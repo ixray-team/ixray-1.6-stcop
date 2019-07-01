@@ -1,0 +1,146 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Simple examples", "Simple examples", "{87827618-92DF-4B09-9086-15C6835317EE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "simple_app", "examples\simple_app\simple_app.vcproj", "{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74} = {61D4856F-FA82-4F02-BB88-909DDFB1FE74}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "simple_plugin", "examples\simple_plugin\simple_plugin.vcproj", "{6D4563E3-B3CE-45FC-B954-C88E104FA314}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74} = {61D4856F-FA82-4F02-BB88-909DDFB1FE74}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oarpclib", "oarpc\oarpclib\oarpclib.vcproj", "{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oalib", "oalib\oalib.vcproj", "{61D4856F-FA82-4F02-BB88-909DDFB1FE74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oatest", "oatest", "{C79FC7CE-89B6-4CD4-8E9D-6FCEF86ADF53}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oatestlib", "oatest\oatestlib.vcproj", "{182900AF-5689-48DE-857F-2629343484A2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oatest", "oatest\oatest\oatest.vcproj", "{319DF16D-8B00-4C14-B98D-72388DC5B696}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74} = {61D4856F-FA82-4F02-BB88-909DDFB1FE74}
+		{182900AF-5689-48DE-857F-2629343484A2} = {182900AF-5689-48DE-857F-2629343484A2}
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C} = {BE268FF1-A2BE-4E2A-904C-ED8F8231078C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oarpc", "oarpc", "{BAEA5A9D-A4B7-4DE9-9EC3-F61B0066AE7D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oaremote", "oarpc\oaremote\oaremote.vcproj", "{D48E67C2-D5DD-4A13-9452-E970A365C472}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C} = {BE268FF1-A2BE-4E2A-904C-ED8F8231078C}
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74} = {61D4856F-FA82-4F02-BB88-909DDFB1FE74}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oaremote_plugin", "oarpc\oaremote_plugin\oaremote_plugin.vcproj", "{3A7D0AE3-85D7-4DA8-910F-E147E5451387}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C} = {BE268FF1-A2BE-4E2A-904C-ED8F8231078C}
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74} = {61D4856F-FA82-4F02-BB88-909DDFB1FE74}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "plugins", "plugins", "{2E497CDC-22CB-444D-BD76-359265F8E0AD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oainfo_plugin", "plugins\oainfo_plugin\oainfo_plugin.vcproj", "{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74} = {61D4856F-FA82-4F02-BB88-909DDFB1FE74}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Multithreaded DLL|Win32 = Debug Multithreaded DLL|Win32
+		Debug|Win32 = Debug|Win32
+		Release Multithreaded DLL|Win32 = Release Multithreaded DLL|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Debug|Win32.Build.0 = Debug|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Release|Win32.ActiveCfg = Release|Win32
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25}.Release|Win32.Build.0 = Release|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Debug|Win32.Build.0 = Debug|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Release|Win32.ActiveCfg = Release|Win32
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314}.Release|Win32.Build.0 = Release|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Debug|Win32.Build.0 = Debug|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Release|Win32.ActiveCfg = Release|Win32
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C}.Release|Win32.Build.0 = Release|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Debug|Win32.ActiveCfg = Debug|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Debug|Win32.Build.0 = Debug|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Release|Win32.ActiveCfg = Release|Win32
+		{61D4856F-FA82-4F02-BB88-909DDFB1FE74}.Release|Win32.Build.0 = Release|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Debug|Win32.Build.0 = Debug|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Release|Win32.ActiveCfg = Release|Win32
+		{182900AF-5689-48DE-857F-2629343484A2}.Release|Win32.Build.0 = Release|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Debug|Win32.ActiveCfg = Debug|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Debug|Win32.Build.0 = Debug|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Release|Win32.ActiveCfg = Release|Win32
+		{319DF16D-8B00-4C14-B98D-72388DC5B696}.Release|Win32.Build.0 = Release|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Debug|Win32.Build.0 = Debug|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Release|Win32.ActiveCfg = Release|Win32
+		{D48E67C2-D5DD-4A13-9452-E970A365C472}.Release|Win32.Build.0 = Release|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Debug|Win32.Build.0 = Debug|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Release|Win32.ActiveCfg = Release|Win32
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387}.Release|Win32.Build.0 = Release|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Debug Multithreaded DLL|Win32.ActiveCfg = Debug|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Debug Multithreaded DLL|Win32.Build.0 = Debug|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Debug|Win32.Build.0 = Debug|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Release Multithreaded DLL|Win32.ActiveCfg = Release|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Release Multithreaded DLL|Win32.Build.0 = Release|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Release|Win32.ActiveCfg = Release|Win32
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED9269A5-EA17-479C-83EF-9E0AF1E25F25} = {87827618-92DF-4B09-9086-15C6835317EE}
+		{6D4563E3-B3CE-45FC-B954-C88E104FA314} = {87827618-92DF-4B09-9086-15C6835317EE}
+		{BE268FF1-A2BE-4E2A-904C-ED8F8231078C} = {BAEA5A9D-A4B7-4DE9-9EC3-F61B0066AE7D}
+		{D48E67C2-D5DD-4A13-9452-E970A365C472} = {BAEA5A9D-A4B7-4DE9-9EC3-F61B0066AE7D}
+		{3A7D0AE3-85D7-4DA8-910F-E147E5451387} = {BAEA5A9D-A4B7-4DE9-9EC3-F61B0066AE7D}
+		{182900AF-5689-48DE-857F-2629343484A2} = {C79FC7CE-89B6-4CD4-8E9D-6FCEF86ADF53}
+		{319DF16D-8B00-4C14-B98D-72388DC5B696} = {C79FC7CE-89B6-4CD4-8E9D-6FCEF86ADF53}
+		{A3F4A0F8-B570-432D-AAC7-70EC6B46F34F} = {2E497CDC-22CB-444D-BD76-359265F8E0AD}
+	EndGlobalSection
+EndGlobal

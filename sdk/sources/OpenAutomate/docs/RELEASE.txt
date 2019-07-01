@@ -1,0 +1,213 @@
+v0.6 - July 19, 2008
+    This release helps maintain backward compatibility in future releases by
+    adding the byte size of structs passed to functions in the API to the
+    structs themselves. Unfortunately, this addition breaks backward
+    compatibility with previous versions of the OpenAutomate SDK.
+
+    * Conformance test suite has been added
+        The SDK now includes the OpenAutomate conformance test suite named
+        oatest in source form. Applications that claim to be OpenAutomate
+        compatible must pass the tests within this suite. Please see oatest
+        for more information.
+
+    * structs now have StructSize field
+        oaMessage, oaNamedOption, oaOptionDependency, and oaCommand now have
+        a field oaInt StructSize as their first field. This is initialized
+        to the sizeof() of their respective types in order to allow either
+        backward compatibility in future versions of the SDK or graceful
+        failure.
+
+        The StructSize field must be initialized by the associated
+        oaInitXXX() functions:
+
+            /* Initializes an oaMessage */
+            void oaInitMessage(oaMessage *message);
+
+            /* Initializes an oaCommand */
+            void oaInitCommand(oaCommand *command);
+
+            /* Initializes an oaNamedOption, and the member oaOptionDependency */
+            void oaInitOption(oaNamedOption *option);
+
+    * oaInitCommand() added
+        oaInitCommand() was added to the API. It must be called on the
+        oaCommand object sent to oaGetNextCommand() before each call to
+        oaGetNextCommand().
+
+    * ComparisonValType member added to oaOptionDependency struct
+        Until this release, plug-ins had to infer the type of
+        oaOptionDependency.ComparisonVal by maintaining a mapping of option
+        names to option type from previous calls to oaAddOption. This had
+        two unfortunate side-effects:
+
+        * The application was required to always call oaAddOption() for the
+        parent option first.
+        * Plug-ins had to maintain global state for the mapping, needlessly
+        complicating plug-in development.
+
+        The addition of ComparisonValType removes these restrictions. The
+        application must now set this value to the type of the parent
+        option. It must match the type of the parent option, when
+        oaAddOption is called with it.
+
+    * added oaiInitFuncTable() in OpenAutomate_Internal.h
+        This function should be used to initialize an oaiFunctionTable
+        instead of explicitly calling memset() and setting the TableSize
+        field.
+
+        Note: This function is only used when developing OA plug-ins.
+
+    * Switched to const oaChar * from oaString
+        Many locations where oaString were used have now been switched to
+        const oaChar * to force compile time restrictions in cases where the
+        string should not be modified.
+
+v0.5 - June 17, 2008
+    Fifth alpha release. This is mostly "service pack" release intended to
+    ease OA integration
+
+    * absolute paths were replaced with relative "../inc/file.h"-style paths
+        It eliminates the need to change project options or change
+        OpenAutomate sources
+
+    * Default level compile warnings were eiminated
+        OpenAutomate should compile without warnings when default warning
+        level is used.
+
+    * OpenAutomateUtil moved to examples
+        It was decided OpenAutomateUtil is not essential part of the core
+        OpenAutomate and may be separated from the core OpenAutomate logic.
+
+    * simple_app.cpp was corrected and extended
+        simple_app.cpp now enumerates options using namespaces new options
+        added to provide more relevant examples of options usage
+
+    * minor OpenAutomate core changes
+          OpenAutomate.h:
+            - OA_PLATFORM (old PLATFORM may cause collisions) is "autodetected"
+          OpenAutomate.cpp: 
+            - init string parsing modifications
+            - Unicode fix (LoadLibraryA is replaced with LoadLibraryW)
+            - minor bugfixes
+
+v0.4 - May 16, 2008
+    Fourth alpha release.
+
+    * all strings are assumed to be UTF-8
+        From the docs:
+
+           All of the OpenAutomate functions that receive or return strings are assumed
+           to be UTF-8 encoded strings.  This simplifies plug-in development, while still
+           supporting all languages.  Furthermore, it maintains compatibility with 
+           standard ASCII strings without any extra effort.
+
+    * added oaAddFrameValue() function
+        This function may be used for providing per frame statistics and
+        results during benchmark runs. It works similarly to
+        oaAddResultValue() but is called every frame, before
+        oaDisplayFrame() is called.
+
+    * more clearly defined OA_CMD_RUN
+        From the docs:
+
+            This command instructs the application to run as normal; it should run as if
+            OpenAutomate mode was never invoked.  However, when the user chooses to exit
+            the application, the application must not exit the process.  Instead, it 
+            should cleanup and return back to the command loop, calling 
+            B<oaGetNextCommand()>.
+
+    * added oaSendSignal()
+        This is a general mechanism for the application to signal the
+        plug-in with various events. Currently, the only supported signal is
+        for rebooting the system in the middle of a benchmark run. See the
+        documentation for more information.
+
+    * added section on registering an OpenAutomate application within the
+    system
+        All OpenAutomate compatible apps are required to register themselves
+        within the system during installation, in order to allow for quick
+        identification of the applications existence.
+
+        See "Registering an Application with OpenAutomate" in README for
+        more information>.
+
+        Also, see OpenAutomateUtil.h and OpenAutomateUtil.c for functions on
+        registering, unregistering, and finding OpenAutomate enabled
+        applications.
+
+        *Note: The Win32 registry is not supported by the utility functions
+        in this release.*
+
+    * Added OpenAutomateUtil.h and OpenAutomateUtil.c
+        In addition, OpenAutomateUtil.h and OpenAutomateUtil.c were added to
+        the SDK. These files are not strictly required for OpenAutomate
+        compatibility, but are made available to users of the SDK to use as
+        they see fit.
+
+        Currently, it the only functions included are ones related to
+        application registration.
+
+    * added option namespaces
+        Options can now be enumerated by the application in a hierarchical
+        fashion similar to files and directories.
+
+        The special namespace User/ must be used to differentiate between
+        options directly visible to the end-user, and ones that aren't. See
+        "Registering an Application with OpenAutomate" in README for more
+        information.
+
+v0.3 - March 26, 2008
+    Third alpha release.
+
+    * Renamed SASH to OpenAutomate
+        OpenAutomate is now the official name for the harness.
+
+        All function and type prefixes are changed from sash to oa.
+
+        Enum value prefixes are changed from SASH_ to <OA_>.
+
+        The -sash command-line option is now -openautomate.
+
+        All other references to SASH are changed to OpenAutomate.
+
+v0.2 - March 9, 2008
+    Second alpha release.
+
+    * added sashAddResultValue()
+        Can optionally be called at the end of a benchmark run, to
+        communicate result values such as benchmark scores, tests
+        passing/failing, etc...
+
+    * added type parameter to sashAddOptionValue()
+        The prototype for sashAddOptionValue() has changed from:
+
+           void sashAddOptionValue(const SASH_CHAR *name, const sashValue *value);
+
+        to:
+
+           void sashAddOptionValue(const SASH_CHAR *name, 
+                                   sashOptionDataType value_type,
+                                   const sashValue *value);
+
+    * now backward compatible with older plug-ins
+        Previously, addition of new functions to the SASH API required
+        recompilation of plug-ins to be compatible with apps that use the
+        new API. This is no longer necessary.
+
+        This matches the new sashAddResultValue(). Previously, the type of
+        the value parameter was implicitely defined by the application
+        through the SASH_CMD_GET_ALL_OPTIONS command. The requirement to
+        issue this command first is no longer needed. Furthermore, the
+        conformance test can now check for consistency between the types in
+        SASH_CMD_GET_ALL_OPTIONS and SASH_GET_CURRENT_OPTIONS.
+
+    * now portable to POSIX compatible OSs
+        Can now be built on POSIX compatible OSs (e.g. Linux, Cygwin, ...).
+        note hasn't be tested extensively, and unicode support is not robust
+        yet.
+
+        A GNUmakefile has been added, for building on these OSs.
+
+v0.1
+    First alpha release.
+

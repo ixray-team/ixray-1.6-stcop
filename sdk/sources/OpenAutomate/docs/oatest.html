@@ -1,0 +1,285 @@
+<HTML>
+
+<HEAD>
+<TITLE>OpenAutomate SDK Release Notes</TITLE>
+
+</HEAD>
+
+<BODY>
+
+
+
+
+
+<BLOCKQUOTE>
+<UL>
+ <LI><A HREF="#1" CLASS="toc-item">OpenAutomate Conformance Suite - oatest
+
+</A></LI>
+     <UL>
+      <LI><A HREF="#2" CLASS="toc-item">Introduction
+
+</A></LI>
+      <LI><A HREF="#3" CLASS="toc-item">Finding and Building oatest
+
+</A></LI>
+      <LI><A HREF="#4" CLASS="toc-item">Running oatest
+
+</A></LI>
+      <LI><A HREF="#5" CLASS="toc-item">Test Failures
+
+</A></LI>
+      <LI><A HREF="#6" CLASS="toc-item">Warnings
+
+</A></LI>
+      <LI><A HREF="#7" CLASS="toc-item">OpenAutomate Compliance
+
+</A></LI>
+     </UL>
+</UL>
+
+<HR SIZE="1" NOSHADE>
+
+<H1><A NAME="OPENAUTOMATE_CONFORMANCE_SUITE_-_OATEST"><A NAME="1">OpenAutomate Conformance Suite - oatest
+
+</A></A></H1>
+
+<H2><A NAME="INTRODUCTION"><A NAME="2">Introduction
+
+</A></A></H2>
+<P>
+<B>oatest</B> is the conformance test suite included with OpenAutomate SDK.  Its
+goal is to aid developers integrating OpenAutomate into their applications by
+making potential errors in the integration transparent.  
+
+
+</P>
+<P>
+In general, adding OpenAutomate to an application is fairly trivial, but its
+easy to introduce bugs during the integration process.  Often these bugs won't
+be perceptible until it's late in the integration process.  oatest solves this 
+problem by giving the developer doing the integration, an immediate method of 
+checking whether his application meets the conformance requirements of 
+OpenAutomate. 
+
+
+</P>
+
+<H2><A NAME="FINDING_AND_BUILDING_OATEST"><A NAME="3">Finding and Building oatest
+
+</A></A></H2>
+<P>
+The source code for oatest can be found in the <I><B>SDKROOT</B>/oatest</I>
+directory of the SDK.
+
+
+</P>
+<P>
+Building oatest is trivial.  Simply load the <I>OpenAutomate.sln</I> Visual Studio
+solution file and build all.  The resulting binaries will end up in the 
+<I><B>SDKROOT</B>/debug</I> or <I><B>SDKROOT</B>/release</I> directory, depending on which 
+target you choose.
+
+
+</P>
+<P>
+<I>Note: It's recommended that you use debug builds of oatest.  The extra 
+debug instrumentation may expose bugs you won't see in a release build.</I>
+
+
+</P>
+<P>
+The two binaries needed to run oatest are <I>oatest.exe</I> and 
+<I>oaremote_plugin.dll</I>.  These files may be moved anywhere on the filesystem,
+but they must always remain in the same directory, otherwise oatest.exe will
+emit an error, and fail to run. 
+ 
+
+</P>
+
+<H2><A NAME="RUNNING_OATEST"><A NAME="4">Running oatest
+
+</A></A></H2>
+<P>
+Running oatest is straightforward.  Assuming we want to run the oatest with the
+example OpenAutomate enabled application included with the 
+SDK--<B>simple_app</B>--and we have built the debug target of the OpenAutomate 
+solution, from the OASDK directory, execute the following on the command-line:
+
+
+</P>
+<PRE>        > .\debug\oatest.exe .\debug\simple_app.exe
+</PRE><P>
+You should see output to stdout on the console that looks something like:
+
+
+</P>
+<PRE>   . Starting process: ./debug/simple_app.exe "-openautomate" "c:\work\OpenAut
+   .   omateSDK\debug\oaremote_plugin.dll;localhost:6969"
+   . Test group: "benchmarks"
+   ... 11 tests passed.
+   . Test group: "GetAllOptions"
+   ... 176 tests passed.
+   . Test group: "GetCurrentOptions"
+   ... 24 tests passed.
+   . Test group: "RunBenchmark"
+   ... running benchmark: forest
+   ... done running benchmark: forest
+   ... running benchmark: crates
+   ... done running benchmark: crates
+   ... running benchmark: map1
+   ... done running benchmark: map1
+   ... 492 tests passed.
+   . Test group: "SetOptions"
+   ... Setting INT option 'Compression Level' -> 10
+   ... Setting FLOAT option 'Texture Quality' -> 19.403
+   ... Setting ENUM option 'Texture Size' -> 128
+   ... Setting ENUM option 'User/AA' -> Off
+   ... Setting INT option 'User/Enemy Density' -> 83
+   ... Setting BOOL option 'User/Music Enabled' -> 1
+   ... Setting ENUM option 'User/Resolution' -> 1024x768
+   ... Setting BOOL option 'User/Sound' -> 1
+   ... Starting process: ./debug/simple_app.exe "-openautomate"
+   ...   "c:\work\p4-revl-lt5\sw\devrel\GFE\harness\OpenAutomateSDK\debug\oaremot
+   ...   e_plugin.dll;localhost:6969"
+   ... 82 tests passed.
+   . Final summary: 785 tests passed.
+</PRE><P>
+A copy of this log may be written to a file as well with the <I>-log</I> command-line
+option like so:
+
+
+</P>
+<PRE>        > .\debug\oatest.exe -log log.txt .\debug\simple_app.exe
+</PRE>
+<H2><A NAME="TEST_FAILURES"><A NAME="5">Test Failures
+
+</A></A></H2>
+<P>
+In the event a test fails, a message similar to the following will appear in
+the section of the log associated with that test:
+
+
+</P>
+<PRE>   ...
+
+   . Test group: "benchmarks"
+   ... FAILED: benchmarks.cpp, 50: Benchmarks.size() > 0
+   ...   !! There must be at least one benchmark defined.
+   ... 1/2 tests FAILED.
+
+   ...
+
+   . Final summary: 1/277 tests FAILED.
+</PRE><P>
+In this example, a test in the test group named <I>benchmarks</I> failed.a  Two
+tests in this group were executed, but only one failed.
+
+
+</P>
+<P>
+The first line of the failure message points to the exact source file and line
+number within oatest where the test takes place.  The following line(s) will
+contain a more verbose description of the issue.
+
+
+</P>
+<P>
+Most of the time, the description should be more than sufficient to understand
+and fix the problem.  In the event that it isn't clear, it's encouraged to look
+at the source code for the test directly and/or write your contact at NVIDIA 
+for guidance.  The source file for all the tests can be found in the 
+<I><B>SDKROOT</B>/oatest/tests/</I> sub-directory.
+
+
+</P>
+
+<H2><A NAME="WARNINGS"><A NAME="6">Warnings
+
+</A></A></H2>
+<P>
+Occasionally, in addition to the tests passing and failing, warnings are 
+emitted by oatest.  Unlike test failures, it's possible to have oatest
+emit warnings, but still pass OpenAutomate conformance.  It is however
+common that the emission of a warning is a direct result of a problem with
+the OpenAutomate integration within an application.  
+
+
+</P>
+<P>
+For example, it's allowed for an application to not expose any options
+via OpenAutomate, but still be OpenAutomate compliant.  Most applications
+however, do have options, and the developer doing the integration generaly 
+means to expose these options.  
+
+
+</P>
+<P>
+The following is an example of an application--a modified version of 
+simple_app--that passes conformance, but has a warning that points to
+a potentially serious problem:
+
+
+</P>
+<PRE>   . Starting process: ./debug/simple_app.exe "-openautomate" "c:\tmp\OpenAutomat
+   .   eSDK-0.6-2\debug\oaremote_plugin.dll;localhost:6969"
+   . Test group: "benchmarks"
+   ... 11 tests passed.
+   . Test group: "GetAllOptions"
+   ... Warning: There were no options returned by the application for command
+   ...          OA_CMD_GET_ALL_OPTIONS.  This may be a bug.
+   ... 1 tests passed, 1 warnings.
+   . Test group: "GetCurrentOptions"
+   ... 0 tests passed.
+   . Test group: "RunBenchmark"
+   ... running benchmark: forest
+   ... done running benchmark: forest
+   ... running benchmark: crates
+   ... done running benchmark: crates
+   ... running benchmark: map1
+   ... done running benchmark: map1
+   ... 492 tests passed.
+   . Test group: "SetOptions"
+   ... Starting process: ./debug/simple_app.exe "-openautomate"
+   ...   "c:\tmp\OpenAutomateSDK-0.6-2\debug\oaremote_plugin.dll;localhost:6969"
+   ... 4 tests passed.
+   . Final summary: 508 tests passed, 1 warnings.
+</PRE><P>
+In general, it's a good idea to pay attention to the warnings emitted by 
+oatest.  
+
+
+</P>
+
+<H2><A NAME="OPENAUTOMATE_COMPLIANCE"><A NAME="7">OpenAutomate Compliance
+
+</A></A></H2>
+<P>
+An application is not considered <I>OpenAutomate Compliant</I> with a given version
+of the OpenAutomate SDK, unless it passes all of the tests in oatest without
+failure.  
+
+
+</P>
+<P>
+Developers are strongly encouraged to ensure that all tests pass 
+before sending any prerelease builds with OpenAutomate compatibility to NVIDIA
+for further testing.  
+
+
+</P>
+<P>
+Once NVIDIA receives a build that passes oatest, a much
+broader set of stress tests requiring a large amount of compute time, and 
+variation in test configuration will be applied to the build.  If the build
+passes these tests, a certificate of compliance will be issued by NVIDIA.
+
+
+</P>
+
+</BLOCKQUOTE>
+
+
+
+</BODY>
+

@@ -1,0 +1,1240 @@
+<HTML>
+
+<HEAD>
+<TITLE>OpenAutomate SDK</TITLE>
+
+</HEAD>
+
+<BODY>
+
+
+
+
+
+<BLOCKQUOTE>
+<UL>
+ <LI><A HREF="#1" CLASS="toc-item">INTRODUCTION
+
+</A></LI>
+ <LI><A HREF="#2" CLASS="toc-item">REQUIREMENTS
+
+</A></LI>
+     <UL>
+      <LI><A HREF="#3" CLASS="toc-item">IMPLEMENTATION
+
+</A></LI>
+          <UL>
+           <LI><A HREF="#4" CLASS="toc-item">Command-line option
+
+</A></LI>
+          </UL>
+      <LI><A HREF="#5" CLASS="toc-item">OpenAutomate Command Loop
+
+</A></LI>
+      <LI><A HREF="#6" CLASS="toc-item">OpenAutomate Commands
+
+</A></LI>
+          <UL>
+           <LI><A HREF="#7" CLASS="toc-item">OA_CMD_EXIT
+
+</A></LI>
+           <LI><A HREF="#8" CLASS="toc-item">OA_CMD_RUN
+
+</A></LI>
+           <LI><A HREF="#9" CLASS="toc-item">OA_CMD_GET_ALL_OPTIONS
+
+</A></LI>
+           <LI><A HREF="#10" CLASS="toc-item">OA_CMD_GET_CURRENT_OPTIONS
+
+</A></LI>
+           <LI><A HREF="#11" CLASS="toc-item">OA_CMD_SET_OPTIONS         
+
+</A></LI>
+           <LI><A HREF="#12" CLASS="toc-item">OA_CMD_GET_BENCHMARKS      
+
+</A></LI>
+           <LI><A HREF="#13" CLASS="toc-item">OA_CMD_RUN_BENCHMARK       
+
+</A></LI>
+          </UL>
+      <LI><A HREF="#14" CLASS="toc-item">Enumerating Options
+
+</A></LI>
+          <UL>
+           <LI><A HREF="#15" CLASS="toc-item">oaAddOption() with OA_TYPE_ENUM
+
+</A></LI>
+           <LI><A HREF="#16" CLASS="toc-item">Numeric Types
+
+</A></LI>
+           <LI><A HREF="#17" CLASS="toc-item">Option Namespaces
+
+</A></LI>
+           <LI><A HREF="#18" CLASS="toc-item">Option Dependencies
+
+</A></LI>
+          </UL>
+      <LI><A HREF="#19" CLASS="toc-item">Signals
+
+</A></LI>
+      <LI><A HREF="#20" CLASS="toc-item">Building with the SDK
+
+</A></LI>
+      <LI><A HREF="#21" CLASS="toc-item">Example Application
+
+</A></LI>
+      <LI><A HREF="#22" CLASS="toc-item">Registering an Application with OpenAutomate
+
+</A></LI>
+          <UL>
+           <LI><A HREF="#23" CLASS="toc-item">Unicode & Strings
+
+</A></LI>
+           <LI><A HREF="#24" CLASS="toc-item">Utility Functions for Registering/Unregistering the Application
+
+</A></LI>
+           <LI><A HREF="#25" CLASS="toc-item">Uninstallation
+
+</A></LI>
+           <LI><A HREF="#26" CLASS="toc-item">Registration File Format
+
+</A></LI>
+          </UL>
+      <LI><A HREF="#27" CLASS="toc-item">Integrating OpenAutomate into an application
+
+</A></LI>
+          <UL>
+           <LI><A HREF="#28" CLASS="toc-item">Integration by including OpenAutomate sources/headers to game project file
+
+</A></LI>
+          </UL>
+     </UL>
+</UL>
+
+<HR SIZE="1" NOSHADE>
+
+<H1><A NAME="INTRODUCTION"><A NAME="1">INTRODUCTION
+
+</A></A></H1>
+<P>
+This directory contains the OpenAutomate SDK.  It's intended for 
+application developers who wish to instrument their applications so that NVIDIA
+can optimize the end-user experience for the application on NVIDIA hardware as 
+efficiently as possible.
+
+
+</P>
+<P>
+The OpenAutomate SDK has been designed to be as unobtrusive and easy 
+to integrate as possible for developers.  All code that will be added to the 
+application is provided as source code.
+
+
+</P>
+<P>
+Instrumenting an application with the OpenAutomate SDK allows NVIDIA to: 
+
+
+</P>
+<UL>
+<LI>
+Enumeration of all application options as seen by the end-user when running on a given platform
+
+</LI>
+<LI>
+Enumerate the current option settings
+
+</LI>
+<LI>
+Set options persistently
+
+</LI>
+<LI>
+Enumerate all available benchmarks
+
+</LI>
+<LI>
+Run benchmarks
+ 
+</LI>
+</UL>
+<P>
+All of the above features are necessary for NVIDIA to efficiently test the
+application within its testing labs.  The ability to set options persistently
+is also necessary to deliver optimal application options to the end-user.
+
+
+</P>
+
+<H1><A NAME="REQUIREMENTS"><A NAME="2">REQUIREMENTS
+
+</A></A></H1>
+<P>
+To be OpenAutomate compatible, an application must have the following:
+
+
+</P>
+<UL>
+<LI>
+A command-line option '-openautomate' that takes a single opaque argument, to put the application into OpenAutomate mode
+
+</LI>
+<LI>
+A method to enumerate all available options
+
+</LI>
+<LI>
+Options directly visible (e.g. in the options menu of a GUI) to the end-user are clearly delineated (see <A HREF="#OPTION_NAMESPACES">the <I>"Option Namespaces"</I> section within this document</A>)
+
+</LI>
+<LI>
+A method to enumerate all current option settings
+
+</LI>
+<LI>
+A method to set options persistently
+
+</LI>
+<LI>
+A method to enumerate benchmarks
+
+</LI>
+<LI>
+A method to run benchmarks
+
+</LI>
+<LI>
+A method to run the application as normal
+
+</LI>
+<LI>
+Exit with non-zero error codes if the application errors
+
+</LI>
+<LI>
+The application must register itself within the system using the OpenAutomate standard during installation
+
+</LI>
+<LI>
+The application must pass all OpenAutomate conformance tests (see <A TARGET="_top" HREF="oatest.html">the <I>"oatest"</I> document</A>)
+
+</LI>
+</UL>
+
+<H2><A NAME="IMPLEMENTATION"><A NAME="3">IMPLEMENTATION
+
+</A></A></H2>
+
+<H3><A NAME="COMMAND-LINE_OPTION"><A NAME="4">Command-line option
+
+</A></A></H3>
+<P>
+The instrumented application must add a command-line option <B>-openautomate</B> that 
+accepts an opaque string as an option.  It must have the form:
+
+
+</P>
+<PRE>    app.exe -openautomate opaque_opt_str
+</PRE><P>
+If this command-line is detected, the application must enter OpenAutomate mode by first 
+calling <B>oaInit()</B>, passing it the option string.
+
+
+</P>
+
+<H2><A NAME="OPENAUTOMATE_COMMAND_LOOP"><A NAME="5">OpenAutomate Command Loop
+
+</A></A></H2>
+<P>
+Immediately after <B>oaInit()</B> is called, the application must enter the OpenAutomate
+command loop, by calling <B>oaGetNextCommand()</B> repeatedly until 
+<B>OA_CMD_EXIT</B> or <B>OA_CMD_RUN</B> is returned.  Here's an example:
+
+
+</P>
+<PRE>    while(1)
+     {
+      oaInitCommand(&Command);
+      switch(oaGetNextCommand(&Command))
+       {
+        /* No more commands, exit program */
+        case OA_CMD_EXIT: 
+         return;
+
+        /* Run as normal */
+        case OA_CMD_RUN: 
+         RunApp();
+         return;
+
+        /* Enumerate all in-game options */
+        case OA_CMD_GET_ALL_OPTIONS: 
+         GetAllOptions();
+         break;
+
+        /* Return the option values currently set */
+        case OA_CMD_GET_CURRENT_OPTIONS:
+         GetCurrentOptions();
+         break;
+
+        /* Set all in-game options */
+        case OA_CMD_SET_OPTIONS: 
+         SetOptions();
+         break;
+
+        /* Enumerate all known benchmarks */
+        case OA_CMD_GET_BENCHMARKS: 
+         GetBenchmarks();
+         break;
+
+        /* Run a benchmark */
+        case OA_CMD_RUN_BENCHMARK: 
+         RunBenchmark(Command.BenchmarkName);
+         break;
+       }
+     }
+</PRE>
+<H2><A NAME="OPENAUTOMATE_COMMANDS"><A NAME="6">OpenAutomate Commands
+
+</A></A></H2>
+<P>
+Each of the seven commands must be supported by the application.  
+
+
+</P>
+
+<H3><A NAME="OA_CMD_EXIT"><A NAME="7">OA_CMD_EXIT
+
+</A></A></H3>
+<P>
+The application should cleanup and exit as soon as possible.
+
+
+</P>
+
+<H3><A NAME="OA_CMD_RUN"><A NAME="8">OA_CMD_RUN
+
+</A></A></H3>
+<P>
+This command instructs the application to run as normal; it should run as if
+OpenAutomate mode was never invoked.  However, when the user chooses to exit
+the application, the application must not exit the process.  Instead, it 
+should cleanup and return back to the command loop, calling 
+<B>oaGetNextCommand()</B>.
+
+
+</P>
+
+<H3><A NAME="OA_CMD_GET_ALL_OPTIONS"><A NAME="9">OA_CMD_GET_ALL_OPTIONS
+
+</A></A></H3>
+<P>
+The application must enumerate all options available to the end user.  For
+each available option, <B>oaAddOption()</B> must be called.  For options of type
+<B>OA_TYPE_ENUM</B> options <B>oaAddOption()</B> must be called for each possible
+enumerant value.  See <A HREF="#ENUMERATING_OPTIONS">the <I>"Enumerating Options"</I> section within this document</A> for more information.
+
+
+</P>
+
+<H3><A NAME="OA_CMD_GET_CURRENT_OPTIONS"><A NAME="10">OA_CMD_GET_CURRENT_OPTIONS
+
+</A></A></H3>
+<P>
+The application should call <B>oaAddOptionValue()</B> for each available option, 
+to enumerate what each option is currently set to.
+
+
+</P>
+
+<H3><A NAME="OA_CMD_SET_OPTIONS"><A NAME="11">OA_CMD_SET_OPTIONS         
+
+</A></A></H3>
+<P>
+The application should call <B>oaGetNextOption()</B> repeatedly, until it returns 
+<B>NULL</B>.  The application should persistently (between invocations of the 
+application) set the option value to the value indicated by the <B>oaNamedOption</B>
+struct pointer returned:
+
+
+</P>
+<PRE>    while((Option = oaGetNextOption()) != NULL)
+     {
+      /*
+       * Set option value to persist for subsequent runs of the game 
+       * to the given value.  Option->Name will be the name of the value, 
+       * and Option->Value will contain the appropriate value.
+       */
+     }
+</PRE>
+<H3><A NAME="OA_CMD_GET_BENCHMARKS"><A NAME="12">OA_CMD_GET_BENCHMARKS      
+
+</A></A></H3>
+<P>
+The application should enumerate all known benchmarks.   <B>Benchmark</B> is 
+loosely defined as any available automated test.
+
+
+</P>
+<P>
+Each benchmark must 
+have a unique string identifier.  <B>oaAddBenchmark()</B> must be called for
+each known benchmark.
+
+
+</P>
+
+<H3><A NAME="OA_CMD_RUN_BENCHMARK"><A NAME="13">OA_CMD_RUN_BENCHMARK       
+
+</A></A></H3>
+<P>
+The application should run the benchmark named by the <B>BenchmarkName</B> field
+returned in the struct by <B>oaGetNextCommand()</B>.  There are three callback
+functions that should be called by the application:
+
+
+</P>
+<UL>
+<LI>
+void oaStartBenchmark(void)
+
+</LI>
+<P>
+The application should call <B>oaStartBenchmark()</B> right before the benchmark 
+starts.  It should be called before any CPU or GPU computation is done for the 
+first frame. 
+
+
+</P>
+<LI>
+void oaDisplayFrame(oaInt frame)
+
+</LI>
+<P>
+This should be called right before the final present call is called for each 
+frame.  
+
+
+</P>
+<P>
+Applications that aren't real-time are not required to call this callback.
+They can simple call <A HREF="#VOID_OASTARTBENCHMARK(VOID)">oaStartBenchMark()</A> and
+<A HREF="#VOID_OAENDBENCHMARK(VOID)">oaEndBenchMark()</A> without calling 
+<A HREF="#VOID_OADISPLAYFRAME(VOID)">oaDisplayFrame()</A> in between.
+
+
+</P>
+<LI>
+void oaEndBenchmark(void)
+
+</LI>
+<P>
+This should be called after the last frame is rendered in the benchmark.
+
+
+</P>
+</UL>
+<P>
+In addition to the callbacks, <B>oaAddResultValue()</B> or <B>oaAddFrameValue()</B> may 
+optionally be called in order to return benchmark scores, or any test results.  
+<B>oaAddResultValue()</B> must be called
+after the last call to <B>oaDisplayFrame()</B> (on the last frame), and before
+<B>oaEndBenchmark()</B>.  <B>oaAddFrameValue()</B> must be called each frame, right 
+before <B>oaDisplayFrame()</B> is called.
+
+
+</P>
+
+<H2><A NAME="ENUMERATING_OPTIONS"><A NAME="14">Enumerating Options
+
+</A></A></H2>
+<P>
+The OpenAutomate SDK supports options of different data types:
+
+
+</P>
+<UL>
+<LI>
+OA_TYPE_STRING
+
+</LI>
+<P>
+String values
+
+
+</P>
+<LI>
+OA_TYPE_INT
+
+</LI>
+<P>
+Integer values 
+
+
+</P>
+<LI>
+OA_TYPE_FLOAT
+
+</LI>
+<P>
+Floating-point values 
+
+
+</P>
+<LI>
+OA_TYPE_ENUM
+
+</LI>
+<P>
+Enumerant values
+
+
+</P>
+<LI>
+OA_TYPE_BOOL
+
+</LI>
+<P>
+Boolean values
+
+
+</P>
+</UL>
+<P>
+For all data types except <B>OA_TYPE_ENUM</B>, <B>oaAddOption()</B> is called once
+per option.
+
+
+</P>
+<P>
+<B>oaAddOption()</B> takes a pointer to a <B>oaNamedOption</B> struct as input.
+The struct must first be initialized with the <B>oaInitOption()</B> function.
+Every option must have the following fields initialized:
+
+
+</P>
+<UL>
+<LI>
+DataType
+
+</LI>
+<P>
+The data type (e.g. OA_TYPE_INT) of the option
+
+
+</P>
+<LI>
+Name
+
+</LI>
+<P>
+A string containing the exact name of the parameter as seen by the end-user
+of the application
+
+
+</P>
+</UL>
+
+<H3><A NAME="OAADDOPTION()_WITH_OA_TYPE_ENUM"><A NAME="15">oaAddOption() with OA_TYPE_ENUM
+
+</A></A></H3>
+<P>
+For options of type <B>OA_TYPE_ENUM</B>, <B>oaAddOption()</B> is called once per
+possible enumerant value of that option.  The field <B>Value.Enum</B> must be
+set to each possible enumerant value.  
+
+
+</P>
+<P>
+For example, an option named <B>Resolution</B> with values <B>640x480</B>, <B>1024x768</B>,
+and <B>1600x1200</B> would be defined with the following code:
+
+
+</P>
+<PRE>    {
+     oaNamedOptionStruct Option; 
+
+     oaInitOption(&Option);
+     Option.Name = "Resolution";
+     Option.DataType = OA_TYPE_ENUM;
+
+     Option.Value.Enum = "640x480";
+     oaAddOption(&Option);
+
+     Option.Value.Enum = "1024x768";
+     oaAddOption(&Option);
+
+     Option.Value.Enum = "1600x1200";
+     oaAddOption(&Option);
+    }
+</PRE><P>
+If possible, all enumerant values should be sorted such that the first 
+enumerant value produces the <B>lowest quality</B> and the last enumerant value
+produces the <B>highest quality</B>.  <B>Quality</B> is obviously subjective, but
+in the case of an option such as <B>Resolution</B>, the order is obvious.  
+
+
+</P>
+
+<H3><A NAME="NUMERIC_TYPES"><A NAME="16">Numeric Types
+
+</A></A></H3>
+<P>
+Options with numeric data types <B>OA_TYPE_INT</B> and <B>OA_TYPE_FLOAT</B> are 
+assumed to have open and continues ranges for possible values by default.
+Options can be limited to ranges optional steps by setting the <B>NumSteps</B>,
+<B>MinValue</B>, and <B>MaxValue</B> fields.  <B>NumSteps</B> can be set to:
+
+
+</P>
+<UL>
+<LI>
+NumSteps = -1
+
+</LI>
+<P>
+If the range is open
+
+
+</P>
+<LI>
+NumSteps = 0
+
+</LI>
+<P>
+If it's closed, but continuous within the range
+
+
+</P>
+<LI>
+NumSteps > 0
+
+</LI>
+<P>
+If the range is divided up into <B>NumSteps</B> number of points
+
+
+</P>
+</UL>
+<P>
+<B>MinValue.Int</B> and <B>MaxValue.Int</B>, or <B>MinValue.Float</B> and <B>MaxValue.Float</B> 
+must be set to the appropriate range values for options of <B>OA_TYPE_INT</B> and
+<B>OA_TYPE_FLOAT</B> respectively.
+
+
+</P>
+<P>
+For example, a floating point parameter named <B>Quality</B> ranging from <B>1.0</B> to
+<B>5.0</B> with increments of <B>0.25</B> (e.g. <B>1.0, 1.25, 1.5, 1.75, 2.0, ... 4.75, 
+5.0</B>) can be defined with the following code:
+
+
+</P>
+<PRE>    {
+     oaNamedOptionStruct Option; 
+
+     oaInitOption(&Option);
+     Option.Name = "Quality";
+     Option.DataType = OA_TYPE_FLOAT;
+
+     Option.NumSteps = 16;
+     Option.MinValue.Float = 1.0;
+     Option.MaxValue.Float = 5.0;
+     oaAddOption(&Option);
+    }
+</PRE>
+<H3><A NAME="OPTION_NAMESPACES"><A NAME="17">Option Namespaces
+
+</A></A></H3>
+<P>
+Options may be grouped into hierarchical namespaces by using the reserved 
+separator <B>/</B> within the option name, similar to standard filesystem path 
+naming conventions.  
+
+
+</P>
+<P>
+If hierarchical namespaces are not used, all available options are assumed 
+to be visible to the end-user, if they were to run the application outside 
+of OpenAutomate mode.  
+
+
+</P>
+<P>
+If hierarchical namespaces are used, care must be 
+taken to delineate between options that are exposed directly to the end-user,
+and ones that are not.  Options under the top-level namespace <B>User/</B>
+are assumed to be directly visible to the end-user.  All other options are
+assumed to not be directly visible.
+
+
+</P>
+<P>
+The special character <B>/</B> can be used within the name of an option by escaping
+it with an additional <B>//</B>.  For example, <B>User/In//Out</B> would represent the
+option named <B>In/Out</B> in the top-level namespace <B>User</B>.
+
+
+</P>
+
+<H3><A NAME="OPTION_DEPENDENCIES"><A NAME="18">Option Dependencies
+
+</A></A></H3>
+<P>
+Often, applications have options that are enabled only when some other parent 
+option's value meets a certain condition.  
+The OpenAutomate SDK supports such dependencies, if the condition can be expressed with 
+the form:
+
+
+</P>
+<PRE>    ParentVal EXP Constant
+</PRE><P>
+Where <B>ParentVal</B> is the value of the parent option, <B>Constant</B> is some constant
+value of the same type as <B>ParentVal</B>, and <B>EXP</B> is one of:
+
+
+</P>
+<UL>
+<LI>
+OA_COMP_OP_EQUAL
+
+</LI>
+<P>
+Equality (e.g. <B>==</B>)
+
+
+</P>
+<LI>
+OA_COMP_OP_NOT_EQUAL
+
+</LI>
+<P>
+Inequality (e.g. <B>!=</B>)
+
+
+</P>
+<LI>
+OA_COMP_OP_GREATER
+
+</LI>
+<P>
+Greater than (e.g. <B>&gt;</B>)
+
+
+</P>
+<LI>
+OA_COMP_OP_LESS
+
+</LI>
+<P>
+Less than (e.g. <B>&lt;</B>)
+
+
+</P>
+<LI>
+OA_COMP_OP_GREATER_OR_EQUAL
+
+</LI>
+<P>
+Greater than or equal to (e.g. <B>&gt;=</B>)
+
+
+</P>
+<LI>
+OA_COMP_OP_LESS_OR_EQUAL
+
+</LI>
+<P>
+Less than or equal to (e.g. <B>&lt;=</B>)
+
+
+</P>
+</UL>
+<P>
+If a dependency exists, it can be setup by setting the subfields 
+<B>Dependency.ParentName</B>, <B>Dependency.ComparisonVal</B>, and 
+<B>Dependency.ComparisonOp</B>.  For example, if an option named <B>Volume</B>
+is dependent on a boolean parent option named <B>Sound Enabled</B> 
+equaling <B>OA_ON</B> for it to be enabled:
+
+
+</P>
+<PRE>    {
+     oaNamedOptionStruct Option; 
+
+     oaInitOption(&Option);
+     Option.Name = "Volume";
+     Option.DataType = OA_TYPE_FLOAT;
+
+     Option.Dependency.ParentName = "Sound Enabled";
+     Option.Dependency.ComparisonOp = OA_COMP_OP_EQUAL;
+     Option.Dependency.ComparisonVal.Bool = OA_ON;
+
+     Option.MinValue.Float = 0;
+     Option.MaxValue.Float = 10;
+     Option.NumSteps = 0;
+
+     oaAddOption(&Option);
+    }
+</PRE>
+<H2><A NAME="SIGNALS"><A NAME="19">Signals
+
+</A></A></H2>
+<P>
+The application may send various signals at various points throughout its run 
+via the <B>oaSendSignal()</B> function:
+
+
+</P>
+<PRE>    oaBool oaSendSignal(oaSignalType signal, void *param);
+</PRE><P>
+Some signals may require a parameter <B>param</B>.  For those that don't, a 
+<B>NULL</B> should be passed in.  The available signals are:
+
+
+</P>
+<DL>
+<DT><STRONG><B>OA_SIGNAL_SYSTEM_REBOOT</B>
+
+</STRONG></DT>
+<DD>
+
+<P>
+Some benchmarks and tests require a reboot mid-run.   This signal requests a safe
+reboot.  After the call to <B>oaSendSignal()</B> completes, the application must:
+
+
+</P>
+<OL>
+<LI>
+cleanup and save the benchmark state
+
+</LI>
+<LI>
+exit the process gracefully
+
+</LI>
+<LI>
+upon the next invocation of the appliation with identical command-line params, continue running benchmark from where it left off when the signal was sent
+
+</LI>
+<P>
+<B>param</B> must be passed in as <B>NULL</B>.
+
+
+</P>
+</OL>
+<DT><STRONG><B>OA_SIGNAL_ERROR</B>
+
+</STRONG></DT>
+<DD>
+
+<P>
+This signal raises an error exception.  <B>param</B> must point to a valid
+<B>oaMessage</B>.  The <B>Error</B> field of the <B>oaMessage</B> object should 
+be set to the appropriate <B>oaErrorType</B> value, and the <B>Message</B> field
+either be <B>NULL</B> or point to an error message.  <B>oaInitMessage</B> must be
+called on the <B>oaMessage</B> object before settings these values.
+
+
+</P>
+<P>
+This signal may be used for warnings (non-fatal errors), and log messages
+by setting the <B>Error</B> field of the <B>oaMessage</B> object to 
+<B>OA_ERROR_WARNING</B> and <B>OA_ERROR_LOG</B> respectively.
+
+
+</P>
+<P>
+The following convenience macros are provided for raising errors, warnings, 
+and log messages:
+
+
+</P>
+<PRE>    OA_RAISE_ERROR(error_type, message_str) 
+    OA_RAISE_WARNING(message_str) 
+    OA_RAISE_LOG(message_str) 
+</PRE></DD></DL>
+
+<H2><A NAME="BUILDING_WITH_THE_SDK"><A NAME="20">Building with the SDK
+
+</A></A></H2>
+<P>
+Building your application with the SDK is intentionally simple.  It requires
+only three files from the SDK to be included in your project:
+
+
+</P>
+<PRE>   inc/OpenAutomate.h
+   inc/OpenAutomate_Internal.h
+   src/OpenAutomate.c
+</PRE><P>
+<B>inc/OpenAutomate.h</B> is the only include file your application needs to include.  
+
+
+</P>
+
+<H2><A NAME="EXAMPLE_APPLICATION"><A NAME="21">Example Application
+
+</A></A></H2>
+<P>
+See <B>examples/simple_app/simple_app.cpp</B> for an example dummy application 
+instrumented with the OpenAutomate SDK.  To build the application, along with 
+a simple plug-in (<B>simple_plugin.dll</B>) to run with the simple application, 
+simply load the included Visual Studio solution <B>OpenAutomate.sln</B> and build
+all.  The resulting binaries will be in the <B>debug</B> sub-directory--<B>release</B>
+if you choose the release target--in the root of the SDK.  Once built, you can 
+run the simple application with the command-line:
+
+
+</P>
+<PRE>    .\exe\simple_app.exe -openautomate plugins\simple_plugin.dll
+</PRE><P>
+<B>simple_plugin.dll</B> will run <B>simple_app</B> through various commands, 
+and write out the result to stderr.  The output should look something like:
+
+
+</P>
+<PRE>    simple_app: Reading options file ".simple_app_options.txt".
+    IN AddOption: 'User/Resolution'
+    IN AddOption: 'User/Resolution'
+    IN AddOption: 'User/Resolution'
+    IN AddOption: 'User/AA'
+    IN AddOption: 'User/AA'
+    IN AddOption: 'User/AA'
+    IN AddOption: 'User/Sound'
+    IN AddOption: 'User/Music Enabled'
+    IN AddOption: 'User/Enemy Density'
+    IN AddOption: 'Compression Level'
+    IN AddOption: 'Texture Quality'
+    IN AddOption: 'Texture Size'
+    IN AddOption: 'Texture Size'
+    IN AddOption: 'Texture Size'
+    Current option (int)'Compression Level' = 10
+    Current option (float)'Texture Quality' = 19.402985
+    Current option (enum)'Texture Size' = 128
+    Current option (enum)'User/AA' = Off
+    Current option (int)'User/Enemy Density' = 83
+    Current option (bool)'User/Music Enabled' = 1
+    Current option (enum)'User/Resolution' = 1024x768
+    Current option (bool)'User/Sound' = 1
+    simple_app: Writing options file ".simple_app_options.txt".
+    IN AddBenchmark: forest
+    IN AddBenchmark: crates
+    IN AddBenchmark: map1
+    Benchmark started
+    Result value (int)'Score' = 18249
+    Result value (float)'Some other score' = 29.140000
+    Benchmark ended
+      Total time = 1s
+      Avg. FPS = 50.000000
+</PRE>
+<H2><A NAME="REGISTERING_AN_APPLICATION_WITH_OPENAUTOMATE"><A NAME="22">Registering an Application with OpenAutomate
+
+</A></A></H2>
+<P>
+Applications that have OpenAutomate integrated--and are thus "OpenAutomate 
+Enabled"--must register themselves when they're installed on the system, so 
+that applications interested in invoking OpenAutomate Enabled applications
+may easily find them on the system,  without doing a filesystem scan.
+
+
+</P>
+<P>
+Application registration is a simple matter of creating a file with 
+name/value pairs, or creating some registry keys (Windows only).
+
+
+</P>
+<P>
+Applications searching for installed OpenAutomate Enabled applications will
+search various roots, building a list of available
+applications.  There is precedence in the search order, so that if the same
+application definition file or registry entry exists under more than one root,
+the location with higher priority overrides the other.
+
+
+</P>
+<P>
+The locations searched from higher to lower precedence are:
+
+
+</P>
+<UL>
+<LI>
+<B>Filesystem</B>: <B>&lt;ENV{OPENAUTOMATE_DIR}<gt</B>>/OpenAutomate/RegisteredApps/<B>&lt;DEV_NAME&gt;</B>/<B>&lt;APP_NAME&gt;</B>/<B>&lt;APP_BUILD_NAME&gt;</B>
+
+</LI>
+<LI>
+<B>Filesystem</B>: <B>&lt;HOME&gt;</B>/OpenAutomate/RegisteredApps/<B>&lt;DEV_NAME&gt;</B>/<B>&lt;APP_NAME&gt;</B>/<B>&lt;APP_BUILD_NAME&gt;</B>
+
+</LI>
+<LI>
+<B>Filesystem</B>: <B>&lt;SYSTEM_ROOT&gt;</B>/OpenAutomate/RegisteredApps/<B>&lt;DEV_NAME&gt;</B>/<B>&lt;APP_NAME&gt;</B>/<B>&lt;APP_BUILD_NAME&gt;</B>
+
+</LI>
+<LI>
+<B>Registry</B>: HKEY_CURRENT_USER\SOFTWARE\OpenAutomate\RegisteredApps\<B>&lt;DEV_NAME&gt;</B>\<B>&lt;APP_NAME&gt;</B>\<B>&lt;APP_BUILD_NAME&gt;</B>
+
+</LI>
+<LI>
+<B>Registry</B>: HKEY_LOCAL_MACHINE\SOFTWARE\OpenAutomate\RegisteredApps\<B>&lt;DEV_NAME&gt;</B>\<B>&lt;APP_NAME&gt;</B>\<B>&lt;APP_BUILD_NAME&gt;</B>
+
+</LI>
+</UL>
+<P>
+Where:
+
+
+</P>
+<UL>
+<LI>
+&lt;HOME&gt;
+
+</LI>
+<P>
+The home directory of the current user.
+
+
+</P>
+<LI>
+&lt;SYSTEM_ROOT&gt; 
+
+</LI>
+<P>
+The root directory of the system.
+
+
+</P>
+<LI>
+&lt;DEV_NAME&gt;
+
+</LI>
+<P>
+The name of the developer of the application (e.g. NVIDIA).
+
+
+</P>
+<LI>
+&lt;APP_NAME&gt; 
+
+</LI>
+<P>
+The name of the application (e.g. simple_app).
+
+
+</P>
+<LI>
+&lt;APP_BUILD_NAME&gt; 
+
+</LI>
+<P>
+The name of the specific build (e.g. v1.1, 080511, ...).
+
+
+</P>
+</UL>
+<P>
+For registration via the filesystem, a file 
+<A HREF="#REGISTRATION_FILE_FORMAT">(format detailed below)</A> must be 
+created with the given path (e.g. <B>&lt;HOME&gt;</B>/.openautomate/<B>&lt;DEV_NAME&gt;</B>/<B>&lt;APP_NAME&gt;</B>/<B>&lt;APP_BUILD_NAME&gt;</B>).  
+The name/value pairs will be stored within this file.
+
+
+</P>
+<P>
+For registration via the Windows registry, a key with the given path must be created, and the name/value pairs are stored as values under this key.
+
+
+</P>
+<P>
+The following name/value pairs must be defined:
+
+
+</P>
+<UL>
+<LI>
+<B>INSTALL_ROOT_PATH</B>
+
+</LI>
+<P>
+The full path to the installation directory for the application.
+
+
+</P>
+<LI>
+<B>ENTRY_EXE</B>
+
+</LI>
+<P>
+Full path to the executable that can be called with the <B>-openautomate</B> option
+to start the application in OpenAutomate mode.
+
+
+</P>
+<LI>
+<B>INSTALL_DATETIME</B>
+
+</LI>
+<P>
+The date and time the application was installed in ISO8601 format.
+
+
+</P>
+<LI>
+<B>REGION</B>
+
+</LI>
+<P>
+A list of regions/languages supported by the build in RFC3066 format.  If
+multiple regions/languages are supported, they can be listed by separating
+them with the <B>|</B> character.
+
+
+</P>
+</UL>
+
+<H3><A NAME="UNICODE_&_STRINGS"><A NAME="23">Unicode & Strings
+
+</A></A></H3>
+<P>
+All of the OpenAutomate functions that receive or return strings are assumed
+to be UTF-8 encoded strings.  This simplifies plug-in development, while still
+supporting all languages.  Furthermore, it maintains compatibility with 
+standard ASCII strings without any extra effort.
+
+
+</P>
+
+<H3><A NAME="UTILITY_FUNCTIONS_FOR_REGISTERING/UNREGISTERING_THE_APPLICATION"><A NAME="24">Utility Functions for Registering/Unregistering the Application
+
+</A></A></H3>
+<P>
+Utility functions to register and unregister the application are provided with
+the SDK.  User's of OpenAutomate are free to use the functions directly, or as
+example.  Please see <I>OpenAutomateUtil.h</I> and <I>OpenAutomateUtil.c</I> for more
+information.
+
+
+</P>
+
+<H3><A NAME="UNINSTALLATION"><A NAME="25">Uninstallation
+
+</A></A></H3>
+<P>
+Upon uninstallation of the application, any registration files or registry 
+settings registering the application must be deleted.
+
+
+</P>
+
+<H3><A NAME="REGISTRATION_FILE_FORMAT"><A NAME="26">Registration File Format
+
+</A></A></H3>
+<UL>
+<LI>
+The file is encoded in UTF-8 to support extended characters.
+
+</LI>
+<LI>
+The first 5 bytes of the file must be the magic value 'OAREG '.
+
+</LI>
+<LI>
+Following the magic is the version number of the file format, followed by a newline.
+
+</LI>
+<LI>
+Lines containing only whitespace are ignored.
+
+</LI>
+<LI>
+Non-whitespace only lines must have name/value pairs.
+
+</LI>
+<P>
+The format is: &lt;NAME&gt; : &lt;VALUE&gt;
+
+
+</P>
+<P>
+Whitespace preceding and following the &lt;NAME&gt; and &lt;VALUE&gt; tokens 
+are ignored.
+
+
+</P>
+</UL>
+<P>
+Here's an example registration file:
+
+
+</P>
+<PRE>    OAREG 1.0 
+
+    INSTALL_ROOT_PATH: c:\Program Files\My Company\My Game
+    ENTRY_EXE:         c:\Program Files\My Company\My Game\Bin\mygame.exe -i -o
+    INSTALL_DATETIME:  2008-05-31 15:01:02
+    REGION:            en_US|ko_KR
+</PRE>
+<H2><A NAME="INTEGRATING_OPENAUTOMATE_INTO_AN_APPLICATION"><A NAME="27">Integrating OpenAutomate into an application
+
+</A></A></H2>
+<P>
+The OpenAutomate SDK can be integrated to a game application in a number of ways
+and it is up to the game developers to decide which way to use. Examples are:
+
+
+</P>
+<UL>
+<LI>
+Include OpenAutomate.c to some project and add "#include SDKPATH/OpenAutomate.h" to all c/c++ files that use OpenAutomate calls
+
+</LI>
+<LI>
+include OpenAutomate project to a game solution file and link the final exe against OpenAutomate library
+
+</LI>
+
+<H3><A NAME="INTEGRATION_BY_INCLUDING_OPENAUTOMATE_SOURCES/HEADERS_TO_GAME_PROJECT_FILE"><A NAME="28">Integration by including OpenAutomate sources/headers to game project file
+
+</A></A></H3>
+</UL>
+<P>
+This is the simplest and the preferable OpenAutomate integration method.
+There is no overhead of separate project, no project settings headache and game developer 
+will never have any link problems related to OpenAutomate. The recommended 
+integration sequence is following:
+
+
+</P>
+<UL>
+<LI>
+unzip the whole OpenAutomate SDK to some directory, for example \ThirdParty\OpenAutomate. Upgrade to next OpenAautomate version will require a single directory replacement. There may be several OpenAutomate versions in 'ThirdParty' directory, put the latest to directory named like 'OpenAutomate' (without version name), it will eliminate any project changes on OpenAutomate upgrades.
+
+</LI>
+<LI>
+all c/c++ files that use OpenAutomate should include <OpenAutomate\OpenAutomate.h> header (supposedly OA is located somewhere like ThirdParty/OpenAutomate and ThirdParty is in the project include paths).
+
+</LI>
+<LI>
+put OpenAutomate.c to the application project (or some library project). It should be included only once.
+
+</LI>
+<LI>
+Add the code that work with OpenAutomate to you game application
+
+</LI>
+</UL>
+<P>
+If there are warnings or compilations errors please report them to your DevTech
+support engineer.
+
+
+</P>
+
+</BLOCKQUOTE>
+
+
+
+</BODY>
+

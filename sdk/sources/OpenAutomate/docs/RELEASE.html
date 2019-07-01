@@ -1,0 +1,470 @@
+<HTML>
+
+<HEAD>
+<TITLE>OpenAutomate SDK Release Notes</TITLE>
+
+</HEAD>
+
+<BODY>
+
+
+
+
+
+<BLOCKQUOTE>
+<UL>
+ <LI><A HREF="#1" CLASS="toc-item">v0.6 - July 19, 2008
+
+</A></LI>
+ <LI><A HREF="#2" CLASS="toc-item">v0.5 - June 17, 2008
+
+</A></LI>
+ <LI><A HREF="#3" CLASS="toc-item">v0.4 - May 16, 2008
+
+</A></LI>
+ <LI><A HREF="#4" CLASS="toc-item">v0.3 - March 26, 2008
+
+</A></LI>
+ <LI><A HREF="#5" CLASS="toc-item">v0.2 - March 9, 2008
+
+</A></LI>
+ <LI><A HREF="#6" CLASS="toc-item">v0.1 
+
+</A></LI>
+</UL>
+
+<HR SIZE="1" NOSHADE>
+
+<H1><A NAME="V0.6_-_JULY_19,_2008"><A NAME="1">v0.6 - July 19, 2008
+
+</A></A></H1>
+<P>
+This release helps maintain backward compatibility in future releases by
+adding the byte size of structs passed to functions in the API to the 
+structs themselves.  Unfortunately, this addition breaks backward compatibility
+with previous versions of the OpenAutomate SDK.
+
+
+</P>
+<UL>
+<LI>
+Conformance test suite has been added
+
+</LI>
+<P>
+The SDK now includes the OpenAutomate conformance test suite named <B>oatest</B> in
+source form.  Applications that claim to be OpenAutomate compatible must pass
+the tests within this suite.  Please see <A TARGET="_top" HREF="oatest.html">the <I>"oatest"</I> document</A> for more information.
+
+
+</P>
+<LI>
+structs now have <B>StructSize</B> field
+
+</LI>
+<P>
+<B>oaMessage</B>, <B>oaNamedOption</B>, <B>oaOptionDependency</B>,
+and <B>oaCommand</B> now have a field <B>oaInt StructSize</B> as their first
+field.  This is initialized to the <B>sizeof()</B> of their respective types
+in order to allow either backward compatibility in future versions of the SDK
+or graceful failure.
+
+
+</P>
+<P>
+The <B>StructSize</B> field must be initialized by the associated <B>oaInitXXX()</B> 
+functions:  
+
+
+</P>
+<PRE>    /* Initializes an oaMessage */
+    void oaInitMessage(oaMessage *message);
+
+    /* Initializes an oaCommand */
+    void oaInitCommand(oaCommand *command);
+
+    /* Initializes an oaNamedOption, and the member oaOptionDependency */
+    void oaInitOption(oaNamedOption *option);
+</PRE><LI>
+<B>oaInitCommand()</B> added
+
+</LI>
+<P>
+<B>oaInitCommand()</B> was added to the API.  It must be called on the <B>oaCommand</B>
+object sent to <B>oaGetNextCommand()</B> before each call to <B>oaGetNextCommand()</B>.
+
+
+</P>
+<LI>
+<B>ComparisonValType</B> member added to <B>oaOptionDependency</B> struct
+
+</LI>
+<P>
+Until this release, plug-ins had to infer the type of 
+<B>oaOptionDependency.ComparisonVal</B>
+by maintaining a mapping of option names to option type from previous calls
+to <B>oaAddOption</B>.  This had two unfortunate side-effects:
+
+
+</P>
+<UL>
+<LI>
+The application was required to always call <B>oaAddOption()</B>
+for the parent option first.
+
+</LI>
+<LI>
+Plug-ins had to maintain global state for the mapping, needlessly complicating plug-in development.
+
+</LI>
+</UL>
+<P>
+The addition of <B>ComparisonValType</B> removes these restrictions.  The 
+application must now set this value to the type of the parent option.  
+It must match the type of the parent option, when <B>oaAddOption</B> 
+is called with it.
+
+
+</P>
+<LI>
+added <B>oaiInitFuncTable()</B> in OpenAutomate_Internal.h
+
+</LI>
+<P>
+This function should be used to initialize an <B>oaiFunctionTable</B> instead
+of explicitly calling <B>memset()</B> and setting the <B>TableSize</B> field.
+
+
+</P>
+<P>
+Note: This function is only used when developing OA plug-ins.
+
+
+</P>
+<LI>
+Switched to <B>const oaChar *</B> from <B>oaString</B>
+
+</LI>
+<P>
+Many locations where <B>oaString</B> were used have now been switched to
+<B>const oaChar *</B> to force compile time restrictions in cases where the
+string should not be modified. 
+
+
+</P>
+</UL>
+
+<H1><A NAME="V0.5_-_JUNE_17,_2008"><A NAME="2">v0.5 - June 17, 2008
+
+</A></A></H1>
+<P>
+Fifth alpha release.
+This is mostly "service pack" release intended to ease OA integration
+
+
+</P>
+<UL>
+<LI>
+absolute paths were replaced with relative "../inc/file.h"-style paths
+
+</LI>
+<P>
+It eliminates the need to change project options or change OpenAutomate sources
+
+
+</P>
+<LI>
+Default level compile warnings were eiminated
+
+</LI>
+<P>
+OpenAutomate should compile without warnings when default warning
+level is used. 
+
+
+</P>
+<LI>
+OpenAutomateUtil moved to examples
+
+</LI>
+<P>
+It was decided OpenAutomateUtil is not essential part of the core OpenAutomate and may be separated
+from the core OpenAutomate logic.
+
+
+</P>
+<LI>
+simple_app.cpp was corrected and extended
+
+</LI>
+<P>
+simple_app.cpp now enumerates options using namespaces
+new options added to provide more relevant examples of options usage
+
+
+</P>
+<LI>
+minor OpenAutomate core changes
+
+</LI>
+<PRE>  OpenAutomate.h:
+    - OA_PLATFORM (old PLATFORM may cause collisions) is "autodetected"
+  OpenAutomate.cpp: 
+    - init string parsing modifications
+    - Unicode fix (LoadLibraryA is replaced with LoadLibraryW)
+    - minor bugfixes
+</PRE></UL>
+
+<H1><A NAME="V0.4_-_MAY_16,_2008"><A NAME="3">v0.4 - May 16, 2008
+
+</A></A></H1>
+<P>
+Fourth alpha release.
+
+
+</P>
+<UL>
+<LI>
+all strings are assumed to be UTF-8
+
+</LI>
+<P>
+From the docs:
+
+
+</P>
+<PRE>   All of the OpenAutomate functions that receive or return strings are assumed
+   to be UTF-8 encoded strings.  This simplifies plug-in development, while still
+   supporting all languages.  Furthermore, it maintains compatibility with 
+   standard ASCII strings without any extra effort.
+</PRE><LI>
+added <B>oaAddFrameValue()</B> function 
+
+</LI>
+<P>
+This function may be used for providing per frame statistics and results
+during benchmark runs.  It works similarly to <B>oaAddResultValue()</B> but
+is called every frame, before <B>oaDisplayFrame()</B> is called.
+
+
+</P>
+<LI>
+more clearly defined <B>OA_CMD_RUN</B>
+
+</LI>
+<P>
+From the docs:
+
+
+</P>
+<PRE>    This command instructs the application to run as normal; it should run as if
+    OpenAutomate mode was never invoked.  However, when the user chooses to exit
+    the application, the application must not exit the process.  Instead, it 
+    should cleanup and return back to the command loop, calling 
+    B<oaGetNextCommand()>.
+</PRE><LI>
+added oaSendSignal()
+
+</LI>
+<P>
+This is a general mechanism for the application to signal the plug-in with various
+events.  Currently, the only supported signal is for rebooting the system in the
+middle of a benchmark run.  See the documentation for more information.
+
+
+</P>
+<LI>
+added section on registering an OpenAutomate application within the system
+
+</LI>
+<P>
+All OpenAutomate compatible apps are required to register themselves within 
+the system during installation, in order to allow for quick identification of the
+applications existence.
+
+
+</P>
+<P>
+See <A TARGET="_top" HREF="README.html#REGISTERING_AN_APPLICATION_WITH_OPENAUTOMATE">the <I>"Registering an Application with OpenAutomate"</I> section of the <I>"README"</I> document</A> for more information>.
+
+
+</P>
+<P>
+Also, see <B>OpenAutomateUtil.h</B> and <B>OpenAutomateUtil.c</B> for functions on 
+registering, unregistering, and finding OpenAutomate enabled applications.
+
+
+</P>
+<P>
+<I>Note: The Win32 registry is not supported by the utility functions in this 
+release.</I>
+
+
+</P>
+<LI>
+Added <B>OpenAutomateUtil.h</B> and <B>OpenAutomateUtil.c</B> 
+
+</LI>
+<P>
+In addition, <B>OpenAutomateUtil.h</B> and <B>OpenAutomateUtil.c</B> were added to the
+SDK.  These files are not strictly required for OpenAutomate compatibility, but 
+are made available to users of the SDK to use as they see fit.
+
+
+</P>
+<P>
+Currently, it the only functions included are ones related to application
+registration.  
+
+
+</P>
+<LI>
+added option namespaces
+
+</LI>
+<P>
+Options can now be enumerated by the application in a hierarchical fashion 
+similar to files and directories.  
+
+
+</P>
+<P>
+The special namespace <B>User/</B> must be used to differentiate between options 
+directly visible to the end-user, and ones that aren't.  
+See <A TARGET="_top" HREF="README.html#REGISTERING_AN_APPLICATION_WITH_OPENAUTOMATE">the <I>"Registering an Application with OpenAutomate"</I> section of the <I>"README"</I> document</A> for more 
+information.
+
+
+</P>
+</UL>
+
+<H1><A NAME="V0.3_-_MARCH_26,_2008"><A NAME="4">v0.3 - March 26, 2008
+
+</A></A></H1>
+<P>
+Third alpha release.
+
+
+</P>
+<UL>
+<LI>
+Renamed SASH to OpenAutomate
+
+</LI>
+<P>
+<B>OpenAutomate</B> is now the official name for the harness.  
+
+
+</P>
+<P>
+All function and type prefixes are changed from <B>sash</B> to <B>oa</B>.  
+
+
+</P>
+<P>
+Enum value prefixes are changed from <B>SASH_</B> to <OA_>.  
+
+
+</P>
+<P>
+The <B>-sash</B> command-line option is now <B>-openautomate</B>.
+
+
+</P>
+<P>
+All other references to <B>SASH</B> are changed to <B>OpenAutomate</B>.
+
+
+</P>
+</UL>
+
+<H1><A NAME="V0.2_-_MARCH_9,_2008"><A NAME="5">v0.2 - March 9, 2008
+
+</A></A></H1>
+<P>
+Second alpha release.
+
+
+</P>
+<UL>
+<LI>
+added <B>sashAddResultValue()</B>
+
+</LI>
+<P>
+Can optionally be called at the end of a benchmark run, to communicate result
+values such as benchmark scores, tests passing/failing, etc...
+
+
+</P>
+<LI>
+added type parameter to <B>sashAddOptionValue()</B> 
+
+</LI>
+<P>
+The prototype for <B>sashAddOptionValue()</B> has changed from: 
+
+
+</P>
+<PRE>   void sashAddOptionValue(const SASH_CHAR *name, const sashValue *value);
+</PRE><P>
+to: 
+
+
+</P>
+<PRE>   void sashAddOptionValue(const SASH_CHAR *name, 
+                           sashOptionDataType value_type,
+                           const sashValue *value);
+</PRE><LI>
+now backward compatible with older plug-ins
+
+</LI>
+<P>
+Previously, addition of new functions to the SASH API required recompilation
+of plug-ins to be compatible with apps that use the new API.  This is no 
+longer necessary.
+
+
+</P>
+<P>
+This matches the new <B>sashAddResultValue()</B>.  Previously, the type of the
+value parameter was implicitely defined by the application through the
+<B>SASH_CMD_GET_ALL_OPTIONS</B> command.  The requirement to issue this command
+first is no longer needed.  Furthermore, the conformance test can now check
+for consistency between the types in <B>SASH_CMD_GET_ALL_OPTIONS</B> and 
+<B>SASH_GET_CURRENT_OPTIONS</B>.
+
+
+</P>
+<LI>
+now portable to POSIX compatible OSs
+
+</LI>
+<P>
+Can now be built on POSIX compatible OSs (e.g. Linux, Cygwin, ...).  note 
+hasn't be tested extensively, and unicode support is not robust yet.
+
+
+</P>
+<P>
+A GNUmakefile has been added, for building on these OSs.
+
+
+</P>
+</UL>
+
+<H1><A NAME="V0.1"><A NAME="6">v0.1 
+
+</A></A></H1>
+<P>
+First alpha release.
+
+
+</P>
+
+</BLOCKQUOTE>
+
+
+
+</BODY>
+
