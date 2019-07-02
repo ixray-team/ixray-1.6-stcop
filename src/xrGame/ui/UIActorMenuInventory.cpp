@@ -377,7 +377,8 @@ void CUIActorMenu::DetachAddon(LPCSTR addon_name, PIItem itm)
 
 		P.w_stringZ								(addon_name);
 		CGameObject::u_EventSend				(P);
-	};
+		return;
+	}
 	if(itm==NULL)
 		CurrentIItem()->Detach					(addon_name, true);
 	else

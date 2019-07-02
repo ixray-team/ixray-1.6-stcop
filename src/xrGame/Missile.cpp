@@ -74,8 +74,6 @@ void CMissile::Load(LPCSTR section)
 	
 	m_vThrowPoint		= pSettings->r_fvector3(section,"throw_point");
 	m_vThrowDir			= pSettings->r_fvector3(section,"throw_dir");
-	m_vHudThrowPoint	= pSettings->r_fvector3(*hud_sect,"throw_point");
-	m_vHudThrowDir		= pSettings->r_fvector3(*hud_sect,"throw_dir");
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 }

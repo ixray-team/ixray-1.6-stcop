@@ -3,7 +3,7 @@
 
 #include "../xrServerEntities/associative_vector.h"
 #include "mixed_delegate.h"
-#include "atlas_stalkercs_v1.h"
+#include "atlas_stalkercoppc_v1.h"
 #include "script_export_space.h"
 
 namespace gamespy_profile

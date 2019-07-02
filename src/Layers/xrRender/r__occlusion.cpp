@@ -44,7 +44,8 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 	//	Igor: prevent release crash if we issue too many queries
 	if (pool.empty())
 	{
-		Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
+		if ((Device.dwFrame % 40) == 0)
+			Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
 		ID = iInvalidHandle;
 		return 0;
 	}

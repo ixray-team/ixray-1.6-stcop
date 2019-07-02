@@ -134,7 +134,7 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 				{
 					if (local_player && !local_player->IsSkip())
 					{
-						if (!m_bReadMapDesc)
+						if (!m_bReadMapDesc && Level().CurrentEntity())
 						{
 							m_bReadMapDesc = m_game_ui->ShowServerInfo() ? TRUE : FALSE;
 							GetActiveVoting				();
@@ -1443,19 +1443,13 @@ void game_cl_CaptureTheArtefact::OnTeamSelect(int Team)
 
 	if (NeedToSendTeamSelect)
 	{
-		CObject *l_pObj = Level().CurrentEntity();
-
-		CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
-		VERIFY(l_pPlayer);
-
 		NET_Packet		P;
-		l_pPlayer->u_EventGen(P,GE_GAME_EVENT, l_pPlayer->ID());
+		u_EventGen(P,GE_GAME_EVENT, local_player->GameID);
 		P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);
 		P.w_u8(PLAYER_CHANGE_TEAM);
-		
 		P.w_s16	(static_cast<s16>(Team));
 		//P.w_u32			(0);
-		l_pPlayer->u_EventSend(P);
+		u_EventSend(P);
 		//-----------------------------------------------------------------
 		m_bSkinSelected = FALSE;
 	};
@@ -1476,17 +1470,13 @@ void game_cl_CaptureTheArtefact::OnSkinMenu_Ok()
 {
 	VERIFY(m_game_ui);
 	NET_Packet P;
-	
-	CObject *l_pObj = Level().CurrentEntity();
-	CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
-	VERIFY2(l_pPlayer, make_string("local player object not found"));
-	
+
 	// sending request for selecting actor scin
-	l_pPlayer->u_EventGen(P, GE_GAME_EVENT, l_pPlayer->ID()	);
+	u_EventGen(P, GE_GAME_EVENT, local_player->GameID);
 	P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);
 	P.w_u8(PLAYER_CHANGE_SKIN);
     P.w_s8(m_game_ui->GetSelectedSkinIndex());
-	l_pPlayer->u_EventSend(P);
+	u_EventSend(P);
 }
 
 void game_cl_CaptureTheArtefact::OnSkinMenu_Cancel()

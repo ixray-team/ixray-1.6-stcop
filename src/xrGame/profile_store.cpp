@@ -165,13 +165,75 @@ void profile_store::load_profile(store_operation_cb progress_indicator_cb)
 	m_awards_store->reset_awards		();
 	m_best_scores_store->reset_scores	();
 
-	store_operation_cb			tmp_cb(this, &profile_store::loaded_awards);
+	merge_fields(
+		m_best_scores_store->get_field_names(),
+		m_awards_store->get_field_names());
+	
+	
 	m_progress_indicator		(true, "mp_loading_awards");
+	//m_progress_indicator		(true, "mp_loading_best_scores"); - merged
 	Engine.Sheduler.Register	(this, FALSE);
-	m_awards_store->load_awards	(tmp_cb);
+	load_profile_fields			();
 }
 
-void __stdcall	profile_store::loaded_awards(bool const result, char const * err_descr)
+void profile_store::merge_fields(best_scores_store::best_fields_names_t const & best_results,
+								 awards_store::award_fields_names_t const & awards_fields)
+{
+	unsigned int i = 0;
+	for (unsigned int bf = 0; bf < best_scores_store::fields_count; ++bf)
+	{
+		m_field_names_store[i] = best_results[bf];
+		++i;
+	}
+	for (unsigned int af = 0; af < awards_store::fields_count; ++af)
+	{
+		m_field_names_store[i] = awards_fields[af];
+		++i;
+	}
+	VERIFY(i == merged_fields_count);
+	m_get_records_input.mNumFields	= i; 
+	m_get_records_input.mFieldNames = m_field_names_store;
+	m_get_records_input.mTableId	= profile_table_name;
+}
+
+void profile_store::load_profile_fields()
+{
+	SAKERequest reqres = m_sake_obj->GetMyRecords(
+		&m_get_records_input,
+		&profile_store::get_my_fields_cb,
+		this
+	);
+	
+	if (!reqres)
+	{
+		SAKEStartRequestResult tmp_result	= m_sake_obj->GetRequestResult();
+		loaded_fields(false, CGameSpy_SAKE::TryToTranslate(tmp_result).c_str());
+	}
+}
+
+void __cdecl profile_store::get_my_fields_cb(SAKE sake,
+											 SAKERequest request,
+											 SAKERequestResult result,
+											 void * inputData,
+											 void * outputData,
+											 void * userData)
+{
+	profile_store* my_inst = static_cast<profile_store*>(userData);
+	if (result != SAKERequestResult_SUCCESS)
+	{
+		my_inst->loaded_fields(false, CGameSpy_SAKE::TryToTranslate(result).c_str());
+		return;
+	}
+	SAKEGetMyRecordsOutput*	tmp_out		= static_cast<SAKEGetMyRecordsOutput*>(
+		outputData
+	);
+	VERIFY(tmp_out);
+	my_inst->m_awards_store->process_aw_out_response(tmp_out, merged_fields_count);
+	my_inst->m_best_scores_store->process_scores_out_response(tmp_out, merged_fields_count);
+	my_inst->loaded_fields(true, "");
+}
+
+void profile_store::loaded_fields(bool const result, char const * err_descr)
 {
 	if (!m_complete_cb)
 	{
@@ -181,51 +243,26 @@ void __stdcall	profile_store::loaded_awards(bool const result, char const * err_
 		return;
 	}
 
+	store_operation_cb			tmp_cb = m_complete_cb;
+	m_complete_cb.clear			();
+	m_progress_indicator.clear	();
+	Engine.Sheduler.Unregister	(this);
+
 	if (!result)
 	{
-		store_operation_cb			tmp_cb = m_complete_cb;
-		m_complete_cb.clear			();
-		m_progress_indicator.clear	();
-		Engine.Sheduler.Unregister	(this);
 		tmp_cb						(false, err_descr);
 		return;
 	}
 	
 	if (m_valid_ltx)
+	{
 		m_awards_store->load_awards_from_ltx(m_dsigned_reader.get_ltx());
-
-	m_progress_indicator(true, "mp_loading_best_scores");
-	store_operation_cb	tmp_cb(this, &profile_store::loaded_best_scores);
-	m_best_scores_store->load_best_scores(tmp_cb);
+		m_best_scores_store->load_best_scores_from_ltx(m_dsigned_reader.get_ltx());
+		check_sake_actuality();
+	}
+	tmp_cb(true, "");
 }
 
-void __stdcall	profile_store::loaded_best_scores(bool const result, char const * err_descr)
-{
-	if (!m_complete_cb)
-	{
-		Msg("WARNING: loading best scores terminated by user");
-		VERIFY(!m_progress_indicator);
-		Engine.Sheduler.Unregister(this);
-		return;
-	}
-	store_operation_cb			tmp_cb = m_complete_cb;
-	m_complete_cb.clear			();
-	m_progress_indicator.clear	();
-	Engine.Sheduler.Unregister	(this);
-	if (!result)
-	{
-		tmp_cb		(false, err_descr);
-	} else
-	{
-		if (m_valid_ltx)
-		{
-			m_best_scores_store->load_best_scores_from_ltx(m_dsigned_reader.get_ltx());
-			check_sake_actuality();
-		}
-		tmp_cb		(true, "");
-	}
-	
-}
 
 void __stdcall	profile_store::onlylog_operation(bool const result, char const * descr)
 {

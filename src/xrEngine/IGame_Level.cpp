@@ -79,6 +79,8 @@ static void __stdcall	build_callback	(Fvector* V, int Vcnt, CDB::TRI* T, int Tcn
 
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
+	SECUROM_MARKER_PERFORMANCE_ON(10)
+
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;
@@ -133,7 +135,9 @@ BOOL IGame_Level::Load			(u32 dwNum)
 
 	Device.seqFrame.Add			(this);
 
-	return TRUE;
+	SECUROM_MARKER_PERFORMANCE_OFF(10)
+
+	return TRUE;	
 }
 
 int		psNET_DedicatedSleep	= 5;

@@ -15,22 +15,37 @@
 class CLevelPathBuilder : public CDetailPathBuilder {
 private:
 	typedef CDetailPathBuilder	inherited;
+
 private:
+	Fvector						m_temp;
 	u32							m_start_vertex_id;
 	u32							m_dest_vertex_id;
-	bool						m_extrapolate_path;
-	Fvector						m_temp;
 	const Fvector				*m_precise_position;
+	u32							m_last_fail_time;
+	bool						m_extrapolate_path;
+	bool						m_use_delay_after_fail;
+
+private:
+	enum {
+		time_to_wait_after_fail	= u32(2000),
+	};
 
 public:
-	IC						CLevelPathBuilder	(CMovementManager *object)
-		: inherited(object)
+	IC						CLevelPathBuilder	(CMovementManager *object) :
+		inherited				( object ),
+		m_last_fail_time		( 0 ),
+		m_use_delay_after_fail	( true )
 	{
 	}
 
 	IC		const u32		&dest_vertex_id		() const
 	{
 		return					(m_dest_vertex_id);
+	}
+
+	IC		void			use_delay_after_fail( bool const value )
+	{
+		m_use_delay_after_fail	= value;
 	}
 
 	IC		void			setup				(const u32 &start_vertex_id, const u32 &dest_vertex_id, bool extrapolate_path, const Fvector *precise_position)
@@ -53,6 +68,9 @@ public:
 			void			register_to_process	()
 	{
 		m_object->m_wait_for_distributed_computation	= true;
+		if ( Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail )
+			return;
+
 		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevelPathBuilder::process));
 	}
 
@@ -62,6 +80,9 @@ public:
 		m_object->level_path().build_path	(m_start_vertex_id,m_dest_vertex_id);
 
 		if (m_object->level_path().failed()) {
+			if ( m_use_delay_after_fail )
+				m_last_fail_time			= Device.dwTimeGlobal;
+
 			m_object->m_path_state			= CMovementManager::ePathStateBuildLevelPath;
 			return;
 		}
@@ -83,6 +104,9 @@ public:
 
 			void __stdcall	process				()
 	{
+		if ( Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail )
+			return;
+
 		m_object->build_level_path			();
 	}
 

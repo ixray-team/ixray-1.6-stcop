@@ -99,6 +99,7 @@ private:
 	
 	void						MakeUpdatePackets			();
 	void						SendUpdatePacketsToAll		();
+	u32							m_last_updates_size;
 	
 	
 	void						SendServerInfoToClient		(ClientID const & new_client);
@@ -242,6 +243,7 @@ public:
 	void					entity_Destroy		(CSE_Abstract *&P);
 	u32						GetEntitiesNum		()			{ return entities.size(); };
 	CSE_Abstract*			GetEntity			(u32 Num);
+	u32 const				GetLastUpdatesSize	() const { return m_last_updates_size; };
 
 	xrClientData*			ID_to_client		(ClientID ID, bool ScanAll = false ) { return (xrClientData*)(IPureServer::ID_to_client( ID, ScanAll)); }
 	CSE_Abstract*			ID_to_entity		(u16 ID);
@@ -269,6 +271,7 @@ public:
 			void			MakeConfigDump		(ClientID const & admin_id, ClientID const & cheater_id);
 
 	virtual void			GetServerInfo		( CServerInfo* si );
+			void			SendPlayersInfo		(ClientID const & to_client);
 public:
 	xr_string				ent_name_safe		(u16 eid);
 #ifdef DEBUG
@@ -297,6 +300,5 @@ public:
 		};
 extern	Flags32	dbg_net_Draw_Flags;
 #endif
-
 
 #endif // !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)

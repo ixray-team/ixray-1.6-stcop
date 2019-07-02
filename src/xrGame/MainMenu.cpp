@@ -630,7 +630,8 @@ void	CMainMenu::OnSessionTerminate				(LPCSTR reason)
 		return;
 
 	m_start_time = Device.dwTimeGlobal;
-	LPCSTR str = CStringTable().translate("ui_st_kicked_by_server").c_str();
+	CStringTable	st;
+	LPCSTR str = st.translate("ui_st_kicked_by_server").c_str();
 	LPSTR		text;
 
 	if ( reason && xr_strlen(reason) && reason[0] == '@' )
@@ -642,7 +643,7 @@ void	CMainMenu::OnSessionTerminate				(LPCSTR reason)
 		STRCONCAT( text, str, " ", reason );
 	}
 	
-	m_pMB_ErrDlgs[SessionTerminate]->SetText( text );
+	m_pMB_ErrDlgs[SessionTerminate]->SetText(st.translate(text).c_str());
 	SetErrorDialog(CMainMenu::SessionTerminate);
 }
 
@@ -782,17 +783,15 @@ void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 LPCSTR CMainMenu::GetGSVer()
 {
 	static string256	buff;
-	static string256	buff2;
 	if(m_pGameSpyFull)
 	{
-		xr_strcpy(buff2, m_pGameSpyFull->GetGameVersion(buff));
+		xr_strcpy(buff, m_pGameSpyFull->GetGameVersion());
 	}else
 	{
-		buff[0]		= 0;
-		buff2[0]	= 0;
+		buff[0]	= 0;
 	}
 
-	return buff2;
+	return buff;
 }
 
 LPCSTR CMainMenu::GetPlayerName()

@@ -9,8 +9,10 @@
 BOOL CEditableObject::ParseMAMaterial(CSurface* dest, SXRShaderData& d)
 {
 	string1024 tmp;
-	strcpy				(tmp,d.tex_name.asChar());	if (strext(tmp)) *strext(tmp)=0;
-	dest->SetTexture	(EFS.AppendFolderToName(tmp,1,TRUE));
+	strcpy_s				(tmp, d.tex_name.asChar());	
+	if (strext(tmp)) *strext(tmp)=0;
+
+	dest->SetTexture	(EFS.AppendFolderToName(tmp, sizeof(tmp), 1, TRUE));
 	dest->SetFVF		(D3DFVF_XYZ|D3DFVF_NORMAL|(1<<D3DFVF_TEXCOUNT_SHIFT));
 	dest->SetVMap		("Texture");
 	dest->m_Flags.set	(CSurface::sf2Sided,d.double_side);

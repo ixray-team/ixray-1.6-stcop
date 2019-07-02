@@ -60,6 +60,19 @@ public:
 		default:	return NULL;
 		}
 	}
+
+	void on_dbg_render();
+
+	#if DEBUG 
+	struct pixel_box
+	{
+		Fvector center;
+		Fvector radius;
+		float	z;
+	}  dbg_pixel_boxes [occ_dim_0*occ_dim_0];
+	bool dbg_HOM_draw_initialized;
+	
+	#endif
 	
 	occRasterizer	();
 	~occRasterizer	();

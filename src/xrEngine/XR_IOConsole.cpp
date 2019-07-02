@@ -94,6 +94,7 @@ CConsole::CConsole()
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips    = false;
 	Register_callbacks();
+	Device.seqResolutionChanged.Add(this);
 }
 
 void CConsole::Initialize()
@@ -131,6 +132,7 @@ CConsole::~CConsole()
 	xr_delete( m_hShader_back );
 	xr_delete( m_editor );
 	Destroy();
+	Device.seqResolutionChanged.Remove(this);
 }
 
 void CConsole::Destroy()
@@ -602,6 +604,8 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 
 void CConsole::Show()
 {
+	SECUROM_MARKER_HIGH_SECURITY_ON(11)
+
 	if ( bVisible )
 	{
 		return;
@@ -619,6 +623,8 @@ void CConsole::Show()
 	m_editor->IR_Capture();
 	Device.seqRender.Add( this, 1 );
 	Device.seqFrame.Add( this );
+
+	SECUROM_MARKER_HIGH_SECURITY_OFF(11)
 }
 
 extern CInput* pInput;

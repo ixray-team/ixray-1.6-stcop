@@ -26,6 +26,12 @@ public:
 	void						reset_scores				();
 
 	all_best_scores_t&			get_player_best_scores		();
+	
+	static int const			fields_count = bst_score_types_count;
+	typedef char* best_fields_names_t[fields_count];
+
+	best_fields_names_t const &	get_field_names				() const { return m_field_names_store; }
+	void						process_scores_out_response	(SAKEGetMyRecordsOutput* tmp_out, int const out_fields_count);
 private:
 	all_best_scores_t	m_result_scores;
 	all_best_scores_t	m_ltx_result_scores;
@@ -34,12 +40,9 @@ private:
 	CGameSpy_SAKE*		m_sake_obj;
 	CGameSpy_Full*		m_fullgs_obj;
 
-	static int const		fields_count = bst_score_types_count;
-	char*					m_field_names_store[fields_count];
+	best_fields_names_t		m_field_names_store;
 	SAKEGetMyRecordsInput	m_get_records_input;
 	void					init_field_names();
-
-	void				process_scores_out_response		(SAKEGetMyRecordsOutput* tmp_out);
 
 	static void __cdecl get_my_player_scores_cb			(SAKE sake,
 														 SAKERequest request,

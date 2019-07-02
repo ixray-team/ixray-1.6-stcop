@@ -497,6 +497,7 @@ bool Weapon_Statistic::FindHit(u32 BulletID, HITS_VEC_it& Hit_it)
 
 void WeaponUsageStatistic::RemoveBullet(ABULLETS_it& Bullet_it)
 {
+	statistic_sync_quard syncg(m_mutex);
 	if (!Bullet_it->Removed || Bullet_it->HitRefCount!=Bullet_it->HitResponds) return;
 	//-------------------------------------------------------------
 	PLAYERS_STATS_it PlayerIt = FindPlayer(*(Bullet_it->FirerName));
@@ -513,6 +514,7 @@ void WeaponUsageStatistic::RemoveBullet(ABULLETS_it& Bullet_it)
 
 void WeaponUsageStatistic::OnWeaponBought(game_PlayerState* ps, LPCSTR WeaponName)
 {
+	statistic_sync_quard syncg(m_mutex);
 	if (!CollectData()) return;
 	if (!ps) return;
 	PLAYERS_STATS_it PlayerIt = FindPlayer(ps->getName());
@@ -529,6 +531,7 @@ void WeaponUsageStatistic::OnWeaponBought(game_PlayerState* ps, LPCSTR WeaponNam
 
 void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& cartridge)
 {
+	statistic_sync_quard syncg(m_mutex);
 	if (!CollectData()) return;
 
 	if (!pBullet || !pBullet->flags.allow_sendhit) return;
@@ -553,6 +556,7 @@ void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& car
 
 void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation)
 {
+	statistic_sync_quard syncg(m_mutex);
 	if (!pBullet || !pBullet->flags.allow_sendhit) return;
 //	Msg("! OnBullet Hit ID[%d]", pBullet->m_dwID);
 	ABULLETS_it BulletIt;
@@ -702,6 +706,7 @@ void WeaponUsageStatistic::Send_Check_Respond()
 
 void WeaponUsageStatistic::On_Check_Respond(NET_Packet* P)
 {
+	statistic_sync_quard syncg(m_mutex);
 	if (!P) return;
 	u8 NumFalse = P->r_u8();
 	u8 NumTrue = P->r_u8();
@@ -805,9 +810,12 @@ void WeaponUsageStatistic::OnPlayerKillPlayer(game_PlayerState* ps, KILL_TYPE Ki
 
 void WeaponUsageStatistic::OnExplosionKill(game_PlayerState* ps, const SHit& hit)
 {
+	
 	if (!CollectData())							return;
 	if (!ps)									return;
 	if (!OnServer())							return;
+	
+	statistic_sync_quard syncg(m_mutex);
 
 	CObject* killer								= hit.who;
 	if(!killer)									return;
@@ -842,6 +850,7 @@ void WeaponUsageStatistic::OnExplosionKill(game_PlayerState* ps, const SHit& hit
 
 void WeaponUsageStatistic::OnBleedKill(game_PlayerState* killer_ps, game_PlayerState* victim_ps, u16 weapon_id)
 {
+	statistic_sync_quard syncg(m_mutex);
 	if (!killer_ps || !victim_ps)
 		return;
 	Player_Statistic& PlayerStatKiller = *(FindPlayer(killer_ps->getName()));
@@ -974,6 +983,9 @@ void WeaponUsageStatistic::Update()
 void WeaponUsageStatistic::OnUpdateRequest(NET_Packet*)
 {
 	if (aPlayersStatistic.empty() || !Game().local_player) return;
+	
+	statistic_sync_quard syncg(m_mutex);
+	
 	game_PlayerState* local_player = Game().local_player;
 	if (!xr_strlen(local_player->getName()))
 		return;
@@ -992,6 +1004,9 @@ void WeaponUsageStatistic::OnUpdateRequest(NET_Packet*)
 void WeaponUsageStatistic::OnUpdateRespond(NET_Packet* P, shared_str const & sender_digest)
 {
 	if (!P) return;
+	
+	statistic_sync_quard syncg(m_mutex);
+	
 	shared_str PName;
 	P->r_stringZ(PName);
 	Player_Statistic& PS = *(FindPlayer(*PName));

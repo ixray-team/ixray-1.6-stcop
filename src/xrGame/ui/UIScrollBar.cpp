@@ -265,14 +265,14 @@ bool CUIScrollBar::OnMouseDownEx()
 	if ( dec2_rect.in(cursor_pos) && (m_mouse_state != 2) )
 	{
 		TryScrollDec(true);
-//		m_mouse_state = 1;
+		m_mouse_state = 1;
 		return true;
 	}
 	
 	if ( inc2_rect.in(cursor_pos) && (m_mouse_state != 1) )
 	{
 		TryScrollInc(true);
-//		m_mouse_state = 2;
+		m_mouse_state = 2;
 		return true;
 	}
 	return false;

@@ -9,4 +9,6 @@ extern "C"
 		ptPatchCallback callback, 
 		PTBool blocking, 
 		void * instance ));
+
+	EXPORT_FN_DECL(bool, ptTrackUsageA,	(int userID));
 }

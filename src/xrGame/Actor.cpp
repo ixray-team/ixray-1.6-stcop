@@ -94,7 +94,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={AF_GODMODE_RT};
+Flags32			psActorFlags={AF_GODMODE_RT|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE};
 int				psActorSleepTime = 1;
 
 
@@ -122,6 +122,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	}
 	cameras[eacFreeLook]	= xr_new<CCameraLook>					(this);
 	cameras[eacFreeLook]->Load("actor_free_cam");
+	cameras[eacFixedLookAt]	= xr_new<CCameraFixedLook>				(this);
+	cameras[eacFixedLookAt]->Load("actor_look_cam");
 
 	cam_active				= eacFirstEye;
 	fPrevCamPos				= 0.0f;
@@ -798,10 +800,6 @@ void CActor::Die	(CObject* who)
 		};
 	};
 
-	cam_Set					(eacFreeLook);
-	mstate_wishful	&=		~mcAnyMove;
-	mstate_real		&=		~mcAnyMove;
-
 	if(!g_dedicated_server)
 	{
 		::Sound->play_at_pos	(sndDie[Random.randI(SND_DIE_COUNT)],this,Position());
@@ -811,11 +809,19 @@ void CActor::Die	(CObject* who)
 		m_DangerSnd.stop		();		
 	}
 
-	if(IsGameTypeSingle())
+	if	(IsGameTypeSingle())
 	{
+		cam_Set				(eacFreeLook);
 		CurrentGameUI()->HideShownDialogs();
 		start_tutorial		("game_over");
+	} else
+	{
+		cam_Set				(eacFixedLookAt);
 	}
+	
+	mstate_wishful	&=		~mcAnyMove;
+	mstate_real		&=		~mcAnyMove;
+
 	xr_delete				(m_sndShockEffector);
 }
 
@@ -1630,16 +1636,15 @@ ALife::_TIME_ID	 CActor::TimePassedAfterDeath()	const
 }
 
 
-void CActor::OnItemTake			(CInventoryItem *inventory_item)
+void CActor::OnItemTake(CInventoryItem *inventory_item)
 {
-//	CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
 	CInventoryOwner::OnItemTake(inventory_item);
 	if (OnClient()) return;
 }
 
-void CActor::OnItemDrop(CInventoryItem *inventory_item)
+void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy)
 {
-	CInventoryOwner::OnItemDrop(inventory_item);
+	CInventoryOwner::OnItemDrop(inventory_item, just_before_destroy);
 
 	CCustomOutfit* outfit		= smart_cast<CCustomOutfit*>(inventory_item);
 	if(outfit && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
@@ -1654,7 +1659,16 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item)
 		if(weapon->GetRememberActorNVisnStatus())
 			weapon->EnableActorNVisnAfterZoom();
 	}
-	
+
+	if(		!just_before_destroy && 
+			inventory_item->BaseSlot()==GRENADE_SLOT && 
+			NULL==inventory().ItemFromSlot(GRENADE_SLOT) )
+	{
+		PIItem grenade =  inventory().SameSlot(GRENADE_SLOT, inventory_item, true);
+		
+		if(grenade)
+			inventory().Slot(GRENADE_SLOT, grenade, true, true);
+	}
 }
 
 

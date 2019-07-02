@@ -432,7 +432,26 @@ u32	CHW::selectPresentInterval	()
 
 u32 CHW::selectGPU ()
 {
-	if (Caps.bForceGPU_SW) return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+	if ( Caps.id_vendor == 0x8086 ) { // Intel
+
+		#define GMA_BL_SIZE 27
+
+		DWORD IntelGMA_BlackList[ GMA_BL_SIZE ] = { 
+			0x2782,0x2582,0x2792,0x2592,0x2772,0x2776,0x27A2,0x27A6,0x27AE,
+			0x2982,0x2983,0x2992,0x2993,0x29A2,0x29A3,0x2972,0x2973,0x2A02,
+			0x2A03,0x2A12,0x2A13,0x29C2,0x29C3,0x29B2,0x29B3,0x29D2,0x29D3
+		};
+
+		for ( int idx = 0 ; idx < GMA_BL_SIZE ; ++idx )
+			if ( IntelGMA_BlackList[ idx ] == Caps.id_device ) {
+				Caps.bForceGPU_SW = TRUE;
+				Msg( "* Forcing software vertex processing for Intel GMA [0x%X]" , Caps.id_device );
+				break;
+			}
+	}
+
+	if ( Caps.bForceGPU_SW ) 
+		return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
 	D3DCAPS9	caps;
 	pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);

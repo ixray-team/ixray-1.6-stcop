@@ -106,7 +106,7 @@ public:
 	IC		void				clear			();
 	IC		void				insert			(_object_type	*object);
 	IC		_object_type		*remove			(const _object_type *object);
-	IC		_object_type		*find			(const Fvector	&position);
+	IC		_object_type		*find			(const Fvector	&position) const;
 	IC		void				nearest			(const Fvector	&position,	float radius, xr_vector<_object_type*> &objects, bool clear = true) const;
 	IC		void				all				(xr_vector<_object_type*> &objects, bool clear = true) const;
 	IC		size_t				size			() const;

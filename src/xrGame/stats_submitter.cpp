@@ -324,6 +324,20 @@ bool stats_submitter::prepare_report()
 	return false;	
 }
 
+bool stats_submitter::add_player_name_to_report()
+{
+	SCResult tmp_res = m_atlas_obj->ReportAddStringValue(
+		m_atlas_report,
+		KEY_PlayerName,
+		m_last_operation_profile->unique_nick()
+	);
+	VERIFY(tmp_res == SCResult_NO_ERROR);
+	if (tmp_res != SCResult_NO_ERROR)
+			return false;
+
+	return true;
+}
+
 bool stats_submitter::create_award_inc_report()
 {
 	__time32_t tmp_time		= 0;
@@ -347,7 +361,7 @@ bool stats_submitter::create_award_inc_report()
 	if (tmp_res != SCResult_NO_ERROR)
 			return false;
 
-	return true;
+	return add_player_name_to_report();
 }
 
 bool stats_submitter::create_best_scores_report()
@@ -366,7 +380,7 @@ bool stats_submitter::create_best_scores_report()
 		if (tmp_res != SCResult_NO_ERROR)
 			return false;
 	}
-	return true;
+	return add_player_name_to_report();
 }
 
 bool stats_submitter::create_all_awards_report()
@@ -393,7 +407,7 @@ bool stats_submitter::create_all_awards_report()
 		if (tmp_res != SCResult_NO_ERROR)
 			return false;
 	}
-	return true;
+	return add_player_name_to_report();
 }
 
 void stats_submitter::terminate_session()

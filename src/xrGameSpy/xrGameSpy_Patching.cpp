@@ -4,7 +4,7 @@
 
 #include "xrGameSpy_Patching.h"
 
-extern const char*	GetGameVersion	(const char*KeyValue);
+extern const char*	GetGameVersion		();
 extern			int GetGameDistribution	();
 
 XRGAMESPY_API bool xrGS_ptCheckForPatchA(
@@ -13,13 +13,22 @@ XRGAMESPY_API bool xrGS_ptCheckForPatchA(
 										PTBool blocking, 
 										void * instance )
 {
-	char VersionValue[128] = "";
-//	return ptCheckForPatch(productID, versionUniqueID, distributionID, callback, blocking, instance )!=PTFalse;
+	//	return ptCheckForPatch(productID, versionUniqueID, distributionID, callback, blocking, instance )!=PTFalse;
 	return ptCheckForPatchA(GAMESPY_PRODUCTID, 
 //		GAME_VERSION,
-		GetGameVersion(VersionValue),
+		GetGameVersion(),
 //		GAMESPY_PATCHING_VERSIONUNIQUE_ID, 
 //		GAMESPY_PATCHING_DISTRIBUTION_ID, 
 		GetGameDistribution(),
-		callback, blocking, instance )!=PTFalse;
+		callback, blocking, instance ) != PTFalse;
 };
+
+XRGAMESPY_API bool xrGS_ptTrackUsageA(int userID)
+{
+	return ptTrackUsageA(
+		userID,
+		GAMESPY_PRODUCTID,
+		GetGameVersion(),
+		GetGameDistribution(),
+		PTFalse) != PTFalse;
+}

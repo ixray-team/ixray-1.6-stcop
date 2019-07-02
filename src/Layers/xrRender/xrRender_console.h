@@ -9,6 +9,9 @@ extern ECORE_API	xr_token	qsun_shafts_token[];
 extern ECORE_API	u32			ps_r_ssao;			//	=	0;
 extern ECORE_API	xr_token	qssao_token[];
 
+extern ECORE_API	u32			ps_r_ssao_mode;
+extern ECORE_API	xr_token	qssao_mode_token[];
+
 extern ECORE_API	u32			ps_r_sun_quality;	//	=	0;
 extern ECORE_API	xr_token	qsun_quality_token[];
 
@@ -186,6 +189,7 @@ enum
 	R2FLAGEXT_SSAO_HDAO				= (1<<4),
 	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<5),
 	R2FLAGEXT_WIREFRAME				= (1<<6),
+	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
 };
 
 extern void						xrRender_initconsole	();

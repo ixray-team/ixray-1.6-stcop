@@ -99,7 +99,7 @@ void CAI_Stalker::on_ownership_reject	( CObject*O, bool just_before_destroy )
 	CGameObject* const game_object			= smart_cast<CGameObject*>(O);
 	VERIFY									(game_object);
 	
-	if ( !inventory().DropItem(game_object, just_before_destroy) )
+	if ( !inventory().DropItem(game_object, just_before_destroy, just_before_destroy) )
 		return;
 
 	if ( O->getDestroy() )

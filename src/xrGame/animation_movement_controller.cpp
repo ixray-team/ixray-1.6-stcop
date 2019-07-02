@@ -25,7 +25,6 @@ blend_linear_speed(0),
 blend_angular_speed(0),
 m_control_blend( b ),
 m_poses_blending ( Fidentity, Fidentity, -1.f )
-
 #ifdef	DEBUG
 , DBG_previous_position( *_pObjXForm )
 #endif
@@ -50,6 +49,7 @@ m_poses_blending ( Fidentity, Fidentity, -1.f )
 	B.set_callback( bctCustom, RootBoneCallback, this, TRUE );
 	B.mTransform = Fidentity;
 	GetInitalPositionBlenSpeed	( );
+	//m_pKinematicsC->LL_VisBoxInvalidate();
 	m_pKinematicsA->SetBlendDestroyCallback( this );
 	m_pKinematicsC->CalculateBones_Invalidate();
 	m_pKinematicsC->CalculateBones(TRUE);
@@ -222,8 +222,9 @@ void animation_movement_controller::OnFrame( )
 	//	return;
 	VERIFY(IsActive());
 	DBG_verify_position_not_chaged();
+	//		ka->CalculateBones_Invalidate( );
+	//	ka->CalculateBones( TRUE );
 	
-	//m_pKinematicsC->CalculateBones( );
 #ifdef	DEBUG
 	if( dbg_draw_animation_movement_controller && dbg_frame_count < 3 )
 	{
@@ -240,17 +241,18 @@ void animation_movement_controller::OnFrame( )
 	animation_root_position( root_pos );
 
 
-		//Fmatrix obj_pos = Fmatrix().mul_43( m_startObjXForm, root_pos );
-	Fmatrix obj_pos = Fmatrix().mul_43( m_startObjXForm, root_pos);
 
+	Fmatrix obj_pos = Fmatrix().mul_43( m_startObjXForm, root_pos);
+	//Fvector prv_pos = m_pObjXForm.c;
 	InitalPositionBlending( obj_pos );
+	
 #ifdef DEBUG
 	DBG_previous_position = m_pObjXForm;
 #endif
 	
 	
 
-
+//	UpdateVisBox( Fvector().sub(m_pObjXForm.c,prv_pos).square_magnitude()  );
 	
 /*
 	if( IsActive() && IsBlending() )
@@ -271,6 +273,7 @@ void animation_movement_controller::OnFrame( )
 		m_pKinematicsA->LL_IterateBlends(cb);
 	}
 */
+	//m_pKinematicsC->CalculateBones( );
 #ifdef	DEBUG	
 	++dbg_frame_count;
 #endif
@@ -415,3 +418,23 @@ void	animation_movement_controller::SetPosesBlending	( )
 	m_poses_blending = blending;
 	m_control_blend->timeCurrent = sv_time;
 }
+
+float change_pos_delta = 0.02f;
+
+//void	animation_movement_controller::UpdateVisBox	( float pos_sq_delta )
+//{
+//	VERIFY( m_pKinematicsC );
+//	const Fbox &b = m_pKinematicsC->GetBox();
+//	Fsphere		sphere; b.getsphere( sphere.P, sphere.R );
+//	float sq_diff = Fvector().sub( m_pObjXForm.c,m_update_vis_pos).magnitude();
+//
+//	float change_pos_sq_delta = change_pos_delta * change_pos_delta * (( Device.fTimeDelta/0.01f )*( Device.fTimeDelta/0.01f ));
+//
+//	if(  pos_sq_delta > change_pos_sq_delta || sphere.P.square_magnitude() + change_pos_sq_delta + pos_sq_delta > sphere.R*sphere.R )
+//	{
+//		m_update_vis_pos = m_pObjXForm.c;
+//		m_pKinematicsC->LL_VisBoxInvalidate();
+//		m_pKinematicsC->CalculateBones_Invalidate( );
+//		m_pKinematicsC->CalculateBones(TRUE);// TRUE 
+//	}
+//}

@@ -16,7 +16,7 @@
 #include "gamefont.h"
 #include "render.h"
 
-float	psCamInert		= 0.21f;
+float	psCamInert		= 0.f;
 float	psCamSlideInert	= 0.25f;
 
 SPPInfo		pp_identity;

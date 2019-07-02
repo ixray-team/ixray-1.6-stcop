@@ -267,15 +267,19 @@ CRenderTarget::CRenderTarget		()
 {
    u32 SampleCount = 1;
 
+   if (ps_r_ssao_mode!=2/*hdao*/)
+	   ps_r_ssao = _min(ps_r_ssao, 3);
+
+	RImplementation.o.ssao_ultra		= ps_r_ssao>3;
    if( RImplementation.o.dx10_msaa )
       SampleCount    = RImplementation.o.dx10_msaa_samples;
 
 #ifdef DEBUG
 	Msg			("MSAA samples = %d", SampleCount );
-   if( RImplementation.o.dx10_msaa_opt )
-	   Msg		("dx10_MSAA_opt = on" );
-   if( RImplementation.o.dx10_gbuffer_opt )
-	   Msg		("dx10_gbuffer_opt = on" );
+	if( RImplementation.o.dx10_msaa_opt )
+		Msg		("dx10_MSAA_opt = on" );
+	if( RImplementation.o.dx10_gbuffer_opt )
+		Msg		("dx10_gbuffer_opt = on" );
 #endif // DEBUG
 	param_blur			= 0.f;
 	param_gray			= 0.f;
@@ -314,12 +318,12 @@ CRenderTarget::CRenderTarget		()
 	b_combine				= xr_new<CBlender_combine>			();
 	b_ssao					= xr_new<CBlender_SSAO_noMSAA>		();
 
-    // HDAO
-    b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
+	// HDAO
+	b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
 	if( RImplementation.o.dx10_msaa )
 	{
-        b_hdao_msaa_cs      = xr_new<CBlender_CS_HDAO_MSAA>     ();
-    }
+		b_hdao_msaa_cs      = xr_new<CBlender_CS_HDAO_MSAA>     ();
+	}
 
 	if( RImplementation.o.dx10_msaa )
 	{
@@ -358,11 +362,11 @@ CRenderTarget::CRenderTarget		()
 		u32		w=Device.dwWidth, h=Device.dwHeight;
 		rt_Position.create			(r2_RT_P,		w,h,D3DFMT_A16B16G16R16F, SampleCount );
 
-      if( RImplementation.o.dx10_msaa )
-         rt_MSAADepth.create( r2_RT_MSAAdepth, w, h, D3DFMT_D24S8, SampleCount );
+		if( RImplementation.o.dx10_msaa )
+			rt_MSAADepth.create( r2_RT_MSAAdepth, w, h, D3DFMT_D24S8, SampleCount );
 
-      if( !RImplementation.o.dx10_gbuffer_opt )
-         rt_Normal.create			(r2_RT_N,		w,h,D3DFMT_A16B16G16R16F, SampleCount );
+		if( !RImplementation.o.dx10_gbuffer_opt )
+			rt_Normal.create			(r2_RT_N,		w,h,D3DFMT_A16B16G16R16F, SampleCount );
 
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
@@ -376,16 +380,16 @@ CRenderTarget::CRenderTarget		()
 			// can't - mix-depth
 			if (RImplementation.o.fp16_blend) {
 				// NV40
-            if( !RImplementation.o.dx10_gbuffer_opt )
-            {
-				   rt_Color.create				(r2_RT_albedo,		w,h,D3DFMT_A16B16G16R16F, SampleCount );	// expand to full
-				   rt_Accumulator.create		(r2_RT_accum,		w,h,D3DFMT_A16B16G16R16F, SampleCount );
-            }
-            else
-            {
-   				rt_Color.create				(r2_RT_albedo,		w,h,D3DFMT_A8R8G8B8,       SampleCount );	// expand to full
-	   			rt_Accumulator.create		(r2_RT_accum,		w,h,D3DFMT_A16B16G16R16F,  SampleCount );
-            }
+				if( !RImplementation.o.dx10_gbuffer_opt )
+				{
+					rt_Color.create				(r2_RT_albedo,		w,h,D3DFMT_A16B16G16R16F, SampleCount );	// expand to full
+					rt_Accumulator.create		(r2_RT_accum,		w,h,D3DFMT_A16B16G16R16F, SampleCount );
+				}
+				else
+				{
+					rt_Color.create				(r2_RT_albedo,		w,h,D3DFMT_A8R8G8B8,       SampleCount );	// expand to full
+					rt_Accumulator.create		(r2_RT_accum,		w,h,D3DFMT_A16B16G16R16F,  SampleCount );
+				}
 			} else {
 				// R4xx, no-fp-blend,-> albedo_wo
 				VERIFY						(RImplementation.o.albedo_wo);
@@ -398,12 +402,12 @@ CRenderTarget::CRenderTarget		()
 		// generic(LDR) RTs
 		rt_Generic_0.create			(r2_RT_generic0,w,h,D3DFMT_A8R8G8B8, SampleCount	);
 		rt_Generic_1.create			(r2_RT_generic1,w,h,D3DFMT_A8R8G8B8, SampleCount		);
-      if( RImplementation.o.dx10_msaa )
-      {
-         rt_Generic_0_r.create		(r2_RT_generic0_r,w,h,D3DFMT_A8R8G8B8, 1		);
-         rt_Generic_1_r.create		(r2_RT_generic1_r,w,h,D3DFMT_A8R8G8B8, 1		);
-         rt_Generic.create		      (r2_RT_generic,w,h,   D3DFMT_A8R8G8B8, 1		);
-      }
+		if( RImplementation.o.dx10_msaa )
+		{
+			rt_Generic_0_r.create		(r2_RT_generic0_r,w,h,D3DFMT_A8R8G8B8, 1		);
+			rt_Generic_1_r.create		(r2_RT_generic1_r,w,h,D3DFMT_A8R8G8B8, 1		);
+			rt_Generic.create		      (r2_RT_generic,w,h,   D3DFMT_A8R8G8B8, 1		);
+		}
 		//	Igor: for volumetric lights
 		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
@@ -432,7 +436,7 @@ CRenderTarget::CRenderTarget		()
 			s_create_minmax_sm.create( &TempBlender, "null" );
 		}
 
-      //rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
+		//rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
 		//rt_smap_ZB					= NULL;
 		s_accum_mask.create			(b_accum_mask,				"r3\\accum_mask");
 		s_accum_direct.create		(b_accum_direct,			"r3\\accum_direct");
@@ -502,35 +506,35 @@ CRenderTarget::CRenderTarget		()
 		CBlender_rain	TempBlender;
 		s_rain.create( &TempBlender, "null");
 
-      if( RImplementation.o.dx10_msaa )
-      {
-         static LPCSTR SampleDefs[] = { "0","1","2","3","4","5","6","7" };
-	      CBlender_rain_msaa	TempBlender[8];
+		if( RImplementation.o.dx10_msaa )
+		{
+			static LPCSTR SampleDefs[] = { "0","1","2","3","4","5","6","7" };
+			CBlender_rain_msaa	TempBlender[8];
 
-         int bound = RImplementation.o.dx10_msaa_samples;
+			int bound = RImplementation.o.dx10_msaa_samples;
 
-         if( RImplementation.o.dx10_msaa_opt )
-            bound = 1;
+			if( RImplementation.o.dx10_msaa_opt )
+				bound = 1;
 
-	      for( int i = 0; i < bound; ++i )
-         {
+			for( int i = 0; i < bound; ++i )
+			{
 				TempBlender[i].SetDefine( "ISAMPLE", SampleDefs[i] );
 				s_rain_msaa[i].create( &TempBlender[i], "null");
 				s_accum_spot_msaa[i].create			(b_accum_spot_msaa[i],				"r2\\accum_spot_s",	"lights\\lights_spot01");
 				s_accum_point_msaa[i].create		(b_accum_point_msaa[i],			"r2\\accum_point_s");
 				//s_accum_volume_msaa[i].create(b_accum_direct_volumetric_msaa[i], "lights\\lights_spot01");
 				s_accum_volume_msaa[i].create(b_accum_volumetric_msaa[i], "lights\\lights_spot01");
-            s_combine_msaa[i].create					(b_combine_msaa[i],					"r2\\combine");
-         }
-      }
+				s_combine_msaa[i].create					(b_combine_msaa[i],					"r2\\combine");
+			}
+		}
 	}
 
-   if( RImplementation.o.dx10_msaa )
-   {
-      CBlender_msaa TempBlender;
+	if( RImplementation.o.dx10_msaa )
+	{
+		CBlender_msaa TempBlender;
 
-      s_mark_msaa_edges.create( &TempBlender, "null" );
-   }
+		s_mark_msaa_edges.create( &TempBlender, "null" );
+	}
 
 	// POINT
 	{
@@ -553,23 +557,23 @@ CRenderTarget::CRenderTarget		()
 		accum_volumetric_geom_create();
 		g_accum_volumetric.create( D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
 	}
-			
+
 
 	// REFLECTED
 	{
 		s_accum_reflected.create	(b_accum_reflected,			"r2\\accum_refl");
-      if( RImplementation.o.dx10_msaa )
-      {
-         int bound = RImplementation.o.dx10_msaa_samples;
+		if( RImplementation.o.dx10_msaa )
+		{
+			int bound = RImplementation.o.dx10_msaa_samples;
 
-         if( RImplementation.o.dx10_msaa_opt )
-            bound = 1;
+			if( RImplementation.o.dx10_msaa_opt )
+				bound = 1;
 
-	      for( int i = 0; i < bound; ++i )
+			for( int i = 0; i < bound; ++i )
 			{
-			   s_accum_reflected_msaa[i].create( b_accum_reflected_msaa[i], "null");
+				s_accum_reflected_msaa[i].create( b_accum_reflected_msaa[i], "null");
 			}
-      }
+		}
 	}	
 
 	// BLOOM
@@ -585,11 +589,11 @@ CRenderTarget::CRenderTarget		()
 		s_bloom_dbg_1.create		("effects\\screen_set",		r2_RT_bloom1);
 		s_bloom_dbg_2.create		("effects\\screen_set",		r2_RT_bloom2);
 		s_bloom.create				(b_bloom,					"r2\\bloom");
-      if( RImplementation.o.dx10_msaa )
-      {
-         s_bloom_msaa.create		 (b_bloom_msaa,					"r2\\bloom");
-         s_postprocess_msaa.create(b_postprocess_msaa,			"r2\\post");
-      }
+		if( RImplementation.o.dx10_msaa )
+		{
+			s_bloom_msaa.create		 (b_bloom_msaa,					"r2\\bloom");
+			s_postprocess_msaa.create(b_postprocess_msaa,			"r2\\post");
+		}
 		f_bloom_factor				= 0.5f;
 	}
 
@@ -655,17 +659,17 @@ CRenderTarget::CRenderTarget		()
 	//	}
 	//}
 
-    // HDAO
-    if( RImplementation.o.ssao_hdao )
-    {
+	// HDAO
+	if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
+	{
 		u32		w = Device.dwWidth, h = Device.dwHeight;
-		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, D3DFMT_R16F, 1);
-        s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
-	    if( RImplementation.o.dx10_msaa )
-	    {
-	        s_hdao_cs_msaa.create			(b_hdao_msaa_cs, "r2\\ssao");
-        }
-    }
+		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, D3DFMT_R16F, 1, true);
+		s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
+		if( RImplementation.o.dx10_msaa )
+		{
+			s_hdao_cs_msaa.create			(b_hdao_msaa_cs, "r2\\ssao");
+		}
+	}
 
 	// COMBINE
 	{
@@ -840,7 +844,7 @@ CRenderTarget::CRenderTarget		()
 			desc.MiscFlags = 0;
 
 			D3D_SUBRESOURCE_DATA	subData[TEX_jitter_count];
-			
+
 			for (int it=0; it<TEX_jitter_count-1; it++)
 			{
 				subData[it].pSysMem = tempData[it];
@@ -897,11 +901,11 @@ CRenderTarget::CRenderTarget		()
 			descHBAO.BindFlags = D3D_BIND_SHADER_RESOURCE;
 			descHBAO.CPUAccessFlags = 0;
 			descHBAO.MiscFlags = 0;
-			
+
 			it = TEX_jitter_count-1;
 			subData[it].pSysMem = tempDataHBAO;
 			subData[it].SysMemPitch = descHBAO.Width*sampleSize * sizeof(float);
-			
+
 			// Fill it,
 			for (u32 y=0; y<TEX_jitter; y++)
 			{
@@ -913,6 +917,7 @@ CRenderTarget::CRenderTarget		()
 					case 1: numDir = 4.0f; break;
 					case 2: numDir = 6.0f; break;
 					case 3: numDir = 8.0f; break;
+					case 4: numDir = 8.0f; break;
 					}
 					float angle = 2 * PI * ::Random.randF(0.0f, 1.0f) / numDir;
 					float dist = ::Random.randF(0.0f, 1.0f);
@@ -927,7 +932,7 @@ CRenderTarget::CRenderTarget		()
 					*(p+3) = 0;
 				}
 			}			
-			
+
 			string_path					name;
 			xr_sprintf						(name,"%s%d",r2_jitter,it);
 			//R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));

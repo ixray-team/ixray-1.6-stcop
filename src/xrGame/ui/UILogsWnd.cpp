@@ -69,24 +69,19 @@ void CUILogsWnd::Show( bool status )
 void CUILogsWnd::Update()
 {
 	inherited::Update();
-	//if ( IsShown() )
-	//{
-	//	if ( Device.dwTimeGlobal - m_previous_time > 1000 )
-	//	{
-	//		m_previous_time = Device.dwTimeGlobal;
-	//		m_date->SetText( InventoryUtilities::Get_GameTimeAndDate_AsString().c_str() );
-
-	//		m_date_caption->AdjustWidthToText();
-	//		Fvector2 pos = m_date_caption->GetWndPos();
-	//		pos.x = m_date->GetWndPos().x - m_date_caption->GetWidth() - 5.0f;
-	//		m_date_caption->SetWndPos( pos );
-	//	}
-	//}
-	if ( m_need_reload )
-	{
+	if( m_need_reload )
 		ReLoadNews();
-	}
 
+
+	if(!m_items_ready.empty())
+	{
+		WINDOW_LIST::reverse_iterator it	= m_items_ready.rbegin();
+		WINDOW_LIST::reverse_iterator it_e	= m_items_ready.rend();
+		for(; it!=it_e; ++it)
+			m_list->AddWindow			(*it, true);
+		
+		m_items_ready.clear();
+	}
 }
 
 void CUILogsWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -228,7 +223,6 @@ void CUILogsWnd::PerformWork()
 	if(!m_news_in_queue.empty())
 	{
 		u32 count = _min(30, m_news_in_queue.size());
-//.		u32 count = m_news_in_queue.size();
 		for(u32 i=0; i<count;++i)
 		{
 			GAME_NEWS_VECTOR& news_vector = Actor()->game_news_registry->registry().objects();
@@ -239,16 +233,6 @@ void CUILogsWnd::PerformWork()
 			AddNewsItem					( gn );
 		}
 	}
-/*	else
-	{
-		s32 cnt = m_items_cache.size()+m_list->GetSize();
-
-		if(cnt<1000)
-		{
-			for(s32 i=0; i<_min(10,1000-cnt); ++i)
-				m_items_cache.push_back(CreateItem());
-		}
-	}*/
 }
 
 CUIWindow*	CUILogsWnd::CreateItem()
@@ -286,7 +270,7 @@ void CUILogsWnd::AddNewsItem(GAME_NEWS_DATA& news_data)
 	CUINewsItemWnd*	news_itm	= smart_cast<CUINewsItemWnd*>(news_itm_w);
 	news_itm->Setup				(news_data);
 	
-	m_list->AddWindow			(news_itm, true);
+	m_items_ready.push_back		(news_itm);
 }
 
 void CUILogsWnd::UpdateChecks( CUIWindow* w, void* d )

@@ -162,6 +162,8 @@ void configs_dumper::sign_configs		()
 		tmp_cl_game->local_player ? tmp_cl_game->local_player->getName() : "unknown_just_connected",
 		"\"");
 	LPCSTR		tmp_cdkey_digest	= Level().get_cdkey_digest().c_str();
+	if (!tmp_cdkey_digest)
+		tmp_cdkey_digest = "null";
 
 	LPCSTR		add_str = NULL;
 	STRCONCAT(add_str,

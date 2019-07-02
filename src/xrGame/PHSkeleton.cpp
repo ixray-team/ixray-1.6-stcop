@@ -254,11 +254,13 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 	{
 		obj->PPhysicsShell()->Disable();
 	}
-	for( u16 bone=0; e!=i; i++, bone++ )
-	{
-		R_ASSERT(bone<obj->PHGetSyncItemsNumber());
-		obj->PHGetSyncItem(bone)->set_State(*i);
-	}
+
+	if( saved_bones.size() == obj->PHGetSyncItemsNumber() )
+		for( u16 bone=0; e!=i; i++, bone++ )
+		{
+			R_ASSERT(bone<obj->PHGetSyncItemsNumber());
+			obj->PHGetSyncItem(bone)->set_State(*i);
+		}
 	saved_bones.clear();
 	po->_flags.set(CSE_PHSkeleton::flSavedData,FALSE);
 	m_flags.set(CSE_PHSkeleton::flSavedData,FALSE);

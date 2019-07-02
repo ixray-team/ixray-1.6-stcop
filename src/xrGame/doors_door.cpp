@@ -26,6 +26,7 @@ door::door						( CPhysicObject* object ) :
 	m_state						( door_state_open ),
 	m_previous_state			( door_state_open ),
 	m_target_state				( door_state_open ),
+	m_registered_position		( object->Position() ),
 	m_locked					( false )
 {
 	VERIFY						( valid(m_state) );
@@ -69,7 +70,7 @@ Fvector const& door::position	( ) const
 	VERIFY						( valid(m_target_state) );
 	VERIFY						( valid(m_previous_state) );
 
-	return						m_object.Position();
+	return						m_registered_position;
 }
 
 Fmatrix const& door::get_matrix	( ) const

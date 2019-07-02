@@ -12,7 +12,9 @@
 //const float JUMP_HIGHT=0.5;
 const float JUMP_UP_VELOCITY=6.0f;//5.6f;
 const float JUMP_INCREASE_VELOCITY_RATE=1.2f;
-
+//#ifdef DEBUG
+//XRPHYSICS_API BOOL use_controllers_separation = TRUE;
+//#endif
 CPHActorCharacter::CPHActorCharacter( bool single_game ): b_single_game(single_game)
 {
 	SetRestrictionType(rtActor);
@@ -245,6 +247,64 @@ struct SFindPredicate
 		return *b1||c->geom.g2==o->m_restrictor_transform;
 	}
 };
+
+static void BigVelSeparate(dContact* c,bool &do_collide)
+{
+	VERIFY( c );
+#ifdef DEBUG
+	//if( !use_controllers_separation )
+		//return;
+#endif
+	if(!do_collide)
+		return;
+	dxGeomUserData* dat1 = retrieveGeomUserData(c->geom.g1);
+	dxGeomUserData* dat2 = retrieveGeomUserData(c->geom.g2);
+
+	if( !dat1 || !dat2 ||
+		!dat1->ph_object || !dat2->ph_object ||
+		dat1->ph_object->CastType() != CPHObject::tpCharacter || 
+		dat2->ph_object->CastType() != CPHObject::tpCharacter 
+		) 
+		return;
+	
+	//float spr	= Spring( c->surface.soft_cfm,c->surface.soft_erp);
+	//float dmp	= Damping( c->surface.soft_cfm,c->surface.soft_erp);
+	//spr *=0.001f;
+	//dmp *=10.f;
+	//float cfm	= Cfm( spr, dmp );
+	//float e		= Erp( spr, dmp );
+	c->surface.soft_cfm *= 100.f;
+	c->surface.soft_erp *=0.1f;
+	//MulSprDmp(c->surface.soft_cfm,c->surface.soft_erp ,0.1f,10);
+
+	CPHCharacter* ch1 = static_cast<CPHCharacter*>(dat1->ph_object);
+	CPHCharacter* ch2 = static_cast<CPHCharacter*>(dat2->ph_object);
+	Fvector v1, v2;
+	ch1->GetVelocity(v1);
+	ch2->GetVelocity(v2);
+	if(v1.square_magnitude()<4.f && 
+		v2.square_magnitude()<4.f
+	)
+		return;
+	c->surface.mu		=1.00f;
+
+	dJointID contact_joint1	= dJointCreateContactSpecial(0, ContactGroup, c);
+	dJointID contact_joint2	= dJointCreateContactSpecial(0, ContactGroup, c);
+
+	ch1->Enable();
+	ch2->Enable();
+
+	dat1->ph_object->Island().DActiveIsland()->ConnectJoint(contact_joint1);
+	dat2->ph_object->Island().DActiveIsland()->ConnectJoint(contact_joint2);
+
+	dJointAttach			(contact_joint1, dGeomGetBody(c->geom.g1), 0);
+
+	dJointAttach			(contact_joint2, 0, dGeomGetBody(c->geom.g2));
+
+	do_collide=false;
+		
+}
+
 void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_idx_1,u16	material_idx_2 )
 {
 
@@ -283,6 +343,7 @@ void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_id
 			m_friction_factor*=0.1f;
 			
 		}
+		//BigVelSeparate( c, do_collide );
 	}
 	else
 	{
@@ -299,7 +360,9 @@ void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_id
 				c->surface.mu=1.f;
 			}
 		}
+		
 		if(do_collide)inherited::InitContact(c,do_collide,material_idx_1,material_idx_2);
+		BigVelSeparate( c, do_collide );
 	}
 }
 
@@ -343,4 +406,22 @@ void		CPHActorCharacter ::update_last_material()
 {
 	if( ignore_material( *p_lastMaterialIDX ) )
 				inherited::update_last_material();
+}
+
+float free_fly_up_force_limit = 4000.f;
+void	CPHActorCharacter::PhTune( dReal step )
+{
+	inherited::PhTune( step );
+	if(b_lose_control&&!b_external_impulse)//
+	{
+			const float* force = dBodyGetForce( m_body );
+			float fy = force[1];
+			if(fy>free_fly_up_force_limit)
+				fy = free_fly_up_force_limit;
+			dBodySetForce(m_body,
+			force[0],
+			fy,
+			force[2]
+			);
+	}
 }

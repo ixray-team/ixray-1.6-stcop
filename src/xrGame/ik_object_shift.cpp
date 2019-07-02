@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ik_object_shift.h"
 #include "pose_extrapolation.h"
+#include "../xrphysics/mathutils.h"
 #ifdef	DEBUG
 #include "phdebug.h"
 #endif
@@ -87,22 +88,41 @@ bool square_equation(float a, float b, float c, float &x0, float &x1 )// returns
 	return true;
 }
 
-static const float max_possible_shift_speed = 5.f; //
-float clamp_taget_to_max_possible_shift_speed_return_shit_taget(float &taget, float current, float time )
-{
-	float x			= taget - current ;
-	float taget_speed = x/time;
-		
-	clamp(taget_speed,-max_possible_shift_speed, max_possible_shift_speed );
-	 
-	x = taget_speed * time;
-	
-	taget = x + current; 
-
-	return x;
-
-
-}
+//static const float max_possible_shift_speed_up = 4.5f; //
+//static const float max_shift_avr_accel_up = 3.5f; //
+//static const float max_possible_shift_speed_down = 4.5f; //
+//static const float max_shift_avr_accel_down= 3.5f; //
+//float clamp_taget_to_max_possible_shift_speed_return_shift_taget(float &taget, float current, float speed, float time )
+//{
+//	float x			= taget - current ;
+//	return x;
+//	float taget_speed = x/time;
+//	
+//		//clamp(taget_speed,-max_possible_shift_speed, max_possible_shift_speed );
+//	save_min( taget_speed, max_possible_shift_speed_up );
+//	save_max( taget_speed, -max_possible_shift_speed_down ); 
+//
+//	float change_speed = taget_speed - speed;
+//	float avr_accel = change_speed/time;
+//
+//	//clamp( avr_accel,-max_shift_avr_accel, max_shift_avr_accel );
+//	save_min( avr_accel, max_shift_avr_accel_up );
+//	save_max( avr_accel, -max_shift_avr_accel_down );
+//	taget_speed = speed + avr_accel * time;
+//
+//	//clamp(taget_speed,-max_possible_shift_speed, max_possible_shift_speed );
+//	save_min( taget_speed, max_possible_shift_speed_up );
+//	save_max( taget_speed, -max_possible_shift_speed_down ); 
+//	x = taget_speed * time;
+//	
+//	taget = x + current; 
+//
+//	return x;
+//
+//
+//}
+float half_shift_restrict_up = 0.1f;
+float half_shift_restrict_down = 0.15f;
 
 void	object_shift::set_taget		( float taget_, float time )
 {
@@ -140,22 +160,32 @@ void	object_shift::set_taget		( float taget_, float time )
 	speed = speed + accel * time_pased  + aaccel * time_pased * time_pased / 2.f ;
 
 	//accel += aaccel * time_pased;
-	//float x			= taget - current ;
-	float x = clamp_taget_to_max_possible_shift_speed_return_shit_taget( taget, current, time );
+	float x			= taget - current ;
+	
+	//float x = clamp_taget_to_max_possible_shift_speed_return_shift_taget( taget, current, speed, time );
 
 	float sq_time	= time * time ;
 	
-	//accel = 2.f * ( ( taget - current ) / ( time * time ) - speed / time );
-	accel = 2.f * ( 3.f * x / sq_time - 2.f * speed / time );
 	
+
+	accel = 2.f * ( 3.f * x / sq_time - 2.f * speed / time );
 	aaccel = 6.f * ( speed / sq_time - 2.f * x / sq_time / time );
 	
+	//aaccel = 3.f*( speed/sq_time - x/sq_time/time );
+	//accel = - aaccel * time;
+
 	float x0, x1;
-	if( square_equation( aaccel/2.f, accel, speed, x0, x1 ) )
+	if( ( x > half_shift_restrict_up || x< -half_shift_restrict_down ) &&   square_equation( aaccel/2.f, accel, speed, x0, x1 ) )
 	{
+		
+		float max_shift0 = _abs( delta_shift( x0 ) ) ;
+		float max_shift1 = _abs( delta_shift( x1 ) ) ;
+		float ax = _abs( x );
+		bool bx0 = max_shift0 > 2.f * ax;
+		bool bx1 = max_shift1 > 2.f * ax;
 		if( 
-			( ( x0 > 0.f && x0 < time - EPS_S ) && _abs( delta_shift( x0 ) ) > 2.f * x ) ||
-			( ( x1 > 0.f && x1 < time - EPS_S ) && _abs( delta_shift( x1 ) ) > 2.f * x )
+			( ( x0 > 0.f && x0 < time - EPS_S ) && bx0 ) ||
+			( ( x1 > 0.f && x1 < time - EPS_S ) && bx1 )
 			)
 		{
 			aaccel	= 0.f;

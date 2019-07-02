@@ -69,6 +69,8 @@ void game_PlayerState::clear()
 	mOldIDs.clear		();
 	money_added			= 0;
 	m_aBonusMoney.clear	();
+	m_player_ip			= "";
+	m_player_digest		= "";
 }
 
 game_PlayerState::~game_PlayerState()

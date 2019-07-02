@@ -103,9 +103,9 @@ void CObjectHandler::OnItemTake		(CInventoryItem *inventory_item)
 	}
 }
 
-void CObjectHandler::OnItemDrop		(CInventoryItem *inventory_item)
+void CObjectHandler::OnItemDrop		(CInventoryItem *inventory_item, bool just_before_destroy)
 {
-	inherited::OnItemDrop	(inventory_item);
+	inherited::OnItemDrop	(inventory_item, just_before_destroy);
 
 	m_inventory_actual		= false;
 	

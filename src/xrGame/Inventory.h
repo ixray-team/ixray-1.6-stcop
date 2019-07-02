@@ -44,7 +44,7 @@ public:
 
 	void					Take				(CGameObject *pObj, bool bNotActivate, bool strict_placement);
 	//if just_before_destroy is true, then activate will be forced (because deactivate message will not deliver)
-	bool					DropItem			(CGameObject *pObj, bool just_before_destroy);
+	bool					DropItem			(CGameObject *pObj, bool just_before_destroy, bool dont_create_shell);
 	void					Clear				();
 
 	IC u16					FirstSlot			() const {return KNIFE_SLOT;}

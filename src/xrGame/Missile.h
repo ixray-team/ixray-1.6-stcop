@@ -85,9 +85,6 @@ protected:
 	//относительная точка и направление вылета гранаты
 	Fvector					m_vThrowPoint;
 	Fvector					m_vThrowDir;
-	//для HUD
-	Fvector					m_vHudThrowPoint;
-	Fvector					m_vHudThrowDir;
 
 protected:
 			void			setup_throw_params		();

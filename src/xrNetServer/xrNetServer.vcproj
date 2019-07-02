@@ -94,7 +94,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="Ws2_32.lib dxerr9.lib"
+				AdditionalDependencies="Ws2_32.lib dxerr.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
@@ -316,7 +316,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="Ws2_32.lib dxerr9.lib"
+				AdditionalDependencies="Ws2_32.lib dxerr.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
@@ -668,6 +668,14 @@
 		</File>
 		<File
 			RelativePath=".\ip_filter.h"
+			>
+		</File>
+		<File
+			RelativePath=".\NET_AuthCheck.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\NET_AuthCheck.h"
 			>
 		</File>
 		<File

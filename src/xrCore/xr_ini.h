@@ -1,6 +1,8 @@
 #ifndef xr_iniH
 #define xr_iniH
 
+#include "fastdelegate.h"
+
 // refs
 class	CInifile;
 struct	xr_token;
@@ -34,6 +36,8 @@ public:
 	typedef	xr_vector<Sect*>		Root;
 	typedef Root::iterator			RootIt;
 	typedef Root::const_iterator	RootCIt;
+	
+	typedef fastdelegate::FastDelegate<bool (LPCSTR)>	allow_include_func_t;
 
 	static CInifile*	Create		( LPCSTR szFileName, BOOL ReadOnly=TRUE);
 	static void			Destroy		( CInifile*);
@@ -43,17 +47,26 @@ private:
 	Flags8			m_flags;
 	string_path		m_file_name;
 	Root			DATA;
-
-	void			Load			(IReader* F, LPCSTR path);
+	
+	void			Load		(IReader* F, LPCSTR path, allow_include_func_t	allow_include_func = allow_include_func_t());
 public:
-				CInifile		( IReader* F, LPCSTR path=0 );
-				CInifile		( LPCSTR szFileName, BOOL ReadOnly=TRUE, BOOL bLoadAtStart=TRUE, BOOL SaveAtEnd=TRUE, u32 sect_count=0);
+				CInifile		( IReader* F,
+								   LPCSTR path=0,
+								   allow_include_func_t allow_include_func = allow_include_func_t() );
+
+				CInifile		( LPCSTR szFileName,
+								  BOOL ReadOnly=TRUE,
+								  BOOL bLoadAtStart=TRUE,
+								  BOOL SaveAtEnd=TRUE,
+								  u32 sect_count=0,
+								  allow_include_func_t allow_include_func = allow_include_func_t() );
+
 	virtual 	~CInifile		( );
     bool		save_as         ( LPCSTR new_fname=0 );
 	void		save_as			(IWriter& writer, bool bcheck=false)const;
 	void		set_override_names(BOOL b){m_flags.set(eOverrideNames,b);}
 	void		save_at_end		(BOOL b){m_flags.set(eSaveAtEnd,b);}
-	LPCSTR		fname			( ) { return m_file_name; };
+	LPCSTR		fname			( ) const { return m_file_name; };
 
 	Sect&		r_section		( LPCSTR S			)const;
 	Sect&		r_section		( const shared_str& S	)const;
@@ -136,6 +149,6 @@ public:
 
 // Main configuration file
 extern XRCORE_API CInifile const * pSettings;
-
+extern XRCORE_API CInifile const * pSettingsAuth;
 
 #endif //__XR_INI_H__

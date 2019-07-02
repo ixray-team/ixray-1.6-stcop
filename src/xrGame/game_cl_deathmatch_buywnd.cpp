@@ -447,7 +447,8 @@ void				game_cl_Deathmatch::LoadDefItemsForRank(IBuyWnd* pBuyMenu)
 //		s16 ID = GetBuyMenuItemIndex(SlotID, ItemID);
 
 		s16 ID = GetBuyMenuItemIndex(0, ItemID);
-		if (GameID() == eGameIDArtefactHunt)
+		
+		if (GameID() != eGameIDDeathmatch)
 		{
 			PlayerDefItems.push_back(ID);
 			PlayerDefItems.push_back(ID);

@@ -13,6 +13,7 @@
 class CGameSpy_Full;
 class CGameSpy_GP;
 class CGameSpy_ATLAS;
+class CGameSpy_Patching;
 
 namespace gamespy_gp
 {
@@ -40,6 +41,7 @@ struct profile
 
 	char const *		unique_nick		() const { return m_unique_nick.c_str(); };
 	bool const			online			() const { return m_online; };
+	GPProfile const		profile_id		() const { return m_profile_id; };
 	//copy constructor is valid
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };//struct profile
@@ -114,6 +116,7 @@ private:
 
 	CGameSpy_GP*				m_gamespy_gp;
 	CGameSpy_ATLAS*				m_gamespy_atlas;
+	CGameSpy_Patching*			m_gamespy_patching;
 	profile*					m_current_profile;
 
 	shared_str					m_last_email;

@@ -346,6 +346,8 @@ void CHOM::Enable		()
 #ifdef DEBUG
 void CHOM::OnRender	()
 {
+	Raster.on_dbg_render();
+
 	if (psDeviceFlags.is(rsOcclusionDraw)){
 		if (m_pModel){
 			DEFINE_VECTOR		(FVF::L,LVec,LVecIt);

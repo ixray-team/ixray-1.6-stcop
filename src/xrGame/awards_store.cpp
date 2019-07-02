@@ -124,17 +124,19 @@ void awards_store::process_award(SAKEField* award_params)
 	m_awards_result.insert		(std::make_pair(awid, award_data(awards_count, award_rdate)));
 }
 
-void awards_store::process_aw_out_response(SAKEGetMyRecordsOutput* tmp_out)
+void awards_store::process_aw_out_response(SAKEGetMyRecordsOutput* tmp_out, int const out_fields_count)
 {
 	VERIFY(tmp_out->mNumRecords <= 1);					//one raw
 	if (tmp_out->mNumRecords == 0)
 		return;
 
-	for (int aidx = 0; aidx < at_awards_count; ++aidx)
+	for (int i = 0; i < out_fields_count; ++i)
 	{
-		int findex = aidx * ap_award_params_count;
-		process_award(tmp_out->mRecords[0] + findex);	//one raw
-	};
+		if (get_award_by_stat_name(tmp_out->mRecords[0][i].mName) != at_awards_count)
+		{
+			process_award(&tmp_out->mRecords[0][i]);
+		}
+	}
 }
 
 void __cdecl awards_store::get_my_awards_cb(SAKE sake,
@@ -155,7 +157,7 @@ void __cdecl awards_store::get_my_awards_cb(SAKE sake,
 			outputData
 		);
 		VERIFY(tmp_out);
-		my_inst->process_aw_out_response	(tmp_out);
+		my_inst->process_aw_out_response	(tmp_out, fields_count);
 		my_inst->m_award_operation_cb		(true, "");
 	}
 	my_inst->m_award_operation_cb.clear		();

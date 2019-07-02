@@ -45,17 +45,22 @@ ENGINE_API int g_current_renderer = 0;
 ENGINE_API bool is_enough_address_space_available	()
 {
 	SYSTEM_INFO		system_info;
+
+	SECUROM_MARKER_HIGH_SECURITY_ON(12)
+
 	GetSystemInfo	( &system_info );
-	return			(*(u32*)&system_info.lpMaximumApplicationAddress) > 0x90000000;
+
+	SECUROM_MARKER_HIGH_SECURITY_OFF(12)
+
+	return			(*(u32*)&system_info.lpMaximumApplicationAddress) > 0x90000000;	
 }
 
-void CEngineAPI::Initialize(void)
-{
-	//////////////////////////////////////////////////////////////////////////
-	// render
-	LPCSTR			r1_name	= "xrRender_R1.dll";
-
 #ifndef DEDICATED_SERVER
+
+void CEngineAPI::InitializeNotDedicated()
+{
+	SECUROM_MARKER_HIGH_SECURITY_ON(2)
+
 	LPCSTR			r2_name	= "xrRender_R2.dll";
 	LPCSTR			r3_name	= "xrRender_R3.dll";
 	LPCSTR			r4_name	= "xrRender_R4.dll";
@@ -103,7 +108,21 @@ void CEngineAPI::Initialize(void)
 		else
 			g_current_renderer	= 2;
 	}
-#endif
+
+	SECUROM_MARKER_HIGH_SECURITY_OFF(2)
+}
+#endif // DEDICATED_SERVER
+
+
+void CEngineAPI::Initialize(void)
+{
+	//////////////////////////////////////////////////////////////////////////
+	// render
+	LPCSTR			r1_name	= "xrRender_R1.dll";
+
+	#ifndef DEDICATED_SERVER
+		InitializeNotDedicated();
+	#endif // DEDICATED_SERVER
 
 	if (0==hRender)		
 	{
@@ -224,7 +243,7 @@ void CEngineAPI::CreateRendererList()
 		{
 			SupportsDX11Rendering *test_dx11_rendering = (SupportsDX11Rendering*) GetProcAddress(hRender,"SupportsDX11Rendering");
 			R_ASSERT(test_dx11_rendering);
-			bSupports_r4 = true;//test_dx11_rendering();
+			bSupports_r4 = test_dx11_rendering();
 			FreeLibrary(hRender);
 		}
 	}

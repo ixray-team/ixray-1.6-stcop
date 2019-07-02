@@ -76,8 +76,10 @@ bool correction_needed(float prev_ang, float curr_ang)
 {
 	float dist = _abs(curr_ang - prev_ang);
 	if( _abs(dist-PI_MUL_2) < dist)
+	{
+//		Msg("needed [%f][%f]", prev_ang, curr_ang);
 		return true;
-	else
+	}else
 		return false;
 }
 
@@ -163,13 +165,26 @@ MStatus CXRayCameraExport::ExportCamera(const MFileObject& file)
 				add_			= -PI_MUL_2;
 				R.y				+= add_;
 				Msg("-2pi correction");
+			}else
+			{
+				float dist = (R.y - Rprev.y);
+				if(dist>0)
+				{
+					add_			= -PI_MUL_2;
+					R.y				+= add_;
+				}else
+				{
+					add_			= PI_MUL_2;
+					R.y				+= add_;
+				}
+			
 			}
 		}
 
 		Rprev						= R;
 		tmTemp2						= tmTemp-startFrame;
 		float time_					= float(tmTemp2.as(MTime::uiUnit()))/30.0f;
-//		Msg							("%f - %f", time_, R.y);
+		Msg							("%f - %f", time_, R.y);
 		M.CreateKey					(time_, P, R);
 		count++;
 		if(tmTemp==endFrame)

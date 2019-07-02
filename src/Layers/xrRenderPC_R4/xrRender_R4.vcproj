@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="dxguid.lib d3dx11.lib d3d11_beta.lib dxgi.lib D3DCompiler.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib"
+				AdditionalDependencies="dxguid.lib d3dx11.lib d3d11.lib dxgi.lib D3DCompiler.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib d3d10.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\..\sdk\libraries;..\..\..\..\libraries"
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11_beta.lib dxgi_beta.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib"
+				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib d3d10.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
 				GenerateDebugInformation="true"
@@ -277,7 +277,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11_beta.lib dxgi_beta.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib"
+				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib d3d10.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
 				GenerateDebugInformation="true"
@@ -2152,10 +2152,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="todo.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -11,15 +11,18 @@ CUICursor::CUICursor()
 :m_static(NULL),m_b_use_win_cursor(false)
 {    
 	bVisible				= false;
+	vPrevPos.set			(0.0f, 0.0f);
 	vPos.set				(0.f,0.f);
 	InitInternal			();
 	Device.seqRender.Add	(this,-3/*2*/);
+	Device.seqResolutionChanged.Add(this);
 }
 //--------------------------------------------------------------------
 CUICursor::~CUICursor	()
 {
 	xr_delete				(m_static);
 	Device.seqRender.Remove	(this);
+	Device.seqResolutionChanged.Remove(this);
 }
 
 void CUICursor::OnScreenResolutionChanged()
@@ -101,14 +104,14 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 		if(!r)		return;
 		p.x			= (float)pti.x;
 		p.y			= (float)pti.y;
+		vPos.x		= p.x * (UI_BASE_WIDTH/(float)Device.dwWidth);
+		vPos.y		= p.y * (UI_BASE_HEIGHT/(float)Device.dwHeight);
 	}else
 	{
 		float sens = 1.0f;
-		p.x			= vPrevPos.x	+ _dx*sens;
-		p.y			= vPrevPos.y	+ _dy*sens;
+		vPos.x		+= _dx*sens;
+		vPos.y		+= _dy*sens;
 	}
-	vPos.x		= p.x * (UI_BASE_WIDTH/(float)Device.dwWidth);
-	vPos.y		= p.y * (UI_BASE_HEIGHT/(float)Device.dwHeight);
 	clamp		(vPos.x, 0.f, UI_BASE_WIDTH);
 	clamp		(vPos.y, 0.f, UI_BASE_HEIGHT);
 }

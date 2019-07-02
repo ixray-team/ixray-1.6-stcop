@@ -194,7 +194,12 @@ void imotion_position::state_start( )
 		interactive_motion_diagnostic("stoped immediately");
 		switch_to_free	( );
 		flags.set(fl_not_played,TRUE);
+		return;
 	}
+	move( float( Device.dwTimeDelta )/1000, *KA );
+	if(flags.test(fl_switch_dm_toragdoll))
+			switch_to_free	( );
+	//K->CalculateBones_Invalidate();
 }
 
 #ifdef DEBUG
@@ -337,6 +342,7 @@ void imotion_position::move_update( )
 	VERIFY( K );
 
 	disable_update( false );
+	K->CalculateBones_Invalidate( );
 	K->CalculateBones(  );
 	disable_update( true );
 	VERIFY( shell );

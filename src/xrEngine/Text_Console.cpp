@@ -4,7 +4,7 @@
 
 extern char const * const		ioc_prompt;
 extern char const * const		ch_cursor;
-int g_svTextConsoleUpdateRate = 10;
+int g_svTextConsoleUpdateRate = 1;
 
 CTextConsole::CTextConsole()
 {

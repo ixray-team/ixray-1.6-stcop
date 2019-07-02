@@ -7,7 +7,10 @@
 #pragma once
 
 #include "hwcaps.h"
+
+#ifndef _MAYA_EXPORT
 #include "stats_manager.h"
+#endif
 
 class  CHW
 #if defined(USE_DX10) || defined(USE_DX11)
@@ -98,8 +101,9 @@ public:
 	D3DPRESENT_PARAMETERS	DevPP;
 #endif	//	USE_DX10
 
+#ifndef _MAYA_EXPORT
 	stats_manager			stats_manager;
-
+#endif
 #if defined(USE_DX10) || defined(USE_DX11)
 	void			UpdateViews();
 	DXGI_RATIONAL	selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);

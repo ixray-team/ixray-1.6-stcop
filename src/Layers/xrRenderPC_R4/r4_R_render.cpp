@@ -221,6 +221,13 @@ void CRender::Render		()
 		Target->u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 		return;
 	}
+
+	if( m_bFirstFrameAfterReset )
+	{
+		m_bFirstFrameAfterReset = false;
+		return;
+	}
+
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure

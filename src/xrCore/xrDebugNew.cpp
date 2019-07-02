@@ -4,7 +4,7 @@
 #include "xrdebug.h"
 #include "os_clipboard.h"
 
-#include "dxerr9.h"
+#include "dxerr.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -34,7 +34,7 @@ extern bool shared_str_initialized;
 
 #ifndef _M_AMD64
 #	ifndef __BORLANDC__
-#		pragma comment(lib,"dxerr9.lib")
+#		pragma comment(lib,"dxerr.lib")
 #	endif
 #endif
 
@@ -252,7 +252,7 @@ LPCSTR xrDebug::error2string	(long code)
 
 #ifdef _M_AMD64
 #else
-	result				= DXGetErrorDescription9	(code);
+	result				= DXGetErrorDescription	(code);
 #endif
 	if (0==result) 
 	{
@@ -423,8 +423,8 @@ please Submit Bug or save report and email it manually (button More...).\
 			0
 		);
 #else // #ifndef MASTER_GOLD
-//		!dedicated ?
-//		MiniDumpNoDump :
+		!dedicated ?
+		MiniDumpNoDump :
 		(
 			MiniDumpWithDataSegs |
 //			MiniDumpWithFullMemory |

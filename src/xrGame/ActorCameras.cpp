@@ -24,7 +24,7 @@
 #include "../xrphysics/ielevatorstate.h"
 #include "../xrphysics/actorcameracollision.h"
 #include "IKLimbsController.h"
-
+#include "GamePersistent.h"
 
 void CActor::cam_Set	(EActorCameras style)
 {
@@ -273,9 +273,16 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 			r_torso.roll = 0.f;
 		}
 }
+#ifdef	DEBUG
 BOOL ik_cam_shift = true;
 float ik_cam_shift_tolerance = 0.2f;
 float ik_cam_shift_speed = 0.01f;
+#else
+static const BOOL	ik_cam_shift = true;
+static const float	ik_cam_shift_tolerance = 0.2f;
+static const float	ik_cam_shift_speed = 0.01f;
+#endif
+
 void CActor::cam_Update(float dt, float fFOV)
 {
 	if(m_holder)		return;
@@ -285,26 +292,23 @@ void CActor::cam_Update(float dt, float fFOV)
 	on_weapon_shot_update();
 	float y_shift =0;
 	
-	if( ik_cam_shift && character_physics_support() && character_physics_support()->ik_controller() )
+	if( GamePersistent().GameType() != eGameIDSingle && ik_cam_shift && character_physics_support() && character_physics_support()->ik_controller() )
 	{
 		y_shift = character_physics_support()->ik_controller()->Shift();
 		float cam_smooth_k = 1.f;
 		if(_abs(y_shift-current_ik_cam_shift)>ik_cam_shift_tolerance)
 		{
-			//float cam_smooth_k = 0.99f ;//* 50.f * dt;
-			//.cam_smooth_k = 1.f - dt;
+
 			cam_smooth_k = 1.f - ik_cam_shift_speed * dt/0.01f;
-			//current_ik_cam_shift = cam_smooth_k * current_ik_cam_shift + y_shift * ( 1.f - cam_smooth_k );
-		
-			
-			//current_ik_cam_shift = y_shift;
+
 		}
 
 		if(_abs(y_shift)<ik_cam_shift_tolerance/2.f)
 			cam_smooth_k = 1.f - ik_cam_shift_speed * 1.f/0.01f * dt;
 		clamp( cam_smooth_k, 0.f, 1.f );
 		current_ik_cam_shift = cam_smooth_k * current_ik_cam_shift + y_shift * ( 1.f - cam_smooth_k );
-	}
+	} else
+		current_ik_cam_shift = 0;
 
 	Fvector point		= {0,CameraHeight() + current_ik_cam_shift,0}; 
 	Fvector dangle		= {0,0,0};
@@ -421,9 +425,10 @@ extern	BOOL g_bDrawBulletHit;
 
 void CActor::OnRender	()
 {
-	if (g_bDrawBulletHit && inventory().ActiveItem())
+#ifdef DEBUG
+	if (inventory().ActiveItem())
 		inventory().ActiveItem()->OnRender();
-
+#endif
 	if (!bDebug)				return;
 
 	if ((dbg_net_Draw_Flags.is_any(dbg_draw_actor_phys)))

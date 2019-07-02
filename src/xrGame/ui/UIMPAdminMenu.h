@@ -1,73 +1,45 @@
 #pragma once
 
 #include "UIDialogWnd.h"
-#include "UIWindow.h"
 #include "UIWndCallback.h"
-class CUI3tButton;
+#include "UIMessageBox.h"
+
 class CUIStatic;
-class CUITextWnd;
 class CUITabControl;
 class CUIXml;
 class CUIMpPlayersAdm;
 class CUIMpServerAdm;
-class CUIListBox;
+class CUIMpChangeMapAdm;
+class CUIWindow;
 class CUI3tButton;
-class CUITrackBar;
+class CUIMessageBoxEx;
 
-class CUIMpAdminMenu :	public CUIDialogWnd 
+class CUIMpAdminMenu :	public CUIDialogWnd, public CUIWndCallback 
 {
+private:
 		typedef CUIWindow	inherited;
 		CUIStatic*			m_pBack;
 		CUITabControl*		m_pTabControl;
 		CUIMpPlayersAdm*	m_pPlayersAdm;
 		CUIMpServerAdm*		m_pServerAdm;
+		CUIMpChangeMapAdm*	m_pChangeMapAdm;
 		CUIXml*				xml_doc;
 
 		CUIWindow*			m_pActiveDialog;
 		shared_str			m_sActiveSection;
 		CUI3tButton*		m_pClose;
+
+		CUIMessageBoxEx*		m_pMessageBox;
+
 public:
 							CUIMpAdminMenu();
 		virtual				~CUIMpAdminMenu();
 				void		Init();
 		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+		virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
 				void		SetActiveSubdialog	(const shared_str& section);
+		void	xr_stdcall	RemoteAdminLogin(CUIWindow*, void*);
+				void		ShowMessageBox(CUIMessageBox::E_MESSAGEBOX_STYLE style, LPCSTR reason="");
 };
 
-class CUIMpPlayersAdm :	public CUIWindow, public CUIWndCallback 
-{
-		typedef CUIWindow	inherited;
-		CUIListBox*			m_pPlayersList;
-		CUI3tButton*		m_pRefreshBtn;
-		CUI3tButton*		m_pScreenAllBtn;
-		CUI3tButton*		m_pConfigAllBtn;
-		CUI3tButton*		m_pPingLimitBtn;
-		CUITrackBar*		m_pPingLimitTrack;
-		CUITextWnd*			m_pPingLimitText;
-		CUI3tButton*		m_pScreenPlayerBtn;
-		CUI3tButton*		m_pConfigPlayerBtn;
-		CUI3tButton*		m_pKickPlayerBtn;
-		CUI3tButton*		m_pBanPlayerBtn;
-		CUITrackBar*		m_pBanTimeTrack;
-		CUITextWnd*			m_pBanTimeText;
-public:
-							CUIMpPlayersAdm();
-		virtual				~CUIMpPlayersAdm();
-				void		Init(CUIXml& xml_doc);
-				void		RefreshPlayersList();
-		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
-				void		SetMaxPingLimit();
-				void		GetSelPlayerScreenshot();
-				void		GetSelPlayerConfig();
-				void		KickSelPlayer();
-				void		BanSelPlayer();
-};
 
-class CUIMpServerAdm :	public CUIWindow, public CUIWndCallback 
-{
-		typedef CUIWindow	inherited;
-public:
-							CUIMpServerAdm();
-		virtual				~CUIMpServerAdm();
-				void		Init(CUIXml& xml_doc);
-};

@@ -7,8 +7,11 @@ class		CRT		:	public xr_resource_named	{
 public:
 	CRT();
 	~CRT();
-
+#ifdef USE_DX11
+	void	create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, bool useUAV = false );
+#else
 	void	create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1 );
+#endif
 	void	destroy();
 	void	reset_begin();
 	void	reset_end();
@@ -35,7 +38,11 @@ public:
 };
 struct 		resptrcode_crt	: public resptr_base<CRT>
 {
-	void				create			(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1 );
+#ifdef USE_DX11
+	void				create			(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, bool useUAV = false );
+#else
+	void				create			(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1);
+#endif
 	void				destroy			()	{ _set(NULL);		}
 };
 typedef	resptr_core<CRT,resptrcode_crt>		ref_rt;

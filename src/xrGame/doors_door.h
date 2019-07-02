@@ -52,6 +52,7 @@ private:
 	door_state			m_state;
 	door_state			m_previous_state;
 	door_state			m_target_state;
+	Fvector				m_registered_position;
 	bool				m_locked;
 }; // class door
 

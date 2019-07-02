@@ -3,7 +3,8 @@
 
 #include "fs_internal.h"
 
-XRCORE_API CInifile const * pSettings	= NULL;
+XRCORE_API CInifile const * pSettings		= NULL;
+XRCORE_API CInifile const * pSettingsAuth	= NULL;
 
 CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly)
 {	return xr_new<CInifile>(szFileName,ReadOnly); }
@@ -89,17 +90,22 @@ BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
 }
 //------------------------------------------------------------------------------
 
-CInifile::CInifile(IReader* F ,LPCSTR path)
+CInifile::CInifile(IReader* F ,LPCSTR path, allow_include_func_t allow_include_func)
 {
 	m_file_name[0]	= 0;
 	m_flags.zero	();
 	m_flags.set		(eSaveAtEnd,		FALSE);
 	m_flags.set		(eReadOnly,			TRUE);
 	m_flags.set		(eOverrideNames,	FALSE);
-	Load			(F,path);
+	Load			(F,path, allow_include_func);
 }
 
-CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd, u32 sect_count)
+CInifile::CInifile(LPCSTR szFileName,
+				   BOOL ReadOnly,
+				   BOOL bLoad,
+				   BOOL SaveAtEnd,
+				   u32 sect_count,
+				   allow_include_func_t allow_include_func)
 {
 	if(szFileName && strstr(szFileName,"system"))
 		Msg("-----loading %s",szFileName);
@@ -121,7 +127,7 @@ CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd,
         if (R){
 			if(sect_count)
 				DATA.reserve(sect_count);
-			Load		(R,path);
+			Load		(R, path, allow_include_func);
 			FS.r_close	(R);
         }
 	}
@@ -165,7 +171,7 @@ IC BOOL	is_empty_line_now(IReader* F)
 	return (*a0==13) && ( *a1==10) && (*a2==13) && ( *a3==10); 
 };
 
-void	CInifile::Load(IReader* F, LPCSTR path)
+void	CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_func)
 {
 	R_ASSERT(F);
 	Sect		*Current = 0;
@@ -223,9 +229,12 @@ void	CInifile::Load(IReader* F, LPCSTR path)
                 strconcat	(sizeof(fn),fn,path,inc_name);
 				_splitpath	(fn,inc_path,folder, 0, 0 );
 				xr_strcat		(inc_path,folder);
-            	IReader* I 	= FS.r_open(fn); R_ASSERT3(I,"Can't find include file:", inc_name);
-            	Load		(I,inc_path);
-                FS.r_close	(I);
+				if (!allow_include_func || allow_include_func(fn))
+				{
+					IReader* I 	= FS.r_open(fn); R_ASSERT3(I,"Can't find include file:", inc_name);
+            		Load		(I,inc_path, allow_include_func);
+					FS.r_close	(I);
+				}
             }
         } 
 		else if (str[0] && (str[0]=='[')) //new section ?

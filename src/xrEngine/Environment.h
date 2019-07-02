@@ -126,6 +126,8 @@ public:
 	shared_str			sky_texture_env_name;
 	shared_str			clouds_texture_name	;
 
+	BENCH_SEC_SCRAMBLEMEMBER1
+
 	/*
 	ref_texture			sky_texture		;
 	ref_texture			sky_texture_env	;
@@ -253,6 +255,7 @@ public:
 	float					wind_blast_strength_stop_value;
 	Fquaternion				wind_blast_current;
 	// Environments
+	BENCH_SEC_SCRAMBLEMEMBER2
 	CEnvDescriptorMixer*	CurrentEnv;
 	CEnvDescriptor*			Current[2];
 

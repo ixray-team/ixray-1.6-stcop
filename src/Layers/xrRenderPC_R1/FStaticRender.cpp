@@ -127,6 +127,10 @@ void					CRender::reset_end				()
 //.	HWOCC.occq_create			(occq_size);
 	Target						=	xr_new<CRenderTarget>	();
 	if (L_Projector)			L_Projector->invalidate		();
+
+	// Set this flag true to skip the first render frame,
+	// that some data is not ready in the first frame (for example device camera position)
+	m_bFirstFrameAfterReset = true;
 }
 
 void					CRender::OnFrame				()
@@ -310,6 +314,7 @@ IC		void			gm_SetNearer		(BOOL bNearer)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CRender::CRender	()
+:m_bFirstFrameAfterReset(false)
 {
 }
 
@@ -548,6 +553,12 @@ void	CRender::rmNormal	()
 extern u32 g_r;
 void	CRender::Render		()
 {
+	if( m_bFirstFrameAfterReset )
+	{
+		m_bFirstFrameAfterReset = false;
+		return;
+	}
+
 	g_r											= 1;
 	Device.Statistic->RenderDUMP.Begin();
 	// Begin
@@ -565,7 +576,7 @@ void	CRender::Render		()
 	r_pmask										(true,false);	// disable priority "1"
 	o.vis_intersect								= TRUE			;
 	HOM.Disable									();
-	L_Dynamic->render							();				// addititional light sources
+	L_Dynamic->render							(0);				// addititional light sources
 	if(Wallmarks){
 		g_r										= 0;
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
@@ -577,12 +588,24 @@ void	CRender::Render		()
 	if(L_Shadows)L_Shadows->render				();				// ... and shadows
 	r_dsgraph_render_lods						(false,true);	// lods - FB
 	r_dsgraph_render_graph						(1);			// normal level, secondary priority
+	L_Dynamic->render							(1);			// addititional light sources, secondary priority
 	PortalTraverser.fade_render					();				// faded-portals
 	r_dsgraph_render_sorted						();				// strict-sorted geoms
 	if(L_Glows)L_Glows->Render					();				// glows
 	g_pGamePersistent->Environment().RenderFlares	();				// lens-flares
 	g_pGamePersistent->Environment().RenderLast	();				// rain/thunder-bolts
 
+#if DEBUG
+	for (int _priority=0; _priority<2; ++_priority)
+	{
+		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
+		{
+			R_ASSERT( mapNormalPasses[_priority][iPass].size() == 0);
+			R_ASSERT( mapMatrixPasses[_priority][iPass].size() == 0);
+		}
+	}
+
+#endif
 	// Postprocess, if necessary
 	Target->End									();
 	if (L_Projector) L_Projector->finalize		();

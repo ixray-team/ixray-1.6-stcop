@@ -55,11 +55,11 @@ Fvector CScriptGameObject::GetCurrentDirection()
 	return obj->GetCurrentDirection();
 }
 
-CScriptGameObject::CScriptGameObject		(CGameObject *game_object)
+CScriptGameObject::CScriptGameObject		(CGameObject *game_object) :
+	m_game_object	( game_object ),
+	m_door			( 0 )
 {
-	m_game_object	= game_object;
-	m_door			= 0;
-	R_ASSERT2		(m_game_object,"Null actual object passed!");
+	R_ASSERT2		( m_game_object, "Null actual object passed!" );
 }
 
 CScriptGameObject::~CScriptGameObject		()
@@ -67,7 +67,7 @@ CScriptGameObject::~CScriptGameObject		()
 	if ( !m_door )
 		return;
 
-	ai().doors().unregister_door	( m_door );
+	unregister_door					( );
 }
 
 CScriptGameObject *CScriptGameObject::Parent				() const

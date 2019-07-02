@@ -152,6 +152,10 @@ void CLevel::SaveDemoHeader(shared_str const & server_options)
 
 void CLevel::SaveDemoInfo()
 {
+	game_cl_mp* tmp_game = smart_cast<game_cl_mp*>(&Game());
+	if (!tmp_game)
+		return;
+	
 	R_ASSERT(m_writer);
 	
 	u32 old_pos = m_writer->tell();

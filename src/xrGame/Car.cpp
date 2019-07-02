@@ -1710,7 +1710,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 
 			bool just_before_destroy		= !P.r_eof() && P.r_u8();
 			O->SetTmpPreDestroy				(just_before_destroy);
-			GetInventory()->DropItem(smart_cast<CGameObject*>(O), just_before_destroy);
+			GetInventory()->DropItem(smart_cast<CGameObject*>(O), just_before_destroy, just_before_destroy);
 			//if(GetInventory()->DropItem(smart_cast<CGameObject*>(O), just_before_destroy)) 
 			//{
 			//	O->H_SetParent(0, just_before_destroy);

@@ -59,6 +59,7 @@ private:
 	u32					m_previous_time;
 	bool				m_need_reload;
 	WINDOW_LIST			m_items_cache;
+	WINDOW_LIST			m_items_ready;
 	xr_vector<u32>		m_news_in_queue;
 
 	CUIWindow*			CreateItem			();

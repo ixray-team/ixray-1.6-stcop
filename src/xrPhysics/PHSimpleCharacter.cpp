@@ -160,6 +160,7 @@ CPHSimpleCharacter::CPHSimpleCharacter():	m_last_environment_update ( Fvector().
 	b_meet=false;
 	b_lose_control=true;
 	b_lose_ground=true;
+	b_depart_control = false;
 	b_jump=false;
 	b_side_contact=false;
 	b_was_side_contact=false;
@@ -470,18 +471,21 @@ void		CPHSimpleCharacter::ApplyImpulse(const Fvector& dir,dReal P)
 	b_external_impulse=true;
 	m_ext_impuls_stop_step=ph_world->m_steps_num+impulse_time_constant;
 	//m_ext_imulse.set(Fvector().mul(dir,P/fixed_step/impulse_time_constant));
+	dBodySetLinearVel(m_body,0,0,0);
 	dBodySetForce(m_body,m_ext_imulse.x*P/fixed_step,m_ext_imulse.y*P/fixed_step,m_ext_imulse.z*P/fixed_step);
 }
 
 void		CPHSimpleCharacter::ApplyForce(const Fvector& force)
 {
-	ApplyForce(force.x,force.y,force.z);
+	
+		ApplyForce(force.x,force.y,force.z);
 }
 
 void		CPHSimpleCharacter::ApplyForce(float x, float y, float z)
 {
 	if(!b_exist) return;
 	Enable();
+	//if( !b_external_impulse )
 	dBodyAddForce(m_body,x,y,z);
 	//BodyCutForce(m_body,5.f,0.f);
 }
@@ -533,6 +537,7 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/){
 	m_friction_factor			=	0.f				;
 	b_collision_restrictor_touch=	false			;
 	b_foot_mtl_check			=	true			;
+	b_depart_control			=	false			;
 	dMatrix3 R;
 	dRSetIdentity (R);
 	dBodySetAngularVel(m_body,0.f,0.f,0.f);
@@ -695,6 +700,7 @@ void CPHSimpleCharacter::PhTune(dReal step){
 	if(b_jump)
 	{
 		b_lose_control=true;
+		b_depart_control = true;
 		dBodySetLinearVel(m_body,m_jump_accel.x,m_jump_accel.y,m_jump_accel.z);//vel[1]+
 		//Log("jmp",m_jump_accel);
 		dVectorSet(m_jump_depart_position,dBodyGetPosition(m_body));
@@ -727,7 +733,7 @@ void CPHSimpleCharacter::PhTune(dReal step){
 		dReal vProj=dDOT(sidedir,chVel);
 
 		dBodyAddForce(m_body,m_control_force[0],m_control_force[1],m_control_force[2]);//+2.f*9.8f*70.f
-		if(!b_lose_control||b_clamb_jump)
+		if(!b_lose_control||b_clamb_jump)//)&&!b_external_impulse
 			dBodyAddForce(m_body,
 				-sidedir[0]*vProj*(500.f+200.f*b_clamb_jump)*m_friction_factor,
 				-m.mass*(50.f)*(!b_lose_control&&!(is_contact||(b_any_contacts))),//&&!b_climb
@@ -755,6 +761,10 @@ void CPHSimpleCharacter::PhTune(dReal step){
 	if(b_jumping)
 	{
 
+		float air_factor = 1.f;
+		if( b_lose_control  && CastActorCharacter() )//
+			air_factor = 10.f*m_air_control_factor;
+
 		dReal proj=m_acceleration.x*chVel[0]+m_acceleration.z*chVel[2];
 
 		const dReal* current_pos=dBodyGetPosition(m_body);
@@ -765,12 +775,17 @@ void CPHSimpleCharacter::PhTune(dReal step){
 		if(amag>0.f)
 			if(dif[0]*m_acceleration.x/amag+dif[2]*m_acceleration.z/amag<0.3f)
 			{
-				dBodyAddForce(m_body,m_acceleration.x/amag*1000.f,0,m_acceleration.z/amag*1000.f);
+				Fvector jump_fv = m_acceleration;//{ m_acceleration.x/amag*1000.f,0,m_acceleration.z/amag*1000.f }
+				jump_fv.mul( 1000.f/amag * air_factor  );
+				dBodyAddForce( m_body, jump_fv.x, 0, jump_fv.z );
 			}
 			if(proj<0.f){
 
 				dReal vmag=chVel[0]*chVel[0]+chVel[2]*chVel[2];
-				dBodyAddForce(m_body,chVel[0]/vmag/amag*proj*3000.f,0,chVel[2]/vmag/amag*proj*3000.f);
+				
+				Fvector jump_fv = cast_fv( chVel );
+				jump_fv.mul( 3000.f*air_factor/vmag/amag*proj );
+				dBodyAddForce(m_body,jump_fv.x,0,jump_fv.z);
 			}
 	}
 	//else
@@ -781,6 +796,10 @@ void CPHSimpleCharacter::PhTune(dReal step){
 		//}
 
 	BodyCutForce(m_body,5.f,0.f);
+//	
+
+
+//
 #ifdef DEBUG
 	if(debug_output().ph_dbg_draw_mask().test(phDbgCharacterControl))
 	{
@@ -1234,6 +1253,7 @@ void CPHSimpleCharacter::doCaptureExist(bool& do_exist)
 	do_exist=!!m_capture_joint;
 }
 */
+//float max_hit_vel_limit = 3000.f;
 void CPHSimpleCharacter::SafeAndLimitVelocity()
 {
 
@@ -1262,6 +1282,7 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 				}
 		
 			}
+			//clamp(ll_limit,0.f,max_hit_vel_limit);
 			if(ll_limit>l_limit)
 				l_limit=ll_limit;
 		}

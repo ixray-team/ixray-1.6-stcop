@@ -508,6 +508,7 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
+	m_fRTZoomFactor					= m_zoom_params.m_fScopeZoomFactor;
 	BOOL bResult					= inherited::net_Spawn(DC);
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeItemWeapon			    *E	= smart_cast<CSE_ALifeItemWeapon*>(e);
@@ -554,8 +555,9 @@ void CWeapon::net_Destroy	()
 
 BOOL CWeapon::IsUpdating()
 {	
-	bool bIsActiveItem = m_pInventory && m_pInventory->ActiveItem()==this;
-	return bIsActiveItem || bWorking || IsPending() || getVisible();
+	//bool bIsActiveItem = m_pInventory && m_pInventory->ActiveItem()==this;
+	//return bIsActiveItem || bWorking || IsPending() || getVisible();
+	return bWorking;
 }
 
 void CWeapon::net_Export(NET_Packet& P)
@@ -1366,14 +1368,11 @@ void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 void CWeapon::OnZoomIn()
 {
 	m_zoom_params.m_bIsZoomModeNow		= true;
-	float delta, min_zoom_factor;
 	if(m_zoom_params.m_bUseDynamicZoom)
-	{
-		GetZoomData(m_zoom_params.m_fScopeZoomFactor, delta, min_zoom_factor);
-		m_zoom_params.m_fCurrentZoomFactor	= min_zoom_factor;
-	}
+		SetZoomFactor(m_fRTZoomFactor);
 	else
 		m_zoom_params.m_fCurrentZoomFactor	= CurrentZoomFactor();
+
 	EnableHudInertion					(FALSE);
 
 	
@@ -1402,6 +1401,7 @@ void CWeapon::OnZoomIn()
 void CWeapon::OnZoomOut()
 {
 	m_zoom_params.m_bIsZoomModeNow		= false;
+	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor	= g_fov;
 	EnableHudInertion					(TRUE);
 

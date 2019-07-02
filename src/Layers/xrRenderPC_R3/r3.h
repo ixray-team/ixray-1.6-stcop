@@ -58,6 +58,7 @@ public:
 		u32		ssao_half_data		: 1;
 		u32		ssao_hbao			: 1;
 		u32		ssao_hdao			: 1;
+		u32		hbao_vectorized		: 1;
 
 		u32		smapsize			: 16;
 		u32		depth16				: 1;
@@ -158,6 +159,8 @@ public:
 	u32															q_sync_count	;
 
 	bool														m_bMakeAsyncSS;
+	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
+
 private:
 	// Loading / Unloading
 	void							LoadBuffers					(CStreamReader	*fs,	BOOL	_alternative);

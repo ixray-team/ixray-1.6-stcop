@@ -1,6 +1,5 @@
 #ifndef xrSyncronizeH
 #define xrSyncronizeH
-#pragma once
 
 #if 0//def DEBUG
 #	define PROFILE_CRITICAL_SECTIONS
@@ -19,7 +18,7 @@
 #endif // PROFILE_CRITICAL_SECTIONS
 
 // Desc: Simple wrapper for critical section
-class XRCORE_API		xrCriticalSection
+class XRCORE_API xrCriticalSection
 {
 public:
 	class XRCORE_API raii
@@ -33,6 +32,7 @@ public:
 	};
 
 private:
+	xrCriticalSection(xrCriticalSection const & copy) {}; //noncopyable
 	void*				pmutex;
 #ifdef PROFILE_CRITICAL_SECTIONS
 	LPCSTR				m_id;

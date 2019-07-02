@@ -35,10 +35,12 @@ void player_account::load_account()
 	{
 		m_player_name		= tmp_curr_prof->m_unique_nick;
 		m_online_account	= tmp_curr_prof->online();
+		m_profile_id		= static_cast<u32>(tmp_curr_prof->profile_id());
 	} else
 	{
 		m_player_name		= "";
 		m_online_account	= false;
+		m_profile_id		= 0;
 	}
 	m_clan_name			= "";
 	m_clan_leader		= false;
@@ -55,8 +57,10 @@ void player_account::load_account()
 
 void player_account::net_Import	(NET_Packet & P)
 {
+	P.r_u32			(m_profile_id);
 	P.r_stringZ		(m_player_name);
 	P.r_stringZ		(m_clan_name);
+	
 	m_clan_leader		= P.r_u8() ? true : false;
 	m_online_account	= P.r_u8() ? true : false;
 	u16 awards_count = P.r_u16();
@@ -76,6 +80,7 @@ void player_account::net_Import	(NET_Packet & P)
 void player_account::skip_Import(NET_Packet & P)
 {
 	string256		tmp_string;
+	P.r_u32			();
 	P.r_stringZ_s	(tmp_string);
 	P.r_stringZ_s	(tmp_string);
 	P.r_u8			();
@@ -91,6 +96,7 @@ void player_account::skip_Import(NET_Packet & P)
 
 void player_account::net_Export	(NET_Packet & P)
 {
+	P.w_u32		(m_profile_id);
 	P.w_stringZ	(m_player_name);
 	P.w_stringZ	(m_clan_name);
 	P.w_u8		(m_clan_leader ? 1 : 0);

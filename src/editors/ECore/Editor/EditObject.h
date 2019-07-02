@@ -105,7 +105,7 @@ public:
     IC void 		SetShaderXRLC	(LPCSTR name){m_ShaderXRLCName=name;}
     IC void			SetGameMtl		(LPCSTR name){m_GameMtlName=name;}
     IC void			SetFVF			(u32 fvf){m_dwFVF=fvf;}
-    IC void			SetTexture		(LPCSTR name){string512 buf; strcpy(buf,name); if(strext(buf)) *strext(buf)=0; m_Texture=buf;}
+    IC void			SetTexture		(LPCSTR name){string512 buf; strcpy_s(buf,name); if(strext(buf)) *strext(buf)=0; m_Texture=buf;}
     IC void			SetVMap			(LPCSTR name){m_VMap=name;}
 #ifdef _EDITOR
     IC u32			_GameMtl		()const	{return GMLib.GetMaterialID	(*m_GameMtlName);}

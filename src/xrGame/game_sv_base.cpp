@@ -20,7 +20,7 @@ ENGINE_API	bool g_dedicated_server;
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
 string_path		MAPROT_LIST		= "";
 BOOL	net_sv_control_hit	= FALSE		;
-BOOL	g_bCollectStatisticData = FALSE;
+BOOL	g_bCollectStatisticData = TRUE;
 //-----------------------------------------------------------------
 u32		g_sv_base_dwRPointFreezeTime	= 0;
 int		g_sv_base_iVotingEnabled		= 0x00ff;

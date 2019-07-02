@@ -38,6 +38,7 @@ private:
 	friend class doors::actor;
 	void		open_door				( door* door );
 	void		close_door				( door* door );
+//	void		check_bug_door			( ) const;
 
 private:
 	typedef CQuadTree<door>				doors_tree_type;

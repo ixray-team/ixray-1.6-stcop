@@ -132,44 +132,66 @@ float	CIKLimbsController::StaticObjectShift			( const SCalculateData cd[max_size
 		_object_shift.set_taget( shift , _abs( current_shift - shift ) / static_shift_object_speed );
 		return shift;
 }
-
+static float doun_shift_to_correct = 0.3f;
+static float doun_shift_correct = 0.1f;
 bool	CIKLimbsController::PredictObjectShift			(  const SCalculateData cd[max_size] )
 {
 	
-	float predict_time = FLT_MAX;
-	float predict_shift = 0.f;
-	bool ret = false;
+	float predict_time_shift_down = FLT_MAX;
+	float predict_time_shift_up = FLT_MAX;
+	float predict_shift_down = 0.f;
+	//float predict_shift_up = 0.f;
+	bool shift_down = false;
+	bool shift_up = false;
 	const u16 sz =(u16)_bone_chains.size();
+	float current_shift = _object_shift.shift();
 	for(u16 j = 0; sz > j; ++j )
 		if( !cd[j].state.foot_step )
 		{
 			float time = cd[j].m_limb->time_to_footstep();
-			if( time < predict_time )
+
+			float lshift = cd[j].m_limb->footstep_shift();
+			if( lshift < 0.f  )
 			{
-				float lshift = cd[j].m_limb->footstep_shift();
-				if( lshift < 0.f )
+				if( time < predict_time_shift_down )
 				{
-					predict_time	= time;
-					predict_shift	= lshift;
-					ret = true;
+					predict_time_shift_down	= time;
+					predict_shift_down	= lshift;
+					shift_down = true;
 				}
+			} 
+			else if( current_shift < -doun_shift_to_correct && time < predict_time_shift_up )
+			{
+				predict_time_shift_up	= time;
+				
+				shift_up = true;
 			}
+			
 		} 
-	if( ret )
+	float	predict_shift = 0;
+	float	predict_time_shift = FLT_MAX;
+
+	if( shift_down )
 	{
-		if( predict_time < EPS_S )
-			predict_time = Device.fTimeDelta;
-		_object_shift.set_taget( predict_shift, predict_time );
-		/*
-		float leg_length_limit = LegLengthShiftLimit( cd );
-		if( leg_length_limit> 0.f )
-			_object_shift.set_up_shift_limit( -leg_length_limit );
-		else
-			_object_shift.set_up_shift_limit( FLT_MAX );
-		*/
-	}
+		predict_shift = predict_shift_down;
+		predict_time_shift = predict_time_shift_down;
 	
-	return ret;
+	} else if( shift_up )
+	{
+		predict_shift = 0;
+		predict_time_shift = predict_time_shift_up;
+	} else 
+		return false;
+	//{
+	//	predict_shift = 0;
+	//	predict_time_shift = Device.fTimeDelta;
+	//}
+		
+	
+	if( predict_time_shift < EPS_S )
+		predict_time_shift = Device.fTimeDelta;
+		_object_shift.set_taget( predict_shift, predict_time_shift );
+	return true;
 }
 
 

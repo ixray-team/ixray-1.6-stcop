@@ -15,7 +15,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH	:
-		if (!xrRender_test_hw())	return FALSE;
 		::Render					= &RImplementation;
 		::RenderFactory				= &RenderFactoryImpl;
 		::DU						= &DUImpl;

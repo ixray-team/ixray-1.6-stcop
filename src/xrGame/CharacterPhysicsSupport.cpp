@@ -207,7 +207,11 @@ void CCharacterPhysicsSupport::in_NetSpawn( CSE_Abstract* e )
 	if( !m_EntityAlife.g_Alive() )
 	{
 		if( m_eType == etStalker )
+		{
+			//pK->LL_GetData( 0 ).shape.flags.set(SBoneShape::sfVisibilityIgnore,TRUE);
+			//pK->LL_GetData( pK->LL_BoneID("bip01") ).shape.flags.set(SBoneShape::sfVisibilityIgnore,TRUE);
 			ka->PlayCycle( "waunded_1_idle_0" );
+		}
 		else
 			ka->PlayCycle( "death_init" );
 
@@ -441,6 +445,11 @@ bool is_similar( const Fmatrix &m0, const Fmatrix &m1, float param )
 	return _abs( ang )<M_PI/2.f;
 }
 
+//static struct callback_tracks_disable: public IUpdateTracksCallback
+//{
+//	virtual	bool	operator () ( float dt, IKinematicsAnimated& k ){return false;}
+//} tracks_disable_update;
+
 void CCharacterPhysicsSupport::KillHit( SHit &H )
 {
 #ifdef	DEBUG
@@ -449,12 +458,18 @@ void CCharacterPhysicsSupport::KillHit( SHit &H )
 #endif
 	VERIFY( m_EntityAlife.Visual( ) );
 	VERIFY( m_EntityAlife.Visual( )->dcast_PKinematics( ) );
+
+	//IKinematicsAnimated * KA = m_EntityAlife.Visual( )->dcast_PKinematicsAnimated	();
+	//VERIFY( KA );
+	//KA->SetUpdateTracksCalback( &tracks_disable_update );
+
 	m_character_shell_control.TestForWounded( m_EntityAlife.XFORM( ), m_EntityAlife.Visual( )->dcast_PKinematics( ) );
 	Fmatrix prev_pose; prev_pose.set( mXFORM );
 
 	Fvector start;start.set( m_EntityAlife.Position( ) );
 	Fvector velocity;
 	Fvector death_position;
+
 	CreateShell( H.who, death_position, velocity );
 	//ActivateShell( H.who );
 
@@ -476,9 +491,12 @@ void CCharacterPhysicsSupport::KillHit( SHit &H )
 		m_interactive_motion->setup( m ,m_pPhysicsShell, hit_angle );
 	} else 
 		DestroyIKController( );
+	//KA->SetUpdateTracksCalback( 0 );
 
 	if( is_imotion(m_interactive_motion ) )
-				m_interactive_motion->play( );
+			m_interactive_motion->play( );
+		
+
 
 
 	m_character_shell_control.set_fatal_impulse( H );

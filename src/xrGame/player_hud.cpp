@@ -448,7 +448,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 		}
 	}
 	
-	Msg("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
+//	Msg("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
 
 	if(!b_reload)
 	{

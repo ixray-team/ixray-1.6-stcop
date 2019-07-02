@@ -605,7 +605,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 
 
 #ifdef DEBUG
-	if(bDebug)
+	if(bDebug && g_ShowAnimationInfo)
 	{
 		UI().Font().pFontStat->OutSetI	(0,0);
 		UI().Font().pFontStat->OutNext("[%s]",mov_state[moving_idx]);

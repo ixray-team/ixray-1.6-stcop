@@ -266,6 +266,9 @@ CRenderTarget::CRenderTarget		()
 {
    u32 SampleCount = 1;
 
+   if (ps_r_ssao_mode!=2/*hdao*/)
+	   ps_r_ssao = _min(ps_r_ssao, 3);
+
    if( RImplementation.o.dx10_msaa )
       SampleCount    = RImplementation.o.dx10_msaa_samples;
 
@@ -893,6 +896,7 @@ CRenderTarget::CRenderTarget		()
 					case 1: numDir = 4.0f; break;
 					case 2: numDir = 6.0f; break;
 					case 3: numDir = 8.0f; break;
+					case 4: numDir = 8.0f; break;
 					}
 					float angle = 2 * PI * ::Random.randF(0.0f, 1.0f) / numDir;
 					float dist = ::Random.randF(0.0f, 1.0f);

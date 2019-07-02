@@ -892,7 +892,8 @@ bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_i
 	SCOPES_VECTOR_IT it = m_scopes.begin();
 	for(; it!=m_scopes.end(); it++)
 	{
-		if(pSettings->r_string((*it),"scope_name")==item_section_name)
+		LPCSTR iter_scope_name = pSettings->r_string((*it),"scope_name");
+		if(!xr_strcmp(iter_scope_name, item_section_name))
 		{
 			m_cur_scope = NULL;
 			detached = true;
@@ -904,9 +905,13 @@ bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_i
 bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 {
 	if(		m_eScopeStatus == ALife::eAddonAttachable &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) &&
 			DetachScope(item_section_name, b_spawn_item))
 	{
+		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) == 0)
+		{
+			Msg("ERROR: scope addon already detached.");
+			return true;
+		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
 		UpdateAddonsVisibility();
@@ -915,9 +920,13 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else if(m_eSilencerStatus == ALife::eAddonAttachable &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer) &&
 			(m_sSilencerName == item_section_name))
 	{
+		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0)
+		{
+			Msg("ERROR: silencer addon already detached.");
+			return true;
+		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
 		UpdateAddonsVisibility();
@@ -925,9 +934,13 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else if(m_eGrenadeLauncherStatus == ALife::eAddonAttachable &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
 			(m_sGrenadeLauncherName == item_section_name))
 	{
+		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0)
+		{
+			Msg("ERROR: grenade launcher addon already detached.");
+			return true;
+		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		UpdateAddonsVisibility();

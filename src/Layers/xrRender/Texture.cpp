@@ -59,10 +59,10 @@ int get_texture_load_lod(LPCSTR fn)
 	}
 
 	if(psTextureLOD<2) {
-		if ( enough_address_space_available || (g_current_renderer < 2) )
+//		if ( enough_address_space_available || (g_current_renderer < 2) )
 			return 0;
-		else
-			return 1;
+//		else
+//			return 1;
 	}
 	else
 	if(psTextureLOD<4)

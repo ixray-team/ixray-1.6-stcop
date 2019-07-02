@@ -115,7 +115,7 @@ IC	void CSQuadTree::insert		(_object_type *object)
 }
 
 TEMPLATE_SPECIALIZATION
-IC	_object_type *CSQuadTree::find	(const Fvector &position)
+IC	_object_type *CSQuadTree::find	(const Fvector &position) const
 {
 	Fvector				center = m_center;
 	float				distance = m_radius;
@@ -138,7 +138,6 @@ IC	_object_type *CSQuadTree::find	(const Fvector &position)
 
 		node			= node->m_neighbours[index];
 	}
-	NODEFAULT;
 }
 
 TEMPLATE_SPECIALIZATION

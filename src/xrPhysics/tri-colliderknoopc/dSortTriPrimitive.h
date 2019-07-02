@@ -399,6 +399,8 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 
 
 
+	}
+	
 	if(b_neg_depth<dInfinity){
 
 		bool include = true;
@@ -433,7 +435,6 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 			else if(*pushing_b_neg)ret=bret;
 		}
 
-	}
 	}
 	if(  !*pushing_neg  )//no_last_pos|| && !*pushing_b_neg
 		dVectorSet(last_pos,p);

@@ -89,7 +89,9 @@ extern	int		g_sv_Pending_Wait_Time;
 extern	int		g_sv_Client_Reconnect_Time;
 		int		g_dwEventDelay			= 0	;
 
-extern	int		g_sv_adm_menu_ban_time;
+extern	u32		g_sv_adm_menu_ban_time;
+extern	xr_token g_ban_times[];
+
 extern	int		g_sv_adm_menu_ping_limit;
 extern	u32		g_sv_cta_dwInvincibleTime;
 //extern	u32		g_sv_cta_dwAnomalySetLengthTime;
@@ -2096,7 +2098,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Float,		"sv_vote_time"				,	&g_sv_mp_fVoteTime					, 0.5f,10.0f);
 
 	CMD4(CCC_SV_Integer,	"sv_forcerespawn"			,	(int*)&g_sv_dm_dwForceRespawn		,	0,3600);	//sec
-	CMD4(CCC_SV_Integer,	"sv_fraglimit"				,	&g_sv_dm_dwFragLimit				,	0,100);
+	CMD4(CCC_SV_Integer,	"sv_fraglimit"				,	&g_sv_dm_dwFragLimit				,	0,1000);
 	CMD4(CCC_SV_Integer,	"sv_timelimit"				,	&g_sv_dm_dwTimeLimit				,	0,180);		//min
 	CMD4(CCC_SV_Integer,	"sv_dmgblockindicator"		,	(int*)&g_sv_dm_bDamageBlockIndicators,	0, 1);
 	CMD4(CCC_SV_Integer,	"sv_dmgblocktime"			,	(int*)&g_sv_dm_dwDamageBlockTime	,	0, 600);	//sec
@@ -2133,7 +2135,8 @@ void register_mp_console_commands()
 	CMD1(CCC_SvChat,		"chat");
 
 //-----------------
-	CMD4(CCC_Integer,		"sv_adm_menu_ban_time",			(int*)&g_sv_adm_menu_ban_time, 1, 60); //min
+	CMD3(CCC_Token,			"sv_adm_menu_ban_time",			&g_sv_adm_menu_ban_time, g_ban_times); //min
+//	CMD4(CCC_Integer,		"sv_adm_menu_ban_time",			(int*)&g_sv_adm_menu_ban_time, 1, 60); //min
 	CMD4(CCC_Integer,		"sv_adm_menu_ping_limit",		(int*)&g_sv_adm_menu_ping_limit, 1, 200); //min
 
 	CMD4(CCC_Integer,		"sv_invincible_time",			(int*)&g_sv_cta_dwInvincibleTime, 0, 60); //sec
@@ -2162,5 +2165,5 @@ void register_mp_console_commands()
 	CMD1(CCC_GameSpyRegisterUniqueNick,		"gs_register_unique_nick");
 	CMD1(CCC_GameSpyProfile,				"gs_profile");
 	CMD4(CCC_Integer,						"sv_write_update_bin",				&g_sv_write_updates_bin, 0, 1);
-	CMD4(CCC_Integer,						"sv_traffic_optimization_level",	(int*)&g_sv_traffic_optimization_level, 0, 3);
+	CMD4(CCC_Integer,						"sv_traffic_optimization_level",	(int*)&g_sv_traffic_optimization_level, 0, 7);
 }

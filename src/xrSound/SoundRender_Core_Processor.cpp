@@ -156,15 +156,16 @@ void	CSoundRender_Core::statistic			(CSound_stats*  dest, CSound_stats_ext*  ext
 		cache.stats_clear	();
 	}
 	if (ext){
-		for (u32 it=0; it<s_emitters.size(); it++){
+		for (u32 it=0; it<s_emitters.size(); it++)
+		{
 			CSoundRender_Emitter*	_E = s_emitters[it];	
 			CSound_stats_ext::SItem _I;
 			_I._3D					= !_E->b2D;
 			_I._rendered			= !!_E->target;
-			_I.name					= _E->source()->fname;
 			_I.params				= _E->p_source;
 			_I.volume				= _E->smooth_volume;
 			if (_E->owner_data){
+				_I.name				= _E->source()->fname;
 				_I.game_object		= _E->owner_data->g_object;
 				_I.game_type		= _E->owner_data->g_type;
 				_I.type				= _E->owner_data->s_type;

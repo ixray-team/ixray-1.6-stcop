@@ -5,8 +5,92 @@
 #include "../xrServerEntities/object_broker.h"
 #include "xrMessages.h"
 
-
 BOOL		g_sv_write_updates_bin	= FALSE;
+
+last_updates_cache::last_updates_cache()
+{
+	for (u32 i = 0; i < cache_entities_size; ++i)
+	{
+		m_cache[i].first.m_eq_count		= 0;
+		m_cache[i].first.m_object_id	= 0;
+		m_cache[i].first.m_update_time	= 0;
+		m_cache[i].second.B.count		= 0;
+	}
+}
+
+u16 last_updates_cache::add_update			(u16 const entity_id, NET_Packet const & update)
+{
+	last_update_t* tmp_entity = search_entity(entity_id);
+	u32 current_time = Device.dwTimeGlobal;
+	if (!tmp_entity)
+	{
+		tmp_entity = search_most_expired(current_time, update.B.count);
+		if (!tmp_entity)
+		{
+			return 0;
+		}		
+	}
+	tmp_entity->first.m_object_id	= entity_id;
+	if ((tmp_entity->second.B.count == update.B.count) &&
+		(!memcmp(tmp_entity->second.B.data, update.B.data, update.B.count)))
+	{
+		++tmp_entity->first.m_eq_count;
+	} else
+	{
+		tmp_entity->first.m_eq_count = 0;
+	}	
+	tmp_entity->first.m_update_time	= current_time;
+	CopyMemory(tmp_entity->second.B.data, update.B.data, update.B.count);
+	tmp_entity->second.B.count = update.B.count;
+	return tmp_entity->first.m_eq_count;
+}
+
+u16 last_updates_cache::get_last_equpdates	(u16 const entity_id, NET_Packet const & update)
+{
+	last_update_t* tmp_entity = search_entity(entity_id);
+	if (!tmp_entity)
+		return 0;
+	return tmp_entity->first.m_eq_count;
+}
+
+last_updates_cache::last_update_t* last_updates_cache::search_entity(u16 const entity_id)
+{
+	for (u32 i = 0; i < cache_entities_size; ++i)
+	{
+		if (m_cache[i].first.m_object_id == entity_id)
+		{
+			return &m_cache[i];
+		}
+	}
+	return NULL;
+}
+
+last_updates_cache::last_update_t*	last_updates_cache::search_most_expired(u32 const current_time,
+																			u32 const update_size)
+{
+	STATIC_CHECK(cache_entities_size > 1, cache_entities_size__must_be_greater_than_one);
+	last_update_t*	min_time = &m_cache[0];
+	for (u32 i = 1; i < cache_entities_size; ++i)
+	{
+		last_update_t & tmp_entity = m_cache[i];
+		u32 curr_time	= tmp_entity.first.m_update_time;
+		u32 mtime		= min_time->first.m_update_time;
+		if (curr_time < mtime)
+		{
+			min_time = &tmp_entity;
+		} else if ((curr_time == mtime) &&
+			(tmp_entity.second.B.count < min_time->second.B.count))
+		{
+			min_time = &tmp_entity;
+		}
+	}
+	if ((min_time->first.m_update_time == current_time) &&
+		(min_time->second.B.count >= update_size))
+	{
+		return NULL;
+	}
+	return min_time;
+}
 
 server_updates_compressor::server_updates_compressor()
 {
@@ -162,8 +246,11 @@ void server_updates_compressor::write_update_for(u16 const enity, NET_Packet & u
 {
 	if (g_sv_traffic_optimization_level & eto_last_change)
 	{
-		//not implemented 
-		NODEFAULT;
+		//if (m_updates_cache.get_last_equpdates(enity, update) >= max_eq_packets)
+		if (m_updates_cache.add_update(enity, update) >= max_eq_packets)
+		{
+			return;
+		}
 	}
 	//(sizeof(u16)*2 + 1) ::= w_begin(2) + compress_type(1) + zero_end(2)
 	if (m_acc_buff.w_tell() + update.w_tell() + (sizeof(u16)*2 + 1) >= sizeof(m_acc_buff.B.data))
@@ -179,8 +266,11 @@ void server_updates_compressor::end_updates(send_ready_updates_t::const_iterator
 	if (m_acc_buff.w_tell() > 2)
 		flush_accumulative_buffer();
 	
-	if (g_sv_traffic_optimization_level & eto_ppmd_compression)
+	if ((g_sv_traffic_optimization_level & eto_ppmd_compression) ||
+		(g_sv_traffic_optimization_level & eto_lzo_compression))
+	{
 		get_current_dest()->w_u16(0);
+	}
 
 	b = m_ready_for_send.begin();
 	e = m_ready_for_send.begin() + m_current_update + 1;

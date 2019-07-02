@@ -41,6 +41,7 @@ public:
 		DIDEVICEOBJECTINSTANCE		objectInfo;
 	};
 private:
+	BENCH_SEC_SCRAMBLEMEMBER1
 	LPDIRECTINPUT8				pDI;			// The DInput object
 	LPDIRECTINPUTDEVICE8		pMouse;			// The DIDevice7 interface
 	LPDIRECTINPUTDEVICE8		pKeyboard;		// The DIDevice7 interface

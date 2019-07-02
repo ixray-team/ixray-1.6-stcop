@@ -52,7 +52,7 @@ void	CRenderTarget::phase_combine	()
 		t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
 	}
 
-    if( RImplementation.o.ssao_hdao )
+    if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
     {
         if( ps_r_ssao > 0 )
         {

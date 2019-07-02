@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
-#include "atlas_stalkercs_v1.h"
+#include "atlas_stalkercoppc_v1.h"
 
 int atlas_rule_set_version = 1;
 
@@ -14,40 +14,20 @@ int ATLAS_GET_KEY(char* keyName)
    if(!keyName)
       return 0;
    
-   if(!strcmp("KEY_AwardDeadlyAccuracyLastRewardDate", keyName))
-      return KEY_AwardDeadlyAccuracyLastRewardDate;   
-   if(!strcmp("KEY_AwardRemembrance", keyName))
-      return KEY_AwardRemembrance;   
-   if(!strcmp("KEY_AwardRemembranceLastRewardDate", keyName))
-      return KEY_AwardRemembranceLastRewardDate;   
-   if(!strcmp("KEY_AwardAvenger", keyName))
-      return KEY_AwardAvenger;   
-   if(!strcmp("KEY_AwardAvengerLastRewardDate", keyName))
-      return KEY_AwardAvengerLastRewardDate;   
-   if(!strcmp("KEY_AwardCherub", keyName))
-      return KEY_AwardCherub;   
-   if(!strcmp("KEY_AwardCherubLastRewardDate", keyName))
-      return KEY_AwardCherubLastRewardDate;   
-   if(!strcmp("KEY_AwardDignity", keyName))
-      return KEY_AwardDignity;   
-   if(!strcmp("KEY_AwardDignityLastRewardDate", keyName))
-      return KEY_AwardDignityLastRewardDate;   
-   if(!strcmp("KEY_AwardStalkerFlair", keyName))
-      return KEY_AwardStalkerFlair;   
-   if(!strcmp("KEY_AwardStalkerFlairLastRewardDate", keyName))
-      return KEY_AwardStalkerFlairLastRewardDate;   
-   if(!strcmp("KEY_AwardLucky", keyName))
-      return KEY_AwardLucky;   
-   if(!strcmp("KEY_AwardLuckyLastRewardDate", keyName))
-      return KEY_AwardLuckyLastRewardDate;   
-   if(!strcmp("KEY_AwardBlackList", keyName))
-      return KEY_AwardBlackList;   
-   if(!strcmp("KEY_AwardBlackListLastRewardDate", keyName))
-      return KEY_AwardBlackListLastRewardDate;   
-   if(!strcmp("KEY_AwardSilentDeath", keyName))
-      return KEY_AwardSilentDeath;   
-   if(!strcmp("KEY_AwardSilentDeathLastRewardDate", keyName))
-      return KEY_AwardSilentDeathLastRewardDate;   
+   if(!strcmp("KEY_BestScore_KillsInRow", keyName))
+      return KEY_BestScore_KillsInRow;   
+   if(!strcmp("KEY_BestScore_KnifeKillsInRow", keyName))
+      return KEY_BestScore_KnifeKillsInRow;   
+   if(!strcmp("KEY_BestScore_BackstabsKillsInRow", keyName))
+      return KEY_BestScore_BackstabsKillsInRow;   
+   if(!strcmp("KEY_BestScore_HeadshotsKillsInRow", keyName))
+      return KEY_BestScore_HeadshotsKillsInRow;   
+   if(!strcmp("KEY_BestScore_EyeKillsInRow", keyName))
+      return KEY_BestScore_EyeKillsInRow;   
+   if(!strcmp("KEY_BestScore_BleedKillsInRow", keyName))
+      return KEY_BestScore_BleedKillsInRow;   
+   if(!strcmp("KEY_BestScore_ExplosiveKillsInRow", keyName))
+      return KEY_BestScore_ExplosiveKillsInRow;   
    if(!strcmp("KEY_AwardMasscare", keyName))
       return KEY_AwardMasscare;   
    if(!strcmp("KEY_AwardMasscareLastRewardDate", keyName))
@@ -134,20 +114,42 @@ int ATLAS_GET_KEY(char* keyName)
       return KEY_AwardPeaceAmbassadorLastRewardDate;   
    if(!strcmp("KEY_AwardDeadlyAccuracy", keyName))
       return KEY_AwardDeadlyAccuracy;   
-   if(!strcmp("KEY_BestScore_KillsInRow", keyName))
-      return KEY_BestScore_KillsInRow;   
-   if(!strcmp("KEY_BestScore_KnifeKillsInRow", keyName))
-      return KEY_BestScore_KnifeKillsInRow;   
-   if(!strcmp("KEY_BestScore_BackstabsKillsInRow", keyName))
-      return KEY_BestScore_BackstabsKillsInRow;   
-   if(!strcmp("KEY_BestScore_HeadshotsKillsInRow", keyName))
-      return KEY_BestScore_HeadshotsKillsInRow;   
-   if(!strcmp("KEY_BestScore_EyeKillsInRow", keyName))
-      return KEY_BestScore_EyeKillsInRow;   
-   if(!strcmp("KEY_BestScore_BleedKillsInRow", keyName))
-      return KEY_BestScore_BleedKillsInRow;   
-   if(!strcmp("KEY_BestScore_ExplosiveKillsInRow", keyName))
-      return KEY_BestScore_ExplosiveKillsInRow;   
+   if(!strcmp("KEY_AwardDeadlyAccuracyLastRewardDate", keyName))
+      return KEY_AwardDeadlyAccuracyLastRewardDate;   
+   if(!strcmp("KEY_AwardRemembrance", keyName))
+      return KEY_AwardRemembrance;   
+   if(!strcmp("KEY_AwardRemembranceLastRewardDate", keyName))
+      return KEY_AwardRemembranceLastRewardDate;   
+   if(!strcmp("KEY_AwardAvenger", keyName))
+      return KEY_AwardAvenger;   
+   if(!strcmp("KEY_AwardAvengerLastRewardDate", keyName))
+      return KEY_AwardAvengerLastRewardDate;   
+   if(!strcmp("KEY_AwardCherub", keyName))
+      return KEY_AwardCherub;   
+   if(!strcmp("KEY_AwardCherubLastRewardDate", keyName))
+      return KEY_AwardCherubLastRewardDate;   
+   if(!strcmp("KEY_AwardDignity", keyName))
+      return KEY_AwardDignity;   
+   if(!strcmp("KEY_AwardDignityLastRewardDate", keyName))
+      return KEY_AwardDignityLastRewardDate;   
+   if(!strcmp("KEY_AwardStalkerFlair", keyName))
+      return KEY_AwardStalkerFlair;   
+   if(!strcmp("KEY_AwardStalkerFlairLastRewardDate", keyName))
+      return KEY_AwardStalkerFlairLastRewardDate;   
+   if(!strcmp("KEY_AwardLucky", keyName))
+      return KEY_AwardLucky;   
+   if(!strcmp("KEY_AwardLuckyLastRewardDate", keyName))
+      return KEY_AwardLuckyLastRewardDate;   
+   if(!strcmp("KEY_AwardBlackList", keyName))
+      return KEY_AwardBlackList;   
+   if(!strcmp("KEY_AwardBlackListLastRewardDate", keyName))
+      return KEY_AwardBlackListLastRewardDate;   
+   if(!strcmp("KEY_AwardSilentDeath", keyName))
+      return KEY_AwardSilentDeath;   
+   if(!strcmp("KEY_AwardSilentDeathLastRewardDate", keyName))
+      return KEY_AwardSilentDeathLastRewardDate;   
+   if(!strcmp("KEY_PlayerName", keyName))
+      return KEY_PlayerName;   
    
    return 0;
 }
@@ -157,40 +159,20 @@ char* ATLAS_GET_KEY_NAME(int keyId)
    if(keyId <= 0)
       return "";
    
-   if(keyId == KEY_AwardDeadlyAccuracyLastRewardDate)
-      return "KEY_AwardDeadlyAccuracyLastRewardDate";   
-   if(keyId == KEY_AwardRemembrance)
-      return "KEY_AwardRemembrance";   
-   if(keyId == KEY_AwardRemembranceLastRewardDate)
-      return "KEY_AwardRemembranceLastRewardDate";   
-   if(keyId == KEY_AwardAvenger)
-      return "KEY_AwardAvenger";   
-   if(keyId == KEY_AwardAvengerLastRewardDate)
-      return "KEY_AwardAvengerLastRewardDate";   
-   if(keyId == KEY_AwardCherub)
-      return "KEY_AwardCherub";   
-   if(keyId == KEY_AwardCherubLastRewardDate)
-      return "KEY_AwardCherubLastRewardDate";   
-   if(keyId == KEY_AwardDignity)
-      return "KEY_AwardDignity";   
-   if(keyId == KEY_AwardDignityLastRewardDate)
-      return "KEY_AwardDignityLastRewardDate";   
-   if(keyId == KEY_AwardStalkerFlair)
-      return "KEY_AwardStalkerFlair";   
-   if(keyId == KEY_AwardStalkerFlairLastRewardDate)
-      return "KEY_AwardStalkerFlairLastRewardDate";   
-   if(keyId == KEY_AwardLucky)
-      return "KEY_AwardLucky";   
-   if(keyId == KEY_AwardLuckyLastRewardDate)
-      return "KEY_AwardLuckyLastRewardDate";   
-   if(keyId == KEY_AwardBlackList)
-      return "KEY_AwardBlackList";   
-   if(keyId == KEY_AwardBlackListLastRewardDate)
-      return "KEY_AwardBlackListLastRewardDate";   
-   if(keyId == KEY_AwardSilentDeath)
-      return "KEY_AwardSilentDeath";   
-   if(keyId == KEY_AwardSilentDeathLastRewardDate)
-      return "KEY_AwardSilentDeathLastRewardDate";   
+   if(keyId == KEY_BestScore_KillsInRow)
+      return "KEY_BestScore_KillsInRow";   
+   if(keyId == KEY_BestScore_KnifeKillsInRow)
+      return "KEY_BestScore_KnifeKillsInRow";   
+   if(keyId == KEY_BestScore_BackstabsKillsInRow)
+      return "KEY_BestScore_BackstabsKillsInRow";   
+   if(keyId == KEY_BestScore_HeadshotsKillsInRow)
+      return "KEY_BestScore_HeadshotsKillsInRow";   
+   if(keyId == KEY_BestScore_EyeKillsInRow)
+      return "KEY_BestScore_EyeKillsInRow";   
+   if(keyId == KEY_BestScore_BleedKillsInRow)
+      return "KEY_BestScore_BleedKillsInRow";   
+   if(keyId == KEY_BestScore_ExplosiveKillsInRow)
+      return "KEY_BestScore_ExplosiveKillsInRow";   
    if(keyId == KEY_AwardMasscare)
       return "KEY_AwardMasscare";   
    if(keyId == KEY_AwardMasscareLastRewardDate)
@@ -277,20 +259,42 @@ char* ATLAS_GET_KEY_NAME(int keyId)
       return "KEY_AwardPeaceAmbassadorLastRewardDate";   
    if(keyId == KEY_AwardDeadlyAccuracy)
       return "KEY_AwardDeadlyAccuracy";   
-   if(keyId == KEY_BestScore_KillsInRow)
-      return "KEY_BestScore_KillsInRow";   
-   if(keyId == KEY_BestScore_KnifeKillsInRow)
-      return "KEY_BestScore_KnifeKillsInRow";   
-   if(keyId == KEY_BestScore_BackstabsKillsInRow)
-      return "KEY_BestScore_BackstabsKillsInRow";   
-   if(keyId == KEY_BestScore_HeadshotsKillsInRow)
-      return "KEY_BestScore_HeadshotsKillsInRow";   
-   if(keyId == KEY_BestScore_EyeKillsInRow)
-      return "KEY_BestScore_EyeKillsInRow";   
-   if(keyId == KEY_BestScore_BleedKillsInRow)
-      return "KEY_BestScore_BleedKillsInRow";   
-   if(keyId == KEY_BestScore_ExplosiveKillsInRow)
-      return "KEY_BestScore_ExplosiveKillsInRow";   
+   if(keyId == KEY_AwardDeadlyAccuracyLastRewardDate)
+      return "KEY_AwardDeadlyAccuracyLastRewardDate";   
+   if(keyId == KEY_AwardRemembrance)
+      return "KEY_AwardRemembrance";   
+   if(keyId == KEY_AwardRemembranceLastRewardDate)
+      return "KEY_AwardRemembranceLastRewardDate";   
+   if(keyId == KEY_AwardAvenger)
+      return "KEY_AwardAvenger";   
+   if(keyId == KEY_AwardAvengerLastRewardDate)
+      return "KEY_AwardAvengerLastRewardDate";   
+   if(keyId == KEY_AwardCherub)
+      return "KEY_AwardCherub";   
+   if(keyId == KEY_AwardCherubLastRewardDate)
+      return "KEY_AwardCherubLastRewardDate";   
+   if(keyId == KEY_AwardDignity)
+      return "KEY_AwardDignity";   
+   if(keyId == KEY_AwardDignityLastRewardDate)
+      return "KEY_AwardDignityLastRewardDate";   
+   if(keyId == KEY_AwardStalkerFlair)
+      return "KEY_AwardStalkerFlair";   
+   if(keyId == KEY_AwardStalkerFlairLastRewardDate)
+      return "KEY_AwardStalkerFlairLastRewardDate";   
+   if(keyId == KEY_AwardLucky)
+      return "KEY_AwardLucky";   
+   if(keyId == KEY_AwardLuckyLastRewardDate)
+      return "KEY_AwardLuckyLastRewardDate";   
+   if(keyId == KEY_AwardBlackList)
+      return "KEY_AwardBlackList";   
+   if(keyId == KEY_AwardBlackListLastRewardDate)
+      return "KEY_AwardBlackListLastRewardDate";   
+   if(keyId == KEY_AwardSilentDeath)
+      return "KEY_AwardSilentDeath";   
+   if(keyId == KEY_AwardSilentDeathLastRewardDate)
+      return "KEY_AwardSilentDeathLastRewardDate";   
+   if(keyId == KEY_PlayerName)
+      return "KEY_PlayerName";   
    
    return "";
 }
@@ -434,6 +438,8 @@ int ATLAS_GET_STAT(char* statName)
       return STAT_BestScore_KillsInRow;   
    if(!strcmp("STAT_BestScore_KnifeKillsInRow", statName))
       return STAT_BestScore_KnifeKillsInRow;   
+   if(!strcmp("STAT_PlayerName", statName))
+      return STAT_PlayerName;   
    
    return 0;
 }
@@ -576,6 +582,8 @@ char* ATLAS_GET_STAT_NAME(int statId)
       return "STAT_BestScore_KillsInRow";   
    if(statId == STAT_BestScore_KnifeKillsInRow)
       return "STAT_BestScore_KnifeKillsInRow";   
+   if(statId == STAT_PlayerName)
+      return "STAT_PlayerName";   
    
    return "";
 }
@@ -587,16 +595,16 @@ int ATLAS_GET_STAT_PAGE_BY_ID(int statId)
    
 
    //PlayerStats
-   if(statId == 3 || statId == 4 || statId == 5 || statId == 6 || statId == 7 || statId == 8 || statId == 9 ||
-      statId == 10 || statId == 11 || statId == 12 || statId == 13 || statId == 14 || statId == 15 || statId == 16 ||
-      statId == 17 || statId == 18 || statId == 19 || statId == 20 || statId == 21 || statId == 22 || statId == 23 ||
-      statId == 24 || statId == 25 || statId == 26 || statId == 27 || statId == 28 || statId == 29 || statId == 30 ||
-      statId == 31 || statId == 32 || statId == 33 || statId == 34 || statId == 35 || statId == 36 || statId == 37 ||
-      statId == 38 || statId == 39 || statId == 40 || statId == 41 || statId == 42 || statId == 43 || statId == 44 ||
-      statId == 45 || statId == 46 || statId == 47 || statId == 48 || statId == 49 || statId == 50 || statId == 51 ||
-      statId == 52 || statId == 53 || statId == 54 || statId == 55 || statId == 56 || statId == 57 || statId == 58 ||
-      statId == 59 || statId == 60 || statId == 61 || statId == 62 || statId == 63 || statId == 64 || statId == 65 ||
-      statId == 66 || statId == 67 || statId == 68 || statId == 69)
+   if(statId == 1 || statId == 2 || statId == 3 || statId == 4 || statId == 5 || statId == 6 || statId == 7 ||
+      statId == 8 || statId == 9 || statId == 10 || statId == 11 || statId == 12 || statId == 13 || statId == 14 ||
+      statId == 15 || statId == 16 || statId == 17 || statId == 18 || statId == 19 || statId == 20 || statId == 21 ||
+      statId == 22 || statId == 23 || statId == 24 || statId == 25 || statId == 26 || statId == 27 || statId == 28 ||
+      statId == 29 || statId == 30 || statId == 31 || statId == 32 || statId == 33 || statId == 34 || statId == 35 ||
+      statId == 36 || statId == 37 || statId == 38 || statId == 39 || statId == 40 || statId == 41 || statId == 42 ||
+      statId == 43 || statId == 44 || statId == 45 || statId == 46 || statId == 47 || statId == 48 || statId == 49 ||
+      statId == 50 || statId == 51 || statId == 52 || statId == 53 || statId == 54 || statId == 55 || statId == 56 ||
+      statId == 57 || statId == 58 || statId == 59 || statId == 60 || statId == 61 || statId == 62 || statId == 63 ||
+      statId == 64 || statId == 65 || statId == 66 || statId == 67 || statId == 68)
       return 1;   
       
    
@@ -610,40 +618,40 @@ int ATLAS_GET_STAT_PAGE_BY_NAME(char* statName)
    
 
    //PlayerStats
-   if(!strcmp("STAT_BestScore_KillsInRow", statName) || !strcmp("STAT_BestScore_KnifeKillsInRow", statName) ||
-      !strcmp("STAT_BestScore_BackstabsKillsInRow", statName) || !strcmp("STAT_BestScore_HeadshotsKillsInRow", statName) ||
-      !strcmp("STAT_BestScore_EyeKillsInRow", statName) || !strcmp("STAT_BestScore_BleedKillsInRow", statName) ||
-      !strcmp("STAT_BestScore_ExplosiveKillsInRow", statName) || !strcmp("STAT_AwardMasscare", statName) ||
-      !strcmp("STAT_AwardMasscareLastRewardDate", statName) || !strcmp("STAT_AwardParanoia", statName) ||
-      !strcmp("STAT_AwardParanoiaLastRewardDate", statName) || !strcmp("STAT_AwardOwerwhelmingSuperiority", statName) ||
-      !strcmp("STAT_AwardOwerwhelmingSuperiorityLastRewardDate", statName) || !strcmp("STAT_AwardBlitzkrieg", statName) ||
-      !strcmp("STAT_AwardBlitzkriegLastRewardDate", statName) || !strcmp("STAT_AwardDryVictory", statName) ||
-      !strcmp("STAT_AwardDryVictoryLastRewardDate", statName) || !strcmp("STAT_AwardMultichampion", statName) ||
-      !strcmp("STAT_AwardMultichampionLastRewardDate", statName) || !strcmp("STAT_AwardMad", statName) ||
-      !strcmp("STAT_AwardMadLastRewardDate", statName) || !strcmp("STAT_AwardAchillesHeel", statName) ||
-      !strcmp("STAT_AwardAchillesHeelLastRewardDate", statName) || !strcmp("STAT_AwardFasterThanBullets", statName) ||
-      !strcmp("STAT_AwardFasterThanBulletsLastRewardDate", statName) || !strcmp("STAT_AwardHarvestTime", statName) ||
-      !strcmp("STAT_AwardHarvestTimeLastRewardDate", statName) || !strcmp("STAT_AwardSkewer", statName) ||
-      !strcmp("STAT_AwardSkewerLastRewardDate", statName) || !strcmp("STAT_AwardDoubleShotDoubleKill", statName) ||
-      !strcmp("STAT_AwardDoubleShotDoubleKillLastRewardDate", statName) || !strcmp("STAT_AwardClimber", statName) ||
-      !strcmp("STAT_AwardClimberLastRewardDate", statName) || !strcmp("STAT_AwardOpener", statName) ||
-      !strcmp("STAT_AwardOpenerLastRewardDate", statName) || !strcmp("STAT_AwardToughy", statName) ||
-      !strcmp("STAT_AwardToughyLastRewardDate", statName) || !strcmp("STAT_AwardInvincibleFury", statName) ||
-      !strcmp("STAT_AwardInvincibleFuryLastRewardDate", statName) || !strcmp("STAT_AwardOculist", statName) ||
-      !strcmp("STAT_AwardOculistLastRewardDate", statName) || !strcmp("STAT_AwardLightingReflexes", statName) ||
-      !strcmp("STAT_AwardLightingReflexesLastRewardDate", statName) || !strcmp("STAT_AwardSprinterStopper", statName) ||
-      !strcmp("STAT_AwardSprinterStopperLastRewardDate", statName) || !strcmp("STAT_AwardMarksman", statName) ||
-      !strcmp("STAT_AwardMarksmanLastRewardDate", statName) || !strcmp("STAT_AwardPeaceAmbassador", statName) ||
-      !strcmp("STAT_AwardPeaceAmbassadorLastRewardDate", statName) || !strcmp("STAT_AwardDeadlyAccuracy", statName) ||
-      !strcmp("STAT_AwardDeadlyAccuracyLastRewardDate", statName) || !strcmp("STAT_AwardRemembrance", statName) ||
-      !strcmp("STAT_AwardRemembranceLastRewardDate", statName) || !strcmp("STAT_AwardAvenger", statName) ||
-      !strcmp("STAT_AwardAvengerLastRewardDate", statName) || !strcmp("STAT_AwardCherub", statName) ||
-      !strcmp("STAT_AwardCherubLastRewardDate", statName) || !strcmp("STAT_AwardDignity", statName) ||
-      !strcmp("STAT_AwardDignityLastRewardDate", statName) || !strcmp("STAT_AwardStalkerFlair", statName) ||
-      !strcmp("STAT_AwardStalkerFlairLastRewardDate", statName) || !strcmp("STAT_AwardLucky", statName) ||
-      !strcmp("STAT_AwardLuckyLastRewardDate", statName) || !strcmp("STAT_AwardBlackList", statName) ||
-      !strcmp("STAT_AwardBlackListLastRewardDate", statName) || !strcmp("STAT_AwardSilentDeath", statName) ||
-      !strcmp("STAT_AwardSilentDeathLastRewardDate", statName))
+   if(!strcmp("STAT_AwardAchillesHeel", statName) || !strcmp("STAT_AwardAchillesHeelLastRewardDate", statName) ||
+      !strcmp("STAT_AwardAvenger", statName) || !strcmp("STAT_AwardAvengerLastRewardDate", statName) ||
+      !strcmp("STAT_AwardBlackList", statName) || !strcmp("STAT_AwardBlackListLastRewardDate", statName) ||
+      !strcmp("STAT_AwardBlitzkrieg", statName) || !strcmp("STAT_AwardBlitzkriegLastRewardDate", statName) ||
+      !strcmp("STAT_AwardCherub", statName) || !strcmp("STAT_AwardCherubLastRewardDate", statName) ||
+      !strcmp("STAT_AwardClimber", statName) || !strcmp("STAT_AwardClimberLastRewardDate", statName) ||
+      !strcmp("STAT_AwardDeadlyAccuracy", statName) || !strcmp("STAT_AwardDeadlyAccuracyLastRewardDate", statName) ||
+      !strcmp("STAT_AwardDignity", statName) || !strcmp("STAT_AwardDignityLastRewardDate", statName) ||
+      !strcmp("STAT_AwardDoubleShotDoubleKill", statName) || !strcmp("STAT_AwardDoubleShotDoubleKillLastRewardDate", statName) ||
+      !strcmp("STAT_AwardDryVictory", statName) || !strcmp("STAT_AwardDryVictoryLastRewardDate", statName) ||
+      !strcmp("STAT_AwardFasterThanBullets", statName) || !strcmp("STAT_AwardFasterThanBulletsLastRewardDate", statName) ||
+      !strcmp("STAT_AwardHarvestTime", statName) || !strcmp("STAT_AwardHarvestTimeLastRewardDate", statName) ||
+      !strcmp("STAT_AwardInvincibleFury", statName) || !strcmp("STAT_AwardInvincibleFuryLastRewardDate", statName) ||
+      !strcmp("STAT_AwardLightingReflexes", statName) || !strcmp("STAT_AwardLightingReflexesLastRewardDate", statName) ||
+      !strcmp("STAT_AwardLucky", statName) || !strcmp("STAT_AwardLuckyLastRewardDate", statName) ||
+      !strcmp("STAT_AwardMad", statName) || !strcmp("STAT_AwardMadLastRewardDate", statName) ||
+      !strcmp("STAT_AwardMarksman", statName) || !strcmp("STAT_AwardMarksmanLastRewardDate", statName) ||
+      !strcmp("STAT_AwardMasscare", statName) || !strcmp("STAT_AwardMasscareLastRewardDate", statName) ||
+      !strcmp("STAT_AwardMultichampion", statName) || !strcmp("STAT_AwardMultichampionLastRewardDate", statName) ||
+      !strcmp("STAT_AwardOculist", statName) || !strcmp("STAT_AwardOculistLastRewardDate", statName) ||
+      !strcmp("STAT_AwardOpener", statName) || !strcmp("STAT_AwardOpenerLastRewardDate", statName) ||
+      !strcmp("STAT_AwardOwerwhelmingSuperiority", statName) || !strcmp("STAT_AwardOwerwhelmingSuperiorityLastRewardDate", statName) ||
+      !strcmp("STAT_AwardParanoia", statName) || !strcmp("STAT_AwardParanoiaLastRewardDate", statName) ||
+      !strcmp("STAT_AwardPeaceAmbassador", statName) || !strcmp("STAT_AwardPeaceAmbassadorLastRewardDate", statName) ||
+      !strcmp("STAT_AwardRemembrance", statName) || !strcmp("STAT_AwardRemembranceLastRewardDate", statName) ||
+      !strcmp("STAT_AwardSilentDeath", statName) || !strcmp("STAT_AwardSilentDeathLastRewardDate", statName) ||
+      !strcmp("STAT_AwardSkewer", statName) || !strcmp("STAT_AwardSkewerLastRewardDate", statName) ||
+      !strcmp("STAT_AwardSprinterStopper", statName) || !strcmp("STAT_AwardSprinterStopperLastRewardDate", statName) ||
+      !strcmp("STAT_AwardStalkerFlair", statName) || !strcmp("STAT_AwardStalkerFlairLastRewardDate", statName) ||
+      !strcmp("STAT_AwardToughy", statName) || !strcmp("STAT_AwardToughyLastRewardDate", statName) ||
+      !strcmp("STAT_BestScore_BackstabsKillsInRow", statName) || !strcmp("STAT_BestScore_BleedKillsInRow", statName) ||
+      !strcmp("STAT_BestScore_ExplosiveKillsInRow", statName) || !strcmp("STAT_BestScore_EyeKillsInRow", statName) ||
+      !strcmp("STAT_BestScore_HeadshotsKillsInRow", statName) || !strcmp("STAT_BestScore_KillsInRow", statName) ||
+      !strcmp("STAT_BestScore_KnifeKillsInRow", statName) || !strcmp("STAT_PlayerName", statName))
       return 1;   
       
    

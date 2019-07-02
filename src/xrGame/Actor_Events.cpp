@@ -125,7 +125,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 				break;
 			}
 
-			if (!Obj->getDestroy() && inventory().DropItem(GO, dont_create_shell)) 
+			if (!Obj->getDestroy() && inventory().DropItem(GO, just_before_destroy, dont_create_shell)) 
 			{
 				//O->H_SetParent(0,just_before_destroy);//moved to DropItem
 				//feel_touch_deny(O,2000);

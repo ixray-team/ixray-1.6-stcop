@@ -18,9 +18,12 @@ void CActor::script_register(lua_State *L)
 	module(L)
 	[
 		class_<CActor,CGameObject>("CActor")
-			.def(constructor<>()),
-
+			.def(constructor<>())
+			
+#ifndef	BENCHMARK_BUILD
+		,
 		class_<CLevelChanger,CGameObject>("CLevelChanger")
 			.def(constructor<>())
+#endif	//	BENCHMARK_BUILD
 	];
 }

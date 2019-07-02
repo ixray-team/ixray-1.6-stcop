@@ -27,6 +27,7 @@ public:
 		eacFirstEye		,
 		eacLookAt		,
 		eacFreeLook		,
+		eacFixedLookAt	,
 		eacMaxCam
 	};
 private:

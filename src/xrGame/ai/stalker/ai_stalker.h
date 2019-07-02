@@ -261,7 +261,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 public:
 	virtual void						OnItemTake				(CInventoryItem *inventory_item);
-	virtual void						OnItemDrop				(CInventoryItem *inventory_item);
+	virtual void						OnItemDrop				(CInventoryItem *inventory_item, bool just_before_destroy);
 			bool						item_to_kill			();
 			bool						item_can_kill			();
 			bool						remember_item_to_kill	();

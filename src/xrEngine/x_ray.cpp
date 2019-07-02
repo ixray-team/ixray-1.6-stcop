@@ -11,6 +11,7 @@
 
 #include "dedicated_server_only.h"
 #include "no_single.h"
+#include "../xrNetServer/NET_AuthCheck.h"
 
 #include "xr_input.h"
 #include "xr_ioconsole.h"
@@ -55,6 +56,70 @@ static int days_in_month[12] = {
 static int start_day	= 31;	// 31
 static int start_month	= 1;	// January
 static int start_year	= 1999;	// 1999
+
+// binary hash, mainly for copy-protection
+
+#ifndef DEDICATED_SERVER
+
+#include "../xrGameSpy/gamespy/md5c.c"
+#include <ctype.h>
+
+#define DEFAULT_MODULE_HASH "3CAABCFCFF6F3A810019C6A72180F166"
+static char szEngineHash[33] = DEFAULT_MODULE_HASH;
+
+PROTECT_API char * ComputeModuleHash( char * pszHash )
+{
+	SECUROM_MARKER_HIGH_SECURITY_ON(3)
+
+	char szModuleFileName[ MAX_PATH ];
+	HANDLE hModuleHandle = NULL , hFileMapping = NULL;
+	LPVOID lpvMapping = NULL;
+	MEMORY_BASIC_INFORMATION MemoryBasicInformation;
+
+	if ( ! GetModuleFileName( NULL , szModuleFileName , MAX_PATH ) )
+		return pszHash;
+
+	hModuleHandle = CreateFile( szModuleFileName , GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL );
+
+	if ( hModuleHandle == INVALID_HANDLE_VALUE )
+		return pszHash;
+
+	hFileMapping = CreateFileMapping( hModuleHandle , NULL , PAGE_READONLY , 0 , 0 , NULL );
+
+	if ( hFileMapping == NULL ) {
+		CloseHandle( hModuleHandle );
+		return pszHash;
+	}
+
+	lpvMapping = MapViewOfFile( hFileMapping , FILE_MAP_READ , 0 , 0 , 0 );
+
+	if ( lpvMapping == NULL ) {
+		CloseHandle( hFileMapping );
+		CloseHandle( hModuleHandle );
+		return pszHash;
+	}
+
+	ZeroMemory( &MemoryBasicInformation , sizeof( MEMORY_BASIC_INFORMATION ) );
+
+	VirtualQuery( lpvMapping , &MemoryBasicInformation , sizeof( MEMORY_BASIC_INFORMATION ) );
+
+	if ( MemoryBasicInformation.RegionSize ) {
+		char szHash[33];
+		MD5Digest( ( unsigned char *)lpvMapping , (unsigned int) MemoryBasicInformation.RegionSize , szHash );
+		MD5Digest( ( unsigned char *)szHash , 32 , pszHash );
+		for ( int i = 0 ; i < 32 ; ++i )
+			pszHash[ i ] = toupper( pszHash[ i ] );
+	}
+
+	UnmapViewOfFile( lpvMapping );
+	CloseHandle( hFileMapping );
+	CloseHandle( hModuleHandle );
+
+	SECUROM_MARKER_HIGH_SECURITY_OFF(3)
+
+	return pszHash;
+}
+#endif // DEDICATED_SERVER
 
 void compute_build_id	()
 {
@@ -123,8 +188,28 @@ void InitEngine		()
 	CheckCopyProtection			( );
 }
 
+struct path_excluder_predicate
+{
+	explicit path_excluder_predicate(xr_auth_strings_t const * ignore) :
+		m_ignore(ignore)
+	{
+	}
+	bool xr_stdcall is_allow_include(LPCSTR path)
+	{
+		if (!m_ignore)
+			return true;
+		
+		return allow_to_include_path(*m_ignore, path);
+	}
+	xr_auth_strings_t const *	m_ignore;
+};
+
 PROTECT_API void InitSettings	()
 {
+	#ifndef DEDICATED_SERVER
+		Msg( "EH: %s\n" , ComputeModuleHash( szEngineHash ) );
+	#endif // DEDICATED_SERVER
+
 	string_path					fname; 
 	FS.update_path				(fname,"$game_config$","system.ltx");
 #ifdef DEBUG
@@ -133,12 +218,30 @@ PROTECT_API void InitSettings	()
 	pSettings					= xr_new<CInifile>	(fname,TRUE);
 	CHECK_OR_EXIT				(0!=pSettings->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 
+	xr_auth_strings_t			tmp_ignore_pathes;
+	xr_auth_strings_t			tmp_check_pathes;
+	fill_auth_check_params		(tmp_ignore_pathes, tmp_check_pathes);
+	
+	path_excluder_predicate			tmp_excluder(&tmp_ignore_pathes);
+	CInifile::allow_include_func_t	tmp_functor;
+	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
+	pSettingsAuth					= xr_new<CInifile>(
+		fname,
+		TRUE,
+		TRUE,
+		FALSE,
+		0,
+		tmp_functor
+	);
+
 	FS.update_path				(fname,"$game_config$","game.ltx");
 	pGameIni					= xr_new<CInifile>	(fname,TRUE);
 	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 }
 PROTECT_API void InitConsole	()
 {
+	SECUROM_MARKER_SECURITY_ON(5)
+
 #ifdef DEDICATED_SERVER
 	{
 		Console						= xr_new<CTextConsole>	();		
@@ -157,6 +260,8 @@ PROTECT_API void InitConsole	()
 		sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
 		xr_strcpy					(Console->ConfigFile,c_name);
 	}
+
+	SECUROM_MARKER_SECURITY_OFF(5)
 }
 
 PROTECT_API void InitInput		()
@@ -483,9 +588,6 @@ struct damn_keys_filter {
 #undef dwFilterKeysStructSize
 #undef dwToggleKeysStructSize
 
-// ѕриблудина дл€ SecuROM-а
-#include "securom_api.h"
-
 // ‘унци€ дл€ тупых требований THQ и тупых американских пользователей
 BOOL IsOutOfVirtualMemory()
 {
@@ -526,7 +628,7 @@ BOOL IsOutOfVirtualMemory()
 
 	SECUROM_MARKER_HIGH_SECURITY_OFF(1)
 
-	return 1;
+	return 1;	
 }
 
 #include "xr_ioc_cmd.h"
@@ -619,7 +721,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
-	#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
+	#define STALKER_PRESENCE_MUTEX "Local\\STALKER-COP"
 	
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
 	hCheckPresenceMutex = OpenMutex( READ_CONTROL , FALSE ,  STALKER_PRESENCE_MUTEX );
@@ -682,6 +784,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	
 	compute_build_id			();
 	Core._initialize			("xray",NULL, TRUE, fsgame[0] ? fsgame : NULL);
+
 	InitSettings				();
 
 	// Adjust player & computer name for Asian
@@ -964,7 +1067,9 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		{		
 			Console->Execute("main_menu off");
 			Console->Hide();
-			Device.Reset					(false);
+//!			this line is commented by Dima
+//!			because I don't see any reason to reset device here
+//!			Device.Reset					(false);
 			//-----------------------------------------------------------
 			g_pGamePersistent->PreStart		(op_server);
 			//-----------------------------------------------------------
@@ -1149,6 +1254,8 @@ void CApplication::Level_Append		(LPCSTR folder)
 
 void CApplication::Level_Scan()
 {
+	SECUROM_MARKER_PERFORMANCE_ON(8)
+
 	for (u32 i=0; i<Levels.size(); i++)
 	{
 		xr_free(Levels[i].folder);
@@ -1164,6 +1271,8 @@ void CApplication::Level_Scan()
 		Level_Append((*folder)[i]);
 	
 	FS.file_list_close		(folder);
+
+	SECUROM_MARKER_PERFORMANCE_OFF(8)
 }
 
 void gen_logo_name(string_path& dest, LPCSTR level_name, int num)
@@ -1181,6 +1290,8 @@ void gen_logo_name(string_path& dest, LPCSTR level_name, int num)
 
 void CApplication::Level_Set(u32 L)
 {
+	SECUROM_MARKER_PERFORMANCE_ON(9)
+
 	if (L>=Levels.size())	return;
 	FS.get_path	("$level$")->_set	(Levels[L].folder);
 
@@ -1214,11 +1325,16 @@ void CApplication::Level_Set(u32 L)
 		m_pRender->setLevelLogo	(path);
 
 	CheckCopyProtection			();
+
+	SECUROM_MARKER_PERFORMANCE_OFF(9)
 }
 
 int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 {
 	int result = -1;
+
+	SECUROM_MARKER_SECURITY_ON(7)
+
 	CLocatorAPI::archives_it it		= FS.m_archives.begin();
 	CLocatorAPI::archives_it it_e	= FS.m_archives.end();
 	bool arch_res					= false;
@@ -1257,6 +1373,8 @@ int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 
 	if( arch_res )
 		g_pGamePersistent->OnAssetsChanged	();
+
+	SECUROM_MARKER_SECURITY_OFF(7)
 
 	return result;
 }

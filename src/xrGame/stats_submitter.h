@@ -77,6 +77,7 @@ private:
 			void			begin_session				();
 			bool			prepare_report				();
 			
+			bool			add_player_name_to_report	();
 			bool			create_award_inc_report		();
 			bool			create_best_scores_report	();
 			bool			create_all_awards_report	();

@@ -110,6 +110,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="as-invoker-manifest-part.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -321,6 +322,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="as-invoker-manifest-part.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -533,6 +535,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="as-invoker-manifest-part.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -751,6 +754,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="as-invoker-manifest-part.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -961,6 +965,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="as-invoker-manifest-part.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -1168,6 +1173,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="as-invoker-manifest-part.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

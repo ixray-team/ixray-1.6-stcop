@@ -37,6 +37,11 @@ void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 		parent->XFORM().transform_dir(vDirection);
 		parent->XFORM().transform_dir(vNormal);
 	}
+	UpdateDistance		(point);
+}
+
+void CCameraLook::UpdateDistance( Fvector& point )
+{
 	Fvector				vDir;
 	collide::rq_result	R;
 
@@ -49,7 +54,6 @@ void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 	
 	vPosition.mul		(vDirection,-d-VIEWPORT_NEAR);
 	vPosition.add		(point);
-
 }
 
 void CCameraLook::Move( int cmd, float val, float factor)
@@ -182,4 +186,57 @@ void CCameraLook2::Load(LPCSTR section)
 	m_cam_offset			= pSettings->r_fvector3	(section,"offset");
 	m_autoaim_inertion_yaw	= pSettings->r_fvector2	(section,"autoaim_speed_y");
 	m_autoaim_inertion_pitch= pSettings->r_fvector2	(section,"autoaim_speed_x");
+}
+
+
+void CCameraFixedLook::Load	(LPCSTR section)
+{
+	CCameraLook::Load(section);
+	style = csFixed;
+}
+
+void CCameraFixedLook::OnActivate(CCameraBase* old_cam)
+{
+	inherited::OnActivate(old_cam);
+	m_current_dir.rotationYawPitchRoll(-pitch, -yaw, -roll);	
+	
+	Fmatrix	rm;
+	Fmatrix	trm;
+	Fmatrix brm;
+	brm.setXYZ(-pitch, -yaw, -roll);
+	trm.rotateX(PI_DIV_2);
+	rm.mul(brm, trm);
+	rm.getXYZ(pitch, yaw, roll);
+	m_final_dir.set(rm);
+	pitch	= -pitch;
+	yaw		= -yaw;
+	roll	= -roll;
+}
+
+void CCameraFixedLook::Move	(int cmd, float val, float factor)
+{
+}
+
+void CCameraFixedLook::Update(Fvector& point, Fvector& noise_dangle)
+{
+	Fquaternion	new_dir;
+	new_dir.slerp		(m_current_dir, m_final_dir, Device.fTimeDelta);	//1 sec
+	m_current_dir.set	(new_dir);
+	
+	Fmatrix	rm;
+	rm.rotation			(m_current_dir);
+	vPosition.set		(point);
+	vDirection.set		(rm.k);
+	vNormal.set			(rm.j);
+
+	UpdateDistance		(point);
+}
+
+void CCameraFixedLook::Set(float Y, float P, float R)
+ {
+	inherited::Set(Y, P, R);
+	Fmatrix	rm;
+	rm.setXYZ			(-P, -Y, -R);	
+	m_current_dir.set	(rm);
+	m_final_dir.set		(m_current_dir);
 }

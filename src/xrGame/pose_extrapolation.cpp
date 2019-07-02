@@ -4,9 +4,10 @@
 
 using namespace extrapolation;
 
+static u32 extrapolate_pose_update_mseconds = 50;
 void	points::update( const Fmatrix &m )
 {
-	if( last_update == Device.dwTimeGlobal )
+	if( Device.dwTimeGlobal - last_update <  extrapolate_pose_update_mseconds  )
 		return;
 	m_points.push_back( point().set( pose().set( m ), Device.fTimeGlobal ) );
 	last_update = Device.dwTimeGlobal;

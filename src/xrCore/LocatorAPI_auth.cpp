@@ -2,8 +2,8 @@
 #pragma hdrstop
 
 struct	auth_options	{
-	xr_vector<xr_string>				ignore;
-	xr_vector<xr_string>				important;
+	xr_vector<shared_str>				ignore;
+	xr_vector<shared_str>				important;
 };
 
 void	auth_entry		(void* p)
@@ -11,7 +11,7 @@ void	auth_entry		(void* p)
 	FS.auth_runtime		(p);
 }
 
-void	CLocatorAPI::auth_generate		(xr_vector<xr_string>&	ignore, xr_vector<xr_string>&	important)
+void	CLocatorAPI::auth_generate		(xr_vector<shared_str>&	ignore, xr_vector<shared_str>&	important)
 {
 	auth_options*	_o	= xr_new<auth_options>	();
 	_o->ignore			= ignore	;
@@ -36,9 +36,20 @@ void	CLocatorAPI::auth_runtime		(void*	params)
 	m_auth_lock.Enter	()	;
 	auth_options*		_o	= (auth_options*)	params	;
 
-	CMemoryWriter		writer;
-	pSettings->save_as	(writer);
-	m_auth_code			= crc32(writer.pointer(), writer.size());
+	CMemoryWriter			writer;
+	pSettingsAuth->save_as	(writer);
+	m_auth_code				= crc32(writer.pointer(), writer.size());
+
+#ifdef DEBUG
+	if (strstr(Core.Params,"auth_debug"))
+	{
+		string_path	tmp_path;
+		update_path(tmp_path, "$app_data_root$", "auth_psettings.ltx");
+		IWriter* tmp_dst = w_open(tmp_path);
+		pSettingsAuth->save_as(*tmp_dst, false);
+		w_close(tmp_dst);
+	}
+#endif
 
 	bool				do_break = false;
 
@@ -72,7 +83,7 @@ void	CLocatorAPI::auth_runtime		(void*	params)
 					u32 crc			= crc32		(r->pointer(),r->length());
 					
 #ifdef DEBUG
-					if(strstr(Core.Params,"qwerty"))
+					if(strstr(Core.Params,"auth_debug"))
 						Msg("auth %s = 0x%08x",f.name,crc);
 #endif // DEBUG
 

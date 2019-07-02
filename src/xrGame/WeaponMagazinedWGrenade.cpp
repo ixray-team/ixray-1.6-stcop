@@ -928,7 +928,10 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 	}
 
 	if(!IsGrenadeLauncherAttached())
+	{
+		info.grenade = "";
 		return false;
+	}
 
 	int total2 = m_bGrenadeMode ? GetAmmoCount(0) : GetAmmoCount2(0);
 	if(unlimited_ammo())
@@ -940,7 +943,7 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 		else
 			xr_sprintf(int_str, "X");
 	}
-	info.grenade._set(int_str);
+	info.grenade	= int_str;
 	
 	return true;
 }

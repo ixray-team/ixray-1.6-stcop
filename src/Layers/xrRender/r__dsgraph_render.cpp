@@ -260,6 +260,7 @@ void		sort_tlist_mat
 
 void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 {
+
 	//PIX_EVENT(r_dsgraph_render_graph);
 	Device.Statistic->RenderDUMP.Begin		();
 

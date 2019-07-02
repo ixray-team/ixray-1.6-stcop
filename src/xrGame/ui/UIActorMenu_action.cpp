@@ -65,7 +65,7 @@ public:
 };
 void CUIActorMenu::OnDragItemOnTrash(CUIDragItem* item, bool b_receive)
 {
-	if(b_receive)
+	if(b_receive && !CurrentIItem()->IsQuestItem())
 		item->SetCustomDraw(xr_new<CUITrashIcon>());
 	else
 		item->SetCustomDraw(NULL);
@@ -92,6 +92,9 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 	{
 	case iTrashSlot:
 		{
+			if(CurrentIItem()->IsQuestItem())
+				return true;
+
 			if(t_old==iQuickSlot)	
 			{
 				old_owner->RemoveItem(itm, false);

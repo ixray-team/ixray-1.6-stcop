@@ -55,7 +55,8 @@ struct TipString
 
 class ENGINE_API CConsole :
 	public pureRender,
-	public pureFrame
+	public pureFrame,
+	public pureScreenResolutionChanged
 {
 public:
 	struct str_pred : public std::binary_function<char*, char*, bool>
@@ -92,6 +93,7 @@ private:
 	u32				m_cmd_history_max;
 	int				m_cmd_history_idx;
 	shared_str		m_last_cmd;
+	BENCH_SEC_SCRAMBLEMEMBER1
 
 	vecTips			m_temp_tips;
 	vecTipsEx		m_tips;
@@ -109,7 +111,7 @@ public:
 
 	virtual void		OnRender			();
 	virtual void _BCL	OnFrame				();
-	void			OnScreenResolutionChanged();
+	virtual void	OnScreenResolutionChanged();
 	string64		ConfigFile;
 	bool			bVisible;
 	vecCMD			Commands;
@@ -137,6 +139,8 @@ public:
 protected:
 	text_editor::line_editor*			m_editor;
 	text_editor::line_edit_control&		ec();
+
+	BENCH_SEC_SCRAMBLEMEMBER2
 
 	enum Console_mark // (int)=char
 	{
@@ -188,7 +192,6 @@ protected:
 	void xr_stdcall Hide_cmd_esc();
 
 	void xr_stdcall GamePause	();
-	void xr_stdcall SwitchKL	();
 
 protected:
 	void	add_cmd_history		( shared_str const& str );

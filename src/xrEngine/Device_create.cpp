@@ -159,6 +159,8 @@ void CRenderDevice::ConnectToRender()
 
 PROTECT_API void CRenderDevice::Create	() 
 {
+	SECUROM_MARKER_SECURITY_ON(4)
+
 	if (b_is_Ready)		return;		// prevent double call
 	Statistic			= xr_new<CStats>();
 
@@ -200,4 +202,6 @@ cdb_bDebug		= &bDebug;
 	_Create				(fname);
 
 	PreCache			(0, false, false);
+
+	SECUROM_MARKER_SECURITY_OFF(4)
 }

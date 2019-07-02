@@ -10,7 +10,9 @@
 #endif
 
 #include "../xrCore/net_utils.h"
+#include <dplay/dplay8.h>
 #include "net_messages.h"
+
 
 
 #include "net_compressor.h"
@@ -57,12 +59,20 @@ public:
 	IC u32	getRetriedCount		()	{ return ci_last.dwPacketsRetried;		}
 	IC u32	getMPS_Receive		()  { return mps_recive;	}
 	IC u32	getMPS_Send			()	{ return mps_send;		}
+	IC u32	getReceivedPerSec	()	{ return dwBytesReceivedPerSec; }
+	IC u32	getSendedPerSec		()	{ return dwBytesSendedPerSec; }
+	
 
 	IC void	Clear				()	{ CTimer* timer = device_timer; ZeroMemory(this,sizeof(*this)); device_timer=timer; dwBaseTime=TimeGlobal(device_timer); }
 
 	//-----------------------------------------------------------------------
 	u32		dwTimesBlocked;
+	
 	u32		dwBytesSended;
-	u32		dwBytesPerSec;
+	u32		dwBytesSendedPerSec;
+	
+	u32		dwBytesReceived;
+	u32		dwBytesReceivedPerSec;
+
 };
 

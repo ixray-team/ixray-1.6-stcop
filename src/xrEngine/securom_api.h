@@ -13,6 +13,32 @@
 #ifndef SECUROM_SDK_H
 #define SECUROM_SDK_H
 
+#define USE_SECUROM_MARKERS_API
+//#undef USE_SECUROM_MARKERS_API
+
+
+
+#ifdef DEDICATED_SERVER
+	#undef USE_SECUROM_MARKERS_API
+#endif // DEDICATED_SERVER
+
+#ifdef _EDITOR
+	#undef USE_SECUROM_MARKERS_API
+#endif // _EDITOR
+
+#ifndef USE_SECUROM_MARKERS_API
+
+	#define SECUROM_MARKER_PERFORMANCE_ON(id)
+	#define SECUROM_MARKER_PERFORMANCE_OFF(id)
+
+	#define SECUROM_MARKER_SECURITY_ON(id)
+	#define SECUROM_MARKER_SECURITY_OFF(id)
+
+	#define SECUROM_MARKER_HIGH_SECURITY_ON(id)
+	#define SECUROM_MARKER_HIGH_SECURITY_OFF(id)
+
+#else // USE_SECUROM_MARKERS_API
+
 #include <windows.h>
 #include <stdio.h>
 
@@ -147,8 +173,9 @@ typedef struct
 		param = addr; \
 	}
 
+#endif // USE_SECUROM_MARKERS_API
 
-#endif
+#endif // SECUROM_SDK_H
 
 
 

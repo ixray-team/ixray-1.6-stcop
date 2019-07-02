@@ -26,7 +26,7 @@ bool xrSASH::Init(const char* pszParam)
 	oaBool res = oaInit(pszParam, &ver);
 	if (res)
 	{
-
+		m_bInited = true;
 		m_bOpenAutomate = true;
 
 		Msg("oa:: Version: %d.%d.%d.%d", ver.Major, ver.Minor, ver.Minor, ver.Custom);
@@ -310,6 +310,9 @@ void xrSASH::GetAllOptions()
 	{
 		DescribeOption("r2_sun_shafts",			Option.Dependency);
 		DescribeOption("r2_ssao",				Option.Dependency);
+		DescribeOption("r2_ssao_opt_data",		Option.Dependency);
+		DescribeOption("r2_ssao_half_data",		Option.Dependency);
+		DescribeOption("r2_ssao_hbao",			Option.Dependency);
 		DescribeOption("r2_soft_water",			Option.Dependency);
 		DescribeOption("r2_soft_particles",		Option.Dependency);
 		DescribeOption("r2_dof_enable",			Option.Dependency);
@@ -373,6 +376,9 @@ void xrSASH::GetCurrentOptions()
 	//	>=r2.5
 	GetOption("r2_sun_shafts");
 	GetOption("r2_ssao");
+	GetOption("r2_ssao_opt_data");
+	GetOption("r2_ssao_half_data");
+	GetOption("r2_ssao_hbao");
 	GetOption("r2_soft_water");
 	GetOption("r2_soft_particles");
 	GetOption("r2_dof_enable");

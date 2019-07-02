@@ -18,6 +18,7 @@
 #include "stalker_animation_manager.h"
 #include "doors_actor.h"
 #include "doors_manager.h"
+#include "level_path_builder.h"
 
 #ifndef MASTER_GOLD
 #	include "ai_debug.h"
@@ -39,6 +40,13 @@ stalker_movement_manager_obstacles::stalker_movement_manager_obstacles	(CAI_Stal
 stalker_movement_manager_obstacles::~stalker_movement_manager_obstacles	()
 {
 	xr_delete						(m_doors_actor);
+}
+
+void stalker_movement_manager_obstacles::Load	( LPCSTR section )
+{
+	inherited::Load					( section );
+
+	level_path_builder().use_delay_after_fail	( false );
 }
 
 CRestrictedObject *stalker_movement_manager_obstacles::create_restricted_object	()

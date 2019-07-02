@@ -10,7 +10,7 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
-#include "dxerr9.h"
+#include "dxerr.h"
 
 //#pragma warning(pop)
 
@@ -293,6 +293,7 @@ void
 IPureClient::_Recieve( const void* data, u32 data_size, u32 /*param*/ )
 {
     MSYS_PING*    cfg = (MSYS_PING*)data;
+	net_Statistic.dwBytesReceived += data_size;
 
 	if(     (data_size>=2*sizeof(u32)) 
 	    &&  (cfg->sign1==0x12071980) 
@@ -363,16 +364,10 @@ IPureClient::~IPureClient	()
 	psNET_direct_connect = FALSE;
 }
 
-void gen_auth_code();
 BOOL IPureClient::Connect	(LPCSTR options)
 {
 	R_ASSERT						(options);
 	net_Disconnected				= FALSE;
-
-	if(!psNET_direct_connect && !strstr(options,"localhost") )
-	{
-		gen_auth_code	();
-	}
 
 if(!psNET_direct_connect)
 {

@@ -311,8 +311,11 @@ void	CRenderTarget::phase_combine	()
 #ifdef DEBUG
 	RCache.set_CullMode	( CULL_CCW );
 	static	xr_vector<Fplane>		saved_dbg_planes;
-	if (bDebug)		saved_dbg_planes= dbg_planes;
-	else			dbg_planes		= saved_dbg_planes;
+	if (bDebug)		
+		saved_dbg_planes= dbg_planes;
+	else			
+		dbg_planes		= saved_dbg_planes;
+
 	if (1) for (u32 it=0; it<dbg_planes.size(); it++)
 	{
 		Fplane&		P	=	dbg_planes[it];
@@ -335,8 +338,11 @@ void	CRenderTarget::phase_combine	()
 	}
 
 	static	xr_vector<dbg_line_t>	saved_dbg_lines;
-	//if (bDebug)		saved_dbg_lines	= dbg_lines;
-	//else			dbg_lines		= saved_dbg_lines;
+	if (bDebug)
+		saved_dbg_lines	= dbg_lines;
+	else
+		dbg_lines		= saved_dbg_lines;
+
 	HW.pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 	HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 	HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);

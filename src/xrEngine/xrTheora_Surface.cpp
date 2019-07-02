@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
-#ifndef _EDITOR
-#	include "xrTheora_Surface_mmx.h"
-#endif
 
 CTheoraSurface::CTheoraSurface()
 {
@@ -175,13 +172,6 @@ u32	CTheoraSurface::Height(bool bRealSize)
 
 }
 
-#ifndef _EDITOR
-	#define MMX_TV_YUV2ARGB
-#endif
-
-#undef MMX_TV_YUV2ARGB
-
-// #define MMX_TV_YUV2ARGB
 void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 {
 	VERIFY		(m_rgb);
@@ -191,85 +181,85 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 	u32 width				= Width(true);
 	u32 height				= Height(true);
 
-	u32 pixelformat			= m_rgb->t_info.pixelformat;
-
-	int uv_w				=1;
-	int uv_h				=1;
-	switch (pixelformat)
-	{
-		case OC_PF_444:	uv_w=1; uv_h=1; break;
-		case OC_PF_422:	uv_w=2; uv_h=1; break;
-		case OC_PF_420:	uv_w=2; uv_h=2; break;
-		default:		NODEFAULT;
-	}
 	static const float K = 0.256788f + 0.504129f + 0.097906f;
+
+	// we use ffmpeg2theora for encoding, so only OC_PF_420 valid
+	u32 pixelformat			= m_rgb->t_info.pixelformat;
 
 	// rgb
 	if (yuv_rgb){
 		yuv_buffer&	yuv	= *yuv_rgb;
 
-#ifndef MMX_TV_YUV2ARGB
 		u32 pos = 0;
-		for (u32 h=0; h<height; ++h)
-		{
-			u8* Y		= yuv.y+yuv.y_stride*h;
-			u8* U		= yuv.u+yuv.uv_stride*(h/uv_h);
-			u8* V		= yuv.v+yuv.uv_stride*(h/uv_h);
 
-			for (u32 w=0; w<width; ++w)
-			{
-				u8 y	= Y[w];
-				u8 u	= U[w/uv_w];
-				u8 v	= V[w/uv_w];
-if(!bShaderYUV2RGB)
-{
-				int C	= y - 16;
-				int D	= u - 128;
-				int E	= v - 128;
+		if( ! bShaderYUV2RGB ) {
+			for (u32 h=0; h<height; ++h) {
 
-				int R	= clampr(( 298 * C           + 409 * E + 128) >> 8,0,255);
-				int G	= clampr(( 298 * C - 100 * D - 208 * E + 128) >> 8,0,255);
-				int B	= clampr(( 298 * C + 516 * D           + 128) >> 8,0,255);
+				u32 uv_stride_add = yuv.uv_stride * ( h >> 1 );
+				u8* Y		= yuv.y + yuv.y_stride * h;
+				u8* U		= yuv.u + uv_stride_add;
+				u8* V		= yuv.v + uv_stride_add;
 
-				data[pos] = color_rgba(R,G,B,255);
-}else
-{
-				data[pos] = color_rgba(int(y),int(u),int(v),255);
-}
-				pos++;
-				if(w==width-1)
-					pos += _width;
+				for (u32 w=0; w<width; ++w) {
+
+					u32 uv_idx = w >> 1;
+					u8 y	= Y[ w ];
+					u8 u	= U[ uv_idx ];
+					u8 v	= V[ uv_idx ];
+
+					int C	= y - 16;
+					int D	= u - 128;
+					int E	= v - 128;
+
+					int R	= clampr(( 298 * C           + 409 * E + 128) >> 8,0,255);
+					int G	= clampr(( 298 * C - 100 * D - 208 * E + 128) >> 8,0,255);
+					int B	= clampr(( 298 * C + 516 * D           + 128) >> 8,0,255);
+
+					data[pos] = color_rgba(R,G,B,255);
+
+					pos++;
+				}
+				pos += _width;
 			}
+		} else {
+
+			u32 buff_step = width + _width;
+			u32 buff_double_step = buff_step << 1;
+
+			for ( u32 y_h = 0 , uv_h = 0 ; y_h < height ; y_h += 2 , ++uv_h , pos += buff_double_step ) {
+
+				u32 uv_stride_add = yuv.uv_stride * uv_h;
+				u8* Y0		= yuv.y + yuv.y_stride * y_h;
+				u8* U		= yuv.u + uv_stride_add;
+				u8* Y1		= Y0 + yuv.y_stride;
+				u8* V		= yuv.v + uv_stride_add;
+
+				for ( u32 y_w = 0 , uv_w = 0 ; y_w < width ; y_w += 2 , ++uv_w ) {
+
+					u32 y00	= Y0[ y_w ] << 16;
+					u32 y01	= Y0[ y_w + 1 ] << 16;
+
+					u32 y10	= Y1[ y_w ] << 16;
+					u32 y11	= Y1[ y_w + 1 ] << 16;
+
+					u8 u	= U[ uv_w ];
+					u8 v	= V[ uv_w ];
+
+					u32 idx = pos + y_w;
+
+					u32 common_part = 255 << 24 | u << 8 | v;
+
+					data[ idx ]			= ( common_part | y00 );
+					data[ idx + 1 ]		= ( common_part | y01 );
+
+					idx += buff_step;
+
+					data[ idx ]			= ( common_part | y10 );
+					data[ idx + 1 ]		= ( common_part | y11 );
+				}				
+			}
+		}
 		_pos = pos;
-		}
-#else
-if(!bShaderYUV2RGB)
-{
-		tv_yuv2argb		( ( lp_tv_uchar ) data, width, height,
-						yuv.y,yuv.y_width,yuv.y_height,yuv.y_stride,
-						yuv.u,yuv.v,
-						yuv.uv_width,yuv.uv_height,yuv.uv_stride, 0);
-}else
-{
-		u32 pos = 0;
-		for (u32 h=0; h<height; ++h)
-		{
-
-			u8* Y		= yuv.y+yuv.y_stride*h;
-			u8* U		= yuv.u+yuv.uv_stride*(h/uv_h);
-			u8* V		= yuv.v+yuv.uv_stride*(h/uv_h);
-
-			for (u32 w=0; w<width; ++w)
-			{
-				u8 y			= Y[w];
-				u8 u			= U[w/uv_w];
-				u8 v			= V[w/uv_w];
-				data[++pos]		= color_rgba(int(y),int(u),int(v),255);
-			}
-		}
-	_pos = pos;
-}
-#endif        
 	}
 
 	// alpha

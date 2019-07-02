@@ -344,7 +344,6 @@ void CHUDManager::OnScreenResolutionChanged()
 	pUIGame->Load						();
 
 	pUIGame->OnConnected				();
-	GetUICursor().OnScreenResolutionChanged	();
 }
 
 void CHUDManager::OnDisconnected()

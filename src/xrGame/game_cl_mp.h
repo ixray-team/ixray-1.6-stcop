@@ -8,6 +8,7 @@
 #include "configs_dumper.h"
 #include "configs_dump_verifyer.h"
 #include "screenshot_server.h"
+#include "../xrCore/fastdelegate.h"
 
 class CUIWindow;
 class CUISpeechMenu;
@@ -265,8 +266,10 @@ public:
 
 				void				AddRewardTask	(u32 const award_id);
 
-				void				AddSoundMessage	(LPCSTR sound_name, u32 const sound_priority, u32 const soundID);
-				void				PlaySndMessage	(u32 ID);
+				void				AddSoundMessage		(LPCSTR sound_name, u32 const sound_priority, u32 const soundID);
+				void				PlaySndMessage		(u32 ID);
+				typedef fastdelegate::FastDelegate<void (u32 const)> player_info_reply_cb_t;
+				bool				RequestPlayersInfo	(player_info_reply_cb_t const pinfo_repl_cb);
 private:
 				u8*					buffer_for_compress;
 				u32					buffer_for_compress_size;
@@ -276,6 +279,9 @@ private:
 				
 				award_system::reward_manager*	m_reward_manager;
 				void				start_receive_server_info	(ClientID const & svclient_id);
+				
+				player_info_reply_cb_t	m_players_info_reply;
+				void				ProcessPlayersInfoReply(NET_Packet & P);
 public:
 				void __stdcall		SendCollectedData	(u8 const* buffer, u32 buffer_size, u32 uncompressed_size);
 				void				PrepareToReceiveFile(ClientID const & from_client, shared_str const & client_session_id, clientdata_event_t response_event);

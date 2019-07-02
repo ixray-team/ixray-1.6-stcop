@@ -134,6 +134,9 @@ void stalker_movement_manager_obstacles::build_level_path					()
 		m_dynamic_obstacles.inactive_query().copy		(m_dynamic_obstacles.active_query());
 #endif // MASTER_GOLD
 
+	bool pure_search_tried			= false;
+	bool pure_search_result			= false;
+
 	do {
 		if (m_failed_to_build_path)
 			break;
@@ -141,14 +144,20 @@ void stalker_movement_manager_obstacles::build_level_path					()
 		inherited::build_level_path	();
 
 		if (level_path().failed()) {
-			m_static_obstacles.clear();
-			m_saved_current_iteration.clear	();
+			if ( !pure_search_tried ) {
+				pure_search_tried	= true;
 
-			level_path().invalidate_failed_info	();
+				m_static_obstacles.clear();
+				m_saved_current_iteration.clear	();
+
+				level_path().invalidate_failed_info	();
+				
+				inherited::build_level_path	();
+
+				pure_search_result	= !level_path().failed();
+			}
 			
-			inherited::build_level_path	();
-			
-			if (level_path().failed()) {
+			if (!pure_search_result) {
 #ifndef MASTER_GOLD
 				Msg					("! level_path().failed() during navigation");
 #endif // #ifndef MASTER_GOLD
@@ -156,7 +165,7 @@ void stalker_movement_manager_obstacles::build_level_path					()
 			}
 		}
 	}
-	while (!simulate_path_navigation());
+	while ( !simulate_path_navigation() );
 
 	m_last_dest_vertex_id			= level_path().dest_vertex_id();
 //	Msg								("[%6d][%6d][%s][%f] build_level_path",Device.dwFrame,Device.dwTimeGlobal,*object().cName(),timer.GetElapsed_sec()*1000.f);

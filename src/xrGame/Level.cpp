@@ -697,18 +697,11 @@ void CLevel::OnFrame	()
 				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
 				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
-				F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d), Sended(%2d), SPS(%2d)",
-					//Server->game->get_option_s(C->Name,"name",C->Name),
-					//					C->Name,
-					net_Statistic.getPing(),
-					float(net_Statistic.getBPS()),// /1024,
-					net_Statistic.getMPS_Receive	(),
-					net_Statistic.getMPS_Send	(),
+				F->OutNext("BReceivedPs(%2d), BSendedPs(%2d), Retried(%2d), Blocked(%2d)",
+					net_Statistic.getReceivedPerSec(),
+					net_Statistic.getSendedPerSec(),
 					net_Statistic.getRetriedCount(),
-					net_Statistic.dwTimesBlocked,
-					net_Statistic.dwBytesSended,
-					net_Statistic.dwBytesPerSec
-					);
+					net_Statistic.dwTimesBlocked);
 #ifdef DEBUG
 				if (!pStatGraphR)
 				{
@@ -880,8 +873,12 @@ void CLevel::OnRender()
 		UI().Font().pFontStat->SetColor	(0xffff0000);
 
 		if(Server)UI().Font().pFontStat->OutNext	("Client Objects:      [%d]",Server->GetEntitiesNum());
-		UI().Font().pFontStat->OutNext	("Server Objects:      [%d]",Objects.o_count());
-		UI().Font().pFontStat->OutNext	("Interpolation Steps: [%d]", Level().GetInterpolationSteps());
+		UI().Font().pFontStat->OutNext		("Server Objects:      [%d]",Objects.o_count());
+		UI().Font().pFontStat->OutNext		("Interpolation Steps: [%d]", Level().GetInterpolationSteps());
+		if (Server)
+		{
+			UI().Font().pFontStat->OutNext	("Server updates size: [%d]", Server->GetLastUpdatesSize());
+		}
 		UI().Font().pFontStat->SetHeight	(8.0f);
 		//---------------------------------------------------------------------
 	}

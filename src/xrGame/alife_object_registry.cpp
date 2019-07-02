@@ -16,13 +16,14 @@ CALifeObjectRegistry::CALifeObjectRegistry	(LPCSTR section)
 
 CALifeObjectRegistry::~CALifeObjectRegistry	()
 {
-	OBJECT_REGISTRY::iterator		I = m_objects.begin();
-	OBJECT_REGISTRY::iterator		E = m_objects.end();
-	for ( ; I != E; ++I) {
-		// hack, should be revisited in case of not intended behaviour
+	OBJECT_REGISTRY::iterator const B	= m_objects.begin();
+	OBJECT_REGISTRY::iterator I			= B;
+	OBJECT_REGISTRY::iterator const E	= m_objects.end();
+	for ( ; I != E; ++I)
 		(*I).second->on_unregister	();
+
+	for (I = B; I != E; ++I)
 		xr_delete					((*I).second);
-	}
 }
 
 void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObject *object, u32 &object_count)

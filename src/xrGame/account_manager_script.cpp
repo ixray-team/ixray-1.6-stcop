@@ -20,6 +20,7 @@ void account_manager::script_register	(lua_State *L)
 			.def("create_profile",			&account_manager::create_profile)
 			.def("delete_profile",			&account_manager::delete_profile)
 
+			.def("is_get_account_profiles_active",	&account_manager::is_get_account_profiles_active)
 			.def("get_account_profiles",			&account_manager::get_account_profiles)
 			.def("stop_fetching_account_profiles",	&account_manager::stop_fetching_account_profiles)
 
@@ -29,8 +30,9 @@ void account_manager::script_register	(lua_State *L)
 			.def("verify_password",			&account_manager::verify_password)
 			.def("get_verify_error_descr",	&account_manager::get_verify_error_descr)
 			
-			.def("search_for_email",		&account_manager::search_for_email)
-			.def("stop_searching_email",	&account_manager::stop_searching_email)
+			.def("is_email_searching_active",	&account_manager::is_email_searching_active)
+			.def("search_for_email",			&account_manager::search_for_email)
+			.def("stop_searching_email",		&account_manager::stop_searching_email)
 	];
 }
 

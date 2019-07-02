@@ -42,7 +42,7 @@ float CActor::GetWeaponAccuracy() const
 		dispersion *= ( 1.0f + (state.fVelocity/VEL_MAX) * m_fDispVelFactor * GetWeaponParam(W, Get_PDM_Vel_F(), 1.0f) );
 
 		bool bAccelerated = isActorAccelerated( mstate_real, IsZoomAimingMode() );
-		if( bAccelerated )
+		if ( bAccelerated || !state.bCrouch )
 		{
 			dispersion *= ( 1.0f + m_fDispAccelFactor * GetWeaponParam(W, Get_PDM_Accel_F(), 1.0f) );
 		}

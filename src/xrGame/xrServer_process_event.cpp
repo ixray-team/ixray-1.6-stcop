@@ -238,9 +238,12 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		break;
 	case GE_ADDON_ATTACH:
 	case GE_ADDON_DETACH:
+		{
+			SendBroadcast	(BroadcastCID, P, net_flags(TRUE, TRUE));
+		}break;
 	case GE_CHANGE_POS:
 		{			
-			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
 		}break;
 	case GE_INSTALL_UPGRADE:
 		{
@@ -340,6 +343,10 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		}break;
 	case GE_FREEZE_OBJECT:
 		break;
+	case GE_REQUEST_PLAYERS_INFO:
+		{
+			SendPlayersInfo(sender);
+		}break;
 	default:
 		R_ASSERT2	(0,"Game Event not implemented!!!");
 		break;

@@ -54,7 +54,7 @@
 #define KILLEVENT_GRID_HEIGHT	64
 
 
-BOOL g_draw_downloads = TRUE;
+BOOL g_draw_downloads = FALSE;
 
 #pragma comment(lib, "crypto.lib")
 
@@ -255,11 +255,10 @@ bool game_cl_mp::OnKeyboardPress(int key)
 				if(!m_pAdminMenuWindow)
 					m_pAdminMenuWindow = xr_new<CUIMpAdminMenu>();
 
-				if(!m_pAdminMenuWindow->IsShown())
+				if(local_player && local_player->testFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS))
 					m_pAdminMenuWindow->ShowDialog(true);
 				else
-					m_pAdminMenuWindow->HideDialog();
-
+					m_pAdminMenuWindow->ShowMessageBox(CUIMessageBox::MESSAGEBOX_RA_LOGIN);
 			}break;
 		case kVOTE_BEGIN:
 			{
@@ -476,6 +475,10 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		{
 			m_ready_to_open_buy_menu = true;
 		}break;
+	case GAME_EVENT_PLAYERS_INFO_REPLY:
+		{
+			ProcessPlayersInfoReply(P);
+		}break;
 	default:
 		inherited::TranslateGameMessage(msg,P);
 	}
@@ -593,7 +596,6 @@ void game_cl_mp::shedule_Update(u32 dt)
 			{
 				HideMessageMenus();
 			};
-			
 		}break;
 	default:
 		{
@@ -1414,6 +1416,20 @@ void game_cl_mp::OnRadminMessage(u16 type, NET_Packet* P)
 {
 	switch(type)
 	{
+	case M_REMOTE_CONTROL_AUTH:
+		{
+				string4096		buff;
+				P->r_stringZ	(buff);
+				if(!m_pAdminMenuWindow)
+					m_pAdminMenuWindow = xr_new<CUIMpAdminMenu>();
+
+				if(0==stricmp(buff,"Access permitted."))
+					m_pAdminMenuWindow->ShowDialog(true);
+				else
+					m_pAdminMenuWindow->ShowMessageBox(CUIMessageBox::MESSAGEBOX_OK, buff);
+
+				Msg				("# srv: %s",buff);
+		}break;
 	case M_REMOTE_CONTROL_CMD:
 		{
 				string4096		buff;
@@ -1883,6 +1899,7 @@ void game_cl_mp::extract_server_info(u8* data_ptr, u32 data_size)
 	if (!data_ptr)
 	{
 		tmp_ui_mp_game->SetServerLogo(NULL, 0);
+		return;
 	}
 	using namespace file_transfer;
 	buffer_vector<const_buffer_t>	tmp_vector(
@@ -1890,8 +1907,11 @@ void game_cl_mp::extract_server_info(u8* data_ptr, u32 data_size)
 		2
 	);
 	split_received_to_buffers		(data_ptr, data_size, tmp_vector);
-	R_ASSERT2(!tmp_vector.empty(), "no server info received");
-		
+	if (tmp_vector.empty())
+	{
+		Msg("! ERROR: received corrupted server info");
+		return;
+	}
 	tmp_ui_mp_game->SetServerLogo	(tmp_vector[0].first, tmp_vector[0].second);
 	if (tmp_vector.size() > 1)
 	{
@@ -1924,4 +1944,46 @@ bool game_cl_mp::IsLocalPlayerInitialized() const
 	game_cl_GameState::PLAYERS_MAP const & playersMap = Game().players;
 	game_cl_GameState::PLAYERS_MAP::const_iterator pi = playersMap.find(local_svdpnid);
 	return pi != playersMap.end();
+}
+
+bool game_cl_mp::RequestPlayersInfo	(player_info_reply_cb_t const pinfo_repl_cb)
+{
+	if (m_players_info_reply)
+		return false;
+
+	m_players_info_reply	= pinfo_repl_cb;
+	NET_Packet tmp_packet;
+	u_EventGen				(tmp_packet, GE_REQUEST_PLAYERS_INFO, 0);
+	Level().Send			(tmp_packet);
+	return true;
+}
+
+void game_cl_mp::ProcessPlayersInfoReply(NET_Packet & P)
+{
+	shared_str tmp_fake_str;
+	u32 info_count = 0;
+	while (!P.r_eof())
+	{
+		ClientID tmp_client;
+		P.r_clientID(tmp_client);
+		++info_count;
+		PLAYERS_MAP_IT tmp_iter = players.find(tmp_client);
+		if (tmp_iter == players.end())
+		{
+			VERIFY("client not found");
+			P.r_stringZ(tmp_fake_str);
+			P.r_stringZ(tmp_fake_str);
+			continue;
+		}
+		VERIFY(tmp_iter->second);
+		P.r_stringZ(tmp_iter->second->m_player_ip);
+		P.r_stringZ(tmp_iter->second->m_player_digest);
+	}
+	VERIFY2(m_players_info_reply, "info reply callback not binded");
+	if (m_players_info_reply)
+	{
+		player_info_reply_cb_t tmp_cb = m_players_info_reply;
+		m_players_info_reply.clear	();
+		tmp_cb(info_count);
+	}
 }

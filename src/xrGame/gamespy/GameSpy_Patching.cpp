@@ -34,6 +34,7 @@ CGameSpy_Patching::~CGameSpy_Patching()
 void	CGameSpy_Patching::LoadGameSpy(HMODULE hGameSpyDLL)
 {	
 	GAMESPY_LOAD_FN(xrGS_ptCheckForPatchA);
+	GAMESPY_LOAD_FN(xrGS_ptTrackUsageA);
 }
 
 
@@ -100,7 +101,6 @@ static char const * ModifyDownloadUrl(char* dest, u32 dest_size, char const * or
 bool g_bInformUserThatNoPatchFound = true;
 void __cdecl GS_ptPatchCallback ( PTBool available, PTBool mandatory, const char * versionName, int fileID, const char * downloadURL,  void * param )
 {
-#ifndef NO_SINGLE
 	if (!MainMenu()) return;
 	if (!available)
 	{
@@ -115,7 +115,6 @@ void __cdecl GS_ptPatchCallback ( PTBool available, PTBool mandatory, const char
 	char const * new_url = ModifyDownloadUrl(new_download_url, new_url_size, downloadURL);
 	Msg("NewPatch url after updating: %s", new_url);
 	MainMenu()->OnNewPatchFound(versionName, new_url);
-#endif //#ifndef NO_SINGLE
 };
 
 void	CGameSpy_Patching::CheckForPatch(bool InformOfNoPatch)
@@ -132,3 +131,8 @@ void	CGameSpy_Patching::CheckForPatch(bool InformOfNoPatch)
 
 	}
 };
+
+void CGameSpy_Patching::PtTrackUsage	(int userID)
+{
+	xrGS_ptTrackUsageA(userID);
+}

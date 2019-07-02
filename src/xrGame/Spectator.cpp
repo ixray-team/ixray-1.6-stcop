@@ -47,6 +47,9 @@ CSpectator::CSpectator() : CGameObject()
 	cameras[eacFreeFly]		= xr_new<CSpectrCameraFirstEye>	(m_fTimeDelta, this, 0);
 	cameras[eacFreeFly]->Load("actor_firsteye_cam");
 
+	cameras[eacFixedLookAt]	= xr_new<CCameraFixedLook>	(this);
+	cameras[eacFixedLookAt]->Load("actor_look_cam");
+
 //	cam_active				= eacFreeFly;
 	cam_active				= eacFreeLook;
 	m_last_camera			= eacFreeLook;
@@ -207,10 +210,20 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 			
 			if (!PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 			{
-				while (!pMPGame->Is_Spectator_Camera_Allowed(new_camera) && new_camera != eacFreeFly)
+				bool found = false;
+				while (!found)
 				{
-					new_camera = EActorCameras((new_camera+1)%eacMaxCam);
+					if (pMPGame->Is_Spectator_Camera_Allowed(new_camera))
+					{
+						found = true;
+						break;
+					}
+					if (new_camera == (eacMaxCam - 1))
+						break;
+					new_camera = EActorCameras((new_camera+1)%eacMaxCam);					
 				}
+				if (!found)
+					break;
 			};
 			
 			if (new_camera == eacFreeFly)
@@ -221,10 +234,7 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 			else
 			{
 				if (!m_pActorToLookAt) SelectNextPlayerToLook(false);
-				if (!m_pActorToLookAt)
-				{
-					cam_Set			(eacFreeFly);
-				} else
+				if (m_pActorToLookAt)
 				{
 					cam_Set			(new_camera);
 					m_last_camera	= new_camera;
@@ -421,10 +431,17 @@ void CSpectator::cam_Update	(CActor* A)
 			g_pGameLevel->Cameras().UpdateFromCamera(cam);
 		}
 		//-----------------------------------
-	}else{
+	} else
+	{
+
 		CCameraBase* cam			= cameras[eacFreeFly];
+		if (cam_active == eacFixedLookAt)
+		{
+			cam	= cameras[eacFixedLookAt];
+		}
+
 		Fvector point, dangle;
-		point.set					(0.f,1.6f,0.f);
+		point.set				(0.f,1.6f,0.f);
 		XFORM().transform_tiny	(point);
 
 		// apply shift
@@ -453,10 +470,27 @@ BOOL			CSpectator::net_Spawn				( CSE_Abstract*	DC )
 	CSE_Abstract			*E	= (CSE_Abstract*)(DC);
 	if (!E) return FALSE;
 
-	cam_active				= eacFreeFly;
+	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
+	float tmp_roll = 0.f;
+	if (!pMPGame || pMPGame->Is_Spectator_Camera_Allowed(eacFreeFly))
+	{
+		cam_active = eacFreeFly;
+	} else
+	{
+		game_PlayerState*	ps = pMPGame->local_player;
+		s16					tmp_team = ps ? pMPGame->ModifyTeam(ps->team) : -1;
+		if ((tmp_team == -1) || (tmp_team == etSpectatorsTeam))
+		{
+			cam_active = eacFreeFly;
+		} else
+		{
+			cam_active = eacFixedLookAt;
+			tmp_roll = -E->o_Angle.z;
+		}
+	}
 	look_idx				= 0;
 
-	cameras[cam_active]->Set		(-E->o_Angle.y,-E->o_Angle.x,0);		// set's camera orientation
+	cameras[cam_active]->Set(-E->o_Angle.y, -E->o_Angle.x, tmp_roll);// set's camera orientation
 	cameras[cam_active]->vPosition.set(E->o_Position);
 
 	if (OnServer())

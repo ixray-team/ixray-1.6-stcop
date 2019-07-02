@@ -113,6 +113,9 @@ const	u32		CSE_ALifeInventoryItem::random_limit			= 120;
 //if TRUE, then object sends update packet
 BOOL CSE_ALifeInventoryItem::Net_Relevant()
 {
+	if (base()->ID_Parent != u16(-1))
+		return		FALSE;
+
 	if (!freezed)
 		return		TRUE;
 
@@ -626,9 +629,10 @@ u16	 CSE_ALifeItemWeapon::get_ammo_magsize	()
 
 BOOL CSE_ALifeItemWeapon::Net_Relevant()
 {
-	if (!inherited::Net_Relevant())
-		return FALSE;
-	return (wpn_flags==1);
+	if (wpn_flags==1)
+		return TRUE;
+
+	return inherited::Net_Relevant();
 }
 
 #ifndef XRGAME_EXPORTS
@@ -955,7 +959,10 @@ void CSE_ALifeItemArtefact::FillProps		(LPCSTR pref, PropItemVec& items)
 
 BOOL CSE_ALifeItemArtefact::Net_Relevant	()
 {
-	return							(inherited::Net_Relevant());
+	if (base()->ID_Parent == u16(-1))
+		return TRUE;
+
+	return FALSE;
 }
 
 ////////////////////////////////////////////////////////////////////////////

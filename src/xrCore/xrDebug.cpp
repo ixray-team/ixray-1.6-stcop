@@ -7,7 +7,7 @@
 #include "resource.h"
 #include "dbghelp.h"
  
-#include "dxerr9.h"
+#include "dxerr.h"
 
 #ifdef __BORLANDC__
 	#include "d3d9.h"
@@ -24,7 +24,7 @@
 #else
 #define DEBUG_INVOKE	__asm		{ int 3 }
 #ifndef __BORLANDC__
-	#pragma comment			(lib,"dxerr9.lib")
+	#pragma comment			(lib,"dxerr.lib")
 #endif
 #endif
 
@@ -123,7 +123,7 @@ LPCSTR xrDebug::error2string	(long code)
 
 #ifdef _M_AMD64
 #else
-	result				= DXGetErrorDescription9	(code);
+	result				= DXGetErrorDescription	(code);
 #endif
 	if (0==result) 
 	{

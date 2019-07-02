@@ -1476,12 +1476,15 @@ void CScriptGameObject::register_door							()
 {
 	VERIFY2								( !m_door, make_string("object %s has been registered as a door already", m_game_object->cName().c_str()) );
 	m_door								= ai().doors().register_door( *smart_cast<CPhysicObject*>(m_game_object) );
+//	Msg									( "registering door 0x%-08x", m_door );
 }
 
 void CScriptGameObject::unregister_door							()
 {
 	VERIFY2								( m_door, make_string("object %s is not a door", m_game_object->cName().c_str()) );
+//	Msg									( "UNregistering door 0x%-08x", m_door );
 	ai().doors().unregister_door		( m_door );
+	m_door								= 0;
 }
 
 void CScriptGameObject::on_door_is_open							()

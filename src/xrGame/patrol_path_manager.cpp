@@ -148,14 +148,20 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 			}
 			default			: NODEFAULT;
 		}
-		R_ASSERT2			(
-			vertex || show_restrictions(m_object),
-			make_string(
-				"any vertex in patrol path [%s] is inaccessible for object [%s]",
-				*m_path_name,
-				*m_game_object->cName()
-			)
-		);
+		if ( !(vertex || show_restrictions(m_object)) ) {
+			// ugly HACK, just because Plecha asked...
+			VERIFY2					(
+				vertex || show_restrictions(m_object),
+				make_string(
+					"any vertex in patrol path [%s] is inaccessible for object [%s]",
+					*m_path_name,
+					*m_game_object->cName()
+				)
+			);
+			dest_vertex_id			= m_game_object->ai_location().level_vertex_id();
+			return;
+		}
+
 		R_ASSERT2			(
 			ai().level_graph().valid_vertex_id(vertex->data().level_vertex_id()),
 			make_string(

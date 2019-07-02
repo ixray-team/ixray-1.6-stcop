@@ -1230,6 +1230,7 @@ struct CCC_JumpToLevel : public IConsole_Command {
 
 };
 
+//#ifndef MASTER_GOLD
 class CCC_Script : public IConsole_Command {
 public:
 	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = false; };

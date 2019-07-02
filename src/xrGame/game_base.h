@@ -73,6 +73,10 @@ struct game_PlayerState
 	bool		m_bPayForSpawn;
 	u32			m_online_time;
 	player_account	m_account;
+	
+	shared_str	m_player_ip;
+	shared_str	m_player_digest;
+
 	//if account_info == NULL then constructor call load_account method.
 	//so it MUST be use ONLY for local_player !
 	explicit		game_PlayerState		(NET_Packet* account_info);

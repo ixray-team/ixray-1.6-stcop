@@ -12,7 +12,6 @@ class CWeaponBinoculars: public CWeaponCustomPistol
 private:
 	typedef CWeaponCustomPistol inherited;
 protected:
-	float			m_fRTZoomFactor; //run-time zoom factor
 	bool			m_bVision;
 public:
 					CWeaponBinoculars	(); 

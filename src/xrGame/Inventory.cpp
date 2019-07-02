@@ -203,7 +203,7 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	};
 }
 
-bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy) 
+bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy, bool dont_create_shell) 
 {
 	CInventoryItem *pIItem				= smart_cast<CInventoryItem*>(pObj);
 	VERIFY								(pIItem);
@@ -275,7 +275,7 @@ bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy)
 	pIItem->m_pInventory = NULL;
 
 
-	m_pOwner->OnItemDrop	(smart_cast<CInventoryItem*>(pObj));
+	m_pOwner->OnItemDrop	(smart_cast<CInventoryItem*>(pObj), just_before_destroy);
 
 	CalcTotalWeight					();
 	InvalidateState					();
@@ -288,7 +288,7 @@ bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy)
 		if (Level().CurrentViewEntity() == pActor_owner)
 			CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_REJECT);
 	};
-	pObj->H_SetParent(0, just_before_destroy);
+	pObj->H_SetParent(0, dont_create_shell);
 	return							true;
 }
 

@@ -125,7 +125,7 @@ void CStateGroupHearDangerousSoundAbstract::setup_substates()
 		data.accelerated		= true;
 		data.braking			= true;
 		data.accel_type 		= eAT_Aggressive;
-		data.action.sound_type	= MonsterSound::eMonsterSoundPanic;
+		data.action.sound_type	= (u32)MonsterSound::eMonsterSoundDummy;
 		data.action.sound_delay = object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataMoveToPointEx));

@@ -19,6 +19,8 @@ public:
 
 	virtual float	GetWorldYaw		( )	{ return -yaw;	};
 	virtual float	GetWorldPitch	( )	{ return pitch; };
+protected:
+			void	UpdateDistance	( Fvector& point );
 };
 
 class CCameraLook2	: public CCameraLook
@@ -37,3 +39,20 @@ public:
 	virtual void	Update			( Fvector& point, Fvector& noise_dangle );
 	virtual void	Load			(LPCSTR section);
 };
+
+class CCameraFixedLook : public CCameraLook
+{
+	typedef CCameraLook inherited;
+public:
+					CCameraFixedLook(CObject* p, u32 flags=0) : CCameraLook(p, flags) {};
+	virtual			~CCameraFixedLook() {};
+	virtual void	Load			(LPCSTR section);
+	virtual void	Move			(int cmd, float val=0, float factor=1.0f);
+	virtual	void	OnActivate		(CCameraBase* old_cam);
+	virtual void	Update			(Fvector& point, Fvector& noise_dangle);
+	virtual void	Set				(float Y, float P, float R);
+private:
+	Fquaternion		m_final_dir;
+	Fquaternion		m_current_dir;
+};
+

@@ -218,6 +218,10 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 		assign_callback( DIK_DELETE, ks_free, Callback( this, &line_edit_control::delete_selected_forward ) );
 		assign_callback( DIK_BACK  , ks_Ctrl, Callback( this, &line_edit_control::delete_word_back     ) );
 		assign_callback( DIK_DELETE, ks_Ctrl, Callback( this, &line_edit_control::delete_word_forward  ) );
+
+		assign_callback( DIK_LSHIFT, ks_Ctrl, Callback( this, &line_edit_control::SwitchKL ) );
+		assign_callback( DIK_LSHIFT, ks_Alt, Callback( this, &line_edit_control::SwitchKL  ) );
+
 	} // if mode
 
 	create_key_state( DIK_LSHIFT  , ks_LShift );
@@ -253,6 +257,10 @@ void line_edit_control::assign_char_pairs( init_mode mode )
 		create_char_pair( DIK_7, '7', '7' );
 		create_char_pair( DIK_8, '8', '8' );
 		create_char_pair( DIK_9, '9', '9' );
+		create_char_pair( DIK_NUMPADMINUS , '-', '-' );
+		create_char_pair( DIK_MINUS       , '-', '-' );
+		create_char_pair( DIK_NUMPADPLUS  , '+', '+' );
+		create_char_pair( DIK_EQUALS	  , '+', '+' );
 		return;
 	}
 
@@ -743,6 +751,11 @@ void line_edit_control::compute_positions()
 void line_edit_control::clamp_cur_pos()
 {
 	clamp( m_cur_pos, 0, (int)xr_strlen( m_edit_str ) );
+}
+
+void line_edit_control::SwitchKL()
+{
+// system do it itself.	HKL kl = ActivateKeyboardLayout( (HKL)HKL_NEXT, 0 );
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -5,8 +5,11 @@
 #include "MainMenu.h"	   //for accesssing to login_manager, if there's deleting profile
 #include "login_manager.h" //for deleting profile (verifying) and deleting profile class instance
 
+#define GP_UNIQUENICK_MIN_LEN 3
+
 namespace gamespy_gp
 {
+
 
 account_manager::account_manager(CGameSpy_GP* gsgp_inst)
 {
@@ -116,6 +119,12 @@ bool account_manager::verify_unique_nick	(char const * unick)
 	{
 		Msg("! ERROR: unique nick name is empty");
 		m_verifyer_error = "mp_gp_no_unique_nick";
+		return false;
+	}
+	if (unick_length < GP_UNIQUENICK_MIN_LEN)
+	{
+		Msg("! ERROR: unique nick name is too short (must be greater that 2 character)");
+		m_verifyer_error = "mp_gp_unique_nick_too_short";
 		return false;
 	}
 	if (unick_length >= GP_UNIQUENICK_LEN)

@@ -32,7 +32,7 @@ XRGAMESPY_API int fnxrGameSpy(void);
 
 extern "C"
 {
-	EXPORT_FN_DECL(const char*, GetGameVersion,		(const char*));
+	EXPORT_FN_DECL(const char*, GetGameVersion,		());
 	EXPORT_FN_DECL(void,		GetGameID,			(int* GameID, int verID));
 }
 

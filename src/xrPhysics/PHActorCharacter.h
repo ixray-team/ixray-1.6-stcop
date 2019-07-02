@@ -115,6 +115,7 @@ private:
 	virtual	void		ValidateWalkOn						();
 			bool		CanJump								();
 	virtual	void		update_last_material				();
+	virtual	void		PhTune								( dReal step );
 private:
 		void			ClearRestrictors					();
 		RESTRICTOR_I	Restrictor							(ERestrictionType rtype);

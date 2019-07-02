@@ -278,10 +278,15 @@ void					CRender::create					()
 	o.ssao_hbao			= !o.ssao_hdao && ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
 
 	//	TODO: fix hbao shader to allow to perform per-subsample effect!
+	o.hbao_vectorized = false;
 	if (o.ssao_hdao )
 		o.ssao_opt_data = false;
     else if( o.ssao_hbao)
+	{
+		if (HW.Caps.id_vendor==0x1002)
+			o.hbao_vectorized = true;
 		o.ssao_opt_data = true;
+	}
 
 	o.dx10_sm4_1		= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
 	o.dx10_sm4_1		= o.dx10_sm4_1 && ( HW.pDevice1 != 0 );
@@ -414,6 +419,7 @@ void					CRender::destroy				()
 	xr_delete					(Target);
 	PSLibrary.OnDestroy			();
 	Device.seqFrame.Remove		(this);
+	r_dsgraph_destroy			();
 }
 
 void CRender::reset_begin()
@@ -462,6 +468,10 @@ void CRender::reset_end()
 
 	xrRender_apply_tf			();
 	FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+
+	// Set this flag true to skip the first render frame,
+	// that some data is not ready in the first frame (for example device camera position)
+	m_bFirstFrameAfterReset		= true;
 }
 /*
 void CRender::OnFrame()
@@ -639,6 +649,7 @@ void					CRender::rmNormal			()
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CRender::CRender()
+:m_bFirstFrameAfterReset(false)
 {
 }
 
@@ -814,6 +825,12 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"USE_HBAO";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
+		if (o.hbao_vectorized)
+		{
+			defines[def_it].Name		=	"VECTORIZED_CODE";
+			defines[def_it].Definition	=	"1";
+			def_it						++;
+		}
 	}
 
 	if( o.dx10_msaa )

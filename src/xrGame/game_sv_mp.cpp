@@ -38,8 +38,8 @@ float		g_sv_mp_fVoteTime				= VOTE_LENGTH_TIME;
 BOOL		g_sv_mp_save_proxy_screenshots	= FALSE;
 BOOL		g_sv_mp_save_proxy_configs		= FALSE;
 //-----------------------------------------------------------------
-int			g_sv_adm_menu_ban_time			= 1;
-int			g_sv_adm_menu_ping_limit		= 1;
+u32			g_sv_adm_menu_ban_time			= 1;
+int			g_sv_adm_menu_ping_limit		= 25;
 //-----------------------------------------------------------------
 
 extern xr_token	round_end_result_str[];
@@ -696,7 +696,7 @@ bool	game_sv_mp::GetPosAngleFromActor				(ClientID id, Fvector& Pos, Fvector &An
 	CActor* pActor = smart_cast <CActor*>(pObject);
 	if (!pActor) return false;
 
-	Angle.set(-pActor->cam_Active()->pitch, -pActor->cam_Active()->yaw, 0);
+	Angle.set(-pActor->cam_Active()->pitch, -pActor->cam_Active()->yaw, -pActor->cam_Active()->roll);
 	Pos.set(pActor->cam_Active()->vPosition);
 	return true;
 };
@@ -1841,7 +1841,7 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 //	R_ASSERT2( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
 	VERIFY2  ( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
 	if ( !e_parent ) {
-		Msg               ( "! ERROR (RejectGameItem): parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent );
+		Msg( "! ERROR (RejectGameItem): parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent );
 		return;
 	}
 
@@ -1927,6 +1927,10 @@ void game_sv_mp::DumpOnlineStatistic()
 void game_sv_mp::WritePlayerStats(CInifile& ini, LPCSTR sect, xrClientData* pCl)
 {
 	ini.w_string(sect,"player_name",	pCl->ps->getName());
+	if (pCl->ps->m_account.is_online())
+	{
+		ini.w_u32(sect,"player_profile_id",	pCl->ps->m_account.profile_id());
+	}
 	ini.w_u32	(sect,"player_team",	pCl->ps->team);
 	ini.w_u32	(sect,"kills_rival",	pCl->ps->m_iRivalKills);
 	ini.w_u32	(sect,"kills_self",		pCl->ps->m_iSelfKills);

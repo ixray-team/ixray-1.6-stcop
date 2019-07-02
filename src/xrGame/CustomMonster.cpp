@@ -1379,5 +1379,17 @@ Fvector	CCustomMonster::spatial_sector_point	( )
 	//if ( g_Alive() )
 	//	return						inherited::spatial_sector_point( );
 
-	return							inherited::spatial_sector_point( ).add( Fvector().set(0.f, Radius()*.5f, 0.f) );
+	//if ( !animation_movement() )
+		return						inherited::spatial_sector_point( ).add( Fvector().set(0.f, Radius()*.5f, 0.f) );
+
+	//IKinematics* const kinematics	= smart_cast<IKinematics*>(Visual());
+	//VERIFY							(kinematics);
+	//u16 const root_bone_id			= kinematics->LL_BoneID("bip01_spine");
+
+	//Fmatrix local;
+	//kinematics->Bone_GetAnimPos		( local, root_bone_id, u8(-1), false );
+
+	//Fmatrix result;
+	//result.mul_43					( XFORM(), local );
+	//return							result.c;
 }

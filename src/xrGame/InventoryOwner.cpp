@@ -470,7 +470,7 @@ void CInventoryOwner::ChangeReputation	(CHARACTER_REPUTATION_VALUE delta)
 }
 
 
-void CInventoryOwner::OnItemDrop			(CInventoryItem *inventory_item)
+void CInventoryOwner::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy)
 {
 	CGameObject	*object = smart_cast<CGameObject*>(this);
 	VERIFY		(object);

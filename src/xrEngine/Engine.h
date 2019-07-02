@@ -15,6 +15,7 @@ class ENGINE_API CEngine
 {
 	HMODULE				hPSGP;
 public:
+	BENCH_SEC_SCRAMBLEMEMBER1
 	// DLL api stuff
 	CEngineAPI			External;
 	CEventAPI			Event;

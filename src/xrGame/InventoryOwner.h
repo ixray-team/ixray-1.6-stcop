@@ -186,7 +186,7 @@ public:
 	virtual void			OnItemRuck				(CInventoryItem *inventory_item, const SInvItemPlace& previous_place);
 	virtual void			OnItemSlot				(CInventoryItem *inventory_item, const SInvItemPlace& previous_place);
 	
-	virtual void			OnItemDrop				(CInventoryItem *inventory_item);
+	virtual void			OnItemDrop				(CInventoryItem *inventory_item, bool just_before_destroy);
 	virtual void			OnItemDropUpdate		();
 	virtual bool			use_bolts				() const {return(true);}
 	virtual	void			spawn_supplies			();

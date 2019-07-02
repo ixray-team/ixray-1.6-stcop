@@ -127,13 +127,13 @@ void __cdecl best_scores_store::get_my_player_scores_cb(SAKE sake,
 			outputData
 		);
 		VERIFY(tmp_out);
-		my_inst->process_scores_out_response(tmp_out);
+		my_inst->process_scores_out_response(tmp_out, fields_count);
 		my_inst->m_scores_operation_cb		(true, "mp_load_best_scores_complete");
 	}
 	my_inst->m_scores_operation_cb.clear	();
 }
 
-void best_scores_store::process_scores_out_response(SAKEGetMyRecordsOutput* tmp_out)
+void best_scores_store::process_scores_out_response(SAKEGetMyRecordsOutput* tmp_out, int const out_fields_count)
 {
 	VERIFY(tmp_out->mNumRecords <= 1);					//one raw
 	if (tmp_out->mNumRecords == 0)
@@ -150,11 +150,13 @@ void best_scores_store::process_scores_out_response(SAKEGetMyRecordsOutput* tmp_
 		return;
 	}
 	
-	for (int i = 0; i < fields_count; ++i)
+	for (int i = 0; i < out_fields_count; ++i)
 	{
 		enum_best_score_type bst	= get_best_score_type_by_sname(
 			tmp_out->mRecords[0][i].mName
 		);
+		if (bst == bst_score_types_count)
+			continue;
 		s32 bs_value				= tmp_out->mRecords[0][i].mValue.mInt;	//one raw
 		m_result_scores.insert		(std::make_pair(bst, bs_value));
 	};

@@ -56,10 +56,11 @@ xrClientData::~xrClientData()
 
 xrServer::xrServer() : IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
 {
-	m_file_transfers = NULL;
+	m_file_transfers	= NULL;
 	m_aDelayedPackets.clear();
-	m_server_logo	= NULL;
-	m_server_rules	= NULL;
+	m_server_logo		= NULL;
+	m_server_rules		= NULL;
+	m_last_updates_size	= 0;
 }
 
 xrServer::~xrServer()
@@ -132,7 +133,7 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 	return newCL;
 };
 
-INT	g_sv_Client_Reconnect_Time = 0;
+INT	g_sv_Client_Reconnect_Time = 60;
 
 void		xrServer::client_Destroy	(IClient* C)
 {
@@ -300,11 +301,13 @@ void xrServer::MakeUpdatePackets()
 
 void xrServer::SendUpdatePacketsToAll()
 {
+	m_last_updates_size = 0;
 	for (update_iterator_t i = m_update_begin; i != m_update_end; ++i)
 	{
 		NET_Packet& to_send = **i;
 		if (to_send.B.count > 2)
 		{
+			m_last_updates_size += to_send.B.count;
 			SendBroadcast	(GetServerClient()->ID, to_send, net_flags(FALSE,TRUE));
 			if (Level().IsDemoSave())
 			{
@@ -605,6 +608,10 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			if(0==stricmp(user.c_str(),"logoff"))
 			{
 				CL->m_admin_rights.m_has_admin_rights	= FALSE;
+				if (CL->ps)
+				{
+					CL->ps->resetFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS);
+				}
 				xr_strcpy				(reason,"logged off");
 				Msg("# Remote administrator logged off.");
 			}else
@@ -614,13 +621,17 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 				if(res){
 					CL->m_admin_rights.m_has_admin_rights	= TRUE;
 					CL->m_admin_rights.m_dwLoginTime		= Device.dwTimeGlobal;
+					if (CL->ps)
+					{
+						CL->ps->setFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS);
+					}
 					Msg("# User [%s] logged as remote administrator.", user.c_str());
 				}else
 					Msg("# User [%s] tried to login as remote administrator. Access denied.", user.c_str());
 
 			}
 			NET_Packet			P_answ;			
-			P_answ.w_begin		(M_REMOTE_CONTROL_CMD);
+			P_answ.w_begin		(M_REMOTE_CONTROL_AUTH);
 			P_answ.w_stringZ	(reason);
 			SendTo				(CL->ID,P_answ,net_flags(TRUE,TRUE));
 		}break;
@@ -1143,4 +1154,30 @@ void xrServer::deinitialize_screenshot_proxies()
 	{
 		xr_delete(m_screenshot_proxies[i]);
 	}
+}
+
+struct PlayerInfoWriter
+{
+	NET_Packet*	dest;
+	void operator()(IClient* C)
+	{
+		xrClientData* tmp_client = smart_cast<xrClientData*>(C);
+		if (!tmp_client)
+			return;
+
+		dest->w_clientID(tmp_client->ID);
+		dest->w_stringZ(tmp_client->m_cAddress.to_string().c_str());
+		dest->w_stringZ(tmp_client->m_cdkey_digest);
+	}
+};//struct PlayerInfoWriter
+
+void xrServer::SendPlayersInfo(ClientID const & to_client)
+{
+	PlayerInfoWriter tmp_functor;
+	NET_Packet tmp_packet;
+	tmp_packet.w_begin	(M_GAMEMESSAGE); 
+	tmp_packet.w_u32	(GAME_EVENT_PLAYERS_INFO_REPLY);
+	tmp_functor.dest	= &tmp_packet;
+	ForEachClientDo		(tmp_functor);
+	SendTo				(to_client, tmp_packet, net_flags(TRUE, TRUE));
 }

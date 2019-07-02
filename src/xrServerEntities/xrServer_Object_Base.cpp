@@ -136,6 +136,15 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 			CopyMemory			(temp,config->pointer(),size);
 			temp[size]			= 0;
 			m_ini_string		= temp;
+
+#ifdef XRGAME_EXPORTS
+		if ( NULL==ai().get_alife() )
+#endif // #ifdef XRGAME_EXPORTS
+		{
+			IReader* _r	= (IReader*)config;
+			FS.r_close(_r);
+		}
+
 		}
 		else
 			Msg					( "! cannot open config file %s", raw_file_name );

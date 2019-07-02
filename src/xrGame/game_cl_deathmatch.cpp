@@ -497,7 +497,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 				if (m_bFirstRun)
 				{
 					m_bFirstRun = FALSE;
-					if (!Level().IsDemoPlayStarted())
+					if (!Level().IsDemoPlayStarted() && Level().CurrentEntity())
 					{
 						VERIFY( m_game_ui );
 						m_bFirstRun = m_game_ui->ShowServerInfo() ? FALSE : TRUE;
