@@ -17,9 +17,11 @@
 #include "../xrRender/light_db.h"
 #include "light_render_direct.h"
 #include "../xrRender/LightTrack.h"
+#include "../xrRender/r_sun_cascades.h"
 
 #include "../../xrEngine/irenderable.h"
 #include "../../xrEngine/fmesh.h"
+
 
 class dxRender_Visual;
 
@@ -160,6 +162,8 @@ public:
 
 	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
+	xr_vector<sun::cascade>										m_sun_cascades;
+
 
 private:
 	// Loading / Unloading
@@ -188,6 +192,11 @@ public:
 	void							render_sun_filtered			();
 	void							render_menu					();
 	void							render_rain					();
+
+	void							render_sun_cascade			(u32 cascade_ind);
+	void							init_cacades				();
+	void							render_sun_cascades			();
+
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
@@ -257,16 +266,12 @@ public:
 			ID3DBaseTexture*		texture_load				(LPCSTR	fname, u32& msize, bool bStaging = false);
 	virtual HRESULT					shader_compile			(
 		LPCSTR							name,
-		LPCSTR                          pSrcData,
+		DWORD const*					pSrcData,
 		UINT                            SrcDataLen,
-		void*							pDefines,
-		void*							pInclude,
 		LPCSTR                          pFunctionName,
 		LPCSTR                          pTarget,
 		DWORD                           Flags,
-		void*							ppShader,
-		void*							ppErrorMsgs,
-		void*							ppConstantTable);
+		void*&							result);
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
@@ -341,6 +346,9 @@ public:
 	virtual ~CRender				();
 protected:
 	virtual	void					ScreenshotImpl				(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
+
+private:
+	FS_FileSet						m_file_set;
 };
 
 extern CRender						RImplementation;

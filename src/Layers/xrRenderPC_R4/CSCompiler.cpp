@@ -14,38 +14,6 @@ CSCompiler::CSCompiler(ComputeShader& target):
 {
 }
 
-class	includer				: public ID3DInclude
-{
-public:
-	HRESULT __stdcall	Open	(D3D10_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
-	{
-		string_path				pname;
-		strconcat				(sizeof(pname),pname,::Render->getShaderPath(),pFileName);
-		IReader*		R		= FS.r_open	("$game_shaders$",pname);
-		if (0==R)				{
-			// possibly in shared directory or somewhere else - open directly
-			R					= FS.r_open	("$game_shaders$",pFileName);
-			if (0==R)			return			E_FAIL;
-		}
-
-		// duplicate and zero-terminate
-		u32				size	= R->length();
-		u8*				data	= xr_alloc<u8>	(size + 1);
-		CopyMemory			(data,R->pointer(),size);
-		data[size]				= 0;
-		FS.r_close				(R);
-
-		*ppData					= data;
-		*pBytes					= size;
-		return	D3D_OK;
-	}
-	HRESULT __stdcall	Close	(LPCVOID	pData)
-	{
-		xr_free	(pData);
-		return	D3D_OK;
-	}
-};
-
 CSCompiler& CSCompiler::begin(const char* name)
 {
 	compile(name);
@@ -216,57 +184,25 @@ void CSCompiler::compile(const char* name)
 		return;
 	}
 
-	includer					Includer;
-	ID3DBlob*					pShaderBuf	= NULL;
-	ID3DBlob*					pErrorBuf	= NULL;
-	HRESULT						_hr			= S_OK;
 	string_path					cname;
 	strconcat					(sizeof(cname),cname,::Render->getShaderPath(),name,".cs");
 	FS.update_path				(cname,	"$game_shaders$", cname);
 
-	IReader*					fs			= FS.r_open(cname);
-	R_ASSERT3					(fs, "shader file doesnt exist", cname);
+	IReader* file				= FS.r_open(cname);
+	R_ASSERT2					( file, cname );
 
 	// Select target
 	LPCSTR						c_target	= "cs_5_0";
 	LPCSTR						c_entry		= "main";
 
-	R_ASSERT2					(fs,cname);
-	_hr = ::Render->shader_compile(name,LPCSTR(fs->pointer()),fs->length(), NULL, &Includer, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
-	FS.r_close					(fs);
+	HRESULT	const _hr			= ::Render->shader_compile(name,(DWORD const*)file->pointer(),file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)m_cs );
 
-	if (SUCCEEDED(_hr))
-	{
-		if (pShaderBuf)
-		{
-			_hr = HW.pDevice->CreateComputeShader(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), NULL, &m_cs);
-			if (SUCCEEDED(_hr))	
-			{
-				ID3DShaderReflection *pReflection = 0;
+	FS.r_close					( file );
 
-				_hr = D3DReflect( pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), IID_ID3DShaderReflection, (void**)&pReflection);
-				
-				//	Parse constant, texture, sampler binding
-				//	Store input signature blob
-				if (SUCCEEDED(_hr) && pReflection)
-				{
-					//	Let constant table parse it's data
-					m_constants.parse(pReflection, RC_dest_pixel);
-					_RELEASE(pReflection);
-				}
-			}
-			_RELEASE(pShaderBuf);
-		}
-		else	_hr = E_FAIL;
-	} 
-	else 
-	{
-		VERIFY	(pErrorBuf);
-		Log		("! VS: ", name);
-		Log		("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
-	}
-	_RELEASE	(pShaderBuf);
-	_RELEASE	(pErrorBuf);
+	VERIFY(SUCCEEDED(_hr));
 
-	R_CHK		(_hr);
+	CHECK_OR_EXIT				(
+		!FAILED(_hr),
+		make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
+	);
 }

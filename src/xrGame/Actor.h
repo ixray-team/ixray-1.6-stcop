@@ -729,12 +729,10 @@ public:
 	virtual	bool				is_ai_obstacle					() const;
 	
 			float				GetRestoreSpeed					(ALife::EConditionRestoreType const& type);
-private:
-	static const float		cam_inert_value;
-	float					prev_cam_inert_value;
+
 public:
 	virtual void			On_SetEntity();
-	virtual void			On_LostEntity();
+	virtual void			On_LostEntity() {};
 
 			void			DisableHitMarks(bool disable)		{m_disabled_hitmarks = disable;};
 			bool			DisableHitMarks()					{return m_disabled_hitmarks;};

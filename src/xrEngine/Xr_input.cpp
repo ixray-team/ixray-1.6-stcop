@@ -227,7 +227,9 @@ void CInput::KeyUpdate	( )
 #endif
 	if(b_altF4)					return;
 
-	if(Device.dwPrecacheFrame==0)
+	#ifndef _EDITOR
+   	if(Device.dwPrecacheFrame==0)
+	#endif
 	{
 
 		for (u32 i = 0; i < dwElements; i++)
@@ -318,9 +320,20 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	return						(cnt!=-1);
 }
 
+#define MOUSE_1		(0xED + 100)
+#define MOUSE_8		(0xED + 107)
+
 BOOL CInput::iGetAsyncKeyState( int dik )
 {
-	return !!KBState[dik];
+	if(dik<COUNT_KB_BUTTONS)
+		return !!KBState[dik];
+	else
+	if(dik>=MOUSE_1 && dik<=MOUSE_8)
+	{
+		int mk = dik-MOUSE_1;
+		return iGetAsyncBtnState(mk);
+	}else
+		return FALSE; //unknown key ???
 }
 
 BOOL CInput::iGetAsyncBtnState( int btn )
@@ -344,14 +357,20 @@ void CInput::MouseUpdate( )
 		if ( hr != S_OK ) return;
 	};
 
+	#ifndef _EDITOR
 	if(Device.dwPrecacheFrame)
 		return;
-
+    #endif
 	BOOL				mouse_prev[COUNT_MOUSE_BUTTONS];
 
 	mouse_prev[0]		= mouseState[0];
 	mouse_prev[1]		= mouseState[1];
 	mouse_prev[2]		= mouseState[2];
+	mouse_prev[3]		= mouseState[3];
+	mouse_prev[4]		= mouseState[4];
+	mouse_prev[5]		= mouseState[5];
+	mouse_prev[6]		= mouseState[6];
+	mouse_prev[7]		= mouseState[7];
 
 	offs[0] = offs[1] = offs[2] = 0;
 	for (u32 i = 0; i < dwElements; i++){
@@ -379,33 +398,33 @@ void CInput::MouseUpdate( )
 			break;
 		case DIMOFS_BUTTON3:
 			if ( od[i].dwData & 0x80 )	
-			{ mouseState[2] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 103);		}
+			{ mouseState[3] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 103);		}
 			if ( !(od[i].dwData & 0x80))
-			{ mouseState[2] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 103);	}
+			{ mouseState[3] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 103);	}
 			break;
 		case DIMOFS_BUTTON4:
 			if ( od[i].dwData & 0x80 )	
-			{ mouseState[2] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 104);		}
+			{ mouseState[4] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 104);		}
 			if ( !(od[i].dwData & 0x80))
-			{ mouseState[2] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 104);	}
+			{ mouseState[4] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 104);	}
 			break;
 		case DIMOFS_BUTTON5:
 			if ( od[i].dwData & 0x80 )	
-			{ mouseState[2] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 105);		}
+			{ mouseState[5] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 105);		}
 			if ( !(od[i].dwData & 0x80))
-			{ mouseState[2] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 105);	}
+			{ mouseState[5] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 105);	}
 			break;
 		case DIMOFS_BUTTON6:
 			if ( od[i].dwData & 0x80 )	
-			{ mouseState[2] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 106);		}
+			{ mouseState[6] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 106);		}
 			if ( !(od[i].dwData & 0x80))
-			{ mouseState[2] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 106);	}
+			{ mouseState[6] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 106);	}
 			break;
 		case DIMOFS_BUTTON7:
 			if ( od[i].dwData & 0x80 )	
-			{ mouseState[2] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 107);		}
+			{ mouseState[7] = TRUE;				cbStack.back()->IR_OnKeyboardPress(0xED + 107);		}
 			if ( !(od[i].dwData & 0x80))
-			{ mouseState[2] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 107);	}
+			{ mouseState[7] = FALSE;			cbStack.back()->IR_OnKeyboardRelease(0xED + 107);	}
 			break;
 		}
 	}

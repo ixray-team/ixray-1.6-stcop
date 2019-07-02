@@ -1,8 +1,8 @@
 object fraBottomBar: TfraBottomBar
   Left = 0
   Top = 0
-  Width = 443
-  Height = 270
+  Width = 435
+  Height = 268
   VertScrollBar.Visible = False
   Align = alClient
   Color = 10528425
@@ -11,14 +11,14 @@ object fraBottomBar: TfraBottomBar
   object paBottomBar: TPanel
     Left = 0
     Top = 0
-    Width = 443
+    Width = 435
     Height = 17
     Align = alTop
     BevelOuter = bvLowered
     ParentColor = True
     TabOrder = 0
     object paInfo: TPanel
-      Left = 95
+      Left = 87
       Top = 1
       Width = 347
       Height = 15

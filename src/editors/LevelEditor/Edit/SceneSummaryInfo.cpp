@@ -121,10 +121,10 @@ void SSceneSummary::STextureInfo::FillProp	(PropItemVec& items, LPCSTR main_pref
         PropValue* V=0;
         V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Texture"), 		&file_name, smTexture); V->Owner()->Enable(FALSE);
         PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Format"),		info.FormatString());
-        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Size"), 			shared_str().sprintf("%d x %d x %s",info.width,info.height,info.HasAlpha()?"32b":"24b"));
-        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Memory Usage"),	shared_str().sprintf("%d Kb",iFloor(tex_mem/1024)));
-        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Effective Area"),shared_str().sprintf("%3.2f m^2",effective_area));
-        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Pixel Density"),	shared_str().sprintf("%3.2f p/m",_sqrt((pixel_area*info.width*info.height)/effective_area)));
+        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Size"), 			shared_str().printf("%d x %d x %s",info.width,info.height,info.HasAlpha()?"32b":"24b"));
+        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Memory Usage"),	shared_str().printf("%d Kb",iFloor(tex_mem/1024)));
+        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Effective Area"),shared_str().printf("%3.2f m^2",effective_area));
+        PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Pixel Density"),	shared_str().printf("%3.2f p/m",_sqrt((pixel_area*info.width*info.height)/effective_area)));
 /*
 //. убрал из-за кол-ва > 4096 
         AnsiString tmp 		= "on demand";
@@ -136,7 +136,7 @@ void SSceneSummary::STextureInfo::FillProp	(PropItemVec& items, LPCSTR main_pref
         if (info.flags.is_any(STextureParams::flDiffuseDetail|STextureParams::flBumpDetail)){
             if (0!=info.detail_name.size()){
                 V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Detail Texture"),	&info.detail_name,smTexture); 	V->Owner()->Enable(FALSE);
-                PHelper().CreateCaption(items,PrepareKey(pref.c_str(), "Detail Scale"),		shared_str().sprintf("%3.2f",info.detail_scale));
+                PHelper().CreateCaption(items,PrepareKey(pref.c_str(), "Detail Scale"),		shared_str().printf("%3.2f",info.detail_scale));
             }else{
                 PHelper().CreateCaption(items,PrepareKey(pref.c_str(), "Detail Texture"),	"INVALID");
                 ELog.Msg(mtError,"Empty details on texture: '%s'",*file_name);
@@ -278,26 +278,26 @@ void SSceneSummary::FillProp(PropItemVec& items)
     B->OnBtnClickEvent.bind(this,&SSceneSummary::OnFileClick);
     // fill items
     PHelper().CreateCaption(items,"Common\\Level Name",			Scene->m_LevelOp.m_FNLevelPath.c_str());
-    PHelper().CreateCaption(items,"Geometry\\Bounding\\Min", 	shared_str().sprintf("{%3.2f, %3.2f, %3.2f}",VPUSH(bbox.min)));
-    PHelper().CreateCaption(items,"Geometry\\Bounding\\Max", 	shared_str().sprintf("{%3.2f, %3.2f, %3.2f}",VPUSH(bbox.max)));
-    PHelper().CreateCaption(items,"Geometry\\Mesh\\Total Faces",   	shared_str().sprintf("%d",face_cnt));
-    PHelper().CreateCaption(items,"Geometry\\Mesh\\Total Vertices",	shared_str().sprintf("%d",vert_cnt));
-    PHelper().CreateCaption(items,"Geometry\\MU\\Objects",	   	shared_str().sprintf("%d",mu_objects.size()));
-    PHelper().CreateCaption(items,"Geometry\\MU\\References",   shared_str().sprintf("%d",object_mu_ref_cnt));
-    PHelper().CreateCaption(items,"Geometry\\LOD\\Objects",		shared_str().sprintf("%d",lod_objects.size()));
-    PHelper().CreateCaption(items,"Geometry\\LOD\\References",	shared_str().sprintf("%d",object_lod_ref_cnt));
-    PHelper().CreateCaption(items,"Visibility\\HOM\\Faces",		shared_str().sprintf("%d",hom_face_cnt));
-    PHelper().CreateCaption(items,"Visibility\\HOM\\Vertices",	shared_str().sprintf("%d",hom_vert_cnt));
-    PHelper().CreateCaption(items,"Visibility\\Sectors",		shared_str().sprintf("%d",sector_cnt));
-    PHelper().CreateCaption(items,"Visibility\\Portals",		shared_str().sprintf("%d",portal_cnt));
-    PHelper().CreateCaption(items,"Lights\\Count",				shared_str().sprintf("%d",light_point_cnt+light_spot_cnt));
-    PHelper().CreateCaption(items,"Lights\\By Type\\Point",		shared_str().sprintf("%d",light_point_cnt));
-    PHelper().CreateCaption(items,"Lights\\By Type\\Spot",		shared_str().sprintf("%d",light_spot_cnt));
-    PHelper().CreateCaption(items,"Lights\\By Usage\\Dynamic",	shared_str().sprintf("%d",light_dynamic_cnt));
-    PHelper().CreateCaption(items,"Lights\\By Usage\\Static",	shared_str().sprintf("%d",light_static_cnt));
-    PHelper().CreateCaption(items,"Lights\\By Usage\\Breakable",shared_str().sprintf("%d",light_breakable_cnt));
-    PHelper().CreateCaption(items,"Lights\\By Usage\\Procedural",shared_str().sprintf("%d",light_procedural_cnt));
-    PHelper().CreateCaption(items,"Glows\\Count",				shared_str().sprintf("%d",glow_cnt));
+    PHelper().CreateCaption(items,"Geometry\\Bounding\\Min", 	shared_str().printf("{%3.2f, %3.2f, %3.2f}",VPUSH(bbox.min)));
+    PHelper().CreateCaption(items,"Geometry\\Bounding\\Max", 	shared_str().printf("{%3.2f, %3.2f, %3.2f}",VPUSH(bbox.max)));
+    PHelper().CreateCaption(items,"Geometry\\Mesh\\Total Faces",   	shared_str().printf("%d",face_cnt));
+    PHelper().CreateCaption(items,"Geometry\\Mesh\\Total Vertices",	shared_str().printf("%d",vert_cnt));
+    PHelper().CreateCaption(items,"Geometry\\MU\\Objects",	   	shared_str().printf("%d",mu_objects.size()));
+    PHelper().CreateCaption(items,"Geometry\\MU\\References",   shared_str().printf("%d",object_mu_ref_cnt));
+    PHelper().CreateCaption(items,"Geometry\\LOD\\Objects",		shared_str().printf("%d",lod_objects.size()));
+    PHelper().CreateCaption(items,"Geometry\\LOD\\References",	shared_str().printf("%d",object_lod_ref_cnt));
+    PHelper().CreateCaption(items,"Visibility\\HOM\\Faces",		shared_str().printf("%d",hom_face_cnt));
+    PHelper().CreateCaption(items,"Visibility\\HOM\\Vertices",	shared_str().printf("%d",hom_vert_cnt));
+    PHelper().CreateCaption(items,"Visibility\\Sectors",		shared_str().printf("%d",sector_cnt));
+    PHelper().CreateCaption(items,"Visibility\\Portals",		shared_str().printf("%d",portal_cnt));
+    PHelper().CreateCaption(items,"Lights\\Count",				shared_str().printf("%d",light_point_cnt+light_spot_cnt));
+    PHelper().CreateCaption(items,"Lights\\By Type\\Point",		shared_str().printf("%d",light_point_cnt));
+    PHelper().CreateCaption(items,"Lights\\By Type\\Spot",		shared_str().printf("%d",light_spot_cnt));
+    PHelper().CreateCaption(items,"Lights\\By Usage\\Dynamic",	shared_str().printf("%d",light_dynamic_cnt));
+    PHelper().CreateCaption(items,"Lights\\By Usage\\Static",	shared_str().printf("%d",light_static_cnt));
+    PHelper().CreateCaption(items,"Lights\\By Usage\\Breakable",shared_str().printf("%d",light_breakable_cnt));
+    PHelper().CreateCaption(items,"Lights\\By Usage\\Procedural",shared_str().printf("%d",light_procedural_cnt));
+    PHelper().CreateCaption(items,"Glows\\Count",				shared_str().printf("%d",glow_cnt));
     // objects
     for (OISetIt o_it=objects.begin(); o_it!=objects.end(); o_it++){
     	SObjectInfo* info= (SObjectInfo*)(&(*o_it));
@@ -332,23 +332,23 @@ void SSceneSummary::FillProp(PropItemVec& items)
                     info->FillProp(items,pref.c_str(),cur_mem_usage);
                 }
             }
-            mem->ApplyValue		(shared_str().sprintf("%d Kb",iFloor(cur_mem_usage/1024)));
-            area->ApplyValue 	(shared_str().sprintf("%3.2f m^2",cur_area));
+            mem->ApplyValue		(shared_str().printf("%d Kb",iFloor(cur_mem_usage/1024)));
+            area->ApplyValue 	(shared_str().printf("%3.2f m^2",cur_area));
             total_mem_usage		+= cur_mem_usage;
         }
     }
-    total_count->ApplyValue	(shared_str().sprintf("%d",		textures.size()));
-    total_mem->ApplyValue	(shared_str().sprintf("%d Kb",	iFloor(total_mem_usage/1024)));
+    total_count->ApplyValue	(shared_str().printf("%d",		textures.size()));
+    total_mem->ApplyValue	(shared_str().printf("%d Kb",	iFloor(total_mem_usage/1024)));
 	// sound
-    PHelper().CreateCaption	(items,"Sounds\\Occluder\\Faces",		shared_str().sprintf("%d",snd_occ_face_cnt));
-    PHelper().CreateCaption	(items,"Sounds\\Occluder\\Vertices",	shared_str().sprintf("%d",snd_occ_vert_cnt));
-    PHelper().CreateCaption	(items,"Sounds\\Sources",				shared_str().sprintf("%d",sound_source_cnt));
-    PHelper().CreateCaption	(items,"Sounds\\Waves\\Count",			shared_str().sprintf("%d",waves.size()));
+    PHelper().CreateCaption	(items,"Sounds\\Occluder\\Faces",		shared_str().printf("%d",snd_occ_face_cnt));
+    PHelper().CreateCaption	(items,"Sounds\\Occluder\\Vertices",	shared_str().printf("%d",snd_occ_vert_cnt));
+    PHelper().CreateCaption	(items,"Sounds\\Sources",				shared_str().printf("%d",sound_source_cnt));
+    PHelper().CreateCaption	(items,"Sounds\\Waves\\Count",			shared_str().printf("%d",waves.size()));
     for (RStringSetIt w_it=waves.begin(); w_it!=waves.end(); w_it++)
         PHelper().CreateCaption(items,PrepareKey("Sounds\\Waves",w_it->c_str()),"-");
     // particles
-    PHelper().CreateCaption	(items,"Particle System\\Sources",		shared_str().sprintf("%d",pe_static_cnt));
-    PHelper().CreateCaption	(items,"Particle System\\Refs\\Count",	shared_str().sprintf("%d",pe_static.size()));
+    PHelper().CreateCaption	(items,"Particle System\\Sources",		shared_str().printf("%d",pe_static_cnt));
+    PHelper().CreateCaption	(items,"Particle System\\Refs\\Count",	shared_str().printf("%d",pe_static.size()));
     for (RStringSetIt pe_it=pe_static.begin(); pe_it!=pe_static.end(); pe_it++)
         PHelper().CreateCaption(items,PrepareKey("Particle System\\Refs",pe_it->c_str()),"-");
 }

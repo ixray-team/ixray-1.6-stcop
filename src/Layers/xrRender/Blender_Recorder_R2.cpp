@@ -103,6 +103,10 @@ void	CBlender_Compile::i_Address		(u32 s, u32	address)
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSV,	address);
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSW,	address);
 }
+void	CBlender_Compile::i_BorderColor	(u32 s, u32	color)
+{
+	RS.SetSAMP			(s,D3DSAMP_BORDERCOLOR,	color);
+}
 void	CBlender_Compile::i_Filter_Min		(u32 s, u32	f)
 {
 	RS.SetSAMP			(s,D3DSAMP_MINFILTER,	f);

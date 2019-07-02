@@ -86,7 +86,7 @@ public:
 	u32					size		()						const	{	if (0==p_) return 0; else return p_->dwLength;	}
 	void				swap		(shared_str & rhs)				{	str_value* tmp = p_; p_ = rhs.p_; rhs.p_ = tmp;	}
 	bool				equal		(const shared_str & rhs) const	{	return (p_ == rhs.p_);							}
-    shared_str& __cdecl	printf		(const char* format, ...)		{
+	shared_str& __cdecl	printf		(const char* format, ...)		{
 		string4096 	buf;
 		va_list		p;
 		va_start	(p,format);

@@ -83,6 +83,21 @@ void best_scores_store::load_best_scores_from_ltx(CInifile& ini)
 	}
 }
 
+void best_scores_store::merge_sake_to_ltx_best_scores()
+{
+	for (all_best_scores_t::iterator i = m_ltx_result_scores.begin(),
+		ie = m_ltx_result_scores.end(); i != ie; ++i)
+	{
+		all_best_scores_t::const_iterator tmp_bi = m_result_scores.find(
+			i->first);
+		if (tmp_bi != m_result_scores.end())
+		{
+			u32 tmp_value	= std::max(i->second, tmp_bi->second);
+			i->second		= tmp_value;
+		}
+	}
+}
+
 all_best_scores_t& best_scores_store::get_player_best_scores()
 {
 	if (m_ltx_result_scores.empty())

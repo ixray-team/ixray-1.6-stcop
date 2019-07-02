@@ -151,10 +151,10 @@ void CRenderTarget::draw_rain( light &RainSetup )
 			Fvector			localnormal;m_xform.transform_dir(localnormal,normal); localnormal.normalize();
 			m_clouds_shadow.mul			(m_xform,xf_invview)		;
 			//m_xform.scale				(0.002f,0.002f,1.f)			;
-			m_xform.scale				(1.f,1.f,1.f)				;
-			m_clouds_shadow.mulA_44		(m_xform)					;
-			m_xform.translate			(localnormal.mul(w_shift))	;
-			m_clouds_shadow.mulA_44		(m_xform)					;
+// 			m_xform.scale				(1.f,1.f,1.f)				;
+// 			m_clouds_shadow.mulA_44		(m_xform)					;
+// 			m_xform.translate			(localnormal.mul(w_shift))	;
+// 			m_clouds_shadow.mulA_44		(m_xform)					;
 		}
 
 		// Make jitter texture
@@ -241,7 +241,6 @@ void CRenderTarget::draw_rain( light &RainSetup )
 		RCache.set_c				("m_shadow",			m_shadow						);
 		RCache.set_c				("m_sunmask",			m_clouds_shadow					);
 		RCache.set_c				("RainDensity",			fRainFactor, 0, 0, 0			);
-		RCache.set_c				("RainFallof",			ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0			);
 		if( !RImplementation.o.dx10_msaa )
 		{
 			RCache.set_Stencil( TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0 );

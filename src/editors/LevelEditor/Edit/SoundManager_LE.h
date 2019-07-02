@@ -21,7 +21,7 @@ public:
     void		RefreshEnvLibrary	();
     void		RefreshEnvGeometry	(){bNeedRefreshEnvGeom = true;}
 
-    bool 		MakeEnvGeometry		(CMemoryWriter& F, bool bErrMsg=false);
+//    bool 		MakeEnvGeometry		(CMemoryWriter& F, bool bErrMsg=false);
 
     bool		Validate			();
 

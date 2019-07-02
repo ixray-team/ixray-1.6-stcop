@@ -14,6 +14,7 @@
 #include "../../xrEngine/xr_ioconsole.h"
 #include "../string_table.h"
 
+extern int g_sv_adm_menu_ping_limit;
 xr_token g_ban_times[] = {
 	{ "ui_mp_am_10_minutes",	600},
 	{ "ui_mp_am_30_minutes",	1800},
@@ -108,6 +109,8 @@ void CUIMpPlayersAdm::Init(CUIXml& xml_doc)
 	//CUIXmlInit::InitTrackBar(xml_doc, "players_adm:ban_time_track", 0, m_pBanTimeTrack);
 	//CUIXmlInit::InitTextWnd(xml_doc, "players_adm:ban_time_text", 0, m_pBanTimeText);
 	RefreshPlayersList();
+	int min, max;
+	g_sv_adm_menu_ping_limit = iCeil(Console->GetInteger("sv_max_ping_limit", min, max)/10.0f);
 	m_pPingLimitTrack->SetCurrentOptValue();
 	SetMaxPingLimitText();
 	m_pBanPlayerCombo->SetCurrentOptValue();

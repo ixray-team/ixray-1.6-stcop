@@ -27,6 +27,13 @@ void fix_texture_name(LPSTR fn)
 		*_ext = 0;
 }
 
+  ENGINE_API int g_current_renderer;
+  #ifndef _EDITOR
+  ENGINE_API bool is_enough_address_space_available();
+  #else
+  bool is_enough_address_space_available(){return true;}
+  #endif
+
 int get_texture_load_lod(LPCSTR fn)
 {
 	CInifile::Sect& sect	= pSettings->r_section("reduce_lod_texture_list");
@@ -36,8 +43,6 @@ int get_texture_load_lod(LPCSTR fn)
 	CInifile::SectCIt it	= it_;
 	CInifile::SectCIt it_e	= it_e_;
 
-	ENGINE_API int g_current_renderer;
-	ENGINE_API bool is_enough_address_space_available();
 	static bool enough_address_space_available = is_enough_address_space_available();
 
 	for(;it!=it_e;++it)
@@ -491,7 +496,8 @@ _BUMP_from_base:
 	{
 		Msg			("! auto-generated bump map: %s",fname);
 //////////////////
-		if (strstr(fname,"_bump#"))			
+#ifndef _EDITOR
+		if (strstr(fname,"_bump#"))
 		{
 			R_ASSERT2	(FS.exist(fn,"$game_textures$",	"ed\\ed_dummy_bump#",	".dds"), "ed_dummy_bump#");
 			S						= FS.r_open	(fn);
@@ -499,7 +505,7 @@ _BUMP_from_base:
 			img_size				= S->length	();
 			goto		_DDS_2D;
 		}
-		if (strstr(fname,"_bump"))			
+		if (strstr(fname,"_bump"))
 		{
 			R_ASSERT2	(FS.exist(fn,"$game_textures$",	"ed\\ed_dummy_bump",	".dds"),"ed_dummy_bump");
 			S						= FS.r_open	(fn);
@@ -509,6 +515,7 @@ _BUMP_from_base:
 			img_size				= S->length	();
 			goto		_DDS_2D;
 		}
+#endif        
 //////////////////
 
 		*strstr		(fname,"_bump")	= 0;

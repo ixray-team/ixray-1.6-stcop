@@ -27,8 +27,8 @@ extern	BOOL	g_sv_tdm_bAutoTeamSwap			;
 u32		g_sv_ah_dwArtefactRespawnDelta	= 30;
 int		g_sv_ah_dwArtefactsNum			= 10;
 u32		g_sv_ah_dwArtefactStayTime		= 3;
-int		g_sv_ah_iReinforcementTime		= 0;		//0 - Immediate, -1 - after artefact spawn , other - reinforcement
-BOOL	g_sv_ah_bBearerCantSprint		= TRUE;
+int		g_sv_ah_iReinforcementTime		= 15;		//0 - Immediate, -1 - after artefact spawn , other - reinforcement
+BOOL	g_sv_ah_bBearerCantSprint		= FALSE;
 BOOL	g_sv_ah_bShildedBases			= TRUE;
 BOOL	g_sv_ah_bAfReturnPlayersToBases = TRUE;
 //-------------------------------------------------------

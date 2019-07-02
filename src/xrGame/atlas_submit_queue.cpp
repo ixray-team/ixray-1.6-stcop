@@ -22,7 +22,7 @@ void atlas_submit_queue::submit_all()
 	gamespy_gp::login_manager* tmp_lmngr		= MainMenu()->GetLoginMngr();
 	VERIFY(tmp_lmngr);
 	gamespy_gp::profile const * tmp_curr_prof	= tmp_lmngr->get_current_profile();
-	if (!tmp_curr_prof->online())
+	if (!tmp_curr_prof || !tmp_curr_prof->online())
 	{
 		Msg("! ATLAS submit can be only in online profile mode");
 		return;

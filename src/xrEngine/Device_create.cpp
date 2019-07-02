@@ -6,6 +6,9 @@
 #include "render.h"
 #include "dedicated_server_only.h"
 #include "../xrcdb/xrxrc.h"
+
+#include "securom_api.h"
+
 extern XRCDB_API BOOL *cdb_bDebug;
 
 void	SetupGPU(IRenderDeviceRender *pRender)

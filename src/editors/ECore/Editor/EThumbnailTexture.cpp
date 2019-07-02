@@ -170,8 +170,8 @@ void ETextureThumbnail::FillInfo(PropItemVec& items)
 	STextureParams& F			= m_TexParams;
     PHelper().CreateCaption		(items, "Format",					get_token_name(tfmt_token,F.fmt));
     PHelper().CreateCaption		(items, "Type",						get_token_name(ttype_token,F.type));
-    PHelper().CreateCaption		(items, "Width",					shared_str().sprintf("%d",_Width()));
-    PHelper().CreateCaption		(items, "Height",					shared_str().sprintf("%d",_Height()));
+    PHelper().CreateCaption		(items, "Width",					shared_str().printf("%d",_Width()));
+    PHelper().CreateCaption		(items, "Height",					shared_str().printf("%d",_Height()));
     PHelper().CreateCaption		(items, "Alpha",					_Alpha()?"on":"off");
 }
 

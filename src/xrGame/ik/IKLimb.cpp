@@ -1275,7 +1275,7 @@ void 	CIKLimb::BonesCallback0( CBoneInstance* B )
 		DBG_DrawMatrix( Fmatrix( ).mul_43( *D->m_obj, Fmatrix( ).mul_43( start, bm ) ), 0.75f );
 	}
 #endif
-	R_ASSERT2(  _valid( B->mTransform ), "CIKLimb::BonesCallback0" );
+	VERIFY2(  _valid( B->mTransform ), "CIKLimb::BonesCallback0" );
 }
 void 	CIKLimb::BonesCallback1				( CBoneInstance* B )
 {
@@ -1288,7 +1288,7 @@ void 	CIKLimb::BonesCallback1				( CBoneInstance* B )
 	Fmatrix start	; 
 	get_start		( start, *D, 1 );
 	B->mTransform.mul_43( start, bm );
-	R_ASSERT2(  _valid( B->mTransform ), "CIKLimb::BonesCallback1" );
+	VERIFY2(  _valid( B->mTransform ), "CIKLimb::BonesCallback1" );
 }
 void 	CIKLimb::BonesCallback2				( CBoneInstance* B )
 {
@@ -1318,5 +1318,5 @@ void 	CIKLimb::BonesCallback2				( CBoneInstance* B )
 		DBG_DrawMatrix( Fmatrix( ).mul_43( *D->m_obj, start ), 0.3f );
 	}
 #endif
-	R_ASSERT2(  _valid( B->mTransform ), "CIKLimb::BonesCallback2" );
+	VERIFY2(  _valid( B->mTransform ), "CIKLimb::BonesCallback2" );
 }

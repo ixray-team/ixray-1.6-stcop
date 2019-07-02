@@ -114,7 +114,7 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 	string256					buff;
     for (PFloatMapIt f_it=floats.begin(); f_it!=floats.end(); ++f_it,++counter)
 	{
-		sprintf_s				(buff, sizeof(buff),"flt_%04d",counter);
+		xr_sprintf				(buff, sizeof(buff),"flt_%04d",counter);
         if(ver==0)
         {
             if(ini.line_exist(sect.c_str(), buff))
@@ -125,28 +125,28 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 	counter=0;
     for (PVectorMapIt v_it=vectors.begin(); v_it!=vectors.end(); ++v_it,++counter)
 	{
-		sprintf_s				(buff, sizeof(buff),"vec_%04d",counter);
+		xr_sprintf				(buff, sizeof(buff),"vec_%04d",counter);
 		v_it->second.val		= ini.r_fvector3	(sect.c_str(), buff);
 	}
 
 	counter=0;
     for (PDomainMapIt d_it=domains.begin();	d_it!=domains.end(); ++d_it,++counter)
 	{
-		sprintf_s				(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter);
+		xr_sprintf				(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter);
 		d_it->second.Load2		(ini, buff);
 	}
 
 	counter=0;
     for (PBoolMapIt b_it=bools.begin(); b_it!=bools.end(); ++b_it,++counter)
 	{
-		sprintf_s				(buff, sizeof(buff),"bool_%04d",counter);
+		xr_sprintf				(buff, sizeof(buff),"bool_%04d",counter);
 		b_it->second.val		= ini.r_bool		(sect.c_str(), buff);
 	}
 
 	counter=0;
     for (PIntMapIt i_it=ints.begin(); i_it!=ints.end(); ++i_it,++counter)
 	{
-		sprintf_s				(buff, sizeof(buff),"int_%04d",counter);
+		xr_sprintf				(buff, sizeof(buff),"int_%04d",counter);
 		i_it->second.val		= ini.r_s32		(sect.c_str(), buff);
 	}
 
@@ -173,34 +173,34 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 	string256			buff;
     for (PFloatMapIt f_it=floats.begin(); f_it!=floats.end(); ++f_it,++counter)
 	{
-		sprintf_s		(buff, sizeof(buff),"flt_%04d",counter);
+		xr_sprintf		(buff, sizeof(buff),"flt_%04d",counter);
 		ini.w_float		(sect.c_str(), buff, f_it->second.val);
 	}
 	counter=0;
     for (PVectorMapIt v_it=vectors.begin(); v_it!=vectors.end(); ++v_it,++counter)
 	{
-		sprintf_s		(buff, sizeof(buff),"vec_%04d",counter);
+		xr_sprintf		(buff, sizeof(buff),"vec_%04d",counter);
 		ini.w_fvector3	(sect.c_str(), buff, v_it->second.val);
 	}
 
 	counter=0;
     for (PDomainMapIt d_it=domains.begin();	d_it!=domains.end(); ++d_it,++counter)
 	{
-		sprintf_s		(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter);
+		xr_sprintf		(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter);
 		d_it->second.Save2(ini, buff);
 	}
 
 	counter=0;
     for (PBoolMapIt b_it=bools.begin(); b_it!=bools.end(); ++b_it,++counter)
 	{
-		sprintf_s		(buff, sizeof(buff),"bool_%04d",counter);
+		xr_sprintf		(buff, sizeof(buff),"bool_%04d",counter);
 		ini.w_bool		(sect.c_str(), buff, b_it->second.val);
 	}
 
 	counter=0;
     for (PIntMapIt i_it=ints.begin(); i_it!=ints.end(); ++i_it,++counter)
 	{
-		sprintf_s		(buff, sizeof(buff),"int_%04d",counter);
+		xr_sprintf		(buff, sizeof(buff),"int_%04d",counter);
 		ini.w_s32		(sect.c_str(), buff, i_it->second.val);
 	}
 }

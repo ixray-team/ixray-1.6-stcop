@@ -20,9 +20,16 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 	CSE_Abstract*	E	= F_entity_Create	(*s_name);
 	R_ASSERT2(E, *s_name);
 
+
 	E->Spawn_Read		(P);
 	if (E->s_flags.is(M_SPAWN_UPDATE))
 		E->UPDATE_Read	(P);
+
+	if (!E->match_configuration())
+	{
+		F_entity_Destroy(E);
+		return;
+	}
 //-------------------------------------------------
 //.	Msg ("M_SPAWN - %s[%d][%x] - %d %d", *s_name,  E->ID, E,E->ID_Parent, Device.dwFrame);
 //-------------------------------------------------

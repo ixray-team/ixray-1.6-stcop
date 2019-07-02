@@ -37,7 +37,7 @@ void __fastcall TfraBottomBar::ClickOptionsMenuItem(TObject *Sender)
         else if (mi==miRenderLinearFilter)	psDeviceFlags.set(rsFilterLinear,mi->Checked);
         else if (mi==miRenderEdgedFaces)	psDeviceFlags.set(rsEdgedFaces,mi->Checked);
         else if (mi==miFog)					psDeviceFlags.set(rsFog,mi->Checked);
-        else if (mi==miRealTime)			psDeviceFlags.set(rsRenderRealTime,mi->Checked);
+        else if (mi==miRealTime)            psDeviceFlags.set(rsRenderRealTime,mi->Checked);
         else if (mi==miDrawSafeRect)		ExecCommand(COMMAND_TOGGLE_SAFE_RECT);
         else if (mi==miRenderFillPoint)		EDevice.dwFillMode 	= D3DFILL_POINT;
         else if (mi==miRenderFillWireframe)	EDevice.dwFillMode 	= D3DFILL_WIREFRAME;

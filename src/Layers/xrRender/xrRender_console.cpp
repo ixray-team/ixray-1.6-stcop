@@ -51,9 +51,7 @@ xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_high",				2												},
 #if defined(USE_DX10) || defined(USE_DX11)
 	{ "st_opt_ultra",				3												},
-#	ifdef USE_DX11
 	{ "st_opt_extreme",				4												},
-#	endif
 #endif	//	USE_DX10
 	{ 0,							0												}
 };
@@ -133,6 +131,7 @@ float		ps_r1_pps_v					= 0.f	;
 // R1-specific
 int			ps_r1_GlowsPerFrame			= 16	;					// r1-only
 float		ps_r1_fog_luminance			= 1.1f	;					// r1-only
+int			ps_r1_SoftwareSkinning		= 0		;					// r1-only
 
 // R2
 float		ps_r2_ssaLOD_A				= 64.f	;
@@ -720,6 +719,12 @@ void		xrRender_initconsole	()
 
 	CMD4(CCC_Float,		"r1_fog_luminance",		&ps_r1_fog_luminance,		0.2f,	5.f	);
 
+	// Software Skinning
+	// 0 - disabled (renderer can override)
+	// 1 - enabled
+	// 2 - forced hardware skinning (renderer can not override)
+	CMD4(CCC_Integer,	"r1_software_skinning",	&ps_r1_SoftwareSkinning,	0,		2	);
+
 	// R2
 	CMD4(CCC_Float,		"r2_ssa_lod_a",			&ps_r2_ssaLOD_A,			16,		96		);
 	CMD4(CCC_Float,		"r2_ssa_lod_b",			&ps_r2_ssaLOD_B,			32,		64		);
@@ -798,8 +803,12 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dhemi_light_scale",	&ps_r2_dhemi_light_scale,	0,		100.f	);
 	CMD4(CCC_Float,		"r2_dhemi_light_flow",	&ps_r2_dhemi_light_flow,	0,		1.f	);
 	CMD4(CCC_Float,		"r2_dhemi_smooth",		&ps_r2_lt_smooth,			0.f,	10.f	);
-	CMD3(CCC_Mask,		"rs_hom_depth_draw",	&ps_r2_ls_flags_ext,R_FLAGEXT_HOM_DEPTH_DRAW);
+	CMD3(CCC_Mask,		"rs_hom_depth_draw",	&ps_r2_ls_flags_ext,		R_FLAGEXT_HOM_DEPTH_DRAW);
+	
 #endif // DEBUG
+
+	CMD3(CCC_Mask,		"r2_shadow_cascede_zcul",&ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_ZCULLING);
+	CMD3(CCC_Mask,		"r2_shadow_cascede_old", &ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_OLD);
 
 	CMD4(CCC_Float,		"r2_ls_depth_scale",	&ps_r2_ls_depth_scale,		0.5,	1.5		);
 	CMD4(CCC_Float,		"r2_ls_depth_bias",		&ps_r2_ls_depth_bias,		-0.5,	+0.5	);

@@ -53,7 +53,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if (factor<EPS_L)			return;
 
-	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
+  	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
 	// visual
 	float		factor_visual	= factor/2.f+.5f;
 	Fvector3	f_rain_color	= g_pGamePersistent->Environment().CurrentEnv->rain_color;

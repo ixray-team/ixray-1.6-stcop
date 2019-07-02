@@ -3,6 +3,7 @@
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"
+#include "blender_light_direct_cascade.h"
 #include "blender_light_point.h"
 #include "blender_light_spot.h"
 #include "blender_light_reflected.h"
@@ -201,6 +202,7 @@ CRenderTarget::CRenderTarget		()
 	b_occq							= xr_new<CBlender_light_occq>			();
 	b_accum_mask					= xr_new<CBlender_accum_direct_mask>	();
 	b_accum_direct					= xr_new<CBlender_accum_direct>			();
+	b_accum_direct_cascade			= xr_new<CBlender_accum_direct_cascade>	();
 	b_accum_point					= xr_new<CBlender_accum_point>			();
 	b_accum_spot					= xr_new<CBlender_accum_spot>			();
 	b_accum_reflected				= xr_new<CBlender_accum_reflected>		();
@@ -263,10 +265,14 @@ CRenderTarget::CRenderTarget		()
 		rt_smap_depth.create		(r2_RT_smap_depth,			size,size,depth_format	);
 		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
 		rt_smap_ZB					= NULL;
-		s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
-		s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
+		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
+		s_accum_direct.create			(b_accum_direct,			"r2\\accum_direct");
+		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
 		if (RImplementation.o.advancedpp)
+		{
 			s_accum_direct_volumetric.create("accum_volumetric_sun");
+			s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
+		}
 	}
 	else
 	{
@@ -274,10 +280,14 @@ CRenderTarget::CRenderTarget		()
 		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
 		rt_smap_depth				= NULL;
 		R_CHK						(HW.pDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,NULL));
-		s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
-		s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
+		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
+		s_accum_direct.create			(b_accum_direct,			"r2\\accum_direct");
+		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
 		if (RImplementation.o.advancedpp)
+		{
 			s_accum_direct_volumetric.create("accum_volumetric_sun");
+			s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
+		}
 	}
 
 	// POINT
@@ -391,6 +401,7 @@ CRenderTarget::CRenderTarget		()
 		g_combine_VP.create					(dwDecl,		RCache.Vertex.Buffer(), RCache.QuadIB);
 		g_combine.create					(FVF::F_TL,		RCache.Vertex.Buffer(), RCache.QuadIB);
 		g_combine_2UV.create				(FVF::F_TL2uv,	RCache.Vertex.Buffer(), RCache.QuadIB);
+		g_combine_cuboid.create				(FVF::F_L,	RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
 		u32 fvf_aa_blur				= D3DFVF_XYZRHW|D3DFVF_TEX4|D3DFVF_TEXCOORDSIZE2(0)|D3DFVF_TEXCOORDSIZE2(1)|D3DFVF_TEXCOORDSIZE2(2)|D3DFVF_TEXCOORDSIZE2(3);
 		g_aa_blur.create			(fvf_aa_blur,	RCache.Vertex.Buffer(), RCache.QuadIB);
@@ -617,6 +628,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_accum_spot			);
 	xr_delete					(b_accum_point			);
 	xr_delete					(b_accum_direct			);
+	xr_delete					(b_accum_direct_cascade	);
 	xr_delete					(b_accum_mask			);
 	xr_delete					(b_occq					);
 }
@@ -674,4 +686,19 @@ void CRenderTarget::increment_light_marker()
 	//if (dwLightMarkerID>10)
 	if (dwLightMarkerID>255)
 		reset_light_marker(true);
+}
+
+bool CRenderTarget::need_to_render_sunshafts()
+{
+	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+		return false;
+
+	{
+		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
+		float fValue = E.m_fSunShaftsIntensity;
+		//	TODO: add multiplication by sun color here
+		if (fValue<0.0001) return false;
+	}
+
+	return true;
 }

@@ -208,10 +208,10 @@
   </BUILDTOOLS>
 
   <FILES>
-    <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
     <FILE type="override" value="blackbox\stdafx_.cpp" translator="Auto">

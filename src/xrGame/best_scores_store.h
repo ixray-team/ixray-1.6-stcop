@@ -25,7 +25,8 @@ public:
 	bool						is_sake_equal_to_file		() const;
 	void						reset_scores				();
 
-	all_best_scores_t&			get_player_best_scores		();
+	all_best_scores_t&			get_player_best_scores			();
+	void						merge_sake_to_ltx_best_scores	();
 	
 	static int const			fields_count = bst_score_types_count;
 	typedef char* best_fields_names_t[fields_count];

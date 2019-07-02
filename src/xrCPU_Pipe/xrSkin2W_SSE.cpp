@@ -1,329 +1,355 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifdef _EDITOR
-#include "skeletonX.h"
-#include "skeletoncustom.h"
-#else
-#include "..\skeletonX.h"
-#include "..\skeletoncustom.h"
-#endif
+#define transform_dir(idx,res,SX,SY,SZ,T1)									\
+__asm	movzx		eax, WORD PTR [esi][idx*(TYPE u16)]S.m					\
+__asm	movaps		res, SX													\
+__asm	sal			eax, 5													\
+__asm	lea			eax, [eax+eax*4]										\
+__asm	movaps		T1, SY													\
+__asm	mulps		res, XMMWORD PTR [edx][eax][64]							\
+__asm	mulps		T1, XMMWORD PTR [edx][eax][80]							\
+__asm	addps		res, T1													\
+__asm	movaps		T1, SZ													\
+__asm	mulps		T1, XMMWORD PTR [edx][eax][96]							\
+__asm	addps		res, T1													
 
-// -- offsets -------------------------------------------------------
-#define M11 0
-#define M12 4
-#define M13 8
-#define M14 12
-#define M21 16
-#define M22 20
-#define M23 24
-#define M24 28
-#define M31 32
-#define M32 36
-#define M33 40
-#define M34 44
-#define M41 48
-#define M42 52
-#define M43 56
-#define M44 60
+#define transform_tiny(idx,res,SX,SY,SZ,T1)									\
+transform_dir(idx,res,SX,SY,SZ,T1)											\
+__asm	addps		res, XMMWORD PTR [edx][eax][112]	
+
+#define shuffle_vec(VEC,SX,SY,SZ)											\
+__asm	movss		SX, DWORD PTR [esi]VEC.x								\
+__asm	movss		SY, DWORD PTR [esi]VEC.y								\
+__asm	shufps		SX, SX, _MM_SHUFFLE(1,0,0,0)							\
+__asm	movss		SZ, DWORD PTR [esi]VEC.z								\
+__asm	shufps		SY, SY, _MM_SHUFFLE(1,0,0,0)							\
+__asm	shufps		SZ, SZ, _MM_SHUFFLE(1,0,0,0)							\
+
+#define shuffle_sw4(SW0,SW1,SW2,SW3)										\
+__asm	movss		SW3, DWORD PTR [One]									\
+__asm	movss		SW0, DWORD PTR [esi][0*(TYPE float)]S.w					\
+__asm	movss		SW1, DWORD PTR [esi][1*(TYPE float)]S.w					\
+__asm	subss		SW3, SW0												\
+__asm	shufps		SW0, SW0, _MM_SHUFFLE(1,0,0,0)							\
+__asm	subss		SW3, SW1												\
+__asm	movss		SW2, DWORD PTR [esi][2*(TYPE float)]S.w					\
+__asm	shufps		SW1, SW1, _MM_SHUFFLE(1,0,0,0)							\
+__asm	subss		SW3, SW2												\
+__asm	shufps		SW2, SW2, _MM_SHUFFLE(1,0,0,0)							\
+__asm	shufps		SW3, SW3, _MM_SHUFFLE(1,0,0,0)							
+
+// ==================================================================
+void __stdcall xrSkin4W_SSE(vertRender*		D,
+							vertBoned4W*	S,
+							u32				vCount,
+							CBoneInstance*	Bones) 
+{
+__m128 P0,P1,P2,P3; DWORD One;
+__asm{
 // ------------------------------------------------------------------
+	mov			edi, DWORD PTR [D]			; edi = D
+	mov			esi, DWORD PTR [S]			; esi = S
+	mov			ecx, DWORD PTR [vCount]		; ecx = vCount
+	mov			edx, DWORD PTR [Bones]		; edx = Bones
+	mov			DWORD PTR [One], 0x3f800000	; One = 1.0f
+// ------------------------------------------------------------------
+	ALIGN		16				;
+	new_vert:					; _new cycle iteration
+// ------------------------------------------------------------------
+	shuffle_vec(S.P,xmm4,xmm5,xmm6);
 
-/*
-struct vertBoned2W	// (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
+	transform_tiny(0,xmm0,xmm4,xmm5,xmm6,xmm7);		xmm0 = P0
+	transform_tiny(1,xmm1,xmm4,xmm5,xmm6,xmm7);		xmm1 = P1
+	transform_tiny(2,xmm2,xmm4,xmm5,xmm6,xmm7);		xmm2 = P2
+	transform_tiny(3,xmm3,xmm4,xmm5,xmm6,xmm7);		xmm3 = P3
+
+	movaps		XMMWORD PTR [P0], xmm0
+	movaps		XMMWORD PTR [P1], xmm1
+	movaps		XMMWORD PTR [P2], xmm2
+	movaps		XMMWORD PTR [P3], xmm3
+
+	shuffle_vec(S.N,xmm4,xmm5,xmm6);
+
+	transform_dir(0,xmm0,xmm4,xmm5,xmm6,xmm7);		xmm0 = N0
+	transform_dir(1,xmm1,xmm4,xmm5,xmm6,xmm7);		xmm1 = N1
+	transform_dir(2,xmm2,xmm4,xmm5,xmm6,xmm7);		xmm2 = N2
+	transform_dir(3,xmm3,xmm4,xmm5,xmm6,xmm7);		xmm3 = N3
+
+	shuffle_sw4(xmm4,xmm5,xmm6,xmm7);
+
+	mulps		xmm0, xmm4					; xmm0 = N0
+	mulps		xmm1, xmm5					; xmm1 = N1
+	mulps		xmm2, xmm6					; xmm2 = N2
+	addps		xmm0, xmm1					; xmm0 = N0 + N1
+	mulps		xmm3, xmm7					; xmm3 = N3
+
+	mulps		xmm4, XMMWORD PTR [P0]		; xmm4 = P0
+	mulps		xmm5, XMMWORD PTR [P1]		; xmm5 = P1 
+	mulps		xmm6, XMMWORD PTR [P2]		; xmm6 = P2
+	addps		xmm4, xmm5					; xmm4 = P0 + P1
+	mulps		xmm7, XMMWORD PTR [P3]		; xmm7 = P3
+
+	addps		xmm0, xmm2					; xmm0 = N0 + N1 + N2
+	addps		xmm4, xmm6					; xmm4 = P0 + P1 + P2
+	addps		xmm0, xmm3					; xmm0 = N0 + N1 + N2 + N3 = 00 | Nz | Ny | Nx
+	addps		xmm4, xmm7					; xmm4 = P0 + P1 + P2 + P3 = 00 | Pz | Py | Px
+// ------------------------------------------------------------------
+	movlps		xmm1, MMWORD PTR [esi]S.u	; xmm1 = ?? | ?? | v | u
+	movaps		xmm5, xmm4					; xmm5 = 00 | Pz | Py | Px
+	add			edi,TYPE vertRender			;	// advance dest
+	movss		xmm5, xmm0					; xmm5 = 00 | Pz | Py | Nx
+	prefetchnta BYTE PTR [esi+4*(TYPE vertBoned4W)];		one cache line ahead
+	add			esi,TYPE vertBoned4W		;	// advance source
+
+	shufps		xmm4, xmm5, _MM_SHUFFLE(0,2,1,0)	; xmm4 = Nx | Pz | Py | Px
+	shufps		xmm0, xmm1, _MM_SHUFFLE(1,0,2,1)	; xmm0 = v | u | Nz | Ny
+// ------------------------------------------------------------------
+	dec			ecx								;	// vCount--
+// ------------------------------------------------------------------
+//	writing data
+// ------------------------------------------------------------------
+	movntps		XMMWORD PTR [edi-(TYPE vertRender)],xmm4		; 
+	movntps		XMMWORD PTR [edi+16-(TYPE vertRender)],xmm0		; 
+// ------------------------------------------------------------------
+	jnz			new_vert						;	// vCount == 0 ? exit : goto new_vert
+// ------------------------------------------------------------------
+	sfence										;	write back cache
+// ------------------------------------------------------------------
+}}
+
+
+#define shuffle_sw3(SW0,SW1,SW2)											\
+__asm	movss		SW2, DWORD PTR [One]									\
+__asm	movss		SW0, DWORD PTR [esi][0*(TYPE float)]S.w					\
+__asm	movss		SW1, DWORD PTR [esi][1*(TYPE float)]S.w					\
+__asm	subss		SW2, SW0												\
+__asm	shufps		SW0, SW0, _MM_SHUFFLE(1,0,0,0)							\
+__asm	subss		SW2, SW1												\
+__asm	shufps		SW1, SW1, _MM_SHUFFLE(1,0,0,0)							\
+__asm	shufps		SW2, SW2, _MM_SHUFFLE(1,0,0,0)							
+
+
+// ==================================================================
+void __stdcall xrSkin3W_SSE(vertRender*		D,
+							vertBoned3W*	S,
+							u32				vCount,
+							CBoneInstance*	Bones) 
 {
-	u16	matrix0;
-	u16	matrix1;
-	Fvector	P0;
-	Fvector	N0;
-	Fvector	P1;
-	Fvector	N1;
-	float	w;
-	float	u,v;
-};
+__m128 P0,P1; DWORD One;
+__asm{
+// ------------------------------------------------------------------
+	mov			edi, DWORD PTR [D]			; edi = D
+	mov			esi, DWORD PTR [S]			; esi = S
+	mov			ecx, DWORD PTR [vCount]		; ecx = vCount
+	mov			edx, DWORD PTR [Bones]		; edx = Bones
+	mov			DWORD PTR [One], 0x3f800000	; One = 1.0f
+// ------------------------------------------------------------------
+	ALIGN		16				;
+	new_vert:					; _new cycle iteration
+// ------------------------------------------------------------------
+	shuffle_vec(S.P,xmm4,xmm5,xmm6);
 
-struct vertRender
-{
-	Fvector	P;
-	Fvector	N;
-	float	u,v;
-};
+	transform_tiny(0,xmm0,xmm4,xmm5,xmm6,xmm7);		xmm0 = P0
+	transform_tiny(1,xmm1,xmm4,xmm5,xmm6,xmm7);		xmm1 = P1
+	transform_tiny(2,xmm2,xmm4,xmm5,xmm6,xmm7);		xmm2 = P2
 
-	IC	void	transform_tiny		(Tvector &dest, const Tvector &v)	const // preferred to use
-	{
-		dest.x = v.x*_11 + v.y*_21 + v.z*_31 + _41;
-		dest.y = v.x*_12 + v.y*_22 + v.z*_32 + _42;
-		dest.z = v.x*_13 + v.y*_23 + v.z*_33 + _43;
-	}
-	IC	void	transform_dir		(Tvector &dest, const Tvector &v)	const 	// preferred to use
-	{
-		dest.x = v.x*_11 + v.y*_21 + v.z*_31;
-		dest.y = v.x*_12 + v.y*_22 + v.z*_32;
-		dest.z = v.x*_13 + v.y*_23 + v.z*_33;
-	}
-	IC	SelfRef	lerp(const Self &p1, const Self &p2, T t )
-	{
-		T invt = 1.f-t;
-		x = p1.x*invt + p2.x*t;
-		y = p1.y*invt + p2.y*t;
-		z = p1.z*invt + p2.z*t;
-		return *this;	
-	}
+	movaps		XMMWORD PTR [P0], xmm0
+	movaps		XMMWORD PTR [P1], xmm1
 
-*/
+	shuffle_vec(S.N,xmm4,xmm5,xmm6);
 
-#define LINE1(base) XMMWORD PTR [base+M11]
-#define LINE2(base) XMMWORD PTR [base+M21]
-#define LINE3(base) XMMWORD PTR [base+M31]
-#define LINE4(base) XMMWORD PTR [base+M41]
+	transform_dir(0,xmm0,xmm4,xmm5,xmm6,xmm7);		xmm0 = N0
+	transform_dir(1,xmm1,xmm4,xmm5,xmm6,xmm7);		xmm1 = N1
+	transform_dir(2,xmm3,xmm4,xmm5,xmm6,xmm7);		xmm3 = N2
 
+	shuffle_sw3(xmm4,xmm5,xmm6);
+
+	mulps		xmm0, xmm4					; xmm0 = N0
+	mulps		xmm1, xmm5					; xmm1 = N1
+	mulps		xmm3, xmm6					; xmm2 = N2
+	
+	addps		xmm0, xmm1					; xmm0 = N0 + N1
+
+	mulps		xmm4, XMMWORD PTR [P0]		; xmm4 = P0
+	mulps		xmm5, XMMWORD PTR [P1]		; xmm5 = P1 
+	mulps		xmm6, xmm2					; xmm6 = P2
+
+	addps		xmm4, xmm5					; xmm4 = P0 + P1
+
+	addps		xmm0, xmm3					; xmm0 = N0 + N1 + N2
+	addps		xmm4, xmm6					; xmm4 = P0 + P1 + P2
+// ------------------------------------------------------------------
+	movlps		xmm1, MMWORD PTR [esi]S.u	; xmm1 = ?? | ?? | v | u
+	movaps		xmm5, xmm4					; xmm5 = 00 | Pz | Py | Px
+	add			edi,TYPE vertRender			;	// advance dest
+	movss		xmm5, xmm0					; xmm5 = 00 | Pz | Py | Nx
+	prefetchnta BYTE PTR [esi+8*(TYPE vertBoned3W)];		one cache line ahead
+	add			esi,TYPE vertBoned3W		;	// advance source
+
+	shufps		xmm4, xmm5, _MM_SHUFFLE(0,2,1,0)	; xmm4 = Nx | Pz | Py | Px
+	shufps		xmm0, xmm1, _MM_SHUFFLE(1,0,2,1)	; xmm0 = v | u | Nz | Ny
+// ------------------------------------------------------------------
+	dec			ecx								;	// vCount--
+// ------------------------------------------------------------------
+//	writing data
+// ------------------------------------------------------------------
+	movntps		XMMWORD PTR [edi-(TYPE vertRender)],xmm4		; 
+	movntps		XMMWORD PTR [edi+16-(TYPE vertRender)],xmm0		; 
+// ------------------------------------------------------------------
+	jnz			new_vert						;	// vCount == 0 ? exit : goto new_vert
+// ------------------------------------------------------------------
+	sfence										;	write back cache
+// ------------------------------------------------------------------
+}}
+
+
+#define transform_dir2(idx,res,SX,SY,SZ,T1)									\
+__asm	movzx		eax, WORD PTR [esi]S.matrix##idx						\
+__asm	movaps		res, SX													\
+__asm	sal			eax, 5													\
+__asm	lea			eax, [eax+eax*4]										\
+__asm	movaps		T1, SY													\
+__asm	mulps		res, XMMWORD PTR [edx][eax][64]							\
+__asm	mulps		T1, XMMWORD PTR [edx][eax][80]							\
+__asm	addps		res, T1													\
+__asm	movaps		T1, SZ													\
+__asm	mulps		T1, XMMWORD PTR [edx][eax][96]							\
+__asm	addps		res, T1
+
+#define transform_tiny2(idx,res,SX,SY,SZ,T1)								\
+transform_dir2(idx,res,SX,SY,SZ,T1)											\
+__asm	addps		res, XMMWORD PTR [edx][eax][112]
+
+
+// ==================================================================
 void __stdcall xrSkin2W_SSE(vertRender*		D,
 							vertBoned2W*	S,
 							u32				vCount,
 							CBoneInstance*	Bones) 
 {__asm{
 // ------------------------------------------------------------------
-	mov			ecx,vCount		; ecx = vCount
-// ------------------------------------------------------------------
-//	esi		= source _vector_ [S]
-//	edi		= result _vector_ [D]
-//	eax		= transform matrix 1
-//	ebx		= transform matrix 0
-// ------------------------------------------------------------------
-	mov			edi,D			; edi = D
-	mov			esi,S			; esi = S
+	mov			edi, DWORD PTR [D]			; edi = D
+	mov			esi, DWORD PTR [S]			; esi = S
+	mov			ecx, DWORD PTR [vCount]		; ecx = vCount
+	mov			edx, DWORD PTR [Bones]		; edx = Bones
 // ------------------------------------------------------------------
 	ALIGN		16				;
-	new_dot:					; _new cycle iteration
+	new_vert:					; _new cycle iteration
 // ------------------------------------------------------------------
-// checking for private case, when matrixes are equal
+	shuffle_vec(S.P,xmm4,xmm5,xmm6);
+
+	transform_tiny2(0,xmm0,xmm4,xmm5,xmm6,xmm7);		xmm0 = P0
+	transform_tiny2(1,xmm1,xmm4,xmm5,xmm6,xmm7);		xmm1 = P1
+
+	shuffle_vec(S.N,xmm4,xmm5,xmm6);
+
+	transform_dir2(0,xmm2,xmm4,xmm5,xmm6,xmm7);			xmm2 = N0
+	transform_dir2(1,xmm3,xmm4,xmm5,xmm6,xmm7);			xmm3 = N1
+
+	movss		xmm7, DWORD PTR [esi]S.w				; xmm7 = 0 | 0 | 0 | w
+
+	subps		xmm1, xmm0								; xmm1 = P1 - P0
+	shufps		xmm7, xmm7, _MM_SHUFFLE(1,0,0,0)		; xmm7 = 0 | w | w | w
+	subps		xmm3, xmm2								; xmm3 = N1 - N0
+
+	mulps		xmm1, xmm7								; xmm1 = (P1 - P0)*w
+	mulps		xmm3, xmm7								; xmm3 = (N1 - N0)*w
+
+	addps		xmm0, xmm1								; xmm0 = P0 + (P1 - P0)*w
+	addps		xmm2, xmm3								; xmm2 = N0 + (N1 - N0)*w
+
+	movlps		xmm7, MMWORD PTR [esi]S.u				; xmm7 = ?? | ?? | v | u
+	movaps		xmm5, xmm0								; xmm5 = 00 | Pz | Py | Px
+	add			edi,TYPE vertRender						;	// advance dest
+	movss		xmm5, xmm2								; xmm5 = 00 | Pz | Py | Nx
+	prefetchnta BYTE PTR [esi+12*(TYPE vertBoned2W)];		one cache line ahead
+	add			esi,TYPE vertBoned2W					;	// advance source
+
+	shufps		xmm0, xmm5, _MM_SHUFFLE(0,2,1,0)		; xmm0 = Nx | Pz | Py | Px
+	shufps		xmm2, xmm7, _MM_SHUFFLE(1,0,2,1)		; xmm2 = v | u | Nz | Ny
 // ------------------------------------------------------------------
-	mov			ax,WORD PTR [esi]S.matrix0		;	ax = matrix0 index
-	mov			bx,WORD PTR [esi]S.matrix1		;	bx = matrix1 index
-	cmp			ax,bx							;
-	jz			save_private_case				; 
-// ------------------------------------------------------------------
-// calculating transformation matrix 0 addresses
-// ------------------------------------------------------------------
-	mov			eax,TYPE CBoneInstance			;
-	mul			WORD PTR [esi]S.matrix0			;
-	add			eax,Bones						;
-	mov			ebx,eax							;
-// ------------------------------------------------------------------
-// calculating transformation matrix 1 addresses
-// ------------------------------------------------------------------
-	mov			eax,TYPE CBoneInstance			;
-	mul			WORD PTR [esi]S.matrix1			;
-	add			eax,Bones						;
-// ------------------------------------------------------------------
-// transform tiny m1 & m0 interleaved
-// ------------------------------------------------------------------
-	movups		xmm3,XMMWORD PTR [esi]S.P1		; xmm3 = ?.? | v.z | v.y | v.x
-	movups		xmm0,XMMWORD PTR [esi]S.P0		; xmm0 = ?.? | v.z | v.y | v.x
-
-// ------------------------------------------------------------------
-	movss		xmm7,DWORD PTR [esi]S.w			; xmm7 = ?.? | ?.? | ?.? | w
-// ------------------------------------------------------------------
-
-	movaps		xmm4,xmm3						; xmm4 = ?.? | v.z | v.y | v.x
-	movaps		xmm1,xmm0						; xmm1 = ?.? | v.z | v.y | v.x
-
-	movaps		xmm5,xmm3						; xmm5 = ?.? | v.z | v.y | v.x
-	movaps		xmm2,xmm0						; xmm2 = ?.? | v.z | v.y | v.x
-
-	shufps		xmm4,xmm4,00000000b				; xmm4 = v.x | v.x | v.x | v.x
-	shufps		xmm1,xmm1,00000000b				; xmm1 = v.x | v.x | v.x | v.x
-
-	shufps		xmm5,xmm5,01010101b				; xmm5 = v.y | v.y | v.y | v.y
-	shufps		xmm2,xmm2,01010101b				; xmm2 = v.y | v.y | v.y | v.y
-	
-	mulps		xmm4,LINE1(eax)					; xmm4 = v.x*_14 | v.x*_13 | v.x*_12 | v.x*_11
-	mulps		xmm1,LINE1(ebx)					; xmm1 = v.x*_14 | v.x*_13 | v.x*_12 | v.x*_11
-
-	mulps		xmm5,LINE2(eax)					; xmm5 = v.y*_24 | v.y*_23 | v.y*_22 | v.y*_21
-	mulps		xmm2,LINE2(ebx)					; xmm2 = v.y*_24 | v.y*_23 | v.y*_22 | v.y*_21
-	
-	addps		xmm4,xmm5						; xmm4 = v.x*_14+v.y*_24 | v.x*_13+v.y*_23 |
-												;		 v.x*_12+v.y*_22 | v.x*_11+v.y*_21
-	addps		xmm1,xmm2						; xmm1 = v.x*_14+v.y*_24 | v.x*_13+v.y*_23 |
-												;		 v.x*_12+v.y*_22 | v.x*_11+v.y*_21
-
-	movaps		xmm5,xmm3						; xmm5 = ?.? | v.z | v.y | v.x
-	movaps		xmm2,xmm0						; xmm2 = ?.? | v.z | v.y | v.x
-
-	shufps		xmm5,xmm5,10101010b				; xmm5 = v.z | v.z | v.z | v.z
-	shufps		xmm2,xmm2,10101010b				; xmm2 = v.z | v.z | v.z | v.z
-
-	mulps		xmm5,LINE3(eax)					; xmm5 = v.z*_34 | v.z*_33 | v.z*_32 | v.z*_31
-	mulps		xmm2,LINE3(ebx)					; xmm2 = v.z*_34 | v.z*_33 | v.z*_32 | v.z*_31
-
-	addps		xmm5,LINE4(eax)					; xmm5 = v.z*_34+_44 | v.z*_33+_43 | 
-												;		 v.z*_32+_42 | v.z*_31+_41
-	addps		xmm2,LINE4(ebx)					; xmm2 = v.z*_34+_44 | v.z*_33+_43 | 
-												;		 v.z*_32+_42 | v.z*_31+_41
-
-	addps		xmm5,xmm4						; xmm5 = v.x*_14+v.y*_24+v.z*_34+_44 | v.x*_13+v.y*_23+v.z*_33+_43 |
-												;		 v.x*_12+v.y*_22+v.z*_32+_42 | v.x*_11+v.y*_21+v.z*_31+_41
-	addps		xmm2,xmm1						; xmm2 = v.x*_14+v.y*_24+v.z*_34+_44 | v.x*_13+v.y*_23+v.z*_33+_43 |
-												;		 v.x*_12+v.y*_22+v.z*_32+_42 | v.x*_11+v.y*_21+v.z*_31+_41
-// ------------------------------------------------------------------
-// lerp P0 & P1
-// ------------------------------------------------------------------
-	shufps		xmm7,xmm7,00000000b				; xmm7 = w | w | w | w
-// ------------------------------------------------------------------
-	subps		xmm5,xmm2			; xmm5 = ?.? | p1.z-p0.z | p1.y-p1.y | p1.x-p0.x
-	mulps		xmm5,xmm7			; xmm5 = ?.? | (p1.z-p0.z)*w | (p1.y-p0.y)*w | (p1.x-p0.x)*w
-	addps		xmm5,xmm2			; xmm5 = ?.? | (p1.z-p0.z)*w+p0.z | (p1.y-p0.y)*w+p0.y | (p1.x-p0.x)*w+p0.x
-// ------------------------------------------------------------------
-// => xmm5			: lerp(p0,p1) result	: ?.? | lerp(z) | lerp(y) | lerp(x)
-// ------------------------------------------------------------------
-// transform dir m1 & m0 interleaved
-// ------------------------------------------------------------------	
-	movups		xmm3,XMMWORD PTR [esi]S.N1		; xmm3 = ?.? | v.z | v.y | v.x
-	movaps		xmm0,XMMWORD PTR [esi]S.N0		; xmm0 = ?.? | v.z | v.y | v.x
-	
-	movaps		xmm4,xmm3						; xmm4 = ?.? | v.z | v.y | v.x
-	movaps		xmm1,xmm0						; xmm1 = ?.? | v.z | v.y | v.x
-
-	movaps		xmm6,xmm3						; xmm6 = ?.? | v.z | v.y | v.x
-	movaps		xmm2,xmm0						; xmm2 = ?.? | v.z | v.y | v.x
-
-	shufps		xmm4,xmm4,00000000b				; xmm4 = v.x | v.x | v.x | v.x
-	shufps		xmm1,xmm1,00000000b				; xmm1 = v.x | v.x | v.x | v.x
-
-	shufps		xmm6,xmm6,01010101b				; xmm6 = v.y | v.y | v.y | v.y
-	shufps		xmm2,xmm2,01010101b				; xmm2 = v.y | v.y | v.y | v.y
-
-	mulps		xmm4,LINE1(eax)					; xmm4 = v.x*_14 | v.x*_13 | v.x*_12 | v.x*_11
-	mulps		xmm1,LINE1(ebx)					; xmm1 = v.x*_14 | v.x*_13 | v.x*_12 | v.x*_11
-
-	mulps		xmm6,LINE2(eax)					; xmm6 = v.y*_24 | v.y*_23 | v.y*_22 | v.y*_21
-	mulps		xmm2,LINE2(ebx)					; xmm2 = v.y*_24 | v.y*_23 | v.y*_22 | v.y*_21
-	
-	addps		xmm4,xmm2						; xmm4 = v.x*_14+v.y*_24 | v.x*_13+v.y*_23 |
-												;		 v.x*_12+v.y*_22 | v.x*_11+v.y*_21
-	addps		xmm1,xmm2						; xmm1 = v.x*_14+v.y*_24 | v.x*_13+v.y*_23 |
-												;		 v.x*_12+v.y*_22 | v.x*_11+v.y*_21
-
-	movaps		xmm6,xmm3						; xmm6 = ?.? | v.z | v.y | v.x
-	movaps		xmm2,xmm0						; xmm2 = ?.? | v.z | v.y | v.x
-
-	shufps		xmm6,xmm6,10101010b				; xmm6 = v.z | v.z | v.z | v.z
-	shufps		xmm2,xmm2,10101010b				; xmm2 = v.z | v.z | v.z | v.z
-
-	mulps		xmm6,LINE3(eax)					; xmm6 = v.z*_34 | v.z*_33 | v.z*_32 | v.z*_31
-	mulps		xmm2,LINE3(ebx)					; xmm2 = v.z*_34 | v.z*_33 | v.z*_32 | v.z*_31
-
-	addps		xmm6,xmm4						; xmm6 = v.x*_14+v.y*_24+v.z*_34 | v.x*_13+v.y*_23+v.z*_33 |
-												;		 v.x*_12+v.y*_22+v.z*_32 | v.x*_11+v.y*_21+v.z*_31
-	addps		xmm2,xmm1						; xmm2 = v.x*_14+v.y*_24+v.z*_34 | v.x*_13+v.y*_23+v.z*_33 |
-												;		 v.x*_12+v.y*_22+v.z*_32 | v.x*_11+v.y*_21+v.z*_31
-// ------------------------------------------------------------------
-// lerp N0 & N1
-// ------------------------------------------------------------------
-	subps		xmm6,xmm2			; xmm6 = ?.? | p1.z-p0.z | p1.y-p1.y | p1.x-p0.x
-	mulps		xmm6,xmm7			; xmm6 = ?.? | (p1.z-p0.z)*w | (p1.y-p0.y)*w | (p1.x-p0.x)*w
-	addps		xmm6,xmm2			; xmm6 = ?.? | (p1.z-p0.z)*w+p0.z | (p1.y-p0.y)*w+p0.y | (p1.x-p0.x)*w+p0.x
-// ------------------------------------------------------------------
-// => xmm6			: lerp(p0,p1) result	: ?.? | lerp(z) | lerp(y) | lerp(x)
-// ------------------------------------------------------------------
-//	preparing for aligned store
-// ------------------------------------------------------------------
-	movaps		xmm3,xmm5						; xmm3 = ?.? | z1 | y1 | x1
-	movss		xmm3,xmm6						; xmm3 = ?.? | z1 | y1 | x2
-	shufps		xmm3,xmm3,00100111b				; xmm3 = x2 | z1 | y1 | ?.?
-	movss		xmm3,xmm5						; xmm3 = x2 | z1 | y1 | x1
-
-	shufps		xmm6,xmm6,11001001b				; xmm6 = ?.? | x2 | z2 | y2
-	movhps		xmm6,MMWORD PTR [esi]S.u		; xmm6 = v | u | z2 | y2
+	dec			ecx										;	// vCount--
 // ------------------------------------------------------------------
 //	writing data
 // ------------------------------------------------------------------
-	movntps		XMMWORD PTR [edi],xmm3			; 
-	movntps		XMMWORD PTR [edi+16],xmm6		; 
+	movntps		XMMWORD PTR [edi-(TYPE vertRender)],xmm0		; 
+	movntps		XMMWORD PTR [edi+16-(TYPE vertRender)],xmm2		; 
 // ------------------------------------------------------------------
-	add			esi,TYPE vertBoned2W			;	// advance source
-	add			edi,TYPE vertRender				;	// advance dest
+	jnz			new_vert						;	// vCount == 0 ? exit : goto new_vert
 // ------------------------------------------------------------------
-	dec			ecx								;	// ecx = ecx - 1
-	jnz			new_dot							;	// ecx==0 ? exit : goto new_dot
-	jmp short	we_are_done						;	skip private_case and go exit
+	sfence										;	write back cache
+// ------------------------------------------------------------------
+}}
+
+
+// ==================================================================
+void __stdcall xrSkin1W_SSE(vertRender*		D,
+							vertBoned1W*	S,
+							u32				vCount,
+							CBoneInstance*	Bones) 
+{__asm{
+// ------------------------------------------------------------------
+	mov			edi, DWORD PTR [D]			; edi = D
+	mov			esi, DWORD PTR [S]			; esi = S
+	mov			ecx, DWORD PTR [vCount]		; ecx = vCount
+	mov			edx, DWORD PTR [Bones]		; edx = Bones
 // ------------------------------------------------------------------
 	ALIGN		16				;
-	save_private_case:			; more cheaper out
+	new_vert:					; _new cycle iteration
 // ------------------------------------------------------------------
-// calculating transformation matrix 0 addresses
+	mov			eax, DWORD PTR [esi]S.matrix		;	eax = S.matrix
+
+	movss		xmm0, DWORD PTR [esi]S.P.x
+	movss		xmm1, DWORD PTR [esi]S.P.y
+	lea			eax, [eax+eax*4]					;	eax *= 5 (160)
+	shufps		xmm0, xmm0, _MM_SHUFFLE(1,0,0,0)
+	movss		xmm2, DWORD PTR [esi]S.P.z
+	shufps		xmm1, xmm1, _MM_SHUFFLE(1,0,0,0)
+	shufps		xmm2, xmm2, _MM_SHUFFLE(1,0,0,0)
+
+	movss		xmm3, DWORD PTR [esi]S.N.x
+	movss		xmm4, DWORD PTR [esi]S.N.y
+	sal			eax, 5								;	eax *= 32
+	shufps		xmm3, xmm3, _MM_SHUFFLE(1,0,0,0)
+	movss		xmm5, DWORD PTR [esi]S.N.z
+	shufps		xmm4, xmm4, _MM_SHUFFLE(1,0,0,0)
+	shufps		xmm5, xmm5, _MM_SHUFFLE(1,0,0,0)
+
+	mulps		xmm0, XMMWORD PTR [edx][eax][64]
+	mulps		xmm1, XMMWORD PTR [edx][eax][80]
+	mulps		xmm2, XMMWORD PTR [edx][eax][96]
+
+	mulps		xmm3, XMMWORD PTR [edx][eax][64]
+	mulps		xmm4, XMMWORD PTR [edx][eax][80]
+	mulps		xmm5, XMMWORD PTR [edx][eax][96]
+
+	addps		xmm0, xmm1
+	addps		xmm3, xmm4
+
+	addps		xmm0, xmm2
+	addps		xmm3, xmm5
+
+	addps		xmm0, XMMWORD PTR [edx][eax][112]
+
+	movlps		xmm1, MMWORD PTR [esi]S.u				; xmm1 = ?? | ?? | v | u
+	movaps		xmm4, xmm0								; xmm4 = 00 | Pz | Py | Px
+	add			edi,TYPE vertRender						;	// advance dest
+	movss		xmm4, xmm3								; xmm4 = 00 | Pz | Py | Nx
+	prefetchnta BYTE PTR [esi+16*(TYPE vertBoned1W)];		one cache line ahead
+	add			esi,TYPE vertBoned1W					;	// advance source
+
+	shufps		xmm0, xmm4, _MM_SHUFFLE(0,2,1,0)		; xmm0 = Nx | Pz | Py | Px
+	shufps		xmm3, xmm1, _MM_SHUFFLE(1,0,2,1)		; xmm3 = v | u | Nz | Ny
 // ------------------------------------------------------------------
-	mov			eax,TYPE CBoneInstance			;
-	mul			WORD PTR [esi]S.matrix0			;
-	add			eax,Bones						;
-// ------------------------------------------------------------------
-// transform tiny & dir m0 interleaved
-// ------------------------------------------------------------------
-	movups		xmm0,XMMWORD PTR [esi]S.P0		; xmm0 = ?.? | v.z | v.y | v.x
-	movaps		xmm3,XMMWORD PTR [esi]S.N0		; xmm3 = ?.? | v.z | v.y | v.x
-
-	movaps		xmm1,xmm0						; xmm1 = ?.? | v.z | v.y | v.x
-	movaps		xmm4,xmm3						; xmm4 = ?.? | v.z | v.y | v.x
-
-	movaps		xmm2,xmm0						; xmm2 = ?.? | v.z | v.y | v.x
-	movaps		xmm5,xmm3						; xmm5 = ?.? | v.z | v.y | v.x
-
-	shufps		xmm1,xmm1,00000000b				; xmm1 = v.x | v.x | v.x | v.x
-	shufps		xmm4,xmm4,00000000b				; xmm4 = v.x | v.x | v.x | v.x
-
-	shufps		xmm2,xmm2,01010101b				; xmm2 = v.y | v.y | v.y | v.y
-	shufps		xmm5,xmm5,01010101b				; xmm5 = v.y | v.y | v.y | v.y
-	
-	mulps		xmm1,LINE1(eax)					; xmm1 = v.x*_14 | v.x*_13 | v.x*_12 | v.x*_11
-	mulps		xmm4,LINE1(eax)					; xmm4 = v.x*_14 | v.x*_13 | v.x*_12 | v.x*_11
-
-	mulps		xmm2,LINE2(eax)					; xmm2 = v.y*_24 | v.y*_23 | v.y*_22 | v.y*_21
-	mulps		xmm5,LINE2(eax)					; xmm5 = v.y*_24 | v.y*_23 | v.y*_22 | v.y*_21
-	
-	addps		xmm1,xmm2						; xmm1 = v.x*_14+v.y*_24 | v.x*_13+v.y*_23 |
-												;		 v.x*_12+v.y*_22 | v.x*_11+v.y*_21
-	addps		xmm4,xmm5						; xmm4 = v.x*_14+v.y*_24 | v.x*_13+v.y*_23 |
-												;		 v.x*_12+v.y*_22 | v.x*_11+v.y*_21
-
-	movaps		xmm2,xmm0						; xmm2 = ?.? | v.z | v.y | v.x
-	movaps		xmm5,xmm3						; xmm5 = ?.? | v.z | v.y | v.x
-
-	shufps		xmm2,xmm2,10101010b				; xmm2 = v.z | v.z | v.z | v.z
-	shufps		xmm5,xmm5,10101010b				; xmm5 = v.z | v.z | v.z | v.z
-
-	mulps		xmm2,LINE3(eax)					; xmm2 = v.z*_34 | v.z*_33 | v.z*_32 | v.z*_31
-	mulps		xmm5,LINE3(eax)					; xmm5 = v.z*_34 | v.z*_33 | v.z*_32 | v.z*_31
-
-	addps		xmm2,LINE4(eax)					; xmm2 = v.z*_34+_44 | v.z*_33+_43 | 
-												;		 v.z*_32+_42 | v.z*_31+_41
-	addps		xmm5,xmm4						; xmm5 = v.x*_14+v.y*_24+v.z*_34 | v.x*_13+v.y*_23+v.z*_33 |
-												;		 v.x*_12+v.y*_22+v.z*_32 | v.x*_11+v.y*_21+v.z*_31
-
-	addps		xmm2,xmm1						; xmm2 = v.x*_14+v.y*_24+v.z*_34+_44 | v.x*_13+v.y*_23+v.z*_33+_43 |
-												;		 v.x*_12+v.y*_22+v.z*_32+_42 | v.x*_11+v.y*_21+v.z*_31+_41
-// ------------------------------------------------------------------
-//	preparing for aligned store
-// ------------------------------------------------------------------
-	movaps		xmm3,xmm2						; xmm3 = ?.? | z1 | y1 | x1
-	movss		xmm3,xmm5						; xmm3 = ?.? | z1 | y1 | x2
-	shufps		xmm3,xmm3,00100111b				; xmm3 = x2 | z1 | y1 | ?.?
-	movss		xmm3,xmm2						; xmm3 = x2 | z1 | y1 | x1
-
-	shufps		xmm5,xmm5,11001001b				; xmm5 = ?.? | x2 | z2 | y2
-	movhps		xmm5,MMWORD PTR [esi]S.u		; xmm5 = v | u | z2 | y2
+	dec			ecx								;	// vCount--
 // ------------------------------------------------------------------
 //	writing data
 // ------------------------------------------------------------------
-	movntps		XMMWORD PTR [edi],xmm3			; 
-	movntps		XMMWORD PTR [edi+16],xmm5		; 
+	movntps		XMMWORD PTR [edi-(TYPE vertRender)],xmm0		; 
+	movntps		XMMWORD PTR [edi+16-(TYPE vertRender)],xmm3		; 
 // ------------------------------------------------------------------
-	add			esi,TYPE vertBoned2W			;	// advance source
-	add			edi,TYPE vertRender				;	// advance dest
-// ------------------------------------------------------------------
-	dec			ecx								;	// ecx = ecx - 1
-	jnz			new_dot							;	// ecx==0 ? exit : goto new_dot
-// ------------------------------------------------------------------
-	we_are_done:								;
+	jnz			new_vert						;	// vCount == 0 ? exit : goto new_vert
 // ------------------------------------------------------------------
 	sfence										;	write back cache
 // ------------------------------------------------------------------

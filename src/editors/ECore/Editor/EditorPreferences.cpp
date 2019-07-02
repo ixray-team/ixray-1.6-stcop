@@ -150,8 +150,6 @@ void CCustomPreferences::FillProp(PropItemVec& props)
     PHelper().CreateFloat	(props,"Tools\\Snap\\Move",			          	&snap_move, 		0.01f,	1000.f);
     PHelper().CreateFloat	(props,"Tools\\Snap\\Move To", 		          	&snap_moveto,		0.01f,	1000.f);
 
-    PHelper().CreateFlag32	(props,"Sounds\\Use\\Hardware",					&psSoundFlags, 	ss_Hardware);
-    PHelper().CreateFlag32	(props,"Sounds\\Use\\EAX",						&psSoundFlags, 	ss_EAX);        
 
     PHelper().CreateFloat	(props,"Viewport\\Camera\\Move Sens",		    &cam_sens_move);
     PHelper().CreateFloat	(props,"Viewport\\Camera\\Rotate Sens",		    &cam_sens_rot);

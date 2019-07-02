@@ -113,7 +113,10 @@ bool best_scores_helper::OnPlayerKilled(u16 killer_id, u16 target_id, u16 weapon
 	if (kill_type.first == KT_BLEEDING)
 	{
 		++m_bleed_kills_in_row;
-	} else if (kill_type.first == KT_RADIATION)
+	} 
+	
+	u16 kill_weapon_id = m_player_state_accum->get_object_id(weapon_id);
+	if (m_player_state_accum->is_item_in_group(kill_weapon_id, ammunition_group::gid_hand_grenades))
 	{
 		++m_explosive_kills_in_row;
 	}

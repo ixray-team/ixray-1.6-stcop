@@ -295,6 +295,7 @@ void bone_table::net_load(NET_Packet* P)
 Player_Statistic::Player_Statistic(LPCSTR Name)
 {
 	PName					= Name;
+	PID						= 0;
 	m_dwTotalShots			= 0;
 	m_dwTotalShots_d		= 0;
 	m_dwCurrentTeam			= 0;
@@ -526,7 +527,14 @@ void WeaponUsageStatistic::OnWeaponBought(game_PlayerState* ps, LPCSTR WeaponNam
 	{
 		BasketPos = (ps->money_for_round-1)/1000 + 1;
 	};
-	WeaponIt->m_Basket[ConvertToTeamIndex(ps->team)][BasketPos]++;
+	u8	team_index = ConvertToTeamIndex(ps->team);
+	u8	bascet_pos = static_cast<u8>(BasketPos);
+	if ((team_index >= STAT_TEAM_COUNT) ||
+		(bascet_pos >= MAX_BASKET))
+	{
+		return;
+	}
+	WeaponIt->m_Basket[team_index][bascet_pos]++;
 };
 
 void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& cartridge)
@@ -888,7 +896,7 @@ u8 WeaponUsageStatistic::ConvertToTeamIndex(s16 team)
 	{
 		if (team_index == -1)
 		{
-			Msg("! ERROR: can't process spectators in deathmatch statistics.");
+//			Msg("! ERROR: can't process spectators in deathmatch statistics.");
 			return 1;
 		}
 	} else
@@ -1001,7 +1009,7 @@ void WeaponUsageStatistic::OnUpdateRequest(NET_Packet*)
 	Level().Send(P);
 };
 
-void WeaponUsageStatistic::OnUpdateRespond(NET_Packet* P, shared_str const & sender_digest)
+void WeaponUsageStatistic::OnUpdateRespond(NET_Packet* P, shared_str const & sender_digest, u32 sender_pid)
 {
 	if (!P) return;
 	
@@ -1010,7 +1018,8 @@ void WeaponUsageStatistic::OnUpdateRespond(NET_Packet* P, shared_str const & sen
 	shared_str PName;
 	P->r_stringZ(PName);
 	Player_Statistic& PS = *(FindPlayer(*PName));
-	PS.PDigest = sender_digest;
+	PS.PDigest	= sender_digest;
+	PS.PID		= sender_pid;
 	Msg("--- CL: On Update Respond from [%s]", PName.c_str());
 	PS.net_load(P);
 };

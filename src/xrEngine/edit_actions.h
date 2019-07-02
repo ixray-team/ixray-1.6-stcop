@@ -70,13 +70,13 @@ private:
 class key_state_base : public base
 {
 public:
-					key_state_base	( key_state state );
+					key_state_base	( key_state state, base* type_pair );
 	virtual			~key_state_base	();
 	virtual	void	on_key_press	( line_edit_control* const control );
 
 private:
 	key_state		m_state;
-
+	base*			m_type_pair;
 }; // class key_state_base
 
 } // namespace text_editor

@@ -41,6 +41,7 @@ enum enum_accumulative_player_values
 	acpv_stalker_flair,
 	acpv_black_list,
 	acpv_thunder_count,
+	acpv_killer_victim_angle,
 	acpv_count,
 }; //enum enum_accumulative_player_values
 

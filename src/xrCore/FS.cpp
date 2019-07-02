@@ -173,7 +173,7 @@ void *FileDownload		(LPCSTR file_name, u32 *buffer_size)
 
 typedef char MARK[9];
 IC void mk_mark(MARK& M, const char* S)
-{	strncpy_s(M,S,8); }
+{	strncpy_s(M,sizeof(M),S,8); }
 
 void  FileCompress	(const char *fn, const char* sign, void* data, u32 size)
 {

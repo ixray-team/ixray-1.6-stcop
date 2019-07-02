@@ -61,7 +61,7 @@ bool cdkey_ban_list::is_player_banned(char const * hexstr_digest, shared_str & b
 	for (ban_list_t::iterator i = m_ban_list.begin(),
 		ie = m_ban_list.end(); i != ie; ++i)
 	{
-		Msg("* comparing with cheater [%s]", (*i)->client_hexstr_digest.c_str());
+//		Msg("* comparing with cheater [%s]", (*i)->client_hexstr_digest.c_str());
 		if (!xr_strcmp((*i)->client_hexstr_digest, hexstr_digest))
 		{
 			Msg("* found banned client [%s] by admin [%s]", 

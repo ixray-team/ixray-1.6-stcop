@@ -2,7 +2,7 @@
 #ifndef renderH
 #define renderH
 
-#include "frustum.h"
+#include "..\..\xrCDB\frustum.h"
 #include "vis_common.h"
 
 #include "..\..\Layers\xrRender\blenders\blender.h"

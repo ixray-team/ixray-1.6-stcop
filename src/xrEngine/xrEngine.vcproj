@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="xrEngine"
 	ProjectGUID="{2578C6D8-660D-48AE-9322-7422F8664F06}"
 	RootNamespace="xrEngine"
@@ -91,7 +91,7 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions="/ignore:4099&#x0D;&#x0A;/MACHINE:I386"
-				AdditionalDependencies="msacm32.lib vfw32.lib ogg_static_d.lib theora_static_d.lib oalibmtd.lib"
+				AdditionalDependencies="vfw32.lib libogg_static_d.lib libtheora_static_d.lib oalibmtd.lib"
 				ShowProgress="0"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -303,7 +303,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="msacm32.lib vfw32.lib ogg_static.lib theora_static.lib openAL32.lib oalibmt.lib"
+				AdditionalDependencies="vfw32.lib libogg_static.lib libtheora_static.lib openAL32.lib oalibmt.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
@@ -513,7 +513,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 "
-				AdditionalDependencies="msacm32.lib vfw32.lib ogg_static.lib theora_static.lib oalibmt.lib"
+				AdditionalDependencies="vfw32.lib libogg_static.lib libtheora_static.lib oalibmt.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
@@ -734,7 +734,7 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions="/MACHINE:I386 "
-				AdditionalDependencies="msacm32.lib vfw32.lib ogg_static_d.lib theora_static_d.lib oalibmtd.lib"
+				AdditionalDependencies="vfw32.lib libogg_static_d.lib libtheora_static_d.lib oalibmtd.lib"
 				ShowProgress="0"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
@@ -946,7 +946,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 "
-				AdditionalDependencies="msacm32.lib vfw32.lib ogg_static.lib theora_static.lib oalibmt.lib"
+				AdditionalDependencies="vfw32.lib libogg_static.lib libtheora_static.lib oalibmt.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -1152,7 +1152,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 "
-				AdditionalDependencies="msacm32.lib vfw32.lib ogg_static.lib theora_static.lib oalibmt.lib"
+				AdditionalDependencies="vfw32.lib libogg_static.lib libtheora_static.lib oalibmt.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

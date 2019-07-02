@@ -124,6 +124,7 @@ struct Player_Statistic
 {
 	shared_str		PName;
 	shared_str		PDigest;
+	u32				PID;
 	
 	u32				m_dwTotalShots;
 	u32				m_dwTotalShots_d;
@@ -248,7 +249,7 @@ struct WeaponUsageStatistic {
 	//-----------------------------------------------
 	void				Update						();
 	void				OnUpdateRequest				(NET_Packet* P);
-	void				OnUpdateRespond				(NET_Packet* P, shared_str const & sender_digest);
+	void				OnUpdateRespond				(NET_Packet* P, shared_str const & sender_digest, u32 sender_pid);
 	//-----------------------------------------------
 	string_path			mFileName;
 	void				SaveData					();

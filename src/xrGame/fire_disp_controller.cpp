@@ -34,7 +34,7 @@ float	CFireDispertionController::GetCurrentDispertion() const
 void	CFireDispertionController::Update()
 {
 	float tmp_inertion = default_inertion;
-	CActor* tmp_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	CActor* tmp_actor = smart_cast<CActor*>(Level().CurrentEntity());
 	if (tmp_actor)
 	{
 		CWeapon* tmp_weapon = smart_cast<CWeapon*>(tmp_actor->inventory().ActiveItem());

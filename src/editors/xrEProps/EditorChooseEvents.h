@@ -214,7 +214,7 @@ void __stdcall  SelectPE(SChooseItem* item, PropItemVec& info_items)
         {
            if( (*pe_it)->m_EffectName==item->name )
            {
-           sprintf_s(str,sizeof(str),"%d",++i);
+           xr_sprintf(str,sizeof(str),"%d",++i);
     	   	PHelper().CreateCaption(info_items, str, def->m_Name);
            }
         }
@@ -235,7 +235,7 @@ void __stdcall  SelectPG(SChooseItem* item, PropItemVec& info_items)
             PS::CPGDef::EffectIt pe_it_e 	= def->m_Effects.end();
             for(;pe_it!=pe_it_e;++pe_it)
             {
-           		sprintf_s(str,sizeof(str),"%d",++i);
+           		xr_sprintf(str,sizeof(str),"%d",++i);
             	PHelper().CreateCaption(info_items, str, (*pe_it)->m_EffectName);
             }
         break;

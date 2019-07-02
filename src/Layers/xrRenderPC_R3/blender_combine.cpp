@@ -190,9 +190,9 @@ void	CBlender_combine_msaa::Compile(CBlender_Compile& C)
 
       C.r_dx10Texture		("s_position",		r2_RT_P);
       C.r_dx10Texture		("s_normal",		r2_RT_N);
-      C.r_dx10Texture		("s_image",			r2_RT_generic0_r);
+      C.r_dx10Texture		("s_image",			r2_RT_generic0);
       C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-      C.r_dx10Texture		("s_distort",		r2_RT_generic1);
+      C.r_dx10Texture		("s_distort",		r2_RT_generic1_r);
 
       C.r_dx10Sampler		("smp_nofilter");
       C.r_dx10Sampler		("smp_rtlinear");
@@ -209,9 +209,9 @@ void	CBlender_combine_msaa::Compile(CBlender_Compile& C)
 
       C.r_dx10Texture		("s_position",		r2_RT_P);
       C.r_dx10Texture		("s_normal",		r2_RT_N);
-      C.r_dx10Texture		("s_image",			r2_RT_generic0_r);
+      C.r_dx10Texture		("s_image",			r2_RT_generic0);
       C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-      C.r_dx10Texture		("s_distort",		r2_RT_generic1);
+      C.r_dx10Texture		("s_distort",		r2_RT_generic1_r);
 
       C.r_dx10Sampler		("smp_nofilter");
       C.r_dx10Sampler		("smp_rtlinear");
@@ -227,9 +227,9 @@ void	CBlender_combine_msaa::Compile(CBlender_Compile& C)
 
       C.r_dx10Texture		("s_position",		r2_RT_P);
       C.r_dx10Texture		("s_normal",		r2_RT_N);
-      C.r_dx10Texture		("s_image",			r2_RT_generic0_r);
+      C.r_dx10Texture		("s_image",			r2_RT_generic0);
       C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-      C.r_dx10Texture		("s_distort",		r2_RT_generic1);
+      C.r_dx10Texture		("s_distort",		r2_RT_generic1_r);
 
       C.r_dx10Sampler		("smp_nofilter");
       C.r_dx10Sampler		("smp_rtlinear");
@@ -246,9 +246,9 @@ void	CBlender_combine_msaa::Compile(CBlender_Compile& C)
 
       C.r_dx10Texture		("s_position",		r2_RT_P);
       C.r_dx10Texture		("s_normal",		r2_RT_N);
-      C.r_dx10Texture		("s_image",			r2_RT_generic0_r);
+      C.r_dx10Texture		("s_image",			r2_RT_generic0);
       C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-      C.r_dx10Texture		("s_distort",		r2_RT_generic1);
+      C.r_dx10Texture		("s_distort",		r2_RT_generic1_r);
 
       C.r_dx10Sampler		("smp_nofilter");
       C.r_dx10Sampler		("smp_rtlinear");

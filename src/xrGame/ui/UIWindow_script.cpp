@@ -187,7 +187,9 @@ void CUIWindow::script_register(lua_State *L)
 				value("MESSAGE_BOX_QUIT_GAME_CLICKED",	int(MESSAGE_BOX_QUIT_GAME_CLICKED)),
 				value("MESSAGE_BOX_QUIT_WIN_CLICKED",	int(MESSAGE_BOX_QUIT_WIN_CLICKED)),
 
-				value("EDIT_TEXT_COMMIT",				int(EDIT_TEXT_COMMIT))
+				value("EDIT_TEXT_COMMIT",				int(EDIT_TEXT_COMMIT)),
+	// CMainMenu
+				value("MAIN_MENU_RELOADED",				int(MAIN_MENU_RELOADED))
 			]
 	];
 }

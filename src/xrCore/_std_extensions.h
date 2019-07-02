@@ -30,24 +30,34 @@
 #endif
 
 #ifdef  _EDITOR
-IC void xr_strcpy(char* strDestination,   size_t sizeInBytes,   const char *strSource)
+IC char* strncpy_s(char* strDestination, size_t sizeInBytes, const char *strSource, size_t count)
 {
-	strcpy(strDestination, strSource);
+    return strncpy(strDestination, strSource, count);
 }
 
-IC void xr_strcpy(char* strDestination,   const char *strSource)
+IC char* xr_strcpy(char* strDestination,   size_t sizeInBytes,   const char *strSource)
 {
-	strcpy(strDestination, strSource);
+	return strcpy(strDestination, strSource);
 }
 
-IC void _strlwr_s(char* strDestination, size_t sizeInBytes)
+IC char* xr_strcpy(char* strDestination,   const char *strSource)
 {
-    strlwr(strDestination);
+	return strcpy(strDestination, strSource);
 }
 
-IC void xr_strcat(char* strDestination,   size_t sizeInBytes,   const char *strSource)
+IC char* _strlwr_s(char* strDestination, size_t sizeInBytes)
 {
-	xr_strcat(strDestination, strSource);
+    return strlwr(strDestination);
+}
+
+IC char* xr_strcat(char* strDestination,   size_t sizeInBytes,   const char *strSource)
+{
+	return strncat(strDestination, strSource, sizeInBytes);
+}
+
+IC char* xr_strcat(char* strDestination,  const char *strSource)
+{
+	return strcat(strDestination, strSource);
 }
 
 IC int xr_sprintf(char* dest, size_t sizeOfBuffer, const char* format, ...)
@@ -185,7 +195,9 @@ IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return (int)strcmp(S1,S2);  }
 #endif
 
+#ifndef  _EDITOR
 #ifndef MASTER_GOLD
+
 inline errno_t xr_strcpy		( LPSTR destination, size_t const destination_size, LPCSTR source )
 {
 	return						strcpy_s( destination, destination_size, source );
@@ -211,6 +223,7 @@ inline int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string
 	return						vsprintf_s( destination, count, format_string, args );
 }
 #else // #ifndef MASTER_GOLD
+
 inline errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, LPCSTR source )
 {
 	return						strncpy_s( destination, destination_size, source, destination_size );
@@ -247,9 +260,7 @@ inline int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string
 }
 #endif // #ifndef MASTER_GOLD
 
-#ifndef _EDITOR
 #	pragma deprecated( strcpy, strcpy_s, sprintf, sprintf_s, strcat, strcat_s )
-#endif // #ifndef _EDITOR
 
 template <int count>
 inline errno_t xr_strcpy	( char (&destination)[count], LPCSTR source )
@@ -262,6 +273,7 @@ inline errno_t xr_strcat	( char (&destination)[count], LPCSTR source )
 {
 	return						xr_strcat( destination, count, source );
 }
+#endif // #ifndef _EDITOR
 
 XRCORE_API	char*				timestamp				(string64& dest);
 

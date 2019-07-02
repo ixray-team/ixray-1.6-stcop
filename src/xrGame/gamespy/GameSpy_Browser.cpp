@@ -151,12 +151,15 @@ static bool services_checked = false;
 
 bool	CGameSpy_Browser::Init(CServerList* pServerList)
 {
+	if (m_pServerList)
+	{
+		m_pServerList->on_game_spy_browser_destroy(this);
+	}
 	m_pServerList = pServerList;
-
 	return true;
 };
 
-void			CGameSpy_Browser::Clear()
+void	CGameSpy_Browser::Clear()
 {
 	m_pServerList = NULL;
 };

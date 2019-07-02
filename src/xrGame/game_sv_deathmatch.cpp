@@ -1722,7 +1722,8 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 			if (std::find(to_reject.begin(), to_reject.end(), e_item) != to_reject.end())
 				continue;
 
-			if (e_item->m_tClassID == CLSID_OBJECT_W_KNIFE)
+			if ((e_item->m_tClassID == CLSID_OBJECT_W_KNIFE) ||
+				(e_item->m_tClassID == CLSID_DEVICE_TORCH))
 			{
 				to_destroy.push_back	(e_item);
 			} else if (m_strWeaponsData->GetItemIdx(e_item->s_name) != u32(-1))

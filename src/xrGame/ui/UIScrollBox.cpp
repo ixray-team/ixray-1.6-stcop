@@ -24,7 +24,7 @@ bool CUIScrollBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 	bool im_capturer = (GetParent()->GetMouseCapturer() == this);
 
-	if(mouse_action == WINDOW_LBUTTON_DOWN)
+	if(mouse_action == WINDOW_LBUTTON_DOWN || mouse_action == WINDOW_LBUTTON_DB_CLICK)
 	{
 		GetParent()->SetCapture(this, true);
 		return true;

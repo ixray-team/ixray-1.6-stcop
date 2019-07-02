@@ -162,7 +162,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			s32 ShotRndSeed = P.r_s32();
 			if (!IsGameTypeSingle() && !g_Alive())
 			{
-				Msg("! WARNING: dead player tries to rize inventory action");
+//				Msg("! WARNING: dead player tries to rize inventory action");
 				break;
 			}
 									
@@ -190,14 +190,14 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 //			R_ASSERT2( Obj, make_string("GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id).c_str() );
 			VERIFY2  ( Obj, make_string("GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id).c_str() );
 			if ( !Obj ) {
-				Msg                 ( "! GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id );
+//				Msg                 ( "! GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id );
 				break;
 			}
 
 //			R_ASSERT2( !Obj->getDestroy(), make_string("GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id).c_str() );
 			VERIFY2  ( !Obj->getDestroy(), make_string("GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id).c_str() );
 			if ( Obj->getDestroy() ) {
-				Msg                                ( "! GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id );
+//				Msg                                ( "! GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id );
 				break;
 			}
 

@@ -95,7 +95,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 #include "..\..\Layers\xrRender\xrD3dDefs.h"
 
 #include <dinput.h>
-#include <dsound.h>
+//#include <dsound.h>
 
 // some user components
 #include "..\..\xrEngine\fmesh.h"

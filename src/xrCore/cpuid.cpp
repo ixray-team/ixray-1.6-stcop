@@ -16,7 +16,15 @@
 *   Returns int with capablity bit set.
 *
 ****************************************************/
+#ifdef _EDITOR
+int _cpuid ( _processor_info *pinfo )
+{
+    ZeroMemory(pinfo, sizeof(_processor_info));
 
+    pinfo->feature = _CPU_FEATURE_MMX | _CPU_FEATURE_SSE;
+    return pinfo->feature;
+}
+#else
 
 int _cpuid ( _processor_info *pinfo )
 {__asm {
@@ -26,7 +34,7 @@ int _cpuid ( _processor_info *pinfo )
 
 	// zero result
 	xor			esi , esi
-	mov			BYTE PTR  [edi][_processor_info::model_name][0] , 0	
+	mov			BYTE PTR  [edi][_processor_info::model_name][0] , 0
 	mov			BYTE PTR  [edi][_processor_info::v_name][0] , 0
 
 	// test for CPUID presence
@@ -82,6 +90,13 @@ int _cpuid ( _processor_info *pinfo )
 	xor			ebx , ebx
 	mov			eax , _CPU_FEATURE_SSE3
 	test		ecx , 01h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against MONITOR/MWAIT
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_MWAIT
+	test		ecx , 08h
 	cmovnz		ebx , eax
 	or			esi , ebx
 
@@ -247,3 +262,4 @@ NO_CPUID:
 
 	return pinfo->feature;
 }
+#endif

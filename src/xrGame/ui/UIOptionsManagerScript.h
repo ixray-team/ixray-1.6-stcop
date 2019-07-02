@@ -12,5 +12,6 @@ public:
 	void 		OptionsPostAccept		();
 	void 		SendMessage2Group		(LPCSTR group, LPCSTR message);
 	bool 		NeedSystemRestart		();
+	bool 		NeedVidRestart			();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

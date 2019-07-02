@@ -215,11 +215,11 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	u64 _our		=	FS.auth_get();
 	u64 _him		=	P.r_u64();
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_AUTH
 	Msg("_our = %d", _our);
 	Msg("_him = %d", _him);
 	_our = MP_DEBUG_AUTH;
-#endif // DEBUG
+#endif // USE_DEBUG_AUTH
 
 	if ( _our != _him )
 	{

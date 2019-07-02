@@ -33,29 +33,43 @@ void CLevel::remove_objects	()
 	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - Start");
 	BOOL						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 	
-	if (OnServer()) {
-		VERIFY					(Server);
-		Server->SLS_Clear		();
-	}
-	
-	if (OnClient())
-		ClearAllObjects			();
+	int loop = 5;
+	while(loop)
+	{
+		if (OnServer()) 
+		{
+			R_ASSERT				(Server);
+			Server->SLS_Clear		();
+		}
 
-	snd_Events.clear			();
+		if (OnClient())
+			ClearAllObjects			();
 
-	for (int i=0; i<20; ++i) {
-		psNET_Flags.set			(NETFLAG_MINIMIZEUPDATES,FALSE);
-		// ugly hack for checks that update is twice on frame
-		// we need it since we do updates for checking network messages
-		++(Device.dwFrame);
-		psDeviceFlags.set		(rsDisableObjectsAsCrows,TRUE);
-		ClientReceive			();
-		ProcessGameEvents		();
-		Objects.Update			(false);
-#ifdef DEBUG
-		Msg						("Update objects list...");
-#endif // #ifdef DEBUG
-		Objects.dump_all_objects();
+		for (int i=0; i<20; ++i) 
+		{
+			snd_Events.clear		();
+			psNET_Flags.set			(NETFLAG_MINIMIZEUPDATES,FALSE);
+			// ugly hack for checks that update is twice on frame
+			// we need it since we do updates for checking network messages
+			++(Device.dwFrame);
+			psDeviceFlags.set		(rsDisableObjectsAsCrows,TRUE);
+			ClientReceive			();
+			ProcessGameEvents		();
+			Objects.Update			(false);
+			#ifdef DEBUG
+			Msg						("Update objects list...");
+			#endif // #ifdef DEBUG
+			Objects.dump_all_objects();
+		}
+
+		if(Objects.o_count()==0)
+			break;
+		else
+		{
+			--loop;
+			Msg						("Objects removal next loop. Active objects count=%d", Objects.o_count());
+		}
+
 	}
 
 	BulletManager().Clear		();
@@ -407,7 +421,7 @@ void			CLevel::OnBuildVersionChallenge		()
 {
 	NET_Packet P;
 	P.w_begin				(M_CL_AUTH);
-#ifdef DEBUG
+#ifdef USE_DEBUG_AUTH
 	u64 auth = MP_DEBUG_AUTH;
 	Msg("* Sending auth value ...");
 #else
@@ -529,7 +543,17 @@ void			CLevel::ClearAllObjects				()
 	for (u32 i=0; i<CLObjNum; i++)
 	{
 		CObject* pObj = Level().Objects.o_get_by_iterator(i);
-		R_ASSERT(pObj->H_Parent()==NULL);
+		if (pObj->H_Parent() != NULL)
+		{
+			if (IsGameTypeSingle())
+			{
+				FATAL("pObj->H_Parent()==NULL");
+			} else
+			{
+				Msg("! ERROR: object's parent is not NULL");
+			}
+		}
+		
 		//-----------------------------------------------------------
 		NET_Packet			GEN;
 		GEN.w_begin			(M_EVENT);

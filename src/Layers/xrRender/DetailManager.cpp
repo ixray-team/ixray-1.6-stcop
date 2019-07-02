@@ -17,7 +17,9 @@
 #else
 #	include "../../xrEngine/igame_persistent.h"
 #	include "../../xrEngine/environment.h"
+#   include <xmmintrin.h>
 #endif
+
 
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
@@ -216,9 +218,15 @@ void CDetailManager::UpdateVisibleM()
 				continue;	// invisible-view frustum
 			}
 			// test slots
-			for (int _i=0; _i<dm_cache1_count*dm_cache1_count; _i++){
+			
+			u32 dwCC = dm_cache1_count*dm_cache1_count;
+
+			for (int _i=0; _i < dwCC ; _i++){
 				Slot*	PS		= *MS.slots[_i];
 				Slot& 	S 		= *PS;
+
+//				if ( ( _i + 1 ) < dwCC );
+//					_mm_prefetch( (char *) *MS.slots[ _i + 1 ]  , _MM_HINT_T1 );
 
 				// if slot empty - continue
 				if (S.empty)

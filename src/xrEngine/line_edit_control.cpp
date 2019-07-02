@@ -342,11 +342,12 @@ void line_edit_control::assign_char_pairs( init_mode mode )
 
 void line_edit_control::create_key_state( u32 const dik, key_state state )
 {
-	if ( m_actions[dik] )
-	{
-		xr_delete( m_actions[dik] );
-	}
-	m_actions[dik] = xr_new<text_editor::key_state_base>( state );
+	Base* prev = m_actions[dik];
+	//if ( m_actions[dik] )
+	//{
+	//	xr_delete( m_actions[dik] );
+	//}
+	m_actions[dik] = xr_new<text_editor::key_state_base>( state, prev );
 }
 
 void line_edit_control::create_char_pair( u32 const dik, char c, char c_shift, bool translate )
@@ -755,7 +756,7 @@ void line_edit_control::clamp_cur_pos()
 
 void line_edit_control::SwitchKL()
 {
-// system do it itself.	HKL kl = ActivateKeyboardLayout( (HKL)HKL_NEXT, 0 );
+	ActivateKeyboardLayout( (HKL)HKL_NEXT, 0 );
 }
 
 // -------------------------------------------------------------------------------------------------

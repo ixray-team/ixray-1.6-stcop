@@ -33,6 +33,12 @@ bool filereceiver_node::receive_packet(NET_Packet & packet)
 {
 	if (!m_writer->tell())
 	{
+		if (packet.r_elapsed() < (sizeof(u32) * 2))
+		{
+			m_data_size_to_receive = m_writer->tell();
+			return false;
+		}
+
 		packet.r_u32(m_data_size_to_receive);
 		packet.r_u32(m_user_param);
 	}

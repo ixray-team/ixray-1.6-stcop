@@ -186,8 +186,8 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 	OnTypeChangeEvent	            = on_type_change;
     PropValue* P		            = PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
     P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);
-    PHelper().CreateCaption			(items, "Source\\Width",			shared_str().xr_sprintf("%d",width));
-    PHelper().CreateCaption			(items, "Source\\Height",			shared_str().xr_sprintf("%d",height));
+    PHelper().CreateCaption			(items, "Source\\Width",			shared_str().printf("%d",width));
+    PHelper().CreateCaption			(items, "Source\\Height",			shared_str().printf("%d",height));
     PHelper().CreateCaption			(items, "Source\\Alpha",			HasAlpha	()?"present":"absent"); 
 	switch (type){
     case ttImage:	

@@ -4,6 +4,7 @@
 #include "xrdebug.h"
 #include "os_clipboard.h"
 
+#include <sal.h>
 #include "dxerr.h"
 
 #pragma warning(push)
@@ -254,7 +255,7 @@ LPCSTR xrDebug::error2string	(long code)
 #else
 	result				= DXGetErrorDescription	(code);
 #endif
-	if (0==result) 
+	if (0==result)
 	{
 		FormatMessage	(FORMAT_MESSAGE_FROM_SYSTEM,0,code,0,desc_storage,sizeof(desc_storage)-1,0);
 		result			= desc_storage;
@@ -355,12 +356,12 @@ void CALLBACK PreErrorHandler	(INT_PTR)
 			_getcwd			(current_folder,sizeof(current_folder));
 			
 			string256		relative_path;
-			xr_strcpy		(relative_path,log_folder);
+			xr_strcpy		(relative_path,sizeof(relative_path),log_folder);
 			strconcat		(sizeof(log_folder),log_folder,current_folder,"\\",relative_path);
 		}
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER) {
-		xr_strcpy				(log_folder,"logs");
+		xr_strcpy				(log_folder,sizeof(log_folder),"logs");
 	}
 
 	string_path				temp;
@@ -423,7 +424,7 @@ please Submit Bug or save report and email it manually (button More...).\
 			0
 		);
 #else // #ifndef MASTER_GOLD
-		!dedicated ?
+		dedicated ?
 		MiniDumpNoDump :
 		(
 			MiniDumpWithDataSegs |
@@ -598,6 +599,11 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     LocalFree	(message);
 }
 
+#ifndef _EDITOR
+    #include <errorrep.h>
+    #pragma comment( lib, "faultrep.lib" )
+#endif
+
 LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	string256				error_message;
@@ -620,7 +626,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		for (int i=0; i<g_stackTraceCount; ++i) {
 			if (shared_str_initialized)
 				Msg			("%s",g_stackTrace[i]);
-			xr_sprintf			(buffer,"%s\r\n",g_stackTrace[i]);
+			xr_sprintf			(buffer, sizeof(buffer), "%s\r\n",g_stackTrace[i]);
 #ifdef DEBUG
 			if (!IsDebuggerPresent())
 				os_clipboard::update_clipboard(buffer);
@@ -631,7 +637,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			if (shared_str_initialized)
 				Msg			("\n%s",error_message);
 
-			xr_strcat			(error_message,"\r\n");
+			xr_strcat			(error_message,sizeof(error_message),"\r\n");
 #ifdef DEBUG
 			if (!IsDebuggerPresent())
 				os_clipboard::update_clipboard(buffer);
@@ -654,6 +660,10 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
+
+#ifndef _EDITOR
+	ReportFault				( pExceptionInfo, 0 );
+#endif
 
 	if (!previous_filter) {
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
@@ -887,13 +897,14 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
     void	xrDebug::_initialize		(const bool &dedicated)
     {
+		static bool is_dedicated		= dedicated;
+
 		*g_bug_report_file				= 0;
 
 		debug_on_thread_spawn			();
 
-
 #ifdef USE_BUG_TRAP
-		SetupExceptionHandler			(dedicated);
+		SetupExceptionHandler			( is_dedicated );
 #endif // USE_BUG_TRAP
 		previous_filter					= ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
 

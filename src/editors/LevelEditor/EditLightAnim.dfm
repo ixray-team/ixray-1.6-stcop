@@ -28,8 +28,8 @@ object frmEditLightAnim: TfrmEditLightAnim
   object paItemProps: TPanel
     Left = 191
     Top = 0
-    Width = 451
-    Height = 224
+    Width = 443
+    Height = 222
     Align = alClient
     BevelOuter = bvNone
     Color = 10528425
@@ -42,10 +42,10 @@ object frmEditLightAnim: TfrmEditLightAnim
     TabOrder = 0
     Visible = False
     object paColorAndControls: TPanel
-      Left = 249
+      Left = 241
       Top = 0
       Width = 202
-      Height = 224
+      Height = 222
       Align = alRight
       BevelOuter = bvNone
       ParentColor = True
@@ -54,7 +54,7 @@ object frmEditLightAnim: TfrmEditLightAnim
         Left = 0
         Top = 0
         Width = 202
-        Height = 190
+        Height = 188
         Align = alClient
         BevelInner = bvLowered
         Color = 10526880
@@ -99,7 +99,7 @@ object frmEditLightAnim: TfrmEditLightAnim
       end
       object Panel1: TPanel
         Left = 0
-        Top = 190
+        Top = 188
         Width = 202
         Height = 34
         Align = alBottom
@@ -374,8 +374,8 @@ object frmEditLightAnim: TfrmEditLightAnim
     object paPropsGroup: TPanel
       Left = 0
       Top = 0
-      Width = 249
-      Height = 224
+      Width = 241
+      Height = 222
       Align = alClient
       BevelOuter = bvNone
       ParentColor = True
@@ -383,8 +383,8 @@ object frmEditLightAnim: TfrmEditLightAnim
       object paProps: TPanel
         Left = 0
         Top = 0
-        Width = 249
-        Height = 189
+        Width = 241
+        Height = 187
         Align = alClient
         BevelOuter = bvLowered
         Color = 10528425
@@ -392,8 +392,8 @@ object frmEditLightAnim: TfrmEditLightAnim
       end
       object wnShape: TD3DWindow
         Left = 0
-        Top = 189
-        Width = 249
+        Top = 187
+        Width = 241
         Height = 35
         FocusedColor = 15000804
         Align = alBottom
@@ -404,7 +404,7 @@ object frmEditLightAnim: TfrmEditLightAnim
         object pbG: TPaintBox
           Left = 1
           Top = 1
-          Width = 247
+          Width = 239
           Height = 33
           Align = alClient
           Color = clBlack
@@ -421,14 +421,14 @@ object frmEditLightAnim: TfrmEditLightAnim
     Left = 0
     Top = 0
     Width = 191
-    Height = 224
+    Height = 222
     Align = alLeft
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 1
     object Panel2: TPanel
       Left = 0
-      Top = 205
+      Top = 203
       Width = 191
       Height = 19
       Align = alBottom
@@ -535,7 +535,7 @@ object frmEditLightAnim: TfrmEditLightAnim
       Left = 0
       Top = 0
       Width = 191
-      Height = 205
+      Height = 203
       Align = alClient
       BevelOuter = bvLowered
       ParentColor = True

@@ -703,6 +703,7 @@ template	< typename vertex_type >
 static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinematics *Parent, u32 iBase, u32 iCount, const u16 *indices, u32 vertex_idx, u32 idx )
 {
 	VERIFY(Parent);
+#ifndef _EDITOR
 	for( u8 i =0; i<vertex_type::bones_count; ++i )
 		if( v.get_bone_id(i) >= Parent->LL_BoneCount() )
 		{
@@ -714,6 +715,7 @@ static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinema
 			FlushLog();
 			FATAL( "v.get_bone_id(i) >= Parent->LL_BoneCount()" );
 		}
+#endif        
 }
 #endif
 

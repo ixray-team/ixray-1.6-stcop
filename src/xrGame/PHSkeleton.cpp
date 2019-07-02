@@ -74,10 +74,15 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 	CSE_Visual				*visual = smart_cast<CSE_Visual*>(D);
 	VERIFY					(visual);
 	m_startup_anim			= visual->startup_animation;
-
+	CPHSkeleton* source		= 0;
 	if(po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
 	{
-		CPHSkeleton* source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
+		source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
+		VERIFY(source);
+	}
+	if(source)
+	{
+		
 		R_ASSERT2(source,"no source");
 		source->UnsplitSingle(this);
 		m_flags.set				(CSE_PHSkeleton::flSpawnCopy,FALSE);

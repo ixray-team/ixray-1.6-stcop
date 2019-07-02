@@ -6,6 +6,8 @@
 #include "EngineAPI.h"
 #include "../xrcdb/xrXRC.h"
 
+#include "securom_api.h"
+
 extern xr_token* vid_quality_token;
 
 //////////////////////////////////////////////////////////////////////

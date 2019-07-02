@@ -148,8 +148,9 @@ void game_sv_mp::OnRoundStart()
 		}
 	};
 	ready_clearer tmp_functor;
-	m_server->ForEachClientDo(tmp_functor);
-	m_async_stats_request_time = 0;
+	m_server->ForEachClientDo		(tmp_functor);
+	m_async_stats_request_time		= 0;
+	m_server->ClearDisconnectedPool	();
 	
 	
 	// 1. We have to destroy all delayed events
@@ -330,7 +331,9 @@ void	game_sv_mp::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 		{
 			if (!IsVotingEnabled()) break;
 			string1024 VoteCommand;
-			P.r_stringZ(VoteCommand);
+			if (P.r_elapsed() > (sizeof(VoteCommand) - 1))
+				break;
+			P.r_stringZ_s(VoteCommand);
 			OnVoteStart(VoteCommand, sender);
 		}break;
 	case GAME_EVENT_VOTE_YES:
@@ -1011,10 +1014,14 @@ void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 	char	CommandName[256];	CommandName[0]=0;
 	char	CommandParams[256];	CommandParams[0]=0;
 	string1024 resVoteCommand = "";
-	sscanf	(VoteCommand,"%s ", CommandName);
-	if (xr_strlen(CommandName)+1 < xr_strlen(VoteCommand))
+
+	sscanf	(VoteCommand,"%255s ", CommandName);
+	u32 tmp_command_len = xr_strlen(CommandName) + 1; // + ' '
+	if ((tmp_command_len < 256) && 
+		(tmp_command_len < xr_strlen(VoteCommand)))
 	{
-		xr_strcpy(CommandParams, VoteCommand + xr_strlen(CommandName)+1);
+		strncpy_s(CommandParams, VoteCommand + xr_strlen(CommandName)+1, 255);
+		CommandParams[255] = 0;
 	}
 
 	int i=0;
@@ -1045,7 +1052,7 @@ void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 		if (!stricmp(votecommands[i].name, "changeweather"))
 		{
 			string256 WeatherTime = "", WeatherName = "";
-			sscanf(CommandParams, "%s %s", WeatherName, WeatherTime );
+			sscanf(CommandParams, "%255s %255s", WeatherName, WeatherTime );
 
 			m_pVoteCommand.printf("%s %s", votecommands[i].command, WeatherTime);
 			xr_sprintf(resVoteCommand, "%s %s", votecommands[i].name, WeatherName);

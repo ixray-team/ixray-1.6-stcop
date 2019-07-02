@@ -68,7 +68,7 @@ XRCORE_API void _decorate(LPSTR dest, LPCSTR src)
 				if (bInsideSTR) { *dest++ = *src++; }
 				else			{ *dest++ = *src++; *dest++ = ' '; }
 				continue;
-			} else if (*src=='"') 
+			} else if (*src=='"')
 			{
 				bInsideSTR = !bInsideSTR;
 			}
@@ -90,22 +90,34 @@ BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
 }
 //------------------------------------------------------------------------------
 
-CInifile::CInifile(IReader* F ,LPCSTR path, allow_include_func_t allow_include_func)
+CInifile::CInifile(IReader* F ,LPCSTR path
+                                #ifndef _EDITOR
+								   ,allow_include_func_t allow_include_func
+                                #endif
+                                    )
 {
 	m_file_name[0]	= 0;
 	m_flags.zero	();
 	m_flags.set		(eSaveAtEnd,		FALSE);
 	m_flags.set		(eReadOnly,			TRUE);
 	m_flags.set		(eOverrideNames,	FALSE);
-	Load			(F,path, allow_include_func);
+	Load			(F,path
+    #ifndef _EDITOR
+    , allow_include_func
+    #endif
+    );
 }
 
 CInifile::CInifile(LPCSTR szFileName,
 				   BOOL ReadOnly,
 				   BOOL bLoad,
 				   BOOL SaveAtEnd,
-				   u32 sect_count,
-				   allow_include_func_t allow_include_func)
+				   u32 sect_count
+                   #ifndef _EDITOR
+                       ,allow_include_func_t allow_include_func
+                    #endif
+                    )
+
 {
 	if(szFileName && strstr(szFileName,"system"))
 		Msg("-----loading %s",szFileName);
@@ -113,7 +125,7 @@ CInifile::CInifile(LPCSTR szFileName,
 	m_file_name[0]	= 0;
 	m_flags.zero	();
 	if(szFileName)
-		xr_strcpy		(m_file_name,szFileName);
+		xr_strcpy		(m_file_name, sizeof(m_file_name), szFileName);
 
 	m_flags.set		(eSaveAtEnd, SaveAtEnd);
 	m_flags.set		(eReadOnly, ReadOnly);
@@ -122,12 +134,16 @@ CInifile::CInifile(LPCSTR szFileName,
 	{	
     	string_path	path,folder; 
 		_splitpath	(m_file_name, path, folder, 0, 0 );
-        xr_strcat		(path,folder);
+        xr_strcat		(path,sizeof(path),folder);
 		IReader* R 	= FS.r_open(szFileName);
         if (R){
 			if(sect_count)
 				DATA.reserve(sect_count);
-			Load		(R, path, allow_include_func);
+			Load		(R, path
+    #ifndef _EDITOR
+            , allow_include_func
+    #endif
+            );
 			FS.r_close	(R);
         }
 	}
@@ -171,7 +187,11 @@ IC BOOL	is_empty_line_now(IReader* F)
 	return (*a0==13) && ( *a1==10) && (*a2==13) && ( *a3==10); 
 };
 
-void	CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_func)
+void	CInifile::Load(IReader* F, LPCSTR path
+                                #ifndef _EDITOR
+								   ,allow_include_func_t allow_include_func
+                                #endif
+                                    )
 {
 	R_ASSERT(F);
 	Sect		*Current = 0;
@@ -228,11 +248,17 @@ void	CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_
             	string_path	fn,inc_path,folder;
                 strconcat	(sizeof(fn),fn,path,inc_name);
 				_splitpath	(fn,inc_path,folder, 0, 0 );
-				xr_strcat		(inc_path,folder);
+				xr_strcat		(inc_path,sizeof(inc_path),folder);
+#ifndef _EDITOR
 				if (!allow_include_func || allow_include_func(fn))
+#endif                
 				{
 					IReader* I 	= FS.r_open(fn); R_ASSERT3(I,"Can't find include file:", inc_name);
-            		Load		(I,inc_path, allow_include_func);
+            		Load		(I,inc_path
+                    #ifndef _EDITOR
+                    , allow_include_func
+                    #endif
+                    );
 					FS.r_close	(I);
 				}
             }
@@ -259,7 +285,8 @@ void	CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_
 				inherited_names		+= 2;
 				u32 cnt				= _GetItemCount(inherited_names);
 				u32 total_count		= 0;
-				for (u32 k=0; k<cnt; ++k) {
+                u32 k               = 0;
+				for (k=0; k<cnt; ++k) {
 					string512	tmp;
 					_GetItem	(inherited_names,k,tmp);
 					Sect& inherited_section = r_section(tmp);
@@ -268,7 +295,7 @@ void	CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_
 
 				Current->Data.reserve( Current->Data.size() + total_count );
 
-				for (u32 k=0; k<cnt; ++k)
+				for (k=0; k<cnt; ++k)
 				{
 					string512	tmp;
 					_GetItem	(inherited_names,k,tmp);
@@ -494,7 +521,7 @@ shared_str		CInifile::r_string_wb(LPCSTR S, LPCSTR L)const
 	if	(0==_base)					return	shared_str(0);
 
 	string4096						_original;
-	xr_strcpy						(_original,_base);
+	xr_strcpy						(_original,sizeof(_original),_base);
 	u32			_len				= xr_strlen(_original);
 	if	(0==_len)					return	shared_str("");
 	if	('"'==_original[_len-1])	_original[_len-1]=0;				// skip end
@@ -637,7 +664,7 @@ BOOL	CInifile::r_bool( LPCSTR S, LPCSTR L )const
 		)
 	);
 	char		B[8];
-	strncpy_s		(B,C,7);
+	strncpy_s		(B,sizeof(B),C,7);
 	B[7]		= 0;
 	strlwr		(B);
     return 		IsBOOL(B);

@@ -19,6 +19,7 @@ public:
 	void DoSystemRestart					();
 
 	bool NeedSystemRestart					()	{return 0 != (m_restart_flags&e_system_restart);}
+	bool NeedVidRestart						()	{return 0 != (m_restart_flags&e_vid_restart);}
 	void SendMessage2Group					(const shared_str& group, const char* message);
 
 	void RegisterItem						(CUIOptionsItem* item, const shared_str& group);

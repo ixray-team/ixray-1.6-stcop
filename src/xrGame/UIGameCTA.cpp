@@ -44,6 +44,7 @@
 
 #define TEAM_PANELS_XML_NAME "ui_team_panels_cta.xml"
 
+
 CUIGameCTA::CUIGameCTA()
 :teamPanels(NULL),
 m_pFragLimitIndicator(NULL),
@@ -307,6 +308,9 @@ void CUIGameCTA::BuyMenuItemIDInserter(u16 const & itemID)
 	
 }*/
 
+void TryToDefuseWeapon(CWeapon const * weapon,
+					   TIItemContainer const & all_items,
+					   buffer_vector<shared_str> & dest_ammo);
 
 void CUIGameCTA::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
 {
@@ -358,15 +362,32 @@ struct AmmoSearcherPredicate
 
 };
 
-void CUIGameCTA::TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon, TIItemContainer const & all_items, aditional_ammo_t & dest_ammo)
+void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
+								TIItemContainer const & all_items,
+								buffer_vector<shared_str> & dest_ammo)
 {
 	if (!weapon)
 		return;
 
-	if (weapon->m_ammoTypes2.size() <= u32(weapon->m_ammoType2))
+	xr_vector<shared_str> const *	tmp_ammo_types = NULL;
+	u8 const *						tmp_ammo_type = NULL;
+	u16								ammo_elapsed = 0;
+	if (weapon->m_bGrenadeMode)
+	{
+		tmp_ammo_types	= &weapon->m_ammoTypes;
+		tmp_ammo_type	= &weapon->m_ammoType;
+		ammo_elapsed	= (u16)weapon->GetAmmoElapsed();
+	} else
+	{
+		tmp_ammo_types	= &weapon->m_ammoTypes2;
+		tmp_ammo_type	= &weapon->m_ammoType2;
+		ammo_elapsed	= (u16)weapon->m_magazine2.size();
+	}
+	
+	if (tmp_ammo_types->size() <= u32(*tmp_ammo_type))
 		return;
 
-	shared_str ammo_section = weapon->m_ammoTypes2[weapon->m_ammoType2];
+	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
 
 	VERIFY2(ammo_section.size(), make_string(
 		"grenade ammo type of [%s] hasn't section name", weapon->cNameSect().c_str()).c_str());
@@ -376,7 +397,8 @@ void CUIGameCTA::TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * wea
 	VERIFY(pSettings->line_exist(ammo_section.c_str(), "box_size"));
 
 	u16 ammo_box_size	= pSettings->r_u16(ammo_section.c_str(), "box_size");
-	u16 ammo_elapsed	= weapon->iAmmoElapsed2;
+	
+
 	R_ASSERT2(ammo_elapsed <= 1, make_string(
 		"weapon [%s] can't have more than one grenade in grenade launcher",
 		weapon->cNameSect().c_str()).c_str());
@@ -404,18 +426,36 @@ void CUIGameCTA::TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * wea
 }
 
 
-void CUIGameCTA::TryToDefuseWeapon(CWeapon const * weapon, TIItemContainer const & all_items, aditional_ammo_t & dest_ammo)
+void TryToDefuseWeapon(CWeapon const * weapon,
+					   TIItemContainer const & all_items,
+					   buffer_vector<shared_str> & dest_ammo)
 {
 	if (!weapon)
 		return;
 
+	CWeaponMagazinedWGrenade const * tmp_gl_weapon = smart_cast<CWeaponMagazinedWGrenade const *>(weapon);
 	if (weapon->IsGrenadeLauncherAttached())
-		TryToDefuseGrenadeLauncher(smart_cast<CWeaponMagazinedWGrenade const *>(weapon), all_items, dest_ammo);
+		TryToDefuseGrenadeLauncher(tmp_gl_weapon, all_items, dest_ammo);
+
+	xr_vector<shared_str> const *	tmp_ammo_types = NULL;
+	u8 const *						tmp_ammo_type = NULL;
+	u16								ammo_elapsed = 0;
+	if (tmp_gl_weapon && tmp_gl_weapon->m_bGrenadeMode)
+	{
+		tmp_ammo_types	= &tmp_gl_weapon->m_ammoTypes2;
+		tmp_ammo_type	= &tmp_gl_weapon->m_ammoType2;
+		ammo_elapsed	= (u16)tmp_gl_weapon->m_magazine2.size();
+	} else
+	{
+		tmp_ammo_types	= &weapon->m_ammoTypes;
+		tmp_ammo_type	= &weapon->m_ammoType;
+		ammo_elapsed	= (u16)weapon->GetAmmoElapsed();
+	}
 	
-	if (weapon->m_ammoTypes.size() <= u32(weapon->m_ammoType))
+	if (tmp_ammo_types->size() <= u32(*tmp_ammo_type))
 		return;
 
-	shared_str ammo_section = weapon->m_ammoTypes[weapon->m_ammoType];
+	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
 
 	VERIFY2(ammo_section.size(), make_string(
 		"ammo type of [%s] hasn't section name", weapon->cName().c_str()).c_str());
@@ -425,8 +465,7 @@ void CUIGameCTA::TryToDefuseWeapon(CWeapon const * weapon, TIItemContainer const
 	VERIFY(pSettings->line_exist(ammo_section.c_str(), "box_size"));
 
 	u16 ammo_box_size	= pSettings->r_u16(ammo_section.c_str(), "box_size");
-	u16 ammo_elapsed	= static_cast<u16>(weapon->GetAmmoElapsed());
-
+	
 	while (ammo_elapsed >= ammo_box_size)
 	{
 		dest_ammo.push_back(ammo_section);

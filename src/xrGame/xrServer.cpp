@@ -61,6 +61,7 @@ xrServer::xrServer() : IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
 	m_server_logo		= NULL;
 	m_server_rules		= NULL;
 	m_last_updates_size	= 0;
+	m_last_update_time	= 0;
 }
 
 xrServer::~xrServer()
@@ -133,7 +134,7 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 	return newCL;
 };
 
-INT	g_sv_Client_Reconnect_Time = 60;
+u32	g_sv_Client_Reconnect_Time = 3;
 
 void		xrServer::client_Destroy	(IClient* C)
 {
@@ -177,9 +178,27 @@ void		xrServer::client_Destroy	(IClient* C)
 		}
 		
 //.		if (!alife_client->flags.bVerified)
-		xr_delete(alife_client);				
+		xrClientData*	xr_client = static_cast<xrClientData*>(alife_client);
+		m_disconnected_clients.Add(xr_client); //xr_delete(alife_client);				
 	}
 }
+
+void xrServer::GetPooledState(xrClientData* xrCL)
+{
+	xrClientData* pooled_client = m_disconnected_clients.Get(xrCL);
+	if (!pooled_client)
+		return;
+
+	NET_Packet	tmp_packet;
+	u16			tmp_fake;
+	tmp_packet.w_begin				(M_SPAWN);
+	pooled_client->ps->net_Export	(tmp_packet, TRUE);
+	tmp_packet.r_begin				(tmp_fake);
+	xrCL->ps->net_Import			(tmp_packet);
+	xrCL->flags.bReconnect			= TRUE;
+	xr_delete						(pooled_client);
+}
+
 //--------------------------------------------------------------------
 int	g_Dump_Update_Write = 0;
 
@@ -243,9 +262,11 @@ void _stdcall xrServer::SendGameUpdateTo(IClient* client)
 	xrClientData*	xr_client = static_cast<xrClientData*>(client);
 	VERIFY			(xr_client);
 	if (!xr_client->net_Ready)
+	{
 		return;
+	}
 
-	if (!HasBandwidth(client) 
+	if (!HasBandwidth(client)
 #ifdef DEBUG 
 			&& !g_sv_SendUpdate
 #endif
@@ -330,20 +351,23 @@ void xrServer::SendUpdatesToAll()
 	sendtofd.bind(this, &xrServer::SendGameUpdateTo);
 	ForEachClientDoSender(sendtofd);
 
-	MakeUpdatePackets				();
-	SendUpdatePacketsToAll			();
-	
+	if ((Device.dwTimeGlobal - m_last_update_time) >= u32(1000/psNET_ServerUpdate))
+	{
+		MakeUpdatePackets				();
+		SendUpdatePacketsToAll			();
+
+#ifdef DEBUG
+		g_sv_SendUpdate = 0;
+#endif			
+		if (game->sv_force_sync)	Perform_game_export();
+		VERIFY						(verify_entities());
+		m_last_update_time			= Device.dwTimeGlobal;
+	}
 	if (m_file_transfers)
 	{
 		m_file_transfers->update_transfer();
 		m_file_transfers->stop_obsolete_receivers();
 	}
-
-#ifdef DEBUG
-	g_sv_SendUpdate = 0;
-#endif			
-	if (game->sv_force_sync)	Perform_game_export();
-	VERIFY						(verify_entities());
 }
 
 xr_vector<shared_str>	_tmp_log;
@@ -585,7 +609,9 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 					my_game->m_async_stats.set_responded(CL->ID);
 					if (static_cast<IClient*>(CL) != GetServerClient())
 					{
-						Game().m_WeaponUsageStatistic->OnUpdateRespond(&P, CL->m_cdkey_digest);
+						game_PlayerState* tmp_ps = CL->ps;
+						u32 tmp_pid = tmp_ps != NULL ? tmp_ps->m_account.profile_id() : 0;
+						Game().m_WeaponUsageStatistic->OnUpdateRespond(&P, CL->m_cdkey_digest, tmp_pid);
 					}
 				} else
 				{

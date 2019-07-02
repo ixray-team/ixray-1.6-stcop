@@ -132,6 +132,9 @@ void CActor::SelectBestWeapon	(CObject* O)
 	CInventoryItem*	pIItem		= smart_cast<CInventoryItem*> (O);
 	bool NeedToSelectBestWeapon = false;
 
+	if (pArtefact && pArtefact->H_Parent()) //just take an artefact
+		return;
+	
 	if ((pWeapon || pGrenade || pArtefact) && pIItem)
 	{
 		NeedToSelectBestWeapon = true;

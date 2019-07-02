@@ -72,6 +72,10 @@ void CBlender_Compile::i_dx10Address(u32 s, u32 address)
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSW,	address);
 }
 
+void CBlender_Compile::i_dx10BorderColor(u32 s, u32 color)
+{
+	RS.SetSAMP			(s,D3DSAMP_BORDERCOLOR,	color);
+}
 void CBlender_Compile::i_dx10Filter_Min(u32 s, u32 f)
 {
 	VERIFY(s!=u32(-1));

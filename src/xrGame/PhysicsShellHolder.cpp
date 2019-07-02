@@ -27,7 +27,14 @@ CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
 }
-
+CPhysicsShellHolder::	~CPhysicsShellHolder						()
+{
+	VERIFY ( !m_pPhysicsShell );
+//#ifndef MASTER_GOLD
+	//R_ASSERT( !m_pPhysicsShell );
+//#endif
+	destroy_physics_shell( m_pPhysicsShell );
+}
 const IObjectPhysicsCollision*CPhysicsShellHolder::physics_collision	()
 {
 	CCharacterPhysicsSupport	*char_support = character_physics_support();

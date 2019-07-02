@@ -15,6 +15,7 @@
 #include "ui/UICDkey.h"
 
 int		g_cl_save_demo = 0;
+extern XRCORE_API bool g_allow_heap_min;
 
 shared_str CLevel::OpenDemoFile(LPCSTR demo_file_name)
 {
@@ -112,9 +113,13 @@ bool CLevel::net_start1				()
 		params							&p = g_pGamePersistent->m_game_params;
 		// Connect
 		if (!xr_strcmp(p.m_game_type,"single"))
-			Server					= xr_new<xrServer>();		
-		else
+		{
+			Server					= xr_new<xrServer>();
+		} else
+		{
+			g_allow_heap_min		= false;
 			Server					= xr_new<xrGameSpyServer>();
+		}
 
 		if (xr_strcmp(p.m_alife,"alife"))
 		{
@@ -133,6 +138,9 @@ bool CLevel::net_start1				()
 				return true;
 			}
 		}
+	} else
+	{
+		g_allow_heap_min = false;
 	}
 	return true;
 }

@@ -179,7 +179,10 @@ void rewarding_state_events::init()
 	);
 
 	add_event(
-		add_accumm_value_condition(acpv_sprinter_victim_velocity, float_bfunc_cf::get_function(float_bfunc_cf::tt_greater_equal), 6.0f),
+		add_and_condition(
+			add_accumm_value_condition(acpv_sprinter_victim_velocity, float_bfunc_cf::get_function(float_bfunc_cf::tt_greater_equal), 6.0f),
+			add_accumm_value_condition(acpv_killer_victim_angle, float_bfunc_cf::get_function(float_bfunc_cf::tt_less_equal), _cos(PI_DIV_2 - 0.345f))	//~ 90 +- 20 degrees
+		),
 		1,
 		eGameIDDeathmatch | eGameIDTeamDeathmatch | eGameIDArtefactHunt | eGameIDCaptureTheArtefact,
 		gamespy_profile::at_award_sprinter_stopper

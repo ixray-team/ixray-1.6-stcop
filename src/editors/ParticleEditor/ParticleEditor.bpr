@@ -213,7 +213,7 @@ Item3=x:\libraries
 DebugSourceDirs=$(BCB)\source\vcl
 
 [Parameters]
-RunParams=-wf x:\stalker_addon\resources
+RunParams=-wf x:\stalker_addon\resources -editor
 Launcher=
 UseLauncher=0
 DebugCWD=

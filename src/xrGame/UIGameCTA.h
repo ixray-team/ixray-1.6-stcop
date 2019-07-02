@@ -85,12 +85,7 @@ private:
 
 	typedef buffer_vector<shared_str> aditional_ammo_t;
 			void		TryToDefuseAllWeapons		(aditional_ammo_t & dest_ammo);
-			void		TryToDefuseWeapon			(CWeapon const * weapon, TIItemContainer const & all_items, aditional_ammo_t & dest_ammo);
-			void		TryToDefuseGrenadeLauncher	(CWeaponMagazinedWGrenade const * weapon, TIItemContainer const & all_items, aditional_ammo_t & dest_ammo);
 			void		AdditionalAmmoInserter		(aditional_ammo_t::value_type const & sect_name);
-			
-			
-
 
 			void		BuyMenuItemInserter(PIItem const & item);
 			void		BuyMenuItemInserter(CInventorySlot const & slot);

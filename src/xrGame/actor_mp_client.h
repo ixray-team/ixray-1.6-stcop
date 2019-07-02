@@ -14,6 +14,8 @@ private:
 private:
 	actor_mp_state_holder	m_state_holder;
 	//bool					m_i_am_dead;
+	float					prev_cam_inert_value;
+	static const float		cam_inert_value;
 
 private:
 			void			fill_state			(actor_mp_state &state);
@@ -29,6 +31,8 @@ public:
 	virtual void			Die					(CObject		*killer);
 	virtual void			DumpActiveParams	(shared_str const & section_name, CInifile & dst_ini) const;
 	shared_str const 		GetAnticheatSectionName	() const { return "mp_actor"; };
+	virtual void			On_SetEntity		();
+	virtual void			On_LostEntity		();
 protected:
 	virtual	void			cam_Set					(EActorCameras style);
 			void			use_booster				(NET_Packet &packet);

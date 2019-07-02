@@ -555,9 +555,8 @@ void CWeapon::net_Destroy	()
 
 BOOL CWeapon::IsUpdating()
 {	
-	//bool bIsActiveItem = m_pInventory && m_pInventory->ActiveItem()==this;
-	//return bIsActiveItem || bWorking || IsPending() || getVisible();
-	return bWorking;
+	bool bIsActiveItem = m_pInventory && m_pInventory->ActiveItem()==this;
+	return bIsActiveItem || bWorking;// || IsPending() || getVisible();
 }
 
 void CWeapon::net_Export(NET_Packet& P)
@@ -1815,8 +1814,14 @@ BOOL CWeapon::ParentMayHaveAimBullet	()
 
 BOOL CWeapon::ParentIsActor	()
 {
-	CObject* O=H_Parent();
-	CEntityAlive* EA=smart_cast<CEntityAlive*>(O);
+	CObject* O			= H_Parent();
+	if (!O)
+		return FALSE;
+
+	CEntityAlive* EA	= smart_cast<CEntityAlive*>(O);
+	if (!EA)
+		return FALSE;
+
 	return EA->cast_actor()!=0;
 }
 

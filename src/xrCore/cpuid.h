@@ -11,6 +11,8 @@
 #define _CPU_FEATURE_SSE4_1 0x0040
 #define _CPU_FEATURE_SSE4_2	0x0080
 
+#define _CPU_FEATURE_MWAIT	0x0100
+
 struct _processor_info {
     char		v_name[13];							// vendor name
     char		model_name[49];						// Name of model eg. Intel_Pentium_Pro

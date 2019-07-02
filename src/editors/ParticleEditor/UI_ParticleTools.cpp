@@ -609,7 +609,7 @@ void CParticleTool::FillReferenceList()
             if(m_EditPG->GetDefinition()->m_Flags.test(PS::CPGDef::SEffect::flOnDeadChild))
                 fraLeftBar->refLB->AddItem( (*pe_it)->m_OnDeadChildName.c_str(), NULL );
         }
-        sprintf_s							(str, sizeof(str), "Effect(s): %d", fraLeftBar->refLB->Count );
+        xr_sprintf							(str, sizeof(str), "Effect(s): %d", fraLeftBar->refLB->Count );
     }else
     {
     	if(m_EditPE->GetDefinition())
@@ -637,7 +637,7 @@ void CParticleTool::FillReferenceList()
                 }
             }
         }
-        sprintf_s							(str, sizeof(str), "Group(s): %d", fraLeftBar->refLB->Count );
+        xr_sprintf							(str, sizeof(str), "Group(s): %d", fraLeftBar->refLB->Count );
     }
     fraLeftBar->refName->Caption 	= str;
 }

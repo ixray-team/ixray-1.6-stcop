@@ -23,6 +23,7 @@ public:
 	IBlender*					b_occq;
 	IBlender*					b_accum_mask;
 	IBlender*					b_accum_direct;
+	IBlender*					b_accum_direct_cascade;
 	IBlender*					b_accum_point;
 	IBlender*					b_accum_spot;
 	IBlender*					b_accum_reflected;
@@ -87,7 +88,9 @@ private:
 	// Accum
 	ref_shader					s_accum_mask	;
 	ref_shader					s_accum_direct	;
+	ref_shader					s_accum_direct_cascade;
 	ref_shader					s_accum_direct_volumetric;
+	ref_shader					s_accum_direct_volumetric_cascade;
 	ref_shader					s_accum_point	;
 	ref_shader					s_accum_spot	;
 	ref_shader					s_accum_reflected;
@@ -131,6 +134,7 @@ private:
 	ref_geom					g_combine;
 	ref_geom					g_combine_VP;		// xy=p,zw=tc
 	ref_geom					g_combine_2UV;
+	ref_geom					g_combine_cuboid;
 	ref_geom					g_aa_blur;
 	ref_geom					g_aa_AA;
 	ref_shader					s_combine_dbg_0;
@@ -180,7 +184,8 @@ public:
 	void						accum_volumetric_geom_destroy();
 
 	void						u_stencil_optimize		(BOOL		common_stencil=TRUE);
-	void						u_compute_texgen_screen	(Fmatrix&	dest);
+	void						u_compute_texgen_screen		(Fmatrix&	dest);
+	void						u_compute_texgen_screen_asd	(Fmatrix&	dest);
 	void						u_compute_texgen_jitter	(Fmatrix&	dest);
 	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb);
 	void						u_setrt					(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IDirect3DSurface9* zb);
@@ -206,7 +211,9 @@ public:
 	void						phase_accumulator		();
 	void						phase_vol_accumulator	();
 	void						shadow_direct			(light* L, u32 dls_phase);
-	
+
+	bool						need_to_render_sunshafts();
+
 	BOOL						enable_scissor			(light* L);		// true if intersects near plane
 	void						enable_dbt_bounds		(light* L);
 
@@ -214,6 +221,7 @@ public:
 
 	void						draw_volume				(light* L);
 	void						accum_direct			(u32	sub_phase);
+	void						accum_direct_cascade	(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias); 
 	void						accum_direct_f			(u32	sub_phase);
 	void						accum_direct_lum		();
 	void						accum_direct_blend		();

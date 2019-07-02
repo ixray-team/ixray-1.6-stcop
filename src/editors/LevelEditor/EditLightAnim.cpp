@@ -193,7 +193,7 @@ void TfrmEditLightAnim::UpdateProperties()
         V->OnAfterEditEvent.bind(this,&TfrmEditLightAnim::OnFrameCountAfterEdit);
 
         u32 frame 				= sePointer->Value;
-        PHelper().CreateCaption	(items,	"Current\\Frame",	shared_str().sprintf("%d",frame));
+        PHelper().CreateCaption	(items,	"Current\\Frame",	shared_str().printf("%d",frame));
         u32* val				= m_CurrentItem->GetKey(sePointer->Value);
         if (val){
             PHelper().CreateColor(items,"Current\\Color",	val);

@@ -28,6 +28,8 @@
 
 #include "xrSash.h"
 
+#include "securom_api.h"
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -108,7 +110,7 @@ PROTECT_API char * ComputeModuleHash( char * pszHash )
 		MD5Digest( ( unsigned char *)lpvMapping , (unsigned int) MemoryBasicInformation.RegionSize , szHash );
 		MD5Digest( ( unsigned char *)szHash , 32 , pszHash );
 		for ( int i = 0 ; i < 32 ; ++i )
-			pszHash[ i ] = toupper( pszHash[ i ] );
+			pszHash[ i ] = (char)toupper( pszHash[ i ] );
 	}
 
 	UnmapViewOfFile( lpvMapping );
@@ -677,6 +679,11 @@ void foo	()
 
 ENGINE_API	bool g_dedicated_server	= false;
 
+#ifndef DEDICATED_SERVER
+	// forward declaration for Parental Control checks
+	BOOL IsPCAccessAllowed(); 
+#endif // DEDICATED_SERVER
+
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
@@ -715,9 +722,14 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 #ifndef DEDICATED_SERVER
 
 	// Check for virtual memory
-
 	if ( ( strstr( lpCmdLine , "--skipmemcheck" ) == NULL ) && IsOutOfVirtualMemory() )
 		return 0;
+
+	// Parental Control for Vista and upper
+	if ( ! IsPCAccessAllowed() ) {
+		MessageBox( NULL , "Access restricted" , "Parental Control" , MB_OK | MB_ICONERROR );
+		return 1;
+	}
 
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
@@ -901,11 +913,29 @@ int stack_overflow_exception_filter	(int exception_code)
        return EXCEPTION_CONTINUE_SEARCH;
 }
 
+#include <boost/crc.hpp>
+
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
+	//FILE* file				= 0;
+	//fopen_s					( &file, "z:\\development\\call_of_prypiat\\resources\\gamedata\\shaders\\r3\\objects\\r4\\accum_sun_near_msaa_minmax.ps\\2048__1___________4_11141_", "rb" );
+	//u32 const file_size		= 29544;
+	//char* buffer			= (char*)malloc(file_size);
+	//fread					( buffer, file_size, 1, file );
+	//fclose					( file );
+
+	//u32 const& crc			= *(u32*)buffer;
+
+	//boost::crc_32_type		processor;
+	//processor.process_block	( buffer + 4, buffer + file_size );
+	//u32 const new_crc		= processor.checksum( );
+	//VERIFY					( new_crc == crc );
+
+	//free					(buffer);
+
 	__try 
 	{
 		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
@@ -1406,6 +1436,56 @@ void CApplication::LoadAllArchives()
 		g_pGamePersistent->OnAssetsChanged	();
 	}
 }
+
+#ifndef DEDICATED_SERVER
+// Parential control for Vista and upper
+typedef BOOL (*PCCPROC)( CHAR* ); 
+
+BOOL IsPCAccessAllowed()
+{
+	CHAR szPCtrlChk[ MAX_PATH ] , szGDF[ MAX_PATH ] , *pszLastSlash;
+	HINSTANCE hPCtrlChk = NULL;
+	PCCPROC pctrlchk = NULL;
+	BOOL bAllowed = TRUE;
+
+	if ( ! GetModuleFileName( NULL , szPCtrlChk , MAX_PATH ) )
+		return TRUE;
+
+	if ( ( pszLastSlash = strrchr( szPCtrlChk , '\\' ) ) == NULL )
+		return TRUE;
+
+	*pszLastSlash = '\0';
+
+	strcpy_s( szGDF , szPCtrlChk );
+
+	strcat_s( szPCtrlChk , "\\pctrlchk.dll" );
+	if ( GetFileAttributes( szPCtrlChk ) == INVALID_FILE_ATTRIBUTES )
+		return TRUE;
+
+	if ( ( pszLastSlash = strrchr( szGDF , '\\' ) ) == NULL )
+		return TRUE;
+
+	*pszLastSlash = '\0';
+
+	strcat_s( szGDF , "\\Stalker-COP.exe" );
+	if ( GetFileAttributes( szGDF ) == INVALID_FILE_ATTRIBUTES )
+		return TRUE;
+
+	if ( ( hPCtrlChk = LoadLibrary( szPCtrlChk ) ) == NULL )
+		return TRUE;
+
+	if ( ( pctrlchk = (PCCPROC) GetProcAddress( hPCtrlChk , "pctrlchk" ) ) == NULL ) {
+		FreeLibrary( hPCtrlChk );
+		return TRUE;
+	}
+
+	bAllowed = pctrlchk( szGDF );
+
+	FreeLibrary( hPCtrlChk );
+
+	return bAllowed;
+}
+#endif // DEDICATED_SERVER
 
 //launcher stuff----------------------------
 extern "C"{

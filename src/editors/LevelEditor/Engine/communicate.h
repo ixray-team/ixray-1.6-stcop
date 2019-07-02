@@ -169,8 +169,8 @@ struct b_params
         for(u32 i=0; i<6; ++i)
         {
         	string128	buff;
-            xr_sprintf	(buff,"reserved_%d",i);
-            ini.w_float	(section,buff,f_reserved[i]);
+            xr_sprintf	(buff, sizeof(buff), "reserved_%d",i);
+            ini.w_float	(section, buff, f_reserved[i]);
         }
     }
     void LoadLTX(CInifile& ini)
@@ -187,7 +187,7 @@ struct b_params
         for(u32 i=0; i<6; ++i)
         {
         	string128		buff;
-            xr_sprintf		(buff,"reserved_%d",i);
+            xr_sprintf		(buff, sizeof(buff), "reserved_%d",i);
             f_reserved[i]	= ini.r_float	(section,buff);
         }
     }

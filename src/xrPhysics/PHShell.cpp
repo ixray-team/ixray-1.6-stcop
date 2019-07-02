@@ -452,7 +452,7 @@ void  CPHShell:: BonesCallback				( CBoneInstance* B ){
 		
 	//}
 	E->BonesCallBack(B);
-	R_ASSERT2( _valid(B->mTransform), "CPHShell:: BonesCallback" );
+	VERIFY2( _valid(B->mTransform), "CPHShell:: BonesCallback" );
 }
 
 

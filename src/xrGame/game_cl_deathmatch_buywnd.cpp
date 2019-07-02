@@ -14,6 +14,10 @@
 
 #define UNBUYABLESLOT		20
 
+void TryToDefuseWeapon(CWeapon const * weapon,
+					   TIItemContainer const & all_items,
+					   buffer_vector<shared_str> & dest_ammo);
+
 s16	game_cl_Deathmatch::GetBuyMenuItemIndex		(u8 Addons, u8 ItemID)
 {
 	s16	ID = (s16(Addons) << 0x08) | s16(ItemID);
@@ -538,96 +542,6 @@ struct AmmoSearcherPredicate
 	}
 
 };
-
-
-void game_cl_Deathmatch::TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon, TIItemContainer const & all_items, aditional_ammo_t & dest_ammo)
-{
-	if (!weapon)
-		return;
-
-	if (weapon->m_ammoTypes2.size() <= u32(weapon->m_ammoType2))
-		return;
-
-	shared_str ammo_section = weapon->m_ammoTypes2[weapon->m_ammoType2];
-
-	VERIFY2(ammo_section.size(), make_string(
-		"grenade ammo type of [%s] hasn't section name", weapon->cNameSect().c_str()).c_str());
-	if (!ammo_section.size())
-		return;
-
-	VERIFY(pSettings->line_exist(ammo_section.c_str(), "box_size"));
-
-	u16 ammo_box_size	= pSettings->r_u16(ammo_section.c_str(), "box_size");
-	u16 ammo_elapsed	= weapon->iAmmoElapsed2;
-	R_ASSERT2(ammo_elapsed <= 1, make_string(
-		"weapon [%s] can't have more than one grenade in grenade launcher",
-		weapon->cNameSect().c_str()).c_str());
-
-
-	while (ammo_elapsed >= ammo_box_size)
-	{
-		dest_ammo.push_back(ammo_section);
-		ammo_elapsed = ammo_elapsed - ammo_box_size;
-	}
-	if (!ammo_elapsed)
-		return;
-
-	AmmoSearcherPredicate ammo_completitor(ammo_elapsed, ammo_section);
-
-	TIItemContainer::const_iterator temp_iter = std::find_if(
-		all_items.begin(), all_items.end(), ammo_completitor);
-
-	if (temp_iter == all_items.end())
-		return;
-
-	CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(*temp_iter);
-	R_ASSERT2(temp_ammo, "failed to create ammo after defusing weapon");
-	temp_ammo->m_boxCurr = temp_ammo->m_boxSize;
-}
-
-void game_cl_Deathmatch::TryToDefuseWeapon(CWeapon const * weapon, TIItemContainer const & all_items, aditional_ammo_t & dest_ammo)
-{
-	if (!weapon)
-		return;
-
-	if (weapon->IsGrenadeLauncherAttached())
-		TryToDefuseGrenadeLauncher(smart_cast<CWeaponMagazinedWGrenade const *>(weapon), all_items, dest_ammo);
-	
-	if (weapon->m_ammoTypes.size() <= u32(weapon->m_ammoType))
-		return;
-
-	shared_str ammo_section = weapon->m_ammoTypes[weapon->m_ammoType];
-
-	VERIFY2(ammo_section.size(), make_string(
-		"ammo type of [%s] hasn't section name", weapon->cName().c_str()).c_str());
-	if (!ammo_section.size())
-		return;
-
-	VERIFY(pSettings->line_exist(ammo_section.c_str(), "box_size"));
-
-	u16 ammo_box_size	= pSettings->r_u16(ammo_section.c_str(), "box_size");
-	u16 ammo_elapsed	= static_cast<u16>(weapon->GetAmmoElapsed());
-
-	while (ammo_elapsed >= ammo_box_size)
-	{
-		dest_ammo.push_back(ammo_section);
-		ammo_elapsed = ammo_elapsed - ammo_box_size;
-	}
-	if (!ammo_elapsed)
-		return;
-
-	AmmoSearcherPredicate ammo_completitor(ammo_elapsed, ammo_section);
-
-	TIItemContainer::const_iterator temp_iter = std::find_if(
-		all_items.begin(), all_items.end(), ammo_completitor);
-
-	if (temp_iter == all_items.end())
-		return;
-
-	CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(*temp_iter);
-	R_ASSERT2(temp_ammo, "failed to create ammo after defusing weapon");
-	temp_ammo->m_boxCurr = temp_ammo->m_boxSize;
-}
 
 void game_cl_Deathmatch::AdditionalAmmoInserter	(aditional_ammo_t::value_type const & sect_name)
 {

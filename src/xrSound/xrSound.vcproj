@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="xrSound"
 	ProjectGUID="{CCCA7859-EB86-493E-9B53-C4235F45B3C5}"
 	Keyword="Win32Proj"
@@ -82,7 +82,7 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions="/NODEFAULTLIB:LIBCMTD"
-				AdditionalDependencies="ogg_static_d.lib vorbis_static_d.lib vorbisfile_static_d.lib OpenAL32.lib"
+				AdditionalDependencies="libogg_static_d.lib libvorbis_static_d.lib libvorbisfile_static_d.lib OpenAL32.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
@@ -280,7 +280,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ogg_static.lib vorbis_static.lib vorbisfile_static.lib OpenAL32.lib"
+				AdditionalDependencies="libogg_static.lib libvorbis_static.lib libvorbisfile_static.lib OpenAL32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
 				GenerateDebugInformation="true"
@@ -477,7 +477,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ogg_static.lib vorbis_static.lib vorbisfile_static.lib OpenAL32.lib"
+				AdditionalDependencies="libogg_static.lib libvorbis_static.lib libvorbisfile_static.lib OpenAL32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\sdk\libraries;..\..\..\libraries"
 				GenerateDebugInformation="true"

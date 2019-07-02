@@ -29,7 +29,8 @@ private:
 		shared_str			m_sActiveSection;
 		CUI3tButton*		m_pClose;
 
-		CUIMessageBoxEx*		m_pMessageBox;
+		CUIMessageBoxEx*	m_pMessageBoxLogin;
+		CUIMessageBoxEx*	m_pMessageBoxOk;
 
 public:
 							CUIMpAdminMenu();

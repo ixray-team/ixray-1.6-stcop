@@ -248,7 +248,7 @@ void CStats::Show()
 		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);	
 		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
 		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);	
-		F.OutNext	("  DT_Vis/Cnt:%2.2fms",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
+		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
 		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);	
 		F.OutNext	("  DT_Cache:  %2.2fms",RenderDUMP_DT_Cache.result);	
 		F.OutNext	("  Wallmarks: %2.2fms, %d/%d - %d",RenderDUMP_WM.result,RenderDUMP_WMS_Count,RenderDUMP_WMD_Count,RenderDUMP_WMT_Count);

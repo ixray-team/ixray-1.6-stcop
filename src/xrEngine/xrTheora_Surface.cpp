@@ -184,7 +184,7 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 	static const float K = 0.256788f + 0.504129f + 0.097906f;
 
 	// we use ffmpeg2theora for encoding, so only OC_PF_420 valid
-	u32 pixelformat			= m_rgb->t_info.pixelformat;
+//	u32 pixelformat			= m_rgb->t_info.pixelformat;
 
 	// rgb
 	if (yuv_rgb){

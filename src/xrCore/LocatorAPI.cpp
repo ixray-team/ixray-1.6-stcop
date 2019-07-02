@@ -470,6 +470,7 @@ void CLocatorAPI::unload_archive(CLocatorAPI::archive& A)
 			char* str		= LPSTR(I->name);
 			xr_free			(str);
 			m_files.erase	(I);
+			break;
 		}
 	}	
 	A.close();

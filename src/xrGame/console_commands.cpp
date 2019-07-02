@@ -396,11 +396,11 @@ public:
 	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args) {
 		#ifndef	DEBUG
-		if (GameID() != eGameIDSingle) 
-		{
-			Msg("For this game type Demo Record is disabled.");
-			return;
-		};
+		//if (GameID() != eGameIDSingle) 
+		//{
+		//	Msg("For this game type Demo Record is disabled.");
+		//	return;
+		//};
 		#endif
 		Console->Hide	();
 
@@ -421,11 +421,11 @@ public:
 	CCC_DemoRecordSetPos(LPCSTR N) : CCC_Vector3( N, &p, Fvector().set( -FLT_MAX, -FLT_MAX, -FLT_MAX ),Fvector().set( FLT_MAX, FLT_MAX, FLT_MAX ) ) {};
 	virtual void Execute(LPCSTR args) {
 		#ifndef	DEBUG
-		if (GameID() != eGameIDSingle) 
-		{
-			Msg("For this game type Demo Record is disabled.");
-			return;
-		};
+		//if (GameID() != eGameIDSingle) 
+		//{
+		//	Msg("For this game type Demo Record is disabled.");
+		//	return;
+		//};
 		#endif
 		CDemoRecord::GetGlobalPosition( p );
 		CCC_Vector3::Execute(args);
@@ -444,11 +444,11 @@ public:
 	  { bEmptyArgsHandled = TRUE; };
 	  virtual void Execute(LPCSTR args) {
 		#ifndef	DEBUG
-		if (GameID() != eGameIDSingle) 
-		{
-			Msg("For this game type Demo Play is disabled.");
-			return;
-		};
+		//if (GameID() != eGameIDSingle) 
+		//{
+		//	Msg("For this game type Demo Play is disabled.");
+		//	return;
+		//};
 		#endif
 		  if (0==g_pGameLevel)
 		  {
@@ -1842,7 +1842,7 @@ void CCC_RegisterCommands()
 #endif // DEBUG
 
 	// Demo
-#ifndef MASTER_GOLD
+#if 1//ndef MASTER_GOLD
 	CMD1(CCC_DemoPlay,			"demo_play"				);
 	CMD1(CCC_DemoRecord,		"demo_record"			);
 	CMD1(CCC_DemoRecordSetPos,	"demo_set_cam_position"	);

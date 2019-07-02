@@ -12,6 +12,8 @@
 #include "xr_object.h"
 #include "feel_sound.h"
 
+#include "securom_api.h"
+
 ENGINE_API	IGame_Level*	g_pGameLevel	= NULL;
 extern	BOOL g_bLoaded;
 

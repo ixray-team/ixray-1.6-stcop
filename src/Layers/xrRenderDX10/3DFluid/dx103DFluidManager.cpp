@@ -358,7 +358,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 	if( !RImplementation.o.dx10_msaa )
 		pTarget->u_setrt( pTarget->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
 	else
-		pTarget->u_setrt( pTarget->rt_Generic_0,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
+		pTarget->u_setrt( pTarget->rt_Generic_0_r,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
 
 	RImplementation.rmNormal();
 	//RImplementation.Target->phase_scene_begin();
@@ -734,7 +734,7 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 	if( !RImplementation.o.dx10_msaa )
 		pTarget->u_setrt( pTarget->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
 	else
-		pTarget->u_setrt( pTarget->rt_Generic_0,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
+		pTarget->u_setrt( pTarget->rt_Generic_0_r,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
 
 	RImplementation.rmNormal();
 }

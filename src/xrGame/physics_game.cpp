@@ -12,9 +12,15 @@
 #include "PHCommander.h"
 #include "../xrphysics/MathUtils.h"
 #include "../xrphysics/iPHWorld.h"
+//#include "../xrphysics/physicsshell.h"
+
+#include "phreqcomparer.h"
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/WallMarkArray.h"
+//#ifdef	DEBUG
+//#include "phdebug.h"
+//#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 static const float PARTICLE_EFFECT_DIST=70.f;
@@ -27,6 +33,7 @@ class CPHParticlesPlayCall :
 		public CPHAction
 {
 LPCSTR ps_name;
+protected:
 dContactGeom c;
 public:
 	CPHParticlesPlayCall(const dContactGeom &contact,bool invert_n,LPCSTR psn)
@@ -53,7 +60,74 @@ public:
 	};
 	virtual bool 			obsolete						()const{return false;}
 };
+static const float minimal_plane_distance_between_liquid_particles = 0.2f;
+class CPHLiquidParticlesPlayCall :
+	public CPHParticlesPlayCall,
+	public CPHReqComparerV
+{
+	u32 remove_time;
+	bool b_called;
+public:
+	CPHLiquidParticlesPlayCall(const dContactGeom &contact,bool invert_n,LPCSTR psn):
+	  CPHParticlesPlayCall( contact, invert_n, psn ), b_called ( false )
+	{
+		static const u32 time_to_call_remove  = 3000;
+		remove_time = Device.dwTimeGlobal + time_to_call_remove;
+	}
+	const Fvector 	&position() const
+	{
+		return cast_fv( c.pos );
+	}
+private:
+	virtual bool			compare							(const	CPHReqComparerV* v)					const	{return v->compare(this);}
 
+	virtual void 			run								()
+	{
+		if( b_called )
+			return;
+		b_called = true;
+		CPHParticlesPlayCall::run();
+	}
+	virtual bool 			obsolete						()const{return Device.dwTimeGlobal > remove_time ;}
+};
+
+
+class CPHLiquidParticlesCondition:
+	public CPHCondition,
+	public CPHReqComparerV
+{
+
+
+private:
+	virtual bool			compare							(const	CPHReqComparerV* v)					const	{return v->compare(this);}
+	virtual bool 			is_true							(){return true;}
+	virtual bool 			obsolete						()const{return false;}
+};
+class CPHFindLiquidParticlesComparer:
+	public CPHReqComparerV
+{
+	Fvector m_position;
+public:
+	CPHFindLiquidParticlesComparer( const Fvector &position ): m_position(position) {}
+private:
+	virtual bool			compare							(const	CPHReqComparerV* v)					const	{return v->compare(this);}
+	virtual bool			compare							(const	CPHLiquidParticlesCondition* v)		const	{return true;}
+	virtual bool			compare							(const	CPHLiquidParticlesPlayCall* v )		const	
+	{
+		VERIFY( v );
+		
+		Fvector	disp = Fvector().sub( m_position, v->position() );
+		return disp.x*disp.x + disp.z*disp.z < ( minimal_plane_distance_between_liquid_particles * minimal_plane_distance_between_liquid_particles ) ;
+	}
+};
+
+//class CPHLiquidParticlesComparer :
+//	public CPHReqComparerV
+//{
+//	virtual bool			compare							(const	CPHReqComparerV* v)					const	{return v->compare(this);}
+//	virtual bool			compare							(const	CPHOnesConditionSelfCmpTrue* v)		const	{return true;}
+//	
+//};
 
 class CPHWallMarksCall :
 	public CPHAction
@@ -79,6 +153,7 @@ public:
 	};
 	virtual bool 			obsolete						()const{return false;}
 };
+
 static void play_object( dxGeomUserData* data, SGameMtlPair* mtl_pair, const dContactGeom* c )
 {
 						VERIFY( data );
@@ -103,6 +178,46 @@ static void play_object( dxGeomUserData* data, SGameMtlPair* mtl_pair, const dCo
 						if(sp)
 							sp->Play(mtl_pair,*(Fvector*)c->pos);
 
+}
+template<class Pars>
+IC bool play_liquid_particle_criteria(dxGeomUserData &data, float vel_cret )
+{
+
+	if(  vel_cret > Pars.vel_cret_particles )
+		return true;
+
+	bool controller = !!data.ph_object && data.ph_object->CastType() == CPHObject::tpCharacter;
+
+	return  !controller && vel_cret>Pars.vel_cret_particles / 4.f;
+
+	
+	//return false;
+	//if( !data.ph_ref_object || !data.ph_ref_object->ObjectPPhysicsShell() )
+	//	return false;
+	//if( data.ph_ref_object->ObjectPPhysicsShell()->HasTracedGeoms() )
+	//	return false;
+
+}
+
+
+template<class Pars>
+void play_particles(float vel_cret, dxGeomUserData* data,  const dContactGeom* c, bool b_invert_normal, const SGameMtl* static_mtl, LPCSTR ps_name )
+{
+	VERIFY( c );
+	VERIFY( static_mtl );
+	bool liquid = !!static_mtl->Flags.test( SGameMtl::flLiquid );
+
+	bool play_liquid =		liquid && play_liquid_particle_criteria<Pars>( *data, vel_cret );
+	bool play_not_liquid = !liquid && vel_cret > Pars.vel_cret_particles;
+
+	if( play_not_liquid )
+		Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHParticlesPlayCall>(*c,b_invert_normal,ps_name));
+	else if( play_liquid )
+	{
+		CPHFindLiquidParticlesComparer find( cast_fv( c->pos ) );
+		if( !Level().ph_commander().has_call( &find, &find ) )
+			Level().ph_commander().add_call(xr_new<CPHLiquidParticlesCondition>(),xr_new<CPHLiquidParticlesPlayCall>(*c,b_invert_normal,ps_name));
+	}
 }
 
 template<class Pars>
@@ -178,22 +293,19 @@ void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 					}
 				}
 			}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			if(square_cam_dist<SQUARE_PARTICLE_EFFECT_DIST)
+			if( square_cam_dist<SQUARE_PARTICLE_EFFECT_DIST && !mtl_pair->CollideParticles.empty() )
 			{
 				SGameMtl* static_mtl =  GMLib.GetMaterialByIdx(T->material);
 				VERIFY( static_mtl );
-				if( ( vel_cret>Pars.vel_cret_particles || ( static_mtl->Flags.test( SGameMtl::flLiquid ) &&  vel_cret>Pars.vel_cret_particles / 4.f ) ) && !mtl_pair->CollideParticles.empty())
-				{
-					LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.size())];
-					//отыграть партиклы столкновения материалов
-					Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHParticlesPlayCall>(*c,b_invert_normal,ps_name));
-				}
+				LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.size())];
+				play_particles<Pars>( vel_cret, data, c, b_invert_normal, static_mtl, ps_name );
 			}
 		}
 	}
- }
-
+}
 
 ContactCallbackFun *ContactShotMark = &TContactShotMark<EffectPars>;
 ContactCallbackFun *CharacterContactShotMark = &TContactShotMark<CharacterEffectPars>;

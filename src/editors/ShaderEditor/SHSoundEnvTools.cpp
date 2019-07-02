@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+/*
 #include "SHSoundEnvTools.h"
 #include "ui_shadermain.h"
 #include "../xrEProps/folderlib.h"
@@ -78,19 +79,7 @@ void CSHSoundEnvTools::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
     case 0: m_PreviewSnd.play	(0,sm_Looped);	break;
     case 1: m_PreviewSnd.stop	();				break;
 	}
-/*    
-    switch (V->btn_num){
-    case 0:{
-		m_PreviewSnd.create("music\\combat\\theme1_intro", st_Effect, 0);
-		m_PreviewSnd.play(0, sm_2D);
-		m_PreviewSnd.attach_tail("music\\combat\\theme1_combat_2");
-    };	break;
-    case 1: m_PreviewSnd.stop	();				break;
-    case 2:{
-		m_PreviewSnd.attach_tail("music\\combat\\theme1_combat_1");
-    };				break;
-	}
-*/
+
     bModif = false;
 }
 
@@ -358,4 +347,4 @@ void CSHSoundEnvTools::RealUpdateProperties()
 }
 //---------------------------------------------------------------------------
 
-
+*/

@@ -40,7 +40,8 @@ CUIMpAdminMenu::CUIMpAdminMenu()
 	m_pClose->SetAutoDelete(true);
 	AttachChild(m_pClose);
 
-	m_pMessageBox = xr_new<CUIMessageBoxEx>();
+	m_pMessageBoxLogin = xr_new<CUIMessageBoxEx>();
+	m_pMessageBoxOk = xr_new<CUIMessageBoxEx>();
 	Init();
 }
 
@@ -50,7 +51,8 @@ CUIMpAdminMenu::~CUIMpAdminMenu()
 	delete_data(m_pPlayersAdm);
 	delete_data(m_pServerAdm);
 	delete_data(m_pChangeMapAdm);
-	delete_data(m_pMessageBox);
+	delete_data(m_pMessageBoxLogin);
+	delete_data(m_pMessageBoxOk);
 }
 
 void CUIMpAdminMenu::Init()
@@ -69,6 +71,10 @@ void CUIMpAdminMenu::Init()
 	m_pTabControl->SetActiveTab("players");
 	SetActiveSubdialog("players");
 	CUIXmlInit::Init3tButton(*xml_doc, "admin_menu:close_button", 0, m_pClose);
+
+	m_pMessageBoxLogin->InitMessageBox("message_box_ra_login");
+	m_pMessageBoxLogin->func_on_ok = CUIWndCallback::void_function(this, &CUIMpAdminMenu::RemoteAdminLogin);
+	m_pMessageBoxOk->InitMessageBox("message_box_error");
 }
 
 void CUIMpAdminMenu::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -139,21 +145,19 @@ void CUIMpAdminMenu::ShowMessageBox(CUIMessageBox::E_MESSAGEBOX_STYLE style, LPC
 	{
 	case CUIMessageBox::MESSAGEBOX_RA_LOGIN:
 		{
-			m_pMessageBox->InitMessageBox("message_box_ra_login");
-			m_pMessageBox->func_on_ok = CUIWndCallback::void_function(this, &CUIMpAdminMenu::RemoteAdminLogin);
+			m_pMessageBoxLogin->ShowDialog(true);
 		}break;
 	case CUIMessageBox::MESSAGEBOX_OK:
 		{
-			m_pMessageBox->InitMessageBox("message_box_error");
-			m_pMessageBox->SetText(reason);
+			m_pMessageBoxOk->SetText(reason);
+			m_pMessageBoxOk->ShowDialog(true);
 		}break;
 	}
-	m_pMessageBox->ShowDialog(true);
 }
 
 void CUIMpAdminMenu::RemoteAdminLogin(CUIWindow*, void*)
 {
 	string512 tmp_string;
-	xr_sprintf(tmp_string, "ra login %s %s", m_pMessageBox->m_pMessageBox->GetUserPassword(), m_pMessageBox->m_pMessageBox->GetPassword());
+	xr_sprintf(tmp_string, "ra login %s %s", m_pMessageBoxLogin->m_pMessageBox->GetUserPassword(), m_pMessageBoxLogin->m_pMessageBox->GetPassword());
 	Console->Execute(tmp_string);
 }

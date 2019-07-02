@@ -154,20 +154,14 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-      if( !RImplementation.o.dx10_msaa )
-		   Target->u_setrt						(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
-      else
-         Target->u_setrt						(Target->rt_Generic_0,0,0,RImplementation.Target->rt_MSAADepth->pZRT);		// LDR RT
-	   g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
+		Target->u_setrt(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
+
 	// Distort
 	{
-      if( !RImplementation.o.dx10_msaa )
-		   Target->u_setrt						(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-      else
-         Target->u_setrt						(Target->rt_Generic_1,0,0,RImplementation.Target->rt_MSAADepth->pZRT);		// Now RT is a distortion mask
-		//CHK_DX(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
-		FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
+		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
+		Target->u_setrt(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
 		HW.pDevice->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
@@ -387,10 +381,10 @@ void CRender::Render		()
 		if (0)
 		{
 
-         if( !RImplementation.o.dx10_msaa )
-			   Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
-         else
-            Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,RImplementation.Target->rt_MSAADepth->pZRT );
+			if( !RImplementation.o.dx10_msaa )
+				Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
+			else
+				Target->u_setrt		( Target->rt_Generic_0_r,	Target->rt_Generic_1,0,RImplementation.Target->rt_MSAADepth->pZRT );
 			RCache.set_CullMode	( CULL_NONE );
 			RCache.set_Stencil	( FALSE		);
 
@@ -461,9 +455,14 @@ void CRender::Render		()
 	{
 		PIX_EVENT(DEFER_SUN);
 		RImplementation.stats.l_visible		++;
-		render_sun_near						();
-		render_sun							();
-		render_sun_filtered					();
+		if( !ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
+			render_sun_cascades					();
+		else
+		{
+			render_sun_near						();
+			render_sun							();
+			render_sun_filtered					();
+		}
 		Target->accum_direct_blend			();
 	}
 

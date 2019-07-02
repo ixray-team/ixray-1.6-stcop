@@ -13,6 +13,7 @@
 #include "../xrEngine/mp_logging.h"
 #include "secure_messaging.h"
 #include "xrServer_updates_compressor.h"
+#include "xrClientsPool.h"
 
 #ifdef DEBUG
 //. #define SLOW_VERIFY_ENTITIES
@@ -100,6 +101,7 @@ private:
 	void						MakeUpdatePackets			();
 	void						SendUpdatePacketsToAll		();
 	u32							m_last_updates_size;
+	u32							m_last_update_time;
 	
 	
 	void						SendServerInfoToClient		(ClientID const & new_client);
@@ -194,6 +196,7 @@ public:
 	void					AttachNewClient			(IClient* CL);
 	virtual void			OnBuildVersionRespond				(IClient* CL, NET_Packet& P);
 protected:
+	xrClientsPool			m_disconnected_clients;
 	bool					CheckAdminRights		(const shared_str& user, const shared_str& pass, string512& reason);
 	virtual IClient*		new_client				( SClientConnectData* cl_data );
 	
@@ -232,6 +235,8 @@ public:
 	virtual void			SendTo_LL			(ClientID ID, void* data, u32 size, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
 			void			SecureSendTo		(xrClientData* xrCL, NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
 	virtual	void			SendBroadcast		(ClientID exclude, NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED);
+			void			GetPooledState			(xrClientData* xrCL);
+			void			ClearDisconnectedPool	() { m_disconnected_clients.Clear(); };
 
 	virtual IClient*		client_Create		();								// create client info
 	virtual void			client_Replicate	();								// replicate current state to client

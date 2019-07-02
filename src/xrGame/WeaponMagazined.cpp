@@ -308,8 +308,16 @@ void CWeaponMagazined::ReloadMagazine()
 	
 	if(!unlimited_ammo()) 
 	{
+		if (m_ammoTypes.size() <= m_ammoType)
+			return;
+		
+		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+		
+		if (!tmp_sect_name)
+			return;
+
 		//попытаться найти в инвентаре патроны текущего типа 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() ));
+		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(tmp_sect_name));
 		
 		if(!m_pCurrentAmmo && !m_bLockType) 
 		{

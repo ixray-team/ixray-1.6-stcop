@@ -55,9 +55,6 @@
 
 #include "../xrSound/sound.h"
 
-// Приблудина для SecuROM-а
-#include "securom_api.h"
-
 extern ENGINE_API CInifile *pGameIni;
 
 #pragma comment( lib, "xrCore.lib"	)

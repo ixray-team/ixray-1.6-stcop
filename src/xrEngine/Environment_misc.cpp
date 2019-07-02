@@ -10,6 +10,8 @@
 #include "../xrServerEntities/object_broker.h"
 #include "../xrServerEntities/LevelGameDef.h"
 
+#include "securom_api.h"
+
 void CEnvModifier::load	(IReader* fs, u32 version)
 {
 	use_flags.one					();

@@ -64,6 +64,7 @@ extern ECORE_API	int			ps_r1_GlowsPerFrame;	// r1-only
 extern ECORE_API	Flags32		ps_r1_flags;			// r1-only
 
 extern ECORE_API	float		ps_r1_fog_luminance;	//1.f r1-only
+extern ECORE_API	int			ps_r1_SoftwareSkinning;	// r1-only
 
 enum
 {
@@ -190,6 +191,8 @@ enum
 	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<5),
 	R2FLAGEXT_WIREFRAME				= (1<<6),
 	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
+	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
+	R2FLAGEXT_SUN_OLD				= (1<<9),
 };
 
 extern void						xrRender_initconsole	();

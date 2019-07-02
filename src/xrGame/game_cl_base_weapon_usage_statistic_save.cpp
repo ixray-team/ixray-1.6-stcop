@@ -117,6 +117,7 @@ void Player_Statistic::WriteLtx(CInifile& ini, LPCSTR sect)
 {
 	ini.w_string(sect, "name", PName.c_str());
 	ini.w_string(sect, "player_unique_digest", PDigest.c_str());
+	ini.w_u32(sect, "player_profile_id", PID);
 
 	ini.w_u32(sect,"TotalShots",m_dwTotalShots);
 

@@ -295,8 +295,8 @@ void CCustomObject::AnimationFillProp(LPCSTR pref, PropItemVec& items)
 		V				= PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\ChangeKeyTime(sec)"),	&m_MotionParams->tmp, -10000.f, 10000.f,	1.f/30.f, 3);
     	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionKeyTimeChange);
 
-        				  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Key Count"),			shared_str().sprintf("%d",m_Motion->KeyCount()));
-        				  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Length (sec)"),		shared_str().sprintf("%3.2f",m_Motion->GetLength()));
+        				  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Key Count"),			shared_str().printf("%d",m_Motion->KeyCount()));
+        				  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Length (sec)"),		shared_str().printf("%3.2f",m_Motion->GetLength()));
 	}
 }
  

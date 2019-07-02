@@ -45,11 +45,11 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\.. -I..\..\Layers\xrRender -I$(DXSDK_DIR)\Include 
-      -I$(COMPONENTS)\alexmx -I$(BCB)\include -I$(BCB)\include\vcl 
-      -I$(COMPONENTS)\ElPack\Code -I$(COMPONENTS)\ElPack\Code\Source 
-      -I$(CORE_DIR) -I..\..\xrEngine -I..\..\xrCPU_Pipe -src_suffix cpp 
-      -D_EDITOR -D_ACTOR_EDITOR -D_DEBUG -boa"/>
+    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_ACTOR_EDITOR -D_DEBUG -I..\.. 
+      -I..\..\Layers\xrRender -I$(DXSDK_DIR)\Include -I$(COMPONENTS)\alexmx 
+      -I$(BCB)\include -I$(BCB)\include\vcl -I$(COMPONENTS)\ElPack\Code 
+      -I$(COMPONENTS)\ElPack\Code\Source -I$(CORE_DIR) -I..\..\xrEngine 
+      -I..\..\xrCPU_Pipe -boa"/>
     <CFLAG1 value="-Od -H=pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF -ff -X- -r- -ps -a4 -6 -b- 
       -k -y -v -vi- -He -c -tW -tWM"/>
     <PFLAGS value="-N2x:\intermediate_ed\ae -N0x:\intermediate_ed\ae -$Y+ -$W -$O- -$A8 -v 
@@ -246,7 +246,7 @@ Item3=x:\libraries
 DebugSourceDirs=$(COMPONENTS)\AlexMX\
 
 [Parameters]
-RunParams=-wf x:\stalker_addon\resources
+RunParams=-wf x:\stalker_addon\resources -editor
 Launcher=
 UseLauncher=0
 DebugCWD=

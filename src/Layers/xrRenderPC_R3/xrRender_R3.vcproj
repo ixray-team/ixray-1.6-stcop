@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="xrRender_R3"
 	ProjectGUID="{3F383D3C-FCD8-4170-990B-EB4833F09248}"
 	RootNamespace="xrRender_R3"
@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="dxguid.lib d3dcompiler.lib d3d10.lib d3dx10.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib"
+				AdditionalDependencies="dxguid.lib d3dcompiler.lib d3d10.lib d3dx10.lib dxgi.lib nvapi.lib atimgpud_s_x86.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3dcompiler.lib d3d10.lib d3dx10.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib"
+				AdditionalDependencies="dxguid.lib d3dcompiler.lib d3d10.lib d3dx10.lib dxgi.lib nvapi.lib atimgpud_s_x86.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
 				GenerateDebugInformation="true"
@@ -277,7 +277,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3dcompiler.lib d3d10.lib d3dx10.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib"
+				AdditionalDependencies="dxguid.lib d3dcompiler.lib d3d10.lib d3dx10.lib dxgi.lib nvapi.lib atimgpud_s_x86.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
 				GenerateDebugInformation="true"
@@ -486,6 +486,10 @@
 			</File>
 			<File
 				RelativePath="..\xrRender\r__screenshot.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\xrRender\r_sun_cascades.h"
 				>
 			</File>
 			<File

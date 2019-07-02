@@ -70,7 +70,7 @@ extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
 
-float		g_cl_lvInterp		= 0;
+float		g_cl_lvInterp		= 0.1;
 u32			lvInterpSteps		= 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

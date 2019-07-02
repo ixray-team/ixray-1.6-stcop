@@ -84,6 +84,7 @@ public:
 	_IndexStream					Index;
 	ID3DIndexBuffer*				QuadIB;
 	ID3DIndexBuffer*				old_QuadIB;
+	ID3DIndexBuffer*				CuboidIB;
 	R_xforms						xforms;
 	R_hemi							hemi;
 	R_tree							tree;

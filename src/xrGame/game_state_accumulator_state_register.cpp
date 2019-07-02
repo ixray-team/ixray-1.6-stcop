@@ -28,6 +28,7 @@
 #include "stalker_flair.h"
 #include "black_list.h"
 #include "silent_shots.h"
+#include "killer_victim_velocity_angle.h"
 
 namespace award_system
 {
@@ -69,6 +70,7 @@ char* player_values_strtable[] =
 	"stalker_flair",
 	"black_list",
 	"thunder_count",
+	"killer_victim_angle_cos",
 };
 #endif //#ifdef DEBUG
 

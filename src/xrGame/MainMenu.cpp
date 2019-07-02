@@ -480,6 +480,7 @@ void CMainMenu::OnFrame()
 		if(b_is_16_9 !=m_activatedScreenRatio)
 		{
 			ReloadUI();
+			m_startDialog->SendMessage(m_startDialog, MAIN_MENU_RELOADED, NULL);
 		}
 	}
 }

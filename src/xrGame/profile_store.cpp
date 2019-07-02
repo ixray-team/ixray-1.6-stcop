@@ -258,6 +258,8 @@ void profile_store::loaded_fields(bool const result, char const * err_descr)
 	{
 		m_awards_store->load_awards_from_ltx(m_dsigned_reader.get_ltx());
 		m_best_scores_store->load_best_scores_from_ltx(m_dsigned_reader.get_ltx());
+		m_awards_store->merge_sake_to_ltx_awards();
+		m_best_scores_store->merge_sake_to_ltx_best_scores();
 		check_sake_actuality();
 	}
 	tmp_cb(true, "");

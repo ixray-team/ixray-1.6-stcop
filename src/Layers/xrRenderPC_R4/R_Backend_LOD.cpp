@@ -10,7 +10,7 @@ void	R_LOD::set_LOD(float LOD)
 {
 	if (c_LOD)
 	{
-		float factor = clampr<float>(ceil(LOD*LOD*LOD*LOD*LOD*8.0f), 1, 8);
+		float factor = clampr<float>(ceil(LOD*LOD*LOD*LOD*LOD*8.0f), 1, 7);
 		RCache.set_c(c_LOD, factor);
 	}
 }

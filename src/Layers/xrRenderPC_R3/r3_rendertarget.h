@@ -60,10 +60,10 @@ public:
 
 	// MRT-path
 	ref_rt						rt_Depth;			// Z-buffer like - initial depth
-   ref_rt                  rt_MSAADepth;     // z-buffer for MSAA deferred shading
-   ref_rt                  rt_Generic_0_r;   // resolved generic 1
-   ref_rt                  rt_Generic_1_r;   // resolved generic 1
-   ref_rt                  rt_Generic;
+	ref_rt						rt_MSAADepth;     // z-buffer for MSAA deferred shading
+	ref_rt						rt_Generic_0_r;   // MRT generic 0
+	ref_rt						rt_Generic_1_r;   // MRT generic 1
+	ref_rt						rt_Generic;
 	ref_rt						rt_Position;		// 64bit,	fat	(x,y,z,?)				(eye-space)
 	ref_rt						rt_Normal;			// 64bit,	fat	(x,y,z,hemi)			(eye-space)
 	ref_rt						rt_Color;			// 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
@@ -177,6 +177,7 @@ private:
 	ref_geom					g_combine;
 	ref_geom					g_combine_VP;		// xy=p,zw=tc
 	ref_geom					g_combine_2UV;
+	ref_geom					g_combine_cuboid;
 	ref_geom					g_aa_blur;
 	ref_geom					g_aa_AA;
 	ref_shader				s_combine_dbg_0;
@@ -274,6 +275,7 @@ public:
 
 	void						draw_volume				(light* L);
 	void						accum_direct			(u32	sub_phase);
+	void						accum_direct_cascade	(u32	sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias );
 	void						accum_direct_f			(u32	sub_phase);
 	void						accum_direct_lum		();
 	void						accum_direct_blend		();

@@ -179,6 +179,7 @@ void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 		SendConnectResult(tmp_client, 0, ecr_have_been_banned, message_to_user);
 		return;
 	}
-	PerformSecretKeysSync(xrCL);
-	Check_BuildVersion_Success(tmp_client);	
+	GetPooledState				(xrCL);
+	PerformSecretKeysSync		(xrCL);
+	Check_BuildVersion_Success	(tmp_client);	
 }

@@ -30,7 +30,7 @@ bool CLevelSoundManager::Validate()
     }
     return true;
 }
-
+/*
 void CLevelSoundManager::RealRefreshEnvGeometry()
 {
 	CMemoryWriter F;
@@ -108,19 +108,19 @@ bool CLevelSoundManager::MakeEnvGeometry(CMemoryWriter& F, bool bErrMsg)
 
     return true;
 }
-
+*/
 void CLevelSoundManager::OnFrame()
 {
 	inherited::OnFrame();
 	if (bNeedRefreshEnvGeom){
     	bNeedRefreshEnvGeom 	= false;
-        RealRefreshEnvGeometry	();
+  //      RealRefreshEnvGeometry	();
     }
 }
-
+/*
 void CLevelSoundManager::RefreshEnvLibrary()
 {
 	Sound->refresh_env_library();
     RefreshEnvGeometry		();
 }
-
+*/

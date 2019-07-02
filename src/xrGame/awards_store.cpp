@@ -84,6 +84,21 @@ void awards_store::load_awards_from_ltx	(CInifile& ini)
 		);
 	}
 }
+void awards_store::merge_sake_to_ltx_awards()
+{
+	for (all_awards_t::iterator i = m_ltx_awards_result.begin(),
+		ie = m_ltx_awards_result.end(); i != ie; ++i)
+	{
+		all_awards_t::const_iterator tmp_awi = m_awards_result.find(
+			i->first);
+		if (tmp_awi != m_awards_result.end())
+		{
+			u16 tmp_count = std::max(i->second.m_count, tmp_awi->second.m_count);
+			u32 tmp_rdate = std::max(i->second.m_last_reward_date, tmp_awi->second.m_last_reward_date);
+			i->second = award_data(tmp_count, tmp_rdate);
+		}
+	}
+}
 
 all_awards_t & awards_store::get_player_awards()
 {

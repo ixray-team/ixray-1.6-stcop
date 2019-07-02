@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="dxguid.lib d3dx11.lib d3d11.lib dxgi.lib D3DCompiler.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib d3d10.lib"
+				AdditionalDependencies="dxguid.lib d3dx11.lib d3d11.lib dxgi.lib D3DCompiler.lib nvapi.lib atimgpud_s_x86.lib dxerr.lib d3d10.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\..\sdk\libraries;..\..\..\..\libraries"
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib d3d10.lib"
+				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11.lib dxgi.lib nvapi.lib atimgpud_s_x86.lib dxerr.lib d3d10.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
 				GenerateDebugInformation="true"
@@ -277,7 +277,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11.lib dxgi.lib nvapi.lib atimgpud_mtdll_x86.lib dxerr.lib d3d10.lib"
+				AdditionalDependencies="dxguid.lib d3dx11.lib D3DCompiler.lib d3d11.lib dxgi.lib nvapi.lib atimgpud_s_x86.lib dxerr.lib d3d10.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (March 2009)\Lib\x86\&quot;;..\..\..\sdk\libraries;..\..\..\..\libraries;"
 				GenerateDebugInformation="true"
@@ -490,6 +490,10 @@
 			</File>
 			<File
 				RelativePath="..\xrRender\r__screenshot.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\xrRender\r_sun_cascades.h"
 				>
 			</File>
 			<File

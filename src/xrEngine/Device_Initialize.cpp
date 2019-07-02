@@ -59,7 +59,7 @@ PROTECT_API void CRenderDevice::Initialize			()
         RegisterClass( &wndClass );
 
         // Set the window's initial style
-        m_dwWindowStyle = WS_BORDER |WS_DLGFRAME;
+        m_dwWindowStyle = WS_BORDER | WS_DLGFRAME;
 
         // Set the window's initial width
         RECT rc;
@@ -67,7 +67,8 @@ PROTECT_API void CRenderDevice::Initialize			()
         AdjustWindowRect( &rc, m_dwWindowStyle, FALSE );
 
         // Create the render window
-		m_hWnd = CreateWindow( wndclass, "S.T.A.L.K.E.R.: Call of Pripyat", m_dwWindowStyle,
+		m_hWnd = CreateWindowEx( WS_EX_TOPMOST, 
+								wndclass, "S.T.A.L.K.E.R.: Call of Pripyat", m_dwWindowStyle,
                                /*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
                                (rc.right-rc.left), (rc.bottom-rc.top), 0L,
                                0, hInstance, 0L );

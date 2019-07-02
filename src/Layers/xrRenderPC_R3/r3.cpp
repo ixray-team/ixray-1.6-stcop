@@ -651,6 +651,7 @@ void					CRender::rmNormal			()
 CRender::CRender()
 :m_bFirstFrameAfterReset(false)
 {
+	init_cacades();
 }
 
 CRender::~CRender()
@@ -679,6 +680,8 @@ void	CRender::Statistics	(CGameFont* _F)
 #endif
 }
 
+static inline bool match_shader_id		( LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result );
+
 /////////
 #pragma comment(lib,"d3dx9.lib")
 /*
@@ -688,113 +691,315 @@ LPCSTR WINAPI	D3DXGetPixelShaderProfile	(LPDIRECT3DDEVICE9  pDevice);
 LPCSTR WINAPI	D3DXGetVertexShaderProfile	(LPDIRECT3DDEVICE9	pDevice);
 };
 */
+static HRESULT create_shader				(
+		LPCSTR const	pTarget,
+		DWORD const*	buffer,
+		u32	const		buffer_size,
+		LPCSTR const	file_name,
+		void*&			result,
+		bool const		disasm
+	)
+{
+	HRESULT		_result = E_FAIL;
+	if (pTarget[0] == 'p') {
+		SPS* sps_result = (SPS*)result;
+#ifdef USE_DX11
+		_result			= HW.pDevice->CreatePixelShader(buffer, buffer_size, 0, &sps_result->ps);
+#else // #ifdef USE_DX11
+		_result			= HW.pDevice->CreatePixelShader(buffer, buffer_size, &sps_result->ps);
+#endif // #ifdef USE_DX11
+		if ( !SUCCEEDED(_result) ) {
+			Log			("! PS: ", file_name);
+			Msg			("! CreatePixelShader hr == 0x%08x", _result);
+			return		E_FAIL;
+		}
+
+		ID3DShaderReflection *pReflection = 0;
+
+#ifdef USE_DX11
+		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+#else
+		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
+#endif
+
+		//	Parse constant, texture, sampler binding
+		//	Store input signature blob
+		if (SUCCEEDED(_result) && pReflection)
+		{
+			//	Let constant table parse it's data
+			sps_result->constants.parse(pReflection,RC_dest_pixel);
+
+			_RELEASE(pReflection);
+		}
+		else
+		{
+			Log	("! PS: ", file_name);
+			Msg	("! D3DReflectShader hr == 0x%08x", _result);
+		}
+	}
+	else if (pTarget[0] == 'v') {
+		SVS* svs_result = (SVS*)result;
+#ifdef USE_DX11
+		_result			= HW.pDevice->CreateVertexShader(buffer, buffer_size, 0, &svs_result->vs);
+#else // #ifdef USE_DX11
+		_result			= HW.pDevice->CreateVertexShader(buffer, buffer_size, &svs_result->vs);
+#endif // #ifdef USE_DX11
+
+		if ( !SUCCEEDED(_result) ) {
+			Log			("! VS: ", file_name);
+			Msg			("! CreatePixelShader hr == 0x%08x", _result);
+			return		E_FAIL;
+		}
+
+		ID3DShaderReflection *pReflection = 0;
+#ifdef USE_DX11
+		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+#else
+		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
+#endif
+		
+		//	Parse constant, texture, sampler binding
+		//	Store input signature blob
+		if (SUCCEEDED(_result) && pReflection)
+		{
+			//	TODO: DX10: share the same input signatures
+
+			//	Store input signature (need only for VS)
+			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
+			ID3DBlob*	pSignatureBlob;
+			CHK_DX		( D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob) );
+			VERIFY		(pSignatureBlob);
+
+			svs_result->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
+
+			_RELEASE	(pSignatureBlob);
+
+			//	Let constant table parse it's data
+			svs_result->constants.parse(pReflection,RC_dest_vertex);
+
+			_RELEASE	(pReflection);
+		}
+		else
+		{
+			Log			("! VS: ", file_name);
+			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
+		}
+	}
+	else if (pTarget[0] == 'g') {
+		SGS* sgs_result = (SGS*)result;
+#ifdef USE_DX11
+		_result			= HW.pDevice->CreateGeometryShader(buffer, buffer_size, 0, &sgs_result->gs);
+#else // #ifdef USE_DX11
+		_result			= HW.pDevice->CreateGeometryShader(buffer, buffer_size, &sgs_result->gs);
+#endif // #ifdef USE_DX11
+		if ( !SUCCEEDED(_result) ) {
+			Log			("! GS: ", file_name);
+			Msg			("! CreateGeometryShaderhr == 0x%08x", _result);
+			return		E_FAIL;
+		}
+
+		ID3DShaderReflection *pReflection = 0;
+
+#ifdef USE_DX11
+		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+#else
+		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
+#endif
+
+		//	Parse constant, texture, sampler binding
+		//	Store input signature blob
+		if (SUCCEEDED(_result) && pReflection)
+		{
+			//	Let constant table parse it's data
+			sgs_result->constants.parse(pReflection,RC_dest_geometry);
+
+			_RELEASE(pReflection);
+		}
+		else
+		{
+			Log	("! PS: ", file_name);
+			Msg	("! D3DReflectShader hr == 0x%08x", _result);
+		}
+	}
+
+	if ( disasm )
+	{
+		ID3DBlob*		disasm	= 0;
+		D3DDisassemble	(buffer, buffer_size, FALSE, 0, &disasm );
+		//D3DXDisassembleShader		(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm );
+		string_path		dname;
+		strconcat		(sizeof(dname),dname,"disasm\\",file_name,('v'==pTarget[0])?".vs":('p'==pTarget[0])?".ps":".gs" );
+		IWriter*		W		= FS.w_open("$logs$",dname);
+		W->w			(disasm->GetBufferPointer(),(u32)disasm->GetBufferSize());
+		FS.w_close		(W);
+		_RELEASE		(disasm);
+	}
+
+	return				_result;
+}
+
+//--------------------------------------------------------------------------------------------------------------
+class	includer				: public ID3DInclude
+{
+public:
+	HRESULT __stdcall	Open	(D3D10_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+	{
+		string_path				pname;
+		strconcat				(sizeof(pname),pname,::Render->getShaderPath(),pFileName);
+		IReader*		R		= FS.r_open	("$game_shaders$",pname);
+		if (0==R)				{
+			// possibly in shared directory or somewhere else - open directly
+			R					= FS.r_open	("$game_shaders$",pFileName);
+			if (0==R)			return			E_FAIL;
+		}
+
+		// duplicate and zero-terminate
+		u32				size	= R->length();
+		u8*				data	= xr_alloc<u8>	(size + 1);
+		CopyMemory			(data,R->pointer(),size);
+		data[size]				= 0;
+		FS.r_close				(R);
+
+		*ppData					= data;
+		*pBytes					= size;
+		return	D3D_OK;
+	}
+	HRESULT __stdcall	Close	(LPCVOID	pData)
+	{
+		xr_free	(pData);
+		return	D3D_OK;
+	}
+};
+
+#include <boost/crc.hpp>
+
 HRESULT	CRender::shader_compile			(
 	LPCSTR							name,
-	LPCSTR                          pSrcData,
+	DWORD const*					pSrcData,
 	UINT                            SrcDataLen,
-	void*							_pDefines,
-	void*							_pInclude,
 	LPCSTR                          pFunctionName,
 	LPCSTR                          pTarget,
 	DWORD                           Flags,
-	void*							_ppShader,
-	void*							_ppErrorMsgs,
-	void*							_ppConstantTable)
+	void*&							result)
 {
 	D3D_SHADER_MACRO				defines			[128];
 	int								def_it			= 0;
-	CONST D3D_SHADER_MACRO*         pDefines		= (CONST D3D_SHADER_MACRO*)	_pDefines;
 	char							c_smapsize		[32];
 	char							c_gloss			[32];
 	char							c_sun_shafts	[32];
 	char							c_ssao			[32];
 	char							c_sun_quality	[32];
 
-	if (pDefines)	{
-		// transfer existing defines
-		for (;;def_it++)	{
-			if (0==pDefines[def_it].Name)	break;
-			defines[def_it]			= pDefines[def_it];
-		}
-	}
+	char	sh_name[MAX_PATH] = "";
+	u32 len = 0;
 	// options
 	{
-		xr_sprintf						(c_smapsize,"%d",u32(o.smapsize));
+		xr_sprintf						(c_smapsize,"%04d",u32(o.smapsize));
 		defines[def_it].Name		=	"SMAP_size";
 		defines[def_it].Definition	=	c_smapsize;
 		def_it						++	;
+		VERIFY							( xr_strlen(c_smapsize) == 4 );
+		xr_strcat(sh_name, c_smapsize); len+=4;
 	}
+
 	if (o.fp16_filter)		{
 		defines[def_it].Name		=	"FP16_FILTER";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.fp16_filter); ++len;
+
 	if (o.fp16_blend)		{
 		defines[def_it].Name		=	"FP16_BLEND";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.fp16_blend); ++len;
+
 	if (o.HW_smap)			{
 		defines[def_it].Name		=	"USE_HWSMAP";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.HW_smap); ++len;
+
 	if (o.HW_smap_PCF)			{
 		defines[def_it].Name		=	"USE_HWSMAP_PCF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.HW_smap_PCF); ++len;
+
 	if (o.HW_smap_FETCH4)			{
 		defines[def_it].Name		=	"USE_FETCH4";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.HW_smap_FETCH4); ++len;
+
 	if (o.sjitter)			{
 		defines[def_it].Name		=	"USE_SJITTER";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.sjitter); ++len;
+
 	if (HW.Caps.raster_major >= 3)	{
 		defines[def_it].Name		=	"USE_BRANCHING";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(HW.Caps.raster_major >= 3); ++len;
+
 	if (HW.Caps.geometry.bVTF)	{
 		defines[def_it].Name		=	"USE_VTF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(HW.Caps.geometry.bVTF); ++len;
+
 	if (o.Tshadows)			{
 		defines[def_it].Name		=	"USE_TSHADOWS";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.Tshadows); ++len;
+
 	if (o.mblur)			{
 		defines[def_it].Name		=	"USE_MBLUR";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.mblur); ++len;
+
 	if (o.sunfilter)		{
 		defines[def_it].Name		=	"USE_SUNFILTER";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.sunfilter); ++len;
+
 	if (o.sunstatic)		{
 		defines[def_it].Name		=	"USE_R2_STATIC_SUN";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.sunstatic); ++len;
+
 	if (o.forcegloss)		{
 		xr_sprintf						(c_gloss,"%f",o.forcegloss_v);
 		defines[def_it].Name		=	"FORCE_GLOSS";
 		defines[def_it].Definition	=	c_gloss;
 		def_it						++	;
 	}
+	sh_name[len]='0'+char(o.forcegloss); ++len;
+
 	if (o.forceskinw)		{
 		defines[def_it].Name		=	"SKIN_COLOR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(o.forceskinw); ++len;
 
 	if (o.ssao_blur_on)
 	{
@@ -802,16 +1007,7 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-
-	if (o.ssao_opt_data)
-	{
-		defines[def_it].Name		=	"SSAO_OPT_DATA";
-		if (o.ssao_half_data)
-			defines[def_it].Definition	=	"2";
-		else
-			defines[def_it].Definition	=	"1";
-		def_it						++;
-	}
+	sh_name[len]='0'+char(o.ssao_blur_on); ++len;
 
 	if (o.ssao_hdao)
 	{
@@ -819,6 +1015,7 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(o.ssao_hdao); ++len;
 
 	if (o.ssao_hbao)
 	{
@@ -832,51 +1029,66 @@ HRESULT	CRender::shader_compile			(
 			def_it						++;
 		}
 	}
+	sh_name[len]='0'+char(o.ssao_hbao); ++len;
+	sh_name[len]='0'+char(o.ssao_hbao ? o.hbao_vectorized : 0); ++len;
 
-	if( o.dx10_msaa )
+	if (o.ssao_opt_data)
 	{
-		static char def[ 256 ];
-      if( m_MSAASample < 0 )
-         def[0]= '0';
-      else
-		   def[0]= '0' + char(m_MSAASample);
-      def[1] = 0;
-		defines[def_it].Name		=	"ISAMPLE";
-		defines[def_it].Definition	=	def;
-		def_it						++	;
+		defines[def_it].Name		=	"SSAO_OPT_DATA";
+		if (o.ssao_half_data)
+			defines[def_it].Definition	=	"2";
+		else
+			defines[def_it].Definition	=	"1";
+		def_it						++;
 	}
+	sh_name[len]='0'+char(o.ssao_opt_data ? (o.ssao_half_data ? 2 : 1) : 0); ++len;
 
 	// skinning
 	if (m_skinning<0)		{
 		defines[def_it].Name		=	"SKIN_NONE";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
+		sh_name[len]='1'; ++len;
 	}
+	else
+	{
+		sh_name[len]='0'; ++len;
+	}
+
 	if (0==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_0";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(0==m_skinning); ++len;
+
 	if (1==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_1";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(1==m_skinning); ++len;
+
 	if (2==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_2";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(2==m_skinning); ++len;
+
 	if (3==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_3";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(3==m_skinning); ++len;
+
 	if (4==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_4";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(4==m_skinning); ++len;
 
 	//	Igor: need restart options
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
@@ -884,6 +1096,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"USE_SOFT_WATER";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
@@ -891,6 +1108,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"USE_SOFT_PARTICLES";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
@@ -898,6 +1120,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"USE_DOF";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r_sun_shafts)
@@ -906,6 +1133,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"SUN_SHAFTS_QUALITY";
 		defines[def_it].Definition	=	c_sun_shafts;
 		def_it						++;
+		sh_name[len]='0'+char(ps_r_sun_shafts); ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r_ssao)
@@ -914,6 +1146,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"SSAO_QUALITY";
 		defines[def_it].Definition	=	c_ssao;
 		def_it						++;
+		sh_name[len]='0'+char(ps_r_ssao); ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r_sun_quality)
@@ -922,6 +1159,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"SUN_QUALITY";
 		defines[def_it].Definition	=	c_sun_quality;
 		def_it						++;
+		sh_name[len]='0'+char(ps_r_sun_quality); ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
@@ -929,28 +1171,36 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"ALLOW_STEEPPARALLAX";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
-   if( o.dx10_gbuffer_opt )
+	if( o.dx10_gbuffer_opt )
 	{
 		defines[def_it].Name		=	"GBUFFER_OPTIMIZATION";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
+	sh_name[len]='0'+char(o.dx10_gbuffer_opt); ++len;
 
-   if( o.dx10_sm4_1 )
-   {
-	   defines[def_it].Name		=	"SM_4_1";
-	   defines[def_it].Definition	=	"1";
-	   def_it++;
-   }
+	if( o.dx10_sm4_1 )
+	{
+		defines[def_it].Name		=	"SM_4_1";
+		defines[def_it].Definition	=	"1";
+		def_it++;
+	}
+	sh_name[len]='0'+0*char(o.dx10_sm4_1); ++len;
 
-   if (o.dx10_minmax_sm)
-   {
-	   defines[def_it].Name		=	"USE_MINMAX_SM";
-	   defines[def_it].Definition	=	"1";
-	   def_it++;
-   }
+	if (o.dx10_minmax_sm)
+	{
+		defines[def_it].Name		=	"USE_MINMAX_SM";
+		defines[def_it].Definition	=	"1";
+		def_it++;
+	}
+	sh_name[len]='0'+char(o.dx10_minmax_sm!=0); ++len;
 
 	// add a #define for DX10_1 MSAA support
    if( o.dx10_msaa )
@@ -967,6 +1217,18 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	= samples;	
 	   def_it						++;
 
+		static char def[ 256 ];
+		if( m_MSAASample < 0 )
+			def[0]= '0';
+		else
+			def[0]= '0' + char(m_MSAASample);
+
+		def[1] = 0;
+		defines[def_it].Name		=	"ISAMPLE";
+		defines[def_it].Definition	=	def;
+		def_it						++	;
+
+
 	   if( o.dx10_msaa_opt )
 	   {
 		   defines[def_it].Name		=	"MSAA_OPTIMIZATION";
@@ -974,45 +1236,52 @@ HRESULT	CRender::shader_compile			(
 		   def_it						++;
 	   }
 
+		sh_name[len]='1'; ++len;
+		sh_name[len]='0'+char(o.dx10_msaa_samples); ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'+char(o.dx10_msaa_opt); ++len;
+
 		switch(o.dx10_msaa_alphatest)
 		{
 		case MSAA_ATEST_DX10_0_ATOC:
 			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_0_ATOC";
 			defines[def_it].Definition	=	"1";
 			def_it						++;
+			sh_name[len]='1'; ++len;
+			sh_name[len]='0'; ++len;
+			sh_name[len]='0'; ++len;
 			break;
 		case MSAA_ATEST_DX10_1_ATOC:
 			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_1_ATOC";
 			defines[def_it].Definition	=	"1";
 			def_it						++;
+			sh_name[len]='0'; ++len;
+			sh_name[len]='1'; ++len;
+			sh_name[len]='0'; ++len;
 			break;
 		case MSAA_ATEST_DX10_1_NATIVE:
 			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_1";
 			defines[def_it].Definition	=	"1";
 			def_it						++;
+			sh_name[len]='0'; ++len;
+			sh_name[len]='0'; ++len;
+			sh_name[len]='1'; ++len;
 			break;
+		default:
+			sh_name[len]='0'; ++len;
+			sh_name[len]='0'; ++len;
+			sh_name[len]='0'; ++len;
 		}
-	   /*
-	   VERIFY( !o.dx10_msaa_alphatest || (o.dx10_msaa_alphatest&&o.dx10_msaa_opt) || (o.dx10_msaa_alphatest&&o.dx10_msaa_alphatest_atoc)
-		   || (o.dx10_msaa_alphatest&&o.dx10_msaa_hybrid));
-
-	   if( o.dx10_msaa_alphatest )
-	   {
-		   if (o.dx10_msaa_alphatest_atoc)
-		   {
-			   defines[def_it].Name		=	"MSAA_ALPHATEST_ATOC";
-			   defines[def_it].Definition	=	"1";
-			   def_it						++;
-		   }
-		   else
-		   {
-			   defines[def_it].Name		=	"MSAA_ALPHATEST";
-			   defines[def_it].Definition	=	"1";
-			   def_it						++;
-		   }
-	   }
-	   */
    }
+   else {
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+	}
 
 	// finish
 	defines[def_it].Name			=	0;
@@ -1045,37 +1314,163 @@ HRESULT	CRender::shader_compile			(
       }
 	}
 
-	ID3DInclude*					pInclude		= (ID3DInclude*)		_pInclude;
-	ID3DBlob**						ppShader		= (ID3DBlob**)			_ppShader;
-	ID3DBlob**						ppErrorMsgs		= (ID3DBlob**)			_ppErrorMsgs;
-	//LPD3DXCONSTANTTABLE*            ppConstantTable	= (LPD3DXCONSTANTTABLE*)_ppConstantTable;
+	HRESULT		_result = E_FAIL;
+
+	string_path	folder_name, folder;
+	xr_strcpy		( folder, "r3\\objects\\r3\\" );
+	xr_strcat		( folder, name );
+	xr_strcat		( folder, "." );
+
+	char extension[3];
+	strncpy_s		( extension, pTarget, 2 );
+	xr_strcat		( folder, extension );
+
+	FS.update_path	( folder_name, "$game_shaders$", folder );
+	xr_strcat		( folder_name, "\\" );
 	
-	//HRESULT		_result	= D3D10CompileShader(pSrcData,SrcDataLen,NULL, defines,pInclude,pFunctionName,pTarget,Flags,ppShader,ppErrorMsgs,ppConstantTable);
+	m_file_set.clear( );
+	FS.file_list	( m_file_set, folder_name, FS_ListFiles | FS_RootOnly, "*");
 
-	HRESULT		_result	= D3DCompile( 
-		pSrcData, 
-		SrcDataLen,
-		"",//NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
-		defines, pInclude, pFunctionName,
-		pTarget,
-      Flags, 0,
-		ppShader,
-		ppErrorMsgs
-		);
+	string_path temp_file_name, file_name;
+	if ( !match_shader_id(name, sh_name, m_file_set, temp_file_name) ) {
+		string_path file;
+		xr_strcpy		( file, "shaders_cache\\r3\\" );
+		xr_strcat		( file, name );
+		xr_strcat		( file, "." );
+		xr_strcat		( file, extension );
+		xr_strcat		( file, "\\" );
+		xr_strcat		( file, sh_name );
+		FS.update_path	( file_name, "$app_data_root$", file);
+	}
+	else {
+		xr_strcpy		( file_name, folder_name );
+		xr_strcat		( file_name, temp_file_name );
+	}
 
-	if (SUCCEEDED(_result) && o.disasm)
+	if (FS.exist(file_name))
 	{
-		ID3DBlob*		code	= *ppShader;
-		ID3DBlob*		disasm	= 0;
-		D3DDisassemble(code->GetBufferPointer(), code->GetBufferSize(), FALSE, 0, &disasm );
-		//D3DXDisassembleShader		(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm );
-		string_path			dname;
-		strconcat			(sizeof(dname),dname,"disasm\\",name,('v'==pTarget[0])?".vs":('p'==pTarget[0])?".ps":".gs" );
-		IWriter*			W		= FS.w_open("$logs$",dname);
-		W->w				(disasm->GetBufferPointer(),(u32)disasm->GetBufferSize());
-		FS.w_close			(W);
-		_RELEASE			(disasm);
+		IReader* file = FS.r_open(file_name);
+		if (file->length()>4)
+		{
+			u32 crc = 0;
+			crc = file->r_u32();
+
+			boost::crc_32_type		processor;
+			processor.process_block	( file->pointer(), ((char*)file->pointer()) + file->elapsed() );
+			u32 const real_crc		= processor.checksum( );
+
+			if ( real_crc == crc ) {
+				_result				= create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
+			}
+		}
+		file->close();
+	}
+
+	if (FAILED(_result))
+	{
+		includer					Includer;
+		LPD3DBLOB					pShaderBuf	= NULL;
+		LPD3DBLOB					pErrorBuf	= NULL;
+		_result						=
+			D3DCompile(
+				pSrcData, 
+				SrcDataLen,
+				"",//NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
+				defines, &Includer, pFunctionName,
+				pTarget,
+				Flags,
+				0,
+				&pShaderBuf,
+				&pErrorBuf
+			);
+
+		if (SUCCEEDED(_result))
+		{
+			IWriter* file = FS.w_open(file_name);
+
+			boost::crc_32_type		processor;
+			processor.process_block	( pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize() );
+			u32 const crc			= processor.checksum( );
+
+			file->w_u32				(crc);
+			file->w					(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
+			FS.w_close				(file);
+			
+			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
+		}
+		else {
+//			Msg						( "! shader compilation failed" );
+			Log						("! ", file_name);
+			if ( pErrorBuf )
+				Log					("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
+			else
+				Msg					("Can't compile shader hr=0x%08x", _result);
+		}
 	}
 
 	return		_result;
+}
+
+static inline bool match_shader		( LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length )
+{
+	u32 const full_shader_id_length	= xr_strlen( full_shader_id );
+	R_ASSERT2				(
+		full_shader_id_length == mask_length,
+		make_string(
+			"bad cache for shader %s, [%s], [%s]",
+			debug_shader_id,
+			mask,
+			full_shader_id
+		)
+	);
+	char const* i			= full_shader_id;
+	char const* const e		= full_shader_id + full_shader_id_length;
+	char const* j			= mask;
+	for ( ; i != e; ++i, ++j ) {
+		if ( *i == *j )
+			continue;
+
+		if ( *j == '_' )
+			continue;
+
+		return				false;
+	}
+
+	return					true;
+}
+
+static inline bool match_shader_id	( LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result )
+{
+#if 0
+	strcpy_s					( result, "" );
+	return						false;
+#else // #if 1
+#ifdef DEBUG
+	LPCSTR temp					= "";
+	bool found					= false;
+	FS_FileSet::const_iterator	i = file_set.begin();
+	FS_FileSet::const_iterator	const e = file_set.end();
+	for ( ; i != e; ++i ) {
+		if ( match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size() ) ) {
+			VERIFY				( !found );
+			found				= true;
+			temp				= (*i).name.c_str();
+		}
+	}
+
+	xr_strcpy					( result, temp );
+	return						found;
+#else // #ifdef DEBUG
+	FS_FileSet::const_iterator	i = file_set.begin();
+	FS_FileSet::const_iterator	const e = file_set.end();
+	for ( ; i != e; ++i ) {
+		if ( match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size() ) ) {
+			xr_strcpy			( result, (*i).name.c_str() );
+			return				true;
+		}
+	}
+
+	return						false;
+#endif // #ifdef DEBUG
+#endif// #if 1
 }

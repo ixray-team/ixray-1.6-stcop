@@ -36,8 +36,8 @@ public:
 	CPhysicsShell			*m_pPhysicsShell;
 
 
-	CPhysicsShellHolder							();
-
+			CPhysicsShellHolder							();
+	virtual	~CPhysicsShellHolder						();
 
 	virtual bool		ActivationSpeedOverriden (Fvector& dest, bool clear_override) { return false; }
 

@@ -156,7 +156,7 @@ void CObjectAnimator::DrawPath()
             m_Current->_Evaluate((*k_it)->time,T,r);
             if (EDevice.m_Camera.GetPosition().distance_to_sqr(T)<50.f*50.f){
                 DU_impl.DrawCross	(T,0.1f,0.1f,0.1f, 0.1f,0.1f,0.1f, clr,false);
-                DU_impl.OutText		(T,AnsiString().xr_sprintf("K: %3.3f",(*k_it)->time).c_str(),0xffffffff,0x00000000);
+                DU_impl.OutText		(T,AnsiString().sprintf("K: %3.3f",(*k_it)->time).c_str(),0xffffffff,0x00000000);
             }
         }
     }

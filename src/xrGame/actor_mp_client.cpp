@@ -2,12 +2,16 @@
 #include "actor_mp_client.h"
 #include "actorcondition.h"
 #include "../xrEngine/CameraBase.h"
+#include "../xrEngine/CameraManager.h"
 
 #include "game_cl_base.h"
 #include "ui/UIActorMenu.h"
 #include "ui/UIDragDropReferenceList.h"
 #include "uigamecustom.h"
 #include "eatable_item.h"
+
+//if we are not current control entity we use this value
+const float	CActorMP::cam_inert_value = 0.7f;
 
 CActorMP::CActorMP			()
 {
@@ -67,4 +71,19 @@ void CActorMP::use_booster(NET_Packet &packet)
 		return;
 	}
 	tmp_eatable->UseBy(this);
+}
+
+void CActorMP::On_SetEntity()
+{
+	prev_cam_inert_value = psCamInert;
+	if (this != Level().CurrentControlEntity())
+	{
+		psCamInert = cam_inert_value;
+	}
+	inherited::On_SetEntity();
+}
+
+void CActorMP::On_LostEntity()
+{
+	psCamInert = prev_cam_inert_value;
 }

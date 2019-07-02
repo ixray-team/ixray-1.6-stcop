@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef SHSoundEnvToolsH
 #define SHSoundEnvToolsH
-
+/*
 #include "SHToolsInterface.h"
 #include "../../xrSound/soundrender_environment.h"
 
@@ -65,4 +65,5 @@ public:
     virtual void				OnDeviceDestroy		(){;}
 };
 //---------------------------------------------------------------------------
+*/
 #endif

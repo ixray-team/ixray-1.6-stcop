@@ -244,7 +244,7 @@ void CShaderTool::RegisterTools()
     	case aeCompiler:	tools = xr_new<CSHCompilerTools>	(ISHInit( EToolsID(k),	m_Items,	fraLeftBar->tsCompiler, m_ItemProps,	m_PreviewProps));	break;
     	case aeMtl:			tools = xr_new<CSHGameMtlTools>		(ISHInit( EToolsID(k),	m_Items,	fraLeftBar->tsMaterial,	m_ItemProps,	m_PreviewProps));	break;
     	case aeMtlPair:		tools = xr_new<CSHGameMtlPairTools>	(ISHInit( EToolsID(k),	m_Items,	fraLeftBar->tsMaterialPair,m_ItemProps,	m_PreviewProps));	break;
-    	case aeSoundEnv:	tools = xr_new<CSHSoundEnvTools>	(ISHInit( EToolsID(k),	m_Items,	fraLeftBar->tsSoundEnv,	m_ItemProps,	m_PreviewProps));	break;
+//    	case aeSoundEnv:	tools = xr_new<CSHSoundEnvTools>	(ISHInit( EToolsID(k),	m_Items,	fraLeftBar->tsSoundEnv,	m_ItemProps,	m_PreviewProps));	break;
         }
         R_ASSERT(tools);
 		m_Tools.insert(mk_pair(k,tools));

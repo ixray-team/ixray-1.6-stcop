@@ -428,7 +428,10 @@ void game_sv_CaptureTheArtefact::OnPlayerConnectFinished(ClientID id_who)
 	u_EventSend(P);
 
 	SetPlayersDefItems	(xrCData->ps);
-	Money_SetStart		(xrCData->ps);
+	if (!xrCData->flags.bReconnect)
+	{
+		Money_SetStart(xrCData->ps);
+	}
 	SpawnPlayer(id_who, "spectator");
 
 	xrCData->net_Ready = TRUE;
@@ -1915,7 +1918,8 @@ void game_sv_CaptureTheArtefact::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *
 			if (std::find(to_reject.begin(), to_reject.end(), e_item) != to_reject.end())
 				continue;
 
-			if (e_item->m_tClassID == CLSID_OBJECT_W_KNIFE)
+			if ((e_item->m_tClassID == CLSID_OBJECT_W_KNIFE) ||
+				(e_item->m_tClassID == CLSID_DEVICE_TORCH))
 			{
 				to_destroy.push_back	(e_item);
 			} else if (m_strWeaponsData->GetItemIdx(e_item->s_name) != u32(-1))

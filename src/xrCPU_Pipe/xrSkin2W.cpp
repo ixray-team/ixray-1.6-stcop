@@ -4,17 +4,91 @@
 #ifdef _EDITOR
 #	include "skeletonX.h"
 #	include "skeletoncustom.h"
-#else // _EDITOR
-#include "../xrEngine/bone.h"
-#include "../Layers/xrRender/SkeletonXVertRender.h"
-//#	include "../xrEngine/skeletonX.h"
-//#	include "../Layers/xrRender/skeletonX.h"
-//#	include "../Layers/xrRender/skeletoncustom.h"
 #endif // _EDITOR
 
+void __stdcall xrSkin1W_x86(	vertRender*		D,
+								vertBoned1W*	S,
+								u32				vCount,
+								CBoneInstance*	Bones) 
+{
+	// Prepare
+	int U_Count			= vCount/8;
+	vertBoned1W*	V	= S;
+	vertBoned1W*	E	= V+U_Count*8;
 
-//#pragma optimize("a",on)
-// it means no aliasing inside the function, /Oa compiler option
+	// Unrolled loop
+	for (; S!=E; )
+	{
+		Fmatrix& M0		= Bones[S->matrix].mRenderTransform;
+		M0.transform_tiny(D->P,S->P);
+		M0.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+		
+		Fmatrix& M1		= Bones[S->matrix].mRenderTransform;
+		M1.transform_tiny(D->P,S->P);
+		M1.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+		
+		Fmatrix& M2		= Bones[S->matrix].mRenderTransform;
+		M2.transform_tiny(D->P,S->P);
+		M2.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+		
+		Fmatrix& M3		= Bones[S->matrix].mRenderTransform;
+		M3.transform_tiny(D->P,S->P);
+		M3.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++; 
+		
+		Fmatrix& M4		= Bones[S->matrix].mRenderTransform;
+		M4.transform_tiny(D->P,S->P);
+		M4.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+		
+		Fmatrix& M5		= Bones[S->matrix].mRenderTransform;
+		M5.transform_tiny(D->P,S->P);
+		M5.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+		
+		Fmatrix& M6		= Bones[S->matrix].mRenderTransform;
+		M6.transform_tiny(D->P,S->P);
+		M6.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+		
+		Fmatrix& M7		= Bones[S->matrix].mRenderTransform;
+		M7.transform_tiny(D->P,S->P);
+		M7.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++; 
+	}
+	
+	// The end part
+	vertBoned1W* E2 = V+vCount;
+	for (; S!=E2; )
+	{
+		Fmatrix& M		= Bones[S->matrix].mRenderTransform;
+		M.transform_tiny(D->P,S->P);
+		M.transform_dir (D->N,S->N);
+		D->u			= S->u;
+		D->v			= S->v;
+		S++; D++;
+	}
+}
+ 
 void __stdcall xrSkin2W_x86(vertRender*		D,
 							vertBoned2W*	S,
 							u32				vCount,
@@ -79,13 +153,15 @@ void __stdcall xrSkin3W_x86(vertRender*		D,
         M2.transform_tiny(P2,S->P); P2.mul(1.0f-S->w[0]-S->w[1]);
         M2.transform_dir (N2,S->N); N2.mul(1.0f-S->w[0]-S->w[1]);
 
+		P0.add(P1);
+		P0.add(P2);
+
 		D->P			= P0;
-		D->P.add		(P1);
-		D->P.add		(P2);
+
+		N0.add(N1);
+		N0.add(N2);
 
 		D->N			= N0;
-		D->N.add		(N1);
-		D->N.add		(N2);
 		
 		D->u			= S->u;
         D->v			= S->v;
@@ -128,15 +204,17 @@ void __stdcall xrSkin4W_x86(vertRender*		D,
 		M3.transform_tiny(P3,S->P); P3.mul(1.0f-S->w[0]-S->w[1]-S->w[2]);
         M3.transform_dir (N3,S->N); N3.mul(1.0f-S->w[0]-S->w[1]-S->w[2]);
 
+		P0.add(P1);
+		P0.add(P2);
+		P0.add(P3);
+
 		D->P			= P0;
-		D->P.add		(P1);
-		D->P.add		(P2);
-		D->P.add		(P3);
+		
+		N0.add(N1);
+		N0.add(N2);
+		N0.add(N3);
 
 		D->N			= N0;
-		D->N.add		(N1);
-		D->N.add		(N2);
-		D->N.add		(N3);
 		
 		D->u			= S->u;
         D->v			= S->v;
