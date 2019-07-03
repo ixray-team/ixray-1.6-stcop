@@ -1495,15 +1495,14 @@ void PATargetRotate::Execute(ParticleEffect *effect, const float dt, float& tm_m
 {
 	float scaleFac = scale * dt;
 
-	pVector r = pVector(_abs(rot.x),_abs(rot.y),_abs(rot.z));
+	float r = _abs(rot.x);
 
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle &m = effect->particles[i];
-//		m.rot += (r - m.rot) * scaleFac;
-		pVector sign(m.rot.x>=0.f?scaleFac:-scaleFac,m.rot.y>=0.f?scaleFac:-scaleFac,m.rot.z>=0.f?scaleFac:-scaleFac);
-		pVector dif((r.x-_abs(m.rot.x))*sign.x,(r.y-_abs(m.rot.y))*sign.x,(r.z-_abs(m.rot.z))*sign.x);
-		m.rot	+= dif;
+		float sign = m.rot.x >= 0.f ? scaleFac : -scaleFac;
+		float dif = ( r - _abs( m.rot.x ) ) * sign;
+		m.rot.x	+= dif;
 	}
 }
 void PATargetRotate::Transform(const Fmatrix&){;}
@@ -1676,9 +1675,18 @@ struct TES_PARAMS {
 	float magnitude;
 };
 
+
 void PATurbulenceExecuteStream( LPVOID lpvParams )
 {
-    pVector pV;
+	#ifdef _GPA_ENABLED	
+		TAL_SCOPED_TASK_NAMED( "PATurbulenceExecuteStream()" );
+
+		TAL_ID rtID = TAL_MakeID( 1 , Core.dwFrame , 0);	
+		TAL_AddRelationThis(TAL_RELATION_IS_CHILD_OF, rtID);
+	#endif // _GPA_ENABLED
+
+
+	pVector pV;
     pVector vX;
     pVector vY;
     pVector vZ;
@@ -1750,6 +1758,10 @@ void PATurbulenceExecuteStream( LPVOID lpvParams )
 
 void PATurbulence::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 {
+	#ifdef _GPA_ENABLED	
+		TAL_SCOPED_TASK_NAMED( "PATurbulence::Execute()" );
+	#endif // _GPA_ENABLED
+
 	if ( noise_start ) {
 		noise_start = 0;
 		noise3Init();
@@ -1759,9 +1771,12 @@ void PATurbulence::Execute(ParticleEffect *effect, const float dt, float& tm_max
 
 	u32 p_cnt = effect->p_count;
 
+	if ( ! p_cnt )
+		return;
+
 	u32 nWorkers = ttapi_GetWorkersCount();
 
-	if ( p_cnt < ( nWorkers * 64 ) )
+	if ( p_cnt < nWorkers * 20 )
 		nWorkers = 1;
 
 	TES_PARAMS* tesParams = (TES_PARAMS*) _alloca( sizeof(TES_PARAMS) * nWorkers );
@@ -1771,6 +1786,9 @@ void PATurbulence::Execute(ParticleEffect *effect, const float dt, float& tm_max
 	u32 nSlice = p_cnt / 128; 
 
 	u32 nStep = ( ( p_cnt - nSlice ) / nWorkers );
+	//u32 nStep = ( p_cnt / nWorkers );
+
+	//Msg( "Trb: %u" , nStep );
 
 	for ( u32 i = 0 ; i < nWorkers ; ++i ) {
 		tesParams[i].p_from = i * nStep;

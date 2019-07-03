@@ -26,6 +26,18 @@ public:
 		reverse_search = _reverse_search,
 	};
 
+private:
+	typedef CProblemSolver<
+		_operator_condition,
+		_condition_state,
+		_operator,
+		_condition_evaluator,
+		_operator_id_type,
+		_reverse_search,
+		_operator_ptr,
+		_condition_evaluator_ptr
+	> self_type;
+
 public:
 	typedef _operator_condition								COperatorCondition;
 	typedef _operator										COperator;
@@ -84,13 +96,19 @@ private:
 	IC		bool						is_goal_reached_impl	(const _index_type	&vertex_index) const;
 	IC		bool						is_goal_reached_impl	(const _index_type	&vertex_index, bool) const;
 	
-	template <bool>
-	IC		_edge_value_type			estimate_edge_weight_impl(const _index_type	&vertex_index) const {return estimate_edge_weight_impl(vertex_index);}
-	template <>
-	IC		_edge_value_type			estimate_edge_weight_impl<true>(const _index_type	&vertex_index) const {return estimate_edge_weight_impl(vertex_index,true);}
-
 	IC		_edge_value_type			estimate_edge_weight_impl(const _index_type	&vertex_index) const;
 	IC		_edge_value_type			estimate_edge_weight_impl(const _index_type	&vertex_index, bool) const;
+
+private:
+	template <bool>
+	struct helper {
+		static IC	_edge_value_type	estimate_edge_weight_impl( self_type const& self, const _index_type	&vertex_index) {return self.estimate_edge_weight_impl(vertex_index);}
+	}; // struct helper
+
+	template <>
+	struct helper<true> {
+		static IC	_edge_value_type	estimate_edge_weight_impl( self_type const& self, const _index_type	&vertex_index) {return self.estimate_edge_weight_impl(vertex_index,true);}
+	}; // struct helper
 
 protected:
 #ifdef DEBUG

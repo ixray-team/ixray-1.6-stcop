@@ -381,7 +381,7 @@ IC	void CProblemSolverAbstract::solve			()
 TEMPLATE_SPECIALIZATION
 IC	typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::estimate_edge_weight	(const _index_type &condition) const
 {
-	return						(estimate_edge_weight_impl<reverse_search>(condition));
+	return						(helper<reverse_search>::estimate_edge_weight_impl(*this,condition));
 }
 
 TEMPLATE_SPECIALIZATION
