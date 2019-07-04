@@ -7,7 +7,7 @@
 	Trivial (and dumb) Threads API
 */
 
-#define _GPA_ENABLED
+//#define _GPA_ENABLED
 
 #ifdef _GPA_ENABLED
 	#include <tal.h>
