@@ -38,6 +38,9 @@
 
 #pragma comment(lib, "shlwapi.lib")
 
+// #HACK: Definition copied from <shlwapi.h>
+LWSTDAPI_(int) StrCmpLogicalW(__in LPCWSTR psz1, __in LPCWSTR psz2);
+
 struct logical_string_predicate {
 	static HRESULT AnsiToUnicode						(LPCSTR pszA, LPVOID buffer, u32 const& buffer_size)
 	{
