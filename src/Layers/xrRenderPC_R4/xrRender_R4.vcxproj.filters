@@ -1,0 +1,1344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Kernel">
+      <UniqueIdentifier>{fb48622a-5acc-415f-8061-178170ca0116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{67163c0f-8fa3-4cae-a994-1d21a7e27765}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Details">
+      <UniqueIdentifier>{721bf3b9-d991-4191-a751-1d57f35d7ee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stripifier">
+      <UniqueIdentifier>{fa2e0add-cecc-41e4-b188-7ddd7968bf3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lights">
+      <UniqueIdentifier>{624390a7-3bde-452b-ba13-d069bd5bd861}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Glows">
+      <UniqueIdentifier>{732e6d91-9e5c-4754-92c9-99dd9173cc11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wallmarks">
+      <UniqueIdentifier>{3a42e3e9-a257-4ef0-9b1d-acf5b3772a3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shading templates">
+      <UniqueIdentifier>{f17a50e3-1cc9-4e7f-901d-30ee5bbae51b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shading templates\R1">
+      <UniqueIdentifier>{c5a9f2d2-2d3b-4d19-9f22-fdacb478d96e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shading templates\3dFluid">
+      <UniqueIdentifier>{9bcf2e52-31cc-4363-b77b-0f147d5c48f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shading templates\DX10 Rain">
+      <UniqueIdentifier>{b8910dd8-17cf-4f67-83b4-12ef508d1c4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{7f24fd7e-01c6-4d54-895f-2b07890f517d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models\Visuals">
+      <UniqueIdentifier>{38f7e73d-5165-42b4-982e-e0ca6903947c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visibility">
+      <UniqueIdentifier>{2cb423fa-5692-4071-9cdc-b3bdb4d15592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visibility\Sector/Portal">
+      <UniqueIdentifier>{ba5f9883-ba6a-44fa-a6e6-7587d6358ae6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visibility\HOM Occlusion">
+      <UniqueIdentifier>{066267e3-d995-4ebc-b010-33440c80ec5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core_Target">
+      <UniqueIdentifier>{718dc38b-8930-4d77-a57c-45640e3db90d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core_Target\ColorMap">
+      <UniqueIdentifier>{4a70e11b-3123-42a1-856a-892ea321a419}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored">
+      <UniqueIdentifier>{5e39d07a-e8f6-4a7d-b8ba-02446f0a1751}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\HW">
+      <UniqueIdentifier>{c02fdd16-e5e3-4d4b-9b3f-aeaa40fcc6d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Backend">
+      <UniqueIdentifier>{c8d8ad34-1aa2-4915-9e6a-5e566198fb81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D">
+      <UniqueIdentifier>{2613e647-94b0-423b-b423-4758bd27416e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Shaders">
+      <UniqueIdentifier>{2dc06ce3-675f-47ed-8fa4-efd469dcaeac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Shaders\Resources">
+      <UniqueIdentifier>{ab3e10c1-3459-46e5-bd7d-f555bcb73f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Shaders\Resources\dx10_R_shader">
+      <UniqueIdentifier>{53d8720c-484d-40e0-88ff-87008682c0fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Shaders\ShaderManager">
+      <UniqueIdentifier>{e8b34ea8-9d66-4cc1-ba6f-dfb1a01bd7db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Shaders\Blender">
+      <UniqueIdentifier>{855a5099-ce3b-45bb-951d-cd57450be353}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\DebugDraw">
+      <UniqueIdentifier>{b70b79f9-8da3-42b1-80ef-6d7fa512e85a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Visuals">
+      <UniqueIdentifier>{cca716a9-e604-4e59-b90c-77cfce1bef69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Visuals\Skeleton">
+      <UniqueIdentifier>{002fe17f-3d0e-4419-8430-7d1428d06a41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Gamma">
+      <UniqueIdentifier>{7f13a043-c100-4440-bacf-73a39d5bd2b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Interfaces">
+      <UniqueIdentifier>{07bb4da5-3c10-431f-b417-69fc257c0235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\stats_manager">
+      <UniqueIdentifier>{ec397073-3449-4447-8f20-9bde6efea836}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations">
+      <UniqueIdentifier>{bf66efdb-9601-4784-bdd5-492110f3fcba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\RenderFactory">
+      <UniqueIdentifier>{f0052d07-612b-43b1-b121-e5534eab9389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\LensFlare">
+      <UniqueIdentifier>{8c4fdaf7-72d9-4902-8414-9d0d0e1186c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\FactoryPtr">
+      <UniqueIdentifier>{4aa7f337-31c3-4f59-baae-6282f49625ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\ApplicationRender">
+      <UniqueIdentifier>{b47f0694-bf5b-41f4-ba66-d6706b168228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\RainRender">
+      <UniqueIdentifier>{7e38474b-b999-4353-ae70-b39ecf849402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\ThunderboltRender">
+      <UniqueIdentifier>{9a909d8f-ae61-4555-9697-b783c058c72d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\EnvironmentRender">
+      <UniqueIdentifier>{c3dc662b-a696-49f2-9369-2618e8cc58f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\RenderDeviceRender">
+      <UniqueIdentifier>{26e6b896-9090-48cc-99a6-83c7587d56ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\ConsoleRender">
+      <UniqueIdentifier>{620f7ed6-41ab-42e3-aa60-4fe5e9d1ff15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\ObjectSpaceRender">
+      <UniqueIdentifier>{549c81b4-a95b-4b83-bd30-c8b46ac04d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\FontRender">
+      <UniqueIdentifier>{e8fbce27-fc86-45d0-a10e-2fa552eae54b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\WallMarkArray">
+      <UniqueIdentifier>{0e0a2ca2-1231-4be5-9656-a7cb578ae590}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\StatGraphRender">
+      <UniqueIdentifier>{db19824d-cb7a-4b9b-94e3-8c3da6e46b62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\ThunderboltDescRender">
+      <UniqueIdentifier>{441645d8-cafe-4c67-8636-51dddba02637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\StatsRender">
+      <UniqueIdentifier>{6d67cac4-07af-4aa1-b621-343bf0a5be0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\Debug">
+      <UniqueIdentifier>{4601df42-fb96-49c3-b7d9-1f336e74944f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\Debug\DebugRender">
+      <UniqueIdentifier>{0d0d74b4-3727-4f9f-bda9-19bde451123a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\UI">
+      <UniqueIdentifier>{076eb9cb-359d-439f-bfac-d6c5d477c92d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\UI\UIRender">
+      <UniqueIdentifier>{f0f63b20-652f-4790-9de0-cd6eb54810b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\UI\UIShader">
+      <UniqueIdentifier>{5085bc0a-1f89-48c8-9b82-403796f7fbbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\UI\UISequenceVideoItem">
+      <UniqueIdentifier>{d234dc8f-7edd-41f6-8b3e-138b335aa867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfase implementations\MSAARender">
+      <UniqueIdentifier>{cb97ab02-67a5-49e8-85c2-fa2090752eee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dx9 to dx10 Utils">
+      <UniqueIdentifier>{1b4f158e-e949-41cc-99ec-09cb53435f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StateManager">
+      <UniqueIdentifier>{67a9f0d8-1471-4a5b-8d56-7cbb1878cffd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{b599ff88-4c4e-4afe-b351-354e72b5acb1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cl_intersect.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\DXCommonTypes.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xrD3DDefs.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xrRender_console.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\PSLibrary.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\QueryHelper.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="r2_types.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="r4.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="r4_R_sun_support.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r__dsgraph_structure.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r__dsgraph_types.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r__occlusion.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r__pixel_calculator.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r_sun_cascades.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="DetailFormat.h">
+      <Filter>Details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\DetailManager.h">
+      <Filter>Details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\DetailModel.h">
+      <Filter>Details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\NvTriStrip.h">
+      <Filter>Stripifier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\NvTriStripObjects.h">
+      <Filter>Stripifier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\VertexCache.h">
+      <Filter>Stripifier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xrStripify.h">
+      <Filter>Stripifier</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Light_DB.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="light_gi.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Light_Package.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Light_Render_Direct.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="light_smapvis.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\LightTrack.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="SMAP_Allocator.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\WallmarksEngine.h">
+      <Filter>Wallmarks</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_bloom_build.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_BmmD.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_combine.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_deffer_aref.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_deffer_flat.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_deffer_model.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_Editor_Selection.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_Editor_Wire.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_light_direct.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_light_mask.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_light_occq.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_light_point.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_light_reflected.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_light_spot.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_luminance.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_Particle.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_ssao.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11HDAOCSBlender.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11MinMaxSMBlender.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\uber_deffer.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_detail_still.h">
+      <Filter>Shading templates\R1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_Lm(EbB).h">
+      <Filter>Shading templates\R1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_Model_EbB.h">
+      <Filter>Shading templates\R1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_Screen_SET.h">
+      <Filter>Shading templates\R1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Blender_tree.h">
+      <Filter>Shading templates\R1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidBlenders.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\DX10 Rain\dx10RainBlender.h">
+      <Filter>Shading templates\DX10 Rain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ModelPool.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidVolume.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FLOD.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FProgressive.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FSkinned.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FTreeVisual.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FVisual.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ParticleEffect.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ParticleEffectDef.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ParticleGroup.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r__sector.h">
+      <Filter>Visibility\Sector/Portal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\HOM.h">
+      <Filter>Visibility\HOM Occlusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\occRasterizer.h">
+      <Filter>Visibility\HOM Occlusion</Filter>
+    </ClInclude>
+    <ClInclude Include="r4_rendertarget.h">
+      <Filter>Core_Target</Filter>
+    </ClInclude>
+    <ClInclude Include="r4_rendertarget_wallmarks.h">
+      <Filter>Core_Target</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ColorMapManager.h">
+      <Filter>Core_Target\ColorMap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\HW.h">
+      <Filter>Refactored\HW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\HWCaps.h">
+      <Filter>Refactored\HW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10R_Backend_Runtime.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FVF.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_hemi.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="R_Backend_LOD.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_Runtime.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_tree.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_xform.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_DStreams.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="ComputeShader.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="CSCompiler.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10ConstantBuffer.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10ConstantBuffer_impl.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r_constants.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SH_Atomic.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SH_Constant.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SH_Matrix.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SH_RT.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SH_Texture.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Shader.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10r_constants_cache.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx10_R_shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r_constants_cache.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx10_R_shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ETextureParams.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ResourceManager.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ShaderResourceTraits.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\TextureDescrManager.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\blenders\Blender.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\blenders\Blender_CLSID.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\tss.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\tss_def.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\D3DUtils.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\DrawUtils.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_box.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_cone.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_cylinder.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_sphere.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_sphere_part.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxParticleCustom.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FBasicVisual.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\FHierrarhyVisual.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ParticleCustom.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderVisual.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Animation.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\Kinematics.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\KinematicsAnimated.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SkeletonAnimated.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SkeletonCustom.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SkeletonX.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xr_effgamma.h">
+      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\IRenderDetailModel.h">
+      <Filter>Refactored\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderDetailModel.h">
+      <Filter>Refactored\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\stats_manager.h">
+      <Filter>Refactored\stats_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderFactory.h">
+      <Filter>Interfase implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderFactory.h">
+      <Filter>Interfase implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxLensFlareRender.h">
+      <Filter>Interfase implementations\LensFlare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\LensFlareRender.h">
+      <Filter>Interfase implementations\LensFlare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h">
+      <Filter>Interfase implementations\FactoryPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h">
+      <Filter>Interfase implementations\ApplicationRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxApplicationRender.h">
+      <Filter>Interfase implementations\ApplicationRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRainRender.h">
+      <Filter>Interfase implementations\RainRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RainRender.h">
+      <Filter>Interfase implementations\RainRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxThunderboltRender.h">
+      <Filter>Interfase implementations\ThunderboltRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ThunderboltRender.h">
+      <Filter>Interfase implementations\ThunderboltRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxEnvironmentRender.h">
+      <Filter>Interfase implementations\EnvironmentRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\EnvironmentRender.h">
+      <Filter>Interfase implementations\EnvironmentRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderDeviceRender.h">
+      <Filter>Interfase implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h">
+      <Filter>Interfase implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ConsoleRender.h">
+      <Filter>Interfase implementations\ConsoleRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxConsoleRender.h">
+      <Filter>Interfase implementations\ConsoleRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxObjectSpaceRender.h">
+      <Filter>Interfase implementations\ObjectSpaceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ObjectSpaceRender.h">
+      <Filter>Interfase implementations\ObjectSpaceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxFontRender.h">
+      <Filter>Interfase implementations\FontRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\FontRender.h">
+      <Filter>Interfase implementations\FontRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxWallMarkArray.h">
+      <Filter>Interfase implementations\WallMarkArray</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\WallMarkArray.h">
+      <Filter>Interfase implementations\WallMarkArray</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxStatGraphRender.h">
+      <Filter>Interfase implementations\StatGraphRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\StatGraphRender.h">
+      <Filter>Interfase implementations\StatGraphRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxThunderboltDescRender.h">
+      <Filter>Interfase implementations\ThunderboltDescRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ThunderboltDescRender.h">
+      <Filter>Interfase implementations\ThunderboltDescRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxStatsRender.h">
+      <Filter>Interfase implementations\StatsRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\StatsRender.h">
+      <Filter>Interfase implementations\StatsRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\DebugShader.h">
+      <Filter>Interfase implementations\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\DebugRender.h">
+      <Filter>Interfase implementations\Debug\DebugRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxDebugRender.h">
+      <Filter>Interfase implementations\Debug\DebugRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUIRender.h">
+      <Filter>Interfase implementations\UI\UIRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\UIRender.h">
+      <Filter>Interfase implementations\UI\UIRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUIShader.h">
+      <Filter>Interfase implementations\UI\UIShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\UIShader.h">
+      <Filter>Interfase implementations\UI\UIShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h">
+      <Filter>Interfase implementations\UI\UISequenceVideoItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\UISequenceVideoItem.h">
+      <Filter>Interfase implementations\UI\UISequenceVideoItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\MSAA\dx10MSAABlender.h">
+      <Filter>Interfase implementations\MSAARender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10BufferUtils.h">
+      <Filter>dx9 to dx10 Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10StateUtils.h">
+      <Filter>dx9 to dx10 Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10TextureUtils.h">
+      <Filter>dx9 to dx10 Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.h">
+      <Filter>StateManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.h">
+      <Filter>StateManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\StateManager\dx10State.h">
+      <Filter>StateManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\StateManager\dx10StateCache.h">
+      <Filter>StateManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\StateManager\dx10StateCacheImpl.h">
+      <Filter>StateManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\StateManager\dx10StateManager.h">
+      <Filter>StateManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Utils\dxHashHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidData.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidEmitters.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidGrid.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidManager.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidObstacles.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidRenderer.h">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Debug\dxPixEventWrapper.h">
+      <Filter>Interfase implementations\Debug</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\xrRender_console.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="xrRender_R4.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10Texture.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\PSLibrary.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_blenders.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_R_calculate.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_R_lights.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_R_sun.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_sector_detect.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_test_hw.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r4.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_loader.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_R_rain.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_R_render.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_R_sun_support.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__dsgraph_build.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__dsgraph_render.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__dsgraph_render_lods.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__occlusion.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__pixel_calculator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__screenshot.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\tga.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\DetailManager.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\DetailManager_CACHE.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\DetailManager_Decompress.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\DetailManager_soft.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\DetailManager_VS.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\DetailModel.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10DetailManager_VS.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\NvTriStrip.cpp">
+      <Filter>Stripifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\NvTriStripObjects.cpp">
+      <Filter>Stripifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\VertexCache.cpp">
+      <Filter>Stripifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\xrStripify.cpp">
+      <Filter>Stripifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\light.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Light_DB.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="light_GI.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Light_Package.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Light_Render_Direct.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="light_smapvis.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="light_vis.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\LightTrack.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\WallmarksEngine.cpp">
+      <Filter>Wallmarks</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_bloom_build.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_BmmD.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_combine.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_deffer_aref.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_deffer_flat.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_deffer_model.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Editor_Selection.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Editor_Wire.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_direct.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_mask.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_occq.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_point.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_reflected.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_spot.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_luminance.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Particle.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_ssao.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11HDAOCSBlender.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11MinMaxSMBlender.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\uber_deffer.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_detail_still.cpp">
+      <Filter>Shading templates\R1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Lm(EbB).cpp">
+      <Filter>Shading templates\R1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Model_EbB.cpp">
+      <Filter>Shading templates\R1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Screen_SET.cpp">
+      <Filter>Shading templates\R1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_tree.cpp">
+      <Filter>Shading templates\R1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidBlenders.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\DX10 Rain\dx10RainBlender.cpp">
+      <Filter>Shading templates\DX10 Rain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ModelPool.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidVolume.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FLOD.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FProgressive.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FSkinned.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FTreeVisual.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FVisual.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ParticleEffect.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ParticleEffectDef.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ParticleGroup.cpp">
+      <Filter>Models\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__sector.cpp">
+      <Filter>Visibility\Sector/Portal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r__sector_traversal.cpp">
+      <Filter>Visibility\Sector/Portal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\HOM.cpp">
+      <Filter>Visibility\HOM Occlusion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\occRasterizer.cpp">
+      <Filter>Visibility\HOM Occlusion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\occRasterizer_core.cpp">
+      <Filter>Visibility\HOM Occlusion</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_direct.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_omnipart_geom.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_point.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_point_geom.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_reflected.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_spot.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_accum_spot_geom.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_create_minmaxSM.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_draw_rain.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_draw_volume.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_enable_scissor.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_mark_msaa_edges.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_accumulator.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_bloom.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_combine.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_hdao.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_luminance.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_occq.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_PP.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_rain.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_scene.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_smap_D.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_smap_S.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_ssao.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ColorMapManager.cpp">
+      <Filter>Core_Target\ColorMap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10HW.cpp">
+      <Filter>Refactored\HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\HWCaps.cpp">
+      <Filter>Refactored\HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_DBG.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_hemi.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="R_Backend_LOD.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_Runtime.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_tree.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_xform.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_DStreams.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="ComputeShader.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="CSCompiler.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10ConstantBuffer.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10r_constants.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10SH_RT.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10SH_Texture.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r_constants.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SH_Atomic.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SH_Constant.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SH_Matrix.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Shader.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10r_constants_cache.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx10_R_shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xrEngine\ai_script_lua_debug.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10ResourceManager_Resources.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10ResourceManager_Scripting.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ETextureParams.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ResourceManager.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ResourceManager_Loader.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ResourceManager_Reset.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\TextureDescrManager.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\blenders\Blender.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Recorder_R2.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\Blender_Recorder_R3.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\tss_def.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\D3DUtils.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_box.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_cone.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_cylinder.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_sphere.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_sphere_part.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxParticleCustom.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FBasicVisual.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\FHierrarhyVisual.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Animation.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SkeletonAnimated.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SkeletonCustom.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SkeletonRigid.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SkeletonX.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\xr_effgamma.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\stats_manager.cpp">
+      <Filter>Refactored\stats_manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderFactory.cpp">
+      <Filter>Interfase implementations\RenderFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxLensFlareRender.cpp">
+      <Filter>Interfase implementations\LensFlare</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxApplicationRender.cpp">
+      <Filter>Interfase implementations\ApplicationRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRainRender.cpp">
+      <Filter>Interfase implementations\RainRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxThunderboltRender.cpp">
+      <Filter>Interfase implementations\ThunderboltRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp">
+      <Filter>Interfase implementations\EnvironmentRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
+      <Filter>Interfase implementations\RenderDeviceRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxConsoleRender.cpp">
+      <Filter>Interfase implementations\ConsoleRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp">
+      <Filter>Interfase implementations\ObjectSpaceRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxFontRender.cpp">
+      <Filter>Interfase implementations\FontRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxWallMarkArray.cpp">
+      <Filter>Interfase implementations\WallMarkArray</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxStatGraphRender.cpp">
+      <Filter>Interfase implementations\StatGraphRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxThunderboltDescRender.cpp">
+      <Filter>Interfase implementations\ThunderboltDescRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxStatsRender.cpp">
+      <Filter>Interfase implementations\StatsRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxDebugRender.cpp">
+      <Filter>Interfase implementations\Debug\DebugRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUIRender.cpp">
+      <Filter>Interfase implementations\UI\UIRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUIShader.cpp">
+      <Filter>Interfase implementations\UI\UIShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp">
+      <Filter>Interfase implementations\UI\UISequenceVideoItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\MSAA\dx10MSAABlender.cpp">
+      <Filter>Interfase implementations\MSAARender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10BufferUtils.cpp">
+      <Filter>dx9 to dx10 Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10StateUtils.cpp">
+      <Filter>dx9 to dx10 Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10TextureUtils.cpp">
+      <Filter>dx9 to dx10 Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.cpp">
+      <Filter>StateManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.cpp">
+      <Filter>StateManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\StateManager\dx10State.cpp">
+      <Filter>StateManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\StateManager\dx10StateCache.cpp">
+      <Filter>StateManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\StateManager\dx10StateManager.cpp">
+      <Filter>StateManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Utils\dxHashHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidData.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidEmitters.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidGrid.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidManager.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidObstacles.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidRenderer.cpp">
+      <Filter>Shading templates\3dFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Debug\dxPixEventWrapper.cpp">
+      <Filter>Interfase implementations\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

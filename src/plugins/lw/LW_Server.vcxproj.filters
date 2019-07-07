@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{620b9ce5-5a82-44da-ac44-d5fba1d81cb0}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{f0d34621-21d8-4aa0-87f8-5e49754fb19c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Server\servdesc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\servmain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\shutdown.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\startup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\username.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+# Global ignoring of different binaries and another temporary files
+
+# Visual Studio user settings
+*.suo
+*.user
+
+# Visual C++ cache files
+ipch/
+*.ncb
+*.opendb
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+*.aps
+
+# Build results
+intermediate/
+intermediate_ed/
+intermediate_plugs/
+libraries/
+binaries/
+binaries_plugs/
+
+# Migrating report files
+_UpgradeReport_Files/
+UpgradeLog*.XML
+UpgradeLog*.htm

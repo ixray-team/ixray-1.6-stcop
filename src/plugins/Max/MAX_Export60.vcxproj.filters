@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Kernel">
+      <UniqueIdentifier>{e73741e9-1632-44ff-8f2a-22c5c3d3396b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Files">
+      <UniqueIdentifier>{70c38efa-9ba0-4889-84ed-11bba98454c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Files\Engine">
+      <UniqueIdentifier>{facbdc11-da78-4524-8f4f-c0bf98505bc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Files\Editor">
+      <UniqueIdentifier>{ff2185af-ed02-4f02-8964-b48f31e535ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Files\Material">
+      <UniqueIdentifier>{041f8e1d-c7d9-478c-b45c-d539891d78be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Export Object">
+      <UniqueIdentifier>{edb4b515-16d4-4697-8904-880552ef9668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Export Skin">
+      <UniqueIdentifier>{25ea0c94-0fd6-43af-be2d-67645e9c09f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Export Skin Keys">
+      <UniqueIdentifier>{3a461086-a6c3-4c16-a9fa-05a6aa392092}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Export\MeshExpPlugin.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\MeshExpUtility.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\NetDeviceLog.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\stdafx.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\bone.cpp">
+      <Filter>Shared Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Envelope.cpp">
+      <Filter>Shared Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\interp.cpp">
+      <Filter>Shared Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\motion.cpp">
+      <Filter>Shared Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditMesh.cpp">
+      <Filter>Shared Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditObjectMotions.cpp">
+      <Filter>Shared Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\ELog.cpp">
+      <Filter>Shared Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\FS2.CPP">
+      <Filter>Shared Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\EditMeshExportMAX.cpp">
+      <Filter>Export Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\EditObjectExportLWO.cpp">
+      <Filter>Export Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\EditObjectExportMAX.cpp">
+      <Filter>Export Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\BoneDef.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditMeshIO.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditMeshModify.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditObject.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditObjectIO.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\Exporter.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\ExporterMotion.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\ExporterSkin.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Helper.cpp">
+      <Filter>Export Skin</Filter>
+    </ClCompile>
+    <ClCompile Include="Export\ExportKeys.cpp">
+      <Filter>Export Skin Keys</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Export\MeshExpUtility.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\NetDeviceLog.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\Stdafx.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\bone.h">
+      <Filter>Shared Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\envelope.h">
+      <Filter>Shared Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\Fmesh.h">
+      <Filter>Shared Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\motion.h">
+      <Filter>Shared Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\editors\ECore\Editor\EditMesh.h">
+      <Filter>Shared Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\editors\ECore\Editor\editobject.h">
+      <Filter>Shared Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\ELog.h">
+      <Filter>Shared Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\FS2.H">
+      <Filter>Shared Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\lwchunks.h">
+      <Filter>Shared Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\Shader_xrLC.h">
+      <Filter>Shared Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\GameMaterial.h">
+      <Filter>Shared Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\TexMaps.h">
+      <Filter>Shared Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\XRayMtlRes.h">
+      <Filter>Shared Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\Exporter.h">
+      <Filter>Export Skin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Face.h">
+      <Filter>Export Skin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Helper.h">
+      <Filter>Export Skin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Vert.h">
+      <Filter>Export Skin</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Export\MeshExpUtility.rc">
+      <Filter>Kernel</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Export\MeshExpUtility.rh">
+      <Filter>Kernel</Filter>
+    </None>
+    <None Include="Export\Utility.def">
+      <Filter>Kernel</Filter>
+    </None>
+  </ItemGroup>
+</Project>

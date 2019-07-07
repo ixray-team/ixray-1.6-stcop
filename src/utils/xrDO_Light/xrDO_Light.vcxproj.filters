@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Kernel">
+      <UniqueIdentifier>{663e2046-a1d2-42ca-a911-86c66937a8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel\Resources">
+      <UniqueIdentifier>{11e9be79-c8af-45a6-9729-7f1e2dfe40d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel\Log">
+      <UniqueIdentifier>{24ac2683-7483-4fae-84f4-cce512dde07b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel\Generic">
+      <UniqueIdentifier>{95e20117-4d01-4baa-ba36-4e4f4f184e1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernel\CDB">
+      <UniqueIdentifier>{122d0e0e-d0e0-4944-945b-af68a328c163}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="_d3d_extensions.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Kernel\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="cl_log.h">
+      <Filter>Kernel\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="std_classes.h">
+      <Filter>Kernel\Generic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="xrDO_Light.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="cl_log.cpp">
+      <Filter>Kernel\Log</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>Kernel\Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
