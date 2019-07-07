@@ -26,3 +26,7 @@ binaries_plugs/
 _UpgradeReport_Files/
 UpgradeLog*.XML
 UpgradeLog*.htm
+
+# Dependencies
+sdk/dxsdk_mar2009/
+sdk/dxsdk_jun2010/

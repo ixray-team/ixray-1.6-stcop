@@ -64,12 +64,12 @@ void TTestDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* material
 	if(do_colide&&!material_1->Flags.test(SGameMtl::flPassable) &&!material_2->Flags.test(SGameMtl::flPassable))
 	{
 		float& depth=c.geom.depth;
-		float test_depth=depth-Pars.decrement_depth;
+		float test_depth=depth-Pars::decrement_depth;
 		save_max(max_depth,test_depth);
-		c.surface.mu*=Pars.calback_friction_factor;
-		if(test_depth>Pars.depth_to_use_force)
+		c.surface.mu*=Pars::calback_friction_factor;
+		if(test_depth>Pars::depth_to_use_force)
 		{
-			float force = Pars.callback_force_factor*ph_world->Gravity();
+			float force = Pars::callback_force_factor*ph_world->Gravity();
 			dBodyID b1=dGeomGetBody(c.geom.g1);
 			dBodyID b2=dGeomGetBody(c.geom.g2);
 			if(b1)dBodyAddForce(b1,c.geom.normal[0]*force,c.geom.normal[1]*force,c.geom.normal[2]*force);
@@ -92,12 +92,12 @@ void TTestDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* material
 
 			do_colide=false;
 		}
-		else if(test_depth>Pars.depth_to_change_softness_pars)
+		else if(test_depth>Pars::depth_to_change_softness_pars)
 		{
-			c.surface.soft_cfm=Pars.callback_cfm_factor;
-			c.surface.soft_erp=Pars.callback_erp_factor;
+			c.surface.soft_cfm=Pars::callback_cfm_factor;
+			c.surface.soft_erp=Pars::callback_erp_factor;
 		}
-		limit_above(depth,Pars.max_real_depth);
+		limit_above(depth,Pars::max_real_depth);
 	}
 
 }
