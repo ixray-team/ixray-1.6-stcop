@@ -30,3 +30,12 @@ UpgradeLog*.htm
 # Dependencies
 sdk/dxsdk_mar2009/
 sdk/dxsdk_jun2010/
+
+# C++ Builder cache files
+*.csm
+*.\#0[0-9]
+
+# C++ Builder backups
+*.~bpr
+*.~h
+*.~cpp

@@ -4,7 +4,6 @@
 #include "xrdebug.h"
 #include "os_clipboard.h"
 
-#include <sal.h>
 #include "dxerr.h"
 
 #pragma warning(push)

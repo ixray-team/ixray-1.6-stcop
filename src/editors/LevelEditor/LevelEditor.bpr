@@ -3,7 +3,7 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="$(OUTPUT_BINARIES_DIR)\LevelEditor.exe"/>
+    <PROJECT value="x:\binaries\LevelEditor.exe"/>
     <OBJFILES value="x:\intermediate_ed\le\LevelEditor.obj x:\intermediate_ed\le\BottomBar.obj 
       x:\intermediate_ed\le\main.obj x:\intermediate_ed\le\TopBar.obj 
       x:\intermediate_ed\le\stdafx.obj x:\intermediate_ed\le\DOOneColor.obj 
@@ -136,7 +136,7 @@
     <LIBRARIES value="editor.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib editor.lib elpackB6.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi elpackB6.bpi elpproB6.bpi"/>
-    <PATHCPP value=".;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;..\..\xrEngine;Edit;Edit;Edit;..\..\xrServerEntities;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;Edit;..\..\xrServerEntities;Edit;Edit;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\Layers\xrRender"/>
+    <PATHCPP value=".;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;..\..\xrEngine;Edit;Edit;Edit;..\..\xrServerEntities;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;Edit;..\..\xrServerEntities;Edit;Edit;X:\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;X:\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;X:\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;X:\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;X:\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\Layers\xrRender"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -146,32 +146,32 @@
     <USERDEFINES value="_EDITOR;_LEVEL_EDITOR;_DEBUG"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="LevelEditor.cpp"/>
-    <INCLUDEPATH value="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\xrServerEntities;..\..\Layers\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;$(MAGIC_SW_DIR);$(ETOOLS_DIR)"/>
-    <LIBPATH value="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)"/>
+    <INCLUDEPATH value="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\xrServerEntities;..\..\Layers\xrRender;X:\sdk\dxsdk_mar2009\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;X:\sdk\components\AlexMX;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\src\xrCore;../../xrEngine;X:\sdk\sources\MagicSoftware\Sdk\Include;X:\src\utils\ETools;X:\src\xrParticles"/>
+    <LIBPATH value="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries"/>
     <WARNINGS value="-w8092 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin -w-par 
       -wnod -wnak -w-8027 -w-8026 -wdef -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_LEVEL_EDITOR -D_DEBUG 
-      -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D 
+    <IDLCFLAGS value="-I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D 
       -I..\.. -I..\..\xrServerEntities -I..\..\Layers\xrRender 
-      -I$(DXSDK_DIR)\Include -IEdit -IEngine -I$(BCB)\Projects 
-      -I$(BCB)\include\vcl -I$(BCB)\include -I$(COMPONENTS)\alexmx 
-      -I$(COMPONENTS)\ElPack\Code -I$(COMPONENTS)\ElPack\Code\Source 
-      -I$(CORE_DIR) -I../../xrEngine -I$(MAGIC_SW_DIR) -I$(ETOOLS_DIR)"/>
+      -IX:\sdk\dxsdk_mar2009\Include -IEdit -IEngine -I$(BCB)\Projects 
+      -I$(BCB)\include\vcl -I$(BCB)\include -IX:\sdk\components\AlexMX 
+      -IX:\sdk\components\ElPack\Code -IX:\sdk\components\ElPack\Code\Source 
+      -IX:\src\xrCore -I../../xrEngine 
+      -IX:\sdk\sources\MagicSoftware\Sdk\Include -IX:\src\utils\ETools 
+      -IX:\src\xrParticles -src_suffix cpp -D_EDITOR -D_LEVEL_EDITOR -D_DEBUG"/>
     <CFLAG1 value="-Od -H=pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF -ff -X- -r- -ps -a4 -6 -b- 
       -k -y -v -vi- -He -c -tW -tWM"/>
     <PFLAGS value="-N2x:\intermediate_ed\le -N0x:\intermediate_ed\le -$Y+ -$W -$R -$Q -$O- 
       -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-lx:\stalker_addon\libraries -Ix:\intermediate_ed\le -D&quot;&quot; -aa -Tpe -GD -x 
-      -Gn -v"/>
+    <LFLAGS value="-lx:\libraries -Ix:\intermediate_ed\le -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -332,11 +332,11 @@
       <FILE FILENAME="LEClipEditor.dfm" FORMNAME="" UNITNAME="LEClipEditor.dfm" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="LEClipEditor.h" FORMNAME="" UNITNAME="LEClipEditor.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="LEPhysics.cpp" FORMNAME="" UNITNAME="LEPhysics" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D\MgcConvexHull2D.cpp" FORMNAME="" UNITNAME="MgcConvexHull2D" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D\MgcAppr3DPlaneFit.cpp" FORMNAME="" UNITNAME="MgcAppr3DPlaneFit" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics\MgcEigen.cpp" FORMNAME="" UNITNAME="MgcEigen" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D\MgcVector2.cpp" FORMNAME="" UNITNAME="MgcVector2" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D\MgcVector3.cpp" FORMNAME="" UNITNAME="MgcVector3" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="X:\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D\MgcConvexHull2D.cpp" FORMNAME="" UNITNAME="MgcConvexHull2D" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="X:\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D\MgcAppr3DPlaneFit.cpp" FORMNAME="" UNITNAME="MgcAppr3DPlaneFit" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="X:\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics\MgcEigen.cpp" FORMNAME="" UNITNAME="MgcEigen" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="X:\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D\MgcVector2.cpp" FORMNAME="" UNITNAME="MgcVector2" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="X:\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D\MgcVector3.cpp" FORMNAME="" UNITNAME="MgcVector3" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\Layers\xrRender\stats_manager.cpp" FORMNAME="" UNITNAME="stats_manager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
@@ -349,7 +349,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=2
-Build=156
+Build=157
 Debug=1
 PreRelease=0
 Special=0
@@ -361,7 +361,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.2.156
+FileVersion=1.0.2.157
 InternalName=
 LegalCopyright=
 LegalTrademarks=
@@ -371,41 +371,47 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=12
-Item0=..\..;..\..\xrServerEntities;..\..\Layers\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
-Item1=$(VC_INCLUDE);..\..;..\..\xrServerEntities;..\..\Layers\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
-Item2=..\..;..\..\xrServerEntities;..\..\Layers\xrRender;..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
-Item3=..\..\xrServerEntities;..\..\Layers\xrRender;..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
-Item4=..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
-Item5=..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR)
-Item6=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR)
-Item7=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrEngine/xrRender;$(MAGIC_SW_DIR)
-Item8=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrEngine/xrRender
-Item9=Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(DXSDK_DIR)\Include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrEngine/xrRender
-Item10=Edit;H:\RAD\Borland\CBuilder6\Projects;&quot;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include&quot;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
-Item11=H:\RAD\Borland\CBuilder6\Projects;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;Engine\Game;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
+Count=15
+Item0=..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\xrServerEntities;..\..\Layers\xrRender;X:\sdk\dxsdk_mar2009\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;X:\sdk\components\AlexMX;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\src\xrCore;../../xrEngine;X:\sdk\sources\MagicSoftware\Sdk\Include;X:\src\utils\ETools;X:\src\xrParticles
+Item1=..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\xrServerEntities;..\..\Layers\xrRender;X:\sdk\dxsdk_mar2009\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;X:\sdk\components\AlexMX;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\src\xrCore;../../xrEngine;X:\sdk\sources\MagicSoftware\Sdk\Include;X:\src\utils\ETools
+Item2=..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\xrServerEntities;..\..\Layers\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
+Item3=..\..;..\..\xrServerEntities;..\..\Layers\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
+Item4=$(VC_INCLUDE);..\..;..\..\xrServerEntities;..\..\Layers\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
+Item5=..\..;..\..\xrServerEntities;..\..\Layers\xrRender;..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
+Item6=..\..\xrServerEntities;..\..\Layers\xrRender;..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
+Item7=..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR);$(ETOOLS_DIR)
+Item8=..\..\xrEngine\xrRender;$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR)
+Item9=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrRender;$(MAGIC_SW_DIR)
+Item10=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrEngine/xrRender;$(MAGIC_SW_DIR)
+Item11=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrEngine/xrRender
+Item12=Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(DXSDK_DIR)\Include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xrEngine;../../xrEngine/xrRender
+Item13=Edit;H:\RAD\Borland\CBuilder6\Projects;&quot;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include&quot;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
+Item14=H:\RAD\Borland\CBuilder6\Projects;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;Engine\Game;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
 
 [HistoryLists\hlLibraryPath]
-Count=14
-Item0=..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item1=..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source
-Item2=..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
-Item3=..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
-Item4=..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item5=..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item6=..\..\xrServerEntities;..\..\Layers\xrRender;..\..\..\SDK\components\ElPack\Code;..\..\xrEngine\xrRender;..\..\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item7=..\..\xrEngine\xrRender;..\..\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item8=..\..\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item9=..\..\xrEngine\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item10=Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item11=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item12=H:\RAD\Borland\CBuilder6\Projects;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
-Item13=H:\RAD\Borland\CBuilder6\Projects;Engine\Game;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Count=16
+Item0=..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item1=..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item2=..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item3=..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source
+Item4=..\..;..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
+Item5=..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
+Item6=..\..\Layers\xrRender;..\..\xrServerEntities;..\..\xrEngine;Edit;..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item7=..\..\..\SDK\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item8=..\..\xrServerEntities;..\..\Layers\xrRender;..\..\..\SDK\components\ElPack\Code;..\..\xrEngine\xrRender;..\..\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item9=..\..\xrEngine\xrRender;..\..\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item10=..\..\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item11=..\..\xrEngine\xrRender;..\..\xrEngine;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item12=Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item13=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item14=H:\RAD\Borland\CBuilder6\Projects;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Item15=H:\RAD\Borland\CBuilder6\Projects;Engine\Game;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
 
 [HistoryLists\hlDebugSourcePath]
-Count=2
-Item0=X:\stalker_addon\sources\engine\editors\ECore\Editor\
-Item1=c:\rad\borland\cbuilder5\source\vcl;R:\Borland\Components6\AlexMX\
+Count=3
+Item0=X:\src\editors\ECore\Editor\
+Item1=X:\stalker_addon\sources\engine\editors\ECore\Editor\
+Item2=c:\rad\borland\cbuilder5\source\vcl;R:\Borland\Components6\AlexMX\
 
 [HistoryLists\hlConditionals]
 Count=2
@@ -420,21 +426,21 @@ Item2=intermediate
 
 [HistoryLists\hlFinalOutputDir]
 Count=5
-Item0=$(OUTPUT_BINARIES_DIR)\
-Item1=x:\stalker_addon\binaries\
-Item2=x:\binaries\
-Item3=x:\binaries
+Item0=x:\binaries\
+Item1=x:\binaries
+Item2=$(OUTPUT_BINARIES_DIR)\
+Item3=x:\stalker_addon\binaries\
 Item4=x:\
 
 [HistoryLists\hIBPIOutputDir]
 Count=4
-Item0=x:\stalker_addon\libraries
-Item1=$(OUTPUT_LIBRARIES_DIR)
-Item2=$(OUTPUT_LIBRARIES_DIR)\
-Item3=x:\libraries
+Item0=x:\libraries
+Item1=x:\stalker_addon\libraries
+Item2=$(OUTPUT_LIBRARIES_DIR)
+Item3=$(OUTPUT_LIBRARIES_DIR)\
 
 [Debugging]
-DebugSourceDirs=X:\stalker_addon\sources\engine\editors\ECore\Editor\
+DebugSourceDirs=X:\src\editors\ECore\Editor\
 
 [Parameters]
 RunParams=-wf x:\stalker_addon\resources -editor
