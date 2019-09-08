@@ -10,7 +10,8 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = xrCoreB.dll xrSoundB.dll xrParticlesB.dll xrEPropsB.dll xrECoreB.dll \
-  ActorEditor.exe ParticleEditor.exe ShaderEditor.exe LevelEditor.exe
+  ActorEditor.exe ParticleEditor.exe ShaderEditor.exe LevelEditor.exe \
+  Postprocess.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -48,6 +49,10 @@ ShaderEditor.exe: editors\ShaderEditor\ShaderEditor.bpr
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
 LevelEditor.exe: editors\LevelEditor\LevelEditor.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+Postprocess.exe: editors\PPEditor\Postprocess.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 

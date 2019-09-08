@@ -36,6 +36,7 @@ sdk/dxsdk_jun2010/
 *.\#0[0-9]
 
 # C++ Builder backups
+*.~bpg
 *.~bpr
 *.~h
 *.~cpp
