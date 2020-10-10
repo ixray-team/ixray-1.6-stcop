@@ -431,19 +431,23 @@ void CGamePersistent::WeathersUpdate()
 
 bool allow_intro ()
 {
-#ifdef MASTER_GOLD
-	if (g_SASH.IsRunning())
-#else	// #ifdef MASTER_GOLD
-	if ((0!=strstr(Core.Params, "-nointro")) || g_SASH.IsRunning())
-#endif	// #ifdef MASTER_GOLD
-	{
+	if ((0 != strstr(Core.Params, "-nointro")) || g_SASH.IsRunning()) {
 		return false;
-	}else
-		return true;
+	} else { 
+		return true; 
+	}
 }
 
 void CGamePersistent::start_logo_intro()
 {
+	if (!allow_intro())
+	{
+		m_intro_event = 0;
+		Console->Show();
+		Console->Execute("main_menu on");
+		return;
+	}
+
 	if(Device.dwPrecacheFrame==0)
 	{
 		m_intro_event.bind		(this, &CGamePersistent::update_logo_intro);
