@@ -521,10 +521,10 @@ Item4=xrLC_Options
 
 [HistoryLists\hlFinalOutputDir]
 Count=4
-Item0=x:\binaries
-Item1=$(OUTPUT_BINARIES_DIR)\
-Item2=x:\stalker_addon\binaries\
-Item3=x:\binaries\
+Item0=x:\binaries\
+Item1=x:\binaries
+Item2=$(OUTPUT_BINARIES_DIR)\
+Item3=x:\stalker_addon\binaries\
 
 [HistoryLists\hIBPIOutputDir]
 Count=5

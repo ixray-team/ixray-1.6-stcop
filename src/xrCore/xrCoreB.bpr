@@ -219,10 +219,10 @@
     <FILE type="override" value="blackbox\GetLoadedModules.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
     <FILE type="override" value="blackbox\stdafx_.cpp" translator="Auto">
@@ -359,10 +359,10 @@ Item7=xrLC_Options
 
 [HistoryLists\hlFinalOutputDir]
 Count=18
-Item0=x:\binaries
-Item1=$(OUTPUT_BINARIES_DIR)\
-Item2=x:\stalker_addon\binaries\
-Item3=x:\binaries\
+Item0=x:\binaries\
+Item1=x:\binaries
+Item2=$(OUTPUT_BINARIES_DIR)\
+Item3=x:\stalker_addon\binaries\
 Item4=C:\Program Files\THQ\S.T.A.L.K.E.R. - Shadow of Chernobyl\
 Item5=x:\
 Item6=x:\build\

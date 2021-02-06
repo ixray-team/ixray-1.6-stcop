@@ -166,9 +166,9 @@ Item0=x:\intermediate_ed\ppe
 
 [HistoryLists\hlFinalOutputDir]
 Count=4
-Item0=x:\binaries
-Item1=x:\stalker_addon\binaries\
-Item2=x:\binaries\
+Item0=x:\binaries\
+Item1=x:\binaries
+Item2=x:\stalker_addon\binaries\
 Item3=x:\
 
 [Debugging]

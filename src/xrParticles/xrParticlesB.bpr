@@ -184,10 +184,10 @@ Item5=Intermediate
 
 [HistoryLists\hlFinalOutputDir]
 Count=7
-Item0=x:\binaries
-Item1=$(OUTPUT_BINARIES_DIR)\
-Item2=x:\stalker_addon\binaries\
-Item3=x:\binaries\
+Item0=x:\binaries\
+Item1=x:\binaries
+Item2=$(OUTPUT_BINARIES_DIR)\
+Item3=x:\stalker_addon\binaries\
 Item4=x:\
 Item5=x:\build\
 Item6=x:\build
