@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Test Modules">
-      <UniqueIdentifier>{238dc935-2c44-4661-92fa-27fd3c0dc6b8}</UniqueIdentifier>
+      <UniqueIdentifier>{befa0d32-daa5-4593-b533-b4003d666a24}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

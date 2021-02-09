@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Simple examples", "Simple examples", "{87827618-92DF-4B09-9086-15C6835317EE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oatest", "oatest", "{C79FC7CE-89B6-4CD4-8E9D-6FCEF86ADF53}"
