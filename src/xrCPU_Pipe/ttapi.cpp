@@ -104,60 +104,9 @@ DWORD ttapi_Init( _processor_info* ID )
 		return ttapi_workers_count;
 
 	// System Info
-	ttapi_workers_count = ID->n_cores;
-
-	SetPriorityClass( GetCurrentProcess() , REALTIME_PRIORITY_CLASS );
-
-	DWORD i , dwNumIter;
-	volatile DWORD dwDummy = 1;
-	LARGE_INTEGER liFrequency , liStart , liEnd;
-
-	QueryPerformanceFrequency( &liFrequency );
-
-	// Get fast spin-loop timings
-	dwNumIter = 100000000;
-
-	QueryPerformanceCounter( &liStart );
-	for ( i = 0 ; i < dwNumIter ; ++i ) {
-		if ( dwDummy == 0 )
-			goto process1;
-		__asm pause;
-	}
-	process1:
-	QueryPerformanceCounter( &liEnd );
-
-	// We want 1/25 (40ms) fast spin-loop
-	ttapi_dwFastIter = ( dwNumIter * liFrequency.QuadPart ) / ( ( liEnd.QuadPart - liStart.QuadPart ) * 25 );
-	//Msg( "fast spin-loop iterations : %u" , ttapi_dwFastIter );
-
-	// Get slow spin-loop timings
-	dwNumIter = 10000000;
-
-	QueryPerformanceCounter( &liStart );
-	for ( i = 0 ; i < dwNumIter ; ++i ) {
-		if ( dwDummy == 0 )
-			goto process2;
-		SwitchToThread();
-	}
-	process2:
-	QueryPerformanceCounter( &liEnd );
-
-	// We want 1/2 (500ms) slow spin-loop
-	ttapi_dwSlowIter = ( dwNumIter * liFrequency.QuadPart ) / ( ( liEnd.QuadPart - liStart.QuadPart ) * 2 );
-	//Msg( "slow spin-loop iterations : %u" , ttapi_dwSlowIter );
-
-	SetPriorityClass( GetCurrentProcess() , NORMAL_PRIORITY_CLASS );
-
-	// Check for override from command line
-	char szSearchFor[] = "-max-threads";
-	char* pszTemp = strstr( GetCommandLine() , szSearchFor );
-	DWORD dwOverride = 0;
-	if ( pszTemp )
-		if ( sscanf_s( pszTemp + strlen( szSearchFor ) , "%u" , &dwOverride ) )
-			if ( ( dwOverride >= 1 ) && ( dwOverride < ttapi_workers_count ) )
-				ttapi_workers_count = dwOverride;
-
-	// Number of helper threads
+	SYSTEM_INFO SystemInfo;
+	GetSystemInfo(&SystemInfo);
+	ttapi_workers_count = SystemInfo.dwNumberOfProcessors;
 	ttapi_threads_count = ttapi_workers_count - 1;
 
 	// Creating control structures
@@ -172,32 +121,20 @@ DWORD ttapi_Init( _processor_info* ID )
 
 	char szThreadName[64];
 	DWORD dwThreadId = 0;
-	DWORD dwAffinitiMask = ID->affinity_mask;
-	DWORD dwCurrentMask = 0x01;
 
-	// Setting affinity
-	while ( ! ( dwAffinitiMask & dwCurrentMask ) )
-		dwCurrentMask <<= 1;
-
-	SetThreadAffinityMask( GetCurrentThread() , dwCurrentMask );
-	//Msg("Master Thread Affinity Mask : 0x%8.8X" , dwCurrentMask );
+	SetThreadIdealProcessor(GetCurrentThread(), 0);
 
 	// Creating threads
 	for ( DWORD i = 0 ; i < ttapi_threads_count ; i++ ) {
 
 		// Initializing "enter" "critical section"
-		ttapi_worker_params[ i ].vlFlag = 1;
+		_InterlockedExchange(&ttapi_worker_params[ i ].vlFlag, 1);
 
 		if ( ( ttapi_threads_handles[ i ] = CreateThread( NULL , 0 , &ttapiThreadProc , &ttapi_worker_params[ i ] , 0 , &dwThreadId ) ) == NULL )
 			return 0;
 
-		// Setting affinity
-		do
-			dwCurrentMask <<= 1;
-		while ( ! ( dwAffinitiMask & dwCurrentMask ) );
-			
-		SetThreadAffinityMask( ttapi_threads_handles[ i ] , dwCurrentMask );
-		//Msg("Helper Thread #%u Affinity Mask : 0x%8.8X" , i + 1 , dwCurrentMask );
+		// Setting preferred processor
+		SetThreadIdealProcessor(ttapi_threads_handles[i], i + 1);
 
 		// Setting thread name
 		sprintf_s( szThreadName , "Helper Thread #%u" , i );
