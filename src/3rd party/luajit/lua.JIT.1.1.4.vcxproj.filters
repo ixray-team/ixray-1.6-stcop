@@ -2,22 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="doc">
-      <UniqueIdentifier>{f1294a8c-64f9-4214-af24-0eb445590bc8}</UniqueIdentifier>
+      <UniqueIdentifier>{19547fdf-f263-49c7-8db8-486b131bbe0b}</UniqueIdentifier>
     </Filter>
     <Filter Include="etc">
-      <UniqueIdentifier>{172beedb-3da8-460a-9187-87e8cc564173}</UniqueIdentifier>
+      <UniqueIdentifier>{aa0212b3-4410-49bb-9410-8b4e692d0123}</UniqueIdentifier>
     </Filter>
     <Filter Include="jit">
-      <UniqueIdentifier>{0005ed3f-0c41-4ec3-8382-f08e652972ec}</UniqueIdentifier>
+      <UniqueIdentifier>{f33c859a-cc0f-486d-891b-ec44362ae1b9}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{3461f95d-5d87-4c66-b055-cae1002f5793}</UniqueIdentifier>
+      <UniqueIdentifier>{98337d78-40a5-4d4d-9a70-c65df445a63a}</UniqueIdentifier>
     </Filter>
     <Filter Include="jitdoc">
-      <UniqueIdentifier>{ddc43895-c474-42d8-818d-9a65be2a9508}</UniqueIdentifier>
+      <UniqueIdentifier>{02c8fc72-5037-4c5a-bc3a-fcd5b9411f4d}</UniqueIdentifier>
     </Filter>
     <Filter Include="dynasm">
-      <UniqueIdentifier>{8a6a4028-35cf-4a02-83c4-208fb5f9ce72}</UniqueIdentifier>
+      <UniqueIdentifier>{4ec7e4d7-fd08-425e-b271-353f4de200ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

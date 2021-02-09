@@ -6,68 +6,68 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Light">
-      <UniqueIdentifier>{a8a51daa-ab4d-4c73-b512-a20627389bcf}</UniqueIdentifier>
+      <UniqueIdentifier>{aacdee5c-758f-4e48-8606-6869efe91e4e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\xrLC_GlobalData">
-      <UniqueIdentifier>{fccdbd58-22ee-4e32-be41-a56de8886dad}</UniqueIdentifier>
+      <UniqueIdentifier>{8822c5f8-245e-4890-bec4-1194afb1216d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Net">
-      <UniqueIdentifier>{19760533-acf9-4ca6-9ecd-0cc35b5a20bb}</UniqueIdentifier>
+      <UniqueIdentifier>{6d368222-c1eb-424a-a829-a29f06227027}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Net\new">
-      <UniqueIdentifier>{8976a20c-c980-4f69-955e-e8b935c4cb7e}</UniqueIdentifier>
+      <UniqueIdentifier>{e1f9d4a0-aa54-4c9a-95b6-7de7c450e331}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Net\new\net_user_gl_data">
-      <UniqueIdentifier>{c4e1d5ab-1494-4b73-8420-7e08fbac4008}</UniqueIdentifier>
+      <UniqueIdentifier>{d258a19b-e633-46fa-83b1-44ba9f1f6d44}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Net\new\net_user_execution">
-      <UniqueIdentifier>{2a592dd6-e3d2-49b0-99b2-751f97b6e55f}</UniqueIdentifier>
+      <UniqueIdentifier>{261fc226-dd15-4c04-af2f-1d48ba8d3b92}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Net\new\task_manager">
-      <UniqueIdentifier>{c326980e-9331-4ba5-8786-c3a9ae18b71a}</UniqueIdentifier>
+      <UniqueIdentifier>{e048b901-a687-4d6a-8b2c-081a023e63e0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Net\depr">
-      <UniqueIdentifier>{f042ff6b-44be-4d31-9451-00d0a3a1c693}</UniqueIdentifier>
+      <UniqueIdentifier>{b4784555-b8de-4dbd-be4b-8b186d34b97e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\models">
-      <UniqueIdentifier>{b5d2278e-e0c5-41e8-9eb1-a63e905c1fea}</UniqueIdentifier>
+      <UniqueIdentifier>{908fbf1b-f29d-4aa5-88c6-c1a6b9ab2224}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\models\mu_light">
-      <UniqueIdentifier>{4b3a12ce-dc2b-4bf8-a531-1076640d884b}</UniqueIdentifier>
+      <UniqueIdentifier>{9db5e53d-f8b0-441c-b26d-5442e4bf19e7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\LightImplicit">
-      <UniqueIdentifier>{56d57f44-4b5a-4256-8573-8e6c42da236f}</UniqueIdentifier>
+      <UniqueIdentifier>{b58fab01-eba0-40a4-8ed0-643b6f946862}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\xrDeflector">
-      <UniqueIdentifier>{088e6dcb-6cb9-4489-a749-49fe20b5f4ae}</UniqueIdentifier>
+      <UniqueIdentifier>{73b9c7dd-c787-40a0-a62c-019606d2d893}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Mesh">
-      <UniqueIdentifier>{4e0c17dd-f532-47b6-b7e4-9124bb30f6e8}</UniqueIdentifier>
+      <UniqueIdentifier>{68d13c9d-c940-498f-84cf-614e15d72ecf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\serialize">
-      <UniqueIdentifier>{78e695f5-91f6-4aa0-ada0-8cf744a01136}</UniqueIdentifier>
+      <UniqueIdentifier>{53f513eb-8088-45ad-a944-b9369c455b8d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Lightmaps">
-      <UniqueIdentifier>{7c15f00d-ba8a-4483-9d3f-576930877c50}</UniqueIdentifier>
+      <UniqueIdentifier>{e7996e06-14e1-420d-8b96-8a73c71d3f3c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Textures">
-      <UniqueIdentifier>{118aa37b-ee81-41b1-86c3-6f06a3152745}</UniqueIdentifier>
+      <UniqueIdentifier>{3c3bbc21-93ca-41a4-92e5-c7ec9607466f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Lights">
-      <UniqueIdentifier>{fcf66b00-1adc-4bad-a101-ac4ee11196b8}</UniqueIdentifier>
+      <UniqueIdentifier>{ffeed060-3e1e-4b41-b850-9d1ce864c284}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\color">
-      <UniqueIdentifier>{d1f01d84-2985-4fa2-ad18-f082fea52fc8}</UniqueIdentifier>
+      <UniqueIdentifier>{a816b96a-7255-405d-a4d0-362018d73031}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\LightVertex">
-      <UniqueIdentifier>{077aa68c-fe5f-487a-b90b-53ffe0ac6688}</UniqueIdentifier>
+      <UniqueIdentifier>{f9463c46-08ad-430d-a977-395e80aa743c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="do_light">
-      <UniqueIdentifier>{758b54e1-e233-4b86-ab27-66d606e7e2eb}</UniqueIdentifier>
+      <UniqueIdentifier>{86e709ac-0a6c-409c-82c4-21071a9b9e35}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -583,6 +583,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

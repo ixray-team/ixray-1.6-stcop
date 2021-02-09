@@ -2,16 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Main">
-      <UniqueIdentifier>{24ee7da0-d8c1-4780-b5e1-56fe76eb63e2}</UniqueIdentifier>
+      <UniqueIdentifier>{4a8367f9-7f2b-47aa-9cd9-ce5b252e4794}</UniqueIdentifier>
     </Filter>
     <Filter Include="LZO">
-      <UniqueIdentifier>{d0beb623-d0d7-425f-8d51-f8528c3a1b28}</UniqueIdentifier>
+      <UniqueIdentifier>{bdb901f6-57de-4325-85ba-4dcdca69ca1e}</UniqueIdentifier>
     </Filter>
     <Filter Include="LZO\Include">
-      <UniqueIdentifier>{1448c6bf-f951-4137-845e-270e45941378}</UniqueIdentifier>
+      <UniqueIdentifier>{3865136d-6eaf-4fe1-beb2-9c4584ed3821}</UniqueIdentifier>
     </Filter>
     <Filter Include="LZO\Source">
-      <UniqueIdentifier>{bbb30c45-80f3-4019-add5-bfe6a125876b}</UniqueIdentifier>
+      <UniqueIdentifier>{08e50099-3f69-4af3-b13e-8b4f83d84088}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

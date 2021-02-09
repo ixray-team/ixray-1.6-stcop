@@ -2,139 +2,139 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="kernel">
-      <UniqueIdentifier>{45d828b4-d1bf-4fbb-81c8-2710d81afb97}</UniqueIdentifier>
+      <UniqueIdentifier>{6470a794-374e-4d5e-81ff-6ec7ca9fccc8}</UniqueIdentifier>
     </Filter>
     <Filter Include="interface">
-      <UniqueIdentifier>{13edd325-7e6e-4367-a314-760eb6e8a04a}</UniqueIdentifier>
+      <UniqueIdentifier>{feb33b63-5639-419e-8266-9ad93992ad3b}</UniqueIdentifier>
     </Filter>
     <Filter Include="interface\shell">
-      <UniqueIdentifier>{5e321299-25d1-4737-b8b0-4ed7821583f3}</UniqueIdentifier>
+      <UniqueIdentifier>{caa5061d-39de-4135-9c70-8ea7ff8e9417}</UniqueIdentifier>
     </Filter>
     <Filter Include="interface\character_movement">
-      <UniqueIdentifier>{ca4b96c7-9abf-471c-9e6d-176ed7960642}</UniqueIdentifier>
+      <UniqueIdentifier>{41acbe63-074f-43b2-8bd4-ee3b2ac9d20d}</UniqueIdentifier>
     </Filter>
     <Filter Include="interface\world">
-      <UniqueIdentifier>{e90eaece-376d-4855-8e68-4f99f9f18e2a}</UniqueIdentifier>
+      <UniqueIdentifier>{a4c62669-ab8c-4416-9a39-2a5db1815b6d}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics">
-      <UniqueIdentifier>{1fb02228-77d5-42de-9798-9e758da7f778}</UniqueIdentifier>
+      <UniqueIdentifier>{70b65cf4-d8e6-458d-8bc0-2d5e98e5f710}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\colliders">
-      <UniqueIdentifier>{f9b367e4-e110-41b1-80cc-e8f5dd175097}</UniqueIdentifier>
+      <UniqueIdentifier>{b2820668-376b-4120-aa16-01eeec1f7cb5}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\colliders\tri">
-      <UniqueIdentifier>{ae8d68f1-97e9-4186-b3e3-f0da2e0f33cb}</UniqueIdentifier>
+      <UniqueIdentifier>{c941cdac-2c08-4804-8308-66eca4fe4e8b}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\colliders\cyl">
-      <UniqueIdentifier>{e54bafeb-9296-4012-9e07-9f5588358437}</UniqueIdentifier>
+      <UniqueIdentifier>{893b3ff9-7858-46aa-9d5e-a896dd22060b}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\colliders\RayMotions">
-      <UniqueIdentifier>{d93b3b21-73f2-4eae-8123-7031fb57e3ef}</UniqueIdentifier>
+      <UniqueIdentifier>{797d3224-a19e-4ac5-bbcb-8b4143b22c7a}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\ActivationBox">
-      <UniqueIdentifier>{335341d8-ec0e-4598-945e-cb8337939adf}</UniqueIdentifier>
+      <UniqueIdentifier>{bbf9ff32-b6d6-4194-a50f-e6f2713a70c4}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base">
-      <UniqueIdentifier>{f03e3725-5297-4e32-a4ed-60ccb9079238}</UniqueIdentifier>
+      <UniqueIdentifier>{b002eee6-b756-4a47-a8c4-9a3ca1ad90d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects">
-      <UniqueIdentifier>{9120907e-59ed-4ffe-b260-d889474cb856}</UniqueIdentifier>
+      <UniqueIdentifier>{3447ce31-0dbc-4f50-8257-801b55c16716}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Utils">
-      <UniqueIdentifier>{db1fa292-5c6d-4901-8589-b1559980fd0a}</UniqueIdentifier>
+      <UniqueIdentifier>{31a6eae7-bc89-41e8-a72b-ec55642efc95}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Utils\Interpolation">
-      <UniqueIdentifier>{80624397-c9db-416b-91e1-046779b86862}</UniqueIdentifier>
+      <UniqueIdentifier>{a6ecf0bb-d802-4f63-a67e-4ef964158b53}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Utils\Storage">
-      <UniqueIdentifier>{4a54cf6d-07c0-4589-acf8-b1d99187cf19}</UniqueIdentifier>
+      <UniqueIdentifier>{d3cbc2be-4700-4efa-b756-49c6dc48283b}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Utils\Math">
-      <UniqueIdentifier>{5a1e71d6-47ba-4492-9cbc-68421f688c4d}</UniqueIdentifier>
+      <UniqueIdentifier>{50f96d60-5cf3-4221-955a-c4d08d766038}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\BodyEffectors">
-      <UniqueIdentifier>{f5dda245-6dc8-4e0c-819b-25df01675846}</UniqueIdentifier>
+      <UniqueIdentifier>{38a5edde-85fd-4983-a612-61fc400d04ca}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PHNet">
-      <UniqueIdentifier>{bf832aa0-a034-4311-8822-841672126e75}</UniqueIdentifier>
+      <UniqueIdentifier>{e19fb6bb-8869-4f6f-87e2-d29119e427f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\MoveStorage">
-      <UniqueIdentifier>{4a4a0686-6dfe-4806-9527-3c94f50d9bcc}</UniqueIdentifier>
+      <UniqueIdentifier>{4093c9bb-6044-40d6-956c-07a981d3e79e}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Disabling">
-      <UniqueIdentifier>{65a78f87-5148-4023-b98a-3525d64fb4f2}</UniqueIdentifier>
+      <UniqueIdentifier>{9df6a798-b084-4875-bf6a-9c95b27b549f}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PhyMove">
-      <UniqueIdentifier>{10184b0e-484d-458d-86d7-79fcc78dad40}</UniqueIdentifier>
+      <UniqueIdentifier>{dc2ed97b-10c3-447d-aef6-a47e242dd7c4}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PhyMove\ActorCaracter">
-      <UniqueIdentifier>{dabda1f7-f567-4797-9596-a5eff887d25d}</UniqueIdentifier>
+      <UniqueIdentifier>{905d6c78-03ef-4896-97eb-3ab0d58effd2}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PhyMove\AICharacter">
-      <UniqueIdentifier>{c46f6a43-08bd-4a65-acb9-d3e5dc5f3539}</UniqueIdentifier>
+      <UniqueIdentifier>{1fbf59da-3667-4a34-8c8d-753c6cff5a83}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PhyMove\Capture">
-      <UniqueIdentifier>{1f6c1f20-5a81-4140-b13d-3da775af451f}</UniqueIdentifier>
+      <UniqueIdentifier>{6864e6e2-16b9-4a82-a72b-c0984a86a942}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PhyMove\SipmpleCharacter">
-      <UniqueIdentifier>{9703fab4-fdaf-4e5f-897b-8bdc539e5e9e}</UniqueIdentifier>
+      <UniqueIdentifier>{e4658836-cc67-4b3d-b483-376bd3b1ce1a}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PhyMove\BaseCharacter">
-      <UniqueIdentifier>{c0ba27c3-195a-486d-bbf6-6120a6c81552}</UniqueIdentifier>
+      <UniqueIdentifier>{4031b284-d508-481f-9ef6-122fd389a55f}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\BaseShell">
-      <UniqueIdentifier>{ed1ab06d-0e0b-458d-a817-ffde73356444}</UniqueIdentifier>
+      <UniqueIdentifier>{0f6f46dc-5183-4329-a450-17efa0af6573}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\BaseShell\PhysicsShellAnimator">
-      <UniqueIdentifier>{ce0cab51-798a-4a74-83a0-6c38539d51c6}</UniqueIdentifier>
+      <UniqueIdentifier>{e59026ff-b629-4964-acb8-0aa4a524c8ea}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Element">
-      <UniqueIdentifier>{aec8205e-246c-497a-985c-75fa5ece6148}</UniqueIdentifier>
+      <UniqueIdentifier>{04fd11ea-7cc5-4f37-904e-7a894297fb2f}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Element\Geom">
-      <UniqueIdentifier>{89951090-6f42-43a7-9881-54603978d43c}</UniqueIdentifier>
+      <UniqueIdentifier>{3e94a0e3-22cb-49ea-8f76-6c2bbe9ca480}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Joint">
-      <UniqueIdentifier>{bb672d80-ecc9-4367-89df-da7dbf9782a3}</UniqueIdentifier>
+      <UniqueIdentifier>{2e52e472-a1e9-4a85-b08f-c8f49c5db823}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Shell">
-      <UniqueIdentifier>{b3c6eb4d-b956-4a39-a988-e1e30dd85c35}</UniqueIdentifier>
+      <UniqueIdentifier>{a06c2762-88f7-4146-b43f-55870c322871}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\Breakable">
-      <UniqueIdentifier>{657b3cfe-a4d6-494e-9d9f-8f33d56a30c0}</UniqueIdentifier>
+      <UniqueIdentifier>{d377d4a9-9177-417c-8c94-c0712452cbe0}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\SplitedShell">
-      <UniqueIdentifier>{9973947f-3ae3-41bf-9d1f-ffa031cd13fd}</UniqueIdentifier>
+      <UniqueIdentifier>{5e76def0-0890-4bb3-b3ed-1b7f97003fd8}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PHObject">
-      <UniqueIdentifier>{6e48af17-a6fb-4ed8-8648-7666fa59a171}</UniqueIdentifier>
+      <UniqueIdentifier>{fba49b55-d486-42cf-8e44-fbf1de329ef9}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\PHIsland">
-      <UniqueIdentifier>{f1a47a50-a7cc-422f-8956-1d363702003a}</UniqueIdentifier>
+      <UniqueIdentifier>{6e36c74f-7623-4354-a867-b52da3759d08}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\World">
-      <UniqueIdentifier>{3feee996-c2b8-420a-b0a6-a661901ea06f}</UniqueIdentifier>
+      <UniqueIdentifier>{8459908d-5db1-466a-817f-ce95ba305383}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\CollideValidator">
-      <UniqueIdentifier>{2edabed9-abc3-4205-a7fd-152f47e62380}</UniqueIdentifier>
+      <UniqueIdentifier>{71f9b3b4-4322-49c6-a613-51a1b781e7e8}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\StaticShell">
-      <UniqueIdentifier>{e3162fe2-d53d-46a7-afce-456d11d14c23}</UniqueIdentifier>
+      <UniqueIdentifier>{887c5304-9cca-42a9-b1c5-201b2238d85a}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Objects\script">
-      <UniqueIdentifier>{0dd70154-c48c-42ad-92c4-8d3383e7f327}</UniqueIdentifier>
+      <UniqueIdentifier>{54d5a228-564c-4466-ae83-1a01f0cd4891}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Impact">
-      <UniqueIdentifier>{85219455-c585-4f1f-955b-4175d4c0b473}</UniqueIdentifier>
+      <UniqueIdentifier>{267889ed-378e-475a-8a2b-94372945ae56}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\Base\Debug">
-      <UniqueIdentifier>{1afe0c16-092c-4c12-82ec-cbfabc5b554b}</UniqueIdentifier>
+      <UniqueIdentifier>{9a9d7c10-b63e-42bb-94e7-b717a0a1b470}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\camera_collision">
-      <UniqueIdentifier>{b85ab2bb-edcd-4d84-a756-53d784fcfc99}</UniqueIdentifier>
+      <UniqueIdentifier>{30700e1a-0691-4a3a-8324-477172d2991c}</UniqueIdentifier>
     </Filter>
     <Filter Include="physics\damage_receiver">
-      <UniqueIdentifier>{20fd6317-962a-45a0-97e7-77463acc10b4}</UniqueIdentifier>
+      <UniqueIdentifier>{80998b7f-b55a-4417-8c39-fa4c99122c8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

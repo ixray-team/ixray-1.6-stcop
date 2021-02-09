@@ -2,34 +2,34 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{0f41045b-80a9-4e79-9b67-83ae9100ce55}</UniqueIdentifier>
+      <UniqueIdentifier>{70fd3781-812d-4354-b6d8-87dd964deeb4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files">
-      <UniqueIdentifier>{13ac22d8-a6d3-422d-a371-d7d096aa021e}</UniqueIdentifier>
+      <UniqueIdentifier>{e74d137b-fc00-4d75-b8fe-15cecd5ce7f9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine">
-      <UniqueIdentifier>{f7d299b1-4bbb-4948-b3ab-5c90c4635b8c}</UniqueIdentifier>
+      <UniqueIdentifier>{e98f436f-761b-4082-a089-f7964259df83}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine\Mender2003">
-      <UniqueIdentifier>{34da8bdf-57fe-42b2-b003-57d12777eda7}</UniqueIdentifier>
+      <UniqueIdentifier>{acb82a71-0615-46c3-8fd7-b5498082e0a2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Editor">
-      <UniqueIdentifier>{cec79018-ec94-43fe-8a9b-03556c5bc482}</UniqueIdentifier>
+      <UniqueIdentifier>{fdbf0417-c58e-4a90-a18d-27c76e431a9c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\VIPM">
-      <UniqueIdentifier>{bc01f820-6cf5-4eec-a5d7-ab82bada0468}</UniqueIdentifier>
+      <UniqueIdentifier>{cba6448c-5c85-4abe-905e-38eb1e8f7b60}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\WML">
-      <UniqueIdentifier>{3d38f6e1-7bf7-442e-b6ab-43ce2b7afff6}</UniqueIdentifier>
+      <UniqueIdentifier>{592b3d48-c826-44f3-a80b-7e166c7af552}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export">
-      <UniqueIdentifier>{0860a7c1-272b-4a2f-811e-19264bbbf9b0}</UniqueIdentifier>
+      <UniqueIdentifier>{5a56e79b-eda2-4cec-ac7e-0198393e93aa}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export\Skin">
-      <UniqueIdentifier>{beb3675c-3bf5-43a8-9ed6-1950e0424352}</UniqueIdentifier>
+      <UniqueIdentifier>{e8b42ed1-5e5e-4660-8fc7-c4e7168d53fa}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export\Object">
-      <UniqueIdentifier>{997a7db1-5904-47b2-af31-a0d0b2ed5b8d}</UniqueIdentifier>
+      <UniqueIdentifier>{c7f366a3-5bbc-4cdd-ac06-1ce865c24821}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -333,17 +333,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="Export\SmdBone.h">
+    <CustomBuild Include="Export\SmdBone.h">
       <Filter>Export\Skin</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="Export\SmdMaya.h">
+    </CustomBuild>
+    <CustomBuild Include="Export\SmdMaya.h">
       <Filter>Export\Skin</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="Export\SmdTriangle.h">
+    </CustomBuild>
+    <CustomBuild Include="Export\SmdTriangle.h">
       <Filter>Export\Skin</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="Export\maTranslator.h">
+    </CustomBuild>
+    <CustomBuild Include="Export\maTranslator.h">
       <Filter>Export\Object</Filter>
-    </CustomBuildStep>
+    </CustomBuild>
   </ItemGroup>
 </Project>

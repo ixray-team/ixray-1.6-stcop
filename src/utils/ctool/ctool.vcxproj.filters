@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="PPMTrain">
-      <UniqueIdentifier>{62fd9c5a-896b-4418-a864-aeb77f82dd3d}</UniqueIdentifier>
+      <UniqueIdentifier>{5558575a-6cb4-4a87-accc-eec14617d801}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -12,8 +12,8 @@
     <ClCompile Include="ctool.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="PPMT_SA.hpp">
+    <CustomBuild Include="PPMT_SA.hpp">
       <Filter>PPMTrain</Filter>
-    </CustomBuildStep>
+    </CustomBuild>
   </ItemGroup>
 </Project>

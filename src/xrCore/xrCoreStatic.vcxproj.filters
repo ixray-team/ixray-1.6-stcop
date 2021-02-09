@@ -2,79 +2,79 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{33d0d5af-f162-4e44-97e6-8614b1d4a038}</UniqueIdentifier>
+      <UniqueIdentifier>{b876f360-93db-456f-a539-a6d0c5112389}</UniqueIdentifier>
     </Filter>
     <Filter Include="Math">
-      <UniqueIdentifier>{b522bc96-3def-4d66-9842-6e5b3f21c9fe}</UniqueIdentifier>
+      <UniqueIdentifier>{8c9074cb-6921-41ad-a76a-7d312720c433}</UniqueIdentifier>
     </Filter>
     <Filter Include="Math\CPU">
-      <UniqueIdentifier>{5f92e668-0dcf-4d03-aa30-b75ea305ad3f}</UniqueIdentifier>
+      <UniqueIdentifier>{579ca681-299d-4cac-8a72-958dcf1e73a8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Math\STLext">
-      <UniqueIdentifier>{38f50743-319c-4f3d-8b59-a55a638ed967}</UniqueIdentifier>
+      <UniqueIdentifier>{52bbd5dc-d202-4810-8317-c8346921173e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Math\Extensions">
-      <UniqueIdentifier>{9cc054b3-42b4-4166-8f00-5bb80d5fdf5e}</UniqueIdentifier>
+      <UniqueIdentifier>{acdf61ed-f696-4f52-a712-944deae5d762}</UniqueIdentifier>
     </Filter>
     <Filter Include="FS">
-      <UniqueIdentifier>{57fd2836-5bff-4d9e-9fea-60b9b3d27cfa}</UniqueIdentifier>
+      <UniqueIdentifier>{4de91dff-2a44-4152-81cf-ddde0880120d}</UniqueIdentifier>
     </Filter>
     <Filter Include="FS\stream_reader">
-      <UniqueIdentifier>{8d19a148-6cef-4ad4-a435-65e7180831b1}</UniqueIdentifier>
+      <UniqueIdentifier>{a92bca48-b455-46cb-900b-efe7f28ce6d8}</UniqueIdentifier>
     </Filter>
     <Filter Include="FS\file_stream_reader">
-      <UniqueIdentifier>{90a21c19-897d-4cfd-84e9-c4df31d563f7}</UniqueIdentifier>
+      <UniqueIdentifier>{190fc1ce-3b1d-4385-944d-bf6fa6e8e53a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Memory manager">
-      <UniqueIdentifier>{666a9903-3274-4bd5-b079-1ea400904f13}</UniqueIdentifier>
+      <UniqueIdentifier>{86d9f7b9-e83f-4c61-b760-646cb383c35c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Debug core">
-      <UniqueIdentifier>{3629200e-b9ca-4096-be2f-1693caf67f60}</UniqueIdentifier>
+      <UniqueIdentifier>{99a692b9-5389-4d97-ba8a-f121b647041a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Debug core\BugTrap">
-      <UniqueIdentifier>{a2320a02-9f40-41f5-b55e-957872c30c48}</UniqueIdentifier>
+      <UniqueIdentifier>{e9e819d6-bd2f-48d0-97b2-796c832c3338}</UniqueIdentifier>
     </Filter>
     <Filter Include="Debug core\BlackBox">
-      <UniqueIdentifier>{e81ea75a-b838-4734-a96d-9b9a39015848}</UniqueIdentifier>
+      <UniqueIdentifier>{1332cd2e-dd8c-4200-b401-04d40b67d918}</UniqueIdentifier>
     </Filter>
     <Filter Include="shared memory/string library">
-      <UniqueIdentifier>{b5fba09f-8fd2-42ef-ab85-ceca70e2501d}</UniqueIdentifier>
+      <UniqueIdentifier>{ea24926b-9c4a-42a5-adeb-a54bbe30cff6}</UniqueIdentifier>
     </Filter>
     <Filter Include="intrusive_ptr">
-      <UniqueIdentifier>{12a8f0d9-9127-4458-a260-855d9b13fb40}</UniqueIdentifier>
+      <UniqueIdentifier>{0f8cc3a8-5643-4ffa-9fc2-f26ef96e6ccd}</UniqueIdentifier>
     </Filter>
     <Filter Include="memory_monitor">
-      <UniqueIdentifier>{068b6a2d-3db9-483e-a69c-9391c6b8f62a}</UniqueIdentifier>
+      <UniqueIdentifier>{79cb5d33-20f7-4dc4-b4cb-7e4685b8577e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression">
-      <UniqueIdentifier>{24193ab2-5fbb-4fb6-bc58-41167049060f}</UniqueIdentifier>
+      <UniqueIdentifier>{de82e4b3-da4e-4f42-a1c1-1a624e10c064}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\ppmd">
-      <UniqueIdentifier>{5b3e1b63-ef23-4186-bd84-d865030a7446}</UniqueIdentifier>
+      <UniqueIdentifier>{9cc154ce-412c-4ef8-9937-771478f111f6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\ppmd\common">
-      <UniqueIdentifier>{11b6d532-6935-4911-88de-d60bdd9e6971}</UniqueIdentifier>
+      <UniqueIdentifier>{0599a9fc-b092-4b9d-bb00-6c64426ffb20}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\ppmd\core">
-      <UniqueIdentifier>{c6cc1f4e-5bcd-4be9-afed-8ffaf2a6bb2b}</UniqueIdentifier>
+      <UniqueIdentifier>{492cae6b-ff8f-4c8e-ae96-f6f7feaf79dd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\ppmd\core\allocator">
-      <UniqueIdentifier>{81456b21-50f3-4fb9-9d8e-0472f7935ff9}</UniqueIdentifier>
+      <UniqueIdentifier>{d502209c-48c3-4c3f-8847-f201b878cf50}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\ppmd\stream">
-      <UniqueIdentifier>{0688f827-d2b2-44ce-a166-24b9d7de6abb}</UniqueIdentifier>
+      <UniqueIdentifier>{17c14f82-c1af-408a-8b82-0a3de9a43574}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\lzo">
-      <UniqueIdentifier>{82e3fd60-f10f-4dae-8e1d-100865a004b2}</UniqueIdentifier>
+      <UniqueIdentifier>{8a60de40-41e3-4a79-8685-b8c175e1a0dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\lz">
-      <UniqueIdentifier>{fefd2f08-0ae0-462d-8044-25c5f96eb4d1}</UniqueIdentifier>
+      <UniqueIdentifier>{efdb3d93-8224-4585-b267-f1ff620fb88c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Compression\rt">
-      <UniqueIdentifier>{74b690e1-c22c-4f9f-902c-bdefce597a02}</UniqueIdentifier>
+      <UniqueIdentifier>{6e94d5cf-437a-42fa-bd1c-0bd09db28ffc}</UniqueIdentifier>
     </Filter>
     <Filter Include="string_concatenations">
-      <UniqueIdentifier>{e8b95252-e7b3-4eab-9171-98e3027a35b7}</UniqueIdentifier>
+      <UniqueIdentifier>{99a0742f-afc5-433a-b2a0-6534af237c6f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -547,11 +547,11 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="FileSystem.h">
+    <CustomBuild Include="FileSystem.h">
       <Filter>FS</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="LocatorAPI_Notifications.h">
+    </CustomBuild>
+    <CustomBuild Include="LocatorAPI_Notifications.h">
       <Filter>FS</Filter>
-    </CustomBuildStep>
+    </CustomBuild>
   </ItemGroup>
 </Project>

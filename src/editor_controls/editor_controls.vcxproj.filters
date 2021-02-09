@@ -2,16 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="core">
-      <UniqueIdentifier>{8d4ee40d-aa54-45c0-afbc-9d4742fe3609}</UniqueIdentifier>
+      <UniqueIdentifier>{2be28f47-5a81-4140-aed5-da60afd6e55b}</UniqueIdentifier>
     </Filter>
     <Filter Include="controls">
-      <UniqueIdentifier>{fc2b05be-6d17-4edb-aa28-9fbcebe6716f}</UniqueIdentifier>
+      <UniqueIdentifier>{b84585c3-b459-48a9-b963-5d5672bad85e}</UniqueIdentifier>
     </Filter>
     <Filter Include="controls\property_grid">
-      <UniqueIdentifier>{319e1726-c6f0-40ef-976a-576c55d2f316}</UniqueIdentifier>
+      <UniqueIdentifier>{7ffd2f5c-accb-41fd-a886-fbe86aa70162}</UniqueIdentifier>
     </Filter>
     <Filter Include="interfaces">
-      <UniqueIdentifier>{ea588b8e-8081-4db2-89e6-eb2f493f7f22}</UniqueIdentifier>
+      <UniqueIdentifier>{f4c459bc-59dd-43c7-93f8-8962aec5b153}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

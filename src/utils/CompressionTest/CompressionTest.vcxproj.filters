@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="PPMd">
-      <UniqueIdentifier>{08e59f7f-80f7-4117-8b25-52ff4b4b9a53}</UniqueIdentifier>
+      <UniqueIdentifier>{321f8b3d-5825-4155-9d18-c09bdcc45167}</UniqueIdentifier>
     </Filter>
     <Filter Include="LZO">
-      <UniqueIdentifier>{3f604256-f080-41a5-8ec0-a7a1e79094c6}</UniqueIdentifier>
+      <UniqueIdentifier>{3ab4bc98-ff7e-48a9-b92a-1f56d94181dd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

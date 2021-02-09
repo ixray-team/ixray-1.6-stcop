@@ -2,28 +2,28 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{ced2f91e-4a7f-49ae-a1bd-7a8e7851ac7a}</UniqueIdentifier>
+      <UniqueIdentifier>{1d787cb8-a114-4507-ace3-2522750de04d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files">
-      <UniqueIdentifier>{a78c06f3-f848-4388-9a21-0eaef44be345}</UniqueIdentifier>
+      <UniqueIdentifier>{15f43e54-5d42-4549-89a7-9e80043d7a5a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine">
-      <UniqueIdentifier>{ee444b74-616b-4d4b-8d76-695b5b193790}</UniqueIdentifier>
+      <UniqueIdentifier>{28ba668c-7b61-40a3-a800-0aa0b36b6105}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine\Mender2003">
-      <UniqueIdentifier>{9c991a61-7c26-4e8c-b4a6-d12b3555b4ce}</UniqueIdentifier>
+      <UniqueIdentifier>{7fba6ebc-e568-42e0-84fb-41eee4924896}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Editor">
-      <UniqueIdentifier>{673f65a7-859c-4335-8d8b-695ecf280f62}</UniqueIdentifier>
+      <UniqueIdentifier>{1bb8ec8d-64cf-445f-8e21-9ecb8593edbe}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export">
-      <UniqueIdentifier>{390b72cc-01dc-4920-857b-8cc9a947bf78}</UniqueIdentifier>
+      <UniqueIdentifier>{284eea00-82f0-487b-a437-77065a21c7db}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export\Skin">
-      <UniqueIdentifier>{d95b82a3-330c-4966-a4a0-158a14f69a2a}</UniqueIdentifier>
+      <UniqueIdentifier>{f10d21b1-c2f6-4ff2-915b-53449661b217}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export\Object">
-      <UniqueIdentifier>{c06b97c4-76fc-4445-adec-9be610f66958}</UniqueIdentifier>
+      <UniqueIdentifier>{acd7e426-4274-46af-9eb3-7286e0e070a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,17 +156,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="Export\SmdBone.h">
+    <CustomBuild Include="Export\SmdBone.h">
       <Filter>Export\Skin</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="Export\SmdMaya.h">
+    </CustomBuild>
+    <CustomBuild Include="Export\SmdMaya.h">
       <Filter>Export\Skin</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="Export\SmdTriangle.h">
+    </CustomBuild>
+    <CustomBuild Include="Export\SmdTriangle.h">
       <Filter>Export\Skin</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="Export\maTranslator.h">
+    </CustomBuild>
+    <CustomBuild Include="Export\maTranslator.h">
       <Filter>Export\Object</Filter>
-    </CustomBuildStep>
+    </CustomBuild>
   </ItemGroup>
 </Project>
