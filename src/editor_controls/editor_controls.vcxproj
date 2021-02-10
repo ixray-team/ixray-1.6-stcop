@@ -117,8 +117,8 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="Flobbster.Windows.Forms.PropertyGrid, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    <Reference Include="Flobbster.Windows.Forms.PropertyGrid">
+      <HintPath>..\..\sdk\binaries\Flobbster.Windows.Forms.PropertyGrid.dll</HintPath>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
     <Reference Include="System.Drawing">

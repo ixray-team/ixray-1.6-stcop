@@ -123,17 +123,12 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="DockPanelSkin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    <Reference Include="DockPanelSkin">
+      <HintPath>..\..\sdk\binaries\DockPanelSkin.dll</HintPath>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="editor_controls">
-      <HintPath>..\..\binaries\editor_controls.dll</HintPath>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </Reference>
-    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\..\sdk\binaries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
     <Reference Include="System.Design">
@@ -144,8 +139,8 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="Flobbster.Windows.Forms.PropertyGrid, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    <Reference Include="Flobbster.Windows.Forms.PropertyGrid">
+      <HintPath>..\..\sdk\binaries\Flobbster.Windows.Forms.PropertyGrid.dll</HintPath>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
   </ItemGroup>

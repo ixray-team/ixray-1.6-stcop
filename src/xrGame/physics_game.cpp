@@ -183,12 +183,12 @@ template<class Pars>
 IC bool play_liquid_particle_criteria(dxGeomUserData &data, float vel_cret )
 {
 
-	if(  vel_cret > Pars.vel_cret_particles )
+	if(  vel_cret > Pars::vel_cret_particles )
 		return true;
 
 	bool controller = !!data.ph_object && data.ph_object->CastType() == CPHObject::tpCharacter;
 
-	return  !controller && vel_cret>Pars.vel_cret_particles / 4.f;
+	return  !controller && vel_cret>Pars::vel_cret_particles / 4.f;
 
 	
 	//return false;
@@ -208,7 +208,7 @@ void play_particles(float vel_cret, dxGeomUserData* data,  const dContactGeom* c
 	bool liquid = !!static_mtl->Flags.test( SGameMtl::flLiquid );
 
 	bool play_liquid =		liquid && play_liquid_particle_criteria<Pars>( *data, vel_cret );
-	bool play_not_liquid = !liquid && vel_cret > Pars.vel_cret_particles;
+	bool play_not_liquid = !liquid && vel_cret > Pars::vel_cret_particles;
 
 	if( play_not_liquid )
 		Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHParticlesPlayCall>(*c,b_invert_normal,ps_name));
@@ -261,7 +261,7 @@ void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 		if(mtl_pair)
 		{
 			//if(vel_cret>Pars.vel_cret_wallmark && !mtl_pair->CollideMarks.empty())
-			if(vel_cret>Pars.vel_cret_wallmark && !mtl_pair->m_pCollideMarks->empty())
+			if(vel_cret>Pars::vel_cret_wallmark && !mtl_pair->m_pCollideMarks->empty())
 			{
 				//ref_shader pWallmarkShader = mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];
 				wm_shader WallmarkShader = mtl_pair->m_pCollideMarks->GenerateWallmark();
@@ -276,11 +276,11 @@ void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 				VERIFY( static_mtl );
 				if(!static_mtl->Flags.test(SGameMtl::flPassable))
 				{
-					if(vel_cret>Pars.vel_cret_sound)
+					if(vel_cret>Pars::vel_cret_sound)
 					{
 						if(!mtl_pair->CollideSounds.empty())
 						{
-							float volume=collide_volume_min+vel_cret*(collide_volume_max-collide_volume_min)/(_sqrt(mass_limit)*default_l_limit-Pars.vel_cret_sound);
+							float volume=collide_volume_min+vel_cret*(collide_volume_max-collide_volume_min)/(_sqrt(mass_limit)*default_l_limit-Pars::vel_cret_sound);
 							GET_RANDOM(mtl_pair->CollideSounds).play_no_feedback(0,0,0,((Fvector*)c->pos),&volume);
 						}
 					}
