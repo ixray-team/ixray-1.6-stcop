@@ -62,16 +62,22 @@
     <OutDir>..\..\..\..\binaries\</OutDir>
     <IntDir>..\..\..\..\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>X:\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>X:\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\..\binaries\</OutDir>
     <IntDir>..\..\..\..\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>X:\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>X:\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>..\..\..\..\binaries\</OutDir>
     <IntDir>..\..\..\..\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>X:\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>X:\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>

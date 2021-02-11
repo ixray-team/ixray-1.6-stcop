@@ -58,14 +58,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\libraries\</OutDir>
     <IntDir>..\..\..\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>X:\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\..\libraries\</OutDir>
     <IntDir>..\..\..\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>X:\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>..\..\..\libraries\</OutDir>
     <IntDir>..\..\..\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>X:\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
