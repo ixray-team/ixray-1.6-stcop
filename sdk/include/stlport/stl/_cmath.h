@@ -484,8 +484,8 @@ inline long double pow(long double __x, int __y) { return (_Pow_int(__x, __y)); 
 #    pragma warning (push)
 #    pragma warning (disable : 4996) // hypot is deprecated.
 #  endif
-_STLP_MATH_INLINE2XX(float, hypot, hypot)
-inline long double hypot(long double x, long double y) { return sqrt(x * x + y * y); }
+//_STLP_MATH_INLINE2XX(float, hypot, hypot)
+//inline long double hypot(long double x, long double y) { return sqrt(x * x + y * y); }
 #  if defined (_STLP_MSVC) && (_STLP_MSVC >= 1400)
 #    pragma warning (pop)
 #  endif
