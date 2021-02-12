@@ -160,7 +160,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_configs_verifyer", "util
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minizip", "3rd party\bugtrap\minizip\minizip.vcxproj", "{893279CB-0805-405F-B484-9BB728A18261}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_ballancer", "utils\mp_balancer\mp_balancer.vcxproj", "{93EA76CE-7B49-420D-BD4A-C9798B82CD59}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_balancer", "utils\mp_balancer\mp_balancer.vcxproj", "{93EA76CE-7B49-420D-BD4A-C9798B82CD59}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_gpprof_server", "utils\mp_gpprof_server\mp_gpprof_server.vcxproj", "{6E9637D8-B32D-4ABD-A5CC-6E4677039B47}"
 EndProject

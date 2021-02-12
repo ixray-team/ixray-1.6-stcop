@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>mp_ballancer</ProjectName>
+    <ProjectName>mp_balancer</ProjectName>
     <ProjectGuid>{93EA76CE-7B49-420D-BD4A-C9798B82CD59}</ProjectGuid>
     <RootNamespace>mp_balancer</RootNamespace>
     <Keyword>Win32Proj</Keyword>
