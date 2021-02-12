@@ -13,8 +13,12 @@
 
 // windows.h
 #ifndef _WIN32_WINNT
-#	define _WIN32_WINNT 0x0601
-#endif
+#ifdef _MSC_VER
+#define _WIN32_WINNT 0x0601
+#else // ifdef _MSC_VER
+#define _WIN32_WINNT 0x0500
+#endif // ifdef _MSC_VER
+#endif // ifndef _WIN32_WINNT
 
 #ifdef __BORLANDC__
 	#include <vcl.h>
