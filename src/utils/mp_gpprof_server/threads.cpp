@@ -52,13 +52,35 @@ unsigned int const get_clock_ms()
 	return (clock() / CLOCKS_PER_SEC) * 1000;
 }
 
+#include <Windows.h>
+
+BOOLEAN nanosleep(LONGLONG ns) {
+	HANDLE timer;
+	LARGE_INTEGER li;
+
+	if (!(timer = CreateWaitableTimer(NULL, TRUE, NULL))) {
+		return FALSE;
+    }
+
+	li.QuadPart = -ns;
+	if (!SetWaitableTimer(timer, &li, 0, NULL, NULL, FALSE)) {
+		CloseHandle(timer);
+		return FALSE;
+	}
+
+	WaitForSingleObject(timer, INFINITE);
+
+	CloseHandle(timer);
+
+	return TRUE;
+}
+
 void sleep(unsigned int const ms)
 {
 	timespec tmp_ts;
-	timespec tmp_tsrem;
 	tmp_ts.tv_sec	= ms / 1000;
 	tmp_ts.tv_nsec	= (ms % 1000) * 1000;
-	nanosleep(&tmp_ts, &tmp_tsrem);
+	nanosleep(tmp_ts.tv_sec);
 }
 
 } //namespace xray

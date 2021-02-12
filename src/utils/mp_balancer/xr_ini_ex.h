@@ -12,13 +12,13 @@ public:
 	{
 		shared_str	first;
 		shared_str	second;
-#ifdef DEBUG
+//#ifdef DEBUG
 		shared_str	comment;
-#endif
+//#endif
 		Item() : first(0), second(0)
-#ifdef DEBUG
+//#ifdef DEBUG
 			, comment(0)
-#endif
+//#endif
 		{};
 	};
 	typedef xr_vector<Item>				Items;
@@ -27,9 +27,9 @@ public:
     struct Sect {
 		shared_str		Name;
 		Items			Data;
-#ifdef DEBUG
+//#ifdef DEBUG
 		xr_vector<shared_str>		base_sections;
-#endif
+//#endif
 		BOOL			line_exist	(LPCSTR L, LPCSTR* val=0);
 	};
 	typedef	xr_vector<Sect*>		Root;
