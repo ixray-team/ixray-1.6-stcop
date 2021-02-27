@@ -3,24 +3,25 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="..\..\..\binaries\ShaderEditor.exe"/>
-    <OBJFILES value="..\..\..\intermediate_ed\se\ShaderEditor.obj 
-      ..\..\..\intermediate_ed\se\UI_shadertools.obj 
-      ..\..\..\intermediate_ed\se\BottomBar.obj 
-      ..\..\..\intermediate_ed\se\GameMtlLib_Editor.obj 
-      ..\..\..\intermediate_ed\se\leftbar.obj 
-      ..\..\..\intermediate_ed\se\main.obj 
-      ..\..\..\intermediate_ed\se\Splash.obj ..\..\..\intermediate_ed\se\stdafx.obj 
-      ..\..\..\intermediate_ed\se\TopBar.obj 
-      ..\..\..\intermediate_ed\se\ui_shadermain.obj 
-      ..\..\..\intermediate_ed\se\SHToolsInterface.obj 
-      ..\..\..\intermediate_ed\se\SHCompilerTools.obj 
-      ..\..\..\intermediate_ed\se\SHCompilerToolsProperties.obj 
-      ..\..\..\intermediate_ed\se\SHGameMtlPairTools.obj 
-      ..\..\..\intermediate_ed\se\SHGameMtlTools.obj 
-      ..\..\..\intermediate_ed\se\SHSoundEnvTools.obj 
-      ..\..\..\intermediate_ed\se\SHEngineTools.obj 
-      ..\..\..\intermediate_ed\se\SHEngineToolsProperties.obj"/>
+    <PROJECT value="..\..\..\bin\ShaderEditor.exe"/>
+    <OBJFILES value="..\..\..\obj\Mixed\ShaderEditor\ShaderEditor.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\UI_shadertools.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\BottomBar.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\GameMtlLib_Editor.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\leftbar.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\main.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\Splash.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\stdafx.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\TopBar.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\ui_shadermain.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHToolsInterface.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHCompilerTools.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHCompilerToolsProperties.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHGameMtlPairTools.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHGameMtlTools.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHSoundEnvTools.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHEngineTools.obj 
+      ..\..\..\obj\Mixed\ShaderEditor\SHEngineToolsProperties.obj"/>
     <RESFILES value="resource.res ShaderEditor.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -41,7 +42,7 @@
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="ShaderEditor.cpp"/>
     <INCLUDEPATH value="..\..\..\sdk\dxsdk_mar2009\Include;..\..\..\sdk\components\AlexMX;$(BCB)\include;$(BCB)\include\vcl;..\..\..\sdk\components\ElPack\Code;..\..\..\sdk\components\ElPack\Code\Source;..\..\xrCore;..\..\xrEngine;..\..\..\sdk\include\eax;..\..\xrParticles"/>
-    <LIBPATH value="..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries"/>
+    <LIBPATH value="..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\lib"/>
     <WARNINGS value="-w8092 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin -w-par 
       -wnod -wnak -w-8027 -w-8026 -wdef -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
@@ -53,13 +54,13 @@
       -I..\..\xrCore -I..\..\xrEngine -I..\..\..\sdk\include\eax 
       -I..\..\xrParticles -src_suffix cpp -D_EDITOR -D_SHADER_EDITOR -D_DEBUG 
       -no_tie -boa"/>
-    <CFLAG1 value="-Od -H=..\..\..\intermediate_ed\se\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
-      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\intermediate_ed\se -N0..\..\..\intermediate_ed\se -$Y+ -$W -$R 
-      -$Q -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ShaderEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
+      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\Mixed\ShaderEditor -N0..\..\..\obj\Mixed\ShaderEditor -$Y+ 
+      -$W -$R -$Q -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\libraries -I..\..\..\intermediate_ed\se -D&quot;&quot; -aa -Tpe -GD -x -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\ShaderEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -154,18 +155,19 @@ Item26=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;r:\bo
 Item27=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;r:\borland\components6\alexmx;editor;R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\Elpack\Code;R:\Borland\Components6\Elpack\Code\Source;P:\xrCore;P:\xrSound
 
 [HistoryLists\hlLibraryPath]
-Count=11
-Item0=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries
-Item1=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
-Item2=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\libraries
-Item3=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item4=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item5=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source
-Item6=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
-Item7=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item8=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item9=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
-Item10=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;c:\rad\borland\CBuilder5\Projects;..\lib\DX;..\lib;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\Elpack\Code\Source;R:\Borland\Components6\Elpack\Code;x:\
+Count=12
+Item0=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\lib
+Item1=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries
+Item2=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item3=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item4=..\..\..\sdk\components\ElPack\Code;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item5=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item6=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source
+Item7=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
+Item8=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item9=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item10=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Item11=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;c:\rad\borland\CBuilder5\Projects;..\lib\DX;..\lib;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\Elpack\Code\Source;R:\Borland\Components6\Elpack\Code;x:\
 
 [HistoryLists\hlDebugSourcePath]
 Count=3
@@ -189,35 +191,39 @@ Item10=_DEBUG;_ED
 Item11=_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=5
-Item0=..\..\..\intermediate_ed\se
-Item1=x:\intermediate_ed\se
-Item2=$(OUTPUT_INTERMEDIATE_DIR)\se
-Item3=Intermediate
-Item4=ShaderEditor
+Count=6
+Item0=..\..\..\obj\Mixed\ShaderEditor
+Item1=..\..\..\intermediate_ed\se
+Item2=x:\intermediate_ed\se
+Item3=$(OUTPUT_INTERMEDIATE_DIR)\se
+Item4=Intermediate
+Item5=ShaderEditor
 
 [HistoryLists\hlFinalOutputDir]
-Count=12
-Item0=..\..\..\binaries
-Item1=x:\binaries\
-Item2=x:\binaries
-Item3=$(OUTPUT_BINARIES_DIR)\
-Item4=x:\stalker_addon\binaries\
-Item5=x:\
-Item6=x:\build\
-Item7=x:\build
-Item8=u:\preliminary\
-Item9=u:\preliminary
-Item10=!run\
-Item11=P:\Editor\!run
+Count=14
+Item0=..\..\..\bin
+Item1=..\..\..\binaries\
+Item2=..\..\..\binaries
+Item3=x:\binaries\
+Item4=x:\binaries
+Item5=$(OUTPUT_BINARIES_DIR)\
+Item6=x:\stalker_addon\binaries\
+Item7=x:\
+Item8=x:\build\
+Item9=x:\build
+Item10=u:\preliminary\
+Item11=u:\preliminary
+Item12=!run\
+Item13=P:\Editor\!run
 
 [HistoryLists\hIBPIOutputDir]
-Count=5
-Item0=..\..\..\libraries
-Item1=x:\libraries
-Item2=x:\stalker_addon\libraries
-Item3=$(OUTPUT_LIBRARIES_DIR)
-Item4=$(OUTPUT_LIBRARIES_DIR)\
+Count=6
+Item0=..\..\..\lib
+Item1=..\..\..\libraries
+Item2=x:\libraries
+Item3=x:\stalker_addon\libraries
+Item4=$(OUTPUT_LIBRARIES_DIR)
+Item5=$(OUTPUT_LIBRARIES_DIR)\
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

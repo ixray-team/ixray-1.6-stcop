@@ -3,25 +3,26 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="..\..\..\binaries\ParticleEditor.exe"/>
-    <OBJFILES value="..\..\..\intermediate_ed\pe\ParticleEditor.obj 
-      ..\..\..\intermediate_ed\pe\stdafx.obj 
-      ..\..\..\intermediate_ed\pe\Splash.obj 
-      ..\..\..\intermediate_ed\pe\main.obj ..\..\..\intermediate_ed\pe\BottomBar.obj 
-      ..\..\..\intermediate_ed\pe\TopBar.obj 
-      ..\..\..\intermediate_ed\pe\LeftBar.obj 
-      ..\..\..\intermediate_ed\pe\UI_ParticleMain.obj 
-      ..\..\..\intermediate_ed\pe\UI_ParticleTools.obj 
-      ..\..\..\intermediate_ed\pe\UI_ParticleToolsProps.obj 
-      ..\..\..\intermediate_ed\pe\PSLibraryEditor.obj 
-      ..\..\..\intermediate_ed\pe\ParticleGroupEditor.obj 
-      ..\..\..\intermediate_ed\pe\ParticleEffectEditor.obj 
-      ..\..\..\intermediate_ed\pe\StatGraph.obj 
-      ..\..\..\intermediate_ed\pe\ObjectAnimator.obj 
-      ..\..\..\intermediate_ed\pe\noise.obj 
-      ..\..\..\intermediate_ed\pe\ParticleEffectActionsImpl.obj 
-      ..\..\..\intermediate_ed\pe\pDomain.obj 
-      ..\..\..\intermediate_ed\pe\ItemPropFormUnit.obj"/>
+    <PROJECT value="..\..\..\bin\ParticleEditor.exe"/>
+    <OBJFILES value="..\..\..\obj\Mixed\ParticleEditor\ParticleEditor.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\stdafx.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\Splash.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\main.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\BottomBar.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\TopBar.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\LeftBar.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\UI_ParticleMain.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\UI_ParticleTools.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\UI_ParticleToolsProps.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\PSLibraryEditor.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\ParticleGroupEditor.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\ParticleEffectEditor.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\StatGraph.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\ObjectAnimator.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\noise.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\ParticleEffectActionsImpl.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\pDomain.obj 
+      ..\..\..\obj\Mixed\ParticleEditor\ItemPropFormUnit.obj"/>
     <RESFILES value="ParticleEditor.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -43,7 +44,7 @@
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="ParticleEditor.cpp"/>
     <INCLUDEPATH value="$(BCB)\Projects;..\ECore\Editor;..\..\..\sdk\dxsdk_mar2009\Include;..\..\..\sdk\components\AlexMX;$(BCB)\include\vcl;$(BCB)\include;..\..\..\sdk\components\ElPack\Code;..\..\..\sdk\components\ElPack\Code\Source;..\..\xrEngine;..\..\xrCore;..\..\xrParticles"/>
-    <LIBPATH value="..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries"/>
+    <LIBPATH value="..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\lib"/>
     <WARNINGS value="-w8092 -w8091 -w8090 -w8089 -w8087 -wprc -wuse -wucp -wstv -wstu -wsig 
       -wpin -w-par -wnod -wnak -w-8027 -w-8026 -wdef -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
@@ -55,13 +56,13 @@
       -I..\..\..\sdk\components\ElPack\Code\Source -I..\..\xrEngine 
       -I..\..\xrCore -I..\..\xrParticles -src_suffix cpp -D_EDITOR 
       -D_PARTICLE_EDITOR -D_DEBUG -no_tie -boa"/>
-    <CFLAG1 value="-Od -H=..\..\..\intermediate_ed\pe\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
-      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\intermediate_ed\pe -N0..\..\..\intermediate_ed\pe -$Y+ -$W -$Q 
-      -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ParticleEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf 
+      -xp -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\Mixed\ParticleEditor -N0..\..\..\obj\Mixed\ParticleEditor 
+      -$Y+ -$W -$Q -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\libraries -I..\..\..\intermediate_ed\pe -D&quot;&quot; -aa -Tpe -GD -x -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\ParticleEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -153,19 +154,20 @@ Item22=r:\borland\components6\alexmx;R:\SDK\DirectX9.0\include;$(BCB)\include;$(
 Item23=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;r:\borland\components6\alexmx;editor;R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\Elpack\Code;R:\Borland\Components6\Elpack\Code\Source;P:\xrCore
 
 [HistoryLists\hlLibraryPath]
-Count=12
-Item0=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries
-Item1=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
-Item2=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\libraries
-Item3=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item4=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item5=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source
-Item6=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
-Item7=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item8=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item9=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item10=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
-Item11=lib;Engine\Animations;Engine\BLENDERS;c:\rad\borland\CBuilder6\Projects;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\Elpack\Code\Source;R:\Borland\Components6\Elpack\Code;..\lib\dx;..\lib;x:\
+Count=13
+Item0=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\lib
+Item1=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries
+Item2=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item3=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item4=..\..\..\sdk\components\ElPack\Code;..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item5=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item6=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source
+Item7=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
+Item8=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item9=..\ECore\Editor;..\..\xrEngine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item10=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item11=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Item12=lib;Engine\Animations;Engine\BLENDERS;c:\rad\borland\CBuilder6\Projects;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\Elpack\Code\Source;R:\Borland\Components6\Elpack\Code;..\lib\dx;..\lib;x:\
 
 [HistoryLists\hlDebugSourcePath]
 Count=3
@@ -192,37 +194,41 @@ Item13=_DEBUG;_ED
 Item14=_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=5
-Item0=..\..\..\intermediate_ed\pe
-Item1=x:\intermediate_ed\pe
-Item2=$(OUTPUT_INTERMEDIATE_DIR)\pe
-Item3=Intermediate
-Item4=ParticleEditor
+Count=6
+Item0=..\..\..\obj\Mixed\ParticleEditor
+Item1=..\..\..\intermediate_ed\pe
+Item2=x:\intermediate_ed\pe
+Item3=$(OUTPUT_INTERMEDIATE_DIR)\pe
+Item4=Intermediate
+Item5=ParticleEditor
 
 [HistoryLists\hlFinalOutputDir]
-Count=14
-Item0=..\..\..\binaries
-Item1=x:\binaries\
-Item2=x:\binaries
-Item3=$(OUTPUT_BINARIES_DIR)\
-Item4=x:\stalker_addon\binaries\
-Item5=x:\
-Item6=x:\build\
-Item7=x:\build
-Item8=x:\build\bins\editors\
-Item9=x:\build\bins\editors
-Item10=x:\build_karma\
-Item11=x:\build_karma
-Item12=!run\
-Item13=P:\Editor\!run
+Count=16
+Item0=..\..\..\bin
+Item1=..\..\..\binaries\
+Item2=..\..\..\binaries
+Item3=x:\binaries\
+Item4=x:\binaries
+Item5=$(OUTPUT_BINARIES_DIR)\
+Item6=x:\stalker_addon\binaries\
+Item7=x:\
+Item8=x:\build\
+Item9=x:\build
+Item10=x:\build\bins\editors\
+Item11=x:\build\bins\editors
+Item12=x:\build_karma\
+Item13=x:\build_karma
+Item14=!run\
+Item15=P:\Editor\!run
 
 [HistoryLists\hIBPIOutputDir]
-Count=5
-Item0=..\..\..\libraries
-Item1=x:\libraries
-Item2=x:\stalker_addon\libraries
-Item3=$(OUTPUT_LIBRARIES_DIR)
-Item4=$(OUTPUT_LIBRARIES_DIR)\
+Count=6
+Item0=..\..\..\lib
+Item1=..\..\..\libraries
+Item2=x:\libraries
+Item3=x:\stalker_addon\libraries
+Item4=$(OUTPUT_LIBRARIES_DIR)
+Item5=$(OUTPUT_LIBRARIES_DIR)\
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

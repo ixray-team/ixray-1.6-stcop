@@ -3,27 +3,28 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="..\..\..\binaries\ActorEditor.exe"/>
-    <OBJFILES value="..\..\..\intermediate_ed\ae\ActorEditor.obj 
-      ..\..\..\intermediate_ed\ae\BonePart.obj 
-      ..\..\..\intermediate_ed\ae\KeyBar.obj 
-      ..\..\..\intermediate_ed\ae\LeftBar.obj 
-      ..\..\..\intermediate_ed\ae\Splash.obj 
-      ..\..\..\intermediate_ed\ae\main.obj ..\..\..\intermediate_ed\ae\TopBar.obj 
-      ..\..\..\intermediate_ed\ae\BottomBar.obj 
-      ..\..\..\intermediate_ed\ae\UI_ActorMain.obj 
-      ..\..\..\intermediate_ed\ae\UI_ActorToolsUndo.obj 
-      ..\..\..\intermediate_ed\ae\UI_ActorTools.obj 
-      ..\..\..\intermediate_ed\ae\UI_ActorToolsMotions.obj 
-      ..\..\..\intermediate_ed\ae\UI_ActorToolsProps.obj 
-      ..\..\..\intermediate_ed\ae\stdafx.obj 
-      ..\..\..\intermediate_ed\ae\SkeletonAnimated.obj 
-      ..\..\..\intermediate_ed\ae\SkeletonCustom.obj 
-      ..\..\..\intermediate_ed\ae\FHierrarhyVisual.obj 
-      ..\..\..\intermediate_ed\ae\FVisual.obj 
-      ..\..\..\intermediate_ed\ae\SkeletonRigid.obj 
-      ..\..\..\intermediate_ed\ae\SkeletonX.obj 
-      ..\..\..\intermediate_ed\ae\Animation.obj"/>
+    <PROJECT value="..\..\..\bin\ActorEditor.exe"/>
+    <OBJFILES value="..\..\..\obj\Mixed\ActorEditor\ActorEditor.obj 
+      ..\..\..\obj\Mixed\ActorEditor\BonePart.obj 
+      ..\..\..\obj\Mixed\ActorEditor\KeyBar.obj 
+      ..\..\..\obj\Mixed\ActorEditor\LeftBar.obj 
+      ..\..\..\obj\Mixed\ActorEditor\Splash.obj 
+      ..\..\..\obj\Mixed\ActorEditor\main.obj 
+      ..\..\..\obj\Mixed\ActorEditor\TopBar.obj 
+      ..\..\..\obj\Mixed\ActorEditor\BottomBar.obj 
+      ..\..\..\obj\Mixed\ActorEditor\UI_ActorMain.obj 
+      ..\..\..\obj\Mixed\ActorEditor\UI_ActorToolsUndo.obj 
+      ..\..\..\obj\Mixed\ActorEditor\UI_ActorTools.obj 
+      ..\..\..\obj\Mixed\ActorEditor\UI_ActorToolsMotions.obj 
+      ..\..\..\obj\Mixed\ActorEditor\UI_ActorToolsProps.obj 
+      ..\..\..\obj\Mixed\ActorEditor\stdafx.obj 
+      ..\..\..\obj\Mixed\ActorEditor\SkeletonAnimated.obj 
+      ..\..\..\obj\Mixed\ActorEditor\SkeletonCustom.obj 
+      ..\..\..\obj\Mixed\ActorEditor\FHierrarhyVisual.obj 
+      ..\..\..\obj\Mixed\ActorEditor\FVisual.obj 
+      ..\..\..\obj\Mixed\ActorEditor\SkeletonRigid.obj 
+      ..\..\..\obj\Mixed\ActorEditor\SkeletonX.obj 
+      ..\..\..\obj\Mixed\ActorEditor\Animation.obj"/>
     <RESFILES value="ActorEditor.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -45,7 +46,7 @@
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="ActorEditor.cpp"/>
     <INCLUDEPATH value="..\..;..\..\Layers\xrRender;..\..\..\sdk\dxsdk_mar2009\Include;..\..\..\sdk\components\AlexMX;$(BCB)\include;$(BCB)\include\vcl;..\..\..\sdk\components\ElPack\Code;..\..\..\sdk\components\ElPack\Code\Source;..\..\xrCore;..\..\xrEngine;..\..\xrCPU_Pipe"/>
-    <LIBPATH value="..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries"/>
+    <LIBPATH value="..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\lib"/>
     <WARNINGS value="-w8092 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin -w-par 
       -wnod -wnak -w-8027 -w-8026 -wdef -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
@@ -57,13 +58,13 @@
       -I..\..\..\sdk\components\ElPack\Code 
       -I..\..\..\sdk\components\ElPack\Code\Source -I..\..\xrCore 
       -I..\..\xrEngine -I..\..\xrCPU_Pipe -boa"/>
-    <CFLAG1 value="-Od -H=..\..\..\intermediate_ed\ae\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
-      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\intermediate_ed\ae -N0..\..\..\intermediate_ed\ae -$Y+ -$W 
-      -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ActorEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
+      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\Mixed\ActorEditor -N0..\..\..\obj\Mixed\ActorEditor -$Y+ 
+      -$W -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\libraries -I..\..\..\intermediate_ed\ae -D&quot;&quot; -aa -Tpe -GD -x -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\ActorEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -164,36 +165,36 @@ Item29=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;r:\bo
 
 [HistoryLists\hlLibraryPath]
 Count=30
-Item0=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries
-Item1=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
-Item2=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\libraries
-Item3=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item4=..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
-Item5=..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source
-Item6=..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
-Item7=..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
-Item8=..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item9=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
-Item10=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item11=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
-Item12=..\ShaderEditor;..\ECore;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore\Editor
-Item13=..\ECore;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore\Editor
-Item14=..\ECore;C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\
-Item15=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\
-Item16=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\
-Item17=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;x:\;..\lib\dx;..\lib
-Item18=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;x:;..\lib\dx;..\lib
-Item19=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib
-Item20=lib;Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib;..\lib\dx
-Item21=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib;..\lib\dx
-Item22=Engine\Animations;Engine\BLENDERS;lib;lib\DX;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source
-Item23=Engine\Animations;Engine\BLENDERS;lib;lib\DX;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\Components\Eldos\Code
-Item24=Engine\Animations;Engine\BLENDERS;lib;lib\DX;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx\;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\Components\Eldos\Code\
-Item25=Engine\Animations;Engine\BLENDERS;c:\rad\borland\CBuilder5\Projects\;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
-Item26=Engine\BLENDERS;c:\rad\borland\CBuilder5\Projects\;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
-Item27=c:\rad\borland\CBuilder5\Projects\;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
-Item28=c:\rad\borland\CBuilder5\Projects;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
-Item29=lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx;R:\Borland\Components\Eldos\Code\Source;R:\Borland\Components\Eldos\Code
+Item0=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\lib
+Item1=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;..\..\..\sdk\components\alexmx;..\..\..\sdk\components\ElPack\Code\Source;..\..\..\libraries
+Item2=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item3=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\sdk\components\alexmx;X:\sdk\components\ElPack\Code;X:\sdk\components\ElPack\Code\Source;X:\libraries
+Item4=..\..\..\sdk\components\ElPack\Code;..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item5=..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(OUT_LIB_DIR)
+Item6=..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source
+Item7=..\..;..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
+Item8=..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries;X:\libraries
+Item9=..\..\Layers\xrRender;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item10=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\stalker_addon\libraries
+Item11=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item12=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Item13=..\ShaderEditor;..\ECore;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore\Editor
+Item14=..\ECore;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore\Editor
+Item15=..\ECore;C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\
+Item16=C:\Rad\Borland\CBuilder6\Projects;Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\
+Item17=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\
+Item18=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;x:\;..\lib\dx;..\lib
+Item19=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;x:;..\lib\dx;..\lib
+Item20=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib
+Item21=lib;Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib;..\lib\dx
+Item22=Engine\Animations;Engine\BLENDERS;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib;..\lib\dx
+Item23=Engine\Animations;Engine\BLENDERS;lib;lib\DX;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source
+Item24=Engine\Animations;Engine\BLENDERS;lib;lib\DX;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\Components\Eldos\Code
+Item25=Engine\Animations;Engine\BLENDERS;lib;lib\DX;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx\;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\Components\Eldos\Code\
+Item26=Engine\Animations;Engine\BLENDERS;c:\rad\borland\CBuilder5\Projects\;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
+Item27=Engine\BLENDERS;c:\rad\borland\CBuilder5\Projects\;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
+Item28=c:\rad\borland\CBuilder5\Projects\;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
+Item29=c:\rad\borland\CBuilder5\Projects;lib;lib\DX;engine;editor;shared;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
 
 [HistoryLists\hlDebugSourcePath]
 Count=8
@@ -222,47 +223,51 @@ Item10=_DEBUG;_ED
 Item11=_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=5
-Item0=..\..\..\intermediate_ed\ae
-Item1=x:\intermediate_ed\ae
-Item2=$(OUTPUT_INTERMEDIATE_DIR)\ae
-Item3=Intermediate
-Item4=ActorEditor
+Count=6
+Item0=..\..\..\obj\Mixed\ActorEditor
+Item1=..\..\..\intermediate_ed\ae
+Item2=x:\intermediate_ed\ae
+Item3=$(OUTPUT_INTERMEDIATE_DIR)\ae
+Item4=Intermediate
+Item5=ActorEditor
 
 [HistoryLists\hlFinalOutputDir]
-Count=14
-Item0=..\..\..\binaries
-Item1=x:\binaries\
-Item2=x:\binaries
-Item3=$(OUTPUT_BINARIES_DIR)\
-Item4=x:\stalker_addon\binaries\
-Item5=x:\
-Item6=x:\build\
-Item7=x:\build
-Item8=u:\preliminary\
-Item9=u:\preliminary
-Item10=s:\bin\
-Item11=s:\bin
-Item12=!run\
-Item13=P:\Editor\!run
+Count=16
+Item0=..\..\..\bin
+Item1=..\..\..\binaries\
+Item2=..\..\..\binaries
+Item3=x:\binaries\
+Item4=x:\binaries
+Item5=$(OUTPUT_BINARIES_DIR)\
+Item6=x:\stalker_addon\binaries\
+Item7=x:\
+Item8=x:\build\
+Item9=x:\build
+Item10=u:\preliminary\
+Item11=u:\preliminary
+Item12=s:\bin\
+Item13=s:\bin
+Item14=!run\
+Item15=P:\Editor\!run
 
 [HistoryLists\hIBPIOutputDir]
-Count=5
-Item0=..\..\..\libraries
-Item1=x:\libraries
-Item2=x:\stalker_addon\libraries
-Item3=$(OUTPUT_LIBRARIES_DIR)
-Item4=$(OUTPUT_LIBRARIES_DIR)\
+Count=6
+Item0=..\..\..\lib
+Item1=..\..\..\libraries
+Item2=x:\libraries
+Item3=x:\stalker_addon\libraries
+Item4=$(OUTPUT_LIBRARIES_DIR)
+Item5=$(OUTPUT_LIBRARIES_DIR)\
 
 [Debugging]
 DebugSourceDirs=..\..\..\sdk\components\AlexMX
 
 [Parameters]
-RunParams=-wf ..\..\..\resources -editor
+RunParams=-wf ..\..\resources -editor
 Launcher=
 UseLauncher=0
 DebugCWD=
-HostApplication=..\..\..\binaries\ActorEditor.exe
+HostApplication=..\..\..\bin\ActorEditor.exe
 RemoteHost=
 RemotePath=
 RemoteLauncher=

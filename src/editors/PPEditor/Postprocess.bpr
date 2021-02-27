@@ -3,16 +3,16 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="..\..\..\binaries\Postprocess.exe"/>
-    <OBJFILES value="..\..\..\intermediate_ed\ppe\Postprocess.obj 
-      ..\..\..\intermediate_ed\ppe\main.obj 
-      ..\..\..\intermediate_ed\ppe\interp.obj 
-      ..\..\..\intermediate_ed\ppe\float_param.obj 
-      ..\..\..\intermediate_ed\ppe\float_constructor.obj 
-      ..\..\..\intermediate_ed\ppe\color.obj 
-      ..\..\..\intermediate_ed\ppe\single_param.obj 
-      ..\..\..\intermediate_ed\ppe\Envelope.obj 
-      ..\..\..\intermediate_ed\ppe\PostprocessAnimator.obj"/>
+    <PROJECT value="..\..\..\bin\Postprocess.exe"/>
+    <OBJFILES value="..\..\..\obj\Mixed\PostprocessEditor\Postprocess.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\main.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\interp.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\float_param.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\float_constructor.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\color.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\single_param.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\Envelope.obj 
+      ..\..\..\obj\Mixed\PostprocessEditor\PostprocessAnimator.obj"/>
     <RESFILES value="Postprocess.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -37,7 +37,7 @@
     <SYSDEFINES value="NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="Postprocess.cpp"/>
     <INCLUDEPATH value="..\..\xrGame;..\..\xrEngine;$(BCB)\include;$(BCB)\include\vcl;..\..\xrCore;..\..\..\sdk\components\AlexMX"/>
-    <LIBPATH value="..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\libraries"/>
+    <LIBPATH value="..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib"/>
     <WARNINGS value="-w-pck -w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -45,13 +45,13 @@
     <IDLCFLAGS value="-I..\..\xrGame -I..\..\xrEngine -I$(BCB)\include -I$(BCB)\include\vcl 
       -I..\..\xrCore -I..\..\..\sdk\components\AlexMX -src_suffix cpp -D_EDITOR 
       -D_PP_EDITOR_ -DENGINE_API -DIC -DICF -D__forceinline -boa"/>
-    <CFLAG1 value="-O2 -H=..\..\..\intermediate_ed\ppe\pch.csm -Hc -Q -Vmm -Vx -Ve -xf -xp 
-      -VF -X- -ps -a4 -6 -b- -k- -vi -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\intermediate_ed\ppe -N0..\..\..\intermediate_ed\ppe -$Y- -$L- 
-      -$D- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-O2 -H=..\..\..\obj\Mixed\PostprocessEditor\pch.csm -Hc -Q -Vmm -Vx -Ve 
+      -xf -xp -VF -X- -ps -a4 -6 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\Mixed\PostprocessEditor 
+      -N0..\..\..\obj\Mixed\PostprocessEditor -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-I..\..\..\intermediate_ed\ppe -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <LFLAGS value="-I..\..\..\obj\Mixed\PostprocessEditor -D&quot;&quot; -aa -Tpe -x -Gn"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -123,19 +123,20 @@ Item13=Y:\postprocess\core_hdr;..\RX\Units;..;Postprocess;$(BCB)\include;$(BCB)\
 Item14=..\RX\Units;..;Postprocess;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=12
-Item0=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\libraries
-Item1=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;X:\libraries
-Item2=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;x:\stalker_addon\libraries
-Item3=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;x:\stalker_addon\libraries
-Item4=$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;x:\stalker_addon\libraries
-Item5=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item6=$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item7=..\..\..\sdk\components\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item8=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item9=..\..\components\AlexMX;Y:\postprocess;..;Postprocess;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item10=Y:\postprocess;..\RX\Units;..;Postprocess;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item11=..\RX\Units;..;Postprocess;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Count=13
+Item0=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib
+Item1=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\libraries
+Item2=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;X:\libraries
+Item3=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;x:\stalker_addon\libraries
+Item4=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;x:\stalker_addon\libraries
+Item5=$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;x:\stalker_addon\libraries
+Item6=..\..\..\SDK\components\AlexMX;..\..\xrGame;..\..\xrEngine;$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item7=$(COMPONENTS)\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item8=..\..\..\sdk\components\AlexMX;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item9=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item10=..\..\components\AlexMX;Y:\postprocess;..;Postprocess;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item11=Y:\postprocess;..\RX\Units;..;Postprocess;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item12=..\RX\Units;..;Postprocess;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
@@ -166,18 +167,20 @@ Item19=_DEBUG,_EDITOR,_CPPUNWIND
 Item20=_DEBUG,__BORLANDC__
 
 [HistoryLists\hlIntOutputDir]
-Count=2
-Item0=..\..\..\intermediate_ed\ppe
-Item1=x:\intermediate_ed\ppe
+Count=3
+Item0=..\..\..\obj\Mixed\PostprocessEditor
+Item1=..\..\..\intermediate_ed\ppe
+Item2=x:\intermediate_ed\ppe
 
 [HistoryLists\hlFinalOutputDir]
-Count=6
-Item0=..\..\..\binaries\
-Item1=..\..\..\binaries
-Item2=x:\binaries\
-Item3=x:\binaries
-Item4=x:\stalker_addon\binaries\
-Item5=x:\
+Count=7
+Item0=..\..\..\bin
+Item1=..\..\..\binaries\
+Item2=..\..\..\binaries
+Item3=x:\binaries\
+Item4=x:\binaries
+Item5=x:\stalker_addon\binaries\
+Item6=x:\
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

@@ -1,6 +1,6 @@
 @echo off
 
-cd libraries
+cd lib
 
 if exist editor.lib (
     del editor.lib
