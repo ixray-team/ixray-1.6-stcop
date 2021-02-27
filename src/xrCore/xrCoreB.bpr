@@ -3,49 +3,54 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="x:\binaries\xrCoreB.dll"/>
-    <OBJFILES value="x:\intermediate_ed\core\xrMemory_pso_Fill32.obj 
-      x:\intermediate_ed\core\_math.obj x:\intermediate_ed\core\_sphere.obj 
-      x:\intermediate_ed\core\cpuid.obj x:\intermediate_ed\core\stdafx.obj 
-      x:\intermediate_ed\core\xrCore.obj x:\intermediate_ed\core\xrMemory.obj 
-      x:\intermediate_ed\core\xrMemory_pso_Copy.obj 
-      x:\intermediate_ed\core\xrMemory_pso_Fill.obj 
-      x:\intermediate_ed\core\_compressed_normal.obj 
-      x:\intermediate_ed\core\xrMemory_align.obj 
-      x:\intermediate_ed\core\LzHuf.obj x:\intermediate_ed\core\log.obj 
-      x:\intermediate_ed\core\FS.obj x:\intermediate_ed\core\xr_trims.obj 
-      x:\intermediate_ed\core\Xr_ini.obj x:\intermediate_ed\core\clsid.obj 
-      x:\intermediate_ed\core\FileSystem_borland.obj 
-      x:\intermediate_ed\core\FileSystem.obj 
-      x:\intermediate_ed\core\xrMemory_subst_msvc.obj 
-      x:\intermediate_ed\core\xrMemory_POOL.obj 
-      x:\intermediate_ed\core\xrMemory_subst_borland.obj 
-      x:\intermediate_ed\core\rt_lzo.obj 
-      x:\intermediate_ed\core\rt_compressor.obj 
-      x:\intermediate_ed\core\FTimer.obj x:\intermediate_ed\core\xrstring.obj 
-      x:\intermediate_ed\core\xrsharedmem.obj 
-      x:\intermediate_ed\core\_std_extensions.obj 
-      x:\intermediate_ed\core\crc32.obj x:\intermediate_ed\core\xrSyncronize.obj 
-      x:\intermediate_ed\core\ELocatorAPI.obj 
-      x:\intermediate_ed\core\LocatorAPI_defs.obj 
-      x:\intermediate_ed\core\xrDebug.obj x:\intermediate_ed\core\xrDebugNew.obj 
-      x:\intermediate_ed\core\TLHELPProcessInfo.obj 
-      x:\intermediate_ed\core\BlackBoxUI.obj 
-      x:\intermediate_ed\core\BSUFunctions.obj 
-      x:\intermediate_ed\core\CrashHandler.obj 
-      x:\intermediate_ed\core\DiagAssert.obj 
-      x:\intermediate_ed\core\GetLoadedModules.obj 
-      x:\intermediate_ed\core\IsNT.obj 
-      x:\intermediate_ed\core\NT4ProcessInfo.obj x:\intermediate_ed\core\stdafx_.obj 
-      x:\intermediate_ed\core\rt_compressor9.obj 
-      x:\intermediate_ed\core\rt_lzo1x_1.obj 
-      x:\intermediate_ed\core\rt_lzo1x_9x.obj 
-      x:\intermediate_ed\core\rt_lzo1x_d1.obj 
-      x:\intermediate_ed\core\rt_lzo1x_d2.obj 
-      x:\intermediate_ed\core\rt_lzo1x_d3.obj 
-      x:\intermediate_ed\core\rt_lzo_init.obj 
-      x:\intermediate_ed\core\os_clipboard.obj"/>
-    <RESFILES value="x:\intermediate_ed\core\xrCore.res"/>
+    <PROJECT value="..\..\binaries\xrCoreB.dll"/>
+    <OBJFILES value="..\..\intermediate_ed\core\xrMemory_pso_Fill32.obj 
+      ..\..\intermediate_ed\core\_math.obj 
+      ..\..\intermediate_ed\core\_sphere.obj ..\..\intermediate_ed\core\cpuid.obj 
+      ..\..\intermediate_ed\core\stdafx.obj 
+      ..\..\intermediate_ed\core\xrCore.obj ..\..\intermediate_ed\core\xrMemory.obj 
+      ..\..\intermediate_ed\core\xrMemory_pso_Copy.obj 
+      ..\..\intermediate_ed\core\xrMemory_pso_Fill.obj 
+      ..\..\intermediate_ed\core\_compressed_normal.obj 
+      ..\..\intermediate_ed\core\xrMemory_align.obj 
+      ..\..\intermediate_ed\core\LzHuf.obj ..\..\intermediate_ed\core\log.obj 
+      ..\..\intermediate_ed\core\FS.obj ..\..\intermediate_ed\core\xr_trims.obj 
+      ..\..\intermediate_ed\core\Xr_ini.obj ..\..\intermediate_ed\core\clsid.obj 
+      ..\..\intermediate_ed\core\FileSystem_borland.obj 
+      ..\..\intermediate_ed\core\FileSystem.obj 
+      ..\..\intermediate_ed\core\xrMemory_subst_msvc.obj 
+      ..\..\intermediate_ed\core\xrMemory_POOL.obj 
+      ..\..\intermediate_ed\core\xrMemory_subst_borland.obj 
+      ..\..\intermediate_ed\core\rt_lzo.obj 
+      ..\..\intermediate_ed\core\rt_compressor.obj 
+      ..\..\intermediate_ed\core\FTimer.obj 
+      ..\..\intermediate_ed\core\xrstring.obj 
+      ..\..\intermediate_ed\core\xrsharedmem.obj 
+      ..\..\intermediate_ed\core\_std_extensions.obj 
+      ..\..\intermediate_ed\core\crc32.obj 
+      ..\..\intermediate_ed\core\xrSyncronize.obj 
+      ..\..\intermediate_ed\core\ELocatorAPI.obj 
+      ..\..\intermediate_ed\core\LocatorAPI_defs.obj 
+      ..\..\intermediate_ed\core\xrDebug.obj 
+      ..\..\intermediate_ed\core\xrDebugNew.obj 
+      ..\..\intermediate_ed\core\TLHELPProcessInfo.obj 
+      ..\..\intermediate_ed\core\BlackBoxUI.obj 
+      ..\..\intermediate_ed\core\BSUFunctions.obj 
+      ..\..\intermediate_ed\core\CrashHandler.obj 
+      ..\..\intermediate_ed\core\DiagAssert.obj 
+      ..\..\intermediate_ed\core\GetLoadedModules.obj 
+      ..\..\intermediate_ed\core\IsNT.obj 
+      ..\..\intermediate_ed\core\NT4ProcessInfo.obj 
+      ..\..\intermediate_ed\core\stdafx_.obj 
+      ..\..\intermediate_ed\core\rt_compressor9.obj 
+      ..\..\intermediate_ed\core\rt_lzo1x_1.obj 
+      ..\..\intermediate_ed\core\rt_lzo1x_9x.obj 
+      ..\..\intermediate_ed\core\rt_lzo1x_d1.obj 
+      ..\..\intermediate_ed\core\rt_lzo1x_d2.obj 
+      ..\..\intermediate_ed\core\rt_lzo1x_d3.obj 
+      ..\..\intermediate_ed\core\rt_lzo_init.obj 
+      ..\..\intermediate_ed\core\os_clipboard.obj"/>
+    <RESFILES value="..\..\intermediate_ed\core\xrCore.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
@@ -64,24 +69,24 @@
     <USERDEFINES value="_EDITOR;_XRCOREB;XRCORE_EXPORTS;_DEBUG;NO_WIN32_LEAN_AND_MEAN"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrCoreB.bpf"/>
-    <INCLUDEPATH value="..\editors\ECore;$(BCB)\Projects;blackbox;X:\src\utils\ETools;X:\sdk\dxsdk_mar2009\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc"/>
-    <LIBPATH value="..\editors\ECore;$(BCB)\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;X:\libraries;X:\sdk\components\ElPack\Code;X:\sdk\components\AlexMX"/>
+    <INCLUDEPATH value="..\editors\ECore;$(BCB)\Projects;blackbox;..\utils\ETools;..\..\sdk\dxsdk_mar2009\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc"/>
+    <LIBPATH value="..\editors\ECore;$(BCB)\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;..\..\libraries;..\..\sdk\components\ElPack\Code;..\..\sdk\components\AlexMX"/>
     <WARNINGS value="-w8092 -w8091 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin 
       -w-par -wnod -wnak -w-8027 -w-8026 -wdef -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\editors\ECore -I$(BCB)\Projects -Iblackbox -IX:\src\utils\ETools 
-      -IX:\sdk\dxsdk_mar2009\Include -I$(BCB)\include -I$(BCB)\include\vcl 
+    <IDLCFLAGS value="-I..\editors\ECore -I$(BCB)\Projects -Iblackbox -I..\utils\ETools 
+      -I..\..\sdk\dxsdk_mar2009\Include -I$(BCB)\include -I$(BCB)\include\vcl 
       -I$(BCB)\Include\Mfc -src_suffix cpp -D_EDITOR -D_XRCOREB -DXRCORE_EXPORTS 
       -D_DEBUG -DNO_WIN32_LEAN_AND_MEAN -boa"/>
-    <CFLAG1 value="-WD -Od -H=pch.csm -Q -Vx -Ve -xf -xp -VF -ff -X- -r- -ps -a4 -6 -b- -k -y 
-      -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2x:\intermediate_ed\core -N0x:\intermediate_ed\core -$Y+ -$W -$O- -$A8 
-      -v -JPHNE -M"/>
+    <CFLAG1 value="-WD -Od -H=..\..\intermediate_ed\core\pch.csm -Q -Vx -Ve -xf -xp -VF -ff 
+      -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2..\..\intermediate_ed\core -N0..\..\intermediate_ed\core -$Y+ -$W -$O- 
+      -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-lx:\libraries -Ix:\intermediate_ed\core -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
+    <LFLAGS value="-l..\..\libraries -I..\..\intermediate_ed\core -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -207,6 +212,15 @@
   </BUILDTOOLS>
 
   <FILES>
+    <FILE type="override" value="blackbox\stdafx_.cpp" translator="Auto">
+      <CFLAG1 value=" -H- -Hc-"/>
+    </FILE>
+    <FILE type="override" value="blackbox\TLHELPProcessInfo.cpp" translator="Auto">
+      <CFLAG1 value=" -H- -Hc-"/>
+    </FILE>
+    <FILE type="override" value="blackbox\DiagAssert.cpp" translator="Auto">
+      <CFLAG1 value=" -H- -Hc-"/>
+    </FILE>
     <FILE type="override" value="blackbox\CrashHandler.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
@@ -219,19 +233,10 @@
     <FILE type="override" value="blackbox\GetLoadedModules.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
-      <CFLAG1 value=" -H- -Hc-"/>
-    </FILE>
     <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\stdafx_.cpp" translator="Auto">
-      <CFLAG1 value=" -H- -Hc-"/>
-    </FILE>
-    <FILE type="override" value="blackbox\TLHELPProcessInfo.cpp" translator="Auto">
-      <CFLAG1 value=" -H- -Hc-"/>
-    </FILE>
-    <FILE type="override" value="blackbox\DiagAssert.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
   </FILES>
@@ -266,69 +271,69 @@ Comments=
 
 [HistoryLists\hlIncludePath]
 Count=30
-Item0=..\editors\ECore;$(BCB)\Projects;blackbox;X:\src\utils\ETools;X:\sdk\dxsdk_mar2009\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item1=..\editors\ECore;E:\Program Files (x86)\Borland\CBuilder6\Projects;blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item2=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item3=$(VC_INCLUDE);blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item4=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\_include_;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item5=$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item6=$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item7=$(DXSDK)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
-Item8=I:\Program Files\Microsoft DirectX SDK (October 2006)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\Include\Mfc
-Item9=R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\Include\Mfc
-Item10=R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
-Item11=R:\SDK\Microsoft DirectX 9.0 SDK (February 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools
-Item12=R:\SDK\Microsoft DirectX 9.0 SDK (October 2004)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools
-Item13=R:\SDK\DirectX9.0_sum_2004\Include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools
-Item14=R:\SDK\DirectX9.0_sum_2004\Include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
-Item15=$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
-Item16=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
-Item17=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;R:\Borland\CBuilder6\Include\Mfc
-Item18=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include
-Item19=R:\SDK\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include
-Item20=R:\SDK\DirectX8.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include
-Item21=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;$(BCB)\include\mfc
-Item22=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\include\mfc
-Item23=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
-Item24=R:\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
-Item25=R:\DirectX9\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
-Item26=R:\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
-Item27=..\LevelOptions\Engine;..\LevelOptions\Editor;..\LevelOptions;Editor;R:\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
-Item28=Editor;R:\DirectX8.1\include\;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include\;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
-Item29=Editor;Engine\Blenders;R:\Borland\Components\Eldos\Code\Source\;r:\borland\components\alexmx\;lib\DX;R:\DirectX8.1\include\;c:\rad\Borland\CBuilder5\Bin\;c:\rad\borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;engine;edit;Import\LWO;Collide;P:\MagicFM_Borland\Sdk\Include\;c:\rad\borland\components\extbtn\;c:\rad\borland\components\multi\;c:\rad\borland\components\renderwindow\;C:\RAD\borland\Components\RX\Units\;C:\RAD\borland\Components\ElTree\Code\Source\
+Item0=..\editors\ECore;$(BCB)\Projects;blackbox;..\utils\ETools;..\..\sdk\dxsdk_mar2009\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item1=..\editors\ECore;$(BCB)\Projects;blackbox;X:\src\utils\ETools;X:\sdk\dxsdk_mar2009\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item2=..\editors\ECore;E:\Program Files (x86)\Borland\CBuilder6\Projects;blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item3=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item4=$(VC_INCLUDE);blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item5=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\_include_;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item6=$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item7=$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item8=$(DXSDK)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item9=I:\Program Files\Microsoft DirectX SDK (October 2006)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\Include\Mfc
+Item10=R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\Include\Mfc
+Item11=R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
+Item12=R:\SDK\Microsoft DirectX 9.0 SDK (February 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools
+Item13=R:\SDK\Microsoft DirectX 9.0 SDK (October 2004)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools
+Item14=R:\SDK\DirectX9.0_sum_2004\Include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools
+Item15=R:\SDK\DirectX9.0_sum_2004\Include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
+Item16=$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
+Item17=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
+Item18=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;R:\Borland\CBuilder6\Include\Mfc
+Item19=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include
+Item20=R:\SDK\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include
+Item21=R:\SDK\DirectX8.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include
+Item22=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;$(BCB)\include\mfc
+Item23=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\include\mfc
+Item24=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
+Item25=R:\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
+Item26=R:\DirectX9\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
+Item27=R:\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
+Item28=..\LevelOptions\Engine;..\LevelOptions\Editor;..\LevelOptions;Editor;R:\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
+Item29=Editor;R:\DirectX8.1\include\;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include\;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source
 
 [HistoryLists\hlLibraryPath]
 Count=30
-Item0=..\editors\ECore;$(BCB)\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;X:\libraries;X:\sdk\components\ElPack\Code;X:\sdk\components\AlexMX
-Item1=..\editors\ECore;E:\Program Files (x86)\Borland\CBuilder6\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(OUT_LIB_DIR);$(COMPONENTS)\Elpack\Code;$(COMPONENTS)\AlexMX
-Item2=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(OUT_LIB_DIR);$(COMPONENTS)\Elpack\Code;$(COMPONENTS)\AlexMX
-Item3=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code;$(OUT_LIB_DIR)
-Item4=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code;$(OUTPUT_LIBRARIES_DIR)
-Item5=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code;$(OUTPUT_LINRARIES_DIR)
-Item6=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code
-Item7=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS_DIR)\ElPack\Code
-Item8=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code;x:\libraries;X:\sources\sdk\components\ElPack\Code
-Item9=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code;x:\libraries
-Item10=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code;x:\libraries\
-Item11=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code
-Item12=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk
-Item13=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries;$(BCB)\lib\psdk
-Item14=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries
-Item15=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries
-Item16=i:\Projects\editors\components\Alexmx;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries
-Item17=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;x:\libraries
-Item18=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\
-Item19=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\
-Item20=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib
-Item21=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\lib\dx;..\lib
-Item22=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;lib;lib\dx
-Item23=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;lib
-Item24=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk
-Item25=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk\
-Item26=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code
-Item27=..\LevelOptions\Engine;..\LevelOptions\Editor;..\LevelOptions;c:\rad\borland\CBuilder5\Projects;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code
-Item28=c:\rad\borland\CBuilder5\Projects\;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code
-Item29=c:\rad\borland\CBuilder5\Projects\;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\
+Item0=..\editors\ECore;$(BCB)\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;..\..\libraries;..\..\sdk\components\ElPack\Code;..\..\sdk\components\AlexMX
+Item1=..\editors\ECore;$(BCB)\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;X:\libraries;X:\sdk\components\ElPack\Code;X:\sdk\components\AlexMX
+Item2=..\editors\ECore;E:\Program Files (x86)\Borland\CBuilder6\Projects;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(OUT_LIB_DIR);$(COMPONENTS)\Elpack\Code;$(COMPONENTS)\AlexMX
+Item3=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(OUT_LIB_DIR);$(COMPONENTS)\Elpack\Code;$(COMPONENTS)\AlexMX
+Item4=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code;$(OUT_LIB_DIR)
+Item5=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code;$(OUTPUT_LIBRARIES_DIR)
+Item6=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code;$(OUTPUT_LINRARIES_DIR)
+Item7=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS)\ElPack\Code
+Item8=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk;$(COMPONENTS_DIR)\ElPack\Code
+Item9=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code;x:\libraries;X:\sources\sdk\components\ElPack\Code
+Item10=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code;x:\libraries
+Item11=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code;x:\libraries\
+Item12=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk;X:\stalker_addon\sources\sdk\components\ElPack\Code
+Item13=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\stalker_addon\libraries;$(BCB)\lib\psdk
+Item14=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries;$(BCB)\lib\psdk
+Item15=blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries
+Item16=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries
+Item17=i:\Projects\editors\components\Alexmx;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries
+Item18=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;x:\libraries
+Item19=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\
+Item20=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\
+Item21=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib
+Item22=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\lib\dx;..\lib
+Item23=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;lib;lib\dx
+Item24=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;lib
+Item25=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk
+Item26=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk\
+Item27=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code
+Item28=..\LevelOptions\Engine;..\LevelOptions\Editor;..\LevelOptions;c:\rad\borland\CBuilder5\Projects;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code
+Item29=c:\rad\borland\CBuilder5\Projects\;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
@@ -347,46 +352,49 @@ Item7=_OPTIONS
 Item8=_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=8
-Item0=x:\intermediate_ed\core
-Item1=$(OUTPUT_INTERMEDIATE_DIR)\core
-Item2=$(OUTPUT_INTERMEDIATE_DIR)
-Item3=$(OUTPUT_INTERMEDIATE_DIR)\
-Item4=x:\intermediate_ed
-Item5=Intermediate
-Item6=XRLC_Intermediate
-Item7=xrLC_Options
+Count=9
+Item0=..\..\intermediate_ed\core
+Item1=x:\intermediate_ed\core
+Item2=$(OUTPUT_INTERMEDIATE_DIR)\core
+Item3=$(OUTPUT_INTERMEDIATE_DIR)
+Item4=$(OUTPUT_INTERMEDIATE_DIR)\
+Item5=x:\intermediate_ed
+Item6=Intermediate
+Item7=XRLC_Intermediate
+Item8=xrLC_Options
 
 [HistoryLists\hlFinalOutputDir]
-Count=18
-Item0=x:\binaries\
-Item1=x:\binaries
-Item2=$(OUTPUT_BINARIES_DIR)\
-Item3=x:\stalker_addon\binaries\
-Item4=C:\Program Files\THQ\S.T.A.L.K.E.R. - Shadow of Chernobyl\
-Item5=x:\
-Item6=x:\build\
-Item7=x:\build
-Item8=u:\preliminary\
-Item9=u:\preliminary
-Item10=s:\bin\
-Item11=z:\
-Item12=S:\build_zmey\
-Item13=S:\build_zmey
-Item14=x:\xrCoreB.dll\
-Item15=x:\xrCoreB.dll
-Item16=!run\
-Item17=!run
+Count=19
+Item0=..\..\binaries
+Item1=x:\binaries\
+Item2=x:\binaries
+Item3=$(OUTPUT_BINARIES_DIR)\
+Item4=x:\stalker_addon\binaries\
+Item5=C:\Program Files\THQ\S.T.A.L.K.E.R. - Shadow of Chernobyl\
+Item6=x:\
+Item7=x:\build\
+Item8=x:\build
+Item9=u:\preliminary\
+Item10=u:\preliminary
+Item11=s:\bin\
+Item12=z:\
+Item13=S:\build_zmey\
+Item14=S:\build_zmey
+Item15=x:\xrCoreB.dll\
+Item16=x:\xrCoreB.dll
+Item17=!run\
+Item18=!run
 
 [HistoryLists\hIBPIOutputDir]
-Count=7
-Item0=x:\libraries
-Item1=x:\stalker_addon\libraries
-Item2=$(OUT_LIB_DIR)
-Item3=$(OUT_LIB_DIR)\
-Item4=$(OUTPUT_LIBRARIES_DIR)
-Item5=$(OUTPUT_LIBRARIES_DIR)\
-Item6=x:\libraries\
+Count=8
+Item0=..\..\libraries
+Item1=x:\libraries
+Item2=x:\stalker_addon\libraries
+Item3=$(OUT_LIB_DIR)
+Item4=$(OUT_LIB_DIR)\
+Item5=$(OUTPUT_LIBRARIES_DIR)
+Item6=$(OUTPUT_LIBRARIES_DIR)\
+Item7=x:\libraries\
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
