@@ -21,6 +21,9 @@ intermediate_plugs/
 libraries/
 binaries/
 binaries_plugs/
+obj/
+lib/
+bin/
 
 # Migrating report files
 _UpgradeReport_Files/
