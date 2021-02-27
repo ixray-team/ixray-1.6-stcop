@@ -15,12 +15,6 @@ ipch/
 *.aps
 
 # Build results
-intermediate/
-intermediate_ed/
-intermediate_plugs/
-libraries/
-binaries/
-binaries_plugs/
 obj/
 lib/
 bin/
