@@ -1,1 +1,0 @@
-@subst.exe X: .
