@@ -134,7 +134,7 @@ Comments=
 DebugSourceDirs=..\..\..\sdk\components\AlexMX
 
 [Parameters]
-RunParams=-wf ..\..\resources -editor
+RunParams=-wf ..\..\..\gamedata -editor
 Launcher=
 UseLauncher=0
 DebugCWD=

@@ -42,9 +42,9 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\..\xrGame -I..\..\xrEngine -I$(BCB)\include -I$(BCB)\include\vcl 
-      -I..\..\xrCore -I..\..\..\sdk\components\AlexMX -src_suffix cpp -D_EDITOR 
-      -D_PP_EDITOR_ -DENGINE_API -DIC -DICF -D__forceinline -boa"/>
+    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_PP_EDITOR_ -DENGINE_API -DIC -DICF 
+      -D__forceinline -I..\..\xrGame -I..\..\xrEngine -I$(BCB)\include 
+      -I$(BCB)\include\vcl -I..\..\xrCore -I..\..\..\sdk\components\AlexMX -boa"/>
     <CFLAG1 value="-O2 -H=..\..\..\obj\Mixed\PostprocessEditor\pch.csm -Hc -Q -Vmm -Vx -Ve 
       -xf -xp -VF -X- -ps -a4 -6 -b- -k- -vi -c -tW -tWM"/>
     <PFLAGS value="-N2..\..\..\obj\Mixed\PostprocessEditor 
@@ -108,11 +108,11 @@ Comments=
 DebugSourceDirs=$(BCB)\source\vcl
 
 [Parameters]
-RunParams=-wf x:\stalker_addon\resources
+RunParams=-wf ..\..\..\gamedata
 Launcher=
 UseLauncher=0
 DebugCWD=
-HostApplication=x:\binaries\Postprocess.exe
+HostApplication=..\..\..\bin\Postprocess.exe
 RemoteHost=
 RemotePath=
 RemoteLauncher=

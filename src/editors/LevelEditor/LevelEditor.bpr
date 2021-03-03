@@ -183,7 +183,8 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D 
+    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_LEVEL_EDITOR -D_DEBUG 
+      -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D 
@@ -194,8 +195,7 @@
       -I..\..\..\sdk\components\ElPack\Code 
       -I..\..\..\sdk\components\ElPack\Code\Source -I..\..\xrCore 
       -I..\..\xrEngine -I..\..\..\sdk\sources\MagicSoftware\Sdk\Include 
-      -I..\..\utils\ETools -I..\..\xrParticles -src_suffix cpp -D_EDITOR 
-      -D_LEVEL_EDITOR -D_DEBUG"/>
+      -I..\..\utils\ETools -I..\..\xrParticles"/>
     <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\LevelEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
       -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
     <PFLAGS value="-N2..\..\..\obj\Mixed\LevelEditor -N0..\..\..\obj\Mixed\LevelEditor -$Y+ 
@@ -405,11 +405,11 @@ Comments=
 DebugSourceDirs=..\..\editors\ECore\Editor
 
 [Parameters]
-RunParams=-wf x:\stalker_addon\resources -editor
+RunParams=-wf ..\..\..\gamedata -editor
 Launcher=
 UseLauncher=0
 DebugCWD=
-HostApplication=x:\STALKER_ADDON\binaries\LevelEditor.exe
+HostApplication=..\..\..\bin\LevelEditor.exe
 RemoteHost=
 RemotePath=
 RemoteLauncher=

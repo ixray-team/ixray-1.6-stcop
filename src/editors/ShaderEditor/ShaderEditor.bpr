@@ -48,12 +48,12 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\..\..\sdk\dxsdk_mar2009\Include -I..\..\..\sdk\components\AlexMX 
+    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_SHADER_EDITOR -D_DEBUG 
+      -I..\..\..\sdk\dxsdk_mar2009\Include -I..\..\..\sdk\components\AlexMX 
       -I$(BCB)\include -I$(BCB)\include\vcl 
       -I..\..\..\sdk\components\ElPack\Code -I..\..\..\sdk\components\ElPack\Code\Source 
       -I..\..\xrCore -I..\..\xrEngine -I..\..\..\sdk\include\eax 
-      -I..\..\xrParticles -src_suffix cpp -D_EDITOR -D_SHADER_EDITOR -D_DEBUG 
-      -no_tie -boa"/>
+      -I..\..\xrParticles -no_tie -boa"/>
     <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ShaderEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
       -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
     <PFLAGS value="-N2..\..\..\obj\Mixed\ShaderEditor -N0..\..\..\obj\Mixed\ShaderEditor -$Y+ 
@@ -127,11 +127,11 @@ Comments=
 DebugSourceDirs=$(BCB)\source\vcl
 
 [Parameters]
-RunParams=-wf x:\stalker_addon\resources
+RunParams=-wf ..\..\..\gamedata -editor
 Launcher=
 UseLauncher=0
 DebugCWD=
-HostApplication=x:\stalker_addon\binaries\ShaderEditor.exe
+HostApplication=..\..\..\bin\ShaderEditor.exe
 RemoteHost=
 RemotePath=
 RemoteLauncher=
