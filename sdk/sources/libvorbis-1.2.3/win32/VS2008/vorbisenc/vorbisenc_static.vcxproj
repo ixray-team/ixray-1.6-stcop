@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>vorbisenc</ProjectName>
+    <ProjectName>vorbisenc_static</ProjectName>
     <ProjectGuid>{E48B6A8B-F7FE-4DA8-8248-E64DBAC4F56C}</ProjectGuid>
     <RootNamespace>vorbisenc</RootNamespace>
     <Keyword>Win32Proj</Keyword>
