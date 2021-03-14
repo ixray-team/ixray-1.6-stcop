@@ -4,48 +4,34 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\bin\xrCoreB.dll"/>
-    <OBJFILES value="..\..\obj\Mixed\xrCoreB\xrMemory_pso_Fill32.obj 
-      ..\..\obj\Mixed\xrCoreB\_math.obj ..\..\obj\Mixed\xrCoreB\_sphere.obj 
-      ..\..\obj\Mixed\xrCoreB\cpuid.obj ..\..\obj\Mixed\xrCoreB\stdafx.obj 
-      ..\..\obj\Mixed\xrCoreB\xrCore.obj ..\..\obj\Mixed\xrCoreB\xrMemory.obj 
-      ..\..\obj\Mixed\xrCoreB\xrMemory_pso_Copy.obj 
-      ..\..\obj\Mixed\xrCoreB\xrMemory_pso_Fill.obj 
-      ..\..\obj\Mixed\xrCoreB\_compressed_normal.obj 
-      ..\..\obj\Mixed\xrCoreB\xrMemory_align.obj 
-      ..\..\obj\Mixed\xrCoreB\LzHuf.obj ..\..\obj\Mixed\xrCoreB\log.obj 
-      ..\..\obj\Mixed\xrCoreB\FS.obj ..\..\obj\Mixed\xrCoreB\xr_trims.obj 
-      ..\..\obj\Mixed\xrCoreB\Xr_ini.obj ..\..\obj\Mixed\xrCoreB\clsid.obj 
-      ..\..\obj\Mixed\xrCoreB\FileSystem_borland.obj 
-      ..\..\obj\Mixed\xrCoreB\FileSystem.obj 
-      ..\..\obj\Mixed\xrCoreB\xrMemory_subst_msvc.obj 
-      ..\..\obj\Mixed\xrCoreB\xrMemory_POOL.obj 
-      ..\..\obj\Mixed\xrCoreB\xrMemory_subst_borland.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_compressor.obj 
-      ..\..\obj\Mixed\xrCoreB\FTimer.obj ..\..\obj\Mixed\xrCoreB\xrstring.obj 
-      ..\..\obj\Mixed\xrCoreB\xrsharedmem.obj 
-      ..\..\obj\Mixed\xrCoreB\_std_extensions.obj 
-      ..\..\obj\Mixed\xrCoreB\crc32.obj ..\..\obj\Mixed\xrCoreB\xrSyncronize.obj 
-      ..\..\obj\Mixed\xrCoreB\ELocatorAPI.obj 
-      ..\..\obj\Mixed\xrCoreB\LocatorAPI_defs.obj 
-      ..\..\obj\Mixed\xrCoreB\xrDebug.obj ..\..\obj\Mixed\xrCoreB\xrDebugNew.obj 
-      ..\..\obj\Mixed\xrCoreB\TLHELPProcessInfo.obj 
-      ..\..\obj\Mixed\xrCoreB\BlackBoxUI.obj 
-      ..\..\obj\Mixed\xrCoreB\BSUFunctions.obj 
-      ..\..\obj\Mixed\xrCoreB\CrashHandler.obj 
-      ..\..\obj\Mixed\xrCoreB\DiagAssert.obj 
-      ..\..\obj\Mixed\xrCoreB\GetLoadedModules.obj 
-      ..\..\obj\Mixed\xrCoreB\IsNT.obj 
-      ..\..\obj\Mixed\xrCoreB\NT4ProcessInfo.obj ..\..\obj\Mixed\xrCoreB\stdafx_.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_compressor9.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo1x_1.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo1x_9x.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo1x_d1.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo1x_d2.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo1x_d3.obj 
-      ..\..\obj\Mixed\xrCoreB\rt_lzo_init.obj 
-      ..\..\obj\Mixed\xrCoreB\os_clipboard.obj"/>
-    <RESFILES value="..\..\obj\Mixed\xrCoreB\xrCore.res"/>
+    <OBJFILES value="..\..\obj\xrCoreB\xrMemory_pso_Fill32.obj ..\..\obj\xrCoreB\_math.obj 
+      ..\..\obj\xrCoreB\_sphere.obj ..\..\obj\xrCoreB\cpuid.obj 
+      ..\..\obj\xrCoreB\stdafx.obj ..\..\obj\xrCoreB\xrCore.obj 
+      ..\..\obj\xrCoreB\xrMemory.obj ..\..\obj\xrCoreB\xrMemory_pso_Copy.obj 
+      ..\..\obj\xrCoreB\xrMemory_pso_Fill.obj 
+      ..\..\obj\xrCoreB\_compressed_normal.obj 
+      ..\..\obj\xrCoreB\xrMemory_align.obj ..\..\obj\xrCoreB\LzHuf.obj 
+      ..\..\obj\xrCoreB\log.obj ..\..\obj\xrCoreB\FS.obj 
+      ..\..\obj\xrCoreB\xr_trims.obj ..\..\obj\xrCoreB\Xr_ini.obj 
+      ..\..\obj\xrCoreB\clsid.obj ..\..\obj\xrCoreB\FileSystem_borland.obj 
+      ..\..\obj\xrCoreB\FileSystem.obj ..\..\obj\xrCoreB\xrMemory_subst_msvc.obj 
+      ..\..\obj\xrCoreB\xrMemory_POOL.obj 
+      ..\..\obj\xrCoreB\xrMemory_subst_borland.obj ..\..\obj\xrCoreB\rt_lzo.obj 
+      ..\..\obj\xrCoreB\rt_compressor.obj ..\..\obj\xrCoreB\FTimer.obj 
+      ..\..\obj\xrCoreB\xrstring.obj ..\..\obj\xrCoreB\xrsharedmem.obj 
+      ..\..\obj\xrCoreB\_std_extensions.obj ..\..\obj\xrCoreB\crc32.obj 
+      ..\..\obj\xrCoreB\xrSyncronize.obj ..\..\obj\xrCoreB\ELocatorAPI.obj 
+      ..\..\obj\xrCoreB\LocatorAPI_defs.obj ..\..\obj\xrCoreB\xrDebug.obj 
+      ..\..\obj\xrCoreB\xrDebugNew.obj ..\..\obj\xrCoreB\TLHELPProcessInfo.obj 
+      ..\..\obj\xrCoreB\BlackBoxUI.obj ..\..\obj\xrCoreB\BSUFunctions.obj 
+      ..\..\obj\xrCoreB\CrashHandler.obj ..\..\obj\xrCoreB\DiagAssert.obj 
+      ..\..\obj\xrCoreB\GetLoadedModules.obj ..\..\obj\xrCoreB\IsNT.obj 
+      ..\..\obj\xrCoreB\NT4ProcessInfo.obj ..\..\obj\xrCoreB\stdafx_.obj 
+      ..\..\obj\xrCoreB\rt_compressor9.obj ..\..\obj\xrCoreB\rt_lzo1x_1.obj 
+      ..\..\obj\xrCoreB\rt_lzo1x_9x.obj ..\..\obj\xrCoreB\rt_lzo1x_d1.obj 
+      ..\..\obj\xrCoreB\rt_lzo1x_d2.obj ..\..\obj\xrCoreB\rt_lzo1x_d3.obj 
+      ..\..\obj\xrCoreB\rt_lzo_init.obj ..\..\obj\xrCoreB\os_clipboard.obj"/>
+    <RESFILES value="..\..\obj\xrCoreB\xrCore.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
@@ -54,7 +40,7 @@
     <LIBRARIES value="editor.lib elpackB6.lib vclx.lib bcbsmp.lib vcl.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib elpackB6.lib editor.lib"/>
     <PACKAGES value="rtl.bpi"/>
-    <PATHCPP value=".;blackbox;blackbox;blackbox;blackbox;blackbox;blackbox;blackbox;blackbox;blackbox"/>
+    <PATHCPP value=".;blackbox"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -75,13 +61,12 @@
       -I..\..\sdk\dxsdk_mar2009\Include -I$(BCB)\include -I$(BCB)\include\vcl 
       -I$(BCB)\Include\Mfc -src_suffix cpp -D_EDITOR -D_XRCOREB -DXRCORE_EXPORTS 
       -D_DEBUG -DNO_WIN32_LEAN_AND_MEAN -boa"/>
-    <CFLAG1 value="-WD -Od -H=..\..\obj\Mixed\xrCoreB\pch.csm -Q -Vx -Ve -xf -xp -VF -ff -X- 
-      -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2..\..\obj\Mixed\xrCoreB -N0..\..\obj\Mixed\xrCoreB -$Y+ -$W -$O- -$A8 
-      -v -JPHNE -M"/>
+    <CFLAG1 value="-WD -Od -H=..\..\obj\xrCoreB\pch.csm -Q -Vx -Ve -xf -xp -VF -ff -X- -r- 
+      -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2..\..\obj\xrCoreB -N0..\..\obj\xrCoreB -$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-l..\..\lib -I..\..\obj\Mixed\xrCoreB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
+    <LFLAGS value="-l..\..\lib -I..\..\obj\xrCoreB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -228,10 +213,10 @@
     <FILE type="override" value="blackbox\GetLoadedModules.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
-    <FILE type="override" value="blackbox\IsNT.cpp" translator="Auto">
+    <FILE type="override" value="blackbox\BlackBoxUI.cpp" translator="Auto">
       <CFLAG1 value=" -H- -Hc-"/>
     </FILE>
   </FILES>

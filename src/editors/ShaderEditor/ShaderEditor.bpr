@@ -4,24 +4,22 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\ShaderEditor.exe"/>
-    <OBJFILES value="..\..\..\obj\Mixed\ShaderEditor\ShaderEditor.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\UI_shadertools.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\BottomBar.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\GameMtlLib_Editor.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\leftbar.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\main.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\Splash.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\stdafx.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\TopBar.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\ui_shadermain.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHToolsInterface.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHCompilerTools.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHCompilerToolsProperties.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHGameMtlPairTools.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHGameMtlTools.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHSoundEnvTools.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHEngineTools.obj 
-      ..\..\..\obj\Mixed\ShaderEditor\SHEngineToolsProperties.obj"/>
+    <OBJFILES value="..\..\..\obj\ShaderEditor\ShaderEditor.obj 
+      ..\..\..\obj\ShaderEditor\UI_shadertools.obj 
+      ..\..\..\obj\ShaderEditor\BottomBar.obj 
+      ..\..\..\obj\ShaderEditor\GameMtlLib_Editor.obj 
+      ..\..\..\obj\ShaderEditor\leftbar.obj ..\..\..\obj\ShaderEditor\main.obj 
+      ..\..\..\obj\ShaderEditor\Splash.obj ..\..\..\obj\ShaderEditor\stdafx.obj 
+      ..\..\..\obj\ShaderEditor\TopBar.obj 
+      ..\..\..\obj\ShaderEditor\ui_shadermain.obj 
+      ..\..\..\obj\ShaderEditor\SHToolsInterface.obj 
+      ..\..\..\obj\ShaderEditor\SHCompilerTools.obj 
+      ..\..\..\obj\ShaderEditor\SHCompilerToolsProperties.obj 
+      ..\..\..\obj\ShaderEditor\SHGameMtlPairTools.obj 
+      ..\..\..\obj\ShaderEditor\SHGameMtlTools.obj 
+      ..\..\..\obj\ShaderEditor\SHSoundEnvTools.obj 
+      ..\..\..\obj\ShaderEditor\SHEngineTools.obj 
+      ..\..\..\obj\ShaderEditor\SHEngineToolsProperties.obj"/>
     <RESFILES value="resource.res ShaderEditor.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -48,19 +46,19 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_SHADER_EDITOR -D_DEBUG 
-      -I..\..\..\sdk\dxsdk_mar2009\Include -I..\..\..\sdk\components\AlexMX 
+    <IDLCFLAGS value="-I..\..\..\sdk\dxsdk_mar2009\Include -I..\..\..\sdk\components\AlexMX 
       -I$(BCB)\include -I$(BCB)\include\vcl 
       -I..\..\..\sdk\components\ElPack\Code -I..\..\..\sdk\components\ElPack\Code\Source 
       -I..\..\xrCore -I..\..\xrEngine -I..\..\..\sdk\include\eax 
-      -I..\..\xrParticles -no_tie -boa"/>
-    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ShaderEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
-      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\ShaderEditor -N0..\..\..\obj\Mixed\ShaderEditor -$Y+ 
-      -$W -$R -$Q -$O- -$A8 -v -JPHNE -M"/>
+      -I..\..\xrParticles -src_suffix cpp -D_EDITOR -D_SHADER_EDITOR -D_DEBUG 
+      -no_tie -boa"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\ShaderEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
+      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\ShaderEditor -N0..\..\..\obj\ShaderEditor -$Y+ -$W -$R -$Q 
+      -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\ShaderEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\ShaderEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

@@ -4,15 +4,15 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\Postprocess.exe"/>
-    <OBJFILES value="..\..\..\obj\Mixed\PostprocessEditor\Postprocess.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\main.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\interp.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\float_param.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\float_constructor.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\color.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\single_param.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\Envelope.obj 
-      ..\..\..\obj\Mixed\PostprocessEditor\PostprocessAnimator.obj"/>
+    <OBJFILES value="..\..\..\obj\PostprocessEditor\Postprocess.obj 
+      ..\..\..\obj\PostprocessEditor\main.obj 
+      ..\..\..\obj\PostprocessEditor\interp.obj 
+      ..\..\..\obj\PostprocessEditor\float_param.obj 
+      ..\..\..\obj\PostprocessEditor\float_constructor.obj 
+      ..\..\..\obj\PostprocessEditor\color.obj 
+      ..\..\..\obj\PostprocessEditor\single_param.obj 
+      ..\..\..\obj\PostprocessEditor\Envelope.obj 
+      ..\..\..\obj\PostprocessEditor\PostprocessAnimator.obj"/>
     <RESFILES value="Postprocess.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -42,16 +42,16 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_PP_EDITOR_ -DENGINE_API -DIC -DICF 
-      -D__forceinline -I..\..\xrGame -I..\..\xrEngine -I$(BCB)\include 
-      -I$(BCB)\include\vcl -I..\..\xrCore -I..\..\..\sdk\components\AlexMX -boa"/>
-    <CFLAG1 value="-O2 -H=..\..\..\obj\Mixed\PostprocessEditor\pch.csm -Hc -Q -Vmm -Vx -Ve 
-      -xf -xp -VF -X- -ps -a4 -6 -b- -k- -vi -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\PostprocessEditor 
-      -N0..\..\..\obj\Mixed\PostprocessEditor -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <IDLCFLAGS value="-I..\..\xrGame -I..\..\xrEngine -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I..\..\xrCore -I..\..\..\sdk\components\AlexMX -src_suffix cpp -D_EDITOR 
+      -D_PP_EDITOR_ -DENGINE_API -DIC -DICF -D__forceinline -boa"/>
+    <CFLAG1 value="-O2 -H=..\..\..\obj\PostprocessEditor\pch.csm -Hc -Q -Vmm -Vx -Ve -xf -xp 
+      -VF -X- -ps -a4 -6 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\PostprocessEditor -N0..\..\..\obj\PostprocessEditor -$Y- 
+      -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-I..\..\..\obj\Mixed\PostprocessEditor -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <LFLAGS value="-I..\..\..\obj\PostprocessEditor -D&quot;&quot; -aa -Tpe -x -Gn"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

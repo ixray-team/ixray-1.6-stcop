@@ -4,14 +4,14 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\bin\xrParticlesB.dll"/>
-    <OBJFILES value="..\..\obj\Mixed\xrParticlesB\stdafx.obj 
-      ..\..\obj\Mixed\xrParticlesB\particle_manager.obj 
-      ..\..\obj\Mixed\xrParticlesB\particle_core.obj 
-      ..\..\obj\Mixed\xrParticlesB\particle_actions.obj 
-      ..\..\obj\Mixed\xrParticlesB\particle_effect.obj 
-      ..\..\obj\Mixed\xrParticlesB\particle_actions_collection.obj 
-      ..\..\obj\Mixed\xrParticlesB\particle_actions_collection_io.obj 
-      ..\..\obj\Mixed\xrParticlesB\noise.obj"/>
+    <OBJFILES value="..\..\obj\xrParticlesB\stdafx.obj 
+      ..\..\obj\xrParticlesB\particle_manager.obj 
+      ..\..\obj\xrParticlesB\particle_core.obj 
+      ..\..\obj\xrParticlesB\particle_actions.obj 
+      ..\..\obj\xrParticlesB\particle_effect.obj 
+      ..\..\obj\xrParticlesB\particle_actions_collection.obj 
+      ..\..\obj\xrParticlesB\particle_actions_collection_io.obj 
+      ..\..\obj\xrParticlesB\noise.obj"/>
     <RESFILES value=""/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -45,13 +45,13 @@
   <OPTIONS>
     <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\vcl -I..\xrCore -src_suffix cpp 
       -D_EDITOR -DXR_PARTICLES_EXPORTS -D_DEBUG -boa"/>
-    <CFLAG1 value="-WD -Od -H=..\..\obj\Mixed\xrParticlesB\pch.csm -Hc -Q -Vx -Ve -xf -xp -VF 
-      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2..\..\obj\Mixed\xrParticlesB -N0..\..\obj\Mixed\xrParticlesB -$Y+ -$W 
-      -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-WD -Od -H=..\..\obj\xrParticlesB\pch.csm -Hc -Q -Vx -Ve -xf -xp -VF -ff 
+      -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2..\..\obj\xrParticlesB -N0..\..\obj\xrParticlesB -$Y+ -$W -$O- -$A8 -v 
+      -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-l..\..\lib -I..\..\obj\Mixed\xrParticlesB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
+    <LFLAGS value="-l..\..\lib -I..\..\obj\xrParticlesB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

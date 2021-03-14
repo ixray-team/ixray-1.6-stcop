@@ -4,180 +4,139 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\xrECoreB.dll"/>
-    <OBJFILES value="..\..\..\obj\Mixed\xrECoreB\guid.obj ..\..\..\obj\Mixed\xrECoreB\bone.obj 
-      ..\..\..\obj\Mixed\xrECoreB\defines.obj 
-      ..\..\..\obj\Mixed\xrECoreB\cl_collector.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Envelope.obj 
-      ..\..\..\obj\Mixed\xrECoreB\fmesh.obj 
-      ..\..\..\obj\Mixed\xrECoreB\GameFont.obj 
-      ..\..\..\obj\Mixed\xrECoreB\GameMtlLib.obj 
-      ..\..\..\obj\Mixed\xrECoreB\IGame_Persistent.obj 
-      ..\..\..\obj\Mixed\xrECoreB\IInputReceiver.obj 
-      ..\..\..\obj\Mixed\xrECoreB\interp.obj 
-      ..\..\..\obj\Mixed\xrECoreB\motion.obj 
-      ..\..\..\obj\Mixed\xrECoreB\pure.obj ..\..\..\obj\Mixed\xrECoreB\Xr_input.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrImage_Resampler.obj 
-      ..\..\..\obj\Mixed\xrECoreB\FBasicVisual.obj 
-      ..\..\..\obj\Mixed\xrECoreB\FHierrarhyVisual.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SkeletonAnimated.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SkeletonCustom.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SkeletonRigid.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SkeletonX.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ResourceManager_Reset.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ai_sounds.obj 
-      ..\..\..\obj\Mixed\xrECoreB\nv_algebra.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SkeletonMotions.obj 
-      ..\..\..\obj\Mixed\xrECoreB\tntQAVI.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrCDB_Collector.obj 
-      ..\..\..\obj\Mixed\xrECoreB\perlin.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrTheora_Surface.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrTheora_Stream.obj 
-      ..\..\..\obj\Mixed\xrECoreB\LightAnimLibrary.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrHemisphere.obj 
-      ..\..\..\obj\Mixed\xrECoreB\BlenderDefault.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_default_aref.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Vertex.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_vertex_aref.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_screen_gray.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Editor_Selection.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Screen_SET.obj 
-      ..\..\..\obj\Mixed\xrECoreB\blender_light.obj 
-      ..\..\..\obj\Mixed\xrECoreB\blender_b.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Lm(EbB).obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Blur.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Editor_Wire.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_LaEmB.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_BmmD.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Shadow_World.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Model.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Model_EbB.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_detail_still.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_tree.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_particle.obj 
-      ..\..\..\obj\Mixed\xrECoreB\guid_generator.obj 
-      ..\..\..\obj\Mixed\xrECoreB\UI_MainMail.obj 
-      ..\..\..\obj\Mixed\xrECoreB\BoneEditor.obj 
-      ..\..\..\obj\Mixed\xrECoreB\c_dinput.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ColorPicker.obj 
-      ..\..\..\obj\Mixed\xrECoreB\D3DUtils.obj 
-      ..\..\..\obj\Mixed\xrECoreB\device.obj 
-      ..\..\..\obj\Mixed\xrECoreB\du_box.obj 
-      ..\..\..\obj\Mixed\xrECoreB\du_cone.obj 
-      ..\..\..\obj\Mixed\xrECoreB\du_cylinder.obj 
-      ..\..\..\obj\Mixed\xrECoreB\du_sphere.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EDetailModel.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditMesh.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditMeshIO.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditMeshModify.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditMeshPick.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditMeshRender.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObject.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObjectEditor.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObjectImport.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObjectIO.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObjectMotions.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObjectProps.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditObjectSkin.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EditorPreferences.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ELog.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Engine.obj ..\..\..\obj\Mixed\xrECoreB\EStats.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ExportObjectOGF.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ExportSkeleton.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ExportSkeletonCalculateTB.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ImageEditor.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ImageManager.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Library.obj 
-      ..\..\..\obj\Mixed\xrECoreB\LogForm.obj 
-      ..\..\..\obj\Mixed\xrECoreB\render.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SoundEditor.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SoundManager.obj 
-      ..\..\..\obj\Mixed\xrECoreB\TLSPRITE.obj 
-      ..\..\..\obj\Mixed\xrECoreB\UI_Camera.obj 
-      ..\..\..\obj\Mixed\xrECoreB\UI_MainCommand.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ui_main.obj 
-      ..\..\..\obj\Mixed\xrECoreB\stdafx.obj 
-      ..\..\..\obj\Mixed\xrECoreB\UI_ToolsCustom.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ImageManagerDO.obj 
-      ..\..\..\obj\Mixed\xrECoreB\GeometryCollector.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ParticleEffectActions.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EThumbnailTexture.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EThumbnail.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EThumbnailObject.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EThumbnailSound.obj 
-      ..\..\..\obj\Mixed\xrECoreB\du_sphere_part.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ImageManagerLOD.obj 
-      ..\..\..\obj\Mixed\xrECoreB\DeviceScreenshot.obj 
-      ..\..\..\obj\Mixed\xrECoreB\pDomain.obj 
-      ..\..\..\obj\Mixed\xrECoreB\EThumbnailGroup.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrLoadSurface.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlContMinBox3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlBox3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlMinimizeN.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlMinimize1.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlMath.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlVector3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlMatrix3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlSystem.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlWinSystem.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlContBox3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlQuaternion.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlApprGaussPointsFit3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\WmlEigen.obj 
-      ..\..\..\obj\Mixed\xrECoreB\RAPIDMinBox.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Image.obj 
-      ..\..\..\obj\Mixed\xrECoreB\MinimapEditor.obj 
-      ..\..\..\obj\Mixed\xrECoreB\tga.obj 
-      ..\..\..\obj\Mixed\xrECoreB\DetailModel.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ModelPool.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ParticleEffect.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ParticleGroup.obj 
-      ..\..\..\obj\Mixed\xrECoreB\PSLibrary.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Texture.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrRender_console.obj 
-      ..\..\..\obj\Mixed\xrECoreB\FVisual.obj 
-      ..\..\..\obj\Mixed\xrECoreB\xrSkin2W.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ParticleEffectDef.obj 
-      ..\..\..\obj\Mixed\xrECoreB\FProgressive.obj 
-      ..\..\..\obj\Mixed\xrECoreB\FSkinned.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Animation.obj 
-      ..\..\..\obj\Mixed\xrECoreB\HW.obj ..\..\..\obj\Mixed\xrECoreB\HWCaps.obj 
-      ..\..\..\obj\Mixed\xrECoreB\dxRenderFactory.obj 
-      ..\..\..\obj\Mixed\xrECoreB\dxFontRender.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_Backend.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_Backend_xform.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_Backend_DBG.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_Backend_Runtime.obj 
-      ..\..\..\obj\Mixed\xrECoreB\dx9r_constants_cache.obj 
-      ..\..\..\obj\Mixed\xrECoreB\r_constants.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_DStreams.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ResourceManager.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ResourceManager_Resources.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ResourceManager_Loader.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SH_Atomic.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SH_Texture.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SH_Constant.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SH_Matrix.obj 
-      ..\..\..\obj\Mixed\xrECoreB\SH_RT.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Shader.obj 
-      ..\..\..\obj\Mixed\xrECoreB\tss_def.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Recorder.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Palette.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Recorder_StandartBinding.obj 
-      ..\..\..\obj\Mixed\xrECoreB\TextureDescrManager.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ETextureParams.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Blender_Recorder_R2.obj 
-      ..\..\..\obj\Mixed\xrECoreB\NVMeshMender.obj 
-      ..\..\..\obj\Mixed\xrECoreB\ExportObjectOGFCalculateTB.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_Backend_hemi.obj 
-      ..\..\..\obj\Mixed\xrECoreB\R_Backend_tree.obj 
-      ..\..\..\obj\Mixed\xrECoreB\PhysicsShellHolderEditorBase.obj 
-      ..\..\..\obj\Mixed\xrECoreB\MgcCont3DMinSphere.obj 
-      ..\..\..\obj\Mixed\xrECoreB\MgcVector2.obj 
-      ..\..\..\obj\Mixed\xrECoreB\MgcVector3.obj 
-      ..\..\..\obj\Mixed\xrECoreB\MgcMath.obj 
-      ..\..\..\obj\Mixed\xrECoreB\Frustum.obj 
-      ..\..\..\obj\Mixed\xrECoreB\stats_manager.obj"/>
+    <OBJFILES value="..\..\..\obj\xrECoreB\guid.obj ..\..\..\obj\xrECoreB\bone.obj 
+      ..\..\..\obj\xrECoreB\defines.obj ..\..\..\obj\xrECoreB\cl_collector.obj 
+      ..\..\..\obj\xrECoreB\Envelope.obj ..\..\..\obj\xrECoreB\fmesh.obj 
+      ..\..\..\obj\xrECoreB\GameFont.obj ..\..\..\obj\xrECoreB\GameMtlLib.obj 
+      ..\..\..\obj\xrECoreB\IGame_Persistent.obj 
+      ..\..\..\obj\xrECoreB\IInputReceiver.obj ..\..\..\obj\xrECoreB\interp.obj 
+      ..\..\..\obj\xrECoreB\motion.obj ..\..\..\obj\xrECoreB\pure.obj 
+      ..\..\..\obj\xrECoreB\Xr_input.obj 
+      ..\..\..\obj\xrECoreB\xrImage_Resampler.obj 
+      ..\..\..\obj\xrECoreB\FBasicVisual.obj 
+      ..\..\..\obj\xrECoreB\FHierrarhyVisual.obj 
+      ..\..\..\obj\xrECoreB\SkeletonAnimated.obj 
+      ..\..\..\obj\xrECoreB\SkeletonCustom.obj 
+      ..\..\..\obj\xrECoreB\SkeletonRigid.obj 
+      ..\..\..\obj\xrECoreB\SkeletonX.obj ..\..\..\obj\xrECoreB\ResourceManager_Reset.obj 
+      ..\..\..\obj\xrECoreB\ai_sounds.obj ..\..\..\obj\xrECoreB\nv_algebra.obj 
+      ..\..\..\obj\xrECoreB\SkeletonMotions.obj 
+      ..\..\..\obj\xrECoreB\tntQAVI.obj ..\..\..\obj\xrECoreB\xrCDB_Collector.obj 
+      ..\..\..\obj\xrECoreB\perlin.obj 
+      ..\..\..\obj\xrECoreB\xrTheora_Surface.obj ..\..\..\obj\xrECoreB\xrTheora_Stream.obj 
+      ..\..\..\obj\xrECoreB\LightAnimLibrary.obj 
+      ..\..\..\obj\xrECoreB\xrHemisphere.obj 
+      ..\..\..\obj\xrECoreB\BlenderDefault.obj 
+      ..\..\..\obj\xrECoreB\Blender_default_aref.obj 
+      ..\..\..\obj\xrECoreB\Blender_Vertex.obj 
+      ..\..\..\obj\xrECoreB\Blender_vertex_aref.obj 
+      ..\..\..\obj\xrECoreB\Blender_screen_gray.obj 
+      ..\..\..\obj\xrECoreB\Blender_Editor_Selection.obj 
+      ..\..\..\obj\xrECoreB\Blender_Screen_SET.obj 
+      ..\..\..\obj\xrECoreB\blender_light.obj 
+      ..\..\..\obj\xrECoreB\blender_b.obj ..\..\..\obj\xrECoreB\Blender_Lm(EbB).obj 
+      ..\..\..\obj\xrECoreB\Blender_Blur.obj 
+      ..\..\..\obj\xrECoreB\Blender_Editor_Wire.obj 
+      ..\..\..\obj\xrECoreB\Blender_LaEmB.obj 
+      ..\..\..\obj\xrECoreB\Blender_BmmD.obj 
+      ..\..\..\obj\xrECoreB\Blender_Shadow_World.obj 
+      ..\..\..\obj\xrECoreB\Blender_Model.obj 
+      ..\..\..\obj\xrECoreB\Blender_Model_EbB.obj 
+      ..\..\..\obj\xrECoreB\Blender_detail_still.obj 
+      ..\..\..\obj\xrECoreB\Blender_tree.obj 
+      ..\..\..\obj\xrECoreB\Blender_particle.obj 
+      ..\..\..\obj\xrECoreB\guid_generator.obj 
+      ..\..\..\obj\xrECoreB\UI_MainMail.obj ..\..\..\obj\xrECoreB\BoneEditor.obj 
+      ..\..\..\obj\xrECoreB\c_dinput.obj ..\..\..\obj\xrECoreB\ColorPicker.obj 
+      ..\..\..\obj\xrECoreB\D3DUtils.obj ..\..\..\obj\xrECoreB\device.obj 
+      ..\..\..\obj\xrECoreB\du_box.obj ..\..\..\obj\xrECoreB\du_cone.obj 
+      ..\..\..\obj\xrECoreB\du_cylinder.obj ..\..\..\obj\xrECoreB\du_sphere.obj 
+      ..\..\..\obj\xrECoreB\EDetailModel.obj ..\..\..\obj\xrECoreB\EditMesh.obj 
+      ..\..\..\obj\xrECoreB\EditMeshIO.obj 
+      ..\..\..\obj\xrECoreB\EditMeshModify.obj 
+      ..\..\..\obj\xrECoreB\EditMeshPick.obj 
+      ..\..\..\obj\xrECoreB\EditMeshRender.obj 
+      ..\..\..\obj\xrECoreB\EditObject.obj 
+      ..\..\..\obj\xrECoreB\EditObjectEditor.obj 
+      ..\..\..\obj\xrECoreB\EditObjectImport.obj 
+      ..\..\..\obj\xrECoreB\EditObjectIO.obj 
+      ..\..\..\obj\xrECoreB\EditObjectMotions.obj 
+      ..\..\..\obj\xrECoreB\EditObjectProps.obj 
+      ..\..\..\obj\xrECoreB\EditObjectSkin.obj 
+      ..\..\..\obj\xrECoreB\EditorPreferences.obj ..\..\..\obj\xrECoreB\ELog.obj 
+      ..\..\..\obj\xrECoreB\Engine.obj ..\..\..\obj\xrECoreB\EStats.obj 
+      ..\..\..\obj\xrECoreB\ExportObjectOGF.obj 
+      ..\..\..\obj\xrECoreB\ExportSkeleton.obj 
+      ..\..\..\obj\xrECoreB\ExportSkeletonCalculateTB.obj 
+      ..\..\..\obj\xrECoreB\ImageEditor.obj 
+      ..\..\..\obj\xrECoreB\ImageManager.obj ..\..\..\obj\xrECoreB\Library.obj 
+      ..\..\..\obj\xrECoreB\LogForm.obj ..\..\..\obj\xrECoreB\render.obj 
+      ..\..\..\obj\xrECoreB\SoundEditor.obj 
+      ..\..\..\obj\xrECoreB\SoundManager.obj ..\..\..\obj\xrECoreB\TLSPRITE.obj 
+      ..\..\..\obj\xrECoreB\UI_Camera.obj 
+      ..\..\..\obj\xrECoreB\UI_MainCommand.obj ..\..\..\obj\xrECoreB\ui_main.obj 
+      ..\..\..\obj\xrECoreB\stdafx.obj ..\..\..\obj\xrECoreB\UI_ToolsCustom.obj 
+      ..\..\..\obj\xrECoreB\ImageManagerDO.obj 
+      ..\..\..\obj\xrECoreB\GeometryCollector.obj 
+      ..\..\..\obj\xrECoreB\ParticleEffectActions.obj 
+      ..\..\..\obj\xrECoreB\EThumbnailTexture.obj 
+      ..\..\..\obj\xrECoreB\EThumbnail.obj 
+      ..\..\..\obj\xrECoreB\EThumbnailObject.obj 
+      ..\..\..\obj\xrECoreB\EThumbnailSound.obj 
+      ..\..\..\obj\xrECoreB\du_sphere_part.obj 
+      ..\..\..\obj\xrECoreB\ImageManagerLOD.obj 
+      ..\..\..\obj\xrECoreB\DeviceScreenshot.obj 
+      ..\..\..\obj\xrECoreB\pDomain.obj 
+      ..\..\..\obj\xrECoreB\EThumbnailGroup.obj ..\..\..\obj\xrECoreB\xrLoadSurface.obj 
+      ..\..\..\obj\xrECoreB\WmlContMinBox3.obj ..\..\..\obj\xrECoreB\WmlBox3.obj 
+      ..\..\..\obj\xrECoreB\WmlMinimizeN.obj 
+      ..\..\..\obj\xrECoreB\WmlMinimize1.obj ..\..\..\obj\xrECoreB\WmlMath.obj 
+      ..\..\..\obj\xrECoreB\WmlVector3.obj ..\..\..\obj\xrECoreB\WmlMatrix3.obj 
+      ..\..\..\obj\xrECoreB\WmlSystem.obj ..\..\..\obj\xrECoreB\WmlWinSystem.obj 
+      ..\..\..\obj\xrECoreB\WmlContBox3.obj 
+      ..\..\..\obj\xrECoreB\WmlQuaternion.obj 
+      ..\..\..\obj\xrECoreB\WmlApprGaussPointsFit3.obj 
+      ..\..\..\obj\xrECoreB\WmlEigen.obj ..\..\..\obj\xrECoreB\RAPIDMinBox.obj 
+      ..\..\..\obj\xrECoreB\Image.obj ..\..\..\obj\xrECoreB\MinimapEditor.obj 
+      ..\..\..\obj\xrECoreB\tga.obj ..\..\..\obj\xrECoreB\DetailModel.obj 
+      ..\..\..\obj\xrECoreB\ModelPool.obj 
+      ..\..\..\obj\xrECoreB\ParticleEffect.obj 
+      ..\..\..\obj\xrECoreB\ParticleGroup.obj 
+      ..\..\..\obj\xrECoreB\PSLibrary.obj ..\..\..\obj\xrECoreB\Texture.obj 
+      ..\..\..\obj\xrECoreB\xrRender_console.obj 
+      ..\..\..\obj\xrECoreB\FVisual.obj ..\..\..\obj\xrECoreB\xrSkin2W.obj 
+      ..\..\..\obj\xrECoreB\ParticleEffectDef.obj 
+      ..\..\..\obj\xrECoreB\FProgressive.obj ..\..\..\obj\xrECoreB\FSkinned.obj 
+      ..\..\..\obj\xrECoreB\Animation.obj ..\..\..\obj\xrECoreB\HW.obj 
+      ..\..\..\obj\xrECoreB\HWCaps.obj ..\..\..\obj\xrECoreB\dxRenderFactory.obj 
+      ..\..\..\obj\xrECoreB\dxFontRender.obj ..\..\..\obj\xrECoreB\R_Backend.obj 
+      ..\..\..\obj\xrECoreB\R_Backend_xform.obj 
+      ..\..\..\obj\xrECoreB\R_Backend_DBG.obj 
+      ..\..\..\obj\xrECoreB\R_Backend_Runtime.obj 
+      ..\..\..\obj\xrECoreB\dx9r_constants_cache.obj 
+      ..\..\..\obj\xrECoreB\r_constants.obj ..\..\..\obj\xrECoreB\R_DStreams.obj 
+      ..\..\..\obj\xrECoreB\ResourceManager.obj 
+      ..\..\..\obj\xrECoreB\ResourceManager_Resources.obj 
+      ..\..\..\obj\xrECoreB\ResourceManager_Loader.obj 
+      ..\..\..\obj\xrECoreB\SH_Atomic.obj ..\..\..\obj\xrECoreB\SH_Texture.obj 
+      ..\..\..\obj\xrECoreB\SH_Constant.obj ..\..\..\obj\xrECoreB\SH_Matrix.obj 
+      ..\..\..\obj\xrECoreB\SH_RT.obj ..\..\..\obj\xrECoreB\Shader.obj 
+      ..\..\..\obj\xrECoreB\tss_def.obj 
+      ..\..\..\obj\xrECoreB\Blender_Recorder.obj 
+      ..\..\..\obj\xrECoreB\Blender.obj 
+      ..\..\..\obj\xrECoreB\Blender_Palette.obj ..\..\..\obj\xrECoreB\Blender_Recorder_StandartBinding.obj 
+      ..\..\..\obj\xrECoreB\TextureDescrManager.obj 
+      ..\..\..\obj\xrECoreB\ETextureParams.obj 
+      ..\..\..\obj\xrECoreB\Blender_Recorder_R2.obj 
+      ..\..\..\obj\xrECoreB\NVMeshMender.obj 
+      ..\..\..\obj\xrECoreB\ExportObjectOGFCalculateTB.obj 
+      ..\..\..\obj\xrECoreB\R_Backend_hemi.obj 
+      ..\..\..\obj\xrECoreB\R_Backend_tree.obj 
+      ..\..\..\obj\xrECoreB\PhysicsShellHolderEditorBase.obj 
+      ..\..\..\obj\xrECoreB\MgcCont3DMinSphere.obj 
+      ..\..\..\obj\xrECoreB\MgcVector2.obj ..\..\..\obj\xrECoreB\MgcVector3.obj 
+      ..\..\..\obj\xrECoreB\MgcMath.obj ..\..\..\obj\xrECoreB\Frustum.obj 
+      ..\..\..\obj\xrECoreB\stats_manager.obj"/>
     <RESFILES value="resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -188,7 +147,7 @@
     <LIBRARIES value="editor.lib editorB.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib editorB.lib editor.lib elpackB6.lib"/>
     <PACKAGES value="vcl.bpi rtl.bpi elpackB6.bpi bcbsmp.bpi"/>
-    <PATHCPP value=".;Engine;..\..\xrEngine;Engine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;Engine;Engine;..\..\xrEngine;..\..\xrEngine;..\..\xrCDB;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\xrEngine;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRender;..\..\Layers\xrRender;Engine\blenders;Engine\blenders;..\..\Layers\xrRender;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRender;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRender;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRenderPC_R1;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;Engine;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;Editor;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;WildMagic;Engine;Editor;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\xrCPU_Pipe;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRenderDX9;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender\blenders;..\..\Layers\xrRender\blenders;..\..\Layers\xrRender\blenders;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\common\NvMender2003;Editor;..\..\Layers\xrRender;..\..\Layers\xrRender;Editor;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core;..\..\xrCDB;..\..\Layers\xrRender"/>
+    <PATHCPP value=".;Engine;..\..\xrEngine;..\..\Layers\xrRender;..\..\xrCDB;..\..\Layers\xrRenderPC_R1;Engine\blenders;Editor;WildMagic;..\..\xrCPU_Pipe;..\..\Layers\xrRenderDX9;..\..\Layers\xrRender\blenders;..\..\common\NvMender2003;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -220,13 +179,13 @@
       -I..\..\..\sdk\sources\MagicSoftware\Sdk\Include 
       -I..\..\..\sdk\include\freeimage -I..\..\utils\ETools -src_suffix cpp 
       -D_EDITOR -D_ECOREB -DXRCDB_EXPORTS -D_DEBUG -boa"/>
-    <CFLAG1 value="-WD -Od -H=..\..\..\obj\Mixed\xrECoreB\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
-      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\xrECoreB -N0..\..\..\obj\Mixed\xrECoreB -$Y+ -$W 
-      -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-WD -Od -H=..\..\..\obj\xrECoreB\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
+      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2..\..\..\obj\xrECoreB -N0..\..\..\obj\xrECoreB -$Y+ -$W -$O- -$A8 -v 
+      -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\xrECoreB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\xrECoreB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

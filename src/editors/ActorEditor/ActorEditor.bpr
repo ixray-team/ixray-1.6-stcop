@@ -4,27 +4,24 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\ActorEditor.exe"/>
-    <OBJFILES value="..\..\..\obj\Mixed\ActorEditor\ActorEditor.obj 
-      ..\..\..\obj\Mixed\ActorEditor\BonePart.obj 
-      ..\..\..\obj\Mixed\ActorEditor\KeyBar.obj 
-      ..\..\..\obj\Mixed\ActorEditor\LeftBar.obj 
-      ..\..\..\obj\Mixed\ActorEditor\Splash.obj 
-      ..\..\..\obj\Mixed\ActorEditor\main.obj 
-      ..\..\..\obj\Mixed\ActorEditor\TopBar.obj 
-      ..\..\..\obj\Mixed\ActorEditor\BottomBar.obj 
-      ..\..\..\obj\Mixed\ActorEditor\UI_ActorMain.obj 
-      ..\..\..\obj\Mixed\ActorEditor\UI_ActorToolsUndo.obj 
-      ..\..\..\obj\Mixed\ActorEditor\UI_ActorTools.obj 
-      ..\..\..\obj\Mixed\ActorEditor\UI_ActorToolsMotions.obj 
-      ..\..\..\obj\Mixed\ActorEditor\UI_ActorToolsProps.obj 
-      ..\..\..\obj\Mixed\ActorEditor\stdafx.obj 
-      ..\..\..\obj\Mixed\ActorEditor\SkeletonAnimated.obj 
-      ..\..\..\obj\Mixed\ActorEditor\SkeletonCustom.obj 
-      ..\..\..\obj\Mixed\ActorEditor\FHierrarhyVisual.obj 
-      ..\..\..\obj\Mixed\ActorEditor\FVisual.obj 
-      ..\..\..\obj\Mixed\ActorEditor\SkeletonRigid.obj 
-      ..\..\..\obj\Mixed\ActorEditor\SkeletonX.obj 
-      ..\..\..\obj\Mixed\ActorEditor\Animation.obj"/>
+    <OBJFILES value="..\..\..\obj\ActorEditor\ActorEditor.obj 
+      ..\..\..\obj\ActorEditor\BonePart.obj ..\..\..\obj\ActorEditor\KeyBar.obj 
+      ..\..\..\obj\ActorEditor\LeftBar.obj ..\..\..\obj\ActorEditor\Splash.obj 
+      ..\..\..\obj\ActorEditor\main.obj ..\..\..\obj\ActorEditor\TopBar.obj 
+      ..\..\..\obj\ActorEditor\BottomBar.obj 
+      ..\..\..\obj\ActorEditor\UI_ActorMain.obj 
+      ..\..\..\obj\ActorEditor\UI_ActorToolsUndo.obj 
+      ..\..\..\obj\ActorEditor\UI_ActorTools.obj 
+      ..\..\..\obj\ActorEditor\UI_ActorToolsMotions.obj 
+      ..\..\..\obj\ActorEditor\UI_ActorToolsProps.obj 
+      ..\..\..\obj\ActorEditor\stdafx.obj 
+      ..\..\..\obj\ActorEditor\SkeletonAnimated.obj 
+      ..\..\..\obj\ActorEditor\SkeletonCustom.obj 
+      ..\..\..\obj\ActorEditor\FHierrarhyVisual.obj 
+      ..\..\..\obj\ActorEditor\FVisual.obj 
+      ..\..\..\obj\ActorEditor\SkeletonRigid.obj 
+      ..\..\..\obj\ActorEditor\SkeletonX.obj 
+      ..\..\..\obj\ActorEditor\Animation.obj"/>
     <RESFILES value="ActorEditor.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -35,7 +32,7 @@
     <LIBRARIES value="editor.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib editor.lib elpackB6.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi elpackB6.bpi"/>
-    <PATHCPP value=".;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender"/>
+    <PATHCPP value=".;..\..\Layers\xrRender"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -52,19 +49,19 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_ACTOR_EDITOR -D_DEBUG -I..\.. 
-      -I..\..\Layers\xrRender -I..\..\..\sdk\dxsdk_mar2009\Include 
+    <IDLCFLAGS value="-I..\.. -I..\..\Layers\xrRender -I..\..\..\sdk\dxsdk_mar2009\Include 
       -I..\..\..\sdk\components\AlexMX -I$(BCB)\include -I$(BCB)\include\vcl 
       -I..\..\..\sdk\components\ElPack\Code 
       -I..\..\..\sdk\components\ElPack\Code\Source -I..\..\xrCore 
-      -I..\..\xrEngine -I..\..\xrCPU_Pipe -boa"/>
-    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ActorEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
-      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\ActorEditor -N0..\..\..\obj\Mixed\ActorEditor -$Y+ 
-      -$W -$O- -$A8 -v -JPHNE -M"/>
+      -I..\..\xrEngine -I..\..\xrCPU_Pipe -src_suffix cpp -D_EDITOR 
+      -D_ACTOR_EDITOR -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\ActorEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
+      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\ActorEditor -N0..\..\..\obj\ActorEditor -$Y+ -$W -$O- -$A8 
+      -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\ActorEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\ActorEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

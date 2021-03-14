@@ -4,26 +4,24 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\bin\xrSoundB.dll"/>
-    <OBJFILES value="..\..\obj\Mixed\xrSoundB\SoundRender_Core.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Core_Processor.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Core_SourceManager.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Core_StartStop.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Emitter.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Emitter_FSM.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Emitter_StartStop.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Emitter_streamer.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Environment.obj 
-      ..\..\obj\Mixed\xrSoundB\soundrender_source.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Source_loader.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Target.obj 
-      ..\..\obj\Mixed\xrSoundB\stdafx.obj ..\..\obj\Mixed\xrSoundB\guids.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_Cache.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_TargetA.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_CoreA.obj 
-      ..\..\obj\Mixed\xrSoundB\sound.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_TargetD.obj 
-      ..\..\obj\Mixed\xrSoundB\SoundRender_CoreD.obj 
-      ..\..\obj\Mixed\xrSoundB\OpenALDeviceList.obj"/>
+    <OBJFILES value="..\..\obj\xrSoundB\SoundRender_Core.obj 
+      ..\..\obj\xrSoundB\SoundRender_Core_Processor.obj 
+      ..\..\obj\xrSoundB\SoundRender_Core_SourceManager.obj 
+      ..\..\obj\xrSoundB\SoundRender_Core_StartStop.obj 
+      ..\..\obj\xrSoundB\SoundRender_Emitter.obj 
+      ..\..\obj\xrSoundB\SoundRender_Emitter_FSM.obj 
+      ..\..\obj\xrSoundB\SoundRender_Emitter_StartStop.obj 
+      ..\..\obj\xrSoundB\SoundRender_Emitter_streamer.obj 
+      ..\..\obj\xrSoundB\SoundRender_Environment.obj 
+      ..\..\obj\xrSoundB\soundrender_source.obj 
+      ..\..\obj\xrSoundB\SoundRender_Source_loader.obj 
+      ..\..\obj\xrSoundB\SoundRender_Target.obj ..\..\obj\xrSoundB\stdafx.obj 
+      ..\..\obj\xrSoundB\guids.obj ..\..\obj\xrSoundB\SoundRender_Cache.obj 
+      ..\..\obj\xrSoundB\SoundRender_TargetA.obj 
+      ..\..\obj\xrSoundB\SoundRender_CoreA.obj ..\..\obj\xrSoundB\sound.obj 
+      ..\..\obj\xrSoundB\SoundRender_TargetD.obj 
+      ..\..\obj\xrSoundB\SoundRender_CoreD.obj 
+      ..\..\obj\xrSoundB\OpenALDeviceList.obj"/>
     <RESFILES value=""/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -52,13 +50,12 @@
     <IDLCFLAGS value="-I..\..\sdk\dxsdk_mar2009\Include -I$(BCB)\include -I$(BCB)\include\vcl 
       -I..\xrCore -I..\..\sdk\include -I..\utils\ETools -src_suffix cpp 
       -D_EDITOR -D_XRSOUNDB -DXRSOUND_EXPORTS -D_DEBUG -boa"/>
-    <CFLAG1 value="-WD -Od -H=..\..\obj\Mixed\xrSoundB\pch.csm -Hc -Q -Vx -Ve -xf -xp -VF -ff 
-      -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2..\..\obj\Mixed\xrSoundB -N0..\..\obj\Mixed\xrSoundB -$Y+ -$W -$O- -$A8 
-      -v -JPHNE -M"/>
+    <CFLAG1 value="-WD -Od -H=..\..\obj\xrSoundB\pch.csm -Hc -Q -Vx -Ve -xf -xp -VF -ff -X- 
+      -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2..\..\obj\xrSoundB -N0..\..\obj\xrSoundB -$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-l..\..\lib -I..\..\obj\Mixed\xrSoundB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
+    <LFLAGS value="-l..\..\lib -I..\..\obj\xrSoundB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

@@ -4,22 +4,19 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\xrEPropsB.dll"/>
-    <OBJFILES value="..\..\..\obj\Mixed\xrEPropsB\stdafx.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\PropertiesListTypes.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ItemList.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ItemListHelper.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ItemListTypes.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\PropertiesList.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\PropertiesListHelper.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\FolderLib.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ColorPicker.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\NumericVector.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ShaderFunction.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\TextForm.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\xrEProps.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ChoseForm.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\ItemDialog.obj 
-      ..\..\..\obj\Mixed\xrEPropsB\GameTypeForm.obj"/>
+    <OBJFILES value="..\..\..\obj\xrEPropsB\stdafx.obj 
+      ..\..\..\obj\xrEPropsB\PropertiesListTypes.obj 
+      ..\..\..\obj\xrEPropsB\ItemList.obj 
+      ..\..\..\obj\xrEPropsB\ItemListHelper.obj 
+      ..\..\..\obj\xrEPropsB\ItemListTypes.obj 
+      ..\..\..\obj\xrEPropsB\PropertiesList.obj 
+      ..\..\..\obj\xrEPropsB\PropertiesListHelper.obj 
+      ..\..\..\obj\xrEPropsB\FolderLib.obj 
+      ..\..\..\obj\xrEPropsB\ColorPicker.obj ..\..\..\obj\xrEPropsB\NumericVector.obj 
+      ..\..\..\obj\xrEPropsB\ShaderFunction.obj 
+      ..\..\..\obj\xrEPropsB\TextForm.obj ..\..\..\obj\xrEPropsB\xrEProps.obj 
+      ..\..\..\obj\xrEPropsB\ChoseForm.obj ..\..\..\obj\xrEPropsB\ItemDialog.obj 
+      ..\..\..\obj\xrEPropsB\GameTypeForm.obj"/>
     <RESFILES value="xrEPropsB.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -51,13 +48,13 @@
       -I..\..\..\sdk\components\AlexMX 
       -I..\..\..\sdk\components\elpack\code\source -src_suffix cpp -D_EDITOR 
       -DXR_EPROPS_EXPORTS -D_DEBUG -boa"/>
-    <CFLAG1 value="-WD -Od -H=..\..\..\obj\Mixed\xrEPropsB\pch.csm -Hc -Q -Vms -Vx -Ve -xf 
-      -xp -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\xrEPropsB -N0..\..\..\obj\Mixed\xrEPropsB -$Y+ -$W 
-      -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-WD -Od -H=..\..\..\obj\xrEPropsB\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
+      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2..\..\..\obj\xrEPropsB -N0..\..\..\obj\xrEPropsB -$Y+ -$W -$O- -$A8 -v 
+      -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\xrEPropsB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\xrEPropsB -D&quot;&quot; -aa -Tpd -x -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

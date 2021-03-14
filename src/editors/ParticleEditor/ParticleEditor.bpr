@@ -4,25 +4,24 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\ParticleEditor.exe"/>
-    <OBJFILES value="..\..\..\obj\Mixed\ParticleEditor\ParticleEditor.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\stdafx.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\Splash.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\main.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\BottomBar.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\TopBar.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\LeftBar.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\UI_ParticleMain.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\UI_ParticleTools.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\UI_ParticleToolsProps.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\PSLibraryEditor.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\ParticleGroupEditor.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\ParticleEffectEditor.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\StatGraph.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\ObjectAnimator.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\noise.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\ParticleEffectActionsImpl.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\pDomain.obj 
-      ..\..\..\obj\Mixed\ParticleEditor\ItemPropFormUnit.obj"/>
+    <OBJFILES value="..\..\..\obj\ParticleEditor\ParticleEditor.obj 
+      ..\..\..\obj\ParticleEditor\stdafx.obj 
+      ..\..\..\obj\ParticleEditor\Splash.obj 
+      ..\..\..\obj\ParticleEditor\main.obj ..\..\..\obj\ParticleEditor\BottomBar.obj 
+      ..\..\..\obj\ParticleEditor\TopBar.obj 
+      ..\..\..\obj\ParticleEditor\LeftBar.obj 
+      ..\..\..\obj\ParticleEditor\UI_ParticleMain.obj 
+      ..\..\..\obj\ParticleEditor\UI_ParticleTools.obj 
+      ..\..\..\obj\ParticleEditor\UI_ParticleToolsProps.obj 
+      ..\..\..\obj\ParticleEditor\PSLibraryEditor.obj 
+      ..\..\..\obj\ParticleEditor\ParticleGroupEditor.obj 
+      ..\..\..\obj\ParticleEditor\ParticleEffectEditor.obj 
+      ..\..\..\obj\ParticleEditor\StatGraph.obj 
+      ..\..\..\obj\ParticleEditor\ObjectAnimator.obj 
+      ..\..\..\obj\ParticleEditor\noise.obj 
+      ..\..\..\obj\ParticleEditor\ParticleEffectActionsImpl.obj 
+      ..\..\..\obj\ParticleEditor\pDomain.obj 
+      ..\..\..\obj\ParticleEditor\ItemPropFormUnit.obj"/>
     <RESFILES value="ParticleEditor.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -33,7 +32,7 @@
     <LIBRARIES value="editor.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib editor.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi elpackB6.bpi"/>
-    <PATHCPP value=".;..\..\xrEngine;..\..\xrEngine;..\ECore\Editor"/>
+    <PATHCPP value=".;..\..\xrEngine;..\ECore\Editor"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -50,19 +49,19 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_PARTICLE_EDITOR -D_DEBUG -I$(BCB)\Projects 
-      -I..\ECore\Editor -I..\..\..\sdk\dxsdk_mar2009\Include 
+    <IDLCFLAGS value="-I$(BCB)\Projects -I..\ECore\Editor -I..\..\..\sdk\dxsdk_mar2009\Include 
       -I..\..\..\sdk\components\AlexMX -I$(BCB)\include\vcl -I$(BCB)\include 
       -I..\..\..\sdk\components\ElPack\Code 
       -I..\..\..\sdk\components\ElPack\Code\Source -I..\..\xrEngine 
-      -I..\..\xrCore -I..\..\xrParticles -no_tie -boa"/>
-    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\ParticleEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf 
-      -xp -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\ParticleEditor -N0..\..\..\obj\Mixed\ParticleEditor 
-      -$Y+ -$W -$Q -$O- -$A8 -v -JPHNE -M"/>
+      -I..\..\xrCore -I..\..\xrParticles -src_suffix cpp -D_EDITOR 
+      -D_PARTICLE_EDITOR -D_DEBUG -no_tie -boa"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\ParticleEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
+      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\ParticleEditor -N0..\..\..\obj\ParticleEditor -$Y+ -$W -$Q 
+      -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\ParticleEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\ParticleEditor -D&quot;&quot; -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

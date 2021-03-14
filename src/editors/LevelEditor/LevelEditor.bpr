@@ -4,153 +4,147 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="..\..\..\bin\LevelEditor.exe"/>
-    <OBJFILES value="..\..\..\obj\Mixed\LevelEditor\LevelEditor.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BottomBar.obj 
-      ..\..\..\obj\Mixed\LevelEditor\main.obj 
-      ..\..\..\obj\Mixed\LevelEditor\TopBar.obj 
-      ..\..\..\obj\Mixed\LevelEditor\stdafx.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DOOneColor.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DOShuffle.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EditLibrary.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EditLightAnim.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameAIMap.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameDetObj.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameGroup.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameLight.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameObject.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FramePortal.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FramePS.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameSector.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameShape.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameSpawn.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameWayPoint.obj 
-      ..\..\..\obj\Mixed\LevelEditor\LeftBar.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ObjectList.obj 
-      ..\..\..\obj\Mixed\LevelEditor\previewimage.obj 
-      ..\..\..\obj\Mixed\LevelEditor\PropertiesEObject.obj 
-      ..\..\..\obj\Mixed\LevelEditor\Splash.obj 
-      ..\..\..\obj\Mixed\LevelEditor\UI_LevelTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\UI_LevelMain.obj 
-      ..\..\..\obj\Mixed\LevelEditor\WayPoint.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools_Export.obj 
-      ..\..\..\obj\Mixed\LevelEditor\Builder.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderCF.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderCore.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderGame.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderLTX.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderOGF.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderRemote.obj 
-      ..\..\..\obj\Mixed\LevelEditor\Cursor3D.obj 
-      ..\..\..\obj\Mixed\LevelEditor\Custom2DProjector.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneDOTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EditObjectExportLWO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ELight.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EParticlesObject.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools_Controls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools_Generate.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools_MotionSimulator.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools_Pick.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapTools_Render.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneCustomMTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneCustomMToolsControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneCustomOTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneCustomOToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneDummyTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneGlowTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneGroupTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneLightTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneLightToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneObjectTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EScenePortalTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EScenePSTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSectorTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneShapeTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSoundEnvTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSoundSrcTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSpawnTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneWayTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EShape.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESound_Environment.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESound_Source.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FS2.obj 
-      ..\..\..\obj\Mixed\LevelEditor\glow.obj 
-      ..\..\..\obj\Mixed\LevelEditor\GroupObject.obj 
-      ..\..\..\obj\Mixed\LevelEditor\portal.obj 
-      ..\..\..\obj\Mixed\LevelEditor\portalutils.obj 
-      ..\..\..\obj\Mixed\LevelEditor\scene.obj 
-      ..\..\..\obj\Mixed\LevelEditor\Scene_Tools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneObject.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneObjectIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ScenePick.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneRender.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneSelection.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneSnap.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneSummaryInfo.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneUndo.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SceneUtil.obj 
-      ..\..\..\obj\Mixed\LevelEditor\sector.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SoundManager_LE.obj 
-      ..\..\..\obj\Mixed\LevelEditor\SpawnPoint.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneAIMapControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneControlsCustom.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneObjectControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EScenePortalControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EScenePSControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSectorControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneShapeControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSpawnControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneWayControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneGlowToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EScenePortalToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSectorToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSpawnToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneObjectToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\EScenePSToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneShapeToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSoundEnvToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneSoundSrcToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneWayToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneGroupToolsIO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneDOTools_Pick.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneDOTools_Controls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneDOTools_Generate.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ObjectAnimator.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ELight_props.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ELight_IO.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneObjectToolsExportBreakable.obj 
-      ..\..\..\obj\Mixed\LevelEditor\LevelGameDef.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneWallmarkTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneWallmarkControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\GeometryPartExtractor.obj 
-      ..\..\..\obj\Mixed\LevelEditor\BuilderLODs.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneGroupControls.obj 
-      ..\..\..\obj\Mixed\LevelEditor\CustomObjectLE.obj 
-      ..\..\..\obj\Mixed\LevelEditor\CustomObject.obj 
-      ..\..\..\obj\Mixed\LevelEditor\CustomObjectAnimation.obj 
-      ..\..\..\obj\Mixed\LevelEditor\LevelPreferences.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrmDBXpacker.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DetailManager.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DetailManager_Decompress.obj 
-      ..\..\..\obj\Mixed\LevelEditor\iniStreamImpl.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DetailManager_soft.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DetailManager_CACHE.obj 
-      ..\..\..\obj\Mixed\LevelEditor\DetailManager_VS.obj 
-      ..\..\..\obj\Mixed\LevelEditor\ESceneFogVolumeTools.obj 
-      ..\..\..\obj\Mixed\LevelEditor\RightForm.obj 
-      ..\..\..\obj\Mixed\LevelEditor\FrameFogVol.obj 
-      ..\..\..\obj\Mixed\LevelEditor\gametype_chooser.obj 
-      ..\..\..\obj\Mixed\LevelEditor\GroupObjectUtils.obj 
-      ..\..\..\obj\Mixed\LevelEditor\AppendObjectInfoForm.obj 
-      ..\..\..\obj\Mixed\LevelEditor\LEClipEditor.obj 
-      ..\..\..\obj\Mixed\LevelEditor\LEPhysics.obj 
-      ..\..\..\obj\Mixed\LevelEditor\MgcConvexHull2D.obj 
-      ..\..\..\obj\Mixed\LevelEditor\MgcAppr3DPlaneFit.obj 
-      ..\..\..\obj\Mixed\LevelEditor\MgcEigen.obj 
-      ..\..\..\obj\Mixed\LevelEditor\MgcVector2.obj 
-      ..\..\..\obj\Mixed\LevelEditor\MgcVector3.obj 
-      ..\..\..\obj\Mixed\LevelEditor\stats_manager.obj"/>
+    <OBJFILES value="..\..\..\obj\LevelEditor\LevelEditor.obj 
+      ..\..\..\obj\LevelEditor\BottomBar.obj ..\..\..\obj\LevelEditor\main.obj 
+      ..\..\..\obj\LevelEditor\TopBar.obj ..\..\..\obj\LevelEditor\stdafx.obj 
+      ..\..\..\obj\LevelEditor\DOOneColor.obj 
+      ..\..\..\obj\LevelEditor\DOShuffle.obj 
+      ..\..\..\obj\LevelEditor\EditLibrary.obj 
+      ..\..\..\obj\LevelEditor\EditLightAnim.obj 
+      ..\..\..\obj\LevelEditor\FrameAIMap.obj 
+      ..\..\..\obj\LevelEditor\FrameDetObj.obj 
+      ..\..\..\obj\LevelEditor\FrameGroup.obj 
+      ..\..\..\obj\LevelEditor\FrameLight.obj 
+      ..\..\..\obj\LevelEditor\FrameObject.obj 
+      ..\..\..\obj\LevelEditor\FramePortal.obj 
+      ..\..\..\obj\LevelEditor\FramePS.obj 
+      ..\..\..\obj\LevelEditor\FrameSector.obj 
+      ..\..\..\obj\LevelEditor\FrameShape.obj 
+      ..\..\..\obj\LevelEditor\FrameSpawn.obj 
+      ..\..\..\obj\LevelEditor\FrameWayPoint.obj 
+      ..\..\..\obj\LevelEditor\LeftBar.obj 
+      ..\..\..\obj\LevelEditor\ObjectList.obj 
+      ..\..\..\obj\LevelEditor\previewimage.obj 
+      ..\..\..\obj\LevelEditor\PropertiesEObject.obj 
+      ..\..\..\obj\LevelEditor\Splash.obj 
+      ..\..\..\obj\LevelEditor\UI_LevelTools.obj 
+      ..\..\..\obj\LevelEditor\UI_LevelMain.obj 
+      ..\..\..\obj\LevelEditor\WayPoint.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools_Export.obj 
+      ..\..\..\obj\LevelEditor\Builder.obj 
+      ..\..\..\obj\LevelEditor\BuilderCF.obj ..\..\..\obj\LevelEditor\BuilderCore.obj 
+      ..\..\..\obj\LevelEditor\BuilderGame.obj 
+      ..\..\..\obj\LevelEditor\BuilderLTX.obj 
+      ..\..\..\obj\LevelEditor\BuilderOGF.obj 
+      ..\..\..\obj\LevelEditor\BuilderRemote.obj 
+      ..\..\..\obj\LevelEditor\Cursor3D.obj 
+      ..\..\..\obj\LevelEditor\Custom2DProjector.obj 
+      ..\..\..\obj\LevelEditor\ESceneDOTools.obj 
+      ..\..\..\obj\LevelEditor\EditObjectExportLWO.obj 
+      ..\..\..\obj\LevelEditor\ELight.obj 
+      ..\..\..\obj\LevelEditor\EParticlesObject.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools_Controls.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools_Generate.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools_MotionSimulator.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools_Pick.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapTools_Render.obj 
+      ..\..\..\obj\LevelEditor\ESceneCustomMTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneCustomMToolsControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneCustomOTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneCustomOToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneDummyTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneGlowTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneGroupTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneLightTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneLightToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneObjectTools.obj 
+      ..\..\..\obj\LevelEditor\EScenePortalTools.obj 
+      ..\..\..\obj\LevelEditor\EScenePSTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneSectorTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneShapeTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneSoundEnvTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneSoundSrcTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneSpawnTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneWayTools.obj 
+      ..\..\..\obj\LevelEditor\EShape.obj 
+      ..\..\..\obj\LevelEditor\ESound_Environment.obj 
+      ..\..\..\obj\LevelEditor\ESound_Source.obj 
+      ..\..\..\obj\LevelEditor\FS2.obj ..\..\..\obj\LevelEditor\glow.obj 
+      ..\..\..\obj\LevelEditor\GroupObject.obj 
+      ..\..\..\obj\LevelEditor\portal.obj 
+      ..\..\..\obj\LevelEditor\portalutils.obj 
+      ..\..\..\obj\LevelEditor\scene.obj ..\..\..\obj\LevelEditor\Scene_Tools.obj 
+      ..\..\..\obj\LevelEditor\SceneIO.obj 
+      ..\..\..\obj\LevelEditor\SceneObject.obj 
+      ..\..\..\obj\LevelEditor\SceneObjectIO.obj 
+      ..\..\..\obj\LevelEditor\ScenePick.obj 
+      ..\..\..\obj\LevelEditor\SceneRender.obj 
+      ..\..\..\obj\LevelEditor\SceneSelection.obj 
+      ..\..\..\obj\LevelEditor\SceneSnap.obj 
+      ..\..\..\obj\LevelEditor\SceneSummaryInfo.obj 
+      ..\..\..\obj\LevelEditor\SceneUndo.obj 
+      ..\..\..\obj\LevelEditor\SceneUtil.obj ..\..\..\obj\LevelEditor\sector.obj 
+      ..\..\..\obj\LevelEditor\SoundManager_LE.obj 
+      ..\..\..\obj\LevelEditor\SpawnPoint.obj 
+      ..\..\..\obj\LevelEditor\ESceneAIMapControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneControlsCustom.obj 
+      ..\..\..\obj\LevelEditor\ESceneObjectControls.obj 
+      ..\..\..\obj\LevelEditor\EScenePortalControls.obj 
+      ..\..\..\obj\LevelEditor\EScenePSControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneSectorControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneShapeControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneSpawnControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneWayControls.obj 
+      ..\..\..\obj\LevelEditor\ESceneGlowToolsIO.obj 
+      ..\..\..\obj\LevelEditor\EScenePortalToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneSectorToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneSpawnToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneObjectToolsIO.obj 
+      ..\..\..\obj\LevelEditor\EScenePSToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneShapeToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneSoundEnvToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneSoundSrcToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneWayToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneGroupToolsIO.obj 
+      ..\..\..\obj\LevelEditor\ESceneDOTools_Pick.obj 
+      ..\..\..\obj\LevelEditor\ESceneDOTools_Controls.obj 
+      ..\..\..\obj\LevelEditor\ESceneDOTools_Generate.obj 
+      ..\..\..\obj\LevelEditor\ObjectAnimator.obj 
+      ..\..\..\obj\LevelEditor\ELight_props.obj 
+      ..\..\..\obj\LevelEditor\ELight_IO.obj 
+      ..\..\..\obj\LevelEditor\ESceneObjectToolsExportBreakable.obj 
+      ..\..\..\obj\LevelEditor\LevelGameDef.obj 
+      ..\..\..\obj\LevelEditor\ESceneWallmarkTools.obj 
+      ..\..\..\obj\LevelEditor\ESceneWallmarkControls.obj 
+      ..\..\..\obj\LevelEditor\GeometryPartExtractor.obj 
+      ..\..\..\obj\LevelEditor\BuilderLODs.obj 
+      ..\..\..\obj\LevelEditor\ESceneGroupControls.obj 
+      ..\..\..\obj\LevelEditor\CustomObjectLE.obj 
+      ..\..\..\obj\LevelEditor\CustomObject.obj 
+      ..\..\..\obj\LevelEditor\CustomObjectAnimation.obj 
+      ..\..\..\obj\LevelEditor\LevelPreferences.obj 
+      ..\..\..\obj\LevelEditor\FrmDBXpacker.obj 
+      ..\..\..\obj\LevelEditor\DetailManager.obj 
+      ..\..\..\obj\LevelEditor\DetailManager_Decompress.obj 
+      ..\..\..\obj\LevelEditor\iniStreamImpl.obj 
+      ..\..\..\obj\LevelEditor\DetailManager_soft.obj 
+      ..\..\..\obj\LevelEditor\DetailManager_CACHE.obj 
+      ..\..\..\obj\LevelEditor\DetailManager_VS.obj 
+      ..\..\..\obj\LevelEditor\ESceneFogVolumeTools.obj 
+      ..\..\..\obj\LevelEditor\RightForm.obj 
+      ..\..\..\obj\LevelEditor\FrameFogVol.obj 
+      ..\..\..\obj\LevelEditor\gametype_chooser.obj 
+      ..\..\..\obj\LevelEditor\GroupObjectUtils.obj 
+      ..\..\..\obj\LevelEditor\AppendObjectInfoForm.obj 
+      ..\..\..\obj\LevelEditor\LEClipEditor.obj 
+      ..\..\..\obj\LevelEditor\LEPhysics.obj 
+      ..\..\..\obj\LevelEditor\MgcConvexHull2D.obj 
+      ..\..\..\obj\LevelEditor\MgcAppr3DPlaneFit.obj 
+      ..\..\..\obj\LevelEditor\MgcEigen.obj 
+      ..\..\..\obj\LevelEditor\MgcVector2.obj 
+      ..\..\..\obj\LevelEditor\MgcVector3.obj 
+      ..\..\..\obj\LevelEditor\stats_manager.obj"/>
     <RESFILES value="LevelEditor.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -166,7 +160,7 @@
     <LIBRARIES value="editor.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib editor.lib elpackB6.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi elpackB6.bpi elpproB6.bpi"/>
-    <PATHCPP value=".;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;..\..\xrEngine;Edit;Edit;Edit;..\..\xrServerEntities;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;Edit;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;..\..\Layers\xrRender;Edit;..\..\xrServerEntities;Edit;Edit;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D;..\..\Layers\xrRender"/>
+    <PATHCPP value=".;Edit;..\..\xrEngine;..\..\xrServerEntities;..\..\Layers\xrRender;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Containment2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D;..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -183,8 +177,7 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-src_suffix cpp -D_EDITOR -D_LEVEL_EDITOR -D_DEBUG 
-      -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D 
+    <IDLCFLAGS value="-I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core2D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Core3D 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Numerics 
       -I..\..\..\sdk\sources\MagicSoftware\FreeMagic\Source\Approximation3D 
@@ -195,14 +188,15 @@
       -I..\..\..\sdk\components\ElPack\Code 
       -I..\..\..\sdk\components\ElPack\Code\Source -I..\..\xrCore 
       -I..\..\xrEngine -I..\..\..\sdk\sources\MagicSoftware\Sdk\Include 
-      -I..\..\utils\ETools -I..\..\xrParticles"/>
-    <CFLAG1 value="-Od -H=..\..\..\obj\Mixed\LevelEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
-      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
-    <PFLAGS value="-N2..\..\..\obj\Mixed\LevelEditor -N0..\..\..\obj\Mixed\LevelEditor -$Y+ 
-      -$W -$R -$Q -$O- -$A8 -v -JPHNE -M"/>
+      -I..\..\utils\ETools -I..\..\xrParticles -src_suffix cpp -D_EDITOR 
+      -D_LEVEL_EDITOR -D_DEBUG"/>
+    <CFLAG1 value="-Od -H=..\..\..\obj\LevelEditor\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF 
+      -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -He -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\..\obj\LevelEditor -N0..\..\..\obj\LevelEditor -$Y+ -$W -$R -$Q 
+      -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\Mixed\LevelEditor -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
+    <LFLAGS value="-l..\..\..\lib -I..\..\..\obj\LevelEditor -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
