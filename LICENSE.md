@@ -1,6 +1,6 @@
-# X-Ray
+# IX-Ray
 
-*X-Ray* game engine license information
+*IX-Ray* project license information
 
 ## License details
 
