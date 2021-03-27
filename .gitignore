@@ -34,3 +34,7 @@ sdk/3d_sdk/
 *.~bpr
 *.~h
 *.~cpp
+
+# X-Ray resources
+gamedata/
+rawdata/
