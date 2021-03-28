@@ -39,7 +39,7 @@ If need to build editors run `InstallElpack.bat` and `InstallOther.bat` with adm
 ### Editors
 
 * Build `XRay.Dependencies.VS2013.sln` on `Release`
-* Build `XRay.Engine.VS2013.sln` on `Mixed` except projects from `engine_core` and `engine_game`
+* Build `XRay.Engine.VS2013.sln` on `Mixed` except projects from `engine_game`
 * Run `ConvertLibraries.bat`
 * Build `XRay.Editors.BCB6.bpg`
 
