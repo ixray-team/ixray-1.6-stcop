@@ -2,6 +2,7 @@
 #include "physics_shell_animated.h"
 
 #include	"../xrphysics/physicsshell.h"
+#include "PhysicsShellHolder.h"
 
 #include	"../Include/xrRender/Kinematics.h"
 
