@@ -2,25 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
-      <UniqueIdentifier>{a02b43c1-923e-4fc4-8029-d4a084ac5f1b}</UniqueIdentifier>
+      <UniqueIdentifier>{44285cee-59df-4add-9740-10e5a6ddf224}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\theora">
-      <UniqueIdentifier>{d1899a00-a920-4c7c-a6ad-909b302a31fb}</UniqueIdentifier>
+      <UniqueIdentifier>{86b22a5a-9b50-4f63-9755-70d16c47499c}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib">
-      <UniqueIdentifier>{8e0e4cfe-d72d-4d5e-b541-0a3fa635a57c}</UniqueIdentifier>
+      <UniqueIdentifier>{f59b2e32-5255-4207-aa11-47087175d467}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib\enc">
-      <UniqueIdentifier>{af5a25c7-2714-4e8c-8d52-61c5f37b8da2}</UniqueIdentifier>
+      <UniqueIdentifier>{cd815263-b931-44b5-8f01-5ced1792af26}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib\enc\x86_vc">
-      <UniqueIdentifier>{b363bb76-c20c-4340-a504-7c531e94147e}</UniqueIdentifier>
+      <UniqueIdentifier>{f72f9ac4-3197-4bb9-a5a7-52ef9d197ee5}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib\dec">
-      <UniqueIdentifier>{658bcaf5-24de-4721-b94b-aaa80cdf41ac}</UniqueIdentifier>
+      <UniqueIdentifier>{ed7c67cf-ae9e-458c-9dd7-044b18a3245d}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib\dec\x86_vc">
-      <UniqueIdentifier>{6e91acd6-e5cb-410b-8631-7ea44344d86a}</UniqueIdentifier>
+      <UniqueIdentifier>{aa45f400-63eb-4d86-909c-66dcaa39237b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
