@@ -2,25 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{2fe101e6-fe67-41a9-8d8f-463aad354818}</UniqueIdentifier>
+      <UniqueIdentifier>{ecca01fe-ac83-49cd-b0d3-8af773c0d694}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files">
-      <UniqueIdentifier>{8bbfe854-896b-4057-ab6d-901201256595}</UniqueIdentifier>
+      <UniqueIdentifier>{4059db9f-e529-413d-93e5-81bb8eaf02ab}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine">
-      <UniqueIdentifier>{a66f16e7-b30c-45c8-b20b-b622ea9d43e4}</UniqueIdentifier>
+      <UniqueIdentifier>{bea44a79-84d8-475b-bd12-a98d7ae643e9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Editor">
-      <UniqueIdentifier>{1f62f8df-0b4d-41f8-83a4-92eaa93a0ae5}</UniqueIdentifier>
+      <UniqueIdentifier>{90cdd0dc-0c53-439a-b84f-508069e13596}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export">
-      <UniqueIdentifier>{654eaf48-ce88-4d3c-8f1b-aaf32120135e}</UniqueIdentifier>
+      <UniqueIdentifier>{3efd18f4-813c-46ed-a0ab-c30111551d83}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export\Skin">
-      <UniqueIdentifier>{2bca83c8-8a5b-482d-831c-bfaadd3cd1d9}</UniqueIdentifier>
+      <UniqueIdentifier>{a743d69e-38c7-4549-9e8c-dea92cae47eb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Export\Object">
-      <UniqueIdentifier>{35f3b308-8849-499d-b1d3-292a86d047e5}</UniqueIdentifier>
+      <UniqueIdentifier>{533a2f41-684e-426a-8b0d-5fe0cebc2e13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

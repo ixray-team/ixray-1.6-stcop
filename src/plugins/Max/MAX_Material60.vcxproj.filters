@@ -2,16 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{89aebe4c-a2d3-41e6-a7e0-5b34a066bb99}</UniqueIdentifier>
+      <UniqueIdentifier>{a686b368-0fa3-4a5c-83ff-3220f374d6c8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files">
-      <UniqueIdentifier>{e21055b3-0b93-4794-82e7-c33c5c6a4037}</UniqueIdentifier>
+      <UniqueIdentifier>{00e362c6-93a9-46f8-b471-9b988383b730}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine">
-      <UniqueIdentifier>{6f2c5419-68c5-49f2-a28a-66cd13fb4716}</UniqueIdentifier>
+      <UniqueIdentifier>{d2750ee6-5362-4c84-8167-5391608bdded}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Editor">
-      <UniqueIdentifier>{d68abeee-38ef-4a3b-bde3-4c9480b827c4}</UniqueIdentifier>
+      <UniqueIdentifier>{66c84e9d-4a13-48e9-a539-4ff145d7ac06}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

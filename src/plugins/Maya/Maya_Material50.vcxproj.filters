@@ -2,22 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{cd0228ab-e14d-477a-8f8f-d1a2e4661c93}</UniqueIdentifier>
+      <UniqueIdentifier>{786cacfe-93b3-49b0-a473-149527944e3f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files">
-      <UniqueIdentifier>{7910d0b4-5c49-48fe-93fb-9e757a511099}</UniqueIdentifier>
+      <UniqueIdentifier>{51a811e1-3786-46f0-a2af-78b83867b8ee}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine">
-      <UniqueIdentifier>{9b7b2824-0ca0-44f3-ad71-273fa23e26d0}</UniqueIdentifier>
+      <UniqueIdentifier>{851d4aa1-e7a6-48d9-ac7f-f89a734f3f9c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Editor">
-      <UniqueIdentifier>{ab432f24-8033-4cf5-9e01-da46a3339ff8}</UniqueIdentifier>
+      <UniqueIdentifier>{c25057c1-a276-4c40-b48a-2f2dfb8e980a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Plugins">
-      <UniqueIdentifier>{5eeb8562-93d0-4ef6-a6d1-ac339155673b}</UniqueIdentifier>
+      <UniqueIdentifier>{e8d82ce0-243f-40a7-9754-304dc6ab4cf1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader">
-      <UniqueIdentifier>{36e61a81-5707-45c3-808f-9ba52e4ca417}</UniqueIdentifier>
+      <UniqueIdentifier>{7e9807e9-fa1b-419a-9219-cb7fe9fef2f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +41,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Material\Stdafx.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
     <ClInclude Include="..\Shared\GameMtlLib.h">
       <Filter>Shared Files\Engine</Filter>
     </ClInclude>
@@ -58,10 +61,5 @@
     <None Include="Material\AEXRayMtlTemplate.mel">
       <Filter>Shader</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Material\Stdafx.h">
-      <Filter>Kernel</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

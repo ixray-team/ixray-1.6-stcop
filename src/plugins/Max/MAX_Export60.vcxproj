@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,20 +22,20 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -220,6 +220,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\editors\ECore\Editor\EditMesh.cpp" />
+    <ClCompile Include="..\..\editors\ECore\Editor\EditMeshIO.cpp" />
+    <ClCompile Include="..\..\editors\ECore\Editor\EditMeshModify.cpp" />
+    <ClCompile Include="..\..\editors\ECore\Editor\EditObject.cpp" />
+    <ClCompile Include="..\..\editors\ECore\Editor\EditObjectIO.cpp" />
+    <ClCompile Include="..\..\editors\ECore\Editor\EditObjectMotions.cpp" />
+    <ClCompile Include="..\Shared\bone.cpp" />
+    <ClCompile Include="..\Shared\ELog.cpp" />
+    <ClCompile Include="..\Shared\Envelope.cpp" />
+    <ClCompile Include="..\Shared\Helper.cpp" />
+    <ClCompile Include="..\Shared\interp.cpp" />
+    <ClCompile Include="..\Shared\motion.cpp" />
+    <ClCompile Include="Export\BoneDef.cpp" />
+    <ClCompile Include="Export\EditMeshExportMAX.cpp" />
+    <ClCompile Include="Export\EditObjectExportLWO.cpp" />
+    <ClCompile Include="Export\EditObjectExportMAX.cpp" />
+    <ClCompile Include="Export\Exporter.cpp" />
+    <ClCompile Include="Export\ExporterMotion.cpp" />
+    <ClCompile Include="Export\ExporterSkin.cpp" />
+    <ClCompile Include="Export\ExportKeys.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Export\FS2.CPP" />
     <ClCompile Include="Export\MeshExpPlugin.cpp" />
     <ClCompile Include="Export\MeshExpUtility.cpp" />
     <ClCompile Include="Export\NetDeviceLog.cpp" />
@@ -228,53 +253,28 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Shared\bone.cpp" />
-    <ClCompile Include="..\Shared\Envelope.cpp" />
-    <ClCompile Include="..\Shared\interp.cpp" />
-    <ClCompile Include="..\Shared\motion.cpp" />
-    <ClCompile Include="..\..\editors\ECore\Editor\EditMesh.cpp" />
-    <ClCompile Include="..\..\editors\ECore\Editor\EditObjectMotions.cpp" />
-    <ClCompile Include="..\Shared\ELog.cpp" />
-    <ClCompile Include="Export\FS2.CPP" />
-    <ClCompile Include="Export\EditMeshExportMAX.cpp" />
-    <ClCompile Include="Export\EditObjectExportLWO.cpp" />
-    <ClCompile Include="Export\EditObjectExportMAX.cpp" />
-    <ClCompile Include="Export\BoneDef.cpp" />
-    <ClCompile Include="..\..\editors\ECore\Editor\EditMeshIO.cpp" />
-    <ClCompile Include="..\..\editors\ECore\Editor\EditMeshModify.cpp" />
-    <ClCompile Include="..\..\editors\ECore\Editor\EditObject.cpp" />
-    <ClCompile Include="..\..\editors\ECore\Editor\EditObjectIO.cpp" />
-    <ClCompile Include="Export\Exporter.cpp" />
-    <ClCompile Include="Export\ExporterMotion.cpp" />
-    <ClCompile Include="Export\ExporterSkin.cpp" />
-    <ClCompile Include="..\Shared\Helper.cpp" />
-    <ClCompile Include="Export\ExportKeys.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Export\MeshExpUtility.h" />
-    <ClInclude Include="Export\NetDeviceLog.h" />
-    <ClInclude Include="Export\Stdafx.h" />
-    <ClInclude Include="..\Shared\bone.h" />
-    <ClInclude Include="..\Shared\envelope.h" />
-    <ClInclude Include="Export\Fmesh.h" />
-    <ClInclude Include="..\Shared\motion.h" />
     <ClInclude Include="..\..\editors\ECore\Editor\EditMesh.h" />
     <ClInclude Include="..\..\editors\ECore\Editor\editobject.h" />
+    <ClInclude Include="..\Shared\bone.h" />
     <ClInclude Include="..\Shared\ELog.h" />
-    <ClInclude Include="Export\FS2.H" />
-    <ClInclude Include="Export\lwchunks.h" />
-    <ClInclude Include="Export\Shader_xrLC.h" />
-    <ClInclude Include="Export\GameMaterial.h" />
-    <ClInclude Include="Export\TexMaps.h" />
-    <ClInclude Include="Export\XRayMtlRes.h" />
-    <ClInclude Include="Export\Exporter.h" />
+    <ClInclude Include="..\Shared\envelope.h" />
     <ClInclude Include="..\Shared\Face.h" />
     <ClInclude Include="..\Shared\Helper.h" />
+    <ClInclude Include="..\Shared\motion.h" />
     <ClInclude Include="..\Shared\Vert.h" />
+    <ClInclude Include="Export\Exporter.h" />
+    <ClInclude Include="Export\Fmesh.h" />
+    <ClInclude Include="Export\FS2.H" />
+    <ClInclude Include="Export\GameMaterial.h" />
+    <ClInclude Include="Export\lwchunks.h" />
+    <ClInclude Include="Export\MeshExpUtility.h" />
+    <ClInclude Include="Export\NetDeviceLog.h" />
+    <ClInclude Include="Export\Shader_xrLC.h" />
+    <ClInclude Include="Export\Stdafx.h" />
+    <ClInclude Include="Export\TexMaps.h" />
+    <ClInclude Include="Export\XRayMtlRes.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Export\MeshExpUtility.rc" />

@@ -2,25 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{02416434-d6e7-4f45-82e3-ba232dcbf38c}</UniqueIdentifier>
+      <UniqueIdentifier>{a2b87ce7-75e3-47dc-97fc-4448021798b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files">
-      <UniqueIdentifier>{95f5022b-bfd3-4d05-b397-1e18a84a5c8f}</UniqueIdentifier>
+      <UniqueIdentifier>{010620e0-18c8-4719-b0ba-df2fb9e917fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Engine">
-      <UniqueIdentifier>{5917b3fe-0a12-4c52-b326-258ecb4a995a}</UniqueIdentifier>
+      <UniqueIdentifier>{27a336cc-2106-4e5f-9a26-25e1fbe0a4e2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Editor">
-      <UniqueIdentifier>{fa6db0aa-fc89-4449-aab0-5df206c8e79d}</UniqueIdentifier>
+      <UniqueIdentifier>{32cdf3c2-191b-4c3c-9196-82621f594d02}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Plugins">
-      <UniqueIdentifier>{3aeee55a-ed53-47d2-9985-cbe402939805}</UniqueIdentifier>
+      <UniqueIdentifier>{5cc1b605-0286-40d9-87a4-797d242ba03c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared Files\Server">
-      <UniqueIdentifier>{248b0960-9eb9-4183-9d71-b6268134e3b0}</UniqueIdentifier>
+      <UniqueIdentifier>{1237fdeb-b640-41fa-93c8-7ca3d10c4a59}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader">
-      <UniqueIdentifier>{89f99a72-933b-4e63-a4ea-249c68b3334a}</UniqueIdentifier>
+      <UniqueIdentifier>{265fa84f-8f6e-44ec-ba33-b613a7ef59f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

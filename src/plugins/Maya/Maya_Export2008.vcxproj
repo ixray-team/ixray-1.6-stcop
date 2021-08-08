@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,12 +18,12 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -130,15 +130,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Export\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Export\XRayExport.cpp" />
-    <ClCompile Include="..\Shared\bone.cpp" />
-    <ClCompile Include="..\Shared\Envelope.cpp" />
-    <ClCompile Include="..\Shared\interp.cpp" />
-    <ClCompile Include="..\Shared\motion.cpp" />
     <ClCompile Include="..\..\common\NvMender2003\NVMeshMender.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
@@ -152,46 +143,55 @@
     <ClCompile Include="..\..\editors\ECore\Editor\EditObject.cpp" />
     <ClCompile Include="..\..\editors\ECore\Editor\EditObjectIO.cpp" />
     <ClCompile Include="..\..\editors\ECore\Editor\EditObjectMotions.cpp" />
-    <ClCompile Include="..\Shared\ELog.cpp" />
     <ClCompile Include="..\..\editors\ECore\Editor\ExportSkeletonCalculateTB.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Shared\bone.cpp" />
+    <ClCompile Include="..\Shared\ELog.cpp" />
+    <ClCompile Include="..\Shared\Envelope.cpp" />
+    <ClCompile Include="..\Shared\interp.cpp" />
+    <ClCompile Include="..\Shared\motion.cpp" />
     <ClCompile Include="Export\ExportDefines.cpp" />
-    <ClCompile Include="Export\SmdBone.cpp" />
-    <ClCompile Include="Export\SmdMaya.cpp" />
-    <ClCompile Include="Export\SmdTriangle.cpp" />
     <ClCompile Include="Export\maTranslator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Export\MayaExport.cpp" />
+    <ClCompile Include="Export\SmdBone.cpp" />
+    <ClCompile Include="Export\SmdMaya.cpp" />
+    <ClCompile Include="Export\SmdTriangle.cpp" />
+    <ClCompile Include="Export\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Export\XRayExport.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Export\Stdafx.h" />
-    <ClInclude Include="..\Shared\bone.h" />
-    <ClInclude Include="..\Shared\envelope.h" />
-    <ClInclude Include="Export\Fmesh.h" />
-    <ClInclude Include="..\Shared\motion.h" />
     <ClInclude Include="..\..\common\NvMender2003\convert.h" />
     <ClInclude Include="..\..\common\NvMender2003\mender_input_output.h" />
     <ClInclude Include="..\..\common\NvMender2003\NVMeshMender.h" />
     <ClInclude Include="..\..\common\NvMender2003\remove_isolated_verts.h" />
     <ClInclude Include="..\..\editors\ECore\Editor\EditMesh.h" />
     <ClInclude Include="..\..\editors\ECore\Editor\EditObject.h" />
-    <ClInclude Include="..\Shared\ELog.h" />
     <ClInclude Include="..\..\editors\ECore\Editor\ExportSkeleton.h" />
     <ClInclude Include="..\..\editors\ECore\Editor\itterate_adjacents_dynamic.h" />
-    <ClInclude Include="Export\motion.h" />
+    <ClInclude Include="..\Shared\bone.h" />
+    <ClInclude Include="..\Shared\ELog.h" />
+    <ClInclude Include="..\Shared\envelope.h" />
+    <ClInclude Include="..\Shared\motion.h" />
     <ClInclude Include="Export\ExportDefines.h" />
+    <ClInclude Include="Export\Fmesh.h" />
+    <ClInclude Include="Export\maTranslator.h" />
+    <ClInclude Include="Export\motion.h" />
+    <ClInclude Include="Export\SmdBone.h" />
+    <ClInclude Include="Export\SmdMaya.h" />
+    <ClInclude Include="Export\SmdTriangle.h" />
     <ClInclude Include="Export\smoth_flags.h" />
-    <CustomBuild Include="Export\SmdBone.h" />
-    <CustomBuild Include="Export\SmdMaya.h" />
-    <CustomBuild Include="Export\SmdTriangle.h" />
-    <CustomBuild Include="Export\maTranslator.h" />
+    <ClInclude Include="Export\Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Export\xrayObjectExportOptions.mel" />
     <None Include="Export\xraySkinExportOptions.mel" />
     <None Include="Export\xraySkinMotionExportOptions.mel" />
-    <None Include="Export\xrayObjectExportOptions.mel" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\xrCore\xrCoreStatic.vcxproj">
