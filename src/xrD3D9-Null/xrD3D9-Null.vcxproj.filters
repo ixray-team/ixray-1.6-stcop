@@ -14,40 +14,40 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
     </Filter>
     <Filter Include="IDirect3D9">
-      <UniqueIdentifier>{24e69294-25d5-42bb-9834-8c8394afebd5}</UniqueIdentifier>
+      <UniqueIdentifier>{3d06438f-791f-4dfa-8d3e-ffb1089588a2}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DDevice9">
-      <UniqueIdentifier>{572888d2-01a2-4c4f-8513-95555dc63225}</UniqueIdentifier>
+      <UniqueIdentifier>{b1553030-4502-4292-8ae5-efc1743c01cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DQuery9">
-      <UniqueIdentifier>{c046fcd4-dfb8-4be2-bf59-06c27f473682}</UniqueIdentifier>
+      <UniqueIdentifier>{7fe67116-d647-4696-aec8-97daa74a73e8}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DSurface9">
-      <UniqueIdentifier>{090d9937-b1a4-40c9-be10-3fa0d8f9a5ef}</UniqueIdentifier>
+      <UniqueIdentifier>{3455a3fa-b704-41db-a9dd-a51d573410d7}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DIndexBuffer9">
-      <UniqueIdentifier>{6084cc4b-c53b-41c7-9e3a-11701365b9fa}</UniqueIdentifier>
+      <UniqueIdentifier>{6d0b8a7e-30d6-49fc-83c0-01f601bda062}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DVertexBuffer9">
-      <UniqueIdentifier>{33f7e06c-715b-4746-b8e7-c466e1d9a10e}</UniqueIdentifier>
+      <UniqueIdentifier>{329ae5b2-3a63-4519-9d9e-a220a130f786}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DTexture9">
-      <UniqueIdentifier>{f6305219-ff63-4180-8ce9-ac7be790d606}</UniqueIdentifier>
+      <UniqueIdentifier>{83e9ae44-cf35-40af-8547-24faac681495}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DVertexDeclaration9">
-      <UniqueIdentifier>{c2dd6a32-1edd-4588-aa8d-0c36f4743495}</UniqueIdentifier>
+      <UniqueIdentifier>{47acc576-5587-4c47-b624-6bf7da1db568}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DVertexShader9">
-      <UniqueIdentifier>{f3614b2e-57e2-4a32-8416-1eacdd58665f}</UniqueIdentifier>
+      <UniqueIdentifier>{dac17bab-fe94-4161-a0fb-1a6c84802ecd}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DPixelShader9">
-      <UniqueIdentifier>{3192c70f-5178-4bb0-bb9f-5fed6821bc0b}</UniqueIdentifier>
+      <UniqueIdentifier>{a89cf10a-d1a4-4eb4-bf96-af9508ed6677}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DStateBlock9">
-      <UniqueIdentifier>{4f99d96e-f2d7-4701-98ff-5af72d72dfec}</UniqueIdentifier>
+      <UniqueIdentifier>{714773e3-2161-4d3f-8890-39f2076bd527}</UniqueIdentifier>
     </Filter>
     <Filter Include="IDirect3DCubeTexture9">
-      <UniqueIdentifier>{ab524233-b8e8-41ad-af76-fe1b17401f69}</UniqueIdentifier>
+      <UniqueIdentifier>{90845833-1351-458c-a7fc-9df8cbdb8303}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

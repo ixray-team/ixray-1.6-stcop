@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,12 +18,12 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -119,12 +119,8 @@
     <None Include="doc\luac.html" />
     <None Include="doc\manual.html" />
     <None Include="doc\readme.html" />
-    <None Include="jit\dis_x86.lua" />
-    <None Include="jit\dump.lua" />
-    <None Include="jit\dumphints.lua" />
-    <None Include="jit\opt.lua" />
-    <None Include="jit\opt_inline.lua" />
-    <None Include="jit\trace.lua" />
+    <None Include="dynasm\dasm_x86.lua" />
+    <None Include="dynasm\dynasm.lua" />
     <None Include="jitdoc\coco.html" />
     <None Include="jitdoc\coco_api.html" />
     <None Include="jitdoc\coco_changes.html" />
@@ -143,20 +139,29 @@
     <None Include="jitdoc\luajit_intro.html" />
     <None Include="jitdoc\luajit_performance.html" />
     <None Include="jitdoc\luajit_run.html" />
-    <None Include="dynasm\dasm_x86.lua" />
-    <None Include="dynasm\dynasm.lua" />
+    <None Include="jit\dis_x86.lua" />
+    <None Include="jit\dump.lua" />
+    <None Include="jit\dumphints.lua" />
+    <None Include="jit\opt.lua" />
+    <None Include="jit\opt_inline.lua" />
+    <None Include="jit\trace.lua" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\sdk\include\lua\lauxlib.h" />
+    <ClInclude Include="..\..\..\sdk\include\lua\library_linkage.h" />
+    <ClInclude Include="..\..\..\sdk\include\lua\lua.h" />
+    <ClInclude Include="..\..\..\sdk\include\lua\luaconf.h" />
+    <ClInclude Include="..\..\..\sdk\include\lua\lualib.h" />
+    <ClInclude Include="dynasm\dasm_proto.h" />
+    <ClInclude Include="dynasm\dasm_x86.h" />
     <ClInclude Include="etc\lua.hpp" />
     <ClInclude Include="src\lapi.h" />
-    <ClInclude Include="..\..\..\sdk\include\lua\lauxlib.h" />
     <ClInclude Include="src\lcoco.h" />
     <ClInclude Include="src\lcode.h" />
     <ClInclude Include="src\ldebug.h" />
     <ClInclude Include="src\ldo.h" />
     <ClInclude Include="src\lfunc.h" />
     <ClInclude Include="src\lgc.h" />
-    <ClInclude Include="..\..\..\sdk\include\lua\library_linkage.h" />
     <ClInclude Include="src\ljit.h" />
     <ClInclude Include="src\ljit_dasm.h" />
     <ClInclude Include="src\ljit_hints.h" />
@@ -171,15 +176,10 @@
     <ClInclude Include="src\lstring.h" />
     <ClInclude Include="src\ltable.h" />
     <ClInclude Include="src\ltm.h" />
-    <ClInclude Include="..\..\..\sdk\include\lua\lua.h" />
-    <ClInclude Include="..\..\..\sdk\include\lua\luaconf.h" />
     <ClInclude Include="src\luajit.h" />
-    <ClInclude Include="..\..\..\sdk\include\lua\lualib.h" />
     <ClInclude Include="src\lundump.h" />
     <ClInclude Include="src\lvm.h" />
     <ClInclude Include="src\lzio.h" />
-    <ClInclude Include="dynasm\dasm_proto.h" />
-    <ClInclude Include="dynasm\dasm_x86.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\lapi.c" />
@@ -195,11 +195,11 @@
     <ClCompile Include="src\lgc.c" />
     <ClCompile Include="src\linit.c" />
     <ClCompile Include="src\liolib.c" />
+    <ClCompile Include="src\ljitlib.c" />
     <ClCompile Include="src\ljit_backend.c" />
     <ClCompile Include="src\ljit_core.c" />
     <ClCompile Include="src\ljit_dasm.c" />
     <ClCompile Include="src\ljit_mem.c" />
-    <ClCompile Include="src\ljitlib.c" />
     <ClCompile Include="src\llex.c" />
     <ClCompile Include="src\lmathlib.c" />
     <ClCompile Include="src\lmem.c" />

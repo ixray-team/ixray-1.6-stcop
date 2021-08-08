@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -17,13 +17,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -114,6 +114,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IDirect3D9.cpp" />
+    <ClCompile Include="IDirect3DCubeTexture9.cpp" />
+    <ClCompile Include="IDirect3DDevice9.cpp" />
+    <ClCompile Include="IDirect3DDevice9_Caps.cpp" />
+    <ClCompile Include="IDirect3DIndexBuffer9.cpp" />
+    <ClCompile Include="IDirect3DPixelShader9.cpp" />
+    <ClCompile Include="IDirect3DQuery9.cpp" />
+    <ClCompile Include="IDirect3DStateBlock9.cpp" />
+    <ClCompile Include="IDirect3DSurface9.cpp" />
+    <ClCompile Include="IDirect3DTexture9.cpp" />
+    <ClCompile Include="IDirect3DVertexBuffer9.cpp" />
+    <ClCompile Include="IDirect3DVertexDeclaration9.cpp" />
+    <ClCompile Include="IDirect3DVertexShader9.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -122,39 +135,26 @@
     <ClCompile Include="xrD3D9-Null_OutProc.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="IDirect3D9.cpp" />
-    <ClCompile Include="IDirect3DDevice9.cpp" />
-    <ClCompile Include="IDirect3DDevice9_Caps.cpp" />
-    <ClCompile Include="IDirect3DQuery9.cpp" />
-    <ClCompile Include="IDirect3DSurface9.cpp" />
-    <ClCompile Include="IDirect3DIndexBuffer9.cpp" />
-    <ClCompile Include="IDirect3DVertexBuffer9.cpp" />
-    <ClCompile Include="IDirect3DTexture9.cpp" />
-    <ClCompile Include="IDirect3DVertexDeclaration9.cpp" />
-    <ClCompile Include="IDirect3DVertexShader9.cpp" />
-    <ClCompile Include="IDirect3DPixelShader9.cpp" />
-    <ClCompile Include="IDirect3DStateBlock9.cpp" />
-    <ClCompile Include="IDirect3DCubeTexture9.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="xrD3D9-Null.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IDirect3D9.h" />
+    <ClInclude Include="IDirect3DCubeTexture9.h" />
+    <ClInclude Include="IDirect3DDevice9.h" />
+    <ClInclude Include="IDirect3DIndexBuffer9.h" />
+    <ClInclude Include="IDirect3DPixelShader9.h" />
+    <ClInclude Include="IDirect3DQuery9.h" />
+    <ClInclude Include="IDirect3DStateBlock9.h" />
+    <ClInclude Include="IDirect3DSurface9.h" />
+    <ClInclude Include="IDirect3DTexture9.h" />
+    <ClInclude Include="IDirect3DVertexBuffer9.h" />
+    <ClInclude Include="IDirect3DVertexDeclaration9.h" />
+    <ClInclude Include="IDirect3DVertexShader9.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="xrD3D9-Null.h" />
     <ClInclude Include="xrD3D9-Null_OutProc.h" />
-    <ClInclude Include="IDirect3D9.h" />
-    <ClInclude Include="IDirect3DDevice9.h" />
-    <ClInclude Include="IDirect3DQuery9.h" />
-    <ClInclude Include="IDirect3DSurface9.h" />
-    <ClInclude Include="IDirect3DIndexBuffer9.h" />
-    <ClInclude Include="IDirect3DVertexBuffer9.h" />
-    <ClInclude Include="IDirect3DTexture9.h" />
-    <ClInclude Include="IDirect3DVertexDeclaration9.h" />
-    <ClInclude Include="IDirect3DVertexShader9.h" />
-    <ClInclude Include="IDirect3DPixelShader9.h" />
-    <ClInclude Include="IDirect3DStateBlock9.h" />
-    <ClInclude Include="IDirect3DCubeTexture9.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

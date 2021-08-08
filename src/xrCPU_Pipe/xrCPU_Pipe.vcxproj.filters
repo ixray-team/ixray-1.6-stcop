@@ -2,22 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{7b791f97-fde0-4172-a95e-ce4c58b399f3}</UniqueIdentifier>
+      <UniqueIdentifier>{b93dfbc2-3f6a-4d4f-8faf-ff2f007d78a9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headers">
-      <UniqueIdentifier>{09af8b9e-5383-426b-9539-6d94beea15f2}</UniqueIdentifier>
+      <UniqueIdentifier>{0c0f3637-08ad-4ae4-a039-1207c2968557}</UniqueIdentifier>
     </Filter>
     <Filter Include="Skinning">
-      <UniqueIdentifier>{5918fb3f-2dd8-4963-b358-f2c7dcc77bce}</UniqueIdentifier>
+      <UniqueIdentifier>{ba13bfd9-28e3-4493-bdf0-dffda64c79e6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources">
-      <UniqueIdentifier>{246b60dc-0740-48bc-ae67-e5d2dfadfdbb}</UniqueIdentifier>
+      <UniqueIdentifier>{fd8cb683-a59c-4294-bd4c-cbfcba6cfd4b}</UniqueIdentifier>
     </Filter>
     <Filter Include="TTAPI">
-      <UniqueIdentifier>{6cae820c-a92f-44cf-b8ca-dd6ace02037d}</UniqueIdentifier>
+      <UniqueIdentifier>{d5082110-dc4f-4161-beeb-1952c91d8e39}</UniqueIdentifier>
     </Filter>
     <Filter Include="PLC">
-      <UniqueIdentifier>{9ea7b757-9731-4f11-af4b-d2f8e4e8259d}</UniqueIdentifier>
+      <UniqueIdentifier>{e6be6d91-0b05-4a8e-abb0-ab74eebc51b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

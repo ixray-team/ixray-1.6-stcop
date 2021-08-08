@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{f4a42cbd-ce11-4ca1-9cb4-908d1e2df7bb}</UniqueIdentifier>
+      <UniqueIdentifier>{015f2860-e89b-48e4-9481-98748570f658}</UniqueIdentifier>
     </Filter>
     <Filter Include="PAPI">
-      <UniqueIdentifier>{27eb3518-764b-4a0f-9d46-a4ca52e24f74}</UniqueIdentifier>
+      <UniqueIdentifier>{b2588c43-39db-4fbc-9708-16b96a0c6bbe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

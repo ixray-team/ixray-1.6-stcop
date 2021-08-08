@@ -2,13 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{7bf227ea-435a-4bef-b7e5-9ee4b3b26fd4}</UniqueIdentifier>
+      <UniqueIdentifier>{605d187b-18ed-46ff-ac6c-02cfac2e52f9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Opcode">
-      <UniqueIdentifier>{6a88a43a-9cde-43cc-95f2-fcd2b499ff7d}</UniqueIdentifier>
+      <UniqueIdentifier>{4ccae340-b14e-48bf-abfd-1a3603c7040d}</UniqueIdentifier>
     </Filter>
     <Filter Include="engine">
-      <UniqueIdentifier>{7fb3eb76-88a0-4e95-a559-26c801ffefe7}</UniqueIdentifier>
+      <UniqueIdentifier>{a27a6398-b65b-46eb-a553-c0d8c23059d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

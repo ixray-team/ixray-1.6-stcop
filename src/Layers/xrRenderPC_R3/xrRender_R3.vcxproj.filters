@@ -2,187 +2,187 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{6d9a5eae-1db7-4b92-b76f-4a3337158b32}</UniqueIdentifier>
+      <UniqueIdentifier>{9bd48831-2ac3-42eb-a157-0e556a7c59ab}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core">
-      <UniqueIdentifier>{548958af-67eb-4d80-a816-dc47b6297a90}</UniqueIdentifier>
+      <UniqueIdentifier>{e6c91fab-ed3d-400f-800d-cea16fbac240}</UniqueIdentifier>
     </Filter>
     <Filter Include="Details">
-      <UniqueIdentifier>{30a32257-bedd-4130-a501-0b84873465a9}</UniqueIdentifier>
+      <UniqueIdentifier>{d1e0c3f0-aba8-48a1-b944-151732e8c2d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Stripifier">
-      <UniqueIdentifier>{ff9741cb-a2ce-44c2-82e6-cf4f80e24a09}</UniqueIdentifier>
+      <UniqueIdentifier>{f88ec7cd-e3ca-4e7e-9d6c-54944df1c5e1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Lights">
-      <UniqueIdentifier>{01529eb4-98eb-4cc6-81f2-30035caafd43}</UniqueIdentifier>
+      <UniqueIdentifier>{ecd5ffc4-090b-4976-a7e4-2bdc809a1f69}</UniqueIdentifier>
     </Filter>
     <Filter Include="Glows">
-      <UniqueIdentifier>{a7b35efc-9f0f-4967-92e9-19ae083f2399}</UniqueIdentifier>
+      <UniqueIdentifier>{fa2a2451-1be3-4341-a87a-8126e71a22d1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Wallmarks">
-      <UniqueIdentifier>{714dfa14-5cb6-4fb1-9076-23b733aeef56}</UniqueIdentifier>
+      <UniqueIdentifier>{4457bc4d-8b19-45d1-860d-0e436e2d340b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates">
-      <UniqueIdentifier>{9ae7af29-b7d7-431f-b8b1-f99b3aec6b30}</UniqueIdentifier>
+      <UniqueIdentifier>{98b1e634-6a05-4d38-b345-f545c7715e91}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates\R1">
-      <UniqueIdentifier>{25534340-3ffa-49ec-9708-4673cd929496}</UniqueIdentifier>
+      <UniqueIdentifier>{a23a84b6-61bc-4e9c-bda1-cfe41ddb0fde}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates\3dFluid">
-      <UniqueIdentifier>{37c61744-9cf8-4f18-b07c-7858fa8df4d7}</UniqueIdentifier>
+      <UniqueIdentifier>{44624763-4d58-4368-b570-642e0b8aa2f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates\DX10 Rain">
-      <UniqueIdentifier>{259312be-ae33-4b03-9910-85c4de9effb3}</UniqueIdentifier>
+      <UniqueIdentifier>{e19993f7-46b2-41d5-98e5-a5a87915e98d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Models">
-      <UniqueIdentifier>{4c3f5a05-96bf-4e0d-8fe7-3b272ffaecf5}</UniqueIdentifier>
+      <UniqueIdentifier>{4130b5d5-e157-4b27-8945-8f061ed81d04}</UniqueIdentifier>
     </Filter>
     <Filter Include="Models\Visuals">
-      <UniqueIdentifier>{f74db434-ec27-4666-8000-09257ea699bf}</UniqueIdentifier>
+      <UniqueIdentifier>{f5be48e3-cd9e-4825-9b79-dcece5c309dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility">
-      <UniqueIdentifier>{7ef9916e-7094-49f0-aebf-5cb2f3dca457}</UniqueIdentifier>
+      <UniqueIdentifier>{bbd59006-ae9b-4020-b2a9-a46544279cc3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\Sector/Portal">
-      <UniqueIdentifier>{ca83cd69-5d98-4c4a-b456-d42d5d7f5abc}</UniqueIdentifier>
+      <UniqueIdentifier>{5815365d-a3d3-4265-9464-d34e60a7f9b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\HOM Occlusion">
-      <UniqueIdentifier>{09921a3d-e66b-4f97-a152-f62bdd00aa4f}</UniqueIdentifier>
+      <UniqueIdentifier>{0dcf4076-4015-47c2-b38e-70633ee07750}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core_Target">
-      <UniqueIdentifier>{d39d57e9-92c5-4e42-bc53-5df62d378d82}</UniqueIdentifier>
+      <UniqueIdentifier>{213e7d16-407e-4e6c-a88f-53b2b2cf467f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core_Target\ColorMap">
-      <UniqueIdentifier>{2e31ddce-3c19-454b-bb81-4bd2304e5cdb}</UniqueIdentifier>
+      <UniqueIdentifier>{9e82b816-932e-4603-a163-40b499ce47d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored">
-      <UniqueIdentifier>{adfc4b5f-ac78-4b04-b9cc-74cb7ff275e6}</UniqueIdentifier>
+      <UniqueIdentifier>{46141282-1ef6-446d-9a53-6f0e996f1658}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\HW">
-      <UniqueIdentifier>{b0ecdd50-513f-48d6-9ccf-a136bebfdf1e}</UniqueIdentifier>
+      <UniqueIdentifier>{0318d0c5-4995-409d-8bf0-bc090c042080}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Backend">
-      <UniqueIdentifier>{456a8444-54ae-483b-962c-8e5cd624605d}</UniqueIdentifier>
+      <UniqueIdentifier>{c99d8cc4-60f7-49c9-bc0c-295d33db0cb5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D">
-      <UniqueIdentifier>{0e014a42-9a51-4f70-aaee-b3e923262037}</UniqueIdentifier>
+      <UniqueIdentifier>{413af2ce-e134-412c-b0e3-89a3ec7df869}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Shaders">
-      <UniqueIdentifier>{745f30b0-7ee0-40f8-9e39-8a295c1b1e1e}</UniqueIdentifier>
+      <UniqueIdentifier>{f3915d85-d14f-4fd4-9aab-e99063b75f14}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Shaders\Resources">
-      <UniqueIdentifier>{ba25f3d7-86ad-4aba-aedf-d6f6fa859141}</UniqueIdentifier>
+      <UniqueIdentifier>{2e3960b8-8c96-4403-9f35-029935e6225a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Shaders\Resources\dx10_R_shader">
-      <UniqueIdentifier>{d2bc72d6-1b03-4ecf-ab58-669fa9507fdb}</UniqueIdentifier>
+      <UniqueIdentifier>{0885579d-5fd6-42c6-bd5e-5d01cf8bc525}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Shaders\ShaderManager">
-      <UniqueIdentifier>{8073333c-6de2-4640-bc45-f266fa630fb6}</UniqueIdentifier>
+      <UniqueIdentifier>{e4d0b3b1-56a4-49a7-8b84-a3e1f6b9524f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Shaders\Blender">
-      <UniqueIdentifier>{5ba3fb3e-5d2d-49fb-9a9e-ec5e5066e519}</UniqueIdentifier>
+      <UniqueIdentifier>{e80b7a41-22ee-46aa-9be4-a33e1c16354a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\DebugDraw">
-      <UniqueIdentifier>{47df295f-aeb6-4809-90be-88ab61e7e4af}</UniqueIdentifier>
+      <UniqueIdentifier>{47396889-42b9-4461-ba41-fc6d63723fa1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Visuals">
-      <UniqueIdentifier>{9b9b3138-ba46-4e65-b0ea-f0f0480d2845}</UniqueIdentifier>
+      <UniqueIdentifier>{580be27f-c1a4-4530-877e-45b3cc40695d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Visuals\Skeleton">
-      <UniqueIdentifier>{bc0705cc-8c27-4143-91a7-88b76fb81a0c}</UniqueIdentifier>
+      <UniqueIdentifier>{e4656806-69e9-4282-addf-df1e1f9460c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Gamma">
-      <UniqueIdentifier>{2948f5f5-9ad9-4da1-a17f-8b026c58b684}</UniqueIdentifier>
+      <UniqueIdentifier>{cc87e709-451a-46df-b6d9-fac5ae6d911a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Interfaces">
-      <UniqueIdentifier>{50e07efa-452c-4af8-894b-683aecb171db}</UniqueIdentifier>
+      <UniqueIdentifier>{a6684eed-0200-41f6-a30f-5247694899c8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\stats_manager">
-      <UniqueIdentifier>{9bd58303-3789-4386-8d74-313821507878}</UniqueIdentifier>
+      <UniqueIdentifier>{9eac2c09-cf6d-416d-b003-08fcd4b14a67}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations">
-      <UniqueIdentifier>{25874ef3-5c77-4c76-9f52-159bfdbad4b2}</UniqueIdentifier>
+      <UniqueIdentifier>{a013918f-6811-42d9-b41e-86337287b0ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\RenderFactory">
-      <UniqueIdentifier>{c7b31667-cb4d-4dd0-96e6-3fe99fbbc520}</UniqueIdentifier>
+      <UniqueIdentifier>{505d78df-fbc8-43e4-b880-fb2def864488}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\LensFlare">
-      <UniqueIdentifier>{8fe638dc-4344-40d6-a579-44c19dbfef60}</UniqueIdentifier>
+      <UniqueIdentifier>{814bb98c-b42c-4aad-83f7-c5e9d3f9d6ee}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\FactoryPtr">
-      <UniqueIdentifier>{4197c3dc-88b1-4f47-9d9a-9a10d7f5e2e7}</UniqueIdentifier>
+      <UniqueIdentifier>{a8136e99-c088-45ad-890b-e9c55c2ed492}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\ApplicationRender">
-      <UniqueIdentifier>{3e3e2e11-ddfa-4c8a-893d-cd912ab682ee}</UniqueIdentifier>
+      <UniqueIdentifier>{1e5fd810-3b59-4253-9d50-4ce9b9fa807c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\RainRender">
-      <UniqueIdentifier>{c0117d49-09ae-4ee5-b7be-9b0c0b1d3f0d}</UniqueIdentifier>
+      <UniqueIdentifier>{a8ca9f2c-7a21-4156-87cf-de8f6260fe22}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\ThunderboltRender">
-      <UniqueIdentifier>{a9fbc42f-cced-4e9b-9b25-a43e74438037}</UniqueIdentifier>
+      <UniqueIdentifier>{0056219b-9d4f-473d-96ed-563451423ff3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\EnvironmentRender">
-      <UniqueIdentifier>{7636aa87-dce6-4217-ac2a-5b87809803d0}</UniqueIdentifier>
+      <UniqueIdentifier>{62c1f7ea-e3da-4c9c-9df2-1a258aa6f5d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\RenderDeviceRender">
-      <UniqueIdentifier>{eb19b10d-416e-48fb-a548-0ac9c4eb16a1}</UniqueIdentifier>
+      <UniqueIdentifier>{f0fc6b50-041d-484c-8cd7-39be0de3b40e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\ConsoleRender">
-      <UniqueIdentifier>{09378ea2-3e5c-45c3-9af5-d6c92174724d}</UniqueIdentifier>
+      <UniqueIdentifier>{f7fe73dc-bc7b-47fe-af09-b2d58736e080}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\ObjectSpaceRender">
-      <UniqueIdentifier>{540373f6-7f52-41b3-833e-2e93221993be}</UniqueIdentifier>
+      <UniqueIdentifier>{11985999-a8f9-4b07-af49-bf51a25486af}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\FontRender">
-      <UniqueIdentifier>{62262140-c3ca-43c2-9ebc-e8e90215a502}</UniqueIdentifier>
+      <UniqueIdentifier>{52f8f80a-7b72-4067-be27-e1e35b9c91df}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\WallMarkArray">
-      <UniqueIdentifier>{fd402a56-d6c4-4382-8845-eb823afd3342}</UniqueIdentifier>
+      <UniqueIdentifier>{6bd6780e-2936-46ef-b8c3-b6f2e80d8d4f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\StatGraphRender">
-      <UniqueIdentifier>{05cf2c0d-c763-40b2-bbc3-3c7dca0b8a70}</UniqueIdentifier>
+      <UniqueIdentifier>{4862dcf9-8a39-4645-860a-a2ef85e2eb9b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\ThunderboltDescRender">
-      <UniqueIdentifier>{3d3b4347-09ec-4872-a9c3-0700435d60bd}</UniqueIdentifier>
+      <UniqueIdentifier>{35e37fec-2a9d-40b3-9efc-90d9dc544e88}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\StatsRender">
-      <UniqueIdentifier>{ceb43af1-0267-4fbd-baa3-545d8fc05d1c}</UniqueIdentifier>
+      <UniqueIdentifier>{334461db-f64c-45ae-8c90-0405638b636c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\Debug">
-      <UniqueIdentifier>{c08d5873-871d-49d8-b64b-ba34fb29d84a}</UniqueIdentifier>
+      <UniqueIdentifier>{33e0bd4a-67b1-4a7f-934d-1f336d97f8cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\Debug\DebugRender">
-      <UniqueIdentifier>{e42bf650-cc76-49a3-b157-00965da74d15}</UniqueIdentifier>
+      <UniqueIdentifier>{802787e7-3063-4fd3-8b4e-26f5952306bd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\UI">
-      <UniqueIdentifier>{538a4350-0290-41c1-a924-3096fdf9040f}</UniqueIdentifier>
+      <UniqueIdentifier>{46e27f68-50e7-46ab-a985-00944a4d8cda}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\UI\UIRender">
-      <UniqueIdentifier>{16109be4-bc4b-4e5c-9a98-8ee25be23899}</UniqueIdentifier>
+      <UniqueIdentifier>{1dcba82f-67a9-4a68-b310-e9130974e56b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\UI\UIShader">
-      <UniqueIdentifier>{3f2b7214-2703-42f0-8e1d-42b9d1a59c00}</UniqueIdentifier>
+      <UniqueIdentifier>{672f30d4-39c7-4427-b18d-7778c635b7db}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\UI\UISequenceVideoItem">
-      <UniqueIdentifier>{6658ac59-3bfa-4fb1-8cd6-3e6b2d2f77b4}</UniqueIdentifier>
+      <UniqueIdentifier>{28f61f4d-cac1-4873-a788-943e3b674daa}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\MSAARender">
-      <UniqueIdentifier>{1c9572e9-6cc1-47a1-bc43-b1cb2190e0d4}</UniqueIdentifier>
+      <UniqueIdentifier>{a6ad6dc1-170e-4e1d-97cd-cc2ed8d40998}</UniqueIdentifier>
     </Filter>
     <Filter Include="dx9 to dx10 Utils">
-      <UniqueIdentifier>{d5a8ec86-3139-456f-ba4e-ef4bf1eaec2b}</UniqueIdentifier>
+      <UniqueIdentifier>{b37cf19c-f7d5-4233-b224-e65ec1caf990}</UniqueIdentifier>
     </Filter>
     <Filter Include="StateManager">
-      <UniqueIdentifier>{30b77375-9e9e-4580-8217-8e0eeaa54b13}</UniqueIdentifier>
+      <UniqueIdentifier>{46924200-e7f0-406d-b26e-30009277f656}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utils">
-      <UniqueIdentifier>{0c9f6edf-e82b-4410-b707-c091e80dde76}</UniqueIdentifier>
+      <UniqueIdentifier>{dc057db9-5292-4016-b6de-a2ac69685a5b}</UniqueIdentifier>
     </Filter>
     <Filter Include="3DFluid">
-      <UniqueIdentifier>{4c6cb7f7-01ce-40d4-8b74-94411831a758}</UniqueIdentifier>
+      <UniqueIdentifier>{419e4fe9-1c38-4adc-b376-a110dc137b79}</UniqueIdentifier>
     </Filter>
     <Filter Include="Debug">
-      <UniqueIdentifier>{1a45a6ca-ca88-4e7c-abc7-cace43931fbf}</UniqueIdentifier>
+      <UniqueIdentifier>{3d1d50bf-4fd5-474a-ab96-efaa316804eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

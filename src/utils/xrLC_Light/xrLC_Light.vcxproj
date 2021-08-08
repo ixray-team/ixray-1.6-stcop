@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,18 +22,18 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -150,103 +150,93 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="_d3d_extensions.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="xrLC_Light.h" />
-    <ClInclude Include="xrThread.h" />
-    <ClInclude Include="hash2D.h" />
-    <ClInclude Include="vector_clear.h" />
-    <ClInclude Include="xrLC_GlobalData.h" />
-    <ClInclude Include="file_compress.h" />
-    <ClInclude Include="light_execute.h" />
-    <ClInclude Include="net_stream.h" />
-    <ClInclude Include="lightstab_interface.h" />
-    <ClInclude Include="net_cl_data_prepare.h" />
-    <ClInclude Include="net_execution_factory.h" />
-    <ClInclude Include="net_execution_globals.h" />
-    <ClInclude Include="net_global_data_cleanup.h" />
-    <ClInclude Include="net_task_callback.h" />
+    <ClInclude Include="..\Shader_xrLC.h" />
+    <ClInclude Include="base_basis.h" />
+    <ClInclude Include="base_color.h" />
+    <ClInclude Include="base_face.h" />
+    <ClInclude Include="base_lighting.h" />
+    <ClInclude Include="b_build_texture.h" />
+    <ClInclude Include="calculate_normals.h" />
+    <ClInclude Include="DetailFormat.h" />
     <ClInclude Include="detail_net_global_data.h" />
+    <ClInclude Include="detail_slot_calculate.h" />
+    <ClInclude Include="ETextureParams.h" />
+    <ClInclude Include="execute_statistics.h" />
+    <ClInclude Include="file_compress.h" />
+    <ClInclude Include="fitter.h" />
+    <ClInclude Include="global_calculation_data.h" />
+    <ClInclude Include="global_slots_data.h" />
     <ClInclude Include="gl_base_cl_data.h" />
+    <ClInclude Include="hash2D.h" />
     <ClInclude Include="implicit_net_global_data.h" />
-    <ClInclude Include="lc_net_global_data.h" />
-    <ClInclude Include="lm_net_global_data.h" />
-    <ClInclude Include="net_all_globals.h" />
-    <ClInclude Include="net_global_data.h" />
-    <ClInclude Include="ref_model_net_global_data.h" />
+    <ClInclude Include="itterate_adjacents_static.h" />
     <ClInclude Include="lcnet_execution_tasks_add.h" />
+    <ClInclude Include="lcnet_task_manager.h" />
+    <ClInclude Include="lc_net_global_data.h" />
+    <ClInclude Include="Lightmap.h" />
+    <ClInclude Include="lightstab_interface.h" />
+    <ClInclude Include="LightThread.h" />
+    <ClInclude Include="light_execute.h" />
+    <ClInclude Include="light_point.h" />
+    <ClInclude Include="lm_layer.h" />
+    <ClInclude Include="lm_net_global_data.h" />
+    <ClInclude Include="MeshStructure.h" />
+    <ClInclude Include="mu_light_net.h" />
+    <ClInclude Include="mu_model_face.h" />
+    <ClInclude Include="mu_model_face_defs.h" />
+    <ClInclude Include="mu_model_light.h" />
+    <ClInclude Include="mu_model_light_threads.h" />
     <ClInclude Include="net_all_executions.h" />
+    <ClInclude Include="net_all_globals.h" />
+    <ClInclude Include="net_cl_data_prepare.h" />
     <ClInclude Include="net_execution.h" />
     <ClInclude Include="net_execution_detail_light.h" />
+    <ClInclude Include="net_execution_factory.h" />
+    <ClInclude Include="net_execution_globals.h" />
     <ClInclude Include="net_execution_implicit_light.h" />
     <ClInclude Include="net_execution_lightmaps.h" />
     <ClInclude Include="net_execution_mu_base.h" />
     <ClInclude Include="net_execution_mu_ref.h" />
     <ClInclude Include="net_execution_vertex_light.h" />
-    <ClInclude Include="lcnet_task_manager.h" />
     <ClInclude Include="net_exec_pool.h" />
+    <ClInclude Include="net_global_data.h" />
+    <ClInclude Include="net_global_data_cleanup.h" />
     <ClInclude Include="net_light.h" />
     <ClInclude Include="net_light_task.h" />
+    <ClInclude Include="net_stream.h" />
     <ClInclude Include="net_task.h" />
+    <ClInclude Include="net_task_callback.h" />
     <ClInclude Include="net_task_manager.h" />
-    <ClInclude Include="fitter.h" />
-    <ClInclude Include="mu_model_face.h" />
-    <ClInclude Include="mu_model_face_defs.h" />
-    <ClInclude Include="xrMU_Model.h" />
-    <ClInclude Include="xrMU_Model_Reference.h" />
-    <ClInclude Include="mu_light_net.h" />
-    <ClInclude Include="mu_model_light.h" />
-    <ClInclude Include="mu_model_light_threads.h" />
+    <ClInclude Include="recalculation.h" />
+    <ClInclude Include="ref_model_net_global_data.h" />
+    <ClInclude Include="R_light.h" />
+    <ClInclude Include="serialize.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="tcf.h" />
+    <ClInclude Include="tga.h" />
+    <ClInclude Include="uv_tri.h" />
+    <ClInclude Include="vector_clear.h" />
+    <ClInclude Include="xrDeflector.h" />
+    <ClInclude Include="xrDeflectorDefs.h" />
+    <ClInclude Include="xrFace.h" />
+    <ClInclude Include="xrFaceDefs.h" />
+    <ClInclude Include="xrImage_Filter.h" />
+    <ClInclude Include="xrImage_Resampler.h" />
+    <ClInclude Include="xrIsect.h" />
+    <ClInclude Include="xrLC_GlobalData.h" />
+    <ClInclude Include="xrLC_Light.h" />
+    <ClInclude Include="xrLightDoNet.h" />
+    <ClInclude Include="xrLightVertex.h" />
     <ClInclude Include="xrLight_Implicit.h" />
     <ClInclude Include="xrLight_ImplicitCalcGlobs.h" />
     <ClInclude Include="xrLight_ImplicitDeflector.h" />
     <ClInclude Include="xrLight_ImplicitRun.h" />
-    <ClInclude Include="execute_statistics.h" />
-    <ClInclude Include="uv_tri.h" />
-    <ClInclude Include="xrDeflector.h" />
-    <ClInclude Include="xrDeflectorDefs.h" />
-    <ClInclude Include="xrImage_Resampler.h" />
-    <ClInclude Include="xrIsect.h" />
-    <ClInclude Include="base_basis.h" />
-    <ClInclude Include="base_face.h" />
-    <ClInclude Include="calculate_normals.h" />
-    <ClInclude Include="itterate_adjacents_static.h" />
-    <ClInclude Include="MeshStructure.h" />
-    <ClInclude Include="xrFace.h" />
-    <ClInclude Include="xrFaceDefs.h" />
-    <ClInclude Include="serialize.h" />
-    <ClInclude Include="Lightmap.h" />
-    <ClInclude Include="lm_layer.h" />
-    <ClInclude Include="xrImage_Filter.h" />
-    <ClInclude Include="b_build_texture.h" />
-    <ClInclude Include="ETextureParams.h" />
-    <ClInclude Include="tcf.h" />
-    <ClInclude Include="tga.h" />
-    <ClInclude Include="base_lighting.h" />
-    <ClInclude Include="light_point.h" />
-    <ClInclude Include="R_light.h" />
-    <ClInclude Include="base_color.h" />
-    <ClInclude Include="xrLightVertex.h" />
-    <ClInclude Include="detail_slot_calculate.h" />
-    <ClInclude Include="DetailFormat.h" />
-    <ClInclude Include="global_calculation_data.h" />
-    <ClInclude Include="global_slots_data.h" />
-    <ClInclude Include="LightThread.h" />
-    <ClInclude Include="recalculation.h" />
-    <ClInclude Include="xrLightDoNet.h" />
-    <ClInclude Include="..\Shader_xrLC.h" />
+    <ClInclude Include="xrMU_Model.h" />
+    <ClInclude Include="xrMU_Model_Reference.h" />
+    <ClInclude Include="xrThread.h" />
+    <ClInclude Include="_d3d_extensions.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="xrLC_Light.cpp" />
-    <ClCompile Include="xrThread.cpp" />
-    <ClCompile Include="MeshStaic.cpp" />
-    <ClCompile Include="xrLC_GlobalData.cpp" />
-    <ClCompile Include="file_compress.cpp" />
     <ClCompile Include="..\..\..\sdk\include\hxgrid\Interface\hxGridInterface.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -267,96 +257,106 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="..\..\xrEngine\xrLoadSurface.cpp" />
+    <ClCompile Include="base_basis.cpp" />
+    <ClCompile Include="base_color.cpp" />
+    <ClCompile Include="base_face.cpp" />
+    <ClCompile Include="base_lighting.cpp" />
+    <ClCompile Include="b_build_texture.cpp" />
+    <ClCompile Include="compiler.cpp" />
+    <ClCompile Include="detail_net_global_data.cpp" />
+    <ClCompile Include="detail_slot_calculate.cpp" />
+    <ClCompile Include="ETextureParams.cpp" />
+    <ClCompile Include="execute_statistics.cpp" />
+    <ClCompile Include="file_compress.cpp" />
+    <ClCompile Include="fitter.cpp" />
+    <ClCompile Include="global_calculation_data.cpp" />
+    <ClCompile Include="global_slots_data.cpp" />
+    <ClCompile Include="gl_base_cl_data.cpp" />
+    <ClCompile Include="implicit_net_global_data.cpp" />
+    <ClCompile Include="lcnet_task_manager.cpp" />
+    <ClCompile Include="lcnet_task_menager_run_task.cpp" />
+    <ClCompile Include="lc_net_global_data.cpp" />
+    <ClCompile Include="Lightmap.cpp" />
+    <ClCompile Include="LightThread.cpp" />
     <ClCompile Include="light_execute.cpp" />
-    <ClCompile Include="net_stream.cpp" />
+    <ClCompile Include="lm_layer.cpp" />
+    <ClCompile Include="lm_net_global_data.cpp" />
+    <ClCompile Include="MeshStaic.cpp" />
+    <ClCompile Include="mu_light_net.cpp" />
+    <ClCompile Include="mu_model_face.cpp" />
+    <ClCompile Include="mu_model_light.cpp" />
+    <ClCompile Include="mu_model_light_threads.cpp" />
     <ClCompile Include="net_cl_data_prepare.cpp" />
+    <ClCompile Include="net_execution.cpp" />
+    <ClCompile Include="net_execution_detail_light.cpp" />
     <ClCompile Include="net_execution_factory.cpp" />
     <ClCompile Include="net_execution_factory_register.cpp" />
     <ClCompile Include="net_execution_globals.cpp" />
-    <ClCompile Include="net_global_data_cleanup.cpp" />
-    <ClCompile Include="net_task_callback.cpp" />
-    <ClCompile Include="detail_net_global_data.cpp" />
-    <ClCompile Include="gl_base_cl_data.cpp" />
-    <ClCompile Include="implicit_net_global_data.cpp" />
-    <ClCompile Include="lc_net_global_data.cpp" />
-    <ClCompile Include="lm_net_global_data.cpp" />
-    <ClCompile Include="net_global_data.cpp" />
-    <ClCompile Include="ref_model_net_global_data.cpp" />
-    <ClCompile Include="net_execution.cpp" />
-    <ClCompile Include="net_execution_detail_light.cpp" />
     <ClCompile Include="net_execution_implicit_light.cpp" />
     <ClCompile Include="net_execution_lightmaps.cpp" />
     <ClCompile Include="net_execution_mu_base.cpp" />
     <ClCompile Include="net_execution_mu_ref.cpp" />
     <ClCompile Include="net_execution_vertex_light.cpp" />
-    <ClCompile Include="net_lightmaps_add_task.cpp" />
-    <ClCompile Include="lcnet_task_manager.cpp" />
-    <ClCompile Include="lcnet_task_menager_run_task.cpp" />
     <ClCompile Include="net_exec_pool.cpp" />
+    <ClCompile Include="net_global_data.cpp" />
+    <ClCompile Include="net_global_data_cleanup.cpp" />
     <ClCompile Include="net_light.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="net_lightmaps_add_task.cpp" />
     <ClCompile Include="net_light_task.cpp" />
+    <ClCompile Include="net_stream.cpp" />
     <ClCompile Include="net_task.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="net_task_callback.cpp" />
     <ClCompile Include="net_task_manager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="fitter.cpp" />
-    <ClCompile Include="mu_model_face.cpp" />
-    <ClCompile Include="xrMU_Model.cpp" />
-    <ClCompile Include="xrMU_Model_Calc_faceopacity.cpp" />
-    <ClCompile Include="xrMU_Model_Calc_materials.cpp" />
-    <ClCompile Include="xrMU_Model_Calc_normals.cpp" />
-    <ClCompile Include="xrMU_Model_export_cform_rcast.cpp" />
-    <ClCompile Include="xrMU_Model_Load.cpp" />
-    <ClCompile Include="xrMU_Model_Reference.cpp" />
-    <ClCompile Include="mu_light_net.cpp" />
-    <ClCompile Include="mu_model_light.cpp" />
-    <ClCompile Include="mu_model_light_threads.cpp" />
-    <ClCompile Include="xrMU_Model_Calc_lighting.cpp" />
-    <ClCompile Include="xrMU_Model_Reference_Calc_Lighting.cpp" />
+    <ClCompile Include="recalculation.cpp" />
+    <ClCompile Include="ref_model_net_global_data.cpp" />
+    <ClCompile Include="serialize.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="tcf.cpp" />
+    <ClCompile Include="tga.cpp" />
+    <ClCompile Include="uv_tri.cpp" />
+    <ClCompile Include="xrDeflectoL_Direct.cpp" />
+    <ClCompile Include="xrDeflector.cpp" />
+    <ClCompile Include="xrDeflectorLight.cpp" />
+    <ClCompile Include="xrFace.cpp" />
+    <ClCompile Include="xrImage_Filter.cpp" />
+    <ClCompile Include="xrImage_Resampler.cpp" />
+    <ClCompile Include="xrLC_GlobalData.cpp" />
+    <ClCompile Include="xrLC_Light.cpp" />
+    <ClCompile Include="xrLightDoNet.cpp" />
+    <ClCompile Include="xrLightVertex.cpp" />
+    <ClCompile Include="xrLightVertexNet.cpp" />
     <ClCompile Include="xrLight_ImlicitNet.cpp" />
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitCalcGlobs.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
     <ClCompile Include="xrLight_ImplicitThread.cpp" />
-    <ClCompile Include="execute_statistics.cpp" />
-    <ClCompile Include="uv_tri.cpp" />
-    <ClCompile Include="xrDeflectoL_Direct.cpp" />
-    <ClCompile Include="xrDeflector.cpp" />
-    <ClCompile Include="xrDeflectorLight.cpp" />
-    <ClCompile Include="xrImage_Resampler.cpp" />
-    <ClCompile Include="base_basis.cpp" />
-    <ClCompile Include="base_face.cpp" />
-    <ClCompile Include="xrFace.cpp" />
-    <ClCompile Include="serialize.cpp" />
-    <ClCompile Include="Lightmap.cpp" />
-    <ClCompile Include="lm_layer.cpp" />
-    <ClCompile Include="xrImage_Filter.cpp" />
-    <ClCompile Include="b_build_texture.cpp" />
-    <ClCompile Include="ETextureParams.cpp" />
-    <ClCompile Include="tcf.cpp" />
-    <ClCompile Include="tga.cpp" />
-    <ClCompile Include="base_lighting.cpp" />
-    <ClCompile Include="base_color.cpp" />
-    <ClCompile Include="xrLightVertex.cpp" />
-    <ClCompile Include="xrLightVertexNet.cpp" />
-    <ClCompile Include="compiler.cpp" />
-    <ClCompile Include="detail_slot_calculate.cpp" />
-    <ClCompile Include="global_calculation_data.cpp" />
-    <ClCompile Include="global_slots_data.cpp" />
-    <ClCompile Include="LightThread.cpp" />
-    <ClCompile Include="recalculation.cpp" />
-    <ClCompile Include="xrLightDoNet.cpp" />
-    <ClCompile Include="..\..\xrEngine\xrLoadSurface.cpp" />
+    <ClCompile Include="xrMU_Model.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_faceopacity.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_lighting.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_materials.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_normals.cpp" />
+    <ClCompile Include="xrMU_Model_export_cform_rcast.cpp" />
+    <ClCompile Include="xrMU_Model_Load.cpp" />
+    <ClCompile Include="xrMU_Model_Reference.cpp" />
+    <ClCompile Include="xrMU_Model_Reference_Calc_Lighting.cpp" />
+    <ClCompile Include="xrThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

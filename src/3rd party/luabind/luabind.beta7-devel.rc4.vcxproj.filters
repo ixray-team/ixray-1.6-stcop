@@ -2,40 +2,40 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
-      <UniqueIdentifier>{b45304db-3160-4c58-a099-a9a38be9280e}</UniqueIdentifier>
+      <UniqueIdentifier>{5a8fecaf-3147-4eb0-845e-40025eb7753e}</UniqueIdentifier>
     </Filter>
     <Filter Include="test">
-      <UniqueIdentifier>{855c1918-e286-4350-ae61-81b7142e4917}</UniqueIdentifier>
+      <UniqueIdentifier>{cb8c49bc-1701-40bf-bd51-f56a815ecaf4}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples">
-      <UniqueIdentifier>{abc33534-5f16-40c2-81f0-1538a06f9e77}</UniqueIdentifier>
+      <UniqueIdentifier>{15e558b3-ca08-4c9a-8a35-78c867df1598}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples\any_converter">
-      <UniqueIdentifier>{b880a81f-50bf-4217-8909-8572f78d1243}</UniqueIdentifier>
+      <UniqueIdentifier>{0bf0a5cc-591e-43e5-a5ae-fc29f166b0f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples\cln">
-      <UniqueIdentifier>{a44d0eeb-cf7b-4ac6-b62b-c407280fbaa3}</UniqueIdentifier>
+      <UniqueIdentifier>{bb885cd5-437e-4f39-8f4b-26a9fba0297e}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples\filesystem">
-      <UniqueIdentifier>{23fb1a9e-1a89-49e4-89a9-7b44a0f44f27}</UniqueIdentifier>
+      <UniqueIdentifier>{bea1770c-6750-43c0-bdf7-44ef0512e3fa}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples\glut">
-      <UniqueIdentifier>{ae5782d1-72ca-4af5-8291-9a581fd1fe3e}</UniqueIdentifier>
+      <UniqueIdentifier>{9a003397-b5ab-4206-b432-82aa48209d5e}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples\intrusive_ptr">
-      <UniqueIdentifier>{059a55de-46e0-41b8-b553-79c85bece53d}</UniqueIdentifier>
+      <UniqueIdentifier>{07fd4e08-b29d-4b1d-855a-4139efebf3de}</UniqueIdentifier>
     </Filter>
     <Filter Include="examples\regexp">
-      <UniqueIdentifier>{3949a604-482e-4340-b85c-56dd846a4760}</UniqueIdentifier>
+      <UniqueIdentifier>{069696e1-4f9e-46a7-8de1-0f203a0c7af1}</UniqueIdentifier>
     </Filter>
     <Filter Include="doc">
-      <UniqueIdentifier>{95242c94-1a11-4da1-b629-7f9abe61584b}</UniqueIdentifier>
+      <UniqueIdentifier>{0496e14f-17ad-40de-9562-61b39339b4af}</UniqueIdentifier>
     </Filter>
     <Filter Include="include">
-      <UniqueIdentifier>{4ef48f83-d673-4988-a84b-32da7d8f7936}</UniqueIdentifier>
+      <UniqueIdentifier>{c805b0a2-b2aa-4441-bdea-4b709584b09b}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\detail">
-      <UniqueIdentifier>{34b5e671-af0a-4aea-8a11-012e786bca08}</UniqueIdentifier>
+      <UniqueIdentifier>{95538248-dacb-4dd2-b9c7-e14100b95416}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +182,9 @@
     <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="luabind\test\test.hpp">
+      <Filter>test</Filter>
+    </ClInclude>
     <ClInclude Include="luabind\examples\filesystem\directory_iterator.hpp">
       <Filter>examples\filesystem</Filter>
     </ClInclude>
@@ -431,10 +434,5 @@
     <None Include="luabind\doc\index.html">
       <Filter>doc</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="luabind\test\test.hpp">
-      <Filter>test</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

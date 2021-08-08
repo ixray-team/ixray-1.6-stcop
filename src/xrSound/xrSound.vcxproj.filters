@@ -2,31 +2,31 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{5693f53c-ea58-434d-9a5e-d00e3c936f4a}</UniqueIdentifier>
+      <UniqueIdentifier>{6ba460b2-2d3f-45e3-855e-f24f114b123b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core">
-      <UniqueIdentifier>{4e29e255-3c2f-42c4-921c-d004989ea509}</UniqueIdentifier>
+      <UniqueIdentifier>{62108844-77e2-45eb-8aaf-a07923b8f9b8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\OpenAL">
-      <UniqueIdentifier>{b0a270d4-f0a7-4125-a178-e0f6cc162a40}</UniqueIdentifier>
+      <UniqueIdentifier>{df496c3e-a144-453d-80a6-8f42ab854c13}</UniqueIdentifier>
     </Filter>
     <Filter Include="Emitter">
-      <UniqueIdentifier>{14b4859d-b6cc-4c26-b602-d0df78450739}</UniqueIdentifier>
+      <UniqueIdentifier>{69ec3309-cbc1-4e66-b776-598fc85a24d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source">
-      <UniqueIdentifier>{11285e46-dabe-4290-9128-e5a7dd2a0361}</UniqueIdentifier>
+      <UniqueIdentifier>{118b8799-9853-498a-a19d-6f9f249f8b64}</UniqueIdentifier>
     </Filter>
     <Filter Include="Target">
-      <UniqueIdentifier>{e431faeb-2244-40a5-aa1b-f47207657a55}</UniqueIdentifier>
+      <UniqueIdentifier>{57b1265c-ffc6-4aa5-bb0b-192b7f62153d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Target\OpenAL">
-      <UniqueIdentifier>{b200e74b-a071-4d36-8d0b-9798b11310d2}</UniqueIdentifier>
+      <UniqueIdentifier>{6f90aa32-c47b-4eb5-9402-346a7521d2e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Environment">
-      <UniqueIdentifier>{f2ec31a3-1e89-4e85-acff-cddaecd4132a}</UniqueIdentifier>
+      <UniqueIdentifier>{7e8837cb-aa51-4f83-85f9-da7cbb0864d5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Cache">
-      <UniqueIdentifier>{4010dfb8-e0b2-4d28-9e58-280bce01c5a5}</UniqueIdentifier>
+      <UniqueIdentifier>{13e6e423-f700-40da-a385-ebb9126a9011}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

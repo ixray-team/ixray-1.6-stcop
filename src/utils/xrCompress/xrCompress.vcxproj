@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,20 +20,20 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -208,14 +208,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="StdAfx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="xrCompress.cpp" />
-    <ClCompile Include="xrCompressDifference.cpp" />
     <ClCompile Include="lzo\alloc.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -233,14 +225,6 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lzo\lzo1.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="lzo\lzo1_99.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -704,6 +688,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="lzo\lzo1_99.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="lzo\lzo2a_9x.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -776,10 +768,16 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="xrCompress.cpp" />
+    <ClCompile Include="xrCompressDifference.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="xrCompress.h" />
     <ClInclude Include="lzo\compr1b.h" />
     <ClInclude Include="lzo\compr1c.h" />
     <ClInclude Include="lzo\config1.h" />
@@ -806,19 +804,19 @@
     <ClInclude Include="lzo\lzo1y.h" />
     <ClInclude Include="lzo\lzo1z.h" />
     <ClInclude Include="lzo\lzo2a.h" />
+    <ClInclude Include="lzo\lzoconf.h" />
+    <ClInclude Include="lzo\lzoutil.h" />
     <ClInclude Include="lzo\lzo_conf.h" />
     <ClInclude Include="lzo\lzo_dict.h" />
     <ClInclude Include="lzo\lzo_ptr.h" />
     <ClInclude Include="lzo\lzo_util.h" />
-    <ClInclude Include="lzo\lzoconf.h" />
-    <ClInclude Include="lzo\lzoutil.h" />
     <ClInclude Include="lzo\stats1a.h" />
     <ClInclude Include="lzo\stats1b.h" />
     <ClInclude Include="lzo\stats1c.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="xrCompress.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="lzo\lzo1_cm.ch" />
-    <None Include="lzo\lzo1_d.ch" />
     <None Include="lzo\lzo1a_cm.ch" />
     <None Include="lzo\lzo1a_cr.ch" />
     <None Include="lzo\lzo1b_c.ch" />
@@ -832,6 +830,8 @@
     <None Include="lzo\lzo1x_c.ch" />
     <None Include="lzo\lzo1x_d.ch" />
     <None Include="lzo\lzo1x_oo.ch" />
+    <None Include="lzo\lzo1_cm.ch" />
+    <None Include="lzo\lzo1_d.ch" />
     <None Include="lzo\lzo2a_d.ch" />
     <None Include="lzo\lzo_mchw.ch" />
     <None Include="lzo\lzo_swd.ch" />

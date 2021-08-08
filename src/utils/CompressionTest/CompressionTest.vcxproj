@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,12 +18,12 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -126,12 +126,12 @@
     <ClInclude Include="..\xrCompress\lzo\lzo1y.h" />
     <ClInclude Include="..\xrCompress\lzo\lzo1z.h" />
     <ClInclude Include="..\xrCompress\lzo\lzo2a.h" />
+    <ClInclude Include="..\xrCompress\lzo\lzoconf.h" />
+    <ClInclude Include="..\xrCompress\lzo\lzoutil.h" />
     <ClInclude Include="..\xrCompress\lzo\lzo_conf.h" />
     <ClInclude Include="..\xrCompress\lzo\lzo_dict.h" />
     <ClInclude Include="..\xrCompress\lzo\lzo_ptr.h" />
     <ClInclude Include="..\xrCompress\lzo\lzo_util.h" />
-    <ClInclude Include="..\xrCompress\lzo\lzoconf.h" />
-    <ClInclude Include="..\xrCompress\lzo\lzoutil.h" />
     <ClInclude Include="..\xrCompress\lzo\stats1a.h" />
     <ClInclude Include="..\xrCompress\lzo\stats1b.h" />
     <ClInclude Include="..\xrCompress\lzo\stats1c.h" />
@@ -144,7 +144,6 @@
     <ClCompile Include="..\xrCompress\lzo\alloc.c" />
     <ClCompile Include="..\xrCompress\lzo\io.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo1.c" />
-    <ClCompile Include="..\xrCompress\lzo\lzo1_99.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo1a.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo1a_99.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo1b_1.c" />
@@ -202,6 +201,7 @@
     <ClCompile Include="..\xrCompress\lzo\lzo1z_d1.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo1z_d2.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo1z_d3.c" />
+    <ClCompile Include="..\xrCompress\lzo\lzo1_99.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo2a_9x.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo2a_d1.c" />
     <ClCompile Include="..\xrCompress\lzo\lzo2a_d2.c" />

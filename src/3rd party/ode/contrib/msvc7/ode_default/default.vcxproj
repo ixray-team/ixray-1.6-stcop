@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,21 +22,21 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -253,29 +253,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\ode\src\array.h" />
-    <ClInclude Include="..\..\..\ode\src\Bounder33.h" />
     <ClInclude Include="..\..\..\include\ode\collision.h" />
-    <ClInclude Include="..\..\..\ode\src\collision_kernel.h" />
     <ClInclude Include="..\..\..\include\ode\collision_space.h" />
-    <ClInclude Include="..\..\..\ode\src\collision_space_internal.h" />
-    <ClInclude Include="..\..\..\ode\src\collision_std.h" />
-    <ClInclude Include="..\..\..\ode\src\collision_transform.h" />
     <ClInclude Include="..\..\..\include\ode\collision_trimesh.h" />
-    <ClInclude Include="..\..\..\ode\src\collision_trimesh_internal.h" />
-    <ClInclude Include="..\..\..\ode\src\collision_util.h" />
-    <ClInclude Include="..\..\..\ode\src\geom_internal.h" />
-    <ClInclude Include="..\..\..\ode\src\joint.h" />
-    <ClInclude Include="..\..\..\ode\src\lcp.h" />
-    <ClInclude Include="..\..\..\ode\src\mat.h" />
-    <ClInclude Include="..\..\..\ode\src\objects.h" />
-    <ClInclude Include="..\..\..\ode\src\obstack.h" />
-    <ClInclude Include="..\..\..\include\ode\odecpp_collision.h" />
-    <ClInclude Include="..\..\..\ode\src\quickstep.h" />
-    <ClInclude Include="..\..\..\ode\src\stack.h" />
-    <ClInclude Include="..\..\..\ode\src\step.h" />
-    <ClInclude Include="..\..\..\ode\src\StepJointInternal.h" />
-    <ClInclude Include="..\..\..\ode\src\testing.h" />
     <ClInclude Include="..\..\..\include\ode\common.h" />
     <ClInclude Include="..\..\..\include\ode\compatibility.h" />
     <ClInclude Include="..\..\..\include\ode\config.h" />
@@ -290,13 +270,33 @@
     <ClInclude Include="..\..\..\include\ode\objects.h" />
     <ClInclude Include="..\..\..\include\ode\ode.h" />
     <ClInclude Include="..\..\..\include\ode\odecpp.h" />
+    <ClInclude Include="..\..\..\include\ode\odecpp_collision.h" />
     <ClInclude Include="..\..\..\include\ode\odemath.h" />
     <ClInclude Include="..\..\..\include\ode\rotation.h" />
     <ClInclude Include="..\..\..\include\ode\space.h" />
     <ClInclude Include="..\..\..\include\ode\timer.h" />
-    <ClInclude Include="de_padf_integration.h" />
+    <ClInclude Include="..\..\..\ode\src\array.h" />
+    <ClInclude Include="..\..\..\ode\src\Bounder33.h" />
+    <ClInclude Include="..\..\..\ode\src\collision_kernel.h" />
+    <ClInclude Include="..\..\..\ode\src\collision_space_internal.h" />
+    <ClInclude Include="..\..\..\ode\src\collision_std.h" />
+    <ClInclude Include="..\..\..\ode\src\collision_transform.h" />
+    <ClInclude Include="..\..\..\ode\src\collision_trimesh_internal.h" />
+    <ClInclude Include="..\..\..\ode\src\collision_util.h" />
+    <ClInclude Include="..\..\..\ode\src\geom_internal.h" />
+    <ClInclude Include="..\..\..\ode\src\joint.h" />
+    <ClInclude Include="..\..\..\ode\src\lcp.h" />
     <ClInclude Include="..\..\..\ode\src\Lcp33.h" />
+    <ClInclude Include="..\..\..\ode\src\mat.h" />
+    <ClInclude Include="..\..\..\ode\src\objects.h" />
+    <ClInclude Include="..\..\..\ode\src\obstack.h" />
+    <ClInclude Include="..\..\..\ode\src\quickstep.h" />
+    <ClInclude Include="..\..\..\ode\src\stack.h" />
+    <ClInclude Include="..\..\..\ode\src\step.h" />
+    <ClInclude Include="..\..\..\ode\src\StepJointInternal.h" />
+    <ClInclude Include="..\..\..\ode\src\testing.h" />
     <ClInclude Include="..\..\..\ode\src\util.h" />
+    <ClInclude Include="de_padf_integration.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\ode\src\array.cpp" />
@@ -315,7 +315,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\ode\src\collision_transform.cpp" />
     <ClCompile Include="..\..\..\ode\src\collision_util.cpp" />
-    <ClCompile Include="de_padf_integration.cpp" />
     <ClCompile Include="..\..\..\ode\src\error.cpp" />
     <ClCompile Include="..\..\..\ode\src\export-dif.cpp" />
     <ClCompile Include="..\..\..\ode\src\fastdot.c" />
@@ -340,6 +339,7 @@
     <ClCompile Include="..\..\..\ode\src\testing.cpp" />
     <ClCompile Include="..\..\..\ode\src\timer.cpp" />
     <ClCompile Include="..\..\..\ode\src\util.cpp" />
+    <ClCompile Include="de_padf_integration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\config\msvcdefs.def" />

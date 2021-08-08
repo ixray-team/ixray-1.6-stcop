@@ -2,13 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Convert">
-      <UniqueIdentifier>{195f0df3-cf41-4fb5-820b-74e6c3d91906}</UniqueIdentifier>
+      <UniqueIdentifier>{b2e93a6e-5e2a-494d-90dc-fdd4faf42668}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared">
-      <UniqueIdentifier>{63e71eb2-a3da-4bbd-b658-5635dce46db5}</UniqueIdentifier>
+      <UniqueIdentifier>{15644fbf-ff75-4101-b424-1df85b395cc3}</UniqueIdentifier>
     </Filter>
     <Filter Include="NormalMap">
-      <UniqueIdentifier>{389155a6-5c44-4c69-a907-1ce932dcfda0}</UniqueIdentifier>
+      <UniqueIdentifier>{a225d1d3-1d23-4a06-a2d8-bfd1ba9a624e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -2,172 +2,172 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Core">
-      <UniqueIdentifier>{e999fb34-34ee-46da-9832-4e6116421ce1}</UniqueIdentifier>
+      <UniqueIdentifier>{40b5d0b3-084c-4d06-9398-8275667ef707}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
-      <UniqueIdentifier>{e06ba963-fe29-46fe-8eb8-cb0bf5d74629}</UniqueIdentifier>
+      <UniqueIdentifier>{ef48e0d3-8ac2-461e-a3fa-49b82cbf624e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\AComponents">
-      <UniqueIdentifier>{f64a51c3-0961-4b6c-99e9-da55fbb8cd9b}</UniqueIdentifier>
+      <UniqueIdentifier>{333afc24-4bb2-4346-a04e-769b52c5ddfb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\AComponents\SpaceRestrictionManager">
-      <UniqueIdentifier>{b4fb7059-0f14-4893-8792-8a0ff39ae3f9}</UniqueIdentifier>
+      <UniqueIdentifier>{2189b511-bdd5-4b9f-93bb-4ca7f44c36af}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ASound">
-      <UniqueIdentifier>{810006fc-a690-4480-88e1-fa22427b8565}</UniqueIdentifier>
+      <UniqueIdentifier>{47b588c5-5dfc-4ebe-ac52-e4792109445c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ASpace">
-      <UniqueIdentifier>{83b9e61a-e71c-4a7d-aceb-95346c7bf24b}</UniqueIdentifier>
+      <UniqueIdentifier>{46dc1fcc-7f1b-480d-8786-6839f0ee3770}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ObjectBroker">
-      <UniqueIdentifier>{85ed21af-ee51-4021-9234-b29a3834ab3e}</UniqueIdentifier>
+      <UniqueIdentifier>{f6b675fe-dc31-413f-a5ac-03e29a0406be}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ObjectFactory">
-      <UniqueIdentifier>{d35d4b20-f142-4798-a07f-626e9176cde8}</UniqueIdentifier>
+      <UniqueIdentifier>{58bfcbd9-782e-4006-8f46-6163395a37c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ObjectFactory\object_item_abstract">
-      <UniqueIdentifier>{ee15f102-4f0d-4374-a963-21390ff8a0af}</UniqueIdentifier>
+      <UniqueIdentifier>{74ba5e8f-8912-4a2d-b15e-9564604bae36}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ObjectFactory\object_item_client_server">
-      <UniqueIdentifier>{297bec63-254c-4048-aac4-4c7ce8d79339}</UniqueIdentifier>
+      <UniqueIdentifier>{4db3366f-9c1e-4e95-a4e7-45124a984070}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ObjectFactory\object_item_script">
-      <UniqueIdentifier>{9b899a1d-94e6-42c4-bb49-ad60806d28a9}</UniqueIdentifier>
+      <UniqueIdentifier>{37f0ba61-4e14-4695-a9e7-949e69227a71}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\ObjectFactory\object_item_single">
-      <UniqueIdentifier>{fcc814d1-0caa-4261-8887-8e645a433a5c}</UniqueIdentifier>
+      <UniqueIdentifier>{8fbe9194-2f78-4dc9-8fde-db16cce5373e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\SmartCast">
-      <UniqueIdentifier>{d57c77a6-13f3-4f50-b94e-8a56aac7852a}</UniqueIdentifier>
+      <UniqueIdentifier>{304f1865-4d95-4ecc-9148-95cf53539aa0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\associative_vector">
-      <UniqueIdentifier>{fb644c05-b546-4839-a324-6f0f8e4536fc}</UniqueIdentifier>
+      <UniqueIdentifier>{2d3b0a80-7720-4f15-8b81-0d152678eb6a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts">
-      <UniqueIdentifier>{1bf7f377-a3e1-4afb-a907-c94ee7ca0fc3}</UniqueIdentifier>
+      <UniqueIdentifier>{c3253304-59f4-4e3b-9a9d-c2ca6bde7e0f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses">
-      <UniqueIdentifier>{8948485a-ad34-4d34-bd86-3e7167fa0d59}</UniqueIdentifier>
+      <UniqueIdentifier>{13fb13be-1831-4abe-8b50-a730ddd21e81}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptFmatrix">
-      <UniqueIdentifier>{b0439912-ec37-4dce-a812-7724b45a525c}</UniqueIdentifier>
+      <UniqueIdentifier>{c1676712-8870-451f-9c06-26215ee05c48}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptFvector">
-      <UniqueIdentifier>{a747cc72-7eb2-4671-89f1-b0336a7c9bf3}</UniqueIdentifier>
+      <UniqueIdentifier>{980ea9bd-6c50-44e9-b90a-165639a25af6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptIniFile">
-      <UniqueIdentifier>{03e9c6ec-e9b0-4c82-9d9b-38871e563d55}</UniqueIdentifier>
+      <UniqueIdentifier>{0ab788b5-e79e-4865-b3ce-44d6cb51afed}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptIniFile\ScriptTokenList">
-      <UniqueIdentifier>{ec252cf7-0aa6-4b94-9506-860b6a42a387}</UniqueIdentifier>
+      <UniqueIdentifier>{fb825a17-251e-46bb-9442-cbd31097a45d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptIniFile\ScriptRTokenList">
-      <UniqueIdentifier>{ee3056b1-0b81-4b96-a748-e360a85e06ba}</UniqueIdentifier>
+      <UniqueIdentifier>{4bcf5bf0-925e-4b4c-b85b-b7303343fbd5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptNetPacket">
-      <UniqueIdentifier>{d1c99879-f83a-44f7-94b1-f24b2ce350ac}</UniqueIdentifier>
+      <UniqueIdentifier>{114927b5-2647-47e0-a9a8-532e25ed3866}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptSoundType">
-      <UniqueIdentifier>{f35eb861-86a3-40b3-a19c-ab0c82ca4556}</UniqueIdentifier>
+      <UniqueIdentifier>{ac6d48a1-e154-4afa-9c77-b42d07d9a31b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptFlags">
-      <UniqueIdentifier>{3b5abc99-4756-4d87-993b-9c65894cdaa0}</UniqueIdentifier>
+      <UniqueIdentifier>{ffb54f16-4c9c-473b-8904-22c7b10e6e3d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptClasses\ScriptReader">
-      <UniqueIdentifier>{1dbcf2b3-bc66-4886-a811-79b06573d40c}</UniqueIdentifier>
+      <UniqueIdentifier>{97d9061e-4b91-45bf-9249-2ec034475eed}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptEngine">
-      <UniqueIdentifier>{d3918437-c272-4227-9242-1bc20b563ced}</UniqueIdentifier>
+      <UniqueIdentifier>{d1d2c224-c305-4a4a-aac4-f4ce4ae01dd8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptStorage">
-      <UniqueIdentifier>{34553946-31f3-416f-ab82-111515b024dd}</UniqueIdentifier>
+      <UniqueIdentifier>{67076725-c9c6-4801-a154-86b9d40171ea}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptProcess">
-      <UniqueIdentifier>{c69be68b-e3b4-40ae-af35-1dd0fc0479f5}</UniqueIdentifier>
+      <UniqueIdentifier>{493287ab-57ae-405d-85f5-8cc9f00179b0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptThread">
-      <UniqueIdentifier>{dbb51e69-c9b8-4e76-99d7-c91168e22c08}</UniqueIdentifier>
+      <UniqueIdentifier>{662bfa2f-ba44-43af-9ae2-65762b804db3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptThread\ScriptStackTracker">
-      <UniqueIdentifier>{953d1a86-4988-4275-8c98-abe82890fb8e}</UniqueIdentifier>
+      <UniqueIdentifier>{a28da084-e159-472a-b916-d2951736a4b7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\ScriptDebugger">
-      <UniqueIdentifier>{4918378a-eb81-4b52-936b-3d02cd8bb15c}</UniqueIdentifier>
+      <UniqueIdentifier>{17142be8-68f6-4872-9278-b71bb1b892ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts\lua_studio">
-      <UniqueIdentifier>{d34d1d08-085d-4954-9301-dd538ecdaf07}</UniqueIdentifier>
+      <UniqueIdentifier>{7c94984c-22c8-46c6-918c-c716f37ac40b}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff">
-      <UniqueIdentifier>{ccb9a41a-ef7e-46e6-b3ee-2e1e71f51ca2}</UniqueIdentifier>
+      <UniqueIdentifier>{d47c8068-3be4-46ff-b26b-bd80bce7dc77}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common">
-      <UniqueIdentifier>{3ac969df-d873-4f6b-ba13-5106cd895922}</UniqueIdentifier>
+      <UniqueIdentifier>{b6658e0d-d367-4416-8fba-2f7eb0b51400}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\ALifeStuff">
-      <UniqueIdentifier>{e60337ad-3002-4878-bb3c-e4bb4286188f}</UniqueIdentifier>
+      <UniqueIdentifier>{028062bd-b3f2-4072-b509-cd75190470f1}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\ALifeStuff\artefact_order">
-      <UniqueIdentifier>{e6a3a705-c916-41b2-94ea-6086600ea31a}</UniqueIdentifier>
+      <UniqueIdentifier>{c21ee37b-9c07-4a18-9a97-233997d5a9cc}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\ALifeStuff\human_brain">
-      <UniqueIdentifier>{84e9b1cb-2305-43bf-ba7d-1a923ca5257d}</UniqueIdentifier>
+      <UniqueIdentifier>{c4ca54ba-368b-4cba-b8b8-81003f45cf7e}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\ALifeStuff\monster_brain">
-      <UniqueIdentifier>{d7631948-0479-4adc-a659-8eed3b216e28}</UniqueIdentifier>
+      <UniqueIdentifier>{6606f7a7-beac-4db9-a720-9e3b39e87ba8}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\GameStuff">
-      <UniqueIdentifier>{1dc7c9fe-a0e3-489c-9a47-27c7a9ff5711}</UniqueIdentifier>
+      <UniqueIdentifier>{a6d2ad78-bc9a-4dd4-8c0b-c55755fcfb21}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\NetworkStuff">
-      <UniqueIdentifier>{45f1d9d5-999e-436a-8db6-cb490a0c8048}</UniqueIdentifier>
+      <UniqueIdentifier>{eb5a177a-846d-42c2-afde-0718bb4be75c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\PhysicsStuff">
-      <UniqueIdentifier>{c321560d-e2a1-45b5-8ba3-5b1e90dfbcee}</UniqueIdentifier>
+      <UniqueIdentifier>{9b9b5d59-3bd9-4ac2-ba51-f50bfd63cb40}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\Common\ServerStuff">
-      <UniqueIdentifier>{4bdefd65-2285-4900-a363-40a02891dd07}</UniqueIdentifier>
+      <UniqueIdentifier>{f8a5c42c-8c48-40c6-bb3d-4ba7e5c5ef40}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerFactory">
-      <UniqueIdentifier>{92e49a04-c022-4790-9b0d-813669350746}</UniqueIdentifier>
+      <UniqueIdentifier>{ad823d81-bb75-4391-afe0-a9e8a35a3b95}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities">
-      <UniqueIdentifier>{6d638eff-9309-49bd-b8cb-4523ba8bbf90}</UniqueIdentifier>
+      <UniqueIdentifier>{0c5effc0-e983-4618-b9d9-5fdbd63f0db6}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\objects">
-      <UniqueIdentifier>{32d219b8-072a-4a7b-b4ca-4c179d704780}</UniqueIdentifier>
+      <UniqueIdentifier>{563a378d-b860-43dc-9e9c-23380a49f974}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\objects_alife">
-      <UniqueIdentifier>{4e168638-a007-464a-ada3-cbc5f08e9aa0}</UniqueIdentifier>
+      <UniqueIdentifier>{025a763f-f952-4c9c-8b82-71453dff3660}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\objects_alife_items">
-      <UniqueIdentifier>{f47fa41c-08fa-4dc7-8361-b459971e4070}</UniqueIdentifier>
+      <UniqueIdentifier>{b4b8b197-24d1-4c29-a136-55873aa550f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\objects_alife_monsters">
-      <UniqueIdentifier>{974308e7-ba80-4909-9b3f-9532d1aee716}</UniqueIdentifier>
+      <UniqueIdentifier>{2286e02d-d99a-4d06-ba83-e18f6b8ad97b}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\editor_properties">
-      <UniqueIdentifier>{7802c296-39b5-4b1b-849c-75ab86041ad6}</UniqueIdentifier>
+      <UniqueIdentifier>{bfe79525-25ad-43e1-8d71-a300de552367}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\scripts">
-      <UniqueIdentifier>{d81ebb7d-3098-4876-8eb1-528feabbcce6}</UniqueIdentifier>
+      <UniqueIdentifier>{6f170f4f-a297-44d2-960b-9537d15d3de6}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\scripts\script_value">
-      <UniqueIdentifier>{0e988de5-99aa-4442-b555-9b23caca67e9}</UniqueIdentifier>
+      <UniqueIdentifier>{a1551817-ba6e-4e82-aea5-556de941b7e6}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\scripts\script_value_wrapper">
-      <UniqueIdentifier>{161f484c-eaf8-4ccb-81de-ffebb05202aa}</UniqueIdentifier>
+      <UniqueIdentifier>{b1e04f3e-22cb-4a79-ba8d-6814c2691cc3}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\scripts\script_value_container">
-      <UniqueIdentifier>{4e14102b-22be-42df-b65d-be7915bf2f1b}</UniqueIdentifier>
+      <UniqueIdentifier>{53e8d2db-2227-4645-b7ac-ab485539e72d}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\scripts\script_properties_list_helper">
-      <UniqueIdentifier>{9bce9eb4-f957-4a4e-98c6-8670f8d3ec5f}</UniqueIdentifier>
+      <UniqueIdentifier>{010eb0e6-4874-4fb2-94d6-ea64e8f9f528}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\objects_alife_smartcover">
-      <UniqueIdentifier>{db2edb5f-72c7-4ade-8d7d-bd8047f8725d}</UniqueIdentifier>
+      <UniqueIdentifier>{5cb994be-59eb-4084-911f-c735e7b7245c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ServerStuff\ServerEntities\movement_manager_holder">
-      <UniqueIdentifier>{32a1ed83-9650-463c-98e4-7e7c6186c5d0}</UniqueIdentifier>
+      <UniqueIdentifier>{d95ff133-f2ba-4484-8a75-9a0997b8cc53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

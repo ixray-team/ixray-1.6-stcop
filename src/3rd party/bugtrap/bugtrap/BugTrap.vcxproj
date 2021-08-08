@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,12 +18,12 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -137,87 +137,55 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
-    <ClCompile Include="MachineInfoDlg.cpp" />
-    <ClCompile Include="MachineStateDlg.cpp" />
-    <ClCompile Include="MainDlg.cpp" />
-    <ClCompile Include="PreviewDlg.cpp" />
-    <ClCompile Include="SendMailDlg.cpp" />
-    <ClCompile Include="SimpleDlg.cpp" />
-    <ClCompile Include="TransferProgressDlg.cpp" />
-    <ClCompile Include="WaitDlg.cpp" />
-    <ClCompile Include="ColHelper.cpp" />
-    <ClCompile Include="StrHolder.cpp" />
-    <ClCompile Include="HexView.cpp" />
-    <ClCompile Include="HyperLink.cpp" />
-    <ClCompile Include="ImageView.cpp" />
-    <ClCompile Include="LayoutManager.cpp" />
-    <ClCompile Include="Splitter.cpp" />
-    <ClCompile Include="TextView.cpp" />
-    <ClCompile Include="WaitCursor.cpp" />
-    <ClCompile Include="CMapi.cpp" />
-    <ClCompile Include="EnumProcess.cpp" />
-    <ClCompile Include="LogFile.cpp" />
-    <ClCompile Include="NetThunks.cpp" />
-    <ClCompile Include="SymEngine.cpp" />
-    <ClCompile Include="SymEngineNet.cpp" />
-    <ClCompile Include="TextLogFile.cpp" />
-    <ClCompile Include="XmlLogFile.cpp" />
-    <ClCompile Include="XmlReader.cpp" />
-    <ClCompile Include="XmlWriter.cpp" />
     <ClCompile Include="BugTrap.cpp" />
     <ClCompile Include="BugTrapNet.cpp" />
     <ClCompile Include="BugTrapUI.cpp" />
     <ClCompile Include="BugTrapUtils.cpp" />
-    <ClCompile Include="ResManager.cpp" />
+    <ClCompile Include="CMapi.cpp" />
+    <ClCompile Include="ColHelper.cpp" />
+    <ClCompile Include="Encoding.cpp" />
+    <ClCompile Include="EnumProcess.cpp" />
+    <ClCompile Include="FileStream.cpp" />
     <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="HexView.cpp" />
+    <ClCompile Include="HyperLink.cpp" />
+    <ClCompile Include="ImageView.cpp" />
+    <ClCompile Include="InputStream.cpp" />
+    <ClCompile Include="LayoutManager.cpp" />
+    <ClCompile Include="LogFile.cpp" />
+    <ClCompile Include="MachineInfoDlg.cpp" />
+    <ClCompile Include="MachineStateDlg.cpp" />
+    <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="MemStream.cpp" />
+    <ClCompile Include="NetThunks.cpp" />
+    <ClCompile Include="OutputStream.cpp" />
+    <ClCompile Include="PreviewDlg.cpp" />
+    <ClCompile Include="ResManager.cpp" />
+    <ClCompile Include="SendMailDlg.cpp" />
+    <ClCompile Include="SimpleDlg.cpp" />
+    <ClCompile Include="Splitter.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="FileStream.cpp" />
-    <ClCompile Include="InputStream.cpp" />
-    <ClCompile Include="MemStream.cpp" />
-    <ClCompile Include="OutputStream.cpp" />
+    <ClCompile Include="StrHolder.cpp" />
     <ClCompile Include="StrStream.cpp" />
-    <ClCompile Include="Encoding.cpp" />
+    <ClCompile Include="SymEngine.cpp" />
+    <ClCompile Include="SymEngineNet.cpp" />
     <ClCompile Include="TextFormat.cpp" />
+    <ClCompile Include="TextLogFile.cpp" />
+    <ClCompile Include="TextView.cpp" />
+    <ClCompile Include="TransferProgressDlg.cpp" />
+    <ClCompile Include="WaitCursor.cpp" />
+    <ClCompile Include="WaitDlg.cpp" />
+    <ClCompile Include="XmlLogFile.cpp" />
+    <ClCompile Include="XmlReader.cpp" />
+    <ClCompile Include="XmlWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
-    <ClInclude Include="MachineInfoDlg.h" />
-    <ClInclude Include="MachineStateDlg.h" />
-    <ClInclude Include="MainDlg.h" />
-    <ClInclude Include="PreviewDlg.h" />
-    <ClInclude Include="SendMailDlg.h" />
-    <ClInclude Include="SimpleDlg.h" />
-    <ClInclude Include="TransferProgressDlg.h" />
-    <ClInclude Include="WaitDlg.h" />
     <ClInclude Include="Array.h" />
-    <ClInclude Include="ColHelper.h" />
-    <ClInclude Include="Hash.h" />
-    <ClInclude Include="InPlaceNew.h" />
-    <ClInclude Include="InterfacePtr.h" />
-    <ClInclude Include="List.h" />
-    <ClInclude Include="SmartPtr.h" />
-    <ClInclude Include="StrHolder.h" />
-    <ClInclude Include="HexView.h" />
-    <ClInclude Include="HyperLink.h" />
-    <ClInclude Include="ImageView.h" />
-    <ClInclude Include="LayoutManager.h" />
-    <ClInclude Include="Splitter.h" />
-    <ClInclude Include="TextView.h" />
-    <ClInclude Include="WaitCursor.h" />
-    <ClInclude Include="XmlReader.h" />
-    <ClInclude Include="XmlWriter.h" />
-    <ClInclude Include="CMapi.h" />
-    <ClInclude Include="EnumProcess.h" />
-    <ClInclude Include="LogFile.h" />
-    <ClInclude Include="LogLink.h" />
-    <ClInclude Include="NetThunks.h" />
-    <ClInclude Include="SymEngine.h" />
-    <ClInclude Include="SymEngineNet.h" />
-    <ClInclude Include="TextLogFile.h" />
-    <ClInclude Include="XmlLogFile.h" />
+    <ClInclude Include="BaseStream.h" />
     <ClInclude Include="BTAtlWindow.h" />
     <ClInclude Include="BTMfcWindow.h" />
     <ClInclude Include="BTTrace.h" />
@@ -225,21 +193,53 @@
     <ClInclude Include="BugTrapNet.h" />
     <ClInclude Include="BugTrapUI.h" />
     <ClInclude Include="BugTrapUtils.h" />
-    <ClInclude Include="ResManager.h" />
-    <ClInclude Include="Globals.h" />
-    <ClInclude Include="LeakWatcher.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="VersionInfo.h" />
-    <ClInclude Include="BaseStream.h" />
-    <ClInclude Include="FileStream.h" />
-    <ClInclude Include="InputStream.h" />
-    <ClInclude Include="MemStream.h" />
-    <ClInclude Include="OutputStream.h" />
-    <ClInclude Include="Stream.h" />
-    <ClInclude Include="StrStream.h" />
+    <ClInclude Include="CMapi.h" />
+    <ClInclude Include="ColHelper.h" />
     <ClInclude Include="Encoding.h" />
+    <ClInclude Include="EnumProcess.h" />
+    <ClInclude Include="FileStream.h" />
+    <ClInclude Include="Globals.h" />
+    <ClInclude Include="Hash.h" />
+    <ClInclude Include="HexView.h" />
+    <ClInclude Include="HyperLink.h" />
+    <ClInclude Include="ImageView.h" />
+    <ClInclude Include="InPlaceNew.h" />
+    <ClInclude Include="InputStream.h" />
+    <ClInclude Include="InterfacePtr.h" />
+    <ClInclude Include="LayoutManager.h" />
+    <ClInclude Include="LeakWatcher.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="LogFile.h" />
+    <ClInclude Include="LogLink.h" />
+    <ClInclude Include="MachineInfoDlg.h" />
+    <ClInclude Include="MachineStateDlg.h" />
+    <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="MemStream.h" />
+    <ClInclude Include="NetThunks.h" />
+    <ClInclude Include="OutputStream.h" />
+    <ClInclude Include="PreviewDlg.h" />
+    <ClInclude Include="ResManager.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SendMailDlg.h" />
+    <ClInclude Include="SimpleDlg.h" />
+    <ClInclude Include="SmartPtr.h" />
+    <ClInclude Include="Splitter.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Stream.h" />
+    <ClInclude Include="StrHolder.h" />
+    <ClInclude Include="StrStream.h" />
+    <ClInclude Include="SymEngine.h" />
+    <ClInclude Include="SymEngineNet.h" />
     <ClInclude Include="TextFormat.h" />
+    <ClInclude Include="TextLogFile.h" />
+    <ClInclude Include="TextView.h" />
+    <ClInclude Include="TransferProgressDlg.h" />
+    <ClInclude Include="VersionInfo.h" />
+    <ClInclude Include="WaitCursor.h" />
+    <ClInclude Include="WaitDlg.h" />
+    <ClInclude Include="XmlLogFile.h" />
+    <ClInclude Include="XmlReader.h" />
+    <ClInclude Include="XmlWriter.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Bug.ico" />

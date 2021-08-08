@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,13 +18,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -89,13 +89,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="atlas_stalkercoppc_v1.h" />
+    <ClInclude Include="gamespy_sake.h" />
     <ClInclude Include="libraries\fcgi-2.4.0\fcgi_config.h" />
     <ClInclude Include="libraries\fcgi-2.4.0\include\fcgiapp.h" />
     <ClInclude Include="libraries\fcgi-2.4.0\include\fcgio.h" />
-    <ClInclude Include="libraries\gamespy\darray.h" />
-    <ClInclude Include="libraries\gamespy\hashtable.h" />
-    <ClInclude Include="libraries\gamespy\md5.h" />
-    <ClInclude Include="libraries\gamespy\nonport.h" />
     <ClInclude Include="libraries\gamespy\common\gsAssert.h" />
     <ClInclude Include="libraries\gamespy\common\gsAvailable.h" />
     <ClInclude Include="libraries\gamespy\common\gsCommon.h" />
@@ -115,6 +113,7 @@
     <ClInclude Include="libraries\gamespy\common\gsStringUtil.h" />
     <ClInclude Include="libraries\gamespy\common\gsUdpEngine.h" />
     <ClInclude Include="libraries\gamespy\common\gsXML.h" />
+    <ClInclude Include="libraries\gamespy\darray.h" />
     <ClInclude Include="libraries\gamespy\ghttp\ghttp.h" />
     <ClInclude Include="libraries\gamespy\ghttp\ghttpASCII.h" />
     <ClInclude Include="libraries\gamespy\ghttp\ghttpBuffer.h" />
@@ -141,10 +140,6 @@
     <ClInclude Include="libraries\gamespy\GP\gpiTransfer.h" />
     <ClInclude Include="libraries\gamespy\GP\gpiUnique.h" />
     <ClInclude Include="libraries\gamespy\GP\gpiUtility.h" />
-    <ClInclude Include="libraries\gamespy\sake\sake.h" />
-    <ClInclude Include="libraries\gamespy\sake\sakeMain.h" />
-    <ClInclude Include="libraries\gamespy\sake\sakeRequest.h" />
-    <ClInclude Include="libraries\gamespy\sake\sakeRequestInternal.h" />
     <ClInclude Include="libraries\gamespy\gt2\gt2.h" />
     <ClInclude Include="libraries\gamespy\gt2\gt2Auth.h" />
     <ClInclude Include="libraries\gamespy\gt2\gt2Buffer.h" />
@@ -156,25 +151,29 @@
     <ClInclude Include="libraries\gamespy\gt2\gt2Message.h" />
     <ClInclude Include="libraries\gamespy\gt2\gt2Socket.h" />
     <ClInclude Include="libraries\gamespy\gt2\gt2Utility.h" />
-    <ClInclude Include="atlas_stalkercoppc_v1.h" />
-    <ClInclude Include="gamespy_sake.h" />
+    <ClInclude Include="libraries\gamespy\hashtable.h" />
+    <ClInclude Include="libraries\gamespy\md5.h" />
+    <ClInclude Include="libraries\gamespy\nonport.h" />
+    <ClInclude Include="libraries\gamespy\sake\sake.h" />
+    <ClInclude Include="libraries\gamespy\sake\sakeMain.h" />
+    <ClInclude Include="libraries\gamespy\sake\sakeRequest.h" />
+    <ClInclude Include="libraries\gamespy\sake\sakeRequestInternal.h" />
+    <ClInclude Include="profiles_cache.h" />
     <ClInclude Include="profile_data_types.h" />
     <ClInclude Include="profile_printer.h" />
     <ClInclude Include="profile_request.h" />
-    <ClInclude Include="profiles_cache.h" />
     <ClInclude Include="requests_processor.h" />
     <ClInclude Include="sake_worker.h" />
     <ClInclude Include="threads.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="libraries\fcgi-2.4.0\libfcgi\fcgi_stdio.c" />
+    <ClCompile Include="atlas_stalkercoppc_v1.c" />
+    <ClCompile Include="entry_point.cpp" />
+    <ClCompile Include="gamespy_sake.cpp" />
     <ClCompile Include="libraries\fcgi-2.4.0\libfcgi\fcgiapp.c" />
     <ClCompile Include="libraries\fcgi-2.4.0\libfcgi\fcgio.cpp" />
+    <ClCompile Include="libraries\fcgi-2.4.0\libfcgi\fcgi_stdio.c" />
     <ClCompile Include="libraries\fcgi-2.4.0\libfcgi\os_win32.c" />
-    <ClCompile Include="libraries\gamespy\darray.c" />
-    <ClCompile Include="libraries\gamespy\hashtable.c" />
-    <ClCompile Include="libraries\gamespy\md5c.c" />
-    <ClCompile Include="libraries\gamespy\nonport.c" />
     <ClCompile Include="libraries\gamespy\common\gsAssert.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -214,6 +213,7 @@
     <ClCompile Include="libraries\gamespy\common\gsStringUtil.c" />
     <ClCompile Include="libraries\gamespy\common\gsUdpEngine.c" />
     <ClCompile Include="libraries\gamespy\common\gsXML.c" />
+    <ClCompile Include="libraries\gamespy\darray.c" />
     <ClCompile Include="libraries\gamespy\ghttp\ghttpBuffer.c" />
     <ClCompile Include="libraries\gamespy\ghttp\ghttpCallbacks.c" />
     <ClCompile Include="libraries\gamespy\ghttp\ghttpCommon.c" />
@@ -238,11 +238,6 @@
     <ClCompile Include="libraries\gamespy\GP\gpiTransfer.c" />
     <ClCompile Include="libraries\gamespy\GP\gpiUnique.c" />
     <ClCompile Include="libraries\gamespy\GP\gpiUtility.c" />
-    <ClCompile Include="libraries\gamespy\sake\sakeMain.c" />
-    <ClCompile Include="libraries\gamespy\sake\sakeRequest.c" />
-    <ClCompile Include="libraries\gamespy\sake\sakeRequestMisc.c" />
-    <ClCompile Include="libraries\gamespy\sake\sakeRequestModify.c" />
-    <ClCompile Include="libraries\gamespy\sake\sakeRequestRead.c" />
     <ClCompile Include="libraries\gamespy\gt2\gt2Auth.c" />
     <ClCompile Include="libraries\gamespy\gt2\gt2Buffer.c" />
     <ClCompile Include="libraries\gamespy\gt2\gt2Callback.c" />
@@ -253,13 +248,18 @@
     <ClCompile Include="libraries\gamespy\gt2\gt2Message.c" />
     <ClCompile Include="libraries\gamespy\gt2\gt2Socket.c" />
     <ClCompile Include="libraries\gamespy\gt2\gt2Utility.c" />
+    <ClCompile Include="libraries\gamespy\hashtable.c" />
+    <ClCompile Include="libraries\gamespy\md5c.c" />
+    <ClCompile Include="libraries\gamespy\nonport.c" />
+    <ClCompile Include="libraries\gamespy\sake\sakeMain.c" />
+    <ClCompile Include="libraries\gamespy\sake\sakeRequest.c" />
+    <ClCompile Include="libraries\gamespy\sake\sakeRequestMisc.c" />
+    <ClCompile Include="libraries\gamespy\sake\sakeRequestModify.c" />
+    <ClCompile Include="libraries\gamespy\sake\sakeRequestRead.c" />
     <ClCompile Include="libraries\pthreads-w32-2-8-0-release\pthread.c" />
-    <ClCompile Include="atlas_stalkercoppc_v1.c" />
-    <ClCompile Include="entry_point.cpp" />
-    <ClCompile Include="gamespy_sake.cpp" />
+    <ClCompile Include="profiles_cache.cpp" />
     <ClCompile Include="profile_data_types.cpp" />
     <ClCompile Include="profile_request.cpp" />
-    <ClCompile Include="profiles_cache.cpp" />
     <ClCompile Include="requests_processor.cpp" />
     <ClCompile Include="sake_worker.cpp" />
     <ClCompile Include="threads.cpp" />
