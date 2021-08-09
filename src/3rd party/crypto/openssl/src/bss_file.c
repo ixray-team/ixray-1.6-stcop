@@ -120,8 +120,8 @@ BIO *BIO_new_file(const char *filename, const char *mode)
 	{
 	BIO *ret;
 	FILE *file;
-
-	if ((file=fopen(filename,mode)) == NULL)
+ 	fopen_s(&file, filename, mode);
+	if (file == NULL)
 		{
 		SYSerr(SYS_F_FOPEN,get_last_sys_error());
 		ERR_add_error_data(5,"fopen('",filename,"','",mode,"')");
@@ -340,9 +340,9 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 			}
 #if defined(OPENSSL_SYS_MSDOS) || defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_WIN32_CYGWIN)
 		if (!(num & BIO_FP_TEXT))
-			strcat(p,"b");
+			strcat_s(p, sizeof p, "b");
 		else
-			strcat(p,"t");
+			strcat_s(p, sizeof p, "t");
 #endif
 #if defined(OPENSSL_SYS_NETWARE)
 		if (!(num & BIO_FP_TEXT))
@@ -350,7 +350,7 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
 		else
 			strcat(p,"t");
 #endif
-		fp=fopen(ptr,p);
+		fopen_s(&fp, ptr, p);
 		if (fp == NULL)
 			{
 			SYSerr(SYS_F_FOPEN,get_last_sys_error());

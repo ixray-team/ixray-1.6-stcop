@@ -128,7 +128,7 @@ local gzFile gz_open (path, mode, fd)
     if (s->path == NULL) {
         return destroy(s), (gzFile)Z_NULL;
     }
-    strcpy(s->path, path); /* do this early for debugging */
+    strcpy_s(s->path, sizeof s->path, path); /* do this early for debugging */
 
     s->mode = '\0';
     do {
@@ -178,7 +178,12 @@ local gzFile gz_open (path, mode, fd)
     s->stream.avail_out = Z_BUFSIZE;
 
     errno = 0;
-    s->file = fd < 0 ? F_OPEN(path, fmode) : (FILE*)fdopen(fd, fmode);
+
+    if (fd < 0) {
+        fopen_s(&s->file, path, fmode);
+    } else {
+        s->file = (FILE*)fdopen(fd, fmode);
+    }
 
     if (s->file == NULL) {
         return destroy(s), (gzFile)Z_NULL;
@@ -1005,9 +1010,9 @@ const char * ZEXPORT gzerror (file, errnum)
     TRYFREE(s->msg);
     s->msg = (char*)ALLOC(strlen(s->path) + strlen(m) + 3);
     if (s->msg == Z_NULL) return (const char*)ERR_MSG(Z_MEM_ERROR);
-    strcpy(s->msg, s->path);
-    strcat(s->msg, ": ");
-    strcat(s->msg, m);
+    strcpy_s(s->msg, sizeof s->msg, s->path);
+    strcat_s(s->msg, sizeof s->msg, ": ");
+    strcat_s(s->msg, sizeof s->msg, m);
     return (const char*)s->msg;
 }
 

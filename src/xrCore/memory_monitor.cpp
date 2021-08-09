@@ -40,7 +40,7 @@ STATIC inline FILE *file()
 	static FILE					*m_file = 0;
 	static char					buffer[buffer_size];
 	if (!m_file) {
-		m_file					= fopen(file_name(),"wb");
+		fopen_s(&m_file, file_name(), "wb");
 		VERIFY					(m_file);
 		setvbuf					(m_file,buffer,_IOFBF,buffer_size);
 	}

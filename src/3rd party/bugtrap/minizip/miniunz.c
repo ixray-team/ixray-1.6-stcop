@@ -306,7 +306,7 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
         {
             char rep=0;
             FILE* ftestexist;
-            ftestexist = fopen(write_filename,"rb");
+            fopen_s(&ftestexist, write_filename,"rb");
             if (ftestexist!=NULL)
             {
                 fclose(ftestexist);
@@ -337,7 +337,7 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
 
         if ((skip==0) && (err==UNZ_OK))
         {
-            fout=fopen(write_filename,"wb");
+            fopen_s(&fout, write_filename,"wb");
 
             /* some zipfile don't contain directory alone before file */
             if ((fout==NULL) && ((*popt_extract_without_path)==0) &&
@@ -347,7 +347,7 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
                 *(filename_withoutpath-1)='\0';
                 makedir(write_filename);
                 *(filename_withoutpath-1)=c;
-                fout=fopen(write_filename,"wb");
+                fopen_s(&fout, write_filename,"wb");
             }
 
             if (fout==NULL)

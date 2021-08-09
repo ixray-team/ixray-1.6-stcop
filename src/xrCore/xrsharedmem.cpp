@@ -71,7 +71,10 @@ void				smem_container::dump			()
 	cs.Enter		();
 	cdb::iterator	it	= container.begin	();
 	cdb::iterator	end	= container.end		();
-	FILE* F			= fopen("x:\\$smem_dump$.txt","w");
+
+	FILE* F;
+	fopen_s(&F, "x:\\$smem_dump$.txt","w");
+
 	for (; it!=end; it++)
 		fprintf		(F,"%4d : crc[%6x], %d bytes\n",(*it)->dwReference,(*it)->dwCRC,(*it)->dwLength);
 	fclose			(F);

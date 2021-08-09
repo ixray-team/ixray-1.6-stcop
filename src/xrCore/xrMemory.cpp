@@ -161,7 +161,9 @@ void	xrMemory::mem_statistic	(LPCSTR fn)
 	debug_cs.Enter			()	;
 	debug_mode				= FALSE;
 
-	FILE*		Fa			= fopen		(fn,"w");
+	FILE*		Fa;
+	fopen_s		(&Fa, fn,"w");
+
 	fprintf					(Fa,"$BEGIN CHUNK #0\n");
 	fprintf					(Fa,"POOL: %d %dKb\n",mem_pools_count,mem_pools_ebase);
 

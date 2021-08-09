@@ -35,9 +35,12 @@ uLong* nRecovered;
 uLong* bytesRecovered;
 {
   int err = Z_OK;
-  FILE* fpZip = fopen(file, "rb");
-  FILE* fpOut = fopen(fileOut, "wb");
-  FILE* fpOutCD = fopen(fileOutTmp, "wb");
+
+  FILE *fpZip = NULL, *fpOut = NULL, *fpOutCD = NULL;
+  fopen_s(&fpZip, file, "rb");
+  fopen_s(&fpOut, fileOut, "wb");
+  fopen_s(&fpOutCD, fileOutTmp, "wb");
+
   if (fpZip != NULL &&  fpOut != NULL) {
     int entries = 0;
     uLong totalBytes = 0;
@@ -244,7 +247,7 @@ uLong* bytesRecovered;
     /* Final merge (file + central directory) */
     fclose(fpOutCD);
     if (err == Z_OK) {
-      fpOutCD = fopen(fileOutTmp, "rb");
+      fopen_s(&fpOutCD, fileOutTmp, "rb");
       if (fpOutCD != NULL) {
         int nRead;
         char buffer[8192];

@@ -6,7 +6,8 @@ LPSTR _TrimLeft( LPSTR str )
 	LPSTR p 	= str;
 	while( *p && (u8(*p)<=u8(' ')) ) p++;
     if (p!=str){
-        for (LPSTR t=str; *p; t++,p++) *t=*p;
+        LPSTR t = NULL;
+        for (t=str; *p; t++,p++) *t=*p;
         *t = 0;
     }
 	return str;
@@ -95,7 +96,7 @@ LPSTR _GetItems ( LPCSTR src, int idx_start, int idx_end, LPSTR dst, char separa
 u32 _ParseItem ( LPCSTR src, xr_token* token_list )
 {
 	for( int i=0; token_list[i].name; i++ )
-		if( !stricmp(src,token_list[i].name) )
+		if( !_stricmp(src,token_list[i].name) )
 			return token_list[i].id;
 	return u32(-1);
 }

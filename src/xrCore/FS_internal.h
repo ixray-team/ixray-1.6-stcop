@@ -30,7 +30,7 @@ public:
 #endif
     		hf		= _fdopen(handle,"wb");
         }else{
-			hf			= fopen(*fName,"wb");
+			fopen_s(&hf, *fName,"wb");
 			if (hf==0)
 				Msg		("!Can't write file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
 		}

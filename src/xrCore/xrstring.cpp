@@ -79,7 +79,7 @@ struct str_container_impl
 			{
 				u32			crc		= crc32	(value->value, value->dwLength);
 				string32	crc_str;
-				R_ASSERT3	(crc==value->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", itoa(value->dwCRC,crc_str,16));
+				R_ASSERT3	(crc==value->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", _itoa(value->dwCRC,crc_str,16));
 				R_ASSERT3	(value->dwLength == xr_strlen(value->value), "CorePanic: read-only memory corruption (shared_strings, internal structures)", value->value);
 				value = value->next;
 			}
@@ -220,7 +220,10 @@ void		str_container::verify	()
 void		str_container::dump	()
 {
  	cs.Enter	();
- 	FILE* F		= fopen("d:\\$str_dump$.txt","w");
+
+ 	FILE* F;
+ 	fopen_s(&F, "d:\\$str_dump$.txt","w");
+
  	impl->dump  (F);
  	fclose		(F);
  	cs.Leave	();
@@ -397,7 +400,8 @@ void		str_container::dump	()
 	cs.Enter	();
 	str_container_impl::cdb::iterator	it	= impl->container.begin	();
 	str_container_impl::cdb::iterator	end	= impl->container.end		();
-	FILE* F		= fopen("d:\\$str_dump$.txt","w");
+	FILE* F;
+	fopen_s(&F, "d:\\$str_dump$.txt", "w");
 	for (; it!=end; it++)
 		fprintf		(F,"ref[%4d]-len[%3d]-crc[%8X] : %s\n",(*it)->dwReference,(*it)->dwLength,(*it)->dwCRC,(*it)->value);
 	fclose		(F);

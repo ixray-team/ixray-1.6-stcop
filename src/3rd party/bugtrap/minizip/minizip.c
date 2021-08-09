@@ -119,7 +119,7 @@ int check_exist_file(filename)
 {
     FILE* ftestexist;
     int ret = 1;
-    ftestexist = fopen(filename,"rb");
+    fopen_s(&ftestexist, filename, "rb");
     if (ftestexist==NULL)
         ret = 0;
     else
@@ -149,7 +149,8 @@ int getFileCrc(const char* filenameinzip,void*buf,unsigned long size_buf,unsigne
 {
    unsigned long calculate_crc=0;
    int err=ZIP_OK;
-   FILE * fin = fopen(filenameinzip,"rb");
+   FILE * fin;
+   fopen_s(&fin, filenameinzip, "rb");
    unsigned long size_read = 0;
    unsigned long total_read = 0;
    if (fin==NULL)
@@ -360,7 +361,7 @@ int main(argc,argv)
                     printf("error in opening %s in zipfile\n",filenameinzip);
                 else
                 {
-                    fin = fopen(filenameinzip,"rb");
+                    fopen_s(&fin, filenameinzip,"rb");
                     if (fin==NULL)
                     {
                         err=ZIP_ERRNO;

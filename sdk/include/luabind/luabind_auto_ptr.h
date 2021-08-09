@@ -8,7 +8,7 @@ namespace luabind {
 class __ptr_base {
 public:
   void* _M_p;
-  void  __set(const void* p) { _M_p = __CONST_CAST(void*,p); }
+  void  __set(const void* p) { _M_p = const_cast<void*>(p); }
   void  __set(void* p) { _M_p = p; }
 }; // class __ptr_base
 

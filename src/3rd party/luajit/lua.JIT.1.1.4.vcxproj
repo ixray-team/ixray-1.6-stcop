@@ -42,14 +42,14 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\..\sdk\include\stlport;..\..\..\sdk\include;..\..\include;dynasm;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\sdk\include;..\..\include;dynasm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\..\sdk\include\stlport;..\..\..\sdk\include;..\..\include;dynasm;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\sdk\include;..\..\include;dynasm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

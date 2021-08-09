@@ -305,7 +305,7 @@ void	CInifile::Load(IReader* F, LPCSTR path
 				}
 			}
 			*strchr(str,']') 	= 0;
-			Current->Name 		= strlwr(str+1);
+			Current->Name 		= _strlwr(str+1);
 		} 
 		else // name = value
 		{
@@ -482,7 +482,7 @@ BOOL			CInifile::section_exist	( const shared_str& S	)const					{ return	section
 //--------------------------------------------------------------------------------------
 CInifile::Sect& CInifile::r_section( LPCSTR S )const
 {
-	char	section[256]; xr_strcpy(section,sizeof(section),S); strlwr(section);
+	char	section[256]; xr_strcpy(section,sizeof(section),S); _strlwr(section);
 	RootCIt I = std::lower_bound(DATA.begin(),DATA.end(),section,sect_pred);
 	if (!(I!=DATA.end() && xr_strcmp(*(*I)->Name,section)==0))
 	{
@@ -666,7 +666,7 @@ BOOL	CInifile::r_bool( LPCSTR S, LPCSTR L )const
 	char		B[8];
 	strncpy_s		(B,sizeof(B),C,7);
 	B[7]		= 0;
-	strlwr		(B);
+	_strlwr		(B);
     return 		IsBOOL(B);
 }
 
@@ -680,7 +680,7 @@ int CInifile::r_token( LPCSTR S, LPCSTR L, const xr_token *token_list)const
 {
 	LPCSTR		C = r_string(S,L);
 	for( int i=0; token_list[i].name; i++ )
-		if( !stricmp(C,token_list[i].name) )
+		if( !_stricmp(C,token_list[i].name) )
 			return token_list[i].id;
 	return 0;
 }

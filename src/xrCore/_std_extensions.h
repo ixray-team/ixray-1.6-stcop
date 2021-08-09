@@ -88,7 +88,7 @@ IC LPCSTR get_token_name(xr_token* tokens, int key)
 IC int get_token_id(xr_token* tokens, LPCSTR key)
 {
     for (int k=0; tokens[k].name; k++)
-    	if ( stricmp(tokens[k].name,key)==0 ) 
+    	if ( _stricmp(tokens[k].name,key)==0 ) 
 			return tokens[k].id;
     return -1;
 }
@@ -186,7 +186,7 @@ IC u32							xr_strlen				( const char* S )
 {	return (u32)strlen(S);			}
 
 IC char*						xr_strlwr				(char* S)
-{	return strlwr(S);				}
+{	return _strlwr(S);				}
 
 #ifdef BREAK_AT_STRCMP
 XRCORE_API	int					xr_strcmp				( const char* S1, const char* S2 );

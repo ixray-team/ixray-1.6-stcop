@@ -201,9 +201,6 @@
     <ClCompile Include="doug_lea_allocator.cpp">
       <Filter>Memory manager\dlmalloc\wrapper</Filter>
     </ClCompile>
-    <ClCompile Include="xrDebug.cpp">
-      <Filter>Debug core</Filter>
-    </ClCompile>
     <ClCompile Include="xrDebugNew.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>

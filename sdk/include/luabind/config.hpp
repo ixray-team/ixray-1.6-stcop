@@ -88,11 +88,6 @@ namespace std
 #	define LUABIND_NO_EXCEPTIONS
 #	define BOOST_NO_EXCEPTIONS
 
-namespace std
-{
-	void terminate();
-}
-
 #endif // NDEBUG
 // LUABIND_NO_ERROR_CHECKING
 // define this to remove all error checks

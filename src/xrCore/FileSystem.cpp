@@ -212,7 +212,7 @@ bool EFS_Utils::GetOpenNameInternal( LPCSTR initial,  LPSTR buffer, int sz_buf, 
             xr_strcpy		(buffer, sz_buf, fns);
         }
     }
-    strlwr				(buffer);
+    _strlwr				(buffer);
     return 				bRes;
 }
 
@@ -270,7 +270,7 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset,
         case FNERR_BUFFERTOOSMALL: 	Log("Too many file selected."); break;
         }
 	}
-    strlwr(buffer);
+    _strlwr(buffer);
 	return bRes;
 }
 //----------------------------------------------------

@@ -201,7 +201,7 @@ void file_compress(file, mode)
     strcpy(outfile, file);
     strcat(outfile, GZ_SUFFIX);
 
-    in = fopen(file, "rb");
+    fopen_s(&in, file, "rb");
     if (in == NULL) {
         perror(file);
         exit(1);
@@ -245,7 +245,7 @@ void file_uncompress(file)
         fprintf(stderr, "%s: can't gzopen %s\n", prog, infile);
         exit(1);
     }
-    out = fopen(outfile, "wb");
+    fopen_s(&out, outfile, "wb");
     if (out == NULL) {
         perror(file);
         exit(1);

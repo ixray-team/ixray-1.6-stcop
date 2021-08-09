@@ -469,7 +469,7 @@ namespace boost {
     template<typename FunctionObj>
     void assign_to(FunctionObj f, detail::function::function_obj_tag)
     {
-      if (!detail::function::has_empty_target(addressof(f))) {
+      if (!detail::function::has_empty_target(boost::addressof(f))) {
         typedef
           typename detail::function::BOOST_FUNCTION_GET_FUNCTION_OBJ_INVOKER<
                                        FunctionObj,
