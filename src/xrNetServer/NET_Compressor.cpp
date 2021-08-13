@@ -403,7 +403,7 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
         #endif
 
 		if( !CompressionDump )
-		    CompressionDump = fopen( "net-compression.log", "w+b" );
+		    fopen_s(&CompressionDump, "net-compression.log", "w+b" );
         
         fprintf( CompressionDump, "%s compress %2.0f%% %u->%u\r\n",
                  compressor_name,

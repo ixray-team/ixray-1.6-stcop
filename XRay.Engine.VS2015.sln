@@ -90,7 +90,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrLC_LightStab", "src\utils
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrPhysics", "src\xrPhysics\xrPhysics.vcxproj", "{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CxImage", "src\3rd party\cximage\CxImage\cximage.vcxproj", "{880CD250-BA77-4DAF-A8D4-552F12DD3AE4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cximage", "src\3rd party\cximage\CxImage\cximage.vcxproj", "{880CD250-BA77-4DAF-A8D4-552F12DD3AE4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jpeg", "src\3rd party\cximage\jpeg\Jpeg.vcxproj", "{E6343391-13FC-479E-B62F-1C24F7B85408}"
 EndProject
@@ -108,7 +108,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "engine_core", "engine_core"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "engine_game", "engine_game", "{CF5844AD-93AF-4CB0-84E0-9D5C0F0EC2A7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_ballancer", "src\utils\mp_balancer\mp_balancer.vcxproj", "{93EA76CE-7B49-420D-BD4A-C9798B82CD59}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_balancer", "src\utils\mp_balancer\mp_balancer.vcxproj", "{93EA76CE-7B49-420D-BD4A-C9798B82CD59}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp_gpprof_server", "src\utils\mp_gpprof_server\mp_gpprof_server.vcxproj", "{6E9637D8-B32D-4ABD-A5CC-6E4677039B47}"
 EndProject

@@ -20,7 +20,7 @@
 
 #include "d3d9.h"
 
-#pragma warning(disable:4996)
+//#pragma warning(disable:4996)
 
 #endif //!defined(AFX_STDAFX_H__A9DB83DB_A9FD_11D0_BFD1_444553540000__INCLUDED_)
 // TODO: reference additional headers your program requires here

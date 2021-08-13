@@ -61,7 +61,7 @@ void LogOut_File(const char *pszFormat, ...)
 	
 
 	FILE *fp;
-	fp = fopen("d3d9-null.log","a+t");
+	fopen_s(&fp, "d3d9-null.log", "a+t");
 	if (fp)
 	{		
 		fprintf(fp,"%s",s);
