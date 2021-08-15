@@ -92,7 +92,7 @@ void CStepManager::reload(LPCSTR section)
 			Msg( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name.first, anim_name.second );
 		}
 #endif
-		m_steps_map.insert(mk_pair(motion_id, param));
+		m_steps_map.insert(std::make_pair(motion_id, param));
 	}
 
 #ifdef	DEBUG

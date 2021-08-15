@@ -24,7 +24,7 @@ void Detach(vecFace* S)
 			if (W==verts.end()) 
 			{	// where is no such-vertex
 				VC = V->CreateCopy_NOADJ( lc_global_data()->g_vertices() );	// make copy
-				verts.insert(mk_pair(V, VC));
+				verts.insert(std::make_pair(V, VC));
 			} else 
 			{
 				// such vertex(key) already exists - update its adjacency

@@ -50,7 +50,7 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive *corpse)
 		it->second = corpse_info;
 	} else {
 		// добавить врага в список объектов
-		m_objects.insert(mk_pair(corpse, corpse_info));
+		m_objects.insert(std::make_pair(corpse, corpse_info));
 	}
 }
 

@@ -53,7 +53,7 @@ int	CompressSelected()
 	// If we get here - need to register _new set of data
 	u32 entry = g_pvs.size();
 	g_pvs.push_back(g_selected);
-	g_compress_tree.insert(mk_pair(sz,entry));
+	g_compress_tree.insert(std::make_pair(sz,entry));
 	return entry;
 }
 

@@ -316,7 +316,7 @@ void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u3
 		if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 		N = *lst [id];
 	}
-	passTextures.push_back	(mk_pair( Stage(),ref_texture( DEV->_CreateTexture(N))));
+	passTextures.push_back	(std::make_pair( Stage(),ref_texture( DEV->_CreateTexture(N))));
 //	i_Address				(Stage(),address);
 	i_Filter				(Stage(),fmin,fmip,fmag);
 }

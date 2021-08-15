@@ -87,7 +87,7 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 			PathPairIt p_it = pathes.find(root);
 			std::pair<PathPairIt, bool> I;
 			FS_Path* P	= xr_new<FS_Path>((p_it!=pathes.end())?p_it->second->m_Path:root,lp_add,lp_def,lp_capt,fl);
-			I			= pathes.insert(mk_pair(xr_strdup(id),P));
+			I			= pathes.insert(std::make_pair(xr_strdup(id),P));
 			
 			R_ASSERT	(I.second);
 		}
@@ -469,7 +469,7 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
 	VERIFY			(root/*&&root[0]*/);
 	VERIFY			(false==path_exist(path_alias));
 	FS_Path* P		= xr_new<FS_Path>(root,add,LPCSTR(0),LPCSTR(0),0);
-	pathes.insert	(mk_pair(xr_strdup(path_alias),P));
+	pathes.insert	(std::make_pair(xr_strdup(path_alias),P));
 	return P;
 }
 

@@ -108,7 +108,7 @@ void dxEnvDescriptorMixerRender::Destroy()
 
 void dxEnvDescriptorMixerRender::Clear()
 {
-	std::pair<u32,ref_texture>	zero = mk_pair(u32(0),ref_texture(0));
+	std::pair<u32,ref_texture>	zero = std::make_pair(u32(0),ref_texture(0));
 	sky_r_textures.clear		();
 	sky_r_textures.push_back	(zero);
 	sky_r_textures.push_back	(zero);
@@ -131,17 +131,17 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender *inA, IEnvDescriptorR
 	dxEnvDescriptorRender *pB = (dxEnvDescriptorRender *)inB;
 
 	sky_r_textures.clear		();
-	sky_r_textures.push_back	(mk_pair(0,pA->sky_texture));
-	sky_r_textures.push_back	(mk_pair(1,pB->sky_texture));
+	sky_r_textures.push_back	(std::make_pair(0,pA->sky_texture));
+	sky_r_textures.push_back	(std::make_pair(1,pB->sky_texture));
 
 	sky_r_textures_env.clear	();
 
-	sky_r_textures_env.push_back(mk_pair(0,pA->sky_texture_env));
-	sky_r_textures_env.push_back(mk_pair(1,pB->sky_texture_env));
+	sky_r_textures_env.push_back(std::make_pair(0,pA->sky_texture_env));
+	sky_r_textures_env.push_back(std::make_pair(1,pB->sky_texture_env));
 
 	clouds_r_textures.clear		();
-	clouds_r_textures.push_back	(mk_pair(0,pA->clouds_texture));
-	clouds_r_textures.push_back	(mk_pair(1,pB->clouds_texture));
+	clouds_r_textures.push_back	(std::make_pair(0,pA->clouds_texture));
+	clouds_r_textures.push_back	(std::make_pair(1,pB->clouds_texture));
 }
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor &owner)
@@ -177,14 +177,14 @@ void dxEnvironmentRender::OnFrame(CEnvironment &env)
 		//. very very ugly hack
 		if (HW.Caps.raster_major >= 3 && HW.Caps.geometry.bVTF){
 			// tonemapping in VS
-			mixRen.sky_r_textures.push_back		(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-			mixRen.sky_r_textures_env.push_back	(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-			mixRen.clouds_r_textures.push_back	(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
+			mixRen.sky_r_textures.push_back		(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
+			mixRen.sky_r_textures_env.push_back	(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
+			mixRen.clouds_r_textures.push_back	(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
 		} else {
 			// tonemapping in PS
-			mixRen.sky_r_textures.push_back		(mk_pair(2,tonemap));								//. hack
-			mixRen.sky_r_textures_env.push_back	(mk_pair(2,tonemap));								//. hack
-			mixRen.clouds_r_textures.push_back	(mk_pair(2,tonemap));								//. hack
+			mixRen.sky_r_textures.push_back		(std::make_pair(2,tonemap));								//. hack
+			mixRen.sky_r_textures_env.push_back	(std::make_pair(2,tonemap));								//. hack
+			mixRen.clouds_r_textures.push_back	(std::make_pair(2,tonemap));								//. hack
 		}
 
 	}

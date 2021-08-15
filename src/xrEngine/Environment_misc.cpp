@@ -365,7 +365,7 @@ void CEnvDescriptorMixer::clear	()
 {
 	m_pDescriptorMixer->Clear();
 	/*
-	std::pair<u32,ref_texture>	zero = mk_pair(u32(0),ref_texture(0));
+	std::pair<u32,ref_texture>	zero = std::make_pair(u32(0),ref_texture(0));
 	sky_r_textures.clear		();
 	sky_r_textures.push_back	(zero);
 	sky_r_textures.push_back	(zero);
@@ -393,17 +393,17 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	m_pDescriptorMixer->lerp(&*A.m_pDescriptor, &*B.m_pDescriptor);
 	/*
 	sky_r_textures.clear		();
-	sky_r_textures.push_back	(mk_pair(0,A.sky_texture));
-	sky_r_textures.push_back	(mk_pair(1,B.sky_texture));
+	sky_r_textures.push_back	(std::make_pair(0,A.sky_texture));
+	sky_r_textures.push_back	(std::make_pair(1,B.sky_texture));
 
 	sky_r_textures_env.clear	();
 
-	sky_r_textures_env.push_back(mk_pair(0,A.sky_texture_env));
-	sky_r_textures_env.push_back(mk_pair(1,B.sky_texture_env));
+	sky_r_textures_env.push_back(std::make_pair(0,A.sky_texture_env));
+	sky_r_textures_env.push_back(std::make_pair(1,B.sky_texture_env));
 
 	clouds_r_textures.clear		();
-	clouds_r_textures.push_back	(mk_pair(0,A.clouds_texture));
-	clouds_r_textures.push_back	(mk_pair(1,B.clouds_texture));
+	clouds_r_textures.push_back	(std::make_pair(0,A.clouds_texture));
+	clouds_r_textures.push_back	(std::make_pair(1,B.clouds_texture));
 	*/
 
 	weight					=	f;

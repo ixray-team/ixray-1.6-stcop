@@ -67,7 +67,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 			// gen geometry
 			FLOD::_face*					facets		= lodV->facets;
 			svector<std::pair<float,u32>,8>	selector	;
-			for (u32 s=0; s<8; s++)			selector.push_back	(mk_pair(Ldir.dotproduct(facets[s].N),s));
+			for (u32 s=0; s<8; s++)			selector.push_back	(std::make_pair(Ldir.dotproduct(facets[s].N),s));
 			std::sort						(selector.begin(),selector.end(),pred_dot);
 
 			float							dot_best	= selector	[selector.size()-1].first	;

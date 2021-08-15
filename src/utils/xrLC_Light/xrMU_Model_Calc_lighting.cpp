@@ -143,7 +143,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 
 		// Register
 		if (!found)				{
-			mapVertIt	ins			= g_trans.insert(mk_pair(key,v_vertices()));
+			mapVertIt	ins			= g_trans.insert(std::make_pair(key,v_vertices()));
 			ins->second.reserve		(32);
 			ins->second.push_back	(V);
 		}
