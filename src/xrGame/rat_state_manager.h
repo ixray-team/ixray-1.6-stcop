@@ -9,13 +9,12 @@
 #ifndef RAT_STATE_MANAGER_H_INCLUDED
 #define RAT_STATE_MANAGER_H_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "associative_vector.h"
 
 class rat_state_base;
 class CAI_Rat;
 
-class rat_state_manager : private boost::noncopyable {
+class rat_state_manager {
 private:
 	typedef	u32													state_id_type;
 	typedef associative_vector<state_id_type, rat_state_base*>	States;
@@ -31,6 +30,8 @@ private:
 			rat_state_base *state				(state_id_type const &state_id);
 
 public:
+	rat_state_manager(const rat_state_manager& other) = delete;
+	rat_state_manager& operator=(const rat_state_manager& other) = delete;
 							rat_state_manager	();
 							~rat_state_manager	();
 			void			construct			(CAI_Rat *object);

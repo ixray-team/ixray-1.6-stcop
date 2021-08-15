@@ -9,7 +9,6 @@
 #ifndef INVENTORY_UPGRADE_BASE_H_INCLUDED
 #define INVENTORY_UPGRADE_BASE_H_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "object_broker.h"
 
 class CInventoryItem;
@@ -39,10 +38,11 @@ enum UpgradeStateResult
 	result_count
 };
 
-class UpgradeBase :
-	private	boost::noncopyable
+class UpgradeBase
 {
 public:
+	UpgradeBase(const UpgradeBase& other) = delete;
+	UpgradeBase& operator=(const UpgradeBase& other) = delete;
 							UpgradeBase();
 	virtual					~UpgradeBase();
 				void		construct( const shared_str& upgrade_id, Manager& manager_r );

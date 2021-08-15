@@ -9,11 +9,10 @@
 #pragma once
 
 #include "restricted_object.h"
-#include <boost/noncopyable.hpp>
 
 class obstacles_query;
 
-class CRestrictedObjectObstacle : public CRestrictedObject, private boost::noncopyable {
+class CRestrictedObjectObstacle : public CRestrictedObject {
 private:
 	typedef CRestrictedObject	inherited;
 
@@ -27,6 +26,9 @@ private:
 			void				apply						(const obstacles_query &query, const u32 &start_vertex_id, const u32 &dest_vertex_id) const;
 
 public:
+	CRestrictedObjectObstacle(const CRestrictedObjectObstacle& other) = delete;
+	CRestrictedObjectObstacle& operator=(const CRestrictedObjectObstacle& other) = delete;
+
 								CRestrictedObjectObstacle	(CCustomMonster *object, const obstacles_query &static_query, const obstacles_query &dynamic_query);
 	virtual	void				add_border					(u32 start_vertex_id, float radius) const;
 	virtual	void				add_border					(const Fvector &start_position, const Fvector &dest_position) const;

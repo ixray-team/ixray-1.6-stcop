@@ -9,8 +9,11 @@
 #include "stdafx.h"
 #include "debug_make_final.hpp"
 
-struct A : private boost::noncopyable
+struct A
 {
+	A() = default;
+	A(const A & other) = delete;
+	A& operator=(const A & other) = delete;
 };
 
 struct B :

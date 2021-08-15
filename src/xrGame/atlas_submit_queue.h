@@ -1,7 +1,6 @@
 #ifndef ATLAS_SUBMIT_QUEUE_INCLUDED
 #define ATLAS_SUBMIT_QUEUE_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "../xrCore/fastdelegate.h"
 #include "profile_data_types.h"
 
@@ -14,9 +13,12 @@ namespace gamespy_gp
 	struct profile;
 };
 
-class atlas_submit_queue : private boost::noncopyable
+class atlas_submit_queue
 {
 public:
+	atlas_submit_queue(const atlas_submit_queue&) = delete;
+	atlas_submit_queue& operator= (const atlas_submit_queue&) = delete;
+
 			atlas_submit_queue	(gamespy_profile::stats_submitter* stats_submitter);
 			~atlas_submit_queue	();
 	

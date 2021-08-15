@@ -14,7 +14,6 @@
 #endif// #ifdef DEBUG
 
 #include <cs/lua_studio_backend/interfaces.h>
-#include <boost/noncopyable.hpp>
 
 namespace luabind {
 	namespace detail {
@@ -23,8 +22,7 @@ namespace luabind {
 } // namespace luabind
 
 class lua_studio_engine :
-	public cs::lua_studio::engine,
-	private boost::noncopyable
+	public cs::lua_studio::engine
 {
 public:
 	virtual	int				CS_LUA_STUDIO_BACKEND_CALL	luaL_loadstring				(lua_State *L, const char *s);
@@ -92,7 +90,8 @@ public:
 
 public:
 													lua_studio_engine			();
-
+													lua_studio_engine(const lua_studio_engine& other) = delete;
+													lua_studio_engine& operator=(const lua_studio_engine& other) = delete;
 private:
 			void 									type_convert_class			(char *buffer, unsigned int size, lua_State *state, int index);
 			bool 									type_convert_instance		(char *buffer, unsigned int size, lua_State *state, int index);

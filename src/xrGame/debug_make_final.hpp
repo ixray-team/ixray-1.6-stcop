@@ -9,8 +9,6 @@
 #ifndef DEBUG_MAKE_FINAL_HPP_INCLUDED
 #define DEBUG_MAKE_FINAL_HPP_INCLUDED
 
-#include <boost/noncopyable.hpp>
-
 namespace debug {
 
 #ifdef DEBUG

@@ -1,5 +1,4 @@
 #pragma once
-#include <boost/noncopyable.hpp>
 
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "poses_blending.h"
@@ -9,8 +8,7 @@ class poses_blending;
 class CBlend;
 
 class animation_movement_controller : 
-	public  IBlendDestroyCallback, 
-	private boost::noncopyable
+	public  IBlendDestroyCallback
 {
 	Fmatrix&			m_pObjXForm;
 	Fmatrix				m_startObjXForm;
@@ -33,6 +31,9 @@ private:
 	void				deinitialize					();
 	void				BlendDestroy					( CBlend& blend );
 public:		
+	animation_movement_controller(const animation_movement_controller& other) = delete;
+	animation_movement_controller& operator=(const animation_movement_controller& other) = delete;
+
 			animation_movement_controller		( Fmatrix	*_pObjXForm, const Fmatrix &inital_pose,  IKinematics *_pKinematicsC,CBlend *b );
 virtual		~animation_movement_controller		( );
 			void	ObjStartXform				( Fmatrix &m )const { m.set( m_startObjXForm ) ;}

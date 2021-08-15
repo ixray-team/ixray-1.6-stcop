@@ -11,7 +11,6 @@
 #include "../include/xrrender/Kinematics.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/ennumerateVertices.h"
-#include <boost/noncopyable.hpp>
 
 
 #ifdef DEBUG
@@ -69,7 +68,6 @@ void CIKFoot::Create		(  IKinematics	*K, LPCSTR section, u16 bones[4] )
 }
 
 struct envc :
-private boost::noncopyable,
 public SEnumVerticesCallback
 {
 	Fvector &pos;
@@ -78,6 +76,8 @@ public SEnumVerticesCallback
 	const Fvector &ax;
 	envc( const Fmatrix &_i_bind_transform, const Fvector &_ax,  Fvector &_pos ): 
 	SEnumVerticesCallback(), i_bind_transform( _i_bind_transform ), ax( _ax ), pos( _pos ) { start_pos.set( 0, 0, 0 ); }
+	envc(const envc& other) = delete;
+	envc& operator=(const envc& other) = delete;
 	void operator () (const Fvector& p)
 	{
 		Fvector lpos;

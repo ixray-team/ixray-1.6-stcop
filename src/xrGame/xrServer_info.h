@@ -1,13 +1,12 @@
 #ifndef SERVER_INFO_UPLOADER
 #define SERVER_INFO_UPLOADER
 
-#include <boost/noncopyable.hpp>
 #include "../xrCore/fastdelegate.h"
 #include "file_transfer.h"
 
 typedef fastdelegate::FastDelegate<void (ClientID const &)>	svinfo_upload_complete_cb;
 
-class server_info_uploader : boost::noncopyable
+class server_info_uploader
 {
 	enum ESvInfoUploadState
 	{
@@ -29,6 +28,9 @@ class server_info_uploader : boost::noncopyable
 	void			execute_complete_cb			();
 	
 public:
+	server_info_uploader(const server_info_uploader&) = delete;
+	server_info_uploader& operator= (const server_info_uploader&) = delete;
+
 	explicit		server_info_uploader		(file_transfer::server_site* file_transfers);
 					~server_info_uploader		();
 

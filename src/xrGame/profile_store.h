@@ -1,7 +1,6 @@
 #ifndef GAMESPY_PROFILE_STORE
 #define GAMESPY_PROFILE_STORE
 
-#include <boost/noncopyable.hpp>
 #include "../xrEngine/ISheduled.h"
 #include "profile_data_types.h"
 #include "script_export_space.h"
@@ -22,10 +21,11 @@ class awards_store;
 class best_scores_store;
 
 class profile_store : 
-	public ISheduled,
-	private boost::noncopyable
+	public ISheduled
 {
 public:
+	profile_store(const profile_store&) = delete;
+	profile_store& operator= (const profile_store&) = delete;
 	explicit		profile_store			(CGameSpy_Full* fullgs_obj);
 					~profile_store			();
 	

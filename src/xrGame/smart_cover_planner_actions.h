@@ -9,7 +9,6 @@
 #define SMART_COVER_PLANNER_ACTIONS_H_INCLUDED
 
 #include "smart_cover_detail.h"
-#include <boost/noncopyable.hpp>
 #include "stalker_combat_action_base.h"
 #include "debug_make_final.hpp"
 
@@ -24,13 +23,14 @@ class animation_planner;
 ////////////////////////////////////////////////////////////////////////////
 
 class action_base :
-	public CStalkerActionCombatBase,
-	private boost::noncopyable
+	public CStalkerActionCombatBase
 {
 private:
 	typedef CStalkerActionCombatBase inherited;
 
 public:
+	action_base(const action_base& other) = delete;
+	action_base& operator=(const action_base& other) = delete;
 						action_base					(CAI_Stalker *object, LPCSTR action_name = "");
 	virtual void		select_animation			(shared_str &result) = 0;
 	virtual	void		on_animation_end			() = 0;

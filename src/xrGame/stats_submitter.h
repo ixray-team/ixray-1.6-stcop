@@ -1,7 +1,6 @@
 #ifndef STATS_SUBMITTER_INCLUDED
 #define STATS_SUBMITTER_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "gamespy/GameSpy_ATLAS.h"
 #include "profile_data_types.h"
 #include "gsc_dsigned_ltx.h"
@@ -18,11 +17,11 @@ namespace gamespy_gp
 namespace gamespy_profile
 {
 
-class stats_submitter :
-	public ISheduled,
-	private boost::noncopyable
+class stats_submitter : public ISheduled
 {
 public:
+	stats_submitter(const stats_submitter&) = delete;
+	stats_submitter& operator= (const stats_submitter&) = delete;
 							stats_submitter			(CGameSpy_Full* fullgs);
 							~stats_submitter		();
 

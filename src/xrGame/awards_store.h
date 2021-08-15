@@ -2,7 +2,6 @@
 #define AWARD_SYSTEM_INCLUDED
 
 #include "../xrServerEntities/associative_vector.h"
-#include <boost/noncopyable.hpp>
 #include "profile_data_types.h"
 #include "../xrGameSpy/GameSpy/sake/sake.h"
 #include "gsc_dsigned_ltx.h"
@@ -13,9 +12,12 @@ class CGameSpy_SAKE;
 namespace gamespy_profile
 {
 
-class awards_store : boost::noncopyable
+class awards_store
 {
 public:
+	awards_store(const awards_store&) = delete;
+	awards_store& operator= (const awards_store&) = delete;
+
 				awards_store		(CGameSpy_Full* fullgs);
 				~awards_store		();
 

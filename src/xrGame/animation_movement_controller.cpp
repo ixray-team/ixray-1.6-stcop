@@ -7,7 +7,7 @@
 #ifdef	 DEBUG
 #include "phdebug.h"
 #endif
-#include <boost/noncopyable.hpp>
+
 void	DBG_DrawBones( const Fmatrix &xform,  IKinematics *K );
 #ifdef	 DEBUG
 BOOL	dbg_draw_animation_movement_controller  = FALSE;

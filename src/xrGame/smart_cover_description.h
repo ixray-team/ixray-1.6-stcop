@@ -8,7 +8,6 @@
 #ifndef SMART_COVER_DESCRIPTION_H_INCLUDED
 #define SMART_COVER_DESCRIPTION_H_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "smart_cover_detail.h"
 #include "graph_abstract.h"
 #include "debug_make_final.hpp"
@@ -24,7 +23,6 @@ namespace transitions {
 
 class description : 
 	private debug::make_final<description>, 
-	private boost::noncopyable, 
 	public  detail::intrusive_base_time
 {
 public:
@@ -44,6 +42,8 @@ private:
 	shared_str						m_table_id;
 
 public:
+	description(const description& other) = delete;
+	description& operator=(const description& other) = delete;
 									description			(shared_str const &table_id);
 									~description		();
 	IC		shared_str const		&table_id			() const;

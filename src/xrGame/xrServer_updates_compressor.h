@@ -3,9 +3,12 @@
 
 #include "traffic_optimization.h"
 
-class last_updates_cache : private boost::noncopyable
+class last_updates_cache
 {
 public:
+	last_updates_cache(const last_updates_cache&) = delete;
+	last_updates_cache& operator= (const last_updates_cache&) = delete;
+
 	static u32 const cache_entities_size = 32;
 	struct entity_update_key
 	{

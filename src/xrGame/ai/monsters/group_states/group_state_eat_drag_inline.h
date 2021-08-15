@@ -4,7 +4,6 @@
 #include "../../../../xrphysics/IPHCapture.h"
 #include "../../../CaptureBoneCallback.h"
 #include "../../../../include/xrrender/Kinematics.h"
-#include <boost/noncopyable.hpp>
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

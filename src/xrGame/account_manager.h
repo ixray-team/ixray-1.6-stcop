@@ -1,7 +1,6 @@
 #ifndef ACCOUNT_MANAGER
 #define ACCOUNT_MANAGER
 
-#include <boost/noncopyable.hpp>
 #include "mixed_delegate.h"
 #include "GameSpy/GameSpy_FuncDefs.h"
 #include "script_export_space.h"
@@ -38,9 +37,12 @@ typedef mixed_delegate<
 	suggest_nicks_cb_tag>				suggest_nicks_cb;
 
 
-class account_manager : private boost::noncopyable
+class account_manager
 {
 public:
+	account_manager(const account_manager&) = delete;
+	account_manager& operator= (const account_manager&) = delete;
+
 	explicit	account_manager		(CGameSpy_GP* gsgp_inst);
 				~account_manager	();
 

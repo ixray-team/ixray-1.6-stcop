@@ -9,7 +9,6 @@
 #define SMART_COVER_ANIMATION_SELECTOR_H_INCLUDED
 
 #include "smart_cover_detail.h"
-#include <boost/noncopyable.hpp>
 #include "../include/xrRender/KinematicsAnimated.h"
 #include "smart_cover_animation_planner.h"
 
@@ -24,9 +23,7 @@ namespace smart_cover {
 class action_base;
 class wait_after_exit;
 
-class animation_selector : 
-	private boost::noncopyable,
-	private debug::make_final<animation_selector>
+class animation_selector : private debug::make_final<animation_selector>
 {
 private:
 	CPropertyStorage		*m_storage;
@@ -42,6 +39,9 @@ private:
 	action_base				*current_operator	() const;
 
 public:
+	animation_selector(const animation_selector& other) = delete;
+	animation_selector& operator=(const animation_selector& other) = delete;
+
 							animation_selector	(CAI_Stalker *object);
 							~animation_selector	();
 		void				initialize			();

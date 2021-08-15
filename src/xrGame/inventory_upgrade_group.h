@@ -16,9 +16,11 @@ namespace inventory
 namespace upgrade
 {
 
-class Group : private boost::noncopyable
+class Group
 {
 public:
+	Group(const Group& other) = delete;
+	Group& operator=(const Group& other) = delete;
 							Group();
 	virtual					~Group();
 				void		construct( const shared_str& group_id, UpgradeBase& parent_upgrade, Manager& manager_r );

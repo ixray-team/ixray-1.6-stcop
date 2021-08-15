@@ -7,15 +7,16 @@
 #ifndef DOORS_ACTOR_H_INCLUDED
 #define DOORS_ACTOR_H_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "doors.h"
 
 class CAI_Stalker;
 
 namespace doors {
 
-class actor : private boost::noncopyable {
+class actor {
 public:
+	actor(const actor& other) = delete;
+	actor& operator=(const actor& other) = delete;
 						actor			( CAI_Stalker const& object );
 	virtual				~actor			( );
 	Fvector const&		get_position	( ) const;

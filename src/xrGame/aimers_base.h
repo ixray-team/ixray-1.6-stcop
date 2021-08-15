@@ -10,7 +10,6 @@
 #define AIMERS_BASE_H_INCLUDED
 
 #include "../include/xrrender/animation_motion.h"
-#include <boost/noncopyable.hpp>
 
 class CGameObject;
 class IKinematics;
@@ -18,9 +17,11 @@ class IKinematicsAnimated;
 
 namespace aimers {
 
-class base : private boost::noncopyable
+class base
 {
 public:
+	base(const base& other) = delete;
+	base& operator=(const base& other) = delete;
 							base			(
 								CGameObject* object,
 								LPCSTR animation_id,
