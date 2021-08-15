@@ -25,9 +25,7 @@ struct loophole_data {
 	u32							m_level_vertex_id;
 };
 
-class cover : 
-	public  CCoverPoint,
-	private debug::make_final<cover>
+class cover final : public  CCoverPoint
 {
 public:
 	cover(const cover& other) = delete;

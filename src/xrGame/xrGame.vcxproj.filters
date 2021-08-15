@@ -2068,9 +2068,6 @@
     <Filter Include="Core\Common\debug">
       <UniqueIdentifier>{dac1d081-4cc7-4c1b-b6d2-9231f3e89266}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Common\debug\make_final">
-      <UniqueIdentifier>{0309a392-5131-4507-a116-5eac9c10a3c6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Common\debug\static_cast_checked">
       <UniqueIdentifier>{49e9973a-863d-4547-a977-d4a017c2339e}</UniqueIdentifier>
     </Filter>
@@ -6231,9 +6228,6 @@
     <ClInclude Include="RegistryFuncs.h">
       <Filter>Core\Common\Registry</Filter>
     </ClInclude>
-    <ClInclude Include="debug_make_final.hpp">
-      <Filter>Core\Common\debug\make_final</Filter>
-    </ClInclude>
     <ClInclude Include="static_cast_checked.hpp">
       <Filter>Core\Common\debug\static_cast_checked</Filter>
     </ClInclude>
@@ -9793,9 +9787,6 @@
     </ClCompile>
     <ClCompile Include="RegistryFuncs.cpp">
       <Filter>Core\Common\Registry</Filter>
-    </ClCompile>
-    <ClCompile Include="debug_make_final_test.cpp">
-      <Filter>Core\Common\debug\make_final</Filter>
     </ClCompile>
     <ClCompile Include="static_cast_checked_test.cpp">
       <Filter>Core\Common\debug\static_cast_checked</Filter>

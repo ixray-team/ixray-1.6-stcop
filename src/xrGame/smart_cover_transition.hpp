@@ -8,8 +8,6 @@
 #ifndef SMART_COVER_TRANSITION_HPP_INCLUDED
 #define SMART_COVER_TRANSITION_HPP_INCLUDED
 
-#include "debug_make_final.hpp"
-
 namespace MonsterSpace {
 	enum EBodyState;
 }; // namespace MonsterSpace
@@ -19,8 +17,7 @@ namespace transitions {
 
 class animation_action;
 
-class action :
-	private debug::make_final<action>
+class action final
 {
 
 public:

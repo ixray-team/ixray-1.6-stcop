@@ -8,15 +8,13 @@
 #ifndef SMART_COVER_TRANSITION_ANIMATION_HPP_INCLUDED
 #define SMART_COVER_TRANSITION_ANIMATION_HPP_INCLUDED
 
-#include "debug_make_final.hpp"
 #include "ai_monster_space.h"
 
 namespace smart_cover {
 
 namespace transitions {
 
-class animation_action :
-	private debug::make_final<animation_action>
+class animation_action final
 {
 private:
 	Fvector									m_position;

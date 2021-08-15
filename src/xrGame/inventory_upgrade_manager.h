@@ -33,7 +33,7 @@ struct shared_str_predicate
 	}
 };
 
-class Manager
+class Manager final
 {
 public:
 	typedef associative_vector<shared_str, Property*, shared_str_predicate>  Properties_type;
