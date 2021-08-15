@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "../xrserverentities/associative_vector.h"
 
 namespace editor {
@@ -26,8 +25,11 @@ namespace environment {
 
 namespace levels {
 
-class manager : private boost::noncopyable {
+class manager {
 public:
+				manager							(const manager&) = delete;
+				manager& operator=				(const manager&) = delete;
+
 							manager			(::editor::environment::weathers::manager* environment);
 							~manager		();
 			void			load			();

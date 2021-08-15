@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "../include/editor/property_holder.hpp"
 #include "property_collection_forward.hpp"
 #include "environment.h"
@@ -28,13 +27,14 @@ class manager;
 
 class channel :
 	public CEnvAmbient::SSndChannel,
-	public editor::property_holder_holder,
-	private boost::noncopyable
+	public editor::property_holder_holder
 {
 private:
 	typedef CEnvAmbient::SSndChannel	inherited;
 
 public:
+	channel(const channel&) = delete;
+	channel& operator= (const channel&) = delete;
 							channel		(manager const& manager, shared_str const& id);
 	virtual					~channel	();
 			void			load		(CInifile& config);

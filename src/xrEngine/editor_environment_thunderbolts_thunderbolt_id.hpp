@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "../include/editor/property_holder.hpp"
 
 namespace editor {
@@ -24,9 +23,10 @@ namespace thunderbolts {
 class manager;
 
 class thunderbolt_id :
-	public editor::property_holder_holder,
-	private boost::noncopyable {
+	public editor::property_holder_holder {
 public:
+	thunderbolt_id(const thunderbolt_id&) = delete;
+	thunderbolt_id& operator= (const thunderbolt_id&) = delete;
 							thunderbolt_id	(manager const& manager, shared_str const& thunderbolt);
 	virtual					~thunderbolt_id	();
 			void			fill			(editor::property_holder_collection* collection);

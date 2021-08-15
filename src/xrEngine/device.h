@@ -297,8 +297,8 @@ private:
 			void				message_loop_editor	();
 
 private:
-	typedef editor::initialize_function_ptr			initialize_function_ptr;
-	typedef editor::finalize_function_ptr			finalize_function_ptr;
+	using initialize_function_ptr = editor::initialize_function_ptr;
+	using finalize_function_ptr = editor::finalize_function_ptr;
 
 private:
 	HMODULE						m_editor_module;

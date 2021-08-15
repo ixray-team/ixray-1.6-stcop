@@ -11,8 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
-
 namespace editor {
 
 class property_holder;
@@ -23,8 +21,10 @@ namespace suns {
 
 class manager;
 
-class blend : private boost::noncopyable {
+class blend {
 public:
+	blend(const blend&) = delete;
+	blend& operator= (const blend&) = delete;
 					blend		();
 			void	load		(CInifile& config, shared_str const& section);
 			void	save		(CInifile& config, shared_str const& section);

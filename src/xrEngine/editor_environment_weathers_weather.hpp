@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "../include/editor/property_holder.hpp"
 #include "property_collection_forward.hpp"
 
@@ -26,13 +25,14 @@ class manager;
 class time;
 
 class weather :
-	public editor::property_holder_holder,
-	private boost::noncopyable
+	public editor::property_holder_holder
 {
 public:
 	typedef editor::property_holder	property_holder_type;
 
 public:
+	weather(const weather&) = delete;
+	weather& operator= (const weather&) = delete;
 									weather				(
 										environment::manager* manager,
 										shared_str const& id

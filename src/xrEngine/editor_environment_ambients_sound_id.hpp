@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "../include/editor/property_holder.hpp"
 
 namespace editor {
@@ -25,10 +24,11 @@ namespace environment {
 
 namespace ambients {
 
-class sound_id :
-	public editor::property_holder_holder,
-	private boost::noncopyable {
+class sound_id : public editor::property_holder_holder {
 public:
+	sound_id(const sound_id&) = delete;
+	sound_id& operator= (const sound_id&) = delete;
+
 							sound_id		(sound_channels::manager const& manager, shared_str const& sound);
 	virtual					~sound_id		();
 			void			fill			(editor::property_holder_collection* collection);

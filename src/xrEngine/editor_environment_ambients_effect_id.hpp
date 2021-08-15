@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "../include/editor/property_holder.hpp"
 
 namespace editor {
@@ -25,10 +24,11 @@ namespace environment {
 
 namespace ambients {
 
-class effect_id :
-	public editor::property_holder_holder,
-	private boost::noncopyable {
+class effect_id : public editor::property_holder_holder {
 public:
+	effect_id(const effect_id&) = delete;
+	effect_id& operator= (const effect_id&) = delete;
+
 							effect_id		(effects::manager const& manager, shared_str const& id);
 	virtual					~effect_id		();
 			void			fill			(editor::property_holder_collection* collection);

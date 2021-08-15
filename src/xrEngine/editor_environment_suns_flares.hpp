@@ -11,7 +11,6 @@
 
 #ifdef INGAME_EDITOR
 
-#include <boost/noncopyable.hpp>
 #include "property_collection_forward.hpp"
 
 namespace editor {
@@ -25,8 +24,10 @@ namespace suns {
 class manager;
 class flare;
 
-class flares : private boost::noncopyable {
+class flares {
 public:
+	flares(const flares&) = delete;
+	flares& operator= (const flares&) = delete;
 					flares	();
 	virtual			~flares	();
 			void	load	(CInifile& config, shared_str const& section);
