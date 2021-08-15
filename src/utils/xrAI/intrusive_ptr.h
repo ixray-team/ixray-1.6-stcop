@@ -43,8 +43,8 @@ private:
 private:
 #ifdef XRGAME_EXPORTS
 	enum {result = 
-		object_type_traits::is_base_and_derived<base_type,object_type>::value ||
-		object_type_traits::is_same<base_type,object_type>::value
+		std::is_base_of<base_type,object_type>::value ||
+		std::is_same<base_type,object_type>::value
 	};
 #else 
 	enum {result = true	};

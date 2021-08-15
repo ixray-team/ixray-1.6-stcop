@@ -20,7 +20,7 @@ struct CCloner {
 		template <>
 		IC	static void clone<true>(const T &_1, T &_2)
 		{
-			_2				= xr_new<object_type_traits::remove_pointer<T>::type>(*_1);
+			_2				= xr_new<std::remove_pointer<T>::type>(*_1);
 			CCloner::clone	(*_1,*_2);
 		}
 	};
@@ -43,7 +43,7 @@ struct CCloner {
 	template <typename T1, typename T2>
 	IC	static void clone(const std::pair<T1,T2> &_1, std::pair<T1,T2> &_2)
 	{
-		clone(const_cast<object_type_traits::remove_const<T1>::type&>(_1.first),const_cast<object_type_traits::remove_const<T1>::type&>(_2.first));
+		clone(const_cast<std::remove_const<T1>::type&>(_1.first),const_cast<std::remove_const<T1>::type&>(_2.first));
 		clone(_1.second,_2.second);
 	}
 
@@ -159,7 +159,7 @@ struct CCloner {
 		template <bool a>
 		IC	static void clone(const T &_1, T &_2)
 		{
-			CHelper<T>::clone<object_type_traits::is_pointer<T>::value>(_1,_2);
+			CHelper<T>::clone<std::is_pointer<T>::value>(_1,_2);
 		}
 
 		template <>

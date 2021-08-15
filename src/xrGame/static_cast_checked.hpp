@@ -54,8 +54,8 @@ struct helper {
 template <typename destination_type, typename source_type>
 inline destination_type static_cast_checked	(source_type const & source)
 {
-	typedef object_type_traits::remove_pointer<source_type>::type			pointerless_type;
-	typedef object_type_traits::remove_reference<pointerless_type>::type	pure_source_type;
+	typedef std::remove_pointer<source_type>::type			pointerless_type;
+	typedef std::remove_reference<pointerless_type>::type	pure_source_type;
 
 	debug::detail::static_cast_checked::helper<
 		source_type const &,
@@ -72,8 +72,8 @@ inline destination_type static_cast_checked	(source_type const & source)
 template <typename destination_type, typename source_type>
 inline destination_type static_cast_checked	(source_type & source)
 {
-	typedef object_type_traits::remove_pointer<source_type>::type			pointerless_type;
-	typedef object_type_traits::remove_reference<pointerless_type>::type	pure_source_type;
+	typedef std::remove_pointer<source_type>::type			pointerless_type;
+	typedef std::remove_reference<pointerless_type>::type	pure_source_type;
 
 	debug::detail::static_cast_checked::helper<
 		source_type &,

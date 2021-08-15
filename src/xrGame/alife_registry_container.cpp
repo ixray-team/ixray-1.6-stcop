@@ -14,7 +14,7 @@
 
 template <typename T1, typename _T2, typename Head>
 struct CRegistryHelperLoad {
-	typedef typename object_type_traits::remove_reference<_T2>::type T2;
+	typedef typename std::remove_reference<_T2>::type T2;
 
 	template <bool loadable>
 	IC	static void do_load(T1 *self, T2 &p1)
@@ -29,13 +29,13 @@ struct CRegistryHelperLoad {
 
 	IC	static void process(T1 *self, T2 &p1)
 	{
-		do_load<object_type_traits::is_base_and_derived<IPureLoadableObject<T2>,Head>::value>(self,p1);
+		do_load<std::is_base_of<IPureLoadableObject<T2>,Head>::value>(self,p1);
 	}
 };
 
 template <typename T1, typename _T2, typename Head>
 struct CRegistryHelperSave {
-	typedef typename object_type_traits::remove_reference<_T2>::type T2;
+	typedef typename std::remove_reference<_T2>::type T2;
 
 	template <bool loadable>
 	IC	static void do_save(T1 *self, T2 &p1)
@@ -50,7 +50,7 @@ struct CRegistryHelperSave {
 
 	IC	static void process(T1 *self, T2 &p1)
 	{
-		do_save<object_type_traits::is_base_and_derived<IPureSavableObject<T2>,Head>::value>(self,p1);
+		do_save<std::is_base_of<IPureSavableObject<T2>,Head>::value>(self,p1);
 	}
 };
 

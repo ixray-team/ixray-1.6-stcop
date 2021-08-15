@@ -142,7 +142,7 @@ struct CComparer {
 		template <bool a>
 		IC	static bool compare(const T &_1, const T &_2, const P &p)
 		{
-			return(CHelper<T>::compare<object_type_traits::is_pointer<T>::value>(_1,_2,p));
+			return(CHelper<T>::compare<std::is_pointer<T>::value>(_1,_2,p));
 		}
 
 		template <>

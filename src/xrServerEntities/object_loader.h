@@ -45,15 +45,19 @@ struct CLoader {
 		template <>
 		IC	static void load_data<true>(T &data, M &stream, const P &p)
 		{
-			CLoader<M,P>::load_data	(*(data = xr_new<object_type_traits::remove_pointer<T>::type>()),stream,p);
+			CLoader<M,P>::load_data	(*(data = xr_new<std::remove_pointer<T>::type>()),stream,p);
 		}
 	};
 
 	struct CHelper3 {
 		template <typename T>
 		struct has_value_compare {
-		template <typename _P> static object_type_traits::detail::yes	select(object_type_traits::detail::other<typename _P::value_compare>*);
-			template <typename _P> static object_type_traits::detail::no		select(...);
+		template <typename _P> 
+			static object_type_traits::detail::yes	
+			select(object_type_traits::detail::other<typename _P::value_compare>*);
+
+		template <typename _P> 
+		static object_type_traits::detail::no	select(...);
 			enum { value = sizeof(object_type_traits::detail::yes) == sizeof(select<T>(0)) };
 		};
 
@@ -106,7 +110,7 @@ struct CLoader {
 		template <bool a>
 		IC	static void load_data(T &data, M &stream, const P &p)
 		{
-			CHelper<T>::load_data<object_type_traits::is_pointer<T>::value>	(data,stream,p);
+			CHelper<T>::load_data<std::is_pointer<T>::value>	(data,stream,p);
 		}
 
 		template <>
@@ -143,10 +147,10 @@ struct CLoader {
 	template <typename T1, typename T2>
 	IC	static void load_data(std::pair<T1,T2> &data, M &stream, const P &p)
 	{
-		if (p(data,const_cast<object_type_traits::remove_const<T1>::type&>(data.first),true)) {
-			const bool					value = object_type_traits::is_same<T1,LPCSTR>::value;
+		if (p(data,const_cast<std::remove_const<T1>::type&>(data.first),true)) {
+			const bool					value = std::is_same<T1,LPCSTR>::value;
 			VERIFY						(!value);
-			load_data					(const_cast<object_type_traits::remove_const<T1>::type&>(data.first),stream,p);
+			load_data					(const_cast<std::remove_const<T1>::type&>(data.first),stream,p);
 		}
 		if (p(data,data.second,false))
 			load_data					(data.second,stream,p);
