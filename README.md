@@ -4,7 +4,7 @@ Improved *X-Ray* 1.6 game engine
 
 ## Requirements
 
-* Visual Studio 2013 Community Edition
+* Visual Studio 2015 Community Edition
 * Borland C++ Builder 6
 
 ## Building
