@@ -11,7 +11,7 @@ Ernie Wright  17 Sep 00
 #include <stdlib.h>
 #include "lwo2.h"
 
-#pragma warning (disable:4996)
+//#pragma warning (disable:4996)
 
 /*
 ======================================================================
@@ -84,7 +84,7 @@ lwObject *lwGetObject( char *filename, unsigned int *failID, int *failpos )
 
    /* open the file */
 
-   fp = fopen( filename, "rb" );
+   fopen_s(&fp, filename, "rb" );
    if ( !fp ) return NULL;
 
    /* read the first 12 bytes */
@@ -275,4 +275,4 @@ Fail:
    return NULL;
 }
 
-#pragma warning (default:4996)
+//#pragma warning (default:4996)

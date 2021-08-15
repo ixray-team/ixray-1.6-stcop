@@ -329,7 +329,7 @@ CFileWriteBlock::CFileWriteBlock ( LPCSTR fn, u32 _size, bool _reopen  ):IWriteB
 		return;
 	string_path		lfile_name;
 	FS.update_path	( lfile_name, "$level$", fn );
-	file			= fopen( lfile_name, "wb");
+	fopen_s(&file, lfile_name, "wb");
 	VERIFY			(file);
 
 }
@@ -407,13 +407,13 @@ void	CFileWriteBlock::w_close()
 	}
 	string_path			 lfile_name;
 	FS.update_path		( lfile_name, "$level$", file_name );
-	file_map			= fopen( lfile_name, "rb" );
+	fopen_s(&file_map, lfile_name, "rb" );
 }
 
 
 INetReaderFile::INetReaderFile( LPCSTR file_name ): file(0)
 {
-	file = fopen( file_name, "rb" );// FS.r_open( file_name );
+	fopen_s(&file, file_name, "rb" );// FS.r_open( file_name );
 }
 
 INetReaderFile::~INetReaderFile( )

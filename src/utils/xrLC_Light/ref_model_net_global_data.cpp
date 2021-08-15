@@ -27,7 +27,7 @@ namespace lc_net
 		 inlc_global_data()->read_mu_model_refs( r_global );
 		 inlc_global_data()->read_modes_color( r_global );
 		}
-	 //unlink( fn );
+	 //_unlink( fn );
 		FPU::m64r		();
 		Memory.mem_compact	();
 		return true;

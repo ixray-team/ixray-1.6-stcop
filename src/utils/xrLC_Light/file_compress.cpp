@@ -6,7 +6,8 @@ void decompress( LPCSTR f_in, LPCSTR f_out );
 
 void compress( LPCSTR f_in, LPCSTR f_out )
 {
-	FILE * file = fopen( f_in, "rb" );
+	FILE * file;
+	fopen_s(&file, f_in, "rb" );
 	u32 buff_size = 1024*1024/2;
 
 	
@@ -31,7 +32,8 @@ void compress( LPCSTR f_in, LPCSTR f_out )
 void decompress( LPCSTR f_in, LPCSTR f_out )
 {
 
-	FILE * file = fopen( f_out, "wb" );
+	FILE * file;
+	fopen_s(&file, f_out, "wb" );
 	u32 buff_size = 1024*1024/2;
 
 	//u32 const length	= _filelength( _fileno( file ) );
@@ -62,7 +64,7 @@ void compress( LPCSTR f_in_out )
 	compress( f_in_out, tmp );
 
 	if ( GetFileAttributes(f_in_out) != u32(-1) ) 
-			unlink(f_in_out);
+			_unlink(f_in_out);
     // physically rename file
     VerifyPath			(f_in_out);
     rename				(tmp,f_in_out);
@@ -76,7 +78,7 @@ void decompress( LPCSTR f_in_out )
  	strconcat( sizeof(tmp),tmp, f_in_out, "___dtmp" );
 	decompress( f_in_out, tmp );
 	if ( GetFileAttributes(f_in_out) != u32(-1) ) 
-			unlink(f_in_out);
+			_unlink(f_in_out);
     // physically rename file
     VerifyPath			(f_in_out);
     rename				(tmp,f_in_out);

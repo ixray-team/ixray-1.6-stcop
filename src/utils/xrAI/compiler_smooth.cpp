@@ -80,7 +80,7 @@ BOOL	ValidNode(vertex& N)
 			float	tri_min_range	= flt_max;
 			int		tri_selected	= -1;
 			float	range = 0.f,u,v;
-			for (i=0; i<u32(tris.size()); i++) 
+			for (u32 i=0; i<u32(tris.size()); i++) 
 			{
 				if (CDB::TestRayTri(P,D,tris[i].v,u,v,range,false)) 
 				{

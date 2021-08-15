@@ -137,7 +137,8 @@ _InitPPM( const char* model_file=0 )
 {
     if( model_file )
     {
-        FILE*   mdl = fopen( model_file, "rb" );
+        FILE* mdl;
+        fopen_s(&mdl, model_file, "rb" );
 
         if( mdl )
         {
@@ -168,7 +169,8 @@ _InitLZO( const char* dic_name=_DefaultDictName )
     _LZOWrkMem = new char[LZO1X_999_MEM_COMPRESS+16];
     _LZOWrkMem = (char*)((unsigned int)(_LZOWrkMem+16) & (~(16-1)));
 
-    FILE*   dic = fopen( dic_name, "rb" );
+    FILE* dic;
+    fopen_s(&dic, dic_name, "rb" );
 
     if( dic )
     {
@@ -193,7 +195,8 @@ static bool
 _ProcessFile_PPMd( const char* file_name )
 {
     bool    success = false;
-    FILE*   file    = fopen( file_name, "rb" );
+    FILE* file;
+    fopen_s(&file, file_name, "rb" );
 
     if( file )
     {
@@ -322,7 +325,8 @@ static bool
 _ProcessFile_LZO( const char* file_name )
 {
     bool    success = false;
-    FILE*   file    = fopen( file_name, "rb" );
+    FILE* file;
+    fopen_s(&file, file_name, "rb" );
 
     if( file )
     {

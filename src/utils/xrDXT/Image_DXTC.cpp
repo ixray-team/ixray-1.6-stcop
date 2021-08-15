@@ -70,7 +70,8 @@ void Image_DXTC::SaveAsRaw()
 {
 	// save decompressed bits
 
-	FILE * pf = fopen( "decom.raw", "wb" );
+	FILE * pf;
+	fopen_s(&pf, "decom.raw", "wb" );
 
 
 	VERIFY (pf);
@@ -99,7 +100,7 @@ bool Image_DXTC::LoadFromFile(LPCSTR filename )
 	char fileupper[256];
 
 	xr_strcpy( fileupper, filename); 
-	strupr( fileupper );
+	_strupr( fileupper );
 
 
 	//TRACE( "\n" );
@@ -128,7 +129,8 @@ bool Image_DXTC::LoadFromFile(LPCSTR filename )
 	//TRACE("\n\nLoading file [%s]\n", filename );
 
 	
-	FILE * file = fopen( filename, "rb" );
+	FILE * file;
+	fopen_s(&file, filename, "rb" );
 
 	if( file == NULL )
 	{
@@ -1564,7 +1566,8 @@ inline void GetColorBlockColors_m1( DXTColBlock * pBlock, Color8888 * col_0, Col
 //-----------------------------------------------------------------------------
 WORD GetNumberOfBits( DWORD dwMask )
 {
-    for( WORD wBits = 0; dwMask; wBits++ )
+    WORD wBits = 0;
+    for(; dwMask; wBits++ )
         dwMask = dwMask & ( dwMask - 1 );  
 
     return wBits;

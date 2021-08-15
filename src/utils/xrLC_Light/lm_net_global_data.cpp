@@ -37,7 +37,7 @@ namespace lc_net
 		 INetReaderFile r_global( path );
 		 inlc_global_data()->read_lm_data( r_global );
 		}
-	 //unlink( fn );
+	 //_unlink( fn );
 	//	inlc_global_data()->create_read_faces();
 	//	inlc_global_data()->create_write_faces();
 		FPU::m64r		();

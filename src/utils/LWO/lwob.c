@@ -14,7 +14,7 @@ Ernie Wright  17 Sep 00
 #include <math.h>
 #include "lwo2.h"
 
-#pragma warning (disable:4996)
+//#pragma warning (disable:4996)
 
 /* IDs specific to LWOB */
 
@@ -575,7 +575,7 @@ lwObject *lwGetObject5( char *filename, unsigned int *failID, int *failpos )
 
    /* open the file */
 
-   fp = fopen( filename, "rb" );
+   fopen_s(&fp, filename, "rb" );
    if ( !fp ) return NULL;
 
    /* read the first 12 bytes */
@@ -683,4 +683,4 @@ Fail:
 }
 
 
-#pragma warning (default:4996)
+//#pragma warning (default:4996)

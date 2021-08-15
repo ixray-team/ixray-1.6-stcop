@@ -482,7 +482,8 @@ HRESULT nvDXT::compress_some(char * wildcard)
 HRESULT nvDXT::compress_list( )
 {
 
-    FILE *fp = fopen( listfile.c_str(), "r");
+    FILE *fp;
+    fopen_s(&fp, listfile.c_str(), "r");
 
     if (fp == 0)
     {
@@ -2337,7 +2338,8 @@ void unsharp_region
 HRESULT nvDXT::ReadFileIntoList(const char * filename, StringArray & strArray)
 {
 
-    FILE *fp = fopen( listfile.c_str(), "r");
+    FILE *fp;
+    fopen_s(&fp, listfile.c_str(), "r");
 
     if (fp == 0)
     {

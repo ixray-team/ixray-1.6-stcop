@@ -417,7 +417,9 @@ void _STDCALL EncodeFile(FILE* DecodedFile,int MaxOrder,int MaxSize)
 {
     StartModelRare(MaxOrder);               EncodeFile1(DecodedFile);
     ShrinkModel(MaxSize);
-    FILE* fp=fopen("!PPMd.mdl","wb");       nc=0;
+    FILE* fp;
+    fopen_s(&fp, "!PPMd.mdl", "wb");
+    nc=0;
     putc(MaxOrder,fp);                      MaxContext->write(0,fp);
     fseek(fp,0,SEEK_SET);                   putc(nc,fp);
     fseek(fp,0,SEEK_END);                   fclose(fp);
@@ -498,7 +500,8 @@ int MakePPMDictionaryFromFile(FILE* raw_bins_file_src)
 
 int MakePPMDictionary(char const * file_name)
 {
-	FILE* fpIn = fopen(file_name,"rb");
+	FILE* fpIn;
+	fopen_s(&fpIn, file_name, "rb");
 	if (!fpIn)
 		return 1;
 	MakePPMDictionaryFromFile(fpIn);

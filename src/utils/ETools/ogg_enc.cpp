@@ -32,7 +32,7 @@ namespace ETOOLS{
 		enc_opts.error				= encode_error;
 		enc_opts.comments			= &vc;
 
-		in							= fopen(in_fn, "rb");
+		fopen_s(&in, in_fn, "rb");
 
 		if(in == NULL)				return 0;
 
@@ -42,7 +42,8 @@ namespace ETOOLS{
 			return 0;
 		};
 
-		out							= fopen(out_fn, "wb");
+		fopen_s(&out, out_fn, "wb");
+		
 		if(out == NULL){
 			fclose					(out);
 			return 0;

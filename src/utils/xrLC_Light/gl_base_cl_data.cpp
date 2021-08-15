@@ -37,7 +37,7 @@ namespace lc_net
 		VERIFY( inlc_global_data() );
 		inlc_global_data()->read_base( r_global );
 		
-		//unlink( fn );
+		//_unlink( fn );
 
 		FPU::m64r		();
 		Memory.mem_compact	();

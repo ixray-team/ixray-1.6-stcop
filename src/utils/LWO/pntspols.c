@@ -13,7 +13,7 @@ Ernie Wright  17 Sep 00
 #include <math.h>
 #include "lwo2.h"
 
-#pragma warning (disable:4996)
+//#pragma warning (disable:4996)
 
 /*
 ======================================================================
@@ -364,7 +364,7 @@ int lwResolvePolySurfaces( lwPolygonList *polygon, lwTagList *tlist,
          if ( !s[ index ] ) return 0;
          s[ index ]->name = malloc( strlen( tlist->tag[ index ] ) + 1 );
          if ( !s[ index ]->name ) return 0;
-         strcpy( s[ index ]->name, tlist->tag[ index ] );
+         strcpy_s( s[ index ]->name, sizeof s[index]->name, tlist->tag[ index ] );
          lwListAdd( surf, s[ index ] );
          *nsurfs = *nsurfs + 1;
       }
@@ -540,4 +540,4 @@ int lwGetPolygonTags( FILE *fp, int cksize, lwTagList *tlist,
    return 1;
 }
 
-#pragma warning (default:4996)
+//#pragma warning (default:4996)

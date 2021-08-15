@@ -39,7 +39,8 @@ int	_PPM_ModelSize	= 64;
 static void
 _UnpackPackets( const char* src_bin, const char* dst_name="" )
 {
-    FILE*   src_file = fopen( src_bin, "rb" );
+    FILE* src_file;
+    fopen_s(&src_file, src_bin, "rb" );
 
     if( src_file )
     {
@@ -71,7 +72,8 @@ _UnpackPackets( const char* src_bin, const char* dst_name="" )
                 _snprintf( bin_name, sizeof(bin_name)-1, "data-%08u.bin", count+1 );
             
                 u16     sz  = *((u16*)data);
-                FILE*   bin = fopen( bin_name, "wb" );
+                FILE* bin;
+                fopen_s(&bin, bin_name, "wb" );
 
                 data += sizeof(u16);
                 fwrite( data, sz, 1, bin );
@@ -190,9 +192,11 @@ _BuildDictionary( const char* bins_file, const char* dst_name="" )
 	vector<PacketInfo>  packet_info;
     unsigned            total_packet_count = 0;
     
-    FILE*   src_file = fopen( bins_file, "rb" );
+	FILE* src_file;
+	fopen_s(&src_file, bins_file, "rb" );
 	static char const * raw_bins_filename = "raw_bins_tmp.bin";
-	FILE*	raw_bins_file = fopen(raw_bins_filename, "wb");
+	FILE*	raw_bins_file;
+	fopen_s(&raw_bins_file, raw_bins_filename, "wb");
 	if (!raw_bins_file)
 	{
 		if (src_file)
@@ -224,7 +228,7 @@ _BuildDictionary( const char* bins_file, const char* dst_name="" )
         {
             const u8*   data        = src_data + sizeof(u32);
             const u8*   data_end    = src_data + src_sz;
-            unsigned    count       = 0;
+            //unsigned    count       = 0;
 
             while( data < data_end )
             {
@@ -320,7 +324,8 @@ _BuildDictionary( const char* bins_file, const char* dst_name="" )
     // build dictionary
 
     const char* dic_file    = IsEmptyString(dst_name)  ? "lzo.dic"  : dst_name;
-    FILE*       dic         = fopen( dic_file, "wb" );
+    FILE* dic;
+    fopen_s(&dic, dic_file, "wb" );
 
 	float const lzo_dict_max_size = 5.0f * 1024; //5 Kb
 
@@ -343,7 +348,7 @@ _BuildDictionary( const char* bins_file, const char* dst_name="" )
                               ? unsigned((10000.0f/float(info.size)) * info.weight)
                               : 1;*/
             
-			unsigned int n   = 0;
+			//unsigned int n   = 0;
 			unsigned int cnt = unsigned int((lzo_dict_max_size*info.weight) / info.size);
            
             for( unsigned p=0,n=0; p<cnt; ++p,++n )
