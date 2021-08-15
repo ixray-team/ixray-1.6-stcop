@@ -174,7 +174,7 @@ u16 CKinematicsAnimated::LL_PartID		(LPCSTR B)
 	for (u16 id=0; id<MAX_PARTS; id++) {
 		CPartDef&	P = (*m_Partition)[id];
 		if (0==P.Name)	continue;
-		if (0==stricmp(B,*P.Name)) return id;
+		if (0==_stricmp(B,*P.Name)) return id;
 	}
 	return BI_NONE;
 }
@@ -655,7 +655,7 @@ void CKinematicsAnimated::IBlend_Startup	()
 #endif
 	}
 	// cycles+fx clear
-	for (i=0; i<MAX_PARTS; i++)
+	for (u32 i=0; i<MAX_PARTS; i++)
 		blend_cycles[i].clear();
 	blend_fx.clear		();
 	ChannelFactorsStartup();

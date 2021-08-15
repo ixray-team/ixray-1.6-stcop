@@ -128,16 +128,16 @@ bool CUIXmlInit::InitOptionsItem(CUIXml& xml_doc, LPCSTR path, int index, CUIOpt
 		{
 			CUIOptionsItem::ESystemDepends d = CUIOptionsItem::sdNothing;
 
-			if(0==stricmp(depends,"vid"))
+			if(0==_stricmp(depends,"vid"))
 				d = CUIOptionsItem::sdVidRestart;
 			else
-			if(0==stricmp(depends,"snd"))
+			if(0==_stricmp(depends,"snd"))
 				d = CUIOptionsItem::sdSndRestart;
 			else
-			if(0==stricmp(depends,"restart"))
+			if(0==_stricmp(depends,"restart"))
 				d = CUIOptionsItem::sdSystemRestart;
 			else
-			if(0==stricmp(depends,"runtime"))
+			if(0==_stricmp(depends,"runtime"))
 				d = CUIOptionsItem::sdApplyOnChange;
 			else
 				Msg("! unknown param [%s] in optionsItem [%s]", depends, entry.c_str());
@@ -547,10 +547,10 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path,
 	{
 		mode = CUIProgressBar::om_horz;
 	}
-	else if ( stricmp( mode_str, "horz" ) == 0 )	{	mode = CUIProgressBar::om_horz;	}
-	else if ( stricmp( mode_str, "vert" ) == 0 )	{	mode = CUIProgressBar::om_vert;	}
-	else if ( stricmp( mode_str, "back" ) == 0 )	{	mode = CUIProgressBar::om_back;	}
-	else if ( stricmp( mode_str, "down" ) == 0 )	{	mode = CUIProgressBar::om_down;	}
+	else if ( _stricmp( mode_str, "horz" ) == 0 )	{	mode = CUIProgressBar::om_horz;	}
+	else if ( _stricmp( mode_str, "vert" ) == 0 )	{	mode = CUIProgressBar::om_vert;	}
+	else if ( _stricmp( mode_str, "back" ) == 0 )	{	mode = CUIProgressBar::om_back;	}
+	else if ( _stricmp( mode_str, "down" ) == 0 )	{	mode = CUIProgressBar::om_down;	}
 	
 	pWnd->InitProgressBar(pos, size, mode);
 
@@ -649,7 +649,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 	while(node)
 	{
 		LPCSTR node_name			= node->Value();
-		if(0==stricmp(node_name,"auto_static"))
+		if(0==_stricmp(node_name,"auto_static"))
 		{
 			CUIStatic* pUIStatic		= xr_new<CUIStatic>();
 			InitStatic					(xml_doc, "auto_static", cnt_static, pUIStatic);
@@ -660,7 +660,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 
 			++cnt_static;
 		}else
-		if(0==stricmp(node_name,"auto_frameline"))
+		if(0==_stricmp(node_name,"auto_frameline"))
 		{
 			CUIFrameLineWnd* pUIFrameline = xr_new<CUIFrameLineWnd>();
 			InitFrameLine				(xml_doc, "auto_frameline", cnt_frameline, pUIFrameline);
@@ -671,7 +671,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 
 			++cnt_frameline;
 		}else
-		if(0==stricmp(node_name,"auto_text"))
+		if(0==_stricmp(node_name,"auto_text"))
 		{
 			++cnt_text;
 		}

@@ -121,16 +121,16 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 
 	// Тип статьи
 	xr_string atricle_type = pXML->ReadAttrib(pNode, "article_type", "encyclopedia");
-	if(0==stricmp(atricle_type.c_str(),"encyclopedia")){
+	if(0==_stricmp(atricle_type.c_str(),"encyclopedia")){
 		data()->articleType = ARTICLE_DATA::eEncyclopediaArticle;
 	}else
-	if(0==stricmp(atricle_type.c_str(),"journal")){
+	if(0==_stricmp(atricle_type.c_str(),"journal")){
 		data()->articleType = ARTICLE_DATA::eJournalArticle;
 	}else
-	if(0==stricmp(atricle_type.c_str(),"task")){
+	if(0==_stricmp(atricle_type.c_str(),"task")){
 		data()->articleType = ARTICLE_DATA::eTaskArticle;
 	}else
-	if(0==stricmp(atricle_type.c_str(),"info")){
+	if(0==_stricmp(atricle_type.c_str(),"info")){
 		data()->articleType = ARTICLE_DATA::eInfoArticle;
 	}else{
 		Msg("incorrect article type definition for [%s]",*item_data.id);

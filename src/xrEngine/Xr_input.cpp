@@ -250,7 +250,7 @@ void CInput::KeyUpdate	( )
 			}
 		}
 
-		for ( i = 0; i < COUNT_KB_BUTTONS; i++ )
+		for (int i = 0; i < COUNT_KB_BUTTONS; i++ )
 			if (KBState[i]) 
 				cbStack.back()->IR_OnKeyboardHold( i );
 	}

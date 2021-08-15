@@ -356,7 +356,7 @@ FILE* gsOpenDebugFile(const char* theFileName)
 	assert(theFileName != NULL);
 
 	// Open the new file (clear contents)
-	aFile = fopen(theFileName, "w+");
+	fopen_s(&aFile, theFileName, "w+");
 	if (aFile != NULL)
 		gsSetDebugFile(aFile);
 

@@ -20,10 +20,10 @@ void fix_texture_name(LPSTR fn)
 {
 	LPSTR _ext = strext(fn);
 	if(  _ext					&&
-	  (0==stricmp(_ext,".tga")	||
-		0==stricmp(_ext,".dds")	||
-		0==stricmp(_ext,".bmp")	||
-		0==stricmp(_ext,".ogm")	) )
+	  (0==_stricmp(_ext,".tga")	||
+		0==_stricmp(_ext,".dds")	||
+		0==_stricmp(_ext,".bmp")	||
+		0==_stricmp(_ext,".ogm")	) )
 		*_ext = 0;
 }
 
@@ -384,7 +384,7 @@ _DDS_CUBE:
 		}
 _DDS_2D:
 		{
-			strlwr					(fn);
+			_strlwr					(fn);
 			// Load   SYS-MEM-surface, bound to device restrictions
 			ID3DTexture2D*		T_sysmem;
 			HRESULT const result	=
@@ -405,7 +405,7 @@ _DDS_2D:
 				Msg					("! Can't load texture '%s'",fn);
 				string_path			temp;
 				R_ASSERT			( FS.exist( temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds" ) );
-				strlwr				(temp);
+				_strlwr				(temp);
 				R_ASSERT			( xr_strcmp(temp,fn) );
 				xr_strcpy			( fn, temp );
 				goto _DDS;

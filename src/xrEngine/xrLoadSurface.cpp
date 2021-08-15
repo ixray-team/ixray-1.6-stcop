@@ -9,7 +9,7 @@ struct SExts{
     {
     	if (ext&&ext[0]){
 			for (u32 i=0; i<exts.size(); i++)
-    			if (0==stricmp(exts[i],ext)) return;
+    			if (0==_stricmp(exts[i],ext)) return;
     		exts.push_back(xr_strdup(ext));
         }
     }

@@ -22,6 +22,7 @@
 #include "UIGameCTA.h"
 #include "string_table.h"
 #include "../xrEngine/xr_ioconsole.h"
+#include <functional>
 
 //-------------------------------------------------------------
 u32			g_sv_cta_dwInvincibleTime		=		5;	//5 seconds

@@ -235,7 +235,8 @@ void CLevelGraph::draw_covers	()
 		Fvector				direction;
 		float				best_value = -1.f;
 
-		for (u32 i=0, j = 0; i<36; ++i) {
+		u32 j = 0;
+		for (u32 i = 0; i<36; ++i) {
 			float				value = high_cover_in_direction(float(10*i)/180.f*PI,v);
 			direction.setHP		(float(10*i)/180.f*PI,0);
 			direction.normalize	();
@@ -280,7 +281,8 @@ void CLevelGraph::draw_covers	()
 		Fvector				direction;
 		float				best_value = -1.f;
 
-		for (u32 i=0, j = 0; i<36; ++i) {
+		u32 j = 0;
+		for (u32 i = 0; i<36; ++i) {
 			float				value = low_cover_in_direction(float(10*i)/180.f*PI,v);
 			direction.setHP		(float(10*i)/180.f*PI,0);
 			direction.normalize	();

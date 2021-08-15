@@ -117,7 +117,7 @@ void CRadioactiveZone::UpdateWorkload					(u32	dt)
 				l_P.read_start();
 
 				float dist			= (*it).object->Position().distance_to(pos);
-				float power			= Power(dist,nearest_shape_radius(it))*dt/1000;
+				float power			= Power(dist,nearest_shape_radius(&(*it)))*dt/1000;
 
 				SHit				HS;
 				HS.GenHeader		(GE_HIT, (*it).object->ID());

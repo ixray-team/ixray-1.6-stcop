@@ -16,20 +16,6 @@
 
 #include	"../xrRender/dxRenderDeviceRender.h"
 
-#ifdef NDEBUG
-
-namespace std
-{
-
-void terminate ()
-{
-	abort();
-}
-
-} // namespace std
-
-#endif // #ifdef NDEBUG
-
 using namespace				luabind;
 
 #ifdef	DEBUG

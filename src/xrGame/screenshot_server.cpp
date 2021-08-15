@@ -224,7 +224,7 @@ void clientdata_proxy::download_screenshot_callback(file_transfer::receiving_sta
 			LPCSTR error_msg;
 			char bufforint[16];
 			STRCONCAT(error_msg, "download screenshot terminated by peer [",
-				ultoa(m_chearer_id.value(), bufforint, 10), "]");
+				_ultoa(m_chearer_id.value(), bufforint, 10), "]");
 			notify_admin(e_screenshot_error_notif, error_msg);
 		}break;
 	case file_transfer::receiving_timeout:
@@ -295,7 +295,7 @@ void clientdata_proxy::download_config_callback(file_transfer::receiving_status_
 			LPCSTR error_msg;
 			char bufforint[16];
 			STRCONCAT(error_msg, "download config terminated by peer [",
-				ultoa(m_chearer_id.value(), bufforint, 10), "]");
+				_ultoa(m_chearer_id.value(), bufforint, 10), "]");
 			notify_admin(e_configs_error_notif, error_msg);
 		}break;
 	case file_transfer::receiving_timeout:

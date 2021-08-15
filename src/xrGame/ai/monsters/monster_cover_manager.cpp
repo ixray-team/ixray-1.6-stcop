@@ -13,7 +13,7 @@
 #include "../../ai_object_location.h"
 #include "ai_monster_squad.h"
 #include "ai_monster_squad_manager.h"
-#include "stl/_function.h"
+#include <functional>
 
 //////////////////////////////////////////////////////////////////////////
 // CControllerCoverEvaluator

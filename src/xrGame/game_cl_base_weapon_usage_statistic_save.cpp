@@ -82,7 +82,8 @@ void WeaponUsageStatistic::SaveData()
 
 	//---------------------------------------------------------
 	FS.update_path			(mFileName,"$logs$",mFileName);
-	FILE* SFile				= fopen(mFileName, "wb");
+	FILE* SFile;
+	fopen_s(&SFile, mFileName, "wb");
 	if (!SFile)				return;
 	//---------------------------------------------------------
 	u32 IDENT				= WUS_IDENT;
@@ -255,7 +256,7 @@ void Weapon_Statistic::Write(FILE* pFile)
 		if (Hit.Completed) NumHits++;
 	};
 	fwrite(&NumHits, 4, 1, pFile);
-	for (i=0; i<m_Hits.size(); i++)
+	for (u32 i=0; i<m_Hits.size(); i++)
 	{
 		HitData& Hit = m_Hits[i];
 		if (!Hit.Completed) continue;

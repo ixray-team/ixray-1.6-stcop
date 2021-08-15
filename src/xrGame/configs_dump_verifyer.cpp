@@ -191,7 +191,7 @@ LPCSTR configs_verifyer::get_diff(CInifile & received,
 bool const configs_verifyer::verify(u8* data, u32 data_size, string256 & diff)
 {
 	static char	const	check_substr[] = "[config_dump_info]";
-	static char const*	end_checksubstr = check_substr + strlen(check_substr);
+	static char const*	end_checksubstr = check_substr + xr_strlen(check_substr);
 	u8*					data_end_ptr = data + data_size;
 
 	if (std::search(data, data_end_ptr, 

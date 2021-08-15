@@ -41,7 +41,7 @@ void CPSLibrary::OnDestroy()
 	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
     	(*e_it)->DestroyShader();
 
-	for (e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
+	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
 		xr_delete	(*e_it);
 	m_PEDs.clear	();
 
@@ -150,7 +150,7 @@ bool CPSLibrary::Load2()
 #endif
 
         xr_sprintf				(_path, sizeof(_path),"%s%s",p_path, p_name);
-        if(0==stricmp(p_ext,".pe"))
+        if(0==_stricmp(p_ext,".pe"))
         {
             PS::CPEDef*	def		= xr_new<PS::CPEDef>();
             def->m_Name			= _path;
@@ -159,7 +159,7 @@ bool CPSLibrary::Load2()
             else
             	xr_delete		(def);
         }else
-        if(0==stricmp(p_ext,".pg"))
+        if(0==_stricmp(p_ext,".pg"))
         {
             PS::CPGDef*	def		= xr_new<PS::CPGDef>();
             def->m_Name			= _path;

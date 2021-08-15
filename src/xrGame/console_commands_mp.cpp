@@ -222,7 +222,7 @@ public:
 
 		u32 CLObjNum	= Level().Objects.o_count();
 		xr_vector<u16>	CObjID;
-		for (i=0; i<CLObjNum; i++)
+		for (u32 i=0; i<CLObjNum; i++)
 		{
 			CObjID.push_back(Level().Objects.o_get_by_iterator(i)->ID());
 		};
@@ -276,7 +276,7 @@ public:
 	virtual void		Execute			(LPCSTR arguments)
 	{
 		string64 cdkey;
-		if ( 0 == stricmp(arguments,"clear") )
+		if ( 0 == _stricmp(arguments,"clear") )
 		{
 			cdkey[0] = 0;
 		}

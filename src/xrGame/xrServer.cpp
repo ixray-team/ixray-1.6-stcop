@@ -20,11 +20,11 @@
 #include "file_transfer.h"
 #include "screenshot_server.h"
 #include "xrServer_info.h"
-#include "stl/_function.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
+#include <functional>
 #pragma warning(pop)
 
 u32 g_sv_traffic_optimization_level = eto_none;
@@ -631,7 +631,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			shared_str				user;
 			shared_str				pass;
 			P.r_stringZ				(user);
-			if(0==stricmp(user.c_str(),"logoff"))
+			if(0==_stricmp(user.c_str(),"logoff"))
 			{
 				CL->m_admin_rights.m_has_admin_rights	= FALSE;
 				if (CL->ps)
@@ -1046,7 +1046,7 @@ void xrServer::GetServerInfo( CServerInfo* si )
 	string32  tmp;
 	string256 tmp256;
 
-	si->AddItem( "Server port", itoa( GetPort(), tmp, 10 ), RGB(128,128,255) );
+	si->AddItem( "Server port", _itoa( GetPort(), tmp, 10 ), RGB(128,128,255) );
 	LPCSTR time = InventoryUtilities::GetTimeAsString( Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay ).c_str();
 	si->AddItem( "Uptime", time, RGB(255,228,0) );
 
@@ -1055,13 +1055,13 @@ void xrServer::GetServerInfo( CServerInfo* si )
 	if ( game->Type() == eGameIDDeathmatch || game->Type() == eGameIDTeamDeathmatch )
 	{
 		xr_strcat( tmp256, " [" );
-		xr_strcat( tmp256, itoa( g_sv_dm_dwFragLimit, tmp, 10 ) );
+		xr_strcat( tmp256, _itoa( g_sv_dm_dwFragLimit, tmp, 10 ) );
 		xr_strcat( tmp256, "] " );
 	}
 	else if ( game->Type() == eGameIDArtefactHunt || game->Type() == eGameIDCaptureTheArtefact )
 	{
 		xr_strcat( tmp256, " [" );
-		xr_strcat( tmp256, itoa( g_sv_ah_dwArtefactsNum, tmp, 10 ) );
+		xr_strcat( tmp256, _itoa( g_sv_ah_dwArtefactsNum, tmp, 10 ) );
 		xr_strcat( tmp256, "] " );
 		g_sv_ah_iReinforcementTime;
 	}
@@ -1069,13 +1069,13 @@ void xrServer::GetServerInfo( CServerInfo* si )
 	//if ( g_sv_dm_dwTimeLimit > 0 )
 	{
 		xr_strcat( tmp256, " time limit [" );
-		xr_strcat( tmp256, itoa( g_sv_dm_dwTimeLimit, tmp, 10 ) );
+		xr_strcat( tmp256, _itoa( g_sv_dm_dwTimeLimit, tmp, 10 ) );
 		xr_strcat( tmp256, "] " );
 	}
 	if ( game->Type() == eGameIDArtefactHunt || game->Type() == eGameIDCaptureTheArtefact )
 	{
 		xr_strcat( tmp256, " RT [" );
-		xr_strcat( tmp256, itoa( g_sv_ah_iReinforcementTime, tmp, 10 ) );
+		xr_strcat( tmp256, _itoa( g_sv_ah_iReinforcementTime, tmp, 10 ) );
 		xr_strcat( tmp256, "]" );
 	}
 	si->AddItem( "Game type", tmp256, RGB(128,255,255) );
@@ -1088,7 +1088,7 @@ void xrServer::GetServerInfo( CServerInfo* si )
 		if ( g_sv_mp_iDumpStatsPeriod > 0 )
 		{
 			xr_strcat( tmp256, " statistic [" );
-			xr_strcat( tmp256, itoa( g_sv_mp_iDumpStatsPeriod, tmp, 10 ) );
+			xr_strcat( tmp256, _itoa( g_sv_mp_iDumpStatsPeriod, tmp, 10 ) );
 			xr_strcat( tmp256, "]" );
 			if ( g_bCollectStatisticData )
 			{

@@ -39,17 +39,6 @@ extern "C" {
 void CCC_RegisterCommands	();
 void setup_luabind_allocator();
 
-#ifdef NDEBUG
-
-namespace std {
-	void terminate			()
-	{
-		abort				();
-	}
-} // namespace std
-
-#endif // #ifdef NDEBUG
-
 BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 {
 	switch (ul_reason_for_call) {
