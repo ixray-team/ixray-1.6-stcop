@@ -48,7 +48,6 @@
     <ClInclude Include="tga.h">
       <Filter>NormalMap</Filter>
     </ClInclude>
-    <ClInclude Include="dds.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +76,6 @@
       <Filter>NormalMap</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="nvDXTlibMTDLL.lib">
-      <Filter>Convert</Filter>
-    </Library>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
