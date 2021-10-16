@@ -10,6 +10,8 @@
 #include "ETextureParams.h"
 #include <dds.h>
 #include <ddraw.h>
+#include <DirectXTex.h>
+#include <memory>
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        u32  ul_reason_for_call, 
@@ -226,20 +228,49 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		nvOpt.bFadeColor	= false;
 		nvOpt.bFadeAlpha	= false;
 
-		RGBAImage			pImage(w*2, h);
-		rgba_t* pixels		= pImage.pixels();
-		u8* pixel			= pImagePixels;
-		for (u32 k=0; k<w*2*h; k++,pixel+=4)
-			pixels[k].set	(pixel[2],pixel[1],pixel[0],pixel[3]);
-		hr					= nvDXTcompress(pImage,&nvOpt,0,0);
+		std::unique_ptr<DirectX::ScratchImage> image(new (std::nothrow) DirectX::ScratchImage);
+		auto images = image->GetImage(0, 0, 0);
+		size_t imagesCount = image->GetImageCount();
+
+		DirectX::TexMetadata info;
+		info.format = image->GetMetadata().format;
+
+		DXGI_FORMAT tformat = info.format;
+
+		DirectX::TEX_FILTER_FLAGS dwFilter = DirectX::TEX_FILTER_DEFAULT;
+		DirectX::TEX_FILTER_FLAGS dwSRGB = DirectX::TEX_FILTER_DEFAULT;
+		DirectX::TEX_FILTER_FLAGS dwConvert = DirectX::TEX_FILTER_DEFAULT;
+		DirectX::TEX_COMPRESS_FLAGS dwCompress = DirectX::TEX_COMPRESS_DEFAULT;
+		DirectX::TEX_FILTER_FLAGS dwFilterOpts = DirectX::TEX_FILTER_DEFAULT;
+
+		float alphaWeight = 1.0f;
+
+		std::unique_ptr<DirectX::ScratchImage> timage(new (std::nothrow) DirectX::ScratchImage);
+
+		hr = DirectX::Compress(images, imagesCount, info, tformat, dwCompress | dwSRGB, alphaWeight, *timage);
+
 		xr_free				(pImagePixels);
 	}else{
-		RGBAImage			pImage(w,h);
-		rgba_t* pixels		= pImage.pixels();
-		u8* pixel			= raw_data;
-		for (u32 k=0; k<w*h; k++,pixel+=4)
-			pixels[k].set	(pixel[2],pixel[1],pixel[0],pixel[3]);
-		hr					= nvDXTcompress(pImage,&nvOpt,0,0);
+		std::unique_ptr<DirectX::ScratchImage> image(new (std::nothrow) DirectX::ScratchImage);
+		auto images = image->GetImage(0, 0, 0);
+		size_t imagesCount = image->GetImageCount();
+
+		DirectX::TexMetadata info;
+		info.format = image->GetMetadata().format;
+
+		DXGI_FORMAT tformat = info.format;
+
+		DirectX::TEX_FILTER_FLAGS dwFilter = DirectX::TEX_FILTER_DEFAULT;
+		DirectX::TEX_FILTER_FLAGS dwSRGB = DirectX::TEX_FILTER_DEFAULT;
+		DirectX::TEX_FILTER_FLAGS dwConvert = DirectX::TEX_FILTER_DEFAULT;
+		DirectX::TEX_COMPRESS_FLAGS dwCompress = DirectX::TEX_COMPRESS_DEFAULT;
+		DirectX::TEX_FILTER_FLAGS dwFilterOpts = DirectX::TEX_FILTER_DEFAULT;
+
+		float alphaWeight = 1.0f;
+
+		std::unique_ptr<DirectX::ScratchImage> timage(new (std::nothrow) DirectX::ScratchImage);
+
+		hr = DirectX::Compress(images, imagesCount, info, tformat, dwCompress | dwSRGB, alphaWeight, *timage);
 	}
     _close					(gFileOut);
 	if (hr!=DD_OK){
