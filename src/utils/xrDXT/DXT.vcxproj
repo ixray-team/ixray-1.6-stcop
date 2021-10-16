@@ -226,7 +226,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="colorconvert.h" />
-    <ClInclude Include="dds.h" />
     <ClInclude Include="ddsTypes.h" />
     <ClInclude Include="dxtlib.h" />
     <ClInclude Include="ETextureParams.h" />
@@ -261,9 +260,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="tga.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="nvDXTlibMTDLL.lib" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

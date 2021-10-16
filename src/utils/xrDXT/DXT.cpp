@@ -8,7 +8,7 @@
 #include "dxtlib.h"
 #pragma warning(pop)
 #include "ETextureParams.h"
-#include "dds.h"
+#include <dds.h>
 #include <ddraw.h>
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
@@ -30,17 +30,17 @@ const u32 fcc_DXT5 = MAKEFOURCC('D','X','T','5');
 
 void __cdecl WriteDTXnFile (DWORD count, void *buffer, void * userData)
 {
-	if (count==sizeof(DDS_HEADER)){
+	if (count==sizeof(DirectX::DDS_HEADER)){
 	// correct DDS header
-		DDS_HEADER* hdr=(DDS_HEADER*)buffer;
-		if (hdr->dwSize==count){
-			switch (hdr->ddspf.dwFourCC){ 
+		DirectX::DDS_HEADER* hdr=(DirectX::DDS_HEADER*)buffer;
+		if (hdr->size==count){
+			switch (hdr->ddspf.fourCC){ 
 			case fcc_DXT1:
 			case fcc_DXT2:
 			case fcc_DXT3:
 			case fcc_DXT4:
 			case fcc_DXT5:
-				hdr->ddspf.dwRGBBitCount = 0;
+				hdr->ddspf.RGBBitCount = 0;
 				break;
 			}
 		}

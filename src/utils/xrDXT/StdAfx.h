@@ -4,15 +4,13 @@
 //
 // Third generation by Oles.
 
-#if !defined(AFX_STDAFX_H__A9DB83DB_A9FD_11D0_BFD1_444553540000__INCLUDED_)
-#define AFX_STDAFX_H__A9DB83DB_A9FD_11D0_BFD1_444553540000__INCLUDED_
-
 #pragma once
 
 #include "../../xrCore/xrCore.h"
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
+#include <d3d11.h>
 
 #define ENGINE_API
 #define XR_EPROPS_API
@@ -25,8 +23,5 @@
 #endif //defined(MAKEFOURCC)
 
 #pragma comment(lib,"xrCore.lib")
-#pragma comment(lib,"nvDXTlibMTDLL.lib")
 
 #pragma warning( disable : 4995 )
-
-#endif
