@@ -189,6 +189,9 @@ void CSE_SmartCover::FillProps	(LPCSTR pref, PropItemVec& items)
 }
 #endif // #ifndef XRGAME_EXPORTS
 
+#include <script_value_container.h>
+#include <script_value_container_impl.h>
+
 #ifdef XRSE_FACTORY_EXPORTS
 void CSE_SmartCover::set_loopholes_table_checker(BOOLValue *value){
 	value->OnChangeEvent.bind	(this,&CSE_SmartCover::OnChangeLoopholes);
