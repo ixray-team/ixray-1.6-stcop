@@ -28,6 +28,7 @@ UpgradeLog*.htm
 sdk/dxsdk_mar2009/
 sdk/dxsdk_jun2010/
 sdk/3d_sdk/
+dep/
 
 # C++ Builder backups
 *.~bpg
