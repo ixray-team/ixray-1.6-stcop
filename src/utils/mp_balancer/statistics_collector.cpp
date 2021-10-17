@@ -32,9 +32,9 @@ void statistics_collector::load_settings()
 
 void statistics_collector::save_files()
 {
-	std::for_each(m_all_params.begin(), m_all_params.end(), std::bind1st(
-		std::mem_fun<void, statistics_collector>(&statistics_collector::save_file), this)
-	);
+	for (auto i = m_all_params.begin(); i != m_all_params.end(); i++) {
+		save_file(*i);
+	}
 }
 
 statistics_collector::csv_files::const_iterator 
