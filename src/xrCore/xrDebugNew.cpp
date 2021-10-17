@@ -307,15 +307,11 @@ int out_of_memory_handler	(size_t size)
 		g_full_memory_stats_callback	( );
 	else {
 		Memory.mem_compact	();
-#ifndef _EDITOR
-		u32					crt_heap		= mem_usage_impl((HANDLE)_get_heap_handle(),0,0);
-#else // _EDITOR
-		u32					crt_heap		= 0;
-#endif // _EDITOR
-		u32					process_heap	= mem_usage_impl(GetProcessHeap(),0,0);
+
+		u32					process_heap	= mem_usage_impl(nullptr, nullptr);
 		int					eco_strings		= (int)g_pStringContainer->stat_economy			();
 		int					eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
-		Msg					("* [x-ray]: crt heap[%d K], process heap[%d K]",crt_heap/1024,process_heap/1024);
+		Msg					("* [x-ray]: process heap[%d K]", process_heap / 1024);
 		Msg					("* [x-ray]: economy: strings[%d K], smem[%d K]",eco_strings/1024,eco_smem);
 	}
 
@@ -577,8 +573,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
     }
 #else
     typedef int		(__cdecl * _PNH)( size_t );
-    //_CRTIMP int		__cdecl _set_new_mode( int );
-    //_CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
 
 	void _terminate		()
 	{
@@ -620,7 +614,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		);
 		
 		exit					(-1);
-	//	FATAL					("Unexpected application termination");
 	}
 
 	static void handler_base				(LPCSTR reason_string)
