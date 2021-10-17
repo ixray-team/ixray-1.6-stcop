@@ -59,21 +59,21 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\..\sdk\include\stlport;..\..\..\sdk\include;..\xrQSlim\src;..\..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\sdk\include;..\xrQSlim\src;..\..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\..\sdk\include\stlport;..\..\..\sdk\include;..\xrQSlim\src;..\..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\sdk\include;..\xrQSlim\src;..\..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\..\sdk\include\stlport;..\..\..\sdk\include;..\xrQSlim\src;..\..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\sdk\include;..\xrQSlim\src;..\..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -435,9 +435,8 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\3rd party\bugtrap\zlib\zlib.vcxproj">
+    <ProjectReference Include="..\..\3rd party\zlib\zlib.vcxproj">
       <Project>{ca2604ca-a2ac-49a1-a468-8ab5a2e6cbc9}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
