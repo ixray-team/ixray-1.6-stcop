@@ -1,6 +1,22 @@
 # IX-Ray
 
-Improved *X-Ray* 1.6 game engine
+<!-- markdownlint-disable MD033 -->
+<div align="center">
+  <p>
+    <a href="https://github.com/ixray-team">
+      <img src="https://github.com/ixray-team/ixray/raw/default/logo.png" alt="IX-Ray Team" width="150" height="150" />
+    </a>
+  </p>
+
+  <p>
+    <a href="https://github.com/ixray-team/ixray-1.6/releases/tag/r1">
+      <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6?include_prereleases" alt="Latest release" />
+    </a>
+  </p>
+</div>
+<!-- markdownlint-enable MD033 -->
+
+Stable repository of the modernized *X-Ray* 1.6 game engine
 
 ## Requirements
 
