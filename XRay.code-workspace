@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            ".vs": true,
+            "bin": true,
+            "lib": true,
+            "obj": true,
+            "ipch": true,
+        }
+    }
+}
