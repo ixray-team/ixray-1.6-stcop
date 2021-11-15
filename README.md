@@ -60,6 +60,10 @@ If need to build editors run `InstallElpack.bat` and `InstallOther.bat` with adm
 * Run `ConvertLibraries.bat`
 * Build `XRay.Editors.BCB6.bpg`
 
+## Changelog
+
+All significant changes to this repository are documented in [this](CHANGELOG.md) file
+
 ## License
 
 See [this](LICENSE.md) file for details
