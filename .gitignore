@@ -5,6 +5,7 @@
 *.user
 
 # Visual C++ cache files
+.vs/
 ipch/
 *.ncb
 *.opendb
