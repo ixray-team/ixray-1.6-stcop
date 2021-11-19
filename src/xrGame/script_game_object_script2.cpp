@@ -27,6 +27,8 @@
 #include "relation_registry.h"
 #include "danger_object.h"
 #include "smart_cover_object.h"
+#include "detail_path_manager_space.h"
+#include "patrol_path_manager_space.h"
 
 using namespace luabind;
 

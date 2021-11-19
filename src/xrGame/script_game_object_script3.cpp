@@ -32,6 +32,7 @@
 #include "ZoneCampfire.h"
 #include "physicobject.h"
 #include "artefact.h"
+#include "sight_manager_space.h"
 
 using namespace luabind;
 
