@@ -115,13 +115,7 @@ public:
 
 // deque
 template <typename T, typename allocator = xalloc<T> >
-class xr_deque : public std::deque<T,allocator> {
-public: 
-	typedef typename allocator								allocator_type;
-	typedef typename allocator_type::value_type				value_type;
-	typedef typename allocator_type::size_type				size_type;
-	u32		size				() const							{return (u32)__super::size();	} 
-};
+using xr_deque = std::deque<T, allocator>;
 
 // stack
 template <typename _Ty, class _C = xr_vector<_Ty> >
