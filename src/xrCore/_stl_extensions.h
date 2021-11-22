@@ -64,54 +64,19 @@ namespace std
 typedef		std::basic_string<char, std::char_traits<char>, xalloc<char> >	xr_string;
 
 // vector
-template	<typename T, typename allocator = xalloc<T> >
-class xr_vector : public std::vector<T,allocator> {
-private:
-	typedef std::vector<T,allocator>	inherited;
+template <typename T, typename allocator = xalloc<T> >
+using xr_vector = std::vector<T, allocator>;
 
-public:
-	typedef allocator					allocator_type;
-
-public:
-			xr_vector			()									: inherited	()					{}
-			xr_vector			(size_t _count, const T& _value)	: inherited	(_count,_value)		{}
-	explicit xr_vector			(size_t _count)						: inherited (_count)			{}
-	u32		size				() const							{ return (u32)inherited::size();} 
-
-	void	clear_and_free		()									{ inherited::clear();			}
-	void	clear_not_free		()									{ erase(begin(),end());			}
-	void	clear_and_reserve	()									{ if ( capacity() <= (size()+size()/4) ) clear_not_free(); else { u32 old=size(); clear_and_free(); reserve(old); } }
-
-#ifdef M_DONTDEFERCLEAR_EXT
-	void	clear				()									{ clear_and_free	();			}
-#else
-	void	clear				()									{ clear_not_free	();			}
-#endif
-
-	const_reference operator[]	(size_type _Pos) const				{ {VERIFY2(_Pos<size(),make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str());} return (*(begin() + _Pos)); }
-	reference operator[]		(size_type _Pos)					{ {VERIFY2(_Pos<size(),make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str());} return (*(begin() + _Pos)); }
-};
-
-// vector<bool>
-template <>
-class xr_vector<bool,xalloc<bool> >	: public std::vector<bool,xalloc<bool> > {
-private:
-	typedef std::vector<bool,xalloc<bool> > inherited;
-
-public: 
-	u32		size				() const							{ return (u32)inherited::size();} 
-	void	clear				()									{ erase(begin(),end());			} 
-};
-
-template <typename allocator>
-class xr_vector<bool,allocator>	: public std::vector<bool,allocator> {
-private:
-	typedef std::vector<bool,allocator> inherited;
-
-public: 
-	u32		size				() const							{ return (u32)inherited::size();} 
-	void	clear				()									{ erase(begin(),end());			} 
-};
+template <typename T>
+void clear_and_reserve(xr_vector<T> &vector_object) {
+    if (vector_object.capacity() <= (vector_object.size() + vector_object.size() / 4)) {
+        vector_object.clear();
+    } else {
+        u32 old = vector_object.size();
+        vector_object.clear();
+        vector_object.reserve(old);
+    }
+}
 
 // deque
 template <typename T, typename allocator = xalloc<T> >

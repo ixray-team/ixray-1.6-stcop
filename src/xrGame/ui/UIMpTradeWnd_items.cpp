@@ -573,7 +573,7 @@ void CUIMpTradeWnd::StorePreset(ETradePreset idx, bool bSilent, bool check_allow
 	ITEMS_vec_cit it_e				= m_all_items.end();
 
 	preset_items&	v				= m_preset_storage[idx];
-	v.clear_not_free				();
+	v.clear();
 	for(;it!=it_e; ++it)
 	{
 		SBuyItemInfo* iinfo			= *it;

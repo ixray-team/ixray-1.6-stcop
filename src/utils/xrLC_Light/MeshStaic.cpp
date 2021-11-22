@@ -89,7 +89,7 @@ void xrLC_GlobalData	::vertices_isolate_and_pool_reload()
 		FS.w_close(file);
 	}
 /////////////////////////////////////////////////////////
-	_g_vertices.clear_not_free();
+	_g_vertices.clear();
 	clLog( "mem usage before clear pool: %u", Memory.mem_usage() );
 
 

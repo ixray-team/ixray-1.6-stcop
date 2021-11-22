@@ -602,7 +602,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 	_findclose		( hFile );
 
 	FFVec buffer(rec_files);
-	rec_files.clear_not_free();
+	rec_files.clear();
 	std::sort		(buffer.begin(), buffer.end(), pred_str_ff);
 	for (FFIt I = buffer.begin(), E = buffer.end(); I != E; ++I)
 		ProcessOne	(path, &*I);

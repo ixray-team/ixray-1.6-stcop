@@ -608,5 +608,5 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 		xr_free(*it);
 	xr_delete(folders_list);
 
-	exclude_exts.clear_and_free();
+	exclude_exts.clear();
 }

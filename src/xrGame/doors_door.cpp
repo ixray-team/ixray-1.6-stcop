@@ -60,7 +60,7 @@ door::~door						( )
 		(*i)->on_door_destroy	( *this );
 
 #ifdef DEBUG
-	m_initiators.clear_and_free	( );
+	m_initiators.clear();
 #endif // #ifdef DEBUG
 }
 

@@ -170,7 +170,7 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
-	lm_packed.clear_and_free();
+	lm_packed.clear();
 	Status			("Compression hemi..."); //.
 	{
 

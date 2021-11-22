@@ -311,7 +311,7 @@ Player_Statistic::Player_Statistic(LPCSTR Name)
 
 Player_Statistic::~Player_Statistic()
 {
-	aWeaponStats.clear_and_free();
+	aWeaponStats.clear();
 };
 
 u32 Player_Statistic::create_victims_table(victims_table & victims_table)

@@ -379,12 +379,12 @@ namespace CDB
 
 	void	CollectorPacked::clear()
 	{
-		verts.clear_and_free	();
-		faces.clear_and_free	();
-		flags.clear_and_free	();
+		verts.clear();
+		faces.clear();
+		flags.clear();
 		for (u32 _x=0; _x<=clpMX; _x++)
 			for (u32 _y=0; _y<=clpMY; _y++)
 				for (u32 _z=0; _z<=clpMZ; _z++)
-					VM[_x][_y][_z].clear_and_free	();
+					VM[_x][_y][_z].clear();
 	}
 };
