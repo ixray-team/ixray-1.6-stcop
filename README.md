@@ -20,8 +20,8 @@ Stable repository of the modernized *X-Ray* 1.6 game engine
 
 ## Requirements
 
-* Visual Studio 2015 Community Edition
-* Windows SDK 8.1
+* Visual Studio 2017 Community Edition
+* Windows SDK 10.0.19041.0
 * Borland C++ Builder 6
 
 ## Building
@@ -39,24 +39,15 @@ Download needed components:
 
 Unpack a contents to the root agreeing to merge
 
-If need to build editors run `InstallElpack.bat` and `InstallOther.bat` with administrator permissions
-
 ### Engine
 
-#### Debug
-
-* Build `XRay.Dependencies.VS2013.sln` on `Debug`
-* Build `XRay.Engine.VS2013.sln` on `Debug` except projects from `utils`
-
-#### Mixed or Release
-
-* Build `XRay.Dependencies.VS2013.sln` on `Release`
-* Build `XRay.Engine.VS2013.sln` on `Mixed` or `Release` except projects from `utils`
+* Run `DownloadDependencies.bat`
+* Build `XRay.Engine.VS2017.sln` except projects from `utils`
 
 ### Editors
 
-* Build `XRay.Dependencies.VS2013.sln` on `Release`
-* Build `XRay.Engine.VS2013.sln` on `Mixed` except projects from `engine_game`
+* Run `InstallElpack.bat` and `InstallOther.bat` with administrator permissions
+* Build `XRay.Engine.VS2017.sln` on `Mixed` except projects from `engine_game`
 * Run `ConvertLibraries.bat`
 * Build `XRay.Editors.BCB6.bpg`
 
