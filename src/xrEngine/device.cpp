@@ -25,7 +25,6 @@
 #	include "engine_impl.hpp"
 #endif // #ifdef INGAME_EDITOR
 
-#include "xrSash.h"
 #include "igame_persistent.h"
 
 #pragma comment( lib, "d3dx9.lib"		)
@@ -156,9 +155,6 @@ void CRenderDevice::End		(void)
 
 	g_bRendering		= FALSE;
 	// end scene
-	//	Present goes here, so call OA Frame end.
-	if (g_SASH.IsBenchmarkRunning())
-		g_SASH.DisplayFrame(Device.fTimeGlobal);
 	m_pRender->End();
 	//RCache.OnFrameEnd	();
 	//Memory.dbg_check		();
@@ -252,10 +248,6 @@ void CRenderDevice::on_idle		()
 		return;
 	}else 
 	{
-		if ( (!Device.dwPrecacheFrame) && (!g_SASH.IsBenchmarkRunning())
-			&& g_bLoaded)
-			g_SASH.StartBenchmark();
-
 		FrameMove						( );
 	}
 

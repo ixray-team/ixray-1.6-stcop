@@ -6,8 +6,6 @@
 #define CMD3(cls,p1,p2,p3)			{ static cls x##cls(p1,p2,p3);		Console->AddCommand(&x##cls);}
 #define CMD4(cls,p1,p2,p3,p4)		{ static cls x##cls(p1,p2,p3,p4);	Console->AddCommand(&x##cls);}
 
-#include "xrSASH.h"
-
 class ENGINE_API	IConsole_Command
 {
 public		:
@@ -51,9 +49,6 @@ public		:
 		TInfo I; Info(I);
 		Msg("~ Invalid syntax in call to '%s'",cName);
 		Msg("~ Valid arguments: %s", I);
-
-		g_SASH.OnConsoleInvalidSyntax("~ Invalid syntax in call to '%s'",cName, false);
-		g_SASH.OnConsoleInvalidSyntax("~ Valid arguments: %s", I, true);
 	}
 	virtual void	Execute	(LPCSTR args)	= 0;
 	virtual void	Status	(TStatus& S)	{ S[0]=0; }
