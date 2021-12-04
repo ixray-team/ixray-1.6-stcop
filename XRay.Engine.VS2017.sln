@@ -130,6 +130,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtheora_static", "sdk\sou
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtheora", "sdk\sources\libtheora-1.1.1\win32\VS2008\libtheora\libtheora_dynamic.vcxproj", "{F89A874B-CC06-4E0A-9666-819CD2C1060A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flobbster.Windows.Forms", "src\Flobbster.Windows.Forms\Flobbster.Windows.Forms.csproj", "{6E4084E3-1CEB-4F09-8695-A31E167B5894}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C11BBDDD-5E5E-4669-9484-CD7031F1DC3D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Dedicated|Win32 = Debug_Dedicated|Win32
@@ -1219,6 +1226,30 @@ Global
 		{F89A874B-CC06-4E0A-9666-819CD2C1060A}.Release|Win32.Build.0 = Release|Win32
 		{F89A874B-CC06-4E0A-9666-819CD2C1060A}.Release|x64.ActiveCfg = Release|x64
 		{F89A874B-CC06-4E0A-9666-819CD2C1060A}.Release|x64.Build.0 = Release|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug_Dedicated|Win32.ActiveCfg = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug_Dedicated|Win32.Build.0 = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug_Dedicated|x64.ActiveCfg = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug_Dedicated|x64.Build.0 = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug|Win32.ActiveCfg = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug|Win32.Build.0 = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug|x64.ActiveCfg = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Debug|x64.Build.0 = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed_Dedicated|Win32.ActiveCfg = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed_Dedicated|Win32.Build.0 = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed_Dedicated|x64.ActiveCfg = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed_Dedicated|x64.Build.0 = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed|Win32.ActiveCfg = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed|Win32.Build.0 = Debug|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed|x64.ActiveCfg = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Mixed|x64.Build.0 = Debug|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release_Dedicated|Win32.ActiveCfg = Release|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release_Dedicated|Win32.Build.0 = Release|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release_Dedicated|x64.ActiveCfg = Release|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release_Dedicated|x64.Build.0 = Release|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release|Win32.ActiveCfg = Release|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release|Win32.Build.0 = Release|x86
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release|x64.ActiveCfg = Release|x64
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1281,6 +1312,7 @@ Global
 		{3BBF9AC6-16C6-4B73-A4B3-7F1700856B16} = {C56069A8-3995-485C-932F-8464F27700EB}
 		{653F3841-3F26-49B9-AFCF-091DB4B67031} = {C56069A8-3995-485C-932F-8464F27700EB}
 		{F89A874B-CC06-4E0A-9666-819CD2C1060A} = {C56069A8-3995-485C-932F-8464F27700EB}
+		{6E4084E3-1CEB-4F09-8695-A31E167B5894} = {C56069A8-3995-485C-932F-8464F27700EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F3E6AA6-BC44-45D7-90B5-726CFA197F41}
