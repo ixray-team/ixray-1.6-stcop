@@ -1,0 +1,110 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>DockPanelSuite.ThemeVS2005Multithreading</PackageId>
+    <PackageVersion>3.1.0</PackageVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <Authors>Weifen Luo and other contributors</Authors>
+    <Description>Visual Studio 2005 theme for DockPanel Suite with multiple UI thread support. (Not recommended)</Description>
+    <Copyright>(C) 2007-2020 Weifen Luo and other contributors</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>http://dockpanelsuite.com</PackageProjectUrl>
+    <PackageReleaseNotes>
+      Release notes can be found at GitHub,
+      https://github.com/dockpanelsuite/dockpanelsuite/releases
+    </PackageReleaseNotes>
+    <TargetFrameworks>net40</TargetFrameworks>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+    <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
+    <AssemblyName>WeifenLuo.WinFormsUI.Docking.ThemeVS2005Multithreading</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\dep\dockpanelsuite\WinFormsUI\dockpanelsuite.snk</AssemblyOriginatorKeyFile>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005Multithreading\VS2005MultithreadingAutoHideStrip.cs" Link="ThemeVS2005Multithreading\VS2005MultithreadingAutoHideStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005Multithreading\VS2005MultithreadingDockPaneCaption.cs" Link="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneCaption.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005Multithreading\VS2005MultithreadingDockPaneStrip.cs" Link="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005Multithreading\VS2005MultithreadingTheme.cs" Link="ThemeVS2005Multithreading\VS2005MultithreadingTheme.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005Multithreading\VS2005MultithreadingPaneIndicator.cs" Link="ThemeVS2005Multithreading\VS2005MultithreadingPaneIndicator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005Multithreading\VS2005MultithreadingPanelIndicator.cs" Link="ThemeVS2005Multithreading\VS2005MultithreadingPanelIndicator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources.Designer.cs" Link="ThemeVS2005\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Strings.Designer.cs" Link="ThemeVS2005\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\VS2005AutoHideWindowControl.cs" Link="ThemeVS2005\VS2005AutoHideWindowControl.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\VS2005AutoHideWindowFactory.cs" Link="ThemeVS2005\VS2005AutoHideWindowFactory.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\VS2005DockOutlineFactory.cs" Link="ThemeVS2005\VS2005DockOutlineFactory.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\VS2005DockPaneSplitterControlFactory.cs" Link="ThemeVS2005\VS2005DockPaneSplitterControlFactory.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\VS2005DockWindowFactory.cs" Link="ThemeVS2005\VS2005DockWindowFactory.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\VS2005WindowSplitterControlFactory.cs" Link="ThemeVS2005\VS2005WindowSplitterControlFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources.resx" Link="ThemeVS2005\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Strings.resx" Link="ThemeVS2005\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\dep\dockpanelsuite\WinFormsUI\dockpanelsuite.snk" />
+    <None Include="..\..\dep\dockpanelsuite\WinFormsUI\license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_Bottom.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\Dockindicator_PaneDiamond_Fill.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_Hotspot.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_HotspotIndex.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_HotspotIndex_VS2012.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_Left.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_Right.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PaneDiamond_Top.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelBottom.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelBottom_Active.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelFill.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelFill_Active.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelLeft.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelLeft_Active.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelRight.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelRight_Active.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelTop.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockIndicator_PanelTop_Active.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockPane_AutoHide.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockPane_Close.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockPane_Dock.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockPane_Option.png" />
+    <Content Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2005\Resources\DockPane_OptionOverflow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="WinFormsUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+</Project>
