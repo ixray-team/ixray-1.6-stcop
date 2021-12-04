@@ -59,7 +59,8 @@ namespace editor {
 
 	protected: 
 
-	private: WeifenLuo::WinFormsUI::DockPanel^  Editor;
+    private: WeifenLuo::WinFormsUI::Docking::DockPanel^  Editor;
+    private: WeifenLuo::WinFormsUI::Docking::VS2015DarkTheme ^DarkTheme;
 
 	private:
 		/// <summary>
@@ -74,14 +75,15 @@ namespace editor {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->Editor = (gcnew WeifenLuo::WinFormsUI::DockPanel());
+			this->Editor = (gcnew WeifenLuo::WinFormsUI::Docking::DockPanel());
+            this->DarkTheme = (gcnew WeifenLuo::WinFormsUI::Docking::VS2015DarkTheme());
 			this->SuspendLayout();
 			// 
 			// Editor
 			// 
 			this->Editor->ActiveAutoHideContent = nullptr;
 			this->Editor->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->Editor->DocumentStyle = WeifenLuo::WinFormsUI::DocumentStyles::DockingSdi;
+			this->Editor->DocumentStyle = WeifenLuo::WinFormsUI::Docking::DocumentStyle::DockingSdi;
 			this->Editor->Font = (gcnew System::Drawing::Font(L"Tahoma", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::World));
 			this->Editor->Location = System::Drawing::Point(0, 0);
 			this->Editor->Name = L"Editor";
@@ -139,7 +141,7 @@ private:
 			void	load_on_create				();
 
 private:
-	WeifenLuo::WinFormsUI::IDockContent^reload_content		(System::String ^persist_string);
+	WeifenLuo::WinFormsUI::Docking::IDockContent ^reload_content		(System::String ^persist_string);
 
 private:
 			Void	window_ide_SizeChanged		(System::Object^  sender, System::EventArgs^  e);

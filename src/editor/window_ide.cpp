@@ -12,7 +12,7 @@ using editor::window_levels;
 using editor::window_weather;
 using editor::window_weather_editor;
 
-using VS2005Style::Extender;
+using namespace WeifenLuo::WinFormsUI::Docking;
 
 void window_ide::custom_init				(editor::engine	*engine)
 {
@@ -20,12 +20,12 @@ void window_ide::custom_init				(editor::engine	*engine)
 
 	m_engine							= engine;
 
-	Extender::SetSchema					(Editor, Extender::Schema::FromBase);
-
 	m_view								= gcnew window_view(*this);
 	m_levels							= gcnew window_levels(this);
 	m_weather							= gcnew window_weather(this);
 	m_weather_editor					= gcnew window_weather_editor(this, m_engine);
+
+	Editor->Theme = DarkTheme;
 
 	load_on_create						();
 

@@ -20,7 +20,7 @@ namespace editor {
 	///          the designers will not be able to interact properly with localized
 	///          resources associated with this form.
 	/// </summary>
-	public ref class window_weather : public WeifenLuo::WinFormsUI::DockContent
+	public ref class window_weather : public WeifenLuo::WinFormsUI::Docking::DockContent
 	{
 	public:
 		window_weather(window_ide^ ide) :

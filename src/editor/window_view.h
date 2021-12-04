@@ -20,7 +20,7 @@ namespace editor {
 	///          the designers will not be able to interact properly with localized
 	///          resources associated with this form.
 	/// </summary>
-	public ref class window_view : public WeifenLuo::WinFormsUI::DockContent
+	public ref class window_view : public WeifenLuo::WinFormsUI::Docking::DockContent
 	{
 	public:
 		window_view(window_ide %ide)
@@ -132,7 +132,7 @@ namespace editor {
 			this->CloseButton = false;
 			this->Controls->Add(this->ViewPanel);
 			this->Controls->Add(this->MainToolBar);
-			this->DockableAreas = WeifenLuo::WinFormsUI::DockAreas::Document;
+			this->DockAreas = WeifenLuo::WinFormsUI::Docking::DockAreas::Document;
 			this->HideOnClose = true;
 			this->KeyPreview = true;
 			this->Name = L"window_view";

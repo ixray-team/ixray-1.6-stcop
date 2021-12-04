@@ -102,9 +102,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Reference Include="DockPanelSkin">
-      <HintPath>..\..\sdk\binaries\DockPanelSkin.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualC">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -132,9 +129,6 @@
     <Reference Include="System.Xml">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </Reference>
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <HintPath>..\..\sdk\binaries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -327,6 +321,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\dockpanelsuite\ThemeVS2015.csproj">
+      <Project>{4add3e04-f177-4372-a09d-2fd6e38b907b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\dockpanelsuite\WinFormsUI.csproj">
+      <Project>{22df5e60-214d-4124-9f61-1fc92558331b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\editor_controls\editor_controls.vcxproj">
       <Project>{b45374aa-c7ed-42cf-bbd3-deaa2b7acb48}</Project>
     </ProjectReference>
