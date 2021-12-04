@@ -247,9 +247,6 @@
     <Filter Include="OpenAutomate">
       <UniqueIdentifier>{340fe49f-2655-4d2a-aba8-6910d3cea7ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="My Amplifier Results">
-      <UniqueIdentifier>{b28749c9-5b4f-4c00-8f98-fd666bdadac1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -978,17 +975,6 @@
     <Image Include="stalker_cs.ico">
       <Filter>General\Resources</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="My Amplifier Results\r000hs\r000hs.ampl">
-      <Filter>My Amplifier Results</Filter>
-    </None>
-    <None Include="My Amplifier Results\r001hs\r001hs.ampl">
-      <Filter>My Amplifier Results</Filter>
-    </None>
-    <None Include="My Amplifier Results\r002cc\r002cc.ampl">
-      <Filter>My Amplifier Results</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ClientServer.txt" />

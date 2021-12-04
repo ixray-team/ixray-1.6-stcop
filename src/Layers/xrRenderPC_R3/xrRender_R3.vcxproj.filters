@@ -1317,7 +1317,4 @@
   <ItemGroup>
     <Text Include="todo.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="VTune\xrRender_R3.vpj" />
-  </ItemGroup>
 </Project>

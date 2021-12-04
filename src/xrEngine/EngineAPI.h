@@ -36,14 +36,10 @@ class ENGINE_API		CEngineAPI
 private:
 	HMODULE				hGame;
 	HMODULE				hRender;
-	HMODULE				hTuner;
 public:
 	BENCH_SEC_SCRAMBLEMEMBER1
 	Factory_Create*		pCreate;
 	Factory_Destroy*	pDestroy;
-	BOOL				tune_enabled;
-	VTPause*			tune_pause	;
-	VTResume*			tune_resume	;
 	void				Initialize	();
 	
 	#ifndef DEDICATED_SERVER

@@ -586,9 +586,6 @@
     <Text Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="VTune\xrRender_R3.vpj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\xrCPU_Pipe\xrCPU_Pipe.vcxproj">
       <Project>{ca0649dd-d089-423a-981c-46b57a884eb9}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
