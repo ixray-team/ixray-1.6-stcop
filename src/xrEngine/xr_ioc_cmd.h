@@ -27,7 +27,7 @@ protected	:
 
 	IC	bool		EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1,S2)==0; }
 public		:
-	IConsole_Command		(LPCSTR N	BENCH_SEC_SIGN) : 
+	IConsole_Command		(LPCSTR N) : 
 	  cName				(N),
 	  bEnabled			(TRUE),
 	  bLowerCaseArgs	(TRUE),
@@ -42,8 +42,6 @@ public		:
 			Console->RemoveCommand(this);
 	};
 
-	BENCH_SEC_SCRAMBLEVTBL3
-
 	LPCSTR			Name()			{ return cName;	}
 	void			InvalidSyntax() {
 		TInfo I; Info(I);
@@ -57,8 +55,6 @@ public		:
 		TStatus		S;	Status(S);
 		if (S[0])	F->w_printf("%s %s\r\n",cName,S); 
 	}
-
-	BENCH_SEC_SCRAMBLEVTBL2
 
 	virtual void	fill_tips		(vecTips& tips, u32 mode)
 	{

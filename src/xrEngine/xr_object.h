@@ -56,8 +56,6 @@ public:
 		u32	storage;
 	};
 private:
-	BENCH_SEC_SCRAMBLEMEMBER1
-	BENCH_SEC_SCRAMBLEVTBL2
 	// Some property variables
 	ObjectProperties					Props;
 	shared_str							NameObject;

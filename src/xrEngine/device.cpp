@@ -491,9 +491,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
 	static int snd_emitters_ = -1;
 
-	if (g_bBenchmark)	return;
-
-
 #ifdef DEBUG
 //	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s",bOn?"ON":"OFF", bTimer?"ON":"OFF", bSound?"ON":"OFF", reason);
 #endif // DEBUG

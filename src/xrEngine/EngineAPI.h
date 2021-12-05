@@ -37,7 +37,6 @@ private:
 	HMODULE				hGame;
 	HMODULE				hRender;
 public:
-	BENCH_SEC_SCRAMBLEMEMBER1
 	Factory_Create*		pCreate;
 	Factory_Destroy*	pDestroy;
 	void				Initialize	();

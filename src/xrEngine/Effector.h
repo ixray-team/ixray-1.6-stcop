@@ -23,8 +23,6 @@ public:
 	IC ECamEffectorType	GetType			()									{return eType;}
 	virtual	BOOL		Valid			()									{return fLifeTime>0.0f;}
 
-	BENCH_SEC_SCRAMBLEVTBL1
-
 	virtual BOOL		ProcessCam		(SCamEffectorInfo& info)			{fLifeTime-=Device.fTimeDelta; return Valid();};;
 		
 	virtual	void		ProcessIfInvalid(SCamEffectorInfo& info)			{};

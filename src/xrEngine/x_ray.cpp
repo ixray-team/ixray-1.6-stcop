@@ -170,10 +170,6 @@ ENGINE_API	CApplication*	pApp			= NULL;
 static		HWND			logoWindow		= NULL;
 
 			int				doLauncher		();
-			void			doBenchmark		(LPCSTR name);
-ENGINE_API	bool			g_bBenchmark	= false;
-string512	g_sBenchmarkName;
-
 
 ENGINE_API	string512		g_sLaunchOnExit_params;
 ENGINE_API	string512		g_sLaunchOnExit_app;
@@ -815,16 +811,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		InitConsole				();
 
 		Engine.External.CreateRendererList();
-
-		LPCSTR benchName = "-batch_benchmark ";
-		if(strstr(lpCmdLine, benchName))
-		{
-			int sz = xr_strlen(benchName);
-			string64				b_name;
-			sscanf					(strstr(Core.Params,benchName)+sz,"%[^ ] ",b_name);
-			doBenchmark				(b_name);
-			return 0;
-		}
 
 		if (strstr(lpCmdLine,"-launcher")) 
 		{
@@ -1523,44 +1509,6 @@ int doLauncher()
 	return 0;
 }
 
-void doBenchmark(LPCSTR name)
-{
-	g_bBenchmark = true;
-	string_path in_file;
-	FS.update_path(in_file,"$app_data_root$", name);
-	CInifile ini(in_file);
-	int test_count = ini.line_count("benchmark");
-	LPCSTR test_name,t;
-	shared_str test_command;
-	for(int i=0;i<test_count;++i){
-		ini.r_line			( "benchmark", i, &test_name, &t);
-		xr_strcpy				(g_sBenchmarkName, test_name);
-		
-		test_command		= ini.r_string_wb("benchmark",test_name);
-		xr_strcpy			(Core.Params,*test_command);
-		_strlwr_s				(Core.Params);
-		
-		InitInput					();
-		if(i){
-			//ZeroMemory(&HW,sizeof(CHW));
-			//	TODO: KILL HW here!
-			//  pApp->m_pRender->KillHW();
-			InitEngine();
-		}
-
-
-		Engine.External.Initialize	( );
-
-		xr_strcpy						(Console->ConfigFile,"user.ltx");
-		if (strstr(Core.Params,"-ltx ")) {
-			string64				c_name;
-			sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
-			xr_strcpy				(Console->ConfigFile,c_name);
-		}
-
-		Startup	 				();
-	}
-}
 #pragma optimize("g", off)
 void CApplication::load_draw_internal()
 {

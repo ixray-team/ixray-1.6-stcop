@@ -317,9 +317,6 @@ extern		ENGINE_API		CRenderDevice		Device;
 #define RDEVICE	EDevice
 #endif
 
-
-extern		ENGINE_API		bool				g_bBenchmark;
-
 typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
 
