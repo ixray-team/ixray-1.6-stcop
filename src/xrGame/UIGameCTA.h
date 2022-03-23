@@ -77,7 +77,8 @@ private:
 		void		set(u8 Slot, u8 Item) { SlotID = Slot; ItemID = Item; BigID = (s16(SlotID) << 0x08) | s16(ItemID); };
 	};
 	
-	DEF_VECTOR					(PRESET_ITEMS, PresetItem);
+	using PRESET_ITEMS = xr_vector<PresetItem>;
+	using PRESET_ITEMS_it = PRESET_ITEMS::iterator;
 	
 	PRESET_ITEMS				PlayerDefItems;
 

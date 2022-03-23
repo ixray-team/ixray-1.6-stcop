@@ -28,7 +28,10 @@ protected:
             data	= d;
         }
     };
-	DEFINE_DEQUE	(SElement,ElementsDeq,ElementsDeqIt);
+
+	using ElementsDeq = xr_deque<SElement>;
+	using ElementsDeqIt = ElementsDeq::iterator;
+
 	struct SSubGraph
 	{
 		EStyle			style;
@@ -42,7 +45,10 @@ protected:
 			style = s;
 		};
 	};
-	DEFINE_VECTOR	(SSubGraph,SubGraphVec,SubGraphVecIt);
+
+	using SubGraphVec = xr_vector<SSubGraph>;
+	using SubGraphVecIt = SubGraphVec::iterator;
+
 	SubGraphVec		subgraphs;
 	
 	float			mn, mx;
@@ -65,7 +71,9 @@ protected:
 		u32				m_dwColor;
 	};
 
-	DEFINE_DEQUE	(SMarker,MarkersDeq,MarkersDeqIt);
+	using MarkersDeq = xr_deque<SMarker>;
+	using MarkersDeqIt = MarkersDeq::iterator;
+
 	MarkersDeq		m_Markers;
 
 protected:

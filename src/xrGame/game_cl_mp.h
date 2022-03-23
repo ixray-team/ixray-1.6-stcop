@@ -53,7 +53,8 @@ struct cl_TeamStruct
 	float				Indicator_r2;
 };
 
-DEF_DEQUE(CL_TEAM_DATA_LIST, cl_TeamStruct);
+using CL_TEAM_DATA_LIST = xr_deque<cl_TeamStruct>;
+using CL_TEAM_DATA_LIST_it = CL_TEAM_DATA_LIST::iterator;
 
 struct cl_Message_Sound
 {
@@ -61,18 +62,21 @@ struct cl_Message_Sound
 	ref_sound	mSound_Radio;
 };
 
-DEF_VECTOR	(TEAMSOUND, cl_Message_Sound);
+using TEAMSOUND = xr_vector<cl_Message_Sound>;
+using TEAMSOUND_it = TEAMSOUND::iterator;
 
 struct cl_Menu_Message {
 	shared_str		pMessage;	
-	DEF_VECTOR	(SOUND_VARIANTS, TEAMSOUND);
+	using SOUND_VARIANTS = xr_vector<TEAMSOUND>;
+	using SOUND_VARIANTS_it = SOUND_VARIANTS::iterator;
 	SOUND_VARIANTS		aVariants;
 };
 
 struct cl_MessageMenu
 {
 	CUISpeechMenu*		m_pSpeechMenu;
-	DEF_VECTOR	(MENUMESSAGES, cl_Menu_Message);
+	using MENUMESSAGES = xr_vector<cl_Menu_Message>;
+	using MENUMESSAGES_it = MENUMESSAGES::iterator;
 	MENUMESSAGES		m_aMessages;	
 
 	bool operator == (CUISpeechMenu* pMenu){return pMenu == m_pSpeechMenu;}
@@ -125,13 +129,20 @@ protected:
 
 	CL_TEAM_DATA_LIST				TeamList;
 
-	DEF_VECTOR(SNDMESSAGES, SND_Message*);
+	using SNDMESSAGES = xr_vector<SND_Message*>;
+	using SNDMESSAGES_it = SNDMESSAGES::iterator;
+
 	SNDMESSAGES						m_pSndMessages;
 	bool							m_bJustRestarted;
-	DEF_VECTOR(SNDMESSAGESINPLAY, SND_Message*);
+
+	using SNDMESSAGESINPLAY = xr_vector<SND_Message*>;
+	using SNDMESSAGESINPLAY_it = SNDMESSAGESINPLAY::iterator;
+
 	SNDMESSAGESINPLAY				m_pSndMessagesInPlay;
 
-	DEF_VECTOR(BONUSES, Bonus_Struct);
+	using BONUSES = xr_vector<Bonus_Struct>;
+	using BONUSES_it = BONUSES::iterator;
+
 	BONUSES							m_pBonusList;
 
 	bool							m_bVotingActive;

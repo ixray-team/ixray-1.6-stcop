@@ -278,8 +278,9 @@ public:
 	typedef CScriptCallbackEx<void> CScriptCallbackExVoid;
 
 private:
-	
-	DEFINE_MAP				(GameObject::ECallbackType, CScriptCallbackExVoid, CALLBACK_MAP, CALLBACK_MAP_IT);
+	using CALLBACK_MAP = xr_map<GameObject::ECallbackType, CScriptCallbackExVoid>;
+	using CALLBACK_MAP_IT = CALLBACK_MAP::iterator;
+
 	CALLBACK_MAP			*m_callbacks;
 
 public:

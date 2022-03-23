@@ -79,7 +79,10 @@ private:
 		shared_motions							motions;
 		BoneMotionsVec							bone_motions;
 	};
-	DEFINE_VECTOR(SMotionsSlot,MotionsSlotVec,MotionsSlotVecIt);
+
+	using MotionsSlotVec = xr_vector<SMotionsSlot>;
+	using MotionsSlotVecIt = MotionsSlotVec::iterator;
+
 	MotionsSlotVec								m_Motions;
 
     CPartition*									m_Partition;
