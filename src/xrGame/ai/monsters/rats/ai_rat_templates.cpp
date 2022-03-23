@@ -25,6 +25,8 @@
 #include "../ai_monster_squad_manager.h"
 #include "../ai_monster_squad.h"
 
+#include "../../../ai_object_location_impl.h"
+
 IC bool CAI_Rat::bfCheckIfOutsideAIMap(Fvector &tTemp1)
 {
 	u32 dwNewNode = ai_location().level_vertex_id();
