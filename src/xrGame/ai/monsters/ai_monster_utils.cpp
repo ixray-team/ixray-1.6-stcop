@@ -6,6 +6,9 @@
 #include "../../level_graph.h"
 #include "../../../Include/xrRender/Kinematics.h"
 #include "basemonster/base_monster.h"
+
+#include "../../ai_object_location_impl.h"
+
 // проверить, находится ли объект entity на ноде
 // возвращает позицию объекта, если он находится на ноде, или центр его ноды
 Fvector get_valid_position(const CEntity *entity, const Fvector &actual_position) 

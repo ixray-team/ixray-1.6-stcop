@@ -109,7 +109,9 @@ public:
 	void UpdateFightRegister ();
 
 private:
-	DEFINE_VECTOR(FIGHT_DATA, FIGHT_VECTOR, FIGHT_VECTOR_IT);
+	using FIGHT_VECTOR = xr_vector<FIGHT_DATA>;
+	using FIGHT_VECTOR_IT = FIGHT_VECTOR::iterator;
+
 	static FIGHT_VECTOR*						m_fight_registry;
 	static FIGHT_VECTOR&						fight_registry();
 	

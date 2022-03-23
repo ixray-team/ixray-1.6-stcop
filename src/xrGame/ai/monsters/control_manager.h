@@ -18,16 +18,24 @@ class CControl_Manager {
 	CBaseMonster			*m_object;
 	xr_vector<CObject*>		m_nearest;
 
-	DEFINE_VECTOR			(CControl_Com *, CONTROLLERS_VECTOR, CONTROLLERS_VECTOR_IT);
-	DEFINE_MAP				(ControlCom::EEventType, CONTROLLERS_VECTOR, LISTENERS_MAP, LISTENERS_MAP_IT);	
+	using CONTROLLERS_VECTOR = xr_vector<CControl_Com*>;
+	using CONTROLLERS_VECTOR_IT = CONTROLLERS_VECTOR::iterator;
+
+	using LISTENERS_MAP = xr_map<ControlCom::EEventType, CONTROLLERS_VECTOR>;
+	using LISTENERS_MAP_IT = LISTENERS_MAP::iterator;
+
 	LISTENERS_MAP			m_listeners;
 
 	// contains all available controllers
-	DEFINE_MAP				(ControlCom::EControlType, CControl_Com*, CONTROLLERS_MAP, CONTROLLERS_MAP_IT);
+	using CONTROLLERS_MAP = xr_map<ControlCom::EControlType, CControl_Com*>;
+	using CONTROLLERS_MAP_IT = CONTROLLERS_MAP::iterator;
+
 	CONTROLLERS_MAP			m_control_elems;
 	CONTROLLERS_MAP			m_base_elems;
 	
-	DEFINE_VECTOR			(CControl_Com*, COM_VEC, COM_VEC_IT);
+	using COM_VEC = xr_vector<CControl_Com*>;
+	using COM_VEC_IT = COM_VEC::iterator;
+
 	COM_VEC					m_active_elems;
 
 	CControlAnimation		*m_animation;

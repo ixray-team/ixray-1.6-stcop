@@ -194,7 +194,9 @@ struct 	ENGINE_API	motions_value
 
 class 	ENGINE_API	motions_container
 {
-	DEFINE_MAP			(shared_str,motions_value*,SharedMotionsMap,SharedMotionsMapIt);
+	using SharedMotionsMap = xr_map<shared_str, motions_value*>;
+	using SharedMotionsMapIt = SharedMotionsMap::iterator;
+
 	SharedMotionsMap	container;
 public:
 						motions_container	();

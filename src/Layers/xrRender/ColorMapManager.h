@@ -25,7 +25,8 @@ private:
 		{	return x<y;	}
 	};
 
-	DEFINE_MAP_PRED(shared_str, ref_texture, map_Tex, map_TexIt, str_pred);
+	using map_Tex = xr_map<shared_str, ref_texture, str_pred>;
+	using map_TexIt = map_Tex::iterator;
 
 private:
 

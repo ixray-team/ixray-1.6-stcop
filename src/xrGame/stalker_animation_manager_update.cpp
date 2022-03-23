@@ -14,7 +14,7 @@
 #include "profiler.h"
 #include "stalker_movement_manager_smart_cover.h"
 
-IC	void CStalkerAnimationManager::play_delayed_callbacks	()
+void CStalkerAnimationManager::play_delayed_callbacks	()
 {
 	if (m_call_script_callback) {
 		m_call_script_callback	= false;

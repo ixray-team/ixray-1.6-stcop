@@ -9,8 +9,12 @@ namespace PAPI{
     {
 		// These are static because all threads access the same effects.
 		// All accesses to these should be locked.
-		DEFINE_VECTOR				(ParticleEffect*,ParticleEffectVec,ParticleEffectVecIt);
-		DEFINE_VECTOR				(ParticleActions*,ParticleActionsVec,ParticleActionsVecIt);
+        using ParticleEffectVec = xr_vector<ParticleEffect*>;
+        using ParticleEffectVecIt = ParticleEffectVec::iterator;
+
+        using ParticleActionsVec = xr_vector<ParticleActions*>;
+        using ParticleActionsVecIt = ParticleActionsVec::iterator;
+
 		ParticleEffectVec			effect_vec;
 		ParticleActionsVec			m_alist_vec;
     public:
