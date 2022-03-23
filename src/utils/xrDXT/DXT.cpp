@@ -7,6 +7,7 @@
 #include <ddraw.h>
 #include <DirectXTex.h>
 #include "dxtlib.h"
+#include <memory>
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        u32  ul_reason_for_call, 
