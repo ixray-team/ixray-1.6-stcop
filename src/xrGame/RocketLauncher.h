@@ -18,7 +18,9 @@ public:
 			void LaunchRocket	(const Fmatrix& xform,  const Fvector& vel, const Fvector& angular_vel);
 
 protected:			   
-	DEFINE_VECTOR(CCustomRocket*, ROCKET_VECTOR, ROCKETIT);
+	using ROCKET_VECTOR = xr_vector<CCustomRocket*>;
+	using ROCKETIT = ROCKET_VECTOR::iterator;
+
 	ROCKET_VECTOR		m_rockets;
 	ROCKET_VECTOR		m_launched_rockets;
 	

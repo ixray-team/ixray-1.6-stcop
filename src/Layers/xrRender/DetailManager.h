@@ -48,7 +48,10 @@ public:
 		Fvector						c_rgb;
 #endif
 	};
-	DEFINE_VECTOR(SlotItem*,SlotItemVec,SlotItemVecIt);
+
+	using SlotItemVec = xr_vector<SlotItem*>;
+	using SlotItemVecIt = SlotItemVec::iterator;
+
 	struct	SlotPart	{                              	// 
 		u32							id;					// ID модельки
 		SlotItemVec					items;              // список кустиков

@@ -26,7 +26,9 @@ public:
 		u16					sender_id;	//id - объекта, который запустил партиклы
 		u32					life_time;	//время жизни партикла (-1) - бесконечно
 	};
-	DEFINE_VECTOR			(SParticlesInfo,ParticlesInfoList,ParticlesInfoListIt);
+
+	using ParticlesInfoList = xr_vector<SParticlesInfo>;
+	using ParticlesInfoListIt = ParticlesInfoList::iterator;
 
 	//структура для косточки с списком запущенных партиклов
 	struct SBoneInfo
@@ -41,7 +43,9 @@ public:
 		void				StopParticles			(const shared_str& ps_name, bool bDestroy);
 		void				StopParticles			(u16 sender_id, bool bDestroy);
 	};
-	DEFINE_VECTOR			(SBoneInfo,BoneInfoVec,BoneInfoVecIt);
+
+	using BoneInfoVec = xr_vector<SBoneInfo>;
+	using BoneInfoVecIt = BoneInfoVec::iterator;
 
 private:
 	// список костей

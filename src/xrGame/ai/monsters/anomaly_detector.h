@@ -28,7 +28,9 @@ class CAnomalyDetector {
 		}
 	};
 
-	DEFINE_VECTOR			(SAnomalyInfo, ANOMALY_INFO_VEC, ANOMALY_INFO_VEC_IT);
+	using ANOMALY_INFO_VEC = xr_vector<SAnomalyInfo>;
+	using ANOMALY_INFO_VEC_IT = ANOMALY_INFO_VEC::iterator;
+
 	ANOMALY_INFO_VEC		m_storage;
 
 public:

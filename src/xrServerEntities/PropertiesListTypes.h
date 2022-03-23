@@ -46,7 +46,9 @@ enum EPropType{
 struct 	xr_token;        
 class PropValue;
 class PropItem;
-DEFINE_VECTOR			(PropItem*,PropItemVec,PropItemIt);
+
+using PropItemVec = xr_vector<PropItem*>;
+using PropItemIt = PropItemVec::iterator;
 
 //------------------------------------------------------------------------------
 #include "../xrcore/ChooseTypes.H"     
@@ -130,7 +132,9 @@ class PropItem
     EPropType			type;
 	void*				item;
 public:
-	DEFINE_VECTOR		(PropValue*,PropValueVec,PropValueIt);
+    using PropValueVec = xr_vector<PropValue*>;
+    using PropValueIt = PropValueVec::iterator;
+
 private:
     PropValueVec		values;
     TProperties* 		m_Owner;

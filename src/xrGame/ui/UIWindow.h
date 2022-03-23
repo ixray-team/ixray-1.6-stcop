@@ -159,7 +159,9 @@ public:
 			void			ResetAll			();
 
 
-	DEF_UILIST				(WINDOW_LIST, CUIWindow*);
+	using WINDOW_LIST = xr_vector<CUIWindow*>;
+	using WINDOW_LIST_it = WINDOW_LIST::iterator;
+
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
 
 

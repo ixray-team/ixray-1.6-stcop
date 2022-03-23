@@ -40,9 +40,14 @@ public:
 
 class CLevelSoundManager
 {
-	DEFINE_VECTOR(SStaticSound,StaticSoundsVec,StaticSoundsVecIt);
+	using StaticSoundsVec = xr_vector<SStaticSound>;
+	using StaticSoundsVecIt = StaticSoundsVec::iterator;
+
 	StaticSoundsVec	m_StaticSounds;
-	DEFINE_VECTOR(SMusicTrack,MusicTrackVec,MusicTrackVecIt);
+
+	using MusicTrackVec = xr_vector<SMusicTrack>;
+	using MusicTrackVecIt = MusicTrackVec::iterator;
+
 	MusicTrackVec	m_MusicTracks;
 	u32				m_NextTrackTime;
 	int				m_CurrentTrack;

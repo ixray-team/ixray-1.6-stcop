@@ -11,7 +11,10 @@ class ENGINE_API CLAItem				{
 public:
     shared_str		cName;
     float   		fFPS;
-    DEFINE_MAP		(int,u32,KeyMap,KeyPairIt);
+
+    using KeyMap = xr_map<int, u32>;
+    using KeyPairIt = KeyMap::iterator;
+
     KeyMap			Keys;
     int				iFrameCount;
 public:
@@ -37,7 +40,9 @@ public:
     int		 	    LastKeyFrame		(){return Keys.rbegin()->first;}
     u32*			GetKey				(int frame){KeyPairIt it=Keys.find(frame); return (it!=Keys.end())?&(it->second):0;}
 };
-DEFINE_VECTOR(CLAItem*,LAItemVec,LAItemIt);
+
+using LAItemVec = xr_vector<CLAItem*>;
+using LAItemIt = LAItemVec::iterator;
 
 class ENGINE_API ELightAnimLibrary{
 public:
