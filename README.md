@@ -29,7 +29,7 @@ Stable repository of the modernized *X-Ray* 1.6 game engine
 Download the repository:
 
 ```console
-git clone https://github.com/ixray-team/ixray-1.6.git
+git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 ```
 
 Download needed components:
@@ -42,12 +42,12 @@ Unpack a contents to the root agreeing to merge
 ### Engine
 
 - Run `DownloadDependencies.bat`
-- Build `XRay.Engine.VS2017.sln` except projects from `utils`
+- Build `XRay.Engine.sln` on `Win32` without projects from `utils`
 
 ### Editors
 
 - Run `InstallElpack.bat` and `InstallOther.bat` with administrator permissions
-- Build `XRay.Engine.VS2017.sln` on `Mixed` except projects from `engine_game`
+- Build `XRay.Engine.sln` on `Mixed` and `Win32` without projects from `engine_game`
 - Run `ConvertLibraries.bat`
 - Build `XRay.Editors.BCB6.bpg`
 
