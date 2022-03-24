@@ -44,6 +44,8 @@ Unpack a contents to the root agreeing to merge
 - Run `DownloadDependencies.bat`
 - Build `XRay.Engine.sln` on `Win32` without projects from `utils`
 
+There may be `fatal error C1002` at the linking stage of __xrGame__. In this case try to set [`/Zm`](https://docs.microsoft.com/en-us/cpp/build/reference/zm-specify-precompiled-header-memory-allocation-limit) parameter of compiler and check the swap file of __Windows__
+
 ### Editors
 
 - Run `InstallElpack.bat` and `InstallOther.bat` with administrator permissions
