@@ -21,7 +21,9 @@ Stable repository of the modernized *X-Ray* 1.6 game engine
 ## Requirements
 
 - Visual Studio 2022 Community Edition
-- Windows SDK 10.0.19041.0
+  - MFC
+  - C++/CLI
+  - Windows SDK 10.0.19041.0
 - Borland C++ Builder 6
 
 ## Building
