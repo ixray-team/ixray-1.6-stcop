@@ -46,7 +46,5 @@ struct		TeamStruct
 };
 
 //массив данных по командам
-DEF_DEQUE(TEAM_DATA_LIST, TeamStruct);
-
-
-
+using TEAM_DATA_LIST = xr_deque<TeamStruct>;
+using TEAM_DATA_LIST_it = TEAM_DATA_LIST::iterator;
