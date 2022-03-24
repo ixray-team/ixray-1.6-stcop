@@ -173,9 +173,9 @@ IC int	calcSphereSector(Fvector& dir)
 	}
 }
 
-
 // volumetric query
-DEF_VECTOR		(Nearest,u32);
+using Nearest = xr_vector<u32>;
+using Nearest_it = Nearest::iterator;
 
 class			Query
 {

@@ -49,7 +49,9 @@ struct vertex					// definition of "patch" or "node"
 	void	PointBL(Fvector& D);
 };
 
-DEF_VECTOR(DWORDs,u32);
+using DWORDs = xr_vector<u32>;
+using DWORDs_it = DWORDs::iterator;
+
 //struct NodeMerged
 //{
 //	DWORDs		neighbours;	// list of neighbours
@@ -88,11 +90,20 @@ struct SCover {
 	u8				cover[4];
 };
 
-DEF_VECTOR(Nodes,vertex			);
-//DEF_VECTOR(Merged,NodeMerged	);
-DEF_VECTOR(Vectors,Fvector		);
-DEF_VECTOR(Marks,BYTE			);
-DEF_VECTOR(Lights,R_Light		);
+using Nodes = xr_vector<vertex>;
+using Nodes_it = Nodes::iterator;
+
+//using Merged = xr_vector<NodeMerged>;
+//using Merged_it = Merged::iterator;
+
+using Vectors = xr_vector<Fvector>;
+using Vectors_it = Vectors::iterator;
+
+using Marks = xr_vector<BYTE>;
+using Marks_it = Marks::iterator;
+
+using Lights = xr_vector<R_Light>;
+using Lights_it = Lights::iterator;
 
 // data
 extern	Nodes				g_nodes;

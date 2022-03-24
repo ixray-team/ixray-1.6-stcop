@@ -45,9 +45,14 @@ protected:
 	virtual		void				ReadOptions				(shared_str &options);
 	virtual		void				ConsoleCommands_Create	();
 	virtual		void				ConsoleCommands_Clear	();
+	
 	/////////////////////////////////////////////////////////////
-	DEF_VECTOR(ANOMALIES, xr_string);
-	DEF_VECTOR(ANOMALY_SETS, ANOMALIES);
+	
+	using ANOMALIES = xr_vector<xr_string>;
+	using ANOMALIES_it = ANOMALIES::iterator;
+
+	using ANOMALY_SETS = xr_vector<ANOMALIES>;
+	using ANOMALY_SETS_it = ANOMALY_SETS::iterator;
 
 	ANOMALIES						m_AnomaliesPermanent;
 	ANOMALY_SETS					m_AnomalySetsList;
@@ -55,8 +60,11 @@ protected:
 	u32								m_dwLastAnomalySetID;
 	u32								m_dwLastAnomalyStartTime;	
 	
-	DEF_VECTOR(ANOMALIES_ID, u16);
-	DEF_VECTOR(ANOMALY_SETS_ID, ANOMALIES_ID);
+	using ANOMALIES_ID = xr_vector<u16>;
+	using ANOMALIES_ID_it = ANOMALIES_ID::iterator;
+
+	using ANOMALY_SETS_ID = xr_vector<ANOMALIES_ID>;
+	using ANOMALY_SETS_ID_it = ANOMALY_SETS_ID::iterator;
 
 	ANOMALY_SETS_ID					m_AnomalyIDSetsList;
 
