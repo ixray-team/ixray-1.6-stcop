@@ -529,8 +529,9 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	Fvector			IPosS, IPosH, IPosL;	//положение актера после интерпол€ции Ѕизье, Ёрмита, линейной
 
 #ifdef DEBUG
-	DEF_DEQUE		(VIS_POSITION, Fvector);
-
+	using VIS_POSITION = xr_deque<Fvector>;
+	using VIS_POSITION_it = VIS_POSITION::iterator;
+	
 	VIS_POSITION	LastPosS;
 	VIS_POSITION	LastPosH;
 	VIS_POSITION	LastPosL;
@@ -552,7 +553,9 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	u32						m_dwILastUpdateTime;
 
 	//---------------------------------------------
-	DEF_DEQUE		(PH_STATES, SPHNetState);
+	using PH_STATES = xr_deque<SPHNetState>;
+	using PH_STATES_it = PH_STATES::iterator;
+
 	PH_STATES				m_States;
 	u16						m_u16NumBones;
 	void					net_ExportDeadBody		(NET_Packet &P);
