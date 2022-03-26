@@ -126,7 +126,6 @@ struct pred_stri	: public std::binary_function<char*, char*, bool>	{
 
 // STL extensions
 #define DEF_LIST(N,T)				typedef xr_list< T > N;			typedef N::iterator N##_it;
-#define DEF_MAP(N,K,T)				typedef xr_map< K, T > N;		typedef N::iterator N##_it;
 
 #define DEFINE_VECTOR(T,N,I)		typedef xr_vector< T > N;		typedef N::iterator I;
 #define DEFINE_MAP(K,T,N,I)			typedef xr_map< K , T > N;		typedef N::iterator I;
