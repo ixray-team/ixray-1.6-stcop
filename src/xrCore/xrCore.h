@@ -244,7 +244,8 @@ struct XRCORE_API xr_shortcut{
 using RStringVec = xr_vector<shared_str>;
 using RStringVecIt = RStringVec::iterator;
 
-DEFINE_SET		(shared_str,RStringSet,RStringSetIt);
+using RStringSet = xr_set<shared_str>;
+using RStringSetIt = RStringSet::iterator;
 
 using RTokenVec = xr_vector<xr_rtoken>;
 using RTokenVecIt = RStringVec::iterator;

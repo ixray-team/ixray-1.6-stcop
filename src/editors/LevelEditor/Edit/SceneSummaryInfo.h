@@ -50,7 +50,10 @@ private:
 		bool operator < (const shared_str& fn)		const{return xr_strcmp(file_name,fn)<0;};
 		bool operator ==(const shared_str& fn)		const{return file_name.equal(fn);};
     };
-    DEFINE_SET	(STextureInfo,TISet,TISetIt);
+    
+    using TISet = xr_set<STextureInfo>;
+    using TISetIt = TISet::iterator;
+
     TISet		textures;
     struct SPairInfo{
     	xr_string			first;
@@ -79,7 +82,10 @@ private:
 		bool operator < (const shared_str& fn)		const{return xr_strcmp(object_name,fn)<0;};
 		bool operator ==(const shared_str& fn)		const{return object_name.equal(fn);};
     };
-    DEFINE_SET	(SObjectInfo,OISet,OISetIt);
+
+    using OISet = xr_set<SObjectInfo>;
+    using OISetIt = OISet::iterator;
+
     OISet		objects;
 public:    
 	RStringSet	lod_objects;

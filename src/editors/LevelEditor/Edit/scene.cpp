@@ -419,7 +419,10 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
     if (bTestShaderCompatible){
     	bool res = true;
         ObjectList& lst = ListObj(OBJCLASS_SCENEOBJECT);
-		DEFINE_SET(CEditableObject*,EOSet,EOSetIt);
+
+		using EOSet = xr_set<CEditableObject*>;
+        using EOSetIt = EOSet::iterator;
+
         EOSet objects;
         int static_obj = 0; 
         for(ObjectIt it=lst.begin();it!=lst.end();it++){
