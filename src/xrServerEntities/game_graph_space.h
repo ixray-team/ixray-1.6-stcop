@@ -174,5 +174,6 @@ namespace GameGraph {
 		svector<_LOCATION_ID,LOCATION_TYPE_COUNT>	tMask;
 	};
 
-	DEFINE_VECTOR	(STerrainPlace,				TERRAIN_VECTOR,					TERRAIN_IT);
+	using TERRAIN_VECTOR = xr_vector<STerrainPlace>;
+	using TERRAIN_IT = TERRAIN_VECTOR::iterator;
 }

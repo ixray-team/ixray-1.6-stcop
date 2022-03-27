@@ -300,7 +300,9 @@ class 	IBoneData
 //static const Fobb	dummy ;//= Fobb().identity();
 // refs
 class CBone;
-DEFINE_VECTOR		    (CBone*,BoneVec,BoneIt);
+
+using BoneVec = xr_vector<CBone*>;
+using BoneIt = BoneVec::iterator;
 
 class ECORE_API CBone:
 	public CBoneInstance,

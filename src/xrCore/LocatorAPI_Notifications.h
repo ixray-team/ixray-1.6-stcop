@@ -32,9 +32,14 @@ private:
         fastdelegate::FastDelegate0<>	FChangeEvent;
 		BOOL 						bRecurse;
     };
-    DEFINE_VECTOR			(HANDLE,HANDLEVec,HANDLEIt);
-    DEFINE_VECTOR			(Path,PathVec,PathIt);
-    PathVec					events;
+
+	using HANDLEVec = xr_vector<HANDLE>;
+	using HANDLEIt = HANDLEVec::iterator;
+
+    using PathVec = xr_vector<Path>;
+	using PathIt = PathVec::iterator;
+
+	PathVec					events;
 public:
 	void* 					FMutex;
 	unsigned 				FNotifyOptionFlags;

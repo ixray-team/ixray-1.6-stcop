@@ -2,7 +2,10 @@
 
 
 
-// Igor DEFINE_VECTOR(ref_shader, SHADER_VECTOR, SHADER_VECTOR_IT);
+// Igor 
+//using SHADER_VECTOR = xr_vector<ref_shader>;
+//using SHADER_VECTOR_IT = SHADER_VECTOR::iterator;
+
 class CWalmarkManager
 {
 private:

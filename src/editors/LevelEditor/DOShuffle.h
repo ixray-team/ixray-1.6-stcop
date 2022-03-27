@@ -123,7 +123,9 @@ struct SDOData{
     Flags32		m_Flags;
     SDOData		();
 };
-DEFINE_VECTOR(SDOData*,DDVec,DDIt);
+
+using DDVec = xr_vector<SDOData*>;
+using DDIt = DDVec::iterator;
 */
 //---------------------------------------------------------------------------
 #endif

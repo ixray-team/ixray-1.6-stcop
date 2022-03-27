@@ -159,7 +159,9 @@ protected:
     TMxLabel* 				m_LB[4];
     CKinematicsAnimated* 	m_RenderObject;
     
-	DEFINE_VECTOR		(CAnimationClip*,AnimClipVec,AnimClipIt);
+	using AnimClipVec = xr_vector<CAnimationClip*>;
+	using AnimClipIt = AnimClipVec::iterator;
+
     AnimClipVec			clips;
     CAnimationClip*		sel_clip; 
     u32					play_clip;

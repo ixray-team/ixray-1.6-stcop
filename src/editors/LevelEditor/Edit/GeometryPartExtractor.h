@@ -7,7 +7,9 @@
 
 struct 	SBFace;
 class 	CSurface;
-DEFINE_VECTOR		(SBFace*,SBFaceVec,SBFaceVecIt);
+
+using SBFaceVec = xr_vector<SBFace*>;
+using SBFaceVecIt = SBFaceVec::iterator;
 
 struct SBFace{
 // internal
@@ -58,8 +60,12 @@ struct SBBone
     	offset.set	(0,0,0);
     }
 };
-DEFINE_VECTOR		(SBBone,SBBoneVec,SBBoneVecIt);
-DEFINE_VECTOR		(SBFaceVec,SBAdjVec,SBAdjVecIt);
+
+using SBBoneVec = xr_vector<SBBone>;
+using SBBoneVecIt = SBBoneVec::iterator;
+
+using SBAdjVec = xr_vector<SBFaceVec>;
+using SBAdjVecIt = SBAdjVec::iterator;
 
 struct SBPart: public CExportSkeletonCustom
 {
@@ -84,7 +90,10 @@ public:
     void			recurse_fragment	(SBFace* F, u32& cnt, u32 bone_id, u32 max_faces, float& area);
     bool			prepare				(SBAdjVec& adjs, u32 bone_face_min);
 };
-DEFINE_VECTOR		(SBPart*,SBPartVec,SBPartVecIt);
+
+using SBPartVec = xr_vector<SBPart*>;
+using SBPartVecIt = SBPartVec::iterator;
+
 //----------------------------------------------------
 
 class CGeomPartExtractor{

@@ -122,7 +122,10 @@ struct EParticleAction
     	AnsiString	name;
         SOrder(EValType	_type, AnsiString _name):type(_type),name(_name){}
     };
-	DEFINE_VECTOR	(SOrder, OrderVec,	OrderVecIt);
+	
+    using OrderVec = xr_vector<SOrder>; 
+    using OrderVecIt = OrderVec::iterator;
+
     OrderVec		orders;
     
     EParticleAction	(PAPI::PActionEnum	_type)

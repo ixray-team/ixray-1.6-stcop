@@ -30,5 +30,8 @@ struct st_SFACE {
 		if (v[2]==from) VSet(2,to);
 	}
 };
-DEFINE_VECTOR(st_SFACE*,vSFACE,SFACEIt);
+
+using vSFACE = xr_vector<st_SFACE*>;
+using SFACEIt = vSFACE::iterator;
+
 #endif // _SkeletonFace_H_

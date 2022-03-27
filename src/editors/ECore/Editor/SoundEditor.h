@@ -61,7 +61,9 @@ private:
 private:	// User declarations
 	static TfrmSoundLib* form;
 
-    DEFINE_VECTOR		(ESoundThumbnail*,THMVec,THMIt);
+    using THMVec = xr_vector<ESoundThumbnail*>
+    using THMIt = THMVec::iterator;
+    
     THMVec				m_THM_Used;
     THMVec				m_THM_Current;
     TItemList*			m_ItemList;

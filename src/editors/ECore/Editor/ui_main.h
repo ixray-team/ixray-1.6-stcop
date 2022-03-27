@@ -220,7 +220,9 @@ public:
     virtual void	LoadSettings				(CInifile*){}
 protected:    
 // progress bar
-    DEFINE_VECTOR	(SPBItem*,PBVec,PBVecIt);
+    using PBVec = xr_vector<SPBItem*>;
+    using PBVecIt = PBVec::iterator;
+    
     PBVec			m_ProgressItems;
 public:
 	SPBItem*		ProgressStart		(float max_val, LPCSTR text);

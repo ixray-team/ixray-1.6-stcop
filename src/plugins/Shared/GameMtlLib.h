@@ -56,9 +56,14 @@
 	#define PSVec 		shared_str
 	#define ShaderVec 	shared_str
 #else
-	DEFINE_VECTOR(ref_sound,SoundVec,SoundIt);
-	DEFINE_VECTOR(shared_str,PSVec,PSIt);
-	DEFINE_VECTOR(ref_shader,ShaderVec,ShaderIt);
+	using SoundVec = xr_vector<ref_sound>;
+    using SoundIt = SoundVec::iterator;
+
+	using PSVec = xr_vector<shared_str>;
+    using PSIt = PSVec::iterator;
+
+	using ShaderVec = xr_vector<ref_shader>;
+    using ShaderIt = ShaderVec::iterator;
 #endif
 
 struct ECORE_API SGameMtl
@@ -132,7 +137,9 @@ public:
     void 				FillProp		(PropItemVec& values, ListItem* owner);
 #endif
 };
-DEFINE_VECTOR(SGameMtl*,GameMtlVec,GameMtlIt);
+
+using GameMtlVec = xr_vector<SGameMtl*>;
+using GameMtlIt = GameMtlVec::iterator;
 
 struct ECORE_API SGameMtlPair{
 	friend class CGameMtlLibrary;
@@ -200,7 +207,8 @@ public:
 #endif
 };
 
-DEFINE_VECTOR(SGameMtlPair*,GameMtlPairVec,GameMtlPairIt);
+using GameMtlPairVec = xr_vector<SGameMtlPair*>;
+using GameMtlPairIt = GameMtlPairVec::iterator;
 
 class ECORE_API CGameMtlLibrary{
 	int					material_index;

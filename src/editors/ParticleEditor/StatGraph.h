@@ -40,7 +40,10 @@ protected:
 			style = s;
 		};
 	};
-	DEFINE_VECTOR	(SSubGraph,SubGraphVec,SubGraphVecIt);
+	
+	using SubGraphVec = xr_vector<SSubGraph>;
+	using SubGraphVecIt = SubGraphVec::iterator;
+
 	SubGraphVec		subgraphs;
 	
 	float			mn, mx;

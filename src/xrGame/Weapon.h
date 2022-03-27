@@ -429,13 +429,17 @@ public:
 		int					m_iScopeX;
 		int					m_iScopeY;
 	};
-	DEFINE_VECTOR(SScopes*, SCOPES_VECTOR, SCOPES_VECTOR_IT);
+
+	using SCOPES_VECTOR = xr_vector<SScopes*>;
+	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
+	
 	SCOPES_VECTOR			m_scopes;
 
 	u8						cur_scope;
 */
+	using SCOPES_VECTOR = xr_vector<shared_str>;
+	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
 
-	DEFINE_VECTOR(shared_str, SCOPES_VECTOR, SCOPES_VECTOR_IT);
 	SCOPES_VECTOR			m_scopes;
 	u8						m_cur_scope;
 

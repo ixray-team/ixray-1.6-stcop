@@ -97,15 +97,25 @@ public:
             bool		m;
             xr_string	descr;
 	    };
-	    DEFINE_VECTOR(Face,FaceVec,FaceIt);
-	    DEFINE_VECTOR(Line,LineVec,LineIt);
-	    DEFINE_VECTOR(Point,PointVec,PointIt);
-		DEFINE_VECTOR(Fobb,OBBVec,OBBVecIt);
+
+	    using FaceVec = xr_vector<Face>;  
+        using FaceIt = FaceVec::iterator;
+
+	    using LineVec = xr_vector<Line>;  
+        using LineIt = LineVec::iterator;
+
+	    using PointVec = xr_vector<Point>; 
+        using PointIt = PointVec::iterator;
+
+		using OBBVec = xr_vector<Fobb>;  
+        using OBBVecIt = OBBVec::iterator;
+
     	FaceVec			m_WireFaces;
     	FaceVec			m_SolidFaces;
 	    LineVec			m_Lines;
 	    PointVec		m_Points;
 		OBBVec 			m_OBB;
+        
         void			Clear()
         {
         	m_WireFaces.clear	();

@@ -43,5 +43,8 @@ struct st_SVERT {
 		return TRUE;
 	}
 };
-DEFINE_VECTOR(st_SVERT*,vSVERT,SVERTIt);
+
+using vSVERT = xr_vector<st_SVERT*>;
+using SVERTIt = vSVERT::iterator;
+
 #endif //_SkeletonVert_H_

@@ -71,8 +71,11 @@ void CUIVote::Update()
 	game_cl_GameState::PLAYERS_MAP_IT I=Game().players.begin();
 	game_cl_GameState::PLAYERS_MAP_IT E=Game().players.end();
 
-	DEFINE_VECTOR	(game_PlayerState*,ItemVec,ItemIt);
+	using ItemVec = xr_vector<game_PlayerState*>;
+	using ItemIt = ItemVec::iterator;
+
 	ItemVec			items;
+
 	for (;I!=E;++I)		
 	{
 		items.push_back(I->second);

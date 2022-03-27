@@ -9,7 +9,9 @@ class ESceneWallmarkTool: public ESceneToolBase
 {
 	typedef ESceneToolBase inherited;
 public:    
-	DEFINE_VECTOR		(FVF::LIT,LITVertVec,LITVertVecIt);
+	using LITVertVec = xr_vector<FVF::LIT>;
+	using LITVertVecIt = LITVertVec::iterator;
+
     struct wm_slot;
 	struct wallmark 
 	{
@@ -24,7 +26,10 @@ public:
 		LITVertVec		verts;
         wallmark		(){flags.zero();parent=0;w=0;h=0;r=0;}
 	};
-	DEFINE_VECTOR		(wallmark*,WMVec,WMVecIt);
+
+	using WMVec = xr_vector<wallmark*>;
+	using WMVecIt = WMVec::iterator;
+
 	struct wm_slot
 	{
 		shared_str		sh_name;
@@ -33,7 +38,10 @@ public:
 		WMVec			items;
 						wm_slot	(shared_str sh, shared_str tx)		{sh_name=sh;tx_name=tx;shader.create(*sh_name,*tx_name);items.reserve(256);}
 	};
-	DEFINE_VECTOR		(wm_slot*,WMSVec,WMSVecIt);
+	
+	using WMSVec = xr_vector<wm_slot*>;
+	using WMSVecIt = WMSVec::iterator;
+
 	WMSVec				marks;
 	WMVec				pool;
 private:

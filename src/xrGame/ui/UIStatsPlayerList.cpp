@@ -214,7 +214,9 @@ void CUIStatsPlayerList::Update()
 	if (m_prev_upd_time > Device.dwTimeContinual - 100)
 		return;
 
-	DEFINE_VECTOR	(game_PlayerState*,ItemVec,ItemIt);
+	using ItemVec = xr_vector<game_PlayerState*>;
+	using ItemIt = ItemVec::iterator;
+
 	ItemVec			items;
 
 	m_prev_upd_time = Device.dwTimeContinual;

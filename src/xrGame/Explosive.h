@@ -13,7 +13,10 @@
 #include "wallmark_manager.h"
 #include "ParticlesObject.h"
 class IRender_Light;
-DEFINE_VECTOR(CPhysicsShellHolder*,BLASTED_OBJECTS_V,BLASTED_OBJECTS_I);
+
+using BLASTED_OBJECTS_V = xr_vector<CPhysicsShellHolder*>;
+using BLASTED_OBJECTS_I = BLASTED_OBJECTS_V::iterator;
+
 class CExplosive : 
 	public IDamageSource
 {

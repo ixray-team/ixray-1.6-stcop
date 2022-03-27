@@ -27,8 +27,9 @@ private:
 	CPHShellSplitter			()														;
 };
 
-DEFINE_VECTOR(CPHShellSplitter,SPLITTER_STORAGE,SPLITTER_I)
-typedef		xr_vector<CPHShellSplitter>::reverse_iterator	SPLITTER_RI;
+using SPLITTER_STORAGE = xr_vector<CPHShellSplitter>;
+using SPLITTER_I = SPLITTER_STORAGE::iterator;
+using SPLITTER_RI = SPLITTER_STORAGE::reverse_iterator;
 
 
 class CPHShellSplitterHolder : public CPHUpdateObject			//call all Fractures and Breakable Joints Updates

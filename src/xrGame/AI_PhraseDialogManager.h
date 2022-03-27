@@ -33,7 +33,9 @@ protected:
 	shared_str m_sStartDialog;
 	shared_str m_sDefaultStartDialog;
 
-	DEFINE_VECTOR(DIALOG_SHARED_PTR, DIALOG_SHARED_VECTOR, DIALOG_SHARED_IT);
+	using DIALOG_SHARED_VECTOR = xr_vector<DIALOG_SHARED_PTR>;
+	using DIALOG_SHARED_IT = DIALOG_SHARED_VECTOR::iterator;
+
 	//список диалогов, на которые нужно ответить
 	DIALOG_SHARED_VECTOR m_PendingDialogs;
 };

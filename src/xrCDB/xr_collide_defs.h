@@ -96,8 +96,10 @@ namespace collide
 		IC BOOL		set_if_less	(CObject* _who, float _range, int _element)	{ if (_range<range) { set(_who,_range,_element); return TRUE;}else return FALSE;}
 		IC BOOL		valid		() {return (element>=0);}
 	};
-	DEFINE_VECTOR	(rq_result,rqVec,rqIt);
-	
+
+	using rqVec = xr_vector<rq_result>;
+	using rqIt = rqVec::iterator;
+
 	class			rq_results
 	{
 	protected:
