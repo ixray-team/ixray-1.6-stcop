@@ -24,11 +24,15 @@ protected:
     using SSVec = xr_vector<SChooseItem>;
     using SSVecIt = SSVec::iterator;
 
-    DEFINE_MAP			(CLASS_ID,SSVec,ClassSpawnMap,ClassSpawnMapIt);
+    using ClassSpawnMap = xr_map<CLASS_ID,SSVec>;
+    using ClassSpawnMapIt = ClassSpawnMap::iterator;
+
     ClassSpawnMap		m_Classes;
 
     // icon list
-    DEFINE_MAP			(shared_str,ref_shader,ShaderMap,ShaderPairIt);
+    using ShaderMap = xr_map<shared_str, ref_shader>;
+    using ShaderPairIt = ShaderMap::iterator;
+
     ShaderMap 			m_Icons;
     ref_shader 			CreateIcon	(shared_str name);
     ref_shader 			GetIcon		(shared_str name);

@@ -185,7 +185,8 @@ using AdjIt = AdjVec::iterator;
 using VMapVec = xr_vector<st_VMap*>; 
 using VMapIt = VMapVec::iterator;
 
-DEFINE_MAP			(CSurface*,IntVec,SurfFaces,SurfFacesPairIt);
+using SurfFaces = xr_map<CSurface*, IntVec>; 
+using SurfFacesPairIt = SurfFaces::iterator;
 
 //refs
 struct st_RenderBuffer;
@@ -203,7 +204,8 @@ class CSector;
 	using RBVector = xr_vector<st_RenderBuffer>;
 	using RBVecIt = RBVector::iterator;
 
-	DEFINE_MAP(CSurface*,RBVector,RBMap,RBMapPairIt);
+	using RBMap = xr_map<CSurface*, RBVector>;
+	using RBMapPairIt = RBMap::iterator;
 #endif
 
 class ECORE_API CEditableMesh {

@@ -12,7 +12,9 @@
 #include "bone.h"
 
 extern "C"	LWMessageFuncs	*g_msg;
-DEFINE_MAP(void*,int,VMIndexLink,VMIndexLinkIt);
+
+using VMIndexLink = xr_map<void*, int>;
+using VMIndexLinkIt = VMIndexLink::iterator;
 
 bool CEditableObject::Import_LWO(st_ObjectDB *I){
 	if (I){

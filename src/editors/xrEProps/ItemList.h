@@ -96,7 +96,10 @@ protected:
     struct SFolderStore{
     	bool expand;
     };
-    DEFINE_MAP(AnsiString,SFolderStore,FolderStoreMap,FolderStorePairIt);
+
+    using FolderStoreMap = xr_map<AnsiString, SFolderStore>;
+    using FolderStorePairIt = FolderStoreMap::iterator;
+
     FolderStoreMap		FolderStore;
 protected:     
     void __stdcall 		RenameItem				(LPCSTR fn0, LPCSTR fn1, EItemType type);

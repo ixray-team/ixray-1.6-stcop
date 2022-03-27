@@ -88,11 +88,20 @@ public:
 };
 struct EParticleAction
 {
-	DEFINE_MAP(AnsiString,PDomain,	PDomainMap,	PDomainMapIt);
-	DEFINE_MAP(AnsiString,PBool,	PBoolMap,	PBoolMapIt);
-	DEFINE_MAP(AnsiString,PFloat,	PFloatMap,	PFloatMapIt);
-    DEFINE_MAP(AnsiString,PInt,		PIntMap,	PIntMapIt);
-	DEFINE_MAP(AnsiString,PVector,	PVectorMap,	PVectorMapIt);
+	using PDomainMap = xr_map<AnsiString, PDomain>;	
+    using PDomainMapIt = PDomainMap::iterator;
+
+	using PBoolMap = xr_map<AnsiString, PBool>;	
+    using PBoolMapIt = PBoolMap::iterator;
+	
+    using PFloatMap = xr_map<AnsiString, PFloat>;	
+    using PFloatMapIt = PFloatMap::iterator;
+    
+    using PIntMap = xr_map<AnsiString, PInt>;	
+    using PIntMapIt = PIntMap::iterator;
+	
+    using PVectorMap = xr_map<AnsiString, PVector>;	
+    using PVectorMapIt = PVectorMap::iterator;
 
     shared_str 		actionName;
 	shared_str 		actionType;

@@ -28,7 +28,10 @@ private:
         	float 			area;
             SObjInfo(float a):ref_count(0),area(a){}            
         };
-        DEFINE_MAP(shared_str,SObjInfo,objinf_map,objinf_map_it);
+
+        using objinf_map = xr_map<shared_str, SObjInfo>;
+        using objinf_map_it = objinf_map::iterator;
+
         objinf_map			objects;
         float				effective_area;
         float				pixel_area;

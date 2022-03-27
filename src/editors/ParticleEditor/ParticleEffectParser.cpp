@@ -756,7 +756,8 @@ public:
 };
 }
 
-DEFINE_MAP(AnsiString,PFunction,PFuncMap,PFuncPairIt);
+using PFuncMap = xr_map<AnsiString, PFunction>;
+using PFuncPairIt = PFuncMap::iterator;
 
 using PFuncVec = xr_vector<PFunction>;
 using PFuncIt = PFuncVec::iterator;

@@ -104,7 +104,9 @@ private:
 protected:
     static AnsiString 			m_LastSelection; 
 
-    DEFINE_MAP(u32,SChooseEvents,EventsMap,EventsMapIt);     
+    using EventsMap = xr_map<u32, SChooseEvents>;
+	using EventsMapIt = EventsMap::iterator;
+
     static EventsMap			m_Events;
 public:
 	static TOnChooseFillEvents 	fill_events;

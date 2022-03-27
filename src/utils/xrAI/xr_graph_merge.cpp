@@ -61,7 +61,8 @@ u32 dwfGetIDByLevelName(CInifile *Ini, LPCSTR caLevelName)
 	return				(u32(-1));
 }
 
-DEFINE_MAP		(u32,					::CLevelGameGraph*,		GRAPH_P_MAP,			GRAPH_P_PAIR_IT);
+using GRAPH_P_MAP = xr_map<u32, ::CLevelGameGraph*>; 
+using GRAPH_P_PAIR_IT = GRAPH_P_MAP::iterator;
 
 using VERTEX_MAP = xr_map<LPSTR, SConnectionVertex, CCompareVertexPredicate>;
 using VERTEX_PAIR_IT = VERTEX_MAP::iterator;

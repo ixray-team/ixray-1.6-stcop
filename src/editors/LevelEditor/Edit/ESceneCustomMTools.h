@@ -150,6 +150,8 @@ public:
     
 };
 
-DEFINE_MAP(ObjClassID,ESceneToolBase*,SceneToolsMap,SceneToolsMapPairIt);
+using SceneToolsMap = xr_map<ObjClassID, ESceneToolBase*>;
+using SceneToolsMapPairIt = SceneToolsMap::iterator;
+
 #endif //ESceneCustomMToolsH
  
