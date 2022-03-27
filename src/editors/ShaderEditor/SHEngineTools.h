@@ -8,9 +8,14 @@
 using TemplateVec = xr_vector<IBlender*>;
 using TemplateIt = TemplateVec::iterator;
 
-DEFINE_MAP_PRED(LPSTR,CConstant*,ConstantMap,ConstantPairIt,str_pred);
-DEFINE_MAP_PRED(LPSTR,CMatrix*,MatrixMap,MatrixPairIt,str_pred);
-DEFINE_MAP_PRED(LPSTR,IBlender*,BlenderMap,BlenderPairIt,str_pred);
+using ConstantMap = xr_map<LPSTR, CConstant*, str_pred);
+using ConstantPairIt = ConstantMap::iterator;
+
+using MatrixMap = xr_map<LPSTR, CMatrix*, str_pred);
+using MatrixPairIt = MatrixMap::iterator;
+
+using BlenderMap = xr_map<LPSTR, IBlender*, str_pred);
+using BlenderPairIt = BlenderMap::iterator;
 
 // refs
 class CSHEngineTools;
