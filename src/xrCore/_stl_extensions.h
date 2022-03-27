@@ -125,8 +125,6 @@ struct pred_stri	: public std::binary_function<char*, char*, bool>	{
 };
 
 // STL extensions
-#define DEFINE_STACK(T,N)			typedef xr_stack< T > N;
-
 #include "FixedVector.h"
 #include "buffer_vector.h"
 
