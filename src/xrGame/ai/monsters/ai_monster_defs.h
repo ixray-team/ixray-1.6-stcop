@@ -361,7 +361,8 @@ struct SAAParam {
 	float		dist;
 };
 
-DEFINE_VECTOR(SAAParam, AA_VECTOR, AA_VECTOR_IT);
+using AA_VECTOR = xr_vector<SAAParam>;
+using AA_VECTOR_IT = AA_VECTOR::iterator;
 
 struct SCurrentAnimationInfo {
 	shared_str		name;
@@ -406,20 +407,28 @@ enum EHitSide {
 	eSideRight
 };
 
+using ANIM_ITEM_VECTOR = xr_vector<SAnimItem*>;
+using ANIM_ITEM_VECTOR_IT = ANIM_ITEM_VECTOR::iterator;
 
-DEFINE_VECTOR	(SAnimItem*,		ANIM_ITEM_VECTOR,		ANIM_ITEM_VECTOR_IT);
-DEFINE_VECTOR	(STransition,		TRANSITION_ANIM_VECTOR, TRANSITION_ANIM_VECTOR_IT);
+using TRANSITION_ANIM_VECTOR = xr_vector<STransition>;
+using TRANSITION_ANIM_VECTOR_IT = TRANSITION_ANIM_VECTOR::iterator;
+
 DEFINE_MAP		(EAction,			SMotionItem,			MOTION_ITEM_MAP,			MOTION_ITEM_MAP_IT);
-DEFINE_VECTOR	(EMotionAnim,		SEQ_VECTOR,				SEQ_VECTOR_IT);
-DEFINE_VECTOR	(SAttackAnimation,	ATTACK_ANIM,			ATTACK_ANIM_IT);
-DEFINE_VECTOR	(SReplacedAnim,		REPLACED_ANIM,			REPLACED_ANIM_IT);
+
+using SEQ_VECTOR = xr_vector<EMotionAnim>;
+using SEQ_VECTOR_IT = SEQ_VECTOR::iterator;
+
+using ATTACK_ANIM = xr_vector<SAttackAnimation>;
+using ATTACK_ANIM_IT = ATTACK_ANIM::iterator;
+
+using REPLACED_ANIM = xr_vector<SReplacedAnim>;
+using REPLACED_ANIM_IT = REPLACED_ANIM::iterator;
 
 DEFINE_MAP		(u16,				t_fx_index,				FX_MAP_U16,					FX_MAP_U16_IT);	
 DEFINE_MAP		(shared_str,			t_fx_index,				FX_MAP_STRING,				FX_MAP_STRING_IT);
 
-
-DEFINE_VECTOR	(SEQ_VECTOR, VELOCITY_CHAIN_VEC, VELOCITY_CHAIN_VEC_IT);
-
+using VELOCITY_CHAIN_VEC = xr_vector<SEQ_VECTOR>;
+using VELOCITY_CHAIN_VEC_IT = VELOCITY_CHAIN_VEC::iterator;
 
 struct SVelocity {
 	float	current;
@@ -500,8 +509,8 @@ struct SMonsterHit {
 	}
 };
 
-DEFINE_VECTOR(SMonsterHit,MONSTER_HIT_VECTOR, MONSTER_HIT_VECTOR_IT);
-
+using MONSTER_HIT_VECTOR = xr_vector<SMonsterHit>;
+using MONSTER_HIT_VECTOR_IT = MONSTER_HIT_VECTOR::iterator;
 
 enum EDangerType {
 	eWeak,

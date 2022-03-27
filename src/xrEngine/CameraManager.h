@@ -71,7 +71,8 @@ struct ENGINE_API SPPInfo {
 using EffectorCamVec = xr_list<CEffectorCam*>;
 using EffectorCamIt = EffectorCamVec::iterator;
 
-DEFINE_VECTOR				(CEffectorPP*,EffectorPPVec,EffectorPPIt);
+using EffectorPPVec = xr_vector<CEffectorPP*>;
+using EffectorPPIt = EffectorPPVec::iterator;
 
 #define			effCustomEffectorStartID	10000
 

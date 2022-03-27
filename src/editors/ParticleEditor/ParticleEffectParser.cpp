@@ -577,7 +577,10 @@ public:
     };
     
     int 				req_params;
-    DEFINE_VECTOR(Param,ParamVec,ParamIt);
+
+    using ParamVec = xr_vector<Param>;
+	using ParamIt = ParamVec::iterator;
+
     ParamVec			params;
 
     LPCSTR				src;
@@ -754,7 +757,9 @@ public:
 }
 
 DEFINE_MAP(AnsiString,PFunction,PFuncMap,PFuncPairIt);
-DEFINE_VECTOR(PFunction,PFuncVec,PFuncIt);
+
+using PFuncVec = xr_vector<PFunction>;
+using PFuncIt = PFuncVec::iterator;
 
 static PFuncMap CommandTemplates;
 

@@ -104,7 +104,10 @@ struct ECORE_API SESubCommand{
 public:
                 	SESubCommand	(LPCSTR d, SECommand* p, CCommandVar _p0, CCommandVar _p1){desc=d;parent=p;p0=_p0;p1=_p1;}
 };
-DEFINE_VECTOR	(SESubCommand*,ESubCommandVec,ESubCommandVecIt);
+
+using ESubCommandVec = xr_vector<SESubCommand*>;
+using ESubCommandVecIt = ESubCommandVec::iterator;
+
 struct ECORE_API SECommand{
 	bool			editable;
     LPSTR			name;
@@ -125,7 +128,9 @@ public:
 	IC LPCSTR		Desc			(){return desc&&desc[0]?desc:"";}
     void			AppendSubCommand(LPCSTR desc, CCommandVar p0, CCommandVar p1){sub_commands.push_back(xr_new<SESubCommand>(desc,this,p0,p1));}
 };
-DEFINE_VECTOR(SECommand*,ECommandVec,ECommandVecIt);
+
+using ECommandVec = xr_vector<SECommand*>;
+using ECommandVecIt = ECommandVec::iterator;
 
 ECORE_API CCommandVar	    ExecCommand				(u32 cmd, CCommandVar p1=u32(0), CCommandVar p2=u32(0));
 ECORE_API CCommandVar	    ExecCommand				(const xr_shortcut& val);

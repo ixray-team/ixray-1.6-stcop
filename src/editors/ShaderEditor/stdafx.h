@@ -80,10 +80,15 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 #ifdef _EDITOR
 	class PropValue;
 	class PropItem;
-	DEFINE_VECTOR(PropItem*,PropItemVec,PropItemIt);
+
+	using PropItemVec = xr_vector<PropItem*>;
+	using PropItemIt = PropItemVec::iterator;
 
 	class ListItem;
-	DEFINE_VECTOR(ListItem*,ListItemsVec,ListItemsIt);
+
+	using ListItemsVec = xr_vector<ListItem*>;
+	using ListItemsIt = ListItemsVec::iterator;
+
 #endif
 
 #include "../../xrCDB/xrCDB.h"
@@ -103,8 +108,11 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 
 #include "../ECore/Editor/D3DX_Wrapper.h"
 
-DEFINE_VECTOR		(AnsiString,AStringVec,AStringIt);
-DEFINE_VECTOR		(AnsiString*,LPAStringVec,LPAStringIt);
+using AStringVec = xr_vector<AnsiString>;
+using AStringIt = AStringVec::iterator;
+
+using LPAStringVec = xr_vector<AnsiString*>;
+using LPAStringIt = LPAStringVec::iterator;
 
 #include "../../xrServerEntities/xrEProps.h"
 #include "Log.h"
@@ -126,10 +134,18 @@ struct astr_pred : public std::binary_function<const AnsiString&, const AnsiStri
 	#include "../ECore/Editor/device.h"
 	#include "properties.h"
 	#include "../ECore/Editor/render.h"
-	DEFINE_VECTOR(FVF::L,FLvertexVec,FLvertexIt);
-	DEFINE_VECTOR(FVF::TL,FTLvertexVec,FTLvertexIt);
-	DEFINE_VECTOR(FVF::LIT,FLITvertexVec,FLITvertexIt);
-	DEFINE_VECTOR(shared_str,RStrVec,RStrVecIt);
+	
+	using FLvertexVec = xr_vector<FVF::L>;
+	using FLvertexIt = FLvertexVec::iterator;
+
+	using FTLvertexVec = xr_vector<FVF::TL>;
+	using FTLvertexIt = FTLvertexVec::iterator;
+
+	using FLITvertexVec = xr_vector<FVF::LIT>; 
+	using FLITvertexIt = FLITvertexVec::iterator;
+
+	using RStrVec = xr_vector<shared_str>; 
+	using RStrVecIt = RStrVec::iterator;
 
 	#include "../ECore/Editor/EditorPreferences.h"
 #endif

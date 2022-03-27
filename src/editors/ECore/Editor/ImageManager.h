@@ -9,7 +9,10 @@ class CEditableObject;
 
 struct SSimpleImage{
 	shared_str	name;
-    DEFINE_VECTOR(U32Vec,DATAVec,DATAIt);
+    
+    using DATAVec = xr_vector<U32Vec>;
+    using DATAIt = DATAVec::iterator;
+
 	DATAVec		layers;
     u32			w,h,a;
     u32			tag;
@@ -18,7 +21,9 @@ struct SSimpleImage{
 };
 IC bool operator == (const SSimpleImage& a, shared_str nm){return a.name==nm;}
 IC bool operator < (const SSimpleImage& a, const SSimpleImage& b){return a.name<b.name;}
-DEFINE_VECTOR	(SSimpleImage,SSimpleImageVec,SSimpleImageVecIt);
+
+using SSimpleImageVec = xr_vectore<SSimpleImage>;
+using SSimpleImageVecIt = SSimpleImageVec::iterator;
 
 class ECORE_API CImageManager{
     bool		MakeGameTexture		(ETextureThumbnail* THM, LPCSTR game_name, u32* data);

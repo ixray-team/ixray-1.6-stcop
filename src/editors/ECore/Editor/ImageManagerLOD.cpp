@@ -107,7 +107,9 @@ void CImageManager::CreateLODTexture(const Fbox& bb, U32Vec& tgt_data, u32 tgt_w
 }
 */
 
-DEFINE_VECTOR(Fvector4,Fvector4Vec,Fvector4It);
+using Fvector4Vec = xr_vector<Fvector4>;
+using Fvector4It = Fvector4Vec::iterator;
+
 BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 {
     CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
@@ -163,7 +165,10 @@ struct SBuildLight{
     Flight					light;
     float					energy;
 };
-DEFINE_VECTOR				(SBuildLight,BLVec,BLIt);
+
+using BLVec = xr_vector<SBuildLight>;
+using BLIt = BLVec::iterator;
+
 ICF static void simple_hemi_callback(float x, float y, float z, float E, LPVOID P)
 {
     BLVec* dst 					= (BLVec*)P;

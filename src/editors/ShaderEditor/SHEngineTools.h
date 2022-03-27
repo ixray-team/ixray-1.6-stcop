@@ -5,7 +5,9 @@
 #include "SHToolsInterface.h"
 #include "../xrEProps/PropertiesList.h"
 
-DEFINE_VECTOR(IBlender*,TemplateVec,TemplateIt);
+using TemplateVec = xr_vector<IBlender*>;
+using TemplateIt = TemplateVec::iterator;
+
 DEFINE_MAP_PRED(LPSTR,CConstant*,ConstantMap,ConstantPairIt,str_pred);
 DEFINE_MAP_PRED(LPSTR,CMatrix*,MatrixMap,MatrixPairIt,str_pred);
 DEFINE_MAP_PRED(LPSTR,IBlender*,BlenderMap,BlenderPairIt,str_pred);

@@ -79,7 +79,9 @@ typedef TMsgDlgBtn TMsgDlgButtons[mbHelp];
 #pragma warning(pop)
 
 #define AnsiString std::string
-DEFINE_VECTOR(AnsiString,AStringVec,AStringIt);
+
+using AStringVec = xr_vector<AnsiString>;
+using AStringIt = AStringVec::iterator;
 
 #define THROW R_ASSERT(0)
 

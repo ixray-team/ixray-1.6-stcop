@@ -21,7 +21,9 @@ protected:
     Flags32				m_Flags;
 
     // class 
-    DEFINE_VECTOR		(SChooseItem,SSVec,SSVecIt);
+    using SSVec = xr_vector<SChooseItem>;
+    using SSVecIt = SSVec::iterator;
+
     DEFINE_MAP			(CLASS_ID,SSVec,ClassSpawnMap,ClassSpawnMapIt);
     ClassSpawnMap		m_Classes;
 

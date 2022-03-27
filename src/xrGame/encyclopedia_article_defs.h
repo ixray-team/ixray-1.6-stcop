@@ -32,8 +32,11 @@ struct ARTICLE_DATA : public IPureSerializeObject<IReader,IWriter>
 	EArticleType			article_type;
 };
 
-DEFINE_VECTOR		(shared_str, ARTICLE_ID_VECTOR, ARTICLE_ID_IT);
-DEFINE_VECTOR		(ARTICLE_DATA, ARTICLE_VECTOR, ARTICLE_IT);
+using ARTICLE_ID_VECTOR = xr_vector<shared_str>;
+using ARTICLE_ID_IT = ARTICLE_ID_VECTOR::iterator;
+
+using ARTICLE_VECTOR = xr_vector<ARTICLE_DATA>;
+using ARTICLE_IT = ARTICLE_VECTOR::iterator;
 
 class FindArticleByIDPred
 {

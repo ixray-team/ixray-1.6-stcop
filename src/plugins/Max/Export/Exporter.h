@@ -4,7 +4,8 @@
 #include "..\..\Shared\bonedef.h"
 #include "..\..\Shared\face.h"
 
-DEFINE_VECTOR(INode*,INodeVec,INodeIt);
+using INodeVec = xr_vector<INode*>;
+using INodeIt = INodeVec::iterator;
 
 //-----------------------------------------------------------------------------
 IC void ERR(LPCSTR s, LPCSTR dop="") 

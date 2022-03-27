@@ -175,7 +175,9 @@ protected:
     TMxLabel* 			m_LB[4];
     CEditableObject* 	m_CurrentObject;
     
-	DEFINE_VECTOR		(CUIClip*,UIClipVec,UIClipIt);
+	using UIClipVec = xr_vector<CUIClip*>;
+	using UIClipIt = UIClipVec::iterator;
+	
     UIClipVec			clips;
     CUIClip*			sel_clip; 
     u32					play_clip;

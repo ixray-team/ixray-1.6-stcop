@@ -37,8 +37,10 @@ struct st_BoneMotion
     			st_BoneMotion()	{name=0; m_Flags.zero(); ZeroMemory(envs,sizeof(CEnvelope*)*ctMaxChannel);}
     void        SetName(LPCSTR nm)	{	name=nm;	}
 };
+
 // vector по костям
-DEFINE_VECTOR(st_BoneMotion,BoneMotionVec,BoneMotionIt);
+using BoneMotionVec = xr_vector<st_BoneMotion>;
+using BoneMotionIt = BoneMotionVec::iterator;
 
 //--------------------------------------------------------------------------
 class ENGINE_API CCustomMotion

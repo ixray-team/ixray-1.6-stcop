@@ -18,7 +18,8 @@ struct ECORE_API GCFace{
 class ECORE_API VCPacked
 {
 protected:
-	DEFINE_VECTOR(U32Vec,GCHash,GCHashIt);
+	using GCHash = xr_vector<U32Vec>; 
+    using GCHashIt = GCHash::iterator;
 
     xr_vector<GCVertex>	verts;
 

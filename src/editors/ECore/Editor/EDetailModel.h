@@ -88,7 +88,9 @@ public:
 	void				OnDeviceDestroy	();
     void				DefferedLoad	();
 };
-DEFINE_VECTOR(EDetail*,DOVec,DOIt);
+
+using DOVec = xr_vector<EDetail*>; 
+using DOIt = DOVec::iterator;
 
 #endif //_INCDEF_DetailModel_H_
 

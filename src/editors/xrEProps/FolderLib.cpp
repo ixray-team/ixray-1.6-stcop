@@ -8,7 +8,10 @@
 #pragma package(smart_init)
 
 CFolderHelper FHelper;
-DEFINE_VECTOR(TElTreeItem*,ELVec,ELVecIt);
+
+using ELVec = xr_vector<TElTreeItem*>;
+using ELVecIt = ELVec::iterator;
+
 static ELVec drag_items;
 
 void CFolderHelper::ShowPPMenu(TMxPopupMenu* M, TExtBtn* B){

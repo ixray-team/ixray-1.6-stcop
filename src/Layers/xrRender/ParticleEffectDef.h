@@ -10,7 +10,9 @@ namespace PAPI
 	struct ParticleEffect;
 	struct PAHeader;
 	struct ParticleAction;
-    DEFINE_VECTOR(ParticleAction*,PAVec,PAVecIt);
+
+	using PAVec = xr_vector<ParticleAction*>;
+	using PAVecIt = PAVec::iterator;
 }
 struct EParticleAction;        
 
@@ -112,7 +114,9 @@ namespace PS
 #ifdef _EDITOR         
 // change Copy&Equal if variables changed
 	public:
-	    DEFINE_VECTOR		(EParticleAction*,EPAVec,EPAVecIt);
+		using EPAVec = xr_vector<EParticleAction*>;
+		using EPAVecIt = EPAVec::iterator;
+
 		EPAVec 				m_EActionList;
 	public:             
 		void __stdcall  	FindActionByName	(LPCSTR new_name, bool& res);

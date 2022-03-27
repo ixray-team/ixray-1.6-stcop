@@ -56,8 +56,11 @@ private:
     	xr_string			first;
     	xr_string			second;
     };
-    DEFINE_VECTOR(SPairInfo,PIVec,PIVecIt);
-	struct SObjectInfo{      
+    
+    using PIVec = xr_vector<SPairInfo>; 
+    using PIVecIt = PIVec::iterator;
+	
+    struct SObjectInfo{      
     	shared_str 			object_name;
         PIVec				info;
         u32					ref_count;
@@ -113,7 +116,10 @@ protected:
         SPixelDensityPair(float _pm, u32 _c):pm(_pm),color(_c){}
 		bool operator < (const SPixelDensityPair& other)const{return pm < other.pm;};
     };
-    DEFINE_VECTOR(SPixelDensityPair,PDVec,PDVecIt);
+
+    using PDVec = xr_vector<SPixelDensityPair>;
+    using PDVecIt = PDVec::iterator;
+
     PDVec		pm_colors;
 	bool 		OnWeightAfterEditClick(PropValue* sender, float& edit_val);
 public:
