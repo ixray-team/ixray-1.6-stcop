@@ -159,7 +159,10 @@ protected:
     struct SFolderStore{
     	bool expand;
     };
-    DEFINE_MAP(AnsiString,SFolderStore,FolderStoreMap,FolderStorePairIt);
+
+    using FolderStoreMap = xr_map<AnsiString, SFolderStore>;
+	using FolderStorePairIt = FolderStoreMap::iterator;
+
     FolderStoreMap		FolderStorage;
     void				FolderStore				();
     void				FolderRestore			();

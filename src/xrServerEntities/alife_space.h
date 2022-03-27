@@ -201,8 +201,11 @@ xr_token							hit_types_token							[ ];
 	using SCHEDULE_P_VECTOR = xr_vector<CSE_ALifeSchedulable*>;
 	using SCHEDULE_P_IT = SCHEDULE_P_VECTOR::iterator;
 
-	DEFINE_MAP		(_OBJECT_ID,				CSE_ALifeDynamicObject*,		D_OBJECT_P_MAP,				D_OBJECT_P_PAIR_IT);
-	DEFINE_MAP		(_STORY_ID,					CSE_ALifeDynamicObject*,		STORY_P_MAP,				STORY_P_PAIR_IT);
+	using D_OBJECT_P_MAP = xr_map<_OBJECT_ID, CSE_ALifeDynamicObject*>;
+	using D_OBJECT_P_PAIR_IT = D_OBJECT_P_MAP::iterator;
+	
+	using STORY_P_MAP = xr_map<_STORY_ID, CSE_ALifeDynamicObject*>;
+	using STORY_P_PAIR_IT = STORY_P_MAP::iterator;
 };
 
 #endif //XRAY_ALIFE_SPACE

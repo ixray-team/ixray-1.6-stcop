@@ -33,7 +33,9 @@ public:
     TProperties*		m_ItemProps;
     TProperties*		m_PreviewProps;
 
-    DEFINE_MAP			(EToolsID,ISHTools*,ToolsMap,ToolsPairIt);
+    using ToolsMap = xr_map<EToolsID, ISHTools*>;
+    using ToolsPairIt = ToolsMap::iterator;
+
     ToolsMap			m_Tools;
     ISHTools*			m_Current;
     ISHTools*			Current				(){return m_Current;}

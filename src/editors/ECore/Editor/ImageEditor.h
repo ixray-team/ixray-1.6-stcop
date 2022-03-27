@@ -82,7 +82,9 @@ private:	// User declarations
     using THMVec = xr_vector<ETextureThumbnail*>; 
 	using THMIt = THMVec::iterator;
 	
-    DEFINE_MAP			(shared_str,ETextureThumbnail*,THMMap,THMMapIt);
+    using THMMap = xr_map<shared_str, ETextureThumbnail*>;
+	using THMMapIt = THMMap::iterator;
+
     THMMap				m_THM_Used;
     THMVec				m_THM_Current;
     TItemList*			m_ItemList;

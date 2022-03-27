@@ -147,7 +147,8 @@ using MotionVecIt = MotionVec::iterator;
 using BoneMotionsVec = xr_vector<MotionVec*>;
 using BoneMotionsVecIt = BoneMotionsVec::iterator;
 
-DEFINE_MAP				(shared_str,MotionVec,BoneMotionMap,BoneMotionMapIt);
+using BoneMotionMap = xr_map<shared_str, MotionVec>;
+using BoneMotionMapIt = BoneMotionMap::iterator;
 
 // partition
 class 	ENGINE_API	CPartDef
