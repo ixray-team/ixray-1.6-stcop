@@ -40,3 +40,11 @@ dep/
 # X-Ray resources
 gamedata/
 rawdata/
+levels/
+localization/
+mp/
+patches/
+resources/
+
+# X-Ray user files
+_appdata_/
