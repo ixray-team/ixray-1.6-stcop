@@ -17,7 +17,9 @@ struct SWPLink{
 //			    SWPLink():way_point(0),probability(0){}
 			    SWPLink(CWayPoint* wp, float pb):way_point(wp),probability(pb){}
 };
-DEFINE_VECTOR(SWPLink*,WPLVec,WPLIt);
+
+using WPLVec = xr_vector<SWPLink*>;
+using WPLIt = WPLVec::iterator;
 
 class CWayPoint{
     friend class CWayObject;
@@ -49,7 +51,8 @@ public:
     void		GetBox			(Fbox& bb);
 };
 
-DEFINE_VECTOR(CWayPoint*,WPVec,WPIt);
+using WPVec = xr_vector<CWayPoint*>;
+using WPIt = WPVec::iterator;
 
 class CWayObject: public CCustomObject
 {

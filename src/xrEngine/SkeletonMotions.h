@@ -5,6 +5,7 @@
 //#include		"skeletoncustom.h"
 #include "bone.h"
 #include "skeletonmotiondefs.h"	
+
 // refs
 class CKinematicsAnimated;
 class CBlend;
@@ -136,11 +137,18 @@ struct accel_str_pred : public std::binary_function<shared_str, shared_str, bool
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}
 };
 typedef xr_map<shared_str,u16,accel_str_pred> 	accel_map;
-DEFINE_VECTOR			(CMotionDef,MotionDefVec,MotionDefVecIt);
 
-DEFINE_VECTOR			(CMotion,MotionVec,MotionVecIt);
-DEFINE_VECTOR			(MotionVec*,BoneMotionsVec,BoneMotionsVecIt);
-DEFINE_MAP				(shared_str,MotionVec,BoneMotionMap,BoneMotionMapIt);
+using MotionDefVec = xr_vector<CMotionDef>; 
+using MotionDefVecIt = MotionDefVec::iterator;
+
+using MotionVec = xr_vector<CMotion>;
+using MotionVecIt = MotionVec::iterator;
+
+using BoneMotionsVec = xr_vector<MotionVec*>;
+using BoneMotionsVecIt = BoneMotionsVec::iterator;
+
+using BoneMotionMap = xr_map<shared_str, MotionVec>;
+using BoneMotionMapIt = BoneMotionMap::iterator;
 
 // partition
 class 	ENGINE_API	CPartDef

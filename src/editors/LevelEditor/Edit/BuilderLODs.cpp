@@ -16,7 +16,9 @@
 //------------------------------------------------------------------------------
 // lod build functions
 //------------------------------------------------------------------------------
-DEFINE_VECTOR(Fvector4,Fvector4Vec,Fvector4It);
+using Fvector4Vec = xr_vector<Fvector4>;
+using Fvector4It = Fvector4Vec::iterator;
+
 BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha)
 {
     CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);

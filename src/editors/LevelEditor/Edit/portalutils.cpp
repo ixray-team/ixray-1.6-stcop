@@ -243,10 +243,18 @@ class sCollector
         CSector* 		s[2];
     };
 
-    DEFINE_VECTOR(sVert, sVertVec, sVertIt);
-    DEFINE_VECTOR(sFace, sFaceVec, sFaceIt);
-    DEFINE_VECTOR(sEdge, sEdgeVec, sEdgeIt);
-    DEFINE_VECTOR(sPortal, sPortalVec, sPortalIt);
+    using sVertVec = xr_vector<sVert>; 
+    using sVertIt = sVertVec::iterator;
+    
+    using sFaceVec = xr_vector<sFace>; 
+    using sFaceIt = sFaceVec::iterator;
+    
+    using sEdgeVec = xr_vector<sEdge>; 
+    using sEdgeIt = sEdgeVec::iterator;
+    
+    using sPortalVec = xr_vector<sPortal>;
+    using sPortalIt = sPortalVec::iterator;
+
 public:
     sVertVec		verts;
     sFaceVec		faces;

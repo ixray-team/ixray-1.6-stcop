@@ -241,9 +241,14 @@ struct XRCORE_API xr_shortcut{
 };
 #pragma pack (pop)
 
-DEFINE_VECTOR	(shared_str,RStringVec,RStringVecIt);
-DEFINE_SET		(shared_str,RStringSet,RStringSetIt);
-DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
+using RStringVec = xr_vector<shared_str>;
+using RStringVecIt = RStringVec::iterator;
+
+using RStringSet = xr_set<shared_str>;
+using RStringSetIt = RStringSet::iterator;
+
+using RTokenVec = xr_vector<xr_rtoken>;
+using RTokenVecIt = RStringVec::iterator;
 
 #define			xr_pure_interface	__interface
 

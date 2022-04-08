@@ -21,7 +21,8 @@ extern "C" {
 	extern "C" __declspec(dllimport) void LWO_CloseFile(lwObject *new_obj);
 #endif
 
-DEFINE_MAP(void*,int,VMIndexLink,VMIndexLinkIt);
+using VMIndexLink = xr_map<void*, int>;
+using VMIndexLinkIt = VMIndexLink::iterator;
 
 bool CompareFunc(const st_VMapPt& vm0, const st_VMapPt& vm1){
 	return vm0.vmap_index<vm1.vmap_index;
@@ -258,7 +259,9 @@ bool CEditableObject::Import_LWO(const char* fn, bool bNeedOptimize)
 							MESH->m_VMRefs.push_back(st_VMapPtLst());
 							st_VMapPtLst&	m_vm_lst = MESH->m_VMRefs.back();
 
-                            DEFINE_VECTOR	(st_VMapPt,VMapPtVec,VMapPtIt);
+                            using VMapPtVec = xr_vector<st_VMapPt>;
+                            using VMapPtIt = VMapPtVec::iterator;
+
                             VMapPtVec		vm_lst;
                             
 							Mpv.vmref 		= MESH->m_VMRefs.size()-1;

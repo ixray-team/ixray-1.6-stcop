@@ -65,7 +65,10 @@ class CCustomObject;
                 e_mesh		= mesh;
             }
         };
-		DEFINE_VECTOR(SResult,ResultVec,ResultIt);
+		
+        using ResultVec = xr_vector<SResult>;
+        using ResultIt = ResultVec::iterator;
+
     protected:
     	ResultVec			results;
     public:
@@ -130,7 +133,10 @@ class CCustomObject;
 		IC void Reset		(){ ZeroMemory(this,sizeof(SRayPickInfo));inf.range = 5000;}
 		IC void SetRESULT	(CDB::MODEL* M, CDB::RESULT* R){inf=*R;inf.id=(M->get_tris()+inf.id)->dummy;}
 	};
-    DEFINE_VECTOR(CDB::RESULT,BPInfVec,BPInfIt);
+    
+    using BPInfVec = xr_vector<CDB::RESULT>;
+    using BPInfIt = BPInfVec::iterator;
+
 	struct SBoxPickInfo{
     	BPInfVec			inf;
 		CCustomObject*		s_obj;
@@ -140,7 +146,10 @@ class CCustomObject;
 		IC void Reset		(){ZeroMemory(this,sizeof(SBoxPickInfo));}
 		IC void AddRESULT	(CDB::MODEL* M, CDB::RESULT* R){inf.push_back(*R); inf.back().id=(M->get_tris()+inf.back().id)->dummy;}
 	};
-	DEFINE_VECTOR(SBoxPickInfo,SBoxPickInfoVec,SBoxPickInfoIt);
+	
+    using SBoxPickInfoVec = xr_vector<SBoxPickInfo>;
+    using SBoxPickInfoIt = SBoxPickInfoVec::iterator;
+    
 #endif
 
 //----------------------------------------------------

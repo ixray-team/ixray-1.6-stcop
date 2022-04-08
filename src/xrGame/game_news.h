@@ -30,4 +30,5 @@ struct GAME_NEWS_DATA : public IPureSerializeObject<IReader,IWriter>
 private:
 };
 
-DEFINE_VECTOR(GAME_NEWS_DATA, GAME_NEWS_VECTOR, GAME_NEWS_IT);
+using GAME_NEWS_VECTOR = xr_vector<GAME_NEWS_DATA>;
+using GAME_NEWS_IT = GAME_NEWS_VECTOR::iterator;

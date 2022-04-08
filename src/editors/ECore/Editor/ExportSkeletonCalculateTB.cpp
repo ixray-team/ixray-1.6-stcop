@@ -26,11 +26,17 @@ class CGameFont;
 
 //
 
+using FLvertexVec = xr_vector<FVF::L>;
+using FLvertexIt = FLvertexVec::iterator;
 
-DEFINE_VECTOR(FVF::L,FLvertexVec,FLvertexIt);
-DEFINE_VECTOR(FVF::TL,FTLvertexVec,FTLvertexIt);
-DEFINE_VECTOR(FVF::LIT,FLITvertexVec,FLITvertexIt);
-DEFINE_VECTOR(shared_str,RStrVec,RStrVecIt);
+using FTLvertexVec = xr_vector<FVF::TL>;
+using FTLvertexIt = FTLvertexVec::iterator;
+
+using FLITvertexVec = xr_vector<FVF::LIT>; 
+using FLITvertexIt = FLITvertexVec::iterator;
+
+using RStrVec = xr_vector<shared_str>; 
+using RStrVecIt = RStrVec::iterator;
 
 #endif
 

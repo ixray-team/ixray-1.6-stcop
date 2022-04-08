@@ -27,12 +27,14 @@ public:
 			bool				Precondition	(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id, LPCSTR next_phrase_id) const;
 			void				Action			(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id) const;
 
+			using PRECONDITION_VECTOR = xr_vector<shared_str>;
+			using PRECONDITION_VECTOR_IT = PRECONDITION_VECTOR::iterator;
 
-
-	DEFINE_VECTOR				(shared_str, PRECONDITION_VECTOR, PRECONDITION_VECTOR_IT);
 			const PRECONDITION_VECTOR& Preconditions		() const {return m_Preconditions;}
 	
-	DEFINE_VECTOR(shared_str, ACTION_NAME_VECTOR, ACTION_NAME_VECTOR_IT);
+			using ACTION_NAME_VECTOR = xr_vector<shared_str>;
+			using ACTION_NAME_VECTOR_IT = ACTION_NAME_VECTOR::iterator;
+
 			const ACTION_NAME_VECTOR& Actions() const {return m_ScriptActions;}
 
 
@@ -58,17 +60,21 @@ protected:
 
 	//скриптовые действия, которые активируется после того как 
 	//говорится фраза
-	DEFINE_VECTOR				(shared_str, ACTION_NAME_VECTOR, ACTION_NAME_VECTOR_IT);
+	using ACTION_NAME_VECTOR = xr_vector<shared_str>;
+	using ACTION_NAME_VECTOR_IT = ACTION_NAME_VECTOR::iterator;
+
 	ACTION_NAME_VECTOR			m_ScriptActions;
 	
-	DEFINE_VECTOR				(shared_str, INFO_VECTOR, INFO_VECTOR_IT);
+	using INFO_VECTOR = xr_vector<shared_str>;
+	using INFO_VECTOR_IT = INFO_VECTOR::iterator;
 
 	INFO_VECTOR					m_GiveInfo;
 	INFO_VECTOR					m_DisableInfo;
 
 	//список скриптовых предикатов, выполнение, которых необходимо
 	//для того чтоб фраза стала доступной
-	DEFINE_VECTOR				(shared_str, PRECONDITION_VECTOR, PRECONDITION_VECTOR_IT);
+	using PRECONDITION_VECTOR = xr_vector<shared_str>;
+	using PRECONDITION_VECTOR_IT = PRECONDITION_VECTOR::iterator;
 
 	PRECONDITION_VECTOR			m_Preconditions;
 	//проверка наличия/отсутствия информации

@@ -21,7 +21,10 @@ namespace PAPI{
 		virtual void 	Load		(IReader& F)=0;
 		virtual void 	Save		(IWriter& F)=0;
 	};
-    DEFINE_VECTOR(ParticleAction*,PAVec,PAVecIt);
+
+	using PAVec = xr_vector<ParticleAction*>;
+	using PAVecIt = PAVec::iterator;
+
 	class ParticleActions{
 		PAVec			actions;
 		bool			m_bLocked;

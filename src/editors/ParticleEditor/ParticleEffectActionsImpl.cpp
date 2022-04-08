@@ -1173,7 +1173,10 @@ struct Stp{
     Fcolor 	c;
     Stp(const Fvector &_p, const Fcolor &_c):p(_p),c(_c){}
 };
-DEFINE_VECTOR(Stp,StpVec,StpVecIt);
+
+using StpVec = xr_vector<Stp>;
+using StpVecIt = StpVec::iterator;
+
 static StpVec pts;
 IC bool sort_tp_pred(const Stp& x, const Stp& y)
 {	

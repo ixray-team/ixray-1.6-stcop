@@ -25,7 +25,8 @@ struct SVertex: public Fvector{
     }
 };
 
-DEFINE_VECTOR(SVertex,SVertexVec,SVertexIt)
+using SVertexVec = xr_vector<SVertex>;
+using SVertexIt = SVertexVec::iterator;
 
 class CPortalUtils{
 //	void FindSVertexLinks(int id, CSector* S, SVertexVec& V);

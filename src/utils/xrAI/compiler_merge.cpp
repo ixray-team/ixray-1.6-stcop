@@ -27,7 +27,8 @@ BOOL	NodeSimilar(vertex&	N1, vertex&	N2)
 	return TRUE;
 }
 
-DEF_VECTOR(vecDW,u32);
+using vecDW = xr_vector<u32>;
+using vecDW_it = vecDW::iterator;
 
 xr_vector<vecDW>	BestQuad;
 u32			BestQuad_Count;

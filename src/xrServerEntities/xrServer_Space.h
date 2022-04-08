@@ -46,11 +46,20 @@ enum EPOType {
     epotSkeleton
 };
 
-DEFINE_VECTOR	(u32,						DWORD_VECTOR,					DWORD_IT);
-DEFINE_VECTOR	(bool,						BOOL_VECTOR,					BOOL_IT);
-DEFINE_VECTOR	(float,						FLOAT_VECTOR,					FLOAT_IT);
-DEFINE_VECTOR	(LPSTR,						LPSTR_VECTOR,					LPSTR_IT);
-DEFINE_VECTOR	(Fvector,					FVECTOR_VECTOR,					FVECTOR_IT);
+using DWORD_VECTOR = xr_vector<u32>;
+using DWORD_IT = DWORD_VECTOR::iterator;
+
+using BOOL_VECTOR = xr_vector<bool>;
+using BOOL_IT = BOOL_VECTOR::iterator;
+
+using FLOAT_VECTOR = xr_vector<float>;
+using FLOAT_IT = FLOAT_VECTOR::iterator;
+
+using LPSTR_VECTOR = xr_vector<LPSTR>;
+using LPSTR_IT = LPSTR_VECTOR::iterator;
+
+using FVECTOR_VECTOR = xr_vector<Fvector>;
+using FVECTOR_IT = FVECTOR_VECTOR::iterator;
 
 #ifdef XRGAME_EXPORTS
 #	define DECLARE_ENTITY_DESTROY

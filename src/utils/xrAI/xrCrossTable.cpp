@@ -12,8 +12,11 @@
 
 LPCSTR GAME_LEVEL_GRAPH = "level.graph";
 
-DEFINE_VECTOR			(u32,			FLOAT_VECTOR,			FLOAT_IT);
-DEFINE_VECTOR			(FLOAT_VECTOR,	FLOAT_VECTOR_VECTOR,	FLOAT_VECTOR_IT);
+using FLOAT_VECTOR = xr_vector<u32>;
+using FLOAT_IT = FLOAT_VECTOR::iterator;
+
+using FLOAT_VECTOR_VECTOR = xr_vector<FLOAT_VECTOR>;
+using FLOAT_VECTOR_IT = FLOAT_VECTOR_VECTOR::iterator;
 
 FLOAT_VECTOR			*g_tDistances;
 CLevelGraph				*g_tMap;

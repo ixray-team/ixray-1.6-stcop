@@ -79,8 +79,12 @@ private:
 private:	// User declarations
 	static TfrmImageLib* form;
 
-    DEFINE_VECTOR		(ETextureThumbnail*,THMVec,THMIt);
-    DEFINE_MAP			(shared_str,ETextureThumbnail*,THMMap,THMMapIt);
+    using THMVec = xr_vector<ETextureThumbnail*>; 
+	using THMIt = THMVec::iterator;
+	
+    using THMMap = xr_map<shared_str, ETextureThumbnail*>;
+	using THMMapIt = THMMap::iterator;
+
     THMMap				m_THM_Used;
     THMVec				m_THM_Current;
     TItemList*			m_ItemList;

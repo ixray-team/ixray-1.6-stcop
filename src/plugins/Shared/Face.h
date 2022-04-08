@@ -10,5 +10,6 @@ public:
 	void	_VSet(int id, int idx){v[id]=idx;}
 };
 
-DEFINE_VECTOR(st_FACE*,ExpFaceVec,ExpFaceIt);
+using ExpFaceVec = xr_vector<st_FACE*>;
+using ExpFaceIt = ExpFaceVec::iterator;
 

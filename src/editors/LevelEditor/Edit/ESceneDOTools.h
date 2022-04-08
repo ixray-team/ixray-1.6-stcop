@@ -21,9 +21,12 @@ struct SIndexDist{
     float	cnt[4];
 	SIndexDist(){ZeroMemory(this,sizeof(SIndexDist));}
 };
-DEFINE_SVECTOR		(SIndexDist,4,SIndexDistVec,SIndexDistIt);
 
-DEFINE_MAP			(u32,DOVec,ColorIndexMap,ColorIndexPairIt);
+using SIndexDistVec = svector<SIndexDist, 4>;
+using SIndexDistIt = SIndexDistVec::iterator;
+
+using ColorIndexMap = xr_map<u32,DOVec>;
+using ColorIndexPairIt = ColorIndexMap::iterator;
 
 #define DETAIL_SLOT_SIZE_2 	DETAIL_SLOT_SIZE*0.5f
 #define DETAIL_SLOT_RADIUS	DETAIL_SLOT_SIZE*0.7071f

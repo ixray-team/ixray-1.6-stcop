@@ -12,7 +12,7 @@ typedef u32 TTime;
 
 class CBlend;
 
-// специальные параметры анимаций (animation spec params)
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (animation spec params)
 #define ASP_MOVE_BKWD			(1 << 0) 
 #define ASP_DRAG_CORPSE			(1 << 1) 
 #define ASP_CHECK_CORPSE		(1 << 2)
@@ -29,8 +29,8 @@ class CBlend;
 #define ASP_UPPER_STATE			(1 << 13)
 #define ASP_MOVE_SMELLING		(1 << 14)
 
-#define AA_FLAG_ATTACK_RAT		(1 << 0)			// аттака крыс?
-#define AA_FLAG_FIRE_ANYWAY		(1 << 1)			// трассировка не нужна
+#define AA_FLAG_ATTACK_RAT		(1 << 0)			// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ?
+#define AA_FLAG_FIRE_ANYWAY		(1 << 1)			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
 #define CRITICAL_STAND_TIME		1400
 #define TIME_STAND_RECHECK		2000
@@ -262,12 +262,12 @@ enum EPState {
 typedef		shared_str			anim_string;
 #define		DEFAULT_ANIM		eAnimStandIdle
 
-// элемент анимации
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 struct SAnimItem {
 
 	anim_string		target_name;	// "stand_idle_"
-	int				spec_id;		// (-1) - any,  (0 - ...) - идентификатор 3
-	u8				count;			// количество анимаций : "idle_0", "idle_1", "idle_2" 
+	int				spec_id;		// (-1) - any,  (0 - ...) - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 3
+	u8				count;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ : "idle_0", "idle_1", "idle_2" 
 	
 	SVelocityParam	velocity;
 
@@ -283,7 +283,7 @@ struct SAnimItem {
 
 #define SKIP_IF_AGGRESSIVE	true
 
-// описание перехода
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 struct STransition {
 
 	struct {
@@ -297,7 +297,7 @@ struct STransition {
 	bool			skip_if_aggressive;
 };
 
-// элемент движения
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 struct SMotionItem {
 	EMotionAnim		anim;
 	bool			is_turn_params;
@@ -309,28 +309,28 @@ struct SMotionItem {
 	} turn;
 };
 
-// подмена анимаций (если *flag == true, то необходимо заменить анимацию)
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ *flag == true, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 struct SReplacedAnim {
 	EMotionAnim cur_anim;
 	EMotionAnim new_anim;
 	bool		*flag;
 };
 
-// Определение времени аттаки по анимации
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 typedef struct {
-	EMotionAnim	anim;				// параметры конкретной анимации 
+	EMotionAnim	anim;				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 	u32			anim_i3;
 
-	TTime		time_from;			// диапазон времени когда можно наносить hit (от)
-	TTime		time_to;		    // диапазон времени когда можно наносить hit (до)
+	TTime		time_from;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ hit (пїЅпїЅ)
+	TTime		time_to;		    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ hit (пїЅпїЅ)
 
-	Fvector		trace_from;			// направление трассировки (относительно центра)
+	Fvector		trace_from;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 	Fvector		trace_to;
 
-	u32			flags;				// специальные флаги
+	u32			flags;				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
-	float		damage;				// урон при данной атаке
-	Fvector		hit_dir;			// угол направления приложения силы к объекту
+	float		damage;				// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	Fvector		hit_dir;			// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	//-----------------------------------------
 	// temp 
@@ -361,7 +361,8 @@ struct SAAParam {
 	float		dist;
 };
 
-DEFINE_VECTOR(SAAParam, AA_VECTOR, AA_VECTOR_IT);
+using AA_VECTOR = xr_vector<SAAParam>;
+using AA_VECTOR_IT = AA_VECTOR::iterator;
 
 struct SCurrentAnimationInfo {
 	shared_str		name;
@@ -406,20 +407,32 @@ enum EHitSide {
 	eSideRight
 };
 
+using ANIM_ITEM_VECTOR = xr_vector<SAnimItem*>;
+using ANIM_ITEM_VECTOR_IT = ANIM_ITEM_VECTOR::iterator;
 
-DEFINE_VECTOR	(SAnimItem*,		ANIM_ITEM_VECTOR,		ANIM_ITEM_VECTOR_IT);
-DEFINE_VECTOR	(STransition,		TRANSITION_ANIM_VECTOR, TRANSITION_ANIM_VECTOR_IT);
-DEFINE_MAP		(EAction,			SMotionItem,			MOTION_ITEM_MAP,			MOTION_ITEM_MAP_IT);
-DEFINE_VECTOR	(EMotionAnim,		SEQ_VECTOR,				SEQ_VECTOR_IT);
-DEFINE_VECTOR	(SAttackAnimation,	ATTACK_ANIM,			ATTACK_ANIM_IT);
-DEFINE_VECTOR	(SReplacedAnim,		REPLACED_ANIM,			REPLACED_ANIM_IT);
+using TRANSITION_ANIM_VECTOR = xr_vector<STransition>;
+using TRANSITION_ANIM_VECTOR_IT = TRANSITION_ANIM_VECTOR::iterator;
 
-DEFINE_MAP		(u16,				t_fx_index,				FX_MAP_U16,					FX_MAP_U16_IT);	
-DEFINE_MAP		(shared_str,			t_fx_index,				FX_MAP_STRING,				FX_MAP_STRING_IT);
+using MOTION_ITEM_MAP = xr_map<EAction, SMotionItem>;			
+using MOTION_ITEM_MAP_IT  = MOTION_ITEM_MAP::iterator;
 
+using SEQ_VECTOR = xr_vector<EMotionAnim>;
+using SEQ_VECTOR_IT = SEQ_VECTOR::iterator;
 
-DEFINE_VECTOR	(SEQ_VECTOR, VELOCITY_CHAIN_VEC, VELOCITY_CHAIN_VEC_IT);
+using ATTACK_ANIM = xr_vector<SAttackAnimation>;
+using ATTACK_ANIM_IT = ATTACK_ANIM::iterator;
 
+using REPLACED_ANIM = xr_vector<SReplacedAnim>;
+using REPLACED_ANIM_IT = REPLACED_ANIM::iterator;
+
+using FX_MAP_U16 = xr_map<u16, t_fx_index>;					
+using FX_MAP_U16_IT = FX_MAP_U16::iterator;	
+
+using FX_MAP_STRING = xr_map<shared_str, t_fx_index>;
+using FX_MAP_STRING_IT = FX_MAP_STRING::iterator;
+
+using VELOCITY_CHAIN_VEC = xr_vector<SEQ_VECTOR>;
+using VELOCITY_CHAIN_VEC_IT = VELOCITY_CHAIN_VEC::iterator;
 
 struct SVelocity {
 	float	current;
@@ -463,7 +476,7 @@ enum EAccelValue {
 #define PATH_NEED_REBUILD() m_object->IsPathEnd(2,0.5f)
 
 
-// тип монстра (по количеству ног)
+// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ)
 #define QUADRUPEDAL		4
 #define BIPEDAL			2
 
@@ -477,7 +490,8 @@ struct SMonsterEnemy {
 
 class CEntityAlive;
 
-DEFINE_MAP(const CEntityAlive *,SMonsterEnemy,ENEMIES_MAP, ENEMIES_MAP_IT);
+using ENEMIES_MAP = xr_map<const CEntityAlive *,SMonsterEnemy>;
+using ENEMIES_MAP_IT = ENEMIES_MAP::iterator;
 
 struct SMonsterCorpse {
 	Fvector position;
@@ -485,9 +499,8 @@ struct SMonsterCorpse {
 	TTime	time;
 };
 
-DEFINE_MAP(const CEntityAlive *,SMonsterCorpse,CORPSE_MAP, CORPSE_MAP_IT);
-
-
+using CORPSE_MAP = xr_map<const CEntityAlive*, SMonsterCorpse>;
+using CORPSE_MAP_IT = CORPSE_MAP::iterator;
 
 struct SMonsterHit {
 	CObject		*object;
@@ -500,8 +513,8 @@ struct SMonsterHit {
 	}
 };
 
-DEFINE_VECTOR(SMonsterHit,MONSTER_HIT_VECTOR, MONSTER_HIT_VECTOR_IT);
-
+using MONSTER_HIT_VECTOR = xr_vector<SMonsterHit>;
+using MONSTER_HIT_VECTOR_IT = MONSTER_HIT_VECTOR::iterator;
 
 enum EDangerType {
 	eWeak,
@@ -511,7 +524,8 @@ enum EDangerType {
 	eNone
 };
 
-DEFINE_MAP(MotionID, shared_str, ANIM_TO_MOTION_MAP, ANIM_TO_MOTION_MAP_IT);
+using ANIM_TO_MOTION_MAP = xr_map<MotionID, shared_str>;
+using ANIM_TO_MOTION_MAP_IT = ANIM_TO_MOTION_MAP::iterator;
 
 
 
