@@ -148,17 +148,19 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>..\..\..\include;..\..\..\..\libogg\include;..\..\..\..\libogg-1.1.4\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\..\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>..\..\..\include;..\..\..\..\libogg\include;..\..\..\..\libogg-1.1.4\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\..\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -170,6 +172,7 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>..\..\..\include;..\..\..\..\libogg\include;..\..\..\..\libogg-1.1.4\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\..\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSE|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -181,6 +184,7 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>..\..\..\include;..\..\..\..\libogg\include;..\..\..\..\libogg-1.1.4\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\..\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSE2|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>

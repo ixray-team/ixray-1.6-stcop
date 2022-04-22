@@ -60,7 +60,7 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_jun2010\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
