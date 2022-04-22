@@ -65,6 +65,7 @@
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -86,6 +87,7 @@
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
