@@ -229,6 +229,9 @@
     <ClCompile Include="tga.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\proj\DirectXTex\DirectXTex.vcxproj">
+      <Project>{286cc988-2191-467a-9f6d-abb7954d4f78}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
