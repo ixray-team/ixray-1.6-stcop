@@ -471,6 +471,11 @@
     <ClInclude Include="..\..\..\lib\smallft.h" />
     <ClInclude Include="..\..\..\lib\window.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libogg-1.1.4\win32\VS2008\libogg_dynamic.vcxproj">
+      <Project>{40913de9-1ead-4293-b682-af7ad1cb6cc9}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
