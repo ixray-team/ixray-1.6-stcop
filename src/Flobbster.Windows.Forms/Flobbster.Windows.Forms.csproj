@@ -6,6 +6,7 @@
     <RootNamespace>Flobbster.Windows.Forms</RootNamespace>
     <AssemblyName>Flobbster.Windows.Forms.PropertyGrid</AssemblyName>
     <OutputType>Library</OutputType>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
 </Project>

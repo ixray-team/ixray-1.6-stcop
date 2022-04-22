@@ -28,6 +28,7 @@
     <AssemblyOriginatorKeyFile>..\..\dep\dockpanelsuite\WinFormsUI\dockpanelsuite.snk</AssemblyOriginatorKeyFile>
     <EnableDefaultItems>false</EnableDefaultItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
