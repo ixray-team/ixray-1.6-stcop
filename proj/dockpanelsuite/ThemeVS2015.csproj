@@ -14,7 +14,7 @@
       Release notes can be found at GitHub,
       https://github.com/dockpanelsuite/dockpanelsuite/releases
     </PackageReleaseNotes>
-    <TargetFrameworks>net40</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
     <AssemblyName>WeifenLuo.WinFormsUI.Docking.ThemeVS2015</AssemblyName>
