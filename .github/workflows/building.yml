@@ -1,0 +1,46 @@
+name: Building
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        configuration: [Debug, Mixed, Release]
+        platform: [Win32]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Get dependencies
+      run: |
+        curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-mar2009.7z -O
+        7z x sdk-directxsdk-mar2009.7z
+        curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-jun2010.7z -O
+        7z x sdk-directxsdk-jun2010.7z
+        git clone --branch aug2021 --depth 1 https://github.com/microsoft/DirectXTex.git dep/DirectXTex
+        git clone --branch Release_3.1.0 --depth 1 https://github.com/dockpanelsuite/dockpanelsuite.git dep/dockpanelsuite
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Restore solution
+      run: |
+        msbuild XRay.Engine.sln /t:Restore /p:Configuration=${{ matrix.configuration }}
+
+    - name: Build solution
+      run: |
+        msbuild /m XRay.Engine.sln /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: out
+        path: |
+          bin/
+          lib/
