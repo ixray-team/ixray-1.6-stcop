@@ -37,32 +37,38 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -96,7 +102,7 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\sdk\include;..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\sdk\libraries;..\..\lib;..\..\lib\Debug;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -118,7 +124,7 @@
     <OutDir>$(SolutionDir)bin\dedicated\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\sdk\include;..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\sdk\libraries;..\..\lib;..\..\lib\Debug;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -127,6 +133,7 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>..\..\sdk\include;..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\sdk\libraries;..\..\lib;..\..\lib\Release;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">
     <OutDir>$(SolutionDir)bin\dedicated\</OutDir>
@@ -169,7 +176,7 @@
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <MapExports>false</MapExports>
@@ -211,7 +218,7 @@
       <AdditionalDependencies>vfw32.lib;libogg_static.lib;libtheora_static.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <SubSystem>Windows</SubSystem>
@@ -258,7 +265,7 @@
       <AdditionalDependencies>vfw32.lib;libogg_static.lib;libtheora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <SubSystem>NotSet</SubSystem>
@@ -304,7 +311,7 @@
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmtd;libcd;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <MapFileName />
       <MapExports>false</MapExports>
       <SubSystem>Windows</SubSystem>
@@ -346,7 +353,7 @@
       <AdditionalDependencies>vfw32.lib;libogg_static.lib;libtheora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <SubSystem>Windows</SubSystem>
@@ -388,7 +395,7 @@
       <AdditionalDependencies>vfw32.lib;libogg_static.lib;libtheora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <SubSystem>NotSet</SubSystem>
@@ -688,6 +695,12 @@
     <Text Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\sdk\sources\libogg-1.1.4\win32\VS2008\libogg_static.vcxproj">
+      <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\sdk\sources\libtheora-1.1.1\win32\VS2008\libtheora\libtheora_static.vcxproj">
+      <Project>{653f3841-3f26-49b9-afcf-091db4b67031}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\3rd party\luabind\luabind.beta7-devel.rc4.vcxproj">
       <Project>{cc52e0b3-cc35-4934-9302-035b748f3f2c}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

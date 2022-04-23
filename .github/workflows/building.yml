@@ -8,8 +8,11 @@ jobs:
 
     strategy:
       matrix:
-        configuration: [Debug, Mixed, Release]
+        configuration: [Debug, Mixed, Release, Debug_Dedicated, Mixed_Dedicated, Release_Dedicated]
         platform: [Win32]
+
+    env:
+      solution_name: XRay.Engine.sln
 
     steps:
     - name: Checkout
@@ -30,18 +33,14 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
-    - name: Restore solution
-      run: |
-        msbuild XRay.Engine.sln /t:Restore /p:Configuration=${{ matrix.configuration }}
-
     - name: Build solution
       run: |
-        msbuild /m XRay.Engine.sln /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
+        msbuild $env:solution_name -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -r -m -nologo
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: out
+        name: out (${{ matrix.configuration }})
         path: |
           bin/
           lib/
