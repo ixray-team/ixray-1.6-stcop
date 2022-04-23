@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        configuration: [Debug, Mixed, Release]
+        configuration: [Debug, Mixed, Release, Debug_Dedicated, Mixed_Dedicated, Release_Dedicated]
         platform: [Win32]
 
     env:
