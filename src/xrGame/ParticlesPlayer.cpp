@@ -246,10 +246,10 @@ void CParticlesPlayer::UpdateParticles()
     CObject* object			= m_self_object;
 	VERIFY	(object);
 
-	for(BoneInfoVecIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
+	for(auto b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
 		SBoneInfo& b_info	= *b_it;
 
-		for (ParticlesInfoListIt p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++){
+		for (auto p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++){
 			SParticlesInfo& p_info	= *p_it;
 			if(!p_info.ps) continue;
 			//обновить позицию партиклов
@@ -275,7 +275,9 @@ void CParticlesPlayer::UpdateParticles()
 				m_bActiveBones  = true;
 		}
 
-		ParticlesInfoListIt RI=std::remove_if(b_info.particles.begin(),b_info.particles.end(),SRP());
+		const auto RI = std::remove_if(b_info.particles.begin(), b_info.particles.end(), [](const SParticlesInfo &pi) {
+			return pi.ps == nullptr;
+		});
 		b_info.particles.erase(RI,b_info.particles.end());
 	}
 }
