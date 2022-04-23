@@ -1,31 +1,24 @@
-// Microsoft Visual C++ generated resource script.
-//
+// Microsoft Visual C++ generated resource script
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "afxres.h"
 
-/////////////////////////////////////////////////////////////////////////////
+// Generated from the TEXTINCLUDE resource
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
 // Russian resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
 #ifdef _WIN32
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
 #endif //_WIN32
 
-/////////////////////////////////////////////////////////////////////////////
-//
 // Version
-//
-
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION 1,6,0,2
  PRODUCTVERSION 1,6,0,2
@@ -59,13 +52,9 @@ BEGIN
     END
 END
 
-#endif    // Russian resources
-/////////////////////////////////////////////////////////////////////////////
+#endif // Russian resources
 
-
-/////////////////////////////////////////////////////////////////////////////
 // Ukrainian resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
 #ifdef _WIN32
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
@@ -73,42 +62,28 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
 // TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
-    "#include ""afxres.h""\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
 END
-
-#endif    // APSTUDIO_INVOKED
-
-#endif    // Ukrainian resources
-/////////////////////////////////////////////////////////////////////////////
-
-
+#endif // APSTUDIO_INVOKED
+#endif // Ukrainian resources
 
 #ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-
+// Generated from the TEXTINCLUDE 3 resource
+#endif // not APSTUDIO_INVOKED

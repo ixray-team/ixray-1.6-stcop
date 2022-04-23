@@ -1,30 +1,24 @@
-// Microsoft Visual C++ generated resource script.
-//
+// Microsoft Visual C++ generated resource script
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "afxres.h"
 
-/////////////////////////////////////////////////////////////////////////////
+// Generated from the TEXTINCLUDE resource
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
 // Russian resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
 #ifdef _WIN32
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
 #endif //_WIN32
 
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog
-//
 
 IDD_VERIFY DIALOGEX 0, 0, 265, 106
 STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | 
@@ -74,14 +68,9 @@ BEGIN
     PUSHBUTTON      "Debug",IDCANCEL,50,0,50,14,BS_FLAT
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // DESIGNINFO
-//
-
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_VERIFY, DIALOG
     BEGIN
@@ -107,15 +96,10 @@ BEGIN
         BOTTOMMARGIN, 8
     END
 END
-#endif    // APSTUDIO_INVOKED
+#endif // APSTUDIO_INVOKED
+#endif // Russian resources
 
-#endif    // Russian resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
 // Ukrainian resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
 #ifdef _WIN32
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
@@ -123,47 +107,36 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
 // TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
-    "#include ""afxres.h""\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
 END
+#endif // APSTUDIO_INVOKED
+#endif // Ukrainian resources
 
-#endif    // APSTUDIO_INVOKED
-
-#endif    // Ukrainian resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
 // English (U.S.) resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog
-//
 
 IDD_NVIEW DIALOG  0, 0, 780, 535
 STYLE DS_ABSALIGN | DS_SETFONT | DS_SETFOREGROUND | DS_NOFAILCREATE | 
@@ -185,14 +158,9 @@ BEGIN
     PUSHBUTTON      "View cover back",ID_VIEW_COVER4,690,180,85,14,BS_FLAT
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // DESIGNINFO
-//
-
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_NVIEW, DIALOG
     BEGIN
@@ -202,20 +170,9 @@ BEGIN
         BOTTOMMARGIN, 528
     END
 END
-#endif    // APSTUDIO_INVOKED
-
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
+#endif // APSTUDIO_INVOKED
+#endif // English (U.S.) resources
 
 #ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-
+// Generated from the TEXTINCLUDE 3 resource
+#endif // not APSTUDIO_INVOKED

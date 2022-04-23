@@ -17,28 +17,24 @@
   <PropertyGroup Label="Globals">
     <ProjectName>ode</ProjectName>
     <ProjectGuid>{1BF75FEB-87DD-486C-880B-227987D191C2}</ProjectGuid>
-    <Keyword>AtlProj</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
-    <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
-    <UseOfAtl>false</UseOfAtl>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
-    <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -82,17 +78,6 @@
     <IncludePath>..\..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>false</MkTypLibCompatible>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <GenerateStublessProxies>true</GenerateStublessProxies>
-      <TypeLibraryName>$(IntDir)default.tlb</TypeLibraryName>
-      <HeaderFileName>default.h</HeaderFileName>
-      <DllDataFileName />
-      <InterfaceIdentifierFileName>default_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName>default_p.c</ProxyFileName>
-    </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_USRDLL;MSVC;dSINGLE;_SECURE_SCL=0;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -107,11 +92,6 @@
       <DisableSpecificWarnings>4100;4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ModuleDefinitionFile>..\..\..\config\msvcdefs.def</ModuleDefinitionFile>
@@ -127,23 +107,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
     </Link>
-    <PostBuildEvent>
-      <Message>Performing registration</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>false</MkTypLibCompatible>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <GenerateStublessProxies>true</GenerateStublessProxies>
-      <TypeLibraryName>$(IntDir)default.tlb</TypeLibraryName>
-      <HeaderFileName>default.h</HeaderFileName>
-      <DllDataFileName />
-      <InterfaceIdentifierFileName>default_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName>default_p.c</ProxyFileName>
-    </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -167,11 +132,6 @@
       <DisableSpecificWarnings>4100;4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <ModuleDefinitionFile>..\..\..\config\msvcdefs.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -189,23 +149,8 @@
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Message>Performing registration</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>false</MkTypLibCompatible>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <GenerateStublessProxies>true</GenerateStublessProxies>
-      <TypeLibraryName>$(IntDir)default.tlb</TypeLibraryName>
-      <HeaderFileName>default.h</HeaderFileName>
-      <DllDataFileName />
-      <InterfaceIdentifierFileName>default_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName>default_p.c</ProxyFileName>
-    </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -226,11 +171,6 @@
       <DisableSpecificWarnings>4100;4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>..\..\..\config\msvcdefs.def</ModuleDefinitionFile>
@@ -246,10 +186,6 @@
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Message>Performing registration</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\ode\collision.h" />
