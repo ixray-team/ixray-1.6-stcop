@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="openssl">
       <UniqueIdentifier>{5fe281fe-5d97-4a9c-9b8d-1047532162fb}</UniqueIdentifier>
     </Filter>
@@ -20,15 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="crypto.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="xr_dsa.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="xr_sha.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="openssl\src\bio_lib.c">
       <Filter>openssl\include</Filter>
     </ClCompile>
@@ -296,20 +279,11 @@
     <ClCompile Include="openssl\src\x_sig.c">
       <Filter>openssl\src</Filter>
     </ClCompile>
+    <ClCompile Include="crypto.cpp" />
+    <ClCompile Include="xr_dsa.cpp" />
+    <ClCompile Include="xr_sha.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="crypto.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto_api_def.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_dsa.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_sha.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="openssl\openssl\aes.h">
       <Filter>openssl\include</Filter>
     </ClInclude>
@@ -550,5 +524,9 @@
     <ClInclude Include="openssl\src\sha_locl.h">
       <Filter>openssl\src</Filter>
     </ClInclude>
+    <ClInclude Include="crypto.h" />
+    <ClInclude Include="crypto_api_def.h" />
+    <ClInclude Include="xr_dsa.h" />
+    <ClInclude Include="xr_sha.h" />
   </ItemGroup>
 </Project>
