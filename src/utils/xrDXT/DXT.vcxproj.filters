@@ -77,7 +77,4 @@
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
 </Project>
