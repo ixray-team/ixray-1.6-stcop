@@ -132,7 +132,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flobbster.Windows.Forms", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C11BBDDD-5E5E-4669-9484-CD7031F1DC3D}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
+		DownloadDependencies.bat = DownloadDependencies.bat
+		fs.ltx = fs.ltx
+		fsfactory.ltx = fsfactory.ltx
+		fsgame.ltx = fsgame.ltx
+		LICENSE.md = LICENSE.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dockpanelsuite", "dockpanelsuite", "{C3BFDA10-0EA9-43F8-BB84-6BD5F8B4A349}"
