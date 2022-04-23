@@ -10,6 +10,8 @@
 
 #include "script_abstract_action.h"
 #include "script_export_space.h"
+#include "patrol_path_manager_space.h"
+#include "detail_path_manager_space.h"
 
 namespace DetailPathManager {
 	enum EDetailPathType;
