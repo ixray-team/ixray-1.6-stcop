@@ -120,9 +120,6 @@
     <ClInclude Include="..\..\common\NvMender2003\remove_isolated_verts.h">
       <Filter>External\NV_Mender2003</Filter>
     </ClInclude>
-    <ClInclude Include="NvMender2002\NVMeshMender.h">
-      <Filter>External\NV_Mender2002</Filter>
-    </ClInclude>
     <ClInclude Include="NvMender2002\nv_algebra.h">
       <Filter>External\NV_Mender2002\NV_Basis</Filter>
     </ClInclude>
@@ -200,9 +197,6 @@
     </ClCompile>
     <ClCompile Include="..\..\common\NvMender2003\NVMeshMender.cpp">
       <Filter>External\NV_Mender2003</Filter>
-    </ClCompile>
-    <ClCompile Include="NvMender2002\NVMeshMender.cpp">
-      <Filter>External\NV_Mender2002</Filter>
     </ClCompile>
     <ClCompile Include="NvMender2002\nv_algebra.cpp">
       <Filter>External\NV_Mender2002\NV_Basis</Filter>
