@@ -369,6 +369,9 @@
     <ClInclude Include="..\..\..\include\vorbis\vorbisfile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libogg-1.1.4\win32\VS2008\libogg_dynamic.vcxproj">
+      <Project>{40913de9-1ead-4293-b682-af7ad1cb6cc9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\libvorbis\libvorbis_dynamic.vcxproj">
       <Project>{3a214e06-b95e-4d61-a291-1f8df2ec10fd}</Project>
     </ProjectReference>
