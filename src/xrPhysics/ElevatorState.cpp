@@ -368,22 +368,20 @@ void CElevatorState::Deactivate()
 	m_character=NULL;
 }
 
-
-
-CElevatorState::SEnertionState CElevatorState:: m_etable[clbNoState][clbNoState]=
-{
-//						clbNone			clbNearUp		clbNearDown		clbClimbingUp	clbClimbingDown	clbDepart	clbNoLadder
-/*clbNone			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNone			
-/*clbNearUp			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNearUp		
-/*clbNearDown		*/	{{0,0},			{0.0f,0},		{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNearDown		
-/*clbClimbingUp		*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbClimbingUp	
-/*clbClimbingDown	*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbClimbingDown	
-/*clbDepart			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{depart_dist,depart_time}},		//clbDepart		
-/*clbNoLadder		*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}} 							//clbNoLadder		
-};
-
 bool CElevatorState::StateSwitchInertion(Estate new_state)
 {
+	CElevatorState::SEnertionState m_etable[clbNoState][clbNoState] =
+	{
+		//						clbNone			clbNearUp		clbNearDown		clbClimbingUp	clbClimbingDown	clbDepart	clbNoLadder
+		/*clbNone			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNone			
+		/*clbNearUp			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNearUp		
+		/*clbNearDown		*/	{{0,0},			{0.0f,0},		{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNearDown		
+		/*clbClimbingUp		*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbClimbingUp	
+		/*clbClimbingDown	*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbClimbingDown	
+		/*clbDepart			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{depart_dist,depart_time}},		//clbDepart		
+		/*clbNoLadder		*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}} 							//clbNoLadder		
+	};
+
 	Fvector p;m_character->GetFootCenter(p);
 	p.sub(m_start_position);
 	if(m_etable[m_state][new_state].dist<p.magnitude()||m_etable[m_state][new_state].time<inl_ph_world().Device().dwTimeGlobal-m_start_time) return true;
