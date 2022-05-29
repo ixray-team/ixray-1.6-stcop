@@ -38,11 +38,7 @@ dep/
 *.~cpp
 
 # X-Ray resources
-levels/
-localization/
-mp/
-patches/
-resources/
+*.db*
 
 # X-Ray user files
 _appdata_/
