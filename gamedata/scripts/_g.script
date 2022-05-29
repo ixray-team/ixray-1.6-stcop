@@ -80,7 +80,7 @@ local scripts_to_print =	{
 							["task_objects"]	 = true
 							}
 function printf(fmt,...)
---[[
+
 	local is_g = 0
 	local result = fmt
 	if debug == nil then
@@ -100,7 +100,7 @@ function printf(fmt,...)
 		result = fmt
 	end
 	log(string.format(result,...))
-	]]
+
 end
 
 ----------------------------------------------------------------------

@@ -44,9 +44,15 @@ target = path | pri_a16_pri_b305_kirillov_closer_walk, 0
 
 [remark@answer_3]:remark@def
 on_info = {+pri_b305_kirilov_what_next_done_end -pri_b305_medik_dont_know_what_say_done} %=play_sound(pri_b305_medik_dont_know_what_say) +pri_b305_medik_dont_know_what_say_done%
-on_signal = sound_end | {-pri_b305_medik_dont_know_what_say_done_end} %+pri_b305_medik_dont_know_what_say_done_end%
+on_signal = sound_end | {-pri_b305_medik_dont_know_what_say_done_end} remark@i_can_talk %+pri_b305_medik_dont_know_what_say_done_end%
 on_info2 = {+pri_b305_second_cam_end} animpoint@base
 meet = no_meet
+anim = wait_na
+target = path | pri_a16_pri_b305_kirillov_closer_walk, 0
+
+[remark@i_can_talk]:remark@def
+on_info = {+pri_b305_second_cam_end} animpoint@base
+meet = _meet
 anim = wait_na
 target = path | pri_a16_pri_b305_kirillov_closer_walk, 0
 
@@ -63,6 +69,8 @@ help_wounded_enabled = false
 corpse_detection_enabled = false
 
 [meet]
+close_snd_hello = nil
+close_snd_bye 	= nil
 close_anim 		= nil
 close_victim 	= nil
 far_anim 		= nil
@@ -70,3 +78,4 @@ far_victim 		= nil
 use = {=actor_enemy} false, true
 trade_enable 	= false
 allow_break 	= false
+meet_on_talking = false

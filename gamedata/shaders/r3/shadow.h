@@ -48,7 +48,7 @@ float sample_hw_pcf (float4 tc,float4 shift)
 
 #define GS2 3
 
-#ifndef SM_5
+//#ifndef SM_5
 float shadow_hw( float4 tc )
 {
   	float	s0		= sample_hw_pcf( tc, float4( -1, -1, 0, 0) );
@@ -58,6 +58,7 @@ float shadow_hw( float4 tc )
 
 	return	(s0+s1+s2+s3)/4.h;
 }
+/*
 #else
 float shadow_hw( float4 tc )
 {
@@ -112,7 +113,7 @@ float shadow_hw( float4 tc )
    return s*(1.0/49);
 }
 #endif
-
+*/
 #ifdef SM_5
 
 #define FILTER_SIZE	11

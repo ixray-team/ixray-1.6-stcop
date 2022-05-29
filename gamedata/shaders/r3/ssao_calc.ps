@@ -21,7 +21,7 @@ struct	_input
 
 float4 main ( _input I 
 #ifdef	MSAA_OPTIMIZATION	
-	,uint	iSample	: SV_SAMPLEINDEX;
+	,uint	iSample	: SV_SAMPLEINDEX
 #endif	//	MSAA_OPTIMIZATION	
 ) : SV_Target0
 {

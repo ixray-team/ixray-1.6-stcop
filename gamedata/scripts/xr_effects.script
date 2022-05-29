@@ -1285,7 +1285,7 @@ function destroy_object(actor, obj, p)
 		end
 		local target_position, target_id, target_init = xr_remark.init_target(obj, target_str)
 		if target_id == nil then
-			printf("You are trying to set non-existant target [%s] for object [%s] in section [%s]", target_str, npc:name(), db.storage[npc:id()].active_section)
+			printf("You are trying to set non-existant target [%s] for object [%s] in section [%s]", tostring(target_str), tostring(obj:name()), tostring(db.storage[obj:id()].active_section))
 		end
 		sobj = alife():object(target_id)
 	end
@@ -3369,7 +3369,7 @@ function jup_b200_count_found(actor)
 	for k,v in pairs(mat_table) do
 		local material_obj = get_story_object(v)
 		if material_obj then
-			local parent = material_obj:parent() 
+			local parent = material_obj:parent()
 			if parent then
 				local parent_id = parent:id()
 				if parent_id ~= 65535 and parent_id == actor:id() then

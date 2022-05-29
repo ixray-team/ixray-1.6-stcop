@@ -13,6 +13,9 @@ combat_ignore_cond = {-jup_b4_monolith_squad_hit} true, false
 meet = meet
 on_info = {=is_squad_enemy_to_actor(jup_b4_squad)} walker@begin2 %+jup_b4_monolith_squad_out%
 on_info2 = {+jup_b4_teleport_to_monolit} walker@begin2
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@begin2]
 use_camp = false
@@ -24,6 +27,9 @@ on_info = {+jup_b4_aling} walker@1
 on_info2 = {+jup_b4_freedom_squad_leader_lets_talk_sound} walker@freedom
 on_info3 = {=is_squad_enemy_to_actor(jup_b4_squad)} %+jup_b4_monolith_squad_out%
 on_actor_dist_ge_nvis = 150 | {-jup_b4_actor_go_away} %+jup_b4_actor_go_away%
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 ;--------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------
 
@@ -37,6 +43,9 @@ on_info = {+jup_b4_duty_prisiaga} walker@2
 on_info2 = {=is_squad_enemy_to_actor(jup_b4_squad)} %+jup_b4_monolith_squad_out%
 on_actor_dist_ge_nvis = 150 | {-jup_b4_actor_go_away} %+jup_b4_actor_go_away%
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@2]
 use_camp = false
@@ -46,6 +55,9 @@ combat_ignore_cond = {-jup_b4_monolith_squad_hit} true, false
 on_actor_dist_ge_nvis = 150 | {-jup_b4_actor_go_away} %+jup_b4_actor_go_away%
 on_timer = 300 | walker@3
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@3]
 use_camp = false
@@ -56,6 +68,9 @@ on_info = {+jup_b4_duty_prisiaga -jup_b4_recruit_6_serve_duty_sound} %=play_soun
 on_info2 = {+jup_b4_monolith_squad_out -jup_b4_ml_stop_sound} %=stop_sound +jup_b4_ml_stop_sound%
 on_actor_dist_ge_nvis = 150 | {-jup_b4_actor_go_away} %+jup_b4_actor_go_away%
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [meet]
 use					= {+jup_b4_monolith_squad_out} false, true
@@ -82,6 +97,9 @@ on_signal = leader_near_fire | %+jup_b4_freedom_monolit_leader_near_fire%
 on_info = {=is_squad_enemy_to_actor(jup_b4_squad)} %+jup_b4_monolith_squad_out%
 on_actor_dist_ge_nvis = 150 | {-jup_b4_actor_go_away} %+jup_b4_actor_go_away%
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [hit]
 on_info = %+jup_b4_monolith_squad_hit%

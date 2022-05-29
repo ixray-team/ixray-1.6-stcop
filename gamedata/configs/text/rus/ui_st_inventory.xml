@@ -273,12 +273,6 @@
 	<string id="ui_inv_outfit_power_restore">
 		<text>Восстановление сил</text>
 	</string>
-	<string id="st_undress_helmet">
-		<text>снять шлем</text>
-	</string>
-	<string id="st_dress_helmet">
-		<text>надеть шлем</text>
-	</string>
 	<string id="st_ui_bleeding_sensor">
 		<text>Кровотечение</text>
 	</string>
@@ -299,5 +293,11 @@
 	</string>
 	<string id="ui_inv_survive_surge">
 		<text>Позволяет пережить выброс</text>
+	</string>
+	<string id="st_undress_helmet">
+		<text>снять шлем</text>
+	</string>
+	<string id="st_dress_helmet">
+		<text>надеть шлем</text>
 	</string>
 </string_table>

@@ -1,8 +1,8 @@
 [trader]
 buy_condition = trade_generic_buy 
 sell_condition = trade_generic_sell
-buy_supplies = {=counter_greater(jup_b1_sci_task_controller_count:4)} supplies_advanced_anobiotik, {=counter_greater(jup_b1_sci_task_controller_count:3)} supplies_anobiotik, {+jup_b1_task_done +jup_b6_task_done +jup_b32_task_done} supplies_advanced, supplies_start
-discounts = {=counter_greater(jup_b1_sci_task_controller_count:6)} discount_2, {=counter_greater(jup_b1_sci_task_controller_count:3)} discount
+buy_supplies = {+pioneer_achievement_gained +research_man_gained} supplies_advanced_anobiotik, {+pioneer_achievement_gained} supplies_anobiotik, {+research_man_gained} supplies_advanced, supplies_start
+discounts = {+pioneer_achievement_gained +research_man_gained} discount_2, {+research_man_gained} discount
 
 [discount]
 buy =  1
@@ -528,7 +528,7 @@ drug_antidot			= 10, 0.4
 drug_radioprotector		= 10, 0.4
 
 ;Предметы
-detector_elite			= 1,	1
+detector_elite			= 2,	1
 
 [supplies_advanced]:supplies_start
 ;Медикаменты
@@ -544,7 +544,7 @@ drug_radioprotector		= 10, 0.4
 drug_psy_blockade		= 10, 0.35
 
 ;Предметы
-detector_scientific		= 1,	1
+detector_scientific		= 2,	1
 detector_elite			= 1,	0.0001
 
 [supplies_anobiotik]:supplies_start
@@ -562,11 +562,12 @@ drug_coagulant			= 10, 0.5
 drug_antidot			= 10, 0.5
 drug_radioprotector		= 10, 0.5
 drug_psy_blockade		= 10, 0.45
+drug_anabiotic			= 1, 1
 
 ;Предметы
-detector_scientific		= 1, 1
+detector_scientific		= 2, 1
 detector_elite			= 1,	0.0001
-drug_anabiotic			= 1, 1
+
 
 
 

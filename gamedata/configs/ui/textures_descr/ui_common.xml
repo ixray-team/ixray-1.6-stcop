@@ -625,9 +625,9 @@
   <texture id="ui_scroll_back_back"  x="124" y="189" width="15" height="15" />
   <texture id="ui_scroll_back_e"  x="124" y="189" width="15" height="15" />
 
-  <texture id="ui_scroll_box_b"   x="124" y="206" width="15" height="15" />
+  <texture id="ui_scroll_box_b"   x="124" y="206" width="15" height="7" />
   <texture id="ui_scroll_box_back"   x="124" y="206" width="15" height="15" />
-  <texture id="ui_scroll_box_e"   x="124" y="206" width="15" height="15" />
+  <texture id="ui_scroll_box_e"   x="124" y="206" width="15" height="8" />
 
   <texture id="ui_scroll_move"  x="127" y="193" width="5" height="5" />
   <texture id="ui_scroll_btn_down" x="124" y="221" width="15" height="16" />

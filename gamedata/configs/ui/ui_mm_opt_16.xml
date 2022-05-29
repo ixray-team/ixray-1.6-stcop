@@ -418,6 +418,14 @@
             <options_item entry="r3_msaa_opt" group="mm_opt_video_adv" depend="vid"/>
         </check_r3_msaa_opt>
 
+        <cap_r4_tessellation x="16" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r4_enable_tessellation</text>
+        </cap_r4_tessellation>
+        <check_r4_tessellation x="133" y="0" width="35" stretch="1" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r4_enable_tessellation" group="mm_opt_video_adv" depend="vid"/>
+        </check_r4_tessellation>
+
         <btn_to_simply x="270" y="322" width="86" height="24" stretch="1">
             <text align="c" font="letterica16">ui_mm_simply</text>
             <texture>ui_inGame2_button</texture>

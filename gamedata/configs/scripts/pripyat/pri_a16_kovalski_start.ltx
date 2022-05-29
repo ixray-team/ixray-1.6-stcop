@@ -116,9 +116,10 @@ on_info2 = {-pri_a21_colonel_lets_talk} %=play_sound(pri_a21_colonel_lets_talk) 
 [remark@b35_talk]:remark@presets
 anim = wait_rac
 target = story | actor
-on_signal = anim_end | %=play_sound(pri_b35_kovalski_calls_guide)%
+on_signal = anim_end | {-pri_b35_kovalski_calls_guide} %+pri_b35_kovalski_calls_guide =play_sound(pri_b35_kovalski_calls_guide)%
 on_signal2 = sound_end | %+pri_b35_ui%
 on_info = {+pri_b35_actor_rest} walker@stand_base
+on_game_timer = 50 | {-pri_b35_kovalski_calls_guide} %+pri_b35_kovalski_calls_guide =play_sound(pri_b35_kovalski_calls_guide)%
 meet = no_meet
 
 ;---------------------------------

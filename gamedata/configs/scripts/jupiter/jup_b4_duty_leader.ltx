@@ -12,6 +12,9 @@ path_look = duty_leader_1_look
 combat_ignore_cond = {-jup_b4_monolith_squad_out} true
 on_info = {+jup_b4_duty_start_speech -jup_b4_monolith_squad_in_duty -jup_b4_monolith_squad_in_freedom -jup_b4_monolith_squad_out} walker@2
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@2]
 use_camp = false
@@ -22,6 +25,9 @@ on_signal = align | {-jup_b4_aling} walker@3 %=play_sound(jup_b4_duty_squad_lead
 on_info = {+jup_b4_monolith_squad_out -jup_b4_duty_leader_stop_sound} %=stop_sound +jup_b4_duty_leader_stop_sound%
 on_info2 = {+jup_b4_aling} walker@3
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@3]
 use_camp = false
@@ -31,6 +37,9 @@ combat_ignore_cond = {-jup_b4_monolith_squad_out} true
 on_info = {+jup_b4_duty_aling1 +jup_b4_duty_aling2 +jup_b4_duty_aling3 +jup_b4_duty_aling4 +jup_b4_duty_aling5 +jup_b4_duty_aling6} walker@4 %=play_sound(jup_b4_duty_squad_leader_align_line) +jup_b4_aling_line%
 on_info2 = {+jup_b4_monolith_squad_out -jup_b4_duty_leader_stop_sound} %=stop_sound +jup_b4_duty_leader_stop_sound%
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@4]
 use_camp = false
@@ -39,6 +48,9 @@ path_look = duty_leader_3_look
 combat_ignore_cond = {-jup_b4_monolith_squad_out} true
 on_signal = jup_b4_duty_walk_3 | walker@5 
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@5]
 use_camp = false
@@ -50,6 +62,9 @@ on_signal1 = jup_b4_duty_speech | {-jup_b4_duty_squad_leader_speech_sound} walke
 ;on_signal2 = jup_b4_duty_prisiaga | walker@final_sound %+jup_b4_duty_prisiaga%
 on_info = {+jup_b4_monolith_squad_out -jup_b4_duty_leader_stop_sound} %=stop_sound +jup_b4_duty_leader_stop_sound%
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@remark]
 use_camp = false
@@ -59,6 +74,9 @@ combat_ignore_cond = {-jup_b4_monolith_squad_out} true
 on_signal = sound_end | walker@final_sound %+jup_b4_duty_prisiaga%
 on_info = {+jup_b4_monolith_squad_out -jup_b4_duty_leader_stop_sound} %=stop_sound +jup_b4_duty_leader_stop_sound%
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@final_sound]
 use_camp = false
@@ -70,6 +88,9 @@ on_signal = sound_end | %+jup_b4_duty_squad_leader_final_sound_end%
 on_info = {+jup_b4_monolith_squad_out -jup_b4_duty_leader_stop_sound} %=stop_sound +jup_b4_duty_leader_stop_sound%
 on_info2 = {+jup_b4_monolith_squad_in_duty} walker@6
 meet = no_meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [walker@6]
 use_camp = false
@@ -78,6 +99,9 @@ path_look = duty_leader_1_look
 combat_ignore_cond = {-jup_b4_monolith_squad_out} true
 on_info = {+jup_b4_monolith_squad_out -jup_b4_duty_leader_stop_sound} %=stop_sound +jup_b4_duty_leader_stop_sound%
 meet = meet
+gather_items_enabled = false
+help_wounded_enabled = false
+corpse_detection_enabled = false
 
 [meet]
 meet_dialog = jup_b4_duty_squad_start_dialog

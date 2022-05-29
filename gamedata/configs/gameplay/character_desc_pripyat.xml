@@ -324,6 +324,10 @@
 #include "gameplay\character_criticals_4.xml"
 		<start_dialog>pri_a15_sokolov_start_dialog</start_dialog>
 		<actor_dialog>pri_a15_sokolov_pripyat_ready</actor_dialog>
+
+		<actor_dialog>pri_a15_sokolov_evacuation_point</actor_dialog>
+		<actor_dialog>pri_a15_sokolov_evacuation_note</actor_dialog>
+
 		<actor_dialog>actor_break_dialog</actor_dialog>
 
 	</specific_character>
@@ -361,6 +365,12 @@
 #include "gameplay\character_criticals_4.xml"
 		<start_dialog>pri_a15_sokolov_start_dialog</start_dialog>
 		<actor_dialog>pri_a15_sokolov_pripyat_ready</actor_dialog>
+
+		<actor_dialog>pri_a15_sokolov_evacuation_point</actor_dialog>
+		<actor_dialog>pri_a15_sokolov_evacuation_note</actor_dialog>
+		<actor_dialog>pri_a15_sokolov_acquaintance_after_jorney</actor_dialog>
+		<actor_dialog>pri_a15_sokolov_about_journey</actor_dialog>
+		<actor_dialog>pri_a15_sokolov_helicopter</actor_dialog>
 
 		<actor_dialog>actor_break_dialog</actor_dialog>
 	</specific_character>

@@ -14,6 +14,8 @@ help_wounded_enabled = false
 corpse_detection_enabled = false
 
 [meet@meet_snd_surge]
+close_snd_hello = nil
+close_snd_bye 	= nil
 abuse = false
 use = false
 snd_on_use = pri_a28_army_about_surge_3
@@ -23,6 +25,8 @@ close_anim = nil
 meet_on_talking = false
 
 [meet@meet_near_door_snd]
+close_snd_hello = nil
+close_snd_bye 	= nil
 abuse = false
 use = false
 snd_on_use = pri_a28_army_about_evacuation_3
@@ -42,7 +46,7 @@ active = animpoint@a28_first_theme_1
 ;--------------------------------------
 ; First theme about surge, start
 [animpoint@a28_first_theme_1]:animpoint@a28_def
-on_game_timer = 100 | {=is_alive(pri_a17_military_prapor_valentyr)} %=play_sound(pri_a28_army_surge_talk_1_first)%
+on_game_timer = 150 | {=is_alive(pri_a17_military_prapor_valentyr)} %=play_sound(pri_a28_army_surge_talk_1_first)%
 on_signal = sound_end | animpoint@a28_first_theme_2 %+pri_a28_army_surge_talk_1_first%
 
 [animpoint@a28_first_theme_2]:animpoint@a28_def

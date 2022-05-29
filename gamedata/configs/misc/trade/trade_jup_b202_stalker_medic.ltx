@@ -1,7 +1,9 @@
 [trader]
 buy_condition = trade_generic_buy 
 sell_condition = trade_generic_sell
-buy_supplies = {=counter_equal(jup_a6_actor_help_freedom:2) =counter_equal(jup_a6_actor_help_freedom:2)} supplies_duty_free, {=counter_equal(jup_a6_actor_help_freedom:2) =counter_equal(jup_a6_actor_help_stalkers:2)} supplies_st_free, {=counter_equal(jup_a6_actor_help_duty:2) =counter_equal(jup_a6_actor_help_stalkers:2)} supplies_st_duty, {=counter_equal(jup_a6_actor_help_duty:2)} supplies_duty, {=counter_equal(jup_a6_actor_help_stalkers:2)} supplies_stalkers, {=counter_equal(jup_a6_actor_help_freedom:2)} supplies_free, supplies_start
+
+buy_supplies = {=counter_greater(jup_a6_actor_help_freedom:1) =counter_greater(jup_a6_actor_help_duty:1)} supplies_duty_free, {=counter_greater(jup_a6_actor_help_freedom:1) =counter_greater(jup_a6_actor_help_stalkers:1)} supplies_st_free, {=counter_greater(jup_a6_actor_help_duty:1) =counter_greater(jup_a6_actor_help_stalkers:1)} supplies_st_duty, {=counter_greater(jup_a6_actor_help_duty:1)} supplies_duty, {=counter_greater(jup_a6_actor_help_stalkers:1)} supplies_stalkers, {=counter_greater(jup_a6_actor_help_freedom:1)} supplies_free, supplies_start
+
 discounts = {=friend_of_stalkers_functor} discount
 
 

@@ -359,7 +359,7 @@ function animpoint:update()
 		printf("***")
 		print_table(tbl)
 		printf("***")
-		abort("No actions found %s %s", self.npc_id)
+		abort("No actions found %s", self.npc_id)
 ]]
 
 		table.insert(tmp_actions, descr)

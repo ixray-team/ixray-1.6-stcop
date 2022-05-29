@@ -19,11 +19,39 @@ uniform	Texture2D					s_half_depth;
 Texture2D<float> s_occ;
 #endif // SM_5
 
+//#ifdef SSAO_QUALITY
+//#undef SSAO_QUALITY
+//#define SSAO_QUALITY 4
+//#endif
+
+#if SSAO_QUALITY <=3
 #include "ssao.ps"
+//#ifdef SM_5
+//#undef SM_5
+//#endif
+#else
+#ifndef USE_HDAO
+#define USE_HDAO
+#endif
+#endif
+
 #ifdef USE_HDAO
+#if SSAO_QUALITY > 3
 #include "ssao_hdao_new.ps"
+#endif
 #define USE_HDAO_CODE
-//#include "ssao_hdao.ps"
+#if SSAO_QUALITY <=3
+#define  g_f2RTSize ( pos_decompression_params2.xy )
+//#define  g_f2RTSize float2( 1280.0f, 1024.0f )
+#ifdef GBUFFER_OPTIMIZATION
+#define g_txDepth s_position
+#define g_txNormal s_position
+#else
+#define g_txDepth s_position
+#define g_txNormal s_normal
+#endif
+#include "ssao_hdao.ps"
+#endif
 #else // USE_HDAO
 #ifdef	USE_HBAO
 #include "ssao_hbao.ps"
@@ -113,9 +141,17 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 
 #ifdef USE_HDAO
 #ifdef SM_5
+#if SSAO_QUALITY > 3
     float occ = s_occ.Sample( smp_nofilter, I.tc0);	
+#else // SSAO_QUALITY > 3
+	float occ = calc_hdao( CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE ) );
+#endif // SSAO_QUALITY > 3
 #else // SM_5
+#if SSAO_QUALITY > 3
 	float occ = calc_new_hdao( CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE ) );
+#else // SSAO_QUALITY > 3
+	float occ = calc_hdao( CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE ) );
+#endif // SSAO_QUALITY > 3
 #endif // SM_5
 #else // USE_HDAO
 #ifdef USE_HBAO

@@ -108,25 +108,27 @@ function options_dialog:SetCurrentValues()
 end
 
 function options_dialog:UpdateDependControls()
-
-	local _current_id		= self.combo_renderer:CurrentID()
-	local _ssample_trb_val	= self.ss_trb:GetIValue()
-	local _ssample_cb_val	= self.ss_cb:CurrentID()
+	self.scroll_v:Clear()
+	local _current_id = self.combo_renderer:CurrentID()
 
 	for i,j in pairs(self.m_preconditions) do
-		j		(i, _current_id, _ssample_trb_val, _ssample_cb_val)
+		if(j.func(_current_id)) then
+			self.scroll_v:AddWindow(j.control, true)
+			j.control:SetAutoDelete(false)
+		end
 	end
-	
-	local max_texture_lod	= 	4
-	local min_texture_lod	= 	0
-	
+
+	local max_texture_lod = 4
+	local min_texture_lod = 0
+
 	if _current_id ~= 0 then
 		if not is_enough_address_space_available()	then
 			min_texture_lod = 1
 		end
 	end
-	
+
 	self.texture_lod_track:SetOptIBounds(min_texture_lod, max_texture_lod)
+	self:OnAOOptionChange()
 end
 
 function options_dialog:InitCallBacks()
@@ -142,8 +144,9 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
 	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
-	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
-	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
+	self:AddCallback("tab_ao_opt",			ui_events.TAB_CHANGED,		self.OnAOOptionChange,		self)
+--	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
+--	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 
 end
 
@@ -238,6 +241,17 @@ function options_dialog:OnTabChange()
 		self.dlg_controls:Show(true)
 	end
 
+end
+
+function options_dialog:OnAOOptionChange()
+	local ao_opt_id = self.tab_ao_opt:GetActiveId()
+	local render_id = self.combo_renderer:CurrentID()
+	if(render_id>=4) and (ao_opt_id=="hdao") then
+		self.combo_ssao:enable_id(4)
+	else
+		self.combo_ssao:disable_id(4)
+	end
+	self.combo_ssao:SetCurrentOptValue()
 end
 
 function options_dialog:OnBtnAdvGraphic()

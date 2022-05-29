@@ -8,9 +8,11 @@ on_info = {+jup_a9_tech_way_info} sr_idle@drink_control %=give_task(jup_b218_pri
 on_info = {+jup_b15_actor_drink +jup_b15_zulus_drink_anim_info} sr_idle@drink_effect
 
 [sr_idle@drink_effect]
-on_info = {+jup_b15_actor_drink -jup_b15_actor_drink_final} %=run_postprocess(fade_in_out) =give_item(vodka_script:actor) -jup_b15_actor_drink%
-on_info2 = {+jup_b15_actor_drink +jup_b15_actor_drink_final} %=run_postprocess(fade_in_out) =give_item(vodka_script:actor) -jup_b15_actor_drink%
-on_game_timer = 25 | {+jup_b15_actor_drink_final =actor_has_item(vodka_script)} sr_cutscene@sleep %=eat_vodka_script%, {-jup_b15_actor_drink_final =actor_has_item(vodka_script)} sr_idle@drink_control %=eat_vodka_script -jup_b15_zulus_drink_anim_info =enable_ui +jup_b15_can_talk%;, {!actor_has_item(vodka_script)} %=give_item(vodka_script:actor)%
+;on_info = {+jup_b15_actor_drink -jup_b15_actor_drink_final} %=run_postprocess(fade_in_out) =give_item(vodka_script:actor) -jup_b15_actor_drink%
+;on_info2 = {+jup_b15_actor_drink +jup_b15_actor_drink_final} %=run_postprocess(fade_in_out) =give_item(vodka_script:actor) -jup_b15_actor_drink%
+on_info = {+jup_b15_actor_drink -jup_b15_actor_drink_final} %=give_item(vodka_script:actor) -jup_b15_actor_drink%
+on_info2 = {+jup_b15_actor_drink +jup_b15_actor_drink_final} %=give_item(vodka_script:actor) -jup_b15_actor_drink%
+on_game_timer = 15 | {+jup_b15_actor_drink_final =actor_has_item(vodka_script)} sr_cutscene@sleep %=eat_vodka_script%, {-jup_b15_actor_drink_final =actor_has_item(vodka_script)} sr_idle@drink_control %=eat_vodka_script -jup_b15_zulus_drink_anim_info =enable_ui +jup_b15_can_talk%;, {!actor_has_item(vodka_script)} %=give_item(vodka_script:actor)%
 
 [sr_cutscene@sleep]
 point = jup_b15_cut_actor_walk

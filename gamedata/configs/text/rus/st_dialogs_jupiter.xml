@@ -2593,7 +2593,7 @@
 		<text>Проведешь меня в Припять?</text>
 	</string>
 	<string id="jup_b43_stalker_assistant_guide_to_pripyat_1">
-		<text>За 5000 попробую. Люблю я те края!</text>
+		<text>За 3000 попробую. Люблю я те края!</text>
 	</string>
 	<string id="jup_b43_stalker_assistant_guide_to_pripyat_11">
 		<text>По рукам.</text>
@@ -2608,7 +2608,7 @@
 		<text>Похоже, у меня денег не хватит.</text>
 	</string>
 	<string id="jup_b43_stalker_assistant_guide_to_pripyat_2">
-		<text>За 5000 попробую... Только выброс переждать бы.</text>
+		<text>За 3000 попробую... Только выброс переждать бы.</text>
 	</string>
 	<string id="jup_b43_stalker_assistant_guide_to_zaton_0">
 		<text>Можешь провести меня на Затон?</text>
@@ -3160,7 +3160,7 @@
 		<text>Что случилось с вашей охраной?</text>
 	</string>
 	<string id="jup_b6_scientist_nuclear_physicist_guards_1">
-		<text>Не знаю. Они просто куда-то исчезли!</text>
+		<text>Не знаю. В один прекрасный момент они просто исчезли.</text>
 	</string>
 	<string id="jup_b6_scientist_nuclear_physicist_guards_11">
 		<text>Я мог бы подобрать новую охрану.</text>

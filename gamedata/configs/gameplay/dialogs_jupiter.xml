@@ -115,6 +115,7 @@
             <phrase id="2">
                 <text>jup_a6_duty_leader_pripyat_group_2</text>
                 <dont_has_info>jup_b4_monolith_squad_in_duty</dont_has_info>
+                <give_info>jup_a6_duty_leader_pripyat_group_told</give_info>
                 <give_info>jup_a6_duty_leader_pripyat_group_known</give_info>
             </phrase>
         </phrase_list>
@@ -172,6 +173,7 @@
             <phrase id="2">
                 <text>jup_a6_freedom_leader_pripyat_group_2</text>
                 <dont_has_info>jup_b4_monolith_squad_in_freedom</dont_has_info>
+                <give_info>jup_a6_freedom_leader_pripyat_group_told</give_info>
                 <give_info>jup_a6_freedom_leader_pripyat_group_known</give_info>
             </phrase>
             <phrase id="1">
@@ -732,35 +734,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="jup_b4_duty_squad_start_dialog">
-        <phrase_list>
-            <phrase id="0">
-                <text>jup_b4_duty_squad_start_dialog_0</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_freedom_start_dialog">
-        <phrase_list>
-            <phrase id="0">
-                <text>jup_b4_freedom_start_dialog_0</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_about_stolen_items">
-        <has_info>jup_b202_actor_items_stolen</has_info>
-        <dont_has_info>jup_b4_monolith_squad_leader_about_stolen_items</dont_has_info>
-        <dont_has_info>jup_b202_actor_find_snag</dont_has_info>
-        <phrase_list>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_about_stolen_items_0</text>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_about_stolen_items_1</text>
-                <give_info>jup_b4_monolith_squad_leader_about_stolen_items</give_info>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="jup_a6_stalker_barmen_about_halfartefact_jup_b1">
         <precondition>dialogs_jupiter.if_actor_has_jup_b1_art</precondition>
         <dont_has_info>jup_a6_stalker_barmen_about_halfartefact_jup_b1_asked</dont_has_info>
@@ -777,6 +750,7 @@
     </dialog>
     <dialog id="jup_a6_stalker_medik_b4_monolith_squad_dialog">
         <has_info>jup_b4_monolith_squad_help</has_info>
+        <dont_has_info>jup_a6_stalker_medik_b4_monolith_squad_dialog</dont_has_info>
         <dont_has_info>jup_b4_monolith_squad_in_duty</dont_has_info>
         <dont_has_info>jup_b4_monolith_squad_in_freedom</dont_has_info>
         <dont_has_info>jup_b4_monolith_squad_out</dont_has_info>
@@ -802,18 +776,8 @@
                 <next>11111</next>
             </phrase>
             <phrase id="11111">
+                <give_info>jup_a6_stalker_medik_b4_monolith_squad_dialog</give_info>
                 <text>jup_a6_stalker_medik_b4_monolith_squad_dialog_11111</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_wassup">
-        <phrase_list>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_wassup_0</text>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_wassup_1</text>
             </phrase>
         </phrase_list>
     </dialog>
@@ -2039,7 +2003,6 @@
             </phrase>
             <phrase id="0">
                 <text />
-                <disable_info>jup_b25_flint_about_controller_seys_ones</disable_info>
                 <next>1</next>
                 <next>2</next>
                 <next>3</next>
@@ -2682,37 +2645,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_pripyat_group">
-        <has_info>jup_b218_pripyat_group_gathering</has_info>
-        <dont_has_info>jup_b218_monolith_agreed</dont_has_info>
-        <dont_has_info>jup_b218_gather_squad_complete</dont_has_info>
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <action>dialog_manager.action_disable_phrase</action>
-        <phrase_list>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_pripyat_group_1</text>
-                <dont_has_info>jup_b4_monolith_squad_on_base</dont_has_info>
-            </phrase>
-            <phrase id="3">
-                <text>jup_b4_monolith_squad_leader_pripyat_group_3</text>
-                <give_info>jup_b218_monolith_agreed</give_info>
-                <has_info>jup_b4_monolith_squad_in_duty</has_info>
-                <has_info>jup_b4_monolith_squad_on_base</has_info>
-            </phrase>
-            <phrase id="2">
-                <text>jup_b4_monolith_squad_leader_pripyat_group_2</text>
-                <give_info>jup_b218_monolith_agreed</give_info>
-                <has_info>jup_b4_monolith_squad_in_freedom</has_info>
-                <has_info>jup_b4_monolith_squad_on_base</has_info>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_pripyat_group_0</text>
-                <next>1</next>
-                <next>2</next>
-                <next>3</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="jup_b43_stalker_assistant_bunker_pripyat_group">
         <has_info>jup_b218_pripyat_group_gathering</has_info>
         <dont_has_info>jup_b218_gather_squad_complete</dont_has_info>
@@ -3144,32 +3076,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_goto_zulus">
-        <has_info>jup_b4_monolith_squad_leader_need_outfit_told</has_info>
-        <dont_has_info>jup_b218_monolith_hired</dont_has_info>
-        <phrase_list>
-            <phrase id="11">
-                <text>jup_b4_monolith_squad_leader_goto_zulus_11</text>
-                <give_info>jup_b218_monolith_hired</give_info>
-                <action>dialogs.break_dialog</action>
-                <is_final>1</is_final>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_goto_zulus_0</text>
-                <next>1</next>
-                <next>2</next>
-            </phrase>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_goto_zulus_1</text>
-                <precondition>dialogs.is_surge_not_running</precondition>
-                <next>11</next>
-            </phrase>
-            <phrase id="2">
-                <text>jup_b4_monolith_squad_leader_goto_zulus_2</text>
-                <precondition>dialogs.is_surge_running</precondition>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="jup_b15_zulus_group_stalker_about">
         <has_info>jup_b15_zulus_group_stalker_start_told</has_info>
         <dont_has_info>jup_b15_zulus_group_stalker_about_told</dont_has_info>
@@ -3240,44 +3146,6 @@
             </phrase>
             <phrase id="0">
                 <text />
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_need_outfit">
-        <has_info>jup_b218_monolith_agreed</has_info>
-        <has_info>jup_a9_tech_way_info</has_info>
-        <dont_has_info>jup_b4_monolith_squad_leader_need_outfit_told</dont_has_info>
-        <dont_has_info>jup_b218_gather_squad_complete</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_need_outfit_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_need_outfit_0</text>
-                <give_info>jup_b4_monolith_squad_leader_need_outfit_told</give_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_need_help_2">
-        <has_info>jup_b4_monolith_squad_leader_need_help_told</has_info>
-        <dont_has_info>jup_b4_monolith_squad_help</dont_has_info>
-        <phrase_list>
-            <phrase id="12">
-                <text>jup_b4_monolith_squad_leader_need_help_2_12</text>
-            </phrase>
-            <phrase id="11">
-                <text>jup_b4_monolith_squad_leader_need_help_2_11</text>
-                <give_info>jup_b4_monolith_squad_help</give_info>
-            </phrase>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_need_help_2_1</text>
-                <next>11</next>
-                <next>12</next>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_need_help_2_0</text>
                 <next>1</next>
             </phrase>
         </phrase_list>
@@ -3392,39 +3260,6 @@
                 <give_info>jup_a6_stalker_medik_pripyat_group_told</give_info>
                 <next>1</next>
                 <next>2</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_need_help">
-        <dont_has_info>jup_b4_monolith_squad_help</dont_has_info>
-        <dont_has_info>jup_b4_monolith_squad_leader_need_help_told</dont_has_info>
-        <phrase_list>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_need_help_0</text>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_need_help_1</text>
-                <next>11</next>
-                <next>1112</next>
-            </phrase>
-            <phrase id="11">
-                <text>jup_b4_monolith_squad_leader_need_help_11</text>
-                <dont_has_info>jup_b4_monolith_squad_leader_need_help_told</dont_has_info>
-                <next>111</next>
-            </phrase>
-            <phrase id="111">
-                <text>jup_b4_monolith_squad_leader_need_help_111</text>
-                <give_info>jup_b4_monolith_squad_leader_need_help_told</give_info>
-                <next>1111</next>
-                <next>1112</next>
-            </phrase>
-            <phrase id="1111">
-                <text>jup_b4_monolith_squad_leader_need_help_1111</text>
-                <give_info>jup_b4_monolith_squad_help</give_info>
-            </phrase>
-            <phrase id="1112">
-                <text>jup_b4_monolith_squad_leader_need_help_1112</text>
             </phrase>
         </phrase_list>
     </dialog>
@@ -3702,11 +3537,13 @@
                 <text>jup_b220_trapper_zaton_chimera_hunted_1</text>
                 <dont_has_info>jup_b212_jupiter_chimera_hunt_done</dont_has_info>
                 <give_info>jup_b220_trapper_zaton_chimera_hunted_told</give_info>
+                <action>dialogs_jupiter.zat_b106_trapper_reward</action>
             </phrase>
             <phrase id="2">
                 <text>jup_b220_trapper_zaton_chimera_hunted_2</text>
                 <give_info>jup_b220_trapper_zaton_chimera_hunted_told</give_info>
                 <has_info>jup_b212_jupiter_chimera_hunt_done</has_info>
+                <action>dialogs_jupiter.zat_b106_trapper_reward</action>
             </phrase>
         </phrase_list>
     </dialog>
@@ -5155,76 +4992,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_start">
-        <phrase_list>
-            <phrase id="1">
-                <text />
-                <next>11</next>
-                <next>12</next>
-                <next>13</next>
-                <next>14</next>
-            </phrase>
-            <phrase id="121">
-                <text>jup_b4_monolith_squad_leader_start_121</text>
-                <next>1211</next>
-            </phrase>
-            <phrase id="1211">
-                <text>jup_b4_monolith_squad_leader_start_1211</text>
-            </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-            </phrase>
-            <phrase id="11">
-                <text>jup_b4_monolith_squad_leader_start_11</text>
-                <dont_has_info>jup_b4_monolith_squad_help</dont_has_info>
-            </phrase>
-            <phrase id="12">
-                <text>jup_b4_monolith_squad_leader_start_12</text>
-                <dont_has_info>jup_b4_monolith_squad_redy_go_yanov</dont_has_info>
-                <has_info>jup_b4_monolith_squad_help</has_info>
-                <next>121</next>
-            </phrase>
-            <phrase id="13">
-                <text>jup_b4_monolith_squad_leader_start_13</text>
-                <dont_has_info>jup_b218_monolith_tp</dont_has_info>
-                <has_info>jup_b4_monolith_squad_redy_go_yanov</has_info>
-            </phrase>
-            <phrase id="14">
-                <text>jup_b4_monolith_squad_leader_start_14</text>
-                <has_info>jup_b218_monolith_tp</has_info>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_pripyat_ready">
-        <has_info>jup_b218_monolith_hired</has_info>
-        <precondition>dialogs.level_jupiter</precondition>
-        <dont_has_info>jup_b4_monolith_squad_leader_pripyat_ready_told</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_pripyat_ready_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_pripyat_ready_0</text>
-                <give_info>jup_b4_monolith_squad_leader_pripyat_ready_told</give_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_monolith_squad_leader_pripyat_how_are_you">
-        <precondition>dialogs.level_pripyat</precondition>
-        <dont_has_info>jup_b4_monolith_squad_leader_pripyat_how_are_you_done</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>jup_b4_monolith_squad_leader_pripyat_how_are_you_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_monolith_squad_leader_pripyat_how_are_you_0</text>
-                <give_info>jup_b4_monolith_squad_leader_pripyat_how_are_you_done</give_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="jup_b15_zulus_go_to_pripyat">
         <precondition>dialogs_jupiter.jup_b218_counter_not_0</precondition>
         <dont_has_info>jup_b218_gather_squad_complete</dont_has_info>
@@ -5852,12 +5619,14 @@
     </dialog>
     <dialog id="jup_b217_stalker_tech_b4_monolith_squad_dialog">
         <has_info>jup_b4_monolith_squad_help</has_info>
+        <dont_has_info>jup_b217_stalker_tech_b4_monolith_squad_dialog</dont_has_info>
         <dont_has_info>jup_b4_monolith_squad_in_duty</dont_has_info>
         <dont_has_info>jup_b4_monolith_squad_in_freedom</dont_has_info>
         <dont_has_info>jup_b4_monolith_squad_out</dont_has_info>
         <phrase_list>
             <phrase id="1">
                 <text>jup_b217_stalker_tech_b4_monolith_squad_dialog_1</text>
+                <give_info>jup_b217_stalker_tech_b4_monolith_squad_dialog</give_info>
             </phrase>
             <phrase id="0">
                 <text>jup_b217_stalker_tech_b4_monolith_squad_dialog_0</text>
@@ -6333,39 +6102,6 @@
                 <action>dialogs.break_dialog</action>
                 <disable_info>jup_b25_actor_refused_senya</disable_info>
                 <give_info>jup_b25_found_senya</give_info>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_duty_start_dialog">
-        <phrase_list>
-            <phrase id="0">
-                <text>jup_b4_duty_start_dialog_0</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="jup_b4_freedom_go_home">
-        <precondition>dialogs_jupiter.npc_in_b4_smart</precondition>
-        <has_info>jup_b4_monolith_squad_in_freedom</has_info>
-        <dont_has_info>jup_b4_freedom_go_home</dont_has_info>
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>jup_b4_freedom_go_home_1</text>
-                <next>11</next>
-                <next>12</next>
-            </phrase>
-            <phrase id="12">
-                <text>jup_b4_freedom_go_home_12</text>
-            </phrase>
-            <phrase id="0">
-                <text>jup_b4_freedom_go_home_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-            <phrase id="11">
-                <text>jup_b4_freedom_go_home_11</text>
-                <action>dialogs.break_dialog</action>
-                <give_info>jup_b4_freedom_go_home</give_info>
             </phrase>
         </phrase_list>
     </dialog>
@@ -7142,21 +6878,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="jup_a10_vano_back_1">
-        <has_info>jup_a10_vano_give_task</has_info>
-        <has_info>jup_a10_bandit_out</has_info>
-        <dont_has_info>jup_a10_vano_give_task_end</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>jup_a10_vano_back_1_1</text>
-                <give_info>jup_a10_vano_give_task_end</give_info>
-            </phrase>
-            <phrase id="0">
-                <text>jup_a10_vano_back_1_0</text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="jup_a10_vano_back_4">
         <has_info>jup_a10_vano_give_task</has_info>
         <dont_has_info>jup_a10_vano_give_task_end</dont_has_info>
@@ -7519,7 +7240,7 @@
         </phrase_list>
     </dialog>
     <dialog id="jup_b6_scientist_nuclear_physicist_scan_anomaly">
-		<precondition>dialogs_jupiter.jup_b6_scientist_nuclear_physicist_scan_anomaly_precond</precondition>
+        <precondition>dialogs_jupiter.jup_b6_scientist_nuclear_physicist_scan_anomaly_precond</precondition>
         <phrase_list>
             <phrase id="1221">
                 <text>jup_b6_scientist_nuclear_physicist_scan_anomaly_1221</text>
@@ -8419,45 +8140,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="jup_a10_guard_dialog">
-        <phrase_list>
-            <phrase id="1">
-                <text></text>
-                <next>11</next>
-            </phrase>
-            <phrase id="11">
-                <text>jup_a10_guard_dialog_11</text>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="112">
-                <text>jup_a10_guard_dialog_112</text>
-                <next>1121</next>
-            </phrase>
-            <phrase id="1121">
-                <text>jup_a10_guard_dialog_1121</text>
-            </phrase>
-            <phrase id="111">
-                <text>jup_a10_guard_dialog_111</text>
-                <dont_has_info>jup_a10_back_vano</dont_has_info>
-                <has_info>jup_a10_vano_give_task</has_info>
-                <next>1111</next>
-            </phrase>
-            <phrase id="1111">
-                <text>jup_a10_guard_dialog_1111</text>
-                <next>11111</next>
-            </phrase>
-            <phrase id="11111">
-                <text>jup_a10_guard_dialog_11111</text>
-                <action>dialogs.break_dialog</action>
-                <give_info>jup_a10_guard_back</give_info>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="jup_b1_stalker_about_scrutiny">
         <precondition>dialogs_jupiter.jup_b6_stalker_dialog_precond</precondition>
         <has_info>jup_b6_give_task</has_info>
@@ -8471,7 +8153,7 @@
                 <next>121</next>
             </phrase>
             <phrase id="121">
-                <text></text>
+                <text />
                 <action>dialogs.break_dialog</action>
                 <give_info>jup_b6_go_to_anom_2</give_info>
             </phrase>
@@ -8502,7 +8184,7 @@
                 <next>111</next>
             </phrase>
             <phrase id="111">
-                <text></text>
+                <text />
                 <action>dialogs.break_dialog</action>
                 <give_info>jup_b6_go_to_anom_1</give_info>
             </phrase>
@@ -8547,7 +8229,7 @@
         <dont_has_info>jup_b6_st_mission</dont_has_info>
         <phrase_list>
             <phrase id="1113111">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="111612">
                 <text>jup_b1_stalker_lead_info_111612</text>
@@ -8636,7 +8318,7 @@
                 <next>11121111</next>
             </phrase>
             <phrase id="11">
-                <text></text>
+                <text />
                 <next>111</next>
             </phrase>
             <phrase id="1112141">
@@ -8667,7 +8349,7 @@
                 <next>1111111</next>
             </phrase>
             <phrase id="111">
-                <text></text>
+                <text />
                 <next>1111</next>
                 <next>1112</next>
                 <next>1116</next>
@@ -8762,6 +8444,335 @@
                 <text>jup_b1_stalker_lead_info_111216</text>
                 <dont_has_info>jup_b47_no_bunker_guard</dont_has_info>
                 <next>1112161</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_a10_guard_dialog">
+        <phrase_list>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>jup_a10_guard_dialog_11</text>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="112">
+                <text>jup_a10_guard_dialog_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="1121">
+                <text>jup_a10_guard_dialog_1121</text>
+            </phrase>
+            <phrase id="111">
+                <text>jup_a10_guard_dialog_111</text>
+                <dont_has_info>jup_a10_back_vano</dont_has_info>
+                <has_info>jup_a10_vano_give_task</has_info>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>jup_a10_guard_dialog_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>jup_a10_guard_dialog_11111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>jup_a10_guard_back</give_info>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_a10_vano_back_1">
+        <has_info>jup_a10_vano_give_task</has_info>
+        <has_info>jup_a10_bandit_out</has_info>
+        <dont_has_info>jup_a10_vano_give_task_end</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>jup_a10_vano_back_1_1</text>
+                <give_info>jup_a10_vano_give_task_end</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_a10_vano_back_1_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_freedom_start_dialog">
+        <phrase_list>
+            <phrase id="0">
+                <text>jup_b4_freedom_start_dialog_0</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_freedom_go_home">
+        <precondition>dialogs_jupiter.npc_in_b4_smart</precondition>
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <has_info>jup_b4_monolith_squad_in_freedom</has_info>
+        <dont_has_info>jup_b4_freedom_go_home</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>jup_b4_freedom_go_home_1</text>
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+            <phrase id="12">
+                <text>jup_b4_freedom_go_home_12</text>
+            </phrase>
+            <phrase id="11">
+                <text>jup_b4_freedom_go_home_11</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>jup_b4_freedom_go_home</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_freedom_go_home_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_duty_start_dialog">
+        <phrase_list>
+            <phrase id="0">
+                <text>jup_b4_duty_start_dialog_0</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_duty_squad_start_dialog">
+        <phrase_list>
+            <phrase id="0">
+                <text>jup_b4_duty_squad_start_dialog_0</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_about_stolen_items">
+        <has_info>jup_b202_actor_items_stolen</has_info>
+        <dont_has_info>jup_b4_monolith_squad_leader_about_stolen_items</dont_has_info>
+        <dont_has_info>jup_b202_actor_find_snag</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_about_stolen_items_1</text>
+                <give_info>jup_b4_monolith_squad_leader_about_stolen_items</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_about_stolen_items_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_goto_zulus">
+        <has_info>jup_b4_monolith_squad_leader_need_outfit_told</has_info>
+        <dont_has_info>jup_b218_monolith_hired</dont_has_info>
+        <phrase_list>
+            <phrase id="11">
+                <text>jup_b4_monolith_squad_leader_goto_zulus_11</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>jup_b218_monolith_hired</give_info>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_goto_zulus_1</text>
+                <precondition>dialogs.is_surge_not_running</precondition>
+                <next>11</next>
+            </phrase>
+            <phrase id="2">
+                <text>jup_b4_monolith_squad_leader_goto_zulus_2</text>
+                <precondition>dialogs.is_surge_running</precondition>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_goto_zulus_0</text>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_need_help">
+        <dont_has_info>jup_b4_monolith_squad_help</dont_has_info>
+        <dont_has_info>jup_b4_monolith_squad_leader_need_help_told</dont_has_info>
+        <phrase_list>
+            <phrase id="111">
+                <text>jup_b4_monolith_squad_leader_need_help_111</text>
+                <give_info>jup_b4_monolith_squad_leader_need_help_told</give_info>
+                <next>1111</next>
+                <next>1112</next>
+            </phrase>
+            <phrase id="1111">
+                <text>jup_b4_monolith_squad_leader_need_help_1111</text>
+                <give_info>jup_b4_monolith_squad_help</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_need_help_0</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="11">
+                <text>jup_b4_monolith_squad_leader_need_help_11</text>
+                <dont_has_info>jup_b4_monolith_squad_leader_need_help_told</dont_has_info>
+                <next>111</next>
+            </phrase>
+            <phrase id="1112">
+                <text>jup_b4_monolith_squad_leader_need_help_1112</text>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_need_help_1</text>
+                <next>11</next>
+                <next>1112</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_need_help_2">
+        <has_info>jup_b4_monolith_squad_leader_need_help_told</has_info>
+        <dont_has_info>jup_b4_monolith_squad_help</dont_has_info>
+        <phrase_list>
+            <phrase id="12">
+                <text>jup_b4_monolith_squad_leader_need_help_2_12</text>
+            </phrase>
+            <phrase id="11">
+                <text>jup_b4_monolith_squad_leader_need_help_2_11</text>
+                <give_info>jup_b4_monolith_squad_help</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_need_help_2_0</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_need_help_2_1</text>
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_need_outfit">
+        <has_info>jup_b218_monolith_agreed</has_info>
+        <has_info>jup_a9_tech_way_info</has_info>
+        <dont_has_info>jup_b4_monolith_squad_leader_need_outfit_told</dont_has_info>
+        <dont_has_info>jup_b218_gather_squad_complete</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_need_outfit_0</text>
+                <give_info>jup_b4_monolith_squad_leader_need_outfit_told</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_need_outfit_1</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_pripyat_group">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <has_info>jup_b218_pripyat_group_gathering</has_info>
+        <dont_has_info>jup_b218_monolith_agreed</dont_has_info>
+        <dont_has_info>jup_b218_gather_squad_complete</dont_has_info>
+        <phrase_list>
+            <phrase id="3">
+                <text>jup_b4_monolith_squad_leader_pripyat_group_3</text>
+                <give_info>jup_b218_monolith_agreed</give_info>
+                <has_info>jup_b4_monolith_squad_in_duty</has_info>
+                <has_info>jup_b4_monolith_squad_on_base</has_info>
+            </phrase>
+            <phrase id="2">
+                <text>jup_b4_monolith_squad_leader_pripyat_group_2</text>
+                <give_info>jup_b218_monolith_agreed</give_info>
+                <has_info>jup_b4_monolith_squad_in_freedom</has_info>
+                <has_info>jup_b4_monolith_squad_on_base</has_info>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_pripyat_group_1</text>
+                <dont_has_info>jup_b4_monolith_squad_on_base</dont_has_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_pripyat_group_0</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_pripyat_how_are_you">
+        <precondition>dialogs.level_pripyat</precondition>
+        <dont_has_info>jup_b4_monolith_squad_leader_pripyat_how_are_you_done</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_pripyat_how_are_you_0</text>
+                <give_info>jup_b4_monolith_squad_leader_pripyat_how_are_you_done</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_pripyat_how_are_you_1</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_pripyat_ready">
+        <precondition>dialogs.level_jupiter</precondition>
+        <has_info>jup_b218_monolith_hired</has_info>
+        <dont_has_info>jup_b4_monolith_squad_leader_pripyat_ready_told</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_pripyat_ready_0</text>
+                <give_info>jup_b4_monolith_squad_leader_pripyat_ready_told</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_pripyat_ready_1</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_wassup">
+        <dont_has_info>jup_b4_wassup</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>jup_b4_monolith_squad_leader_wassup_1</text>
+                <give_info>jup_b4_wassup</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>jup_b4_monolith_squad_leader_wassup_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="jup_b4_monolith_squad_leader_start">
+        <phrase_list>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+            <phrase id="11">
+                <text>jup_b4_monolith_squad_leader_start_11</text>
+                <disable_info>jup_b4_wassup</disable_info>
+                <dont_has_info>jup_b4_monolith_squad_help</dont_has_info>
+            </phrase>
+            <phrase id="1211">
+                <text>jup_b4_monolith_squad_leader_start_1211</text>
+            </phrase>
+            <phrase id="121">
+                <text>jup_b4_monolith_squad_leader_start_121</text>
+                <next>1211</next>
+            </phrase>
+            <phrase id="12">
+                <text>jup_b4_monolith_squad_leader_start_12</text>
+                <disable_info>jup_b4_wassup</disable_info>
+                <dont_has_info>jup_b4_monolith_squad_redy_go_yanov</dont_has_info>
+                <has_info>jup_b4_monolith_squad_help</has_info>
+                <next>121</next>
+            </phrase>
+            <phrase id="13">
+                <text>jup_b4_monolith_squad_leader_start_13</text>
+                <disable_info>jup_b4_wassup</disable_info>
+                <dont_has_info>jup_b218_monolith_tp</dont_has_info>
+                <has_info>jup_b4_monolith_squad_redy_go_yanov</has_info>
+            </phrase>
+            <phrase id="14">
+                <text>jup_b4_monolith_squad_leader_start_14</text>
+                <disable_info>jup_b4_wassup</disable_info>
+                <has_info>jup_b218_monolith_tp</has_info>
             </phrase>
         </phrase_list>
     </dialog>

@@ -49,6 +49,7 @@ function evaluator_wounded_exist:evaluate()
 		local id = vo:id()
 		local npc_id = npc:id()
 		
+		--printf(" %s wounded_already_selected %s", id, tostring(db.storage[id].wounded_already_selected))
 		if npc:see(vo) and xr_wounded.is_wounded(vo) and (db.storage[id].wounded_already_selected == nil or db.storage[id].wounded_already_selected == npc_id) and vo:alive() then
 			if db.storage[id].wounded.not_for_help ~= true then
 				local npc_position = npc:position() 
@@ -60,8 +61,8 @@ function evaluator_wounded_exist:evaluate()
 					if npc:accessible(vertex) then
 						nearest_dist = npc_position:distance_to_sqr(vo_position)
 						nearest_vertex = vertex
-						nearest_position = npc_position
-						selected_id = npc_id
+						nearest_position = vo_position
+						selected_id = id
 					end
 	
 				end
@@ -113,6 +114,7 @@ function action_help_wounded:execute ()
 		return
 	end
 
+	--printf("hw %s", vec_to_str(self.a.vertex_position))
 	state_mgr.set_state(self.object, "help_wounded", nil, nil, {look_position = self.a.vertex_position})
 
 end
@@ -121,19 +123,26 @@ function action_help_wounded:finalize ()
 end
 
 function help_wounded(npc)
+	--printf("HELP WOUNDED %s", npc:name())
 	local selected_id = db.storage[npc:id()].help_wounded.selected_id
 	local selected_npc = db.storage[selected_id] and db.storage[selected_id].object
 	
+	--printf("selected_id %s", tostring(selected_id))
+	
 	if selected_npc == nil then
+		--printf("	help wounded return")
 		return
-	end
+	end	
 	
 	alife():create("medkit_script", selected_npc:position(), selected_npc:level_vertex_id(), selected_npc:game_vertex_id(), selected_id)
-	
+
 	--selected_npc:eat(selected_npc:object("medkit_script"))
 	
-	
 	xr_wounded.unlock_medkit(selected_npc)
+	
+	db.storage[selected_id].wounded_already_selected = -1 
+	
+	--xr_wounded.eat_medkit(selected_npc)
 	
 	xr_sound.set_sound_play(npc:id(), "wounded_medkit")
 end

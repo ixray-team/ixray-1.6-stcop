@@ -154,7 +154,7 @@
 		<text>–адиопомехи: уничтожить источник помех</text>
 	</string>
 	<string id="pri_a25_destroy_antenna_text">
-		<text>»сточник радиопомех обнружен, нужно его уничтожить.</text>
+		<text>»сточник радиопомех обнаружен, нужно его уничтожить.</text>
 	</string>
 	<string id="pri_a25_find_antenna_name">
 		<text>–адиопомехи: найти источник помех</text>

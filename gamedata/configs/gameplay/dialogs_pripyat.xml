@@ -699,6 +699,8 @@
         <has_info>pri_a22_colonel_give_task</has_info>
         <dont_has_info>pri_a25_rfi_source_ask_complete</dont_has_info>
         <dont_has_info>pri_b305_second_cam_end</dont_has_info>
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <action>dialog_manager.action_disable_phrase</action>
         <phrase_list>
             <phrase id="2">
                 <text>pri_a22_army_signaller_about_rfi_source_2</text>
@@ -1169,13 +1171,13 @@
             </phrase>
             <phrase id="12112">
                 <text>pri_a17_military_base_commander_actor_questions_dialog_12112</text>
-                <has_info>jup_b43_stalker_assistant_met</has_info>
+                <has_info>pri_a17_actor_has_gauss_rifle</has_info>
                 <next>1113</next>
                 <next>1114</next>
             </phrase>
             <phrase id="12111">
                 <text>pri_a17_military_base_commander_actor_questions_dialog_12111</text>
-                <dont_has_info>jup_b43_stalker_assistant_met</dont_has_info>
+                <dont_has_info>pri_a17_actor_has_gauss_rifle</dont_has_info>
                 <next>1113</next>
                 <next>1114</next>
             </phrase>
@@ -1515,7 +1517,7 @@
     <dialog id="pri_a17_military_colonel_kovalski_b35_reward">
         <has_info>pri_b35_rendevous_done</has_info>
         <dont_has_info>pri_b35_reward_given</dont_has_info>
-        <dont_has_info>pri_b305_second_cam_end</dont_has_info>
+        <dont_has_info>pri_a28_update_task_cover_strelok</dont_has_info>
         <phrase_list>
             <phrase id="2">
                 <text>pri_a17_military_colonel_kovalski_b35_reward_2</text>
@@ -1524,7 +1526,6 @@
                 <give_info>pri_b35_reward_given</give_info>
                 <has_info>pri_b35_primary</has_info>
                 <has_info>pri_b35_target_merc</has_info>
-                <has_info>pri_b35_merc_leader_out</has_info>
             </phrase>
             <phrase id="3">
                 <text>pri_a17_military_colonel_kovalski_b35_reward_3</text>
@@ -1533,7 +1534,6 @@
                 <give_info>pri_b35_reward_given</give_info>
                 <has_info>pri_b35_primary</has_info>
                 <has_info>pri_b35_target_envoy</has_info>
-                <has_info>pri_b35_envoy_out</has_info>
             </phrase>
             <phrase id="4">
                 <text>pri_a17_military_colonel_kovalski_b35_reward_4</text>
@@ -1541,7 +1541,7 @@
                 <dont_has_info>pri_b35_primary</dont_has_info>
                 <give_info>pri_b35_reward_given</give_info>
                 <has_info>pri_b35_secondary</has_info>
-                <has_info>pri_b35_merc_leader_out</has_info>
+                <has_info>pri_b35_target_envoy</has_info>
             </phrase>
             <phrase id="5">
                 <text>pri_a17_military_colonel_kovalski_b35_reward_5</text>
@@ -1549,7 +1549,7 @@
                 <dont_has_info>pri_b35_primary</dont_has_info>
                 <give_info>pri_b35_reward_given</give_info>
                 <has_info>pri_b35_secondary</has_info>
-                <has_info>pri_b35_envoy_out</has_info>
+                <has_info>pri_b35_target_merc</has_info>
             </phrase>
             <phrase id="1">
                 <text>pri_a17_military_colonel_kovalski_b35_reward_1</text>
@@ -1564,7 +1564,6 @@
                 <dont_has_info>pri_b35_primary</dont_has_info>
                 <dont_has_info>pri_b35_secondary</dont_has_info>
                 <give_info>pri_b35_reward_given</give_info>
-                <has_info>pri_b35_task_end</has_info>
             </phrase>
             <phrase id="0">
                 <text>pri_a17_military_colonel_kovalski_b35_reward_0</text>

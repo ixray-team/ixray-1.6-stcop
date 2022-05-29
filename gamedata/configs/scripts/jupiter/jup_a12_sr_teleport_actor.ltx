@@ -7,13 +7,13 @@ on_info2 = {-jup_a12_task_given +jup_a12_actor_choose_power -jup_a12_stalker_pri
 on_info3 = {-jup_a12_task_given +jup_a12_actor_choose_ransom -jup_a12_stalker_prisoner_dead} sr_idle@wait %+jup_a12_actor_choose_self_or_ransom +jup_a12_task_given =give_task(jup_a12_free_prisoner)%
 on_info4 = {-jup_a12_task_given +pri_a12_stalker_prisoner_free -jup_a12_stalker_prisoner_dead} sr_idle@wait %+jup_a12_task_given =give_task(jup_a12_free_prisoner)%
 on_info5 = {+jup_a12_stalker_prisoner_dead} sr_idle@remove_prisoner %+jup_a12_stalker_prisoner_dead +pri_a12_stalker_prisoner_free +jup_a12_stalker_prisoner_free%
-on_game_timer = 172800 | {-pri_a12_stalker_prisoner_free} sr_idle@remove_prisoner %+jup_a12_stalker_prisoner_dead +pri_a12_stalker_prisoner_free +jup_a12_stalker_prisoner_free%
+;on_game_timer = 172800 | {-pri_a12_stalker_prisoner_free} sr_idle@remove_prisoner %+jup_a12_stalker_prisoner_dead +pri_a12_stalker_prisoner_free +jup_a12_stalker_prisoner_free%
 
 [sr_idle@wait]
 on_info = {+jup_a12_actor_guided_base} sr_idle@start %-jup_a12_ui%
 on_info2 = {+jup_a12_stalker_prisoner_cheats_to_base -jup_a12_stalkers_on_base} sr_idle@start
 on_info3 = {+jup_a12_stalkers_on_base} sr_idle@clean_up
-on_game_timer = 172800 | {-pri_a12_stalker_prisoner_free} sr_idle@remove_prisoner %+jup_a12_stalker_prisoner_dead%
+;on_game_timer = 172800 | {-pri_a12_stalker_prisoner_free} sr_idle@remove_prisoner %+jup_a12_stalker_prisoner_dead%
 
 [sr_idle@start]
 on_info = {+jup_a12_actor_guided_base} sr_idle@teleport %=run_postprocess(fade_in) =disable_ui%

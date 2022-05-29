@@ -11,7 +11,7 @@ combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 invulnerable = true
 meet = meet@stand_base
-on_info = {-pri_a20_way_to_pripyat_2_sound_end =squad_in_zone(pri_a16_sokolov_squad:pri_a16_sr_noweap) +pri_a16_sokolov_on_pripyat} walker@wait_for_play_sound
+on_info = {-pri_a20_way_to_pripyat_2_sound_end -pri_a20_talk_with_colonel_complete =squad_in_zone(pri_a16_sokolov_squad:pri_a16_sr_noweap) +pri_a16_sokolov_on_pripyat} walker@wait_for_play_sound
 on_info2 = {-pri_a16_stalker_guide_met_done !talking +pri_a16_stalker_guide_met} %+pri_a16_stalker_guide_met_done%
 out_restr = pri_a16_sr_noweap
 gather_items_enabled = false
@@ -28,6 +28,7 @@ meet = no_meet
 def_state_standing = wait_na
 on_info = {+pri_a20_way_to_pripyat_1_sound_end} walker@play_sound
 on_info2 = {!squad_in_zone(pri_a16_sokolov_squad:pri_a16_sr_noweap)} animpoint@stand_base
+on_info3 = {+pri_a20_talk_with_colonel_complete} animpoint@stand_base
 out_restr = pri_a16_sr_noweap
 gather_items_enabled = false
 help_wounded_enabled = false
@@ -45,6 +46,7 @@ def_state_standing = wait_na
 on_signal = sound_end | %+pri_a20_way_to_pripyat_2_sound_end%
 on_game_timer = 10 | %=play_sound(pri_a20_sokolov_with_garick_new_way_to_pripyat_2)%
 on_info = {+pri_a20_way_to_pripyat_3_sound_end} animpoint@stand_base
+on_info2 = {+pri_a20_talk_with_colonel_complete} animpoint@stand_base
 out_restr = pri_a16_sr_noweap
 gather_items_enabled = false
 help_wounded_enabled = false
@@ -52,6 +54,8 @@ corpse_detection_enabled = false
 use_camp = false
 
 [meet@stand_base]
+close_snd_hello = nil
+close_snd_bye 	= nil
 close_anim 		= nil
 close_victim 	= nil
 far_anim 		= nil

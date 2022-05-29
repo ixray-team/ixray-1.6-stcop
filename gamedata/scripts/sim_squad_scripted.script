@@ -484,16 +484,16 @@ function sim_squad_scripted:set_location_types(new_smart_name)
 	if alife():object(self.assigned_target_id):clsid() == clsid.smart_terrain then
 		self:set_location_types_section(default_location)
 		local old_smart_name = self.smart_id and alife():object(self.smart_id) and alife():object(self.smart_id):name()
-		printf("old_smart_name = [%s]!", tostring(old_smart_name))
+		--printf("old_smart_name = [%s]!", tostring(old_smart_name))
 		if old_smart_name then
 			self:set_location_types_section(old_smart_name)
 		end
-		printf("new_smart_name = [%s]!", tostring(new_smart_name))
+		--printf("new_smart_name = [%s]!", tostring(new_smart_name))
 		if new_smart_name then
 			self:set_location_types_section(new_smart_name)
 		end
 	else
-		printf("target is squad or actor setting [squad_terrain]!")
+		--printf("target is squad or actor setting [squad_terrain]!")
 		self:set_location_types_section("squad_terrain")
 		for k,v in pairs(simulation_objects.get_sim_obj_registry().objects) do
 			if alife():object(k):clsid() == clsid.smart_terrain then
@@ -830,6 +830,15 @@ function sim_squad_scripted:show()
 		return
 	end
 
+    if(level.map_has_object_spot(self:commander_id(), "ui_pda2_trader_location")~=0) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_mechanic_location")~=0) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_scout_location")~=0) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_quest_npc_location")~=0) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_medic_location")~=0) then
+		self.show_disabled = true
+		return
+	end
+
 	if self.current_spot_id ~= self:commander_id() then
 		self:hide()
 		self.current_spot_id = self:commander_id()
@@ -891,6 +900,12 @@ end
 
 function sim_squad_scripted:get_current_task()
 	if self.assigned_target_id ~= nil and alife():object(self.assigned_target_id) ~= nil then
+		local smart_terrain = alife():object(self.assigned_target_id)
+		if smart_terrain.arriving_npc ~= nil and smart_terrain.arriving_npc[self:commander_id()] == nil
+			and smart_terrain.npc_info and smart_terrain.npc_info[self:commander_id()]
+			and smart_terrain.npc_info[self:commander_id()].job_id and smart_terrain.job_data[smart_terrain.npc_info[self:commander_id()].job_id] then
+			return smart_terrain.job_data[smart_terrain.npc_info[self:commander_id()].job_id].alife_task
+		end
 		return alife():object(self.assigned_target_id):get_alife_task()
 	end
 	return self:get_alife_task()
