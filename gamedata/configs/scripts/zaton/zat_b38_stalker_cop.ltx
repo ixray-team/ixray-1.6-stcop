@@ -184,9 +184,8 @@ out_restr = zat_b38_vnz_out_restr
 cover_name = zat_b38_sc_cop_break_lift
 reach_movement = patrol
 avail_animations = zat_b38_stalker_turn_on_lift
-on_info = {=npc_in_zone(zat_b38_lift_floor)} walker@research_basement 
+on_info = {=npc_in_zone(zat_b38_lift_floor)} walker@research_basement %=play_sound(zat_b38_cop_elevator_landing) +zat_b38_cop_elevator_landing_done%
 on_info2 = {+zat_b38_lift_opened -zat_b38_stalker_cop_jump_down_1_done} %=play_sound(zat_b38_stalker_cop_jump_down_1) +zat_b38_stalker_cop_jump_down_1_done%
-on_game_timer = 100 | {-zat_b38_cop_elevator_landing_done} %=play_sound(zat_b38_cop_elevator_landing) +zat_b38_cop_elevator_landing_done%
 meet = no_meet
 combat_ignore_cond = true
 

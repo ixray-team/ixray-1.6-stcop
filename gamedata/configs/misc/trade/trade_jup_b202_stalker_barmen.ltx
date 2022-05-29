@@ -4,7 +4,7 @@ sell_condition = trade_generic_sell
 
 buy_supplies = {+jup_a9_tech_way_info =counter_greater(jup_a6_actor_help_freedom:3) =wealthy_functor} sci_supplies_freedom_wealthy_tier_2, {=counter_greater(jup_a6_actor_help_freedom:3) =wealthy_functor} supplies_freedom_wealthy_tier_2, {+jup_a9_tech_way_info =counter_greater(jup_a6_actor_help_duty:3) =wealthy_functor} sci_supplies_duty_wealthy_tier_2, {=counter_greater(jup_a6_actor_help_duty:3) =wealthy_functor} supplies_duty_wealthy_tier_2, {+jup_a9_tech_way_info =counter_greater(jup_a6_actor_help_freedom:3)} sci_supplies_freedom_tier_2, {=counter_greater(jup_a6_actor_help_freedom:3)} supplies_freedom_tier_2, {+jup_a9_tech_way_info =counter_greater(jup_a6_actor_help_duty:3)} sci_supplies_duty_tier_2, {=counter_greater(jup_a6_actor_help_duty:3)} supplies_duty_tier_2, {+jup_a9_tech_way_info =counter_equal(jup_a6_actor_help_duty:2) =counter_equal(jup_a6_actor_help_freedom:2)} sci_supplies_freedom_duty_tier, {=counter_equal(jup_a6_actor_help_duty:2) =counter_equal(jup_a6_actor_help_freedom:2)} supplies_freedom_duty_tier, {+jup_a9_tech_way_info =counter_equal(jup_a6_actor_help_duty:2)} sci_supplies_duty_tier_1, {=counter_equal(jup_a6_actor_help_duty:2)} supplies_duty_tier_1, {+jup_a9_tech_way_info =counter_equal(jup_a6_actor_help_freedom:2)} sci_supplies_freedom_tier_1, {=counter_equal(jup_a6_actor_help_freedom:2)} supplies_freedom_tier_1, {+jup_a9_tech_way_info} sci_supplies_generic, supplies_generic
 
-discounts = {=counter_greater(jup_a6_actor_help_freedom:3)} discount_1, {=counter_equal(jup_a6_actor_help_stalkers:3)} discount_2, {=counter_greater(jup_a6_actor_help_duty:3)} discount_3
+discounts = {=counter_greater(jup_a6_actor_help_freedom:3)} discount_1, {=counter_greater(jup_a6_actor_help_stalkers:2)} discount_2, {=counter_greater(jup_a6_actor_help_duty:3)} discount_3
 
 buy_item_condition_factor = 0.7
 
@@ -547,7 +547,7 @@ wpn_addon_scope_susat	= 1,	0.5
 wpn_addon_silencer 		= 2,	0.3
 
 ;Предметы
-detector_advanced		= 1,	1
+detector_advanced		= 2,	1
 
 [sci_supplies_generic]:supplies_generic, supplies_scientific
 
@@ -620,7 +620,7 @@ svoboda_light_outfit	    = 1,	0.9
 helm_respirator 			= 1,	0.4
 
 ;Предметы
-detector_elite				= 1,	1
+detector_elite				= 2,	1
 detector_advanced		    = 1,	0.0001
 
 [sci_supplies_freedom_tier_1]:supplies_freedom_tier_1, supplies_scientific
@@ -669,7 +669,7 @@ helm_hardhat			= 1, 	0.3
 helm_respirator 		= 1,	0.3
 
 ;Предметы
-detector_elite				= 1,	1
+detector_elite				= 2,	1
 detector_advanced		    = 1,	0.0001
 
 [sci_supplies_freedom_duty_tier]:supplies_freedom_duty_tier, supplies_scientific
@@ -713,7 +713,7 @@ helm_hardhat			= 1, 	0.1
 helm_respirator 		= 1,	0.1
 
 ;Предметы
-detector_elite				= 1,	1
+detector_elite				= 2,	1
 detector_advanced		    = 1,	0.0001
 
 [sci_supplies_duty_tier_2]:supplies_duty_tier_2, supplies_scientific

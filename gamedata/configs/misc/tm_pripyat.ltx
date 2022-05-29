@@ -10,7 +10,8 @@ title = {+zat_a23_actor_has_gauss_rifle_documentation} pri_a17_talk_with_kovalsk
 descr = {+zat_a23_actor_has_gauss_rifle_documentation} pri_a17_talk_with_kovalski_about_gauss_rifle_information_text, {+zat_a23_actor_has_access_card_to_testing_workshop} pri_a17_get_gauss_rifle_documentation_text, {+zat_b3_stalker_tech_produce_62_show +zat_b3_tech_has_awaken} pri_a17_stalker_tech_produce_62_get_info_text, {+zat_b3_tech_see_produce_62_quest} pri_a17_stalker_tech_produce_62_show_text, {+pri_a17_actor_bring_gauss_rifle} pri_a17_get_info_text, {=actor_has_item(pri_a17_gauss_rifle)} pri_a17_task_give_gauss_rifle_to_kovalski_text, {+pri_a17_gauss_falled} pri_a17_task_get_gauss_rifle_from_preacher_text, {+pri_a17_actor_attack_military_antibug -pri_a17_mon_preacher_dead} pri_a17_kill_preacher_text, {+pri_a17_in_cover -pri_a17_mon_preacher_dead} pri_a17_kill_preacher_text, {+pri_a17_ice_dead -pri_a17_actor_attack_military} pri_a17_get_in_cover_text, {+pri_a17_patrol_dead} pri_a17_maraud_text,  {+pri_a17_military_recon_squad_ambush_dialog_end} pri_a17_watch_recons_six_text, pri_a17_task_find_gauss_rifle_text
 target = {+zat_a23_actor_has_gauss_rifle_documentation} pri_a17_military_colonel_kovalski, {+zat_a23_actor_has_access_card_to_testing_workshop} zat_a23_gauss_rifle_docs, {+zat_b3_tech_see_produce_62_quest} zat_a2_stalker_mechanic, {+pri_a17_actor_bring_gauss_rifle} nil, {=actor_has_item(pri_a17_gauss_rifle)} pri_a17_military_colonel_kovalski,  {+pri_a17_gauss_falled} pri_a17_gauss_rifle, {+pri_a17_actor_attack_military_antibug -pri_a17_mon_preacher_dead} pri_a17_monolith_preacher, {+pri_a17_in_cover -pri_a17_mon_preacher_dead} pri_a17_monolith_preacher, {+pri_a17_ice_dead -pri_a17_actor_attack_military} pri_a17_cover_zone, {+pri_a17_patrol_dead} pri_a17_monolith_patrol_lead,  pri_a17_recon_squad
 condlist_0 = {+pri_a23_dialog_about_gauss_labx8_end} complete %=inc_faction_goodwill_to_actor(army:250)%
-condlist_1 = {=is_dead(pri_a17_military_colonel_kovalski) =story_object_exist(pri_a17_military_colonel_kovalski)} fail, {+pri_a28_actor_enemy} fail 
+condlist_1 = {=is_dead(pri_a17_military_colonel_kovalski) =story_object_exist(pri_a17_military_colonel_kovalski)} fail, {+pri_a28_actor_enemy} fail
+condlist_2 = {+pri_a28_update_task_cover_strelok} reversed 
 
 [pri_a20_check_recon_squad_task]
 icon = ui_inGame2_Propavshaya_razvedgruppa
@@ -125,6 +126,7 @@ descr = {+pri_b35_envoy_out +pri_b35_merc_leader_out} pri_b35_task_reward_text, 
 target = {+pri_b35_envoy_out +pri_b35_merc_leader_out} pri_a17_military_colonel_kovalski, {+pri_b35_merc_leader_out +pri_b35_envoy_escape} pri_a17_military_colonel_kovalski, {+pri_b35_envoy_out +pri_b35_merc_leader_escape} pri_a17_military_colonel_kovalski, {+pri_b35_target_envoy +pri_b35_envoy_out -pri_b35_merc_leader_out -pri_b35_merc_leader_escape} pri_b35_merc_leader, {+pri_b35_target_merc +pri_b35_merc_leader_out -pri_b35_envoy_out -pri_b35_envoy_escape} pri_b35_envoy, {+pri_b35_target_merc +pri_b35_merc_leader_sighted} pri_b35_merc_leader, {+pri_b35_target_envoy +pri_b35_envoy_sighted} pri_b35_envoy
 condlist_0 = {+pri_b35_reward_given} complete
 condlist_1 = {+pri_b35_target_merc +pri_b35_merc_leader_escape} fail %+pri_b35_task_end%, {+pri_b35_target_envoy +pri_b35_envoy_escape} fail %+pri_b35_task_end%
+condlist_2 = {+pri_a28_update_task_cover_strelok} reversed 
 on_complete = %+pri_b35_task_end =inc_faction_goodwill_to_actor(army:250)% 
 
 [pri_b306_task]

@@ -1,8 +1,10 @@
 #include "common.h"
 
-#ifndef ISAMPLE
+#ifdef ISAMPLE
+#	undef ISAMPLE
+#endif // #ifdef ISAMPLE
+
 #define ISAMPLE 0
-#endif
 
 uniform float3x4	m_v2w;
 
@@ -47,9 +49,9 @@ float4 main ( _input I ) : SV_Target0
 #if SSAO_OPT_DATA == 2	
 	return  float4(P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz );
 #else	//	SSAO_OPT_DATA == 2
-	gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d, ISAMPLE) );
-	return  float4(gbd.P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz);
+//	gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d, ISAMPLE) );
+//	return  float4(gbd.P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz);
+	return	float4(0,0,0,1);
 #endif	//	SSAO_OPT_DATA == 2
 #endif // HDAO
 }
-

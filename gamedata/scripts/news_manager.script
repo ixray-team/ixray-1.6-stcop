@@ -219,6 +219,7 @@ function send_treasure(param)
 		news_caption = game.translate_string("st_found_new_treasure")
 	elseif(param==1) then
 		news_caption = game.translate_string("st_got_treasure")
+		xr_sound.set_sound_play(db.actor:id(), "pda_tips")
 	elseif(param==2) then
 		news_caption = game.translate_string("st_found_old_treasure")
 	end

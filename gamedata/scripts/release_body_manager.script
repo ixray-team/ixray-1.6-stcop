@@ -14,7 +14,7 @@ local function add_to_release_table(release_tbl, object_id)
 end
 
 local function find_nearest_obj_to_release(release_tbl)
-	local max_distanse = 900
+	local max_distanse = 4900
 	local pos_in_table = nil
 	local actor = db.actor
 	local actor_pos = actor:position()

@@ -337,7 +337,11 @@ function gamespy_page:TerminateLogin()
 		self.owner.shniaga:ShowPage(CUIMMShniaga.epi_new_network_game)
 		self.owner.shniaga:SetPage(CUIMMShniaga.epi_main, "ui_mm_main.xml", "menu_main")
 	elseif (self.profile_name == "") then
-		self.owner.acc_mgr:stop_fetching_account_profiles()
+		if (self.owner.acc_mgr:is_email_searching_active()) then
+			self.owner.acc_mgr:stop_searching_email()
+		elseif (self.owner.acc_mgr:is_get_account_profiles_active()) then
+			self.owner.acc_mgr:stop_fetching_account_profiles()
+		end
 	else
 		self.owner.l_mgr:stop_login()
 	end

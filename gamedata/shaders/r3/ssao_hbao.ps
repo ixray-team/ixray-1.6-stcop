@@ -7,6 +7,9 @@ float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
 
 #else	//	SSAO_QUALITY
 
+// comment this to run the old NV code
+//#define VECTORIZED_CODE
+
 //cbuffer PixelGlobalShaderData_s : register(b0)
 //{
 
@@ -100,6 +103,11 @@ float3 fetch_eye_pos(float2 uv)
 float falloff(float r)
 {
     return 1.0f - r*r;
+}
+
+float4 falloff4(float4 r)
+{
+    return ( (1.0f).xxxx - r*r );
 }
 
 //----------------------------------------------------------------------------------
@@ -252,6 +260,75 @@ float horizon_occlusion2(float2 deltaUV,
     return ao;
 }
 
+//----------------------------------------------------------------------------------
+float horizon_occlusion2_4way(float2 deltaUV0,
+                              float2 deltaUV1, 
+                              float2 deltaUV2, 
+                              float2 deltaUV3, 
+                              float2 uv_0, 
+                              float3 P, 
+                              float numSteps, 
+                              float randstep,
+                              float3 dPdu,
+                              float3 dPdv )
+{
+
+    // Randomize starting point within the first sample distance
+    float2 uv0 = uv_0 + snap_uv_offset( randstep * deltaUV0 );
+    float2 uv1 = uv_0 + snap_uv_offset( randstep * deltaUV1 );
+    float2 uv2 = uv_0 + snap_uv_offset( randstep * deltaUV2 );
+    float2 uv3 = uv_0 + snap_uv_offset( randstep * deltaUV3 );
+    
+    // Snap increments to pixels to avoid disparities between xy 
+    // and z sample locations and sample along a line
+    deltaUV0 = snap_uv_offset( deltaUV0 );
+    deltaUV1 = snap_uv_offset( deltaUV1 );
+    deltaUV2 = snap_uv_offset( deltaUV2 );
+    deltaUV3 = snap_uv_offset( deltaUV3 );
+
+    // Compute tangent vector using the tangent plane
+    float3 T0 = deltaUV0.x * dPdu + deltaUV0.y * dPdv;
+    float3 T1 = deltaUV1.x * dPdu + deltaUV1.y * dPdv;
+    float3 T2 = deltaUV2.x * dPdu + deltaUV2.y * dPdv;
+    float3 T3 = deltaUV3.x * dPdu + deltaUV3.y * dPdv;
+
+    float4 tanH = float4( biased_tangent(T0), biased_tangent(T1),
+                          biased_tangent(T2), biased_tangent(T3) );
+    float4 sinH = tanH / sqrt((1.0f).xxxx + tanH*tanH);
+
+    float ao = 0.0f;
+    for(float j = 1; j <= numSteps; ++j) {
+        uv0 += deltaUV0; 
+        uv1 += deltaUV1; 
+        uv2 += deltaUV2; 
+        uv3 += deltaUV3;
+        
+        float3 S0 = fetch_eye_pos(uv0);
+        float3 S1 = fetch_eye_pos(uv1);
+        float3 S2 = fetch_eye_pos(uv2);
+        float3 S3 = fetch_eye_pos(uv3);
+        
+        // Ignore any samples outside the radius of influence
+        float4 d2   = float4( length2(S0 - P), length2(S1 - P),
+                              length2(S2 - P), length2(S3 - P) );
+        float4 tanS = float4( tangent(P, S0), tangent(P, S1),
+                              tangent(P, S2), tangent(P, S3) );
+        float4 sinS = tanS / sqrt((1.0f).xxxx + tanS*tanS);
+        float4 r    = sqrt( d2 ) * g_inv_R.xxxx;
+        float4 fo   = float4( falloff( r.x ), falloff( r.y ),
+                              falloff( r.z ), falloff( r.w ) );
+        float4 flag = ( d2 < g_sqr_R.xxxx ? (1.0f).xxxx : (0.0f).xxxx );
+        
+        flag *= ( tanS > tanH  ? (1.0f).xxxx : (0.0f).xxxx );
+        
+        ao  += dot( flag, fo * ( sinS - sinH ) );
+        tanH = ( flag > (0.0f).xxxx ? tanS : tanH );
+        sinH = ( flag > (0.0f).xxxx ? sinS : sinH );
+        }
+
+    return ao;
+}
+
 float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
 {
     float3 P = uv_to_eye(tc0, z);
@@ -285,8 +362,12 @@ float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
     float ao = 0;
     float alpha = 2.0f * M_PI / g_NumDir;
     float delta = g_NumDir / numDirs;
-    for (float d = 0; d < g_NumDir; d+=delta) {  
-  
+    
+    int   iNumDir = ceil( int( g_NumDir / delta ) );
+    
+#ifndef VECTORIZED_CODE    
+    for (int i = 0; i < iNumDir; ++i ) {  
+        float d     = float(i)*delta;
 	    float angle = alpha * d;
 	    float2 dir = float2(cos(angle), sin(angle));
 	    float2 deltaUV = float2(dir.x*rand_Dir.x - dir.y*rand_Dir.y, 
@@ -297,6 +378,46 @@ float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
         //ao += horizon_occlusion_integrateDirection(deltaUV, tc0, P, numSteps, rand_Dir.z);
 
 	}
+#else // VECTORIZED_CODE
+    for (int i = 0; i < (iNumDir / 4); ++i) {  
+  
+        float d      = float(i)*delta;
+	    float4 angle = alpha * float4( 4.0f*d + 0.0f * delta, 4.0f*d + 1.0f * delta,
+	                                   4.0f*d + 2.0f * delta, 4.0f*d + 3.0f * delta);
+	    float4 f4Cos = cos( angle );
+	    float4 f4Sin = sin( angle );
+	    
+        float2 dir_0 = float2(f4Cos.x, f4Sin.x);
+        float2 dir_1 = float2(f4Cos.y, f4Sin.y);
+        float2 dir_2 = float2(f4Cos.z, f4Sin.z);
+        float2 dir_3 = float2(f4Cos.w, f4Sin.w);
+	    float2 deltaUV0 = step_size.xy * float2(dir_0.x*rand_Dir.x - dir_0.y*rand_Dir.y, 
+	                                            dir_0.x*rand_Dir.y + dir_0.y*rand_Dir.x);
+	    float2 deltaUV1 = step_size.xy * float2(dir_1.x*rand_Dir.x - dir_1.y*rand_Dir.y, 
+	                                            dir_1.x*rand_Dir.y + dir_1.y*rand_Dir.x);
+	    float2 deltaUV2 = step_size.xy * float2(dir_2.x*rand_Dir.x - dir_2.y*rand_Dir.y, 
+	                                            dir_2.x*rand_Dir.y + dir_2.y*rand_Dir.x);
+	    float2 deltaUV3 = step_size.xy * float2(dir_3.x*rand_Dir.x - dir_3.y*rand_Dir.y, 
+	                                            dir_3.x*rand_Dir.y + dir_3.y*rand_Dir.x);
+	    
+	    ao += horizon_occlusion2_4way(deltaUV0, deltaUV1, deltaUV2, deltaUV3, 
+	                                  tc0, P, numSteps, rand_Dir.z, dPdu, dPdv);
+	    }
+	
+    // Handle remaining directions that are not a multiple of 4. Only define this if the number of directions required
+    // is not a multiple of 4.
+    for (i = 4 * (iNumDir/4); i < iNumDir; ++i) {
+        float d     = float(i)*delta;
+    	float angle = alpha * d;
+	    float2 dir  = float2(cos(angle), sin(angle));
+	    float2 deltaUV = float2(dir.x*rand_Dir.x - dir.y*rand_Dir.y, 
+	                            dir.x*rand_Dir.y + dir.y*rand_Dir.x)
+				         * step_size.xy;
+	    
+	    ao += horizon_occlusion2(deltaUV, tc0, P, numSteps, rand_Dir.z, dPdu, dPdv);
+        }
+
+#endif // VECTORIZED_CODE
 
 	float WeaponAttenuation = smoothstep( 0.8, 0.9, length( P.xyz ));
 

@@ -15,6 +15,7 @@ on_signal = cut_scene_ready | {-zat_b14_stalker_cut_scene_ready} %+zat_b14_stalk
 on_info = {+zat_b14_cut_scene_1_start} walker@give_art 
 on_info2 = {-zat_b14_ui_disable} %+zat_b14_ui_disable =enable_ui%
 on_info3 = {-zat_b14_st_neutral =npc_in_zone(zat_a2_sr_noweap)} %=set_squad_neutral_to_actor(zat_b14_stalkers) +zat_b14_st_neutral%
+on_info4 = {+zat_b14_cut_scene_end} animpoint@wait_to_go 
 in_restr = zat_b14_not_give_item_zone
 def_state_standing = zat_b14_give_artefact_idle
 def_state_moving = walk
@@ -34,6 +35,7 @@ path_walk = zat_b14_stalker_1_walk_4
 path_look = zat_b14_stalker_1_look_4
 def_state_moving = walk
 def_state_standing = zat_b14_give_artefact_idle
+on_info = {+zat_b14_cut_scene_end} animpoint@wait_to_go
 on_game_timer = 40 | remark@cut_give_item
 meet = no_meet
 combat_ignore_cond = true
@@ -50,6 +52,7 @@ target = story | zat_a2_stalker_barmen
 anim = zat_b14_give_artefact_act
 on_info = %+zat_b14_cut_scene_stalker_transfer_artefact =play_sound(zat_b14_scene_1_give_item)%
 on_info2 = {-zat_b14_cut_scene_stalker_not_have_artefact} %+zat_b14_cut_scene_stalker_not_have_artefact =give_money_to_npc(3000)%
+on_info3 = {+zat_b14_cut_scene_end} animpoint@wait_to_go
 snd_anim_sync = true
 on_signal = anim_end | remark@wait %+zat_b14_cut_scene_1_point_01 =destroy_object(story:zat_b14_artefact_id)%
 meet = no_meet
@@ -78,6 +81,7 @@ corpse_detection_enabled = false
 target = story | zat_a2_stalker_barmen
 anim = wait_na
 on_info = %=play_sound(zat_b14_scene_1_stalker_bye)%
+on_info2 = {+zat_b14_cut_scene_end} animpoint@wait_to_go
 snd_anim_sync = true
 on_signal = sound_end | remark@cut_teach_actor %+zat_b14_cut_scene_1_point_03%
 meet = no_meet

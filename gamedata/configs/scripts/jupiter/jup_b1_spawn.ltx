@@ -17,12 +17,12 @@ on_game_timer = 30 | {-jup_b1_actor_atk_squad} sr_idle@step2 %+jup_b1_kill_tuska
 on_game_timer2 = 30 | {+jup_b1_actor_atk_squad} sr_idle@step2 %+jup_b1_spawn_controller%
 
 [sr_idle@step2]
-on_info = {=actor_has_item(jup_b1_half_artifact) +jup_b1_spawn_controller} sr_idle@postef %=create_squad(jup_b1_controller_squad:jup_b1) +jup_b1_actor_has_half_artifact%
+on_info = {=actor_has_item(jup_b1_half_artifact) +jup_b1_spawn_controller} sr_idle@postef %=anomaly_turn_off(jup_b1_anomal_zone) =create_squad(jup_b1_controller_squad:jup_b1) +jup_b1_actor_has_half_artifact%
 
 [sr_idle@postef]
 on_info = {+jup_b1_controller_is_dead} sr_idle@turn_anomaly_off %=run_postprocess(blink)%
 
 [sr_idle@turn_anomaly_off]
-on_info = {+jup_b1_task_done} sr_idle@end %=anomaly_turn_off(jup_b1_anomal_zone)%
+on_info = {+jup_b1_task_done} sr_idle@end; %=anomaly_turn_off(jup_b1_anomal_zone)%
 
 [sr_idle@end]

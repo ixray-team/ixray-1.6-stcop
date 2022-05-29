@@ -65,6 +65,13 @@ on_game_timer = 10 | sr_idle@teleport_gonta_to_jupiter %=teleport_squad(zat_b106
 
 
 [sr_idle@teleport_gonta_to_jupiter]
-on_info = {+jup_b6_gonta_employed =dist_to_story_obj_ge(zat_b106_stalker_gonta:50)} sr_idle@nil %=remove_squad(zat_b106_stalker_gonta_squad) =remove_squad(zat_b106_stalker_crab_squad) +jup_b6_gonta_on_jupiter%
+on_info = {+jup_b6_gonta_employed -zat_b106_gonta_on_jupiter =dist_to_story_obj_ge(zat_b106_stalker_gonta:50)} sr_idle@nil %=remove_squad(zat_b106_stalker_gonta_squad) =remove_squad(zat_b106_stalker_crab_squad)%
+on_info2 = {+zat_b106_gonta_on_jupiter} sr_idle@check_gonta_on_zaton
+
+[sr_idle@check_gonta_on_zaton]
+on_info = {=squad_exist(zat_b106_stalker_gonta_squad)} %=remove_squad(zat_b106_stalker_gonta_squad)%
+on_info2 = {=squad_exist(zat_b106_stalker_crab_squad)} %=remove_squad(zat_b106_stalker_crab_squad)%
+on_info3 = sr_idle@nil
+
 
 [sr_idle@nil]

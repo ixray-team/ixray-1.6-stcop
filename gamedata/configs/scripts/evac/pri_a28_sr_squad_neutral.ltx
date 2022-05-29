@@ -12,7 +12,7 @@ on_info4 = {=squad_exist(pri_a28_evac_squad) =is_squad_enemy_to_actor(pri_a28_ev
 on_info5 = {-pri_a28_strelok_dead !is_alive(pri_b305_strelok)} %+pri_a28_strelok_dead%
 on_info6 = {-pri_a28_koval_dead !is_alive(pri_a17_military_colonel_kovalski)} %+pri_a28_koval_dead%
 on_info7 = {=squad_exist(pri_a16_military_squad) =pri_a28_actor_is_far} %=kill_squad(pri_a16_military_squad)%
-on_info8 = {+pri_a28_scene_end} sr_idle@nil
+on_info8 = {+pri_a28_actor_in_zone_stay} sr_idle@nil, {+pri_a28_actor_in_zone_leave} sr_idle@nil, {+pri_a28_evacuation_heli} sr_idle@nil
 on_game_timer = 300 | {=squad_exist(pri_a16_military_squad)} sr_idle@heal_a_little_bit
 
 [sr_idle@heal_a_little_bit]

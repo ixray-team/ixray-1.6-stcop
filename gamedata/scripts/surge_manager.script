@@ -177,15 +177,15 @@ function CSurgeManager:update()
 	if(prev_sec~=diff_sec) then
 		prev_sec = diff_sec
 		log("------>diff_sec="..tostring(diff_sec))
-		local cover = self:get_nearest_cover()
-		if(cover==nil and self.count==0) then
-			self:init_surge_covers()
-			return
-		end
 		local level_name = level.name()
 		if(level_name=="labx8" or level_name=="jupiter_underground") then
 			printf("Surge stopped because of level!")
 			self:end_surge()
+			return
+		end
+		local cover = self:get_nearest_cover()
+		if(cover==nil and self.count==0) then
+			self:init_surge_covers()
 			return
 		end
 		if(diff_sec>=self.surge_time) then

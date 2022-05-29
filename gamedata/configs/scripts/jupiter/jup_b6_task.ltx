@@ -12,11 +12,16 @@ on_info = {+jup_b6_employed_stalker} sr_idle@spawn
 [sr_idle@spawn]
 on_info  = {+jup_b6_freedom_employed} sr_idle@no_task %=create_squad(jup_b6_stalker_freedom_squad:jup_b41)%
 on_info2 = {+jup_b6_duty_employed} sr_idle@no_task %=create_squad(jup_b6_stalker_duty_squad:jup_b41)%
-on_info3 = {+jup_b6_gonta_employed} sr_idle@clean_up_gonta %=create_squad(jup_b6_stalker_gonta_squad:jup_b41)%
+on_info3 = {+jup_b6_gonta_employed} sr_idle@check_gonta_on_zaton %=create_squad(jup_b6_stalker_gonta_squad:jup_b41)%
 on_info4 = {+jup_b6_exprisoner_work_on_sci} sr_idle@no_task %=create_squad(jup_b6_stalker_exprisoner_squad:jup_b41)%
 
+[sr_idle@check_gonta_on_zaton]
+on_info = {=squad_exist(zat_b106_stalker_gonta_squad)} %=remove_squad(zat_b106_stalker_gonta_squad)%
+on_info2 = {=squad_exist(zat_b106_stalker_crab_squad)} %=remove_squad(zat_b106_stalker_crab_squad)%
+on_info3 = sr_idle@no_task %+zat_b106_gonta_on_jupiter%
+
 [sr_idle@clean_up_gonta]
-on_info = {+zat_b106_garmata_dead} sr_idle@no_task %=remove_npc(jup_b6_stalker_garmata_squad)%, sr_idle@no_task
+on_info = sr_idle@no_task
 
 [sr_idle@cont]
 on_game_timer = 10 | sr_idle@reward %=give_task(jup_b6_task)%

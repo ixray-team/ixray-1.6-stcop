@@ -257,6 +257,14 @@ function actor_relocate_trapper_reward(first_speaker, second_speaker)
 	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_wincheaster1300_trapper")
 end
 
+function zat_b106_trapper_reward(first_speaker, second_speaker)
+	if has_alife_info("zat_b106_one_hit") then
+		dialogs.relocate_money_to_actor(first_speaker, second_speaker, 3000)
+	else
+		dialogs.relocate_money_to_actor(first_speaker, second_speaker, 2000)
+	end
+end
+
 -- Jupiter a10, by alex
 
 function jup_a10_proverka_wpn(first_speaker, second_speaker)
@@ -496,6 +504,8 @@ function jup_b6_scientist_nuclear_physicist_scan_anomaly_precond(first_speaker, 
 	if not has_alife_info("jup_b6_b32_quest_active") then
 		return false
 	elseif has_alife_info("jup_b6_give_task") and has_alife_info("jup_b32_task_addon_start") then
+		return false
+	elseif has_alife_info("jup_b6_task_fail") and has_alife_info("jup_b32_task_addon_start") then
 		return false
 	end
 	

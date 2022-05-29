@@ -556,4 +556,32 @@
 	        <texture>ui_inGame2_Mp_bigbuttone</texture>
 	    </button_no>
     </message_box_gs_question>
+
+	<message_box_ra_login type="ra_login" x="240" y="256" width="541" height="255" stretch="1">
+	    <texture>ui_inGame2_message_box</texture>
+	    <cap_login x="226" y="30" width="89" height="25">
+	        <text font="letterica16" vert_align="c" align="c">mm_mp_login</text>
+	    </cap_login>
+	    <edit_login x="202" y="60" width="136" height="25" max_symb_count="20">
+	        <text x="3" font="letterica16" vert_align="c"/>
+	        <texture>ui_inGame2_edit_box_1</texture>
+	    </edit_login>
+	    <cap_password x="226" y="90" width="89" height="25">
+	        <text font="letterica16" vert_align="c" align="c">mm_mp_password</text>
+	    </cap_password>
+	    <edit_password x="202" y="120" width="136" height="25" password="1" max_symb_count="20">
+	        <text x="3" font="letterica16" vert_align="c"></text>
+	        <texture>ui_inGame2_edit_box_1</texture>
+	    </edit_password>
+	    <button_yes x="167" y="212" width="101" height="28" check_mode="0">
+	        <window_name>button_yes</window_name>
+	        <text font="letterica18">Btn_OK</text>
+	        <texture>ui_inGame2_Mp_bigbuttone</texture>
+	    </button_yes>
+	    <button_no x="272" y="212" width="101" height="28" check_mode="0">
+	        <window_name>button_no</window_name>
+	        <text font="letterica18">Btn_Cancel</text>
+	        <texture>ui_inGame2_Mp_bigbuttone</texture>
+	    </button_no>
+	</message_box_ra_login>
 </w>

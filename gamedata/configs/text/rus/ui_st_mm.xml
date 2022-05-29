@@ -927,4 +927,7 @@
 	<string id="st_opt_ultra">
 		<text>очень высоко</text>
 	</string>
+	<string id="ui_mm_r4_enable_tessellation">
+		<text>Тесселяция</text>
+	</string>
 </string_table>

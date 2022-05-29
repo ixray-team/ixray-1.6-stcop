@@ -984,8 +984,6 @@
             <phrase id="1">
                 <text>zat_b7_bandit_boss_sultan_b30_detectors_actor_dialog_1</text>
                 <give_info>zat_b30_sultan_know_about_detectors</give_info>
-                <give_info>zat_b30_compass_to_barmen_reversed</give_info>
-                <disable_info>zat_b30_compass_to_barmen</disable_info>
             </phrase>
             <phrase id="0">
                 <text>zat_b7_bandit_boss_sultan_b30_detectors_actor_dialog_0</text>
@@ -2865,9 +2863,11 @@
         </phrase_list>
     </dialog>
     <dialog id="zat_b38_cop_about_himself_dialog">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
             <phrase id="1">
                 <text>zat_b38_cop_about_himself_dialog_1</text>
+		        <action>dialog_manager.action_disable_phrase</action>
             </phrase>
             <phrase id="0">
                 <text>zat_b38_cop_about_himself_dialog_0</text>
@@ -3475,9 +3475,11 @@
             <phrase id="2">
                 <text>zat_b106_stalker_gonta_come_with_me_2</text>
                 <has_info>jup_b218_soldier_agreed</has_info>
+                <has_info>jup_b6_gonta_employed</has_info>
             </phrase>
             <phrase id="3">
                 <text>zat_b106_stalker_gonta_come_with_me_3</text>
+                <dont_has_info>jup_b6_gonta_employed</dont_has_info>
             </phrase>
             <phrase id="0">
                 <text>zat_b106_stalker_gonta_come_with_me_0</text>
@@ -3489,6 +3491,7 @@
             <phrase id="1">
                 <text>zat_b106_stalker_gonta_come_with_me_1</text>
                 <dont_has_info>jup_b218_soldier_agreed</dont_has_info>
+                <has_info>jup_b6_gonta_employed</has_info>
             </phrase>
         </phrase_list>
     </dialog>
@@ -4161,6 +4164,7 @@
                 <action>dialogs_zaton.zat_b33_transfer_fourth_item</action>
                 <action>dialogs_zaton.zat_b33_transfer_fifth_item</action>
                 <give_info>zat_b33_refuse_task</give_info>
+                <give_info>zat_b33_stalker_snag_setup</give_info>
                 <give_info>zat_b52_reputation_task_open</give_info>
             </phrase>
             <phrase id="12">
@@ -4185,7 +4189,7 @@
     </dialog>
     <dialog id="zat_b3_stalker_tech_drink_1">
         <precondition>dialogs_zaton.if_actor_has_vodka</precondition>
-        <dont_has_info>zat_b3_tech_drink_no_more</dont_has_info>
+        <precondition>dialogs_zaton.zat_b3_tech_drinks_precond</precondition>
         <dont_has_info>zat_b3_tech_have_one_dose</dont_has_info>
         <phrase_list>
             <phrase id="2">
@@ -4243,7 +4247,6 @@
             </phrase>
             <phrase id="1">
                 <text>zat_b3_stalker_tech_produce_62_start_1</text>
-                <action>dialogs_zaton.give_tech_gauss_rifle</action>
                 <next>11</next>
             </phrase>
             <phrase id="11111">
@@ -4374,7 +4377,6 @@
                 <dont_has_info>zat_b5_actor_with_dealer</dont_has_info>
                 <has_info>zat_b7_task_fail</has_info>
                 <has_info>zat_b30_trader_for_b5_info</has_info>
-                <disable_info>zat_b30_trader_for_b5_info</disable_info>
                 <next>131</next>
                 <next>132</next>
             </phrase>
@@ -4386,6 +4388,7 @@
                 <text>zat_b30_owl_stalker_trader_start_dialog_131</text>
                 <give_info>zat_b5_actor_with_dealer</give_info>
                 <disable_info>zat_b5_dialog_info</disable_info>
+                <disable_info>zat_b30_trader_for_b5_info</disable_info>
                 <next>1311</next>
             </phrase>
         </phrase_list>
@@ -6460,6 +6463,7 @@
         <precondition>dialogs_zaton.if_actor_has_vodka</precondition>
         <has_info>zat_b3_tech_have_couple_dose</has_info>
         <dont_has_info>zat_b3_tech_drink_no_more</dont_has_info>
+        <dont_has_info>zat_b3_tech_see_produce_62</dont_has_info>
         <phrase_list>
             <phrase id="3">
                 <text />
@@ -6482,6 +6486,7 @@
             <phrase id="1">
                 <text>zat_b3_stalker_tech_produce_62_end_1</text>
                 <give_info>zat_a23_produce_62_bring_documentation</give_info>
+                <action>dialogs_zaton.give_tech_gauss_rifle</action>
             </phrase>
             <phrase id="0">
                 <text>zat_b3_stalker_tech_produce_62_end_0</text>
@@ -6591,6 +6596,7 @@
         <precondition>dialogs_zaton.if_actor_has_vodka</precondition>
         <has_info>zat_b3_tech_have_one_dose</has_info>
         <dont_has_info>zat_b3_tech_drink_no_more</dont_has_info>
+        <dont_has_info>zat_b3_tech_see_produce_62</dont_has_info>
         <dont_has_info>zat_b3_tech_have_couple_dose</dont_has_info>
         <phrase_list>
             <phrase id="2">
@@ -6898,6 +6904,8 @@
                 <dont_has_info>zat_b106_stalker_gonta_employ_stalkers</dont_has_info>
                 <dont_has_info>zat_b106_chimera_dead_reward</dont_has_info>
                 <dont_has_info>zat_b106_found_soroka_done</dont_has_info>
+                <dont_has_info>zat_b22_stalker_vampire_done</dont_has_info>
+                <dont_has_info>zat_b106_gonta_accept_actor</dont_has_info>
             </phrase>
             <phrase id="12">
                 <text>zat_b106_stalker_gonta_start_12</text>
@@ -6908,7 +6916,7 @@
             </phrase>
             <phrase id="13">
                 <text>zat_b106_stalker_gonta_start_13</text>
-                <dont_has_info>zat_b106_found_soroka</dont_has_info>
+                <dont_has_info>zat_b106_found_soroka_done</dont_has_info>
                 <dont_has_info>zat_b106_gonta_accept_actor</dont_has_info>
                 <has_info>zat_b22_stalker_vampire_done</has_info>
                 <next>131</next>
@@ -6933,7 +6941,7 @@
             <phrase id="14">
                 <text>zat_b106_stalker_gonta_start_14</text>
                 <dont_has_info>zat_b106_stalker_gonta_employ_stalkers</dont_has_info>
-                <has_info>zat_b106_stalker_gonta_after_fight_done</has_info>
+                <has_info>zat_b106_chimera_dead_reward</has_info>
             </phrase>
         </phrase_list>
     </dialog>

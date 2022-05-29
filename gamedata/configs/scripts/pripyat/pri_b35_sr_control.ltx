@@ -62,8 +62,8 @@ on_info7 = {+pri_b35_target_envoy +pri_b35_envoy_out -pri_b35_primary} %+pri_b35
 on_info8 = {-pri_b35_target_envoy +pri_b35_envoy_out -pri_b35_secondary} %+pri_b35_secondary%
 
 on_info9 = {-pri_b35_attack_started !actor_in_zone(pri_b35_sr_actor_position)} %+pri_b35_attack_started +pri_b35_rendevous_done%
-on_info10 = {+pri_b35_reward_given} sr_idle@nil, {+pri_b305_second_cam_end} sr_idle@nil
-on_info11 = {+pri_b35_merc_leader_escape +pri_b35_envoy_escape} sr_idle@nil
+on_info10 = {+pri_b35_reward_given} sr_idle@nil, {+pri_a28_update_task_cover_strelok} sr_idle@nil
+on_info11 = {+pri_b35_merc_leader_escape +pri_b35_envoy_escape} sr_idle@nil %+pri_b35_task_end%
 on_info12 = {+pri_b35_attack_started -pri_b35_envoy_escape -pri_b35_envoy_out =squad_exist(pri_b35_envoy_squad) !actor_in_zone(pri_b35_sr_actor_position)} sr_idle@remove_envoy
 on_info13 = {+pri_b35_attack_started -pri_b35_merc_leader_escape -pri_b35_merc_leader_out =squad_exist(pri_b35_mercs_squad) !actor_in_zone(pri_b35_sr_actor_position)} sr_idle@remove_mercs
 

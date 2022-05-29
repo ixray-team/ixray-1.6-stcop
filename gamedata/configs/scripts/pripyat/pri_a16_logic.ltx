@@ -3,7 +3,7 @@ combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 invulnerable = true
 out_restr = pri_a16_sr_noweap
-meet = no_meet
+meet = meet@send_far
 gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
@@ -14,11 +14,22 @@ combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 invulnerable = true
 use_camp = false
-meet = no_meet
+meet = meet@send_far
 out_restr = pri_a16_sr_noweap
 gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
+
+[meet@send_far]
+close_anim 		= nil
+close_victim 	= nil
+far_anim 		= nil
+far_victim 		= nil
+close_snd_hello = nil
+close_snd_bye 	= nil
+use = false
+snd_on_use = {=is_wounded} nil, {=actor_enemy} nil, {=has_enemy} meet_use_no_fight, {=actor_has_weapon} meet_use_no_weapon, {!dist_to_actor_le(3)} nil, meet_use_no_talk_leader
+meet_on_talking = false
 
 
 

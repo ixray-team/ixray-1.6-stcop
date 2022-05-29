@@ -19,8 +19,8 @@ on_info2 = {!squad_exist(pri_b35_jup_b43_stalker_assistant_squad)} %=create_squa
 on_info = {+pri_a28_actor_in_zone_stay} sr_idle@create_yar %=create_squad(pri_b35_jup_b43_stalker_assistant_squad:pri_a16) =create_squad(pri_a16_stalkers_squad:pri_a16) =create_squad(stalker_sim_squad_advanced:pri_a16) =create_squad(stalker_sim_squad_veteran:pri_a16) -pri_a16_wait_for_stalkers%
 
 [sr_idle@create_yar]
-on_info = {+jup_b19_complete =squad_exist(jup_b19_freedom_yar_squad)} sr_idle@add_yar %=remove_squad(jup_b19_freedom_yar_squad)%
-on_info2 = {+jup_b19_complete !squad_exist(jup_b19_freedom_yar_squad)} sr_idle@add_yar
+on_info = {+jup_b19_complete -jup_b19_yar_enemy_or_dead =squad_exist(jup_b19_freedom_yar_squad)} sr_idle@add_yar %=remove_squad(jup_b19_freedom_yar_squad)%
+on_info2 = {+jup_b19_complete -jup_b19_yar_enemy_or_dead !squad_exist(jup_b19_freedom_yar_squad)} sr_idle@add_yar
 on_info3 = {+jup_b19_yar_enemy_or_dead} sr_idle@nil
 
 [sr_idle@add_yar]

@@ -140,6 +140,13 @@ function uni_traveler_precond(actor, npc)
 		return false
 	end
 
+	local smart = xr_gulag.get_npc_smart(npc)
+	if (smart) then
+		if smart:name() == "jup_b41" then
+			return false
+		end
+	end
+
 	return true
 end
 
@@ -179,6 +186,11 @@ function traveling()
 				board:exit_smart(v, traveler_smart_id)
 				board:remove_squad(v)
 			end
+		end
+		local curr_smart_id = traveler_squad.smart_id
+		if curr_smart_id ~= nil then
+			board:assign_squad_to_smart(traveler_squad, nil)
+			board:assign_squad_to_smart(traveler_squad, curr_smart_id)
 		end
 
 		local position = patrol(traveler_squad_path):point(0)
@@ -395,9 +407,9 @@ function get_travel_cost(actor, npc, dialog_id, phrase_id, p1)
 
 	local squad_position = npc:position()
 	local smart_position = smart.position
-	
+
 	local distance = squad_position:distance_to(smart_position)
-	
+
 	local price = get_price_by_distance(distance)
 	--printf("TRAVEL DISTANCE %s", distance)
 
@@ -420,7 +432,7 @@ function actor_have_money(actor, npc, dialog_id, phrase_id)
 
 	local squad_position = npc:position()
 	local smart_position = smart.position
-	
+
 	local distance = squad_position:distance_to(smart_position)
 
 	local price = get_price_by_distance(distance)

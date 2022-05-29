@@ -32,7 +32,7 @@ path_look = zulus_look_1
 out_restr = pri_b301_zulus_def_restr
 meet = no_meet
 on_info = {+pri_b301_save_zulus_complete =dist_to_actor_le(8) +pri_b301_monster_death_1 +pri_b301_monster_death_2 +pri_b301_monster_death_3} remark@no_danger
-on_info2 = {-pri_b301_zulus_hello_in_combat_sound =see_actor() =dist_to_actor_le(20)} %+pri_b301_zulus_hello_in_combat_sound =play_sound(pri_b301_zulus_hello_in_combat)%, {-pri_b301_zulus_hello_in_combat_sound =dist_to_actor_le(5)} %+pri_b301_zulus_hello_in_combat_sound =play_sound(pri_b301_zulus_hello_in_combat)%
+on_info2 = {-pri_b301_save_zulus_complete -pri_b301_zulus_hello_in_combat_sound =see_actor() =dist_to_actor_le(20)} %+pri_b301_zulus_hello_in_combat_sound =play_sound(pri_b301_zulus_hello_in_combat)%, {-pri_b301_save_zulus_complete -pri_b301_zulus_hello_in_combat_sound =dist_to_actor_le(5)} %+pri_b301_zulus_hello_in_combat_sound =play_sound(pri_b301_zulus_hello_in_combat)%
 on_info3 = {-pri_b301_save_zulus_complete} %=play_sound(pri_b301_zulus_surrounded)%
 on_info4 = {=dist_to_actor_ge(140)} %=destroy_object +pri_b301_zulus_destroy_alone_without_fight%
 wounded = wounded

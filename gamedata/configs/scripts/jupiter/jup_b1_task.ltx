@@ -2,7 +2,7 @@
 active = sr_idle@turn_anomaly_off
 
 [sr_idle@turn_anomaly_off]
-on_game_timer = 15 | %=anomaly_turn_off(jup_b1_anomal_zone) +jup_b1_debug% 
+on_game_timer = 15 | {-jup_b1_debug} %=anomaly_turn_off(jup_b1_anomal_zone) +jup_b1_debug% 
 on_info = {+jup_b1_give_task} sr_idle@no_task
 
 [sr_idle@no_task]

@@ -82,36 +82,23 @@ end
 local medic_items_table = {
 						["basic"] = {
 									["conserva"] 	= 2,
-									["medkit"] 		= 2,
-									["medkit_army"] = 1,
+									["medkit_army"] = 2,
 									["antirad"] 	= 2,
 									["bandage"] 	= 4,
-									["drug_coagulant"] 		= 1,
-									["drug_radioprotector"]	= 1,
 									},
 
 						["advanced"] = {
 									["conserva"] 			= 3,
-									["medkit"] 				= 3,
-									["medkit_army"] 		= 2,
+									["medkit_army"] 		= 3,
 									["antirad"] 			= 3,
 									["bandage"] 			= 5,
-									["drug_coagulant"] 		= 1,
-									["drug_radioprotector"]	= 1,
-									["drug_antidot"] 		= 1,
-									["drug_psy_blockade"]	= 1,
 									},
 
 						["elite"] = {
 									["conserva"] 			= 4,
-									["medkit"] 				= 5,
-									["medkit_army"] 		= 3,
+									["medkit_army"] 		= 5,
 									["antirad"] 			= 5,
 									["bandage"] 			= 8,
-									["drug_coagulant"] 		= 2,
-									["drug_radioprotector"]	= 2,
-									["drug_antidot"] 		= 1,
-									["drug_psy_blockade"]	= 1,
 									},
 					}
 

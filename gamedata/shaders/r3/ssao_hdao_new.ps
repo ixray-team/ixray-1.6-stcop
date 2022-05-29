@@ -21,9 +21,13 @@
 
     #define MSAA_SAMPLE_INDEX ( 3 )
 
-#else // ( MSAA_SAMPLES == 8 )
+#elif ( MSAA_SAMPLES == 8 )
 
     #define MSAA_SAMPLE_INDEX ( 6 )
+
+#else
+
+    #define MSAA_SAMPLE_INDEX ( 0 )
 
 #endif
 
@@ -47,11 +51,10 @@ RWTexture2D<float> g_ResultTexture : register( u0 );
 // Hard coded HDAO params
 //=================================================================================================================================
 
-static float g_fHDAORejectRadius    = 0.23f;	// Camera Z values must fall within the reject and accept radius to be 
-static float g_fHDAOAcceptRadius    = 0.00212f; // considered as a valley
-static float g_fHDAOIntensity       = 0.6f;	// Simple scaling factor to control the intensity of the occlusion
-//static float g_fHDAOIntensity     = 5.6f;	// Simple scaling factor to control the intensity of the occlusion
-static float g_fHDAONormalScale     = 0.05f;	// Scaling factor to control the effect the normals have 
+static float g_fHDAORejectRadius    = 0.43f;	// Camera Z values must fall within the reject and accept radius to be 
+static float g_fHDAOAcceptRadius    = 0.0001f;  // considered as a valley
+static float g_fHDAOIntensity       = 0.5f;	    // Simple scaling factor to control the intensity of the occlusion
+static float g_fHDAONormalScale     = 0.10f;	// Scaling factor to control the effect the normals have 
 static float g_fAcceptAngle         = 0.98f;	// Used by the ValleyAngle function to determine shallow valleys
 
 //=================================================================================================================================
@@ -110,7 +113,7 @@ static float g_fAcceptAngle         = 0.98f;	// Used by the ValleyAngle function
 // HDAO sample pattern
 //=================================================================================================================================
 
-#if SSAO_QUALITY == 3
+#if SSAO_QUALITY >= 3
 
     #define NUM_VALLEYS (48)
 
@@ -219,7 +222,9 @@ static float g_fAcceptAngle         = 0.98f;	// Used by the ValleyAngle function
     };
 
     static float g_fWeightTotal = 18.4198;
+#endif
 
+/*
 #elif SSAO_QUALITY == 2
 
     #define NUM_VALLEYS (32)
@@ -345,6 +350,8 @@ static float g_fAcceptAngle         = 0.98f;	// Used by the ValleyAngle function
 
 #endif
 
+*/
+
 // Used by the valley angle function
 #define NUM_NORMAL_LOADS (4)
 static const int2 g_i2NormalLoadPattern[NUM_NORMAL_LOADS] = 
@@ -355,7 +362,7 @@ static const int2 g_i2NormalLoadPattern[NUM_NORMAL_LOADS] =
 	{ 8, 9 },
 };
 
-#ifdef SSAO_QUALITY
+#if SSAO_QUALITY >= 3
 //=================================================================================================================================
 // Computes the general valley angle
 //=================================================================================================================================
@@ -369,7 +376,11 @@ float ValleyAngle( uint2 u2ScreenCoord )
 	int2 i2OffsetScreenCoord;
 	int2 i2MirrorOffsetScreenCoord;
 	
+    #ifdef GBUFFER_OPTIMIZATION
 	float3 N = gbuf_unpack_normal( g_txNormal.Load( int3( u2ScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy );
+	#else
+	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;
+	#endif
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
 	{
@@ -383,10 +394,15 @@ float ValleyAngle( uint2 u2ScreenCoord )
 		i2OffsetScreenCoord = ( i2OffsetScreenCoord < 0 ) ? ( 0 ) : ( i2OffsetScreenCoord );
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
+    #ifdef GBUFFER_OPTIMIZATION
 		f3N1.xy  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy;
 		f3N1.xyz = gbuf_unpack_normal( f3N1.xy );
 		f3N2.xy  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy;				
 		f3N2.xyz = gbuf_unpack_normal( f3N2.xy );
+    #else
+		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;
+		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;				
+    #endif
 		
 		fDot = dot( f3N1, N );
 		
@@ -407,7 +423,7 @@ float ValleyAngle( uint2 u2ScreenCoord )
 
 #ifdef SM_5_0
 
-#ifdef SSAO_QUALITY
+#if SSAO_QUALITY >= 3
     float ComputeHDAO( uint2 u2CenterTexel, uint2 u2ScreenPos )
     {
 	    // Locals
@@ -421,7 +437,7 @@ float ValleyAngle( uint2 u2ScreenCoord )
 	    float fDot;
 
 	    // Get the general valley angle, to scale the result by 
-	    fDot = 1.0f;//ValleyAngle( u2ScreenPos );	
+	    fDot = ValleyAngle( u2ScreenPos );	
     	
 	    // Sample center texel
 	    fCenterZ = LoadFromLDS( u2CenterTexel ); 
@@ -440,12 +456,12 @@ float ValleyAngle( uint2 u2ScreenCoord )
 		    f2Compare *= ( f2Diff > g_fHDAOAcceptRadius.xx ) ? ( 1.0f ) : ( 0.0f );
     		
 		    // Weight occlusion
-		    fOcclusion += ( f2Compare.x * f2Compare.y * g_fHDAOSampleWeights[uValley] * fDot );	
+		    fOcclusion += ( f2Compare.x * f2Compare.y * g_fHDAOSampleWeights[uValley] );	
 	    }
     	
 	    // Finally calculate the HDAO occlusion value
 	    fOcclusion /= g_fWeightTotal;
-	    fOcclusion *= g_fHDAOIntensity;
+	    fOcclusion *= g_fHDAOIntensity * fDot;
 	    fOcclusion *= fCenterZ < 0.5f ? 0.0f : lerp( 0.0f, 1.0f, saturate( fCenterZ - 0.5f ) );
 	    fOcclusion = 1.0f - saturate( fOcclusion );
     	
@@ -471,7 +487,19 @@ float ValleyAngle( uint2 u2ScreenCoord )
             g_ResultTexture[u2ScreenPos.xy] = 1.0f;
         }
     }
-    #else
+    #elif SSAO_QUALITY < 3
+    {
+        // Calculate the screen pos
+	    uint2 u2ScreenPos = uint2( Gid.x * ALU_DIM + GTid.x, Gid.y * ALU_DIM + GTid.y );
+    		
+	    // Make sure we don't write outside the target buffer
+	    if( ( u2ScreenPos.x < uint( g_f2RTSize.x ) ) && ( u2ScreenPos.y < uint( g_f2RTSize.y ) ) )
+	    {
+            // Write the data directly to an AO texture:
+            g_ResultTexture[u2ScreenPos.xy] = 1.0f;
+        }
+    }
+    #elif SSAO_QUALITY >= 3
     { 
 	    // Locals
 	    float2 f2ScreenCoord;
@@ -555,8 +583,8 @@ float ValleyAngle( uint2 u2ScreenCoord )
     }
 #endif
 
-#else
 
+#else
 
 //=================================================================================================================================
 // HDAO PS: Performs valley detection in Camera Z space, and offsets by the Z 
@@ -579,7 +607,7 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
 {
 	return 1.0f;
 }
-#else
+#elif SSAO_QUALITY >= 3
 {
 	// Locals
 	uint2 u2CenterScreenCoord;
@@ -594,7 +622,7 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
 	float fDot;
 								
 	// Compute screen coord, and store off the inverse of the RT Size
-	u2CenterScreenCoord = uint2( tc * g_f2RTSize );
+	u2CenterScreenCoord = uint2( floor( tc * g_f2RTSize ) );
 	
 	// Get the general valley angle, to scale the result by 
 	fDot = ValleyAngle( u2CenterScreenCoord );
@@ -629,18 +657,19 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
 		f2Compare *= ( f2Diff > g_fHDAOAcceptRadius.xx ) ? ( 1.0f ) : ( 0.0f );
 						
 		// Accumulate weighted occlusion
-		fOcclusion += f2Compare.x * f2Compare.y * g_fHDAOSampleWeights[iValley] * fDot;	
+		fOcclusion += f2Compare.x * f2Compare.y * g_fHDAOSampleWeights[iValley];	
 	}
 					
 	// Finally calculate the HDAO occlusion value
 	fOcclusion /= g_fWeightTotal;
-	fOcclusion *= g_fHDAOIntensity;
+	fOcclusion *= g_fHDAOIntensity * fDot;
 	fOcclusion *= fCenterZ < 0.5f ? 0.0f : lerp( 0.0f, 1.0f, saturate( fCenterZ - 0.5f ) );
 	fOcclusion = 1.0f - saturate( fOcclusion );
 	
 	return fOcclusion;
 }
 #endif
+
 #endif
 
 //=================================================================================================================================

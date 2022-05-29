@@ -480,7 +480,7 @@ end
 
 function balance_advocate_functor()
 	if not has_alife_info("balance_advocate_gained") then
-		if has_alife_info("jup_b46_duty_founder_pda_to_owl")
+		if has_alife_info("jup_b46_duty_founder_pda_to_stalkers")
 				and has_alife_info("jup_b207_dealers_pda_sold_owl")
 				and has_alife_info("zat_b106_found_soroka_done") then
 			db.actor:give_info_portion("balance_advocate_gained")
@@ -555,6 +555,7 @@ function information_dealer_functor()
 		if count >= 10 then
 			news_manager.send_tip(db.actor, "st_ach_information_dealer", nil, "information_dealer", nil, nil)
 			db.actor:give_info_portion("actor_information_dealer")
+			return true
 		end
 	end
 	return has_alife_info("actor_information_dealer")

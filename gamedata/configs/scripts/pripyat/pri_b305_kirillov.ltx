@@ -44,10 +44,12 @@ on_info20 = {+pri_b305_third_cam_go -pri_b305_tp_cam_done} walker@strelok_operat
 
 [logic@pri_b305_kirillov]
 active = walker@teleport
-suitable = {+pri_a25_rfi_source_eliminated -pri_b305_fifth_cam_end =check_npc_name(pri_a22_army_signaller)} true
+suitable = {+pri_a25_rfi_source_eliminated -pri_b305_actor_wondered_done_end =check_npc_name(pri_a22_army_signaller)} true
 prior = 200
 
 [meet@kirillov]
+close_snd_hello = nil
+close_snd_bye 	= nil
 use = {=actor_enemy} false, true
 close_victim = nil
 
@@ -78,7 +80,7 @@ on_signal = sound_end | {-pri_b305_kirilov_about_strelok_1_done_end} remark@meet
 
 [remark@meet_actor_2]:remark@based, remark@cats
 target = path | pri_a16_pri_b305_actor_walk, 0
-on_info   = {+pri_b305_actor_go_done_end -pri_b305_kirilov_about_garik_vano_done !story_object_exist(jup_b218_vano_in_suit)} %=play_sound(pri_b305_kirilov_about_garik) +pri_b305_kirilov_about_garik_vano_done%, {+pri_b305_actor_go_done_end -pri_b305_kirilov_about_garik_vano_done -jup_a10_vano_agree_go_und} %=play_sound(pri_b305_kirilov_about_garik) +pri_b305_kirilov_about_garik_vano_done%, {+pri_b305_actor_go_done_end -pri_b305_kirilov_about_garik_vano_done} %=play_sound(pri_b305_kirilov_about_garik) +pri_b305_kirilov_about_garik_vano_done%
+on_info   = {+pri_b305_actor_go_done_end -pri_b305_kirilov_about_garik_vano_done +pri_b305_vano_gone} %=play_sound(pri_b305_kirilov_about_garik_vano) +pri_b305_kirilov_about_garik_vano_done%, {+pri_b305_actor_go_done_end -pri_b305_kirilov_about_garik_vano_done -jup_a10_vano_agree_go_und} %=play_sound(pri_b305_kirilov_about_garik) +pri_b305_kirilov_about_garik_vano_done%, {+pri_b305_actor_go_done_end -pri_b305_kirilov_about_garik_vano_done} %=play_sound(pri_b305_kirilov_about_garik) +pri_b305_kirilov_about_garik_vano_done%
 on_signal = sound_end | {-pri_b305_kirilov_about_garik_vano_done_end} remark@meet_medic_3 %+pri_b305_kirilov_about_garik_vano_done_end%
 
 ;******************** < 1 after > ***********************
@@ -164,4 +166,5 @@ cover_name = pri_a16_animp_vano
 meet = meet@kirillov
 on_info = {+pri_b305_kovalskiy_order_kirilov_done_end -pri_b305_kirilov_order_agree_done} %=play_sound(pri_b305_kirilov_order_agree) +pri_b305_kirilov_order_agree_done%
 on_signal = sound_end | {-pri_b305_kirilov_order_agree_done_end} %+pri_b305_kirilov_order_agree_done_end%
+avail_animations = animpoint_stay_wall_no_rnd
 

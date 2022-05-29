@@ -8,12 +8,16 @@ on_hit = hit
 
 [walker@def_go_base]
 on_info10 = {+pri_a18_reinf_go_base} patrol@base
+on_info11 = {-pri_a18_skelja_once_combat_section_go +pri_a18_hit_pray_squad} camper@idol_room %+pri_a18_skelja_once_combat_section_go%
 [remark@def_go_base]
 on_info10 = {+pri_a18_reinf_go_base} patrol@base
+on_info11 = {-pri_a18_skelja_once_combat_section_go +pri_a18_hit_pray_squad} camper@idol_room %+pri_a18_skelja_once_combat_section_go%
 [smartcover@def_go_base]
 on_info10 = {+pri_a18_reinf_go_base} patrol@base
+on_info11 = {-pri_a18_skelja_once_combat_section_go +pri_a18_hit_pray_squad} camper@idol_room %+pri_a18_skelja_once_combat_section_go%
 [camper@def_go_base]
 on_info10 = {+pri_a18_reinf_go_base} patrol@base
+on_info11 = {-pri_a18_skelja_once_combat_section_go +pri_a18_hit_pray_squad} camper@idol_room %+pri_a18_skelja_once_combat_section_go%
 
 ;*****************************************************
 
@@ -221,7 +225,6 @@ corpse_detection_enabled = false
 gather_items_enabled = false
 meet = no_meet
 radius = 0
-combat_ignore_cond = {-pri_a18_actor_enemy} true 
 path_walk = pri_a18_reinforcement_2_ready_kill_walk
 path_look = pri_a18_reinf_guard_look
 on_info = {+pri_a18_task_end} walker@in_hall_after_idol_use
@@ -248,6 +251,7 @@ on_game_timer = 1200 | %+pri_a18_scene_end_change_smart%
 on_info = {=health_le(0.5) !actor_enemy} %=restore_health%
 on_info2 = {+pri_a18_actor_enemy} %=actor_enemy%
 on_info3 = {=surge_started} | %+pri_a18_scene_end_change_smart%
+def_state_moving = assault
 
 [meet]
 meet_dialog = pri_a18_altar_destroyed_soldiers_start

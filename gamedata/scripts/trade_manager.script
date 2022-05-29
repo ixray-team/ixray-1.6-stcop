@@ -48,6 +48,7 @@ function update(npc)
 	local tt = trade_manager[npc:id()]
 
 	if tt == nil then
+		printf("TRADE [%s]:  tt is nil", npc:name())
 		return
 	end
 
@@ -71,9 +72,11 @@ function update(npc)
 		abort("Wrong section in buy_condition condlist for npc [%s]!", npc:name())
 	end
 	if tt.current_sell_condition ~= str then
-		--'printf("TRADE [%s]: sell condition = %s", npc:name(), str)
+		printf("TRADE [%s]: sell condition = %s", npc:name(), str)
 		npc:sell_condition(tt.config, str)
 		tt.current_sell_condition = str
+	else
+		printf("TRADE [%s]: current = %s   sell = %s", npc:name(), tostring(tt.current_sell_condition), tostring(str))
 	end
 
 	str = tonumber(xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_item_condition_factor))
