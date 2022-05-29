@@ -10,7 +10,7 @@ end
 
 
 function apply_combat_restrictor(npc)
-	-- итерируемся по рестрикторам, ищем в котором мы находимся и апплаим его
+	-- РёС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЂРµСЃС‚СЂРёРєС‚РѕСЂР°Рј, РёС‰РµРј РІ РєРѕС‚РѕСЂРѕРј РјС‹ РЅР°С…РѕРґРёРјСЃСЏ Рё Р°РїРїР»Р°РёРј РµРіРѕ
 	local npc_position = npc:position()
 	for k,v in pairs(combat_sectors) do
 		if v:inside(npc_position) then
@@ -38,7 +38,7 @@ function accessible_job(se_obj, way_name)
 	if obj == nil then
 		return false
 	end
-	-- Берем клиентский объект НПС	
+	-- Р‘РµСЂРµРј РєР»РёРµРЅС‚СЃРєРёР№ РѕР±СЉРµРєС‚ РќРџРЎ	
 	obj = obj.object
 	if obj == nil then
 		return false
@@ -47,8 +47,8 @@ function accessible_job(se_obj, way_name)
 	local npc_position = obj:position()
 	local job_position = patrol(way_name):point(0)
 		
-	-- Берем рестриктор по позиции пути	
-	-- Берем рестриктор по позиции НПС
+	-- Р‘РµСЂРµРј СЂРµСЃС‚СЂРёРєС‚РѕСЂ РїРѕ РїРѕР·РёС†РёРё РїСѓС‚Рё	
+	-- Р‘РµСЂРµРј СЂРµСЃС‚СЂРёРєС‚РѕСЂ РїРѕ РїРѕР·РёС†РёРё РќРџРЎ
 	local is_npc_inside = false
 	for k,v in pairs(combat_sectors) do
 		if v:inside(npc_position) then
@@ -59,19 +59,19 @@ function accessible_job(se_obj, way_name)
 		end
 	end
 		
-	-- Если они совпадают - то истина, иначе ложь.
+	-- Р•СЃР»Рё РѕРЅРё СЃРѕРІРїР°РґР°СЋС‚ - С‚Рѕ РёСЃС‚РёРЅР°, РёРЅР°С‡Рµ Р»РѕР¶СЊ.
 	return is_npc_inside ~= true
 end
 
 
 function get_job_restrictor(way_name)
-	-- Берем смарт по позиции пути
+	-- Р‘РµСЂРµРј СЃРјР°СЂС‚ РїРѕ РїРѕР·РёС†РёРё РїСѓС‚Рё
 	local job_position = patrol(way_name):point(0)
 	for k,v in pairs(combat_sectors) do
 		if v:inside(job_position) then
 			return k
 		end
 	end
-	-- Возвращаем его имя
+	-- Р’РѕР·РІСЂР°С‰Р°РµРј РµРіРѕ РёРјСЏ
 	return ""
 end

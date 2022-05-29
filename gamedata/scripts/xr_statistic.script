@@ -357,7 +357,7 @@ function seeker_functor()
 			return false
 		end
 	end
-	-- Бандиты симуляционно больше преследуют игрока
+	-- Р‘Р°РЅРґРёС‚С‹ СЃРёРјСѓР»СЏС†РёРѕРЅРЅРѕ Р±РѕР»СЊС€Рµ РїСЂРµСЃР»РµРґСѓСЋС‚ РёРіСЂРѕРєР°
 	db.actor:give_info_portion("sim_bandit_attack_harder")
 	news_manager.send_tip(db.actor, "st_ach_seeker", nil, "seeker", nil, nil)
 	xr_effects.inc_faction_goodwill_to_actor(db.actor, nil, {"stalker", 200})
@@ -397,7 +397,7 @@ function skilled_stalker_functor()
 end
 
 function leader_functor()
-	-- логика бонуса: pri_a21_base_restrictor.ltx
+	-- Р»РѕРіРёРєР° Р±РѕРЅСѓСЃР°: pri_a21_base_restrictor.ltx
 	if not has_alife_info("leader_achievement_gained") then
 		if has_alife_info("jup_a10_vano_agree_go_und")
 				and has_alife_info("jup_b218_soldier_hired")
@@ -499,7 +499,7 @@ function wealthy_functor()
 end
 
 function keeper_of_secrets_functor()
-	-- логика бонуса: pri_b305_logic.ltx
+	-- Р»РѕРіРёРєР° Р±РѕРЅСѓСЃР°: pri_b305_logic.ltx
 	if not has_alife_info("keeper_of_secrets_achievement_gained") then
 		if has_alife_info("pri_b305_all_strelok_notes_given") then
 			db.actor:give_info_portion("keeper_of_secrets_achievement_gained")

@@ -5,8 +5,8 @@ local MARKER_IN = 1
 local MARKER_OUT = 2
 local MARKER_IDLE = 3
 
---' Анимации персонажа
---' мы уже находимся в необходимом состоянии?
+--' РђРЅРёРјР°С†РёРё РїРµСЂСЃРѕРЅР°Р¶Р°
+--' РјС‹ СѓР¶Рµ РЅР°С…РѕРґРёРјСЃСЏ РІ РЅРµРѕР±С…РѕРґРёРјРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё?
 class "eva_state_mgr_animation" (property_evaluator)
 function eva_state_mgr_animation:__init(name, st) super (nil, name)
 	self.st = st
@@ -17,7 +17,7 @@ function eva_state_mgr_animation:evaluate()
 end
 
 
---' Отыгрываем ли мы сейчас извращенную анимацию
+--' РћС‚С‹РіСЂС‹РІР°РµРј Р»Рё РјС‹ СЃРµР№С‡Р°СЃ РёР·РІСЂР°С‰РµРЅРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ
 class "eva_state_mgr_animation_play_now" (property_evaluator)
 function eva_state_mgr_animation_play_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -27,7 +27,7 @@ function eva_state_mgr_animation_play_now:evaluate()
 end
 
 
---' мы уже не отыгрываем никакую извращенную анимацию
+--' РјС‹ СѓР¶Рµ РЅРµ РѕС‚С‹РіСЂС‹РІР°РµРј РЅРёРєР°РєСѓСЋ РёР·РІСЂР°С‰РµРЅРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ
 class "eva_state_mgr_animation_none_now" (property_evaluator)
 function eva_state_mgr_animation_none_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -36,7 +36,7 @@ function eva_state_mgr_animation_none_now:evaluate()
 	return self.st.animation.states.current_state == nil
 end
 
---' Мы начали отыгрывать анимацию и ждем коллбека от нее
+--' РњС‹ РЅР°С‡Р°Р»Рё РѕС‚С‹РіСЂС‹РІР°С‚СЊ Р°РЅРёРјР°С†РёСЋ Рё Р¶РґРµРј РєРѕР»Р»Р±РµРєР° РѕС‚ РЅРµРµ
 class "eva_state_mgr_animation_locked" (property_evaluator)
 function eva_state_mgr_animation_locked:__init(name, st) super (nil, name)
 	self.st = st
@@ -53,7 +53,7 @@ end
 
 
 
---' Играем входную анимацию
+--' РРіСЂР°РµРј РІС…РѕРґРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ
 class "act_state_mgr_animation_start" (action_base)
 function act_state_mgr_animation_start:__init(name, st) super (nil, name)
 	self.st = st
@@ -72,7 +72,7 @@ function act_state_mgr_animation_start:finalize()
 end
 
 
---' Играем выходную анимацию
+--' РРіСЂР°РµРј РІС‹С…РѕРґРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ
 class "act_state_mgr_animation_stop" (action_base)
 function act_state_mgr_animation_stop:__init(name, st) super (nil, name)
 	self.st = st
@@ -120,10 +120,10 @@ function animation:__init(npc, mgr, anim_path)
 		seq_id = 1 }
 
 end
--- Передача управления данному экземпляру класса.
+-- РџРµСЂРµРґР°С‡Р° СѓРїСЂР°РІР»РµРЅРёСЏ РґР°РЅРЅРѕРјСѓ СЌРєР·РµРјРїР»СЏСЂСѓ РєР»Р°СЃСЃР°.
 function animation:set_control()
 	--printf("[%s] [%s] set control current_state[%s] marker[%s] sid[%s]", self.npc:name(), self.name, tostring(self.states.current_state), tostring(self.states.anim_marker), self.sid)
-	-- Устанавливаем коллбек
+	-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєРѕР»Р»Р±РµРє
 	self.npc:set_callback(callback.script_animation, animation.animation_callback, self)
 	if self.name == "state_mgr_animation_list" then
 		self.mgr.animstate.states.anim_marker = nil
@@ -132,7 +132,7 @@ function animation:set_control()
 		self:update_anim()
 	end
 end
--- Инициализируем выбор анимации
+-- РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РІС‹Р±РѕСЂ Р°РЅРёРјР°С†РёРё
 function animation:update_anim()
 	local anim, state = self:select_anim()
 
@@ -140,26 +140,26 @@ function animation:update_anim()
 		self:add_anim(anim, state)
 	end
 end
--- Установка цели, какую анимацию нужно отыгрывать.
+-- РЈСЃС‚Р°РЅРѕРІРєР° С†РµР»Рё, РєР°РєСѓСЋ Р°РЅРёРјР°С†РёСЋ РЅСѓР¶РЅРѕ РѕС‚С‹РіСЂС‹РІР°С‚СЊ.
 function animation:set_state(new_state, fast_set)
 	--printf("[%s] [%s] set new animation [%s], current_state [%s]", self.npc:name(), self.name, tostring(new_state), tostring(self.states.current_state))
 --	print_table(self.states)
 
-	-- Быстрый выход, если понадобится.
+	-- Р‘С‹СЃС‚СЂС‹Р№ РІС‹С…РѕРґ, РµСЃР»Рё РїРѕРЅР°РґРѕР±РёС‚СЃСЏ.
 	if fast_set == true then
 		--printf(" FAST SET %s  sid(%s)", self.npc:name(), self.sid)
 
 		-- clear_animations
 		self.npc:clear_animations()
 
-		-- Детачнуть атачнутые предметы
+		-- Р”РµС‚Р°С‡РЅСѓС‚СЊ Р°С‚Р°С‡РЅСѓС‚С‹Рµ РїСЂРµРґРјРµС‚С‹
 		local state
 
 		if self.states.anim_marker == MARKER_IN then	
-			-- Если в момент ресета мы играем входную анимацию
+			-- Р•СЃР»Рё РІ РјРѕРјРµРЅС‚ СЂРµСЃРµС‚Р° РјС‹ РёРіСЂР°РµРј РІС…РѕРґРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ
 			state = self.anim_path.animations[self.states.target_state]
 		else
-			-- Если в момент ресета мы играем выходную анимацию или айдл
+			-- Р•СЃР»Рё РІ РјРѕРјРµРЅС‚ СЂРµСЃРµС‚Р° РјС‹ РёРіСЂР°РµРј РІС‹С…РѕРґРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ РёР»Рё Р°Р№РґР»
 			state = self.anim_path.animations[self.states.current_state]
 		end
 		
@@ -178,7 +178,7 @@ function animation:set_state(new_state, fast_set)
 
 
 
-		-- перевести current_state в nil
+		-- РїРµСЂРµРІРµСЃС‚Рё current_state РІ nil
 		--printf("NULIFY ANIM MARKER %s", tostring(self.states.anim_marker))
 		self.states.anim_marker = nil
 
@@ -195,7 +195,7 @@ function animation:set_state(new_state, fast_set)
 	self.states.next_rnd = time_global()
 end
 
--- Выбор анимации.
+-- Р’С‹Р±РѕСЂ Р°РЅРёРјР°С†РёРё.
 function animation:select_anim()
 	local states = self.states
 	--printf("[%s] [%s] select anim [%s], current_state [%s]", self.npc:name(), self.name, tostring(states.target_state), tostring(states.current_state))
@@ -205,14 +205,14 @@ function animation:select_anim()
 
 
 	if states.target_state ~= states.current_state then
-	-- Один из возможных вариантов выбора анимашки:
-	-- 1. Нужно отыграть выход из анимации.
+	-- РћРґРёРЅ РёР· РІРѕР·РјРѕР¶РЅС‹С… РІР°СЂРёР°РЅС‚РѕРІ РІС‹Р±РѕСЂР° Р°РЅРёРјР°С€РєРё:
+	-- 1. РќСѓР¶РЅРѕ РѕС‚С‹РіСЂР°С‚СЊ РІС‹С…РѕРґ РёР· Р°РЅРёРјР°С†РёРё.
 		if states.target_state == nil then
 			--printf("		select out")
 
 			local state = self.anim_path.animations[states.current_state]
 
-			-- Если нет OUT анимации
+			-- Р•СЃР»Рё РЅРµС‚ OUT Р°РЅРёРјР°С†РёРё
 			if state.out == nil then
 				states.anim_marker = MARKER_OUT
 				self:animation_callback(true)
@@ -229,7 +229,7 @@ function animation:select_anim()
 			end
 
 			local next_anim = anim_for_slot[states.seq_id]
-			-- Если следующая анимация - спец действие
+			-- Р•СЃР»Рё СЃР»РµРґСѓСЋС‰Р°СЏ Р°РЅРёРјР°С†РёСЏ - СЃРїРµС† РґРµР№СЃС‚РІРёРµ
 			if type(next_anim) == "table" then
 				self:process_special_action(next_anim)
 				self:animation_callback()
@@ -238,13 +238,13 @@ function animation:select_anim()
 			return next_anim, state
 		end
 
-		-- 2. Нужно отыграть вход в анимацию
+		-- 2. РќСѓР¶РЅРѕ РѕС‚С‹РіСЂР°С‚СЊ РІС…РѕРґ РІ Р°РЅРёРјР°С†РёСЋ
 		if states.current_state == nil then
 			--printf("		select into, seq_id [%s], target [%s]", tostring(states.seq_id), tostring(states.target_state))
 
 			local state = self.anim_path.animations[states.target_state]
 
-			-- Если нет INTO анимации
+			-- Р•СЃР»Рё РЅРµС‚ INTO Р°РЅРёРјР°С†РёРё
 			if state.into == nil then
 				states.anim_marker = MARKER_IN
 				self:animation_callback(true)
@@ -261,7 +261,7 @@ function animation:select_anim()
 				return nil
 			end
 			local next_anim = anim_for_slot[states.seq_id]
-			-- Если следующая анимация - спец действие
+			-- Р•СЃР»Рё СЃР»РµРґСѓСЋС‰Р°СЏ Р°РЅРёРјР°С†РёСЏ - СЃРїРµС† РґРµР№СЃС‚РІРёРµ
 			if type(next_anim) == "table" then
 				self:process_special_action(next_anim)
 				self:animation_callback()
@@ -271,7 +271,7 @@ function animation:select_anim()
 		end
 	end
 
-	-- 3. Нужно отыграть айдл анимации или рандом
+	-- 3. РќСѓР¶РЅРѕ РѕС‚С‹РіСЂР°С‚СЊ Р°Р№РґР» Р°РЅРёРјР°С†РёРё РёР»Рё СЂР°РЅРґРѕРј
 	if states.target_state == states.current_state and states.current_state ~= nil then
 		--printf("		select rnd")
 		local wpn_slot = self:weapon_slot()
@@ -281,7 +281,7 @@ function animation:select_anim()
 			anim = self:select_rnd(state, wpn_slot, time_global() >= states.next_rnd)
 		end
 
-		-- Если не выбрали рандомную, то играем айдл
+		-- Р•СЃР»Рё РЅРµ РІС‹Р±СЂР°Р»Рё СЂР°РЅРґРѕРјРЅСѓСЋ, С‚Рѕ РёРіСЂР°РµРј Р°Р№РґР»
 		if anim == nil and state.idle ~= nil then
 			anim = self:anim_for_slot(wpn_slot, state.idle)
 		end
@@ -291,7 +291,7 @@ function animation:select_anim()
 		return anim, state
 	end
 end
---' Возвращает текущий оружейный слот
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёР№ РѕСЂСѓР¶РµР№РЅС‹Р№ СЃР»РѕС‚
 function animation:weapon_slot()
 	local weapon = self.npc:active_item()
 	if weapon == nil or self.npc:weapon_strapped() == true then
@@ -299,7 +299,7 @@ function animation:weapon_slot()
 	end
 	return weapon:animation_slot()
 end
---' Возвращает анимацию под переданный оружейный слот
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РЅРёРјР°С†РёСЋ РїРѕРґ РїРµСЂРµРґР°РЅРЅС‹Р№ РѕСЂСѓР¶РµР№РЅС‹Р№ СЃР»РѕС‚
 function animation:anim_for_slot(slot, t)
 --	printf("ANIM [%s] for slot [%s]", self.name, tostring(slot))
 --	print_table(t)
@@ -315,7 +315,7 @@ function animation:anim_for_slot(slot, t)
 	end
 	return t[slot]
 end
--- Выборка рандомной анимации
+-- Р’С‹Р±РѕСЂРєР° СЂР°РЅРґРѕРјРЅРѕР№ Р°РЅРёРјР°С†РёРё
 function animation:select_rnd(anim_state, wpn_slot, must_play)
 	if not must_play and math.random(100) > self.anim_path.animations[self.states.current_state].prop.rnd then
 		return nil
@@ -345,7 +345,7 @@ function animation:select_rnd(anim_state, wpn_slot, must_play)
 end
 
 
--- Добавление анимации, установка коллбека
+-- Р”РѕР±Р°РІР»РµРЅРёРµ Р°РЅРёРјР°С†РёРё, СѓСЃС‚Р°РЅРѕРІРєР° РєРѕР»Р»Р±РµРєР°
 function animation:add_anim(anim, state)
 	local npc = self.npc
 	local animation_props = state.prop
@@ -362,9 +362,9 @@ function animation:add_anim(anim, state)
 		return
 	end
 
-	-- Если позиций/направление анимации не заданы или они уже применились
+	-- Р•СЃР»Рё РїРѕР·РёС†РёР№/РЅР°РїСЂР°РІР»РµРЅРёРµ Р°РЅРёРјР°С†РёРё РЅРµ Р·Р°РґР°РЅС‹ РёР»Рё РѕРЅРё СѓР¶Рµ РїСЂРёРјРµРЅРёР»РёСЃСЊ
 	if self.mgr.animation_position == nil or self.mgr.pos_direction_applied == true then
-		-- Анимация с передвижением.
+		-- РђРЅРёРјР°С†РёСЏ СЃ РїРµСЂРµРґРІРёР¶РµРЅРёРµРј.
 		--npc:set_sight(CSightParams.eSightTypeAnimationDirection, false,false)
 --		printf("%s no pos", npc:name())
 		npc:add_animation(anim, true, true)
@@ -373,20 +373,20 @@ function animation:add_anim(anim, state)
 			abort("Animation direction missing")
 		end
 
-		-- Сюда передается дирекшн (единичный вектор. нужно его перевести в вектор ротейшнов по костям)
+		-- РЎСЋРґР° РїРµСЂРµРґР°РµС‚СЃСЏ РґРёСЂРµРєС€РЅ (РµРґРёРЅРёС‡РЅС‹Р№ РІРµРєС‚РѕСЂ. РЅСѓР¶РЅРѕ РµРіРѕ РїРµСЂРµРІРµСЃС‚Рё РІ РІРµРєС‚РѕСЂ СЂРѕС‚РµР№С€РЅРѕРІ РїРѕ РєРѕСЃС‚СЏРј)
 		local rot_y = -math.deg(math.atan2(self.mgr.animation_direction.x, self.mgr.animation_direction.z))
 		
 		--local rot_y2 = math.deg(math.acos( (v1.x*v2.x + v1.y*v2.y)/math.sqrt((v1.x*v1.x + v1.y*v1.y)*(v2.x*v2.x + v2.y*v2.y))  ))
 		
 		--printf("%s UGOL %s", npc:name(), rot_y)
-		-- Нижеследующая строка - это когда нужно отыграть анимацию в глобальных координатах.
+		-- РќРёР¶РµСЃР»РµРґСѓСЋС‰Р°СЏ СЃС‚СЂРѕРєР° - СЌС‚Рѕ РєРѕРіРґР° РЅСѓР¶РЅРѕ РѕС‚С‹РіСЂР°С‚СЊ Р°РЅРёРјР°С†РёСЋ РІ РіР»РѕР±Р°Р»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С….
 		npc:add_animation			(anim, true, self.mgr.animation_position, vector():set(0, rot_y, 0), false)
 
 		self.mgr.pos_direction_applied = true
 	end
 end
 
--- Вызов коллбека, обычно в этот момент нужен выбор новой анимации.
+-- Р’С‹Р·РѕРІ РєРѕР»Р»Р±РµРєР°, РѕР±С‹С‡РЅРѕ РІ СЌС‚РѕС‚ РјРѕРјРµРЅС‚ РЅСѓР¶РµРЅ РІС‹Р±РѕСЂ РЅРѕРІРѕР№ Р°РЅРёРјР°С†РёРё.
 function animation:animation_callback(skip_multianim_check)
 	--printf("[%s][%s] ANIM CALLBACK time[%s] count[%s]", self.npc:name(), self.name, time_global(), self.npc:animation_count())
 	if(self.npc:animation_count()~=0) then
@@ -394,10 +394,10 @@ function animation:animation_callback(skip_multianim_check)
 	end
 	local states = self.states
 
-	-- 1. Отыграли INTO анимацию
+	-- 1. РћС‚С‹РіСЂР°Р»Рё INTO Р°РЅРёРјР°С†РёСЋ
 	if states.anim_marker == MARKER_IN then
 		states.anim_marker = nil
-		-- Если INTO анимаций несколько
+		-- Р•СЃР»Рё INTO Р°РЅРёРјР°С†РёР№ РЅРµСЃРєРѕР»СЊРєРѕ
 		if skip_multianim_check ~= true then
 			local into_table = {}
 			local target_anims = self.anim_path.animations[states.target_state]
@@ -419,7 +419,7 @@ function animation:animation_callback(skip_multianim_check)
 	end
 
 
-	-- 2. Отыграли RND или IDLE
+	-- 2. РћС‚С‹РіСЂР°Р»Рё RND РёР»Рё IDLE
 	if states.anim_marker == MARKER_IDLE then
 		states.anim_marker = nil
 		local props = self.anim_path.animations[states.current_state].prop
@@ -435,11 +435,11 @@ function animation:animation_callback(skip_multianim_check)
 	end
 
 
-	-- 3. Отыграли OUT анимацию
+	-- 3. РћС‚С‹РіСЂР°Р»Рё OUT Р°РЅРёРјР°С†РёСЋ
 	if states.anim_marker == MARKER_OUT then
 		states.anim_marker = nil
 		if skip_multianim_check ~= true then
-			-- Если OUT анимаций несколько
+			-- Р•СЃР»Рё OUT Р°РЅРёРјР°С†РёР№ РЅРµСЃРєРѕР»СЊРєРѕ
 						local out_table = {}
 			if(self.anim_path.animations[states.current_state].out) then
 				out_table = self:anim_for_slot(self:weapon_slot(), self.anim_path.animations[states.current_state].out)
@@ -455,7 +455,7 @@ function animation:animation_callback(skip_multianim_check)
 		states.seq_id = 1
 		states.current_state = nil
 
-		-- Передать управление анимстейту.
+		-- РџРµСЂРµРґР°С‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ Р°РЅРёРјСЃС‚РµР№С‚Сѓ.
 		if self.name == "state_mgr_animation_list" then
 			if self.mgr.animstate ~= nil and self.mgr.animstate.set_control ~= nil then
 				self.mgr.animstate:set_control()
@@ -464,11 +464,11 @@ function animation:animation_callback(skip_multianim_check)
 		end
 	end
 end
--- Обработка спецдействий
+-- РћР±СЂР°Р±РѕС‚РєР° СЃРїРµС†РґРµР№СЃС‚РІРёР№
 function animation:process_special_action(action_table)
 	--printf("[%s] process_special_action", self.npc:name())
-	-- Производим действия находящиеся на 1 позиции
-	-- Аттач предмета
+	-- РџСЂРѕРёР·РІРѕРґРёРј РґРµР№СЃС‚РІРёСЏ РЅР°С…РѕРґСЏС‰РёРµСЃСЏ РЅР° 1 РїРѕР·РёС†РёРё
+	-- РђС‚С‚Р°С‡ РїСЂРµРґРјРµС‚Р°
 	if action_table.a ~= nil then
 		printf("item [%s] attach", utils.to_str(action_table.a))
 		local obj = self.npc:object(action_table.a)
@@ -476,7 +476,7 @@ function animation:process_special_action(action_table)
 			obj:enable_attachable_item(true)
 		end
 	end
-	-- Детач предмета
+	-- Р”РµС‚Р°С‡ РїСЂРµРґРјРµС‚Р°
 	if action_table.d ~= nil then
 		printf("item [%s] detach", utils.to_str(action_table.d))
 		local obj = self.npc:object(action_table.d)
@@ -484,13 +484,13 @@ function animation:process_special_action(action_table)
 			obj:enable_attachable_item(false)
 		end
 	end
-	-- Отыграть звук
+	-- РћС‚С‹РіСЂР°С‚СЊ Р·РІСѓРє
 	if action_table.s ~= nil then
 		xr_sound.set_sound_play(self.npc:id(), action_table.s)
 	end
-	-- Нанести хит себе
+	-- РќР°РЅРµСЃС‚Рё С…РёС‚ СЃРµР±Рµ
 	if action_table.sh ~= nil then
-		-- наносим хит себе.
+		-- РЅР°РЅРѕСЃРёРј С…РёС‚ СЃРµР±Рµ.
 		local h = hit()
 		h.power = action_table.sh
 		h.direction = vector_rotate_y(self.npc:direction(), 90)
@@ -499,7 +499,7 @@ function animation:process_special_action(action_table)
 		h.type = hit.wound
 		self.npc:hit(h)
 	end
-	-- Запуск любой функции
+	-- Р—Р°РїСѓСЃРє Р»СЋР±РѕР№ С„СѓРЅРєС†РёРё
 	if action_table.f ~= nil then
 		--printf("called function [%s]", tostring(action_table.f))
 		action_table.f(self.npc)

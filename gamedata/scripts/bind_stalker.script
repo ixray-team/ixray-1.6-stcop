@@ -36,9 +36,9 @@ function actor_binder:net_spawn(data)
 --	printf("actor net spawn")
 	level.show_indicators()
 	self.bCheckStart = true
-	self.weapon_hide = false -- спрятано или нет оружие при разговоре.
+	self.weapon_hide = false -- СЃРїСЂСЏС‚Р°РЅРѕ РёР»Рё РЅРµС‚ РѕСЂСѓР¶РёРµ РїСЂРё СЂР°Р·РіРѕРІРѕСЂРµ.
 	self.weapon_hide_in_dialog = false
-	weapon_hide = {} -- устанавливаем глобальный дефолтовый флаг.
+	weapon_hide = {} -- СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РіР»РѕР±Р°Р»СЊРЅС‹Р№ РґРµС„РѕР»С‚РѕРІС‹Р№ С„Р»Р°Рі.
 	if object_binder.net_spawn(self,data) == false then
 		return false
 	end
@@ -50,9 +50,9 @@ function actor_binder:net_spawn(data)
 	end
 	xr_s.on_game_load()                                    --' Distemper 03.2008 --
 	self.weather_manager:reset()
-	--' Загружаем настройки дропа
+	--' Р—Р°РіСЂСѓР¶Р°РµРј РЅР°СЃС‚СЂРѕР№РєРё РґСЂРѕРїР°
 	death_manager.init_drop_settings()
-	--'Устанавливаем ссылку на таскменеджер
+	--'РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃСЃС‹Р»РєСѓ РЅР° С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂ
 	self.task_manager = task_manager.get_task_manager()
 	self.spawn_frame = device().frame
 	self.already_jumped = false
@@ -127,8 +127,8 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:info_callback(npc, info_id)
 	printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
-	--' Сюжет
-	-- Отметки на карте
+	--' РЎСЋР¶РµС‚
+	-- РћС‚РјРµС‚РєРё РЅР° РєР°СЂС‚Рµ
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_trade (item, sell_bye, money)
@@ -240,7 +240,7 @@ function actor_binder:update(delta)
 		return
 	end
 
-	-- Вызов апдейта переноса игрока проводником
+	-- Р’С‹Р·РѕРІ Р°РїРґРµР№С‚Р° РїРµСЂРµРЅРѕСЃР° РёРіСЂРѕРєР° РїСЂРѕРІРѕРґРЅРёРєРѕРј
 	if travel_func ~= nil then
 		travel_func()
 	end
@@ -249,16 +249,16 @@ function actor_binder:update(delta)
 	--slowdown.update()
 	local time = time_global()
 	game_stats.update (delta, self.object)
-	-- апдейт погоды
+	-- Р°РїРґРµР№С‚ РїРѕРіРѕРґС‹
 	self.weather_manager:update()
 
 	self:check_detective_achievement()
 	self:check_mutant_hunter_achievement()
 
-	--' Апдейт саундменеджера
+	--' РђРїРґРµР№С‚ СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂР°
 	xr_sound.update(self.object:id())
 
-	-- Обновление отключения ввода с клавиатуры.
+	-- РћР±РЅРѕРІР»РµРЅРёРµ РѕС‚РєР»СЋС‡РµРЅРёСЏ РІРІРѕРґР° СЃ РєР»Р°РІРёР°С‚СѓСЂС‹.
 	if self.st.disable_input_time ~= nil and
 		game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
 		then
@@ -266,7 +266,7 @@ function actor_binder:update(delta)
 		self.st.disable_input_time = nil
 	end
 
-	-- Апдейт прятание оружия игрока во время диалога
+	-- РђРїРґРµР№С‚ РїСЂСЏС‚Р°РЅРёРµ РѕСЂСѓР¶РёСЏ РёРіСЂРѕРєР° РІРѕ РІСЂРµРјСЏ РґРёР°Р»РѕРіР°
 	if self.object:is_talking() then
 		if self.weapon_hide_in_dialog == false then
 			self.object:hide_weapon()
@@ -280,7 +280,7 @@ function actor_binder:update(delta)
 			self.weapon_hide_in_dialog = false
 		end
 	end
-	-- Апдейт прятание оружия игрока в зоне sr_no_weapon
+	-- РђРїРґРµР№С‚ РїСЂСЏС‚Р°РЅРёРµ РѕСЂСѓР¶РёСЏ РёРіСЂРѕРєР° РІ Р·РѕРЅРµ sr_no_weapon
 	if check_for_weapon_hide_by_zones() == true then
 		if self.weapon_hide == false then
 			printf("hiding weapon!!!")
@@ -295,12 +295,12 @@ function actor_binder:update(delta)
 		end
 	end
 
-	-- обновление пси-антенны
+	-- РѕР±РЅРѕРІР»РµРЅРёРµ РїСЃРё-Р°РЅС‚РµРЅРЅС‹
 	if sr_psy_antenna.psy_antenna then
 		sr_psy_antenna.psy_antenna:update(delta)
 	end
 --[[
-	--' Вывод сообщения о большой радиации
+	--' Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ Р±РѕР»СЊС€РѕР№ СЂР°РґРёР°С†РёРё
 	if self.object.radiation >= 0.7 then
 		local hud = get_hud()
 		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
@@ -350,7 +350,7 @@ function actor_binder:update(delta)
 		end
 		self.surge_manager:update()
 	end
-	-- Апдейт доступности для симуляции.
+	-- РђРїРґРµР№С‚ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё РґР»СЏ СЃРёРјСѓР»СЏС†РёРё.
 	simulation_objects.get_sim_obj_registry():update_avaliability(alife():actor())
 
 	if not self.loaded then
@@ -369,9 +369,9 @@ end
 function actor_binder:save(packet)
 	set_save_marker(packet, "save", false, "actor_binder")
 	object_binder.save(self, packet)
-	--' Сохраняем уровень сложности
+	--' РЎРѕС…СЂР°РЅСЏРµРј СѓСЂРѕРІРµРЅСЊ СЃР»РѕР¶РЅРѕСЃС‚Рё
 	packet:w_u8(level.get_game_difficulty())
-	--' Сохраняем данные об отключенном вводе
+	--' РЎРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ РѕР± РѕС‚РєР»СЋС‡РµРЅРЅРѕРј РІРІРѕРґРµ
 	if self.st.disable_input_time == nil then
 		packet:w_bool(false)
 	else
@@ -436,7 +436,7 @@ end
 function actor_binder:load(reader)
 	set_save_marker(reader, "load", false, "actor_binder")
 	object_binder.load(self, reader)
-	--' Загружаем уровень сложности
+	--' Р—Р°РіСЂСѓР¶Р°РµРј СѓСЂРѕРІРµРЅСЊ СЃР»РѕР¶РЅРѕСЃС‚Рё
 	local game_difficulty = reader:r_u8()
 	printf("load game_difficulty %s", tostring(game_difficulty))
 	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
@@ -490,7 +490,7 @@ function actor_binder:load(reader)
 end
 
 --*************************************************************
---*					Подспаун вещей в ящики					  *
+--*					РџРѕРґСЃРїР°СѓРЅ РІРµС‰РµР№ РІ СЏС‰РёРєРё					  *
 --*************************************************************
 local detective_achievement_items 		= {	"medkit",
 											"antirad",

@@ -21,13 +21,13 @@ function empty	(container)
 end
 
 
-schemes = {} -- ñîîòâåòñòâèå ñõåì ìîäóëÿì
-stypes = {} -- òèïv ñõåì
+schemes = {} -- ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²Ð¸Ðµ ÑÑ…ÐµÐ¼ Ð¼Ð¾Ð´ÑƒÐ»ÑÐ¼
+stypes = {} -- Ñ‚Ð¸Ð¿Ñ‹ ÑÑ…ÐµÐ¼
 
--- ³àãðóæàåò ñõåìó èç ôàéëà íà äèñêå è àêòèâèðóåò â ìîòèâàòîðå.
--- ³äåñü:
--- 	filename - èìÿ ôàéëà, â êîòîðîì ðåàëèçîâàíà ñõåìà, áåç ðàñøèðåíèÿ
--- 	scheme - èìÿ ñõåì
+-- Ð—Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÑ‚ ÑÑ…ÐµÐ¼Ñƒ Ð¸Ð· Ñ„Ð°Ð¹Ð»Ð° Ð½Ð° Ð´Ð¸ÑÐºÐµ Ð¸ Ð°ÐºÑ‚Ð¸Ð²Ð¸Ñ€ÑƒÐµÑ‚ Ð² Ð¼Ð¾Ñ‚Ð¸Ð²Ð°Ñ‚Ð¾Ñ€Ðµ.
+-- Ð—Ð´ÐµÑÑŒ:
+-- 	filename - Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ð½Ð° ÑÑ…ÐµÐ¼Ð°, Ð±ÐµÐ· Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ
+-- 	scheme - Ð¸Ð¼Ñ ÑÑ…ÐµÐ¼
 function load_scheme(filename, scheme, stype)
 	schemes[scheme] = filename
 	stypes[scheme] = stype
@@ -181,14 +181,14 @@ function distance_between(obj1, obj2)
 	return obj1:position():distance_to(obj2:position())
 end
 
--- +ñëè îäèí îáúåêò nil, íàïðèìåð íåò àêòåðà, òî ñ÷èòàåì, ÷òî îí äàëåêî
+-- Ð•ÑÐ»Ð¸ Ð¾Ð´Ð¸Ð½ Ð¾Ð±ÑŠÐµÐºÑ‚ nil, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ Ð½ÐµÑ‚ Ð°ÐºÑ‚ÐµÑ€Ð°, Ñ‚Ð¾ ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼, Ñ‡Ñ‚Ð¾ Ð¾Ð½ Ð´Ð°Ð»ÐµÐºÐ¾
 function distance_between_safe(obj1, obj2)
 	if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
 end
 
 local aa = nil
---' ³ðîâåðêà íà èíôîïîðøív, äàæå åñëè èãðîêà íå ñó	åñòâóåò
+--' ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¸Ð½Ñ„Ð¾Ð¿Ð¾Ñ€ÑˆÐ½Ð¸, Ð´Ð°Ð¶Ðµ ÐµÑÐ»Ð¸ Ð¸Ð³Ñ€Ð¾ÐºÐ° Ð½Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚
 function has_alife_info(info_id)
 	if aa == nil then
 		return false
@@ -209,10 +209,10 @@ end
 -- Functions and variables added by Zmey
 --------------------------------------------------
 
--- ³îíñòàíòà, êîòîðó³ èñïîëüçîâàòü â ìåñòàõ, ãäå íóæíî çàäàòü íåîãðàíè÷åííîå âðåìÿ äåéñòâèÿ
+-- ÐšÐ¾Ð½ÑÑ‚Ð°Ð½Ñ‚Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€ÑƒÑŽ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ Ð² Ð¼ÐµÑÑ‚Ð°Ñ…, Ð³Ð´Ðµ Ð½ÑƒÐ¶Ð½Ð¾ Ð·Ð°Ð´Ð°Ñ‚ÑŒ Ð½ÐµÐ¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð½Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 time_infinite = 100000000
 
--- +ñëè â äàíívé ìîìåíò âvïîëíÿåòñÿ êàêîå-òî äåéñòâèå, ïðåðvâàåò åãî è îòêë³÷àåò ñêðèïòîâvé ðåæèì
+-- Ð•ÑÐ»Ð¸ Ð² Ð´Ð°Ð½Ð½Ñ‹Ð¹ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÐµÑ‚ÑÑ ÐºÐ°ÐºÐ¾Ðµ-Ñ‚Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ, Ð¿Ñ€ÐµÑ€Ñ‹Ð²Ð°ÐµÑ‚ ÐµÐ³Ð¾ Ð¸ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡Ð°ÐµÑ‚ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð²Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼
 function interrupt_action(who, script_name)
 	if who:get_script() then
 		who:script(false, script_name)
@@ -292,7 +292,7 @@ function parse_nums( s )
 	return t
 end
 
--- Íàõîäèòñÿ ëè îáüåêò â îíëàéíå.
+-- ÐÐ°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð»Ð¸ Ð¾Ð±ÑŒÐµÐºÑ‚ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ.
 function is_object_online(obj_id)
 	return level.object_by_id(obj_id) ~= nil
 end
@@ -302,7 +302,7 @@ function get_clsid(npc)
 	return npc:clsid()
 end
 
---Tv÷èñëÿåò yaw â ðàäèàíàõ
+--Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÑÐµÑ‚ yaw Ð² Ñ€Ð°Ð´Ð¸Ð°Ð½Ð°Ñ…
 function yaw( v1, v2 )
 	return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
 end
@@ -316,7 +316,7 @@ function vector_cross(v1, v2)
 	return vector():set(v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
---Ïîâîðà÷èâàåò âåêòîð âîêðóã îñè y ïðîòèâ ÷àñîâîé ñòðåëêè.
+--ÐŸÐ¾Ð²Ð¾Ñ€Ð°Ñ‡Ð¸Ð²Ð°ÐµÑ‚ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð²Ð¾ÐºÑ€ÑƒÐ³ Ð¾ÑÐ¸ y Ð¿Ñ€Ð¾Ñ‚Ð¸Ð² Ñ‡Ð°ÑÐ¾Ð²Ð¾Ð¹ ÑÑ‚Ñ€ÐµÐ»ÐºÐ¸.
 function vector_rotate_y(v, angle)
 	angle = angle * 0.017453292519943295769236907684886
 	local c = math.cos (angle)
@@ -324,7 +324,7 @@ function vector_rotate_y(v, angle)
 	return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
--- î÷èñòêà òàáëèöû.
+-- Ð¾Ñ‡Ð¸ÑÑ‚ÐºÐ° Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹.
 function clear_table (t)
 	while #t > 0 do
 		table.remove (t, #t)
@@ -338,7 +338,7 @@ function stop_play_sound(obj)
 	end
 end
 
--- Ïå÷àòàåò òàáëèöó êàê äåðåâî.
+-- ÐŸÐµÑ‡Ð°Ñ‚Ð°ÐµÑ‚ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ ÐºÐ°Ðº Ð´ÐµÑ€ÐµÐ²Ð¾.
 function print_table(table, subs)
 	local sub
 	if subs ~= nil then
@@ -451,7 +451,7 @@ function alife_character_community (obj)
 	return "monster"
 end
 
--- ïîëó÷èòü ãåéìîáæåêò ïî ñòîðè_àéäè.
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð³ÐµÐ¹Ð¼Ð¾Ð±Ð¶ÐµÐºÑ‚ Ð¿Ð¾ ÑÑ‚Ð¾Ñ€Ð¸_Ð°Ð¹Ð´Ð¸.
 function level_object_by_sid( sid )
 	local sim = alife()
 	if sim then
@@ -462,7 +462,7 @@ function level_object_by_sid( sid )
 	end
 	return nil
 end
--- Ïîëó÷èòü àéäèøíèê îáüåêòà ïî ñòîðè àéäè.
+-- ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð°Ð¹Ð´Ð¸ÑˆÐ½Ð¸Ðº Ð¾Ð±ÑŒÐµÐºÑ‚Ð° Ð¿Ð¾ ÑÑ‚Ð¾Ñ€Ð¸ Ð°Ð¹Ð´Ð¸.
 function id_by_sid( sid )
 	local sim = alife()
 	if sim then
@@ -474,7 +474,7 @@ function id_by_sid( sid )
 	return nil
 end
 
--- Êðåøíóòü èãðó (ïîñëå âûâîäà ñîîáùåíèÿ îá îøèáêå â ëîã)
+-- ÐšÑ€ÐµÑˆÐ½ÑƒÑ‚ÑŒ Ð¸Ð³Ñ€Ñƒ (Ð¿Ð¾ÑÐ»Ðµ Ð²Ñ‹Ð²Ð¾Ð´Ð° ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ Ð¾Ð± Ð¾ÑˆÐ¸Ð±ÐºÐµ Ð² Ð»Ð¾Ð³)
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
 	--error_log(reason)
@@ -486,7 +486,7 @@ function set_inactivate_input_time(delta)
 	level.disable_input()
 end
 
--- ³ðèíèìàåò: ïîçèöè³ ïîëîæåíèÿ, ïîçèöè³ êóäà ñìîòðåòü, âðåìÿ ñíà â ìèíóòàõ.
+-- ÐŸÑ€Ð¸Ð½Ð¸Ð¼Ð°ÐµÑ‚: Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ, Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ ÐºÑƒÐ´Ð° ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ, Ð²Ñ€ÐµÐ¼Ñ ÑÐ½Ð° Ð² Ð¼Ð¸Ð½ÑƒÑ‚Ð°Ñ….
 --[[
 function set_sleep_relocate(point, look, timeout)
 	db.storage[db.actor:id()].sleep_relocate_time = game.get_game_time()
@@ -496,12 +496,12 @@ function set_sleep_relocate(point, look, timeout)
 end
 ]]--
 
--- ïðîâåðÿåò öåëóþ ÷àñòü ÷èñëà íà íå÷åòíîñòü
+-- Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÑ‚ Ñ†ÐµÐ»ÑƒÑŽ Ñ‡Ð°ÑÑ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð° Ð½Ð° Ð½ÐµÑ‡ÐµÑ‚Ð½Ð¾ÑÑ‚ÑŒ
 function odd( x )
 	return math.floor( x * 0.5 ) * 2 == math.floor( x )
 end
 
---' íàõîäèòñÿ ëè NPC âî ôðóñòðóìå èãðîêà
+--' Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð»Ð¸ NPC Ð²Ð¾ Ñ„Ñ€ÑƒÑÑ‚Ñ€ÑƒÐ¼Ðµ Ð¸Ð³Ñ€Ð¾ÐºÐ°
 function npc_in_actor_frustrum(npc)
 	local actor_dir = device().cam_dir
 	--local actor_dir = db.actor:direction()
@@ -610,12 +610,12 @@ function start_game_callback()
 	sim_board.clear()
 	sr_light.clean_up ()
 	pda.add_quick_slot_items_on_game_start()
-	-- Tåñòèðîâàíèå îïòèìèçàöèè
+	-- TÐµÑÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð¿Ñ‚Ð¸Ð¼Ð¸Ð·Ð°Ñ†Ð¸Ð¸
 	--local test_object = test_object.test_object_class()
 	--test_object:test()
 end
 
---' Lñòàëîñòü
+--' Ð£ÑÑ‚Ð°Ð»Ð¾ÑÑ‚ÑŒ
 function on_actor_critical_power()
 
 end
@@ -623,7 +623,7 @@ end
 function on_actor_critical_max_power()
 end
 
---' ³ðîâîòå÷åíèå
+--' ÐšÑ€Ð¾Ð²Ð¾Ñ‚ÐµÑ‡ÐµÐ½Ð¸Ðµ
 function on_actor_bleeding()
 
 end
@@ -631,22 +631,22 @@ end
 function on_actor_satiety()
 end
 
---' ³àäèàöèÿ
+--' Ð Ð°Ð´Ð¸Ð°Ñ†Ð¸Ñ
 function on_actor_radiation()
 
 end
 
---' ³àêëèíèëî îðóæèå
+--' Ð—Ð°ÐºÐ»Ð¸Ð½Ð¸Ð»Ð¾ Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ
 function on_actor_weapon_jammed()
 
 end
 
---' íå ìîæåò õîäèòü èççà âåñà
+--' Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¸Ð·Ð·Ð° Ð²ÐµÑÐ°
 function on_actor_cant_walk_weight()
 
 end
 
---' ïñè âîçäåéñòâèå
+--' Ð¿ÑÐ¸ Ð²Ð¾Ð·Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ
 function on_actor_psy()
 end
 
@@ -697,7 +697,7 @@ ammo_section["ammo_12x76_zhekan"]	= true
 ammo_section["ammo_pkm_100"]		= true
 
 quest_section = {}
--- ïðåîáðàçóåò ñòðîêó â ñîîòâåòñòâèè ñî çíà÷åíèåì
+-- Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·ÑƒÐµÑ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð² ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²Ð¸Ð¸ ÑÐ¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸ÐµÐ¼
 function get_param_string(src_string , obj)
 	--printf("src_string is [%s] obj name is [%s]", tostring(src_string), obj:name())
 	local script_ids = db.script_ids[obj:id()]
@@ -711,10 +711,10 @@ end
 
 local save_markers = {}
 
--- Ôóíêöèè äëÿ ïðîâåðêè êîððåêòíîñòè ñåéâ ëîàä
+-- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¸ ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾ÑÑ‚Ð¸ ÑÐµÐ¹Ð² Ð»Ð¾Ð°Ð´
 function set_save_marker(p, mode, check, prefix)
 
-	-- îïðåäåëÿåì êëþ÷ ìàðêåðà.
+	-- Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ ÐºÐ»ÑŽÑ‡ Ð¼Ð°Ñ€ÐºÐµÑ€Ð°.
 	local result = ""
 --	if debug ~= nil then
 --		local info_table = debug.getinfo(2)
@@ -766,18 +766,18 @@ function set_save_marker(p, mode, check, prefix)
 	end
 
 end
--- ïåðåâîäèò âåêòîð â ñòðîêó.
+-- Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ñ‚ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð² ÑÑ‚Ñ€Ð¾ÐºÑƒ.
 function vec_to_str (vector)
 	if vector == nil then return "nil" end
 	return string.format("[%s:%s:%s]", vector.x, vector.y, vector.z)
 end
--- âûâîäèò â ëîã ñòýê âûçîâà ôóíêöèé.
+-- Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ Ð² Ð»Ð¾Ð³ ÑÑ‚ÑÐº Ð²Ñ‹Ð·Ð¾Ð²Ð° Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹.
 function callstack()
 	if debug ~= nil then
 		log(debug.traceback(2))
 	end
 end
--- ìåíÿåò team:squad:group îáüåêòà.
+-- Ð¼ÐµÐ½ÑÐµÑ‚ team:squad:group Ð¾Ð±ÑŒÐµÐºÑ‚Ð°.
 function change_team_squad_group(se_obj, team, squad, group)
 	local cl_obj = db.storage[se_obj.id] and db.storage[se_obj.id].object
 	if cl_obj ~= nil then
@@ -817,7 +817,7 @@ function unregister_story_id(story_id)
 end
 
 -----------------------------------------------------------------------------------------------
--- Ïîëó÷èòü ñêâàä îáüåêòà!!!!!
+-- ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑÐºÐ²Ð°Ð´ Ð¾Ð±ÑŒÐµÐºÑ‚Ð°!!!!!
 function get_object_squad(object)
 	if object == nil then abort("You are trying to get squad_object from NIL object!!!") end
 	local obj_id = nil
@@ -838,7 +838,7 @@ function get_story_squad(story_id)
 	return squad_id and alife():object(squad_id)
 end
 
---Ïðîâåðêà ïî âðåìåííîìó èíòåðâàëó.
+--ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð¿Ð¾ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ð¼Ñƒ Ð¸Ð½Ñ‚ÐµÑ€Ð²Ð°Ð»Ñƒ.
 function in_time_interval(val1, val2)
 	local game_hours = level.get_time_hours()
 	if val1 >= val2 then

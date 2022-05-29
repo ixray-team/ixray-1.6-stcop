@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 --' Cutscene trigger
 ----------------------------------------------------------------------------------------------------
---' Временные переменные
+--' Р’СЂРµРјРµРЅРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 local object_cutscene = nil
 local storage_scene = nil
 
@@ -127,7 +127,7 @@ function cam_effector_set:select_effect()
 end
 --------------------------------------------------------------------------------
 class "action_cutscene"
---' инициализация объекта класса
+--' РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР°
 function action_cutscene:__init(obj, storage)
 	self.object = obj
 	self.st = storage
@@ -135,15 +135,15 @@ function action_cutscene:__init(obj, storage)
 	self.motion_id = 1
 	self.postprocess = false
 end
---' инициализация схемы поведения
+--' РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС…РµРјС‹ РїРѕРІРµРґРµРЅРёСЏ
 function action_cutscene:reset_scheme()
 	self.state = ""
-	self.st.signals = {} --' обнуляем сигналы
+	self.st.signals = {} --' РѕР±РЅСѓР»СЏРµРј СЃРёРіРЅР°Р»С‹
 	self.motion = nil
 
 	self:zone_enter()
 end
---' функция обновления, вызываемая конвеером
+--' С„СѓРЅРєС†РёСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ, РІС‹Р·С‹РІР°РµРјР°СЏ РєРѕРЅРІРµРµСЂРѕРј
 function action_cutscene:update(delta)
 	local state = self.state
 --	if(state~="run") then
@@ -158,15 +158,15 @@ function action_cutscene:update(delta)
 			self.st.signals["cam_effector_stop"] = nil
 	    end
 	end
-		--' выполняем архитектурное требование
+		--' РІС‹РїРѕР»РЅСЏРµРј Р°СЂС…РёС‚РµРєС‚СѓСЂРЅРѕРµ С‚СЂРµР±РѕРІР°РЅРёРµ
 	if(xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)) then
 		return
 	end
 end
---' тут нужно запустить сцену
+--' С‚СѓС‚ РЅСѓР¶РЅРѕ Р·Р°РїСѓСЃС‚РёС‚СЊ СЃС†РµРЅСѓ
 function action_cutscene:zone_enter()
 	self.state = "run"
-	--' телепорт в выбранную точку
+	--' С‚РµР»РµРїРѕСЂС‚ РІ РІС‹Р±СЂР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ
 	--printf("%s ZONE ENTER %s", self.object:name(), device():time_global())
 
 	xr_effects.teleport_actor(db.actor, self.object, {self.st.point, self.st.look})
@@ -190,11 +190,11 @@ function action_cutscene:zone_enter()
 	object_cutscene = self.object
 	storage_scene = self.st
 end
---' Выбор и начало отыгрыша следующего пролета
+--' Р’С‹Р±РѕСЂ Рё РЅР°С‡Р°Р»Рѕ РѕС‚С‹РіСЂС‹С€Р° СЃР»РµРґСѓСЋС‰РµРіРѕ РїСЂРѕР»РµС‚Р°
 function action_cutscene:select_next_motion()
 	local motion = self.st.cam_effector[self.motion_id]
 
-	if cam_effector_sets[motion] == nil then --Это имя файла, а не имя таблицы.
+	if cam_effector_sets[motion] == nil then --Р­С‚Рѕ РёРјСЏ С„Р°Р№Р»Р°, Р° РЅРµ РёРјСЏ С‚Р°Р±Р»РёС†С‹.
 		self.motion = cam_effector_set({start={},idle={{anim=motion, looped=false, global_cameffect = self.st.global_cameffect}},finish={}}, self.st)
 	else
 		self.motion = cam_effector_set(cam_effector_sets[motion], self.st)
@@ -205,7 +205,7 @@ function action_cutscene:select_next_motion()
 
 	self.motion_id = self.motion_id + 1
 end
---' Ивент об окончании пролета
+--' РРІРµРЅС‚ РѕР± РѕРєРѕРЅС‡Р°РЅРёРё РїСЂРѕР»РµС‚Р°
 function action_cutscene:cutscene_callback()
 	if(self.motion.state=="release") then
 		self.motion = nil
@@ -242,7 +242,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	local new_action = action_cutscene(npc, storage)
 
 	storage.cutscene_action = new_action
-	--' Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	--' Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 function set_scheme(obj, ini, scheme, section, gulag_name)

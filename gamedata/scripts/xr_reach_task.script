@@ -1,22 +1,22 @@
 --[[----------------------------------------------------------------------------------------------------------
-Схема, ведущяя сталкера к месту его работы под smart terrain.
-Приводит сталкера к месту работы единожды. Дальше сталкер ходит под обычными схемами.
-Чугай Александр (chugai)
+РЎС…РµРјР°, РІРµРґСѓС‰СЏСЏ СЃС‚Р°Р»РєРµСЂР° Рє РјРµСЃС‚Сѓ РµРіРѕ СЂР°Р±РѕС‚С‹ РїРѕРґ smart terrain.
+РџСЂРёРІРѕРґРёС‚ СЃС‚Р°Р»РєРµСЂР° Рє РјРµСЃС‚Сѓ СЂР°Р±РѕС‚С‹ РµРґРёРЅРѕР¶РґС‹. Р”Р°Р»СЊС€Рµ СЃС‚Р°Р»РєРµСЂ С…РѕРґРёС‚ РїРѕРґ РѕР±С‹С‡РЅС‹РјРё СЃС…РµРјР°РјРё.
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ (chugai)
 ------------------------------------------------------------------------------------------------------------]]
 --local function printf()
 --end
 ----------------------------------------------------------------------------------------------------------------------
---	Схема патруль для reach_task_location.
+--	РЎС…РµРјР° РїР°С‚СЂСѓР»СЊ РґР»СЏ reach_task_location.
 ----------------------------------------------------------------------------------------------------------------------
 local key = nil
 local data = nil
 
 --'patrol states
-local patrol_move   =   0       -- просто движение
-local patrol_hide   =   1       -- ракоход
-local patrol_sprint =   2       -- очень быстро бежим
-local patrol_run    =   3       -- просто несемся, аки лоси в кукурузу
-local patrol_stop   =   4       -- стоим
+local patrol_move   =   0       -- РїСЂРѕСЃС‚Рѕ РґРІРёР¶РµРЅРёРµ
+local patrol_hide   =   1       -- СЂР°РєРѕС…РѕРґ
+local patrol_sprint =   2       -- РѕС‡РµРЅСЊ Р±С‹СЃС‚СЂРѕ Р±РµР¶РёРј
+local patrol_run    =   3       -- РїСЂРѕСЃС‚Рѕ РЅРµСЃРµРјСЃСЏ, Р°РєРё Р»РѕСЃРё РІ РєСѓРєСѓСЂСѓР·Сѓ
+local patrol_stop   =   4       -- СЃС‚РѕРёРј
 
 local patrols = {}
 
@@ -60,14 +60,14 @@ function PatrolManager:__init(target_id)
 	self.commander_dir = vector ():set (0, 0, 1)
 	self.npc_count = 0
 end
---' Добавление нового персонажа
+--' Р”РѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р°
 function PatrolManager:add_npc(npc)
 	--'validate npc
 	if npc == nil or npc:alive() == false or self.npc_list[npc:id()] ~= nil then
 		return
 	end
 
-	--' Проверка на то что в патруле не больше 7 сталкеров (иначе будет вылетать дальше)
+	--' РџСЂРѕРІРµСЂРєР° РЅР° С‚Рѕ С‡С‚Рѕ РІ РїР°С‚СЂСѓР»Рµ РЅРµ Р±РѕР»СЊС€Рµ 7 СЃС‚Р°Р»РєРµСЂРѕРІ (РёРЅР°С‡Рµ Р±СѓРґРµС‚ РІС‹Р»РµС‚Р°С‚СЊ РґР°Р»СЊС€Рµ)
 --	if self.npc_count == 7 then
 --		abort("[XR_REACH_TASK] attempt to add more then 7 npc. [%s]", npc:name())
 --		return
@@ -75,7 +75,7 @@ function PatrolManager:add_npc(npc)
 	--' if this npc first in command then set him as commander
 	self.npc_list[npc:id ()] = {soldier = npc:id(), dir = vector ():set (1, 0, 0), dist = 0}
 	self.npc_count = self.npc_count + 1
-	--' если мужик первый или считается лидером, то установим, как лидера
+	--' РµСЃР»Рё РјСѓР¶РёРє РїРµСЂРІС‹Р№ РёР»Рё СЃС‡РёС‚Р°РµС‚СЃСЏ Р»РёРґРµСЂРѕРј, С‚Рѕ СѓСЃС‚Р°РЅРѕРІРёРј, РєР°Рє Р»РёРґРµСЂР°
 	if npc:id() == get_object_squad(npc):commander_id() then
 		self.commander_id = npc:id ()
 		printf ("[XR_REACH_TASK] ASSIGNED NPC %s AS PATROL COMMANDER", npc:name ())
@@ -83,7 +83,7 @@ function PatrolManager:add_npc(npc)
 	--printf ("[XR_REACH_TASK] NPC %s added to patrol manager %s", npc:name (), self.target_name)
 	self:reset_positions ()
 end
---' Удаление персонажа
+--' РЈРґР°Р»РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶Р°
 function PatrolManager:remove_npc(npc)
 	if npc == nil then return end
 	if self.npc_list[npc:id()] == nil then
@@ -97,12 +97,12 @@ function PatrolManager:remove_npc(npc)
 		self:reset_positions ()
 	end
 end
---' Пересчет занимаемых позиций
+--' РџРµСЂРµСЃС‡РµС‚ Р·Р°РЅРёРјР°РµРјС‹С… РїРѕР·РёС†РёР№
 function PatrolManager:reset_positions()
 	local form_ = formations[self.formation]
 	local index = 1
 	for key, data in pairs(self.npc_list) do
-		--установим командора, если это еще не сделано
+		--СѓСЃС‚Р°РЅРѕРІРёРј РєРѕРјР°РЅРґРѕСЂР°, РµСЃР»Рё СЌС‚Рѕ РµС‰Рµ РЅРµ СЃРґРµР»Р°РЅРѕ
 		local se_npc = alife():object(data.soldier)
 		local squad = se_npc and get_object_squad(se_npc)
 		if squad == nil then
@@ -111,7 +111,7 @@ function PatrolManager:reset_positions()
 		if self.commander_id == -1 then
 			 self.commander_id = squad:commander_id()
 		end
-		-- пересчитаем позиции
+		-- РїРµСЂРµСЃС‡РёС‚Р°РµРј РїРѕР·РёС†РёРё
 		if self.commander_id ~= self.npc_list[key].soldier then
 			--printf("key[%s] index[%s]", tostring(key), tostring(index))
 			self.npc_list[key].dir = form_[index].dir
@@ -122,7 +122,7 @@ function PatrolManager:reset_positions()
 		end
 	end
 end
---' Установление формации
+--' РЈСЃС‚Р°РЅРѕРІР»РµРЅРёРµ С„РѕСЂРјР°С†РёРё
 function PatrolManager:set_formation(formation)
 	if formation == nil then
 		abort ("Invalid formation (nil) for PatrolManager[%s]", self.target_name)
@@ -133,47 +133,47 @@ function PatrolManager:set_formation(formation)
 	self.formation = formation
 	self:reset_positions ()
 end
---' Получить командира патруля
+--' РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґРёСЂР° РїР°С‚СЂСѓР»СЏ
 function PatrolManager:get_commander(npc)
 	if npc == nil then
 		abort ("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.target_name)
 	end
-	--закешируем айдишник непися
+	--Р·Р°РєРµС€РёСЂСѓРµРј Р°Р№РґРёС€РЅРёРє РЅРµРїРёСЃСЏ
 	local npc_id = npc:id ()
-	--проверка непися на присутсвие в списке
+	--РїСЂРѕРІРµСЂРєР° РЅРµРїРёСЃСЏ РЅР° РїСЂРёСЃСѓС‚СЃРІРёРµ РІ СЃРїРёСЃРєРµ
 	if self.npc_list[npc:id ()] == nil then
 		abort ("NPC with name %s can't present in PatrolManager[%s]", npc:name (), self.target_name)
 	end
-	--проверка, чтобы командир не вздумал задавать глупых вопросов
+	--РїСЂРѕРІРµСЂРєР°, С‡С‚РѕР±С‹ РєРѕРјР°РЅРґРёСЂ РЅРµ РІР·РґСѓРјР°Р» Р·Р°РґР°РІР°С‚СЊ РіР»СѓРїС‹С… РІРѕРїСЂРѕСЃРѕРІ
 	if npc:id () == self.commander_id then
 		abort ("Patrol commander called function PatrolManager:get_npc_command in PatrolManager[%s]", self.target_name)
 	end
-	--получим данные командира
+	--РїРѕР»СѓС‡РёРј РґР°РЅРЅС‹Рµ РєРѕРјР°РЅРґРёСЂР°
 	local commander = self.npc_list[self.commander_id].soldier
 	if commander == nil then
 		abort ("Patrol commander not present in PatrolManager[%s]", self.target_name)
 	end
 	return level.object_by_id(commander)
 end
---' Получить параметры действия NPC
+--' РџРѕР»СѓС‡РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РґРµР№СЃС‚РІРёСЏ NPC
 function PatrolManager:get_npc_command(npc)
 	if npc == nil then
 		abort("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.target_name)
 	end
-	--'закешируем айдишник непися
+	--'Р·Р°РєРµС€РёСЂСѓРµРј Р°Р№РґРёС€РЅРёРє РЅРµРїРёСЃСЏ
 	local npc_id = npc:id ()
 	if self.npc_list[self.commander_id] == nil then
 		return npc:level_vertex_id(), npc:direction(), self.current_state
 	end
-	--'проверка непися на присутсвие в списке
+	--'РїСЂРѕРІРµСЂРєР° РЅРµРїРёСЃСЏ РЅР° РїСЂРёСЃСѓС‚СЃРІРёРµ РІ СЃРїРёСЃРєРµ
 	if self.npc_list[npc:id ()] == nil then
 		 abort("NPC with name %s can't present in PatrolManager[%s]", npc:name (), self.target_name)
 	end
-	--'проверка, чтобы командир не вздумал задавать глупых вопросов
+	--'РїСЂРѕРІРµСЂРєР°, С‡С‚РѕР±С‹ РєРѕРјР°РЅРґРёСЂ РЅРµ РІР·РґСѓРјР°Р» Р·Р°РґР°РІР°С‚СЊ РіР»СѓРїС‹С… РІРѕРїСЂРѕСЃРѕРІ
 	if npc:id() == self.commander_id then
 		 abort("Patrol commander called function PatrolManager:get_npc_command in PatrolManager[%s]", self.target_name)
 	end
-	--'получим данные командира
+	--'РїРѕР»СѓС‡РёРј РґР°РЅРЅС‹Рµ РєРѕРјР°РЅРґРёСЂР°
 	local commander = level.object_by_id(self.npc_list[self.commander_id].soldier)
 	if commander == nil then
 		abort("commander is nil!!!")
@@ -182,21 +182,21 @@ function PatrolManager:get_npc_command(npc)
 
 	local pos = vector():set(0, 0, 0)
 	local vertex_id = commander:location_on_path(5, pos)
-	--' Если командир сам еще не дошел до пути (расстояние до вертекса больше чем 5 метров)
-	--' то за основную точку берем вертекс командира
+	--' Р•СЃР»Рё РєРѕРјР°РЅРґРёСЂ СЃР°Рј РµС‰Рµ РЅРµ РґРѕС€РµР» РґРѕ РїСѓС‚Рё (СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РІРµСЂС‚РµРєСЃР° Р±РѕР»СЊС€Рµ С‡РµРј 5 РјРµС‚СЂРѕРІ)
+	--' С‚Рѕ Р·Р° РѕСЃРЅРѕРІРЅСѓСЋ С‚РѕС‡РєСѓ Р±РµСЂРµРј РІРµСЂС‚РµРєСЃ РєРѕРјР°РЅРґРёСЂР°
 	if level.vertex_position(vertex_id):distance_to(level.object_by_id(self.npc_list[npc_id].soldier):position()) > 5 then
 		vertex_id = commander:level_vertex_id()
 	end
 
-	--'уберем влияние вертикальной составляющей
+	--'СѓР±РµСЂРµРј РІР»РёСЏРЅРёРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ СЃРѕСЃС‚Р°РІР»СЏСЋС‰РµР№
 	dir.y = 0
 	dir:normalize()
-	--'получим данные салаги
+	--'РїРѕР»СѓС‡РёРј РґР°РЅРЅС‹Рµ СЃР°Р»Р°РіРё
 	local dir_s = self.npc_list[npc_id].dir
 	local dist_s = self.npc_list[npc_id].dist
 
-	--'расчет позиции для салаги
-	--'сначала получим направление
+	--'СЂР°СЃС‡РµС‚ РїРѕР·РёС†РёРё РґР»СЏ СЃР°Р»Р°РіРё
+	--'СЃРЅР°С‡Р°Р»Р° РїРѕР»СѓС‡РёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 	local angle = yaw_degree(dir_s, vector():set(0, 0, 1))
 	local vvv = vector_cross(dir_s, vector():set(0, 0, 1))
 	if vvv.y < 0 then
@@ -205,17 +205,17 @@ function PatrolManager:get_npc_command(npc)
 	dir_s = vector_rotate_y(dir, angle)
 
 	local d = 2
-	--'теперь аи ноду относительно командора ордена рыцарей храма
+	--'С‚РµРїРµСЂСЊ Р°Рё РЅРѕРґСѓ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РєРѕРјР°РЅРґРѕСЂР° РѕСЂРґРµРЅР° СЂС‹С†Р°СЂРµР№ С…СЂР°РјР°
 	local vertex = level.vertex_in_direction(level.vertex_in_direction(vertex_id, dir_s, dist_s), dir, d)
 	self.npc_list[npc_id].vertex_id = vertex
 
-	--' проверим, а не имеет ли смысла неписю скорректировать свою позицию
+	--' РїСЂРѕРІРµСЂРёРј, Р° РЅРµ РёРјРµРµС‚ Р»Рё СЃРјС‹СЃР»Р° РЅРµРїРёСЃСЋ СЃРєРѕСЂСЂРµРєС‚РёСЂРѕРІР°С‚СЊ СЃРІРѕСЋ РїРѕР·РёС†РёСЋ
 	--local distance = level.vertex_position(vertex):distance_to(self.npc_list[npc_id].soldier:position())
-	-- нужно считать отставание от командира, а не от расчетной точки.
+	-- РЅСѓР¶РЅРѕ СЃС‡РёС‚Р°С‚СЊ РѕС‚СЃС‚Р°РІР°РЅРёРµ РѕС‚ РєРѕРјР°РЅРґРёСЂР°, Р° РЅРµ РѕС‚ СЂР°СЃС‡РµС‚РЅРѕР№ С‚РѕС‡РєРё.
 	local distance = commander:position():distance_to(level.object_by_id(self.npc_list[npc_id].soldier):position())
 	if distance > dist_s + 2 then
-		--' Игрок сильно отстал. Необходимо изменить тип перемещения.
-		--' Тип перемещения задаем в зависимости от базового типа.
+		--' РРіСЂРѕРє СЃРёР»СЊРЅРѕ РѕС‚СЃС‚Р°Р». РќРµРѕР±С…РѕРґРёРјРѕ РёР·РјРµРЅРёС‚СЊ С‚РёРї РїРµСЂРµРјРµС‰РµРЅРёСЏ.
+		--' РўРёРї РїРµСЂРµРјРµС‰РµРЅРёСЏ Р·Р°РґР°РµРј РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ Р±Р°Р·РѕРІРѕРіРѕ С‚РёРїР°.
 		local new_state = accel_by_curtype[self.current_state]
 		if new_state ~= nil then
 			return vertex, dir, new_state
@@ -223,7 +223,7 @@ function PatrolManager:get_npc_command(npc)
 	end
 	return vertex, dir, self.current_state
 end
---' Установить действие НПС
+--' РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РґРµР№СЃС‚РІРёРµ РќРџРЎ
 function PatrolManager:set_command(npc, command, formation)
 	if npc == nil or npc:alive () == false then
 		abort ("NPC commander possible dead in PatrolManager[%s]", self.target_name)
@@ -240,11 +240,11 @@ function PatrolManager:set_command(npc, command, formation)
 	self.commander_dir = npc:direction ()
 	self:update ()
 end
---' Является ли указанный НПС командиром.
+--' РЇРІР»СЏРµС‚СЃСЏ Р»Рё СѓРєР°Р·Р°РЅРЅС‹Р№ РќРџРЎ РєРѕРјР°РЅРґРёСЂРѕРј.
 function PatrolManager:is_commander(npc_id)
 	return npc_id == self.commander_id
 end
---' Находится ли командир патруля в схеме XR_MEET
+--' РќР°С…РѕРґРёС‚СЃСЏ Р»Рё РєРѕРјР°РЅРґРёСЂ РїР°С‚СЂСѓР»СЏ РІ СЃС…РµРјРµ XR_MEET
 function PatrolManager:is_commander_in_meet()
 	if self.commander_id == -1 then return false end
 	local npc = level.object_by_id(self.npc_list[self.commander_id].soldier)
@@ -253,7 +253,7 @@ function PatrolManager:is_commander_in_meet()
 	end
 	return false
 end
---' Апдейт
+--' РђРїРґРµР№С‚
 function PatrolManager:update ()
 	if tm_enabled == true then
 		self.tm:update ()
@@ -265,7 +265,7 @@ local function squad_current_action (object)
 	return squad and squad.current_action
 end
 
--- включение патруля
+-- РІРєР»СЋС‡РµРЅРёРµ РїР°С‚СЂСѓР»СЏ
 local function add_to_patrol(npc, target_id)
 	local squad_id = get_object_squad(npc).id
 	if patrols[target_id.."_to_"..squad_id] == nil then
@@ -293,7 +293,7 @@ function evaluator_reached_task_location:evaluate()
 end
 
 --------------------------------------------------------------------------------------------------------------
--- действие "довести сталкера к месту работы"
+-- РґРµР№СЃС‚РІРёРµ "РґРѕРІРµСЃС‚Рё СЃС‚Р°Р»РєРµСЂР° Рє РјРµСЃС‚Сѓ СЂР°Р±РѕС‚С‹"
 
 class "action_reach_task_location" ( action_base )
 

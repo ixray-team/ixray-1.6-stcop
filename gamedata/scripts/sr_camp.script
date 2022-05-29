@@ -78,10 +78,10 @@ function sr_camp_story_precondition(camp)
 	return false
 end
 --------------------------------------------------------------------------------
--- Класс CCampManager
+-- РљР»Р°СЃСЃ CCampManager
 --------------------------------------------------------------------------------
--- Кемп содержит свои действия в терминах состояния кемпа (рассказ истории, музыка, ожидание), а не в терминах анимаций персонажей
--- Кемп возвращает свое состояние, а решение какую именно анимацию играть принимает финальная схема, например xr_animpoint
+-- РљРµРјРї СЃРѕРґРµСЂР¶РёС‚ СЃРІРѕРё РґРµР№СЃС‚РІРёСЏ РІ С‚РµСЂРјРёРЅР°С… СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРµРјРїР° (СЂР°СЃСЃРєР°Р· РёСЃС‚РѕСЂРёРё, РјСѓР·С‹РєР°, РѕР¶РёРґР°РЅРёРµ), Р° РЅРµ РІ С‚РµСЂРјРёРЅР°С… Р°РЅРёРјР°С†РёР№ РїРµСЂСЃРѕРЅР°Р¶РµР№
+-- РљРµРјРї РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, Р° СЂРµС€РµРЅРёРµ РєР°РєСѓСЋ РёРјРµРЅРЅРѕ Р°РЅРёРјР°С†РёСЋ РёРіСЂР°С‚СЊ РїСЂРёРЅРёРјР°РµС‚ С„РёРЅР°Р»СЊРЅР°СЏ СЃС…РµРјР°, РЅР°РїСЂРёРјРµСЂ xr_animpoint
 class "CCampManager"
 function CCampManager:__init(object, ini)
 	self.object = object
@@ -94,14 +94,14 @@ function CCampManager:__init(object, ini)
 		self.harmonica_table = parse_names(harmonicas)
 	self.npc = {}
 	self.schemes = {}
-	-- Хранилище для режиссера лагеря. Режиссерем является сталкер, затеявший необычное поведение
+	-- РҐСЂР°РЅРёР»РёС‰Рµ РґР»СЏ СЂРµР¶РёСЃСЃРµСЂР° Р»Р°РіРµСЂСЏ. Р РµР¶РёСЃСЃРµСЂРµРј СЏРІР»СЏРµС‚СЃСЏ СЃС‚Р°Р»РєРµСЂ, Р·Р°С‚РµСЏРІС€РёР№ РЅРµРѕР±С‹С‡РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
 	self.director = nil
-	-- Текущее состояние
+	-- РўРµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	self.active_state = "idle"
-	--' Для теста создаем объект истории
+	--' Р”Р»СЏ С‚РµСЃС‚Р° СЃРѕР·РґР°РµРј РѕР±СЉРµРєС‚ РёСЃС‚РѕСЂРёРё
 	self.sound_manager = sound_manager.get_sound_manager(CAMP_SECTION..self.object:id())
 	self.sound_manager_started = true
-	-- Состояния кемпа
+	-- РЎРѕСЃС‚РѕСЏРЅРёСЏ РєРµРјРїР°
 	self.states = {
 					idle = {
 								director_state = nil,
@@ -144,10 +144,10 @@ function CCampManager:__init(object, ini)
 	self.timeout = 0
 	self.idle_talker = nil
 end
--- Переключает состояния кемпа
+-- РџРµСЂРµРєР»СЋС‡Р°РµС‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРµРјРїР°
 function CCampManager:update()
 
-	-- Если саундменеджер говорит какую то историю - ждем окончания.
+	-- Р•СЃР»Рё СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂ РіРѕРІРѕСЂРёС‚ РєР°РєСѓСЋ С‚Рѕ РёСЃС‚РѕСЂРёСЋ - Р¶РґРµРј РѕРєРѕРЅС‡Р°РЅРёСЏ.
 	if not self.sound_manager:is_finished() then
 		self.sound_manager:update()
 		return
@@ -157,7 +157,7 @@ function CCampManager:update()
 		return
 	end
 
-	-- Если кто-то говорит айдловую фразу, ждем пока он договорит.
+	-- Р•СЃР»Рё РєС‚Рѕ-С‚Рѕ РіРѕРІРѕСЂРёС‚ Р°Р№РґР»РѕРІСѓСЋ С„СЂР°Р·Сѓ, Р¶РґРµРј РїРѕРєР° РѕРЅ РґРѕРіРѕРІРѕСЂРёС‚.
 	if(self.idle_talker~=nil) then
 		if(xr_sound.sound_table[self.idle_talker]) then
 			return
@@ -166,7 +166,7 @@ function CCampManager:update()
 		end
 	end
 
-	-- Выбор состояния кемпа. Тут решается что делать дальше.
+	-- Р’С‹Р±РѕСЂ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРµРјРїР°. РўСѓС‚ СЂРµС€Р°РµС‚СЃСЏ С‡С‚Рѕ РґРµР»Р°С‚СЊ РґР°Р»СЊС€Рµ.
 	--printf("camp time %s", tostring(self.active_state_time - time_global()))
 	if(self.active_state_time < time_global()) then
 		self:set_next_state()
@@ -193,13 +193,13 @@ function CCampManager:update()
 		end
 	end
 
-	-- Выбираем новую тему для саундменеджера (Для гитары и гармошки нужно будет юзать другой метод, чтобы не начали играть звук до того, как достанут инструмент)
+	-- Р’С‹Р±РёСЂР°РµРј РЅРѕРІСѓСЋ С‚РµРјСѓ РґР»СЏ СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂР° (Р”Р»СЏ РіРёС‚Р°СЂС‹ Рё РіР°СЂРјРѕС€РєРё РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ СЋР·Р°С‚СЊ РґСЂСѓРіРѕР№ РјРµС‚РѕРґ, С‡С‚РѕР±С‹ РЅРµ РЅР°С‡Р°Р»Рё РёРіСЂР°С‚СЊ Р·РІСѓРє РґРѕ С‚РѕРіРѕ, РєР°Рє РґРѕСЃС‚Р°РЅСѓС‚ РёРЅСЃС‚СЂСѓРјРµРЅС‚)
 	if(self.timeout~=0) and (self.timeout<=time_global()) then
 		self:set_story()
 		self.timeout = 0
 	end
 
-	-- Болтовня в айдле
+	-- Р‘РѕР»С‚РѕРІРЅСЏ РІ Р°Р№РґР»Рµ
 	if(self.active_state=="idle") then
 		local npc_count = 0
 		local talkers = {}
@@ -279,7 +279,7 @@ function CCampManager:set_story()
 		self.sound_manager_started = true
 	end
 end
--- Возвращает текущее действие кемпа
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ РєРµРјРїР°
 function CCampManager:get_camp_action(npc_id)
 	if(npc_id==nil) then
 		abort("Trying to use destroyed object!")
@@ -289,14 +289,14 @@ function CCampManager:get_camp_action(npc_id)
 	end
 	return self.npc[npc_id].state, self.director==npc_id
 end
--- Регистрит персонажа в кемп
+-- Р РµРіРёСЃС‚СЂРёС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РІ РєРµРјРї
 function CCampManager:register_npc(npc_id)
 --	local npc_id = npc:id()
 	--printf("Register NPC to camp %s", self.object:id())
 	self.npc[npc_id] = {state = self.active_state}
 	db.storage[npc_id].registred_camp = self.object:id()
 
-	-- При регистрации персонажа, проверяем какие роли он может выполнять.
+	-- РџСЂРё СЂРµРіРёСЃС‚СЂР°С†РёРё РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРѕРІРµСЂСЏРµРј РєР°РєРёРµ СЂРѕР»Рё РѕРЅ РјРѕР¶РµС‚ РІС‹РїРѕР»РЅСЏС‚СЊ.
 	for k,v in pairs(self.states) do
 		--printf("FIND NPC ROLE %s", npc_id)
 		local role = self:get_npc_role(npc_id, k)
@@ -309,10 +309,10 @@ function CCampManager:register_npc(npc_id)
 
 	xr_logic.issue_event(db.storage[npc_id].object, db.storage[npc_id][db.storage[npc_id].active_scheme], "update")
 end
--- Убирает персонажа из кемпа
+-- РЈР±РёСЂР°РµС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РёР· РєРµРјРїР°
 function CCampManager:unregister_npc(npc_id)
 --	local npc_id = npc:id()
-	-- Если удаляется режиссер лагеря
+	-- Р•СЃР»Рё СѓРґР°Р»СЏРµС‚СЃСЏ СЂРµР¶РёСЃСЃРµСЂ Р»Р°РіРµСЂСЏ
 	if self.director == npc_id then
 		self.sound_manager_started = false
 		self.active_state_time = 0

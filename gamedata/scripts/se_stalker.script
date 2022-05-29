@@ -1,8 +1,8 @@
 --[[
-Изменения script_version:
-	3 - сохранение поля job_online
-	5 - сохранение поля was_in_smart_terrain
-	6 - сохранение поля death_droped
+РР·РјРµРЅРµРЅРёСЏ script_version:
+	3 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ job_online
+	5 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ was_in_smart_terrain
+	6 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ death_droped
 ]]
 
 class "se_stalker"	(cse_alife_human_stalker)
@@ -14,15 +14,15 @@ function se_stalker:__init (section) super (section)
 	self.smart_terrain_conditions = nil
 	self.smart_terrain_conditions_initialized = false
 
-	-- этот флаг берётся из работы смарта
-	-- true     = всегда в онлайне
-	-- false    = всегда в офлайне
-	-- condlist = условие, которое отпределяет true или false
-	-- nil      = смарту всё равно
+	-- СЌС‚РѕС‚ С„Р»Р°Рі Р±РµСЂС‘С‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚Р°
+	-- true     = РІСЃРµРіРґР° РІ РѕРЅР»Р°Р№РЅРµ
+	-- false    = РІСЃРµРіРґР° РІ РѕС„Р»Р°Р№РЅРµ
+	-- condlist = СѓСЃР»РѕРІРёРµ, РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂРµРґРµР»СЏРµС‚ true РёР»Рё false
+	-- nil      = СЃРјР°СЂС‚Сѓ РІСЃС‘ СЂР°РІРЅРѕ
 	self.job_online          = nil
 	self.job_online_condlist = nil
 
-	self.death_droped = false --'Генерил ли персонаж выпадаемые предметы или нет.
+	self.death_droped = false --'Р“РµРЅРµСЂРёР» Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РІС‹РїР°РґР°РµРјС‹Рµ РїСЂРµРґРјРµС‚С‹ РёР»Рё РЅРµС‚.
 
 	self.m_registred = false
 
@@ -98,7 +98,7 @@ end
 --------------------
 function se_stalker:on_register()
 	cse_alife_human_stalker.on_register( self )
-	-- Проверяем кастомдату обьекта на наличие стори айди.
+	-- РџСЂРѕРІРµСЂСЏРµРј РєР°СЃС‚РѕРјРґР°С‚Сѓ РѕР±СЊРµРєС‚Р° РЅР° РЅР°Р»РёС‡РёРµ СЃС‚РѕСЂРё Р°Р№РґРё.
 	story_objects.check_spawn_ini_for_story_id(self)
 
 	self.board 	= sim_board.get_sim_board()
@@ -111,10 +111,10 @@ function se_stalker:on_register()
 --	db.offline_objects[self.id].level_vertex_id = self.m_level_vertex_id
 
 	printf("registering stalker %s ", self:name())
-	--' Отключаем старый метод выбора смарттеррейнов.
+	--' РћС‚РєР»СЋС‡Р°РµРј СЃС‚Р°СЂС‹Р№ РјРµС‚РѕРґ РІС‹Р±РѕСЂР° СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅРѕРІ.
 	self:brain():can_choose_alife_tasks(false)
 
-	--' Выбор смарта
+	--' Р’С‹Р±РѕСЂ СЃРјР°СЂС‚Р°
 	local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
 	local smart_obj = self.board:get_smart_by_name(smart)
 	if smart_obj == nil then

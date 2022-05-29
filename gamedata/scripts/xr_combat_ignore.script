@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Игнорирование врагов
-Чугай Александр
+РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РІСЂР°РіРѕРІ
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 --------------------------------------------------------------------------------------------------------------------]]
 local ignored_smart = {
 	zat_stalker_base_smart	= true,
@@ -40,7 +40,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 	end
 	storage.enemy_id = enemy:id()
 
-	--' Отсеиваем по зоне
+	--' РћС‚СЃРµРёРІР°РµРј РїРѕ Р·РѕРЅРµ
 	local active_sector = storage.active_sector
 	if active_sector ~= nil then
 		if sr_danger.check_danger_position(enemy:position(), active_sector) == false then
@@ -49,11 +49,11 @@ function is_enemy(obj, enemy, st, not_check_sim)
 		end
 	end
 
-	-- Проверка на зоны комбат игнора возле баз:
-		-- игнорировать если:
-		-- враг не актер.
-		-- сталкер находится в зоне.
-		-- смарт в котором находится сталкер не в состоянии тревоги.
+	-- РџСЂРѕРІРµСЂРєР° РЅР° Р·РѕРЅС‹ РєРѕРјР±Р°С‚ РёРіРЅРѕСЂР° РІРѕР·Р»Рµ Р±Р°Р·:
+		-- РёРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ РµСЃР»Рё:
+		-- РІСЂР°Рі РЅРµ Р°РєС‚РµСЂ.
+		-- СЃС‚Р°Р»РєРµСЂ РЅР°С…РѕРґРёС‚СЃСЏ РІ Р·РѕРЅРµ.
+		-- СЃРјР°СЂС‚ РІ РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёС‚СЃСЏ СЃС‚Р°Р»РєРµСЂ РЅРµ РІ СЃРѕСЃС‚РѕСЏРЅРёРё С‚СЂРµРІРѕРіРё.
 	if enemy:id() ~= db.actor:id() then
 		for k,v in pairs (smarts_by_no_assault_zones) do
 			local zone = db.zone_by_name[k]
@@ -76,7 +76,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 		end
 	end
 	--printf("checking combat_ignore for stalker[%s] enemy name [%s] in section[%s]",obj:name(), enemy:name(),storage.active_section)
-	--' Если есть оверрайды, то работаем по ним.
+	--' Р•СЃР»Рё РµСЃС‚СЊ РѕРІРµСЂСЂР°Р№РґС‹, С‚Рѕ СЂР°Р±РѕС‚Р°РµРј РїРѕ РЅРёРј.
 	if overrides and
 		 overrides.combat_ignore
 	then
@@ -140,7 +140,7 @@ function action_process_enemy:hit_callback(obj, amount, local_direction, who, bo
 
 --	printf("_bp: action_process_enemy: hit_callback(): obj='%s'", obj:name())
 	if amount == 0 then
-		-- Кто-то стрельнул в воздух
+		-- РљС‚Рѕ-С‚Рѕ СЃС‚СЂРµР»СЊРЅСѓР» РІ РІРѕР·РґСѓС…
 		return
 	end
 
@@ -170,7 +170,7 @@ function reset_combat_ignore_checker(npc, scheme, st, section)
 
 	npc:set_enemy_callback( storage.action.enemy_callback, storage.action )
 
-	-- Подписываемся на hit callback-и:
+	-- РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° hit callback-Рё:
 	xr_logic.subscribe_action_for_events( npc, storage, storage.action )
 
 	storage.overrides = xr_logic.generic_scheme_overrides(npc)
@@ -183,8 +183,8 @@ end
 function disable_scheme( npc, scheme )
 	npc:set_enemy_callback()
 
-	-- Отписываемся от hit callback. Это делать обязательно, потому что иначе при переключении на другой набор
-	-- схем, в котором нет перехвата боя, продолжится вызываться callback в старом подписанном action-е.
+	-- РћС‚РїРёСЃС‹РІР°РµРјСЃСЏ РѕС‚ hit callback. Р­С‚Рѕ РґРµР»Р°С‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РёРЅР°С‡Рµ РїСЂРё РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РґСЂСѓРіРѕР№ РЅР°Р±РѕСЂ
+	-- СЃС…РµРј, РІ РєРѕС‚РѕСЂРѕРј РЅРµС‚ РїРµСЂРµС…РІР°С‚Р° Р±РѕСЏ, РїСЂРѕРґРѕР»Р¶РёС‚СЃСЏ РІС‹Р·С‹РІР°С‚СЊСЃСЏ callback РІ СЃС‚Р°СЂРѕРј РїРѕРґРїРёСЃР°РЅРЅРѕРј action-Рµ.
 	local st = db.storage[npc:id()][scheme]
 	if st then
 		xr_logic.unsubscribe_action_from_events(npc, st, st.action)

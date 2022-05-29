@@ -1,13 +1,13 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Менеджер изменения состояния тела
---	автор: Диденко Руслан (Stohe)
---  перехерячивал: Пличко Александр (Plecha)
+--	РњРµРЅРµРґР¶РµСЂ РёР·РјРµРЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ С‚РµР»Р°
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
+--  РїРµСЂРµС…РµСЂСЏС‡РёРІР°Р»: РџР»РёС‡РєРѕ РђР»РµРєСЃР°РЅРґСЂ (Plecha)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 --function printf()
 --end
 
---' Сам менеджер
+--' РЎР°Рј РјРµРЅРµРґР¶РµСЂ
 function goap_graph(st, npc)
 	st.npc = npc
 	st.planner = action_planner()
@@ -643,7 +643,7 @@ function goap_graph(st, npc)
 
 
 
--- SMARTCOVER - вход
+-- SMARTCOVER - РІС…РѕРґ
 	action = state_mgr_smartcover.act_state_mgr_smartcover_enter("act_state_mgr_smartcover_enter", st)
 	action:add_precondition    (world_property(st.properties["locked"],                 false))
 	action:add_precondition    (world_property(st.properties["weapon"],                 true))
@@ -656,7 +656,7 @@ function goap_graph(st, npc)
 
 
 
--- SMARTCOVER - выход
+-- SMARTCOVER - РІС‹С…РѕРґ
 	action = state_mgr_smartcover.act_state_mgr_smartcover_exit("act_state_mgr_smartcover_exit", st)
 	action:add_precondition    (world_property(st.properties["locked"],                 false))
 	action:add_precondition    (world_property(st.properties["weapon"],                 true))

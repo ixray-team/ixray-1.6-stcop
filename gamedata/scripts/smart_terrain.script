@@ -1,6 +1,6 @@
-local DEATH_IDLE_TIME = 10*60 -- секунд
-local RESPAWN_IDLE = 1000   -- секунд игрового времени
-local RESPAWN_RADIUS = 150 -- радиус респауна(если актер ближе, то не спаунить)
+local DEATH_IDLE_TIME = 10*60 -- СЃРµРєСѓРЅРґ
+local RESPAWN_IDLE = 1000   -- СЃРµРєСѓРЅРґ РёРіСЂРѕРІРѕРіРѕ РІСЂРµРјРµРЅРё
+local RESPAWN_RADIUS = 150 -- СЂР°РґРёСѓСЃ СЂРµСЃРїР°СѓРЅР°(РµСЃР»Рё Р°РєС‚РµСЂ Р±Р»РёР¶Рµ, С‚Рѕ РЅРµ СЃРїР°СѓРЅРёС‚СЊ)
 SMART_TERRAIN_SECT = "smart_terrain"
 smart_terrains_by_name = {}
 local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
@@ -16,7 +16,7 @@ local valid_territory = {
 	territory = true
 }
 
---' Проверка, что нпс подходит работе
+--' РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РЅРїСЃ РїРѕРґС…РѕРґРёС‚ СЂР°Р±РѕС‚Рµ
 local function job_avail_to_npc(npc_info, job_info, smart)
 	--printf("job_avail_to_npc %s job %s smart %s", npc_info.se_obj:name(), tostring(job_info.job_id), smart:name())
 	local job = smart.job_data[job_info.job_id]
@@ -28,12 +28,12 @@ local function job_avail_to_npc(npc_info, job_info, smart)
 		return false
 	end
 
-	-- Проверка условия "монстровости"
+	-- РџСЂРѕРІРµСЂРєР° СѓСЃР»РѕРІРёСЏ "РјРѕРЅСЃС‚СЂРѕРІРѕСЃС‚Рё"
 	if job_info._precondition_is_monster ~= nil and job_info._precondition_is_monster ~= npc_info.is_monster then
 		return false
 	end
 
-	--' Проверяем подходит ли нпс по предикату
+	--' РџСЂРѕРІРµСЂСЏРµРј РїРѕРґС…РѕРґРёС‚ Р»Рё РЅРїСЃ РїРѕ РїСЂРµРґРёРєР°С‚Сѓ
 	if job_info._precondition_function ~= nil then
 		if not job_info._precondition_function(npc_info.se_obj, smart, job_info._precondition_params, npc_info) then
 			return false
@@ -43,28 +43,28 @@ local function job_avail_to_npc(npc_info, job_info, smart)
 end
 
 
--- Итерируемся по НПС, начинаем со свободных нпс, потом НПС на низкоприоритетных работах, потом на высокоприоритетных.
--- Для каждого конкретного НПС ищем работу.
--- Отсеиваем в поиске работы, приоритет которых ниже, чем у текущей.
+-- РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РќРџРЎ, РЅР°С‡РёРЅР°РµРј СЃРѕ СЃРІРѕР±РѕРґРЅС‹С… РЅРїСЃ, РїРѕС‚РѕРј РќРџРЎ РЅР° РЅРёР·РєРѕРїСЂРёРѕСЂРёС‚РµС‚РЅС‹С… СЂР°Р±РѕС‚Р°С…, РїРѕС‚РѕРј РЅР° РІС‹СЃРѕРєРѕРїСЂРёРѕСЂРёС‚РµС‚РЅС‹С….
+-- Р”Р»СЏ РєР°Р¶РґРѕРіРѕ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РќРџРЎ РёС‰РµРј СЂР°Р±РѕС‚Сѓ.
+-- РћС‚СЃРµРёРІР°РµРј РІ РїРѕРёСЃРєРµ СЂР°Р±РѕС‚С‹, РїСЂРёРѕСЂРёС‚РµС‚ РєРѕС‚РѕСЂС‹С… РЅРёР¶Рµ, С‡РµРј Сѓ С‚РµРєСѓС‰РµР№.
 local function job_iterator(jobs, npc_data, selected_job_prior, smart)
 	--printf("  iterate")
-	-- итерируемся по работам
+	-- РёС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЂР°Р±РѕС‚Р°Рј
 	local current_job_prior = selected_job_prior
 	local selected_job_id = nil
 	local selected_job_link = nil
 	for k,v in pairs(jobs) do
-		-- Если приоритет у проверяемой работы ниже, чем приоритет текущей выбранной работы НПС - завершаем выполнение
+		-- Р•СЃР»Рё РїСЂРёРѕСЂРёС‚РµС‚ Сѓ РїСЂРѕРІРµСЂСЏРµРјРѕР№ СЂР°Р±РѕС‚С‹ РЅРёР¶Рµ, С‡РµРј РїСЂРёРѕСЂРёС‚РµС‚ С‚РµРєСѓС‰РµР№ РІС‹Р±СЂР°РЅРЅРѕР№ СЂР°Р±РѕС‚С‹ РќРџРЎ - Р·Р°РІРµСЂС€Р°РµРј РІС‹РїРѕР»РЅРµРЅРёРµ
 		if current_job_prior > v._prior then
 			return selected_job_id, current_job_prior, selected_job_link
 		end
-		-- Проверяем, может ли НПС занять данную работу
+		-- РџСЂРѕРІРµСЂСЏРµРј, РјРѕР¶РµС‚ Р»Рё РќРџРЎ Р·Р°РЅСЏС‚СЊ РґР°РЅРЅСѓСЋ СЂР°Р±РѕС‚Сѓ
 		if job_avail_to_npc(npc_data, v, smart) then
-			-- Это работа-кластер или работа-описание.
+			-- Р­С‚Рѕ СЂР°Р±РѕС‚Р°-РєР»Р°СЃС‚РµСЂ РёР»Рё СЂР°Р±РѕС‚Р°-РѕРїРёСЃР°РЅРёРµ.
 			if v.job_id == nil then
-				-- Вызываем рекурсивно себя для списка работ кластера
+				-- Р’С‹Р·С‹РІР°РµРј СЂРµРєСѓСЂСЃРёРІРЅРѕ СЃРµР±СЏ РґР»СЏ СЃРїРёСЃРєР° СЂР°Р±РѕС‚ РєР»Р°СЃС‚РµСЂР°
 				selected_job_id, current_job_prior, selected_job_link = job_iterator(v.jobs, npc_data, selected_job_prior, smart)
 			else
-				-- Если работа пустая или ее занимаем мы сами - выбираем ее.
+				-- Р•СЃР»Рё СЂР°Р±РѕС‚Р° РїСѓСЃС‚Р°СЏ РёР»Рё РµРµ Р·Р°РЅРёРјР°РµРј РјС‹ СЃР°РјРё - РІС‹Р±РёСЂР°РµРј РµРµ.
 				if v.npc_id == nil then
 					return v.job_id, v._prior, v
 				elseif v.job_id == npc_data.job_id then
@@ -76,7 +76,7 @@ local function job_iterator(jobs, npc_data, selected_job_prior, smart)
 	return selected_job_id, current_job_prior, selected_job_link
 end
 
--- Расстояние до работы
+-- Р Р°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ СЂР°Р±РѕС‚С‹
 local function arrived_to_smart(obj, smart)
 	local obj_gv, obj_pos
 
@@ -108,14 +108,14 @@ local function arrived_to_smart(obj, smart)
 	end
 
 	if obj_gv:level_id() == smart_gv:level_id() then
-		return obj_pos:distance_to_sqr(smart.position) <= 10000 --Ближе 100 метров
+		return obj_pos:distance_to_sqr(smart.position) <= 10000 --Р‘Р»РёР¶Рµ 100 РјРµС‚СЂРѕРІ
 	else
 		return false
 	end
 end
 
 ----------------------------------------------------------------------------------------------------------------------
--- Класс "se_smart_terrain". Обеспечивает поддержку smart terrain в ОФЛАЙНЕ.
+-- РљР»Р°СЃСЃ "se_smart_terrain". РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїРѕРґРґРµСЂР¶РєСѓ smart terrain РІ РћР¤Р›РђР™РќР•.
 ----------------------------------------------------------------------------------------------------------------------
 class "se_smart_terrain" (cse_alife_smart_zone)
 function se_smart_terrain:__init(section) super(section)
@@ -127,9 +127,9 @@ function se_smart_terrain:__init(section) super(section)
 	self.npc_by_job_section = {}
 	self.dead_time = {}
 
-	-- Таблица для хранения зарегистренных НПС
-	self.npc_info  = {} -- Те, кто уже пришел и стал на работу
-	self.arriving_npc  = {} -- Только идущие на работу.
+	-- РўР°Р±Р»РёС†Р° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Р·Р°СЂРµРіРёСЃС‚СЂРµРЅРЅС‹С… РќРџРЎ
+	self.npc_info  = {} -- РўРµ, РєС‚Рѕ СѓР¶Рµ РїСЂРёС€РµР» Рё СЃС‚Р°Р» РЅР° СЂР°Р±РѕС‚Сѓ
+	self.arriving_npc  = {} -- РўРѕР»СЊРєРѕ РёРґСѓС‰РёРµ РЅР° СЂР°Р±РѕС‚Сѓ.
 end
 function se_smart_terrain:on_before_register()
 	cse_alife_smart_zone.on_before_register(self)
@@ -141,7 +141,7 @@ end
 
 function se_smart_terrain:on_register()
 	cse_alife_smart_zone.on_register(self)
-	-- Проверяем кастомдату обьекта на наличие стори айди.
+	-- РџСЂРѕРІРµСЂСЏРµРј РєР°СЃС‚РѕРјРґР°С‚Сѓ РѕР±СЊРµРєС‚Р° РЅР° РЅР°Р»РёС‡РёРµ СЃС‚РѕСЂРё Р°Р№РґРё.
 	story_objects.check_spawn_ini_for_story_id(self)
 	simulation_objects.get_sim_obj_registry():register(self)
 
@@ -166,13 +166,13 @@ function se_smart_terrain:on_register()
 		self:init_npc_after_load()
 	end
 
-	-- Регистрим персонажей, которые добавили до регистрации смарта. (отложенный список)
+	-- Р РµРіРёСЃС‚СЂРёРј РїРµСЂСЃРѕРЅР°Р¶РµР№, РєРѕС‚РѕСЂС‹Рµ РґРѕР±Р°РІРёР»Рё РґРѕ СЂРµРіРёСЃС‚СЂР°С†РёРё СЃРјР°СЂС‚Р°. (РѕС‚Р»РѕР¶РµРЅРЅС‹Р№ СЃРїРёСЃРѕРє)
 	self:register_delayed_npc()
 
 	self.check_time = time_global()
 end
--- анрегистрация объекта в симуляторе.
--- вызывается симулятором.
+-- Р°РЅСЂРµРіРёСЃС‚СЂР°С†РёСЏ РѕР±СЉРµРєС‚Р° РІ СЃРёРјСѓР»СЏС‚РѕСЂРµ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ СЃРёРјСѓР»СЏС‚РѕСЂРѕРј.
 function se_smart_terrain:on_unregister()
 	cse_alife_smart_zone.on_unregister(self)
 	self.board:unregister_smart(self)
@@ -180,7 +180,7 @@ function se_smart_terrain:on_unregister()
 	unregister_story_object_by_id(self.id)
 	simulation_objects.get_sim_obj_registry():unregister(self)
 end
--- чтение custom data.
+-- С‡С‚РµРЅРёРµ custom data.
 function se_smart_terrain:read_params()
 	self.ini  = self:spawn_ini()
 
@@ -201,7 +201,7 @@ function se_smart_terrain:read_params()
 	local ini = self.ini
 	self.sim_type		= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "sim_type", 		self, false, "", "default")
 
-	--' Вычитка симуляционных свойств
+	--' Р’С‹С‡РёС‚РєР° СЃРёРјСѓР»СЏС†РёРѕРЅРЅС‹С… СЃРІРѕР№СЃС‚РІ
 	if valid_territory[self.sim_type] == nil then
 		abort("Wrong sim_type value [%s] in smart [%s]", self.sim_type, self:name())
 	end
@@ -223,7 +223,7 @@ function se_smart_terrain:read_params()
 	end
 	self.forbidden_point	= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "forbidden_point", self, false, "")
 
-	--' Рестрикторы для симуляции
+	--' Р РµСЃС‚СЂРёРєС‚РѕСЂС‹ РґР»СЏ СЃРёРјСѓР»СЏС†РёРё
 	self.def_restr		= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "def_restr", 	self, false, "", nil)
 	self.att_restr		= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "att_restr", 	self, false, "", nil)
 	self.safe_restr		= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "safe_restr", 	self, false, "", nil)
@@ -272,10 +272,10 @@ function se_smart_terrain:read_params()
 end
 
 --*******************************************************
--- МЕТОДЫ ДЛЯ РАБОТЫ С НПС
+-- РњР•РўРћР”Р« Р”Р›РЇ Р РђР‘РћРўР« РЎ РќРџРЎ
 --*******************************************************
--- заполнить информацию о персонаже
--- у монстров нету метода profile_name()
+-- Р·Р°РїРѕР»РЅРёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
+-- Сѓ РјРѕРЅСЃС‚СЂРѕРІ РЅРµС‚Сѓ РјРµС‚РѕРґР° profile_name()
 function se_smart_terrain:fill_npc_info(obj)
 	local npc_info = {}
 	printf("filling npc_info for obj [%s]", tostring(obj:name()))
@@ -283,7 +283,7 @@ function se_smart_terrain:fill_npc_info(obj)
 	local is_stalker = IsStalker(obj)
 	npc_info.se_obj			= obj
 	npc_info.is_monster		= not is_stalker
-	npc_info.need_job		= "nil"	-- Специально для смены гвардов. Указывает на какую работу хочет данный чувак.
+	npc_info.need_job		= "nil"	-- РЎРїРµС†РёР°Р»СЊРЅРѕ РґР»СЏ СЃРјРµРЅС‹ РіРІР°СЂРґРѕРІ. РЈРєР°Р·С‹РІР°РµС‚ РЅР° РєР°РєСѓСЋ СЂР°Р±РѕС‚Сѓ С…РѕС‡РµС‚ РґР°РЅРЅС‹Р№ С‡СѓРІР°Рє.
 	npc_info.job_prior		= -1
 	npc_info.job_id			= -1
 	npc_info.begin_job		= false
@@ -306,7 +306,7 @@ function se_smart_terrain:refresh_script_logic(obj_id)
 	xr_logic.initialize_obj(db.storage[object.id].object, db.storage[object.id], false, db.actor, stype)
 end
 
--- добавить npc в smart terrain.
+-- РґРѕР±Р°РІРёС‚СЊ npc РІ smart terrain.
 function se_smart_terrain:register_npc(obj)
 	printf("[smart_terrain %s] register called obj=%s", self:name(), obj:name())
 	self.population = self.population + 1
@@ -316,7 +316,7 @@ function se_smart_terrain:register_npc(obj)
 		return
 	end
 
-	-- Только для монстров, чтобы ходили по смартам.
+	-- РўРѕР»СЊРєРѕ РґР»СЏ РјРѕРЅСЃС‚СЂРѕРІ, С‡С‚РѕР±С‹ С…РѕРґРёР»Рё РїРѕ СЃРјР°СЂС‚Р°Рј.
 	if not IsStalker(obj) then
 		obj:smart_terrain_task_activate()
 	end
@@ -325,23 +325,23 @@ function se_smart_terrain:register_npc(obj)
 	if arrived_to_smart(obj, self) then
 		self.npc_info[obj.id] = self:fill_npc_info(obj)
 
-		-- Затычка на случай если мы регистримся в смарт, из которого только что сами вынесли всех врагов.
+		-- Р—Р°С‚С‹С‡РєР° РЅР° СЃР»СѓС‡Р°Р№ РµСЃР»Рё РјС‹ СЂРµРіРёСЃС‚СЂРёРјСЃСЏ РІ СЃРјР°СЂС‚, РёР· РєРѕС‚РѕСЂРѕРіРѕ С‚РѕР»СЊРєРѕ С‡С‚Рѕ СЃР°РјРё РІС‹РЅРµСЃР»Рё РІСЃРµС… РІСЂР°РіРѕРІ.
 		self.dead_time = {}
 
-		-- тут надо найти чуваку работу
+		-- С‚СѓС‚ РЅР°РґРѕ РЅР°Р№С‚Рё С‡СѓРІР°РєСѓ СЂР°Р±РѕС‚Сѓ
 		self:select_npc_job(self.npc_info[obj.id])
 	else
 		self.arriving_npc[obj.id]  = obj
 	end
 end
--- Регистрация НПС в список отложенных. Осуществляется на загрузке или на регистрации НПС, пока не зарегистрен смарт
+-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РќРџРЎ РІ СЃРїРёСЃРѕРє РѕС‚Р»РѕР¶РµРЅРЅС‹С…. РћСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ РЅР° Р·Р°РіСЂСѓР·РєРµ РёР»Рё РЅР° СЂРµРіРёСЃС‚СЂР°С†РёРё РќРџРЎ, РїРѕРєР° РЅРµ Р·Р°СЂРµРіРёСЃС‚СЂРµРЅ СЃРјР°СЂС‚
 function se_smart_terrain:register_delayed_npc()
 	for k,v in pairs(self.npc_to_register) do
 		self:register_npc(v)
 	end
 	self.npc_to_register = {}
 end
--- отпустить npc
+-- РѕС‚РїСѓСЃС‚РёС‚СЊ npc
 function se_smart_terrain:unregister_npc(obj)
 	--callstack()
 	printf("smart [%s] unregister npc [%s]", self:name(), obj:name())
@@ -349,7 +349,7 @@ function se_smart_terrain:unregister_npc(obj)
 	self.population = self.population - 1
 
 	if self.npc_info[obj.id] ~= nil then
-		-- TODO: Тут надо выгнать чувака с занимаемой им работы
+		-- TODO: РўСѓС‚ РЅР°РґРѕ РІС‹РіРЅР°С‚СЊ С‡СѓРІР°РєР° СЃ Р·Р°РЅРёРјР°РµРјРѕР№ РёРј СЂР°Р±РѕС‚С‹
 		self.npc_info[obj.id].job_link.npc_id = nil
 		self.npc_info[obj.id] = nil
 		obj:clear_smart_terrain()
@@ -372,10 +372,10 @@ function se_smart_terrain:unregister_npc(obj)
 
 	abort("self.npc_info[obj.id] = nil !!! obj.id=%d", obj.id)
 end
--- Убрать убитого
+-- РЈР±СЂР°С‚СЊ СѓР±РёС‚РѕРіРѕ
 function se_smart_terrain:clear_dead(obj)
 	if self.npc_info[obj.id] ~= nil then
-		-- Устанавливаем таймер смерти на работе
+		-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚Р°Р№РјРµСЂ СЃРјРµСЂС‚Рё РЅР° СЂР°Р±РѕС‚Рµ
 		self.dead_time[self.npc_info[obj.id].job_id] = game.get_game_time()
 
 		self.npc_info[obj.id].job_link.npc_id = nil
@@ -391,7 +391,7 @@ function se_smart_terrain:clear_dead(obj)
 
 	abort("self.npc_info[obj.id] = nil !!! obj.id=%d", obj.id)
 end
--- выдать объекту задание.
+-- РІС‹РґР°С‚СЊ РѕР±СЉРµРєС‚Сѓ Р·Р°РґР°РЅРёРµ.
 function se_smart_terrain:task(obj)
 	if self.arriving_npc[obj.id] ~= nil then
 		return self.smart_alife_task
@@ -401,18 +401,18 @@ end
 
 
 --*******************************************************
--- Функции для работы с работами
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ СЂР°Р±РѕС‚Р°РјРё
 --*******************************************************
--- Загрузка работ (из gulag_general)
+-- Р—Р°РіСЂСѓР·РєР° СЂР°Р±РѕС‚ (РёР· gulag_general)
 function se_smart_terrain:load_jobs()
 	--printf("LOAD JOBS %s", self:name())
-	-- Загружаем иерархию работ
+	-- Р—Р°РіСЂСѓР¶Р°РµРј РёРµСЂР°СЂС…РёСЋ СЂР°Р±РѕС‚
 	self.jobs = gulag_general.load_job(self)
 
-	-- Загружаем ltx работ.
+	-- Р—Р°РіСЂСѓР¶Р°РµРј ltx СЂР°Р±РѕС‚.
 	self.ltx, self.ltx_name = xr_gulag.loadLtx(self:name())
-	-- Сортируем всю иерархию по уменьшению приоритета
-	-- Рекурсивная функция сортировки
+	-- РЎРѕСЂС‚РёСЂСѓРµРј РІСЃСЋ РёРµСЂР°СЂС…РёСЋ РїРѕ СѓРјРµРЅСЊС€РµРЅРёСЋ РїСЂРёРѕСЂРёС‚РµС‚Р°
+	-- Р РµРєСѓСЂСЃРёРІРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё
 	local function sort_jobs(jobs)
 		for k,v in pairs(jobs) do
 			if v.jobs ~= nil then
@@ -435,8 +435,8 @@ function se_smart_terrain:load_jobs()
 	--end
 
 
-	-- Надо сделать постобработку работ. Проинитить все неиниченные поля
-	-- Для более быстрого доступа нужно вычленить параметры работ в отдельную таблицу вида:
+	-- РќР°РґРѕ СЃРґРµР»Р°С‚СЊ РїРѕСЃС‚РѕР±СЂР°Р±РѕС‚РєСѓ СЂР°Р±РѕС‚. РџСЂРѕРёРЅРёС‚РёС‚СЊ РІСЃРµ РЅРµРёРЅРёС‡РµРЅРЅС‹Рµ РїРѕР»СЏ
+	-- Р”Р»СЏ Р±РѕР»РµРµ Р±С‹СЃС‚СЂРѕРіРѕ РґРѕСЃС‚СѓРїР° РЅСѓР¶РЅРѕ РІС‹С‡Р»РµРЅРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ СЂР°Р±РѕС‚ РІ РѕС‚РґРµР»СЊРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ РІРёРґР°:
 	--self.job_data[job_id] = {}
 	local id = 0
 	self.job_data = {}
@@ -451,7 +451,7 @@ function se_smart_terrain:load_jobs()
 				end
 				self.job_data[id] = v.job_id
 
-				self.job_data[id]._prior = v._prior -- Кешируем для проверки
+				self.job_data[id]._prior = v._prior -- РљРµС€РёСЂСѓРµРј РґР»СЏ РїСЂРѕРІРµСЂРєРё
 				v.job_id = id
 				id = id + 1
 			end
@@ -459,7 +459,7 @@ function se_smart_terrain:load_jobs()
 	end
 
 	get_jobs_data(self.jobs)
-	-- Пробегаемся по работам и высчитываем для каждой работы alife_task
+	-- РџСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ СЂР°Р±РѕС‚Р°Рј Рё РІС‹СЃС‡РёС‚С‹РІР°РµРј РґР»СЏ РєР°Р¶РґРѕР№ СЂР°Р±РѕС‚С‹ alife_task
 	for k,v in pairs(self.job_data) do
 		local section = v.section
 		local ltx = v.ini_file or self.ltx
@@ -470,8 +470,8 @@ function se_smart_terrain:load_jobs()
 
 
 --		printf("job_type %s  job_section %s", tostring(v.job_type), tostring(section))
-		-- В зависимости от типа работы по разному считаем alife_path
-		if v.job_type == "path_job" then  -- работа задается патрульным путем
+		-- Р’ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° СЂР°Р±РѕС‚С‹ РїРѕ СЂР°Р·РЅРѕРјСѓ СЃС‡РёС‚Р°РµРј alife_path
+		if v.job_type == "path_job" then  -- СЂР°Р±РѕС‚Р° Р·Р°РґР°РµС‚СЃСЏ РїР°С‚СЂСѓР»СЊРЅС‹Рј РїСѓС‚РµРј
 			local path_field
 			for i,vv in pairs(path_fields) do
 				if ltx:line_exist(active_section, vv) then
@@ -488,7 +488,7 @@ function se_smart_terrain:load_jobs()
 				path_name = self:name() .. "_" .. path_name
 			end
 
-			if path_field == "center_point" then --' TODO убрать затык когда переделаем кемпы на смарткаверы
+			if path_field == "center_point" then --' TODO СѓР±СЂР°С‚СЊ Р·Р°С‚С‹Рє РєРѕРіРґР° РїРµСЂРµРґРµР»Р°РµРј РєРµРјРїС‹ РЅР° СЃРјР°СЂС‚РєР°РІРµСЂС‹
 				if level.patrol_path_exists(path_name .. "_task") then
 					path_name = path_name .. "_task"
 				end
@@ -496,7 +496,7 @@ function se_smart_terrain:load_jobs()
 
 			v.alife_task = CALifeSmartTerrainTask(path_name)
 
-		elseif v.job_type == "smartcover_job" then -- работа задается смарткавером
+		elseif v.job_type == "smartcover_job" then -- СЂР°Р±РѕС‚Р° Р·Р°РґР°РµС‚СЃСЏ СЃРјР°СЂС‚РєР°РІРµСЂРѕРј
 			local smartcover_name = ltx:r_string(active_section, "cover_name")
 			local smartcover = se_smart_cover.registered_smartcovers[smartcover_name]
 			if smartcover == nil then
@@ -505,7 +505,7 @@ function se_smart_terrain:load_jobs()
 			printf("Returning alife task for object [%s] game_vertex [%s] level_vertex [%s] position %s", smartcover.id, smartcover.m_game_vertex_id, smartcover.m_level_vertex_id, vec_to_str(smartcover.position))
 			v.alife_task = CALifeSmartTerrainTask(smartcover.m_game_vertex_id, smartcover.m_level_vertex_id)
 
-		elseif v.job_type == "point_job" then   -- работа задается позицией
+		elseif v.job_type == "point_job" then   -- СЂР°Р±РѕС‚Р° Р·Р°РґР°РµС‚СЃСЏ РїРѕР·РёС†РёРµР№
 			v.alife_task = self.smart_alife_task
 		end
 
@@ -515,47 +515,47 @@ function se_smart_terrain:load_jobs()
 	end
 end
 
--- Апдейт работ смарттеррейна.
--- Если передается object, то значит нужно найти только для него
+-- РђРїРґРµР№С‚ СЂР°Р±РѕС‚ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°.
+-- Р•СЃР»Рё РїРµСЂРµРґР°РµС‚СЃСЏ object, С‚Рѕ Р·РЅР°С‡РёС‚ РЅСѓР¶РЅРѕ РЅР°Р№С‚Рё С‚РѕР»СЊРєРѕ РґР»СЏ РЅРµРіРѕ
 function se_smart_terrain:update_jobs()
 	self:check_alarm()
 	--printf("UPDATE JOBS %s", self:name())
 
-	-- Проверяем, дошел ли кто-то до смарта
+	-- РџСЂРѕРІРµСЂСЏРµРј, РґРѕС€РµР» Р»Рё РєС‚Рѕ-С‚Рѕ РґРѕ СЃРјР°СЂС‚Р°
 	for k,v in pairs(self.arriving_npc) do
 		if arrived_to_smart(v, self) then
 			self.npc_info[v.id] = self:fill_npc_info(v)
 
-			-- Затычка на случай если мы регистримся в смарт, из которого только что сами вынесли всех врагов.
+			-- Р—Р°С‚С‹С‡РєР° РЅР° СЃР»СѓС‡Р°Р№ РµСЃР»Рё РјС‹ СЂРµРіРёСЃС‚СЂРёРјСЃСЏ РІ СЃРјР°СЂС‚, РёР· РєРѕС‚РѕСЂРѕРіРѕ С‚РѕР»СЊРєРѕ С‡С‚Рѕ СЃР°РјРё РІС‹РЅРµСЃР»Рё РІСЃРµС… РІСЂР°РіРѕРІ.
 			self.dead_time = {}
 
-			-- тут надо найти чуваку работу
+			-- С‚СѓС‚ РЅР°РґРѕ РЅР°Р№С‚Рё С‡СѓРІР°РєСѓ СЂР°Р±РѕС‚Сѓ
 			self:select_npc_job(self.npc_info[v.id])
 
 			self.arriving_npc[k] = nil
 		end
 	end
 
-	-- Сортируем НПС по увеличению приоритета занимаемой работы
+	-- РЎРѕСЂС‚РёСЂСѓРµРј РќРџРЎ РїРѕ СѓРІРµР»РёС‡РµРЅРёСЋ РїСЂРёРѕСЂРёС‚РµС‚Р° Р·Р°РЅРёРјР°РµРјРѕР№ СЂР°Р±РѕС‚С‹
 	table.sort(self.npc_info, function(a,b) return a.job_prior < b.job_prior end )
 	for k,v in pairs(self.npc_info) do
 		self:select_npc_job(v)
 	end
 end
--- Выбор работы для персонажа
+-- Р’С‹Р±РѕСЂ СЂР°Р±РѕС‚С‹ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 function se_smart_terrain:select_npc_job(npc_info)
-	-- Выбираем работу
+	-- Р’С‹Р±РёСЂР°РµРј СЂР°Р±РѕС‚Сѓ
 	local selected_job_id, selected_job_prior, selected_job_link = job_iterator(self.jobs, npc_info, 0, self)
 	if selected_job_id == nil then
 		print_table(self.jobs)
 		abort("Insufficient smart_terrain jobs %s", self:name())
 	end
 
-	-- Назначаем работу
+	-- РќР°Р·РЅР°С‡Р°РµРј СЂР°Р±РѕС‚Сѓ
 	if selected_job_id ~= npc_info.job_id and selected_job_link ~= nil then
-		-- Установить себе выбранную работу
+		-- РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРµР±Рµ РІС‹Р±СЂР°РЅРЅСѓСЋ СЂР°Р±РѕС‚Сѓ
 		--printf("NPC %s FOUND JOB %s SECTION %s", npc_info.se_obj:name(), selected_job_id, self.job_data[selected_job_link.job_id].section)
-		-- Если НПС был на работе - выгоняем его с нее.
+		-- Р•СЃР»Рё РќРџРЎ Р±С‹Р» РЅР° СЂР°Р±РѕС‚Рµ - РІС‹РіРѕРЅСЏРµРј РµРіРѕ СЃ РЅРµРµ.
 		if npc_info.job_link ~= nil then
 			self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = nil
 			npc_info.job_link.npc_id = nil
@@ -567,10 +567,10 @@ function se_smart_terrain:select_npc_job(npc_info)
 		npc_info.job_id = selected_job_link.job_id
 		npc_info.job_prior = selected_job_link._prior
 		npc_info.begin_job = false
-		-- сохраняем ссылку на работу, для облегчения удаления
+		-- СЃРѕС…СЂР°РЅСЏРµРј СЃСЃС‹Р»РєСѓ РЅР° СЂР°Р±РѕС‚Сѓ, РґР»СЏ РѕР±Р»РµРіС‡РµРЅРёСЏ СѓРґР°Р»РµРЅРёСЏ
 		npc_info.job_link = selected_job_link
 
-		-- завершаем текущую работу
+		-- Р·Р°РІРµСЂС€Р°РµРј С‚РµРєСѓС‰СѓСЋ СЂР°Р±РѕС‚Сѓ
 		local obj_storage = db.storage[npc_info.se_obj.id]
 		if obj_storage ~= nil then
 			xr_logic.switch_to_section(obj_storage.object, self.ltx, "nil")
@@ -578,11 +578,11 @@ function se_smart_terrain:select_npc_job(npc_info)
 	end
 
 	if npc_info.begin_job ~= true then
-		-- Проверяем, дошел ли персонаж до работы (то есть может ли он начать ее выполнение)
+		-- РџСЂРѕРІРµСЂСЏРµРј, РґРѕС€РµР» Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РґРѕ СЂР°Р±РѕС‚С‹ (С‚Рѕ РµСЃС‚СЊ РјРѕР¶РµС‚ Р»Рё РѕРЅ РЅР°С‡Р°С‚СЊ РµРµ РІС‹РїРѕР»РЅРµРЅРёРµ)
 		local job_data = self.job_data[npc_info.job_id]
-		-- Начинаем выполнять работу
+		-- РќР°С‡РёРЅР°РµРј РІС‹РїРѕР»РЅСЏС‚СЊ СЂР°Р±РѕС‚Сѓ
 		printf("[smart_terrain %s] gulag: beginJob: obj=%s job= %s", self:name(), npc_info.se_obj:name(), job_data.section)
-		-- Смена работы, очищаем память для оффлайнового обьекта.
+		-- РЎРјРµРЅР° СЂР°Р±РѕС‚С‹, РѕС‡РёС‰Р°РµРј РїР°РјСЏС‚СЊ РґР»СЏ РѕС„С„Р»Р°Р№РЅРѕРІРѕРіРѕ РѕР±СЊРµРєС‚Р°.
 		db.offline_objects[npc_info.se_obj.id] = {}
 		npc_info.begin_job = true
 
@@ -592,7 +592,7 @@ function se_smart_terrain:select_npc_job(npc_info)
 		end
 	end
 end
--- настроить логику для объекта, который в онлайне.
+-- РЅР°СЃС‚СЂРѕРёС‚СЊ Р»РѕРіРёРєСѓ РґР»СЏ РѕР±СЉРµРєС‚Р°, РєРѕС‚РѕСЂС‹Р№ РІ РѕРЅР»Р°Р№РЅРµ.
 function se_smart_terrain:setup_logic(obj)
 	--printf("setup npc logic %s", obj:name())
 --	callstack()
@@ -610,16 +610,16 @@ function se_smart_terrain:setup_logic(obj)
 
 	xr_logic.activate_by_section(obj, ltx, sect, job.prefix_name or self:name(), false)
 end
--- получить работу, которую занимает объект
+-- РїРѕР»СѓС‡РёС‚СЊ СЂР°Р±РѕС‚Сѓ, РєРѕС‚РѕСЂСѓСЋ Р·Р°РЅРёРјР°РµС‚ РѕР±СЉРµРєС‚
 function se_smart_terrain:getJob(obj_id)
 	return self.npc_info[obj_id] and self.job_data[self.npc_info[obj_id].job_id]
 end
--- Получение персонажа, который занимает указанную работу.
+-- РџРѕР»СѓС‡РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶Р°, РєРѕС‚РѕСЂС‹Р№ Р·Р°РЅРёРјР°РµС‚ СѓРєР°Р·Р°РЅРЅСѓСЋ СЂР°Р±РѕС‚Сѓ.
 function se_smart_terrain:idNPCOnJob(job_name)
 	return self.npc_by_job_section[job_name]
 end
 function se_smart_terrain:switch_to_desired_job(npc)
-	-- Берем текущую работу НПС
+	-- Р‘РµСЂРµРј С‚РµРєСѓС‰СѓСЋ СЂР°Р±РѕС‚Сѓ РќРџРЎ
 	local npc_id = npc:id()
 	local npc_info = self.npc_info[npc_id]
 
@@ -628,7 +628,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 	--printf("changing_npc_id %s", tostring(changing_npc_id))
 
 	if changing_npc_id == nil then
-		-- Мы не нашли с кем меняться, просто ресетим себя
+		-- РњС‹ РЅРµ РЅР°С€Р»Рё СЃ РєРµРј РјРµРЅСЏС‚СЊСЃСЏ, РїСЂРѕСЃС‚Рѕ СЂРµСЃРµС‚РёРј СЃРµР±СЏ
 		self.npc_info[npc_id].job_link = nil
 		self.npc_info[npc_id].job_id = -1
 		self.npc_info[npc_id].job_prior = -1
@@ -640,7 +640,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 	end
 
 	if self.npc_info[changing_npc_id] == nil then
-		-- Мы не нашли с кем меняться, просто ресетим себя
+		-- РњС‹ РЅРµ РЅР°С€Р»Рё СЃ РєРµРј РјРµРЅСЏС‚СЊСЃСЏ, РїСЂРѕСЃС‚Рѕ СЂРµСЃРµС‚РёРј СЃРµР±СЏ
 		self.npc_info[npc_id].job_link = nil
 		self.npc_info[npc_id].job_id = -1
 		self.npc_info[npc_id].job_prior = -1
@@ -653,7 +653,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 
 	local desired_job = self.npc_info[changing_npc_id].job_id
 
-	-- Переключаем НПС на желаемую работу
+	-- РџРµСЂРµРєР»СЋС‡Р°РµРј РќРџРЎ РЅР° Р¶РµР»Р°РµРјСѓСЋ СЂР°Р±РѕС‚Сѓ
 	if npc_info.job_link ~= nil then
 		self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = nil
 		npc_info.job_link.npc_id = nil
@@ -669,7 +669,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 	npc_info.job_prior = selected_job_link._prior
 	npc_info.begin_job = true
 
-	-- сохраняем ссылку на работу, для облегчения удаления
+	-- СЃРѕС…СЂР°РЅСЏРµРј СЃСЃС‹Р»РєСѓ РЅР° СЂР°Р±РѕС‚Сѓ, РґР»СЏ РѕР±Р»РµРіС‡РµРЅРёСЏ СѓРґР°Р»РµРЅРёСЏ
 	npc_info.job_link = selected_job_link
 	npc_info.need_job = "nil"
 
@@ -678,7 +678,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 		self:setup_logic(obj_storage.object)
 	end
 
-	-- Освобождаем НПС, который занимает желаемую работу и говорим ему перевыбрать работу
+	-- РћСЃРІРѕР±РѕР¶РґР°РµРј РќРџРЎ, РєРѕС‚РѕСЂС‹Р№ Р·Р°РЅРёРјР°РµС‚ Р¶РµР»Р°РµРјСѓСЋ СЂР°Р±РѕС‚Сѓ Рё РіРѕРІРѕСЂРёРј РµРјСѓ РїРµСЂРµРІС‹Р±СЂР°С‚СЊ СЂР°Р±РѕС‚Сѓ
 	self.npc_info[changing_npc_id].job_link = nil
 	self.npc_info[changing_npc_id].job_id = -1
 	self.npc_info[changing_npc_id].job_prior = -1
@@ -687,15 +687,15 @@ end
 
 
 --*******************************************************
--- СЕЙВ/ЛОАД
+-- РЎР•Р™Р’/Р›РћРђР”
 --*******************************************************
--- сохранение
+-- СЃРѕС…СЂР°РЅРµРЅРёРµ
 function se_smart_terrain:STATE_Write(packet)
 	cse_alife_smart_zone.STATE_Write(self, packet)
 
 	set_save_marker(packet, "save", false, "se_smart_terrain")
 
-	-- Информацию о НПС, идущих в смарт
+	-- РРЅС„РѕСЂРјР°С†РёСЋ Рѕ РќРџРЎ, РёРґСѓС‰РёС… РІ СЃРјР°СЂС‚
 	local n = 0
 	for k,v in pairs(self.arriving_npc) do
 		n = n + 1
@@ -706,7 +706,7 @@ function se_smart_terrain:STATE_Write(packet)
 	end
 
 
-	-- Информацию о НПС в смарте
+	-- РРЅС„РѕСЂРјР°С†РёСЋ Рѕ РќРџРЎ РІ СЃРјР°СЂС‚Рµ
 	n = 0
 	for k,v in pairs(self.npc_info) do
 		n = n + 1
@@ -768,11 +768,11 @@ function se_smart_terrain:STATE_Write(packet)
 	set_save_marker(packet, "save", true, "se_smart_terrain")
 end
 
--- восстановление
+-- РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ
 function se_smart_terrain:STATE_Read(packet, size)
 	cse_alife_smart_zone.STATE_Read(self, packet, size)
 
-	-- под LevelEditor не пытаться читать из пакета ничего
+	-- РїРѕРґ LevelEditor РЅРµ РїС‹С‚Р°С‚СЊСЃСЏ С‡РёС‚Р°С‚СЊ РёР· РїР°РєРµС‚Р° РЅРёС‡РµРіРѕ
 	if editor() then
 		return
 	end
@@ -780,7 +780,7 @@ function se_smart_terrain:STATE_Read(packet, size)
 	set_save_marker(packet, "load", false, "se_smart_terrain")
 	self:read_params()
 
-	-- Информацию о НПС, идущих в смарт
+	-- РРЅС„РѕСЂРјР°С†РёСЋ Рѕ РќРџРЎ, РёРґСѓС‰РёС… РІ СЃРјР°СЂС‚
 	local n = packet:r_u8()
 	self.arriving_npc = {}
 	for i = 1,n do
@@ -788,7 +788,7 @@ function se_smart_terrain:STATE_Read(packet, size)
 		self.arriving_npc[id] = false
 	end
 
-	-- Информацию о НПС в смарте
+	-- РРЅС„РѕСЂРјР°С†РёСЋ Рѕ РќРџРЎ РІ СЃРјР°СЂС‚Рµ
 	n = packet:r_u8()
 	--printf("load %s npc", tostring(n))
 	self.npc_info = {}
@@ -855,7 +855,7 @@ function se_smart_terrain:STATE_Read(packet, size)
 
 	set_save_marker(packet, "load", true, "se_smart_terrain")
 end
--- Инициализация НПС после загрузки.
+-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РќРџРЎ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё.
 function se_smart_terrain:init_npc_after_load()
 	local function find_job(jobs, npc_info)
 		for k,v in pairs(jobs) do
@@ -893,7 +893,7 @@ function se_smart_terrain:init_npc_after_load()
 			npc_info.begin_job = v.begin_job
 			npc_info.need_job = v.need_job
 
-			--Теперь надо найти данную работу и выставить ссылку на нее.
+			--РўРµРїРµСЂСЊ РЅР°РґРѕ РЅР°Р№С‚Рё РґР°РЅРЅСѓСЋ СЂР°Р±РѕС‚Сѓ Рё РІС‹СЃС‚Р°РІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РЅРµРµ.
 			find_job(self.jobs, npc_info)
 
 			self.npc_info[k] = npc_info
@@ -907,7 +907,7 @@ function se_smart_terrain:init_npc_after_load()
 end
 
 
---' Возвращает отформатированную строку свойств смарта
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ СЃРІРѕР№СЃС‚РІ СЃРјР°СЂС‚Р°
 function se_smart_terrain:get_smart_props()
 	local props = smart_names.get_smart_terrain_name(self)
 	if(props==nil) or (_G.dev_debug) then
@@ -926,7 +926,7 @@ function se_smart_terrain:get_smart_props()
 					end
 			end
 
-			--' Добавляем информацию о находящихся в смарте отрядах
+			--' Р”РѕР±Р°РІР»СЏРµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ СЃРјР°СЂС‚Рµ РѕС‚СЂСЏРґР°С…
 			for k,v in pairs(sim_board.get_sim_board().smarts[self.id].squads) do
 					props = props .. tostring(v.id) .. "\\n"
 			end
@@ -936,7 +936,7 @@ end
 
 
 
---' Отрисовка смарта на игровом поле
+--' РћС‚СЂРёСЃРѕРІРєР° СЃРјР°СЂС‚Р° РЅР° РёРіСЂРѕРІРѕРј РїРѕР»Рµ
 function se_smart_terrain:show()
 	local time = time_global()
 	if(self.showtime~=nil) and (self.showtime+200>=time) then
@@ -975,11 +975,11 @@ function se_smart_terrain:show()
 
 	end
 end
---' Обновление информации о смарте на игровом поле
+--' РћР±РЅРѕРІР»РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ СЃРјР°СЂС‚Рµ РЅР° РёРіСЂРѕРІРѕРј РїРѕР»Рµ
 function se_smart_terrain:refresh()
 	self:show()
 end
---' Убирание отрисовки смарта на игровом поле
+--' РЈР±РёСЂР°РЅРёРµ РѕС‚СЂРёСЃРѕРІРєРё СЃРјР°СЂС‚Р° РЅР° РёРіСЂРѕРІРѕРј РїРѕР»Рµ
 function se_smart_terrain:hide()
 	if self.smrt_showed_spot == nil then
 		return
@@ -997,13 +997,13 @@ local function is_only_monsters_on_jobs(npc_info)
 	return true
 end
 
--- Обновление.
--- В онлайне вызывается через binder.
--- Также может вызваться принудительно из xr_effects
+-- РћР±РЅРѕРІР»РµРЅРёРµ.
+-- Р’ РѕРЅР»Р°Р№РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ С‡РµСЂРµР· binder.
+-- РўР°РєР¶Рµ РјРѕР¶РµС‚ РІС‹Р·РІР°С‚СЊСЃСЏ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РёР· xr_effects
 function se_smart_terrain:update()
 	cse_alife_smart_zone.update( self )
 	if dev_debug then
-		self:refresh() -- Не забыть потом заремить
+		self:refresh() -- РќРµ Р·Р°Р±С‹С‚СЊ РїРѕС‚РѕРј Р·Р°СЂРµРјРёС‚СЊ
 	end
 
 	local current_time = time_global()
@@ -1017,7 +1017,7 @@ function se_smart_terrain:update()
 		end
 	end
 
-	-- Апдейт респауна отрядов симуляции.
+	-- РђРїРґРµР№С‚ СЂРµСЃРїР°СѓРЅР° РѕС‚СЂСЏРґРѕРІ СЃРёРјСѓР»СЏС†РёРё.
 	if self.respawn_params ~= nil then
 		self:try_respawn()
 	end
@@ -1026,8 +1026,8 @@ function se_smart_terrain:update()
 		return
 	end
 
-	--проверить есть ли кто-то в смарте, если есть и костры не включены то включить,
-	--еще проверить есть ли актер, чтоб была гарантия что костры проспонились...
+	--РїСЂРѕРІРµСЂРёС‚СЊ РµСЃС‚СЊ Р»Рё РєС‚Рѕ-С‚Рѕ РІ СЃРјР°СЂС‚Рµ, РµСЃР»Рё РµСЃС‚СЊ Рё РєРѕСЃС‚СЂС‹ РЅРµ РІРєР»СЋС‡РµРЅС‹ С‚Рѕ РІРєР»СЋС‡РёС‚СЊ,
+	--РµС‰Рµ РїСЂРѕРІРµСЂРёС‚СЊ РµСЃС‚СЊ Р»Рё Р°РєС‚РµСЂ, С‡С‚РѕР± Р±С‹Р»Р° РіР°СЂР°РЅС‚РёСЏ С‡С‚Рѕ РєРѕСЃС‚СЂС‹ РїСЂРѕСЃРїРѕРЅРёР»РёСЃСЊ...
 	if is_only_monsters_on_jobs(self.npc_info) and self.campfires_on then
 		bind_campfire.turn_off_campfires_by_smart_name(self:name())
 		self.campfires_on = false
@@ -1044,7 +1044,7 @@ function se_smart_terrain:update()
 		self.check_time = current_time + 10
 	end
 
-	-- Проверяем, не истек ли запрет на занимание работы, на которой убили НПС
+	-- РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РёСЃС‚РµРє Р»Рё Р·Р°РїСЂРµС‚ РЅР° Р·Р°РЅРёРјР°РЅРёРµ СЂР°Р±РѕС‚С‹, РЅР° РєРѕС‚РѕСЂРѕР№ СѓР±РёР»Рё РќРџРЎ
 	local current_time = game.get_game_time()
 	for k,v in pairs(self.dead_time) do
 		if current_time:diffSec(v) >= DEATH_IDLE_TIME then
@@ -1052,33 +1052,33 @@ function se_smart_terrain:update()
 		end
 	end
 
-	-- Перевыбор работ
+	-- РџРµСЂРµРІС‹Р±РѕСЂ СЂР°Р±РѕС‚
 	self:update_jobs()
 
-	-- Апдейтим контрол реакции базы на игрока
+	-- РђРїРґРµР№С‚РёРј РєРѕРЅС‚СЂРѕР» СЂРµР°РєС†РёРё Р±Р°Р·С‹ РЅР° РёРіСЂРѕРєР°
 	if self.base_on_actor_control ~= nil then
 		self.base_on_actor_control:update()
 	end
-	-- Апдейт доступности для симуляции.
+	-- РђРїРґРµР№С‚ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё РґР»СЏ СЃРёРјСѓР»СЏС†РёРё.
 	simulation_objects.get_sim_obj_registry():update_avaliability(self)
 end
--- Переведение смарта в напряженное состояние
+-- РџРµСЂРµРІРµРґРµРЅРёРµ СЃРјР°СЂС‚Р° РІ РЅР°РїСЂСЏР¶РµРЅРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 function se_smart_terrain:set_alarm()
 	self.smart_alarm_time = game.get_game_time()
 end
--- Проверяет. а не прошел ли аларм в смарте
+-- РџСЂРѕРІРµСЂСЏРµС‚. Р° РЅРµ РїСЂРѕС€РµР» Р»Рё Р°Р»Р°СЂРј РІ СЃРјР°СЂС‚Рµ
 function se_smart_terrain:check_alarm()
 	if self.smart_alarm_time == nil then
 		return
 	end
-	if game.get_game_time():diffSec(self.smart_alarm_time) > 21600 then -- 6 Игровых часов
+	if game.get_game_time():diffSec(self.smart_alarm_time) > 21600 then -- 6 РРіСЂРѕРІС‹С… С‡Р°СЃРѕРІ
 		self.smart_alarm_time = nil
 	end
 end
 
 
--- установить логику и сообщить смарту, что объект перешёл в онлайн.
--- вызывается из net_spawn() объектов
+-- СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р»РѕРіРёРєСѓ Рё СЃРѕРѕР±С‰РёС‚СЊ СЃРјР°СЂС‚Сѓ, С‡С‚Рѕ РѕР±СЉРµРєС‚ РїРµСЂРµС€С‘Р» РІ РѕРЅР»Р°Р№РЅ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· net_spawn() РѕР±СЉРµРєС‚РѕРІ
 function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
 	local sim = alife()
 	local sobject = alife():object(obj:id())
@@ -1103,7 +1103,7 @@ function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
 	end
 end
 
--- Убираем объект из смарта при смерти
+-- РЈР±РёСЂР°РµРј РѕР±СЉРµРєС‚ РёР· СЃРјР°СЂС‚Р° РїСЂРё СЃРјРµСЂС‚Рё
 function on_death(obj)
 	local sim = alife()
 	if sim then
@@ -1121,12 +1121,12 @@ end
 --***********************************************************************************************
 --*										SIMULATION_TARGET_SMART									*
 --***********************************************************************************************
--- Получить позицию, левел вертекс, гейм вертекс обьекта.
+-- РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ, Р»РµРІРµР» РІРµСЂС‚РµРєСЃ, РіРµР№Рј РІРµСЂС‚РµРєСЃ РѕР±СЊРµРєС‚Р°.
 function se_smart_terrain:get_location()
 	return self.position, self.m_level_vertex_id, self.m_game_vertex_id
 end
 
--- Достигнут ли я отрядом выбравшим меня как цель.
+-- Р”РѕСЃС‚РёРіРЅСѓС‚ Р»Рё СЏ РѕС‚СЂСЏРґРѕРј РІС‹Р±СЂР°РІС€РёРј РјРµРЅСЏ РєР°Рє С†РµР»СЊ.
 function se_smart_terrain:am_i_reached(squad)
 	local squad_pos, squad_lv_id, squad_gv_id = squad:get_location()
 	local target_pos, target_lv_id, target_gv_id = self:get_location()
@@ -1139,7 +1139,7 @@ function se_smart_terrain:am_i_reached(squad)
 	return squad.always_arrived or squad_pos:distance_to_sqr(target_pos) <= self.arrive_dist^2
 end
 
--- Вызывается 1 раз после достижения меня отрядом выбравшим меня как цель.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ 1 СЂР°Р· РїРѕСЃР»Рµ РґРѕСЃС‚РёР¶РµРЅРёСЏ РјРµРЅСЏ РѕС‚СЂСЏРґРѕРј РІС‹Р±СЂР°РІС€РёРј РјРµРЅСЏ РєР°Рє С†РµР»СЊ.
 function se_smart_terrain:on_after_reach(squad)
 	for k in squad:squad_members() do
 		local obj = k.object
@@ -1148,7 +1148,7 @@ function se_smart_terrain:on_after_reach(squad)
 	squad.current_target_id = self.id
 end
 
--- Вызывается 1 раз в момент выбора меня как цели.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ 1 СЂР°Р· РІ РјРѕРјРµРЅС‚ РІС‹Р±РѕСЂР° РјРµРЅСЏ РєР°Рє С†РµР»Рё.
 function se_smart_terrain:on_reach_target(squad)
 --	squad.sound_manager:set_storyteller(squad:commander_id())
 --	squad.sound_manager:set_story("squad_begin_attack")
@@ -1162,7 +1162,7 @@ function se_smart_terrain:on_reach_target(squad)
 --	self.board:exit_smart(squad, squad.smart_id)
 end
 
--- Возвращает CALifeSmartTerrainTask на меня, вызывается из smart_terrain:task()
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ CALifeSmartTerrainTask РЅР° РјРµРЅСЏ, РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· smart_terrain:task()
 function se_smart_terrain:get_alife_task()
 	return self.smart_alife_task
 end
@@ -1240,7 +1240,7 @@ function surge_stats()
 	print_smarts_and_squads_by_level("jupiter")
 	print_smarts_and_squads_by_level("pripyat")
 end
--- Мой прекондишн.
+-- РњРѕР№ РїСЂРµРєРѕРЅРґРёС€РЅ.
 function se_smart_terrain:target_precondition(squad, need_to_dec_population)
 	if self.respawn_only_smart == true then
 		return false
@@ -1327,12 +1327,12 @@ function se_smart_terrain:target_precondition(squad, need_to_dec_population)
 ]]
 end
 
--- Посчитать мой приоритет для отряда.
+-- РџРѕСЃС‡РёС‚Р°С‚СЊ РјРѕР№ РїСЂРёРѕСЂРёС‚РµС‚ РґР»СЏ РѕС‚СЂСЏРґР°.
 function se_smart_terrain:evaluate_prior(squad)
 	return simulation_objects.evaluate_prior(self, squad)
 end
 
--- Респаун симуляции.
+-- Р РµСЃРїР°СѓРЅ СЃРёРјСѓР»СЏС†РёРё.
 
 function se_smart_terrain:check_respawn_params(respawn_params)
 	--printf("CHECK RESPAWN PARAMS %s", self:name())

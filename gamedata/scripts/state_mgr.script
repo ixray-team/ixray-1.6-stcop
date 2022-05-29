@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Ìåíåäæåð èçìåíåíèÿ ñîñòîÿíèÿ òåëà
---	àâòîð: Äèäåíêî Ðóñëàí (Stohe)
+--	ÐœÐµÐ½ÐµÐ´Ð¶ÐµÑ€ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ñ‚ÐµÐ»Ð°
+--	Ð°Ð²Ñ‚Ð¾Ñ€: Ð”Ð¸Ð´ÐµÐ½ÐºÐ¾ Ð ÑƒÑÐ»Ð°Ð½ (Stohe)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 --function printf()
@@ -9,8 +9,8 @@
 aim_ratio = 1000/50
 min_ratio = 1500
 
---' Ýâàëóàòîð, êîòîðûé ñèíõðîíèçèðóåò ìåíåäæåð.
---' Ìû óæå â áåçðàëè÷íîì ñîñòîÿíèè idle èëè íåò
+--' Ð­Ð²Ð°Ð»ÑƒÐ°Ñ‚Ð¾Ñ€, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ ÑÐ¸Ð½Ñ…Ñ€Ð¾Ð½Ð¸Ð·Ð¸Ñ€ÑƒÐµÑ‚ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€.
+--' ÐœÑ‹ ÑƒÐ¶Ðµ Ð² Ð±ÐµÐ·Ñ€Ð°Ð»Ð¸Ñ‡Ð½Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸ idle Ð¸Ð»Ð¸ Ð½ÐµÑ‚
 class "evaluator_state_mgr_idle" (property_evaluator)
 function evaluator_state_mgr_idle:__init(name, state_manager) super (nil, name)
 	self.st = state_manager
@@ -43,10 +43,10 @@ function evaluator_state_mgr_idle:evaluate()
 
 	if self.st.combat == true then return true end
 
-	--' Åñëè ó íàñ ïîñò êîìáàò âåéò - âåðíóòü ÒÐÓ.  Äåëàëîñü, ÷òîáû êîãäà ÷óâàê âûïîëíÿåò ïîñò êîìáàò, îí ñ÷èòàë ÷òî ñòåéò ìåíåäæåð íàõîäèòñÿ â áåçðàçëè÷íîì ñîñòîÿíèè.
+	--' Ð•ÑÐ»Ð¸ Ñƒ Ð½Ð°Ñ Ð¿Ð¾ÑÑ‚ ÐºÐ¾Ð¼Ð±Ð°Ñ‚ Ð²ÐµÐ¹Ñ‚ - Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð¢Ð Ð£.  Ð”ÐµÐ»Ð°Ð»Ð¾ÑÑŒ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÐºÐ¾Ð³Ð´Ð° Ñ‡ÑƒÐ²Ð°Ðº Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÐµÑ‚ Ð¿Ð¾ÑÑ‚ ÐºÐ¾Ð¼Ð±Ð°Ñ‚, Ð¾Ð½ ÑÑ‡Ð¸Ñ‚Ð°Ð» Ñ‡Ñ‚Ð¾ ÑÑ‚ÐµÐ¹Ñ‚ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð² Ð±ÐµÐ·Ñ€Ð°Ð·Ð»Ð¸Ñ‡Ð½Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸.
 
-	--  Çàðåìëåííî, ïîòîìó ÷òî áûë áàã, êîãäà ÷óâàê óæå âûïîëíÿåò ïëàííåð êîìáàòà, à åùå íå âûøåë èç àíèìàöèè ïîñòêîìáàòà
-	-- UPD: Îòðåìëåíî, ïîòîìó ÷òî ñòåéò ìåíåäæåð íå èìååò ïðàâà ðàáîòàòü âî âðåìÿ ïîñò êîìáàòà.
+	--  Ð—Ð°Ñ€ÐµÐ¼Ð»ÐµÐ½Ð½Ð¾, Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ð±Ñ‹Ð» Ð±Ð°Ð³, ÐºÐ¾Ð³Ð´Ð° Ñ‡ÑƒÐ²Ð°Ðº ÑƒÐ¶Ðµ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÐµÑ‚ Ð¿Ð»Ð°Ð½Ð½ÐµÑ€ ÐºÐ¾Ð¼Ð±Ð°Ñ‚Ð°, Ð° ÐµÑ‰Ðµ Ð½Ðµ Ð²Ñ‹ÑˆÐµÐ» Ð¸Ð· Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð¿Ð¾ÑÑ‚ÐºÐ¾Ð¼Ð±Ð°Ñ‚Ð°
+	-- UPD: ÐžÑ‚Ñ€ÐµÐ¼Ð»ÐµÐ½Ð¾, Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ ÑÑ‚ÐµÐ¹Ñ‚ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€ Ð½Ðµ Ð¸Ð¼ÐµÐµÑ‚ Ð¿Ñ€Ð°Ð²Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ Ð²Ð¾ Ð²Ñ€ÐµÐ¼Ñ Ð¿Ð¾ÑÑ‚ ÐºÐ¾Ð¼Ð±Ð°Ñ‚Ð°.
 	if self.combat_planner == nil then
 		self.combat_planner = cast_planner(self.mgr:action(stalker_ids.action_combat_planner))
 	end
@@ -62,7 +62,7 @@ function evaluator_state_mgr_idle:evaluate()
 	return false
 end
 
---' Ìû óæå â áåçðàëè÷íîì ñîñòîÿíèè idle èëè íåò ()ó÷åò ñ ïðîâåðêîé alife
+--' ÐœÑ‹ ÑƒÐ¶Ðµ Ð² Ð±ÐµÐ·Ñ€Ð°Ð»Ð¸Ñ‡Ð½Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸ idle Ð¸Ð»Ð¸ Ð½ÐµÑ‚ ()ÑƒÑ‡ÐµÑ‚ Ñ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¾Ð¹ alife
 class "evaluator_state_mgr_idle_alife" (property_evaluator)
 function evaluator_state_mgr_idle_alife:__init(name, state_manager) super (nil, name)
 	self.st = state_manager
@@ -72,8 +72,8 @@ function evaluator_state_mgr_idle_alife:evaluate()
 	if not self.object:alive() then
 		return true
 	end
-	-- àïäåéò ìåíåäæåðà àíèìàöèé
-	-- ðàíüøå îí áûë òóò, ñåé÷àñ îí âûíåñåí èç ýâàëóàòîðà
+	-- Ð°Ð¿Ð´ÐµÐ¹Ñ‚ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€Ð° Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¹
+	-- Ñ€Ð°Ð½ÑŒÑˆÐµ Ð¾Ð½ Ð±Ñ‹Ð» Ñ‚ÑƒÑ‚, ÑÐµÐ¹Ñ‡Ð°Ñ Ð¾Ð½ Ð²Ñ‹Ð½ÐµÑÐµÐ½ Ð¸Ð· ÑÐ²Ð°Ð»ÑƒÐ°Ñ‚Ð¾Ñ€Ð°
 
 --	printf("SECTION %s", utils.to_str(db.storage[self.st.npc:id()].active_section))
 	mgr = self.object:motivation_action_manager()
@@ -86,7 +86,7 @@ function evaluator_state_mgr_idle_alife:evaluate()
 		end
 	end
 
---	if db.storage[self.st.npc:id()].active_section == nil then  --Çàðåìèë, ïîòîìó ÷òî ÷óâàêè ïîêà ó íèõ åñòü àêòèâíàÿ ñåêöèÿ ñðûâàëèñü â àëàéô áåç êîððåêòíîãî çàâåðøåíèÿ àíèìàöèé
+--	if db.storage[self.st.npc:id()].active_section == nil then  --Ð—Ð°Ñ€ÐµÐ¼Ð¸Ð», Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ñ‡ÑƒÐ²Ð°ÐºÐ¸ Ð¿Ð¾ÐºÐ° Ñƒ Ð½Ð¸Ñ… ÐµÑÑ‚ÑŒ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð°Ñ ÑÐµÐºÑ†Ð¸Ñ ÑÑ€Ñ‹Ð²Ð°Ð»Ð¸ÑÑŒ Ð² Ð°Ð»Ð°Ð¹Ñ„ Ð±ÐµÐ· ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾Ð³Ð¾ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¹
 		if xr_meet.is_meet(self.object) == false then
 			local t = self.st.target_state == "idle" and
 				--not self.st.planner:evaluator(self.st.properties["locked"]):evaluate() and
@@ -117,7 +117,7 @@ function evaluator_state_mgr_idle_alife:evaluate()
 --	return true
 end
 
---' Ìû óæå â áåçðàëè÷íîì ñîñòîÿíèè idle èëè íåò ()ó÷åò ñ ïðîâåðêîé alife
+--' ÐœÑ‹ ÑƒÐ¶Ðµ Ð² Ð±ÐµÐ·Ñ€Ð°Ð»Ð¸Ñ‡Ð½Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸ idle Ð¸Ð»Ð¸ Ð½ÐµÑ‚ ()ÑƒÑ‡ÐµÑ‚ Ñ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¾Ð¹ alife
 class "evaluator_state_mgr_idle_items" (property_evaluator)
 function evaluator_state_mgr_idle_items:__init(name, state_manager) super (nil, name)
 	self.st = state_manager
@@ -127,8 +127,8 @@ function evaluator_state_mgr_idle_items:evaluate()
 	if not self.object:alive() then
 		return true
 	end
-	-- àïäåéò ìåíåäæåðà àíèìàöèé
-	-- ðàíüøå îí áûë òóò, ñåé÷àñ îí âûíåñåí èç ýâàëóàòîðà
+	-- Ð°Ð¿Ð´ÐµÐ¹Ñ‚ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€Ð° Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¹
+	-- Ñ€Ð°Ð½ÑŒÑˆÐµ Ð¾Ð½ Ð±Ñ‹Ð» Ñ‚ÑƒÑ‚, ÑÐµÐ¹Ñ‡Ð°Ñ Ð¾Ð½ Ð²Ñ‹Ð½ÐµÑÐµÐ½ Ð¸Ð· ÑÐ²Ð°Ð»ÑƒÐ°Ñ‚Ð¾Ñ€Ð°
 
 --	printf("SECTION %s", utils.to_str(db.storage[self.st.npc:id()].active_section))
 --	mgr = self.object:motivation_action_manager()
@@ -141,7 +141,7 @@ function evaluator_state_mgr_idle_items:evaluate()
 --		end
 --	end
 
---	if db.storage[self.st.npc:id()].active_section == nil then  --Çàðåìèë, ïîòîìó ÷òî ÷óâàêè ïîêà ó íèõ åñòü àêòèâíàÿ ñåêöèÿ ñðûâàëèñü â àëàéô áåç êîððåêòíîãî çàâåðøåíèÿ àíèìàöèé
+--	if db.storage[self.st.npc:id()].active_section == nil then  --Ð—Ð°Ñ€ÐµÐ¼Ð¸Ð», Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ñ‡ÑƒÐ²Ð°ÐºÐ¸ Ð¿Ð¾ÐºÐ° Ñƒ Ð½Ð¸Ñ… ÐµÑÑ‚ÑŒ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð°Ñ ÑÐµÐºÑ†Ð¸Ñ ÑÑ€Ñ‹Ð²Ð°Ð»Ð¸ÑÑŒ Ð² Ð°Ð»Ð°Ð¹Ñ„ Ð±ÐµÐ· ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾Ð³Ð¾ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¹
 		if xr_meet.is_meet(self.object) == false then
 			local t = self.st.target_state == "idle" and
 --				not self.st.planner:evaluator(self.st.properties["locked"]):evaluate() and
@@ -185,7 +185,7 @@ function evaluator_state_mgr_logic_active:evaluate()
 	return true
 end
 
---' Ïåðåõîä â idle
+--' ÐŸÐµÑ€ÐµÑ…Ð¾Ð´ Ð² idle
 class "act_state_mgr_to_idle" (action_base)
 function act_state_mgr_to_idle:__init(name,state_manager) super (nil, name)
 	self.st = state_manager
@@ -225,8 +225,8 @@ function act_state_mgr_to_idle:execute()
 	action_base.execute(self)
 end
 function act_state_mgr_to_idle:finalize()
-	-- Ïî çàâåðøåíèþ ïåðåõîäà íóæíî çàïèñàòü -1 â óêàçàòåëü "íà êîãî ñìîòðåòü",
-	-- ÷òîáû ïðè âîçâðàòå áûëî ïîíÿòíî ÷òî åãî íóæíî ïåðåèíèöèàëèçèðîâàòü.
+	-- ÐŸÐ¾ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸ÑŽ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð° Ð½ÑƒÐ¶Ð½Ð¾ Ð·Ð°Ð¿Ð¸ÑÐ°Ñ‚ÑŒ -1 Ð² ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ "Ð½Ð° ÐºÐ¾Ð³Ð¾ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ",
+	-- Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¿Ñ€Ð¸ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ðµ Ð±Ñ‹Ð»Ð¾ Ð¿Ð¾Ð½ÑÑ‚Ð½Ð¾ Ñ‡Ñ‚Ð¾ ÐµÐ³Ð¾ Ð½ÑƒÐ¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ.
 
 	self.st.current_object = -1
 
@@ -235,9 +235,9 @@ end
 
 
 --'-------------------------------------------------------------------------------------
---' Ýâàëóàòîðû è ýêøåíû ìåíåäæåðà
+--' Ð­Ð²Ð°Ð»ÑƒÐ°Ñ‚Ð¾Ñ€Ñ‹ Ð¸ ÑÐºÑˆÐµÐ½Ñ‹ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€Ð°
 --'-------------------------------------------------------------------------------------
---' Çàêîí÷èë ëè ìåíåäæåð ñâîþ ðàáîòó
+--' Ð—Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ð» Ð»Ð¸ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€ ÑÐ²Ð¾ÑŽ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ
 class "eva_state_mgr_end" (property_evaluator)
 function eva_state_mgr_end:__init(name, st) super (nil, name)
 	self.st = st
@@ -275,7 +275,7 @@ function eva_state_mgr_end:evaluate()
 	return false
 end
 
---' Çàëî÷åí ëè ìåíåäæåð
+--' Ð—Ð°Ð»Ð¾Ñ‡ÐµÐ½ Ð»Ð¸ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€
 class "eva_state_mgr_locked" (property_evaluator)
 function eva_state_mgr_locked:__init(name, st) super (nil, name)
 	self.st = st
@@ -306,7 +306,7 @@ end
 
 
 
---' Èäëîâûé ýêøí ìåíåäæåðà
+--' Ð˜Ð´Ð»Ð¾Ð²Ñ‹Ð¹ ÑÐºÑˆÐ½ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€Ð°
 class "act_state_mgr_end" (action_base)
 function act_state_mgr_end:__init(name, st) super (nil, name)
 	self.st = st
@@ -320,7 +320,7 @@ function act_state_mgr_end:execute()
 	self:weapon_update()
 end
 function act_state_mgr_end:weapon_update()
-	-- Êîëëáåê íà çàâåðøåíèå ñîñòîÿíèÿ
+	-- ÐšÐ¾Ð»Ð»Ð±ÐµÐº Ð½Ð° Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ðµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ
 	if self.st.callback ~= nil then
 		if self.st.callback.begin == nil then
 			self.st.callback.begin = time_global()
@@ -394,7 +394,7 @@ function act_state_mgr_end:finalize()
 	action_base.finalize(self)
 end
 
---' Ëîê ìåíåäæåðà
+--' Ð›Ð¾Ðº Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€Ð°
 class "act_state_mgr_locked" (action_base)
 function act_state_mgr_locked:__init(name, st) super (nil, name)
 	self.st = st
@@ -410,7 +410,7 @@ function act_state_mgr_locked:finalize()
 end
 
 
---' Ñàì ìåíåäæåð
+--' Ð¡Ð°Ð¼ Ð¼ÐµÐ½ÐµÐ´Ð¶ÐµÑ€
 class "state_manager"
 function state_manager:__init(npc)
 	state_mgr_goap.goap_graph(self, npc)
@@ -451,7 +451,7 @@ function state_manager:set_state(state_name, callback, timeout, target, extra)
 		--printf("look target NIL")
 	end
 
-	--ñïåðâà óñòàíàâëèâàåì öåëè
+	--ÑÐ¿ÐµÑ€Ð²Ð° ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ñ†ÐµÐ»Ð¸
 	if target ~= nil then
 		self.look_position = target.look_position
 		if target.look_object ~= nil then
@@ -470,10 +470,10 @@ function state_manager:set_state(state_name, callback, timeout, target, extra)
 		--printf("Set State called: for %s State: %s  [%s]", self.npc:name(), state_name, device():time_global())
 		--callstack()
 		--log(string.format("Set State called: for %s State: %s  [%s]", self.npc:name(), state_name, device():time_global()))
-		--' Åñëè ìû ïåðåêëþ÷àåìñÿ èç ñòðåëÿþùåãî ñîñòîÿíèÿ â íåñòðåëÿþùåå - íåîáõîäèìî ñðàçó æå ïðåêðàòèòü ñòðåëüáó
+		--' Ð•ÑÐ»Ð¸ Ð¼Ñ‹ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ÑÑ Ð¸Ð· ÑÑ‚Ñ€ÐµÐ»ÑÑŽÑ‰ÐµÐ³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð² Ð½ÐµÑÑ‚Ñ€ÐµÐ»ÑÑŽÑ‰ÐµÐµ - Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ ÑÑ€Ð°Ð·Ñƒ Ð¶Ðµ Ð¿Ñ€ÐµÐºÑ€Ð°Ñ‚Ð¸Ñ‚ÑŒ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñƒ
 
 		if (state_lib.states[self.target_state].weapon == "fire" or
-			 state_lib.states[self.target_state].weapon == "sniper_fire") and   -- or self.target_state == "idle"  Çàðåìèë, ïîòîìó ÷òî çàëèïàëè â àíèìïîèíòàõ, êîãäà ïðè àêòèâíîé àíèìàöèè àíñòðàïàëîñü îðóæèå.
+			 state_lib.states[self.target_state].weapon == "sniper_fire") and   -- or self.target_state == "idle"  Ð—Ð°Ñ€ÐµÐ¼Ð¸Ð», Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ð·Ð°Ð»Ð¸Ð¿Ð°Ð»Ð¸ Ð² Ð°Ð½Ð¸Ð¼Ð¿Ð¾Ð¸Ð½Ñ‚Ð°Ñ…, ÐºÐ¾Ð³Ð´Ð° Ð¿Ñ€Ð¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð¹ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð°Ð½ÑÑ‚Ñ€Ð°Ð¿Ð°Ð»Ð¾ÑÑŒ Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ.
 			 (state_lib.states[state_name].weapon ~= "fire" and
 			 state_lib.states[state_name].weapon ~= "sniper_fire")
 		then
@@ -485,7 +485,7 @@ function state_manager:set_state(state_name, callback, timeout, target, extra)
 		end
 
 
-		--' Ïðîâåðêà íà íåîáõîäèìîñòü special_danger_move
+		--' ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ÑÑ‚ÑŒ special_danger_move
 		if state_lib.states[state_name].special_danger_move == true then
 			--printf("SPECIAL DANGER MOVE %s for stalker [%s]", tostring(self.npc:special_danger_move()), self.npc:name())
 			if self.npc:special_danger_move() ~= true then
@@ -505,7 +505,7 @@ function state_manager:set_state(state_name, callback, timeout, target, extra)
 		if extra ~= nil then
 			self.fast_set 				= extra.fast_set
 
-			-- Çàíîâî çàñòàâëÿåì ïðèìåíèòü ïîçèöèþ è íàïðàâëåíèå â ñëó÷àå åñëè îíî íå áûëî ïðèìåíåíî ëèáî ïîçèöèÿ è íàïðàâëåíèå èçìåíèëèñü.
+			-- Ð—Ð°Ð½Ð¾Ð²Ð¾ Ð·Ð°ÑÑ‚Ð°Ð²Ð»ÑÐµÐ¼ Ð¿Ñ€Ð¸Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¸ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ ÐµÑÐ»Ð¸ Ð¾Ð½Ð¾ Ð½Ðµ Ð±Ñ‹Ð»Ð¾ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÐµÐ½Ð¾ Ð»Ð¸Ð±Ð¾ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð¸ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¸Ð·Ð¼ÐµÐ½Ð¸Ð»Ð¸ÑÑŒ.
 			if self.pos_direction_applied == false or
 				 (self.animation_position ~= nil and extra.animation_position ~= nil and (not utils.vector_cmp(self.animation_position, extra.animation_position)) or
 					self.animation_direction ~= nil and extra.animation_direction ~= nil and (not utils.vector_cmp(self.animation_direction, extra.animation_direction)) )
@@ -542,17 +542,17 @@ function state_manager:get_state()
 end
 function state_manager:update()
 	--printf("Update called for stalker [%s]", self.npc:name())
-	-- Îáðàáàòûâàåì êîëëáåê
+	-- ÐžÐ±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ ÐºÐ¾Ð»Ð»Ð±ÐµÐº
 	if self.animation.states.current_state == state_lib.states[self.target_state].animation then
 		if self.callback ~= nil and
 			 self.callback.func ~= nil
 		then
 			 if self.callback.begin == nil then
-					 -- Èíèöèàëèçèðóåì êîëëáåê
+					 -- Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€ÑƒÐµÐ¼ ÐºÐ¾Ð»Ð»Ð±ÐµÐº
 				self.callback.begin = time_global()
 				--printf("		Callback initialized %s", time_global())
 			else
-				-- Ïðîâåðÿåì, íå ïðèøëî ëè âðåìÿ âûçâàòü êîëëáåê
+				-- ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼, Ð½Ðµ Ð¿Ñ€Ð¸ÑˆÐ»Ð¾ Ð»Ð¸ Ð²Ñ€ÐµÐ¼Ñ Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ ÐºÐ¾Ð»Ð»Ð±ÐµÐº
 				if time_global() - self.callback.begin >= self.callback.timeout then
 					--printf("		Callback called %s", time_global())
 

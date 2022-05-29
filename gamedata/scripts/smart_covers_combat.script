@@ -8,7 +8,7 @@ function get_smart_cover()
 	return {
 			need_weapon = true,
 			loopholes = {
-				-- Крауч
+				-- РљСЂР°СѓС‡
 				smart_covers_loophole_crouch_front_left.get_loophole	("crouch_front_left",	vector():set(-1,	0,	-0.7)),
 				smart_covers_loophole_crouch_front.get_loophole			("crouch_front",		vector():set(-1,	0,	0)),
 				smart_covers_loophole_crouch_front_right.get_loophole	("crouch_front_right",	vector():set(-1,	0,	0.7)),
@@ -16,7 +16,7 @@ function get_smart_cover()
 				smart_covers_loophole_crouch_back.get_loophole			("crouch_back",			vector():set(1,		0,	0)),
 				smart_covers_loophole_crouch_left.get_loophole			("crouch_left",			vector():set(0.2,	0,	-1)),
 
-				-- Стоя
+				-- РЎС‚РѕСЏ
 				smart_covers_loophole_stand_front_left.get_loophole		("stand_front_left",	vector():set(-1,	0,	-0.7)),
 				smart_covers_loophole_stand_front_right.get_loophole	("stand_front_right",	vector():set(-1,	0,	0.7)),
 				smart_covers_loophole_stand_right.get_loophole			("stand_right",		vector():set(0.2,	0,	1)),
@@ -24,7 +24,7 @@ function get_smart_cover()
 				smart_covers_loophole_stand_left.get_loophole			("stand_left",			vector():set(0.2,	0,	-1))
 
 
-				-- Лежа
+				-- Р›РµР¶Р°
 			},
 
 
@@ -38,7 +38,7 @@ function get_smart_cover()
 
 
 			transitions = {
-			--' Анимации входа в бойницы
+			--' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
 			{
 				vertex0 = "",
 				vertex1 = "crouch_front_left",
@@ -244,7 +244,7 @@ function get_smart_cover()
 
 
 
-			--' Анимации перехода.
+			--' РђРЅРёРјР°С†РёРё РїРµСЂРµС…РѕРґР°.
 			{
 				vertex0 = "crouch_front_left",
 				vertex1 = "crouch_back",
@@ -637,7 +637,7 @@ function get_smart_cover()
 
 
 
-			--' Анимации выхода из бойниц.
+			--' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
 			{
 				vertex0 = "crouch_front_left",
 				vertex1 = "",

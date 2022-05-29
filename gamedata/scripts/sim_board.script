@@ -1,8 +1,8 @@
 --'******************************************************
---'*        Реестр смарт-террейнов. Игровое поле симуляции.
+--'*        Р РµРµСЃС‚СЂ СЃРјР°СЂС‚-С‚РµСЂСЂРµР№РЅРѕРІ. РРіСЂРѕРІРѕРµ РїРѕР»Рµ СЃРёРјСѓР»СЏС†РёРё.
 --'******************************************************
 
---' В этом ltx хранятся дескрипторы сквадов.
+--' Р’ СЌС‚РѕРј ltx С…СЂР°РЅСЏС‚СЃСЏ РґРµСЃРєСЂРёРїС‚РѕСЂС‹ СЃРєРІР°РґРѕРІ.
 squad_ltx = system_ini()
 setting_ini = ini_file("misc\\simulation.ltx")
 
@@ -146,26 +146,26 @@ simulation_activities = {
 
 class "sim_board"
 function sim_board:__init()
-	--' Таблица содержащая смарты и данные о них в формате:
+	--' РўР°Р±Р»РёС†Р° СЃРѕРґРµСЂР¶Р°С‰Р°СЏ СЃРјР°СЂС‚С‹ Рё РґР°РЅРЅС‹Рµ Рѕ РЅРёС… РІ С„РѕСЂРјР°С‚Рµ:
 	--' smart = {smrt, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
 	self.smarts = {}
 	self.simulation_started = true
 
-	--' Таблица смартов по именам.
+	--' РўР°Р±Р»РёС†Р° СЃРјР°СЂС‚РѕРІ РїРѕ РёРјРµРЅР°Рј.
 	self.smarts_by_names = {}
 
-	--' Таблица существующих отрядов.
+	--' РўР°Р±Р»РёС†Р° СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… РѕС‚СЂСЏРґРѕРІ.
 	self.squads = {}
 
-	--' отрисовывается ли сейчас поле на карте.
+	--' РѕС‚СЂРёСЃРѕРІС‹РІР°РµС‚СЃСЏ Р»Рё СЃРµР№С‡Р°СЃ РїРѕР»Рµ РЅР° РєР°СЂС‚Рµ.
 	--self.show_flag = false
 
-	--' Таблица спаунсмартов. Смарт = уровень.
+	--' РўР°Р±Р»РёС†Р° СЃРїР°СѓРЅСЃРјР°СЂС‚РѕРІ. РЎРјР°СЂС‚ = СѓСЂРѕРІРµРЅСЊ.
 	self.spawn_smarts = {}
-	-- Таблица для логовов мутантов на уровнях
+	-- РўР°Р±Р»РёС†Р° РґР»СЏ Р»РѕРіРѕРІРѕРІ РјСѓС‚Р°РЅС‚РѕРІ РЅР° СѓСЂРѕРІРЅСЏС…
 	self.mutant_lair = {}
 
-	-- Временная таблица
+	-- Р’СЂРµРјРµРЅРЅР°СЏ С‚Р°Р±Р»РёС†Р°
 	self.tmp_assigned_squad = {}
 	self.tmp_entered_squad = {}
 
@@ -177,12 +177,12 @@ end
 function sim_board:stop_sim()
 	self.simulation_started = false
 end
--- Перевод игрока в группировку.
+-- РџРµСЂРµРІРѕРґ РёРіСЂРѕРєР° РІ РіСЂСѓРїРїРёСЂРѕРІРєСѓ.
 function sim_board:set_actor_community(community)
-	---- Устанавливаем группировку игрока
+	---- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РіСЂСѓРїРїРёСЂРѕРІРєСѓ РёРіСЂРѕРєР°
 	db.actor:set_character_community(actor_communitites[community], 0, 0)
 end
---' Регистрация нового смарта.
+--' Р РµРіРёСЃС‚СЂР°С†РёСЏ РЅРѕРІРѕРіРѕ СЃРјР°СЂС‚Р°.
 function sim_board:register_smart(obj)
 	printf("register_smart %s", obj:name())
 	if self.smarts[obj.id] ~= nil then
@@ -194,7 +194,7 @@ function sim_board:register_smart(obj)
 	self.smarts_by_names[obj:name()] = obj
 
 end
--- Инициализация смарта
+-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРјР°СЂС‚Р°
 function sim_board:init_smart(obj)
 	if self.tmp_assigned_squad[obj.id] ~= nil then
 		for k,v in pairs(self.tmp_assigned_squad[obj.id]) do
@@ -209,7 +209,7 @@ function sim_board:init_smart(obj)
 		self.tmp_entered_squad[obj.id] = nil
 	end
 end
---' АнРегистрация смарта.
+--' РђРЅР РµРіРёСЃС‚СЂР°С†РёСЏ СЃРјР°СЂС‚Р°.
 function sim_board:unregister_smart(obj)
 	if self.smarts[obj.id] == nil then
 		abort("Trying to unregister nil smart [%s]", obj:name())
@@ -218,7 +218,7 @@ function sim_board:unregister_smart(obj)
 	self.smarts[obj.id] = nil
 end
 
---' Создание нового отряда
+--' РЎРѕР·РґР°РЅРёРµ РЅРѕРІРѕРіРѕ РѕС‚СЂСЏРґР°
 function sim_board:create_squad(spawn_smart, sq_id)
 	printf("create squad called")
 	local squad_id = tostring(sq_id)
@@ -229,19 +229,19 @@ function sim_board:create_squad(spawn_smart, sq_id)
 	--local squad = squad_class(self, squad_id, faction_name, settings_id)
 	--squad:init_squad(spawn_smart)
 	printf("Creating squad[%s] in smart[%s]", squad_id, spawn_smart:name())
-	--' Определяем в каком смарте создать новый отряд
+	--' РћРїСЂРµРґРµР»СЏРµРј РІ РєР°РєРѕРј СЃРјР°СЂС‚Рµ СЃРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ РѕС‚СЂСЏРґ
 	squad:create_npc(spawn_smart)
 	squad:set_squad_relation()
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
-	--' Пересчитываем Team, Squad, Group
+	--' РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Team, Squad, Group
 	for k in squad:squad_members() do
 		local obj = k.object
 		squad.board:setup_squad_and_group(obj)
 	end
 	return squad
 end
---' Удалить отряд
+--' РЈРґР°Р»РёС‚СЊ РѕС‚СЂСЏРґ
 function sim_board:remove_squad(squad)
 	printf("Remove squad %s", tostring(squad.id))
 	if squad.current_action == nil or
@@ -255,10 +255,10 @@ function sim_board:remove_squad(squad)
 
 	squad:remove_squad()
 end
---' Назначение отряда в смарт.
+--' РќР°Р·РЅР°С‡РµРЅРёРµ РѕС‚СЂСЏРґР° РІ СЃРјР°СЂС‚.
 function sim_board:assign_squad_to_smart(squad, smart_id)
-	-- Если смарта нету (например на загрузке он еще не загружен), то мы загоняем данные
-	-- во временную таблицу. И на загрузке смарта автодобавляем их.
+	-- Р•СЃР»Рё СЃРјР°СЂС‚Р° РЅРµС‚Сѓ (РЅР°РїСЂРёРјРµСЂ РЅР° Р·Р°РіСЂСѓР·РєРµ РѕРЅ РµС‰Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅ), С‚Рѕ РјС‹ Р·Р°РіРѕРЅСЏРµРј РґР°РЅРЅС‹Рµ
+	-- РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ. Р РЅР° Р·Р°РіСЂСѓР·РєРµ СЃРјР°СЂС‚Р° Р°РІС‚РѕРґРѕР±Р°РІР»СЏРµРј РёС….
 	--printf("assigned squad %s to smart [%s].", tostring(squad.id), tostring(smart_id))
 
 	if smart_id ~= nil and self.smarts[smart_id] == nil then
@@ -271,7 +271,7 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
 	end
 
 
-	--' Убираем отряд из старого смарта
+	--' РЈР±РёСЂР°РµРј РѕС‚СЂСЏРґ РёР· СЃС‚Р°СЂРѕРіРѕ СЃРјР°СЂС‚Р°
 	local old_smart_id = nil
 	if squad.smart_id ~= nil then
 		old_smart_id = squad.smart_id
@@ -288,12 +288,12 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
 
 	squad:assign_smart(self.smarts[smart_id].smrt)
 
-	--' Прописываем отряд в новом смарте.
+	--' РџСЂРѕРїРёСЃС‹РІР°РµРј РѕС‚СЂСЏРґ РІ РЅРѕРІРѕРј СЃРјР°СЂС‚Рµ.
 	self.smarts[smart_id].squads[squad.id] = squad
 
 	self.smarts[smart_id].smrt:refresh()
 end
---' Отряд покидает смарт (уменьшаются ресурсы)
+--' РћС‚СЂСЏРґ РїРѕРєРёРґР°РµС‚ СЃРјР°СЂС‚ (СѓРјРµРЅСЊС€Р°СЋС‚СЃСЏ СЂРµСЃСѓСЂСЃС‹)
 function sim_board:exit_smart(squad, smart_id)
 	if smart_id == nil then
 		return
@@ -317,7 +317,7 @@ function sim_board:exit_smart(squad, smart_id)
 
 	--smart.smrt:refresh()
 end
---' Отряд занимает смарт (увеличиваются ресурсы)
+--' РћС‚СЂСЏРґ Р·Р°РЅРёРјР°РµС‚ СЃРјР°СЂС‚ (СѓРІРµР»РёС‡РёРІР°СЋС‚СЃСЏ СЂРµСЃСѓСЂСЃС‹)
 function sim_board:enter_smart(squad, smart_id, after_load)
 	callstack()
 	if self.smarts[smart_id] == nil then
@@ -343,18 +343,18 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	squad.items_spawned = false
 end
 
--- установить squad и group в соответствии с работой
+-- СѓСЃС‚Р°РЅРѕРІРёС‚СЊ squad Рё group РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ СЂР°Р±РѕС‚РѕР№
 function sim_board:setup_squad_and_group(obj)
 	--printf("tsg["..obj:name().."]")
 	local level_name = level.name()
-	--' Группу берем из уровня.
+	--' Р“СЂСѓРїРїСѓ Р±РµСЂРµРј РёР· СѓСЂРѕРІРЅСЏ.
 	local obj = alife():object(obj.id)
 
 	local group = group_id_by_levels[level_name] or 0
 
 	change_team_squad_group(obj, obj.team, obj.squad, group)
 
-	--' Сквад берем из смарта.
+	--' РЎРєРІР°Рґ Р±РµСЂРµРј РёР· СЃРјР°СЂС‚Р°.
 	local squad = alife():object(obj.group_id)
 	if squad == nil then
 		change_team_squad_group(obj, obj.team, 0, obj.group)
@@ -382,7 +382,7 @@ function sim_board:setup_squad_and_group(obj)
 	--printf("TSG3: [%s][%s][%s]", tostring(obj.team), tostring(obj.squad), tostring(obj.group))
 end
 
---' Заполнение стартового расположения
+--' Р—Р°РїРѕР»РЅРµРЅРёРµ СЃС‚Р°СЂС‚РѕРІРѕРіРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ
 function sim_board:fill_start_position()
 	if self.start_position_filled == true then
 		return
@@ -414,16 +414,16 @@ function sim_board:fill_start_position()
 end
 
 
---' Возвратить смарт по его имени.
+--' Р’РѕР·РІСЂР°С‚РёС‚СЊ СЃРјР°СЂС‚ РїРѕ РµРіРѕ РёРјРµРЅРё.
 function sim_board:get_smart_by_name(name)
 	return self.smarts_by_names[name]
 end
---' Возвращает количество отрядов в смарте.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕС‚СЂСЏРґРѕРІ РІ СЃРјР°СЂС‚Рµ.
 function sim_board:get_smart_population(smart)
 	return self.smarts[smart.id].stayed_squad_quan
 end
 
---' Получение игрового поля.
+--' РџРѕР»СѓС‡РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ.
 function get_sim_board()
 	if board == nil then
 		board = sim_board()
@@ -440,7 +440,7 @@ function sim_board:get_squad_target(squad)
 	local max_prior = 0
 	for k,v in pairs(simulation_objects.get_sim_obj_registry().objects)	do
 		local curr_prior = 0
-		-- Проверка против выдачи таска на себя.
+		-- РџСЂРѕРІРµСЂРєР° РїСЂРѕС‚РёРІ РІС‹РґР°С‡Рё С‚Р°СЃРєР° РЅР° СЃРµР±СЏ.
 		if v.id ~= squad.id then
 			curr_prior = v:evaluate_prior(squad)
 		end
@@ -468,12 +468,12 @@ local targets_by_squad_id = {}
 
 
 end]]--
---' Обнуление списка на создании игры.
+--' РћР±РЅСѓР»РµРЅРёРµ СЃРїРёСЃРєР° РЅР° СЃРѕР·РґР°РЅРёРё РёРіСЂС‹.
 function clear()
 	board = nil
 end
 
---' Тестовые функции
+--' РўРµСЃС‚РѕРІС‹Рµ С„СѓРЅРєС†РёРё
 function print()
 	--print_table(get_sim_board().smarts)
 end
