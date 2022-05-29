@@ -397,7 +397,7 @@
 		<text>начало эвакуации из Припяти</text>
 	</string>
 	<string id="st_save_pri_a28_evacuation_end">
-		<text>достигнуты вертолеты эвакуации</text>
+		<text>достигнуты вертолёты эвакуации</text>
 	</string>
 	<string id="st_save_uni_zone_to_reality">
 		<text>уход из Зоны</text>
@@ -496,6 +496,6 @@
 		<text>Продать выбранные вещи</text>
 	</string>
 	<string id="st_save_pri_a28_evacuation_heli">
-		<text>отлёт вертолетов эвакуации</text>
+		<text>отлёт вертолётов эвакуации</text>
 	</string>
 </string_table>

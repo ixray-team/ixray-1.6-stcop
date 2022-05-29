@@ -1,12 +1,12 @@
 <w>
 	<main_frame x="0" y="573" width="850" height="183" />
 
-	<auto_static x="383" y="0" width="50" height="18">
-		<text font="letterica18" r="128" g="128" b="128">st_weight</text>
+	<auto_static x="371" y="0" width="50" height="18">
+		<text font="letterica18" r="128" g="128" b="128" align="r">st_weight</text>
 	</auto_static>
 
 
-	<static_name x="35" y="0" width="250" height="20">
+	<static_name x="35" y="0" width="375" height="20">
 		<text font="graffiti22" complex_mode="1" align="l" vert_align="c" />
 	</static_name>
 
@@ -14,7 +14,7 @@
 		<text align="r" vert_align="c" font="graffiti22" a="170"/>
 	</static_cost>
 
-	<static_weight x="412" y="0" width="80" height="30">
+	<static_weight x="426" y="0" width="80" height="30">
 		<text align="l" x="0" y="0" font="letterica18" r="240" g="217" b="182"/>
 	</static_weight>
 

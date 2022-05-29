@@ -17,14 +17,14 @@
 
 #ifdef USE_SUNFILTER
 #ifdef MSAA_OPTIMIZATION
-float4 main ( v2p_TL2uv I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
+float4 main ( v2p_volume I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
 #else
-float4 main ( v2p_TL2uv I  ) : SV_Target
+float4 main ( v2p_volume I  ) : SV_Target
 #endif
 {
 	//float4 _P = tex2D( s_position, tc );
 
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.Tex0, I.HPos, ISAMPLE) );
+	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc, I.hpos, ISAMPLE) );
 
 #ifdef	GBUFFER_OPTIMIZATION
 	//	Emulate virtual offset
@@ -35,21 +35,21 @@ float4 main ( v2p_TL2uv I  ) : SV_Target
 
 	float4 PS = mul( m_shadow,  _P );
 
-	float s	= shadowtest_sun( PS, I.Tex1 ) * sunmask( _P );
+	float s	= shadowtest_sun( PS, I.tcJ ) * sunmask( _P );
 
 	return s;
 }
 #else
 #ifdef MSAA_OPTIMIZATION
-float4 main ( v2p_TL2uv I,  uint iSample : SV_SAMPLEINDEX ) : SV_Target
+float4 main ( v2p_volume I,  uint iSample : SV_SAMPLEINDEX ) : SV_Target
 #else
-float4 main ( v2p_TL2uv I ) : SV_Target
+float4 main ( v2p_volume I ) : SV_Target
 #endif
 {
 	//float4 	_P	= tex2D( s_position, tc );
 	//float4	_N	= tex2D( s_normal, tc );
 
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.Tex0, I.HPos, ISAMPLE) );
+	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc.xy/I.tc.w, I.hpos, ISAMPLE) );
 
 #ifdef	GBUFFER_OPTIMIZATION
 	//	Emulate virtual offset
@@ -70,16 +70,20 @@ float4 main ( v2p_TL2uv I ) : SV_Target
   	float4 	P4 	= float4( _P.x, _P.y, _P.z, 1.f);
 	float4 	PS	= mul( m_shadow, P4 );
 	float 	s 	= sunmask( P4 );
-	#ifdef 	USE_SJITTER
-	  		s 	*= shadowtest_sun( PS, I.Tex1 );
+	#if defined	(USE_SJITTER) || SUN_QUALITY==2 // Hight quality
+	  		s 	*= shadow_high(PS); //shadowtest_sun( PS, float4(0,0,0,0) );
 	#else
 #ifdef SM_MINMAX
-	  		s 	*= shadow_dx10_1( PS, I.Tex1, I.HPos.xy );
+		#ifdef USE_SJITTER
+	  		s 	*= shadow_dx10_1( PS, I.tcJ, I.hpos.xy );
+		#else
+			s *= shadow( PS );
+		#endif
 #else
 			s *= shadow( PS );
 #endif
 	#endif
 
-	return 		blend( Ldynamic_color * light * s, I.Tex0 );
+	return 		blend( Ldynamic_color * light * s/*float4( 1.f, 0.2f, 0.2f, 1.f)*/, I.tc );
 }
 #endif

@@ -26,6 +26,7 @@ on_info = {-pri_a19_lab_x8_investigated +lx8_doc_1} %+pri_a19_lab_x8_investigate
 on_info2 = {+lx8_door_open +pri_b35_envoy_escape -pri_b35_merc_leader_escape} sr_idle@mercs_attack %=create_squad(pri_b306_mercs_squad_light:pri_b306)%
 on_info3 = {+lx8_door_open +pri_b35_envoy_escape +pri_b35_merc_leader_escape} sr_idle@mercs_attack %=create_squad(pri_b306_mercs_squad_strong:pri_b306)%
 on_info4 = {-pri_b306_attack_end +pri_b35_envoy_out} sr_idle@wait_lab %+pri_b306_attack_end%
+on_info5 = {+pri_b35_task_refuse} sr_idle@wait_lab %+pri_b306_attack_end%
 
 [sr_idle@mercs_attack]
 on_info = {!black_screen !actor_in_zone(pri_b306_sr_lift_exit)} sr_idle@wait_for_attack_end %+pri_b306_mercs_attack_start%

@@ -8,7 +8,6 @@ float3x4 m_sunmask;	// ortho-projection
 Texture3D	s_water;
 Texture2D	s_waterFall;
 float4	RainDensity;	//	float
-float4	RainFallof;		//	float2
 float4	WorldX;	//	Float3	
 float4	WorldZ;	//	Float3	
 
@@ -93,23 +92,14 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 	float3 WorldP	= mul( m_sunmask, _P );
 	float3 WorldN	= mul( m_sunmask, _N.xyz );
 
-	//	floor ???? instead of step?
-	//float	delta = sin(WorldP.z*30);
-	//float	deltaX = step(0, sin(WorldP.z*30));
-	//float	deltaX = step(0, sin(WorldP.z*(2.0*3.14)/(1+frac(WorldP.x + WorldP.y)) ));
-
-	//float	deltaY = step(0, sin(WorldP.z*10+3));
-	//float	deltaY = deltaX;
-
-	//deltaX *= 0.05;
-	//deltaY *= 0.05;
-
-	//float s	= shadow_rain( PS, WorldP.xz*2 + float2(deltaX, deltaY) );
-	float s	= shadow_rain( PS, WorldP.xz*2 );
-
+	// Read rain projection with some jetter. Also adding pixel normal 
+	// factor to jitter to make rain strips more realistic.
+	float s		= shadow_rain( PS, WorldP.xz*1.1 - WorldN.xz*0.035 );	
+	
 	//	Apply distance falloff
 	//float	fAtten = 1 - smoothstep( 10, 30, length( _P.xyz ));
-	float	fAtten = 1 - smoothstep( RainFallof.x, RainFallof.y, length( _P.xyz ));
+	// Using fixed fallof factors according to float16 depth coordinate precision.
+	float	fAtten = 1 - smoothstep( 5, 20, _P.z );
 	s	*= fAtten*fAtten;
 
 	//	Apply rain density

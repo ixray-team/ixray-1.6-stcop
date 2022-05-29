@@ -1448,7 +1448,6 @@
                 <text>about_quests_dialog_stalkers_57</text>
                 <precondition>dialogs.not_level_pripyat</precondition>
                 <precondition>dialogs.monolith_leader_dead_or_hired</precondition>
-                <has_info>jup_b218_monolith_hired</has_info>
                 <has_info>jup_a10_vano_agree_go_und</has_info>
             </phrase>
             <phrase id="1">

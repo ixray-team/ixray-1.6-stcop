@@ -4,6 +4,7 @@
 #undef USE_ULTRA_SHADOWS
 
 #define RAY_PATH	2.0h
+#define JITTER_TEXTURE_SIZE	64.0f
 
 #define	JITTER_SUN_SHAFTS
 
@@ -12,8 +13,10 @@
 		#define	FILTER_LOW
 		#define RAY_SAMPLES	20
 	#elif SUN_SHAFTS_QUALITY==2
+		#define	FILTER_LOW
 		#define RAY_SAMPLES	20
 	#elif SUN_SHAFTS_QUALITY==3
+		#define	FILTER_LOW	
 		#define RAY_SAMPLES	40
 	#endif
 #endif
@@ -28,24 +31,24 @@
 
 float4	volume_range;	//	x - near plane, y - far plane
 float4	sun_shafts_intensity;
+uniform	float4	screen_res;
 
 #ifdef MSAA_OPTIMIZATION
 //#ifdef GBUFFER_OPTIMIZATION
 //float4 	main (float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 pos2d : SV_Position, uint iSample : SV_SAMPLEINDEX ) : SV_Target
 //#else
-float4 	main (v2p_TL2uv I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
+float4 	main (v2p_volume  I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
 //#endif
 #else
 //#ifdef GBUFFER_OPTIMIZATION
 //float4 	main (float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 pos2d : SV_Position ) : SV_Target
 //#else
-float4 	main (v2p_TL2uv I) : SV_Target
+float4 	main (v2p_volume  I) : SV_Target
 //#endif
 #endif
 {
-	float2	tc  = I.Tex0;
-	float2	tcJ = I.Tex1;
-	float4	pos2d = I.HPos;
+	float2	tc  = I.tc.xy/I.tc.w;
+	float4	pos2d = I.hpos;
 	
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(tc, pos2d, ISAMPLE) );
 
@@ -62,10 +65,11 @@ float4 	main (v2p_TL2uv I) : SV_Target
 //	Variable ray length, variable step dencity
 	float3	direction = P/RAY_SAMPLES;
 #else	//	JITTER_SUN_SHAFTS
+//	float2	tcJ = I.tcJ;
 //	Variable ray length, variable step dencity, use jittering
 	//float4	J0 	= tex2D		(jitter0,tcJ);
-	float4	J0 	= jitter0.Sample( smp_jitter, tcJ );
-	float	coeff = (RAY_SAMPLES - 2*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
+	float4	J0 	= jitter0.Sample( smp_jitter, tc*screen_res.x*1.f/JITTER_TEXTURE_SIZE );
+	float	coeff = (RAY_SAMPLES - 1*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
 	float3	direction = P*coeff;
 //	float3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
 #endif	//	JITTER_SUN_SHAFTS
@@ -90,7 +94,7 @@ float4 	main (v2p_TL2uv I) : SV_Target
 		{
 #ifndef	FILTER_LOW
 #ifndef SM_MINMAX
-				res += density*shadow(current );
+				res += density*shadow( current );
 #else
 				res += density*shadow_dx10_1_sunshafts(current, pos2d.xy );
 #endif
@@ -144,8 +148,8 @@ float4 	main (float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 #else	//	JITTER_SUN_SHAFTS
 //	Variable ray length, variable step dencity, use jittering
 	//float4	J0 	= tex2D		(jitter0,tcJ);
-	float4	J0 	= jitter0.Sample( smp_jitter, tcJ );
-	float	coeff = (RAY_SAMPLES - 2*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
+	float4	J0 	= jitter0.Sample( smp_jitter, tc*screen_res.x*1.f/JITTER_TEXTURE_SIZE );
+	float	coeff = (RAY_SAMPLES - 1*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
 	float3	direction = P*coeff;
 //	float3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
 #endif	//	JITTER_SUN_SHAFTS
