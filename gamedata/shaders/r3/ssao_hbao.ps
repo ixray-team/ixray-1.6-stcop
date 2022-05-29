@@ -7,9 +7,6 @@ float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
 
 #else	//	SSAO_QUALITY
 
-// comment this to run the old NV code
-//#define VECTORIZED_CODE
-
 //cbuffer PixelGlobalShaderData_s : register(b0)
 //{
 
@@ -17,6 +14,8 @@ uniform	float4		screen_res;
 
 #define g_Resolution screen_res.xy
 #define g_InvResolution screen_res.zw
+
+static const float g_MaxFootprintUV=0.01f;
 
 #if SSAO_QUALITY == 3
 static const float g_NumDir = 6.0f;
@@ -76,6 +75,7 @@ float3 min_diff(float3 P, float3 Pr, float3 Pl)
 // fix that later
 float3 fetch_eye_pos(float2 uv)
 {
+////#define SSAO_OPT_DATA
 #ifndef SSAO_OPT_DATA
 #ifdef USE_MSAA
 #ifdef GBUFFER_OPTIMIZATION
@@ -230,7 +230,7 @@ float horizon_occlusion2(float2 deltaUV,
     // Compute tangent vector using the tangent plane
     float3 T = deltaUV.x * dPdu + deltaUV.y * dPdv;
 
-    float tanH = biased_tangent(T);
+    float tanH = tangent(T);
     float sinH = tanH / sqrt(1.0f + tanH*tanH);
 
     float ao = 0;
@@ -240,11 +240,9 @@ float horizon_occlusion2(float2 deltaUV,
         
         // Ignore any samples outside the radius of influence
         float d2  = length2(S - P);
-        if (d2 < g_sqr_R) {
-            float tanS = tangent(P, S);
-
-            [branch]
-            if(tanS > tanH) {
+        float tanS = tangent(P, S);	
+	[branch]
+        if ((d2 < g_sqr_R) && (tanS > tanH)) {
                 // Accumulate AO between the horizon and the sample
                 float sinS = tanS / sqrt(1.0f + tanS*tanS);
                 float r = sqrt(d2) * g_inv_R;
@@ -253,7 +251,6 @@ float horizon_occlusion2(float2 deltaUV,
                 // Update the current horizon angle
                 tanH = tanS;
                 sinH = sinS;
-            }
         } 
     }
 
@@ -292,8 +289,8 @@ float horizon_occlusion2_4way(float2 deltaUV0,
     float3 T2 = deltaUV2.x * dPdu + deltaUV2.y * dPdv;
     float3 T3 = deltaUV3.x * dPdu + deltaUV3.y * dPdv;
 
-    float4 tanH = float4( biased_tangent(T0), biased_tangent(T1),
-                          biased_tangent(T2), biased_tangent(T3) );
+    float4 tanH = float4( tangent(T0), tangent(T1),
+                          tangent(T2), tangent(T3) );
     float4 sinH = tanH / sqrt((1.0f).xxxx + tanH*tanH);
 
     float ao = 0.0f;
@@ -339,16 +336,8 @@ float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
     if( numSteps < 1.0 ) return 1.0;
     step_size = step_size / ( numSteps + 1 );
 
-    float4 tangentPlane = float4(N, dot(P, N));
-    float3 Pr = tangent_eye_pos(tc0 + float2(g_InvResolution.x, 0), tangentPlane);
-    float3 Pl = tangent_eye_pos(tc0 + float2(-g_InvResolution.x, 0), tangentPlane);
-    float3 Pt = tangent_eye_pos(tc0 + float2(0, g_InvResolution.y), tangentPlane);
-    float3 Pb = tangent_eye_pos(tc0 + float2(0, -g_InvResolution.y), tangentPlane);
 
-    float3 dPdu = min_diff(P, Pr, Pl);
-    float3 dPdv = min_diff(P, Pt, Pb) * (g_Resolution.y * g_InvResolution.x);
-
-    // (cos(alpha),sin(alpha),jitter)
+// (cos(alpha),sin(alpha),jitter)
 #ifndef HBAO_WORLD_JITTER
     float3 rand_Dir = jitter4.Load(int3((int)pos2d.x&63, (int)pos2d.y&63, 0)).xyz;
 #else
@@ -358,6 +347,26 @@ float4 calc_hbao(float z, float3 N, float2 tc0, float4 pos2d)
     float3 rand_Dir = jitter4.SampleLevel(smp_jitter, tc1.xz, 0).xyz; 
 #endif
 
+
+	// footprint optimization
+	float maxNumSteps = g_MaxFootprintUV / step_size;
+	if (maxNumSteps < numSteps)
+	{
+		numSteps = floor(maxNumSteps + rand_Dir.z);
+        	numSteps = max(numSteps, 1);
+	        step_size = g_MaxFootprintUV / numSteps;
+    	}
+
+    float4 tangentPlane = float4(N, dot(P, N));
+    float3 Pr = tangent_eye_pos(tc0 + float2(g_InvResolution.x, 0), tangentPlane);
+    float3 Pl = tangent_eye_pos(tc0 + float2(-g_InvResolution.x, 0), tangentPlane);
+    float3 Pt = tangent_eye_pos(tc0 + float2(0, g_InvResolution.y), tangentPlane);
+    float3 Pb = tangent_eye_pos(tc0 + float2(0, -g_InvResolution.y), tangentPlane);
+
+    float3 dPdu = min_diff(P, Pr, Pl);
+    float3 dPdv = min_diff(P, Pt, Pb) * (g_Resolution.y * g_InvResolution.x);
+
+    
     // Loop for all directions
     float ao = 0;
     float alpha = 2.0f * M_PI / g_NumDir;

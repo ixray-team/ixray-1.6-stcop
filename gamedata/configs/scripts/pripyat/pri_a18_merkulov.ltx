@@ -41,6 +41,7 @@ gather_items_enabled = false
 meet = no_meet
 anim = guard_na
 target = story | actor
+combat_ignore_cond = {-pri_a18_actor_enemy} true
 on_info = {+pri_a18_sokolov_say_hello_done +pri_a18_vano_say_hello_done} walker@go_shop %+pri_a18_get_reinforcement_done%
 on_info2 = {=health_le(0.5) !actor_enemy} %=restore_health%
 on_info3 = %+pri_a18_vano_say_hello_done%
@@ -139,7 +140,7 @@ on_info3 = {+pri_a18_actor_enemy} %=actor_enemy%
 
 [walker@go_corridor]:walker@def_go_base
 out_restr = pri_a18_corridor_man_fire_zone
-combat_ignore_cond = {!is_alive(pri_a18_monolith_2nd_corridor_1)} true
+combat_ignore_cond = {-pri_a18_actor_enemy !is_alive(pri_a18_monolith_2nd_corridor_1)} true
 corpse_detection_enabled = false
 gather_items_enabled = false
 meet = no_meet
@@ -154,7 +155,7 @@ on_info3 = {+pri_a18_actor_enemy} %=actor_enemy%
 [smartcover@corridor_corner]:smartcover@def_go_base
 out_restr = pri_a18_corridor_man_fire_zone
 meet = no_meet
-combat_ignore_cond = {!is_alive(pri_a18_monolith_2nd_corridor_1)} true
+combat_ignore_cond = {-pri_a18_actor_enemy !is_alive(pri_a18_monolith_2nd_corridor_1)} true
 corpse_detection_enabled = false
 gather_items_enabled = false
 cover_name = pri_a18_corridor_smartcov
@@ -221,7 +222,7 @@ meet = no_meet
 def_state_moving = raid
 def_state_campering_fire = threat_fire
 radius = 0
-combat_ignore_cond = {-pri_a18_hit_pray_squad} true 
+combat_ignore_cond = {-pri_a18_actor_enemy -pri_a18_hit_pray_squad} true 
 path_walk = pri_a18_reinforcement_1_ready_kill_walk
 path_look = pri_a18_reinforcement_1_ready_kill_look
 on_signal = pri_a18_play_kill_snd_1 | %+pri_a18_vano_lets_kill_snd_done% camper@before_fight
@@ -236,7 +237,7 @@ meet = no_meet
 def_state_moving = raid
 def_state_campering_fire = threat_fire
 radius = 0
-combat_ignore_cond = {-pri_a18_hit_pray_squad} true 
+combat_ignore_cond = {-pri_a18_actor_enemy -pri_a18_hit_pray_squad} true 
 path_walk = pri_a18_reinforcement_1_ready_kill_walk
 path_look = pri_a18_reinforcement_1_ready_kill_look
 on_game_timer = 50 | {+pri_a18_sokolov_lets_kill_snd_done} %+pri_a18_hit_pray_squad%

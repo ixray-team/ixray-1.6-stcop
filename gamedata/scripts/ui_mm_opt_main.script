@@ -71,8 +71,10 @@ function options_dialog:InitControls()
 
 
 	self.message_box			= CUIMessageBoxEx()
+	self:Register				(self.message_box, "mb")
 
 	self.b_restart_system_shown	= false
+	self.timer					= nil
 
 	self.cap_download			= xml:InitStatic		("download_static",self)
 	self.text_download			= xml:InitStatic		("download_text",self)
@@ -101,8 +103,10 @@ function options_dialog:SetCurrentValues()
 	opt:SaveBackupValues("mm_opt_sound")
 
 	opt:SetCurrentValues("mm_opt_controls")
+	opt:SaveBackupValues("mm_opt_controls")
 
 	opt:SetCurrentValues("key_binding")
+	opt:SaveBackupValues("key_binding")
 
 	self:UpdateDependControls()
 end
@@ -145,6 +149,9 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
 	self:AddCallback("tab_ao_opt",			ui_events.TAB_CHANGED,		self.OnAOOptionChange,		self)
+
+	self:AddCallback("mb",					ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
+	self:AddCallback("mb",					ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
 --	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
 --	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 
@@ -185,6 +192,8 @@ function options_dialog:OnBtnAccept()
 	local opt		= COptionsManager()
 	local console	= get_console()
 
+   	console:execute("cfg_save tmp")
+
 	opt:SaveValues("mm_opt_video_preset")
 	opt:SaveValues("key_binding")
 	opt:SaveValues("mm_opt_video")
@@ -193,20 +202,17 @@ function options_dialog:OnBtnAccept()
 	opt:SaveValues("mm_opt_sound")
 	opt:SaveValues("mm_opt_controls")
 
+	if opt:NeedVidRestart() then
+		_G.b_discard_settings_shown = true
+		self.message_box:InitMessageBox("message_box_yes_no")
+		self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
+		self.message_box:ShowDialog(true)
+	else
+		self:OnApplyChanges()
+	end
+
 	opt:OptionsPostAccept()
 
-		self.owner:ShowDialog(true)
-		self:HideDialog()
-		self.owner:Show(true)
-
-	if false==self.b_restart_system_shown then
-		local opt = COptionsManager()
-		if opt:NeedSystemRestart() then
-			self.b_restart_system_shown		 = true
-			self.message_box:InitMessageBox	("message_box_restart_game")
-			self.message_box:ShowDialog(true)
-		end
-	end
 	console:execute("cfg_save")
 end
 
@@ -310,9 +316,59 @@ function options_dialog:Update()
 		self.download_progress:Show				(false)
 		self.btn_cancel_download:Show			(false)
 	end
+	if(_G.b_discard_settings_shown) then
+		local tg = math.floor(time_global_async()/1000)
+		if(self.timer==nil) then
+			self.timer = tg
+		end
+		self.message_box:SetText(string.format("%s %d %s", game.translate_string("ui_mm_confirm_changes"), 15-(tg-self.timer), game.translate_string("mp_si_sec")))
+		if(tg-self.timer>=15) then
+			self.message_box:HideDialog()
+			self:OnDiscardChanges()
+		end
+	end
 end
 
 function options_dialog:OnBtn_CancelDownload()
 	local mm = main_menu.get_main_menu()
 	mm:CancelDownload()
+end
+
+function options_dialog:OnApplyChanges()
+    self.timer = nil
+    _G.b_discard_settings_shown = false
+
+	self.owner:ShowDialog(true)
+	self:HideDialog()
+	self.owner:Show(true)
+
+	if false==self.b_restart_system_shown then
+		local opt = COptionsManager()
+		if opt:NeedSystemRestart() then
+			self.b_restart_system_shown = true
+			self.message_box:InitMessageBox("message_box_restart_game")
+			self.message_box:ShowDialog(true)
+		end
+	end
+end
+
+function options_dialog:OnDiscardChanges()
+    self.timer = nil
+    _G.b_discard_settings_shown = false
+
+	local c = get_console()
+   	c:execute("cfg_load tmp")
+
+	self:SetCurrentValues()
+
+	c:execute("vid_restart")
+   	c:execute("cfg_save")
+end
+
+function options_dialog:OnMenuReloaded()
+	if(_G.b_discard_settings_shown) then
+	    self.message_box:InitMessageBox("message_box_yes_no")
+	    self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
+	    self.message_box:ShowDialog(true)
+	end
 end

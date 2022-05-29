@@ -240,7 +240,7 @@
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_sun_quality</text>
         </cap_r2_sun_quality>
         <list_r2_sun_quality x="180" y="0" width="235" height="20" list_length="3">
-            <options_item entry="r2_sun_quality" group="mm_opt_video"/>
+            <options_item entry="r2_sun_quality" group="mm_opt_video" depend="vid"/>
             <list_font r="170" g="170" b="170" font="letterica16"/>
             <text_color>
 	            <e r="170" g="170" b="170"/>

@@ -930,4 +930,7 @@
 	<string id="ui_mm_r4_enable_tessellation">
 		<text>Тесселяция</text>
 	</string>
+	<string id="ui_mm_confirm_changes">
+		<text>Применить сделанные изменения? Все изменения будут отменены через</text>
+	</string>
 </string_table>

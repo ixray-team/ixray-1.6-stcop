@@ -4917,6 +4917,7 @@
                 <text>zat_b30_owl_stalker_trader_choose_task_111311</text>
                 <disable_info>zat_b5_dialog_info</disable_info>
                 <give_info>zat_b5_actor_with_dealer</give_info>
+				<disable_info>zat_b30_trader_for_b5_info</disable_info>
             </phrase>
             <phrase id="1111">
                 <text>zat_b30_owl_stalker_trader_choose_task_1111</text>

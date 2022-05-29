@@ -1,7 +1,11 @@
 #include "common.h"
 
 //	Igor: used for volumetric light
-Texture2D 	s_vollight;
+#ifndef USE_MSAA
+Texture2D 							s_vollight;
+#else
+Texture2DMS<float4, MSAA_SAMPLES>	s_vollight;
+#endif
 
 struct	_input      
 {
@@ -23,8 +27,16 @@ _out main( _input I )
 	_out	o;
 	float4	color;
 
-//	color = tex2D(s_vollight, I.tc0);
-	color = s_vollight.Sample( smp_nofilter, I.tc0);
+#ifndef USE_MSAA
+	color = s_vollight.Load(int3(I.tc0.xy*pos_decompression_params2.xy, 0));
+#else // USE_MSAA
+	color = s_vollight.Load(int3(I.tc0.xy*pos_decompression_params2.xy, 0), 0);
+	[unroll] for(int iSample = 1; iSample < MSAA_SAMPLES; ++iSample)
+	{
+		color	+= s_vollight.Load(int3(I.tc0*pos_decompression_params2.xy, 0), iSample);
+	}
+	color /= MSAA_SAMPLES;
+#endif // USE_MSAA
 
 	tonemap(o.low, o.high, color, tm_scale );
 

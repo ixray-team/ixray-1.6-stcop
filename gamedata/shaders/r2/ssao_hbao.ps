@@ -11,6 +11,7 @@ float4 calc_hbao(float z, float4 curN, float2 tc0)
 #define g_Resolution 	screen_res.xy
 #define g_InvResolution screen_res.zw
 
+static const float g_MaxFootprintUV=0.01f;
 
   static const float g_R = 0.400009334f;
   static const float g_sqr_R = 0.160007462f;
@@ -187,11 +188,9 @@ float horizon_occlusion(float2 deltaUV,
         
         // Ignore any samples outside the radius of influence
         float d2  = length2(S - P);
-        if (d2 < g_sqr_R) {
-            float tanS = tangent(P, S);
+        float tanS = tangent(P, S);
+        if ((d2 < g_sqr_R) && (tanS > tanH)) {
 
-			//[branch]
-            if(tanS > tanH) {
                 // Accumulate AO between the horizon and the sample
                 float sinS = tanS / sqrt(1.0f + tanS*tanS);
                 float r = sqrt(d2) * g_inv_R;
@@ -200,7 +199,6 @@ float horizon_occlusion(float2 deltaUV,
                 // Update the current horizon angle
                 tanH = tanS;
                 sinH = sinS;
-            }
         } 
     }
 
@@ -224,6 +222,25 @@ float4 calc_hbao(float z, float4 curN, float2 tc0)
 //    if( numSteps < 1.0 ) return 1.0;
     step_size = step_size / ( numSteps + 1 );
 
+    // (cos(alpha),sin(alpha),jitter)
+#ifndef HBAO_WORLD_JITTER
+    float3 rand_Dir = tex2D(jitter4, tc0 * g_Resolution /64.0f).rgb;
+#else
+    float3 tc1	= mul( m_v2w, float4(P,1) );
+    tc1 *= ssao_noise_tile_factor;
+    tc1.xz += tc1.y; 
+    float3 rand_Dir = tex2D(jitter4, tc1.xz).xyz; 
+#endif
+    //rand_Dir = float3(1,0,0);
+
+	// footprint optimization
+	float maxNumSteps = g_MaxFootprintUV / step_size;
+	if (maxNumSteps < numSteps)
+	{
+		numSteps = floor(maxNumSteps + rand_Dir.z);
+        	numSteps = max(numSteps, 1);
+	        step_size = g_MaxFootprintUV / numSteps;
+    	}
 
     float4 tangentPlane = float4(N, dot(P, N));
     
@@ -245,16 +262,7 @@ float4 calc_hbao(float z, float4 curN, float2 tc0)
     float3 dPdu = min_diff(P, Pr, Pl);
     float3 dPdv = min_diff(P, Pt, Pb) * (g_Resolution.y * g_InvResolution.x);
 
-    // (cos(alpha),sin(alpha),jitter)
-#ifndef HBAO_WORLD_JITTER
-    float3 rand_Dir = tex2D(jitter4, tc0 * g_Resolution /64.0f).rgb;
-#else
-    float3 tc1	= mul( m_v2w, float4(P,1) );
-    tc1 *= ssao_noise_tile_factor;
-    tc1.xz += tc1.y; 
-    float3 rand_Dir = tex2D(jitter4, tc1.xz).xyz; 
-#endif
-    //rand_Dir = float3(1,0,0);
+
 
     // Loop over all directions
     float ao = 0;
