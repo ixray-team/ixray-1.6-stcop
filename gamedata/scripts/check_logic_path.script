@@ -72,12 +72,12 @@ function check_ini(ini, section, smart, prefix_name)
 			
 			local patrol_walk = patrol(path_walk)
 
-			-- Проверка наличия пути		
+			-- РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ РїСѓС‚Рё		
 			if not patrol_walk then
 				printf("path_walk [%s] doesnt exist in the game", path_walk)
 			end
 
-			-- Если это валк путь, проверяем есть ли лук.
+			-- Р•СЃР»Рё СЌС‚Рѕ РІР°Р»Рє РїСѓС‚СЊ, РїСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё Р»СѓРє.
 			local patrol_look = nil 
 			if path_field == "path_walk" then
 				local path_look_name = utils.cfg_get_string(ini, sect, "path_look", smart, false, prefix)
@@ -90,12 +90,12 @@ function check_ini(ini, section, smart, prefix_name)
 				end
 			end
 
-			-- Итерируемся по точкам патрульного пути
+			-- РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ С‚РѕС‡РєР°Рј РїР°С‚СЂСѓР»СЊРЅРѕРіРѕ РїСѓС‚Рё
 			local cnt = patrol_walk:count()
 			for pt = 0, cnt - 1 do
 				local point = patrol_walk:point(pt)
 
-				-- Проверка что точка на АИ карте
+				-- РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ С‚РѕС‡РєР° РЅР° РђР РєР°СЂС‚Рµ
 				local level_vertex_id = patrol_walk:level_vertex_id(pt)
 				
 				if level_vertex_id == nil then
@@ -106,7 +106,7 @@ function check_ini(ini, section, smart, prefix_name)
 			--		printf("path_walk [%s] point [%s] is not on the AI map (by_distance)", path_walk, pt)
 			--	end
 				
-				-- Проверка что есть соответствующий лук путь.
+				-- РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ РµСЃС‚СЊ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ Р»СѓРє РїСѓС‚СЊ.
 				if patrol_look ~= nil then
 					local flags = patrol_walk:flags(pt)
 				
@@ -124,7 +124,7 @@ function check_ini(ini, section, smart, prefix_name)
 						printf("path_walk [%s] is one-point walk path without corresponding look points", path_walk)
 					end
 				else				
-					-- Спешл кейс на случай когда одноточечным путь волка
+					-- РЎРїРµС€Р» РєРµР№СЃ РЅР° СЃР»СѓС‡Р°Р№ РєРѕРіРґР° РѕРґРЅРѕС‚РѕС‡РµС‡РЅС‹Рј РїСѓС‚СЊ РІРѕР»РєР°
 					if cnt == 1 then
 						printf("path_walk [%s] is one-point walk path without path_look", path_walk)
 					end

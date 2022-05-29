@@ -61,7 +61,7 @@ function init_traveler_dialog(dialog)
 	local npc_phrase_script = npc_phrase:GetPhraseScript()
 	npc_phrase_script:SetScriptText("travel_manager.squad_action_description")
 
-		-- Может ли игрок пойти с ними
+		-- РњРѕР¶РµС‚ Р»Рё РёРіСЂРѕРє РїРѕР№С‚Рё СЃ РЅРёРјРё
 		actor_phrase = dialog:AddPhrase("dm_traveler_can_i_go_with_you", "11", "1", -10000)
 		actor_script = actor_phrase:GetPhraseScript()
 		actor_script:AddPrecondition("travel_manager.squad_on_move")
@@ -82,14 +82,14 @@ function init_traveler_dialog(dialog)
 			npc_phrase_script = npc_phrase:GetPhraseScript()
 			npc_phrase_script:AddPrecondition("travel_manager.squad_cannot_take_actor")
 
-		-- Игрок просит разрешения провести его
+		-- РРіСЂРѕРє РїСЂРѕСЃРёС‚ СЂР°Р·СЂРµС€РµРЅРёСЏ РїСЂРѕРІРµСЃС‚Рё РµРіРѕ
 		actor_phrase = dialog:AddPhrase("dm_traveler_take_me_to", "12", "1", -10000)
 
 			npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_where_do_you_want", "121", "12", -10000)
 			npc_phrase_script = npc_phrase:GetPhraseScript()
 			npc_phrase_script:AddPrecondition("travel_manager.squad_can_travel")
 
-				-- Формирование таргетов для проводников
+				-- Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ С‚Р°СЂРіРµС‚РѕРІ РґР»СЏ РїСЂРѕРІРѕРґРЅРёРєРѕРІ
 				local travel_class = get_travel_class()
 				for k,v in pairs(travel_class.smart_travels) do
 					actor_phrase = dialog:AddPhrase(game.translate_string(v.name)..".", v.phrase_id, "121", -10000)
@@ -119,7 +119,7 @@ function init_traveler_dialog(dialog)
 			npc_phrase_script = npc_phrase:GetPhraseScript()
 			npc_phrase_script:AddPrecondition("travel_manager.squad_cannot_travel")
 
-		-- Игрок выходит из диалога
+		-- РРіСЂРѕРє РІС‹С…РѕРґРёС‚ РёР· РґРёР°Р»РѕРіР°
 		actor_phrase = dialog:AddPhrase("dm_traveler_bye", "13", "1", -10000)
 end
 
@@ -150,7 +150,7 @@ function uni_traveler_precond(actor, npc)
 	return true
 end
 
--- Перенос игрока и отряда
+-- РџРµСЂРµРЅРѕСЃ РёРіСЂРѕРєР° Рё РѕС‚СЂСЏРґР°
 local init_time = nil
 local traveler_actor_path = nil
 local traveler_squad_path = nil
@@ -200,7 +200,7 @@ function traveling()
 		db.actor:set_actor_direction(dir)
 		db.actor:set_actor_position(point:point(0))
 
-		local minutes = traveler_distance/10  -- Сколько минут нужно, чтобы пройти расстояние со скоростью 6 км/ч (100 метров в минуту) + Так как у нас время идет в 10 раз быстрее
+		local minutes = traveler_distance/10  -- РЎРєРѕР»СЊРєРѕ РјРёРЅСѓС‚ РЅСѓР¶РЅРѕ, С‡С‚РѕР±С‹ РїСЂРѕР№С‚Рё СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЃРѕ СЃРєРѕСЂРѕСЃС‚СЊСЋ 6 РєРј/С‡ (100 РјРµС‚СЂРѕРІ РІ РјРёРЅСѓС‚Сѓ) + РўР°Рє РєР°Рє Сѓ РЅР°СЃ РІСЂРµРјСЏ РёРґРµС‚ РІ 10 СЂР°Р· Р±С‹СЃС‚СЂРµРµ
 		local hours = math.floor(minutes/60)
 		minutes = minutes - hours*60
 
@@ -338,12 +338,12 @@ function check_smart_availability(smart_name, smart_table, squad)
 		return false
 	end
 
-	-- Проверка на текущий левел
+	-- РџСЂРѕРІРµСЂРєР° РЅР° С‚РµРєСѓС‰РёР№ Р»РµРІРµР»
 	if smart_table.level ~= level.name() then
 		return false
 	end
 
-	-- Мы не водим в текущий смарт
+	-- РњС‹ РЅРµ РІРѕРґРёРј РІ С‚РµРєСѓС‰РёР№ СЃРјР°СЂС‚
 	if simulation_objects.sim_dist_to(squad , smart) < 50 then
 		return false
 	end
@@ -378,7 +378,7 @@ end
 function travel_condlist(actor, npc, dialog_id, prev_phrase_id, phrase_id)
 	local travel_class = get_travel_class()
 
-	-- Берем по id фразы смарт
+	-- Р‘РµСЂРµРј РїРѕ id С„СЂР°Р·С‹ СЃРјР°СЂС‚
 	local smart_name = travel_class.smart_by_phrase[phrase_id]
 
 	if smart_name == nil then
@@ -397,7 +397,7 @@ function get_travel_cost(actor, npc, dialog_id, phrase_id, p1)
 
 	local travel_class = get_travel_class()
 
-	-- Берем по id фразы смарт
+	-- Р‘РµСЂРµРј РїРѕ id С„СЂР°Р·С‹ СЃРјР°СЂС‚
 	local smart_name = travel_class.smart_by_phrase[travel_phrase_id]
 	local board = sim_board.get_sim_board()
 	local smart = board:get_smart_by_name(smart_name)
@@ -421,7 +421,7 @@ function actor_have_money(actor, npc, dialog_id, phrase_id)
 
 	local travel_class = get_travel_class()
 
-	-- Берем по id фразы смарт
+	-- Р‘РµСЂРµРј РїРѕ id С„СЂР°Р·С‹ СЃРјР°СЂС‚
 	local smart_name = travel_class.smart_by_phrase[travel_phrase_id]
 	local board = sim_board.get_sim_board()
 	local smart = board:get_smart_by_name(smart_name)
@@ -458,7 +458,7 @@ function actor_travel_with_squad(actor, npc, dialog_id, phrase_id)
 	level.hide_indicators_safe()
 	level.add_pp_effector("fade_in_out.ppe", 613, false)
 
-	-- Берем по id фразы смарт
+	-- Р‘РµСЂРµРј РїРѕ id С„СЂР°Р·С‹ СЃРјР°СЂС‚
 	local smart_name = travel_class.smart_by_phrase[travel_phrase_id]
 	local board = sim_board.get_sim_board()
 	local smart = board:get_smart_by_name(smart_name)

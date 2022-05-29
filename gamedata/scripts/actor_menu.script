@@ -1,7 +1,7 @@
 -- actor_menu_mode -----
 
 -- int mode:
--- 0 = 	Undefined = закрыто
+-- 0 = 	Undefined = Р·Р°РєСЂС‹С‚Рѕ
 -- 1 = 	Inventory
 -- 2 = 	Trade
 -- 3 = 	Upgrade

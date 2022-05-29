@@ -565,7 +565,7 @@ function get_sequence_for_npc(npc, existing_npc)
 	local return_table = {}
 
 	for i = 1,#cutscene do
-		-- Проверяем есть ли чувак в этой камере
+		-- РџСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё С‡СѓРІР°Рє РІ СЌС‚РѕР№ РєР°РјРµСЂРµ
 		if check_availability(cutscene[i].precondition, existing_npc) then
 			local anm = cutscene[i].animation[npc].a
 			local anm2 = cutscene[i].animation[npc].a2

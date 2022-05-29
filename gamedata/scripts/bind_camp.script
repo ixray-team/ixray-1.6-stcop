@@ -2,7 +2,7 @@ function bind(obj)
 	obj:bind_object(camp_binder( obj ))
 end
 
--- Таблица, содержащая кемпы
+-- РўР°Р±Р»РёС†Р°, СЃРѕРґРµСЂР¶Р°С‰Р°СЏ РєРµРјРїС‹
 camps = {}
 CAMP_SECTION = "camp"
 
@@ -42,7 +42,7 @@ function camp_binder:net_destroy()
 
 	object_binder.net_destroy(self)
 end
--- вызывается из обновления актёра!
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· РѕР±РЅРѕРІР»РµРЅРёСЏ Р°РєС‚С‘СЂР°!
 function camp_binder:update(delta)
 	local cc = camps[self.object:id()]
 	if cc ~= nil then

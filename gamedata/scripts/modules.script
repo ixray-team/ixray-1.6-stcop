@@ -1,4 +1,4 @@
--- Типы схем:
+-- РўРёРїС‹ СЃС…РµРј:
 stype_stalker		= 0
 stype_mobile		= 1
 stype_item			= 2
@@ -6,10 +6,10 @@ stype_heli			= 3
 stype_restrictor	= 4
 
 ----------------------------------------------------------------------
--- Загрузка схем:
+-- Р—Р°РіСЂСѓР·РєР° СЃС…РµРј:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
--- Загрузка модулей сталкеров:
+-- Р—Р°РіСЂСѓР·РєР° РјРѕРґСѓР»РµР№ СЃС‚Р°Р»РєРµСЂРѕРІ:
 ----------------------------------------------------------------------
 load_scheme("xr_danger",						"danger",			stype_stalker)
 load_scheme("xr_gather_items",					"gather_items",		stype_stalker)
@@ -37,7 +37,7 @@ load_scheme("xr_animpoint",						"animpoint",		stype_stalker)
 load_scheme("xr_reach_task",					"reach_task",		stype_stalker)
 
 ----------------------------------------------------------------------
--- Загрузка модулей монстров:
+-- Р—Р°РіСЂСѓР·РєР° РјРѕРґСѓР»РµР№ РјРѕРЅСЃС‚СЂРѕРІ:
 ----------------------------------------------------------------------
 load_scheme("mob_remark",						"mob_remark",		stype_mobile)
 load_scheme("mob_walker",						"mob_walker",		stype_mobile)
@@ -46,7 +46,7 @@ load_scheme("mob_death",						"mob_death",		stype_mobile)
 load_scheme("mob_jump",							"mob_jump",			stype_mobile)
 load_scheme("mob_home",							"mob_home",			stype_mobile)
 ----------------------------------------------------------------------
--- Загрузка модулей физических объектов:
+-- Р—Р°РіСЂСѓР·РєР° РјРѕРґСѓР»РµР№ С„РёР·РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ:
 ----------------------------------------------------------------------
 load_scheme("ph_door",							"ph_door",			stype_item)
 load_scheme("ph_idle",							"ph_idle",			stype_item)
@@ -59,11 +59,11 @@ load_scheme("ph_minigun",						"ph_minigun",		stype_item)
 --load_scheme("ph_target",						"ph_target",		stype_item)
 load_scheme("ph_oscillate",						"ph_oscillate",		stype_item)
 ----------------------------------------------------------------------
--- Загрузка модулей вертолёта:
+-- Р—Р°РіСЂСѓР·РєР° РјРѕРґСѓР»РµР№ РІРµСЂС‚РѕР»С‘С‚Р°:
 ----------------------------------------------------------------------
 load_scheme("heli_move",      					"heli_move",		stype_heli)
 ----------------------------------------------------------------------
--- Загрузка модулей рестрикторов:
+-- Р—Р°РіСЂСѓР·РєР° РјРѕРґСѓР»РµР№ СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ:
 ----------------------------------------------------------------------
 load_scheme("sr_no_weapon",						"sr_no_weapon",		stype_restrictor)
 load_scheme("sr_teleport",						"sr_teleport",		stype_restrictor)

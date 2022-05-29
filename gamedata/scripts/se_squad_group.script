@@ -3,12 +3,12 @@ function se_squad:__init (section) super (section)
 end
 function se_squad:on_register()
 	cse_alife_online_offline_group.on_register( self )
-	-- Проверяем кастомдату обьекта на наличие стори айди.
+	-- РџСЂРѕРІРµСЂСЏРµРј РєР°СЃС‚РѕРјРґР°С‚Сѓ РѕР±СЊРµРєС‚Р° РЅР° РЅР°Р»РёС‡РёРµ СЃС‚РѕСЂРё Р°Р№РґРё.
 	story_objects.check_spawn_ini_for_story_id(self)
 	simulation_objects.get_sim_obj_registry():register(self)
 end
 function se_squad:on_unregister()
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	unregister_story_object_by_id(self.id)
 	cse_alife_online_offline_group.on_unregister( self )
 	simulation_objects.get_sim_obj_registry():unregister(self)

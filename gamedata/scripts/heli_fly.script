@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------
 Helicopter movement
-Андрущенко Иван
+РђРЅРґСЂСѓС‰РµРЅРєРѕ РРІР°РЅ
 
 --------------------------------------------------------------------------------------------------]]
 local heli_flyer = {}
@@ -32,32 +32,32 @@ function heli_fly:fly_on_point_with_vector(dest_point, dest_direction, dest_velo
 --'	printf("fly_on_point_with_vector()")
 
 	local heli = self.obj:get_helicopter()
-	local curr_heli_position = self.obj:position()						-- текущая позиция
-	local curr_heli_direction = self.obj:direction()					-- единичный вектор текущего направления
-	local curr_heli_velocity = heli:GetCurrVelocity()					-- текущая скорость
+	local curr_heli_position = self.obj:position()						-- С‚РµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ
+	local curr_heli_direction = self.obj:direction()					-- РµРґРёРЅРёС‡РЅС‹Р№ РІРµРєС‚РѕСЂ С‚РµРєСѓС‰РµРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
+	local curr_heli_velocity = heli:GetCurrVelocity()					-- С‚РµРєСѓС‰Р°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
 	dest_velocity = dest_velocity * 1000 / 3600
 	if not flag_to_wp_callback then
---------------Расчеты------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------Р Р°СЃС‡РµС‚С‹------------------------------------------------------------------------------------------------------------------------------------------------------
 
 		local a_speed = 0
 		local time_by_fly = 0
-		local rez_point = vector():set(0,0,0)								-- точка, через которую пролетим, что-бы попасть в заданную точку, и выйти на заданную скорость
-		local d_path                                                        -- d_path - допуск расстояния попадания в точку
+		local rez_point = vector():set(0,0,0)								-- С‚РѕС‡РєР°, С‡РµСЂРµР· РєРѕС‚РѕСЂСѓСЋ РїСЂРѕР»РµС‚РёРј, С‡С‚Рѕ-Р±С‹ РїРѕРїР°СЃС‚СЊ РІ Р·Р°РґР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ, Рё РІС‹Р№С‚Рё РЅР° Р·Р°РґР°РЅРЅСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ
+		local d_path                                                        -- d_path - РґРѕРїСѓСЃРє СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РїРѕРїР°РґР°РЅРёСЏ РІ С‚РѕС‡РєСѓ
 	-------------------------------------------------------------
 		if dest_velocity >= curr_heli_velocity then
 	-------------------------------------------------------------
-			a_speed=  self.heliLAccFW										                -- ускорение разгона, берем из helicopter.ltx
+			a_speed=  self.heliLAccFW										                -- СѓСЃРєРѕСЂРµРЅРёРµ СЂР°Р·РіРѕРЅР°, Р±РµСЂРµРј РёР· helicopter.ltx
 	        d_path = curr_heli_velocity * 2 / a_speed
     -------------------------------------------------------------
 		else
 	-------------------------------------------------------------
-			a_speed= - self.heliLAccBW	    									                -- ускорение торможения, берем из helicopter.ltx
+			a_speed= - self.heliLAccBW	    									                -- СѓСЃРєРѕСЂРµРЅРёРµ С‚РѕСЂРјРѕР¶РµРЅРёСЏ, Р±РµСЂРµРј РёР· helicopter.ltx
             d_path = - curr_heli_velocity * 2 / a_speed
 	-------------------------------------------------------------
 		end
 
-		time_by_fly = (dest_velocity - curr_heli_velocity)/a_speed					-- t=(v2-v1)/a -- t - время, за которое затормозим/разгонимся. a - ускорение торможения/разгона, берем из helicopter.ltx
-		local delta = curr_heli_velocity * time_by_fly + a_speed * time_by_fly * time_by_fly / 2	-- расстояние для выхода на заданную скорость	s=v0t+(at^2)/2	
+		time_by_fly = (dest_velocity - curr_heli_velocity)/a_speed					-- t=(v2-v1)/a -- t - РІСЂРµРјСЏ, Р·Р° РєРѕС‚РѕСЂРѕРµ Р·Р°С‚РѕСЂРјРѕР·РёРј/СЂР°Р·РіРѕРЅРёРјСЃСЏ. a - СѓСЃРєРѕСЂРµРЅРёРµ С‚РѕСЂРјРѕР¶РµРЅРёСЏ/СЂР°Р·РіРѕРЅР°, Р±РµСЂРµРј РёР· helicopter.ltx
+		local delta = curr_heli_velocity * time_by_fly + a_speed * time_by_fly * time_by_fly / 2	-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґР»СЏ РІС‹С…РѕРґР° РЅР° Р·Р°РґР°РЅРЅСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ	s=v0t+(at^2)/2	
 		if delta >= d_path then
             self.point_arr[0] = curr_heli_position
             self.point_arr[1] = dest_point
@@ -150,7 +150,7 @@ end
 
 function heli_fly:correct_velocity()
 	local heli = self.obj:get_helicopter()
-	local curr_heli_velocity = heli:GetCurrVelocity()					--' текущая скорость
+	local curr_heli_velocity = heli:GetCurrVelocity()					--' С‚РµРєСѓС‰Р°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
     local dist_to_dest_point = heli:GetDistanceToDestPosition()
     local a_speed =  self.heliLAccFW
     local dest_velocity

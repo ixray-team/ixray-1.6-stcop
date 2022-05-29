@@ -51,7 +51,7 @@ function CSurgeManager:initialize()
 	self.surge_time = 190
 	self.inited_time = game.CTime()
 	self.last_surge_time = game.get_game_time()
-	self._delta = math.random(START_MIN_SURGE_TIME, START_MAX_SURGE_TIME) -- global minutes, время между выбросами
+	self._delta = math.random(START_MIN_SURGE_TIME, START_MAX_SURGE_TIME) -- global minutes, РІСЂРµРјСЏ РјРµР¶РґСѓ РІС‹Р±СЂРѕСЃР°РјРё
 
 	self.count = 0
 	self.covers = {}

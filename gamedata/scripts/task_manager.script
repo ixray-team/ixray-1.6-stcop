@@ -2,10 +2,10 @@ local random_task = nil
 
 class "CRandomTask"
 function CRandomTask:__init()
-	--' На конструкторе вычитываем LTX и создаем заготовки квестов.
+	--' РќР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ РІС‹С‡РёС‚С‹РІР°РµРј LTX Рё СЃРѕР·РґР°РµРј Р·Р°РіРѕС‚РѕРІРєРё РєРІРµСЃС‚РѕРІ.
 	self.task_ini = ini_file("misc\\task_manager.ltx")
 
-	--' Таблица проинициализированных квестов.
+	--' РўР°Р±Р»РёС†Р° РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹С… РєРІРµСЃС‚РѕРІ.
 	self.task_info = {}
 end
 -- Save
@@ -39,7 +39,7 @@ function CRandomTask:load(reader)
 end
 --------------------------------------------------------------------------------
 
---' Выдача квеста игроку
+--' Р’С‹РґР°С‡Р° РєРІРµСЃС‚Р° РёРіСЂРѕРєСѓ
 function CRandomTask:give_task(task_id)
 	printf("CRandomTask:give_task() task_id[%s]", tostring(task_id))
 
@@ -50,7 +50,7 @@ function CRandomTask:give_task(task_id)
 
 	self.task_info[task_id]:give_task()
 end
---' Проверяем, не выполнен ли таск
+--' РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РІС‹РїРѕР»РЅРµРЅ Р»Рё С‚Р°СЃРє
 function CRandomTask:task_complete(p1)
 	local task = self.task_info[p1]
 	if task == nil then
@@ -65,7 +65,7 @@ function CRandomTask:task_complete(p1)
 		return false
 	end
 end
---' Проверяем, не профейлен ли таск
+--' РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РїСЂРѕС„РµР№Р»РµРЅ Р»Рё С‚Р°СЃРє
 function CRandomTask:task_fail(p1)
 	local task = self.task_info[p1]
 	if task == nil then
@@ -75,10 +75,10 @@ function CRandomTask:task_fail(p1)
 
 	return task.last_check_task == "fail" or task.last_check_task == "reversed"
 end
---' Коллбек таска
+--' РљРѕР»Р»Р±РµРє С‚Р°СЃРєР°
 function CRandomTask:task_callback(task, completed)
 --    printf("CRandomTask:task_callback")
-	--' Если задание выполнилось - надо выдать с него награду!
+	--' Р•СЃР»Рё Р·Р°РґР°РЅРёРµ РІС‹РїРѕР»РЅРёР»РѕСЃСЊ - РЅР°РґРѕ РІС‹РґР°С‚СЊ СЃ РЅРµРіРѕ РЅР°РіСЂР°РґСѓ!
 	local task_id = task:get_id()
 	local delta
 	--print_table(self.task_info)
@@ -110,7 +110,7 @@ function task_fail(p1)
 end
 function task_callback(_task, state)
 --	printf("task_callback")
-	--' В случае есть квест выполнен или провален - надо вызвать обнуление.
+	--' Р’ СЃР»СѓС‡Р°Рµ РµСЃС‚СЊ РєРІРµСЃС‚ РІС‹РїРѕР»РЅРµРЅ РёР»Рё РїСЂРѕРІР°Р»РµРЅ - РЅР°РґРѕ РІС‹Р·РІР°С‚СЊ РѕР±РЅСѓР»РµРЅРёРµ.
 	if state == task.fail or state == task.completed then
 --		printf("task_callback1")
 		get_task_manager():task_callback(_task, state == task.completed)
