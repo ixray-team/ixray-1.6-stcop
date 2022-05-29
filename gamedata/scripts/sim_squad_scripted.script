@@ -1,9 +1,9 @@
 --'******************************************************
---'*	Боевой отряд группировки. (Скриптовая версия)
---'*	Наследован от обычного боевого отряда.
---'*	Отличия:
---'*		- Детерминированные состав отряда
---'*		- Возможность жестко указать активное действие
+--'*	Р‘РѕРµРІРѕР№ РѕС‚СЂСЏРґ РіСЂСѓРїРїРёСЂРѕРІРєРё. (РЎРєСЂРёРїС‚РѕРІР°СЏ РІРµСЂСЃРёСЏ)
+--'*	РќР°СЃР»РµРґРѕРІР°РЅ РѕС‚ РѕР±С‹С‡РЅРѕРіРѕ Р±РѕРµРІРѕРіРѕ РѕС‚СЂСЏРґР°.
+--'*	РћС‚Р»РёС‡РёСЏ:
+--'*		- Р”РµС‚РµСЂРјРёРЅРёСЂРѕРІР°РЅРЅС‹Рµ СЃРѕСЃС‚Р°РІ РѕС‚СЂСЏРґР°
+--'*		- Р’РѕР·РјРѕР¶РЅРѕСЃС‚СЊ Р¶РµСЃС‚РєРѕ СѓРєР°Р·Р°С‚СЊ Р°РєС‚РёРІРЅРѕРµ РґРµР№СЃС‚РІРёРµ
 --'******************************************************
 local squad_behaviour_ini 	= ini_file("misc\\squad_behaviours.ltx")
 local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
@@ -17,19 +17,19 @@ class "sim_squad_scripted" (cse_alife_online_offline_group)
 --***********************************************************************************************
 
 function sim_squad_scripted:__init(section) super (section)
-	--' смарт, в котором сейчас находится отряд.
+	--' СЃРјР°СЂС‚, РІ РєРѕС‚РѕСЂРѕРј СЃРµР№С‡Р°СЃ РЅР°С…РѕРґРёС‚СЃСЏ РѕС‚СЂСЏРґ.
 	self.smart_id 			= nil
 	self.board 				= sim_board.get_sim_board()
-	self.current_spot_id 	= nil --' ID объекта на который сейчас установлен мапспот.
+	self.current_spot_id 	= nil --' ID РѕР±СЉРµРєС‚Р° РЅР° РєРѕС‚РѕСЂС‹Р№ СЃРµР№С‡Р°СЃ СѓСЃС‚Р°РЅРѕРІР»РµРЅ РјР°РїСЃРїРѕС‚.
 
-	--' Текущее действие
+	--' РўРµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ
 	self.current_action 	= nil
 
 	self.current_target_id	= nil
 
 	self.assigned_target_id	= nil
 
-	--' Саундменеджер отряда
+	--' РЎР°СѓРЅРґРјРµРЅРµРґР¶РµСЂ РѕС‚СЂСЏРґР°
 	self.sound_manager 		= sound_manager.get_sound_manager("squad_"..self:section_name() )
 
 	self.settings_id 		= self:section_name()
@@ -38,7 +38,7 @@ function sim_squad_scripted:__init(section) super (section)
 
 	self:set_squad_behaviour()
 end
---' Инициализация
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 function sim_squad_scripted:init_squad()
 	self.player_id 			= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "faction", self, true, "")
 	self.action_condlist	= xr_logic.parse_condlist(self, "assign_action", "target_smart", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "target_smart", self, false, "", ""))
@@ -54,9 +54,9 @@ function sim_squad_scripted:init_squad()
 	self:set_squad_sympathy()
 end
 
--- Инициализация отряда на загрузке
+-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕС‚СЂСЏРґР° РЅР° Р·Р°РіСЂСѓР·РєРµ
 function sim_squad_scripted:init_squad_on_load()
-	-- Прописываем сквад в нужные смарты
+	-- РџСЂРѕРїРёСЃС‹РІР°РµРј СЃРєРІР°Рґ РІ РЅСѓР¶РЅС‹Рµ СЃРјР°СЂС‚С‹
 	printf("Init squad %s on load", self.id)
 	self:set_squad_sympathy()
 	self.board:assign_squad_to_smart(self, self.smart_id)
@@ -67,7 +67,7 @@ function sim_squad_scripted:init_squad_on_load()
 	self.need_to_reset_location_masks = true
 end
 
--- Вычитываем настройки поведения сквада.
+-- Р’С‹С‡РёС‚С‹РІР°РµРј РЅР°СЃС‚СЂРѕР№РєРё РїРѕРІРµРґРµРЅРёСЏ СЃРєРІР°РґР°.
 function sim_squad_scripted:set_squad_behaviour()
 	self.behaviour		= {}
 	local behaviour_section = utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "behaviour", self, false, "", self.player_id)
@@ -85,7 +85,7 @@ end
 --*										SCRIPT_TARGET_SELECTION									*
 --***********************************************************************************************
 
---' Возвращает скриптовую цель.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРєСЂРёРїС‚РѕРІСѓСЋ С†РµР»СЊ.
 function sim_squad_scripted:get_script_target()
 	local new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
 
@@ -96,7 +96,7 @@ function sim_squad_scripted:get_script_target()
 
 	if new_target ~= self.last_target then
 		self.last_target = new_target
-		--' Парсим новые задачи для отряда
+		--' РџР°СЂСЃРёРј РЅРѕРІС‹Рµ Р·Р°РґР°С‡Рё РґР»СЏ РѕС‚СЂСЏРґР°
 		self.parsed_targets = utils.parse_names(new_target)
 
 		if self.need_free_update ~= true then
@@ -125,20 +125,20 @@ function sim_squad_scripted:get_script_target()
 end
 
 
---' Выбор следующей цели
+--' Р’С‹Р±РѕСЂ СЃР»РµРґСѓСЋС‰РµР№ С†РµР»Рё
 function sim_squad_scripted:pick_next_target()
 	--printf("Picking next target for [%s] = %s by %s", self:section_name(), tostring(self.parsed_targets[self.next_target]), self.next_target)
 	return self.parsed_targets[self.next_target]
 end
 
 
---' Проверка пришел ли отряд в очередной поинт
+--' РџСЂРѕРІРµСЂРєР° РїСЂРёС€РµР» Р»Рё РѕС‚СЂСЏРґ РІ РѕС‡РµСЂРµРґРЅРѕР№ РїРѕРёРЅС‚
 function sim_squad_scripted:check_squad_come_to_point()
 	--printf("[%s] check squad point", self.id)
 	if self.parsed_targets == nil then
 		return true
 	end
-	--' Если мы уже дошли до точки.
+	--' Р•СЃР»Рё РјС‹ СѓР¶Рµ РґРѕС€Р»Рё РґРѕ С‚РѕС‡РєРё.
 	local next_target = self.next_target or 0
 	if self.assigned_target_id ~= nil and self.smart_id == self.assigned_target_id then
 		if self.parsed_targets[next_target+1] ~= nil then
@@ -149,7 +149,7 @@ function sim_squad_scripted:check_squad_come_to_point()
 	return false
 end
 
---' Проверка пришел ли отряд в очередной поинт
+--' РџСЂРѕРІРµСЂРєР° РїСЂРёС€РµР» Р»Рё РѕС‚СЂСЏРґ РІ РѕС‡РµСЂРµРґРЅРѕР№ РїРѕРёРЅС‚
 function sim_squad_scripted:update_current_action()
 	local is_finished =	self.current_action:update(false)
 	if not is_finished then
@@ -162,7 +162,7 @@ function sim_squad_scripted:update()
 	cse_alife_online_offline_group.update (self)
 	self:refresh()
 
-	-- Апдейт доступности для симуляции.
+	-- РђРїРґРµР№С‚ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё РґР»СЏ СЃРёРјСѓР»СЏС†РёРё.
 	simulation_objects.get_sim_obj_registry():update_avaliability(self)
 
 	self:check_invulnerability()
@@ -185,18 +185,18 @@ function sim_squad_scripted:update()
 	if self.assigned_target_id ~= nil and self.assigned_target_id == script_target then
 		if self.current_action ~= nil then
 			if self.current_action.name == "stay_point" then
-				--' Если экшн stay_point. Проверяем пришли ли до экшна.
+				--' Р•СЃР»Рё СЌРєС€РЅ stay_point. РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё РґРѕ СЌРєС€РЅР°.
 				if self:check_squad_come_to_point() then
-					--' Пришли в точку, перевыбрали цель
+					--' РџСЂРёС€Р»Рё РІ С‚РѕС‡РєСѓ, РїРµСЂРµРІС‹Р±СЂР°Р»Рё С†РµР»СЊ
 					need_to_find_new_action = true
 					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.id, tostring(need_to_find_new_action))
 				else
-					--' Не пришли в точку, апдейтимся дальше
+					--' РќРµ РїСЂРёС€Р»Рё РІ С‚РѕС‡РєСѓ, Р°РїРґРµР№С‚РёРјСЃСЏ РґР°Р»СЊС€Рµ
 					need_to_find_new_action = self:update_current_action()
 					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.id, tostring(need_to_find_new_action))
 				end
 			else
-				--' Если экшн attack_point. Проверяем пришли ли после экшна.
+				--' Р•СЃР»Рё СЌРєС€РЅ attack_point. РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё РїРѕСЃР»Рµ СЌРєС€РЅР°.
 				if self:update_current_action() then
 					self:check_squad_come_to_point()
 					need_to_find_new_action = true
@@ -204,7 +204,7 @@ function sim_squad_scripted:update()
 				end
 			end
 		else
-			--' Проверяем пришли ли
+			--' РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё
 			self:check_squad_come_to_point()
 			need_to_find_new_action = true
 			--printf("[%s] SCRIPTED need_to_find_new_action %s", self.id, tostring(need_to_find_new_action))
@@ -234,7 +234,7 @@ function sim_squad_scripted:update()
 			self.current_action:finalize()
 			self.current_action = nil
 		end
-		--' Если у нас нет текущей цели - просим выдать нам задание.
+		--' Р•СЃР»Рё Сѓ РЅР°СЃ РЅРµС‚ С‚РµРєСѓС‰РµР№ С†РµР»Рё - РїСЂРѕСЃРёРј РІС‹РґР°С‚СЊ РЅР°Рј Р·Р°РґР°РЅРёРµ.
 		self:get_next_action(false)
 	end
 	if self.need_to_reset_location_masks then
@@ -258,7 +258,7 @@ function sim_squad_scripted:assigned_target_avaliable()
 	if target_obj == nil then
 		return false
 	end
-	-- В данном случае нужно проверять попьюлейшн минус один, т.к. я уже состою в смарте.
+	-- Р’ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ РЅСѓР¶РЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ РїРѕРїСЊСЋР»РµР№С€РЅ РјРёРЅСѓСЃ РѕРґРёРЅ, С‚.Рє. СЏ СѓР¶Рµ СЃРѕСЃС‚РѕСЋ РІ СЃРјР°СЂС‚Рµ.
 	return target_obj:target_precondition(self, true)
 end
 
@@ -297,10 +297,10 @@ local function get_help_target_id(squad)
 end
 
 
---' Апдейт отряда для выбора симуляционных целей.
+--' РђРїРґРµР№С‚ РѕС‚СЂСЏРґР° РґР»СЏ РІС‹Р±РѕСЂР° СЃРёРјСѓР»СЏС†РёРѕРЅРЅС‹С… С†РµР»РµР№.
 function sim_squad_scripted:generic_update()
 	--printf("Squad[%s] UPDATE", self.id)
-	--' Если у нас есть незавершенное действие - ждем пока оно завершится.
+	--' Р•СЃР»Рё Сѓ РЅР°СЃ РµСЃС‚СЊ РЅРµР·Р°РІРµСЂС€РµРЅРЅРѕРµ РґРµР№СЃС‚РІРёРµ - Р¶РґРµРј РїРѕРєР° РѕРЅРѕ Р·Р°РІРµСЂС€РёС‚СЃСЏ.
 	self.sound_manager:update()
 	self:refresh()
 
@@ -342,7 +342,7 @@ function sim_squad_scripted:generic_update()
 	end
 	self:get_next_action(true)
 end
---' Получение следующего экшна на выполнение
+--' РџРѕР»СѓС‡РµРЅРёРµ СЃР»РµРґСѓСЋС‰РµРіРѕ СЌРєС€РЅР° РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ
 function sim_squad_scripted:get_next_action(under_simulation)
 	local squad_target = alife():object(self.assigned_target_id)
 	--printf("assigned_target = [%s]", tostring(self.assigned_target_id))
@@ -372,7 +372,7 @@ end
 --***********************************************************************************************
 --*										MEMBERS_CONTROL											*
 --***********************************************************************************************
---' Удаление персонажей отряда
+--' РЈРґР°Р»РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶РµР№ РѕС‚СЂСЏРґР°
 function sim_squad_scripted:remove_squad()
 	local squad_npcs = {}
 	for k in self:squad_members() do
@@ -389,14 +389,14 @@ function sim_squad_scripted:remove_squad()
 	self:hide()
 --	alife():release(self, true)
 end
---' Удаление конкретного персонажа отряда
+--' РЈРґР°Р»РµРЅРёРµ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РѕС‚СЂСЏРґР°
 function sim_squad_scripted:remove_npc(npc_id)
 	local npc = alife():object(npc_id)
 	self:on_npc_death(npc)
 	--printf("releasing object ["..npc:name().."]")
 	alife():release(npc, true)
 end
---' Убийство НПС
+--' РЈР±РёР№СЃС‚РІРѕ РќРџРЎ
 function sim_squad_scripted:on_npc_death(npc)
 	printf("Squad %s. Killed member %s", tostring(self.id), npc.id)
 
@@ -435,7 +435,7 @@ function sim_squad_scripted:assign_squad_member_to_smart(member_id, smart, old_s
 		end
 	end
 end
---' Назначение смарта
+--' РќР°Р·РЅР°С‡РµРЅРёРµ СЃРјР°СЂС‚Р°
 function sim_squad_scripted:assign_smart(smart)
 	local old_smart = self.smart_id
 	self.smart_id = smart and smart.id
@@ -530,7 +530,7 @@ function sim_squad_scripted:add_squad_member(spawn_section, spawn_position, lv_i
 	return obj.id
 end
 
---' Создание чуваков в отряд
+--' РЎРѕР·РґР°РЅРёРµ С‡СѓРІР°РєРѕРІ РІ РѕС‚СЂСЏРґ
 function sim_squad_scripted:create_npc(spawn_smart)
 	local ini = system_ini()
 	local spawn_sections = utils.parse_names(utils.cfg_get_string(ini, self.settings_id, "npc", self, false, "", ""))
@@ -542,7 +542,7 @@ function sim_squad_scripted:create_npc(spawn_smart)
 
 	--print_table(debug.getinfo(1))
 	printf("SPAWN SMART %s", spawn_smart:name())
-	--' Высчитываем базовую позицию спауна
+	--' Р’С‹СЃС‡РёС‚С‹РІР°РµРј Р±Р°Р·РѕРІСѓСЋ РїРѕР·РёС†РёСЋ СЃРїР°СѓРЅР°
 	local base_spawn_position = spawn_smart.position
 	local base_lvi = spawn_smart.m_level_vertex_id
 	local base_gvi = spawn_smart.m_game_vertex_id
@@ -567,7 +567,7 @@ function sim_squad_scripted:create_npc(spawn_smart)
 		end
 	end
 
-	-- подспаун рэндомных чуваков...
+	-- РїРѕРґСЃРїР°СѓРЅ СЂСЌРЅРґРѕРјРЅС‹С… С‡СѓРІР°РєРѕРІ...
 	local random_spawn = utils.cfg_get_string(ini, self.settings_id, "npc_random", self, false, "",nil)
 	if random_spawn ~= nil then
 		random_spawn 				= 	utils.parse_names(random_spawn)
@@ -753,21 +753,21 @@ end
 function sim_squad_scripted:on_register()
 	cse_alife_online_offline_group.on_register( self )
 	self.board.squads[self.id] = self
-	-- Проверяем кастомдату обьекта на наличие стори айди.
+	-- РџСЂРѕРІРµСЂСЏРµРј РєР°СЃС‚РѕРјРґР°С‚Сѓ РѕР±СЊРµРєС‚Р° РЅР° РЅР°Р»РёС‡РёРµ СЃС‚РѕСЂРё Р°Р№РґРё.
 	story_objects.check_spawn_ini_for_story_id(self)
 	simulation_objects.get_sim_obj_registry():register(self)
 end
 function sim_squad_scripted:on_unregister()
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	unregister_story_object_by_id(self.id)
-		--' Удалить отряд
+		--' РЈРґР°Р»РёС‚СЊ РѕС‚СЂСЏРґ
 	self.board.squads[self.id] = nil
 	self.board:assign_squad_to_smart(self, nil)
 	cse_alife_online_offline_group.on_unregister( self )
 	simulation_objects.get_sim_obj_registry():unregister(self)
 	if self.respawn_point_id ~= nil then
 		local smart = alife():object(self.respawn_point_id)
-		-- затычка для дестроя левела(смарты дестроятся раньше сквадов)
+		-- Р·Р°С‚С‹С‡РєР° РґР»СЏ РґРµСЃС‚СЂРѕСЏ Р»РµРІРµР»Р°(СЃРјР°СЂС‚С‹ РґРµСЃС‚СЂРѕСЏС‚СЃСЏ СЂР°РЅСЊС€Рµ СЃРєРІР°РґРѕРІ)
 		if smart == nil then
 			return
 		end
@@ -823,7 +823,7 @@ function sim_squad_scripted:hide()
 	self.spot_section = nil
 end
 
---' Показать отряд на карте
+--' РџРѕРєР°Р·Р°С‚СЊ РѕС‚СЂСЏРґ РЅР° РєР°СЂС‚Рµ
 function sim_squad_scripted:show()
 	if self.show_disabled then
 		self:hide()
@@ -893,7 +893,7 @@ end
 --***********************************************************************************************
 --*										SIMULATION_TARGET_SQUAD									*
 --***********************************************************************************************
--- Получить позицию, левел вертекс, гейм вертекс обьекта.
+-- РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ, Р»РµРІРµР» РІРµСЂС‚РµРєСЃ, РіРµР№Рј РІРµСЂС‚РµРєСЃ РѕР±СЊРµРєС‚Р°.
 function sim_squad_scripted:get_location()
 	return self.position, self.m_level_vertex_id, self.m_game_vertex_id
 end
@@ -910,15 +910,15 @@ function sim_squad_scripted:get_current_task()
 	end
 	return self:get_alife_task()
 end
--- Достигнут ли я отрядом выбравшим меня как цель.
+-- Р”РѕСЃС‚РёРіРЅСѓС‚ Р»Рё СЏ РѕС‚СЂСЏРґРѕРј РІС‹Р±СЂР°РІС€РёРј РјРµРЅСЏ РєР°Рє С†РµР»СЊ.
 function sim_squad_scripted:am_i_reached(squad)
 	return self:npc_count() == 0
 end
--- Вызывается 1 раз после достижения меня отрядом выбравшим меня как цель.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ 1 СЂР°Р· РїРѕСЃР»Рµ РґРѕСЃС‚РёР¶РµРЅРёСЏ РјРµРЅСЏ РѕС‚СЂСЏРґРѕРј РІС‹Р±СЂР°РІС€РёРј РјРµРЅСЏ РєР°Рє С†РµР»СЊ.
 function sim_squad_scripted:on_after_reach(squad)
 
 end
--- Вызывается 1 раз в момент выбора меня как цели.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ 1 СЂР°Р· РІ РјРѕРјРµРЅС‚ РІС‹Р±РѕСЂР° РјРµРЅСЏ РєР°Рє С†РµР»Рё.
 function sim_squad_scripted:on_reach_target(squad)
 	squad:set_location_types()
  	for k in squad:squad_members() do
@@ -928,7 +928,7 @@ function sim_squad_scripted:on_reach_target(squad)
 	end
 	self.board:assign_squad_to_smart(squad, nil)
 end
--- Возвращает CALifeSmartTerrainTask на меня, вызывается из smart_terrain:task()
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ CALifeSmartTerrainTask РЅР° РјРµРЅСЏ, РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· smart_terrain:task()
 function sim_squad_scripted:get_alife_task()
 	--printf("Returning alife task for object [%s] game_vertex [%s] level_vertex [%s] position %s", self.id, self.m_game_vertex_id, self.m_level_vertex_id, vec_to_str(self.position))
 	return CALifeSmartTerrainTask(self.m_game_vertex_id, self.m_level_vertex_id)
@@ -954,7 +954,7 @@ function sim_squad_scripted:sim_available()
 	if self.smart_id == nil then
 		return true
 	end
-	-- Удалять из регистра сим обьектов если мы идем на базу.
+	-- РЈРґР°Р»СЏС‚СЊ РёР· СЂРµРіРёСЃС‚СЂР° СЃРёРј РѕР±СЊРµРєС‚РѕРІ РµСЃР»Рё РјС‹ РёРґРµРј РЅР° Р±Р°Р·Сѓ.
 	local props_base = alife():object(self.smart_id).props and alife():object(self.smart_id).props["base"]
 	if props_base and tonumber(props_base) > 0 then
 		return false
@@ -970,7 +970,7 @@ function sim_squad_scripted:sim_available()
 	return true
 end
 
--- Мой прекондишн.
+-- РњРѕР№ РїСЂРµРєРѕРЅРґРёС€РЅ.
 function sim_squad_scripted:target_precondition(squad)
 	local squad_params = sim_board.simulation_activities[squad.player_id]
 	if squad_params == nil or squad_params.squad == nil then
@@ -998,36 +998,36 @@ function sim_squad_scripted:target_precondition(squad)
 		return true
 	end
 
-	-- Травоядные днем атакуют проходящих мимо сталкеров.(плоть, кабан)
+	-- РўСЂР°РІРѕСЏРґРЅС‹Рµ РґРЅРµРј Р°С‚Р°РєСѓСЋС‚ РїСЂРѕС…РѕРґСЏС‰РёС… РјРёРјРѕ СЃС‚Р°Р»РєРµСЂРѕРІ.(РїР»РѕС‚СЊ, РєР°Р±Р°РЅ)
 	if squad.player_id == "monster_vegetarian" and in_time_interval(8,22) and not is_squad_monster[self.player_id] then
 		return true
 	end
 
-	-- Хищники днем атакуют сталкеров и травоядных(собаки, псевдособаки, пси собаки)
+	-- РҐРёС‰РЅРёРєРё РґРЅРµРј Р°С‚Р°РєСѓСЋС‚ СЃС‚Р°Р»РєРµСЂРѕРІ Рё С‚СЂР°РІРѕСЏРґРЅС‹С…(СЃРѕР±Р°РєРё, РїСЃРµРІРґРѕСЃРѕР±Р°РєРё, РїСЃРё СЃРѕР±Р°РєРё)
 	if squad.player_id == "monster_predatory_day" and
 		in_time_interval(8,22) and
 		(self.player_id == "monster_vegetarian" or not is_squad_monster[self.player_id]) then
 		return true
 	end
-	-- Хищники ночью атакуют сталкеров и травоядных(тушканы,кровосос, химера)
+	-- РҐРёС‰РЅРёРєРё РЅРѕС‡СЊСЋ Р°С‚Р°РєСѓСЋС‚ СЃС‚Р°Р»РєРµСЂРѕРІ Рё С‚СЂР°РІРѕСЏРґРЅС‹С…(С‚СѓС€РєР°РЅС‹,РєСЂРѕРІРѕСЃРѕСЃ, С…РёРјРµСЂР°)
 	if squad.player_id == "monster_predatory_night" and
 		in_time_interval( 22 , 8) and
 		(self.player_id == "monster_vegetarian" or not is_squad_monster[self.player_id]) then
 		return true
 	end
-	-- Зомбиобразные днем атакуют проходящих мимо сталкеров.
+	-- Р—РѕРјР±РёРѕР±СЂР°Р·РЅС‹Рµ РґРЅРµРј Р°С‚Р°РєСѓСЋС‚ РїСЂРѕС…РѕРґСЏС‰РёС… РјРёРјРѕ СЃС‚Р°Р»РєРµСЂРѕРІ.
 	if squad.player_id == "monster_zombied_day" and
 		in_time_interval(8,22) and
 		(not is_squad_monster[self.player_id]) then
 		return true
 	end
-	-- Зомбиобразные днем атакуют проходящих мимо сталкеров.
+	-- Р—РѕРјР±РёРѕР±СЂР°Р·РЅС‹Рµ РґРЅРµРј Р°С‚Р°РєСѓСЋС‚ РїСЂРѕС…РѕРґСЏС‰РёС… РјРёРјРѕ СЃС‚Р°Р»РєРµСЂРѕРІ.
 	if squad.player_id == "monster_zombied_night" and
 		in_time_interval(22,8) and
 		(not is_squad_monster[self.player_id]) then
 		return true
 	end
-	-- Особенные днем атакуют проходящих мимо сталкеров.
+	-- РћСЃРѕР±РµРЅРЅС‹Рµ РґРЅРµРј Р°С‚Р°РєСѓСЋС‚ РїСЂРѕС…РѕРґСЏС‰РёС… РјРёРјРѕ СЃС‚Р°Р»РєРµСЂРѕРІ.
 	if squad.player_id == "monster_special" and
 		in_time_interval(8,22) and
 		(not is_squad_monster[self.player_id]) then
@@ -1038,7 +1038,7 @@ function sim_squad_scripted:target_precondition(squad)
 	]]
 end
 
--- Посчитать мой приоритет для отряда.
+-- РџРѕСЃС‡РёС‚Р°С‚СЊ РјРѕР№ РїСЂРёРѕСЂРёС‚РµС‚ РґР»СЏ РѕС‚СЂСЏРґР°.
 function sim_squad_scripted:evaluate_prior(squad)
 	return simulation_objects.evaluate_prior(self, squad)
 end

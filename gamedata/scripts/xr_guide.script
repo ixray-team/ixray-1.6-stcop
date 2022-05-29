@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- Guide
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
 local state_main = 1
@@ -93,7 +93,7 @@ function action_guide_activity:move_callback(mode, number)
 		printf("SWITCH_TO_ROBBER")
 		self.st.enabled = false
 		xr_motivator.storage[self.object:id()].robber.enabled = true
-		return false -- false т.к. мы не меняли параметры движения в схеме, просто активировали другую...
+		return false -- false С‚.Рє. РјС‹ РЅРµ РјРµРЅСЏР»Рё РїР°СЂР°РјРµС‚СЂС‹ РґРІРёР¶РµРЅРёСЏ РІ СЃС…РµРјРµ, РїСЂРѕСЃС‚Рѕ Р°РєС‚РёРІРёСЂРѕРІР°Р»Рё РґСЂСѓРіСѓСЋ...
 	end
 	abort("object '%s': invalid 'ret' value specified in path: ret = %d", self.object:name(), number)
 	return false
@@ -183,9 +183,9 @@ function add_to_binder(npc, char_ini)
 	end
 end
 
--- Включение схемы
+-- Р’РєР»СЋС‡РµРЅРёРµ СЃС…РµРјС‹
 -- 
--- enabled - включена ли схема
+-- enabled - РІРєР»СЋС‡РµРЅР° Р»Рё СЃС…РµРјР°
 function set_guide(object, enabled, path_main_walk, path_main_look, path_lead_walk, path_lead_look, team)
 	--printf("_bp: set_guide (path_main_walk=%s)", path_main_walk)
 	local char_ini = object:spawn_ini()	
@@ -198,10 +198,10 @@ function set_guide(object, enabled, path_main_walk, path_main_look, path_lead_wa
 	st.path_lead_look = utils.conf_get_string(char_ini, "guide", "path_lead_look", path_lead_look, object, false)
 	st.team = utils.conf_get_string(char_ini, "guide", "team", team, object, false)
 
-	st.path_main_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
-	st.path_main_look_info = nil -- не загружены.
-	st.path_lead_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
-	st.path_lead_look_info = nil -- не загружены.
+	st.path_main_walk_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ
+	st.path_main_look_info = nil -- РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
+	st.path_lead_walk_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ
+	st.path_lead_look_info = nil -- РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 
 	if st.action ~= nil then
 		printf("_bp: set_guide: reset_scheme")

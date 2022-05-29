@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---'	Схема игнорирования денжеров.
---'	автор: Диденко Руслан (Stohe)
+--'	РЎС…РµРјР° РёРіРЅРѕСЂРёСЂРѕРІР°РЅРёСЏ РґРµРЅР¶РµСЂРѕРІ.
+--'	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --'	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 local DANGER_IGNORE_DISTANCE = 150
@@ -35,16 +35,16 @@ function get_danger_name(best_danger)
 	return best_danger_object:name()
 end
 
--- Функция, проверяющая, нужно ли реагировать на денжер. Возвращает FALSE, когда реагировать не надо
+-- Р¤СѓРЅРєС†РёСЏ, РїСЂРѕРІРµСЂСЏСЋС‰Р°СЏ, РЅСѓР¶РЅРѕ Р»Рё СЂРµР°РіРёСЂРѕРІР°С‚СЊ РЅР° РґРµРЅР¶РµСЂ. Р’РѕР·РІСЂР°С‰Р°РµС‚ FALSE, РєРѕРіРґР° СЂРµР°РіРёСЂРѕРІР°С‚СЊ РЅРµ РЅР°РґРѕ
 function is_danger(npc)
 	local best_danger = npc:best_danger()
 
-	-- проверка на наличие денжера.
+	-- РїСЂРѕРІРµСЂРєР° РЅР° РЅР°Р»РёС‡РёРµ РґРµРЅР¶РµСЂР°.
 	if best_danger == nil then
 		return false
 	end
 
-	-- Получение объекта, спровоцировавшего денжер
+	-- РџРѕР»СѓС‡РµРЅРёРµ РѕР±СЉРµРєС‚Р°, СЃРїСЂРѕРІРѕС†РёСЂРѕРІР°РІС€РµРіРѕ РґРµРЅР¶РµСЂ
 	local best_danger_object = best_danger:object()
 	local bd_type = best_danger:type()
 
@@ -52,12 +52,12 @@ function is_danger(npc)
 		best_danger_object = best_danger:dependent_object()
 	end
 
-	-- Проверяем наличие объекта денжера.
+	-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РѕР±СЉРµРєС‚Р° РґРµРЅР¶РµСЂР°.
 	if best_danger_object == nil then
 		return false
 	end
 
-	-- Игнорим денжеры не от врагов. (кроме трупов и гранат)
+	-- РРіРЅРѕСЂРёРј РґРµРЅР¶РµСЂС‹ РЅРµ РѕС‚ РІСЂР°РіРѕРІ. (РєСЂРѕРјРµ С‚СЂСѓРїРѕРІ Рё РіСЂР°РЅР°С‚)
 	if bd_type ~= danger_object.entity_corpse and bd_type ~= danger_object.grenade and
 		 npc:relation(best_danger_object) ~= game_object.enemy
 	then
@@ -65,14 +65,14 @@ function is_danger(npc)
 		return false
 	end
 
-	-- Зомби игнорируют гранаты
+	-- Р—РѕРјР±Рё РёРіРЅРѕСЂРёСЂСѓСЋС‚ РіСЂР°РЅР°С‚С‹
 	if bd_type == danger_object.grenade then
 		if character_community(npc) == "zombied" then
 			return false
 		end
 	end
 
-	-- Игнорируем старые трупы
+	-- РРіРЅРѕСЂРёСЂСѓРµРј СЃС‚Р°СЂС‹Рµ С‚СЂСѓРїС‹
 	if bd_type == danger_object.entity_corpse then
 		return false
 		--local corpse_object = best_danger:object()
@@ -81,14 +81,14 @@ function is_danger(npc)
 		--end
 	end
 
-	--' отсеиваем по настройке combat_ignore/danger
+	--' РѕС‚СЃРµРёРІР°РµРј РїРѕ РЅР°СЃС‚СЂРѕР№РєРµ combat_ignore/danger
 	if not xr_combat_ignore.is_enemy(npc, best_danger_object, db.storage[npc:id()].combat_ignore, true) then
 		--printf("[%s] check danger COMBAT IGNORE", npc:name())
 		return false
 	end
 
 
-	-- Отсеиваем по дистанции
+	-- РћС‚СЃРµРёРІР°РµРј РїРѕ РґРёСЃС‚Р°РЅС†РёРё
 	local danger_distance_sqr = best_danger:position():distance_to_sqr(npc:position())
 	local ignore_distance_by_type = ignore_distance[bd_type]
 	--printf("[%s] check danger type %s, distance %s", npc:name(), bd_type, tostring(ignore_distance_by_type))
@@ -102,7 +102,7 @@ function is_danger(npc)
 	end
 
 
-	--' Отсеиваем по зоне
+	--' РћС‚СЃРµРёРІР°РµРј РїРѕ Р·РѕРЅРµ
 	local active_sector = db.storage[npc:id()].active_sector
 	if active_sector ~= nil then
 		if sr_danger.check_danger_position(best_danger:position(), active_sector) == false then
@@ -110,13 +110,13 @@ function is_danger(npc)
 		end
 	end
 
-	-- Отсеиваем тяжелораненых
+	-- РћС‚СЃРµРёРІР°РµРј С‚СЏР¶РµР»РѕСЂР°РЅРµРЅС‹С…
 	if xr_wounded.is_heavy_wounded_by_id(npc:id()) then
 		return false
 	end
 
 
-	-- Кемперы игнорируют все, кроме гранат
+	-- РљРµРјРїРµСЂС‹ РёРіРЅРѕСЂРёСЂСѓСЋС‚ РІСЃРµ, РєСЂРѕРјРµ РіСЂР°РЅР°С‚
 	if active_scheme == "camper" and
 		 bd_type ~= danger_object.grenade
 	then
@@ -139,7 +139,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- EVALUATORS
 ----------------------------------------------------------------------------------------------------------------------
--- true - есть danger, false - нет danger
+-- true - РµСЃС‚СЊ danger, false - РЅРµС‚ danger
 class "evaluator_danger" (property_evaluator)
 function evaluator_danger:__init(name, storage, npc) super (nil, name)
 	self.a = storage
@@ -150,7 +150,7 @@ function evaluator_danger:evaluate()
 		self.mgr = self.object:motivation_action_manager()
 	end
 
-	-- инерция возврата
+	-- РёРЅРµСЂС†РёСЏ РІРѕР·РІСЂР°С‚Р°
 	if self.a.danger_time ~= nil and self.object:best_danger() ~= nil and time_global() - self.a.danger_time < DANGER_INERTION_TIME then
 	 	--printf("%s [%s] [%s]", self.object:name(), time_global() - self.danger_time, DANGER_INERTION_TIME)
 
@@ -173,7 +173,7 @@ function evaluator_danger:evaluate()
 
 	db.storage[self.object:id()].danger_flag = true
 
-	-- Стремаем смарт террейн
+	-- РЎС‚СЂРµРјР°РµРј СЃРјР°СЂС‚ С‚РµСЂСЂРµР№РЅ
 	local se_obj = alife():object(self.object:id())
 	if se_obj and se_obj.m_smart_terrain_id ~= 65535 then
 		alife():object(se_obj.m_smart_terrain_id):set_alarm()

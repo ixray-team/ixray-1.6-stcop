@@ -1,4 +1,4 @@
---' Находится ли уже смарткавер в нужном состоянии
+--' РќР°С…РѕРґРёС‚СЃСЏ Р»Рё СѓР¶Рµ СЃРјР°СЂС‚РєР°РІРµСЂ РІ РЅСѓР¶РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё
 class "eva_state_mgr_smartcover" (property_evaluator)
 function eva_state_mgr_smartcover:__init(name, st) super (nil, name)
 	self.st = st
@@ -12,7 +12,7 @@ function eva_state_mgr_smartcover:evaluate()
 	local state_descr = db.storage[self.object:id()]["smartcover"] 
 	local dest_smart_cover_name = self.object:get_dest_smart_cover_name()
 	
-	-- Также нужно добавить, чтоб мы находимся именно в _нужном_ смарткавере
+	-- РўР°РєР¶Рµ РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ, С‡С‚РѕР± РјС‹ РЅР°С…РѕРґРёРјСЃСЏ РёРјРµРЅРЅРѕ РІ _РЅСѓР¶РЅРѕРј_ СЃРјР°СЂС‚РєР°РІРµСЂРµ
 --	printf("SC %s [%s] [%s]", tostring(dest_smart_cover_name == (state_descr.smartcover_name or "")), 
 --								tostring(dest_smart_cover_name), tostring((state_descr.smartcover_name or "")))
 	if state_descr == nil then
@@ -21,7 +21,7 @@ function eva_state_mgr_smartcover:evaluate()
 	return dest_smart_cover_name == (state_descr.cover_name or "")
 end
 
---' Нужно ли нам входить в смарткавер
+--' РќСѓР¶РЅРѕ Р»Рё РЅР°Рј РІС…РѕРґРёС‚СЊ РІ СЃРјР°СЂС‚РєР°РІРµСЂ
 class "eva_state_mgr_smartcover_need" (property_evaluator)
 function eva_state_mgr_smartcover_need:__init(name, st) super (nil, name)
 	self.st = st
@@ -40,7 +40,7 @@ function eva_state_mgr_smartcover_need:evaluate()
 end
 
 
---' залочена ли схема (находимся ли мы в процессе входа-выхода из смарткавера)
+--' Р·Р°Р»РѕС‡РµРЅР° Р»Рё СЃС…РµРјР° (РЅР°С…РѕРґРёРјСЃСЏ Р»Рё РјС‹ РІ РїСЂРѕС†РµСЃСЃРµ РІС…РѕРґР°-РІС‹С…РѕРґР° РёР· СЃРјР°СЂС‚РєР°РІРµСЂР°)
 class "eva_state_mgr_smartcover_locked" (property_evaluator)
 function eva_state_mgr_smartcover_locked:__init(name, st) super (nil, name)
 	self.st = st
@@ -59,7 +59,7 @@ function eva_state_mgr_smartcover_locked:evaluate()
 end
 
 
---' залочена ли схема (находимся ли мы в процессе входа-выхода из смарткавера)
+--' Р·Р°Р»РѕС‡РµРЅР° Р»Рё СЃС…РµРјР° (РЅР°С…РѕРґРёРјСЃСЏ Р»Рё РјС‹ РІ РїСЂРѕС†РµСЃСЃРµ РІС…РѕРґР°-РІС‹С…РѕРґР° РёР· СЃРјР°СЂС‚РєР°РІРµСЂР°)
 class "eva_state_mgr_in_smartcover" (property_evaluator)
 function eva_state_mgr_in_smartcover:__init(name, st) super (nil, name)
 	self.st = st
@@ -85,7 +85,7 @@ end
 
 
 
---' Вход в смарткавер
+--' Р’С…РѕРґ РІ СЃРјР°СЂС‚РєР°РІРµСЂ
 class "act_state_mgr_smartcover_enter" (action_base)
 function act_state_mgr_smartcover_enter:__init(name, st) super (nil, name)
 	self.st = st
@@ -113,7 +113,7 @@ function act_state_mgr_smartcover_enter:finalize()
 	action_base.finalize(self)
 end
 
---' Выход из смарткавера
+--' Р’С‹С…РѕРґ РёР· СЃРјР°СЂС‚РєР°РІРµСЂР°
 class "act_state_mgr_smartcover_exit" (action_base)
 function act_state_mgr_smartcover_exit:__init(name, st) super (nil, name)
 	self.st = st

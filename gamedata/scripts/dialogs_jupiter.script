@@ -1007,11 +1007,11 @@ function if_actor_has_jup_b9_blackbox(first_speaker, second_speaker)
 	return db.actor:object("jup_b9_blackbox") ~= nil
 end
 
---  çàïðîñ åñòü ëè ó àêò¸ðà jup_b9_blackbox
+--  Ð·Ð°Ð¿Ñ€Ð¾Ñ ÐµÑÑ‚ÑŒ Ð»Ð¸ Ñƒ Ð°ÐºÑ‚Ñ‘Ñ€Ð° jup_b9_blackbox
 
 ----------------------	b43 ----------------------
 
--- ïðîâåðêà àðòåôàêòîâ
+-- Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð°Ñ€Ñ‚ÐµÑ„Ð°ÐºÑ‚Ð¾Ð²
 
 function if_actor_has_af_mincer_meat(first_speaker, second_speaker)
 	return first_speaker:object("af_mincer_meat") ~= nil
@@ -1025,7 +1025,7 @@ function actor_has_first_or_second_artefact(first_speaker, second_speaker)
 	return first_speaker:object("af_mincer_meat") ~= nil or first_speaker:object("af_fuzz_kolobok") ~= nil
 end
 
--- ïåðåäà÷à àðòåôàêòîâ íà Þïèòåðå ïî çàäàíèþ
+-- Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð° Ð°Ñ€Ñ‚ÐµÑ„Ð°ÐºÑ‚Ð¾Ð² Ð½Ð° Ð®Ð¿Ð¸Ñ‚ÐµÑ€Ðµ Ð¿Ð¾ Ð·Ð°Ð´Ð°Ð½Ð¸ÑŽ
 
 function transfer_af_mincer_meat(first_speaker, second_speaker)
 		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "af_mincer_meat")
@@ -1035,13 +1035,13 @@ function transfer_af_fuzz_kolobok(first_speaker, second_speaker)
 		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "af_fuzz_kolobok")
 end
 
--- ïëàòà çà òåëåïîðò èãðîêà íà Ïðèïÿòü
+-- Ð¿Ð»Ð°Ñ‚Ð° Ð·Ð° Ñ‚ÐµÐ»ÐµÐ¿Ð¾Ñ€Ñ‚ Ð¸Ð³Ñ€Ð¾ÐºÐ° Ð½Ð° ÐŸÑ€Ð¸Ð¿ÑÑ‚ÑŒ
 
 function pay_cost_to_guide_to_pripyat(first_speaker, second_speaker)
 	dialogs.relocate_money_from_actor(first_speaker, second_speaker, 5000)
 end
 
--- ïðîâåðêà, ïëàòåæåñïîñîáíîñòè èãðîêà çà òåëåïîðò íà Ïðèïÿòü
+-- Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°, Ð¿Ð»Ð°Ñ‚ÐµÐ¶ÐµÑÐ¿Ð¾ÑÐ¾Ð±Ð½Ð¾ÑÑ‚Ð¸ Ð¸Ð³Ñ€Ð¾ÐºÐ° Ð·Ð° Ñ‚ÐµÐ»ÐµÐ¿Ð¾Ñ€Ñ‚ Ð½Ð° ÐŸÑ€Ð¸Ð¿ÑÑ‚ÑŒ
 
 function jup_b43_actor_has_5000_money(first_speaker, second_speaker)
 	return db.actor:money() >= 5000
@@ -1051,7 +1051,7 @@ function jup_b43_actor_do_not_has_5000_money(first_speaker, second_speaker)
 	return db.actor:money() < 5000
 end
 
--- íàãðàäà çà àðòåôàêòû
+-- Ð½Ð°Ð³Ñ€Ð°Ð´Ð° Ð·Ð° Ð°Ñ€Ñ‚ÐµÑ„Ð°ÐºÑ‚Ñ‹
 
 function jup_b43_reward_for_first_artefact(first_speaker, second_speaker)
 	dialogs.relocate_money_to_actor(first_speaker, second_speaker, 2500)

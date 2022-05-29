@@ -5,7 +5,7 @@ r2		= 2
 r2.5	= 3
 r3		= 4
 r4		= 5
-Команда називається r2_ssao. Для DX10 і DX11 потрібно додати нову опцію - st_opt_ultra, але лише коли r2_ssao_mode==hdao.
+РљРѕРјР°РЅРґР° РЅР°Р·РёРІР°С”С‚СЊСЃСЏ r2_ssao. Р”Р»СЏ DX10 С– DX11 РїРѕС‚СЂС–Р±РЅРѕ РґРѕРґР°С‚Рё РЅРѕРІСѓ РѕРїС†С–СЋ - st_opt_ultra, Р°Р»Рµ Р»РёС€Рµ РєРѕР»Рё r2_ssao_mode==hdao.
 ]]
 class "opt_video_adv" (CUIWindow)
 function opt_video_adv:__init() super()

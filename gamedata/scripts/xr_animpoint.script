@@ -90,14 +90,14 @@ function action_animpoint:finalize()
 	action_base.finalize(self)
 end
 --------------------------------------------------------------------------------
--- Класс отыгрывания разных ништяков на точке
+-- РљР»Р°СЃСЃ РѕС‚С‹РіСЂС‹РІР°РЅРёСЏ СЂР°Р·РЅС‹С… РЅРёС€С‚СЏРєРѕРІ РЅР° С‚РѕС‡РєРµ
 --------------------------------------------------------------------------------
 class "animpoint"
 function animpoint:__init(npc, storage)
 	self.npc_id = npc:id()
 	self.st = storage
 end
--- Вызывается при активации схемы
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё Р°РєС‚РёРІР°С†РёРё СЃС…РµРјС‹
 function animpoint:initialize()
 	self.camp = nil
 	self.st.base_action = nil
@@ -116,8 +116,8 @@ function animpoint:activate_scheme(loading, npc, switching_scheme)
 	self.st.signals = {}
 
 	self:calculate_position()
-	if self.started == true then   -- не стопать, если нужно отыграть тот же смарткавер и тот же экшн. (Кешировать в :start())
-		-- Возможно self.current_action - то, что надо
+	if self.started == true then   -- РЅРµ СЃС‚РѕРїР°С‚СЊ, РµСЃР»Рё РЅСѓР¶РЅРѕ РѕС‚С‹РіСЂР°С‚СЊ С‚РѕС‚ Р¶Рµ СЃРјР°СЂС‚РєР°РІРµСЂ Рё С‚РѕС‚ Р¶Рµ СЌРєС€РЅ. (РљРµС€РёСЂРѕРІР°С‚СЊ РІ :start())
+		-- Р’РѕР·РјРѕР¶РЅРѕ self.current_action - С‚Рѕ, С‡С‚Рѕ РЅР°РґРѕ
 		if not self.st.use_camp and self.cover_name == self.st.cover_name then
 		
 			self:fill_approved_actions()
@@ -132,7 +132,7 @@ function animpoint:activate_scheme(loading, npc, switching_scheme)
 			
 			if current_st_animstate == target_st_animstate	then
 				--printf("NO ANIMPOINT STOP %s", npc:name())
-				-- Если у нас одинаковое состояние тела, но сами дескрипторы анимаций разные, нужно перевыбрать текущее действие
+				-- Р•СЃР»Рё Сѓ РЅР°СЃ РѕРґРёРЅР°РєРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ С‚РµР»Р°, РЅРѕ СЃР°РјРё РґРµСЃРєСЂРёРїС‚РѕСЂС‹ Р°РЅРёРјР°С†РёР№ СЂР°Р·РЅС‹Рµ, РЅСѓР¶РЅРѕ РїРµСЂРµРІС‹Р±СЂР°С‚СЊ С‚РµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ
 				if target_action ~= self.current_action then
 					self.current_action = self.st.approved_actions[math.random(#self.st.approved_actions)].name
 				end
@@ -143,7 +143,7 @@ function animpoint:activate_scheme(loading, npc, switching_scheme)
 		self:stop()
 	end
 end
---' Рассчитывает позицию, куда идти
+--' Р Р°СЃСЃС‡РёС‚С‹РІР°РµС‚ РїРѕР·РёС†РёСЋ, РєСѓРґР° РёРґС‚Рё
 function animpoint:calculate_position()
 	--printf("CALCULATE POSITION")
 
@@ -168,7 +168,7 @@ function animpoint:calculate_position()
 
 
 
-	-- Также получаем дескриптор позиции, и формируем список доступных действий.
+	-- РўР°РєР¶Рµ РїРѕР»СѓС‡Р°РµРј РґРµСЃРєСЂРёРїС‚РѕСЂ РїРѕР·РёС†РёРё, Рё С„РѕСЂРјРёСЂСѓРµРј СЃРїРёСЃРѕРє РґРѕСЃС‚СѓРїРЅС‹С… РґРµР№СЃС‚РІРёР№.
 	local description_name = smartcover:description()
 	if xr_animpoint_predicates.associations[description_name] == nil then
 		if self.st.avail_animations == nil then
@@ -180,8 +180,8 @@ function animpoint:calculate_position()
 	self.avail_actions = xr_animpoint_predicates.associations[description_name]
 	self.st.approved_actions = {}
 
---[[ Перенес инициализацию в :start(). Так как здесь еще неизвестно мы в кампе или нет, а это очень критично для гитар и гармошек.
-	-- Если задан авеил анимейшнз, то мы игнорим ассоциации с нашим смарткавером.
+--[[ РџРµСЂРµРЅРµСЃ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЋ РІ :start(). РўР°Рє РєР°Рє Р·РґРµСЃСЊ РµС‰Рµ РЅРµРёР·РІРµСЃС‚РЅРѕ РјС‹ РІ РєР°РјРїРµ РёР»Рё РЅРµС‚, Р° СЌС‚Рѕ РѕС‡РµРЅСЊ РєСЂРёС‚РёС‡РЅРѕ РґР»СЏ РіРёС‚Р°СЂ Рё РіР°СЂРјРѕС€РµРє.
+	-- Р•СЃР»Рё Р·Р°РґР°РЅ Р°РІРµРёР» Р°РЅРёРјРµР№С€РЅР·, С‚Рѕ РјС‹ РёРіРЅРѕСЂРёРј Р°СЃСЃРѕС†РёР°С†РёРё СЃ РЅР°С€РёРј СЃРјР°СЂС‚РєР°РІРµСЂРѕРј.
 	if self.st.avail_animations ~= nil then
 		-- animations are set from custom_data?
 		for k, v in pairs(self.st.avail_animations) do
@@ -190,7 +190,7 @@ function animpoint:calculate_position()
 	else
 		if self.avail_actions ~= nil then
 			for k,v in pairs(self.avail_actions) do
-				-- Убираем те действия, которые не подходят по прекондишну
+				-- РЈР±РёСЂР°РµРј С‚Рµ РґРµР№СЃС‚РІРёСЏ, РєРѕС‚РѕСЂС‹Рµ РЅРµ РїРѕРґС…РѕРґСЏС‚ РїРѕ РїСЂРµРєРѕРЅРґРёС€РЅСѓ
 				--printf("checking approved actions %s", self.npc_id)
 				if v.predicate(self.npc_id)==true then
 					table.insert(self.st.approved_actions, v)
@@ -204,13 +204,13 @@ function animpoint:calculate_position()
 	end
 	]] 
 end
--- Возвращает позицию и направление смарткавера (чтобы отыграть анимацию с привязкой к точке)
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРёРµ СЃРјР°СЂС‚РєР°РІРµСЂР° (С‡С‚РѕР±С‹ РѕС‚С‹РіСЂР°С‚СЊ Р°РЅРёРјР°С†РёСЋ СЃ РїСЂРёРІСЏР·РєРѕР№ Рє С‚РѕС‡РєРµ)
 function animpoint:get_animation_params()
 	return self.position, self.smart_direction
 end
---' Возвращает достиг ли персонаж точки начала работы схемы
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРѕСЃС‚РёРі Р»Рё РїРµСЂСЃРѕРЅР°Р¶ С‚РѕС‡РєРё РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ СЃС…РµРјС‹
 function animpoint:position_riched()
-	-- Если мы уже что то делаем, то значит что стопудова дошли
+	-- Р•СЃР»Рё РјС‹ СѓР¶Рµ С‡С‚Рѕ С‚Рѕ РґРµР»Р°РµРј, С‚Рѕ Р·РЅР°С‡РёС‚ С‡С‚Рѕ СЃС‚РѕРїСѓРґРѕРІР° РґРѕС€Р»Рё
 	if self.current_action ~= nil then
 		return true
 	end
@@ -228,7 +228,7 @@ function animpoint:position_riched()
 	--printf("%s animpoint position riched %s", npc:name(), npc:position():distance_to_sqr(self.vertex_position))
 	local distance_reached = npc:position():distance_to_sqr(self.vertex_position) <= self.st.reach_distance
 
-	-- Если дистанция достигнута и игрок уже играет нужную анимацию - считаем что пришли.
+	-- Р•СЃР»Рё РґРёСЃС‚Р°РЅС†РёСЏ РґРѕСЃС‚РёРіРЅСѓС‚Р° Рё РёРіСЂРѕРє СѓР¶Рµ РёРіСЂР°РµС‚ РЅСѓР¶РЅСѓСЋ Р°РЅРёРјР°С†РёСЋ - СЃС‡РёС‚Р°РµРј С‡С‚Рѕ РїСЂРёС€Р»Рё.
 
 --	if distance_reached then
 --		printf("current_state %s", state)
@@ -247,7 +247,7 @@ end
 function animpoint:fill_approved_actions()
 	local is_in_camp = self.camp ~= nil
 
-	-- Если задан авеил анимейшнз, то мы игнорим ассоциации с нашим смарткавером.
+	-- Р•СЃР»Рё Р·Р°РґР°РЅ Р°РІРµРёР» Р°РЅРёРјРµР№С€РЅР·, С‚Рѕ РјС‹ РёРіРЅРѕСЂРёРј Р°СЃСЃРѕС†РёР°С†РёРё СЃ РЅР°С€РёРј СЃРјР°СЂС‚РєР°РІРµСЂРѕРј.
 	if self.st.avail_animations ~= nil then
 		-- animations are set from custom_data?
 		for k, v in pairs(self.st.avail_animations) do
@@ -256,7 +256,7 @@ function animpoint:fill_approved_actions()
 	else
 		if self.avail_actions ~= nil then
 			for k,v in pairs(self.avail_actions) do
-				-- Убираем те действия, которые не подходят по прекондишну
+				-- РЈР±РёСЂР°РµРј С‚Рµ РґРµР№СЃС‚РІРёСЏ, РєРѕС‚РѕСЂС‹Рµ РЅРµ РїРѕРґС…РѕРґСЏС‚ РїРѕ РїСЂРµРєРѕРЅРґРёС€РЅСѓ
 				--printf("checking approved actions %s", self.npc_id)
 				if v.predicate(self.npc_id, is_in_camp)==true then
 					table.insert(self.st.approved_actions, v)
@@ -269,16 +269,16 @@ function animpoint:fill_approved_actions()
 		abort("There is no approved actions for stalker[%s] in animpoint[%s]", db.storage[self.npc_id].object:name(), self.object:name())
 	end
 end
--- Чувак дошел до точки и может начинать работать
+-- Р§СѓРІР°Рє РґРѕС€РµР» РґРѕ С‚РѕС‡РєРё Рё РјРѕР¶РµС‚ РЅР°С‡РёРЅР°С‚СЊ СЂР°Р±РѕС‚Р°С‚СЊ
 function animpoint:start()
-	-- Определяем, находится ли точка в каком то из кампов
+	-- РћРїСЂРµРґРµР»СЏРµРј, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё С‚РѕС‡РєР° РІ РєР°РєРѕРј С‚Рѕ РёР· РєР°РјРїРѕРІ
 	if self.st.use_camp then
 		self.camp = sr_camp.get_current_camp(self.position)
 	end
 
 	self:fill_approved_actions()
 
-	-- Получаем сигнал, какое действие мы можем отыграть:
+	-- РџРѕР»СѓС‡Р°РµРј СЃРёРіРЅР°Р», РєР°РєРѕРµ РґРµР№СЃС‚РІРёРµ РјС‹ РјРѕР¶РµРј РѕС‚С‹РіСЂР°С‚СЊ:
 	if self.camp ~= nil then
 		self.camp:register_npc(self.npc_id)
 	else
@@ -289,7 +289,7 @@ function animpoint:start()
 	self.started = true
 	self.cover_name = self.st.cover_name
 end
--- Чувак ушел с точки
+-- Р§СѓРІР°Рє СѓС€РµР» СЃ С‚РѕС‡РєРё
 function animpoint:stop()
 	--printf("STOP")
 	--callstack()
@@ -299,7 +299,7 @@ function animpoint:stop()
 	self.started = false
 	self.current_action = nil
 end
--- Возвращает, что надо делать
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚, С‡С‚Рѕ РЅР°РґРѕ РґРµР»Р°С‚СЊ
 function animpoint:get_action()
 	return self.current_action
 end
@@ -369,7 +369,7 @@ function animpoint:update()
 	local action = tmp_actions[rnd]
 	
 	
-	--action - выбранный экшн из доступных
+	--action - РІС‹Р±СЂР°РЅРЅС‹Р№ СЌРєС€РЅ РёР· РґРѕСЃС‚СѓРїРЅС‹С…
 	if(self.st.base_action) then
 		--printf("		have base_action")
 		if(self.st.base_action==descr.."_weapon") then
@@ -421,7 +421,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	storage.animpoint = animpoint(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, storage.animpoint)
 
 

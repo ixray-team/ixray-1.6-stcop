@@ -7,7 +7,7 @@ end
 --------------------
 function se_level_changer:on_register()
 	cse_alife_level_changer.on_register(self)
-	-- Проверяем кастомдату обьекта на наличие стори айди.
+	-- РџСЂРѕРІРµСЂСЏРµРј РєР°СЃС‚РѕРјРґР°С‚Сѓ РѕР±СЊРµРєС‚Р° РЅР° РЅР°Р»РёС‡РёРµ СЃС‚РѕСЂРё Р°Р№РґРё.
 	story_objects.check_spawn_ini_for_story_id(self)
 end
 --------------------
@@ -27,7 +27,7 @@ end
 --------------------
 function se_level_changer:STATE_Read(packet, size)
 	cse_alife_level_changer.STATE_Read(self, packet, size)
-	-- под LevelEditor не пытаться читать из пакета ничего
+	-- РїРѕРґ LevelEditor РЅРµ РїС‹С‚Р°С‚СЊСЃСЏ С‡РёС‚Р°С‚СЊ РёР· РїР°РєРµС‚Р° РЅРёС‡РµРіРѕ
 	if editor() then
 		return
 	end

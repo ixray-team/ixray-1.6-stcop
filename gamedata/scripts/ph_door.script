@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------------------------
 -- Physic door control
 ----------------------------------------------------------------------------------------------------
--- Исходный скрипт: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
--- Перевод на xr_logic: Andrey Fidrya (Zmey) af@svitonline.com
--- Доработка: Oleg Kreptul (Haron) haronk@ukr.net
+-- РСЃС…РѕРґРЅС‹Р№ СЃРєСЂРёРїС‚: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+-- РџРµСЂРµРІРѕРґ РЅР° xr_logic: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р”РѕСЂР°Р±РѕС‚РєР°: Oleg Kreptul (Haron) haronk@ukr.net
 ----------------------------------------------------------------------------------------------------
 
 
@@ -38,16 +38,16 @@ function action_door:reset_scheme(loading)
 	self.show_tips = self.st.show_tips
 
 	local disable_snd
-	-- Звук нужно отключить, только если скрипт двери для этого объекта используется
-	-- впервые (т.е. после загрузки уровня или после загрузки сохраненной игры),
-	-- иначе игрок услышит хлопок...
+	-- Р—РІСѓРє РЅСѓР¶РЅРѕ РѕС‚РєР»СЋС‡РёС‚СЊ, С‚РѕР»СЊРєРѕ РµСЃР»Рё СЃРєСЂРёРїС‚ РґРІРµСЂРё РґР»СЏ СЌС‚РѕРіРѕ РѕР±СЉРµРєС‚Р° РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+	-- РІРїРµСЂРІС‹Рµ (С‚.Рµ. РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё СѓСЂРѕРІРЅСЏ РёР»Рё РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё СЃРѕС…СЂР°РЅРµРЅРЅРѕР№ РёРіСЂС‹),
+	-- РёРЅР°С‡Рµ РёРіСЂРѕРє СѓСЃР»С‹С€РёС‚ С…Р»РѕРїРѕРє...
 	if not self.st.script_used_more_than_once then
 		disable_snd = true
 		self.st.script_used_more_than_once = true
 	end
 	
 	if self.st.closed then
-		--' Если дверь уже закрыта - то нужно закрыть без звука
+		--' Р•СЃР»Рё РґРІРµСЂСЊ СѓР¶Рµ Р·Р°РєСЂС‹С‚Р° - С‚Рѕ РЅСѓР¶РЅРѕ Р·Р°РєСЂС‹С‚СЊ Р±РµР· Р·РІСѓРєР°
 		if self:is_closed() then
 			disable_snd = true
 		end
@@ -92,7 +92,7 @@ function action_door:open_fastcall()
 
 	if self:is_open() then
 		local ph_obj = self.object:get_physics_object()
-		ph_obj:unset_door_ignore_dynamics() --'Игнорирование динамики на момент открытия/закрытия	
+		ph_obj:unset_door_ignore_dynamics() --'РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РґРёРЅР°РјРёРєРё РЅР° РјРѕРјРµРЅС‚ РѕС‚РєСЂС‹С‚РёСЏ/Р·Р°РєСЂС‹С‚РёСЏ	
 		self.object:on_door_is_open()
 		return true
 	end
@@ -103,13 +103,13 @@ end
 function action_door:close_action()
 	--printf("_bp: close_action(): %d", time_global())
 
-	-- Закрыли до предела, будем блокировать
+	-- Р—Р°РєСЂС‹Р»Рё РґРѕ РїСЂРµРґРµР»Р°, Р±СѓРґРµРј Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ
 	if self.st.no_force == true then
 		self.joint:set_max_force_and_velocity(0, 0, 0)
 	else
 		self.joint:set_max_force_and_velocity(10000, 1, 0)
 		
-		--!!! Фиксируем кость.
+		--!!! Р¤РёРєСЃРёСЂСѓРµРј РєРѕСЃС‚СЊ.
 		local ph_shell = self.object:get_physics_shell()
 		if ph_shell then
 			local ph_element = ph_shell:get_element_by_bone_name("door")
@@ -121,9 +121,9 @@ function action_door:close_action()
 	end
 	
 	local ph_obj = self.object:get_physics_object()
-	ph_obj:unset_door_ignore_dynamics() --'Игнорирование динамики на момент открытия/закрытия
+	ph_obj:unset_door_ignore_dynamics() --'РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РґРёРЅР°РјРёРєРё РЅР° РјРѕРјРµРЅС‚ РѕС‚РєСЂС‹С‚РёСЏ/Р·Р°РєСЂС‹С‚РёСЏ
 	self.block = false
-	-- Отыграть звук когда дверь захлопнулась:
+	-- РћС‚С‹РіСЂР°С‚СЊ Р·РІСѓРє РєРѕРіРґР° РґРІРµСЂСЊ Р·Р°С…Р»РѕРїРЅСѓР»Р°СЃСЊ:
 	if not self.soundless_block and self.st.snd_close_stop then
         xr_sound.set_sound_play(self.object:id(), self.st.snd_close_stop)
 	end
@@ -139,7 +139,7 @@ function action_door:open_door(disable_snd)
 
 	self.object:set_fastcall(self.open_fastcall,self)
 
-	--!!! Тут надо снять фиксацию кости
+	--!!! РўСѓС‚ РЅР°РґРѕ СЃРЅСЏС‚СЊ С„РёРєСЃР°С†РёСЋ РєРѕСЃС‚Рё
 	local ph_shell = self.object:get_physics_shell()
 	if ph_shell then
 		local ph_element = ph_shell:get_element_by_bone_name("door")
@@ -148,7 +148,7 @@ function action_door:open_door(disable_snd)
 			ph_element:release_fixed()
 			
 			local ph_obj = self.object:get_physics_object()
-			ph_obj:set_door_ignore_dynamics() --'Игнорирование динамики на момент открытия/закрытия
+			ph_obj:set_door_ignore_dynamics() --'РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РґРёРЅР°РјРёРєРё РЅР° РјРѕРјРµРЅС‚ РѕС‚РєСЂС‹С‚РёСЏ/Р·Р°РєСЂС‹С‚РёСЏ
 		end	
 	end
 	 
@@ -209,7 +209,7 @@ function action_door:close_door(disable_snd)
 		end
 	end
 
-	-- Ставим коллбек для отлова окончания закрытия двери (чтобы заблокировать ее и проиграть звук, если нужно):
+	-- РЎС‚Р°РІРёРј РєРѕР»Р»Р±РµРє РґР»СЏ РѕС‚Р»РѕРІР° РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РєСЂС‹С‚РёСЏ РґРІРµСЂРё (С‡С‚РѕР±С‹ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РµРµ Рё РїСЂРѕРёРіСЂР°С‚СЊ Р·РІСѓРє, РµСЃР»Рё РЅСѓР¶РЅРѕ):
 	self.object:set_fastcall(self.fastcall,self)
 
 	--printf("_bp: action_door:close_door()")
@@ -218,11 +218,11 @@ function action_door:close_door(disable_snd)
 	else
 		self.joint:set_max_force_and_velocity(200, 3, 0)
 	end
-	self.block = true -- Закрываем и блокируем	
+	self.block = true -- Р—Р°РєСЂС‹РІР°РµРј Рё Р±Р»РѕРєРёСЂСѓРµРј	
 	self.soundless_block = disable_snd
 	
 	local ph_obj = self.object:get_physics_object()
-	ph_obj:set_door_ignore_dynamics() --'Игнорирование динамики на момент открытия/закрытия
+	ph_obj:set_door_ignore_dynamics() --'РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РґРёРЅР°РјРёРєРё РЅР° РјРѕРјРµРЅС‚ РѕС‚РєСЂС‹С‚РёСЏ/Р·Р°РєСЂС‹С‚РёСЏ
 
 	if self.show_tips then
 		if self.st.locked == true and self.st.tip_unlock then
@@ -294,7 +294,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = action_door(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
@@ -341,9 +341,9 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 end
 
 
--- Вызывается на апдейте НПС
--- пробегается по всем дверям и пытается открыть те, которые находятся рядом с НПС
--- возвращает список дверей, которую открыл данный НПС
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РЅР° Р°РїРґРµР№С‚Рµ РќРџРЎ
+-- РїСЂРѕР±РµРіР°РµС‚СЃСЏ РїРѕ РІСЃРµРј РґРІРµСЂСЏРј Рё РїС‹С‚Р°РµС‚СЃСЏ РѕС‚РєСЂС‹С‚СЊ С‚Рµ, РєРѕС‚РѕСЂС‹Рµ РЅР°С…РѕРґСЏС‚СЃСЏ СЂСЏРґРѕРј СЃ РќРџРЎ
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РґРІРµСЂРµР№, РєРѕС‚РѕСЂСѓСЋ РѕС‚РєСЂС‹Р» РґР°РЅРЅС‹Р№ РќРџРЎ
 function try_to_open_door(npc)
 	if true then return {} end
 	local opened_doors = {}

@@ -6,13 +6,24 @@
         }
     ],
     "settings": {
-        "files.exclude": {
-            ".vs": true,
-            "bin": true,
-            "lib": true,
-            "obj": true,
-            "ipch": true,
-            "*.VC.db": true
+        "files.associations": {
+            // Configs
+            "fs.ltx": "ini",
+            "fsfactory.ltx": "ini",
+            "fsgame.ltx": "ini",
+            "**/gamedata/configs/**/*.ltx": "ini",
+            // Scripts
+            "**/gamedata/scripts/*.script": "lua",
+            "**/gamedata/shaders/**/*.s": "lua",
+            "**/gamedata/shaders/**/*.s_": "lua",
+            // Shaders
+            "**/gamedata/shaders/**/*.h": "hlsl",
+            "**/gamedata/shaders/**/*.ps": "hlsl",
+            "**/gamedata/shaders/**/*.vs": "hlsl",
+            "**/gamedata/shaders/**/*.ds": "hlsl",
+            "**/gamedata/shaders/**/*.hs": "hlsl",
+            "**/gamedata/shaders/**/*.gs": "hlsl",
+            "**/gamedata/shaders/**/*.cs": "hlsl",
         }
     }
 }

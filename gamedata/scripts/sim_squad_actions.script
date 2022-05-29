@@ -1,5 +1,5 @@
 --'******************************************************
---'*	Действие: Захватить точку
+--'*	Р”РµР№СЃС‚РІРёРµ: Р—Р°С…РІР°С‚РёС‚СЊ С‚РѕС‡РєСѓ
 --'******************************************************
 local STAY_POINT_IDLE_MIN = 180*60 --
 local STAY_POINT_IDLE_MAX = 300*60 --
@@ -9,13 +9,13 @@ function reach_target:__init(squad)
 	self.board = squad.board
 	self.squad_id = squad.id
 end
--- Сохранение
+-- РЎРѕС…СЂР°РЅРµРЅРёРµ
 function reach_target:save(packet)
 end
--- Загрузка
+-- Р—Р°РіСЂСѓР·РєР°
 function reach_target:load(packet)
 end
---' Апдейт действия
+--' РђРїРґРµР№С‚ РґРµР№СЃС‚РІРёСЏ
 function reach_target:update(under_simulation)
 	--printf("Squad[%s] attack_update", self.squad_id)
 	local squad = alife():object(self.squad_id)
@@ -33,7 +33,7 @@ function reach_target:update(under_simulation)
 	end
 	return false
 end
---' Произведение действия.
+--' РџСЂРѕРёР·РІРµРґРµРЅРёРµ РґРµР№СЃС‚РІРёСЏ.
 function reach_target:make(under_simulation)
 	local squad = alife():object(self.squad_id)
 	local squad_target = simulation_objects.get_sim_obj_registry().objects[squad.assigned_target_id]
@@ -44,7 +44,7 @@ function reach_target:make(under_simulation)
 		squad_target:on_reach_target(squad)
 	end
 	
-		--' Пересчитываем Team, Squad, Group  --Добавил Руслан, чтобы отряды, уходящие с базы обнуляли свой TSG и не агрили базу, если игрок решит их атаковать.
+		--' РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Team, Squad, Group  --Р”РѕР±Р°РІРёР» Р СѓСЃР»Р°РЅ, С‡С‚РѕР±С‹ РѕС‚СЂСЏРґС‹, СѓС…РѕРґСЏС‰РёРµ СЃ Р±Р°Р·С‹ РѕР±РЅСѓР»СЏР»Рё СЃРІРѕР№ TSG Рё РЅРµ Р°РіСЂРёР»Рё Р±Р°Р·Сѓ, РµСЃР»Рё РёРіСЂРѕРє СЂРµС€РёС‚ РёС… Р°С‚Р°РєРѕРІР°С‚СЊ.
 	for k in squad:squad_members() do
 		--log("Squad "..self.squad_id.."     id "..tostring(k.id))
 		if k.object ~= nil then
@@ -53,27 +53,27 @@ function reach_target:make(under_simulation)
 		end
 	end
 end
--- Вызывается при прикращении работы
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РїСЂРёРєСЂР°С‰РµРЅРёРё СЂР°Р±РѕС‚С‹
 function reach_target:finalize()
 end
 
 --'******************************************************
---'*	Действие: Остаться в точке
+--'*	Р”РµР№СЃС‚РІРёРµ: РћСЃС‚Р°С‚СЊСЃСЏ РІ С‚РѕС‡РєРµ
 --'******************************************************
 class "stay_on_target"
 function stay_on_target:__init(squad)
-	--' Смарт в котором остаемся
+	--' РЎРјР°СЂС‚ РІ РєРѕС‚РѕСЂРѕРј РѕСЃС‚Р°РµРјСЃСЏ
 	self.name = "stay_point"
 	self.start_time = nil
 	self.idle_time = math.random(STAY_POINT_IDLE_MIN, STAY_POINT_IDLE_MAX)
 end
--- Сохранение
+-- РЎРѕС…СЂР°РЅРµРЅРёРµ
 function stay_on_target:save(packet)
 end
--- Загрузка
+-- Р—Р°РіСЂСѓР·РєР°
 function stay_on_target:load(packet)
 end
---' Апдейт действия
+--' РђРїРґРµР№С‚ РґРµР№СЃС‚РІРёСЏ
 function stay_on_target:update(under_simulation)
 	--printf("diffsec = [%s] idle = [%s]", game.get_game_time():diffSec(self.start_time), self.idle_time)
 	if not under_simulation then
@@ -82,10 +82,10 @@ function stay_on_target:update(under_simulation)
 		return game.get_game_time():diffSec(self.start_time) > self.idle_time
 	end
 end
---' Произведение действия.
+--' РџСЂРѕРёР·РІРµРґРµРЅРёРµ РґРµР№СЃС‚РІРёСЏ.
 function stay_on_target:make(under_simulation)
 	self.start_time = game.get_game_time()
 end
--- Вызывается при прикращении работы
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РїСЂРёРєСЂР°С‰РµРЅРёРё СЂР°Р±РѕС‚С‹
 function stay_on_target:finalize()
 end

@@ -1,13 +1,13 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Схема встречи двух сталкеров
---	автор: Диденко Руслан (Stohe)
+--	РЎС…РµРјР° РІСЃС‚СЂРµС‡Рё РґРІСѓС… СЃС‚Р°Р»РєРµСЂРѕРІ
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
---' Возвращает есть ли у нас контакт с другим сталкером
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РµСЃС‚СЊ Р»Рё Сѓ РЅР°СЃ РєРѕРЅС‚Р°РєС‚ СЃ РґСЂСѓРіРёРј СЃС‚Р°Р»РєРµСЂРѕРј
 class "evaluator_contact" (property_evaluator)
 function evaluator_contact:__init(name, storage) super (nil, name)
 	self.a = storage
@@ -52,7 +52,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
---' Приглашение к тороговле
+--' РџСЂРёРіР»Р°С€РµРЅРёРµ Рє С‚РѕСЂРѕРіРѕРІР»Рµ
 class "action_meet_wait" (action_base)
 function action_meet_wait:__init (npc_name,action_name, storage, char_ini) super (nil, action_name)
 	self.char_ini = char_ini
@@ -74,10 +74,10 @@ end
 
 
 
--- Функционал
+-- Р¤СѓРЅРєС†РёРѕРЅР°Р»
 --[[
 
--- звук на юзание CB
+-- Р·РІСѓРє РЅР° СЋР·Р°РЅРёРµ CB
 
 ]]
 
@@ -93,27 +93,27 @@ function Cmeet_manager:__init(npc, storage)
 	self.allow_break = nil
 	self.npc_is_camp_director = false
 
-	self.curent_distance = nil -- nil - мит не активен, close - близко, far - далеко
+	self.curent_distance = nil -- nil - РјРёС‚ РЅРµ Р°РєС‚РёРІРµРЅ, close - Р±Р»РёР·РєРѕ, far - РґР°Р»РµРєРѕ
 
-	self.hello_passed = false 	-- Говорили ли мы привет
-	self.bye_passed = false	 	-- Говорили ли мы пока
+	self.hello_passed = false 	-- Р“РѕРІРѕСЂРёР»Рё Р»Рё РјС‹ РїСЂРёРІРµС‚
+	self.bye_passed = false	 	-- Р“РѕРІРѕСЂРёР»Рё Р»Рё РјС‹ РїРѕРєР°
 end
 function Cmeet_manager:update_state()
 	local state = nil
 	local victim = nil
 
 	if self.current_distance == "close" then
-		-- анимация, пока в близком радиусе
+		-- Р°РЅРёРјР°С†РёСЏ, РїРѕРєР° РІ Р±Р»РёР·РєРѕРј СЂР°РґРёСѓСЃРµ
 		state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_anim)
 
-		-- направление, пока в близком радиусе
+		-- РЅР°РїСЂР°РІР»РµРЅРёРµ, РїРѕРєР° РІ Р±Р»РёР·РєРѕРј СЂР°РґРёСѓСЃРµ
 		victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_victim)
 
 	elseif self.current_distance == "far" then
-		-- анимация, пока в дальнем радиусе
+		-- Р°РЅРёРјР°С†РёСЏ, РїРѕРєР° РІ РґР°Р»СЊРЅРµРј СЂР°РґРёСѓСЃРµ
 		state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_anim)
 
-		-- направление, пока в близком радиусе
+		-- РЅР°РїСЂР°РІР»РµРЅРёРµ, РїРѕРєР° РІ Р±Р»РёР·РєРѕРј СЂР°РґРёСѓСЃРµ
 		victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_victim)
 
 	end
@@ -136,7 +136,7 @@ function Cmeet_manager:update_state()
 
 	local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd)
 
-	-- звук, пока в дальнем радиусе  (отыгрывается, даже если мы в ближнем)
+	-- Р·РІСѓРє, РїРѕРєР° РІ РґР°Р»СЊРЅРµРј СЂР°РґРёСѓСЃРµ  (РѕС‚С‹РіСЂС‹РІР°РµС‚СЃСЏ, РґР°Р¶Рµ РµСЃР»Рё РјС‹ РІ Р±Р»РёР¶РЅРµРј)
 	if tostring(snd) ~= "nil" then
 		xr_sound.set_sound_play(self.npc:id(), snd)
 	end
@@ -157,7 +157,7 @@ function Cmeet_manager:set_start_distance()
 		return
 	end
 
-	-- Определение, в каком радиусе находимся
+	-- РћРїСЂРµРґРµР»РµРЅРёРµ, РІ РєР°РєРѕРј СЂР°РґРёСѓСЃРµ РЅР°С…РѕРґРёРјСЃСЏ
 	local distance = self.npc:position():distance_to(db.actor:position())
 
 	local actor_visible = self.npc:see(db.actor)
@@ -181,7 +181,7 @@ function Cmeet_manager:set_start_distance()
 
 end
 function Cmeet_manager:update()
-	-- Определение, в каком радиусе находимся
+	-- РћРїСЂРµРґРµР»РµРЅРёРµ, РІ РєР°РєРѕРј СЂР°РґРёСѓСЃРµ РЅР°С…РѕРґРёРјСЃСЏ
 	local distance = self.npc:position():distance_to(db.actor:position())
 
 	local actor_visible = self.npc:see(db.actor)
@@ -189,8 +189,8 @@ function Cmeet_manager:update()
 	if actor_visible then
 		--printf("%s check distance %s <= %s <= %s", self.npc:name(), distance, tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)), tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) )
 		if distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)) then
-			-- Коллбек на приближение
-			-- звук при приближении
+			-- РљРѕР»Р»Р±РµРє РЅР° РїСЂРёР±Р»РёР¶РµРЅРёРµ
+			-- Р·РІСѓРє РїСЂРё РїСЂРёР±Р»РёР¶РµРЅРёРё
 			if self.hello_passed == false then
 				local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_hello)
 				if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
@@ -202,8 +202,8 @@ function Cmeet_manager:update()
 	
 		elseif distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) then
 			if self.hello_passed == true then
-				-- Коллбек на отдаление
-				-- звук при отдалении
+				-- РљРѕР»Р»Р±РµРє РЅР° РѕС‚РґР°Р»РµРЅРёРµ
+				-- Р·РІСѓРє РїСЂРё РѕС‚РґР°Р»РµРЅРёРё
 				if self.bye_passed == false then
 					local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_bye)
 					if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
@@ -229,7 +229,7 @@ function Cmeet_manager:update()
 	elseif is_object_far == true then
 		self.current_distance = "far"
 	elseif distance > self.a.reset_distance then
-		-- ресет флажков при выходе в дальний радиус CB
+		-- СЂРµСЃРµС‚ С„Р»Р°Р¶РєРѕРІ РїСЂРё РІС‹С…РѕРґРµ РІ РґР°Р»СЊРЅРёР№ СЂР°РґРёСѓСЃ CB
 		self.hello_passed = false
 		self.bye_passed = false
 		self.current_distance = nil
@@ -238,25 +238,25 @@ function Cmeet_manager:update()
 	end
 
 
-	-- Можно или нет оборвать диалог
+	-- РњРѕР¶РЅРѕ РёР»Рё РЅРµС‚ РѕР±РѕСЂРІР°С‚СЊ РґРёР°Р»РѕРі
 	local allow_break = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.allow_break)
 	if self.allow_break ~= (allow_break == "true") then
 		self.allow_break = (allow_break == "true")
 	end
 
-	-- стартовый диалог
+	-- СЃС‚Р°СЂС‚РѕРІС‹Р№ РґРёР°Р»РѕРі
 	if self.a.meet_dialog ~= nil then
 		local start_dialog = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
 		if self.startdialog ~= start_dialog then
 			self.startdialog = start_dialog
 			--printf("*DIALOGS %s* SET [%s]", self.npc:name(), tostring(start_dialog))
 			if start_dialog == nil or start_dialog == "nil" then
-				-- восстановление начального
+				-- РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕРіРѕ
 				--printf("RESTORE")
 				self.npc:restore_default_start_dialog()
 			else
 				--printf("SET %s allow_break %s", start_dialog, tostring(self.allow_break))
-				-- установка нового
+				-- СѓСЃС‚Р°РЅРѕРІРєР° РЅРѕРІРѕРіРѕ
 				self.npc:set_start_dialog(start_dialog)
 				if self.npc:is_talking() then
 					db.actor:run_talk_dialog(self.npc, not(self.allow_break))
@@ -271,7 +271,7 @@ function Cmeet_manager:update()
 
 	local use = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use)
 
-	-- Проверяем, играем ли мы что то в кампе
+	-- РџСЂРѕРІРµСЂСЏРµРј, РёРіСЂР°РµРј Р»Рё РјС‹ С‡С‚Рѕ С‚Рѕ РІ РєР°РјРїРµ
 	if self.npc_is_camp_director == true then
 		use = "false"
 	end
@@ -279,7 +279,7 @@ function Cmeet_manager:update()
 
 	--printf("%s self.use[%s] use [%s]", self.npc:name(), tostring(self.use), tostring(use))
 	--print_table(self.a.use)
-	-- доступность юзания
+	-- РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ СЋР·Р°РЅРёСЏ
 	if self.use ~= use then
 		if use == "self" then
 			if not is_talking and device().precache_frame < 1 then
@@ -312,7 +312,7 @@ function Cmeet_manager:update()
 		db.actor:allow_break_talk_dialog(self.allow_break)
 	end
 ]]
-	-- Проверяем включать ли обижание на заюзывание
+	-- РџСЂРѕРІРµСЂСЏРµРј РІРєР»СЋС‡Р°С‚СЊ Р»Рё РѕР±РёР¶Р°РЅРёРµ РЅР° Р·Р°СЋР·С‹РІР°РЅРёРµ
 	local abuse = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.abuse)
 	if self.abuse_mode ~= abuse then
 		if abuse == "true" then
@@ -323,7 +323,7 @@ function Cmeet_manager:update()
 		self.abuse_mode = abuse
 	end
 
-	-- доступность торговли
+	-- РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ С‚РѕСЂРіРѕРІР»Рё
 	if xr_wounded.is_wounded(self.npc) then
 		self.trade_enable = false
 	else
@@ -343,7 +343,7 @@ end
 function notify_on_use(victim, who)
 	--printf("NOTIFY [%s] used by [%s]", victim:name(), who:name())
 
-	-- Если мы мертвы - на юзание не реагировать
+	-- Р•СЃР»Рё РјС‹ РјРµСЂС‚РІС‹ - РЅР° СЋР·Р°РЅРёРµ РЅРµ СЂРµР°РіРёСЂРѕРІР°С‚СЊ
 	if not victim:alive() then
 		return
 	end
@@ -422,12 +422,12 @@ end
 
 
 ------------
--- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
--- первичную настройку.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ РЅР°С‡Р°Р»Рµ РЅР° С‡С‚РµРЅРёРё Р»РѕРіРёРєРё, СЃРѕР·РґР°РµС‚ СЌРєС€РµРЅС‹, СЌРІР°Р»СѓР°С‚РѕСЂС‹ Рё РїСЂРѕРёР·РІРѕРґРёС‚
+-- РїРµСЂРІРёС‡РЅСѓСЋ РЅР°СЃС‚СЂРѕР№РєСѓ.
 function set_meet(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 end
--- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РЅРѕРІСѓСЋ СЃРµРєС†РёСЋ. РџСЂРѕРёР·РІРѕРґРёС‚ РІС‹С‡РёС‚С‹РІР°РЅРёРµ РЅР°СЃС‚СЂРѕРµРє РёР· С‚РµРєСѓС‰РµР№ СЃРµРєС†РёРё.
 function reset_meet(npc, scheme, st, section)
 	local meet_section
 --	printf("[%s]", utils.to_str(st.section_logic))
@@ -441,7 +441,7 @@ function reset_meet(npc, scheme, st, section)
 end
 
 
--- Функция чтения настроек. В нее передается секция, откуда их нужно читать.
+-- Р¤СѓРЅРєС†РёСЏ С‡С‚РµРЅРёСЏ РЅР°СЃС‚СЂРѕРµРє. Р’ РЅРµРµ РїРµСЂРµРґР°РµС‚СЃСЏ СЃРµРєС†РёСЏ, РѕС‚РєСѓРґР° РёС… РЅСѓР¶РЅРѕ С‡РёС‚Р°С‚СЊ.
 function init_meet(npc, ini, section, st, scheme)
 	--printf("MEET SECTION [%s][%s][%s]", tostring(st.meet_section), tostring(section), tostring(scheme))
 
@@ -453,7 +453,7 @@ function init_meet(npc, ini, section, st, scheme)
 
 	st.meet_section = utils.tostring(section)
 
--- Что можно настраивать в meet
+-- Р§С‚Рѕ РјРѕР¶РЅРѕ РЅР°СЃС‚СЂР°РёРІР°С‚СЊ РІ meet
 --[[
 [meet]
 close_distance 	= {=actor_has_weapon} 3, 3
@@ -471,19 +471,19 @@ far_victim 		= {=actor_has_weapon} a, b
 
 snd_on_use 		= {=in_battle} a, {=no_talk} b, c
 
-use				= {=actor_has_weapon} true, false  -- self - юзает сам
+use				= {=actor_has_weapon} true, false  -- self - СЋР·Р°РµС‚ СЃР°Рј
 meet_dialog		= {=actor_has_weapon} a
 abuse			= {=in_battle} true, false
 trade_enable	= {=in_battle} true, false
 allow_break		= {=in_battle} true, false
 
-Ненастраиваемые параметры:
+РќРµРЅР°СЃС‚СЂР°РёРІР°РµРјС‹Рµ РїР°СЂР°РјРµС‚СЂС‹:
 
 reset_distance	= 30
 
 ]]
 
-	-- Устанавливаем дефолты
+	-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґРµС„РѕР»С‚С‹
 	local def = {}
 
 	local relation = game_relations.get_npcs_relation(npc, db.actor)
@@ -589,7 +589,7 @@ reset_distance	= 30
 	st.meet_manager:set_start_distance()
 
 	--print_table(st.far_distance)
-	-- флажок, что функция хотя бы раз вызывалась
+	-- С„Р»Р°Р¶РѕРє, С‡С‚Рѕ С„СѓРЅРєС†РёСЏ С…РѕС‚СЏ Р±С‹ СЂР°Р· РІС‹Р·С‹РІР°Р»Р°СЃСЊ
 	st.meet_set = true
 end
 
@@ -598,7 +598,7 @@ function disable_scheme(npc, scheme)
 	db.storage[npc:id()].actor_disable = nil
 end
 
---- Находится ли чувак в данный момент в состоянии мита
+--- РќР°С…РѕРґРёС‚СЃСЏ Р»Рё С‡СѓРІР°Рє РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РІ СЃРѕСЃС‚РѕСЏРЅРёРё РјРёС‚Р°
 function is_meet(npc)
 	local manager = npc:motivation_action_manager()
 	if manager and manager:initialized() then

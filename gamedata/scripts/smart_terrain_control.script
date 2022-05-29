@@ -1,8 +1,8 @@
--- Состояние смарттеррейна
--- Может быть трех видов: normal, danger, alarm
--- normal - все как обычно, без ограничений
--- danger - в зоне контроля находится игрок с оружием. Нужно запереть двери и предложить ему убираться
--- alarm - игрок атаковал смарт. Нужно запереть двери и подождать время.
+-- РЎРѕСЃС‚РѕСЏРЅРёРµ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°
+-- РњРѕР¶РµС‚ Р±С‹С‚СЊ С‚СЂРµС… РІРёРґРѕРІ: normal, danger, alarm
+-- normal - РІСЃРµ РєР°Рє РѕР±С‹С‡РЅРѕ, Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№
+-- danger - РІ Р·РѕРЅРµ РєРѕРЅС‚СЂРѕР»СЏ РЅР°С…РѕРґРёС‚СЃСЏ РёРіСЂРѕРє СЃ РѕСЂСѓР¶РёРµРј. РќСѓР¶РЅРѕ Р·Р°РїРµСЂРµС‚СЊ РґРІРµСЂРё Рё РїСЂРµРґР»РѕР¶РёС‚СЊ РµРјСѓ СѓР±РёСЂР°С‚СЊСЃСЏ
+-- alarm - РёРіСЂРѕРє Р°С‚Р°РєРѕРІР°Р» СЃРјР°СЂС‚. РќСѓР¶РЅРѕ Р·Р°РїРµСЂРµС‚СЊ РґРІРµСЂРё Рё РїРѕРґРѕР¶РґР°С‚СЊ РІСЂРµРјСЏ.
 
 NORMAL = 0
 DANGER = 1
@@ -38,7 +38,7 @@ function CBaseOnActorControl:update()
 
 		local sound = xr_logic.pick_section_from_condlist(db.actor, self.smart, self.alarm_stop_sound)
 		--printf("SOUND = %s", tostring(sound))
-		--' Озвучка на конец атаки
+		--' РћР·РІСѓС‡РєР° РЅР° РєРѕРЅРµС† Р°С‚Р°РєРё
 		if sound ~= nil then
 			xr_sound.set_sound_play(db.actor:id(), sound)
 		end
@@ -55,7 +55,7 @@ function CBaseOnActorControl:update()
 	end
 end
 
--- Возвращает статус угрожает ли игрок смарту или нет (находится ли с оружием в пределах новеапон зоны).
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚Р°С‚СѓСЃ СѓРіСЂРѕР¶Р°РµС‚ Р»Рё РёРіСЂРѕРє СЃРјР°СЂС‚Сѓ РёР»Рё РЅРµС‚ (РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё СЃ РѕСЂСѓР¶РёРµРј РІ РїСЂРµРґРµР»Р°С… РЅРѕРІРµР°РїРѕРЅ Р·РѕРЅС‹).
 function CBaseOnActorControl:get_actor_treat()
 	local zone = db.zone_by_name[self.noweap_zone]
 	if zone == nil then
@@ -78,12 +78,12 @@ function CBaseOnActorControl:get_actor_treat()
 	return false
 end
 
--- Устанавливает, что игрок атаковал смарт
+-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚, С‡С‚Рѕ РёРіСЂРѕРє Р°С‚Р°РєРѕРІР°Р» СЃРјР°СЂС‚
 function CBaseOnActorControl:actor_attack()
 
 	if self.status ~= ALARM then
 		local sound = xr_logic.pick_section_from_condlist(db.actor, self.smart, self.alarm_start_sound)
-		--' Озвучка на начало атаки.
+		--' РћР·РІСѓС‡РєР° РЅР° РЅР°С‡Р°Р»Рѕ Р°С‚Р°РєРё.
 		if sound ~= nil then
 			xr_sound.set_sound_play(db.actor:id(), sound)
 		end
@@ -99,7 +99,7 @@ function CBaseOnActorControl:get_status()
 	return self.status
 end
 
--- НЕ ЗАБЫТЬ СЕЙВ ЛОАД
+-- РќР• Р—РђР‘Р«РўР¬ РЎР•Р™Р’ Р›РћРђР”
 function CBaseOnActorControl:save(packet)
 	set_save_marker(packet, "save", false, "CBaseOnActorControl")
 

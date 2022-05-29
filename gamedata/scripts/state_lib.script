@@ -1,11 +1,11 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Библиотека состояний тела
---	автор: Диденко Руслан (Stohe)
+--	Р‘РёР±Р»РёРѕС‚РµРєР° СЃРѕСЃС‚РѕСЏРЅРёР№ С‚РµР»Р°
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 states = {
-	-- Дефолтовый
+	-- Р”РµС„РѕР»С‚РѕРІС‹Р№
 	idle = {	weapon = nil,
 				movement = nil,
 				mental = nil,
@@ -22,7 +22,7 @@ states = {
 				direction = CSightParams.eSightTypeAnimationDirection
 			},
 
-	-- Ходячие состояния
+	-- РҐРѕРґСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	walk = {	weapon = "strapped",
 				movement = move.walk,
 				mental = anim.free,
@@ -130,7 +130,7 @@ states = {
 				animation = nil
 			},
 
-	-- Стоячие состояния
+	-- РЎС‚РѕСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	wait = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -359,7 +359,7 @@ states = {
 				animstate = nil,
 				animation = "hide"
 			},
-	-- Сидячие состояния
+	-- РЎРёРґСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	sit = {		weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -622,7 +622,7 @@ states = {
 
 
 
-	-- Раненый
+	-- Р Р°РЅРµРЅС‹Р№
 	wounded = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.danger,
@@ -693,7 +693,7 @@ states = {
 				animation = "talk_default"
 			},
 
-	-- Пси раненый
+	-- РџСЃРё СЂР°РЅРµРЅС‹Р№
 	psy_pain = {weapon = "drop",
 				movement = move.stand,
 				mental = anim.free,
