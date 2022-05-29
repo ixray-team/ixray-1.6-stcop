@@ -845,7 +845,7 @@ HRESULT	CRender::shader_compile			(
 	HRESULT		_result = E_FAIL;
 
 	string_path	folder_name, folder;
-	xr_strcpy		( folder, "r1\\objects\\r1\\" );
+	xr_strcpy		( folder, "shaders_cache\\r1\\" );
 	xr_strcat		( folder, name );
 	xr_strcat		( folder, "." );
 
