@@ -38,8 +38,6 @@ dep/
 *.~cpp
 
 # X-Ray resources
-gamedata/
-rawdata/
 levels/
 localization/
 mp/
@@ -48,4 +46,3 @@ resources/
 
 # X-Ray user files
 _appdata_/
-.ltx
