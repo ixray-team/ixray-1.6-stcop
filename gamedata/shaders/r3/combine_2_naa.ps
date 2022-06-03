@@ -19,7 +19,7 @@ struct 	v2p
 Texture2D 			s_distort;
 #define	EPSDEPTH	0.001
 #else
-Texture2DMS<float4, MSAA_SAMPLES> s_distort;
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_distort;
 #define	EPSDEPTH	0.001
 #endif
 uniform float4 		e_barrier;	// x=norm(.8f), y=depth(.1f), z=clr
