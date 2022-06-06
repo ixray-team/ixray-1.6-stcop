@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //	Vertex
 //	TODO: DX10: replace WorldViewProjection with m_WVP
-PS_INPUT_RAYCAST main (VS_INPUT input)
+PS_INPUT_RAYCAST main_vs_4_0 (VS_INPUT input)
 {
     PS_INPUT_RAYCAST output = (PS_INPUT_RAYCAST)0;
     output.pos = float4(input.pos,1);
