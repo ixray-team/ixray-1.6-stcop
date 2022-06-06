@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //	Vertex
 //	A full-screen edge detection pass to locate artifacts
-VS_OUTPUT_EDGE main( VS_INPUT input )
+VS_OUTPUT_EDGE main_vs_4_0( VS_INPUT input )
 {
     VS_OUTPUT_EDGE output = (VS_OUTPUT_EDGE)0;
     output.position = float4(input.pos,1);
