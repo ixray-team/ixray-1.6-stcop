@@ -2,7 +2,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //	Vertex
-v2g_fluidsim_clip main( v_fluidsim input)
+v2g_fluidsim_clip main_vs_4_0( v_fluidsim input)
 {
     v2g_fluidsim_clip output = (v2g_fluidsim_clip)0;
 
