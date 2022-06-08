@@ -135,10 +135,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
-		DownloadDependencies.bat = DownloadDependencies.bat
+		download-dependencies.ps1 = download-dependencies.ps1
 		fs.ltx = fs.ltx
 		fsfactory.ltx = fsfactory.ltx
 		fsgame.ltx = fsgame.ltx
+		launch-engine.bat = launch-engine.bat
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
