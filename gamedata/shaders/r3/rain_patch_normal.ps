@@ -87,6 +87,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	_N.xyz = normalize(_N.xyz);
 
+	_P.xyz += _N.xyz * 0.15f;
 	float4 PS = mul( m_shadow,  _P );
 
 	float3 WorldP	= mul( m_sunmask, _P );
@@ -94,7 +95,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	// Read rain projection with some jetter. Also adding pixel normal 
 	// factor to jitter to make rain strips more realistic.
-	float s		= shadow_rain( PS, WorldP.xz*1.1 - WorldN.xz*0.035 );	
+	float s		= shadow_hw(PS) * saturate(gbd.hemi * 10.0f);	
 	
 	//	Apply distance falloff
 	//float	fAtten = 1 - smoothstep( 10, 30, length( _P.xyz ));
