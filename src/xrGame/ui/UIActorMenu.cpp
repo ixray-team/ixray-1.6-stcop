@@ -63,14 +63,23 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 	m_pPartnerInvOwner	= io;
 	if ( m_pPartnerInvOwner )
 	{
-		if (m_pPartnerInvOwner->use_simplified_visual() ) 
+		CBaseMonster* monster = smart_cast<CBaseMonster*>(m_pPartnerInvOwner);
+		if (monster || m_pPartnerInvOwner->use_simplified_visual()) {
 			m_PartnerCharacterInfo->ClearInfo();
-		else 
-			m_PartnerCharacterInfo->InitCharacter( m_pPartnerInvOwner->object_id() );
+
+			if (monster)
+			{
+				m_PartnerCharacterInfo->InitCharacterMP("", 
+					pSettings->r_string(monster->cNameSect(), "icon"));
+			}
+		} else {
+			m_PartnerCharacterInfo->InitCharacter(m_pPartnerInvOwner->object_id());
+		}
 
 		SetInvBox( NULL );
-	}else
+	} else {
 		m_PartnerCharacterInfo->ClearInfo();
+	}
 }
 
 void CUIActorMenu::SetInvBox(CInventoryBox* box)
