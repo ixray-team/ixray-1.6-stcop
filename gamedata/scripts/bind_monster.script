@@ -49,12 +49,16 @@ function generic_object_binder:update(delta)
 	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
 	--'	self.object:name(), time_global())
 
-	if not object_alive then
-		return
+	if object_alive then
+		if self.object:is_talk_enabled() then
+			self.object:set_tip_text("character_use")
+		else
+			self.object:set_tip_text("")
+		end
+	else
+		self.object:set_tip_text_default()
 	end
 
-
-	self.object:set_tip_text("")
 	local st = db.storage[self.object:id()]
 	if st ~= nil and st.active_scheme ~= nil then
 		xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
