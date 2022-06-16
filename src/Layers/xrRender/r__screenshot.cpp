@@ -190,38 +190,54 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			break;
 		case IRender_interface::SM_FOR_LEVELMAP:
 		case IRender_interface::SM_FOR_CUBEMAP:
+		{
+			ID3DTexture2D* pSrcSmallTexture;
+
+			D3D_TEXTURE2D_DESC desc;
+			ZeroMemory(&desc, sizeof(desc));
+			desc.Width = Device.dwHeight;
+			desc.Height = Device.dwHeight;
+			desc.MipLevels = 1;
+			desc.ArraySize = 1;
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc.SampleDesc.Count = 1;
+			desc.Usage = D3D_USAGE_DEFAULT;
+			desc.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+
+			CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSrcSmallTexture));
+
+#ifdef USE_DX11
+			CHK_DX(D3DX11LoadTextureFromTexture(HW.pContext, pSrcTexture,
+				NULL, pSrcSmallTexture));
+#else
+			CHK_DX(D3DX10LoadTextureFromTexture(pSrcTexture,
+				NULL, pSrcSmallTexture));
+#endif
+
+			// save (logical & physical)
+			ID3DBlob* saved = 0;
+#ifdef USE_DX11
+			HRESULT hr = D3DX11SaveTextureToMemory(HW.pContext, pSrcSmallTexture, D3DX11_IFF_DDS, &saved, 0);
+#else
+			HRESULT hr = D3DX10SaveTextureToMemory(pSrcSmallTexture, D3DX10_IFF_DDS, &saved, 0);
+#endif
+			if (hr == D3D_OK)
 			{
-				VERIFY(!"CRender::Screenshot. This screenshot type is not supported for DX10.");
-				/*
-				string64			t_stemp;
-				string_path			buf;
-				VERIFY				(name);
-				strconcat			(sizeof(buf),buf,"ss_",Core.UserName,"_",timestamp(t_stemp),"_#",name);
-				xr_strcat				(buf,".tga");
-				IWriter*		fs	= FS.w_open	("$screenshots$",buf); R_ASSERT(fs);
-				TGAdesc				p;
-				p.format			= IMG_24B;
-
-				//	TODO: DX10: This is totally incorrect but mimics 
-				//	original behaviour. Fix later.
-				hr					= pFB->LockRect(&D,0,D3DLOCK_NOSYSLOCK);
-				if(hr!=D3D_OK)		return;
-				hr					= pFB->UnlockRect();
-				if(hr!=D3D_OK)		goto _end_;
-
-				// save
-				u32* data			= (u32*)xr_malloc(Device.dwHeight*Device.dwHeight*4);
-				imf_Process			(data,Device.dwHeight,Device.dwHeight,(u32*)D.pBits,Device.dwWidth,Device.dwHeight,imf_lanczos3);
-				p.scanlenght		= Device.dwHeight*4;
-				p.width				= Device.dwHeight;
-				p.height			= Device.dwHeight;
-				p.data				= data;
-				p.maketga			(*fs);
-				xr_free				(data);
-
-				FS.w_close			(fs);
-				*/
+				string_path buf;
+				VERIFY(name);
+				strconcat(sizeof(buf), buf, name, ".dds");
+				IWriter* fs = FS.w_open("$screenshots$", buf);
+				if (fs)
+				{
+					fs->w(saved->GetBufferPointer(), (u32)saved->GetBufferSize());
+					FS.w_close(fs);
+				}
 			}
+			_RELEASE(saved);
+
+			// cleanup
+			_RELEASE(pSrcSmallTexture);
+		}
 			break;
 	}
 
