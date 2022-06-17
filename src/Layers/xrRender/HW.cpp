@@ -37,7 +37,10 @@ CHW::CHW() :
 	pBaseZB(NULL),
 	m_move_window(true)
 {
-	;
+	DEVMODE dmi;
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmi);
+	psCurrentVidMode[0] = dmi.dmPelsWidth;
+	psCurrentVidMode[1] = dmi.dmPelsHeight;
 }
 
 CHW::~CHW()
