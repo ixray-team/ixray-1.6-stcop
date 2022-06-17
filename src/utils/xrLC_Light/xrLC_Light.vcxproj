@@ -367,6 +367,9 @@
     <ClCompile Include="xrThread.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\3rd party\zlib\zlib.vcxproj">
+      <Project>{ca2604ca-a2ac-49a1-a468-8ab5a2e6cbc9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
