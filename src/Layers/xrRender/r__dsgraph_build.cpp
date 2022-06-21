@@ -76,7 +76,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	{
 		if (sh->flags.bStrictB2F)	
 		{
-			mapSorted_Node* N		= mapSorted.insertInAnyWay	(distSQ);
+			mapSorted_Node* N		= mapHUDSorted.insertInAnyWay	(distSQ);
 			N->val.ssa				= SSA;
 			N->val.pObject			= RI.val_pObject;
 			N->val.pVisual			= pVisual;
