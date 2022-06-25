@@ -78,7 +78,6 @@ half4   main( vf I )          : COLOR
 	half3	c_reflection       = env*amount;
 	half3	final              = lerp(c_reflection,base.rgb,base.a);
 
-			final	*= I.c0*2;
 
         // tonemap
 #ifdef        USE_VTF
@@ -123,6 +122,7 @@ half4   main( vf I )          : COLOR
 	alpha		= lerp(alpha, leaves.a, leaves.a*fLeavesFactor);
 
 #endif	//	USE_SOFT_WATER
+	final	*= I.c0*2;
 
 	//	Fogging
 	final = lerp(fog_color, final, I.fog);
@@ -131,10 +131,11 @@ half4   main( vf I )          : COLOR
 	return  float4(final, alpha );
 
 #else	//	NEED_SOFT_WATER
-
+	final	*= I.c0*2;
+	
 	//	Fogging
 	final = lerp(fog_color, final, I.fog);
-	
+
 	return  float4(final, I.fog*I.fog);
 
 #endif	//	NEED_SOFT_WATER
