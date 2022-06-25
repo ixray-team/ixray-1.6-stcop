@@ -19,6 +19,7 @@ uniform sampler2D	s_nmap;
 uniform samplerCUBE	s_env0;
 uniform samplerCUBE	s_env1;
 uniform sampler2D	s_leaves;
+uniform float4 pos_decompression_params;
 
 #if defined(USE_SOFT_WATER) && defined(NEED_SOFT_WATER)
 half3	water_intensity;
@@ -93,7 +94,10 @@ half4   main( vf I )          : COLOR
 #ifdef	USE_SOFT_WATER
 	//	Igor: additional depth test
 	half4 _P = 	tex2Dproj( s_position, I.tctexgen);
-	half waterDepth = _P.z-I.tctexgen.z;
+
+	float2 PosTc = I.tctexgen.xy / I.tctexgen.w;
+	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
+	float waterDepth = length(waterPos - _P) * 0.75f;
 
 	//	water fog
 	half  fog_exp_intens = -4.0h;
