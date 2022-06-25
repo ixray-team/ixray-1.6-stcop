@@ -89,7 +89,9 @@ float4 main( vf I ) : SV_Target
 	gbuffer_data gbd = gbuffer_load_data( PosTc );
 #endif
 	float4 _P = 	float4( gbd.P, gbd.mtl );
-	float waterDepth = _P.z-I.tctexgen.z;
+
+	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
+	float waterDepth = length(waterPos - _P) * 0.75f;
 
 	//	water fog
 	float  fog_exp_intens = -4.0h;
