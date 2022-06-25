@@ -66,7 +66,6 @@ float4 main( vf I ) : SV_Target
 	float3	c_reflection       = env*amount;
 	float3	final              = lerp(c_reflection,base.rgb,base.a);
 
-			final	*= I.c0*2;
 
         // tonemap
 #ifdef        USE_VTF
@@ -115,6 +114,7 @@ float4 main( vf I ) : SV_Target
 
 #endif	//	USE_SOFT_WATER
 
+	final	*= I.c0*2;
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);
 	alpha		*= I.fog*I.fog;
@@ -123,6 +123,7 @@ float4 main( vf I ) : SV_Target
 
 #else	//	NEED_SOFT_WATER
 
+	final	*= I.c0*2;
 //	return  float4   (final, 1 )                ;
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);
