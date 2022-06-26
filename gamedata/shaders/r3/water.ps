@@ -50,7 +50,14 @@ float4 main( vf I ) : SV_Target
 			Nw	= normalize (Nw);
 	float3	v2point	= normalize (I.v2point);
 	float3	vreflect= reflect(v2point, Nw);
-			vreflect.y= vreflect.y*2-1;     // fake remapping
+
+	float	fresnel	= saturate (dot(vreflect,v2point));
+
+	//	true remapping. Slow.
+	float3 vreflectabs = abs(vreflect);
+	float vreflectmax = max( vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
+	vreflect /= vreflectmax;
+	vreflect.y = vreflect.y*2-1;
 
 //	float3	env0	= texCUBE (s_env0, vreflect);
 //	float3	env1	= texCUBE (s_env1, vreflect);
@@ -59,7 +66,6 @@ float4 main( vf I ) : SV_Target
 	float3	env	= lerp (env0,env1,L_ambient.w);
 			env	*= env*2;
 
-	float	fresnel	= saturate (dot(vreflect,v2point));
 	float	power	= pow(fresnel,9);
 	float	amount	= 0.15h+0.25h*power;	// 1=full env, 0=no env
 
