@@ -9,8 +9,11 @@
   </p>
 
   <p>
-    <a href="https://github.com/ixray-team/ixray-1.6/releases/tag/r1">
-      <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6?include_prereleases" alt="Latest release" />
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.2">
+      <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases" alt="Latest release" />
+    </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/building.yml">
+      <img src="https://img.shields.io/github/workflow/status/ixray-team/ixray-1.6-stcop/Building" alt="Building status" />
     </a>
   </p>
 </div>
