@@ -50,7 +50,14 @@ float4 main( vf I ) : SV_Target
 			Nw	= normalize (Nw);
 	float3	v2point	= normalize (I.v2point);
 	float3	vreflect= reflect(v2point, Nw);
-			vreflect.y= vreflect.y*2-1;     // fake remapping
+
+	float	fresnel	= saturate (dot(vreflect,v2point));
+
+	//	true remapping. Slow.
+	float3 vreflectabs = abs(vreflect);
+	float vreflectmax = max( vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
+	vreflect /= vreflectmax;
+	vreflect.y = vreflect.y*2-1;
 
 //	float3	env0	= texCUBE (s_env0, vreflect);
 //	float3	env1	= texCUBE (s_env1, vreflect);
@@ -59,14 +66,12 @@ float4 main( vf I ) : SV_Target
 	float3	env	= lerp (env0,env1,L_ambient.w);
 			env	*= env*2;
 
-	float	fresnel	= saturate (dot(vreflect,v2point));
 	float	power	= pow(fresnel,9);
 	float	amount	= 0.15h+0.25h*power;	// 1=full env, 0=no env
 
 	float3	c_reflection       = env*amount;
 	float3	final              = lerp(c_reflection,base.rgb,base.a);
 
-			final	*= I.c0*2;
 
         // tonemap
 #ifdef        USE_VTF
@@ -89,7 +94,9 @@ float4 main( vf I ) : SV_Target
 	gbuffer_data gbd = gbuffer_load_data( PosTc );
 #endif
 	float4 _P = 	float4( gbd.P, gbd.mtl );
-	float waterDepth = _P.z-I.tctexgen.z;
+
+	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
+	float waterDepth = length(waterPos - _P) * 0.75f;
 
 	//	water fog
 	float  fog_exp_intens = -4.0h;
@@ -113,6 +120,7 @@ float4 main( vf I ) : SV_Target
 
 #endif	//	USE_SOFT_WATER
 
+	final	*= I.c0*2;
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);
 	alpha		*= I.fog*I.fog;
@@ -121,6 +129,7 @@ float4 main( vf I ) : SV_Target
 
 #else	//	NEED_SOFT_WATER
 
+	final	*= I.c0*2;
 //	return  float4   (final, 1 )                ;
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);

@@ -2,23 +2,24 @@
 
 struct   vf
 {
-        float4         hpos        :         POSITION        ;
+      float4         hpos        :         POSITION        ;
       float2  tbase        :        TEXCOORD0        ;  // base
-           float2         tnorm0        :        TEXCOORD1        ;  // nm0
-           float2         tnorm1        :        TEXCOORD2        ;  // nm1
-        half3         M1                :        TEXCOORD3        ;
-        half3         M2                :        TEXCOORD4        ;
-        half3         M3                :        TEXCOORD5        ;
-        half3        v2point        :        TEXCOORD6        ;
-	float4      tctexgen    :         TEXCOORD7        ;
-           half4        c0                :          COLOR0                ;
-//        float          fog        :         FOG                ;
+      float2         tnorm0        :        TEXCOORD1        ;  // nm0
+      float2         tnorm1        :        TEXCOORD2        ;  // nm1
+      half3         M1                :        TEXCOORD3        ;
+      half3         M2                :        TEXCOORD4        ;
+      half3         M3                :        TEXCOORD5        ;
+      half3        v2point        :        TEXCOORD6        ;
+	  float4      tctexgen    :         TEXCOORD7        ;
+      half4        c0                :          COLOR0                ;
+      float          fog        :         FOG                ;
 };
 
 uniform sampler2D	s_nmap;
 uniform samplerCUBE	s_env0;
 uniform samplerCUBE	s_env1;
 uniform sampler2D	s_leaves;
+uniform float4 pos_decompression_params;
 
 #if defined(USE_SOFT_WATER) && defined(NEED_SOFT_WATER)
 half3	water_intensity;
@@ -56,28 +57,26 @@ half4   main( vf I )          : COLOR
 			Nw	= normalize (Nw);
 	half3	v2point	= normalize (I.v2point);
 	half3	vreflect= reflect(v2point, Nw);
-			vreflect.y= vreflect.y*2-1;     // fake remapping
-/*	//	true remapping. Slow.
-	half3 vreflectabs = abs(vreflect);
-	half vreflectmax = max( vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
+
+	float	fresnel	= saturate (dot(vreflect,v2point));
+
+	//	true remapping. Slow.
+	float3 vreflectabs = abs(vreflect);
+	float vreflectmax = max( vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
 	vreflect /= vreflectmax;
-	if (vreflect.y<0.99)
-		vreflect.y = vreflect.y*2-1;
-*/
+	vreflect.y = vreflect.y*2-1;
 
 	half3	env0	= texCUBE (s_env0, vreflect);
 	half3	env1	= texCUBE (s_env1, vreflect);
 	half3	env	= lerp (env0,env1,L_ambient.w);
 			env	*= env*2;
 
-	half	fresnel	= saturate (dot(vreflect,v2point));
 	half	power	= pow(fresnel,9);
 	half	amount	= 0.15h+0.25h*power;	// 1=full env, 0=no env
 
 	half3	c_reflection       = env*amount;
 	half3	final              = lerp(c_reflection,base.rgb,base.a);
 
-			final	*= I.c0*2;
 
         // tonemap
 #ifdef        USE_VTF
@@ -93,7 +92,10 @@ half4   main( vf I )          : COLOR
 #ifdef	USE_SOFT_WATER
 	//	Igor: additional depth test
 	half4 _P = 	tex2Dproj( s_position, I.tctexgen);
-	half waterDepth = _P.z-I.tctexgen.z;
+
+	float2 PosTc = I.tctexgen.xy / I.tctexgen.w;
+	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
+	float waterDepth = length(waterPos - _P) * 0.75f;
 
 	//	water fog
 	half  fog_exp_intens = -4.0h;
@@ -119,12 +121,21 @@ half4   main( vf I )          : COLOR
 	alpha		= lerp(alpha, leaves.a, leaves.a*fLeavesFactor);
 
 #endif	//	USE_SOFT_WATER
+	final	*= I.c0*2;
 
-	return  half4   (final, alpha*I.c0.a*I.c0.a )                ;
+	//	Fogging
+	final = lerp(fog_color, final, I.fog);
+	alpha *= I.fog*I.fog;
+
+	return  float4(final, alpha );
 
 #else	//	NEED_SOFT_WATER
+	final	*= I.c0*2;
+	
+	//	Fogging
+	final = lerp(fog_color, final, I.fog);
 
-        return  half4   (final, 1 )                ;
+	return  float4(final, I.fog*I.fog);
 
 #endif	//	NEED_SOFT_WATER
 }
