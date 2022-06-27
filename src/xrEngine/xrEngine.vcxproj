@@ -315,7 +315,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary />
+      <ImportLibrary>$(SolutionDir)lib\dedicated\$(ProjectName).lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -357,6 +357,7 @@
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention />
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <ImportLibrary>$(SolutionDir)lib\dedicated\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">
@@ -399,6 +400,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention />
+      <ImportLibrary>$(SolutionDir)lib\dedicated\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
