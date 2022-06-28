@@ -1,15 +1,16 @@
 name: Building
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   build:
+    name: 'Building'
     runs-on: windows-latest
 
     strategy:
       matrix:
-        configuration: [Debug, Mixed, Release, Debug_Dedicated, Mixed_Dedicated, Release_Dedicated]
-        platform: [Win32]
+        configuration: [ Debug, Mixed, Release, Debug_Dedicated, Mixed_Dedicated, Release_Dedicated ]
+        platform: [ x86 ]
 
     env:
       solution_name: XRay.Engine.sln
