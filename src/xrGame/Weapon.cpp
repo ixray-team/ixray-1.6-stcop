@@ -239,9 +239,9 @@ void CWeapon::Load		(LPCSTR section)
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
 	
 	////////////////////////////////////////////////////
-	// дисперсия стрельбы
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-	//подбрасывание камеры во время отдачи
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	u8 rm = READ_IF_EXISTS( pSettings, r_u8, section, "cam_return", 1 );
 	cam_recoil.ReturnMode = (rm == 1);
 	
@@ -289,8 +289,8 @@ void CWeapon::Load		(LPCSTR section)
 	
 	cam_recoil.DispersionFrac	= _abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", 0.7f ) );
 
-	//подбрасывание камеры во время отдачи в режиме zoom ==> ironsight or scope
-	//zoom_cam_recoil.Clone( cam_recoil ); ==== нельзя !!!!!!!!!!
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ zoom ==> ironsight or scope
+	//zoom_cam_recoil.Clone( cam_recoil ); ==== пїЅпїЅпїЅпїЅпїЅпїЅ !!!!!!!!!!
 	zoom_cam_recoil.RelaxSpeed		= cam_recoil.RelaxSpeed;
 	zoom_cam_recoil.RelaxSpeed_AI	= cam_recoil.RelaxSpeed_AI;
 	zoom_cam_recoil.DispersionFrac	= cam_recoil.DispersionFrac;
@@ -384,7 +384,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_fMaxRadius		= pSettings->r_float		(section,"max_radius");
 
 
-	// информация о возможных апгрейдах и их визуализации в инвентаре
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	m_eScopeStatus			 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"scope_status");
 	m_eSilencerStatus		 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"silencer_status");
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
@@ -463,7 +463,7 @@ void CWeapon::Load		(LPCSTR section)
 //	m_zoom_params.m_ZoomDof		= READ_IF_EXISTS(pSettings, r_fvector3, section, "zoom_dof", Fvector().set(-1,-1,-1));
 //	m_zoom_params.m_bZoomDofEnabled	= !def_dof.similar(m_zoom_params.m_ZoomDof);
 
-//	m_zoom_params.m_ReloadDof	= READ_IF_EXISTS(pSettings, r_fvector4, section, "reload_dof", Fvector4().set(-1,-1,-1,-1));
+	m_zoom_params.m_ReloadDof	= READ_IF_EXISTS(pSettings, r_fvector4, section, "reload_dof", Fvector4().set(-1,-1,-1,-1));
 
 
 	m_bHasTracers			= !!READ_IF_EXISTS(pSettings, r_bool, section, "tracers", true);
@@ -544,7 +544,7 @@ void CWeapon::net_Destroy	()
 {
 	inherited::net_Destroy	();
 
-	//удалить объекты партиклов
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	StopFlameParticles	();
 	StopFlameParticles2	();
 	StopLight			();
@@ -747,7 +747,7 @@ void CWeapon::OnActiveItem ()
 //-
 
 	inherited::OnActiveItem		();
-	//если мы занружаемся и оружие было в руках
+	//пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 //.	SetState					(eIdle);
 //.	SetNextState				(eIdle);
 }
@@ -804,10 +804,10 @@ void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
 	UpdateHUDAddonsVisibility();
-	//подсветка от выстрела
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	UpdateLight				();
 
-	//нарисовать партиклы
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 
@@ -884,11 +884,11 @@ void CWeapon::renderable_Render		()
 {
 	UpdateXForm				();
 
-	//нарисовать подсветку
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	RenderLight				();	
 
-	//если мы в режиме снайперки, то сам HUD рисовать не надо
+	//пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ HUD пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 	if(IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
 		RenderHud		(FALSE);
 	else
@@ -931,7 +931,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE: 
 			{
-				//если оружие чем-то занято, то ничего не делать
+				//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				{				
 					if(IsPending())		
 						return				false;
@@ -1087,7 +1087,7 @@ int CWeapon::GetSuitableAmmoTotal( bool use_item_to_spawn ) const
 		return ae_count;
 	}
 
-	//чтоб не делать лишних пересчетов
+	//пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if ( m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame )
 	{
 		return ae_count + m_iAmmoCurrentTotal;
@@ -1857,15 +1857,15 @@ void CWeapon::OnStateSwitch	(u32 S)
 	inherited::OnStateSwitch(S);
 	m_BriefInfo_CalcFrame = 0;
 
-	//if(GetState()==eReload)
-	//{
-	//	if(H_Parent()==Level().CurrentEntity() && !fsimilar(m_zoom_params.m_ReloadDof.w,-1.0f))
-	//	{
-	//		CActor* current_actor	= smart_cast<CActor*>(H_Parent());
-	//		if (current_actor)
-	//			current_actor->Cameras().AddCamEffector(xr_new<CEffectorDOF>(m_zoom_params.m_ReloadDof) );
-	//	}
-	//}
+	if(GetState()==eReload)
+	{
+		if(H_Parent()==Level().CurrentEntity() && !fsimilar(m_zoom_params.m_ReloadDof.w,-1.0f))
+		{
+			CActor* current_actor	= smart_cast<CActor*>(H_Parent());
+			if (current_actor)
+				current_actor->Cameras().AddCamEffector(xr_new<CEffectorDOF>(m_zoom_params.m_ReloadDof));
+		}
+	}
 }
 
 void CWeapon::OnAnimationEnd(u32 state) 

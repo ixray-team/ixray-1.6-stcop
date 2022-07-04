@@ -207,7 +207,7 @@ protected:
 		float			m_fZoomRotationFactor;
 		
 //		Fvector			m_ZoomDof;
-//		Fvector4		m_ReloadDof;
+		Fvector4		m_ReloadDof;
 		BOOL			m_bUseDynamicZoom;
 		shared_str		m_sUseZoomPostprocess;
 		shared_str		m_sUseBinocularVision;
