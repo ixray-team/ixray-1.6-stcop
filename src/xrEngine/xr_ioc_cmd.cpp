@@ -730,6 +730,7 @@ void CCC_Register()
 	// Render device states
 	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
 
+	CMD3(CCC_Mask, "read_sun_config", &psEnvironmentFlags, ENABLE_READ_SUN_CONFIG);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
