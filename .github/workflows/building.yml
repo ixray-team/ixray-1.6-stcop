@@ -34,9 +34,14 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: '5.x'
+
     - name: Restore solution
       run: |
-        msbuild $env:solution_name -t:Restore -p:Configuration=${{ matrix.configuration }}
+        nuget restore $env:solution_name
 
     - name: Build solution
       run: |
