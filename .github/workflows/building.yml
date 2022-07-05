@@ -27,7 +27,6 @@ jobs:
         7z x directxsdk-mar2009.7z
         curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-jun2010.7z -O directxsdk-jun2010.7z
         7z x directxsdk-jun2010.7z
-        git clone --branch aug2021 --depth 1 https://github.com/microsoft/DirectXTex.git dep/DirectXTex
         git clone --branch Release_3.1.0 --depth 1 https://github.com/dockpanelsuite/dockpanelsuite.git dep/dockpanelsuite
       shell: powershell
 
