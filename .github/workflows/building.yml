@@ -38,6 +38,13 @@ jobs:
       with:
         nuget-version: '5.x'
 
+    - name: Cache packages
+      uses: actions/cache@v1
+      id: cache
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget
+
     - name: Restore solution
       run: |
         nuget restore $env:solution_name
