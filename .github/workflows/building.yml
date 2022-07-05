@@ -34,9 +34,13 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
+    - name: Restore solution
+      run: |
+        msbuild $env:solution_name -t:Restore -p:Configuration=${{ matrix.configuration }}
+
     - name: Build solution
       run: |
-        msbuild $env:solution_name -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -r -m -nologo
+        msbuild $env:solution_name -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -m -nologo
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
