@@ -38,10 +38,20 @@ jobs:
       run: |
         msbuild $env:solution_name -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -r -m -nologo
 
-    - name: Upload artifacts
+    - name: Upload binaries
       uses: actions/upload-artifact@v3
       with:
-        name: out (${{ matrix.configuration }})
-        path: |
-          bin/
-          lib/
+        name: bin (${{ matrix.configuration }})
+        path: bin/
+
+    - name: Upload libraries
+      uses: actions/upload-artifact@v3
+      with:
+        name: lib (${{ matrix.configuration }})
+        path: lib/
+
+    - name: Upload gamedata
+      uses: actions/upload-artifact@v3
+      with:
+        name: gamedata
+        path: gamedata/
