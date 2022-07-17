@@ -171,6 +171,10 @@ public:
 	float				m_fSunShaftsIntensity;
 	float				m_fWaterIntensity;
 
+	float				trees_amplitude;
+	float				trees_speed;
+	float				trees_rotation;
+	Fvector3			trees_wave;
 
 //	int					lens_flare_id;
 //	int					tb_id;
