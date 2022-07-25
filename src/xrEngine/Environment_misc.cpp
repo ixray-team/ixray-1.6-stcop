@@ -238,6 +238,11 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	tb_id				= "";
     
 	env_ambient			= NULL;
+
+	trees_amplitude = 0.005f;
+	trees_speed = 1.00f;
+	trees_rotation = 10.0f;
+	trees_wave.set(.1f, .01f, .11f);
 }
 
 #define	C_CHECK(C)	if (C.x<0 || C.x>2 || C.y<0 || C.y>2 || C.z<0 || C.z>2)	{ Msg("! Invalid '%s' in env-section '%s'",#C,m_identifier.c_str());}
@@ -275,6 +280,9 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	ambient					= config.r_fvector3	(m_identifier.c_str(),"ambient_color");
 	hemi_color				= config.r_fvector4	(m_identifier.c_str(),"hemisphere_color");
 	sun_color				= config.r_fvector3	(m_identifier.c_str(),"sun_color");
+	
+	if (config.line_exist(m_identifier.c_str(), "trees_amplitude"))
+		trees_amplitude = config.r_float(m_identifier.c_str(), "trees_amplitude");
 //	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
 		sun_dir.setHP			(
 			deg2rad(config.r_float(m_identifier.c_str(),"sun_altitude")),
@@ -445,6 +453,8 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 
 	m_fSunShaftsIntensity	=	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
 	m_fWaterIntensity		=	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;
+
+	trees_amplitude = fi * A.trees_amplitude + f * B.trees_amplitude;
 
 	// colors
 //.	sky_color.lerp			(A.sky_color,B.sky_color,f).add(Mdf.sky_color).mul(modif_power);
