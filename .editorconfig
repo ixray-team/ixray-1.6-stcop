@@ -1,0 +1,103 @@
+# Enable top-most EditorConfig file
+root = true
+
+# Git configs
+[{.gitattributes,.gitignore}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+# Markdown documents
+[*.md]
+charset = utf-8
+end_of_line = crlf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+
+# Visual Studio Code project files
+[{*.code-workspace,.vscode/*.json}]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# Visual Studio solutions
+[*.sln]
+charset = utf-8-bom
+end_of_line = crlf
+indent_size = 4
+indent_style = tab
+insert_final_newline = true
+tab_width = 4
+
+# Visual C++ projects
+[*.vcxproj]
+charset = utf-8-bom
+end_of_line = crlf
+indent_size = 2
+indent_style = space
+insert_final_newline = false
+
+# MSBuild configs and scripts
+[*.props]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# Batch scripts
+[*.{bat,cmd}]
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# PowerShell scripts
+[*.ps1]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# INI configs
+[{fs.ltx,fsfactory.ltx,fsgame.ltx,gamedata/configs/*.ltx,gamedata/configs/*/*.ltx,gamedata/textures/*/*.ini,gamedata/textures/*/*.seq}]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# XML configs
+[{gamedata/configs/gameplay/*.xml,gamedata/configs/ui/*.xml,gamedata/configs/ui/*/*.xml}]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# XML locales
+[gamedata/configs/text/*/*.xml]
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# Lua scripts
+[{gamedata/scripts/*.script,gamedata/shaders/*/*.s,gamedata/shaders/*/*.s_}]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# HLSL scripts
+[{gamedata/shaders/*/*.h,gamedata/shaders/*/*.ps,gamedata/shaders/*/*.vs,gamedata/shaders/*/*.ds,gamedata/shaders/*/*.hs,gamedata/shaders/*/*.gs,gamedata/shaders/*/*.cs}]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
