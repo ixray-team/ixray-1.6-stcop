@@ -3,12 +3,11 @@
 
 #include "stdafx.h"
 #include "ETextureParams.h"
+#include <dds.h>
 #include <ddraw.h>
 #include <DirectXTex.h>
 #include "dxtlib.h"
 #include <memory>
-
-#include "ddsheader.h"
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        u32  ul_reason_for_call, 
@@ -29,9 +28,9 @@ const u32 fcc_DXT5 = MAKEFOURCC('D','X','T','5');
 
 void __cdecl WriteDTXnFile (DWORD count, void *buffer, void * userData)
 {
-	if (count==sizeof(DDS_HEADER)){
+	if (count==sizeof(DirectX::DDS_HEADER)){
 	// correct DDS header
-		DDS_HEADER* hdr=(DDS_HEADER*)buffer;
+		DirectX::DDS_HEADER* hdr=(DirectX::DDS_HEADER*)buffer;
 		if (hdr->size==count){
 			switch (hdr->ddspf.fourCC){ 
 			case fcc_DXT1:
