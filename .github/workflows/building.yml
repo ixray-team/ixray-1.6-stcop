@@ -21,6 +21,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Cancel previous runs
+      uses: n1hility/cancel-previous-runs@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Get dependencies
       run: |
         curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-mar2009.7z -O directxsdk-mar2009.7z
