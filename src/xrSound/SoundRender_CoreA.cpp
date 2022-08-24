@@ -127,7 +127,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     A_CHK				        (alListenerf		(AL_GAIN,1.f));
 
     // Check for EAX extension
-    bEAX 				        = deviceDesc.props.eax && !deviceDesc.props.eax_unwanted;
+    bEAX 				        = deviceDesc.props.eax/* && !deviceDesc.props.eax_unwanted*/;
 
     eaxSet 				        = (EAXSet)alGetProcAddress	((const ALchar*)"EAXSet");
     if (eaxSet==NULL) bEAX 		= false;
