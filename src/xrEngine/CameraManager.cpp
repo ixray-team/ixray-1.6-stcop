@@ -351,8 +351,12 @@ void CCameraManager::UpdateCamEffectors()
 {
 	if (m_EffectorsCam.empty()) 	return;
 	EffectorCamVec::reverse_iterator rit	= m_EffectorsCam.rbegin();
-	for(; rit!=m_EffectorsCam.rend(); ++rit)
-		ProcessCameraEffector(*rit);
+
+	for(; rit != m_EffectorsCam.rend(); ++rit) {
+		if(!ProcessCameraEffector(*rit)) {
+			--rit;
+		}
+	}
 
 	m_cam_info.d.normalize			();
 	m_cam_info.n.normalize			();
