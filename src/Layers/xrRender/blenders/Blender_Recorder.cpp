@@ -172,18 +172,16 @@ void	CBlender_Compile::PassEnd			()
 	proto.vs		= DEV->_CreateVS			(pass_vs);
 	ctable.merge	(&proto.ps->constants);
 	ctable.merge	(&proto.vs->constants);
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	proto.gs		= DEV->_CreateGS			(pass_gs);
 	ctable.merge	(&proto.gs->constants);
-#	ifdef	USE_DX11
 	proto.hs		= DEV->_CreateHS			(pass_hs);
 	ctable.merge	(&proto.hs->constants);
 	proto.ds		= DEV->_CreateDS			(pass_ds);
 	ctable.merge	(&proto.ds->constants);
 	proto.cs		= DEV->_CreateCS			(pass_cs);
 	ctable.merge	(&proto.cs->constants);
-#	endif
-#endif	//	USE_DX10
+#endif
 	SetMapping				();
 	proto.constants	= DEV->_CreateConstantTable(ctable);
 	proto.T 		= DEV->_CreateTextureList	(passTextures);
@@ -226,14 +224,14 @@ void	CBlender_Compile::PassSET_ablend_mode	(BOOL bABlend,	u32 abSRC, u32 abDST)
 	RS.SetRS(D3DRS_SRCBLEND,			bABlend?abSRC:D3DBLEND_ONE	);
 	RS.SetRS(D3DRS_DESTBLEND,			bABlend?abDST:D3DBLEND_ZERO	);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	Since in our engine D3DRS_SEPARATEALPHABLENDENABLE state is
 	//	always set to false and in DirectX 10 blend functions for 
 	//	color and alpha are always independent, assign blend options for
 	//	alpha in DX10 identical to color.
 	RS.SetRS(D3DRS_SRCBLENDALPHA,		bABlend?abSRC:D3DBLEND_ONE	);
 	RS.SetRS(D3DRS_DESTBLENDALPHA,		bABlend?abDST:D3DBLEND_ZERO	);
-#endif	//	USE_DX10
+#endif	//	USE_DX11
 }
 void	CBlender_Compile::PassSET_ablend_aref	(BOOL bATest,	u32 aRef)
 {
@@ -291,7 +289,7 @@ void	CBlender_Compile::StageSET_Alpha	(u32 a1, u32 op, u32 a2)
 {
 	RS.SetAlpha	(Stage(),a1,op,a2);
 }
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 void	CBlender_Compile::StageSET_TMC		(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel)
 {
 	Stage_Texture		(T);
@@ -320,7 +318,7 @@ void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u3
 //	i_Address				(Stage(),address);
 	i_Filter				(Stage(),fmin,fmip,fmag);
 }
-#endif	//	USE_DX10
+#endif	//	USE_DX11
 void	CBlender_Compile::Stage_Matrix		(LPCSTR name, int iChannel)
 {
 	sh_list& lst	= L_matrices; 

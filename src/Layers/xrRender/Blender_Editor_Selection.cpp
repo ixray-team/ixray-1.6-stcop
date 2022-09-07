@@ -33,7 +33,7 @@ void	CBlender_Editor_Selection::Load	( IReader& fs, u16 version	)
 void	CBlender_Editor_Selection::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);	
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 	if (C.bEditor)	{
 		C.PassBegin		();
 		{
@@ -54,7 +54,7 @@ void	CBlender_Editor_Selection::Compile	(CBlender_Compile& C)
 		C.PassEnd			();
 	} 
 	else 
-#endif	//	USE_DX10
+#endif //USE_DX11
 	{
 		C.r_Pass	("editor","simple_color",FALSE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA);
 		C.r_End		();

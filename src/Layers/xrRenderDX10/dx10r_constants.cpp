@@ -315,18 +315,14 @@ IC u32 dest_to_shift_value(u32 destination)
 		return RC_dest_vertex_cb_index_shift;
 	case RC_dest_pixel:
 		return RC_dest_pixel_cb_index_shift;
-#if defined(USE_DX10) || defined(USE_DX11)
 	case RC_dest_geometry:
 		return RC_dest_geometry_cb_index_shift;
-#	ifdef USE_DX11
 	case RC_dest_hull:
 		return RC_dest_hull_cb_index_shift;
 	case RC_dest_domain:
 		return RC_dest_domain_cb_index_shift;
 	case RC_dest_compute:
 		return RC_dest_compute_cb_index_shift;
-#	endif
-#endif
 	default:
 		FATAL("invalid enumeration for shader");
 	}
@@ -341,18 +337,14 @@ IC u32 dest_to_cbuf_type(u32 destination)
 		return CB_BufferVertexShader;
 	case RC_dest_pixel:
 		return CB_BufferPixelShader;
-#if defined(USE_DX10) || defined(USE_DX11)
 	case RC_dest_geometry:
 		return CB_BufferGeometryShader;
-#	ifdef USE_DX11
 	case RC_dest_hull:
 		return CB_BufferHullShader;
 	case RC_dest_domain:
 		return CB_BufferDomainShader;
 	case RC_dest_compute:
 		return CB_BufferComputeShader;
-#	endif
-#endif
 	default:
 		FATAL("invalid enumeration for shader");
 	}
