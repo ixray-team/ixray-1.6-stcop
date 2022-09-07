@@ -337,8 +337,8 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
     D3D_FEATURE_LEVEL pFeatureLevels[] =
     {
         D3D_FEATURE_LEVEL_11_0,
-//        D3D_FEATURE_LEVEL_10_1,
-//        D3D_FEATURE_LEVEL_10_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
     };
 
    R =  D3D11CreateDeviceAndSwapChain(   0,//m_pAdapter,//What wrong with adapter??? We should use another version of DXGI?????
