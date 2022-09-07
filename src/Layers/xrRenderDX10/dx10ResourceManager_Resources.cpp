@@ -21,37 +21,35 @@
 
 #include "../xrRender/ShaderResourceTraits.h"
 
-#ifdef USE_DX11
-	SHS*	CResourceManager::_CreateHS			(LPCSTR Name)
-	{
-		return CreateShader<SHS>(Name);
-	}
+SHS*	CResourceManager::_CreateHS			(LPCSTR Name)
+{
+	return CreateShader<SHS>(Name);
+}
 
-	void	CResourceManager::_DeleteHS			(const SHS*	HS	)
-	{
-		DestroyShader(HS);
-	}
+void	CResourceManager::_DeleteHS			(const SHS*	HS	)
+{
+	DestroyShader(HS);
+}
 
-	SDS*	CResourceManager::_CreateDS			(LPCSTR Name)
-	{
-		return CreateShader<SDS>(Name);
-	}
+SDS*	CResourceManager::_CreateDS			(LPCSTR Name)
+{
+	return CreateShader<SDS>(Name);
+}
 
-	void	CResourceManager::_DeleteDS			(const SDS*	DS	)
-	{
-		DestroyShader(DS);
-	}
+void	CResourceManager::_DeleteDS			(const SDS*	DS	)
+{
+	DestroyShader(DS);
+}
 
-    SCS*	CResourceManager::_CreateCS			(LPCSTR Name)
-	{
-		return CreateShader<SCS>(Name);
-	}
+SCS*	CResourceManager::_CreateCS			(LPCSTR Name)
+{
+	return CreateShader<SCS>(Name);
+}
 
-	void	CResourceManager::_DeleteCS			(const SCS*	CS	)
-	{
-		DestroyShader(CS);
-	}
-#endif	//	USE_DX10
+void	CResourceManager::_DeleteCS			(const SCS*	CS	)
+{
+	DestroyShader(CS);
+}
 
 void fix_texture_name(LPSTR fn);
 
@@ -79,14 +77,11 @@ SState*		CResourceManager::_CreateState		(SimulatorStates& state_code)
 	// Create New
 	v_states.push_back				(xr_new<SState>());
 	v_states.back()->dwFlags		|= xr_resource_flagged::RF_REGISTERED;
-#if defined(USE_DX10) || defined(USE_DX11)
 	v_states.back()->state			= ID3DState::Create(state_code);
-#else	//	USE_DX10
-	v_states.back()->state			= state_code.record();
-#endif	//	USE_DX10
 	v_states.back()->state_code		= state_code;
 	return v_states.back();
 }
+
 void		CResourceManager::_DeleteState		(const SState* state)
 {
 	if (0==(state->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
@@ -107,11 +102,9 @@ SPass*		CResourceManager::_CreatePass			(const SPass& proto)
 	P->ps						=	proto.ps;
 	P->vs						=	proto.vs;
 	P->gs						=	proto.gs;
-#ifdef USE_DX11
 	P->hs						=	proto.hs;
 	P->ds						=	proto.ds;
 	P->cs						=	proto.cs;
-#endif
 	P->constants				=	proto.constants;
 	P->T						=	proto.T;
 #ifdef _EDITOR
@@ -453,11 +446,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-#ifdef USE_DX11
 CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount, bool useUAV )
-#else
-CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
-#endif
 {
 	R_ASSERT(Name && Name[0] && w && h);
 
@@ -470,11 +459,7 @@ CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 S
 		CRT *RT					=	xr_new<CRT>();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_rtargets.insert		(std::make_pair(RT->set_name(Name),RT));
-#ifdef USE_DX11
 		if (Device.b_is_Ready)	RT->create	(Name,w,h,f, SampleCount, useUAV );
-#else
-		if (Device.b_is_Ready)	RT->create	(Name,w,h,f, SampleCount );
-#endif
 		return					RT;
 	}
 }

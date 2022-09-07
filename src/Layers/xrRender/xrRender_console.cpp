@@ -38,9 +38,9 @@ xr_token							qssao_token									[ ]={
 	{ "st_opt_low",					1												},
 	{ "st_opt_medium",				2												},
 	{ "st_opt_high",				3												},
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	{ "st_opt_ultra",				4												},
-#endif
+#endif //USE_DX11
 	{ 0,							0												}
 };
 
@@ -49,10 +49,10 @@ xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_low",					0												},
 	{ "st_opt_medium",				1												},
 	{ "st_opt_high",				2												},
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	{ "st_opt_ultra",				3												},
 	{ "st_opt_extreme",				4												},
-#endif	//	USE_DX10
+#endif //USE_DX11
 	{ 0,							0												}
 };
 
@@ -228,9 +228,9 @@ float		ps_r2_gloss_factor			= 4.0f;
 #include	"../../xrEngine/xr_ioconsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 #include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 //-----------------------------------------------------------------------
 class CCC_tf_Aniso		: public CCC_Integer
@@ -239,12 +239,12 @@ public:
 	void	apply	()	{
 		if (0==HW.pDevice)	return	;
 		int	val = *value;	clamp(val,1,16);
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		SSManager.SetMaxAnisotropy(val);
-#else	//	USE_DX10
+#else //USE_DX11
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
 			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
-#endif	//	USE_DX10
+#endif //USE_DX11
 	}
 	CCC_tf_Aniso(LPCSTR N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
 	virtual void Execute	(LPCSTR args)
@@ -264,13 +264,13 @@ public:
 	void	apply	()	{
 		if (0==HW.pDevice)	return	;
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		//	TODO: DX10: Implement mip bias control
 		//VERIFY(!"apply not implmemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
 			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) value)));
-#endif	//	USE_DX10
+#endif
 	}
 
 	CCC_tf_MipBias(LPCSTR N, float*	v) : CCC_Float(N, v, -0.5f, +0.5f)	{ };
@@ -474,11 +474,11 @@ public:
 	CCC_BuildSSA(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) 
 	{
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 		//	TODO: DX10: Implement pixel calculator
 		r_pixel_calculator	c;
 		c.run				();
-#endif	//	USE_DX10
+#endif //USE_DX11
 	}
 };
 #endif

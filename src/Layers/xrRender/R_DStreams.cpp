@@ -18,7 +18,7 @@ void _VertexStream::Create	()
 	DEV->Evict();
 
 	mSize					= rsDVB_Size*1024;
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	D3D_BUFFER_DESC bufferDesc;
 	bufferDesc.ByteWidth        = mSize;
 	bufferDesc.Usage            = D3D_USAGE_DYNAMIC;	
@@ -28,10 +28,10 @@ void _VertexStream::Create	()
 
 	R_CHK					(HW.pDevice->CreateBuffer	( &bufferDesc, 0, &pVB ));
 	HW.stats_manager.increment_stats_vb						( pVB );
-#else	//	USE_DX10
+#else //USE_DX11
 	R_CHK					(HW.pDevice->CreateVertexBuffer	( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &pVB, NULL));
 	HW.stats_manager.increment_stats_vb						( pVB );
-#endif	//	USE_DX10
+#endif
 
 	R_ASSERT				(pVB);
 
@@ -77,39 +77,33 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		vOffset				= 0;
 		mDiscardID			++;
 
-#if defined(USE_DX11)
+#ifdef USE_DX11
 		HW.pContext->Map(pVB, 0, D3D_MAP_WRITE_DISCARD, 0, &MappedSubRes);
 		pData=(BYTE*)MappedSubRes.pData;
 		pData += vOffset;
-#elif defined(USE_DX10)
-		pVB->Map(D3D_MAP_WRITE_DISCARD, 0, (void**)&pData);
-		pData += vOffset;
-#else	//	USE_DX10
+#else //USE_DX11
 		HRESULT res = pVB->Lock( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
 
 		if( res != D3D_OK )
 			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData );
 
-#endif	//	USE_DX10
+#endif
 	} else {
 		// APPEND-LOCK
 		mPosition			= vl_mPosition*Stride;
 		vOffset				= vl_mPosition;
 
-#if defined(USE_DX11)
+#ifdef USE_DX11
 		HW.pContext->Map(pVB, 0, D3D_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
 		pData=(BYTE*)MappedSubRes.pData;
 		pData += vOffset*Stride;
-#elif defined(USE_DX10)
-		pVB->Map(D3D_MAP_WRITE_NO_OVERWRITE, 0, (void**)&pData);
-		pData += vOffset*Stride;
-#else	//	USE_DX10
+#else //USE_DX11
 		HRESULT res = pVB->Lock			( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
 		
 		if( res != D3D_OK )
 			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData );
 
-#endif	//	USE_DX10
+#endif
 	}
 	VERIFY				( pData );
 
@@ -127,13 +121,11 @@ void	_VertexStream::Unlock		( u32 Count, u32 Stride)
 
 	VERIFY				(pVB);
 
-#if defined(USE_DX11)
+#ifdef USE_DX11
 	HW.pContext->Unmap(pVB, 0);
-#elif defined(USE_DX10)
-	pVB->Unmap();
-#else	//	USE_DX10
+#else //USE_DX11
 	pVB->Unlock();
-#endif	//	USE_DX10
+#endif
 }
 
 void	_VertexStream::reset_begin	()
@@ -171,7 +163,7 @@ void	_IndexStream::Create	()
 
 	mSize					= rsDIB_Size*1024;
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	D3D_BUFFER_DESC bufferDesc;
 	bufferDesc.ByteWidth        = mSize;
 	bufferDesc.Usage            = D3D_USAGE_DYNAMIC;	
@@ -181,10 +173,10 @@ void	_IndexStream::Create	()
 
 	R_CHK					(HW.pDevice->CreateBuffer( &bufferDesc, 0, &pIB ));
 	HW.stats_manager.increment_stats_ib		(pIB);
-#else	//	USE_DX10
+#else //USE_DX11
 	R_CHK					(HW.pDevice->CreateIndexBuffer( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &pIB, NULL));
 	HW.stats_manager.increment_stats_ib		(pIB);
-#endif	//	USE_DX10
+#endif
 	R_ASSERT				(pIB);
 
 	mPosition				= 0;
@@ -222,21 +214,15 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 		dwFlags		= LOCKFLAGS_FLUSH;			// discard it's contens
 		mDiscardID	++;
 	}
-#if defined(USE_DX11)
+#ifdef USE_DX11
 	D3D_MAP MapMode = (dwFlags==LOCKFLAGS_APPEND) ? 
 		D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;
 	HW.pContext->Map(pIB, 0, MapMode, 0, &MappedSubRes);
 	pLockedData = (BYTE*)MappedSubRes.pData;
 	pLockedData += mPosition * 2;
-#elif defined(USE_DX10)
-	D3D_MAP MapMode = (dwFlags==LOCKFLAGS_APPEND) ? 
-		D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;
-	pIB->Map( MapMode, 0, (void**)&pLockedData);
-	pLockedData += mPosition * 2;
-
-#else	//	USE_DX10
+#else //USE_DX11
 	pIB->Lock				( mPosition * 2, Count * 2, (void**) &pLockedData, dwFlags);
-#endif	//	USE_DX10
+#endif
 	VERIFY					(pLockedData);
 
 	vOffset					=	mPosition;
@@ -249,13 +235,11 @@ void	_IndexStream::Unlock(u32 RealCount)
 	PGO						(Msg("PGO:IB_UNLOCK:%d",RealCount));
 	mPosition				+=	RealCount;
 	VERIFY					(pIB);
-#if defined(USE_DX11)
+#ifdef USE_DX11
 	HW.pContext->Unmap(pIB, 0);
-#elif defined(USE_DX10)
-	pIB->Unmap();
-#else	//	USE_DX10
+#else //USE_DX11
 	pIB->Unlock();
-#endif	//	USE_DX10
+#endif
 }
 
 void	_IndexStream::reset_begin	()

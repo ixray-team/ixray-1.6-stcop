@@ -49,10 +49,10 @@ public:
 	using map_VS = xr_map<const char*, SVS*, str_pred>;
 	using map_VSIt = map_VS::iterator;
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	using map_GS = xr_map<const char*, SGS*, str_pred>;
 	using map_GSIt = map_GS::iterator;
-#endif // if defined(USE_DX10) || defined(USE_DX11)
+#endif
 
 #ifdef USE_DX11
 	using map_HS = xr_map<const char*, SHS*, str_pred>;
@@ -63,7 +63,7 @@ public:
 
 	using map_CS = xr_map<const char*, SCS*, str_pred>;
 	using map_CSIt = map_CS::iterator;
-#endif // ifdef USE_DX11
+#endif
 
 	using map_PS = xr_map<const char*, SPS*, str_pred>;
 	using map_PSIt = map_PS::iterator;
@@ -81,9 +81,9 @@ private:
 	//	DX10 cut map_RTC												m_rtargets_c;
 	map_VS												m_vs;
 	map_PS												m_ps;
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	map_GS												m_gs;
-#endif	//	USE_DX10
+#endif //USE_DX11
 	map_TD												m_td;
 
 	xr_vector<SState*>									v_states;
@@ -91,10 +91,10 @@ private:
 	xr_vector<SGeometry*>								v_geoms;
 	xr_vector<R_constant_table*>						v_constant_tables;
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	xr_vector<dx10ConstantBuffer*>						v_constant_buffer;
 	xr_vector<SInputSignature*>							v_input_signature;
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 	// lists
 	xr_vector<STextureList*>							lst_textures;
@@ -153,13 +153,13 @@ public:
 	R_constant_table*				_CreateConstantTable(R_constant_table& C);
 	void							_DeleteConstantTable(const R_constant_table* C);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	dx10ConstantBuffer*				_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
 	void							_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
 	SInputSignature*				_CreateInputSignature(ID3DBlob* pBlob);
 	void							_DeleteInputSignature(const SInputSignature* pSignature);
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 #ifdef USE_DX11
 	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount = 1, bool useUAV=false );
@@ -170,10 +170,10 @@ public:
 
 	//	DX10 cut CRTC*							_CreateRTC			(LPCSTR Name, u32 size,	D3DFORMAT f);
 	//	DX10 cut void							_DeleteRTC			(const CRTC*	RT	);
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	SGS*							_CreateGS			(LPCSTR Name);
 	void							_DeleteGS			(const SGS*	GS	);
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 #ifdef USE_DX11
 	SHS*							_CreateHS			(LPCSTR Name);
@@ -184,7 +184,7 @@ public:
 
     SCS*							_CreateCS			(LPCSTR Name);
 	void							_DeleteCS			(const SCS*	CS	);
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 	SPS*							_CreatePS			(LPCSTR Name);
 	void							_DeletePS			(const SPS*	PS	);
@@ -261,7 +261,7 @@ private:
 	template<typename T>
 	void DestroyShader(const T* sh);
 
-#endif	//	USE_DX10
+#endif //USE_DX11
 };
 
 #endif //ResourceManagerH

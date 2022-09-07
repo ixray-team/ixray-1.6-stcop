@@ -17,28 +17,28 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: implement
 	//VERIFY(!"CBackend::dbg_Draw not implemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 	OnFrameEnd					();
 	CHK_DX(HW.pDevice->SetFVF	(FVF::F_L));
 	CHK_DX(HW.pDevice->DrawIndexedPrimitiveUP(T, 0, vcnt, pcnt,
 		pIdx, D3DFMT_INDEX16,
 		pVerts, sizeof(FVF::L)
 		));
-#endif	//	USE_DX10
+#endif
 }
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: implement
 	//VERIFY(!"CBackend::dbg_Draw not implemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 	OnFrameEnd					();
 	CHK_DX(HW.pDevice->SetFVF	(FVF::F_L));
 	CHK_DX(HW.pDevice->DrawPrimitiveUP(T, pcnt, pVerts, sizeof(FVF::L)	));
-#endif	//	USE_DX10
+#endif
 }
 
 #define RGBA_GETALPHA(rgb)      ((rgb) >> 24)
@@ -127,7 +127,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 			0.3536f,-0.1464f,-0.9239f,  0.3827f,0.0000f,-0.9239f,  0.3536f,0.1464f,-0.9239f,
 			0.2706f,0.2706f,-0.9239f,  0.1464f,0.3536f,-0.9239f,  0.0000f,0.0000f,-1.0000f
 	};
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 	u16 gFaces[224*3] =
 	{
 		0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,6, 0,6,7, 0,7,8, 0,8,9, 0,9,10,
@@ -156,7 +156,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 			96,97,81, 113,98,97, 113,99,98, 113,100,99, 113,101,100, 113,102,101, 113,103,102, 113,104,103, 113,105,104,
 			113,106,105, 113,107,106, 113,108,107, 113,109,108, 113,110,109, 113,111,110, 113,112,111, 113,97,112
 	};
-#endif // #if defined(USE_DX10) || defined(USE_DX11)
+#endif // #ifdef USE_DX11
 
 	const int vcnt = sizeof(gVertices)/(sizeof(float)*3);
 	FVF::L  verts[vcnt];
@@ -167,15 +167,15 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 
 	set_xform_world				(T);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: implement
 	//VERIFY(!"CBackend::dbg_Draw not implemented.");
 	//dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
-#else	//	USE_DX10
+#else //USE_DX11
 	HW.pDevice->SetRenderState	(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
 	HW.pDevice->SetRenderState	(D3DRS_FILLMODE, D3DFILL_SOLID);
-#endif	//	USE_DX10
+#endif
 }
 
 #endif

@@ -111,7 +111,7 @@ u32 GetGpuNum()
 #endif
 }
 
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 void CHWCaps::Update()
 {
 	D3DCAPS9					caps;
@@ -213,7 +213,7 @@ void CHWCaps::Update()
 
 	iGPUNum = GetGpuNum();
 }
-#else	//	USE_DX10
+#else //USE_DX11
 void CHWCaps::Update()
 {
 	// ***************** GEOMETRY
@@ -272,4 +272,4 @@ void CHWCaps::Update()
 
 	iGPUNum = GetGpuNum();
 }
-#endif	//	USE_DX10
+#endif //USE_DX11

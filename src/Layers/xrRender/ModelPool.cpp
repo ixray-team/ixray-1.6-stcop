@@ -460,7 +460,7 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 
 		if( vis_ptr == NULL )
 			continue;
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 		D3DINDEXBUFFER_DESC IB_desc;
 		D3DVERTEXBUFFER_DESC VB_desc;
 
