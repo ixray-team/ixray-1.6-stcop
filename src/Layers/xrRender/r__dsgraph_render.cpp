@@ -542,7 +542,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	const ref_rt	rt_null;
 	RCache.set_RT(0,	1);
 	RCache.set_RT(0,	2);
-#if	(RENDER==R_R3) || (RENDER==R_R4)
+#if	(RENDER==R_R4)
 	if( !RImplementation.o.dx10_msaa )
 	{
 		if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	HW.pBaseZB);
@@ -553,10 +553,10 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 		if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	RImplementation.Target->rt_MSAADepth->pZRT);
 		else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Color,			rt_null,	rt_null,	RImplementation.Target->rt_MSAADepth->pZRT);
 	}
-#else // (RENDER==R_R3) || (RENDER==R_R4)
+#else
 	if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	HW.pBaseZB);
 	else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Color,			rt_null,	rt_null,	HW.pBaseZB);
-#endif // (RENDER==R_R3) || (RENDER==R_R4)
+#endif
 #endif // RENDER!=R_R1
 
 	rmNear						();
