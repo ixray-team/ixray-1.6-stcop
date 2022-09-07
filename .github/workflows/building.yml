@@ -13,7 +13,7 @@ jobs:
         platform: [ x86 ]
 
     env:
-      solution_name: XRay.Engine.sln
+      solution_name: XRay.sln
 
     steps:
     - name: Checkout
