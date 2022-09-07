@@ -1,6 +1,5 @@
 # IX-Ray
 
-<!-- markdownlint-disable MD033 -->
 <div align="center">
   <p>
     <a href="https://github.com/ixray-team">
@@ -9,7 +8,7 @@
   </p>
 
   <p>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.3">
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.4">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases" alt="Latest release" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/building.yml">
@@ -17,9 +16,8 @@
     </a>
   </p>
 </div>
-<!-- markdownlint-enable MD033 -->
 
-Stable repository of the modernized *X-Ray* 1.6 game engine
+Stable repository of the modernized _X-Ray_ 1.6 game engine
 
 ## Requirements
 
@@ -39,7 +37,7 @@ git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 ### Engine
 
 - Run `download-dependencies.ps1`
-- Build `XRay.Engine.sln` on `Win32` without projects from `utils`
+- Build `XRay.sln` on `Win32` without projects from `utils`
 
 ## Changelog
 

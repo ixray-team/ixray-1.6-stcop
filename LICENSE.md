@@ -1,6 +1,6 @@
 # IX-Ray
 
-*IX-Ray* project license information
+_IX-Ray_ project license information
 
 ## License details
 
