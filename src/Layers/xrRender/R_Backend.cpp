@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#ifdef USE_DX11
 #include "../xrRenderDX10/dx10BufferUtils.h"
+#endif // USE_DX11
 
 CBackend			RCache;
 
 // Create Quad-IB
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 
 // Igor: is used to test bug with rain, particles corruption
 void CBackend::RestoreQuadIBData()
@@ -60,7 +62,7 @@ void CBackend::CreateQuadIB		()
 	HW.stats_manager.increment_stats_ib	( QuadIB);
 }
 
-#else	//	USE_DX10
+#else //USE_DX11
 
 // Igor: is used to test bug with rain, particles corruption
 void CBackend::RestoreQuadIBData()
@@ -118,14 +120,14 @@ void CBackend::CreateQuadIB		()
 	R_CHK(QuadIB->Unlock());
 }
 
-#endif	//	USE_DX10
+#endif
 
 // Device dependance
 void CBackend::OnDeviceCreate	()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//CreateConstantBuffers();
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 	CreateQuadIB		();
 
@@ -147,12 +149,12 @@ void CBackend::OnDeviceDestroy()
 	HW.stats_manager.decrement_stats_ib	(QuadIB);
 	_RELEASE							(QuadIB);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//DestroyConstantBuffers();
-#endif	//	USE_DX10
+#endif //USE_DX11
 }
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 /*
 void CBackend::CreateConstantBuffers()
 {
@@ -168,4 +170,4 @@ void CBackend::DestroyConstantBuffers()
 	_RELEASE(m_pPixelConstants);
 }
 */
-#endif	USE_DX10
+#endif

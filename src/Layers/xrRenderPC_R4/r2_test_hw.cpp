@@ -81,14 +81,19 @@ bool TestDX11Present()
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
 
-	D3D_FEATURE_LEVEL pFeatureLevels[] = {D3D_FEATURE_LEVEL_11_0};
+	D3D_FEATURE_LEVEL pFeatureLevels[] =
+	{
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_10_0,
+	};
 	D3D_FEATURE_LEVEL FeatureLevel;
 
 	ID3D11Device*           pd3dDevice = NULL;
 	ID3D11DeviceContext*    pContext = NULL;
 	IDXGISwapChain*         pSwapChain = NULL;
 
-	hr = pD3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, pFeatureLevels, 1,
+	hr = pD3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, pFeatureLevels, sizeof(pFeatureLevels) / sizeof(pFeatureLevels[0]),
 		D3D11_SDK_VERSION, &sd, &pSwapChain, &pd3dDevice, &FeatureLevel, &pContext );
 
 	if (FAILED(hr))

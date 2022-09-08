@@ -11,7 +11,11 @@
 #	include "../../xrEngine/environment.h"
 #endif
 
+#ifdef USE_DX11
 #include "../xrRenderDX10/dx10BufferUtils.h"
+#endif // USE_DX11
+
+
 
 const int			quant	= 16384;
 const int			c_hdr	= 10;
@@ -63,7 +67,7 @@ void CDetailManager::hw_Load_Geom()
 	u32			vSize		= sizeof(vertHW);
 	Msg("* [DETAILS] %d v(%d), %d p",dwVerts,vSize,dwIndices/3);
 
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 	// Determine POOL & USAGE
 	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
 
@@ -73,19 +77,19 @@ void CDetailManager::hw_Load_Geom()
 	R_CHK			(HW.pDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
 	HW.stats_manager.increment_stats_ib				(hw_IB);
 
-#endif	//	USE_DX10
+#endif	//	USE_DX11
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);
 
 	// Fill VB
 	{
 		vertHW*			pV;
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		vertHW*			pVOriginal;
 		pVOriginal	=	xr_alloc<vertHW>(dwVerts);
 		pV = pVOriginal;		
-#else	//	USE_DX10
+#else //USE_DX11
 		R_CHK			(hw_VB->Lock(0,0,(void**)&pV,0));
-#endif	//	USE_DX10
+#endif
 		for (u32 o=0; o<objects.size(); o++)
 		{
 			const CDetail& D		=	*objects[o];
@@ -106,25 +110,25 @@ void CDetailManager::hw_Load_Geom()
 				}
 			}
 		}
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
 		HW.stats_manager.increment_stats_vb		( hw_VB);
 		xr_free(pVOriginal);
-#else	//	USE_DX10
+#else //USE_DX11
 		R_CHK			(hw_VB->Unlock());
-#endif	//	USE_DX10
+#endif
 	}
 
 	// Fill IB
 	{
 		u16*			pI;
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		u16*			pIOriginal;
 		pIOriginal = xr_alloc<u16>(dwIndices);
 		pI	= pIOriginal;
-#else	//	USE_DX10
+#else //USE_DX11
 		R_CHK			(hw_IB->Lock(0,0,(void**)(&pI),0));
-#endif	//	USE_DX10
+#endif
 		for (u32 o=0; o<objects.size(); o++)
 		{
 			const CDetail& D		=	*objects[o];
@@ -136,13 +140,13 @@ void CDetailManager::hw_Load_Geom()
 				offset		=	u16(offset+u16(D.number_vertices));
 			}
 		}
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
 		HW.stats_manager.increment_stats_ib		(hw_IB);
 		xr_free(pIOriginal);
-#else	//	USE_DX10
+#else //USE_DX11
 		R_CHK			(hw_IB->Unlock());
-#endif	//	USE_DX10
+#endif
 	}
 
 	// Declare geometry
@@ -159,7 +163,7 @@ void CDetailManager::hw_Unload()
 	_RELEASE					(hw_VB);
 }
 
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 void CDetailManager::hw_Load_Shaders()
 {
 	// Create shader to access constant storage
@@ -326,4 +330,4 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 	}
 }
 
-#endif	//	USE_DX10
+#endif

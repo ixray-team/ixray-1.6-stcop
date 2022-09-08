@@ -38,9 +38,9 @@ xr_token							qssao_token									[ ]={
 	{ "st_opt_low",					1												},
 	{ "st_opt_medium",				2												},
 	{ "st_opt_high",				3												},
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	{ "st_opt_ultra",				4												},
-#endif
+#endif //USE_DX11
 	{ 0,							0												}
 };
 
@@ -49,10 +49,10 @@ xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_low",					0												},
 	{ "st_opt_medium",				1												},
 	{ "st_opt_high",				2												},
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	{ "st_opt_ultra",				3												},
 	{ "st_opt_extreme",				4												},
-#endif	//	USE_DX10
+#endif //USE_DX11
 	{ 0,							0												}
 };
 
@@ -228,9 +228,9 @@ float		ps_r2_gloss_factor			= 4.0f;
 #include	"../../xrEngine/xr_ioconsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 #include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 //-----------------------------------------------------------------------
 class CCC_tf_Aniso		: public CCC_Integer
@@ -239,12 +239,12 @@ public:
 	void	apply	()	{
 		if (0==HW.pDevice)	return	;
 		int	val = *value;	clamp(val,1,16);
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		SSManager.SetMaxAnisotropy(val);
-#else	//	USE_DX10
+#else //USE_DX11
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
 			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
-#endif	//	USE_DX10
+#endif //USE_DX11
 	}
 	CCC_tf_Aniso(LPCSTR N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
 	virtual void Execute	(LPCSTR args)
@@ -264,13 +264,13 @@ public:
 	void	apply	()	{
 		if (0==HW.pDevice)	return	;
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		//	TODO: DX10: Implement mip bias control
 		//VERIFY(!"apply not implmemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
 			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) value)));
-#endif	//	USE_DX10
+#endif
 	}
 
 	CCC_tf_MipBias(LPCSTR N, float*	v) : CCC_Float(N, v, -0.5f, +0.5f)	{ };
@@ -474,11 +474,11 @@ public:
 	CCC_BuildSSA(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) 
 	{
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 		//	TODO: DX10: Implement pixel calculator
 		r_pixel_calculator	c;
 		c.run				();
-#endif	//	USE_DX10
+#endif //USE_DX11
 	}
 };
 #endif
@@ -626,7 +626,7 @@ public:
 };
 
 //	Allow real-time fog config reload
-#if	(RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 #ifdef	DEBUG
 
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
@@ -641,7 +641,7 @@ public:
 	}
 };
 #endif	//	DEBUG
-#endif	//	(RENDER == R_R3) || (RENDER == R_R4)
+#endif
 
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
@@ -854,7 +854,6 @@ void		xrRender_initconsole	()
 	//CMD3(CCC_Mask,		"r3_msaa_hybrid",				&ps_r2_ls_flags,			R3FLAG_MSAA_HYBRID);
 	//CMD3(CCC_Mask,		"r3_msaa_opt",					&ps_r2_ls_flags,			R3FLAG_MSAA_OPT);
 	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
-	CMD3(CCC_Mask,		"r3_use_dx10_1",				&ps_r2_ls_flags,			(u32)R3FLAG_USE_DX10_1);
 	//CMD3(CCC_Mask,		"r3_msaa_alphatest",			&ps_r2_ls_flags,			(u32)R3FLAG_MSAA_ALPHATEST);
 	CMD3(CCC_Token,		"r3_msaa_alphatest",			&ps_r3_msaa_atest,			qmsaa__atest_token);
 	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);
@@ -862,11 +861,11 @@ void		xrRender_initconsole	()
 
 
 	//	Allow real-time fog config reload
-#if	(RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 #ifdef	DEBUG
 	CMD1(CCC_Fog_Reload,"r3_fog_reload");
 #endif	//	DEBUG
-#endif	//	(RENDER == R_R3) || (RENDER == R_R4)
+#endif
 
 	CMD3(CCC_Mask,		"r3_dynamic_wet_surfaces",		&ps_r2_ls_flags,			R3FLAG_DYN_WET_SURF);
 	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_near",	&ps_r3_dyn_wet_surf_near,	10,	70		);

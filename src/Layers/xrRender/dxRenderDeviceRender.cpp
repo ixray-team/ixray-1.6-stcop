@@ -64,13 +64,13 @@ void  dxRenderDeviceRender::Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float
 	Memory.mem_compact		();
 	HW.Reset				(hWnd);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	dwWidth					= HW.m_ChainDesc.BufferDesc.Width;
 	dwHeight				= HW.m_ChainDesc.BufferDesc.Height;
-#else	//	USE_DX10
+#else //USE_DX11
 	dwWidth					= HW.DevPP.BackBufferWidth;
 	dwHeight				= HW.DevPP.BackBufferHeight;
-#endif	//	USE_DX10
+#endif
 
 	fWidth_2				= float(dwWidth/2);
 	fHeight_2				= float(dwHeight/2);
@@ -85,10 +85,10 @@ void dxRenderDeviceRender::SetupStates()
 {
 	HW.Caps.Update			();
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: Implement Resetting of render states into default mode
 	//VERIFY(!"dxRenderDeviceRender::SetupStates not implemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 	for (u32 i=0; i<HW.Caps.raster.dwStages; i++)				{
 		float fBias = -.5f	;
 		CHK_DX(HW.pDevice->SetSamplerState	( i, D3DSAMP_MAXANISOTROPY, 4				));
@@ -126,7 +126,7 @@ void dxRenderDeviceRender::SetupStates()
 		CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_LINEAR		));
 	}
 
-#endif	//	USE_DX10
+#endif
 }
 
 void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
@@ -152,13 +152,13 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool move_window)
 {
 	HW.CreateDevice		(hWnd, move_window);
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	dwWidth					= HW.m_ChainDesc.BufferDesc.Width;
 	dwHeight				= HW.m_ChainDesc.BufferDesc.Height;
-#else	//	USE_DX10
+#else //USE_DX11
 	dwWidth					= HW.DevPP.BackBufferWidth;
 	dwHeight				= HW.DevPP.BackBufferHeight;
-#endif	//	USE_DX10
+#endif
 	fWidth_2			= float(dwWidth/2)			;
 	fHeight_2			= float(dwHeight/2)			;
 	Resources			= xr_new<CResourceManager>		();
@@ -173,10 +173,10 @@ void dxRenderDeviceRender::SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, 
 
 void dxRenderDeviceRender::overdrawBegin()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: Implement overdrawBegin
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 	// Turn stenciling
 	CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILENABLE,		TRUE			));
 	CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILFUNC,		D3DCMP_ALWAYS	));
@@ -192,15 +192,15 @@ void dxRenderDeviceRender::overdrawBegin()
 	{ CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_KEEP		)); }	// Overdraw
 	else 
 	{ CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_INCRSAT	)); }	// ZB access
-#endif	//	USE_DX10
+#endif
 }
 
 void dxRenderDeviceRender::overdrawEnd()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: Implement overdrawEnd
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 	// Set up the stencil states
 	CHK_DX	(HW.pDevice->SetRenderState( D3DRS_STENCILZFAIL,		D3DSTENCILOP_KEEP	));
 	CHK_DX	(HW.pDevice->SetRenderState( D3DRS_STENCILFAIL,		D3DSTENCILOP_KEEP	));
@@ -231,7 +231,7 @@ void dxRenderDeviceRender::overdrawEnd()
 		CHK_DX(HW.pDevice->DrawPrimitiveUP	( D3DPT_TRIANGLESTRIP,	2,	pv, sizeof(FVF::TL) ));
 	}
 	CHK_DX(HW.pDevice->SetRenderState( D3DRS_STENCILENABLE,		FALSE ));
-#endif	//	USE_DX10
+#endif
 }
 
 void dxRenderDeviceRender::DeferredLoad(BOOL E)
@@ -263,11 +263,11 @@ void dxRenderDeviceRender::ResourcesDumpMemoryUsage()
 dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
 	HW.Validate		();
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//	TODO: DX10: Implement GetDeviceState
 	//	TODO: DX10: Implement DXGI_PRESENT_TEST testing
 	//VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-#else	//	USE_DX10
+#else //USE_DX11
 	HRESULT	_hr		= HW.pDevice->TestCooperativeLevel();
 	if (FAILED(_hr))
 	{
@@ -279,7 +279,7 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 		if		(D3DERR_DEVICENOTRESET==_hr)
 			return dsNeedReset;
 	}
-#endif	//	USE_DX10
+#endif
 
 	return dsOK;
 }
@@ -296,9 +296,9 @@ u32 dxRenderDeviceRender::GetCacheStatPolys()
 
 void dxRenderDeviceRender::Begin()
 {
-#if !defined(USE_DX10) && !defined(USE_DX11)
+#ifndef USE_DX11
 	CHK_DX					(HW.pDevice->BeginScene());
-#endif	//	USE_DX10
+#endif //USE_DX11
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);
@@ -307,7 +307,7 @@ void dxRenderDeviceRender::Begin()
 
 void dxRenderDeviceRender::Clear()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	HW.pContext->ClearDepthStencilView(RCache.get_ZB(), 
 		D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
 
@@ -316,14 +316,14 @@ void dxRenderDeviceRender::Clear()
 		FLOAT ColorRGBA[4] = {0.0f,0.0f,0.0f,0.0f};
 		HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 	}
-#else	//	USE_DX10
+#else //USE_DX11
 	CHK_DX(HW.pDevice->Clear(0,0,
 		D3DCLEAR_ZBUFFER|
 		(psDeviceFlags.test(rsClearBB)?D3DCLEAR_TARGET:0)|
 		(HW.Caps.bStencil?D3DCLEAR_STENCIL:0),
 		D3DCOLOR_XRGB(0,0,0),1,0
 		));
-#endif	//	USE_DX10
+#endif
 }
 
 void DoAsyncScreenshot();
@@ -339,18 +339,18 @@ void dxRenderDeviceRender::End()
 
 	DoAsyncScreenshot();
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	if (psDeviceFlags.test(rsVSync)) {
 		HW.m_pSwapChain->Present(1, 0);
 	} else {
 		HW.m_pSwapChain->Present(0, 0);
 	}
 	
-#else	//	USE_DX10
+#else //USE_DX11
 	CHK_DX				(HW.pDevice->EndScene());
 
 	HW.pDevice->Present( NULL, NULL, NULL, NULL );
-#endif	//	USE_DX10
+#endif
 	//HRESULT _hr		= HW.pDevice->Present( NULL, NULL, NULL, NULL );
 	//if				(D3DERR_DEVICELOST==_hr)	return;			// we will handle this later
 }
@@ -362,12 +362,12 @@ void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()
 
 void dxRenderDeviceRender::ClearTarget()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	FLOAT ColorRGBA[4] = {0.0f,0.0f,0.0f,0.0f};
 	HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
-#else	//	USE_DX10
+#else //USE_DX11
 	CHK_DX(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,D3DCOLOR_XRGB(0,0,0),1,0));
-#endif	//	USE_DX10
+#endif
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)

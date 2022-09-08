@@ -333,12 +333,12 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	// Create the device
 	//	DX10 don't need it?
 	//u32 GPU		= selectGPU();
-#ifdef USE_DX11
+
     D3D_FEATURE_LEVEL pFeatureLevels[] =
     {
         D3D_FEATURE_LEVEL_11_0,
-//        D3D_FEATURE_LEVEL_10_1,
-//        D3D_FEATURE_LEVEL_10_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
     };
 
    R =  D3D11CreateDeviceAndSwapChain(   0,//m_pAdapter,//What wrong with adapter??? We should use another version of DXGI?????
@@ -353,35 +353,8 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 		                                  &pDevice,
 										  &FeatureLevel,		
 										  &pContext);
-#else
-   R =  D3DX10CreateDeviceAndSwapChain(   m_pAdapter,
-                                          m_DriverType,
-                                          NULL,
-                                          createDeviceFlags,
-                                          &sd,
-                                          &m_pSwapChain,
-		                                    &pDevice );
 
-   pContext = pDevice;
-   FeatureLevel = D3D_FEATURE_LEVEL_10_0;
-   if(!FAILED(R))
-   {
-      D3DX10GetFeatureLevel1( pDevice, &pDevice1 );
-	  FeatureLevel = D3D_FEATURE_LEVEL_10_1;
-   }
-   pContext1 = pDevice1;
-#endif
 
-	/*
-	if (FAILED(R))	{
-		R	= HW.pD3D->CreateDevice(	DevAdapter,
-			DevT,
-			m_hWnd,
-			GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
-			&P,
-			&pDevice );
-	}
-	*/
 	//if (D3DERR_DEVICELOST==R)	{
 	if (FAILED(R))
 	{
@@ -457,13 +430,8 @@ void CHW::DestroyDevice()
 	_SHOW_REF				("refCount:m_pSwapChain",m_pSwapChain);
 	_RELEASE				(m_pSwapChain);
 
-#ifdef USE_DX11
 	_RELEASE				(pContext);
-#endif
 
-#ifndef USE_DX11
-	_RELEASE				(HW.pDevice1);
-#endif
 	_SHOW_REF				("DeviceREF:",HW.pDevice);
 	_RELEASE				(HW.pDevice);
 

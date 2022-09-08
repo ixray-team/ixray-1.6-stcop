@@ -16,9 +16,9 @@
 //	SVS
 SVS::SVS() :
 	vs(0)
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 //	,signature(0)
-#endif	//	USE_DX10
+#endif //USE_DX11
 {
 	;
 }
@@ -27,10 +27,10 @@ SVS::SVS() :
 SVS::~SVS()
 {
 	DEV->_DeleteVS(this);
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	//_RELEASE(signature);
 	//	Now it is release automatically
-#endif	//	USE_DX10
+#endif //USE_DX11
 	_RELEASE(vs);
 }
 
@@ -39,22 +39,19 @@ SVS::~SVS()
 //	SPS
 SPS::~SPS								()			{	_RELEASE(ps);		DEV->_DeletePS			(this);	}
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 ///////////////////////////////////////////////////////////////////////
 //	SGS
 SGS::~SGS								()			{	_RELEASE(gs);		DEV->_DeleteGS			(this);	}
-
-#	ifdef USE_DX11
 SHS::~SHS								()			{	_RELEASE(sh);		DEV->_DeleteHS			(this);	}
 SDS::~SDS								()			{	_RELEASE(sh);		DEV->_DeleteDS			(this);	}
 SCS::~SCS								()			{	_RELEASE(sh);		DEV->_DeleteCS			(this);	}
-#	endif
 
 ///////////////////////////////////////////////////////////////////////
 //	SInputSignature
 SInputSignature::SInputSignature(ID3DBlob* pBlob)	{ VERIFY(pBlob); signature=pBlob; signature->AddRef();};
 SInputSignature::~SInputSignature		()			{	_RELEASE(signature); DEV->_DeleteInputSignature(this); }
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 ///////////////////////////////////////////////////////////////////////
 //	SState
@@ -65,7 +62,7 @@ SState::~SState							()			{	_RELEASE(state);	DEV->_DeleteState		(this);	}
 SDeclaration::~SDeclaration()
 {	
 	DEV->_DeleteDecl(this);	
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;
 	iLayout = vs_to_layout.begin();
 	for( ; iLayout != vs_to_layout.end(); ++iLayout)
@@ -73,8 +70,8 @@ SDeclaration::~SDeclaration()
 		//	Release vertex layout
 		_RELEASE(iLayout->second);
 	}
-#else	//	USE_DX10
+#else //USE_DX11
 	//	Release vertex layout
 	_RELEASE(dcl);
-#endif	//	USE_DX10
+#endif
 }

@@ -52,19 +52,19 @@ public:
 	CTexture							();
 	virtual ~CTexture					();
 	
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	ID3DShaderResourceView*				get_SRView() {return m_pSRView;}
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 private:
 	IC BOOL								desc_valid		()		{ return pSurface==desc_cache; }
 	IC void								desc_enshure	()		{ if (!desc_valid()) desc_update(); }
 	void								desc_update		();
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	void								Apply			(u32 dwStage);
 	void								ProcessStaging();
 	D3D_USAGE							GetUsage();
-#endif	//	USE_DX10
+#endif //USE_DX11
 
 	//	Class data
 public:	//	Public class members (must be encapsulated furthur)
@@ -74,9 +74,9 @@ public:	//	Public class members (must be encapsulated furthur)
 		u32					bUser		: 1;
 		u32					seqCycles	: 1;
 		u32					MemoryUsage	: 28;
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 		u32					bLoadedAsStaging: 1;
-#endif	//	USE_DX10
+#endif //USE_DX11
 	}									flags;
 	fastdelegate::FastDelegate1<u32>	bind;
 
@@ -100,11 +100,11 @@ private:
 	ID3DBaseTexture*					desc_cache;
 	D3D_TEXTURE2D_DESC					desc;
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_DX11
 	ID3DShaderResourceView*			m_pSRView;
 	// Sequence view data
 	xr_vector<ID3DShaderResourceView*>m_seqSRView;
-#endif	//	USE_DX10
+#endif //USE_DX11
 };
 struct 		resptrcode_texture	: public resptr_base<CTexture>
 {
