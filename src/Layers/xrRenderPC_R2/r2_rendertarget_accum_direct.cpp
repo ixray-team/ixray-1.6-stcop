@@ -769,9 +769,6 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		//s_smap
 
 		STextureList* _T = &*s_accum_direct_volumetric_cascade->E[0]->passes[0]->T;
-		
-		if( ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-			_T = &*s_accum_direct_volumetric->E[0]->passes[0]->T;
 
 		STextureList::iterator	_it		= _T->begin	();
 		STextureList::iterator	_end	= _T->end	();
@@ -803,15 +800,8 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 
 		// setup
 
-		
-
-		if( ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-			RCache.set_Element			(s_accum_direct_volumetric->E[0]);
-		else
-		{
-			RCache.set_Element			(s_accum_direct_volumetric_cascade->E[0]);
-			RCache.set_CullMode			(CULL_CCW); 
-		}
+		RCache.set_Element			(s_accum_direct_volumetric_cascade->E[0]);
+		RCache.set_CullMode			(CULL_CCW); 
 
 //		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0 );
 		RCache.set_c				("Ldynamic_color",		L_clr.x,L_clr.y,L_clr.z,0);
@@ -832,12 +822,8 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 			zMin = 0;
 			zMax = ps_r2_sun_near;
 		} else {
-			extern float	OLES_SUN_LIMIT_27_01_07;
-			if( ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-				zMin = ps_r2_sun_near;
-			else
-				zMin = 0; /////*****************************************************************************************
-
+			extern float OLES_SUN_LIMIT_27_01_07;
+			zMin = 0;
 			zMax = OLES_SUN_LIMIT_27_01_07;
 		}
 
@@ -876,10 +862,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		// setup stencil: we have to draw to both lit and unlit pixels
 		//RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 
-		if( ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		else
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,8,0,16);
+		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,8,0,16);
 
 		// Fetch4 : disable
 		if (RImplementation.o.HW_smap_FETCH4)	{
