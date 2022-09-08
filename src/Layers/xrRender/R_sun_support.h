@@ -1,9 +1,7 @@
-#ifndef	r4_R_sun_support_included
-#define	r4_R_sun_support_included
 #pragma once
 
-const u32 LIGHT_CUBOIDSIDEPOLYS_COUNT	= 4;
-const u32 LIGHT_CUBOIDVERTICES_COUNT	= 2*LIGHT_CUBOIDSIDEPOLYS_COUNT;
+constexpr u32 LIGHT_CUBOIDSIDEPOLYS_COUNT = 4;
+constexpr u32 LIGHT_CUBOIDVERTICES_COUNT = 2 * LIGHT_CUBOIDSIDEPOLYS_COUNT;
 
 template <bool _debug>
 class	FixedConvexVolume
@@ -291,7 +289,7 @@ public:
 	{
 		int				p0,p1;
 		int				counter;
-		_edge		(int _p0, int _p1, int m) : p0(_p0), p1(_p1), counter(m){ if (p0>p1)	swap(p0,p1); 	}
+						_edge		(int _p0, int _p1, int m) : p0(_p0), p1(_p1), counter(m){ if (p0>p1)	swap(p0,p1); 	}
 		bool			equal		(_edge& E)												{ return p0==E.p0 && p1==E.p1;	}
 	};
 public:
@@ -305,10 +303,10 @@ public:
 		{
 			_poly&			P	=	polys[it];
 			Fvector3		t1,t2;
-			float			len;
-
 			t1.sub					(points[P.points[0]], points[P.points[1]]);
 			t2.sub					(points[P.points[0]], points[P.points[2]]);
+		#ifdef USE_DX11
+			float			len;
 
 			P.planeN.crossproduct	(t1,t2);
 			
@@ -351,17 +349,10 @@ public:
 				Fplane	p301;	p301.build(p3,p0,p1);
 				VERIFY	(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
 			}
-
-			/*
-			t1.sub					(points[P.points[0]], points[P.points[1]]);
-
-
+		#else
 			//	HACK: Igor: just make sure we calculated the plane
 
-			t2.sub					(points[P.points[0]], points[P.points[2]]);
 			P.planeN.crossproduct	(t1,t2).normalize();
-
-
 			P.planeD			= -	P.planeN.dotproduct(points[P.points[0]]);
 
 			// verify
@@ -377,9 +368,10 @@ public:
 				Fplane	p301;	p301.build(p3,p0,p1);
 				VERIFY	(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
 			}
-			*/
+		#endif
 		}
 	}
+
 	void				compute_caster_model	(xr_vector<Fplane>& dest, Fvector3 direction)
 	{
 		CRenderTarget&	T	= *RImplementation.Target;
@@ -464,5 +456,3 @@ public:
 		}
 	}
 };
-
-#endif	//	r3_R_sun_support_included
