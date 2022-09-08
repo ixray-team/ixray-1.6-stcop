@@ -3,7 +3,7 @@
 #include "../../xrEngine/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
 
-#include "r4_R_sun_support.h"
+#include "../xrRender/R_sun_support.h"
 
 constexpr float tweak_COP_initial_offs = 1200.0f;
 
@@ -176,12 +176,12 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 		float dist = light_top_plane.classify( Device.vCameraPosition );
 
 		float map_size = m_sun_cascades[cascade_ind].size;
-		D3DXMatrixOrthoOffCenterLH	((D3DXMATRIX*)&mdir_Project,-map_size*0.5f, map_size*0.5f, -map_size*0.5f, map_size*0.5f,  0.1, dist + /*sqrt(2)*/1.41421f*map_size );
 
-		//////////////////////////////////////////////////////////////////////////
-
-
-		/**/
+	#ifndef USE_DX11
+		D3DXMatrixOrthoOffCenterLH((D3DXMATRIX *)&mdir_Project, -map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + map_size);
+	#else
+		D3DXMatrixOrthoOffCenterLH	((D3DXMATRIX*)&mdir_Project,-map_size*0.5f, map_size*0.5f, -map_size*0.5f, map_size*0.5f,  0.1, dist + 1.41421f * map_size);
+	#endif // USE_DX11
 
 		// build viewport xform
 		float	view_dim			= float(RImplementation.o.smapsize);
@@ -225,13 +225,12 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 			if( cascade_ind < m_sun_cascades.size()-1 )
 				m_sun_cascades[cascade_ind+1].rays =  light_cuboid.view_frustum_rays;
 
-// #ifdef	_DEBUG
-
+#ifdef	_DEBUG
 			static bool draw_debug = false;
 			if( draw_debug && cascade_ind == 0 )
 				for (u32 it=0; it<cull_planes.size(); it++)
 					RImplementation.Target->dbg_addplane(cull_planes[it],it*0xFFF);
-//#endifDDS
+#endif
 
 			Fvector cam_shifted = L_pos;
 			cam_shifted.add(lightXZshift);
@@ -343,6 +342,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	// Accumulate
 	Target->phase_accumulator	();
 
+#ifdef USE_DX11
 	if ( Target->use_minmax_sm_this_frame()	)
 	{
 		PIX_EVENT(SE_SUN_NEAR_MINMAX_GENERATE);
@@ -350,6 +350,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	}
 
 	PIX_EVENT(SE_SUN_NEAR);
+#endif // USE_DX11
 
 	if( cascade_ind == 0 )
 		Target->accum_direct_cascade		(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias );
