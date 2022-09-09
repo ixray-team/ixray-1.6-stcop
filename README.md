@@ -9,10 +9,10 @@
 
   <p>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.4">
-      <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases" alt="Latest release" />
+      <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/building.yml">
-      <img src="https://img.shields.io/github/workflow/status/ixray-team/ixray-1.6-stcop/Building" alt="Building status" />
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build.yml/badge.svg" alt="Build engine" />
     </a>
   </p>
 </div>
