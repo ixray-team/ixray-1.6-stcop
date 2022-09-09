@@ -1,10 +1,10 @@
-name: Building
+name: 'Build engine'
 
 on: [ push, pull_request ]
 
 jobs:
-  build:
-    name: 'Building'
+  build-engine:
+    name: 'Build'
     runs-on: windows-latest
 
     strategy:
