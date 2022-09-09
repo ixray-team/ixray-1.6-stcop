@@ -56,20 +56,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\sdk\include;..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\lib;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\sdk\include;..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\lib;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\sdk\include;..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\lib;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -98,7 +98,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Ws2_32.lib;dxerr.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>NotSet</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -134,7 +134,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Ws2_32.lib;dxerr.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -164,7 +164,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Ws2_32.lib;dxerr.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>

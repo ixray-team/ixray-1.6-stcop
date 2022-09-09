@@ -180,7 +180,6 @@ extern "C" {
 
 #ifndef ETOOLS_EXPORTS
 	#undef D3DXCompileShaderFromFile
-	#undef DXGetErrorDescription9
 	#define D3DXGetDriverLevel						D3DX_GetDriverLevel
 	#define D3DXGetImageInfoFromFileInMemory		D3DX_GetImageInfoFromFileInMemory
 	#define D3DXCreateCubeTextureFromFileInMemoryEx	D3DX_CreateCubeTextureFromFileInMemoryEx
@@ -195,7 +194,6 @@ extern "C" {
 	#define D3DXGetDeclVertexSize					D3DX_GetDeclVertexSize
 	#define D3DXGetDeclLength						D3DX_GetDeclLength
 	#define D3DXGetFVFVertexSize					D3DX_GetFVFVertexSize
-	#define DXGetErrorDescription9					DX_GetErrorDescription9
 	#define D3DXMatrixInverse						D3DX_MatrixInverse
 	#define D3DXMatrixTranspose						D3DX_MatrixTranspose
 	#define D3DXPlaneNormalize						D3DX_PlaneNormalize 

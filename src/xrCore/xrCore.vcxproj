@@ -60,20 +60,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\lib;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\lib;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\sdk\dxsdk_mar2009\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\lib;..\..\sdk\dxsdk_mar2009\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -172,7 +172,7 @@
       <DataExecutionPrevention />
       <ImportLibrary>$(SolutionDir)lib\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>NotSet</TargetMachine>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

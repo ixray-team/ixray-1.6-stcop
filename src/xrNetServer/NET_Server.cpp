@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "dxerr.h"
 #include "NET_Common.h"
 #include "net_server.h"
 #include <functional>
@@ -302,22 +301,16 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options, GameDescriptionData &
 if(!psNET_direct_connect)
 {
 	//---------------------------
-#ifdef DEBUG
-	string1024 tmp;
-#endif // DEBUG
-//	HRESULT CoInitializeExRes = CoInitializeEx(NULL, 0);	
-//	if (CoInitializeExRes != S_OK && CoInitializeExRes != S_FALSE)
-//	{
-//		DXTRACE_ERR(tmp, CoInitializeExRes);
-//		CHK_DX(CoInitializeExRes);
-//	};	
+
+	string1024 tmp = "";
+
 	//---------------------------
     // Create the IDirectPlay8Client object.
 	HRESULT CoCreateInstanceRes = CoCreateInstance	(CLSID_DirectPlay8Server, NULL, CLSCTX_INPROC_SERVER, IID_IDirectPlay8Server, (LPVOID*) &NET);
 	//---------------------------	
 	if (CoCreateInstanceRes != S_OK)
 	{
-		DXTRACE_ERR(tmp, CoCreateInstanceRes );
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, CoCreateInstanceRes, 0, tmp, 0, nullptr);
 		CHK_DX(CoCreateInstanceRes );
 	}	
 	//---------------------------

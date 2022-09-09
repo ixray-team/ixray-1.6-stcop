@@ -101,7 +101,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>user32.lib;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
@@ -135,7 +135,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 /NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>user32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -168,7 +168,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 /NODEFAULTLIB:user32 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>user32.dll;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
