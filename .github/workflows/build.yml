@@ -1,10 +1,10 @@
-name: Building
+name: 'Build engine'
 
 on: [ push, pull_request ]
 
 jobs:
-  build:
-    name: 'Building'
+  build-engine:
+    name: 'Build'
     runs-on: windows-latest
 
     strategy:
@@ -42,6 +42,13 @@ jobs:
     - name: Build solution
       run: |
         msbuild $env:solution_name -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -r -m -nologo
+
+    - name: Cleanup
+      run: |
+        if exist bin\*.ilk (del /s bin\*.ilk)
+        if exist bin\*.pdb (del /s bin\*.pdb)
+        if exist lib\*.pdb (del /s lib\*.pdb)
+      shell: cmd
 
     - name: Upload binaries
       uses: actions/upload-artifact@v3
