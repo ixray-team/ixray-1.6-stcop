@@ -10,7 +10,6 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
-#include "dxerr.h"
 
 //#pragma warning(pop)
 
@@ -438,19 +437,13 @@ if(!psNET_direct_connect)
 
 	//---------------------------
 	string1024 tmp="";
-//	HRESULT CoInitializeExRes = CoInitializeEx(NULL, 0);
-//	if (CoInitializeExRes != S_OK && CoInitializeExRes != S_FALSE)
-//	{
-//		DXTRACE_ERR(tmp, CoInitializeExRes);
-//		CHK_DX(CoInitializeExRes);
-//	};	
 	//---------------------------
     // Create the IDirectPlay8Client object.
     HRESULT CoCreateInstanceRes = CoCreateInstance	(CLSID_DirectPlay8Client, NULL, CLSCTX_INPROC_SERVER, IID_IDirectPlay8Client, (LPVOID*) &NET);
 	//---------------------------	
 	if (CoCreateInstanceRes != S_OK)
 	{
-		DXTRACE_ERR(tmp, CoCreateInstanceRes );
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, CoCreateInstanceRes, 0, tmp, 0, nullptr);
 		CHK_DX(CoCreateInstanceRes );
 	}	
 	//---------------------------
@@ -647,9 +640,8 @@ if(!psNET_direct_connect)
 				else
 					Msg("! IPureClient : port %d is BUSY!", c_port);
 
-//				const char* x = DXGetErrorString9(res);
 				string1024 tmp = "";
-				DXTRACE_ERR(tmp, res);
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp, 0, nullptr);
 #endif				
 				c_port++;
 			}
@@ -696,10 +688,9 @@ if(!psNET_direct_connect)
 //		R_CHK(res);		
 		net_csEnumeration.Leave		();
 		_RELEASE					(pHostAddress);
-#ifdef DEBUG	
-//		const char* x = DXGetErrorString9(res);
+#ifdef DEBUG
 		string1024 tmp = "";
-		DXTRACE_ERR(tmp, res);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp, 0, nullptr);
 #endif
 		switch (res)
 		{
@@ -876,11 +867,10 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 				{
 					PDPNMSG_CONNECT_COMPLETE pMsg = (PDPNMSG_CONNECT_COMPLETE)pMessage;
 #ifdef DEBUG
-//					const char* x = DXGetErrorString9(pMsg->hResultCode);
 					if (pMsg->hResultCode != S_OK)
 					{
-						string1024 tmp="";
-						DXTRACE_ERR(tmp, pMsg->hResultCode);
+						string1024 tmp= "";
+						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, pMsg->hResultCode, 0, tmp, 0, nullptr);
 					}					
 #endif
 					if (pMsg->dwApplicationReplyDataSize)
@@ -972,9 +962,8 @@ void	IPureClient::SendTo_LL(void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 	if( FAILED(hr) )	
 	{
 		Msg	("! ERROR: Failed to send net-packet, reason: %s",::Debug.error2string(hr));
-//		const char* x = DXGetErrorString9(hr);
-		string1024 tmp="";
-		DXTRACE_ERR(tmp, hr);
+		string1024 tmp= "";
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, hr, 0, tmp, 0, nullptr);
 	}
 
 //	UpdateStatistic();

@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 #include "gamefont.h"
-#include "dxerr.h"
 #include "ImageManager.h"
 #include "ui_main.h"
 #include "render.h"
