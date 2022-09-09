@@ -4,8 +4,6 @@
 #include "xrdebug.h"
 #include "os_clipboard.h"
 
-#include "dxerr.h"
-
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
@@ -26,12 +24,6 @@ extern bool shared_str_initialized;
         static BOOL			bException	= FALSE;
 
 	#	define USE_OWN_ERROR_MESSAGE_WINDOW
-#endif
-
-#ifndef _M_AMD64
-#	ifndef __BORLANDC__
-#		pragma comment(lib,"dxerr.lib")
-#	endif
 #endif
 
 #include <dbghelp.h>						// MiniDump flags
@@ -234,19 +226,11 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 LPCSTR xrDebug::error2string	(long code)
 {
-	LPCSTR				result	= 0;
-	static	string1024	desc_storage;
+	static string1024 desc_storage = "";
 
-#ifdef _M_AMD64
-#else
-	result				= DXGetErrorDescription	(code);
-#endif
-	if (nullptr == result)
-	{
-		FormatMessage	(FORMAT_MESSAGE_FROM_SYSTEM,0,code,0,desc_storage,sizeof(desc_storage)-1,0);
-		result			= desc_storage;
-	}
-	return		result	;
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, code, 0, desc_storage, 0, nullptr);
+
+	return desc_storage;
 }
 
 void xrDebug::error		(long hr, const char* expr, const char *file, int line, const char *function, bool &ignore_always)
