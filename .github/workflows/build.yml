@@ -45,9 +45,10 @@ jobs:
 
     - name: Cleanup
       run: |
-        del /s bin\*.ilk
-        del /s bin\*.pdb
-        del /s lib\*.pdb
+        if exist bin\*.ilk (del /s bin\*.ilk)
+        if exist bin\*.pdb (del /s bin\*.pdb)
+        if exist lib\*.pdb (del /s lib\*.pdb)
+      shell: cmd
 
     - name: Upload binaries
       uses: actions/upload-artifact@v3
