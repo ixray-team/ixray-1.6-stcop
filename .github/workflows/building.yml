@@ -43,6 +43,12 @@ jobs:
       run: |
         msbuild $env:solution_name -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -r -m -nologo
 
+    - name: Cleanup
+      run: |
+        del /s bin\*.ilk
+        del /s bin\*.pdb
+        del /s lib\*.pdb
+
     - name: Upload binaries
       uses: actions/upload-artifact@v3
       with:
