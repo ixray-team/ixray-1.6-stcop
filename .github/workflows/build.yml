@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         configuration: [ Debug, Mixed, Release, Debug_Dedicated, Mixed_Dedicated, Release_Dedicated ]
-        platform: [ x86 ]
+        platform: [ Win32 ]
 
     env:
       solution_name: XRay.sln
@@ -33,6 +33,7 @@ jobs:
         curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-jun2010.7z -O directxsdk-jun2010.7z
         7z x directxsdk-jun2010.7z
         git clone --branch aug2021 --depth 1 https://github.com/microsoft/DirectXTex.git dep/DirectXTex
+        git clone --branch jul2022 --depth 1 https://github.com/microsoft/DirectXMesh.git dep/DirectXMesh
         git clone --branch Release_3.1.0 --depth 1 https://github.com/dockpanelsuite/dockpanelsuite.git dep/dockpanelsuite
       shell: powershell
 
@@ -45,8 +46,10 @@ jobs:
 
     - name: Cleanup
       run: |
+        if exist bin\*.idb (del /s bin\*.idb)
         if exist bin\*.ilk (del /s bin\*.ilk)
         if exist bin\*.pdb (del /s bin\*.pdb)
+        if exist lib\*.idb (del /s lib\*.idb)
         if exist lib\*.pdb (del /s lib\*.pdb)
       shell: cmd
 
