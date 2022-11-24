@@ -49,7 +49,7 @@ TiXmlNode::~TiXmlNode()
 	{
 		temp = node;
 		node = node->next;
-		delete temp;
+		xr_delete(temp);
 	}	
 }
 
@@ -63,7 +63,7 @@ void TiXmlNode::Clear()
 	{
 		temp = node;
 		node = node->next;
-		delete temp;
+		xr_delete(temp);
 	}	
 
 	firstChild = 0;
@@ -78,7 +78,7 @@ TiXmlNode* TiXmlNode::LinkEndChild( TiXmlNode* node )
 
 	if ( node->Type() == TiXmlNode::DOCUMENT )
 	{
-		delete node;
+		xr_delete(node);
 		if ( GetDocument() ) GetDocument()->SetError( TIXML_ERROR_DOCUMENT_TOP_ONLY, 0, 0, TIXML_ENCODING_UNKNOWN );
 		return 0;
 	}
@@ -265,7 +265,7 @@ void TiXmlElement::ClearThis()
 	{
 		TiXmlAttribute* node = attributeSet.First();
 		attributeSet.Remove( node );
-		delete node;
+		xr_delete(node);
 	}
 }
 
