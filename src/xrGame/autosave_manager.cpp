@@ -50,8 +50,7 @@ float CAutosaveManager::shedule_Scale		()
 void CAutosaveManager::shedule_Update		(u32 dt)
 {
 	inherited::shedule_Update	(dt);
-	#pragma todo("Plecha to Plecha : AUTOSAVE (do not forgive to enable it in release version:-))))!!!!")
-	if (true) return;
+
 	if (!ai().get_alife())
 		return;
 
