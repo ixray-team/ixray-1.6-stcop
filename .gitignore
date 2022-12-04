@@ -27,6 +27,9 @@ __history/
 __recovery/
 *.~*
 
+# Common backups
+*.bak
+
 # Build results
 obj/
 lib/

@@ -57,6 +57,7 @@ contains
   mxprops in 'mxprops.pas',
   MxShortcut in 'MxShortcut.pas',
   mxStrUtils in 'mxStrUtils.pas',
+  mxVclutils in 'mxVclutils.pas',
   RenderWindow in 'RenderWindow.pas';
 
 end.
