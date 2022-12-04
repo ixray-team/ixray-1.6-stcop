@@ -1,3 +1,321 @@
+================================ Version 3.12 ==================================
+
+Lite Package (Delphi) ----------------- 
+
+ElStrUtils:
+
++ UTF8 conversion functions added
++ CreateUnicodeHintString function added
+
+TElEdit:
+
+! TElEdit was re-made significantly.
+
+TElScrollBar:
+
+* Fixed the bug with setting width of the scrollbar with UseSystemMetrics
+  set to true and themes enabled
+* Fixed the problem with Width/UseSystemMetrics loading order.
+* Fixed the problem with incorrect keyboard handling
+* The value of Min property different from 0 caused incorrect positioning of the thumb. Fixed.
+
+TElHeader:
+
++ Added Reindex method
+
+TElTree:
+
+! When RowSelect is false, drag frame is now drawn around main text. 
+! Changed the order of moving selection and focus when the item is deleted
++ OnItemChange is now fired with icmColumnText parameter when column text changes
++ Added RemoveItem/AddExistingItem methods. These methods let you detach/attach items and whole trees.
+* Fixed the bug with incorrect repainting of main text when tracking is on and mouse is moved over items.
+* Fixed counting items of different height (when using HTML-enabled items). This affected scrollbar updating and navigation.
+* Fixed the AV that could happen when attempting to edit the cell controlled by cell style
+* Fixed the AV that happened in some cases when DoubleClickMode = dcmEdit and the click happened on empty space
+* ElCellStyle.UseBkColor was not saved to stream. Fixed.
+* Clicking on Empty space didn't deselect items even when AlwaysKeepSelection was false. Fixed.
+* Fixed inplace editing in DblClickMode = dcmEdit
+* Fixed MoveToItem to insert the item above the target when the item belonged to 
+* Fixed painting of the control when IsUpdating = true
+* Improved vertical scrolling of items with own height (once more)
+* HeaderHotTrack was not saved and reverted to false. Fixed. 
+* SortUseCase was not used when VirtualityLevel is vlNone. Fixed.
+  Thanks to Steve Moss for reports
+* Fixed the AV that happened when virtual mode was used with item style enabled
+  and no columns in header present 
+* Fixed the EOutOfBounds error that could happen when trying to edit the last style-enabled cell
+* Fixed item height calculation for better performance and to remove possible side-effects
+* Cell Styles revisited. Now text in the cell with TextFlags that includes
+  DT_VCENTER or DT_BOTTOM is justified vertically.
+* Fixed problems when the control is being destroyed while in editing mode.
+* Fixed sorting for main column (spoiled recently)
+* Improved header size adjustment when the sections are rebuilt
+* Improved font changing -- header font is also updated now.
+* Writing the items to string list worked only for the tree with columns turned on. Fixed.
+* Fixed the problem with ItemFocused that contained the pointer to FRoot after Clear method.
+* Some fixes with destryoing of the handle during inplace editing operation
+
+
+TElWideStrings:
+
+* Fixed setting text via Text property -- it skipped empty lines. 
+* Fixed loading of non-unicode text to the stream
++ Added SaveUnicode property and byte-order handling
+
+TElWideStringList:
+
+* IndexOfName was broken (reported by Paul Kienitz). Fixed
+
+TElHTMLRender:
+
+* Fixed comment skipping routine that could cause an infinite loop
+* Fixed alignment problem with word-wrapped and <br>-ed paragraphs
+
+TElHintWindow:
+
+* Fixed the problem with charset not being set for HTML rendering engine
+
+Standard Package (Delphi) ----------------- 
+
+TElFileNameEdit, TElFolderNameEdit:
+
+* Button width was not preserved. Fixed.
++ Added OnBeforeDialogExecute and OnDialogExecute events
+
+TElFileNameEdit:
+
++ OnDialogExecute event added to TElFileNameEdit
+* Corrected error that caused an AV when pressing button
+* Optimized behaviour of Title/DialogTitle properties. Title is the same as
+  DialogTitle now
+* Fixed dialog type in FileNameEdit (dialog of wrong type was created) 
+
+TElTrayInfo:
+
+* Fixed recent bug when ElTrayInfo caused an AV upon showing
++ Added InfoForm property to access the info form when it is shown.
+  This can be used to set custom window region for the form  
+
+TElTimerPool:
+
++ Added support for power events -- before the change suspending the 
+  system caused incorrect behaviour after operations were resumed
+* Setting Precise property to true could cause an AV on application exit
+
+TElIniFile:
+
+* Fixed the possible problem with setting key name in WriteDouble
+
+TElCheckGroup, TElRadioGroup:
+
++ ItemSpacing and ItemHeight properties added.
++ HorzOffset property added
+* Some button properties (MoneyFlat*, FlatAlways) were not set in run-time. Fixed. 
+* Fixed height setting of the items in group boxes (spoiled on 06/04)
+
+TElRadioGroup:
+
+* Clearing items caused error when ItemIndex <> -1 in ElRadioGroup. Fixed. 
+
+TElStatusBar:
+
++ Added ConvertHintTextW function. It can be used to set statusbar text from application hint
+
+TElURLLabel:
+
+* ShowURLInHint functionality was spoiled in Unicode mode. Fixed.
+
+TElCalendar:
+
+* Now the week number is shown not for the first day, but for the first monday in row
+
+TElFormPersist:
+
+* Fixed TopMost setting (stopped to work due to lousy VCL design :()
+* Fixed the problem with property saving when the window was created but was not shown during the session
+
+TElAdvancedListBox:
+
+* Line hint fixed in ElAdvancedListBox
+
+TElAdvancedComboBox:
+
++ Implemented AutoCompletion property in ElAdvancedComboBox
++ Added DropDownWidth property to ElAdvancedComboBox
++ Added HandleDialogKeys property to ElAdvancedComboBox
+* Fixed setting the width of DropDown list using DropDownWidth property
+
+TElComboBox:
+
++ Added ShowLineHint property
++ Corrected button frame drawing n XP with themes disabled
+* AutoSelect property made published
+* Pressing Enter when the combo is dropped down and when it's on dialog box with default button
+  caused this button to react instead of the combo box.
+
+TElFolderDialog:
+
++ Added StatusText property
+
+TElImageComboBox:
+
+! Changed Name parameter in OnImageName event to TElFString to provide Unicode support
+* ImageIndex was offset by 2 when ShowEmptyValue was true. Fixed.
+* Fixed programmatic setting of ImageIndex
+
+TElInputDialog:
+
+* The dialog made Unicode.
++ Added Position property.
+
+TElListBox:
+
++ Added UseSelectedFont and SelectedFontColor properties.
+* Line hint fixed
+* Fixed the problem with assignment of items in non-Unicode mode
+
+ElMenus:
+
++ Increased spacing between text and shortcut
++ Added right-to-left support
++ Added Clear method
+* Fixed some HTML-related bugs
+* Sort of fixed the problem with overlapping text and sub-menu arrow
+* Fixed a bug that corrupted IDE menus (thanks to Graham Powell)
+* Fixed drawing of the separator line in OfficeXP style
+* OnClick was not fired for menu items that have sub-menus. Fixed.
+* MainMenu blocked painting of popup menus. Fixed
+
+TElMRU:
+
++ Added Default, Checked and Persisten properties to TElMRUEntry
+
+TElPageControl:
+
++ Added UseActiveTabFont and ActiveTabFont properties. They let you specify separate font for active tab.
++ Added TabCursor property
++ Added drag'n'drop of the pages.
++ Added TabSheet.UseTabColor property to enable use of TabColor (which was useless previously)
++ Added OnDrawTab and changed parameter list for OnMeasureTab
++ DefaultPage property added. It can be set in design-time to force activation of specified page  
+* When the page is removed, the next page was erroneously activated. Fixed.
+
+TElPopupButton, TElGraphicButton:
+
++ DrawFocusFrame property added
++ Added Alignment property for the text. It is active for multiline captions only 
++ Added support for HTML-formatted captions
+* Buttons didn't work correctly with ElPopupMenu as PulldownMenu if they didn't
+  have an owner. Fixed. 
+* With older versions of VCL pressing F1 on buttons caused an AV if 
+  there was no PullDownMenu assigned. Fixed.
+
+TElVersionInfo:
+
+* Fixed the case when version info resource was not present in the file
+
+TElSideBar:
+
+* SectionsFont settings were ignored in run-time. Fixed.
+* Scrolling the items with mouse wheel now works only when the corresponding arrow is present 
+
+TElSpinEdit:
+
+* Finally fixed button border behaviour
+
+TElFloatSpinEdit:
+
+* OnChange is called when the value is changed with keyboard in ElFloatSpinEdit
+
+
+TElStringTokenizer:
+
+* Renamed ReturnTokens to ReturnDelims
++ Added SkipEmptyValues property
+
+TElTreeGrid:
+
+* ExplorerEditMode property was ignored when edit operation was finished by pressing arrows/tab. Fixed
+* Cell controls didn't receive clicks on left mouse button. Fixed. 
+* Pressing the keys which are the hotkeys for the form in default editor caused activation of the hot-key control. Fixed.
+* OnAfterSelectionChange was not fired when moving the focus up/down with keyboard or when clicking cell with mouse. Fixed.
+* Fixed the problem with ignoring ExplorerEditMode when initiating edit
+  operation in the item and the pending edit operation is already active
+* It is now possible to set RowCount to 0. 
+* Fixed some problems with ending inplace edit operation when InputValid is set to true
+
+TElTreeStringGrid:
+
+* Fixed inplace editor invokation in RowSelect mode
+
+TElHTMlListBox:
+
+* Fixed design-time setting of Style property
+
+TElDateTimePicker:
+
++ Added UnassignedChar property
+* Day name (ddd, dddd modifiers) was not shown and selected. Fixed. 
+* When ChangeDisabledText was set to true, changing Enabled property didn't invalidate the control
+
+TElExplorerBar:
+
+* Fixed adjustment of Margin property that caused infinite loop and hanging of the application
+
+TElScrollBox:
+
+* Fixed the problem with the border in XP with themes disabled
+
+TElTrackBar:
+
+* Focus rectangle was not shown when the focus was set to control. Fixed. 
+
+TElTreeComboBox:
+
+* The tree didn't work with standard scrollbars. Fixed.
+* Enter/Escape did not close the dropdown. Fixed.
+* TreeParentFont didn't work as it should. Fixed.
+
+TElToolbar:
+
+* BorderWidth property was ignored. Fixed.
+
+TElTrayIcon:
+
++ Added StaticIcons pool for handling of static icon. 
+
+TElCheckBox, TElRadioButton:
+
+* Deletion of LinkPopupMenu component didn't clear the property. Fixed.
+* AutoSize didn't work when font was changed. Fixed.
+* Setting MoneyFlat didn't change the flag for items
+
+TElPromptDialog:
+
++ Added Position property.
++ Added All button
+
+TElFormCaption:
+
+* Fixed the problem with the incorrect background of the caption, painted in Windows XP with themes disabled
+
+
+Profesional Package (Delphi) ----------------- 
+
+Fixed lookup boxes
+
+TElTreePrinter:
+
+* Fixed an AV that could happen when the item has no style assigned and FillBackground is true
+* Fixed drawing of right- and center- aligned cells when printing with TElTreePrinter
+
+TElShellTree, TElShellList:
+
+* Fixed rebuilding of the tree and list when the component is loaded
+* OnItemAdded is now correctly fired for all items
+* Columns in list are now built correctly 
+
 ================================ Version 3.11 ==================================
 
 All controls now correctly set inherited (non-Unicode) Hint property in the 
