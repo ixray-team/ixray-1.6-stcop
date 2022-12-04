@@ -2,6 +2,14 @@
     <PropertyGroup>
         <ProjectGuid>{82D7DB71-AC8B-4CF3-89B7-D5EB75DA0273}</ProjectGuid>
     </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="sdk\components\AlexMX\editor.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sdk\components\AlexMX\editorB.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
         <Borland.ProjectType/>
@@ -9,14 +17,32 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="editor">
+        <MSBuild Projects="sdk\components\AlexMX\editor.dproj"/>
+    </Target>
+    <Target Name="editor:Clean">
+        <MSBuild Projects="sdk\components\AlexMX\editor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="editor:Make">
+        <MSBuild Projects="sdk\components\AlexMX\editor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="editorB">
+        <MSBuild Projects="sdk\components\AlexMX\editorB.dproj"/>
+    </Target>
+    <Target Name="editorB:Clean">
+        <MSBuild Projects="sdk\components\AlexMX\editorB.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="editorB:Make">
+        <MSBuild Projects="sdk\components\AlexMX\editorB.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget/>
+        <CallTarget Targets="editor;editorB"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget/>
+        <CallTarget Targets="editor:Clean;editorB:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget/>
+        <CallTarget Targets="editor:Make;editorB:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

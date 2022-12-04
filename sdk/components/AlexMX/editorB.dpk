@@ -1,0 +1,62 @@
+package editorB;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  vclx;
+
+contains
+  ExtBtn in 'ExtBtn.pas',
+  Gradient in 'Gradient.pas',
+  multi_check in 'multi_check.pas',
+  multi_color in 'multi_color.pas',
+  multi_edit in 'multi_edit.pas',
+  mxAppUtils in 'mxAppUtils.pas',
+  mxBoxprocs in 'mxBoxprocs.pas',
+  mxCConst in 'mxCConst.pas',
+  mxClipicon in 'mxClipicon.pas',
+  mxConst in 'mxConst.pas',
+  MxCtrls in 'MxCtrls.pas',
+  mxDateutil in 'mxDateutil.pas',
+  mxfilectrl in 'mxfilectrl.pas',
+  mxFileutil in 'mxFileutil.pas',
+  mxhook in 'mxhook.pas',
+  Mxlconst in 'Mxlconst.pas',
+  mxMaxmin in 'mxMaxmin.pas',
+  mxmenus in 'mxmenus.pas',
+  mxPlacemnt in 'mxPlacemnt.pas',
+  mxprgrss in 'mxprgrss.pas',
+  mxprops in 'mxprops.pas',
+  MxShortcut in 'MxShortcut.pas',
+  mxStrUtils in 'mxStrUtils.pas',
+  RenderWindow in 'RenderWindow.pas';
+
+end.
