@@ -46,6 +46,9 @@ sdk/dxsdk_jun2010/
 sdk/3d_sdk/
 dep/
 
+# Generated files
+inc/
+
 # X-Ray resources
 *.db*
 
