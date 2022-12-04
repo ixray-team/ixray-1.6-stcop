@@ -1,11 +1,11 @@
 # Global ignoring of different binaries and another temporary files
 
 # Visual Studio user settings
+.vs/
 *.suo
 *.user
 
 # Visual C++ cache files
-.vs/
 ipch/
 *.ncb
 *.opendb
@@ -14,6 +14,18 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 *.aps
+
+# RAD Studio user settings
+*.local
+*.identcache
+*.projdata
+*.tvsconfig
+*.dsk
+
+# RAD Studio history and backups
+__history/
+__recovery/
+*.~*
 
 # Build results
 obj/
@@ -30,12 +42,6 @@ sdk/dxsdk_mar2009/
 sdk/dxsdk_jun2010/
 sdk/3d_sdk/
 dep/
-
-# C++ Builder backups
-*.~bpg
-*.~bpr
-*.~h
-*.~cpp
 
 # X-Ray resources
 *.db*
