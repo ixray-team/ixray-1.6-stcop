@@ -13,7 +13,7 @@ unit mxHook;
 
 interface
 
-uses {$IFDEF WIN32} Windows, {$ELSE} WinTypes, WinProcs, {$ENDIF}
+uses Windows,
   Messages, SysUtils, Classes, Controls, Forms, mxConst;
 
 type
@@ -338,11 +338,7 @@ function TRxWindowHook.GetHookHandle: HWnd;
 begin
   if Assigned(HookList) then Result := HookList.Handle
   else
-{$IFDEF WIN32}
     Result := INVALID_HANDLE_VALUE;
-{$ELSE}
-    Result := 0;
-{$ENDIF}
 end;
 
 procedure TRxWindowHook.HookControl;
@@ -388,18 +384,16 @@ begin
 end;
 
 procedure TRxWindowHook.DefineProperties(Filer: TFiler);
-{$IFDEF WIN32}
   function DoWrite: Boolean;
   begin
     if Assigned(Filer.Ancestor) then
       Result := IsForm <> TRxWindowHook(Filer.Ancestor).IsForm
     else Result := IsForm;
   end;
-{$ENDIF}
 begin
   inherited DefineProperties(Filer);
   Filer.DefineProperty('IsForm', ReadForm, WriteForm,
-    {$IFDEF WIN32} DoWrite {$ELSE} IsForm {$ENDIF});
+    DoWrite);
 end;
 
 function TRxWindowHook.GetWinControl: TWinControl;
@@ -436,9 +430,7 @@ begin
     SaveActive := FActive;
     Hook := TControlHook(DoUnhookControl);
     FControl := Value;
-{$IFDEF WIN32}
     if Value <> nil then Value.FreeNotification(Self);
-{$ENDIF}
     if Assigned(Hook) and (Hook.FList.Count = 0) and Assigned(HookList) then
       PostMessage(HookList.Handle, CM_DESTROYHOOK, 0, Longint(Hook));
     if SaveActive then HookControl;
@@ -462,13 +454,13 @@ end;
 
 function SetVirtualMethodAddress(AClass: TClass; AIndex: Integer;
   NewAddress: Pointer): Pointer;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 const
   PageSize = SizeOf(Pointer);
 {$ENDIF}
 var
   Table: PPointer;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   SaveFlag: DWORD;
 {$ELSE}
   Block: Pointer;
@@ -477,7 +469,7 @@ begin
   Table := PPointer(AClass);
   Inc(Table, AIndex - 1);
   Result := Table^;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   if VirtualProtect(Table, PageSize, PAGE_EXECUTE_READWRITE, @SaveFlag) then
   try
     Table^ := NewAddress;
@@ -505,10 +497,6 @@ end;
 
 initialization
   HookList := nil;
-{$IFDEF WIN32}
 finalization
   DropHookList;
-{$ELSE}
-  AddExitProc(DropHookList);
-{$ENDIF}
 end.

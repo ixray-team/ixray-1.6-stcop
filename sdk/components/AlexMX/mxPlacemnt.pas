@@ -13,17 +13,15 @@ unit mxPlacemnt;
 
 interface
 
-uses {$IFDEF WIN32} Windows, Registry, {$ELSE} WinTypes, WinProcs, {$ENDIF}
+uses Windows, Registry,
   Controls, Messages, Classes, Forms, IniFiles, Dialogs, mxVclUtils, mxHook;
 
 type
   TPlacementOption = (fpState, fpPosition, fpActiveControl);
   TPlacementOptions = set of TPlacementOption;
   TPlacementOperation = (poSave, poRestore);
-{$IFDEF WIN32}
   TPlacementRegRoot = (prCurrentUser, prLocalMachine, prCurrentConfig,
     prClassesRoot, prUsers, prDynData);
-{$ENDIF}
 
   TIniLink = class;
 
@@ -56,14 +54,12 @@ type
   TFormPlacement = class(TComponent)
   private
     FActive: Boolean;
-    FIniFileName: PString;
-    FIniSection: PString;
+    FIniFileName: String;
+    FIniSection: String;
     FIniFile: TIniFile;
     FUseRegistry: Boolean;
-{$IFDEF WIN32}
     FRegIniFile: TRegIniFile;
     FRegistryRoot: TPlacementRegRoot;
-{$ENDIF WIN32}
     FLinks: TList;
     FOptions: TPlacementOptions;
     FVersion: Integer;
@@ -126,9 +122,7 @@ type
     procedure EraseSections;
     property IniFileObject: TObject read GetIniFile;
     property IniFile: TIniFile read FIniFile;
-{$IFDEF WIN32}
     property RegIniFile: TRegIniFile read FRegIniFile;
-{$ENDIF WIN32}
   published
     property Active: Boolean read FActive write FActive default True;
     property IniFileName: string read GetIniFileName write SetIniFileName;
@@ -136,9 +130,7 @@ type
     property MinMaxInfo: TWinMinMaxInfo read FWinMinMaxInfo write SetWinMinMaxInfo;
     property Options: TPlacementOptions read FOptions write FOptions default [fpState, fpPosition];
     property PreventResize: Boolean read FPreventResize write SetPreventResize default False;
-{$IFDEF WIN32}
     property RegistryRoot: TPlacementRegRoot read FRegistryRoot write FRegistryRoot default prCurrentUser;
-{$ENDIF WIN32}
     property UseRegistry: Boolean read FUseRegistry write FUseRegistry default False;
     property Version: Integer read FVersion write FVersion default 0;
     property OnSavePlacement: TNotifyEvent read FOnSavePlacement
@@ -177,9 +169,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-{$IFDEF WIN32}
     procedure SetNotification;
-{$ENDIF WIN32}
 {$IFDEF RX_D3}
     property StoredValue[const Name: string]: Variant read GetStoredValue write SetStoredValue;
 {$ENDIF RX_D3}
@@ -292,8 +282,8 @@ const
 constructor TFormPlacement.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FIniFileName := NullStr;
-  FIniSection := NullStr;
+  FIniFileName := '';
+  FIniSection := '';
   FActive := True;
   if AOwner is TForm then FOptions := [fpState, fpPosition]
   else FOptions := [];
@@ -313,8 +303,6 @@ begin
     ReleaseHook;
     RestoreEvents;
   end;
-  DisposeStr(FIniFileName);
-  DisposeStr(FIniSection);
   FWinMinMaxInfo.Free;
   inherited Destroy;
 end;
@@ -519,13 +507,8 @@ end;
 
 procedure TFormPlacement.UpdatePlacement;
 const
-{$IFDEF WIN32}
   Metrics: array[bsSingle..bsSizeToolWin] of Word =
     (SM_CXBORDER, SM_CXFRAME, SM_CXDLGFRAME, SM_CXBORDER, SM_CXFRAME);
-{$ELSE}
-  Metrics: array[bsSingle..bsDialog] of Word =
-    (SM_CXBORDER, SM_CXFRAME, SM_CXDLGFRAME);
-{$ENDIF}
 var
   Placement: TWindowPlacement;
 begin
@@ -578,42 +561,34 @@ end;
 
 function TFormPlacement.GetIniFile: TObject;
 begin
-{$IFDEF WIN32}
   if UseRegistry then Result := FRegIniFile
   else Result := FIniFile;
-{$ELSE}
-  Result := FIniFile;
-{$ENDIF WIN32}
 end;
 
 function TFormPlacement.GetIniFileName: string;
 begin
-  Result := FIniFileName^;
+  Result := FIniFileName;
   if (Result = '') and not (csDesigning in ComponentState) then begin
-{$IFDEF WIN32}
     if UseRegistry then Result := GetDefaultIniRegKey
     else Result := GetDefaultIniName;
-{$ELSE}
-    Result := GetDefaultIniName;
-{$ENDIF}
   end;
 end;
 
 procedure TFormPlacement.SetIniFileName(const Value: string);
 begin
-  AssignStr(FIniFileName, Value);
+  FIniFileName := FIniFileName + Value;
 end;
 
 function TFormPlacement.GetIniSection: string;
 begin
-  Result := FIniSection^;
+  Result := FIniSection;
   if (Result = '') and not (csDesigning in ComponentState) then
     Result := GetDefaultSection(Owner);
 end;
 
 procedure TFormPlacement.SetIniSection(const Value: string);
 begin
-  AssignStr(FIniSection, Value);
+  FIniSection := FIniSection + Value;
 end;
 
 procedure TFormPlacement.Save;
@@ -629,7 +604,6 @@ end;
 procedure TFormPlacement.SavePlacement;
 begin
   if Owner is TCustomForm then begin
-{$IFDEF WIN32}
     if UseRegistry then begin
       if (Options * [fpState, fpPosition] <> []) then begin
         WriteFormPlacementReg(Form, FRegIniFile, IniSection);
@@ -646,14 +620,6 @@ begin
       if (fpActiveControl in Options) and (Form.ActiveControl <> nil) then
         FIniFile.WriteString(IniSection, siActiveCtrl, Form.ActiveControl.Name);
     end;
-{$ELSE}
-    if (Options * [fpState, fpPosition] <> []) then begin
-      WriteFormPlacement(Form, FIniFile, IniSection);
-      FIniFile.WriteBool(IniSection, siVisible, FDestroying);
-    end;
-    if (fpActiveControl in Options) and (Form.ActiveControl <> nil) then
-      FIniFile.WriteString(IniSection, siActiveCtrl, Form.ActiveControl.Name);
-{$ENDIF}
   end;
   NotifyLinks(poSave);
 end;
@@ -661,12 +627,10 @@ end;
 procedure TFormPlacement.RestorePlacement;
 begin
   if Owner is TCustomForm then begin
-{$IFDEF WIN32}
     if UseRegistry then
       ReadFormPlacementReg(Form, FRegIniFile, IniSection, fpState in Options,
         fpPosition in Options)
     else
-{$ENDIF}
       ReadFormPlacement(Form, FIniFile, IniSection, fpState in Options,
         fpPosition in Options);
   end;
@@ -676,12 +640,8 @@ end;
 procedure TFormPlacement.IniNeeded(ReadOnly: Boolean);
 begin
   if IniFileObject = nil then begin
-{$IFDEF WIN32}
     if UseRegistry then begin
       FRegIniFile := TRegIniFile.Create(IniFileName);
-{$IFDEF RX_D5}
-      if ReadOnly then FRegIniFile.Access := KEY_READ;
-{$ENDIF}
       case FRegistryRoot of
         prLocalMachine:
           FRegIniFile.RootKey := HKEY_LOCAL_MACHINE;
@@ -698,7 +658,6 @@ begin
         FRegIniFile.OpenKey(FRegIniFile.FileName, not ReadOnly);
     end
     else
-{$ENDIF}
     FIniFile := TIniFile.Create(IniFileName);
   end;
 end;
@@ -708,9 +667,7 @@ begin
   if IniFileObject <> nil then begin
     IniFileObject.Free;
     FIniFile := nil;
-{$IFDEF WIN32}
     FRegIniFile := nil;
-{$ENDIF}
   end;
 end;
 
@@ -928,7 +885,6 @@ begin
   inherited Destroy;
 end;
 
-{$IFDEF WIN32}
 procedure TFormStorage.SetNotification;
 var
   I: Integer;
@@ -939,14 +895,11 @@ begin
     if Component <> nil then Component.FreeNotification(Self);
   end;
 end;
-{$ENDIF WIN32}
 
 procedure TFormStorage.SetStoredProps(Value: TStrings);
 begin
   FStoredProps.Assign(Value);
-{$IFDEF WIN32}
   SetNotification;
-{$ENDIF}
 end;
 
 {$IFDEF RX_D3}
@@ -999,12 +952,8 @@ begin
   try
     Section := IniSection;
     OnWriteString := DoWriteString;
-{$IFDEF WIN32}
     if UseRegistry then OnEraseSection := FRegIniFile.EraseSection
     else OnEraseSection := FIniFile.EraseSection;
-{$ELSE}
-    OnEraseSection := FIniFile.EraseSection;
-{$ENDIF WIN32}
     StoreObjectsProps(Owner, FStoredProps);
   finally
     Free;
@@ -1064,7 +1013,7 @@ end;
 
 function TIniLink.GetRootSection: string;
 begin
-  if Assigned(FStorage) then Result := FStorage.FIniSection^
+  if Assigned(FStorage) then Result := FStorage.FIniSection
   else Result := '';
   if Result <> '' then Result := Result + '\';
 end;

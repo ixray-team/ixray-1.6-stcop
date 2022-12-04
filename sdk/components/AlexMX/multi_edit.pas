@@ -1095,11 +1095,11 @@ begin
 	ValidChars := ['+', '-', '0'..'9'];
   	if ValueType = vtFloat then begin
   		// если нет точки вообще
-    	if Pos(DecimalSeparator, Text) = 0 then
-			ValidChars := ValidChars + [DecimalSeparator];
+    	if Pos(FormatSettings.DecimalSeparator, Text) = 0 then
+			ValidChars := ValidChars + [FormatSettings.DecimalSeparator];
   		// если есть выделение
-    	if (SelLength>0) and (Pos(DecimalSeparator, Text) <> 0) and (Pos(DecimalSeparator, SelText) <> 0) then
-        	ValidChars := ValidChars + [DecimalSeparator];
+    	if (SelLength>0) and (Pos(FormatSettings.DecimalSeparator, Text) <> 0) and (Pos(FormatSettings.DecimalSeparator, SelText) <> 0) then
+        	ValidChars := ValidChars + [FormatSettings.DecimalSeparator];
 		if Pos('E', AnsiUpperCase(Text)) = 0 then
       		ValidChars := ValidChars + ['e', 'E'];
   	end else if ValueType = vtHex then begin

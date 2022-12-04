@@ -29,7 +29,7 @@ function BoxCanDropItem(List: TWinControl; X, Y: Integer;
 
 implementation
 
-uses {$IFDEF WIN32} Windows {$ELSE} WinTypes, WinProcs {$ENDIF}, Graphics;
+uses Windows, Graphics;
 
 function BoxItems(List: TWinControl): TStrings;
 begin
@@ -65,17 +65,6 @@ begin
     Result := TMxCustomListBox(List).ItemIndex
   else Result := LB_ERR;
 end;
-
-{$IFNDEF WIN32}
-function BoxGetCanvas(List: TWinControl): TCanvas;
-begin
-  if List is TCustomListBox then
-    Result := TCustomListBox(List).Canvas
-  else if List is TMxCustomListBox then
-    Result := TMxCustomListBox(List).Canvas
-  else Result := nil;
-end;
-{$ENDIF}
 
 procedure BoxSetItemIndex(List: TWinControl; Index: Integer);
 begin
@@ -241,22 +230,16 @@ var
   R: TRect;
 
   procedure DrawItemFocusRect(Idx: Integer);
-{$IFDEF WIN32}
   var
     P: TPoint;
     DC: HDC;
-{$ENDIF}
   begin
     R := BoxItemRect(List, Idx);
-{$IFDEF WIN32}
     P := List.ClientToScreen(R.TopLeft);
     R := Bounds(P.X, P.Y, R.Right - R.Left, R.Bottom - R.Top);
     DC := GetDC(0);
     DrawFocusRect(DC, R);
     ReleaseDC(0, DC);
-{$ELSE}
-    BoxGetCanvas(List).DrawFocusRect(R);
-{$ENDIF}
   end;
 
 begin

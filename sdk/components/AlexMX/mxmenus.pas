@@ -6,7 +6,9 @@ unit MxMenus;
 interface
 
 uses Windows, SysUtils,
-  Classes, Controls, Messages, Graphics, ImgList, Menus;
+  Classes, Controls, Messages, Graphics, ImgList,
+  {$IFDEF RX_D16}System.UITypes,{$ENDIF}
+  Menus, MxHook {$IFDEF RX_D6}, Types{$ENDIF};
 
 type
   TMxMenuStyle = (msStandard, msOwnerDraw, msBtnLowered, msBtnRaised);
@@ -113,9 +115,11 @@ function IsItemPopup(Item: TMenuItem): Boolean;
 
 implementation
 
-uses CommCtrl, Forms, ExtCtrls, Consts, mxVclUtils, mxConst, mxMaxMin, mxClipIcon, mxStrUtils;
+uses {$IFNDEF VER80} CommCtrl, {$ENDIF} Forms, ExtCtrls, Consts, mxConst,
+  mxMaxMin, MxVCLUtils, MxClipIcon, MxStrUtils; // Polaris
 
 const
+  DefMarginColor: TColor = clBlue;
   AddWidth = 2;
   AddHeight = 4;
   Tab = #9#9;
@@ -126,11 +130,15 @@ type
 
 function BtnStyle(MenuStyle: TMxMenuStyle): TBtnStyle;
 begin
+{$IFNDEF VER80}
   case MenuStyle of
     msBtnLowered: Result := bsLowered;
     msBtnRaised: Result := bsRaised;
     else Result := bsNone;
   end;
+{$ELSE}
+  Result := bsNone;
+{$ENDIF}
 end;
 
 function IsItemPopup(Item: TMenuItem): Boolean;
@@ -138,6 +146,116 @@ begin
   Result := (Item.Parent = nil) or (Item.Parent.Parent <> nil) or
     not (Item.Parent.Owner is TMainMenu);
 end;
+
+{$IFDEF VER80}
+const
+  { return codes for WM_MENUCHAR (not defined in Delphi 1.0) }
+  MNC_IGNORE = 0;
+  MNC_CLOSE = 1;
+  MNC_EXECUTE = 2;
+  MNC_SELECT = 3;
+{$ENDIF}
+
+{$IFNDEF RX_D4}
+procedure ProcessMenuChar(AMenu: TMenu; var Message: TWMMenuChar);
+var
+  C, I, First, Hilite, Next: Integer;
+  State: Word;
+
+  function IsAccelChar(Menu: HMENU; State: Word; I: Integer; C: Char): Boolean;
+  var
+    Item: TMenuItem;
+    Id: Cardinal;
+  begin
+    Item := nil;
+    if State and MF_POPUP <> 0 then begin
+      Menu := GetSubMenu(Menu, I);
+      Item := AMenu.FindItem(Menu, fkHandle);
+    end
+    else begin
+      Id := GetMenuItemID(Menu, I);
+      if Id <> {$IFNDEF VER80} $FFFFFFFF {$ELSE} $FFFF {$ENDIF} then
+        Item := AMenu.FindItem(Id, fkCommand);
+    end;
+    if Item <> nil then Result := IsAccel(Ord(C), Item.Caption)
+    else Result := False;
+  end;
+
+  function IsInitialChar(Menu: HMENU; State: Word; I: Integer; C: Char): Boolean;
+  var
+    Item: TMenuItem;
+  begin
+    if State and MF_POPUP <> 0 then begin
+      Menu := GetSubMenu(Menu, I);
+      Item := AMenu.FindItem(Menu, fkHandle);
+    end
+    else begin
+      Item := AMenu.FindItem(Menu, fkHandle);
+      if Item <> nil then Item := Item.Items[I];
+    end;
+    if (Item <> nil) and (Item.Caption <> '') then
+      Result := AnsiCompareText(Item.Caption[1], C) = 0
+    else Result := False;
+  end;
+
+begin
+  with Message do begin
+    Result := MNC_IGNORE; { No item found: beep }
+    First := -1;
+    Hilite := -1;
+    Next := -1;
+    C := GetMenuItemCount(Menu);
+    for I := 0 to C - 1 do begin
+      State := GetMenuState(Menu, I, MF_BYPOSITION);
+      if IsAccelChar(Menu, State, I, User) then begin
+        if State and MF_DISABLED <> 0 then begin
+          { Close the menu if this is the only disabled item to choose from.
+            Otherwise, ignore the item. }
+          if First < 0 then First := -2;
+          Continue;
+        end;
+        if First < 0 then begin
+          First := I;
+          Result := MNC_EXECUTE;
+        end
+        else Result := MNC_SELECT;
+        if State and MF_HILITE <> 0 then Hilite := I
+        else if Hilite >= 0 then Next := I;
+      end;
+    end;
+    { We found a single disabled item. End the selection. }
+    if First < -1 then begin
+      Result := MNC_CLOSE shl 16;
+      Exit;
+    end;
+
+    { If we can't find accelerators, then look for initial letters }
+    if First < 0 then
+      for I := 0 to C - 1 do begin
+        State := GetMenuState(Menu, I, MF_BYPOSITION);
+        if IsInitialChar(Menu, State, I, User) then begin
+          if State and MF_DISABLED <> 0 then begin
+            Result := MNC_CLOSE shl 16;
+            Exit;
+          end;
+          if First < 0 then begin
+            First := I;
+            Result := MNC_EXECUTE;
+          end
+          else Result := MNC_SELECT;
+          if State and MF_HILITE <> 0 then Hilite := I
+          else if Hilite >= 0 then Next := I;
+        end;
+      end;
+
+    if (Result = MNC_EXECUTE) then Result := Result shl 16 or First
+    else if Result = MNC_SELECT then begin
+      if Next < 0 then Next := First;
+      Result := Result shl 16 or Next;
+    end;
+  end;
+end;
+{$ENDIF RX_D4}
 
 procedure MenuWndMessage(Menu: TMenu; var AMsg: TMessage; var Handled: Boolean);
 var
@@ -174,15 +292,145 @@ begin
       CM_MENUCHANGED: Menu.Dispatch(AMsg);
       WM_MENUCHAR:
         begin
+{$IFDEF RX_D4}
           Menu.ProcessMenuChar(TWMMenuChar(AMsg));
+{$ELSE}
+          ProcessMenuChar(Menu, TWMMenuChar(AMsg));
+{$ENDIF}
         end;
     end;
 end;
 
+{$IFNDEF RX_D4}
+procedure RefreshMenuItem(MenuItem: TMenuItem; OwnerDraw: Boolean);
+const
+  Breaks: array[TMenuBreak] of Longint = (0, MF_MENUBREAK, MF_MENUBARBREAK);
+  Checks: array[Boolean] of LongInt = (MF_UNCHECKED, MF_CHECKED);
+  Enables: array[Boolean] of LongInt = (MF_DISABLED or MF_GRAYED, MF_ENABLED);
+  Separators: array[Boolean] of LongInt = (MF_STRING, MF_SEPARATOR);
+{$IFNDEF VER80}
+  IBreaks: array[TMenuBreak] of DWORD = (MFT_STRING, MFT_MENUBREAK, MFT_MENUBARBREAK);
+  IRadios: array[Boolean] of DWORD = (MFT_STRING, MFT_RADIOCHECK);
+  ISeparators: array[Boolean] of DWORD = (MFT_STRING, MFT_SEPARATOR);
+  IOwnerDraw: array[Boolean] of DWORD = (MFT_STRING, MFT_OWNERDRAW);
+{$ENDIF}
+var
+{$IFNDEF VER80}
+  MenuItemInfo: TMenuItemInfo;
+{$ENDIF}
+  CCaption: array[0..255] of Char;
+  NewFlags: Integer;
+  ItemID, I, C: Integer;
+  MenuHandle: THandle;
+  Item: TMenuItem;
+
+{$IFNDEF VER80}
+  procedure PrepareItemInfo;
+  begin
+    FillChar(MenuItemInfo, SizeOf(TMenuItemInfo), 0);
+    with MenuItemInfo do begin
+      cbSize := SizeOf(TMenuItemInfo);
+      fMask := MIIM_CHECKMARKS or MIIM_DATA or MIIM_ID or MIIM_STATE or
+        MIIM_SUBMENU or MIIM_TYPE;
+      cch := SizeOf(CCaption) - 1;
+    end;
+  end;
+{$ENDIF}
+
+begin
+  if (MenuItem <> nil) then begin
+    StrPCopy(CCaption, MenuItem.Caption);
+    NewFlags := Breaks[MenuItem.Break] or Checks[MenuItem.Checked] or
+      Enables[MenuItem.Enabled] or Separators[MenuItem.Caption = Separator] or
+      MF_BYCOMMAND;
+    ItemID := MenuItem.Command;
+    if MenuItem.Count > 0 then begin
+      NewFlags := NewFlags or MF_POPUP;
+      ItemID := MenuItem.Handle;
+    end
+    else begin
+      if (MenuItem.ShortCut <> scNone) and ((MenuItem.Parent = nil) or
+        (MenuItem.Parent.Parent <> nil) or
+        not (MenuItem.Parent.Owner is TMainMenu)) then
+          StrPCopy(StrECopy(StrEnd(CCaption), Tab),
+            ShortCutToText(MenuItem.ShortCut));
+    end;
+    Item := MenuItem;
+    while Item.Parent <> nil do Item := Item.Parent;
+    if (Item.Owner <> nil) and (Item.Owner is TMenu) then
+      MenuHandle := TMenu(Item.Owner).Handle
+    else
+      MenuHandle := Item.Handle;
+{$IFNDEF VER80}
+    if Lo(GetVersion) >= 4 then begin
+      FillChar(MenuItemInfo, SizeOf(TMenuItemInfo), 0);
+      MenuItemInfo.cbSize := SizeOf(TMenuItemInfo);
+      if MenuItem.Count > 0 then begin
+        MenuItemInfo.fMask := MIIM_DATA or MIIM_TYPE;
+        with MenuItem do
+          MenuItemInfo.fType := IRadios[RadioItem] or IBreaks[Break] or
+            ISeparators[Caption = Separator] or IOwnerDraw[OwnerDraw];
+        MenuItemInfo.dwTypeData := CCaption;
+        SetMenuItemInfo(MenuHandle, MenuItem.Command, False, MenuItemInfo);
+      end
+      else begin
+        C := GetMenuItemCount(MenuHandle);
+        ItemID := -1;
+        for I := 0 to C - 1 do begin
+          PrepareItemInfo;
+          MenuItemInfo.dwTypeData := CCaption;
+          GetMenuItemInfo(MenuHandle, I, True, MenuItemInfo);
+          if MenuItemInfo.wID = MenuItem.Command then begin
+            ItemID := I;
+            Break;
+        end;
+    end;
+        if (ItemID < 0) and (MenuItem.Parent <> nil) then begin
+          MenuHandle := MenuItem.Parent.Handle;
+          C := GetMenuItemCount(MenuHandle);
+          for I := 0 to C - 1 do begin
+            PrepareItemInfo;
+            MenuItemInfo.dwTypeData := CCaption;
+            GetMenuItemInfo(MenuHandle, I, True, MenuItemInfo);
+            if MenuItemInfo.wID = MenuItem.Command then begin
+              ItemID := I;
+              Break;
+            end;
+          end;
+        end;
+        if ItemID < 0 then Exit;
+        with MenuItem do
+          MenuItemInfo.fType := IRadios[RadioItem] or IBreaks[Break] or
+            ISeparators[Caption = Separator] or IOwnerDraw[OwnerDraw];
+        MenuItemInfo.dwTypeData := CCaption;
+        DeleteMenu(MenuHandle, MenuItem.Command, MF_BYCOMMAND);
+        InsertMenuItem(MenuHandle, ItemID, True, MenuItemInfo);
+      end;
+    end
+    else
+{$ENDIF}
+    begin
+      if OwnerDraw then begin
+        ModifyMenu(MenuHandle, MenuItem.Command, NewFlags or MF_OWNERDRAW and
+          not MF_STRING, ItemID, PChar(MenuItem));
+      end
+      else begin
+        ModifyMenu(MenuHandle, MenuItem.Command, NewFlags, ItemID, CCaption);
+      end;
+    end;
+    for I := 0 to MenuItem.Count - 1 do
+      RefreshMenuItem(MenuItem.Items[I], OwnerDraw);
+  end;
+end;
+{$ENDIF RX_D4}
+
 procedure SetDefaultMenuFont(AFont: TFont);
+{$IFNDEF VER80}
 var
   NCMetrics: TNonCLientMetrics;
+{$ENDIF}
 begin
+{$IFNDEF VER80}
   if NewStyleControls then begin
     NCMetrics.cbSize := SizeOf(TNonCLientMetrics);
     if SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, @NCMetrics, 0) then
@@ -191,8 +439,9 @@ begin
       Exit;
     end;
   end;
+{$ENDIF}
   with AFont do begin
-    if NewStyleControls then Name := 'MS Sans Serif'
+    if NewStyleControls then Name := {$IFDEF RX_D6}'Tahoma'{$ELSE}'MS Sans Serif'{$ENDIF}
     else Name := 'System';
     Size := 8;
     Color := clMenuText;
@@ -282,8 +531,9 @@ end;
 
 procedure DrawMenuItem(AMenu: TMenu; Item: TMenuItem; Glyph: TGraphic;
   NumGlyphs: Integer; Canvas: TCanvas; ShowCheck: Boolean; Buttons: TBtnStyle;
-  Rect: TRect; MinOffset: Integer; State: TMenuOwnerDrawState; Images: TImageList;
-  ImageIndex: Integer; SelColor,SepHColor,SepLColor: TColor);
+  Rect: TRect; MinOffset: {$IFDEF RX_D4} Integer {$ELSE} Cardinal {$ENDIF};
+  State: TMenuOwnerDrawState {$IFNDEF VER80}; Images: TImageList;
+  ImageIndex: Integer {$ENDIF});
 var
   Left, LineTop, MaxWidth, I, W: Integer;
   CheckSize: Longint;
@@ -291,15 +541,20 @@ var
   IsPopup, DrawHighlight, DrawLowered: Boolean;
   GrayColor: TColor;
   Bmp: TBitmap;
+{$IFNDEF VER80}
   Ico: HIcon;
   H: Integer;
+{$ENDIF}
+{$IFDEF RX_D4}
   ParentMenu: TMenu;
+{$ENDIF}
 
   procedure MenuTextOut(X, Y: Integer; const Text: string; Flags: Longint);
   var
     R: TRect;
   begin
     if Length(Text) = 0 then Exit;
+{$IFDEF RX_D4}
     if (ParentMenu <> nil) and (ParentMenu.IsRightToLeft) then begin
       if Flags and DT_LEFT = DT_LEFT then
         Flags := Flags and (not DT_LEFT) or DT_RIGHT
@@ -307,6 +562,7 @@ var
         Flags := Flags and (not DT_RIGHT) or DT_LEFT;
       Flags := Flags or DT_RTLREADING;
     end;
+{$ENDIF}
     R := Rect; R.Left := X; R.Top := Y;
     if (mdDisabled in State) then begin
       if DrawHighlight then begin
@@ -324,6 +580,7 @@ var
   begin
     Bmp := TBitmap.Create;
     try
+{$IFNDEF VER80}
       with Bmp do begin
         Width := LoWord(CheckSize);
         Height := HiWord(CheckSize);
@@ -342,6 +599,9 @@ var
           Monochrome := True;
         end;
       end;
+{$ELSE}
+      Bmp.Handle := LoadBitmap(0, PChar(32760));
+{$ENDIF}
       DrawMenuBitmap(Canvas, X, Y, Bmp, DrawLowered, State);
     finally
       Bmp.Free;
@@ -357,7 +617,11 @@ var
     SaveColor := Canvas.Brush.Color;
     try
       if not (mdSelected in State) then
+{$IFDEF RX_D4}
         Bmp := AllocPatternBitmap(clMenu, clBtnHighlight)
+{$ELSE}
+        Bmp := CreateTwoColorsBrushPattern(clMenu, clBtnHighlight)
+{$ENDIF}
       else Bmp := nil;
       try
         if Bmp <> nil then Canvas.Brush.Bitmap := Bmp
@@ -365,6 +629,9 @@ var
         Canvas.FillRect(ARect);
       finally
         Canvas.Brush.Bitmap := nil;
+{$IFNDEF RX_D4}
+        Bmp.Free;
+{$ENDIF}
       end;
     finally
       Canvas.Brush.Color := SaveColor;
@@ -372,11 +639,13 @@ var
     Frame3D(Canvas, ARect, GrayColor, clBtnHighlight, 1);
   end;
 
+{$IFNDEF VER80}
   function UseImages: Boolean;
   begin
     Result := Assigned(Images) and (ImageIndex >= 0) and
       (ImageIndex < Images.Count) and Images.HandleAllocated;
   end;
+{$ENDIF}
 
 begin
     IsPopup := IsItemPopup(Item);
@@ -406,16 +675,21 @@ begin
         end;
     end;
     if Assigned(Item) then begin
+{$IFDEF RX_D4}
         ParentMenu := Item.GetParentMenu;
+{$ENDIF}
         if Item.Checked and ShowCheck and IsPopup then begin
             DrawCheckImage(Rect.Left + (Left - LoWord(CheckSize)) div 2,
                             (Rect.Bottom + Rect.Top - HiWord(CheckSize)) div 2);
         end;
+{$IFNDEF VER80}
         if Assigned(Images) and IsPopup then
             MinOffset := Max(MinOffset, Images.Width + AddWidth);
+{$ENDIF}
         if not ShowCheck and (Assigned(Glyph) or (MinOffset > 0)) then
             if Buttons = bsOffice then Left := 1
             else Left := GetMarginOffset;
+{$IFNDEF VER80}
         if UseImages then begin
             W := Images.Width + AddWidth;
             if W < Integer(MinOffset) then W := MinOffset;
@@ -433,11 +707,15 @@ begin
                                 (Rect.Bottom + Rect.Top - Images.Height) div 2, ILD_NORMAL);
             Inc(Left, W + GetMarginOffset);
         end else
+{$ENDIF}
             if Assigned(Glyph) and not Glyph.Empty and (Item.Caption <> Separator) then begin
                 W := Glyph.Width;
                 if (Glyph is TBitmap) and (NumGlyphs in [2..5]) then W := W div NumGlyphs;
                 W := Max(W + AddWidth, MinOffset);
-                if not (Glyph is TIcon) then begin
+{$IFNDEF VER80}
+                if not (Glyph is TIcon) then
+{$ENDIF}
+                begin
                     BtnRect := Bounds(Rect.Left + Left - 1, Rect.Top, W + 2,
                     Rect.Bottom - Rect.Top);
                     if DrawLowered then DrawGlyphCheck(BtnRect)
@@ -465,7 +743,9 @@ begin
                                             (Rect.Bottom + Rect.Top - Glyph.Height) div 2, TBitmap(Glyph),
                                             DrawLowered, State);
                     Inc(Left, W + GetMarginOffset);
-                end else if Glyph is TIcon then begin
+                end
+{$IFNDEF VER80}
+                else if Glyph is TIcon then begin
                     Ico := CreateRealSizeIcon(TIcon(Glyph));
                     try
                         GetIconSize(Ico, W, H);
@@ -481,7 +761,9 @@ begin
                     finally
                         DestroyIcon(Ico);
                     end;
-                end else begin
+                end
+{$ENDIF}
+                else begin
                     Canvas.Draw(Rect.Left + Left + (W - Glyph.Width) div 2,
                                 (Rect.Bottom + Rect.Top - Glyph.Height) div 2, Glyph);
                     Inc(Left, W + GetMarginOffset);
@@ -502,8 +784,8 @@ begin
                 LineTop := (Rect.Top + Rect.Bottom) div 2 - 1;
                 if NewStyleControls then begin
                     Canvas.Pen.Width := 1;
-                    MenuLine(Canvas, SepHColor, Rect.Left, LineTop, Rect.Right, LineTop);
-                    MenuLine(Canvas, SepLColor, Rect.Left, LineTop + 1, Rect.Right, LineTop + 1);
+        MenuLine(Canvas, clBtnShadow, Rect.Left, LineTop, Rect.Right, LineTop);
+        MenuLine(Canvas, clBtnHighlight, Rect.Left, LineTop + 1, Rect.Right, LineTop + 1);
                 end
             else begin
                 Canvas.Pen.Width := 2;
@@ -515,12 +797,6 @@ begin
                 for I := 0 to Item.Parent.Count - 1 do
                 MaxWidth := Max(Canvas.TextWidth(DelChars(Item.Parent.Items[I].Caption, '&') + Tab), MaxWidth);
             end;
-
-            if (mdSelected in State) and not (Buttons in [bsLowered, bsRaised]) then begin
-                Canvas.Brush.Color := SelColor;
-                Canvas.FillRect(Rect);
-            end;
-
             Canvas.Brush.Style := bsClear;
             LineTop := (Rect.Bottom + Rect.Top - Canvas.TextHeight('Ay')) div 2;
             MenuTextOut(Rect.Left + Left, LineTop, Item.Caption, DT_EXPANDTABS or DT_LEFT or DT_SINGLELINE);
@@ -625,7 +901,7 @@ type
     procedure Remove(Popup: TPopupMenu);
   end;
 
-const
+var
   PopupList: TPopupList = nil;
 
 procedure TPopupList.WndProc(var Message: TMessage);
@@ -836,11 +1112,6 @@ begin
   FPopupPoint := Point(X, Y);
   FParentBiDiMode := ParentBiDiMode;
   try
-    SetBiDiModeFromPopupControl;
-    FOnPopup := OnPopup;
-    if Assigned(FOnPopup) then FOnPopup(Self);
-    if IsOwnerDrawMenu then RefreshMenu(True);
-    AdjustBiDiBehavior;
     TrackPopupMenu(Items.Handle, Flags[UseRightToLeftAlignment, Alignment] or Buttons[TrackButton],
                     X, Y, 0, PopupList.Window, nil);
   finally
@@ -877,18 +1148,24 @@ procedure TMxPopupMenu.DefaultDrawItem(Item: TMenuItem; Rect: TRect;
 var
   Graphic: TGraphic;
   BackColor: TColor;
-  NumGlyphs, ImageIndex: Integer;
+  NumGlyphs {$IFNDEF VER80}, ImageIndex {$ENDIF}: Integer;
 begin
   if Canvas.Handle <> 0 then begin
     Graphic := nil;
     BackColor := Canvas.Brush.Color;
     NumGlyphs := 1;
     GetItemParams(Item, State, Canvas.Font, BackColor, Graphic, NumGlyphs);
+{$IFNDEF VER80}
+{$IFDEF RX_D4}
     ImageIndex := Item.ImageIndex;
+{$ELSE}
+    ImageIndex := -1;
+{$ENDIF}
     GetImageIndex(Item, State, ImageIndex);
+{$ENDIF}
     DrawMenuItem(Self, Item, Graphic, NumGlyphs, Canvas, FShowCheckMarks,
-      BtnStyle(Style), Rect, FMinTextOffset, State,
-      FImages, ImageIndex, FSelColor, FSepHColor, FSepLColor);
+      BtnStyle(Style), Rect, FMinTextOffset, State
+      {$IFNDEF VER80}, FImages, ImageIndex {$ENDIF});
   end;
 end;
 
@@ -897,7 +1174,7 @@ procedure TMxPopupMenu.DrawItem(Item: TMenuItem; Rect: TRect;
 var
   Graphic: TGraphic;
   BackColor: TColor;
-  NumGlyphs, ImageIndex: Integer;
+  NumGlyphs {$IFNDEF VER80}, ImageIndex {$ENDIF}: Integer;
 begin
   if Canvas.Handle <> 0 then begin
     Graphic := nil;
@@ -910,11 +1187,17 @@ begin
     end;
     if Assigned(FOnDrawItem) then FOnDrawItem(Self, Item, Rect, State)
     else begin
+{$IFNDEF VER80}
+{$IFDEF RX_D4}
       ImageIndex := Item.ImageIndex;
+{$ELSE}
+      ImageIndex := -1;
+{$ENDIF}
       GetImageIndex(Item, State, ImageIndex);
+{$ENDIF}
       DrawMenuItem(Self, Item, Graphic, NumGlyphs, Canvas, FShowCheckMarks,
-        BtnStyle(Style), Rect, FMinTextOffset, State,
-        FImages, ImageIndex, FSelColor, FSepHColor, FSepLColor);
+        BtnStyle(Style), Rect, FMinTextOffset, State
+        {$IFNDEF VER80}, FImages, ImageIndex {$ENDIF});
     end;
   end;
 end;

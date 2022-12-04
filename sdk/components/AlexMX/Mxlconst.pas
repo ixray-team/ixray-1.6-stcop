@@ -80,10 +80,6 @@ const
 
 implementation
 
-{$IFDEF WIN32}
  {$R *.R32}
-{$ELSE}
- {$R *.R16}
-{$ENDIF}
 
 end.

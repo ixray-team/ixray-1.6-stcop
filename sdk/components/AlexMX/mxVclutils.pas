@@ -14,11 +14,7 @@ unit mxVCLUtils;
 
 interface
 
-{$IFDEF WIN32}
 uses Windows, Classes, Graphics, Forms, Controls, Dialogs;
-{$ELSE}
-uses WinTypes, WinProcs, Classes, Graphics, Forms, Controls, Dialogs;
-{$ENDIF}
 
 { Windows resources (bitmaps and icons) VCL-oriented routines }
 
@@ -38,7 +34,7 @@ function CreateDisabledBitmap(FOriginal: TBitmap; OutlineColor: TColor): TBitmap
 function ChangeBitmapColor(Bitmap: TBitmap; Color, NewColor: TColor): TBitmap;
 procedure AssignBitmapCell(Source: TGraphic; Dest: TBitmap; Cols, Rows,
   Index: Integer);
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 procedure ImageListDrawDisabled(Images: TImageList; Canvas: TCanvas;
   X, Y, Index: Integer; HighlightColor, GrayColor: TColor; DrawHighlight: Boolean);
 {$ENDIF}
@@ -47,9 +43,7 @@ function MakeIcon(ResID: PChar): TIcon;
 function MakeIconID(ResID: Word): TIcon;
 function MakeModuleIcon(Module: THandle; ResID: PChar): TIcon;
 function CreateBitmapFromIcon(Icon: TIcon; BackColor: TColor): TBitmap;
-{$IFDEF WIN32}
 function CreateIconFromBitmap(Bitmap: TBitmap; TransparentColor: TColor): TIcon;
-{$ENDIF}
 
 { Service routines }
 
@@ -65,10 +59,8 @@ procedure DrawInvertFrame(ScreenRect: TRect; Width: Integer);
 procedure CopyParentImage(Control: TControl; Dest: TCanvas);
 procedure Delay(MSecs: Longint);
 procedure CenterControl(Control: TControl);
-{$IFDEF WIN32}
 procedure ShowMDIClientEdge(ClientHandle: THandle; ShowEdge: Boolean);
 function MakeVariant(const Values: array of Variant): Variant;
-{$ENDIF}
 function CreateRotatedFont(Font: TFont; Angle: Integer): HFont;
 function MsgBox(const Caption, Text: string; Flags: Integer): Integer;
 function MsgDlg(const Msg: string; AType: TMsgDlgType;
@@ -93,9 +85,6 @@ procedure Beep;
 function GetWindowsVersion: string;
 function LoadDLL(const LibName: string): THandle;
 function RegisterServer(const ModuleName: string): Boolean;
-{$IFNDEF WIN32}
-function IsLibrary: Boolean;
-{$ENDIF}
 
 { Gradient filling routine }
 
@@ -132,20 +121,16 @@ procedure HugeInc(var HugePtr: Pointer; Amount: Longint);
 procedure HugeDec(var HugePtr: Pointer; Amount: Longint);
 function HugeOffset(HugePtr: Pointer; Amount: Longint): Pointer;
 procedure HugeMove(Base: Pointer; Dst, Src, Size: Longint);
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 procedure HMemCpy(DstPtr, SrcPtr: Pointer; Amount: Longint);
 {$ELSE}
 procedure ZeroMemory(Ptr: Pointer; Length: Longint);
 procedure FillMemory(Ptr: Pointer; Length: Longint; Fill: Byte);
-{$ENDIF WIN32}
+{$ENDIF}
 
 { Standard Windows colors that are not defined by Delphi }
 
 const
-{$IFNDEF WIN32}
-  clInfoBk = TColor($02E1FFFF);
-  clNone = TColor($02FFFFFF);
-{$ENDIF}
   clCream = TColor($A6CAF0);
   clMoneyGreen = TColor($C0DCC0);
   clSkyBlue = TColor($FFFBF0);
@@ -161,9 +146,6 @@ const
 {$IFNDEF RX_D4}
 
 { Mouse Wheel message }
-
-{$IFDEF WIN32}
-
 {$IFDEF VER90}
 const
   WM_MOUSEWHEEL    =    $020A;
@@ -190,8 +172,6 @@ type
         Result: Longint);
   end;
 
-{$ENDIF WIN32}
-
 {$ENDIF RX_D4}
 
 { Cursor routines }
@@ -202,9 +182,7 @@ const
 procedure StartWait;
 procedure StopWait;
 function DefineCursor(Instance: THandle; ResID: PChar): TCursor;
-{$IFDEF WIN32}
 function LoadAniCursor(Instance: THandle; ResID: PChar): HCursor;
-{$ENDIF}
 
 { Windows API level routines }
 
@@ -216,9 +194,6 @@ procedure DrawTransparentBitmap(DC: HDC; Bitmap: HBitmap;
 function PaletteEntries(Palette: HPALETTE): Integer;
 function WindowClassName(Wnd: HWnd): string;
 function ScreenWorkArea: TRect;
-{$IFNDEF WIN32}
-procedure MoveWindowOrg(DC: HDC; DX, DY: Integer);
-{$ENDIF}
 procedure SwitchToWindow(Wnd: HWnd; Restore: Boolean);
 procedure ActivateWindow(Wnd: HWnd);
 procedure ShowWinNoAnimate(Handle: HWnd; CmdShow: Integer);
@@ -272,7 +247,7 @@ type
     procedure FreeHandle;
   end;
 
-{$IFNDEF WIN32}
+{$IFDEF VER80}
 
 { TBits }
 
@@ -320,15 +295,13 @@ type
 function GetCurrentDir: string;
 function SetCurrentDir(const Dir: string): Boolean;
 
-{$ENDIF WIN32}
+{$ENDIF}
 
-{$IFDEF WIN32}
 function CheckWin32(OK: Boolean): Boolean; { obsolete, use Win32Check }
 {$IFNDEF RX_D3}
 function Win32Check(RetVal: Bool): Bool;
 {$ENDIF}
 procedure RaiseWin32Error(ErrorCode: DWORD);
-{$ENDIF WIN32}
 
 {$IFNDEF RX_D3} { for Delphi 3.0 and previous versions compatibility }
 type
@@ -357,25 +330,30 @@ procedure ResourceNotFound(ResID: PChar);
 var
   S: string;
 begin
+  {$IFDEF WIN64}
+  if Int64Rec(ResID).Hi = 0 then S := IntToStr(Int64Rec(ResID).Lo)
+  else S := StrPas(ResID);
+  {$ELSE}
   if LongRec(ResID).Hi = 0 then S := IntToStr(LongRec(ResID).Lo)
   else S := StrPas(ResID);
+  {$ENDIF}
   raise EResNotFound.CreateFmt(ResStr(SResNotFound), [S]);
 end;
 
 { Bitmaps }
 
 function MakeModuleBitmap(Module: THandle; ResID: PChar): TBitmap;
-{$IFNDEF WIN32}
-var
-  S: TStream;
-{$ENDIF}
 begin
   Result := TBitmap.Create;
   try
-{$IFDEF WIN32}
     if Module <> 0 then begin
+    {$IFDEF WIN64}
+    if Int64Rec(ResID).Hi = 0 then
+        Result.LoadFromResourceID(Module, Int64Rec(ResID).Lo)
+    {$ELSE}
       if LongRec(ResID).Hi = 0 then
         Result.LoadFromResourceID(Module, LongRec(ResID).Lo)
+    {$ENDIF}
       else
         Result.LoadFromResourceName(Module, StrPas(ResID));
     end
@@ -383,10 +361,6 @@ begin
       Result.Handle := LoadBitmap(Module, ResID);
       if Result.Handle = 0 then ResourceNotFound(ResID);
     end;
-{$ELSE}
-    Result.Handle := LoadBitmap(Module, ResID);
-    if Result.Handle = 0 then ResourceNotFound(ResID);
-{$ENDIF}
   except
     Result.Free;
     Result := nil;
@@ -449,10 +423,8 @@ begin
   if (Control = nil) or (Control.Parent = nil) then Exit;
   Count := Control.Parent.ControlCount;
   DC := Dest.Handle;
-{$IFDEF WIN32}
   with Control.Parent do ControlState := ControlState + [csPaintCopy];
   try
-{$ENDIF}
     with Control do begin
       SelfR := Bounds(Left, Top, Width, Height);
       X := -Left; Y := -Top;
@@ -479,9 +451,7 @@ begin
         with TGraphicControl(Control.Parent.Controls[I]) do begin
           CtlR := Bounds(Left, Top, Width, Height);
           if Bool(IntersectRect(R, SelfR, CtlR)) and Visible then begin
-{$IFDEF WIN32}
             ControlState := ControlState + [csPaintCopy];
-{$ENDIF}
             SaveIndex := SaveDC(DC);
             try
               SaveIndex := SaveDC(DC);
@@ -490,19 +460,15 @@ begin
               Perform(WM_PAINT, DC, 0);
             finally
               RestoreDC(DC, SaveIndex);
-{$IFDEF WIN32}
               ControlState := ControlState - [csPaintCopy];
-{$ENDIF}
             end;
           end;
         end;
       end;
     end;
-{$IFDEF WIN32}
   finally
     with Control.Parent do ControlState := ControlState - [csPaintCopy];
   end;
-{$ENDIF}
 end;
 
 { Transparent bitmap }
@@ -608,7 +574,7 @@ end;
 procedure DrawTransparentBitmap(DC: HDC; Bitmap: HBitmap;
   DstX, DstY: Integer; TransparentColor: TColorRef);
 var
-  BM: {$IFDEF WIN32} Windows.TBitmap {$ELSE} WinTypes.TBitmap {$ENDIF};
+  BM: Windows.TBitmap;
 begin
   GetObject(Bitmap, SizeOf(BM), @BM);
   DrawTransparentBitmapRect(DC, Bitmap, DstX, DstY, BM.bmWidth, BM.bmHeight,
@@ -772,7 +738,7 @@ begin
     clBtnFace, clBtnHighlight, clBtnShadow, True);
 end;
 
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 procedure ImageListDrawDisabled(Images: TImageList; Canvas: TCanvas;
   X, Y, Index: Integer; HighlightColor, GrayColor: TColor; DrawHighlight: Boolean);
 var
@@ -879,7 +845,6 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
 function CreateIconFromBitmap(Bitmap: TBitmap; TransparentColor: TColor): TIcon;
 begin
   with TImageList.CreateSize(Bitmap.Width, Bitmap.Height) do
@@ -901,7 +866,6 @@ begin
     Free;
   end;
 end;
-{$ENDIF WIN32}
 
 { Dialog units }
 
@@ -933,23 +897,12 @@ type
 function LoadDLL(const LibName: string): THandle;
 var
   ErrMode: Cardinal;
-{$IFNDEF WIN32}
-  P: array[0..255] of Char;
-{$ENDIF}
 begin
   ErrMode := SetErrorMode(SEM_NOOPENFILEERRORBOX);
-{$IFDEF WIN32}
   Result := LoadLibrary(PChar(LibName));
-{$ELSE}
-  Result := LoadLibrary(StrPCopy(P, LibName));
-{$ENDIF}
   SetErrorMode(ErrMode);
   if Result < HINSTANCE_ERROR then
-{$IFDEF WIN32}
     Win32Check(False);
-{$ELSE}
-    raise EOutOfResources.CreateResFmt(SLoadLibError, [LibName]);
-{$ENDIF}
 end;
 
 function RegisterServer(const ModuleName: string): Boolean;
@@ -980,9 +933,7 @@ end;
 
 procedure FreeUnusedOle;
 begin
-{$IFDEF WIN32}
   FreeLibrary(GetModuleHandle('OleAut32'));
-{$ENDIF}
 end;
 
 procedure NotImplemented;
@@ -991,23 +942,6 @@ begin
   MessageDlg(LoadStr(SNotImplemented), mtInformation, [mbOk], 0);
   Abort;
 end;
-
-{$IFNDEF WIN32}
-
-procedure MoveWindowOrg(DC: HDC; DX, DY: Integer);
-var
-  P: TPoint;
-begin
-  GetWindowOrgEx(DC, @P);
-  SetWindowOrgEx(DC, P.X - DX, P.Y - DY, nil);
-end;
-
-function IsLibrary: Boolean;
-begin
-  Result := (PrefixSeg = 0);
-end;
-
-{$ENDIF WIN32}
 
 procedure PaintInverseRect(const RectOrg, RectEnd: TPoint);
 var
@@ -1250,8 +1184,6 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
-
 { ShowMDIClientEdge function has been copied from Inprise's FORMS.PAS unit,
   Delphi 4 version }
 procedure ShowMDIClientEdge(ClientHandle: THandle; ShowEdge: Boolean);
@@ -1285,8 +1217,6 @@ begin
   else Result := Null;
 end;
 
-{$ENDIF WIN32}
-
 { Shade rectangle }
 
 procedure ShadeRect(DC: HDC; const Rect: TRect);
@@ -1312,10 +1242,6 @@ begin
 end;
 
 function ScreenWorkArea: TRect;
-{$IFNDEF WIN32}
-const
-  SPI_GETWORKAREA = 48;
-{$ENDIF}
 begin
   if not SystemParametersInfo(SPI_GETWORKAREA, 0, @Result, 0) then
     with Screen do Result := Bounds(0, 0, Width, Height);
@@ -1328,19 +1254,13 @@ begin
   SetString(Result, Buffer, GetClassName(Wnd, Buffer, SizeOf(Buffer) - 1));
 end;
 
-{$IFDEF WIN32}
-
 function GetAnimation: Boolean;
 var
   Info: TAnimationInfo;
 begin
   Info.cbSize := SizeOf(TAnimationInfo);
   if SystemParametersInfo(SPI_GETANIMATION, SizeOf(Info), @Info, 0) then
-{$IFDEF RX_D3}
     Result := Info.iMinAnimate <> 0
-{$ELSE}
-    Result := Info.iMinAnimate
-{$ENDIF}
   else Result := False;
 end;
 
@@ -1363,52 +1283,28 @@ begin
   if Animation then SetAnimation(True);
 end;
 
-{$ELSE}
-
-procedure ShowWinNoAnimate(Handle: HWnd; CmdShow: Integer);
-begin
-  ShowWindow(Handle, CmdShow);
-end;
-
-procedure SwitchToThisWindow(Wnd: HWnd; Restore: Bool); far; external 'USER'
-  index 172;
-
-{$ENDIF WIN32}
-
 procedure SwitchToWindow(Wnd: HWnd; Restore: Boolean);
 begin
   if IsWindowEnabled(Wnd) then begin
-{$IFDEF WIN32}
     SetForegroundWindow(Wnd);
     if Restore and IsWindowVisible(Wnd) then begin
       if not IsZoomed(Wnd) then
         SendMessage(Wnd, WM_SYSCOMMAND, SC_RESTORE, 0);
       SetFocus(Wnd);
     end;
-{$ELSE}
-    SwitchToThisWindow(Wnd, Restore);
-{$ENDIF}
   end;
 end;
 
 function GetWindowParent(Wnd: HWnd): HWnd;
 begin
-{$IFDEF WIN32}
   Result := GetWindowLong(Wnd, GWL_HWNDPARENT);
-{$ELSE}
-  Result := GetWindowWord(Wnd, GWW_HWNDPARENT);
-{$ENDIF}
 end;
 
 procedure ActivateWindow(Wnd: HWnd);
 begin
   if Wnd <> 0 then begin
     ShowWinNoAnimate(Wnd, SW_SHOW);
-{$IFDEF WIN32}
     SetForegroundWindow(Wnd);
-{$ELSE}
-    SwitchToThisWindow(Wnd, True);
-{$ENDIF}
   end;
 end;
 
@@ -1434,7 +1330,6 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
 function WindowsEnum(Handle: HWnd; Param: Longint): Bool; export; stdcall;
 begin
   if WindowClassName(Handle) = 'TAppBuilder' then begin
@@ -1443,7 +1338,6 @@ begin
   end
   else Result := True;
 end;
-{$ENDIF}
 
 {$IFDEF CBUILDER}
 function ActivatePrevInstance(const MainFormClass: ShortString;
@@ -1453,11 +1347,7 @@ function ActivatePrevInstance(const MainFormClass, ATitle: string): Boolean;
 {$ENDIF CBUILDER}
 var
   PrevWnd, PopupWnd, ParentWnd: HWnd;
-{$IFDEF WIN32}
   IsDelphi: Longint;
-{$ELSE}
-  S: array[0..255] of Char;
-{$ENDIF}
 begin
   Result := False;
   PrevWnd := FindPrevInstance(MainFormClass, ATitle);
@@ -1468,15 +1358,10 @@ begin
       ParentWnd := GetWindowParent(PrevWnd);
     end;
     if WindowClassName(PrevWnd) = 'TApplication' then begin
-{$IFDEF WIN32}
       IsDelphi := 0;
       EnumThreadWindows(GetWindowTask(PrevWnd), @WindowsEnum,
         LPARAM(@IsDelphi));
       if Boolean(IsDelphi) then Exit;
-{$ELSE}
-      GetModuleFileName(GetWindowTask(PrevWnd), S, SizeOf(S) - 1);
-      if AnsiUpperCase(ExtractFileName(StrPas(S))) = 'DELPHI.EXE' then Exit;
-{$ENDIF}
       if IsIconic(PrevWnd) then begin { application is minimized }
         SendMessage(PrevWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
         Result := True;
@@ -1489,11 +1374,7 @@ begin
     if (PrevWnd <> PopupWnd) and IsWindowVisible(PopupWnd) and
       IsWindowEnabled(PopupWnd) then
     begin
-{$IFDEF WIN32}
       SetForegroundWindow(PopupWnd);
-{$ELSE}
-      BringWindowToTop(PopupWnd);
-{$ENDIF}
     end
     else ActivateWindow(PopupWnd);
     Result := True;
@@ -1503,7 +1384,6 @@ end;
 { Standard Windows MessageBox function }
 
 function MsgBox(const Caption, Text: string; Flags: Integer): Integer;
-{$IFDEF WIN32}
 begin
   SetAutoSubClass(True);
   try
@@ -1512,50 +1392,12 @@ begin
     SetAutoSubClass(False);
   end;
 end;
-{$ELSE}
-var
-  BufMsg, BufCaption: PChar;
-begin
-  SetAutoSubClass(True);
-  BufMsg := StrPAlloc(Text);
-  BufCaption := StrPAlloc(Caption);
-  try
-    Result := Application.MessageBox(BufMsg, BufCaption, Flags);
-  finally
-    StrDispose(BufCaption);
-    StrDispose(BufMsg);
-    SetAutoSubClass(False);
-  end;
-end;
-{$ENDIF}
 
 function MsgDlg(const Msg: string; AType: TMsgDlgType;
   AButtons: TMsgDlgButtons; HelpCtx: Longint): Word;
-{$IFDEF WIN32}
 begin
   Result := MessageDlg(Msg, AType, AButtons, HelpCtx);
 end;
-{$ELSE}
-var
-  KeepGlyphs: Boolean;
-  KeepSize: TPoint;
-begin
-  if NewStyleControls then begin
-    KeepGlyphs := MsgDlgGlyphs;
-    KeepSize := MsgDlgBtnSize;
-    MsgDlgBtnSize := Point(77, 25);
-    MsgDlgGlyphs := False;
-  end;
-  try
-    Result := MessageDlg(Msg, AType, AButtons, HelpCtx);
-  finally
-    if NewStyleControls then begin
-      MsgDlgBtnSize := KeepSize;
-      MsgDlgGlyphs := KeepGlyphs;
-    end;
-  end;
-end;
-{$ENDIF}
 
 { Gradient fill procedure - displays a gradient beginning with a chosen    }
 { color and ending with another chosen color. Based on TGradientFill       }
@@ -1720,18 +1562,21 @@ var
 begin
   Result := 0;
   if fpBlock <> nil then begin
-{$IFDEF WIN32}
     hMem := GlobalHandle(fpBlock);
-{$ELSE}
-    hMem := LoWord(GlobalHandle(SelectorOf(fpBlock)));
-{$ENDIF}
     if hMem <> 0 then Result := GlobalSize(hMem);
   end;
 end;
 
+{$IFDEF WIN64}
+function CompareMem(fpBlock1, fpBlock2: Pointer; Size: UINT): Boolean; assembler;
+begin
+  Result := Sysutils.CompareMem(fpBlock1, fpBlock2, Size);
+end;
+{$ELSE}
+
 function CompareMem(fpBlock1, fpBlock2: Pointer; Size: Cardinal): Boolean; assembler;
 asm
-{$IFDEF WIN32}
+{$IFNDEF VER80}
         PUSH    ESI
         PUSH    EDI
         MOV     ESI,fpBlock1
@@ -1762,6 +1607,7 @@ asm
 @@1:    POP     DS
 {$ENDIF}
 end;
+{$ENDIF}
 
 {$IFNDEF RX_D5}
 procedure FreeAndNil(var Obj);
@@ -1776,21 +1622,21 @@ end;
 
 { Manipulate huge pointers routines by Ray Lischner, The Waite Group, Inc. }
 
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 
 procedure HugeInc(var HugePtr: Pointer; Amount: Longint);
 begin
-  HugePtr := PChar(HugePtr) + Amount;
+  HugePtr := PAnsiChar(HugePtr) + Amount;
 end;
 
 procedure HugeDec(var HugePtr: Pointer; Amount: Longint);
 begin
-  HugePtr := PChar(HugePtr) - Amount;
+  HugePtr := PAnsiChar(HugePtr) - Amount;
 end;
 
 function HugeOffset(HugePtr: Pointer; Amount: Longint): Pointer;
 begin
-  Result := PChar(HugePtr) + Amount;
+  Result := PAnsiChar(HugePtr) + Amount;
 end;
 
 procedure HMemCpy(DstPtr, SrcPtr: Pointer; Amount: Longint);
@@ -1800,10 +1646,10 @@ end;
 
 procedure HugeMove(Base: Pointer; Dst, Src, Size: Longint);
 var
-  SrcPtr, DstPtr: PChar;
+  SrcPtr, DstPtr: PAnsiChar;
 begin
-  SrcPtr := PChar(Base) + Src * SizeOf(Pointer);
-  DstPtr := PChar(Base) + Dst * SizeOf(Pointer);
+  SrcPtr := PAnsiChar(Base) + Src * SizeOf(Pointer);
+  DstPtr := PAnsiChar(Base) + Dst * SizeOf(Pointer);
   Move(SrcPtr^, DstPtr^, Size * SizeOf(Pointer));
 end;
 
@@ -1978,7 +1824,7 @@ end;
 {$W+}
 function GetEnvVar(const VarName: string): string;
 var
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   S: array[0..2048] of Char;
 {$ELSE}
   S: array[0..255] of Char;
@@ -1986,7 +1832,7 @@ var
   P: PChar;
 {$ENDIF}
 begin
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   if GetEnvironmentVariable(PChar(VarName), S, SizeOf(S) - 1) > 0 then
     Result := StrPas(S)
   else Result := '';
@@ -1995,7 +1841,7 @@ begin
   P := GetDosEnvironment;
   StrPLCopy(S, VarName, 255);
   while P^ <> #0 do begin
-    if (StrLIComp(P, {$IFDEF WIN32} PChar(VarName) {$ELSE} S {$ENDIF}, L) = 0) and
+    if (StrLIComp(P, {$IFNDEF VER80} PChar(VarName) {$ELSE} S {$ENDIF}, L) = 0) and
       (P[L] = '=') then
     begin
       Result := StrPas(P + L + 1);
@@ -2103,7 +1949,7 @@ begin
   if S <> '' then begin
     Temp := Result[1];
     Temp := AnsiUpperCase(Temp);
-    Result[1] := Temp[1];
+    Result[1] := Char(Temp[1]);
   end;
 end;
 
@@ -2114,7 +1960,7 @@ end;
 
 function StringToPChar(var S: string): PChar;
 begin
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   Result := PChar(S);
 {$ELSE}
   if Length(S) = High(S) then Dec(S[0]);
@@ -2132,7 +1978,6 @@ end;
 
 { Cursor routines }
 
-{$IFDEF WIN32}
 {$IFNDEF RX_D3}
 const
   RT_ANICURSOR = MakeIntResource(21);
@@ -2177,17 +2022,14 @@ begin
     end;
   end;
 end;
-{$ENDIF}
 
 function DefineCursor(Instance: THandle; ResID: PChar): TCursor;
 var
   Handle: HCursor;
 begin
   Handle := LoadCursor(Instance, ResID);
-{$IFDEF WIN32}
   if Handle = 0 then
     Handle := LoadAniCursor(Instance, ResID);
-{$ENDIF}
   if Handle = 0 then ResourceNotFound(ResID);
   for Result := 100 to High(TCursor) do { Look for an unassigned cursor index }
     if (Screen.Cursors[Result] = Screen.Cursors[crDefault]) then begin
@@ -2198,7 +2040,7 @@ begin
   raise EOutOfResources.Create(ResStr(SOutOfResources));
 end;
 
-const
+var
   WaitCount: Integer = 0;
   SaveCursor: TCursor = crDefault;
 
@@ -2221,7 +2063,7 @@ end;
 
 { Grid drawing }
 
-const
+var
   DrawBitmap: TBitmap = nil;
 
 procedure UsesBitmap;
@@ -2248,9 +2090,6 @@ const
   RTL: array [Boolean] of Integer = (0, DT_RTLREADING);
 {$ENDIF}
 var
-{$IFNDEF WIN32}
-  S: array[0..255] of Char;
-{$ENDIF}
   B, R: TRect;
   I, Left: Integer;
 begin
@@ -2275,13 +2114,8 @@ begin
 {$IFDEF RX_D4}
     ACanvas.TextRect(ARect, Left, ARect.Top + DY, Text);
 {$ELSE}
-  {$IFDEF WIN32}
     ExtTextOut(ACanvas.Handle, Left, ARect.Top + DY, ETO_OPAQUE or
       ETO_CLIPPED, @ARect, PChar(Text), Length(Text), nil);
-  {$ELSE}
-    ExtTextOut(ACanvas.Handle, Left, ARect.Top + DY, ETO_OPAQUE or
-      ETO_CLIPPED, @ARect, StrPCopy(S, Text), Length(Text), nil);
-  {$ENDIF}
 {$ENDIF}
   end
   else begin { Use FillRect and DrawText for dithered colors }
@@ -2293,7 +2127,7 @@ begin
       begin                     { brush origin tics in painting / scrolling.    }
         Width := Max(Width, Right - Left);
         Height := Max(Height, Bottom - Top);
-        R := Rect(DX, DY, Right - Left - {$IFDEF WIN32} 1 {$ELSE} 2 {$ENDIF},
+        R := Rect(DX, DY, Right - Left - 1,
           Bottom - Top - 1);
         B := Rect(0, 0, Right - Left, Bottom - Top);
       end;
@@ -2310,13 +2144,8 @@ begin
         DrawText(Handle, PChar(Text), Length(Text), R, AlignFlags[Alignment]
           or RTL[ARightToLeft] or WrapFlags[WordWrap]);
 {$ELSE}
-  {$IFDEF WIN32}
         DrawText(Handle, PChar(Text), Length(Text), R,
           AlignFlags[Alignment] or WrapFlags[WordWrap]);
-  {$ELSE}
-        DrawText(Handle, StrPCopy(S, Text), Length(Text), R,
-          AlignFlags[Alignment] or WrapFlags[WordWrap]);
-  {$ENDIF}
 {$ENDIF}
       end;
       ACanvas.CopyRect(ARect, DrawBitmap.Canvas, B);
@@ -2433,7 +2262,7 @@ begin
   SetWindowOrgEx(Handle, -X, -Y, @FOrigin);
 end;
 
-{$IFNDEF WIN32}
+{$IFDEF VER80}
 
 { TBits }
 
@@ -2647,9 +2476,7 @@ begin
   Result := IOResult = 0;
 end;
 
-{$ENDIF WIN32}
-
-{$IFDEF WIN32}
+{$ENDIF}
 
 procedure RaiseWin32Error(ErrorCode: DWORD);
 {$IFDEF RX_D3}
@@ -2692,8 +2519,6 @@ begin
   Result := Win32Check(Ok);
 end;
 
-{$ENDIF WIN32}
-
 {$IFNDEF RX_D3}
 function ResStr(Ident: Cardinal): string;
 begin
@@ -2717,7 +2542,7 @@ type
   end;
 
 function CheckTaskWindow(Window: HWnd; Data: Longint): WordBool;
-  {$IFDEF WIN32} stdcall {$ELSE} export {$ENDIF};
+  stdcall;
 begin
   Result := True;
   if PCheckTaskInfo(Data)^.FocusWnd = Window then begin
@@ -2729,13 +2554,13 @@ end;
 function IsForegroundTask: Boolean;
 var
   Info: TCheckTaskInfo;
-{$IFNDEF WIN32}
+{$IFDEF VER80}
   Proc: TFarProc;
 {$ENDIF}
 begin
   Info.FocusWnd := GetActiveWindow;
   Info.Found := False;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   EnumThreadWindows(GetCurrentThreadID, @CheckTaskWindow, Longint(@Info));
 {$ELSE}
   Proc := MakeProcInstance(@CheckTaskWindow, HInstance);
@@ -2749,7 +2574,6 @@ begin
 end;
 
 function GetWindowsVersion: string;
-{$IFDEF WIN32}
 const
   sWindowsVersion = 'Windows %s %d.%.2d.%.3d %s';
 var
@@ -2774,24 +2598,8 @@ begin
       dwMinorVersion, dwBuildNumber, szCSDVersion]));
   end;
 end;
-{$ELSE}
-const
-  sWindowsVersion = 'Windows%s %d.%d';
-  sNT: array[Boolean] of string[3] = ('', ' NT');
-var
-  Ver: Longint;
-begin
-  Ver := GetVersion;
-  Result := Format(sWindowsVersion, [sNT[not Boolean(HiByte(LoWord(Ver)))],
-    LoByte(LoWord(Ver)), HiByte(LoWord(Ver))]);
-end;
-{$ENDIF WIN32}
 
 initialization
-{$IFDEF WIN32}
 finalization
   ReleaseBitmap;
-{$ELSE}
-  AddExitProc(ReleaseBitmap);
-{$ENDIF}
 end.

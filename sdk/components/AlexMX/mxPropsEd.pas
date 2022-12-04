@@ -101,9 +101,7 @@ uses Windows, MXLConst, TypInfo, mxBoxProcs;
 
 {$R *.DFM}
 
-{$IFDEF WIN32}
  {$D-}
-{$ENDIF}
 
 { TFormStorageEditor }
 
@@ -119,9 +117,7 @@ begin
       Storage.StoredProps, Opt) then
     begin
       Storage.Options := Opt;
-{$IFDEF WIN32}
       Storage.SetNotification;
-{$ENDIF}
     end;
   end;
 end;
@@ -163,9 +159,7 @@ begin
     Storage.StoredProps, Opt) then
   begin
     Storage.Options := Opt;
-{$IFDEF WIN32}
     Storage.SetNotification;
-{$ENDIF}
   end;
 end;
 

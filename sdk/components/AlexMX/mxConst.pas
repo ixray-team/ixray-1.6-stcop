@@ -78,13 +78,9 @@ const
 
 implementation
 
-uses {$IFDEF WIN32} Windows, {$ELSE} WinProcs, {$ENDIF} Forms;
+uses Windows, Forms;
 
-{$IFDEF WIN32}
  {$R *.R32}
-{$ELSE}
- {$R *.R16}
-{$ENDIF}
 
 initialization
   Screen.Cursors[crHand] := LoadCursor(hInstance, 'RX_HANDCUR');

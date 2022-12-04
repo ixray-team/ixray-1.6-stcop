@@ -26,10 +26,8 @@ function MaxFloat(const Values: array of Extended): Extended;
 function MinFloat(const Values: array of Extended): Extended;
 function MaxDateTime(const Values: array of TDateTime): TDateTime;
 function MinDateTime(const Values: array of TDateTime): TDateTime;
-{$IFDEF WIN32}
 function MaxOf(const Values: array of Variant): Variant;
 function MinOf(const Values: array of Variant): Variant;
-{$ENDIF}
 
 procedure SwapLong(var Int1, Int2: Longint);
 procedure SwapInt(var Int1, Int2: Integer);
@@ -37,18 +35,7 @@ procedure SwapInt(var Int1, Int2: Integer);
 procedure SwapInt64(var Int1, Int2: Int64);
 {$ENDIF}
 
-{$IFNDEF WIN32}
-function MakeWord(A, B: Byte): Word;
-{$ENDIF}
-
 implementation
-
-{$IFNDEF WIN32}
-function MakeWord(A, B: Byte): Word;
-begin
-  Result := A or B shl 8;
-end;
-{$ENDIF}
 
 procedure SwapInt(var Int1, Int2: Integer);
 var
@@ -161,7 +148,6 @@ begin
     if Values[I] < Result then Result := Values[I];
 end;
 
-{$IFDEF WIN32}
 function MaxOf(const Values: array of Variant): Variant;
 var
   I: Cardinal;
@@ -179,6 +165,5 @@ begin
   for I := 0 to High(Values) do
     if Values[I] < Result then Result := Values[I];
 end;
-{$ENDIF WIN32}
 
 end.

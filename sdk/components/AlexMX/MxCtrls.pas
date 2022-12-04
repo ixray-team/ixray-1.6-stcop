@@ -14,7 +14,7 @@ unit MXCtrls;
 
 interface
 
-uses {$IFDEF WIN32} Windows, Registry, {$ELSE} WinTypes, WinProcs, {$ENDIF}
+uses Windows, Registry,
   Messages, Classes, Controls, Graphics, StdCtrls, ExtCtrls, Forms,
   Buttons, Menus, IniFiles, MxConst, mxPlacemnt;//, RxTimer, 
 
@@ -26,18 +26,10 @@ type
   TTextListBox = class(TCustomListBox)
   private
     FMaxWidth: Integer;
-{$IFNDEF WIN32}
-    FTabWidth: Integer;
-    procedure SetTabWidth(Value: Integer);
-{$ENDIF}
     procedure ResetHorizontalExtent;
     procedure SetHorizontalExtent;
     function GetItemWidth(Index: Integer): Integer;
   protected
-{$IFNDEF WIN32}
-    procedure CreateParams(var Params: TCreateParams); override;
-    procedure CreateWnd; override;
-{$ENDIF}
     procedure WndProc(var Message: TMessage); override;
   published
     property Align;
@@ -57,12 +49,10 @@ type
     property DragKind;
     property ParentBiDiMode;
 {$ENDIF}
-{$IFDEF WIN32}
   {$IFNDEF VER90}
     property ImeMode;
     property ImeName;
   {$ENDIF}
-{$ENDIF}
     property ItemHeight;
     property Items;
     property MultiSelect;
@@ -75,11 +65,7 @@ type
     property Sorted;
     property TabOrder;
     property TabStop;
-{$IFDEF WIN32}
     property TabWidth;
-{$ELSE}
-    property TabWidth: Integer read FTabWidth write SetTabWidth default 0;
-{$ENDIF}
     property Visible;
     property OnClick;
     property OnDblClick;
@@ -94,9 +80,7 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-{$IFDEF WIN32}
     property OnStartDrag;
-{$ENDIF}
 {$IFDEF RX_D5}
     property OnContextPopup;
 {$ENDIF}
@@ -169,9 +153,7 @@ type
     procedure WMNCHitTest(var Msg: TWMNCHitTest); message WM_NCHITTEST;
     procedure WMKillFocus(var Msg: TWMKillFocus); message WM_KILLFOCUS;
     procedure WMSetFocus(var Msg: TWMSetFocus); message WM_SETFOCUS;
-{$IFDEF WIN32}
     procedure CMCtl3DChanged(var Message: TMessage); message CM_CTL3DCHANGED;
-{$ENDIF}
   protected
     procedure CreateParams(var Params: TCreateParams); override;
     procedure CreateWnd; override;
@@ -295,10 +277,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-{$IFDEF WIN32}
     procedure SaveStatesReg(IniFile: TRegIniFile);
     procedure RestoreStatesReg(IniFile: TRegIniFile);
-{$ENDIF WIN32}
     procedure SaveStates(IniFile: TIniFile);
     procedure RestoreStates(IniFile: TIniFile);
     procedure ApplyState(AState: TCheckBoxState; EnabledOnly: Boolean);
@@ -329,12 +309,10 @@ type
     property DragKind;
     property ParentBiDiMode;
 {$ENDIF}
-{$IFDEF WIN32}
   {$IFNDEF VER90}
     property ImeMode;
     property ImeName;
   {$ENDIF}
-{$ENDIF}
     property IntegralHeight;
     property ItemHeight;
     property Items stored False;
@@ -368,9 +346,7 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-{$IFDEF WIN32}
     property OnStartDrag;
-{$ENDIF}
 {$IFDEF RX_D5}
     property OnContextPopup;
 {$ENDIF}
@@ -517,9 +493,7 @@ type
     property OnMouseUp;
     property OnMouseEnter;
     property OnMouseLeave;
-{$IFDEF WIN32}
     property OnStartDrag;
-{$ENDIF}
 {$IFDEF RX_D5}
     property OnContextPopup;
 {$ENDIF}
@@ -527,6 +501,8 @@ type
     property OnEndDock;
     property OnStartDock;
 {$ENDIF}
+public
+    constructor Create(AOwner: TComponent); override;
   end;
 
   TMxPanel = class(TCustomPanel)
@@ -755,9 +731,7 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-{$IFDEF WIN32}
     property OnStartDrag;
-{$ENDIF}
 {$IFDEF RX_D4}
     property OnEndDock;
     property OnStartDock;
@@ -783,11 +757,9 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Invalidate;
-{$IFDEF WIN32}
     procedure DrawEx(Canvas: TCanvas; X, Y, Margin, Spacing: Integer;
       Layout: TButtonLayout; AFont: TFont; Images: TImageList;
       ImageIndex: Integer; Flags: Word);
-{$ENDIF}
     procedure Draw(Canvas: TCanvas; X, Y, Margin, Spacing: Integer;
       Layout: TButtonLayout; AFont: TFont; Flags: Word);
     property Alignment: TAlignment read GetAlignment write SetAlignment;
@@ -818,29 +790,25 @@ type
     procedure MinimizeCaption(Canvas: TCanvas; const Caption: string;
       Buffer: PChar; MaxLen, Width: Integer);
     function CreateButtonGlyph(State: TMxButtonState): Integer;
-{$IFDEF WIN32}
     function CreateImageGlyph(State: TMxButtonState; Images: TImageList;
       Index: Integer): Integer;
-{$ENDIF}
     procedure CalcButtonLayout(Canvas: TCanvas; const Client: TRect;
       var Caption: string; Layout: TButtonLayout; Margin, Spacing: Integer;
       PopupMark: Boolean; var GlyphPos: TPoint; var TextBounds: TRect;
-      Flags: Word {$IFDEF WIN32}; Images: TImageList; ImageIndex: Integer
-      {$ENDIF});
+      Flags: Word; Images: TImageList; ImageIndex: Integer
+      );
   public
     constructor Create;
     destructor Destroy; override;
     procedure Invalidate;
     function DrawButtonGlyph(Canvas: TCanvas; X, Y: Integer;
       State: TMxButtonState): TPoint;
-{$IFDEF WIN32}
     function DrawButtonImage(Canvas: TCanvas; X, Y: Integer; Images: TImageList;
       ImageIndex: Integer; State: TMxButtonState): TPoint;
     function DrawEx(Canvas: TCanvas; const Client: TRect; const Caption: string;
       Layout: TButtonLayout; Margin, Spacing: Integer; PopupMark: Boolean;
       Images: TImageList; ImageIndex: Integer; State: TMxButtonState;
       Flags: Word): TRect;
-{$ENDIF}
     procedure DrawButtonText(Canvas: TCanvas; const Caption: string;
       TextBounds: TRect; State: TMxButtonState; Flags: Word);
     procedure DrawPopupMark(Canvas: TCanvas; X, Y: Integer;
@@ -863,19 +831,21 @@ function CheckBitmap: TBitmap;
 
 implementation
 
-{$IFDEF WIN32}
  {$R *.R32}
-{$ELSE}
- {$R *.R16}
-{$ENDIF}
 
-uses SysUtils, Dialogs, {$IFDEF WIN32} CommCtrl, {$ELSE} Str16, {$ENDIF}
-  mxVCLUtils, mxMaxMin, Consts, RTLConsts, mxAppUtils {$IFDEF RX_D4}, ImgList,
-  ActnList {$ENDIF};
+uses SysUtils, Dialogs, {$IFNDEF VER80} CommCtrl, {$ELSE} RxStr16, {$ENDIF}
+  mxVCLUtils, mxMaxMin, Consts, mxAppUtils {$IFDEF RX_D4}, ImgList,
+  ActnList {$ENDIF}
+  {$IFDEF RX_D6}, RTLConsts, Types{$ENDIF};
 
 const
   Alignments: array [TAlignment] of Word = (DT_LEFT, DT_RIGHT, DT_CENTER);
   WordWraps: array[Boolean] of Word = (0, DT_WORDBREAK);
+
+constructor TMxLabel.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
 
 { TTextListBox }
 
@@ -907,34 +877,6 @@ begin
     FMaxWidth := Max(FMaxWidth, GetItemWidth(I));
   SetHorizontalExtent;
 end;
-
-{$IFNDEF WIN32}
-
-procedure TTextListBox.SetTabWidth(Value: Integer);
-begin
-  if Value < 0 then Value := 0;
-  if FTabWidth <> Value then begin
-    FTabWidth := Value;
-    RecreateWnd;
-  end;
-end;
-
-procedure TTextListBox.CreateParams(var Params: TCreateParams);
-const
-  TabStops: array[Boolean] of Longword = (0, LBS_USETABSTOPS);
-begin
-  inherited CreateParams(Params);
-  Params.Style := Params.Style or TabStops[FTabWidth <> 0];
-end;
-
-procedure TTextListBox.CreateWnd;
-begin
-  inherited CreateWnd;
-  if FTabWidth <> 0 then
-    SendMessage(Handle, LB_SETTABSTOPS, 1, Longint(@FTabWidth));
-end;
-
-{$ENDIF}
 
 procedure TTextListBox.WndProc(var Message: TMessage);
 begin
@@ -999,18 +941,10 @@ type
 {$IFNDEF RX_D3}
 procedure TMxListBoxStrings.Error(Msg: Word; Data: Integer);
 
-{$IFDEF WIN32}
   function ReturnAddr: Pointer;
   asm
           MOV     EAX,[EBP+4]
   end;
-{$ELSE}
-  function ReturnAddr: Pointer; assembler;
-  asm
-          MOV     AX,[BP].Word[2]
-          MOV     DX,[BP].Word[4]
-  end;
-{$ENDIF}
 
 begin
   raise EStringListError.CreateFmt('%s: %d', [LoadStr(Msg),
@@ -1026,14 +960,14 @@ end;
 function TMxListBoxStrings.Get(Index: Integer): string;
 var
   Len: Integer;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   Text: array[0..4095] of Char;
 {$ENDIF}
 begin
   Len := SendMessage(ListBox.Handle, LB_GETTEXT, Index,
-    {$IFDEF WIN32} LongInt(@Text) {$ELSE} LongInt(@Result) {$ENDIF});
+    {$IFNDEF VER80}LongInt(@Text){$ELSE}LongInt(@Result){$ENDIF});
   if Len < 0 then Error(SListIndexError, Index);
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   SetString(Result, Text, Len);
 {$ELSE}
   System.Move(Result[0], Result[1], Len);
@@ -1053,31 +987,15 @@ begin
 end;
 
 function TMxListBoxStrings.Add(const S: string): Integer;
-{$IFNDEF WIN32}
-var
-  Text: array[0..255] of Char;
-{$ENDIF}
 begin
-{$IFDEF WIN32}
   Result := SendMessage(ListBox.Handle, LB_ADDSTRING, 0, LongInt(PChar(S)));
-{$ELSE}
-  Result := SendMessage(ListBox.Handle, LB_ADDSTRING, 0, LongInt(StrPCopy(Text, S)));
-{$ENDIF}
   if Result < 0 then raise EOutOfResources.Create(ResStr(SInsertLineError));
 end;
 
 procedure TMxListBoxStrings.Insert(Index: Integer; const S: string);
-{$IFNDEF WIN32}
-var
-  Text: array[0..255] of Char;
-{$ENDIF}
 begin
   if SendMessage(ListBox.Handle, LB_INSERTSTRING, Index,
-{$IFDEF WIN32}
     Longint(PChar(S))) < 0 then
-{$ELSE}
-    Longint(StrPCopy(Text, S))) < 0 then
-{$ENDIF}
       raise EOutOfResources.Create(ResStr(SInsertLineError));
 end;
 
@@ -1101,18 +1019,10 @@ end;
 
 procedure ListIndexError(Index: Integer);
 
-{$IFDEF WIN32}
   function ReturnAddr: Pointer;
   asm
           MOV     EAX,[EBP+4]
   end;
-{$ELSE}
-  function ReturnAddr: Pointer; assembler;
-  asm
-          MOV     AX,[BP].Word[2]
-          MOV     DX,[BP].Word[4]
-  end;
-{$ENDIF}
 
 begin
 {$IFDEF RX_D3}
@@ -1128,12 +1038,8 @@ const
   ListBoxStyle = [csSetCaption, csDoubleClicks];
 begin
   inherited Create(AOwner);
-{$IFDEF WIN32}
   if NewStyleControls then ControlStyle := ListBoxStyle
   else ControlStyle := ListBoxStyle + [csFramed];
-{$ELSE}
-  ControlStyle := ListBoxStyle + [csFramed];
-{$ENDIF}
   Width := 121;
   Height := 97;
   TabStop := True;
@@ -1474,10 +1380,6 @@ begin
   inherited CreateParams(Params);
   CreateSubClass(Params, 'LISTBOX');
   with Params do begin
-{$IFNDEF WIN32}
-    Inc(X); Inc(Y);
-    Dec(Width, 2); Dec(Height, 2);
-{$ENDIF}
     Selects := @MultiSelects;
     if FExtendedSelect then Selects := @ExtendSelects;
     Style := Style or (WS_HSCROLL or WS_VSCROLL or LBS_HASSTRINGS or
@@ -1485,12 +1387,10 @@ begin
       Selects^[FMultiSelect] or IntegralHeights[FIntegralHeight] or
       MultiColumns[FColumns <> 0] or BorderStyles[FBorderStyle] or
       TabStops[FTabWidth <> 0];
-{$IFDEF WIN32}
     if NewStyleControls and Ctl3D and (FBorderStyle = bsSingle) then begin
       Style := Style and not WS_BORDER;
       ExStyle := ExStyle or WS_EX_CLIENTEDGE;
     end;
-{$ENDIF}
     WindowClass.Style := WindowClass.Style and not (CS_HREDRAW or CS_VREDRAW);
   end;
 end;
@@ -1684,13 +1584,13 @@ end;
 procedure TMxCustomListBox.DragCanceled;
 var
   M: TWMMouse;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   MousePos: TPoint;
 {$ENDIF}
 begin
   with M do begin
     Msg := WM_LBUTTONDOWN;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
     GetCursorPos(MousePos);
     Pos := PointToSmallPoint(ScreenToClient(MousePos));
 {$ELSE}
@@ -1748,7 +1648,7 @@ var
   State: TOwnerDrawState;
 begin
   with Message.DrawItemStruct^ do begin
-{$IFDEF WIN32}
+{$IFNDEF VER80}
  {$IFDEF RX_D5}
     State := TOwnerDrawState(LongRec(itemState).Lo);
  {$ELSE}
@@ -1802,13 +1702,11 @@ begin
   if FGraySelection and MultiSelect and (SelCount > 1) then Invalidate;
 end;
 
-{$IFDEF WIN32}
 procedure TMxCustomListBox.CMCtl3DChanged(var Message: TMessage);
 begin
   if NewStyleControls and (FBorderStyle = bsSingle) then RecreateWnd;
   inherited;
 end;
-{$ENDIF}
 
 { TCheckListBoxItem }
 
@@ -1881,7 +1779,7 @@ end;
 
 { TMxCheckListBox }
 
-const
+var
   FCheckBitmap: TBitmap = nil;
 
 function CheckBitmap: TBitmap;
@@ -1972,7 +1870,6 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
 procedure TMxCheckListBox.SaveStatesReg(IniFile: TRegIniFile);
 begin
   InternalSaveStates(IniFile, GetDefaultSection(Self));
@@ -1982,7 +1879,6 @@ procedure TMxCheckListBox.RestoreStatesReg(IniFile: TRegIniFile);
 begin
   InternalRestoreStates(IniFile, GetDefaultSection(Self));
 end;
-{$ENDIF WIN32}
 
 procedure TMxCheckListBox.SaveStates(IniFile: TIniFile);
 begin
@@ -2073,7 +1969,6 @@ end;
 
 procedure TMxCheckListBox.DefineProperties(Filer: TFiler);
 
-{$IFDEF WIN32}
   function DoWrite: Boolean;
   var
     I: Integer;
@@ -2091,14 +1986,13 @@ procedure TMxCheckListBox.DefineProperties(Filer: TFiler);
       end
     else Result := Items.Count > 0;
   end;
-{$ENDIF}
 
 begin
   inherited DefineProperties(Filer);
   Filer.DefineProperty('InternalVersion', ReadVersion, WriteVersion,
-    {$IFDEF WIN32} Filer.Ancestor = nil {$ELSE} True {$ENDIF});
+    Filer.Ancestor = nil);
   Filer.DefineProperty('Strings', ReadCheckData, WriteCheckData,
-    {$IFDEF WIN32} DoWrite {$ELSE} Items.Count > 0 {$ENDIF});
+    DoWrite);
 end;
 
 procedure TMxCheckListBox.CreateWnd;
@@ -2612,9 +2506,7 @@ constructor TMxCustomLabel.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   ControlStyle := ControlStyle + [csOpaque];
-{$IFDEF WIN32}
   ControlStyle := ControlStyle + [csReplicatable];
-{$ENDIF}
   Width := 65;
   Height := 17;
   FAutoSize := True;
@@ -2636,24 +2528,14 @@ end;
 
 procedure TMxCustomLabel.DoDrawText(var Rect: TRect; Flags: Word);
 var
-{$IFDEF WIN32}
   Text: string;
-{$ELSE}
-  Text: array[0..255] of Char;
-{$ENDIF}
   PosShadow: TShadowPosition;
   SizeShadow: Byte;
   ColorShadow: TColor;
 begin
-{$IFDEF WIN32}
   Text := GetLabelCaption;
   if (Flags and DT_CALCRECT <> 0) and ((Text = '') or FShowAccelChar and
     (Text[1] = '&') and (Text[2] = #0)) then Text := Text + ' ';
-{$ELSE}
-  StrPLCopy(Text, GetLabelCaption, 255);
-  if (Flags and DT_CALCRECT <> 0) and ((Text[0] = #0) or FShowAccelChar and
-    (Text[0] = '&') and (Text[1] = #0)) then StrCopy(Text, ' ');
-{$ENDIF}
   if not FShowAccelChar then Flags := Flags or DT_NOPREFIX;
 {$IFDEF RX_D4}
   Flags := DrawTextBiDiModeFlags(Flags);
@@ -2671,13 +2553,8 @@ begin
     Canvas.Font.Color := clGrayText;
     ColorShadow := clBtnHighlight;
   end;
-{$IFDEF WIN32}
   DrawShadowText(Canvas.Handle, PChar(Text), Length(Text), Rect, Flags,
     SizeShadow, ColorToRGB(ColorShadow), PosShadow);
-{$ELSE}
-  DrawShadowText(Canvas.Handle, Text, StrLen(Text), Rect, Flags,
-    SizeShadow, ColorToRGB(ColorShadow), PosShadow);
-{$ENDIF}
 end;
 
 procedure TMxCustomLabel.Paint;
@@ -2712,9 +2589,7 @@ begin
       not (csDesigning in ComponentState) then
     begin
       InflateRect(Rect, 1, 0);
-{$IFDEF WIN32}
       Brush.Color := Self.Color;
-{$ENDIF}
       DrawFocusRect(Rect);
     end;
   end;
@@ -2825,9 +2700,7 @@ end;
 procedure TMxCustomLabel.SetFocusControl(Value: TWinControl);
 begin
   FFocusControl := Value;
-{$IFDEF WIN32}
   if Value <> nil then Value.FreeNotification(Self);
-{$ENDIF}
   if FShowFocus then Invalidate;
 end;
 
@@ -3002,10 +2875,8 @@ type
     destructor Destroy; override;
     function Add(Image, Mask: TBitmap): Integer;
     function AddMasked(Image: TBitmap; MaskColor: TColor): Integer;
-{$IFDEF WIN32}
 {$IFNDEF RX_D3} { Delphi 2.0 bug fix }
     procedure ReplaceMasked(Index: Integer; NewImage: TBitmap; MaskColor: TColor);
-{$ENDIF}
 {$ENDIF}
     procedure Delete(Index: Integer);
     property Count: Integer read FCount;
@@ -3028,7 +2899,7 @@ type
 
 constructor TGlyphList.CreateSize(AWidth, AHeight: Integer);
 begin
-{$IFDEF WIN32}
+{$IFNDEF VER80}
   inherited CreateSize(AWidth, AHeight);
 {$ELSE}
   inherited Create(AWidth, AHeight);
@@ -3052,7 +2923,6 @@ begin
   FUsed[Result] := True;
 end;
 
-{$IFDEF WIN32}
 {$IFNDEF RX_D3} { Delphi 2.0 bug fix }
 procedure TGlyphList.ReplaceMasked(Index: Integer; NewImage: TBitmap; MaskColor: TColor);
 var
@@ -3090,7 +2960,6 @@ begin
   end;
   Change;
 end;
-{$ENDIF}
 {$ENDIF}
 
 function TGlyphList.Add(Image, Mask: TBitmap): Integer;
@@ -3156,7 +3025,7 @@ begin
   Result := FGlyphLists.Count = 0;
 end;
 
-const
+var
   GlyphCache: TGlyphCache = nil;
 
 { TMxButtonGlyph }
@@ -3245,7 +3114,6 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
 function TMxButtonGlyph.CreateImageGlyph(State: TMxButtonState;
   Images: TImageList; Index: Integer): Integer;
 var
@@ -3318,7 +3186,6 @@ begin
   end;
   Result := FIndexs[State];
 end;
-{$ENDIF}
 
 function TMxButtonGlyph.CreateButtonGlyph(State: TMxButtonState): Integer;
 var
@@ -3430,16 +3297,11 @@ begin
     FOriginal.Empty then Exit;
   Index := CreateButtonGlyph(State);
   if Index >= 0 then begin
-{$IFDEF WIN32}
     ImageList_Draw(FGlyphList.Handle, Index, Canvas.Handle, X, Y, ILD_NORMAL);
-{$ELSE}
-    FGlyphList.Draw(Canvas, X, Y, Index);
-{$ENDIF}
     Result := Point(FGlyphList.Width, FGlyphList.Height);
   end;
 end;
 
-{$IFDEF WIN32}
 function TMxButtonGlyph.DrawButtonImage(Canvas: TCanvas; X, Y: Integer;
   Images: TImageList; ImageIndex: Integer; State: TMxButtonState): TPoint;
 var
@@ -3461,37 +3323,21 @@ begin
     ImageList_Draw(Images.Handle, ImageIndex, Canvas.Handle, X, Y, ILD_NORMAL);
   Result := Point(Images.Width, Images.Height);
 end;
-{$ENDIF}
 
 procedure TMxButtonGlyph.MinimizeCaption(Canvas: TCanvas; const Caption: string;
   Buffer: PChar; MaxLen, Width: Integer);
 var
   I: Integer;
-{$IFNDEF WIN32}
-  P: PChar;
-{$ENDIF}
   Lines: TStrings;
 begin
   StrPLCopy(Buffer, Caption, MaxLen);
   if FWordWrap then Exit;
   Lines := TStringList.Create;
   try
-{$IFDEF WIN32}
     Lines.Text := Caption;
     for I := 0 to Lines.Count - 1 do
       Lines[I] := MinimizeText(Lines[I], Canvas, Width);
     StrPLCopy(Buffer, TrimRight(Lines.Text), MaxLen);
-{$ELSE}
-    Lines.SetText(Buffer);
-    for I := 0 to Lines.Count - 1 do
-      Lines[I] := MinimizeText(Lines[I], Canvas, Width);
-    P := Lines.GetText;
-    try
-      StrPLCopy(Buffer, TrimRight(StrPas(P)), MaxLen);
-    finally
-      StrDispose(P);
-    end;
-{$ENDIF}
   finally
     Lines.Free;
   end;
@@ -3521,7 +3367,7 @@ end;
 procedure TMxButtonGlyph.CalcButtonLayout(Canvas: TCanvas; const Client: TRect;
   var Caption: string; Layout: TButtonLayout; Margin, Spacing: Integer;
   PopupMark: Boolean; var GlyphPos: TPoint; var TextBounds: TRect; Flags: Word
-  {$IFDEF WIN32}; Images: TImageList; ImageIndex: Integer {$ENDIF});
+  ; Images: TImageList; ImageIndex: Integer);
 var
   TextPos: TPoint;
   MaxSize, ClientSize, GlyphSize, TextSize: TPoint;
@@ -3530,12 +3376,10 @@ var
 begin
   { calculate the item sizes }
   ClientSize := Point(Client.Right - Client.Left, Client.Bottom - Client.Top);
-{$IFDEF WIN32}
   if Assigned(Images) and (Images.Width > 0) and (ImageIndex >= 0) and
     (ImageIndex < Images.Count) then
     GlyphSize := Point(Images.Width, Images.Height)
   else
-{$ENDIF}
   if FOriginal <> nil then
     GlyphSize := Point(FOriginal.Width div FNumGlyphs, FOriginal.Height)
   else GlyphSize := Point(0, 0);
@@ -3640,7 +3484,6 @@ begin
   OffsetRect(TextBounds, TextPos.X + Client.Left, TextPos.Y + Client.Top);
 end;
 
-{$IFDEF WIN32}
 function TMxButtonGlyph.Draw(Canvas: TCanvas; const Client: TRect;
   const Caption: string; Layout: TButtonLayout; Margin, Spacing: Integer;
   PopupMark: Boolean; State: TMxButtonState; Flags: Word): TRect;
@@ -3648,31 +3491,21 @@ begin
   Result := DrawEx(Canvas, Client, Caption, Layout, Margin, Spacing,
     PopupMark, nil, -1, State, Flags);
 end;
-{$ENDIF}
 
-{$IFDEF WIN32}
 function TMxButtonGlyph.DrawEx(Canvas: TCanvas; const Client: TRect;
   const Caption: string; Layout: TButtonLayout; Margin, Spacing: Integer;
   PopupMark: Boolean; Images: TImageList; ImageIndex: Integer;
   State: TMxButtonState; Flags: Word): TRect;
-{$ELSE}
-function TMxButtonGlyph.Draw(Canvas: TCanvas; const Client: TRect;
-  const Caption: string; Layout: TButtonLayout; Margin, Spacing: Integer;
-  PopupMark: Boolean; State: TMxButtonState; Flags: Word): TRect;
-{$ENDIF}
 var
-{$IFDEF WIN32}
   UseImages: Boolean;
-{$ENDIF}
   GlyphPos, PopupPos: TPoint;
   TextBounds: TRect;
   CaptionText: string;
 begin
   CaptionText := Caption;
   CalcButtonLayout(Canvas, Client, CaptionText, Layout, Margin, Spacing,
-    PopupMark, GlyphPos, TextBounds, Flags {$IFDEF WIN32}, Images,
-    ImageIndex {$ENDIF});
-{$IFDEF WIN32}
+    PopupMark, GlyphPos, TextBounds, Flags, Images,
+    ImageIndex);
   UseImages := False;
   if Assigned(Images) and (ImageIndex >= 0) and (ImageIndex < Images.Count) and
     (Images.Width > 0) then
@@ -3681,7 +3514,6 @@ begin
     PopupPos := DrawButtonImage(Canvas, GlyphPos.X, GlyphPos.Y, Images,
       ImageIndex, State);
   end else
-{$ENDIF}
   PopupPos := DrawButtonGlyph(Canvas, GlyphPos.X, GlyphPos.Y, State);
   DrawButtonText(Canvas, CaptionText, TextBounds, State, Flags);
   if PopupMark then
@@ -3703,7 +3535,7 @@ begin
   Result := TextBounds;
 end;
 
-const
+var
 {$IFNDEF RX_D4}
   Pattern: TBitmap = nil;
 {$ENDIF}
@@ -3816,22 +3648,15 @@ begin
   TMxButtonGlyph(FGlyph).Alignment := Value;
 end;
 
-{$IFDEF WIN32}
 procedure TButtonImage.Draw(Canvas: TCanvas; X, Y, Margin, Spacing: Integer;
   Layout: TButtonLayout; AFont: TFont; Flags: Word);
 begin
   DrawEx(Canvas, X, Y, Margin, Spacing, Layout, AFont, nil, -1, Flags);
 end;
-{$ENDIF}
 
-{$IFDEF WIN32}
 procedure TButtonImage.DrawEx(Canvas: TCanvas; X, Y, Margin, Spacing: Integer;
   Layout: TButtonLayout; AFont: TFont; Images: TImageList; ImageIndex: Integer;
   Flags: Word);
-{$ELSE}
-procedure TButtonImage.Draw(Canvas: TCanvas; X, Y, Margin, Spacing: Integer;
-  Layout: TButtonLayout; AFont: TFont; Flags: Word);
-{$ENDIF}
 var
   Target: TRect;
   SaveColor: Integer;
@@ -3847,13 +3672,8 @@ begin
     Frame3D(Canvas, Target, clBtnShadow, clWindowFrame, 1);
     Frame3D(Canvas, Target, clBtnHighlight, clBtnShadow, 1);
     if AFont <> nil then Canvas.Font := AFont;
-{$IFDEF WIN32}
     TMxButtonGlyph(FGlyph).DrawEx(Canvas, Target, Caption, Layout, Margin,
       Spacing, False, Images, ImageIndex, rbsUp, Flags);
-{$ELSE}
-    TMxButtonGlyph(FGlyph).Draw(Canvas, Target, Caption, Layout, Margin,
-      Spacing, False, rbsUp, Flags);
-{$ENDIF}
   finally
     Canvas.Font.Assign(SaveFont);
     SaveFont.Free;
@@ -3874,9 +3694,7 @@ begin
   inherited Create(AOwner);
   SetBounds(0, 0, 25, 25);
   ControlStyle := [csCaptureMouse, csOpaque, csDoubleClicks];
-{$IFDEF WIN32}
   ControlStyle := ControlStyle + [csReplicatable];
-{$ENDIF}
   FInactiveGrayed := True;
   FDrawImage := TBitmap.Create;
   FGlyph := TMxButtonGlyph.Create;
@@ -4014,7 +3832,7 @@ end;
 function TMxSpeedButton.CheckBtnMenuDropDown: Boolean;
 begin
   Result := CheckMenuDropDown(
-    {$IFDEF WIN32}PointToSmallPoint(GetDropDownMenuPos){$ELSE}
+    {$IFNDEF VER80}PointToSmallPoint(GetDropDownMenuPos){$ELSE}
     GetDropDownMenuPos{$ENDIF}, True);
 end;
 
@@ -4325,9 +4143,7 @@ end;
 procedure TMxSpeedButton.SetDropDownMenu(Value: TPopupMenu);
 begin
   FDropDownMenu := Value;
-{$IFDEF WIN32}
   if Value <> nil then Value.FreeNotification(Self);
-{$ENDIF}
   if FMarkDropDown then Invalidate;
 end;
 
@@ -4540,14 +4356,8 @@ begin
 end;
 {$ENDIF RX_D4}
 
-{$IFDEF WIN32}
 initialization
   FCheckBitmap := nil;
 finalization
   DestroyLocals;
-{$ELSE}
-initialization
-  FCheckBitmap := nil;
-  AddExitProc(DestroyLocals);
-{$ENDIF}
 end.

@@ -29,7 +29,8 @@ package editor;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  designide;
 
 contains
   MxRegister in 'MxRegister.pas';

@@ -25,15 +25,7 @@ procedure SetProgressValue(Control: TControl; ProgressValue: Longint);
 
 implementation
 
-{$DEFINE USE_GAUGE}
-{$IFDEF WIN32}
-  {$IFDEF USE_PROGRESSBAR}
-    {$UNDEF USE_GAUGE}
-  {$ENDIF}
-{$ENDIF}
-
-uses TypInfo, {$IFDEF WIN32} {$IFDEF USE_GAUGE} Gauges, {$ENDIF} ComCtrls;
-  {$ELSE} Gauges; {$ENDIF}
+uses TypInfo, ComCtrls;
 
 { TProgressList }
 
@@ -63,12 +55,7 @@ type
 constructor TProgressList.Create;
 begin
   inherited Create;
-{$IFDEF WIN32}
   Add(TProgressBar, 'Max', 'Min', 'Position');
-{$ENDIF}
-{$IFDEF USE_GAUGE}
-  Add(TGauge, 'MaxValue', 'MinValue', 'Progress');
-{$ENDIF}
 end;
 
 destructor TProgressList.Destroy;
@@ -138,7 +125,7 @@ begin
       end;
       PropInfo := GetPropInfo(Control.ClassInfo, PropName);
       if (PropInfo <> nil) and (PropInfo^.PropType^.Kind in
-        [tkInteger, tkFloat {$IFDEF WIN32}, tkVariant {$ENDIF}]) then
+        [tkInteger, tkFloat, tkVariant]) then
       begin
         SetOrdProp(Control, PropInfo, Value);
         Result := True;
@@ -147,7 +134,7 @@ begin
   end;
 end;
 
-const
+var
   ProgressList: TProgressList = nil;
 
 function GetProgressList: TProgressList;
@@ -189,18 +176,7 @@ begin
   GetProgressList.SetControlProperty(Control, ppProgress, ProgressValue);
 end;
 
-{$IFNDEF WIN32}
-procedure Finalize; far;
-begin
-  ProgressList.Free;
-end;
-{$ENDIF}
-
 initialization
-{$IFDEF WIN32}
 finalization
   ProgressList.Free;
-{$ELSE}
-  AddExitProc(Finalize);
-{$ENDIF}
 end.

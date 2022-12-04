@@ -11,10 +11,13 @@ unit mxClipIcon;
 
 {$I mx.INC}
 {$P+,W-,R-}
+{$IFDEF RX_D6}
+{$WARN SYMBOL_PLATFORM OFF}
+{$ENDIF}
 
 interface
 
-uses {$IFDEF WIN32} Windows, {$ELSE} WinTypes, WinProcs, {$ENDIF}
+uses {$IFNDEF VER80} Windows, {$ELSE} WinTypes, WinProcs, {$ENDIF}
   SysUtils, Classes, Graphics, Controls;
 
 { Icon clipboard routines }
@@ -39,7 +42,7 @@ uses Consts, Clipbrd, mxVCLUtils;
 { Icon clipboard routines }
 
 function CreateBitmapFromIcon(Icon: TIcon; BackColor: TColor): TBitmap;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 var
   Ico: HIcon;
   W, H: Integer;
@@ -192,7 +195,7 @@ begin
   raise EOutOfResources.Create(ResStr(SOutOfResources));
 end;
 
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 
 function WidthBytes(I: Longint): Longint;
 begin
@@ -275,7 +278,7 @@ begin
       DeleteObject(Temp);
     end;
     with BI do begin
-      Inc(Longint(Bits), biSizeImage);
+      Inc({$IFDEF WIN64} NativeInt {$ELSE} Longint {$ENDIF} (Bits), biSizeImage);
       biBitCount := 1;
       biSizeImage := WidthBytes(Longint(biWidth) * biBitCount) * biHeight;
       biClrUsed := 2;
@@ -429,10 +432,10 @@ begin
   H := GetSystemMetrics(SM_CYICON);
 end;
 
-{$ENDIF WIN32}
+{$ENDIF}
 
 function CreateRealSizeIcon(Icon: TIcon): HIcon;
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 var
   Mem: TMemoryStream;
   CI: TCursorOrIcon;
@@ -458,7 +461,7 @@ begin
 end;
 
 procedure DrawRealSizeIcon(Canvas: TCanvas; Icon: TIcon; X, Y: Integer);
-{$IFDEF WIN32}
+{$IFNDEF VER80}
 var
   Ico: HIcon;
   W, H: Integer;

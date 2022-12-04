@@ -56,10 +56,8 @@ function StrToDateFmtDef(const DateFormat, S: string; Default: TDateTime): TDate
 function DefDateFormat(FourDigitYear: Boolean): string;
 function DefDateMask(BlanksChar: Char; FourDigitYear: Boolean): string;
 
-{$IFDEF WIN32}
 function FormatLongDate(Value: TDateTime): string;
 function FormatLongDateTime(Value: TDateTime): string;
-{$ENDIF}
 
 const
   DefaultDateOrder = doDMY;
@@ -73,15 +71,11 @@ function FourDigitYear: Boolean;
 
 const
   CenturyOffset: Byte = 60;
-{$IFDEF WIN32}
   NullDate: TDateTime = {-693594} 0;
-{$ELSE}
-  NullDate: TDateTime = 0;
-{$ENDIF}
 
 implementation
 
-uses SysUtils, {$IFDEF WIN32} Windows, {$ENDIF} Consts, mxStrUtils, RTLConsts;
+uses SysUtils, Windows, Consts, mxStrUtils, RTLConsts;
 
 function IsLeapYear(AYear: Integer): Boolean;
 begin
@@ -302,21 +296,13 @@ begin
   Result := Trunc(ADate);
 end;
 
-function CurrentYear: Word; {$IFNDEF WIN32} assembler; {$ENDIF}
-{$IFDEF WIN32}
+function CurrentYear: Word;
 var
   SystemTime: TSystemTime;
 begin
   GetLocalTime(SystemTime);
   Result := SystemTime.wYear;
 end;
-{$ELSE}
-asm
-        MOV     AH,2AH
-        INT     21H
-        MOV     AX,CX
-end;
-{$ENDIF}
 
 { String to date conversions. Copied from SYSUTILS.PAS unit. }
 
@@ -418,12 +404,12 @@ begin
   Y := 0; M := 0; D := 0;
   DateOrder := GetDateOrder(DateFormat);
 {$IFDEF RX_D3}
-  if ShortDateFormat[1] = 'g' then { skip over prefix text }
+  if FormatSettings.ShortDateFormat[1] = 'g' then { skip over prefix text }
     ScanToNumber(S, Pos);
 {$ENDIF RX_D3}
-  if not (ScanNumber(S, MaxInt, Pos, N1) and ScanChar(S, Pos, DateSeparator) and
+  if not (ScanNumber(S, MaxInt, Pos, N1) and ScanChar(S, Pos, FormatSettings.DateSeparator) and
     ScanNumber(S, MaxInt, Pos, N2)) then Exit;
-  if ScanChar(S, Pos, DateSeparator) then begin
+  if ScanChar(S, Pos, FormatSettings.DateSeparator) then begin
     if not ScanNumber(S, MaxInt, Pos, N3) then Exit;
     case DateOrder of
       doMDY: begin Y := N3; M := N1; D := N2; end;
@@ -441,20 +427,20 @@ begin
       M := N1; D := N2;
     end;
   end;
-  ScanChar(S, Pos, DateSeparator);
+  ScanChar(S, Pos, FormatSettings.DateSeparator);
   ScanBlanks(S, Pos);
 {$IFDEF RX_D3}
-  if SysLocale.FarEast and (System.Pos('ddd', ShortDateFormat) <> 0) then
+  if SysLocale.FarEast and (System.Pos('ddd', FormatSettings.ShortDateFormat) <> 0) then
   begin { ignore trailing text }
-    if ShortTimeFormat[1] in ['0'..'9'] then  { stop at time digit }
+    if FormatSettings.ShortTimeFormat[1] in ['0'..'9'] then  { stop at time digit }
       ScanToNumber(S, Pos)
     else  { stop at time prefix }
       repeat
         while (Pos <= Length(S)) and (S[Pos] <> ' ') do Inc(Pos);
         ScanBlanks(S, Pos);
       until (Pos > Length(S)) or
-        (AnsiCompareText(TimeAMString, Copy(S, Pos, Length(TimeAMString))) = 0) or
-        (AnsiCompareText(TimePMString, Copy(S, Pos, Length(TimePMString))) = 0);
+        (AnsiCompareText(FormatSettings.TimeAMString, Copy(S, Pos, Length(FormatSettings.TimeAMString))) = 0) or
+        (AnsiCompareText(FormatSettings.TimePMString, Copy(S, Pos, Length(FormatSettings.TimePMString))) = 0);
   end;
 {$ENDIF RX_D3}
   Result := IsValidDate(Y, M, D) and (Pos > Length(S));
@@ -464,9 +450,9 @@ function MonthFromName(const S: string; MaxLen: Byte): Byte;
 begin
   if Length(S) > 0 then
     for Result := 1 to 12 do begin
-      if (Length(LongMonthNames[Result]) > 0) and
+      if (Length(FormatSettings.LongMonthNames[Result]) > 0) and
         (AnsiCompareText(Copy(S, 1, MaxLen),
-        Copy(LongMonthNames[Result], 1, MaxLen)) = 0) then Exit;
+        Copy(FormatSettings.LongMonthNames[Result], 1, MaxLen)) = 0) then Exit;
     end;
   Result := 0;
 end;
@@ -542,7 +528,7 @@ end;
 
 function StrToDateDef(const S: string; Default: TDateTime): TDateTime;
 begin
-  if not InternalStrToDate(ShortDateFormat, S, Result) then
+  if not InternalStrToDate(FormatSettings.ShortDateFormat, S, Result) then
     Result := Trunc(Default);
 end;
 
@@ -555,14 +541,14 @@ end;
 function DefDateFormat(FourDigitYear: Boolean): string;
 begin
   if FourDigitYear then begin
-    case GetDateOrder(ShortDateFormat) of
+    case GetDateOrder(FormatSettings.ShortDateFormat) of
       doMDY: Result := 'MM/DD/YYYY';
       doDMY: Result := 'DD/MM/YYYY';
       doYMD: Result := 'YYYY/MM/DD';
     end;
   end
   else begin
-    case GetDateOrder(ShortDateFormat) of
+    case GetDateOrder(FormatSettings.ShortDateFormat) of
       doMDY: Result := 'MM/DD/YY';
       doDMY: Result := 'DD/MM/YY';
       doYMD: Result := 'YY/MM/DD';
@@ -573,21 +559,19 @@ end;
 function DefDateMask(BlanksChar: Char; FourDigitYear: Boolean): string;
 begin
   if FourDigitYear then begin
-    case GetDateOrder(ShortDateFormat) of
+    case GetDateOrder(FormatSettings.ShortDateFormat) of
       doMDY, doDMY: Result := '!99/99/9999;1;';
       doYMD: Result := '!9999/99/99;1;';
     end;
   end
   else begin
-    case GetDateOrder(ShortDateFormat) of
+    case GetDateOrder(FormatSettings.ShortDateFormat) of
       doMDY, doDMY: Result := '!99/99/99;1;';
       doYMD: Result := '!99/99/99;1;';
     end;
   end;
   if Result <> '' then Result := Result + BlanksChar;
 end;
-
-{$IFDEF WIN32}
 
 function FormatLongDate(Value: TDateTime): string;
 var
@@ -614,8 +598,6 @@ begin
   else Result := '';
 end;
 
-{$ENDIF WIN32}
-
 {$IFNDEF USE_FOUR_DIGIT_YEAR}
 function FourDigitYear: Boolean;
 begin
@@ -625,6 +607,6 @@ end;
 
 {$IFDEF USE_FOUR_DIGIT_YEAR}
 initialization
-  FourDigitYear := Pos('YYYY', AnsiUpperCase(ShortDateFormat)) > 0;
+  FourDigitYear := Pos('YYYY', AnsiUpperCase(FormatSettings.ShortDateFormat)) > 0;
 {$ENDIF}
 end.

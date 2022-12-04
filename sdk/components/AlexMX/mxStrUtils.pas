@@ -16,7 +16,7 @@ unit mxStrUtils;
 
 interface
 
-uses SysUtils {$IFNDEF WIN32}, Str16 {$ENDIF};
+uses SysUtils {$IFDEF MSWINDOWS}{$IFDEF VER80}, RxStr16 {$ENDIF}{$ENDIF};
 
 type
 {$IFNDEF RX_D4}
@@ -214,28 +214,20 @@ const
 
 implementation
 
-uses {$IFDEF WIN32} Windows {$ELSE} WinTypes, WinProcs {$ENDIF};
+uses Windows;
 
 function StrToOem(const AnsiStr: string): string;
 begin
   SetLength(Result, Length(AnsiStr));
   if Length(Result) > 0 then
-{$IFDEF WIN32}
-    CharToOemBuff(PChar(AnsiStr), PChar(Result), Length(Result));
-{$ELSE}
-    AnsiToOemBuff(@AnsiStr[1], @Result[1], Length(Result));
-{$ENDIF}
+    CharToOemBuff(PChar(AnsiStr), PAnsiChar(Result), Length(Result));
 end;
 
 function OemToAnsiStr(const OemStr: string): string;
 begin
   SetLength(Result, Length(OemStr));
   if Length(Result) > 0 then
-{$IFDEF WIN32}
-    OemToCharBuff(PChar(OemStr), PChar(Result), Length(Result));
-{$ELSE}
-    OemToAnsiBuff(@OemStr[1], @Result[1], Length(Result));
-{$ENDIF}
+    OemToCharBuff(PAnsiChar(OemStr), PChar(Result), Length(Result));
 end;
 
 function IsEmptyStr(const S: string; const EmptyChars: TCharSet): Boolean;
@@ -341,9 +333,6 @@ function MakeStr(C: Char; N: Integer): string;
 begin
   if N < 1 then Result := ''
   else begin
-{$IFNDEF WIN32}
-    if N > 255 then N := 255;
-{$ENDIF WIN32}
     SetLength(Result, N);
     FillChar(Result[1], Length(Result), C);
   end;
@@ -398,22 +387,14 @@ end;
 
 function CompStr(const S1, S2: string): Integer;
 begin
-{$IFDEF WIN32}
   Result := CompareString(GetThreadLocale, SORT_STRINGSORT, PChar(S1),
     Length(S1), PChar(S2), Length(S2)) - 2;
-{$ELSE}
-  Result := CompareStr(S1, S2);
-{$ENDIF}
 end;
 
 function CompText(const S1, S2: string): Integer;
 begin
-{$IFDEF WIN32}
   Result := CompareString(GetThreadLocale, SORT_STRINGSORT or NORM_IGNORECASE,
     PChar(S1), Length(S1), PChar(S2), Length(S2)) - 2;
-{$ELSE}
-  Result := CompareText(S1, S2);
-{$ENDIF}
 end;
 
 function Copy2Symb(const S: string; Symb: Char): string;
@@ -578,12 +559,10 @@ begin
     end;
 end;
 
-{$IFDEF WIN32}
   {$IFNDEF VER90}
     { C++Builder or Delphi 3.0 }
     {$DEFINE MBCS}
   {$ENDIF}
-{$ENDIF}
 
 function QuotedString(const S: string; Quote: Char): string;
 {$IFDEF MBCS}
@@ -761,9 +740,9 @@ Label
   A500, A400, A100, A90, A50, A40, A10, A9, A5, A4, A1;
 begin
   Result := '';
-{$IFNDEF WIN32}
+{$IFDEF MSWINDOWS}{$IFDEF VER80}
   if (Value > MaxInt * 2) then Exit;
-{$ENDIF}
+{$ENDIF}{$ENDIF}
   while Value >= 1000 do begin
     Dec(Value, 1000); Result := Result + 'M';
   end;
@@ -974,7 +953,7 @@ begin
   Result := Src;
   if Length(Key) > 0 then
     for I := 1 to Length(Src) do
-      Result[I] := Chr(Byte(Key[1 + ((I - 1) mod Length(Key))]) xor Ord(Src[I]));
+      Result[I] := AnsiChar(Chr(Byte(Key[1 + ((I - 1) mod Length(Key))]) xor Ord(Src[I])));
 end;
 
 function XorEncode(const Key, Source: string): string;

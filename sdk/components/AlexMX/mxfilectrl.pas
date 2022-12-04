@@ -639,7 +639,7 @@ begin
   Style := csOwnerDrawFixed;
   ReadBitmaps;
   GetDir(0, Temp);
-  FDrive := Temp[1]; { make default drive selected }
+  FDrive := Char(Temp[1]); { make default drive selected }
   if FDrive = '\' then FDrive := #0;
   ResetItemHeight;
 end;
@@ -2005,6 +2005,12 @@ begin
     or (ExtractFilePath(Dir) = Dir) then Exit; // avoid 'xyz:\' problem.
   Result := ForceDirectories(ExtractFilePath(Dir)) and CreateDir(Dir);
 end;
+
+initialization
+
+finalization
+
+end.
 
 end.
 

@@ -60,14 +60,12 @@ type
     function StoreClassProperty(PropInfo: PPropInfo): string;
     function StoreStringsProperty(PropInfo: PPropInfo): string;
     function StoreComponentProperty(PropInfo: PPropInfo): string;
-{$IFDEF WIN32}
     function StoreLStringProperty(PropInfo: PPropInfo): string;
     function StoreWCharProperty(PropInfo: PPropInfo): string;
     function StoreVariantProperty(PropInfo: PPropInfo): string;
     procedure LoadLStringProperty(const S: string; PropInfo: PPropInfo);
     procedure LoadWCharProperty(const S: string; PropInfo: PPropInfo);
     procedure LoadVariantProperty(const S: string; PropInfo: PPropInfo);
-{$ENDIF}
 {$IFDEF RX_D4}
     function StoreInt64Property(PropInfo: PPropInfo): string;
     procedure LoadInt64Property(const S: string; PropInfo: PPropInfo);
@@ -111,15 +109,11 @@ function CreateStoredItem(const CompName, PropName: string): string;
 function ParseStoredItem(const Item: string; var CompName, PropName: string): Boolean;
 
 const
-{$IFDEF WIN32}
   sPropNameDelimiter: string = '_';
-{$ELSE}
-  sPropNameDelimiter: Char = '_';
-{$ENDIF}
 
 implementation
 
-uses {$IFDEF WIN32} Windows, {$ELSE} WinTypes, WinProcs, Str16, {$ENDIF}
+uses Windows, {$IFDEF RX_D6} Variants, {$ENDIF}
   Consts, mxStrUtils;               
 
 const
@@ -130,7 +124,7 @@ const
 type
   TCardinalSet = set of 0..SizeOf(Cardinal) * 8 - 1;
 
-{$IFNDEF WIN32}
+{$IFDEF VER80}
 function GetEnumName(TypeInfo: PTypeInfo; Value: Integer): string;
 begin
   Result := TypInfo.GetEnumName(TypeInfo, Value)^;
@@ -139,11 +133,7 @@ end;
 
 function GetPropType(PropInfo: PPropInfo): PTypeInfo;
 begin
-{$IFDEF RX_D3}
-  Result := PropInfo^.PropType^;
-{$ELSE}
-  Result := PropInfo^.PropType;
-{$ENDIF}
+  Result := PropInfo^.PropType{$IFDEF RX_D3}^{$ENDIF};
 end;
 
 { TPropInfoList }
@@ -273,7 +263,6 @@ begin
   end;
 end;
 
-{$IFDEF WIN32}
 function FindGlobalComponent(const Name: string): TComponent;
 var
   I: Integer;
@@ -288,7 +277,6 @@ begin
   end;
   Result := nil;
 end;
-{$ENDIF}
 
 { TPropsStorage }
 
@@ -308,14 +296,12 @@ begin
         tkChar: Def := StoreCharProperty(PropInfo);
         tkEnumeration: Def := StoreEnumProperty(PropInfo);
         tkFloat: Def := StoreFloatProperty(PropInfo);
-{$IFDEF WIN32}
         tkWChar: Def := StoreWCharProperty(PropInfo);
         tkLString: Def := StoreLStringProperty(PropInfo);
   {$IFNDEF RX_D3} { - Delphi 2.0, C++Builder 1.0 }
         tkLWString: Def := StoreLStringProperty(PropInfo);
   {$ENDIF}
         tkVariant: Def := StoreVariantProperty(PropInfo);
-{$ENDIF WIN32}
 {$IFDEF RX_D4}
         tkInt64: Def := StoreInt64Property(PropInfo);
 {$ENDIF}
@@ -325,10 +311,8 @@ begin
         else Exit;
       end;
       if (Def <> '') or (PropInfo^.PropType^.Kind in [tkString, tkClass])
-{$IFDEF WIN32}
         or (PropInfo^.PropType^.Kind in [tkLString,
           {$IFNDEF RX_D3} tkLWString, {$ENDIF} tkWChar])
-{$ENDIF WIN32}
       then
         S := Trim(ReadString(Section, GetItemName(PropInfo^.Name), Def))
       else S := '';
@@ -337,14 +321,12 @@ begin
         tkChar: LoadCharProperty(S, PropInfo);
         tkEnumeration: LoadEnumProperty(S, PropInfo);
         tkFloat: LoadFloatProperty(S, PropInfo);
-{$IFDEF WIN32}
         tkWChar: LoadWCharProperty(S, PropInfo);
         tkLString: LoadLStringProperty(S, PropInfo);
   {$IFNDEF RX_D3} { - Delphi 2.0, C++Builder 1.0 }
         tkLWString: LoadLStringProperty(S, PropInfo);
   {$ENDIF}
         tkVariant: LoadVariantProperty(S, PropInfo);
-{$ENDIF WIN32}
 {$IFDEF RX_D4}
         tkInt64: LoadInt64Property(S, PropInfo);
 {$ENDIF}
@@ -368,14 +350,12 @@ begin
       tkChar: S := StoreCharProperty(PropInfo);
       tkEnumeration: S := StoreEnumProperty(PropInfo);
       tkFloat: S := StoreFloatProperty(PropInfo);
-{$IFDEF WIN32}
       tkLString: S := StoreLStringProperty(PropInfo);
   {$IFNDEF RX_D3} { - Delphi 2.0, C++Builder 1.0 }
       tkLWString: S := StoreLStringProperty(PropInfo);
   {$ENDIF}
       tkWChar: S := StoreWCharProperty(PropInfo);
       tkVariant: S := StoreVariantProperty(PropInfo);
-{$ENDIF WIN32}
 {$IFDEF RX_D4}
       tkInt64: S := StoreInt64Property(PropInfo);
 {$ENDIF}
@@ -385,8 +365,8 @@ begin
       else Exit;
     end;
     if (S <> '') or (PropInfo^.PropType^.Kind in [tkString
-      {$IFDEF WIN32}, tkLString, {$IFNDEF RX_D3} tkLWString, {$ENDIF}
-      tkWChar {$ENDIF WIN32}]) then
+      , tkLString, {$IFNDEF RX_D3} tkLWString, {$ENDIF}
+      tkWChar]) then
       WriteString(Section, GetItemName(PropInfo^.Name), Trim(S));
   end;
 end;
@@ -408,15 +388,11 @@ end;
 
 function TPropsStorage.StoreFloatProperty(PropInfo: PPropInfo): string;
 const
-{$IFDEF WIN32}
-  Precisions: array[TFloatType] of Integer = (7, 15, 18, 18, 19);
-{$ELSE}
-  Precisions: array[TFloatType] of Integer = (7, 15, 18, 18);
-{$ENDIF}
+  Precisions: array[TFloatType] of Integer = (7, 15, 18, 18{$IFNDEF VER80}, 19{$ENDIF});
 begin
   Result := ReplaceStr(FloatToStrF(GetFloatProp(FObject, PropInfo), ffGeneral,
     Precisions[GetTypeData(GetPropType(PropInfo))^.FloatType], 0), 
-    DecimalSeparator, '.');
+    {$IFDEF RX_D15}FormatSettings.{$ENDIF}DecimalSeparator, '.');
 end;
 
 function TPropsStorage.StoreStringProperty(PropInfo: PPropInfo): string;
@@ -424,7 +400,6 @@ begin
   Result := GetStrProp(FObject, PropInfo);
 end;
 
-{$IFDEF WIN32}
 function TPropsStorage.StoreLStringProperty(PropInfo: PPropInfo): string;
 begin
   Result := GetStrProp(FObject, PropInfo);
@@ -439,7 +414,6 @@ function TPropsStorage.StoreVariantProperty(PropInfo: PPropInfo): string;
 begin
   Result := GetVariantProp(FObject, PropInfo);
 end;
-{$ENDIF}
 
 {$IFDEF RX_D4}
 function TPropsStorage.StoreInt64Property(PropInfo: PPropInfo): string;
@@ -534,7 +508,6 @@ begin
   Obj := TObject(GetOrdProp(Self.FObject, PropInfo));
   if (Obj <> nil) then begin
     if Obj is TStrings then StoreStringsProperty(PropInfo)
-{$IFDEF WIN32}
     else if Obj is TCollection then begin
       EraseSection(Format('%s.%s', [Section, Prefix + PropInfo^.Name]));
       Saver := CreateStorage;
@@ -550,7 +523,6 @@ begin
         Saver.Free;
       end;
     end
-{$ENDIF}
     else if Obj is TComponent then begin
       Result := StoreComponentProperty(PropInfo);
       Exit;
@@ -594,7 +566,7 @@ end;
 procedure TPropsStorage.LoadFloatProperty(const S: string; PropInfo: PPropInfo);
 begin
   SetFloatProp(FObject, PropInfo, StrToFloat(ReplaceStr(S, '.',
-    DecimalSeparator)));
+    FormatSettings.DecimalSeparator)));
 end;
 
 {$IFDEF RX_D4}
@@ -604,7 +576,6 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF WIN32}
 procedure TPropsStorage.LoadLStringProperty(const S: string; PropInfo: PPropInfo);
 begin
   SetStrProp(FObject, PropInfo, S);
@@ -619,7 +590,6 @@ procedure TPropsStorage.LoadVariantProperty(const S: string; PropInfo: PPropInfo
 begin
   SetVariantProp(FObject, PropInfo, S);
 end;
-{$ENDIF}
 
 procedure TPropsStorage.LoadStringProperty(const S: string; PropInfo: PPropInfo);
 begin
@@ -675,7 +645,6 @@ begin
 end;
 
 procedure TPropsStorage.LoadComponentProperty(const S: string; PropInfo: PPropInfo);
-{$IFDEF WIN32}
 var
   RootName, Name: string;
   Root: TComponent;
@@ -700,26 +669,13 @@ begin
   if (Root <> nil) then
     SetOrdProp(FObject, PropInfo, Longint(Root.FindComponent(Name)));
 end;
-{$ELSE}
-begin
-  if Trim(S) = '' then Exit;
-  if CompareText(SNull, Trim(S)) = 0 then begin
-    SetOrdProp(FObject, PropInfo, Longint(nil));
-    Exit;
-  end;
-  if (FOwner <> nil) then
-    SetOrdProp(FObject, PropInfo, Longint(FOwner.FindComponent(Trim(S))));
-end;
-{$ENDIF}
 
 procedure TPropsStorage.LoadClassProperty(const S: string; PropInfo: PPropInfo);
 var
   Loader: TPropsStorage;
   I: Integer;
-{$IFDEF WIN32}
   Cnt: Integer;
   Recreate: Boolean;
-{$ENDIF}
   Obj: TObject;
 
   procedure LoadObjectProps(Obj: TObject; const APrefix, ASection: string);
@@ -745,7 +701,6 @@ begin
   Obj := TObject(GetOrdProp(Self.FObject, PropInfo));
   if (Obj <> nil) then begin
     if Obj is TStrings then LoadStringsProperty(S, PropInfo)
-{$IFDEF WIN32}
     else if Obj is TCollection then begin
       Loader := CreateStorage;
       try
@@ -769,7 +724,6 @@ begin
         Loader.Free;
       end;
     end
-{$ENDIF}
     else if Obj is TComponent then begin
       LoadComponentProperty(S, PropInfo);
       Exit;
