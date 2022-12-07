@@ -1,8 +1,9 @@
 package elpackB6;
 
-{$R *.RES}
+{$R *.res}
 {$R 'Source\Checkctl.res'}
-{$ALIGN ON}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -12,26 +13,27 @@ package elpackB6;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$DEFINE BUIlDER_USED}
+{$DEFINE USE_VARIANT}
+{$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS Visual Components'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
-{$DEFINE BUIlDER_USED}
 
 requires
   vcl;
-
-{%File 'Source\ElPack.inc'}
 
 contains
   ElURLLabel in 'Source\ElURLLabel.pas',
@@ -117,10 +119,10 @@ contains
   ElCLabel in 'Source\ElCLabel.pas',
   ElCGControl in 'Source\ElCGControl.pas',
   ElGauge in 'Source\ElGauge.pas',
-  ElPgCtl in 'Source\ElPgCtl.pas',  
+  ElPgCtl in 'Source\ElPgCtl.pas',
   ElShutdownWatcher in 'Source\ElShutdownWatcher.pas',
   ElInputDlg in 'Source\ElInputDlg.pas',
-  ElHandPt in 'Source\ElHandPt.pas', 
+  ElHandPt in 'Source\ElHandPt.pas',
   ElTreeGrids in 'Source\ElTreeGrids.pas',
   ElMaskEdit in 'Source\ElMaskEdit.pas',
   ElVerInfo in 'Source\ElVerInfo.pas',
@@ -129,12 +131,11 @@ contains
   ElHTMLPanel in 'Source\ElHTMLPanel.pas',
   ElTreeBtnEdit in 'Source\ElTreeBtnEdit.pas',
   ElShellUtils in 'Source\ElShellUtils.pas',
-  ElScrollBox in 'Source\ElScrollBox.pas',  
+  ElScrollBox in 'Source\ElScrollBox.pas',
   ElListBox in 'Source\ElListBox.pas',
-  ElMenus in 'Source\ElMenus.pas', 
+  ElMenus in 'Source\ElMenus.pas',
   ElColor in 'Source\ElColor.pas',
   ElExpBar in 'Source\ElExpBar.pas',
-
   ElUnicodeStrings in 'Source\ElUnicodeStrings.pas',
   ElDriveCombo in 'Source\ElDriveCombo.pas',
   ElFontCombo in 'Source\ElFontCombo.pas',
@@ -157,10 +158,10 @@ contains
   ElGroupBox in 'Source\ElGroupBox.pas',
   frmTbrStp in 'Source\frmTbrStp.pas',
   ElMouseHint in 'Source\ElMouseHint.pas',
-  ElEdits in 'Source\ElEdits.pas',  
+  ElEdits in 'Source\ElEdits.pas',
   ElTmSchema in 'Source\ElTmSchema.pas',
-  ElUxTheme in 'Source\ElUxtheme.pas',
-  ElXPThemedControl in 'Source\ElXPThemedControl.pas',  
+  ElUxtheme in 'Source\ElUxtheme.pas',
+  ElXPThemedControl in 'Source\ElXPThemedControl.pas',
   ElHotKey in 'Source\ElHotKey.pas',
   HTMLRender in 'Source\HTMLRender.pas';
 

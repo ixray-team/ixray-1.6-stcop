@@ -1,0 +1,243 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{ACA913BB-1594-4703-AB8C-0D9B148323DF}</ProjectGuid>
+        <MainSource>elpackB6.dpk</MainSource>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Package</AppType>
+        <FrameworkType>VCL</FrameworkType>
+        <ProjectVersion>19.2</ProjectVersion>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_E>false</DCC_E>
+        <DCC_F>false</DCC_F>
+        <DCC_K>false</DCC_K>
+        <DCC_N>false</DCC_N>
+        <DCC_S>false</DCC_S>
+        <DCC_ImageBase>00400000</DCC_ImageBase>
+        <GenDll>true</GenDll>
+        <GenPackage>true</GenPackage>
+        <SanitizedProjectName>elpackB6</SanitizedProjectName>
+        <DCC_Description>EldoS Visual Components</DCC_Description>
+        <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
+        <DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
+        <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;DUnitX.Loggers.GUI;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
+        <VerInfo_Locale>1049</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <BT_BuildType>Debug</BT_BuildType>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_DebugInformation>0</DCC_DebugInformation>
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+        <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_Optimize>false</DCC_Optimize>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <DCCReference Include="Source\Checkctl.res"/>
+        <DCCReference Include="vcl.dcp"/>
+        <DCCReference Include="Source\ElURLLabel.pas"/>
+        <DCCReference Include="Source\ElVCLUtils.pas"/>
+        <DCCReference Include="Source\ElStrUtils.pas"/>
+        <DCCReference Include="Source\ElTools.pas"/>
+        <DCCReference Include="Source\ElContBase.pas"/>
+        <DCCReference Include="Source\ElList.pas"/>
+        <DCCReference Include="Source\ElRegUtils.pas"/>
+        <DCCReference Include="Source\ElIni.pas"/>
+        <DCCReference Include="Source\ElQueue.pas"/>
+        <DCCReference Include="Source\ElBaseComp.pas"/>
+        <DCCReference Include="Source\ElImgLst.pas"/>
+        <DCCReference Include="Source\ElSndMap.pas"/>
+        <DCCReference Include="Source\ElOneInst.pas"/>
+        <DCCReference Include="Source\ElTray.pas"/>
+        <DCCReference Include="Source\ElHook.pas"/>
+        <DCCReference Include="Source\ElBtnCtl.pas"/>
+        <DCCReference Include="Source\ElHint.pas"/>
+        <DCCReference Include="Source\ElPopBtn.pas"/>
+        <DCCReference Include="Source\ElCaption.pas"/>
+        <DCCReference Include="Source\ElMTree.pas"/>
+        <DCCReference Include="Source\ElFrmPers.pas"/>
+        <DCCReference Include="Source\ElPropTools.pas"/>
+        <DCCReference Include="Source\ElMRU.pas"/>
+        <DCCReference Include="Source\ElCBFmts.pas"/>
+        <DCCReference Include="Source\ElCRC32.pas"/>
+        <DCCReference Include="Source\ElDailyTip.pas">
+            <Form>ElDailyTipForm</Form>
+        </DCCReference>
+        <DCCReference Include="Source\ElStack.pas"/>
+        <DCCReference Include="Source\ElExtBkgnd.pas"/>
+        <DCCReference Include="Source\ElPanel.pas"/>
+        <DCCReference Include="Source\ElBtnEdit.pas"/>
+        <DCCReference Include="Source\ElBiProgr.pas"/>
+        <DCCReference Include="Source\ElSpin.pas"/>
+        <DCCReference Include="Source\ElToolBar.pas"/>
+        <DCCReference Include="Source\ElStatBar.pas"/>
+        <DCCReference Include="Source\ElHstgrm.pas"/>
+        <DCCReference Include="Source\ElIPEdit.pas"/>
+        <DCCReference Include="Source\ElAppBar.pas"/>
+        <DCCReference Include="Source\ElGraphs.pas"/>
+        <DCCReference Include="Source\ElClock.pas"/>
+        <DCCReference Include="Source\ElCurrEdit.pas"/>
+        <DCCReference Include="Source\ElCalendarDefs.pas"/>
+        <DCCReference Include="Source\ElMD5.pas"/>
+        <DCCReference Include="Source\ElHashList.pas"/>
+        <DCCReference Include="Source\ElDragDrop.pas"/>
+        <DCCReference Include="Source\ElCheckCtl.pas"/>
+        <DCCReference Include="Source\ElFlatCtl.pas"/>
+        <DCCReference Include="Source\ElACtrls.pas"/>
+        <DCCReference Include="Source\ElCalendar.pas"/>
+        <DCCReference Include="Source\ElCalendDlg.pas">
+            <Form>ElCalendarForm</Form>
+        </DCCReference>
+        <DCCReference Include="Source\ElHeader.pas"/>
+        <DCCReference Include="Source\ElTree.pas"/>
+        <DCCReference Include="Source\ElScrollBar.pas"/>
+        <DCCReference Include="Source\ElTreeCombo.pas"/>
+        <DCCReference Include="Source\ElMemoCombo.pas"/>
+        <DCCReference Include="Source\ElSideBar.pas"/>
+        <DCCReference Include="Source\ElClrCmb.pas"/>
+        <DCCReference Include="Source\frmColorMapItems.pas">
+            <Form>ColorMapItemsForm</Form>
+        </DCCReference>
+        <DCCReference Include="Source\ElColorMap.pas"/>
+        <DCCReference Include="Source\ElArray.pas"/>
+        <DCCReference Include="Source\ElStrArray.pas"/>
+        <DCCReference Include="Source\ElStrToken.pas"/>
+        <DCCReference Include="Source\ElOpts.pas"/>
+        <DCCReference Include="Source\ElHintWnd.pas"/>
+        <DCCReference Include="source\ElObjList.pas"/>
+        <DCCReference Include="Source\ElSplit.pas"/>
+        <DCCReference Include="Source\ElTimers.pas"/>
+        <DCCReference Include="Source\ElCombos.pas"/>
+        <DCCReference Include="Source\ElImgFrm.pas"/>
+        <DCCReference Include="Source\ElLabel.pas"/>
+        <DCCReference Include="Source\ElStrPool.pas"/>
+        <DCCReference Include="Source\ElPromptDlg.pas"/>
+        <DCCReference Include="Source\ElFolderDlg.pas"/>
+        <DCCReference Include="Source\ElTrayInfo.pas"/>
+        <DCCReference Include="Source\frmHdrStp.pas"/>
+        <DCCReference Include="Source\HTMLLbx.pas"/>
+        <DCCReference Include="Source\ElHTMLLbl.pas"/>
+        <DCCReference Include="Source\ElHTMLHint.pas"/>
+        <DCCReference Include="Source\ElHTMLView.pas"/>
+        <DCCReference Include="Source\ElDTPick.pas"/>
+        <DCCReference Include="Source\ElSpinBtn.pas"/>
+        <DCCReference Include="Source\ElCLabel.pas"/>
+        <DCCReference Include="Source\ElCGControl.pas"/>
+        <DCCReference Include="Source\ElGauge.pas"/>
+        <DCCReference Include="Source\ElPgCtl.pas"/>
+        <DCCReference Include="Source\ElShutdownWatcher.pas"/>
+        <DCCReference Include="Source\ElInputDlg.pas"/>
+        <DCCReference Include="Source\ElHandPt.pas"/>
+        <DCCReference Include="Source\ElTreeGrids.pas"/>
+        <DCCReference Include="Source\ElMaskEdit.pas"/>
+        <DCCReference Include="Source\ElVerInfo.pas"/>
+        <DCCReference Include="Source\ElCheckItemGrp.pas"/>
+        <DCCReference Include="Source\ElAdvPanel.pas"/>
+        <DCCReference Include="Source\ElHTMLPanel.pas"/>
+        <DCCReference Include="Source\ElTreeBtnEdit.pas"/>
+        <DCCReference Include="Source\ElShellUtils.pas"/>
+        <DCCReference Include="Source\ElScrollBox.pas"/>
+        <DCCReference Include="Source\ElListBox.pas"/>
+        <DCCReference Include="Source\ElMenus.pas"/>
+        <DCCReference Include="Source\ElColor.pas"/>
+        <DCCReference Include="Source\ElExpBar.pas"/>
+        <DCCReference Include="Source\ElUnicodeStrings.pas"/>
+        <DCCReference Include="Source\ElDriveCombo.pas"/>
+        <DCCReference Include="Source\ElFontCombo.pas"/>
+        <DCCReference Include="Source\ElTrackBar.pas"/>
+        <DCCReference Include="Source\ElImgCombo.pas"/>
+        <DCCReference Include="Source\ElTreeTreeComboEdit.pas"/>
+        <DCCReference Include="Source\ElTreeSpinEdit.pas"/>
+        <DCCReference Include="Source\ElTreeMemoEdit.pas"/>
+        <DCCReference Include="Source\ElTreeMaskEdit.pas"/>
+        <DCCReference Include="Source\ElTreeDTPickEdit.pas"/>
+        <DCCReference Include="Source\ElTreeCurrEdit.pas"/>
+        <DCCReference Include="Source\ElTreeComboBox.pas"/>
+        <DCCReference Include="Source\ElTreeCheckBoxEdit.pas"/>
+        <DCCReference Include="Source\ElTreeAdvEdit.pas"/>
+        <DCCReference Include="Source\ElTreeStdEditors.pas"/>
+        <DCCReference Include="Source\ElTreeModalEdit.pas"/>
+        <DCCReference Include="Source\ElNameEdits.pas"/>
+        <DCCReference Include="Source\ElClipMon.pas"/>
+        <DCCReference Include="Source\ElFileUtils.pas"/>
+        <DCCReference Include="Source\ElGroupBox.pas"/>
+        <DCCReference Include="Source\frmTbrStp.pas"/>
+        <DCCReference Include="Source\ElMouseHint.pas"/>
+        <DCCReference Include="Source\ElEdits.pas"/>
+        <DCCReference Include="Source\ElTmSchema.pas"/>
+        <DCCReference Include="Source\ElUxtheme.pas"/>
+        <DCCReference Include="Source\ElXPThemedControl.pas"/>
+        <DCCReference Include="Source\ElHotKey.pas"/>
+        <DCCReference Include="Source\HTMLRender.pas"/>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType>Package</Borland.ProjectType>
+        <BorlandProject>
+            <Delphi.Personality>
+                <Source>
+                    <Source Name="MainSource">elpackB6.dpk</Source>
+                </Source>
+            </Delphi.Personality>
+            <Platforms>
+                <Platform value="Win32">True</Platform>
+                <Platform value="Win64">False</Platform>
+            </Platforms>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>
