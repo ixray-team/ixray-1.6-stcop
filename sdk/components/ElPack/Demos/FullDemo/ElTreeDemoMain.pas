@@ -7,9 +7,10 @@ uses
   ElPgCtl, ElXPThemedControl, ElTree, ElHeader, ElBtnCtl, ElCheckCtl, ExtCtrls,
   ElPanel, StdCtrls, ElACtrls, ElPopBtn, ElTreeModalEdit, ElTreeDTPickEdit,
   ElDTPick, ElTreeCurrEdit, ElTreeSpinEdit, ElTreeCheckBoxEdit, ElDragDrop,
-  ElStrUtils, ElShellUtils, ElTools, ShellAPI,
-  ElTreeMemoEdit, ElTreeAdvEdit, ElPromptDlg, ElTreeTreeComboEdit,
-  ElHTMLLbl, ElTimers, ElVCLUtils, ElFontCombo;
+  ElTreeDemoExportTemplate, ElStrUtils, ElShellUtils, ElTools, ShellAPI,
+  ElTreeMemoEdit, ElTreeAdvEdit, ElPromptDlg, ElTreeTreeComboEdit, ElMlGen,
+  ElTreeMLGen, ElHTMLLbl, Printers, ElPrinter, ElTreePrinter, ElTimers,
+  ElVCLUtils, ElFontCombo;
 
 type
   TElTreeDemoMainForm = class(TForm)
@@ -32,6 +33,9 @@ type
     MemoEdit: TElTreeInplaceMemoEdit;
     Edit: TElTreeInplaceAdvancedEdit;
     TreeEdit: TElTreeInplaceTreeComboEdit;
+    TreeHTMLExport: TElTree;
+    ElTreeMLGen: TElTreeMLGenerator;
+    TreePrint: TElTree;
     TimerPool: TElTimerPool;
     tabOtherFeatures: TElTabSheet;
     tabDragDrop: TElTabSheet;
@@ -40,6 +44,16 @@ type
     tabUnicode: TElTabSheet;
     TreeUnicode: TElTree;
     TreeTextFeatures: TElTree;
+    APrinter: TElPrinter;
+    ATreePrinter: TElTreePrinter;
+    Panel5: TElPanel;
+    HTMLExportTemplateButton: TElPopupButton;
+    HTMLExportPreviewButton: TElPopupButton;
+    GenerateColumnsCB: TElCheckBox;
+    Panel7: TElPanel;
+    PrintButton: TElPopupButton;
+    PrintPreviewButton: TElPopupButton;
+    PrintColumnsCB: TElCheckBox;
     Panel1: TElPanel;
     IgnoreEnabledCB: TElCheckBox;
     ShowHiddenItemsCB: TElCheckBox;
@@ -58,12 +72,14 @@ type
     Panel10: TElPanel;
     ElHTMLLabel4: TElHTMLLabel;
     TreeUnicodeFontCombo: TElFontComboBox;
+    Panel6: TElPanel;
+    Label4: TElHTMLLabel;
+    Panel8: TElPanel;
+    ElHTMLLabel1: TElHTMLLabel;
     Panel2: TElPanel;
     Label1: TLabel;
     Panel4: TElPanel;
     Label2: TLabel;
-    Label4: TElHTMLLabel;
-    ElHTMLLabel1: TElHTMLLabel;
     procedure ShowHiddenItemsCBClick(Sender: TObject);
     procedure IgnoreEnabledCBClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -76,7 +92,16 @@ type
     procedure ModalEditExecute(Sender: TObject; var Accepted: Boolean);
     procedure TreeEditBeforeOperation(Sender: TObject;
       var DefaultConversion: Boolean);
+    procedure HTMLExportTemplateButtonClick(Sender: TObject);
     procedure Label4LinkClick(Sender: TObject; HRef: TElFString);
+    procedure ElTreeMLGenBeforeExecute(Sender: TObject);
+    procedure ElTreeMLGenAfterExecute(Sender: TObject);
+    procedure ElTreeMLGenWriteString(Sender: TObject; Value: String);
+    procedure HTMLExportPreviewButtonClick(Sender: TObject);
+    procedure GenerateColumnsCBClick(Sender: TObject);
+    procedure PrintPreviewButtonClick(Sender: TObject);
+    procedure ATreePrinterBeforePage(Sender: TObject; PageNumber: Integer);
+    procedure PrintColumnsCBClick(Sender: TObject);
     procedure TimerPoolTimer(Sender: TObject);
     procedure TreeDragDropDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
@@ -91,6 +116,7 @@ type
     procedure TreeUnicodeFontComboChange(Sender: TObject);
   private
     NotFirstTime : boolean;
+    HTMLStream   : TStream;
     DragItem     : TElTreeItem;
     procedure CreateCellControls;
     procedure CellControlButtonClick(Sender: TObject);
@@ -243,10 +269,116 @@ begin
   TreeEdit.Editor.Selection := TreeEdit.Editor.Items.LookForItem(nil, TreeEdit.ValueAsText, nil, -1, false, false, false, false, true);
 end;
 
+procedure TElTreeDemoMainForm.HTMLExportTemplateButtonClick(
+  Sender: TObject);
+begin
+  with TElTreeDemoExportTemplateForm.Create(nil) do
+  try
+    TemplateMemo.Lines.Assign(ElTreeMLGen.Template);
+    if ShowModal = mrOk then
+      ElTreeMLGen.Template.Assign(TemplateMemo.Lines);
+  finally
+    Free;
+  end;
+end;
+
 procedure TElTreeDemoMainForm.Label4LinkClick(Sender: TObject;
   HRef: TElFString);
 begin
   FireURL(HRef);
+end;
+
+procedure TElTreeDemoMainForm.ElTreeMLGenBeforeExecute(Sender: TObject);
+var S : string;
+begin
+  try
+    S := GetTempFile  + '.html';
+    HTMLStream := TNamedFileStream.Create(S, fmCreate or fmShareDenyWrite);
+  except
+    ElMessageDlg('Failed to create temporary file for resulting page', mtError, [mbOk], 0);
+    raise;
+  end;
+end;
+
+procedure TElTreeDemoMainForm.ElTreeMLGenAfterExecute(Sender: TObject);
+var S : String;
+  SHI : TShellExecuteInfo;
+begin
+  if HTMLStream <> nil then
+  begin
+    S := TNamedFileStream(HTMLStream).FileName;
+    HTMLStream.Free;
+    ZeroMemory(@SHI, sizeof(SHI));
+    SHI.cbSize := sizeof(SHI);
+    SHI.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_NOCLOSEPROCESS;
+    SHI.Wnd := Application.Handle;
+    SHI.lpVerb := PChar('open');
+    SHI.lpFile := PChar(S);
+    SHI.lpParameters := nil;
+    SHI.lpDirectory := nil;
+    if ShellExecuteEx(@SHI) then
+    begin
+      if SHI.hProcess <> INVALID_HANDLE_VALUE then
+      begin
+        WaitForInputIdle(SHI.hProcess, 10000);
+        CloseHandle(SHI.hProcess);
+      end;
+      Sleep(5000);
+      DeleteFile(S);
+    end
+    else
+      ElMessageDlg('Failed to open default browser with resulting page', mtError, [mbOk], 0);
+  end;
+end;
+
+procedure TElTreeDemoMainForm.ElTreeMLGenWriteString(Sender: TObject;
+  Value: String);
+begin
+  if HTMLStream <> nil then
+    HTMLStream.Write(PChar(Value)^, Length(Value));
+end;
+
+procedure TElTreeDemoMainForm.HTMLExportPreviewButtonClick(
+  Sender: TObject);
+begin
+  ElTreeMLGen.Execute;
+end;
+
+procedure TElTreeDemoMainForm.GenerateColumnsCBClick(Sender: TObject);
+begin
+  ElTreeMLGen.GenerateColumns := GenerateColumnsCB.Checked;
+end;
+
+procedure TElTreeDemoMainForm.PrintPreviewButtonClick(Sender: TObject);
+begin
+  ATreePrinter.Print;
+  APrinter.Preview;
+end;
+
+procedure TElTreeDemoMainForm.ATreePrinterBeforePage(Sender: TObject;
+  PageNumber: Integer);
+var S : String;
+    R : TRect;
+    WP,
+    HP: integer;
+    FDC : THandle;
+
+begin
+  S  := 'Page ' + IntToStr(PageNumber + 1);
+
+  FDC:= GetDC(0);
+  WP := MulDiv(APrinter.PageWidth, GetDeviceCaps(FDC, LOGPIXELSX), 2540);
+  HP := MulDiv(APrinter.TopMargin, GetDeviceCaps(FDC, LOGPIXELSY), 2540);
+  ReleaseDC(0, FDC);
+
+  R.Left := (WP - APrinter.Canvas[PageNumber].TextWidth(S)) div 2;
+  R.Top  := -(HP - APrinter.Canvas[PageNumber].TextHeight(S)) div 2;
+  APrinter.Canvas[PageNumber].TextOut(R.Left, R.Top, S);
+end;
+
+procedure TElTreeDemoMainForm.PrintColumnsCBClick(Sender: TObject);
+begin
+  ATreePrinter.ShowColumns := PrintColumnsCB.Checked;
 end;
 
 procedure TElTreeDemoMainForm.CreateCellControls;

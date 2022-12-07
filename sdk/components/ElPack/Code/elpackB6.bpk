@@ -1,0 +1,239 @@
+# ---------------------------------------------------------------------------
+!if !$d(BCB)
+BCB = $(MAKEDIR)\..
+!endif
+
+# ---------------------------------------------------------------------------
+# IDE SECTION
+# ---------------------------------------------------------------------------
+# The following section of the project makefile is managed by the BCB IDE.
+# It is recommended to use the IDE to change any of the values in this
+# section.
+# ---------------------------------------------------------------------------
+
+VERSION = BCB.06.00
+# ---------------------------------------------------------------------------
+PROJECT = elpackB6.bpl
+OBJFILES = source\frmHdrStp.obj source\ElACtrls.obj source\ElAppBar.obj \
+    source\ElArray.obj source\ElBaseComp.obj source\ElBiProgr.obj \
+    source\ElBtnCtl.obj source\ElBtnEdit.obj source\ElCalendar.obj \
+    source\ElCalendDlg.obj source\ElCaption.obj source\ElCBFmts.obj \
+    source\ElCheckCtl.obj source\ElClock.obj source\ElClrCmb.obj \
+    source\ElColorMap.obj source\ElContBase.obj source\ElCRC32.obj \
+    source\ElDailyTip.obj source\ElDragDrop.obj source\ElExtBkgnd.obj \
+    source\ElFlatCtl.obj source\ElFrmPers.obj source\ElGraphs.obj \
+    source\ElHashList.obj source\ElHeader.obj source\ElHint.obj \
+    source\ElHintWnd.obj source\ElHook.obj source\ElHstgrm.obj \
+    source\ElImgLst.obj source\ElIni.obj source\ElList.obj source\ElMD5.obj \
+    source\ElMemoCombo.obj source\ElMRU.obj source\ElMTree.obj \
+    source\ElObjList.obj source\ElOneInst.obj source\ElOpts.obj \
+    source\ElPanel.obj source\ElPopBtn.obj source\ElPropTools.obj \
+    source\ElQueue.obj source\ElRegUtils.obj source\ElScrollBar.obj \
+    source\ElSideBar.obj source\ElSndMap.obj source\ElSpin.obj \
+    source\ElSplit.obj source\ElStack.obj source\ElStatBar.obj \
+    source\ElStrArray.obj source\ElStrToken.obj source\ElStrUtils.obj \
+    source\ElTimers.obj source\ElToolBar.obj source\ElTools.obj \
+    source\ElTray.obj source\ElTree.obj source\ElTreeCombo.obj \
+    source\ElURLLabel.obj source\ElVCLUtils.obj source\ElImgFrm.obj \
+    source\ElLabel.obj source\ElCombos.obj source\ElCLabel.obj \
+    source\ElCGControl.obj source\ElHandPt.obj source\ElTreeGrids.obj \
+    source\ElMaskEdit.obj source\ElVerInfo.obj source\ElCheckItemGrp.obj \
+    source\ElAdvPanel.obj source\ElHTMLPanel.obj source\ElTreeBtnEdit.obj \
+    source\ElShellUtils.obj Source\ElPgCtl.obj source\ElGauge.obj \
+    Source\ElShutdownWatcher.obj Source\ElIPEdit.obj \
+    source\ElUnicodeStrings.obj source\ElDriveCombo.obj source\ElFontCombo.obj \
+    source\ElTrackBar.obj source\ElImgCombo.obj source\ElTreeTreeComboEdit.obj \
+    source\ElTreeSpinEdit.obj source\ElTreeMemoEdit.obj Source\ElHTMLView.obj \
+    source\ElTreeMaskEdit.obj Source\ElTmSchema.obj Source\ElUxTheme.obj \
+    source\ElXPThemedControl.obj Source\ElListBox.obj Source\ElColor.obj \
+    Source\ElMouseHint.obj Source\ElEdits.obj Source\ElTreeAdvEdit.obj \
+    Source\frmTbrStp.obj Source\ElScrollBox.obj Source\ElMenus.obj \
+    source\ElTreeDTPickEdit.obj source\ElTreeCurrEdit.obj Source\HTMLLbx.obj \
+    source\ElTreeComboBox.obj source\ElTreeCheckBoxEdit.obj \
+    Source\ElExpBar.obj source\ElFileUtils.obj Source\ElGroupBox.obj \
+    Source\ElClipMon.obj source\ElCalendarDefs.obj Source\ElCurrEdit.Obj \
+    Source\ElDTPick.obj source\ElTreeAdvEdit.obj source\ElPromptDlg.obj \
+    Source\ElInputDlg.obj source\frmColorMapItems.obj source\ElNameEdits.obj \
+    source\ElTreeStdEditors.obj source\ElTreeModalEdit.obj \
+    Source\ElTrayInfo.obj Source\ElSpinBtn.obj Source\ElHTMLHint.obj \
+    Source\HTMLRender.obj Source\ElFolderDlg.obj Source\ElStrPool.obj \
+    Source\ElHotKey.obj Source\ElHTMLLbl.obj elpackB6.obj
+RESFILES = elpackB6.res
+MAINSOURCE = elpackB6.cpp
+RESDEPEN = $(RESFILES) Source\frmHdrStp.dfm Source\ElCalendDlg.dfm \
+    Source\ElDailyTip.dfm Source\ElPromptDlg.dfm Source\frmColorMapItems.dfm
+LIBFILES = 
+IDLFILES = 
+IDLGENFILES = 
+LIBRARIES = 
+PACKAGES = rtl.bpi vclx.bpi VCL.bpi
+SPARELIBS = Vcl.lib rtl.lib
+DEFFILE = 
+OTHERFILES = 
+# ---------------------------------------------------------------------------
+DEBUGLIBPATH = $(BCB)\lib\debug
+RELEASELIBPATH = $(BCB)\lib\release
+USERDEFINES = 
+SYSDEFINES = NO_STRICT;_RTLDLL;_VIS_NOLIB;USEPACKAGES
+INCLUDEPATH = source;$(BCB)\include;$(BCB)\include\vcl
+LIBPATH = source;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\lib\release
+WARNINGS= -w-par -w-8027 -w-8026
+PATHCPP = .;
+PATHASM = .;
+PATHPAS = .;Source
+PATHRC = .;
+PATHOBJ = .;$(LIBPATH)
+# ---------------------------------------------------------------------------
+CFLAG1 = -O2 -H=$(BCB)\lib\vcl.csm -Hc -Vx -Ve -Tkh30000 -X- -a8 -4 -b- -k- -vi -c \
+    -tWM
+IDLCFLAGS = -Isource -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa
+PFLAGS = -Usource;$(BCB)\lib\obj;$(BCB)\lib;$(RELEASELIBPATH) \
+         -Isource;$(BCB)\include;$(BCB)\include\vcl  \
+         -N2source -N0source -$Y- -$L- -$I- -$D- -$C- -v -M -JPHNE
+RFLAGS = 
+AFLAGS = /mx /w2 /zn
+LFLAGS = -Isource -D"EldoS Visual Components" -aa -Tpp -Gpr -x -Gn -Gl -Gi
+# ---------------------------------------------------------------------------
+ALLOBJ = c0pkg32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)
+ALLRES = $(RESFILES)
+ALLLIB = $(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib
+# ---------------------------------------------------------------------------
+!ifdef IDEOPTIONS
+
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+!endif
+
+
+
+
+
+# ---------------------------------------------------------------------------
+# MAKE SECTION
+# ---------------------------------------------------------------------------
+# This section of the project file is not used by the BCB IDE.  It is for
+# the benefit of building from the command-line using the MAKE utility.
+# ---------------------------------------------------------------------------
+
+.autodepend
+# ---------------------------------------------------------------------------
+!if "$(USERDEFINES)" != ""
+AUSERDEFINES = -d$(USERDEFINES:;= -d)
+!else
+AUSERDEFINES =
+!endif
+
+!if !$d(BCC32)
+BCC32 = bcc32
+!endif
+
+!if !$d(CPP32)
+CPP32 = cpp32
+!endif
+
+!if !$d(DCC32)
+DCC32 = dcc32
+!endif
+
+!if !$d(TASM32)
+TASM32 = tasm32
+!endif
+
+!if !$d(LINKER)
+LINKER = ilink32
+!endif
+
+!if !$d(BRCC32)
+BRCC32 = brcc32
+!endif
+
+
+# ---------------------------------------------------------------------------
+!if $d(PATHCPP)
+.PATH.CPP = $(PATHCPP)
+.PATH.C   = $(PATHCPP)
+!endif
+
+!if $d(PATHPAS)
+.PATH.PAS = $(PATHPAS)
+!endif
+
+!if $d(PATHASM)
+.PATH.ASM = $(PATHASM)
+!endif
+
+!if $d(PATHRC)
+.PATH.RC  = $(PATHRC)
+!endif
+
+!if $d(PATHOBJ)
+.PATH.OBJ  = $(PATHOBJ)
+!endif
+# ---------------------------------------------------------------------------
+$(PROJECT): $(OTHERFILES) $(IDLGENFILES) $(OBJFILES) $(RESDEPEN) $(DEFFILE)
+    $(BCB)\BIN\$(LINKER) @&&!
+    $(LFLAGS) -L$(LIBPATH) +
+    $(ALLOBJ), +
+    $(PROJECT),, +
+    $(ALLLIB), +
+    $(DEFFILE), +
+    $(ALLRES)
+!
+# ---------------------------------------------------------------------------
+.pas.hpp:
+    $(BCB)\BIN\$(DCC32) $(PFLAGS) -U$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -O$(INCLUDEPATH) --BCB {$< }
+
+.pas.obj:
+    $(BCB)\BIN\$(DCC32) $(PFLAGS) -U$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -O$(INCLUDEPATH) --BCB {$< }
+
+.cpp.obj:
+    $(BCB)\BIN\$(BCC32) $(CFLAG1) $(WARNINGS) -I$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -n$(@D) {$< }
+
+.c.obj:
+    $(BCB)\BIN\$(BCC32) $(CFLAG1) $(WARNINGS) -I$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -n$(@D) {$< }
+
+.c.i:
+    $(BCB)\BIN\$(CPP32) $(CFLAG1) $(WARNINGS) -I$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -n. {$< }
+
+.cpp.i:
+    $(BCB)\BIN\$(CPP32) $(CFLAG1) $(WARNINGS) -I$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -n. {$< }
+
+.asm.obj:
+    $(BCB)\BIN\$(TASM32) $(AFLAGS) -i$(INCLUDEPATH:;= -i) $(AUSERDEFINES) -d$(SYSDEFINES:;= -d) $<, $@
+
+.rc.res:
+    $(BCB)\BIN\$(BRCC32) $(RFLAGS) -I$(INCLUDEPATH) -D$(USERDEFINES);$(SYSDEFINES) -fo$@ $<
+
+
+
+# ---------------------------------------------------------------------------
+
+
+
+

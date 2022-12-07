@@ -16,7 +16,11 @@ uses
   ElScrollBarDemoMain in 'ElScrollBarDemoMain.pas' {ElScrollBarDemoMainForm},
   MainForm in 'MainForm.pas' {frmMain},
   ElDateTimePickerDemoMain in 'ElDateTimePickerDemoMain.pas' {ElDateTimePickerDemoMainForm},
-  ElTreeDemoMain in 'ElTreeDemoMain.pas' {ElTreeDemoMainForm};
+  ElTreeDemoMain in 'ElTreeDemoMain.pas' {ElTreeDemoMainForm},
+  ElTreeDemoExportTemplate in 'ElTreeDemoExportTemplate.pas' {ElTreeDemoExportTemplateForm},
+  ElTreeMLGen in '..\..\Code\Source\MLGen\Source\ElTreeMLGen.pas',
+  ElUnicodeStrings in '..\..\code\source\ElUnicodeStrings.pas',
+  HTMLRender in '..\..\code\source\HTMLRender.pas';
 
 {$R *.RES}
 

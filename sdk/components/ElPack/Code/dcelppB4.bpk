@@ -1,0 +1,219 @@
+# ---------------------------------------------------------------------------
+!if !$d(BCB)
+BCB = $(MAKEDIR)\..
+!endif
+
+# ---------------------------------------------------------------------------
+# IDE SECTION
+# ---------------------------------------------------------------------------
+# The following section of the project makefile is managed by the BCB IDE.
+# It is recommended to use the IDE to change any of the values in this
+# section.
+# ---------------------------------------------------------------------------
+
+VERSION = BCB.04.04
+# ---------------------------------------------------------------------------
+PROJECT = dcelppB4.bpl
+OBJFILES = ElProReg.obj dcelppB4.obj 
+RESFILES = dcelppB4.res
+DEFFILE =
+RESDEPEN = $(RESFILES) 
+LIBFILES =
+IDLGENFILES =
+IDLFILES =
+LIBRARIES =
+SPARELIBS = VCL40.lib
+PACKAGES = vclx40.bpi VCL40.bpi elpproB4.bpi
+# ---------------------------------------------------------------------------
+PATHCPP = .;
+PATHASM = .;
+PATHPAS = .;Design;Source
+PATHRC = .;
+DEBUGLIBPATH = $(BCB)\lib\debug
+RELEASELIBPATH = $(BCB)\lib\release
+SYSDEFINES = NO_STRICT;_RTLDLL;USEPACKAGES
+USERDEFINES =
+# ---------------------------------------------------------------------------
+CFLAG1 = -Idesign;$(BCB)\include;$(BCB)\include\vcl -O2 -Hc -H=$(BCB)\lib\vcl40.csm -w \
+  -Ve -Tkh30000 -a8 -4 -k- -vi -D$(SYSDEFINES);$(USERDEFINES) -c -b- -w-par \
+  -w-inl -Vx -tWM
+CFLAG2 =
+CFLAG3 =
+IDLCFLAGS = -Idesign -I$(BCB)\include -I$(BCB)\include\vcl -src_suffixcpp
+PFLAGS = -U$(BCB)\lib\release;source;design;$(BCB)\lib\obj;$(BCB)\lib;$(RELEASELIBPATH) \
+  -Idesign;$(BCB)\include;$(BCB)\include\vcl -$YD -$L- -$I- \
+  -$D- -$C- -v -M -JPHNE
+RFLAGS = -idesign;source;$(BCB)\include;$(BCB)\include\vcl
+AFLAGS = /idesign /isource /i$(BCB)\include /i$(BCB)\include\vcl /mx /w2 /zn /d_RTLDLL \
+  /dUSEPACKAGES
+LFLAGS = -L$(BCB)\lib\release;source;design;$(BCB)\lib\obj;$(BCB)\lib;$(RELEASELIBPATH) \
+  -D"EldoS Professional Components (Design-Time)" -aa -Tpp -Gpd \
+  -x -Gn -Gl -Gi
+IFLAGS =
+# ---------------------------------------------------------------------------
+ALLOBJ = c0pkg32.obj Memmgr.Lib $(PACKAGES) sysinit.obj $(OBJFILES)
+ALLRES = $(RESFILES)
+ALLLIB = $(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib
+# ---------------------------------------------------------------------------
+!ifdef IDEOPTIONS
+
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=1
+MajorVer=3
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=1
+Locale=1033
+CodePage=1251
+
+[Version Info Keys]
+CompanyName=EldoS
+FileDescription=EldoS Professional Components
+FileVersion=3.0.0.0
+InternalName=elppro
+LegalCopyright=(c) 1998-2001 EldoS
+LegalTrademarks=
+OriginalFilename=elppro
+ProductName=elppro
+ProductVersion=3.0.0.0
+Comments=
+
+[Excluded Packages]
+e:\projects\EXE\DElPB4.bpl=EldoS Visual components
+e:\projects\exe\DElDB4.bpl=EldoS Data-aware controls
+$(BCB)\Bin\bcbsmp40.bpl=Borland C++ Sample Components
+
+[HistoryLists\hlIncludePath]
+Count=2
+Item0=design;$(BCB)\include;$(BCB)\include\vcl
+Item1=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=3
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_RTLDLL;USEPACKAGES
+
+[HistoryLists\hlIntOutputDir]
+Count=2
+
+[HistoryLists\hlFinalOutputDir]
+Count=1
+Item0=
+
+[HistoryLists\hIBPIOutputDir]
+Count=1
+Item0=e:\projects\exe\
+
+[Debugging]
+DebugSourceDirs=
+
+[Parameters]
+RunParams=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+InMemoryExe=0
+ShowInfoMsgs=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+!endif
+
+# ---------------------------------------------------------------------------
+# MAKE SECTION
+# ---------------------------------------------------------------------------
+# This section of the project file is not used by the BCB IDE.  It is for
+# the benefit of building from the command-line using the MAKE utility.
+# ---------------------------------------------------------------------------
+
+.autodepend
+# ---------------------------------------------------------------------------
+!if !$d(BCC32)
+BCC32 = bcc32
+!endif
+
+!if !$d(DCC32)
+DCC32 = dcc32
+!endif
+
+!if !$d(TASM32)
+TASM32 = tasm32
+!endif
+
+!if !$d(LINKER)
+LINKER = ilink32
+!endif
+
+!if !$d(BRCC32)
+BRCC32 = brcc32
+!endif
+
+!if !$d(IDL2CPP)
+IDL2CPP = idl2cpp
+!endif
+# ---------------------------------------------------------------------------
+!if $d(PATHCPP)
+.PATH.CPP = $(PATHCPP)
+.PATH.C   = $(PATHCPP)
+!endif
+
+!if $d(PATHPAS)
+.PATH.PAS = $(PATHPAS)
+!endif
+
+!if $d(PATHASM)
+.PATH.ASM = $(PATHASM)
+!endif
+
+!if $d(PATHRC)
+.PATH.RC  = $(PATHRC)
+!endif
+# ---------------------------------------------------------------------------
+$(PROJECT): $(IDLGENFILES) $(OBJFILES) $(RESDEPEN) $(DEFFILE)
+    $(BCB)\BIN\$(LINKER) @&&!
+    $(LFLAGS) +
+    $(ALLOBJ), +
+    $(PROJECT),, +
+    $(ALLLIB), +
+    $(DEFFILE), +
+    $(ALLRES)
+!
+# ---------------------------------------------------------------------------
+.pas.hpp:
+    $(BCB)\BIN\$(DCC32) $(PFLAGS) {$< }
+
+.pas.obj:
+    $(BCB)\BIN\$(DCC32) $(PFLAGS) {$< }
+
+.cpp.obj:
+    $(BCB)\BIN\$(BCC32) $(CFLAG1) $(CFLAG2) $(CFLAG3) -n$(@D) {$< }
+
+.c.obj:
+    $(BCB)\BIN\$(BCC32) $(CFLAG1) $(CFLAG2) $(CFLAG3) -n$(@D) {$< }
+
+.asm.obj:
+    $(BCB)\BIN\$(TASM32) $(AFLAGS) $<, $@
+
+.rc.res:
+    $(BCB)\BIN\$(BRCC32) $(RFLAGS) -fo$@ $<
+# ---------------------------------------------------------------------------
+
+

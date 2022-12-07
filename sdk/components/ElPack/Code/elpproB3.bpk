@@ -1,0 +1,186 @@
+# ---------------------------------------------------------------------------
+!if !$d(BCB)
+BCB = $(MAKEDIR)\..
+!endif
+
+# ---------------------------------------------------------------------------
+# IDE SECTION
+# ---------------------------------------------------------------------------
+# The following section of the project makefile is managed by the BCB IDE.
+# It is recommended to use the IDE to change any of the values in this
+# section.
+# ---------------------------------------------------------------------------
+
+VERSION = BCB.03
+# ---------------------------------------------------------------------------
+PROJECT = elpproB3.bpl
+OBJFILES = Source\ElShellCtl.obj Source\ElPrinter.obj Source\ElTreePrinter.obj \
+           Source\ElPrinterPreview.obj elpproB3.obj
+RESFILES = elpproB3.res
+DEFFILE =
+RESDEPEN = $(RESFILES) Source\ElPrinterPreview.dfm
+LIBFILES =
+LIBRARIES =
+SPARELIBS = VCL35.lib
+PACKAGES = vclx35.bpi VCL35.bpi ElPackB3.bpi
+# ---------------------------------------------------------------------------
+PATHCPP = .;
+PATHASM = .;Source
+PATHPAS = .;Source
+PATHRC = .;
+DEBUGLIBPATH = $(BCB)\lib\debug
+RELEASELIBPATH = $(BCB)\lib\release
+# ---------------------------------------------------------------------------
+CFLAG1 = -O2 -Hc -w -Ve -k- -vi -c -b- -w-par -w-inl -Vx
+CFLAG2 = -D_RTLDLL;USEPACKAGES -Isource;$(BCB)\include;$(BCB)\include\vcl \
+  -H=$(BCB)\lib\vcl35.csm
+CFLAG3 = -Tkh30000 -4
+PFLAGS = -D_RTLDLL;USEPACKAGES \
+  -U$(BCB)\lib\release;source;$(BCB)\lib\obj;$(BCB)\lib;$(RELEASELIBPATH) \
+  -Isource;$(BCB)\include;$(BCB)\include\vcl -$L- -$I- -$D- -$C- -v -JPHN -M
+RFLAGS = -D_RTLDLL;USEPACKAGES -isource;$(BCB)\include;$(BCB)\include\vcl
+AFLAGS = /isource /i$(BCB)\include /i$(BCB)\include\vcl /d_RTLDLL /dUSEPACKAGES /mx /w2 \
+  /zn
+LFLAGS = -L$(BCB)\lib\release;source;$(BCB)\lib\obj;$(BCB)\lib;$(RELEASELIBPATH) \
+  -D"EldoS Visual Components" -aa -Tpp -Gpr -x -Gn -Gl -Gi
+IFLAGS =
+# ---------------------------------------------------------------------------
+ALLOBJ = c0pkg32.obj $(PACKAGES) sysinit.obj $(OBJFILES)
+ALLRES = $(RESFILES)
+ALLLIB = $(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib
+# ---------------------------------------------------------------------------
+!ifdef IDEOPTIONS
+
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=3
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=1
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=EldoS
+FileDescription=
+FileVersion=3.0.0.0
+InternalName=elppro
+LegalCopyright=(c) 1998-2001, EldoS
+LegalTrademarks=
+OriginalFilename=
+ProductName=elppro
+ProductVersion=3.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=1
+Item0=source;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=2
+Item0=$(BCB)\lib\release;source;$(BCB)\lib\obj;$(BCB)\lib
+Item1=source;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_RTLDLL;USEPACKAGES
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=e:\projects\elppro_Redist\Units\Builder3[Debugging]
+
+[Debugging]
+DebugSourceDirs=
+
+[Parameters]
+RunParams=
+HostApplication=
+
+!endif
+
+# ---------------------------------------------------------------------------
+# MAKE SECTION
+# ---------------------------------------------------------------------------
+# This section of the project file is not used by the BCB IDE.  It is for
+# the benefit of building from the command-line using the MAKE utility.
+# ---------------------------------------------------------------------------
+
+.autodepend
+# ---------------------------------------------------------------------------
+!if !$d(BCC32)
+BCC32 = bcc32
+!endif
+
+!if !$d(DCC32)
+DCC32 = dcc32
+!endif
+
+!if !$d(TASM32)
+TASM32 = tasm32
+!endif
+
+!if !$d(LINKER)
+LINKER = ilink32
+!endif
+
+!if !$d(BRCC32)
+BRCC32 = brcc32
+!endif
+# ---------------------------------------------------------------------------
+!if $d(PATHCPP)
+.PATH.CPP = $(PATHCPP)
+.PATH.C   = $(PATHCPP)
+!endif
+
+!if $d(PATHPAS)
+.PATH.PAS = $(PATHPAS)
+!endif
+
+!if $d(PATHASM)
+.PATH.ASM = $(PATHASM)
+!endif
+
+!if $d(PATHRC)
+.PATH.RC  = $(PATHRC)
+!endif
+# ---------------------------------------------------------------------------
+$(PROJECT): $(OBJFILES) $(RESDEPEN) $(DEFFILE)
+    $(BCB)\BIN\$(LINKER) @&&!
+    $(LFLAGS) +
+    $(ALLOBJ), +
+    $(PROJECT),, +
+    $(ALLLIB), +
+    $(DEFFILE), +
+    $(ALLRES)
+!
+# ---------------------------------------------------------------------------
+.pas.hpp:
+    $(BCB)\BIN\$(DCC32) $(PFLAGS) {$< }
+
+.pas.obj:
+    $(BCB)\BIN\$(DCC32) $(PFLAGS) {$< }
+
+.cpp.obj:
+    $(BCB)\BIN\$(BCC32) $(CFLAG1) $(CFLAG2) $(CFLAG3) -n$(@D) {$< }
+
+.c.obj:
+    $(BCB)\BIN\$(BCC32) $(CFLAG1) $(CFLAG2) $(CFLAG3) -n$(@D) {$< }
+
+.asm.obj:
+    $(BCB)\BIN\$(TASM32) $(AFLAGS) $<, $@
+
+.rc.res:
+    $(BCB)\BIN\$(BRCC32) $(RFLAGS) -fo$@ $<
+# ---------------------------------------------------------------------------
+
+

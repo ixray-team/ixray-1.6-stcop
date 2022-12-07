@@ -129,7 +129,6 @@ Different internal directives. Do not modify them.
 {$DEFINE MANUAL_BUTTONS}
 
 {$R-}
-
 {$IFDEF VER90}
   {$DEFINE D_2}
   {$DEFINE D_2_UP}
@@ -248,7 +247,6 @@ Different internal directives. Do not modify them.
 {$IFDEF BUILDER_USED}
 	{$ObjExportAll On}
 {$ENDIF}
-
 
 {$ifdef DEBUG}
 {$J+,R-,I-,Q-,O-,D+,L+,Y+}
