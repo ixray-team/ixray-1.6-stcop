@@ -16,11 +16,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ElTree, StdCtrls, ElACtrls, ElSplit, ExtCtrls, ElPanel, ElBtnCtl,
   ElPopBtn, Menus, ElStrArray,
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,  
-{$else}
-  DsgnIntf, 
-{$endif}
   ElStrPool, ElVCLUtils, ElStrUtils, TypInfo, ElFrmPers, ElIni,
   ElXPThemedControl, ElEdits;
 

@@ -177,9 +177,7 @@ uses
   ExtCtrls,
   Menus,
   ComObj,
-  {$ifdef VCL_4_USED}
   ImgList,
-  {$endif}
 {$ifdef VCL_6_USED}
 Types,
 {$endif}
@@ -468,7 +466,7 @@ type
     procedure WMNCLButtonDown(var Message: TWMNCLBUTTONDOWN); message
         WM_NCLBUTTONDOWN;
     procedure WMNCLButtonUp(var Message: TWMNCLBUTTONUP); message WM_NCLBUTTONUP;
-    procedure WMNCHitTest(var Message: TWMNCHitTest); message WM_NCHITTEST;
+    procedure WMNCHitTest(var msg: TWMNCHitTest); message WM_NCHITTEST;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure WMGetDlgCode(var Message: TWMGetDlgCode); message WM_GETDLGCODE;
     procedure CMShowingChanged(var Message: TMessage); message CM_SHOWINGCHANGED;
@@ -687,9 +685,6 @@ type
     {$ifdef ELPACK_UNICODE}
     property Hint: WideString read FHint write SetHint;
     {$endif}
-{$IFNDEF VCL_4_USED}
-    property OnResize : TNotifyEvent read FOnResize write FOnResize;
-{$ELSE}
 
     property Align;
     property DragCursor;
@@ -722,7 +717,6 @@ type
     property OnDockOver;
     property OnEndDock;
     property OnResize;
-{$ENDIF}
 {$IFDEF VCL_5_USED}
     property OnContextPopup;
 {$ENDIF}
@@ -3132,11 +3126,14 @@ begin
     ScrollBtnState := pbsNone;*)
 end;
 
-procedure TElPageControl.WMNCHitTest(var Message: TWMNCHitTest);
+procedure TElPageControl.WMNCHitTest(var msg: TWMNCHitTest);
+var
+   res : Integer;
 begin
   inherited;
+  res := msg.Result;
   if not (csDesigning in ComponentState) then
-    DoHitTest(Message.XPos, Message.YPos, Message.Result);
+    DoHitTest(msg.XPos, msg.YPos, res);
 end;
 
 procedure TElPageControl.CMMouseLeave(var Message: TMessage);
@@ -3468,11 +3465,7 @@ begin
       if Length(Sheet.Caption) = 0 then
       begin
         {$ifdef MSWINDOWS}
-        {$ifdef ELPACK_UNICODE}
-        GetTextMetrics(ACanvas.Handle, TM);
-        {$else}
-        GetTextMetrics(ACanvas.Handle, TM);
-        {$endif}
+        GetTextMetricsA(ACanvas.Handle, TM);
         t := Abs(TM.tmHeight);
         {$else}
         Metrics := QFontMetrics_create(ACanvas.Font.Handle);
@@ -6851,17 +6844,20 @@ var ASheet : TElTabSheet;
       Bits : Pointer;
       BytesPerScanline, ImageSize : DWORD;
   {$WARNINGS OFF}
-      function FindScanline(Source : Pointer; MaxLen : Cardinal;
-        Value : Cardinal) : Cardinal; assembler;
-      asm
-                PUSH    ECX
-                MOV     ECX,EDX
-                MOV     EDX,EDI
-                MOV     EDI,EAX
-                POP     EAX
-                REPE    SCASB
-                MOV     EAX,ECX
-                MOV     EDI,EDX
+
+      function FindScanline(Source: Pointer; MaxLen: Cardinal; Value: Cardinal): Cardinal;
+      var
+        Ptr: PByte;
+      begin
+        Result := MaxLen;
+        if Result > 0 then
+          dec(Result);
+        Ptr := Source;
+        while (Result > 0) and (Ptr^ = Value) do
+        begin
+          inc(Ptr);
+          dec(Result);
+        end;
       end;
 
     begin

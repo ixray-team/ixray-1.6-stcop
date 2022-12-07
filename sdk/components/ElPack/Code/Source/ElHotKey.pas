@@ -289,10 +289,6 @@ var
   i: byte;
 begin
   Result := '';
-  for i := 0 to 6 do
-    if ((byte(1) shl i) and byte(state)) > 0 then
-      Result := Result + nshift[i];
-{
   if ssCtrl   in state then result:=result+'Ctrl+';
   if ssShift  in state then result:=result+'Shift+';
   if ssAlt    in state then result:=result+'Alt+';
@@ -300,7 +296,7 @@ begin
   if ssRight  in state then result:=result+'Right+';
   if ssMiddle in state then result:=result+'Middle+';
   if ssDouble in state then result:=result+'Double+';
-}
+
 end;
 
 procedure TElHotKey.SetModifiers(Value: TElHKModifiers);
@@ -331,9 +327,9 @@ function TElHotKey.GetShiftState(state: TShiftState): TShiftState;
 var
   b: byte;
 begin
-  b := byte(state);
+  b := byte(word(state));
   b := b or byte(FModifiers);
-  Result := TShiftState(b);
+  Result := TShiftState(word(b));
   if ([ssShift, ssAlt, ssCtrl] * Result) <> [] then
   begin
     if (hcCtrlAlftShift in FInvalidKeys) and

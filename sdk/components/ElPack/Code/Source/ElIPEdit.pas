@@ -816,7 +816,7 @@ end;
 procedure TElIPEdit.SetIPString(value : string);
 var i : DWORD;
 begin
-  i := inet_addr(PChar(value));
+  i := inet_addr(PAnsiChar(value));
   if Value = '255.255.255.255' then
      SetIPAddress($FFFFFFFF)
   else

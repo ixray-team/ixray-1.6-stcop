@@ -302,7 +302,7 @@ var
 begin
 {$ifndef CALENDAR_USE_WINDOWS_CALENDAR}
   for i := 1 to 12 do
-    MonthCombo.Items.Add(LongMonthNames[i]);
+    MonthCombo.Items.Add(FormatSettings.LongMonthNames[i]);
 {$endif}
 end;
 

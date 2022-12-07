@@ -13,11 +13,7 @@ unit frmItemsProp;
 interface
 
 uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, 
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,  
-{$else}
-  DsgnIntf, 
-{$endif}
 
   Buttons, ExtCtrls, ElTree, frmItemCol, Dialogs,
 {$IFDEF ELPACK_COMPLETE}
@@ -217,6 +213,7 @@ begin
       T.GetData;
       Form := GetOwnerForm(AComp);
       if (Form <> nil) and (Form.Designer <> nil) then Form.Designer.Modified;
+      Tree.Refresh;
     end;
     Tree.SetFocus;
   finally

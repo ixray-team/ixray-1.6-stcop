@@ -15,13 +15,10 @@ interface
 
 uses
 
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,  
-{$else}
-  DsgnIntf, 
-{$endif}
   ToolIntf, EditIntf, ExptIntf, Windows, Dialogs, TypInfo, Classes, SysUtils,
-  Consts, Forms;
+  Consts, Forms,
+  RTLConsts;
 
 type
   TFormCtlProperty = class(TComponentProperty)
@@ -52,8 +49,8 @@ implementation
 procedure TFormCtlProperty.GetValues(Proc : TGetStrProc);
 begin
   inherited;
-  if (Designer.Form is GetTypeData(GetPropType)^.ClassType) and
-    (Designer.Form.Name <> '') then Proc(Designer.Form.Name);
+  if (Designer.Root is GetTypeData(GetPropType)^.ClassType) and
+    (Designer.Root.Name <> '') then Proc(Designer.Root.Name);
 end;
 
 procedure TFormCtlProperty.SetValue(const Value : string);
@@ -62,17 +59,17 @@ var
 begin
   Comp := Designer.GetComponent(Value);
   if ((Comp = nil) or not (Comp is GetTypeData(GetPropType)^.ClassType))
-    and (CompareText(Designer.Form.Name, Value) = 0) then
+    and (CompareText(Designer.Root.Name, Value) = 0) then
   begin
-    if not (Designer.Form is GetTypeData(GetPropType)^.ClassType) then
+    if not (Designer.Root is GetTypeData(GetPropType)^.ClassType) then
     begin
       MessageDlg(Format('Invalid property value: %s expected, %s found',
-                        [Designer.Form.ClassName, GetTypeData(GetPropType)^.ClassType.ClassName]),
+                        [Designer.Root.ClassName, GetTypeData(GetPropType)^.ClassType.ClassName]),
                  mtError, [mbOk], 0);
       raise
         EPropertyError.Create(SInvalidPropertyValue);
     end;
-    SetOrdValue(Longint(Designer.Form));
+    SetOrdValue(Longint(Designer.Root));
   end
   else
     inherited;

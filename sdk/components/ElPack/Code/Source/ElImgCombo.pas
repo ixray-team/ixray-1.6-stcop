@@ -65,9 +65,7 @@ uses
   Windows,
   Messages,
   Classes,
-  {$ifdef VCL_4_USED}
   ImgList,
-  {$endif}
   Controls,
   StdCtrls,
 

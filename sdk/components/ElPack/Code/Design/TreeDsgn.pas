@@ -15,11 +15,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ElTree, ElHeader, frmItemsProp, frmSectProp, 
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst
-{$else}
-  DsgnIntf
-{$endif}
   ;
 
 type

@@ -46,7 +46,8 @@ Types,
 {$else}
 Types, Libc,
 {$endif}
-classes, SysUtils, ElStrUtils;
+classes, SysUtils, ElStrUtils,
+System.TimeSpan;
 
 function Sign(a : integer) : integer;
 function Max(a, b : integer) : integer;
@@ -71,6 +72,8 @@ function GetTime(DateTime : TDateTime) : TDateTime;
 // <string length><text>
 function WriteStringToStream(S : TStream; Str : string) : boolean;
 function ReadStringFromStream(S : TStream; var Str : string) : boolean;
+function WriteStringToStreamA(S : TStream; Str : AnsiString ) : boolean;
+function ReadStringFromStreamA(S : TStream; var Str : AnsiString) : boolean;
 {$ifndef BROKEN_UNICODE}
 function WriteWideStringToStream(S : TStream; Str : WideString) : boolean;
 function ReadWideStringFromStream(S : TStream; var Str : WideString) : boolean;
@@ -760,12 +763,12 @@ begin
       S2 := S2 + IntToStr(ST.wYear mod 100)
     else if Pos('mmmm', S4) = 1 then
     begin
-      S2 := S2 + LongMonthNames[ST.wMonth];
+      S2 := S2 + FormatSettings.LongMonthNames[ST.wMonth];
       inc(i, 3);
     end
     else if Pos('mmm', S4) = 1 then
     begin
-      S2 := S2 + ShortMonthNames[ST.wMonth];
+      S2 := S2 + FormatSettings.ShortMonthNames[ST.wMonth];
       inc(i, 2);
     end
     else if Pos('mm', S4) = 1 then
@@ -789,11 +792,11 @@ begin
     end
     else if Pos('ww', S4) = 1 then
     begin
-      S2 := S2 + LongDayNames[ST.wDayOfWeek + 1];
+      S2 := S2 + FormatSettings.LongDayNames[ST.wDayOfWeek + 1];
       inc(i);
     end
     else if S1[i] = 'w' then
-      S2 := S2 + ShortDayNames[ST.wDayOfWeek + 1]
+      S2 := S2 + FormatSettings.ShortDayNames[ST.wDayOfWeek + 1]
     else if S1[i] = 'W' then
       S2 := S2 + IntToStr(ST.wDayOfWeek)
     else if Pos('hh', S4) = 1 then
@@ -1255,7 +1258,7 @@ end;
 
 procedure TDirectMemoryStream.SetPointer(Ptr : Pointer; Size : Longint);
 begin
-  inherited;
+  inherited SetPointer(Ptr, Size);
   Position := 0;
   if Ptr = nil then 
     Capacity := 0;
@@ -1397,52 +1400,8 @@ end;
 
 {$ifdef MSWINDOWS}
 function SubtractTimes(Time1, Time2 : TDateTime) : TDateTime;
-var
-  TT : TSystemTime;
-  TFT1, TFT2, TFT3 : TFileTime;
-  h1, h2, l1, l2 : integer;
 begin
-  begin
-    DateTimeToSystemTime(Time1, TT);
-    SystemTimeToFileTime(TT, TFT1);
-    DateTimeToSystemTime(Time2, TT);
-    SystemTimeToFileTime(TT, TFT2);
-    h1 := TFT1.dwHighDateTime;
-    h2 := TFT2.dwHighDateTime;
-    l1 := TFT1.dwLowDateTime;
-    l2 := TFT2.dwLowDateTime;
-    if (h1 < h2) or
-      ((h1 = h2) and (l1 < l2)) then
-      result := 0
-    else
-    begin
-      asm
-           push eax
-           mov eax, l1
-           cmp eax, l2
-           jl @1
-           mov eax, l1
-           sub eax, l2
-           sub eax, $FFFFFFFF
-           mov TFT3.dwLowDateTime, eax
-           jmp @2
-          @1:
-          mov eax, l1
-          sub eax, l2
-          mov TFT3.dwLowDateTime, eax
-          @2:
-           // subtracting high-order dwords
-           mov eax, h1
-           sub eax, h2
-           mov TFT3.dwHighDateTime, eax
-           pop eax
-      end;
-      FileTimeToSystemTime(TFT3, TT);
-      TT.wYear := 299 + TT.wYear;
-      result := SystemTimeToDateTime(TT);
-    end;
-    exit;
-  end;
+  Result := Time2 - Time1;
 end;
 {$endif}
 {$ENDIF}
@@ -1468,6 +1427,43 @@ begin
 end;
 
 function ReadStringFromStream(S : TStream; var Str : string) : boolean;
+var
+  SS : string;
+  i : integer;
+begin
+  try
+    S.ReadBuffer(i, sizeof(integer));
+    if i < 0 then raise Exception.Create('Invalid string header read from the stream');
+    if i = 0 then
+      Str := ''
+    else
+    begin
+      SetLength(SS, i);
+      S.ReadBuffer(SS[1], i);
+      Str := SS;
+    end;
+    result := true;
+  except
+    result := false;
+  end;
+end;
+
+function WriteStringToStreamA(S : TStream; Str : AnsiString) : boolean;
+var
+  i : integer;
+begin
+  i := Length(Str);
+  try
+    S.WriteBuffer(i, sizeof(integer));
+    if i > 0 then
+      S.WriteBuffer(Str[1], i);
+    result := true;
+  except
+    result := false;
+  end;
+end;
+
+function ReadStringFromStreamA(S : TStream; var Str : AnsiString) : boolean;
 var
   SS : string;
   i : integer;
@@ -1998,11 +1994,7 @@ var
   s : string;
   s1,
   s2: string;
-{$IFDEF VCL_4_USED}
-  pr: Cardinal;
-{$ELSE}
-  pr: integer;
-{$ENDIF}
+  pr: PDWORD_PTR;
 begin
   GetMem(P,256);
   SetLength(s,256);

@@ -139,7 +139,7 @@ type
     function GetTextRect : TRect;
     procedure SetCaption(Value: TElFString);
     {$ifndef CLX_USED}
-    procedure DoDrawText(var Rect: TRect; Flags: {$ifdef VCL_4_USED}Longint{$else}Word{$endif});
+    procedure DoDrawText(var Rect: TRect; Flags: Longint);
     {$ifndef D_3}override;{$endif}
     {$endif}
     procedure SetLinkColor(newValue : TColor); virtual;

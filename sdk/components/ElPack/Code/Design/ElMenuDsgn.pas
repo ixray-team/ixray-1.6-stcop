@@ -48,13 +48,9 @@ uses
   ElUnicodeStrings,
   {$endif}
   ExtCtrls,
-  {$ifdef VCL_6_USED}
   DesignEditors,
   DesignConst,
   DesignIntf
-  {$else}
-  DsgnIntf
-  {$endif}
   ;
 
 type
@@ -101,15 +97,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     AComp: TComponent;
-    ADesigner: {$ifdef VCL_4_USED}
-                 {$ifdef VCL_6_USED}
-                   IDesigner
-                 {$else}
-                   IFormDesigner
-                 {$endif}
-               {$else}
-                 TFormDesigner
-               {$endif};
+    ADesigner: IDesigner;
     
     destructor Destroy; override;
     property Menu : TMenu read FMenu write SetElMenu;

@@ -134,66 +134,10 @@ var
   lt, rt : integer;
 
   function GetCursorHeightMargin : Integer;
-  var
-    IconInfo : TIconInfo;
-    BitmapInfoSize : DWORD;
-    BitmapBitsSize : DWORD;
-    Bitmap : PBitmapInfoHeader;
-    Bits : Pointer;
-    BytesPerScanline, ImageSize : DWORD;
-{$WARNINGS OFF}
-    function FindScanline(Source : Pointer; MaxLen : Cardinal;
-      Value : Cardinal) : Cardinal; assembler;
-    asm
-              PUSH    ECX
-              MOV     ECX,EDX
-              MOV     EDX,EDI
-              MOV     EDI,EAX
-              POP     EAX
-              REPE    SCASB
-              MOV     EAX,ECX
-              MOV     EDI,EDX
-    end;
-
   begin
-    { Default value is entire icon height }
-    Result := GetSystemMetrics(SM_CYCURSOR);
-    if GetIconInfo(GetCursor, IconInfo) then
-    try
-      GetDIBSizes(IconInfo.hbmMask, BitmapInfoSize, BitmapBitsSize);
-      Bitmap := AllocMem(BitmapInfoSize + BitmapBitsSize);
-      try
-        Bits := Pointer(Longint(Bitmap) + BitmapInfoSize);
-        if GetDIB(IconInfo.hbmMask, 0, Bitmap^, Bits^) and
-          (Bitmap^.biBitCount = 1) then
-        begin
-          { Point Bits to the end of this bottom-up bitmap }
-          with Bitmap^ do
-          begin
-            BytesPerScanline := ((biWidth * biBitCount + 31) and not 31) div 8;
-            ImageSize := biWidth * BytesPerScanline;
-            Bits := Pointer(Integer(Bits) + BitmapBitsSize - ImageSize);
-            { Use the width to determine the height since another mask bitmap
-              may immediately follow }
-            Result := FindScanline(Bits, ImageSize, $FF);
-            { In case the and mask is blank, look for an empty scanline in the
-              xor mask. }
-            if (Result = 0) and (biHeight >= 2 * biWidth) then
-              Result := FindScanline(Pointer(Integer(Bits) - ImageSize),
-                ImageSize, $00);
-            Result := Result div BytesPerScanline;
-          end;
-          Dec(Result, IconInfo.yHotSpot);
-        end;
-      finally
-        FreeMem(Bitmap, BitmapInfoSize + BitmapBitsSize);
-      end;
-    finally
-      if IconInfo.hbmColor <> 0 then DeleteObject(IconInfo.hbmColor);
-      if IconInfo.hbmMask <> 0 then DeleteObject(IconInfo.hbmMask);
-    end;
+    Result := GetSystemMetrics(SM_CYICON);
   end;
-{$WARNINGS ON}
+
 var
   p1 : TPoint;
 

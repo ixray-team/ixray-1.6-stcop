@@ -15,11 +15,7 @@ interface
 
 uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, ElTree, TypInfo, 
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,  
-{$else}
-  DsgnIntf, 
-{$endif}
   ElTools, ComCtrls;
 
 type

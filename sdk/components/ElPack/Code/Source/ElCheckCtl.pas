@@ -113,9 +113,7 @@ uses
   Forms,
   StdCtrls,
   Menus,
-{$ifdef VCL_4_USED}
   ImgList,
-{$endif}
 {$else}
 {$ifdef MSWINDOWS}
   Messages,
@@ -430,19 +428,15 @@ type
     property OnKeyUp;
     property OnStartDrag;
 
-{$IFDEF VCL_4_USED}
     property Anchors;
     property Action;
     property Constraints;
-{$ifndef CLX_USED}
     property DockOrientation;
     property Floating;
     property DoubleBuffered;
     property DragKind;
     property OnStartDock;
     property OnEndDock;
-{$endif}    
-{$ENDIF}
 {$IFDEF VCL_5_USED}
     property OnContextPopup;
 {$ENDIF}

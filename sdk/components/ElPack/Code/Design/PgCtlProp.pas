@@ -35,11 +35,7 @@ uses
 {$IFDEF D_5_UP}
     ElImageIndexProp,
 {$ENDIF}
-{$ifdef VCL_6_USED}
     DesignIntf, DesignMenus, DesignEditors, DesignWindows, DsnConst
-{$else}
-    DsgnIntf
-{$endif}
     ;
 
 type

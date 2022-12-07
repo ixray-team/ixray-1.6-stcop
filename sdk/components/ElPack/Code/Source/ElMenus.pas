@@ -98,10 +98,8 @@ uses
   Menus,
   StdCtrls,
   Clipbrd,
-  {$ifdef VCL_4_USED}
   ActnList,
   ImgList,
-  {$endif}
   CommCtrl,
   ElTools,
   ElImgFrm,
@@ -123,7 +121,7 @@ uses
   {$ifdef HAS_HTML_RENDER}
   , HTMLRender
   {$endif}
-  ;
+  ,ElList;
 
 {$warnings off}
 
@@ -225,7 +223,7 @@ type
     FCommand: Word;
     FHelpContext: THelpContext;
     FHint: TElFString;
-    FItems: TList;
+    FItems: TElList;
     FShortCut: TShortCut;
     FParent: TElMenuItem;
     FMerged: TElMenuItem;
@@ -716,6 +714,9 @@ end;
 
 { Used to populate or merge menus }
 
+type
+    PointerMenuItemIterateFunction = function(MenuItem: TMenuItem): Boolean;
+
 procedure IterateMenus(Func: Pointer; Menu1, Menu2: TElMenuItem);
 var
   I, J: Integer;
@@ -723,7 +724,7 @@ var
   Menu1Size, Menu2Size: Integer;
   Done: Boolean;
 
-  function Iterate(var I: Integer; MenuItem: TElMenuItem; AFunc: Pointer): Boolean;
+  function Iterate(var I: Integer; MenuItem: TElMenuItem; AFunc: PointerMenuItemIterateFunction): Boolean;
   var
     Item: TMenuItem;
   begin
@@ -733,14 +734,9 @@ var
     begin
       Item := MenuItem[I];
       if Item.GroupIndex > IIndex then Break;
-      asm
-        MOV     EAX,Item
-        MOV     EDX,[EBP+8]
-        PUSH    DWORD PTR [EDX]
-        CALL    DWORD PTR AFunc
-        ADD     ESP,4
-        MOV     Result,AL
-      end;
+       begin
+         Result := AFunc(Item);
+       end;
       Inc(I);
     end;
   end;
@@ -1067,7 +1063,7 @@ begin
 //      {$ifdef ELPACK_UNICODE}
 //      dwTypeData := PWideChar(Caption);
 //      {$else}
-        dwTypeData := PChar(String(Caption));
+        dwTypeData := PAnsiChar(String(Caption));
 //      {$endif}
         if GetCount > 0 then
           hSubMenu := GetHandle;
@@ -1076,7 +1072,7 @@ begin
         //{$else}
         //InsertMenuItemA(Menu, DWORD(-1), True, MenuItemInfo);
         //{$endif}
-        InsertMenuItem(Menu, DWORD(-1), True, MenuItemInfo);
+        InsertMenuItemA(Menu, DWORD(-1), True, MenuItemInfo);
       end;
     (*end
     else
@@ -2415,7 +2411,7 @@ procedure TElMenuItem.Insert(Index: Integer; Item: TElMenuItem);
 begin
   if Item.FParent <> nil then
     raise EMenuError.CreateFmt('Menu Reinserted', [Name]);
-  if FItems = nil then FItems := TList.Create;
+  if FItems = nil then FItems := TElList.Create;
   if (Index - 1 >= 0) and (Index - 1 < FItems.Count) then
     if Item.GroupIndex < TElMenuItem(FItems[Index - 1]).GroupIndex then
       Item.GroupIndex := TElMenuItem(FItems[Index - 1]).GroupIndex;

@@ -14,11 +14,7 @@ unit ElTBDsgn;
 interface
 
 uses ElToolBar,
-{$ifdef VCL_6_USED}
   DesignEditors, DesignWindows, DesignIntf, DsnConst
-{$else}
-  DsgnIntf
-{$endif}
 ;
 
 type

@@ -17,6 +17,8 @@
 {$endif}
 {$endif}
 
+{$POINTERMATH ON}
+
 unit ElList;
 
 interface
@@ -42,17 +44,16 @@ type
   TElList = class (TPersistent)
   protected
     FAutoClearObjects: Boolean;
-    FCapacity: Integer;
-    FCount: Integer;
-    FList: PPointerList;
+    FList: TList;
     FOnDelete: TElListDeleteEvent;
+
     class procedure Error(const Msg: string; Data: Integer);
     function Get(Index: Integer): Pointer; virtual;
-    procedure Grow; virtual;
     procedure Put(Index: Integer; Item: Pointer); virtual;
     procedure SetCapacity(NewCapacity: Integer);
     procedure SetCount(NewCount: Integer);
-    procedure IntDelete(Index: Integer);
+    function GetCapacity(): Integer;
+    function GetCount(): Integer;
     procedure TriggerDeleteEvent(Item: Pointer); virtual;
   public
     constructor Create;
@@ -64,7 +65,6 @@ type
     procedure Delete(Index: Integer); virtual;
     procedure DeleteRange(StartIndex, EndIndex: Integer); virtual;
     procedure Exchange(Index1, Index2: Integer);
-    function Expand: TElList;
     function First: Pointer;
     function IndexOf(Item: Pointer): Integer;
     function IndexOfBack(StartIndex: integer; Item: Pointer): Integer;
@@ -79,10 +79,10 @@ type
     procedure SortC(Compare: TElListSortCompareEx; Cargo: Pointer);
     property AutoClearObjects: Boolean read FAutoClearObjects write
         FAutoClearObjects;
-    property Capacity: Integer read FCapacity write SetCapacity;
-    property Count: Integer read FCount write SetCount;
+    property Capacity: Integer read GetCapacity write SetCapacity;
+    property Count: Integer read GetCount write SetCount;
     property Items[Index: Integer]: Pointer read Get write Put; default;
-    property List: PPointerList read FList;
+    property List: TList read FList;
     property OnDelete: TElListDeleteEvent read FOnDelete write FOnDelete;
   end;
 
@@ -195,9 +195,7 @@ end;
 constructor TElList.Create;
 begin
   inherited;
-  FList := nil;
-  FCount := 0;
-  FCapacity := 0;
+  FList := TList.Create;
   FAutoClearObjects := FALSE;
   FOnDelete := nil;
 end;
@@ -210,103 +208,40 @@ end;
 
 function TElList.Add(Item: Pointer): Integer;
 begin
-  If FCount = FCapacity Then
-  Begin
-    Inc(FCapacity, Min(Count * 2 + 1, AlignMem));
-    ReAllocMem(FList, FCapacity * SizeOf(Pointer));
-  End;
-  FList^[FCount] := Item;
-  Result := FCount;
-  Inc(FCount);
+  Result := FList.Add(Item);
 end;
 
 procedure TElList.Assign(Source : TPersistent);
 begin
   if Source is TElList then
-  begin
-    Clear;
-    SetCapacity(TElList(Source).Capacity);
-    SetCount(TElList(Source).Count);
-    if FCount > 0 then
-       System.Move(TElList(Source).FList^[0], FList^[0], FCount * sizeof(pointer));
-  end else inherited;
+    FList.Assign(TElList(Source).FList)
+  else
+    inherited;
 end;
 
 procedure TElList.Clear;
-var
-  I: Integer;
-  P: Pointer;
 begin
-  For I := 0 to Count - 1 do
-     TriggerDeleteEvent(FList^[I]);
-  If AutoClearObjects then
-    For I := 0 to Count - 1 do
-    begin
-      p := Get(i);
-      try
-        if (P <> nil) and (TObject(P) is TObject)
-            then TObject(P).Free;
-      except
-      end;
-    end;
-  // Don't call two routines for this. Just assign
-  FCount := 0;
-  FCapacity := 0;
-  ReallocMem(FList, 0);
-end;
-
-procedure TElList.IntDelete(Index: Integer);
-begin
-  if (Index < 0) or (Index >= FCount)
-    then RaiseOutOfBoundsError(Index);
-  Dec(FCount);
-  if FCount > Index then
-    System.Move(FList^[Index + 1],
-                FList^[Index],
-                (FCount - Index) * SizeOf(Pointer));
+    FList.Clear;
 end;
 
 procedure TElList.DeleteRange(StartIndex, EndIndex: Integer); 
 var i : integer;
 begin
-  if ((StartIndex < 0) or (StartIndex >= FCount)) then
+  if ((StartIndex < 0) or (StartIndex >= FList.Count)) then
      RaiseOutOfBoundsError(StartIndex);
-  if ((EndIndex < 0) or (EndIndex >= FCount)) or
+  if ((EndIndex < 0) or (EndIndex >= FList.Count)) or
      (EndIndex < StartIndex) then
      RaiseOutOfBoundsError(EndIndex);
-  for i := StartIndex to EndIndex do 
-    TriggerDeleteEvent(FList^[I]);
-  if (FCount > EndIndex + 1) then
+  for i := StartIndex to EndIndex do
   begin
-    System.Move(FList^[EndIndex + 1],
-                FList^[StartIndex],
-                (FCount - (EndIndex - StartIndex + 1)) * SizeOf(Pointer));    
+    TriggerDeleteEvent(FList[i]);
+    FList.Delete(i);
   end;
-  Dec(FCount, EndIndex - StartIndex + 1);
-  If FCount < FCapacity shr 1 Then
-  Begin
-    FCapacity := FCapacity shr 1;
-    ReAllocMem(FList, FCapacity * SizeOf(Pointer));
-  End;
 end;
 
 procedure TElList.Delete(Index: Integer);
 begin
-  if (Index < 0) or (Index >= FCount)
-    then RaiseOutOfBoundsError(Index);
-  TriggerDeleteEvent(FList^[Index]);
-  if AutoClearObjects then TObject(FList^[Index]).Free;
-
-  Dec(FCount);
-  if FCount > Index then
-    System.Move(FList^[Index + 1],
-                FList^[Index],
-                (FCount - Index) * SizeOf(Pointer));
-  If FCount < FCapacity shr 1 Then
-  Begin
-    FCapacity := FCapacity shr 1;
-    ReAllocMem(FList, FCapacity * SizeOf(Pointer));
-  End;
+  FList.Delete(Index);
 end;
 
 class procedure TElList.Error(const Msg: string; Data: Integer);
@@ -321,116 +256,64 @@ begin
 end;
 
 procedure TElList.Exchange(Index1, Index2: Integer);
-var
-  Item: Pointer;
 begin
-  if (Index1 < 0) or (Index1 >= FCount) then
-    RaiseOutOfBoundsError(Index1);
-  if (Index2 < 0) or (Index2 >= FCount) then
-    RaiseOutOfBoundsError(Index2);
-  Item := FList^[Index1];
-  FList^[Index1] := FList^[Index2];
-  FList^[Index2] := Item;
-end;
-
-function TElList.Expand: TElList;
-begin
-  if FCount = FCapacity then
-  Begin
-    Inc(FCapacity, Min(Count * 2 + 1, AlignMem));
-    ReallocMem(FList, FCapacity * SizeOf(Pointer));
-  End;
-  Result := Self;
+  FList.Exchange(index1, Index2);
 end;
 
 function TElList.First: Pointer;
 begin
-  Result := FList^[0];
+  Result := FList.First;
 end;
 
 function TElList.FastGet(Index: Integer): Pointer;
 begin
-  Result := FList^[Index];
+  Result := FList[Index];
 end;
 
 function TElList.Get(Index: Integer): Pointer;
 begin
-  if (Index < 0) or (Index >= FCount) then RaiseOutOfBoundsError(Index);
-  Result := FList^[Index];
-end;
-
-procedure TElList.Grow;
-begin
-  Inc(FCapacity, Min(Count * 2 + 1, AlignMem));
-  ReAllocMem(FList, FCapacity * SizeOf(Pointer));
+  if (Index < 0) or (Index >= FList.Count) then RaiseOutOfBoundsError(Index);
+  Result := FList[Index];
 end;
 
 function TElList.IndexOf(Item: Pointer): Integer;
 begin
-  Result := 0;
-  while (Result < FCount) and (FList^[Result] <> Item) do
-    Inc(Result);
-  if Result = FCount then
-    Result := -1;
+  Result := FList.IndexOf(item);
 end;
 
 function TElList.IndexOfBack(StartIndex: integer; Item: Pointer): Integer;
 begin
-  if (StartIndex < 0) or (StartIndex >= FCount) then RaiseOutOfBoundsError(
+  if (StartIndex < 0) or (StartIndex >= FList.Count) then RaiseOutOfBoundsError(
       StartIndex);
   Result := StartIndex;
-  while (Result >= 0) and (FList^[Result] <> Item) do
+  while (Result >= 0) and (FList[Result] <> Item) do
     dec(Result);
 end;
 
 function TElList.IndexOfFrom(StartIndex: integer; Item: Pointer): Integer;
 begin
-  if (StartIndex < 0) or (StartIndex >= FCount) then
+  if (StartIndex < 0) or (StartIndex >= FList.Count) then
     RaiseOutOfBoundsError(StartIndex);
   Result := StartIndex;
-  while (Result < FCount) and (FList^[Result] <> Item) do
+  while (Result < FList.Count) and (FList[Result] <> Item) do
     Inc(Result);
-  if Result = FCount then
+  if Result = FList.Count then
     Result := -1;
 end;
 
 procedure TElList.Insert(Index: Integer; Item: Pointer);
 begin
-  if (Index < 0) or (Index > FCount) then
-    RaiseOutOfBoundsError(Index);
-  if FCount = FCapacity then
-  Begin
-    Inc(FCapacity, Min(Count * 2 + 1, AlignMem));
-    ReAllocMem(FList, FCapacity * SizeOf(Pointer));
-  End;
-  // if Index < FCount then == Useless. See first line.
-  System.Move(FList^[Index],
-              FList^[Index + 1],
-              (FCount - Index) * SizeOf(Pointer));
-  FList^[Index] := Item;
-  Inc(FCount);
+  FList.Insert(Index, Item);
 end;
 
 function TElList.Last: Pointer;
 begin
-  if FCount = 0 then
-    result := nil
-  else
-    Result := FList^[Pred(FCount)];
+  Result := FList.Last;
 end;
 
 procedure TElList.Move(CurIndex, NewIndex: Integer);
-var
-  Item: Pointer;
 begin
-  if CurIndex <> NewIndex then
-  begin
-    if (NewIndex < 0) or (NewIndex >= FCount) then
-      RaiseOutOfBoundsError(NewIndex);
-    Item := FList^[CurIndex];
-    IntDelete(CurIndex);
-    Insert(NewIndex, Item);
-  end;
+  FList.Move(CurIndex, NewIndex);
 end;
 
 procedure TElList.MoveRange(CurStart, CurEnd, NewStart: integer);
@@ -440,104 +323,75 @@ var
 begin
   if CurStart <> NewStart then
   begin
-    if (NewStart < 0) or (NewStart >= FCount) or
+    if (NewStart < 0) or (NewStart >= FList.Count) or
       ((NewStart >= CurStart) and (NewStart <= CurEnd)) then
       RaiseOutOfBoundsError(NewStart);
-    if (CurStart < 0) or (CurStart >= FCount) then
+    if (CurStart < 0) or (CurStart >= FList.Count) then
       RaiseOutOfBoundsError(CurStart);
-    if (CurEnd < 0) or (CurEnd >= FCount) then
+    if (CurEnd < 0) or (CurEnd >= FList.Count) then
       RaiseOutOfBoundsError(CurEnd);
     if CurStart > NewStart then
     begin
       bs := CurEnd - CurStart + 1;
       GetMem(P, bs * SizeOf(Pointer));
-      System.Move(FList^[CurStart], P^, BS * SizeOf(Pointer));
-      System.Move(FList^[NewStart], FList^[NewStart + BS], (CurStart - 
+      System.Move(FList[CurStart]^, P^, BS * SizeOf(Pointer));
+      System.Move(FList[NewStart]^, FList[NewStart + BS]^, (CurStart -
           NewStart) * SizeOf(Pointer));
-      System.Move(P^, FList^[NewStart], BS * SizeOf(Pointer));
+      System.Move(P^, FList[NewStart]^, BS * SizeOf(Pointer));
       FreeMem(P);
     end else
     begin
       bs := CurEnd - CurStart + 1;
       GetMem(P, BS * SizeOf(Pointer));
-      System.Move(FList^[CurStart], P^, BS * SizeOf(Pointer));
-      System.Move(FList^[CurEnd + 1], FList^[CurStart], (NewStart - CurEnd) * 
+      System.Move(FList[CurStart]^, P^, BS * SizeOf(Pointer));
+      System.Move(FList[CurEnd + 1]^, FList[CurStart]^, (NewStart - CurEnd) *
           SizeOf(Pointer));
       NewStart := CurStart - 1 + NewStart - CurEnd;
-      System.Move(P^, FList^[NewStart], BS * SizeOf(Pointer));
+      System.Move(P^, FList[NewStart]^, BS * SizeOf(Pointer));
       FreeMem(P);
     end;
   end;
 end;
 
 procedure TElList.Pack;
-var
-  I: Integer;
 begin
-  for I := FCount - 1 downto 0 do
-    if Items[I] = nil then Delete(I);
+  FList.Pack;
 end;
 
 procedure TElList.Put(Index: Integer; Item: Pointer);
 begin
-  if (Index < 0) or (Index >= FCount) then
+  if (Index < 0) or (Index >= FList.Count) then
     RaiseOutOfBoundsError(Index);
   if (FList[Index] <> nil) And Assigned(FOnDelete) then
-   FOnDelete(Self, FList^[Index]);
-  FList^[Index] := Item;
+   FOnDelete(Self, FList[Index]);
+  FList[Index] := Item;
 end;
 
 function TElList.Remove(Item: Pointer): Integer;
 begin
-  Result := IndexOf(Item);
-  // changed by chmv. if Result <> -1 then
-  if Result >= 0 then
-  Begin
-    TriggerDeleteEvent(FList^[Result]);
-    Dec(FCount);
-    // if Index < FCount then == Useless. See above.
-    System.Move(FList^[Result + 1],
-                FList^[Result],
-                (FCount - Result) * SizeOf(Pointer));
-    If FCount < FCapacity shr 1 Then
-    Begin
-      FCapacity := FCapacity shr 1;
-      ReAllocMem(FList, FCapacity * SizeOf(Pointer));
-    End;
-  End;
+  Result := FList.Remove(Item);
 end;
 
 procedure TElList.SetCapacity(NewCapacity: Integer);
 begin
-  if (NewCapacity < FCount) or (NewCapacity > MaxListSize) then
-    RaiseOutOfBoundsError(NewCapacity);
-  if NewCapacity <> FCapacity then
-  begin
-    ReallocMem(FList, NewCapacity * SizeOf(Pointer));
-    FCapacity := NewCapacity;
-  end;
+  FList.Capacity := NewCapacity;
 end;
 
 procedure TElList.SetCount(NewCount: Integer);
 begin
-  if (NewCount < 0) or (NewCount > MaxListSize) then
-    RaiseOutOfBoundsError(NewCount);
-  if NewCount > FCapacity then SetCapacity(NewCount);
-  if NewCount > FCount then
-    FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0);
-  FCount := NewCount;
+  FList.Capacity := NewCount;
 end;
 
 procedure TElList.Sort(Compare: TElListSortCompare; Cargo: Pointer);
 begin
-  if (FList <> nil) and (Count > 0) then
-    QuickSort(FList, 0, Count - 1, Compare, Cargo);
+  if (FList <> nil) and (FList.Count > 0) then
+    QuickSort(FList.Items[0], 0, FList.Count - 1, Compare, Cargo);
 end;
 
 procedure TElList.SortC(Compare: TElListSortCompareEx; Cargo: Pointer);
 begin
-  if (FList <> nil) and (Count > 0) then
-    QuickSortC(FList, 0, Count - 1, Compare, Cargo);
+  if (FList <> nil) and (FList.Count > 0) then
+    QuickSortC(FList.Items[0], 0, FList.Count - 1, Compare, Cargo);
 end;
 
 procedure TElList.TriggerDeleteEvent(Item: Pointer);
@@ -550,5 +404,14 @@ begin
     FOnDelete(Self, Item);
 end;
 
+function TElList.GetCapacity(): Integer;
+begin
+  Result := FList.Capacity;
+end;
+
+function TElList.GetCount(): Integer;
+begin
+  Result := FList.Count;
+end;
 
 end.

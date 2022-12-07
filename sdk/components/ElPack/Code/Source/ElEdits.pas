@@ -1031,11 +1031,7 @@ begin
   end;
   {$ifdef ELPACK_UNICODE}
   if IsWinNTUp then
-    {$ifndef VCL_4_USED}
-    Result := GetTextExtentExPointW(DC, PWideChar(lpszStr), cchString, nMaxExtent, lpnFit, alpDX^, lpSize)
-    {$else}
     Result := GetTextExtentExPointW(DC, PWideChar(lpszStr), cchString, nMaxExtent, @lpnFit, alpDX, lpSize)
-    {$endif}
   else
   begin
     i := 0;
@@ -1926,11 +1922,11 @@ begin
     {$endif}
     begin
       Len := MultiByteToWideChar(GetACP(), MB_PRECOMPOSED or MB_USEGLYPHCHARS,
-                                 PChar(Temp), Length(Temp), nil, 0);
+                                 PAnsiChar(Temp), Length(Temp), nil, 0);
       if Len > 0 then
       begin
         SetLength(ANewStr, Len);
-        MultiByteToWideChar(GetACP(), MB_PRECOMPOSED or MB_USEGLYPHCHARS, PChar(Temp),
+        MultiByteToWideChar(GetACP(), MB_PRECOMPOSED or MB_USEGLYPHCHARS, PAnsiChar(Temp),
                             Length(Temp), PWideChar(ANewStr), Len)
       end
       else
@@ -3976,9 +3972,9 @@ begin
   KeyboardCodePage := StrToIntDef(Buf, GetACP);
 
   // Получаем длину результирующей строки
-  LenRes := MultiByteToWideChar(KeyboardCodePage, MB_PRECOMPOSED or MB_USEGLYPHCHARS, PChar(Key), Length(Key), nil, 0);
+  LenRes := MultiByteToWideChar(KeyboardCodePage, MB_PRECOMPOSED or MB_USEGLYPHCHARS, PAnsiChar(Key), Length(Key), nil, 0);
   SetLength(Result, LenRes);
-  MultiByteToWideChar(KeyboardCodePage, MB_PRECOMPOSED or MB_USEGLYPHCHARS, PChar(Key), Length(Key), PWideChar(Result), LenRes);
+  MultiByteToWideChar(KeyboardCodePage, MB_PRECOMPOSED or MB_USEGLYPHCHARS, PAnsiChar(Key), Length(Key), PWideChar(Result), LenRes);
 end;
 
 (*

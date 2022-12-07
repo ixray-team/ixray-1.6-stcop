@@ -64,7 +64,8 @@ Types,
   ElTools,
   ElQueue,
   ElImgFrm,
-  ElCGControl;
+  ElCGControl,
+  ElList;
 
 type
 
@@ -130,7 +131,7 @@ type
     FLegendWidth : Integer;
     FLegendAtRight : Boolean;
 
-    FEntryList : TList;
+    FEntryList : TElList;
     FShowLegend : Boolean;
     FShowMinMax : Boolean;
     FShowGrid : Boolean;
@@ -986,7 +987,7 @@ begin
   inherited Create(AOwner);
   ControlStyle := [csClickEvents, csDoubleClicks, csCaptureMouse,
     csDesignInteractive, csReplicatable, csOpaque{$ifndef CLX_USED}, csReflector{$endif}];
-  FEntryList := TList.Create;
+  FEntryList := TElList.Create;
   FLegendAtRight := true;
   FLegendWidth := 100;
   FHGridLines := 5;

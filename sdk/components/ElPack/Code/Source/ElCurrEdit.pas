@@ -503,7 +503,7 @@ type
 
 procedure TElCurrPartEdit.WMChar(var Message: TMessage);
 begin
-  if (TWMChar(Message).CharCode = Ord(DecimalSeparator))
+  if (TWMChar(Message).CharCode = Ord(FormatSettings.DecimalSeparator))
      or (TWMChar(Message).CharCode = Ord('.'))
      or (TWMChar(Message).CharCode = Ord(','))
   then
@@ -632,7 +632,7 @@ begin
   {$endif}
 
   FBorderStyle := bsSingle;
-  FDecimalPlaces := SysUtils.CurrencyDecimals;
+  FDecimalPlaces := FormatSettings.CurrencyDecimals;
   FUseSystemDecimalPlaces := True;
   FCurrencySymbol := '';
   FCurrencySymbolPosition := ecsPosRight;
@@ -844,7 +844,7 @@ begin
     begin
       Dec(cx, FSWidth);
     end;
-    S := DecimalSeparator;
+    S := FormatSettings.DecimalSeparator;
     TextOut(Canvas.Handle, cx, eh, PChar(S), Length(S));
   end;
 
@@ -1076,7 +1076,7 @@ begin
   end
   else
   begin
-    S := '0' + DecimalSeparator + Copy(S, 1, DecimalPlaces);
+    S := '0' + FormatSettings.DecimalSeparator + Copy(S, 1, DecimalPlaces);
     FAbsValue := StrToCurr(S) + Trunc(FAbsValue);
     UpdatePartsWidth;
     SetModified(true);
@@ -1243,7 +1243,7 @@ begin
       FSignWidth := 0;
 
     // calculate decimal separator width in pixels
-    FDSWidth := Canvas.TextWidth(DecimalSeparator);
+    FDSWidth := Canvas.TextWidth(FormatSettings.DecimalSeparator);
 
     // calculate fractional part editor width in pixels
     FDWidth := 0;
@@ -1284,7 +1284,7 @@ var
   IPos: Integer;
 begin
   Result := CurrToStrF(AValue, ffFixed, DecimalPlaces);
-  IPos := Pos(DecimalSeparator, Result);
+  IPos := Pos(FormatSettings.DecimalSeparator, Result);
   if IPos > 0 then
     Result := Copy(Result, Succ(IPos), Length(Result))
   else
@@ -1308,7 +1308,7 @@ begin
   begin
     if Value then
     begin
-      DecimalPlaces := SysUtils.CurrencyDecimals;
+      DecimalPlaces := FormatSettings.CurrencyDecimals;
     end;
     FUseSystemDecimalPlaces := Value;
   end;
@@ -1344,8 +1344,8 @@ begin
   begin
     if Value then
     begin
-      CurrencySymbol := SysUtils.CurrencyString;
-      case SysUtils.CurrencyFormat of
+      CurrencySymbol := FormatSettings.CurrencyString;
+      case FormatSettings.CurrencyFormat of
         0: CurrencySymbolPosition := ecsPosLeft;
         1: CurrencySymbolPosition := ecsPosRight;
         2:

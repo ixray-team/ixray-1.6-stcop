@@ -169,11 +169,7 @@ end;
 
 procedure TElDriveComboBox.FillItems;
 var
-{$ifdef VCL_4_USED}
     i : Cardinal;
-{$else}
-    i : integer;
-{$endif}
     c : char;
     sv: integer;
     Drives: set of 0..25;
@@ -191,11 +187,7 @@ var
     var
       Buf : array [0..MAX_PATH] of Char;
       Drv : array [0..3] of Char;
-{$ifdef VCL_4_USED}
       BufSize: Cardinal;
-{$else}
-      BufSize: Integer;
-{$endif}
     begin
       BufSize := sizeof(buf);
       StrPCopy(Drv, Volume);

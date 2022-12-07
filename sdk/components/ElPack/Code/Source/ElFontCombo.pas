@@ -194,7 +194,7 @@ function EnumFontsProc(var EnumLogFont: TEnumLogFont;
 var FontName : string;
 
 begin
-  FontName := StrPas(@EnumLogFont.elfLogFont.lfFaceName);
+  FontName := StrPas(PAnsiChar(AnsiString(EnumLogFont.elfLogFont.lfFaceName)));
   if IsValidFont(TElFontComboBox(Pointer(Data)), EnumLogFont.elfLogFont, FontType) then
     TElFontComboBox(Pointer(Data)).AddFont(FontName, FontType);
   Result := 1;  

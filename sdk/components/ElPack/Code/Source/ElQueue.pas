@@ -163,15 +163,15 @@ begin
   else if NewCapacity < FCapacity then
   begin
 {$ifndef KYLIX_USED}
-    MoveMemory(FList, @(FList[FCapacity - NewCapacity]),
+    MoveMemory(FList^, @(FList^[FCapacity - NewCapacity]),
       (NewCapacity) * SizeOf(Pointer));
 {$else}
-    memmove(FList, @(FList[FCapacity - NewCapacity]),
+    memmove(FList^, @(FList^[FCapacity - NewCapacity]),
       (NewCapacity) * SizeOf(Pointer));
 {$endif}
     ReallocMem(FList, NewCapacity * SizeOf(Pointer));
     FCapacity := NewCapacity;
-    if FCapacity = 0 then FList := nil;
+    if FCapacity = 0 then FList^ := nil;
   end;
 end;
 

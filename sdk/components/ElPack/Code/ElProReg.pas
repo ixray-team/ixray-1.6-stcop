@@ -15,14 +15,10 @@ unit ElProReg;
 interface
 
 uses TypInfo,
-{$ifdef VCL_6_USED}
      DesignEditors, 
      DesignWindows, 
      DsnConst, 
      DesignIntf,
-{$else}
-     DsgnIntf,
-{$endif}
      Classes,
 
      ElShellCtl,

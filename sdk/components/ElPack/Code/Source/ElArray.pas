@@ -134,7 +134,7 @@ function TElArray.Add(Item: Pointer): Integer;
 begin
   Result := FCount;
   if Result = FCapacity then Grow;
-  FList^[Result] := Item;
+  FList[Result] := Item;
   Inc(FCount);
 end;
 
@@ -143,7 +143,7 @@ begin
   Clear;
   SetCapacity(AList.Capacity);
   SetCount(AList.Count);
-  System.Move(AList.FList^[0], FList^[0], FCount);
+  System.Move(AList.FList[0], FList[0], FCount);
 end;
 
 procedure TElArray.Clear;
@@ -170,10 +170,10 @@ end;
 procedure TElArray.Delete(Index: Integer);
 begin
   if (Index < 0) or (Index >= FCount) then RaiseOutOfBoundsError(Index);
-  TriggerDeleteEvent(FList^[Index]);
-  if AutoClearObjects then TObject(FList^[Index]).Free;
+  TriggerDeleteEvent(FList[Index]);
+  if AutoClearObjects then TObject(FList[Index]).Free;
   Dec(FCount);
-  if Index < FCount then System.Move(FList^[Index + 1], FList^[Index], (FCount - Index) * SizeOf(Pointer));
+  if Index < FCount then System.Move(FList[Index + 1], FList[Index], (FCount - Index) * SizeOf(Pointer));
   if FCount < (FCapacity div 2) then SetCapacity(FCapacity div 2);
 end;
 
@@ -185,9 +185,9 @@ begin
   if (Index2 < 0) then RaiseOutOfBoundsError(Index2);
   if (Index1 >= FCount) then Count := Index1 + 1;
   if (Index2 >= FCount) then Count := Index2 + 1;
-  Item := FList^[Index1];
-  FList^[Index1] := FList^[Index2];
-  FList^[Index2] := Item;
+  Item := FList[Index1];
+  FList[Index1] := FList[Index2];
+  FList[Index2] := Item;
 end;
 
 function TElArray.Expand: TElArray;
@@ -204,7 +204,7 @@ end;
 function TElArray.Get(Index: Integer): Pointer;
 begin
   if (Index < 0) then RaiseOutOfBoundsError(Index);
-  if (Index >= FCount) then result := nil else Result := FList^[Index];
+  if (Index >= FCount) then result := nil else Result := FList[Index];
 end;
 
 procedure TElArray.Grow;
@@ -226,7 +226,7 @@ begin
   if (StartIndex >= FCount) then result := -1 else
   begin
     Result := StartIndex;
-    while (Result < FCount) and (FList^[Result] <> Item) do Inc(Result);
+    while (Result < FCount) and (FList[Result] <> Item) do Inc(Result);
     if Result = FCount then Result := -1;
   end;
 end;
@@ -235,13 +235,13 @@ function TElArray.IndexOfBack(StartIndex: integer; Item: Pointer): Integer;
 begin
   if (StartIndex < 0) then RaiseOutOfBoundsError(StartIndex);
   if (StartIndex >= FCount) then result := FCount - 1 else Result := StartIndex;
-  while (Result >= 0) and (FList^[Result] <> Item) do dec(Result);
+  while (Result >= 0) and (FList[Result] <> Item) do dec(Result);
 end;
 
 function TElArray.IndexOf(Item: Pointer): Integer;
 begin
   Result := 0;
-  while (Result < FCount) and (FList^[Result] <> Item) do Inc(Result);
+  while (Result < FCount) and (FList[Result] <> Item) do Inc(Result);
   if Result = FCount then Result := -1;
 end;
 
@@ -249,8 +249,8 @@ procedure TElArray.Insert(Index: Integer; Item: Pointer);
 begin
   if (Index < 0) or (Index > FCount) then RaiseOutOfBoundsError(Index);
   if FCount = FCapacity then Grow;
-  if Index < FCount then System.Move(FList^[Index], FList^[Index + 1], (FCount - Index) * SizeOf(Pointer));
-  FList^[Index] := Item;
+  if Index < FCount then System.Move(FList[Index], FList[Index + 1], (FCount - Index) * SizeOf(Pointer));
+  FList[Index] := Item;
   Inc(FCount);
 end;
 
@@ -274,18 +274,18 @@ begin
     begin
       bs := CurEnd - CurStart + 1;
       GetMem(P, bs * SizeOf(Pointer));
-      System.Move(FList^[CurStart], P^, BS * SizeOf(Pointer));
-      System.Move(FList^[NewStart], FList^[NewStart + BS], (CurStart - NewStart) * SizeOf(Pointer));
-      System.Move(P^, FList^[NewStart], BS * SizeOf(Pointer));
+      System.Move(FList[CurStart], P^, BS * SizeOf(Pointer));
+      System.Move(FList[NewStart], FList[NewStart + BS], (CurStart - NewStart) * SizeOf(Pointer));
+      System.Move(P^, FList[NewStart], BS * SizeOf(Pointer));
       FreeMem(P);
     end else
     begin
       bs := CurEnd - CurStart + 1;
       GetMem(P, BS * SizeOf(Pointer));
-      System.Move(FList^[CurStart], P^, BS * SizeOf(Pointer));
-      System.Move(FList^[CurEnd + 1], FList^[CurStart], (NewStart - CurEnd) * SizeOf(Pointer));
+      System.Move(FList[CurStart], P^, BS * SizeOf(Pointer));
+      System.Move(FList[CurEnd + 1], FList[CurStart], (NewStart - CurEnd) * SizeOf(Pointer));
       NewStart := CurStart - 1 + NewStart - CurEnd;
-      System.Move(P^, FList^[NewStart], BS * SizeOf(Pointer));
+      System.Move(P^, FList[NewStart], BS * SizeOf(Pointer));
       FreeMem(P);
     end;
   end;
@@ -310,15 +310,15 @@ procedure TElArray.Put(Index: Integer; Item: Pointer);
 begin
   if (Index < 0) then RaiseOutOfBoundsError(Index);
   if (Index >= FCount) then Count := Index + 1;
-  if FList^[Index] <> Item then
+  if FList[Index] <> Item then
   begin
-    TriggerDeleteEvent(FList^[Index]);
+    TriggerDeleteEvent(FList[Index]);
     if AutoClearObjects then 
       try 
-        TObject(FList^[Index]).Free; 
+        TObject(FList[Index]).Free; 
       except 
       end;
-    FList^[Index] := Item;
+    FList[Index] := Item;
   end;
 end;
 
@@ -358,7 +358,7 @@ begin
     RaiseOutOfBoundsError(NewCount);
   if NewCount > FCapacity then SetCapacity(NewCount);
   if NewCount > FCount then
-    FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0);
+    FillChar(FList[FCount], (NewCount - FCount) * SizeOf(Pointer), 0);
   FCount := NewCount;
 end;
 

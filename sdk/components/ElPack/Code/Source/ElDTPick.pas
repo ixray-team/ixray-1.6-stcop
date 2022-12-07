@@ -934,10 +934,10 @@ begin
                   S1 := IntToStr(St.wMonth);
               end else
               if Part.Text = 'MMM' then
-                S1 := ShortMonthNames[St.wMonth]
+                S1 := FormatSettings.ShortMonthNames[St.wMonth]
               else
               if Part.Text = 'MMMM' then
-                S1 := LongMonthNames[St.wMonth];
+                S1 := FormatSettings.LongMonthNames[St.wMonth];
             end;
           end;
        3: begin
@@ -1019,9 +1019,9 @@ begin
               if s1 = 'ampm' then
               begin
                 if ST.wHour < 12 then
-                   S1 := TimeAMString
+                   S1 := FormatSettings.TimeAMString
                 else
-                   S1 := TimePMString;
+                   S1 := FormatSettings.TimePMString;
               end else
               if s1 = 'am/pm' then
               begin
@@ -1041,16 +1041,16 @@ begin
           end;
        9: begin
             if Part.Text = '/' then
-               S1 := DateSeparator
+               S1 := FormatSettings.DateSeparator
             else
             if Part.Text = ':' then
-               S1 := TimeSeparator;
+               S1 := FormatSettings.TimeSeparator;
           end;
        10:begin
             if Length(Part.Text) = 3 then
-               S1 := ShortDayNames[ST.wDayOfWeek + 1]
+               S1 := FormatSettings.ShortDayNames[ST.wDayOfWeek + 1]
             else
-               S1 := LongDayNames[ST.wDayOfWeek + 1];
+               S1 := FormatSettings.LongDayNames[ST.wDayOfWeek + 1];
           end;
     end;
 
@@ -1246,13 +1246,13 @@ begin
           if count = 6 then
           begin
             Delete(Format, C, 6);
-            Insert(LongDateFormat, Format, C);
+            Insert(FormatSettings.LongDateFormat, Format, C);
             P := PChar(Format) + C - 2;
           end
           else
           begin
             Delete(Format, C, 5);
-            Insert(ShortDateFormat, Format, C);
+            Insert(FormatSettings.ShortDateFormat, Format, C);
             P := PChar(Format) + C - 2;
           end;
         end;
@@ -1314,7 +1314,7 @@ begin
         LastToken := P^;
         c := P - PChar(Format);
         Delete(Format, C + 1, 1);
-        Insert(ShortDateFormat + #32 + LongTimeFormat, Format, C);
+        Insert(FormatSettings.ShortDateFormat + #32 + FormatSettings.LongTimeFormat, Format, C);
         P := PChar(Format) + C - 1;
       end
       else
@@ -1326,14 +1326,14 @@ begin
         if (p^ = 't') or (p^ = 'T') then
         begin
           Delete(Format, C + 1, 2);
-          Insert(LongTimeFormat, Format, C + 1);
+          Insert(FormatSettings.LongTimeFormat, Format, C + 1);
           P := PChar(Format) + C - 1;
         end
         else
         begin
           dec(p);
           Delete(Format, C + 1, 1);
-          Insert(ShortTimeFormat, Format, C + 1);
+          Insert(FormatSettings.ShortTimeFormat, Format, C + 1);
           P := PChar(Format) + C - 1;
         end;
       end else
@@ -1407,10 +1407,10 @@ function TElDateTimePicker.GetStdFormat(Fmt : TElDatePickerFormat) : string;
 begin
   case Fmt of
     edfShortDateLongTime: result := 'c';
-    edfLongDate         : result := LongDateFormat;
-    edfShortDate        : result := ShortDateFormat;
-    edfLongTime         : result := LongTimeFormat;
-    edfShortTime        : result := ShortTimeFormat;
+    edfLongDate         : result := FormatSettings.LongDateFormat;
+    edfShortDate        : result := FormatSettings.ShortDateFormat;
+    edfLongTime         : result := FormatSettings.LongTimeFormat;
+    edfShortTime        : result := FormatSettings.ShortTimeFormat;
     edfCustom           : result := 'c';
   end;
 end;
@@ -2215,8 +2215,8 @@ begin
               GetTimePMChar,
               Upcase(GetTimeAMChar),
               Upcase(GetTimePMChar),
-              DateSeparator,
-              TimeSeparator])) then
+              FormatSettings.DateSeparator,
+              FormatSettings.TimeSeparator])) then
         begin
           {$ifndef CLX_USED}
           if Key in [VK_NUMPAD0..VK_NUMPAD9] then
@@ -2389,9 +2389,9 @@ begin
              ((PDTFPart(DTFParts[FCurPart + 1]).DPart = 9) or
               ((PDTFPart(DTFParts[FCurPart + 1]).DPart = -1) and
                ((Part.DPart in [0..3]) and
-                (PDTFPart(DTFParts[FCurPart + 1]).Text = DateSeparator)) or
+                (PDTFPart(DTFParts[FCurPart + 1]).Text = FormatSettings.DateSeparator)) or
                ((Part.DPart in [4..7]) and
-                (PDTFPart(DTFParts[FCurPart + 1]).Text = TimeSeparator)))) then
+                (PDTFPart(DTFParts[FCurPart + 1]).Text = FormatSettings.TimeSeparator)))) then
           begin
             if Char(Key) = PDTFPart(DTFParts[FCurPart + 1]).Text then
             begin
@@ -2419,8 +2419,8 @@ begin
           else
           if Part.DPart = 8 then
           begin
-            if ((Length(TimeAMString) > 0) and
-                 ((Char(Key) = UpCase(TimeAMString[1])) or (Char(Key - 32) = UpCase(TimeAMString[1])))) then
+            if ((Length(FormatSettings.TimeAMString) > 0) and
+                 ((Char(Key) = UpCase(FormatSettings.TimeAMString[1])) or (Char(Key - 32) = UpCase(FormatSettings.TimeAMString[1])))) then
             begin
               if ST.wHour >= 12 then
               begin
@@ -2429,8 +2429,8 @@ begin
                 ch := true;
               end;
             end else
-            if ((Length(TimePMString) > 0) and
-                 ((Char(Key) = UpCase(TimePMString[1])) or (Char(Key - 32) = UpCase(TimePMString[1])))) then
+            if ((Length(FormatSettings.TimePMString) > 0) and
+                 ((Char(Key) = UpCase(FormatSettings.TimePMString[1])) or (Char(Key - 32) = UpCase(FormatSettings.TimePMString[1])))) then
             begin
               if ST.wHour < 12 then
               begin

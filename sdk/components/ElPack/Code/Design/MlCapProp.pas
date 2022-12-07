@@ -14,11 +14,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,
-{$else}
-  DsgnIntf,
-{$endif}
 
   Typinfo,
   {$ifdef ELPACK_UNICODE}

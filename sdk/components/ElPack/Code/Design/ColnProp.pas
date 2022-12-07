@@ -23,11 +23,7 @@ interface
 
 uses Windows,
   Classes, Forms, Controls, SysUtils,
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,
-{$else}
-  DsgnIntf,
-{$endif}
   ColnEdit, ElStatBar, ElSideBar;
 
 type

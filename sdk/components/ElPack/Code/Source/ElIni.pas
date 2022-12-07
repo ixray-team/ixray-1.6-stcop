@@ -208,7 +208,7 @@ type
     function Delete(Key, ValueName : string): Boolean;
     function EnumSubKeys(Key : string; Strings : TStrings): Boolean;
     function EnumValues(Key : string; Strings : TStrings): Boolean;
-    function FullKey(Key : string): String;
+    function FullKey(Key : String): String;
     function GetValueType(Key, ValueName : string): TElValueType;
     function KeyExists(Key : string): Boolean;
     procedure LoadFromStream(Stream : TStream);
@@ -639,7 +639,7 @@ begin
   OpenKey(S, false);
 end;
 
-function TElIniFile.FullKey(Key : string): String;
+function TElIniFile.FullKey(Key : String): String;
 begin
   if (Length(Key) = 0) or (Key[1] <> FDelimiter) then
     if FCurrentKey = FDelimiter then

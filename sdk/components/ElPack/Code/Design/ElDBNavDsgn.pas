@@ -13,11 +13,7 @@ unit ElDBNavDsgn;
 interface
 
 uses ElDBCtrls,
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst
-{$else}
-  DsgnIntf
-{$endif}
 ;
 
 type

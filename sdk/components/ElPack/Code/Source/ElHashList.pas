@@ -119,13 +119,13 @@ var
 begin
   Index := GetIndex(Hash);
   if (index < 0) or (index >= FCount) then raise EElHashListError.Create('Hash not found.');
-  if assigned(FOnDelete) then FOnDelete(Self, FList^[Index]^.ItemData);
+  if assigned(FOnDelete) then FOnDelete(Self, FList[Index]^.ItemData);
 
-  if AutoClearObjects and (FList^[Index]^.ItemData <> nil) then TObject(FList^[Index]^.ItemData).Free;
+  if AutoClearObjects and (FList[Index]^.ItemData <> nil) then TObject(FList[Index]^.ItemData).Free;
 
   Dec(FCount);
   if Index < FCount then
-    System.Move(FList^[Index + 1], FList^[Index], (FCount - Index) * SizeOf(Pointer));
+    System.Move(FList[Index + 1], FList[Index], (FCount - Index) * SizeOf(Pointer));
   if FCount < (FCapacity div 2) then SetCapacity(FCapacity div 2);
 end; { DeleteItem }
 
@@ -166,13 +166,13 @@ begin
       h := CalcQuickHash(Hash)
     else
       h := CrcStr(Hash);
-    while (i < FCount) and (integer(FList^[i]^.Hash) <> h) do
+    while (i < FCount) and (integer(FList[i]^.Hash) <> h) do
       inc(i);
   end
   else
   begin
     while (i < FCount) and
-      (not CompareMem(P.Hash, FList^[i]^.Hash, SizeOf(Integer) * 4)) do
+      (not CompareMem(P.Hash, FList[i]^.Hash, SizeOf(Integer) * 4)) do
       inc(i);
   end;
   b := i <> FCount;
@@ -195,9 +195,9 @@ begin
   P^.ItemData := Value;
   if FCount = FCapacity then Grow;
   if Index < FCount then
-    System.Move(FList^[Index], FList^[Index + 1],
+    System.Move(FList[Index], FList[Index + 1],
       (FCount - Index) * SizeOf(Pointer));
-  FList^[Index] := P;
+  FList[Index] := P;
   Inc(FCount);
 end; { InsertItem }
 
@@ -215,7 +215,7 @@ begin
       result := nil;
   end
   else
-    result := FList^[i]^.ItemData;
+    result := FList[i]^.ItemData;
 end; { GetItem }
 {$WARNINGS off}
 
@@ -251,10 +251,10 @@ begin
   end;
   i := 0;
   if (FQuickHash) or (FHashType <> ehtMD5) then
-    while (i < FCount) and (integer(FList^[i]^.Hash) <> h) do
+    while (i < FCount) and (integer(FList[i]^.Hash) <> h) do
       inc(i)
   else
-    while (i < FCount) and (not CompareMem(@Arr, FList^[i]^.Hash, SizeOf(Integer) * 4)) do
+    while (i < FCount) and (not CompareMem(@Arr, FList[i]^.Hash, SizeOf(Integer) * 4)) do
       inc(i);
   if i = FCount then
   begin
@@ -298,12 +298,12 @@ var
 begin
   for j := 0 to FCount - 1 do // Iterate
   begin
-    if assigned(FOnDelete) then FOnDelete(Self, FList^[j]^.ItemData);
-    if AutoClearObjects and (FList^[j]^.ItemData <> nil) then TObject(FList^[j]^.ItemData).Free;
+    if assigned(FOnDelete) then FOnDelete(Self, FList[j]^.ItemData);
+    if AutoClearObjects and (FList[j]^.ItemData <> nil) then TObject(FList[j]^.ItemData).Free;
     (*
-    if FHashType = ehtMD5 then Dispose(FList^[j]^.Hash);
+    if FHashType = ehtMD5 then Dispose(FList[j]^.Hash);
     *)
-    Dispose(FList^[j]);
+    Dispose(FList[j]);
   end;
   FCount := 0;
   SetCapacity(0);
@@ -314,7 +314,7 @@ begin
   if (Index < 0) or (Index >= FCount) then
     raise EElHashListError.Create('Invalid index.')
   else
-    result := FList^[Index]^.ItemData;
+    result := FList[Index]^.ItemData;
 end; { GetByIndex }
 
 procedure TElHashList.SetHashType(newValue : TElHashType);

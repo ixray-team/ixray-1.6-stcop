@@ -48,9 +48,7 @@ uses ElTree,
      ElStrUtils,
      ElVCLUtils,
      ElTools,
-{$ifdef VCL_4_USED}
      ImgList,
-{$endif}
      Windows,
      Graphics,
      StdCtrls,

@@ -110,7 +110,6 @@ type
   protected
     procedure RemoveHook(Hook : TElHook);
     procedure AddHook(Hook : TElHook);
-//    function HooksCount : integer;
 
     constructor Create;
     destructor Destroy; override;
@@ -226,13 +225,6 @@ begin
 {$endif}
 end; {AddHook}
 
-{
-function TCtlHook.HooksCount : integer;
-begin
-  result := FHooks.Count;
-end;
-}
-
 {$ifndef CLX_USED}
 procedure TCtlHook.HookWndProc(var Msg : TMessage);
 var
@@ -313,7 +305,9 @@ begin
     if Message.Msg = WM_REMOVEELHOOK then
     begin
       if TCtlHook(Message.lParam).FHooks.Count = 0 then
+      begin
          FCtlHooks.Remove(pointer(Message.lParam));
+      end;
       if FCtlHooks.Count = 0 then
       begin
         Free;

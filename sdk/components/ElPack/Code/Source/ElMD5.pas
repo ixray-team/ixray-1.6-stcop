@@ -252,12 +252,7 @@ implementation
 
 function ROL(A : Longint; Amount : BYTE) : Longint;
 begin
-  asm
-   mov cl, Amount
-   mov eax, a
-   rol eax, cl
-   mov result, eax
-  end;
+  Result := A shl Amount;
 end;
 {$WARNINGS on}
 

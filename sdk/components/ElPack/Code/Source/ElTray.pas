@@ -84,9 +84,7 @@ uses
   Forms,
   ElBaseComp,
   ExtCtrls,
-{$IFDEF VCL_4_USED}
   ImgList,
-{$ENDIF}
   ElVCLUtils,
   ElHook,
   ElTools,

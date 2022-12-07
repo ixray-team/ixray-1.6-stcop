@@ -69,6 +69,7 @@ uses Classes;
   uses Classes;
   {$endif}
 {$endif}
+uses RTLConsts;
 type
 
 {$ifdef MSWINDOWS}
@@ -113,7 +114,6 @@ const
   WideCRLF = WideString(#13#10#0);
 {$endif}
 
-{$IFDEF WIN32}
 const
   oleaut = 'oleaut32.dll';
 
@@ -125,7 +125,6 @@ procedure SysFreeString(S: PWideChar); stdcall;
 
 function SysStringLen(S: PWideChar): Integer; stdcall;
   external oleaut name 'SysStringLen';
-{$ENDIF WIN32}
 
 function IntToStrFmt(value: integer): string;
 function FloatToStrFmt(value: extended; decims: integer): string;
@@ -222,8 +221,8 @@ function WideMakeString(FLen: Integer; Seq : WideString): WideString;
 function WideStringDup(S : WideString) : PWideChar;
 
 function WidePos(const Substr, S : WideString) : integer;
-function WideStrScan(const Str: PWideChar; Chr: WideChar): PWideChar; assembler;
-function WideStrRScan(const Str: PWideChar; Chr: WideChar): PWideChar; assembler;
+function WideStrScan(const Str: PWideChar; Chr: WideChar): PWideChar;
+function WideStrRScan(const Str: PWideChar; Chr: WideChar): PWideChar;
 
 function WideQuotedStr(const S: WideString; Quote: WideChar): WideString;
 function WideExtractQuotedStr(var Src: PWideChar; Quote: WideChar): WideString;
@@ -240,7 +239,7 @@ procedure SetWideString(var S: WideString; Buffer: PWideChar; Len: Integer);
 
 function WideStrCopy(Target : PWideChar; Source : PWideChar) : PWideChar;
 function WideStrPCopy(Target : PWideChar; const Source: WideString): PWideChar;
-function WideStrComp(const S1, S2: PWideChar): Integer; assembler;
+function WideStrComp(const S1, S2: PWideChar): Integer;
 function WideStrLComp(const Str1, Str2: PWideChar; MaxLen: Cardinal): Integer;
 function WideStrLen(const Str: PWideChar): Cardinal;
 function WideStrPas(const Source: PWideChar): WideString;
@@ -457,7 +456,7 @@ begin
     if (sl > 3 + (i - 1)) and
       ((sl - j + 1) mod 3 = 0) and (j > i) then
     begin
-      result[k] := ThousandSeparator;
+      result[k] := FormatSettings.ThousandSeparator;
       inc(k);
     end;
     result[k] := S[j];
@@ -467,7 +466,7 @@ end;
 
 function FloatToStrFmt(value: extended; decims: integer): string;
 begin
-  result := IntToStrFmt(Trunc(Value)) + DecimalSeparator + IntToStr(Round(Frac(Value) * Power(10, decims)));
+  result := IntToStrFmt(Trunc(Value)) + FormatSettings.DecimalSeparator + IntToStr(Round(Frac(Value) * Power(10, decims)));
 end;
 
 function IntToStrPad(value: integer; MinSize: integer): string;
@@ -502,13 +501,13 @@ end;
 function OEMToStr(S: string): string;
 begin
   SetLength(Result, Length(S));
-  if Length(S) > 0 then OEMToChar(PChar(S), PChar(result));
+  if Length(S) > 0 then OEMToChar(PAnsiChar(S), PChar(result));
 end;
 
 function StrToOEM(S: string): string;
 begin
   SetLength(Result, Length(S));
-  if Length(S) > 0 then CharToOEM(PChar(S), PChar(result));
+  if Length(S) > 0 then CharToOEM(PWideChar(S), PAnsiChar(result));
 end;
 {$endif}
 
@@ -1122,7 +1121,7 @@ end;
 
 function CurrToPrettyStr(const Value: Currency): string;
 begin
-  Result := CurrToStrF(Value, ffCurrency, CurrencyDecimals);
+  Result := CurrToStrF(Value, ffCurrency, FormatSettings.CurrencyDecimals);
 end;
 
 function PrettyStrToCurr(const Value: string): Currency;
@@ -1144,9 +1143,9 @@ begin
     CurrNegFormatted := False;
     DigitsFound := False;
     FractPartMultiplicator := 0.0;
-    if CurrencyString <> '' then
+    if FormatSettings.CurrencyString <> '' then
     begin
-      CurrSymbolPosition := Pos(CurrencyString, Value);
+      CurrSymbolPosition := Pos(FormatSettings.CurrencyString, Value);
     end
     else
     begin
@@ -1160,7 +1159,7 @@ begin
       begin
         // skip currency symbol(s)
         if DigitsFound and CurrNegFormatted then Break;
-        Inc(I, Length(CurrencyString));
+        Inc(I, Length(FormatSettings.CurrencyString));
         Continue;
       end;
       Ch := Value[I];
@@ -1198,9 +1197,9 @@ begin
           end;
       else
         begin
-          if Ch <> ThousandSeparator then
+          if Ch <> FormatSettings.ThousandSeparator then
           begin
-            if Ch = DecimalSeparator then
+            if Ch = FormatSettings.DecimalSeparator then
             begin
               DigitsFound := True;
               if FractPartMultiplicator > 0.0 then
@@ -2948,46 +2947,14 @@ begin
 end;
 *)
 
-function WideStrScan(const Str: PWideChar; Chr: WideChar): PWideChar; assembler;
-asm
-        PUSH    EDI
-        PUSH    EAX
-        MOV     EDI,Str
-        MOV     ECX,0FFFFFFFFH
-        XOR     EAX,EAX
-        REPNE   SCASW
-        NOT     ECX
-        POP     EDI
-        MOV     AX, Chr
-        REPNE   SCASW
-        MOV     EAX,0
-        JNE     @@1
-        MOV     EAX, EDI
-        DEC     EAX
-        DEC     EAX
-@@1:    POP     EDI
+function WideStrScan(const Str: PWideChar; Chr: WideChar): PWideChar;
+begin
+  Result := StrScan(Str, Chr);
 end;
 
-function WideStrRScan(const Str: PWideChar; Chr: WideChar): PWideChar; assembler;
-asm
-        PUSH    EDI
-        MOV     EDI,Str
-        MOV     ECX,0FFFFFFFFH
-        XOR     AX,AX
-        REPNE   SCASW
-        NOT     ECX
-        STD
-        DEC     EDI
-        DEC     EDI
-        MOV     AX,Chr
-        REPNE   SCASW
-        MOV     EAX,0
-        JNE     @@1
-        MOV     EAX,EDI
-        INC     EAX
-        INC     EAX
-@@1:    CLD
-        POP     EDI
+function WideStrRScan(const Str: PWideChar; Chr: WideChar): PWideChar;
+begin
+  Result := StrRScan(Str, Chr);
 end;
 
 {$ifndef BROKEN_UNICODE}
@@ -3176,27 +3143,8 @@ begin
 end;
 
 function WideStrCopy(Target : PWideChar; Source: PWideChar): PWideChar;
-assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        MOV     ESI,EAX
-        MOV     EDI,EDX
-        MOV     ECX,0FFFFFFFFH
-        XOR     AX,AX
-        REPNE   SCASW
-        NOT     ECX
-        MOV     EDI,ESI
-        MOV     ESI,EDX
-        MOV     EDX,ECX
-        MOV     EAX,EDI
-        SHR     ECX,1
-        REP     MOVSD
-        MOV     ECX,EDX
-        AND     ECX,1
-        REP     MOVSW
-        POP     ESI
-        POP     EDI
+begin
+  Result := StrCopy(Target, Source);
 end;
 
 function WideStrPCopy(Target : PWideChar; const Source: WideString): PWideChar;
@@ -3204,61 +3152,19 @@ begin
   Result := WideStrLCopy(Target, PWideChar(Source), Length(Source));
 end;
 
-function WideStrComp(const S1, S2: PWideChar): Integer; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        MOV     EDI,EDX
-        MOV     ESI,EAX
-        MOV     ECX,0FFFFFFFFH
-        XOR     EAX,EAX
-        REPNE   SCASW
-        NOT     ECX
-        MOV     EDI,EDX
-        XOR     EDX,EDX
-        REPE    CMPSW
-        MOV     AX,[ESI-2]
-        MOV     DX,[EDI-2]
-        SUB     EAX,EDX
-        POP     ESI
-        POP     EDI
+function WideStrComp(const S1, S2: PWideChar): Integer;
+begin
+  Result := StrComp(S1, S2);
 end;
 
-function WideStrLComp(const Str1, Str2: PWideChar; MaxLen: Cardinal): Integer; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        PUSH    EBX
-        MOV     EDI,EDX
-        MOV     ESI,EAX
-        MOV     EBX,ECX
-        XOR     EAX,EAX
-        OR      ECX,ECX
-        JE      @@1
-        REPNE   SCASW
-        SUB     EBX,ECX
-        MOV     ECX,EBX
-        MOV     EDI,EDX
-        XOR     EDX,EDX
-        REPE    CMPSW
-        MOV     AX,[ESI-2]
-        MOV     DX,[EDI-2]
-        SUB     EAX,EDX
-@@1:    POP     EBX
-        POP     ESI
-        POP     EDI
+function WideStrLComp(const Str1, Str2: PWideChar; MaxLen: Cardinal): Integer;
+begin
+   Result := StrLComp(Str1, Str2, MaxLen);
 end;
 
-function WideStrLen(const Str: PWideChar): Cardinal; assembler;
-asm
-        MOV     EDX,EDI
-        MOV     EDI,EAX
-        MOV     ECX,0FFFFFFFFH
-        XOR     AX,AX
-        REPNE   SCASW
-        MOV     EAX,0FFFFFFFEH
-        SUB     EAX,ECX
-        MOV     EDI,EDX
+function WideStrLen(const Str: PWideChar): Cardinal;
+begin
+   Result := StrLen(Str);
 end;
 
 function WideStrPas(const Source: PWideChar): WideString;
@@ -3274,208 +3180,39 @@ begin
   end;
 end;
 
-procedure WideMove(const Source; var Dest; Count : Integer); assembler;
-asm
-{     ->EAX     Pointer to source       }
-{       EDX     Pointer to destination  }
-{       ECX     Count In Words          }
-
-        PUSH    ESI
-        PUSH    EDI
-        MOV     ESI,EAX
-        MOV     EDI,EDX
-        MOV     EDX,ECX
-        CMP     EDI,ESI
-        JA      @@1
-        JE      @@2
-        SHR     ECX,1
-        REP     MOVSD
-        MOV     ECX,EDX
-        AND     ECX,1
-        REP     MOVSW
-        JMP     @@2
-@@1:    LEA     ESI,[ESI+ECX*2-2]
-        LEA     EDI,[EDI+ECX*2-2]
-        AND     ECX,1
-        STD
-        REP     MOVSW
-        DEC     ESI
-        DEC     EDI
-        MOV     ECX,EDX
-        DEC     ESI
-        DEC     EDI
-        SHR     ECX,1
-        REP     MOVSD
-        CLD
-@@2:    POP     EDI
-        POP     ESI
+procedure WideMove(const Source; var Dest; Count : Integer);
+begin
+  Move(Source, Dest, Count);
 end;
 
-procedure FillWord(var X; Count: Integer; Value: Word); assembler;
-asm
-{     ->EAX     Pointer to destination  }
-{       EDX     count   }
-{       CX      value   }
-
-        PUSH    EDI
-
-        MOV     EDI,EAX { Point EDI to destination              }
-
-        MOV     EAX,ECX { Fill EAX with value repeated 2 times  }
-        SHL     EAX,16
-        MOV     AX,CX
-
-        MOV     ECX,EDX
-        SAR     ECX,1
-        JS      @@exit
-
-        REP     STOSD   { Fill count DIV 2 dwords       }
-
-        MOV     ECX,EDX
-        AND     ECX,1
-        REP     STOSW   { Fill count MOD 2 bytes        }
-
-@@exit:
-        POP     EDI
+procedure FillWord(var X; Count: Integer; Value: Word);
+begin
+  FillChar(X, Count, Value);
 end;
 
-procedure FillWideChar(var X; Count: Integer; Value: WideChar); assembler;
-asm
-{     ->EAX     Pointer to destination  }
-{       EDX     count   }
-{       CX      value   }
-
-        PUSH    EDI
-
-        MOV     EDI,EAX { Point EDI to destination              }
-
-        MOV     EAX,ECX { Fill EAX with value repeated 2 times  }
-        SHL     EAX,16
-        MOV     AX,CX
-
-        MOV     ECX,EDX
-        SAR     ECX,1
-        JS      @@exit
-
-        REP     STOSD   { Fill count DIV 2 dwords       }
-
-        MOV     ECX,EDX
-        AND     ECX,1
-        REP     STOSW   { Fill count MOD 2 bytes        }
-
-@@exit:
-        POP     EDI
+procedure FillWideChar(var X; Count: Integer; Value: WideChar);
+begin
+  FillChar(X, Count, Value);
 end;
 
-
-function WideStrMove(Dest: PWideChar; const Source: PWideChar; Count: Cardinal): PWideChar; assembler;
-asm
-        PUSH    ESI
-        PUSH    EDI
-        MOV     ESI,EDX
-        MOV     EDI,EAX
-        MOV     EDX,ECX
-        CMP     EDI,ESI
-        JA      @@1
-        JE      @@2
-        SHR     ECX,1
-        REP     MOVSD
-        MOV     ECX,EDX
-        AND     ECX,1
-        REP     MOVSW
-        JMP     @@2
-@@1:    LEA     ESI,[ESI+ECX*2-2]
-        LEA     EDI,[EDI+ECX*2-2]
-        AND     ECX,1
-        STD
-        REP     MOVSW
-        DEC     ESI
-        DEC     EDI
-        MOV     ECX,EDX
-        DEC     ESI
-        DEC     EDI
-        SHR     ECX,1
-        REP     MOVSD
-        CLD
-@@2:    POP     EDI
-        POP     ESI
+function WideStrMove(Dest: PWideChar; const Source: PWideChar; Count: Cardinal): PWideChar;
+begin
+  Result := StrMove(Dest, Source, Count);
 end;
 
-function WideStrECopy(Dest: PWideChar; const Source: PWideChar): PWideChar; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        MOV     ESI,EAX
-        MOV     EDI,EDX
-        MOV     ECX,0FFFFFFFFH
-        XOR     AX,AX
-        REPNE   SCASW
-        NOT     ECX
-        MOV     EDI,ESI
-        MOV     ESI,EDX
-        MOV     EDX,ECX
-        SHR     ECX,1
-        REP     MOVSD
-        MOV     ECX,EDX
-        AND     ECX,1
-        REP     MOVSW
-        LEA     EAX,[EDI-2]
-        POP     ESI
-        POP     EDI
+function WideStrECopy(Dest: PWideChar; const Source: PWideChar): PWideChar;
+begin
+   Result := StrECopy(Dest, Source);
 end;
 
-function WideStrLCopy(Dest: PWideChar; const Source: PWideChar; MaxLen: Cardinal): PWideChar; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        PUSH    EBX
-        MOV     ESI,EAX
-        MOV     EDI,EDX
-        MOV     EBX,ECX
-        XOR     AX,AX
-        TEST    ECX,ECX
-        JZ      @@1
-        REPNE   SCASW
-        JNE     @@1
-        INC     ECX
-@@1:    SUB     EBX,ECX
-        MOV     EDI,ESI
-        MOV     ESI,EDX
-        MOV     EDX,EDI
-        MOV     ECX,EBX
-        SHR     ECX,1
-        REP     MOVSD
-        MOV     ECX,EBX
-        AND     ECX,1
-        REP     MOVSW
-        STOSW
-        MOV     EAX,EDX
-        POP     EBX
-        POP     ESI
-        POP     EDI
+function WideStrLCopy(Dest: PWideChar; const Source: PWideChar; MaxLen: Cardinal): PWideChar;
+begin
+   Result := StrLCopy(Dest, Source, MaxLen);
 end;
 
-function WideStrLCat(Dest: PWideChar; const Source: PWideChar; MaxLen: Cardinal): PWideChar; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        PUSH    EBX
-        MOV     EDI,Dest
-        MOV     EBX,MaxLen
-        MOV     ESI,Source
-        SHL     EBX, 1
-        CALL    WideStrEnd
-        MOV     ECX,EDI
-        ADD     ECX,EBX
-        SUB     ECX,EAX
-        JBE     @@1
-        SHR     ECX, 1
-        MOV     EDX,ESI
-        CALL    WideStrLCopy
-@@1:    MOV     EAX,EDI
-        POP     EBX
-        POP     ESI
-        POP     EDI
+function WideStrLCat(Dest: PWideChar; const Source: PWideChar; MaxLen: Cardinal): PWideChar;
+begin
+   Result := StrLCat(Dest, Source, MaxLen);
 end;
 
 function WideStrCat(Dest: PWideChar; const Source: PWideChar): PWideChar;
@@ -3531,15 +3268,8 @@ end;
 
 {$ifndef KYLIX_USED}
 function WideStrAlloc(Size: Cardinal): PWideChar;
-asm
-        TEST    EAX,EAX
-        JE      @@1
-        PUSH    EAX
-        PUSH    0
-        CALL    SysAllocStringLen
-        TEST    EAX,EAX
-        JE      WStrError
-@@1:
+begin
+  Result := StrAlloc(Size);
 end;
 
 function WideStrBufSize(const Str: PWideChar): Cardinal;
@@ -3725,51 +3455,10 @@ begin
   result := true;
 end;
 
-function WideStrPos(const Str1, Str2: PWideChar): PWideChar; assembler;
-asm
-        PUSH    EDI
-        PUSH    ESI
-        PUSH    EBX
-        OR      EAX,EAX
-        JE      @@2
-        OR      EDX,EDX
-        JE      @@2
-        MOV     EBX,EAX
-        MOV     EDI,EDX
-        XOR     AX,AX
-        MOV     ECX,0FFFFFFFFH
-        REPNE   SCASW
-        NOT     ECX
-        DEC     ECX
-        JE      @@2
-        MOV     ESI,ECX
-        MOV     EDI,EBX
-        MOV     ECX,0FFFFFFFFH
-        REPNE   SCASW
-        NOT     ECX
-        SUB     ECX,ESI
-        JBE     @@2
-        MOV     EDI,EBX
-        LEA     EBX,[ESI-1]
-@@1:    MOV     ESI,EDX
-        LODSW
-        REPNE   SCASW
-        JNE     @@2
-        MOV     EAX,ECX
-        PUSH    EDI
-        MOV     ECX,EBX
-        REPE    CMPSW
-        POP     EDI
-        MOV     ECX,EAX
-        JNE     @@1
-        LEA     EAX,[EDI-2]
-        JMP     @@3
-@@2:    XOR     EAX,EAX
-@@3:    POP     EBX
-        POP     ESI
-        POP     EDI
+function WideStrPos(const Str1, Str2: PWideChar): PWideChar;
+begin
+   Result := StrPos(Str1, Str2);
 end;
-
 
 function WideCopy(S : WideString; SPos, SLen : integer) : WideString;
 begin

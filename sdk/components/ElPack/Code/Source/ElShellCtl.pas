@@ -85,9 +85,7 @@ uses
   {$ifdef VCL_4_USED}
   ImgList,
   {$endif}
-  {$ifdef VCL_6_USED}
   Variants,
-  {$endif}
   StdCtrls,
 {$ifdef VCL_6_USED}
 Types,
@@ -1550,16 +1548,8 @@ end;
 function TElShellTree.CheckChildren(Item : TElTreeItem; AFolder :
     IShellFolder): Boolean;
 var //t     : integer;
-    {$ifndef VCL_4_USED}
-    i     : integer;
-    {$else}
     i,
-    {$endif}
-    {$ifdef D_3}
-    j     : integer;
-    {$else}
     j,
-    {$endif}
     FAttr : cardinal;
     List  : IEnumIDList;
     Flags : Cardinal;
@@ -1611,16 +1601,9 @@ end;
 
 procedure TElShellTree.FillItemWithData(Item : TElShellTreeItem; AFolder :
     IShellFolder; recursive : integer);
-var {$ifndef VCL_4_USED}
-    i     : integer;
-    {$else}
+var
     i,
-    {$endif}
-    {$ifdef D_3}
-    j     : integer;
-    {$else}
     j,
-    {$endif}
     FAttr: cardinal;
     List : IEnumIDList;
     Flags: Cardinal;
@@ -2214,7 +2197,7 @@ end;
 procedure TElShellTree.TriggerVirtualValueNeeded(Item : TElTreeItem;
     SectionIndex : Integer; VarType : integer; var Value : Variant);
 begin
-  Value := Unassigned;
+  Value := Variants.Unassigned;
 end;
 
 procedure TElShellTree.TriggerSortBegin;
@@ -2396,11 +2379,8 @@ begin
 end;
 
 function TElShellTreeItem.GetPicture(ParentFolder : IShellFolder): Integer;
-var {$ifndef VCL_4_USED}
-    i      : integer;
-    {$else}
+var
     i      : Cardinal;
-    {$endif}
     // Icon   : IExtractIcon;
     APIDL  : PItemIDList;
 begin
@@ -2439,11 +2419,8 @@ end;
 
 
 procedure TElShellTreeItem.GetAttributes(iParentFolder : IShellFolder);
-var {$ifndef VCL_4_USED}
-    i      : integer;
-    {$else}
+var
     i      : Cardinal;
-    {$endif}
 //    APIDL  : PItemIDList;
 begin
   if FPIDL = nil then
@@ -2974,7 +2951,7 @@ begin
     FillMemory(@ICI, sizeof(ICI), 0);
     ICI.cbSize := SizeOf(ICI);
     ICI.nShow  := SW_SHOWNORMAL;
-    ICI.lpVerb := MakeIntResource(LOWORD(Message.wParam));
+    ICI.lpVerb := MakeIntResourceA(LOWORD(Message.wParam));
     if Integer(ICI.lpVerb) >= 0 then
       iCtxMenu.InvokeCommand(ICI);
   end;
@@ -3090,11 +3067,7 @@ procedure TElShellComboBox.FillCombo(BaseFolder : IShellFolder; BasePIDL :
     var ComboData : PElShellComboData;
         Str       : TStrRet;
         // Icon      : IExtractIcon;
-        {$ifdef VCL_4_USED}
         j         : Cardinal;
-        {$else}
-        j         : integer;
-        {$endif}
     begin
       ZeroMemory(@Str, sizeof(Str));
       Str.uType := STRRET_CSTR;
@@ -3172,16 +3145,8 @@ var PIDLList : TElList;
     Flags    : Cardinal;
     i        : integer;
     FAttr    : Cardinal;
-    {$ifdef D_3}
-    j        : integer;
-    {$else}
     j        : Cardinal;
-    {$endif}
-    {$ifndef VCL_4_USED}
-    k        : integer;
-    {$else}
     k        : Cardinal;
-    {$endif}
     MyComPIDL: PItemIDList;
     dFolder,
     iFolder  : IShellFolder;
@@ -3449,11 +3414,7 @@ var State : {$ifndef VCL_5_USED}StdCtrls{$else}Windows{$endif}.TOwnerDrawState;
 begin
   with Msg.DrawItemStruct^ do
   begin
-    {$IFDEF VCL_5_USED}
     State := TOwnerDrawState(LongRec(itemState).Lo);
-    {$ELSE}
-    State := TOwnerDrawState(WordRec(LongRec(itemState).Lo).Lo);
-    {$ENDIF}
     Canvas.Handle := hDC;
     Canvas.Font := Font;
     Canvas.Brush := Brush;
@@ -3826,16 +3787,9 @@ begin
 end;
 
 procedure TElShellList.RefreshList;
-var {$ifndef VCL_4_USED}
-    i        : integer;
-    {$else}
+var
     i        : Cardinal;
-    {$endif}
-    {$ifdef D_3}
-    j     : integer;
-    {$else}
     j,
-    {$endif}
     FAttr: cardinal;
     List : IEnumIDList;
     Flags: Cardinal;
@@ -4171,7 +4125,7 @@ begin
                           or SFGAO_CANRENAME or SFGAO_FILESYSANCESTOR
                           or SFGAO_FILESYSTEM or SFGAO_REMOVABLE;
 
-  FIFolder.GetAttributesOf(1, FRootPIDL, FAttr);
+  FIFolder.GetAttributesOf(1, FRootPIDL, Cardinal(FAttr));
   RefreshList;
 end;
 
@@ -4735,11 +4689,8 @@ begin
 end;
 
 function TElShellListItem.GetPicture(ParentFolder: IShellFolder): Integer;
-var {$ifndef VCL_4_USED}
-    i      : integer;
-    {$else}
+var
     i      : Cardinal;
-    {$endif}
     // Icon   : IExtractIcon;
     APIDL  : PItemIDList;
 begin
@@ -4777,11 +4728,8 @@ begin
 end;
 
 procedure TElShellListItem.GetAttributes(iParentFolder : IShellFolder);
-var {$ifndef VCL_4_USED}
-    i      : integer;
-    {$else}
+var
     i      : Cardinal;
-    {$endif}
     // Icon   : IExtractIcon;
 //    APIDL  : PItemIDList;
 begin
@@ -4887,7 +4835,7 @@ begin
     FillMemory(@ICI, sizeof(ICI), 0);
     ICI.cbSize := SizeOf(ICI);
     ICI.nShow  := SW_SHOWNORMAL;
-    ICI.lpVerb := MakeIntResource(LOWORD(Message.wParam));
+    ICI.lpVerb := MakeIntResourceA(LOWORD(Message.wParam));
     if Integer(ICI.lpVerb) >= 0 then
       iCtxMenu.InvokeCommand(ICI);
   end;

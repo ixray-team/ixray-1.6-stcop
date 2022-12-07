@@ -76,9 +76,7 @@ uses
   ElImgFrm,
   ExtCtrls,
   Forms,
-  {$ifdef VCL_4_USED}
   ImgList,
-  {$endif}
   {$else}
   {$ifdef MSWINDOWS}
   Windows,

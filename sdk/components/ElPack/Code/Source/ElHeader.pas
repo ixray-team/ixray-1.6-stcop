@@ -148,9 +148,7 @@ uses
   Menus,
   ExtCtrls,
   StdCtrls,
-{$IFDEF VCL_4_USED}
   ImgList,
-{$ENDIF}
   {$else}
   {$ifdef LINUX}
   Xlib,
@@ -282,7 +280,7 @@ type
     FSortMode : TElSSortMode;
     FAllowClick : boolean;
     FAlignment : TElSAlignment;
-    FText: TElFString;
+    FText: string;
     FData : pointer;
     FOwner : TCustomElHeader;
     FLookupHist : TStringList;
@@ -299,7 +297,7 @@ type
     function GetRight : integer;
     procedure SetMaxWidth(value : integer);
     procedure SetMinWidth(value : integer);
-    procedure SetText(value: TElFString);
+    procedure SetText(value: string);
     procedure SetStyle(value : TElSectionStyle);
     procedure SetSortMode(value : TElSSortMode);
     procedure SetAlignment(value : TElSAlignment);
@@ -352,7 +350,7 @@ type
 {$ENDIF}
     property Owner: TCustomElHeader read FOwner;
   published
-    property Text: TElFString read FText write SetText;
+    property Text: string read FText write SetText;
     property Style : TElSectionStyle read FStyle write SetStyle default ElhsText;
     property Width : integer read GetWidth write SetWidth;
     property MaxWidth : integer read FMaxWidth write SetMaxWidth default 10000;
@@ -390,7 +388,7 @@ type
 
   TElHeaderSections = class(TPersistent)
   private
-    FList : TElList;
+    FList : TList;
     function GetCount : integer;
     function GetSectionsOrder : string;
     procedure SetSectionsOrder(newValue : string);
@@ -818,18 +816,14 @@ type
     property DefaultWidth;
     property Enabled;
     property Flat;
-{$IFDEF VCL_4_USED}
     property Anchors;
     property Action;
     property Constraints;
-    {$ifndef CLX_USED}
     property DockOrientation;
     property Floating;
     property BevelKind;
     property DoubleBuffered;
     property DragKind;
-    {$endif}
-{$ENDIF}
 //        property FixClick; // Left for future
     property MoveOnDrag;
     property Font;
@@ -1171,7 +1165,7 @@ begin
     result := i;
 end;
 
-procedure TElHeaderSection.SetText(value: TElFString);
+procedure TElHeaderSection.SetText(value: string);
 begin
   if FText = value then exit;
   FText := value;
@@ -1515,7 +1509,7 @@ constructor TElHeaderSections.Create;
 begin
   inherited Create;
   FOwner := AOwner;
-  FList := TElList.Create;
+  FList := TList.Create;
 end;
 
 destructor TElHeaderSections.Destroy;
@@ -1854,8 +1848,8 @@ var
   i, j : integer;
   P : PSectionPersistInfo;
   TS : TElHeaderSection;
-  P1 : PChar;
-  S : string;
+  P1 : PAnsiChar;
+  S : AnsiString;
 begin
   inherited;
   GetMem(P, SizeOf(TSectionPersistInfo));
@@ -1945,8 +1939,8 @@ var
   T9 : P9SectionData;
   T8a: P8aSectionData;
   T8 : P8SectionData;
-  P1 : PChar;
-  S  : string;
+  P1 : PAnsiChar;
+  S  : AnsiString ;
   THS : TElHeaderSection;
   Ver : integer;
   //failed killsection : boolean;
@@ -2016,7 +2010,7 @@ begin
         ReadFStringFromStream(Stream, THS.FHint)
       else
       begin
-        ReadStringFromStream(Stream, S);
+        ReadStringFromStreamA(Stream, S);
         THS.FHint := S;
       end;
       {$else}
@@ -2088,7 +2082,7 @@ begin
       dec(i);
       ReadStringFromStream(Stream, THS.FPopupName);
       {$ifdef ELPACK_UNICODE}
-      ReadStringFromStream(Stream, S);
+      ReadStringFromStreamA(Stream, S);
       THS.FHint := S;
       {$else}
       ReadFStringFromStream(Stream, THS.FHint);
@@ -2157,7 +2151,7 @@ begin
       dec(i);
       ReadStringFromStream(Stream, THS.FPopupName);
       {$ifdef ELPACK_UNICODE}
-      ReadStringFromStream(Stream, S);
+      ReadStringFromStreamA(Stream, S);
       THS.FHint := S;
       {$else}
       ReadFStringFromStream(Stream, THS.FHint);
@@ -2225,7 +2219,7 @@ begin
       dec(i);
       ReadStringFromStream(Stream, THS.FPopupName);
       {$ifdef ELPACK_UNICODE}
-      ReadStringFromStream(Stream, S);
+      ReadStringFromStreamA(Stream, S);
       THS.FHint := S;
       {$else}
       ReadFStringFromStream(Stream, THS.FHint);

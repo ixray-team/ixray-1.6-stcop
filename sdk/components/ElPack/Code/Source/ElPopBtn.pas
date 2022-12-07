@@ -212,9 +212,7 @@ uses
 {$ifdef VCL_6_USED}
 Types,
 {$endif}
-{$ifdef VCL_4_USED}
   ImgList,
-{$endif}
 {$IFDEF VCL_4_USED}
   ActnList,
 {$ENDIF}
@@ -887,7 +885,7 @@ type
         UseThemesForText : boolean; Theme : HTheme; ThemePart, ThemeState : integer;
         ShowAccelChar : boolean {$ifdef HAS_HTML_RENDER}; IsHTML : boolean; 
         HTMLRender : TElHTMLRender{$endif} ; ChangeDisabledText : boolean);
-    procedure CalcButtonLayout(Canvas : TCanvas; const Client : TRect; const Offset
+    procedure CalcButtonLayout(Canvas : TCanvas; const Client : TRect; const _offset
         : TPoint; const Caption : TElFString; Layout : TButtonLayout; Margin, 
         Spacing : Integer; var GlyphPos : TPoint; var TextBounds : TRect; ShowGlyph,
         ShowText, MultiLine : boolean; ArrowWidth : integer; UseThemesForText : 
@@ -906,7 +904,7 @@ type
     { return the text rectangle }
     procedure ResetNumGlyphs;
 
-    function Draw(Canvas : TCanvas; const Client : TRect; const Offset : TPoint;
+    function Draw(Canvas : TCanvas; const Client : TRect; const _offset : TPoint;
         const Caption : TElFString; Layout : TButtonLayout; Margin, Spacing :
         Integer; State, GlyphState : TElButtonState; Alignment : TAlignment;
         Transparent : Boolean; Multiline : boolean; Active, ShowGlyph,
@@ -919,7 +917,7 @@ type
         ) : TRect;
     procedure GetPaintGlyphSize(R : TRect; var Size : TPoint);
     function CalcButtonWidth(Canvas : TCanvas; var MaxHeight : integer; const 
-        Offset : TPoint; const Caption : TElFString; Layout : TButtonLayout; Margin,
+        _offset : TPoint; const Caption : TElFString; Layout : TButtonLayout; Margin,
         Spacing : Integer; ShowGlyph, ShowText, MultiLine : boolean; ArrowWidth : 
         integer; UseThemesForText : boolean; Theme : HTheme; ThemePart, ThemeState 
         : integer{$ifdef HAS_HTML_RENDER}; IsHTML : boolean; HTMLRender : TElHTMLRender{$endif}): Integer;
@@ -1445,22 +1443,18 @@ type
     property OnEndDrag;
     property OnStartDrag;
 
-{$IFDEF VCL_4_USED}
     property Anchors;
     property Action;
     property Constraints;
-    {$ifndef CLX_USED}
     property DockOrientation;
     property Floating;
     property DragKind;
 
     property OnStartDock;
     property OnEndDock;
-{$ENDIF}
 {$IFDEF VCL_5_USED}
     property OnContextPopup;
 {$ENDIF}
-    {$endif}
   end;
 
 {$IFDEF VCL_4_USED}
@@ -2384,7 +2378,7 @@ end;
 {$WARNINGS off}
 
 procedure TElButtonGlyph.CalcButtonLayout(Canvas : TCanvas; const Client :
-    TRect; const Offset : TPoint; const Caption : TElFString; Layout :
+    TRect; const _offset : TPoint; const Caption : TElFString; Layout :
     TButtonLayout; Margin, Spacing : Integer; var GlyphPos : TPoint; var
     TextBounds : TRect; ShowGlyph, ShowText, MultiLine : boolean; ArrowWidth :
     integer; UseThemesForText : boolean; Theme : HTheme; ThemePart, ThemeState
@@ -2610,21 +2604,21 @@ begin
   { fixup the result variables }
   with GlyphPos do
   begin
-    Inc(X, Client.Left + Offset.X);
-    Inc(Y, Client.Top + Offset.Y);
+    Inc(X, Client.Left + _offset.X);
+    Inc(Y, Client.Top + _offset.Y);
   end;
   (*
   with TextPos do
   begin
-    Inc(X, Client.Left + Offset.X);
-    Inc(Y, Client.Top + Offset.Y);
+    Inc(X, Client.Left + _offset.X);
+    Inc(Y, Client.Top + _offset.Y);
   end;
   *)
   if Theme <> 0 then
-    OffsetRect(TextBounds, TextPos.X + Client.Left + Offset.X, Client.Top + TextPos.Y + Offset.Y)
+    OffsetRect(TextBounds, TextPos.X + Client.Left + _offset.X, Client.Top + TextPos.Y + _offset.Y)
   else
   begin
-    OffsetRect(TextBounds, TextPos.X + Client.Left + Offset.X, TextPos.Y + Client.Top + Offset.Y);
+    OffsetRect(TextBounds, TextPos.X + Client.Left + _offset.X, TextPos.Y + Client.Top + _offset.Y);
     // TextBounds.Right := TextBounds.Left + // Min(TextBounds.Right - TextBounds.Left, Client.Right - Client.Left - 1);
     // TextBounds.Bottom := TextBounds.Top + Min(TextBounds.Bottom - TextBounds.Top, Client.Bottom - Client.Top - 1);
   end;
@@ -2715,7 +2709,7 @@ begin
 end;
 
 function TElButtonGlyph.Draw(Canvas : TCanvas; const Client : TRect; const 
-    Offset : TPoint; const Caption : TElFString; Layout : TButtonLayout; Margin,
+    _offset : TPoint; const Caption : TElFString; Layout : TButtonLayout; Margin,
     Spacing : Integer; State, GlyphState : TElButtonState; Alignment : TAlignment; 
     Transparent : Boolean; Multiline : boolean; Active, ShowGlyph, ShowText : boolean;
     ArrowWidth : integer; TextDrawType : TElTextDrawType; Color : TColor; 
@@ -2726,7 +2720,7 @@ function TElButtonGlyph.Draw(Canvas : TCanvas; const Client : TRect; const
 var
   GlyphPos : TPoint;
 begin
-  CalcButtonLayout(Canvas, Client, Offset, Caption, Layout, Margin, Spacing,
+  CalcButtonLayout(Canvas, Client, _offset, Caption, Layout, Margin, Spacing,
     GlyphPos, Result, ShowGlyph, ShowText, Multiline, ArrowWidth, UseThemesForText,
     Theme, ThemePart, ThemeState{$ifdef HAS_HTML_RENDER}, IsHTML, HTMLRender{$endif});
   if ShowGlyph then
@@ -2774,7 +2768,7 @@ begin
 end;
 
 function TElButtonGlyph.CalcButtonWidth(Canvas : TCanvas; var MaxHeight : 
-    integer; const Offset : TPoint; const Caption : TElFString; Layout : 
+    integer; const _offset : TPoint; const Caption : TElFString; Layout :
     TButtonLayout; Margin, Spacing : Integer; ShowGlyph, ShowText, MultiLine : 
     boolean; ArrowWidth : integer; UseThemesForText : boolean; Theme : HTheme; 
     ThemePart, ThemeState : integer
@@ -3016,7 +3010,7 @@ var
   R1, BgRect : TRect;
   {$endif}
   ArrRect    : TRect;
-  Offset     : TPoint;
+  _offset    : TPoint;
   dw : integer;
   aw : integer;
   {$ifndef CLX_USED}
@@ -3487,8 +3481,8 @@ begin
   {$endif}
   ;
 
-  Offset.x := 0;
-  Offset.y := 0;
+  _offset.x := 0;
+  _offset.y := 0;
 
   if (FState in [ebsDown, ebsExclusive]) or (FDown and FIsSwitch) then
   begin
@@ -3497,8 +3491,8 @@ begin
        (UseIcon) or
        ((not UseImageList) and (UseIcon) and (NumGlyphs < 2)) then
     begin
-      Offset.X := 1;
-      Offset.Y := 1;
+      _offset.X := 1;
+      _offset.Y := 1;
     end;
   end;
   inc(PaintRect.Right, dw);
@@ -3535,7 +3529,7 @@ begin
   end;
   {$endif}
 
-  FTextRect := FGlyph.Draw(Canvas, PaintRect, Offset, Caption, FLayout, FMargin,
+  FTextRect := FGlyph.Draw(Canvas, PaintRect, _offset, Caption, FLayout, FMargin,
     FSpacing, FState, GlyphState, Alignment, true, FMultiline, (Focused and FShowFocus), FShowGlyph,
     FShowText, Aw, TextDrawType, Color, {$ifdef MSWINDOWS}ParentFont and (Theme <> 0), Theme, BP_PUSHBUTTON, sid{$else}false,0,0,0{$endif}, true, ImageIsAlphaBlended{$ifdef HAS_HTML_RENDER}, IsHTML, FRender{$endif}, FChangeDisabledText);
 
@@ -6011,7 +6005,7 @@ var
   R1, BgRect : TRect;
   ACtl    : TWinControl;
   ArrRect : TRect;
-  Offset : TPoint;
+  _offset : TPoint;
   dw : integer;
   aw : integer;
   AColor : TColor;
@@ -6344,9 +6338,9 @@ begin
     DrawThemeBackground(Theme, Canvas.Handle, GetThemePartID, sID, PaintRect, @RClip);
     {$else}
     Canvas.Start;
-    OffsetRect(PaintRect, Left, Top);
+    _offsetRect(PaintRect, Left, Top);
     DrawThemeBackground(Theme, QPaintDevice_handle(QPainter_device(Canvas.Handle)), GetThemePartID, sID, PaintRect, nil);
-    OffsetRect(PaintRect, -Left, -Top);
+    _offsetRect(PaintRect, -Left, -Top);
 
     Canvas.Stop;
     {$endif}
@@ -6372,8 +6366,8 @@ begin
   {$endif}
   end;
 
-  Offset.x := 0;
-  Offset.y := 0;
+  _offset.x := 0;
+  _offset.y := 0;
 
   if (FState in [ebsDown, ebsExclusive]) or (FDown and FIsSwitch) then
   begin
@@ -6382,8 +6376,8 @@ begin
        (UseIcon) or
        ((not UseImageList) and (UseIcon) and (NumGlyphs < 2)) then
     begin
-      Offset.X := 1;
-      Offset.Y := 1;
+      _offset.X := 1;
+      _offset.Y := 1;
     end;
   end;
   inc(PaintRect.Right, dw);
@@ -6422,10 +6416,10 @@ begin
   {$ifdef CLX_USED}
   {$IFDEF HAS_HTML_RENDER}
   if IsHTML then
-    FRender.Data.TextOffset := Point(Left, Top);
+    FRender.Data.Text_offset := Point(Left, Top);
   {$ENDIF}
   {$endif}
-  FTextRect := FGlyph.Draw(Canvas, PaintRect, Offset, Caption, FLayout, FMargin,
+  FTextRect := FGlyph.Draw(Canvas, PaintRect, _offset, Caption, FLayout, FMargin,
     FSpacing, FState, GlyphState, Alignment, true, FMultiline, false, FShowGlyph,
     FShowText, Aw, TextDrawType, Color,
     {$ifdef MSWINDOWS}false{ParentFont and (Theme <> 0)}, FTheme, GetThemePartID, sid
@@ -6436,7 +6430,7 @@ begin
   {$ifdef CLX_USED}
   {$IFDEF HAS_HTML_RENDER}
   if IsHTML then
-    FRender.Data.TextOffset := Point(0, 0);
+    FRender.Data.Text_offset := Point(0, 0);
   {$ENDIF}
   {$endif}
 

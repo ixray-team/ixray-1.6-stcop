@@ -246,11 +246,7 @@ uses
   QTypes,
   {$endif}
 {$ifndef CLX_USED}
-{$ifdef VCL_6_USED}
   DesignEditors, DesignWindows, DsnConst, DesignIntf,
-{$else}
-  DsgnIntf,
-{$endif}
 {$else}
   DesignEditors, DesignWindows, DsnConst, DesignIntf,
 {$endif}
@@ -378,11 +374,6 @@ uses
 {$endif}
 {$endif}
 
-{$ifndef CLX_USED}
-{$ifndef VCL_6_USED}
-  FormCtlProp,
-{$endif}
-  {$endif}
   {$ifndef CLX_USED}
   ColorMapProp,
   ElCombos,
@@ -431,53 +422,30 @@ uses
 type
   TMRUCollectionEditor = class(TDefaultEditor)
   public
-{$ifdef VCL_6_USED}
     procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-{$else}
-    procedure EditProperty(PropertyEditor : TPropertyEditor; var Continue, FreeEditor : Boolean); override;
-{$endif}
     procedure ExecuteVerb(Index: integer); override;
     function GetVerb(Index: integer): string; override;
     function GetVerbCount: integer; override;
   end;
 
-{$ifndef CLX_USED}
   TTimerPoolEditor = class(TDefaultEditor)
   public
-{$ifdef VCL_6_USED}
     procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-{$else}
-    procedure EditProperty(PropertyEditor : TPropertyEditor; var Continue, FreeEditor : Boolean); override;
-{$endif}
     procedure ExecuteVerb(Index: integer); override;
     function GetVerb(Index: integer): string; override;
     function GetVerbCount: integer; override;
   end;
-{$endif}
 
-{$ifdef VCL_6_USED}
 procedure TMRUCollectionEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
-{$else}
-procedure TMRUCollectionEditor.EditProperty(PropertyEditor : TPropertyEditor; var Continue, FreeEditor : Boolean);
-{$endif}
 var
   PropName : string;
 begin
-{$ifdef VCL_6_USED}
   PropName := Prop.GetName;
   if (CompareText(PropName, 'SECTIONS') = 0) then
   begin
     Prop.Edit;
     Continue := False;
   end;
-{$else}
-  PropName := PropertyEditor.GetName;
-  if (CompareText(PropName, 'SECTIONS') = 0) then
-  begin
-    PropertyEditor.Edit;
-    Continue := False;
-  end;
-{$endif}  
 end;
 
 procedure TMRUCollectionEditor.ExecuteVerb(Index: integer);
@@ -497,30 +465,16 @@ end;
 
 { TTimerPoolEditor }
 
-{$ifndef CLX_USED}
-{$ifdef VCL_6_USED}
 procedure TTimerPoolEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
-{$else}
-procedure TTimerPoolEditor.EditProperty(PropertyEditor : TPropertyEditor; var Continue, FreeEditor : Boolean);
-{$endif}
 var
   PropName : string;
 begin
-{$ifdef VCL_6_USED}
   PropName := Prop.GetName;
   if (CompareText(PropName, 'ITEMS') = 0) then
   begin
     Prop.Edit;
     Continue := False;
   end;
-{$else}
-  PropName := PropertyEditor.GetName;
-  if (CompareText(PropName, 'ITEMS') = 0) then
-  begin
-    PropertyEditor.Edit;
-    Continue := False;
-  end;
-{$endif}
 end;
 
 procedure TTimerPoolEditor.ExecuteVerb(Index: integer);
@@ -538,7 +492,6 @@ begin
   Result := 1;
 end;
 {$ENDIF}
-{$endif}
 
 {$IFDEF ELPACK_COMPLETE}
 {$IFDEF D_5_UP}
@@ -720,12 +673,6 @@ begin
   RegisterComponentEditor(TElExplorerBar, TElExplorerBarEditor);
   RegisterNoIcon([TElExplorerBarGroup]);
   RegisterClass(TElExplorerBarGroup);
-{$ifndef VCL_6_USED}
-  RegisterPropertyEditor(TypeInfo(TWinControl), TElHook, 'Control',
-    TFormCtlProperty);
-  RegisterPropertyEditor(TypeInfo(TWinControl), TElDropTarget, 'Target',
-    TFormCtlProperty);
-{$endif}
   {$endif}
   RegisterComponentEditor(TElToolBar, TElToolBarEditor);
 
@@ -759,10 +706,6 @@ begin
   RegisterPropertyEditor(TypeInfo(TElSoundName), nil, '', TSoundNameProperty);
   RegisterPropertyEditor(TypeInfo(TElTreeItems), TElTreeCombo, 'Items',
     TElTreeItemsProperty);
-{$ifndef VCL_6_USED}
- RegisterPropertyEditor(TypeInfo(String), TElTrayIcon, 'ExtendedHint',
-    TFormProperty);
-{$endif}
 {$endif}
 
 {$ifndef CLX_USED}

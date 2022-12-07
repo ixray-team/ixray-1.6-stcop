@@ -362,11 +362,11 @@ begin
     else
     begin
       if FShowWeekDay then CurTime.wDayOfWeek := SysUtils.DayOfWeek(SystemTimeToDateTime(CurTime)) - 1;
-      if FShowWeekDay and FShowDate then S1 := ShortDayNames[CurTime.wDayOfWeek + 1] + ', ' + S1;
+      if FShowWeekDay and FShowDate then S1 := FormatSettings.ShortDayNames[CurTime.wDayOfWeek + 1] + ', ' + S1;
       FCaption := S2;
       if FShowDate then
         FCaption := FCaption + #13#10 + S1;
-      if FShowWeekDay and (not FShowDate) then FCaption := FCaption + #13#10 + LongDayNames[CurTime.wDayOfWeek + 1];
+      if FShowWeekDay and (not FShowDate) then FCaption := FCaption + #13#10 + FormatSettings.LongDayNames[CurTime.wDayOfWeek + 1];
     end;
   end;
   if Labels then FCaption := FCaption + #13#10 + Hint;

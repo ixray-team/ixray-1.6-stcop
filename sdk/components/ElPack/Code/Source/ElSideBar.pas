@@ -141,11 +141,7 @@ Types,
   ElSndMap,
   ElUxtheme,
   ElTmSchema,
-{$IFDEF VCL_4_USED}
-{$ifndef CLX_USED}
   ImgList,
-{$endif}
-{$ENDIF}
 {$ifdef CLX_USED}
   QImgList,
 {$endif}

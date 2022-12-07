@@ -332,7 +332,7 @@ begin
   Path := '';
   if SHGetPathFromIDList(PIDL, @APath) then
   begin
-    Path := StrPas(@APath);
+    Path := StrPas(PAnsiChar(AnsiString(APath)));
     result := true;
   end else
     result := false;
@@ -342,15 +342,7 @@ function GETPIDLFromPath(Path : String): PItemIDList;
 var
   WSP: PWideChar;
   DesktopFolder: IShellFolder;
-{$IFDEF VCL_4_USED}
   Eaten, Attribs: Cardinal;
-{$ELSE}
-{$IFDEF B_3_UP}
-  Eaten, Attribs: Cardinal;
-{$ELSE}
-  Eaten, Attribs: Integer;
-{$ENDIF}
-{$ENDIF}
 begin
   SHGetDesktopFolder(DesktopFolder);
   GetMem(WSP, length(Path) * 2 + 2);
@@ -386,7 +378,7 @@ begin
   else
   if (Str.uType = STRRET_CSTR) then
   begin
-    Result := StrPas(@Str.cStr);
+    Result := StrPas(PAnsiChar(AnsiString(Str.cStr)));
   end
   else
   if (Str.uType = STRRET_OFFSET) then
@@ -473,11 +465,7 @@ function TElShellIconCache.AddIcon(Icon : IExtractIcon; Flags : Cardinal):
     Integer;
 var S : String;
     i : integer;
-    {$ifdef VCL_4_USED}
     pFlags : Cardinal;
-    {$else}
-    pFlags : Integer;
-    {$endif}
     Entry : PElShellIconCacheEntry;
     largeIcon,
     smallIcon : HICON;

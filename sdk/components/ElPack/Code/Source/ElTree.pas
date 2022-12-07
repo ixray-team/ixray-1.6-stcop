@@ -833,9 +833,7 @@ uses
 {$ifdef VCL_6_USED}
 Types,
 {$endif}
-{$ifdef VCL_4_USED}
   ImgList,
-{$endif}
 {$ifdef ELPACK_COMPLETE}
   Buttons,
 {$endif}
@@ -868,9 +866,7 @@ Types,
   ElScrollBar,
   ElStrUtils,
   ElHintWnd,
-{$ifdef VCL_6_USED}
   Variants,
-{$endif}
 {$ifdef ELPACK_UNICODE}
   ElUnicodeStrings,
 {$endif}
@@ -1371,7 +1367,7 @@ type
     FHTMLData      : TElHTMLData;
     FHTMLDataArray : TElArray;
 {$ENDIF}
-    FTag           : Integer;
+    FTag           : Longint;
     FObject        : TObject;
     FDataInterface : IUnknown;
 {$IFDEF USE_VARIANT}
@@ -1681,7 +1677,7 @@ type
        // Tells, on which level the item is
        // Root items have Level 0 (zero)
 
-    property Tag : Integer read FTag write FTag;
+    property Tag : Longint read FTag write FTag;
 
 {$ifdef ELTREE_USE_STYLES}
     property Styles[index: integer]: TElCellStyle read GetStyles write SetStyles;
@@ -1803,6 +1799,9 @@ type
   TIterateProc = procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
     IterateData: pointer; Tree: TCustomElTree);
 
+   TIterateProcAnonymusMethod = reference to procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree);
+
   TElTreeItems = class(TPersistent)
   protected
     FOwner: TCustomElTree;
@@ -1872,10 +1871,10 @@ type
     procedure Clear;
     procedure IterateBranch(VisibleOnly: boolean; IterateProc: TIterateProc; IterateData: pointer; BranchParent: TElTreeItem);
 
-    procedure IterateFrom(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProc; IterateData: pointer; StartFrom: TElTreeItem); (*<+>*)
-    procedure IterateBackFrom(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProc; IterateData: pointer; StartFrom: TElTreeItem); (*<+>*)
-    procedure Iterate(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProc; IterateData: pointer); (*<+>*)
-    procedure IterateBack(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProc; IterateData: pointer); (*<+>*)
+    procedure IterateFrom(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProcAnonymusMethod; IterateData: pointer; StartFrom: TElTreeItem); (*<+>*)
+    procedure IterateBackFrom(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProcAnonymusMethod; IterateData: pointer; StartFrom: TElTreeItem); (*<+>*)
+    procedure Iterate(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProcAnonymusMethod; IterateData: pointer); (*<+>*)
+    procedure IterateBack(VisibleOnly, CheckCollapsed: boolean; IterateProc: TIterateProcAnonymusMethod; IterateData: pointer); (*<+>*)
 
     procedure BeginUpdate; virtual;
     procedure EndUpdate; virtual;
@@ -2296,11 +2295,7 @@ type
     procedure OnDragExpandTimer(Sender : TObject);
 
 {$ifndef CLX_USED}
-{$IFDEF VCL_4_USED}
     function GetDragImages: TDragImageList; override;
-{$ELSE}
-    function GetDragImages: TCustomImageList; override;
-{$ENDIF}
 {$endif}
 {$ifdef ELTREE_USE_OLE_DRAGDROP}
 {$IFNDEF VER90}
@@ -3107,11 +3102,7 @@ type
 {$endif}
 
 {$ifndef CLX_USED}
-{$IFDEF VCL_4_USED}
     function GetDragImages: TDragImageList; override;
-{$ELSE}
-    function GetDragImages: TCustomImageList; override;
-{$ENDIF}
 {$endif}
     procedure AutoSizeAllColumns;
     procedure AutoSizeColumn(SectionIndex : integer);
@@ -3674,7 +3665,6 @@ type
     property AutoLineHeight;
     property AutoLookup;
     property AutoResizeColumns;
-{$IFDEF VCL_4_USED}
     property Anchors;
     {$ifndef CLX_USED}
     property Action;
@@ -3687,7 +3677,6 @@ type
     property DoubleBuffered;
     property DragKind;
     {$endif}
-{$ENDIF}
     property DefaultSectionWidth;
 {$IFNDEF LITE}
     property AdjustMultilineHeight;
@@ -6677,6 +6666,7 @@ end;
 
 function TElTreeView.CalcPageUpPos;
 var i : integer;
+IntPrevVis : TIterateProcAnonymusMethod;
 
 type TSRec = record
        MaxHeight : integer;
@@ -6686,8 +6676,11 @@ type TSRec = record
      end;
      PSRec = ^TSRec;
 
-     procedure IntPrevVis(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-               IterateData: pointer; Tree: TCustomElTree);
+var SRec : TSRec;
+
+begin
+  IntPrevVis :=  procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+               IterateData: pointer; Tree: TCustomElTree)
      begin
        with PSRec(IterateData)^ do
        begin
@@ -6698,10 +6691,6 @@ type TSRec = record
            LastItem := Item;
        end;
      end;
-
-var SRec : TSRec;
-
-begin
   i := CurIdx;
   if (i = 0) or (FVisible.Count = 0) then
   begin
@@ -6711,12 +6700,13 @@ begin
   SRec.MaxHeight := ClientHeight;
   SRec.CurHeight := 0;
   SRec.LastItem  := FOwner.FItems.GetVisItem(i);
-  FOwner.FItems.IterateBackFrom(true, false, @IntPrevVis, @SRec, SRec.LastItem); (*<+>*)
+  FOwner.FItems.IterateBackFrom(true, false, IntPrevVis, @SRec, SRec.LastItem); (*<+>*)
   result := SRec.LastItem.VisIndex;
 end;
 
 function TElTreeView.CalcPageDownPos;
 var i : integer;
+IntPrevVis: TIterateProcAnonymusMethod;
 
 type TSRec = record
        MaxHeight : integer;
@@ -6725,8 +6715,11 @@ type TSRec = record
      end;
      PSRec = ^TSRec;
 
-     procedure IntPrevVis(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-               IterateData: pointer; Tree: TCustomElTree);
+var SRec : TSRec;
+
+begin
+  IntPrevVis :=  procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+               IterateData: pointer; Tree: TCustomElTree)
      begin
        with PSRec(IterateData)^ do
        begin
@@ -6737,10 +6730,6 @@ type TSRec = record
            LastItem := Item;
        end;
      end;
-
-var SRec : TSRec;
-
-begin
   i := CurIdx;
   if (FVisible.Count = 0) then
   begin
@@ -6750,7 +6739,7 @@ begin
   SRec.MaxHeight := ClientHeight;
   SRec.CurHeight := 0;
   SRec.LastItem  := FOwner.FItems.GetVisItem(i);
-  FOwner.FItems.IterateFrom(true, false, @IntPrevVis, @SRec, SRec.LastItem); (*<+>*)
+  FOwner.FItems.IterateFrom(true, false, IntPrevVis, @SRec, SRec.LastItem); (*<+>*)
   result := SRec.LastItem.VisIndex;
 end;
 
@@ -13841,11 +13830,7 @@ begin
 end;  { WMKillFocus }
 
 {$ifndef CLX_USED}
-{$IFDEF VCL_4_USED}
 function TElTreeView.GetDragImages: TDragImageList;
-{$ELSE}
-function TElTreeView.GetDragImages: TCustomImageList;
-{$ENDIF}
 begin
   if (FDragImages <> nil) and (FDragImages.Count > 0) then
      Result := FDragImages
@@ -14237,63 +14222,65 @@ type
   end;
 var
   GIRec: TGIRec;
-
-  procedure IntVis0(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  begin
-    with PGIRec(IterateData)^ do
-    begin
-      if (Item.Enabled or (Tree.IgnoreEnabled)) then
+  IntNextVis: TIterateProcAnonymusMethod;
+  IntVis0: TIterateProcAnonymusMethod;
+  IntPgVis: TIterateProcAnonymusMethod;
+begin
+   IntNextVis := procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree)
       begin
-        Sel := Item.Selected;
-        NewFocused := Item;
-        i := 0;
-        ContinueIterate := false;
-      end;
-    end;
-  end;
-
-  procedure IntNextVis(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  begin
-    if (PGIRec(IterateData)^.OTSI = Tree.FView.FFocused) and (Tree.IgnoreEnabled or (Item.Enabled)) then
-    begin
-      PGIRec(IterateData)^.Sel := Item.Selected;
-      PGIRec(IterateData)^.NewFocused := Item;
-      PGIRec(IterateData)^.i := Index;
-      ContinueIterate := false;
-    end;
-    if Item = Tree.FView.FFocused then
-       PGIRec(IterateData)^.OTSI := Item;
-  end;
-
-  procedure IntPgVis(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  begin
-    with PGIRec(IterateData)^ do
-    begin
-      if Item = Tree.FView.FFocused then
-         oi := 1;
-      if oi = 1 then
-      begin
-        if Tree.IgnoreEnabled or Item.Enabled then
+        if (PGIRec(IterateData)^.OTSI = Tree.FView.FFocused) and (Tree.IgnoreEnabled or (Item.Enabled)) then
         begin
-          dec(PgCnt);
-          NewFocused := Item;
+          PGIRec(IterateData)^.Sel := Item.Selected;
+          PGIRec(IterateData)^.NewFocused := Item;
+          PGIRec(IterateData)^.i := Index;
+          ContinueIterate := false;
+        end;
+        if Item = Tree.FView.FFocused then
+           PGIRec(IterateData)^.OTSI := Item;
+      end;
+
+    IntVis0 := procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree)
+      begin
+        with PGIRec(IterateData)^ do
+        begin
+          if (Item.Enabled or (Tree.IgnoreEnabled)) then
+          begin
+            Sel := Item.Selected;
+            NewFocused := Item;
+            i := 0;
+            ContinueIterate := false;
+          end;
+        end;
+      end;
+
+    IntPgVis := procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree)
+        begin
+          with PGIRec(IterateData)^ do
+          begin
+            if Item = Tree.FView.FFocused then
+               oi := 1;
+            if oi = 1 then
+            begin
+              if Tree.IgnoreEnabled or Item.Enabled then
+              begin
+                dec(PgCnt);
+                NewFocused := Item;
+              end;
+
+              TSI := Item;
+              Sel := Item.Selected;
+              i := Index;
+            end;
+            if PgCnt < 0 then
+            begin
+              ContinueIterate := false;
+            end;
+          end;
         end;
 
-        TSI := Item;
-        Sel := Item.Selected;
-        i := Index;
-      end;
-      if PgCnt < 0 then
-      begin
-        ContinueIterate := false;
-      end;
-    end;
-  end;
-
-begin
   Result := nil;
   FillChar(GIRec, sizeof(GIRec), 0);
   if Key = VK_UP then
@@ -14302,13 +14289,13 @@ begin
     begin
       if FOwner.TotalVisCount > 0 then
       begin
-        FItems.Iterate(true, false, @IntVis0, @GIRec);
+        FItems.Iterate(true, false, IntVis0, @GIRec);
         Result := GIRec.NewFocused;
       end;
     end
     else
     begin
-      FItems.IterateBack(true, false, @IntNextVis, @GIRec);
+      FItems.IterateBack(true, false, IntNextVis, @GIRec);
       if GIRec.NewFocused <> nil then
         Result := GIRec.NewFocused
       else
@@ -14325,12 +14312,12 @@ begin
     begin
       if FOwner.TotalVisCount > 0 then
       begin
-        FItems.Iterate(true, false, @IntVis0, @GIRec);
+        FItems.Iterate(true, false, IntVis0, @GIRec);
         result := GIRec.NewFocused;
       end;
     end else
     begin
-      FItems.Iterate(true, false, @IntNextVis, @GIRec);
+      FItems.Iterate(true, false, IntNextVis, @GIRec);
       if GIRec.NewFocused <> nil then
         result := GIRec.NewFocused
       else
@@ -14351,7 +14338,7 @@ begin
     GIRec.oi := 0;
     GIRec.NewFocused := nil;
     if FFocused <> nil then
-       FItems.IterateFrom(true, false, @IntPgVis, @GIRec, FOwner.ItemFocused);
+       FItems.IterateFrom(true, false, IntPgVis, @GIRec, FOwner.ItemFocused);
     if GIRec.NewFocused <> nil then
       result := GIRec.NewFocused
     else
@@ -14379,7 +14366,7 @@ begin
     GIRec.NewFocused := nil;
 
     if FFocused <> nil then
-       FItems.IterateBackFrom(true, false, @IntPgVis, @GIRec, FOwner.ItemFocused);
+       FItems.IterateBackFrom(true, false, IntPgVis, @GIRec, FOwner.ItemFocused);
     if GIRec.NewFocused <> nil then
       result := GIRec.NewFocused
     else
@@ -14392,7 +14379,7 @@ begin
   begin
     if FFocused <> nil then
     begin
-      FItems.Iterate(true, false, @IntVis0, @GIRec);
+      FItems.Iterate(true, false, IntVis0, @GIRec);
       result := GIRec.NewFocused;
       GIRec.i := 0;
       if result = nil then
@@ -14971,7 +14958,7 @@ end;
 procedure TElTreeItem.ReadData(Stream: TStream);
 var
   i, j, k: integer;
-  s: string;
+  s: AnsiString;
   t28  : TS28ItemInfo;
   t28a : TS28aItemInfo;
   PInfo: TItemPersistInfo;
@@ -14994,9 +14981,12 @@ begin
     Stream.ReadBuffer(k, SizeOf(k));
   end;
   SetLength(s, k);
-  Stream.ReadBuffer(pchar(s)^, k);
+  Stream.ReadBuffer(PAnsiChar(s)^, k);
   if FStaticData <> nil then
     FStaticData.FText := s;
+
+  OutputDebugString(PChar(IntToStr(SizeOf(char))));
+
   if
 {$IFDEF ELPACK_COMPLETE}
     (Ver = -7) or
@@ -15214,7 +15204,7 @@ begin
     else
     {$endif}
     begin
-      ReadStringFromStream(Stream, s);
+      ReadStringFromStreamA(Stream, s);
       if FStaticData <> nil then
         FStaticData.FHint := s;
     end;
@@ -15268,7 +15258,7 @@ begin
           FTag := SI.FTag;
           FUseBkColor := SI.FUseBkColor;
         end;
-        ReadStringFromStream(Stream, s);
+        ReadStringFromStreamA(Stream, s);
         MainStyle.FFontName := s;
       end;
       Stream.ReadBuffer(i, SizeOf(i));
@@ -15296,7 +15286,7 @@ begin
             FTag := SI.FTag;
             FUseBkColor := SI.FUseBkColor;
           end;
-          ReadStringFromStream(Stream, s);
+          ReadStringFromStreamA(Stream, s);
           Style.FFontName := s;
         end;
       end; // for
@@ -15315,7 +15305,8 @@ end;
 procedure TElTreeItem.WriteData(Stream: TStream);
 var
   i, j, k: integer;
-  s: string;
+  s: AnsiString;
+  sTmp: AnsiString;
   PInfo : TItemPersistInfo;
   p: pchar;
 {$ifdef ELTREE_USE_STYLES}
@@ -15335,10 +15326,9 @@ begin
     s := FStaticData.FText;
   k := length(s);
   Stream.WriteBuffer(k, SizeOf(k));
-  GetMem(p, k + 1);
-  StrPCopy(p, s);
-  Stream.WriteBuffer(p^, k);
-  FreeMem(p, k + 1);
+  Stream.WriteBuffer(PChar(s)^, k);
+
+  OutputDebugString(PChar(IntToStr(SizeOf(char))));
   // write binary data
 
   PInfo.FState := FState;
@@ -15920,20 +15910,19 @@ var
   i : integer;
   b : boolean;
   AnItem : TElTreeItem;
-
-  procedure IterateProc(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  begin
-    if not Item.IsUnder(TElTreeItem(IterateData)) then
-    begin
-      ContinueIterate := false;
-      exit;
-    end;
-    ContinueIterate := true;
-    if Item <> IterateData then Item.Selected := false;
-  end;
-
+  IterateProc: TIterateProcAnonymusMethod;
 begin
+  IterateProc :=  procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+      IterateData: pointer; Tree: TCustomElTree)
+    begin
+      if not Item.IsUnder(TElTreeItem(IterateData)) then
+      begin
+        ContinueIterate := false;
+        exit;
+      end;
+      ContinueIterate := true;
+      if Item <> IterateData then Item.Selected := false;
+    end;
   b := true;
   if Self <> FRoot then FOwner.DoItemCollapsing(self, b);
   if not (b) then exit;
@@ -15967,7 +15956,7 @@ begin
   end;
 
   if FOwner.FDeselectChildrenOnCollapse then
-    FOwner.Items.IterateFrom(false, true, @IterateProc, Self, Self); (*<+>*)
+    FOwner.Items.IterateFrom(false, true, IterateProc, Self, Self); (*<+>*)
 
   if (not FOwner.FShowHeader) and FullyExpanded then
      FOwner.FView.FHRange := -1;
@@ -16614,7 +16603,7 @@ begin
   if Self = Item then
      result := true
   else
-  if (FParent <> FRoot) and (FParent <> nil) then
+  if (FParent <> nil) and (FParent <> FRoot) then
      result := FParent.IsUnder(Item)
   else
      result := false;
@@ -18043,19 +18032,20 @@ end;  { SetHeight }
 procedure TElTreeItem.SetSuppressLines(newValue: Boolean);
 { Sets data member FSuppressLines to newValue. }
 
-
-  procedure InvalidateItemPart(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-           IterateData: pointer; Tree: TCustomElTree);
-  var R: TRect;
-  begin
-    with Item.TreeView do
-      R := GetItemRect(Item.AbsoluteIndex);
-    Item.RedrawItemPart(true,R.Left, R.Right);
-
-    ContinueIterate := true;
-  end;
-
+var
+InvalidateItemPart: TIterateProcAnonymusMethod;
 begin
+  InvalidateItemPart :=  procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+           IterateData: pointer; Tree: TCustomElTree)
+    var R: TRect;
+    begin
+      with Item.TreeView do
+        R := GetItemRect(Item.AbsoluteIndex);
+      Item.RedrawItemPart(true,R.Left, R.Right);
+
+      ContinueIterate := true;
+    end;
+
   if (((FBoolData1 and ibfSuppressLines) = ibfSuppressLines) <> newValue) then
   begin
     if newValue then
@@ -18065,7 +18055,7 @@ begin
 
     if FOwner.FShowLines then
     begin
-      FList.IterateFrom(true, false, @InvalidateItemPart, nil, FParent); (*<+>*)
+      FList.IterateFrom(true, false, InvalidateItemPart, nil, FParent); (*<+>*)
       with FOwner do
       begin
         if FShowHeader and (FOwner.FUpdateCount = 0) then
@@ -18178,7 +18168,7 @@ begin
   begin
     for i := 0 to ColumnText.Count -1 do
     begin
-      if (Pos('<html>', ColumnText[i]) = 1) then
+      if (Pos('<html>', PAnsiChar(ColumnText[i])) = 1) then
       begin
         FHTMLDataArray[i] := FOwner.FView.FRender.CreateData;
         FData := FHTMLDataArray[i];
@@ -18732,12 +18722,13 @@ var
   j: integer;
   DoContinue: boolean;
 
-  procedure IntIterate(VisibleOnly, CheckCollapsed: boolean; Item: TElTreeItem); (*<+>*)
+procedure IntIterate(VisibleOnly, CheckCollapsed: boolean; Item: TElTreeItem); (*<+>*)
   var
     i, k: integer;
   begin
     inc(j);
-    if (j >= 0) and ((not VisibleOnly) or ((not Item.Hidden) or (not FOwner.FilteredVisibility))) then IterateProc(Item, j, DoContinue, IterateData, FOwner);
+    if (j >= 0) and ((not VisibleOnly) or ((not Item.Hidden) or (not FOwner.FilteredVisibility))) then
+       IterateProc(Item, j, DoContinue, IterateData, FOwner);
     if not (DoContinue) then exit;
     if (not (VisibleOnly)) or CheckCollapsed or (Item.Expanded) then  (*<+>*)
     begin
@@ -19649,32 +19640,31 @@ function TElTreeItems.LookBackForItemEx2(StartItem: TElTreeItem; ColumnNum: inte
         CheckStartItem, SubItemsOnly, VisibleOnly, CheckCollapsed: boolean;
         SearchDetails: pointer;
         CompareProc: TElLookupCompareProc): TElTreeItem;
-
-  procedure IntFind(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  var
-    b: boolean;
-
-  begin
-    if (Item = PSRecEx(IterateData).StartItem) and (not PSRecEx(IterateData).CheckStartItem) then exit;
-    if ((not PSRecEx(IterateData).CheckStartItem) or (Item <> PSRecEx(IterateData).StartItem)) and
-    (PSRecEx(IterateData).SubItemsOnly) and (not Item.IsUnder(PSRecEx(IterateData).StartItem)) then
-    begin
-      ContinueIterate := false;
-      exit;
-    end;
-    b := PSRecEx(IterateData).CompProc(Item, PSRecEx(IterateData).SearchDetails);
-    if b then
-    begin
-      PSRecEx(IterateData).result := Item;
-      ContinueIterate := false;
-      exit;
-    end;
-  end;
-
 var
   SRec: TSRecEx;
+  IntFind: TIterateProcAnonymusMethod;
 begin
+  IntFind :=  procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree)
+      var
+        b: boolean;
+
+      begin
+        if (Item = PSRecEx(IterateData).StartItem) and (not PSRecEx(IterateData).CheckStartItem) then exit;
+        if ((not PSRecEx(IterateData).CheckStartItem) or (Item <> PSRecEx(IterateData).StartItem)) and
+        (PSRecEx(IterateData).SubItemsOnly) and (not Item.IsUnder(PSRecEx(IterateData).StartItem)) then
+        begin
+          ContinueIterate := false;
+          exit;
+        end;
+        b := PSRecEx(IterateData).CompProc(Item, PSRecEx(IterateData).SearchDetails);
+        if b then
+        begin
+          PSRecEx(IterateData).result := Item;
+          ContinueIterate := false;
+          exit;
+        end;
+      end;
   SRec.ColumnNum := ColumnNum;
   SRec.StartItem := StartItem;
   SRec.CheckStartItem := CheckStartItem;
@@ -19683,37 +19673,13 @@ begin
   SRec.SearchDetails := SearchDetails;
   SRec.Result := nil;
   try
-    IterateBackFrom(VisibleOnly, CheckCollapsed, @IntFind, @SRec, StartItem); (*<+>*)
+    IterateBackFrom(VisibleOnly, CheckCollapsed, IntFind, @SRec, StartItem); (*<+>*)
   finally
     Result := SRec.Result;
   end;
 end;
 
-function TElTreeItems.LookForItem(StartItem: TElTreeItem;
-  TextToFind: TElFString;
-  DataToFind: pointer;
-  ColumnNum: integer;
-  LookForData,
-  CheckStartItem,
-  SubItemsOnly,
-  VisibleOnly,
-  NoCase: boolean): TElTreeItem;
-
-type
-  TSRec = record
-    TextToFind: TElFString;
-    ColumnNum: integer;
-    StartItem: TElTreeItem;
-    DataToFind: pointer;
-    CheckStartItem,
-      LookForData,
-      SubItemsOnly: boolean;
-    NoCase: boolean;
-    Result: TElTreeItem;
-  end;
-  PSRec = ^TSRec;
-
-  procedure IntFind(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+  procedure IntFindLookForItem(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
     IterateData: pointer; Tree: TCustomElTree);
   var
     i: integer;
@@ -19776,6 +19742,30 @@ type
     end;
   end;
 
+function TElTreeItems.LookForItem(StartItem: TElTreeItem;
+  TextToFind: TElFString;
+  DataToFind: pointer;
+  ColumnNum: integer;
+  LookForData,
+  CheckStartItem,
+  SubItemsOnly,
+  VisibleOnly,
+  NoCase: boolean): TElTreeItem;
+
+type
+  TSRec = record
+    TextToFind: TElFString;
+    ColumnNum: integer;
+    StartItem: TElTreeItem;
+    DataToFind: pointer;
+    CheckStartItem,
+      LookForData,
+      SubItemsOnly: boolean;
+    NoCase: boolean;
+    Result: TElTreeItem;
+  end;
+  PSRec = ^TSRec;
+
 var
   SRec: TSRec;
 begin
@@ -19789,19 +19779,13 @@ begin
   SRec.SubItemsOnly := SubItemsOnly;
   SRec.Result := nil;
   try          
-    IterateFrom(VisibleOnly, not VisibleOnly, @IntFind, @SRec, StartItem); (*<+>*)
+    IterateFrom(VisibleOnly, not VisibleOnly, IntFindLookForItem, @SRec, StartItem); (*<+>*)
   finally
     Result := SRec.Result;
   end;
 end;
 
-(*<+>*)
-function TElTreeItems.LookForItemEx2(StartItem: TElTreeItem; ColumnNum: integer;
-      CheckStartItem, SubItemsOnly, VisibleOnly, CheckCollapsed: boolean;
-      SearchDetails: pointer;
-      CompareProc: TElLookupCompareProc): TElTreeItem;
-
-  procedure IntFind(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+procedure IntFindLookForItemEx2(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
     IterateData: pointer; Tree: TCustomElTree);
   var
     b: boolean;
@@ -19823,6 +19807,12 @@ function TElTreeItems.LookForItemEx2(StartItem: TElTreeItem; ColumnNum: integer;
     end;
   end;
 
+(*<+>*)
+function TElTreeItems.LookForItemEx2(StartItem: TElTreeItem; ColumnNum: integer;
+      CheckStartItem, SubItemsOnly, VisibleOnly, CheckCollapsed: boolean;
+      SearchDetails: pointer;
+      CompareProc: TElLookupCompareProc): TElTreeItem;
+
 var
   SRec: TSRecEx;
 begin
@@ -19834,26 +19824,14 @@ begin
   SRec.SearchDetails := SearchDetails;
   SRec.Result := nil;
   try
-    IterateFrom(VisibleOnly, CheckCollapsed, @IntFind, @SRec, StartItem); (*<+>*)
+    IterateFrom(VisibleOnly, CheckCollapsed, IntFindLookForItemEx2, @SRec, StartItem); (*<+>*)
   finally
     Result := SRec.Result;
   end;
 end;
 
-(*<+>*)
-function TElTreeItems.LookForItem2(StartItem: TElTreeItem;
-  TextToFind: TElFString;
-  WholeTextOnly: boolean;
-  DataToFind: pointer;
-  ColumnNum: integer;
-  LookForData,
-  CheckStartItem,
-  SubItemsOnly,
-  VisibleOnly,
-  CheckCollapsed,
-  NoCase: boolean): TElTreeItem;
 
-  procedure IntFind(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+  procedure IntFindLookForItem2(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
     IterateData: pointer; Tree: TCustomElTree);
   var
     SubStrPos, i: integer;
@@ -19935,6 +19913,19 @@ function TElTreeItems.LookForItem2(StartItem: TElTreeItem;
     end;
   end;
 
+(*<+>*)
+function TElTreeItems.LookForItem2(StartItem: TElTreeItem;
+  TextToFind: TElFString;
+  WholeTextOnly: boolean;
+  DataToFind: pointer;
+  ColumnNum: integer;
+  LookForData,
+  CheckStartItem,
+  SubItemsOnly,
+  VisibleOnly,
+  CheckCollapsed,
+  NoCase: boolean): TElTreeItem;
+
 var
   SRec: TSRec;
 begin
@@ -19949,7 +19940,7 @@ begin
   SRec.SubItemsOnly := SubItemsOnly;
   SRec.Result := nil;
   try
-    IterateFrom(VisibleOnly, CheckCollapsed, @IntFind, @SRec, StartItem); (*<+>*)
+    IterateFrom(VisibleOnly, CheckCollapsed, IntFindLookForItem2, @SRec, StartItem); (*<+>*)
   finally
     Result := SRec.Result;
   end;
@@ -19970,30 +19961,30 @@ type
   end;
   PSRec = ^TSRec;
 
-  procedure IntFind(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  var
-    b: boolean;
-
-  begin
-    if (Item = PSRec(IterateData).StartItem) and (not PSRec(IterateData).CheckStartItem) then exit;
-    if (PSRec(IterateData).SubItemsOnly) and (not Item.IsUnder(PSRec(IterateData).StartItem)) then
-    begin
-      ContinueIterate := false;
-      exit;
-    end;
-    b := PSRec(IterateData).CompProc(Item, PSRec(IterateData).SearchDetails);
-    if b then
-    begin
-      PSRec(IterateData).result := Item;
-      ContinueIterate := false;
-      exit;
-    end;
-  end;
-
 var
   SRec: TSRec;
+  IntFind: TIterateProcAnonymusMethod;
 begin
+  IntFind := procedure(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree)
+      var
+        b: boolean;
+
+      begin
+        if (Item = PSRec(IterateData).StartItem) and (not PSRec(IterateData).CheckStartItem) then exit;
+        if (PSRec(IterateData).SubItemsOnly) and (not Item.IsUnder(PSRec(IterateData).StartItem)) then
+        begin
+          ContinueIterate := false;
+          exit;
+        end;
+        b := PSRec(IterateData).CompProc(Item, PSRec(IterateData).SearchDetails);
+        if b then
+        begin
+          PSRec(IterateData).result := Item;
+          ContinueIterate := false;
+          exit;
+        end;
+      end;
   SRec.ColumnNum := ColumnNum;
   SRec.StartItem := StartItem;
   SRec.CheckStartItem := CheckStartItem;
@@ -20002,7 +19993,7 @@ begin
   SRec.SearchDetails := SearchDetails;
   SRec.Result := nil;
   try
-    IterateFrom(VisibleOnly, not VisibleOnly, @IntFind, @SRec, StartItem); (*<+>*)
+    IterateFrom(VisibleOnly, not VisibleOnly, IntFind, @SRec, StartItem); (*<+>*)
   finally
     Result := SRec.Result;
   end;
@@ -25952,11 +25943,7 @@ begin
 end;  { SetHeaderInvertSortArrows }
 
 {$ifndef CLX_USED}
-{$IFDEF VCL_4_USED}
 function TCustomElTree.GetDragImages: TDragImageList;
-{$ELSE}
-function TCustomElTree.GetDragImages: TCustomImageList;
-{$ENDIF}
 begin
   result := FView.GetDragImages;
 end;
@@ -26659,7 +26646,7 @@ end;
 procedure TCustomElTree.TriggerVirtualValueNeeded(Item : TElTreeItem;
     SectionIndex : Integer; VarType : integer; var Value : Variant);
 begin
-  Value := Unassigned;
+  Value := Variants.Unassigned;
   if Assigned(FOnVirtualValueNeeded) then
     FOnVirtualValueNeeded(Self, Item, SectionIndex, VarType, Value); 
 end;

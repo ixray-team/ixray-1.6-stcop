@@ -56,7 +56,8 @@ uses Classes,
      {$ifdef VCL_6_USED}
      RTLConsts,
      {$endif}
-     ElStrUtils;
+     ElStrUtils,
+     RTLConsts;
 
 const
   U_LSB_FIRST = WideChar($FEFF);
@@ -91,7 +92,7 @@ type
     end;
 
     PWideStringItemList = ^TWideStringItemList;
-    TWideStringItemList = array[0..MaxListSize] of TWideStringItem;
+    TWideStringItemList = array[0..MaxListSize DIV 8] of TWideStringItem;
 
     TElWideStrings = class(TPersistent)
     private
@@ -574,24 +575,23 @@ procedure TElWideStrings.StrSwapByteOrder(Str: PWideChar);
 // byte to go from LSB to MSB and vice versa.
 // EDX contains address of string
 
-asm
-         PUSHF
-         PUSH ESI
-         PUSH EDI
-         MOV ESI, EDX
-         MOV EDI, ESI
-         XOR EAX, EAX  // clear high order byte to be able to use 32bit operand below
-         CLD
-@@1:     LODSW
-         OR EAX, EAX
-         JZ @@2
-         XCHG AL, AH
-         STOSW
-         JMP @@1
-
-@@2:     POP EDI
-         POP ESI
-         POPF
+var
+{$ifdef _WIN64}
+  val : Int64Rec;
+{$else}
+  val : LongRec;
+{$endif}
+  temp: Word;
+begin
+{$ifdef _WIN64}
+  val := Int64Rec(Str);
+{$else}
+  val := LongRec(Str);
+{$endif}
+  temp := val.Lo;
+  val.Lo := val.Hi;
+  val.Hi := temp;
+  Str := PWideChar(val);
 end;
 
 procedure TElWideStrings.LoadFromStream(Stream: TStream);
@@ -903,7 +903,7 @@ begin
   FOnChanging := nil;
   inherited Destroy;
   if FCount <> 0 then
-    Finalize(FList^[0], FCount);
+    Finalize(FList[0], FCount);
   FCount := 0;
   SetCapacity(0);
 end;
@@ -937,7 +937,7 @@ begin
   if FCount <> 0 then
   begin
     Changing;
-    Finalize(FList^[0], FCount);
+    Finalize(FList[0], FCount);
     FCount := 0;
     SetCapacity(0);
     Changed;
@@ -959,10 +959,10 @@ begin
   if (Index < 0) or (Index >= FCount) then
     Error(SListIndexError, Index);
   Changing;
-  Finalize(FList^[Index]);
+  Finalize(FList[Index]);
   Dec(FCount);
   if Index < FCount then
-    System.Move(FList^[Index + 1], FList^[Index],
+    System.Move(FList[Index + 1], FList[Index],
       (FCount - Index) * SizeOf(TStringItem));
   Changed;
 end;
@@ -978,17 +978,30 @@ end;
 
 procedure TElWideStringList.ExchangeItems(Index1, Index2: Integer);
 var
+{$ifdef _WIN64}
+  Temp: Int64;
+{$else}
   Temp: Integer;
+{$endif}
   Item1, Item2: PWideStringItem;
 begin
-  Item1 := @FList^[Index1];
-  Item2 := @FList^[Index2];
+  Item1 := @FList[Index1];
+  Item2 := @FList[Index2];
+{$ifdef _WIN64}
+  Temp := Int64(Item1^.FString);
+  Int64(Item1^.FString) := Int64(Item2^.FString);
+  Int64(Item2^.FString) := Temp;
+  Temp := Int64(Item1^.FObject);
+  Int64(Item1^.FObject) := Int64(Item2^.FObject);
+  Int64(Item2^.FObject) := Temp;
+{$else}
   Temp := Integer(Item1^.FString);
   Integer(Item1^.FString) := Integer(Item2^.FString);
   Integer(Item2^.FString) := Temp;
   Temp := Integer(Item1^.FObject);
   Integer(Item1^.FObject) := Integer(Item2^.FObject);
-  Integer(Item2^.FObject) := Temp;
+  Integer(Item2^.FObject) := Temp
+{$endif}
 end;
 
 function TElWideStringList.Find(const S: WideString; var Index: Integer): 
@@ -1002,7 +1015,7 @@ begin
   while L <= H do
   begin
     I := (L + H) shr 1;
-    C := WideCompareText(FList^[I].FString, S);
+    C := WideCompareText(FList[I].FString, S);
     if C < 0 then L := I + 1 else
     begin
       H := I - 1;
@@ -1019,7 +1032,7 @@ end;
 function TElWideStringList.Get(Index: Integer): WideString;
 begin
   if (Index < 0) or (Index >= FCount) then Error(SListIndexError, Index);
-  Result := FList^[Index].FString;
+  Result := FList[Index].FString;
 end;
 
 function TElWideStringList.GetCapacity: Integer;
@@ -1035,7 +1048,7 @@ end;
 function TElWideStringList.GetObject(Index: Integer): TObject;
 begin
   if (Index < 0) or (Index >= FCount) then Error(SListIndexError, Index);
-  Result := FList^[Index].FObject;
+  Result := FList[Index].FObject;
 end;
 
 procedure TElWideStringList.Grow;
@@ -1069,9 +1082,9 @@ begin
   Changing;
   if FCount = FCapacity then Grow;
   if Index < FCount then
-    System.Move(FList^[Index], FList^[Index + 1],
+    System.Move(FList[Index], FList[Index + 1],
       (FCount - Index) * SizeOf(TStringItem));
-  with FList^[Index] do
+  with FList[Index] do
   begin
     Pointer(FString) := nil;
     FObject := nil;
@@ -1086,7 +1099,7 @@ begin
   if Sorted then Error(SSortedListError, 0);
   if (Index < 0) or (Index >= FCount) then Error(SListIndexError, Index);
   Changing;
-  FList^[Index].FString := S;
+  FList[Index].FString := S;
   Changed;
 end;
 
@@ -1094,7 +1107,7 @@ procedure TElWideStringList.PutObject(Index: Integer; AObject: TObject);
 begin
   if (Index < 0) or (Index >= FCount) then Error(SListIndexError, Index);
   Changing;
-  FList^[Index].FObject := AObject;
+  FList[Index].FObject := AObject;
   Changed;
 end;
 
@@ -1148,8 +1161,8 @@ end;
 
 function StringListWideCompare(List: TElWideStringList; Index1, Index2: Integer): Integer;
 begin
-  Result := WideCompareText(List.FList^[Index1].FString,
-                            List.FList^[Index2].FString);
+  Result := WideCompareText(List.FList[Index1].FString,
+                            List.FList[Index2].FString);
 end;
 
 procedure TElWideStringList.Sort;

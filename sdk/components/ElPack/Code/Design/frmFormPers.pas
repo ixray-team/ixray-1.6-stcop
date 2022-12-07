@@ -16,11 +16,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   ElTree, ExtCtrls, ElPopBtn, ElImgLst,
-{$ifdef VCL_6_USED}
   DesignEditors, DesignWindows, DsnConst, DesignIntf, 
-{$else}
-  DsgnIntf, 
-{$endif}
   ElFrmPers, ElMTree,
   Menus, ElIni, TypInfo, ElVCLUtils, StdCtrls, ElHeader, ElBtnCtl, Graphics 
 {$IFDEF VCL_4_USED}
@@ -227,16 +223,6 @@ type TSRec = record
      end;
      PSRec = ^TSRec;
 
-  procedure IterateProc(Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
-    IterateData: pointer; Tree: TCustomElTree);
-  begin
-    if PSRec(IterateData).AnObj = Item.AnObject then
-    begin
-      ContinueIterate := false;
-      PSRec(IterateData).Item := Item;
-    end;
-  end;
-
   procedure IntFillTree(Comp : TObject; Name, TypeName : string; MItem : TElMTreeItem; Parent : TElTreeItem);
   var
     Item : TElTreeItem;
@@ -246,7 +232,18 @@ type TSRec = record
     i, j : integer;
     MItem1 : TElMTreeItem;
     SRec   : TSRec;
+    IterateProc: TIterateProcAnonymusMethod;
   begin
+    IterateProc :=   procedure (Item: TElTreeItem; Index: integer; var ContinueIterate: boolean;
+    IterateData: pointer; Tree: TCustomElTree)
+  begin
+    if PSRec(IterateData).AnObj = Item.AnObject then
+    begin
+      ContinueIterate := false;
+      PSRec(IterateData).Item := Item;
+    end;
+  end;
+
     Item := Tree.Items.AddItem(Parent);
     Item.Text := Name;
     MItem1 := nil;
@@ -304,7 +301,7 @@ type TSRec = record
 
           SRec.Item := nil;
           SRec.AnObj := Obj;
-          Item.Owner.Items.Iterate(false, true, @IterateProc, @SRec);
+          Item.Owner.Items.Iterate(false, true, IterateProc, @SRec);
           if SRec.Item = nil then
           begin
             if (Obj is TCollection) then

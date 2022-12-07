@@ -61,15 +61,9 @@ uses
   Graphics,
   Consts,
   Forms,
-{$IFDEF WIN32}
   ElUxTheme,
-{$ENDIF}
-  {$ifdef VCL_4_USED}
   ImgList,
-  {$endif}
-  {$ifdef VCL_6_USED}
   RTLConsts,
-  {$endif}
   ElImgFrm,
   Menus,
 {$ifdef VCL_6_USED}
@@ -2091,23 +2085,11 @@ end;
 
 procedure TCustomElListBox.CNDrawItem(var Message: TWMDrawItem);
 var
-{$ifndef VCL_5_USED}
   State: TOwnerDrawState;
-{$else}
-  State: Windows.TOwnerDrawState;
-{$endif}
 begin
   with Message.DrawItemStruct^ do
   begin
-{$ifndef VCL_4_USED}
-    State := TOwnerDrawState(WordRec(LongRec(itemState).Lo).Lo);
-{$else}
-    {$ifdef VCL_5_USED}
     State := Windows.TOwnerDrawState(LongRec(itemState).Lo);
-    {$else}
-    State := TOwnerDrawState(WordRec(LongRec(itemState).Lo).Lo);
-    {$endif}
-{$endif}
     FCanvas.Handle := hDC;
     FCanvas.Font := Font;
     FCanvas.Brush := Brush;

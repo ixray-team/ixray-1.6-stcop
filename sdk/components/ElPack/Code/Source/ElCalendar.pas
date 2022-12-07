@@ -554,7 +554,7 @@ begin
         dec(ACol);
     end;
     if FTranslateDays then
-       Result := ShortDayNames[(StartOfWeek + ACol) mod 7 + 1]
+       Result := FormatSettings.ShortDayNames[(StartOfWeek + ACol) mod 7 + 1]
     else
        Result := USShortDayNames[(StartOfWeek + ACol) mod 7 + 1];
   end

@@ -15,11 +15,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,  
-{$else}
-  DsgnIntf, 
-{$endif}
   ElTools, ElHeader, StdCtrls, frmSectEdit, ExtCtrls, ElXPThemedControl;
 
 type
@@ -65,6 +61,7 @@ type
     procedure FillSecList;
     procedure SetData;
     procedure GetData;
+    constructor Create(AOwner: TComponent); override;
   end;
 
   TElSectionsProperty = class(TClassProperty)
@@ -76,11 +73,7 @@ type
 
   TElHeaderEditor = class(TDefaultEditor)
   public
-  {$ifdef VCL_6_USED}
     procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-  {$else}
-    procedure EditProperty(PropertyEditor : TPropertyEditor; var Continue, FreeEditor : Boolean); override;
-  {$endif}
     procedure ExecuteVerb(Index: integer); override;
     function GetVerb(Index: integer): string; override;
     function GetVerbCount: integer; override;
@@ -155,6 +148,12 @@ end;
 procedure TElSectionsPropDlg.GetData;
 begin
   ASect.Assign(TestHeader.Sections);
+end;
+
+constructor TElSectionsPropDlg.Create(AOwner: TComponent);
+begin
+  Inherited;
+  TestHeader := TElHeader.Create(AOwner);
 end;
 
 procedure TElSectionsPropDlg.LoadBtnClick(Sender : TObject);
@@ -317,26 +316,14 @@ end;
 
 { TElHeaderEditor }
 
-{$ifdef VCL_6_USED}
 procedure TElHeaderEditor.EditProperty(const Prop: IProperty; var Continue: Boolean); 
-{$else}
-procedure TElHeaderEditor.EditProperty(PropertyEditor : TPropertyEditor; var Continue, FreeEditor : Boolean); 
-{$endif}
 var
   PropName : string;
 begin
-{$ifndef VCL_6_USED}
-  PropName := PropertyEditor.GetName;
-{$else}
   PropName := Prop.GetName;  
-{$endif}
   if (CompareText(PropName, 'SECTIONS') = 0) then
   begin
-{$ifndef VCL_6_USED}
-    PropertyEditor.Edit;
-{$else}
     Prop.Edit;
-{$endif}
     Continue := False;
   end;
 end;

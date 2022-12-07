@@ -249,7 +249,7 @@ const
 
     ModalResults: array[TMsgDlgBtn] of Integer = (
              mrYes, mrNo, mrOk, mrCancel, mrAbort, mrRetry, mrIgnore, mrAll, mrNoToAll,
-             mrYesToAll, 0);
+             mrYesToAll, 0, 0);
 
 function ElMessageDlg(const Msg: TElFString; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; HelpCtx: Longint): Word;
 begin

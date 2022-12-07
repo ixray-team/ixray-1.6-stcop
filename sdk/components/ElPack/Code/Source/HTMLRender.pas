@@ -384,11 +384,7 @@ begin
               Height := FontHeight;
           end;
           {$ifndef CLX_USED}
-          {$ifdef ELPACK_UNICODE}
-          GetTextMetrics(FOwner.FRender.Canvas.Handle, TM);
-          {$else}
-          GetTextMetrics(FOwner.FRender.Canvas.Handle, TM);
-          {$endif}
+          GetTextMetricsA(FOwner.FRender.Canvas.Handle, TM);
           baseLine := TM.tmDescent;
           Result := Abs(TM.tmHeight);
           {$else}
@@ -436,7 +432,7 @@ begin
             Height  := FontHeight;
           end;
           {$ifndef CLX_USED}
-          GetTextMetrics(FOwner.FRender.Canvas.Handle, TM);
+          GetTextMetricsA(FOwner.FRender.Canvas.Handle, TM);
           result := TM.tmMaxCharWidth;
           {$else}
           Metrics := QFontMetrics_create(FOwner.FRender.Canvas.Font.Handle);
@@ -612,7 +608,7 @@ begin
             Height  := FontHeight;
           end;
           {$ifndef CLX_USED}
-          GetTextMetrics(FOwner.FRender.Canvas.Handle, TM);
+          GetTextMetricsA(FOwner.FRender.Canvas.Handle, TM);
           result := TM.tmAveCharWidth;
           {$else}
           Metrics := QFontMetrics_create(FOwner.FRender.Canvas.Font.Handle);

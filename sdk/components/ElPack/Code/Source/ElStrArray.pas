@@ -22,7 +22,8 @@ unit ElStrArray;
 interface
 
 uses Classes,
-     ElArray;
+     ElArray,
+     RTLConsts;
 
 type
 

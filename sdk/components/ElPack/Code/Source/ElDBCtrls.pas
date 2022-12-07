@@ -631,11 +631,9 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure Reset;
   public
-    {$ifdef VCL_4_USED}
     function ExecuteAction(Action: TBasicAction): Boolean; override;
     function UpdateAction(Action: TBasicAction): Boolean; override;
     function UseRightToLeftAlignment: Boolean; override;
-    {$endif}
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
     property Field: TField read GetField;
@@ -791,11 +789,9 @@ type
     procedure LoadMemo; virtual;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    {$ifdef VCL_4_USED}
     function ExecuteAction(Action: TBasicAction): Boolean; override;
     function UpdateAction(Action: TBasicAction): Boolean; override;
     function UseRightToLeftAlignment: Boolean; override;
-    {$endif}
     property Field: TField read GetField;
   published
     property DataField: string read GetDataField write SetDataField;

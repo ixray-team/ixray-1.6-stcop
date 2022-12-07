@@ -14,11 +14,7 @@ unit ColorMapProp;
 interface
 
 uses Classes, SysUtils, 
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,  
-{$else}
-  DsgnIntf, 
-{$endif}
 
 Dialogs, Controls, Forms, TypInfo, frmColorMapItems, ElColorMap;
 

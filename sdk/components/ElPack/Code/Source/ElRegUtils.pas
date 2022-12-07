@@ -765,11 +765,7 @@ var
   MaxKeyLen : integer;
   KeyCount : integer;
   S : string;
-{$IFDEF VCL_4_USED}
   i, Len : Cardinal;
-{$ELSE}
-  i, Len : Integer;
-{$ENDIF}
 
 begin
   result := false;

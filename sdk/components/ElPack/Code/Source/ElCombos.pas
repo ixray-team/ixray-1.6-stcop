@@ -143,9 +143,7 @@ uses
   ElVCLUtils,
   Buttons,
   ElPopBtn,
-{$IFDEF WIN32}
   ElUxTheme,
-{$ENDIF}
   stdctrls,
 {$ifdef ELPACK_UNICODE}
   ElUnicodeStrings,

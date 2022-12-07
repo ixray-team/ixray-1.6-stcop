@@ -366,18 +366,14 @@ type
     property OnContextPopup;
 {$ENDIF}
 
-{$IFDEF VCL_4_USED}
     property Anchors;
     property Action;
     property Constraints;
-    {$ifndef CLX_USED}
     property DockOrientation;
     property Floating;
     property BevelKind;
     property DoubleBuffered;
     property DragKind;
-    {$endif}
-{$ENDIF}
   end;
 
 {$ifdef ELPACK_UNICODE}

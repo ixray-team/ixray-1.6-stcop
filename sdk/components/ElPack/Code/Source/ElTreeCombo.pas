@@ -2352,19 +2352,18 @@ type TSearchRec = record
 var
   i : integer;
   SRec : TSearchRec;
-
-  procedure IntSelect(Item : TElTreeItem; Index : integer; var ContinueIterate : boolean;
-    IterateData : pointer; Tree : TCustomElTree);
-  begin
-    if Item.GetFullName(PSearchRec(IterateData).Separator) = PSearchRec(IterateData).Text then
-    begin
-      ContinueIterate := false;
-      Tree.ItemFocused := Item;
-      Item.Selected := true;
-    end;
-  end;
-
+  IntSelect: TIterateProcAnonymusMethod;
 begin
+  IntSelect :=  procedure(Item : TElTreeItem; Index : integer; var ContinueIterate : boolean;
+    IterateData : pointer; Tree : TCustomElTree)
+    begin
+      if Item.GetFullName(PSearchRec(IterateData).Separator) = PSearchRec(IterateData).Text then
+      begin
+        ContinueIterate := false;
+        Tree.ItemFocused := Item;
+        Item.Selected := true;
+      end;
+    end;
   if MultiSelect then
   begin
     FTree.Items.BeginUpdate;
@@ -2379,7 +2378,7 @@ begin
     SRec.Text := Text;
     FTree.ItemFocused := FSelection;
     if FTree.ItemFocused = nil then
-      FTree.Items.Iterate(false, false, @IntSelect, @SRec);
+      FTree.Items.Iterate(false, false, IntSelect, @SRec);
   end;
 end; { PrepareSelection }
 

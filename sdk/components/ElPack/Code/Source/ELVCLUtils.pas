@@ -106,23 +106,6 @@ const
 var
   ParentControlRepaintedMessage : DWORD;
 
-{$IFNDEF VCL_4_USED}
-type
-  TWMMouseWheel = record
-    Msg : Cardinal;
-    Keys : SmallInt;
-    WheelDelta : SmallInt;
-    case Integer of
-      0 : (
-        XPos : Smallint;
-        YPos : Smallint);
-      1 : (
-        Pos : TSmallPoint;
-        Result : Longint);
-  end;
-
-{$ENDIF}
-
 {$ifndef VCL_4_USED}
 type
   TImageIndex = type Integer;
@@ -393,16 +376,16 @@ implementation
 
 function GetTimeAMChar : char;
 begin
-  if Length(TimeAMString) > 0 then
-    result := TimeAMString[1]
+  if Length(FormatSettings.TimeAMString) > 0 then
+    result := FormatSettings.TimeAMString[1]
   else
     result := #0;
 end;
 
 function GetTimePMChar : char;
 begin
-  if Length(TimePMString) > 0 then
-    result := TimePMString[1]
+  if Length(FormatSettings.TimePMString) > 0 then
+    result := FormatSettings.TimePMString[1]
   else
     result := #0;
 end;
@@ -2183,8 +2166,8 @@ begin
   if ScrollBars = ssNone then exit;
   if ScrollBars <> ssBoth then
   begin
-    if ScrollBars = ssVertical then dwStyle := dwStyle and not WS_HSCROLL;
-    if ScrollBars = ssHorizontal then dwStyle := dwStyle and not WS_VSCROLL;
+    if ScrollBars = TScrollStyle.ssVertical then dwStyle := dwStyle and not WS_HSCROLL;
+    if ScrollBars = TScrollStyle.ssHorizontal then dwStyle := dwStyle and not WS_VSCROLL;
   end;
   if ((dwStyle and WS_HSCROLL) <> 0) and ((dwStyle and WS_VSCROLL) <> 0)
      and ((Rc1.Right - Rc1.Left) - (Rc.Right - Rc.Left) >= nFrameSize + hScrollSize)
@@ -2368,8 +2351,8 @@ begin
 
   if ScrollBars <> ssBoth then
   begin
-    if ScrollBars = ssVertical then dwStyle := dwStyle and not WS_HSCROLL;
-    if ScrollBars = ssHorizontal then dwStyle := dwStyle and not WS_VSCROLL;
+    if ScrollBars = TScrollStyle.ssVertical then dwStyle := dwStyle and not WS_HSCROLL;
+    if ScrollBars = TScrollStyle.ssHorizontal then dwStyle := dwStyle and not WS_VSCROLL;
   end;
   if ((dwStyle and WS_HSCROLL) <> 0) and ((dwStyle and WS_VSCROLL) <> 0)
      and ((Rc1.Right - Rc1.Left) - (Rc.Right - Rc.Left) >= nFrameSize + hScrollSize)
@@ -3040,7 +3023,7 @@ begin
 
     strPtr := lpString;
 
-    GetTextMetrics(hdc, tm);
+    GetTextMetricsA(hdc, tm);
     if (uFormat and DT_EXTERNALLEADING) = DT_EXTERNALLEADING then
       lh := tm.tmHeight + tm.tmExternalLeading
     else

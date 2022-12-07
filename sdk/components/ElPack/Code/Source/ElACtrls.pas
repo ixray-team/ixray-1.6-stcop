@@ -4299,7 +4299,7 @@ begin
     begin
       FChildHandle := Message.lParam;
       GetClassName(FChildHandle, @Buf, 50);
-      if (StrPas(@Buf) = 'Edit') and
+      if (StrPas(PAnsiChar(AnsiString(Buf))) = 'Edit') and
          ((GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWN) = CBS_DROPDOWN) then
       begin
         FEditHandle := FChildHandle;
@@ -4307,7 +4307,7 @@ begin
         SetWindowLong(FEditHandle, GWL_WNDPROC, Integer(FEditInstance));
       end
       else
-      if (StrPas(@Buf) = 'ComboLBox') then
+      if (StrPas(PAnsiChar(AnsiString(Buf))) = 'ComboLBox') then
       begin
         FListHandle := FChildHandle;
         if (FSaveListWndProc = 0) then

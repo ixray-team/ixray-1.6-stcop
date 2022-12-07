@@ -15,11 +15,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ElTree, ElPopBtn, Menus, ElHeader,
-{$ifdef VCL_6_USED}
   DesignIntf, DesignEditors, DesignWindows, DsnConst,
-{$else}
-  DsgnIntf,
-{$endif}
   TypInfo, ElSndMap, ElBtnCtl, ElTreeAdvEdit, ElTreeModalEdit, ElXPThemedControl;
 
 type
