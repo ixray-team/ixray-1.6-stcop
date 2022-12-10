@@ -3,6 +3,9 @@
 
 using std::swap;
 
+#ifndef _MSC_VER
+#include <unordered_map>
+#endif
 #ifdef	__BORLANDC__
 #define M_NOSTDCONTAINERS_EXT
 #endif

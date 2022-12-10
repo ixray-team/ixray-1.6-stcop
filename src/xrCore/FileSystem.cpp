@@ -53,7 +53,12 @@ xr_string	EFS_Utils::ChangeFileExt(LPCSTR src, LPCSTR ext)
 	LPSTR src_ext	= strext(src);
     if (src_ext){
 	    size_t		ext_pos	= src_ext-src;
+#ifdef _MSC_VER
         tmp.assign	(src,0,ext_pos);
+#else
+        xr_string _src(src);
+        tmp = _src.substr(0,ext_pos);
+#endif
     }else{
         tmp			= src;
     }

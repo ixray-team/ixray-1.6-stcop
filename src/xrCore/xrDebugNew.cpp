@@ -28,8 +28,10 @@ extern bool shared_str_initialized;
 
 #include <dbghelp.h>						// MiniDump flags
 
+#ifndef _EDITOR
 #include <new.h>							// for _set_new_mode
 #include <signal.h>							// for signals
+#endif
 
 #ifndef DEBUG
 #	define USE_OWN_MINI_DUMP
@@ -539,10 +541,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 //////////////////////////////////////////////////////////////////////
 #ifdef M_BORLAND
-	namespace std{
-		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );
-	};
-
 	static void __cdecl def_new_handler() 
     {
 		FATAL		("Out of memory.");

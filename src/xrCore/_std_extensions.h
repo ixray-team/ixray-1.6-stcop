@@ -30,10 +30,13 @@
 #endif
 
 #ifdef  _EDITOR
+
+#ifdef _MSC_VER
 IC char* strncpy_s(char* strDestination, size_t sizeInBytes, const char *strSource, size_t count)
 {
     return strncpy(strDestination, strSource, count);
 }
+#endif
 
 IC char* xr_strcpy(char* strDestination,   size_t sizeInBytes,   const char *strSource)
 {

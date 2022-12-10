@@ -199,7 +199,7 @@ void*  FileDecompress	(const char *fn, const char* sign, u32* size)
     R_ASSERT(strncmp(M,F,8)==0);
 
 	void* ptr = 0; u32 SZ;
-	SZ = _readLZ (H, ptr, _filelength(H)-8);
+	SZ = _readLZ (H, ptr, filelength(H)-8);
 	_close	(H);
 	if (size) *size = SZ;
 	return ptr;

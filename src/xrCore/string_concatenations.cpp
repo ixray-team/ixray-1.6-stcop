@@ -81,7 +81,25 @@ void   check_stack_overflow (u32 stack_increment)
 	} 
 	__except ( xray::core::detail::stack_overflow_exception_filter(GetExceptionCode()) ) 
 	{
+#ifndef _EDITOR
 		_resetstkoflw();
+#else
+		SYSTEM_INFO si;
+		GetSystemInfo(&si);
+
+		MEMORY_BASIC_INFORMATION mi;
+		DWORD previous_protection_status;
+		LPBYTE page = (LPBYTE)&page; // Address in the stack
+		VirtualQuery(page, &mi, sizeof(mi)); // Currently used memory page
+		page = (LPBYTE)(mi.BaseAddress)-si.dwPageSize; // Go to the page one below this
+
+		// Free and protect everything from the start of the allocation range
+		// to the end of the page below the one in use
+		if (!VirtualFree(mi.AllocationBase, (LPBYTE)page - (LPBYTE)mi.AllocationBase, MEM_DECOMMIT) ||
+			!VirtualProtect(page, si.dwPageSize, PAGE_GUARD | PAGE_READWRITE, &previous_protection_status)) {
+			throw std::bad_exception();
+		}
+#endif
 	}
 }
 
@@ -117,6 +135,7 @@ void	string_tupples::error_process () const
 
 using namespace xray::core::detail;
 
+#ifndef _EDITOR
 // dest = S1+S2
 LPSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2)
 {
@@ -311,4 +330,5 @@ LPSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S
 
 	return			(dest);
 }
+#endif
 

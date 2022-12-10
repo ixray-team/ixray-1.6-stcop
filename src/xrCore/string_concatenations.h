@@ -44,7 +44,6 @@ IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const cha
 
 // warning: do not comment this macro, as stack overflow check is very light
 // (consumes ~1% performance of STRCONCAT macro)
-#ifndef _EDITOR
 #define STRCONCAT_STACKOVERFLOW_CHECK
 
 #ifdef STRCONCAT_STACKOVERFLOW_CHECK
@@ -69,7 +68,6 @@ IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const cha
 
 #endif //#ifdef STRCONCAT_STACKOVERFLOW_CHECK
 
-#endif //_EDITOR
 #include "string_concatenations_inline.h"
 
 
