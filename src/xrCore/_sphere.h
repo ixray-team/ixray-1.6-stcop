@@ -1,6 +1,12 @@
 #ifndef _F_SPHERE_H_
 #define _F_SPHERE_H_
 
+template<class T>
+struct _sphere;
+
+using Fsphere = _sphere<float>;
+using Dsphere = _sphere<double>;
+
 template <class T>
 struct _sphere {
 	_vector3<T>	P;
@@ -142,9 +148,6 @@ public:
 		return T( PI_MUL_4 / 3 ) * (R*R*R);
 	}
 };
-
-typedef _sphere<float>	Fsphere;
-typedef _sphere<double> Dsphere;
 
 template <class T>
 BOOL	_valid			(const _sphere<T>& s)		{ return _valid(s.P) && _valid(s.R);	}
