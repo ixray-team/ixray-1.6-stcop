@@ -60,7 +60,11 @@ protected:
 	// ref-counting
 	void				_dec		()								{	if (0==p_) return;	p_->dwReference--; 	if (0==p_->dwReference)	p_=0;						}
 public:
+#ifndef _EDITOR
 	void				_set		(str_c rhs) 					{	str_value* v = g_pStringContainer->dock(rhs); if (0!=v) v->dwReference++; _dec(); p_ = v;	}
+#else
+	void				_set		(pcstr rhs)						{	str_value* v = g_pStringContainer->dock(rhs); if (0!=v) v->dwReference++; _dec(); p_ = v;	}
+#endif
 	void				_set		(shared_str const &rhs)			{	str_value* v = rhs.p_; if (0!=v) v->dwReference++; _dec(); p_ = v;							}
 //	void				_set		(shared_str const &rhs)			{	str_value* v = g_pStringContainer->dock(rhs.c_str()); if (0!=v) v->dwReference++; _dec(); p_ = v;							}
 	
@@ -70,17 +74,33 @@ public:
 public:
 	// construction
 						shared_str	()								{	p_ = 0;											}
+#ifndef _EDITOR
 						shared_str	(str_c rhs) 					{	p_ = 0;	_set(rhs);								}
+#else
+						shared_str	(pcstr rhs)						{	p_ = 0; _set(rhs);								}
+#endif
 						shared_str	(shared_str const &rhs)			{	p_ = 0;	_set(rhs);								}
 						~shared_str	()								{	_dec();											}
 
 	// assignment & accessors
+#ifndef _EDITOR
 	shared_str&			operator=	(str_c rhs)						{	_set(rhs);	return (shared_str&)*this;			}
+#else
+	shared_str&			operator=	(pcstr rhs)						{	_set(rhs);	return (shared_str&)*this;			}
+#endif
 	shared_str&			operator=	(shared_str const &rhs)			{	_set(rhs);	return (shared_str&)*this;			}
+#ifndef _EDITOR
 	str_c				operator*	() const						{	return p_?p_->value:0;							}
+#else
+	pcstr				operator*	() const						{	return p_?p_->value:0;							}
+#endif
 	bool				operator!	() const						{	return p_ == 0;									}
 	char				operator[]	(size_t id)						{	return p_->value[id];							}
+#ifndef _EDITOR
 	str_c				c_str		() const						{	return p_?p_->value:0;							}
+#else
+	pcstr				c_str		() const						{	return p_?p_->value:0;							}
+#endif
 
 	// misc func
 	u32					size		()						const	{	if (0==p_) return 0; else return p_->dwLength;	}
