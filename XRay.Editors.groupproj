@@ -2,6 +2,17 @@
     <PropertyGroup>
         <ProjectGuid>{21D5BFE6-5F14-43E9-952E-0A6B1D667C56}</ProjectGuid>
     </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="src\xrCore\xrCoreB.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="src\xrParticles\xrParticlesB.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="src\xrSound\xrSoundB.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
         <Borland.ProjectType/>
@@ -9,14 +20,41 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="xrCoreB">
+        <MSBuild Projects="src\xrCore\xrCoreB.cbproj"/>
+    </Target>
+    <Target Name="xrCoreB:Clean">
+        <MSBuild Projects="src\xrCore\xrCoreB.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xrCoreB:Make">
+        <MSBuild Projects="src\xrCore\xrCoreB.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="xrParticlesB">
+        <MSBuild Projects="src\xrParticles\xrParticlesB.cbproj"/>
+    </Target>
+    <Target Name="xrParticlesB:Clean">
+        <MSBuild Projects="src\xrParticles\xrParticlesB.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xrParticlesB:Make">
+        <MSBuild Projects="src\xrParticles\xrParticlesB.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="xrSoundB">
+        <MSBuild Projects="src\xrSound\xrSoundB.cbproj"/>
+    </Target>
+    <Target Name="xrSoundB:Clean">
+        <MSBuild Projects="src\xrSound\xrSoundB.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xrSoundB:Make">
+        <MSBuild Projects="src\xrSound\xrSoundB.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget/>
+        <CallTarget Targets="xrCoreB;xrParticlesB;xrSoundB"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget/>
+        <CallTarget Targets="xrCoreB:Clean;xrParticlesB:Clean;xrSoundB:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget/>
+        <CallTarget Targets="xrCoreB:Make;xrParticlesB:Make;xrSoundB:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
