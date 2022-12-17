@@ -278,13 +278,12 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 			R		= FS.r_open(cname);
 		}
 
-		IReader* file			= FS.r_open(cname);
-		R_ASSERT2				( file, cname );
-		u32	const size			= file->length();
+		R_ASSERT2(R, cname);
+		u32	const size = R->length();
 		char* const data		= (LPSTR)_alloca(size + 1);
-		CopyMemory				( data, file->pointer(), size );
+		CopyMemory(data, R->pointer(), size);
 		data[size]				= 0;
-		FS.r_close				( file );
+		FS.r_close(R);
 
 		// Select target
 		LPCSTR						c_target	= "ps_2_0";
