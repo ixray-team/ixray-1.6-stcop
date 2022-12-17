@@ -395,8 +395,8 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 static BOOL	dcl_equal			(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 {
 	// check sizes
-	u32 a_size	= D3DXGetDeclLength(a);
-	u32 b_size	= D3DXGetDeclLength(b);
+	u32 a_size = GetDeclLength(a);
+	u32 b_size = GetDeclLength(b);
 	if (a_size!=b_size)	return FALSE;
 	return 0==memcmp	(a,b,a_size*sizeof(D3DVERTEXELEMENT9));
 }
@@ -412,7 +412,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 
 	// Create _new
 	SDeclaration* D			= xr_new<SDeclaration>();
-	u32 dcl_size			= D3DXGetDeclLength(dcl)+1;
+	u32 dcl_size = GetDeclLength(dcl) + 1;
 	//	Don't need it for DirectX 10 here
 	//CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);

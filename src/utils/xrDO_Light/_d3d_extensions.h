@@ -97,15 +97,15 @@ public:
 
 struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH+1>
 {
-	void	set		(u32 FVF)
+	void set (u32 FVF)
 	{
 		D3DXDeclaratorFromFVF	(FVF,begin());
-		resize					(D3DXGetDeclLength(begin())+1);
+		resize(FVF::GetDeclLength(begin()) + 1);
 	}
-	void	set		(D3DVERTEXELEMENT9* dcl)
+	void set(D3DVERTEXELEMENT9* dcl)
 	{
-		resize					(D3DXGetDeclLength(dcl)+1);
-		CopyMemory				(begin(),dcl,size()*sizeof(D3DVERTEXELEMENT9));
+		resize(FVF::GetDeclLength(dcl) + 1);
+		CopyMemory(begin(), dcl, size() * sizeof(D3DVERTEXELEMENT9));
 	}
 	void	set		(const VDeclarator& d)
 	{
