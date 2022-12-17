@@ -3,6 +3,9 @@
 
 #include "../dx10BufferUtils.h"
 
+#include <Utilities/FlexibleVertexFormat.h>
+using namespace FVF;
+
 struct VS_INPUT_FLUIDSIM_STRUCT
 {   
 	D3DXVECTOR3 Pos; // Clip space position for slice vertices
@@ -71,7 +74,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
 		D3DDECL_END()
 	};
 
-	u32 vSize = D3DXGetDeclVertexSize(layoutDesc,0);
+	u32 vSize = ComputeVertexSize(layoutDesc, 0);
 
 	//UINT numElements = sizeof(layoutDesc)/sizeof(layoutDesc[0]);
 	//CreateLayout( layoutDesc, numElements, technique, &layout);

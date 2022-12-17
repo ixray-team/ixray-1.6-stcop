@@ -21,6 +21,9 @@
 
 #include "../xrRender/ShaderResourceTraits.h"
 
+#include <Utilities\FlexibleVertexFormat.h>
+using namespace FVF;
+
 SHS*	CResourceManager::_CreateHS			(LPCSTR Name)
 {
 	return CreateShader<SHS>(Name);
@@ -515,7 +518,7 @@ void	CResourceManager::DBG_VerifyGeoms	()
 	D3DVERTEXELEMENT9		test	[MAX_FVF_DECL_SIZE];
 	u32						size	= 0;
 	G->dcl->GetDeclaration			(test,(unsigned int*)&size);
-	u32 vb_stride					= D3DXGetDeclVertexSize	(test,0);
+	u32 vb_stride = ComputeVertexSize(test,0);
 	u32 vb_stride_cached			= G->vb_stride;
 	R_ASSERT						(vb_stride == vb_stride_cached);
 	}
@@ -527,7 +530,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, ID3DVertexBuff
 	R_ASSERT			(decl && vb);
 
 	SDeclaration* dcl	= _CreateDecl			(decl);
-	u32 vb_stride		= D3DXGetDeclVertexSize	(decl,0);
+	u32 vb_stride = ComputeVertexSize(decl, 0);
 
 	// ***** first pass - search already loaded shader
 	for (u32 it=0; it<v_geoms.size(); it++)
