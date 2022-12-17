@@ -174,7 +174,7 @@ extern "C"{
 		CONST D3DVERTEXELEMENT9*		pDecl,
 		DWORD							Stream)
 	{
-		return D3DXGetDeclVertexSize(pDecl,Stream);
+		return ComputeVertexSize(pDecl, Stream);
 	}
 
 	ETOOLS_API UINT WINAPI 
