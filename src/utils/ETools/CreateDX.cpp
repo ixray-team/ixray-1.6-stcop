@@ -181,7 +181,7 @@ extern "C"{
 		D3DX_GetDeclLength(
 		CONST D3DVERTEXELEMENT9 *pDecl)
 	{
-		return D3DXGetDeclLength(pDecl);
+		return GetDeclLength(pDecl);
 	}
 
 	ETOOLS_API UINT WINAPI
