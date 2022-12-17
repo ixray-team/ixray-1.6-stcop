@@ -122,6 +122,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrSE_Factory", "src\utils\xrSE_Factory\xrSE_Factory.vcxproj", "{3AD26FD3-4F52-4E22-A4CF-AD4C49E74C61}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETools", "src\utils\ETools\ETools.vcxproj", "{65CBB9D0-FBC6-41A4-8316-F5E9B5D7FB33}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6857F086-F6FE-4150-9ED7-7446F1C1C220} = {6857F086-F6FE-4150-9ED7-7446F1C1C220}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LWO", "src\utils\LWO\LWO.vcxproj", "{A6EBBBBB-5FEF-4C20-8460-DFAB11734DED}"
 EndProject
@@ -140,6 +143,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrLC_LightStab", "src\utils\xrLC_LightStab\xrLC_LightStab.vcxproj", "{EC924B9B-4991-4931-8623-E1DB9AE005CA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrLC", "src\utils\xrLC\xrLC.vcxproj", "{A4ABD75E-825B-4D09-B3B2-2709682E40C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6857F086-F6FE-4150-9ED7-7446F1C1C220} = {6857F086-F6FE-4150-9ED7-7446F1C1C220}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrDO_Light", "src\utils\xrDO_Light\xrDO_Light.vcxproj", "{B730F54D-1199-481A-AAD0-5DB684E067C0}"
 EndProject
