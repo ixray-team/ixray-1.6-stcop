@@ -2,9 +2,7 @@
 #pragma hdrstop
 
 #pragma warning(disable:4995)
-#include <d3dx9.h>
 #ifndef _EDITOR
-#pragma comment( lib, "d3dx9.lib"		)
 #include "../../xrEngine/render.h"
 #endif
 #pragma warning(default:4995)
@@ -515,7 +513,7 @@ void	CResourceManager::DBG_VerifyGeoms	()
 	{
 	SGeometry* G					= v_geoms[it];
 
-	D3DVERTEXELEMENT9		test	[MAX_FVF_DECL_SIZE];
+	D3DVERTEXELEMENT9		test	[MAXD3DDECLLENGTH + 1];
 	u32						size	= 0;
 	G->dcl->GetDeclaration			(test,(unsigned int*)&size);
 	u32 vb_stride = ComputeVertexSize(test,0);
@@ -550,9 +548,10 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, ID3DVertexBuff
 }
 SGeometry*	CResourceManager::CreateGeom		(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
-	D3DVERTEXELEMENT9	dcl	[MAX_FVF_DECL_SIZE];
-	CHK_DX				(D3DXDeclaratorFromFVF(FVF,dcl));
-	SGeometry* g		=  CreateGeom	(dcl,vb,ib);
+	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+	CHK_DX(CreateDeclFromFVF(FVF, dcl));
+	SGeometry* g = CreateGeom(dcl.data(), vb, ib);
+
 	return	g;
 }
 
