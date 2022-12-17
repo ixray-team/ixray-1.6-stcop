@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(disable:4995)
-#include <d3dx9.h>
-#pragma warning(default:4995)
 #include "fmesh.h"
 
 //BOOL ValidateIndices(u32 vCount, u32 iCount, u16* pIndices)
@@ -40,8 +37,8 @@ void ConvertVertices(u32 dwTypeDest, void *pDest, u32 dwTypeSrc, void *pSource, 
 	u32	TransferMask	[64];
 	u32	tmPos			= 0;
 	u32	tmPosSrc		= 0;
-	u32	dwSizeSrc		= D3DXGetFVFVertexSize(dwTypeSrc)/4;
-	u32	dwSizeDest		= D3DXGetFVFVertexSize(dwTypeDest)/4;
+	u32	dwSizeSrc		= FVF::ComputeVertexSize(dwTypeSrc)/4;
+	u32	dwSizeDest		= FVF::ComputeVertexSize(dwTypeDest)/4;
 	u32*	dest		= (u32*)pDest;
 	u32*	src			= (u32*)pSource;
 

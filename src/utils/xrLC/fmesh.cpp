@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <Utilities\FlexibleVertexFormat.h>
+
 static u32 dwPositionPart[8] =
 {
 	0,	// no position
@@ -18,11 +20,13 @@ static u32 dwPositionPart[8] =
 void ConvertVertices(u32 dwTypeDest, void *pDest, u32 dwTypeSrc, void *pSource, u32 dwCount)
 // assuming that pDest is large enought to maintain all the data
 {
+	using namespace FVF;
+
 	u32	TransferMask[64];
 	u32	tmPos		= 0;
 	u32	tmPosSrc	= 0;
-	u32	dwSizeSrc	= D3DXGetFVFVertexSize(dwTypeSrc)/4;
-	u32	dwSizeDest	= D3DXGetFVFVertexSize(dwTypeDest)/4;
+	u32	dwSizeSrc	= ComputeVertexSize(dwTypeSrc)/4;
+	u32	dwSizeDest	= ComputeVertexSize(dwTypeDest)/4;
 	u32*	dest		= (u32*)pDest;
 	u32*	src			= (u32*)pSource;
 
