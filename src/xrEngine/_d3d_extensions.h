@@ -95,15 +95,14 @@ public:
 #ifndef NO_XR_VDECLARATOR
 #include <Utilities\FlexibleVertexFormat.h>
 
-struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH+1>
-{
-	void set(u32 FVF)
-	{
-		D3DXDeclaratorFromFVF	(FVF,begin());
+struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
+	void set(u32 FVF) {
+		auto vec = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+		CHK_DX(FVF::CreateDeclFromFVF(FVF, vec));
 		resize(FVF::GetDeclLength(begin()) + 1);
+		CopyMemory(begin(), vec.data(), size() * sizeof(D3DVERTEXELEMENT9));
 	}
-	void set(D3DVERTEXELEMENT9* dcl)
-	{
+	void set(D3DVERTEXELEMENT9* dcl) {
 		resize(FVF::GetDeclLength(dcl) + 1);
 		CopyMemory(begin(), dcl, size() * sizeof(D3DVERTEXELEMENT9));
 	}
