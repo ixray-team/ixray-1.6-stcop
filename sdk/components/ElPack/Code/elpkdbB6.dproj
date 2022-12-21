@@ -55,9 +55,8 @@
         <DCC_BplOutput>..\..\..\..\bin\$(Platform)\$(Config)</DCC_BplOutput>
         <DCC_BpiOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_BpiOutput>
         <DCC_ObjOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_ObjOutput>
-        <DCC_HppOutput>..\..\..\..\inc\elpkdbB6</DCC_HppOutput>
+        <DCC_HppOutput>.\Source</DCC_HppOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutputARM>true</DCC_HppOutputARM>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>

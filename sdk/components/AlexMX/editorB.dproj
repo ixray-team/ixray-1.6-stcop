@@ -51,9 +51,8 @@
         <DCC_DcpOutput>..\..\..\obj\editorB\$(Platform)\$(Config)</DCC_DcpOutput>
         <VerInfo_Locale>1049</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_HppOutputARM>true</DCC_HppOutputARM>
         <DCC_BpiOutput>..\..\..\lib\$(Platform)\$(Config)</DCC_BpiOutput>
-        <DCC_HppOutput>..\..\..\inc\editorB</DCC_HppOutput>
+        <DCC_HppOutput>.\</DCC_HppOutput>
         <DCC_ObjOutput>..\..\..\lib\$(Platform)\$(Config)</DCC_ObjOutput>
         <DCC_BplOutput>..\..\..\bin\$(Platform)\$(Config)</DCC_BplOutput>
     </PropertyGroup>

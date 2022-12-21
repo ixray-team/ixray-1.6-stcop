@@ -57,9 +57,8 @@
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
         <DCC_BpiOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_BpiOutput>
         <DCC_ObjOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_ObjOutput>
-        <DCC_HppOutput>..\..\..\..\inc\dceldbB6</DCC_HppOutput>
+        <DCC_HppOutput>.\Design</DCC_HppOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutputARM>true</DCC_HppOutputARM>
         <DCC_DcpOutput>..\..\..\..\obj\dceldbB6\$(Platform)\$(Config)</DCC_DcpOutput>
         <DCC_DcuOutput>..\..\..\..\obj\dceldbB6\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_BplOutput>..\..\..\..\bin\$(Platform)\$(Config)</DCC_BplOutput>

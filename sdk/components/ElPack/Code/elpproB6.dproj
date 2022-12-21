@@ -56,8 +56,7 @@
         <DCC_BpiOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_BpiOutput>
         <DCC_ObjOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_ObjOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutputARM>true</DCC_HppOutputARM>
-        <DCC_HppOutput>..\..\..\..\inc\elpproB6</DCC_HppOutput>
+        <DCC_HppOutput>.\Source</DCC_HppOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>

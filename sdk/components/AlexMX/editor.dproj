@@ -59,8 +59,7 @@
         <DCC_BplOutput>..\..\..\bin\$(Platform)\$(Config)</DCC_BplOutput>
         <DCC_BpiOutput>..\..\..\lib\$(Platform)\$(Config)</DCC_BpiOutput>
         <DCC_ObjOutput>..\..\..\lib\$(Platform)\$(Config)</DCC_ObjOutput>
-        <DCC_HppOutputARM>true</DCC_HppOutputARM>
-        <DCC_HppOutput>..\..\..\inc\editor</DCC_HppOutput>
+        <DCC_HppOutput>.\</DCC_HppOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>

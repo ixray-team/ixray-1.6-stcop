@@ -54,10 +54,10 @@
         <DCC_DcuOutput>..\..\..\..\obj\elpackB6\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_BplOutput>..\..\..\..\bin\$(Platform)\$(Config)</DCC_BplOutput>
         <DCC_BpiOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_BpiOutput>
-        <DCC_HppOutput>..\..\..\..\inc\elpackB6</DCC_HppOutput>
+        <DCC_HppOutput>.\Source</DCC_HppOutput>
         <DCC_ObjOutput>..\..\..\..\lib\$(Platform)\$(Config)</DCC_ObjOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutputARM>true</DCC_HppOutputARM>
+        <DCC_Define>BUIlDER_USED;USE_VARIANT;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
