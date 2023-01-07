@@ -4,13 +4,25 @@ on:
   push:
     branches:
       - '**'
-    paths-ignore:
-      - 'gamedata/**'
+    paths:
+      - '.github/workflows/**'
+      - 'proj/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '*.sln'
+      - '*.props'
+      - '*.targets'
   pull_request:
     branches:
       - '**'
-    paths-ignore:
-      - 'gamedata/**'
+    paths:
+      - '.github/workflows/**'
+      - 'proj/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '*.sln'
+      - '*.props'
+      - '*.targets'
 
 defaults:
   run:
