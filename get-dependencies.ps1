@@ -1,6 +1,11 @@
-# Set path to 7-Zip
-$path = Join-Path -Path ${env:ProgramFiles} `
-                  -ChildPath "7-Zip\7z.exe"
+# Test and set path to 7-Zip
+$globalPaths = $env:Path -split ';'
+ForEach ($line in $globalPaths) {
+    If (!(Test-Path (Join-Path -Path $line -ChildPath "\7z.exe"))) {
+        $path = Join-Path -Path ${env:ProgramFiles} `
+                          -ChildPath "7-Zip\7z.exe"
+    }
+}
 
 # Getting DirectX SDK March 2009 from archive
 If (!(Test-Path "sdk\dxsdk_mar2009")) {
