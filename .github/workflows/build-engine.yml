@@ -52,45 +52,45 @@ jobs:
       solution_name: XRay.sln
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Get dependencies
-      run: |
-        ${{ github.workspace }}\get-dependencies.bat
+      - name: Get dependencies
+        run: |
+          ${{ github.workspace }}\get-dependencies.bat
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
 
-    - name: Build solution
-      run: |
-        msbuild $env:solution_name `
-          -p:Configuration=${{ matrix.config }} `
-          -p:Platform=${{ matrix.platform }} `
-          -restore `
-          -maxCpuCount `
-          -nologo
+      - name: Build solution
+        run: |
+          msbuild $env:solution_name `
+            -p:Configuration=${{ matrix.config }} `
+            -p:Platform=${{ matrix.platform }} `
+            -restore `
+            -maxCpuCount `
+            -nologo
 
-    - name: Cleanup
-      run: |
-        ${{ github.workspace }}/delete-symbols.bat
+      - name: Cleanup
+        run: |
+          ${{ github.workspace }}/delete-symbols.bat
 
-    - name: Upload binaries
-      uses: actions/upload-artifact@v3
-      with:
-        name: bin (${{ matrix.config }})
-        path: bin/
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin (${{ matrix.config }})
+          path: bin/
 
-    - name: Upload libraries
-      uses: actions/upload-artifact@v3
-      with:
-        name: lib (${{ matrix.config }})
-        path: lib/
+      - name: Upload libraries
+        uses: actions/upload-artifact@v3
+        with:
+          name: lib (${{ matrix.config }})
+          path: lib/
 
-    - name: Upload gamedata
-      uses: actions/upload-artifact@v3
-      with:
-        name: gamedata
-        path: gamedata/
+      - name: Upload gamedata
+        uses: actions/upload-artifact@v3
+        with:
+          name: gamedata
+          path: gamedata/
