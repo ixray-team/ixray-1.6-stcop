@@ -1,6 +1,3 @@
-# Set title of the window
-$Host.UI.RawUI.WindowTitle = "IX-Ray"
-
 # Set path to 7-Zip
 $path = Join-Path -Path ${env:ProgramFiles} -ChildPath "7-Zip\7z.exe"
 
@@ -28,7 +25,3 @@ If (!(Test-Path "sdk\dxsdk_jun2010")) {
 git clone --branch jul2022 --depth 1 https://github.com/microsoft/DirectXTex.git dep/DirectXTex
 git clone --branch jul2022 --depth 1 https://github.com/microsoft/DirectXMesh.git dep/DirectXMesh
 git clone --branch Release_3.1.0 --depth 1 https://github.com/dockpanelsuite/dockpanelsuite.git dep/dockpanelsuite
-
-# Pause
-Write-Host "Press any key to continue..."
-$Host.UI.RawUI.ReadKey("NoEcho, IncludeKeyDown") | Out-Null
