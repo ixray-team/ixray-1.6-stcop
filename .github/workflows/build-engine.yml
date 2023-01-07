@@ -12,6 +12,10 @@ on:
     paths-ignore:
       - 'gamedata/**'
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   build-engine:
     name: 'Building'
