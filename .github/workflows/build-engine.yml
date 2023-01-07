@@ -70,12 +70,7 @@ jobs:
 
     - name: Cleanup
       run: |
-        if exist bin\*.idb (del /s bin\*.idb)
-        if exist bin\*.ilk (del /s bin\*.ilk)
-        if exist bin\*.pdb (del /s bin\*.pdb)
-        if exist lib\*.idb (del /s lib\*.idb)
-        if exist lib\*.pdb (del /s lib\*.pdb)
-      shell: cmd
+        ${{ github.workspace }}/delete-symbols.bat
 
     - name: Upload binaries
       uses: actions/upload-artifact@v3
