@@ -80,17 +80,17 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
-          name: bin (${{ matrix.config }})
+          name: bin (${{ matrix.config }}) ${{ github.sha }}
           path: bin/
 
       - name: Upload libraries
         uses: actions/upload-artifact@v3
         with:
-          name: lib (${{ matrix.config }})
+          name: lib (${{ matrix.config }}) ${{ github.sha }}
           path: lib/
 
       - name: Upload gamedata
         uses: actions/upload-artifact@v3
         with:
-          name: gamedata
+          name: gamedata ${{ github.sha }}
           path: gamedata/
