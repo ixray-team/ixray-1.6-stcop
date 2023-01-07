@@ -66,7 +66,12 @@ jobs:
 
     - name: Build solution
       run: |
-        msbuild $env:solution_name -p:Configuration=${{ matrix.config }} -p:Platform=${{ matrix.platform }} -r -m -nologo
+        msbuild $env:solution_name `
+          -p:Configuration=${{ matrix.config }} `
+          -p:Platform=${{ matrix.platform }} `
+          -restore `
+          -maxCpuCount `
+          -nologo
 
     - name: Cleanup
       run: |
