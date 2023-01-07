@@ -8,9 +8,7 @@
     "settings": {
         "files.associations": {
             // Configs
-            "fs.ltx": "ini",
-            "fsfactory.ltx": "ini",
-            "fsgame.ltx": "ini",
+            "*.ltx": "ini",
             "**/gamedata/configs/**/*.ltx": "ini",
             // Scripts
             "**/gamedata/scripts/*.script": "lua",
