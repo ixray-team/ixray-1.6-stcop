@@ -139,7 +139,6 @@ jobs:
             ${{ github.workspace }}/temp/r0.3
           move ${{ github.workspace }}/temp/r0.3/gamedata `
             ${{ github.workspace }}/gamedata_origin
-          rm ${{ github.workspace }}/temp -recurse
 
       - name: Generate patch
         run: |
