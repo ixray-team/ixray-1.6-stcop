@@ -94,3 +94,65 @@ jobs:
         with:
           name: gamedata ${{ github.sha }}
           path: gamedata/
+
+  pack-assets:
+    name: 'Packing'
+
+    needs: build-engine
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        config:
+          - Release
+        platform:
+          - Win32
+
+    runs-on: ${{ matrix.system }}
+
+    env:
+      compressor: src\utils\xrCompress\xrCompress.vcxproj
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build compressor
+        run: |
+          msbuild $env:compressor `
+            -p:Configuration=${{ matrix.config }} `
+            -p:Platform=${{ matrix.platform }} `
+            -nologo
+
+      - name: Get original assets
+        run: |
+          git clone `
+            --branch r0.3 `
+            --depth 1 `
+            ${{ github.server_url }}/${{ github.repository }} `
+            ${{ github.workspace }}/temp/r0.3
+          move ${{ github.workspace }}/temp/r0.3/gamedata `
+            ${{ github.workspace }}/gamedata_origin
+          rm ${{ github.workspace }}/temp -recurse
+
+      - name: Generate patch
+        run: |
+          ${{ github.workspace }}/bin/xrCompress `
+            -diff gamedata gamedata_origin
+            -out patch
+
+      - name: Pack patch
+        run: |
+          ${{ github.workspace }}/bin/xrCompress patch `
+            -ltx datapack.ltx
+          move patch.pack_#0 xpatch_03.db
+          cat engine.log
+
+      - name: Upload patch
+        uses: actions/upload-artifact@v3
+        with:
+          name: xpatch_03 ${{ github.sha }}
+          path: xpatch_03.db
