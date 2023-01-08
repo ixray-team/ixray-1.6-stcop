@@ -111,35 +111,25 @@ jobs:
 
     runs-on: ${{ matrix.system }}
 
-    env:
-      compressor: src\utils\xrCompress\xrCompress.vcxproj
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
+      - name: Get binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: bin (${{ matrix.config }}) ${{ github.sha }}
 
-      - name: Build compressor
-        run: |
-          msbuild $env:compressor `
-            -p:Configuration=${{ matrix.config }} `
-            -p:Platform=${{ matrix.platform }} `
-            -p:SolutionDir=${{ github.workspace }} `
-            -p:OutDir="${{ github.workspace }}\bin\" `
-            -nologo
-
-      - name: Get original assets
+      - name: Get assets
         run: |
           git clone `
-            --branch r0.3 `
-            --depth 1 `
-            ${{ github.server_url }}/${{ github.repository }} `
-            ${{ github.workspace }}/temp/r0.3
-          move ${{ github.workspace }}/temp/r0.3/gamedata `
+            ${{ github.workspace }}/.git `
+            ${{ github.workspace }}/temp
+          git checkout `
+            c87b43f286f4a4fa5873a2eb4977d77571e51991
+          move ${{ github.workspace }}/temp/gamedata `
             ${{ github.workspace }}/gamedata_origin
 
       - name: Generate patch
@@ -153,10 +143,9 @@ jobs:
           ${{ github.workspace }}\bin\xrCompress.exe patch `
             -ltx datapack.ltx
           move patch.pack_#0 xpatch_03.db
-          cat engine.log
 
       - name: Upload patch
         uses: actions/upload-artifact@v3
         with:
-          name: xpatch_03 ${{ github.sha }}
+          name: patch ${{ github.sha }}
           path: xpatch_03.db
