@@ -42,3 +42,9 @@ dep/
 
 # X-Ray user files
 _appdata_/
+
+# Temporary files
+temp/
+gamedata_origin/
+patch/
+*.log
