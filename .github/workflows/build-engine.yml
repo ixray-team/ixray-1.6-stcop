@@ -129,6 +129,7 @@ jobs:
             -p:Configuration=${{ matrix.config }} `
             -p:Platform=${{ matrix.platform }} `
             -p:SolutionDir=${{ github.workspace }} `
+            -p:OutDir="$(SolutionDir)\bin\" `
             -nologo
 
       - name: Check binaries
