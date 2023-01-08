@@ -9,10 +9,6 @@
 #endif
 
 extern "C" {
-	ETOOLS_API UINT WINAPI
-		D3DX_GetDriverLevel(
-		LPDIRECT3DDEVICE9		pDevice);
-
 	ETOOLS_API HRESULT WINAPI
 		D3DX_GetImageInfoFromFileInMemory(
 		LPCVOID					pSrcData,
@@ -180,7 +176,6 @@ extern "C" {
 
 #ifndef ETOOLS_EXPORTS
 	#undef D3DXCompileShaderFromFile
-	#define D3DXGetDriverLevel						D3DX_GetDriverLevel
 	#define D3DXGetImageInfoFromFileInMemory		D3DX_GetImageInfoFromFileInMemory
 	#define D3DXCreateCubeTextureFromFileInMemoryEx	D3DX_CreateCubeTextureFromFileInMemoryEx
 	#define D3DXCreateTextureFromFileInMemoryEx		D3DX_CreateTextureFromFileInMemoryEx

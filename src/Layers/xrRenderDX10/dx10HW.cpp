@@ -399,7 +399,6 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	//u32	memory									= pDevice->GetAvailableTextureMem	();
 	size_t	memory									= Desc.DedicatedVideoMemory;
 	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
-	//Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
 #ifndef _EDITOR
 	updateWindowProps							(m_hWnd);
 	fill_vid_mode_list							(this);
