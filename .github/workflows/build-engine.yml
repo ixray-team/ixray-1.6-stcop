@@ -6,23 +6,27 @@ on:
       - '**'
     paths:
       - '.github/workflows/**'
+      - 'gamedata/**'
       - 'proj/**'
       - 'sdk/**'
       - 'src/**'
       - '*.sln'
       - '*.props'
       - '*.targets'
+      - '*.ltx'
   pull_request:
     branches:
       - '**'
     paths:
       - '.github/workflows/**'
+      - 'gamedata/**'
       - 'proj/**'
       - 'sdk/**'
       - 'src/**'
       - '*.sln'
       - '*.props'
       - '*.targets'
+      - '*.ltx'
 
 defaults:
   run:
@@ -80,17 +84,73 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
-          name: bin (${{ matrix.config }})
+          name: bin (${{ matrix.config }}) ${{ github.sha }}
           path: bin/
 
       - name: Upload libraries
         uses: actions/upload-artifact@v3
         with:
-          name: lib (${{ matrix.config }})
+          name: lib (${{ matrix.config }}) ${{ github.sha }}
           path: lib/
 
       - name: Upload gamedata
         uses: actions/upload-artifact@v3
         with:
-          name: gamedata
+          name: gamedata ${{ github.sha }}
           path: gamedata/
+
+  pack-assets:
+    name: 'Packing'
+
+    needs: build-engine
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        config:
+          - Release
+        platform:
+          - Win32
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: bin (${{ matrix.config }}) ${{ github.sha }}
+          path: bin/
+
+      - name: Get assets
+        run: |
+          git clone `
+            ${{ github.workspace }}/.git `
+            ${{ github.workspace }}/temp
+          git checkout `
+            c87b43f286f4a4fa5873a2eb4977d77571e51991
+          move ${{ github.workspace }}/temp/gamedata `
+            ${{ github.workspace }}/gamedata_origin
+
+      - name: Generate patch
+        run: |
+          ${{ github.workspace }}\bin\xrCompress.exe `
+            -diff gamedata gamedata_origin `
+            -out patch
+
+      - name: Pack patch
+        run: |
+          ${{ github.workspace }}\bin\xrCompress.exe patch `
+            -ltx datapack.ltx
+          move patch.pack_#0 xpatch_03.db
+
+      - name: Upload patch
+        uses: actions/upload-artifact@v3
+        with:
+          name: patch ${{ github.sha }}
+          path: xpatch_03.db
