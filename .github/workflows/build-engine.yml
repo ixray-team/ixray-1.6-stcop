@@ -120,6 +120,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+
       - name: Build compressor
         run: |
           msbuild $env:compressor `
