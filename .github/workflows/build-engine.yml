@@ -98,7 +98,7 @@ jobs:
   pack-assets:
     name: 'Packing'
 
-    needs: build-engine
+    #needs: build-engine
 
     strategy:
       matrix:
@@ -129,6 +129,10 @@ jobs:
             -p:Configuration=${{ matrix.config }} `
             -p:Platform=${{ matrix.platform }} `
             -nologo
+
+      - name: Check binaries
+        run: |
+          ls bin
 
       - name: Get original assets
         run: |
