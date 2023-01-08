@@ -98,7 +98,7 @@ jobs:
   pack-assets:
     name: 'Packing'
 
-    #needs: build-engine
+    needs: build-engine
 
     strategy:
       matrix:
@@ -129,12 +129,8 @@ jobs:
             -p:Configuration=${{ matrix.config }} `
             -p:Platform=${{ matrix.platform }} `
             -p:SolutionDir=${{ github.workspace }} `
-            -p:OutDir="$(SolutionDir)\bin\" `
+            -p:OutDir="${{ github.workspace }}\bin\" `
             -nologo
-
-      - name: Check binaries
-        run: |
-          ls bin
 
       - name: Get original assets
         run: |
@@ -148,13 +144,13 @@ jobs:
 
       - name: Generate patch
         run: |
-          ${{ github.workspace }}/bin/xrCompress `
-            -diff gamedata gamedata_origin
+          ${{ github.workspace }}\bin\xrCompress.exe `
+            -diff gamedata gamedata_origin `
             -out patch
 
       - name: Pack patch
         run: |
-          ${{ github.workspace }}/bin/xrCompress patch `
+          ${{ github.workspace }}\bin\xrCompress.exe patch `
             -ltx datapack.ltx
           move patch.pack_#0 xpatch_03.db
           cat engine.log
