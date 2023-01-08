@@ -132,8 +132,10 @@ jobs:
           git clone `
             ${{ github.workspace }}/.git `
             ${{ github.workspace }}/temp
+          cd temp
           git checkout `
             c87b43f286f4a4fa5873a2eb4977d77571e51991
+          cd ..
           move ${{ github.workspace }}/temp/gamedata `
             ${{ github.workspace }}/gamedata_origin
 
