@@ -48,7 +48,7 @@ jobs:
           - Mixed_Dedicated
           - Release_Dedicated
         platform:
-          - Win32
+          - x86
 
     runs-on: ${{ matrix.system }}
 
