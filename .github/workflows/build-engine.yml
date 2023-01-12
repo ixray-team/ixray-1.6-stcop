@@ -63,7 +63,7 @@ jobs:
 
       - name: Get dependencies
         run: |
-          ${{ github.workspace }}\get-dependencies.bat
+          ${{ github.workspace }}/get-dependencies.bat
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.1
@@ -93,12 +93,6 @@ jobs:
           name: lib (${{ matrix.config }}) ${{ github.sha }}
           path: lib/
 
-      - name: Upload gamedata
-        uses: actions/upload-artifact@v3
-        with:
-          name: gamedata ${{ github.sha }}
-          path: gamedata/
-
   pack-assets:
     name: 'Packing'
 
@@ -127,32 +121,18 @@ jobs:
           name: bin (${{ matrix.config }}) ${{ github.sha }}
           path: bin/
 
-      - name: Get assets
-        run: |
-          git clone `
-            ${{ github.workspace }}/.git `
-            ${{ github.workspace }}/temp
-          cd temp
-          git checkout `
-            c87b43f286f4a4fa5873a2eb4977d77571e51991
-          cd ..
-          move ${{ github.workspace }}/temp/gamedata `
-            ${{ github.workspace }}/gamedata_origin
-
       - name: Generate patch
         run: |
-          ${{ github.workspace }}\bin\xrCompress.exe `
-            -diff gamedata gamedata_origin `
-            -out patch
+          ${{ github.workspace }}/generate-patch.bat
 
-      - name: Pack patch
-        run: |
-          ${{ github.workspace }}\bin\xrCompress.exe patch `
-            -ltx datapack.ltx
-          move patch.pack_#0 xpatch_03.db
+      - name: Upload gamedata
+        uses: actions/upload-artifact@v3
+        with:
+          name: gamedata ${{ github.sha }}
+          path: gamedata/
 
       - name: Upload patch
         uses: actions/upload-artifact@v3
         with:
           name: patch ${{ github.sha }}
-          path: xpatch_03.db
+          path: patches/xpatch_03.db
