@@ -65,13 +65,6 @@ enum DECLSPEC_DENUM TTaskbarEdge : unsigned char { tbeBottom, tbeLeft, tbeTop, t
 enum DECLSPEC_DENUM TElTextCase : unsigned char { etcNoChange, etcUppercase, etcLowercase };
 
 //-- var, const, procedure ---------------------------------------------------
-static const System::Int8 MOUSE_WHEEL_DELTA = System::Int8(0x78);
-static const int DT_HIDEPREFIX = int(0x100000);
-static const System::Word WM_CHANGEUISTATE = System::Word(0x127);
-static const System::Word WM_UPDATEUISTATE = System::Word(0x128);
-static const System::Word WM_QUERYUISTATE = System::Word(0x129);
-static const System::Word SPI_GETKEYBOARDCUES = System::Word(0x100a);
-static const System::Word SC_DRAGMOVE = System::Word(0xf012);
 extern DELPHI_PACKAGE unsigned ParentControlRepaintedMessage;
 extern DELPHI_PACKAGE TElBorderSides AllBorderSides;
 extern DELPHI_PACKAGE System::StaticArray<unsigned, 2> smXEdge;
@@ -80,10 +73,6 @@ extern DELPHI_PACKAGE System::Uitypes::TCursor WaitCursor;
 extern DELPHI_PACKAGE System::WideChar __fastcall GetTimeAMChar(void);
 extern DELPHI_PACKAGE System::WideChar __fastcall GetTimePMChar(void);
 extern DELPHI_PACKAGE int __fastcall IncColor(const System::Uitypes::TColor Color, int RInc, int GInc, int BInc);
-extern DELPHI_PACKAGE System::Byte __fastcall GetBValue(System::Uitypes::TColor aColor);
-extern DELPHI_PACKAGE System::Byte __fastcall GetGValue(System::Uitypes::TColor aColor);
-extern DELPHI_PACKAGE System::Byte __fastcall GetRValue(System::Uitypes::TColor aColor);
-extern DELPHI_PACKAGE System::Uitypes::TColor __fastcall RGB(System::Byte R, System::Byte G, System::Byte B);
 extern DELPHI_PACKAGE System::Uitypes::TColor __fastcall InvertColor(System::Uitypes::TColor aColor);
 extern DELPHI_PACKAGE System::Types::TRect __fastcall GetWorkSpaceRect(void);
 extern DELPHI_PACKAGE int __fastcall GetWorkSpaceTop(void);

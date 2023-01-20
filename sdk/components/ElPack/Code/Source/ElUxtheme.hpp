@@ -163,37 +163,6 @@ typedef HRESULT __stdcall (*GetCurrentThemeNameProc)(System::WideChar * pszTheme
 typedef HRESULT __stdcall (*GetThemeDocumentationPropertyProc)(System::WideChar * pszThemeName, System::WideChar * pszPropertyName, System::WideChar * pszValueBuff, int cchMaxValChars);
 
 //-- var, const, procedure ---------------------------------------------------
-static const System::Int8 DTT_GRAYED = System::Int8(0x1);
-static const System::Int8 HTTB_BACKGROUNDSEG = System::Int8(0x0);
-static const System::Int8 HTTB_FIXEDBORDER = System::Int8(0x2);
-static const System::Int8 HTTB_CAPTION = System::Int8(0x4);
-static const System::Int8 HTTB_RESIZINGBORDER_LEFT = System::Int8(0x10);
-static const System::Int8 HTTB_RESIZINGBORDER_TOP = System::Int8(0x20);
-static const System::Int8 HTTB_RESIZINGBORDER_RIGHT = System::Int8(0x40);
-static const System::Byte HTTB_RESIZINGBORDER_BOTTOM = System::Byte(0x80);
-static const System::Byte HTTB_RESIZINGBORDER = System::Byte(0xf0);
-static const System::Word HTTB_USESIZINGTEMPLATE = System::Word(0x100);
-static const System::Int8 DTL_LEFT = System::Int8(0x1);
-static const System::Int8 DTL_TOP = System::Int8(0x2);
-static const System::Int8 DTL_RIGHT = System::Int8(0x4);
-static const System::Int8 DTL_BOTTOM = System::Int8(0x8);
-static const System::Int8 MAX_INTLIST_COUNT = System::Int8(0xa);
-static const System::Int8 PO_STATE = System::Int8(0x0);
-static const System::Int8 PO_PART = System::Int8(0x1);
-static const System::Int8 PO_CLASS = System::Int8(0x2);
-static const System::Int8 PO_GLOBAL = System::Int8(0x3);
-static const System::Int8 PO_NOTFOUND = System::Int8(0x4);
-static const System::Int8 STAP_ALLOW_NONCLIENT = System::Int8(0x1);
-static const System::Int8 STAP_ALLOW_CONTROLS = System::Int8(0x2);
-static const System::Int8 STAP_ALLOW_WEBCONTENT = System::Int8(0x4);
-#define SZ_THDOCPROP_DISPLAYNAME L"DisplayName"
-#define SZ_THDOCPROP_CANONICALNAME L"ThemeName"
-#define SZ_THDOCPROP_TOOLTIP L"ToolTip"
-#define SZ_THDOCPROP_AUTHOR L"author"
-static const System::Word WM_THEMECHANGED = System::Word(0x31a);
-static const System::Int8 TS_MIN = System::Int8(0x0);
-static const System::Int8 TS_TRUE = System::Int8(0x1);
-static const System::Int8 TS_DRAW = System::Int8(0x2);
 extern DELPHI_PACKAGE IsThemeActiveProc IsThemeActive;
 extern DELPHI_PACKAGE EnableThemingProc EnableTheming;
 extern DELPHI_PACKAGE OpenThemeDataProc OpenThemeData;

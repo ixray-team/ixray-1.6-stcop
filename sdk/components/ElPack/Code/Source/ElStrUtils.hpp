@@ -17,6 +17,7 @@
 #include <System.RTLConsts.hpp>
 
 //-- user supplied -----------------------------------------------------------
+typedef WideString TElFString;
 
 namespace Elstrutils
 {
@@ -50,9 +51,6 @@ enum DECLSPEC_DENUM ConversionFlags : unsigned char { strictConversion, lenientC
 
 //-- var, const, procedure ---------------------------------------------------
 #define oleaut L"oleaut32.dll"
-extern "C" System::WideChar * __stdcall SysAllocStringLen(System::WideChar * P, int Len);
-extern "C" void __stdcall SysFreeString(System::WideChar * S);
-extern "C" int __stdcall SysStringLen(System::WideChar * S);
 extern DELPHI_PACKAGE bool doti;
 #define SPathDelimiters L"/\\"
 #define SWidePathDelimiters L"/\\"
