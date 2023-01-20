@@ -9,6 +9,8 @@
 #ifndef SMART_CAST_H
 #define SMART_CAST_H
 
+#ifndef _EDITOR
+
 #ifdef DEBUG
 #	define PURE_DYNAMIC_CAST
 #endif // DEBUG
@@ -327,6 +329,8 @@
 #	ifndef DO_NOT_DECLARE_TYPE_LIST
 #		include "smart_cast_impl1.h"
 #	endif
+#endif
+
 #endif
 
 #endif //SMART_CAST_H
