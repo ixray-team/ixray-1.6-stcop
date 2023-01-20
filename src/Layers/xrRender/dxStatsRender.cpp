@@ -56,9 +56,11 @@ void dxStatsRender::GuardDrawCalls (CGameFont &F)
 
 void dxStatsRender::SetDrawParams (IRenderDeviceRender *pRender)
 {
+#ifndef _EDITOR
 	dxRenderDeviceRender *pR = (dxRenderDeviceRender*) pRender;
 
 	RCache.set_xform_world  (Fidentity);
 	RCache.set_Shader		(pR->m_SelectionShader);
 	RCache.set_c			("tfactor",1,1,1,1);
+#endif
 }

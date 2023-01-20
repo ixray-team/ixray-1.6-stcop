@@ -8,6 +8,14 @@
 
 #define VLOAD_NOVERTICES		(1<<0)
 
+#ifdef _EDITOR
+#include "../../xrEngine/Fmesh.h"
+#endif
+
+#ifdef _EDITOR
+struct ogf_desc;
+#endif
+
 // The class itself
 class					CKinematicsAnimated;
 class					CKinematics;

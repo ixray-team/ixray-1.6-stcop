@@ -6,7 +6,9 @@
 #include "../../xrEngine/environment.h"
 #include "../../Layers/xrRender/ResourceManager.h"
 
+#ifndef _EDITOR
 #include "../../xrEngine/xr_efflensflare.h"
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -226,6 +228,7 @@ void dxEnvironmentRender::OnUnload()
 
 void dxEnvironmentRender::RenderSky(CEnvironment &env)
 {
+#ifndef _EDITOR
 	// clouds_sh.create		("clouds","null");
 	//. this is the bug-fix for the case when the sky is broken
 	//. for some unknown reason the geoms happen to be invalid sometimes
@@ -286,10 +289,12 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 #else
 	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
 #endif
+#endif
 }
 
 void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 {
+#ifndef _EDITOR
 	::Render->rmFar				();
 
 	Fmatrix						mXFORM, mScale;
@@ -327,6 +332,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 	RCache.Render				(D3DPT_TRIANGLELIST,v_offset,0,env.CloudsVerts.size(),i_offset,env.CloudsIndices.size()/3);
 
 	::Render->rmNormal			();
+#endif
 }
 
 void dxEnvironmentRender::OnDeviceCreate()

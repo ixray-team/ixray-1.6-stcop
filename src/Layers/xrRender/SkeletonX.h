@@ -9,6 +9,11 @@
 #include "SkeletonCustom.h"
 #include "SkeletonXVertRender.h"
 
+#ifdef _EDITOR
+#include "../../editors/ECore/Engine/cl_intersect.h"
+#include "Fvisual.h"
+#endif
+
 // refs
 class 	CKinematics;
 class Fvisual		;

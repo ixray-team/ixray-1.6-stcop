@@ -8,6 +8,12 @@
 
 #else //USE_DX11
 
+#ifdef _EDITOR
+#include "d3d9.h"
+#include "d3dx9mesh.h"
+#include "d3dx9shader.h"
+#endif
+
 typedef	IDirect3DVertexShader9	ID3DVertexShader;
 typedef	IDirect3DPixelShader9	ID3DPixelShader;
 typedef	ID3DXBuffer				ID3DBlob;

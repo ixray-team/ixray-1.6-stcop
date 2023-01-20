@@ -3,6 +3,10 @@
 
 #pragma once
 
+#ifdef _EDITOR
+#include "xrD3DDefs.h"
+#endif
+
 class	 SimulatorStates
 {
 private:

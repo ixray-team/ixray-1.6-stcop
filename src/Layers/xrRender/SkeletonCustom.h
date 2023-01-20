@@ -6,6 +6,14 @@
 #include		"../../xrEngine/bone.h"
 #include		"../../Include/xrRender/Kinematics.h"
 
+#ifdef _EDITOR
+#include "d3d9.h"
+#include "d3dx9mesh.h"
+#include "d3dx9shader.h"
+#include "d3d9types.h"
+#include "FVF.h"
+#endif
+
 // consts
 extern	xrCriticalSection	UCalc_Mutex			;
 
@@ -88,6 +96,8 @@ using SkeletonWMVecIt = SkeletonWMVec::iterator;
 #else
 #	define _DBG_SINGLE_USE_MARKER
 #endif
+
+class CSkeletonX;
 
 class 	CKinematics: public FHierrarhyVisual, public IKinematics
 {

@@ -47,12 +47,13 @@ static void ApplyTexgen( const Fmatrix &mVP )
 
 void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particle& m, u32 )
 {
+	CRandom rand;
 	CParticleEffect* PE = static_cast<CParticleEffect*>(owner); VERIFY(PE);
     CPEDef* PED			= PE->GetDefinition(); 
     if (PED){
         if (PED->m_Flags.is(CPEDef::dfRandomFrame))
-            m.frame	= (u16)iFloor(Random.randI(PED->m_Frame.m_iFrameCount)*255.f);
-        if (PED->m_Flags.is(CPEDef::dfAnimated)&&PED->m_Flags.is(CPEDef::dfRandomPlayback)&&Random.randI(2))
+            m.frame	= (u16)iFloor(rand.randI(PED->m_Frame.m_iFrameCount)*255.f);
+        if (PED->m_Flags.is(CPEDef::dfAnimated)&&PED->m_Flags.is(CPEDef::dfRandomPlayback)&&rand.randI(2))
             m.flags.set(Particle::ANIMATE_CCW,TRUE);
     }
 }
