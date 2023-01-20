@@ -40,6 +40,12 @@ virtual void Destroy##Class(I##Class *pObject) = 0;
 class IRenderFactory
 {
 public:
+RENDER_FACTORY_INTERFACE(StatGraphRender)
+RENDER_FACTORY_INTERFACE(StatsRender)
+RENDER_FACTORY_INTERFACE(EnvironmentRender)
+RENDER_FACTORY_INTERFACE(EnvDescriptorMixerRender)
+RENDER_FACTORY_INTERFACE(EnvDescriptorRender)
+
 #ifndef _EDITOR
 	/*
 	virtual IStatsRender* CreateStatsRender() = 0;
@@ -47,7 +53,6 @@ public:
 	*/
 	RENDER_FACTORY_INTERFACE(UISequenceVideoItem)
 	RENDER_FACTORY_INTERFACE(UIShader)
-	RENDER_FACTORY_INTERFACE(StatGraphRender)
 	RENDER_FACTORY_INTERFACE(ConsoleRender)
 	RENDER_FACTORY_INTERFACE(RenderDeviceRender)
 #	ifdef DEBUG
@@ -55,13 +60,9 @@ public:
 #	endif // DEBUG
 	RENDER_FACTORY_INTERFACE(ApplicationRender)
 	RENDER_FACTORY_INTERFACE(WallMarkArray)
-	RENDER_FACTORY_INTERFACE(StatsRender)
 #endif // _EDITOR
 
 #ifndef _EDITOR
-	RENDER_FACTORY_INTERFACE(EnvironmentRender)
-	RENDER_FACTORY_INTERFACE(EnvDescriptorMixerRender)
-	RENDER_FACTORY_INTERFACE(EnvDescriptorRender)
 	RENDER_FACTORY_INTERFACE(RainRender)
 	RENDER_FACTORY_INTERFACE(LensFlareRender)
 	RENDER_FACTORY_INTERFACE(ThunderboltRender)
