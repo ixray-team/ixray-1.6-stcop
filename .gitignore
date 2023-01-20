@@ -54,3 +54,7 @@ inc/
 
 # X-Ray user files
 _appdata_/
+
+# Temporary files
+logs/
+*.log
