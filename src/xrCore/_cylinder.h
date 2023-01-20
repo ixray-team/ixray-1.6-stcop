@@ -1,6 +1,10 @@
 #ifndef _CYLINDER_H
 #define _CYLINDER_H
 
+#ifdef _EDITOR
+void XRCORE_API __cdecl Msg(LPCSTR format, ...);
+#endif
+
 template <class T>
 class _cylinder
 {

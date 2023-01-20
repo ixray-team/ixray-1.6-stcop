@@ -9,7 +9,9 @@
 
 #include "../xrCore/xrCore.h"
 
+#ifndef _EDITOR
 #include "../xrCore/doug_lea_allocator.h"
+#endif
 #include "../xrCore/memory_allocator_options.h"
 
 #ifdef USE_ARENA_ALLOCATOR
