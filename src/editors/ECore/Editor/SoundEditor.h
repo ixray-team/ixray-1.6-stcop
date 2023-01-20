@@ -14,6 +14,8 @@
 #include <ImgList.hpp>
 
 #include "MXCtrls.hpp"
+#include "ItemList.h"
+#include <System.ImageList.hpp>
 
 //---------------------------------------------------------------------------
 // refs
@@ -61,7 +63,7 @@ private:
 private:	// User declarations
 	static TfrmSoundLib* form;
 
-    using THMVec = xr_vector<ESoundThumbnail*>
+    using THMVec = xr_vector<ESoundThumbnail*>;
     using THMIt = THMVec::iterator;
     
     THMVec				m_THM_Used;
@@ -75,7 +77,7 @@ private:	// User declarations
 
 	void __fastcall 	RegisterModifiedTHM	();
 
-    void 				OnModified			();
+    void __stdcall		OnModified			();
     void __fastcall 	UpdateLib			();
 
     bool 				bFormLocked;

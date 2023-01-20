@@ -245,7 +245,7 @@ void CEditorRenderDevice::_Destroy(BOOL	bKeepTextures)
 }
 
 //---------------------------------------------------------------------------
-void __fastcall CEditorRenderDevice::Resize(int w, int h)
+void CEditorRenderDevice::Resize(int w, int h)
 {
     m_RealWidth 	= w;
     m_RealHeight 	= h;

@@ -7,8 +7,6 @@
 
 #pragma warn -pck
 
-#define sqrtf(a) sqrt(a)
-
 #define smart_cast dynamic_cast
 
 #ifndef O_SEQUENTIAL
@@ -46,16 +44,8 @@ __inline long _lseek(int handle, long offset, int fromwhere){ return ::lseek(han
 #ifdef _dup
 #undef _dup
 #endif
-#define fmodf fmod
+#define _fmodf fmod
 __inline int _dup    (int handle)                           { return ::dup(handle);}
-__inline float modff(float a, float *b){
-	double x,y;
-    y = modf(double(a),&x);
-    *b = x;
-    return float(y);
-}
-__inline float expf	(float val)                           	{ return ::exp(val);}
-
 
 #ifdef	_ECOREB
     #define ECORE_API		__declspec(dllexport)
@@ -113,7 +103,11 @@ using AStringIt = AStringVec::iterator;
 using LPAStringVec = xr_vector<AnsiString*>;
 using LPAStringIt = LPAStringVec::iterator;
 
+#ifndef _PP_EDITOR_
 #include "..\..\..\xrServerEntities\xrEProps.h"
+#else
+#include "..\..\xrServerEntities\xrEProps.h"
+#endif
 #include "..\..\xrCore\Log.h"
 #include "editor\engine.h"
 #include "..\..\xrEngine\defines.h"

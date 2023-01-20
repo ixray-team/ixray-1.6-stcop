@@ -22,20 +22,20 @@ struct SSimpleImage{
 IC bool operator == (const SSimpleImage& a, shared_str nm){return a.name==nm;}
 IC bool operator < (const SSimpleImage& a, const SSimpleImage& b){return a.name<b.name;}
 
-using SSimpleImageVec = xr_vectore<SSimpleImage>;
+using SSimpleImageVec = xr_vector<SSimpleImage>;
 using SSimpleImageVecIt = SSimpleImageVec::iterator;
 
 class ECORE_API CImageManager{
-    bool		MakeGameTexture		(ETextureThumbnail* THM, LPCSTR game_name, u32* data);
+    bool		MakeGameTexture		(ETextureThumbnail* THM, LPCSTR game_name, u8* data);
 public:
     static void		MakeThumbnailImage	(ETextureThumbnail* THM, u32* data, u32 w, u32 h, u32 a);
 public:
-				CImageManager		(){;}
-				~CImageManager		(){;}
+				CImageManager		(){}
+				~CImageManager		(){}
 	// texture routines
     void __stdcall 	RemoveTexture	(LPCSTR fname, EItemType type, bool& res);
-    BOOL		CheckCompliance		(LPCSTR fname, int& compl);
-    void		CheckCompliance		(FS_FileSet& files, FS_FileSet& compl);
+	BOOL		CheckCompliance_		(LPCSTR fname, int& _compl);
+	void		CheckCompliance_		(FS_FileSet& files, FS_FileSet& _compl);
     int			GetTextures			(FS_FileSet& files, BOOL bFolder=FALSE);
     int			GetTexturesRaw		(FS_FileSet& files, BOOL bFolder=FALSE);
 //	int			GetServerModifiedTextures(CLocatorAPI::files_query& files);
@@ -46,7 +46,7 @@ public:
     void 		SynchronizeTexture	(LPCSTR tex_name, int age);
 //	void		ChangeFileAgeTo		(FS_FileSet* source_map, int age);
 	// make/update routines
-    bool		MakeGameTexture		(LPCSTR game_name, u32* data, const STextureParams& tp);
+    bool		MakeGameTexture		(LPCSTR game_name, u8* data, const STextureParams& tp);
     void		CreateTextureThumbnail(ETextureThumbnail* THM, const AnsiString& src_name, LPCSTR path=0, bool bSetDefParam=true);
     BOOL		CreateOBJThumbnail	(LPCSTR tex_name, CEditableObject* obj, int age);
     void		CreateLODTexture	(CEditableObject* object, U32Vec& lod_pixels, U32Vec& nm_pixels, u32 tgt_w, u32 tgt_h, int samples, int quality);

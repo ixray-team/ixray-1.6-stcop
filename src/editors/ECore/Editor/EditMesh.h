@@ -299,7 +299,7 @@ public:
 	void 			OptimizeMesh			(BOOL NoOpt);
 public:
 	                CEditableMesh			(CEditableObject* parent){m_Parent=parent;Construct();}
-	                CEditableMesh			(CEditableMesh* source,CEditableObject* parent){m_Parent=parent;Construct();CloneFrom(source);}
+	                //CEditableMesh			(CEditableMesh* source,CEditableObject* parent){m_Parent=parent;Construct();CloneFrom(source);}
 	virtual         ~CEditableMesh			();
 	void			Construct				();
     void			Clear					();
@@ -314,7 +314,7 @@ public:
 	IC void 		Show					(BOOL bVisible){m_Flags.set(flVisible,bVisible);}
 
     // mesh modify routine
-	void            CloneFrom				(CEditableMesh *source);
+	//void            CloneFrom				(CEditableMesh *source);
 	void            Transform				(const Fmatrix& parent);
 
 	IC CEditableObject*	Parent				(){ return m_Parent;	}

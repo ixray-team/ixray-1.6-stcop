@@ -14,6 +14,11 @@
 #include <ImgList.hpp>
 
 #include "MXCtrls.hpp"
+#include <System.ImageList.hpp>
+
+#ifdef _ECOREB
+	#include "ItemList.h"
+#endif
 
 //---------------------------------------------------------------------------
 // refs

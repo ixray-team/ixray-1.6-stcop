@@ -5,6 +5,11 @@
 #ifndef D3DUtilsH_included
 #define D3DUtilsH_included
 	
+#ifdef _EDITOR
+#include "stdafx.h"
+#include "device.h"
+#endif
+
 #include "..\Include\xrRender\DrawUtils.h"
 //----------------------------------------------------
 
@@ -78,7 +83,7 @@ public:
     }
     
     void OnDeviceCreate	();
-    void OnDeviceDestroy();
+    void __stdcall OnDeviceDestroy();
 
 	void UpdateGrid(int number_of_cell, float square_size, int subdiv=10);
 

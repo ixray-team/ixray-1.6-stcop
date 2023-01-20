@@ -5,13 +5,8 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "MXCtrls"
-#pragma link "ElEdits"
-#pragma link "ElSpin"
-#pragma link "ElXPThemedControl"
-#pragma link "ElACtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "MinimapEditor.dfm"
 
 TTMinimapEditor* TTMinimapEditor::form = NULL;
 //.TTMinimapEditor *TMinimapEditor;
@@ -60,9 +55,9 @@ void __fastcall TTMinimapEditor::btnLoadClick(TObject *Sender)
           u32 y2 = image_w-1;
           for (int y=0; y<image_h/2; y++,y2--)
           {
-              CopyMemory(line,image_data.begin()+y2*image_w,sz_ln);
-              CopyMemory(image_data.begin()+y2*image_w,image_data.begin()+y*image_w,sz_ln);
-              CopyMemory(image_data.begin()+y*image_w,line,sz_ln);
+              CopyMemory(line,&*image_data.begin()+y2*image_w,sz_ln);
+              CopyMemory(&*image_data.begin()+y2*image_w,&*image_data.begin()+y*image_w,sz_ln);
+              CopyMemory(&*image_data.begin()+y*image_w,line,sz_ln);
           }
             xr_free(line);
 

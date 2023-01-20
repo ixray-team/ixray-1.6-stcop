@@ -5,6 +5,9 @@
 #include "PropertiesList.h"
 #include "ui_main.h"
 #include "ui_toolscustom.h"
+
+#include "EditorPreferences.h"
+
 //---------------------------------------------------------------------------
 CCustomPreferences* EPrefs=0;
 //---------------------------------------------------------------------------
@@ -79,7 +82,7 @@ void __stdcall CCustomPreferences::OnClose	()
 //---------------------------------------------------------------------------
 
 
-void CheckValidate(ShortcutValue*, const xr_shortcut& new_val, bool& result)
+void __stdcall CheckValidate(ShortcutValue*, const xr_shortcut& new_val, bool& result)
 {
 	result 					= true; 
     ECommandVec& cmds		= GetEditorCommands();

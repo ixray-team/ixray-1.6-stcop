@@ -10,7 +10,7 @@ CSoundManager* SndLib=0;
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
-extern "C" int ogg_enc(const char* in_fn, const char* out_fn, float quality, void* comment, int size);
+extern "C" int __stdcall ogg_enc(const char* in_fn, const char* out_fn, float quality, void* comment, int size);
 //------------------------------------------------------------------------------
 xr_string CSoundManager::UpdateFileName(xr_string& fn)
 {

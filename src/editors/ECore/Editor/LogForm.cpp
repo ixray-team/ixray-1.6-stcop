@@ -5,9 +5,9 @@
 #include "ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma link "MxMenus"
-#pragma resource "*.dfm"
+
+#pragma resource "LogForm.dfm"
+
 TfrmLog *TfrmLog::form=0;
 //---------------------------------------------------------------------------
 __fastcall TfrmLog::TfrmLog(TComponent* Owner)
@@ -73,7 +73,7 @@ void __fastcall TfrmLog::lbLogDrawItem(TWinControl *Control, int Index,
 	TCanvas *pCanvas = lb->Canvas;
     if (!State.Contains(odSelected)){
 		pCanvas->Brush->Color 	= TColor(MSG_DEF);
-	    TMsgDlgType mt 			= (TMsgDlgType)lb->Items->Objects[Index];
+	    TMsgDlgType mt 			= *((TMsgDlgType*)lb->Items->Objects[Index]);
 	    switch(mt){
 	    case mtError: 			pCanvas->Brush->Color=TColor(MSG_ERROR);break;
 	    case mtInformation:     pCanvas->Brush->Color=TColor(MSG_INFO); break;
@@ -144,9 +144,11 @@ void __fastcall TfrmLog::imCopyClick(TObject *Sender)
     xr_string		tmp;
     for (int i = 0; i < lbLog->Items->Count; i++)
         if (lbLog->Selected[i]){
-            tmp		= tmp+lbLog->Items->Strings[i].c_str()+"\r\n";
+            tmp		= tmp+AnsiString(lbLog->Items->Strings[i]).c_str()+"\r\n";
         }
-    clp->SetTextBuf	((LPSTR)tmp.c_str());
+    wchar_t logText[512];
+    wcscpy(logText, std::wstring(tmp.c_str(), tmp.c_str() + tmp.size()).c_str());
+    clp->SetTextBuf(logText);
 }
 //---------------------------------------------------------------------------
 

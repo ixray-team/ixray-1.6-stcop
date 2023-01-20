@@ -237,7 +237,7 @@ CCommandVar 	TUI::CommandRenderResize(CCommandVar p1, CCommandVar p2)
 //------------------------------------------------------------------------------
 // Common Commands
 //------------------------------------------------------------------------------
-CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandInitialize(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res		= TRUE;
     Engine.Initialize	();
@@ -280,7 +280,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
     }
     return res;
 }             
-CCommandVar 	CommandDestroy(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandDestroy(CCommandVar p1, CCommandVar p2)
 {
     ExecCommand			(COMMAND_SAVE_UI_BAR);
     EPrefs->OnDestroy	();
@@ -296,28 +296,28 @@ CCommandVar 	CommandDestroy(CCommandVar p1, CCommandVar p2)
     Engine.Destroy		();
     return				TRUE;
 }             
-CCommandVar 	CommandQuit(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandQuit(CCommandVar p1, CCommandVar p2)
 {
     UI->Quit			();
     return				TRUE;
 }             
-CCommandVar 	CommandEditorPrefs(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandEditorPrefs(CCommandVar p1, CCommandVar p2)
 {
     EPrefs->Edit		();
     return				TRUE;
 }             
-CCommandVar 	CommandChangeAction(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandChangeAction(CCommandVar p1, CCommandVar p2)
 {
      Tools->SetAction	(ETAction(u32(p1)));
     return				TRUE;
 }             
-CCommandVar 	CommandChangeAxis(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandChangeAxis(CCommandVar p1, CCommandVar p2)
 {
     Tools->SetAxis	(ETAxis(u32(p1)));
     return				TRUE;
 }
 
-CCommandVar 	CommandSimulate(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandSimulate(CCommandVar p1, CCommandVar p2)
 {
 
 	Tools->Simulate();
@@ -326,7 +326,7 @@ CCommandVar 	CommandSimulate(CCommandVar p1, CCommandVar p2)
     return				TRUE;
 }
 
-CCommandVar 	CommandUseSimulatePositions(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandUseSimulatePositions(CCommandVar p1, CCommandVar p2)
 {
 
    Tools->UseSimulatePositions();
@@ -336,80 +336,82 @@ CCommandVar 	CommandUseSimulatePositions(CCommandVar p1, CCommandVar p2)
 
 
 
-CCommandVar 	CommandSetSettings(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandSetSettings(CCommandVar p1, CCommandVar p2)
 {
 	Tools->SetSettings(p1,p2);
     return				TRUE;
 }             
-CCommandVar 	CommandSoundEditor(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandSoundEditor(CCommandVar p1, CCommandVar p2)
 {
-    TfrmSoundLib::EditLib(AnsiString("Sound Editor"));
+    AnsiString title("Sound Editor");
+    TfrmSoundLib::EditLib(title);
     return				TRUE;
 }
-CCommandVar 	CommandSyncSounds(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandSyncSounds(CCommandVar p1, CCommandVar p2)
 {
     if (ELog.DlgMsg(mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,"Are you sure to synchronize sounds?")==mrYes)
         SndLib->RefreshSounds(true);
     return				TRUE;
 }
-CCommandVar 	CommandImageEditor(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandImageEditor(CCommandVar p1, CCommandVar p2)
 {
-    TfrmImageLib::EditLib(AnsiString("Image Editor"));
+    AnsiString title("Image Editor");
+    TfrmImageLib::EditLib(title);
     return				TRUE;
 }
 
-CCommandVar 	CommandMinimapEditor(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandMinimapEditor(CCommandVar p1, CCommandVar p2)
 {
     TTMinimapEditor::Show   ();
     return				    TRUE;
 }
 
-CCommandVar 	CommandCheckTextures(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandCheckTextures(CCommandVar p1, CCommandVar p2)
 {
     TfrmImageLib::ImportTextures();
     return				TRUE;
 }
-CCommandVar 	CommandRefreshTextures(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandRefreshTextures(CCommandVar p1, CCommandVar p2)
 {
     if (ELog.DlgMsg(mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,"Are you sure to synchronize textures?")==mrYes)
         ImageLib.RefreshTextures(0);
     return				TRUE;
 }
-CCommandVar 	CommandReloadTextures(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandReloadTextures(CCommandVar p1, CCommandVar p2)
 {
     EDevice.ReloadTextures();
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandChangeSnap(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandChangeSnap(CCommandVar p1, CCommandVar p2)
 {
     ((TExtBtn*)(u32)p1)->Down = !((TExtBtn*)(u32)p1)->Down;
     return				TRUE;
 }
-CCommandVar 	CommandUnloadTextures(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandUnloadTextures(CCommandVar p1, CCommandVar p2)
 {
     EDevice.UnloadTextures();
     return				TRUE;
 }
-CCommandVar 	CommandEvictObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandEvictObjects(CCommandVar p1, CCommandVar p2)
 {
     Lib.EvictObjects	();
     return				TRUE;
 }
-CCommandVar 	CommandEvictTextures(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandEvictTextures(CCommandVar p1, CCommandVar p2)
 {
     EDevice.Resources->Evict();
     return				TRUE;
 }
-CCommandVar 	CommandCheckModified(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandCheckModified(CCommandVar p1, CCommandVar p2)
 {
     return 		Tools->IsModified();
 }
-CCommandVar 	CommandExit(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandExit(CCommandVar p1, CCommandVar p2)
 {
     return 		Tools->IfModified();
 }
-CCommandVar 	CommandShowProperties(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandShowProperties(CCommandVar p1, CCommandVar p2)
 {
 	if(p1.IsString())
     {
@@ -419,50 +421,50 @@ CCommandVar 	CommandShowProperties(CCommandVar p1, CCommandVar p2)
     	Tools->ShowProperties(NULL);
     return				TRUE;
 }
-CCommandVar 	CommandUpdateProperties(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandUpdateProperties(CCommandVar p1, CCommandVar p2)
 {
     Tools->UpdateProperties(p1);
     return				TRUE;
 }
-CCommandVar 	CommandRefreshProperties(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandRefreshProperties(CCommandVar p1, CCommandVar p2)
 {
     Tools->RefreshProperties();
     return				TRUE;
 }
-CCommandVar 	CommandZoomExtents(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandZoomExtents(CCommandVar p1, CCommandVar p2)
 {
     Tools->ZoomObject	(p1);
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandToggleRenderWire(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandToggleRenderWire(CCommandVar p1, CCommandVar p2)
 {
     if (EDevice.dwFillMode!=D3DFILL_WIREFRAME)	EDevice.dwFillMode 	= D3DFILL_WIREFRAME;
     else 										EDevice.dwFillMode 	= D3DFILL_SOLID;
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandToggleSafeRect(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandToggleSafeRect(CCommandVar p1, CCommandVar p2)
 {
     psDeviceFlags.set	(rsDrawSafeRect,!psDeviceFlags.is(rsDrawSafeRect));
     ExecCommand			(COMMAND_RENDER_RESIZE);
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandToggleGrid(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandToggleGrid(CCommandVar p1, CCommandVar p2)
 {
     psDeviceFlags.set(rsDrawGrid,!psDeviceFlags.is(rsDrawGrid));
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandUpdateGrid(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandUpdateGrid(CCommandVar p1, CCommandVar p2)
 {
     DU_impl.UpdateGrid		(EPrefs->grid_cell_count,EPrefs->grid_cell_size);
     UI->OutGridSize		();
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandGridNumberOfSlots(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandGridNumberOfSlots(CCommandVar p1, CCommandVar p2)
 {
     if (p1)				EPrefs->grid_cell_count += 2;
     else				EPrefs->grid_cell_count -= 2;
@@ -470,7 +472,7 @@ CCommandVar 	CommandGridNumberOfSlots(CCommandVar p1, CCommandVar p2)
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandGridSlotSize(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandGridSlotSize(CCommandVar p1, CCommandVar p2)
 {
     float step = 1.f;
     float val = EPrefs->grid_cell_size;
@@ -485,17 +487,17 @@ CCommandVar 	CommandGridSlotSize(CCommandVar p1, CCommandVar p2)
     UI->RedrawScene		();
     return				TRUE;
 }
-CCommandVar 	CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
 {
     SndLib		= xr_new<CSoundManager>();
     return				TRUE;
 }
-CCommandVar 	CommandMuteSound(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandMuteSound(CCommandVar p1, CCommandVar p2)
 {
     SndLib->MuteSounds	(p1);
     return				TRUE;
 }
-CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
 {
     Fvector pos					= EDevice.m_Camera.GetPosition();
     if (NumericVectorRun		("Move to",&pos,3))
@@ -503,7 +505,7 @@ CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
     return 						TRUE;
 }
 
-CCommandVar 	ExecuteCommandList(LPCSTR text)
+CCommandVar __stdcall 	ExecuteCommandList(LPCSTR text)
 {
 	CCommandVar	res		= TRUE;
     IReader F			((void*)text,xr_strlen(text));
@@ -555,13 +557,13 @@ CCommandVar 	ExecuteCommandList(LPCSTR text)
     return				res;
 }
 
-bool 	OnRunExecuteListClick(LPCSTR txt)
+bool __stdcall 	OnRunExecuteListClick(LPCSTR txt)
 {
 	ExecuteCommandList		(txt);
     return true;
 }
 
-CCommandVar 	CommandExecuteCommandList(CCommandVar _p1, CCommandVar _p2)
+CCommandVar __stdcall 	CommandExecuteCommandList(CCommandVar _p1, CCommandVar _p2)
 {
     xr_string 	cmds_text			= _p1;
     return  	ExecuteCommandList	(cmds_text.c_str());
@@ -573,7 +575,7 @@ bool __stdcall OnCloseCommandListEditor()
     return 		true;
 }
 
-CCommandVar 	CommandEditCommandList(CCommandVar _p1, CCommandVar _p2)
+CCommandVar __stdcall 	CommandEditCommandList(CCommandVar _p1, CCommandVar _p2)
 {
     if (NULL==frmEditCommandList){
     	frmEditCommandList	= TfrmText::CreateForm(sCommandListText,"Execute command list",0,0,"Run",OnRunExecuteListClick,OnCloseCommandListEditor);
@@ -582,12 +584,12 @@ CCommandVar 	CommandEditCommandList(CCommandVar _p1, CCommandVar _p2)
     return FALSE;
 }
 
-CCommandVar 	CommandLogCommands(CCommandVar _p1, CCommandVar _p2)
+CCommandVar __stdcall 	CommandLogCommands(CCommandVar _p1, CCommandVar _p2)
 {
 	bAllowLogCommands	= _p1;
     return 				TRUE;
 }
-CCommandVar 	CommandRunMacro(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandRunMacro(CCommandVar p1, CCommandVar p2)
 {
 	xr_string fn;
 	if (p1.IsString()){
@@ -608,7 +610,7 @@ CCommandVar 	CommandRunMacro(CCommandVar p1, CCommandVar p2)
     }
     return 				FALSE;
 }
-CCommandVar 	CommandAssignMacro(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall 	CommandAssignMacro(CCommandVar p1, CCommandVar p2)
 {
     xr_string fn 		= p2.IsString()?xr_string(p2):xr_string(""); 
     if (p2.IsString()){

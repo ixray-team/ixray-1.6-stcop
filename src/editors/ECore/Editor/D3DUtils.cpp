@@ -163,7 +163,7 @@ void CDrawUtilities::UpdateGrid(int number_of_cell, float square_size, int subdi
 				m_GridPoints.push_back( right );
 			}
 		}
-		for(i=-m_GridCounts[1]; i<=m_GridCounts[1]; i++){
+		for(int i=-m_GridCounts[1]; i<=m_GridCounts[1]; i++){
 			if( (!!thin) != !!(i%m_GridSubDiv[1]) ){
 				left.p.x = -m_GridCounts[0]*m_GridStep.x;
 				right.p.x = m_GridCounts[0]*m_GridStep.x;
@@ -209,7 +209,7 @@ void CDrawUtilities::OnDeviceCreate()
     // initialize identity box
 	Fbox bb;
 	bb.set(-0.505f,-0.505f,-0.505f, 0.505f,0.505f,0.505f);
-	for (i=0; i<8; i++){
+	for (int i=0; i<8; i++){
     	Fvector S;
     	Fvector p;
         bb.getpoint(i,p);
@@ -1219,7 +1219,7 @@ void CDrawUtilities::DrawIndexedPrimitive(	int pt,
 	Stream->Unlock(vb_size, vs_L->vb_stride);
 
     i 				= StreamI->Lock(ib_size,iBase);
-    for (k=0; k<ib_size; ++k,++i) 
+    for (int k=0; k<ib_size; ++k,++i)
     	*i= ib[k];
         
     StreamI->Unlock(ib_size);

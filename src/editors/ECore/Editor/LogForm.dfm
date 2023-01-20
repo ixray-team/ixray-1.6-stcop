@@ -1,10 +1,10 @@
 object frmLog: TfrmLog
   Left = 560
   Top = 413
-  Width = 400
-  Height = 225
   BorderStyle = bsSizeToolWin
   Caption = 'Log'
+  ClientHeight = 178
+  ClientWidth = 382
   Color = clBtnFace
   Constraints.MinHeight = 80
   Constraints.MinWidth = 400
@@ -19,16 +19,18 @@ object frmLog: TfrmLog
   Scaled = False
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  PixelsPerInch = 96
+  PixelsPerInch = 120
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 178
-    Width = 392
+    Top = 158
+    Width = 382
     Height = 20
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 178
+    ExplicitWidth = 392
     object ebClear: TExtBtn
       Left = 184
       Top = 2
@@ -105,11 +107,13 @@ object frmLog: TfrmLog
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 392
-    Height = 178
+    Width = 382
+    Height = 158
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 392
+    ExplicitHeight = 178
     object lbLog: TListBox
       Left = 0
       Top = 0

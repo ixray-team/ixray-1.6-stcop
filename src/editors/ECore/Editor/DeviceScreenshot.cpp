@@ -45,10 +45,9 @@ bool CEditorRenderDevice::MakeScreenshot(U32Vec& pixels, u32 width, u32 height)
 	// Image processing
 	u32* pPixel	= (u32*)D.pBits;
 
-    U32It it 		= pixels.begin();
-    for (int h=height-1; h>=0; h--,it+=width){
+    for (int h=height-1, it_index = 0; h>=0; h--, it_index+=width){
         LPDWORD dt 	= LPDWORD(u32(pPixel)+u32(D.Pitch*h));
-        CopyMemory	(it,dt,sizeof(u32)*width);
+        CopyMemory	(&pixels.at(it_index),dt,sizeof(u32)*width);
     }
 
     R_CHK(pFB->UnlockRect());

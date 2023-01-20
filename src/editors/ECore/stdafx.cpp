@@ -24,6 +24,8 @@
 #pragma comment(lib,"EToolsB.lib")
 #pragma comment(lib,"LWOB.lib")
 
-#pragma comment(lib,"oggB.lib")
-#pragma comment(lib,"theoraB.lib")
+#pragma comment(lib,"liboggB.lib")
+#pragma comment(lib,"libtheoraB.lib")
 
+#pragma comment(lib, "editorB.lib")
+#pragma comment(lib, "elpackB6.lib")

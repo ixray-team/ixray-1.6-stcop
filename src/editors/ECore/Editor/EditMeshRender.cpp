@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "EditMeshVLight.h"
 #include "EditMesh.h"
 #include "EditObject.h"
 #include "ui_main.h"
@@ -69,7 +68,7 @@ void CEditableMesh::GenerateRenderBuffers()
             v_cnt				-= V_LIM;
             start_face			+= (_S->m_Flags.is(CSurface::sf2Sided))?rb.dwNumVertex/6:rb.dwNumVertex/3;
         }while(v_cnt>0);
-        if (num_verts>0) m_RenderBuffers->insert(mk_pair(_S,rb_vec));
+        if (num_verts>0) m_RenderBuffers->insert(std::make_pair(_S,rb_vec));
     }
     UnloadVNormals();
 }
@@ -195,7 +194,7 @@ void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 //----------------------------------------------------
 #define MAX_VERT_COUNT 0xFFFF
 static Fvector RB[MAX_VERT_COUNT];
-static RB_cnt=0;
+static int RB_cnt=0;
 
 void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, IntVec& fl)
 {

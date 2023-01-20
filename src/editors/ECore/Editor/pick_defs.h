@@ -118,11 +118,11 @@ class CCustomObject;
         }
         IC SResult* r_begin	()
         {
-        	return results.begin();
+        	return &* results.begin();
         }
         IC SResult* r_end	()
         {
-        	return results.end();
+        	return &* results.end();
         }
         IC void r_clear		()
         {

@@ -1,10 +1,10 @@
 object frmSoundLib: TfrmSoundLib
   Left = 884
   Top = 162
-  Width = 382
-  Height = 512
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Sound Editor'
+  ClientHeight = 465
+  ClientWidth = 364
   Color = 10528425
   Constraints.MinHeight = 400
   Constraints.MinWidth = 350
@@ -22,28 +22,31 @@ object frmSoundLib: TfrmSoundLib
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  PixelsPerInch = 96
+  PixelsPerInch = 120
   TextHeight = 13
   object Splitter1: TSplitter
-    Left = 200
+    Left = 190
     Top = 0
     Width = 2
-    Height = 478
-    Cursor = crHSplit
+    Height = 465
     Align = alRight
     Color = 13816530
     ParentColor = False
+    ExplicitLeft = 200
+    ExplicitHeight = 478
   end
   object paRight: TPanel
-    Left = 202
+    Left = 192
     Top = 0
     Width = 172
-    Height = 478
+    Height = 465
     Align = alRight
     BevelOuter = bvLowered
     Color = 10528425
     Constraints.MinWidth = 172
     TabOrder = 0
+    ExplicitLeft = 202
+    ExplicitHeight = 478
     object paCommand: TPanel
       Left = 1
       Top = 441
@@ -122,12 +125,14 @@ object frmSoundLib: TfrmSoundLib
   object paItems: TPanel
     Left = 0
     Top = 0
-    Width = 200
-    Height = 478
+    Width = 190
+    Height = 465
     Align = alClient
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 1
+    ExplicitWidth = 200
+    ExplicitHeight = 478
   end
   object fsStorage: TFormStorage
     Version = 1

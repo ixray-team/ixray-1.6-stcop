@@ -1,10 +1,10 @@
 object frmImageLib: TfrmImageLib
   Left = 482
   Top = 150
-  Width = 469
-  Height = 596
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Image Editor'
+  ClientHeight = 549
+  ClientWidth = 451
   Color = 10528425
   Constraints.MinHeight = 400
   Constraints.MinWidth = 390
@@ -22,27 +22,29 @@ object frmImageLib: TfrmImageLib
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  PixelsPerInch = 96
+  PixelsPerInch = 120
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 194
     Top = 0
     Width = 2
-    Height = 562
-    Cursor = crHSplit
+    Height = 549
     Color = 3026478
     ParentColor = False
+    ExplicitHeight = 562
   end
   object paRight: TPanel
     Left = 196
     Top = 0
-    Width = 265
-    Height = 562
+    Width = 255
+    Height = 549
     Align = alClient
     BevelOuter = bvLowered
     Color = 10528425
     Constraints.MinWidth = 172
     TabOrder = 0
+    ExplicitWidth = 265
+    ExplicitHeight = 562
     object Bevel2: TBevel
       Left = 1
       Top = 456
@@ -211,12 +213,13 @@ object frmImageLib: TfrmImageLib
     Left = 0
     Top = 0
     Width = 194
-    Height = 562
+    Height = 549
     Align = alLeft
     BevelOuter = bvNone
     Constraints.MinWidth = 194
     ParentColor = True
     TabOrder = 1
+    ExplicitHeight = 562
     object paFilter: TPanel
       Left = 0
       Top = 0

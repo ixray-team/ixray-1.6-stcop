@@ -353,7 +353,7 @@ void CEditableObject::EvictObject()
 //}
 //---------------------------------------------------------------------------
 
-void __fastcall CEditableObject::OnChangeTransform(PropValue*)
+void __stdcall CEditableObject::OnChangeTransform(PropValue*)
 {
 	UI->RedrawScene();
 }

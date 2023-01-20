@@ -12,12 +12,8 @@
 #include "ItemList.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElTree"
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma link "mxPlacemnt"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "SoundEditor.dfm"
 
 TfrmSoundLib* TfrmSoundLib::form = 0;
 FS_FileSet	TfrmSoundLib::modif_map;
@@ -76,7 +72,7 @@ void __fastcall TfrmSoundLib::EditLib(AnsiString& title)
 }
 //---------------------------------------------------------------------------
 
-void TfrmSoundLib::OnModified()
+void __stdcall TfrmSoundLib::OnModified()
 {
 	m_ItemProps->RefreshForm();
 }
@@ -112,7 +108,7 @@ void TfrmSoundLib::AppendModif(LPCSTR nm)
 {
     FS_File 		dest;
     string_path		fname;
-    FS.update_path	(fname,_sounds_,ChangeFileExt(nm,".wav").c_str());
+    FS.update_path	(fname,_sounds_,AnsiString(ChangeFileExt(nm,".wav")).c_str());
 	BOOL bFind		= FS.file_find(fname,dest); R_ASSERT(bFind);
     modif_map.insert(dest);
 }
@@ -255,7 +251,7 @@ void __fastcall TfrmSoundLib::fsStorageSavePlacement(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmSoundLib::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void TfrmSoundLib::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0: m_Snd.play(0,sm_2D); 	break;
@@ -269,7 +265,7 @@ void __fastcall TfrmSoundLib::OnControlClick(ButtonValue* V, bool& bModif, bool&
 }
 //------------------------------------------------------------------------------
 
-void __fastcall TfrmSoundLib::OnControl2Click(ButtonValue* V, bool& bModif, bool& bSafe)
+void TfrmSoundLib::OnControl2Click(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0:{
@@ -351,7 +347,7 @@ void __stdcall TfrmSoundLib::OnAttClick(ButtonValue* V, bool& bModif, bool& bSaf
 	}
 }
 
-void __fastcall TfrmSoundLib::OnItemsFocused(ListItemsVec& items)
+void TfrmSoundLib::OnItemsFocused(ListItemsVec& items)
 {
 	PropItemVec props;
 
@@ -413,7 +409,7 @@ void __fastcall TfrmSoundLib::OnItemsFocused(ListItemsVec& items)
 void TfrmSoundLib::PlaySound(LPCSTR name, u32& size, u32& time)
 {
 	string_path fname;
-    FS.update_path			(fname,_game_sounds_,ChangeFileExt(name,".ogg").c_str());
+    FS.update_path			(fname,_game_sounds_,AnsiString(ChangeFileExt(name,".ogg")).c_str());
     FS_File F;
     if (FS.file_find(fname,F))
     {
@@ -436,7 +432,7 @@ void TfrmSoundLib::OnFrame()
     }
 }
 
-void __fastcall TfrmSoundLib::OnSyncCurrentClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void __stdcall TfrmSoundLib::OnSyncCurrentClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 //.
 	THMIt it 	= m_THM_Current.begin();

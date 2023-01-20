@@ -275,7 +275,10 @@ void TUI::ShowObjectHint()
     if (!m_bAppActive) return;
 
     GetCursorPos(&m_HintPoint);
-    TWinControl* ctr = FindVCLWindow(m_HintPoint);
+    System::Types::TPoint tPoint;
+    tPoint.X = m_HintPoint.x;
+    tPoint.Y = m_HintPoint.y;
+    TWinControl* ctr = FindVCLWindow(tPoint);
     if (ctr!=m_D3DWindow) return;
 
 	AStringVec SS;

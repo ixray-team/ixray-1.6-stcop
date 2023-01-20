@@ -3,7 +3,7 @@
 #define renderH
 
 #include "..\..\xrCDB\frustum.h"
-#include "vis_common.h"
+#include "..\..\xrEngine\vis_common.h"
 
 #include "..\..\Layers\xrRender\blenders\blender.h"
 #include "..\..\Layers\xrRender\blenders\blender_clsid.h"
@@ -15,6 +15,9 @@
 #include "..\..\Layers\xrRender\SkeletonCustom.h"
 #include "..\..\Include/xrAPI/xrAPI.h"
 
+#include "..\..\xrEngine\render.h"
+
+class CSkeletonWallmark;
 
 // definition (Renderer)
 class CRenderTarget /*:public IRender_Target*/
