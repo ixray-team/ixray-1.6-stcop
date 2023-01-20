@@ -7,6 +7,11 @@
 #include "xr_object_list.h"
 #include "../xrcdb/xr_area.h"
 
+#ifdef _EDITOR
+#include "engineapi.h"
+#include "eventapi.h"
+#endif
+
 // refs
 class ENGINE_API CCameraManager;
 class ENGINE_API CCursor;
@@ -118,6 +123,7 @@ public:
 //-----------------------------------------------------------------------------------------------------------
 extern ENGINE_API	IGame_Level*	g_pGameLevel;
 
+#ifndef _EDITOR
 template <typename _class_type>
 	void relcase_register	(_class_type *self, void (xr_stdcall _class_type::* function_to_bind)(CObject*))
 	{
@@ -137,4 +143,6 @@ template <typename _class_type>
 				function_to_bind)
 		);
 	}
+#endif
+
 #endif    

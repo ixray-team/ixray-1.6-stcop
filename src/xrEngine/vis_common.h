@@ -2,6 +2,13 @@
 #define vis_commonH
 #pragma once
 
+#ifdef _EDITOR
+#include "../xrCore/xrCore.h"
+#include "../xrCore/_vector3d.h"
+#include "../xrCore/_sphere.h"
+#include "../Layers/xrRender/Shader.h"
+#endif
+
 #pragma pack(push,4)
 struct	vis_data
 {

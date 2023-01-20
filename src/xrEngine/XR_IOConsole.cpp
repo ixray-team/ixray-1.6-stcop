@@ -17,6 +17,11 @@
 
 #include "securom_api.h"
 
+#ifdef _EDITOR
+#include "../xrCore/_std_extensions.h"
+#include "../xrCore/string_concatenations.h"
+#endif
+
 static float const UI_BASE_WIDTH	= 1024.0f;
 static float const UI_BASE_HEIGHT	= 768.0f;
 static float const LDIST            = 0.05f;

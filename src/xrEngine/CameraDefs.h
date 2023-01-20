@@ -37,14 +37,16 @@ struct ENGINE_API SCamEffectorInfo
 	}
 };
 
+#ifndef _PP_EDITOR_
 enum ECameraStyle       {
 	csCamDebug,
 	csFirstEye,
 	csLookAt,
-    csMax,
+	csMax,
 	csFixed,
 	cs_forcedword = u32(-1)
 };
+#endif
 
 enum ECamEffectorType		{
 	cefDemo		=0,

@@ -4,6 +4,7 @@
 #include "StatGraph.h"
 //---------------------------------------------
 
+#ifndef _EDITOR
 CStatGraph::CStatGraph()
 {
 	Device.seqRender.Add		(this,REG_PRIORITY_LOW-1000);
@@ -27,6 +28,7 @@ CStatGraph::~CStatGraph()
 	OnDeviceDestroy();
 	m_Markers.clear();
 }
+#endif
 
 void CStatGraph::OnDeviceCreate()
 {

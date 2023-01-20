@@ -1,6 +1,8 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
+#ifndef _EDITOR
+
 #include "../xrCDB/frustum.h"
 #include "vis_common.h"
 //#include "IRenderDetailModel.h"
@@ -294,5 +296,7 @@ protected:
 };
 
 //extern ENGINE_API	IRender_interface*	Render;
+
+#endif
 
 #endif

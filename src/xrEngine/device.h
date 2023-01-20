@@ -285,8 +285,8 @@ public:
 
 private:
 			void					message_loop		();
-virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
-virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
+virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt ) { if (mt) seqFrameMT.Add(f,REG_PRIORITY_HIGH); else seqFrame.Add(f,REG_PRIORITY_LOW); }
+virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f ) { seqFrameMT.Remove(f); seqFrame.Remove(f); }
 virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 #ifdef INGAME_EDITOR
 public:
@@ -320,6 +320,7 @@ extern		ENGINE_API		CRenderDevice		Device;
 typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
 
+#ifndef _EDITOR
 class ENGINE_API CLoadScreenRenderer :public pureRender
 {
 public:
@@ -331,6 +332,8 @@ public:
 	bool			b_registered;
 	bool			b_need_user_input;
 };
+
 extern ENGINE_API CLoadScreenRenderer load_screen_renderer;
+#endif
 
 #endif

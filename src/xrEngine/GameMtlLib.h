@@ -160,6 +160,8 @@ public:
 using GameMtlVec = xr_vector<SGameMtl*>;
 using GameMtlIt = GameMtlVec::iterator;
 
+class CGameMtlLibrary;
+
 struct MTL_EXPORT_API SGameMtlPair{
 	friend class CGameMtlLibrary;
     CGameMtlLibrary*	m_Owner;

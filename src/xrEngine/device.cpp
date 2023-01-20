@@ -36,7 +36,9 @@ ENGINE_API CLoadScreenRenderer load_screen_renderer;
 ENGINE_API BOOL g_bRendering = FALSE; 
 
 BOOL		g_bLoaded = FALSE;
+#ifndef _EDITOR
 ref_light	precache_light = 0;
+#endif
 
 BOOL CRenderDevice::Begin	()
 {

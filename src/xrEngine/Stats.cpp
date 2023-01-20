@@ -2,6 +2,7 @@
 #include "GameFont.h"
 #pragma hdrstop
 
+#ifndef _EDITOR
 #include "../xrcdb/ISpatial.h"
 #include "IGame_Persistent.h"
 #include "render.h"
@@ -46,6 +47,7 @@ void _draw_cam_pos(CGameFont* pFont)
 	pFont->OnRender	();
 }
 
+#ifndef _EDITOR
 void CStats::Show() 
 {
 	// Stop timers
@@ -408,6 +410,7 @@ void	_LogCallback				(LPCSTR string)
 	if (string && '!'==string[0] && ' '==string[1])
 		Device.Statistic->errors.push_back	(shared_str(string));
 }
+#endif
 
 void CStats::OnDeviceCreate			()
 {
@@ -440,8 +443,11 @@ void CStats::OnDeviceDestroy		()
 	xr_delete	(pFont);
 }
 
+#endif
+
 void CStats::OnRender				()
 {
+#ifndef _EDITOR
 #ifdef DEBUG
 	if (g_stats_flags.is(st_sound)){
 		CSound_stats_ext				snd_stat_ext;
@@ -479,5 +485,6 @@ void CStats::OnRender				()
 			}
 		}
 	}
+#endif
 #endif
 }
