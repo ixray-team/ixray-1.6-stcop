@@ -18,6 +18,9 @@
         <Projects Include="src\editors\ECore\xrECoreB.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="src\editors\PPEditor\Postprocess.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -71,14 +74,23 @@
     <Target Name="xrECoreB:Make">
         <MSBuild Projects="src\editors\ECore\xrECoreB.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="Postprocess">
+        <MSBuild Projects="src\editors\PPEditor\Postprocess.cbproj"/>
+    </Target>
+    <Target Name="Postprocess:Clean">
+        <MSBuild Projects="src\editors\PPEditor\Postprocess.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Postprocess:Make">
+        <MSBuild Projects="src\editors\PPEditor\Postprocess.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="xrCoreB;xrParticlesB;xrSoundB;xrEPropsB;xrECoreB"/>
+        <CallTarget Targets="xrCoreB;xrParticlesB;xrSoundB;xrEPropsB;xrECoreB;Postprocess"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="xrCoreB:Clean;xrParticlesB:Clean;xrSoundB:Clean;xrEPropsB:Clean;xrECoreB:Clean"/>
+        <CallTarget Targets="xrCoreB:Clean;xrParticlesB:Clean;xrSoundB:Clean;xrEPropsB:Clean;xrECoreB:Clean;Postprocess:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="xrCoreB:Make;xrParticlesB:Make;xrSoundB:Make;xrEPropsB:Make;xrECoreB:Make"/>
+        <CallTarget Targets="xrCoreB:Make;xrParticlesB:Make;xrSoundB:Make;xrEPropsB:Make;xrECoreB:Make;Postprocess:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
