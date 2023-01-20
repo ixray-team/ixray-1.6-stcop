@@ -7,7 +7,7 @@
             
 xr_string	ShortcutValue::GetDrawText		(TOnDrawTextEvent OnDrawText)
 {
-    xr_string 	txt = MxShortCutToText(value->hotkey).c_str();
+	xr_string 	txt = AnsiString(MxShortCutToText(value->hotkey).c_str()).c_str();
     if (!OnDrawText.empty())	OnDrawText(this, txt);
     return 			txt;
 }

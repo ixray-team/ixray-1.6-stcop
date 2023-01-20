@@ -30,5 +30,8 @@ namespace CDB{
 #pragma comment		(lib,"xrCoreB.lib")
 #pragma comment		(lib,"EToolsB.lib")
 
+#pragma comment(lib, "editorB.lib")
+#pragma comment(lib, "elpackB6.lib")
+
 #endif //stdafxH
 

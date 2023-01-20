@@ -7,6 +7,10 @@
 #include "ExtBtn.hpp"
 #include "MxMenus.hpp"
 
+#ifdef _EDITOR
+#include "../../xrServerEntities/xrEProps.h"
+#endif
+
 typedef fastdelegate::FastDelegate2<LPCSTR,bool&> TFindObjectByName;     
 
 class XR_EPROPS_API CFolderHelper{

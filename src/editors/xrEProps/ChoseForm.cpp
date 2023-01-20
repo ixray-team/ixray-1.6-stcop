@@ -7,13 +7,9 @@
 #include "PropertiesList.h"               
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma link "MXCtrls"
-#pragma link "mxPlacemnt"
-#pragma link "ElXPThemedControl"
-#pragma link "Gradient"
-#pragma resource "*.dfm"
+
+#pragma resource "ChoseForm.dfm"
+
 TfrmChoseItem*				TfrmChoseItem::form			= 0;
 AnsiString 					TfrmChoseItem::select_item	= "";
 TfrmChoseItem::EventsMap	TfrmChoseItem::m_Events;

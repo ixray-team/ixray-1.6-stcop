@@ -88,12 +88,12 @@ TElTreeItem* CFolderHelper::FindItemInFolder(EItemType type, TElTree* tv, TElTre
 {
    if (start_folder){
         for (TElTreeItem* node=start_folder->GetFirstChild(); node; node=start_folder->GetNextChild(node))
-            if (type==((EItemType)(node->Data))&&(node->Text==name)) return node;
-    }else{
+			if (type==((EItemType)((int)(node->Data)))&&(node->Text==name)) return node;
+	}else{
         for (TElTreeItem* node=tv->Items->GetFirstNode(); node; node=node->GetNextSibling())
-            if (type==((EItemType)(node->Data))&&(node->Text==name)) return node;
+			if (type==((EItemType)((int)(node->Data)))&&(node->Text==name)) return node;
     }
-    return 0;
+	return 0;
 }
 //---------------------------------------------------------------------------
 
@@ -254,18 +254,18 @@ TElTreeItem* CFolderHelper::AppendObject(TElTree* tv, AnsiString full_name, bool
 void CFolderHelper::GenerateFolderName(TElTree* tv, TElTreeItem* node, AnsiString& name,AnsiString pref, bool num_first)
 {
     int cnt = 0;
-    if (num_first) name.sprintf("%s_%02d",pref,cnt++); else name = pref;
+	if (num_first) name.sprintf("%s_%02d",pref.c_str(),cnt++); else name = pref;
     while (FindItemInFolder(TYPE_FOLDER,tv,node,name))
-    	name.sprintf("%s_%02d",pref,cnt++);
+		name.sprintf("%s_%02d",pref.c_str(),cnt++);
 }
 //---------------------------------------------------------------------------
 
 void CFolderHelper::GenerateObjectName(TElTree* tv, TElTreeItem* node, AnsiString& name,AnsiString pref, bool num_first)
 {
     int cnt = 0;
-    if (num_first) name.sprintf("%s_%02d",pref,cnt++); else name = pref;
+	if (num_first) name.sprintf("%s_%02d",pref.c_str(),cnt++); else name = pref;
     while (FindItemInFolder(TYPE_OBJECT,tv,node,name))
-    	name.sprintf("%s_%02d",pref,cnt++);
+		name.sprintf("%s_%02d",pref.c_str(),cnt++);
 }
 //---------------------------------------------------------------------------
 
@@ -307,7 +307,7 @@ void CFolderHelper::DragDrop(TObject *Sender, TObject* Source, int X, int Y, TOn
 
         do{
             // проверяем есть ли в таргете такой элемент
-            EItemType type 	= EItemType(item->Data);
+            EItemType type 	= *static_cast<EItemType*>(item->Data);
             TElTreeItem* pNode = FindItemInFolder(type,tv,cur_folder,item->Text);
             if (pNode&&IsObject(item)){
                 Msg			("#!Item '%s' already exist in folder '%s'.",AnsiString(item->Text).c_str(),AnsiString(cur_folder->Text).c_str());

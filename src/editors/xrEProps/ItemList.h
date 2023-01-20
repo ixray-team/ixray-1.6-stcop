@@ -121,19 +121,19 @@ public:		// User declarations
 public:		// User declarations
 	__fastcall 	    	TItemList	       		(TComponent* Owner);
 
-    void 			 	ShowListModal			();
+	void   __fastcall			 	ShowListModal			();
     void 				ShowList				();
-    void 				HideList				();
-    void 				RefreshForm				();
+	void   __fastcall				HideList				();
+    void   __fastcall				RefreshForm				();
 
-    void 				DeselectAll				();
+	void 	__fastcall			DeselectAll				();
     virtual void 		SelectItem				(LPCSTR full_name, bool bVal, bool bLeaveSel, bool bExpand);
-    virtual void 		AssignItems				(ListItemsVec& values, bool full_expand, bool full_sort=false);
+	virtual void   __fastcall		AssignItems				(ListItemsVec& values, bool full_expand, bool full_sort=false);
     bool 				IsFocused				(){return tvItems->Focused();}
 
     const ListItemsVec&	GetItems				(){return m_Items;}
-    virtual int  		GetSelected				(RStringVec& items);
-    virtual int  		GetSelected				(LPCSTR pref, ListItemsVec& items, bool bOnlyObject);
+	virtual int __fastcall 		GetSelected				(RStringVec& items);
+	virtual int __fastcall 		GetSelected				(LPCSTR pref, ListItemsVec& items, bool bOnlyObject);
     virtual TElTreeItem*GetSelected				(){R_ASSERT(!tvItems->MultiSelect); return (tvItems->MultiSelect)?0:tvItems->Selected;}
     virtual ListItem*	FindItem				(LPCSTR full_name);
 
@@ -169,7 +169,7 @@ public:		// User declarations
     virtual void 		OnCreate				(LPCSTR title, TWinControl* parent, TAlign align, u32 flags);
     virtual void 		OnDestroy				();
 
-    virtual void 		ClearList				();
+    virtual void   __fastcall		ClearList				();
 
 	virtual void 		GenerateObjectName		(shared_str& name, LPCSTR start_node, LPCSTR pref="object", bool num_first=false);
 

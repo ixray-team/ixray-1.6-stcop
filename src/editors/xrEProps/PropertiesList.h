@@ -174,7 +174,7 @@ public:		// User declarations
 	static TProperties* CreateForm				(const AnsiString& title, TWinControl* parent=0, TAlign align=alNone, TOnModifiedEvent modif=0, TOnItemFocused focused=0, TOnCloseEvent close=0, u32 flags=plFolderStore|plFullExpand);
 	static TProperties* CreateModalForm			(const AnsiString& title, bool bShowButtonsBar=true, TOnModifiedEvent modif=0, TOnItemFocused focused=0, TOnCloseEvent close=0, u32 flags=plFolderStore|plFullExpand);
 	static void 		DestroyForm				(TProperties*& props);
-    static int 			EditPropertiesModal		(PropItemVec& values, LPCSTR title, bool bShowButtonsBar=true, TOnModifiedEvent modif=0, TOnItemFocused focused=0, TOnCloseEvent close=0, u32 flags=plFolderStore|plFullExpand);
+    static int __fastcall			EditPropertiesModal		(PropItemVec& values, LPCSTR title, bool bShowButtonsBar=true, TOnModifiedEvent modif=0, TOnItemFocused focused=0, TOnCloseEvent close=0, u32 flags=plFolderStore|plFullExpand);
     int __fastcall 		ShowPropertiesModal		();
     void __fastcall 	ShowProperties			();
     void __fastcall 	HideProperties			();

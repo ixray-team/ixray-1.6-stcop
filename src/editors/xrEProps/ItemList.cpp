@@ -11,20 +11,8 @@
 #include "TextForm.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_edit"
-#pragma link "ElTreeStdEditors"
-#pragma link "ElXPThemedControl"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTree"
-#pragma link "ElTreeStdEditors"
-#pragma link "ElXPThemedControl"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTreeAdvEdit"
-#pragma link "ElBtnCtl"
-#pragma link "ElPopBtn"
-#pragma resource "*.dfm"
+
+#pragma resource "ItemList.dfm"
 
 //---------------------------------------------------------------------------
 // IItemList vector
@@ -283,7 +271,7 @@ void __fastcall TItemList::AssignItems(ListItemsVec& items, bool full_expand, bo
     tvItems->DeselectAll	();
 
     
-    for (s_it=last_selected_items.begin(); s_it!=last_selected_items.end(); s_it++)
+	for (RStringVecIt s_it=last_selected_items.begin(); s_it!=last_selected_items.end(); s_it++)
 	    FHelper.RestoreSelection(tvItems,**s_it,true);
 
     // check size
@@ -448,7 +436,7 @@ void __fastcall TItemList::RefreshForm()
             }
         }
     }
-    for (item=tvItems->Items->GetFirstNode(); item; item=item->GetNext()){
+	for (TElTreeItem* item=tvItems->Items->GetFirstNode(); item; item=item->GetNext()){
         ListItem* prop				= (ListItem*)item->Tag;
         if (!prop) item->Hidden		= !item->HasVisibleChildren;
     }

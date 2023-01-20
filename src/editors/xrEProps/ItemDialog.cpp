@@ -4,8 +4,9 @@
 #include "ItemDialog.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "ItemDialog.dfm"
+
 TfrmItemDialog* TfrmItemDialog::form=0;
 int 			TfrmItemDialog::res=-1;
 

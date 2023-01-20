@@ -5,14 +5,8 @@
 //#include "ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "MXCtrls"
-#pragma link "mxPlacemnt"
-#pragma link "ElACtrls"
-#pragma link "ElStatBar"
-#pragma link "ElXPThemedControl"
-#pragma link "MxMenus"
-#pragma resource "*.dfm"
+
+#pragma resource "TextForm.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfrmText::TfrmText(TComponent* Owner)
@@ -64,7 +58,7 @@ void __fastcall TfrmText::ebCancelClick(TObject *Sender)
 void __fastcall TfrmText::ebApplyClick(TObject *Sender)
 {
     if (!OnApplyClick.empty()){
-    	if (OnApplyClick(mmText->Text.c_str()))
+		if (OnApplyClick((AnsiString(mmText->Text)).c_str()))
 			*m_Text 		= mmText->Text;
     }else{
         *m_Text 			= mmText->Text;
@@ -157,7 +151,7 @@ void __fastcall TfrmText::ebSaveClick(TObject *Sender)
 	xr_string fn;        
 	if (EFS.GetSaveName(_import_,fn,NULL,2)){
     	CMemoryWriter F;
-        F.w_stringZ	(mmText->Text.c_str());
+		F.w_stringZ	((AnsiString(mmText->Text)).c_str());
         if (!F.save_to(fn.c_str()))
 	    	Log		("!Can't save text file:",fn.c_str());
     }

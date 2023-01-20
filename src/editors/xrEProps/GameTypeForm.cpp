@@ -5,8 +5,9 @@
 #include "../../xrServerEntities/gametype_chooser.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma resource "*.dfm"
+
+#pragma resource "GameTypeForm.dfm"
+
 TfmGameType *fmGameType = NULL;
 //---------------------------------------------------------------------------
 bool __fastcall TfmGameType::Run(const char* title, GameTypeChooser* data)

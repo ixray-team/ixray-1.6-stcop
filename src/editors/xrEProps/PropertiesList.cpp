@@ -16,28 +16,8 @@
 #include "ItemList.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_edit"
-#pragma link "ElTreeStdEditors"
-#pragma link "ElXPThemedControl"
-#pragma link "multi_edit"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTree"
-#pragma link "ElTreeStdEditors"
-#pragma link "ElXPThemedControl"
-#pragma link "multi_edit"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTreeAdvEdit"
-#pragma link "ElBtnCtl"
-#pragma link "ElPopBtn"
-#pragma link "ExtBtn"
-#pragma link "ElEdits"
-#pragma link "ElHotKey"
-#pragma link "RenderWindow"
-#pragma link "MxShortcut"
-#pragma link "ExtBtn"
-#pragma resource "*.dfm"
+
+#pragma resource "PropertiesList.dfm"
 
 #define TSTRING_COUNT 	4
 const LPSTR TEXTUREString[TSTRING_COUNT]={"Custom...","-","$null","$base0"};
@@ -393,7 +373,7 @@ void TProperties::FolderRestore()
         }
     }
 }
-void __fastcall TProperties::OnFolderFocused(TElTreeItem* item)
+void __stdcall TProperties::OnFolderFocused(TElTreeItem* item)
 {
 	AnsiString s, lfsi;
     if (tvProperties->Selected) FHelper.MakeFullName(tvProperties->Selected,0,lfsi);
@@ -1262,7 +1242,7 @@ BOOL NumericOnEdit	   		(PropItem* prop, T new_val, BOOL& bRes)
 {                                                     
     NumericValue<T>* V		= dynamic_cast<NumericValue<T>*>(prop->GetFrontValue());
     if (!V)					return FALSE;
-    if (prop->AfterEdit<NumericValue<T>,T>	(T(new_val)))
+	if (prop->AfterEdit<NumericValue<T>,T>	(new_val))
 	    bRes 				= prop->ApplyValue<NumericValue<T>,T>	(T(new_val));
     return TRUE;
 }
@@ -1385,7 +1365,7 @@ void TProperties::ApplyLWText()
 	    switch (prop->type){
         case PROP_CTEXT:{
 			CTextValue* V		= dynamic_cast<CTextValue*>(prop->GetFrontValue()); R_ASSERT(V);
-			xr_string new_val	= AnsiString(edText->Text).c_str();
+			xr_string new_val	= AnsiString(edText->Text.c_str()).c_str();
             if (prop->AfterEdit<CTextValue,xr_string>(new_val))
                 if (prop->ApplyValue<CTextValue,LPCSTR>(new_val.c_str())){
                     Modified();
@@ -1394,7 +1374,7 @@ void TProperties::ApplyLWText()
         }break;
         case PROP_STEXT:{
 			STextValue* V		= dynamic_cast<STextValue*>(prop->GetFrontValue()); R_ASSERT(V);
-			xr_string new_val	= AnsiString(edText->Text).c_str();
+			xr_string new_val	= AnsiString(edText->Text.c_str()).c_str();
             if (prop->AfterEdit<STextValue,xr_string>(new_val))
                 if (prop->ApplyValue<STextValue,xr_string>(new_val)){
                     Modified();
@@ -1403,7 +1383,7 @@ void TProperties::ApplyLWText()
         }break;
         case PROP_RTEXT:{
 			RTextValue* V		= dynamic_cast<RTextValue*>(prop->GetFrontValue()); R_ASSERT(V);
-			shared_str new_val	= AnsiString(edText->Text).c_str();
+			shared_str new_val	= xr_string(AnsiString(edText->Text.c_str()).c_str()).c_str();
             if (prop->AfterEdit<RTextValue,shared_str>(new_val))
                 if (prop->ApplyValue<RTextValue,shared_str>(new_val)){
                     Modified();
@@ -1412,7 +1392,7 @@ void TProperties::ApplyLWText()
         }break;
         case PROP_TIME:{
 			FloatValue* V		= dynamic_cast<FloatValue*>(prop->GetFrontValue()); R_ASSERT(V);
-			float new_val		= StrTimeToFloatTime(edText->Text.c_str());
+			float new_val		= StrTimeToFloatTime(AnsiString(edText->Text.c_str()).c_str());
             if (prop->AfterEdit<FloatValue,float>(new_val))
                 if (prop->ApplyValue<FloatValue,float>(new_val)){
                     Modified		();

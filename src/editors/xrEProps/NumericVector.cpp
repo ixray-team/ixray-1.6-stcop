@@ -5,7 +5,9 @@
 //#include "ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "NumericVector.dfm"
+
 TfrmNumericVector *frmNumericVector=0;
 
 bool NumericVectorRun(const char* title, Fvector* data, int decimal, Fvector* reset_value, Fvector* min, Fvector* max, int* X, int* Y){
