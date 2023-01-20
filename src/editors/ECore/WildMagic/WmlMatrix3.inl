@@ -18,26 +18,26 @@ Matrix3<Real>::Matrix3 ()
 template <class Real>
 Matrix3<Real>::Matrix3 (const Matrix3& rkM)
 {
-    memcpy(m_afEntry,rkM.m_afEntry,9*sizeof(Real));
+    memcpy(this->m_afEntry,rkM.m_afEntry,9*sizeof(Real));
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix3<Real>::Matrix3 (const Matrix<3,Real>& rkM)
 {
-    memcpy(m_afEntry,(const Real*)rkM,9*sizeof(Real));
+    memcpy(this->m_afEntry,(const Real*)rkM,9*sizeof(Real));
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix3<Real>& Matrix3<Real>::operator= (const Matrix3& rkM)
 {
-    memcpy(m_afEntry,rkM.m_afEntry,9*sizeof(Real));
+    memcpy(this->m_afEntry,rkM.m_afEntry,9*sizeof(Real));
     return *this;
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix3<Real>& Matrix3<Real>::operator= (const Matrix<3,Real>& rkM)
 {
-    memcpy(m_afEntry,(const Real*)rkM,9*sizeof(Real));
+    memcpy(this->m_afEntry,(const Real*)rkM,9*sizeof(Real));
     return *this;
 }
 //----------------------------------------------------------------------------
@@ -45,15 +45,15 @@ template <class Real>
 Matrix3<Real>::Matrix3 (Real fM00, Real fM01, Real fM02, Real fM10,
     Real fM11, Real fM12, Real fM20, Real fM21, Real fM22)
 {
-    m_afEntry[0] = fM00;
-    m_afEntry[1] = fM01;
-    m_afEntry[2] = fM02;
-    m_afEntry[3] = fM10;
-    m_afEntry[4] = fM11;
-    m_afEntry[5] = fM12;
-    m_afEntry[6] = fM20;
-    m_afEntry[7] = fM21;
-    m_afEntry[8] = fM22;
+    this->m_afEntry[0] = fM00;
+    this->m_afEntry[1] = fM01;
+    this->m_afEntry[2] = fM02;
+    this->m_afEntry[3] = fM10;
+    this->m_afEntry[4] = fM11;
+    this->m_afEntry[5] = fM12;
+    this->m_afEntry[6] = fM20;
+    this->m_afEntry[7] = fM21;
+    this->m_afEntry[8] = fM22;
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -61,19 +61,19 @@ Matrix3<Real>::Matrix3 (const Real afEntry[9], bool bRowMajor)
 {
     if ( bRowMajor )
     {
-        memcpy(m_afEntry,afEntry,9*sizeof(Real));
+        memcpy(this->m_afEntry,this->afEntry,9*sizeof(Real));
     }
     else
     {
-        m_afEntry[0] = afEntry[0];
-        m_afEntry[1] = afEntry[3];
-        m_afEntry[2] = afEntry[6];
-        m_afEntry[3] = afEntry[1];
-        m_afEntry[4] = afEntry[4];
-        m_afEntry[5] = afEntry[7];
-        m_afEntry[6] = afEntry[2];
-        m_afEntry[7] = afEntry[5];
-        m_afEntry[8] = afEntry[8];
+        this->m_afEntry[0] = afEntry[0];
+        this->m_afEntry[1] = afEntry[3];
+        this->m_afEntry[2] = afEntry[6];
+        this->m_afEntry[3] = afEntry[1];
+        this->m_afEntry[4] = afEntry[4];
+        this->m_afEntry[5] = afEntry[7];
+        this->m_afEntry[6] = afEntry[2];
+        this->m_afEntry[7] = afEntry[5];
+        this->m_afEntry[8] = afEntry[8];
     }
 }
 //----------------------------------------------------------------------------
@@ -83,27 +83,27 @@ Matrix3<Real>::Matrix3 (const Vector3<Real>& rkU,
 {
     if ( bColumns )
     {
-        m_afEntry[0] = rkU[0];
-        m_afEntry[1] = rkV[0];
-        m_afEntry[2] = rkW[0];
-        m_afEntry[3] = rkU[1];
-        m_afEntry[4] = rkV[1];
-        m_afEntry[5] = rkW[1];
-        m_afEntry[6] = rkU[2];
-        m_afEntry[7] = rkV[2];
-        m_afEntry[8] = rkW[2];
+        this->m_afEntry[0] = rkU[0];
+        this->m_afEntry[1] = rkV[0];
+        this->m_afEntry[2] = rkW[0];
+        this->m_afEntry[3] = rkU[1];
+        this->m_afEntry[4] = rkV[1];
+        this->m_afEntry[5] = rkW[1];
+        this->m_afEntry[6] = rkU[2];
+        this->m_afEntry[7] = rkV[2];
+        this->m_afEntry[8] = rkW[2];
     }
     else
     {
-        m_afEntry[0] = rkU[0];
-        m_afEntry[1] = rkU[1];
-        m_afEntry[2] = rkU[2];
-        m_afEntry[3] = rkV[0];
-        m_afEntry[4] = rkV[1];
-        m_afEntry[5] = rkV[2];
-        m_afEntry[6] = rkW[0];
-        m_afEntry[7] = rkW[1];
-        m_afEntry[8] = rkW[2];
+        this->m_afEntry[0] = rkU[0];
+        this->m_afEntry[1] = rkU[1];
+        this->m_afEntry[2] = rkU[2];
+        this->m_afEntry[3] = rkV[0];
+        this->m_afEntry[4] = rkV[1];
+        this->m_afEntry[5] = rkV[2];
+        this->m_afEntry[6] = rkW[0];
+        this->m_afEntry[7] = rkW[1];
+        this->m_afEntry[8] = rkW[2];
     }
 }
 //----------------------------------------------------------------------------
@@ -112,27 +112,27 @@ Matrix3<Real>::Matrix3 (const Vector3<Real>* akV, bool bColumns)
 {
     if ( bColumns )
     {
-        m_afEntry[0] = akV[0][0];
-        m_afEntry[1] = akV[1][0];
-        m_afEntry[2] = akV[2][0];
-        m_afEntry[3] = akV[0][1];
-        m_afEntry[4] = akV[1][1];
-        m_afEntry[5] = akV[2][1];
-        m_afEntry[6] = akV[0][2];
-        m_afEntry[7] = akV[1][2];
-        m_afEntry[8] = akV[2][2];
+        this->m_afEntry[0] = akV[0][0];
+        this->m_afEntry[1] = akV[1][0];
+        this->m_afEntry[2] = akV[2][0];
+        this->m_afEntry[3] = akV[0][1];
+        this->m_afEntry[4] = akV[1][1];
+        this->m_afEntry[5] = akV[2][1];
+        this->m_afEntry[6] = akV[0][2];
+        this->m_afEntry[7] = akV[1][2];
+        this->m_afEntry[8] = akV[2][2];
     }
     else
     {
-        m_afEntry[0] = akV[0][0];
-        m_afEntry[1] = akV[0][1];
-        m_afEntry[2] = akV[0][2];
-        m_afEntry[3] = akV[1][0];
-        m_afEntry[4] = akV[1][1];
-        m_afEntry[5] = akV[1][2];
-        m_afEntry[6] = akV[2][0];
-        m_afEntry[7] = akV[2][1];
-        m_afEntry[8] = akV[2][2];
+        this->m_afEntry[0] = akV[0][0];
+        this->m_afEntry[1] = akV[0][1];
+        this->m_afEntry[2] = akV[0][2];
+        this->m_afEntry[3] = akV[1][0];
+        this->m_afEntry[4] = akV[1][1];
+        this->m_afEntry[5] = akV[1][2];
+        this->m_afEntry[6] = akV[2][0];
+        this->m_afEntry[7] = akV[2][1];
+        this->m_afEntry[8] = akV[2][2];
     }
 }
 //----------------------------------------------------------------------------
@@ -147,15 +147,15 @@ template <class Real>
 void Matrix3<Real>::MakeTensorProduct (const Vector3<Real>& rkU,
     const Vector3<Real>& rkV)
 {
-    m_afEntry[0] = rkU[0]*rkV[0];
-    m_afEntry[1] = rkU[0]*rkV[1];
-    m_afEntry[2] = rkU[0]*rkV[2];
-    m_afEntry[3] = rkU[1]*rkV[0];
-    m_afEntry[4] = rkU[1]*rkV[1];
-    m_afEntry[5] = rkU[1]*rkV[2];
-    m_afEntry[6] = rkU[2]*rkV[0];
-    m_afEntry[7] = rkU[2]*rkV[1];
-    m_afEntry[8] = rkU[2]*rkV[2];
+    this->m_afEntry[0] = rkU[0]*rkV[0];
+    this->m_afEntry[1] = rkU[0]*rkV[1];
+    this->m_afEntry[2] = rkU[0]*rkV[2];
+    this->m_afEntry[3] = rkU[1]*rkV[0];
+    this->m_afEntry[4] = rkU[1]*rkV[1];
+    this->m_afEntry[5] = rkU[1]*rkV[2];
+    this->m_afEntry[6] = rkU[2]*rkV[0];
+    this->m_afEntry[7] = rkU[2]*rkV[1];
+    this->m_afEntry[8] = rkU[2]*rkV[2];
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -167,15 +167,15 @@ Matrix3<Real>::Matrix3 (Real fM00, Real fM11, Real fM22)
 template <class Real>
 void Matrix3<Real>::MakeDiagonal (Real fM00, Real fM11, Real fM22)
 {
-    m_afEntry[0] = fM00;
-    m_afEntry[1] = (Real)0.0;
-    m_afEntry[2] = (Real)0.0;
-    m_afEntry[3] = (Real)0.0;
-    m_afEntry[4] = fM11;
-    m_afEntry[5] = (Real)0.0;
-    m_afEntry[6] = (Real)0.0;
-    m_afEntry[7] = (Real)0.0;
-    m_afEntry[8] = fM22;
+    this->m_afEntry[0] = fM00;
+    this->m_afEntry[1] = (Real)0.0;
+    this->m_afEntry[2] = (Real)0.0;
+    this->m_afEntry[3] = (Real)0.0;
+    this->m_afEntry[4] = fM11;
+    this->m_afEntry[5] = (Real)0.0;
+    this->m_afEntry[6] = (Real)0.0;
+    this->m_afEntry[7] = (Real)0.0;
+    this->m_afEntry[8] = fM22;
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -200,15 +200,15 @@ void Matrix3<Real>::FromAxisAngle (const Vector3<Real>& rkAxis, Real fAngle)
     Real fYSin = rkAxis[1]*fSin;
     Real fZSin = rkAxis[2]*fSin;
     
-    m_afEntry[0] = fX2*fOneMinusCos+fCos;
-    m_afEntry[1] = fXYM-fZSin;
-    m_afEntry[2] = fXZM+fYSin;
-    m_afEntry[3] = fXYM+fZSin;
-    m_afEntry[4] = fY2*fOneMinusCos+fCos;
-    m_afEntry[5] = fYZM-fXSin;
-    m_afEntry[6] = fXZM-fYSin;
-    m_afEntry[7] = fYZM+fXSin;
-    m_afEntry[8] = fZ2*fOneMinusCos+fCos;
+    this->m_afEntry[0] = fX2*fOneMinusCos+fCos;
+    this->m_afEntry[1] = fXYM-fZSin;
+    this->m_afEntry[2] = fXZM+fYSin;
+    this->m_afEntry[3] = fXYM+fZSin;
+    this->m_afEntry[4] = fY2*fOneMinusCos+fCos;
+    this->m_afEntry[5] = fYZM-fXSin;
+    this->m_afEntry[6] = fXZM-fYSin;
+    this->m_afEntry[7] = fYZM+fXSin;
+    this->m_afEntry[8] = fZ2*fOneMinusCos+fCos;
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -219,18 +219,18 @@ Matrix3<Real> Matrix3<Real>::Inverse () const
 
     Matrix3<Real> kInverse;
 
-    kInverse[0][0] = m_afEntry[4]*m_afEntry[8] - m_afEntry[5]*m_afEntry[7];
-    kInverse[0][1] = m_afEntry[2]*m_afEntry[7] - m_afEntry[1]*m_afEntry[8];
-    kInverse[0][2] = m_afEntry[1]*m_afEntry[5] - m_afEntry[2]*m_afEntry[4];
-    kInverse[1][0] = m_afEntry[5]*m_afEntry[6] - m_afEntry[3]*m_afEntry[8];
-    kInverse[1][1] = m_afEntry[0]*m_afEntry[8] - m_afEntry[2]*m_afEntry[6];
-    kInverse[1][2] = m_afEntry[2]*m_afEntry[3] - m_afEntry[0]*m_afEntry[5];
-    kInverse[2][0] = m_afEntry[3]*m_afEntry[7] - m_afEntry[4]*m_afEntry[6];
-    kInverse[2][1] = m_afEntry[1]*m_afEntry[6] - m_afEntry[0]*m_afEntry[7];
-    kInverse[2][2] = m_afEntry[0]*m_afEntry[4] - m_afEntry[1]*m_afEntry[3];
+    kInverse[0][0] = this->m_afEntry[4]*this->m_afEntry[8] - this->m_afEntry[5]*this->m_afEntry[7];
+    kInverse[0][1] = this->m_afEntry[2]*this->m_afEntry[7] - this->m_afEntry[1]*this->m_afEntry[8];
+    kInverse[0][2] = this->m_afEntry[1]*this->m_afEntry[5] - this->m_afEntry[2]*this->m_afEntry[4];
+    kInverse[1][0] = this->m_afEntry[5]*this->m_afEntry[6] - this->m_afEntry[3]*this->m_afEntry[8];
+    kInverse[1][1] = this->m_afEntry[0]*this->m_afEntry[8] - this->m_afEntry[2]*this->m_afEntry[6];
+    kInverse[1][2] = this->m_afEntry[2]*this->m_afEntry[3] - this->m_afEntry[0]*this->m_afEntry[5];
+    kInverse[2][0] = this->m_afEntry[3]*this->m_afEntry[7] - this->m_afEntry[4]*this->m_afEntry[6];
+    kInverse[2][1] = this->m_afEntry[1]*this->m_afEntry[6] - this->m_afEntry[0]*this->m_afEntry[7];
+    kInverse[2][2] = this->m_afEntry[0]*this->m_afEntry[4] - this->m_afEntry[1]*this->m_afEntry[3];
 
-    Real fDet = m_afEntry[0]*kInverse[0][0] + m_afEntry[1]*kInverse[1][0]+
-        m_afEntry[2]*kInverse[2][0];
+    Real fDet = this->m_afEntry[0]*kInverse[0][0] + this->m_afEntry[1]*kInverse[1][0]+
+        this->m_afEntry[2]*kInverse[2][0];
 
     if ( Math<Real>::FAbs(fDet) <= Math<Real>::EPSILON )
         return Matrix3::ZERO;
@@ -244,15 +244,15 @@ Matrix3<Real> Matrix3<Real>::Adjoint () const
 {
     Matrix3<Real> kAdjoint;
 
-    kAdjoint[0][0] = m_afEntry[4]*m_afEntry[8] - m_afEntry[5]*m_afEntry[7];
-    kAdjoint[0][1] = m_afEntry[2]*m_afEntry[7] - m_afEntry[1]*m_afEntry[8];
-    kAdjoint[0][2] = m_afEntry[1]*m_afEntry[5] - m_afEntry[2]*m_afEntry[4];
-    kAdjoint[1][0] = m_afEntry[5]*m_afEntry[6] - m_afEntry[3]*m_afEntry[8];
-    kAdjoint[1][1] = m_afEntry[0]*m_afEntry[8] - m_afEntry[2]*m_afEntry[6];
-    kAdjoint[1][2] = m_afEntry[2]*m_afEntry[3] - m_afEntry[0]*m_afEntry[5];
-    kAdjoint[2][0] = m_afEntry[3]*m_afEntry[7] - m_afEntry[4]*m_afEntry[6];
-    kAdjoint[2][1] = m_afEntry[1]*m_afEntry[6] - m_afEntry[0]*m_afEntry[7];
-    kAdjoint[2][2] = m_afEntry[0]*m_afEntry[4] - m_afEntry[1]*m_afEntry[3];
+    kAdjoint[0][0] = this->m_afEntry[4]*this->m_afEntry[8] - this->m_afEntry[5]*this->m_afEntry[7];
+    kAdjoint[0][1] = this->m_afEntry[2]*this->m_afEntry[7] - this->m_afEntry[1]*this->m_afEntry[8];
+    kAdjoint[0][2] = this->m_afEntry[1]*this->m_afEntry[5] - this->m_afEntry[2]*this->m_afEntry[4];
+    kAdjoint[1][0] = this->m_afEntry[5]*this->m_afEntry[6] - this->m_afEntry[3]*this->m_afEntry[8];
+    kAdjoint[1][1] = this->m_afEntry[0]*this->m_afEntry[8] - this->m_afEntry[2]*this->m_afEntry[6];
+    kAdjoint[1][2] = this->m_afEntry[2]*this->m_afEntry[3] - this->m_afEntry[0]*this->m_afEntry[5];
+    kAdjoint[2][0] = this->m_afEntry[3]*this->m_afEntry[7] - this->m_afEntry[4]*this->m_afEntry[6];
+    kAdjoint[2][1] = this->m_afEntry[1]*this->m_afEntry[6] - this->m_afEntry[0]*this->m_afEntry[7];
+    kAdjoint[2][2] = this->m_afEntry[0]*this->m_afEntry[4] - this->m_afEntry[1]*this->m_afEntry[3];
 
     return kAdjoint;
 }
@@ -260,10 +260,10 @@ Matrix3<Real> Matrix3<Real>::Adjoint () const
 template <class Real>
 Real Matrix3<Real>::Determinant () const
 {
-    Real fCo00 = m_afEntry[4]*m_afEntry[8] - m_afEntry[5]*m_afEntry[7];
-    Real fCo10 = m_afEntry[5]*m_afEntry[6] - m_afEntry[3]*m_afEntry[8];
-    Real fCo20 = m_afEntry[3]*m_afEntry[7] - m_afEntry[4]*m_afEntry[6];
-    Real fDet = m_afEntry[0]*fCo00 + m_afEntry[1]*fCo10 + m_afEntry[2]*fCo20;
+    Real fCo00 = this->m_afEntry[4]*this->m_afEntry[8] - this->m_afEntry[5]*this->m_afEntry[7];
+    Real fCo10 = this->m_afEntry[5]*this->m_afEntry[6] - this->m_afEntry[3]*this->m_afEntry[8];
+    Real fCo20 = this->m_afEntry[3]*this->m_afEntry[7] - this->m_afEntry[4]*this->m_afEntry[6];
+    Real fDet = this->m_afEntry[0]*fCo00 + this->m_afEntry[1]*fCo10 + this->m_afEntry[2]*fCo20;
     return fDet;
 }
 //----------------------------------------------------------------------------
@@ -292,65 +292,65 @@ void Matrix3<Real>::ToAxisAngle (Vector3<Real>& rkAxis, Real& rfAngle) const
     // z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
     // it does not matter which sign you choose on the square roots.
 
-    Real fTrace = m_afEntry[0] + m_afEntry[4] + m_afEntry[8];
+    Real fTrace = this->m_afEntry[0] + this->m_afEntry[4] + this->m_afEntry[8];
     Real fCos = ((Real)0.5)*(fTrace-((Real)1.0));
     rfAngle = Math<Real>::ACos(fCos);  // in [0,PI]
 
     if ( rfAngle > (Real)0.0 )
     {
-        if ( rfAngle < Math<Real>::PI )
+        if ( rfAngle < Math<Real>::_PI )
         {
-            rkAxis[0] = m_afEntry[7]-m_afEntry[5];
-            rkAxis[1] = m_afEntry[2]-m_afEntry[6];
-            rkAxis[2] = m_afEntry[3]-m_afEntry[1];
+            rkAxis[0] = this->m_afEntry[7]-this->m_afEntry[5];
+            rkAxis[1] = this->m_afEntry[2]-this->m_afEntry[6];
+            rkAxis[2] = this->m_afEntry[3]-this->m_afEntry[1];
             rkAxis.Normalize();
         }
         else
         {
             // angle is PI
             Real fHalfInverse;
-            if ( m_afEntry[0] >= m_afEntry[4] )
+            if ( this->m_afEntry[0] >= this->m_afEntry[4] )
             {
                 // r00 >= r11
-                if ( m_afEntry[0] >= m_afEntry[8] )
+                if ( this->m_afEntry[0] >= this->m_afEntry[8] )
                 {
                     // r00 is maximum diagonal term
-                    rkAxis[0] = ((Real)0.5)*Math<Real>::Sqrt(m_afEntry[0] -
-                        m_afEntry[4] - m_afEntry[8] + (Real)1.0);
+                    rkAxis[0] = ((Real)0.5)*Math<Real>::Sqrt(this->m_afEntry[0] -
+                        this->m_afEntry[4] - this->m_afEntry[8] + (Real)1.0);
                     fHalfInverse = ((Real)0.5)/rkAxis[0];
-                    rkAxis[1] = fHalfInverse*m_afEntry[1];
-                    rkAxis[2] = fHalfInverse*m_afEntry[2];
+                    rkAxis[1] = fHalfInverse*this->m_afEntry[1];
+                    rkAxis[2] = fHalfInverse*this->m_afEntry[2];
                 }
                 else
                 {
                     // r22 is maximum diagonal term
-                    rkAxis[2] = ((Real)0.5)*Math<Real>::Sqrt(m_afEntry[8] -
-                        m_afEntry[0] - m_afEntry[4] + (Real)1.0);
+                    rkAxis[2] = ((Real)0.5)*Math<Real>::Sqrt(this->m_afEntry[8] -
+                        this->m_afEntry[0] - this->m_afEntry[4] + (Real)1.0);
                     fHalfInverse = ((Real)0.5)/rkAxis[2];
-                    rkAxis[0] = fHalfInverse*m_afEntry[2];
-                    rkAxis[1] = fHalfInverse*m_afEntry[5];
+                    rkAxis[0] = fHalfInverse*this->m_afEntry[2];
+                    rkAxis[1] = fHalfInverse*this->m_afEntry[5];
                 }
             }
             else
             {
                 // r11 > r00
-                if ( m_afEntry[4] >= m_afEntry[8] )
+                if ( this->m_afEntry[4] >= this->m_afEntry[8] )
                 {
                     // r11 is maximum diagonal term
-                    rkAxis[1] = ((Real)0.5)*Math<Real>::Sqrt(m_afEntry[4] -
-                        m_afEntry[0] - m_afEntry[8] + (Real)1.0);
+                    rkAxis[1] = ((Real)0.5)*Math<Real>::Sqrt(this->m_afEntry[4] -
+                        this->m_afEntry[0] - this->m_afEntry[8] + (Real)1.0);
                     fHalfInverse  = ((Real)0.5)/rkAxis[1];
-                    rkAxis[0] = fHalfInverse*m_afEntry[1];
-                    rkAxis[2] = fHalfInverse*m_afEntry[5];
+                    rkAxis[0] = fHalfInverse*this->m_afEntry[1];
+                    rkAxis[2] = fHalfInverse*this->m_afEntry[5];
                 }
                 else
                 {
                     // r22 is maximum diagonal term
-                    rkAxis[2] = ((Real)0.5)*Math<Real>::Sqrt(m_afEntry[8] -
-                        m_afEntry[0] - m_afEntry[4] + (Real)1.0);
+                    rkAxis[2] = ((Real)0.5)*Math<Real>::Sqrt(this->m_afEntry[8] -
+                        this->m_afEntry[0] - this->m_afEntry[4] + (Real)1.0);
                     fHalfInverse = ((Real)0.5)/rkAxis[2];
-                    rkAxis[0] = fHalfInverse*m_afEntry[2];
-                    rkAxis[1] = fHalfInverse*m_afEntry[5];
+                    rkAxis[0] = fHalfInverse*this->m_afEntry[2];
+                    rkAxis[1] = fHalfInverse*this->m_afEntry[5];
                 }
             }
         }
@@ -379,45 +379,45 @@ void Matrix3<Real>::Orthonormalize ()
     // product of vectors A and B.
 
     // compute q0
-    Real fInvLength = Math<Real>::InvSqrt(m_afEntry[0]*m_afEntry[0] +
-        m_afEntry[3]*m_afEntry[3] + m_afEntry[6]*m_afEntry[6]);
+    Real fInvLength = Math<Real>::InvSqrt(this->m_afEntry[0]*this->m_afEntry[0] +
+        this->m_afEntry[3]*this->m_afEntry[3] + this->m_afEntry[6]*this->m_afEntry[6]);
 
-    m_afEntry[0] *= fInvLength;
-    m_afEntry[3] *= fInvLength;
-    m_afEntry[6] *= fInvLength;
+    this->m_afEntry[0] *= fInvLength;
+    this->m_afEntry[3] *= fInvLength;
+    this->m_afEntry[6] *= fInvLength;
 
     // compute q1
-    Real fDot0 = m_afEntry[0]*m_afEntry[1] + m_afEntry[3]*m_afEntry[4] +
-        m_afEntry[6]*m_afEntry[7];
+    Real fDot0 = this->m_afEntry[0]*this->m_afEntry[1] + this->m_afEntry[3]*this->m_afEntry[4] +
+        this->m_afEntry[6]*this->m_afEntry[7];
 
-    m_afEntry[1] -= fDot0*m_afEntry[0];
-    m_afEntry[4] -= fDot0*m_afEntry[3];
-    m_afEntry[7] -= fDot0*m_afEntry[6];
+    this->m_afEntry[1] -= fDot0*this->m_afEntry[0];
+    this->m_afEntry[4] -= fDot0*this->m_afEntry[3];
+    this->m_afEntry[7] -= fDot0*this->m_afEntry[6];
 
-    fInvLength = Math<Real>::InvSqrt(m_afEntry[1]*m_afEntry[1] +
-        m_afEntry[4]*m_afEntry[4] + m_afEntry[7]*m_afEntry[7]);
+    fInvLength = Math<Real>::InvSqrt(this->m_afEntry[1]*this->m_afEntry[1] +
+        this->m_afEntry[4]*this->m_afEntry[4] + this->m_afEntry[7]*this->m_afEntry[7]);
 
-    m_afEntry[1] *= fInvLength;
-    m_afEntry[4] *= fInvLength;
-    m_afEntry[7] *= fInvLength;
+    this->m_afEntry[1] *= fInvLength;
+    this->m_afEntry[4] *= fInvLength;
+    this->m_afEntry[7] *= fInvLength;
 
     // compute q2
-    Real fDot1 = m_afEntry[1]*m_afEntry[2] + m_afEntry[4]*m_afEntry[5] +
-        m_afEntry[7]*m_afEntry[8];
+    Real fDot1 = this->m_afEntry[1]*this->m_afEntry[2] + this->m_afEntry[4]*this->m_afEntry[5] +
+        this->m_afEntry[7]*this->m_afEntry[8];
 
-    fDot0 = m_afEntry[0]*m_afEntry[2] + m_afEntry[3]*m_afEntry[5] +
-        m_afEntry[6]*m_afEntry[8];
+    fDot0 = this->m_afEntry[0]*this->m_afEntry[2] + this->m_afEntry[3]*this->m_afEntry[5] +
+        this->m_afEntry[6]*this->m_afEntry[8];
 
-    m_afEntry[2] -= fDot0*m_afEntry[0] + fDot1*m_afEntry[1];
-    m_afEntry[5] -= fDot0*m_afEntry[3] + fDot1*m_afEntry[4];
-    m_afEntry[8] -= fDot0*m_afEntry[6] + fDot1*m_afEntry[7];
+    this->m_afEntry[2] -= fDot0*this->m_afEntry[0] + fDot1*this->m_afEntry[1];
+    this->m_afEntry[5] -= fDot0*this->m_afEntry[3] + fDot1*this->m_afEntry[4];
+    this->m_afEntry[8] -= fDot0*this->m_afEntry[6] + fDot1*this->m_afEntry[7];
 
-    fInvLength = Math<Real>::InvSqrt(m_afEntry[2]*m_afEntry[2] +
-        m_afEntry[5]*m_afEntry[5] + m_afEntry[8]*m_afEntry[8]);
+    fInvLength = Math<Real>::InvSqrt(this->m_afEntry[2]*this->m_afEntry[2] +
+        this->m_afEntry[5]*this->m_afEntry[5] + this->m_afEntry[8]*this->m_afEntry[8]);
 
-    m_afEntry[2] *= fInvLength;
-    m_afEntry[5] *= fInvLength;
-    m_afEntry[8] *= fInvLength;
+    this->m_afEntry[2] *= fInvLength;
+    this->m_afEntry[5] *= fInvLength;
+    this->m_afEntry[8] *= fInvLength;
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -428,19 +428,19 @@ bool Matrix3<Real>::ToEulerAnglesXYZ (Real& rfXAngle, Real& rfYAngle,
     //        cz*sx*sy+cx*sz  cx*cz-sx*sy*sz -cy*sx
     //       -cx*cz*sy+sx*sz  cz*sx+cx*sy*sz  cx*cy
 
-    if ( m_afEntry[2] < (Real)1.0 )
+    if ( this->m_afEntry[2] < (Real)1.0 )
     {
-        if ( m_afEntry[2] > -(Real)1.0 )
+        if ( this->m_afEntry[2] > -(Real)1.0 )
         {
-            rfXAngle = Math<Real>::ATan2(-m_afEntry[5],m_afEntry[8]);
-            rfYAngle = (Real)asin((double)m_afEntry[2]);
-            rfZAngle = Math<Real>::ATan2(-m_afEntry[1],m_afEntry[0]);
+            rfXAngle = Math<Real>::ATan2(-this->m_afEntry[5],this->m_afEntry[8]);
+            rfYAngle = (Real)asin((double)this->m_afEntry[2]);
+            rfZAngle = Math<Real>::ATan2(-this->m_afEntry[1],this->m_afEntry[0]);
             return true;
         }
         else
         {
             // WARNING.  Not unique.  XA - ZA = -atan2(r10,r11)
-            rfXAngle = -Math<Real>::ATan2(m_afEntry[3],m_afEntry[4]);
+            rfXAngle = -Math<Real>::ATan2(this->m_afEntry[3],this->m_afEntry[4]);
             rfYAngle = -Math<Real>::HALF_PI;
             rfZAngle = (Real)0.0;
             return false;
@@ -449,7 +449,7 @@ bool Matrix3<Real>::ToEulerAnglesXYZ (Real& rfXAngle, Real& rfYAngle,
     else
     {
         // WARNING.  Not unique.  XAngle + ZAngle = atan2(r10,r11)
-        rfXAngle = Math<Real>::ATan2(m_afEntry[3],m_afEntry[4]);
+        rfXAngle = Math<Real>::ATan2(this->m_afEntry[3],this->m_afEntry[4]);
         rfYAngle = Math<Real>::HALF_PI;
         rfZAngle = (Real)0.0;
         return false;
@@ -464,19 +464,19 @@ bool Matrix3<Real>::ToEulerAnglesXZY (Real& rfXAngle, Real& rfZAngle,
     //        sx*sy+cx*cy*sz  cx*cz          -cy*sx+cx*sy*sz
     //       -cx*sy+cy*sx*sz  cz*sx           cx*cy+sx*sy*sz
 
-    if ( m_afEntry[1] < (Real)1.0 )
+    if ( this->m_afEntry[1] < (Real)1.0 )
     {
-        if ( m_afEntry[1] > -(Real)1.0 )
+        if ( this->m_afEntry[1] > -(Real)1.0 )
         {
-            rfXAngle = Math<Real>::ATan2(m_afEntry[7],m_afEntry[4]);
-            rfZAngle = (Real)asin(-(double)m_afEntry[1]);
-            rfYAngle = Math<Real>::ATan2(m_afEntry[2],m_afEntry[0]);
+            rfXAngle = Math<Real>::ATan2(this->m_afEntry[7],this->m_afEntry[4]);
+            rfZAngle = (Real)asin(-(double)this->m_afEntry[1]);
+            rfYAngle = Math<Real>::ATan2(this->m_afEntry[2],this->m_afEntry[0]);
             return true;
         }
         else
         {
             // WARNING.  Not unique.  XA - YA = atan2(r20,r22)
-            rfXAngle = Math<Real>::ATan2(m_afEntry[6],m_afEntry[8]);
+            rfXAngle = Math<Real>::ATan2(this->m_afEntry[6],this->m_afEntry[8]);
             rfZAngle = Math<Real>::HALF_PI;
             rfYAngle = (Real)0.0;
             return false;
@@ -485,7 +485,7 @@ bool Matrix3<Real>::ToEulerAnglesXZY (Real& rfXAngle, Real& rfZAngle,
     else
     {
         // WARNING.  Not unique.  XA + YA = atan2(-r20,r22)
-        rfXAngle = Math<Real>::ATan2(-m_afEntry[6],m_afEntry[8]);
+        rfXAngle = Math<Real>::ATan2(-this->m_afEntry[6],this->m_afEntry[8]);
         rfZAngle = -Math<Real>::HALF_PI;
         rfYAngle = (Real)0.0;
         return false;
@@ -500,19 +500,19 @@ bool Matrix3<Real>::ToEulerAnglesYXZ (Real& rfYAngle, Real& rfXAngle,
     //        cx*sz           cx*cz          -sx
     //       -cz*sy+cy*sx*sz  cy*cz*sx+sy*sz  cx*cy
 
-    if ( m_afEntry[5] < (Real)1.0 )
+    if ( this->m_afEntry[5] < (Real)1.0 )
     {
-        if ( m_afEntry[5] > -(Real)1.0 )
+        if ( this->m_afEntry[5] > -(Real)1.0 )
         {
-            rfYAngle = Math<Real>::ATan2(m_afEntry[2],m_afEntry[8]);
-            rfXAngle = (Real)asin(-(double)m_afEntry[5]);
-            rfZAngle = Math<Real>::ATan2(m_afEntry[3],m_afEntry[4]);
+            rfYAngle = Math<Real>::ATan2(this->m_afEntry[2],this->m_afEntry[8]);
+            rfXAngle = (Real)asin(-(double)this->m_afEntry[5]);
+            rfZAngle = Math<Real>::ATan2(this->m_afEntry[3],this->m_afEntry[4]);
             return true;
         }
         else
         {
             // WARNING.  Not unique.  YA - ZA = atan2(r01,r00)
-            rfYAngle = Math<Real>::ATan2(m_afEntry[1],m_afEntry[0]);
+            rfYAngle = Math<Real>::ATan2(this->m_afEntry[1],this->m_afEntry[0]);
             rfXAngle = Math<Real>::HALF_PI;
             rfZAngle = (Real)0.0;
             return false;
@@ -521,7 +521,7 @@ bool Matrix3<Real>::ToEulerAnglesYXZ (Real& rfYAngle, Real& rfXAngle,
     else
     {
         // WARNING.  Not unique.  YA + ZA = atan2(-r01,r00)
-        rfYAngle = Math<Real>::ATan2(-m_afEntry[1],m_afEntry[0]);
+        rfYAngle = Math<Real>::ATan2(-this->m_afEntry[1],this->m_afEntry[0]);
         rfXAngle = -Math<Real>::HALF_PI;
         rfZAngle = (Real)0.0;
         return false;
@@ -536,19 +536,19 @@ bool Matrix3<Real>::ToEulerAnglesYZX (Real& rfYAngle, Real& rfZAngle,
     //        sz              cx*cz          -cz*sx
     //       -cz*sy           cy*sx+cx*sy*sz  cx*cy-sx*sy*sz
 
-    if ( m_afEntry[3] < (Real)1.0 )
+    if ( this->m_afEntry[3] < (Real)1.0 )
     {
-        if ( m_afEntry[3] > -(Real)1.0 )
+        if ( this->m_afEntry[3] > -(Real)1.0 )
         {
-            rfYAngle = Math<Real>::ATan2(-m_afEntry[6],m_afEntry[0]);
-            rfZAngle = (Real)asin((double)m_afEntry[3]);
-            rfXAngle = Math<Real>::ATan2(-m_afEntry[5],m_afEntry[4]);
+            rfYAngle = Math<Real>::ATan2(-this->m_afEntry[6],this->m_afEntry[0]);
+            rfZAngle = (Real)asin((double)this->m_afEntry[3]);
+            rfXAngle = Math<Real>::ATan2(-this->m_afEntry[5],this->m_afEntry[4]);
             return true;
         }
         else
         {
             // WARNING.  Not unique.  YA - XA = -atan2(r21,r22);
-            rfYAngle = -Math<Real>::ATan2(m_afEntry[7],m_afEntry[8]);
+            rfYAngle = -Math<Real>::ATan2(this->m_afEntry[7],this->m_afEntry[8]);
             rfZAngle = -Math<Real>::HALF_PI;
             rfXAngle = (Real)0.0;
             return false;
@@ -557,7 +557,7 @@ bool Matrix3<Real>::ToEulerAnglesYZX (Real& rfYAngle, Real& rfZAngle,
     else
     {
         // WARNING.  Not unique.  YA + XA = atan2(r21,r22)
-        rfYAngle = Math<Real>::ATan2(m_afEntry[7],m_afEntry[8]);
+        rfYAngle = Math<Real>::ATan2(this->m_afEntry[7],this->m_afEntry[8]);
         rfZAngle = Math<Real>::HALF_PI;
         rfXAngle = (Real)0.0;
         return false;
@@ -572,19 +572,19 @@ bool Matrix3<Real>::ToEulerAnglesZXY (Real& rfZAngle, Real& rfXAngle,
     //        cz*sx*sy+cy*sz  cx*cz          -cy*cz*sx+sy*sz
     //       -cx*sy           sx              cx*cy
 
-    if ( m_afEntry[7] < (Real)1.0 )
+    if ( this->m_afEntry[7] < (Real)1.0 )
     {
-        if ( m_afEntry[7] > -(Real)1.0 )
+        if ( this->m_afEntry[7] > -(Real)1.0 )
         {
-            rfZAngle = Math<Real>::ATan2(-m_afEntry[1],m_afEntry[4]);
-            rfXAngle = (Real)asin((double)m_afEntry[7]);
-            rfYAngle = Math<Real>::ATan2(-m_afEntry[6],m_afEntry[8]);
+            rfZAngle = Math<Real>::ATan2(-this->m_afEntry[1],this->m_afEntry[4]);
+            rfXAngle = (Real)asin((double)this->m_afEntry[7]);
+            rfYAngle = Math<Real>::ATan2(-this->m_afEntry[6],this->m_afEntry[8]);
             return true;
         }
         else
         {
             // WARNING.  Not unique.  ZA - YA = -atan(r02,r00)
-            rfZAngle = -Math<Real>::ATan2(m_afEntry[2],m_afEntry[0]);
+            rfZAngle = -Math<Real>::ATan2(this->m_afEntry[2],this->m_afEntry[0]);
             rfXAngle = -Math<Real>::HALF_PI;
             rfYAngle = (Real)0.0;
             return false;
@@ -593,7 +593,7 @@ bool Matrix3<Real>::ToEulerAnglesZXY (Real& rfZAngle, Real& rfXAngle,
     else
     {
         // WARNING.  Not unique.  ZA + YA = atan2(r02,r00)
-        rfZAngle = Math<Real>::ATan2(m_afEntry[2],m_afEntry[0]);
+        rfZAngle = Math<Real>::ATan2(this->m_afEntry[2],this->m_afEntry[0]);
         rfXAngle = Math<Real>::HALF_PI;
         rfYAngle = (Real)0.0;
         return false;
@@ -608,19 +608,19 @@ bool Matrix3<Real>::ToEulerAnglesZYX (Real& rfZAngle, Real& rfYAngle,
     //        cy*sz           cx*cz+sx*sy*sz -cz*sx+cx*sy*sz
     //       -sy              cy*sx           cx*cy
 
-    if ( m_afEntry[6] < (Real)1.0 )
+    if ( this->m_afEntry[6] < (Real)1.0 )
     {
-        if ( m_afEntry[6] > -(Real)1.0 )
+        if ( this->m_afEntry[6] > -(Real)1.0 )
         {
-            rfZAngle = Math<Real>::ATan2(m_afEntry[3],m_afEntry[0]);
-            rfYAngle = (Real)asin(-(double)m_afEntry[6]);
-            rfXAngle = Math<Real>::ATan2(m_afEntry[7],m_afEntry[8]);
+            rfZAngle = Math<Real>::ATan2(this->m_afEntry[3],this->m_afEntry[0]);
+            rfYAngle = (Real)asin(-(double)this->m_afEntry[6]);
+            rfXAngle = Math<Real>::ATan2(this->m_afEntry[7],this->m_afEntry[8]);
             return true;
         }
         else
         {
             // WARNING.  Not unique.  ZA - XA = -atan2(r01,r02)
-            rfZAngle = -Math<Real>::ATan2(m_afEntry[1],m_afEntry[2]);
+            rfZAngle = -Math<Real>::ATan2(this->m_afEntry[1],this->m_afEntry[2]);
             rfYAngle = Math<Real>::HALF_PI;
             rfXAngle = (Real)0.0;
             return false;
@@ -629,7 +629,7 @@ bool Matrix3<Real>::ToEulerAnglesZYX (Real& rfZAngle, Real& rfYAngle,
     else
     {
         // WARNING.  Not unique.  ZA + XA = atan2(-r01,-r02)
-        rfZAngle = Math<Real>::ATan2(-m_afEntry[1],-m_afEntry[2]);
+        rfZAngle = Math<Real>::ATan2(-this->m_afEntry[1],-this->m_afEntry[2]);
         rfYAngle = -Math<Real>::HALF_PI;
         rfXAngle = (Real)0.0;
         return false;
@@ -838,12 +838,12 @@ void Matrix3<Real>::Tridiagonalize (Real afDiag[3], Real afSubDiag[3])
     //     diag, diagonal entries of T
     //     subd, subdiagonal entries of T (T is symmetric)
 
-    Real fA = m_afEntry[0];
-    Real fB = m_afEntry[1];
-    Real fC = m_afEntry[2];
-    Real fD = m_afEntry[4];
-    Real fE = m_afEntry[5];
-    Real fF = m_afEntry[8];
+    Real fA = this->m_afEntry[0];
+    Real fB = this->m_afEntry[1];
+    Real fC = this->m_afEntry[2];
+    Real fD = this->m_afEntry[4];
+    Real fE = this->m_afEntry[5];
+    Real fF = this->m_afEntry[8];
 
     afDiag[0] = fA;
     afSubDiag[2] = (Real)0.0;
@@ -859,15 +859,15 @@ void Matrix3<Real>::Tridiagonalize (Real afDiag[3], Real afSubDiag[3])
         afSubDiag[0] = fLength;
         afSubDiag[1] = fE-fB*fQ;
 
-        m_afEntry[0] = (Real)1.0;
-        m_afEntry[1] = (Real)0.0;
-        m_afEntry[2] = (Real)0.0;
-        m_afEntry[3] = (Real)0.0;
-        m_afEntry[4] = fB;
-        m_afEntry[5] = fC;
-        m_afEntry[6] = (Real)0.0;
-        m_afEntry[7] = fC;
-        m_afEntry[8] = -fB;
+        this->m_afEntry[0] = (Real)1.0;
+        this->m_afEntry[1] = (Real)0.0;
+        this->m_afEntry[2] = (Real)0.0;
+        this->m_afEntry[3] = (Real)0.0;
+        this->m_afEntry[4] = fB;
+        this->m_afEntry[5] = fC;
+        this->m_afEntry[6] = (Real)0.0;
+        this->m_afEntry[7] = fC;
+        this->m_afEntry[8] = -fB;
     }
     else
     {
@@ -876,15 +876,15 @@ void Matrix3<Real>::Tridiagonalize (Real afDiag[3], Real afSubDiag[3])
         afSubDiag[0] = fB;
         afSubDiag[1] = fE;
 
-        m_afEntry[0] = (Real)1.0;
-        m_afEntry[1] = (Real)0.0;
-        m_afEntry[2] = (Real)0.0;
-        m_afEntry[3] = (Real)0.0;
-        m_afEntry[4] = (Real)1.0;
-        m_afEntry[5] = (Real)0.0;
-        m_afEntry[6] = (Real)0.0;
-        m_afEntry[7] = (Real)0.0;
-        m_afEntry[8] = -(Real)1.0;
+        this->m_afEntry[0] = (Real)1.0;
+        this->m_afEntry[1] = (Real)0.0;
+        this->m_afEntry[2] = (Real)0.0;
+        this->m_afEntry[3] = (Real)0.0;
+        this->m_afEntry[4] = (Real)1.0;
+        this->m_afEntry[5] = (Real)0.0;
+        this->m_afEntry[6] = (Real)0.0;
+        this->m_afEntry[7] = (Real)0.0;
+        this->m_afEntry[8] = -(Real)1.0;
     }
 }
 //----------------------------------------------------------------------------
@@ -949,10 +949,10 @@ bool Matrix3<Real>::QLAlgorithm (Real afDiag[3], Real afSubDiag[3])
 
                 for (int iRow = 0; iRow < 3; iRow++)
                 {
-                    fTmp3 = m_afEntry[I(iRow,i2+1)];
-                    m_afEntry[I(iRow,i2+1)] = fSin*m_afEntry[I(iRow,i2)] +
+                    fTmp3 = this->m_afEntry[this->I(iRow,i2+1)];
+                    this->m_afEntry[this->I(iRow,i2+1)] = fSin*this->m_afEntry[this->I(iRow,i2)] +
                         fCos*fTmp3;
-                    m_afEntry[I(iRow,i2)] = fCos*m_afEntry[I(iRow,i2)] -
+                    this->m_afEntry[this->I(iRow,i2)] = fCos*this->m_afEntry[this->I(iRow,i2)] -
                         fSin*fTmp3;
                 }
             }
@@ -1435,30 +1435,30 @@ void Matrix3<Real>::QDUDecomposition (Matrix3& rkQ, Matrix3& rkD,
     // u02 = r02/r00, and u12 = r12/r11.
 
     // build orthogonal matrix Q
-    Real fInvLength = Math<Real>::InvSqrt(m_afEntry[0]*m_afEntry[0] +
-        m_afEntry[3]*m_afEntry[3] + m_afEntry[6]*m_afEntry[6]);
-    rkQ[0][0] = m_afEntry[0]*fInvLength;
-    rkQ[1][0] = m_afEntry[3]*fInvLength;
-    rkQ[2][0] = m_afEntry[6]*fInvLength;
+    Real fInvLength = Math<Real>::InvSqrt(this->m_afEntry[0]*this->m_afEntry[0] +
+        this->m_afEntry[3]*this->m_afEntry[3] + this->m_afEntry[6]*this->m_afEntry[6]);
+    rkQ[0][0] = this->m_afEntry[0]*fInvLength;
+    rkQ[1][0] = this->m_afEntry[3]*fInvLength;
+    rkQ[2][0] = this->m_afEntry[6]*fInvLength;
 
-    Real fDot = rkQ[0][0]*m_afEntry[1] + rkQ[1][0]*m_afEntry[4] +
-        rkQ[2][0]*m_afEntry[7];
-    rkQ[0][1] = m_afEntry[1]-fDot*rkQ[0][0];
-    rkQ[1][1] = m_afEntry[4]-fDot*rkQ[1][0];
-    rkQ[2][1] = m_afEntry[7]-fDot*rkQ[2][0];
+    Real fDot = rkQ[0][0]*this->m_afEntry[1] + rkQ[1][0]*this->m_afEntry[4] +
+        rkQ[2][0]*this->m_afEntry[7];
+    rkQ[0][1] = this->m_afEntry[1]-fDot*rkQ[0][0];
+    rkQ[1][1] = this->m_afEntry[4]-fDot*rkQ[1][0];
+    rkQ[2][1] = this->m_afEntry[7]-fDot*rkQ[2][0];
     fInvLength = Math<Real>::InvSqrt(rkQ[0][1]*rkQ[0][1] +
         rkQ[1][1]*rkQ[1][1] + rkQ[2][1]*rkQ[2][1]);
     rkQ[0][1] *= fInvLength;
     rkQ[1][1] *= fInvLength;
     rkQ[2][1] *= fInvLength;
 
-    fDot = rkQ[0][0]*m_afEntry[2] + rkQ[1][0]*m_afEntry[5] +
-        rkQ[2][0]*m_afEntry[8];
-    rkQ[0][2] = m_afEntry[2]-fDot*rkQ[0][0];
-    rkQ[1][2] = m_afEntry[5]-fDot*rkQ[1][0];
-    rkQ[2][2] = m_afEntry[8]-fDot*rkQ[2][0];
-    fDot = rkQ[0][1]*m_afEntry[2] + rkQ[1][1]*m_afEntry[5] +
-        rkQ[2][1]*m_afEntry[8];
+    fDot = rkQ[0][0]*this->m_afEntry[2] + rkQ[1][0]*this->m_afEntry[5] +
+        rkQ[2][0]*this->m_afEntry[8];
+    rkQ[0][2] = this->m_afEntry[2]-fDot*rkQ[0][0];
+    rkQ[1][2] = this->m_afEntry[5]-fDot*rkQ[1][0];
+    rkQ[2][2] = this->m_afEntry[8]-fDot*rkQ[2][0];
+    fDot = rkQ[0][1]*this->m_afEntry[2] + rkQ[1][1]*this->m_afEntry[5] +
+        rkQ[2][1]*this->m_afEntry[8];
     rkQ[0][2] -= fDot*rkQ[0][1];
     rkQ[1][2] -= fDot*rkQ[1][1];
     rkQ[2][2] -= fDot*rkQ[2][1];
@@ -1484,18 +1484,18 @@ void Matrix3<Real>::QDUDecomposition (Matrix3& rkQ, Matrix3& rkD,
 
     // build "right" matrix R
     Matrix3 kR;
-    kR[0][0] = rkQ[0][0]*m_afEntry[0] + rkQ[1][0]*m_afEntry[3] +
-        rkQ[2][0]*m_afEntry[6];
-    kR[0][1] = rkQ[0][0]*m_afEntry[1] + rkQ[1][0]*m_afEntry[4] +
-        rkQ[2][0]*m_afEntry[7];
-    kR[1][1] = rkQ[0][1]*m_afEntry[1] + rkQ[1][1]*m_afEntry[4] +
-        rkQ[2][1]*m_afEntry[7];
-    kR[0][2] = rkQ[0][0]*m_afEntry[2] + rkQ[1][0]*m_afEntry[5] +
-        rkQ[2][0]*m_afEntry[8];
-    kR[1][2] = rkQ[0][1]*m_afEntry[2] + rkQ[1][1]*m_afEntry[5] +
-        rkQ[2][1]*m_afEntry[8];
-    kR[2][2] = rkQ[0][2]*m_afEntry[2] + rkQ[1][2]*m_afEntry[5] +
-        rkQ[2][2]*m_afEntry[8];
+    kR[0][0] = rkQ[0][0]*this->m_afEntry[0] + rkQ[1][0]*this->m_afEntry[3] +
+        rkQ[2][0]*this->m_afEntry[6];
+    kR[0][1] = rkQ[0][0]*this->m_afEntry[1] + rkQ[1][0]*this->m_afEntry[4] +
+        rkQ[2][0]*this->m_afEntry[7];
+    kR[1][1] = rkQ[0][1]*this->m_afEntry[1] + rkQ[1][1]*this->m_afEntry[4] +
+        rkQ[2][1]*this->m_afEntry[7];
+    kR[0][2] = rkQ[0][0]*this->m_afEntry[2] + rkQ[1][0]*this->m_afEntry[5] +
+        rkQ[2][0]*this->m_afEntry[8];
+    kR[1][2] = rkQ[0][1]*this->m_afEntry[2] + rkQ[1][1]*this->m_afEntry[5] +
+        rkQ[2][1]*this->m_afEntry[8];
+    kR[2][2] = rkQ[0][2]*this->m_afEntry[2] + rkQ[1][2]*this->m_afEntry[5] +
+        rkQ[2][2]*this->m_afEntry[8];
 
     // the scaling component
     rkD.MakeDiagonal(kR[0][0],kR[1][1],kR[2][2]);

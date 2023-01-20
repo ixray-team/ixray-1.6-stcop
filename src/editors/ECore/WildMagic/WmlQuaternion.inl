@@ -620,7 +620,7 @@ Quaternion<Real> Quaternion<Real>::SlerpExtraSpins (Real fT,
         return rkP;
 
     Real fSin = Math<Real>::Sin(fAngle);
-    Real fPhase = Math<Real>::PI*iExtraSpins*fT;
+    Real fPhase = Math<Real>::_PI*iExtraSpins*fT;
     Real fInvSin = ((Real)1.0)/fSin;
     Real fCoeff0 = Math<Real>::Sin((((Real)1.0)-fT)*fAngle-fPhase)*fInvSin;
     Real fCoeff1 = Math<Real>::Sin(fT*fAngle + fPhase)*fInvSin;

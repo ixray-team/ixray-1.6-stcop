@@ -18,22 +18,22 @@ Matrix2<Real>::Matrix2 ()
 template <class Real>
 Matrix2<Real>::Matrix2 (const Matrix2& rkM)
 {
-    memcpy(m_afEntry,rkM.m_afEntry,4*sizeof(Real));
+    memcpy(this->m_afEntry,rkM.m_afEntry,4*sizeof(Real));
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix2<Real>::Matrix2 (const Matrix<2,Real>& rkM)
 {
-    memcpy(m_afEntry,(const Real*)rkM,4*sizeof(Real));
+    memcpy(this->m_afEntry,(const Real*)rkM,4*sizeof(Real));
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix2<Real>::Matrix2 (Real fM00, Real fM01, Real fM10, Real fM11)
 {
-    m_afEntry[0] = fM00;
-    m_afEntry[1] = fM01;
-    m_afEntry[2] = fM10;
-    m_afEntry[3] = fM11;
+    this->m_afEntry[0] = fM00;
+    this->m_afEntry[1] = fM01;
+    this->m_afEntry[2] = fM10;
+    this->m_afEntry[3] = fM11;
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -41,14 +41,14 @@ Matrix2<Real>::Matrix2 (const Real afEntry[4], bool bRowMajor)
 {
     if ( bRowMajor )
     {
-        memcpy(m_afEntry,afEntry,4*sizeof(Real));
+        memcpy(this->m_afEntry,afEntry,4*sizeof(Real));
     }
     else
     {
-        m_afEntry[0] = afEntry[0];
-        m_afEntry[1] = afEntry[2];
-        m_afEntry[2] = afEntry[1];
-        m_afEntry[3] = afEntry[3];
+        this->m_afEntry[0] = afEntry[0];
+        this->m_afEntry[1] = afEntry[2];
+        this->m_afEntry[2] = afEntry[1];
+        this->m_afEntry[3] = afEntry[3];
     }
 }
 //----------------------------------------------------------------------------
@@ -58,17 +58,17 @@ Matrix2<Real>::Matrix2 (const Vector2<Real>& rkU,
 {
     if ( bColumns )
     {
-        m_afEntry[0] = rkU[0];
-        m_afEntry[1] = rkV[0];
-        m_afEntry[2] = rkU[1];
-        m_afEntry[3] = rkV[1];
+        this->m_afEntry[0] = rkU[0];
+        this->m_afEntry[1] = rkV[0];
+        this->m_afEntry[2] = rkU[1];
+        this->m_afEntry[3] = rkV[1];
     }
     else
     {
-        m_afEntry[0] = rkU[0];
-        m_afEntry[1] = rkU[1];
-        m_afEntry[2] = rkV[0];
-        m_afEntry[3] = rkV[1];
+        this->m_afEntry[0] = rkU[0];
+        this->m_afEntry[1] = rkU[1];
+        this->m_afEntry[2] = rkV[0];
+        this->m_afEntry[3] = rkV[1];
     }
 }
 //----------------------------------------------------------------------------
@@ -77,17 +77,17 @@ Matrix2<Real>::Matrix2 (const Vector2<Real>* akV, bool bColumns)
 {
     if ( bColumns )
     {
-        m_afEntry[0] = akV[0][0];
-        m_afEntry[1] = akV[1][0];
-        m_afEntry[2] = akV[0][1];
-        m_afEntry[3] = akV[1][1];
+        this->m_afEntry[0] = akV[0][0];
+        this->m_afEntry[1] = akV[1][0];
+        this->m_afEntry[2] = akV[0][1];
+        this->m_afEntry[3] = akV[1][1];
     }
     else
     {
-        m_afEntry[0] = akV[0][0];
-        m_afEntry[1] = akV[0][1];
-        m_afEntry[2] = akV[1][0];
-        m_afEntry[3] = akV[1][1];
+        this->m_afEntry[0] = akV[0][0];
+        this->m_afEntry[1] = akV[0][1];
+        this->m_afEntry[2] = akV[1][0];
+        this->m_afEntry[3] = akV[1][1];
     }
 }
 //----------------------------------------------------------------------------
@@ -102,10 +102,10 @@ template <class Real>
 void Matrix2<Real>::MakeTensorProduct (const Vector2<Real>& rkU,
     const Vector2<Real>& rkV)
 {
-    m_afEntry[0] = rkU[0]*rkV[0];
-    m_afEntry[1] = rkU[0]*rkV[1];
-    m_afEntry[2] = rkU[1]*rkV[0];
-    m_afEntry[3] = rkU[1]*rkV[1];
+    this->m_afEntry[0] = rkU[0]*rkV[0];
+    this->m_afEntry[1] = rkU[0]*rkV[1];
+    this->m_afEntry[2] = rkU[1]*rkV[0];
+    this->m_afEntry[3] = rkU[1]*rkV[1];
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -117,10 +117,10 @@ Matrix2<Real>::Matrix2 (Real fM00, Real fM11)
 template <class Real>
 void Matrix2<Real>::MakeDiagonal (Real fM00, Real fM11)
 {
-    m_afEntry[0] = fM00;
-    m_afEntry[1] = (Real)0.0;
-    m_afEntry[2] = (Real)0.0;
-    m_afEntry[3] = fM11;
+    this->m_afEntry[0] = fM00;
+    this->m_afEntry[1] = (Real)0.0;
+    this->m_afEntry[2] = (Real)0.0;
+    this->m_afEntry[3] = fM11;
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -132,23 +132,23 @@ Matrix2<Real>::Matrix2 (Real fAngle)
 template <class Real>
 void Matrix2<Real>::FromAngle (Real fAngle)
 {
-    m_afEntry[0] = Math<Real>::Cos(fAngle);
-    m_afEntry[1] = -Math<Real>::Sin(fAngle);
-    m_afEntry[2] =  m_afEntry[1];
-    m_afEntry[3] =  m_afEntry[0];
+    this->m_afEntry[0] = Math<Real>::Cos(fAngle);
+    this->m_afEntry[1] = -Math<Real>::Sin(fAngle);
+    this->m_afEntry[2] =  this->m_afEntry[1];
+    this->m_afEntry[3] =  this->m_afEntry[0];
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix2<Real>& Matrix2<Real>::operator= (const Matrix2& rkM)
 {
-    memcpy(m_afEntry,rkM.m_afEntry,4*sizeof(Real));
+    memcpy(this->m_afEntry,rkM.m_afEntry,4*sizeof(Real));
     return *this;
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Matrix2<Real>& Matrix2<Real>::operator= (const Matrix<2,Real>& rkM)
 {
-    memcpy(m_afEntry,(const Real*)rkM,4*sizeof(Real));
+    memcpy(this->m_afEntry,(const Real*)rkM,4*sizeof(Real));
     return *this;
 }
 //----------------------------------------------------------------------------
@@ -157,14 +157,14 @@ Matrix2<Real> Matrix2<Real>::Inverse () const
 {
     Matrix2<Real> kInverse;
 
-    Real fDet = m_afEntry[0]*m_afEntry[3] - m_afEntry[1]*m_afEntry[2];
+    Real fDet = this->m_afEntry[0]*this->m_afEntry[3] - this->m_afEntry[1]*this->m_afEntry[2];
     if ( Math<Real>::FAbs(fDet) > Math<Real>::EPSILON )
     {
         Real fInvDet = ((Real)1.0)/fDet;
-        kInverse[0][0] =  m_afEntry[3]*fInvDet;
-        kInverse[0][1] = -m_afEntry[1]*fInvDet;
-        kInverse[1][0] = -m_afEntry[2]*fInvDet;
-        kInverse[1][1] =  m_afEntry[0]*fInvDet;
+        kInverse[0][0] =  this->m_afEntry[3]*fInvDet;
+        kInverse[0][1] = -this->m_afEntry[1]*fInvDet;
+        kInverse[1][0] = -this->m_afEntry[2]*fInvDet;
+        kInverse[1][1] =  this->m_afEntry[0]*fInvDet;
     }
     else
     {
@@ -178,21 +178,21 @@ template <class Real>
 Matrix2<Real> Matrix2<Real>::Adjoint () const
 {
     return Matrix2<Real>(
-         m_afEntry[3],-m_afEntry[1],
-        -m_afEntry[2], m_afEntry[0]);
+         this->m_afEntry[3],-this->m_afEntry[1],
+        -this->m_afEntry[2], this->m_afEntry[0]);
 }
 //----------------------------------------------------------------------------
 template <class Real>
 Real Matrix2<Real>::Determinant () const
 {
-    return m_afEntry[0]*m_afEntry[3] - m_afEntry[1]*m_afEntry[2];
+    return this->m_afEntry[0]*this->m_afEntry[3] - this->m_afEntry[1]*this->m_afEntry[2];
 }
 //----------------------------------------------------------------------------
 template <class Real>
 void Matrix2<Real>::ToAngle (Real& rfAngle) const
 {
     // assert:  matrix is a rotation
-    rfAngle = Math<Real>::ATan2(m_afEntry[2],m_afEntry[0]);
+    rfAngle = Math<Real>::ATan2(this->m_afEntry[2],this->m_afEntry[0]);
 }
 //----------------------------------------------------------------------------
 template <class Real>
@@ -208,37 +208,37 @@ void Matrix2<Real>::Orthonormalize ()
     // product of vectors A and B.
 
     // compute q0
-    Real fInvLength = Math<Real>::InvSqrt(m_afEntry[0]*m_afEntry[0] +
-        m_afEntry[2]*m_afEntry[2]);
+    Real fInvLength = Math<Real>::InvSqrt(this->m_afEntry[0]*this->m_afEntry[0] +
+        this->m_afEntry[2]*this->m_afEntry[2]);
 
-    m_afEntry[0] *= fInvLength;
-    m_afEntry[2] *= fInvLength;
+    this->m_afEntry[0] *= fInvLength;
+    this->m_afEntry[2] *= fInvLength;
 
     // compute q1
-    Real fDot0 = m_afEntry[0]*m_afEntry[1] + m_afEntry[2]*m_afEntry[3];
-    m_afEntry[1] -= fDot0*m_afEntry[0];
-    m_afEntry[3] -= fDot0*m_afEntry[2];
+    Real fDot0 = this->m_afEntry[0]*this->m_afEntry[1] + this->m_afEntry[2]*this->m_afEntry[3];
+    this->m_afEntry[1] -= fDot0*this->m_afEntry[0];
+    this->m_afEntry[3] -= fDot0*this->m_afEntry[2];
 
-    fInvLength = Math<Real>::InvSqrt(m_afEntry[1]*m_afEntry[1] +
-        m_afEntry[3]*m_afEntry[3]);
+    fInvLength = Math<Real>::InvSqrt(this->m_afEntry[1]*this->m_afEntry[1] +
+        this->m_afEntry[3]*this->m_afEntry[3]);
 
-    m_afEntry[1] *= fInvLength;
-    m_afEntry[3] *= fInvLength;
+    this->m_afEntry[1] *= fInvLength;
+    this->m_afEntry[3] *= fInvLength;
 }
 //----------------------------------------------------------------------------
 template <class Real>
 void Matrix2<Real>::EigenDecomposition (Matrix2& rkRot, Matrix2& rkDiag) const
 {
-    Real fTrace = m_afEntry[0] + m_afEntry[3];
-    Real fDiff = m_afEntry[0] - m_afEntry[3];
+    Real fTrace = this->m_afEntry[0] + this->m_afEntry[3];
+    Real fDiff = this->m_afEntry[0] - this->m_afEntry[3];
     Real fDiscr = Math<Real>::Sqrt(fDiff*fDiff +
-        ((Real)4.0)*m_afEntry[1]*m_afEntry[1]);
+        ((Real)4.0)*this->m_afEntry[1]*this->m_afEntry[1]);
     Real fEVal0 = ((Real)0.5)*(fTrace-fDiscr);
     Real fEVal1 = ((Real)0.5)*(fTrace+fDiscr);
     rkDiag.MakeDiagonal(fEVal0,fEVal1);
 
-    Vector2<Real> kRow0(m_afEntry[0]-fEVal0,m_afEntry[1]);
-    Vector2<Real> kRow1(m_afEntry[1],m_afEntry[3]-fEVal0);
+    Vector2<Real> kRow0(this->m_afEntry[0]-fEVal0,this->m_afEntry[1]);
+    Vector2<Real> kRow1(this->m_afEntry[1],this->m_afEntry[3]-fEVal0);
     Real fLength0 = kRow0.Length();
     Real fLength1 = kRow1.Length();
 
