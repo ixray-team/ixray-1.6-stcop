@@ -12,6 +12,12 @@
         <Projects Include="src\xrSound\xrSoundB.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="src\editors\xrEProps\xrEPropsB.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="src\editors\ECore\xrECoreB.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +53,32 @@
     <Target Name="xrSoundB:Make">
         <MSBuild Projects="src\xrSound\xrSoundB.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="xrEPropsB">
+        <MSBuild Projects="src\editors\xrEProps\xrEPropsB.cbproj"/>
+    </Target>
+    <Target Name="xrEPropsB:Clean">
+        <MSBuild Projects="src\editors\xrEProps\xrEPropsB.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xrEPropsB:Make">
+        <MSBuild Projects="src\editors\xrEProps\xrEPropsB.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="xrECoreB">
+        <MSBuild Projects="src\editors\ECore\xrECoreB.cbproj"/>
+    </Target>
+    <Target Name="xrECoreB:Clean">
+        <MSBuild Projects="src\editors\ECore\xrECoreB.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="xrECoreB:Make">
+        <MSBuild Projects="src\editors\ECore\xrECoreB.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="xrCoreB;xrParticlesB;xrSoundB"/>
+        <CallTarget Targets="xrCoreB;xrParticlesB;xrSoundB;xrEPropsB;xrECoreB"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="xrCoreB:Clean;xrParticlesB:Clean;xrSoundB:Clean"/>
+        <CallTarget Targets="xrCoreB:Clean;xrParticlesB:Clean;xrSoundB:Clean;xrEPropsB:Clean;xrECoreB:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="xrCoreB:Make;xrParticlesB:Make;xrSoundB:Make"/>
+        <CallTarget Targets="xrCoreB:Make;xrParticlesB:Make;xrSoundB:Make;xrEPropsB:Make;xrECoreB:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
