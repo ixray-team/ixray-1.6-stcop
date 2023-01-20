@@ -5,11 +5,9 @@
 #include "main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_edit"
-#pragma link "MXCtrls"
-#pragma link "multi_edit"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "single_param.dfm"
+
 __fastcall TAddFloatForm::TAddFloatForm(TComponent* Owner, pp_params p)
     : TForm(Owner),m_pp_params(p)
 {
@@ -290,7 +288,7 @@ void __fastcall TAddFloatForm::TimeValueKeyDown(TObject *Sender, WORD &Key,
 
 void __fastcall TAddFloatForm::cmTextureNameChange(TObject *Sender)
 {
-    MainForm->m_Animator->PPinfo().cm_tex1 = cmTextureName->Text.c_str();
+	MainForm->m_Animator->PPinfo().cm_tex1 = (pcstr)cmTextureName->Text.c_str();
 }
 //---------------------------------------------------------------------------
 

@@ -90,7 +90,6 @@ object MainForm: TMainForm
         Text = 'Effect time : '
         Width = 50
       end>
-    SimplePanel = False
   end
   object TabControl: TTabControl
     Left = 0

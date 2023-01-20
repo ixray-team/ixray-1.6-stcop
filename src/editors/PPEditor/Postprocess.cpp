@@ -16,7 +16,7 @@
 #define EDevice NULL
 #define Device NULL
 
-#pragma comment (lib, "x:\xrCoreB.lib")
+#pragma comment (lib, "xrCoreB.lib")
 //---------------------------------------------------------------------------
 USEFORM("main.cpp", MainForm);
 USEFORM("float_param.cpp", frmTimeConstructor);
@@ -37,7 +37,7 @@ void    log_callback    (LPCSTR lpString)
 }
 
 
-WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
     try
     {
@@ -47,6 +47,8 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
          
          Application->Initialize();
          Application->CreateForm(__classid(TMainForm), &MainForm);
+		Application->CreateForm(__classid(TfrmTimeConstructor), &frmTimeConstructor);
+		Application->CreateForm(__classid(TfrmConstructor), &frmConstructor);
 		Application->Run();
          Core._destroy();
          fclose (g_LogFileHandle);

@@ -86,9 +86,9 @@ object AddColorForm: TAddColorForm
       Top = 43
       Width = 93
       Height = 21
-      LWSensitivity = 1
+      LWSensitivity = 1.000000000000000000
       Alignment = taRightJustify
-      Increment = 0.01
+      Increment = 0.010000000000000000
       ValueType = vtFloat
       TabOrder = 1
       OnChange = CnahgeParam
@@ -100,9 +100,9 @@ object AddColorForm: TAddColorForm
       Top = 67
       Width = 93
       Height = 21
-      LWSensitivity = 1
+      LWSensitivity = 1.000000000000000000
       Alignment = taRightJustify
-      Increment = 0.01
+      Increment = 0.010000000000000000
       ValueType = vtFloat
       TabOrder = 2
       OnChange = CnahgeParam
@@ -114,9 +114,9 @@ object AddColorForm: TAddColorForm
       Top = 89
       Width = 93
       Height = 21
-      LWSensitivity = 1
+      LWSensitivity = 1.000000000000000000
       Alignment = taRightJustify
-      Increment = 0.01
+      Increment = 0.010000000000000000
       ValueType = vtFloat
       TabOrder = 3
       OnChange = CnahgeParam
@@ -128,9 +128,9 @@ object AddColorForm: TAddColorForm
       Top = 112
       Width = 93
       Height = 21
-      LWSensitivity = 1
+      LWSensitivity = 1.000000000000000000
       Alignment = taRightJustify
-      Increment = 0.01
+      Increment = 0.010000000000000000
       ValueType = vtFloat
       TabOrder = 4
       Visible = False
@@ -142,10 +142,10 @@ object AddColorForm: TAddColorForm
       Top = 11
       Width = 93
       Height = 21
-      LWSensitivity = 1
+      LWSensitivity = 1.000000000000000000
       Alignment = taRightJustify
-      Increment = 0.1
-      MaxValue = 99999
+      Increment = 0.100000000000000000
+      MaxValue = 99999.000000000000000000
       ValueType = vtFloat
       TabOrder = 0
       OnChange = CnahgeParam
@@ -162,7 +162,6 @@ object AddColorForm: TAddColorForm
     OnClick = ColorClick
   end
   object ColorDialog: TColorDialog
-    Ctl3D = True
     Options = [cdFullOpen, cdSolidColor]
     Left = 56
     Top = 140

@@ -5,9 +5,8 @@
 #include "single_param.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_edit"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "main.dfm"
 
 TMainForm *MainForm;
 
@@ -75,7 +74,7 @@ void __fastcall TMainForm::FormResize(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::NewEffectButtonClick(TObject *Sender)
 {
-    if (Application->MessageBox ("Do you wish to create a new effect ?", "Warning", MB_YESNO | MB_ICONSTOP) == IDNO)
+	if (Application->MessageBox (L"Do you wish to create a new effect ?", L"Warning", MB_YESNO | MB_ICONSTOP) == IDNO)
        return;
        
     m_Animator->Create ();   
@@ -166,7 +165,7 @@ void __fastcall TMainForm::LoadButtonClick(TObject *Sender)
     if(OpenDialog->Execute ())
     {
         m_Marker = 0.0f;
-        m_Animator->Load 	(OpenDialog->FileName.c_str ());
+		m_Animator->Load 	((LPCSTR)OpenDialog->FileName.c_str ());
         Caption 			= OpenDialog->FileName.c_str ();
 
         TabControl->TabIndex 				= 0;
@@ -178,8 +177,8 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
 {
     if (m_Animator->GetLength() == 0.0f) return;
     if (SaveDialog->Execute())
-    {
-    	m_Animator->Save (SaveDialog->FileName.c_str ());
+	{
+		m_Animator->Save ((LPCSTR)SaveDialog->FileName.c_str ());
         Caption = SaveDialog->FileName.c_str ();
     }
 }
@@ -197,9 +196,9 @@ void TMainForm::UpdateGraph()
     canvas->LineTo               (Image->Picture->Bitmap->Width, 0);
     canvas->MoveTo               (0, Image->Picture->Bitmap->Height - 1);
     canvas->LineTo               (Image->Picture->Bitmap->Width, Image->Picture->Bitmap->Height - 1);
-    canvas->TextOutA             (0, Image->Picture->Bitmap->Height / 2 - 14, "0.0");
-    canvas->TextOutA             (0, Image->Picture->Bitmap->Height - 14, "-1.0");
-    canvas->TextOutA             (0, 2, "1.0");
+	canvas->TextOut             (0, Image->Picture->Bitmap->Height / 2 - 14, "0.0");
+	canvas->TextOut             (0, Image->Picture->Bitmap->Height - 14, "-1.0");
+    canvas->TextOut             (0, 2, "1.0");
 
 
     float alltime 				= m_Animator->GetLength ();

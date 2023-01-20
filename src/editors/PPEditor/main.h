@@ -3,10 +3,10 @@
 #ifndef mainH
 #define mainH
 //---------------------------------------------------------------------------
-#include <Classes.hpp>
-#include <Controls.hpp>
-#include <StdCtrls.hpp>
-#include <Forms.hpp>
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
 #include "PERFGRAP.h"
 #include <ComCtrls.hpp>
 #include <ExtCtrls.hpp>
@@ -16,6 +16,7 @@
 #include <ImgList.hpp>
 #include "MXCtrls.hpp"
 #include <Menus.hpp>
+#include <System.ImageList.hpp>
 #define XRCORE_API __declspec(dllimport)
 
 #include "base.h"

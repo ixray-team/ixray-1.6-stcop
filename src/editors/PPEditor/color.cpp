@@ -4,9 +4,8 @@
 #include "main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_edit"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "color.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TAddColorForm::TAddColorForm(TComponent* Owner, _pp_params p)
@@ -253,7 +252,7 @@ void __fastcall TAddColorForm::ColorClick(TObject *Sender)
 
       float kl					= l/255.0f;
 
-	  ColorDialog->Color 		= color_rgba(	(BlueValue->Value 	- BlueValue->MinValue)/kl , 
+	  ColorDialog->Color 		= (System::Uitypes::TColor) color_rgba(	(BlueValue->Value 	- BlueValue->MinValue)/kl ,
       											(GreenValue->Value 	- GreenValue->MinValue)/kl, 
                                                 (RedValue->Value 	- RedValue->MinValue)/kl, 
                                                 0.0f);

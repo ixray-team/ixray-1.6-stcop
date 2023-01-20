@@ -4,3 +4,4 @@
 #include <vcl.h>
 #include <stdio.h>
  
+#pragma comment(lib, "editorB.lib")
