@@ -1,7 +1,7 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
-#ifndef _EDITOR
+#if !defined(_EDITOR) || defined (_PP_EDITOR_)
 
 #include "../xrCDB/frustum.h"
 #include "vis_common.h"

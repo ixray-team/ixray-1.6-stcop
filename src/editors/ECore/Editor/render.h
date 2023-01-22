@@ -17,6 +17,7 @@
 
 #include "..\..\xrEngine\render.h"
 
+#ifndef _PP_EDITOR_
 class CSkeletonWallmark;
 
 // definition (Renderer)
@@ -26,6 +27,7 @@ public:
 	virtual u32			get_width			()				{ return EDevice.dwWidth;	}
 	virtual u32			get_height			()				{ return EDevice.dwHeight;	}
 };
+
 
 class IRender_interface{
 public:
@@ -155,5 +157,7 @@ IC  float   CalcSSA(Fvector& C, float R)
 }
 extern ECORE_API CRender  	RImplementation;
 //.extern ECORE_API CRender*	Render;
+
+#endif // ifndef _PP_EDITOR_
 
 #endif
