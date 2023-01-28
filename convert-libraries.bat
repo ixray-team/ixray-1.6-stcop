@@ -6,6 +6,7 @@ set coff2omf="%programfiles(x86)%\Embarcadero\Studio\21.0\bin\coff2omf.exe"
 %coff2omf% sdk\dxsdk_jun2010\Lib\x86\dsound.lib lib\dsoundB.lib -v
 %coff2omf% sdk\libraries\eax.lib lib\eaxB.lib -v
 %coff2omf% sdk\libraries\FreeImage.lib lib\FreeImageB.lib -v
+%coff2omf% sdk\libraries\MagicFM.lib lib\MagicFMB.lib
 
 %coff2omf% lib\Debug\libogg.lib lib\liboggB.lib -v
 %coff2omf% lib\Debug\libtheora.lib lib\libtheoraB.lib -v
