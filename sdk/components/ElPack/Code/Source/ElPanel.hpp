@@ -121,7 +121,7 @@ protected:
 	bool FUseXPThemes;
 	bool FPressed;
 	bool FIntPaint;
-	Elstrutils::TElFString FCaption;
+	WideString FCaption;
 	System::Byte FAlphaLevel;
 	bool FTransparentXPThemes;
 	bool FSizeGrip;
@@ -171,7 +171,7 @@ protected:
 	virtual void __fastcall Paint();
 	virtual void __fastcall TriggerMoveEvent();
 	virtual void __fastcall TriggerPaintEvent();
-	virtual void __fastcall SetCaption(Elstrutils::TElFString newValue);
+	virtual void __fastcall SetCaption(WideString newValue);
 	virtual void __fastcall CreateParams(Vcl::Controls::TCreateParams &Params);
 	virtual void __fastcall WndProc(Winapi::Messages::TMessage &Message);
 	HIDESBASE MESSAGE void __fastcall WMSetFocus(Winapi::Messages::TMessage &Message);
@@ -181,7 +181,7 @@ protected:
 	virtual void __fastcall Notification(System::Classes::TComponent* AComponent, System::Classes::TOperation Operation);
 	virtual void __fastcall DoMouseEnter();
 	virtual void __fastcall DoMouseLeave();
-	virtual Elstrutils::TElFString __fastcall GetCaption();
+	virtual WideString __fastcall GetCaption();
 	void __fastcall SetAlphaLevel(System::Byte Value);
 	virtual System::WideString __fastcall GetThemedClassName();
 	virtual void __fastcall SetUseXPThemes(const bool Value);
@@ -207,7 +207,7 @@ protected:
 	__property bool Resizable = {read=FResizable, write=SetResizable, default=0};
 	__property bool Movable = {read=FMovable, write=SetMovable, default=0};
 	__property bool Transparent = {read=FTransparent, write=SetTransparent, default=0};
-	__property Elstrutils::TElFString Caption = {read=GetCaption, write=SetCaption};
+	__property WideString Caption = {read=GetCaption, write=SetCaption};
 	__property System::Uitypes::TColor GradientStartColor = {read=FGradientStartColor, write=SetGradientStartColor, default=0};
 	__property System::Uitypes::TColor GradientEndColor = {read=FGradientEndColor, write=SetGradientEndColor, default=0};
 	__property int GradientSteps = {read=FGradientSteps, write=SetGradientSteps, default=16};

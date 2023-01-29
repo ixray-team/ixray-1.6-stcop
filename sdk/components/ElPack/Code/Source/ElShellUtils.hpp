@@ -33,57 +33,6 @@
 //-- user supplied -----------------------------------------------------------
 typedef UNALIGNED _ITEMIDLIST * LPITEMIDLIST;
 typedef const UNALIGNED _ITEMIDLIST * LPCITEMIDLIST;
-typedef struct _STRRET
-{
-    UINT uType; // One of the STRRET_* values
-    union
-    {
-        LPWSTR          pOleStr;        // must be freed by caller of GetDisplayNameOf
-        LPSTR           pStr;           // NOT USED
-        UINT            uOffset;        // Offset into SHITEMID
-        char            cStr[MAX_PATH]; // Buffer to fill in (ANSI)
-    } DUMMYUNIONNAME;
-} STRRET, *LPSTRRET;
-typedef struct {
-    GUID fmtid;
-    DWORD pid;
-} SHCOLUMNID, *LPSHCOLUMNID;
-typedef const SHCOLUMNID* LPCSHCOLUMNID;
-typedef SHCOLUMNID *PShColumnID;
-typedef struct _SHELLDETAILS
-{
-    int     fmt;            // LVCFMT_* value (header only)
-    int     cxChar;         // Number of "average" characters (header only)
-    STRRET  str;            // String information
-} SHELLDETAILS, *LPSHELLDETAILS;
-typedef _SHELLDETAILS *PShellDetails;
-typedef _SHELLDETAILS  TShellDetails;
-DECLARE_INTERFACE_(IShellFolder, IUnknown)
-{
-    // *** IUnknown methods ***
-    STDMETHOD(QueryInterface) (THIS_ REFIID riid, void **ppv) PURE;
-    STDMETHOD_(ULONG,AddRef) (THIS)  PURE;
-    STDMETHOD_(ULONG,Release) (THIS) PURE;
-
-    // *** IShellFolder methods ***
-    STDMETHOD(ParseDisplayName)(THIS_ HWND hwnd, LPBC pbc, LPOLESTR pszDisplayName,
-                                ULONG *pchEaten, LPITEMIDLIST *ppidl, ULONG *pdwAttributes) PURE;
-
-    STDMETHOD(EnumObjects)(THIS_ HWND hwnd, DWORD grfFlags, IEnumIDList **ppenumIDList) PURE;
-
-    STDMETHOD(BindToObject)(THIS_ LPCITEMIDLIST pidl, LPBC pbc, REFIID riid, void **ppv) PURE;
-    STDMETHOD(BindToStorage)(THIS_ LPCITEMIDLIST pidl, LPBC pbc, REFIID riid, void **ppv) PURE;
-    STDMETHOD(CompareIDs)(THIS_ LPARAM lParam, LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2) PURE;
-    STDMETHOD(CreateViewObject)(THIS_ HWND hwndOwner, REFIID riid, void **ppv) PURE;
-    STDMETHOD(GetAttributesOf)(THIS_ UINT cidl, LPCITEMIDLIST * apidl, ULONG * rgfInOut) PURE;
-    STDMETHOD(GetUIObjectOf)(THIS_ HWND hwndOwner, UINT cidl, LPCITEMIDLIST * apidl,
-                             REFIID riid, UINT * prgfInOut, void **ppv) PURE;
-    STDMETHOD(GetDisplayNameOf)(THIS_ LPCITEMIDLIST pidl, DWORD uFlags, LPSTRRET lpName) PURE;
-    STDMETHOD(SetNameOf)(THIS_ HWND hwnd, LPCITEMIDLIST pidl, LPCOLESTR pszName,
-                         DWORD uFlags, LPITEMIDLIST *ppidlOut) PURE;
-};
-typedef IShellFolder * LPSHELLFOLDER;
-DECLARE_DINTERFACE_TYPE(IEnumExtraSearch);
 
 namespace Elshellutils
 {

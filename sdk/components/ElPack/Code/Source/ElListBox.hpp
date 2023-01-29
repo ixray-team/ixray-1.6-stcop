@@ -264,7 +264,7 @@ protected:
 	HIDESBASE MESSAGE void __fastcall CMHintShow(Winapi::Messages::TMessage &Message);
 	void __fastcall SetHint(System::WideString Value);
 	void __fastcall ItemsChange(System::TObject* Sender);
-	virtual void __fastcall DoDrawText(Vcl::Graphics::TCanvas* ACanvas, const Elstrutils::TElFString ACaption, System::Types::TRect &Rect, int Flags);
+	virtual void __fastcall DoDrawText(Vcl::Graphics::TCanvas* ACanvas, const WideString ACaption, System::Types::TRect &Rect, int Flags);
 	virtual void __fastcall MeasureItem(int Index, int &Height);
 	void __fastcall SetUseSelectedFont(bool Value);
 	void __fastcall SetSelectedFontColor(System::Uitypes::TColor Value);
