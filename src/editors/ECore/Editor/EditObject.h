@@ -500,7 +500,10 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual shared_str	_BCL			getDebugName		() 															{return m_ModifName;}
 #endif
 private:
-   	virtual	IKinematics*	 	_BCL	ObjectKinematics		()				 										{ return this;}
+   	virtual	IKinematics*	 	_BCL	ObjectKinematics		() const				 										{
+   		IKinematics* res = (IKinematics*)this;
+   		return res;
+   	}
 
 };
 //----------------------------------------------------

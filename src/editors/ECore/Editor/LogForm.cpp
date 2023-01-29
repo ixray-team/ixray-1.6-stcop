@@ -55,7 +55,8 @@ void __fastcall TfrmLog::AddMessage(TMsgDlgType mt, const AnsiString& msg)
         if (msg[i]=='\n') M+=" ";
         else M+=msg[i];
     }
-	form->lbLog->Items->AddObject(M,(TObject*)mt);
+    TMsgDlgType *_mt = new TMsgDlgType(mt);
+	form->lbLog->Items->AddObject(M, (TObject*) _mt);
     form->lbLog->ItemIndex = form->lbLog->Items->Count-1;
     if ((mt==mtError)&&!form->Visible) form->Show();
 }
@@ -73,7 +74,8 @@ void __fastcall TfrmLog::lbLogDrawItem(TWinControl *Control, int Index,
 	TCanvas *pCanvas = lb->Canvas;
     if (!State.Contains(odSelected)){
 		pCanvas->Brush->Color 	= TColor(MSG_DEF);
-	    TMsgDlgType mt 			= *((TMsgDlgType*)lb->Items->Objects[Index]);
+		TObject* obj = lb->Items->Objects[Index];
+	    TMsgDlgType mt 			= *((TMsgDlgType*) obj);
 	    switch(mt){
 	    case mtError: 			pCanvas->Brush->Color=TColor(MSG_ERROR);break;
 	    case mtInformation:     pCanvas->Brush->Color=TColor(MSG_INFO); break;

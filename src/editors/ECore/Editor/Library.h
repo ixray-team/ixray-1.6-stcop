@@ -7,6 +7,9 @@
 
 #include "pure.h"
 #include "../xrEProps/FolderLib.h"              
+
+#include "../stdafx.h"
+
 //----------------------------------------------------
 class CEditableObject;
 

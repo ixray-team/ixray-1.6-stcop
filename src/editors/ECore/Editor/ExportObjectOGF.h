@@ -145,6 +145,24 @@ class ECORE_API CExportObjectOGF
 		void 			MakeProgressive	();
         				SSplit			(CSurface* surf, const Fbox& bb);
         				~SSplit			();
+
+        SSplit(SSplit&& ssplit) {
+            this->apx_box = ssplit.apx_box;
+            this->m_Parts = ssplit.m_Parts;
+            this->m_CurrentPart = ssplit.m_CurrentPart;
+            this->m_Box = ssplit.m_Box;
+            this->m_Surf = ssplit.m_Surf;
+        }
+
+        const SSplit& operator =(SSplit&& ssplit) {
+            this->apx_box = ssplit.apx_box;
+            this->m_Parts = ssplit.m_Parts;
+            this->m_CurrentPart = ssplit.m_CurrentPart;
+            this->m_Box = ssplit.m_Box;
+            this->m_Surf = ssplit.m_Surf;
+            return *this;
+        }
+
 		void 			ComputeBounding	()
         {
             m_Box.invalidate();

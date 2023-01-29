@@ -5,9 +5,7 @@
 #include "ui_main.h"
 #include "../../xrServerEntities/PropertiesListHelper.h"
 #include "ParticleEffectActions.h"
-
 using namespace PAPI;
-
 PDomain::PDomain(EType et, BOOL ra, u32 color, PDomainEnum t,	
 										float inA0,	float inA1,	float inA2,	
 								   		float inA3,	float inA4,	float inA5,
@@ -27,7 +25,6 @@ PDomain::PDomain(EType et, BOOL ra, u32 color, PDomainEnum t,
 	f[7] = inA7;
 	f[8] = inA8;
 }
-
 PDomain::PDomain(const PDomain& inDomain)
 {
 	e_type 	= inDomain.e_type;
@@ -48,7 +45,6 @@ PDomain::PDomain(const PDomain& inDomain)
 PDomain::~PDomain()
 {
 }
-
 void PDomain::Load(IReader& F)
 {
 	type		= PDomainEnum(F.r_u32());
@@ -98,7 +94,6 @@ void	PDomain::set(PAPI::PDomainEnum t, 		float inA0, float inA1, float inA2,
 	f[8]	= inA8;
 }
 */
-
 //--------------------------------------------------------------------
 void 	PDomain::Render		(u32 clr, const Fmatrix& parent)
 {
@@ -166,7 +161,6 @@ void 	PDomain::Render		(u32 clr, const Fmatrix& parent)
     break;
    }
 }
-
 xr_token					domain_token	[ ]={
 	{ "Point",				PDPoint		},
 	{ "Line",			   	PDLine		},
@@ -380,7 +374,6 @@ void 	PDomain::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
     break;
     }
 }
-
 //--------------------------------------------------------------------
 /*
 void	PDomain::MoveXYZ(float x, float y, float z)
@@ -426,7 +419,6 @@ void	PDomain::MoveXYZ(float x, float y, float z)
 	}
 	
 }
-
 //----------------------------------------------------------
 void	PDomain::RotateXYZ	(float x, float y, float z)
 {
@@ -546,7 +538,6 @@ void	PDomain::ScaleXYZ	(float x, float y, float z)
 			break;
 	}
 }
-
 //----------------------------------------------------------
 MVertex&	PDomain::GetCenter()
 {

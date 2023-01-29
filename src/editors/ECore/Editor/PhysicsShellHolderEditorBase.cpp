@@ -59,6 +59,17 @@ void  CPhysicsShellHolderEditorBase::UpdateObjectXform(Fmatrix &obj_xform)
     }
     obj_xform.set(m_object_xform);
 }
+
+void  CPhysicsShellHolderEditorBase::UpdateObjectXform(Fmatrix &obj_xform) const {
+    Fmatrix _m_object = m_object_xform;
+    if (m_physics_shell) {
+        IKinematics* K = ObjectKinematics();
+        VERIFY(K);
+        m_physics_shell->InterpolateGlobalTransform(&_m_object);
+    }
+    obj_xform.set(_m_object);
+}
+
  void			CPhysicsShellHolderEditorBase::ApplyDragForce		( const Fvector &force )
  {
  	VERIFY( m_physics_shell );

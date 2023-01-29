@@ -9,6 +9,7 @@ public:
 	void								CreatePhysicsShell	( Fmatrix*	obj_xform );
     void								DeletePhysicsShell	();
     void								UpdateObjectXform	( Fmatrix &obj_xform );
+	void								UpdateObjectXform	( Fmatrix &obj_xform ) const;
     void								ApplyDragForce		( const Fvector &force );
 protected:
 	CPhysicsShellHolderEditorBase(): m_physics_shell(0),m_object_xform(Fidentity){}
