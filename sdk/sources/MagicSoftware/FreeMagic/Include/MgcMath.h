@@ -110,7 +110,7 @@ public:
 
     // common constants
     static const Real MAX_REAL;
-    static const Real PI;
+    static const Real _PI;
     static const Real TWO_PI;
     static const Real HALF_PI;
     static const Real INV_TWO_PI;
