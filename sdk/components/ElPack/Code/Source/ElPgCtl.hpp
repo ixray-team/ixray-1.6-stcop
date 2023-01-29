@@ -99,7 +99,7 @@ protected:
 	TElPageControl* FPageControl;
 	int FImageIndex;
 	bool FTabVisible;
-	Elstrutils::TElFString FCaption;
+	WideString FCaption;
 	bool FTabEnabled;
 	Vcl::Menus::TPopupMenu* FTabMenu;
 	System::WideString FHint;
@@ -110,7 +110,7 @@ protected:
 	void __fastcall SetPageControl(TElPageControl* Value);
 	void __fastcall SetImageIndex(int Value);
 	void __fastcall SetTabVisible(bool Value);
-	void __fastcall SetCaption(Elstrutils::TElFString Value);
+	void __fastcall SetCaption(WideString Value);
 	virtual void __fastcall Paint();
 	int __fastcall GetTabIndex();
 	HIDESBASE MESSAGE void __fastcall WMEraseBkGnd(Winapi::Messages::TWMEraseBkgnd &Msg);
@@ -144,7 +144,7 @@ __published:
 	__property TElPageControl* PageControl = {read=FPageControl, write=SetPageControl};
 	__property int ImageIndex = {read=FImageIndex, write=SetImageIndex, default=-1};
 	__property bool TabVisible = {read=FTabVisible, write=SetTabVisible, default=1};
-	__property Elstrutils::TElFString Caption = {read=FCaption, write=SetCaption};
+	__property WideString Caption = {read=FCaption, write=SetCaption};
 	__property int PageIndex = {read=GetPageIndex, write=SetPageIndex, stored=false, nodefault};
 	__property bool TabEnabled = {read=FTabEnabled, write=SetTabEnabled, default=1};
 	__property Vcl::Menus::TPopupMenu* TabMenu = {read=FTabMenu, write=SetTabMenu};
@@ -404,7 +404,6 @@ public:
 	__property System::Uitypes::TColor TabBkColorNetStyle = {read=FTabBkColorNetStyle, write=SetTabBkColorNetStyle, nodefault};
 	
 __published:
-	__property Elsndmap::TElSoundName ActivateSound = {read=FActivateSound, write=FActivateSound};
 	__property System::Uitypes::TColor ActiveTabColor = {read=FActiveTabColor, write=SetActiveTabColor, default=-16777201};
 	__property int BorderWidth = {read=FBorderWidth, write=SetBorderWidth, nodefault};
 	__property System::UnicodeString Caption = {read=FDummyCaption};

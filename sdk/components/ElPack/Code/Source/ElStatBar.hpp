@@ -53,11 +53,11 @@ class PASCALIMPLEMENTATION TElStatusPanel : public System::Classes::TCollectionI
 	typedef System::Classes::TCollectionItem inherited;
 	
 private:
-	WideString FHint;
+	Elstrutils::TElFString FHint;
 	System::Classes::TAlignment FAlignment;
 	TElStatusPanelBevel FBevel;
 	TElStatusPanelStyle FStyle;
-	WideString FText;
+	Elstrutils::TElFString FText;
 	int FWidth;
 	Vcl::Controls::TControl* FControl;
 	Vcl::Controls::TWinControl* FOldParent;
@@ -75,7 +75,7 @@ private:
 	void __fastcall SetAlignment(System::Classes::TAlignment newValue);
 	void __fastcall SetBevel(TElStatusPanelBevel newValue);
 	void __fastcall SetStyle(TElStatusPanelStyle newValue);
-	void __fastcall SetText(WideString newValue);
+	void __fastcall SetText(Elstrutils::TElFString newValue);
 	void __fastcall SetWidth(int newValue);
 	void __fastcall SetControl(Vcl::Controls::TControl* newValue);
 	int __fastcall GetLeft();
@@ -105,11 +105,11 @@ __published:
 	__property System::Classes::TAlignment Alignment = {read=FAlignment, write=SetAlignment, default=0};
 	__property TElStatusPanelBevel Bevel = {read=FBevel, write=SetBevel, default=0};
 	__property TElStatusPanelStyle Style = {read=FStyle, write=SetStyle, default=0};
-	__property WideString Text = {read=FText, write=SetText};
+	__property Elstrutils::TElFString Text = {read=FText, write=SetText};
 	__property int Width = {read=FWidth, write=SetWidth, default=100};
 	__property Vcl::Controls::TControl* Control = {read=FControl, write=SetControl};
 	__property bool Visible = {read=FVisible, write=SetVisible, default=1};
-	__property WideString Hint = {read=FHint, write=FHint};
+	__property Elstrutils::TElFString Hint = {read=FHint, write=FHint};
 	__property bool IsHTML = {read=FIsHTML, write=SetIsHTML, nodefault};
 };
 
@@ -158,7 +158,7 @@ private:
 	TElStatusPanel* FHintPanel;
 	TElStatusPanel* FPressedPanel;
 	TElStatusPanel* FResizePanel;
-	WideString FSimpleText;
+	Elstrutils::TElFString FSimpleText;
 	bool FSimplePanel;
 	bool FSizeGrip;
 	TElPanelEvent FOnPanelResize;
@@ -177,7 +177,7 @@ private:
 	Htmlrender::TElHTMLImageNeededEvent FOnImageNeeded;
 	System::WideString FHint;
 	void __fastcall SetPanels(TElStatusPanels* Value);
-	void __fastcall SetSimpleText(WideString newValue);
+	void __fastcall SetSimpleText(Elstrutils::TElFString newValue);
 	void __fastcall SetSimplePanel(bool newValue);
 	void __fastcall SetSizeGrip(bool newValue);
 	HIDESBASE MESSAGE void __fastcall WMERASEBKGND(Winapi::Messages::TWMEraseBkgnd &Msg);
@@ -205,7 +205,7 @@ protected:
 	virtual void __fastcall DrawPanel(TElStatusPanel* Panel);
 	virtual void __fastcall UpdatePanels();
 	virtual void __fastcall Notification(System::Classes::TComponent* AComponent, System::Classes::TOperation Operation);
-	virtual void __fastcall TriggerImageNeededEvent(System::TObject* Sender, WideString Src, Vcl::Graphics::TBitmap* &Image);
+	virtual void __fastcall TriggerImageNeededEvent(System::TObject* Sender, Elstrutils::TElFString Src, Vcl::Graphics::TBitmap* &Image);
 	void __fastcall IntLButtonDown(int X, int Y);
 	void __fastcall IntLButtonUp(int X, int Y);
 	void __fastcall IntMouseMove(int X, int Y);
@@ -225,7 +225,7 @@ public:
 	
 __published:
 	__property TElStatusPanels* Panels = {read=FPanels, write=SetPanels};
-	__property WideString SimpleText = {read=FSimpleText, write=SetSimpleText};
+	__property Elstrutils::TElFString SimpleText = {read=FSimpleText, write=SetSimpleText};
 	__property bool SimplePanel = {read=FSimplePanel, write=SetSimplePanel, default=1};
 	__property bool SimpleTextIsHTML = {read=FSimpleTextIsHTML, write=SetSimpleTextIsHTML, nodefault};
 	__property bool SizeGrip = {read=FSizeGrip, write=SetSizeGrip, default=1};

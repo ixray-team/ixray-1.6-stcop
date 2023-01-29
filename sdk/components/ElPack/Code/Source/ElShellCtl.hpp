@@ -229,7 +229,7 @@ protected:
 	void __fastcall SetDefaultColumns(bool Value);
 	void __fastcall AddDefaultColumns();
 	int __fastcall DeleteDefaultColumns();
-	virtual void __fastcall TriggerVirtualTextNeeded(Eltree::TElTreeItem* Item, int SectionIndex, Elstrutils::TElFString &Text);
+	virtual void __fastcall TriggerVirtualTextNeeded(Eltree::TElTreeItem* Item, int SectionIndex, WideString &Text);
 	virtual void __fastcall TriggerVirtualValueNeeded(Eltree::TElTreeItem* Item, int SectionIndex, int VarType, System::Variant &Value);
 	virtual void __fastcall TriggerSortBegin();
 	virtual void __fastcall TriggerTryEditEvent(Eltree::TElTreeItem* Item, int SectionIndex, Elheader::TElFieldType &CellType, bool &CanEdit);
@@ -685,7 +685,7 @@ protected:
 	int __fastcall DeleteDefaultColumns();
 	virtual void __fastcall TriggerSortBegin();
 	virtual void __fastcall TriggerTryEditEvent(Eltree::TElTreeItem* Item, int SectionIndex, Elheader::TElFieldType &CellType, bool &CanEdit);
-	virtual void __fastcall TriggerVirtualTextNeeded(Eltree::TElTreeItem* Item, int SectionIndex, Elstrutils::TElFString &Text);
+	virtual void __fastcall TriggerVirtualTextNeeded(Eltree::TElTreeItem* Item, int SectionIndex, WideString &Text);
 	virtual void __fastcall TriggerVirtualValueNeeded(Eltree::TElTreeItem* Item, int SectionIndex, int VarType, System::Variant &Value);
 	void __fastcall SetFileSystemOnly(bool Value);
 	TElShellListItem* __fastcall FindItemByPIDL(Winapi::Shlobj::PItemIDList APIDL);

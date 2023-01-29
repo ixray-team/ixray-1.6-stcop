@@ -126,8 +126,8 @@ protected:
 	virtual void __fastcall SetLinkColor(System::Uitypes::TColor newValue);
 	virtual void __fastcall SetLinkStyle(System::Uitypes::TFontStyles newValue);
 	void __fastcall DoLinkPopup(const System::Types::TPoint &MousePos);
-	void __fastcall TriggerImageNeededEvent(System::TObject* Sender, Elstrutils::TElFString Src, Vcl::Graphics::TBitmap* &Image);
-	virtual void __fastcall TriggerLinkClickEvent(Elstrutils::TElFString HRef);
+	void __fastcall TriggerImageNeededEvent(System::TObject* Sender, WideString Src, Vcl::Graphics::TBitmap* &Image);
+	virtual void __fastcall TriggerLinkClickEvent(WideString HRef);
 	__property Elsndmap::TElSoundName CheckSound = {read=FCheckSound, write=FCheckSound};
 	__property Elsndmap::TElSoundMap* SoundMap = {read=FSoundMap, write=setSoundMap};
 	__property System::Classes::TLeftRight Alignment = {read=FAlignment, write=setAlignment, default=1};
@@ -184,7 +184,6 @@ __published:
 	__property AutoSize = {default=1};
 	__property UseCustomGlyphs = {default=0};
 	__property Checked = {default=0};
-	__property CheckSound = {default=0};
 	__property SoundMap;
 	__property Glyph;
 	__property ImageForm;
@@ -275,7 +274,6 @@ __published:
 	__property OnImageNeeded;
 	__property OnLinkClick;
 	__property UseCustomGlyphs = {default=0};
-	__property CheckSound = {default=0};
 	__property SoundMap;
 	__property Alignment = {default=1};
 	__property Glyph;

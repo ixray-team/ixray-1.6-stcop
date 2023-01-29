@@ -66,8 +66,6 @@ typedef TThemeErrorContext *PThemeErrorContext;
 
 typedef NativeUInt HTheme;
 
-typedef NativeUInt HIMAGELIST;
-
 typedef bool __stdcall (*IsThemeActiveProc)(void);
 
 typedef HRESULT __stdcall (*EnableThemingProc)(bool fEnable);
