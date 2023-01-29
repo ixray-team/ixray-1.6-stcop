@@ -42,7 +42,7 @@ void CLight::SFuzzyData::SaveLTX(CInifile& ini, LPCSTR sect_name)
 
 void CLight::SFuzzyData::LoadLTX(CInifile& ini, LPCSTR sect_name)
 {
-    m_ShapeType		= ini.r_u8			(sect_name, "fuzzy_shape_type");
+    m_ShapeType		= (EShapeType) ini.r_u8			(sect_name, "fuzzy_shape_type");
     m_SphereRadius	= ini.r_float		(sect_name, "fuzzy_sphere_radius");
     m_BoxDimension	= ini.r_fvector3	(sect_name,  "fuzzy_box_dim");
     m_PointCount	= ini.r_u32			(sect_name,  "fuzzy_point_count");

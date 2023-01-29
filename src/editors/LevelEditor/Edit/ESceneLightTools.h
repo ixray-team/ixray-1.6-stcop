@@ -4,6 +4,8 @@
 #include "ESceneCustomOTools.H"
 #include "xr_efflensflare.h"
 
+class CLight;
+
 class CEditFlare: public CLensFlare{
 public:
 					CEditFlare();
@@ -77,7 +79,7 @@ public:
     AnsiString			GenLightControlName		();
     xr_rtoken*   		FindLightControl		(int id);
     RTokenVecIt	   		FindLightControlIt		(LPCSTR name);
-    xr_rtoken*   		FindLightControl		(LPCSTR name){RTokenVecIt it = FindLightControlIt(name); return it!=lcontrols.end()?it:0;}
+    xr_rtoken*   		FindLightControl		(LPCSTR name){ RTokenVecIt it = FindLightControlIt(name); return it != lcontrols.end() ? &(*it) : nullptr; }
     void				AppendLightControl		(LPCSTR name, u32* idx=0);
     void				RemoveLightControl		(LPCSTR name);
 

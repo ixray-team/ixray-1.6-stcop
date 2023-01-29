@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-__fastcall TUI_ControlGroupAdd::TUI_ControlGroupAdd(int st, int act, ESceneToolBase* parent):TUI_CustomControl(st,act,parent)
+TUI_ControlGroupAdd::TUI_ControlGroupAdd(int st, int act, ESceneToolBase* parent):TUI_CustomControl(st,act,parent)
 {
 }
 
@@ -30,15 +30,15 @@ bool __fastcall TUI_ControlGroupAdd::AfterAppendCallback(TShiftState Shift, CCus
     }
     return result;
 }
-bool __fastcall TUI_ControlGroupAdd::Start(TShiftState Shift)
+bool TUI_ControlGroupAdd::Start(TShiftState Shift)
 {
 	DefaultAddObject	(Shift,0,AfterAppendCallback);
     return false;
 }
-void __fastcall TUI_ControlGroupAdd::Move(TShiftState _Shift)
+void TUI_ControlGroupAdd::Move(TShiftState _Shift)
 {
 }
-bool __fastcall TUI_ControlGroupAdd::End(TShiftState _Shift)
+bool TUI_ControlGroupAdd::End(TShiftState _Shift)
 {
     return true;
 }

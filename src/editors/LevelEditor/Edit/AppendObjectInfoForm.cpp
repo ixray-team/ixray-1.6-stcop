@@ -6,7 +6,8 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "AppendObjectInfoForm.dfm"
 
 TfrmAppendObjectInfo* 		g_frmConflictLoadObject = NULL;
 //---------------------------------------------------------------------------

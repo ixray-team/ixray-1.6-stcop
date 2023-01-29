@@ -506,7 +506,8 @@ bool EDetailManager::Export(LPCSTR path)
                     bRes=false;
                 }else{
                     LPCSTR tex_name = ((EDetail*)(*it))->GetTextureName();
-                    for (u32 t_idx=0; t_idx<textures.size(); t_idx++) 
+                    u32 t_idx = 0;
+                    for (; t_idx<textures.size(); t_idx++) 
                         if (textures[t_idx]==tex_name) break;
                     VERIFY(t_idx<textures.size());
                     t_idx = remap[t_idx];
@@ -523,7 +524,7 @@ bool EDetailManager::Export(LPCSTR path)
     // slots
     if (bRes){
     	xr_vector<DetailSlot> dt_slots(slot_cnt); dt_slots.assign(dtSlots,dtSlots+slot_cnt);
-        for (slot_idx=0; slot_idx<slot_cnt; slot_idx++){
+        for (int slot_idx=0; slot_idx<slot_cnt; slot_idx++){
             DetailSlot& it 	= dt_slots[slot_idx];
             // zero colors need lighting
 	        it.c_dir		= 0;
@@ -537,7 +538,7 @@ bool EDetailManager::Export(LPCSTR path)
             }
         }
 		F.open_chunk	(DETMGR_CHUNK_SLOTS);
-		F.w				(dt_slots.begin(),dtH.size_x*dtH.size_z*sizeof(DetailSlot));
+		F.w				(&*dt_slots.begin(),dtH.size_x*dtH.size_z*sizeof(DetailSlot));
 	    F.close_chunk	();
         pb->Inc();
 

@@ -124,7 +124,7 @@ bool ESoundSource::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
 	inherited::LoadLTX	(ini, sect_name);
 
-    m_Type				= ini.r_u32			(sect_name, "snd_type");
+    m_Type				= (ESoundType) ini.r_u32			(sect_name, "snd_type");
 
     m_WAVName			= ini.r_string		(sect_name, "snd_name");
 

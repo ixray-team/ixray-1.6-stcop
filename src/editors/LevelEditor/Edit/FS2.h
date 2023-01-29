@@ -3,13 +3,13 @@
 
 #pragma once
 
-class ENGINE_API IBasicStream {
+class IBasicStream {
 private:
 	std::stack<u32>	chunk_pos;
 	std::stack<u16>	subchunk_pos;
 	void		revbytes		( void *bp, int elsize, int elcount )
 	{
-		register unsigned char *p, *q;
+		unsigned char *p, *q;
 
 		p = ( unsigned char * ) bp;
 
@@ -107,7 +107,7 @@ public:
 	}
 };
 
-class ENGINE_API CMemoryStream : public IBasicStream
+class CMemoryStream : public IBasicStream
 {
 	u8*		data;
 	u32		position;
@@ -149,7 +149,7 @@ public:
 
 #include "lwchunks.h"
 
-class ENGINE_API CLWMemoryStream: public CMemoryStream{
+class CLWMemoryStream: public CMemoryStream{
 	IC void make_ord( int nbloks, int index, unsigned char *ord )
 	{
 		int i, d;

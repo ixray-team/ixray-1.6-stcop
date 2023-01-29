@@ -29,7 +29,7 @@
 //.    if (m_Cursor->GetVisible()) RedrawScene();
 #endif
 
-CLevelMain*&	LUI=(CLevelMain*)UI;
+CLevelMain*&	LUI=(CLevelMain*&)UI;
 
 CLevelMain::CLevelMain()
 {
@@ -49,7 +49,7 @@ CLevelMain::~CLevelMain()
 //------------------------------------------------------------------------------
 // Tools commands
 //------------------------------------------------------------------------------
-CCommandVar CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 {
 	if (Scene->GetTool(p1)->IsEnabled())
     {
@@ -60,7 +60,7 @@ CCommandVar CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
     	return 		FALSE;
     }
 }
-CCommandVar CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
 {
     if (LUI->GetEState()==esEditScene) ShowObjectList();
     return TRUE;
@@ -69,7 +69,7 @@ CCommandVar CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
 //------------------------------------------------------------------------------
 // Main commands
 //------------------------------------------------------------------------------
-CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 {
     if (Scene->ObjCount()||(LUI->GetEState()!=esEditScene)){
         if (LUI->GetEState()==esEditLibrary)	TfrmEditLibrary::ShowEditor();
@@ -79,17 +79,17 @@ CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
     }
     return TRUE;
 }
-CCommandVar CommandLAnimEditor(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLAnimEditor(CCommandVar p1, CCommandVar p2)
 {
     TfrmEditLightAnim::ShowEditor();
     return TRUE;
 }
-CCommandVar CommandFileMenu(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandFileMenu(CCommandVar p1, CCommandVar p2)
 {
     FHelper.ShowPPMenu(fraLeftBar->pmSceneFile,0);
     return TRUE;
 }
-CCommandVar CLevelTool::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CLevelTool::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneToolBase* M 	= Scene->GetTool(p1);
     VERIFY					(M);
@@ -118,7 +118,7 @@ CCommandVar CLevelTool::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
     return res;
 }
 
-CCommandVar CLevelTool::CommandShowTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CLevelTool::CommandShowTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneToolBase* M 	= Scene->GetTool(p1);
     if(p2)
@@ -129,7 +129,7 @@ CCommandVar CLevelTool::CommandShowTarget(CCommandVar p1, CCommandVar p2)
     return TRUE;
 }
 
-CCommandVar CLevelTool::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CLevelTool::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneToolBase* M 		= Scene->GetTool(p1); VERIFY(M);
     BOOL res				= TRUE;
@@ -154,7 +154,7 @@ CCommandVar CLevelTool::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
     return res;
 }
 
-CCommandVar CLevelTool::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CLevelTool::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() )
     {
@@ -174,21 +174,21 @@ CCommandVar CLevelTool::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2
     }
     return 					FALSE;
 }
-CCommandVar CommandLoadLevelPart(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLoadLevelPart(CCommandVar p1, CCommandVar p2)
 {
     xr_string temp_fn	= LTools->m_LastFileName.c_str();
     if (!temp_fn.empty())
         return			Scene->LoadLevelPart(temp_fn.c_str(),p1);
     return				TRUE;
 }
-CCommandVar CommandUnloadLevelPart(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUnloadLevelPart(CCommandVar p1, CCommandVar p2)
 {
     xr_string temp_fn	= LTools->m_LastFileName.c_str();
     if (!temp_fn.empty())
         return			Scene->UnloadLevelPart(temp_fn.c_str(),p1);
     return				TRUE;
 }
-CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLoad(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() )
     {
@@ -253,14 +253,14 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
     }
     return TRUE;
 }
-CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
     string_path 	fn;
     strconcat(sizeof(fn),fn,Core.CompName,"_",Core.UserName,"_backup.level");
     FS.update_path	(fn,_maps_,fn);
     return 			ExecCommand(COMMAND_SAVE,xr_string(fn));
 }
-CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSave(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() )
     {
@@ -310,7 +310,7 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandClear(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (!Scene->IfModified()) return TRUE;
@@ -331,21 +331,21 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
         return					FALSE;
     }
 }
-CCommandVar CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
 {
     if (EPrefs->FirstRecentFile())
         return 					ExecCommand(COMMAND_LOAD,xr_string(EPrefs->FirstRecentFile()));
     return 						FALSE;
 }
 
-CCommandVar CommandClearDebugDraw(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandClearDebugDraw(CCommandVar p1, CCommandVar p2)
 {
     Tools->ClearDebugDraw		();
     UI->RedrawScene				();
     return 						TRUE;
 }
 #include "SpawnPoint.h"
-CCommandVar CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
 {
 	if(g_clip_maker==NULL)
        g_clip_maker = TClipMaker::CreateForm();
@@ -380,7 +380,7 @@ CCommandVar CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
     return 							TRUE;
 }
 
-CCommandVar CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
 {
     xr_string fn;
     if(EFS.GetOpenName("$logs$", fn, false, NULL, 0)){
@@ -389,7 +389,7 @@ CCommandVar CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
     UI->RedrawScene		();
     return TRUE;
 }
-CCommandVar CommandExportCompilerError(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandExportCompilerError(CCommandVar p1, CCommandVar p2)
 {
     xr_string fn;
     if(EFS.GetSaveName("$logs$", fn, NULL, 0)){
@@ -397,7 +397,7 @@ CCommandVar CommandExportCompilerError(CCommandVar p1, CCommandVar p2)
     }
     return TRUE;
 }
-CCommandVar CommandValidateScene(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandValidateScene(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->Validate	(true,true,true,true,true,true);
@@ -407,7 +407,7 @@ CCommandVar CommandValidateScene(CCommandVar p1, CCommandVar p2)
 	    return 			FALSE;
     }
 }
-CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
 {
     if ( !Scene->locked() ){
         Lib.CleanLibrary();
@@ -418,13 +418,13 @@ CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandReloadObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandReloadObjects(CCommandVar p1, CCommandVar p2)
 {
     Lib.ReloadObjects	();
     return 				TRUE;
 }
 
-CCommandVar CommandCut(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandCut(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->CutSelection(LTools->CurrentClassID());
@@ -437,7 +437,7 @@ CCommandVar CommandCut(CCommandVar p1, CCommandVar p2)
         return 			FALSE;
     }
 }
-CCommandVar CommandCopy(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandCopy(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->CopySelection(LTools->CurrentClassID());
@@ -450,7 +450,7 @@ CCommandVar CommandCopy(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandPaste(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandPaste(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->PasteSelection();
@@ -463,7 +463,7 @@ CCommandVar CommandPaste(CCommandVar p1, CCommandVar p2)
 }
 
 #include "AppendObjectInfoForm.h"
-CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLoadSelection(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() )
     {
@@ -491,7 +491,7 @@ CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
     }
     return 				FALSE;
 }        
-CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         xr_string fn			= LTools->m_LastSelectionName;
@@ -510,7 +510,7 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
     return 						FALSE;
 }
 
-CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUndo(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if( !Scene->Undo() ) 	ELog.DlgMsg( mtInformation, "Undo buffer empty" );
@@ -525,7 +525,7 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
     return 						FALSE;
 }
 
-CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRedo(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if( !Scene->Redo() ) 	ELog.DlgMsg( mtInformation, "Redo buffer empty" );
@@ -540,7 +540,7 @@ CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
     return 						FALSE;
 }
 
-CCommandVar CommandClearSceneSummary(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandClearSceneSummary(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ClearSummaryInfo	();
@@ -550,7 +550,7 @@ CCommandVar CommandClearSceneSummary(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandCollectSceneSummary(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandCollectSceneSummary(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->CollectSummaryInfo();
@@ -560,7 +560,7 @@ CCommandVar CommandCollectSceneSummary(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandShowSceneSummary(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandShowSceneSummary(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ShowSummaryInfo();
@@ -570,7 +570,7 @@ CCommandVar CommandShowSceneSummary(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandExportSceneSummary(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandExportSceneSummary(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ExportSummaryInfo(xr_string(p1).c_str());
@@ -581,7 +581,7 @@ CCommandVar CommandExportSceneSummary(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandSceneHighlightTexture(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSceneHighlightTexture(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         LPCSTR new_val 		 	= 0;
@@ -595,7 +595,7 @@ CCommandVar CommandSceneHighlightTexture(CCommandVar p1, CCommandVar p2)
     return 						FALSE;
 }
 
-CCommandVar CommandOptions(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandOptions(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         ExecCommand				(COMMAND_SHOW_PROPERTIES, p1, p2);
@@ -606,7 +606,7 @@ CCommandVar CommandOptions(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandBuild(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to build level?"))
@@ -616,7 +616,7 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
-CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall  CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to export ai-map?"))
@@ -626,7 +626,7 @@ CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
-CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandMakeGame(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to export game?"))
@@ -636,7 +636,7 @@ CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
-CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to export details?"))
@@ -646,7 +646,7 @@ CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
-CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandMakeHOM(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to export HOM?"))
@@ -656,7 +656,7 @@ CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
-CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to export Sound Occlusion Model?"))
@@ -666,7 +666,7 @@ CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
-CCommandVar CommandInvertSelectionAll(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandInvertSelectionAll(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->InvertSelection	(LTools->CurrentClassID());
@@ -677,7 +677,7 @@ CCommandVar CommandInvertSelectionAll(CCommandVar p1, CCommandVar p2)
     return 						FALSE;
 }
 
-CCommandVar CommandSelectAll(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSelectAll(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->SelectObjects	(true,LTools->CurrentClassID());
@@ -688,7 +688,7 @@ CCommandVar CommandSelectAll(CCommandVar p1, CCommandVar p2)
     return 						FALSE;
 }
 
-CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandDeselectAll(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->SelectObjects	(false,LTools->CurrentClassID());
@@ -699,7 +699,7 @@ CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->RemoveSelection	( LTools->CurrentClassID() );
@@ -711,7 +711,7 @@ CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
     }
 }
 
-CCommandVar CommandHideUnsel(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandHideUnsel(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ShowObjects		( false, LTools->CurrentClassID(), true, false );
@@ -723,7 +723,7 @@ CCommandVar CommandHideUnsel(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandHideSel(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandHideSel(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ShowObjects		( bool(p1), LTools->CurrentClassID(), true, true );
@@ -735,7 +735,7 @@ CCommandVar CommandHideSel(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandHideAll(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandHideAll(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ShowObjects		( bool(p1), LTools->CurrentClassID(), false );
@@ -747,7 +747,7 @@ CCommandVar CommandHideAll(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandSetSnapObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSetSnapObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->SetSnapList		();
@@ -757,7 +757,7 @@ CCommandVar CommandSetSnapObjects(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandAddSelSnapObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandAddSelSnapObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->AddSelToSnapList	();
@@ -767,7 +767,7 @@ CCommandVar CommandAddSelSnapObjects(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandDelSelSnapObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandDelSelSnapObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->DelSelFromSnapList();
@@ -777,7 +777,7 @@ CCommandVar CommandDelSelSnapObjects(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandClearSnapObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandClearSnapObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->ClearSnapList	(true);
@@ -787,7 +787,7 @@ CCommandVar CommandClearSnapObjects(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandSelectSnapObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSelectSnapObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         Scene->SelectSnapList	();
@@ -797,7 +797,7 @@ CCommandVar CommandSelectSnapObjects(CCommandVar p1, CCommandVar p2)
 	    return 					FALSE;
     }
 }
-CCommandVar CommandRefreshSnapObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRefreshSnapObjects(CCommandVar p1, CCommandVar p2)
 {
     fraLeftBar->UpdateSnapList();
     return 						TRUE;
@@ -811,57 +811,57 @@ CCommandVar CommandRefreshSoundEnvs(CCommandVar p1, CCommandVar p2)
 }
 */
 
-CCommandVar CommandRefreshSoundEnvGeometry(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRefreshSoundEnvGeometry(CCommandVar p1, CCommandVar p2)
 {
     LSndLib->RefreshEnvGeometry();
     return 						TRUE;
 }
-CCommandVar CommandShowContextMenu(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandShowContextMenu(CCommandVar p1, CCommandVar p2)
 {
     LUI->ShowContextMenu		(p1);
     return 						TRUE;
 }
 //------        
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->RefreshBar		();
     fraLeftBar->RefreshBar		();
     fraBottomBar->RefreshBar	();
     return 						TRUE;
 }
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->RestoreFormPlacement();
     fraLeftBar->fsStorage->RestoreFormPlacement();
     fraBottomBar->fsStorage->RestoreFormPlacement();
     return 						TRUE;
 }
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->SaveFormPlacement();
     fraLeftBar->fsStorage->SaveFormPlacement();
     fraBottomBar->fsStorage->SaveFormPlacement();
     return 						TRUE;
 }
-CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     fraLeftBar->UpdateBar		();
     return 						TRUE;
 }
-CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
 {
     frmMain->UpdateCaption		();
     return 						TRUE;
 }
 //------
-CCommandVar CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
 {
     SndLib						= xr_new<CLevelSoundManager>();
     return 						TRUE;
 }
 
 extern BOOL ai_map_shown;
-CCommandVar CommandToggleAiMapVisibility(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandToggleAiMapVisibility(CCommandVar p1, CCommandVar p2)
 {
 	ai_map_shown 				= !ai_map_shown;
     return 						TRUE;
@@ -964,16 +964,16 @@ void CLevelMain::RegisterCommands()
 
 char* CLevelMain::GetCaption()
 {
-	return Tools->m_LastFileName.IsEmpty()?"noname":Tools->m_LastFileName.c_str();
+	return Tools->m_LastFileName.IsEmpty()? (char*) "noname":Tools->m_LastFileName.c_str();
 }
 
-bool __fastcall CLevelMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool CLevelMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall CLevelMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool CLevelMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }
@@ -1172,7 +1172,7 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
     if (depth<EDevice.m_Camera._Znear()) depth = EDevice.m_Camera._Zfar();
     else depth += EPrefs->bp_depth_tolerance;
 
-    for (i=0; i<4; i++){
+	for (int i=0; i<4; i++){
 	    EDevice.m_Camera.MouseRayFromPoint(st, d, pt[i]);
         p[i].mad(st,d,depth);
     }
@@ -1314,7 +1314,7 @@ void CLevelMain::restore_rt_flags(CCustomObject* CO)
     {
 		u32 fl = m_rt_object_props->r_u32(LTools->m_LastFileName.c_str(), CO->Name);
         CO->m_RT_Flags.set	(CCustomObject::flRT_Visible|CCustomObject::flRT_Selected|CCustomObject::flRT_SelectedLast, FALSE);
-        CO->m_RT_Flags.or	(fl);
+        CO->m_RT_Flags.or_	(fl);
     }
 }
 

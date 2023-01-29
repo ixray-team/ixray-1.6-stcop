@@ -38,7 +38,7 @@ struct SExportStreams{
 	SExportStreamItem	fog_vol;
 };
 
-class ECORE_API CCustomObject 
+class CCustomObject 
 {
 	ObjClassID		FClassID;
     ESceneCustomOTool* FParentTools;
@@ -103,7 +103,7 @@ public:
 	void __stdcall 	OnMotionKeyTimeChange	(PropValue* value);
 
     void __stdcall 	OnMotionCurrentFrameChange(PropValue* value); 
-    void __stdcall 	OnMotionCameraViewChange(PropValue* value); 
+    void __stdcall 	OnMotionCameraViewChange(PropValue* value);
 protected:
 	LPCSTR			GetName			() const {return *FName; }
 	void			SetName			(LPCSTR N){string256 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
@@ -112,10 +112,15 @@ protected:
     virtual const Fvector& GetRotation	()	const { return FRotation;	}
     virtual const Fvector& GetScale		()	const { return FScale; 		}
 
+	virtual Fvector& GetPositionRW	()	{ return FPosition; 	}
+	virtual Fvector& GetRotationRW	()	{ return FRotation;	}
+	virtual Fvector& GetScaleRW		()	{ return FScale; 		}
+
     virtual void 	SetPosition		(const Fvector& pos)	{ FPosition.set(pos);	UpdateTransform();}
 	virtual void 	SetRotation		(const Fvector& rot)	{ FRotation.set(rot);  VERIFY(_valid(FRotation)); UpdateTransform();}
     virtual void 	SetScale		(const Fvector& scale)	{ FScale.set(scale);	UpdateTransform();}
 
+public:
     void __stdcall 	OnNameChange		(PropValue* sender);
     void __stdcall 	OnChangeIngroupUnique(PropValue* sender);
     
@@ -222,13 +227,31 @@ public:
     IC const Fvector& _Rotation				(){return FRotation;}
     IC const Fvector& _Scale				(){return FScale;}
 
-    PropertyGP(GetPosition,SetPosition)		Fvector PPosition;
-    PropertyGP(GetRotation,SetRotation)		Fvector PRotation;
-    PropertyGP(GetScale,SetScale)			Fvector PScale;
+private:
+	ESceneCustomOTool* readParentTools() {
+		return (FParentTools);
+	}
 
-    PropertyGP(FParentTools,FParentTools)	ESceneCustomOTool* ParentTool;
-    PropertyGP(FClassID,FClassID)			ObjClassID 	ClassID;
-    PropertyGP(GetName,SetName) 			LPCSTR  	Name;
+	void writeParentTools(ESceneCustomOTool* newValue) {
+		FParentTools = newValue;
+	}
+
+	ObjClassID readClassID() {
+		return FClassID;
+	}
+
+	void writeClassID(ObjClassID nv) {
+		FClassID = nv;
+	}
+
+public:
+	__property ESceneCustomOTool* ParentTool = {read = readParentTools, write = writeParentTools};
+	__property LPCSTR Name = {read = GetName, write = SetName};
+	__property ObjClassID ClassID = {read = readClassID, write = writeClassID};
+	__property Fvector PPosition = {read = GetPosition, write = SetPosition};
+	__property Fvector PRotation = {read = GetRotation, write = SetRotation};
+	__property Fvector PScale = {read = GetScale, write = SetScale};
+
 public:
 	static void		SnapMove		(Fvector& pos, Fvector& rot, const Fmatrix& rotRP, const Fvector& amount);
 	static void		NormalAlign		(Fvector& rot, const Fvector& up, const Fvector& dir);

@@ -82,7 +82,7 @@ void CCustomObject::AnimationDrawPath()
         EDevice.SetShader		(EDevice.m_WireShader);
         RCache.set_xform_world	(Fidentity);
         if (!path_points.empty())
-        	DU_impl.DrawPrimitiveL		(D3DPT_LINESTRIP,path_points.size()-1,path_points.begin(),path_points.size(),clr,true,false);
+        	DU_impl.DrawPrimitiveL		(D3DPT_LINESTRIP,path_points.size()-1,&*path_points.begin(),path_points.size(),clr,true,false);
         CEnvelope* E 			= m_Motion->Envelope();
         for (KeyIt k_it=E->keys.begin(); k_it!=E->keys.end(); k_it++){
             m_Motion->_Evaluate	((*k_it)->time,T,r);

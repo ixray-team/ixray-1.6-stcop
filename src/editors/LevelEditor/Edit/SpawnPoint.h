@@ -46,7 +46,7 @@ public:
     public:
     	CSE_Motion*		source;
         CObjectAnimator*animator;
-        void 			OnChangeMotion	();
+        void __stdcall 			OnChangeMotion	();
         void 			PlayMotion		();
     public:
 						CLE_Motion		(CSE_Motion* src);
@@ -79,7 +79,7 @@ public:
         }
         void			Create			(LPCSTR entity_ref);
         void			Destroy			();
-        bool			Valid			(){return m_Data;}
+        bool			Valid			() const {return m_Data;}
 
         bool		    LoadStream		(IReader&);
         void		    SaveStream		(IWriter&);
@@ -94,7 +94,7 @@ public:
 		void    		OnFrame			();
     	void __stdcall	OnAnimControlClick		(ButtonValue* value, bool& bModif, bool& bSafe);  
         
-		virtual void get_bone_xform				(LPCSTR name, Fmatrix& xform);
+		virtual void __stdcall get_bone_xform				(LPCSTR name, Fmatrix& xform);
 	};
 
 	SSpawnData    	m_SpawnData;
@@ -173,7 +173,7 @@ public:
     		void 	UseSimulatePose ();
 public:
   
-    virtual	IKinematics*	   _BCL	ObjectKinematics	 ()				 	{ if(!m_SpawnData.m_Visual||!m_SpawnData.m_Visual->visual)return 0;return m_SpawnData.m_Visual->visual->dcast_PKinematics();}
+    virtual	IKinematics*	   _BCL	ObjectKinematics	 () const				 	{ if(!m_SpawnData.m_Visual||!m_SpawnData.m_Visual->visual)return 0;return m_SpawnData.m_Visual->visual->dcast_PKinematics();}
 private:
     virtual void 	OnUpdateTransform();
 private:

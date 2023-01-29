@@ -1235,7 +1235,7 @@ void EScene::LoadCompilerError(LPCSTR fn)
     Fvector 		pt[3];
     if (F->find_chunk(10)){ // lc error (TJ)
         Tools->m_DebugDraw.m_Points.resize(F->r_u32());
-        F->r(Tools->m_DebugDraw.m_Points.begin(),sizeof(CLevelTool::SDebugDraw::Point)*Tools->m_DebugDraw.m_Points.size());
+        F->r(&*Tools->m_DebugDraw.m_Points.begin(),sizeof(CLevelTool::SDebugDraw::Point)*Tools->m_DebugDraw.m_Points.size());
     }else if (F->find_chunk(0)){ // lc error (TJ)
     	u32 cnt			= F->r_u32();
         for (u32 k=0;k<cnt; k++){ F->r(pt,sizeof(Fvector)); Tools->m_DebugDraw.AppendPoint(pt[0],0xff00ff00,true,true,"TJ"); }
@@ -1251,7 +1251,7 @@ void EScene::LoadCompilerError(LPCSTR fn)
 */
     if (F->find_chunk(12)){ // lc error (invalid faces)
         Tools->m_DebugDraw.m_WireFaces.resize(F->r_u32());
-        F->r(Tools->m_DebugDraw.m_WireFaces.begin(),sizeof(CLevelTool::SDebugDraw::Face)*Tools->m_DebugDraw.m_WireFaces.size());
+        F->r(&*Tools->m_DebugDraw.m_WireFaces.begin(),sizeof(CLevelTool::SDebugDraw::Face)*Tools->m_DebugDraw.m_WireFaces.size());
     }else if (F->find_chunk(2)){ // lc error (invalid faces)
     	u32 cnt			= F->r_u32();
         for (u32 k=0;k<cnt; k++){ F->r(pt,sizeof(Fvector)*3); Tools->m_DebugDraw.AppendWireFace(pt[0],pt[1],pt[2]); }
@@ -1337,19 +1337,19 @@ void EScene::SaveCompilerError(LPCSTR fn)
 	// t-junction
 	err.open_chunk	(10);
 	err.w_u32		(Tools->m_DebugDraw.m_Points.size());
-	err.w			(Tools->m_DebugDraw.m_Points.begin(), Tools->m_DebugDraw.m_Points.size()*sizeof(CLevelTool::SDebugDraw::Point));
+	err.w			(&*Tools->m_DebugDraw.m_Points.begin(), Tools->m_DebugDraw.m_Points.size()*sizeof(CLevelTool::SDebugDraw::Point));
 	err.close_chunk	();
 
 	// m-edje
 	err.open_chunk	(11);
 	err.w_u32		(Tools->m_DebugDraw.m_Lines.size());
-	err.w			(Tools->m_DebugDraw.m_Lines.begin(), Tools->m_DebugDraw.m_Lines.size()*sizeof(CLevelTool::SDebugDraw::Line));
+	err.w			(&*Tools->m_DebugDraw.m_Lines.begin(), Tools->m_DebugDraw.m_Lines.size()*sizeof(CLevelTool::SDebugDraw::Line));
 	err.close_chunk	();
 
 	// invalid
 	err.open_chunk	(12);
 	err.w_u32		(Tools->m_DebugDraw.m_WireFaces.size());
-	err.w			(Tools->m_DebugDraw.m_WireFaces.begin(), Tools->m_DebugDraw.m_WireFaces.size()*sizeof(CLevelTool::SDebugDraw::Face));
+	err.w			(&*Tools->m_DebugDraw.m_WireFaces.begin(), Tools->m_DebugDraw.m_WireFaces.size()*sizeof(CLevelTool::SDebugDraw::Face));
 	err.close_chunk	();
 
     FS.w_close		(fs);

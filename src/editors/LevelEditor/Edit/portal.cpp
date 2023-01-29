@@ -80,7 +80,7 @@ void CPortal::Render(int priority, bool strictB2F)
 			col.set			(m_SectorFront->sector_color);
 	        if (!Selected())col.mul_rgb(0.7f);
 		    EDevice.SetRS(D3DRS_CULLMODE,D3DCULL_CCW);
-    	    DU_impl.DrawPrimitiveL	(D3DPT_TRIANGLEFAN, V.size()-2, V.begin(), V.size(), col.get(), true, false);
+    	    DU_impl.DrawPrimitiveL	(D3DPT_TRIANGLEFAN, V.size()-2, &*V.begin(), V.size(), col.get(), true, false);
 		    EDevice.SetRS(D3DRS_CULLMODE,D3DCULL_CCW);
         }
         // back
@@ -88,7 +88,7 @@ void CPortal::Render(int priority, bool strictB2F)
 			col.set			(m_SectorBack->sector_color);
 	        if (!Selected())col.mul_rgb(0.7f);
 		    EDevice.SetRS(D3DRS_CULLMODE,D3DCULL_CW);
-    	    DU_impl.DrawPrimitiveL	(D3DPT_TRIANGLEFAN, V.size()-2, V.begin(), V.size(), col.get(), true, false);
+    	    DU_impl.DrawPrimitiveL	(D3DPT_TRIANGLEFAN, V.size()-2, &*V.begin(), V.size(), col.get(), true, false);
 		    EDevice.SetRS(D3DRS_CULLMODE,D3DCULL_CCW);
         }
 		col.set				(1.f,1.f,1.f,1.f);
@@ -97,7 +97,7 @@ void CPortal::Render(int priority, bool strictB2F)
     	// render portal edges
     	EScenePortalTool* lt = dynamic_cast<EScenePortalTool*>(ParentTool); VERIFY(lt);
         FvectorVec& src_ln 	= (lt->m_Flags.is(EScenePortalTool::flDrawSimpleModel))?m_SimplifyVertices:m_Vertices;
-        DU_impl.DrawPrimitiveL	(D3DPT_LINESTRIP, src_ln.size(), src_ln.begin(), src_ln.size(), col.get(), true, true);
+        DU_impl.DrawPrimitiveL	(D3DPT_LINESTRIP, src_ln.size(), &*src_ln.begin(), src_ln.size(), col.get(), true, true);
         EDevice.ResetNearer	();
         DU_impl.DrawFaceNormal	(m_Center,m_Normal,1,0xFFFFFFFF);
         DU_impl.DrawFaceNormal	(m_Center,m_Normal,1,0x00000000);
@@ -123,7 +123,7 @@ void CPortal::Move( Fvector& amount ){
 //------------------------------------------------------------------------------
 
 bool CPortal::FrustumPick(const CFrustum& frustum){
-	if (frustum.testPolyInside(m_Vertices.begin(),m_Vertices.size())) return true;
+	if (frustum.testPolyInside(&*m_Vertices.begin(),m_Vertices.size())) return true;
     return false;
 }
 //------------------------------------------------------------------------------
@@ -305,7 +305,7 @@ void CPortal::Simplify()
     Fvector rkNormal;
     // compute plane
     Fplane P;
-	Mgc::OrthogonalPlaneFit(m_Vertices.size(), (Mgc::Vector3*)m_Vertices.begin(), (Mgc::Vector3&)rkOffset, (Mgc::Vector3&)rkNormal);
+	Mgc::OrthogonalPlaneFit(m_Vertices.size(), (Mgc::Vector3*)&*m_Vertices.begin(), (Mgc::Vector3&)rkOffset, (Mgc::Vector3&)rkNormal);
     P.build(rkOffset, rkNormal);
     // project points
 	Fmatrix		mView;
@@ -326,7 +326,7 @@ void CPortal::Simplify()
         points[k].set(p.x,p.y);
     }
     // compute 2D Convex Hull
-    Mgc::ConvexHull2D Hull(points.size(),(const Mgc::Vector2*)points.begin());
+    Mgc::ConvexHull2D Hull(points.size(),(const Mgc::Vector2*)&*points.begin());
 //    Hull.ByDivideAndConquer();
     Hull.ByIncremental();
     Hull.RemoveCollinear();
@@ -392,7 +392,7 @@ void CPortal::Simplify()
     center.set(0,0,0);
     mView.invert();
     m_SimplifyVertices.resize(vertices.size());
-    for (k=0; k<vertices.size(); k++){
+    for (u32 k=0; k<vertices.size(); k++){
     	p.set(vertices[k].x,vertices[k].y,0.f);
      	mView.transform_tiny(m_SimplifyVertices[k],p);
         center.add(m_SimplifyVertices[k]);
@@ -400,7 +400,7 @@ void CPortal::Simplify()
     center.div(vertices.size());
 
     norm.set(0,0,0);
-    for (k=0; k<m_SimplifyVertices.size()-1; k++){
+    for (u32 k=0; k<m_SimplifyVertices.size()-1; k++){
         temp.mknormal(center,m_SimplifyVertices[k],m_SimplifyVertices[k+1]);
     	norm.add(temp);
     }
@@ -505,7 +505,7 @@ bool CPortal::LoadStream(IReader& F)
 
     R_ASSERT(F.find_chunk(PORTAL_CHUNK_VERTICES));
 	m_Vertices.resize(F.r_u16());
-	F.r				(m_Vertices.begin(), m_Vertices.size()*sizeof(Fvector));
+	F.r				(&*m_Vertices.begin(), m_Vertices.size()*sizeof(Fvector));
 
     if (m_Vertices.size()<3){
         ELog.Msg( mtError, "Portal: '%s' can't create.\nInvalid portal. (m_Vertices.size()<3)", Name);
@@ -539,7 +539,7 @@ void CPortal::SaveStream(IWriter& F)
 
 	F.open_chunk	(PORTAL_CHUNK_VERTICES);
     F.w_u16			((u16)m_Vertices.size());
-    F.w				(m_Vertices.begin(),m_Vertices.size()*sizeof(Fvector));
+    F.w				(&*m_Vertices.begin(),m_Vertices.size()*sizeof(Fvector));
 	F.close_chunk	();
 }
 //------------------------------------------------------------------------------

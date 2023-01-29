@@ -19,7 +19,7 @@
 #define DETACH_FRAME(a) 	if (a){ (a)->Hide(); 	(a)->Parent = NULL; }
 #define ATTACH_FRAME(a,b)	if (a){ (a)->Parent=(b);(a)->Show(); 		}
 
-CLevelTool*&	LTools=(CLevelTool*)Tools;
+CLevelTool*&	LTools=(CLevelTool*&)Tools;
 
 TShiftState ssRBOnly;
 //---------------------------------------------------------------------------
@@ -164,7 +164,7 @@ bool __fastcall CLevelTool::KeyPress  (WORD Key, TShiftState Shift)
 }
 //---------------------------------------------------------------------------
 
-void CLevelTool::RealSetAction   (ETAction act)
+void __fastcall CLevelTool::RealSetAction   (ETAction act)
 {
 	inherited::SetAction(act);
     if (pCurTool)
@@ -174,7 +174,7 @@ void CLevelTool::RealSetAction   (ETAction act)
     m_Flags.set	(flChangeAction,FALSE);
 }
 
-void __fastcall CLevelTool::SetAction(ETAction act)
+void CLevelTool::SetAction(ETAction act)
 {
 	// если мышь захвачена - изменим action после того как она освободится
 	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
@@ -218,7 +218,7 @@ void __fastcall CLevelTool::ResetSubTarget()
 	pCurTool->ResetSubTarget();
 }
 //---------------------------------------------------------------------------
-void __fastcall CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
+void CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
 {
 	// если мышь захвачена - изменим target после того как она освободится
 	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
@@ -312,7 +312,7 @@ void CLevelTool::OnPropsClose()
 }
 //---------------------------------------------------------------------------
 
-void __fastcall CLevelTool::OnPropsModified()
+void CLevelTool::OnPropsModified()
 {
 	Scene->Modified();
 //	Scene->UndoSave();
@@ -374,7 +374,7 @@ LPCSTR CLevelTool::GetInfo()
 }
 //---------------------------------------------------------------------------
 
-void __fastcall CLevelTool::OnFrame()
+void CLevelTool::OnFrame()
 {
 	Scene->OnFrame		(EDevice.fTimeDelta);
     EEditorState est 	= UI->GetEState();
@@ -393,7 +393,7 @@ void __fastcall CLevelTool::OnFrame()
 }
 //---------------------------------------------------------------------------
 #include "d3dutils.h"
-void __fastcall CLevelTool::RenderEnvironment()
+void CLevelTool::RenderEnvironment()
 {
     // draw sky
     EEditorState est 		= UI->GetEState();
@@ -408,7 +408,7 @@ void __fastcall CLevelTool::RenderEnvironment()
     }
 }
 
-void __fastcall CLevelTool::Render()
+void CLevelTool::Render()
 {
 	// Render update
     ::Render->Calculate		();

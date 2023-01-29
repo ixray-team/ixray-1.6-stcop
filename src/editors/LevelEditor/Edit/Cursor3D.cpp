@@ -66,9 +66,12 @@ void C3DCursor::Render(){
     if (m_Visible&&!EDevice.m_Camera.IsMoving()){
         SRayPickInfo pinf;
         Fvector start, dir, N, D;
-        POINT start_pt;
+        TPoint start_pt;
         Ivector2 pt;
-        GetCursorPos(&start_pt); 
+        POINT _point;
+        GetCursorPos(&_point); 
+        start_pt.X = _point.x;
+        start_pt.Y = _point.y;
         start_pt=UI->GetD3DWindow()->ScreenToClient(start_pt);
         pt.set(float(start_pt.x),float(start_pt.y));
         EDevice.m_Camera.MouseRayFromPoint(start,dir,pt);
@@ -94,7 +97,7 @@ void C3DCursor::Render(){
 //                UI->D3D_RenderNearer(0.0001);
                 RCache.set_xform_world(Fidentity);
 				EDevice.SetShader(EDevice.m_WireShader);
-                DU_impl.DrawPrimitiveL(D3DPT_LINESTRIP,m_RenderBuffer.size(),m_RenderBuffer.begin(),m_RenderBuffer.size(),dwColor,true,true);
+                DU_impl.DrawPrimitiveL(D3DPT_LINESTRIP,m_RenderBuffer.size(), &*m_RenderBuffer.begin(),m_RenderBuffer.size(),dwColor,true,true);
 //                UI->D3D_ResetNearer();
             }break;
             case csPoint:{
@@ -123,9 +126,13 @@ bool C3DCursor::PrepareBrush(){
     SRayPickInfo pinf;
     bool bPickObject, bPickGround;
     Fvector N, D;
-    POINT start_pt;
+    TPoint start_pt;
     Ivector2 pt;
-    GetCursorPos(&start_pt); start_pt=UI->GetD3DWindow()->ScreenToClient(start_pt);
+    POINT _point;
+    GetCursorPos(&start_pt);
+    start_pt.X = _point.x;
+    start_pt.Y = _point.y;
+    start_pt=UI->GetD3DWindow()->ScreenToClient(start_pt);
     pt.set(iFloor(start_pt.x),iFloor(start_pt.y));
     EDevice.m_Camera.MouseRayFromPoint(brush_start,brush_dir,pt);
     bPickObject 			= !!Scene->RayPickObject(pinf.inf.range,brush_start, brush_dir, OBJCLASS_SCENEOBJECT, &pinf, Scene->GetSnapList(false));
@@ -143,8 +150,9 @@ bool C3DCursor::PrepareBrush(){
 void C3DCursor::GetRandomBrushPos(Fvector& pos, Fvector& norm){
     Fvector p, start, dir;
     SRayPickInfo pinf;
-    float s_a = Random.randF(PI_MUL_2);
-    float dist = sqrtf(Random.randF())*brush_radius;
+    CRandom random;
+    float s_a = random.randF(PI_MUL_2);
+    float dist = sqrtf(random.randF())*brush_radius;
     p.set(cosf(s_a)*dist, sinf(s_a)*dist, 0);
     brush_mat.transform(p);
     GetPickPoint(p, pos, &norm);

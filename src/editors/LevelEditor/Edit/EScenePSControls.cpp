@@ -12,7 +12,7 @@
 //----------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-__fastcall TUI_ControlPSAdd::TUI_ControlPSAdd(int st, int act, ESceneToolBase* parent):TUI_CustomControl(st,act,parent){
+TUI_ControlPSAdd::TUI_ControlPSAdd(int st, int act, ESceneToolBase* parent):TUI_CustomControl(st,act,parent){
 }
 
 bool __fastcall TUI_ControlPSAdd::AfterAppendCallback(TShiftState Shift, CCustomObject* obj)
@@ -30,16 +30,16 @@ bool __fastcall TUI_ControlPSAdd::AfterAppendCallback(TShiftState Shift, CCustom
     return true;
 }
 
-bool __fastcall TUI_ControlPSAdd::Start(TShiftState Shift)
+bool TUI_ControlPSAdd::Start(TShiftState Shift)
 {
     DefaultAddObject(Shift,0,AfterAppendCallback);
     return false;
 }
 
-void __fastcall TUI_ControlPSAdd::Move(TShiftState _Shift)
+void TUI_ControlPSAdd::Move(TShiftState _Shift)
 {
 }
-bool __fastcall TUI_ControlPSAdd::End(TShiftState _Shift)
+bool TUI_ControlPSAdd::End(TShiftState _Shift)
 {
     return true;
 }

@@ -25,9 +25,9 @@ public:
     Flags8			m_Flags;
 
     bool			m_bDefLoad;
-    void 			ShaderChange	(PropValue* value);
+    void __stdcall 			ShaderChange	(PropValue* value);
 protected:
-    virtual const Fvector& GetScale		() const	{ FScale.set(m_fRadius,m_fRadius,m_fRadius); return FScale;	}
+    virtual Fvector& GetScale		() 	{ return FScale.set(m_fRadius,m_fRadius,m_fRadius);	}
 	virtual void 	SetScale		(const Fvector& sc){float v=m_fRadius; if (!fsimilar(FScale.x,sc.x)) v=sc.x; if (!fsimilar(FScale.y,sc.y)) v=sc.y; if (!fsimilar(FScale.z,sc.z)) v=sc.z; FScale.set(v,v,v); m_fRadius=v; UpdateTransform();}
 public:
 	                CGlow       (LPVOID data, LPCSTR name);

@@ -37,7 +37,8 @@ void EParticlesObject::Construct(LPVOID data)
 
 EParticlesObject::~EParticlesObject()
 {
-	::Render->model_Delete	(dynamic_cast<IRenderVisual*>(m_Particles) );
+	IRenderVisual* visual =  dynamic_cast<IRenderVisual*>(m_Particles);
+	::Render->model_Delete	(visual);
 }
 //----------------------------------------------------
 
@@ -110,7 +111,8 @@ void EParticlesObject::RenderSingle()
 
 bool EParticlesObject::FrustumPick(const CFrustum& frustum)
 {
-    return (frustum.testSphere_dirty(PPosition,PSOBJECT_SIZE))?true:false;
+	Fvector _vector = PPosition;
+    return (frustum.testSphere_dirty(_vector, PSOBJECT_SIZE))?true:false;
 }
 //----------------------------------------------------
 
@@ -256,7 +258,8 @@ bool EParticlesObject::ExportGame(SExportStreams* F)
 
 bool EParticlesObject::Compile(LPCSTR ref_name)
 {
-	::Render->model_Delete	(dynamic_cast<IRenderVisual*>(m_Particles) );
+	IRenderVisual* visual = dynamic_cast<IRenderVisual*>(m_Particles);
+	::Render->model_Delete	(visual);
     if (ref_name)
     {
     	IRenderVisual* base = ::Render->model_CreateParticles(ref_name);

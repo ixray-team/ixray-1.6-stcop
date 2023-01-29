@@ -10,7 +10,7 @@ class CSceneObject : public CCustomObject
 {
 	shared_str		m_ReferenceName;
 	CEditableObject*m_pReference;
-	void 			ReferenceChange			(PropValue* sender);
+	void __stdcall 			ReferenceChange			(PropValue* sender);
 public:
 	enum{
 //    	flDynamic	= (1<<0),

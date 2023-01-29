@@ -36,7 +36,8 @@ void* SAINode::operator new(std::size_t size, SAINode* src)
 
 void SAINode::operator delete(void* ptr)
 {
-	g_ainode_pool.destroy((SAINode*)ptr);
+	auto _ptr = (SAINode*) ptr;
+	g_ainode_pool.destroy(_ptr);
 }
 
 void SAINode::PointLF(Fvector& D, float patch_size)
@@ -175,7 +176,7 @@ void ESceneAIMapTool::Clear(bool bOnlyNodes)
 	hash_Clear			();
 	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
     	xr_delete		(*it);
-	m_Nodes.clear_and_free();
+	m_Nodes.clear();
 	if (!bOnlyNodes){
 	    m_SnapObjects.clear	();
         m_AIBBox.invalidate	();
@@ -208,7 +209,7 @@ void ESceneAIMapTool::OnFrame()
     	m_Flags.set(flUpdateHL,FALSE);
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
 			(*it)->flags.set(SAINode::flHLSelected,FALSE);
-        for (it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
+        for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
             SAINode& N = **it;
             if (N.flags.is(SAINode::flSelected))
                 for (int k=0; k<4; k++)

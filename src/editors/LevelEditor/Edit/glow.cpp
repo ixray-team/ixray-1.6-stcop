@@ -77,26 +77,26 @@ void CGlow::Render(int priority, bool strictB2F)
         ESceneGlowTool* gt 		= dynamic_cast<ESceneGlowTool*>(ParentTool);
         VERIFY					(gt);
         RCache.set_xform_world	(Fidentity);
-
+        Fvector _pPosition = PPosition;
         if (gt->m_Flags.is(ESceneGlowTool::flTestVisibility))
         { 
             Fvector D;
-            D.sub(EDevice.vCameraPosition,PPosition);
+            D.sub(EDevice.vCameraPosition, _pPosition);
             float dist 	= D.normalize_magn();
-            if (!Scene->RayPickObject(dist,PPosition,D,OBJCLASS_SCENEOBJECT,0,0)){
+            if (!Scene->RayPickObject(dist, _pPosition,D,OBJCLASS_SCENEOBJECT,0,0)){
                 if (m_GShader){	EDevice.SetShader(m_GShader);
                 }else{			EDevice.SetShader(EDevice.m_WireShader);}
-                m_RenderSprite.Render(PPosition,m_fRadius,m_Flags.is(gfFixedSize));
-                DU_impl.DrawRomboid(PPosition, VIS_RADIUS, 0x00FF8507);
+                m_RenderSprite.Render(_pPosition,m_fRadius,m_Flags.is(gfFixedSize));
+                DU_impl.DrawRomboid(_pPosition, VIS_RADIUS, 0x00FF8507);
             }else{
                 // рендерим bounding sphere
                 EDevice.SetShader(EDevice.m_WireShader);
-                DU_impl.DrawRomboid(PPosition, VIS_RADIUS, 0x00FF8507);
+                DU_impl.DrawRomboid(_pPosition, VIS_RADIUS, 0x00FF8507);
             }
         }else{
             if (m_GShader){	EDevice.SetShader(m_GShader);
             }else{			EDevice.SetShader(EDevice.m_WireShader);}
-            m_RenderSprite.Render(PPosition,m_fRadius,m_Flags.is(gfFixedSize));
+            m_RenderSprite.Render(_pPosition,m_fRadius,m_Flags.is(gfFixedSize));
         }
         if( Selected() ){
             Fbox bb; GetBox(bb);
@@ -106,7 +106,7 @@ void CGlow::Render(int priority, bool strictB2F)
             if (gt->m_Flags.is(ESceneGlowTool::flDrawCross))
             {
             	Fvector sz; bb.getradius(sz);
-        		DU_impl.DrawCross(PPosition,sz.x,sz.y,sz.z, sz.x,sz.y,sz.z,0xFFFFFFFF,false);
+        		DU_impl.DrawCross(_pPosition,sz.x,sz.y,sz.z, sz.x,sz.y,sz.z,0xFFFFFFFF,false);
             }
         }
     }
@@ -114,7 +114,8 @@ void CGlow::Render(int priority, bool strictB2F)
 
 bool CGlow::FrustumPick(const CFrustum& frustum)
 {
-    return (frustum.testSphere_dirty(PPosition,m_fRadius))?true:false;
+    Fvector _vector = PPosition;
+    return (frustum.testSphere_dirty(_vector, m_fRadius))?true:false;
 }
 
 bool CGlow::RayPick(float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
@@ -245,7 +246,7 @@ void CGlow::FillProp(LPCSTR pref, PropItemVec& items)
 bool CGlow::GetSummaryInfo(SSceneSummary* inf)
 {
 	inherited::GetSummaryInfo	(inf);
-	if (m_TexName.size()) 	inf->AppendTexture(ChangeFileExt(*m_TexName,"").LowerCase().c_str(),SSceneSummary::sttGlow,0,0,"$GLOW$");
+	if (m_TexName.size()) 	inf->AppendTexture(AnsiString(ChangeFileExt(*m_TexName,"").LowerCase()).c_str(),SSceneSummary::sttGlow,0,0,"$GLOW$");
 	inf->glow_cnt++;
 	return true;
 }

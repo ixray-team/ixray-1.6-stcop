@@ -78,9 +78,11 @@ void ESceneLightTool::BeforeRender()
         for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++){
             CLight* l 		= (CLight*)(*_F);
             l_cnt++;
-            if (l->Visible()&&l->m_UseInD3D&&l->m_Flags.is_any(ELight::flAffectDynamic|ELight::flAffectStatic))
-                if (::Render->ViewBase.testSphere_dirty(l->PPosition,l->m_Range))
+            if (l->Visible()&&l->m_UseInD3D&&l->m_Flags.is_any(ELight::flAffectDynamic|ELight::flAffectStatic)) {
+                Fvector _pPos = l->PPosition;
+                if (::Render->ViewBase.testSphere_dirty(_pPos, l->m_Range))
                 	AppendFrameLight(l);
+            }
         }
     	// set sun
 		if (m_Flags.is(flShowSun))
@@ -220,7 +222,7 @@ xr_rtoken* ESceneLightTool::FindLightControl(int id)
 	RTokenVecIt		_I 	= lcontrols.begin();
     RTokenVecIt		_E 	= lcontrols.end();
     for (;_I!=_E; _I++)
-    	if (_I->id==id) return _I;
+    	if (_I->id==id) return &(*_I);
     return 0;
 }
 //------------------------------------------------------------------------------

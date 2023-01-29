@@ -210,11 +210,11 @@ void CCustomObject::FillProp(LPCSTR pref, PropItemVec& items)
     PropValue* V;
     V = PHelper().CreateNameCB	(items, PrepareKey(pref, "Name"),&FName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNameChange);
-    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Position"),	&PPosition,	-10000,	10000,0.01,2);
+    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Position"),	&GetPositionRW(),	-10000,	10000,0.01,2);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangePosition);
-    V = PHelper().CreateAngle3	(items, PrepareKey(pref,"Transform\\Rotation"),	&PRotation,	-10000,	10000,0.1,1);
+    V = PHelper().CreateAngle3	(items, PrepareKey(pref,"Transform\\Rotation"),	&GetRotationRW(),	-10000,	10000,0.1,1);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangeRotation);
-    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Scale"),	&PScale, 	0.01,	10000,0.01,2);
+    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Scale"),	&GetScaleRW(), 	0.01,	10000,0.01,2);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangeScale);
 
     if(m_CO_Flags.test(flObjectInGroup))

@@ -127,10 +127,11 @@ bool ESoundEnvironment::GetSummaryInfo(SSceneSummary* inf)
 	return true;
 }
 
+using _ShapeData = CShapeData;
 void ESoundEnvironment::get_box(Fmatrix& m)
 {
-	CShapeData::shape_def shape = get_shape(0);
-    R_ASSERT(shape.type==CShapeData::cfBox);
+	_ShapeData::shape_def shape = get_shape(0);
+    R_ASSERT(shape.type == _ShapeData::cfBox);
     m.mul				(_Transform(),shape.data.box);
 }
 

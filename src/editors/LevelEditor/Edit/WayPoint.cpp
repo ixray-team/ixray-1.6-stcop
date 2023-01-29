@@ -609,7 +609,8 @@ void CWayObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
         ini.w_string		(sect_name, buff, *W->m_Name?*W->m_Name:"");
     }
 
-	for (wp_idx=0, it=m_WayPoints.begin(); it!=m_WayPoints.end(); ++it, ++wp_idx)
+	wp_idx = 0;
+	for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); ++it, ++wp_idx)
     {
     	CWayPoint* W		= *it;
     	u32 link_idx		= 0;
@@ -694,7 +695,7 @@ void CWayObject::SaveStream(IWriter& F)
 
 	F.open_chunk	(WAYOBJECT_CHUNK_LINKS);
     F.w_u16			((u16)l_cnt);
-	for (it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++){
+	for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++){
     	CWayPoint* W= *it;
     	int from	= it-m_WayPoints.begin();
         for (WPLIt l_it=W->m_Links.begin(); l_it!=W->m_Links.end(); l_it++){
@@ -737,7 +738,7 @@ bool CWayObject::ExportGame(SExportStreams* F)
 
         F->patrolpath.stream.open_chunk	(WAYOBJECT_CHUNK_LINKS);
         F->patrolpath.stream.w_u16		((u16)l_cnt);
-        for (it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++){
+        for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++){
             CWayPoint* W= *it;
             int from	= it-m_WayPoints.begin();
             for (WPLIt l_it=W->m_Links.begin(); l_it!=W->m_Links.end(); l_it++){

@@ -175,7 +175,7 @@ void EScene::UpdateSnapListReal()
 {
 	if (NULL==LTools) return;
     ObjClassID cls = LTools->CurrentClassID();
-    switch (cls){
+    switch ((s32) cls){
     case OBJCLASS_DUMMY:	break;
     default:
 	    ESceneToolBase* mt = m_SceneTools[cls];

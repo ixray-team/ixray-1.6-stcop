@@ -89,7 +89,7 @@ protected:
 	void			CreateSceneTools			();
 	void			DestroySceneTools			();
 
-    void 			FindObjectByNameCB			(LPCSTR new_name, bool& res){res=!!FindObjectByName(new_name,(CCustomObject*)0);}
+    void __stdcall 			FindObjectByNameCB			(LPCSTR new_name, bool& res){res=!!FindObjectByName(new_name,(CCustomObject*)0);}
 
 	void __stdcall 	OnBuildControlClick			(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void __stdcall 	OnRTFlagsChange				(PropValue* sender);
@@ -231,18 +231,7 @@ public:
 
 public:
 	int  			GetQueryObjects		(ObjectList& objset, ObjClassID classfilter, int iSel=1, int iVis=1, int iLock=0);
-    template <class Predicate>
-    int  GetQueryObjects_if			(ObjectList& dest, ObjClassID classfilter, Predicate cmp){
-        for(ObjectPairIt it=FirstClass(); it!=LastClass(); it++){
-            ObjectList& lst = it->second;
-            if ((classfilter==OBJCLASS_DUMMY)||(classfilter==it->first)){
-                for(ObjectIt _F = lst.begin();_F!=lst.end();_F++){
-        			if (cmp(_F)) dest.push_back(*_F);
-                }
-            }
-        }
-        return dest.size();
-    }
+
 public:
 
 	void 			OnCreate		();

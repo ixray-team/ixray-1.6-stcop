@@ -61,8 +61,19 @@ public:
     virtual void    	OnActivate  			();
     virtual void    	OnDeactivate			();
     virtual void    	OnObjectsUpdate			(){;}
+
+private:
+	ObjClassID readClassID() {
+		return FClassID;
+	}
+
+	void writeClassID(ObjClassID nv) {
+		FClassID = nv;
+	}
+
 public:
-    PropertyGP			(FClassID,FClassID) 	ObjClassID ClassID;
+    __property ObjClassID ClassID = {read = readClassID, write = writeClassID};
+
 	// definition
     virtual LPCSTR		ClassName				()=0;
     virtual LPCSTR		ClassDesc				()=0;

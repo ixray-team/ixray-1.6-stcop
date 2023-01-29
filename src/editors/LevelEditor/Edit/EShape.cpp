@@ -382,7 +382,7 @@ bool CEditShape::LoadStream(IReader& F)
 
 	R_ASSERT(F.find_chunk(SHAPE_CHUNK_SHAPES));
     shapes.resize	(F.r_u32());
-    F.r				(shapes.begin(),shapes.size()*sizeof(shape_def));
+    F.r				(&*shapes.begin(),shapes.size()*sizeof(shape_def));
 
     if(F.find_chunk(SHAPE_CHUNK_DATA))
     	m_shape_type	= F.r_u8();
@@ -401,7 +401,7 @@ void CEditShape::SaveStream(IWriter& F)
 
 	F.open_chunk	(SHAPE_CHUNK_SHAPES);
     F.w_u32			(shapes.size());
-    F.w				(shapes.begin(),shapes.size()*sizeof(shape_def));
+    F.w				(&*shapes.begin(),shapes.size()*sizeof(shape_def));
 	F.close_chunk	();
 
     F.open_chunk	(SHAPE_CHUNK_DATA);

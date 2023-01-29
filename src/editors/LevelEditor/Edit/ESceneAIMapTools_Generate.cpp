@@ -122,7 +122,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 			float	tri_min_range	= flt_max;
 			int		tri_selected	= -1;
 			float	range,u,v;
-			for (i=0; i<DWORD(tris.size()); i++){
+			for (DWORD i=0; i<DWORD(tris.size()); i++){
 				if (ETOOLS::TestRayTriA(P,D,tris[i].v,u,v,range,false)){
 					if (range<tri_min_range){
 						tri_min_range	= range;
@@ -222,7 +222,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 				float	tri_min_range	= flt_max;
 				int		tri_selected	= -1;
 				float	range,u,v;
-				for (i=0; i<tris.size(); i++){
+				for (DWORD i=0; i<tris.size(); i++){
 					if (ETOOLS::TestRayTriA(P,D,tris[i].v,u,v,range,false)){
 						if (range<tri_min_range){
 							tri_min_range	= range;

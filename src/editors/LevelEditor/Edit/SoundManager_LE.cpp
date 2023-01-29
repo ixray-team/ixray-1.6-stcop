@@ -8,7 +8,7 @@
 #include "du_box.h"
 #include "xrLevel.h"
 
-CLevelSoundManager*& LSndLib=(CLevelSoundManager*)SndLib;
+CLevelSoundManager*& LSndLib=(CLevelSoundManager*&)SndLib;
 
 bool CLevelSoundManager::Validate()
 {
@@ -21,7 +21,7 @@ bool CLevelSoundManager::Validate()
         }
     }
 	ObjectList& snd_src = Scene->ListObj(OBJCLASS_SOUND_SRC);
-    for (it=snd_src.begin(); it!=snd_src.end(); it++){
+    for (ObjectIt it=snd_src.begin(); it!=snd_src.end(); it++){
     	ESoundSource* S = dynamic_cast<ESoundSource*>(*it); R_ASSERT(S);
         if (!S->GetSourceWAV()||(0==strlen(S->GetSourceWAV()))){
         	ELog.DlgMsg(mtError,"SoundSource: '%s' hasn't wave.",S->Name);

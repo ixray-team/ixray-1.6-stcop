@@ -282,7 +282,7 @@ void ESceneGroupTool::MakeThumbnail()
                 lst.push_back		((*it)->Name);
                 
             EGroupThumbnail 		tex	(tex_name.c_str(),false);
-            tex.CreateFromData		(pixels.begin(),w,h,lst);
+            tex.CreateFromData		(&*pixels.begin(),w,h,lst);
             string_path fn;
             FS.update_path			(fn,_groups_,object->RefName());
             strcat					(fn,".group");

@@ -160,7 +160,7 @@ void ESceneWallmarkTool::OnFrame	(){}
 
 struct zero_slot_pred : public std::unary_function<ESceneWallmarkTool::wm_slot*, bool>
 {
-	bool operator()(const ESceneWallmarkTool::wm_slot*& x){ return x==0; }
+	bool operator()(const ESceneWallmarkTool::wm_slot* x){ return x==0; }
 };
 void ESceneWallmarkTool::RefiningSlots()
 {
@@ -219,7 +219,7 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
                                 w_start					= w_verts;
                             }
                             // real fill buffer
-                            FVF::LIT* S		= W->verts.begin()+t_idx*3;
+                            FVF::LIT* S		= &*W->verts.begin()+t_idx*3;
                         	for (int k=0; k<3; k++,S++,w_verts++){
                                 w_verts->p.set	(S->p);
                                 w_verts->color	= C;
@@ -255,7 +255,7 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
 
 struct zero_item_pred : public std::unary_function<ESceneWallmarkTool::wallmark*, bool>
 {
-	bool operator()(const ESceneWallmarkTool::wallmark*& x){ return x==0; }
+	bool operator()(const ESceneWallmarkTool::wallmark* x){ return x==0; }
 };
 bool ESceneWallmarkTool::LoadLTX(CInifile& ini)
 {
@@ -612,7 +612,7 @@ void ESceneWallmarkTool::RecurseTri(u32 t, Fmatrix &mView, wallmark &W)
 		}
 		
 		// recurse
-		for (i=0; i<3; i++)
+		for (u32 i=0; i<3; i++)
 		{
 			u32 adj					= sml_adjacency[3*t+i];
 			if (0xffffffff==adj)	continue;

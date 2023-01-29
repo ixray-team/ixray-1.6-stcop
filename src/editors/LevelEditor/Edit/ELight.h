@@ -106,7 +106,7 @@ public:
     // pick functions
 	virtual bool 	RayPick			(float& distance, const Fvector& start, const Fvector& direction,
 									SRayPickInfo* pinf = NULL );
-    virtual bool 	FrustumPick		(const CFrustum& frustum);
+    virtual bool 	FrustumPick		(CFrustum& frustum);
 
     // change position/orientation methods
 	virtual void 	Scale			(Fvector& amount){;}
