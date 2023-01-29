@@ -4,19 +4,40 @@ on:
   push:
     branches:
       - '**'
-    paths-ignore:
+    paths:
+      - '.github/workflows/**'
       - 'gamedata/**'
+      - 'proj/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '*.sln'
+      - '*.props'
+      - '*.targets'
+      - '*.ltx'
+    paths-ignore:
       - 'sdk/components/**'
       - 'src/editors/**'
-      - '*.cbproj'
-  pull_request:
+      - '*.cbproj'  pull_request:
     branches:
       - '**'
-    paths-ignore:
+    paths:
+      - '.github/workflows/**'
       - 'gamedata/**'
+      - 'proj/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '*.sln'
+      - '*.props'
+      - '*.targets'
+      - '*.ltx'
+    paths-ignore:
       - 'sdk/components/**'
       - 'src/editors/**'
       - '*.cbproj'
+
+defaults:
+  run:
+    shell: pwsh
 
 jobs:
   build-engine:
@@ -24,9 +45,17 @@ jobs:
 
     strategy:
       matrix:
-        system: [ windows-2022 ]
-        config: [ Debug, Mixed, Release, Debug_Dedicated, Mixed_Dedicated, Release_Dedicated ]
-        platform: [ Win32 ]
+        system:
+          - windows-2022
+        config:
+          - Debug
+          - Mixed
+          - Release
+          - Debug_Dedicated
+          - Mixed_Dedicated
+          - Release_Dedicated
+        platform:
+          - x86
 
     runs-on: ${{ matrix.system }}
 
@@ -34,52 +63,83 @@ jobs:
       solution_name: XRay.sln
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Get dependencies
-      run: |
-        curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-mar2009.7z -O directxsdk-mar2009.7z
-        7z x directxsdk-mar2009.7z
-        curl https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r0.2/sdk-directxsdk-jun2010.7z -O directxsdk-jun2010.7z
-        7z x directxsdk-jun2010.7z
-        git clone --branch aug2021 --depth 1 https://github.com/microsoft/DirectXTex.git dep/DirectXTex
-        git clone --branch jul2022 --depth 1 https://github.com/microsoft/DirectXMesh.git dep/DirectXMesh
-        git clone --branch Release_3.1.0 --depth 1 https://github.com/dockpanelsuite/dockpanelsuite.git dep/dockpanelsuite
-      shell: powershell
+      - name: Get dependencies
+        run: |
+          ${{ github.workspace }}/get-dependencies.bat
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
 
-    - name: Build solution
-      run: |
-        msbuild $env:solution_name -p:Configuration=${{ matrix.config }} -p:Platform=${{ matrix.platform }} -r -m -nologo
+      - name: Build solution
+        run: |
+          msbuild $env:solution_name `
+            -p:Configuration=${{ matrix.config }} `
+            -p:Platform=${{ matrix.platform }} `
+            -restore `
+            -maxCpuCount `
+            -nologo
 
-    - name: Cleanup
-      run: |
-        if exist bin\*.idb (del /s bin\*.idb)
-        if exist bin\*.ilk (del /s bin\*.ilk)
-        if exist bin\*.pdb (del /s bin\*.pdb)
-        if exist lib\*.idb (del /s lib\*.idb)
-        if exist lib\*.pdb (del /s lib\*.pdb)
-      shell: cmd
+      - name: Cleanup
+        run: |
+          ${{ github.workspace }}/delete-symbols.bat
 
-    - name: Upload binaries
-      uses: actions/upload-artifact@v3
-      with:
-        name: bin (${{ matrix.config }})
-        path: bin/
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin (${{ matrix.config }}) ${{ github.sha }}
+          path: bin/
 
-    - name: Upload libraries
-      uses: actions/upload-artifact@v3
-      with:
-        name: lib (${{ matrix.config }})
-        path: lib/
+      - name: Upload libraries
+        uses: actions/upload-artifact@v3
+        with:
+          name: lib (${{ matrix.config }}) ${{ github.sha }}
+          path: lib/
 
-    - name: Upload gamedata
-      uses: actions/upload-artifact@v3
-      with:
-        name: gamedata
-        path: gamedata/
+  pack-assets:
+    name: 'Packing'
+
+    needs: build-engine
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        config:
+          - Release
+        platform:
+          - Win32
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: bin (${{ matrix.config }}) ${{ github.sha }}
+          path: bin/
+
+      - name: Generate patch
+        run: |
+          ${{ github.workspace }}/generate-patch.bat
+
+      - name: Upload gamedata
+        uses: actions/upload-artifact@v3
+        with:
+          name: gamedata ${{ github.sha }}
+          path: gamedata/
+
+      - name: Upload patch
+        uses: actions/upload-artifact@v3
+        with:
+          name: patch ${{ github.sha }}
+          path: patches/xpatch_03.db
