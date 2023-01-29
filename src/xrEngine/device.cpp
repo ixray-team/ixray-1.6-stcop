@@ -571,21 +571,6 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	}
 }
 
-void	CRenderDevice::AddSeqFrame			( pureFrame* f, bool mt )
-{
-		if ( mt )	
-		seqFrameMT.Add	(f,REG_PRIORITY_HIGH);
-	else								
-		seqFrame.Add		(f,REG_PRIORITY_LOW);
-
-}
-
-void	CRenderDevice::RemoveSeqFrame	( pureFrame* f )
-{
-	seqFrameMT.Remove	( f );
-	seqFrame.Remove		( f );
-}
-
 CLoadScreenRenderer::CLoadScreenRenderer()
 :b_registered(false)
 {}
