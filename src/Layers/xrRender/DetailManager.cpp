@@ -187,6 +187,7 @@ extern ECORE_API float r_ssaDISCARD;
 
 void CDetailManager::UpdateVisibleM()
 {
+	CRandom random;
 	Fvector		EYE				= RDEVICE.vCameraPosition_saved;
 
 	CFrustum	View;
@@ -258,7 +259,7 @@ void CDetailManager::UpdateVisibleM()
 					float	alpha_i		= 1.f - alpha;
 					float	dist_sq_rcp	= 1.f / dist_sq;
 
-					S.frame			= RDEVICE.dwFrame+Random.randI(15,30);
+					S.frame			= RDEVICE.dwFrame+random.randI(15,30);
 					for (int sp_id=0; sp_id<dm_obj_in_slot; sp_id++){
 						SlotPart&			sp	= S.G		[sp_id];
 						if (sp.id==DetailSlot::ID_Empty)	continue;

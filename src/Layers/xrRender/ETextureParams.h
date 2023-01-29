@@ -110,6 +110,99 @@ struct ECORE_API STextureParams{
 	{
 		Clear();
 	}
+
+#ifdef _EDITOR
+STextureParams(const STextureParams& ctp) {
+	fmt = ctp.fmt;
+	flags = ctp.flags;	
+	border_color = ctp.border_color;
+	fade_color = ctp.fade_color;
+	fade_amount = ctp.fade_amount;
+	fade_delay = ctp.fade_delay;
+	mip_filter = ctp.mip_filter;
+	width = ctp.width;
+	height = ctp.height;
+	detail_name = ctp.detail_name;
+	detail_scale = ctp.detail_scale;
+	type = ctp.type;
+	material = ctp.material;
+	material_weight = ctp.material_weight;
+	bump_virtual_height = ctp.bump_virtual_height;
+	bump_mode = ctp.bump_mode;
+	bump_name = ctp.bump_name;
+	ext_normal_map_name = ctp.ext_normal_map_name;
+}
+
+STextureParams& operator=(const STextureParams& ctp) {
+	if(this != & ctp)
+		return *this;
+	fmt = ctp.fmt;
+	flags = ctp.flags;	
+	border_color = ctp.border_color;
+	fade_color = ctp.fade_color;
+	fade_amount = ctp.fade_amount;
+	fade_delay = ctp.fade_delay;
+	mip_filter = ctp.mip_filter;
+	width = ctp.width;
+	height = ctp.height;
+	detail_name = ctp.detail_name;
+	detail_scale = ctp.detail_scale;
+	type = ctp.type;
+	material = ctp.material;
+	material_weight = ctp.material_weight;
+	bump_virtual_height = ctp.bump_virtual_height;
+	bump_mode = ctp.bump_mode;
+	bump_name = ctp.bump_name;
+	ext_normal_map_name = ctp.ext_normal_map_name;
+	return *this;
+}
+
+STextureParams(STextureParams&& ctp) {
+	fmt = ctp.fmt;
+	flags = ctp.flags;	
+	border_color = ctp.border_color;
+	fade_color = ctp.fade_color;
+	fade_amount = ctp.fade_amount;
+	fade_delay = ctp.fade_delay;
+	mip_filter = ctp.mip_filter;
+	width = ctp.width;
+	height = ctp.height;
+	detail_name = ctp.detail_name;
+	detail_scale = ctp.detail_scale;
+	type = ctp.type;
+	material = ctp.material;
+	material_weight = ctp.material_weight;
+	bump_virtual_height = ctp.bump_virtual_height;
+	bump_mode = ctp.bump_mode;
+	bump_name = ctp.bump_name;
+	ext_normal_map_name = ctp.ext_normal_map_name;
+}
+
+const STextureParams& operator=(STextureParams&& ctp) {
+	fmt = ctp.fmt;
+	flags = ctp.flags;	
+	border_color = ctp.border_color;
+	fade_color = ctp.fade_color;
+	fade_amount = ctp.fade_amount;
+	fade_delay = ctp.fade_delay;
+	mip_filter = ctp.mip_filter;
+	width = ctp.width;
+	height = ctp.height;
+	detail_name = ctp.detail_name;
+	detail_scale = ctp.detail_scale;
+	type = ctp.type;
+	material = ctp.material;
+	material_weight = ctp.material_weight;
+	bump_virtual_height = ctp.bump_virtual_height;
+	bump_mode = ctp.bump_mode;
+	bump_name = ctp.bump_name;
+	ext_normal_map_name = ctp.ext_normal_map_name;
+	return *this;
+}
+~STextureParams() {
+}
+
+#endif
 	
 	IC void destroy_shared_str	(shared_str& object)
 	{
