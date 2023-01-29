@@ -24,7 +24,7 @@
 #include "../../xrphysics/iphworld.h"
 #include "../../xrcdb/xr_area.h"
 
-CActorTools*&	ATools=(CActorTools*)Tools;
+CActorTools*&	ATools=(CActorTools*&)Tools;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
 
@@ -43,7 +43,8 @@ void EngineModel::DeleteVisual		()
 
 void	   EngineModel::		OnRender			()
 {
-	UpdateObjectXform(Fmatrix());
+	Fmatrix matrix;
+	UpdateObjectXform(matrix);
 }
 void PreviewModel::RestoreParams(TFormStorage* s)
 {          
@@ -747,7 +748,7 @@ void CActorTools::OnItemModified()
     }
 }
 
-void __fastcall CActorTools::OnBoneModified(void)
+void CActorTools::OnBoneModified(void)
 {
 	Modified				();
 	RefreshSubProperties	();
@@ -1064,7 +1065,7 @@ bool CActorTools::BatchConvert(LPCSTR fn)
     {
     	CInifile::Sect& sect	= ini->r_section("ogf");
         Msg						("Start converting %d items...",sect.Data.size());
-        for (CInifile::Item* it=sect.Data.begin(); it!=sect.Data.end(); it++){
+		for (CInifile::SectIt_ it=sect.Data.begin(); it!=sect.Data.end(); it++){
         	string_path 		src_name;
             string_path 		tgt_name;
             FS.update_path		(src_name,_objects_,		it->first.c_str());
@@ -1090,7 +1091,7 @@ bool CActorTools::BatchConvert(LPCSTR fn)
     {
     	CInifile::Sect& sect	= ini->r_section("omf");
         Msg						("Start converting %d items...",sect.Data.size());
-        for (CInifile::Item* it=sect.Data.begin(); it!=sect.Data.end(); ++it)
+		for (CInifile::SectIt_ it=sect.Data.begin(); it!=sect.Data.end(); ++it)
         {
         	string_path 		src_name;
             string_path 		tgt_name;

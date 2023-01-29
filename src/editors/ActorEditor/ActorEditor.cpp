@@ -15,7 +15,7 @@ USEFORM("main.cpp", frmMain);
 USEFORM("TopBar.cpp", fraTopBar); /* TFrame: File Type */
 USEFORM("BottomBar.cpp", fraBottomBar); /* TFrame: File Type */
 //---------------------------------------------------------------------------
-WINAPI WinMain(HINSTANCE  hInst, HINSTANCE, LPSTR, int)
+int WINAPI WinMain(HINSTANCE  hInst, HINSTANCE, LPSTR, int)
 {
 
 

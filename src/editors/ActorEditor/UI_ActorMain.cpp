@@ -13,7 +13,7 @@
 #include "../xrEProps/ChoseForm.h"
 
 //---------------------------------------------------------------------------
-CActorMain*&	AUI=(CActorMain*)UI;
+CActorMain*&	AUI=(CActorMain*&)UI;
 //---------------------------------------------------------------------------
 
 CActorMain::CActorMain()
@@ -35,7 +35,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 {
     xr_string temp_fn	= p1.IsString()?xr_string(p1):xr_string(""); 
     if(!p1.IsString()){
-        temp_fn			= ChangeFileExt(m_LastFileName,"").c_str();
+		temp_fn			= AnsiString(ChangeFileExt(m_LastFileName,"")).c_str();
         if (!EFS.GetOpenName	( _objects_, temp_fn ))
         	return  	FALSE;
     }
@@ -275,71 +275,71 @@ CCommandVar CActorTools::CommandBatchConvert(CCommandVar p1, CCommandVar p2)
 //---------------------------------------------------------------------------
 // Common command
 //---------------------------------------------------------------------------
-CCommandVar CommandShowClipMaker(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandShowClipMaker(CCommandVar p1, CCommandVar p2)
 {
     ATools->ShowClipMaker();
     return TRUE;
 }
-CCommandVar CommandMakePreview(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandMakePreview(CCommandVar p1, CCommandVar p2)
 {
     ATools->MakePreview();
     return TRUE;
 }
-CCommandVar CommandPreviewObjPref(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandPreviewObjPref(CCommandVar p1, CCommandVar p2)
 {
     ATools->SetPreviewObjectPrefs();
     return TRUE;
 }
-CCommandVar CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
 {
     ATools->SelectPreviewObject(p1);
     return TRUE;
 }
-CCommandVar CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
 {
     if (EPrefs->FirstRecentFile())
         return ExecCommand(COMMAND_LOAD,xr_string(EPrefs->FirstRecentFile()));
 
     return FALSE;
 }
-CCommandVar CommandFileMenu(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandFileMenu(CCommandVar p1, CCommandVar p2)
 {
     FHelper.ShowPPMenu(fraLeftBar->pmSceneFile,0);
     return TRUE;
 }
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->RefreshBar	();
     fraLeftBar->RefreshBar	();
     fraBottomBar->RefreshBar();
     return TRUE;
 }
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->RestoreFormPlacement();
     fraLeftBar->fsStorage->RestoreFormPlacement();
     fraBottomBar->fsStorage->RestoreFormPlacement();
     return TRUE;
 }
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->SaveFormPlacement();
     fraLeftBar->fsStorage->SaveFormPlacement();
     fraBottomBar->fsStorage->SaveFormPlacement();
     return TRUE;
 }
-CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     fraLeftBar->UpdateBar();
     return TRUE;
 }
-CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
 {
     frmMain->UpdateCaption();
     return TRUE;
 }
 
-CCommandVar CommandChangeTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 {
 	if (p1.IsString()){
         ATools->SelectListItem(xr_string(p1).c_str(),	0,true,false,true);
@@ -398,16 +398,16 @@ void CActorMain::RegisterCommands()
 
 char* CActorMain::GetCaption()
 {
-	return ATools->GetEditFileName().IsEmpty()?"noname":ATools->GetEditFileName().c_str();
+	return ATools->GetEditFileName().IsEmpty()? (char*) "noname":ATools->GetEditFileName().c_str();
 }
 
-bool __fastcall CActorMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool CActorMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall CActorMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool CActorMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }

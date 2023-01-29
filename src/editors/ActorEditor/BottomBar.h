@@ -15,7 +15,7 @@
 #include <ExtCtrls.hpp>
 #include <Menus.hpp>
 //---------------------------------------------------------------------------
-class ECORE_API TfraBottomBar : public TFrame
+class TfraBottomBar : public TFrame
 {
 __published:	// IDE-managed Components
 	TFormStorage *fsStorage;
@@ -91,8 +91,8 @@ private:	// User declarations
 	void __fastcall MacroEditCommandListClick(TObject *Sender);
 public:		// User declarations
     __fastcall TfraBottomBar(TComponent* Owner);
-    void RefreshBar(){;}
-    void RedrawBar();
+    void __fastcall RefreshBar(){}
+    void __fastcall RedrawBar();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfraBottomBar *fraBottomBar;

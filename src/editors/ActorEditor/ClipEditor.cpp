@@ -16,19 +16,8 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma link "mxPlacemnt"
-#pragma link "ExtBtn"
-#pragma link "MXCtrls"
-#pragma link "Gradient"
-#pragma link "ElScrollBar"
-#pragma link "ElXPThemedControl"
-#pragma link "MxMenus"
-#pragma link "ElPanel"
-#pragma link "ElSplit"
-#pragma link "multi_edit"
-#pragma link "ElTrackBar"
-#pragma resource "*.dfm"
+
+#pragma resource "ClipEditor.dfm"
 
 static const TColor CLIP_INACTIVE_COLOR		= 0x00686868;
 static const TColor CLIP_ACTIVE_COLOR		= 0x00A1A1A1;

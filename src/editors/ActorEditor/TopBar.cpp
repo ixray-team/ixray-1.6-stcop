@@ -7,9 +7,9 @@
 #include "ui_actortools.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "TopBar.dfm"
+
 TfraTopBar *fraTopBar;
 //---------------------------------------------------------------------------
 __fastcall TfraTopBar::TfraTopBar(TComponent* Owner)

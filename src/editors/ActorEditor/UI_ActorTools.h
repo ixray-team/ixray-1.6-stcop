@@ -82,7 +82,7 @@ private:
    //	virtual	Fmatrix&				   	_BCL	ObjectXFORM							()				 { return m_pobject_matrix; }
    //	virtual	Fvector&					_BCL	ObjectPosition						()				 { return m_pobject_matrix.c; }
 	//virtual	IRenderVisual*				_BCL	ObjectVisual						()				 { return m_pVisual;}
-    virtual	IKinematics*				_BCL	ObjectKinematics					()				 	{ if(!m_pVisual)return 0;return m_pVisual->dcast_PKinematics();}
+    virtual	IKinematics*				_BCL	ObjectKinematics					() const				 	{ if(!m_pVisual)return 0;return m_pVisual->dcast_PKinematics();}
 
 };
 
@@ -317,21 +317,21 @@ public:
 
 
     // commands
-	CCommandVar			CommandClear		(CCommandVar p1, CCommandVar p2);
-	CCommandVar 		CommandLoad			(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandSave			(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandImport		(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandExportDM		(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandExportOBJ	(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandExportOGF	(CCommandVar p1, CCommandVar p2);
-    CCommandVar         CommandExportOMF	(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandExportCPP	(CCommandVar p1, CCommandVar p2);
-	CCommandVar 		CommandUndo			(CCommandVar p1, CCommandVar p2);
-	CCommandVar 		CommandRedo			(CCommandVar p1, CCommandVar p2);
-	CCommandVar 		CommandOptimizeMotions(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandMakeThumbnail(CCommandVar p1, CCommandVar p2);
-    CCommandVar			CommandBatchConvert	(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandClear		(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandLoad			(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandSave			(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandImport		(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandExportDM		(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandExportOBJ	(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandExportOGF	(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall         CommandExportOMF	(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall 		CommandExportCPP	(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandUndo			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandRedo			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandOptimizeMotions(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall 		CommandMakeThumbnail(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall			CommandBatchConvert	(CCommandVar p1, CCommandVar p2);
 };
 
 extern CActorTools*&	ATools;

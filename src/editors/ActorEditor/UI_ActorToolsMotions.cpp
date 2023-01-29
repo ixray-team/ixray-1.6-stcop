@@ -58,14 +58,16 @@ void EngineModel::FillMotionList(LPCSTR pref, ListItemsVec& items, int modeID)
                 E = SA->m_Motions[k].motions.cycle()->end();              
                 for ( ; I != E; ++I){
                 	shared_str tmp = PrepareKey(slot_pref.c_str(),*(*I).first);
-                    LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&MotionID((u16)k,I->second));
+					MotionID mId =  MotionID((u16)k,I->second);
+					LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&mId);
             	}
                 // fxs
                 I = SA->m_Motions[k].motions.fx()->begin(); 
                 E = SA->m_Motions[k].motions.fx()->end(); 
                 for ( ; I != E; ++I){
                 	shared_str tmp = PrepareKey(slot_pref.c_str(),*(*I).first);
-                    LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&MotionID((u16)k,I->second));
+					MotionID mId =  MotionID((u16)k,I->second);
+					LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&mId);
                 }
             }
         }
@@ -146,7 +148,7 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
     IReader R							(F.pointer(), F.size());
     ::Render->model_Delete				(m_pVisual,TRUE);
     g_pMotionsContainer->clean			(false);
-    m_pVisual = ::Render->model_Create	(ChangeFileExt(source->GetName(),"").c_str(),&R);
+    m_pVisual = ::Render->model_Create	(AnsiString(ChangeFileExt(source->GetName(),"")).c_str(),&R);
     m_pBlend = 0;
     return bRes;
 }

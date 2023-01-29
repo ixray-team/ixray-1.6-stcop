@@ -14,17 +14,9 @@
 #include "../xrEProps/NumericVector.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTree"
-#pragma link "ElXPThemedControl"
-#pragma link "ElTreeAdvEdit"
-#pragma link "ElPgCtl"
-#pragma link "MXCtrls"
-#pragma link "ElBtnCtl"
-#pragma link "ElCheckCtl"
-#pragma resource "*.dfm"
+
+#pragma resource "LeftBar.dfm"
+
 TfraLeftBar *fraLeftBar;
 
 //---------------------------------------------------------------------------
@@ -41,7 +33,7 @@ __fastcall TfraLeftBar::TfraLeftBar(TComponent* Owner)
 void __fastcall TfraLeftBar::miRecentFilesClick(TObject *Sender)
 {
 	TMenuItem* MI 	= dynamic_cast<TMenuItem*>(Sender); R_ASSERT(MI&&(MI->Tag==0x1001));
-    xr_string fn 	= AnsiString(MI->Caption).c_str();
+	xr_string fn(AnsiString(MI->Caption).c_str());
     ExecCommand(COMMAND_LOAD,fn);
 }
 //---------------------------------------------------------------------------

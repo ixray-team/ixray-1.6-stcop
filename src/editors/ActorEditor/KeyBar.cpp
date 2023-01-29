@@ -6,18 +6,9 @@
 #include "UI_ActorMain.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma link "Gradient"
-#pragma link "ElTrackBar"
-#pragma link "ElXPThemedControl"
-#pragma link "MXCtrls"
-#pragma link "multi_edit"
-#pragma link "ExtBtn"
-#pragma link "ElBtnCtl"
-#pragma link "ElCheckCtl"
-#pragma link "ElPopBtn"
-#pragma resource "*.dfm"
+
+#pragma resource "KeyBar.dfm"
+
 //---------------------------------------------------------------------------
 __fastcall TfrmKeyBar::TfrmKeyBar(TComponent* Owner)
     : TForm(Owner)

@@ -14,7 +14,7 @@
 #include "mxPlacemnt.hpp"
 #include <Dialogs.hpp>
 //---------------------------------------------------------------------------
-class ECORE_API TfraTopBar : public TFrame
+class TfraTopBar : public TFrame
 {
 __published:	// IDE-managed Components
     TPanel *paTBEdit;
