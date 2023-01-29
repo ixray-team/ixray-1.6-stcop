@@ -119,7 +119,7 @@ private://IPhysicsShellHolder
 	virtual	u16						_BCL					ObjectID							()		const			;
 	virtual	ICollisionForm*			_BCL					ObjectCollisionModel				()						;
 	//virtual	IRenderVisual*			_BCL					ObjectVisual						()						;
-	virtual	IKinematics*			_BCL					ObjectKinematics					()						;
+	virtual	IKinematics*			_BCL					ObjectKinematics					() const						;
 	virtual IDamageSource*			_BCL					ObjectCastIDamageSource				()						;
 	virtual	void					_BCL					ObjectProcessingDeactivate			()						;
 	virtual	void					_BCL					ObjectProcessingActivate			()						;				

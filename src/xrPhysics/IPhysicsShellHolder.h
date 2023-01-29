@@ -43,7 +43,7 @@ class IPhysicsShellHolder
 	virtual	u16							_BCL	ObjectID							()		const			=0;
 	virtual	ICollisionForm*				_BCL	ObjectCollisionModel				()						=0;
 //	virtual	IRenderVisual*				_BCL	ObjectVisual						()						=0;
-	virtual	IKinematics*				_BCL	ObjectKinematics					()						=0;
+	virtual	IKinematics*				_BCL	ObjectKinematics					()		const				=0;
 	virtual IDamageSource*				_BCL	ObjectCastIDamageSource				()						=0;
 	virtual	void						_BCL	ObjectProcessingDeactivate			()						=0;
 	virtual	void						_BCL	ObjectProcessingActivate			()						=0;				

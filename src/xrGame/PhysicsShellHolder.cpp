@@ -519,7 +519,7 @@ ICollisionForm* CPhysicsShellHolder::ObjectCollisionModel()
 	return collidable.model;
 }
 
-IKinematics	*CPhysicsShellHolder::ObjectKinematics()
+IKinematics	*CPhysicsShellHolder::ObjectKinematics() const
 {
 	VERIFY(Visual());
 	return Visual()->dcast_PKinematics();
