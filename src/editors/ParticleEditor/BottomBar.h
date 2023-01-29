@@ -15,7 +15,7 @@
 #include <ExtCtrls.hpp>
 #include <Menus.hpp>
 //---------------------------------------------------------------------------
-class ECORE_API TfraBottomBar : public TFrame
+class TfraBottomBar : public TFrame
 {
 __published:	// IDE-managed Components
 	TFormStorage *fsStorage;

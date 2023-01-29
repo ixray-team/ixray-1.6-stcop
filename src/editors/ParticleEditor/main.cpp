@@ -8,8 +8,8 @@
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "RenderWindow"
-#pragma resource "*.dfm"
+
+#pragma resource "main.dfm"
 
 #include "topbar.h"
 #include "leftbar.h"
@@ -25,9 +25,9 @@ TfrmMain *frmMain;
 #include "../ECore/Editor/EThumbnail.h"
 #include "../xrEProps/FolderLib.h"
 #include "LightAnimLibrary.h"
-#include "ImageManager.h"
-#include "SoundManager.h"
-#include "ui_main.h"
+#include "../ECore/Editor/ImageManager.h"
+#include "../ECore/Editor/SoundManager.h"
+#include "../ECore/Editor/ui_main.h"
 #include "..\..\Layers\xrRender\PSLibrary.h"
 #include "GameMtlLib.h"
 #include "../../xrSound/soundrender_source.h"
@@ -67,7 +67,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
     FillChooseEvents		();
 
     // special case :(
-	frmMain->WindowState 	= (TWindowState)fsStorage->ReadInteger("window_state",frmMain->WindowState);
+	frmMain->WindowState 	= (TWindowState)fsStorage->ReadInteger("window_state", (int) frmMain->WindowState);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormClose(TObject *Sender, TCloseAction &Action)
@@ -257,7 +257,7 @@ void __fastcall TfrmMain::paRenderResize(TObject *Sender)
  
 void __fastcall TfrmMain::fsStorageSavePlacement(TObject *Sender)
 {
-    fsStorage->WriteInteger("window_state",frmMain->WindowState);
+    fsStorage->WriteInteger("window_state", (int) frmMain->WindowState);
 }
 //---------------------------------------------------------------------------
 

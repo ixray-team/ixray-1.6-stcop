@@ -22,7 +22,7 @@
 #include "ParticleEffectActions.h"
 #include "ItemPropFormUnit.h"
 //------------------------------------------------------------------------------
-CParticleTool*&	PTools=(CParticleTool*)Tools;
+CParticleTool*&	PTools=(CParticleTool*&)Tools;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
 //static Fvector zero_vec={0.f,0.f,0.f};
@@ -647,7 +647,7 @@ void CParticleTool::CommandJumpToItem()
    {
         if(fraLeftBar->refLB->Selected[i])
         {
-        	m_PList->SelectItem((fraLeftBar->refLB->Items->Strings[i]).c_str(),true,false,true);
+			m_PList->SelectItem(AnsiString((fraLeftBar->refLB->Items->Strings[i])).c_str(),true,false,true);
         	break;
         }
     }

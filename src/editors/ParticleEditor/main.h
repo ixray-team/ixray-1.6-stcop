@@ -18,7 +18,7 @@
 //---------------------------------------------------------------------------
 // refs
 
-class ECORE_API TfrmMain : public TForm
+class TfrmMain : public TForm
 {
 __published:	// IDE-managed Components
         TPanel *paLeftBar;

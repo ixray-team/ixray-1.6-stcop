@@ -159,20 +159,20 @@ public:
     virtual bool		GetSelectionPosition	(Fmatrix& result);
 
     
-    CCommandVar			Compact				(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CreateGroupFromSelected(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall			Compact				(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CreateGroupFromSelected(CCommandVar p1, CCommandVar p2);
     // commands
-    CCommandVar			CommandSelectPreviewObj	(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandEditPreviewProps	(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandSave				(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandSaveXR			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandLoadXR			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandSaveBackup		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandReload			(CCommandVar p1, CCommandVar p2);
-    CCommandVar			CommandValidate			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandClear			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandPlayCurrent		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandStopCurrent		(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandSelectPreviewObj	(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandEditPreviewProps	(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandSave				(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandSaveXR			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandLoadXR			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandSaveBackup		(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandReload			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandValidate			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandClear			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandPlayCurrent		(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall			CommandStopCurrent		(CCommandVar p1, CCommandVar p2);
 };
 #define SYSTEM_PREFIX 	"Systems"
 #define EFFECT_PREFIX 	"Effects"

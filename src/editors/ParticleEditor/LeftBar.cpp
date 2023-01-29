@@ -10,16 +10,9 @@
 #include "UI_ParticleTools.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTree"
-#pragma link "ElXPThemedControl"
-#pragma link "ElTreeAdvEdit"
-#pragma link "ElPgCtl"                	
-#pragma link "MXCtrls"
-#pragma link "ElTree"
-#pragma resource "*.dfm"
+
+#pragma resource "LeftBar.dfm"
+
 TfraLeftBar *fraLeftBar;
 
 #define MIN_PANEL_HEIGHT 15

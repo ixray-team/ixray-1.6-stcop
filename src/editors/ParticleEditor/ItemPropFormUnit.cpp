@@ -6,8 +6,9 @@
 #include "ItemPropFormUnit.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "ItemPropFormUnit.dfm"
+
 TfmItemProp *fmItemProp;
 //---------------------------------------------------------------------------
 __fastcall TfmItemProp::TfmItemProp(TComponent* Owner)

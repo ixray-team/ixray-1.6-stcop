@@ -1161,7 +1161,7 @@ void	EPATurbulence::Compile		(IWriter& F)
             for(int j = 0; j < detail; j++)
                 delete [] nval[i][j];
         }
-        for(i = 0; i < detail; i++)
+        for(int i = 0; i < detail; i++)
             delete [] nval[i];
         delete [] nval;
         nval = 0;

@@ -14,7 +14,7 @@
 #include "xr_input.h"
 
 //---------------------------------------------------------------------------
-CParticleMain*&	PUI=(CParticleMain*)UI;
+CParticleMain*&	PUI=(CParticleMain*&)UI;
 //---------------------------------------------------------------------------
 
 CParticleMain::CParticleMain()  
@@ -29,25 +29,25 @@ CParticleMain::~CParticleMain()
 }
 //---------------------------------------------------------------------------
 
-CCommandVar CParticleTool::CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
 {
     SelectPreviewObject(p1);
     return TRUE;
 }
-CCommandVar CParticleTool::CommandEditPreviewProps(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandEditPreviewProps(CCommandVar p1, CCommandVar p2)
 {
     EditPreviewPrefs();
     return TRUE;
 }
 
-CCommandVar CParticleTool::CommandSaveXR(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandSaveXR(CCommandVar p1, CCommandVar p2)
 {
     Save							(true);
     ExecCommand						(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
 
-CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
 {
 	xr_string temp_fn;
     if (EFS.GetOpenName				( "$game_data$", temp_fn, false, NULL, 0))
@@ -61,79 +61,79 @@ CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
     return TRUE;
 }
 
-CCommandVar CParticleTool::CommandSave(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandSave(CCommandVar p1, CCommandVar p2)
 {
     Save		(false);
     ExecCommand	(COMMAND_UPDATE_CAPTION);
     return 		TRUE;
 }
-CCommandVar CParticleTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
     ExecCommand(COMMAND_SAVE);
     return TRUE;
 }
-CCommandVar CParticleTool::CommandReload(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandReload(CCommandVar p1, CCommandVar p2)
 {
     if (!IfModified()) 	return FALSE;
     Reload				();
     ExecCommand(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar CParticleTool::CommandValidate(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandValidate(CCommandVar p1, CCommandVar p2)
 {
 	Validate(true);
     return TRUE;
 }
-CCommandVar CParticleTool::CommandClear(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandClear(CCommandVar p1, CCommandVar p2)
 {
     EDevice.m_Camera.Reset();
     ResetPreviewObject();
     ExecCommand(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar CParticleTool::CommandPlayCurrent(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandPlayCurrent(CCommandVar p1, CCommandVar p2)
 {
     PlayCurrent();
     return TRUE;
 }
-CCommandVar CParticleTool::CommandStopCurrent(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CParticleTool::CommandStopCurrent(CCommandVar p1, CCommandVar p2)
 {
     StopCurrent(p1);
     return TRUE;
 }
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->RefreshBar	();
     fraLeftBar->RefreshBar	();
     fraBottomBar->RefreshBar();
     return TRUE;
 }
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->RestoreFormPlacement();
     fraLeftBar->fsStorage->RestoreFormPlacement();
     fraBottomBar->fsStorage->RestoreFormPlacement();
     return TRUE;
 }
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->SaveFormPlacement();
     fraLeftBar->fsStorage->SaveFormPlacement();
     fraBottomBar->fsStorage->SaveFormPlacement();
     return TRUE;
 }
-CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     fraLeftBar->UpdateBar();
     return TRUE;
 }
-CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
 {
     frmMain->UpdateCaption();
     return TRUE;
 }
 
-CCommandVar CommandJumpToItem(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandJumpToItem(CCommandVar p1, CCommandVar p2)
 {
     PTools->CommandJumpToItem();
     return TRUE;
@@ -172,13 +172,13 @@ char* CParticleMain::GetCaption()
 	return "particles";
 }
 
-bool __fastcall CParticleMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool CParticleMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall CParticleMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool CParticleMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }

@@ -52,7 +52,7 @@ void PS::CPEDef::Copy(const CPEDef& src)
 	Compile				(m_EActionList);
 }
 
-void __fastcall PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void __stdcall PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0: 			PTools->PlayCurrent();		break;
@@ -62,20 +62,20 @@ void __fastcall PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, 
     bDataModified		= false;
 }
 
-void __fastcall PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
+void __stdcall PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
 {
 	res 				= false;
 	for (EPAVecIt s_it=m_EActionList.begin(); s_it!=m_EActionList.end(); s_it++)
     	if (0==stricmp(new_name,*(*s_it)->actionName)){res=true; break;};
 }
 
-IC __fastcall void PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
+IC __stdcall void PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
 {
     for(int i=0; actions_token[i].name; i++)
         items.push_back(SChooseItem(actions_token[i].name,actions_token[i].info));
 }
 
-void __fastcall PS::CPEDef::OnActionsClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void __stdcall PS::CPEDef::OnActionsClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0:{
@@ -99,19 +99,19 @@ void __fastcall PS::CPEDef::OnActionsClick(ButtonValue* B, bool& bDataModified, 
     bDataModified	= false;
 }
 
-void __fastcall PS::CPEDef::OnFlagChange(PropValue* sender)
+void __stdcall PS::CPEDef::OnFlagChange(PropValue* sender)
 {
     ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }          
 
-void __fastcall PS::CPEDef::OnShaderChange(PropValue* sender)
+void __stdcall PS::CPEDef::OnShaderChange(PropValue* sender)
 {
 	m_CachedShader.destroy	();
 	if (m_ShaderName.size()&&m_TextureName.size())
 		m_CachedShader.create(m_ShaderName.c_str(),m_TextureName.c_str());
 }          
 
-void __fastcall PS::CPEDef::OnFrameResize(PropValue* sender)
+void __stdcall PS::CPEDef::OnFrameResize(PropValue* sender)
 {
 	m_Frame.m_iFrameDimX	= iFloor(1.f/m_Frame.m_fTexSize.x);
 }
@@ -136,7 +136,7 @@ void PS::CPEDef::CollisionCutoffOnDraw(PropValue* sender, xr_string& draw_val)
 }
 
 
-void __fastcall PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void __stdcall PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     bDataModified	= false;
     int idx			= B->tag;
