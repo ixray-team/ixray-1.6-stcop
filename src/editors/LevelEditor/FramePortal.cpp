@@ -10,8 +10,8 @@
 #include "EScenePortalTools.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "FramePortal.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraPortal::TfraPortal(TComponent* Owner)

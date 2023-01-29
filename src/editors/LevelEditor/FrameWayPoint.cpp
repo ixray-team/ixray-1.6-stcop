@@ -9,7 +9,8 @@
 #include "ESceneWayControls.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "FrameWayPoint.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraWayPoint::TfraWayPoint(TComponent* Owner)

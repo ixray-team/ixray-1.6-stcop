@@ -21,18 +21,8 @@
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElTree"
-#pragma link "ElHeader"
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma link "mxPlacemnt"
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma link "mxPlacemnt"
-#pragma link "MxMenus"
-#pragma link "ElTreeAdvEdit"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "EditLibrary.dfm"
 
 TfrmEditLibrary* TfrmEditLibrary::form=0;
 FS_FileSet TfrmEditLibrary::modif_map;
@@ -246,7 +236,7 @@ void TfrmEditLibrary::OnModified()
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmEditLibrary::OnItemsFocused(ListItemsVec& items)
+void TfrmEditLibrary::OnItemsFocused(ListItemsVec& items)
 {
 	xr_delete		(m_Thm);
 //    bool mt			= false;
@@ -263,7 +253,7 @@ void __fastcall TfrmEditLibrary::OnItemsFocused(ListItemsVec& items)
         ebRemoveObject->Enabled = !bReadOnly;
 //		ebExportLWO->Enabled 	= !bReadOnly;
 
-        FS.update_path			(thm_fn,_objects_,ChangeFileExt(nm,".thm").c_str());
+        FS.update_path			(thm_fn,_objects_,AnsiString(ChangeFileExt(nm,".thm")).c_str());
         if (FS.exist(thm_fn))
             m_Thm 				= xr_new<EObjectThumbnail>(nm.c_str());
         /*
@@ -383,7 +373,7 @@ void __fastcall TfrmEditLibrary::ebMakeThmClick(TObject *Sender)
     	if(obj && cbPreview->Checked)
         {
             string_path 			fn;
-        	FS.update_path			(fn,_objects_,ChangeFileExt(obj->GetName(),".thm").c_str());
+        	FS.update_path			(fn,_objects_,AnsiString(ChangeFileExt(obj->GetName(),".thm")).c_str());
 
             m_Items->SelectItem			(item->Key(),true,false,true);
             if (ImageLib.CreateOBJThumbnail	(fn,obj,obj->Version()))
@@ -772,7 +762,7 @@ void __fastcall TfrmEditLibrary::ebImportClick(TObject *Sender)
 		xr_string m_LastSelection;
         for (AStringIt it=lst.begin(); it!=lst.end(); ++it)
         {
-        	nm = ChangeFileExt(ExtractFileName(*it),"").c_str();
+        	nm = AnsiString(ChangeFileExt(ExtractFileName(*it),"")).c_str();
             CEditableObject* O = xr_new<CEditableObject>(nm.c_str());
             if (O->Load(it->c_str()))
             {

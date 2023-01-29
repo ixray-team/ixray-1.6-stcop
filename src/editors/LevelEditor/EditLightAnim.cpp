@@ -9,14 +9,8 @@
 #include "../ECore/Editor/ColorPicker.h"
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
-#pragma link "multi_edit"
-#pragma link "Gradient"
-#pragma link "ElTrackBar"
-#pragma link "ElTreeAdvEdit"
-#pragma link "MxMenus"
-#pragma link "MXCtrls"
-#pragma link "RenderWindow"
-#pragma resource "*.dfm"
+
+#pragma resource "EditLightAnim.dfm"
 
 TfrmEditLightAnim* TfrmEditLightAnim::form=0;
 
@@ -64,7 +58,7 @@ void __fastcall TfrmEditLightAnim::fsStorageSavePlacement(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmEditLightAnim::OnModified()
+void TfrmEditLightAnim::OnModified()
 {
 	ebSave->Enabled = true;
     UpdateView();
@@ -127,7 +121,7 @@ bool TfrmEditLightAnim::FinalClose(){
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmEditLightAnim::OnItemFocused(TElTreeItem* item)
+void TfrmEditLightAnim::OnItemFocused(TElTreeItem* item)
 {
     if (item&&FHelper.IsObject(item)){
         ListItem* prop 			= (ListItem*)item->Tag; VERIFY(prop);

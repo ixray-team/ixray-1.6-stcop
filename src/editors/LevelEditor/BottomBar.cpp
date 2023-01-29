@@ -10,10 +10,9 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"          
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"     
+
+#pragma resource "BottomBar.dfm"
+
 TfraBottomBar *fraBottomBar=0;
 //---------------------------------------------------------------------------
 __fastcall TfraBottomBar::TfraBottomBar(TComponent* Owner)
@@ -168,7 +167,7 @@ void __fastcall TfraBottomBar::pmOptionsPopup(TObject *Sender)
     {
         TMenuItem* mi = miWeather->Items[i];
         BOOL bch;
-        bch  = ((EPrefs->sWeather.size()) && (0==stricmp(mi->Caption.c_str(), EPrefs->sWeather.c_str()))) ||
+        bch  = ((EPrefs->sWeather.size()) && (0==stricmp(AnsiString(mi->Caption).c_str(), EPrefs->sWeather.c_str()))) ||
                (mi->Caption=="none" && EPrefs->sWeather.size()==0) ;
         mi->Checked                 = bch;
     }

@@ -8,9 +8,8 @@
 #include "EParticlesObject.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "FramePS.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraPS::TfraPS(TComponent* Owner)

@@ -9,8 +9,8 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_color"
-#pragma resource "*.dfm"
+
+#pragma resource "FrameDetObj.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraDetailObject::TfraDetailObject(TComponent* Owner, EDetailManager* dm_tools)

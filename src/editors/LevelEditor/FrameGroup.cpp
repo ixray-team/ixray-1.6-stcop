@@ -8,10 +8,8 @@
 #include "escenegrouptools.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "MXCtrls"
-#pragma link "multi_edit"
-#pragma link "MxMenus"
-#pragma resource "*.dfm"
+
+#pragma resource "FrameGroup.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraGroup::TfraGroup(TComponent* Owner, ESceneGroupTool* gt)
@@ -66,7 +64,7 @@ void __fastcall TfraGroup::ebAlignToObjectClick(TObject *Sender)
 void __fastcall TfraGroup::ebSelectClick(TObject *Sender)
 {
 	LPCSTR 		nm;
-    xr_string N	= lbCurrent->Caption.c_str();
+    xr_string N	= AnsiString(lbCurrent->Caption).c_str();
     if (TfrmChoseItem::SelectItem(smGroup,nm,1,N.c_str()))
         ParentTools->SetCurrentObject(nm);	
 }
@@ -118,7 +116,7 @@ void __fastcall TfraGroup::seSelPercentKeyPress(TObject *Sender, char &Key)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfraGroup::MultiSelByRefObject ( bool clear_prev )
+void TfraGroup::MultiSelByRefObject ( bool clear_prev )
 {
     ObjectList 	objlist;
     LPU32Vec 	sellist;
@@ -145,7 +143,7 @@ void __fastcall TfraGroup::MultiSelByRefObject ( bool clear_prev )
         std::random_shuffle	(sellist.begin(),sellist.end());
         int max_k		= iFloor(float(sellist.size())/100.f*float(seSelPercent->Value)+0.5f);
         int k			= 0;
-        for (LPU32It o_it=sellist.begin(); k<max_k; o_it++,k++){
+        for (auto o_it=sellist.begin(); k<max_k; o_it++,k++){
             CGroupObject *_O = (CGroupObject *)(*o_it);
             _O->Select( true );
         }
@@ -156,7 +154,7 @@ void __fastcall TfraGroup::MultiSelByRefObject ( bool clear_prev )
 void TfraGroup::SelByRefObject( bool flag )
 {
     ObjectList objlist;
-	LPCSTR N=lbCurrent->Caption.c_str();
+	LPCSTR N=AnsiString(lbCurrent->Caption).c_str();
 	if (N){
         ObjectIt _F = Scene->FirstObj(OBJCLASS_GROUP);
         ObjectIt _E = Scene->LastObj(OBJCLASS_GROUP);

@@ -16,7 +16,9 @@
 #include "../ECore/Editor/ImageManager.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "DOShuffle.dfm"
+
 TfrmDOShuffle *TfrmDOShuffle::form=0;
 
 //static DDVec DOData;

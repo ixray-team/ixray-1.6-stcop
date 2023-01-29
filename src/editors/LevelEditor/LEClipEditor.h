@@ -211,7 +211,7 @@ public:		// User declarations
     void				ShowEditor		(CKinematicsAnimated* O);
     void				HideEditor		();
 
-	virtual void		OnFrame			(void);
+	virtual void	__stdcall	OnFrame			(void);
     TItemList*			m_ObjectItems;
 };
 

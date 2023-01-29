@@ -5,7 +5,8 @@
 #include "../ECore/Engine/Texture.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "previewimage.dfm"
 
 TfrmPreviewImage* TfrmPreviewImage::form = 0;
 //---------------------------------------------------------------------------

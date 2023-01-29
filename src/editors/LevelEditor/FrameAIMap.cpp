@@ -9,13 +9,8 @@
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma link "ElTree"
-#pragma link "ElXPThemedControl"
-#pragma link "ElPanel"
-#pragma link "ElSplit"
-#pragma link "multi_edit"
-#pragma resource "*.dfm"
+
+#pragma resource "FrameAIMap.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraAIMap::TfraAIMap(TComponent* Owner, ESceneAIMapTool* _tools)

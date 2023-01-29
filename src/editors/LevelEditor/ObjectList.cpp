@@ -8,9 +8,9 @@
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma link "ElEdits"
-#pragma resource "*.dfm"
+
+#pragma resource "ObjectList.dfm"
+
 //---------------------------------------------------------------------------
 TfrmObjectList* TfrmObjectList::CreateForm(TWinControl* parent)
 {

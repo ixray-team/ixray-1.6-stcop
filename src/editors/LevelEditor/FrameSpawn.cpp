@@ -9,7 +9,8 @@
 #include "../ECore/Editor/EThumbnail.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "FrameSpawn.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraSpawn::TfraSpawn(TComponent* Owner)
@@ -81,9 +82,9 @@ void __fastcall TfraSpawn::FormShow(TObject *Sender)
 	m_caption_to_sect.clear();
     m_Items->LoadSelection	(fsStorage);
     ListItemsVec items;
-    LHelper().CreateItem	(items,RPOINT_CHOOSE_NAME,0,0,RPOINT_CHOOSE_NAME);
-    LHelper().CreateItem	(items,ENVMOD_CHOOSE_NAME,0,0,ENVMOD_CHOOSE_NAME);
-    CInifile::Root& data 	= pSettings->sections();
+    LHelper().CreateItem	(items,RPOINT_CHOOSE_NAME,0,0, (void*) RPOINT_CHOOSE_NAME);
+    LHelper().CreateItem	(items,ENVMOD_CHOOSE_NAME,0,0, (void*) ENVMOD_CHOOSE_NAME);
+    CInifile::Root data 	= pSettings->sections();
     for (CInifile::RootIt it=data.begin(); it!=data.end(); it++){
     	LPCSTR val;
     	if ((*it)->line_exist("$spawn",&val))
@@ -160,7 +161,7 @@ void TfraSpawn::MultiSelByRefObject ( bool clear_prev )
         std::random_shuffle	(sellist.begin(),sellist.end());
         int max_k		= iFloor(float(sellist.size())/100.f*float(seSelPercent->Value)+0.5f);
         int k			= 0;
-        for (LPU32It o_it=sellist.begin(); k<max_k; o_it++,k++){
+        for (auto o_it=sellist.begin(); k<max_k; o_it++,k++){
             CSpawnPoint *_O = (CSpawnPoint *)(*o_it);
             _O->Select( true );
         }

@@ -15,10 +15,9 @@
 #include "FrmDBXpacker.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "LeftBar.dfm"
+
 TfraLeftBar *fraLeftBar;
 
 //---------------------------------------------------------------------------
@@ -554,7 +553,7 @@ void __fastcall TfraLeftBar::RemoveSelectedFromList1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfraLeftBar::UpdateSnapList()
+void TfraLeftBar::UpdateSnapList()
 {
 	lbSnapList->Items->Clear();
     ObjectList* lst = Scene->GetSnapList(true);

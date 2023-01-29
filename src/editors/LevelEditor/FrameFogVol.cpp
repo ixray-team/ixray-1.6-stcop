@@ -6,9 +6,8 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma resource "*.dfm"
 
+#pragma resource "FrameFogVol.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraFogVol::TfraFogVol(TComponent* Owner, ESceneFogVolumeTool* gt)

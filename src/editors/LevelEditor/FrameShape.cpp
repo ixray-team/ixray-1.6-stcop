@@ -9,7 +9,8 @@
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma resource "*.dfm"
+
+#pragma resource "FrameShape.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraShape::TfraShape(TComponent* Owner)

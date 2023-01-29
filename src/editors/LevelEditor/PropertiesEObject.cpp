@@ -9,14 +9,9 @@
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma link "mxPlacemnt"
-#pragma link "ExtBtn"
-#pragma link "ElPgCtl"
-#pragma link "ElXPThemedControl"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "PropertiesEObject.dfm"
+
 //---------------------------------------------------------------------------
 __fastcall TfrmPropertiesEObject::TfrmPropertiesEObject(TComponent* Owner)
     : TForm(Owner)

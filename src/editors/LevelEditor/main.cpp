@@ -8,8 +8,8 @@
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "RenderWindow"
-#pragma resource "*.dfm"
+
+#pragma resource "main.dfm"
 
 #include "topbar.h"
 #include "leftbar.h"
@@ -65,7 +65,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
     FillChooseEvents		();
 
     // special case :(
-	frmMain->WindowState 	= (TWindowState)fsStorage->ReadInteger("window_state",frmMain->WindowState);
+	frmMain->WindowState 	= (TWindowState)fsStorage->ReadInteger("window_state", (int) frmMain->WindowState);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormClose(TObject *Sender, TCloseAction &Action)
@@ -260,7 +260,7 @@ void __fastcall TfrmMain::paRenderResize(TObject *Sender)
  
 void __fastcall TfrmMain::fsStorageSavePlacement(TObject *Sender)
 {
-    fsStorage->WriteInteger("window_state",frmMain->WindowState);
+    fsStorage->WriteInteger("window_state", (int) frmMain->WindowState);
 }
 //---------------------------------------------------------------------------
 

@@ -76,7 +76,7 @@ __published:	// IDE-managed Components
 	void __fastcall ExtBtn9Click(TObject *Sender);
 private:	// User declarations
     void __fastcall MultiSelByRefObject ( bool clear_prev );
-    void __fastcall SelByRefObject  	( bool flag );
+    void SelByRefObject  	( bool flag );
     TItemList* m_Items;
     void __stdcall  OnItemFocused		(ListItemsVec& items);
     LPCSTR m_Current;

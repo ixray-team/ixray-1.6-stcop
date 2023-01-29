@@ -16,26 +16,15 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "mxPlacemnt"
-#pragma link "mxPlacemnt"
-#pragma link "ExtBtn"
-#pragma link "MXCtrls"
-#pragma link "Gradient"
-#pragma link "ElScrollBar"
-#pragma link "ElXPThemedControl"
-#pragma link "MxMenus"
-#pragma link "ElPanel"
-#pragma link "ElSplit"
-#pragma link "multi_edit"
-#pragma link "ElTrackBar"
-#pragma resource "*.dfm"
 
-static const TColor CLIP_INACTIVE_COLOR		= 0x00686868;
-static const TColor CLIP_ACTIVE_COLOR		= 0x00A1A1A1;
-static const TColor CLIP_ACTIVE_DRAG_COLOR	= 0x00FFFFFF;
-static const TColor BP_INACTIVE_COLOR		= 0x00686868;
-static const TColor BP_ACTIVE_COLOR			= 0x00A1A1A1;
-static const TColor BP_ACTIVE_DRAG_COLOR	= 0x00FFFFFF;
+#pragma resource "LEClipEditor.dfm"
+
+static const TColor CLIP_INACTIVE_COLOR		= TColor(0x00686868);
+static const TColor CLIP_ACTIVE_COLOR		= TColor(0x00A1A1A1);
+static const TColor CLIP_ACTIVE_DRAG_COLOR	= TColor(0x00FFFFFF);
+static const TColor BP_INACTIVE_COLOR		= TColor(0x00686868);
+static const TColor BP_ACTIVE_COLOR			= TColor(0x00A1A1A1);
+static const TColor BP_ACTIVE_DRAG_COLOR	= TColor(0x00FFFFFF);
 
 static TShiftState 		drag_state;
 static int 	drag_obj	= 0xFFFF;
@@ -502,7 +491,7 @@ void __fastcall TClipMaker::BPMouseUp(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClipMaker::OnClipItemFocused(ListItemsVec& items)
+void TClipMaker::OnClipItemFocused(ListItemsVec& items)
 {
 	if (!items.empty()){
 	    for (ListItemsIt it=items.begin(); it!=items.end(); it++){
@@ -517,20 +506,20 @@ void __fastcall TClipMaker::OnClipItemFocused(ListItemsVec& items)
 }
 //------------------------------------------------------------------------------
 
-void __fastcall TClipMaker::OnNameChange(PropValue* V)
+void TClipMaker::OnNameChange(PropValue* V)
 {
 	VERIFY(sel_clip);
     RepaintClips();
 }
 //------------------------------------------------------------------------------
 
-void __fastcall TClipMaker::OnClipLengthChange(PropValue* V)
+void TClipMaker::OnClipLengthChange(PropValue* V)
 {
 	UpdateClips		();
 }
 //------------------------------------------------------------------------------
 
-void __fastcall TClipMaker::OnZoomChange(PropValue* V)
+void TClipMaker::OnZoomChange(PropValue* V)
 {
 	UpdateClips		();
 }
@@ -895,7 +884,7 @@ void TClipMaker::RealUpdateClips()
     // clip list
     ListItemsVec			l_items;
     
-    for (it=clips.begin(); it!=clips.end(); ++it)
+    for (AnimClipIt it=clips.begin(); it!=clips.end(); ++it)
     	LHelper().CreateItem	(l_items,*(*it)->name,0,0,*it);
         
 	m_ClipList->AssignItems		(l_items,true);

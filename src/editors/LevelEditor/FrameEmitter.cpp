@@ -8,9 +8,9 @@
 #include "ParticleSystem.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElPgCtl"
-#pragma link "ElXPThemedControl"
-#pragma resource "*.dfm"
+
+#pragma resource "FrameEmitter.dfm"
+
 TfraEmitter *fraEmitter;
 //---------------------------------------------------------------------------
 __fastcall TfraEmitter::TfraEmitter(TComponent* Owner)

@@ -139,7 +139,7 @@ object fraGroup: TfraGroup
     object APHeadLabel2: TLabel
       Left = 1
       Top = 1
-      Width = 211
+      Width = 68
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -217,7 +217,7 @@ object fraGroup: TfraGroup
     object Label1: TLabel
       Left = 1
       Top = 1
-      Width = 211
+      Width = 73
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -335,6 +335,7 @@ object fraGroup: TfraGroup
       Color = clGray
       ParentColor = False
       OnClick = ExpandClick
+      ExplicitWidth = 83
     end
     object ExtBtn5: TExtBtn
       Left = 200
@@ -420,11 +421,11 @@ object fraGroup: TfraGroup
       Top = 30
       Width = 43
       Height = 13
-      LWSensitivity = 1
+      LWSensitivity = 1.000000000000000000
       ButtonKind = bkLightWave
-      MaxValue = 100
-      MinValue = 1
-      Value = 100
+      MaxValue = 100.000000000000000000
+      MinValue = 1.000000000000000000
+      Value = 100.000000000000000000
       AutoSize = False
       BorderStyle = bsNone
       Color = 12698049

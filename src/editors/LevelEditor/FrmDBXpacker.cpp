@@ -6,13 +6,8 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElShellCtl"
-#pragma link "ElTree"
-#pragma link "ElXPThemedControl"
-#pragma link "ElListBox"
-#pragma link "ExtBtn"
-#pragma link "MXCtrls"
-#pragma resource "*.dfm"
+
+#pragma resource "FrmDBXpacker.dfm"
 
 TDB_packer* TDB_packer::m_form = NULL;
 

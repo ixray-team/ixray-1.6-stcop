@@ -7,11 +7,9 @@
 #include "ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "multi_edit"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "ShaderFunction.dfm"
+
 TfrmShaderFunction *TfrmShaderFunction::form=0;
 WaveForm* TfrmShaderFunction::m_CurFunc=0;
 WaveForm* TfrmShaderFunction::m_SaveFunc=0;

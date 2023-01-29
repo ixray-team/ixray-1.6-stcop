@@ -6,9 +6,9 @@
 #include "../ECore/Editor/ColorPicker.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ElXPThemedControl"
-#pragma link "ExtBtn"
-#pragma resource "*.dfm"
+
+#pragma resource "DOOneColor.dfm"
+
 //---------------------------------------------------------------------------
 __fastcall TfrmOneColor::TfrmOneColor(TComponent* Owner)
     : TForm(Owner)

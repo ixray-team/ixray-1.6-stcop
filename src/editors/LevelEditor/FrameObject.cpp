@@ -13,9 +13,8 @@
 #include "Scene.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "multi_edit"
-#pragma link "mxPlacemnt"
-#pragma resource "*.dfm"
+
+#pragma resource "FrameObject.dfm"
 
 //---------------------------------------------------------------------------
 __fastcall TfraObject::TfraObject(TComponent* Owner,ESceneObjectTool* parent_tools)
@@ -33,7 +32,7 @@ void TfraObject::OnDrawObjectThumbnail(LPCSTR name, HDC hdc, const Irect &r)
     xr_delete				(thm);
 }
 //---------------------------------------------------------------------------
-void __fastcall TfraObject::OnItemFocused(ListItemsVec& items)
+void TfraObject::OnItemFocused(ListItemsVec& items)
 {
 	VERIFY(items.size()<=1);
     m_Current 			= 0;
@@ -97,7 +96,7 @@ void __fastcall TfraObject::MultiSelByRefObject ( bool clear_prev )
         std::random_shuffle	(sellist.begin(),sellist.end());
         int max_k		= iFloor(float(sellist.size())/100.f*float(seSelPercent->Value)+0.5f);
         int k			= 0;
-        for (LPU32It o_it=sellist.begin(); k<max_k; o_it++,k++){
+        for (auto o_it=sellist.begin(); k<max_k; o_it++,k++){
             CSceneObject *_O = (CSceneObject *)(*o_it);
             _O->Select( true );
         }
