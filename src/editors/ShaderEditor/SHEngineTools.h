@@ -5,16 +5,18 @@
 #include "SHToolsInterface.h"
 #include "../xrEProps/PropertiesList.h"
 
+#include "..\ECore\stdafx.h"
+
 using TemplateVec = xr_vector<IBlender*>;
 using TemplateIt = TemplateVec::iterator;
 
-using ConstantMap = xr_map<LPSTR, CConstant*, str_pred);
+using ConstantMap = xr_map<LPSTR, CConstant*, str_pred>;
 using ConstantPairIt = ConstantMap::iterator;
 
-using MatrixMap = xr_map<LPSTR, CMatrix*, str_pred);
+using MatrixMap = xr_map<LPSTR, CMatrix*, str_pred>;
 using MatrixPairIt = MatrixMap::iterator;
 
-using BlenderMap = xr_map<LPSTR, IBlender*, str_pred);
+using BlenderMap = xr_map<LPSTR, IBlender*, str_pred>;
 using BlenderPairIt = BlenderMap::iterator;
 
 // refs

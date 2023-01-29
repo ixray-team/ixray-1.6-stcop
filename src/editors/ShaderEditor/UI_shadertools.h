@@ -94,12 +94,12 @@ public:
     ISHTools*			FindTools			(TElTabSheet* sheet);
 
     // commands
-    CCommandVar 		CommandSave			(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandReload		(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandClear		(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandSave			(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandReload		(CCommandVar p1, CCommandVar p2);
+	CCommandVar __stdcall 		CommandClear		(CCommandVar p1, CCommandVar p2);
 
-    CCommandVar 		CommandUpdateList	(CCommandVar p1, CCommandVar p2);
+    CCommandVar __stdcall 		CommandUpdateList	(CCommandVar p1, CCommandVar p2);
 };
 extern CShaderTool*&	STools;
 //---------------------------------------------------------------------------

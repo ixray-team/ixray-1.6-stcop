@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "UI_ShaderTools.h"
+
 #include "../xrEProps/ChoseForm.h"
 #include "../ECore/Editor/ui_main.h"
 #include "leftbar.h"
@@ -12,8 +12,11 @@
 #include "GameMtlLib.h"
 #include "../xrEProps/ItemList.h"
 
+#include "..\ECore\stdafx.h"
+#include "UI_ShaderTools.h"
+
 //------------------------------------------------------------------------------
-CShaderTool*&	STools=(CShaderTool*)Tools;
+CShaderTool*&	STools=(CShaderTool*&)Tools;
 //------------------------------------------------------------------------------
 
 CShaderTool::CShaderTool()
@@ -247,7 +250,7 @@ void CShaderTool::RegisterTools()
 //    	case aeSoundEnv:	tools = xr_new<CSHSoundEnvTools>	(ISHInit( EToolsID(k),	m_Items,	fraLeftBar->tsSoundEnv,	m_ItemProps,	m_PreviewProps));	break;
         }
         R_ASSERT(tools);
-		m_Tools.insert(mk_pair(k,tools));
+		m_Tools.insert(std::make_pair(static_cast<EToolsID>(k), tools));
     }
 }
 
@@ -297,7 +300,7 @@ void CShaderTool::RealUpdateList()
 	m_Flags.set(flRefreshList,FALSE);
 }
 
-void __fastcall CShaderTool::OnItemFocused(ListItemsVec& items)
+void __stdcall CShaderTool::OnItemFocused(ListItemsVec& items)
 {
 	LPCSTR name				= 0;
     Current()->m_CurrentItem= 0;

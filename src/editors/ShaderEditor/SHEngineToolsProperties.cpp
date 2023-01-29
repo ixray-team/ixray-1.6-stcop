@@ -17,7 +17,7 @@ xr_token							mode_token					[ ]={
 	{ 0,							0							}           
 };
 //---------------------------------------------------------------------------
-void __fastcall CSHEngineTools::FillMatrixProps(PropItemVec& items, LPCSTR pref, LPSTR name)
+void __stdcall CSHEngineTools::FillMatrixProps(PropItemVec& items, LPCSTR pref, LPSTR name)
 {
     CMatrix* M 						= AppendMatrix(name);
     R_ASSERT(M);
@@ -37,7 +37,7 @@ void __fastcall CSHEngineTools::FillMatrixProps(PropItemVec& items, LPCSTR pref,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall CSHEngineTools::MCOnDraw(PropValue* sender, xr_string& draw_val)
+void __stdcall CSHEngineTools::MCOnDraw(PropValue* sender, xr_string& draw_val)
 {
 	if (draw_val[0]!='$') draw_val="Custom";
 }
@@ -65,7 +65,7 @@ bool CSHEngineTools::MatrixOnAfterEdit(PropValue* sender, xr_string& nm)
 }
 //------------------------------------------------------------------------------
 
-void __fastcall CSHEngineTools::FillConstProps(PropItemVec& items, LPCSTR pref, LPSTR name)
+void __stdcall CSHEngineTools::FillConstProps(PropItemVec& items, LPCSTR pref, LPSTR name)
 {
 	CConstant* C = AppendConstant(name);
     R_ASSERT(C);

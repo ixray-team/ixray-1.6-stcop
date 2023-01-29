@@ -7,7 +7,7 @@
 #include "UI_shadertools.h"
 //---------------------------------------------------------------------------
 USEFORM("BottomBar.cpp", fraBottomBar); /* TFrame: File Type */
-USEFORM("LeftBar.cpp", fraLeftBar); /* TFrame: File Type */
+USEFORM("leftbar.cpp", fraLeftBar); /* TFrame: File Type */
 USEFORM("main.cpp", frmMain);
 USEFORM("Splash.cpp", frmSplash);
 USEFORM("TopBar.cpp", fraTopBar); /* TFrame: File Type */
@@ -21,7 +21,7 @@ struct SInit{
 };
 SInit init;
 
-WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 {
 //    try{
         if (!Application->Handle){ 

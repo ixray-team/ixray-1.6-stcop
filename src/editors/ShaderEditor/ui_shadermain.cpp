@@ -13,7 +13,7 @@
 #include "xr_input.h"
 
 //---------------------------------------------------------------------------
-CShaderMain*&	PUI=(CShaderMain*)UI;
+CShaderMain*&	PUI=(CShaderMain*&)UI;
 //---------------------------------------------------------------------------
 
 CShaderMain::CShaderMain()
@@ -28,61 +28,61 @@ CShaderMain::~CShaderMain()
 }
 //---------------------------------------------------------------------------
 
-CCommandVar CShaderTool::CommandSave(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CShaderTool::CommandSave(CCommandVar p1, CCommandVar p2)
 {
     Save			(0,0);
     ExecCommand		(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar CShaderTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CShaderTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
     ExecCommand		(COMMAND_SAVE);
     return TRUE;
 }
-CCommandVar CShaderTool::CommandReload(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CShaderTool::CommandReload(CCommandVar p1, CCommandVar p2)
 {
     Reload			();
     ExecCommand		(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar CShaderTool::CommandClear(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CShaderTool::CommandClear(CCommandVar p1, CCommandVar p2)
 {
     EDevice.m_Camera.Reset();
     ExecCommand		(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar CShaderTool::CommandUpdateList(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CShaderTool::CommandUpdateList(CCommandVar p1, CCommandVar p2)
 {
 	UpdateList		();
     return TRUE;
 }
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->RefreshBar	();
     fraLeftBar->RefreshBar	();
     fraBottomBar->RefreshBar();
     return TRUE;
 }
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->RestoreFormPlacement();
     fraLeftBar->fsStorage->RestoreFormPlacement();
     fraBottomBar->fsStorage->RestoreFormPlacement();
     return TRUE;
 }
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
 {
     fraTopBar->fsStorage->SaveFormPlacement();
     fraLeftBar->fsStorage->SaveFormPlacement();
     fraBottomBar->fsStorage->SaveFormPlacement();
     return TRUE;
 }
-CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     fraLeftBar->UpdateBar();
     return TRUE;
 }
-CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
+CCommandVar __stdcall CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
 {
     frmMain->UpdateCaption();
     return TRUE;
@@ -109,13 +109,13 @@ char* CShaderMain::GetCaption()
 	return (LPSTR)STools->CurrentToolsName();// "shaders&materials";
 }           
 
-bool __fastcall CShaderMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool CShaderMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall CShaderMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool CShaderMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }

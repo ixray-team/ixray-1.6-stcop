@@ -8,8 +8,6 @@
 
 #pragma warn -pck
 
-#define sqrtf(a) sqrt(a)
-
 #define smart_cast dynamic_cast
 
 #ifndef O_SEQUENTIAL
@@ -30,33 +28,7 @@
 #include <process.h>
 #include <utime.h>
 
-// iseful macros
-// MSC names for functions
-#ifdef _eof
-#undef _eof
-#endif
-__inline int _eof	(int _a)   		                        { return ::eof(_a); }
-#ifdef _access
-#undef _access
-#endif
-__inline int _access(const char *_a, int _b)                { return ::access(_a,_b); }
-#ifdef _lseek
-#undef _lseek
-#endif
-__inline long _lseek(int handle, long offset, int fromwhere){ return ::lseek(handle, offset, fromwhere);}
-#ifdef _dup
-#undef _dup
-#endif
-#define fmodf fmod
-__inline int _dup    (int handle)                           { return ::dup(handle);}
-__inline float modff(float a, float *b){
-	double x,y;
-    y = modf(double(a),&x);
-    *b = x;
-    return float(y);
-}
-__inline float expf	(float val)                           	{ return ::exp(val);}
-
+#define _fmodf fmod
 
 #ifdef	_ECOREB
     #define ECORE_API		__declspec(dllexport)
@@ -118,17 +90,6 @@ using LPAStringIt = LPAStringVec::iterator;
 #include "Log.h"
 #include "../ECore/Editor/engine.h"
 #include "defines.h"
-
-struct str_pred : public std::binary_function<char*, char*, bool>
-{
-    IC bool operator()(LPCSTR x, LPCSTR y) const
-    {	return strcmp(x,y)<0;	}
-};
-struct astr_pred : public std::binary_function<const AnsiString&, const AnsiString&, bool>
-{
-    IC bool operator()(const AnsiString& x, const AnsiString& y) const
-    {	return x<y;	}
-};
 
 #ifdef _EDITOR
 	#include "../ECore/Editor/device.h"

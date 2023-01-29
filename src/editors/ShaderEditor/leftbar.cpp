@@ -13,14 +13,9 @@
 #include "../xrEProps/ChoseForm.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "ExtBtn"
-#pragma link "MxMenus"
-#pragma link "mxPlacemnt"
-#pragma link "ElTree"
-#pragma link "ElXPThemedControl"
-#pragma link "ElTreeAdvEdit"
-#pragma link "ElPgCtl"
-#pragma resource "*.dfm"
+
+#pragma resource "leftbar.dfm"
+
 TfraLeftBar *fraLeftBar;
 
 #define MIN_PANEL_HEIGHT 15
