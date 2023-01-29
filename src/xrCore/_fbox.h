@@ -23,7 +23,7 @@ public:
 		};
 	};
 
-	IC	BOOL	is_valid	()											{return (x2>=x1)&&(y2>=y1)&&(z2>=z1);}
+	IC	BOOL	is_valid	() const											{return (x2>=x1)&&(y2>=y1)&&(z2>=z1);}
 
 	IC	const T* data		()	const									{ return &min.x;	}	
 

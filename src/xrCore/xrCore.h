@@ -216,6 +216,23 @@ struct XRCORE_API xr_rtoken{
     shared_str	name;
     int	   	id;
            	xr_rtoken	(LPCSTR _nm, int _id){name=_nm;id=_id;}
+
+#ifdef _EDITOR
+	xr_rtoken(xr_rtoken&& rt) {
+		this->name = rt.name;
+		this->id = rt.id;
+	}
+
+	const xr_rtoken& operator =(xr_rtoken&& rt) {
+		this->name = rt.name;
+		this->id = rt.id;
+		return *this;
+	}
+
+	~xr_rtoken() {
+	}
+#endif
+
 public:
     void	rename		(LPCSTR _nm)		{name=_nm;}
     bool	equal		(LPCSTR _nm)		{return (0==xr_strcmp(*name,_nm));}
@@ -248,7 +265,7 @@ using RStringSet = xr_set<shared_str>;
 using RStringSetIt = RStringSet::iterator;
 
 using RTokenVec = xr_vector<xr_rtoken>;
-using RTokenVecIt = RStringVec::iterator;
+using RTokenVecIt = RTokenVec::iterator;
 
 #define			xr_pure_interface	__interface
 
