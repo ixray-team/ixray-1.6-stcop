@@ -14,10 +14,10 @@ on:
       - '*.props'
       - '*.targets'
       - '*.ltx'
-    paths-ignore:
-      - 'sdk/components/**'
-      - 'src/editors/**'
-      - '*.cbproj'  pull_request:
+      - '!sdk/components/**'
+      - '!src/editors/**'
+      - '!*.cbproj'
+  pull_request:
     branches:
       - '**'
     paths:
@@ -30,10 +30,9 @@ on:
       - '*.props'
       - '*.targets'
       - '*.ltx'
-    paths-ignore:
-      - 'sdk/components/**'
-      - 'src/editors/**'
-      - '*.cbproj'
+      - '!sdk/components/**'
+      - '!src/editors/**'
+      - '!*.cbproj'
 
 defaults:
   run:
