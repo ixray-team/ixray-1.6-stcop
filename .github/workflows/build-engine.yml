@@ -6,11 +6,17 @@ on:
       - '**'
     paths-ignore:
       - 'gamedata/**'
+      - 'sdk/components/**'
+      - 'src/editors/**'
+      - '*.cbproj'
   pull_request:
     branches:
       - '**'
     paths-ignore:
       - 'gamedata/**'
+      - 'sdk/components/**'
+      - 'src/editors/**'
+      - '*.cbproj'
 
 jobs:
   build-engine:
