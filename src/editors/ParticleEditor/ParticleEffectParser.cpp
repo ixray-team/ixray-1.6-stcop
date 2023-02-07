@@ -509,8 +509,8 @@ IC bool get_float(LPCSTR a, var& val)
 
 IC bool get_bool(LPCSTR a, var& val)
 {
-    bool b0 = (0==stricmp(a,"false"));
-    bool b1 = (0==stricmp(a,"true"));
+    bool b0 = (0==_stricmp(a,"false"));
+    bool b1 = (0==_stricmp(a,"true"));
     if (b0==b1) return false;
     val = (BOOL)b1;
     return true;
@@ -983,7 +983,7 @@ void CPEDef::Compile()
     int action_list_handle	= pGenActionLists();
 	pCurrentEffect			(effect_handle);
 
-    // reset state (одинаковые начальные условия)
+    // reset state (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
     pResetState				();
     
     try{
@@ -1082,7 +1082,7 @@ void CPEDef::Compile()
     int action_list_handle	= pGenActionLists();
 	pCurrentEffect			(effect_handle);
 
-    // reset state (одинаковые начальные условия)
+    // reset state (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
     pResetState				();
     
     // execute commands
