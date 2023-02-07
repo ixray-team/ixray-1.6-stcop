@@ -22,6 +22,6 @@ vf main (vv v)
 	o.tc		= v.tc;				// copy tc
 	o.c		= v.c;				// copy color
 	o.fog 		= calc_fogging (v.P);		// fog, input in world coords
-
+    o.c.w *= o.fog;
 	return o;
 }
