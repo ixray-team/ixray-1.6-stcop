@@ -24,7 +24,7 @@
 #include "ESceneLightTools.h"
 
 //------------------------------------------------------------------------------
-// !!! использовать prefix если нужно имя !!! (Связано с группами)
+// !!! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prefix пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ !!! (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 //------------------------------------------------------------------------------
 
 #define LEVEL_LODS_TEX_NAME "level_lods"
@@ -446,7 +446,7 @@ int SceneBuilder::CalculateSector(const Fvector& P, float R)
         	if (_S->m_sector_num!=m_iDefaultSectorNum) 
             	return _S->m_sector_num;
 	}
-    return m_iDefaultSectorNum; // по умолчанию
+    return m_iDefaultSectorNum; // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
 void SceneBuilder::Clear ()
@@ -1210,7 +1210,7 @@ int SceneBuilder::BuildShaderXRLC(const char * s){
 //------------------------------------------------------------------------------
 int SceneBuilder::FindInTextures(const char* name){
     for (u32 i=0; i<l_textures.size(); i++)
-    	if(stricmp(l_textures[i].name,name)==0) return i;
+    	if(_stricmp(l_textures[i].name,name)==0) return i;
     return -1;
 }
 //------------------------------------------------------------------------------

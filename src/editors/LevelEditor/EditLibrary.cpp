@@ -330,7 +330,7 @@ void __fastcall TfrmEditLibrary::FormKeyDown(TObject *Sender, WORD &Key,
         if (Key==VK_ESCAPE){
             if (bFormLocked)	ExecCommand(COMMAND_BREAK_LAST_OPERATION);
             else				ebCancel->Click();
-            Key = 0; // :-) нужно для того чтобы AccessVoilation не вылазил по ESCAPE
+            Key = 0; // :-) пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ AccessVoilation пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ ESCAPE
         }
     }
 }
@@ -633,7 +633,7 @@ void TfrmEditLibrary::ChangeReference(const RStringVec& items)
 	// save new position
 	CEditableObject* E				= m_pEditObject->GetReference();
 
-    if (E && new_name && (stricmp(E->GetName(),new_name))==0 ) return;
+    if (E && new_name && (_stricmp(E->GetName(),new_name))==0 ) return;
 
     if (E)
     {

@@ -28,11 +28,11 @@ CDA_STATE CCDA::GetState( )
 {
 	err	= mciSendString( "status cdaudio mode", retStr, retLen, NULL );
 	if ( err == 0 ){
-		if ( !stricmp( retStr, "not ready") )		return CDA_STATE_NOTREADY;
-		if ( !stricmp( retStr, "paused"	) )			return CDA_STATE_PAUSE;
-		if ( !stricmp( retStr, "playing"	) )		return CDA_STATE_PLAY;
-		if ( !stricmp( retStr, "stopped"	) )		return CDA_STATE_STOP;
-		if ( !stricmp( retStr, "open"	) )			return CDA_STATE_OPEN;
+		if ( !_stricmp( retStr, "not ready") )		return CDA_STATE_NOTREADY;
+		if ( !_stricmp( retStr, "paused"	) )			return CDA_STATE_PAUSE;
+		if ( !_stricmp( retStr, "playing"	) )		return CDA_STATE_PLAY;
+		if ( !_stricmp( retStr, "stopped"	) )		return CDA_STATE_STOP;
+		if ( !_stricmp( retStr, "open"	) )			return CDA_STATE_OPEN;
 	}
 	return CDA_STATE_NOTREADY;
 }

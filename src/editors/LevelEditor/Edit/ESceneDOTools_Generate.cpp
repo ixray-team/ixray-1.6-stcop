@@ -241,7 +241,7 @@ void EDetailManager::GetSlotTCRect(Irect& rect, int sx, int sz){
 	GetSlotRect			(R,sx,sz);
 	rect.x1 			= m_Base.GetPixelUFromX(R.x1,m_BBox);
 	rect.x2 			= m_Base.GetPixelUFromX(R.x2,m_BBox);
-	rect.y2 			= m_Base.GetPixelVFromZ(R.y1,m_BBox); // v - координата флипнута
+	rect.y2 			= m_Base.GetPixelVFromZ(R.y1,m_BBox); // v - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	rect.y1 			= m_Base.GetPixelVFromZ(R.y2,m_BBox);
 }
 
@@ -313,7 +313,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
         }
     }
     std::sort(best.begin(),best.end(),CompareWeightFunc);
-    // пройдем по 4 частям слота и определим плотность заполнения (учесть переворот V)
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ V)
     Irect P[4];
     float dx=float(R.x2-R.x1)/2.f;
     float dy=float(R.y2-R.y1)/2.f;
@@ -352,7 +352,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
     u32 o_cnt=0;
     for (u32 i=0; i<best.size(); i++)
         o_cnt+=m_ColorIndices[best[i].index].size();
-    // равномерно заполняем пустые слоты
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     if (o_cnt>best.size()){
         while (best.size()<4){
             do{
@@ -365,7 +365,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
         }
     }
 
-    // заполним палитру и установим Random'ы
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Random'пїЅ
 //	Msg("Slot: %d %d",x,z);
     for(u32 k=0; k<best.size(); k++){
      	// objects
@@ -395,7 +395,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
         slot->palette[k].a3 	= (u16)iFloor(best[k].dens[3]*f*15.f+.5f);
     }
 
-    // определим ID незаполненных слотов как пустышки
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     for(k=best.size(); k<4; k++)
         slot->w_id(k,DetailSlot::ID_Empty);
     return true;
@@ -430,7 +430,7 @@ bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
 CDetailManager::DetailIt EDetailManager::FindDOByNameIt(LPCSTR name)
 {
 	for (DetailIt it=objects.begin(); it!=objects.end(); it++)
-    	if (stricmp(((EDetail*)(*it))->GetName(),name)==0) return it;
+    	if (_stricmp(((EDetail*)(*it))->GetName(),name)==0) return it;
     return objects.end();
 }
 
@@ -499,7 +499,7 @@ EDetail* EDetailManager::FindObjectInColorIndices(u32 index, LPCSTR name)
 	if (CI!=m_ColorIndices.end()){
     	DOVec& lst = CI->second;
 		for (DOIt it=lst.begin(); it!=lst.end(); it++)
-    		if (stricmp((*it)->GetName(),name)==0) return *it;
+    		if (_stricmp((*it)->GetName(),name)==0) return *it;
     }
     return 0;
 }

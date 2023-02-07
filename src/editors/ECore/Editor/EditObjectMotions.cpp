@@ -276,7 +276,7 @@ bool CEditableObject::RemoveSMotion(const char* name)
 {
     SMotionVec& lst = m_SMotions;
     for(SMotionIt m=lst.begin(); m!=lst.end(); m++)
-        if ((stricmp((*m)->Name(),name)==0)){
+        if ((_stricmp((*m)->Name(),name)==0)){
         	if (m_ActiveSMotion==*m) SetActiveSMotion(0);
             xr_delete(*m);
         	lst.erase(m);
@@ -322,7 +322,7 @@ bool CEditableObject::AppendSMotion(LPCSTR fname, SMotionVec* inserted)
     bool bRes	= true;
     
 	LPCSTR ext	= strext(fname);
-    if (0==stricmp(ext,".skl")){
+    if (0==_stricmp(ext,".skl")){
         CSMotion* M = xr_new<CSMotion>();
         if (!M->LoadMotion(fname)){
             ELog.Msg(mtError,"Motion '%s' can't load. Append failed.",fname);
@@ -346,7 +346,7 @@ bool CEditableObject::AppendSMotion(LPCSTR fname, SMotionVec* inserted)
 	            bRes = false;
             }
         }
-    }else if (0==stricmp(ext,".skls")){
+    }else if (0==_stricmp(ext,".skls")){
         IReader* F	= FS.r_open(fname);
         if (!F){
         	ELog.Msg(mtError,"Can't open file '%s'.",fname);
@@ -402,7 +402,7 @@ bool CEditableObject::SaveSMotions(const char* fname)
 
 bool CEditableObject::RenameSMotion(const char* old_name, const char* new_name)
 {
-	if (stricmp(old_name,new_name)==0) return true;
+	if (_stricmp(old_name,new_name)==0) return true;
     if (FindSMotionByName(new_name)) return false;
 	CSMotion* M = FindSMotionByName(old_name); VERIFY(M);
     M->SetName(new_name);
@@ -414,7 +414,7 @@ CSMotion* CEditableObject::FindSMotionByName	(const char* name, const CSMotion* 
 	if (name&&name[0]){
         SMotionVec& lst = m_SMotions;
         for(SMotionIt m=lst.begin(); m!=lst.end(); m++)
-            if ((Ignore!=(*m))&&(stricmp((*m)->Name(),name)==0)) return (*m);
+            if ((Ignore!=(*m))&&(_stricmp((*m)->Name(),name)==0)) return (*m);
     }
     return 0;
 }
