@@ -400,20 +400,20 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 				BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, NULL, NULL );
 				if (bOK)
 				{
-					xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
+					xr_sprintf( szScratch, sizeof(string_path), "Saved dump file to '%s'", szDumpPath );
 					szResult = szScratch;
 //					retval = EXCEPTION_EXECUTE_HANDLER;
 				}
 				else
 				{
-					xr_sprintf( szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
+					xr_sprintf( szScratch, sizeof(string_path), "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
 					szResult = szScratch;
 				}
 				::CloseHandle(hFile);
 			}
 			else
 			{
-				xr_sprintf( szScratch, "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
+				xr_sprintf( szScratch, sizeof(string_path), "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
 				szResult = szScratch;
 			}
 		}
