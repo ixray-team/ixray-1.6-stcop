@@ -12,6 +12,8 @@
 #include "game_cl_base.h"
 
 #include "../Weapon.h"
+#include "../WeaponKnife.h"
+#include "../WeaponBinoculars.h"
 #include "../WeaponMagazinedWGrenade.h"
 #include "../WeaponAmmo.h"
 #include "../Silencer.h"
@@ -614,7 +616,9 @@ void CUIActorMenu::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropLis
 	ammo_types.clear();
 
 	CWeapon* weapon = smart_cast<CWeapon*>(weapon_item);
-	if ( !weapon )
+	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(weapon_item);
+	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(weapon_item);
+	if ( !weapon || binoc || knife)
 	{
 		return;
 	}
@@ -670,6 +674,8 @@ void CUIActorMenu::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropList
 	VERIFY( ammo_item );
 	VERIFY( ddlist );
 	CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(ammo_item);
+	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(ammo_item);
+	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(ammo_item);
 	if ( !ammo )
 	{
 		return;
@@ -696,7 +702,7 @@ void CUIActorMenu::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropList
 		xr_vector<shared_str>::iterator ite = weapon->m_ammoTypes.end();
 		for ( ; itb != ite; ++itb )
 		{
-			if ( ammo_name._get() == (*itb)._get() )
+			if ( ammo_name._get() == (*itb)._get() && !(binoc||knife) )
 			{
 				ci->m_select_armament = true;
 				break; // for itb
