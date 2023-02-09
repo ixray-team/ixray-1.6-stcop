@@ -62,7 +62,8 @@ void CUIActorMenu::InitInventoryMode()
 void CUIActorMenu::DeInitInventoryMode()
 {
 	m_pTrashList->Show				(false);
-//	m_clock_value->Show					(false);
+	clear_highlight_lists			();
+//	m_clock_value->Show				(false);
 }
 
 void CUIActorMenu::SendEvent_ActivateSlot(u16 slot, u16 recipient)
@@ -71,6 +72,7 @@ void CUIActorMenu::SendEvent_ActivateSlot(u16 slot, u16 recipient)
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ACTIVATE_SLOT, recipient);
 	P.w_u16							(slot);
 	CGameObject::u_EventSend		(P);
+	clear_highlight_lists			();
 }
 
 void CUIActorMenu::SendEvent_Item2Slot(PIItem pItem, u16 recipient, u16 slot_id)
@@ -83,6 +85,7 @@ void CUIActorMenu::SendEvent_Item2Slot(PIItem pItem, u16 recipient, u16 slot_id)
 	P.w_u16							(pItem->object().ID());
 	P.w_u16							(slot_id);
 	CGameObject::u_EventSend		(P);
+	clear_highlight_lists			();
 
 	PlaySnd							(eItemToSlot);
 };
@@ -96,6 +99,7 @@ void CUIActorMenu::SendEvent_Item2Belt(PIItem pItem, u16 recipient)
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2BELT, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
 	CGameObject::u_EventSend		(P);
+	clear_highlight_lists			();
 
 	PlaySnd							(eItemToBelt);
 };
@@ -109,6 +113,7 @@ void CUIActorMenu::SendEvent_Item2Ruck(PIItem pItem, u16 recipient)
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
 	CGameObject::u_EventSend		(P);
+	clear_highlight_lists			();
 
 	PlaySnd							(eItemToRuck);
 };
@@ -122,6 +127,7 @@ void CUIActorMenu::SendEvent_Item_Eat(PIItem pItem, u16 recipient)
 	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM_EAT, recipient);
 	P.w_u16							(pItem->object().ID());
 	CGameObject::u_EventSend		(P);
+	clear_highlight_lists			();
 };
 
 void CUIActorMenu::SendEvent_Item_Drop(PIItem pItem, u16 recipient)
@@ -135,6 +141,7 @@ void CUIActorMenu::SendEvent_Item_Drop(PIItem pItem, u16 recipient)
 	P.w_u16						(pItem->object().ID());
 	pItem->object().u_EventSend	(P);
 	PlaySnd						(eDropItem);
+	clear_highlight_lists			();
 }
 
 void CUIActorMenu::DropAllCurrentItem()
@@ -849,7 +856,7 @@ void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 	CHelmet* pHelmet		= smart_cast<CHelmet*>		( item );
 	CInventory&  inv		= m_pActorInvOwner->inventory();
 
-	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
+	// Р¤Р»Р°Рі-РїСЂРёР·РЅР°Рє РґР»СЏ РЅРµРІР»СЋС‡РµРЅРёСЏ РїСѓРЅРєС‚Р° РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ: Dreess Outfit, РµСЃР»Рё РєРѕСЃС‚СЋРј СѓР¶Рµ РЅР°РґРµС‚
 	bool bAlreadyDressed	= false;
 	u16 cur_slot			= item->BaseSlot();
 
@@ -901,7 +908,7 @@ void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 
 void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, bool& b_show )
 {
-	//отсоединение аддонов от вещи
+	//РѕС‚СЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ РѕС‚ РІРµС‰Рё
 	CWeapon*	pWeapon = smart_cast<CWeapon*>( item );
 	if ( !pWeapon )
 	{
@@ -966,7 +973,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 #include "../string_table.h"
 void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 {
-	//присоединение аддонов к активному слоту (2 или 3)
+	//РїСЂРёСЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ Рє Р°РєС‚РёРІРЅРѕРјСѓ СЃР»РѕС‚Сѓ (2 РёР»Рё 3)
 
 	CScope*				pScope				= smart_cast<CScope*>			(item);
 	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(item);
