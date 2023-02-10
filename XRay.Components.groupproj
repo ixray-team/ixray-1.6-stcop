@@ -3,10 +3,10 @@
         <ProjectGuid>{82D7DB71-AC8B-4CF3-89B7-D5EB75DA0273}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="sdk\components\AlexMX\editor.dproj">
+        <Projects Include="sdk\components\AlexMX\editorB.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sdk\components\AlexMX\editorB.dproj">
+        <Projects Include="sdk\components\AlexMX\editor.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="sdk\components\ElPack\Code\elpackB6.dproj">
@@ -35,15 +35,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="editor">
-        <MSBuild Projects="sdk\components\AlexMX\editor.dproj"/>
-    </Target>
-    <Target Name="editor:Clean">
-        <MSBuild Projects="sdk\components\AlexMX\editor.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="editor:Make">
-        <MSBuild Projects="sdk\components\AlexMX\editor.dproj" Targets="Make"/>
-    </Target>
     <Target Name="editorB">
         <MSBuild Projects="sdk\components\AlexMX\editorB.dproj"/>
     </Target>
@@ -52,6 +43,15 @@
     </Target>
     <Target Name="editorB:Make">
         <MSBuild Projects="sdk\components\AlexMX\editorB.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="editor">
+        <MSBuild Projects="sdk\components\AlexMX\editor.dproj"/>
+    </Target>
+    <Target Name="editor:Clean">
+        <MSBuild Projects="sdk\components\AlexMX\editor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="editor:Make">
+        <MSBuild Projects="sdk\components\AlexMX\editor.dproj" Targets="Make"/>
     </Target>
     <Target Name="elpackB6">
         <MSBuild Projects="sdk\components\ElPack\Code\elpackB6.dproj"/>
@@ -108,13 +108,13 @@
         <MSBuild Projects="sdk\components\ElPack\Code\dceldbB6.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="editor;editorB;elpackB6;elpproB6;elpkdbB6;dclelpB6;dcelppB6;dceldbB6"/>
+        <CallTarget Targets="editorB;editor;elpackB6;elpproB6;elpkdbB6;dclelpB6;dcelppB6;dceldbB6"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="editor:Clean;editorB:Clean;elpackB6:Clean;elpproB6:Clean;elpkdbB6:Clean;dclelpB6:Clean;dcelppB6:Clean;dceldbB6:Clean"/>
+        <CallTarget Targets="editorB:Clean;editor:Clean;elpackB6:Clean;elpproB6:Clean;elpkdbB6:Clean;dclelpB6:Clean;dcelppB6:Clean;dceldbB6:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="editor:Make;editorB:Make;elpackB6:Make;elpproB6:Make;elpkdbB6:Make;dclelpB6:Make;dcelppB6:Make;dceldbB6:Make"/>
+        <CallTarget Targets="editorB:Make;editor:Make;elpackB6:Make;elpproB6:Make;elpkdbB6:Make;dclelpB6:Make;dcelppB6:Make;dceldbB6:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

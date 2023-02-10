@@ -1227,7 +1227,7 @@ begin
         {$IFDEF RX_D12}
         StrCopy(FileNameW, FileDestPath);
         {$ELSE}
-        MultiByteToWideChar(CP_ACP, 0, FileDestPath, -1, FileNameW, MAX_PATH);
+        MultiByteToWideChar(CP_ACP, 0, PAnsiChar(@FileDestPath[0]), -1, FileNameW, MAX_PATH);
         {$ENDIF}
         OleCheck(PersistFile.Save(FileNameW, True));
       finally

@@ -27,7 +27,7 @@ package dclelpB6;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS Visual Components (Design-time)'}
 {$DESIGNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,

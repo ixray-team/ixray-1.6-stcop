@@ -30,7 +30,7 @@ package elpackB6;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS Visual Components'}
 {$RUNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl;

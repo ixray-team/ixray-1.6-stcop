@@ -27,7 +27,7 @@ package elpkdbB6;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS DB-Aware Controls'}
 {$RUNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,

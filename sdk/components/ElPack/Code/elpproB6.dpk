@@ -27,7 +27,7 @@ package elpproB6;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS Professional Components'}
 {$RUNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,
