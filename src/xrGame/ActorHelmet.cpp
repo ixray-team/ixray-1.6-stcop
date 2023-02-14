@@ -55,6 +55,8 @@ void CHelmet::Load(LPCSTR section)
 	m_BonesProtectionSect			= READ_IF_EXISTS(pSettings, r_string, section, "bones_koeff_protection",  "" );
 	m_fShowNearestEnemiesDistance	= READ_IF_EXISTS(pSettings, r_float, section, "nearest_enemies_show_dist",  0.0f );
 
+	// Added by Axel, to enable optional condition use on any item
+	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
 
 void CHelmet::ReloadBonesProtection()
@@ -217,7 +219,7 @@ float CHelmet::HitThroughArmor(float hit_power, s16 element, float ap, bool& add
 		float BoneArmor = ba*GetCondition();
 		if(/*!fis_zero(ba, EPS) && */(ap > BoneArmor))
 		{
-			//пуля пробила бронь
+			//РїСѓР»СЏ РїСЂРѕР±РёР»Р° Р±СЂРѕРЅСЊ
 			if(!IsGameTypeSingle())
 			{
 				float hit_fraction = (ap - BoneArmor) / ap;
@@ -232,9 +234,9 @@ float CHelmet::HitThroughArmor(float hit_power, s16 element, float ap, bool& add
 		}
 		else
 		{
-			//пуля НЕ пробила бронь
+			//РїСѓР»СЏ РќР• РїСЂРѕР±РёР»Р° Р±СЂРѕРЅСЊ
 			NewHitPower *= m_boneProtection->m_fHitFracActor;
-			add_wound = false; 	//раны нет
+			add_wound = false; 	//СЂР°РЅС‹ РЅРµС‚
 		}
 	}
 	else
@@ -253,7 +255,7 @@ float CHelmet::HitThroughArmor(float hit_power, s16 element, float ap, bool& add
 		if(NewHitPower < 0.f)
 			NewHitPower = 0.f;
 	}
-	//увеличить изношенность шлема
+	//СѓРІРµР»РёС‡РёС‚СЊ РёР·РЅРѕС€РµРЅРЅРѕСЃС‚СЊ С€Р»РµРјР°
 	Hit(hit_power, hit_type);
 
 	return NewHitPower;

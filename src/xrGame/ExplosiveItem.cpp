@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
-// ExplosiveItem.cpp:	êëàññ äëÿ âåùè êîòîðàÿ âçðûâàåòñÿ ïîä 
-//						äåéñòâèåì ðàçëè÷íûõ õèòîâ (êàíèñòðû,
-//						áàëîíû ñ ãàçîì è ò.ä.)
+// ExplosiveItem.cpp:	ÐºÐ»Ð°ÑÑ Ð´Ð»Ñ Ð²ÐµÑ‰Ð¸ ÐºÐ¾Ñ‚Ð¾Ñ€Ð°Ñ Ð²Ð·Ñ€Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¿Ð¾Ð´ 
+//						Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸ÐµÐ¼ Ñ€Ð°Ð·Ð»Ð¸Ñ‡Ð½Ñ‹Ñ… Ñ…Ð¸Ñ‚Ð¾Ð² (ÐºÐ°Ð½Ð¸ÑÑ‚Ñ€Ñ‹,
+//						Ð±Ð°Ð»Ð¾Ð½Ñ‹ Ñ Ð³Ð°Ð·Ð¾Ð¼ Ð¸ Ñ‚.Ð´.)
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -23,6 +23,9 @@ void CExplosiveItem::Load(LPCSTR section)
 	m_flags.set								(FUsingCondition, TRUE);
 	CDelayedActionFuse::Initialize			(pSettings->r_float(section,"time_to_explode"),pSettings->r_float(section,"condition_to_explode"));
 	VERIFY(pSettings->line_exist			(section,"set_timer_particles"));
+
+	// Added by Axel, to enable optional condition use on any item
+	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
 
 void CExplosiveItem::net_Destroy()
@@ -44,7 +47,7 @@ void	CExplosiveItem::Hit					(SHit* pHDS)
 		CDelayedActionFuse::CheckCondition(GetCondition() &&
 		pHDS->who)/*&&CExplosive::Initiator()==u16(-1)*/)
 	{
-		//çàïîìíèòü òîãî, êòî âçîðâàë âåùü
+		//Ð·Ð°Ð¿Ð¾Ð¼Ð½Ð¸Ñ‚ÑŒ Ñ‚Ð¾Ð³Ð¾, ÐºÑ‚Ð¾ Ð²Ð·Ð¾Ñ€Ð²Ð°Ð» Ð²ÐµÑ‰ÑŒ
 		SetInitiator( pHDS->who->ID());
 	}
 }
