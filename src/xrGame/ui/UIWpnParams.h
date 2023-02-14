@@ -18,7 +18,7 @@ public:
 
 	void 					InitFromXml			(CUIXml& xml_doc);
 	void					SetInfo				(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn);
-	bool 					Check				(const shared_str& wpn_section);
+	bool 					Check				(CInventoryItem& wpn_section);
 
 protected:
 	CUIDoubleProgressBar	m_progressAccuracy; // red or green
