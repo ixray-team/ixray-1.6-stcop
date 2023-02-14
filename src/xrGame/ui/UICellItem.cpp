@@ -10,9 +10,7 @@
 #include "UIXmlInit.h"
 #include "UIProgressBar.h"
 
-#include "Weapon.h"
 #include "CustomOutfit.h"
-#include "ActorHelmet.h"
 
 CUICellItem* CUICellItem::m_mouse_selected_item = NULL;
 
@@ -201,14 +199,13 @@ void CUICellItem::SetOwnerList(CUIDragDropListEx* p)
 
 void CUICellItem::UpdateConditionProgressBar()
 {
+	if (!m_pConditionState)
+		return;
 
 	if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
 	{
 		PIItem itm = (PIItem)m_pData;
-		CWeapon* pWeapon = smart_cast<CWeapon*>(itm);
-		CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(itm);
-		CHelmet* pHelmet = smart_cast<CHelmet*>(itm);
-		if(pWeapon || pOutfit || pHelmet)
+		if (itm && itm->IsUsingCondition())
 		{
 			Ivector2 itm_grid_size = GetGridSize();
 			if(m_pParentList->GetVerticalPlacement())
