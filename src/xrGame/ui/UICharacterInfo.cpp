@@ -323,6 +323,10 @@ void CUICharacterInfo::Update()
 			{
 				m_icons[eIcon]->SetTextureColor(color_argb(255,255,160,160));
 			}
+			else
+			{
+				m_icons[eIcon]->SetTextureColor(color_argb(255, 255, 255, 255));
+			}
 		}
 	}
 }
