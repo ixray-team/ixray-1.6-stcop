@@ -10,6 +10,7 @@ CUIProgressBar::CUIProgressBar(void)
 
 	m_bBackgroundPresent	= false;
 	m_bUseColor				= false;
+	m_bUseMidColor			= false;
 
 	AttachChild				(&m_UIBackgroundItem);
 	AttachChild				(&m_UIProgressItem);
@@ -56,7 +57,10 @@ void CUIProgressBar::UpdateProgressBar()
 	if(m_bUseColor)
 	{
 		Fcolor curr;
-		curr.lerp							(m_minColor,m_middleColor,m_maxColor,fCurrentLength);
+		if (m_bUseMidColor)
+			curr.lerp(m_minColor, m_middleColor, m_maxColor, fCurrentLength);
+		else
+			curr.lerp(m_minColor, m_maxColor, fCurrentLength);
 		m_UIProgressItem.SetTextureColor	(curr.get());
 	}
 }
