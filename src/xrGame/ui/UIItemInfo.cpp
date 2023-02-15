@@ -15,6 +15,7 @@
 #include "UIInventoryUtilities.h"
 #include "../PhysicsShellHolder.h"
 #include "UIWpnParams.h"
+#include "UIKnifeParams.h"
 #include "ui_af_params.h"
 #include "UIInvUpgradeProperty.h"
 #include "UIOutfitInfo.h"
@@ -41,6 +42,7 @@ CUIItemInfo::CUIItemInfo()
 	UIDesc						= NULL;
 //	UIConditionWnd				= NULL;
 	UIWpnParams					= NULL;
+	UIKnifeParams				= NULL;
 	UIProperties				= NULL;
 	UIOutfitInfo				= NULL;
 	UIBoosterInfo				= NULL;
@@ -56,6 +58,7 @@ CUIItemInfo::~CUIItemInfo()
 {
 //	xr_delete	(UIConditionWnd);
 	xr_delete	(UIWpnParams);
+	xr_delete	(UIKnifeParams);
 	xr_delete	(UIArtefactParams);
 	xr_delete	(UIProperties);
 	xr_delete	(UIOutfitInfo);
@@ -128,6 +131,8 @@ void CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 //		UIConditionWnd->InitFromXml		(uiXml);
 		UIWpnParams						= xr_new<CUIWpnParams>();
 		UIWpnParams->InitFromXml		(uiXml);
+		UIKnifeParams					= xr_new<CUIKnifeParams>();
+		UIKnifeParams->InitFromXml		(uiXml);
 
 		UIArtefactParams				= xr_new<CUIArtefactParams>();
 		UIArtefactParams->InitFromXml	(uiXml);
@@ -300,6 +305,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		}
 		TryAddConditionInfo					(*pInvItem, pCompareItem);
 		TryAddWpnInfo						(*pInvItem, pCompareItem);
+		TryAddKnifeInfo						(*pInvItem, pCompareItem);
 		TryAddArtefactInfo					(pInvItem->object().cNameSect());
 		TryAddOutfitInfo					(*pInvItem, pCompareItem);
 		TryAddUpgradeInfo					(*pInvItem);
@@ -323,7 +329,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	}
 	if(UIItemImage)
 	{
-		// Çàãðóæàåì êàðòèíêó
+		// Ð—Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÑƒ
 		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
 
 		Irect item_grid_rect				= pInvItem->GetInvGridRect();
@@ -360,6 +366,15 @@ void CUIItemInfo::TryAddWpnInfo( CInventoryItem& pInvItem, CInventoryItem* pComp
 	{
 		UIWpnParams->SetInfo( pCompareItem, pInvItem );
 		UIDesc->AddWindow( UIWpnParams, false );
+	}
+}
+
+void CUIItemInfo::TryAddKnifeInfo( CInventoryItem& pInvItem, CInventoryItem* pCompareItem )
+{
+	if ( UIKnifeParams->Check( pInvItem ) )
+	{
+		UIKnifeParams->SetInfo( pCompareItem, pInvItem );
+		UIDesc->AddWindow( UIKnifeParams, false );
 	}
 }
 

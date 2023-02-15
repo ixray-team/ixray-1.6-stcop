@@ -66,10 +66,12 @@ extern CUIXml*	g_uiSpotXml;
 extern CUIXml*	pWpnScopeXml;
 
 extern void destroy_lua_wpn_params	();
+extern void destroy_lua_knife_params();
 
 void clean_game_globals()
 {
 	destroy_lua_wpn_params							();
+	destroy_lua_knife_params();
 	// destroy ai space
 	xr_delete										(g_ai_space);
 	// destroy object factory
@@ -108,11 +110,11 @@ void clean_game_globals()
 	//static shader for blood
 	CEntityAlive::UnloadBloodyWallmarks				();
 	CEntityAlive::UnloadFireParticles				();
-	//очищение памяти таблицы строк
+	//РѕС‡РёС‰РµРЅРёРµ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃС‚СЂРѕРє
 	CStringTable::Destroy							();
-	// Очищение таблицы цветов
+	// РћС‡РёС‰РµРЅРёРµ С‚Р°Р±Р»РёС†С‹ С†РІРµС‚РѕРІ
 	CUIXmlInit::DeleteColorDefs						();
-	// Очищение таблицы идентификаторов рангов и отношений сталкеров
+	// РћС‡РёС‰РµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ СЂР°РЅРіРѕРІ Рё РѕС‚РЅРѕС€РµРЅРёР№ СЃС‚Р°Р»РєРµСЂРѕРІ
 	InventoryUtilities::ClearCharacterInfoStrings	();
 
 	xr_delete										(g_sound_collection_storage);
