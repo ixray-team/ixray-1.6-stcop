@@ -28,6 +28,9 @@
 #include "UIMessageBoxEx.h"
 #include "UIPropertiesBox.h"
 #include "UIMainIngameWnd.h"
+#ifdef DEBUG
+#include <dinput.h>
+#endif
 
 
 bool  CUIActorMenu::AllowItemDrops(EDDListType from, EDDListType to)
@@ -355,6 +358,25 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		return true;
 	}
 
+#ifdef DEBUG
+	if (WINDOW_KEY_PRESSED == keyboard_action)
+	{
+		{
+			if (DIK_NUMPAD7 == dik && CurrentIItem() && CurrentIItem()->IsUsingCondition())
+			{
+				CurrentIItem()->ChangeCondition(-0.05f);
+				UpdateConditionProgressBars();
+				m_pCurrentCellItem->UpdateConditionProgressBar();
+			}
+			else if (DIK_NUMPAD8 == dik && CurrentIItem() && CurrentIItem()->IsUsingCondition())
+			{
+				CurrentIItem()->ChangeCondition(0.05f);
+				UpdateConditionProgressBars();
+				m_pCurrentCellItem->UpdateConditionProgressBar();
+			}
+		}
+	}
+#endif
 	if( inherited::OnKeyboardAction(dik,keyboard_action) )return true;
 
 	return false;
