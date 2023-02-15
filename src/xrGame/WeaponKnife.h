@@ -61,6 +61,9 @@ public:
 	virtual bool		Action							(u16 cmd, u32 flags);
 
 	virtual bool		GetBriefInfo					(II_BriefInfo& info);
+	IC		float		GetHit1Dist						()	const	{ return m_Hit1Distance; }
+	IC		float		GetHit2Dist						()	const	{ return m_Hit2Distance; }
+	bool				m_bShowKnifeStats;
 
 #ifdef DEBUG
 	virtual void		OnRender						();

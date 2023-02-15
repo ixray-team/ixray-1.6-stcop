@@ -6792,6 +6792,9 @@
     <ClInclude Include="ui\UIWpnParams.h">
       <Filter>UI\Common\ui-item-infos</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UIKnifeParams.h">
+      <Filter>UI\Common\ui-item-infos</Filter>
+    </ClInclude>
     <ClInclude Include="ui\UICharacterInfo.h">
       <Filter>UI\Common\ui-item-infos\CharacterInfo</Filter>
     </ClInclude>
@@ -10383,6 +10386,9 @@
       <Filter>UI\Common\ui-item-infos</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIWpnParams.cpp">
+      <Filter>UI\Common\ui-item-infos</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIKnifeParams.cpp">
       <Filter>UI\Common\ui-item-infos</Filter>
     </ClCompile>
     <ClCompile Include="ui\UICharacterInfo.cpp">

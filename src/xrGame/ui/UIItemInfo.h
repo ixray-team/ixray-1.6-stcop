@@ -9,6 +9,7 @@ class CUIScrollView;
 class CUIProgressBar;
 class CUIConditionParams;
 class CUIWpnParams;
+class CUIKnifeParams;
 class CUIArtefactParams;
 class CUIFrameWindow;
 class UIInvUpgPropertiesWnd;
@@ -41,6 +42,7 @@ public:
 
 	void				TryAddConditionInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddWpnInfo		(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
+	void				TryAddKnifeInfo		(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddArtefactInfo	(const shared_str& af_section);
 	void				TryAddOutfitInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddUpgradeInfo	(CInventoryItem& pInvItem);
@@ -61,6 +63,7 @@ public:
 
 //	CUIConditionParams*		UIConditionWnd;
 	CUIWpnParams*			UIWpnParams;
+	CUIKnifeParams*			UIKnifeParams;
 	CUIArtefactParams*		UIArtefactParams;
 	UIInvUpgPropertiesWnd*	UIProperties;
 	CUIOutfitInfo*			UIOutfitInfo;
