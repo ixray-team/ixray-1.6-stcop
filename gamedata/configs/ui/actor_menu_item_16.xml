@@ -134,6 +134,63 @@
 	    <static_ammo_type2 x="84" y="117" width="80" height="40" />
 	</wpn_params>
 
+	<knife_params x="0" y="0" width="212" height="70">
+		<prop_line x="0" y="0" width="212" height="9" stretch="1">
+			<texture>ui_inGame2_hint_wnd_Properties</texture>
+		</prop_line>
+		<static_damage x="0" y="10" width="14" height="18" stretch="1">
+			<texture>ui_wp_prop_damage</texture>
+		</static_damage>
+		<static_handling x="0" y="28" width="14" height="18" stretch="1">
+			<texture>ui_wp_prop_ergonomics</texture>
+		</static_handling>
+		<static_dist x="0" y="46" width="14" height="18" stretch="1">
+			<texture>ui_wp_prop_distantion</texture>
+		</static_dist>
+		<cap_damage x="18" y="12" width="80" height="8">
+			<text font="letterica16" color="ui_2" align="l">ui_inv_damage</text>
+		</cap_damage>
+		<cap_handling x="18" y="30" width="80" height="8">
+			<text font="letterica16" color="ui_2" align="l">ui_inv_handling</text>
+		</cap_handling>
+		<cap_dist x="18" y="48" width="80" height="8">
+			<text font="letterica16" color="ui_2" align="l">ui_inv_dist</text>
+		</cap_dist>
+		
+		<progress_damage x="104" y="14" width="101" height="9" horz="1">
+			<progress>
+				<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line_16</texture>
+			</progress>
+			<background>
+				<texture>ui_inGame2_hint_wnd_bar_16</texture>
+			</background>
+			<color_less color="pda_red"  />
+			<color_more color="pda_green"/>
+		</progress_damage>
+		<progress_handling x="104" y="32" width="101" height="9" horz="1">
+			<progress>
+				<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line_16</texture>
+			</progress>
+			<background>
+				<texture>ui_inGame2_hint_wnd_bar_16</texture>
+			</background>
+			<color_less color="pda_red"  />
+			<color_more color="pda_green"/>
+		</progress_handling>
+		<value_dist1 x="104" y="48" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_dist1>
+		<value_dist2 x="123" y="48" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_dist2>
+		<value_dist_delimiter x="119" y="48" width="1" height="8">
+			<text font="letterica16" color="ui_2" align="l"/>
+		</value_dist_delimiter>
+		<meters_name x="137" y="48" width="80" height="8">
+			<text font="letterica16" color="ui_2" align="l"/>
+		</meters_name>
+	</knife_params>
+
 #include "ui\af_params_16.xml"
 #include "ui\booster_params_16.xml"
 
