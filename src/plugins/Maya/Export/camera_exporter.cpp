@@ -44,7 +44,7 @@ MPxFileTranslator::MFileKind CXRayCameraExport::identifyFile (
     const char * name = fileName.name().asChar();
     int   nameLength = xr_strlen(name);
     
-	if ((nameLength > 4) && !stricmp(name+nameLength-4, ".anm"))
+	if ((nameLength > 4) && !_stricmp(name+nameLength-4, ".anm"))
         return kCouldBeMyFileType;
     else
         return kNotMyFileType;

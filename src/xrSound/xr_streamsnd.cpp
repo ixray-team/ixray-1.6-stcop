@@ -281,7 +281,7 @@ void CSoundStream::LoadADPCM( )
 		XRead			(hdr);
         CopyMemory	(buf,hdr.id,4); buf[4]=0;
         pos				= hf->tell();
-        if (stricmp(buf, "fmt ")==0) {
+        if (_stricmp(buf, "fmt ") == 0) {
 			dwFMT_Size		= hdr.len;
 			psrc			= (LPWAVEFORMATEX)xr_malloc(dwFMT_Size);
 			pwfx			= (LPWAVEFORMATEX)xr_malloc(dwFMT_Size);
@@ -289,7 +289,7 @@ void CSoundStream::LoadADPCM( )
 			CopyMemory	(pwfx,psrc,	dwFMT_Size);
 			pwfx->wFormatTag = WAVE_FORMAT_PCM;
         } else {
-            if (stricmp(buf,"data")==0) {
+            if (_stricmp(buf,"data") == 0) {
                 DataPos=hf->tell();
 				dwTotalSize=hdr.len;
             }

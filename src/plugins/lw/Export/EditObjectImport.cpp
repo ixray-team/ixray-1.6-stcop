@@ -60,14 +60,14 @@ bool CEditableObject::Import_LWO(const char* fn, bool bNeedOptimize)
 //                UI->ProgressStart(I->nsurfs,"Check surf:");
                 for (Isf=I->surf; Isf; Isf=Isf->next){
 //                    UI->ProgressUpdate(i);
-                    Isf->alpha_mode=i; // перетираем для внутренних целей !!!
+                    Isf->alpha_mode=i; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ !!!
                     CSurface* Osf = xr_new<CSurface>();
                     m_Surfaces.push_back(Osf);
                     if (Isf->name&&Isf->name[0]) Osf->SetName(Isf->name); else Osf->SetName("Default");
                     Osf->m_Flags.set(CSurface::sf2Sided,(Isf->sideflags==3)?TRUE:FALSE);
                     AnsiString en_name="default", lc_name="default", gm_name="default";
                     XRShader* sh_info = 0;
-                    if (Isf->nshaders&&(stricmp(Isf->shader->name,SH_PLUGIN_NAME)==0)){
+                    if (Isf->nshaders&&(_stricmp(Isf->shader->name,SH_PLUGIN_NAME)==0)){
                     	sh_info 	= (XRShader*)Isf->shader->data;
                         en_name 	= sh_info->en_name;
                         lc_name 	= sh_info->lc_name;
@@ -167,7 +167,7 @@ bool CEditableObject::Import_LWO(const char* fn, bool bNeedOptimize)
                         break;
                     }
 
-                    // индексы соответствия импортируемых мап
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 					static VMIndexLink VMIndices;
 				    VMIndices.clear();
 
@@ -277,24 +277,24 @@ bool CEditableObject::Import_LWO(const char* fn, bool bNeedOptimize)
                             }
                             AStringVec names;
 							if (vmpl_cnt){
-                            	// берем из poly
+                            	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ poly
     							for (int vm_i=0; vm_i<vmpl_cnt; vm_i++){
 									if (Ipv.vm[vm_i].vmap->type!=ID_TXUV) continue;
 									vm_lst.push_back(st_VMapPt());
 									st_VMapPt& pt	= vm_lst.back();
-        							pt.vmap_index	= VMIndices[Ipv.vm[vm_i].vmap];// номер моей VMap
+        							pt.vmap_index	= VMIndices[Ipv.vm[vm_i].vmap];// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ VMap
                                     names.push_back	(Ipv.vm[vm_i].vmap->name);
             						pt.index 		= Ipv.vm[vm_i].index;
                 				}
 							}
                             if (vmpt_cnt){
-                            	// берем из points
+                            	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ points
                                 for (int vm_i=0; vm_i<vmpt_cnt; vm_i++){
 									if (Ipt.vm[vm_i].vmap->type!=ID_TXUV) continue;
                                     if (std::find(names.begin(),names.end(),Ipt.vm[vm_i].vmap->name)!=names.end()) continue;
 									vm_lst.push_back(st_VMapPt());
 									st_VMapPt& pt	= vm_lst.back();
-									pt.vmap_index	= VMIndices[Ipt.vm[vm_i].vmap]; // номер моей VMap
+									pt.vmap_index	= VMIndices[Ipt.vm[vm_i].vmap]; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ VMap
 									pt.index 		= Ipt.vm[vm_i].index;
                                 }
 							}
@@ -307,7 +307,7 @@ bool CEditableObject::Import_LWO(const char* fn, bool bNeedOptimize)
 								if (Ipt.vm[vm_i].vmap->type!=ID_WGHT) continue;
 								vm_lst.push_back(st_VMapPt());
 								st_VMapPt& pt	= vm_lst.back();
-        	                    pt.vmap_index	= VMIndices[Ipt.vm[vm_i].vmap]; // номер моей VMap
+        	                    pt.vmap_index	= VMIndices[Ipt.vm[vm_i].vmap]; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ VMap
             	                pt.index 		= Ipt.vm[vm_i].index;
                             }
                             m_vm_lst.count		= vm_lst.size();
@@ -315,7 +315,7 @@ bool CEditableObject::Import_LWO(const char* fn, bool bNeedOptimize)
                             Memory.mem_copy		(m_vm_lst.pts,&*vm_lst.begin(),m_vm_lst.count*sizeof(st_VMapPt));
                         }
                         if (!bResult) break;
-						// Ipol.surf->alpha_mode - заполнено как номер моего surface
+						// Ipol.surf->alpha_mode - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ surface
                         surf_ids[i]			= Ipol.surf->alpha_mode;
                     }
                     if (!bResult) break;

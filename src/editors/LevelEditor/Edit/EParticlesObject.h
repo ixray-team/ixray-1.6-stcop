@@ -50,7 +50,7 @@ public:
 
     virtual void 		OnUpdateTransform	();
 
-    IC bool				RefCompare			(LPCSTR ref_name){VERIFY(ref_name&&ref_name[0]); return (0==stricmp(ref_name,GetReferenceName()));}
+    IC bool				RefCompare			(LPCSTR ref_name){VERIFY(ref_name&&ref_name[0]); return (0==_stricmp(ref_name,GetReferenceName()));}
 
     bool				Compile				(LPCSTR ref_name);
     

@@ -865,23 +865,23 @@ HRESULT nvDXT::process_command_line(int argc, char * argv[])
             bLegalCommand = true;
             bAlphaBorder = true;
         }
-        else if (stricmp(token, "-alphaborderLeft") == 0)
+        else if (_stricmp(token, "-alphaborderLeft") == 0)
         {
             bLegalCommand = true;
             bAlphaBorderLeft = true;
         }
 
-        else if (stricmp(token, "-alphaborderRight") == 0)
+        else if (_stricmp(token, "-alphaborderRight") == 0)
         {
             bLegalCommand = true;
             bAlphaBorderRight = true;
         }
-        else if (stricmp(token, "-alphaborderTop") == 0)
+        else if (_stricmp(token, "-alphaborderTop") == 0)
         {
             bLegalCommand = true;
             bAlphaBorderTop = true;
         }
-        else if (stricmp(token, "-alphaborderBottom") == 0)
+        else if (_stricmp(token, "-alphaborderBottom") == 0)
         {
             bLegalCommand = true;
             bAlphaBorderBottom = true;
@@ -1516,164 +1516,164 @@ HRESULT nvDXT::process_command_line(int argc, char * argv[])
 
 
 
-        else if (stricmp(token, "-Point") == 0)
+        else if (_stricmp(token, "-Point") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterPoint;
         }
-        else if (stricmp(token, "-Box") == 0)
+        else if (_stricmp(token, "-Box") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterBox;
         }
-        else if (stricmp(token, "-Triangle") == 0)
+        else if (_stricmp(token, "-Triangle") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterTriangle;
         }
-        else if (stricmp(token, "-Quadratic") == 0)
+        else if (_stricmp(token, "-Quadratic") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterQuadratic;
 
         }
-        else if (stricmp(token, "-Cubic") == 0)
+        else if (_stricmp(token, "-Cubic") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterCubic;
 
         }
-        else if (stricmp(token, "-Catrom") == 0)
+        else if (_stricmp(token, "-Catrom") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterCatrom;
 
         }
-        else if (stricmp(token, "-Mitchell") == 0)
+        else if (_stricmp(token, "-Mitchell") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterMitchell;
 
         }
-        else if (stricmp(token, "-Gaussian") == 0)
+        else if (_stricmp(token, "-Gaussian") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterGaussian;
 
         }
-        else if (stricmp(token, "-Sinc") == 0)
+        else if (_stricmp(token, "-Sinc") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterSinc;
 
         }
-        else if (stricmp(token, "-Bessel") == 0)
+        else if (_stricmp(token, "-Bessel") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterBessel;
 
         }
-        else if (stricmp(token, "-Hanning") == 0)
+        else if (_stricmp(token, "-Hanning") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterHanning;
 
         }
-        else if (stricmp(token, "-Hamming") == 0)
+        else if (_stricmp(token, "-Hamming") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterHamming;
 
         }
-        else if (stricmp(token, "-Blackman") == 0)
+        else if (_stricmp(token, "-Blackman") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterBlackman;
 
         }
-        else if (stricmp(token, "-Kaiser") == 0)
+        else if (_stricmp(token, "-Kaiser") == 0)
         {
             bLegalCommand = true;
             MIPFilterType = kMIPFilterKaiser;
 
         }
         /////////////////  prescale
-        else if (stricmp(token, "-RescalePoint") == 0)
+        else if (_stricmp(token, "-RescalePoint") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterPoint;
         }
-        else if (stricmp(token, "-RescaleBox") == 0)
+        else if (_stricmp(token, "-RescaleBox") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterBox;
         }
-        else if (stricmp(token, "-RescaleTriangle") == 0)
+        else if (_stricmp(token, "-RescaleTriangle") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterTriangle;
         }
-        else if (stricmp(token, "-RescaleQuadratic") == 0)
+        else if (_stricmp(token, "-RescaleQuadratic") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterQuadratic;
 
         }
-        else if (stricmp(token, "-RescaleCubic") == 0)
+        else if (_stricmp(token, "-RescaleCubic") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterCubic;
 
         }
-        else if (stricmp(token, "-RescaleCatrom") == 0)
+        else if (_stricmp(token, "-RescaleCatrom") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterCatrom;
 
         }
-        else if (stricmp(token, "-RescaleMitchell") == 0)
+        else if (_stricmp(token, "-RescaleMitchell") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterMitchell;
 
         }
-        else if (stricmp(token, "-RescaleGaussian") == 0)
+        else if (_stricmp(token, "-RescaleGaussian") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterGaussian;
 
         }
-        else if (stricmp(token, "-RescaleSinc") == 0)
+        else if (_stricmp(token, "-RescaleSinc") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterSinc;
 
         }
-        else if (stricmp(token, "-RescaleBessel") == 0)
+        else if (_stricmp(token, "-RescaleBessel") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterBessel;
 
         }
-        else if (stricmp(token, "-RescaleHanning") == 0)
+        else if (_stricmp(token, "-RescaleHanning") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterHanning;
 
         }
-        else if (stricmp(token, "-RescaleHamming") == 0)
+        else if (_stricmp(token, "-RescaleHamming") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterHamming;
 
         }
-        else if (stricmp(token, "-RescaleBlackman") == 0)
+        else if (_stricmp(token, "-RescaleBlackman") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterBlackman;
 
         }
-        else if (stricmp(token, "-RescaleKaiser") == 0)
+        else if (_stricmp(token, "-RescaleKaiser") == 0)
         {
             bLegalCommand = true;
             rescaleImageFilter = kMIPFilterKaiser;
