@@ -5,6 +5,7 @@ struct vf
 	float4 hpos	: POSITION;
 	float4 C	: COLOR0;
 	float2 tc	: TEXCOORD0;
+    float fog : FOG;
 };
 
 uniform float4 		consts; // {1/quant,1/quant,diffusescale,ambient}
@@ -27,6 +28,9 @@ vf main (v_detail v)
  	pos.y 		= dot	(m1, v.pos);
  	pos.z 		= dot	(m2, v.pos);
 	pos.w 		= 1;
+
+    // Calc fog
+    o.fog = calc_fogging(pos);
 
 	// Final out
 	o.hpos		= mul	(m_WVP,pos);
