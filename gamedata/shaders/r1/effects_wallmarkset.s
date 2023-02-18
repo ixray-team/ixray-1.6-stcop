@@ -1,5 +1,5 @@
 function normal		(shader, t_base, t_second, t_detail)
-	shader:begin	("wmark",	"vert")
+	shader:begin	("wmark",	"wmark")
 			: sorting	(1, false)
 			: aref 		(false,0)
 			: zb 		(true,true)
