@@ -12,7 +12,7 @@ struct 	v2p
 half4 	main_ps_1_1	( v2p I )	: COLOR
 {
 	half4 res = tex2D	(s_base,I.tc0);
-	res.rgb = lerp( half3(0.5, 0.5, 0.5), res.rgb, I.c0.a);
+	res = lerp( 0.5, res, I.c0.a);
 	return res;
 }
 
