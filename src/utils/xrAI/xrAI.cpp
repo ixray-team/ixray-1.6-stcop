@@ -17,7 +17,6 @@
 #pragma comment(linker,"/STACK:0x800000,0x400000")
 
 #pragma comment(lib,"comctl32.lib")
-#pragma comment(lib,"d3dx9.lib")
 #pragma comment(lib,"IMAGEHLP.LIB")
 #pragma comment(lib,"winmm.LIB")
 #pragma comment(lib,"xrcdb.LIB")

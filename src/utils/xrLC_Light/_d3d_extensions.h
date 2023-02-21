@@ -93,23 +93,24 @@ public:
 #endif
 
 #ifndef NO_XR_VDECLARATOR
-struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH+1>
-{
-	void	set		(u32 FVF)
-	{
-		D3DXDeclaratorFromFVF	(FVF,begin());
-		resize					(D3DXGetDeclLength(begin())+1);
+#include <Utilities\FlexibleVertexFormat.h>
+
+struct	VDeclarator : public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
+	void set(u32 FVF) {
+		auto vec = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+		CHK_DX(FVF::CreateDeclFromFVF(FVF, vec));
+		resize(FVF::GetDeclLength(begin()) + 1);
+		CopyMemory(begin(), vec.data(), size() * sizeof(D3DVERTEXELEMENT9));
 	}
-	void	set		(D3DVERTEXELEMENT9* dcl)
-	{
-		resize					(D3DXGetDeclLength(dcl)+1);
-		CopyMemory				(begin(),dcl,size()*sizeof(D3DVERTEXELEMENT9));
+	void set(D3DVERTEXELEMENT9* dcl) {
+		resize(FVF::GetDeclLength(dcl) + 1);
+		CopyMemory(begin(), dcl, size() * sizeof(D3DVERTEXELEMENT9));
 	}
 	void	set		(const VDeclarator& d)
 	{
 		*this		= d;
 	}
-	u32		vertex	()				{ return D3DXGetDeclVertexSize(begin(),0);	}
+	u32		vertex	()				{ return FVF::ComputeVertexSize(begin(), 0);	}
 	BOOL	equal	(VDeclarator& d)
 	{
 		if (size()!=d.size())	return false;

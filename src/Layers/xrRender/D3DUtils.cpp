@@ -18,6 +18,8 @@
 #include "d3dx9.h"
 #pragma warning(pop)
 
+#include <Utilities/FlexibleVertexFormat.h>
+
 CDrawUtilities DUImpl;
 
 #define LINE_DIVISION  32  // не меньше 6!!!!!
@@ -108,7 +110,7 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 	p_type				= _pt;
 	v_cnt				= _v_cnt;
 	i_cnt				= _i_cnt;
-	u32 stride			= D3DXGetFVFVertexSize(FVF);
+	u32 stride = FVF::ComputeVertexSize(FVF);
 	R_CHK(HW.pDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
 	HW.stats_manager.increment_stats_vb	(pVB);
 	u8* 				bytes;

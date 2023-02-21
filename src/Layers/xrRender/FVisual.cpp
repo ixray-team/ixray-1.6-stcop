@@ -16,6 +16,9 @@
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #endif // USE_DX11
 
+#include <Utilities\FlexibleVertexFormat.h>
+using namespace FVF;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -41,7 +44,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	dxRender_Visual::Load		(N,data,dwFlags);
 
-	D3DVERTEXELEMENT9	dcl		[MAX_FVF_DECL_SIZE];
+	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
 	D3DVERTEXELEMENT9*	vFormat	= 0;
 	dwPrimitives				= 0;
 	BOOL				loaded_v=false;
@@ -123,10 +126,10 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			R_ASSERT			(data->find_chunk(OGF_VERTICES));
 			vBase				= 0;
 			u32 fvf				= data->r_u32				();
-			CHK_DX				(D3DXDeclaratorFromFVF(fvf,dcl));
-			vFormat				= dcl;
+			CHK_DX(CreateDeclFromFVF(fvf, dcl));
+			vFormat = dcl.data();
 			vCount				= data->r_u32				();
-			u32 vStride			= D3DXGetFVFVertexSize		(fvf);
+			u32 vStride = ComputeVertexSize(fvf);
 
 #ifdef USE_DX11
 			VERIFY				(NULL==p_rm_Vertices);

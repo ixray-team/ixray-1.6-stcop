@@ -61,19 +61,19 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <IncludePath>.\;..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)dep\DirectXMesh;.\;..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_jun2010\Lib\x86;$(SolutionDir)lib\dedicated;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>.\;..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)dep\DirectXMesh;.\;..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_jun2010\Lib\x86;$(SolutionDir)lib\dedicated;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>.\;..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)dep\DirectXMesh;.\;..\..\..\sdk\include;..\..\..\sdk\dxsdk_jun2010\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\sdk\dxsdk_jun2010\Lib\x86;$(SolutionDir)lib\dedicated;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

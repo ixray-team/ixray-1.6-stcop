@@ -4,6 +4,9 @@
 #include	"stdafx.h"
 #include	"D3DX_Wrapper.h"
 
+#include <Utilities\FlexibleVertexFormat.h>
+using namespace FVF;
+
 // misc
 __declspec( dllimport ) bool WINAPI FSColorPickerDoModal(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState);
 extern "C" __declspec(dllexport) bool  __stdcall FSColorPickerExecute(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState)
@@ -157,9 +160,11 @@ extern "C"{
 	ETOOLS_API HRESULT WINAPI
 		D3DX_DeclaratorFromFVF(
 		DWORD							FVF,
-		D3DVERTEXELEMENT9				pDeclarator[MAX_FVF_DECL_SIZE])
-	{
-		return D3DXDeclaratorFromFVF(FVF,pDeclarator);
+		D3DVERTEXELEMENT9				pDeclarator[MAXD3DDECLLENGTH + 1]) {
+		auto vec = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+		auto result = FVF::CreateDeclFromFVF(FVF, vec);
+		CopyMemory(pDeclarator, vec.data(), sizeof(pDeclarator) * sizeof(D3DVERTEXELEMENT9));
+		return result;
 	}
 
 	ETOOLS_API UINT WINAPI 
@@ -167,20 +172,20 @@ extern "C"{
 		CONST D3DVERTEXELEMENT9*		pDecl,
 		DWORD							Stream)
 	{
-		return D3DXGetDeclVertexSize(pDecl,Stream);
+		return ComputeVertexSize(pDecl, Stream);
 	}
 
 	ETOOLS_API UINT WINAPI 
 		D3DX_GetDeclLength(
 		CONST D3DVERTEXELEMENT9 *pDecl)
 	{
-		return D3DXGetDeclLength(pDecl);
+		return GetDeclLength(pDecl);
 	}
 
 	ETOOLS_API UINT WINAPI
 		D3DX_GetFVFVertexSize(DWORD FVF)
 	{
-		return D3DXGetFVFVertexSize(FVF);
+		return ComputeVertexSize(FVF);
 	}
 
 	ETOOLS_API D3DXMATRIX* WINAPI 
