@@ -27,7 +27,7 @@ package dceldbB6;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS DB-Aware Controls (Design-time)'}
 {$DESIGNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,

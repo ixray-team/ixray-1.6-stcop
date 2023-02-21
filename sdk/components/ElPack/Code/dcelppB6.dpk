@@ -27,7 +27,7 @@ package dcelppB6;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'EldoS Professional Components (Design-time)'}
 {$DESIGNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,
