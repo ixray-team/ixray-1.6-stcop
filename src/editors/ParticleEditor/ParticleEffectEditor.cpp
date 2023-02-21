@@ -69,7 +69,7 @@ void __stdcall PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
     	if (0==stricmp(new_name,*(*s_it)->actionName)){res=true; break;};
 }
 
-IC __stdcall void PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
+void __stdcall PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
 {
     for(int i=0; actions_token[i].name; i++)
         items.push_back(SChooseItem(actions_token[i].name,actions_token[i].info));

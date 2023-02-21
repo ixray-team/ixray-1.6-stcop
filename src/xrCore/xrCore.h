@@ -112,7 +112,6 @@
 
 	#include <assert.h>
 	#include <utime.h>
-	#define _utimbuf utimbuf
 	#define MODULE_NAME 		"xrCoreB.dll"
 
 	// function redefinition
