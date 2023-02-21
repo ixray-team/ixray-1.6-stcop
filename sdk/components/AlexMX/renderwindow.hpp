@@ -1,8 +1,8 @@
 ﻿// CodeGear C++Builder
-// Copyright (c) 1995, 2021 by Embarcadero Technologies, Inc.
+// Copyright (c) 1995, 2022 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'RenderWindow.pas' rev: 34.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'RenderWindow.pas' rev: 35.00 (Windows)
 
 #ifndef RenderwindowHPP
 #define RenderwindowHPP
@@ -97,7 +97,7 @@ public:
 
 
 //-- var, const, procedure ---------------------------------------------------
-#define RWStyle (System::Set<Vcl::Controls::Vcl_Controls__31, Vcl::Controls::Vcl_Controls__31::csAcceptsControls, Vcl::Controls::Vcl_Controls__31::csOverrideStylePaint>() << Vcl::Controls::Vcl_Controls__31::csAcceptsControls << Vcl::Controls::Vcl_Controls__31::csCaptureMouse << Vcl::Controls::Vcl_Controls__31::csClickEvents << Vcl::Controls::Vcl_Controls__31::csOpaque << Vcl::Controls::Vcl_Controls__31::csReplicatable )
+#define RWStyle (System::Set<Vcl::Controls::Vcl_Controls__31, Vcl::Controls::Vcl_Controls__31::csAcceptsControls, Vcl::Controls::Vcl_Controls__31::csNeedsDesignDisabledState>() << Vcl::Controls::Vcl_Controls__31::csAcceptsControls << Vcl::Controls::Vcl_Controls__31::csCaptureMouse << Vcl::Controls::Vcl_Controls__31::csClickEvents << Vcl::Controls::Vcl_Controls__31::csOpaque << Vcl::Controls::Vcl_Controls__31::csReplicatable )
 }	/* namespace Renderwindow */
 #if !defined(DELPHIHEADER_NO_IMPLICIT_NAMESPACE_USE) && !defined(NO_USING_NAMESPACE_RENDERWINDOW)
 using namespace Renderwindow;

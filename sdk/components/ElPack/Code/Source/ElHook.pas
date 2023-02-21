@@ -110,6 +110,7 @@ type
   protected
     procedure RemoveHook(Hook : TElHook);
     procedure AddHook(Hook : TElHook);
+    function HooksCount : integer;
 
     constructor Create;
     destructor Destroy; override;
@@ -224,6 +225,11 @@ begin
 {$ENDIF}
 {$endif}
 end; {AddHook}
+
+function TCtlHook.HooksCount : integer;
+begin
+  result := FHooks.Count;
+end;
 
 {$ifndef CLX_USED}
 procedure TCtlHook.HookWndProc(var Msg : TMessage);

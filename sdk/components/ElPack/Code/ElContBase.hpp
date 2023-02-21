@@ -1,11 +1,11 @@
 ﻿// CodeGear C++Builder
-// Copyright (c) 1995, 2021 by Embarcadero Technologies, Inc.
+// Copyright (c) 1995, 2022 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'ElReg.pas' rev: 34.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'ElContBase.pas' rev: 35.00 (Windows)
 
-#ifndef ElregHPP
-#define ElregHPP
+#ifndef ElcontbaseHPP
+#define ElcontbaseHPP
 
 #pragma delphiheader begin
 #pragma option push
@@ -17,19 +17,23 @@
 
 //-- user supplied -----------------------------------------------------------
 
-namespace Elreg
+namespace Elcontbase
 {
 //-- forward type declarations -----------------------------------------------
 //-- type declarations -------------------------------------------------------
+typedef System::StaticArray<void *, 134217727> TPointerList;
+
+typedef TPointerList *PPointerList;
+
 //-- var, const, procedure ---------------------------------------------------
-extern DELPHI_PACKAGE void __fastcall Register(void);
-}	/* namespace Elreg */
-#if !defined(DELPHIHEADER_NO_IMPLICIT_NAMESPACE_USE) && !defined(NO_USING_NAMESPACE_ELREG)
-using namespace Elreg;
+static const int MaxListSize = int(0x7ffffff);
+}	/* namespace Elcontbase */
+#if !defined(DELPHIHEADER_NO_IMPLICIT_NAMESPACE_USE) && !defined(NO_USING_NAMESPACE_ELCONTBASE)
+using namespace Elcontbase;
 #endif
 #pragma pack(pop)
 #pragma option pop
 
 #pragma delphiheader end.
 //-- end unit ----------------------------------------------------------------
-#endif	// ElregHPP
+#endif	// ElcontbaseHPP

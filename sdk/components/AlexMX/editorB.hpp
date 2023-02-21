@@ -1,8 +1,8 @@
 ﻿// CodeGear C++Builder
-// Copyright (c) 1995, 2021 by Embarcadero Technologies, Inc.
+// Copyright (c) 1995, 2022 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'editorB.dpk' rev: 34.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'editorB.dpk' rev: 35.00 (Windows)
 
 #ifndef EditorbHPP
 #define EditorbHPP
@@ -47,12 +47,13 @@
 #include <System.SysUtils.hpp>	// (rtl)
 #include <System.VarUtils.hpp>	// (rtl)
 #include <System.Variants.hpp>	// (rtl)
-#include <System.Math.hpp>	// (rtl)
-#include <System.Rtti.hpp>	// (rtl)
 #include <System.TypInfo.hpp>	// (rtl)
+#include <System.Math.hpp>	// (rtl)
 #include <System.Generics.Defaults.hpp>	// (rtl)
+#include <System.Rtti.hpp>	// (rtl)
 #include <System.TimeSpan.hpp>	// (rtl)
 #include <System.Classes.hpp>	// (rtl)
+#include <Winapi.ShellAPI.hpp>	// (rtl)
 #include <System.DateUtils.hpp>	// (rtl)
 #include <System.IOUtils.hpp>	// (rtl)
 #include <System.IniFiles.hpp>	// (rtl)
@@ -67,9 +68,8 @@
 #include <Winapi.UxTheme.hpp>	// (rtl)
 #include <Vcl.GraphUtil.hpp>	// (vcl)
 #include <Vcl.StdCtrls.hpp>	// (vcl)
-#include <Winapi.ShellAPI.hpp>	// (rtl)
-#include <Vcl.Printers.hpp>	// (vcl)
 #include <Vcl.Clipbrd.hpp>	// (vcl)
+#include <Vcl.Printers.hpp>	// (vcl)
 #include <Vcl.ComCtrls.hpp>	// (vcl)
 #include <Vcl.Dialogs.hpp>	// (vcl)
 #include <Vcl.ExtCtrls.hpp>	// (vcl)

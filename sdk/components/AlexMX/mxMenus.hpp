@@ -1,8 +1,8 @@
 ﻿// CodeGear C++Builder
-// Copyright (c) 1995, 2021 by Embarcadero Technologies, Inc.
+// Copyright (c) 1995, 2022 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'MxMenus.pas' rev: 34.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'MxMenus.pas' rev: 35.00 (Windows)
 
 #ifndef MxmenusHPP
 #define MxmenusHPP
@@ -21,10 +21,10 @@
 #include <Winapi.Messages.hpp>
 #include <Vcl.Graphics.hpp>
 #include <Vcl.ImgList.hpp>
-#include <System.UITypes.hpp>
 #include <Vcl.Menus.hpp>
 #include <mxHook.hpp>
 #include <System.Types.hpp>
+#include <System.UITypes.hpp>
 
 //-- user supplied -----------------------------------------------------------
 
