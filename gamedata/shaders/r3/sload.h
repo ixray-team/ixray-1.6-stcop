@@ -95,7 +95,7 @@ void UpdateTC( inout p_bumped I)
 		float2	vTexCoord = I.tcdh + vParallaxOffset;
 	
 		//	Output the result
-		I.tcdh = vTexCoord;
+		I.tcdh.xy = vTexCoord;
 
 #if defined(USE_TDETAIL) && defined(USE_STEEPPARALLAX)
 		I.tcdbump = vTexCoord * dt_params;
@@ -119,7 +119,7 @@ void UpdateTC( inout p_bumped I)
 	float2	new_tc  = I.tcdh + height * normalize(eye);	//
 
 	//	Output the result
-	I.tcdh	= new_tc;
+	I.tcdh.xy	= new_tc;
 }
 
 #else	//	USE_PARALLAX
