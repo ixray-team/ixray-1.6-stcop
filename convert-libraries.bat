@@ -1,6 +1,6 @@
 @echo off
 
-set coff2omf="%programfiles(x86)%\Embarcadero\Studio\21.0\bin\coff2omf.exe"
+set coff2omf="%programfiles(x86)%\Embarcadero\Studio\22.0\bin\coff2omf.exe"
 
 %coff2omf% sdk\dxsdk_jun2010\Lib\x86\dinput8.lib lib\dinput8B.lib -v
 %coff2omf% sdk\dxsdk_jun2010\Lib\x86\dsound.lib lib\dsoundB.lib -v

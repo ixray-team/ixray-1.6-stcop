@@ -23,6 +23,7 @@ ipch/
 *.dsk
 
 # RAD Studio history and backups
+__astcache/
 __history/
 __recovery/
 *.~*
