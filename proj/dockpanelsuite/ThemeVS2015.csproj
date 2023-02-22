@@ -35,68 +35,40 @@
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012AutoHideWindowFactory.cs" Link="ThemeVS2012\VS2012AutoHideWindowFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockIndicatorFactory.cs" Link="ThemeVS2012\VS2012DockIndicatorFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockOutlineFactory.cs" Link="ThemeVS2012\VS2012DockOutlineFactory.cs" />
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockPaneCaptionInertButton.cs" Link="ThemeVS2012\VS2012DockPaneCaptionInertButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockPaneCaptionInertButton.cs" Link="ThemeVS2012\VS2012DockPaneCaptionInertButton.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockWindowFactory.cs" Link="ThemeVS2012\VS2012DockWindowFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012PaletteFactory.cs" Link="ThemeVS2012\VS2012PaletteFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012PaneIndicatorFactory.cs" Link="ThemeVS2012\VS2012PaneIndicatorFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012PanelIndicatorFactory.cs" Link="ThemeVS2012\VS2012PanelIndicatorFactory.cs" />
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPane.cs" Link="ThemeVS2013\VS2013DockPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneCaption.cs" Link="ThemeVS2013\VS2013DockPaneCaption.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPane.cs" Link="ThemeVS2013\VS2013DockPane.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneCaption.cs" Link="ThemeVS2013\VS2013DockPaneCaption.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneCaptionFactory.cs" Link="ThemeVS2013\VS2013DockPaneCaptionFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneFactory.cs" Link="ThemeVS2013\VS2013DockPaneFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneSplitterControlFactory.cs" Link="ThemeVS2013\VS2013DockPaneSplitterControlFactory.cs" />
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneStrip.cs" Link="ThemeVS2013\VS2013DockPaneStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneStrip.cs" Link="ThemeVS2013\VS2013DockPaneStrip.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013DockPaneStripFactory.cs" Link="ThemeVS2013\VS2013DockPaneStripFactory.cs" />
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013SplitterControl.cs" Link="ThemeVS2013\VS2013SplitterControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013WindowSplitterControl.cs" Link="ThemeVS2013\VS2013WindowSplitterControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013SplitterControl.cs" Link="ThemeVS2013\VS2013SplitterControl.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013WindowSplitterControl.cs" Link="ThemeVS2013\VS2013WindowSplitterControl.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2013\VS2013WindowSplitterControlFactory.cs" Link="ThemeVS2013\VS2013WindowSplitterControlFactory.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\Resources.Designer.cs" Link="ThemeVS2015\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015ThemeBase.cs" Link="ThemeVS2015\VS2015ThemeBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015LightTheme.cs" Link="ThemeVS2015\VS2015LightTheme.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015DarkTheme.cs" Link="ThemeVS2015\VS2015DarkTheme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015ThemeBase.cs" Link="ThemeVS2015\VS2015ThemeBase.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015LightTheme.cs" Link="ThemeVS2015\VS2015LightTheme.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015DarkTheme.cs" Link="ThemeVS2015\VS2015DarkTheme.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\PaintingService.cs" Link="ThemeVS2012\PaintingService.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\Strings.Designer.cs" Link="ThemeVS2012\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012AutoHideStrip.cs" Link="ThemeVS2012\VS2012AutoHideStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012AutoHideWindowControl.cs" Link="ThemeVS2012\VS2012AutoHideWindowControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockWindow.cs" Link="ThemeVS2012\VS2012DockWindow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012WindowSplitterControl.cs" Link="ThemeVS2012\VS2012WindowSplitterControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015BlueTheme.cs" Link="ThemeVS2015\VS2015BlueTheme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012AutoHideStrip.cs" Link="ThemeVS2012\VS2012AutoHideStrip.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012AutoHideWindowControl.cs" Link="ThemeVS2012\VS2012AutoHideWindowControl.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012DockWindow.cs" Link="ThemeVS2012\VS2012DockWindow.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2012\VS2012WindowSplitterControl.cs" Link="ThemeVS2012\VS2012WindowSplitterControl.cs" />
+    <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\ThemeVS2015\VS2015BlueTheme.cs" Link="ThemeVS2015\VS2015BlueTheme.cs" />
     <Compile Include="..\..\dep\dockpanelsuite\WinFormsUI\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
