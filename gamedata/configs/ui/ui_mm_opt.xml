@@ -209,7 +209,7 @@
         </cap_r2_sun>
         <check_r2_sun x="167" y="0" width="44" height="29">
 	        <texture>ui_inGame2_checkbox</texture>
-            <options_item entry="r2_sun" group="mm_opt_video"/>
+            <options_item entry="r2_sun" depend="restart" group="mm_opt_video"/>
         </check_r2_sun>
 
         <cap_r1_detail_textures x="20" y="3" width="135" height="24">
