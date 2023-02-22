@@ -69,6 +69,8 @@ enum
 	R1FLAG_TERRAIN_MASK			= (1<<1),
 };
 
+extern ECORE_API Flags32		ps_r__common_flags;
+
 // R2
 extern ECORE_API	float		ps_r2_ssaLOD_A;
 extern ECORE_API	float		ps_r2_ssaLOD_B;
@@ -189,6 +191,7 @@ enum
 	R2FLAGEXT_WIREFRAME				= (1<<6),
 	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
 	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
+	RFLAG_ACTOR_SHADOW				= (1<<9),
 };
 
 extern void						xrRender_initconsole	();
