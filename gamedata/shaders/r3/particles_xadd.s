@@ -1,5 +1,5 @@
 function normal		(shader, t_base, t_second, t_detail)
-	shader:begin	("particle",	"particle")
+	shader:begin	("particle",	"particle_add")
 			: sorting	(3, false)
 			: blend		(true,blend.one,blend.one)
 			: aref 		(false,0)
