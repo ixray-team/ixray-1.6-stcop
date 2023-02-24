@@ -124,12 +124,14 @@ jobs:
       - name: Generate patch
         run: |
           ${{ github.workspace }}/generate-patch.bat
+          move ${{ github.workspace }}/patch `
+            ${{ github.workspace }}/temp/gamedata
 
       - name: Upload gamedata
         uses: actions/upload-artifact@v3
         with:
           name: gamedata ${{ github.sha }}
-          path: gamedata/
+          path: temp/gamedata/
 
       - name: Upload patch
         uses: actions/upload-artifact@v3
