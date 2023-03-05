@@ -30,6 +30,8 @@ float4 main(v2p I) : COLOR
 	result.a *= Contrast(saturate(spaceDepth*1.3h), 2);
 	result.rgb *= Contrast(saturate(spaceDepth*1.3h), 2);
 #endif	//	USE_SOFT_PARTICLES
+
+	clip(result.a - (0.01f / 255.0f));
     result.w *= I.fog;
     result.xyz *= I.fog;
 
