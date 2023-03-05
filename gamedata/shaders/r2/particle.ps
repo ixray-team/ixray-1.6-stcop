@@ -33,6 +33,7 @@ half4 	main	( v2p I )	: COLOR
 //	result = saturate (spaceDepth*5.0);
 //	result.a = 1;
 #endif	//	USE_SOFT_PARTICLES
+	clip(result.a - (0.01f / 255.0f));
     result.w *= I.fog;
 
 	return	result;
