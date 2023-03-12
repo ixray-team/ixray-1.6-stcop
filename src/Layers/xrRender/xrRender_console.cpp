@@ -844,6 +844,7 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
 	CMD3(CCC_Mask,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
+	CMD3(CCC_Mask,		"r2_use_bump",					&ps_r__common_flags,		R2FLAG_USE_BUMP);
 
 	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
 

@@ -192,6 +192,7 @@ enum
 	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
 	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
 	RFLAG_ACTOR_SHADOW				= (1<<9),
+	R2FLAG_USE_BUMP					= (1<<10),
 };
 
 extern void						xrRender_initconsole	();
