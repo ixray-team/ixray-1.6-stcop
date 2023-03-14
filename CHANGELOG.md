@@ -2,6 +2,60 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Current
+
+### Common
+
+- Enabled assets packing
+- Replaced `dxerr` with Windows SDK analog
+- Replaced `stricmp` with POSIX analog
+- Simplificated `get-dependencies` script launching
+- Incompletely integrated __DirectXMesh__
+
+### Engine
+
+- Added ability to run __Direct3D 11__ on unsupported videocards
+- Fixed autosaves
+- Fixed potential memory leak in __DirectX 10__ resource manager
+- Fixed inverted sky colors and sky bluring on __Direct3D 10+__
+- Fixed switching ingame console language layout
+- Fixed playing animation of getting weapons
+- Fixed character info for deadbody color
+- Fixed progress bar for optional using of `middle_color`
+- Enabled fog accounting for grass on static lightning
+- Enabled `Ldynamic_dir` counting for `accum_direct_volumetric()` on __Direct3D 9__
+- Enabled screenshots capturing in windowed mode on __Direct3D 9__
+- Enabled clearing highlight lists on each inventory action
+- Enabled changing items condition by Num7 and Num8
+- Enabled static sun shadows on disabled cascades
+- Implemented __Direct3D 10__ initialization over __Direct3D 11__
+- Implemented actor shadow
+- Replaced crashing with warning when there is no sound
+- Restored grass shadow
+- Merged sun cascades in all renders
+- Disabled ammo highlights for knife and binocular
+- Disabled stats by class and not by section
+- Deleted old TSM algorithms in all renders
+- Deleted`r2_shadow_cascede_old` console command
+- Deleted __xrRender_R3__
+
+### Dependencies
+
+- Replaced `delete` operator with `xr_delete()` function in __xrXMLParser__
+
+### Resources
+
+- Fixed `sload` for correct nearest bumps displaying
+- Fixed water displaying on static lightning
+- Fixed fog accounting for campfire and anomalies
+- Fixed `s_distort` parameter for `particles_xadd` blender on __Direct3D 10+__
+- Fixed particles displaying on shooting
+- Enabled fog accounting for wallmarks on static lightning
+- Enabled fog accounting for particles
+- Implemented knife parameters class and and related features
+- Implemented `use_condition` parameter
+- Implemented notification restarting for `r2_sun` command
+
 ## Release 0.4 (September 2022)
 
 ### Common
@@ -99,7 +153,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Replaced deprecated functions to safe and modern analogs
 - Replaced some custom functions and types to standard library analog
 - Disabled hardcoded _GUID_ of __DirectX__
-- Replaced `debug::make_final<T>` class to *C++11* `final` specifier
+- Replaced `debug::make_final<T>` class to _C++11_ `final` specifier
 
 ### Core
 
