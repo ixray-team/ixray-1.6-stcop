@@ -36,6 +36,7 @@ public:
 	IC LPCSTR		id_str() const;
 	IC LPCSTR		icon_name() const;
 	IC LPCSTR		name() const;
+	IC u32			icon_color() const;
 
 	IC FunctorParams_type const&	functor_params() const;
 
@@ -48,6 +49,7 @@ protected:
 
 	shared_str		m_name;
 	shared_str		m_icon;
+	u32				m_color;
 
 	StrFunctor			m_desc;
 	FunctorParams_type	m_functor_params;
