@@ -29,6 +29,11 @@ IC LPCSTR Property::icon_name() const
 	return	m_icon.c_str();
 }
 
+IC u32 Property::icon_color() const
+{
+	return m_color;
+}
+
 IC LPCSTR Property::name() const
 {
 	return	m_name.c_str();
