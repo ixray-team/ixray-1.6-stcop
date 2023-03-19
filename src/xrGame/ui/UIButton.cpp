@@ -199,14 +199,14 @@ bool CUIButton::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 void CUIButton::SetAccelerator(int iAccel, int idx)	
 {
-	VERIFY(idx>=0 && idx<4); 
-	m_uAccelerator[idx] = s16(iAccel);
+	VERIFY(idx >= 0 && idx < 4);
+	m_uAccelerator[idx] = iAccel;
 }
 
 const int CUIButton::GetAccelerator(int idx) const			
 {
-	VERIFY(idx>=0 && idx<4); 
-	return m_uAccelerator[idx]; 
+	VERIFY(idx >= 0 && idx < 4);
+	return m_uAccelerator[idx];
 }
 
 bool CUIButton::IsAccelerator(int iAccel) const		
