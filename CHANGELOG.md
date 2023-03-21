@@ -2,7 +2,7 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
-## Current
+## Release 0.5 (March 2023)
 
 ### Common
 
@@ -22,6 +22,9 @@ Full changelog of _IX-Ray_ 1.6 project
 - Enabled screenshots capturing in windowed mode on __Direct3D 9__
 - Enabled clearing highlight lists on each inventory action
 - Enabled changing items condition by Num7 and Num8
+- Implemented `ui_reload` command
+- Allowed to use min and max colors for double progress bar
+- Allowed to change upgrade icon color by config
 - Replaced crashing with warning when there is no sound
 - Disabled ammo highlights for knife and binocular
 - Disabled stats by class and not by section
@@ -43,6 +46,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Restored grass shadow
 - Implemented __Direct3D 10__ initialization over __Direct3D 11__
 - Implemented actor shadow
+- Prevented writing alpha-blended geometry to depth buffer
 - Deleted __xrRender_R3__
 - Deleted old TSM algorithms in all renders
 - Deleted`r2_shadow_cascede_old` console command
