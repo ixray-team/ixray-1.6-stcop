@@ -53,29 +53,29 @@ ALife::_OBJECT_ID smart_terrain_id	(CSE_ALifeMonsterAbstract *monster)
 	return						(monster->m_smart_terrain_id);
 }
 #ifdef XRGAME_EXPORTS
-float travel_speed					(CSE_ALifeMonsterAbstract *self)
+float travel_speed					(CSE_ALifeMonsterAbstract *self_)
 {
-	return						(self->m_fGoingSpeed);
+	return						(self_->m_fGoingSpeed);
 }
 
-void travel_speed2					(CSE_ALifeMonsterAbstract *self, float travel_speed)
+void travel_speed2					(CSE_ALifeMonsterAbstract *self_, float travel_speed)
 {
-	self->m_fGoingSpeed			= travel_speed;
+	self_->m_fGoingSpeed			= travel_speed;
 }
 
-float current_level_travel_speed	(CSE_ALifeMonsterAbstract *self)
+float current_level_travel_speed	(CSE_ALifeMonsterAbstract *self_)
 {
-	return						(self->m_fCurrentLevelGoingSpeed);
+	return						(self_->m_fCurrentLevelGoingSpeed);
 }
 
-void current_level_travel_speed2	(CSE_ALifeMonsterAbstract *self, float travel_speed)
+void current_level_travel_speed2	(CSE_ALifeMonsterAbstract *self_, float travel_speed)
 {
-	self->m_fCurrentLevelGoingSpeed	= travel_speed;
+	self_->m_fCurrentLevelGoingSpeed	= travel_speed;
 }
 
-void ForceSetGoodwill(CSE_ALifeMonsterAbstract *self, int goodwill, ALife::_OBJECT_ID pWhoToSet)
+void ForceSetGoodwill(CSE_ALifeMonsterAbstract *self_, int goodwill, ALife::_OBJECT_ID pWhoToSet)
 {
-	RELATION_REGISTRY().ForceSetGoodwill(self->ID, pWhoToSet, goodwill);
+	RELATION_REGISTRY().ForceSetGoodwill(self_->ID, pWhoToSet, goodwill);
 }
 
 

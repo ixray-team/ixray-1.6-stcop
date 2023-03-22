@@ -39,7 +39,7 @@ void safe_verify(LPCSTR file_name,
 		}
 	} __except(EXCEPTION_EXECUTE_HANDLER)
 	{
-		printf("FATAL ERROR (%s): failed to verify data\n");
+		printf("FATAL ERROR: failed to verify data\n");
 	}
 }
 

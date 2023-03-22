@@ -236,17 +236,17 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 
 	stream.open_chunk			(2);
 	{
-		const_vertex_iterator	I = vertices().begin();
-		const_vertex_iterator	E = vertices().end();
-		for ( ; I != E; ++I) {
-			if ((*I).second->edges().empty())
+		const_vertex_iterator	I_ = vertices().begin();
+		const_vertex_iterator	E_ = vertices().end();
+		for ( ; I_ != E_; ++I_) {
+			if ((*I_).second->edges().empty())
 				continue;
 
-			save_data			((*I).second->vertex_id(),stream);
+			save_data			((*I_).second->vertex_id(),stream);
 
-			stream.w_u32		((u32)(*I).second->edges().size());
-			const_iterator		i = (*I).second->edges().begin();
-			const_iterator		e = (*I).second->edges().end();
+			stream.w_u32		((u32)(*I_).second->edges().size());
+			const_iterator		i = (*I_).second->edges().begin();
+			const_iterator		e = (*I_).second->edges().end();
 			for ( ; i != e; ++i) {
 				save_data		((*i).vertex_id(),stream);
 				save_data		((*i).weight(),stream);

@@ -48,7 +48,7 @@ void MxPropSlim::consider_normals(bool will)
 	D = compute_dimension(m);
 }
 
-unsigned int MxPropSlim::compute_dimension(MxStdModel *m)
+unsigned int MxPropSlim::compute_dimension(MxStdModel *m_)
 {
 	unsigned int d = 3;
 
@@ -574,36 +574,36 @@ void MxPropSlim::apply_contraction(const MxPairContraction& conx,
 
 void MxPropSlim::collect_edges()
 {
-	MxVertexList star;
+	MxVertexList star_;
 
 	for(MxVertexID i=0; i<m->vert_count(); i++)
 	{
-		star.reset();
-		m->collect_vertex_star(i, star);
+		star_.reset();
+		m->collect_vertex_star(i, star_);
 
-		for(unsigned int j=0; j<(unsigned int)star.length(); j++)
-			if( i < star(j) )  // Only add particular edge once
-				create_edge(i, star(j));
+		for(unsigned int j=0; j<(unsigned int)star_.length(); j++)
+			if( i < star_(j) )  // Only add particular edge once
+				create_edge(i, star_(j));
 	}
 }
 
 void MxPropSlim::constrain_boundaries()
 {
-	MxVertexList star;
+	MxVertexList star_;
 	MxFaceList faces;
 
 	for(MxVertexID i=0; i<m->vert_count(); i++)
 	{
-		star.reset();
-		m->collect_vertex_star(i, star);
+		star_.reset();
+		m->collect_vertex_star(i, star_);
 
-		for(unsigned int j=0; j<(unsigned int)star.length(); j++){
-			if( i < star(j) )
+		for(unsigned int j=0; j<(unsigned int)star_.length(); j++){
+			if( i < star_(j) )
 			{
 				faces.reset();
-				m->collect_edge_neighbors(i, star(j), faces);
+				m->collect_edge_neighbors(i, star_(j), faces);
 				if( faces.length() == 1 )
-					discontinuity_constraint(i, star(j), faces);
+					discontinuity_constraint(i, star_(j), faces);
 			}
 		}
 	}

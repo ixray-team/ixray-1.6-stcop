@@ -259,7 +259,7 @@ void	CInifileEx::Load(IReader* F, LPCSTR path)
 				}
 			}
 			*strchr(str,']') 	= 0;
-			Current->Name 		= strlwr(str+1);
+			Current->Name 		= _strlwr(str+1);
 		} 
 		else // name = value
 		{
@@ -441,7 +441,7 @@ BOOL			CInifileEx::section_exist	( const shared_str& S	)					{ return	section_ex
 //--------------------------------------------------------------------------------------
 CInifileEx::Sect& CInifileEx::r_section( LPCSTR S )
 {
-	char	section[256]; strcpy_s(section,sizeof(section),S); strlwr(section);
+	char	section[256]; strcpy_s(section,sizeof(section),S); _strlwr(section);
 	RootIt I = std::lower_bound(DATA.begin(),DATA.end(),section,sect_pred);
 	if (!(I!=DATA.end() && xr_strcmp(*(*I)->Name,section)==0))
 		Debug.fatal(DEBUG_INFO,"Can't open section '%s'",S);
@@ -594,7 +594,7 @@ BOOL	CInifileEx::r_bool( LPCSTR S, LPCSTR L )
 	char		B[8];
 	strncpy		(B,C,7);
 	B[7]		= 0;
-	strlwr		(B);
+	_strlwr		(B);
     return 		IsBOOL(B);
 }
 CLASS_ID CInifileEx::r_clsid( LPCSTR S, LPCSTR L)

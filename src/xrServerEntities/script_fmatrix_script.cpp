@@ -10,13 +10,13 @@
 #include "script_fmatrix.h"
 
 using namespace luabind;
-void get_matrix_hpb(Fmatrix* self, float* h, float* p, float* b)
+void get_matrix_hpb(Fmatrix* self_, float* h, float* p, float* b)
 {
-	self->getHPB	(*h, *p, *b);
+	self_->getHPB	(*h, *p, *b);
 }
-void matrix_transform (Fmatrix* self, Fvector* v)
+void matrix_transform (Fmatrix* self_, Fvector* v)
 {
-	self->transform (*v);
+	self_->transform (*v);
 }
 
 #pragma optimize("s",on)

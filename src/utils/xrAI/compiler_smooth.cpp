@@ -51,9 +51,9 @@ BOOL	ValidNode(vertex& N)
 		D.v[1].set	(rp.verts[1]);
 		D.v[2].set	(rp.verts[2]);
 
-		Fvector		N;
-		N.mknormal	(D.v[0],D.v[1],D.v[2]);
-		if (N.y<=0)	continue;
+		Fvector		N_;
+		N_.mknormal	(D.v[0],D.v[1],D.v[2]);
+		if (N_.y<=0)	continue;
 
 		tris.inc	();
 	}

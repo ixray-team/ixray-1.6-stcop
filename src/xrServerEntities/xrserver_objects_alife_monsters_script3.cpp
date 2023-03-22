@@ -61,9 +61,9 @@ void CSE_ALifeCreaturePhantom::script_register(lua_State *L)
 	];
 }
 
-static SRotation* CSE_ALifeCreatureAbstract__o_torso	(CSE_ALifeCreatureAbstract* self)
+static SRotation* CSE_ALifeCreatureAbstract__o_torso	(CSE_ALifeCreatureAbstract* self_)
 {
-	return	(&self->o_torso);
+	return	(&self_->o_torso);
 }
 
 void CSE_ALifeCreatureAbstract::script_register(lua_State *L)

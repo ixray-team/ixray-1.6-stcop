@@ -263,8 +263,8 @@ public:
 			u32		ID	= *it;
 			R_ASSERT	(ID<g_nodes.size());
 			if			(N==ID)		continue;
-			vertex&		N			= g_nodes[ID];
-			Fvector&	Pos			= N.Pos;
+			vertex&		N_			= g_nodes[ID];
+			Fvector&	Pos			= N_.Pos;
 			Fvector		Dir;
 			Dir.sub		(Pos,BasePos);
 			float		range		= Dir.magnitude();
@@ -424,10 +424,10 @@ bool vertex_in_direction	(const u32 &start_vertex_id, const u32 &target_vertex_i
 				if (next_vertex_id == target_vertex_id)
 					return		(true);
 
-				Fvector2		temp;
-				temp.add		(box.min,box.max);
-				temp.mul		(.5f);
-				float			dist = _sqr(temp.x - dest.x) + _sqr(temp.y - dest.y);
+				Fvector2		temp_;
+				temp_.add		(box.min,box.max);
+				temp_.mul		(.5f);
+				float			dist = _sqr(temp_.x - dest.x) + _sqr(temp_.y - dest.y);
 				if (dist > cur_sqr)
 					continue;
 
@@ -554,9 +554,9 @@ void compute_non_covers		()
 			}
 		}
 
-		for (int i=0; i<4; ++i) {
-			clamp						((*I).high_cover[i], 0.f, 1.f);
-			clamp						((*I).low_cover[i], 0.f, 1.f);
+		for (int i_=0; i_<4; ++i_) {
+			clamp						((*I).high_cover[i_], 0.f, 1.f);
+			clamp						((*I).low_cover[i_], 0.f, 1.f);
 		}
 	}
 }

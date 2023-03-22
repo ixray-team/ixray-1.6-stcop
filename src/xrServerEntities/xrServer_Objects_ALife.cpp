@@ -95,12 +95,12 @@ bool SortStringsByAlphabetPred (const shared_str& s1, const shared_str& s2)
 };
 
 struct story_name_predicate {
-	IC	bool	operator()	(const xr_rtoken &_1, const xr_rtoken &_2) const
+	IC	bool	operator()	(const xr_rtoken &source, const xr_rtoken &destination) const
 	{
-		VERIFY	(_1.name.size());
-		VERIFY	(_2.name.size());
+		VERIFY	(source.name.size());
+		VERIFY	(destination.name.size());
 
-		return	(xr_strcmp(_1.name,_2.name) < 0);
+		return	(xr_strcmp(source.name, destination.name) < 0);
 	}
 };
 
@@ -316,7 +316,7 @@ void CSE_ALifeGraphPoint::FillProps			(LPCSTR pref, PropItemVec& items)
 #	endif // #ifdef XRSE_FACTORY_EXPORTS
 }
 
-void CSE_ALifeGraphPoint::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
+void CSE_ALifeGraphPoint::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
 {
 #	ifdef XRSE_FACTORY_EXPORTS
 static const u32 IL[16]={0,1, 0,2, 0,3, 0,4, 1,3, 3,2, 2,4, 4,1};
@@ -1518,16 +1518,16 @@ void CSE_ALifeObjectHangingLamp::FillProps	(LPCSTR pref, PropItemVec& values)
 }
 
 #define VIS_RADIUS 		0.25f
-void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
+void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
 {
-	inherited1::on_render		(du,owner,bSelected,parent,priority,strictB2F);
+	inherited1::on_render		(du,owner_,bSelected,parent,priority,strictB2F);
 	if ((1==priority)&&(false==strictB2F)){
 		u32 clr					= bSelected?0x00FFFFFF:0x00FFFF00;
 		Fmatrix main_xform, ambient_xform;
-		owner->get_bone_xform		(*light_main_bone,main_xform);
+		owner_->get_bone_xform		(*light_main_bone,main_xform);
 		main_xform.mulA_43			(parent);
 		if(flags.is(flPointAmbient) ){
-			owner->get_bone_xform	(*light_ambient_bone,ambient_xform);
+			owner_->get_bone_xform	(*light_ambient_bone,ambient_xform);
 			ambient_xform.mulA_43	(parent);
 		}
 		if (bSelected){
@@ -2233,8 +2233,8 @@ void CSE_ALifeInventoryBox::STATE_Read( NET_Packet &tNetPacket, u16 size )
 {
 	inherited::STATE_Read( tNetPacket, size );
 
-	u16 m_wVersion		= base()->m_wVersion;
-	if ( m_wVersion > 124 )
+	u16 m_wVersion_		= base()->m_wVersion;
+	if ( m_wVersion_ > 124 )
 	{
 		u8 temp;
 		tNetPacket.r_u8	( temp );		m_can_take = (temp == 1);
