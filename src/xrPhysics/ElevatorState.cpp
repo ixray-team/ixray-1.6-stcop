@@ -370,7 +370,7 @@ void CElevatorState::Deactivate()
 
 bool CElevatorState::StateSwitchInertion(Estate new_state)
 {
-	CElevatorState::SEnertionState m_etable[clbNoState][clbNoState] =
+	CElevatorState::SEnertionState m_etable_[clbNoState][clbNoState] =
 	{
 		//						clbNone			clbNearUp		clbNearDown		clbClimbingUp	clbClimbingDown	clbDepart	clbNoLadder
 		/*clbNone			*/	{{0,0},			{0,0},			{0,0},			{0,0},			{0,0},			{0,0},		{0,0}},							//clbNone			
@@ -384,7 +384,7 @@ bool CElevatorState::StateSwitchInertion(Estate new_state)
 
 	Fvector p;m_character->GetFootCenter(p);
 	p.sub(m_start_position);
-	if(m_etable[m_state][new_state].dist<p.magnitude()||m_etable[m_state][new_state].time<inl_ph_world().Device().dwTimeGlobal-m_start_time) return true;
+	if(m_etable_[m_state][new_state].dist<p.magnitude()||m_etable_[m_state][new_state].time<inl_ph_world().Device().dwTimeGlobal-m_start_time) return true;
 	else return false;
 }
 

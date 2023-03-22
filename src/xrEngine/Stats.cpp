@@ -300,25 +300,25 @@ void CStats::Show()
 	// PERF ALERT
 	if (!g_bDisableRedText)
 	{
-		CGameFont&	F = *((CGameFont*)pFont);
-		F.SetColor						(color_rgba(255,16,16,255));
-		F.OutSet						(300,300);
-		F.SetHeightI						(f_base_size*2);
-		if (fFPS<30)					F.OutNext	("FPS       < 30:   %3.1f",	fFPS);
+		CGameFont&	F_ = *((CGameFont*)pFont);
+		F_.SetColor						(color_rgba(255,16,16,255));
+		F_.OutSet						(300,300);
+		F_.SetHeightI						(f_base_size*2);
+		if (fFPS<30)					F_.OutNext	("FPS       < 30:   %3.1f",	fFPS);
 		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
-		m_pRender->GuardVerts(F);
+		m_pRender->GuardVerts(F_);
 		////if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
 		if (psDeviceFlags.test(rsStatistic))
 		{
-			m_pRender->GuardDrawCalls(F);
+			m_pRender->GuardDrawCalls(F_);
 			//if (RCache.stat.calls>1000)		F.OutNext	("DIP/DP    > 1k:   %d",	RCache.stat.calls);
 			////if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
-			if (RenderDUMP_DT_Count>1000)	F.OutNext	("DT_count  > 1000: %u",	RenderDUMP_DT_Count);
-			F.OutSkip						();
+			if (RenderDUMP_DT_Count>1000)	F_.OutNext	("DT_count  > 1000: %u",	RenderDUMP_DT_Count);
+			F_.OutSkip						();
 			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
-			if (Sheduler.result>3.f)		F.OutNext	("Update     > 3ms:	%3.1f",	Sheduler.result);
-			if (UpdateClient.result>3.f)	F.OutNext	("UpdateCL   > 3ms: %3.1f",	UpdateClient.result);
-			if (Physics.result>5.f)			F.OutNext	("Physics    > 5ms: %3.1f",	Physics.result);	
+			if (Sheduler.result>3.f)		F_.OutNext	("Update     > 3ms:	%3.1f",	Sheduler.result);
+			if (UpdateClient.result>3.f)	F_.OutNext	("UpdateCL   > 3ms: %3.1f",	UpdateClient.result);
+			if (Physics.result>5.f)			F_.OutNext	("Physics    > 5ms: %3.1f",	Physics.result);	
 		}
 	}
 
@@ -326,18 +326,18 @@ void CStats::Show()
 	// Show errors
 	if (!g_bDisableRedText && errors.size())
 	{
-		CGameFont&	F = *((CGameFont*)pFont);
-		F.SetColor	(color_rgba(255,16,16,191));
-		F.OutSet	(200,0);
-		F.SetHeightI	(f_base_size);
+		CGameFont&	F_ = *((CGameFont*)pFont);
+		F_.SetColor	(color_rgba(255,16,16,191));
+		F_.OutSet	(200,0);
+		F_.SetHeightI	(f_base_size);
 #if 0
 		for (u32 it=0; it<errors.size(); it++)
-			F.OutNext("%s",errors[it].c_str());
+			F_.OutNext("%s",errors[it].c_str());
 #else
 		for (u32 it=(u32)_max(int(0),(int)errors.size() - g_ErrorLineCount); it<errors.size(); it++)
-			F.OutNext("%s",errors[it].c_str());
+			F_.OutNext("%s",errors[it].c_str());
 #endif
-		F.OnRender	();
+		F_.OnRender	();
 	}
 #endif
 

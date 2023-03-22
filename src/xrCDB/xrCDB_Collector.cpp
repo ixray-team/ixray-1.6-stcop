@@ -155,22 +155,22 @@ namespace CDB
 		dest.assign						(edge_count,u32(-1));
 
 		{
-			edge						*I = edges, *J;
-			edge						*E = edges + edge_count;
-			for ( ; I != E; ++I) {
-				if (I + 1 == E)
+			edge						*I_ = edges, *J;
+			edge						*E_ = edges + edge_count;
+			for ( ; I_ != E_; ++I_) {
+				if (I_ + 1 == E_)
 					continue;
 
-				J							= I + 1;
+				J							= I_ + 1;
 
-				if ((*I).vertex_id0 != (*J).vertex_id0)
+				if ((*I_).vertex_id0 != (*J).vertex_id0)
 					continue;
 
-				if ((*I).vertex_id1 != (*J).vertex_id1)
+				if ((*I_).vertex_id1 != (*J).vertex_id1)
 					continue;
 
-				dest[(*I).face_id*3 + (*I).edge_id]	= (*J).face_id;
-				dest[(*J).face_id*3 + (*J).edge_id]	= (*I).face_id;
+				dest[(*I_).face_id*3 + (*I_).edge_id]	= (*J).face_id;
+				dest[(*J).face_id*3 + (*J).edge_id]	= (*I_).face_id;
 			}
 		}
 #	if 0

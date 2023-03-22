@@ -48,6 +48,9 @@ class property_value;
 
 class property_holder {
 public:
+	virtual ~property_holder() {}
+
+public:
 	typedef fastdelegate::FastDelegate0<bool>			boolean_getter_type;
 	typedef fastdelegate::FastDelegate1<bool>			boolean_setter_type;
 

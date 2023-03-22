@@ -50,11 +50,11 @@ void window_tree_values::values						(
 			String^				k = index < 0 ? j : j->Substring(0, index);
 			j					= index < 0 ? "" : j->Substring(index + 1);
 			if (!current) {
-				for each (TreeNode^ i in TreeView->Nodes) {
-					if (i->Text != k)
+				for each (TreeNode^ i_ in TreeView->Nodes) {
+					if (i_->Text != k)
 						continue;
 
-					current		= i;
+					current		= i_;
 					break;
 				}
 				
@@ -68,12 +68,12 @@ void window_tree_values::values						(
 			}
 
 			bool				found = false;
-			for each (TreeNode^ i in current->Nodes) {
-				if (i->Text != k)
+			for each (TreeNode^ i_ in current->Nodes) {
+				if (i_->Text != k)
 					continue;
 
 				found			= true;
-				current			= i;
+				current			= i_;
 				break;
 			}
 			if (!found) {

@@ -640,8 +640,8 @@ if(!psNET_direct_connect)
 				else
 					Msg("! IPureClient : port %d is BUSY!", c_port);
 
-				string1024 tmp = "";
-				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp, 0, nullptr);
+				string1024 tmp_ = "";
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp_, 0, nullptr);
 #endif				
 				c_port++;
 			}
@@ -689,8 +689,8 @@ if(!psNET_direct_connect)
 		net_csEnumeration.Leave		();
 		_RELEASE					(pHostAddress);
 #ifdef DEBUG
-		string1024 tmp = "";
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp, 0, nullptr);
+		string1024 tmp_ = "";
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp_, 0, nullptr);
 #endif
 		switch (res)
 		{
