@@ -345,12 +345,12 @@ static int local_book_besterror(codebook *book,float *a){
 
   if(book->c->lengthlist[best]<=0){
     const static_codebook *c=book->c;
-    int i,j;
+    int i_,j;
     float bestf=0.f;
     float *e=book->valuelist;
     best=-1;
-    for(i=0;i<book->entries;i++){
-      if(c->lengthlist[i]>0){
+    for(i_=0;i_<book->entries;i_++){
+      if(c->lengthlist[i_]>0){
         float this=0.f;
         for(j=0;j<dim;j++){
           float val=(e[j]-a[j]);
@@ -358,7 +358,7 @@ static int local_book_besterror(codebook *book,float *a){
         }
         if(best==-1 || this<bestf){
           bestf=this;
-          best=i;
+          best=i_;
         }
       }
       e+=dim;

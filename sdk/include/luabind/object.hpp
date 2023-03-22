@@ -101,7 +101,7 @@ namespace luabind
 				rhs.m_called = true;
 			}
 
-			~proxy_caller();
+			~proxy_caller() noexcept(false);
 			operator luabind::object();
 
 #if defined(BOOST_MSVC) && (BOOST_MSVC <= 1300)
@@ -1312,7 +1312,7 @@ private:
 
 
 		template<class Tuple>
-		proxy_caller<Tuple>::~proxy_caller()
+		proxy_caller<Tuple>::~proxy_caller() noexcept(false)
 		{
 			if (m_called) return;
 

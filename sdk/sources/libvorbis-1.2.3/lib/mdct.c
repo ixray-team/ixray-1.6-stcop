@@ -76,14 +76,14 @@ void mdct_init(mdct_lookup *lookup,int n){
   /* bitreverse lookup... */
 
   {
-    int mask=(1<<(log2n-1))-1,i,j;
+    int mask=(1<<(log2n-1))-1,i_,j;
     int msb=1<<(log2n-2);
-    for(i=0;i<n/8;i++){
+    for(i_=0;i_<n/8;i_++){
       int acc=0;
       for(j=0;msb>>j;j++)
-        if((msb>>j)&i)acc|=1<<j;
-      bitrev[i*2]=((~acc)&mask)-1;
-      bitrev[i*2+1]=acc;
+        if((msb>>j)&i_)acc|=1<<j;
+      bitrev[i_*2]=((~acc)&mask)-1;
+      bitrev[i_*2+1]=acc;
 
     }
   }
@@ -437,55 +437,55 @@ void mdct_backward(mdct_lookup *init, DATA_TYPE *in, DATA_TYPE *out){
   {
     DATA_TYPE *oX1=out+n2+n4;
     DATA_TYPE *oX2=out+n2+n4;
-    DATA_TYPE *iX =out;
+    DATA_TYPE *iX_ =out;
     T             =init->trig+n2;
 
     do{
       oX1-=4;
 
-      oX1[3]  =  MULT_NORM (iX[0] * T[1] - iX[1] * T[0]);
-      oX2[0]  = -MULT_NORM (iX[0] * T[0] + iX[1] * T[1]);
+      oX1[3]  =  MULT_NORM (iX_[0] * T[1] - iX_[1] * T[0]);
+      oX2[0]  = -MULT_NORM (iX_[0] * T[0] + iX_[1] * T[1]);
 
-      oX1[2]  =  MULT_NORM (iX[2] * T[3] - iX[3] * T[2]);
-      oX2[1]  = -MULT_NORM (iX[2] * T[2] + iX[3] * T[3]);
+      oX1[2]  =  MULT_NORM (iX_[2] * T[3] - iX_[3] * T[2]);
+      oX2[1]  = -MULT_NORM (iX_[2] * T[2] + iX_[3] * T[3]);
 
-      oX1[1]  =  MULT_NORM (iX[4] * T[5] - iX[5] * T[4]);
-      oX2[2]  = -MULT_NORM (iX[4] * T[4] + iX[5] * T[5]);
+      oX1[1]  =  MULT_NORM (iX_[4] * T[5] - iX_[5] * T[4]);
+      oX2[2]  = -MULT_NORM (iX_[4] * T[4] + iX_[5] * T[5]);
 
-      oX1[0]  =  MULT_NORM (iX[6] * T[7] - iX[7] * T[6]);
-      oX2[3]  = -MULT_NORM (iX[6] * T[6] + iX[7] * T[7]);
+      oX1[0]  =  MULT_NORM (iX_[6] * T[7] - iX_[7] * T[6]);
+      oX2[3]  = -MULT_NORM (iX_[6] * T[6] + iX_[7] * T[7]);
 
       oX2+=4;
-      iX    +=   8;
+      iX_    +=   8;
       T     +=   8;
-    }while(iX<oX1);
+    }while(iX_<oX1);
 
-    iX=out+n2+n4;
+    iX_=out+n2+n4;
     oX1=out+n4;
     oX2=oX1;
 
     do{
       oX1-=4;
-      iX-=4;
+      iX_-=4;
 
-      oX2[0] = -(oX1[3] = iX[3]);
-      oX2[1] = -(oX1[2] = iX[2]);
-      oX2[2] = -(oX1[1] = iX[1]);
-      oX2[3] = -(oX1[0] = iX[0]);
+      oX2[0] = -(oX1[3] = iX_[3]);
+      oX2[1] = -(oX1[2] = iX_[2]);
+      oX2[2] = -(oX1[1] = iX_[1]);
+      oX2[3] = -(oX1[0] = iX_[0]);
 
       oX2+=4;
-    }while(oX2<iX);
+    }while(oX2<iX_);
 
-    iX=out+n2+n4;
+    iX_=out+n2+n4;
     oX1=out+n2+n4;
     oX2=out+n2;
     do{
       oX1-=4;
-      oX1[0]= iX[3];
-      oX1[1]= iX[2];
-      oX1[2]= iX[1];
-      oX1[3]= iX[0];
-      iX+=4;
+      oX1[0]= iX_[3];
+      oX1[1]= iX_[2];
+      oX1[2]= iX_[1];
+      oX1[3]= iX_[0];
+      iX_+=4;
     }while(oX1>oX2);
   }
 }
