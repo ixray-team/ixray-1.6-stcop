@@ -840,12 +840,12 @@ void CUIActorMenu::ActivatePropertiesBox()
 	{
 		m_UIPropertiesBox->AutoUpdateSize();
 
-		Fvector2 cursor_pos;
+		Fvector2 cursor_pos_;
 		Frect						vis_rect;
 		GetAbsoluteRect				(vis_rect);
-		cursor_pos					= GetUICursor().GetCursorPosition();
-		cursor_pos.sub				(vis_rect.lt);
-		m_UIPropertiesBox->Show		(vis_rect, cursor_pos);
+		cursor_pos_					= GetUICursor().GetCursorPosition();
+		cursor_pos_.sub				(vis_rect.lt);
+		m_UIPropertiesBox->Show		(vis_rect, cursor_pos_);
 		PlaySnd						(eProperties);
 	}
 }
@@ -1144,8 +1144,8 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	case INVENTORY_EAT_ACTION:		TryUseItem( cell_item ); 		break;
 	case INVENTORY_DROP_ACTION:
 		{
-			void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
-			if ( d == (void*)33 )
+			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
+			if ( d_ == (void*)33 )
 			{
 				DropAllCurrentItem();
 			}
@@ -1157,10 +1157,10 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 		}
 	case INVENTORY_ATTACH_ADDON:
 		{
-			PIItem item = CurrentIItem(); // temporary storing because of AttachAddon is setting curiitem to NULL
+			PIItem item_ = CurrentIItem(); // temporary storing because of AttachAddon is setting curiitem to NULL
 			AttachAddon((PIItem)(m_UIPropertiesBox->GetClickedItem()->GetData()));
 			if(m_currMenuMode==mmDeadBodySearch)
-				RemoveItemFromList(m_pDeadBodyBagList, item);
+				RemoveItemFromList(m_pDeadBodyBagList, item_);
 			
 			break;
 		}

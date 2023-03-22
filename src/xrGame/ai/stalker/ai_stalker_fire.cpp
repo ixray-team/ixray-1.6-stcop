@@ -604,7 +604,7 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 	return								(false);
 }
 
-void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage)
+void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage_)
 {
 	VERIFY							(!fis_zero(direction.square_magnitude()));
 
@@ -613,7 +613,7 @@ void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &dire
 	
 	ray_query_param					params(this,memory().visual().transparency_threshold(),distance);
 
-	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,ray_query_callback,&params,NULL,this);
+	Level().ObjectSpace.RayQuery	(rq_storage_,ray_defs,ray_query_callback,&params,NULL,this);
 	m_can_kill_enemy				= m_can_kill_enemy  || params.m_can_kill_enemy;
 	m_can_kill_member				= m_can_kill_member || params.m_can_kill_member;
 	m_pick_distance					= _max(m_pick_distance,params.m_pick_distance);

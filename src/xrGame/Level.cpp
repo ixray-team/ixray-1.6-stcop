@@ -494,12 +494,12 @@ void CLevel::ProcessGameEvents		()
 					u8 Count = P.r_u8();
 					for (u8 i=0; i<Count; i++)
 					{
-						u16 ID = P.r_u16();					
+						u16 ID_ = P.r_u16();					
 						Fvector NewPos, NewDir;
 						P.r_vec3(NewPos);
 						P.r_vec3(NewDir);
 
-						CActor*	OActor	= smart_cast<CActor*>(Objects.net_Find		(ID));
+						CActor*	OActor	= smart_cast<CActor*>(Objects.net_Find		(ID_));
 						if (0 == OActor)		break;
 						OActor->MoveActor(NewPos, NewDir);
 					};
@@ -821,9 +821,9 @@ void CLevel::OnRender()
 		for (u32 I=0; I < Level().Objects.o_count(); I++) {
 			CObject*	_O		= Level().Objects.o_get_by_iterator(I);
 
-			CAI_Stalker*		stalker = smart_cast<CAI_Stalker*>(_O);
-			if (stalker)
-				stalker->OnRender	();
+			CAI_Stalker*		stalker_ = smart_cast<CAI_Stalker*>(_O);
+			if (stalker_)
+				stalker_->OnRender	();
 
 			CCustomMonster*		monster = smart_cast<CCustomMonster*>(_O);
 			if (monster)
@@ -899,10 +899,10 @@ void CLevel::OnRender()
 	if (psAI_Flags.is(aiVision)) {
 		for (u32 I=0; I < Level().Objects.o_count(); I++) {
 			CObject						*object = Objects.o_get_by_iterator(I);
-			CAI_Stalker					*stalker = smart_cast<CAI_Stalker*>(object);
-			if (!stalker)
+			CAI_Stalker					*stalker_ = smart_cast<CAI_Stalker*>(object);
+			if (!stalker_)
 				continue;
-			stalker->dbg_draw_vision	();
+			stalker_->dbg_draw_vision	();
 		}
 	}
 
@@ -910,11 +910,11 @@ void CLevel::OnRender()
 	if (psAI_Flags.test(aiDrawVisibilityRays)) {
 		for (u32 I=0; I < Level().Objects.o_count(); I++) {
 			CObject						*object = Objects.o_get_by_iterator(I);
-			CAI_Stalker					*stalker = smart_cast<CAI_Stalker*>(object);
-			if (!stalker)
+			CAI_Stalker					*stalker_ = smart_cast<CAI_Stalker*>(object);
+			if (!stalker_)
 				continue;
 
-			stalker->dbg_draw_visibility_rays	();
+			stalker_->dbg_draw_visibility_rays	();
 		}
 	}
 #endif

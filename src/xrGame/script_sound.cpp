@@ -24,7 +24,7 @@ CScriptSound::CScriptSound				(LPCSTR caSoundName, ESoundTypes sound_type)
 		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"File not found \"%s\"!",l_caFileName);
 }
 
-CScriptSound::~CScriptSound		()
+CScriptSound::~CScriptSound		() noexcept(false)
 {
 	THROW3					(!m_sound._feedback(),"playing sound is not completed, but is destroying",m_sound._handle() ? m_sound._handle()->file_name() : "unknown");
 	m_sound.destroy			();

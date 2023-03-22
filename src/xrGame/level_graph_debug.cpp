@@ -224,15 +224,15 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	}
 
 	typedef CALifeGraphRegistry::OBJECT_REGISTRY	OBJECT_REGISTRY;
-	typedef OBJECT_REGISTRY::_const_iterator		const_iterator;
+	typedef OBJECT_REGISTRY::_const_iterator		const_iterator_;
 	typedef CALifeMonsterDetailPathManager::PATH	PATH;
 	const OBJECT_REGISTRY		&objects = ai().alife().graph().objects()[vertex_id].objects();
 
 	CDebugRenderer				&render = Level().debug_renderer();
 	if (show_text) {
 		bool					first_time = true;
-		const_iterator			I = objects.objects().begin();
-		const_iterator			E = objects.objects().end();
+		const_iterator_			I = objects.objects().begin();
+		const_iterator_			E = objects.objects().end();
 		for (; I != E; ++I) {
 			CSE_ALifeDynamicObject	*object = (*I).second;
 			CSE_ALifeHumanStalker	*stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
@@ -249,20 +249,20 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 			if (!first_time)
 				continue;
 
-			Fvector						position;
+			Fvector						position_;
 			if (psAI_Flags.test(aiDrawGameGraphRealPos))
-				position = graph.vertex(stalker->m_tGraphID)->level_point();
+				position_ = graph.vertex(stalker->m_tGraphID)->level_point();
 			else
-				position = convert_position(graph.vertex(stalker->m_tGraphID)->game_point());
+				position_ = convert_position(graph.vertex(stalker->m_tGraphID)->game_point());
 			
-			render.draw_aabb	(position,radius,radius,radius,color);
+			render.draw_aabb	(position_,radius,radius,radius,color);
 			first_time			= false;
 			continue;
 		}
 	}
 
-	const_iterator				I = objects.objects().begin();
-	const_iterator				E = objects.objects().end();
+	const_iterator_				I = objects.objects().begin();
+	const_iterator_				E = objects.objects().end();
 	for (; I != E; ++I) {
 		CSE_ALifeDynamicObject	*object = (*I).second;
 		CSE_ALifeHumanStalker	*stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
@@ -390,15 +390,15 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	}
 
 	typedef CALifeGraphRegistry::OBJECT_REGISTRY	OBJECT_REGISTRY;
-	typedef OBJECT_REGISTRY::_const_iterator		const_iterator;
+	typedef OBJECT_REGISTRY::_const_iterator		const_iterator_;
 	typedef CALifeMonsterDetailPathManager::PATH	PATH;
 	const OBJECT_REGISTRY		&objects = ai().alife().graph().objects()[vertex_id].objects();
 
 	CDebugRenderer				&render = Level().debug_renderer();
 	if (show_text) {
 		bool					first_time = true;
-		const_iterator			I = objects.objects().begin();
-		const_iterator			E = objects.objects().end();
+		const_iterator_			I = objects.objects().begin();
+		const_iterator_			E = objects.objects().end();
 		for (; I != E; ++I) {
 			CSE_ALifeDynamicObject	*object = (*I).second;
 			CSE_ALifeMonsterAbstract*monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
@@ -415,20 +415,20 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 			if (!first_time)
 				continue;
 
-			Fvector						position;
+			Fvector						position_;
 			if (psAI_Flags.test(aiDrawGameGraphRealPos))
-				position = graph.vertex(monster->m_tGraphID)->level_point();
+				position_ = graph.vertex(monster->m_tGraphID)->level_point();
 			else
-				position = convert_position(graph.vertex(monster->m_tGraphID)->game_point());
+				position_ = convert_position(graph.vertex(monster->m_tGraphID)->game_point());
 
-			render.draw_aabb	(position,radius,radius,radius,color);
+			render.draw_aabb	(position_,radius,radius,radius,color);
 			first_time			= false;
 			continue;
 		}
 	}
 
-	const_iterator				I = objects.objects().begin();
-	const_iterator				E = objects.objects().end();
+	const_iterator_				I = objects.objects().begin();
+	const_iterator_				E = objects.objects().end();
 	for (; I != E; ++I) {
 		CSE_ALifeDynamicObject	*object = (*I).second;
 		CSE_ALifeMonsterAbstract*monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);

@@ -995,18 +995,18 @@ void CGameObject::destroy_anim_mov_ctrl	()
 	xr_delete			( m_anim_mov_ctrl );
 }
 
-IC	bool similar						(const Fmatrix &_0, const Fmatrix &_1, const float &epsilon = EPS)
+IC	bool similar						(const Fmatrix &matrix0, const Fmatrix &matrix1, const float &epsilon = EPS)
 {
-	if (!_0.i.similar(_1.i,epsilon))
+	if (!matrix0.i.similar(matrix1.i,epsilon))
 		return						(false);
 
-	if (!_0.j.similar(_1.j,epsilon))
+	if (!matrix0.j.similar(matrix1.j,epsilon))
 		return						(false);
 
-	if (!_0.k.similar(_1.k,epsilon))
+	if (!matrix0.k.similar(matrix1.k,epsilon))
 		return						(false);
 
-	if (!_0.c.similar(_1.c,epsilon))
+	if (!matrix0.c.similar(matrix1.c,epsilon))
 		return						(false);
 
 	// note: we do not compare projection here
@@ -1086,8 +1086,8 @@ void render_box						(IRenderVisual *visual, const Fmatrix &xform, const Fvector
 			Fvector().set(+1.f,-1.f,-1.f)
 		};
 		
-		for (u32 i=0; i<8; ++i, ++I)
-			matrix.transform_tiny	(*I,local_points[i]);
+		for (u32 i_=0; i_<8; ++i_, ++I)
+			matrix.transform_tiny	(*I,local_points[i_]);
 	}
 
 	VERIFY						(visible_bone_count);

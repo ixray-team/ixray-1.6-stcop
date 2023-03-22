@@ -47,9 +47,9 @@ public:
 		return			(call_member<DLL_Pure*>(this,"_construct"));
 	}
 
-	static	DLL_Pure*	_construct_static	(base *self)
+	static	DLL_Pure*	_construct_static	(base *self_)
 	{
-		return			(self->base::_construct());
+		return			(self_->base::_construct());
 	}
 };
 

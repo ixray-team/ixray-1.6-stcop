@@ -102,7 +102,7 @@ private:
 private:
 	template <bool>
 	struct helper {
-		static IC	_edge_value_type	estimate_edge_weight_impl( self_type const& self, const _index_type	&vertex_index) {return self.estimate_edge_weight_impl(vertex_index);}
+		static IC	_edge_value_type	estimate_edge_weight_impl( self_type const& self_, const _index_type	&vertex_index) {return self_.estimate_edge_weight_impl(vertex_index);}
 	}; // struct helper
 
 	template <>

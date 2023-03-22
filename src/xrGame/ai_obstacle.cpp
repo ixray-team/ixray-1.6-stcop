@@ -138,8 +138,8 @@ void ai_obstacle::compute_matrix(Fmatrix &result, const Fvector &additional)
 		last_half_size			= obb.m_halfsize;
 		result.mulB_43			(Fmatrix().scale(obb.m_halfsize));
 
-		for (u32 i=0; i<8; ++i, ++I)
-			result.transform_tiny	(*I,local_points[i]);
+		for (u32 i_=0; i_<8; ++i_, ++I)
+			result.transform_tiny	(*I,local_points[i_]);
 	}
 
 	VERIFY						(visible_bone_count);

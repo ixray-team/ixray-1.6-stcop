@@ -119,9 +119,9 @@ void cover::vertex				(smart_cover::loophole const &loophole, smart_cover::looph
 	const_iterator				E = loophole.actions().end();
 	for ( ; I != E; ++I )
 		if ( ( *I ).second->movement( ) ) {
-			Fvector				pos = position((*I).second->target_position());
-			pos.y				+= 2.0f;
-			u32					level_vertex_id = graph.vertex_id(pos);
+			Fvector				pos_ = position((*I).second->target_position());
+			pos_.y				+= 2.0f;
+			u32					level_vertex_id = graph.vertex_id(pos_);
 			VERIFY2				(
 				graph.valid_vertex_id(level_vertex_id),
 				make_string(

@@ -490,13 +490,13 @@ void CAI_Stalker::debug_text			()
 	if (inventory().ActiveItem()) {
 		DBG_OutText	("%s%sactive item",indent,indent);
 		DBG_OutText	("%s%s%sobject         : %s",indent,indent,indent,inventory().ActiveItem() ? *inventory().ActiveItem()->object().cName() : "");
-		CWeapon	*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-		if (weapon) {
-			DBG_OutText("%s%s%sstrapped       : %s",indent,indent,indent,weapon_strapped(weapon) ? "+" : "-");
-			DBG_OutText("%s%s%sunstrapped     : %s",indent,indent,indent,weapon_unstrapped(weapon) ? "+" : "-");
-			DBG_OutText("%s%s%sammo           : %d",indent,indent,indent,weapon->GetAmmoElapsed());
-			DBG_OutText("%s%s%smagazine       : %d",indent,indent,indent,weapon->GetAmmoMagSize());
-			DBG_OutText("%s%s%stotal ammo     : %d",indent,indent,indent,weapon->GetSuitableAmmoTotal());
+		CWeapon	*weapon_ = smart_cast<CWeapon*>(inventory().ActiveItem());
+		if (weapon_) {
+			DBG_OutText("%s%s%sstrapped       : %s",indent,indent,indent,weapon_strapped(weapon_) ? "+" : "-");
+			DBG_OutText("%s%s%sunstrapped     : %s",indent,indent,indent,weapon_unstrapped(weapon_) ? "+" : "-");
+			DBG_OutText("%s%s%sammo           : %d",indent,indent,indent,weapon_->GetAmmoElapsed());
+			DBG_OutText("%s%s%smagazine       : %d",indent,indent,indent,weapon_->GetAmmoMagSize());
+			DBG_OutText("%s%s%stotal ammo     : %d",indent,indent,indent,weapon_->GetSuitableAmmoTotal());
 		}
 	}
 
@@ -1097,8 +1097,8 @@ void CAI_Stalker::dbg_draw_visibility_rays	()
 	const CEntityAlive		*enemy = memory().enemy().selected() ? memory().enemy().selected() : Actor();
 	if (enemy) {
 		if (memory().visual().visible_now(enemy)) {
-			collide::rq_results	rq_storage;
-			draw_visiblity_rays	(this,enemy,rq_storage);
+			collide::rq_results	rq_storage_;
+			draw_visiblity_rays	(this,enemy,rq_storage_);
 		}
 	}
 }
@@ -1574,10 +1574,10 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	CDebugRenderer&					renderer = Level().debug_renderer();
 
 	if (self.inventory().ActiveItem()) {
-		CWeapon*					weapon = smart_cast<CWeapon*>(self.inventory().ActiveItem());
-		if (weapon) {
-			Fvector position		= weapon->get_LastFP();
-			Fvector direction		= weapon->get_LastFD();
+		CWeapon*					weapon_ = smart_cast<CWeapon*>(self.inventory().ActiveItem());
+		if (weapon_) {
+			Fvector position		= weapon_->get_LastFP();
+			Fvector direction		= weapon_->get_LastFD();
 			renderer.draw_line		(
 				Fidentity,
 				position,
@@ -1782,44 +1782,44 @@ void CAI_Stalker::OnRender				()
 
 			// low
 			{
-			Fvector						direction;
-			float						best_value = -1.f;
+			Fvector						direction_;
+			float						best_value_ = -1.f;
 
-			u32  j = 0;
+			u32  j_ = 0;
 			for (u32 i=0; i<36; ++i) {
-				float				value = ai().level_graph().low_cover_in_direction(float(10*i)/180.f*PI,v);
-				direction.setHP		(float(10*i)/180.f*PI,0);
-				direction.normalize	();
-				direction.mul		(value*half_size);
-				direction.add		(position);
-				direction.y			= position.y;
-				Level().debug_renderer().draw_line	(Fidentity,position,direction,D3DCOLOR_XRGB(0,0,255));
-				value				= ai().level_graph().compute_low_square(float(10*i)/180.f*PI,PI/2.f,v);
-				if (value > best_value) {
-					best_value		= value;
-					j				= i;
+				float				value_ = ai().level_graph().low_cover_in_direction(float(10*i)/180.f*PI,v);
+				direction_.setHP		(float(10*i)/180.f*PI,0);
+				direction_.normalize	();
+				direction_.mul		(value_*half_size);
+				direction_.add		(position);
+				direction_.y			= position.y;
+				Level().debug_renderer().draw_line	(Fidentity,position,direction_,D3DCOLOR_XRGB(0,0,255));
+				value_				= ai().level_graph().compute_low_square(float(10*i)/180.f*PI,PI/2.f,v);
+				if (value_ > best_value_) {
+					best_value_		= value_;
+					j_				= i;
 				}
 			}
 
-			direction.set		(position.x - half_size*float(v->low_cover(0))/15.f,position.y,position.z);
-			Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+			direction_.set		(position.x - half_size*float(v->low_cover(0))/15.f,position.y,position.z);
+			Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-			direction.set		(position.x,position.y,position.z + half_size*float(v->low_cover(1))/15.f);
-			Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+			direction_.set		(position.x,position.y,position.z + half_size*float(v->low_cover(1))/15.f);
+			Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-			direction.set		(position.x + half_size*float(v->low_cover(2))/15.f,position.y,position.z);
-			Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+			direction_.set		(position.x + half_size*float(v->low_cover(2))/15.f,position.y,position.z);
+			Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-			direction.set		(position.x,position.y,position.z - half_size*float(v->low_cover(3))/15.f);
-			Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+			direction_.set		(position.x,position.y,position.z - half_size*float(v->low_cover(3))/15.f);
+			Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-			float				value = ai().level_graph().low_cover_in_direction(float(10*j)/180.f*PI,v);
-			direction.setHP		(float(10*j)/180.f*PI,0);
-			direction.normalize	();
-			direction.mul		(value*half_size);
-			direction.add		(position);
-			direction.y			= position.y;
-			Level().debug_renderer().draw_line	(Fidentity,position,direction,D3DCOLOR_XRGB(0,0,0));
+			float				value_ = ai().level_graph().low_cover_in_direction(float(10*j_)/180.f*PI,v);
+			direction_.setHP		(float(10*j_)/180.f*PI,0);
+			direction_.normalize	();
+			direction_.mul		(value_*half_size);
+			direction_.add		(position);
+			direction_.y			= position.y;
+			Level().debug_renderer().draw_line	(Fidentity,position,direction_,D3DCOLOR_XRGB(0,0,0));
 			}
 		}
 	}

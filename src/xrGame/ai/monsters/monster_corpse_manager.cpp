@@ -38,11 +38,11 @@ void CMonsterCorpseManager::update()
 	}
 }
 
-void CMonsterCorpseManager::force_corpse(const CEntityAlive *corpse)
+void CMonsterCorpseManager::force_corpse(const CEntityAlive *corpse_)
 {
-	this->corpse	= corpse;
-	position		= corpse->Position();
-	vertex			= corpse->ai_location().level_vertex_id();
+	this->corpse	= corpse_;
+	position		= corpse_->Position();
+	vertex			= corpse_->ai_location().level_vertex_id();
 	time_last_seen	= Device.dwTimeGlobal;
 
 	forced			= true;

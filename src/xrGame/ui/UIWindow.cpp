@@ -329,8 +329,8 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	for(; it!=m_ChildWndList.rend(); ++it)
 	{
 		CUIWindow* w	= (*it);
-		Frect wndRect	= w->GetWndRect();
-		if (wndRect.in(cursor_pos) )
+		Frect wndRect_	= w->GetWndRect();
+		if (wndRect_.in(cursor_pos) )
 		{
 			if(w->IsEnabled())
 			{

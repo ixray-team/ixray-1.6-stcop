@@ -46,7 +46,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		u32				chunk = 0;
 		string256		ref_name;
 		Fmatrix			transform;
-		Fvector			zero_vel={0.f,0.f,0.f};
+		Fvector			zero_vel_={0.f,0.f,0.f};
 		u32 ver			= 0;
 		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk,OBJ)) 
 		{
@@ -73,7 +73,7 @@ BOOL CLevel::Load_GameSpecific_After()
 			if ((g_pGamePersistent->m_game_params.m_e_game_type & EGameIDs(gametype_usage)) || (ver == 0))
 			{
 				pStaticParticles				= CParticlesObject::Create(ref_name,FALSE,false);
-				pStaticParticles->UpdateParent	(transform,zero_vel);
+				pStaticParticles->UpdateParent	(transform,zero_vel_);
 				pStaticParticles->Play			(false);
 				m_StaticParticles.push_back		(pStaticParticles);
 			}

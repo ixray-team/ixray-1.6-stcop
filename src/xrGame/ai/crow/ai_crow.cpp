@@ -30,8 +30,8 @@ void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix)
 	for (int i=0; (i<MAX_ANIM_COUNT)&&(m_Animations.size()<MAX_ANIM_COUNT); ++i){
 		string128		sh_anim;
 		xr_sprintf			(sh_anim,"%s_%d",prefix,i);
-		const MotionID	&M = visual->ID_Cycle_Safe(sh_anim);
-		if (M)			m_Animations.push_back(M);
+		const MotionID	&M_ = visual->ID_Cycle_Safe(sh_anim);
+		if (M_)			m_Animations.push_back(M_);
 	}
 	R_ASSERT			(m_Animations.size());
 }

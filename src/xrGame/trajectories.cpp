@@ -144,9 +144,9 @@ bool trajectory_check_collision (float 							low,
 		if ( _abs(box_z_axis.x) > epsilon || _abs(box_z_axis.z) > epsilon ) {
 
 			Fvector const down			=	{ 0, -1, 0 };
-			Fvector							box_x_axis;
-			box_x_axis.crossproduct			(box_z_axis, down);
-			box_y_axis.crossproduct			(box_z_axis, box_x_axis);
+			Fvector							box_x_axis_;
+			box_x_axis_.crossproduct			(box_z_axis, down);
+			box_y_axis.crossproduct			(box_z_axis, box_x_axis_);
 		}
 		else
 		{

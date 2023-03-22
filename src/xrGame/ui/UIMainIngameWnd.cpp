@@ -853,9 +853,9 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			if(item_name.size())
 			{
 				u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
-				string32 str;
-				xr_sprintf(str, "x%d", count);
-				wnd->TextItemControl()->SetText(str);
+				string32 str_;
+				xr_sprintf(str_, "x%d", count);
+				wnd->TextItemControl()->SetText(str_);
 				wnd->Show(true);
 
 				CUIStatic* main_slot = m_quick_slots_icons[i];

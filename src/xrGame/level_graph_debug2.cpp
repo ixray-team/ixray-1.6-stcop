@@ -277,45 +277,45 @@ void CLevelGraph::draw_covers	()
 		position.y			+= 0.6f;
 		Level().debug_renderer().draw_aabb	(position,half_size - .01f,1.f,ai().level_graph().header().cell_size()*.5f-.01f,D3DCOLOR_XRGB(0*255,255,0*255));
 
-		CVertex				*v = vertex((*I)->level_vertex_id());
-		Fvector				direction;
-		float				best_value = -1.f;
+		CVertex				*v_ = vertex((*I)->level_vertex_id());
+		Fvector				direction_;
+		float				best_value_ = -1.f;
 
-		u32 j = 0;
+		u32 j_ = 0;
 		for (u32 i = 0; i<36; ++i) {
-			float				value = low_cover_in_direction(float(10*i)/180.f*PI,v);
-			direction.setHP		(float(10*i)/180.f*PI,0);
-			direction.normalize	();
-			direction.mul		(value*half_size);
-			direction.add		(position);
-			direction.y			= position.y;
-			Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(0,0,255));
-			value				= compute_low_square(float(10*i)/180.f*PI,PI/2.f,v);
-			if (value > best_value) {
-				best_value		= value;
-				j				= i;
+			float				value_ = low_cover_in_direction(float(10*i)/180.f*PI,v_);
+			direction_.setHP		(float(10*i)/180.f*PI,0);
+			direction_.normalize	();
+			direction_.mul		(value_*half_size);
+			direction_.add		(position);
+			direction_.y			= position.y;
+			Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(0,0,255));
+			value_				= compute_low_square(float(10*i)/180.f*PI,PI/2.f,v_);
+			if (value_ > best_value_) {
+				best_value_		= value_;
+				j_				= i;
 			}
 		}
 
-		direction.set		(position.x - half_size*float(v->low_cover(0))/15.f,position.y,position.z);
-		Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+		direction_.set		(position.x - half_size*float(v_->low_cover(0))/15.f,position.y,position.z);
+		Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-		direction.set		(position.x,position.y,position.z + half_size*float(v->low_cover(1))/15.f);
-		Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+		direction_.set		(position.x,position.y,position.z + half_size*float(v_->low_cover(1))/15.f);
+		Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-		direction.set		(position.x + half_size*float(v->low_cover(2))/15.f,position.y,position.z);
-		Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+		direction_.set		(position.x + half_size*float(v_->low_cover(2))/15.f,position.y,position.z);
+		Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-		direction.set		(position.x,position.y,position.z - half_size*float(v->low_cover(3))/15.f);
-		Level().debug_renderer().draw_line(Fidentity,position,direction,D3DCOLOR_XRGB(255,0,0));
+		direction_.set		(position.x,position.y,position.z - half_size*float(v_->low_cover(3))/15.f);
+		Level().debug_renderer().draw_line(Fidentity,position,direction_,D3DCOLOR_XRGB(255,0,0));
 
-		float				value = low_cover_in_direction(float(10*j)/180.f*PI,v);
-		direction.setHP		(float(10*j)/180.f*PI,0);
-		direction.normalize	();
-		direction.mul		(value*half_size);
-		direction.add		(position);
-		direction.y			= position.y;
-		Level().debug_renderer().draw_line	(Fidentity,position,direction,D3DCOLOR_XRGB(0,0,0));
+		float				value_ = low_cover_in_direction(float(10*j_)/180.f*PI,v_);
+		direction_.setHP		(float(10*j_)/180.f*PI,0);
+		direction_.normalize	();
+		direction_.mul		(value_*half_size);
+		direction_.add		(position);
+		direction_.y			= position.y;
+		Level().debug_renderer().draw_line	(Fidentity,position,direction_,D3DCOLOR_XRGB(0,0,0));
 		}
 	}
 }

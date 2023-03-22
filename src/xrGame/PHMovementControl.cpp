@@ -407,9 +407,9 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
 			m_path_distance=GetPathDir().magnitude();
 			if(m_path_distance>EPS)
 			{
-				Fvector _d = GetPathDir();
-				_d.mul(1.f/m_path_distance);
-				SetPathDir(_d);
+				Fvector _d_ = GetPathDir();
+				_d_.mul(1.f/m_path_distance);
+				SetPathDir(_d_);
 			}
 			near_line=false;
 		}
@@ -522,9 +522,9 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 	float temp;
 
 	int i = 0;
-	for(int i=0;i<m_path_size-1;++i)
+	for(int i_=0;i_<m_path_size-1;++i_)
 	{
-		const Fvector &first=path[i].position, &second=path[i+1].position;
+		const Fvector &first=path[i_].position, &second=path[i_+1].position;
 		from_first.sub(new_position,first);
 		from_second.sub(new_position,second);
 		dir.sub(second,first);
@@ -540,7 +540,7 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 				if(temp<m_path_distance)
 				{
 					m_path_distance=temp;
-					index=i;
+					index=i_;
 					vPathPoint.set(first);
 					SetPathDir(dir);
 					near_line=false;
@@ -563,7 +563,7 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 				if(temp<m_path_distance)
 				{
 					m_path_distance=temp;
-					index=i;
+					index=i_;
 					vPathPoint.set(path_point);
 					SetPathDir(dir);
 					near_line=true;

@@ -19,7 +19,7 @@ public:
 	virtual bool		check_completion		();
 	virtual void		setup_substates			();
 	virtual void		check_force_state		();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
 
 #include "monster_state_smart_terrain_task_inline.h"

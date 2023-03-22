@@ -264,11 +264,11 @@ void CCustomDetector::UpdateVisibility()
 	}else
 	if(m_bNeedActivation)
 	{
-		attachable_hud_item* i0		= g_player_hud->attached_item(0);
+		attachable_hud_item* i0_		= g_player_hud->attached_item(0);
 		bool bClimb					= ( (Actor()->MovingState()&mcClimb) != 0 );
 		if(!bClimb)
 		{
-			CHudItem* huditem		= (i0)?i0->m_parent_hud_item : NULL;
+			CHudItem* huditem		= (i0_)?i0_->m_parent_hud_item : NULL;
 			bool bChecked			= !huditem || CheckCompatibilityInt(huditem, 0);
 			
 			if(	bChecked )

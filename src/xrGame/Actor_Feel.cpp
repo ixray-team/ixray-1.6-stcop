@@ -167,18 +167,18 @@ void	CActor::PickupModeUpdate_COD	()
 
 	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
-		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject        ());
+		ISpatial*		spatial_	= ISpatialResult[o_it];
+		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial_->dcast_CObject        ());
 
 		if (0 == pIItem)											continue;
 		if (pIItem->object().H_Parent() != NULL)					continue;
 		if (!pIItem->CanTake())										continue;
 		if ( smart_cast<CExplosiveRocket*>( &pIItem->object() ) )	continue;
 
-		CGrenade*	pGrenade	= smart_cast<CGrenade*> (spatial->dcast_CObject        ());
+		CGrenade*	pGrenade	= smart_cast<CGrenade*> (spatial_->dcast_CObject        ());
 		if (pGrenade && !pGrenade->Useful())						continue;
 
-		CMissile*	pMissile	= smart_cast<CMissile*> (spatial->dcast_CObject        ());
+		CMissile*	pMissile	= smart_cast<CMissile*> (spatial_->dcast_CObject        ());
 		if (pMissile && !pMissile->Useful())						continue;
 		
 		Fvector A, B, tmp; 
@@ -199,9 +199,9 @@ void	CActor::PickupModeUpdate_COD	()
 
 	if(pNearestItem)
 	{
-		CFrustum					frustum;
-		frustum.CreateFromMatrix	(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-		if (!CanPickItem(frustum, Device.vCameraPosition, &pNearestItem->object()))
+		CFrustum					frustum_;
+		frustum_.CreateFromMatrix	(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
+		if (!CanPickItem(frustum_, Device.vCameraPosition, &pNearestItem->object()))
 			pNearestItem = NULL;
 	}
 	if (pNearestItem && pNearestItem->cast_game_object())
@@ -241,18 +241,18 @@ void	CActor::Check_for_AutoPickUp()
 	Fbox APU_Box;
 	APU_Box.set			(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
 
-	xr_vector<ISpatial*>	ISpatialResult;
-	g_SpatialSpace->q_box   (ISpatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
+	xr_vector<ISpatial*>	ISpatialResult_;
+	g_SpatialSpace->q_box   (ISpatialResult_, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
-	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
+	for (u32 o_it=0; o_it<ISpatialResult_.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
-		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject());
+		ISpatial*		spatial_	= ISpatialResult_[o_it];
+		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial_->dcast_CObject());
 
 		if (0 == pIItem)														continue;
 		if (!pIItem->CanTake())													continue;
-		if (Level().m_feel_deny.is_object_denied(spatial->dcast_CObject()) )	continue;
+		if (Level().m_feel_deny.is_object_denied(spatial_->dcast_CObject()) )	continue;
 
 
 		CGrenade*	pGrenade	= smart_cast<CGrenade*> (pIItem);

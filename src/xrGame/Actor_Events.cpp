@@ -69,10 +69,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			{
 				if (IsGameTypeSingle())
 				{
-					NET_Packet		P;
-					u_EventGen		(P,GE_OWNERSHIP_REJECT,ID());
-					P.w_u16			(u16(Obj->ID()));
-					u_EventSend		(P);
+					NET_Packet		P_;
+					u_EventGen		(P_,GE_OWNERSHIP_REJECT,ID());
+					P_.w_u16			(u16(Obj->ID()));
+					u_EventSend		(P_);
 				} else
 				{
 					Msg("! ERROR: Actor [%d][%s]  tries to drop on take [%d][%s]", ID(), Name(), _GO->ID(), _GO->cNameSect().c_str());
@@ -290,10 +290,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		}break;
 	case GEG_PLAYER_ATTACH_HOLDER:
 		{
-			u16 id = P.r_u16();
-			CObject* O	= Level().Objects.net_Find	(id);
+			u16 id_ = P.r_u16();
+			CObject* O	= Level().Objects.net_Find	(id_);
 			if (!O){
-				Msg("! Error: No object to attach holder [%d]", id);
+				Msg("! Error: No object to attach holder [%d]", id_);
 				break;
 			}
 			VERIFY(m_holder==NULL);
@@ -304,9 +304,9 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	case GEG_PLAYER_DETACH_HOLDER:
 		{
 			if			(!m_holder)	break;
-			u16 id			= P.r_u16();
+			u16 id_			= P.r_u16();
 			CGameObject*	GO	= smart_cast<CGameObject*>(m_holder);
-			VERIFY			(id==GO->ID());
+			VERIFY			(id_==GO->ID());
 			use_Holder		(NULL);
 		}break;
 	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
