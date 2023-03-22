@@ -20,15 +20,15 @@
 typedef std::pair<shared_str,shared_str>	ANIMATION_ID;
 
 struct animation_id_predicate {
-	IC	bool operator()	(const ANIMATION_ID &_1, const ANIMATION_ID &_2) const
+	IC	bool operator()	(const ANIMATION_ID &id1, const ANIMATION_ID &id2) const
 	{
-		if (_1.first._get() < _2.first._get())
+		if (id1.first._get() < id2.first._get())
 			return	(true);
 
-		if (_2.first._get() < _1.first._get())
+		if (id2.first._get() < id1.first._get())
 			return	(false);
 
-		return		(_1.second._get() < _2.second._get());
+		return		(id1.second._get() < id2.second._get());
 	}
 };
 
@@ -63,9 +63,9 @@ static ANIMATION_STATS	g_animation_stats;
 typedef std::pair<ANIMATION_ID,ANIMATION_ID>	BLEND_ID;
 
 struct blend_id_predicate {
-	IC	bool less		(const shared_str &_1, const shared_str &_2) const
+	IC	bool less		(const shared_str &first, const shared_str &second) const
 	{
-		return		(_1._get() < _2._get());
+		return		(first._get() < second._get());
 	}
 
 	template <typename T>
@@ -80,9 +80,9 @@ struct blend_id_predicate {
 		return		(less(_1.second,_2.second));
 	}
 
-	IC	bool operator()	(const BLEND_ID &_1, const BLEND_ID &_2) const
+	IC	bool operator()	(const BLEND_ID &id1, const BLEND_ID &id2) const
 	{
-		return		(less(_1,_2));
+		return		(less(id1,id2));
 	}
 };
 
@@ -101,9 +101,9 @@ void show_animations		()
 		*i							= (const ANIMATION_STATS_PAIR *)&(*I).first;
 
 	struct predicate {
-		static IC	bool frame_count	(const ANIMATION_STATS_PAIR * const &_1, const ANIMATION_STATS_PAIR * const &_2)
+		static IC	bool frame_count	(const ANIMATION_STATS_PAIR * const &pair1, const ANIMATION_STATS_PAIR * const &pair2)
 		{
-			return					(_1->second.m_frame_count < _2->second.m_frame_count);
+			return					(pair1->second.m_frame_count < pair2->second.m_frame_count);
 		}
 	};
 
@@ -132,9 +132,9 @@ void show_blends			()
 		*i							= (const BLEND_STATS_PAIR *)&(*I).first;
 
 	struct predicate {
-		static IC	bool blend_count	(const BLEND_STATS_PAIR * const &_1, const BLEND_STATS_PAIR * const &_2)
+		static IC	bool blend_count	(const BLEND_STATS_PAIR * const &pair1, const BLEND_STATS_PAIR * const &pair2)
 		{
-			return					(_1->second < _2->second);
+			return					(pair1->second < pair2->second);
 		}
 	};
 

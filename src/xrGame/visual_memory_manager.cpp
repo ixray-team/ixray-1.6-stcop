@@ -259,8 +259,8 @@ float CVisualMemoryManager::object_visible_distance(const CGameObject *game_obje
 	} 
 	else {
 		Fvector							dummy;
-		float							_0,_1;
-		m_client->camera				(eye_position,eye_direction,dummy,object_fov,_0,_1,object_range);
+		float							aspect_ratio_, near_plane_;
+		m_client->camera				(eye_position,eye_direction,dummy,object_fov, aspect_ratio_, near_plane_, object_range);
 	}
 
 	Fvector								object_direction;

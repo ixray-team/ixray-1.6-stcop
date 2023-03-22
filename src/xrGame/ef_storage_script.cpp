@@ -22,7 +22,7 @@ CEF_Storage *ef_storage()
 	return	(&ai().ef_storage());
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0, CScriptGameObject *_1, CScriptGameObject *_2, CScriptGameObject *_3)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *object0, CScriptGameObject *object1, CScriptGameObject *object2, CScriptGameObject *object3)
 {
 	ef_storage->alife_evaluation(false);
 
@@ -32,32 +32,32 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0, 
 		return		(0.f);
 	}
 
-	ef_storage->non_alife().member()	= smart_cast<CEntityAlive*>(_0 ? &_0->object() : 0);
-	if (_0 && !ef_storage->non_alife().member()) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",*_0->cName());
+	ef_storage->non_alife().member()	= smart_cast<CEntityAlive*>(object0 ? &object0->object() : 0);
+	if (object0 && !ef_storage->non_alife().member()) {
+		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",*object0->cName());
 		return		(0.f);
 	}
 	
-	ef_storage->non_alife().enemy()	= smart_cast<CEntityAlive*>(_1 ? &_1->object() : 0);
-	if (_1 && !ef_storage->non_alife().enemy()) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",*_1->cName());
+	ef_storage->non_alife().enemy()	= smart_cast<CEntityAlive*>(object1 ? &object1->object() : 0);
+	if (object1 && !ef_storage->non_alife().enemy()) {
+		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",*object1->cName());
 		return		(0.f);
 	}
 
-	ef_storage->non_alife().member_item()	= &_2->object();
-	ef_storage->non_alife().enemy_item()	= &_3->object();
+	ef_storage->non_alife().member_item()	= &object2->object();
+	ef_storage->non_alife().enemy_item()	= &object3->object();
 
 	return			(f->ffGetValue());
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0, CScriptGameObject *_1, CScriptGameObject *_2)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *object0, CScriptGameObject *object1, CScriptGameObject *object2)
 {
-	return			(evaluate(ef_storage,function,_0,_1,_2,0));
+	return			(evaluate(ef_storage,function, object0, object1, object2,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0, CScriptGameObject *_1)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *object0, CScriptGameObject *object1)
 {
-	return			(evaluate(ef_storage,function,_0,_1,0,0));
+	return			(evaluate(ef_storage,function, object0, object1,0,0));
 }
 
 float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0)
@@ -65,7 +65,7 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0)
 	return			(evaluate(ef_storage,function,_0,0,0,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0, CSE_ALifeObject *_1, CSE_ALifeObject *_2, CSE_ALifeObject *_3)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0, CSE_ALifeObject *object1, CSE_ALifeObject *object2, CSE_ALifeObject *object3)
 {
 	ef_storage->alife_evaluation(true);
 
@@ -75,37 +75,37 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0, CS
 		return		(0.f);
 	}
 
-	ef_storage->alife().member()	= smart_cast<CSE_ALifeSchedulable*>(_0);
-	if (_0 && !ef_storage->alife().member()) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",_1->name_replace());
+	ef_storage->alife().member()	= smart_cast<CSE_ALifeSchedulable*>(object0);
+	if (object0 && !ef_storage->alife().member()) {
+		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!", object1->name_replace());
 		return		(0.f);
 	}
 
-	ef_storage->alife().enemy()	= smart_cast<CSE_ALifeSchedulable*>(_1);
-	if (_1 && !ef_storage->alife().enemy()) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",_1->name_replace());
+	ef_storage->alife().enemy()	= smart_cast<CSE_ALifeSchedulable*>(object1);
+	if (object1 && !ef_storage->alife().enemy()) {
+		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!", object1->name_replace());
 		return		(0.f);
 	}
 
-	ef_storage->alife().member_item()	= _2;
-	ef_storage->alife().enemy_item()	= _3;
+	ef_storage->alife().member_item()	= object2;
+	ef_storage->alife().enemy_item()	= object3;
 
 	return			(f->ffGetValue());
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0, CSE_ALifeObject *_1, CSE_ALifeObject *_2)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0, CSE_ALifeObject *object1, CSE_ALifeObject *object2)
 {
-	return			(evaluate(ef_storage,function,_0,_1,_2,0));
+	return			(evaluate(ef_storage,function, object0, object1, object2,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0, CSE_ALifeObject *_1)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0, CSE_ALifeObject *object1)
 {
-	return			(evaluate(ef_storage,function,_0,_1,0,0));
+	return			(evaluate(ef_storage,function, object0, object1,0,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0)
+float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0)
 {
-	return			(evaluate(ef_storage,function,_0,0,0,0));
+	return			(evaluate(ef_storage,function, object0,0,0,0));
 }
 
 #pragma optimize("s",on)

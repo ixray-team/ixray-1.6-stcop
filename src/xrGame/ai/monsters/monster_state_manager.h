@@ -18,7 +18,7 @@ public:
 	virtual void	force_script_state		(EMonsterState state);
 	virtual void	execute_script_state	();
 	virtual	void	critical_finalize		();
-	virtual	void	remove_links			(CObject* object) = 0 { inherited::remove_links(object); }
+	virtual	void	remove_links			(CObject* object_) = 0 { inherited::remove_links(object_); }
 
 	virtual	EMonsterState get_state_type	();
 

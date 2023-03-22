@@ -242,9 +242,9 @@ u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distan
 	direction.mul	(max_distance);
 	Fvector			start_position = ai().level_graph().vertex_position(level_vertex_id);
 	Fvector			finish_position = Fvector(start_position).add(direction);
-	u32				result = u32(-1);
-	ai().level_graph().farthest_vertex_in_direction(level_vertex_id,start_position,finish_position,result,0);
-	return			(ai().level_graph().valid_vertex_id(result) ? result : level_vertex_id);
+	u32				result_ = u32(-1);
+	ai().level_graph().farthest_vertex_in_direction(level_vertex_id,start_position,finish_position,result_,0);
+	return			(ai().level_graph().valid_vertex_id(result_) ? result_ : level_vertex_id);
 }
 
 Fvector vertex_position(u32 level_vertex_id)
@@ -440,9 +440,9 @@ CEnvironment *environment()
 	return		(g_pGamePersistent->pEnvironment);
 }
 
-CEnvDescriptor *current_environment(CEnvironment *self)
+CEnvDescriptor *current_environment(CEnvironment *self_)
 {
-	return		(self->CurrentEnv);
+	return		(self_->CurrentEnv);
 }
 extern bool g_bDisableAllInput;
 void disable_input()

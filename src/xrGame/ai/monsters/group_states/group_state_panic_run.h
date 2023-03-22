@@ -12,7 +12,7 @@ public:
 	virtual	void		execute					();
 
 	virtual bool		check_completion		();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
 
 #include "group_state_panic_run_inline.h"

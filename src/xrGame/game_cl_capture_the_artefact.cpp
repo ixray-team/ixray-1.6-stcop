@@ -1620,11 +1620,11 @@ bool game_cl_CaptureTheArtefact::PlayerCanSprint(CActor* pActor)
 	if (m_bBearerCantSprint)
 		return true;
 
-	u16 greenArtefactOwner = GetGreenArtefactOwnerID();
-	u16 blueArtefactOwner = GetBlueArtefactOwnerID();
+	u16 greenArtefactOwner_ = GetGreenArtefactOwnerID();
+	u16 blueArtefactOwner_ = GetBlueArtefactOwnerID();
 	u16 myID = pActor->ID();
-	if ((myID == greenArtefactOwner) ||
-		(myID == blueArtefactOwner))
+	if ((myID == greenArtefactOwner_) ||
+		(myID == blueArtefactOwner_))
 	{
 		return false;
 	}

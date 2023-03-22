@@ -650,11 +650,11 @@ bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
 			float time			= m_man->animation().motion_time(m_data.state_prepare_in_move.motion, m_object->Visual());
 			// set acceleration and velocity
 			SVelocityParam &vel	= m_object->move().get_velocity(m_data.state_prepare_in_move.velocity_mask);
-			float dist = time * vel.velocity.linear;
+			float dist_ = time * vel.velocity.linear;
 
 			// check nodes in direction
 			Fvector target_point;
-			target_point.mad(m_object->Position(), m_object->Direction(), dist);
+			target_point.mad(m_object->Position(), m_object->Direction(), dist_);
 
 			if (m_man->path_builder().accessible(target_point)) {
 				// нода в прямой видимости?

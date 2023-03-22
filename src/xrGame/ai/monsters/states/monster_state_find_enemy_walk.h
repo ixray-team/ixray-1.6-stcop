@@ -10,7 +10,7 @@ public:
 						CStateMonsterFindEnemyWalkAround	(_Object *obj) : inherited(obj) {}
 	virtual	void		execute						();
 	virtual bool		check_completion			() {return false;}
-	virtual void		remove_links				(CObject* object) { inherited::remove_links(object);}
+	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
 };
 
 #include "monster_state_find_enemy_walk_inline.h"

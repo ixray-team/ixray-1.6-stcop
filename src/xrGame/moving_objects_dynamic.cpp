@@ -41,36 +41,36 @@ struct priority {
 		);
 	}
 
-	IC	static bool predicate					(const moving_object *_0, const moving_object *_1)
+	IC	static bool predicate					(const moving_object *object0, const moving_object *object1)
 	{
-		if (standing(_0)) {
-			if (standing(_1))
-				return			(_0 < _1);
+		if (standing(object0)) {
+			if (standing(object1))
+				return			(object0 < object1);
 
 			return				(false);
 		}
 
-		if (standing(_1))
+		if (standing(object1))
 			return				(true);
 
-		return					(_0 < _1);
+		return					(object0 < object1);
 	}
 
-	IC	static bool predicate2					(const moving_objects::COLLISION_TIME &_0, const moving_objects::COLLISION_TIME &_1)
+	IC	static bool predicate2					(const moving_objects::COLLISION_TIME &time0, const moving_objects::COLLISION_TIME &time1)
 	{
-		if (_0.first < _1.first)
+		if (time0.first < time1.first)
 			return				(true);
 
-		if (_1.first < _0.first)
+		if (time1.first < time0.first)
 			return				(false);
 
-		if (predicate(_0.second.second.first,_1.second.second.first))
+		if (predicate(time0.second.second.first,time1.second.second.first))
 			return				(true);
 
-		if (predicate(_1.second.second.first,_0.second.second.first))
+		if (predicate(time1.second.second.first,time0.second.second.first))
 			return				(false);
 
-		return					(predicate(_0.second.second.second,_1.second.second.second));
+		return					(predicate(time0.second.second.second,time1.second.second.second));
 	}
 };
 
@@ -258,7 +258,7 @@ bool moving_objects::exchange_all				(moving_object *previous, moving_object *ne
 	return						(result);
 }
 
-bool moving_objects::fill_collisions			(moving_object *object, const Fvector &object_position, const float &time_to_check)
+bool moving_objects::fill_collisions			(moving_object *object, const Fvector &object_position, const float &time_to_check_)
 {
 	possible_actions			action;
 	int							i = 0;
@@ -270,7 +270,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 
 		bool					priority = ::priority::predicate(object,*I);
 		if (priority) {
-			if (!collided_dynamic(object, object_position, (*I), (*I)->predict_position(time_to_check), action))
+			if (!collided_dynamic(object, object_position, (*I), (*I)->predict_position(time_to_check_), action))
 				continue;
 
 			if (action == possible_action_1_can_wait_2)
@@ -279,7 +279,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 				VERIFY			(action == possible_action_2_can_wait_1);
 		}
 		else {
-			if (!collided_dynamic((*I), (*I)->predict_position(time_to_check), object, object_position, action))
+			if (!collided_dynamic((*I), (*I)->predict_position(time_to_check_), object, object_position, action))
 				continue;
 
 			if (action == possible_action_2_can_wait_1)
@@ -290,7 +290,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 
 		m_collisions.push_back	(
 			std::make_pair(
-				time_to_check,
+				time_to_check_,
 				std::make_pair(
 					action,
 					std::make_pair(
@@ -309,15 +309,15 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 		u32							collision_count = m_collisions.size();
 		COLLISION_TIME				*collisions = (COLLISION_TIME*)_alloca(collision_count*sizeof(COLLISION_TIME));
 		std::copy					(m_collisions.begin(), m_collisions.end(), collisions);
-		COLLISION_TIME				*I = collisions;
-		COLLISION_TIME				*E = collisions + collision_count;
-		for ( ; I != E; ++I) {
+		COLLISION_TIME				*I_ = collisions;
+		COLLISION_TIME				*E_ = collisions + collision_count;
+		for ( ; I_ != E_; ++I_) {
 			moving_object			*test;
-			if ((*I).second.first == possible_action_1_can_wait_2)
-				test				= (*I).second.second.first;
+			if ((*I_).second.first == possible_action_1_can_wait_2)
+				test				= (*I_).second.second.first;
 			else {
-				VERIFY				((*I).second.first == possible_action_2_can_wait_1);
-				test				= (*I).second.second.second;
+				VERIFY				((*I_).second.first == possible_action_2_can_wait_1);
+				test				= (*I_).second.second.second;
 			}
 
 			bool					priority = ::priority::predicate(object,test);
@@ -332,7 +332,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 
 			m_collisions.push_back	(
 				std::make_pair(
-					time_to_check,
+					time_to_check_,
 					std::make_pair(
 						priority ? possible_action_2_can_wait_1 : possible_action_1_can_wait_2,
 						std::make_pair(
@@ -345,20 +345,20 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 		}
 
 		VERIFY					(m_collisions.size() >= collision_count);
-		COLLISIONS::iterator	b = m_collisions.begin() + collision_count, i = b;
+		COLLISIONS::iterator	b = m_collisions.begin() + collision_count, i_ = b;
 		COLLISIONS::iterator	e = m_collisions.end();
-		for ( ; i != e; ++i) {
-			if ((*i).second.second.first == object) {
-				if (exchange_all((*i).second.second.second, object, collision_count))
+		for ( ; i_ != e; ++i_) {
+			if ((*i_).second.second.first == object) {
+				if (exchange_all((*i_).second.second.second, object, collision_count))
 					continue;
 
-				(*i).second.second.first	= 0;
+				(*i_).second.second.first	= 0;
 				continue;
 			}
 
-			VERIFY				((*i).second.second.second == object);
-			if (!exchange_all((*i).second.second.first, object, collision_count))
-				(*i).second.second.first	= 0;
+			VERIFY				((*i_).second.second.second == object);
+			if (!exchange_all((*i_).second.second.first, object, collision_count))
+				(*i_).second.second.first	= 0;
 		}
 
 		struct remove {
@@ -543,21 +543,21 @@ void moving_objects::query_action_dynamic		(moving_object *object)
 
 	m_collision_emitters.push_back		(object);
 	while (!m_collision_emitters.empty()) {
-		moving_object					*object = m_collision_emitters.back();
+		moving_object					*object_ = m_collision_emitters.back();
 		m_collision_emitters.pop_back	();
 
 		m_visited_emitters.insert		(
 			std::lower_bound(
 				m_visited_emitters.begin(),
 				m_visited_emitters.end(),
-				object
+				object_
 			),
-			object
+			object_
 		);
 
-		fill_nearest_moving		(object);
+		fill_nearest_moving		(object_);
 		generate_emitters		();
-		generate_collisions		(object);
+		generate_collisions		(object_);
 	}
 
 	{

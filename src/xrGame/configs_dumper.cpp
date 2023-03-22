@@ -137,10 +137,10 @@ void configs_dumper::write_configs()
 		max_active_objects);
 	active_objects_t::size_type	aobjs_count	= get_active_objects(active_objects);
 	string16 tmp_strbuff;
-	for (active_objects_t::size_type i = 0; i < aobjs_count; ++i)
+	for (active_objects_t::size_type i_ = 0; i_ < aobjs_count; ++i_)
 	{
-		xr_sprintf				(tmp_strbuff, "%d", i + 1);
-		m_active_params.dump	(active_objects[i], tmp_strbuff, active_params_dumper);
+		xr_sprintf				(tmp_strbuff, "%d", i_ + 1);
+		m_active_params.dump	(active_objects[i_], tmp_strbuff, active_params_dumper);
 	}
 	active_params_dumper.save_as	(m_dump_result);
 }

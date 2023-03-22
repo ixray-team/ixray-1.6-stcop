@@ -50,12 +50,12 @@ public:
 		CParticlesObject* ps = CParticlesObject::Create(ps_name,TRUE);
 
 		Fmatrix pos; 
-		Fvector zero_vel = {0.f,0.f,0.f};
+		Fvector zero_vel_ = {0.f,0.f,0.f};
 		pos.k.set(*((Fvector*)c.normal));
 		Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
 		pos.c.set(*((Fvector*)c.pos));
 
-		ps->UpdateParent(pos,zero_vel);
+		ps->UpdateParent(pos,zero_vel_);
 		GamePersistent().ps_needtoplay.push_back(ps);
 	};
 	virtual bool 			obsolete						()const{return false;}

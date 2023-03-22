@@ -12,10 +12,10 @@
 
 using namespace luabind;
 
-Fvector CALifeMonsterPatrolPathManager__target_position	(CALifeMonsterPatrolPathManager *self)
+Fvector CALifeMonsterPatrolPathManager__target_position	(CALifeMonsterPatrolPathManager *self_)
 {
-	THROW	(self);
-	return	(self->target_position());
+	THROW	(self_);
+	return	(self_->target_position());
 }
 
 #pragma optimize("s",on)

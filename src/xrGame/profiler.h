@@ -49,9 +49,9 @@ struct CProfileStats {
 class CProfiler {
 private:
 	struct pred_rstr {
-		IC	bool operator()	(const shared_str &_1, const shared_str &_2) const
+		IC	bool operator()	(const shared_str &first, const shared_str &second) const
 		{
-			return	(xr_strcmp(*_1,*_2) < 0);
+			return	(xr_strcmp(*first,*second) < 0);
 		}
 	};
 protected:

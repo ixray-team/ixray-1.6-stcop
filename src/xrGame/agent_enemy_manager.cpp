@@ -237,9 +237,9 @@ void CAgentEnemyManager::assign_enemies			()
 		(*I).m_probability				*= 1.f - best; 
 
 		// recovering sort order
-		for (u32 i=0, n = m_enemies.size() - 1; i<n; ++i)
-			if (m_enemies[i + 1] < m_enemies[i])
-				std::swap				(m_enemies[i],m_enemies[i + 1]);
+		for (u32 i_=0, n = m_enemies.size() - 1; i_<n; ++i_)
+			if (m_enemies[i_ + 1] < m_enemies[i_])
+				std::swap				(m_enemies[i_],m_enemies[i_ + 1]);
 			else
 				break;
 	}
@@ -283,21 +283,21 @@ void CAgentEnemyManager::permutate_enemies		()
 	bool						changed;
 	do {
 		changed					= false;
-		CAgentMemberManager::iterator				I = object().member().combat_members().begin();
-		CAgentMemberManager::iterator				E = object().member().combat_members().end();
-		for ( ; I != E; ++I) {
+		CAgentMemberManager::iterator				I_ = object().member().combat_members().begin();
+		CAgentMemberManager::iterator				E_ = object().member().combat_members().end();
+		for ( ; I_ != E_; ++I_) {
 			// if member is processed the continue;
-			if ((*I)->processed())
+			if ((*I_)->processed())
 				continue;
 
-			float				best = (*I)->object().Position().distance_to(m_enemies[(*I)->selected_enemy()].m_object->Position());
+			float				best = (*I_)->object().Position().distance_to(m_enemies[(*I_)->selected_enemy()].m_object->Position());
 			bool				found = false;
-			xr_vector<u32>::const_iterator	i = (*I)->enemies().begin();
-			xr_vector<u32>::const_iterator	e = (*I)->enemies().end();
+			xr_vector<u32>::const_iterator	i = (*I_)->enemies().begin();
+			xr_vector<u32>::const_iterator	e = (*I_)->enemies().end();
 			for ( ; i != e; ++i) {
-				if ((*I)->selected_enemy() == *i)
+				if ((*I_)->selected_enemy() == *i)
 					continue;
-				float			my_distance = (*I)->object().Position().distance_to(m_enemies[*i].m_object->Position());
+				float			my_distance = (*I_)->object().Position().distance_to(m_enemies[*i].m_object->Position());
 				if (my_distance < best) {
 					// check if we can exchange enemies
 					squad_mask_type	J = m_enemies[*i].m_distribute_mask.get(), K;
@@ -305,7 +305,7 @@ void CAgentEnemyManager::permutate_enemies		()
 					for ( ; J; J &= J - 1) {
 						K			= (J & (J - 1)) ^ J;
 						CAgentMemberManager::iterator	j = object().member().member(K);
-						xr_vector<u32>::iterator	ii = std::find((*j)->enemies().begin(),(*j)->enemies().end(),(*I)->selected_enemy());
+						xr_vector<u32>::iterator	ii = std::find((*j)->enemies().begin(),(*j)->enemies().end(),(*I_)->selected_enemy());
 						// check if member can my current enemy
 						if (ii == (*j)->enemies().end())
 							continue;
@@ -316,12 +316,12 @@ void CAgentEnemyManager::permutate_enemies		()
 							continue;
 
 						// check if our effectiveness is near the same
-						float		my_to_his = evaluate(&(*I)->object(),m_enemies[(*j)->selected_enemy()].m_object);
-						float		his_to_my = evaluate(&(*j)->object(),m_enemies[(*I)->selected_enemy()].m_object);
-						if (!fsimilar(my_to_his,(*j)->probability()) || !fsimilar(his_to_my,(*I)->probability()))
+						float		my_to_his = evaluate(&(*I_)->object(),m_enemies[(*j)->selected_enemy()].m_object);
+						float		his_to_my = evaluate(&(*j)->object(),m_enemies[(*I_)->selected_enemy()].m_object);
+						if (!fsimilar(my_to_his,(*j)->probability()) || !fsimilar(his_to_my,(*I_)->probability()))
 							continue;
 
-						exchange_enemies	(**I,**j);
+						exchange_enemies	(**I_,**j);
 
 						found		= true;
 						best		= my_distance;
@@ -334,7 +334,7 @@ void CAgentEnemyManager::permutate_enemies		()
 			}
 
 			if (!found) {
-				(*I)->processed	(true);
+				(*I_)->processed	(true);
 				continue;
 			}
 
@@ -345,23 +345,23 @@ void CAgentEnemyManager::permutate_enemies		()
 
 	VERIFY						(!m_enemies.empty());
 	if (!m_only_wounded_left) {
-		CAgentMemberManager::iterator					I = object().member().combat_members().begin();
-		CAgentMemberManager::iterator					E = object().member().combat_members().end();
-		for ( ; I != E; ++I) {
-			CVisualMemoryManager& visual = (*I)->object().memory().visual();
-			CHitMemoryManager&	hit = (*I)->object().memory().hit();
+		CAgentMemberManager::iterator					I_ = object().member().combat_members().begin();
+		CAgentMemberManager::iterator					E_ = object().member().combat_members().end();
+		for ( ; I_ != E_; ++I_) {
+			CVisualMemoryManager& visual = (*I_)->object().memory().visual();
+			CHitMemoryManager&	hit = (*I_)->object().memory().hit();
 			ENEMIES::iterator	i = m_enemies.begin();
 			ENEMIES::iterator	e = m_enemies.end();
 			for ( ; i != e; ++i) {
 				if (visual.visible_now((*i).m_object)) {
-					(*i).m_distribute_mask.assign((*i).m_distribute_mask.get() | object().member().mask(&(*I)->object()));
+					(*i).m_distribute_mask.assign((*i).m_distribute_mask.get() | object().member().mask(&(*I_)->object()));
 					continue;
 				}
 
 				if (hit.last_hit_object_id() != (*i).m_object->ID())
 					continue;
 
-				(*i).m_distribute_mask.assign((*i).m_distribute_mask.get() | object().member().mask(&(*I)->object()));
+				(*i).m_distribute_mask.assign((*i).m_distribute_mask.get() | object().member().mask(&(*I_)->object()));
 			}
 		}
 	}
@@ -489,12 +489,12 @@ void CAgentEnemyManager::assign_wounded			()
 				J									&= (assigned ^ squad_mask_type(-1));
 				for ( ; J; J &= J - 1) {
 					squad_mask_type					K = (J & (J - 1)) ^ J;
-					CAgentMemberManager::iterator	i = object().member().member(K);
-					float							distance_sqr = (*i)->object().Position().distance_to_sqr((*I).m_object->Position());
+					CAgentMemberManager::iterator	i_ = object().member().member(K);
+					float							distance_sqr = (*i_)->object().Position().distance_to_sqr((*I).m_object->Position());
 					if (distance_sqr < best_distance_sqr) {
 						best_distance_sqr			= distance_sqr;
 						enemy						= &*I;
-						processor					= &(*i)->object();
+						processor					= &(*i_)->object();
 					}
 				}
 			}

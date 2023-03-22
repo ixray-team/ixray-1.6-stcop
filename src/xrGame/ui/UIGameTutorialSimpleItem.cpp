@@ -84,13 +84,13 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	
 	int actions_count				= xml->GetNodesNum	(0,0,"action");
 	m_actions.resize				(actions_count);
-	for(int idx=0; idx<actions_count; ++idx)
+	for(int idx_=0; idx_<actions_count; ++idx_)
 	{
-		SActionItem& itm			= m_actions[idx];
-		LPCSTR str					= xml->ReadAttrib("action", idx, "id");
-		itm.m_action				= action_name_to_id(str);
-		itm.m_bfinalize				= !!xml->ReadAttribInt("action", idx, "finalize", FALSE);
-		itm.m_functor				= xml->Read(xml->GetLocalRoot(), "action", idx, "");
+		SActionItem& itm			= m_actions[idx_];
+		LPCSTR str_					= xml->ReadAttrib("action", idx_, "id");
+		itm.m_action				= action_name_to_id(str_);
+		itm.m_bfinalize				= !!xml->ReadAttribInt("action", idx_, "finalize", FALSE);
+		itm.m_functor				= xml->Read(xml->GetLocalRoot(), "action", idx_, "");
 	}
 
 	//ui-components

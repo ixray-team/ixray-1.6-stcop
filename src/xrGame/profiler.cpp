@@ -200,14 +200,14 @@ void CProfiler::show_stats			(CGameFont *game_font, bool show)
 
 		if (!m_actual) {
 			u32					max_string_size = 0;
-			TIMERS::iterator	I = m_timers.begin();
-			TIMERS::iterator	E = m_timers.end();
-			for ( ; I != E; ++I)
-				max_string_size	= _max(max_string_size,compute_string_length(*(*I).first));
+			TIMERS::iterator	I_ = m_timers.begin();
+			TIMERS::iterator	E_ = m_timers.end();
+			for ( ; I_ != E_; ++I_)
+				max_string_size	= _max(max_string_size,compute_string_length(*(*I_).first));
 
-			I					= m_timers.begin();
-			for ( ; I != E; ++I)
-				convert_string	(*(*I).first,(*I).second.m_name,max_string_size);
+			I_					= m_timers.begin();
+			for ( ; I_ != E_; ++I_)
+				convert_string	(*(*I_).first,(*I_).second.m_name,max_string_size);
 
 			m_actual			= true;
 		}

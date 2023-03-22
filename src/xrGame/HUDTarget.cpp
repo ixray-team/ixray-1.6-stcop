@@ -174,7 +174,7 @@ void CHUDTarget::Render()
 
 		if( (PP.RQ.O && PP.RQ.O->getVisible()) || is_poltergeist )
 		{
-			CEntityAlive*	E		= smart_cast<CEntityAlive*>	(PP.RQ.O);
+			CEntityAlive*	E_		= smart_cast<CEntityAlive*>	(PP.RQ.O);
 			CEntityAlive*	pCurEnt = smart_cast<CEntityAlive*>	(Level().CurrentEntity());
 			PIItem			l_pI	= smart_cast<PIItem>		(PP.RQ.O);
 
@@ -182,13 +182,13 @@ void CHUDTarget::Render()
 			{
 				CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
 				
-				if (E && E->g_Alive() && E->cast_base_monster())
+				if (E_ && E_->g_Alive() && E_->cast_base_monster())
 				{
 					C				= C_ON_ENEMY;
 				}
-				else if (E && E->g_Alive() && !E->cast_base_monster())
+				else if (E_ && E_->g_Alive() && !E_->cast_base_monster())
 				{
-					CInventoryOwner* others_inv_owner	= smart_cast<CInventoryOwner*>(E);
+					CInventoryOwner* others_inv_owner	= smart_cast<CInventoryOwner*>(E_);
 
 					if(our_inv_owner && others_inv_owner){
 
@@ -226,14 +226,14 @@ void CHUDTarget::Render()
 			}
 			else
 			{
-				if (E && (E->GetfHealth()>0))
+				if (E_ && (E_->GetfHealth()>0))
 				{
 					if (pCurEnt && GameID() == eGameIDSingle)
 					{
 						if (GameID() == eGameIDDeathmatch)			C = C_ON_ENEMY;
 						else
 						{	
-							if (E->g_Team() != pCurEnt->g_Team())	C = C_ON_ENEMY;
+							if (E_->g_Team() != pCurEnt->g_Team())	C = C_ON_ENEMY;
 							else									C = C_ON_FRIEND;
 						};
 						if (PP.RQ.range >= recon_mindist() && PP.RQ.range <= recon_maxdist())

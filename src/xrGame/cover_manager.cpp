@@ -180,9 +180,9 @@ void CCoverManager::remove_nearby_covers	(smart_cover::cover const &cover, smart
 			m_nearest.end()
 		);
 
-		typedef PointVector::const_iterator const_iterator;
-		const_iterator		i = m_nearest.begin();
-		const_iterator		e = m_nearest.end();
+		typedef PointVector::const_iterator const_iterator_;
+		const_iterator_		i = m_nearest.begin();
+		const_iterator_		e = m_nearest.end();
 		for ( ; i != e; ++i)
 			m_covers->remove(*i);
 

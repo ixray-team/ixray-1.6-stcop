@@ -497,11 +497,11 @@ void DBG_PHAbstructRender()
 	}
 	if(dbg_ph_draw_mode!=dmCashed)
 	{
-		PHABS_DBG_I i,e;
-		i=dbg_draw_cashed.begin();e=dbg_draw_cashed.end();
-		for(;e!=i;++i)
+		PHABS_DBG_I i_,e_;
+		i_=dbg_draw_cashed.begin();e_=dbg_draw_cashed.end();
+		for(;e_!=i_;++i_)
 		{
-			(*i)->render();
+			(*i_)->render();
 		}
 		if(cash_draw_remove_time<Device.dwTimeGlobal)
 		{
@@ -509,11 +509,11 @@ void DBG_PHAbstructRender()
 		}
 	}
 	{
-		PHABS_DBG_I i,e;
-		i=dbg_draw_simple.begin();e=dbg_draw_simple.end();
-		for(;e!=i;++i)
+		PHABS_DBG_I i_,e_;
+		i_=dbg_draw_simple.begin();e_=dbg_draw_simple.end();
+		for(;e_!=i_;++i_)
 		{
-			(*i)->render();
+			(*i_)->render();
 		}
 		//clear_vector(dbg_draw_simple);
 	}

@@ -88,8 +88,8 @@ void CStepManager::reload(LPCSTR section)
 		{
 			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 			VERIFY( KA );
-			std::pair<LPCSTR,LPCSTR> anim_name = KA->LL_MotionDefName_dbg( motion_id );
-			Msg( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name.first, anim_name.second );
+			std::pair<LPCSTR,LPCSTR> anim_name_ = KA->LL_MotionDefName_dbg( motion_id );
+			Msg( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name_.first, anim_name_.second );
 		}
 #endif
 		m_steps_map.insert(std::make_pair(motion_id, param));
