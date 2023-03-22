@@ -435,23 +435,23 @@ void MxEdgeQSlim::initialize()
 
 void MxEdgeQSlim::collect_edges()
 {
-	MxVertexList star;
+	MxVertexList star_;
 
 	for(MxVertexID i=0; i<m->vert_count(); i++)
 	{
-		star.reset();
-		m->collect_vertex_star(i, star);
+		star_.reset();
+		m->collect_vertex_star(i, star_);
 
-		for(unsigned int j=0; j<(unsigned int)star.length(); j++)
-			if( i < star(j) )  // Only add particular edge once
-				create_edge(i, star(j));
+		for(unsigned int j=0; j<(unsigned int)star_.length(); j++)
+			if( i < star_(j) )  // Only add particular edge once
+				create_edge(i, star_(j));
 	}
 }
 
-void MxEdgeQSlim::collect_edges(const MxEdge *edges, unsigned int count)
+void MxEdgeQSlim::collect_edges(const MxEdge *edges_, unsigned int count)
 {
 	for(unsigned int i=0; i<count; i++)
-		create_edge(edges[i].v1, edges[i].v2);
+		create_edge(edges_[i].v1, edges_[i].v2);
 }
 
 void MxEdgeQSlim::update_pre_contract(const MxPairContraction& conx)

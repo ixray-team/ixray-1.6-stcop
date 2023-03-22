@@ -64,10 +64,10 @@ reader::reader(IReader* freader)
 		return;
 	}
 	--tmp_info_begin;//- '['
-	u32 m_info_size				= xr_strlen(tmp_info_begin);
+	u32 m_info_size_				= xr_strlen(tmp_info_begin);
 	m_info_pos					= static_cast<u32>((u8*)tmp_info_begin - m_jpeg_data);
 
-	IReader	tmp_reader			(tmp_info_begin, m_info_size);
+	IReader	tmp_reader			(tmp_info_begin, m_info_size_);
 	m_info_section				= xr_new<CInifile>(&tmp_reader);
 }
 

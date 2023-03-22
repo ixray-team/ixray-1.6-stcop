@@ -201,14 +201,14 @@ void CSpaceRestrictorWrapper::build_border			()
 		fill_shape					(*I);
 	
 	{
-		BORDER::iterator			I = std::remove_if(m_border.begin(),m_border.end(),border_merge_predicate(this,m_level_graph));
-		m_border.erase				(I,m_border.end());
+		BORDER::iterator			I_ = std::remove_if(m_border.begin(),m_border.end(),border_merge_predicate(this,m_level_graph));
+		m_border.erase				(I_,m_border.end());
 	}
 
 	{
 		std::sort					(m_border.begin(),m_border.end());
-		BORDER::iterator			I = std::unique(m_border.begin(),m_border.end());
-		m_border.erase				(I,m_border.end());
+		BORDER::iterator			I_ = std::unique(m_border.begin(),m_border.end());
+		m_border.erase				(I_,m_border.end());
 		std::sort					(m_border.begin(),m_border.end(),sort_by_xz_predicate(m_level_graph));
 	}
 

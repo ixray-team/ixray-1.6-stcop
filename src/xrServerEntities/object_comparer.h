@@ -146,9 +146,9 @@ struct CComparer {
 		}
 
 		template <>
-		IC	static bool compare<true>(const T &_1, const T &_2, const P &p)
+		IC	static bool compare<true>(const T &first, const T &second, const P &p)
 		{
-			return(CHelper3::compare(_1,_2,p));
+			return(CHelper3::compare(first, second, p));
 		}
 	};
 

@@ -189,9 +189,9 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 					for ( u32 i = 0; i < pCollapse->TriCollapsed.size(); i++ )
 					{
 						GeneralTriInfo *pTriInfo = pCollapse->TriCollapsed.item(i);
-						MeshTri *tri = pTriInfo->ppt[0]->FindTri ( pTriInfo->ppt[1], pTriInfo->ppt[2] );
-						R_ASSERT ( tri != NULL );
-						R_ASSERT ( tri->mytri.dwNewIndex == INVALID_INDEX );	// Should not have been in a collapse this level.
+						MeshTri *tri_ = pTriInfo->ppt[0]->FindTri ( pTriInfo->ppt[1], pTriInfo->ppt[2] );
+						R_ASSERT ( tri_ != NULL );
+						R_ASSERT ( tri_->mytri.dwNewIndex == INVALID_INDEX );	// Should not have been in a collapse this level.
 
 						R_ASSERT ( pTriInfo->ppt[0]->mypt.dwNewIndex < wCurIndex );
 						R_ASSERT ( pTriInfo->ppt[1]->mypt.dwNewIndex < wCurIndex );
@@ -239,9 +239,9 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 				wTempIndices.resize(pCollapse->TriOriginal.size() * 3);
 				for ( u32 i = 0; i < pCollapse->TriOriginal.size(); i++ ){
 					GeneralTriInfo *pTriInfo = pCollapse->TriOriginal.item(i);
-					MeshTri *tri = pTriInfo->ppt[0]->FindTri ( pTriInfo->ppt[1], pTriInfo->ppt[2] );
-					R_ASSERT ( tri != NULL );
-					tri->mytri.dwNewIndex = 1;		// Mark it has having been in a collapse.
+					MeshTri *tri_ = pTriInfo->ppt[0]->FindTri ( pTriInfo->ppt[1], pTriInfo->ppt[2] );
+					R_ASSERT ( tri_ != NULL );
+					tri_->mytri.dwNewIndex = 1;		// Mark it has having been in a collapse.
 
 					R_ASSERT ( pTriInfo->ppt[0]->mypt.dwNewIndex < wCurIndex );
 					R_ASSERT ( pTriInfo->ppt[1]->mypt.dwNewIndex < wCurIndex );
@@ -266,10 +266,10 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 			// Add the collapse record.
 			iCurCollapse--;
 
-			VIPM_SWR *swr	= result->swr_records.item ( iCurCollapse );
-			swr->offset		= iCurTriBinned * 3; 
-			swr->num_tris	= (u16)iCurNumTris;
-			swr->num_verts	= wCurIndex;
+			VIPM_SWR *swr_	= result->swr_records.item ( iCurCollapse );
+			swr_->offset		= iCurTriBinned * 3; 
+			swr_->num_tris	= (u16)iCurNumTris;
+			swr_->num_verts	= wCurIndex;
 		}
 
 		// OK, finished this level. Any tris that are left with an index of -1
@@ -346,12 +346,12 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 	// And now check everything is OK.
 	R_ASSERT ( result->swr_records.size() == u32(iNumCollapses + 1) );
 	for ( int i = 0; i <= iNumCollapses; i++ ){
-		VIPM_SWR *swr = result->swr_records.item ( i );
-		for ( int j = 0; j < swr->num_tris * 3; j++ ){
-			R_ASSERT ( (j+swr->offset) < result->indices.size() );
-			swr->num_verts = _max(swr->num_verts,*(result->indices.item(j+swr->offset))); // fignya index ne doljen bit bolshe!!!
+		VIPM_SWR *swr_ = result->swr_records.item ( i );
+		for ( int j = 0; j < swr_->num_tris * 3; j++ ){
+			R_ASSERT ( (j+swr_->offset) < result->indices.size() );
+			swr_->num_verts = _max(swr_->num_verts,*(result->indices.item(j+swr_->offset))); // fignya index ne doljen bit bolshe!!!
 //.			R_ASSERT ( *(result->indices.item(j+swr->offset)) < swr->num_verts ); 
-			if (*(result->indices.item(j+swr->offset)) >= swr->num_verts){
+			if (*(result->indices.item(j+swr_->offset)) >= swr_->num_verts){
 				bRes = FALSE;
 //.				OutputDebugString("--ERROR-------------------\n");
 			}

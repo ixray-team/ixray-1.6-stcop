@@ -105,7 +105,7 @@ void MxStdModel::mark_neighborhood(MxVertexID vid, unsigned short mark)
 	}
 }
 
-void MxStdModel::collect_unmarked_neighbors(MxVertexID vid,MxFaceList& faces)
+void MxStdModel::collect_unmarked_neighbors(MxVertexID vid,MxFaceList& faces_)
 {
 	VERIFY( vid < vert_count() ); 
 
@@ -114,7 +114,7 @@ void MxStdModel::collect_unmarked_neighbors(MxVertexID vid,MxFaceList& faces)
 		unsigned int fid = neighbors(vid)(i);
 		if( !fmark(fid) )
 		{
-			faces.add(fid);
+			faces_.add(fid);
 			fmark(fid, 1);
 		}
 	}
@@ -146,20 +146,20 @@ void MxStdModel::partition_marked_neighbors(MxVertexID v, unsigned short pivot,
 	}
 }
 
-void MxStdModel::mark_corners(const MxFaceList& faces, unsigned short mark)
+void MxStdModel::mark_corners(const MxFaceList& faces_, unsigned short mark)
 {
-	for(unsigned int i=0; i<(unsigned int)faces.length(); i++)
+	for(unsigned int i=0; i<(unsigned int)faces_.length(); i++)
 		for(unsigned int j=0; j<3; j++)
-			vmark(face(faces(i))(j), (unsigned char)mark);
+			vmark(face(faces_(i))(j), (unsigned char)mark);
 }
 
-void MxStdModel::collect_unmarked_corners(const MxFaceList& faces,
+void MxStdModel::collect_unmarked_corners(const MxFaceList& faces_,
 										  MxVertexList& verts)
 {
-	for(unsigned int i=0; i<(unsigned int)faces.length(); i++)
+	for(unsigned int i=0; i<(unsigned int)faces_.length(); i++)
 		for(unsigned int j=0; j<3; j++)
 		{
-			MxVertexID v = face(faces(i))(j);
+			MxVertexID v = face(faces_(i))(j);
 			if( !vmark(v) )
 			{
 				verts.add(v);
@@ -169,11 +169,11 @@ void MxStdModel::collect_unmarked_corners(const MxFaceList& faces,
 }
 
 void MxStdModel::collect_edge_neighbors(unsigned int v1, unsigned int v2,
-										MxFaceList& faces)
+										MxFaceList& faces_)
 {
 	mark_neighborhood(v1, 1);
 	mark_neighborhood(v2, 0);
-	collect_unmarked_neighbors(v1, faces);
+	collect_unmarked_neighbors(v1, faces_);
 }
 
 void MxStdModel::collect_vertex_star(unsigned int v, MxVertexList& verts)
@@ -186,7 +186,7 @@ void MxStdModel::collect_vertex_star(unsigned int v, MxVertexList& verts)
 }
 
 void MxStdModel::collect_neighborhood(MxVertexID v, int depth,
-									  MxFaceList& faces)
+									  MxFaceList& faces_)
 {
 	// TODO: This method is somewhat inefficient.  It will repeatedly touch
 	// all the faces within the collected region at each iteration.  For now,
@@ -194,33 +194,33 @@ void MxStdModel::collect_neighborhood(MxVertexID v, int depth,
 
 	int i;
 
-	faces.reset();
+	faces_.reset();
 
 	// Initially copy immediate neighbors of v
 	for(i=0; i<neighbors(v).length(); i++)
-		faces.add(neighbors(v)[i]);
+		faces_.add(neighbors(v)[i]);
 
 	for(; depth>0; depth--)
 	{
 		// Unmark the neighbors of all vertices in region
-		for(i=0; i<faces.length(); i++)
+		for(i=0; i<faces_.length(); i++)
 		{
-			mark_neighborhood(face(faces[i])[0], 0);
-			mark_neighborhood(face(faces[i])[1], 0);
-			mark_neighborhood(face(faces[i])[2], 0);
+			mark_neighborhood(face(faces_[i])[0], 0);
+			mark_neighborhood(face(faces_[i])[1], 0);
+			mark_neighborhood(face(faces_[i])[2], 0);
 		}
 
 		// Mark all faces already accumulated
-		for(i=0; i<faces.length(); i++)
-			fmark(faces[i], 1);
+		for(i=0; i<faces_.length(); i++)
+			fmark(faces_[i], 1);
 
 		// Collect all unmarked faces
-		int limit = faces.length();
+		int limit = faces_.length();
 		for(i=0; i<limit; i++)
 		{
-			collect_unmarked_neighbors(face(faces[i])[0], faces);
-			collect_unmarked_neighbors(face(faces[i])[1], faces);
-			collect_unmarked_neighbors(face(faces[i])[2], faces);
+			collect_unmarked_neighbors(face(faces_[i])[0], faces_);
+			collect_unmarked_neighbors(face(faces_[i])[1], faces_);
+			collect_unmarked_neighbors(face(faces_[i])[2], faces_);
 		}
 	}
 }
@@ -317,15 +317,15 @@ unsigned int MxStdModel::split_edge(unsigned int v1, unsigned int v2,
 	VERIFY( vertex_is_valid(v1) ); VERIFY( vertex_is_valid(v2) );
 	VERIFY( v1 != v2 );
 
-	MxFaceList faces;
-	collect_edge_neighbors(v1, v2, faces);
-	VERIFY( faces.length() > 0 );
+	MxFaceList faces_;
+	collect_edge_neighbors(v1, v2, faces_);
+	VERIFY( faces_.length() > 0 );
 
 	unsigned int vnew = add_vertex(x,y,z);
 
-	for(unsigned int i=0; i<(unsigned int)faces.length(); i++)
+	for(unsigned int i=0; i<(unsigned int)faces_.length(); i++)
 	{
-		unsigned int f = faces(i);
+		unsigned int f = faces_(i);
 		unsigned int v3 = face(f).opposite_vertex(v1, v2);
 		VERIFY( v3!=v1 && v3!=v2 );
 		VERIFY( vertex_is_valid(v3) );
@@ -349,11 +349,11 @@ unsigned int MxStdModel::split_edge(unsigned int v1, unsigned int v2,
 
 void MxStdModel::flip_edge(unsigned int v1, unsigned int v2)
 {
-	MxFaceList faces;  collect_edge_neighbors(v1, v2, faces);
-	if( faces.length() != 2 ) return;
+	MxFaceList faces_;  collect_edge_neighbors(v1, v2, faces_);
+	if( faces_.length() != 2 ) return;
 
-	unsigned int f1 = faces(0);
-	unsigned int f2 = faces(1);
+	unsigned int f1 = faces_(0);
+	unsigned int f2 = faces_(1);
 	unsigned int v3 = face(f1).opposite_vertex(v1, v2);
 	unsigned int v4 = face(f2).opposite_vertex(v1, v2);
 
@@ -447,15 +447,15 @@ void MxStdModel::unlink_face(MxFaceID fid)
 	VERIFY( !varray_find(neighbors(f(2)), fid, &j) );
 }
 
-void MxStdModel::remove_degeneracy(MxFaceList& faces)
+void MxStdModel::remove_degeneracy(MxFaceList& faces_)
 {
-	for(unsigned int i=0; i<(unsigned int)faces.length(); i++)
+	for(unsigned int i=0; i<(unsigned int)faces_.length(); i++)
 	{
-		VERIFY( face_is_valid(faces(i)) );
-		MxFace& f = face(faces(i));
+		VERIFY( face_is_valid(faces_(i)) );
+		MxFace& f = face(faces_(i));
 
 		if( f(0)==f(1) || f(1)==f(2) || f(0)==f(2) )
-			unlink_face(faces(i));
+			unlink_face(faces_(i));
 	}
 }
 

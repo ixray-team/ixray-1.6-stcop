@@ -56,15 +56,15 @@ void xrLoad(LPCSTR name, bool draft_mode)
 	string256					N;
 	if (!draft_mode)	{
 		// shaders
-		string_path				N;
-		FS.update_path			(N,"$game_data$","shaders_xrlc.xr");
+		string_path				N__;
+		FS.update_path			(N__,"$game_data$","shaders_xrlc.xr");
 		g_shaders_xrlc			= xr_new<Shader_xrLC_LIB> ();
-		g_shaders_xrlc->Load	(N);
+		g_shaders_xrlc->Load	(N__);
 
 		// Load CFORM
 		{
-			strconcat			(sizeof(N),N,name,"build.cform");
-			IReader*			fs = FS.r_open(N);
+			strconcat			(sizeof(N__),N__,name,"build.cform");
+			IReader*			fs = FS.r_open(N__);
 			R_ASSERT			(fs->find_chunk(0));
 
 			hdrCFORM			H;
@@ -87,8 +87,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 		// Load level data
 		{
-			strconcat			(sizeof(N),N,name,"build.prj");
-			IReader*	fs		= FS.r_open (N);
+			strconcat			(sizeof(N__),N__,name,"build.prj");
+			IReader*	fs		= FS.r_open (N__);
 			IReader*	F;
 
 			// Version
@@ -122,29 +122,29 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					CopyMemory		(&BT,&TEX,sizeof(TEX));
 
 					// load thumbnail
-					string128		&N = BT.name;
-					LPSTR			extension = strext(N);
+					string128		&N_ = BT.name;
+					LPSTR			extension = strext(N_);
 					if (extension)
 						*extension	= 0;
 
-					xr_strlwr		(N);
+					xr_strlwr		(N_);
 
-					if (0==xr_strcmp(N,"level_lods"))	{
+					if (0==xr_strcmp(N_,"level_lods"))	{
 						// HACK for merged lod textures
 						BT.dwWidth	= 1024;
 						BT.dwHeight	= 1024;
 						BT.bHasAlpha= TRUE;
 						BT.pSurface	= 0;
 					} else {
-						xr_strcat		(N,".thm");
-						IReader* THM	= FS.r_open("$game_textures$",N);
+						xr_strcat		(N_,".thm");
+						IReader* THM	= FS.r_open("$game_textures$",N_);
 //						if (!THM)		continue;
 						
-						R_ASSERT2		(THM,	N);
+						R_ASSERT2		(THM,	N_);
 
 						// version
-						u32 version				= 0;
-						R_ASSERT				(THM->r_chunk(THM_CHUNK_VERSION,&version));
+						u32 version_				= 0;
+						R_ASSERT				(THM->r_chunk(THM_CHUNK_VERSION,&version_));
 						// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
 
 						// analyze thumbnail information
@@ -158,7 +158,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 						BT.THM.width			= THM->r_u32();
 						BT.THM.height           = THM->r_u32();
 						BOOL			bLOD=FALSE;
-						if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\') bLOD = TRUE;
+						if (N_[0]=='l' && N_[1]=='o' && N_[2]=='d' && N_[3]=='\\') bLOD = TRUE;
 
 						// load surface if it has an alpha channel or has "implicit lighting" flag
 						BT.dwWidth				= BT.THM.width;
@@ -169,9 +169,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 						{
 							if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
 							{
-								clMsg		("- loading: %s",N);
+								clMsg		("- loading: %s",N_);
 								u32			w=0, h=0;
-								BT.pSurface = Surface_Load(N,w,h); 
+								BT.pSurface = Surface_Load(N_,w,h); 
 								R_ASSERT2	(BT.pSurface,"Can't load surface");
 								if ((w != BT.dwWidth) || (h != BT.dwHeight))
 									Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
@@ -281,19 +281,19 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		F->r				(&g_params,sizeof(g_params));
 
 		R_ASSERT			(F->open_chunk(E_AIMAP_CHUNK_NODES));
-		u32					N = F->r_u32();
-		R_ASSERT2			(N < ((u32(1) << u32(MAX_NODE_BIT_COUNT)) - 2),"Too many nodes!");
-		g_nodes.resize		(N);
+		u32					N_ = F->r_u32();
+		R_ASSERT2			(N_ < ((u32(1) << u32(MAX_NODE_BIT_COUNT)) - 2),"Too many nodes!");
+		g_nodes.resize		(N_);
 
 		hdrNODES			H;
 		H.version			= XRAI_CURRENT_VERSION;
-		H.count				= N+1;
+		H.count				= N_+1;
 		H.size				= g_params.fPatchSize;
 		H.size_y			= 1.f;
 		H.aabb				= LevelBB;
 		
 		typedef BYTE NodeLink[3];
-		for (u32 i=0; i<N; i++) {
+		for (u32 i=0; i<N_; i++) {
 			NodeLink			id;
 			u16 				pl;
 			SNodePositionOld 	_np;

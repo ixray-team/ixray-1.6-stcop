@@ -416,8 +416,8 @@ void final_statistics(char *fn, double time, int rate, long samples, long bytes)
 	
 	fprintf(stderr, _("\n\tFile length:  %dm %04.1fs\n"),
 			(int)(samples/rate/60),
-			samples/rate - 
-			samples/rate/60*60);
+			(double) (samples/rate - 
+			samples/rate/60*60));
 	fprintf(stderr, _("\tElapsed time: %dm %04.1fs\n"),
 			(int)(time/60),
 			time - iFloor((float)time/60)*60);

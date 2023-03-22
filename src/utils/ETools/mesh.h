@@ -1634,8 +1634,8 @@ inline bool MeshPt::AddProx ( MeshPt *pPt, bool bProxEdges )
 			MeshEdge *pedgeProx = pPt->FindEdge ( ppPt[i] );
 			if ( pedgeProx != NULL )
 			{
-				bool bRes = pedgeProx->AddProx ( pedge );
-				VERIFY ( bRes );
+				bool bRes_ = pedgeProx->AddProx ( pedge );
+				VERIFY ( bRes_ );
 				break;
 			}
 		}

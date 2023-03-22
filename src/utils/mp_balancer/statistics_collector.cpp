@@ -96,10 +96,10 @@ void statistics_collector::save_file(csv_files::value_type const & val)
 		for (params_collection::const_iterator param_i = val.second->begin(),
 			param_ie = val.second->end(); param_i != param_ie; ++param_i)
 		{
-			LPCSTR val = m_wpn_collection->priquel_config->r_string(i->c_str(), param_i->c_str());
-			if (!val)
-				val = "";
-			sprintf_s(temp_string, "\"%s\",", val);
+			LPCSTR val_ = m_wpn_collection->priquel_config->r_string(i->c_str(), param_i->c_str());
+			if (!val_)
+				val_ = "";
+			sprintf_s(temp_string, "\"%s\",", val_);
 			dest_string.append(temp_string);
 		}
 		dest_string.erase(dest_string.end() - 1);

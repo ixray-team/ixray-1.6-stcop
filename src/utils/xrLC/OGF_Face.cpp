@@ -49,7 +49,7 @@ u16 OGF::x_BuildVertex	(x_vertex& V1)
 	for (itXV it=fast_path_data.vertices.begin(); it!=fast_path_data.vertices.end(); it++)
 		if (it->similar(this,V1)) return u16(it-fast_path_data.vertices.begin());
 	fast_path_data.vertices.push_back	(V1);
-	return (u32)			fast_path_data.vertices.size()-1;
+	return (unsigned short) fast_path_data.vertices.size()-1;
 }
 u16 OGF::_BuildVertex	(OGF_Vertex& V1)
 {
@@ -61,7 +61,7 @@ u16 OGF::_BuildVertex	(OGF_Vertex& V1)
 	} catch (...) { clMsg("* ERROR: OGF::_BuildVertex");	}
 
 	data.vertices.push_back	(V1);
-	return (u32)data.vertices.size()-1;
+	return (unsigned short) data.vertices.size()-1;
 }
 void OGF::x_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
 {

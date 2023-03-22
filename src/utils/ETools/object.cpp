@@ -356,9 +356,9 @@ long Object::UndoCollapse ( void )
 				SetNewLevel ( iCurSlidingWindowLevel );
 
 				// Except that some tris will already be at the lower level.
-				for ( u32 i = 0; i < pNextCollapse->TriNextLevel.size(); i++ )
+				for ( u32 i_ = 0; i_ < pNextCollapse->TriNextLevel.size(); i_++ )
 				{
-					GeneralTriInfo *pTriInfo = pNextCollapse->TriNextLevel.item(i);
+					GeneralTriInfo *pTriInfo = pNextCollapse->TriNextLevel.item(i_);
 					MeshTri *pTri = pTriInfo->ppt[0]->FindTri ( pTriInfo->ppt[1], pTriInfo->ppt[2] );
 					VERIFY ( pTri != NULL );
 					pTri->mytri.iSlidingWindowLevel = iCurSlidingWindowLevel + 1;

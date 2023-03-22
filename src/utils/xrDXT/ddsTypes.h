@@ -14,7 +14,7 @@ typedef enum RescaleTypes
 } RescaleTypes;
 
 
-typedef enum SharpenFilterTypes
+enum SharpenFilterTypes
 {
     kSharpenFilterNone,
     kSharpenFilterNegative,
@@ -41,7 +41,7 @@ typedef enum SharpenFilterTypes
 
 
 
-typedef enum MIPFilterTypes
+enum MIPFilterTypes
 {
     kMIPFilterPoint ,    
     kMIPFilterBox ,      

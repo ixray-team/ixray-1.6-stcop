@@ -277,14 +277,14 @@ double MxBlockModel::compute_face_area(MxFaceID f)
     return 0.5 * mxv_norm(n, 3);
 }
 
-double MxBlockModel::compute_face_perimeter(MxFaceID fid, bool *flags)
+double MxBlockModel::compute_face_perimeter(MxFaceID fid, bool *flags_)
 {
     double perim = 0.0;
     const MxFace& f = face(fid);
 
     for(unsigned int i=0; i<3; i++)
     {
-	if( !flags || flags[i] )
+	if( !flags_ || flags_[i] )
 	{
 	    float *vi = vertex(f[i]),  *vj = vertex(f[(i+1)%3]), e[3];
 	    perim += mxv_norm(mxv_sub(e, vi, vj, 3), 3);

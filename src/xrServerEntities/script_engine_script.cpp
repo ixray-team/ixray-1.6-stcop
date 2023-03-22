@@ -169,18 +169,18 @@ struct profile_timer_script {
 	IC		float					time					() const
 	{
 		FPU::m64r				();
-		float					result = (float(double(m_accumulator)/double(CPU::clk_per_second))*1000000.f);
+		float					result_ = (float(double(m_accumulator)/double(CPU::clk_per_second))*1000000.f);
 		FPU::m24r				();
-		return					(result);
+		return					(result_);
 	}
 };
 
 IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const profile_timer_script &portion1)
 {
-	profile_timer_script	result;
-	result.m_accumulator	= portion0.m_accumulator + portion1.m_accumulator;
-	result.m_count			= portion0.m_count + portion1.m_count;
-	return					(result);
+	profile_timer_script	result_;
+	result_.m_accumulator	= portion0.m_accumulator + portion1.m_accumulator;
+	result_.m_count			= portion0.m_count + portion1.m_count;
+	return					(result_);
 }
 
 // IC	std::ostream& operator<<(std::ostream &stream, profile_timer_script &timer)
