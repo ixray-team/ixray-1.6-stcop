@@ -81,7 +81,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;ALC_API=__declspec(dllexport);AL_API=__declspec(dllexport);_WIN32;NOMINMAX;RESTRICT=__restrict;_CRT_SECURE_NO_WARNINGS;OpenAL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>common.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>common.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>$(SolutionDir)lib\$(Configuration)\$(ProjectName).lib</ImportLibrary>
       <SubSystem>Console</SubSystem>
@@ -109,241 +109,18 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;ALC_API=__declspec(dllexport);AL_API=__declspec(dllexport);_WIN32;NOMINMAX;RESTRICT=__restrict;_CRT_SECURE_NO_WARNINGS;OpenAL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>common.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>common.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ImportLibrary>$(SolutionDir)lib\$(Configuration)\$(ProjectName).lib</ImportLibrary>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\dep\openal-soft\al\auxeffectslot.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\auxeffectslot.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\buffer.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\buffer.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\effect.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\effect.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\autowah.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/autowah.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\chorus.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/chorus.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\compressor.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/compressor.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\convolution.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/convolution.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\dedicated.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/dedicated.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\distortion.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/distortion.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\echo.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/echo.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\effects.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\effects\effects.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\equalizer.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/equalizer.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\fshifter.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/fshifter.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\modulator.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/modulator.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\null.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/null.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\pshifter.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/pshifter.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\reverb.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/reverb.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\effects\vmorpher.cpp">
-      <ObjectFileName>$(IntDir)/al/effects/vmorpher.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\al\error.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\al\event.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\event.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\extension.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\al\filter.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\filter.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\listener.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\listener.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\source.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\source.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\state.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\api.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\api.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\call.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\call.h" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\effect.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\exception.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\exception.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\fx_slot_index.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\fx_slot_index.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\fx_slots.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\fx_slots.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\globals.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\globals.h" />
-    <ClCompile Include="..\..\dep\openal-soft\al\eax\utils.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\utils.h" />
-    <ClInclude Include="..\..\dep\openal-soft\al\eax\x_ram.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\alc.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\alu.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\alu.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\alconfig.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\alconfig.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\context.cpp">
-      <ObjectFileName>$(IntDir)/alc/context.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClInclude Include="..\..\dep\openal-soft\alc\context.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\device.cpp">
-      <ObjectFileName>$(IntDir)/alc/device.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClInclude Include="..\..\dep\openal-soft\alc\device.h" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\effects\base.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\autowah.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/autowah.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\chorus.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/chorus.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\compressor.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/compressor.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\convolution.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/convolution.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\dedicated.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/dedicated.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\distortion.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/distortion.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\echo.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/echo.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\equalizer.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/equalizer.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\fshifter.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/fshifter.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\modulator.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/modulator.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\null.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/null.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\pshifter.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/pshifter.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\reverb.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/reverb.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\dep\openal-soft\alc\effects\vmorpher.cpp">
-      <ObjectFileName>$(IntDir)/alc/effects/vmorpher.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClInclude Include="..\..\dep\openal-soft\alc\inprogext.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\panning.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\base.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\base.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\loopback.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\loopback.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\null.cpp">
-      <ObjectFileName>$(IntDir)/alc/backends/null.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\null.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\winmm.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\winmm.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\dsound.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\dsound.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\wasapi.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\wasapi.h" />
-    <ClCompile Include="..\..\dep\openal-soft\alc\backends\wave.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\alc\backends\wave.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\ambdec.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\ambdec.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\ambidefs.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\ambidefs.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\async_event.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\bformatdec.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\bformatdec.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\bs2b.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\bs2b.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\bsinc_defs.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\bsinc_tables.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\bsinc_tables.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\bufferline.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\buffer_storage.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\buffer_storage.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\context.cpp">
-      <ObjectFileName>$(IntDir)/core/context.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClInclude Include="..\..\dep\openal-soft\core\context.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\converter.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\converter.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\cpu_caps.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\cpu_caps.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\devformat.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\devformat.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\device.cpp">
-      <ObjectFileName>$(IntDir)/core/device.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClInclude Include="..\..\dep\openal-soft\core\device.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\effects\base.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\effectslot.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\effectslot.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\except.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\except.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\filters\biquad.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\filters\biquad.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\core\filters\nfc.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\filters\nfc.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\filters\splitter.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\filters\splitter.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\fmt_traits.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\fmt_traits.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\fpu_ctrl.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\fpu_ctrl.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\front_stablizer.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\helpers.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\helpers.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\hrtf.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\hrtf.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\logging.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\logging.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mastering.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\mastering.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mixer.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\mixer.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\resampler_limits.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\uhjfilter.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\uhjfilter.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\uiddefs.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\core\voice.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\core\voice.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\voice_change.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\mixer\defs.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\mixer\hrtfbase.h" />
-    <ClInclude Include="..\..\dep\openal-soft\core\mixer\hrtfdefs.h" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mixer\mixer_c.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mixer\mixer_sse.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mixer\mixer_sse2.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mixer\mixer_sse3.cpp" />
-    <ClCompile Include="..\..\dep\openal-soft\core\mixer\mixer_sse41.cpp" />
-    <ClInclude Include="..\..\dep\openal-soft\include\AL\al.h" />
-    <ClInclude Include="..\..\dep\openal-soft\include\AL\alc.h" />
-    <ClInclude Include="..\..\dep\openal-soft\include\AL\alext.h" />
-    <ClInclude Include="..\..\dep\openal-soft\include\AL\efx.h" />
-    <ClInclude Include="..\..\dep\openal-soft\include\AL\efx-presets.h" />
-    <ResourceCompile Include="..\..\dep\openal-soft\resources\openal32.rc" />
-    <None Include="default_hrtf.txt" />
+    <ResourceCompile Include="..\..\dep\openal-soft\resources\router.rc" />
+    <ClCompile Include="..\..\dep\openal-soft\router\router.cpp" />
+    <ClInclude Include="..\..\dep\openal-soft\router\router.h" />
+    <ClCompile Include="..\..\dep\openal-soft\router\alc.cpp" />
+    <ClCompile Include="..\..\dep\openal-soft\router\al.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="common.vcxproj">
