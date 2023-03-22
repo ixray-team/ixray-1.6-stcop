@@ -261,7 +261,7 @@ void CLightProjector::calculate	()
 		// Select slot, set viewport
 		int		s_x				=	c_it%P_o_line;
 		int		s_y				=	c_it/P_o_line;
-		D3DVIEWPORT9 VP			=	{s_x*P_o_size,s_y*P_o_size,P_o_size,P_o_size,0,1 };
+		D3DVIEWPORT9 VP			=	{ (unsigned long) s_x*P_o_size, (unsigned long) s_y*P_o_size,P_o_size,P_o_size,0,1 };
 		CHK_DX					(HW.pDevice->SetViewport(&VP));
 
 		// Clear color to ambience

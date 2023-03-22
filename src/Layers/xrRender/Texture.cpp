@@ -350,7 +350,7 @@ _DDS:
 
 _DDS_CUBE:
 		{
-			HRESULT const result	=
+			HRESULT const result_	=
 				D3DXCreateCubeTextureFromFileInMemoryEx(
 					HW.pDevice,
 					S->pointer(),S->length(),
@@ -365,7 +365,7 @@ _DDS_CUBE:
 				);
 			FS.r_close				(S);
 
-			if ( FAILED(result) ) {
+			if ( FAILED(result_) ) {
 				Msg					("! Can't load texture '%s'",fn);
 				string_path			temp;
 				R_ASSERT			( FS.exist( temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds" ) );
@@ -387,7 +387,7 @@ _DDS_2D:
 			_strlwr					(fn);
 			// Load   SYS-MEM-surface, bound to device restrictions
 			ID3DTexture2D*		T_sysmem;
-			HRESULT const result	=
+			HRESULT const result_	=
 				D3DXCreateTextureFromFileInMemoryEx(
 					HW.pDevice,S->pointer(),S->length(),
 					D3DX_DEFAULT,D3DX_DEFAULT,
@@ -401,7 +401,7 @@ _DDS_2D:
 				);
 			FS.r_close				(S);
 
-			if ( FAILED(result) ) {
+			if ( FAILED(result_) ) {
 				Msg					("! Can't load texture '%s'",fn);
 				string_path			temp;
 				R_ASSERT			( FS.exist( temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds" ) );

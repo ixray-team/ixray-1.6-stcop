@@ -103,10 +103,10 @@ struct ECORE_API	R_constant			:public xr_resource
 
 	R_constant() : type(u16(-1)), destination(0), handler(NULL) { };
 	
-	IC R_constant_load& get_load(u32 destination)
+	IC R_constant_load& get_load(u32 destination_)
 	{
 		static R_constant_load	fake;
-		switch (destination&0xFF)
+		switch (destination_&0xFF)
 		{
 		case RC_dest_vertex:
 			return vs;

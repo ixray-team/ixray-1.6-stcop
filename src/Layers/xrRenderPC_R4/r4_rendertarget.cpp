@@ -508,7 +508,7 @@ CRenderTarget::CRenderTarget		()
 		if( RImplementation.o.dx10_msaa )
 		{
 			static LPCSTR SampleDefs[] = { "0","1","2","3","4","5","6","7" };
-			CBlender_rain_msaa	TempBlender[8];
+			CBlender_rain_msaa	TempBlender_[8];
 
 			int bound = RImplementation.o.dx10_msaa_samples;
 
@@ -517,8 +517,8 @@ CRenderTarget::CRenderTarget		()
 
 			for( int i = 0; i < bound; ++i )
 			{
-				TempBlender[i].SetDefine( "ISAMPLE", SampleDefs[i] );
-				s_rain_msaa[i].create( &TempBlender[i], "null");
+				TempBlender_[i].SetDefine( "ISAMPLE", SampleDefs[i] );
+				s_rain_msaa[i].create( &TempBlender_[i], "null");
 				s_accum_spot_msaa[i].create			(b_accum_spot_msaa[i],				"r2\\accum_spot_s",	"lights\\lights_spot01");
 				s_accum_point_msaa[i].create		(b_accum_point_msaa[i],			"r2\\accum_point_s");
 				//s_accum_volume_msaa[i].create(b_accum_direct_volumetric_msaa[i], "lights\\lights_spot01");

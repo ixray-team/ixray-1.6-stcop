@@ -384,19 +384,19 @@ void CTexture::Load		()
 
 //			HRESULT hrr = HW.pDevice->CreateTexture(
 //				_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, NULL );
-			D3D_TEXTURE2D_DESC	desc;
-			desc.Width = _w;
-			desc.Height = _h;
-			desc.MipLevels = 1;
-			desc.ArraySize = 1;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Usage = D3D_USAGE_DYNAMIC;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-			desc.MiscFlags = 0;
-			HRESULT hrr = HW.pDevice->CreateTexture2D(&desc, 0, &pTexture);
+			D3D_TEXTURE2D_DESC	desc_;
+			desc_.Width = _w;
+			desc_.Height = _h;
+			desc_.MipLevels = 1;
+			desc_.ArraySize = 1;
+			desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc_.SampleDesc.Count = 1;
+			desc_.SampleDesc.Quality = 0;
+			desc_.Usage = D3D_USAGE_DYNAMIC;
+			desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+			desc_.MiscFlags = 0;
+			HRESULT hrr = HW.pDevice->CreateTexture2D(&desc_, 0, &pTexture);
 
 			pSurface = pTexture;
 			if (FAILED(hrr))
@@ -430,19 +430,19 @@ void CTexture::Load		()
 				//pAVI->m_dwWidth,pAVI->m_dwHeight,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,
 				//	&pTexture,NULL
 				//	);
-				D3D_TEXTURE2D_DESC	desc;
-				desc.Width = pAVI->m_dwWidth;
-				desc.Height = pAVI->m_dwHeight;
-				desc.MipLevels = 1;
-				desc.ArraySize = 1;
-				desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				desc.SampleDesc.Count = 1;
-				desc.SampleDesc.Quality = 0;
-				desc.Usage = D3D_USAGE_DYNAMIC;
-				desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-				desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-				desc.MiscFlags = 0;
-				HRESULT hrr = HW.pDevice->CreateTexture2D(&desc, 0, &pTexture);
+				D3D_TEXTURE2D_DESC	desc_;
+				desc_.Width = pAVI->m_dwWidth;
+				desc_.Height = pAVI->m_dwHeight;
+				desc_.MipLevels = 1;
+				desc_.ArraySize = 1;
+				desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				desc_.SampleDesc.Count = 1;
+				desc_.SampleDesc.Quality = 0;
+				desc_.Usage = D3D_USAGE_DYNAMIC;
+				desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
+				desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+				desc_.MiscFlags = 0;
+				HRESULT hrr = HW.pDevice->CreateTexture2D(&desc_, 0, &pTexture);
 
 				pSurface	= pTexture;
 				if (FAILED(hrr))

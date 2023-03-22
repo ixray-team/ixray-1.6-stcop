@@ -105,9 +105,9 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 
 		//count the total number of indices
 		unsigned int numIndices = 0;
-		for(int i = 0; i < tempStrips.size(); i++)
+		for(int i_ = 0; i_ < tempStrips.size(); i_++)
 		{
-			numIndices += tempStrips[i]->m_faces.size() * 3;
+			numIndices += tempStrips[i_]->m_faces.size() * 3;
 		}
 
 		//add in the list
@@ -119,22 +119,22 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 
 		//do strips
 		unsigned int indexCtr = 0;
-		for(u32 i = 0; i < tempStrips.size(); i++)
+		for(u32 i_ = 0; i_ < tempStrips.size(); i_++)
 		{
-			for(int j = 0; j < tempStrips[i]->m_faces.size(); j++)
+			for(int j = 0; j < tempStrips[i_]->m_faces.size(); j++)
 			{
-				primGroups[0].indices[indexCtr++] = u16(tempStrips[i]->m_faces[j]->m_v0);
-				primGroups[0].indices[indexCtr++] = u16(tempStrips[i]->m_faces[j]->m_v1);
-				primGroups[0].indices[indexCtr++] = u16(tempStrips[i]->m_faces[j]->m_v2);
+				primGroups[0].indices[indexCtr++] = u16(tempStrips[i_]->m_faces[j]->m_v0);
+				primGroups[0].indices[indexCtr++] = u16(tempStrips[i_]->m_faces[j]->m_v1);
+				primGroups[0].indices[indexCtr++] = u16(tempStrips[i_]->m_faces[j]->m_v2);
 			}
 		}
 
 		//do lists
-		for(u32 i = 0; i < tempFaces.size(); i++)
+		for(u32 i_ = 0; i_ < tempFaces.size(); i_++)
 		{
-			primGroups[0].indices[indexCtr++] = u16(tempFaces[i]->m_v0);
-			primGroups[0].indices[indexCtr++] = u16(tempFaces[i]->m_v1);
-			primGroups[0].indices[indexCtr++] = u16(tempFaces[i]->m_v2);
+			primGroups[0].indices[indexCtr++] = u16(tempFaces[i_]->m_v0);
+			primGroups[0].indices[indexCtr++] = u16(tempFaces[i_]->m_v1);
+			primGroups[0].indices[indexCtr++] = u16(tempFaces[i_]->m_v2);
 		}
 	}
 	else
@@ -159,14 +159,14 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 			if(numSeparateStrips != 1)
 			{
 				//if we've got multiple strips, we need to figure out the correct length
-				int i;
-				for(i = startingLoc; i < stripIndices.size(); i++)
+				int i_;
+				for(i_ = startingLoc; i_ < stripIndices.size(); i_++)
 				{
-					if(stripIndices[i] == -1)
+					if(stripIndices[i_] == -1)
 						break;
 				}
 				
-				stripLength = i - startingLoc;
+				stripLength = i_ - startingLoc;
 			}
 			else
 				stripLength = stripIndices.size();
@@ -176,8 +176,8 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 			primGroups[stripCtr].numIndices = stripLength;
 			
 			int indexCtr = 0;
-			for(int i = startingLoc; i < stripLength + startingLoc; i++)
-				primGroups[stripCtr].indices[indexCtr++] = u16(stripIndices[i]);
+			for(int i_ = startingLoc; i_ < stripLength + startingLoc; i_++)
+				primGroups[stripCtr].indices[indexCtr++] = u16(stripIndices[i_]);
 			
 			startingLoc += stripLength + 1; //we add 1 to account for the -1 separating strips
 		}
@@ -190,11 +190,11 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 			primGroups[faceGroupLoc].indices    = xr_alloc<u16>	(tempFaces.size() * 3);
 			primGroups[faceGroupLoc].numIndices = tempFaces.size() * 3;
 			int indexCtr = 0;
-			for(int i = 0; i < tempFaces.size(); i++)
+			for(int i_ = 0; i_ < tempFaces.size(); i_++)
 			{
-				primGroups[faceGroupLoc].indices[indexCtr++] = u16(tempFaces[i]->m_v0);
-				primGroups[faceGroupLoc].indices[indexCtr++] = u16(tempFaces[i]->m_v1);
-				primGroups[faceGroupLoc].indices[indexCtr++] = u16(tempFaces[i]->m_v2);
+				primGroups[faceGroupLoc].indices[indexCtr++] = u16(tempFaces[i_]->m_v0);
+				primGroups[faceGroupLoc].indices[indexCtr++] = u16(tempFaces[i_]->m_v1);
+				primGroups[faceGroupLoc].indices[indexCtr++] = u16(tempFaces[i_]->m_v2);
 			}
 		}
 	}
@@ -202,19 +202,19 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 	//clean up everything
 
 	//_delete strips
-	for(u32 i = 0; i < tempStrips.size(); i++)
+	for(u32 i_ = 0; i_ < tempStrips.size(); i_++)
 	{
-		for(int j = 0; j < tempStrips[i]->m_faces.size(); j++)
+		for(int j = 0; j < tempStrips[i_]->m_faces.size(); j++)
 		{
-			xr_delete(tempStrips[i]->m_faces[j]);
+			xr_delete(tempStrips[i_]->m_faces[j]);
 		}
-		xr_delete(tempStrips[i]);
+		xr_delete(tempStrips[i_]);
 	}
 
 	//_delete faces
-	for(u32 i = 0; i < tempFaces.size(); i++)
+	for(u32 i_ = 0; i_ < tempFaces.size(); i_++)
 	{
-		xr_delete(tempFaces[i]);
+		xr_delete(tempFaces[i_]);
 	}
 }
 
