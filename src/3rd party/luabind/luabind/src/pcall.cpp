@@ -39,10 +39,10 @@ namespace luabind { namespace detail
 			lua_insert(L, base);  // push pcall_callback under chunk and args
 			en = base;
   		}
-		int result = lua_pcall(L, nargs, nresults, en);
+		int result_ = lua_pcall(L, nargs, nresults, en);
 		if ( en )
 			lua_remove(L, en);  // remove pcall_callback
-		return result;
+		return result_;
 	}
 
 	int resume_impl(lua_State *L, int nargs, int)

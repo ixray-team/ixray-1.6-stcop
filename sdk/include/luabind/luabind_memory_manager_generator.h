@@ -68,8 +68,8 @@ struct luabind_new_detail_copy_constructor {
 template <typename T BOOST_PP_ENUM_TRAILING_PARAMS(n, class P)>
 inline T* luabind_new (BOOST_PP_ENUM(n,PARAMETERS,BOOST_PP_EMPTY))
 {
-	T			*result = (T*)call_allocator(0,sizeof(T));
-	return		(luabind_new_detail_copy_constructor::initialize(result BOOST_PP_ENUM_TRAILING_PARAMS(n,p)));
+	T			*result_ = (T*)call_allocator(0,sizeof(T));
+	return		(luabind_new_detail_copy_constructor::initialize(result_ BOOST_PP_ENUM_TRAILING_PARAMS(n,p)));
 }
 
 }

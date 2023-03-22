@@ -244,7 +244,7 @@ namespace boost {
 #endif // BOOST_NO_STD_ALLOCATOR
 
 #  ifndef BOOST_NO_STD_ALLOCATOR
-          allocator_type allocator;
+          allocator_type allocator_;
 #  endif // BOOST_NO_STD_ALLOCATOR
 
           if (op == clone_functor_tag) {
@@ -253,8 +253,8 @@ namespace boost {
 
             // Clone the functor
 #  ifndef BOOST_NO_STD_ALLOCATOR
-            pointer_type copy = allocator.allocate(1);
-            allocator.construct(copy, *f);
+            pointer_type copy = allocator_.allocate(1);
+            allocator_.construct(copy, *f);
 
             // Get back to the original pointer type
             functor_type* new_f = static_cast<functor_type*>(copy);
@@ -274,8 +274,8 @@ namespace boost {
             pointer_type victim = static_cast<pointer_type>(f);
 
             // Destroy and deallocate the functor
-            allocator.destroy(victim);
-            allocator.deallocate(victim, 1);
+            allocator_.destroy(victim);
+            allocator_.deallocate(victim, 1);
 #  else
             delete f;
 #  endif // BOOST_NO_STD_ALLOCATOR

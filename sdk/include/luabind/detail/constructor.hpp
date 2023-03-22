@@ -140,9 +140,9 @@ namespace luabind { namespace detail
           , Policies*)
         {
             BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-            W* result = ::luabind::luabind_new<W>(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAM, _));
-            static_cast<weak_ref&>(detail::wrap_access::ref(*result)) = ref;
-            return result;
+            W* result_ = ::luabind::luabind_new<W>(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAM, _));
+            static_cast<weak_ref&>(detail::wrap_access::ref(*result_)) = ref;
+            return result_;
         }
 /*
         template<class T>

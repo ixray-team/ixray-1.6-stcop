@@ -465,7 +465,7 @@ int RAND_poll(void)
 		HEAPENTRY32 hentry;
 		PROCESSENTRY32 p;
 		THREADENTRY32 t;
-		MODULEENTRY32 m;
+		MODULEENTRY32 m_;
 		DWORD stoptime = 0;
 
 		snap = (CREATETOOLHELP32SNAPSHOT)
@@ -548,12 +548,12 @@ int RAND_poll(void)
                          * with each entry.  Consider each field a source of
                          * 1 byte of entropy.
                          */
-			m.dwSize = sizeof(MODULEENTRY32);
+			m_.dwSize = sizeof(MODULEENTRY32);
 			if (good) stoptime = GetTickCount() + MAXDELAY;
-			if (module_first(handle, &m))
+			if (module_first(handle, &m_))
 				do
-					RAND_add(&m, m.dwSize, 9);
-				while (module_next(handle, &m)
+					RAND_add(&m_, m_.dwSize, 9);
+				while (module_next(handle, &m_)
 					       	&& (GetTickCount() < stoptime));
 			if (close_snap)
 				close_snap(handle);

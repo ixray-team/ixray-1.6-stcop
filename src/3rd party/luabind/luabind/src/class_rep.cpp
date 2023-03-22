@@ -1279,9 +1279,9 @@ int luabind::detail::class_rep::lua_class_gettable(lua_State* L)
 
 	if (key && ( *((unsigned*)key) == *((unsigned*)_ok_) ) && !key[4])
 	{
-		class_rep* crep = obj->crep();
+		class_rep* crep_ = obj->crep();
 
-		void* p = crep->extractor() ? crep->extractor()(obj->ptr())
+		void* p = crep_->extractor() ? crep_->extractor()(obj->ptr())
 			: obj->ptr();
 
 		lua_pushboolean(L, p != 0);

@@ -250,9 +250,9 @@ static int _vds_shared_init(vorbis_dsp_state *v,vorbis_info *vi,int encp){
   v->pcm=_ogg_malloc(vi->channels*sizeof(*v->pcm));
   v->pcmret=_ogg_malloc(vi->channels*sizeof(*v->pcmret));
   {
-    int i;
-    for(i=0;i<vi->channels;i++)
-      v->pcm[i]=_ogg_calloc(v->pcm_storage,sizeof(*v->pcm[i]));
+    int i_;
+    for(i_=0;i_<vi->channels;i_++)
+      v->pcm[i_]=_ogg_calloc(v->pcm_storage,sizeof(*v->pcm[i_]));
   }
 
   /* all 1 (large block) or 0 (small block) */
@@ -985,9 +985,9 @@ int vorbis_synthesis_lapout(vorbis_dsp_state *v,float ***pcm){
   }
 
   if(pcm){
-    int i;
-    for(i=0;i<vi->channels;i++)
-      v->pcmret[i]=v->pcm[i]+v->pcm_returned;
+    int i_;
+    for(i_=0;i_<vi->channels;i_++)
+      v->pcmret[i_]=v->pcm[i_]+v->pcm_returned;
     *pcm=v->pcmret;
   }
 

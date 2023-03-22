@@ -136,9 +136,9 @@ namespace luabind { namespace detail
 		if ( lua_getstack (L, 1, &ar) )
 		{
 			int i = 1;
-			const char *name;
-			while ((name = lua_getlocal(L, &ar, i++)) != NULL) {
-				if (!strcmp("this",name)) {
+			const char *name_;
+			while ((name_ = lua_getlocal(L, &ar, i++)) != NULL) {
+				if (!strcmp("this",name_)) {
 					if (lua_istable(L,-1))
 						index = lua_gettop(L);
 					else

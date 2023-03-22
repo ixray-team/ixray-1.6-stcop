@@ -316,14 +316,14 @@ namespace boost {
       if (this->empty())
         boost::throw_exception(bad_function_call());
 
-      internal_result_type result = invoker(function_base::functor
+      internal_result_type result_ = invoker(function_base::functor
                                             BOOST_FUNCTION_COMMA
                                             BOOST_FUNCTION_ARGS);
 
 #ifndef BOOST_NO_VOID_RETURNS
-      return static_cast<result_type>(result);
+      return static_cast<result_type>(result_);
 #else
-      return result;
+      return result_;
 #endif // BOOST_NO_VOID_RETURNS
     }
 
@@ -443,9 +443,9 @@ namespace boost {
                            R BOOST_FUNCTION_COMMA
                            BOOST_FUNCTION_TEMPLATE_ARGS
                          >::type
-          invoker_type;
+          invoker_type_;
 
-        invoker = &invoker_type::invoke;
+        invoker = &invoker_type_::invoke;
         function_base::manager =
           &detail::function::functor_manager<FunctionPtr, Allocator>::manage;
         function_base::functor =
@@ -476,18 +476,18 @@ namespace boost {
                                        R BOOST_FUNCTION_COMMA
                                        BOOST_FUNCTION_TEMPLATE_ARGS
                                      >::type
-          invoker_type;
+          invoker_type_;
 
-        invoker = &invoker_type::invoke;
+        invoker = &invoker_type_::invoke;
         function_base::manager = &detail::function::functor_manager<
                                     FunctionObj, Allocator>::manage;
 #ifndef BOOST_NO_STD_ALLOCATOR
         typedef typename Allocator::template rebind<FunctionObj>::other
-          allocator_type;
-        typedef typename allocator_type::pointer pointer_type;
-        allocator_type allocator;
-        pointer_type copy = allocator.allocate(1);
-        allocator.construct(copy, f);
+          allocator_type_;
+        typedef typename allocator_type_::pointer pointer_type;
+        allocator_type_ allocator_;
+        pointer_type copy = allocator_.allocate(1);
+        allocator_.construct(copy, f);
 
         // Get back to the original pointer type
         FunctionObj* new_f = static_cast<FunctionObj*>(copy);
