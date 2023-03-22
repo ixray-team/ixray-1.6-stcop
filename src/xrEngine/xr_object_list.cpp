@@ -350,8 +350,8 @@ u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_si
 #endif
 			if (g_Dump_Export_Obj)
 			{
-				u32 size				= u32		(Packet.w_tell()-position)-sizeof(u8);
-				Msg("* %s : %d", *(P->cNameSect()), size);
+				u32 size_				= u32		(Packet.w_tell()-position)-sizeof(u8);
+				Msg("* %s : %d", *(P->cNameSect()), size_);
 			}
 			Packet.w_chunk_close8	(position);
 //			if (0==(--count))		

@@ -868,13 +868,13 @@ bool CPHSimpleCharacter::ValidateWalkOnObject()
 }
 bool CPHSimpleCharacter::ValidateWalkOnMesh()
 {
-	Fvector AABB,AABB_forbid,center,center_forbid,accel_add,accel;
+	Fvector AABB_,AABB_forbid,center,center_forbid,accel_add,accel;
 	
-	AABB.x=m_radius;
-	AABB.y=m_radius;
-	AABB.z=m_radius;
+	AABB_.x=m_radius;
+	AABB_.y=m_radius;
+	AABB_.z=m_radius;
 
-	AABB_forbid.set(AABB);
+	AABB_forbid.set(AABB_);
 	//AABB_forbid.x*=0.7f;
 	//AABB_forbid.z*=0.7f;
 	AABB_forbid.y+=m_radius;
@@ -887,7 +887,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 	accel_add.mul(CHWON_ACCLEL_SHIFT/mag);
 	accel.set(accel_add);
 	accel.div(CHWON_ACCLEL_SHIFT);
-	AABB.mul(CHWON_AABB_FACTOR);
+	AABB_.mul(CHWON_AABB_FACTOR);
 	GetPosition(center);
 	center.add(accel_add);
 	center_forbid.set(center);
@@ -900,7 +900,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 	query.set		(center_forbid,center_forbid);
 	query.grow		(AABB_forbid				);
 	tmp.set			(center,center				);
-	tmp.grow		(AABB						);
+	tmp.grow		(AABB_						);
 	query.merge		(tmp);
 	query.get_CD	(q_c,q_d);
 
@@ -964,7 +964,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 		SGameMtl* m =  GMLibrary().GetMaterialByIdx(Res->material);
 		if(m->Flags.test(SGameMtl::flPassable))continue;
 		Point vertices[3]={Point((dReal*)&Res->verts[0]),Point((dReal*)&Res->verts[1]),Point((dReal*)&Res->verts[2])};
-		if(__aabb_tri(Point((float*)&center),Point((float*)&AABB),vertices)){
+		if(__aabb_tri(Point((float*)&center),Point((float*)&AABB_),vertices)){
 			if(test_sides(center,sd_dir,accel,obb,Res->id))
 			{
 #ifdef DEBUG

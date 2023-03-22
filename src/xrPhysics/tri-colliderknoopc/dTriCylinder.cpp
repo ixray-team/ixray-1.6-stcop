@@ -16,19 +16,19 @@ bool dcTriListCollider::circleLineIntersection(const dReal* cn,const dReal* cp,d
 
 	dVector3 LC={lp[0]-cp[0],lp[1]-cp[1],lp[2]-cp[2]};
 
-	dReal A,B,C,B_A,B_A_2,D;
+	dReal A,B_,C,B_A,B_A_2,D;
 	dReal t1,t2;
 	A=dDOT(lv,lv);
-	B=dDOT(LC,lv);
+	B_=dDOT(LC,lv);
 	C=dDOT(LC,LC)-r*r;
-	B_A=B/A;
+	B_A=B_/A;
 	B_A_2=B_A*B_A;
 	D=B_A_2-C;
 	if(D<0.f){
 		
-		point[0]=lp[0]-lv[0]*B;
-		point[1]=lp[1]-lv[1]*B;
-		point[2]=lp[2]-lv[2]*B;
+		point[0]=lp[0]-lv[0]*B_;
+		point[1]=lp[1]-lv[1]*B_;
+		point[2]=lp[2]-lv[2]*B_;
 		return false;
 		
 	}

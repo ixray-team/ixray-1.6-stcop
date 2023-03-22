@@ -302,36 +302,36 @@ IReader* CLocatorAPI::r_open	(LPCSTR path, LPCSTR _fname)
                 if (m_Flags.is(flEBuildCopy)){
                     LPCSTR ext		= strext(cpy_name);
                     if (ext){
-                        IReader* R		= 0;
+                        IReader* R_		= 0;
                         if (0==xr_strcmp(ext,".dds")){
                             P			= get_path("$game_textures$");               
                             update_path	(e_cpy_name,"$textures$",source_name+xr_strlen(P->m_Path));
                             // tga
                             *strext		(e_cpy_name) = 0;
                             strcat		(e_cpy_name,".tga");
-                            r_close		(R=r_open(e_cpy_name));
+                            r_close		(R_=r_open(e_cpy_name));
                             // thm
                             *strext		(e_cpy_name) = 0;
                             strcat		(e_cpy_name,".thm");
-                            r_close		(R=r_open(e_cpy_name));
+                            r_close		(R_=r_open(e_cpy_name));
                         }else if (0==xr_strcmp(ext,".ogg")){
                             P			= get_path("$game_sounds$");                               
                             update_path	(e_cpy_name,"$sounds$",source_name+xr_strlen(P->m_Path));
                             // wav
                             *strext		(e_cpy_name) = 0;
                             strcat		(e_cpy_name,".wav");
-                            r_close		(R=r_open(e_cpy_name));
+                            r_close		(R_=r_open(e_cpy_name));
                             // thm
                             *strext		(e_cpy_name) = 0;
                             strcat		(e_cpy_name,".thm");
-                            r_close		(R=r_open(e_cpy_name));
+                            r_close		(R_=r_open(e_cpy_name));
                         }else if (0==xr_strcmp(ext,".object")){
                             strcpy		(e_cpy_name,source_name);
                             // object thm
                             *strext		(e_cpy_name) = 0;
                             strcat		(e_cpy_name,".thm");
-                            R			= r_open(e_cpy_name);
-                            if (R)		r_close	(R);
+                            R_			= r_open(e_cpy_name);
+                            if (R_)		r_close	(R_);
                         }
                     }
                 }
@@ -426,7 +426,7 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
     	update_path	(fname,path,nm);
     else
     	strcpy		(fname,nm);
-    unlink			(fname);
+    _unlink			(fname);
 }
 
 void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
@@ -446,7 +446,7 @@ void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
 
 void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
 {
-	if (bOwerwrite&&exist(dest)) unlink(dest);
+	if (bOwerwrite&&exist(dest)) _unlink(dest);
     // physically rename file
     VerifyPath			(dest);
     rename				(src,dest);
@@ -516,7 +516,7 @@ BOOL CLocatorAPI::can_write_to_folder(LPCSTR path)
 		if (hf==0)		return FALSE;
         else{
         	fclose 		(hf);
-	    	unlink		(temp);
+	    	_unlink		(temp);
             return 		TRUE;
         }
     }else{

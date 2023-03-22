@@ -145,8 +145,8 @@ inline void buffer_vector_specialized::insert	(iterator const &where, input_iter
 
 	m_end			+= count;
 
-	for (iterator i = where, e = i + count; i != e; ++i, ++begin)
-		construct	(i, *begin);
+	for (iterator i_ = where, e_ = i_ + count; i_ != e_; ++i_, ++begin)
+		construct	(i_, *begin);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -165,8 +165,8 @@ inline void buffer_vector_specialized::insert	(iterator const &where, size_type 
 
 	m_end			+= count;
 
-	for (iterator i = where, e = i + count; i != e; ++i)
-		construct	(i, value);
+	for (iterator i_ = where, e_ = i_ + count; i_ != e_; ++i_)
+		construct	(i_, value);
 }
 
 TEMPLATE_SPECIALIZATION

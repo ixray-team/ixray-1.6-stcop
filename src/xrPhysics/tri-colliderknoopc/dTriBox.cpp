@@ -750,13 +750,13 @@ contact->pos[2] = pos[2];
 contact->depth = outDepth;
 
 //}
- for (u32 i=0; i<ret; ++i) {
-    CONTACT(contact,i*skip)->g1 = const_cast<dxGeom*> (o2);
-    CONTACT(contact,i*skip)->g2 = const_cast<dxGeom*> (o1);
-	CONTACT(contact,i*skip)->normal[0] = norm[0];
-	CONTACT(contact,i*skip)->normal[1] = norm[1];
-	CONTACT(contact,i*skip)->normal[2] = norm[2];
-	SURFACE(contact,i*skip)->mode=T->T->material;
+ for (u32 i_=0; i_<ret; ++i_) {
+    CONTACT(contact,i_*skip)->g1 = const_cast<dxGeom*> (o2);
+    CONTACT(contact,i_*skip)->g2 = const_cast<dxGeom*> (o1);
+	CONTACT(contact,i_*skip)->normal[0] = norm[0];
+	CONTACT(contact,i_*skip)->normal[1] = norm[1];
+	CONTACT(contact,i_*skip)->normal[2] = norm[2];
+	SURFACE(contact,i_*skip)->mode=T->T->material;
  }
  if(ret&&dGeomGetUserData(o1)->callback)dGeomGetUserData(o1)->callback(T->T,contact);
  return ret;

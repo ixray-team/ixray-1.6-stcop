@@ -33,8 +33,8 @@
 		inline_			~Plane()														{													}
 
 		inline_	Plane&	Zero()															{ n.Zero(); d = 0.0f;				return *this;	}
-		inline_	Plane&	Set(float nx, float ny, float nz, float d)						{ n.Set(nx, ny, nz); this->d = d;	return *this;	}
-		inline_	Plane&	Set(const Point& p, const Point& n)								{ this->n = n; d = - p | n;			return *this;	}
+		inline_	Plane&	Set(float nx, float ny, float nz, float d_)						{ n.Set(nx, ny, nz); this->d = d_;	return *this;	}
+		inline_	Plane&	Set(const Point& p, const Point& n_)								{ this->n = n_; d = - p | n_;			return *this;	}
 				Plane&	Set(const Point& p0, const Point& p1, const Point& p2);
 
 		inline_	float	Distance(const Point& p)			const						{ return (p | n) + d;								}

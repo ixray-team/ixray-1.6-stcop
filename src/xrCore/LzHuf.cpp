@@ -539,7 +539,7 @@ int DecodePosition(void)
 /* compression */
 void Encode(void)  /* compression */
 {
-    int  i, c, len, r, s, last_match_length;
+    int  i, c, len_, r, s, last_match_length;
 	
     textsize = fs.InputSize();
 	fs.Init_Output(textsize);
@@ -556,15 +556,15 @@ void Encode(void)  /* compression */
     r = N - F;
     for (i = s; i < r; i++)
         text_buf[i] = 0x20;
-    for (len = 0; len < F && (c = fs._getb()) != EOF; len++)
-        text_buf[r + len] = (unsigned char)c;
-    textsize = len;
+    for (len_ = 0; len_ < F && (c = fs._getb()) != EOF; len_++)
+        text_buf[r + len_] = (unsigned char)c;
+    textsize = len_;
     for (i = 1; i <= F; i++)
         InsertNode(r - i);
     InsertNode(r);
     do {
-        if (match_length > len)
-            match_length = len;
+        if (match_length > len_)
+            match_length = len_;
         if (match_length <= THRESHOLD) {
             match_length = 1;
 			// textsize==56158    - FATAL :(
@@ -589,9 +589,9 @@ void Encode(void)  /* compression */
             DeleteNode(s);
             s = (s + 1) & (N - 1);
             r = (r + 1) & (N - 1);
-            if (--len) InsertNode(r);
+            if (--len_) InsertNode(r);
         }
-    } while (len > 0);
+    } while (len_ > 0);
     fs.PutFlush();
 	tim_size = textsize;
 }

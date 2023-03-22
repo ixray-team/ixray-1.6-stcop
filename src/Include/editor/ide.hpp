@@ -17,6 +17,9 @@ class property_holder_holder;
 
 class ide {
 public:
+	virtual ~ide() {}
+
+public:
 	virtual	HWND				main_handle				() = 0;
 	virtual	HWND				view_handle				() = 0;
 	virtual	void				run						() = 0;

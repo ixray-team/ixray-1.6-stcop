@@ -397,8 +397,8 @@ void CPHShellSplitterHolder::SplitElement(u16 aspl,PHSHELL_PAIR_VECTOR &out_shel
 		CPhysicsElement* ee = out_shels.back().first->get_ElementByStoreOrder(0);
 		VERIFY( ee );
 		VERIFY( smart_cast<CPHElement *>(ee) );
-		CPHElement * e = static_cast<CPHElement *> (ee);
-		VERIFY(dBodyStateValide(e->get_body()));
+		CPHElement * e_ = static_cast<CPHElement *> (ee);
+		VERIFY(dBodyStateValide(e_->get_body()));
 	}
 
 	if(!E->FracturesHolder()) m_splitters.erase(spl_i);//delete splitter if the element no longer have fractures
