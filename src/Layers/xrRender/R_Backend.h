@@ -243,10 +243,10 @@ public:
 	IC	ID3DDepthStencilView*		get_ZB				();
 
 	IC	void						set_Constants		(R_constant_table* C);
-	IC	void						set_Constants		(ref_ctable& C)						{ set_Constants(&*C);			}
+	IC	void						set_Constants		(ref_ctable& C_)						{ set_Constants(&*C_);			}
 
 		void						set_Textures		(STextureList* T);
-	IC	void						set_Textures		(ref_texture_list& T)				{ set_Textures(&*T);			}
+	IC	void						set_Textures		(ref_texture_list& T_)				{ set_Textures(&*T_);			}
 
 #ifdef _EDITOR
 	IC	void						set_Matrices		(SMatrixList* M);
@@ -322,15 +322,15 @@ public:
 	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable)	return ctable->get(n);else return 0;}
 
 	// constants - direct (fast)
-	ICF	void						set_c				(R_constant* C, const Fmatrix& A)									{ if (C)		constants.set(C,A);					}
-	ICF	void						set_c				(R_constant* C, const Fvector4& A)									{ if (C)		constants.set(C,A);					}
-	ICF	void						set_c				(R_constant* C, float x, float y, float z, float w)					{ if (C)		constants.set(C,x,y,z,w);			}
-	ICF	void						set_ca				(R_constant* C, u32 e, const Fmatrix& A)							{ if (C)		constants.seta(C,e,A);				}
-	ICF	void						set_ca				(R_constant* C, u32 e, const Fvector4& A)							{ if (C)		constants.seta(C,e,A);				}
-	ICF	void						set_ca				(R_constant* C, u32 e, float x, float y, float z, float w)			{ if (C)		constants.seta(C,e,x,y,z,w);		}
+	ICF	void						set_c				(R_constant* C_, const Fmatrix& A)									{ if (C_)		constants.set(C_,A);					}
+	ICF	void						set_c				(R_constant* C_, const Fvector4& A)									{ if (C_)		constants.set(C_,A);					}
+	ICF	void						set_c				(R_constant* C_, float x, float y, float z, float w)					{ if (C_)		constants.set(C_,x,y,z,w);			}
+	ICF	void						set_ca				(R_constant* C_, u32 e, const Fmatrix& A)							{ if (C_)		constants.seta(C_,e,A);				}
+	ICF	void						set_ca				(R_constant* C_, u32 e, const Fvector4& A)							{ if (C_)		constants.seta(C_,e,A);				}
+	ICF	void						set_ca				(R_constant* C_, u32 e, float x, float y, float z, float w)			{ if (C_)		constants.seta(C_,e,x,y,z,w);		}
 #ifdef USE_DX11
-	ICF	void						set_c				(R_constant* C, float A)											{ if (C)		constants.set(C,A);					}
-	ICF	void						set_c				(R_constant* C, int A)												{ if (C)		constants.set(C,A);					}
+	ICF	void						set_c				(R_constant* C_, float A)											{ if (C_)		constants.set(C_,A);					}
+	ICF	void						set_c				(R_constant* C_, int A)												{ if (C_)		constants.set(C_,A);					}
 #endif //USE_DX11
 
 
@@ -391,9 +391,9 @@ public:
 #ifdef DEBUG
 	void dbg_Draw					(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
 	void dbg_Draw					(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
-	IC void dbg_DrawAABB			(Fvector& T, float sx, float sy, float sz, u32 C)						{	Fvector half_dim;	half_dim.set(sx,sy,sz); Fmatrix	TM;	TM.translate(T); dbg_DrawOBB(TM,half_dim,C);	}
+	IC void dbg_DrawAABB			(Fvector& T_, float sx, float sy, float sz, u32 C_)						{	Fvector half_dim;	half_dim.set(sx,sy,sz); Fmatrix	TM;	TM.translate(T_); dbg_DrawOBB(TM,half_dim,C_);	}
 	void dbg_DrawOBB				(Fmatrix& T, Fvector& half_dim, u32 C);
-	IC void dbg_DrawTRI				(Fmatrix& T, Fvector* p, u32 C)											{	dbg_DrawTRI(T,p[0],p[1],p[2],C);	}
+	IC void dbg_DrawTRI				(Fmatrix& T_, Fvector* p, u32 C_)											{	dbg_DrawTRI(T_,p[0],p[1],p[2],C_);	}
 	void dbg_DrawTRI				(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
 	void dbg_DrawLINE				(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
 	void dbg_DrawEllipse			(Fmatrix& T, u32 C);

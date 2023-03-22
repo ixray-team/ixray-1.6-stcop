@@ -358,15 +358,15 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
     VisualVecIt it;
     if (!_children_related.empty()){
         for (it=_children_related.begin(); it!=_children_related.end(); it++){
-            CParticleEffect* E	= static_cast<CParticleEffect*>(*it);
-            if (E){
-                E->OnFrame		(u_dt);
-                if (E->IsPlaying()){
+            CParticleEffect* E_	= static_cast<CParticleEffect*>(*it);
+            if (E_){
+                E_->OnFrame		(u_dt);
+                if (E_->IsPlaying()){
                     bPlaying	= true;
-                    if (E->vis.box.is_valid())     box.merge	(E->vis.box);
+                    if (E_->vis.box.is_valid())     box.merge	(E_->vis.box);
                 }else{
                 	if (def.m_Flags.is(CPGDef::SEffect::flOnPlayChildRewind)){
-                    	E->Play	();
+                    	E_->Play	();
                     }
                 }
             }
@@ -375,12 +375,12 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
     if (!_children_free.empty()){
     	u32 rem_cnt				= 0;
         for (it=_children_free.begin(); it!=_children_free.end(); it++){
-            CParticleEffect* E	= static_cast<CParticleEffect*>(*it);
-            if (E){
-                E->OnFrame		(u_dt);
-                if (E->IsPlaying()){ 
+            CParticleEffect* E_	= static_cast<CParticleEffect*>(*it);
+            if (E_){
+                E_->OnFrame		(u_dt);
+                if (E_->IsPlaying()){ 
                     bPlaying	= true;
-                    if (E->vis.box.is_valid()) box.merge	(E->vis.box);
+                    if (E_->vis.box.is_valid()) box.merge	(E_->vis.box);
                 }else{
                 	rem_cnt++	;
 					//::Render->model_Delete(*it);

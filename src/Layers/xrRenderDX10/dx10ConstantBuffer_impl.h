@@ -168,10 +168,10 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
 	VERIFY		(RC_float	== C->type);
 	VERIFY		(RC_1x4		== L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
 
-	static const u16 lineSize	= 4*sizeof(float);
-	u32			base			= (u32)L.index + lineSize*e;
+	static const u16 lineSize_	= 4*sizeof(float);
+	u32			base			= (u32)L.index + lineSize_*e;
 	Fvector4*	it				= Access((u16)base);
-	VERIFY( (base+lineSize) <= m_uiBufferSize );
+	VERIFY( (base+lineSize_) <= m_uiBufferSize );
 	it->set	(A);
 
 	//u32			base	= L.index + e;

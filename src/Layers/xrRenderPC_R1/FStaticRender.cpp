@@ -496,8 +496,8 @@ void CRender::Calculate				()
 							// rendering
 							if (o_it==uID_LTRACK && renderable->renderable_ROS())	{
 								// track lighting environment
-								CROS_impl*		T = (CROS_impl*)renderable->renderable_ROS();
-								T->update			(renderable);
+								CROS_impl*		T_ = (CROS_impl*)renderable->renderable_ROS();
+								T_->update			(renderable);
 							}
 							set_Object						(renderable);
 							renderable->renderable_Render	();
@@ -757,14 +757,14 @@ static HRESULT create_shader				(
 
 	if (disasm)
 	{
-		ID3DXBuffer*	disasm	= 0;
-		D3DXDisassembleShader(LPDWORD(buffer), FALSE, 0, &disasm );
+		ID3DXBuffer*	disasm_	= 0;
+		D3DXDisassembleShader(LPDWORD(buffer), FALSE, 0, &disasm_ );
 		string_path		dname;
 		strconcat		(sizeof(dname),dname,"disasm\\",file_name,('v'==pTarget[0])?".vs":".ps" );
 		IWriter*		W = FS.w_open("$logs$",dname);
-		W->w			(disasm->GetBufferPointer(),disasm->GetBufferSize());
+		W->w			(disasm_->GetBufferPointer(),disasm_->GetBufferSize());
 		FS.w_close		(W);
-		_RELEASE		(disasm);
+		_RELEASE		(disasm_);
 	}
 
 	return				_result;

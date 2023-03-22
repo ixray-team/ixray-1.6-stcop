@@ -189,16 +189,16 @@ static void *lua_alloc		(void *ud, void *ptr, size_t osize, size_t nsize) {
 	}
 
 	if ( !ptr ) {
-		void* const result			= 
+		void* const result_			= 
 			g_render_lua_allocator.malloc_impl((u32)nsize);
-		memory_monitor::monitor_alloc (result,nsize,"render:LUA");
-		return						result;
+		memory_monitor::monitor_alloc (result_,nsize,"render:LUA");
+		return						result_;
 	}
 
 	memory_monitor::monitor_free	(ptr);
-	void* const result				= g_render_lua_allocator.realloc_impl(ptr, (u32)nsize);
-	memory_monitor::monitor_alloc	(result,nsize,"render:LUA");
-	return							result;
+	void* const result_				= g_render_lua_allocator.realloc_impl(ptr, (u32)nsize);
+	memory_monitor::monitor_alloc	(result_,nsize,"render:LUA");
+	return							result_;
 #endif // #ifndef USE_MEMORY_MONITOR
 }
 #endif // USE_DL_ALLOCATOR

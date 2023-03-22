@@ -304,16 +304,16 @@ void	CRenderTarget::phase_combine	()
 		if (bDistort)		
 		{
 			PIX_EVENT(render_distort_objects);
-			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
+			FLOAT ColorRGBA_[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
 			if( !RImplementation.o.dx10_msaa )
 			{
 				u_setrt(rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-				HW.pContext->ClearRenderTargetView( rt_Generic_1->pRT, ColorRGBA);
+				HW.pContext->ClearRenderTargetView( rt_Generic_1->pRT, ColorRGBA_);
 			}
 			else
 			{
 				u_setrt(rt_Generic_1_r,0,0,RImplementation.Target->rt_MSAADepth->pZRT);		// Now RT is a distortion mask
-				HW.pContext->ClearRenderTargetView( rt_Generic_1_r->pRT, ColorRGBA);
+				HW.pContext->ClearRenderTargetView( rt_Generic_1_r->pRT, ColorRGBA_);
 			}
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
@@ -456,14 +456,14 @@ void	CRenderTarget::phase_combine	()
 		L_right.crossproduct(L_up,L_dir);           L_right.normalize       ();
 		L_dir.crossproduct  (L_right,L_up);         L_dir.normalize         ();
 
-		Fvector				p0,p1,p2,p3;
+		Fvector				p0_,p1_,p2,p3;
 		float				sz	= 100.f;
-		p0.mad				(zero,L_right,sz).mad	(L_dir,sz);
-		p1.mad				(zero,L_right,sz).mad	(L_dir,-sz);
+		p0_.mad				(zero,L_right,sz).mad	(L_dir,sz);
+		p1_.mad				(zero,L_right,sz).mad	(L_dir,-sz);
 		p2.mad				(zero,L_right,-sz).mad	(L_dir,-sz);
 		p3.mad				(zero,L_right,-sz).mad	(L_dir,+sz);
-		RCache.dbg_DrawTRI	(Fidentity,p0,p1,p2,0xffffffff);
-		RCache.dbg_DrawTRI	(Fidentity,p2,p3,p0,0xffffffff);
+		RCache.dbg_DrawTRI	(Fidentity,p0_,p1_,p2,0xffffffff);
+		RCache.dbg_DrawTRI	(Fidentity,p2,p3,p0_,0xffffffff);
 	}
 
 	static	xr_vector<dbg_line_t>	saved_dbg_lines;
