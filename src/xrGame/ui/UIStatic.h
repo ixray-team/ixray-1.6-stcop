@@ -58,6 +58,12 @@ public:
 			Fvector2		GetTextureOffeset		() const					{ return m_TextureOffset; }
 			void			TextureOn				()							{ m_bTextureEnable = true; }
 			void			TextureOff				()							{ m_bTextureEnable = false; }
+			void			SetTextOffset			(float x, float y)			{ TextItemControl()->m_TextOffset.x = x; TextItemControl()->m_TextOffset.y = y; }
+
+			void			SetTextX				(float x)					{TextItemControl()->m_TextOffset.x = x;}
+			float			GetTextX				()							{return TextItemControl()->m_TextOffset.x;}
+			void			SetTextY				(float y)					{TextItemControl()->m_TextOffset.y = y;}
+			float			GetTextY				()							{return TextItemControl()->m_TextOffset.y;}
 
 
 	// own
