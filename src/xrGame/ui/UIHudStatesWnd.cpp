@@ -376,12 +376,21 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 	float h = texture_rect.height() * 0.8f;
 	float w = texture_rect.width() * 0.8f;
 
+#ifdef USE_100X100_ICONS
+	// now perform only width scale for ammo, which (W)size >2
+	if (texture_rect.width() > 2.01f*INV_GRID_WIDTH)
+		w = INV_GRID_WIDTH * 1.5f / 2;
+
+	m_ui_weapon_icon->SetWidth( w*UI().get_current_kx() / 2);
+	m_ui_weapon_icon->SetHeight(h / 2);
+#else
 // now perform only width scale for ammo, which (W)size >2
 	if (texture_rect.width() > 2.01f*INV_GRID_WIDTH)
 		w = INV_GRID_WIDTH * 1.5f;
 
 	m_ui_weapon_icon->SetWidth( w*UI().get_current_kx() );
 	m_ui_weapon_icon->SetHeight( h );
+#endif // USE_100X100_ICONS
 }
 // ------------------------------------------------------------------------------------------------
 void CUIHudStatesWnd::UpdateZones()
@@ -504,12 +513,12 @@ void CUIHudStatesWnd::UpdateZones()
 			if ( dist_to_zone < rad_zone )
 			{
 				fRelPow *= 0.3f;
-				fRelPow *= ( 2.5f - 2.0f * power ); // çâóê çàâèñèò îò ñèëû çîíû
+				fRelPow *= ( 2.5f - 2.0f * power ); // Ð·Ð²ÑƒÐº Ð·Ð°Ð²Ð¸ÑÐ¸Ñ‚ Ð¾Ñ‚ ÑÐ¸Ð»Ñ‹ Ð·Ð¾Ð½Ñ‹
 			}
 		}
 		clamp( fRelPow, 0.0f, 1.0f );
 
-		//îïðåäåëèòü òåêóùóþ ÷àñòîòó ñðàáàòûâàíèÿ ñèãíàëà
+		//Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ Ñ‡Ð°ÑÑ‚Ð¾Ñ‚Ñƒ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ ÑÐ¸Ð³Ð½Ð°Ð»Ð°
 		zone_info.cur_period = zone_type->freq.x + (zone_type->freq.y - zone_type->freq.x) * (fRelPow * fRelPow);
 		
 		//string256	buff_z;

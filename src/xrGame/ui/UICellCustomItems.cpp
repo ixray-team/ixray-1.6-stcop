@@ -5,8 +5,13 @@
 #include "UIDragDropListEx.h"
 #include "UIProgressBar.h"
 
+#ifdef USE_100X100_ICONS
+#define INV_GRID_WIDTHF			100.0f
+#define INV_GRID_HEIGHTF		100.0f
+#else
 #define INV_GRID_WIDTHF			50.0f
 #define INV_GRID_HEIGHTF		50.0f
+#endif // USE_100X100_ICONS
 
 namespace detail 
 {
