@@ -28,8 +28,13 @@
 
 extern const LPCSTR g_inventory_upgrade_xml;
 
+#ifdef USE_100X100_ICONS
+#define  INV_GRID_WIDTH2  80.0f
+#define  INV_GRID_HEIGHT2 80.0f
+#else
 #define  INV_GRID_WIDTH2  40.0f
 #define  INV_GRID_HEIGHT2 40.0f
+#endif // USE_100X100_ICONS
 
 CUIItemInfo::CUIItemInfo()
 {
@@ -340,8 +345,13 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->SetStretchTexture		(true);
+#ifdef USE_100X100_ICONS
+		Fvector2 v_r						= { item_grid_rect.x2*INV_GRID_WIDTH2 / 2,	
+												item_grid_rect.y2*INV_GRID_HEIGHT2 / 2};
+#else
 		Fvector2 v_r						= { item_grid_rect.x2*INV_GRID_WIDTH2,	
 												item_grid_rect.y2*INV_GRID_HEIGHT2};
+#endif // USE_100X100_ICONS
 		
 		v_r.x								*= UI().get_current_kx();
 

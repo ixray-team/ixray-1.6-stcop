@@ -130,10 +130,10 @@ void CUIMainIngameWnd::Init()
 	m_iPickUpItemIconY			= UIPickUpItemIcon->GetWndRect().top;
 	//---------------------------------------------------------
 
-	//индикаторы 
+	//РёРЅРґРёРєР°С‚РѕСЂС‹ 
 	UIZoneMap->Init				();
 
-	// Подсказки, которые возникают при наведении прицела на объект
+	// РџРѕРґСЃРєР°Р·РєРё, РєРѕС‚РѕСЂС‹Рµ РІРѕР·РЅРёРєР°СЋС‚ РїСЂРё РЅР°РІРµРґРµРЅРёРё РїСЂРёС†РµР»Р° РЅР° РѕР±СЉРµРєС‚
 	UIStaticQuickHelp			= UIHelper::CreateTextWnd(uiXml, "quick_info", this);
 
 	uiXml.SetLocalRoot			(uiXml.GetRoot());
@@ -167,7 +167,7 @@ void CUIMainIngameWnd::Init()
 	m_ind_boost_power		->Show(false);
 	m_ind_boost_rad			->Show(false);
 	
-	// Загружаем иконки 
+	// Р—Р°РіСЂСѓР¶Р°РµРј РёРєРѕРЅРєРё 
 /*	if ( IsGameTypeSingle() )
 	{
 		xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
@@ -207,11 +207,11 @@ void CUIMainIngameWnd::Init()
 		"artefact"
 	};
 
-	// Загружаем пороговые значения для индикаторов
+	// Р—Р°РіСЂСѓР¶Р°РµРј РїРѕСЂРѕРіРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РёРЅРґРёРєР°С‚РѕСЂРѕРІ
 	EWarningIcons j = ewiWeaponJammed;
 	while (j < ewiInvincible)
 	{
-		// Читаем данные порогов для каждого индикатора
+		// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ РїРѕСЂРѕРіРѕРІ РґР»СЏ РєР°Р¶РґРѕРіРѕ РёРЅРґРёРєР°С‚РѕСЂР°
 		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1]);
 		u32 count = _GetItemCount(*cfgRecord);
 
@@ -457,7 +457,7 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 {
 	bool bMagicFlag = true;
 
-	// Задаем цвет требуемой иконки
+	// Р—Р°РґР°РµРј С†РІРµС‚ С‚СЂРµР±СѓРµРјРѕР№ РёРєРѕРЅРєРё
 	switch(icon)
 	{
 	case ewiAll:
@@ -500,7 +500,7 @@ void CUIMainIngameWnd::TurnOffWarningIcon(EWarningIcons icon)
 
 void CUIMainIngameWnd::SetFlashIconState_(EFlashingIcons type, bool enable)
 {
-	// Включаем анимацию требуемой иконки
+	// Р’РєР»СЋС‡Р°РµРј Р°РЅРёРјР°С†РёСЋ С‚СЂРµР±СѓРµРјРѕР№ РёРєРѕРЅРєРё
 	FlashingIcons_it icon = m_FlashingIcons.find(type);
 	R_ASSERT2(icon != m_FlashingIcons.end(), "Flashing icon with this type not existed");
 	icon->second->Show(enable);
@@ -513,14 +513,14 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
 
 	CUIXmlInit xml_init;
 	CUIStatic *pIcon = NULL;
-	// Пробегаемся по всем нодам и инициализируем из них статики
+	// РџСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј РЅРѕРґР°Рј Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РёР· РЅРёС… СЃС‚Р°С‚РёРєРё
 	for (int i = 0; i < staticsCount; ++i)
 	{
 		pIcon = xr_new<CUIStatic>();
 		xml_init.InitStatic(*node, flashingIconNodeName, i, pIcon);
 		shared_str iconType = node->ReadAttrib(flashingIconNodeName, i, "type", "none");
 
-		// Теперь запоминаем иконку и ее тип
+		// РўРµРїРµСЂСЊ Р·Р°РїРѕРјРёРЅР°РµРј РёРєРѕРЅРєСѓ Рё РµРµ С‚РёРї
 		EFlashingIcons type = efiPdaTask;
 
 		if		(iconType == "pda")		type = efiPdaTask;
@@ -588,7 +588,16 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	int m_iXPos			= pSettings->r_u32(sect_name, "inv_grid_x");
 	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
+#ifdef USE_100X100_ICONS
 
+	float scale_x = m_iPickUpItemIconWidth /
+		float(m_iGridWidth * INV_GRID_WIDTH / 2);
+	float scale_y = m_iPickUpItemIconHeight /
+		float(m_iGridHeight * INV_GRID_HEIGHT / 2);
+
+	scale_x = (scale_x>1) ? 0.5f : scale_x / 2;
+	scale_y = (scale_y>1) ? 0.5f : scale_y / 2;
+#else
 	float scale_x = m_iPickUpItemIconWidth/
 		float(m_iGridWidth*INV_GRID_WIDTH);
 
@@ -597,6 +606,8 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	scale_x = (scale_x>1) ? 1.0f : scale_x;
 	scale_y = (scale_y>1) ? 1.0f : scale_y;
+#endif // USE_100X100_ICONS
+
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 

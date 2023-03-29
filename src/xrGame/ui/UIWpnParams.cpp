@@ -203,7 +203,11 @@ void CUIWpnParams::SetInfo( CInventoryItem* slot_wpn, CInventoryItem& cur_wpn )
 		m_stAmmoType1.SetTextureRect(tex_rect);
 		m_stAmmoType1.TextureOn();
 		m_stAmmoType1.SetStretchTexture(true);
+#ifdef USE_100X100_ICONS
+		m_stAmmoType1.SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*UI().get_current_kx() / 2, (tex_rect.y2-tex_rect.y1) / 2));
+#else
 		m_stAmmoType1.SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*UI().get_current_kx(), tex_rect.y2-tex_rect.y1));
+#endif // USE_100X100_ICONS
 
 		m_stAmmoType2.SetShader(InventoryUtilities::GetEquipmentIconsShader());
 		if(ammo_types.size()==1)
@@ -221,7 +225,11 @@ void CUIWpnParams::SetInfo( CInventoryItem* slot_wpn, CInventoryItem& cur_wpn )
 		m_stAmmoType2.SetTextureRect(tex_rect);
 		m_stAmmoType2.TextureOn();
 		m_stAmmoType2.SetStretchTexture(true);
+#ifdef USE_100X100_ICONS
+		m_stAmmoType2.SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*UI().get_current_kx() / 2, (tex_rect.y2 - tex_rect.y1) / 2));
+#else
 		m_stAmmoType2.SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*UI().get_current_kx(), tex_rect.y2-tex_rect.y1));
+#endif // USE_100X100_ICONS
 	}
 }
 
