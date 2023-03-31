@@ -9,6 +9,7 @@ class CMotionDef;
 #include "actor_defs.h"
 #include "inventory_space.h"
 #include "hudsound.h"
+#include "InertionData.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -55,8 +56,6 @@ protected:
 	enum{
 		fl_pending			= (1<<0),
 		fl_renderhud		= (1<<1),
-		fl_inertion_enable	= (1<<2),
-		fl_inertion_allow	= (1<<3),
 	};
 
 	struct{
@@ -134,8 +133,6 @@ public:
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
 	virtual void				on_b_hud_detach			();
-	IC BOOL						HudInertionEnabled		()	const			{ return m_huditem_flags.test(fl_inertion_enable);}
-	IC BOOL						HudInertionAllowed		()	const			{ return m_huditem_flags.test(fl_inertion_allow);}
 	virtual void				render_hud_mode			()					{};
 	virtual bool				need_renderable			()					{return true;};
 	virtual void				render_item_3d_ui		()					{}
@@ -151,12 +148,10 @@ protected:
 	u32							dwFP_Frame;
 	u32							dwXF_Frame;
 
-	IC void						EnableHudInertion		(BOOL B)		{ m_huditem_flags.set(fl_inertion_enable, B);}
-	IC void						AllowHudInertion		(BOOL B)		{ m_huditem_flags.set(fl_inertion_allow, B);}
-
 	u32							m_animation_slot;
 
 	HUD_SOUND_COLLECTION		m_sounds;
+	InertionData				m_current_inertion;
 
 private:
 	CPhysicItem					*m_object;
@@ -167,6 +162,7 @@ public:
 	IC CPhysicItem&				object					() const		{ VERIFY(m_object); return(*m_object);}
 	IC CInventoryItem&			item					() const		{ VERIFY(m_item); return(*m_item);}
 	IC		u32					animation_slot			()				{ return m_animation_slot;}
+	InertionData&				CurrentInertionData		()				{ return m_current_inertion;}
 
 	virtual void				on_renderable_Render	() = 0;
 	virtual void				debug_draw_firedeps		() {};

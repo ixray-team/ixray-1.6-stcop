@@ -218,6 +218,9 @@ protected:
 	
 		float			m_fRTZoomFactor; //run-time zoom factor
 		CUIWindow*		m_UIScope;
+
+	InertionData	m_base_inertion;
+	InertionData	m_zoom_inertion;
 public:
 
 	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}

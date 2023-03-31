@@ -125,7 +125,6 @@ public:
 private:
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);
-	bool			inertion_allowed	();
 private:
 	const Fvector&	attach_rot			() const;
 	const Fvector&	attach_pos			() const;
