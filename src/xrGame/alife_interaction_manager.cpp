@@ -18,9 +18,7 @@ using namespace ALife;
 /**/
 CALifeInteractionManager::CALifeInteractionManager	(xrServer*server, LPCSTR section) : 
 	CALifeCombatManager			(server,section),
-	CALifeCommunicationManager	(server,section),
-	CALifeSimulatorBase			(server,section)
-{
+	CALifeCommunicationManager	(server,section) {
 /**
 	m_inventory_slot_count		= pSettings->r_u32("inventory","slots");
 	m_temp_weapons.resize		(m_inventory_slot_count);

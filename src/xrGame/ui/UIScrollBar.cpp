@@ -230,20 +230,20 @@ bool CUIScrollBar::OnMouseDown( int mouse_btn )
 }
 bool CUIScrollBar::OnMouseDownEx()
 {
-	Fvector2 cursor_pos = GetUICursor().GetCursorPosition();
+	Fvector2 cursor_pos_ = GetUICursor().GetCursorPosition();
 	Frect    box_rect, dec_rect, inc_rect;
 	m_ScrollBox->GetAbsoluteRect(box_rect);
 	m_DecButton->GetAbsoluteRect(dec_rect);
 	m_IncButton->GetAbsoluteRect(inc_rect);
 
-	if ( dec_rect.in(cursor_pos) && (m_mouse_state != 2) )
+	if ( dec_rect.in(cursor_pos_) && (m_mouse_state != 2) )
 	{
 		TryScrollDec();
 		m_mouse_state = 1;
 		return true;
 	}
 	
-	if ( inc_rect.in(cursor_pos) && (m_mouse_state != 1) )
+	if ( inc_rect.in(cursor_pos_) && (m_mouse_state != 1) )
 	{
 		TryScrollInc();
 		m_mouse_state = 2;
@@ -262,14 +262,14 @@ bool CUIScrollBar::OnMouseDownEx()
 		inc2_rect.set( box_rect.x1, box_rect.y2, inc_rect.x2, inc_rect.y1 );
 	}
 		
-	if ( dec2_rect.in(cursor_pos) && (m_mouse_state != 2) )
+	if ( dec2_rect.in(cursor_pos_) && (m_mouse_state != 2) )
 	{
 		TryScrollDec(true);
 		m_mouse_state = 1;
 		return true;
 	}
 	
-	if ( inc2_rect.in(cursor_pos) && (m_mouse_state != 1) )
+	if ( inc2_rect.in(cursor_pos_) && (m_mouse_state != 1) )
 	{
 		TryScrollInc(true);
 		m_mouse_state = 2;
