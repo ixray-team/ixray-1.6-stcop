@@ -55,9 +55,7 @@ public:
 CALifeUpdateManager::CALifeUpdateManager	(xrServer *server, LPCSTR section) :
 	CALifeSwitchManager		(server,section),
 	CALifeSurgeManager		(server,section),
-	CALifeStorageManager	(server,section),
-	CALifeSimulatorBase		(server,section)
-{
+	CALifeStorageManager	(server,section) {
 	shedule.t_min			= pSettings->r_s32	(section,"schedule_min");
 	shedule.t_max			= pSettings->r_s32	(section,"schedule_max");
 	shedule_register		();

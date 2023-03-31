@@ -119,10 +119,10 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 	if (alife_query)
 		add						(smart_cast<CSE_ALifeDynamicObject*>(item),game_vertex_id);
 	else {
-		CSE_ALifeDynamicObject	*object = smart_cast<CSE_ALifeDynamicObject*>(item);
-		VERIFY					(object);
-		object->m_tGraphID		= game_vertex_id;
-		level().add 			(object);
+		CSE_ALifeDynamicObject	*object_ = smart_cast<CSE_ALifeDynamicObject*>(item);
+		VERIFY					(object_);
+		object_->m_tGraphID		= game_vertex_id;
+		level().add 			(object_);
 	}
 
 	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(&object);

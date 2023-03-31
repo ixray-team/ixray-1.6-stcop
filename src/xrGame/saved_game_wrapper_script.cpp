@@ -14,9 +14,9 @@
 
 using namespace luabind;
 
-xrTime CSavedGameWrapper__game_time		(const CSavedGameWrapper *self)
+xrTime CSavedGameWrapper__game_time		(const CSavedGameWrapper *self_)
 {
-	return			(xrTime(self->game_time()));
+	return			(xrTime(self_->game_time()));
 }
 
 #pragma optimize("s",on)
