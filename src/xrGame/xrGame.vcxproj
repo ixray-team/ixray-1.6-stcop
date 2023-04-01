@@ -1061,6 +1061,7 @@
     <ClInclude Include="ik_object_shift.h" />
     <ClInclude Include="imotion_position.h" />
     <ClInclude Include="imotion_velocity.h" />
+    <ClInclude Include="InertionData.h" />
     <ClInclude Include="InfoDocument.h" />
     <ClInclude Include="InfoPortion.h" />
     <ClInclude Include="ini_id_loader.h" />
