@@ -12,6 +12,7 @@ CUIProgressShape::CUIProgressShape()
 //	AttachChild		(m_pTexture);	
 	m_blend			= true;
 	m_angle_begin	= 0.0f;
+	m_stage = 0.0f;
 	m_angle_end		= PI_MUL_2;
 };
 
