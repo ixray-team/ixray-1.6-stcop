@@ -88,10 +88,9 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
         /*If this is a duplicate of a previous matrix, use that instead.
           This simple check helps us improve cache coherency later.*/
         {
-          int dupe;
-          int qtj;
-          int plj;
-          dupe=0;
+          int dupe = 0;
+          int qtj = 0;
+          int plj = 0;
           for(qtj=0;qtj<=qti;qtj++){
             for(plj=0;plj<(qtj<qti?3:pli);plj++){
               if(!memcmp(_dequant[qi][pli][qti],_dequant[qi][plj][qtj],
