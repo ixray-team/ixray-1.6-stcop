@@ -16,7 +16,7 @@ CSoundStream::CSoundStream	( )
 	bNeedUpdate			= true;
 	bMustPlay			= false;
 
-	pBuffer				= NULL;
+	pBuffer	= nullptr;
 
 	bMustLoop			= false;
 	iLoopCountRested	= 0;
@@ -74,7 +74,7 @@ void CSoundStream::Play	( BOOL loop, int cnt )
 	if (hAcmStream){
 		CHK_DX(acmStreamClose(hAcmStream,0));
 	}
-	CHK_DX(acmStreamOpen(&hAcmStream,0,psrc,pwfx,0,NULL,0,0));
+	CHK_DX(acmStreamOpen(&hAcmStream,0,psrc,pwfx,0, nullptr, 0,0));
 	CHK_DX(acmStreamSize(hAcmStream,dwDestBufSize,LPDWORD(&dwSrcBufSize),ACM_STREAMSIZEF_DESTINATION));
 	// alloc source data buffer
 	VERIFY(dwSrcBufSize);
@@ -226,7 +226,7 @@ void CSoundStream::AppWriteDataToBuffer(
     if (DS_OK==pBuffer->Lock(dwOffset, dwSoundBytes, &lpvPtr1, &dwBytes1, &lpvPtr2, &dwBytes2, 0)){
 		// Write to pointers.
 		CopyMemory	(lpvPtr1, lpbSoundData, dwBytes1);
-		if(NULL != lpvPtr2) CopyMemory (lpvPtr2, lpbSoundData+dwBytes1, dwBytes2);
+		if(nullptr != lpvPtr2) CopyMemory (lpvPtr2, lpbSoundData+dwBytes1, dwBytes2);
 		// Release the data back to DSound.
 		CHK_DX(pBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2));
 	}
@@ -249,11 +249,11 @@ BOOL ADPCMCreateSoundBuffer(IDirectSound8* lpDS, IDirectSoundBuffer* *pDSB, WAVE
     dsBD.lpwfxFormat	= fmt;
 
     // Create buffer.
-    if (FAILED(lpDS->CreateSoundBuffer(&dsBD, pDSB, NULL))){
-		pDSB = NULL;
-		return FALSE;
+    if (FAILED(lpDS->CreateSoundBuffer(&dsBD, pDSB, nullptr))){
+		pDSB = nullptr;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ void CSoundStream::LoadADPCM( )
 	string256		fn;
 	strconcat		(fn,fName,".ogg");
 
-	DataPos			= NULL;
+	DataPos	= nullptr;
 
     hf				= FS.r_open("$game_sounds$",fn);
 	R_ASSERT		(hf>=0);
@@ -299,7 +299,7 @@ void CSoundStream::LoadADPCM( )
 
 	VERIFY	(DataPos);
 	// dest format
-	CHK_DX	(acmFormatSuggest(NULL,psrc,pwfx,dwFMT_Size,ACM_FORMATSUGGESTF_WFORMATTAG));
+	CHK_DX	(acmFormatSuggest(nullptr, psrc,pwfx,dwFMT_Size,ACM_FORMATSUGGESTF_WFORMATTAG));
 	// dest buffer (const size)
     WaveDest		= (unsigned char *)xr_malloc(dwDestBufSize);
 	// wave source -- alloc on Play

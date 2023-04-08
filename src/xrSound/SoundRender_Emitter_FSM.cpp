@@ -31,7 +31,7 @@ void CSoundRender_Emitter::update(float dt)
 
 	if (bRewind){
 		if (target)		SoundRender->i_rewind	(this);
-		bRewind			= FALSE;
+		bRewind	= false;
 	}
 
 	switch (m_current_state)	
@@ -203,7 +203,7 @@ void CSoundRender_Emitter::update(float dt)
 	VERIFY2(owner_data?*(int*)(owner_data->feedback):1,"owner");
 
 	// footer
-	bMoved									= FALSE;
+	bMoved = false;
 	if (m_current_state != stStopped)
 	{
 		if (fTime	>=	fTimeToPropagade)		
@@ -237,7 +237,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 	}else{
 		// Check range
 		float	dist		= SoundRender->listener_position().distance_to	(p_source.position);
-		if (dist>p_source.max_distance)										{ smooth_volume = 0; return FALSE; }
+		if (dist>p_source.max_distance)										{ smooth_volume = 0; return false; }
 
 		// Calc attenuated volume
 		float att			= p_source.min_distance/(psSoundRolloff*dist);	clamp(att,0.f,1.f);
@@ -252,11 +252,11 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 	clamp				(fade_volume,0.f,1.f);
 	// Update smoothing
 	smooth_volume		= .9f*smooth_volume + .1f*(p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)*occluder_volume*fade_volume);
-	if (smooth_volume<psSoundCull)							return FALSE;	// allow volume to go up
+	if (smooth_volume<psSoundCull)							return false;	// allow volume to go up
 	// Here we has enought "PRIORITY" to be soundable
 	// If we are playing already, return OK
 	// --- else check availability of resources
-	if (target)			return	TRUE;
+	if (target)			return	true;
 	else				return	SoundRender->i_allow_play	(this);
 }
 

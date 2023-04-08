@@ -26,7 +26,7 @@ void CCDA::Open( )	{
 
 CDA_STATE CCDA::GetState( ) 
 {
-	err	= mciSendString( "status cdaudio mode", retStr, retLen, NULL );
+	err	= mciSendString( "status cdaudio mode", retStr, retLen, nullptr);
 	if ( err == 0 ){
 		if ( !_stricmp( retStr, "not ready") )		return CDA_STATE_NOTREADY;
 		if ( !_stricmp( retStr, "paused"	) )			return CDA_STATE_PAUSE;
@@ -44,7 +44,7 @@ void CCDA::SetTrack( int track )
 	char			ch[64];
 	sprintf			( ch, "status cdaudio length track %d", track );
 	ZeroMemory		( retStr, sizeof(retStr) );
-	err	= mciSendString( ch, retStr, retLen, NULL );
+	err	= mciSendString( ch, retStr, retLen, nullptr);
 	if ( err )		return;
 
 	dwCurTrack		= track;

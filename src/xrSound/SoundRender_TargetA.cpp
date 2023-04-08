@@ -31,10 +31,10 @@ BOOL	CSoundRender_TargetA::_initialize		()
         A_CHK(alSourcef	(pSource, AL_MAX_GAIN, 1.f));
         A_CHK(alSourcef	(pSource, AL_GAIN, 	cache_gain));
         A_CHK(alSourcef	(pSource, AL_PITCH,	cache_pitch));
-        return			TRUE;
+        return true;
     }else{
     	Msg				("! sound: OpenAL: Can't create source. Error: %s.",(LPCSTR)alGetString(error_));
-        return 			FALSE;
+        return false;
     }
 }
 
@@ -77,8 +77,8 @@ void	CSoundRender_TargetA::stop			()
 	if (rendering)
 	{
 		A_CHK		(alSourceStop(pSource));
-		A_CHK		(alSourcei	(pSource, AL_BUFFER,   NULL));
-		A_CHK		(alSourcei	(pSource, AL_SOURCE_RELATIVE,	TRUE));
+		A_CHK		(alSourcei	(pSource, AL_BUFFER, 0));
+		A_CHK		(alSourcei	(pSource, AL_SOURCE_RELATIVE, true));
 	}
     inherited::stop	();
 }
@@ -88,7 +88,7 @@ void	CSoundRender_TargetA::rewind			()
 	inherited::rewind();
 
 	A_CHK			(alSourceStop(pSource));
-	A_CHK			(alSourcei	(pSource, AL_BUFFER,   NULL));
+	A_CHK			(alSourcei	(pSource, AL_BUFFER, 0));
 	for (u32 buf_idx=0; buf_idx<sdef_target_count; buf_idx++)
 		fill_block	(pBuffers[buf_idx]);
 	A_CHK			(alSourceQueueBuffers	(pSource, sdef_target_count, pBuffers));	

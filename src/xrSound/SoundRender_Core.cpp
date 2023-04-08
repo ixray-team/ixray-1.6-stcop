@@ -5,14 +5,20 @@
 #include "soundrender_core.h"
 #include "soundrender_source.h"
 #include "soundrender_emitter.h"
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <eax/eax.h>
-#pragma warning(pop)
+
+#include <AL/efx.h>
+#include "SoundRender_CoreA.h"
 
 int		psSoundTargets			= 32;
-Flags32	psSoundFlags			= {ss_Hardware | ss_EAX};
+
+Flags32	psSoundFlags = { 
+    ss_Hardware | ss_EFX 
+};
+
 float	psSoundOcclusionScale	= 0.5f;
+float psSoundVelocityAlpha = 0.05f;
+float psSoundTimeFactor = 1.0f;
+float psSoundLinearFadeFactor = 0.4f;
 float	psSoundCull				= 0.01f;
 float	psSoundRolloff			= 0.75f;
 u32		psSoundModel			= 0;
@@ -21,31 +27,96 @@ float	psSoundVFactor			= 1.0f;
 
 float	psSoundVMusic			= 1.f;
 int		psSoundCacheSizeMB		= 32;
+u32 psSoundPrecacheAll = 1;
 
-CSoundRender_Core*				SoundRender = 0;
-CSound_manager_interface*		Sound		= 0;
+CSoundRender_Core* SoundRender = nullptr;
+CSound_manager_interface* Sound = nullptr;
+
+#define LOAD_PROC(x, type) \
+    do \
+    { \
+        ((x) = (type)alGetProcAddress(#x)); \
+        if (!(x)) \
+            return; \
+    } while (false)
 
 CSoundRender_Core::CSoundRender_Core	()
 {
-	bPresent					= FALSE;
-    bEAX						= FALSE;
-    bDeferredEAX				= FALSE;
-	bUserEnvironment			= FALSE;
-	geom_MODEL					= NULL;
-	geom_ENV					= NULL;
-	geom_SOM					= NULL;
-	s_environment				= NULL;
-	Handler						= NULL;
+    bPresent = false;
+    bUserEnvironment = false;
+    geom_MODEL = nullptr;
+    geom_ENV = nullptr;
+    geom_SOM = nullptr;
+    s_environment = nullptr;
+    Handler = nullptr;
 	s_targets_pu				= 0;
 	s_emitters_u				= 0;
     e_current.set_identity		();
     e_target.set_identity		();
-    bListenerMoved				= FALSE;
-    bReady						= FALSE;
-    bLocked						= FALSE;
+    bListenerMoved = false;
+    bReady = false;
+    bLocked = false;
 	fTimer_Value				= Timer.GetElapsed_sec();
-	fTimer_Delta				= 0.0f;
+    fTimer_Delta = 0.f;
 	m_iPauseCounter				= 1;
+
+    LOAD_PROC(alGenEffects, LPALGENEFFECTS);
+    LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
+    LOAD_PROC(alIsEffect, LPALISEFFECT);
+    LOAD_PROC(alEffecti, LPALEFFECTI);
+    LOAD_PROC(alEffectf, LPALEFFECTF);
+    LOAD_PROC(alEffectfv, LPALEFFECTFV);
+    LOAD_PROC(alGetEffectf, LPALGETEFFECTF);
+    LOAD_PROC(alGetEffectfv, LPALGETEFFECTFV);
+    LOAD_PROC(alGetEffecti, LPALGETEFFECTI);
+    LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
+    LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
+    LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
+    LOAD_PROC(alAuxiliaryEffectSlotf, LPALAUXILIARYEFFECTSLOTF);
+    LOAD_PROC(alIsAuxiliaryEffectSlot, LPALISAUXILIARYEFFECTSLOT);
+
+    alGenEffects(1, &effect);
+
+    constexpr ALfloat f3[3] = { 0.f, 0.f, 0.f };
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+    alEffectf(effect, AL_EAXREVERB_DENSITY, AL_EAXREVERB_DEFAULT_DENSITY);
+    alEffectf(effect, AL_EAXREVERB_DIFFUSION, AL_EAXREVERB_DEFAULT_DIFFUSION);
+    alEffectf(effect, AL_EAXREVERB_GAIN, AL_EAXREVERB_DEFAULT_GAIN);
+    alEffectf(effect, AL_EAXREVERB_GAINHF, AL_EAXREVERB_DEFAULT_GAINHF);
+    alEffectf(effect, AL_EAXREVERB_GAINLF, AL_EAXREVERB_DEFAULT_GAINLF);
+    alEffectf(effect, AL_EAXREVERB_DECAY_TIME, AL_EAXREVERB_DEFAULT_DECAY_TIME);
+    alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, AL_EAXREVERB_DEFAULT_DECAY_HFRATIO);
+    alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, AL_EAXREVERB_DEFAULT_DECAY_LFRATIO);
+    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, AL_EAXREVERB_DEFAULT_REFLECTIONS_GAIN);
+    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, AL_EAXREVERB_DEFAULT_REFLECTIONS_DELAY);
+    alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, f3);
+    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, AL_EAXREVERB_DEFAULT_LATE_REVERB_GAIN);
+    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, AL_EAXREVERB_DEFAULT_LATE_REVERB_DELAY);
+    alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, f3);
+    alEffectf(effect, AL_EAXREVERB_ECHO_TIME, AL_EAXREVERB_DEFAULT_ECHO_TIME);
+    alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, AL_EAXREVERB_DEFAULT_ECHO_DEPTH);
+    alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, AL_EAXREVERB_DEFAULT_MODULATION_TIME);
+    alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, AL_EAXREVERB_DEFAULT_MODULATION_DEPTH);
+    alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, AL_EAXREVERB_DEFAULT_AIR_ABSORPTION_GAINHF);
+    alEffectf(effect, AL_EAXREVERB_HFREFERENCE, AL_EAXREVERB_DEFAULT_HFREFERENCE);
+    alEffectf(effect, AL_EAXREVERB_LFREFERENCE, AL_EAXREVERB_DEFAULT_LFREFERENCE);
+    alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, AL_EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
+    alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, AL_EAXREVERB_DEFAULT_DECAY_HFLIMIT);
+
+    ALenum err = alGetError();
+    if (err == AL_NO_ERROR)
+        Log("EFX is initialized");
+    else
+    {
+        Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
+        if (alIsEffect(effect))
+            alDeleteEffects(1, &effect);
+    }
+
+    alGenAuxiliaryEffectSlots(1, &slot);
+    err = alGetError();
+    if (err != AL_NO_ERROR)
+        Log("! SOUND: OpenAL: failed to generate auxiliary slot:", alGetString(err));
 }
 
 CSoundRender_Core::~CSoundRender_Core()
@@ -57,50 +128,133 @@ CSoundRender_Core::~CSoundRender_Core()
 	xr_delete					(geom_ENV);
 	xr_delete					(geom_SOM);
 #endif
+
+    alDeleteEffects(1, &effect);
+    if (alIsAuxiliaryEffectSlot(slot))
+        alDeleteAuxiliaryEffectSlots(1, &slot);
+}
+
+void CSoundRender_Core::set_listener(const CSoundRender_Environment& env)
+{
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DENSITY, env.Density));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DIFFUSION, env.EnvironmentDiffusion));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_GAIN, env.Room));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_GAINHF, env.RoomHF));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_TIME, env.DecayTime));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, env.DecayHFRatio));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, env.DecayLFRatio));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, env.Reflections));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, env.ReflectionsDelay));
+    A_CHK(alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, &env.ReflectionsPan[0]));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, env.Reverb));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, env.ReverbDelay));
+    A_CHK(alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, &env.ReverbPan[0]));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_TIME, env.EchoTime));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, env.EchoDepth));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, env.ModulationTime));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, env.ModulationDepth));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, env.AirAbsorptionHF));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_HFREFERENCE, env.HFReference));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LFREFERENCE, env.LFReference));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, env.RoomRolloffFactor));
+    A_CHK(alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, env.DecayHFLimit));
+}
+
+void CSoundRender_Core::get_listener(CSoundRender_Environment& env)
+{
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_DENSITY, &env.Density));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_DIFFUSION, &env.EnvironmentDiffusion));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_GAIN, &env.Room));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_GAINHF, &env.RoomHF));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_DECAY_TIME, &env.DecayTime));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, &env.DecayHFRatio));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, &env.DecayLFRatio));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, &env.Reflections));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, &env.ReflectionsDelay));
+    A_CHK(alGetEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, (float*)&env.ReflectionsPan));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, &env.Reverb));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, &env.ReverbDelay));
+    A_CHK(alGetEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, (float*)&env.ReverbPan));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_ECHO_TIME, &env.EchoTime));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, &env.EchoDepth));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_MODULATION_TIME, &env.ModulationTime));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, &env.ModulationDepth));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, &env.AirAbsorptionHF));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_HFREFERENCE, &env.HFReference));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_LFREFERENCE, &env.LFReference));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, &env.RoomRolloffFactor));
+    A_CHK(alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, (ALint)env.DecayHFLimit));
+}
+
+void CSoundRender_Core::commit()
+{
+    /* Tell the effect slot to use the loaded effect object. Note that the this
+     * effectively copies the effect properties. You can modify or delete the
+     * effect object afterward without affecting the effect slot.
+     */
+    A_CHK(alAuxiliaryEffectSlotf(slot, AL_EFFECTSLOT_GAIN, 0.5f));
+    A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, true));
+    A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, effect));
 }
 
 void CSoundRender_Core::_initialize(int stage)
 {
-    Log							("* sound: EAX 2.0 extension:",bEAX?"present":"absent");
-    Log							("* sound: EAX 2.0 deferred:",bDeferredEAX?"present":"absent");
 	Timer.Start					( );
 
     // load environment
 	env_load					();
 
-	bPresent					= TRUE;
+    bPresent = true;
 
 	// Cache
 	cache_bytes_per_line		= (sdef_target_block/8)*276400/1000;
     cache.initialize			(psSoundCacheSizeMB*1024,cache_bytes_per_line);
 
-    bReady						= TRUE;
+    bReady = true;
 }
 
 extern xr_vector<u8> g_target_temp_data;
 void CSoundRender_Core::_clear	()
 {
-    bReady						= FALSE;
+    bReady = false;
 	cache.destroy				();
 	env_unload					();
 
     // remove sources
+    /*
 	for (u32 sit=0; sit<s_sources.size(); sit++)
     	xr_delete				(s_sources[sit]);
     s_sources.clear				();
+    */
+    for (auto &kv : s_sources)
+    {
+        xr_delete(kv);
+    }
+    s_sources.clear();
     
-    // remove emmiters
+    /*
+    // remove emitters
 	for (u32 eit=0; eit<s_emitters.size(); eit++)
     	xr_delete				(s_emitters[eit]);
     s_emitters.clear			();
 
 	g_target_temp_data.clear	();
+    */
+    for (auto &emit : s_emitters)
+    {
+        xr_delete(emit);
+    }
+    s_emitters.clear();
 }
 
 void CSoundRender_Core::stop_emitters()
 {
+    /*
 	for (u32 eit=0; eit<s_emitters.size(); eit++)
-		s_emitters[eit]->stop	(FALSE);
+        s_emitters[eit]->stop(false);
+        */
+    for (auto& emit : s_emitters)
+        emit->stop(false);
 }
 
 int CSoundRender_Core::pause_emitters(bool val)
@@ -108,8 +262,10 @@ int CSoundRender_Core::pause_emitters(bool val)
 	m_iPauseCounter				+= val?+1:-1;
 	VERIFY						(m_iPauseCounter>=0);
 
+    /*
 	for (u32 it=0; it<s_emitters.size(); it++)
 		((CSoundRender_Emitter*)s_emitters[it])->pause	(val,val?m_iPauseCounter:m_iPauseCounter+1);
+    */
 
 	return m_iPauseCounter;
 }
@@ -126,7 +282,7 @@ void CSoundRender_Core::env_load	()
 
 	// Load geometry
 
-	// Assosiate geometry
+    // Associate geometry
 }
 
 void CSoundRender_Core::env_unload	()
@@ -364,7 +520,7 @@ void	CSoundRender_Core::destroy	(ref_sound& S )
 {
 	if (S._feedback()){                   
 		CSoundRender_Emitter* E		= (CSoundRender_Emitter*)S._feedback();
-		E->stop						(FALSE);
+        E->stop(false);
 	}
 	S._p				= 0;
 }                                                    
@@ -387,12 +543,12 @@ void CSoundRender_Core::_destroy_data( ref_sound_data& S)
 {
 	if (S.feedback){                   
 		CSoundRender_Emitter* E		= (CSoundRender_Emitter*)S.feedback;
-		E->stop						(FALSE);
+        E->stop(false);
 	}
 	R_ASSERT						(0==S.feedback);
 	SoundRender->i_destroy_source	((CSoundRender_Source*)S.handle);
 	
-	S.handle						= NULL;
+    S.handle = nullptr;
 }
 
 CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& P )
@@ -440,84 +596,11 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 
 void CSoundRender_Core::env_apply		()
 {
-/*
-	// Force all sounds to change their environment
-	// (set their positions to signal changes in environment)
-	for (u32 it=0; it<s_emitters.size(); it++)
-	{
-		CSoundRender_Emitter*	pEmitter	= s_emitters[it];
-		const CSound_params*	pParams		= pEmitter->get_params	();
-		pEmitter->set_position	(pParams->position);
-	}
-*/
-    bListenerMoved			= TRUE;
+    bListenerMoved = true;
 }
 
 void CSoundRender_Core::update_listener( const Fvector& P, const Fvector& D, const Fvector& N, float dt )
 {
-}
-
-void CSoundRender_Core::i_eax_listener_set	(CSound_environment* _E)
-{
-	VERIFY(bEAX);
-    CSoundRender_Environment* E = static_cast<CSoundRender_Environment*>(_E);
-    EAXLISTENERPROPERTIES 		ep;
-    ep.lRoom					= iFloor(E->Room)				;	// room effect level at low frequencies
-    ep.lRoomHF					= iFloor(E->RoomHF)				;   // room effect high-frequency level re. low frequency level
-    ep.flRoomRolloffFactor		= E->RoomRolloffFactor			;   // like DS3D flRolloffFactor but for room effect
-    ep.flDecayTime				= E->DecayTime					;   // reverberation decay time at low frequencies
-    ep.flDecayHFRatio			= E->DecayHFRatio				;   // high-frequency to low-frequency decay time ratio
-    ep.lReflections				= iFloor(E->Reflections)		;   // early reflections level relative to room effect
-    ep.flReflectionsDelay		= E->ReflectionsDelay			;   // initial reflection delay time
-    ep.lReverb					= iFloor(E->Reverb)	 			;   // late reverberation level relative to room effect
-    ep.flReverbDelay			= E->ReverbDelay				;   // late reverberation delay time relative to initial reflection
-    ep.dwEnvironment			= EAXLISTENER_DEFAULTENVIRONMENT;  	// sets all listener properties
-    ep.flEnvironmentSize		= E->EnvironmentSize			;  	// environment size in meters
-    ep.flEnvironmentDiffusion	= E->EnvironmentDiffusion		; 	// environment diffusion
-    ep.flAirAbsorptionHF		= E->AirAbsorptionHF			;	// change in level per meter at 5 kHz
-    ep.dwFlags					= EAXLISTENER_DEFAULTFLAGS		;	// modifies the behavior of properties
-
-    u32 deferred				= bDeferredEAX?DSPROPERTY_EAXLISTENER_DEFERRED:0;
-    
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_ROOM, 					&ep.lRoom,					sizeof(LONG));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_ROOMHF, 				&ep.lRoomHF,				sizeof(LONG));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_ROOMROLLOFFFACTOR, 	&ep.flRoomRolloffFactor,	sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_DECAYTIME, 		  	&ep.flDecayTime,			sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_DECAYHFRATIO,			&ep.flDecayHFRatio,			sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_REFLECTIONS, 			&ep.lReflections,			sizeof(LONG));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_REFLECTIONSDELAY,    	&ep.flReflectionsDelay,		sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_REVERB, 				&ep.lReverb,				sizeof(LONG));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_REVERBDELAY, 			&ep.flReverbDelay,			sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_ENVIRONMENTDIFFUSION,	&ep.flEnvironmentDiffusion,	sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF, 		&ep.flAirAbsorptionHF,		sizeof(float));
-    i_eax_set(&DSPROPSETID_EAX_ListenerProperties, deferred | DSPROPERTY_EAXLISTENER_FLAGS, 				&ep.dwFlags,				sizeof(DWORD));
-}
-
-void CSoundRender_Core::i_eax_listener_get	(CSound_environment* _E)
-{
-	VERIFY(bEAX);
-    CSoundRender_Environment* E = static_cast<CSoundRender_Environment*>(_E);
-    EAXLISTENERPROPERTIES 		ep;
-	i_eax_get					(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_ALLPARAMETERS, &ep, sizeof(EAXLISTENERPROPERTIES));
-    E->Room						= (float)ep.lRoom					;
-    E->RoomHF					= (float)ep.lRoomHF					;
-    E->RoomRolloffFactor		= (float)ep.flRoomRolloffFactor		;
-    E->DecayTime			   	= (float)ep.flDecayTime				;
-    E->DecayHFRatio				= (float)ep.flDecayHFRatio			;
-    E->Reflections				= (float)ep.lReflections			;
-    E->ReflectionsDelay			= (float)ep.flReflectionsDelay		;
-    E->Reverb					= (float)ep.lReverb					;
-    E->ReverbDelay				= (float)ep.flReverbDelay			;
-    E->EnvironmentSize			= (float)ep.flEnvironmentSize		;
-    E->EnvironmentDiffusion		= (float)ep.flEnvironmentDiffusion	;
-    E->AirAbsorptionHF			= (float)ep.flAirAbsorptionHF		;
-}
-
-void CSoundRender_Core::i_eax_commit_setting()
-{
-	// commit eax 
-    if (bDeferredEAX)
-    	i_eax_set(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_COMMITDEFERREDSETTINGS,NULL,0);
 }
 
 void CSoundRender_Core::object_relcase( CObject* obj )
@@ -567,7 +650,9 @@ void						CSoundRender_Core::refresh_sources()
 }
 void CSoundRender_Core::set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env)
 {
-	if (bEAX){
+    /*
+    if (bEAX)
+    {
 		CSoundRender_Environment* SE 	= static_cast<CSoundRender_Environment*>(src_env); 
 		CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
 		// set environment
@@ -577,15 +662,19 @@ void CSoundRender_Core::set_environment_size	(CSound_environment* src_env, CSoun
 		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &DE->EnvironmentSize, sizeof(DE->EnvironmentSize));
 		i_eax_listener_get				(DE);
 	}
+    */
 }
 void CSoundRender_Core::set_environment	(u32 id, CSound_environment** dst_env)
 {
-	if (bEAX){
+    /*
+    if (bEAX)
+    {
 		CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
 		// set environment
 		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &id, sizeof(id));
 		i_eax_listener_get				(DE);
 	}
+    */
 }
 #endif
 

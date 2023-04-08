@@ -45,7 +45,7 @@ XRSOUND_API extern u32				snd_device_id			;
 // Flags
 enum {
 	ss_Hardware			= (1ul<<1ul),	//!< Use hardware mixing only
-    ss_EAX				= (1ul<<2ul),	//!< Use eax
+    ss_EFX = (1ul << 2ul),	//!< Use efx
 	ss_forcedword		= u32(-1)
 };
 
@@ -256,7 +256,7 @@ public:
 	static void						_destroy				( );
 
 	virtual void					_restart				( )																						= 0;
-    virtual BOOL					i_locked 				( )																						= 0;
+    virtual bool i_locked() = 0;
 
 	virtual void					create					( ref_sound& S, LPCSTR fName,				esound_type sound_type, int		game_type)	= 0;
 	virtual void					attach_tail				( ref_sound& S, LPCSTR fName)															= 0;
@@ -313,9 +313,9 @@ IC void	ref_sound::set_frequency				( float freq)											{	VERIFY(!::Sound->i
 IC void	ref_sound::set_range					( float min, float max )								{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_range(min,max);							}
 IC void	ref_sound::set_volume					( float vol )											{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_volume(vol);								}
 IC void	ref_sound::set_priority					( float p )												{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_priority(p);								}
-IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(FALSE);									}
-IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(TRUE);									}
-IC const CSound_params*	ref_sound::get_params	( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	return _feedback()->get_params(); else return NULL;			}
+IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(false);									}
+IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(true);									}
+IC const CSound_params*	ref_sound::get_params	( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	return _feedback()->get_params(); else return nullptr;			}
 IC void	ref_sound::set_params					( CSound_params* p )									
 {	
 	VERIFY(!::Sound->i_locked()); 	

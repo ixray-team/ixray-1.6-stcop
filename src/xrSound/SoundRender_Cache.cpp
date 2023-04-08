@@ -5,10 +5,10 @@
 
 CSoundRender_Cache::CSoundRender_Cache	()
 {
-	data		= NULL;
-	c_storage	= NULL;
-	c_begin		= NULL;
-	c_end		= NULL;
+    data = nullptr;
+    c_storage = nullptr;
+    c_begin = nullptr;
+    c_end = nullptr;
 	_total		= 0;
 	_line		= 0;
 	_count		= 0;
@@ -34,7 +34,7 @@ void	CSoundRender_Cache::move2top	(cache_line* line)
 	if (next)		next->prev	= prev;
 
 	// register at top
-	line->prev					= NULL;
+    line->prev = nullptr;
 	line->next					= c_begin;
 
 	// track begin
@@ -42,8 +42,8 @@ void	CSoundRender_Cache::move2top	(cache_line* line)
 	c_begin						= line;
 
 	// internal verify
-	VERIFY						(c_begin->prev	== NULL);
-	VERIFY						(c_end->next	== NULL);
+    VERIFY(c_begin->prev == nullptr);
+    VERIFY(c_end->next == nullptr);
 }
 
 BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
@@ -57,7 +57,7 @@ BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
 		_stat_hit		++;
 		cache_line*	L	=	c_storage + cptr;
 		move2top		(L);
-		return			FALSE;
+        return false;
 	}
 
 	// 2. purge oldest item + move it to top
@@ -65,7 +65,7 @@ BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
 	move2top	(c_end);
 	if (c_begin->loopback)	{
 		*c_begin->loopback		= CAT_FREE;
-		c_begin->loopback		= NULL;
+        c_begin->loopback = nullptr;
 	}
 
 	// 3. associate
@@ -73,7 +73,7 @@ BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
 	c_begin->loopback	= &cptr;
 
 	// 4. fill with data
-	return			TRUE;
+    return true;
 }
 
 void	CSoundRender_Cache::initialize	(u32 _total_kb_approx, u32 bytes_per_line)
@@ -104,7 +104,7 @@ void	CSoundRender_Cache::disconnect	()
 		cache_line*		L	= c_storage+it;
 		if (L->loopback)	{
 			*L->loopback		= CAT_FREE;
-			L->loopback			= NULL;
+            L->loopback = nullptr;
 		}
 	}
 }
@@ -115,10 +115,10 @@ void	CSoundRender_Cache::format		()
 	for (u32 it=0; it<_count; it++)
 	{
 		cache_line*		L	= c_storage+it;
-		L->prev				= (0==it)				? NULL : c_storage+it-1;
-		L->next				= ((_count-1) == it)	? NULL : c_storage+it+1;
+        L->prev = (0 == it) ? nullptr : c_storage + it - 1;
+        L->next = ((_count - 1) == it) ? nullptr : c_storage + it + 1;
 		L->data				= data + it*_line;
-		L->loopback			= NULL;
+        L->loopback = nullptr;
 		L->id				= u16	(it);
 	}
 
@@ -138,8 +138,8 @@ void	CSoundRender_Cache::destroy		()
 	disconnect	();
 	xr_free		(data);
 	xr_free		(c_storage);
-	c_begin		= NULL;
-	c_end		= NULL;
+    c_begin = nullptr;
+    c_end = nullptr;
 	_total		= 0;
 	_line		= 0;
 	_count		= 0;

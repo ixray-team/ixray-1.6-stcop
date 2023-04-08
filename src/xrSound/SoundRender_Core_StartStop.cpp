@@ -40,7 +40,7 @@ void	CSoundRender_Core::i_stop		(CSoundRender_Emitter* E)
 	R_ASSERT			(E);
 	R_ASSERT			(E == E->target->get_emitter());
 	E->target->stop		();
-	E->target			= NULL;
+    E->target = nullptr;
 }
 
 void	CSoundRender_Core::i_rewind		(CSoundRender_Emitter* E)
@@ -51,14 +51,14 @@ void	CSoundRender_Core::i_rewind		(CSoundRender_Emitter* E)
 	E->target->rewind	();
 }
 
-BOOL	CSoundRender_Core::i_allow_play	(CSoundRender_Emitter* E)
+bool CSoundRender_Core::i_allow_play(CSoundRender_Emitter* E)
 {
 	// Search available target
 	float	Ptest	= E->priority	();
 	for (u32 it=0; it<s_targets.size(); it++)
 	{
 		CSoundRender_Target*	T		= s_targets	[it];
-		if (T->priority<Ptest)			return TRUE;
+		if (T->priority<Ptest)			return true;
 	}
-	return FALSE;
+    return false;
 }

@@ -22,7 +22,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 	u32 it;
 
 	if (0==bReady)				return;
-    bLocked						= TRUE;
+    bLocked = true;
 	float new_tm				= Timer.GetElapsed_sec();
 	fTimer_Delta				= new_tm-fTimer_Value;
 //.	float dt					= float(Timer_Delta)/1000.f;
@@ -97,19 +97,19 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 			s_targets_defer[it]->fill_parameters();
 	}
 
-	// update EAX
-    if (psSoundFlags.test(ss_EAX) && bEAX)
+    // update EFX
+    if (psSoundFlags.test(ss_EFX))
 	{
         if (bListenerMoved)
 		{
-            bListenerMoved			= FALSE;
+            bListenerMoved = false;
             e_target				= *get_environment	(P);
         }
 
         e_current.lerp				(e_current,e_target,dt_sec);
 
-        i_eax_listener_set			(&e_current);
-		i_eax_commit_setting		();
+        set_listener(e_current);
+        commit();
 	}
 
     // update listener
@@ -126,7 +126,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 	// Events
 	update_events					();
 
-    bLocked							= FALSE;
+    bLocked = false;
 }
 
 static	u32	g_saved_event_count		= 0;

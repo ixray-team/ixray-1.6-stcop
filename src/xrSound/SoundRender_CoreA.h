@@ -4,8 +4,7 @@
 
 #include "SoundRender_Core.h"            
 #include "OpenALDeviceList.h"
-#include <eax/eax.h>
-
+#include <AL/efx.h>
 
 #ifdef DEBUG
 #	define A_CHK(expr)		{ alGetError(); 		expr; ALenum error=alGetError(); 			VERIFY2(error==AL_NO_ERROR, (LPCSTR)alGetString(error)); }
@@ -18,31 +17,29 @@
 class CSoundRender_CoreA: public CSoundRender_Core
 {
 	typedef CSoundRender_Core inherited;
-	EAXSet					eaxSet;					// EAXSet function, retrieved if EAX Extension is supported
-	EAXGet					eaxGet;					// EAXGet function, retrieved if EAX Extension is supported
 	ALCdevice* 				pDevice;
     ALCcontext*				pContext;
 	ALDeviceList*			pDeviceList;
 
 	struct SListener{
 		Fvector				position;
-		Fvector				orientation[2];
+        Fvector velocity{};
+        Fvector curVelocity{};
+        Fvector prevVelocity{};
+        Fvector accVelocity{};
+        Fvector	orientation[2]{};
 	};
 	SListener				Listener;
 
-    BOOL 					EAXQuerySupport			(BOOL bDeferred, const GUID* guid, u32 prop, void* val, u32 sz);
-	BOOL 					EAXTestSupport			(BOOL bDeferred);
 protected:
-	virtual void			i_eax_set				(const GUID* guid, u32 prop, void* val, u32 sz);
-	virtual void			i_eax_get				(const GUID* guid, u32 prop, void* val, u32 sz);
 	virtual void			update_listener			( const Fvector& P, const Fvector& D, const Fvector& N, float dt );
 public:	
 						    CSoundRender_CoreA		();
     virtual					~CSoundRender_CoreA		();
 
-	virtual void			_initialize				(int stage);
-	virtual void			_clear					( );
-	virtual void			_restart				( );
+    virtual void _initialize(int stage) override;
+    virtual void _clear() override;
+    virtual void _restart() override;
     
 	virtual void			set_master_volume		( float f		);
 

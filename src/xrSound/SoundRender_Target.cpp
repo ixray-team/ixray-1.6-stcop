@@ -9,7 +9,7 @@
 CSoundRender_Target::CSoundRender_Target(void)
 {
 	m_pEmitter		= 0;
-	rendering		= FALSE;
+	rendering		= false;
 	wave			= 0;
 }
 
@@ -40,7 +40,7 @@ BOOL CSoundRender_Target::_initialize()
 		wfx.nAvgBytesPerSec=176400;
 		wfx.cbSize=0;
 */
-    return					TRUE;
+    return true;
 }
 
 void	CSoundRender_Target::start(CSoundRender_Emitter* E)
@@ -52,20 +52,20 @@ void	CSoundRender_Target::start(CSoundRender_Emitter* E)
 	// 4. Load 2 blocks of data (as much as possible)
 	// 5. Deferred-play-signal (emitter-exist, rendering-false)
 	m_pEmitter		= E;
-	rendering		= FALSE;
+    rendering = false;
 	//attach		();
 }
 
 void	CSoundRender_Target::render			()
 {
-	rendering		= TRUE;
+    rendering = true;
 }
 
 void	CSoundRender_Target::stop			()
 {
 	dettach			();
-	m_pEmitter		= NULL;
-	rendering		= FALSE;
+    m_pEmitter = nullptr;
+    rendering = false;
 }
 
 void	CSoundRender_Target::rewind			()
@@ -98,7 +98,7 @@ void	CSoundRender_Target::attach()
 	ov_callbacks ovc= {ov_read_func,ov_seek_func,ov_close_func,ov_tell_func};
 	wave			= FS.r_open		(m_pEmitter->source()->pname.c_str()); 
 	R_ASSERT3		(wave&&wave->length(),"Can't open wave file:", m_pEmitter->source()->pname.c_str());
- 	ov_open_callbacks(wave,&ovf,NULL,0,ovc);
+    ov_open_callbacks(wave, &ovf, nullptr, 0, ovc);
 	VERIFY			(0!=wave);
 }
 

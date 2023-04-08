@@ -6,10 +6,32 @@
 #include "SoundRender_Environment.h"
 #include "SoundRender_Cache.h"
 #include "soundrender_environment.h"
+#include <AL/efx.h>
 
 class CSoundRender_Core					: public CSound_manager_interface
 {
-    volatile BOOL						bLocked;
+private:
+    LPALGENEFFECTS alGenEffects{};
+    LPALDELETEEFFECTS alDeleteEffects{};
+    LPALISEFFECT alIsEffect{};
+    LPALEFFECTF alEffectf{};
+    LPALEFFECTI alEffecti{};
+    LPALEFFECTFV alEffectfv{};
+    LPALGETEFFECTI alGetEffecti{};
+    LPALGETEFFECTF alGetEffectf{};
+    LPALGETEFFECTFV alGetEffectfv{};
+    LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots{};
+    LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots{};
+    LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti{};
+    LPALAUXILIARYEFFECTSLOTF alAuxiliaryEffectSlotf{};
+    LPALAUXILIARYEFFECTSLOTFV alAuxiliaryEffectSlotfv{};
+    LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot{};
+
+    ALuint effect{};
+    ALuint effectfv{};
+    ALuint slot{};
+
+    volatile bool bLocked;
 protected:
 	virtual void						_create_data			( ref_sound_data& S, LPCSTR fName,	esound_type sound_type, int game_type); 
 	virtual void						_destroy_data			( ref_sound_data& S);
@@ -24,8 +46,6 @@ public:
 public:
 	BOOL								bPresent;
 	BOOL								bUserEnvironment;
-    BOOL	 							bEAX;					// Boolean variable to indicate presence of EAX Extension 
-    BOOL								bDeferredEAX;
     BOOL								bReady;
 
 	CTimer								Timer;
@@ -55,11 +75,8 @@ protected:
 public:
 	// Cache
 	CSoundRender_Cache					cache;
-	u32									cache_bytes_per_line;
-protected:
-	virtual void						i_eax_set				(const GUID* guid, u32 prop, void* val, u32 sz)=0;
-	virtual void						i_eax_get				(const GUID* guid, u32 prop, void* val, u32 sz)=0;
-public:
+    u32 cache_bytes_per_line = 0;
+
 										CSoundRender_Core		();
 	virtual								~CSoundRender_Core		();
 
@@ -91,13 +108,7 @@ public:
 	virtual void						update_events			( );
 	virtual void						statistic				( CSound_stats*  dest, CSound_stats_ext*  ext );
 
-	// listener
-//	virtual const Fvector&				listener_position		( )=0;
 	virtual void						update_listener			(const Fvector& P, const Fvector& D, const Fvector& N, float dt)=0;
-	// eax listener
-	void								i_eax_commit_setting	();
-	void								i_eax_listener_set		(CSound_environment* E);
-	void								i_eax_listener_get		(CSound_environment* E);
 
 #ifdef _EDITOR
 	virtual SoundEnvironment_LIB*		get_env_library			()																{ return s_environment; }
@@ -107,19 +118,27 @@ public:
     virtual void						set_environment			(u32 id, CSound_environment** dst_env);
     virtual void						set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env);
 #endif
-public:
+    auto get_slot() const {
+        return slot; 
+    }
+
+    void set_listener(const CSoundRender_Environment& env);
+    void get_listener(CSoundRender_Environment& env);
+
+    void commit();
+
 	CSoundRender_Source*				i_create_source			( LPCSTR name				);
 	void								i_destroy_source		( CSoundRender_Source*  S	);
 	CSoundRender_Emitter*				i_play					( ref_sound* S, BOOL _loop, float delay	);
 	void								i_start					( CSoundRender_Emitter* E	);
 	void								i_stop					( CSoundRender_Emitter* E	);
 	void								i_rewind				( CSoundRender_Emitter* E	);
-	BOOL								i_allow_play			( CSoundRender_Emitter* E	);
-    virtual BOOL						i_locked 				(){return bLocked;}
+    bool i_allow_play(CSoundRender_Emitter* E);
+    bool i_locked() override { return bLocked; }
 
-	virtual void						object_relcase			( CObject* obj );
+    void object_relcase(CObject* obj);
 
-	virtual float						get_occlusion_to		( const Fvector& hear_pt, const Fvector& snd_pt, float dispersion=0.2f );
+	float						get_occlusion_to		( const Fvector& hear_pt, const Fvector& snd_pt, float dispersion=0.2f );
 	float								get_occlusion			( Fvector& P, float R, Fvector* occ );
 	CSoundRender_Environment*			get_environment			( const Fvector& P );
 
