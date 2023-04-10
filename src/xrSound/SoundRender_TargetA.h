@@ -7,11 +7,12 @@
 
 class CSoundRender_TargetA: public CSoundRender_Target
 {
-	typedef CSoundRender_Target	inherited;
+	using inherited = CSoundRender_Target;
 
 // OpenAL
     ALuint						pSource;
 	ALuint						pBuffers[sdef_target_count];
+	ALuint pAuxSlot;
     float						cache_gain;
     float						cache_pitch;
 
@@ -19,7 +20,7 @@ class CSoundRender_TargetA: public CSoundRender_Target
 private:
 	void						fill_block				(ALuint BufferID);
 public:
-								CSoundRender_TargetA	();
+	CSoundRender_TargetA(ALuint slot);
 	virtual 					~CSoundRender_TargetA	();
 
 	virtual BOOL				_initialize				();

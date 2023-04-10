@@ -31,11 +31,42 @@ class CSoundRender_CoreA: public CSoundRender_Core
 	};
 	SListener				Listener;
 
+    LPALGENEFFECTS alGenEffects{};
+    LPALDELETEEFFECTS alDeleteEffects{};
+    LPALISEFFECT alIsEffect{};
+    LPALEFFECTF alEffectf{};
+    LPALEFFECTI alEffecti{};
+    LPALEFFECTFV alEffectfv{};
+    LPALGETEFFECTI alGetEffecti{};
+    LPALGETEFFECTF alGetEffectf{};
+    LPALGETEFFECTFV alGetEffectfv{};
+    LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots{};
+    LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots{};
+    LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti{};
+    LPALAUXILIARYEFFECTSLOTF alAuxiliaryEffectSlotf{};
+    LPALAUXILIARYEFFECTSLOTFV alAuxiliaryEffectSlotfv{};
+    LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot{};
+
+    ALuint effect{};
+    ALuint effectfv{};
+    ALuint slot{};
+
+    bool m_is_supported{}; // Boolean variable to indicate presence of EFX Extension
+
 protected:
 	virtual void			update_listener			( const Fvector& P, const Fvector& D, const Fvector& N, float dt );
 public:	
 						    CSoundRender_CoreA		();
     virtual					~CSoundRender_CoreA		();
+
+    auto get_slot() const {
+        return slot;
+    }
+
+    virtual void set_listener(const CSoundRender_Environment& env);
+    virtual void get_listener(CSoundRender_Environment& env);
+    virtual bool initialized();
+    virtual void commit();
 
     virtual void _initialize(int stage) override;
     virtual void _clear() override;

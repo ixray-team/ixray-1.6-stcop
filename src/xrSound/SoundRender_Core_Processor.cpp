@@ -6,6 +6,7 @@
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Target.h"
 #include "SoundRender_Source.h"
+#include "SoundRender_CoreA.h"
 
 CSoundRender_Emitter*	CSoundRender_Core::i_play(ref_sound* S, BOOL _loop, float delay)
 {
@@ -48,7 +49,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 		}
 	}
 
-	// Update emmitters
+	// Update emitters
 	//Msg	("! update: emitters");
 	for (it=0; it<s_emitters.size(); it++)
 	{

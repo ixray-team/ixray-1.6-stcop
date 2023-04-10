@@ -11,26 +11,6 @@
 class CSoundRender_Core					: public CSound_manager_interface
 {
 private:
-    LPALGENEFFECTS alGenEffects{};
-    LPALDELETEEFFECTS alDeleteEffects{};
-    LPALISEFFECT alIsEffect{};
-    LPALEFFECTF alEffectf{};
-    LPALEFFECTI alEffecti{};
-    LPALEFFECTFV alEffectfv{};
-    LPALGETEFFECTI alGetEffecti{};
-    LPALGETEFFECTF alGetEffectf{};
-    LPALGETEFFECTFV alGetEffectfv{};
-    LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots{};
-    LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots{};
-    LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti{};
-    LPALAUXILIARYEFFECTSLOTF alAuxiliaryEffectSlotf{};
-    LPALAUXILIARYEFFECTSLOTFV alAuxiliaryEffectSlotfv{};
-    LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot{};
-
-    ALuint effect{};
-    ALuint effectfv{};
-    ALuint slot{};
-
     volatile bool bLocked;
 protected:
 	virtual void						_create_data			( ref_sound_data& S, LPCSTR fName,	esound_type sound_type, int game_type); 
@@ -118,14 +98,11 @@ public:
     virtual void						set_environment			(u32 id, CSound_environment** dst_env);
     virtual void						set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env);
 #endif
-    auto get_slot() const {
-        return slot; 
-    }
 
-    void set_listener(const CSoundRender_Environment& env);
-    void get_listener(CSoundRender_Environment& env);
-
-    void commit();
+	virtual void set_listener(const CSoundRender_Environment& env) = 0;
+	virtual void get_listener(CSoundRender_Environment& env) = 0;
+	virtual bool initialized() = 0;
+	virtual void commit() = 0;
 
 	CSoundRender_Source*				i_create_source			( LPCSTR name				);
 	void								i_destroy_source		( CSoundRender_Source*  S	);

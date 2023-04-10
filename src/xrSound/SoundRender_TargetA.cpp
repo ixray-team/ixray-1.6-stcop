@@ -5,13 +5,17 @@
 #include "soundrender_emitter.h"
 #include "soundrender_source.h"
 
+#include <AL/efx.h>
+
 xr_vector<u8> g_target_temp_data;
 
-CSoundRender_TargetA::CSoundRender_TargetA():CSoundRender_Target()
+CSoundRender_TargetA::CSoundRender_TargetA(ALuint slot) : CSoundRender_Target()
 {
     cache_gain			= 0.f;
     cache_pitch			= 1.f;
     pSource				= 0;
+    pAuxSlot = slot;
+    buf_block = 0;
 }
 
 CSoundRender_TargetA::~CSoundRender_TargetA()
@@ -31,6 +35,9 @@ BOOL	CSoundRender_TargetA::_initialize		()
         A_CHK(alSourcef	(pSource, AL_MAX_GAIN, 1.f));
         A_CHK(alSourcef	(pSource, AL_GAIN, 	cache_gain));
         A_CHK(alSourcef	(pSource, AL_PITCH,	cache_pitch));
+
+        if (pAuxSlot != ALuint(-1))
+            A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, pAuxSlot, 0, AL_FILTER_NULL));
         return true;
     }else{
     	Msg				("! sound: OpenAL: Can't create source. Error: %s.",(LPCSTR)alGetString(error_));
@@ -63,8 +70,8 @@ void CSoundRender_TargetA::start			(CSoundRender_Emitter* E)
 
 void	CSoundRender_TargetA::render		()
 {
-	for (u32 buf_idx=0; buf_idx<sdef_target_count; buf_idx++)
-		fill_block	(pBuffers[buf_idx]);
+    for (ALuint pBuffer : pBuffers)
+        fill_block(pBuffer);
 
 	A_CHK			(alSourceQueueBuffers	(pSource, sdef_target_count, pBuffers));	
 	A_CHK			(alSourcePlay			(pSource));
