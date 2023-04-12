@@ -38,7 +38,6 @@ void __cdecl al_log(char* msg)
 
 ALDeviceList::ALDeviceList()
 {
-    //pLog = al_log;
 	snd_device_id			= u32(-1);
 	Enumerate();
 }
@@ -77,22 +76,7 @@ void ALDeviceList::Enumerate()
         devices = (char*)alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
 		Msg					("devices %s",devices);
         xr_strcpy(m_defaultDeviceName, (char*)alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER));
-		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName);
-		
-		// ManowaR
-		// "Generic Hardware" device on software AC'97 codecs introduce 
-		// high CPU usage ( up to 30% ) as a consequence - freezes, FPS drop
-		// So if default device is "Generic Hardware" which maps to DirectSound3D interface
-		// We re-assign it to "Generic Software" to get use of old good DirectSound interface
-		// This makes 3D-sound processing unusable on cheap AC'97 codecs
-		// Also we assume that if "Generic Hardware" exists, than "Generic Software" is also exists
-		// Maybe wrong
-        /*
-		if(0==_stricmp(m_defaultDeviceName, AL_GENERIC_HARDWARE))
-		{
-			xr_strcpy			(m_defaultDeviceName, AL_GENERIC_SOFTWARE);
-		}
-        */
+		Msg("SOUND: OpenAL: system default SndDevice name is %s", m_defaultDeviceName);
 
 		index				= 0;
 		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
@@ -110,10 +94,10 @@ void ALDeviceList::Enumerate()
 
                     if ((actualDeviceName != nullptr) && xr_strlen(actualDeviceName) > 0)
 					{
-						alcGetIntegerv						(device, ALC_MAJOR_VERSION, sizeof(int), &major);
-						alcGetIntegerv						(device, ALC_MINOR_VERSION, sizeof(int), &minor);
+						alcGetIntegerv(device, ALC_EFX_MAJOR_VERSION, sizeof(int), &major);
+						alcGetIntegerv(device, ALC_EFX_MINOR_VERSION, sizeof(int), &minor);
 
-                        m_devices.back().props.efx = (alIsExtensionPresent("ALC_EXT_EFX") == true);
+						m_devices.back().props.efx = (alcIsExtensionPresent(device, "ALC_EXT_EFX") == AL_TRUE);
 						++index;
 					}
 					alcDestroyContext(context);
@@ -154,13 +138,12 @@ void ALDeviceList::Enumerate()
 	for (u32 j = 0; j < GetNumDevices(); j++)
 	{
 		GetDeviceVersion		(j, &majorVersion, &minorVersion);
-		Msg	("%d. %s, Spec Version %d.%d %s eax[%d] efx[%s] xram[%s]", 
+		Msg("%d. %s, Spec Version %d.%d efx[%s]",
 			j+1, 
 			GetDeviceName(j), 
 			majorVersion, 
 			minorVersion,
-			(_stricmp(GetDeviceName(j),m_defaultDeviceName)==0)? "(default)":"",
-            GetDeviceDesc(j).props.efx ? "yes" : "no" //,
+			GetDeviceDesc(j).props.efx ? "yes" : "no"
 			);
 	}
 }

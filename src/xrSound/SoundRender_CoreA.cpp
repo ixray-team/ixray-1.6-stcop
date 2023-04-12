@@ -2,89 +2,17 @@
 #pragma hdrstop
 
 #include "SoundRender_Core.h"
-#include "soundrender_coreA.h"
-#include "soundrender_targetA.h"
+#include "SoundRender_CoreA.h"
+#include "SoundRender_TargetA.h"
 #include "OpenALDeviceList.h"
 
 CSoundRender_CoreA*	SoundRenderA = nullptr;
-
-#define LOAD_PROC(x, type) \
-    do \
-    { \
-        ((x) = (type)alGetProcAddress(#x)); \
-        if (!(x)) \
-            return; \
-    } while (false)
 
 CSoundRender_CoreA::CSoundRender_CoreA	() {
 	pDevice						= 0;
 	pDeviceList					= 0;
 	pContext					= 0;
-
-
-    LOAD_PROC(alGenEffects, LPALGENEFFECTS);
-    LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
-    LOAD_PROC(alIsEffect, LPALISEFFECT);
-    LOAD_PROC(alEffecti, LPALEFFECTI);
-    LOAD_PROC(alEffectf, LPALEFFECTF);
-    LOAD_PROC(alEffectfv, LPALEFFECTFV);
-    LOAD_PROC(alGetEffectf, LPALGETEFFECTF);
-    LOAD_PROC(alGetEffectfv, LPALGETEFFECTFV);
-    LOAD_PROC(alGetEffecti, LPALGETEFFECTI);
-    LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
-    LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
-    LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
-    LOAD_PROC(alAuxiliaryEffectSlotf, LPALAUXILIARYEFFECTSLOTF);
-    LOAD_PROC(alIsAuxiliaryEffectSlot, LPALISAUXILIARYEFFECTSLOT);
-
-    alGenEffects(1, &effect);
-
-    constexpr ALfloat f3[3] = { 0.f, 0.f, 0.f };
-    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
-    alEffectf(effect, AL_EAXREVERB_DENSITY, AL_EAXREVERB_DEFAULT_DENSITY);
-    alEffectf(effect, AL_EAXREVERB_DIFFUSION, AL_EAXREVERB_DEFAULT_DIFFUSION);
-    alEffectf(effect, AL_EAXREVERB_GAIN, AL_EAXREVERB_DEFAULT_GAIN);
-    alEffectf(effect, AL_EAXREVERB_GAINHF, AL_EAXREVERB_DEFAULT_GAINHF);
-    alEffectf(effect, AL_EAXREVERB_GAINLF, AL_EAXREVERB_DEFAULT_GAINLF);
-    alEffectf(effect, AL_EAXREVERB_DECAY_TIME, AL_EAXREVERB_DEFAULT_DECAY_TIME);
-    alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, AL_EAXREVERB_DEFAULT_DECAY_HFRATIO);
-    alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, AL_EAXREVERB_DEFAULT_DECAY_LFRATIO);
-    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, AL_EAXREVERB_DEFAULT_REFLECTIONS_GAIN);
-    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, AL_EAXREVERB_DEFAULT_REFLECTIONS_DELAY);
-    alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, f3);
-    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, AL_EAXREVERB_DEFAULT_LATE_REVERB_GAIN);
-    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, AL_EAXREVERB_DEFAULT_LATE_REVERB_DELAY);
-    alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, f3);
-    alEffectf(effect, AL_EAXREVERB_ECHO_TIME, AL_EAXREVERB_DEFAULT_ECHO_TIME);
-    alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, AL_EAXREVERB_DEFAULT_ECHO_DEPTH);
-    alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, AL_EAXREVERB_DEFAULT_MODULATION_TIME);
-    alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, AL_EAXREVERB_DEFAULT_MODULATION_DEPTH);
-    alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, AL_EAXREVERB_DEFAULT_AIR_ABSORPTION_GAINHF);
-    alEffectf(effect, AL_EAXREVERB_HFREFERENCE, AL_EAXREVERB_DEFAULT_HFREFERENCE);
-    alEffectf(effect, AL_EAXREVERB_LFREFERENCE, AL_EAXREVERB_DEFAULT_LFREFERENCE);
-    alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, AL_EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
-    alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, AL_EAXREVERB_DEFAULT_DECAY_HFLIMIT);
-
-    /* Check if an error occured, and clean up if so. */
-    ALenum err = alGetError();
-    if (err == AL_NO_ERROR)
-        m_is_supported = true;
-    else
-    {
-        Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
-        if (alIsEffect(effect))
-            alDeleteEffects(1, &effect);
-    }
-
-    alGenAuxiliaryEffectSlots(1, &slot);
-    err = alGetError();
-    if (err != AL_NO_ERROR)
-        Log("! SOUND: OpenAL: failed to generate auxiliary slot:", alGetString(err));
-
-    Log("* SOUND: EFX extension:", m_is_supported ? "present" : "absent");
 }
-
-#undef LOAD_PROC
 
 bool CSoundRender_CoreA::initialized()
 {
@@ -145,7 +73,7 @@ void CSoundRender_CoreA::get_listener(CSoundRender_Environment& env)
 
 void CSoundRender_CoreA::commit()
 {
-    /* Tell the effect slot to use the loaded effect object. Note that th0e this
+    /* Tell the effect slot to use the loaded effect object. Note that this
      * effectively copies the effect properties. You can modify or delete the
      * effect object afterward without affecting the effect slot.
      */
@@ -215,6 +143,77 @@ void CSoundRender_CoreA::_initialize(int stage)
     Fvector	orient[2]	        = {{0.f,0.f,1.f},{0.f,1.f,0.f}};
     A_CHK				        (alListenerfv		(AL_ORIENTATION,&orient[0].x));
     A_CHK				        (alListenerf		(AL_GAIN,1.f));
+
+#define LOAD_PROC(x, type) \
+    do \
+    { \
+        ((x) = (type)alGetProcAddress(#x)); \
+        if (!(x)) \
+            return; \
+    } while (false)
+
+    LOAD_PROC(alGenEffects, LPALGENEFFECTS);
+    LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
+    LOAD_PROC(alIsEffect, LPALISEFFECT);
+    LOAD_PROC(alEffecti, LPALEFFECTI);
+    LOAD_PROC(alEffectf, LPALEFFECTF);
+    LOAD_PROC(alEffectfv, LPALEFFECTFV);
+    LOAD_PROC(alGetEffectf, LPALGETEFFECTF);
+    LOAD_PROC(alGetEffectfv, LPALGETEFFECTFV);
+    LOAD_PROC(alGetEffecti, LPALGETEFFECTI);
+    LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
+    LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
+    LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
+    LOAD_PROC(alAuxiliaryEffectSlotf, LPALAUXILIARYEFFECTSLOTF);
+    LOAD_PROC(alIsAuxiliaryEffectSlot, LPALISAUXILIARYEFFECTSLOT);
+
+    alGenEffects(1, &effect);
+
+    constexpr ALfloat f3[3] = { 0.f, 0.f, 0.f };
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+    alEffectf(effect, AL_EAXREVERB_DENSITY, AL_EAXREVERB_DEFAULT_DENSITY);
+    alEffectf(effect, AL_EAXREVERB_DIFFUSION, AL_EAXREVERB_DEFAULT_DIFFUSION);
+    alEffectf(effect, AL_EAXREVERB_GAIN, AL_EAXREVERB_DEFAULT_GAIN);
+    alEffectf(effect, AL_EAXREVERB_GAINHF, AL_EAXREVERB_DEFAULT_GAINHF);
+    alEffectf(effect, AL_EAXREVERB_GAINLF, AL_EAXREVERB_DEFAULT_GAINLF);
+    alEffectf(effect, AL_EAXREVERB_DECAY_TIME, AL_EAXREVERB_DEFAULT_DECAY_TIME);
+    alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, AL_EAXREVERB_DEFAULT_DECAY_HFRATIO);
+    alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, AL_EAXREVERB_DEFAULT_DECAY_LFRATIO);
+    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, AL_EAXREVERB_DEFAULT_REFLECTIONS_GAIN);
+    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, AL_EAXREVERB_DEFAULT_REFLECTIONS_DELAY);
+    alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, f3);
+    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, AL_EAXREVERB_DEFAULT_LATE_REVERB_GAIN);
+    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, AL_EAXREVERB_DEFAULT_LATE_REVERB_DELAY);
+    alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, f3);
+    alEffectf(effect, AL_EAXREVERB_ECHO_TIME, AL_EAXREVERB_DEFAULT_ECHO_TIME);
+    alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, AL_EAXREVERB_DEFAULT_ECHO_DEPTH);
+    alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, AL_EAXREVERB_DEFAULT_MODULATION_TIME);
+    alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, AL_EAXREVERB_DEFAULT_MODULATION_DEPTH);
+    alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, AL_EAXREVERB_DEFAULT_AIR_ABSORPTION_GAINHF);
+    alEffectf(effect, AL_EAXREVERB_HFREFERENCE, AL_EAXREVERB_DEFAULT_HFREFERENCE);
+    alEffectf(effect, AL_EAXREVERB_LFREFERENCE, AL_EAXREVERB_DEFAULT_LFREFERENCE);
+    alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, AL_EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
+    alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, AL_EAXREVERB_DEFAULT_DECAY_HFLIMIT);
+
+    /* Check if an error occured, and clean up if so. */
+    ALenum err = alGetError();
+    if (err == AL_NO_ERROR)
+        m_is_supported = true;
+    else
+    {
+        Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
+        if (alIsEffect(effect))
+            alDeleteEffects(1, &effect);
+    }
+
+    alGenAuxiliaryEffectSlots(1, &slot);
+    err = alGetError();
+    if (err != AL_NO_ERROR)
+        Log("! SOUND: OpenAL: failed to generate auxiliary slot:", alGetString(err));
+
+    Log("* SOUND: EFX extension:", m_is_supported ? "present" : "absent");
+
+#undef LOAD_PROC
 
     auto auxSlot = ALuint(-1);
 

@@ -3,6 +3,7 @@
 
 #include "AL/al.h"
 #include "AL/alc.h"
+#include "AL/efx.h"
 
 #define AL_GENERIC_HARDWARE "Generic Hardware"
 #define AL_GENERIC_SOFTWARE "Generic Software"
