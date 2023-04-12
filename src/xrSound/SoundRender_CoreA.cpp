@@ -84,6 +84,11 @@ void CSoundRender_CoreA::commit()
 
 CSoundRender_CoreA::~CSoundRender_CoreA	()
 {
+    if (m_is_supported) {
+        alDeleteEffects(1, &effect);
+        if (alIsAuxiliaryEffectSlot(slot))
+            alDeleteAuxiliaryEffectSlots(1, &slot);
+    }
 }
 
 void  CSoundRender_CoreA::_restart()
@@ -195,6 +200,8 @@ void CSoundRender_CoreA::_initialize(int stage)
     alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, AL_EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
     alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, AL_EAXREVERB_DEFAULT_DECAY_HFLIMIT);
 
+#undef LOAD_PROC
+
     /* Check if an error occured, and clean up if so. */
     ALenum err = alGetError();
     if (err == AL_NO_ERROR)
@@ -212,8 +219,6 @@ void CSoundRender_CoreA::_initialize(int stage)
         Log("! SOUND: OpenAL: failed to generate auxiliary slot:", alGetString(err));
 
     Log("* SOUND: EFX extension:", m_is_supported ? "present" : "absent");
-
-#undef LOAD_PROC
 
     auto auxSlot = ALuint(-1);
 
