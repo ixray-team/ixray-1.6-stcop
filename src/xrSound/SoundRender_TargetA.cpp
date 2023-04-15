@@ -181,6 +181,6 @@ void	CSoundRender_TargetA::fill_block	(ALuint BufferID)
 }
 void CSoundRender_TargetA::source_changed()
 {
-	dettach();
+    detach();
 	attach();
 }

@@ -20,26 +20,6 @@ CSoundRender_Target::~CSoundRender_Target(void)
 
 BOOL CSoundRender_Target::_initialize()
 {
-	/*
-	// Calc format
-	wfx.wFormatTag			= WAVE_FORMAT_PCM;
-	wfx.nChannels			= 2; //1;
-	wfx.nSamplesPerSec		= SoundRender->wfm.nSamplesPerSec;
-	wfx.wBitsPerSample		= 16;
-	wfx.nBlockAlign			= wfx.nChannels * wfx.wBitsPerSample / 8;
-	wfx.nAvgBytesPerSec		= wfx.nSamplesPerSec * wfx.nBlockAlign;
-	wfx.cbSize				= 0;
-
-	*/	
-/*
-		wfx.wFormatTag=WAVE_FORMAT_PCM;
-		wfx.nChannels=2;
-		wfx.wBitsPerSample=16;
-		wfx.nBlockAlign=4;
-		wfx.nSamplesPerSec=44100;
-		wfx.nAvgBytesPerSec=176400;
-		wfx.cbSize=0;
-*/
     return true;
 }
 
@@ -63,7 +43,7 @@ void	CSoundRender_Target::render			()
 
 void	CSoundRender_Target::stop			()
 {
-	dettach			();
+	detach();
     m_pEmitter = nullptr;
     rendering = false;
 }
@@ -81,9 +61,6 @@ void	CSoundRender_Target::update			()
 void	CSoundRender_Target::fill_parameters()
 {
 	VERIFY			(m_pEmitter);
-//.	if (pEmitter->b2D){
-//.		pEmitter->set_position(SoundRender->listener_position());
-//.	}
 }
 
 extern int		ov_seek_func	(void *datasource, s64 offset, int whence);
@@ -102,7 +79,7 @@ void	CSoundRender_Target::attach()
 	VERIFY			(0!=wave);
 }
 
-void	CSoundRender_Target::dettach()
+void	CSoundRender_Target::detach()
 {
 	if (wave)		{
 		ov_clear		(&ovf);

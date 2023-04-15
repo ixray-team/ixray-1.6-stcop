@@ -25,15 +25,14 @@ void CSoundRender_CoreA::set_listener(const CSoundRender_Environment& env)
     A_CHK(alEffectf(effect, AL_EAXREVERB_DIFFUSION, env.EnvironmentDiffusion));
     A_CHK(alEffectf(effect, AL_EAXREVERB_GAIN, env.Room));
     A_CHK(alEffectf(effect, AL_EAXREVERB_GAINHF, env.RoomHF));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_GAINHF, env.RoomLF));
     A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_TIME, env.DecayTime));
     A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, env.DecayHFRatio));
     A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, env.DecayLFRatio));
     A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, env.Reflections));
     A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, env.ReflectionsDelay));
-    A_CHK(alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, &env.ReflectionsPan[0]));
     A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, env.Reverb));
     A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, env.ReverbDelay));
-    A_CHK(alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, &env.ReverbPan[0]));
     A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_TIME, env.EchoTime));
     A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, env.EchoDepth));
     A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, env.ModulationTime));
@@ -51,15 +50,14 @@ void CSoundRender_CoreA::get_listener(CSoundRender_Environment& env)
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_DIFFUSION, &env.EnvironmentDiffusion));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_GAIN, &env.Room));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_GAINHF, &env.RoomHF));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_GAINHF, &env.RoomLF));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_DECAY_TIME, &env.DecayTime));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, &env.DecayHFRatio));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, &env.DecayLFRatio));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, &env.Reflections));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, &env.ReflectionsDelay));
-    A_CHK(alGetEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, (float*)&env.ReflectionsPan));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, &env.Reverb));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, &env.ReverbDelay));
-    A_CHK(alGetEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, (float*)&env.ReverbPan));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_ECHO_TIME, &env.EchoTime));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, &env.EchoDepth));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_MODULATION_TIME, &env.ModulationTime));
@@ -78,7 +76,7 @@ void CSoundRender_CoreA::commit()
      * effect object afterward without affecting the effect slot.
      */
     A_CHK(alAuxiliaryEffectSlotf(slot, AL_EFFECTSLOT_GAIN, 1.f));
-    A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, true));
+    A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, false));
     A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, effect));
 }
 
@@ -174,7 +172,6 @@ void CSoundRender_CoreA::_initialize(int stage)
 
     alGenEffects(1, &effect);
 
-    constexpr ALfloat f3[3] = { 0.f, 0.f, 0.f };
     alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
     alEffectf(effect, AL_EAXREVERB_DENSITY, AL_EAXREVERB_DEFAULT_DENSITY);
     alEffectf(effect, AL_EAXREVERB_DIFFUSION, AL_EAXREVERB_DEFAULT_DIFFUSION);
@@ -186,10 +183,8 @@ void CSoundRender_CoreA::_initialize(int stage)
     alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, AL_EAXREVERB_DEFAULT_DECAY_LFRATIO);
     alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, AL_EAXREVERB_DEFAULT_REFLECTIONS_GAIN);
     alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, AL_EAXREVERB_DEFAULT_REFLECTIONS_DELAY);
-    alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, f3);
     alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, AL_EAXREVERB_DEFAULT_LATE_REVERB_GAIN);
     alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, AL_EAXREVERB_DEFAULT_LATE_REVERB_DELAY);
-    alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, f3);
     alEffectf(effect, AL_EAXREVERB_ECHO_TIME, AL_EAXREVERB_DEFAULT_ECHO_TIME);
     alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, AL_EAXREVERB_DEFAULT_ECHO_DEPTH);
     alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, AL_EAXREVERB_DEFAULT_MODULATION_TIME);

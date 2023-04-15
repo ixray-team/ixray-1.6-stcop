@@ -15,7 +15,7 @@ protected:
 	OggVorbis_File				ovf;
 	IReader*					wave;					
 	void						attach				();
-	void						dettach				();
+	void						detach();
 public:
 	OggVorbis_File*				get_data			()	{
 		if (!wave)	attach		();

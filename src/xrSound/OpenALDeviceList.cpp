@@ -138,7 +138,7 @@ void ALDeviceList::Enumerate()
 	for (u32 j = 0; j < GetNumDevices(); j++)
 	{
 		GetDeviceVersion		(j, &majorVersion, &minorVersion);
-		Msg("%d. %s, Spec Version %d.%d efx[%s]",
+		Msg("%d. %s, EFX Spec Version %d.%d efx[%s]",
 			j+1, 
 			GetDeviceName(j), 
 			majorVersion, 

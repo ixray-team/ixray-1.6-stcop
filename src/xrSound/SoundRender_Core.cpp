@@ -87,26 +87,12 @@ void CSoundRender_Core::_clear	()
 	cache.destroy				();
 	env_unload					();
 
-    // remove sources
-    /*
-	for (u32 sit=0; sit<s_sources.size(); sit++)
-    	xr_delete				(s_sources[sit]);
-    s_sources.clear				();
-    */
     for (auto &kv : s_sources)
     {
         xr_delete(kv);
     }
     s_sources.clear();
-    
-    /*
-    // remove emitters
-	for (u32 eit=0; eit<s_emitters.size(); eit++)
-    	xr_delete				(s_emitters[eit]);
-    s_emitters.clear			();
 
-	g_target_temp_data.clear	();
-    */
     for (auto &emit : s_emitters)
     {
         xr_delete(emit);
@@ -116,10 +102,6 @@ void CSoundRender_Core::_clear	()
 
 void CSoundRender_Core::stop_emitters()
 {
-    /*
-	for (u32 eit=0; eit<s_emitters.size(); eit++)
-        s_emitters[eit]->stop(false);
-        */
     for (auto& emit : s_emitters)
         emit->stop(false);
 }
@@ -128,12 +110,6 @@ int CSoundRender_Core::pause_emitters(bool val)
 {
 	m_iPauseCounter				+= val?+1:-1;
 	VERIFY						(m_iPauseCounter>=0);
-
-    /*
-	for (u32 it=0; it<s_emitters.size(); it++)
-		((CSoundRender_Emitter*)s_emitters[it])->pause	(val,val?m_iPauseCounter:m_iPauseCounter+1);
-    */
-
 	return m_iPauseCounter;
 }
 

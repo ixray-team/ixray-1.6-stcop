@@ -12,6 +12,7 @@ public:
     u32				Environment;				// source environment
     float           Room;                       // room effect level at low frequencies
     float           RoomHF;                     // room effect high-frequency level re. low frequency level
+    float RoomLF; // room effect high-frequency level re. low frequency level
     float           RoomRolloffFactor;          // like DS3D flRolloffFactor but for room effect
     float           DecayTime;                  // reverberation decay time at low frequencies
     float           DecayHFRatio;               // high-frequency to low-frequency decay time ratio
@@ -19,10 +20,10 @@ public:
     int DecayHFLimit; // high- frequency decay time limit set by air absorbtion gain
     float           Reflections;                // early reflections level relative to room effect
     float           ReflectionsDelay;           // initial reflection delay time
-    Fvector3 ReflectionsPan; // reflections panning xyz
+    // float ReflectionsPan[3]; // reflections panning xyz
     float EchoTime; // delay between the original sound and echo instance
     float EchoDepth; // controls the amount of echo feedback signal in the loop
-    Fvector3 ReverbPan; // reverb pan xyz
+    // float ReverbPan; // reverb pan xyz
     float           Reverb;                     // late reverberation level relative to room effect
     float           ReverbDelay;                // late reverberation delay time relative to initial reflection
     float           EnvironmentSize;            // environment size in meters
