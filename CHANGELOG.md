@@ -149,7 +149,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Added resources
 - Normalized encoding of scripts
 
-## Release 0.2 (November 2011)
+## Release 0.2 (November 2021)
 
 ### Common
 
