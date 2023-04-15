@@ -95,12 +95,12 @@ bool SortStringsByAlphabetPred (const shared_str& s1, const shared_str& s2)
 };
 
 struct story_name_predicate {
-	IC	bool	operator()	(const xr_rtoken &source, const xr_rtoken &destination) const
+	IC	bool	operator()	(const xr_rtoken &token1, const xr_rtoken &token2) const
 	{
-		VERIFY	(source.name.size());
-		VERIFY	(destination.name.size());
+		VERIFY	(token1.name.size());
+		VERIFY	(token2.name.size());
 
-		return	(xr_strcmp(source.name, destination.name) < 0);
+		return	(xr_strcmp(token1.name, token2.name) < 0);
 	}
 };
 
