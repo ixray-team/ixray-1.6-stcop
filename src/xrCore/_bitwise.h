@@ -78,7 +78,7 @@ IC	u64	btwCount1(u64 v)
 }
 
 
-ICF int iFloor (float x)
+constexpr int iFloor (float x)
 {
     int a			= *(const int*)(&x);
     int exponent	= (127 + 31) - ((a >> 23) & 0xFF);
