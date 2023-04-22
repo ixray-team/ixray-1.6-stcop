@@ -49,7 +49,7 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	HW.pContext->ClearRenderTargetView( RCache.get_RT(), ColorRGBA);
 #else //USE_DX11
-	CHK_DX			(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,D3DCOLOR_ARGB(0,0,0,0),1,0));
+	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, color_argb(0, 0, 0, 0), 1, 0));
 #endif
 
 	if(!sh_progress)
