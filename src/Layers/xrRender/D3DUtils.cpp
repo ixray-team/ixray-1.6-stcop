@@ -28,7 +28,7 @@ static Fvector circledef1[LINE_DIVISION];
 static Fvector circledef2[LINE_DIVISION];
 static Fvector circledef3[LINE_DIVISION];
 
-const u32 boxcolor = D3DCOLOR_RGBA(255,255,255,0);
+constexpr u32 boxcolor = color_rgba(255,255,255,0);
 static const int boxvertcount = 48;
 static Fvector boxvert[boxvertcount];
 
@@ -54,7 +54,7 @@ static Fvector boxvert[boxvertcount];
 
 
 // identity box
-const u32 identboxcolor = D3DCOLOR_RGBA(255,255,255,0);
+constexpr u32 identboxcolor = color_rgba(255,255,255,0);
 static const int identboxwirecount = 24;
 static Fvector identboxwire[identboxwirecount] = {
 	{-0.5f, -0.5f, -0.5f},	{-0.5f, +0.5f, -0.5f},    	{-0.5f, +0.5f, -0.5f},	{+0.5f, +0.5f, -0.5f},
@@ -94,7 +94,7 @@ static FLvertexVec 	m_GridPoints;
 u32 m_ColorAxis	= 0xff000000;
 u32 m_ColorGrid	= 0xff909090;
 u32 m_ColorGridTh = 0xffb4b4b4;
-u32 m_SelectionRect=D3DCOLOR_RGBA(127,255,127,64);
+u32 m_SelectionRect = color_rgba(127,255,127,64);
 
 u32 m_ColorSafeRect = 0xffB040B0;
 
