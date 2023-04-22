@@ -24,9 +24,6 @@
 #include "xrPhysics.h"
 
 #include "../include/xrapi/xrapi.h"
-#ifdef	DEBUG
-#include "d3d9types.h"
-#endif
 //IC IGame_Level &GLevel()
 //{
 //	VERIFY( g_pGameLevel );

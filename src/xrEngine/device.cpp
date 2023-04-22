@@ -13,6 +13,7 @@
 #include <d3dx9.h>
 #pragma warning(default:4995)
 
+
 #include "x_ray.h"
 #include "render.h"
 
@@ -390,7 +391,7 @@ void CRenderDevice::Run			()
 	// Message cycle
 	seqAppStart.Process			(rp_AppStart);
 
-	//CHK_DX(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,D3DCOLOR_XRGB(0,0,0),1,0));
+	//CHK_DX(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,color_xrgb(0,0,0),1,0));
 	m_pRender->ClearTarget		();
 
 	message_loop				();

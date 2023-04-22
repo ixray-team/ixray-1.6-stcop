@@ -5,10 +5,9 @@
 
 typedef u32 TTime;
 
-#define COLOR		D3DCOLOR_XRGB
-#define COLOR_RED	COLOR(255,0,0)	
-#define COLOR_GREEN	COLOR(0,255,0)	
-#define COLOR_BLUE	COLOR(0,0,255)	
+constexpr auto COLOR_RED = color_xrgb(255, 0, 0);
+constexpr auto COLOR_GREEN = color_xrgb(0, 255, 0);
+constexpr auto COLOR_BLUE = color_xrgb(0, 0, 255);
 
 class CBlend;
 
