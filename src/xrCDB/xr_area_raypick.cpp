@@ -4,7 +4,6 @@
 #include "../xrengine/xr_collide_form.h"
 #include "../xrengine/xr_object.h"
 #include "../xrengine/cl_intersect.h"
-#include "d3d9types.h"
 //#include "igame_level.h"
 //#include "x_ray.h"
 //#include "GameFont.h"
@@ -130,10 +129,10 @@ BOOL CObjectSpace::_RayPick	( const Fvector &start, const Fvector &dir, float ra
 			if			(collidable==ignore_object)	continue;
 			ECollisionFormType tp		= collidable->collidable.model->Type();
 			if (((tgt&(rqtObject|rqtObstacle))&&(tp==cftObject))||((tgt&rqtShape)&&(tp==cftShape))){
-				u32		C	= D3DCOLOR_XRGB	(64,64,64);
+				u32 C = color_xrgb(64, 64, 64);
 				Q.range		= R.range;
 				if (collidable->collidable.model->_RayQuery(Q,r_temp)){
-					C				= D3DCOLOR_XRGB(128,128,196);
+					C = color_xrgb(128, 128, 196);
 					R.set_if_less	(r_temp.r_begin());
 				}
 #ifdef DEBUG
