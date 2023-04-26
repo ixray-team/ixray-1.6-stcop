@@ -30,7 +30,7 @@ DXGI_FORMAT	dx103DFluidData::m_VPRenderTargetFormats[ VP_NUM_TARGETS ] =
 dx103DFluidData::dx103DFluidData()
 {
 	D3D_TEXTURE3D_DESC desc;
-	desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	desc.CPUAccessFlags = 0; 
 	desc.MipLevels = 1;
 	desc.MiscFlags = 0;

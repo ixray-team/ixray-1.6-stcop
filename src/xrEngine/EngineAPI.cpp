@@ -189,7 +189,7 @@ void CEngineAPI::CreateRendererList()
 
 		// try to initialize R4
 		Log				("Loading DLL:",	r4_name);
-		//	Hide "d3d10.dll not found" message box for XP
+		//	Hide "d3d11.dll not found" message box for XP
 		SetErrorMode	(SEM_FAILCRITICALERRORS);
 		hRender			= LoadLibrary		(r4_name);
 		//	Restore error handling

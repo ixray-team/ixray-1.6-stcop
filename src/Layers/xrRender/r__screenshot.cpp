@@ -6,7 +6,7 @@
 #include "../../xrEngine/xrImage_Resampler.h"
 
 #ifdef USE_DX11
-#include "d3dx10tex.h"
+#include "d3dx11tex.h"
 #endif //USE_DX11
 
 #define	GAMESAVE_SIZE	128
@@ -63,7 +63,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 				desc.Format = DXGI_FORMAT_BC1_UNORM;
 				desc.SampleDesc.Count = 1;
 				desc.Usage = D3D_USAGE_DEFAULT;
-				desc.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+				desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 				CHK_DX( HW.pDevice->CreateTexture2D( &desc, NULL, &pSrcSmallTexture ) );
 
 				//	D3DX10_TEXTURE_LOAD_INFO *pLoadInfo
@@ -180,7 +180,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			desc.SampleDesc.Count = 1;
 			desc.Usage = D3D_USAGE_DEFAULT;
-			desc.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
 			CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSrcSmallTexture));
 
