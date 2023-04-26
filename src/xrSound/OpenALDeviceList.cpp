@@ -59,7 +59,7 @@ ALDeviceList::~ALDeviceList()
 void ALDeviceList::Enumerate()
 {
 	char				*devices;
-	int					major, minor, index;
+	int	ALmajor, ALminor, EFXmajor, EFXminor, index;
 	LPCSTR				actualDeviceName;
 	
 	Msg("SOUND: OpenAL: enumerate devices...");
@@ -94,10 +94,14 @@ void ALDeviceList::Enumerate()
 
                     if ((actualDeviceName != nullptr) && xr_strlen(actualDeviceName) > 0)
 					{
-						alcGetIntegerv(device, ALC_EFX_MAJOR_VERSION, sizeof(int), &major);
-						alcGetIntegerv(device, ALC_EFX_MINOR_VERSION, sizeof(int), &minor);
+						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &ALmajor);
+                        alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &ALminor);
 
-						m_devices.back().props.efx = (alcIsExtensionPresent(device, "ALC_EXT_EFX") == AL_TRUE);
+                        alcGetIntegerv(device, ALC_EFX_MAJOR_VERSION, sizeof(int), &EFXmajor);
+                        alcGetIntegerv(device, ALC_EFX_MINOR_VERSION, sizeof(int), &EFXminor);
+
+                        m_devices.push_back(ALDeviceDesc(actualDeviceName, ALminor, ALmajor, EFXminor, EFXmajor));
+
 						++index;
 					}
 					alcDestroyContext(context);
@@ -131,20 +135,18 @@ void ALDeviceList::Enumerate()
 	if(0!=GetNumDevices())
 		Msg("SOUND: OpenAL: All available devices:");
 
-
-	int majorVersion, minorVersion;
-
-
 	for (u32 j = 0; j < GetNumDevices(); j++)
 	{
-		GetDeviceVersion		(j, &majorVersion, &minorVersion);
-		Msg("%d. %s, EFX Spec Version %d.%d efx[%s]",
-			j+1, 
-			GetDeviceName(j), 
-			majorVersion, 
-			minorVersion,
-			GetDeviceDesc(j).props.efx ? "yes" : "no"
-			);
+		GetDeviceVersion(j, &ALmajor, &ALminor, &EFXmajor, &EFXminor);
+		// Assume EFX by default, we only care about the spec version.
+		Msg("%d. %s, Spec Version %d.%d, EFX Spec Version %d.%d",
+			j + 1,
+			GetDeviceName(j),
+			ALmajor,
+			ALminor,
+			EFXmajor,
+			EFXminor
+		);
 	}
 }
 
@@ -155,11 +157,12 @@ LPCSTR ALDeviceList::GetDeviceName(u32 index)
 
 void ALDeviceList::SelectBestDevice()
 {
-	int best_majorVersion	= -1;
-	int best_minorVersion	= -1;
-	int majorVersion;
-	int minorVersion;
-	
+	int ALmajorVersion;
+	int ALminorVersion;
+
+	int EFXmajorVersion;
+	int EFXminorVersion;
+
 	if(snd_device_id==u32(-1))
 	{
 		//select best
@@ -169,14 +172,7 @@ void ALDeviceList::SelectBestDevice()
 			if(_stricmp(m_defaultDeviceName,GetDeviceName(i))!=0)
 				continue;
 
-			GetDeviceVersion		(i, &majorVersion, &minorVersion);
-			if( (majorVersion>best_majorVersion) ||
-				(majorVersion==best_majorVersion && minorVersion>best_minorVersion) )
-			{
-				best_majorVersion		= majorVersion;
-				best_minorVersion		= minorVersion;
-				new_device_id			= i;
-			}
+			GetDeviceVersion(i, &ALmajorVersion, &ALminorVersion, &EFXmajorVersion, &EFXminorVersion);
 		}
 		if(new_device_id==u32(-1) )
 		{
@@ -194,9 +190,12 @@ void ALDeviceList::SelectBestDevice()
 /*
  * Returns the major and minor version numbers for a device at a specified index in the complete list
  */
-void ALDeviceList::GetDeviceVersion(u32 index, int *major, int *minor)
+void ALDeviceList::GetDeviceVersion(u32 index, int* ALmajor, int* ALminor, int* EFXmajor, int* EFXminor)
 {
-	*major = m_devices[index].major_ver;
-	*minor = m_devices[index].minor_ver;
+	*ALmajor = m_devices[index].ALmajor_ver;
+	*ALminor = m_devices[index].ALminor_ver;
+	*EFXmajor = m_devices[index].EFXmajor_ver;
+	*EFXminor = m_devices[index].EFXminor_ver;
+
 	return;
 }

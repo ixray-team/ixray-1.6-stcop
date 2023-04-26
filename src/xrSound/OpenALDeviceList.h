@@ -10,8 +10,11 @@
 
 struct ALDeviceDesc{
 	string256			name;
-	int					minor_ver;
-	int					major_ver;
+	int	ALminor_ver;
+	int	ALmajor_ver;
+	int	EFXminor_ver;
+	int	EFXmajor_ver;
+
 	union ESndProps
 	{
 		struct{
@@ -24,7 +27,14 @@ struct ALDeviceDesc{
 		u16 storage;
 	};
 	ESndProps				props;
-	ALDeviceDesc			(LPCSTR nm, int mn, int mj){xr_strcpy(name,nm);minor_ver=mn;major_ver=mj;props.storage=0;
+	ALDeviceDesc(LPCSTR nm, int almn, int almj, int efxmn, int efxmj)
+	{
+		xr_strcpy(name, nm);
+		ALminor_ver = almn;
+		ALmajor_ver = almj;
+		EFXminor_ver = efxmn;
+		EFXmajor_ver = efxmj;
+		props.storage=0;
 	    //props.eax_unwanted=true;
 	}
 };
@@ -42,7 +52,7 @@ public:
 	u32					GetNumDevices			()				{return m_devices.size();}
 	const ALDeviceDesc&	GetDeviceDesc			(u32 index)		{return m_devices[index];}
 	LPCSTR				GetDeviceName			(u32 index);
-	void				GetDeviceVersion		(u32 index, int *major, int *minor);
+	void GetDeviceVersion(u32 index, int* ALmajor, int* ALminor, int* EFXmajor, int* EFXminor);
 	void				SelectBestDevice		();
 };
 
