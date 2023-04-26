@@ -2,11 +2,6 @@
 
 class	dx10State;
 
-typedef	ID3D10Include			ID3DInclude;
-typedef	ID3D10Blob				ID3DBlob;
-
-typedef	D3D10_SHADER_MACRO				D3D_SHADER_MACRO;
-
 typedef	D3D11_BLEND						D3D_BLEND;
 typedef	D3D11_BLEND_OP					D3D_BLEND_OP;
 typedef	D3D11_TEXTURE_ADDRESS_MODE		D3D_TEXTURE_ADDRESS_MODE;

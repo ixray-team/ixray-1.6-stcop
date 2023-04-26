@@ -7,8 +7,6 @@
 #endif
 #pragma warning(default:4995)
 
-#include <D3DX10Core.h>
-
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/tss.h"
 #include "../xrRender/blenders/blender.h"
@@ -189,7 +187,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
 		if (strstr(data, "main_vs_4_0"))	{ c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs );
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
 
 		VERIFY(SUCCEEDED(_hr));
 
@@ -296,8 +294,8 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 		if (strstr(data,"main_ps_4_0"))			{ c_target = "ps_4_0"; c_entry = "main_ps_4_0"; }
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_ps );
-		
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
+
 		VERIFY(SUCCEEDED(_hr));
 
 		CHECK_OR_EXIT		(
@@ -363,7 +361,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 		LPCSTR						c_target	= "gs_4_0";
 		LPCSTR						c_entry		= "main";
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)file->pointer(),file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs );
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
 
 		VERIFY(SUCCEEDED(_hr));
 

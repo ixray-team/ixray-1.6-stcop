@@ -18,7 +18,7 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#include <D3DX10Tex.h>
+#include <D3DX11Tex.h>
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
@@ -955,7 +955,7 @@ CRenderTarget::CRenderTarget		()
 
 				HW.pContext->CopySubresourceRegion( t_noise_surf_mipped, 0, 0, 0, 0, t_noise_surf[0], 0, 0 );
 
-				D3DX11FilterTexture(HW.pContext, t_noise_surf_mipped, 0, D3DX10_FILTER_POINT);
+				D3DX11FilterTexture(HW.pContext, t_noise_surf_mipped, 0, D3DX11_FILTER_POINT);
 			}
 		}
 	}
