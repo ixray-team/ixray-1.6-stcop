@@ -7,15 +7,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.markdownlint.json = .markdownlint.json
+		.vsconfig = .vsconfig
 		CHANGELOG.md = CHANGELOG.md
+		datapack.ltx = datapack.ltx
+		delete-symbols.bat = delete-symbols.bat
 		Directory.Build.props = Directory.Build.props
 		fs.ltx = fs.ltx
 		fsfactory.ltx = fsfactory.ltx
 		fsgame.ltx = fsgame.ltx
-		get-dependencies.bat = get-dependencies.bat
-		get-dependencies.ps1 = get-dependencies.ps1
+		generate-patch.bat = generate-patch.bat
 		launch-engine.bat = launch-engine.bat
 		LICENSE.md = LICENSE.md
+		NuGet.config = NuGet.config
 		README.md = README.md
 	EndProjectSection
 EndProject

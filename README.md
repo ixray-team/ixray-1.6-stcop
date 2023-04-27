@@ -36,7 +36,6 @@ git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 
 ### Engine
 
-- Run `download-dependencies.ps1`
 - Build `XRay.sln` on `Win32` without projects from `utils`
 
 ### Assets
