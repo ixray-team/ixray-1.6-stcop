@@ -14,7 +14,7 @@
 
 ref class property_converter_vec3f;
 
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 using System::String;
 
 editor::property_value* property_holder::add_property				(

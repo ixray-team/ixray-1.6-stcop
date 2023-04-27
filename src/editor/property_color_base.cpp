@@ -13,7 +13,7 @@
 
 using System::Object;
 using System::String;
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 using System::Collections::DictionaryEntry;
 
 ref class property_converter_float;

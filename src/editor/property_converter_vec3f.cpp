@@ -18,7 +18,7 @@ using System::ComponentModel::PropertyDescriptorCollection;
 using System::ComponentModel::PropertyDescriptor;
 using System::ComponentModel::TypeDescriptor;
 using System::ArgumentException;
-using Flobbster::Windows::Forms::PropertyBag;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertyBag;
 using System::Attribute;
 
 typedef PropertyBag::PropertySpecDescriptor	PropertySpecDescriptor;

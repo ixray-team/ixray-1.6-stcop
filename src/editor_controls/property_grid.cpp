@@ -24,7 +24,7 @@ using System::Reflection::BindingFlags;
 using Microsoft::Win32::RegistryKey;
 using System::String;
 
-using Flobbster::Windows::Forms::PropertyBag;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertyBag;
 typedef PropertyBag::PropertySpecDescriptor			PropertySpecDescriptor;
 
 template <typename T>

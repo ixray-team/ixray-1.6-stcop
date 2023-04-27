@@ -45,4 +45,7 @@
       <Filter>interfaces</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
+  </ItemGroup>
 </Project>

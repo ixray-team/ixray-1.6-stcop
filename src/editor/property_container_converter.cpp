@@ -16,7 +16,7 @@ using System::String;
 using System::Object;
 using System::Array;
 using System::Collections::ArrayList;
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 
 PropertyDescriptorCollection^ property_container_converter::GetProperties	(
 		ITypeDescriptorContext^ context,

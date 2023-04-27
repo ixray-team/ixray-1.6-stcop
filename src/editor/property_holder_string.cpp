@@ -24,7 +24,7 @@ ref class property_converter_string_values_no_enter;
 ref class property_editor_file_name;
 ref class property_editor_tree_values;
 
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 using System::String;
 
 //	NotifyParentPropertyAttribute

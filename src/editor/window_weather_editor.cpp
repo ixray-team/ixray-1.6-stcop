@@ -11,7 +11,7 @@ using System::Windows::Forms::GridItem;
 using System::String;
 using System::Windows::Forms::Clipboard;
 
-using Flobbster::Windows::Forms::PropertyBag;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertyBag;
 typedef PropertyBag::PropertySpecDescriptor		PropertySpecDescriptor;
 
 using editor::window_weather_editor;

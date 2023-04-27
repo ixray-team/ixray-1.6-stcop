@@ -24,7 +24,7 @@ ref class property_converter_integer_enum;
 ref class property_converter_integer_values;
 ref class property_integer_values_value;
 
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 using System::String;
 
 editor::property_value* property_holder::add_property				(

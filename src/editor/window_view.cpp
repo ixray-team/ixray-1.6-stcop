@@ -15,7 +15,7 @@ using editor::window_view;
 using editor::controls::property_incrementable;
 
 using System::Windows::Forms::GridItem;
-using Flobbster::Windows::Forms::PropertyBag;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertyBag;
 typedef PropertyBag::PropertySpecDescriptor		PropertySpecDescriptor;
 
 void window_view::custom_init					(window_ide %ide)

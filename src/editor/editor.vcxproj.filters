@@ -748,6 +748,7 @@
     <None Include="images\color_picker.cur">
       <Filter>resources</Filter>
     </None>
+    <None Include="Packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="editor.rc">

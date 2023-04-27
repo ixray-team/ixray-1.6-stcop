@@ -10,7 +10,7 @@
 #include "property_holder.hpp"
 #include "property_container.hpp"
 
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 using System::String;
 using editor::property_holder_collection;
 using editor::engine;

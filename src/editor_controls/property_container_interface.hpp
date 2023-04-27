@@ -13,7 +13,7 @@ interface class property_value;
 
 public interface class property_container_interface {
 public:
-	typedef Flobbster::Windows::Forms::PropertySpec	PropertySpec;
+	typedef ImeSense::Controls::WinForms::PropertyGrid::PropertySpec	PropertySpec;
 
 public:
 	virtual	property_value^	value	(PropertySpec^ description) = 0;
