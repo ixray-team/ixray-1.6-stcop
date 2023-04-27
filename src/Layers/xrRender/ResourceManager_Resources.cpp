@@ -12,7 +12,7 @@
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 void fix_texture_name(LPSTR fn);

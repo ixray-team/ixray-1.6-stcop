@@ -16,7 +16,7 @@
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #endif // USE_DX11
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 //////////////////////////////////////////////////////////////////////

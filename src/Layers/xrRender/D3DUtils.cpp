@@ -18,7 +18,7 @@
 #include "d3dx9.h"
 #pragma warning(pop)
 
-#include <Utilities/FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 
 CDrawUtilities DUImpl;
 

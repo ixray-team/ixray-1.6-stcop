@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 
 static u32 dwPositionPart[8] =
 {

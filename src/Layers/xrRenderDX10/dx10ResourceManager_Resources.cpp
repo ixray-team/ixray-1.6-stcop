@@ -17,7 +17,7 @@
 
 #include "../xrRender/ShaderResourceTraits.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 SHS*	CResourceManager::_CreateHS			(LPCSTR Name)

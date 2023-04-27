@@ -58,20 +58,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)dep\DirectXMesh;..\..\..\sdk\include;..\xrQSlim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\$(Configuration);$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\sdk\include;..\xrQSlim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\$(Configuration);$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)dep\DirectXMesh;..\..\..\sdk\include;..\xrQSlim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\$(Configuration);$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\sdk\include;..\xrQSlim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\$(Configuration);$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)dep\DirectXMesh;..\..\..\sdk\include;..\xrQSlim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\lib\Release;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\sdk\include;..\xrQSlim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\lib\Release;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

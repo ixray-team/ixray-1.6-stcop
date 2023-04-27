@@ -3,7 +3,7 @@
 
 #include "../dx10BufferUtils.h"
 
-#include <Utilities/FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 struct VS_INPUT_FLUIDSIM_STRUCT

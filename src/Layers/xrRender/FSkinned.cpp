@@ -16,7 +16,7 @@
 
 #include "../../xrEngine/EnnumerateVertices.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 //////////////////////////////////////////////////////////////////////
