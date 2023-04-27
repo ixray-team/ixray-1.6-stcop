@@ -3,11 +3,11 @@
 
 #include "stdafx.h"
 #include "ETextureParams.h"
-#include <dds.h>
 #include <ddraw.h>
 #include <DirectXTex.h>
 #include "dxtlib.h"
 #include <memory>
+#include "dds.h"
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        u32  ul_reason_for_call, 

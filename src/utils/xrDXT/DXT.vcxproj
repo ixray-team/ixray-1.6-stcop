@@ -60,20 +60,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)dep\DirectXTex\DirectXTex;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)dep\DirectXTex\DirectXTex;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\Release;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)dep\DirectXTex\DirectXTex;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,7 +121,7 @@
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -179,6 +179,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="colorconvert.h" />
+    <ClInclude Include="dds.h" />
     <ClInclude Include="ddsTypes.h" />
     <ClInclude Include="dxtlib.h" />
     <ClInclude Include="ETextureParams.h" />
@@ -215,13 +216,13 @@
     <ClCompile Include="tga.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\proj\DirectXTex\DirectXTex.vcxproj">
-      <Project>{286cc988-2191-467a-9f6d-abb7954d4f78}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
