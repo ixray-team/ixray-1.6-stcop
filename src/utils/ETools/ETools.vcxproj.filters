@@ -113,4 +113,7 @@
       <Filter>OGG encoder</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
+  </ItemGroup>
 </Project>
