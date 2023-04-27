@@ -38,6 +38,3 @@ git clone --branch jul2022 --depth 1 `
 git clone --branch jul2022 --depth 1 `
     https://github.com/microsoft/DirectXMesh.git `
     dep/DirectXMesh
-git clone --branch Release_3.1.0 --depth 1 `
-    https://github.com/dockpanelsuite/dockpanelsuite.git `
-    dep/dockpanelsuite

@@ -134,6 +134,12 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\..\packages\DockPanelSuite.3.1.0\lib\net40\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking.ThemeVS2015">
+      <HintPath>..\..\packages\DockPanelSuite.ThemeVS2015.3.1.0\lib\net40\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
@@ -326,12 +332,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\dockpanelsuite\ThemeVS2015.csproj">
-      <Project>{4add3e04-f177-4372-a09d-2fd6e38b907b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\dockpanelsuite\WinFormsUI.csproj">
-      <Project>{22df5e60-214d-4124-9f61-1fc92558331b}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\editor_controls\editor_controls.vcxproj">
       <Project>{b45374aa-c7ed-42cf-bbd3-deaa2b7acb48}</Project>
     </ProjectReference>
