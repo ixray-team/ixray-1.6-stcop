@@ -61,6 +61,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '>=5'
+
+      - name: Restore packages
+        run: |
+          nuget restore $env:solution_name
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.1
 
