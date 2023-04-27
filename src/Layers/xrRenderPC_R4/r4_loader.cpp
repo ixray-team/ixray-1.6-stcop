@@ -19,7 +19,7 @@
 #pragma warning(disable:4995)
 #include <malloc.h>
 
-#include <Utilities/FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 #pragma warning(pop)

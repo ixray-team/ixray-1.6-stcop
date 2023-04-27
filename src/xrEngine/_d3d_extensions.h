@@ -93,7 +93,7 @@ public:
 #endif
 
 #ifndef NO_XR_VDECLARATOR
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 
 struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
 	void set(u32 FVF) {

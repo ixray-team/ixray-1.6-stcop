@@ -4,7 +4,7 @@
 #include	"stdafx.h"
 #include	"D3DX_Wrapper.h"
 
-#include <Utilities\FlexibleVertexFormat.h>
+#include <FlexibleVertexFormat.h>
 using namespace FVF;
 
 // misc
