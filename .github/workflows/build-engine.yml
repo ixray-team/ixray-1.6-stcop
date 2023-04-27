@@ -66,7 +66,19 @@ jobs:
         with:
           nuget-version: '>=5'
 
-      - name: Restore packages
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            ~/.nuget/packages
+          key: |
+            ${{ runner.os }}-nuget-${{ hashFiles('**/*.nupkg') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           nuget restore $env:solution_name
 
