@@ -34,7 +34,7 @@ defaults:
 
 jobs:
   build-engine:
-    name: 'Building'
+    name: 'Build'
 
     strategy:
       matrix:
@@ -60,10 +60,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Get dependencies
-        run: |
-          ${{ github.workspace }}/get-dependencies.bat
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.1
@@ -94,7 +90,7 @@ jobs:
           path: lib/
 
   pack-assets:
-    name: 'Packing'
+    name: 'Pack'
 
     needs: build-engine
 
