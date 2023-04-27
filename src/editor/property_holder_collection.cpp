@@ -12,7 +12,7 @@
 #include "property_collection.hpp"
 #include "property_collection_getter.hpp"
 
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 using editor::property_holder_collection;
 
 editor::property_value* property_holder::add_property				(

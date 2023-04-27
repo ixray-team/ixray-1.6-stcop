@@ -17,12 +17,12 @@ interface class property_container_holder;
 
 [System::ComponentModel::TypeConverterAttribute(property_container_converter::typeid)]
 public ref class property_container :
-	public Flobbster::Windows::Forms::PropertyBag,
+	public ImeSense::Controls::WinForms::PropertyGrid::PropertyBag,
 	public property_container_interface
 {
 public:
-	typedef Flobbster::Windows::Forms::PropertySpec				PropertySpec;
-	typedef Flobbster::Windows::Forms::PropertySpecEventArgs	PropertySpecEventArgs;
+	typedef ImeSense::Controls::WinForms::PropertyGrid::PropertySpec				PropertySpec;
+	typedef ImeSense::Controls::WinForms::PropertyGrid::PropertySpecEventArgs	PropertySpecEventArgs;
 	typedef System::Collections::IDictionary					IDictionary;
 	typedef System::Collections::ArrayList						ArrayList;
 	typedef System::Object										Object;

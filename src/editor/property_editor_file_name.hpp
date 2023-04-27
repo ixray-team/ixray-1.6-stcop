@@ -26,7 +26,7 @@ private:
 	typedef System::Drawing::Design::UITypeEditor			inherited;
 	typedef System::Drawing::Design::UITypeEditorEditStyle	UITypeEditorEditStyle;
 	typedef System::Windows::Forms::OpenFileDialog			OpenFileDialog;
-	typedef Flobbster::Windows::Forms::PropertyBag			PropertyBag;
+	typedef ImeSense::Controls::WinForms::PropertyGrid::PropertyBag			PropertyBag;
 	typedef PropertyBag::PropertySpecDescriptor				PropertySpecDescriptor;
 	typedef System::ComponentModel::ITypeDescriptorContext	ITypeDescriptorContext;
 	typedef System::IServiceProvider						IServiceProvider;

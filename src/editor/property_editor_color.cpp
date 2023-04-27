@@ -20,7 +20,7 @@ using System::Drawing::Design::UITypeEditorEditStyle;
 using System::Object;
 using System::Windows::Forms::ColorDialog;
 
-typedef Flobbster::Windows::Forms::PropertyBag		PropertyBag;
+typedef ImeSense::Controls::WinForms::PropertyGrid::PropertyBag		PropertyBag;
 typedef PropertyBag::PropertySpecDescriptor			PropertySpecDescriptor;
 
 static int convert_color							(float color)

@@ -20,7 +20,7 @@ using System::String;
 using System::Object;
 using System::ComponentModel::PropertyDescriptor;
 using editor::property_holder_collection;
-using Flobbster::Windows::Forms::PropertyBag;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertyBag;
 using System::ComponentModel::Design::CollectionEditor;
 
 typedef PropertyBag::PropertySpecDescriptor	PropertySpecDescriptor;

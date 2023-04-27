@@ -10,7 +10,7 @@
 #include "property_container.hpp"
 #include "property_holder.hpp"
 
-using Flobbster::Windows::Forms::PropertySpecEventHandler;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpecEventHandler;
 using System::Collections::Hashtable;
 using System::Collections::IDictionary;
 using System::String;

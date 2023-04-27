@@ -13,7 +13,7 @@ public ref class property_converter_float_enum : public System::ComponentModel::
 private:
 	typedef System::ComponentModel::StringConverter			inherited;
 	typedef System::Collections::ICollection				ICollection;
-	typedef Flobbster::Windows::Forms::PropertyBag			PropertyBag;
+	typedef ImeSense::Controls::WinForms::PropertyGrid::PropertyBag			PropertyBag;
 	typedef PropertyBag::PropertySpecDescriptor				PropertySpecDescriptor;
 	typedef System::ComponentModel::ITypeDescriptorContext	ITypeDescriptorContext;
 	typedef System::Globalization::CultureInfo				CultureInfo;

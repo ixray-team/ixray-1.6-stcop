@@ -103,6 +103,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Reference Include="ImeSense.Controls.WinForms.PropertyGrid">
+      <HintPath>..\..\packages\ImeSense.Controls.WinForms.PropertyGrid.0.1.0\lib\net472\ImeSense.Controls.WinForms.PropertyGrid.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualC">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -291,6 +294,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\color_picker.cur" />
+    <None Include="Packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="editor.rc" />
@@ -330,9 +334,6 @@
     </ProjectReference>
     <ProjectReference Include="..\editor_controls\editor_controls.vcxproj">
       <Project>{b45374aa-c7ed-42cf-bbd3-deaa2b7acb48}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Flobbster.Windows.Forms\Flobbster.Windows.Forms.csproj">
-      <Project>{6e4084e3-1ceb-4f09-8695-a31e167b5894}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>

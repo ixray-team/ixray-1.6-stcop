@@ -15,7 +15,7 @@
 ref class property_editor_color;
 ref class property_converter_color;
 
-using Flobbster::Windows::Forms::PropertySpec;
+using ImeSense::Controls::WinForms::PropertyGrid::PropertySpec;
 
 editor::property_value* property_holder::add_property				(
 		LPCSTR identifier,

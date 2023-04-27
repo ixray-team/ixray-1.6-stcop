@@ -16,7 +16,7 @@ private:
 protected:
 	typedef System::ComponentModel::ITypeDescriptorContext	ITypeDescriptorContext;
 	typedef System::Collections::ICollection				ICollection;
-	typedef Flobbster::Windows::Forms::PropertyBag			PropertyBag;
+	typedef ImeSense::Controls::WinForms::PropertyGrid::PropertyBag			PropertyBag;
 	typedef PropertyBag::PropertySpecDescriptor				PropertySpecDescriptor;
 	typedef System::Type									Type;
 
