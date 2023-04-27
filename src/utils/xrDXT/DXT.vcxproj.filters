@@ -49,6 +49,7 @@
       <Filter>NormalMap</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="dds.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXT.cpp">
@@ -76,5 +77,8 @@
       <Filter>NormalMap</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
   </ItemGroup>
 </Project>
