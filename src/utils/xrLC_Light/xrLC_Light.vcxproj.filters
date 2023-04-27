@@ -582,4 +582,7 @@
       <Filter>do_light</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
+  </ItemGroup>
 </Project>
