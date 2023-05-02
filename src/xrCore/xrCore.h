@@ -62,6 +62,7 @@
 #include <math.h>
 #include <string.h>
 #include <typeinfo>
+#include <DirectXMath.h>
 //#include <process.h>
 
 #ifndef DEBUG

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+using namespace DirectX;
+
 #include "../xrCDB/frustum.h"
 
 #pragma warning(disable:4995)
@@ -9,10 +12,7 @@
 #define MMNOMIXER
 #define MMNOJOY
 #include <mmsystem.h>
-// d3dx9.h
-#include <d3dx9.h>
 #pragma warning(default:4995)
-
 
 #include "x_ray.h"
 #include "render.h"
@@ -27,8 +27,6 @@
 #endif // #ifdef INGAME_EDITOR
 
 #include "igame_persistent.h"
-
-#pragma comment( lib, "d3dx9.lib"		)
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -268,7 +266,9 @@ void CRenderDevice::on_idle		()
 	m_pRender->SetCacheXform(mView, mProject);
 	//RCache.set_xform_view		( mView				);
 	//RCache.set_xform_project	( mProject			);
-	D3DXMatrixInverse			( (D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+	
+	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
+		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
 
 	vCameraPosition_saved	= vCameraPosition;
 	mFullTransform_saved	= mFullTransform;
