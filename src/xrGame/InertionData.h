@@ -3,7 +3,7 @@
 constexpr float PITCH_OFFSET_R = 0.017f;
 constexpr float PITCH_OFFSET_N = 0.012f;
 constexpr float PITCH_OFFSET_D = 0.02f;
-constexpr float ORIGIN_OFFSET = 0.05f;
+constexpr float ORIGIN_OFFSET = -0.05f;
 constexpr float TENDTO_SPEED = 5.0f;
 
 struct InertionData {
