@@ -5,6 +5,8 @@
 
 #include "../xrRender/R_sun_support.h"
 
+using namespace DirectX;
+
 constexpr float tweak_COP_initial_offs = 1200.0f;
 
 float OLES_SUN_LIMIT_27_01_07 = 100.0f;
@@ -80,7 +82,8 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	{
 		ex_project = Device.mProject;
 		ex_full.mul					(ex_project,Device.mView);
-		D3DXMatrixInverse			((D3DXMATRIX*)&ex_full_inverse,0,(D3DXMATRIX*)&ex_full);
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full_inverse),
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full))));
 	}
 
 	// Compute volume(s) - something like a frustum for infinite directional light
@@ -178,9 +181,11 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 		float map_size = m_sun_cascades[cascade_ind].size;
 
 	#ifndef USE_DX11
-		D3DXMatrixOrthoOffCenterLH((D3DXMATRIX *)&mdir_Project, -map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + map_size);
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
+			XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + map_size));
 	#else
-		D3DXMatrixOrthoOffCenterLH	((D3DXMATRIX*)&mdir_Project,-map_size*0.5f, map_size*0.5f, -map_size*0.5f, map_size*0.5f,  0.1, dist + 1.41421f * map_size);
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
+			XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + 1.41421f * map_size));
 	#endif // USE_DX11
 
 		// build viewport xform
@@ -191,8 +196,9 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 			0.0f,			0.0f,				1.0f,		0.0f,
 			view_dim/2.f,	view_dim/2.f,		0.0f,		1.0f
 		};
-		Fmatrix				m_viewport_inv;
-		D3DXMatrixInverse	((D3DXMATRIX*)&m_viewport_inv,0,(D3DXMATRIX*)&m_viewport);
+		Fmatrix m_viewport_inv{};
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport_inv),
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport))));
 
 		// snap view-position to pixel
 		cull_xform.mul		(mdir_Project,mdir_View	);
