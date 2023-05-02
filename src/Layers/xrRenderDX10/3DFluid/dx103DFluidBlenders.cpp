@@ -112,7 +112,6 @@ void BindConstants(CBlender_Compile& C)
 	C.r_Constant( "textureDepth",	&binder_textureDepth);
 
 	//	Renderer constants
-	//D3DXVECTOR3 recGridDim(1.0f/gridDim[0], 1.0f/gridDim[1], 1.0f/gridDim[2]);
 	//pEffect->GetVariableByName("gridDim")->AsVector()->SetFloatVector(gridDim);
 	C.r_Constant( "gridDim",	&binder_gridDim);
 	//pEffect->GetVariableByName("recGridDim")->AsVector()->SetFloatVector(recGridDim);

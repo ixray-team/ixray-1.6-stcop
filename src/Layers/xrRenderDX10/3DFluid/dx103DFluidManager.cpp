@@ -480,7 +480,6 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 	else
 		RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECC]);
 
-	//D3DXVECTOR3 halfVol( grid->dim[0]/2.0f, grid->dim[1]/2.0f, grid->dim[2]/2.0f );
 	//HalfVolumeDimShaderVariable->SetFloatVector( (float*)&halfVol);
 	Fvector4	halfVol;
 	halfVol.set( (float)m_iTextureWidth/2.0f, (float)m_iTextureHeight/2.0f, (float)m_iTextureDepth/2.0f, 0.0f );
