@@ -604,4 +604,7 @@
       <Filter>Kernel</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
+  </ItemGroup>
 </Project>
