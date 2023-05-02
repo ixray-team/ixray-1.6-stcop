@@ -5,6 +5,8 @@
 
 #include "../xrRender/R_sun_support.h"
 
+using namespace DirectX;
+
 const	float	tweak_rain_COP_initial_offs			= 1200.f;
 const	float	tweak_rain_ortho_xform_initial_offs	= 1000.f	;	//. ?
 
@@ -35,8 +37,6 @@ void CRender::render_rain()
 
 	PIX_EVENT(render_rain);
 
-	D3DXMATRIX		m_LightViewProj;
-
 	//	Use light as placeholder for rain data.
 	light			RainLight;
 
@@ -49,13 +49,15 @@ void CRender::render_rain()
 	float	fBoundingSphereRadius = 0;
 
 	// calculate view-frustum bounds in world space
-	Fmatrix	ex_project, ex_full, ex_full_inverse;
+	Fmatrix	ex_project{}, ex_full{};
+	Fmatrix ex_full_inverse{};
 	{
 		//	
 		const float fRainFar = ps_r3_dyn_wet_surf_far;
 		ex_project.build_projection	(deg2rad(Device.fFOV/* *Device.fASPECT*/),Device.fASPECT,VIEWPORT_NEAR, fRainFar); 
 		ex_full.mul					(ex_project,Device.mView);
-		D3DXMatrixInverse			((D3DXMATRIX*)&ex_full_inverse,0,(D3DXMATRIX*)&ex_full);
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full_inverse),
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full))));
 
 		//	Calculate view frustum were we can see dynamic rain radius
 		{
@@ -172,9 +174,10 @@ void CRender::render_rain()
 		bb.min.y = -fBoundingSphereRadius + vRectOffset.z;
 		bb.max.y = fBoundingSphereRadius + vRectOffset.z;
 
-		//D3DXMatrixOrthoOffCenterLH	((D3DXMATRIX*)&mdir_Project,bb.min.x,bb.max.x,  bb.min.y,bb.max.y,  bb.min.z-tweak_rain_ortho_xform_initial_offs,bb.max.z);
-		D3DXMatrixOrthoOffCenterLH	((D3DXMATRIX*)&mdir_Project,bb.min.x,bb.max.x,  bb.min.y,bb.max.y,  bb.min.z-tweak_rain_ortho_xform_initial_offs,bb.min.z+2*tweak_rain_ortho_xform_initial_offs);
-
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
+			XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y,
+				bb.min.z - tweak_rain_ortho_xform_initial_offs,
+				bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs));
 		cull_xform.mul		(mdir_Project,mdir_View	);
 
 		s32		limit				= _min(RImplementation.o.smapsize, ps_r3_dyn_wet_surf_sm_res);
@@ -188,8 +191,9 @@ void CRender::render_rain()
 			0.0f,			0.0f,				1.0f,		0.0f,
 			view_dim/2.f+fTexelOffs,	view_dim/2.f+fTexelOffs,		0.0f,		1.0f
 		};
-		Fmatrix				m_viewport_inv;
-		D3DXMatrixInverse	((D3DXMATRIX*)&m_viewport_inv,0,(D3DXMATRIX*)&m_viewport);
+		Fmatrix m_viewport_inv{};
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport_inv),
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport))));
 
 		// snap view-position to pixel
 		//	snap zero point to pixel
