@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <d3dx9.h>
-#pragma warning(pop)
+using namespace DirectX;
 
 #include "../../xrCDB/frustum.h"
 
@@ -158,15 +155,16 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 coun
 	VERIFY	(_planes && count);
 	if		(count>HW.Caps.geometry.dwClipPlanes)	count=HW.Caps.geometry.dwClipPlanes;
 
-	D3DXMATRIX			worldToClipMatrixIT;
-	D3DXMatrixInverse	(&worldToClipMatrixIT,NULL,(D3DXMATRIX*)&RDEVICE.mFullTransform);
-	D3DXMatrixTranspose	(&worldToClipMatrixIT,&worldToClipMatrixIT);
-	for		(u32 it=0; it<count; it++)		{
-		Fplane&		P			= _planes	[it];
-		D3DXPLANE	planeWorld	(-P.n.x,-P.n.y,-P.n.z,-P.d), planeClip;
-		D3DXPlaneNormalize		(&planeWorld,	&planeWorld);
-		D3DXPlaneTransform		(&planeClip,	&planeWorld, &worldToClipMatrixIT);
-		CHK_DX					(HW.pDevice->SetClipPlane(it,planeClip));
+	auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
+	worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);
+	XMFLOAT4 planeClip{};
+	XMVECTOR planeWorld{};
+
+	for (u32 it = 0; it < count; it++) {
+		Fplane& P = _planes[it];
+		planeWorld = XMPlaneNormalize(XMVectorSet(-P.n.x, -P.n.y, -P.n.z, -P.d));
+		XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
+		CHK_DX(HW.pDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
 	}
 
 	// Enable them
