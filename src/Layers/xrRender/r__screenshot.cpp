@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include <DirectXPackedVector.h>
+
 //#include "../../xrEngine/xr_effgamma.h"
 #include "xr_effgamma.h"
 #include "dxRenderDeviceRender.h"
@@ -10,6 +13,9 @@
 #endif //USE_DX11
 
 #define	GAMESAVE_SIZE	128
+
+using namespace DirectX;
+using namespace DirectX::PackedVector;
 
 IC u32 convert				(float c)	{
 	u32 C=iFloor(c);
@@ -500,23 +506,23 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
 #endif	//	RENDER != R_R1
 
 	// Image processing (gamma-correct)
-	u32* pPixel		= (u32*)D.pBits;
-	u32* pOrigin	= pPixel;
-	u32* pEnd		= pPixel+(rtWidth*rtHeight);
+	auto pPixel = static_cast<u32*>(D.pBits);
+	auto pOrigin = pPixel;
+	auto pEnd = pPixel + (rtWidth * rtHeight);
 	
 	//	Kill alpha
 #if	RENDER != R_R1
 	if (Target->rt_Color->fmt == D3DFMT_A16B16G16R16F)
 	{
 		static const int iMaxPixelsInARow = 1024;
-		D3DXFLOAT16*	pPixelElement16 = (D3DXFLOAT16*) pPixel;
+		auto pPixelElement16 = (float*)pPixel;
 
-		FLOAT	tmpArray[4*iMaxPixelsInARow];
+		HALF tmpArray[4 * iMaxPixelsInARow]{};
 		while(pPixel!=pEnd)
 		{
 			const int iProcessPixels = _min(iMaxPixelsInARow, (s32)(pEnd-pPixel));
 
-			D3DXFloat16To32Array( tmpArray, pPixelElement16, iProcessPixels*4);			
+			XMConvertFloatToHalfStream(tmpArray, sizeof(tmpArray[0]), pPixelElement16, sizeof(pPixelElement16[0]), iProcessPixels * 4);
 
 			for ( int i=0; i<iProcessPixels; ++i)
 			{
