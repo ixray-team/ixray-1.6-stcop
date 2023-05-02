@@ -3,6 +3,8 @@
 #define		rt_dimensions 1024
 #include	"../xrRender/FBasicVisual.h"
 
+using namespace DirectX;
+
 #ifndef USE_DX11
 void	r_pixel_calculator::begin	()
 {
@@ -45,7 +47,8 @@ r_aabb_ssa		r_pixel_calculator::calculate	(dxRender_Visual* V)	{
 		// camera - left-to-right
 		mView.build_camera_dir		(vFrom.invert(cmDir[face]).mul(100.f),	cmDir[face],	cmNorm[face])	;
 		aabb.xform					(V->vis.box,mView);
-		D3DXMatrixOrthoOffCenterLH	( (D3DXMATRIX*)&mProject, aabb.min.x, aabb.max.x, aabb.min.y, aabb.max.y, aabb.min.z, aabb.max.z );
+		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mProject),
+			XMMatrixOrthographicOffCenterLH(aabb.min.x, aabb.max.x, aabb.min.y, aabb.max.y, aabb.min.z, aabb.max.z));
 		RCache.set_xform_world		(Fidentity);
 		RCache.set_xform_view		(mView);
 		RCache.set_xform_project	(mProject);
