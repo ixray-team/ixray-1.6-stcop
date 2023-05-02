@@ -71,7 +71,6 @@ jobs:
         id: cache
         with:
           path: |
-            ~/.nuget/packages
             ${{ github.workspace }}/packages
           key: |
             ${{ runner.os }}-nuget-${{ hashFiles('**/*.nupkg') }}
