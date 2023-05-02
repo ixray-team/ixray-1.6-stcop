@@ -4,12 +4,14 @@
 #include "../dx10BufferUtils.h"
 
 #include <FlexibleVertexFormat.h>
+
 using namespace FVF;
+using namespace DirectX;
 
 struct VS_INPUT_FLUIDSIM_STRUCT
 {   
-	D3DXVECTOR3 Pos; // Clip space position for slice vertices
-	D3DXVECTOR3 Tex; // Cell coordinates in 0-"texture dimension" range
+	XMFLOAT3 Pos; // Clip space position for slice vertices
+	XMFLOAT3 Tex; // Cell coordinates in 0-"texture dimension" range
 };
 
 namespace
@@ -172,17 +174,17 @@ void dx103DFluidGrid::InitScreenSlice(VS_INPUT_FLUIDSIM_STRUCT** vertices, int z
 	float Width  = float(m_iCols * m_vDim[0]);
 	float Height = float(m_iRows * m_vDim[1]);
 
-	tempVertex1.Pos   = D3DXVECTOR3( px*2.0f/Width-1.0f     , -(py*2.0f/Height) + 1.0f      , 0.0f      );
-	tempVertex1.Tex   = D3DXVECTOR3( 0                      ,  0                            , float(z)  );
+	tempVertex1.Pos = XMFLOAT3(px * 2.0f / Width - 1.0f, -(py * 2.0f / Height) + 1.0f, 0.0f);
+	tempVertex1.Tex = XMFLOAT3(0, 0, float(z));
 
-	tempVertex2.Pos   = D3DXVECTOR3( (px+w)*2.0f/Width -1.0f, -((py)*2.0f/Height) + 1.0f    , 0.0f      );
-	tempVertex2.Tex   = D3DXVECTOR3( w                      ,  0                            , float(z)  );
+	tempVertex2.Pos = XMFLOAT3((px + w) * 2.0f / Width - 1.0f, -((py) * 2.0f / Height) + 1.0f, 0.0f);
+	tempVertex2.Tex = XMFLOAT3(w, 0, float(z));
 
-	tempVertex3.Pos   = D3DXVECTOR3( (px+w)*2.0f/Width -1.0f, -((py+h)*2.0f/Height) + 1.0f  , 0.0f      );
-	tempVertex3.Tex   = D3DXVECTOR3( w                      ,  h                            , float(z)  );
+	tempVertex3.Pos = XMFLOAT3((px + w) * 2.0f / Width - 1.0f, -((py + h) * 2.0f / Height) + 1.0f, 0.0f);
+	tempVertex3.Tex = XMFLOAT3(w, h, float(z));
 
-	tempVertex4.Pos   = D3DXVECTOR3( (px)*2.0f/Width -1.0f  , -((py+h)*2.0f/Height) + 1.0f  , 0.0f      );
-	tempVertex4.Tex   = D3DXVECTOR3( 0                      ,  h                            , float(z)  );
+	tempVertex4.Pos = XMFLOAT3((px) * 2.0f / Width - 1.0f, -((py + h) * 2.0f / Height) + 1.0f, 0.0f);
+	tempVertex4.Tex = XMFLOAT3(0, h, float(z));
 
 	(*vertices)[index++] = tempVertex1;
 	(*vertices)[index++] = tempVertex2;
@@ -202,17 +204,17 @@ void dx103DFluidGrid::InitSlice( int z, VS_INPUT_FLUIDSIM_STRUCT** vertices, int
 	int w = m_vDim[0];
 	int h = m_vDim[1];
 
-	tempVertex1.Pos = D3DXVECTOR3( 1*2.0f/w - 1.0f      , -1*2.0f/h + 1.0f      , 0.0f      );
-	tempVertex1.Tex = D3DXVECTOR3( 1.0f                 ,  1.0f                 , float(z)  );
+	tempVertex1.Pos = XMFLOAT3(1 * 2.0f / w - 1.0f, -1 * 2.0f / h + 1.0f, 0.0f);
+	tempVertex1.Tex = XMFLOAT3(1.0f, 1.0f, float(z));
 
-	tempVertex2.Pos = D3DXVECTOR3( (w-1.0f)*2.0f/w-1.0f , -1*2.0f/h + 1.0f      , 0.0f      );
-	tempVertex2.Tex = D3DXVECTOR3( (w-1.0f)             ,   1.0f                , float(z)  );
+	tempVertex2.Pos = XMFLOAT3((w - 1.0f) * 2.0f / w - 1.0f, -1 * 2.0f / h + 1.0f, 0.0f);
+	tempVertex2.Tex = XMFLOAT3((w - 1.0f), 1.0f, float(z));
 
-	tempVertex3.Pos = D3DXVECTOR3( (w-1.0f)*2.0f/w-1.0f , -(h-1)*2.0f/h+1.0f    , 0.0f      );
-	tempVertex3.Tex = D3DXVECTOR3( (w-1.0f)             , (h-1.0f)              , float(z)  );
+	tempVertex3.Pos = XMFLOAT3((w - 1.0f) * 2.0f / w - 1.0f, -(h - 1) * 2.0f / h + 1.0f, 0.0f);
+	tempVertex3.Tex = XMFLOAT3((w - 1.0f), (h - 1.0f), float(z));
 
-	tempVertex4.Pos = D3DXVECTOR3( 1*2.0f/w - 1.0f      , -(h-1.0f)*2.0f/h+1.0f , 0.0f      );
-	tempVertex4.Tex = D3DXVECTOR3( 1.0f                 , (h-1.0f)              , float(z)  );
+	tempVertex4.Pos = XMFLOAT3(1 * 2.0f/w - 1.0f, -(h - 1.0f) * 2.0f / h + 1.0f, 0.0f);
+	tempVertex4.Tex = XMFLOAT3(1.0f, (h - 1.0f), float(z));
 
 
 	(*vertices)[index++] = tempVertex1;
@@ -231,12 +233,12 @@ void dx103DFluidGrid::InitLine( float x1, float y1, float x2, float y2, int z,
 	int w = m_vDim[0];
 	int h = m_vDim[1];
 
-	tempVertex.Pos  = D3DXVECTOR3( x1*2.0f/w - 1.0f , -y1*2.0f/h + 1.0f , 0.5f      );
-	tempVertex.Tex  = D3DXVECTOR3( 0.0f             , 0.0f              , float(z)  );
+	tempVertex.Pos = XMFLOAT3(x1 * 2.0f / w - 1.0f, -y1 * 2.0f / h + 1.0f, 0.5f);
+	tempVertex.Tex = XMFLOAT3(0.0f, 0.0f, float(z));
 	(*vertices)[index++] = tempVertex;
 
-	tempVertex.Pos  = D3DXVECTOR3( x2*2.0f/w - 1.0f , -y2*2.0f/h + 1.0f , 0.5f      );
-	tempVertex.Tex  = D3DXVECTOR3( 0.0f             , 0.0f              , float(z)  );
+	tempVertex.Pos = XMFLOAT3(x2 * 2.0f / w - 1.0f, -y2 * 2.0f / h + 1.0f, 0.5f);
+	tempVertex.Tex = XMFLOAT3(0.0f, 0.0f, float(z));
 	(*vertices)[index++] = tempVertex;
 }
 
