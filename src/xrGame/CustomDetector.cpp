@@ -136,7 +136,7 @@ void CCustomDetector::OnStateSwitch(u32 S)
 	case eHiding:
 		{
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode?"anm_hide_fast":"anm_hide", FALSE/*TRUE*/, this, GetState());
+			PlayHUDMotion				(m_bFastAnimMode?"anm_hide_fast":"anm_hide", TRUE, this, GetState());
 			SetPending					(TRUE);
 		}break;
 	case eIdle:
