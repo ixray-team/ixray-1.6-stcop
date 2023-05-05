@@ -408,17 +408,20 @@ void CWeaponMagazinedWGrenade::OnMagazineEmpty()
 
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
+	auto last_bMisfire = bMisfire;
 	inherited::ReloadMagazine();
-
+	
 	//перезарядка подствольного гранатомета
-	if(iAmmoElapsed && !getRocketCount() && m_bGrenadeMode) 
+	if(m_bGrenadeMode)
 	{
-		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
-		
-		CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+		bMisfire = last_bMisfire;
+		if(iAmmoElapsed && !getRocketCount()) 
+		{
+			shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
+			CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+		}
 	}
 }
-
 
 void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S) 
 {
