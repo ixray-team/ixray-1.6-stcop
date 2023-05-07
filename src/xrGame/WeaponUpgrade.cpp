@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "Weapon.h"
+#include "IXRayGameConstants.h"
 
 static bool process_if_exists_deg2rad( LPCSTR section, LPCSTR name, float& value, bool test )
 {
@@ -251,13 +252,18 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 		if ( m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent )
 		{
 			m_sSilencerName	= pSettings->r_string( section, "silencer_name" );
-#ifdef USE_100X100_ICONS
-			m_iSilencerX	= pSettings->r_s32( section, "silencer_x" ) * 2;
-			m_iSilencerY	= pSettings->r_s32( section, "silencer_y" ) * 2;
-#else
-			m_iSilencerX	= pSettings->r_s32( section, "silencer_x" );
-			m_iSilencerY	= pSettings->r_s32( section, "silencer_y" );
-#endif // USE_100X100_ICONS
+
+			if (GameConstants::GetUseHQ_Icons())
+			{
+				m_iSilencerX = pSettings->r_s32(section, "silencer_x") * 2;
+				m_iSilencerY = pSettings->r_s32(section, "silencer_y") * 2;
+			}
+			else
+			{
+				m_iSilencerX = pSettings->r_s32(section, "silencer_x");
+				m_iSilencerY = pSettings->r_s32(section, "silencer_y");
+			}
+
 			if(m_eSilencerStatus==ALife::eAddonPermanent)
 				InitAddons();
 		}
@@ -272,13 +278,18 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 		if ( m_eGrenadeLauncherStatus == ALife::eAddonAttachable || m_eGrenadeLauncherStatus == ALife::eAddonPermanent )
 		{
 			m_sGrenadeLauncherName	= pSettings->r_string( section, "grenade_launcher_name" );
-#ifdef USE_100X100_ICONS
-			m_iGrenadeLauncherX		= pSettings->r_s32( section, "grenade_launcher_x" ) * 2;
-			m_iGrenadeLauncherY		= pSettings->r_s32( section, "grenade_launcher_y" ) * 2;
-#else
-			m_iGrenadeLauncherX		= pSettings->r_s32( section, "grenade_launcher_x" );
-			m_iGrenadeLauncherY		= pSettings->r_s32( section, "grenade_launcher_y" );
-#endif // USE_100X100_ICONS
+
+			if (GameConstants::GetUseHQ_Icons())
+			{
+				m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * 2;
+				m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * 2;
+			}
+			else
+			{
+				m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x");
+				m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y");
+			}
+
 			if(m_eGrenadeLauncherStatus==ALife::eAddonPermanent)
 				InitAddons();
 		}

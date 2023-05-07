@@ -7395,6 +7395,9 @@
     <ClInclude Include="InertionData.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Custom Weapon\Weapon Generic</Filter>
     </ClInclude>
+    <ClInclude Include="IXRayGameConstants.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -11041,6 +11044,9 @@
     </ClCompile>
     <ClCompile Include="physics_world_scripted.cpp">
       <Filter>Physics\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="IXRayGameConstants.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
