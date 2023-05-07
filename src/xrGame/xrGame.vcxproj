@@ -1091,6 +1091,7 @@
     <ClInclude Include="inventory_upgrade_root_inline.h" />
     <ClInclude Include="invincible_fury.h" />
     <ClInclude Include="item_manager.h" />
+    <ClInclude Include="IXRayGameConstants.h" />
     <ClInclude Include="key_binding_registrator.h" />
     <ClInclude Include="killer_victim_velocity_angle.h" />
     <ClInclude Include="kills_store.h" />
@@ -3482,6 +3483,7 @@
     </ClCompile>
     <ClCompile Include="invincible_fury.cpp" />
     <ClCompile Include="item_manager.cpp" />
+    <ClCompile Include="IXRayGameConstants.cpp" />
     <ClCompile Include="key_binding_registrator_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>

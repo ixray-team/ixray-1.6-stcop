@@ -25,16 +25,12 @@
 #include "../ActorHelmet.h"
 #include "../eatable_item.h"
 #include "UICellItem.h"
+#include "IXRayGameConstants.h"
 
 extern const LPCSTR g_inventory_upgrade_xml;
 
-#ifdef USE_100X100_ICONS
-#define  INV_GRID_WIDTH2  80.0f
-#define  INV_GRID_HEIGHT2 80.0f
-#else
-#define  INV_GRID_WIDTH2  40.0f
-#define  INV_GRID_HEIGHT2 40.0f
-#endif // USE_100X100_ICONS
+#define INV_GRID_WIDTH2(HQ_ICONS) ((HQ_ICONS) ? (80.0f) : (40.0f))
+#define INV_GRID_HEIGHT2(HQ_ICONS) ((HQ_ICONS) ? (80.0f) : (40.0f))
 
 CUIItemInfo::CUIItemInfo()
 {
@@ -339,20 +335,26 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 		Irect item_grid_rect				= pInvItem->GetInvGridRect();
 		Frect texture_rect;
-		texture_rect.lt.set					(item_grid_rect.x1*INV_GRID_WIDTH,	item_grid_rect.y1*INV_GRID_HEIGHT);
-		texture_rect.rb.set					(item_grid_rect.x2*INV_GRID_WIDTH,	item_grid_rect.y2*INV_GRID_HEIGHT);
+		texture_rect.lt.set					(item_grid_rect.x1*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()),	item_grid_rect.y1*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
+		texture_rect.rb.set					(item_grid_rect.x2*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()),	item_grid_rect.y2*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
 		texture_rect.rb.add					(texture_rect.lt);
 		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->SetStretchTexture		(true);
-#ifdef USE_100X100_ICONS
-		Fvector2 v_r						= { item_grid_rect.x2*INV_GRID_WIDTH2 / 2,	
-												item_grid_rect.y2*INV_GRID_HEIGHT2 / 2};
-#else
-		Fvector2 v_r						= { item_grid_rect.x2*INV_GRID_WIDTH2,	
-												item_grid_rect.y2*INV_GRID_HEIGHT2};
-#endif // USE_100X100_ICONS
-		
+
+		Fvector2 v_r{};
+
+		if (GameConstants::GetUseHQ_Icons())
+		{
+			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(GameConstants::GetUseHQ_Icons()) / 2,
+				item_grid_rect.y2 * INV_GRID_HEIGHT2(GameConstants::GetUseHQ_Icons()) / 2 };
+		}
+		else
+		{
+			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(GameConstants::GetUseHQ_Icons()),
+				item_grid_rect.y2 * INV_GRID_HEIGHT2(GameConstants::GetUseHQ_Icons()) };
+		}
+
 		v_r.x								*= UI().get_current_kx();
 
 		UIItemImage->GetUIStaticItem().SetSize	(v_r);
