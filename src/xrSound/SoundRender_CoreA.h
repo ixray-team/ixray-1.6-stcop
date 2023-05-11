@@ -14,6 +14,8 @@
 #	define AC_CHK(expr)		{ expr; }
 #endif
 
+#define FUNCTION_CAST(T, ptr) reinterpret_cast<T>(ptr)
+
 class CSoundRender_CoreA: public CSoundRender_Core
 {
 	typedef CSoundRender_Core inherited;
@@ -31,21 +33,44 @@ class CSoundRender_CoreA: public CSoundRender_Core
 	};
 	SListener				Listener;
 
+    /* Filter object functions */
+    LPALGENFILTERS alGenFilters{};
+    LPALDELETEFILTERS alDeleteFilters{};
+    LPALISFILTER alIsFilter{};
+    LPALFILTERI alFilteri{};
+    LPALFILTERIV alFilteriv{};
+    LPALFILTERF alFilterf{};
+    LPALFILTERFV alFilterfv{};
+    LPALGETFILTERI alGetFilteri{};
+    LPALGETFILTERIV alGetFilteriv{};
+    LPALGETFILTERF alGetFilterf{};
+    LPALGETFILTERFV alGetFilterfv{};
+
+    /* Effect object functions */
     LPALGENEFFECTS alGenEffects{};
     LPALDELETEEFFECTS alDeleteEffects{};
     LPALISEFFECT alIsEffect{};
-    LPALEFFECTF alEffectf{};
     LPALEFFECTI alEffecti{};
+    LPALEFFECTIV alEffectiv{};
+    LPALEFFECTF alEffectf{};
     LPALEFFECTFV alEffectfv{};
     LPALGETEFFECTI alGetEffecti{};
-    LPALGETEFFECTF alGetEffectf{};
-    LPALGETEFFECTFV alGetEffectfv{};
+    LPALGETEFFECTIV alGetEffectiv{};
+    LPALGETEFFECTF alGetEffectf;
+    LPALGETEFFECTFV alGetEffectfv;
+
+    /* Auxiliary Effect Slot object functions */
     LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots{};
     LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots{};
+    LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot{};
     LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti{};
+    LPALAUXILIARYEFFECTSLOTIV alAuxiliaryEffectSlotiv{};
     LPALAUXILIARYEFFECTSLOTF alAuxiliaryEffectSlotf{};
     LPALAUXILIARYEFFECTSLOTFV alAuxiliaryEffectSlotfv{};
-    LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot{};
+    LPALGETAUXILIARYEFFECTSLOTI alGetAuxiliaryEffectSloti{};
+    LPALGETAUXILIARYEFFECTSLOTIV alGetAuxiliaryEffectSlotiv{};
+    LPALGETAUXILIARYEFFECTSLOTF alGetAuxiliaryEffectSlotf{};
+    LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv{};
 
     ALuint effect{};
     ALuint effectfv{};
@@ -63,6 +88,7 @@ public:
         return slot;
     }
 
+    virtual int load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
     virtual void set_listener(const CSoundRender_Environment& env);
     virtual void get_listener(CSoundRender_Environment& env);
     virtual bool initialized();

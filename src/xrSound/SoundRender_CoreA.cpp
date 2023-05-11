@@ -5,6 +5,7 @@
 #include "SoundRender_CoreA.h"
 #include "SoundRender_TargetA.h"
 #include "OpenALDeviceList.h"
+#include "SoundRender_Environment.h"
 
 CSoundRender_CoreA*	SoundRenderA = nullptr;
 
@@ -17,6 +18,50 @@ CSoundRender_CoreA::CSoundRender_CoreA	() {
 bool CSoundRender_CoreA::initialized()
 {
     return m_is_supported;
+}
+
+// LoadEffect loads the given initial reverb properties into the given OpenAL
+//  effect object, and returns non-zero on success.
+int CSoundRender_CoreA::load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb)
+{
+    ALenum err;
+
+    alGetError();
+
+    // Load the reverb properties.
+    A_CHK(alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DENSITY, reverb->flDensity));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DIFFUSION, reverb->flDiffusion));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_GAIN, reverb->flGain));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_GAINHF, reverb->flGainHF));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_GAINLF, reverb->flGainLF));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_TIME, reverb->flDecayTime));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, reverb->flDecayHFRatio));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, reverb->flDecayLFRatio));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, reverb->flReflectionsGain));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, reverb->flReflectionsDelay));
+    A_CHK(alEffectfv(effect, AL_EAXREVERB_REFLECTIONS_PAN, reverb->flReflectionsPan));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, reverb->flLateReverbGain));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, reverb->flLateReverbDelay));
+    A_CHK(alEffectfv(effect, AL_EAXREVERB_LATE_REVERB_PAN, reverb->flLateReverbPan));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_TIME, reverb->flEchoTime));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, reverb->flEchoDepth));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, reverb->flModulationTime));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, reverb->flModulationDepth));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, reverb->flAirAbsorptionGainHF));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_HFREFERENCE, reverb->flHFReference));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LFREFERENCE, reverb->flLFReference));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, reverb->flRoomRolloffFactor));
+    A_CHK(alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, reverb->iDecayHFLimit));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up reverb: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
 }
 
 void CSoundRender_CoreA::set_listener(const CSoundRender_Environment& env)
@@ -71,10 +116,9 @@ void CSoundRender_CoreA::get_listener(CSoundRender_Environment& env)
 
 void CSoundRender_CoreA::commit()
 {
-    /* Tell the effect slot to use the loaded effect object. Note that this
-     * effectively copies the effect properties. You can modify or delete the
-     * effect object afterward without affecting the effect slot.
-     */
+    // Tell the effect slot to use the loaded effect object. Note that this
+    // effectively copies the effect properties. You can modify or delete the
+    // effect object afterward without affecting the effect slot.
     A_CHK(alAuxiliaryEffectSlotf(slot, AL_EFFECTSLOT_GAIN, 1.f));
     A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, false));
     A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, effect));
@@ -147,57 +191,53 @@ void CSoundRender_CoreA::_initialize(int stage)
     A_CHK				        (alListenerfv		(AL_ORIENTATION,&orient[0].x));
     A_CHK				        (alListenerf		(AL_GAIN,1.f));
 
-#define LOAD_PROC(x, type) \
-    do \
-    { \
-        ((x) = (type)alGetProcAddress(#x)); \
-        if (!(x)) \
-            return; \
-    } while (false)
+     // Define a macro to help load the function pointers.
+#define LOAD_PROC(T, x)  ((x) = FUNCTION_CAST(T, alGetProcAddress(#x)))
+    // Filter object functions
+    LOAD_PROC(LPALGENFILTERS, alGenFilters);
+    LOAD_PROC(LPALDELETEFILTERS, alDeleteFilters);
+    LOAD_PROC(LPALISFILTER, alIsFilter);
+    LOAD_PROC(LPALFILTERI, alFilteri);
+    LOAD_PROC(LPALFILTERIV, alFilteriv);
+    LOAD_PROC(LPALFILTERF, alFilterf);
+    LOAD_PROC(LPALFILTERFV, alFilterfv);
+    LOAD_PROC(LPALGETFILTERI, alGetFilteri);
+    LOAD_PROC(LPALGETFILTERIV, alGetFilteriv);
+    LOAD_PROC(LPALGETFILTERF, alGetFilterf);
+    LOAD_PROC(LPALGETFILTERFV, alGetFilterfv);
 
-    LOAD_PROC(alGenEffects, LPALGENEFFECTS);
-    LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
-    LOAD_PROC(alIsEffect, LPALISEFFECT);
-    LOAD_PROC(alEffecti, LPALEFFECTI);
-    LOAD_PROC(alEffectf, LPALEFFECTF);
-    LOAD_PROC(alEffectfv, LPALEFFECTFV);
-    LOAD_PROC(alGetEffectf, LPALGETEFFECTF);
-    LOAD_PROC(alGetEffectfv, LPALGETEFFECTFV);
-    LOAD_PROC(alGetEffecti, LPALGETEFFECTI);
-    LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
-    LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
-    LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
-    LOAD_PROC(alAuxiliaryEffectSlotf, LPALAUXILIARYEFFECTSLOTF);
-    LOAD_PROC(alIsAuxiliaryEffectSlot, LPALISAUXILIARYEFFECTSLOT);
+    // Effect object functions
+    LOAD_PROC(LPALGENEFFECTS, alGenEffects);
+    LOAD_PROC(LPALDELETEEFFECTS, alDeleteEffects);
+    LOAD_PROC(LPALISEFFECT, alIsEffect);
+    LOAD_PROC(LPALEFFECTI, alEffecti);
+    LOAD_PROC(LPALEFFECTIV, alEffectiv);
+    LOAD_PROC(LPALEFFECTF, alEffectf);
+    LOAD_PROC(LPALEFFECTFV, alEffectfv);
+    LOAD_PROC(LPALGETEFFECTI, alGetEffecti);
+    LOAD_PROC(LPALGETEFFECTIV, alGetEffectiv);
+    LOAD_PROC(LPALGETEFFECTF, alGetEffectf);
+    LOAD_PROC(LPALGETEFFECTFV, alGetEffectfv); alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+   
+    // Auxiliary effect slot object functions
+    LOAD_PROC(LPALGENAUXILIARYEFFECTSLOTS, alGenAuxiliaryEffectSlots);
+    LOAD_PROC(LPALDELETEAUXILIARYEFFECTSLOTS, alDeleteAuxiliaryEffectSlots);
+    LOAD_PROC(LPALISAUXILIARYEFFECTSLOT, alIsAuxiliaryEffectSlot);
+    LOAD_PROC(LPALAUXILIARYEFFECTSLOTI, alAuxiliaryEffectSloti);
+    LOAD_PROC(LPALAUXILIARYEFFECTSLOTIV, alAuxiliaryEffectSlotiv);
+    LOAD_PROC(LPALAUXILIARYEFFECTSLOTF, alAuxiliaryEffectSlotf);
+    LOAD_PROC(LPALAUXILIARYEFFECTSLOTFV, alAuxiliaryEffectSlotfv);
+    LOAD_PROC(LPALGETAUXILIARYEFFECTSLOTI, alGetAuxiliaryEffectSloti);
+    LOAD_PROC(LPALGETAUXILIARYEFFECTSLOTIV, alGetAuxiliaryEffectSlotiv);
+    LOAD_PROC(LPALGETAUXILIARYEFFECTSLOTF, alGetAuxiliaryEffectSlotf);
+    LOAD_PROC(LPALGETAUXILIARYEFFECTSLOTFV, alGetAuxiliaryEffectSlotfv);
+#undef LOAD_PROC
 
     alGenEffects(1, &effect);
 
-    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
-    alEffectf(effect, AL_EAXREVERB_DENSITY, AL_EAXREVERB_DEFAULT_DENSITY);
-    alEffectf(effect, AL_EAXREVERB_DIFFUSION, AL_EAXREVERB_DEFAULT_DIFFUSION);
-    alEffectf(effect, AL_EAXREVERB_GAIN, AL_EAXREVERB_DEFAULT_GAIN);
-    alEffectf(effect, AL_EAXREVERB_GAINHF, AL_EAXREVERB_DEFAULT_GAINHF);
-    alEffectf(effect, AL_EAXREVERB_GAINLF, AL_EAXREVERB_DEFAULT_GAINLF);
-    alEffectf(effect, AL_EAXREVERB_DECAY_TIME, AL_EAXREVERB_DEFAULT_DECAY_TIME);
-    alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO, AL_EAXREVERB_DEFAULT_DECAY_HFRATIO);
-    alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, AL_EAXREVERB_DEFAULT_DECAY_LFRATIO);
-    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, AL_EAXREVERB_DEFAULT_REFLECTIONS_GAIN);
-    alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, AL_EAXREVERB_DEFAULT_REFLECTIONS_DELAY);
-    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, AL_EAXREVERB_DEFAULT_LATE_REVERB_GAIN);
-    alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, AL_EAXREVERB_DEFAULT_LATE_REVERB_DELAY);
-    alEffectf(effect, AL_EAXREVERB_ECHO_TIME, AL_EAXREVERB_DEFAULT_ECHO_TIME);
-    alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, AL_EAXREVERB_DEFAULT_ECHO_DEPTH);
-    alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, AL_EAXREVERB_DEFAULT_MODULATION_TIME);
-    alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, AL_EAXREVERB_DEFAULT_MODULATION_DEPTH);
-    alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, AL_EAXREVERB_DEFAULT_AIR_ABSORPTION_GAINHF);
-    alEffectf(effect, AL_EAXREVERB_HFREFERENCE, AL_EAXREVERB_DEFAULT_HFREFERENCE);
-    alEffectf(effect, AL_EAXREVERB_LFREFERENCE, AL_EAXREVERB_DEFAULT_LFREFERENCE);
-    alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, AL_EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR);
-    alEffecti(effect, AL_EAXREVERB_DECAY_HFLIMIT, AL_EAXREVERB_DEFAULT_DECAY_HFLIMIT);
-
-#undef LOAD_PROC
-
-    /* Check if an error occured, and clean up if so. */
+    load_effect(effect, &reverbs[0]);
+   
+    // Check if an error occured, and clean up if so.
     ALenum err = alGetError();
     if (err == AL_NO_ERROR)
         m_is_supported = true;
@@ -209,6 +249,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     }
 
     alGenAuxiliaryEffectSlots(1, &slot);
+
     err = alGetError();
     if (err != AL_NO_ERROR)
         Log("! SOUND: OpenAL: failed to generate auxiliary slot:", alGetString(err));
