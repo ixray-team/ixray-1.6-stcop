@@ -76,7 +76,10 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_sounds.LoadSound(section,"snd_holster", "sndHide"		, false, m_eSoundHide		);
 	m_sounds.LoadSound(section,"snd_shoot", "sndShot"		, false, m_eSoundShot		);
 	m_sounds.LoadSound(section,"snd_empty", "sndEmptyClick"	, false, m_eSoundEmptyClick	);
-	m_sounds.LoadSound(section,"snd_reload", "sndReload"		, true, m_eSoundReload		);
+	m_sounds.LoadSound(section,"snd_reload", "sndReload"	, true, m_eSoundReload		);
+
+	if (isHUDAnimationExist("anm_reload_empty"))
+		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload		);
 	
 	m_sSndShotCurrent = "sndShot";
 		
@@ -466,9 +469,8 @@ void CWeaponMagazined::UpdateSounds	()
 	Fvector P						= get_LastFP();
 	m_sounds.SetPosition("sndShow", P);
 	m_sounds.SetPosition("sndHide", P);
-//. nah	m_sounds.SetPosition("sndShot", P);
 	m_sounds.SetPosition("sndReload", P);
-//. nah	m_sounds.SetPosition("sndEmptyClick", P);
+	m_sounds.SetPosition("sndReloadEmpty", P);
 }
 
 void CWeaponMagazined::state_Fire(float dt)
@@ -704,8 +706,13 @@ void CWeaponMagazined::switch2_Empty()
 }
 void CWeaponMagazined::PlayReloadSound()
 {
-	if(m_sounds_enabled)
-		PlaySound	("sndReload",get_LastFP());
+	if(!m_sounds_enabled)
+		return;
+
+	if (isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+		PlaySound("sndReloadEmpty", get_LastFP());
+	else
+		PlaySound("sndReload", get_LastFP());
 }
 
 void CWeaponMagazined::switch2_Reload()
@@ -1082,8 +1089,12 @@ void CWeaponMagazined::PlayAnimHide()
 
 void CWeaponMagazined::PlayAnimReload()
 {
-	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_reload", TRUE, this, GetState());
+	VERIFY(GetState() == eReload);
+
+	if (isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+		PlayHUDMotion("anm_reload_empty", TRUE, this, GetState());
+	else
+		PlayHUDMotion("anm_reload", TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimAim()
