@@ -97,6 +97,8 @@ public:
 
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
 
+	bool			bMisfireReload;
+
 public:
 	virtual bool	SwitchMode				();
 	virtual bool	SingleShotMode			()			{return 1 == m_iQueueSize;}
