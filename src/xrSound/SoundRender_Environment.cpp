@@ -4,7 +4,7 @@
 #include "soundrender.h"
 #include "soundrender_environment.h"
 #include <AL/efx.h>
-#include <AL/efx-presets.h>
+
 
 CSoundRender_Environment::CSoundRender_Environment(void)
 {
@@ -18,10 +18,6 @@ CSoundRender_Environment::~CSoundRender_Environment(void)
 
 void CSoundRender_Environment::set_default	()
 {
-    EFXEAXREVERBPROPERTIES reverbs[1] = {
-        EFX_REVERB_PRESET_GENERIC
-    };
-
     Room = AL_EAXREVERB_MIN_GAIN; // reverbs->flGain;
     RoomHF = reverbs->flGainHF;
     RoomLF = reverbs->flGainLF;
