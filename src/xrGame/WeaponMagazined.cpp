@@ -21,6 +21,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
+#include "Actor_Flags.h"
 
 ENGINE_API	bool	g_dedicated_server;
 
@@ -157,9 +158,12 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if(m_pInventory && !iAmmoElapsed && actor && GetState()!=eReload) 
-		Reload();
+	if (psActorFlags.test(AF_AUTORELOAD))
+	{
+		CActor	*actor = smart_cast<CActor*>(H_Parent());
+		if(m_pInventory && !iAmmoElapsed && actor && GetState()!=eReload)
+			Reload();
+	}
 }
 
 void CWeaponMagazined::Reload() 
@@ -688,14 +692,15 @@ void CWeaponMagazined::switch2_Empty()
 {
 	OnZoomOut();
 	
-	if(!TryReload())
+	if (psActorFlags.test(AF_AUTORELOAD))
 	{
-		OnEmptyClick();
+		if(!TryReload())
+			OnEmptyClick();
+		else
+			inherited::FireEnd();
 	}
 	else
-	{
-		inherited::FireEnd();
-	}
+		OnEmptyClick();
 }
 void CWeaponMagazined::PlayReloadSound()
 {
