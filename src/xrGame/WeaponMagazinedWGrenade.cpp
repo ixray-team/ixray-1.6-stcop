@@ -12,6 +12,7 @@
 #include "game_base_space.h"
 #include "../xrphysics/MathUtils.h"
 #include "player_hud.h"
+#include "Actor_Flags.h"
 
 #ifdef DEBUG
 #	include "phdebug.h"
@@ -205,10 +206,12 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 			if(iAmmoElapsed)
 				LaunchGrenade		();
 			else
-				Reload				();
-
-			if(GetState() == eIdle) 
-				OnEmptyClick			();
+			{
+				if (psActorFlags.test(AF_AUTORELOAD))
+					Reload();
+				else
+					OnEmptyClick();
+			}
 		}
 		return					true;
 	}
@@ -448,11 +451,6 @@ void CWeaponMagazinedWGrenade::OnAnimationEnd(u32 state)
 	case eSwitch:
 		{
 			SwitchState(eIdle);
-		}break;
-	case eFire:
-		{
-			if(m_bGrenadeMode)
-				Reload();
 		}break;
 	}
 	inherited::OnAnimationEnd(state);
