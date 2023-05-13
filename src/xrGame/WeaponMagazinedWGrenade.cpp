@@ -623,7 +623,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 		if(IsZoomed())
 		{
 			if(m_bGrenadeMode)
-				PlayHUDMotion("anm_idle_g_aim", FALSE, NULL, GetState());
+				PlayHUDMotion("anm_idle_g_aim", TRUE, NULL, GetState());
 			else
 				PlayHUDMotion("anm_idle_w_gl_aim", TRUE, NULL, GetState());
 		}else
@@ -647,7 +647,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 			if(m_bGrenadeMode)
 			{
 				if(act_state==0)
-					PlayHUDMotion("anm_idle_g", FALSE, NULL, GetState());
+					PlayHUDMotion("anm_idle_g", TRUE, NULL, GetState());
 				else
 				if(act_state==1)
 					PlayHUDMotion("anm_idle_sprint_g", TRUE, NULL,GetState());
@@ -658,7 +658,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 			}else
 			{
 				if(act_state==0)
-					PlayHUDMotion("anm_idle_w_gl", FALSE, NULL, GetState());
+					PlayHUDMotion("anm_idle_w_gl", TRUE, NULL, GetState());
 				else
 				if(act_state==1)
 					PlayHUDMotion("anm_idle_sprint_w_gl", TRUE, NULL,GetState());
