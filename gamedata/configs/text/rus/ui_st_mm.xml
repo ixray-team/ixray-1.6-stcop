@@ -852,6 +852,9 @@
 	<string id="ui_st_disable_hud">
 		<text>Показывать интерфейс</text>
 	</string>
+	<string id="ui_st_autoreload">
+		<text>Автоперезарядка</text>
+	</string>
 	<string id="mp_gp_unique_nick_not_registred">
 		<text>Уникальный ник не зарегистрирован. Пожалуйста, зарегистрируйте его</text>
 	</string>
