@@ -28,6 +28,8 @@
 #define		r2_RT_generic2		"$user$generic2"		// ---	//	Igor: for volumetric lights
 #define		r2_RT_generic		"$user$generic"		// ---
 
+#define		r2_RT_backbuffer_final "$user$backbuffer"
+
 #define		r2_RT_bloom1		"$user$bloom1"			// ---
 #define		r2_RT_bloom2		"$user$bloom2"			// ---
 

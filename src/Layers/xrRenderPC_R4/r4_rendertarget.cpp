@@ -15,6 +15,7 @@
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
+#include "blender_fxaa.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
@@ -404,11 +405,20 @@ CRenderTarget::CRenderTarget		()
 			rt_Generic_1_r.create			(r2_RT_generic1_r,w,h,D3DFMT_A8R8G8B8, SampleCount		);
 			rt_Generic.create		      (r2_RT_generic,w,h,   D3DFMT_A8R8G8B8, 1		);
 		}
+
+		rt_Back_Buffer.create(r2_RT_backbuffer_final, w, h, D3DFMT_A8R8G8B8, 1);
+
 		//	Igor: for volumetric lights
 		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
 		if (RImplementation.o.advancedpp)
 			rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A16B16G16R16F, SampleCount );
+	}
+
+	// FXAA
+	{
+		b_fxaa = xr_new<CBlender_FXAA>();
+		s_fxaa.create(b_fxaa);
 	}
 
 	// OCCLUSION
@@ -1013,6 +1023,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_accum_point			);
 	xr_delete					(b_accum_direct			);
 	xr_delete					(b_ssao					);
+	xr_delete					(b_fxaa					);
 
    if( RImplementation.o.dx10_msaa )
    {

@@ -49,6 +49,8 @@ public:
 	IBlender*					b_ssao;
 	IBlender*					b_ssao_msaa[8];
 
+	IBlender*					b_fxaa;
+
     // compute shader for hdao
     IBlender*                   b_hdao_cs;
     IBlender*                   b_hdao_msaa_cs;
@@ -69,6 +71,7 @@ public:
 	ref_rt						rt_Generic_0_r;   // MRT generic 0
 	ref_rt						rt_Generic_1_r;   // MRT generic 1
 	ref_rt						rt_Generic;
+	ref_rt						rt_Back_Buffer;
 	ref_rt						rt_Position;		// 64bit,	fat	(x,y,z,?)				(eye-space)
 	ref_rt						rt_Normal;			// 64bit,	fat	(x,y,z,hemi)			(eye-space)
 	ref_rt						rt_Color;			// 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
@@ -110,8 +113,9 @@ public:
 	ID3DTexture2D*			t_noise_surf	[TEX_jitter_count];
 	ref_texture					t_noise				[TEX_jitter_count];
 private:
-	// OCCq
+	ref_shader					s_fxaa;
 
+	// OCCq
 	ref_shader					s_occq;
 
 	// SSAO
@@ -245,6 +249,8 @@ public:
 	bool						u_need_CM				();
 	BOOL						u_DBT_enable			(float zMin, float zMax);
 	void						u_DBT_disable			();
+
+	void						phase_fxaa				();
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();

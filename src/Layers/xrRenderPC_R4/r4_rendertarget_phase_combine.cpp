@@ -420,6 +420,13 @@ void	CRenderTarget::phase_combine	()
 	}
 	RCache.set_Stencil		(FALSE);
 
+	if (ps_r2_aa_type == 1)
+	{
+		PIX_EVENT(FXAA);
+		phase_fxaa();
+		RCache.set_Stencil(FALSE);
+	}
+
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
 	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares	();	// lens-flares
 

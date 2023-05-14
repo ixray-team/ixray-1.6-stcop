@@ -741,6 +741,7 @@
     <ClInclude Include="..\xrRender\R_sun_support.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="blender_fxaa.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1349,6 +1350,8 @@
     <ClCompile Include="..\xrRenderDX10\dx11Texture.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="blender_fxaa.cpp" />
+    <ClCompile Include="r4_rendertarget_phase_fxaa.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages.config" />
