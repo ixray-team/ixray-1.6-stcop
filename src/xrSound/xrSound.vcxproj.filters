@@ -129,4 +129,7 @@
       <Filter>Cache</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Packages.config" />
+  </ItemGroup>
 </Project>
