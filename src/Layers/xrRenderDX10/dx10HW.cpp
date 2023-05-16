@@ -64,8 +64,8 @@ CHW::~CHW()
 //////////////////////////////////////////////////////////////////////
 void CHW::CreateD3D()
 {
-	IDXGIFactory * pFactory;
-	R_CHK( CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory)) );
+	IDXGIFactory* pFactory = nullptr;
+	R_CHK(CreateDXGIFactory(IID_PPV_ARGS(&pFactory)));
 
 	m_pAdapter = 0;
 	m_bUsePerfhud = false;
@@ -952,8 +952,8 @@ void CHW::UpdateViews()
 
 	// Create a render target view
 	//R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
-	ID3DTexture2D *pBuffer;
-	R = m_pSwapChain->GetBuffer( 0, __uuidof( ID3DTexture2D ), (LPVOID*)&pBuffer );
+	ID3DTexture2D* pBuffer = nullptr;
+	R = m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
 	R_CHK(R);
 
 	R = pDevice->CreateRenderTargetView( pBuffer, NULL, &pBaseRT);
