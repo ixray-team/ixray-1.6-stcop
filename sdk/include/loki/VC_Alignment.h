@@ -58,7 +58,7 @@ protected:
     template<unsigned AlignmentSize>
     struct AlignedPod
     {
-        STATIC_CHECK(AlignmentSize == 0, BadAlignmentSize_OnlyUpTo128);
+        static_assert(AlignmentSize == 0, "Bad alignment size only up to 128");
     };
 
 //
@@ -69,8 +69,8 @@ protected:
 template<> struct AlignedPod<_size_> {                        \
   __declspec(align(_size_)) struct type { char X[_size_]; };  \
   enum { alignment = __alignof(type) }; };                    \
-STATIC_CHECK((_size_ == sizeof(AlignedPod<_size_>::type)), SizeofNotEqualSize); \
-STATIC_CHECK((_size_ == (AlignedPod<_size_>::alignment)), SizeofNotEqualAlignof)
+static_assert((_size_ == sizeof(AlignedPod<_size_>::type)), "Size of not equal size"); \
+static_assert((_size_ == (AlignedPod<_size_>::alignment)), "Size of not equal alignof")
 
 
     ALIGNED_POD(1);

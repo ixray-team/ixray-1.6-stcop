@@ -595,8 +595,8 @@ private:
     template <class T>
     void VariantConstruct(const T& val, double)
     {
-        STATIC_CHECK((::Loki::TL::IndexOf<TList, T>::value >= 0), 
-            Invalid_Type_Used_As_Initializer);
+        static_assert((::Loki::TL::IndexOf<TList, T>::value >= 0), 
+            "Invalid type used as initializer");
         
         new(&buffer_[0]) T(val);
         vptr_ = VTableImpl<T>::GetVPTR();

@@ -44,12 +44,12 @@ private:
 
 	//перобразование из LPCSTR в T_ITEM
 
-	template <typename T_CONVERT_ITEM>
-        T_ITEM				convert			(LPCSTR)
-	{
-		STATIC_CHECK(false, Specialization_for_convert_in_CIni_Table_not_found);
-		NODEFAULT;
-	}
+		template <typename T_CONVERT_ITEM>
+		T_ITEM convert(LPCSTR)
+		{
+			static_assert(false, "Specialization for convert in CIni Table not found");
+			NODEFAULT;
+		}
 
 	template <>
 		T_ITEM				convert<int>		(LPCSTR str)

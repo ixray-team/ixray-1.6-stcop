@@ -33,7 +33,7 @@ protected:
 	template <u32 NUM>
 	static void						LoadItemData	(u32, LPCSTR)
 	{
-		STATIC_CHECK(false, Specialization_for_LoadItemData_in_CIni_IdToIndex_not_found);
+		static_assert(false, "Specialization for LoadItemData in CIni IdToIndex not found");
 		NODEFAULT;
 	}
 

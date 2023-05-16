@@ -248,7 +248,7 @@ CScriptStorage::CScriptStorage		()
 
 #ifdef USE_LUA_STUDIO
 #	ifndef USE_DEBUGGER
-		STATIC_CHECK( false, Do_Not_Define_USE_LUA_STUDIO_macro_without_USE_DEBUGGER_macro );
+	static_assert(false, "Do not define USE_LUA_STUDIO macro without USE_DEBUGGER macro");
 #	endif // #ifndef USE_DEBUGGER
 #endif // #ifdef USE_LUA_STUDIO
 }

@@ -9,11 +9,6 @@
 #ifndef CS_DEFINES_H_INCLUDED
 #define CS_DEFINES_H_INCLUDED
 
-// STATIC_CHECK macro
-#ifndef STATIC_CHECK
-#	define STATIC_CHECK(expr, msg)			typedef char ERROR_##msg[1][(expr)]
-#endif // #ifndef STATIC_CHECK
-
 // DECLSPEC_NOVTABLE macro
 #ifndef DECLSPEC_NOVTABLE
 #	if (_MSC_VER >= 1100) && defined(__cplusplus)
@@ -25,7 +20,7 @@
 
 // CS_STRING_CONCAT macro
 #if defined(CS_STRING_CONCAT) || defined(CS_STRING_CONCAT_HELPER)
-	STATIC_CHECK(false, CS_STRING_CONCAT_or_CS_STRING_CONCAT_HELPER_or_CS_STRING_CONCAT4_macro_already_defined);
+	static_assert(false, "CS STRING_CONCAT or CS_STRING_CONCAT_HELPER or CS_STRING_CONCAT4 macro already defined");
 #endif // #if defined(CS_STRING_CONCAT) || defined(CS_STRING_CONCAT_HELPER)
 
 #define CS_STRING_CONCAT_HELPER(a,b)		a##b
@@ -33,7 +28,7 @@
 
 // CS_MAKE_STRING macro
 #if defined(CS_MAKE_STRING) || defined(CS_MAKE_STRING_HELPER)
-	STATIC_CHECK(false, CS_MAKE_STRING_or_CS_MAKE_STRING_HELPER_macro_already_defined);
+	static_assert(false, "CS MAKE_STRING or CS_MAKE_STRING_HELPER macro already defined");
 #endif // #if defined(CS_MAKE_STRING) || defined(CS_MAKE_STRING_HELPER)
 
 #define CS_MAKE_STRING_HELPER(a)			#a
