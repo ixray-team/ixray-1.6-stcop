@@ -479,7 +479,7 @@ namespace Loki
 
 // this macro will cause compile time error if _type_ is not a Typelist or NullType
 #define ASSERT_TYPELIST(_type_) \
-STATIC_CHECK( ::Loki::TL::is_Typelist<_type_>::value, TList_is_not_legal_Typelist )
+static_assert( ::Loki::TL::is_Typelist<_type_>::value, "TList is not legal Typelist" )
 
 #else
 

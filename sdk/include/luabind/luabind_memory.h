@@ -11,7 +11,7 @@
 
 #ifdef DEBUG
 #	ifdef NDEBUG
-		STATIC_CHECK(false,Do_not_define_NDEBUG_macros_in_DEBUG_configuration_since_luabind_classes_are_sensisitve_to_it)
+		static_assert(false,"Do not define NDEBUG macros in DEBUG configuration since luabind classes are sensisitve to it")
 #	endif // #ifdef NDEBUG
 #endif // #ifdef DEBUG
 

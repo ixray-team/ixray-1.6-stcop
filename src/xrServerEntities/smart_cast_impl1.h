@@ -326,7 +326,7 @@ namespace SmartDynamicCast {
 
 		template <int length>
 		struct selector {
-			STATIC_CHECK(length > 1,Internal_error_please_report);
+			static_assert(length > 1, "Internal error please report");
 
 			typedef typename selector<1>::result nearest;
 
@@ -440,7 +440,7 @@ namespace SmartDynamicCast {
 		template <typename T1>
 		IC	static T1* smart_cast(T2* p)
 		{
-			STATIC_CHECK		(!std::is_const<T2>::value || std::is_const<T1>::value,Cannot_use_smart_cast_to_convert_const_to_non_const);
+			static_assert(!std::is_const<T2>::value || std::is_const<T1>::value, "Cannot use smart cast to convert const to non const");
 			typedef std::remove_const<T1>::type _T1;
 			typedef std::remove_const<T2>::type _T2;
 #ifdef DEBUG
@@ -482,10 +482,10 @@ template <typename T1, typename T2>
 IC	T1	smart_cast(T2* p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
-	STATIC_CHECK				(std::is_pointer<T1>::value,Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(std::is_void<std::remove_pointer<T1>::type>::value 
-		|| std::is_polymorphic<std::remove_pointer<T1>::type>::value,Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(std::is_polymorphic<T2>::value,Invalid_source_type_for_Dynamic_Cast);
+	static_assert(std::is_pointer<T1>::value, "Invalid target type for Dynamic Cast");
+	static_assert(std::is_void<std::remove_pointer<T1>::type>::value
+		|| std::is_polymorphic<std::remove_pointer<T1>::type>::value, "Invalid target type for Dynamic Cast");
+	static_assert(std::is_polymorphic<T2>::value, "Invalid source type for Dynamic Cast");
 #endif
 #ifdef SMART_CAST_STATS_ALL
 	add_smart_cast_stats_all	(typeid(T2*).name(),typeid(T1).name());
@@ -499,9 +499,9 @@ template <typename T1, typename T2>
 IC	T1	smart_cast(T2& p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
-	STATIC_CHECK				(std::is_reference<T1>::value,Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(std::is_polymorphic<std::remove_reference<T1>::type>::value,Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(std::is_polymorphic<T2>::value,Invalid_source_type_for_Dynamic_Cast);
+	static_assert(std::is_reference<T1>::value, "Invalid target type for Dynamic Cast");
+	static_assert(std::is_polymorphic<std::remove_reference<T1>::type>::value, "Invalid target type for Dynamic Cast");
+	static_assert(std::is_polymorphic<T2>::value, "Invalid source type for Dynamic Cast");
 #endif
 #ifdef SMART_CAST_STATS_ALL
 	add_smart_cast_stats_all	(typeid(T2*).name(),typeid(std::remove_reference<T1>::type*).name());

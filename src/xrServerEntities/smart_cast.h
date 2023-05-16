@@ -14,7 +14,6 @@
 #endif // DEBUG
 
 #define  TL_FAST_COMPILATION
-#undef   STATIC_CHECK
 #include <loki/typelist.h>
 
 #ifdef PURE_DYNAMIC_CAST

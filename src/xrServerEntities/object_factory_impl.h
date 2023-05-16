@@ -26,11 +26,11 @@ IC	void CObjectFactory::add	(const CLASS_ID &clsid, LPCSTR script_clsid)
 {
 	{
 		typedef			std::is_base_of<CLIENT_BASE_CLASS,_client_type> a;
-		STATIC_CHECK	(a::value,Client_class_must_be_derived_from_the_CLIENT_BASE_CLASS);
+		static_assert(a::value, "Client class must be derived from the CLIENT_BASE_CLASS");
 	}
 	{
 		typedef			std::is_base_of<SERVER_BASE_CLASS,_server_type> a;
-		STATIC_CHECK	(a::value,Server_class_must_be_derived_from_the_SERVER_BASE_CLASS);
+		static_assert(a::value, "Server class must be derived from the SERVER_BASE_CLASS");
 	}
 	add					(xr_new<CObjectItemClientServer<_client_type,_server_type> >(clsid,script_clsid));
 }
@@ -41,7 +41,7 @@ IC	void CObjectFactory::add	(const CLASS_ID &clsid, LPCSTR script_clsid)
 	{
 		typedef std::is_base_of<CLIENT_BASE_CLASS,_unknown_type> a;
 		typedef std::is_base_of<SERVER_BASE_CLASS,_unknown_type> b;
-		STATIC_CHECK	(a::value || b::value,Class_must_be_derived_from_the_CLIENT_BASE_CLASS_or_SERVER_BASE_CLASS);
+		static_assert(a::value || b::value, "Class must be derived from the CLIENT_BASE_CLASS or SERVER_BASE_CLASS");
 	}
 	add					(
 		xr_new<

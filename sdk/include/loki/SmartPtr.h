@@ -420,7 +420,7 @@ namespace Loki
         
         static P Clone(const P&)
         {
-            STATIC_CHECK(false, This_Policy_Disallows_Value_Copying);
+            static_assert(false, "This policy disallows value copying");
         }
         
         static bool Release(const P&, bool = false)
@@ -611,7 +611,7 @@ namespace Loki
         
         static void OnDefault(const P&)
         {
-            STATIC_CHECK(false, This_Policy_Does_Not_Allow_Default_Initialization);
+            static_assert(false, "This policy does not allow default initialization");
         }
         
         static void OnInit(const P& val)
