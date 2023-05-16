@@ -251,11 +251,11 @@ void __cdecl clMsg( const char *format, ...)
 
 class client_log_impl : public i_lc_log
 {
-	virtual void clMsg		( LPCSTR msg )			{::clMsg(msg);}
-	virtual void clLog		( LPCSTR msg )			{}//::clLog(msg);
-	virtual void Status		( LPCSTR msg )			{::Status(msg);}
-	virtual	void Progress	( const float F )		{::Progress( F );}
-	virtual	void Phase		( LPCSTR phase_name )	{::Phase( phase_name );}
+	virtual void clMsg(LPCSTR msg) override { ::clMsg(msg); }
+	virtual void clLog(LPCSTR msg) override {}//::clLog(msg);
+	virtual void Status(LPCSTR msg) override { ::Status(msg); }
+	virtual	void Progress(const float F) override { ::Progress(F); }
+	virtual	void Phase(LPCSTR phase_name) override { ::Phase(phase_name); }
 public:
 	client_log_impl(){ lc_log = this;}
 } client_log_impl;

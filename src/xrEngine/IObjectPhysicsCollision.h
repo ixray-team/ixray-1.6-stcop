@@ -2,7 +2,7 @@
 
 class IPhysicsShell;
 class IPhysicsElement;
-xr_pure_interface IObjectPhysicsCollision
+class IObjectPhysicsCollision
 {
 public:
 	virtual	const IPhysicsShell		*physics_shell()const		= 0;

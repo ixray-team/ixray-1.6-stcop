@@ -1,6 +1,6 @@
 #pragma once
 
-xr_pure_interface IPhDebugRender
+class IPhDebugRender
 {
 	virtual void	open_cashed_draw	()																				= 0;
 	virtual void	close_cashed_draw	( u32 remove_time)																= 0;

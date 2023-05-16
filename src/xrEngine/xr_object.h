@@ -23,7 +23,7 @@ class	CSE_Abstract;
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
 class	IPhysicsShell;
-xr_pure_interface	IObjectPhysicsCollision;
+class IObjectPhysicsCollision;
 #pragma pack(push,4)
 class	ENGINE_API						CObject :	
 	public DLL_Pure,
