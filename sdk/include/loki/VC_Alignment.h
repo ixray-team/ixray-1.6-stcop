@@ -70,7 +70,7 @@ template<> struct AlignedPod<_size_> {                        \
   __declspec(align(_size_)) struct type { char X[_size_]; };  \
   enum { alignment = __alignof(type) }; };                    \
 static_assert((_size_ == sizeof(AlignedPod<_size_>::type)), "Size of not equal size"); \
-static_assert((_size_ == (AlignedPod<_size_>::alignment)), "Size of not equal alignof")
+static_assert((_size_ == (AlignedPod<_size_>::alignment)), "Size of not equal alignof");
 
 
     ALIGNED_POD(1);
