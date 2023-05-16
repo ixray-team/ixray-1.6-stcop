@@ -33,8 +33,9 @@ static const int	idx2edge	[3][3]  = {
 extern XRLC_LIGHT_API bool g_using_smooth_groups;
 extern XRLC_LIGHT_API bool g_smooth_groups_by_faces;
 
-extern XRLC_LIGHT_API xr_pure_interface  XRLC_LIGHT_API i_lc_log 
+extern XRLC_LIGHT_API class XRLC_LIGHT_API i_lc_log 
 {
+public:
 	virtual void clMsg		( LPCSTR msg )			=0;
 	virtual void clLog		( LPCSTR msg )			=0;
 	virtual void Status		( LPCSTR msg )			=0;

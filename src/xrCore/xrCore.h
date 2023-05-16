@@ -251,8 +251,6 @@ using RStringSetIt = RStringSet::iterator;
 using RTokenVec = xr_vector<xr_rtoken>;
 using RTokenVecIt = RStringVec::iterator;
 
-#define			xr_pure_interface	__interface
-
 #include "FS.h"
 #include "log.h"
 #include "xr_trims.h"
