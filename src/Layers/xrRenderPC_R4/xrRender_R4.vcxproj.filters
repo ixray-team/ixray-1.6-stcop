@@ -800,9 +800,6 @@
     <ClCompile Include="..\xrRender\r__pixel_calculator.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\r__screenshot.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\tga.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -1344,6 +1341,12 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\R_sun_support.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\RenderScreenshot.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx11RenderScreenshot.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
