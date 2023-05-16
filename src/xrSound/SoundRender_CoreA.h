@@ -89,6 +89,17 @@ public:
     }
 
     virtual int load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
+    virtual int load_chorus(ALuint effect);
+    virtual int load_flanger(ALuint effect);
+    virtual int load_vocal_morpher(ALuint effect);
+    virtual int load_pitch_shifter(ALuint effect);
+    virtual int load_ring_modulator(ALuint effect);
+    virtual int load_autowah(ALuint effect);
+    virtual int load_equalizer(ALuint effect);
+    virtual int load_distortion(ALuint effect);
+    virtual int load_compressor(ALuint effect);
+    virtual int load_echo(ALuint effect);
+
     virtual void set_listener(const CSoundRender_Environment& env);
     virtual void get_listener(CSoundRender_Environment& env);
     virtual bool initialized();

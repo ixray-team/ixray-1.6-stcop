@@ -20,13 +20,221 @@ bool CSoundRender_CoreA::initialized()
     return m_is_supported;
 }
 
+int CSoundRender_CoreA::load_chorus(ALuint effect)
+{
+    ALenum err;
+
+    // Load the chorus effect properties
+    A_CHK(alEffecti(effect, AL_CHORUS_WAVEFORM, AL_CHORUS_DEFAULT_WAVEFORM));
+    A_CHK(alEffecti(effect, AL_CHORUS_PHASE, AL_CHORUS_DEFAULT_PHASE));
+    A_CHK(alEffectf(effect, AL_CHORUS_RATE, AL_CHORUS_DEFAULT_RATE));
+    A_CHK(alEffectf(effect, AL_CHORUS_DEPTH, AL_CHORUS_DEFAULT_DEPTH));
+    A_CHK(alEffectf(effect, AL_CHORUS_FEEDBACK, AL_CHORUS_DEFAULT_FEEDBACK));
+    A_CHK(alEffectf(effect, AL_CHORUS_DELAY, AL_CHORUS_DEFAULT_DELAY));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up chorus effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_distortion(ALuint effect)
+{
+    ALenum err;
+
+    // Load the distortion effect parameters
+    A_CHK(alEffectf(effect, AL_DISTORTION_EDGE, AL_DISTORTION_DEFAULT_EDGE));
+    A_CHK(alEffectf(effect, AL_DISTORTION_GAIN, AL_DISTORTION_DEFAULT_GAIN));
+    A_CHK(alEffectf(effect, AL_DISTORTION_LOWPASS_CUTOFF, AL_DISTORTION_DEFAULT_LOWPASS_CUTOFF));
+    A_CHK(alEffectf(effect, AL_DISTORTION_EQCENTER, AL_DISTORTION_DEFAULT_EQCENTER));
+    A_CHK(alEffectf(effect, AL_DISTORTION_EQBANDWIDTH, AL_DISTORTION_DEFAULT_EQBANDWIDTH));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up distortion effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_echo(ALuint effect)
+{
+    ALenum err;
+
+    // Load the echo effect parameters
+    A_CHK(alEffectf(effect, AL_ECHO_DELAY, AL_ECHO_DEFAULT_DELAY));
+    A_CHK(alEffectf(effect, AL_ECHO_LRDELAY, AL_ECHO_DEFAULT_LRDELAY));
+    A_CHK(alEffectf(effect, AL_ECHO_DAMPING, AL_ECHO_DEFAULT_DAMPING));
+    A_CHK(alEffectf(effect, AL_ECHO_FEEDBACK, AL_ECHO_DEFAULT_FEEDBACK));
+    A_CHK(alEffectf(effect, AL_ECHO_SPREAD, AL_ECHO_DEFAULT_SPREAD));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up echo effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_flanger(ALuint effect)
+{
+    ALenum err;
+
+    // Load the flanger effect parameters 
+    A_CHK(alEffecti(effect, AL_FLANGER_WAVEFORM, AL_FLANGER_DEFAULT_WAVEFORM));
+    A_CHK(alEffecti(effect, AL_FLANGER_PHASE, AL_FLANGER_DEFAULT_PHASE));
+    A_CHK(alEffectf(effect, AL_FLANGER_RATE, AL_FLANGER_DEFAULT_RATE));
+    A_CHK(alEffectf(effect, AL_FLANGER_DEPTH, AL_FLANGER_DEFAULT_DEPTH));
+    A_CHK(alEffectf(effect, AL_FLANGER_FEEDBACK, AL_FLANGER_DEFAULT_FEEDBACK));
+    A_CHK(alEffectf(effect, AL_FLANGER_DELAY, AL_FLANGER_DEFAULT_DELAY));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up echo effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_vocal_morpher(ALuint effect)
+{
+    ALenum err;
+
+    // Load the frequency vocal morpher effect parameters
+    A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_PHONEMEA, AL_VOCAL_MORPHER_DEFAULT_PHONEMEA));
+    A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_PHONEMEA_COARSE_TUNING, AL_VOCAL_MORPHER_DEFAULT_PHONEMEA_COARSE_TUNING));
+    A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_PHONEMEB, AL_VOCAL_MORPHER_DEFAULT_PHONEMEB));
+    A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_PHONEMEB_COARSE_TUNING, AL_VOCAL_MORPHER_DEFAULT_PHONEMEA_COARSE_TUNING));
+    A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_WAVEFORM, AL_VOCAL_MORPHER_DEFAULT_WAVEFORM));
+    A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_RATE, AL_VOCAL_MORPHER_DEFAULT_RATE));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up vocal morpher effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_pitch_shifter(ALuint effect)
+{
+    ALenum err;
+
+    // Load the pitchshifter effect parameters
+    A_CHK(alEffectf(effect, AL_PITCH_SHIFTER_COARSE_TUNE, AL_PITCH_SHIFTER_DEFAULT_COARSE_TUNE));
+    A_CHK(alEffectf(effect, AL_PITCH_SHIFTER_FINE_TUNE, AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up pitch shifter effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+
+}
+
+int CSoundRender_CoreA::load_ring_modulator(ALuint effect)
+{
+    ALenum err;
+
+    // Load the ringmodulator effect parameters
+    A_CHK(alEffectf(effect, AL_RING_MODULATOR_FREQUENCY, AL_RING_MODULATOR_DEFAULT_FREQUENCY));
+    A_CHK(alEffectf(effect, AL_RING_MODULATOR_HIGHPASS_CUTOFF, AL_RING_MODULATOR_DEFAULT_HIGHPASS_CUTOFF));
+    A_CHK(alEffectf(effect, AL_RING_MODULATOR_WAVEFORM, AL_RING_MODULATOR_DEFAULT_WAVEFORM));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up ring modulator effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_autowah(ALuint effect)
+{
+    ALenum err;
+
+    // Load the autowah effect parameters
+    A_CHK(alEffectf(effect, AL_AUTOWAH_ATTACK_TIME, AL_AUTOWAH_DEFAULT_ATTACK_TIME));
+    A_CHK(alEffectf(effect, AL_AUTOWAH_RELEASE_TIME, AL_AUTOWAH_DEFAULT_RELEASE_TIME));
+    A_CHK(alEffectf(effect, AL_AUTOWAH_RESONANCE, AL_AUTOWAH_DEFAULT_RESONANCE));
+    A_CHK(alEffectf(effect, AL_AUTOWAH_PEAK_GAIN, AL_AUTOWAH_DEFAULT_PEAK_GAIN));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up autowah effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+
+}
+
+int CSoundRender_CoreA::load_equalizer(ALuint effect)
+{
+    ALenum err;
+
+    // Equalizer effect parameters
+    A_CHK(alEffectf(effect, AL_EQUALIZER_LOW_GAIN, AL_EQUALIZER_DEFAULT_LOW_GAIN));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_LOW_CUTOFF, AL_EQUALIZER_DEFAULT_LOW_CUTOFF));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_MID1_GAIN, AL_EQUALIZER_DEFAULT_MID1_GAIN));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_MID1_CENTER, AL_EQUALIZER_DEFAULT_MID1_CENTER));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_MID1_WIDTH, AL_EQUALIZER_DEFAULT_MID1_WIDTH));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_MID2_GAIN, AL_EQUALIZER_DEFAULT_MID2_GAIN));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_MID2_CENTER, AL_EQUALIZER_DEFAULT_MID2_CENTER));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_MID2_WIDTH, AL_EQUALIZER_DEFAULT_MID2_WIDTH));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_HIGH_GAIN, AL_EQUALIZER_DEFAULT_HIGH_GAIN));
+    A_CHK(alEffectf(effect, AL_EQUALIZER_HIGH_CUTOFF, AL_EQUALIZER_DEFAULT_HIGH_CUTOFF));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up equalizer effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
+int CSoundRender_CoreA::load_compressor(ALuint effect)
+{
+    ALenum err;
+
+    // Load the compressor effect parameters
+    A_CHK(alEffecti(effect, AL_COMPRESSOR_ONOFF, AL_COMPRESSOR_DEFAULT_ONOFF));
+
+    // Check if an error occured, and return failure if so.
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        fprintf(stderr, "Error setting up compressor effect: %s\n", alGetString(err));
+        return 0;
+    }
+
+    return 1;
+}
+
 // LoadEffect loads the given initial reverb properties into the given OpenAL
 //  effect object, and returns non-zero on success.
 int CSoundRender_CoreA::load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb)
 {
     ALenum err;
-
-    alGetError();
 
     // Load the reverb properties.
     A_CHK(alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB));
@@ -57,7 +265,7 @@ int CSoundRender_CoreA::load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES*
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up reverb: %s\n", alGetString(err));
+        fprintf(stderr, "Error setting up reverb effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -76,10 +284,12 @@ void CSoundRender_CoreA::set_listener(const CSoundRender_Environment& env)
     A_CHK(alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO, env.DecayLFRatio));
     A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, env.Reflections));
     A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, env.ReflectionsDelay));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_REFLECTIONS_PAN, *env.ReflectionsPan));
     A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, env.Reverb));
     A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, env.ReverbDelay));
     A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_TIME, env.EchoTime));
     A_CHK(alEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, env.EchoDepth));
+    A_CHK(alEffectf(effect, AL_EAXREVERB_LATE_REVERB_PAN, *env.ReverbPan));
     A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_TIME, env.ModulationTime));
     A_CHK(alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, env.ModulationDepth));
     A_CHK(alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, env.AirAbsorptionHF));
@@ -102,9 +312,11 @@ void CSoundRender_CoreA::get_listener(CSoundRender_Environment& env)
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN, &env.Reflections));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY, &env.ReflectionsDelay));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_GAIN, &env.Reverb));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_REFLECTIONS_PAN, env.ReflectionsPan));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_DELAY, &env.ReverbDelay));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_ECHO_TIME, &env.EchoTime));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_ECHO_DEPTH, &env.EchoDepth));
+    A_CHK(alGetEffectf(effect, AL_EAXREVERB_LATE_REVERB_PAN, env.ReverbPan));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_MODULATION_TIME, &env.ModulationTime));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH, &env.ModulationDepth));
     A_CHK(alGetEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, &env.AirAbsorptionHF));

@@ -78,7 +78,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 		CSoundRender_Target*	T	= s_targets	[it];
 		if (T->get_emitter())
 		{
-			// Has emmitter, maybe just not started rendering
+			// Has emitter, maybe just not started rendering
 			if		(T->get_Rendering())	
 			{
 				/*if	(PU == it)*/	T->fill_parameters	();

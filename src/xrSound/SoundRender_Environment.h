@@ -152,10 +152,10 @@ public:
     int DecayHFLimit; // high- frequency decay time limit set by air absorbtion gain
     float           Reflections;                // early reflections level relative to room effect
     float           ReflectionsDelay;           // initial reflection delay time
-    // float ReflectionsPan[3]; // reflections panning xyz
+    float ReflectionsPan[3]; // reflections panning xyz
     float EchoTime; // delay between the original sound and echo instance
     float EchoDepth; // controls the amount of echo feedback signal in the loop
-    // float ReverbPan; // reverb pan xyz
+    float ReverbPan[3]; // reverb pan xyz
     float           Reverb;                     // late reverberation level relative to room effect
     float           ReverbDelay;                // late reverberation delay time relative to initial reflection
     float           EnvironmentSize;            // environment size in meters

@@ -18,7 +18,7 @@ CSoundRender_Environment::~CSoundRender_Environment(void)
 
 void CSoundRender_Environment::set_default	()
 {
-    Room = AL_EAXREVERB_MIN_GAIN; // reverbs->flGain;
+    Room = reverbs->flGain;
     RoomHF = reverbs->flGainHF;
     RoomLF = reverbs->flGainLF;
     Density = reverbs->flDensity;
@@ -28,6 +28,7 @@ void CSoundRender_Environment::set_default	()
     DecayLFRatio = reverbs->flDecayLFRatio;
     Reflections = reverbs->flReflectionsGain;
     ReflectionsDelay = reverbs->flReflectionsDelay;
+    ReflectionsPan[0] = *reverbs->flReflectionsPan;
     Reverb = reverbs->flLateReverbGain;
     ReverbDelay = reverbs->flLateReverbDelay;
     EnvironmentDiffusion = reverbs->flDiffusion;
@@ -35,6 +36,7 @@ void CSoundRender_Environment::set_default	()
     DecayHFLimit = reverbs->iDecayHFLimit;
     EchoTime = reverbs->flEchoTime;
     EchoDepth = reverbs->flEchoDepth;
+    ReverbPan[0] = *reverbs->flLateReverbPan;
     ModulationTime = reverbs->flModulationTime;
     ModulationDepth = reverbs->flModulationDepth;
     HFReference = reverbs->flHFReference;
@@ -114,8 +116,10 @@ bool CSoundRender_Environment::load			(IReader* fs)
         DecayHFRatio        		= fs->r_float();
         Reflections         		= fs->r_float();
         ReflectionsDelay    		= fs->r_float();
+        ReflectionsPan[0] = fs->r_float();
         Reverb              		= fs->r_float();
         ReverbDelay         		= fs->r_float();
+        ReverbPan[0] = fs->r_float();
         EnvironmentSize     		= fs->r_float();
         EnvironmentDiffusion		= fs->r_float();
         AirAbsorptionHF     		= fs->r_float();
@@ -149,8 +153,10 @@ void CSoundRender_Environment::save	(IWriter* fs)
     fs->w_float	                    (DecayHFRatio        );
     fs->w_float	                    (Reflections         );
     fs->w_float	                    (ReflectionsDelay    );
+    fs->w_float                     (ReflectionsPan[0]   );
     fs->w_float	                    (Reverb              );
     fs->w_float	                    (ReverbDelay         );
+    fs->w_float                     (ReverbPan[0]        );
     fs->w_float	                    (EnvironmentSize     );
     fs->w_float	                    (EnvironmentDiffusion);
     fs->w_float	                    (AirAbsorptionHF     );
