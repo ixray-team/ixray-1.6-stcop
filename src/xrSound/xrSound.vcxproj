@@ -72,10 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-<<<<<<< Updated upstream
     <IncludePath>..\..\sdk\include;$(IncludePath)</IncludePath>
-=======
->>>>>>> Stashed changes
     <LibraryPath>..\..\sdk\libraries;..\..\lib;..\..\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
