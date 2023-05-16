@@ -356,7 +356,6 @@ void	CRenderTarget::phase_combine	()
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
-
 	if (1)	
 	{
 		PIX_EVENT(combine_2);
@@ -420,15 +419,15 @@ void	CRenderTarget::phase_combine	()
 	}
 	RCache.set_Stencil		(FALSE);
 
+	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
+	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
+
 	if (ps_r2_aa_type == 1)
 	{
 		PIX_EVENT(FXAA);
 		phase_fxaa();
 		RCache.set_Stencil(FALSE);
 	}
-
-	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
-	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares	();	// lens-flares
 
 	//	PP-if required
 	if (PP_Complex)		
