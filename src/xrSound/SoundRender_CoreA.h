@@ -88,7 +88,7 @@ public:
         return slot;
     }
 
-    virtual int load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
+    virtual int load_reverb(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
     virtual int load_chorus(ALuint effect);
     virtual int load_flanger(ALuint effect);
     virtual int load_vocal_morpher(ALuint effect);

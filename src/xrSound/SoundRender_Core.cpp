@@ -12,7 +12,7 @@
 int		psSoundTargets			= 32;
 
 Flags32	psSoundFlags = { 
-    ss_Hardware | ss_EFX 
+	ss_EFX
 };
 
 float	psSoundOcclusionScale	= 0.5f;

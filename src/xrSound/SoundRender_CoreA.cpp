@@ -24,6 +24,14 @@ int CSoundRender_CoreA::load_chorus(ALuint effect)
 {
     ALenum err;
 
+    // Prepare the effect for chorus.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_DISTORTION);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load chorus effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
+
     // Load the chorus effect properties
     A_CHK(alEffecti(effect, AL_CHORUS_WAVEFORM, AL_CHORUS_DEFAULT_WAVEFORM));
     A_CHK(alEffecti(effect, AL_CHORUS_PHASE, AL_CHORUS_DEFAULT_PHASE));
@@ -35,7 +43,7 @@ int CSoundRender_CoreA::load_chorus(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up chorus effect: %s\n", alGetString(err));
+        Msg("Error setting up chorus effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -45,6 +53,14 @@ int CSoundRender_CoreA::load_chorus(ALuint effect)
 int CSoundRender_CoreA::load_distortion(ALuint effect)
 {
     ALenum err;
+
+    // Prepare the effect for distortion.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_DISTORTION);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load distortion effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
 
     // Load the distortion effect parameters
     A_CHK(alEffectf(effect, AL_DISTORTION_EDGE, AL_DISTORTION_DEFAULT_EDGE));
@@ -56,7 +72,7 @@ int CSoundRender_CoreA::load_distortion(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up distortion effect: %s\n", alGetString(err));
+        Msg("Error setting up distortion effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -66,6 +82,14 @@ int CSoundRender_CoreA::load_distortion(ALuint effect)
 int CSoundRender_CoreA::load_echo(ALuint effect)
 {
     ALenum err;
+
+    // Prepare the effect for echo.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_ECHO);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load echo effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
 
     // Load the echo effect parameters
     A_CHK(alEffectf(effect, AL_ECHO_DELAY, AL_ECHO_DEFAULT_DELAY));
@@ -77,7 +101,7 @@ int CSoundRender_CoreA::load_echo(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up echo effect: %s\n", alGetString(err));
+        Msg("Error setting up echo effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -87,6 +111,14 @@ int CSoundRender_CoreA::load_echo(ALuint effect)
 int CSoundRender_CoreA::load_flanger(ALuint effect)
 {
     ALenum err;
+
+    // Prepare the effect for flanger.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_FLANGER);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load flanger effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
 
     // Load the flanger effect parameters 
     A_CHK(alEffecti(effect, AL_FLANGER_WAVEFORM, AL_FLANGER_DEFAULT_WAVEFORM));
@@ -99,7 +131,7 @@ int CSoundRender_CoreA::load_flanger(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up echo effect: %s\n", alGetString(err));
+        Msg("Error setting up echo effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -109,6 +141,14 @@ int CSoundRender_CoreA::load_flanger(ALuint effect)
 int CSoundRender_CoreA::load_vocal_morpher(ALuint effect)
 {
     ALenum err;
+
+    // Prepare the effect for vocal morpher.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_VOCAL_MORPHER);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load vocal morpher effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
 
     // Load the frequency vocal morpher effect parameters
     A_CHK(alEffectf(effect, AL_VOCAL_MORPHER_PHONEMEA, AL_VOCAL_MORPHER_DEFAULT_PHONEMEA));
@@ -121,7 +161,7 @@ int CSoundRender_CoreA::load_vocal_morpher(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up vocal morpher effect: %s\n", alGetString(err));
+        Msg("Error setting up vocal morpher effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -132,6 +172,14 @@ int CSoundRender_CoreA::load_pitch_shifter(ALuint effect)
 {
     ALenum err;
 
+    // Prepare the effect for pitch shifter.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_PITCH_SHIFTER);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load pitch shifter effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
+
     // Load the pitchshifter effect parameters
     A_CHK(alEffectf(effect, AL_PITCH_SHIFTER_COARSE_TUNE, AL_PITCH_SHIFTER_DEFAULT_COARSE_TUNE));
     A_CHK(alEffectf(effect, AL_PITCH_SHIFTER_FINE_TUNE, AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE));
@@ -139,17 +187,24 @@ int CSoundRender_CoreA::load_pitch_shifter(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up pitch shifter effect: %s\n", alGetString(err));
+        Msg("Error setting up pitch shifter effect: %s\n", alGetString(err));
         return 0;
     }
 
     return 1;
-
 }
 
 int CSoundRender_CoreA::load_ring_modulator(ALuint effect)
 {
     ALenum err;
+
+    // Prepare the effect for ring modulation.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_RING_MODULATOR);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to prepare ring modulation effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
 
     // Load the ringmodulator effect parameters
     A_CHK(alEffectf(effect, AL_RING_MODULATOR_FREQUENCY, AL_RING_MODULATOR_DEFAULT_FREQUENCY));
@@ -159,7 +214,7 @@ int CSoundRender_CoreA::load_ring_modulator(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up ring modulator effect: %s\n", alGetString(err));
+        Msg("Error setting up ring modulator effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -170,6 +225,14 @@ int CSoundRender_CoreA::load_autowah(ALuint effect)
 {
     ALenum err;
 
+    // Prepare the effect for autowah.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_AUTOWAH);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to prepare autowah effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
+
     // Load the autowah effect parameters
     A_CHK(alEffectf(effect, AL_AUTOWAH_ATTACK_TIME, AL_AUTOWAH_DEFAULT_ATTACK_TIME));
     A_CHK(alEffectf(effect, AL_AUTOWAH_RELEASE_TIME, AL_AUTOWAH_DEFAULT_RELEASE_TIME));
@@ -179,17 +242,24 @@ int CSoundRender_CoreA::load_autowah(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up autowah effect: %s\n", alGetString(err));
+        Msg("Error setting up autowah effect: %s\n", alGetString(err));
         return 0;
     }
 
     return 1;
-
 }
 
 int CSoundRender_CoreA::load_equalizer(ALuint effect)
 {
     ALenum err;
+
+    // Prepare the effect for equalizer.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EQUALIZER);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load equalizer effect type: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
 
     // Equalizer effect parameters
     A_CHK(alEffectf(effect, AL_EQUALIZER_LOW_GAIN, AL_EQUALIZER_DEFAULT_LOW_GAIN));
@@ -206,7 +276,7 @@ int CSoundRender_CoreA::load_equalizer(ALuint effect)
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up equalizer effect: %s\n", alGetString(err));
+        Msg("Error setting up equalizer effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -217,27 +287,43 @@ int CSoundRender_CoreA::load_compressor(ALuint effect)
 {
     ALenum err;
 
+
+    // Prepare the effect for compressor.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_COMPRESSOR);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load compressor effect type: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
+
     // Load the compressor effect parameters
     A_CHK(alEffecti(effect, AL_COMPRESSOR_ONOFF, AL_COMPRESSOR_DEFAULT_ONOFF));
 
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up compressor effect: %s\n", alGetString(err));
+        Msg("Error setting up compressor effect: %s\n", alGetString(err));
         return 0;
     }
 
     return 1;
 }
 
-// LoadEffect loads the given initial reverb properties into the given OpenAL
+// load_reverb loads the given initial reverb properties into the given OpenAL
 //  effect object, and returns non-zero on success.
-int CSoundRender_CoreA::load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb)
+int CSoundRender_CoreA::load_reverb(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb)
 {
     ALenum err;
 
+    // Prepare the effect for EAX Reverb.
+    alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+    if ((err = alGetError()) != AL_NO_ERROR)
+    {
+        Msg("Failed to load the EAX reverb effect: %s (0x%04x)\n", alGetString(err), err);
+        return 0;
+    }
+
     // Load the reverb properties.
-    A_CHK(alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB));
     A_CHK(alEffectf(effect, AL_EAXREVERB_DENSITY, reverb->flDensity));
     A_CHK(alEffectf(effect, AL_EAXREVERB_DIFFUSION, reverb->flDiffusion));
     A_CHK(alEffectf(effect, AL_EAXREVERB_GAIN, reverb->flGain));
@@ -265,7 +351,7 @@ int CSoundRender_CoreA::load_effect(ALuint effect, const EFXEAXREVERBPROPERTIES*
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        fprintf(stderr, "Error setting up reverb effect: %s\n", alGetString(err));
+        Msg("Error setting up reverb effect: %s\n", alGetString(err));
         return 0;
     }
 
@@ -338,7 +424,8 @@ void CSoundRender_CoreA::commit()
 
 CSoundRender_CoreA::~CSoundRender_CoreA	()
 {
-    if (m_is_supported) {
+    if (m_is_supported)
+    {
         alDeleteEffects(1, &effect);
         if (alIsAuxiliaryEffectSlot(slot))
             alDeleteAuxiliaryEffectSlots(1, &slot);
@@ -447,7 +534,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 
     alGenEffects(1, &effect);
 
-    load_effect(effect, &reverbs[0]);
+    load_reverb(effect, &reverbs[0]);
    
     // Check if an error occured, and clean up if so.
     ALenum err = alGetError();
@@ -541,4 +628,4 @@ void CSoundRender_CoreA::update_listener		( const Fvector& P, const Fvector& D, 
 	A_CHK						(alListener3f	(AL_POSITION,Listener.position.x,Listener.position.y,-Listener.position.z));
 	A_CHK						(alListener3f	(AL_VELOCITY,0.f,0.f,0.f));
 	A_CHK						(alListenerfv	(AL_ORIENTATION,&Listener.orientation[0].x));
-}
+} 
