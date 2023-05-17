@@ -58,21 +58,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\..\sdk\include;..\xrQslim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\lib\Release;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\utils\xrQslim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <IncludePath>..\..\..\sdk\include;..\xrQslim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\lib\Debug;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\utils\xrQslim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\..\sdk\include;..\xrQslim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;..\..\..\lib\Release;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\utils\xrQslim\src;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -101,7 +101,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>DirectXMesh.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXMesh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>user32.lib;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
@@ -135,7 +135,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 /NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>DirectXMesh.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXMesh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>user32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -168,7 +168,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 /NODEFAULTLIB:user32 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>DirectXMesh.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXMesh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>user32.dll;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -253,15 +253,6 @@
     <ClInclude Include="xrXRC.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\sdk\sources\libogg-1.1.4\win32\VS2008\libogg_static.vcxproj">
-      <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\sdk\sources\libvorbis-1.2.3\win32\VS2008\libvorbisfile\libvorbisfile_static.vcxproj">
-      <Project>{cebde98b-a6aa-46e6-bc79-faaf823db9ec}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\sdk\sources\libvorbis-1.2.3\win32\VS2008\libvorbis\libvorbis_static.vcxproj">
-      <Project>{3a214e06-b95e-4d61-a291-1f8df2ec10fd}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -281,4 +272,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Import Project="../../LibOgg.targets" />
+  <Import Project="../../LibVorbis.targets" />
 </Project>
