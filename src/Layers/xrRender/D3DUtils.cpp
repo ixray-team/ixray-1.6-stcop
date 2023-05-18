@@ -13,11 +13,6 @@
 
 #include "dxRenderDeviceRender.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include "d3dx9.h"
-#pragma warning(pop)
-
 #include <FlexibleVertexFormat.h>
 
 CDrawUtilities DUImpl;
