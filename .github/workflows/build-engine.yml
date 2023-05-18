@@ -44,9 +44,6 @@ jobs:
           - Debug
           - Mixed
           - Release
-          - Debug_Dedicated
-          - Mixed_Dedicated
-          - Release_Dedicated
         platform:
           - x86
 

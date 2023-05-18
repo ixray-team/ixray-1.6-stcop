@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Common-BinPath>$(MSBuildThisFileDirectory)\..\bin\</Common-BinPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\libvorbis.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\libvorbisfile.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\lua.JIT.1.1.4.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\luabind.beta7-devel.rc4.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\openal32.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrAPI.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrCDB.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrCore.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrCPU_Pipe.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrD3D9-Null.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrNetServer.dll" />
+        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrSound.dll" />
+    </ItemGroup>
+</Project>
