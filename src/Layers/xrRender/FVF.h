@@ -1,7 +1,6 @@
 #ifndef _FVF_H_
 #define _FVF_H_
 #pragma once
-
 //-----------------------------------------------------------------------------
 #pragma pack(push,4)
 namespace FVF {

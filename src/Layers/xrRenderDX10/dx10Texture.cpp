@@ -5,16 +5,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(disable:4995)
-#include <d3dx9.h>
-#pragma warning(default:4995)
-
 #include <D3DX11Tex.h>
 
 #include "../xrRender/dxRenderDeviceRender.h"
-
-// #include "std_classes.h"
-// #include "xr_avi.h"
 
 void fix_texture_name(LPSTR fn)
 {
