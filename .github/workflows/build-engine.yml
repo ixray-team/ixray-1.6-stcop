@@ -87,9 +87,9 @@ jobs:
           msbuild $env:solution_name `
             -p:Configuration=${{ matrix.config }} `
             -p:Platform=${{ matrix.platform }} `
-            -restore `
             -maxCpuCount `
-            -nologo
+            -nologo `
+            -v:minimal
 
       - name: Cleanup
         run: |
