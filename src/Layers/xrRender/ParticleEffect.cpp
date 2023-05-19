@@ -267,14 +267,10 @@ IC void FillSprite_fpu	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const
 }
 
 __forceinline void fsincos( const float angle , float &sine , float &cosine )
-{ __asm {
-    fld			DWORD PTR [angle]
-    fsincos
-    mov			eax , DWORD PTR [cosine]
-    fstp		DWORD PTR [eax]
-    mov			eax , DWORD PTR [sine]
-    fstp		DWORD PTR [eax]
-} }
+{
+	sine = std::sinf(angle);
+	cosine = std::cosf(angle);
+}
 
 
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina , float cosa )
@@ -444,14 +440,9 @@ void ParticleRenderStream( LPVOID lpvParams )
 
 				 _mm_prefetch( (char*) &particles[i + 1] , _MM_HINT_NTA );
 
-				if ( angle != *((DWORD*)&m.rot.x) ) {
-					angle = *((DWORD*)&m.rot.x);
-					__asm {
-						fld			DWORD PTR [angle]
-						fsincos
-						fstp		DWORD PTR [cosa]
-						fstp		DWORD PTR [sina]
-					}
+				if (angle != m.rot.x) {
+					angle = m.rot.x;
+					fsincos(angle, sina, cosa);
 				}
 
 				 _mm_prefetch( 64 + (char*) &particles[i + 1] , _MM_HINT_NTA );
