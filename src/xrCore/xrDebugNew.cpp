@@ -20,7 +20,7 @@ extern bool shared_str_initialized;
     #	define DEBUG_INVOKE	DebugBreak()
         static BOOL			bException	= TRUE;
 #else
-    #	define DEBUG_INVOKE	__asm int 3
+    #	define DEBUG_INVOKE	__debugbreak();
         static BOOL			bException	= FALSE;
 
 	#	define USE_OWN_ERROR_MESSAGE_WINDOW

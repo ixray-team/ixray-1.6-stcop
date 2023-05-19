@@ -109,13 +109,6 @@ void*	xrMemory::mem_alloc		(size_t size
 #ifdef DEBUG_MEMORY_MANAGER
 	if		(debug_mode)		dbg_register		(_ptr,size,_name);
 	if (mem_initialized)		debug_cs.Leave		();
-	//if(g_globalCheckAddr==_ptr){
-	//	__asm int 3;
-	//}
-	//if (_name && (0==strcmp(_name,"class ISpatial *")) && (size==376))
-	//{
-	//	__asm int 3;
-	//}
 #endif // DEBUG_MEMORY_MANAGER
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::monitor_alloc	(_ptr,size,_name);
@@ -139,7 +132,7 @@ void	xrMemory::mem_free		(void* P)
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if(g_globalCheckAddr==P)
-		__asm int 3;
+		__debugbreak();
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -191,7 +184,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if(g_globalCheckAddr==P)
-		__asm int 3;
+		__debugbreak();
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -267,7 +260,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 	if (mem_initialized)		debug_cs.Leave	();
 
 	if(g_globalCheckAddr==_ptr)
-		__asm int 3;
+		__debugbreak();
 #endif // DEBUG_MEMORY_MANAGER
 
 	return	_ptr;
