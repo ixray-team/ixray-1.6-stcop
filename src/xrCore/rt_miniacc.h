@@ -5521,7 +5521,7 @@ ACCLIB_PUBLIC_NOINLINE(void, acc_debug_break) (void)
 #elif (ACC_ARCH_AMD64 || ACC_ARCH_I386) && (ACC_ASM_SYNTAX_GNUC)
     __asm__ __volatile__("int $3\n" : : : __ACC_ASM_CLOBBER);
 #elif (ACC_ARCH_I386) && (ACC_ASM_SYNTAX_MSC)
-    __asm { int 3 }
+    __debugbreak();
 #elif (ACC_OS_WIN32) && (ACC_HAVE_WINDOWS_H)
     DebugBreak();
 #else

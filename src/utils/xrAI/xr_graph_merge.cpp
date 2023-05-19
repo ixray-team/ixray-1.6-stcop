@@ -628,9 +628,6 @@ CGraphMerger::CGraphMerger(
 						R_ASSERT				(M != (*K).second->m_tVertexMap.end());
 					}
 
-//					if (!_stricmp("l06_rostok",*(*I).second->m_tLevel.name())) {
-//						__asm int 3;
-//					}
 					Msg							("Level %s with id %d has VALID connection point %s,\nwhich references to graph point %s on the level %s with id %d\n",*(*I_).second->m_tLevel.name(),(*I_).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
 
 					VERIFY						(((*M).second.tGraphID + (*K).second->m_dwOffset) < (u32(1) << (8*sizeof(GameGraph::_GRAPH_ID))));
