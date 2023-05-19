@@ -752,9 +752,6 @@
     <ClCompile Include="xrRender_R4.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\dx10Texture.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\PSLibrary.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -1347,6 +1344,9 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\dx11RenderScreenshot.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx11Texture.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
