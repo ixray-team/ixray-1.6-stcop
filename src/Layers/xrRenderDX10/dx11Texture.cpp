@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
-#include <D3DX11Tex.h>
+#include <memory>
+#include <DirectXTex.h>
+
+using namespace DirectX;
 
 void fix_texture_name(LPSTR fn) {
     auto _ext = strext(fn);
@@ -98,7 +101,7 @@ IC void	Reduce(UINT& w, UINT& h, int l, int skip) {
 
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging) {
     // Moved here just to avoid warning
-    D3DX11_IMAGE_INFO IMG{};
+    TexMetadata imageInfo{};
 
     // Staging control
     static bool bAllowStaging = !strstr(Core.Params, "-no_staging");
@@ -117,7 +120,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     string_path fname;
     xr_strcpy(fname, fRName);
     fix_texture_name(fname);
-    IReader* S = nullptr;
+    IReader* reader = nullptr;
     if (!FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump")) {
         goto _BUMP_from_base;
     }
@@ -144,104 +147,74 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
     _DDS: {
         // Load and get header
-        S = FS.r_open(fn);
+        reader = FS.r_open(fn);
 #ifdef DEBUG
-        Msg("* Loaded: %s[%d]b", fn, S->length());
+        Msg("* Loaded: %s[%d]b", fn, reader->length());
 #endif // DEBUG
-        img_size = S->length();
-        R_ASSERT(S);
-        R_CHK2(D3DX11GetImageInfoFromMemory(S->pointer(), S->length(), 0, &IMG, 0), fn);
-        if (IMG.MiscFlags & D3D_RESOURCE_MISC_TEXTURECUBE) {
+        img_size = reader->length();
+        R_ASSERT(reader);
+        R_CHK2(GetMetadataFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, imageInfo), fn);
+        if (imageInfo.miscFlags & D3D_RESOURCE_MISC_TEXTURECUBE) {
             goto _DDS_CUBE;
         } else {
             goto _DDS_2D;
         }
     _DDS_CUBE: {
-            //	Inited to default by provided default constructor
-            D3DX11_IMAGE_LOAD_INFO LoadInfo;
-            //LoadInfo.Usage = D3D_USAGE_IMMUTABLE;
-            if (bStaging) {
-                LoadInfo.Usage = D3D_USAGE_STAGING;
-                LoadInfo.BindFlags = 0;
-                LoadInfo.CpuAccessFlags = D3D_CPU_ACCESS_WRITE;
-            } else {
-                LoadInfo.Usage = D3D_USAGE_DEFAULT;
-                LoadInfo.BindFlags = D3D_BIND_SHADER_RESOURCE;
-            }
+        auto scratchImage = std::make_unique<ScratchImage>();
+        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, &imageInfo, *scratchImage);
+        auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
+        auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
+        auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
+        auto miscFlags = imageInfo.miscFlags;
+        
+        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages(), scratchImage->GetImageCount(), 
+            imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 
-            LoadInfo.pSrcInfo = &IMG;
-
-            R_CHK(D3DX11CreateTextureFromMemory(
-                HW.pDevice,
-                S->pointer(), S->length(),
-                &LoadInfo,
-                0,
-                &pTexture2D,
-                0
-            ));
-
-            FS.r_close(S);
-            mip_cnt = IMG.MipLevels;
-            ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
-            return pTexture2D;
+        FS.r_close(reader);
+        mip_cnt = imageInfo.mipLevels;
+        ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
+        return pTexture2D;
         }
     _DDS_2D: {
-            // Check for LMAP and compress if needed
-            _strlwr(fn);
+        // Check for LMAP and compress if needed
+        _strlwr(fn);
 
-            img_loaded_lod = get_texture_load_lod(fn);
+        img_loaded_lod = get_texture_load_lod(fn);
 
-            //	Inited to default by provided default constructor
-            D3DX11_IMAGE_LOAD_INFO LoadInfo{};
-
-            //LoadInfo.FirstMipLevel = img_loaded_lod;
-            LoadInfo.Width = IMG.Width;
-            LoadInfo.Height = IMG.Height;
-
-            if (img_loaded_lod) {
-                Reduce(LoadInfo.Width, LoadInfo.Height, IMG.MipLevels, img_loaded_lod);
-            }
-
-            //LoadInfo.Usage = D3D_USAGE_IMMUTABLE;
-            if (bStaging) {
-                LoadInfo.Usage = D3D_USAGE_STAGING;
-                LoadInfo.BindFlags = 0;
-                LoadInfo.CpuAccessFlags = D3D_CPU_ACCESS_WRITE;
-            } else {
-                LoadInfo.Usage = D3D_USAGE_DEFAULT;
-                LoadInfo.BindFlags = D3D_BIND_SHADER_RESOURCE;
-            }
-            LoadInfo.pSrcInfo = &IMG;
-
-            R_CHK2(D3DX11CreateTextureFromMemory
-            (
-                HW.pDevice, S->pointer(), S->length(),
-                &LoadInfo,
-                0,
-                &pTexture2D,
-                0
-            ), fn);
-
-            FS.r_close(S);
-            mip_cnt = IMG.MipLevels;
-            ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
-            return pTexture2D;
+        if (img_loaded_lod) {
+            Reduce(imageInfo.width, imageInfo.height, imageInfo.mipLevels, img_loaded_lod);
         }
+        auto scratchImage = std::make_unique<ScratchImage>();
+        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, &imageInfo, *scratchImage);
+        
+        auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
+        auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
+        auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
+        auto miscFlags = imageInfo.miscFlags;
+
+        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
+            imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
+        FS.r_close(reader);
+        
+        mip_cnt = imageInfo.mipLevels;
+        ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
+        return pTexture2D;
     }
+}
     _BUMP_from_base: {
         Msg("! Fallback to default bump map: %s", fname);
         if (strstr(fname, "_bump#")) {
             R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
-            S = FS.r_open(fn);
-            R_ASSERT2(S, fn);
-            img_size = S->length();
+            reader = FS.r_open(fn);
+            R_ASSERT2(reader, fn);
+            img_size = reader->length();
             goto _DDS_2D;
         }
         if (strstr(fname, "_bump")) {
             R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
-            S = FS.r_open(fn);
-            R_ASSERT2(S, fn);
-            img_size = S->length();
+            reader = FS.r_open(fn);
+            R_ASSERT2(reader, fn);
+            img_size = reader->length();
             goto _DDS_2D;
         }
     }
