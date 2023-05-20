@@ -28,18 +28,9 @@ namespace CPU {
 	XRCORE_API extern	u64				QPC	()				;
 
 #ifdef M_VISUAL
-	#ifndef _M_AMD64
-		#pragma warning(disable:4035)
-		IC u64	GetCLK(void)	{
-			_asm    _emit 0x0F;
-			_asm    _emit 0x31;
-		}
-		#pragma warning(default:4035)
-	#else
-		IC u64	GetCLK(void)	{
-			return __rdtsc();
-		}
-	#endif
+	IC u64 GetCLK(void) {
+		return __rdtsc();
+	}
 #endif
 
 #ifdef M_BORLAND
