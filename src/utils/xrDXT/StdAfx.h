@@ -10,7 +10,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
-#include <d3d11.h>
+#include <d3d11_1.h>
 
 #define ENGINE_API
 #define XR_EPROPS_API
