@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../xrRender/resourcemanager.h"
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
@@ -14,11 +15,7 @@
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
-
-
 #include "../xrRender/dxRenderDeviceRender.h"
-
-#include <D3DX11Tex.h>
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
@@ -937,26 +934,9 @@ CRenderTarget::CRenderTarget		()
 
 			string_path					name;
 			xr_sprintf						(name,"%s%d",r2_jitter,it);
-			//R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
 			R_CHK( HW.pDevice->CreateTexture2D(&descHBAO, &subData[it], &t_noise_surf[it]) );
 			t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 			t_noise[it]->surface_set	(t_noise_surf[it]);
-
-
-			//	Create noise mipped
-			{
-				//	Autogen mipmaps
-				desc.MipLevels = 0;
-				R_CHK( HW.pDevice->CreateTexture2D(&desc, 0, &t_noise_surf_mipped) );
-				t_noise_mipped = dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_jitter_mipped);
-				t_noise_mipped->surface_set(t_noise_surf_mipped);
-
-				//	Update texture. Generate mips.
-
-				HW.pContext->CopySubresourceRegion( t_noise_surf_mipped, 0, 0, 0, 0, t_noise_surf[0], 0, 0 );
-
-				D3DX11FilterTexture(HW.pContext, t_noise_surf_mipped, 0, D3DX11_FILTER_POINT);
-			}
 		}
 	}
 
@@ -1017,12 +997,6 @@ CRenderTarget::~CRenderTarget	()
 #endif // DEBUG
 		_RELEASE					(t_noise_surf[it]);
 	}
-
-	t_noise_mipped->surface_set	(NULL);
-#ifdef DEBUG
-	_SHOW_REF("t_noise_surf_mipped",t_noise_surf_mipped);
-#endif // DEBUG
-	_RELEASE					(t_noise_surf_mipped);
 
 	// 
 	accum_spot_geom_destroy		();
