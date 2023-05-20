@@ -148,7 +148,7 @@ pid_t xr_thread::getId()
 
 unsigned xr_thread::getTickCount()
 {
-	return GetTickCount();
+	return GetTickCount64();
 }
 
 

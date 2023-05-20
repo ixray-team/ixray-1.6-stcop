@@ -552,7 +552,7 @@ time_t time(time_t *timer)
 gsi_time current_time()  //returns current time in milliseconds
 { 
 #if defined(_WIN32)
-	return (GetTickCount()); 
+	return (GetTickCount64()); 
 
 #elif defined(_PS2)
 	unsigned int ticks;
@@ -1800,7 +1800,7 @@ static void GenerateID(char *keyval)
 		seed = (l1.LowPart ^ l1.HighPart);
 	else
 		seed = 0;
-	Util_RandSeed(seed ^ GetTickCount() ^ (unsigned long)time(NULL) ^ clock());
+	Util_RandSeed(seed ^ GetTickCount64() ^ (unsigned long)time(NULL) ^ clock());
 #else
 	Util_RandSeed(time(NULL) ^ clock());
 #endif
