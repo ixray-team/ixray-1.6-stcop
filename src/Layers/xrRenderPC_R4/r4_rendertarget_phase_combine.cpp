@@ -424,7 +424,7 @@ void	CRenderTarget::phase_combine	()
 
 	if (ps_r2_aa_type == 1)
 	{
-		PIX_EVENT(FXAA);
+		PIX_EVENT(phase_fxaa);
 		phase_fxaa();
 		RCache.set_Stencil(FALSE);
 	}
