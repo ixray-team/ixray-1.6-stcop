@@ -394,20 +394,20 @@ public:
 
     int normalize()
     {
-        double u;
+        float u;
         u = x * x + y * y + z * z;
 
         if ( fabs(u - 1.0) < 1e-12)
             return 0; // already normalized
 
-        if ( fabs((double)u) < 1e-12)
+        if ( fabs(u) < 1e-12)
         {
             x = y = z = 0.0;
             return -1;
         }
 
 
-        u = 1.0 / sqrt(u);
+        u = 1.0f / sqrt(u);
 
 
         x *= u;
@@ -872,7 +872,7 @@ public:
 		for(int i=0; i < m_width * m_height; i++ );
 		{
 
-            int r = p->r;
+            auto r = p->r;
             p->r = p->b;
             p->b = r;
 		} 

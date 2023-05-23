@@ -472,14 +472,14 @@ HRESULT	IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 			// retreive info
 			DPN_PLAYER_INFO*		Pinfo = (DPN_PLAYER_INFO*) bufferData;
 			Pinfo->dwSize			= sizeof(DPN_PLAYER_INFO);
-			HRESULT _hr				= NET->GetClientInfo( msg->dpnidPlayer, Pinfo, &bufferSize, 0 );
-			if( _hr == DPNERR_INVALIDPLAYER )
+			HRESULT hr				= NET->GetClientInfo( msg->dpnidPlayer, Pinfo, &bufferSize, 0 );
+			if( hr == DPNERR_INVALIDPLAYER )
 			{
 				Assign_ServerType( res ); //once
 				break;	// server player
 			}
 
-			CHK_DX					(_hr);
+			CHK_DX					(hr);
 			
 			//string64			cname;
 			//CHK_DX( WideCharToMultiByte( CP_ACP, 0, Pinfo->pwszName, -1, cname, sizeof(cname) , 0, 0 ) );

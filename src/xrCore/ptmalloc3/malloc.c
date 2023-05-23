@@ -4184,7 +4184,6 @@ static void* tmalloc_small(mstate m, size_t nb) {
   }
 
   CORRUPTION_ERROR_ACTION(m);
-  return 0;
 }
 
 /* --------------------------- realloc support --------------------------- */
@@ -4233,7 +4232,6 @@ static void* internal_realloc(mstate m, void* oldmem, size_t bytes) {
     else {
       USAGE_ERROR_ACTION(m, oldmem);
       POSTACTION(m);
-      return 0;
     }
 
     POSTACTION(m);
@@ -4953,7 +4951,6 @@ void* mspace_malloc(mspace msp, size_t bytes) {
   mstate ms = (mstate)msp;
   if (!ok_magic(ms)) {
     USAGE_ERROR_ACTION(ms,ms);
-    return 0;
   }
 
 once_again:
@@ -5187,7 +5184,6 @@ void* mspace_calloc(mspace msp, size_t n_elements, size_t elem_size) {
   mstate ms = (mstate)msp;
   if (!ok_magic(ms)) {
     USAGE_ERROR_ACTION(ms,ms);
-    return 0;
   }
   if (n_elements != 0) {
     req = n_elements * elem_size;
@@ -5219,7 +5215,6 @@ void* mspace_realloc(mspace msp, void* oldmem, size_t bytes) {
 #endif /* FOOTERS */
     if (!ok_magic(ms)) {
       USAGE_ERROR_ACTION(ms,ms);
-      return 0;
     }
     return internal_realloc(ms, oldmem, bytes);
   }
@@ -5229,7 +5224,6 @@ void* mspace_memalign(mspace msp, size_t alignment, size_t bytes) {
   mstate ms = (mstate)msp;
   if (!ok_magic(ms)) {
     USAGE_ERROR_ACTION(ms,ms);
-    return 0;
   }
   return internal_memalign(ms, alignment, bytes);
 }
@@ -5240,7 +5234,6 @@ void** mspace_independent_calloc(mspace msp, size_t n_elements,
   mstate ms = (mstate)msp;
   if (!ok_magic(ms)) {
     USAGE_ERROR_ACTION(ms,ms);
-    return 0;
   }
   return ialloc(ms, n_elements, &sz, 3, chunks);
 }
@@ -5250,7 +5243,6 @@ void** mspace_independent_comalloc(mspace msp, size_t n_elements,
   mstate ms = (mstate)msp;
   if (!ok_magic(ms)) {
     USAGE_ERROR_ACTION(ms,ms);
-    return 0;
   }
   return ialloc(ms, n_elements, sizes, 0, chunks);
 }

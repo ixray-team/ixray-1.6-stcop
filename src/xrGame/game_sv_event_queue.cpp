@@ -21,7 +21,7 @@ GameEventQueue::~GameEventQueue()
 	cs.Leave		();
 }
 
-static u32 LastTimeCreate = 0;
+static ULONGLONG LastTimeCreate = 0;
 GameEvent*		GameEventQueue::Create	()
 {
 	GameEvent*	ge			= 0;
@@ -95,7 +95,7 @@ GameEvent*		GameEventQueue::Retreive	()
 	//---------------------------------------------	
 	else
 	{
-		u32 tmp_time = GetTickCount64()-60000;
+		auto tmp_time = GetTickCount64() - 60000;
 		u32 size = unused.size();
 		if ((LastTimeCreate < tmp_time) &&  (size > 32))
 		{
@@ -116,7 +116,7 @@ void			GameEventQueue::Release	()
 	cs.Enter		();
 	R_ASSERT		(!ready.empty());
 	//---------------------------------------------
-	u32 tmp_time = GetTickCount64()-60000;
+	auto tmp_time = GetTickCount64() - 60000;
 	u32 size = unused.size();
 	if ((LastTimeCreate < tmp_time) &&  (size > 32))
 	{
@@ -166,7 +166,7 @@ u32 GameEventQueue::EraseEvents(event_predicate to_del)
 	while (need_to_erase != ready.end())
 	{
 		//-----
-		u32 tmp_time = GetTickCount64() - 60000;
+		auto tmp_time = GetTickCount64() - 60000;
 		u32 size = unused.size();
 		if ((LastTimeCreate < tmp_time) &&  (size > 32))
 		{
