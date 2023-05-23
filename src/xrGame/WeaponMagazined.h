@@ -164,7 +164,7 @@ protected:
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
-
+	virtual bool	WeaponSoundExist		(LPCSTR section, LPCSTR sound_name);
 
 	virtual void	FireBullet			(const Fvector& pos, 
         								 const Fvector& dir, 
