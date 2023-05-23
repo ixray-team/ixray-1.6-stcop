@@ -733,7 +733,10 @@ void CWeaponMagazined::switch2_Empty()
 			inherited::FireEnd();
 	}
 	else
+	{
+		SwitchState(eIdle);
 		OnEmptyClick();
+	}
 }
 void CWeaponMagazined::PlayReloadSound()
 {
