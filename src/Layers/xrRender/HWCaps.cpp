@@ -232,7 +232,7 @@ void CHWCaps::Update()
 	// ***************** PIXEL processing
 	raster_major				= 4;
 	raster_minor				= 0;
-	raster.dwStages				= 16;
+	raster.dwStages = 15; //unused
 	raster.bNonPow2				= TRUE;
 	raster.bCubemap				= TRUE;
 	raster.dwMRT_count			= 4;

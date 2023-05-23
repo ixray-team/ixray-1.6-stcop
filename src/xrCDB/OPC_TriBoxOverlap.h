@@ -77,7 +77,8 @@ inline_ BOOL planeBoxOverlap(const Point& normal, const float d, const Point& ma
 // - axis vector3 discarded, possibly saves useless movs
 #define IMPLEMENT_CLASS3_TESTS						\
 	float rad;										\
-	float min, max;									\
+	min = 0.0f;										\
+	max = 0.0f;										\
 													\
 	const float fey0 = _abs(e0.y);					\
 	const float fez0 = _abs(e0.z);					\
@@ -104,7 +105,7 @@ inline_ BOOL planeBoxOverlap(const Point& normal, const float d, const Point& ma
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *	Triangle-Box overlap test using the separating axis theorem.
- *	This is the code from Tomas Möller, a bit optimized:
+ *	This is the code from Tomas Mï¿½ller, a bit optimized:
  *	- with some more lazy evaluation (faster path on PC)
  *	- with a tiny bit of assembly
  *	- with "SAT-lite" applied if needed

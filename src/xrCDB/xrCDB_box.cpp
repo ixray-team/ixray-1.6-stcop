@@ -155,7 +155,8 @@ public:
 		if(bClass3)
 		{
 			float rad;
-			float min, max;
+			min = 0.0f;
+			max = 0.0f;
 			// compute triangle edges
 			// - edges lazy evaluated to take advantage of early exits
 			// - fabs precomputed (half less work, possible since extents are always >0)

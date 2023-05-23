@@ -250,8 +250,8 @@ inline_ BOOL AABBTreeCollider::TriTriOverlap(const Point& V0, const Point& V1, c
 	const float up2 = ((const float*)U2)[index];
 
 	// Compute interval for triangle 1
-	float a,b,c,x0,x1;
-	NEWCOMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,a,b,c,x0,x1);
+	float a,b,_c,x0,x1;
+	NEWCOMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,a,b,_c,x0,x1);
 
 	// Compute interval for triangle 2
 	float d,e,f,y0,y1;
@@ -265,7 +265,7 @@ inline_ BOOL AABBTreeCollider::TriTriOverlap(const Point& V0, const Point& V1, c
 
 	float tmp=a*xxyy;
 	isect1[0]=tmp+b*x1*yy;
-	isect1[1]=tmp+c*x0*yy;
+	isect1[1]=tmp+_c*x0*yy;
 
 	tmp=d*xxyy;
 	isect2[0]=tmp+e*xx*y1;
