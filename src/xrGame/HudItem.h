@@ -141,6 +141,9 @@ public:
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
 	bool						isHUDAnimationExist		(LPCSTR anim_name);
+
+	float						 GetHudFov				();
+
 protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
@@ -154,6 +157,7 @@ protected:
 
 	HUD_SOUND_COLLECTION		m_sounds;
 	InertionData				m_current_inertion;
+	float						m_fHudFov;
 
 private:
 	CPhysicItem					*m_object;
