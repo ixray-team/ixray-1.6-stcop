@@ -119,7 +119,7 @@
 #if defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32)
 #include <windows.h>
 #ifndef _WIN32_WINNT
-# define _WIN32_WINNT 0x0400
+# define _WIN32_WINNT 0x0601
 #endif
 #include <wincrypt.h>
 #include <tlhelp32.h>

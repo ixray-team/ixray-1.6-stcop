@@ -266,7 +266,7 @@ extern "C" {
 	* alone, while NT 4.0 and above calls ought to be additionally
 	* checked upon with GetProcAddress.
 	*/
-#      define _WIN32_WINNT 0x0400
+#      define _WIN32_WINNT 0x0601
 #    endif
 #    include <windows.h>
 #    include <stdio.h>
