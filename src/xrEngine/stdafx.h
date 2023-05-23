@@ -13,7 +13,7 @@
 #endif // #ifndef NDEBUG
 
 #ifdef INGAME_EDITOR
-#	define _WIN32_WINNT 0x0550
+#	define _WIN32_WINNT 0x0601
 #endif // #ifdef INGAME_EDITOR
 
 #include "../xrCore/xrCore.h"
