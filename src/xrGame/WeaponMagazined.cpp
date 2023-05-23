@@ -67,6 +67,20 @@ void CWeaponMagazined::net_Destroy()
 	inherited::net_Destroy();
 }
 
+bool CWeaponMagazined::WeaponSoundExist(LPCSTR section, LPCSTR sound_name)
+{
+	LPCSTR str;
+	bool sec_exist = process_if_exists_set(section, sound_name, &CInifile::r_string, str, true);
+	if (sec_exist)
+		return true;
+	else
+	{
+#ifdef DEBUG
+		Msg("~ [WARNING] ------ Sound [%s] does not exist in [%s]", sound_name, section);
+#endif
+		return false;
+	}
+}
 
 void CWeaponMagazined::Load	(LPCSTR section)
 {
@@ -79,11 +93,11 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_sounds.LoadSound(section,"snd_empty", "sndEmptyClick"	, false, m_eSoundEmptyClick	);
 	m_sounds.LoadSound(section,"snd_reload", "sndReload"	, true, m_eSoundReload		);
 
-	if (isHUDAnimationExist("anm_reload_empty"))
-		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload		);
+	if (WeaponSoundExist(section, "snd_reload_empty") && isHUDAnimationExist("anm_reload_empty"))
+		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload);
 	
-	if (isHUDAnimationExist("anm_reload_misfire"))
-		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload		);
+	if (WeaponSoundExist(section, "snd_reload_misfire") && isHUDAnimationExist("anm_reload_misfire"))
+		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload);
 
 	m_sSndShotCurrent = "sndShot";
 		
@@ -474,8 +488,10 @@ void CWeaponMagazined::UpdateSounds	()
 	m_sounds.SetPosition("sndShow", P);
 	m_sounds.SetPosition("sndHide", P);
 	m_sounds.SetPosition("sndReload", P);
-	m_sounds.SetPosition("sndReloadEmpty", P);
-	m_sounds.SetPosition("sndReloadMis", P);
+	if (m_sounds.FindSoundItem("sndReloadEmpty", false))
+		m_sounds.SetPosition("sndReloadEmpty", P);
+	if (m_sounds.FindSoundItem("sndReloadMis", false))
+		m_sounds.SetPosition("sndReloadMis", P);
 }
 
 void CWeaponMagazined::state_Fire(float dt)
@@ -724,9 +740,9 @@ void CWeaponMagazined::PlayReloadSound()
 	if(!m_sounds_enabled)
 		return;
 
-	if (isHUDAnimationExist("anm_reload_misfire") && IsMisfire() && bMisfireReload)
+	if (m_sounds.FindSoundItem("sndReloadMis", false) && isHUDAnimationExist("anm_reload_misfire") && IsMisfire() && bMisfireReload)
 		PlaySound("sndReloadMis", get_LastFP());
-	else if (isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
 		PlaySound("sndReloadEmpty", get_LastFP());
 	else
 		PlaySound("sndReload", get_LastFP());
