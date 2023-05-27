@@ -22,6 +22,8 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "Actor_Flags.h"
+#include "player_hud.h"
+#include "CustomDetector.h"
 
 ENGINE_API	bool	g_dedicated_server;
 
@@ -193,9 +195,16 @@ void CWeaponMagazined::Reload()
 	TryReload();
 }
 
-
 bool CWeaponMagazined::TryReload() 
 {
+	auto i1 = g_player_hud->attached_item(1);
+	if (i1 && HudItemData())
+	{
+		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+		if (det && (det->GetState() != CCustomDetector::eIdle || det->NeedActivation()))
+			return false;
+	}
+
 	if(m_pInventory) 
 	{
 		if(IsGameTypeSingle() && ParentIsActor())
