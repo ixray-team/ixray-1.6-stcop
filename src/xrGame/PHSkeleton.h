@@ -1,5 +1,4 @@
-#ifndef PH_SKELETON_H
-#define PH_SKELETON_H
+#pragma once
 
 #include "../xrphysics/PHDefs.h"
 #include "PHDestroyableNotificate.h"
@@ -33,6 +32,7 @@ private:
 	//Autoremove
 	bool	ReadyForRemove		()																				;
 	void	RecursiveBonesCheck	(u16 id)																		;
+	void ClearSavedBones();
 
 protected:
 	void			LoadNetState		(NET_Packet& P)															;
@@ -59,5 +59,3 @@ IC			bool	IsRemoving			(){return b_removing;}
 					CPHSkeleton			()																		;
 	virtual			~CPHSkeleton		()																		;
 };
-
-#endif

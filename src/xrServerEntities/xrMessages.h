@@ -1,6 +1,3 @@
-#ifndef _INCDEF_XRMESSAGES_H_
-#define _INCDEF_XRMESSAGES_H_
-
 #pragma once
 
 // CL	== client 2 server message
@@ -159,6 +156,7 @@ enum {
 	
 	GEG_PLAYER_USE_BOOSTER,
 	GE_REQUEST_PLAYERS_INFO,
+	GE_CLEAR_SAVED_BONES,
 
 	GE_FORCEDWORD				= u32(-1)
 };
@@ -254,6 +252,3 @@ enum enum_connection_results
 	ecr_have_been_banned,
 	ecr_profile_error,
 };//enum enum_connection_results
-
-
-#endif /*_INCDEF_XRMESSAGES_H_*/
