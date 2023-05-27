@@ -186,6 +186,10 @@ public:
 
 	u8		GetAddonsState						()		const		{return m_flagsAddOnState;};
 	void	SetAddonsState						(u8 st)	{m_flagsAddOnState=st;}//dont use!!! for buy menu only!!!
+
+	bool bReloadKeyPressed;
+	bool bAmmotypeKeyPressed;
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;

@@ -79,6 +79,8 @@ CWeapon::CWeapon()
 	m_activation_speed_is_overriden	=	false;
 	m_cur_scope				= NULL;
 	m_bRememberActorNVisnStatus = false;
+	bReloadKeyPressed		= false;
+	bAmmotypeKeyPressed		= false;
 }
 
 CWeapon::~CWeapon		()
@@ -843,7 +845,29 @@ void CWeapon::UpdateCL		()
 
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
-	
+
+	auto i1 = g_player_hud->attached_item(1);
+	if (i1 && HudItemData())
+	{
+		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+		if (det && (det->GetState() == CCustomDetector::eIdle || !det->NeedActivation()))
+		{
+			if (bAmmotypeKeyPressed || bReloadKeyPressed)
+			{
+				if (bReloadKeyPressed)
+				{
+					bReloadKeyPressed = false;
+					Action(kWPN_RELOAD, CMD_START);
+				}
+				else
+				{
+					bAmmotypeKeyPressed = false;
+					Action(kWPN_NEXT, CMD_START);
+				}
+			}
+		}
+	}
+
 	if( (GetNextState()==GetState()) && IsGameTypeSingle() && H_Parent()==Level().CurrentEntity())
 	{
 		CActor* pActor	= smart_cast<CActor*>(H_Parent());
@@ -1039,11 +1063,16 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 	if ( !(flags & CMD_START) )
 		return false;
 
+	if (bReloadKeyPressed || bAmmotypeKeyPressed)
+		return false;
+	
+	bAmmotypeKeyPressed = true;
+
 	auto i1 = g_player_hud->attached_item(1);
 	if (i1 && HudItemData())
 	{
 		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
-		if (det && (det->GetState() != CCustomDetector::eIdle || det->NeedActivation()))
+		if (det && det->GetState() != CCustomDetector::eIdle)
 			return false;
 	}
 
