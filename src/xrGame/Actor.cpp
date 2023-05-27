@@ -1653,6 +1653,8 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	CWeapon* weapon	= smart_cast<CWeapon*>(inventory_item);
 	if(weapon && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
 	{
+		weapon->bReloadKeyPressed = false;
+		weapon->bAmmotypeKeyPressed = false;
 		weapon->OnZoomOut();
 		if(weapon->GetRememberActorNVisnStatus())
 			weapon->EnableActorNVisnAfterZoom();

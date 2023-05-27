@@ -191,20 +191,20 @@ void CWeaponMagazined::FireEnd()
 
 void CWeaponMagazined::Reload() 
 {
+	auto i1 = g_player_hud->attached_item(1);
+	if (i1 && HudItemData())
+	{
+		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+		if (det && det->GetState() != CCustomDetector::eIdle)
+			return;
+	}
+
 	inherited::Reload();
 	TryReload();
 }
 
 bool CWeaponMagazined::TryReload() 
 {
-	auto i1 = g_player_hud->attached_item(1);
-	if (i1 && HudItemData())
-	{
-		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
-		if (det && (det->GetState() != CCustomDetector::eIdle || det->NeedActivation()))
-			return false;
-	}
-
 	if(m_pInventory) 
 	{
 		if(IsGameTypeSingle() && ParentIsActor())
@@ -655,6 +655,8 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 	{
 		case eReload:
 		{
+			bReloadKeyPressed = false;
+			bAmmotypeKeyPressed = false;
 			if (bMisfireReload)
 			{
 				bMisfire = false;
@@ -809,9 +811,17 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-			if(flags&CMD_START) 
-				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
+			if(flags&CMD_START)
+			{
+
+				if (iAmmoElapsed < iMagazineSize || IsMisfire())
+				{
+					if (!bReloadKeyPressed || !bAmmotypeKeyPressed)
+						bReloadKeyPressed = true;
+
 					Reload();
+				}
+			}
 		} 
 		return true;
 	case kWPN_FIREMODE_PREV:
