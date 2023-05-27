@@ -25,6 +25,7 @@
 #include "ui/UIXmlInit.h"
 #include "Torch.h"
 #include "IXRayGameConstants.h"
+#include "CustomDetector.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1037,6 +1038,14 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 
 	if ( !(flags & CMD_START) )
 		return false;
+
+	auto i1 = g_player_hud->attached_item(1);
+	if (i1 && HudItemData())
+	{
+		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+		if (det && (det->GetState() != CCustomDetector::eIdle || det->NeedActivation()))
+			return false;
+	}
 
 	u8 l_newType = m_ammoType;
 	bool b1, b2;
