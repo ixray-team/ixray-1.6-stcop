@@ -128,7 +128,7 @@ void	CEffect_Rain::OnFrame	()
 
 #ifdef DEDICATED_SERVER
 	return;
-#endif
+#else
 
 	// Parse states
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
@@ -178,6 +178,7 @@ void	CEffect_Rain::OnFrame	()
 //		snd_Ambient.set_position(sndP);
 		snd_Ambient.set_volume	(_max(0.1f,factor) * hemi_factor );
 	}
+#endif
 }
 
 //#include "xr_input.h"
