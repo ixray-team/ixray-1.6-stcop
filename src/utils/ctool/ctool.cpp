@@ -69,7 +69,7 @@ _UnpackPackets( const char* src_bin, const char* dst_name="" )
 
             while( data < data_end )
             {
-                _snprintf( bin_name, sizeof(bin_name)-1, "data-%08u.bin", count+1 );
+                _snprintf_s(bin_name, sizeof(bin_name) - 1, "data-%08u.bin", count + 1);
             
                 u16     sz  = *((u16*)data);
                 FILE* bin;

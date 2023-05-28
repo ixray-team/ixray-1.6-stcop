@@ -514,7 +514,7 @@ main( int argc, char* argv[] )
                 {
                     char    name[2048];
 
-                    _snprintf( name, sizeof(name), "%s\\%s", dir, found_data.cFileName );
+                    _snprintf_s(name, sizeof(name), "%s\\%s", dir, found_data.cFileName);
                     if( !_ProcessFile( name ) )
                     {
                         all_ok = false;
