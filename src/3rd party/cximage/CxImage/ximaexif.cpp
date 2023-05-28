@@ -194,10 +194,10 @@ bool CxImageJPG::CxExifInfo::DecodeExif(CxFile * hFile, int nReadMode)
             default:
                 // Skip any other sections.
                 //if (ShowTags) printf("Jpeg section marker 0x%02x size %d\n",marker, itemlen);
+                return true;
                 break;
         }
     }
-	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 /*--------------------------------------------------------------------------
@@ -738,7 +738,7 @@ double CxImageJPG::CxExifInfo::ConvertAnyFormat(void * ValuePtr, int Format)
 void CxImageJPG::CxExifInfo::process_COM (const BYTE * Data, int length)
 {
     int ch;
-    char Comment[MAX_COMMENT+1];
+    char Comment[MAX_COMMENT + 1]{};
     int nch;
     int a;
 
