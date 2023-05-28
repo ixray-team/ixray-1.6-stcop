@@ -547,7 +547,6 @@ void	CRender::Statistics	(CGameFont* _F)
 }
 
 /////////
-#pragma comment(lib,"d3dx9.lib")
 /*
 extern "C"
 {
