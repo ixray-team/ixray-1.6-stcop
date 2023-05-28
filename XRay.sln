@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		datapack.ltx = datapack.ltx
 		delete-symbols.bat = delete-symbols.bat
-		Directory.Build.props = Directory.Build.props
 		fs.ltx = fs.ltx
 		fsfactory.ltx = fsfactory.ltx
 		fsgame.ltx = fsgame.ltx
