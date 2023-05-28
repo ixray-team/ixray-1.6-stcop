@@ -255,17 +255,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Packages.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets" Condition="Exists('..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets')" />
+    <Import Project="..\..\packages\ImeSense.Packages.LibVorbis.1.3.7.4\build\native\ImeSense.Packages.LibVorbis.targets" Condition="Exists('..\..\packages\ImeSense.Packages.LibVorbis.1.3.7.4\build\native\ImeSense.Packages.LibVorbis.targets')" />
   </ImportGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties DevPartner_IsInstrumented="1" />
-    </VisualStudio>
-  </ProjectExtensions>
-  <Import Project="..\LibOgg.targets" />
-  <Import Project="..\LibVorbis.targets" />
-  <Import Project="..\LibVorbisFile.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets'))" />
+    <Error Condition="!Exists('..\..\packages\ImeSense.Packages.LibVorbis.1.3.7.4\build\native\ImeSense.Packages.LibVorbis.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\ImeSense.Packages.LibVorbis.1.3.7.4\build\native\ImeSense.Packages.LibVorbis.targets'))" />
+  </Target>
 </Project>

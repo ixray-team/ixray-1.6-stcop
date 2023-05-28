@@ -60,20 +60,20 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <IncludePath>$(SolutionDir)sdk\include;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmath.2022.12.12.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)sdk\include;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmath.2022.12.12.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)sdk\include;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\include;$(SolutionDir)packages\directxmath.2022.12.12.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib;$(SolutionDir)packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\release\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -391,9 +391,7 @@
     <ClCompile Include="IGame_Level.cpp" />
     <ClCompile Include="IGame_Level_check_textures.cpp" />
     <ClCompile Include="IGame_ObjectPool.cpp" />
-    <ClCompile Include="IGame_Persistent.cpp">
-      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">false</ShowIncludes>
-    </ClCompile>
+    <ClCompile Include="IGame_Persistent.cpp" />
     <ClCompile Include="IInputReceiver.cpp" />
     <ClCompile Include="interp.cpp" />
     <ClCompile Include="IRenderable.cpp" />
@@ -488,7 +486,18 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets" Condition="Exists('..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets')" />
+    <Import Project="..\..\packages\ImeSense.Packages.LibTheora.1.1.1.3\build\native\ImeSense.Packages.LibTheora.targets" Condition="Exists('..\..\packages\ImeSense.Packages.LibTheora.1.1.1.3\build\native\ImeSense.Packages.LibTheora.targets')" />
+    <Import Project="..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets" Condition="Exists('..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets')" />
+    <Import Project="..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets" Condition="Exists('..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets')" />
   </ImportGroup>
-  <Import Project="../LibOgg.targets" />
-  <Import Project="../LibTheora.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets'))" />
+    <Error Condition="!Exists('..\..\packages\ImeSense.Packages.LibTheora.1.1.1.3\build\native\ImeSense.Packages.LibTheora.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\ImeSense.Packages.LibTheora.1.1.1.3\build\native\ImeSense.Packages.LibTheora.targets'))" />
+    <Error Condition="!Exists('..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets'))" />
+  </Target>
 </Project>
