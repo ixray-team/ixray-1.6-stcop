@@ -1005,7 +1005,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+ static_cast<char>(HW.Caps.raster_major >= 3); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(HW.Caps.raster_major >= 3); 
+		++len;
+	}
 
 	if (HW.Caps.geometry.bVTF)	{
 		defines[def_it].Name		=	"USE_VTF";
@@ -1288,17 +1292,29 @@ HRESULT	CRender::shader_compile			(
 		++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r_sun_quality)
+	if (xr_strcmp(name, "accum_sun_near_nomsaa_minmax") == 0)
 	{
-		xr_sprintf					(c_sun_quality,"%d",ps_r_sun_quality);
-		defines[def_it].Name		=	"SUN_QUALITY";
-		defines[def_it].Definition	=	c_sun_quality;
-		def_it						++;
-		sh_name[len]='0'+ static_cast<char>(ps_r_sun_quality); ++len;
+		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
+		defines[def_it].Name = "SUN_QUALITY";
+		defines[def_it].Definition = c_sun_quality;
+		def_it++;
+
+		sh_name[len] = '0' + static_cast<char>(4);
+		++len;
+	}
+	else if (ps_r_sun_quality > 0)
+	{
+		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
+		defines[def_it].Name = "SUN_QUALITY";
+		defines[def_it].Definition = c_sun_quality;
+		def_it++;
+
+		sh_name[len] = '0' + static_cast<char>(ps_r_sun_quality);
+		++len;
 	}
 	else
 	{
-		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r_sun_quality);
+		sh_name[len] = '0' + static_cast<char>(ps_r_sun_quality);
 		++len;
 	}
 
