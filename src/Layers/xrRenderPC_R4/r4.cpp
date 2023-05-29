@@ -941,91 +941,137 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.fp16_filter); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.fp16_filter); 
+		++len;
+	}
 
 	if (o.fp16_blend)		{
 		defines[def_it].Name		=	"FP16_BLEND";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.fp16_blend); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.fp16_blend); 
+		++len;
+	}
 
 	if (o.HW_smap)			{
 		defines[def_it].Name		=	"USE_HWSMAP";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.HW_smap); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.HW_smap);
+		++len;
+	}
 
 	if (o.HW_smap_PCF)			{
 		defines[def_it].Name		=	"USE_HWSMAP_PCF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.HW_smap_PCF); ++len;
-
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.HW_smap_PCF); 
+		++len;
+	}
 	if (o.HW_smap_FETCH4)			{
 		defines[def_it].Name		=	"USE_FETCH4";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.HW_smap_FETCH4); ++len;
-
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.HW_smap_FETCH4); 
+		++len;
+	}
 	if (o.sjitter)			{
 		defines[def_it].Name		=	"USE_SJITTER";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.sjitter); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.sjitter); 
+		++len;
+	}
 
 	if (HW.Caps.raster_major >= 3)	{
 		defines[def_it].Name		=	"USE_BRANCHING";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(HW.Caps.raster_major >= 3); ++len;
+	sh_name[len]='0'+ static_cast<char>(HW.Caps.raster_major >= 3); ++len;
 
 	if (HW.Caps.geometry.bVTF)	{
 		defines[def_it].Name		=	"USE_VTF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(HW.Caps.geometry.bVTF); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(HW.Caps.geometry.bVTF); 
+		++len;
+	}
 
 	if (o.Tshadows)			{
 		defines[def_it].Name		=	"USE_TSHADOWS";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.Tshadows); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.Tshadows); 
+		++len;
+	}
 
 	if (o.mblur)			{
 		defines[def_it].Name		=	"USE_MBLUR";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.mblur); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.mblur); 
+		++len;
+	}
 
 	if (o.sunfilter)		{
 		defines[def_it].Name		=	"USE_SUNFILTER";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.sunfilter); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.sunfilter); 
+		++len;
+	}
 
 	if (o.sunstatic)		{
 		defines[def_it].Name		=	"USE_R2_STATIC_SUN";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(o.sunstatic); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.sunstatic); 
+		++len;
+	}
 
 	if (o.forceskinw)		{
 		defines[def_it].Name		=	"SKIN_COLOR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(o.forceskinw); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.forceskinw); 
+		++len;
+	}
 
 	if (o.ssao_blur_on)
 	{
@@ -1033,7 +1079,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(o.ssao_blur_on); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(o.ssao_blur_on);
+		++len;
+	}
 
     if (o.ssao_hdao)
     {
@@ -1044,10 +1094,14 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 		sh_name[len]='0'; ++len;
     }
-	else {
-		sh_name[len]='0'; ++len;
-		sh_name[len]='0'+char(o.ssao_hbao); ++len;
-		sh_name[len]='0'+char(o.ssao_half_data); ++len;
+	else 
+	{
+		sh_name[len]='0'; 
+		++len;
+		sh_name[len]='0'+ static_cast<char>(o.ssao_hbao); 
+		++len;
+		sh_name[len]='0'+ static_cast<char>(o.ssao_half_data); 
+		++len;
 		if (o.ssao_hbao) {
 			defines[def_it].Name		=	"SSAO_OPT_DATA";
 			if (o.ssao_half_data)
@@ -1094,7 +1148,8 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(o.dx10_msaa);
+		++len;
 	}
 
 	// skinning
@@ -1104,8 +1159,10 @@ HRESULT	CRender::shader_compile			(
 		def_it						++	;
 		sh_name[len]='1'; ++len;
 	}
-	else {
-		sh_name[len]='0'; ++len;
+	else 
+	{
+		sh_name[len]='0' + static_cast<char>(m_skinning<0);;
+		++len;
 	}
 
 	if (0==m_skinning)		{
@@ -1113,35 +1170,55 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(0==m_skinning); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(0 == m_skinning); 
+		++len;
+	}
 
 	if (1==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_1";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(1==m_skinning); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(1 == m_skinning); 
+		++len;
+	}
 
 	if (2==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_2";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(2==m_skinning); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(2 == m_skinning); 
+		++len;
+	}
 
 	if (3==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_3";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(3==m_skinning); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(3 == m_skinning); 
+		++len;
+	}
 
 	if (4==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_4";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(4==m_skinning); ++len;
+	else
+	{
+		sh_name[len] = '0' + static_cast<char>(4 == m_skinning); 
+		++len;
+	}
 
 	//	Igor: need restart options
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
@@ -1153,7 +1230,8 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len]='0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER));
+		++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
@@ -1165,7 +1243,8 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES));
+		++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
@@ -1177,7 +1256,8 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF));
+		++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r_sun_shafts)
@@ -1186,11 +1266,12 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"SUN_SHAFTS_QUALITY";
 		defines[def_it].Definition	=	c_sun_shafts;
 		def_it						++;
-		sh_name[len]='0'+char(ps_r_sun_shafts); ++len;
+		sh_name[len]='0'+ static_cast<char>(ps_r_sun_shafts); ++len;
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r_sun_shafts);
+		++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r_ssao)
@@ -1199,11 +1280,12 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"SSAO_QUALITY";
 		defines[def_it].Definition	=	c_ssao;
 		def_it						++;
-		sh_name[len]='0'+char(ps_r_ssao); ++len;
+		sh_name[len]='0'+ static_cast<char>(ps_r_ssao); ++len;
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r_ssao);
+		++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r_sun_quality)
@@ -1212,11 +1294,12 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Name		=	"SUN_QUALITY";
 		defines[def_it].Definition	=	c_sun_quality;
 		def_it						++;
-		sh_name[len]='0'+char(ps_r_sun_quality); ++len;
+		sh_name[len]='0'+ static_cast<char>(ps_r_sun_quality); ++len;
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r_sun_quality);
+		++len;
 	}
 
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
@@ -1228,7 +1311,8 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len]='0'; ++len;
+		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX));
+		++len;
 	}
 
    if( o.dx10_gbuffer_opt )
@@ -1237,7 +1321,11 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(o.dx10_gbuffer_opt); ++len;
+   else
+   {
+	   sh_name[len] = '0' + static_cast<char>(o.dx10_gbuffer_opt); 
+	   ++len;
+   }
 
    if(HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1)
    {
@@ -1245,7 +1333,11 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	=	"1";
 	   def_it++;
    }
-   sh_name[len]='0'+0*char(HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1); ++len;
+   else
+   {
+	   sh_name[len] = '0' + 0 * static_cast<char>(HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1); 
+	   ++len;
+   }
 
    if( HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 )
    {
@@ -1253,7 +1345,11 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	=	"1";
 	   def_it++;
    }
-	sh_name[len]='0'+char(HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0); ++len;
+   else
+   {
+	   sh_name[len] = '0' + static_cast<char>(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0); 
+	   ++len;
+   }
 
    if (o.dx10_minmax_sm)
    {
@@ -1261,7 +1357,11 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	=	"1";
 	   def_it++;
    }
-	sh_name[len]='0'+char(o.dx10_minmax_sm!=0); ++len;
+   else
+   {
+	   sh_name[len] = '0' + static_cast<char>(o.dx10_minmax_sm != 0); 
+	   ++len;
+   }
 
 	//Be carefull!!!!! this should be at the end to correctly generate
 	//compiled shader name;
@@ -1276,11 +1376,11 @@ HRESULT	CRender::shader_compile			(
 	   static char samples[2];
 
 	   defines[def_it].Name		=	"MSAA_SAMPLES";
-	   samples[0] = char(o.dx10_msaa_samples) + '0';
+	   samples[0] = static_cast<char>(o.dx10_msaa_samples) + '0';
 	   samples[1] = 0;
 	   defines[def_it].Definition	= samples;	
 	   def_it						++;
-	   sh_name[len]='0'+char(o.dx10_msaa_samples); ++len;
+	   sh_name[len]='0'+ static_cast<char>(o.dx10_msaa_samples); ++len;
 
 	   if( o.dx10_msaa_opt )
 	   {
@@ -1288,7 +1388,11 @@ HRESULT	CRender::shader_compile			(
 		   defines[def_it].Definition	=	"1";
 		   def_it						++;
 	   }
-		sh_name[len]='0'+char(o.dx10_msaa_opt); ++len;
+	   else
+	   {
+		   sh_name[len] = '0' + static_cast<char>(o.dx10_msaa_opt); 
+		   ++len;
+	   }
 
 		switch(o.dx10_msaa_alphatest)
 		{
@@ -1322,7 +1426,8 @@ HRESULT	CRender::shader_compile			(
 			sh_name[len]='0'; ++len;
 		}
    }
-   else {
+   else 
+   {
 		sh_name[len]='0'; ++len;
 		sh_name[len]='0'; ++len;
 		sh_name[len]='0'; ++len;
