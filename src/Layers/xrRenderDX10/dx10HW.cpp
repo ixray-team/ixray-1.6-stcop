@@ -612,7 +612,7 @@ DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 
 		UINT num = 0;
 		DXGI_FORMAT format = fmt;
-		UINT flags         = 0;
+		UINT flags = DXGI_ENUM_MODES_INTERLACED;
 
 		// Get the number of display modes available
 		pOutput->GetDisplayModeList( format, flags, &num, 0);
