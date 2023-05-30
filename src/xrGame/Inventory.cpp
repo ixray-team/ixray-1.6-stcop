@@ -318,10 +318,10 @@ bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict
 	{
 #ifdef _DEBUG
 		Msg("there is item %s[%d,%x] in slot %d[%d,%x]", 
-				ItemFromSlot(pIItem->GetSlot())->object().cName().c_str(), 
-				ItemFromSlot(pIItem->GetSlot())->object().ID(), 
-				ItemFromSlot(pIItem->GetSlot()), 
-				pIItem->GetSlot(), 
+				ItemFromSlot(pIItem->CurrSlot())->object().cName().c_str(), 
+				ItemFromSlot(pIItem->CurrSlot())->object().ID(), 
+				ItemFromSlot(pIItem->CurrSlot()), 
+				pIItem->CurrSlot(), 
 				pIItem->object().ID(),
 				pIItem);
 #endif
