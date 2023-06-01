@@ -153,7 +153,6 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	|R2FLAG_SUN_TSM
 	|R2FLAG_TONEMAP
 	|R2FLAG_VOLUMETRIC_LIGHTS
-	|R2FLAG_USE_BUMP
 	};	// r2-only
 
 Flags32		ps_r2_ls_flags_ext			= {
@@ -161,7 +160,7 @@ Flags32		ps_r2_ls_flags_ext			= {
 		|R2FLAGEXT_ENABLE_TESSELLATION
 	};
 
-Flags32 ps_r__common_flags = {};
+Flags32 ps_r__common_flags = {R2FLAG_USE_BUMP};
 
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 75.f;
