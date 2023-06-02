@@ -434,50 +434,6 @@ u32	CHW::selectPresentInterval	()
 
 u32 CHW::selectGPU ()
 {
-#if RENDER == R_R1
-	BOOL isIntelGMA = FALSE;
-
-	if ( Caps.id_vendor == 0x8086 ) { // Intel
-
-		#define GMA_SL_SIZE 43
-
-		DWORD IntelGMA_SoftList[ GMA_SL_SIZE ] = { 
-			0x2782,0x2582,0x2792,0x2592,0x2772,0x2776,0x27A2,0x27A6,0x27AE,
-			0x2982,0x2983,0x2992,0x2993,0x29A2,0x29A3,0x2972,0x2973,0x2A02,
-			0x2A03,0x2A12,0x2A13,0x29C2,0x29C3,0x29B2,0x29B3,0x29D2,0x29D3,
-
-			0x2A42,0x2A43,0x2E02,0x2E03,0x2E12,0x2E13,0x2E22,0x2E23,0x2E32,
-			0x2E33,0x2E42,0x2E43,0x2E92,0x2E93,0x0042,0x0046
-		};
-
-		for ( int idx = 0 ; idx < GMA_SL_SIZE ; ++idx )
-			if ( IntelGMA_SoftList[ idx ] == Caps.id_device ) {
-				isIntelGMA = TRUE;
-				break;
-			}
-	}
-
-	if ( isIntelGMA )
-		switch ( ps_r1_SoftwareSkinning ) {
-			case 0 : 
-				Msg( "* Enabling software skinning" );
-				ps_r1_SoftwareSkinning = 1;
-				break;
-			case 1 : 
-				Msg( "* Using software skinning" );
-				break;
-			case 2 : 
-				Msg( "* WARNING: Using hardware skinning" );
-				Msg( "*   setting 'r1_software_skinning' to '1' may improve performance" );
-				break;
-	} else
-		if ( ps_r1_SoftwareSkinning == 1 ) {
-				Msg( "* WARNING: Using software skinning" );
-				Msg( "*   setting 'r1_software_skinning' to '0' should improve performance" );
-		}
-
-#endif // RENDER == R_R1
-
 	if ( Caps.bForceGPU_SW ) 
 		return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
