@@ -700,12 +700,12 @@ void CWeaponMagazinedWGrenade::PlayAnimShoot()
 	}
 }
 
-void  CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
+void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
 	if(m_bGrenadeMode)
-		PlayHUDMotion("anm_switch_g" , FALSE, this, eSwitch);
+		PlayHUDMotion("anm_switch_g", TRUE, this, eSwitch);
 	else 
-		PlayHUDMotion("anm_switch" , FALSE, this, eSwitch);
+		PlayHUDMotion("anm_switch", TRUE, this, eSwitch);
 }
 
 void CWeaponMagazinedWGrenade::PlayAnimBore()
