@@ -6,7 +6,6 @@
 
 #ifndef _EDITOR
 	#include "NVAPI/nvapi.h"
-	#include "ATI/atimgpud.h"
 #endif
 
 namespace
@@ -69,26 +68,11 @@ u32 GetNVGpuNum()
 	return iGpuNum;
 }
 
-u32 GetATIGpuNum()
-{
-	int iGpuNum = AtiMultiGPUAdapters();
-	//int iGpuNum = 1;
-
-	if (iGpuNum>1)
-	{
-		Msg	("* ATI MGPU: %d-Way CrossFire detected.", iGpuNum);
-	}
-
-	return iGpuNum;
-}
-
 u32 GetGpuNum()
 {
 	u32 res = 0;
 
-	if (HW.Caps.id_vendor == 0x1002) //AMD
-		res = GetATIGpuNum();
-	else if (HW.Caps.id_vendor == 0x10DE) //NVIDIA
+	if (HW.Caps.id_vendor == 0x10DE) //NVIDIA
 		res = GetNVGpuNum();
 
 	res = _max( res, 2 );
