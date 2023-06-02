@@ -214,9 +214,8 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FUNC:
 		{
-            if (flags&CMD_START && !IsPending()) 
-				SwitchMode();
-			return true;
+            if (flags&CMD_START) 
+				return SwitchMode();
 		}
 	}
 	return false;
