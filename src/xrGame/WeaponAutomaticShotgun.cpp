@@ -36,6 +36,14 @@ void CWeaponAutomaticShotgun::Load(LPCSTR section)
 
 }
 
+bool CWeaponAutomaticShotgun::SwitchAmmoType(u32 flags)
+{
+	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
+		return false;
+
+	return inherited::SwitchAmmoType(flags);
+}
+
 bool CWeaponAutomaticShotgun::Action(u16 cmd, u32 flags) 
 {
 	if(inherited::Action(cmd, flags))

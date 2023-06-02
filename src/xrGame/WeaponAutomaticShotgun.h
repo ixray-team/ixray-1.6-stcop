@@ -27,6 +27,7 @@ public:
 	virtual bool	Action					(u16 cmd, u32 flags);
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };
 
+	virtual bool	SwitchAmmoType(u32 flags);
 	bool			bStopReloadSignal;
 
 protected:

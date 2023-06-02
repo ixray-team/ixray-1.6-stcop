@@ -28,6 +28,7 @@ public:
 
 	virtual bool	Action(u16 cmd, u32 flags);
 
+	virtual bool	SwitchAmmoType(u32 flags);
 	bool			bStopReloadSignal;
 
 protected:
