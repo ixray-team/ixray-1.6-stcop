@@ -8,7 +8,7 @@ using dx10StateUtils::operator==;
 dx10SamplerStateCache	SSManager;
 
 dx10SamplerStateCache::dx10SamplerStateCache():
-	m_uiMaxAnisotropy(1)
+	m_uiMaxAnisotropy(1), m_mipLodBias(0.0f)
 {
 	static const int iMaxRSStates = 10;
 	m_StateArray.reserve(iMaxRSStates);
@@ -27,6 +27,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState( D3D_SAMPLER_DESC
 	//	MaxAnisitropy is reset by ValidateState if not aplicable
 	//	to the filter mode used.
 	desc.MaxAnisotropy = m_uiMaxAnisotropy;
+	desc.MipLODBias = m_mipLodBias;
 
 	dx10StateUtils::ValidateState(desc);
 
@@ -36,7 +37,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState( D3D_SAMPLER_DESC
 
 	if ( hResult == hInvalidHandle )
 	{
-		StateRecord rec;
+		StateRecord rec{};
 		rec.m_crc = crc;
 		CreateState(desc, &rec.m_pState);
 		hResult = m_StateArray.size();
@@ -173,28 +174,36 @@ void dx10SamplerStateCache::SetMaxAnisotropy( UINT uiMaxAniso)
 {
 	clamp( uiMaxAniso, (u32)1, (u32)16);
 
-	if (m_uiMaxAnisotropy==uiMaxAniso)
+	if (m_uiMaxAnisotropy == uiMaxAniso) {
 		return;
+	}
 
 	m_uiMaxAnisotropy = uiMaxAniso;
+	StateDecs samplerDesc = {};
+	for (auto& rec : m_StateArray) {
+		rec.m_pState->GetDesc(&samplerDesc);
+		samplerDesc.MaxAnisotropy = m_uiMaxAnisotropy;
+		dx10StateUtils::ValidateState(samplerDesc);
+		_RELEASE(rec.m_pState);
+		CreateState(samplerDesc, &rec.m_pState);
+	}
+}
 
-	for ( u32 i=0; i<m_StateArray.size(); ++i)
-	{
-		StateRecord	&rec = m_StateArray[i];
-		StateDecs	desc;
+void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) {
+	clamp(mipMapLodBias, -3.0f, 3.0f);
 
-		rec.m_pState->GetDesc(&desc);
+	if (m_mipLodBias == mipMapLodBias) {
+		return;
+	}
 
-		//	MaxAnisitropy is reset by ValidateState if not aplicable
-		//	to the filter mode used.
-		//	Reason: all checks for aniso applicability are done
-		//	in ValidateState.
-		desc.MaxAnisotropy = m_uiMaxAnisotropy;
-		dx10StateUtils::ValidateState(desc);
-
-		//	This can cause fragmentation if called too often
-		rec.m_pState->Release();
-		CreateState(desc, &rec.m_pState);
+	m_mipLodBias = mipMapLodBias;
+	StateDecs samplerDesc = {};
+	for (auto& rec : m_StateArray) {
+		rec.m_pState->GetDesc(&samplerDesc);
+		samplerDesc.MipLODBias = m_mipLodBias;
+		dx10StateUtils::ValidateState(samplerDesc);
+		_RELEASE(rec.m_pState);
+		CreateState(samplerDesc, &rec.m_pState);
 	}
 }
 

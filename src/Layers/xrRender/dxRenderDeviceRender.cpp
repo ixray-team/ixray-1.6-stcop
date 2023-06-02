@@ -87,12 +87,12 @@ void dxRenderDeviceRender::SetupStates()
 
 #ifdef USE_DX11
 	//	TODO: DX10: Implement Resetting of render states into default mode
-	//VERIFY(!"dxRenderDeviceRender::SetupStates not implemented.");
+	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
+	SSManager.SetMipLodBias(ps_r__tf_Mipbias);
 #else //USE_DX11
 	for (u32 i=0; i<HW.Caps.raster.dwStages; i++)				{
-		float fBias = -.5f	;
-		CHK_DX(HW.pDevice->SetSamplerState	( i, D3DSAMP_MAXANISOTROPY, 4				));
-		CHK_DX(HW.pDevice->SetSamplerState	( i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fBias))));
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic));
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, ps_r__tf_Mipbias));
 		CHK_DX(HW.pDevice->SetSamplerState	( i, D3DSAMP_MINFILTER,	D3DTEXF_LINEAR 		));
 		CHK_DX(HW.pDevice->SetSamplerState	( i, D3DSAMP_MAGFILTER,	D3DTEXF_LINEAR 		));
 		CHK_DX(HW.pDevice->SetSamplerState	( i, D3DSAMP_MIPFILTER,	D3DTEXF_LINEAR		));

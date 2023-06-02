@@ -26,7 +26,7 @@ extern ECORE_API	xr_token	qminmax_sm_token[];
 
 extern ENGINE_API	int			ps_r__Supersample;
 extern ECORE_API	int			ps_r__LightSleepFrames;
-
+extern ECORE_API float ps_r__tf_Mipbias;
 extern ECORE_API	float		ps_r__Detail_l_ambient;
 extern ECORE_API	float		ps_r__Detail_l_aniso;
 extern ECORE_API	float		ps_r__Detail_density;
@@ -49,7 +49,6 @@ extern ECORE_API	int			ps_r__tf_Anisotropic;
 // R1
 extern ECORE_API	float		ps_r1_ssaLOD_A;
 extern ECORE_API	float		ps_r1_ssaLOD_B;
-extern ECORE_API	float		ps_r1_tf_Mipbias;
 extern ECORE_API	float		ps_r1_lmodel_lerp;
 extern ECORE_API	float		ps_r1_dlights_clip;
 extern ECORE_API	float		ps_r1_pps_u;
@@ -73,7 +72,6 @@ extern ECORE_API Flags32		ps_r__common_flags;
 // R2
 extern ECORE_API	float		ps_r2_ssaLOD_A;
 extern ECORE_API	float		ps_r2_ssaLOD_B;
-extern ECORE_API	float		ps_r2_tf_Mipbias;
 
 // R2-specific
 extern ECORE_API Flags32		ps_r2_ls_flags;				// r2-only
