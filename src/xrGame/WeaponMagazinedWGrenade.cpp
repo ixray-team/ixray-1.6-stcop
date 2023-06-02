@@ -151,30 +151,22 @@ void CWeaponMagazinedWGrenade::OnShot		()
 
 bool CWeaponMagazinedWGrenade::SwitchMode() 
 {
-	bool bUsefulStateToSwitch = ((eIdle==GetState())||(eHidden==GetState())||(eMisfire==GetState())||(eMagEmpty==GetState())) && (!IsPending());
+	if (!IsGrenadeLauncherAttached())
+		return false;
+
+	bool bUsefulStateToSwitch = (!IsPending() && !IsZoomed() && (GetState() == eIdle || GetState() == eMisfire));
 
 	if(!bUsefulStateToSwitch)
 		return false;
 
-	if(!IsGrenadeLauncherAttached()) 
-		return false;
+	SwitchState(eSwitch);
 
-	OnZoomOut();
+	m_BriefInfo_CalcFrame = 0;
 
-	SetPending				(TRUE);
-
-	PerformSwitchGL			();
-	
-	PlaySound				("sndSwitch", get_LastFP());
-
-	PlayAnimModeSwitch		();
-
-	m_BriefInfo_CalcFrame	= 0;
-
-	return					true;
+	return true;
 }
 
-void  CWeaponMagazinedWGrenade::PerformSwitchGL()
+void CWeaponMagazinedWGrenade::PerformSwitchGL()
 {
 	m_bGrenadeMode		= !m_bGrenadeMode;
 
@@ -199,12 +191,12 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 	if(m_bGrenadeMode && cmd==kWPN_FIRE)
 	{
 		if(IsPending())		
-			return				false;
+			return false;
 
 		if(flags&CMD_START)
 		{
 			if(iAmmoElapsed)
-				LaunchGrenade		();
+				LaunchGrenade();
 			else
 			{
 				if (psActorFlags.test(AF_AUTORELOAD))
@@ -213,17 +205,17 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 					OnEmptyClick();
 			}
 		}
-		return					true;
+		return true;
 	}
 	if(inherited::Action(cmd, flags))
 		return true;
 	
 	switch(cmd) 
 	{
-	case kWPN_FUNC: 
+		case kWPN_FUNC:
 		{
-            if(flags&CMD_START && !IsPending()) 
-				SwitchState(eSwitch);
+            if (flags&CMD_START && !IsPending()) 
+				SwitchMode();
 			return true;
 		}
 	}
@@ -395,9 +387,8 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 void CWeaponMagazinedWGrenade::FireEnd() 
 {
 	if(m_bGrenadeMode)
-	{
 		CWeapon::FireEnd();
-	}else
+	else
 		inherited::FireEnd();
 }
 
@@ -430,40 +421,42 @@ void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S)
 {
 	switch (S)
 	{
-	case eSwitch:
-		{
-			if( !SwitchMode() ){
-				SwitchState(eIdle);
-				return;
-			}
-		}break;
+		case eSwitch:
+			switch2_SwitchMode();
+		break;
 	}
 	
 	inherited::OnStateSwitch(S);
 	UpdateGrenadeVisibility(!!iAmmoElapsed || S == eReload);
 }
 
+void CWeaponMagazinedWGrenade::switch2_SwitchMode()
+{
+	SetPending(TRUE);
+	PerformSwitchGL();
+	PlaySound("sndSwitch", get_LastFP());
+	PlayAnimModeSwitch();
+}
 
 void CWeaponMagazinedWGrenade::OnAnimationEnd(u32 state)
 {
 	switch (state)
 	{
-	case eSwitch:
-		{
+		case eSwitch:
 			SwitchState(eIdle);
-		}break;
+		break;
 	}
 	inherited::OnAnimationEnd(state);
 }
-
 
 void CWeaponMagazinedWGrenade::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	SetPending			(FALSE);
-	if (m_bGrenadeMode) {
-		SetState		( eIdle );
+	SetPending(FALSE);
+	if (m_bGrenadeMode)
+	{
+		SetState		(eIdle);
 		SetPending		(FALSE);
 	}
 }
@@ -636,9 +629,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 		else
 		{
 			if(m_bGrenadeMode)
-				PlayHUDMotion("anm_idle_g", TRUE, NULL, GetState());
+				PlayHUDMotion("anm_idle_g", TRUE, NULL, eIdle);
 			else
-				PlayHUDMotion("anm_idle_w_gl", TRUE, NULL, GetState());
+				PlayHUDMotion("anm_idle_w_gl", TRUE, NULL, eIdle);
 		}
 	}
 	else
@@ -650,9 +643,9 @@ void CWeaponMagazinedWGrenade::PlayAnimAim()
 	if (IsGrenadeLauncherAttached())
 	{
 		if (m_bGrenadeMode)
-			PlayHUDMotion("anm_idle_g_aim", TRUE, NULL, GetState());
+			PlayHUDMotion("anm_idle_g_aim", TRUE, NULL, eIdle);
 		else
-			PlayHUDMotion("anm_idle_w_gl_aim", TRUE, NULL, GetState());
+			PlayHUDMotion("anm_idle_w_gl_aim", TRUE, NULL, eIdle);
 	}
 	else
 		inherited::PlayAnimAim();
@@ -663,9 +656,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdleMoving()
 	if (IsGrenadeLauncherAttached())
 	{
 		if (m_bGrenadeMode)
-			PlayHUDMotion("anm_idle_moving_g", TRUE, NULL, GetState());
+			PlayHUDMotion("anm_idle_moving_g", TRUE, NULL, eIdle);
 		else
-			PlayHUDMotion("anm_idle_moving_w_gl", TRUE, NULL, GetState());
+			PlayHUDMotion("anm_idle_moving_w_gl", TRUE, NULL, eIdle);
 	}
 	else
 		inherited::PlayAnimIdleMoving();
@@ -676,9 +669,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdleSprint()
 	if (IsGrenadeLauncherAttached())
 	{
 		if (m_bGrenadeMode)
-			PlayHUDMotion("anm_idle_sprint_g", TRUE, NULL, GetState());
+			PlayHUDMotion("anm_idle_sprint_g", TRUE, NULL, eIdle);
 		else
-			PlayHUDMotion("anm_idle_sprint_w_gl", TRUE, NULL, GetState());
+			PlayHUDMotion("anm_idle_sprint_w_gl", TRUE, NULL, eIdle);
 	}
 	else
 		inherited::PlayAnimIdleSprint();
