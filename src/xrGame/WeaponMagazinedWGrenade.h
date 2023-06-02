@@ -55,7 +55,6 @@ public:
 	virtual bool	SwitchMode		();
 	void			PerformSwitchGL	();
 	void			OnAnimationEnd	(u32 state);
-	virtual void	OnMagazineEmpty	();
 	virtual bool	GetBriefInfo			(II_BriefInfo& info);
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);

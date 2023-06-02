@@ -141,7 +141,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	LoadSilencerKoeffs();
 }
 
-void CWeaponMagazined::FireStart		()
+void CWeaponMagazined::FireStart()
 {
 	if(!IsMisfire())
 	{
@@ -157,16 +157,18 @@ void CWeaponMagazined::FireStart		()
 				inherited::FireStart();
 				
 				if (iAmmoElapsed == 0) 
-					OnMagazineEmpty();
-				else{
+					switch2_Empty();
+				else
+				{
 					R_ASSERT(H_Parent());
 					SwitchState(eFire);
 				}
 			}
-		}else 
+		}
+		else 
 		{
-			if(eReload!=GetState()) 
-				OnMagazineEmpty();
+			if (GetState() == eIdle) 
+				switch2_Empty();
 		}
 	}else
 	{//misfire
@@ -257,23 +259,6 @@ bool CWeaponMagazined::IsAmmoAvailable()
 			if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() )))
 				return	(true);
 	return		(false);
-}
-
-void CWeaponMagazined::OnMagazineEmpty() 
-{
-
-	if(GetState() == eIdle) 
-	{
-		OnEmptyClick			();
-		return;
-	}
-
-	if( GetNextState() != eMagEmpty && GetNextState() != eReload)
-	{
-		SwitchState(eMagEmpty);
-	}
-
-	inherited::OnMagazineEmpty();
 }
 
 void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
@@ -427,9 +412,6 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 		break;
-	case eMagEmpty:
-		switch2_Empty	();
-		break;
 	case eReload:
 		if(owner)
 			m_sounds_enabled = owner->CanPlayShHdRldSounds();
@@ -478,7 +460,6 @@ void CWeaponMagazined::UpdateCL			()
 				state_Fire		(dt);
 			}break;
 		case eMisfire:		state_Misfire	(dt);	break;
-		case eMagEmpty:		state_MagEmpty	(dt);	break;
 		case eHidden:		break;
 		}
 	}
@@ -607,10 +588,6 @@ void CWeaponMagazined::state_Misfire	(float dt)
 	bMisfire				= true;
 
 	UpdateSounds			();
-}
-
-void CWeaponMagazined::state_MagEmpty	(float dt)
-{
 }
 
 void CWeaponMagazined::SetDefaults	()
@@ -744,10 +721,7 @@ void CWeaponMagazined::switch2_Empty()
 			inherited::FireEnd();
 	}
 	else
-	{
-		SwitchState(eIdle);
 		OnEmptyClick();
-	}
 }
 void CWeaponMagazined::PlayReloadSound()
 {
