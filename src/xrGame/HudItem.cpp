@@ -425,7 +425,6 @@ bool CHudItem::isHUDAnimationExist(LPCSTR anim_name)
 	if (HudItemData()) // First person
 	{
 		string256 anim_name_r;
-		u16 attach_place_idx = pSettings->r_u16(HudItemData()->m_sect_name, "attach_place_idx");
 		sprintf(anim_name_r, "%s", anim_name);
 		player_hud_motion* anm = HudItemData()->m_hand_motions.find_motion(anim_name_r);
 		if (anm)
