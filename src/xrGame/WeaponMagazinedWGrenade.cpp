@@ -392,14 +392,6 @@ void CWeaponMagazinedWGrenade::FireEnd()
 		inherited::FireEnd();
 }
 
-void CWeaponMagazinedWGrenade::OnMagazineEmpty() 
-{
-	if(GetState() == eIdle) 
-	{
-		OnEmptyClick			();
-	}
-}
-
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
 	auto last_bMisfire = bMisfire;
