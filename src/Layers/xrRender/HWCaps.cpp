@@ -4,80 +4,15 @@
 #include "hwcaps.h"
 #include "hw.h"
 
-#ifndef _EDITOR
-	#include "NVAPI/nvapi.h"
-#endif
-
 namespace
 {
 
 #ifndef _EDITOR
-u32 GetNVGpuNum()
-{
-	NvLogicalGpuHandle  logicalGPUs[NVAPI_MAX_LOGICAL_GPUS];
-	NvU32               logicalGPUCount;
-	NvPhysicalGpuHandle physicalGPUs[NVAPI_MAX_PHYSICAL_GPUS];
-	NvU32               physicalGPUCount;
-
-//	int result = NVAPI_OK;
-
-	int iGpuNum = 0;
-
-	NvAPI_Status	status;
-	status = NvAPI_Initialize();
-
-	if (status != NVAPI_OK)
-	{
-		Msg("* NVAPI is missing.");
-		return iGpuNum;
-	}
-
-	// enumerate logical gpus
-	status = NvAPI_EnumLogicalGPUs(logicalGPUs, &logicalGPUCount);
-	if (status != NVAPI_OK)
-	{
-		Msg("* NvAPI_EnumLogicalGPUs failed!");
-		return iGpuNum;
-		// error
-	}
-
-	// enumerate physical gpus
-	status = NvAPI_EnumPhysicalGPUs(physicalGPUs, &physicalGPUCount);
-	if (status != NVAPI_OK)
-	{
-		Msg("* NvAPI_EnumPhysicalGPUs failed!");
-		return iGpuNum;
-		// error
-	}
-
-	Msg	("* NVidia MGPU: Logical(%d), Physical(%d)", physicalGPUCount, logicalGPUCount);
-
-	//	Assume that we are running on logical GPU with most physical GPUs connected.
-	for ( u32 i = 0; i<logicalGPUCount; ++i )
-	{
-		status = NvAPI_GetPhysicalGPUsFromLogicalGPU( logicalGPUs[i], physicalGPUs, &physicalGPUCount);
-		if (status == NVAPI_OK)
-			iGpuNum = _max( iGpuNum, physicalGPUCount);
-	}
-
-	if (iGpuNum>1)
-	{
-		Msg	("* NVidia MGPU: %d-Way SLI detected.", iGpuNum);
-	}
-
-	return iGpuNum;
-}
-
 u32 GetGpuNum()
 {
 	u32 res = 0;
-
-	if (HW.Caps.id_vendor == 0x10DE) //NVIDIA
-		res = GetNVGpuNum();
-
-	res = _max( res, 2 );
-
-	res = _min( res, CHWCaps::MAX_GPUS );
+	res = _max(res, 2);
+	res = _min(res, CHWCaps::MAX_GPUS);
 
 	//	It's vital to have at least one GPU, else
 	//	code will fail.
