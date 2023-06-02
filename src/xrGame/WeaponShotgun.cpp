@@ -40,10 +40,18 @@ void CWeaponShotgun::Load	(LPCSTR section)
 
 }
 
-void CWeaponShotgun::switch2_Fire	()
+void CWeaponShotgun::switch2_Fire()
 {
 	inherited::switch2_Fire	();
 	bWorking = false;
+}
+
+bool CWeaponShotgun::SwitchAmmoType(u32 flags)
+{
+	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
+		return false;
+
+	return inherited::SwitchAmmoType(flags);
 }
 
 bool CWeaponShotgun::Action(u16 cmd, u32 flags) 
