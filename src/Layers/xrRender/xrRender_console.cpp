@@ -127,7 +127,6 @@ float		ps_r1_pps_v					= 0.f	;
 // R1-specific
 int			ps_r1_GlowsPerFrame			= 16	;					// r1-only
 float		ps_r1_fog_luminance			= 1.1f	;					// r1-only
-int			ps_r1_SoftwareSkinning		= 0		;					// r1-only
 int			ps_r1_use_terrain_mask		= 0;
 // R2
 float		ps_r2_ssaLOD_A				= 64.f	;
@@ -708,12 +707,6 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r1_detail_textures",	&ps_r2_ls_flags,			R1FLAG_DETAIL_TEXTURES);
 
 	CMD4(CCC_Float,		"r1_fog_luminance",		&ps_r1_fog_luminance,		0.2f,	5.f	);
-
-	// Software Skinning
-	// 0 - disabled (renderer can override)
-	// 1 - enabled
-	// 2 - forced hardware skinning (renderer can not override)
-	CMD4(CCC_Integer,	"r1_software_skinning",	&ps_r1_SoftwareSkinning,	0,		2	);
 	
 	CMD3(CCC_Mask, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
 
