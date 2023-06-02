@@ -28,6 +28,8 @@ public:
 
 	virtual bool	Action(u16 cmd, u32 flags);
 
+	bool			bStopReloadSignal;
+
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
 	void			TriStateReload		();
