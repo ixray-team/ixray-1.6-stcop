@@ -27,6 +27,8 @@ public:
 	virtual bool	Action					(u16 cmd, u32 flags);
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };
 
+	bool			bStopReloadSignal;
+
 protected:
 	virtual void	OnAnimationEnd			(u32 state);
 	void			TriStateReload			();

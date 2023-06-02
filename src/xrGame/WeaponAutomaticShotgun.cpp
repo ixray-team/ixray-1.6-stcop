@@ -11,6 +11,7 @@ CWeaponAutomaticShotgun::CWeaponAutomaticShotgun()
 {
 	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
+	bStopReloadSignal		= false;
 }
 
 CWeaponAutomaticShotgun::~CWeaponAutomaticShotgun()
@@ -24,7 +25,8 @@ void CWeaponAutomaticShotgun::Load(LPCSTR section)
 	if(pSettings->line_exist(section, "tri_state_reload")){
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
 	};
-	if(m_bTriStateReload){
+	if(m_bTriStateReload)
+	{
 		m_sounds.LoadSound(section, "snd_open_weapon", "sndOpen", false, m_eSoundOpen);
 
 		m_sounds.LoadSound(section, "snd_add_cartridge", "sndAddCartridge", false, m_eSoundAddCartridge);
@@ -36,14 +38,12 @@ void CWeaponAutomaticShotgun::Load(LPCSTR section)
 
 bool CWeaponAutomaticShotgun::Action(u16 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
+	if(inherited::Action(cmd, flags))
+		return true;
 
-	if(	m_bTriStateReload && GetState()==eReload &&
-		cmd==kWPN_FIRE && flags&CMD_START &&
-		m_sub_state==eSubstateReloadInProcess		)//остановить перезагрузку
+	if(m_bTriStateReload && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && cmd == kWPN_FIRE && flags & CMD_START) //остановить перезарядку
 	{
-		AddCartridge(1);
-		m_sub_state = eSubstateReloadEnd;
+		bStopReloadSignal = true;
 		return true;
 	}
 	return false;
@@ -51,24 +51,31 @@ bool CWeaponAutomaticShotgun::Action(u16 cmd, u32 flags)
 
 void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state) 
 {
-	if(!m_bTriStateReload || state != eReload)
+	if (!m_bTriStateReload || state != eReload)
+	{
+		bStopReloadSignal = false;
 		return inherited::OnAnimationEnd(state);
+	}
 
-	switch(m_sub_state){
-		case eSubstateReloadBegin:{
-			m_sub_state = eSubstateReloadInProcess;
-			SwitchState(eReload);
-		}break;
-
-		case eSubstateReloadInProcess:{
-			if( 0 != AddCartridge(1) ){
+	switch(m_sub_state)
+	{
+		case eSubstateReloadBegin:
+		{
+			if (bStopReloadSignal)
 				m_sub_state = eSubstateReloadEnd;
-			}
+			else
+				m_sub_state = eSubstateReloadInProcess;
 			SwitchState(eReload);
 		}break;
-
-		case eSubstateReloadEnd:{
-			m_sub_state = eSubstateReloadBegin;
+		case eSubstateReloadInProcess:
+		{
+			if(0 != AddCartridge(1) || bStopReloadSignal)
+				m_sub_state = eSubstateReloadEnd;
+			SwitchState(eReload);
+		}break;
+		case eSubstateReloadEnd:
+		{
+			bStopReloadSignal = false;
 			SwitchState(eIdle);
 		}break;
 		
@@ -77,47 +84,52 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 
 void CWeaponAutomaticShotgun::Reload() 
 {
-	if(m_bTriStateReload){
+	if(m_bTriStateReload)
 		TriStateReload();
-	}else
+	else
 		inherited::Reload();
 }
 
 void CWeaponAutomaticShotgun::TriStateReload()
 {
-	if( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) )return;
-	CWeapon::Reload		();
-	m_sub_state			= eSubstateReloadBegin;
-	SwitchState			(eReload);
+	if(m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1))
+		return;
+
+	CWeapon::Reload();
+	m_sub_state = eSubstateReloadBegin;
+	SwitchState	(eReload);
 }
 
 void CWeaponAutomaticShotgun::OnStateSwitch	(u32 S)
 {
-	if(!m_bTriStateReload || S != eReload){
+	if(!m_bTriStateReload || S != eReload)
+	{
+		bStopReloadSignal = false;
 		inherited::OnStateSwitch(S);
 		return;
 	}
 
 	CWeapon::OnStateSwitch(S);
 
-	if( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) ){
-			switch2_EndReload		();
+	if( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) )
+	{
+			switch2_EndReload();
 			m_sub_state = eSubstateReloadEnd;
 			return;
 	};
 
 	switch (m_sub_state)
 	{
-	case eSubstateReloadBegin:
-		if( HaveCartridgeInInventory(1) )
+		case eSubstateReloadBegin:
+			if(HaveCartridgeInInventory(1))
 			switch2_StartReload	();
 		break;
-	case eSubstateReloadInProcess:
-			if( HaveCartridgeInInventory(1) )
-				switch2_AddCartgidge	();
+		case eSubstateReloadInProcess:
+			if(HaveCartridgeInInventory(1))
+				switch2_AddCartgidge();
 		break;
-	case eSubstateReloadEnd:
-			switch2_EndReload		();
+		case eSubstateReloadEnd:
+			switch2_EndReload();
 		break;
 	};
 }
