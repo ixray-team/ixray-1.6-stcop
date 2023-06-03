@@ -70,6 +70,9 @@ void	CRenderTarget::phase_scene_prepare	()
 // begin
 void	CRenderTarget::phase_scene_begin	()
 {
+	// Enable ANISO
+	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
+
    ID3DDepthStencilView* pZB = HW.pBaseZB;
 
    if( RImplementation.o.dx10_msaa )
