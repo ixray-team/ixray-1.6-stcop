@@ -179,7 +179,7 @@
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_texture_quality</text>
         </cap_texture_lod>
         <track_texture_lod x="180" y="6" width="235" height="16" invert="1" step="1" is_integer="1">
-            <options_item entry="texture_lod" group="mm_opt_video_adv" depend="restart"/>
+            <options_item entry="texture_lod" group="mm_opt_video_adv" depend="vid"/>
         </track_texture_lod>
 
         <cap_aniso x="20" y="3" width="135" height="24">

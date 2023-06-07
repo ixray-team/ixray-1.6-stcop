@@ -335,14 +335,20 @@ void CResourceManager::DeferredUpload()
 		t->second->Load();
 	}
 }
-/*
-void	CResourceManager::DeferredUnload	()
-{
-	if (!RDEVICE.b_is_Ready)				return;
-	for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
-		t->second->Unload();
+
+void CResourceManager::DeferredUnload() {
+	if (!RDEVICE.b_is_Ready)
+		return;
+
+	Msg("CResourceManager::DeferredUnload -> Textures uloading started! Size = [%u]",
+		m_textures.size());
+
+	for (auto& texture : m_textures)
+		texture.second->Unload();
+
+	Msg("CResourceManager::DeferredUnload -> Textures unloading complete!");
 }
-*/
+
 #ifdef _EDITOR
 void	CResourceManager::ED_UpdateTextures(AStringVec* names)
 {
