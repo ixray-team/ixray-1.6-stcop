@@ -351,6 +351,7 @@
     <ClInclude Include="blender_light_reflected.h" />
     <ClInclude Include="blender_light_spot.h" />
     <ClInclude Include="blender_luminance.h" />
+    <ClInclude Include="blender_smaa.h" />
     <ClInclude Include="blender_ssao.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="ComputeShader.h" />
@@ -527,6 +528,7 @@
     <ClCompile Include="blender_light_reflected.cpp" />
     <ClCompile Include="blender_light_spot.cpp" />
     <ClCompile Include="blender_luminance.cpp" />
+    <ClCompile Include="blender_smaa.cpp" />
     <ClCompile Include="blender_ssao.cpp" />
     <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="CSCompiler.cpp" />
@@ -567,6 +569,7 @@
     <ClCompile Include="r4_rendertarget_phase_PP.cpp" />
     <ClCompile Include="r4_rendertarget_phase_rain.cpp" />
     <ClCompile Include="r4_rendertarget_phase_scene.cpp" />
+    <ClCompile Include="r4_rendertarget_phase_smaa.cpp" />
     <ClCompile Include="r4_rendertarget_phase_smap_D.cpp" />
     <ClCompile Include="r4_rendertarget_phase_smap_S.cpp" />
     <ClCompile Include="r4_rendertarget_phase_ssao.cpp" />

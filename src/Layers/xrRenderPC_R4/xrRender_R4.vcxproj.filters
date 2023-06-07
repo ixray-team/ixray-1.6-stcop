@@ -742,6 +742,7 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="blender_fxaa.h" />
+    <ClInclude Include="blender_smaa.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1352,6 +1353,8 @@
     </ClCompile>
     <ClCompile Include="blender_fxaa.cpp" />
     <ClCompile Include="r4_rendertarget_phase_fxaa.cpp" />
+    <ClCompile Include="blender_smaa.cpp" />
+    <ClCompile Include="r4_rendertarget_phase_smaa.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages.config" />
