@@ -7,6 +7,7 @@ r3		= 4
 r4		= 5
 Команда називається r2_ssao. Для DX10 і DX11 потрібно додати нову опцію - st_opt_ultra, але лише коли r2_ssao_mode==hdao.
 ]]
+
 class "opt_video_adv" (CUIWindow)
 function opt_video_adv:__init() super()
 end
@@ -18,32 +19,16 @@ function all_modes(render_id)
 	return true
 end
 
-function mode_1(render_id)
-	return render_id==0
+function mode_1(id)
+	return id == "renderer_r1"
 end
 
-function mode_ge_2a(render_id)
-	return render_id>=1
+function mode_2(id)
+	return id ~= "renderer_r1"
 end
 
-function mode_ge_2(render_id)
-	return render_id>=2
-end
-
-function mode_ge_25(render_id)
-	return render_id>=3
-end
-
-function mode_less_3(render_id)
-	return render_id<4
-end
-
-function mode_ge_3(render_id)
-	return render_id>=4
-end
-
-function mode_4(render_id)
-	return render_id==5
+function mode_4(id)
+	return id == "renderer_r4"
 end
 
 function opt_video_adv:InitControls(x, y, xml, handler)
@@ -81,12 +66,12 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_ssample", _st)
 	ctl = xml:InitTrackBar("video_adv:track_ssample", _st)
-	table.insert(handler.m_preconditions, {func=mode_less_3, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_1, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_ssample", _st)
 	ctl = xml:InitComboBox("video_adv:combo_ssample", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_3, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_detail_density", _st)
@@ -97,17 +82,17 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_sun", _st)
 	ctl = xml:InitCheck("video_adv:check_r2_sun", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_2, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_light_distance", _st)
 	ctl = xml:InitTrackBar("video_adv:track_light_distance", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_2a, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_particles_distance", _st)
 	ctl = xml:InitTrackBar("video_adv:track_particles_distance", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_2a, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_npc_torch", _st)
@@ -124,23 +109,23 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_detail_bump", _st)
 	ctl = xml:InitCheck("video_adv:check_r2_detail_bump", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_2, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 -- r2_steep_parallax		>r2
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_steep_parallax", _st)
 	ctl = xml:InitCheck("video_adv:check_r2_steep_parallax", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_sun_quality", _st)
 	ctl = xml:InitComboBox("video_adv:list_r2_sun_quality", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_sun_shafts", _st)
 	ctl = xml:InitComboBox("video_adv:combo_sun_shafts", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	_st:SetWndSize(vector2():set(_st:GetWidth(), 106))
@@ -148,45 +133,45 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	ctl = xml:InitTab("video_adv:radio_tab_ao_options", _st)
 	handler.tab_ao_opt = ctl
 	handler:Register(ctl, "tab_ao_opt")
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_ssao", _st)
 	ctl = xml:InitComboBox("video_adv:combo_ssao", _st)
 	handler.combo_ssao = ctl
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_soft_water", _st)
 	ctl = xml:InitCheck("video_adv:check_soft_water", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_soft_particles", _st)
 	ctl = xml:InitCheck("video_adv:check_soft_particles", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_dof", _st)
 	ctl = xml:InitCheck("video_adv:check_dof", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_volumetric_light", _st)
 	ctl = xml:InitCheck("video_adv:check_volumetric_light", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_25, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 -- r3_dynamic_wet_surfaces	>r25
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r3_dynamic_wet_surfaces", _st)
 	ctl = xml:InitCheck ("video_adv:check_r3_dynamic_wet_surfaces", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_3, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
 
 -- r3_volumetric_smoke		>r25
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r3_volumetric_smoke", _st)
 	ctl = xml:InitCheck("video_adv:check_r3_volumetric_smoke", _st)
-	table.insert(handler.m_preconditions, {func=mode_ge_3, control=_st})
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
 
 -- r4_enable_tessellation		only r4
 	_st = xml:InitStatic("video_adv:templ_item", nil)

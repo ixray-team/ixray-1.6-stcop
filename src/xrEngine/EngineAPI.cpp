@@ -141,30 +141,39 @@ void CEngineAPI::CreateRendererList()
 #else
 	//	TODO: ask renderers if they are supported!
 	if(vid_quality_token != NULL)		return;
+	bool bSupports_r1 = false;
 	bool bSupports_r2 = false;
-	bool bSupports_r2_5 = false;
 	bool bSupports_r4 = false;
 
+	LPCSTR r1_name	= "xrRender_R1.dll";
 	LPCSTR			r2_name	= "xrRender_R2.dll";
 	LPCSTR			r4_name	= "xrRender_R4.dll";
 
 	if (strstr(Core.Params,"-perfhud_hack"))
 	{
+		bSupports_r1 = true;
 		bSupports_r2 = true;
-		bSupports_r2_5 = true;
 		bSupports_r4 = true;
 	}
 	else
 	{
+		// try to initialize R1
+		Log("Loading DLL:", r1_name);
+		hRender = LoadLibrary(r1_name);
+		if (hRender)
+		{
+			bSupports_r1 = true;
+			FreeLibrary(hRender);
+		}
+
 		// try to initialize R2
 		Log				("Loading DLL:",	r2_name);
 		hRender			= LoadLibrary		(r2_name);
 		if (hRender)	
 		{
-			bSupports_r2 = true;
 			SupportsAdvancedRendering *test_rendering = (SupportsAdvancedRendering*) GetProcAddress(hRender,"SupportsAdvancedRendering");	
 			R_ASSERT(test_rendering);
-			bSupports_r2_5 = test_rendering();
+			bSupports_r2 = test_rendering();
 			FreeLibrary(hRender);
 		}
 
@@ -187,47 +196,32 @@ void CEngineAPI::CreateRendererList()
 	hRender = 0;
 
 	xr_vector<LPCSTR>			_tmp;
-	bool bBreakLoop = false;
-
-	for (size_t i = 0; i < 5; ++i)
+	for (auto i = 0; i < 3; ++i)
 	{
 		switch (i)
 		{
-		case 1:
-			if (!bSupports_r2)
-				bBreakLoop = true;
+		case 0: //"renderer_r_dx9"
+			if (bSupports_r1)
+				_tmp.push_back(xr_strdup("renderer_r1"));
 			break;
-		case 3:		//"renderer_r2.5"
-			if (!bSupports_r2_5)
-				bBreakLoop = true;
+		case 1: //"renderer_r_dx9"
+			if (bSupports_r2)
+				_tmp.push_back(xr_strdup("renderer_r2"));
 			break;
-		case 4:		//"renderer_r_dx11"
-			if (!bSupports_r4)
-				bBreakLoop = true;
+		case 2:	//"renderer_r_dx11"
+			if (bSupports_r4)
+				_tmp.push_back(xr_strdup("renderer_r4"));
 			break;
-		default:	;
+		default:
+			break;
 		}
-
-		if (bBreakLoop) break;
-
-		_tmp.push_back				(NULL);
-		LPCSTR val					= NULL;
-		switch (i)
-		{
-		case 0: val ="renderer_r1";			break;
-		case 1: val ="renderer_r2a";		break;
-		case 2: val ="renderer_r2";			break;
-		case 3: val ="renderer_r2.5";		break;
-		case 4: val ="renderer_r4";			break; //  -)
-		}
-		if (bBreakLoop) break;
-		_tmp.back()					= xr_strdup(val);
 	}
-	u32 _cnt								= _tmp.size()+1;
-	vid_quality_token						= xr_alloc<xr_token>(_cnt);
 
-	vid_quality_token[_cnt-1].id			= -1;
-	vid_quality_token[_cnt-1].name			= NULL;
+	auto _cnt = _tmp.size() + 1;
+	vid_quality_token = xr_alloc<xr_token>(_cnt);
+
+	vid_quality_token[_cnt - 1].id = -1;
+	vid_quality_token[_cnt - 1].name = NULL;
 
 #ifdef DEBUG
 	Msg("Available render modes[%d]:",_tmp.size());
