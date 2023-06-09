@@ -30,6 +30,7 @@ public:
 
 			LPCSTR		GetText					();
 			LPCSTR		GetTextOf				(int index);
+			LPCSTR GetValueOf(int index);
 			void		SetText					(LPCSTR text);
 
 			void		SetListLength			(int length);

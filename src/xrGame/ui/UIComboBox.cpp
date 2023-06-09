@@ -193,6 +193,13 @@ LPCSTR CUIComboBox::GetTextOf(int index)
 	return m_list_box.GetText(index);
 }
 
+LPCSTR CUIComboBox::GetValueOf(int index) {
+	if (u32(index) >= GetSize())
+		return "";
+
+	auto token = GetOptToken();
+	return token[index].name;
+}
 
 void CUIComboBox::SetItemIDX(int idx)
 {
