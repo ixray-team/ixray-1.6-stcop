@@ -663,13 +663,12 @@ CRender::CRender()
 
 CRender::~CRender()
 {
-	for (FSlideWindowItem it : SWIs)
-    {
-        xr_free(it.sw);
-        it.sw = nullptr;
-        it.count = 0;
-    }
-    SWIs.clear();
+	for (auto& it : SWIs) {
+		xr_free(it.sw);
+		it.sw = nullptr;
+		it.count = 0;
+	}
+	SWIs.clear();
 }
 
 #include "../../xrEngine/GameFont.h"
