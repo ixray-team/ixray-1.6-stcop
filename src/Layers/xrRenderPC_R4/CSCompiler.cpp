@@ -62,7 +62,7 @@ CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName)
 		//i_dx10FilterAnizo( stage, TRUE);
 		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		desc.Filter = D3D11_FILTER_ANISOTROPIC;
-		desc.MaxAnisotropy = 16;
+		desc.MaxAnisotropy = ps_r__tf_Anisotropic;
 		return defSampler(ResourceName, desc);
 	}
 
