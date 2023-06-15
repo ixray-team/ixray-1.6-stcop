@@ -17,38 +17,32 @@ class line_editor;
 class line_edit_control;
 };
 
-struct TipString
-{
+struct TipString {
 	shared_str	text;
 	int			HL_start; // Highlight
 	int			HL_finish;
 	
-	TipString()
-	{
+	TipString() {
 		text._set( "" );
 		HL_start = 0;
 		HL_finish = 0;
 	}
-	TipString( shared_str const& tips_text, int start_pos, int finish_pos )
-	{
+	TipString(shared_str const& tips_text, int start_pos, int finish_pos) {
 		text._set( tips_text );
 		HL_start = start_pos;
 		HL_finish = finish_pos;
 	}
-	TipString( LPCSTR tips_text, int start_pos, int finish_pos )
-	{
+	TipString(LPCSTR tips_text, int start_pos, int finish_pos) {
 		text._set( tips_text );
 		HL_start = start_pos;
 		HL_finish = finish_pos;
 	}
-	TipString( shared_str const& tips_text )
-	{
+	TipString(shared_str const& tips_text) {
 		text._set( tips_text );
 		HL_start = 0;
 		HL_finish = 0;
 	}
-	IC bool operator== ( shared_str const& tips_text )
-	{
+	IC bool operator== (shared_str const& tips_text) {
 		return ( text == tips_text );
 	}
 };

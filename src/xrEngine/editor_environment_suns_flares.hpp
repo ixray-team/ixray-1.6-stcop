@@ -26,8 +26,9 @@ class flare;
 
 class flares {
 public:
-	flares(const flares&) = delete;
-	flares& operator= (const flares&) = delete;
+	flares(const flares& other) = delete;
+	flares& operator =(const flares& other) = delete;
+
 					flares	();
 	virtual			~flares	();
 			void	load	(CInifile& config, shared_str const& section);

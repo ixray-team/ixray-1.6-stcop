@@ -26,8 +26,8 @@ namespace ambients {
 
 class sound_id : public editor::property_holder_holder {
 public:
-	sound_id(const sound_id&) = delete;
-	sound_id& operator= (const sound_id&) = delete;
+	sound_id(const sound_id& other) = delete;
+	sound_id& operator =(const sound_id& other) = delete;
 
 							sound_id		(sound_channels::manager const& manager, shared_str const& sound);
 	virtual					~sound_id		();

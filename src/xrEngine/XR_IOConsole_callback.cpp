@@ -69,13 +69,11 @@ void CConsole::End_log() // PAGE_DOWN+Ctrl
 	scroll_delta = 0;
 }
 
-void CConsole::Find_cmd() // DIK_TAB
-{
+void CConsole::Find_cmd() { // DIK_TAB
 	shared_str out_str;
 		
 	IConsole_Command* cc = find_next_cmd( ec().str_edit(), out_str );
-	if ( cc && out_str.size() )
-	{
+	if (cc && out_str.size()) {
 		ec().set_edit( out_str.c_str() );
 	}
 }
@@ -102,22 +100,18 @@ void CConsole::Find_cmd_back() // DIK_TAB+shift
 	}
 }
 
-void CConsole::Prev_cmd() // DIK_UP + Ctrl
-{
+void CConsole::Prev_cmd() { // DIK_UP + Ctrl
 	prev_cmd_history_idx();
 	SelectCommand();
 }
 
-void CConsole::Next_cmd() // DIK_DOWN + Ctrl
-{
+void CConsole::Next_cmd() { // DIK_DOWN + Ctrl
 	next_cmd_history_idx();
 	SelectCommand();
 }
 
-void CConsole::Prev_tip() // DIK_UP
-{
-	if ( xr_strlen( ec().str_edit() ) == 0 )
-	{
+void CConsole::Prev_tip() { // DIK_UP
+	if (xr_strlen(ec().str_edit()) == 0) {
 		prev_cmd_history_idx();
 		SelectCommand();
 		return;
@@ -125,10 +119,8 @@ void CConsole::Prev_tip() // DIK_UP
 	prev_selected_tip();
 }
 
-void CConsole::Next_tip() // DIK_DOWN + Ctrl
-{
-	if ( xr_strlen( ec().str_edit() ) == 0 )
-	{
+void CConsole::Next_tip() { // DIK_DOWN + Ctrl
+	if (xr_strlen( ec().str_edit()) == 0) {
 		next_cmd_history_idx();
 		SelectCommand();
 		return;
@@ -136,52 +128,41 @@ void CConsole::Next_tip() // DIK_DOWN + Ctrl
 	next_selected_tip();
 }
 
-void CConsole::Begin_tips()
-{
+void CConsole::Begin_tips() {
 	m_select_tip = 0;
 	m_start_tip = 0;
 }
 
-void CConsole::End_tips()
-{
+void CConsole::End_tips() {
 	m_select_tip = m_tips.size() - 1;
 	m_start_tip = m_select_tip - VIEW_TIPS_COUNT + 1;
 	check_next_selected_tip();
 }
 
-void CConsole::PageUp_tips()
-{
+void CConsole::PageUp_tips() {
 	m_select_tip -= VIEW_TIPS_COUNT;
 	check_prev_selected_tip();
 }
 
-void CConsole::PageDown_tips()
-{
+void CConsole::PageDown_tips() {
 	m_select_tip += VIEW_TIPS_COUNT;
 	check_next_selected_tip();
 }
 
-void CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
-{
-	if ( 0 <= m_select_tip && m_select_tip < (int)m_tips.size() )
-	{
+void CConsole::Execute_cmd() { // DIK_RETURN, DIK_NUMPADENTER
+	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size()) {
 		shared_str const& str = m_tips[m_select_tip].text;
-		if ( m_tips_mode == 1 )
-		{
+		if (m_tips_mode == 1) {
 			LPSTR buf;
 			STRCONCAT( buf, str.c_str(), " " );
 			ec().set_edit( buf );
-		}
-		else if ( m_tips_mode == 2 )
-		{
+		} else if (m_tips_mode == 2) {
 			LPSTR buf;
 			STRCONCAT( buf, m_cur_cmd.c_str(), " ", str.c_str() );
 			ec().set_edit( buf );
 		}
 		reset_selected_tip();
-	}
-	else
-	{
+	} else {
 		ExecuteCommand( ec().str_edit() );
 	}
 	m_disable_tips = false;
@@ -197,10 +178,8 @@ void CConsole::Hide_cmd()
 	Hide();
 }
 
-void CConsole::Hide_cmd_esc()
-{
-	if ( 0 <= m_select_tip && m_select_tip < (int)m_tips.size() )
-	{
+void CConsole::Hide_cmd_esc() {
+	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size()) {
 		m_disable_tips = true;
 		return;
 	}

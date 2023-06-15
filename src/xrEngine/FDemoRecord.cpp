@@ -405,10 +405,8 @@ void CDemoRecord::IR_OnKeyboardPress	(int dik)
 	if (dik == DIK_F12)		MakeScreenshot			();
 	if (dik == DIK_ESCAPE)	fLifeTime				= -1;
 
-	if (dik == DIK_RETURN)
-	{	
-		if (g_pGameLevel->CurrentEntity())
-		{
+	if (dik == DIK_RETURN) {	
+		if (g_pGameLevel->CurrentEntity()) {
 			g_pGameLevel->CurrentEntity()->ForceTransform(m_Camera);
 			fLifeTime		= -1; 
 		}

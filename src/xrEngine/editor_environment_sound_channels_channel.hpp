@@ -33,8 +33,9 @@ private:
 	typedef CEnvAmbient::SSndChannel	inherited;
 
 public:
-	channel(const channel&) = delete;
-	channel& operator= (const channel&) = delete;
+	channel(const channel& other) = delete;
+	channel& operator =(const channel& other) = delete;
+
 							channel		(manager const& manager, shared_str const& id);
 	virtual					~channel	();
 			void			load		(CInifile& config);

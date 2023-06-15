@@ -882,29 +882,11 @@ int stack_overflow_exception_filter	(int exception_code)
        return EXCEPTION_CONTINUE_SEARCH;
 }
 
-#include <boost/crc.hpp>
-
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
-	//FILE* file				= 0;
-	//fopen_s					( &file, "z:\\development\\call_of_prypiat\\resources\\gamedata\\shaders\\r3\\objects\\r4\\accum_sun_near_msaa_minmax.ps\\2048__1___________4_11141_", "rb" );
-	//u32 const file_size		= 29544;
-	//char* buffer			= (char*)malloc(file_size);
-	//fread					( buffer, file_size, 1, file );
-	//fclose					( file );
-
-	//u32 const& crc			= *(u32*)buffer;
-
-	//boost::crc_32_type		processor;
-	//processor.process_block	( buffer + 4, buffer + file_size );
-	//u32 const new_crc		= processor.checksum( );
-	//VERIFY					( new_crc == crc );
-
-	//free					(buffer);
-
 	__try 
 	{
 		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
@@ -1064,9 +1046,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		{		
 			Console->Execute("main_menu off");
 			Console->Hide();
-//!			this line is commented by Dima
-//!			because I don't see any reason to reset device here
-//!			Device.Reset					(false);
 			//-----------------------------------------------------------
 			g_pGamePersistent->PreStart		(op_server);
 			//-----------------------------------------------------------
@@ -1226,8 +1205,9 @@ void CApplication::OnFrame	( )
 	Engine.Event.OnFrame			();
 	g_SpatialSpace->update			();
 	g_SpatialSpacePhysic->update	();
-	if (g_pGameLevel)				
-		g_pGameLevel->SoundEvent_Dispatch	( );
+	if (g_pGameLevel) {				
+		g_pGameLevel->SoundEvent_Dispatch();
+	}
 }
 
 void CApplication::Level_Append		(LPCSTR folder)

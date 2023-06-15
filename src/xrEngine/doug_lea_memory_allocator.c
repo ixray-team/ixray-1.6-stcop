@@ -3729,7 +3729,6 @@ static void* tmalloc_small(mstate m, size_t nb) {
   }
 
   CORRUPTION_ERROR_ACTION(m);
-  return 0;
 }
 
 /* --------------------------- realloc support --------------------------- */
@@ -3778,7 +3777,6 @@ static void* internal_realloc(mstate m, void* oldmem, size_t bytes) {
     else {
       USAGE_ERROR_ACTION(m, oldmem);
       POSTACTION(m);
-      return 0;
     }
 
     POSTACTION(m);

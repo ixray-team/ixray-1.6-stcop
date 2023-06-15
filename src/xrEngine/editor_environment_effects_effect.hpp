@@ -28,8 +28,9 @@ class effect :
 	public editor::property_holder_holder
 {
 public:
-	effect(const effect&) = delete;
-	effect& operator= (const effect&) = delete;
+	effect(const effect& other) = delete;
+	effect& operator =(const effect& other) = delete;
+
 							effect		(manager const& manager, shared_str const& id);
 	virtual					~effect		();
 			void			load		(CInifile& config);

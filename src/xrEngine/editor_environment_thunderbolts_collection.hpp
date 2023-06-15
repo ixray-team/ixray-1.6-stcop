@@ -29,8 +29,9 @@ class collection :
 	public SThunderboltCollection,
 	public editor::property_holder_holder {
 public:
-	collection(const collection&) = delete;
-	collection& operator= (const collection&) = delete;
+	collection(const collection& other) = delete;
+	collection& operator =(const collection& other) = delete;
+
 							collection		(manager const& manager, shared_str const& id);
 	virtual					~collection		();
 			void			load			(CInifile& config);

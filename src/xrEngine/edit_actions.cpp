@@ -88,15 +88,6 @@ void type_pair::on_key_press( line_edit_control* const control )
 		unsigned char buff[128] {};
 		buff[0]			= 0;
 		
-		/*
-		//setlocale( LC_ALL, "" ); // User-default
-
-		// The following 3 lines looks useless
-
-		LPSTR			loc;
-		STRCONCAT		( loc, ".", itoa( GetACP(), code_page, 10 ) );
-		setlocale		( LC_ALL, loc );*/
-
 		static _locale_t current_locale = _create_locale(LC_ALL, "");
 		
 		if (pInput->get_dik_name(m_dik, (char*) buff, sizeof(buff))) {
@@ -108,18 +99,14 @@ void type_pair::on_key_press( line_edit_control* const control )
 			}
 		}
 
-		//setlocale( LC_ALL, "C" );	// restore to ANSI
-
-		if ( control->get_key_state( ks_Shift ) != control->get_key_state( ks_CapsLock ) )
-		{
+		if (control->get_key_state(ks_Shift) != control->get_key_state(ks_CapsLock)) {
 			c = c_shift;
 		}
 	}
 	else
 	{
 		c = m_char;
-		if ( control->get_key_state( ks_Shift ) != control->get_key_state( ks_CapsLock ) )
-		{
+		if (control->get_key_state(ks_Shift) != control->get_key_state(ks_CapsLock)) {
 			c = m_char_shift;
 		}
 	}
@@ -128,21 +115,19 @@ void type_pair::on_key_press( line_edit_control* const control )
 
 // -------------------------------------------------------------------------------------------------
 
-key_state_base::key_state_base( key_state state, base* type_pair )
-:m_type_pair(type_pair),m_state(state)
-{
+key_state_base::key_state_base(key_state state, base* type_pair) : m_type_pair(type_pair), m_state(state) {
 }
 
-key_state_base::~key_state_base()
-{
+key_state_base::~key_state_base() {
 	xr_delete(m_type_pair);
 }
 
 void key_state_base::on_key_press( line_edit_control* const control )
 {
 	control->set_key_state( m_state, true );
-	if(m_type_pair)
+	if (m_type_pair) {
 		m_type_pair->on_key_press(control);
+	}
 }
 
 } // namespace text_editor

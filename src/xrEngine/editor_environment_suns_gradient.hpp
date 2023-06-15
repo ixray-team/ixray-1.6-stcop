@@ -24,8 +24,8 @@ class manager;
 
 class gradient {
 public:
-	gradient(const gradient&) = delete;
-	gradient& operator= (const gradient&) = delete;
+	gradient(const gradient& other) = delete;
+	gradient& operator =(const gradient& other) = delete;
 					gradient	();
 			void	load		(CInifile& config, shared_str const& section);
 			void	save		(CInifile& config, shared_str const& section);

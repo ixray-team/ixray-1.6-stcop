@@ -250,8 +250,8 @@ float CEnvironment::TimeWeight(float val, float min_t, float max_t)
 	}
 	return			weight;
 }
-void CEnvironment::ChangeGameTime(float game_time)
-{
+
+void CEnvironment::ChangeGameTime(float game_time) {
 	fGameTime				= NormalizeTime(fGameTime + game_time);
 };
 
@@ -363,13 +363,14 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 	return true;
 }
 
-bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time)
-{
-	if(!SetWeatherFX(name))				
+bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time) {
+	if (!SetWeatherFX(name)) {
 		return false;
+	}
 
-	for (EnvIt it=CurrentWeather->begin(); it!=CurrentWeather->end(); it++)
+	for (EnvIt it=CurrentWeather->begin(); it!=CurrentWeather->end(); it++) {
 		(*it)->exec_time = NormalizeTime((*it)->exec_time - wfx_time + time);
+	}
 
 	wfx_time = time;
 	return true;

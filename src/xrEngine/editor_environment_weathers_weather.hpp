@@ -24,15 +24,14 @@ namespace weathers {
 class manager;
 class time;
 
-class weather :
-	public editor::property_holder_holder
-{
+class weather : public editor::property_holder_holder {
 public:
 	typedef editor::property_holder	property_holder_type;
 
 public:
-	weather(const weather&) = delete;
-	weather& operator= (const weather&) = delete;
+	weather(const weather&other) = delete;
+	weather& operator =(const weather& other) = delete;
+
 									weather				(
 										environment::manager* manager,
 										shared_str const& id

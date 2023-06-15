@@ -22,11 +22,11 @@ namespace thunderbolts {
 
 class manager;
 
-class thunderbolt_id :
-	public editor::property_holder_holder {
+class thunderbolt_id : public editor::property_holder_holder {
 public:
-	thunderbolt_id(const thunderbolt_id&) = delete;
-	thunderbolt_id& operator= (const thunderbolt_id&) = delete;
+	thunderbolt_id(const thunderbolt_id& other) = delete;
+	thunderbolt_id& operator =(const thunderbolt_id& other) = delete;
+
 							thunderbolt_id	(manager const& manager, shared_str const& thunderbolt);
 	virtual					~thunderbolt_id	();
 			void			fill			(editor::property_holder_collection* collection);

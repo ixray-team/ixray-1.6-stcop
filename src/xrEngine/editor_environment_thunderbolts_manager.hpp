@@ -32,8 +32,9 @@ class collection;
 
 class manager {
 public:
-			manager(const manager&) = delete;
-			manager& operator= (const manager&) = delete;
+	manager(const manager& other) = delete;
+	manager& operator =(const manager& other) = delete;
+
 							manager		(::editor::environment::manager* environment);
 							~manager	();
 			void			load		();
