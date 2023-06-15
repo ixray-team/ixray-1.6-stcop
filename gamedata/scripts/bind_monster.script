@@ -57,6 +57,7 @@ function generic_object_binder:update(delta)
 		end
 	else
 		self.object:set_tip_text_default()
+		return
 	end
 
 	local st = db.storage[self.object:id()]
