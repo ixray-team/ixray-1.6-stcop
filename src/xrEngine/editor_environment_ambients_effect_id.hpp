@@ -26,8 +26,8 @@ namespace ambients {
 
 class effect_id : public editor::property_holder_holder {
 public:
-	effect_id(const effect_id&) = delete;
-	effect_id& operator= (const effect_id&) = delete;
+	effect_id(const effect_id& other) = delete;
+	effect_id& operator =(const effect_id& other) = delete;
 
 							effect_id		(effects::manager const& manager, shared_str const& id);
 	virtual					~effect_id		();

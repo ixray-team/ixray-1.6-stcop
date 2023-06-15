@@ -32,8 +32,9 @@ private:
 	typedef SThunderboltDesc			inherited;
 
 public:
-	thunderbolt(const thunderbolt&) = delete;
-	thunderbolt& operator= (const thunderbolt&) = delete;
+	thunderbolt(const thunderbolt& other) = delete;
+	thunderbolt& operator =(const thunderbolt& other) = delete;
+
 							thunderbolt				(manager* manager, shared_str const& id);
 	virtual					~thunderbolt			();
 			void			load					(CInifile& config);

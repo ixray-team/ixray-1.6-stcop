@@ -87,30 +87,7 @@ line_edit_control::~line_edit_control()
 	delete_data				( actions );
 }
 
-static inline bool get_caps_lock_state	()
-{
-#if 0
-	static bool first_time					= true;
-	static bool is_windows_vista_or_later	= false;
-	if ( first_time ) {
-		first_time							= false;
-		OSVERSIONINFO						version_info;
-		ZeroMemory							( &version_info, sizeof(version_info) );
-		version_info.dwOSVersionInfoSize	= sizeof(version_info);
-		GetVersionEx						( &version_info );
-		is_windows_vista_or_later			= version_info.dwMajorVersion >= 6;
-	}
-
-	if ( is_windows_vista_or_later )
-		return		!!(GetKeyState(VK_CAPITAL) & 1);
-	else
-#else // #if 0
-		return		false;
-#endif // #if 0
-}
-
-void line_edit_control::update_key_states	()
-{
+void line_edit_control::update_key_states() {
 	m_key_state.zero( );
 
 	set_key_state	( ks_LShift,	!!pInput->iGetAsyncKeyState(DIK_LSHIFT)		);
@@ -119,7 +96,7 @@ void line_edit_control::update_key_states	()
 	set_key_state	( ks_RCtrl,		!!pInput->iGetAsyncKeyState(DIK_RCONTROL)	);
 	set_key_state	( ks_LAlt,		!!pInput->iGetAsyncKeyState(DIK_LALT)		);
 	set_key_state	( ks_RAlt,		!!pInput->iGetAsyncKeyState(DIK_RALT)		);
-	set_key_state	( ks_CapsLock,	text_editor::get_caps_lock_state()			);
+	set_key_state(ks_CapsLock, false);
 }
 
 void line_edit_control::clear_states()
@@ -343,10 +320,6 @@ void line_edit_control::assign_char_pairs( init_mode mode )
 void line_edit_control::create_key_state( u32 const dik, key_state state )
 {
 	Base* prev = m_actions[dik];
-	//if ( m_actions[dik] )
-	//{
-	//	xr_delete( m_actions[dik] );
-	//}
 	m_actions[dik] = xr_new<text_editor::key_state_base>( state, prev );
 }
 
@@ -360,8 +333,7 @@ void line_edit_control::create_char_pair( u32 const dik, char c, char c_shift, b
 	m_actions[dik] = xr_new<text_editor::type_pair>( dik, c, c_shift, translate );
 }
 
-void line_edit_control::assign_callback( u32 const dik, key_state state, Callback const& callback )
-{
+void line_edit_control::assign_callback(u32 const dik, key_state state, Callback const& callback) {
 	VERIFY( dik < DIK_COUNT );
 	Base* prev_action = m_actions[dik];
 	m_actions[dik] = xr_new<text_editor::callback_base>( callback, state );
@@ -754,8 +726,7 @@ void line_edit_control::clamp_cur_pos()
 	clamp( m_cur_pos, 0, (int)xr_strlen( m_edit_str ) );
 }
 
-void line_edit_control::SwitchKL()
-{
+void line_edit_control::SwitchKL() {
 	ActivateKeyboardLayout( (HKL)HKL_NEXT, 0 );
 }
 

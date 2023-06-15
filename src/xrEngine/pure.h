@@ -60,11 +60,11 @@ public:
 		VERIFY	(obj);
 		for		(u32 i=0; i<R.size(); i++) VERIFY( !((R[i].Prio!=REG_PRIORITY_INVALID)&&(R[i].Object==(void*)obj))   );
 #endif
-		_REG_INFO			I;
-		I.Object			=obj;
-		I.Prio				=priority;
-		I.Flags				=flags;
-		R.push_back			(I);
+		_REG_INFO I_;
+		I_.Object = obj;
+		I_.Prio = priority;
+		I_.Flags = flags;
+		R.push_back(I_);
 		
 		if(in_process)		changed=true;
 		else Resort			( );

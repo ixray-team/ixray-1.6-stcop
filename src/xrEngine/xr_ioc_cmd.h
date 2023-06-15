@@ -12,8 +12,8 @@ public		:
 	friend class	CConsole;
 	typedef char	TInfo	[256];
 	typedef char	TStatus	[256];
-	typedef xr_vector<shared_str>	vecTips;
-	typedef xr_vector<shared_str>	vecLRU;
+	using vecTips = xr_vector<shared_str>;
+	using vecLRU = xr_vector<shared_str>;
 
 protected	:
 	LPCSTR			cName;
@@ -23,7 +23,9 @@ protected	:
 	
 	vecLRU			m_LRU;
 
-	enum			{ LRU_MAX_COUNT = 10 };
+	enum {
+		LRU_MAX_COUNT = 10
+	};
 
 	IC	bool		EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1,S2)==0; }
 public		:
@@ -31,8 +33,7 @@ public		:
 	  cName				(N),
 	  bEnabled			(TRUE),
 	  bLowerCaseArgs	(TRUE),
-	  bEmptyArgsHandled	(FALSE)
-	  {
+	  bEmptyArgsHandled	(FALSE) {
 		  m_LRU.reserve(LRU_MAX_COUNT + 1);
 		  m_LRU.clear();
 	  }
@@ -56,11 +57,10 @@ public		:
 		if (S[0])	F->w_printf("%s %s\r\n",cName,S); 
 	}
 
-	virtual void	fill_tips		(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		add_LRU_to_tips( tips );
 	}
-//			vecLRU&	LRU				() { return m_LRU; }
+
 	virtual void	add_to_LRU		(shared_str const& arg);
 			void	add_LRU_to_tips	(vecTips& tips);
 
@@ -182,28 +182,24 @@ public		:
 	}
 	virtual xr_token* GetToken(){return tokens;}
 	
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str;
 		bool res = false;
 		xr_token* tok = GetToken();
-		while ( tok->name && !res )
-		{
-			if ( tok->id == (int)(*value) )
-			{
-				xr_sprintf( str, sizeof(str), "%s  (current)", tok->name );
+		while (tok->name && !res) {
+			if (tok->id == (int)(*value)) {
+				xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
 				tips.push_back( str );
 				res = true;
 			}
 			tok++;
 		}
-		if ( !res )
-		{
+
+		if (!res) {
 			tips.push_back( "---  (current)" );
 		}
 		tok = GetToken();
-		while ( tok->name )
-		{
+		while (tok->name) {
 			tips.push_back( tok->name );
 			tok++;
 		}
@@ -224,7 +220,10 @@ public		:
 	  max(_max)
 	{};
 	  const float	GetValue	() const {return *value;};
-			void	GetBounds	(float& fmin, float& fmax) const {fmin=min; fmax=max;}
+	void GetBounds(float& fmin, float& fmax) const {
+		fmin = min;
+		fmax = max;
+	}
 
 	virtual void	Execute	(LPCSTR args)
 	{
@@ -241,8 +240,7 @@ public		:
 	{	
 		xr_sprintf(I,sizeof(I),"float value in range [%3.3f,%3.3f]",min,max);
 	}
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str;
 		xr_sprintf( str, sizeof(str), "%3.5f  (current)  [%3.3f,%3.3f]", *value, min, max );
 		tips.push_back( str );
@@ -284,8 +282,7 @@ public
 	{	
 		xr_sprintf(I,sizeof(I),"vector3 in range [%e,%e,%e]-[%e,%e,%e]",min.x,min.y,min.z,max.x,max.y,max.z);
 	}
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str;
 		xr_sprintf( str, sizeof(str), "(%e, %e, %e)  (current)  [(%e,%e,%e)-(%e,%e,%e)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z );
 		tips.push_back( str );
@@ -301,7 +298,10 @@ protected	:
 	int				min,max;
 public		:
 	  const int GetValue	() const {return *value;};
-	  void		GetBounds	(int& imin, int& imax) const {imin = min; imax = max;}
+	void GetBounds(int& imin, int& imax) const {
+		imin = min;
+		imax = max;
+	}
 
 	CCC_Integer(LPCSTR N, int* V, int _min=0, int _max=999) :
 	  IConsole_Command(N),
@@ -324,8 +324,7 @@ public		:
 	{	
 		xr_sprintf(I,sizeof(I),"integer value in range [%d,%d]",min,max);
 	}
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str;
 		xr_sprintf( str, sizeof(str), "%d  (current)  [%d,%d]", *value, min, max );
 		tips.push_back( str );
@@ -349,9 +348,9 @@ public:
 		R_ASSERT(size>1);
 	};
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void Execute(LPCSTR args)
 	{
-		strncpy_s	(value, size, args, size-1);
+		strncpy_s(value, size, args, size-1);
 	}
 	virtual void	Status	(TStatus& S)
 	{	
@@ -361,8 +360,7 @@ public:
 	{	
 		xr_sprintf(I,sizeof(I),"string with up to %d characters",size);
 	}
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		tips.push_back( (LPCSTR)value );
 		IConsole_Command::fill_tips( tips, mode );
 	}

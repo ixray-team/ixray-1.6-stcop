@@ -34,8 +34,9 @@ public:
 	typedef editor::property_holder		property_holder_type;
 
 public:
-	time(const time&) = delete;
-	time& operator= (const time&) = delete;
+	time(const time& other) = delete;
+	time& operator =(const time& other) = delete;
+
 										time						(
 											editor::environment::manager* manager,
 											weather const* weather,

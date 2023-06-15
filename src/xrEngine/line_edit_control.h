@@ -137,7 +137,10 @@ private:
 	char*			m_buf2;
 	char*			m_buf3;
 
-	enum			{ MIN_BUF_SIZE = 8, MAX_BUF_SIZE = 4096 };
+	enum { 
+		MIN_BUF_SIZE = 8, 
+		MAX_BUF_SIZE = 4096
+	};
 	int				m_buffer_size;
 
 	int				m_cur_pos;

@@ -23,8 +23,9 @@ class manager;
 
 class blend {
 public:
-	blend(const blend&) = delete;
-	blend& operator= (const blend&) = delete;
+	blend(const blend& other) = delete;
+	blend& operator =(const blend& other) = delete;
+
 					blend		();
 			void	load		(CInifile& config, shared_str const& section);
 			void	save		(CInifile& config, shared_str const& section);

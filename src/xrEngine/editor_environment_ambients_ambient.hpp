@@ -40,8 +40,9 @@ private:
 	typedef CEnvAmbient		inherited;
 
 public:
-	ambient(const ambient&) = delete;
-	ambient& operator= (const ambient&) = delete;
+	ambient(const ambient& other) = delete;
+	ambient& operator =(const ambient& other) = delete;
+
 							ambient				(manager const& manager, shared_str const& id);
 	virtual					~ambient			();
 	virtual	void			load				(

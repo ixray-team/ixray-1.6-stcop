@@ -13,9 +13,7 @@
 #include "../xrServerEntities/object_broker.h"
 
 template <typename container_type, typename holder_type>
-class property_collection :
-	public editor::property_holder_collection
-{
+class property_collection : public editor::property_holder_collection {
 public:
 	typedef editor::property_holder					property_holder;
 

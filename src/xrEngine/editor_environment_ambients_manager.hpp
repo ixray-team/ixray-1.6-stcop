@@ -35,8 +35,9 @@ class ambient;
 
 class manager {
 public:
-	manager(const manager&) = delete;
-	manager& operator= (const manager&) = delete;
+	manager(const manager& other) = delete;
+	manager& operator =(const manager& other) = delete;
+	
 							manager			(editor::environment::manager const& manager);
 							~manager		();
 			void			load			();

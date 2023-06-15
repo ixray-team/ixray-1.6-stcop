@@ -24,8 +24,9 @@ class channel;
 
 class manager {
 public:
-	manager(const manager&) = delete;
-	manager& operator= (const manager&) = delete;
+	manager(const manager& other) = delete;
+	manager& operator =(const manager& other) = delete;
+
 							manager		();
 							~manager	();
 			void			load		();

@@ -17,12 +17,11 @@ namespace editor {
 namespace environment {
 namespace suns {
 
-class flare :
-	public editor::property_holder_holder
-{
+class flare : public editor::property_holder_holder {
 public:
-	flare(const flare&) = delete;
-	flare& operator= (const flare&) = delete;
+	flare(const flare& other) = delete;
+	flare& operator =(const flare& other) = delete;
+
 						flare		();
 	virtual				~flare		();
 			void		fill		(editor::property_holder_collection* collection);

@@ -24,30 +24,24 @@ xr_token							vid_bpp_token							[ ]={
 };
 //-----------------------------------------------------------------------
 
-void IConsole_Command::add_to_LRU( shared_str const& arg )
-{
-	if ( arg.size() == 0 || bEmptyArgsHandled )
-	{
+void IConsole_Command::add_to_LRU(shared_str const& arg) {
+	if (arg.size() == 0 || bEmptyArgsHandled) {
 		return;
 	}
 	
 	bool dup = ( std::find( m_LRU.begin(), m_LRU.end(), arg ) != m_LRU.end() );
-	if ( !dup )
-	{
+	if (!dup) {
 		m_LRU.push_back( arg );
-		if ( m_LRU.size() > LRU_MAX_COUNT )
-		{
+		if (m_LRU.size() > LRU_MAX_COUNT) {
 			m_LRU.erase( m_LRU.begin() );
 		}
 	}
 }
 
-void  IConsole_Command::add_LRU_to_tips( vecTips& tips )
-{
+void  IConsole_Command::add_LRU_to_tips(vecTips& tips) {
 	vecLRU::reverse_iterator	it_rb = m_LRU.rbegin();
 	vecLRU::reverse_iterator	it_re = m_LRU.rend();
-	for ( ; it_rb != it_re; ++it_rb )
-	{
+	for (; it_rb != it_re; ++it_rb) {
 		tips.push_back( (*it_rb) );
 	}
 }
@@ -59,7 +53,6 @@ class CCC_Quit : public IConsole_Command
 public:
 	CCC_Quit(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-//		TerminateProcess(GetCurrentProcess(),0);
 		Console->Hide();
 		Engine.Event.Defer("KERNEL:disconnect");
 		Engine.Event.Defer("KERNEL:quit");
@@ -414,23 +407,19 @@ public :
 
 		bool res = false;
 		xr_token* tok = GetToken();
-		while ( tok->name && !res )
-		{
-			if ( !xr_strcmp( tok->name, cur ) )
-			{
-				xr_sprintf( str, sizeof(str), "%s  (current)", tok->name );
+		while (tok->name && !res) {
+			if (!xr_strcmp(tok->name, cur)) {
+				xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
 				tips.push_back( str );
 				res = true;
 			}
 			tok++;
 		}
-		if ( !res )
-		{
+		if (!res) {
 			tips.push_back( "---  (current)" );
 		}
 		tok = GetToken();
-		while ( tok->name )
-		{
+		while (tok->name) {
 			tips.push_back( tok->name );
 			tok++;
 		}

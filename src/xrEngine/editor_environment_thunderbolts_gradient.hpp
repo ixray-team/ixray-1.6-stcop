@@ -24,12 +24,11 @@ class manager;
 
 namespace thunderbolts {
 
-class gradient :
-	public SThunderboltDesc::SFlare
-{
+class gradient : public SThunderboltDesc::SFlare {
 public:
-	gradient(const gradient&) = delete;
-	gradient& operator= (const gradient&) = delete;
+	gradient(const gradient& other) = delete;
+	gradient& operator =(const gradient& other) = delete;
+
 						gradient		();
 						~gradient		();
 			void		load			(CInifile& config, shared_str const& section_id, LPCSTR prefix);

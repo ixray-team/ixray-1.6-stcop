@@ -137,9 +137,9 @@ HRESULT CInput::CreateInputDevice( LPDIRECTINPUTDEVICE8* device, GUID guidDevice
 	if (!Device.editor())
 #endif // #ifdef INGAME_EDITOR
 	{
-		HRESULT	_hr = (*device)->SetCooperativeLevel( RDEVICE.m_hWnd, dwFlags );
-		if (FAILED(_hr) && (_hr==E_NOTIMPL)) Msg("! INPUT: Can't set coop level. Emulation???");
-		else R_CHK(_hr);
+		HRESULT	hr = (*device)->SetCooperativeLevel( RDEVICE.m_hWnd, dwFlags );
+		if (FAILED(hr) && (hr==E_NOTIMPL)) Msg("! INPUT: Can't set coop level. Emulation???");
+		else R_CHK(hr);
 	}
 
 	// setup the buffer size for the keyboard data
@@ -175,7 +175,9 @@ void CInput::SetKBDAcquire( BOOL bAcquire )
 BOOL b_altF4 = FALSE;
 void CInput::KeyUpdate	( )
 {
-	if(b_altF4)					return;
+	if (b_altF4) { 
+		return;
+	}
 
 	HRESULT						hr;
 	DWORD dwElements			= KEYBOARDBUFFERSIZE;
@@ -185,27 +187,26 @@ void CInput::KeyUpdate	( )
 	VERIFY(pKeyboard);
 
 	hr = pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0 );
-	if (( hr == DIERR_INPUTLOST )||( hr == DIERR_NOTACQUIRED ))
-	{
+	if ((hr == DIERR_INPUTLOST)||(hr == DIERR_NOTACQUIRED)) {
 		hr = pKeyboard->Acquire();
-		if ( hr != S_OK ) 
+		if (hr != S_OK) {
 			return;
+		}
 
 		hr = pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0 );
-		if ( hr != S_OK ) 
+		if (hr != S_OK) { 
 			return;
+		}
 	}
 
 	bool b_dik_pause_was_pressed = false;
-	for (u32 idx = 0; idx < dwElements; idx++)
-	{
-		if(od[idx].dwOfs==DIK_PAUSE)
-		{
-			if( od[idx].dwData & 0x80 )
+	for (u32 idx = 0; idx < dwElements; idx++) {
+		if (od[idx].dwOfs == DIK_PAUSE) {
+			if (od[idx].dwData & 0x80) {
 				b_dik_pause_was_pressed = true;
+			}
 		
-			if(b_dik_pause_was_pressed && !(od[idx].dwData & 0x80) )
-			{
+			if (b_dik_pause_was_pressed && !(od[idx].dwData & 0x80)) {
 				od[idx].uAppData = 666;
 				continue; //skip one-frame pause key on-off switch
 			}
@@ -216,16 +217,16 @@ void CInput::KeyUpdate	( )
 #ifndef _EDITOR
 	bool b_alt_tab				= false;
 
-	if(!b_altF4 && KBState[DIK_F4] && (KBState[DIK_RMENU] || KBState[DIK_LMENU]) )
-	{
+	if (!b_altF4 && KBState[DIK_F4] && (KBState[DIK_RMENU] || KBState[DIK_LMENU])) {
 		b_altF4				= TRUE;
 		Engine.Event.Defer	("KERNEL:disconnect");
 		Engine.Event.Defer	("KERNEL:quit");
 	}
-
-
 #endif
-	if(b_altF4)					return;
+
+	if (b_altF4) { 
+		return;
+	}
 
 	#ifndef _EDITOR
    	if(Device.dwPrecacheFrame==0)
@@ -234,14 +235,13 @@ void CInput::KeyUpdate	( )
 
 		for (u32 i = 0; i < dwElements; i++)
 		{
-			if(od[i].uAppData == 666) //ignored action
+		if(od[i].uAppData == 666) { //ignored action
 				continue;
-
+		}
 			key					= od[i].dwOfs;
-			if(od[i].dwData & 0x80)
+		if (od[i].dwData & 0x80) {
 				cbStack.back()->IR_OnKeyboardPress	( key );
-			else
-			{
+		} else {
 				cbStack.back()->IR_OnKeyboardRelease	( key );
 	#ifndef _EDITOR
 				if(key==DIK_TAB  && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)) )
@@ -250,9 +250,11 @@ void CInput::KeyUpdate	( )
 			}
 		}
 
-		for (int i = 0; i < COUNT_KB_BUTTONS; i++ )
-			if (KBState[i]) 
+		for (int i = 0; i < COUNT_KB_BUTTONS; i++ ) {
+			if (KBState[i]) { 
 				cbStack.back()->IR_OnKeyboardHold( i );
+			}
+		}
 	}
 
 #ifndef _EDITOR

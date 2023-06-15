@@ -20,11 +20,10 @@ class property_holder_collection;
 namespace environment {
 namespace sound_channels {
 
-class source :
-	public editor::property_holder_holder {
+class source : public editor::property_holder_holder {
 public:
-				source				(const source&) = delete;
-				source& operator=	(const source&) = delete;
+	source(const source& other) = delete;
+	source& operator =(const source& other) = delete;
 
 							source		(shared_str const& source);
 							~source		();

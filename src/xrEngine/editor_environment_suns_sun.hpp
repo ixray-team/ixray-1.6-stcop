@@ -30,8 +30,9 @@ class sun :
 	public editor::property_holder_holder
 {
 public:
-	sun(const sun&) = delete;
-	sun& operator= (const sun&) = delete;
+	sun(const sun& other) = delete;
+	sun& operator =(const sun& other) = delete;
+
 								sun			(manager const& manager, shared_str const &section);
 								~sun		();
 			void				load		(CInifile& config);
