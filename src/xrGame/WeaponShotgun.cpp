@@ -122,9 +122,9 @@ void CWeaponShotgun::TriStateReload()
 
 void CWeaponShotgun::OnStateSwitch(u32 S)
 {
-	if(!m_bTriStateReload || S != eReload)
+	if(!m_bTriStateReload || S != eReload) {
 	
-		bStopReloadSignal = false; {
+		bStopReloadSignal = false; 
 		inherited::OnStateSwitch(S);
 		return;
 	}
