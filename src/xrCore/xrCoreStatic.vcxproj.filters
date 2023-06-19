@@ -174,9 +174,6 @@
     <ClCompile Include="xrDebug.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
-    <ClCompile Include="xrDebugNew.cpp">
-      <Filter>Debug core</Filter>
-    </ClCompile>
     <ClCompile Include="blackbox\BlackBoxUI.cpp">
       <Filter>Debug core\BlackBox</Filter>
     </ClCompile>
