@@ -214,8 +214,6 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 				             MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_SYSTEMMODAL);
 			}
 		}
-
-		DEBUG_INVOKE;
 #endif
 
 	if (get_on_dialog())
