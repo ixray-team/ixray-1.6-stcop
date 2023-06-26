@@ -90,6 +90,12 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 		}
 	}
 	//---------------------------------------------------------------------------
+	if (!loading_save_timer_started) {
+		loading_save_timer.Start();
+		loading_save_timer_started = true;
+		Msg("* Game Loading Timer: Started from net_Start");
+	}
+
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start1));
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start2));
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start3));

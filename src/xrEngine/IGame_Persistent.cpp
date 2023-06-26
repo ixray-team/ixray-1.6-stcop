@@ -132,6 +132,9 @@ void IGame_Persistent::Disconnect	()
 void IGame_Persistent::OnGameStart()
 {
 #ifndef _EDITOR
+	loading_save_timer.Start();
+	loading_save_timer_started = true;
+	Msg("* Game Loading Timer: Started!");
 //	LoadTitle("st_prefetching_objects");
 	LoadTitle();
 	if(!strstr(Core.Params,"-noprefetch"))

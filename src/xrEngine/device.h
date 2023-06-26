@@ -310,6 +310,8 @@ private:
 };
 
 extern		ENGINE_API		CRenderDevice		Device;
+extern ENGINE_API CTimer loading_save_timer;
+extern ENGINE_API bool loading_save_timer_started;
 
 #ifndef	_EDITOR
 #define	RDEVICE	Device
