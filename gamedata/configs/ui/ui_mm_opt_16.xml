@@ -306,6 +306,13 @@
             <options_item entry="rs_refresh_60hz" group="mm_opt_video_adv" depend="vid"/>
         </check_60hz>
 
+        <cap_mt_tex_load x="16" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_mt_tex_load</text>
+        </cap_mt_tex_load>
+        <check_mt_tex_load x="133" y="0" width="35" stretch="1" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r__mt_texture_load" group="mm_opt_video_adv" depend="vid"/>
+        </check_mt_tex_load>
 
         <cap_sun_shafts x="16" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_sun_shafts</text>

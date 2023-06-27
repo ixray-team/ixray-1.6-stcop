@@ -197,6 +197,7 @@ enum
 	RFLAG_USE_CACHE					= (1<<11),
 	RFLAG_CLOUD_SHADOWS = (1 << 12),
 	RFLAG_NO_RAM_TEXTURES = (1 << 13),
+	RFLAG_MT_TEX_LOAD     = (1 << 14),
 };
 
 extern void						xrRender_initconsole	();

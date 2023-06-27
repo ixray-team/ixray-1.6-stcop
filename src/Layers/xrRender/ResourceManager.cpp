@@ -9,6 +9,7 @@
 #include "tss.h"
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
+#include <execution>
 
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
@@ -330,10 +331,20 @@ void CResourceManager::Delete(const Shader* S)
 void CResourceManager::DeferredUpload()
 {
 	if (!RDEVICE.b_is_Ready) return;
-	for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
-	{
-		t->second->Load();
+
+	CTimer timer;
+	timer.Start();
+
+	Msg("%s, [%s] texture loading -> START, size = [%d]", __FUNCTION__, ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) ? "MT" : "NO MT", m_textures.size());
+
+	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
+		std::for_each(std::execution::par_unseq, m_textures.begin(), m_textures.end(), [](auto& pair) { pair.second->Load(); });
+	} else {
+		for (auto& pair : m_textures)
+			pair.second->Load();
 	}
+
+	Msg("%s, [%s] texture loading -> COMPLETE, elapsed time = [%d] ms", __FUNCTION__, ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) ? "MT" : "NO MT", timer.GetElapsed_ms());
 }
 
 void CResourceManager::DeferredUnload() {
