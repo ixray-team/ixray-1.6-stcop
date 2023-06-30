@@ -140,6 +140,24 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
 	return sss;
 }
 
+SDrawStaticStruct * CUIGameCustom::AddHudMessage(LPCSTR text, LPCSTR text2, LPCSTR id, bool trnslate_second_text, float time, bool bSingleInstance) {
+	VERIFY(text);
+
+	SDrawStaticStruct* HudMessage = AddCustomStatic(id ? id : "hud_message", bSingleInstance);
+	HudMessage->m_endTime = Device.fTimeGlobal + time;
+
+	string1024 str;
+
+	if (text2) {
+		xr_sprintf(str, "%s : %s", *CStringTable().translate(text), trnslate_second_text ? *CStringTable().translate(text2) : text2);
+	} else {
+		xr_sprintf(str, "%s", *CStringTable().translate(text));
+	}
+
+	HudMessage->wnd()->TextItemControl()->SetText(str);
+	return HudMessage;
+}
+
 SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 {
 	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id));
