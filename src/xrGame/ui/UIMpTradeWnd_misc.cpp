@@ -157,9 +157,14 @@ void CUIMpTradeWnd::SetCurrentItem(CUICellItem* itm)
 		const shared_str& current_sect_name = CurrentIItem()->object().cNameSect();
 		string256						str;
 		xr_sprintf							(str, "%d", GetItemPrice(CurrentIItem()));
-		m_item_info->UICost->SetText	(str);
 
-		m_item_info->UIName->SetText	(CurrentIItem()->NameShort());
+		if (m_item_info->UICost) {
+			m_item_info->UICost->SetText	(str);
+		}
+
+		if (m_item_info->UIName) {
+			m_item_info->UIName->SetText	(CurrentIItem()->NameShort());
+		}
 
 		string64						tex_name;
 		string64						team;
