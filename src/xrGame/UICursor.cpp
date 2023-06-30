@@ -3,6 +3,7 @@
 
 #include "ui/UIStatic.h"
 #include "ui/UIBtnHint.h"
+#include "ui/UIXmlInit.h"
 
 
 constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
@@ -33,17 +34,29 @@ void CUICursor::OnScreenResolutionChanged()
 
 void CUICursor::InitInternal()
 {
-	m_static					= xr_new<CUIStatic>();
-	m_static->InitTextureEx		("ui\\ui_ani_cursor", "hud\\cursor");
-	Frect						rect;
-	rect.set					(0.0f,0.0f,40.0f,40.0f);
-	m_static->SetTextureRect	(rect);
-	Fvector2					sz;
-	sz.set						(rect.rb);
-	sz.x						*= UI().get_current_kx();
+	CUIXml xml_doc;
+	xml_doc.Load				(CONFIG_PATH, UI_PATH, "cursor.xml");
 
-	m_static->SetWndSize		(sz);
-	m_static->SetStretchTexture	(true);
+	LPCSTR nodevalue			= xml_doc.Read("texture_name", 0, "ui\\ui_ani_cursor");
+
+	m_static					= xr_new<CUIStatic>();
+	m_static->InitTextureEx		(nodevalue, "hud\\cursor");
+
+	float r_x					= xml_doc.ReadFlt("texture_rect_x", 0, 45.f);
+	float r_y					= xml_doc.ReadFlt("texture_rect_y", 0, 45.f);
+
+	Frect						rect;
+	rect.set					(0.0f,0.0f, r_x, r_y);
+	m_static->SetTextureRect	(rect);
+
+	float width					= xml_doc.ReadFlt("width", 0, 40.0f);
+	float height				= xml_doc.ReadFlt("height", 0, 40.0f);
+	width						*= UI().get_current_kx();
+	BOOL stretch				= xml_doc.ReadInt("stretch", 0, TRUE);
+
+
+	m_static->SetWndSize		(Fvector2().set(width, height));
+	m_static->SetStretchTexture	(!!stretch);
 
 	u32 screen_size_x	= GetSystemMetrics( SM_CXSCREEN );
 	u32 screen_size_y	= GetSystemMetrics( SM_CYSCREEN );
