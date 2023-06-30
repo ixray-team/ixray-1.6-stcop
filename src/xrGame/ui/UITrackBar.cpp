@@ -3,6 +3,7 @@
 #include "UITrackBar.h"
 #include "UI3tButton.h"
 #include "UITextureMaster.h"
+#include "UIXmlInit.h"
 #include "../../xrEngine/xr_input.h"
 
 #define DEF_CONTROL_HEIGHT		16.0f
@@ -88,22 +89,30 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 {
-	float				item_height;
-	float				item_width;
 
-	InitIB				(pos, size);
+	CUIXml xml_doc;
+	xml_doc.Load			(CONFIG_PATH, UI_PATH, "trackbar.xml");
 
-	InitState			(S_Enabled, "ui_inGame2_opt_slider_bar");
-	InitState			(S_Disabled, "ui_inGame2_opt_slider_bar");
+	LPCSTR nodevalue_button = xml_doc.Read("button_texture_name", 0, "ui_inGame2_opt_slider_box");
+	LPCSTR nodevalue_track	= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
 
-	item_width			= CUITextureMaster::GetTextureWidth("ui_inGame2_opt_slider_box_e");
-    item_height			= CUITextureMaster::GetTextureHeight("ui_inGame2_opt_slider_box_e");
+	float					item_height;
+	float					item_width;
 
-	item_width			*= UI().get_current_kx();
+	InitIB					(pos, size);
 
-	m_pSlider->InitButton(	Fvector2().set(0.0f, 0.0f) /*(size.y - item_height)/2.0f)*/,
-							Fvector2().set(item_width, item_height) );			//size
-	m_pSlider->InitTexture("ui_inGame2_opt_slider_box");
+	InitState				(S_Enabled, nodevalue_track);
+	InitState				(S_Disabled, nodevalue_track);
+	string128				name_button_e;
+	xr_sprintf				(name_button_e, "%s%s", nodevalue_button, "_e");
+	item_width				= CUITextureMaster::GetTextureWidth(name_button_e);
+    item_height				= CUITextureMaster::GetTextureHeight(name_button_e);
+
+	item_width				*= UI().get_current_kx();
+
+	m_pSlider->InitButton	(Fvector2().set(0.0f, 0.0f), Fvector2().set(item_width, item_height) );			//size
+	m_pSlider->InitTexture	(nodevalue_button);
+	m_pSlider->m_background->SetStretchTexture(xml_doc.ReadInt("stretch", 0, TRUE));
 	
 	SetCurrentState(S_Enabled);
 }	
