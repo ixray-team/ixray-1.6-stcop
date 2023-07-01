@@ -226,6 +226,11 @@ float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
 float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 
+// Test float exported to shaders for development
+float		ps_r__test_exp_to_shaders_1	= 1.0f;
+float		ps_r__test_exp_to_shaders_2	= 1.0f;
+float		ps_r__test_exp_to_shaders_3	= 1.0f;
+float		ps_r__test_exp_to_shaders_4	= 1.0f;
 
 //- Mad Max
 float		ps_r2_gloss_factor			= 4.0f;
@@ -883,7 +888,12 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask,			"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
 	CMD1(CCC_memory_stats,	"render_memory_stats" );
-	
+
+	// test
+	CMD4(CCC_Float,		"r_developer_float_1",				&ps_r__test_exp_to_shaders_1, -10000000.0f, 10000000.0f);
+	CMD4(CCC_Float,		"r_developer_float_2",				&ps_r__test_exp_to_shaders_2, -10000000.0f, 10000000.0f);
+	CMD4(CCC_Float,		"r_developer_float_3",				&ps_r__test_exp_to_shaders_3, -10000000.0f, 10000000.0f);
+	CMD4(CCC_Float,		"r_developer_float_4",				&ps_r__test_exp_to_shaders_4, -10000000.0f, 10000000.0f);
 
 //	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
 }

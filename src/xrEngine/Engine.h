@@ -30,4 +30,10 @@ public:
 ENGINE_API extern xrDispatchTable	PSGP;
 ENGINE_API extern CEngine			Engine;
 
+// These variables have corrensponding console commands, and can be used to quickly tune or test smth, without quiting from game
+extern ENGINE_API float devfloat1;
+extern ENGINE_API float devfloat2;
+extern ENGINE_API float devfloat3;
+extern ENGINE_API float devfloat4;
+
 #endif // !defined(AFX_ENGINE_H__22802DD7_D7EB_4234_9781_E237657471AC__INCLUDED_)

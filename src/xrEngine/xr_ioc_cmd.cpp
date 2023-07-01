@@ -17,6 +17,11 @@
 
 xr_token*							vid_quality_token = NULL;
 
+ENGINE_API float					devfloat1 = 1.0f;
+ENGINE_API float					devfloat2 = 1.0f;
+ENGINE_API float					devfloat3 = 1.0f;
+ENGINE_API float					devfloat4 = 1.0f;
+
 xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},
 	{ "32",							32											},
@@ -773,6 +778,12 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"mouse_invert",			&psMouseInvert,1);
 	psMouseSens			= 0.12f;
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.001f, 0.6f);
+
+	// Other
+	CMD4(CCC_Float,		"developer_float_1",	&devfloat1, -100000.0f, 100000.0f);
+	CMD4(CCC_Float,		"developer_float_2",	&devfloat2, -100000.0f, 100000.0f);
+	CMD4(CCC_Float,		"developer_float_3",	&devfloat3, -100000.0f, 100000.0f);
+	CMD4(CCC_Float,		"developer_float_4",	&devfloat4, -100000.0f, 100000.0f);
 
 	// Camera
 	CMD4(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.9f);
