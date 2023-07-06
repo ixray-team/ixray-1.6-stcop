@@ -12,8 +12,6 @@
 #include "xr_object.h"
 #include "feel_sound.h"
 
-#include "securom_api.h"
-
 ENGINE_API	IGame_Level*	g_pGameLevel	= NULL;
 extern	BOOL g_bLoaded;
 
@@ -81,8 +79,6 @@ static void __stdcall	build_callback	(Fvector* V, int Vcnt, CDB::TRI* T, int Tcn
 
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
-	SECUROM_MARKER_PERFORMANCE_ON(10)
-
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;
@@ -136,9 +132,6 @@ BOOL IGame_Level::Load			(u32 dwNum)
 #endif
 
 	Device.seqFrame.Add			(this);
-
-	SECUROM_MARKER_PERFORMANCE_OFF(10)
-
 	return TRUE;	
 }
 
