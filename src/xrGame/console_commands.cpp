@@ -1349,7 +1349,7 @@ public:
 	CCC_UI_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		if (g_pGamePersistent && g_pGameLevel && Level().game)
-			HUD().OnScreenResolutionChanged(); // перезагружаем UI через эту команду
+			HUD().OnScreenResolutionChanged(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 };
 
@@ -1824,12 +1824,30 @@ public:
 	}
 };
 
+class CCC_ReceiveInfo : public IConsole_Command {
+public:
+	CCC_ReceiveInfo(LPCSTR N) : IConsole_Command(N) {
+	}
+
+	virtual void Execute(LPCSTR info_id) override {
+		if (!g_pGameLevel) {
+			return;
+		}
+
+		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (actor) {
+			actor->OnReceiveInfo(info_id);
+		}
+	}
+};
+
 void CCC_RegisterCommands()
 {
 	// options
 	g_OptConCom.Init();
 
 	CMD1(CCC_SetWeather, "set_weather");
+	CMD1(CCC_ReceiveInfo, "g_info");
 
 	CMD1(CCC_MemStats,			"stat_memory"			);
 #ifdef DEBUG
@@ -1853,7 +1871,7 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_FlushLog,			"flush"					);		// flush log
 	CMD1(CCC_ClearLog,			"clear_log"					);
-	CMD1(CCC_UI_Reload, "ui_reload"); // перезагрузка UI
+	CMD1(CCC_UI_Reload, "ui_reload"); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor"		);		// set time factor
