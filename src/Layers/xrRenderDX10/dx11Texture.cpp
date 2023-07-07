@@ -67,23 +67,7 @@ u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size) {
     return iFloor(res);
 }
 
-IC void	Reduce(int& w, int& h, int& l, int& skip) {
-    while ((l > 1) && skip) {
-        w /= 2;
-        h /= 2;
-        l -= 1;
-
-        skip--;
-    }
-    if (w < 1) {
-        w = 1;
-    }
-    if (h < 1) {
-        h = 1;
-    }
-}
-
-IC void	Reduce(UINT& w, UINT& h, int l, int skip) {
+IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip) {
     while ((l > 1) && skip) {
         w /= 2;
         h /= 2;
@@ -167,7 +151,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
         auto miscFlags = imageInfo.miscFlags;
         
-        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages(), scratchImage->GetImageCount(), 
+        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 
         FS.r_close(reader);
@@ -181,9 +165,6 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
         img_loaded_lod = get_texture_load_lod(fn);
 
-        if (img_loaded_lod) {
-            Reduce(imageInfo.width, imageInfo.height, imageInfo.mipLevels, img_loaded_lod);
-        }
         auto scratchImage = std::make_unique<ScratchImage>();
         HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, &imageInfo, *scratchImage);
         
@@ -191,8 +172,14 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
         auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
         auto miscFlags = imageInfo.miscFlags;
+        int old_mipmap_cnt = 0, mip_lod = 0;
+        if (img_loaded_lod) {
+            old_mipmap_cnt = imageInfo.mipLevels;
+            Reduce(imageInfo.width, imageInfo.height, imageInfo.mipLevels, img_loaded_lod);
+            mip_lod = old_mipmap_cnt - imageInfo.mipLevels;
+        }
 
-        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
+        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages() + mip_lod, imageInfo.mipLevels,
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
         FS.r_close(reader);
         
