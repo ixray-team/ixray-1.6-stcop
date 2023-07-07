@@ -48,6 +48,8 @@
 //	static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);				}
 //#endif // DEBUG_MEMORY_MANAGER
 
+extern int g_keypress_on_start;
+
 CGamePersistent::CGamePersistent(void)
 {
 	m_bPickableDOF				= false;
@@ -430,18 +432,9 @@ void CGamePersistent::WeathersUpdate()
 	}
 }
 
-bool allow_intro ()
-{
-	if ((0 != strstr(Core.Params, "-nointro"))) {
-		return false;
-	} else { 
-		return true; 
-	}
-}
-
 void CGamePersistent::start_logo_intro()
 {
-	if (!allow_intro())
+	if (!g_keypress_on_start)
 	{
 		m_intro_event = 0;
 		Console->Show();
@@ -478,14 +471,13 @@ void CGamePersistent::update_logo_intro()
 	}
 }
 
-extern int g_keypress_on_start;
 void CGamePersistent::game_loaded()
 {
 	if(Device.dwPrecacheFrame<=2)
 	{
-		if(	g_pGameLevel							&&
-			g_pGameLevel->bReady					&&
-			(allow_intro() && g_keypress_on_start)	&&
+		if(	g_pGameLevel &&
+			g_pGameLevel->bReady &&
+			g_keypress_on_start &&
 			load_screen_renderer.b_need_user_input	&& 
 			m_game_params.m_e_game_type == eGameIDSingle)
 		{
@@ -508,7 +500,7 @@ void CGamePersistent::update_game_loaded()
 
 void CGamePersistent::start_game_intro		()
 {
-	if(!allow_intro())
+	if(!g_keypress_on_start)
 	{
 		m_intro_event			= 0;
 		return;
