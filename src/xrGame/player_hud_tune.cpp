@@ -214,6 +214,11 @@ void player_hud::tune(Ivector _values)
 
 	bool is_16x9		= UI().is_widescreen();
 
+	auto is_attached = m_attached_items[hud_adj_item_idx];
+
+	if (!is_attached)
+		return;
+
 	if(hud_adj_mode==1 || hud_adj_mode==2)
 	{
 		Fvector			diff;
