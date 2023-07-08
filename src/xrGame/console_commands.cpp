@@ -59,6 +59,7 @@
 #endif // DEBUG
 
 #include "ai_object_location.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 string_path		g_last_saved_game;
 
@@ -1931,6 +1932,53 @@ public:
 		std::sort(tips.begin(), tips.end());
 	}
 };
+
+extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position, 
+	u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
+
+class CCC_GSpawnToInventory : public IConsole_Command {
+public:
+	CCC_GSpawnToInventory(LPCSTR N) : IConsole_Command(N) {
+	}
+
+	virtual void Execute(LPCSTR args) override {
+		if (g_pGameLevel == nullptr) {
+			return;
+		}
+
+		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (actor == nullptr) {
+			return;
+		}
+
+		if (!pSettings->section_exist(args)) {
+			Msg("! Can't find section: %s", args);
+			return;
+		}
+
+		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+		if (tpGame != nullptr) {
+			CALifeSimulator__spawn_item2(&tpGame->alife(), args, actor->Position(), actor->ai_location().level_vertex_id(),
+				actor->ai_location().game_vertex_id(), actor->ID());
+		}
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override {
+		if (!ai().get_alife()) {
+			Msg("! ALife simulator is needed to perform specified command!");
+			return;
+		}
+
+		for (const auto& section : pSettings->sections()) {
+			if (section->line_exist("cost") && section->line_exist("inv_weight")) {
+				tips.push_back(section->Name.c_str());
+			}
+		}
+
+		std::sort(tips.begin(), tips.end());
+	}
+};
+
 void CCC_RegisterCommands()
 {
 	// options
@@ -1942,6 +1990,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GiveMoney, "g_money");
 
 	CMD1(CCC_GSpawn, "g_spawn");
+	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
+
 	CMD1(CCC_MemStats,			"stat_memory"			);
 #ifdef DEBUG
 	CMD1(CCC_MemCheckpoint,		"stat_memory_checkpoint");
