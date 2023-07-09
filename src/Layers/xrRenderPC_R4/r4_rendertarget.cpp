@@ -15,7 +15,7 @@
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
-#include "blender_fxaa.h"
+#include "../xrRender/blender_fxaa.h"
 #include "blender_smaa.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
