@@ -16,7 +16,7 @@
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
-#include "blender_smaa.h"
+#include "../xrRender/blender_smaa.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)

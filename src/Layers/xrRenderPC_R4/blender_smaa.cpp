@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "blender_smaa.h"
+#include "../xrRender/blender_smaa.h"
 
 CBlender_SMAA::CBlender_SMAA() { description.CLS = 0; }
 CBlender_SMAA::~CBlender_SMAA() {}

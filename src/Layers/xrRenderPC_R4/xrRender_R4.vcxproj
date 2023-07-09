@@ -246,6 +246,7 @@
     <ClInclude Include="..\xrRender\Blender_Model_EbB.h" />
     <ClInclude Include="..\xrRender\Blender_Particle.h" />
     <ClInclude Include="..\xrRender\Blender_Screen_SET.h" />
+    <ClInclude Include="..\xrRender\blender_smaa.h" />
     <ClInclude Include="..\xrRender\Blender_tree.h" />
     <ClInclude Include="..\xrRender\ColorMapManager.h" />
     <ClInclude Include="..\xrRender\D3DUtils.h" />
@@ -351,7 +352,6 @@
     <ClInclude Include="blender_light_reflected.h" />
     <ClInclude Include="blender_light_spot.h" />
     <ClInclude Include="blender_luminance.h" />
-    <ClInclude Include="blender_smaa.h" />
     <ClInclude Include="blender_ssao.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="ComputeShader.h" />

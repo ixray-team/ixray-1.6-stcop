@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
@@ -744,7 +744,9 @@
     <ClInclude Include="..\xrRender\blender_fxaa.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
-    <ClInclude Include="blender_smaa.h" />
+    <ClInclude Include="..\xrRender\blender_smaa.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1353,13 +1355,17 @@
     <ClCompile Include="..\xrRenderDX10\dx11Texture.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="blender_smaa.cpp" />
-    <ClCompile Include="r4_rendertarget_phase_smaa.cpp" />
     <ClCompile Include="r4_rendertarget_phase_fxaa.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
     <ClCompile Include="blender_fxaa.cpp">
       <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_smaa.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_smaa.cpp">
+      <Filter>Core_Target</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
