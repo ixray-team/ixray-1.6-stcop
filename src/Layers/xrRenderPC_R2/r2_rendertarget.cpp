@@ -11,6 +11,7 @@
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"
+#include "../xrRender/blender_fxaa.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
@@ -210,6 +211,7 @@ CRenderTarget::CRenderTarget		()
 	b_ssao							= xr_new<CBlender_SSAO>					();
 	b_luminance						= xr_new<CBlender_luminance>			();
 	b_combine						= xr_new<CBlender_combine>				();
+	b_fxaa = xr_new<CBlender_FXAA>();
 
 	//	NORMAL
 	{
@@ -362,6 +364,10 @@ CRenderTarget::CRenderTarget		()
 		rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F);
 		s_ssao.create				(b_ssao, "r2\\ssao");
 	}
+
+	//FXAA
+	s_fxaa.create(b_fxaa, "r2\\fxaa");
+	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
 
 	// TONEMAP
 	{
@@ -624,6 +630,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_luminance			);
 	xr_delete					(b_bloom				);
 	xr_delete					(b_ssao					);
+	xr_delete(b_fxaa);
 	xr_delete					(b_accum_reflected		);
 	xr_delete					(b_accum_spot			);
 	xr_delete					(b_accum_point			);

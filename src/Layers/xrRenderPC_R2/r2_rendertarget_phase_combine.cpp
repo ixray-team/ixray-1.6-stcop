@@ -206,6 +206,14 @@ void	CRenderTarget::phase_combine	()
 	// Perform blooming filter and distortion if needed
 	RCache.set_Stencil	(FALSE);
 	phase_bloom			( );												// HDR RT invalidated here
+	
+	if (ps_r2_aa_type == 1) {
+		u_setrt(rt_Accumulator, 0, 0, 0);
+		phase_fxaa(0);
+		u_setrt(rt_Generic_0, 0, 0, 0);
+		phase_fxaa(1);
+		RCache.set_Stencil(FALSE);
+	}
 
 	// Distortion filter
 	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified

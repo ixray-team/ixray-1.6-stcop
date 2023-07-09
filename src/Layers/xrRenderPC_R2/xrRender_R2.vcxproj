@@ -222,6 +222,7 @@
     <ClInclude Include="..\xrRender\Blender_detail_still.h" />
     <ClInclude Include="..\xrRender\Blender_Editor_Selection.h" />
     <ClInclude Include="..\xrRender\Blender_Editor_Wire.h" />
+    <ClInclude Include="..\xrRender\blender_fxaa.h" />
     <ClInclude Include="..\xrRender\Blender_Lm(EbB).h" />
     <ClInclude Include="..\xrRender\Blender_Model_EbB.h" />
     <ClInclude Include="..\xrRender\Blender_Particle.h" />
@@ -468,6 +469,7 @@
     <ClCompile Include="blender_deffer_aref.cpp" />
     <ClCompile Include="blender_deffer_flat.cpp" />
     <ClCompile Include="blender_deffer_model.cpp" />
+    <ClCompile Include="blender_fxaa.cpp" />
     <ClCompile Include="blender_light_direct.cpp" />
     <ClCompile Include="blender_light_direct_cascade.cpp" />
     <ClCompile Include="blender_light_mask.cpp" />
@@ -500,6 +502,7 @@
     <ClCompile Include="r2_rendertarget_phase_accumulator.cpp" />
     <ClCompile Include="r2_rendertarget_phase_bloom.cpp" />
     <ClCompile Include="r2_rendertarget_phase_combine.cpp" />
+    <ClCompile Include="r2_rendertarget_phase_fxaa.cpp" />
     <ClCompile Include="r2_rendertarget_phase_luminance.cpp" />
     <ClCompile Include="r2_rendertarget_phase_occq.cpp" />
     <ClCompile Include="r2_rendertarget_phase_PP.cpp" />
