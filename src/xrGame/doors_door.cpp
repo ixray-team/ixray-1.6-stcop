@@ -33,8 +33,6 @@ door::door						( CPhysicObject* object ) :
 	VERIFY						( valid(m_target_state) );
 	VERIFY						( valid(m_previous_state) );
 
-	R_ASSERT					( m_object.get_door_vectors( m_closed_vector, m_open_vector ) );
-
 	Fmatrix invert;
 	invert.invert				( m_object.XFORM() );
 	invert.transform_dir		( m_open_vector );
