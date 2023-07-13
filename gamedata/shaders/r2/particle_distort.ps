@@ -21,7 +21,7 @@ float4 	main	( v2p I )	: COLOR
 	half    factor	= distort.a * dot(I.c.rgb,0.33h);
 /*
 #ifdef	USE_SOFT_PARTICLES
-	half2	zero = half2( 0.5, 0.5);
+	float2	zero = float2( 0.5, 0.5);
 	half	alphaDistort;
 	float4 _P = tex2Dproj( s_position, I.tctexgen);
 	half spaceDepth = _P.z - I.tctexgen.z;

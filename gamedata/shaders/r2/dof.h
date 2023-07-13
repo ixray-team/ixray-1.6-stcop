@@ -42,27 +42,27 @@ float3	dof(float2 center)
 
 	//half blur = 1;
 	//	const amount of blur: define controlled
-	//half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
+	//float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
 	//	const amount of blur: engine controlled
-	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h) * (dof_kernel.z * blur);
+	float2 	scale 	= float2	(0.5f / 1024.0f, 0.5f / 768.0f) * (dof_kernel.z * blur);
 	//	amount of blur varies according to resolution
 	//	but kernel size in pixels is fixed.
-	//	half2 	scale 	= dof_kernel.xy * blur;
+	//	float2 	scale 	= dof_kernel.xy * blur;
 
 	// poisson
-	half2 	o  [12];
-		o[0]	= half2(-0.326212f , -0.405810f)*scale;
-		o[1] 	= half2(-0.840144f , -0.073580f)*scale;
-		o[2] 	= half2(-0.695914f ,  0.457137f)*scale;
-		o[3] 	= half2(-0.203345f ,  0.620716f)*scale;
-		o[4] 	= half2( 0.962340f , -0.194983f)*scale;
-		o[5] 	= half2( 0.473434f , -0.480026f)*scale;
-		o[6] 	= half2( 0.519456f ,  0.767022f)*scale;
-		o[7] 	= half2( 0.185461f , -0.893124f)*scale;
-		o[8] 	= half2( 0.507431f ,  0.064425f)*scale;
-		o[9] 	= half2( 0.896420f ,  0.412458f)*scale;
-		o[10] 	= half2(-0.321940f , -0.932615f)*scale;
-		o[11] 	= half2(-0.791559f , -0.597710f)*scale;
+	float2 	o  [12];
+		o[0]	= float2(-0.326212f , -0.405810f)*scale;
+		o[1] 	= float2(-0.840144f , -0.073580f)*scale;
+		o[2] 	= float2(-0.695914f ,  0.457137f)*scale;
+		o[3] 	= float2(-0.203345f ,  0.620716f)*scale;
+		o[4] 	= float2( 0.962340f , -0.194983f)*scale;
+		o[5] 	= float2( 0.473434f , -0.480026f)*scale;
+		o[6] 	= float2( 0.519456f ,  0.767022f)*scale;
+		o[7] 	= float2( 0.185461f , -0.893124f)*scale;
+		o[8] 	= float2( 0.507431f ,  0.064425f)*scale;
+		o[9] 	= float2( 0.896420f ,  0.412458f)*scale;
+		o[10] 	= float2(-0.321940f , -0.932615f)*scale;
+		o[11] 	= float2(-0.791559f , -0.597710f)*scale;
 
 	// sample
 	float3	sum 	= tex2D(s_image,center);
@@ -100,27 +100,27 @@ float3	dof(float2 center)
 
 	//half blur = 1;
 	//	const amount of blur: define controlled
-	//half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
+	//float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
 	//	const amount of blur: engine controlled
-	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h) * (dof_kernel.z * blur);
+	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * (dof_kernel.z * blur);
 	//	amount of blur varies according to resolution
 	//	but kernel size in pixels is fixed.
-	//	half2 	scale 	= dof_kernel.xy * blur;
+	//	float2 	scale 	= dof_kernel.xy * blur;
 
 	// poisson
-	half2 	o  [12];
-		o[0]	= half2(-0.326212f , -0.405810f)*scale;
-		o[1] 	= half2(-0.840144f , -0.073580f)*scale;
-		o[2] 	= half2(-0.695914f ,  0.457137f)*scale;
-		o[3] 	= half2(-0.203345f ,  0.620716f)*scale;
-		o[4] 	= half2( 0.962340f , -0.194983f)*scale;
-		o[5] 	= half2( 0.473434f , -0.480026f)*scale;
-		o[6] 	= half2( 0.519456f ,  0.767022f)*scale;
-		o[7] 	= half2( 0.185461f , -0.893124f)*scale;
-		o[8] 	= half2( 0.507431f ,  0.064425f)*scale;
-		o[9] 	= half2( 0.896420f ,  0.412458f)*scale;
-		o[10] 	= half2(-0.321940f , -0.932615f)*scale;
-		o[11] 	= half2(-0.791559f , -0.597710f)*scale;
+	float2 	o  [12];
+		o[0]	= float2(-0.326212f , -0.405810f)*scale;
+		o[1] 	= float2(-0.840144f , -0.073580f)*scale;
+		o[2] 	= float2(-0.695914f ,  0.457137f)*scale;
+		o[3] 	= float2(-0.203345f ,  0.620716f)*scale;
+		o[4] 	= float2( 0.962340f , -0.194983f)*scale;
+		o[5] 	= float2( 0.473434f , -0.480026f)*scale;
+		o[6] 	= float2( 0.519456f ,  0.767022f)*scale;
+		o[7] 	= float2( 0.185461f , -0.893124f)*scale;
+		o[8] 	= float2( 0.507431f ,  0.064425f)*scale;
+		o[9] 	= float2( 0.896420f ,  0.412458f)*scale;
+		o[10] 	= float2(-0.321940f , -0.932615f)*scale;
+		o[11] 	= float2(-0.791559f , -0.597710f)*scale;
 
 	// sample 
 	float3	sum 	= tex2D(s_image,center);
@@ -162,22 +162,22 @@ float3	dof(float2 center)
 	//half 	blur 		= (blur_near+blur_far);	
 
 	//half blur = 1;
-	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
+	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
 
 	// poisson
-	half2 	o  [12];
-		o[0]	= half2(-0.326212f , -0.405810f)*scale;
-		o[1] 	= half2(-0.840144f , -0.073580f)*scale;
-		o[2] 	= half2(-0.695914f ,  0.457137f)*scale;
-		o[3] 	= half2(-0.203345f ,  0.620716f)*scale;
-		o[4] 	= half2( 0.962340f , -0.194983f)*scale;
-		o[5] 	= half2( 0.473434f , -0.480026f)*scale;
-		o[6] 	= half2( 0.519456f ,  0.767022f)*scale;
-		o[7] 	= half2( 0.185461f , -0.893124f)*scale;
-		o[8] 	= half2( 0.507431f ,  0.064425f)*scale;
-		o[9] 	= half2( 0.896420f ,  0.412458f)*scale;
-		o[10] 	= half2(-0.321940f , -0.932615f)*scale;
-		o[11] 	= half2(-0.791559f , -0.597710f)*scale;
+	float2 	o  [12];
+		o[0]	= float2(-0.326212f , -0.405810f)*scale;
+		o[1] 	= float2(-0.840144f , -0.073580f)*scale;
+		o[2] 	= float2(-0.695914f ,  0.457137f)*scale;
+		o[3] 	= float2(-0.203345f ,  0.620716f)*scale;
+		o[4] 	= float2( 0.962340f , -0.194983f)*scale;
+		o[5] 	= float2( 0.473434f , -0.480026f)*scale;
+		o[6] 	= float2( 0.519456f ,  0.767022f)*scale;
+		o[7] 	= float2( 0.185461f , -0.893124f)*scale;
+		o[8] 	= float2( 0.507431f ,  0.064425f)*scale;
+		o[9] 	= float2( 0.896420f ,  0.412458f)*scale;
+		o[10] 	= float2(-0.321940f , -0.932615f)*scale;
+		o[11] 	= float2(-0.791559f , -0.597710f)*scale;
 
 	// sample 
 	float3	sum 	= tex2D(s_image,center);

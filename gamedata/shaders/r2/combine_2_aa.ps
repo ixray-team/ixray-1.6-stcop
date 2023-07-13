@@ -53,7 +53,7 @@ float4 	main		( v2p I )	: COLOR
 
 #ifdef 	USE_DISTORT
 	float4 	distort	= tex2D		(s_distort, I.tc0);
-	half2	doffs	= (distort.xy-.5h)*def_distort;
+	float2	doffs	= (distort.xy-0.5f)*def_distort;
 	float2	center	= I.tc0 + doffs;
 #else
 	float2	center 	= I.tc0;

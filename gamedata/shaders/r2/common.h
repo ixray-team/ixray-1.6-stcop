@@ -57,12 +57,12 @@ uniform float4                J_direct        [6];
 uniform float4                J_spot                [6];
 
 half          calc_fogging               (float4 w_pos)      { return dot(w_pos,fog_plane);         }
-half2         calc_detail                (float3 w_pos)      {
-        float                 dtl        = distance                (w_pos,eye_position)*dt_params.w;
-                              dtl        = min              (dtl*dtl, 1);
+float2         calc_detail                (float3 w_pos)      {
+        float                 dtl        = distance(w_pos,eye_position)*dt_params.w;
+                              dtl        = min(dtl * dtl, 1.0f);
         half                  dt_mul     = 1  - dtl;        // dt*  [1 ..  0 ]
         half                  dt_add     = .5 * dtl;        // dt+  [0 .. 0.5]
-        return                half2      (dt_mul,dt_add);
+        return                float2      (dt_mul,dt_add);
 }
 float3         calc_reflection     (float3 pos_w, float3 norm_w)
 {

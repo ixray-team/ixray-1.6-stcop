@@ -36,7 +36,7 @@ float2 	unpack_tc_base	(float2 tc, float du, float dv)		{
 		return (tc.xy + float2	(du,dv))*(32.f/32768.f);	//!Increase from 32bit to 64bit floating point
 }
 
-float2 	unpack_tc_lmap	(half2 tc)	{ return tc*(1.f/32768.f);	} // [-1  .. +1 ] 
+float2 	unpack_tc_lmap	(float2 tc)	{ return tc*(1.0f/32768.0f);	} // [-1  .. +1 ] 
 
 float 	calc_cyclic 	(float x)				{
 	float 	phase 	= 1/(2*3.141592653589f);

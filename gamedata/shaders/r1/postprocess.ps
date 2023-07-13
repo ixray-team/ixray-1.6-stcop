@@ -4,9 +4,9 @@ struct 	v2p
 {
 	float4 	color:		COLOR0;		// multiplier, color.w = noise_amount
 	float4	gray:		COLOR1;		// (.3,.3,.3.,amount)
- 	half2 	tc0: 		TEXCOORD0;	// base1 (duality)
- 	half2 	tc1: 		TEXCOORD1;	// base2 (duality)
- 	half2 	tc2: 		TEXCOORD2;	// base  (noise)
+ 	float2 	tc0: 		TEXCOORD0;	// base1 (duality)
+ 	float2 	tc1: 		TEXCOORD1;	// base2 (duality)
+ 	float2 	tc2: 		TEXCOORD2;	// base  (noise)
 };
 
 uniform sampler2D 	s_base0;

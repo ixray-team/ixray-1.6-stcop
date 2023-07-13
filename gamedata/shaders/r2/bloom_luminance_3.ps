@@ -19,19 +19,19 @@ uniform float4	MiddleGray;
 //	c):	8x8p	=> 1x1p		with exp
 #ifdef  FP16_FILTER
 	// native bilinear
-half	sample	(half2	tc)	{
-	return 	dot	(tex2D(s_image,tc), 1/4.h);	// sum components
+half	sample	(float2	tc)	{
+	return 	dot	(tex2D(s_image,tc), 1.0f/4.0f);	// sum components
 }
 #else
 	// emulate bilinear
-half	sample	(half2	tc)	{
-	half 	phalf 	= .5h/8.h;
+half	sample	(float2	tc)	{
+	half 	phalf 	= 0.5f / 8.0f;
 	float4 	res;
-		res.x 	= dot	(tex2D(s_image,tc+half2(-phalf,-phalf)), 1/4.h); // sum components
-		res.y 	= dot	(tex2D(s_image,tc+half2(+phalf,-phalf)), 1/4.h); // sum components
-		res.z 	= dot	(tex2D(s_image,tc+half2(-phalf,+phalf)), 1/4.h); // sum components
-		res.w 	= dot	(tex2D(s_image,tc+half2(+phalf,+phalf)), 1/4.h); // sum components
-	return 	dot	(res, 	1/4.h);	// sum components
+		res.x 	= dot	(tex2D(s_image,tc+float2(-phalf,-phalf)), 1.0f/4.0f); // sum components
+		res.y 	= dot	(tex2D(s_image,tc+float2(+phalf,-phalf)), 1.0f/4.0f); // sum components
+		res.z 	= dot	(tex2D(s_image,tc+float2(-phalf,+phalf)), 1.0f/4.0f); // sum components
+		res.w 	= dot	(tex2D(s_image,tc+float2(+phalf,+phalf)), 1.0f/4.0f); // sum components
+	return 	dot	(res, 	1.0f/4.0f);	// sum components
 }
 #endif
 

@@ -8,7 +8,7 @@ float4 	main	( float4 C:COLOR0 )	: COLOR
         result.rgb	= C;
 #else
 		float4	high;
-        half    scale	= tex2D(s_tonemap,half2(.5h,.5h)).x;
+        half    scale	= tex2D(s_tonemap,float2(0.5f, 0.5f)).x;
 //		tonemap			(result, high, C, scale*0.9);
 		tonemap			(result, high, C, scale);
 #endif

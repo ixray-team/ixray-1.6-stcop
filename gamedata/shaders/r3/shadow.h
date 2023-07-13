@@ -694,10 +694,10 @@ half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 	//float4	J1 	= tex2D	(jitter1,tc_J)*scale;
 
 	const float k = .5f/float(SMAP_size);
-	r.x 	= test 	(tc, J0.xy+half2(-k,-k)).x;
-	r.y 	= test 	(tc, J0.wz+half2( k,-k)).y;
-	r.z		= test	(tc,-J0.xy+half2(-k, k)).z;
-	r.w		= test	(tc,-J0.wz+half2( k, k)).x;
+	r.x 	= test 	(tc, J0.xy+float2(-k,-k)).x;
+	r.y 	= test 	(tc, J0.wz+float2( k,-k)).y;
+	r.z		= test	(tc,-J0.xy+float2(-k, k)).z;
+	r.w		= test	(tc,-J0.wz+float2( k, k)).x;
 
 	return	dot(r,1.h/4.h);
 }
@@ -712,20 +712,20 @@ half 	shadow_high 	(float4 tc)			// jittered sampling
 
 	const float k = 1.f/float(SMAP_size);
 	float4 r;
-	r.x 	= test 	(tc,J0.xy+half2(-k,-k)).x;
-	r.y 	= test 	(tc,J0.wz+half2( k,-k)).y;
+	r.x 	= test 	(tc,J0.xy+float2(-k,-k)).x;
+	r.y 	= test 	(tc,J0.wz+float2( k,-k)).y;
 
-	r.z		= test	(tc,J0.xy+half2(-k, k)).z;
-	r.w		= test	(tc,J0.wz+half2( k, k)).x;
+	r.z		= test	(tc,J0.xy+float2(-k, k)).z;
+	r.w		= test	(tc,J0.wz+float2( k, k)).x;
 
 
 	const float k1 = 1.3f/float(SMAP_size);
 	float4 r1;
-	r1.x 	= test 	(tc,-J0.xy+half2(-k1,0)).x;
-	r1.y 	= test 	(tc,-J0.wz+half2( 0,-k1)).y;
+	r1.x 	= test 	(tc,-J0.xy+float2(-k1,0)).x;
+	r1.y 	= test 	(tc,-J0.wz+float2( 0,-k1)).y;
 
-	r1.z	= test	(tc,-2*J0.xy+half2( k1, 0)).z;
-	r1.w	= test	(tc,-2*J0.wz+half2( 0, k1)).x;
+	r1.z	= test	(tc,-2*J0.xy+float2( k1, 0)).z;
+	r1.w	= test	(tc,-2*J0.wz+float2( 0, k1)).x;
 
 	return ( r.x + r.y + r.z + r.w + r1.x + r1.y + r1.z + r1.w )*1.h/8.h;
 }
