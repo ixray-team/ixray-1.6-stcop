@@ -17,7 +17,7 @@ uniform sampler2D 	s_base0	;
 uniform sampler2D 	s_base1	;
 uniform sampler2D 	s_hemi0	;
 uniform sampler2D 	s_hemi1	;
-float4 	main_ps_1_1	( v2p I )	: COLOR
+float4 	main	( v2p I )	: COLOR
 {
 	float4 	base0 		= 	tex2D	(s_base0,I.tc0);
 	float4 	base1 		= 	tex2D	(s_base1,I.tc1);

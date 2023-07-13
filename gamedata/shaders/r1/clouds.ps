@@ -12,7 +12,7 @@ uniform sampler2D 	s_clouds1	: register(s1);
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main_ps_1_1	( v2p I )	: COLOR
+float4 	main	( v2p I )	: COLOR
 {
 	float4 	s0	= tex2D		(s_clouds0,I.tc0);
 	float4 	s1	= tex2D		(s_clouds1,I.tc1);

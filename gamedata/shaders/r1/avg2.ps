@@ -11,7 +11,7 @@ uniform sampler2D 	s_base1;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main_ps_1_1	( v2p I )	: COLOR
+float4 	main	( v2p I )	: COLOR
 {
 	float4	t_0 	= tex2D		(s_base0,I.tc0);
 	float4	t_1 	= tex2D		(s_base1,I.tc1);

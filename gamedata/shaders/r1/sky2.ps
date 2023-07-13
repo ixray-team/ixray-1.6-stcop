@@ -13,7 +13,7 @@ uniform float3 		color;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main_ps_1_1	( v2p I )	: COLOR
+float4 	main	( v2p I )	: COLOR
 {
 	float3 	s0	= texCUBE(s_sky0,I.tc0);
 	float3 	s1	= texCUBE(s_sky1,I.tc1);

@@ -2,7 +2,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main_ps_1_1	( vf_spot I )	: COLOR
+float4 	main	( vf_spot I )	: COLOR
 {
 	float4	t_base 	= tex2D		(s_base,I.tc0);
 	float4	t_lmap 	= tex2D		(s_lmap,I.tc1);	// spot-projector
