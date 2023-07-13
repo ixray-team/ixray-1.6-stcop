@@ -18,7 +18,7 @@ uniform float4 		c_colormap;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main_ps_1_4	( v2p I )	: COLOR
+float4 	main	( v2p I )	: COLOR
 {
 	float4	pre_pass= tex2D		(s_base0, I.tc0);
 	float	grad_i 	= dot		(pre_pass.rgb,(0.3333f).xxx);
