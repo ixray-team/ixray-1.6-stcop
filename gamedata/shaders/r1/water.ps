@@ -18,7 +18,7 @@ uniform sampler2D s_nmap;
 uniform samplerCUBE s_env0;
 uniform samplerCUBE s_env1;
 
-float4 main_ps_2_0(vf I) : COLOR {
+float4 main(vf I) : COLOR {
     float4 base = tex2D(s_base, I.tbase);
     float3 n0 = tex2D(s_nmap, I.tnorm0);
     float3 n1 = tex2D(s_nmap, I.tnorm1);

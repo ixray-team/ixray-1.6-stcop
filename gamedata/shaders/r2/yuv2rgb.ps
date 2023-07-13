@@ -1,6 +1,6 @@
 #include "common.h"
 
-float4	main_ps_2_0	(float2 uv : TEXCOORD0)	: COLOR
+float4	main	(float2 uv : TEXCOORD0)	: COLOR
 {
 	float3	YUV	= tex2D	(s_base, uv);
 
