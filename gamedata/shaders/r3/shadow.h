@@ -648,7 +648,7 @@ float4 	test 		(float4 tc, float2 offset)
 	return s_smap.SampleCmpLevelZero( smp_smap, tc.xy, tc.z).x;
 }
 
-/*half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
+/*float 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 {
 	float4	r;
 
@@ -678,10 +678,10 @@ float4 	test 		(float4 tc, float2 offset)
 	f.z		= test	(tc,-J0.xy+float2( k1, 0)).z;
  	f.w		= test	(tc,-J0.wz+float2( 0, k1)).x;
 
-	half res = ( r.x + r.y + r.z + r.w + f.x + f.y + f.z + f.w )*1.h/(4.h + 4.h );
+	float res = ( r.x + r.y + r.z + r.w + f.x + f.y + f.z + f.w )*1.h/(4.h + 4.h );
 	return res;
 }*/
-half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
+float 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 {
 	float4 r;
 
@@ -689,20 +689,20 @@ half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 	const 	float 	scale 	= (0.7f/float(SMAP_size));
 
 
-	float2 	tc_J	= frac(tc.xy/tc.w*SMAP_size/4.0f )*.5f;
+	float2 	tc_J	= frac(tc.xy/tc.w*SMAP_size/4.0f )*0.5f;
 	float4	J0		= jitter0.Sample(smp_jitter,tc_J)*scale;
 	//float4	J1 	= tex2D	(jitter1,tc_J)*scale;
 
-	const float k = .5f/float(SMAP_size);
+	const float k = 0.5f/float(SMAP_size);
 	r.x 	= test 	(tc, J0.xy+float2(-k,-k)).x;
 	r.y 	= test 	(tc, J0.wz+float2( k,-k)).y;
 	r.z		= test	(tc,-J0.xy+float2(-k, k)).z;
 	r.w		= test	(tc,-J0.wz+float2( k, k)).x;
 
-	return	dot(r,1.h/4.h);
+	return	dot(r,1.0f/4.0f);
 }
 
-half 	shadow_high 	(float4 tc)			// jittered sampling
+float 	shadow_high 	(float4 tc)			// jittered sampling
 {
 
 	const	float 	scale 	= (0.5f/float(SMAP_size));

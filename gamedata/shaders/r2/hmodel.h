@@ -10,11 +10,11 @@ uniform samplerCUBE         sky_s1                ;
 uniform float4                         env_color        ;        // color.w  = lerp factor
 uniform float3x4                        m_v2w                ;
 
-void        hmodel                 (out float3 hdiffuse, out float3 hspecular, half m, half h, half s, float3 point, float3 normal)
+void        hmodel                 (out float3 hdiffuse, out float3 hspecular, float m, float h, float s, float3 point, float3 normal)
 {
         // hscale - something like diffuse reflection
         float3         nw                         = mul                 (m_v2w,normal);
-        half         hscale                 = h;                                //. *        (.5h + .5h*nw.y);
+        float         hscale                 = h;                                //. *        (.5h + .5h*nw.y);
 #ifdef         USE_GAMMA_22
                         hscale                = (hscale*hscale);        // make it more linear
 #endif
@@ -23,7 +23,7 @@ void        hmodel                 (out float3 hdiffuse, out float3 hspecular, h
         float3        v2pointL        		= normalize        (point);
         float3         v2point               = mul                (m_v2w,v2pointL);
         float3        vreflect        		= reflect         (v2point,nw);
-        half         hspec                 	= .5h+.5h*dot        (vreflect,v2point);
+        float         hspec                 	= 0.5f+0.5f*dot        (vreflect,v2point);
 
         // material
           float4         light                = tex3D                (s_material, float3(hscale, hspec, m) );                // sample material
@@ -44,15 +44,15 @@ void        hmodel                 (out float3 hdiffuse, out float3 hspecular, h
         hspecular                       = env_s*light.w*s;                //*h*m*s        ;        //env_s        *light.w         * s;
 }
 
-void         hmodel_table        (out float3 hdiffuse, out float3 hspecular, half m, half h, half s, float3 point, float3 normal)
+void         hmodel_table        (out float3 hdiffuse, out float3 hspecular, float m, float h, float s, float3 point, float3 normal)
 {
         // hscale - something like diffuse reflection
-        half         hscale         = h;
+        float         hscale         = h;
 
         // reflection vector
         float3         v2point        = normalize        (point);
         float3        vreflect= reflect         (v2point,normal);
-        half         hspec         = .5h+.5h*dot        (vreflect,v2point);
+        float hspec = 0.5f + 0.5f * dot(vreflect,v2point);
 
         // material
           float4         light        = tex3D                (s_material, float3(hscale, hspec, m) );                // sample material

@@ -17,14 +17,14 @@ float3	dof(float2 center)
 float4	dof_params;
 float3	dof_kernel;	// x,y - resolution pre-scaled z - just kernel size
 
-half DOFFactor( half depth)
+float DOFFactor( float depth)
 {
-	half	dist_to_focus	= depth-dof_params.y;
-	half 	blur_far	= saturate( dist_to_focus
+	float	dist_to_focus	= depth-dof_params.y;
+	float 	blur_far	= saturate( dist_to_focus
 					/ (dof_params.z-dof_params.y) );
-	half 	blur_near	= saturate( dist_to_focus
+	float 	blur_near	= saturate( dist_to_focus
 					/ (dof_params.x-dof_params.y) );
-	half 	blur 		= blur_near+blur_far;
+	float 	blur 		= blur_near+blur_far;
 	blur*=blur;
 	return blur;
 }
@@ -36,11 +36,11 @@ half DOFFactor( half depth)
 float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
-	half 	depth		= tex2D(s_position,center).z;
+	float 	depth		= tex2D(s_position,center).z;
 	if (depth <= EPSDEPTH)	depth = dof_params.w;
-	half	blur 		= DOFFactor(depth);
+	float	blur 		= DOFFactor(depth);
 
-	//half blur = 1;
+	//float blur = 1;
 	//	const amount of blur: define controlled
 	//float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
 	//	const amount of blur: engine controlled
@@ -66,15 +66,15 @@ float3	dof(float2 center)
 
 	// sample
 	float3	sum 	= tex2D(s_image,center);
-	half 	contrib	= 1.h;
+	float 	contrib	= 1.0f;
 
    	for (int i=0; i<12; i++)
 	{
 		float2 	tap 		= center + o[i];
 		float4	tap_color	= tex2D	(s_image,tap);
-		half 	tap_depth 	= tex2D	(s_position,tap).z;
+		float 	tap_depth 	= tex2D	(s_position,tap).z;
 		if (tap_depth <= EPSDEPTH)	tap_depth = dof_params.w;
-		half 	tap_contrib	= DOFFactor(tap_depth);
+		float 	tap_contrib	= DOFFactor(tap_depth);
 		sum 		+= tap_color	* tap_contrib;
 		contrib		+= tap_contrib;
 	}
@@ -87,18 +87,18 @@ float3	dof(float2 center)
 float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
-	half 	depth		= tex2D(s_position,center).z;
+	float 	depth		= tex2D(s_position,center).z;
 //	if (depth <= EPSDEPTH)	depth = dof_params.w;
 	if (depth <= EPSDEPTH)	depth = (dof_params.z-dof_params.y)*0.3;
-	half	dist_to_focus	= depth-dof_params.y;
-	half 	blur_far	= saturate( dist_to_focus
+	float	dist_to_focus	= depth-dof_params.y;
+	float 	blur_far	= saturate( dist_to_focus
 					/ (dof_params.z-dof_params.y) );
-	half 	blur_near	= saturate( dist_to_focus
+	float 	blur_near	= saturate( dist_to_focus
 					/ (dof_params.x-dof_params.y) );
-	half 	blur 		= (blur_near+blur_far);	
+	float 	blur 		= (blur_near+blur_far);	
 	blur*=blur;
 
-	//half blur = 1;
+	//float blur = 1;
 	//	const amount of blur: define controlled
 	//float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
 	//	const amount of blur: engine controlled
@@ -124,16 +124,16 @@ float3	dof(float2 center)
 
 	// sample 
 	float3	sum 	= tex2D(s_image,center);
-	half 	contrib	= 1.h;
+	float 	contrib	= 1.h;
 	for (int i=0; i<12; i++)
 	{
 		float2 	tap 		= center + o[i];
 		float4	tap_color	= tex2D	(s_image,tap);
-		half 	tap_depth 	= tex2D	(s_position,tap).z;
+		float 	tap_depth 	= tex2D	(s_position,tap).z;
 //		if (tap_depth <= EPSDEPTH)	tap_depth = dof_params.w;
 		if (tap_depth <= EPSDEPTH)	tap_depth = (dof_params.z-dof_params.y)*0.3;
-//		half 	tap_contrib	= 1.h;	//(tap_depth>depth)?1.h:0.h;
-		half 	tap_contrib	= 1-saturate(abs(tap_depth-depth)/dist_to_focus);
+//		float 	tap_contrib	= 1.h;	//(tap_depth>depth)?1.h:0.h;
+		float 	tap_contrib	= 1-saturate(abs(tap_depth-depth)/dist_to_focus);
 			sum 		+= tap_color	* tap_contrib;
 			contrib		+= tap_contrib;
 	}
@@ -154,14 +154,14 @@ float3	dof(float2 center)
 float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
-	half 	depth		= tex2D(s_position,center).z;
+	float 	depth		= tex2D(s_position,center).z;
 	if (depth<=EPSDEPTH)	depth = MAXDIST;
-	half 	blur		= saturate( (depth-MINDIST)/(MAXDIST-MINDIST) );	
+	float 	blur		= saturate( (depth-MINDIST)/(MAXDIST-MINDIST) );	
 	blur*=blur;
-	//half 	blur_near	= pow(saturate( 1-(depth-NEAR)/MINDIST ), 2) * MAXCOF_NEAR;
-	//half 	blur 		= (blur_near+blur_far);	
+	//float 	blur_near	= pow(saturate( 1-(depth-NEAR)/MINDIST ), 2) * MAXCOF_NEAR;
+	//float 	blur 		= (blur_near+blur_far);	
 
-	//half blur = 1;
+	//float blur = 1;
 	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * MAXCOF * blur;
 
 	// poisson
@@ -181,13 +181,13 @@ float3	dof(float2 center)
 
 	// sample 
 	float3	sum 	= tex2D(s_image,center);
-	half 	contrib	= 1.h;
+	float 	contrib	= 1.h;
 	for (int i=0; i<12; i++)
 	{
 		float2 	tap 		= center + o[i];
 		float4	tap_color	= tex2D	(s_image,tap);
-		half 	tap_depth 	= tex2D	(s_position,tap).z;
-		half 	tap_contrib	= 1.h;	//(tap_depth>depth)?1.h:0.h;
+		float 	tap_depth 	= tex2D	(s_position,tap).z;
+		float 	tap_contrib	= 1.h;	//(tap_depth>depth)?1.h:0.h;
 			sum 		+= tap_color	* tap_contrib;
 			contrib		+= tap_contrib;
 	}

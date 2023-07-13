@@ -42,7 +42,7 @@ _out         main                ( _input I )
 
 #ifdef         USE_SUPER_SPECULAR
         {
-                half        ds      	= dot        (D.rgb,1.h/3.h)  	;
+                float        ds      	= dot        (D.rgb,1.h/3.h)  	;
                        		D.w         = max        (D.w, 	ds*ds/8.h)	;
         }
 #endif
@@ -56,9 +56,9 @@ _out         main                ( _input I )
 #endif
 
         // static sun
-	half mtl 		= P.w;
+	float mtl 		= P.w;
 #ifdef        USE_R2_STATIC_SUN
-	half	sun_occ        	=       P.w*2	;
+	float	sun_occ        	=       P.w*2.0f	;
 			mtl 			= 		xmaterial;
             L              +=       Ldynamic_color * sun_occ * plight_infinity	(mtl, P.xyz, N.xyz, Ldynamic_dir);
 #endif
@@ -68,11 +68,11 @@ _out         main                ( _input I )
 
 	//  Calculate SSAO
 //#ifdef USE_SSAO_BLUR
-//	half occ = ssao_blur_ps(I.tc0);
+//	float occ = ssao_blur_ps(I.tc0);
 #ifdef USE_HBAO
 	float occ = calc_hbao(P.z, N, I.tc0);
 #else
-	half occ = calc_ssao(P, N, I.tc0, I.tcJ);
+	float occ = calc_ssao(P, N, I.tc0, I.tcJ);
 #endif
 
 
@@ -132,7 +132,7 @@ _out         main                ( _input I )
         float         	distance		= length		(pos);
         float         	fog				= saturate		(distance*fog_params.w + fog_params.x); //
                       	color			= lerp     		(color,fog_color,fog);        			//
-        half        	skyblend		= saturate		(fog*fog);
+        float        	skyblend		= saturate		(fog*fog);
 
 #ifdef         DBG_TMAPPING
         color                        	= D.xyz;
@@ -140,9 +140,9 @@ _out         main                ( _input I )
 
         // final tone-mapping
 #ifdef        USE_VTF
-        half          	tm_scale        = I.tc0.w;                // interpolated from VS
+        float          	tm_scale        = I.tc0.w;                // interpolated from VS
 #else
-        half         	tm_scale        = tex2D        (s_tonemap,I.tc0).x;
+        float         	tm_scale        = tex2D        (s_tonemap,I.tc0).x;
 #endif
 
 #ifdef        USE_SUPER_SPECULAR

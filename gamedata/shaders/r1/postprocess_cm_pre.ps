@@ -21,7 +21,7 @@ uniform float4 		c_colormap;
 float4 	main_ps_1_4	( v2p I )	: COLOR
 {
 	float4	pre_pass= tex2D		(s_base0, I.tc0);
-	half	grad_i 	= dot		(pre_pass.rgb,(0.3333h).xxx);
+	float	grad_i 	= dot		(pre_pass.rgb,(0.3333f).xxx);
 
 	float3 	image0 	= tex2D		(s_grad0, float2(grad_i,0.5f));
 	float3 	image1 	= tex2D		(s_grad1, float2(grad_i,0.5f));

@@ -5,10 +5,10 @@
 float Contrast(float Input, float ContrastPower)
 {
      //piecewise contrast function
-     bool IsAboveHalf = Input > 0.5 ;
-     float ToRaise = saturate(2*(IsAboveHalf ? 1-Input : Input));
-     float Output = 0.5*pow(ToRaise, ContrastPower); 
-     Output = IsAboveHalf ? 1-Output : Output;
+     bool IsAbovefloat = Input > 0.5f ;
+     float ToRaise = saturate(2.0f*(IsAbovefloat ? 1.0f-Input : Input));
+     float Output = 0.5f*pow(ToRaise, ContrastPower); 
+     Output = IsAbovefloat ? 1.0f-Output : Output;
      return Output;
 }
 
@@ -16,12 +16,12 @@ void tonemap( out float4 low, out float4 high, float3 rgb, float scale)
 {
 	rgb		=	rgb*scale;
 
-	const float fWhiteIntensity = 1.7;
+	const float fWhiteIntensity = 1.7f;
 
 	const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
 
 //	low		=	(rgb/(rgb + 1)).xyzz;
-	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ).xyzz;
+	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1.0f) ).xyzz;
 
 	high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
 

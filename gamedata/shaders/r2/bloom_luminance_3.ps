@@ -19,18 +19,18 @@ uniform float4	MiddleGray;
 //	c):	8x8p	=> 1x1p		with exp
 #ifdef  FP16_FILTER
 	// native bilinear
-half	sample	(float2	tc)	{
+float	sample	(float2	tc)	{
 	return 	dot	(tex2D(s_image,tc), 1.0f/4.0f);	// sum components
 }
 #else
 	// emulate bilinear
-half	sample	(float2	tc)	{
-	half 	phalf 	= 0.5f / 8.0f;
+float	sample	(float2	tc)	{
+	float 	pfloat 	= 0.5f / 8.0f;
 	float4 	res;
-		res.x 	= dot	(tex2D(s_image,tc+float2(-phalf,-phalf)), 1.0f/4.0f); // sum components
-		res.y 	= dot	(tex2D(s_image,tc+float2(+phalf,-phalf)), 1.0f/4.0f); // sum components
-		res.z 	= dot	(tex2D(s_image,tc+float2(-phalf,+phalf)), 1.0f/4.0f); // sum components
-		res.w 	= dot	(tex2D(s_image,tc+float2(+phalf,+phalf)), 1.0f/4.0f); // sum components
+		res.x 	= dot	(tex2D(s_image,tc+float2(-pfloat,-pfloat)), 1.0f/4.0f); // sum components
+		res.y 	= dot	(tex2D(s_image,tc+float2(+pfloat,-pfloat)), 1.0f/4.0f); // sum components
+		res.z 	= dot	(tex2D(s_image,tc+float2(-pfloat,+pfloat)), 1.0f/4.0f); // sum components
+		res.w 	= dot	(tex2D(s_image,tc+float2(+pfloat,+pfloat)), 1.0f/4.0f); // sum components
 	return 	dot	(res, 	1.0f/4.0f);	// sum components
 }
 #endif
@@ -65,7 +65,7 @@ float4 	main		( v2p I )	: COLOR
 		final.y	= dot(accum1,1/4.h);
 		final.z	= dot(accum2,1/4.h);
 		final.w	= dot(accum3,1/4.h);
-	half 	result	= dot(final, 1/4.h);
+	float 	result	= dot(final, 1/4.h);
 
 	// OK
 	float	scale 		= MiddleGray.x / (result*MiddleGray.y + MiddleGray.z);	// final

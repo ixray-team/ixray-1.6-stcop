@@ -21,7 +21,7 @@ float4 	main	( v2p I )	: COLOR
 #ifdef	USE_VTF
 	float4 	rgb		= mix		;
 #else
-	half 	scale 	= tex2D		(s_tonemap,float2(0.5f, 0.5f)).x;
+	float 	scale 	= tex2D		(s_tonemap,float2(0.5f, 0.5f)).x;
 	float4 	rgb , hi;
 	tonemap	(rgb, hi, mix, scale );
 #endif

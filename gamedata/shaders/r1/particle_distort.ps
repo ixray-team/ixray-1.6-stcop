@@ -13,6 +13,6 @@ uniform sampler s_distort;
 float4 	main_ps_1_1	( v2p I )	: COLOR
 {
 	float4	distort	= tex2D		(s_distort,I.tc0);
-	half    factor	= distort.a * dot(I.c.rgb,0.33h);
+	float    factor	= distort.a * dot(I.c.rgb,0.33f);
 	return	float4	(distort.rgb,factor);
 }

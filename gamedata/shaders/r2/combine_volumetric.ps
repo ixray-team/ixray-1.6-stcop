@@ -21,9 +21,9 @@ _out         main                ( _input I )
 {
         // final tone-mapping
 #ifdef        USE_VTF
-        half          	tm_scale        = I.tc0.w;	// interpolated from VS
+        float          	tm_scale        = I.tc0.w;	// interpolated from VS
 #else
-        half         	tm_scale        = tex2D(s_tonemap,I.tc0).x;
+        float         	tm_scale        = tex2D(s_tonemap,I.tc0).x;
 #endif
 	_out	o;
 	float4	color;

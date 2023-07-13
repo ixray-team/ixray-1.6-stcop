@@ -23,8 +23,8 @@ float4	main_ps_1_1	( v2p I )	: COLOR
 	float2	faded		= lerp  (distort,zero,	t_base.a );
 
 	float2	faded_bx2	= (faded * 2.0f - 1.0f)*W_DISTORT_POWER;
-	half 	faded_dot	= dot	(float3(faded_bx2,0.0f),0.75f	);	//0.75
-	half 	alpha		= 0.5;		//abs  	(faded_dot);
+	float 	faded_dot	= dot	(float3(faded_bx2,0.0f),0.75f	);	//0.75
+	float 	alpha		= 0.5f;		//abs  	(faded_dot);
   // out
 return  float4  (faded,0.0f,alpha);
 }

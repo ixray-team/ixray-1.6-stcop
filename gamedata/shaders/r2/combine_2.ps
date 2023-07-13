@@ -31,7 +31,7 @@ float4 	main		( v2p I )	: COLOR
 	nd.w 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc4));
 	nd 		-= e_barrier.x	;
 	nd 		=  step		(0,nd);	// bw
-  half  ne 		=  saturate	(dot(nd,e_weights.x));
+  float  ne 		=  saturate	(dot(nd,e_weights.x));
 
   // Opposite coords
   float4 tc5r 		=  I.tc5.wzyx;
@@ -40,16 +40,16 @@ float4 	main		( v2p I )	: COLOR
   // Depth filter : compute gradiental difference: (c-sample1)+(c-sample1_opposite)
   float4 dc		=  tex2D 	(s_position, I.tc0); 
   float4 dd;
-	dd.x 		=  (half)tex2D(s_position,I.tc1).z + (half)tex2D(s_position,I.tc2).z;
-	dd.y 		=  (half)tex2D(s_position,I.tc3).z + (half)tex2D(s_position,I.tc4).z;
-	dd.z 		=  (half)tex2D(s_position,I.tc5).z + (half)tex2D(s_position,tc5r).z;
-	dd.w 		=  (half)tex2D(s_position,I.tc6).z + (half)tex2D(s_position,tc6r).z;
-	dd 		=  abs(2*dc.z-dd)-e_barrier.y;
-	dd 		=  step		(dd,0);		// bw
-  half  de 		=  saturate	(dot(dd,e_weights.y));
+	dd.x 		=  (float)tex2D(s_position,I.tc1).z + (float)tex2D(s_position,I.tc2).z;
+	dd.y 		=  (float)tex2D(s_position,I.tc3).z + (float)tex2D(s_position,I.tc4).z;
+	dd.z 		=  (float)tex2D(s_position,I.tc5).z + (float)tex2D(s_position,tc5r).z;
+	dd.w 		=  (float)tex2D(s_position,I.tc6).z + (float)tex2D(s_position,tc6r).z;
+	dd 		=  abs(2.0f*dc.z-dd)-e_barrier.y;
+	dd 		=  step		(dd,0.0f);		// bw
+  float  de 		=  saturate	(dot(dd,e_weights.y));
 
   // weight
-  half 	w 		=  (1-de*ne)*e_kernel.x;	// 0 - no aa, 1=full aa
+  float 	w 		=  (1.0f-de*ne)*e_kernel.x;	// 0 - no aa, 1=full aa
 
 #ifdef 	USE_DISTORT
 	float4 	distort	= tex2D		(s_distort, I.tc0)	;

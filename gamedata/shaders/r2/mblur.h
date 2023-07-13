@@ -10,8 +10,8 @@ uniform float4x4	m_current;
 uniform float4x4	m_previous;
 uniform float2 	m_blur;		// scale_x / 12, scale_y / 12
 
-#define MBLUR_SAMPLES 	half(12)
-#define MBLUR_CLAMP	half(0.001)
+#define MBLUR_SAMPLES 	float(12.0f)
+#define MBLUR_CLAMP	float(0.001f)
 
 float3 	mblur	(float2 UV, float3 pos, float3 c_original)	{
 	float4 	pos4		= float4	(pos,1.0f);

@@ -10,8 +10,8 @@ struct	surface_bumped
 {
 	float4	base;
 	float3	normal;
-	half	gloss;
-	half	height;
+	float	gloss;
+	float	height;
 
 };
 
@@ -99,7 +99,7 @@ void UpdateTC( inout p_bumped I)
 								 I.M1.y, I.M2.y, I.M3.y,
 								 I.M1.z, I.M2.z, I.M3.z), -I.position.xyz);
 	
-	half	height	= tex2D( s_bumpX, I.tcdh).w;	//
+	float	height	= tex2D( s_bumpX, I.tcdh).w;	//
 			//height  /= 2;
 			//height  *= 0.8;
 			height	= height*(parallax.x) + (parallax.y);	//

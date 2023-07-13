@@ -16,7 +16,7 @@ float4 	main_ps_1_1	( v2p I )	: COLOR
 	// lighting
 	float3 	l_base 	= t_lmap.rgb;				// base light-map
 	float3	l_hemi 	= I.c0*p_hemi(I.tc1);			// hemi
-	half  	l_sun 	= t_lmap.a;				// sun color
+	float  	l_sun 	= t_lmap.a;				// sun color
 	float3	light	= L_ambient + l_base + l_hemi	;
 
 	return  float4	(light,l_sun);

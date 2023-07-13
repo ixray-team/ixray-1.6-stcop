@@ -27,7 +27,7 @@ float4 	main_ps_1_4	( v2p I )	: COLOR
 	float3	t_1 	= tex2D		(s_base1,I.tc1+ offset);	
 	float3 	image	= (t_0+t_1)*0.5f;					// add_d2
 
-	half	gray 	= dot		(image,I.gray);			// dp3
+	float	gray 	= dot		(image,I.gray);			// dp3
 			image 	= lerp 		(gray,image,I.gray.w);		// mul/mad
 
 	float4	t_noise	= tex2D		(s_noise,I.tc2);	

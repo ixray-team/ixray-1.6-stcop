@@ -26,17 +26,17 @@ float4 main(v2p I) : COLOR
 	//	Igor: additional depth test
 #ifdef	USE_SOFT_WATER
 #ifdef	NEED_SOFT_WATER
-	half	alphaDistort;
+	float	alphaDistort;
 	float4 _P = tex2Dproj(s_position, I.tctexgen);
-	half waterDepth = _P.z-I.tctexgen.z;
+	float waterDepth = _P.z-I.tctexgen.z;
 	alphaDistort = saturate(5*waterDepth);
 	faded = lerp  ( zero, faded, alphaDistort);
 #endif	//	NEED_SOFT_WATER
 #endif	//	USE_SOFT_WATER & NEED_SOFT_WATER
 
-        float2        faded_bx2        = (faded*2.0f-1.0f)*W_DISTORT_POWER;
-        half         faded_dot        = dot        (float3(faded_bx2,0.0f),0.75f);        //0.75
-        half         alpha                = .5f        ;                //abs          (faded_dot);
+        float2 faded_bx2 = (faded*2.0f-1.0f)*W_DISTORT_POWER;
+        float faded_dot = dot(float3(faded_bx2,0.0f),0.75f);        //0.75
+        float alpha = 0.5f;                //abs          (faded_dot);
 
 
                 faded                = faded*POWER - .5*POWER + 0.5        ;

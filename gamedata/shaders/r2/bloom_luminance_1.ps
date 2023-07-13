@@ -15,7 +15,7 @@ struct 	v2p
 //////////////////////////////////////////////////////////////////////////////////////////
 #define	LUMINANCE_BASE		0.0001f
 
-half	luminance	(float2	tc)	{
+float	luminance	(float2	tc)	{
 	float3	source 	= tex2D(s_image,tc);
 	return 	dot		(source, LUMINANCE_VECTOR*def_hdr );
 }

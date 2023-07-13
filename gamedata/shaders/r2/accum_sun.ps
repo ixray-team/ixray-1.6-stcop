@@ -18,7 +18,7 @@ float4 	main	( _input I ) : COLOR
   float4  _N		= tex2D 	(s_normal,   	I.tc); 
 
 	// ----- light-model
-	half 	m	= xmaterial	;
+	float 	m	= xmaterial	;
 # ifndef USE_R2_STATIC_SUN
 			m 	= _P.w		;
 # endif
@@ -30,7 +30,7 @@ float4 	main	( _input I ) : COLOR
 		s_sum.y = tex2D	(s_smap,I.RT).y;
 		s_sum.z	= tex2D	(s_smap,I.LB).z;
 		s_sum.w = tex2D	(s_smap,I.RB).w;
-	half 	s 	= dot	(s_sum, 1.h/4.h);
+	float 	s 	= dot	(s_sum, 1.0f/4.0f);
 
 	return 		Ldynamic_color * light * s;
 }

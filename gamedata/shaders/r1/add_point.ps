@@ -12,7 +12,7 @@ float4 	main_ps_1_1(vf_point I) : COLOR
 	float4 final_color = t_base * t_att * I.color;
 		final_color.rgb *= t_base.a;
 	float3	final_rgb 	= (final_color+final_color)*2.0f;
-	half 	final_a 	= final_color.w;
+	float 	final_a 	= final_color.w;
 	
 	// out
 	return final_color * 2.0f;	//float4	(final_rgb,final_a);

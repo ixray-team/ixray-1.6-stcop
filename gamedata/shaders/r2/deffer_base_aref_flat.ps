@@ -14,17 +14,17 @@ f_deffer 	main	( p_flat I )
 #endif
 
 	// hemi,sun,material
-	half 	ms	= xmaterial		;
+	float 	ms	= xmaterial		;
 #ifdef USE_LM_HEMI
 	float4	lm 	= tex2D			(s_hemi, I.lmh);
-//	half 	h  	= dot			(lm.rgb,1.h/3.h);
-	half 	h  	= get_hemi(lm);
+//	float 	h  	= dot			(lm.rgb,1.h/3.h);
+	float 	h  	= get_hemi(lm);
 # ifdef USE_R2_STATIC_SUN
 //		 	ms 	= lm.w			;
 			ms 	= get_sun(lm);
 # endif
 #else
-	half 	h	= I.position.w	;
+	float 	h	= I.position.w	;
 # ifdef USE_R2_STATIC_SUN
 		 	ms	= I.tcdh.w		;
 # endif

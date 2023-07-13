@@ -11,12 +11,12 @@ uniform float4x4 	L_dynamic_xform;
 uniform float4x4	m_plmap_xform;
 uniform float4 		m_plmap_clamp	[2];	// 0.w = factor
 
-half  	calc_fogging 	(float4 w_pos)	{  return saturate(dot(w_pos,fog_plane)); 	}
+float  	calc_fogging 	(float4 w_pos)	{  return saturate(dot(w_pos,fog_plane)); 	}
 float2 	calc_detail 	(float3 w_pos)	{ 
 	float  	dtl	= distance(w_pos,eye_position)*dt_params.w;
 		dtl	= min(dtl*dtl, 1.0f);
-	half  	dt_mul	= 1.0f  - dtl;	// dt*  [1 ..  0 ]
-	half  	dt_add	= 0.5f * dtl;	// dt+	[0 .. 0.5]
+	float  	dt_mul	= 1.0f  - dtl;	// dt*  [1 ..  0 ]
+	float  	dt_add	= 0.5f * dtl;	// dt+	[0 .. 0.5]
 	return	float2	(dt_mul,dt_add);
 }
 float3 	calc_reflection	(float3 pos_w, float3 norm_w)
@@ -109,7 +109,7 @@ uniform sampler2D 	s_hemi;
 uniform sampler2D 	s_att;
 uniform sampler2D 	s_detail;
 
-#define def_distort	half(0.05f)	// we get -0.5 .. 0.5 range, this is -512 .. 512 for 1024, so scale it
+#define def_distort	float(0.05f)	// we get -0.5 .. 0.5 range, this is -512 .. 512 for 1024, so scale it
 
 float3	v_hemi 		(float3 n)		{	return L_hemi_color/* *(.5f + .5f*n.y) */; 		}
 float3	v_hemi_wrap	(float3 n, float w)	{	return L_hemi_color/* *(w + (1-w)*n.y) */; 		}
