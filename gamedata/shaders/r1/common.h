@@ -3,15 +3,15 @@
 
 #include "shared\common.h"
 
-uniform half4		L_dynamic_props;	// per object, xyz=sun,w=hemi
-uniform half4		L_dynamic_color;	// dynamic light color (rgb1)	- spot/point
-uniform half4		L_dynamic_pos;		// dynamic light pos+1/range(w) - spot/point
+uniform float4		L_dynamic_props;	// per object, xyz=sun,w=hemi
+uniform float4		L_dynamic_color;	// dynamic light color (rgb1)	- spot/point
+uniform float4		L_dynamic_pos;		// dynamic light pos+1/range(w) - spot/point
 uniform float4x4 	L_dynamic_xform;
 
 uniform float4x4	m_plmap_xform;
 uniform float4 		m_plmap_clamp	[2];	// 0.w = factor
 
-half  	calc_fogging 	(half4 w_pos)	{  return saturate(dot(w_pos,fog_plane)); 	}
+half  	calc_fogging 	(float4 w_pos)	{  return saturate(dot(w_pos,fog_plane)); 	}
 half2 	calc_detail 	(half3 w_pos)	{ 
 	float  	dtl	= distance(w_pos,eye_position)*dt_params.w;
 		dtl	= min(dtl*dtl, 1);
@@ -118,7 +118,7 @@ float3 	v_sun_wrap	(float3 n, float w)	{	return L_sun_color*(w+(1-w)*dot(n,-L_su
 half3	p_hemi		(float2 tc) 	{
 	//half3	t_lmh 	= tex2D		(s_hemi, tc);
 	//return  dot	(t_lmh,1.h/3.h);
-	half4	t_lmh 	= tex2D		(s_hemi, tc);
+	float4	t_lmh 	= tex2D		(s_hemi, tc);
 	return  t_lmh.a;
 }
 

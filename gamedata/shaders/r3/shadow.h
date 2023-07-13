@@ -650,7 +650,7 @@ float4 	test 		(float4 tc, float2 offset)
 
 /*half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 {
-	half4	r;
+	float4	r;
 
 	const 	float 	scale 	= (0.5f/float(SMAP_size));
 
@@ -658,8 +658,8 @@ float4 	test 		(float4 tc, float2 offset)
 	float2 	tc_J	= tc.xy/tc.w*texsize/8.0f;
 	float2 	fr 		= frac(tc_J)*.5f;
 	
-//	half4	J0 	= tex2D	(jitter0,fr)*scale;
-//	half4	J1 	= tex2D	(jitter1,fr)*scale*2;
+//	float4	J0 	= tex2D	(jitter0,fr)*scale;
+//	float4	J1 	= tex2D	(jitter1,fr)*scale*2;
 	float4	J0 	= jitter0.Sample( smp_jitter, fr )*scale;
 //	float4	J1 	= jitter1.Sample( smp_jitter, fr )*scale;
 
@@ -670,7 +670,7 @@ float4 	test 		(float4 tc, float2 offset)
  	r.z		= test	(tc,J0.xy+float2(-k, k)).z;
  	r.w		= test	(tc,J0.wz+float2( k, k)).x;
 	
-	half4	f;
+	float4	f;
 	float k1 = 1.5f/float(SMAP_size);
 	f.x 	= test 	(tc,-J0.xy+float2(-k1,0)).x;
 	f.y 	= test 	(tc,-J0.wz+float2( 0,-k1)).y;
@@ -683,7 +683,7 @@ float4 	test 		(float4 tc, float2 offset)
 }*/
 half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 {
-	half4	r;
+	float4 r;
 
 	//	const 	float 	scale 	= (2.0f/float(SMAP_size));
 	const 	float 	scale 	= (0.7f/float(SMAP_size));
@@ -691,7 +691,7 @@ half 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 
 	float2 	tc_J	= frac(tc.xy/tc.w*SMAP_size/4.0f )*.5f;
 	float4	J0		= jitter0.Sample(smp_jitter,tc_J)*scale;
-	//half4	J1 	= tex2D	(jitter1,tc_J)*scale;
+	//float4	J1 	= tex2D	(jitter1,tc_J)*scale;
 
 	const float k = .5f/float(SMAP_size);
 	r.x 	= test 	(tc, J0.xy+half2(-k,-k)).x;
@@ -711,7 +711,7 @@ half 	shadow_high 	(float4 tc)			// jittered sampling
 	float4	J0 		=	jitter0.Sample	(smp_jitter,tc_J)*scale;
 
 	const float k = 1.f/float(SMAP_size);
-	half4	r;
+	float4 r;
 	r.x 	= test 	(tc,J0.xy+half2(-k,-k)).x;
 	r.y 	= test 	(tc,J0.wz+half2( k,-k)).y;
 
@@ -720,7 +720,7 @@ half 	shadow_high 	(float4 tc)			// jittered sampling
 
 
 	const float k1 = 1.3f/float(SMAP_size);
-	half4	r1;
+	float4 r1;
 	r1.x 	= test 	(tc,-J0.xy+half2(-k1,0)).x;
 	r1.y 	= test 	(tc,-J0.wz+half2( 0,-k1)).y;
 

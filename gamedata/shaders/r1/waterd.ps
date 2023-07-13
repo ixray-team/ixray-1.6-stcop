@@ -12,9 +12,9 @@ uniform sampler2D	s_distort0;
 uniform sampler2D	s_distort1;
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-half4	main_ps_1_1	( v2p I )	: COLOR
+float4	main_ps_1_1	( v2p I )	: COLOR
 {
-	half4	t_base		= tex2D	(s_base,  	I.tbase  );
+	float4	t_base		= tex2D	(s_base,  	I.tbase  );
 
 	half2	t_d0		= tex2D (s_distort0,   	I.tdist0 );
 	half2	t_d1		= tex2D (s_distort1,   	I.tdist1 );
@@ -26,5 +26,5 @@ half4	main_ps_1_1	( v2p I )	: COLOR
 	half 	faded_dot	= dot	(half3(faded_bx2,0),.75	);	//0.75
 	half 	alpha		= 0.5;		//abs  	(faded_dot);
   // out
-return  half4  (faded,0,alpha);
+return  float4  (faded,0.0f,alpha);
 }

@@ -15,12 +15,12 @@ uniform sampler2D 	s_base3;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-half4 	main_ps_1_1	( v2p I )	: COLOR
+float4 	main_ps_1_1	( v2p I )	: COLOR
 {
-	half4	t_0 	= tex2D		(s_base0,I.tc0);
-	half4	t_1 	= tex2D		(s_base1,I.tc1);
-	half4	t_2 	= tex2D		(s_base2,I.tc2);
-	half4	t_3 	= tex2D		(s_base3,I.tc3);
+	float4	t_0 	= tex2D		(s_base0,I.tc0);
+	float4	t_1 	= tex2D		(s_base1,I.tc1);
+	float4	t_2 	= tex2D		(s_base2,I.tc2);
+	float4	t_3 	= tex2D		(s_base3,I.tc3);
 	
 	// out
 	return  ((t_0+t_1)*.5 + (t_2+t_3)*.5)*.5;

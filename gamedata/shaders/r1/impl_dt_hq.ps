@@ -5,8 +5,8 @@ struct 	v2p
  	half2 	tc0: 		TEXCOORD0;	// base
  	half2 	tc1: 		TEXCOORD1;	// lmap
  	half2 	tc2: 		TEXCOORD2;	// detail
-  	half4	c0:		COLOR0;		// hemi, c0.a * 
-	half4	c1:	        COLOR1;		// sun,  c1.a + 
+  	float4	c0:		COLOR0;		// hemi, c0.a * 
+	float4	c1:	        COLOR1;		// sun,  c1.a + 
 };
 
 uniform sampler2D s_dt_r;
@@ -18,14 +18,14 @@ uniform sampler2D s_mask;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-half4 	main_ps_2_0	( v2p I )	: COLOR
+float4 	main_ps_2_0	( v2p I )	: COLOR
 {
-	half4	t_base 	= tex2D		(s_base,I.tc0);
-	half4	t_mask 	= tex2D		(s_mask,I.tc0);
+	float4	t_base 	= tex2D		(s_base,I.tc0);
+	float4	t_mask 	= tex2D		(s_mask,I.tc0);
 	
 	t_mask	= t_mask / dot (t_mask, 1.0);
 	
-	half4	t_lmap 	= tex2D		(s_lmap,I.tc1);
+	float4	t_lmap 	= tex2D		(s_lmap,I.tc1);
 
 	// lighting
 	half3 	l_base 	= t_lmap.rgb;			// base light-map
@@ -44,6 +44,6 @@ half4 	main_ps_2_0	( v2p I )	: COLOR
 	half3	final 	= (light*t_base.rgb*2)*detail*2	;
 	
 	// out
-	return  half4	(final.rgb,1);
+	return  float4	(final.rgb,1);
 }
 

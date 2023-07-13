@@ -26,7 +26,7 @@ struct   vf
 	float4      tctexgen    :         TEXCOORD7        ;
 #endif	//	USE_SOFT_WATER
 #endif	//	NEED_SOFT_WATER	
-        half4        c0        :          COLOR0                ;
+        float4  c0  :   COLOR0;
         float          fog        :         FOG                ;
 };
 

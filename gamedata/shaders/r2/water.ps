@@ -11,7 +11,7 @@ struct   vf
       half3         M3                :        TEXCOORD5        ;
       half3        v2point        :        TEXCOORD6        ;
 	  float4      tctexgen    :         TEXCOORD7        ;
-      half4        c0                :          COLOR0                ;
+      float4        c0                :          COLOR0                ;
       float          fog        :         FOG                ;
 };
 
@@ -28,10 +28,10 @@ half3	water_intensity;
 ////////////////////////////////////////////////////////////////////////////////
 // Pixel
 /*
-half4   main         ( v2p I )  : COLOR
+float4   main         ( v2p I )  : COLOR
 {
 
-        half4        t_base                = tex2D   (s_base,I.tbase);
+        float4        t_base                = tex2D   (s_base,I.tbase);
         half3        t_env                = texCUBE  (s_env, I.tenv);
 
         half3        refl                = lerp    (t_env,t_base,I.c0.a);
@@ -42,13 +42,13 @@ half4   main         ( v2p I )  : COLOR
         half        alpha_add        = alpha_shift*alpha_shift;
         half        alpha                = t_base.a;
         // out
-  return  half4   (final,   t_base.a );  //t_base.a + (1-I.c0.a));  //half4  (final, t_base.a );
+  return  float4   (final,   t_base.a );  //t_base.a + (1-I.c0.a));  //float4  (final, t_base.a );
 }
 */
 
-half4   main( vf I )          : COLOR
+float4   main( vf I )          : COLOR
 {
-	half4	base	= tex2D (s_base,I.tbase);
+	float4	base	= tex2D (s_base,I.tbase);
 	half3	n0	= tex2D (s_nmap,I.tnorm0);
 	half3	n1	= tex2D (s_nmap,I.tnorm1);
 	half3	Navg	= n0 + n1 - 1;
@@ -91,7 +91,7 @@ half4   main( vf I )          : COLOR
 
 #ifdef	USE_SOFT_WATER
 	//	Igor: additional depth test
-	half4 _P = 	tex2Dproj( s_position, I.tctexgen);
+	float4 _P = 	tex2Dproj( s_position, I.tctexgen);
 
 	float2 PosTc = I.tctexgen.xy / I.tctexgen.w;
 	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
@@ -111,7 +111,7 @@ half4   main( vf I )          : COLOR
 	alpha 		= max (fog, alpha);
 
 	//	Leaves
-	half4	leaves	= tex2D(s_leaves, I.tbase);
+	float4	leaves	= tex2D(s_leaves, I.tbase);
 			leaves.rgb *= water_intensity.r;
 	half	calc_cos = -dot(float3(I.M1.z, I.M2.z, I.M3.z),  normalize(v2point));
 	half	calc_depth = saturate(waterDepth*calc_cos);

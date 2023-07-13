@@ -14,7 +14,7 @@ half3	dof(float2 center)
 #else	//	USE_DOF
 
 // x - near y - focus z - far w - sky distance
-half4	dof_params;
+float4	dof_params;
 half3	dof_kernel;	// x,y - resolution pre-scaled z - just kernel size
 
 half DOFFactor( half depth)
@@ -71,7 +71,7 @@ half3	dof(float2 center)
    	for (int i=0; i<12; i++)
 	{
 		float2 	tap 		= center + o[i];
-		half4	tap_color	= tex2D	(s_image,tap);
+		float4	tap_color	= tex2D	(s_image,tap);
 		half 	tap_depth 	= tex2D	(s_position,tap).z;
 		if (tap_depth <= EPSDEPTH)	tap_depth = dof_params.w;
 		half 	tap_contrib	= DOFFactor(tap_depth);
@@ -128,7 +128,7 @@ half3	dof(float2 center)
 	for (int i=0; i<12; i++)
 	{
 		float2 	tap 		= center + o[i];
-		half4	tap_color	= tex2D	(s_image,tap);
+		float4	tap_color	= tex2D	(s_image,tap);
 		half 	tap_depth 	= tex2D	(s_position,tap).z;
 //		if (tap_depth <= EPSDEPTH)	tap_depth = dof_params.w;
 		if (tap_depth <= EPSDEPTH)	tap_depth = (dof_params.z-dof_params.y)*0.3;
@@ -185,7 +185,7 @@ half3	dof(float2 center)
 	for (int i=0; i<12; i++)
 	{
 		float2 	tap 		= center + o[i];
-		half4	tap_color	= tex2D	(s_image,tap);
+		float4	tap_color	= tex2D	(s_image,tap);
 		half 	tap_depth 	= tex2D	(s_position,tap).z;
 		half 	tap_contrib	= 1.h;	//(tap_depth>depth)?1.h:0.h;
 			sum 		+= tap_color	* tap_contrib;

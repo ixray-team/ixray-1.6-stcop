@@ -13,9 +13,9 @@ uniform sampler2D        s_distort;
 #define POWER        .5h
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-half4        main        ( v2p I )        : COLOR
+float4 main(v2p I) : COLOR
 {
-        half4        t_base                = tex2D        (s_base,          I.tbase  );
+    float4 t_base = tex2D(s_base, I.tbase);
 
         half2        t_d0                = tex2D (s_distort,           I.tdist0 );
         half2        t_d1                = tex2D (s_distort,           I.tdist1 );
@@ -27,7 +27,7 @@ half4        main        ( v2p I )        : COLOR
 #ifdef	USE_SOFT_WATER
 #ifdef	NEED_SOFT_WATER
 	half	alphaDistort;
-	half4 _P               = tex2Dproj         (s_position,         I.tctexgen);
+	float4 _P = tex2Dproj(s_position, I.tctexgen);
 	half waterDepth = _P.z-I.tctexgen.z;
 	alphaDistort = saturate(5*waterDepth);
 	faded = lerp  ( zero, faded, alphaDistort);
@@ -44,8 +44,8 @@ half4        main        ( v2p I )        : COLOR
         // out
 	//	Igor: need for alpha water
 #ifdef	NEED_SOFT_WATER
-	return  half4  (faded, 0.0h, alpha);
+    return float4(faded, 0.0f, alpha);
 #else	//	NEED_SOFT_WATER
-        return  half4  (faded, .08h, alpha);
+    return float4(faded, .08f, alpha);
 #endif	//	NEED_SOFT_WATER
 }

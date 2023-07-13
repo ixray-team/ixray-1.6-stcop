@@ -15,10 +15,10 @@ float4 	main		( float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 float4 	main		( float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 {
   float4 _P		= tex2D 	(s_position, 	tc); 
-  half4  _N		= tex2D 	(s_normal,   	tc); 
+  float4  _N		= tex2D 	(s_normal,   	tc); 
 
 	// ----- light-model
-	half4	light 	= plight_infinity (_P.w,_P,_N,Ldynamic_dir);
+	float4	light 	= plight_infinity (_P.w,_P,_N,Ldynamic_dir);
 
 	// ----- shadow
   	float4 	P4 	= float4	(_P.x,_P.y,_P.z,1.f);

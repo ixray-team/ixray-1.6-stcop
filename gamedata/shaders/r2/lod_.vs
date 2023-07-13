@@ -19,8 +19,8 @@ struct vf
  	half2 	tc1	: TEXCOORD1;	// base1
  	half2 	tc2	: TEXCOORD2;	// hemi0
  	half2 	tc3	: TEXCOORD3;	// hemi1
-	half4 	c	: COLOR0;	// color.alpha
-	half4 	f	: COLOR1;	// factor
+	float4 	c	: COLOR0;	// color.alpha
+	float4 	f	: COLOR1;	// factor
 	float  	fog	: FOG	;
 };
 

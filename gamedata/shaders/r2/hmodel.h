@@ -7,7 +7,7 @@ uniform samplerCUBE         env_s0                ;
 uniform samplerCUBE         env_s1                ;
 uniform samplerCUBE         sky_s0                ;
 uniform samplerCUBE         sky_s1                ;
-uniform half4                         env_color        ;        // color.w  = lerp factor
+uniform float4                         env_color        ;        // color.w  = lerp factor
 uniform half3x4                        m_v2w                ;
 
 void        hmodel                 (out half3 hdiffuse, out half3 hspecular, half m, half h, half s, float3 point, half3 normal)
@@ -26,7 +26,7 @@ void        hmodel                 (out half3 hdiffuse, out half3 hspecular, hal
         half         hspec                 	= .5h+.5h*dot        (vreflect,v2point);
 
         // material
-          half4         light                = tex3D                (s_material, half3(hscale, hspec, m) );                // sample material
+          float4         light                = tex3D                (s_material, half3(hscale, hspec, m) );                // sample material
 
         // diffuse color
         half3         e0d               = texCUBE         (env_s0,nw);
@@ -55,7 +55,7 @@ void         hmodel_table        (out half3 hdiffuse, out half3 hspecular, half 
         half         hspec         = .5h+.5h*dot        (vreflect,v2point);
 
         // material
-          half4         light        = tex3D                (s_material, half3(hscale, hspec, m) );                // sample material
+          float4         light        = tex3D                (s_material, half3(hscale, hspec, m) );                // sample material
 
         // diffuse color
         half3         env_d         = texCUBE         (env_s0,normal);

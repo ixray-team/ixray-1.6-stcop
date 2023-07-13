@@ -8,21 +8,21 @@
 //
 uniform half3x4	        m_W;
 uniform half3x4	        m_V;
-uniform half4x4 	m_P;
+uniform float4x4 m_P;
 uniform half3x4	        m_WV;
-uniform half4x4 	m_VP;
-uniform half4x4 	m_WVP;
+uniform float4x4 m_VP;
+uniform float4x4 m_WVP;
 uniform float4x4 	m_texgen;
 uniform float4x4 	mVPTexgen;
-uniform half4		timers;
-uniform half4		fog_plane;
+uniform float4 timers;
+uniform float4 fog_plane;
 uniform float4		fog_params;		// x=near*(1/(far-near)), ?,?, w = -1/(far-near)
-uniform half4		fog_color;
+uniform float4 fog_color;
 uniform float3		L_sun_color;
 uniform half3		L_sun_dir_w;
 uniform half3		L_sun_dir_e;
-uniform half4		L_hemi_color;
-uniform half4		L_ambient;		// L_ambient.w = skynbox-lerp-factor
+uniform float4 L_hemi_color;
+uniform float4 L_ambient;		// L_ambient.w = skynbox-lerp-factor
 uniform float3 		eye_position;
 uniform half3		eye_direction;
 uniform half3		eye_normal;

@@ -18,10 +18,10 @@ uniform sampler2D 	s_noise;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-half4 	main	( v2p I )	: COLOR
+float4 	main	( v2p I )	: COLOR
 {
         // ----- shadow
-	float4	P4	= half4(I.vPos, 1);
+	float4	P4	= float4(I.vPos, 1.0f);
         float4	PS	= mul( m_shadow, P4);
         half	s	= 1.h;
         #ifdef	USE_SHADOW
@@ -33,7 +33,7 @@ half4 	main	( v2p I )	: COLOR
         #endif
 
         // ----- lightmap
-        half4	lightmap = 1.h;
+        float4	lightmap = 1.0f;
         #ifdef	USE_LMAP
                 #ifdef	USE_LMAPXFORM
               		PS.x	= dot( P4, m_lmap[0]);
@@ -56,12 +56,12 @@ half4 	main	( v2p I )	: COLOR
 	half time = timers.z*0.1;	
 	PS.xy /= 3;
 	PS.x += time;
-	half4	t_noise	= tex2D(s_noise,PS);
+	float4	t_noise	= tex2D(s_noise,PS);
 	PS.x -= time;
-	PS.y -= time*0.70091;
+	PS.y -= time*0.70091f;
 	t_noise *= tex2D(s_noise,PS);
 	//t_noise *= 4;
-	t_noise = t_noise*0.5+0.5;
+	t_noise = t_noise*0.5f+0.5f;
 
 	// out
 	//half maxIntens = 1.0h/100.0h;
@@ -77,5 +77,5 @@ half4 	main	( v2p I )	: COLOR
 
 //	result = 0.1h;
 //	result = 0.0h;
-	return  half4( result, 0);
+	return  float4( result, 0.0f);
 }

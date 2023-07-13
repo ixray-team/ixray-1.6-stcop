@@ -2,14 +2,14 @@
 
 struct         v2p
 {
-        half4        	factor:     COLOR0          ;        // for SM3 - factor.rgb - tonemap-prescaled
+        float4        	factor:     COLOR0          ;        // for SM3 - factor.rgb - tonemap-prescaled
         half3        	tc0:        TEXCOORD0       ;
         half3        	tc1:        TEXCOORD1		;
 };
 struct        _out
 {
-        half4        	low: 		COLOR0;
-        half4        	high:		COLOR1;
+        float4        	low: 		COLOR0;
+        float4        	high:		COLOR1;
 };
 
 

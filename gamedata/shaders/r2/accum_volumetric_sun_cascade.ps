@@ -24,15 +24,15 @@
 	#endif
 #endif
 
-half4	volume_range;	//	x - near plane, y - far plane
-half4	sun_shafts_intensity;
+float4	volume_range;	//	x - near plane, y - far plane
+float4	sun_shafts_intensity;
 uniform	float4		screen_res;
 //#ifdef	USE_BRANCHING
 //	"If" in loop
 float4 	main (float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 {
 #ifndef	SUN_SHAFTS_QUALITY
-	return half4(0,0,0,0);
+	return float4(0.0f,0.0f,0.0f,0.0f);
 #else	//	SUN_SHAFTS_QUALITY
 
 	half3	P = tex2Dproj(s_position, tc).xyz;
@@ -43,7 +43,7 @@ float4 	main (float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 	half3	direction = P/RAY_SAMPLES;
 #else	//	JITTER_SUN_SHAFTS
 //	Variable ray length, variable step dencity, use jittering
-	half4	J0 	= tex2D		(jitter0,float4(screen_res.x/JITTER_TEXTURE_SIZE*tc.xy/tc.w,0,0));//tcJ);
+	float4	J0 	= tex2D		(jitter0,float4(screen_res.x/JITTER_TEXTURE_SIZE*tc.xy/tc.w,0.0f,0.0f));//tcJ);
 	half	coeff = (RAY_SAMPLES - 1*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
 	half3	direction = P*coeff;
 //	half3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
@@ -52,8 +52,8 @@ float4 	main (float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 	half	depth = P.z;
 	half	deltaDepth = direction.z;
 	
-	half4	current	= mul (m_shadow,float4(P,1));
-	half4	delta 	= mul (m_shadow, float4(direction,0));
+	float4	current	= mul (m_shadow,float4(P,1.0f));
+	float4	delta 	= mul (m_shadow, float4(direction,0.0f));
 
 	half	res = 0;
 	half	max_density = sun_shafts_intensity;

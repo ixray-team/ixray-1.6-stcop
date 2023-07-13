@@ -1,6 +1,6 @@
 #include "common.h"
 
-half4	main_ps_2_0	(float2 uv : TEXCOORD0)	: COLOR
+float4	main_ps_2_0	(float2 uv : TEXCOORD0)	: COLOR
 {
 	half3	YUV	= tex2D	(s_base, uv);
 
@@ -22,5 +22,5 @@ half4	main_ps_2_0	(float2 uv : TEXCOORD0)	: COLOR
 	half3	_S	= half3		(-0.86961f,		+0.53076f,	-1.0786f)		;
 	
 
-	return half4(_Y+_U+_V+_S,1);
+	return float4(_Y+_U+_V+_S,1);
 }

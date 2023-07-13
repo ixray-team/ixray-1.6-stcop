@@ -2,8 +2,8 @@
 
 struct 	v2p
 {
-	half4 	color:		COLOR0;		// multiplier, color.w = noise_amount
-	half4	gray:		COLOR1;		// (.3,.3,.3.,amount)
+	float4 	color:		COLOR0;		// multiplier, color.w = noise_amount
+	float4	gray:		COLOR1;		// (.3,.3,.3.,amount)
  	half2 	tc0: 		TEXCOORD0;	// base1 (duality)
  	half2 	tc1: 		TEXCOORD1;	// base2 (duality)
  	half2 	tc2: 		TEXCOORD2;	// base  (noise)
@@ -15,13 +15,13 @@ uniform sampler2D 	s_noise;
 uniform sampler2D 	s_distort;
 uniform sampler2D 	s_intensity;
 uniform sampler2D 	s_grad0;
-uniform half4 		c_brightness;
+uniform float4 		c_brightness;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-half4 	main_ps_1_4	( v2p I )	: COLOR
+float4 	main_ps_1_4	( v2p I )	: COLOR
 {
-	half4 	distort	= tex2D		(s_distort, I.tc0);
+	float4 	distort	= tex2D		(s_distort, I.tc0);
 	half2	offset	= (distort.xy-.5h)*def_distort;
 	half3	t_0 	= tex2D		(s_base0,I.tc0+ offset);
 	half3	t_1 	= tex2D		(s_base1,I.tc1+ offset);	
@@ -30,11 +30,11 @@ half4 	main_ps_1_4	( v2p I )	: COLOR
 	half	gray 	= dot		(image,I.gray);			// dp3
 			image 	= lerp 		(gray,image,I.gray.w);		// mul/mad
 
-	half4	t_noise	= tex2D		(s_noise,I.tc2);	
+	float4	t_noise	= tex2D		(s_noise,I.tc2);	
 	half3 	noised 	= image*t_noise*2;                     		// mul_2x
 			image	= lerp 		(noised,image,I.color.w); 	// lrp ?
 			image	= (image * I.color + c_brightness)*2;		// mad
 //			image	= (image + c_brightness) * I.color;		// mad ?
 
-	return  half4	(image,1);					// +mov
+	return  float4	(image, 1.0f);					// +mov
 }

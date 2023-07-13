@@ -16,14 +16,14 @@ f_deffer 	main	( p_flat I 		)
 	f_deffer	O;
 
  	// diffuse
-	half4 D		= tbase		(I.tcdh);			// IN:  rgb.a
-	half4 L 	= tex2D		(s_lmap, I.tcdh);
+	float4 D		= tbase		(I.tcdh);			// IN:  rgb.a
+	float4 L 	= tex2D		(s_lmap, I.tcdh);
 
 	half	G	= def_gloss	;
 
 # ifdef	USE_TDETAIL
  # ifdef USE_4_DETAIL
-	half4	mask= tex2D		(s_mask, I.tcdh);
+	float4	mask= tex2D		(s_mask, I.tcdh);
 	half 	mag	= dot 		(mask,1);
 			mask= mask/mag	;
 
@@ -36,10 +36,10 @@ f_deffer 	main	( p_flat I 		)
 
   # ifdef USE_4_BUMP
 
- 	 half4	n_Rt = tex2D	(s_dn_r, I.tcdbump).wzyx;
-	 half4	n_Gt = tex2D	(s_dn_g, I.tcdbump).wzyx;
-	 half4	n_Bt = tex2D	(s_dn_b, I.tcdbump).wzyx;
-	 half4	n_At = tex2D	(s_dn_a, I.tcdbump).wzyx;
+ 	 float4	n_Rt = tex2D	(s_dn_r, I.tcdbump).wzyx;
+	 float4	n_Gt = tex2D	(s_dn_g, I.tcdbump).wzyx;
+	 float4	n_Bt = tex2D	(s_dn_b, I.tcdbump).wzyx;
+	 float4	n_At = tex2D	(s_dn_a, I.tcdbump).wzyx;
 	 
  	 half3	n_R = (n_Rt-0.5)*mask.r; half g_R=n_Rt.w*mask.r;
 	 half3	n_G = (n_Gt-0.5)*mask.g; half g_G=n_Gt.w*mask.g;
@@ -71,9 +71,9 @@ f_deffer 	main	( p_flat I 		)
 # endif
 
   // 2. Standart output
-  O.Ne          = half4		(normalize(N), 									D.w			);	// hemi
-  O.position    = half4 	(I.position.xyz + O.Ne.xyz*def_virtualh/2.h, 	ms			);	//
-  O.C			= half4		(D.x,	D.y,	D.z,							G			);	// OUT: rgb.gloss
+  O.Ne          = float4		(normalize(N), 									D.w			);	// hemi
+  O.position    = float4 	(I.position.xyz + O.Ne.xyz*def_virtualh/2.0f, 	ms			);	//
+  O.C			= float4		(D.x,	D.y,	D.z,							G			);	// OUT: rgb.gloss
 
   return O;
 }

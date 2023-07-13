@@ -3,12 +3,12 @@
 #include "shadow.h"
 
 #define	XKERNEL	.6f
-half4 	xlight_infinity	(half m, half3 point, half3 normal, half3 light_direction)       				{
+float4 	xlight_infinity	(half m, half3 point, half3 normal, half3 light_direction)       				{
   half3 N		= normal;							// normal 
   half3 V 		= -normalize	(point);					// vector2eye
   half3 L 		= -light_direction;						// vector2light
   half3 H		= normalize	(L+V);						// half-angle-vector 
-  return tex3Dlod	(s_material,	half4( dot(L,N), dot(H,N), m, 0 ) );		// sample material
+  return tex3Dlod	(s_material,	float4( dot(L,N), dot(H,N), m, 0.0f ) );		// sample material
 }
 half  	xsample_hw	(float4 tc,float4 shift){
 	static const float 	ts = XKERNEL / float(SMAP_size);
@@ -32,7 +32,7 @@ half  	xsample_h	(float4 tc,float4 shift){
 uniform float4	o0,o1,o2,o3;
 half 	xshadow_2	(float4 tc)		{
 	static const float 	ts = KERNEL / float(SMAP_size);
-	half4	s		;
+	float4	s		;
   	s.x	= xsample_h	(tc,o0);	//float4(-1,-1,0,0)*ts); 
   	s.y	= xsample_h	(tc,o1);	//float4(+1,-1,0,0)*ts); 
   	s.z	= xsample_h	(tc,o2);	//float4(-1,+1,0,0)*ts); 
@@ -41,7 +41,7 @@ half 	xshadow_2	(float4 tc)		{
 }
 half 	xshadow_3	(float4 tc)		{
 	static const float 	ts = KERNEL / float(SMAP_size);
-	half4	s		;
+	float4	s		;
   	s.x	= xsample_h	(tc,float4(-1,-1,0,0)*ts); 
   	s.y	= xsample_h	(tc,float4(+1,-1,0,0)*ts); 
   	s.z	= xsample_h	(tc,float4(-1,+1,0,0)*ts); 
@@ -70,9 +70,9 @@ float4 	main		( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
   	float4 	P4 	= float4	(_P.x,_P.y,_P.z,1.f)	;
 	float4 	PS	= mul		(m_shadow, 	P4)	;
 	half	s	= xshadow_2 	(PS);
-	half4	light 	= 0;		//half4	(1,0,0,0)	;
+	float4	light 	= 0;		//float4	(1,0,0,0)	;
 	if (s>0.0001)	{
-  		half4 _N= tex2D 	(s_normal,   	tc	); 
+  		float4 _N= tex2D 	(s_normal,   	tc	); 
 		light 	= Ldynamic_color * s * xsunmask	(P4) * xlight_infinity (_P.w,_P,_N,Ldynamic_dir);
 	}
 	return 		blend		( light, tc );
