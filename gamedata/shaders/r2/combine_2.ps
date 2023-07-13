@@ -23,12 +23,12 @@ uniform float4 		e_kernel;	// x=norm, y=depth, z=clr
 float4 	main		( v2p I )	: COLOR
 {
   // Normal discontinuety filter
-  half3 nc		=  tex2D	(s_normal,   	I.tc0);
+  float3 nc		=  tex2D	(s_normal,   	I.tc0);
   float4 nd;
-	nd.x 		=  dot 		(nc, (half3)tex2D(s_normal,I.tc1));
-	nd.y 		=  dot 		(nc, (half3)tex2D(s_normal,I.tc2));
-	nd.z 		=  dot 		(nc, (half3)tex2D(s_normal,I.tc3));
-	nd.w 		=  dot 		(nc, (half3)tex2D(s_normal,I.tc4));
+	nd.x 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc1));
+	nd.y 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc2));
+	nd.z 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc3));
+	nd.w 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc4));
 	nd 		-= e_barrier.x	;
 	nd 		=  step		(0,nd);	// bw
   half  ne 		=  saturate	(dot(nd,e_weights.x));
@@ -68,8 +68,8 @@ float4 	main		( v2p I )	: COLOR
   float4 	s2 	=  tex2D	(s_image, offset + I.tc3*w);
   float4 	s3 	=  tex2D	(s_image, offset + I.tc4*w);
 
-	half3 	final	=  mblur	(center, dc, (s0+s1+s2+s3)/4.h);
-	half3	bloom	=  tex2D	(s_bloom, I.tc0);
+	float3 	final	=  mblur	(center, dc, (s0+s1+s2+s3)/4.0f);
+	float3	bloom	=  tex2D	(s_bloom, I.tc0);
 
   return combine_bloom	(final,bloom);
 }

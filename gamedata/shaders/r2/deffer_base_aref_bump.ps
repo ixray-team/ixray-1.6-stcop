@@ -9,7 +9,7 @@ f_deffer 	main	( p_bumped I )
 	clip					(S.base.w-def_aref);
 
 	// Sample normal, rotate it by matrix, encode position 
-  	half3	Ne  = mul		(half3x3(I.M1, I.M2, I.M3), S.normal);
+  	float3	Ne  = mul		(float3x3(I.M1, I.M2, I.M3), S.normal);
 			Ne	= normalize	(Ne);
 
 	// hemi,sun,material

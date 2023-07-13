@@ -27,6 +27,6 @@ float4 	main_ps_1_1	( v2p I )	: COLOR
 	float4 	base 		= 	lerp	(base0,base1,I.f.w)*I.c	;
 	half 	hemi 		= 	lerp	(hemi0,hemi1,I.f.w).w	;
 
-	half3 	color 		= 	base*2* (0.5+0.5*hemi);
+	float3 	color 		= 	base*2.0f* (0.5f+0.5f*hemi);
 	return 	float4 		(color,base.a);
 }

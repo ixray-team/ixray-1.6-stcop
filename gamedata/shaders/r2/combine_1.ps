@@ -64,7 +64,7 @@ _out         main                ( _input I )
 #endif
 
         // hemisphere
-        half3       hdiffuse,hspecular;
+        float3       hdiffuse,hspecular;
 
 	//  Calculate SSAO
 //#ifdef USE_SSAO_BLUR
@@ -87,16 +87,16 @@ _out         main                ( _input I )
 
         float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
         float4         C           = D*light       ;                             // rgb.gloss * light(diffuse.specular)
-//        half3         spec        = (C.rgb*.5h + .5h)*C.w + hspecular + hspecular + hspecular;			// replicated specular
-	half3         spec        = C.www         + hspecular;      // replicated specular
+//        float3         spec        = (C.rgb*.5h + .5h)*C.w + hspecular + hspecular + hspecular;			// replicated specular
+	float3         spec        = C.www         + hspecular;      // replicated specular
 
 #ifdef         USE_SUPER_SPECULAR
                       spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;
 #endif
-//		half3       color     = C.rgb + D.rgb*spec     ;
-//		half3       color     = C.rgb + (D.rgb*spec+spec)/0.5h;
-		half3       color     = C.rgb + spec     ;
-//		half3       color     = C.rgb + D.rgb*spec+hspecular+hspecular     ;	//	More realistic and contrast specular - Ugrumiy edition
+//		float3       color     = C.rgb + D.rgb*spec     ;
+//		float3       color     = C.rgb + (D.rgb*spec+spec)/0.5h;
+		float3       color     = C.rgb + spec     ;
+//		float3       color     = C.rgb + D.rgb*spec+hspecular+hspecular     ;	//	More realistic and contrast specular - Ugrumiy edition
 
 ////////////////////////////////////////////////////////////////////////////////
 /// For Test ///////////////////////////////////////////////////////////////////

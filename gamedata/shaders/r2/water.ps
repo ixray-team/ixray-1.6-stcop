@@ -6,10 +6,10 @@ struct   vf
       float2  tbase        :        TEXCOORD0        ;  // base
       float2         tnorm0        :        TEXCOORD1        ;  // nm0
       float2         tnorm1        :        TEXCOORD2        ;  // nm1
-      half3         M1                :        TEXCOORD3        ;
-      half3         M2                :        TEXCOORD4        ;
-      half3         M3                :        TEXCOORD5        ;
-      half3        v2point        :        TEXCOORD6        ;
+      float3         M1                :        TEXCOORD3        ;
+      float3         M2                :        TEXCOORD4        ;
+      float3         M3                :        TEXCOORD5        ;
+      float3        v2point        :        TEXCOORD6        ;
 	  float4      tctexgen    :         TEXCOORD7        ;
       float4        c0                :          COLOR0                ;
       float          fog        :         FOG                ;
@@ -22,7 +22,7 @@ uniform sampler2D	s_leaves;
 uniform float4 pos_decompression_params;
 
 #if defined(USE_SOFT_WATER) && defined(NEED_SOFT_WATER)
-half3	water_intensity;
+float3	water_intensity;
 #endif	//	defined(USE_SOFT_WATER) && defined(NEED_SOFT_WATER)
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,11 +32,11 @@ float4   main         ( v2p I )  : COLOR
 {
 
         float4        t_base                = tex2D   (s_base,I.tbase);
-        half3        t_env                = texCUBE  (s_env, I.tenv);
+        float3        t_env                = texCUBE  (s_env, I.tenv);
 
-        half3        refl                = lerp    (t_env,t_base,I.c0.a);
-        half3        color                = lerp    (refl, t_base,t_base.a);
-        half3        final                = color*I.c0*2  ;
+        float3        refl                = lerp    (t_env,t_base,I.c0.a);
+        float3        color                = lerp    (refl, t_base,t_base.a);
+        float3        final                = color*I.c0*2  ;
 
         half        alpha_shift        = saturate(.5-I.c0.a);
         half        alpha_add        = alpha_shift*alpha_shift;
@@ -49,14 +49,14 @@ float4   main         ( v2p I )  : COLOR
 float4   main( vf I )          : COLOR
 {
 	float4	base	= tex2D (s_base,I.tbase);
-	half3	n0	= tex2D (s_nmap,I.tnorm0);
-	half3	n1	= tex2D (s_nmap,I.tnorm1);
-	half3	Navg	= n0 + n1 - 1;
+	float3	n0	= tex2D (s_nmap,I.tnorm0);
+	float3	n1	= tex2D (s_nmap,I.tnorm1);
+	float3	Navg	= n0 + n1 - 1.0f;
 
-	half3	Nw	= mul (half3x3(I.M1, I.M2, I.M3), Navg);
+	float3	Nw	= mul (float3x3(I.M1, I.M2, I.M3), Navg);
 			Nw	= normalize (Nw);
-	half3	v2point	= normalize (I.v2point);
-	half3	vreflect= reflect(v2point, Nw);
+	float3	v2point	= normalize (I.v2point);
+	float3	vreflect= reflect(v2point, Nw);
 
 	float	fresnel	= saturate (dot(vreflect,v2point));
 
@@ -66,16 +66,16 @@ float4   main( vf I )          : COLOR
 	vreflect /= vreflectmax;
 	vreflect.y = vreflect.y*2-1;
 
-	half3	env0	= texCUBE (s_env0, vreflect);
-	half3	env1	= texCUBE (s_env1, vreflect);
-	half3	env	= lerp (env0,env1,L_ambient.w);
+	float3	env0	= texCUBE (s_env0, vreflect);
+	float3	env1	= texCUBE (s_env1, vreflect);
+	float3	env	= lerp (env0,env1,L_ambient.w);
 			env	*= env*2;
 
 	half	power	= pow(fresnel,9);
 	half	amount	= 0.15h+0.25h*power;	// 1=full env, 0=no env
 
-	half3	c_reflection       = env*amount;
-	half3	final              = lerp(c_reflection,base.rgb,base.a);
+	float3	c_reflection       = env*amount;
+	float3	final              = lerp(c_reflection,base.rgb,base.a);
 
 
         // tonemap
@@ -100,10 +100,10 @@ float4   main( vf I )          : COLOR
 	//	water fog
 	half  fog_exp_intens = -4.0h;
 	float fog	= 1-exp(fog_exp_intens*waterDepth);
-	half3 Fc  	= half3( 0.1h, 0.1h, 0.1h) * water_intensity.r;
-//	half3 Fc  	= lerp(half3( 1.0h, 0.0h, 0.0h), half3( 0.0h, 1.0h, 0.0h), water_intensity.r);
-//	half3 Fc  	= half3( 0.1h, 0.1h, 0.2h);
-//	half3 Fc  	= half3( 1.0h, 0.0h, 0.0h);
+	float3 Fc  	= float3( 0.1f, 0.1f, 0.1f) * water_intensity.r;
+//	float3 Fc  	= lerp(float3( 1.0h, 0.0h, 0.0h), float3( 0.0h, 1.0h, 0.0h), water_intensity.r);
+//	float3 Fc  	= float3( 0.1h, 0.1h, 0.2h);
+//	float3 Fc  	= float3( 1.0h, 0.0h, 0.0h);
 	final 		= lerp (Fc, final, alpha);
 
 	alpha 		= min(alpha, saturate(waterDepth));

@@ -31,8 +31,8 @@ f_deffer 	main	( p_flat I )
 #endif
 
   // 2. Standart output
-  O.Ne          = float4		(normalize((half3)I.N.xyz), 					h			);
-  O.position    = float4 	(I.position.xyz + O.Ne.xyz*def_virtualh/2.h	, 	ms			);	//.
+  O.Ne          = float4		(normalize((float3)I.N.xyz), 					h			);
+  O.position    = float4 	(I.position.xyz + O.Ne.xyz*def_virtualh/2.0f	, 	ms			);	//.
   O.C			= float4		(D.rgb,											def_gloss	);	// OUT: rgb.gloss
   return O;
 }

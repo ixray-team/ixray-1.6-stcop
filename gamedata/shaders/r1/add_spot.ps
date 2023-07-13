@@ -10,7 +10,7 @@ float4 	main_ps_1_1	( vf_spot I )	: COLOR
 
 	float4 	final_color 	= t_base*t_lmap*t_att*I.color;
 		final_color.rgb *= t_base.a;
-	half3	final_rgb 	= (final_color+final_color)*2;
+	float3	final_rgb 	= (final_color+final_color)*2.0f;
 	half 	final_a 	= final_color.w;
 	
 	// out

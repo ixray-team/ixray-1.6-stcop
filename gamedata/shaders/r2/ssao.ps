@@ -2,9 +2,9 @@
 
 #ifndef	SSAO_QUALITY
 
-half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
+half	calc_ssao( float3 P, float3 N, half2 tc, half2 tcJ)
 {
-	return 1.0h;
+	return 1.0f;
 }
 
 #else	//	SSAO_QUALITY
@@ -82,7 +82,7 @@ float3 uv_to_eye(float2 uv, float eye_z)
 //	P	screen space position of the original point
 //	N	screen space normal of the original point
 //	tc	G-buffer coordinates of the original point
-half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
+half	calc_ssao( float3 P, float3 N, half2 tc, half2 tcJ)
 {
 	const float ssao_noise_tile_factor = ssao_params.x;
 	const float ssao_kernel_size = ssao_params.y;
@@ -132,12 +132,12 @@ for (int rad=0; rad < RINGS; rad++)
 				tap		*= scale;
 				tap		+= tc;
 #ifndef SSAO_OPT_DATA
-		half3	tap_pos	= tex2D	(s_position,tap);
+		float3	tap_pos	= tex2D	(s_position,tap);
 #else // SSAO_OPT_DATA
 		float	z	= tex2Dlod(s_half_depth,float4(tap, 0, 0));
-		half3	tap_pos	= uv_to_eye(tap, z);
+		float3	tap_pos	= uv_to_eye(tap, z);
 #endif // SSAO_OPT_DATA
-		half3 	dir 	= tap_pos-P.xyz;
+		float3 	dir 	= tap_pos-P.xyz;
 		half	dist	= length(dir);
 			dir 	= normalize(dir);
 		half 	infl 	= saturate(dot( dir, N.xyz));

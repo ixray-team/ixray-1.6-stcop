@@ -68,7 +68,7 @@ float4 	main	( v2p I )	: COLOR
 	//half maxIntens = 1.0h/40.0h;	
 	//half maxIntens = 1.0h/10.0h;
 	half maxIntens = I.fDensity;
-	half3	result = maxIntens * s * att;
+	float3	result = maxIntens * s * att;
 	result *= lightmap;
 	result *= Ldynamic_color * t_noise;
 

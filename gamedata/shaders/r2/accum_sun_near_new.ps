@@ -3,11 +3,11 @@
 #include "shadow.h"
 
 #define	XKERNEL	.6f
-float4 	xlight_infinity	(half m, half3 point, half3 normal, half3 light_direction)       				{
-  half3 N		= normal;							// normal 
-  half3 V 		= -normalize	(point);					// vector2eye
-  half3 L 		= -light_direction;						// vector2light
-  half3 H		= normalize	(L+V);						// half-angle-vector 
+float4 	xlight_infinity	(half m, float3 point, float3 normal, float3 light_direction)       				{
+  float3 N		= normal;							// normal 
+  float3 V 		= -normalize	(point);					// vector2eye
+  float3 L 		= -light_direction;						// vector2light
+  float3 H		= normalize	(L+V);						// half-angle-vector 
   return tex3Dlod	(s_material,	float4( dot(L,N), dot(H,N), m, 0 ) );		// sample material
 }
 half  	xsample_hw	(float4 tc,float4 shift){

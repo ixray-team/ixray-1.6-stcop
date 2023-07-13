@@ -3,9 +3,9 @@
 struct 	v2p
 {
  	half2 	tc0: 		TEXCOORD0;	// base
-	half3	tc1:		TEXCOORD1;	// environment
+	float3	tc1:		TEXCOORD1;	// environment
  	half2 	tc2: 		TEXCOORD2;	// lmap
-  	half3	c0:		COLOR0;		// sun
+  	float3	c0:		COLOR0;		// sun
   	float4	c1:		COLOR1;		// lq-color + factor
 };
 
@@ -17,7 +17,7 @@ float4 	main_ps_1_1	( v2p I )	: COLOR
 	float4	t_env 	= texCUBE	(s_env,	I.tc1);
 
 	// final-color
-	half3 	final 	= lerp	(t_env,t_base,t_base.a);
+	float3 	final 	= lerp	(t_env,t_base,t_base.a);
 
 	// out
 	return  float4	(final.r,final.g,final.b,t_base.a);

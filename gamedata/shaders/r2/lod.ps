@@ -4,7 +4,7 @@
 struct 	vf
 {
 	float4 	hpos	: POSITION	;
-	half3	position: TEXCOORD0	;
+	float3	position: TEXCOORD0	;
  	float2 	tc0	: TEXCOORD1	;	// base0
  	float2 	tc1	: TEXCOORD2	;	// base1
 	float4 	af	: COLOR1	;	// alpha&factor
@@ -24,7 +24,7 @@ f_deffer 	main	( vf I )
   float4 H 	= lerp		(H0,H1,I.af.w);		H.w	*= I.af.x;	// multiply hemi
 
   clip		(D.w-(96.h/255.h))  ;
-  half3 N 	= normalize	(H.xyz);
+  float3 N 	= normalize	(H.xyz);
 
   // 2. Standart output
   O.Ne          = float4		(N					, H.w		);

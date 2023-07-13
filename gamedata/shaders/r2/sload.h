@@ -9,7 +9,7 @@
 struct	surface_bumped
 {
 	float4	base;
-	half3	normal;
+	float3	normal;
 	half	gloss;
 	half	height;
 

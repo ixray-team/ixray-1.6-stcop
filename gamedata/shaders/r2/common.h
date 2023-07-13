@@ -57,7 +57,7 @@ uniform float4                J_direct        [6];
 uniform float4                J_spot                [6];
 
 half          calc_fogging               (float4 w_pos)      { return dot(w_pos,fog_plane);         }
-half2         calc_detail                (half3 w_pos)      {
+half2         calc_detail                (float3 w_pos)      {
         float                 dtl        = distance                (w_pos,eye_position)*dt_params.w;
                               dtl        = min              (dtl*dtl, 1);
         half                  dt_mul     = 1  - dtl;        // dt*  [1 ..  0 ]
@@ -140,9 +140,9 @@ struct         p_bumped        {
         float2            tcdh        : TEXCOORD0;        // Texture coordinates
 #endif
         float4      position        : TEXCOORD1;        // position + hemi
-        half3       M1                : TEXCOORD2;        // nmap 2 eye - 1
-        half3       M2                : TEXCOORD3;        // nmap 2 eye - 2
-        half3       M3                : TEXCOORD4;        // nmap 2 eye - 3
+        float3       M1                : TEXCOORD2;        // nmap 2 eye - 1
+        float3       M2                : TEXCOORD3;        // nmap 2 eye - 2
+        float3       M3                : TEXCOORD4;        // nmap 2 eye - 3
 #ifdef USE_TDETAIL
         float2      tcdbump     	: TEXCOORD5;        // d-bump
     #ifdef USE_LM_HEMI
@@ -163,7 +163,7 @@ struct         p_flat                  {
     float2                    tcdh        : TEXCOORD0;        // Texture coordinates
 #endif
         float4                position        : TEXCOORD1;        // position + hemi
-        half3                N                : TEXCOORD2;        // Eye-space normal        (for lighting)
+        float3                N                : TEXCOORD2;        // Eye-space normal        (for lighting)
   #ifdef USE_TDETAIL
         float2                tcdbump                : TEXCOORD3;        // d-bump
     #ifdef USE_LM_HEMI
@@ -237,8 +237,8 @@ uniform sampler2D       s_tonemap;              // actually MidleGray / exp(Lw +
 #define def_hdr_clip	half(0.75h)        		//
 
 //////////////////////////////////////////////////////////////////////////////////////////
-#define	LUMINANCE_VECTOR                 half3(0.3f, 0.38f, 0.22f)
-void        tonemap              (out float4 low, out float4 high, half3 rgb, half scale)
+#define	LUMINANCE_VECTOR                 float3(0.3f, 0.38f, 0.22f)
+void        tonemap              (out float4 low, out float4 high, float3 rgb, half scale)
 {
         rgb     =      	rgb*scale       ;
 
@@ -267,7 +267,7 @@ void        tonemap              (out float4 low, out float4 high, half3 rgb, ha
 //		rgb		/=	def_hdr	;
 //		high	= 	float4	(rgb, dot(rgb,0.333f)-def_hdr_clip)		;
 }
-float4		combine_bloom        (half3  low, float4 high)	{
+float4		combine_bloom        (float3  low, float4 high)	{
         return        float4(low + high*high.a, 1.0f);
 }
 
@@ -275,8 +275,8 @@ float3	v_hemi        	(float3 n)                        	{        return L_hemi_
 float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color*(w + (1-w)*n.y);                   }
 float3	v_sun           (float3 n)                        	{        return L_sun_color*dot(n,-L_sun_dir_w);                }
 float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));      }
-half3   p_hemi          (float2 tc)                         {
-//        half3        	t_lmh         = tex2D             	(s_hemi, tc);
+float3   p_hemi          (float2 tc)                         {
+//        float3        	t_lmh         = tex2D             	(s_hemi, tc);
 //        return  dot     (t_lmh,1.h/4.h);
         float4        	t_lmh         = tex2D             	(s_hemi, tc);
         return t_lmh.a;

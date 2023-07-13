@@ -5,9 +5,9 @@
 
 #ifndef	USE_DOF
 
-half3	dof(float2 center)
+float3	dof(float2 center)
 {
-	half3 	img 	= tex2D		(s_image, center);
+	float3 	img 	= tex2D		(s_image, center);
 	return	img;
 }
 
@@ -15,7 +15,7 @@ half3	dof(float2 center)
 
 // x - near y - focus z - far w - sky distance
 float4	dof_params;
-half3	dof_kernel;	// x,y - resolution pre-scaled z - just kernel size
+float3	dof_kernel;	// x,y - resolution pre-scaled z - just kernel size
 
 half DOFFactor( half depth)
 {
@@ -33,7 +33,7 @@ half DOFFactor( half depth)
 //#define MAXCOF		5.h
 #define MAXCOF		7.h
 #define EPSDEPTH	0.0001h
-half3	dof(float2 center)
+float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
 	half 	depth		= tex2D(s_position,center).z;
@@ -65,7 +65,7 @@ half3	dof(float2 center)
 		o[11] 	= half2(-0.791559f , -0.597710f)*scale;
 
 	// sample
-	half3	sum 	= tex2D(s_image,center);
+	float3	sum 	= tex2D(s_image,center);
 	half 	contrib	= 1.h;
 
    	for (int i=0; i<12; i++)
@@ -79,12 +79,12 @@ half3	dof(float2 center)
 		contrib		+= tap_contrib;
 	}
 
-	return 	half3	(sum/contrib);
+	return 	float3	(sum/contrib);
 }
 
 /*
 //	edge along sky line. More light-weight
-half3	dof(float2 center)
+float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
 	half 	depth		= tex2D(s_position,center).z;
@@ -123,7 +123,7 @@ half3	dof(float2 center)
 		o[11] 	= half2(-0.791559f , -0.597710f)*scale;
 
 	// sample 
-	half3	sum 	= tex2D(s_image,center);
+	float3	sum 	= tex2D(s_image,center);
 	half 	contrib	= 1.h;
 	for (int i=0; i<12; i++)
 	{
@@ -137,7 +137,7 @@ half3	dof(float2 center)
 			sum 		+= tap_color	* tap_contrib;
 			contrib		+= tap_contrib;
 	}
-	return 	half3	(sum/contrib);
+	return 	float3	(sum/contrib);
 }
 */
 
@@ -151,7 +151,7 @@ half3	dof(float2 center)
 #define MAXCOF		5.h
 #define MAXCOF_NEAR	100.h
 #define EPSDEPTH	0.0001h
-half3	dof(float2 center)
+float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
 	half 	depth		= tex2D(s_position,center).z;
@@ -180,7 +180,7 @@ half3	dof(float2 center)
 		o[11] 	= half2(-0.791559f , -0.597710f)*scale;
 
 	// sample 
-	half3	sum 	= tex2D(s_image,center);
+	float3	sum 	= tex2D(s_image,center);
 	half 	contrib	= 1.h;
 	for (int i=0; i<12; i++)
 	{
@@ -191,7 +191,7 @@ half3	dof(float2 center)
 			sum 		+= tap_color	* tap_contrib;
 			contrib		+= tap_contrib;
 	}
-	return 	half3	(sum/contrib);
+	return 	float3	(sum/contrib);
 }
 /**/
 #endif	//	USE_DOF
