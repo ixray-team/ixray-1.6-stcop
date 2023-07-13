@@ -3,9 +3,9 @@
 #include "shadow.h"
 
 #define	XKERNEL	0.6f
-float4 	xlight_infinity	(float m, float3 point, float3 normal, float3 light_direction)       				{
+float4 	xlight_infinity	(float m, float3 _point, float3 normal, float3 light_direction)       				{
   float3 N		= normal;							// normal 
-  float3 V 		= -normalize	(point);					// vector2eye
+  float3 V 		= -normalize	(_point);					// vector2eye
   float3 L 		= -light_direction;						// vector2light
   float3 H		= normalize	(L+V);						// float-angle-vector 
   return tex3Dlod	(s_material,	float4( dot(L,N), dot(H,N), m, 0.0f ) );		// sample material

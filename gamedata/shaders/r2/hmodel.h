@@ -10,7 +10,7 @@ uniform samplerCUBE         sky_s1                ;
 uniform float4                         env_color        ;        // color.w  = lerp factor
 uniform float3x4                        m_v2w                ;
 
-void        hmodel                 (out float3 hdiffuse, out float3 hspecular, float m, float h, float s, float3 point, float3 normal)
+void        hmodel                 (out float3 hdiffuse, out float3 hspecular, float m, float h, float s, float3 _point, float3 normal)
 {
         // hscale - something like diffuse reflection
         float3         nw                         = mul                 (m_v2w,normal);
@@ -20,7 +20,7 @@ void        hmodel                 (out float3 hdiffuse, out float3 hspecular, f
 #endif
 
         // reflection vector
-        float3        v2pointL        		= normalize        (point);
+        float3        v2pointL        		= normalize        (_point);
         float3         v2point               = mul                (m_v2w,v2pointL);
         float3        vreflect        		= reflect         (v2point,nw);
         float         hspec                 	= 0.5f+0.5f*dot        (vreflect,v2point);
@@ -44,13 +44,13 @@ void        hmodel                 (out float3 hdiffuse, out float3 hspecular, f
         hspecular                       = env_s*light.w*s;                //*h*m*s        ;        //env_s        *light.w         * s;
 }
 
-void         hmodel_table        (out float3 hdiffuse, out float3 hspecular, float m, float h, float s, float3 point, float3 normal)
+void         hmodel_table        (out float3 hdiffuse, out float3 hspecular, float m, float h, float s, float3 _point, float3 normal)
 {
         // hscale - something like diffuse reflection
         float         hscale         = h;
 
         // reflection vector
-        float3         v2point        = normalize        (point);
+        float3         v2point        = normalize        (_point);
         float3        vreflect= reflect         (v2point,normal);
         float hspec = 0.5f + 0.5f * dot(vreflect,v2point);
 
