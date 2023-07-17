@@ -612,6 +612,7 @@ void	CRender::Render		()
 	r_dsgraph_render_lods						(false,true);	// lods - FB
 	r_dsgraph_render_graph						(1);			// normal level, secondary priority
 	L_Dynamic->render							(1);			// addititional light sources, secondary priority
+	phase = PHASE_NORMAL;
 	PortalTraverser.fade_render					();				// faded-portals
 	r_dsgraph_render_sorted						();				// strict-sorted geoms
 	if(L_Glows)L_Glows->Render					();				// glows
