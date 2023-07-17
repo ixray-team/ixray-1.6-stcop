@@ -141,7 +141,7 @@ void CLightR_Manager::render_point	()
 }
 */
 
-void CLightR_Manager::render_point	()
+void CLightR_Manager::render_point	(u32 _priority)
 {
 	// for each light
 	Fvector		lc_COP		= Device.vCameraPosition	;
@@ -191,7 +191,9 @@ void CLightR_Manager::render_point	()
 
 		//		3. Calculate visibility for light + build soring tree
 		VERIFY										(L->spatial.sector);
-		RImplementation.r_pmask						(true,false);
+		if( _priority == 1)
+			RImplementation.r_pmask						(false,true);
+
 		RImplementation.r_dsgraph_render_subspace	(
 			L->spatial.sector,
 			L_combine,
@@ -199,6 +201,9 @@ void CLightR_Manager::render_point	()
 			true,
 			true
 			);
+
+		if( _priority == 1)
+			RImplementation.r_pmask						(true,true);
 
 		//		4. Analyze if HUD intersects light volume
 		BOOL				bHUD	= FALSE;
@@ -208,14 +213,14 @@ void CLightR_Manager::render_point	()
 
 		//		5. Dump sorting tree
 		RCache.set_Constants((R_constant_table*)0);
-		if (bHUD)			g_hud->Render_Last		();	
-		RImplementation.r_dsgraph_render_graph					(0);
-		if (bHUD)			RImplementation.r_dsgraph_render_hud();	
+		if (bHUD&&_priority == 0)			g_hud->Render_Last		();	
+		RImplementation.r_dsgraph_render_graph					(_priority);
+		if (bHUD&&_priority == 0)			RImplementation.r_dsgraph_render_hud();	
 	}
 	//		??? grass ???
 }
 
-void CLightR_Manager::render_spot	()
+void CLightR_Manager::render_spot	(u32 _priority)
 {
 	// for each light
 	//	Msg	("l=%d",selected_spot.size());
@@ -264,7 +269,9 @@ void CLightR_Manager::render_spot	()
 		//		3. Calculate visibility for light + build soring tree
 		VERIFY										(L->spatial.sector);
 		// RImplementation.marker					++;
-		RImplementation.r_pmask						(true,false);
+		if( _priority == 1)
+			RImplementation.r_pmask						(false,true);
+
 		RImplementation.r_dsgraph_render_subspace	(
 			L->spatial.sector,
 			L_combine,
@@ -272,6 +279,9 @@ void CLightR_Manager::render_spot	()
 			TRUE,
 			TRUE			// precise portals
 			);
+
+		if( _priority == 1)
+			RImplementation.r_pmask						(true,true);
 
 		//		4. Analyze if HUD intersects light volume
 		BOOL				bHUD	= FALSE;
@@ -283,25 +293,29 @@ void CLightR_Manager::render_spot	()
 		//		4. Dump sorting tree
 		//	RCache.set_ClipPlanes					(true,	&L_combine);
 		RCache.set_Constants	((R_constant_table*)0);
-		if (bHUD)	g_hud->Render_Last		();	
-		RImplementation.r_dsgraph_render_graph			(0);
-		if (bHUD)	RImplementation.r_dsgraph_render_hud();	
+		if (bHUD&&_priority == 0)	g_hud->Render_Last		();	
+		RImplementation.r_dsgraph_render_graph			(_priority);
+		if (bHUD&&_priority == 0)	RImplementation.r_dsgraph_render_hud();	
 		//	RCache.set_ClipPlanes					(false,	&L_combine);
 	}
 	//		??? grass ???l
 }
 
-void CLightR_Manager::render		()
+void CLightR_Manager::render		(u32 _priority)
 {
 	if (selected_spot.size())		{ 
 		RImplementation.phase		= CRender::PHASE_SPOT;
-		render_spot			();	
-		selected_spot.clear	();	
+		render_spot			(_priority);	
+
+		if(_priority == 1)
+			selected_spot.clear	();
 	}
 	if (selected_point.size())		{ 
 		RImplementation.phase		= CRender::PHASE_POINT;
-		render_point		();	
-		selected_point.clear(); 
+		render_point		(_priority);	
+		
+		if(_priority == 1)
+			selected_point.clear();
 	}
 }
 
