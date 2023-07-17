@@ -786,6 +786,11 @@ HRESULT	CRender::shader_compile			(
 		void*&							result
 	)
 {
+	if ('v' == pTarget[0])			
+		pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //	
+	else							
+		pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //
+
 	D3DXMACRO						defines			[128];
 	int								def_it			= 0;
 
@@ -911,7 +916,7 @@ HRESULT	CRender::shader_compile			(
 		LPD3DXCONSTANTTABLE			pConstants	= NULL;
 		LPD3DXINCLUDE               pInclude	= (LPD3DXINCLUDE)&Includer;
 
-		_result						= D3DXCompileShader((LPCSTR)pSrcData,SrcDataLen,defines,pInclude,pFunctionName,pTarget,Flags|D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,&pShaderBuf,&pErrorBuf,&pConstants);
+		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags, &pShaderBuf, &pErrorBuf, &pConstants);
 		if (SUCCEEDED(_result)) {
 			IWriter* file = FS.w_open(file_name);
 

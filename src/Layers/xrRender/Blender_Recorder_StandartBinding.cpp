@@ -180,7 +180,11 @@ class cl_fog_color	: public R_constant_setup {
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
 			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-			result.set				(desc.fog_color.x,	desc.fog_color.y, desc.fog_color.z,	0);
+		#if RENDER==R_R1
+			result.set(desc.fog_color.x * ps_r1_fog_luminance, desc.fog_color.y * ps_r1_fog_luminance, desc.fog_color.z * ps_r1_fog_luminance, 0);
+		#else
+			result.set(desc.fog_color.x,	desc.fog_color.y, desc.fog_color.z,	0);
+		#endif // RENDER==R_R1
 		}
 		RCache.set_c	(C,result);
 	}

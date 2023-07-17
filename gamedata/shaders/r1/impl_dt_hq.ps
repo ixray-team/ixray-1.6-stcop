@@ -7,6 +7,7 @@ struct 	v2p
  	float2 	tc2: 		TEXCOORD2;	// detail
   	float4	c0:		COLOR0;		// hemi, c0.a * 
 	float4	c1:	        COLOR1;		// sun,  c1.a + 
+	float fog: FOG;
 };
 
 uniform sampler2D s_dt_r;
@@ -41,9 +42,9 @@ float4 	main	( v2p I )	: COLOR
 	float3 	detail = t_dt_a + t_dt_b + t_dt_g + t_dt_r;
 	
 	// final-color
-	float3	final 	= (light*t_base.rgb*2.0f)*detail*2.0f	;
-	
+	float3 final = (light * t_base.rgb * 2.0f) * detail * 2.0f;
+	final = lerp(fog_color.xyz, final, I.fog);
 	// out
-	return  float4	(final.rgb,1);
+	return float4(final.rgb, 1.0f);
 }
 

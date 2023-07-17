@@ -6,6 +6,7 @@ struct 	v2p
  	float4 	tc1: 		TEXCOORD1;	// lmap
   	float3	c0:		COLOR0;		// sun
   	float4	c1:		COLOR1;		// lq-color + factor
+	float  fog	: FOG;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +22,8 @@ float4 	main	( v2p I )	: COLOR
 	float3	light	= lerp	(l_base + l_sun, I.c1, I.c1.w);
 
 	// final-color
-	float3	final 	= light*t_base*2.0f;
+	float3 final = light * t_base * 2.0f;
+	final = lerp(fog_color.xyz, final, I.fog);
 
 	// out
 	return  float4	(final.r,final.g,final.b,t_base.a);

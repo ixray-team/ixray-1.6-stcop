@@ -7,6 +7,7 @@ struct 	v2p
  	float2 	tc2: 		TEXCOORD2;	// detail
   	float4	c0:		COLOR0;		// hemi, c0.a * 
 	float4	c1:	        COLOR1;		// sun,  c1.a + 
+	float fog: FOG;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +28,8 @@ float4 	main	( v2p I )	: COLOR
 	
 	// final-color
 	float3	final 	= (light*t_base.rgb*2.0f)*detail*2.0f	;
-	
+	final = lerp(fog_color.xyz, final, I.fog);
 	// out
-	return  float4	(final.rgb, 1.0f);
+	return float4(final.rgb, 1.0f);
 	// return 	float4	(light*detail*2,1);
 }

@@ -1036,7 +1036,7 @@ HRESULT	CRender::shader_compile			(
 		LPD3DXCONSTANTTABLE			pConstants	= NULL;
 		LPD3DXINCLUDE               pInclude	= (LPD3DXINCLUDE)&Includer;
 		
-		_result						= D3DXCompileShader((LPCSTR)pSrcData,SrcDataLen,defines,pInclude,pFunctionName,pTarget,Flags|D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,&pShaderBuf,&pErrorBuf,&pConstants);
+		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags, &pShaderBuf, &pErrorBuf, &pConstants);
 		if (SUCCEEDED(_result)) {
 //			Msg						( "shader compilation succeeded" );
 			IWriter* file = FS.w_open(file_name);

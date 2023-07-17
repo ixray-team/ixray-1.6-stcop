@@ -8,6 +8,7 @@ struct 	v2p
  	float2 	tc3: 	TEXCOORD3;	// hemi1
 	float4 	c:	COLOR0;		// color
 	float4 	f:	COLOR1;		// color
+	float  fog	: FOG;
 };
 
 
@@ -28,5 +29,7 @@ float4 	main	( v2p I )	: COLOR
 	float 	hemi 		= 	lerp	(hemi0,hemi1,I.f.w).w	;
 
 	float3 	color 		= 	base*2.0f* (0.5f+0.5f*hemi);
+	color = lerp(fog_color.xyz, color, I.fog);
+
 	return 	float4 		(color,base.a);
 }
