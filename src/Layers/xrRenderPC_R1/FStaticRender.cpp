@@ -3,6 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include <d3dcompiler.h>
+
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/environment.h"
 #include "../xrRender/fbasicvisual.h"
@@ -669,42 +672,43 @@ void	CRender::Statistics	(CGameFont* _F)
 #endif
 }
 
-#include <boost/crc.hpp>
-
-static inline bool match_shader_id		( LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result );
-
 //--------------------------------------------------------------------------------------------------------------
-class	includer				: public ID3DXInclude
-{
+class includer : public ID3DInclude {
 public:
-	HRESULT __stdcall	Open	(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
-	{
-		string_path				pname;
-		strconcat				(sizeof(pname),pname,::Render->getShaderPath(),pFileName);
-		IReader*		R		= FS.r_open	("$game_shaders$",pname);
-		if (0==R)				{
+	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+		string_path pname;
+		strconcat(sizeof(pname), pname, ::Render->getShaderPath(), pFileName);
+		IReader* R = FS.r_open("$game_shaders$", pname);
+		if (0 == R) {
 			// possibly in shared directory or somewhere else - open directly
-			R					= FS.r_open	("$game_shaders$",pFileName);
-			if (0==R)			return			E_FAIL;
+			R = FS.r_open("$game_shaders$", pFileName);
+			if (0 == R) {
+				return E_FAIL;
+			}
 		}
 
 		// duplicate and zero-terminate
-		u32				size	= R->length();
-		u8*				data	= xr_alloc<u8>	(size + 1);
-		CopyMemory			(data,R->pointer(),size);
-		data[size]				= 0;
-		FS.r_close				(R);
+		u32 size = R->length();
+		u8* data = xr_alloc<u8>(size + 1);
+		CopyMemory(data, R->pointer(), size);
+		data[size] = 0;
+		FS.r_close(R);
 
-		*ppData					= data;
-		*pBytes					= size;
+		*ppData = data;
+		*pBytes = size;
 		return	D3D_OK;
 	}
-	HRESULT __stdcall	Close	(LPCVOID	pData)
-	{
-		xr_free	(pData);
-		return	D3D_OK;
+
+	HRESULT __stdcall Close(LPCVOID pData) {
+		xr_free(pData);
+		return D3D_OK;
 	}
 };
+
+#include <boost/crc.hpp>
+
+static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result);
+
 
 static HRESULT create_shader				(
 		LPCSTR const	pTarget,
@@ -761,16 +765,15 @@ static HRESULT create_shader				(
 		}
 	}
 
-	if (disasm)
-	{
-		ID3DXBuffer*	disasm_	= 0;
-		D3DXDisassembleShader(LPDWORD(buffer), FALSE, 0, &disasm_ );
-		string_path		dname;
-		strconcat		(sizeof(dname),dname,"disasm\\",file_name,('v'==pTarget[0])?".vs":".ps" );
-		IWriter*		W = FS.w_open("$logs$",dname);
-		W->w			(disasm_->GetBufferPointer(),disasm_->GetBufferSize());
-		FS.w_close		(W);
-		_RELEASE		(disasm_);
+	if (disasm) {
+		ID3DBlob* disasm_ = 0;
+		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
+		string_path dname;
+		strconcat(sizeof(dname), dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+		IWriter* W = FS.w_open("$logs$", dname);
+		W->w(disasm_->GetBufferPointer(), disasm_->GetBufferSize());
+		FS.w_close(W);
+		_RELEASE(disasm_);
 	}
 
 	return				_result;
@@ -786,13 +789,8 @@ HRESULT	CRender::shader_compile			(
 		void*&							result
 	)
 {
-	if ('v' == pTarget[0])			
-		pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //	
-	else							
-		pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //
-
-	D3DXMACRO						defines			[128];
-	int								def_it			= 0;
+	D3D_SHADER_MACRO defines[128];
+	int def_it = 0;
 
 	char	sh_name[MAX_PATH] = "";
 	u32 len	= 0;
@@ -911,12 +909,17 @@ HRESULT	CRender::shader_compile			(
 	if (FAILED(_result))
 	{
 		includer					Includer;
-		LPD3DXBUFFER				pShaderBuf	= NULL;
-		LPD3DXBUFFER				pErrorBuf	= NULL;
-		LPD3DXCONSTANTTABLE			pConstants	= NULL;
-		LPD3DXINCLUDE               pInclude	= (LPD3DXINCLUDE)&Includer;
+		LPD3DBLOB					pShaderBuf = NULL;
+		LPD3DBLOB					pErrorBuf = NULL;
 
-		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags, &pShaderBuf, &pErrorBuf, &pConstants);
+		_result = D3DCompile(pSrcData, SrcDataLen,
+				"",//NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
+				defines, &Includer, pFunctionName,
+				pTarget,
+				Flags, 0,
+				&pShaderBuf,
+				&pErrorBuf
+			);
 		if (SUCCEEDED(_result)) {
 			IWriter* file = FS.w_open(file_name);
 

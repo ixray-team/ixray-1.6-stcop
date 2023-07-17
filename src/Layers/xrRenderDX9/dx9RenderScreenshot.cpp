@@ -100,7 +100,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         }
 
         // save (logical & physical)
-        ID3DBlob* saved = 0;
+        ID3DXBuffer* saved = 0;
         hr = D3DXSaveTextureToFileInMemory(&saved, D3DXIFF_DDS, texture, 0);
         if (hr != D3D_OK) {
             goto _end_;
@@ -143,7 +143,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         }
 
         // save (logical & physical)
-        ID3DBlob* saved = nullptr;
+        ID3DXBuffer* saved = nullptr;
         hr = D3DXSaveTextureToFileInMemory(&saved, D3DXIFF_DDS, texture, 0);
         if (hr != D3D_OK) {
             goto _end_;
@@ -170,7 +170,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         string64 t_stemp;
         string_path buf;
         xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
-        ID3DBlob* saved = nullptr;
+        ID3DXBuffer* saved = nullptr;
         CHK_DX(D3DXSaveSurfaceToFileInMemory(&saved, D3DXIFF_JPG, pFB, 0, 0));
         IWriter* fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
         fs->w(saved->GetBufferPointer(), saved->GetBufferSize());

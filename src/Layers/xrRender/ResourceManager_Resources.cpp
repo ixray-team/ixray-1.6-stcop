@@ -13,6 +13,8 @@
 #include "blenders\blender_recorder.h"
 
 #include <FlexibleVertexFormat.h>
+#include <d3dcompiler.h>
+
 using namespace FVF;
 
 void fix_texture_name(LPSTR fn);
@@ -166,12 +168,6 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		IReader*					fs			= FS.r_open(cname);
 		R_ASSERT3					(fs, "shader file doesnt exist", cname);
 
-		// Select target
-		LPCSTR						c_target	= "vs_2_0";
-		LPCSTR						c_entry		= "main";
-		if (HW.Caps.geometry_major>=2)	c_target="vs_2_0";
-		else 							c_target="vs_1_1";
-
 		// duplicate and zero-terminate
 		IReader* file			= FS.r_open(cname);
 		R_ASSERT2				( file, cname );
@@ -181,11 +177,12 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		data[size]				= 0;
 		FS.r_close				( file );
 
-		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
-		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
+		// Select target
+		LPCSTR c_target = "vs_3_0";
+		LPCSTR c_entry = "main";
 
-		Msg						( "compiling shader %s", name );
-		HRESULT const _hr		= ::Render->shader_compile( name, (DWORD const*)data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_vs);
+		Msg("compiling shader %s", name);
+		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
 
 		if ( FAILED(_hr) ) {
 			FlushLog();
@@ -246,16 +243,11 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		FS.r_close				( file );
 
 		// Select target
-		LPCSTR						c_target	= "ps_2_0";
-		LPCSTR						c_entry		= "main";
-		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
-		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
-		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
-		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
-		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
+		LPCSTR c_target = "ps_3_0";
+		LPCSTR c_entry = "main";
 
-		Msg						( "compiling shader %s", name );
-		HRESULT const _hr		= ::Render->shader_compile( name, (DWORD const*)data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
+		Msg("compiling shader %s", name);
+		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
 
 		if ( FAILED(_hr) ) {
 			FlushLog();
@@ -703,9 +695,8 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 
 		// vertex
 		R_ASSERT2					(fs,cname);
-		_hr = ::Render->shader_compile(name,LPCSTR(fs->pointer()),fs->length(), NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
-//		_hr = D3DXCompileShader		(LPCSTR(fs->pointer()),fs->length(), NULL, &Includer, "main", target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
-		FS.r_close					(fs);
+		_hr = ::Render->shader_compile(name, LPCSTR(fs->pointer()), fs->length(), NULL, &Includer, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
+		FS.r_close(fs);
 
 		if (SUCCEEDED(_hr))
 		{
@@ -809,9 +800,8 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		LPD3DXBUFFER				pErrorBuf	= NULL;
 		LPD3DXSHADER_CONSTANTTABLE	pConstants	= NULL;
 		HRESULT						_hr			= S_OK;
-		_hr = ::Render->shader_compile	(name,data,size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
-		//_hr = D3DXCompileShader		(text,text_size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
-		xr_free						(data);
+		_hr = ::Render->shader_compile(name, data, size, NULL, &Includer, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, &pShaderBuf, &pErrorBuf, NULL);
+		xr_free(data);
 
 		if (SUCCEEDED(_hr))
 		{

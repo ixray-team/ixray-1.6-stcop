@@ -852,7 +852,6 @@ static HRESULT create_shader				(
 	{
 		ID3DBlob*		disasm_	= 0;
 		D3DDisassemble	(buffer, buffer_size, FALSE, 0, &disasm_ );
-		//D3DXDisassembleShader		(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm );
 		string_path		dname;
 		strconcat		(sizeof(dname),dname,"disasm\\",file_name,('v'==pTarget[0])?".vs":('p'==pTarget[0])?".ps":".gs" );
 		IWriter*		W		= FS.w_open("$logs$",dname);
@@ -865,35 +864,35 @@ static HRESULT create_shader				(
 }
 
 //--------------------------------------------------------------------------------------------------------------
-class	includer				: public ID3DInclude
-{
+class includer : public ID3DInclude {
 public:
-	HRESULT __stdcall	Open	(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
-	{
-		string_path				pname;
-		strconcat				(sizeof(pname),pname,::Render->getShaderPath(),pFileName);
-		IReader*		R		= FS.r_open	("$game_shaders$",pname);
-		if (0==R)				{
+	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+		string_path pname;
+		strconcat(sizeof(pname), pname, ::Render->getShaderPath(), pFileName);
+		IReader* R = FS.r_open("$game_shaders$", pname);
+		if (0 == R) {
 			// possibly in shared directory or somewhere else - open directly
-			R					= FS.r_open	("$game_shaders$",pFileName);
-			if (0==R)			return			E_FAIL;
+			R = FS.r_open("$game_shaders$", pFileName);
+			if (0 == R) {
+				return E_FAIL;
+			}
 		}
 
 		// duplicate and zero-terminate
-		u32				size	= R->length();
-		u8*				data	= xr_alloc<u8>	(size + 1);
-		CopyMemory			(data,R->pointer(),size);
-		data[size]				= 0;
-		FS.r_close				(R);
+		u32 size = R->length();
+		u8* data = xr_alloc<u8>(size + 1);
+		CopyMemory(data, R->pointer(), size);
+		data[size] = 0;
+		FS.r_close(R);
 
-		*ppData					= data;
-		*pBytes					= size;
+		*ppData = data;
+		*pBytes = size;
 		return	D3D_OK;
 	}
-	HRESULT __stdcall	Close	(LPCVOID	pData)
-	{
-		xr_free	(pData);
-		return	D3D_OK;
+
+	HRESULT __stdcall Close(LPCVOID pData) {
+		xr_free(pData);
+		return D3D_OK;
 	}
 };
 
