@@ -45,7 +45,7 @@ XRSOUND_API extern u32				snd_device_id			;
 // Flags
 enum {
 	ss_Hardware			= (1ul<<1ul),	//!< Use hardware mixing only
-    ss_EAX				= (1ul<<2ul),	//!< Use eax
+    ss_EFX				= (1ul<<2ul),	//!< Use eax
 	ss_forcedword		= u32(-1)
 };
 
