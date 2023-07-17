@@ -3,6 +3,7 @@
 
 #include "cl_intersect.h"
 #include "SoundRender_Core.h"
+#include "SoundRender_CoreA.h"
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Target.h"
 #include "SoundRender_Source.h"
@@ -97,8 +98,8 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 			s_targets_defer[it]->fill_parameters();
 	}
 
-	// update EAX
-    if (psSoundFlags.test(ss_EAX) && bEAX)
+	// update EFX
+    if (m_is_supported)
 	{
         if (bListenerMoved)
 		{
@@ -108,8 +109,8 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 
         e_current.lerp				(e_current,e_target,dt_sec);
 
-        i_eax_listener_set			(&e_current);
-		i_eax_commit_setting		();
+        set_listener			(e_current);
+		commit		();
 	}
 
     // update listener
