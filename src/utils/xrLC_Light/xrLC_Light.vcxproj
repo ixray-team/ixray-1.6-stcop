@@ -361,9 +361,6 @@
     <ClCompile Include="xrThread.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\3rd party\zlib\zlib.vcxproj">
-      <Project>{ca2604ca-a2ac-49a1-a468-8ab5a2e6cbc9}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -384,6 +381,7 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets" Condition="Exists('..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets')" />
     <Import Project="..\..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets" Condition="Exists('..\..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets')" />
+    <Import Project="..\..\..\packages\ImeSense.Packages.Zlib.1.2.13.1\build\native\ImeSense.Packages.Zlib.targets" Condition="Exists('..\..\..\packages\ImeSense.Packages.Zlib.1.2.13.1\build\native\ImeSense.Packages.Zlib.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -391,5 +389,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.DXSDK.D3DX.9.29.952.8\build\native\Microsoft.DXSDK.D3DX.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\ImeSense.Packages.Zlib.1.2.13.1\build\native\ImeSense.Packages.Zlib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\ImeSense.Packages.Zlib.1.2.13.1\build\native\ImeSense.Packages.Zlib.targets'))" />
   </Target>
 </Project>
