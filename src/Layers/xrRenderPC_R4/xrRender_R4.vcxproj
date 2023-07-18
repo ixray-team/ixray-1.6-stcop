@@ -61,20 +61,20 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <IncludePath>.\;..\..\..\sdk\include;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(SolutionDir)packages\directxmath.2022.12.12.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\dedicated;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\native\lib\x86\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\;..\..\..\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\dedicated;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>.\;..\..\..\sdk\include;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(SolutionDir)packages\directxmath.2022.12.12.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\dedicated;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\;..\..\..\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\dedicated;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>.\;..\..\..\sdk\include;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\include;$(SolutionDir)packages\directxmesh_desktop_win10.2023.3.30.1\include;$(SolutionDir)packages\directxmath.2022.12.12.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\dedicated;$(SolutionDir)packages\directxtex_desktop_win10.2023.3.30.1\native\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\;..\..\..\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\sdk\libraries;..\..\..\lib;$(SolutionDir)lib\dedicated;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -604,15 +604,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets" Condition="Exists('..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets')" />
-    <Import Project="..\..\..\packages\directxtex_desktop_win10.2023.4.28.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('..\..\..\packages\directxtex_desktop_win10.2023.4.28.1\build\native\directxtex_desktop_win10.targets')" />
     <Import Project="..\..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets" Condition="Exists('..\..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets')" />
+    <Import Project="..\..\..\packages\directxtex_desktop_win10.2023.6.14.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('..\..\..\packages\directxtex_desktop_win10.2023.6.14.1\build\native\directxtex_desktop_win10.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\directxmesh_desktop_win10.2023.4.28.1\build\native\directxmesh_desktop_win10.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\directxtex_desktop_win10.2023.4.28.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\directxtex_desktop_win10.2023.4.28.1\build\native\directxtex_desktop_win10.targets'))" />
     <Error Condition="!Exists('..\..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\directxmath.2022.12.12.1\build\native\directxmath.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\directxtex_desktop_win10.2023.6.14.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\directxtex_desktop_win10.2023.6.14.1\build\native\directxtex_desktop_win10.targets'))" />
   </Target>
 </Project>
