@@ -3,7 +3,6 @@
 #include "Physics.h"
 #include "phupdateobject.h"
 #include "IPHWorld.h"
-#include <boost/noncopyable.hpp>
 #include "physics_scripted.h"
 #include "../xrEngine/pure.h"
 // refs
@@ -30,8 +29,7 @@ class	CObjectSpace;
 class	CObjectList;
 class CPHWorld	:	public	pureFrame,
 					public	IPHWorld,
-					public	cphysics_scripted,
-					private	boost::noncopyable
+					public	cphysics_scripted
 					#ifdef DEBUG
 					, public pureRender
 					#endif
@@ -78,7 +76,8 @@ private:
 	ContactCallbackFun			*m_default_character_contact_shotmark						;
 	PhysicsStepTimeCallback		*physics_step_time_callback									;
 public:
-
+	CPHWorld(const CPHWorld& other) = delete;
+	CPHWorld& operator =(const CPHWorld& other) = delete;
 								CPHWorld						( )							;
 	virtual						~CPHWorld						(){}						;
 

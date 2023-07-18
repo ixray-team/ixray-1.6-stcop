@@ -35,7 +35,6 @@
 #include "PHElementInline.h"
 #include "PhysicsShellAnimator.h"
 #include "phshellbuildjoint.h"
-#include <boost/noncopyable.hpp>
 #ifdef DEBUG
 #include	"debug_output.h"
 #endif

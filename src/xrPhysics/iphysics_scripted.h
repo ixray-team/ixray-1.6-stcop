@@ -2,10 +2,6 @@
 #define	_IPHYSICS_SCRIPTED_
 
 #pragma once
-//#include <boost/noncopyable.hpp>
-
-
-
 
 class iphysics_scripted;
 class iphysics_game_scripted
