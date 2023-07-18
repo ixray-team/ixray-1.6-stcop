@@ -21,7 +21,7 @@ using Microsoft::Win32::Registry;
 using Microsoft::Win32::RegistryKey;
 using Microsoft::Win32::RegistryValueKind;
 
-struct engine_pauser_guard : private boost::noncopyable {
+struct engine_pauser_guard {
 	engine&		m_engine;
 	bool		m_weather_paused;
 
@@ -42,6 +42,10 @@ struct engine_pauser_guard : private boost::noncopyable {
 	{
 		m_engine.weather_paused	(m_weather_paused);
 	}
+
+public:
+	engine_pauser_guard(const engine_pauser_guard& other) = delete;
+	engine_pauser_guard& operator =(const engine_pauser_guard& other) = delete;
 }; // struct engine_pauser_guard
 
 void window_weather_editor::save									(Microsoft::Win32::RegistryKey^ root)
