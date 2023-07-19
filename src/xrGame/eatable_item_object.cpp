@@ -66,6 +66,11 @@ void CEatableItemObject::OnH_A_Independent	()
 {
 	CEatableItem::OnH_A_Independent		();
 	CPhysicItem::OnH_A_Independent		();
+
+	if (!Useful()) {
+		setVisible(false);
+		setEnabled(false);
+	}
 }
 
 void CEatableItemObject::OnH_B_Independent	(bool just_before_destroy)
