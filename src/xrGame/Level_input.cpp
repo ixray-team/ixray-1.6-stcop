@@ -97,6 +97,13 @@ extern float g_separate_radius;
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
+	auto _curr = get_binded_action(key);
+	if (_curr != kNOTBINDED) {
+		if (is_block_action(static_cast<int>(_curr))) {
+			return;
+		}
+	}
+
 	if(Device.dwPrecacheFrame)
 		return;
 
@@ -106,8 +113,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 #endif // #ifdef INGAME_EDITOR
 
 	bool b_ui_exist = (!!CurrentGameUI());
-
-	EGameActions _curr = get_binded_action(key);
 
 	if(_curr==kPAUSE)
 	{
@@ -450,6 +455,13 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
+	auto bind = get_binded_action(key);
+	if (bind != kNOTBINDED) {
+		if (is_block_action(static_cast<int>(bind))) {
+			return;
+		}
+	}
+
 	if (!bReady || g_bDisableAllInput	)								return;
 	if ( CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardRelease(key)) return;
 	if (game && game->OnKeyboardRelease(get_binded_action(key)) )		return;
@@ -462,12 +474,20 @@ void CLevel::IR_OnKeyboardRelease(int key)
 	if (CURRENT_ENTITY())		
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)				IR->IR_OnKeyboardRelease			(get_binded_action(key));
+		if (IR != nullptr) {
+			IR->IR_OnKeyboardRelease(bind);
+		}
 	}
 }
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
+	auto bind = get_binded_action(key);
+	if (bind != kNOTBINDED) {
+		if (is_block_action(static_cast<int>(bind))) {
+			return;
+		}
+	}
 	if(g_bDisableAllInput) return;
 
 #ifdef DEBUG
@@ -507,7 +527,9 @@ void CLevel::IR_OnKeyboardHold(int key)
 		) return;
 	if (CURRENT_ENTITY())		{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)				IR->IR_OnKeyboardHold				(get_binded_action(key));
+		if (IR != nullptr) {
+			IR->IR_OnKeyboardHold(bind);
+		}
 	}
 }
 
@@ -545,4 +567,16 @@ void CLevel::IR_OnActivate()
 			};
 		};
 	}
+}
+
+void CLevel::block_action(int cmd) {
+	++blocked_bings[cmd];
+}
+
+void CLevel::unblock_action(int cmd) {
+	--blocked_bings[cmd];
+}
+
+bool CLevel::is_block_action(int cmd) {
+	return blocked_bings[cmd] > 0;
 }
