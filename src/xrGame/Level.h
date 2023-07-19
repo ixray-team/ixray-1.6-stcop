@@ -397,6 +397,8 @@ public:
 	void block_action(int cmd);
 	void unblock_action(int cmd);
 	bool is_block_action(int cmd);
+	void LockActorWithCameraRotation();
+	void UnLockActor();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -88,6 +88,22 @@ void release_action_script(int cmd) {
 	Level().IR_OnKeyboardRelease(cmd);
 }
 
+void LockActorWithCameraRotation_script() {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().LockActorWithCameraRotation();
+}
+
+void UnLockActor_script() {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().UnLockActor();
+}
+
 LPCSTR command_line	()
 {
 	return		(Core.Params);
@@ -858,7 +874,9 @@ void CLevel::script_register(lua_State *L)
 		def("unblock_action", &unblock_action_script),
 		def("press_action", &press_action_script),
 		def("hold_action", &hold_action_script),
-		def("release_action", &release_action_script)
+		def("release_action", &release_action_script),
+		def("lock_actor", &LockActorWithCameraRotation_script),
+		def("unlock_actor", &UnLockActor_script)
 	],
 	
 	module(L,"actor_stats")

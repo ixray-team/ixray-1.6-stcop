@@ -580,3 +580,15 @@ void CLevel::unblock_action(int cmd) {
 bool CLevel::is_block_action(int cmd) {
 	return blocked_bings[cmd] > 0;
 }
+
+void CLevel::LockActorWithCameraRotation() {
+	for (int i = kJUMP; i < kLASTACTION; ++i) {
+		block_action(i);
+	}
+}
+
+void CLevel::UnLockActor() {
+	for (int i = 0; i < kLASTACTION; ++i) {
+		unblock_action(i);
+	}
+}
