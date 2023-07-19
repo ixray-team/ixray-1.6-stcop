@@ -29,6 +29,7 @@ public:
 	IBlender*					b_bloom;
 	IBlender*					b_ssao;
 	IBlender* b_fxaa;
+	IBlender* b_smaa;
 	IBlender*					b_luminance;
 	IBlender*					b_combine;
 #ifdef DEBUG
@@ -120,6 +121,12 @@ private:
 	ref_shader s_fxaa;
 	ref_geom g_fxaa;
 
+	//SMAA
+	ref_shader s_smaa;
+	ref_geom g_smaa;
+	ref_rt rt_smaa_edgetex;
+	ref_rt rt_smaa_blendtex;
+
 	// Bloom
 	ref_geom					g_bloom_build;
 	ref_geom					g_bloom_filter;
@@ -200,6 +207,7 @@ public:
 
 	void						phase_ssao				();
 	void phase_fxaa(u32 pass);
+	void phase_smaa();
 	void						phase_downsamp			();
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
