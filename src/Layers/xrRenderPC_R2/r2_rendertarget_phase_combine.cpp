@@ -211,6 +211,11 @@ void	CRenderTarget::phase_combine	()
 		phase_fxaa(1);
 		RCache.set_Stencil(FALSE);
 	}
+	else if (ps_r2_aa_type == 2)
+	{
+		phase_smaa();
+		RCache.set_Stencil(FALSE);
+	}
 
 	// Distortion filter
 	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
