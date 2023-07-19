@@ -39,6 +39,55 @@
 
 using namespace luabind;
 
+
+void block_action_script(int cmd) {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().block_action(cmd);
+}
+
+bool is_block_action_script(int cmd) {
+	if (g_pGameLevel == nullptr) {
+		return false;
+	}
+
+	return Level().is_block_action(cmd);
+}
+
+void unblock_action_script(int cmd) {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().unblock_action(cmd);
+}
+
+void press_action_script(int cmd) {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().IR_OnKeyboardPress(cmd);
+}
+
+void hold_action_script(int cmd) {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().IR_OnKeyboardHold(cmd);
+}
+
+void release_action_script(int cmd) {
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	Level().IR_OnKeyboardRelease(cmd);
+}
+
 LPCSTR command_line	()
 {
 	return		(Core.Params);
@@ -704,8 +753,6 @@ bool has_active_tutotial()
 	return (g_tutorial!=NULL);
 }
 
-
-
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -804,7 +851,14 @@ void CLevel::script_register(lua_State *L)
 		
 		def("vertex_id",						&vertex_id),
 
-		def("game_id",							&GameID)
+		def("game_id", &GameID),
+
+		def("block_action", &block_action_script),
+		def("is_block_action", &is_block_action_script),
+		def("unblock_action", &unblock_action_script),
+		def("press_action", &press_action_script),
+		def("hold_action", &hold_action_script),
+		def("release_action", &release_action_script)
 	],
 	
 	module(L,"actor_stats")

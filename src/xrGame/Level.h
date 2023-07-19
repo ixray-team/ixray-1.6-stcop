@@ -16,7 +16,7 @@
 #include "Level_network_map_sync.h"
 #include "secure_messaging.h"
 #include "traffic_optimization.h"
-
+#include "xr_level_controller.h"
 
 class	CHUDManager;
 class	CParticlesObject;
@@ -390,7 +390,13 @@ public:
 	
 	void			init_compression			();
 	void			deinit_compression			();
-			
+
+private:
+	int blocked_bings[bindings_count]{ 0 };
+public:
+	void block_action(int cmd);
+	void unblock_action(int cmd);
+	bool is_block_action(int cmd);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
