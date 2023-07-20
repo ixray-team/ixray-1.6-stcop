@@ -733,7 +733,7 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 	bool b;
 	load_data					(b, input_packet);
 	if(b!=m_bGrenadeMode)		
-		SwitchMode				();
+		PerformSwitchGL();
 
 	u32 sz;
 	load_data					(sz, input_packet);
@@ -757,7 +757,7 @@ void CWeaponMagazinedWGrenade::net_Import	(NET_Packet& P)
 	bool NewMode				= FALSE;
 	NewMode						= !!P.r_u8();	
 	if (NewMode != m_bGrenadeMode)
-		SwitchMode				();
+		PerformSwitchGL();
 
 	inherited::net_Import		(P);
 }
