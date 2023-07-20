@@ -288,6 +288,19 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
+void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
+{
+	Fvector3 camdir = Device.vCameraDirection;
+
+	camdir.y = 0;
+	camdir.normalize();
+
+	camdir.y = 1;
+	camdir.normalize();
+
+	*v = camdir;
+}
+
 void  CWeaponMagazinedWGrenade::LaunchGrenade()
 {
 	if(!getRocketCount())	return;
@@ -352,9 +365,9 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 #endif
 				
 				if (canfire0 != 0)
-				{
 					d = res[0];
-				};
+				else
+					LaunchGrenade_Correct(&d);
 			}
 		};
 		
