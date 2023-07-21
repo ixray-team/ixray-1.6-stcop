@@ -34,34 +34,6 @@ typedef char *					LPSTR;
 // do not forget to call
 // 'cs_free'
 // on the block of memory being returned
-inline LPSTR to_string			(System::String ^string)
-{
-   // Pin memory so GC can't move it while native function is called
-	pin_ptr<const wchar_t>		wch = PtrToStringChars(string);
-
-	size_t						convertedChars = 0;
-	size_t						sizeInBytes = ((string->Length + 1) * 2);
-	errno_t						err = 0;
-	LPSTR						result = (LPSTR)malloc(sizeInBytes);
-
-	err							=
-		wcstombs_s	(
-			&convertedChars, 
-			result,
-			sizeInBytes,
-			wch,
-			sizeInBytes
-		);
-
-	if (err)
-		VERIFY					(!"[tostring][failed] : wcstombs_s failed");
-
-	return						(result);
-}
-
-inline System::String ^to_string	(LPCSTR string)
-{
-	return						(gcnew System::String(string));
-}
+#include <converting.hpp>
 
 #endif // #ifndef PCH_HPP_INCLUDED
