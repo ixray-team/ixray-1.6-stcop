@@ -292,12 +292,24 @@
     <ClInclude Include="property_vec3f_base.hpp" />
     <ClInclude Include="property_vec3f_reference.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="window_ide.h" />
-    <ClInclude Include="window_levels.h" />
-    <ClInclude Include="window_tree_values.h" />
-    <ClInclude Include="window_view.h" />
-    <ClInclude Include="window_weather.h" />
-    <ClInclude Include="window_weather_editor.h" />
+    <ClInclude Include="window_ide.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="window_levels.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="window_tree_values.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="window_view.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="window_weather.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="window_weather_editor.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="images\color_picker.cur" />
