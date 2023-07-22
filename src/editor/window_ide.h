@@ -8,71 +8,39 @@ using namespace System::Data;
 using namespace System::Drawing;
 
 namespace WeifenLuo {
-namespace WinFormsUI {
+namespace WinFormsUI
+{
 	interface class IDockContent;
-} // namespace WinFormsUI
-} // namespace WeifenLuo
+}}
 
-namespace editor {
-
+namespace editor
+{
 	class engine;
 	class ide;
 
-	ref class window_view;
-	ref class window_levels;
-	ref class window_weather;
-	ref class window_weather_editor;
-
-	/// <summary>
-	/// Summary for window_ide
-	///
-	/// WARNING: If you change the name of this class, you will need to change the
-	///          'Resource File Name' property for the managed resource compiler tool
-	///          associated with all .resx files this class depends on.  Otherwise,
-	///          the designers will not be able to interact properly with localized
-	///          resources associated with this form.
-	/// </summary>
 	public ref class window_ide : public System::Windows::Forms::Form
 	{
 	public:
 		window_ide(editor::engine	*engine)
 		{
 			InitializeComponent	();
-			//
-			//TODO: Add the constructor code here
-			//
 			custom_init			(engine);
 		}
 
 	protected:
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
 		~window_ide()
 		{
 			custom_finalize		();
 			if (components)
-			{
 				delete components;
-			}
 		}
 
-	protected: 
-
-    private: WeifenLuo::WinFormsUI::Docking::DockPanel^  Editor;
-    private: WeifenLuo::WinFormsUI::Docking::VS2015DarkTheme ^DarkTheme;
-
-	private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		System::ComponentModel::Container ^components;
+    private:
+		WeifenLuo::WinFormsUI::Docking::DockPanel^			Editor;
+		WeifenLuo::WinFormsUI::Docking::VS2015DarkTheme^	DarkTheme;
+		System::ComponentModel::Container^					components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->Editor = (gcnew WeifenLuo::WinFormsUI::Docking::DockPanel());
@@ -108,6 +76,7 @@ namespace editor {
 
 		}
 #pragma endregion
+
 protected:
 	editor::engine	*m_engine;
 
@@ -139,16 +108,13 @@ private:
 			void	custom_finalize				();
 			void	save_on_exit				();
 			void	load_on_create				();
-
-private:
+			
 	WeifenLuo::WinFormsUI::Docking::IDockContent ^reload_content		(System::String ^persist_string);
 
-private:
 			Void	window_ide_SizeChanged		(System::Object^  sender, System::EventArgs^  e);
 			Void	window_ide_LocationChanged	(System::Object^  sender, System::EventArgs^  e);
 			Void	window_ide_FormClosing		(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
 			Void	window_ide_Activated		(System::Object^  sender, System::EventArgs^  e);
 			Void	window_ide_Deactivate		(System::Object^  sender, System::EventArgs^  e);
-};
-
+	};
 }

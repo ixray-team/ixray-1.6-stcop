@@ -59,7 +59,7 @@ void color_components::blue_setter			(float value)
 	m_holder->blue		(value);
 }
 
-property_color_base::property_color_base	(editor::color const% color, array<System::Attribute^>^ attributes)
+property_color_base::property_color_base	(editor::color const% _color, array<System::Attribute^>^ attributes)
 {
 	m_container			= gcnew property_container(nullptr, this);
 	m_components		= new color_components(this);
@@ -87,7 +87,7 @@ property_color_base::property_color_base	(editor::color const% color, array<Syst
 			float::typeid,
 			"components",
 			"red component",
-			color.r,
+			_color.r,
 			(String^)nullptr,
 			property_converter_float::typeid
 		);
@@ -114,7 +114,7 @@ property_color_base::property_color_base	(editor::color const% color, array<Syst
 			float::typeid,
 			"components",
 			"green component",
-			color.g,
+			_color.g,
 			(String^)nullptr,
 			property_converter_float::typeid
 		);
@@ -142,7 +142,7 @@ property_color_base::property_color_base	(editor::color const% color, array<Syst
 			float::typeid,
 			"components",
 			"blue component",
-			color.b,
+			_color.b,
 			(String^)nullptr,
 			property_converter_float::typeid
 		);
@@ -180,11 +180,11 @@ Object^ property_color_base::get_value		()
 
 void property_color_base::set_value			(Object ^object)
 {
-	Color				color = safe_cast<Color>(object);
+	::Color _color		= safe_cast<::Color>(object);
 	editor::color		value;
-	value.r				= color.r;
-	value.g				= color.g;
-	value.b				= color.b;
+	value.r				= _color.r;
+	value.g				= _color.g;
+	value.b				= _color.b;
 	set_value_raw		(value);
 }
 
@@ -214,8 +214,8 @@ void property_color_base::on_double_click	(editor::controls::property_grid^ prop
 #if 0
 	ColorDialog					^dialog = gcnew ColorDialog();
 	dialog->FullOpen			= true;
-	editor::color				color = get_value_raw();
-	dialog->Color				= System::Drawing::Color::FromArgb(255, int(255.f*color.r), int(255.f*color.g), int(255.f*color.b));
+	editor::color				_color = get_value_raw();
+	dialog->Color				= System::Drawing::Color::FromArgb(255, int(255.f*_color.r), int(255.f*_color.g), int(255.f*_color.b));
 	if (dialog->ShowDialog() == System::Windows::Forms::DialogResult::Cancel)
 		return;
 
