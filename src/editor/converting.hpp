@@ -6,7 +6,7 @@ inline LPSTR to_string(System::String^ string)
 	size_t convertedChars		= 0;
 	size_t sizeInBytes			= ((string->Length + 1) * 2);
 	pin_ptr<const wchar_t> wch	= PtrToStringChars(string);
-	LPSTR result				= (LPSTR)ALLOCA((u32)sizeInBytes);
+	LPSTR result				= (LPSTR)_alloca((u32)sizeInBytes);
 	errno_t err					=
 		wcstombs_s(
 			&convertedChars, 
@@ -32,7 +32,7 @@ inline float to_single(System::String^ string)
 	size_t convertedChars		= 0;
 	size_t sizeInBytes			= ((string->Length + 1) * 2);
 	pin_ptr<const wchar_t>	wch = PtrToStringChars(string);
-	LPSTR result				= (LPSTR)ALLOCA((u32)sizeInBytes);
+	LPSTR result				= (LPSTR)_alloca((u32)sizeInBytes);
 	errno_t err					=
 		wcstombs_s(
 			&convertedChars, 
