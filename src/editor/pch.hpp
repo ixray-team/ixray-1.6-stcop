@@ -12,10 +12,10 @@
 #ifdef DEBUG
 #	define VERIFY(expression)	do { if (!(expression)) throw; } while (0)
 #	define NODEFAULT			do { __debugbreak(); } while (0)
-#else // #ifdef DEBUG
+#else // DEBUG
 #	define VERIFY(expression)	do {} while (0)
 #	define NODEFAULT			__assume(0)
-#endif // #ifdef DEBUG
+#endif // DEBUG
 
 typedef unsigned int			u32;
 typedef char const *			LPCSTR;
@@ -31,9 +31,18 @@ typedef char *					LPSTR;
 #pragma warning(disable:4127)
 #pragma warning(disable:4100)
 
-// do not forget to call
-// 'cs_free'
-// on the block of memory being returned
-#include <converting.hpp>
+// Our headers here:
+#include "converting.hpp"
 
-#endif // #ifndef PCH_HPP_INCLUDED
+// Our forms here:
+namespace editor {
+	ref class window_ide;
+}
+
+#include "window_weather_editor.h"
+#include "window_weather.h"
+#include "window_levels.h"
+#include "window_view.h"
+#include "window_ide.h"
+
+#endif // PCH_HPP_INCLUDED

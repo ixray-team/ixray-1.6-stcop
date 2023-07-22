@@ -8,18 +8,8 @@ using namespace System::Data;
 using namespace System::Drawing;
 
 
-namespace editor {
-
-	ref class window_ide;
-	/// <summary>
-	/// Summary for window_weather
-	///
-	/// WARNING: If you change the name of this class, you will need to change the
-	///          'Resource File Name' property for the managed resource compiler tool
-	///          associated with all .resx files this class depends on.  Otherwise,
-	///          the designers will not be able to interact properly with localized
-	///          resources associated with this form.
-	/// </summary>
+namespace editor
+{
 	public ref class window_weather : public WeifenLuo::WinFormsUI::Docking::DockContent
 	{
 	public:
@@ -27,43 +17,24 @@ namespace editor {
 			m_ide	(ide)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
 		~window_weather()
 		{
 			if (components)
-			{
 				delete components;
-			}
 		}
 
-	private: System::Windows::Forms::ToolStrip^  toolStrip1;
-	private: System::Windows::Forms::ToolStripButton^  SaveButton;
-	private: editor::controls::property_grid^  PropertyGrid;
-	private: System::Windows::Forms::ToolStripButton^  ReloadWeatherButton;
-	private: System::Windows::Forms::ToolStripButton^  ReloadAllWeathersButton;
-	protected: 
-
-	protected: 
-
 	private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::Windows::Forms::ToolStrip^			toolStrip1;
+		System::Windows::Forms::ToolStripButton^	SaveButton;
+		editor::controls::property_grid^			PropertyGrid;
+		System::Windows::Forms::ToolStripButton^	ReloadWeatherButton;
+		System::Windows::Forms::ToolStripButton^	ReloadAllWeathersButton;
+		System::ComponentModel::Container^			components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(window_weather::typeid));
@@ -142,17 +113,17 @@ namespace editor {
 
 		}
 #pragma endregion
+
 private:
 	window_ide^					m_ide;
 
 public:
-	inline	::PropertyGrid^		property_grid		() {return this->PropertyGrid;}
+	inline	::PropertyGrid^		property_grid		() { return this->PropertyGrid; }
 
 private:
 			Void				window_weather_Leave			(Object^ sender, EventArgs^ e);
 			Void				SaveButton_Click				(Object^ sender, EventArgs^ e);
 			Void				ReloadWeatherButton_Click		(Object^ sender, EventArgs^ e);
 			Void				ReloadAllWeathersButton_Click	(Object^ sender, EventArgs^ e);
-}; // ref class window_weather
-
-} // namespace editor
+	};
+}

@@ -7,61 +7,32 @@ using namespace System::Windows::Forms;
 using namespace System::Data;
 using namespace System::Drawing;
 
-
-namespace editor {
-
-	ref class window_ide;
-	/// <summary>
-	/// Summary for window_view
-	///
-	/// WARNING: If you change the name of this class, you will need to change the
-	///          'Resource File Name' property for the managed resource compiler tool
-	///          associated with all .resx files this class depends on.  Otherwise,
-	///          the designers will not be able to interact properly with localized
-	///          resources associated with this form.
-	/// </summary>
+namespace editor
+{
 	public ref class window_view : public WeifenLuo::WinFormsUI::Docking::DockContent
 	{
 	public:
 		window_view(window_ide %ide)
 		{
 			InitializeComponent	();
-			//
-			//TODO: Add the constructor code here
-			//
 			custom_init			(ide);
 		}
 
 	protected:
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
 		~window_view()
 		{
 			if (components)
-			{
 				delete components;
-			}
 		}
-	private: System::Windows::Forms::ToolStrip^  MainToolBar;
-	protected: 
-	private: System::Windows::Forms::ToolStripButton^  EditButton;
-	private: System::Windows::Forms::ToolStripButton^  PauseButton;
-	private: System::Windows::Forms::Panel^  ViewPanel;
-	private: System::Windows::Forms::ImageList^  imageList1;
-	private: System::ComponentModel::IContainer^  components;
-
 	private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-
+		System::Windows::Forms::ToolStrip^			MainToolBar;
+		System::Windows::Forms::ToolStripButton^	EditButton;
+		System::Windows::Forms::ToolStripButton^	PauseButton;
+		System::Windows::Forms::Panel^				ViewPanel;
+		System::Windows::Forms::ImageList^			imageList1;
+		System::ComponentModel::IContainer^			components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
@@ -152,6 +123,7 @@ namespace editor {
 
 		}
 #pragma endregion
+
 public:
 			void	pause						();
 			void	on_load_finished			();
@@ -174,8 +146,6 @@ private:
 			bool	pick_color_cursor			();
 			void	pick_color_cursor			(bool value);
 			void	check_cursor				();
-
-private:
 			void	custom_init					(window_ide %ide);
 			Void	window_view_DoubleClick		(Object^ sender, EventArgs^ e);
 			Void	window_view_SizeChanged		(Object^ sender, EventArgs^ e);
@@ -188,6 +158,5 @@ private:
 			Void	ViewPanel_MouseLeave		(Object^ sender, EventArgs^ e);
 			Void	ViewPanel_MouseClick		(Object^ sender, MouseEventArgs^ e);
 			Void	window_view_KeyDown			(Object^ sender, KeyEventArgs^ e);
-}; // ref class window_view
-
-} // namespace editor
+	};
+}

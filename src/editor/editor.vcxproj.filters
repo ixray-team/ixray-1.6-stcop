@@ -536,6 +536,9 @@
     <ClInclude Include="window_tree_values.h">
       <Filter>windows\tree_values</Filter>
     </ClInclude>
+    <ClInclude Include="converting.hpp">
+      <Filter>core</Filter>
+    </ClInclude>
     <ClInclude Include="engine_include.hpp">
       <Filter>core</Filter>
     </ClInclude>
