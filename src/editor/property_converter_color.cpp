@@ -51,7 +51,7 @@ bool property_converter_color::CanConvertTo		(
 		Type^ destination_type
 	)
 {
-	if (destination_type == Color::typeid)
+	if (destination_type == ::Color::typeid)
 		return				(true);
 
 	if (destination_type == String::typeid)
@@ -69,23 +69,23 @@ Object^ property_converter_color::ConvertTo		(
 {
 	if (destination_type == String::typeid) {
 		property_container^	container = safe_cast<property_container^>(value);
-		editor::color		color = safe_cast<property_color_base%>(container->container_holder()).get_value_raw();
+		editor::color		_color = safe_cast<property_color_base%>(container->container_holder()).get_value_raw();
 		return		(
-			"" +  property_converter_float().ConvertTo(context, culture, color.r, String::typeid) +
-			" " + property_converter_float().ConvertTo(context, culture, color.g, String::typeid) +
-			" " + property_converter_float().ConvertTo(context, culture, color.b, String::typeid) +
+			"" +  property_converter_float().ConvertTo(context, culture, _color.r, String::typeid) +
+			" " + property_converter_float().ConvertTo(context, culture, _color.g, String::typeid) +
+			" " + property_converter_float().ConvertTo(context, culture, _color.b, String::typeid) +
 			""
 		);
 	}
 
-	if (destination_type == Color::typeid) {
+	if (destination_type == ::Color::typeid) {
 		property_container^	container = safe_cast<property_container^>(value);
-		editor::color		color = safe_cast<property_color_base%>(container->container_holder()).get_value_raw();
+		editor::color		_color = safe_cast<property_color_base%>(container->container_holder()).get_value_raw();
 		return		(
-			Color(
-				color.r,
-				color.g,
-				color.b
+			::Color(
+				_color.r,
+				_color.g,
+				_color.b
 			)
 		);
 	}
@@ -117,18 +117,18 @@ Object^ property_converter_color::ConvertFrom	(
 	try {
 		int			comma = string->IndexOf(" ");
 		String		^real_value = string->Substring(0, comma);
-		Color		color;
-		color.r		= to_single(real_value);
+		::Color		_color;
+		_color.r	= to_single(real_value);
 
 		string		= string->Substring(comma + 1, string->Length - comma - 1);
 		comma		= string->IndexOf(" ");
 		real_value	= string->Substring(0, comma);
-		color.g		= to_single(real_value);
+		_color.g	= to_single(real_value);
 
 		string		= string->Substring(comma + 1, string->Length - comma - 1);
-		color.b		= to_single(string);
+		_color.b	= to_single(string);
 
-		return		(color);
+		return		(_color);
 	}
 	catch(...) {
         throw gcnew ArgumentException(

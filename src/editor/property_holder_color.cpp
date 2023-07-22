@@ -33,10 +33,10 @@ editor::property_value* property_holder::add_property				(
 	PropertySpec^				spec =
 		gcnew PropertySpec(
 			to_string(identifier),
-			Color::typeid,
+			::Color::typeid,
 			to_string(category),
 			to_string(description),
-			Color(default_value.r, default_value.g, default_value.b),
+			::Color(default_value.r, default_value.g, default_value.b),
 			property_editor_color::typeid,
 			property_converter_color::typeid
 		);
@@ -67,10 +67,10 @@ editor::property_value* property_holder::add_property				(
 	PropertySpec^				spec =
 		gcnew PropertySpec(
 			to_string(identifier),
-			Color::typeid,
+			::Color::typeid,
 			to_string(category),
 			to_string(description),
-			Color(default_value.r, default_value.g, default_value.b),
+			::Color(default_value.r, default_value.g, default_value.b),
 			property_editor_color::typeid,
 			property_converter_color::typeid
 		);
