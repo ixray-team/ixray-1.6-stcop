@@ -110,32 +110,32 @@ bool CSoundRender_Environment::load			(IReader* fs)
 
         Room                		= fs->r_float();
         RoomHF              		= fs->r_float();
-    RoomLF = fs->r_float();
+    //RoomLF = fs->r_float();
         RoomRolloffFactor   		= fs->r_float();
         DecayTime           		= fs->r_float();
         DecayHFRatio        		= fs->r_float();
         Reflections         		= fs->r_float();
         ReflectionsDelay    		= fs->r_float();
-    ReflectionsPan[0] = fs->r_float();
+    //ReflectionsPan[0] = fs->r_float();
         Reverb              		= fs->r_float();
         ReverbDelay         		= fs->r_float();
-    ReverbPan[0] = fs->r_float();
+    //ReverbPan[0] = fs->r_float();
         EnvironmentSize     		= fs->r_float();
         EnvironmentDiffusion		= fs->r_float();
         AirAbsorptionHF     		= fs->r_float();
 
 	        Environment     		= fs->r_u32();
 
-    DecayHFLimit = fs->r_u32();
-    EchoTime = fs->r_float();
-    EchoDepth = fs->r_float();
-    ReverbDelay = fs->r_float();
-    DecayLFRatio = fs->r_float();
-    ModulationTime = fs->r_float();
-    ModulationDepth = fs->r_float();
-    HFReference = fs->r_float();
-    LFReference = fs->r_float();
-    Density = fs->r_float();
+    //DecayHFLimit = fs->r_u32();
+    //EchoTime = fs->r_float();
+    //EchoDepth = fs->r_float();
+    //ReverbDelay = fs->r_float();
+    //DecayLFRatio = fs->r_float();
+    //ModulationTime = fs->r_float();
+    //ModulationDepth = fs->r_float();
+    //HFReference = fs->r_float();
+    //LFReference = fs->r_float();
+    //Density = fs->r_float();
 
     return true;
 }
@@ -147,32 +147,32 @@ void CSoundRender_Environment::save	(IWriter* fs)
 
     fs->w_float	                    (Room                );
     fs->w_float	                    (RoomHF              );
-    fs->w_float(RoomLF);
+    //fs->w_float(RoomLF);
     fs->w_float	                    (RoomRolloffFactor   );
     fs->w_float	                    (DecayTime           );
     fs->w_float	                    (DecayHFRatio        );
     fs->w_float	                    (Reflections         );
     fs->w_float	                    (ReflectionsDelay    );
-    fs->w_float(ReflectionsPan[0]);
+    //fs->w_float(ReflectionsPan[0]);
     fs->w_float	                    (Reverb              );
     fs->w_float	                    (ReverbDelay         );
-    fs->w_float(ReverbPan[0]);
+    //fs->w_float(ReverbPan[0]);
     fs->w_float	                    (EnvironmentSize     );
     fs->w_float	                    (EnvironmentDiffusion);
     fs->w_float	                    (AirAbsorptionHF     );
 
 	fs->w_u32						(Environment		 );
 
-    fs->w_u32(DecayHFLimit);
-    fs->w_float(EchoTime);
-    fs->w_float(EchoDepth);
-    fs->w_float(ReverbDelay);
-    fs->w_float(DecayLFRatio);
-    fs->w_float(ModulationTime);
-    fs->w_float(ModulationDepth);
-    fs->w_float(HFReference);
-    fs->w_float(LFReference);
-    fs->w_float(Density);
+    //fs->w_u32(DecayHFLimit);
+    //fs->w_float(EchoTime);
+    //fs->w_float(EchoDepth);
+    //fs->w_float(ReverbDelay);
+    //fs->w_float(DecayLFRatio);
+    //fs->w_float(ModulationTime);
+    //fs->w_float(ModulationDepth);
+    //fs->w_float(HFReference);
+    //fs->w_float(LFReference);
+    //fs->w_float(Density);
 }
 
 //////////////////////////////////////////////////////////////////////////
