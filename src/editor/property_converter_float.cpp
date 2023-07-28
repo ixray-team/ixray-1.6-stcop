@@ -73,7 +73,7 @@ Object^ property_converter_float::ConvertFrom	(
 		return		(inherited::ConvertFrom(context, culture, value));
 
 	try {
-		return		( float::Parse(string) );
+		return to_single(string);
 	}
 	catch(...) {
         throw gcnew ArgumentException(

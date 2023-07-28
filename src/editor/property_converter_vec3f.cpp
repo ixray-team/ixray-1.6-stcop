@@ -118,15 +118,15 @@ Object^ property_converter_vec3f::ConvertFrom	(
 		int			comma = string->IndexOf(" ");
 		String		^real_value = string->Substring(0, comma);
 		Vec3f		vec3f;
-		vec3f.x		= float::Parse(real_value);
+		vec3f.x		= to_single(real_value);
 
 		string		= string->Substring(comma + 1, string->Length - comma - 1);
 		comma		= string->IndexOf(" ");
 		real_value	= string->Substring(0, comma);
-		vec3f.y		= float::Parse(real_value);
+		vec3f.y		= to_single(real_value);
 
 		string		= string->Substring(comma + 1, string->Length - comma - 1);
-		vec3f.z		= float::Parse(string);
+		vec3f.z		= to_single(string);
 
 		return		(vec3f);
 	}
