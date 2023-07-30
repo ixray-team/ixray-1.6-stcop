@@ -6,7 +6,7 @@
 #include "../../ai_space.h"
 #include "../../level_graph.h"
 #include "../../game_graph.h"
-#include "../../game_level_cross_table.h"
+#include "../../../xrServerEntities/game_level_cross_table.h"
 #include "../../level.h"
 #include "../../level_debug.h"
 #include "../../cover_manager.h"

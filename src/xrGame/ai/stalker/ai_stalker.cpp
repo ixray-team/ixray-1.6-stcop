@@ -14,7 +14,7 @@
 #include "../../phdestroyable.h"
 #include "../../CharacterPhysicsSupport.h"
 #include "../../script_entity_action.h"
-#include "../../game_level_cross_table.h"
+#include "../../../xrServerEntities/game_level_cross_table.h"
 #include "../../game_graph.h"
 #include "../../inventory.h"
 #include "../../artefact.h"

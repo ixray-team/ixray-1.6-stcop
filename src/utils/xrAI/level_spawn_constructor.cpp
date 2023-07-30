@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "level_spawn_constructor.h"
-#include "game_level_cross_table.h"
+#include "../../xrServerEntities/game_level_cross_table.h"
 #include "level_graph.h"
 #include "graph_engine.h"
 #include "xrmessages.h"

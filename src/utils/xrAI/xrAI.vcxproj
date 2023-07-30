@@ -354,8 +354,8 @@
     <ClInclude Include="game_graph_builder.h" />
     <ClInclude Include="game_graph_builder_inline.h" />
     <ClInclude Include="game_graph_inline.h" />
-    <ClInclude Include="game_level_cross_table.h" />
-    <ClInclude Include="game_level_cross_table_inline.h" />
+    <ClInclude Include="..\..\xrServerEntities\game_level_cross_table.h" />
+    <ClInclude Include="..\..\xrServerEntities\game_level_cross_table_inline.h" />
     <ClInclude Include="game_spawn_constructor.h" />
     <ClInclude Include="game_spawn_constructor_inline.h" />
     <ClInclude Include="graph_abstract.h" />

@@ -13,7 +13,7 @@
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife.h"
 #include "factory_api.h"
-#include "game_level_cross_table.h"
+#include "../../xrServerEntities/game_level_cross_table.h"
 #include "xrCrossTable.h"
 #include "guid_generator.h"
 #include "graph_engine.h"

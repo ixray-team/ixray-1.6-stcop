@@ -4758,10 +4758,10 @@
     <ClInclude Include="..\xrServerEntities\game_graph_space.h">
       <Filter>AI\ANavigation\GameGraph</Filter>
     </ClInclude>
-    <ClInclude Include="game_level_cross_table.h">
+    <ClInclude Include="..\xrServerEntities\game_level_cross_table.h">
       <Filter>AI\ANavigation\GameLevelCrossTable</Filter>
     </ClInclude>
-    <ClInclude Include="game_level_cross_table_inline.h">
+    <ClInclude Include="..\xrServerEntities\game_level_cross_table_inline.h">
       <Filter>AI\ANavigation\GameLevelCrossTable</Filter>
     </ClInclude>
     <ClInclude Include="graph_abstract.h">

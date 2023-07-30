@@ -14,7 +14,7 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_schedule_registry.h"
 #include "alife_graph_registry.h"
-#include "game_level_cross_table.h"
+#include "../xrServerEntities/game_level_cross_table.h"
 #include "level_graph.h"
 
 void CSE_ALifeGroupAbstract::switch_online	()

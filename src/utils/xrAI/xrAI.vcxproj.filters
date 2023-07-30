@@ -645,10 +645,10 @@
     <ClInclude Include="graph_vertex_inline.h">
       <Filter>ALife\search\graphs\abstract_graph\graph_vertex</Filter>
     </ClInclude>
-    <ClInclude Include="game_level_cross_table.h">
+    <ClInclude Include="..\..\xrServerEntities\game_level_cross_table.h">
       <Filter>ALife\search\graphs\cross_table</Filter>
     </ClInclude>
-    <ClInclude Include="game_level_cross_table_inline.h">
+    <ClInclude Include="..\..\xrServerEntities\game_level_cross_table_inline.h">
       <Filter>ALife\search\graphs\cross_table</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xrServerEntities\game_graph_space.h">

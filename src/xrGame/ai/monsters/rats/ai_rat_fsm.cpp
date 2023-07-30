@@ -9,7 +9,7 @@
 #include "pch_script.h"
 #include "ai_rat.h"
 #include "../../ai_monsters_misc.h"
-#include "../../../game_level_cross_table.h"
+#include "../../../../xrServerEntities/game_level_cross_table.h"
 #include "../../../game_graph.h"
 #include "ai_rat_space.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"

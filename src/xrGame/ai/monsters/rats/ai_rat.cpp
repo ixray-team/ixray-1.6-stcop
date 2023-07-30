@@ -11,7 +11,7 @@
 #include "../../ai_monsters_misc.h"
 #include "../../../../xrphysics/PhysicsShell.h"
 #include "../../../game_graph.h"
-#include "../../../game_level_cross_table.h"
+#include "../../../../xrServerEntities/game_level_cross_table.h"
 #include "../../../../xrServerEntities/xrserver_objects_alife_monsters.h"
 
 #include "ai_rat_space.h"

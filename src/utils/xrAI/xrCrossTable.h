@@ -10,7 +10,7 @@
 
 #include "../../xrEngine/xrLevel.h"
 #include "alife_space.h"
-#include "game_level_cross_table.h"
+#include "../../xrServerEntities/game_level_cross_table.h"
 #include "game_graph.h"
 #include "level_graph.h"
 

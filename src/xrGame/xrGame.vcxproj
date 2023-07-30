@@ -980,8 +980,8 @@
     <ClInclude Include="game_events_handler.h" />
     <ClInclude Include="game_graph.h" />
     <ClInclude Include="game_graph_inline.h" />
-    <ClInclude Include="game_level_cross_table.h" />
-    <ClInclude Include="game_level_cross_table_inline.h" />
+    <ClInclude Include="..\xrServerEntities\game_level_cross_table.h" />
+    <ClInclude Include="..\xrServerEntities\game_level_cross_table_inline.h" />
     <ClInclude Include="game_location_selector.h" />
     <ClInclude Include="game_location_selector_inline.h" />
     <ClInclude Include="game_news.h" />

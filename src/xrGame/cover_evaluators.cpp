@@ -12,7 +12,7 @@
 #include "ai_space.h"
 #include "level_graph.h"
 #include "game_graph.h"
-#include "game_level_cross_table.h"
+#include "../xrServerEntities/game_level_cross_table.h"
 #include "smart_cover.h"
 #include "smart_cover_loophole.h"
 #include "ai_debug.h"

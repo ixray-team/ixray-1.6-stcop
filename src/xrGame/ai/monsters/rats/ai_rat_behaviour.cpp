@@ -10,7 +10,7 @@
 #include "ai_rat.h"
 #include "rat_state_manager.h"
 #include "ai_space.h"
-#include "game_level_cross_table.h"
+#include "../../../../xrServerEntities/game_level_cross_table.h"
 #include "ai_object_location.h"
 #include "game_graph.h"
 
