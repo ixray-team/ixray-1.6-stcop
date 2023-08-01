@@ -445,7 +445,6 @@ bool CHudItem::isHUDAnimationExist(LPCSTR anim_name)
 float CHudItem::GetHudFov()
 {
 	auto base = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
-	clamp(base, 0.1f, 1.0f);
 
 	return base;
 }

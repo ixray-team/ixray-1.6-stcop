@@ -469,7 +469,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	Fmatrix Pold				= Device.mProject;
 	Fmatrix FTold				= Device.mFullTransform;
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
+		deg2rad(psHUD_FOV),
 		Device.fASPECT, HUD_VIEWPORT_NEAR, 
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
@@ -531,7 +531,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	Fmatrix Pold				= Device.mProject;
 	Fmatrix FTold				= Device.mFullTransform;
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
+		deg2rad(psHUD_FOV),
 		Device.fASPECT, HUD_VIEWPORT_NEAR, 
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
@@ -584,7 +584,7 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	Fmatrix Pold = Device.mProject;
 	Fmatrix FTold = Device.mFullTransform;
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
+		deg2rad(psHUD_FOV),
 		Device.fASPECT, HUD_VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
@@ -619,7 +619,7 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	Fmatrix Pold				= Device.mProject;
 	Fmatrix FTold				= Device.mFullTransform;
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
+		deg2rad(psHUD_FOV),
 		Device.fASPECT, HUD_VIEWPORT_NEAR, 
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
