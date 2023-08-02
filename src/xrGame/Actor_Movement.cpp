@@ -38,9 +38,13 @@ IC static void generate_orthonormal_basis1(const Fvector& dir,Fvector& updir, Fv
 void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 {
 	// Lookout
-	if (mstate_wf&mcLookout)	mstate_real		|= mstate_wf&mcLookout;
-	else						mstate_real		&= ~mcLookout;
-	
+	if (mstate_wf&mcLLookout && mstate_wf&mcRLookout)
+		mstate_real &= ~mcLookout;
+	else if (mstate_wf & mcLookout)
+		mstate_real	|= mstate_wf&mcLookout;
+	else
+		mstate_real	&= ~mcLookout;
+		
 	if (mstate_real&(mcJump|mcFall|mcLanding|mcLanding2))
 		mstate_real		&= ~mcLookout;
 
