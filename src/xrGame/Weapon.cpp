@@ -1857,9 +1857,10 @@ float CWeapon::Weight() const
 	return res;
 }
 
+extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return !IsPending() && ( !IsZoomed() || !ZoomHideCrosshair() );
+	return !IsPending() && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
 }
 
 bool CWeapon::show_indicators()
@@ -1891,8 +1892,6 @@ BOOL CWeapon::ParentIsActor	()
 
 	return EA->cast_actor()!=0;
 }
-
-extern u32 hud_adj_mode;
 
 void CWeapon::debug_draw_firedeps()
 {
