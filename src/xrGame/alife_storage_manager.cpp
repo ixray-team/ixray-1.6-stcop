@@ -31,7 +31,6 @@ extern string_path g_last_saved_game;
 
 CALifeStorageManager::~CALifeStorageManager	()
 {
-	*g_last_saved_game			= 0;
 }
 
 void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
