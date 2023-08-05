@@ -24,7 +24,7 @@ struct vf {
 	float  fog	: FOG;
 };
 
-vf main_vs_2_0 (v_vertx v) {
+vf main(v_vertx v) {
 	vf 		o;
 
     float4 P = v.P; // world
