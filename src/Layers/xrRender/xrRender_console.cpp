@@ -87,7 +87,6 @@ xr_token							aa_type_token[] = {
 	{ "off",						0												},
 	{ "fxaa",						1												},
 	{ "smaa",						2												},
-	{ "dlaa",						3												},
 	{ 0,							0												}
 };
 // Common
