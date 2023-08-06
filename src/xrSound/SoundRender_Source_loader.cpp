@@ -3,8 +3,8 @@
 
 #include <msacm.h>
 
-#include "soundrender_core.h"
-#include "soundrender_source.h"
+#include "SoundRender_Core.h"
+#include "SoundRender_Source.h"
 
 //	SEEK_SET	0	File beginning
 //	SEEK_CUR	1	Current file pointer position
@@ -67,13 +67,13 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 
 	vorbis_info* ovi		= ov_info(&ovf,-1);
 	// verify
-	R_ASSERT3				(ovi,"Invalid source info:",pName);
-	R_ASSERT3				(ovi->rate==44100,"Invalid source rate:",pName);
+	R_ASSERT3				(ovi, "Invalid source info:", pname.c_str());
+	R_ASSERT3				(ovi->rate==44100, "Invalid source rate:", pname.c_str());
 
 #ifdef DEBUG
 	if(ovi->channels==2)
 	{
-		Msg("stereo sound source [%s]", pName);
+		Msg("stereo sound source [%s]", pname.c_str());
 	}
 #endif // #ifdef DEBUG
 
@@ -99,7 +99,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
         if (vers==0x0001){
 			m_fMinDist		= F.r_float	();
 			m_fMaxDist		= F.r_float	();
-	        m_fBaseVolume	= 1.f;
+	        m_fBaseVolume	= 1.0f;
 			m_uGameType		= F.r_u32	();
 			m_fMaxAIDist	= m_fMaxDist;
 		}else if (vers==0x0002){
@@ -115,12 +115,12 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 			m_uGameType		= F.r_u32	();
 			m_fMaxAIDist	= F.r_float	();
 		}else{
-			Log				("! Invalid ogg-comment version, file: ",pName);
+			Log				("! Invalid ogg-comment version, file: ", pname.c_str());
 		}
 	}else{
-		Log					("! Missing ogg-comment, file: ",pName);
+		Log					("! Missing ogg-comment, file: ", pname.c_str());
 	}
-	R_ASSERT3((m_fMaxAIDist>=0.1f)&&(m_fMaxDist>=0.1f),"Invalid max distance.",pName);
+	R_ASSERT3((m_fMaxAIDist>=0.1f)&&(m_fMaxDist>=0.1f),"Invalid max distance.", pname.c_str());
 
 	ov_clear				(&ovf);
 	FS.r_close				(wave);

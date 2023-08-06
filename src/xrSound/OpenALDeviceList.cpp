@@ -32,15 +32,19 @@
 
 #ifdef _EDITOR
 	log_fn_ptr_type*	pLog = NULL;
-#endif
 
 void __cdecl al_log(char* msg)
 {
 	Log(msg);
 }
+#endif
 
 ALDeviceList::ALDeviceList()
 {
+#ifdef _EDITOR
+	pLog					= al_log;
+#endif
+
 	snd_device_id			= u32(-1);
 	Enumerate();
 }
@@ -61,9 +65,9 @@ ALDeviceList::~ALDeviceList()
 
 void ALDeviceList::Enumerate()
 {
-	char				*devices;
+	char* devices;
 	int	ALmajor, ALminor, EFXmajor, EFXminor, index;
-	LPCSTR				actualDeviceName;
+	const char* actualDeviceName;
 	
 	Msg("SOUND: OpenAL: enumerate devices...");
 	// have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
@@ -97,7 +101,7 @@ void ALDeviceList::Enumerate()
 
 					if ((actualDeviceName != nullptr) && xr_strlen(actualDeviceName) > 0)
 					{
-						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &ALmajor);
+						alcGetIntegerv(device, ALC_MAJOR_VERSION, sizeof(int), &ALmajor);
 						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &ALminor);
 
 						alcGetIntegerv(device, ALC_EFX_MAJOR_VERSION, sizeof(int), &EFXmajor);

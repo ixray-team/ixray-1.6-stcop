@@ -1,45 +1,25 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "soundrender_target.h"
-#include "soundrender_core.h"
-#include "soundrender_emitter.h"
-#include "soundrender_source.h"
+#include "SoundRender_Target.h"
+#include "SoundRender_Core.h"
+#include "SoundRender_Emitter.h"
+#include "SoundRender_Source.h"
 
-CSoundRender_Target::CSoundRender_Target(void)
+CSoundRender_Target::CSoundRender_Target()
 {
 	m_pEmitter		= 0;
 	rendering		= FALSE;
 	wave			= 0;
 }
 
-CSoundRender_Target::~CSoundRender_Target(void)
+CSoundRender_Target::~CSoundRender_Target()
 {
 	VERIFY				(wave==0);
 }
 
 BOOL CSoundRender_Target::_initialize()
 {
-	/*
-	// Calc format
-	wfx.wFormatTag			= WAVE_FORMAT_PCM;
-	wfx.nChannels			= 2; //1;
-	wfx.nSamplesPerSec		= SoundRender->wfm.nSamplesPerSec;
-	wfx.wBitsPerSample		= 16;
-	wfx.nBlockAlign			= wfx.nChannels * wfx.wBitsPerSample / 8;
-	wfx.nAvgBytesPerSec		= wfx.nSamplesPerSec * wfx.nBlockAlign;
-	wfx.cbSize				= 0;
-
-	*/	
-/*
-		wfx.wFormatTag=WAVE_FORMAT_PCM;
-		wfx.nChannels=2;
-		wfx.wBitsPerSample=16;
-		wfx.nBlockAlign=4;
-		wfx.nSamplesPerSec=44100;
-		wfx.nAvgBytesPerSec=176400;
-		wfx.cbSize=0;
-*/
     return					TRUE;
 }
 
@@ -53,7 +33,7 @@ void	CSoundRender_Target::start(CSoundRender_Emitter* E)
 	// 5. Deferred-play-signal (emitter-exist, rendering-false)
 	m_pEmitter		= E;
 	rendering		= FALSE;
-	//attach		();
+	attach			();
 }
 
 void	CSoundRender_Target::render			()
@@ -81,9 +61,6 @@ void	CSoundRender_Target::update			()
 void	CSoundRender_Target::fill_parameters()
 {
 	VERIFY			(m_pEmitter);
-//.	if (pEmitter->b2D){
-//.		pEmitter->set_position(SoundRender->listener_position());
-//.	}
 }
 
 extern int		ov_seek_func	(void *datasource, s64 offset, int whence);

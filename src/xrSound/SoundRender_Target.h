@@ -2,7 +2,7 @@
 #define SoundRender_TargetH
 #pragma once
 
-#include "soundrender.h"
+#include "SoundRender.h"
 
 class CSoundRender_Target
 {
@@ -25,8 +25,8 @@ public:
 								CSoundRender_Target	();
 	virtual 					~CSoundRender_Target();
 
-	CSoundRender_Emitter*		get_emitter			()	{ return m_pEmitter;	}
-	BOOL						get_Rendering		()	{ return rendering;	}
+	CSoundRender_Emitter*		get_emitter			() const { return m_pEmitter;	}
+	BOOL						get_Rendering		() const { return rendering;	}
 
 	virtual BOOL				_initialize			()=0;
 	virtual void				_destroy			()=0;

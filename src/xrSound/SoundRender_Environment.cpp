@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "soundrender.h"
-#include "soundrender_environment.h"
+#include "SoundRender.h"
+#include "SoundRender_Environment.h"
 
 #include <AL/efx.h>
 
-CSoundRender_Environment::CSoundRender_Environment(void)
+CSoundRender_Environment::CSoundRender_Environment()
 {
 	version			= sdef_env_version;
 	set_default		();
 }
 
-CSoundRender_Environment::~CSoundRender_Environment(void)
+CSoundRender_Environment::~CSoundRender_Environment()
 {
 }
 

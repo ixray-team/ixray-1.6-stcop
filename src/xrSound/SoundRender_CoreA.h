@@ -80,7 +80,7 @@ public:
 						    CSoundRender_CoreA		();
     virtual					~CSoundRender_CoreA		();
 
-	int CSoundRender_CoreA::load_reverb(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
+	int load_reverb(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
 
 	virtual void			_initialize				(int stage);
 	virtual void			_clear					( );
@@ -90,7 +90,7 @@ public:
 
 	virtual const Fvector&	listener_position		( ){return Listener.position;}
 
-	// EFX
+	// EFX listener
 	void set_listener(const CSoundRender_Environment& env);
 	void get_listener(CSoundRender_Environment& env);
 	void commit();

@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "soundrender_emitter.h"
-#include "soundrender_core.h"
-#include "soundrender_source.h"
-#include "soundrender_targetA.h"
+#include "SoundRender_Emitter.h"
+#include "SoundRender_Core.h"
+#include "SoundRender_Source.h"
+#include "SoundRender_TargetA.h"
 
 extern	u32				psSoundModel;
 extern	float			psSoundVEffects;
@@ -111,7 +111,6 @@ u32	CSoundRender_Emitter::play_time	( )
 		return 0; 
 }
 
-#include "SoundRender_Source.h"
 void CSoundRender_Emitter::set_cursor(u32 p)
 {
 	m_stream_cursor		= p;
