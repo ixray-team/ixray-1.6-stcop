@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "XRay.sln",
+    "projects": [
+      "src\\utils\\xrCompress\\xrCompress.vcxproj",
+      "src\\xrCore\\xrCore.vcxproj"
+    ]
+  }
+}
