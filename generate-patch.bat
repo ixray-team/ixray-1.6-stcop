@@ -2,7 +2,7 @@
 if not exist gamedata_origin (
     git clone ./.git ./temp
     cd temp
-    git checkout c87b43f286f4a4fa5873a2eb4977d77571e51991
+    git checkout 2045fd565ee903b1ea1a386afd8da73466e65d1d
     cd ..
     move temp/gamedata gamedata_origin
 )
