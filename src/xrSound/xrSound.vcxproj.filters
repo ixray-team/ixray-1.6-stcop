@@ -33,6 +33,9 @@
     <ClInclude Include="cl_intersect.h">
       <Filter>Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="ogg_utils.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -72,6 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guids.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ogg_utils.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="sound.cpp">

@@ -5,35 +5,7 @@
 
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
-
-//	SEEK_SET	0	File beginning
-//	SEEK_CUR	1	Current file pointer position
-//	SEEK_END	2	End-of-file
-int ov_seek_func(void *datasource, s64 offset, int whence)	
-{
-	switch (whence){
-	case SEEK_SET: ((IReader*)datasource)->seek((int)offset);	 break;
-	case SEEK_CUR: ((IReader*)datasource)->advance((int)offset); break;
-	case SEEK_END: ((IReader*)datasource)->seek((int)offset + ((IReader*)datasource)->length()); break;
-	}
-	return 0; 
-}
-size_t ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
-{ 
-	IReader* F			= (IReader*)datasource; 
-	size_t exist_block	= _max(0ul,iFloor(F->elapsed()/(float)size));
-	size_t read_block	= _min(exist_block,nmemb);
-	F->r				(ptr,(int)(read_block*size));	
-	return read_block;
-}
-int ov_close_func(void *datasource)									
-{	
-	return 0; 
-}
-long ov_tell_func(void *datasource)									
-{	
-	return ((IReader*)datasource)->tell(); 
-}
+#include "ogg_utils.h"
 
 void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 {
@@ -57,15 +29,20 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 void CSoundRender_Source::LoadWave	(LPCSTR pName)
 {
 	pname					= pName;
+	ZeroMemory				(&m_wformat, sizeof(WAVEFORMATEX));
 
 	// Load file into memory and parse WAV-format
-	OggVorbis_File			ovf;
-	ov_callbacks ovc		= {ov_read_func,ov_seek_func,ov_close_func,ov_tell_func};
-	IReader* wave			= FS.r_open		(pname.c_str()); 
-	R_ASSERT3				(wave&&wave->length(),"Can't open wave file:",pname.c_str());
-	ov_open_callbacks		(wave,&ovf,NULL,0,ovc);
+	m_wave					= FS.r_open(pname.c_str());
+	R_ASSERT3				(m_wave && m_wave->length(),"Can't open wave file:",pname.c_str());
 
-	vorbis_info* ovi		= ov_info(&ovf,-1);
+	ov_callbacks			ovc;
+	ovc.read_func			= ov_read_func;
+	ovc.seek_func			= ov_seek_func;
+	ovc.close_func			= ov_close_func;
+	ovc.tell_func			= ov_tell_func;
+	ov_open_callbacks		(m_wave, &m_ovf, NULL, 0, ovc);
+
+	vorbis_info* ovi		= ov_info(&m_ovf, -1);
 	// verify
 	R_ASSERT3				(ovi, "Invalid source info:", pname.c_str());
 	R_ASSERT3				(ovi->rate==44100, "Invalid source rate:", pname.c_str());
@@ -77,21 +54,19 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 	}
 #endif // #ifdef DEBUG
 
-	ZeroMemory					( &m_wformat, sizeof( WAVEFORMATEX ) );
-
 	m_wformat.nSamplesPerSec	= (ovi->rate); //44100;
 	m_wformat.wFormatTag		= WAVE_FORMAT_PCM;
 	m_wformat.nChannels			= u16(ovi->channels);
 	m_wformat.wBitsPerSample	= 16;
 
-	m_wformat.nBlockAlign		= m_wformat.wBitsPerSample / 8 * m_wformat.nChannels;
+	m_wformat.nBlockAlign		= (m_wformat.nChannels * m_wformat.wBitsPerSample) / 8;
 	m_wformat.nAvgBytesPerSec	= m_wformat.nSamplesPerSec * m_wformat.nBlockAlign;
 
-	s64 pcm_total				= ov_pcm_total(&ovf,-1);
+	s64 pcm_total				= ov_pcm_total(&m_ovf,-1);
 	dwBytesTotal				= u32(pcm_total*m_wformat.nBlockAlign); 
 	fTimeTotal					= s_f_def_source_footer + dwBytesTotal/float(m_wformat.nAvgBytesPerSec);
 
-	vorbis_comment*	ovm		= ov_comment(&ovf,-1);
+	vorbis_comment*	ovm		= ov_comment(&m_ovf,-1);
 	if (ovm->comments)
 	{
 		IReader F			(ovm->user_comments[0],ovm->comment_lengths[0]);
@@ -121,9 +96,6 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 		Log					("! Missing ogg-comment, file: ", pname.c_str());
 	}
 	R_ASSERT3((m_fMaxAIDist>=0.1f)&&(m_fMaxDist>=0.1f),"Invalid max distance.", pname.c_str());
-
-	ov_clear				(&ovf);
-	FS.r_close				(wave);
 }
 
 void CSoundRender_Source::load(LPCSTR name)
@@ -152,5 +124,10 @@ void CSoundRender_Source::unload()
 	SoundRender->cache.cat_destroy	(CAT);
     fTimeTotal						= 0.0f;
     dwBytesTotal					= 0;
+
+	if (m_wave) {
+		ov_clear(&m_ovf);
+		FS.r_close(m_wave);
+	}
 }
 

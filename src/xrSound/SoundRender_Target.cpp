@@ -5,17 +5,18 @@
 #include "SoundRender_Core.h"
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Source.h"
+#include "ogg_utils.h"
 
 CSoundRender_Target::CSoundRender_Target()
 {
 	m_pEmitter		= 0;
 	rendering		= FALSE;
-	wave			= 0;
+	m_wave			= 0;
 }
 
 CSoundRender_Target::~CSoundRender_Target()
 {
-	VERIFY				(wave==0);
+	VERIFY				(m_wave == 0);
 }
 
 BOOL CSoundRender_Target::_initialize()
@@ -63,27 +64,25 @@ void	CSoundRender_Target::fill_parameters()
 	VERIFY			(m_pEmitter);
 }
 
-extern int		ov_seek_func	(void *datasource, s64 offset, int whence);
-extern size_t	ov_read_func	(void *ptr, size_t size, size_t nmemb, void *datasource);
-extern int		ov_close_func	(void *datasource);
-extern long		ov_tell_func	(void *datasource);
-
 void	CSoundRender_Target::attach()
 {
-	VERIFY			(0==wave);
 	VERIFY			(m_pEmitter);
-	ov_callbacks ovc= {ov_read_func,ov_seek_func,ov_close_func,ov_tell_func};
-	wave			= FS.r_open		(m_pEmitter->source()->pname.c_str()); 
-	R_ASSERT3		(wave&&wave->length(),"Can't open wave file:", m_pEmitter->source()->pname.c_str());
- 	ov_open_callbacks(wave,&ovf,NULL,0,ovc);
-	VERIFY			(0!=wave);
+	m_wave			= FS.r_open		(m_pEmitter->source()->pname.c_str()); 
+	R_ASSERT3		(m_wave && m_wave->length(),"Can't open wave file:", m_pEmitter->source()->pname.c_str());
+
+	ov_callbacks		ovc;
+	ovc.read_func		= ov_read_func;
+	ovc.seek_func		= ov_seek_func;
+	ovc.close_func		= ov_close_func;
+	ovc.tell_func		= ov_tell_func;
+	ov_open_callbacks	(m_wave, &m_ovf, NULL, 0, ovc);
 }
 
 void	CSoundRender_Target::dettach()
 {
-	if (wave)		{
-		ov_clear		(&ovf);
-		FS.r_close		(wave);
+	if (m_wave)		{
+		ov_clear		(&m_ovf);
+		FS.r_close		(m_wave);
 	}
 }
 

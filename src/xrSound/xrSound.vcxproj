@@ -186,6 +186,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h" />
+    <ClCompile Include="ogg_utils.cpp" />
     <ClInclude Include="OpenALDeviceList.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundRender.h" />
@@ -208,6 +209,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClInclude Include="ogg_utils.h" />
     <ClCompile Include="OpenALDeviceList.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="SoundRender_Cache.cpp" />

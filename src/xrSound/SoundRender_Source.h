@@ -24,6 +24,9 @@ public:
 	float					m_fMaxAIDist;
 	u32						m_uGameType;
 private:
+	OggVorbis_File			m_ovf;
+	IReader*				m_wave;
+
 	void 					i_decompress_fr			(OggVorbis_File* ovf, char* dest, u32 size);    
 	void					LoadWave 				(LPCSTR name);
 public:
