@@ -8,9 +8,9 @@ if not exist gamedata_origin (
 )
 
 :: Generate patch
-bin\xrCompress.exe -diff gamedata gamedata_origin -out patch
+bin\utils\Win32\Release\xrCompress.exe -diff gamedata gamedata_origin -out patch
 
 :: Pack patch
-bin\xrCompress.exe patch -ltx datapack.ltx
+bin\utils\Win32\Release\xrCompress.exe patch -ltx datapack.ltx
 mkdir patches
 move patch.pack_#0 patches\xpatch_03.db
