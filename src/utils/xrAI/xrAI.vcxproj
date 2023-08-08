@@ -443,13 +443,18 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xrSE_Factory\xrSE_Factory.vcxproj">
-      <Project>{3ad26fd3-4f52-4e22-a4cf-ad4c49e74c61}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <None Include="Packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Packages.config" />
+    <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
+      <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\xrCore\xrCore.vcxproj">
+      <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\xrSE_Factory\xrSE_Factory.vcxproj">
+      <Project>{3ad26fd3-4f52-4e22-a4cf-ad4c49e74c61}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

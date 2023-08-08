@@ -186,13 +186,15 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xrLC_LightStab\xrLC_LightStab.vcxproj">
-      <Project>{ec924b9b-4991-4931-8623-e1db9ae005ca}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <None Include="Packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Packages.config" />
+    <ProjectReference Include="..\..\xrCore\xrCore.vcxproj">
+      <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\xrLC_Light\xrLC_Light.vcxproj">
+      <Project>{efb76d6f-0092-439c-a783-c0be10bd17c9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

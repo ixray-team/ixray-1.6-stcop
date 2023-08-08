@@ -464,7 +464,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Layers\xrAPI\xrAPI.vcxproj">
       <Project>{1daec516-e52c-4a3c-a4da-ae3553e6e0f8}</Project>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
@@ -474,11 +473,9 @@
     </ProjectReference>
     <ProjectReference Include="..\xrCPU_Pipe\xrCPU_Pipe.vcxproj">
       <Project>{ca0649dd-d089-423a-981c-46b57a884eb9}</Project>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <ProjectReference Include="..\xrD3D9-Null\xrD3D9-Null.vcxproj">
       <Project>{0899b131-f1d4-4876-9ba1-67ac821db9e1}</Project>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <ProjectReference Include="..\xrNetServer\xrNetServer.vcxproj">
       <Project>{435bac9a-b225-457d-ab40-c9bd0cc8838c}</Project>
@@ -488,7 +485,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="..\Server.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets" Condition="Exists('..\..\packages\ImeSense.Packages.LibOgg.1.3.5.4\build\native\ImeSense.Packages.LibOgg.targets')" />
     <Import Project="..\..\packages\ImeSense.Packages.LibTheora.1.1.1.3\build\native\ImeSense.Packages.LibTheora.targets" Condition="Exists('..\..\packages\ImeSense.Packages.LibTheora.1.1.1.3\build\native\ImeSense.Packages.LibTheora.targets')" />

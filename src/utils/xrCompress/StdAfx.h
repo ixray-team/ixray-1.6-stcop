@@ -15,5 +15,4 @@
 #include <malloc.h>
 #pragma warning	(default:4995)
 
-#pragma comment	(lib,"xrCore.lib")
 #pragma comment	(lib,"winmm")

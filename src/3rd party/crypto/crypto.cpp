@@ -3,8 +3,6 @@
 #include <openssl/rand.h>
 #include <openssl/dsa.h>
 
-#pragma comment(lib, "xrCore.lib")
-
 namespace crypto
 {
 

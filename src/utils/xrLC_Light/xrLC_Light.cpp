@@ -2,8 +2,7 @@
 //
 #include "stdafx.h"
 #include "xrLc_globaldata.h"
-#pragma comment(lib,"xrCore.lib")
-#pragma comment(lib,"xrCDB.lib")
+
 #pragma comment(lib,"FreeImage.lib")
 #ifdef _MANAGED
 #pragma managed(push, off)

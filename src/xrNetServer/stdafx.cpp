@@ -3,5 +3,4 @@
 
 #include "stdafx.h"
 
-#pragma comment(lib,	"xrCore"			)
 #pragma comment(lib,	"dxguid.lib"			)

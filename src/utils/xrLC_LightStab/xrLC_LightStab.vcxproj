@@ -158,7 +158,6 @@
   <ItemGroup>
     <ProjectReference Include="..\xrLC_Light\xrLC_Light.vcxproj">
       <Project>{efb76d6f-0092-439c-a783-c0be10bd17c9}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

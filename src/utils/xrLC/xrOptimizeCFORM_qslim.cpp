@@ -5,8 +5,6 @@
 #include "../../xrcdb/xrcdb.h"
 #include "../../common/face_smoth_flags.h"
 
-#pragma comment (lib,"xrQSlim.lib")
-
 #define MAX_DECIMATE_ERROR 0.0005f
 #define COMPACTNESS_RATIO  0.001f
 
