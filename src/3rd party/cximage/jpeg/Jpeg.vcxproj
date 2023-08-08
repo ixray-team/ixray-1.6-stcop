@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectName>jpeg</ProjectName>
     <ProjectGuid>{E6343391-13FC-479E-B62F-1C24F7B85408}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
