@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 	cout << "listening requests..." << endl;
 	while (FCGX_Accept_r(new_request.get()) == 0)
 	{
-		req_poll->add_request(new_request);
+		req_poll->add_request(std::move(new_request));
 		assert(!new_request.get());
 		new_request.reset(new FCGX_Request());
 		FCGX_InitRequest(new_request.get(), binded_sock, 0);

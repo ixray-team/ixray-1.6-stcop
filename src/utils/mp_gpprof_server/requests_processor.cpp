@@ -52,7 +52,7 @@ void requests_poll::add_request(request_ptr_t fcgx_request)
 	if (m_profiles_cache.search(tmp_user_name, tmp_profdata))
 	{
 		m_cache_sync.unlock();
-		fetch_profile_request tmp_request(fcgx_request, tmp_user_name);
+		fetch_profile_request tmp_request(std::move(fcgx_request), tmp_user_name);
 		tmp_request.complete_success(tmp_profdata);
 		return;
 	}
@@ -60,7 +60,7 @@ void requests_poll::add_request(request_ptr_t fcgx_request)
 
 	//trying to search name in cache ..
 	//adding request to processor queue ..
-	add_new_request(fcgx_request, tmp_user_name);
+	add_new_request(std::move(fcgx_request), tmp_user_name);
 }
 
 void requests_poll::add_new_request(request_ptr_t fcgx_request,
@@ -68,7 +68,7 @@ void requests_poll::add_new_request(request_ptr_t fcgx_request,
 {
 	m_new_request_sync.lock();
 	m_new_requests.push_back(
-		new fetch_profile_request(fcgx_request, profile_name));
+		new fetch_profile_request(std::move(fcgx_request), profile_name));
 	m_new_request_sync.unlock();	
 }
 

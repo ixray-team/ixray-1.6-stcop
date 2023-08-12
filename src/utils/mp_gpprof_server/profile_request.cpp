@@ -65,7 +65,7 @@ char* extract_username(char const * uri, char const * root_path, user_name_t & d
 
 fetch_profile_request::fetch_profile_request(request_ptr_t fcgx_request,
 											 user_name_t const profile_name) :
-	m_fcg_request(fcgx_request),
+	m_fcg_request(std::move(fcgx_request)),
 	m_profile_name(profile_name),
 	m_in(m_fcg_request->in),
 	m_out(m_fcg_request->out),
