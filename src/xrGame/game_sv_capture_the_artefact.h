@@ -45,16 +45,13 @@ private:
 	};
 	typedef std::pair<ETeam, MyTeam> TeamPair;
 	// For balancing team players count
-	struct MinPlayersFunctor : public std::binary_function<TeamPair, TeamPair, bool>
-	{
+	struct MinPlayersFunctor {
 		bool operator()(const TeamPair & left, const TeamPair & right) const;
 	};
-	struct SearchArtefactIdFunctor : public std::binary_function<TeamPair, u16, bool>
-	{
+	struct SearchArtefactIdFunctor {
 		bool operator()(const TeamPair & tr, u16 artefactId) const;
 	};
-	struct SearchOwnerIdFunctor : public std::binary_function<TeamPair, u16, bool>
-	{
+	struct SearchOwnerIdFunctor {
 		bool operator()(const TeamPair & tr, u16 actorId) const;
 	};
 	

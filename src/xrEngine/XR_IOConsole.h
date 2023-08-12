@@ -53,8 +53,7 @@ class ENGINE_API CConsole :
 	public pureScreenResolutionChanged
 {
 public:
-	struct str_pred : public std::binary_function<char*, char*, bool>
-	{	
+	struct str_pred {
 		IC bool operator()(const char* x, const char* y) const
 		{
 			return (xr_strcmp( x, y ) < 0);

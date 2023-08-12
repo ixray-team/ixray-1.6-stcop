@@ -48,8 +48,7 @@ public:
 	void						LoadArchive		(archive& A, LPCSTR entrypoint=NULL);
 
 private:
-	struct	file_pred: public 	std::binary_function<file&, file&, bool> 
-	{	
+	struct file_pred {
 		IC bool operator()	(const file& x, const file& y) const
 		{	return xr_strcmp(x.name,y.name)<0;	}
 	};

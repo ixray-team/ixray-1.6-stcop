@@ -14,16 +14,14 @@ ip_filter::~ip_filter()
 	}
 }
 
-struct subnet_comparator : public std::binary_function<subnet_item*, subnet_item*, bool>
-{
+struct subnet_comparator {
 	bool operator()(subnet_item const * left, subnet_item const * right) const
 	{
 		return ((left->subnet_ip.data & left->subnet_mask) < (right->subnet_ip.data & right->subnet_mask));
 	}
 };
 
-struct ip_searcher : public std::binary_function<subnet_item*, subnet_item*, bool>
-{
+struct ip_searcher {
 	bool operator()(subnet_item const * left, subnet_item const * right) const
 	{
 		if (left->subnet_mask)

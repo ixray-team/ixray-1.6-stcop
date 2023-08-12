@@ -63,10 +63,7 @@ void weapon_collection::load_all_mp_weapons()
 	}
 }
 
-struct SymbolCountComparator : public std::binary_function<
-	weapon_collection::tentity_extract_keys, 
-	weapon_collection::tentity_extract_keys, bool>
-{
+struct SymbolCountComparator {
 	bool operator () (weapon_collection::tentity_extract_keys const * left,
 		weapon_collection::tentity_extract_keys const * right) const
 	{

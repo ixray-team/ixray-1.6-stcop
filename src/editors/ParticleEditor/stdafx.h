@@ -119,13 +119,11 @@ using LPAStringIt = LPAStringVec::iterator;
 #include "../ECore/editor/engine.h"
 #include "defines.h"
 
-struct str_pred : public std::binary_function<char*, char*, bool>
-{
+struct str_pred {
     IC bool operator()(LPCSTR x, LPCSTR y) const
     {	return strcmp(x,y)<0;	}
 };
-struct astr_pred : public std::binary_function<const AnsiString&, const AnsiString&, bool>
-{
+struct astr_pred {
     IC bool operator()(const AnsiString& x, const AnsiString& y) const
     {	return x<y;	}
 };
