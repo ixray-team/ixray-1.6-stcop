@@ -158,8 +158,7 @@ bool ESceneWallmarkTool::Valid		(){return !marks.empty();}
 bool ESceneWallmarkTool::IsNeedSave(){return marks.size();}
 void ESceneWallmarkTool::OnFrame	(){}
 
-struct zero_slot_pred : public std::unary_function<ESceneWallmarkTool::wm_slot*, bool>
-{
+struct zero_slot_pred {
 	bool operator()(const ESceneWallmarkTool::wm_slot*& x){ return x==0; }
 };
 void ESceneWallmarkTool::RefiningSlots()
@@ -253,8 +252,7 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
     }
 }
 
-struct zero_item_pred : public std::unary_function<ESceneWallmarkTool::wallmark*, bool>
-{
+struct zero_item_pred {
 	bool operator()(const ESceneWallmarkTool::wallmark*& x){ return x==0; }
 };
 bool ESceneWallmarkTool::LoadLTX(CInifile& ini)
