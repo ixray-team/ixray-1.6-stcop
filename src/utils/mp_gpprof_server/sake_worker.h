@@ -24,7 +24,7 @@ private:
 	xray::mutex					m_newtask_mutex;
 	xray::condition				m_newtask_cond;
 	tasks_queue_t				m_tasks;
-	std::auto_ptr<thread_t>		m_thread;
+	std::unique_ptr<thread_t>		m_thread;
 
 	void*		worker_thread	();	
 	static bool thread_stopper	(void*, sake_processor*) { return false; };

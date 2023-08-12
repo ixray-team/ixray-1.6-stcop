@@ -16,7 +16,7 @@ char* extract_username(char const * uri, char const * root_path, user_name_t & d
 class fetch_profile_request
 {
 public:
-	typedef std::auto_ptr<FCGX_Request> request_ptr_t;
+	typedef std::unique_ptr<FCGX_Request> request_ptr_t;
 
 			fetch_profile_request	(request_ptr_t fcgx_request,
 									 user_name_t const profile_name);

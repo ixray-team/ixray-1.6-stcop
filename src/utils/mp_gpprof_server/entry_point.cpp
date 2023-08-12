@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	if (argc >= 3)
 		root_path = argv[2];
 		
-	std::auto_ptr<requests_poll>			req_poll(new requests_poll());
+	std::unique_ptr<requests_poll>			req_poll(new requests_poll());
 	fetch_profile_request::request_ptr_t	new_request(new FCGX_Request());
 
 	FCGX_InitRequest(new_request.get(), binded_sock, 0);

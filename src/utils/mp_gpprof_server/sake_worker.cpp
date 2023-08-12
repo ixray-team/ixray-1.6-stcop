@@ -32,7 +32,7 @@ void* sake_worker::worker_thread()
 {
 	using namespace std;
 	try {
-		std::auto_ptr<sake_processor> m_sake_inst(new sake_processor());
+		std::unique_ptr<sake_processor> m_sake_inst(new sake_processor());
 		m_thread_initialized		= 1;
 		m_initialization_success	= 1;
 		bool stop_signal = false;

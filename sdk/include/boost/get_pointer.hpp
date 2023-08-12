@@ -19,7 +19,7 @@ template<class T> T * get_pointer(T * p)
 
 // get_pointer(shared_ptr<T> const & p) has been moved to shared_ptr.hpp
 
-template<class T> T * get_pointer(std::auto_ptr<T> const& p)
+template<class T> T * get_pointer(std::unique_ptr<T> const& p)
 {
     return p.get();
 }
