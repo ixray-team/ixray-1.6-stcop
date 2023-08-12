@@ -79,8 +79,8 @@ void vfOptimizeParameters(xr_vector<xr_vector<REAL> > &A, xr_vector<xr_vector<RE
 	do {
 		dPreviousFunctional = dFunctional;
 		dafGradient			(daEvalResults,			daGradient,			B,					dNormaFactor);
-		std::transform		(daGradient.begin(),	daGradient.end(),	daGradient.begin(),	std::bind2nd(std::multiplies<REAL>(), -dAlpha));
-		std::transform		(daDelta.begin(),		daDelta.end(),		daDelta.begin(),	std::bind2nd(std::multiplies<REAL>(), dBeta));
+		std::transform(daGradient.begin(), daGradient.end(), daGradient.begin(), [dAlpha](const auto& value) { return value * -dAlpha; });
+		std::transform(daDelta.begin(), daDelta.end(), daDelta.begin(), [dBeta](const auto& value) { return value * dBeta; });
 		std::transform		(daGradient.begin(),	daGradient.end(),	daDelta.begin(),	daDelta.begin(),	std::plus<REAL>());
 		std::transform		(C.begin(),				C.end(),			daDelta.begin(),	C.begin(),			std::plus<REAL>());
 		std::transform		(D.begin(),				D.end(),			daDelta.begin(),	D.begin(),			std::plus<REAL>());
@@ -90,7 +90,7 @@ void vfOptimizeParameters(xr_vector<xr_vector<REAL> > &A, xr_vector<xr_vector<RE
 	while ((((dPreviousFunctional - dFunctional)/dwTestCount) > dEpsilon) && (i <= dwMaxIterationCount));
 	
 	if (dPreviousFunctional < dFunctional) {
-		std::transform		(daDelta.begin(),		daDelta.end(),		daDelta.begin(),	std::bind2nd(std::multiplies<REAL>(), -1));
+		std::transform(daDelta.begin(), daDelta.end(), daDelta.begin(), [](const auto& value) { return value * -1; });
 		std::transform		(C.begin(),				C.end(),			daDelta.begin(),	C.begin(),			std::plus<REAL>());
 		std::transform		(D.begin(),				D.end(),			daDelta.begin(),	D.begin(),			std::plus<REAL>());
 	}
