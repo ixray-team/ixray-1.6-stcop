@@ -1,8 +1,12 @@
 :: Delete incremental linking information
-if exist bin\*.ilk (del /s bin\*.ilk)
-if exist bin\*.idb (del /s bin\*.idb)
-if exist lib\*.idb (del /s lib\*.idb)
+cd bin
+for /r %i in (*.ilk) do @del "%i"
+for /r %i in (*.idb) do @del "%i"
+cd ..\lib
+for /r %i in (*.idb) do @del "%i"
 
 :: Delete symbols
-if exist bin\*.pdb (del /s bin\*.pdb)
-if exist lib\*.pdb (del /s lib\*.pdb)
+cd ..\bin
+for /r %i in (*.pdb) do @del "%i"
+cd ..\lib
+for /r %i in (*.pdb) do @del "%i"
