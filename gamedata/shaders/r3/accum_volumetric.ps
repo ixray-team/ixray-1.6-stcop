@@ -33,12 +33,8 @@ float4 main ( v2p I, uint iSample : SV_SAMPLEINDEX ) : SV_Target
         float4	PS	= mul( m_shadow, P4);
         float	s	= 1.h;
         #ifdef	USE_SHADOW
-//                #ifdef	USE_SJITTER
-//                  s         = shadowtest        (PS,tcJ);
-//                #else
 //	TODO: DX10: Use lower quality shadow test
-                  	s	= shadow(PS);
-//                #endif
+            s	= shadow(PS);
         #endif
 
         // ----- lightmap

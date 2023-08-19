@@ -47,18 +47,10 @@ float4 main ( v2p_volume I ) : SV_Target
   	float4 	P4 	= float4( _P.x, _P.y, _P.z, 1.f);
 	float4 	PS	= mul( m_shadow, P4 );
 	float 	s 	= sunmask( P4 );
-	#if defined	(USE_SJITTER) || SUN_QUALITY==2 // Hight quality
+	#if SUN_QUALITY == 2 // Hight quality
 	  		s 	*= shadow_high(PS); //shadowtest_sun( PS, float4(0,0,0,0) );
 	#else
-#ifdef SM_MINMAX
-		#ifdef USE_SJITTER
-	  		s 	*= shadow_dx10_1( PS, I.tcJ, I.hpos.xy );
-		#else
-			s *= shadow( PS );
-		#endif
-#else
-			s *= shadow( PS );
-#endif
+		s *= shadow( PS );
 	#endif
 
 	// Far edge fading code

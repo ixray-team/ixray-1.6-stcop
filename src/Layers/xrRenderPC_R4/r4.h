@@ -83,7 +83,6 @@ public:
 		u32		mblur				: 1;
 
 		u32		sunstatic			: 1;
-		u32		sjitter				: 1;
 		u32		noshadows			: 1;
 		u32		Tshadows			: 1;						// transluent shadows
 		u32		disasm				: 1;

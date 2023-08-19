@@ -264,7 +264,6 @@ void					CRender::create					()
 	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
 	o.advancedpp		= r2_advanced_pp;
 	o.volumetricfog		= ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
-	o.sjitter			= (strstr(Core.Params,"-sjitter"))?		TRUE	:FALSE	;
 	o.depth16			= (strstr(Core.Params,"-depth16"))?		TRUE	:FALSE	;
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
@@ -982,16 +981,6 @@ HRESULT	CRender::shader_compile			(
 	else
 	{
 		sh_name[len] = '0' + static_cast<char>(o.HW_smap_FETCH4); 
-		++len;
-	}
-	if (o.sjitter)			{
-		defines[def_it].Name		=	"USE_SJITTER";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.sjitter); 
 		++len;
 	}
 
