@@ -37,7 +37,6 @@ public:
 
 public:
 	struct		_options	{
-		u32		bug					: 1;
 		
 		u32		ssao_blur_on		: 1;
 		u32		ssao_opt_data		: 1;
