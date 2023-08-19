@@ -351,10 +351,6 @@ ICF bool			pred_sp_sort		(ISpatial* _1, ISpatial* _2)
 
 void CRender::Calculate				()
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "CRender::Calculate()" );
-	#endif // _GPA_ENABLED
-
 	Device.Statistic->RenderCALC.Begin();
 
 	// Transfer to global space to avoid deep pointer access
@@ -575,10 +571,6 @@ void	CRender::rmNormal	()
 extern u32 g_r;
 void	CRender::Render		()
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "CRender::Render()" );
-	#endif // _GPA_ENABLED
-
 	if( m_bFirstFrameAfterReset )
 	{
 		m_bFirstFrameAfterReset = false;

@@ -12,10 +12,6 @@ struct SKIN_PARAMS {
 
 void Skin4W_Stream( LPVOID lpvParams )
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "xrSkin4W_Stream()" );
-	#endif // _GPA_ENABLED
-
 	SKIN_PARAMS* sp = (SKIN_PARAMS*) lpvParams;
 
 	vertRender*		D		= (vertRender*) sp->Dest;
@@ -31,10 +27,6 @@ void __stdcall xrSkin4W_thread(	vertRender*		D,
 								u32				vCount,
 								CBoneInstance*	Bones)
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "xrSkin4W()" );
-	#endif // _GPA_ENABLED
-
 	u32 nWorkers = ttapi_GetWorkersCount();
 
 	if ( vCount < ( nWorkers * 64 ) ) {

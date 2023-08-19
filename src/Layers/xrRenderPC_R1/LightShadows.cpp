@@ -139,10 +139,6 @@ void CLightShadows::add_element	(NODE& N)
 //
 void CLightShadows::calculate	()
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "CLightShadows::calculate()" );
-	#endif // _GPA_ENABLED
-
 	if (casters.empty())		return;
 
 	BOOL bRTS					= FALSE;

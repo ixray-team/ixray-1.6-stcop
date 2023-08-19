@@ -274,10 +274,6 @@ __forceinline void fsincos( const float angle , float &sine , float &cosine )
 
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina , float cosa )
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "FillSprite()" );
-	#endif // _GPA_ENABLED
-
 	__m128 Vr, Vt, _T , _R , _pos , _zz , _sa , _ca , a , b , c , d;
 
 	_sa = _mm_set1_ps( sina );
@@ -334,10 +330,6 @@ IC void FillSprite	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fve
 
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina , float cosa )
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "FillSpriteTransform()" );
-	#endif // _GPA_ENABLED
-
 	const Fvector& T 	= dir;
 	Fvector R; 	
 
@@ -413,13 +405,6 @@ __forceinline void magnitude_sse( Fvector &vec , float &res )
 
 void ParticleRenderStream( LPVOID lpvParams )
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "ParticleRenderStream()" );
-
-		TAL_ID rtID = TAL_MakeID( 1 , Core.dwFrame , 0);	
-		TAL_AddRelationThis(TAL_RELATION_IS_CHILD_OF, rtID);
-	#endif // _GPA_ENABLED
-
 			float sina = 0.0f , cosa = 0.0f;
 			DWORD angle = 0xFFFFFFFF;
 
@@ -516,10 +501,6 @@ void ParticleRenderStream( LPVOID lpvParams )
 
 void CParticleEffect::Render(float )
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "CParticleEffect::Render()" );
-	#endif // _GPA_ENABLED
-
 	u32			dwOffset,dwCount;
 	// Get a pointer to the particles in gp memory
     PAPI::Particle* particles;
