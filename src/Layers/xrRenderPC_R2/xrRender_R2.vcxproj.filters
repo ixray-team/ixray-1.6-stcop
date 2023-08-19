@@ -270,9 +270,6 @@
     <ClInclude Include="..\xrRender\Blender_Editor_Wire.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
-    <ClInclude Include="blender_light_direct.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
     <ClInclude Include="blender_light_direct_cascade.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
@@ -783,9 +780,6 @@
       <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\Blender_Editor_Wire.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_light_direct.cpp">
       <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="blender_light_direct_cascade.cpp">

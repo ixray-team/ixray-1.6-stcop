@@ -84,7 +84,6 @@ const		u32					LUMINANCE_size		= 16	;
 #define		SE_SUN_NEAR			0
 #define		SE_SUN_MIDDLE		1
 #define		SE_SUN_FAR			2
-#define		SE_SUN_LUMINANCE	3
 
 extern		float	ps_r2_gloss_factor;
 IC	float	u_diffuse2s	(float x, float y, float z)	{ float	v = (x+y+z)/3.f;	return ps_r2_gloss_factor * ((v<1)?powf(v,2.f/3.f):v); }

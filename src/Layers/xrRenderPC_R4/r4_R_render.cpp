@@ -456,7 +456,6 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_SUN);
 		RImplementation.stats.l_visible		++;
 		render_sun_cascades();
-		Target->accum_direct_blend			();
 	}
 
 	{
