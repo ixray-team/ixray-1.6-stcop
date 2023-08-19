@@ -414,8 +414,6 @@ void CRenderDevice::FrameMove()
 {
 	dwFrame			++;
 
-	Core.dwFrame = dwFrame;
-
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
 
 	if (psDeviceFlags.test(rsConstantFPS))	{
