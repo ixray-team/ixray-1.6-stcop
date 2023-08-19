@@ -27,25 +27,25 @@ vf 	_main (v_model v)
 
 /////////////////////////////////////////////////////////////////////////
 #ifdef 	SKIN_NONE
-vf	main_vs_2_0(v_model v) 		{ return _main(v); 		}
+vf	main(v_model v) 		{ return _main(v); 		}
 #endif
 
 #ifdef 	SKIN_0
-vf	main_vs_2_0(v_model_skinned_0 v) 	{ return _main(skinning_0(v)); }
+vf	main(v_model_skinned_0 v) 	{ return _main(skinning_0(v)); }
 #endif
 
 #ifdef	SKIN_1
-vf	main_vs_2_0(v_model_skinned_1 v) 	{ return _main(skinning_1(v)); }
+vf	main(v_model_skinned_1 v) 	{ return _main(skinning_1(v)); }
 #endif
 
 #ifdef	SKIN_2
-vf	main_vs_2_0(v_model_skinned_2 v) 	{ return _main(skinning_2(v)); }
+vf	main(v_model_skinned_2 v) 	{ return _main(skinning_2(v)); }
 #endif
 
 #ifdef	SKIN_3
-vf	main_vs_2_0(v_model_skinned_3 v) 	{ return _main(skinning_3(v)); }
+vf	main(v_model_skinned_3 v) 	{ return _main(skinning_3(v)); }
 #endif
 
 #ifdef	SKIN_4
-vf	main_vs_2_0(v_model_skinned_4 v) 	{ return _main(skinning_4(v)); }
+vf	main(v_model_skinned_4 v) 	{ return _main(skinning_4(v)); }
 #endif

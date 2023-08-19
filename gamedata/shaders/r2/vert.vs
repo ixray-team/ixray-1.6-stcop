@@ -31,7 +31,7 @@ struct         v_static                {
 };
 */
 
-vf main_vs_2_0 (v_static v)
+vf main (v_static v)
 {
 	vf 		o;
 

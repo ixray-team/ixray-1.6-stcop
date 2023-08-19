@@ -19,7 +19,7 @@ struct vf
 	float  fog	: FOG;
 };
 
-vf main_vs_2_0 	(v_static v)
+vf main 	(v_static v)
 {
 	vf 		o;
 
