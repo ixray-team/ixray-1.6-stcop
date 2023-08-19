@@ -4,16 +4,6 @@
 
 uniform float3	view_shadow_proj;
 
-#ifdef USE_SUNFILTER
-float4 	main		( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
-{
-  float4 	_P	= tex2Dproj 	(s_position, 	tc)	;
-		_P.w 	= 1.f					;
-	float4 	PS	= mul		(m_shadow, 	_P)	;
-	float 	s 	= shadowtest_sun(PS,tcJ)*sunmask(_P)	;
-	return 	s	;
-}
-#else
 float4 	main		( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 {
   float4 _P		= tex2Dproj 	(s_position, 	tc);
@@ -50,4 +40,3 @@ float4 	main		( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 
 	return 		blend		(Ldynamic_color * light * s/*float4( 1.f, 0.2f, 0.2f, 1.f)*/,tc);
 }
-#endif

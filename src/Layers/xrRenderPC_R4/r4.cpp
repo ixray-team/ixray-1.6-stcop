@@ -262,8 +262,6 @@ void					CRender::create					()
 
 	// options
 	o.bug				= (strstr(Core.Params,"-bug"))?			TRUE	:FALSE	;
-	o.sunfilter			= (strstr(Core.Params,"-sunfilter"))?	TRUE	:FALSE	;
-	//.	o.sunstatic			= (strstr(Core.Params,"-sunstatic"))?	TRUE	:FALSE	;
 	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
 	o.advancedpp		= r2_advanced_pp;
 	o.volumetricfog		= ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
@@ -1039,17 +1037,6 @@ HRESULT	CRender::shader_compile			(
 	else
 	{
 		sh_name[len] = '0' + static_cast<char>(o.mblur); 
-		++len;
-	}
-
-	if (o.sunfilter)		{
-		defines[def_it].Name		=	"USE_SUNFILTER";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.sunfilter); 
 		++len;
 	}
 

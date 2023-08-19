@@ -14,7 +14,6 @@ void	CBlender_accum_direct_cascade::Compile(CBlender_Compile& C)
 	BOOL	b_HW_PCF		= RImplementation.o.HW_smap_PCF;
 	BOOL		blend		= FALSE;	//RImplementation.o.fp16_blend;
 	D3DBLEND	dest		= blend?D3DBLEND_ONE:D3DBLEND_ZERO;
-	if (RImplementation.o.sunfilter)	{ blend = FALSE; dest = D3DBLEND_ZERO; }
 
 	switch (C.iElement)
 	{

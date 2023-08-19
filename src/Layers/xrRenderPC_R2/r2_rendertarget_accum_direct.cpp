@@ -32,10 +32,6 @@ void CRenderTarget::accum_direct		(u32 sub_phase)
 {
 	// Choose normal code-path or filtered
 	phase_accumulator					();
-	if (RImplementation.o.sunfilter)	{
-		accum_direct_f	(sub_phase);
-		return			;
-	}
 
 	// *** assume accumulator setted up ***
 	light*			fuckingsun			= (light*)RImplementation.Lights.sun_adapted._get()	;
@@ -229,10 +225,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 {
 	// Choose normal code-path or filtered
 	phase_accumulator					();
-	if (RImplementation.o.sunfilter)	{
-		accum_direct_f	(sub_phase);
-		return			;
-	}
 
 	// *** assume accumulator setted up ***
 	light*			fuckingsun			= (light*)RImplementation.Lights.sun_adapted._get()	;

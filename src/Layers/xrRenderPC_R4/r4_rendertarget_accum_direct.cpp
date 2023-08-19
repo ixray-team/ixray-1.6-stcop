@@ -31,10 +31,6 @@ void CRenderTarget::accum_direct		(u32 sub_phase)
 {
 	// Choose normal code-path or filtered
 	phase_accumulator					();
-	if (RImplementation.o.sunfilter)	{
-		accum_direct_f	(sub_phase);
-		return			;
-	}
 
 	//	choose corect element for the sun shader
 	u32 uiElementIndex = sub_phase;
@@ -316,10 +312,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 {
 	// Choose normal code-path or filtered
 	phase_accumulator					();
-	if (RImplementation.o.sunfilter)	{
-		accum_direct_f	(sub_phase);
-		return			;
-	}
 
 	//	choose correct element for the sun shader
 	u32 uiElementIndex = sub_phase;
