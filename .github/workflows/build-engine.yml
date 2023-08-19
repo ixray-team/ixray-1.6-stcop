@@ -165,8 +165,8 @@ jobs:
       - name: Get binaries
         uses: actions/download-artifact@v3
         with:
-          name: bin (${{ matrix.config }}) ${{ github.sha }}
-          path: bin/
+          name: utils-bin-x86-${{ matrix.config }}-${{ github.sha }}
+          path: bin/utils/Win32/${{ matrix.config }}/
 
       - name: Generate patch
         run: |
