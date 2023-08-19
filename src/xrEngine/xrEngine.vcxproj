@@ -398,7 +398,6 @@
     <ClCompile Include="LightAnimLibrary.cpp" />
     <ClCompile Include="line_editor.cpp" />
     <ClCompile Include="line_edit_control.cpp" />
-    <ClCompile Include="mailSlot.cpp" />
     <ClCompile Include="MbHelpers.cpp" />
     <ClCompile Include="motion.cpp" />
     <ClCompile Include="ObjectAnimator.cpp" />

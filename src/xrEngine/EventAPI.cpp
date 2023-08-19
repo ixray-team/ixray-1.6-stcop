@@ -2,9 +2,6 @@
 #include "eventapi.h"
 #include "xr_ioconsole.h"
 
-extern	void msRead			();
-extern	void msCreate		(LPCSTR name);
-
 //---------------------------------------------------------------------
 class ENGINE_API CEvent
 {
@@ -146,26 +143,8 @@ void	CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
 	CS.Leave	();
 }
 
-#ifdef DEBUG
-void msParse			(LPCSTR c)
-{
-	if (0==_stricmp(c,"exit")) 
-	{
-		Console->Execute	("quit");
-	}
-	if (0==_stricmp(c,"quit"))
-	{
-		TerminateProcess	(GetCurrentProcess(),0);
-		Console->Execute	("quit");
-	}
-}
-#endif
-
 void	CEventAPI::OnFrame	()
 {
-#ifdef DEBUG
-	msRead		();
-#endif
 	CS.Enter	();
 	if (Events_Deferred.empty())	{ CS.Leave(); return; }
 	for (u32 I=0; I<Events_Deferred.size(); I++)

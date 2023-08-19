@@ -803,9 +803,6 @@
     <ClCompile Include="EventAPI.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="mailSlot.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
     <ClCompile Include="_scripting.cpp">
       <Filter>Engine\Core\Scripting</Filter>
     </ClCompile>
