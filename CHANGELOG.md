@@ -2,6 +2,162 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 0.6 (August 2023)
+
+### Common
+
+- Fixed most part of warnings
+- Fixed ignoring temp and metadata files by locator
+- Fixed error skipping process troubles
+- Fixed `std::unique_ptr` use cases
+- Added __Visual Studio__ solution filters
+- Added __Visual Studio Install__ config
+- Enabled NuGet packages getting and caching in __GitHub Actions__
+- Enabled output log for debugger connected
+- Set latest __Windows SDK__ version
+- Splitted project configuration paths
+- Refactored color math module
+- Replaced `D3DCOLOR_RGBA`, `D3DCOLOR_ARGB` and `D3DCOLOR_XRGB` macroses
+- Replaced legacy __DirectX Math__ with __DirectXMath__ analog
+- Replaced `__uuidof` with `IID_PPV_ARGS`
+- Replaced `__interface` keyword with `class`
+- Replaced `STATIC_CHECK` with `static_assert`
+- Replaced `__asm int 3` with `__debugbreak`
+- Replaced `__asm pause` with `_mm_pause`
+- Replaced `GetCLK` function with unified analog
+- Replaced `GetTickCount` with `GetTickCount64` function
+- Replaced `_snprintf` with `_snprintf_s` function
+- Replaced `std::auto_ptr` pointers with `std::unique_ptr`
+- Replaced `std::bind1st` and `std::bind2nd` with lambda functions
+- Replaced linker directives with project references
+- Replaced `FS_DEBUG` macro with `DEBUG`
+- Renamed `xrDebugNew` module to `xrDebug`
+- Deleted pragma deprecations
+  - `strcpy`, `strcpy_s`, `sprintf`, `sprintf_s`, `strcat`, `strcat_s`
+- Deleted `get_ref_count()` function
+- Deleted scripts for getting dependencies
+- Deleted __ATI MGPU__ library with related code
+- Deleted __NVAPI__ library with related code
+- Deleted redundant `DEBUG_INVOKE`
+- Deleted `boost::noncopyable` use cases from editor and xrPhysics
+- Deleted `std::binary_function` use cases
+- Deleted `std::unary_function` use cases
+- Deleted unused `dwFrame` field of `xrCore` class
+- Deleted unused `_GPA_ENABLED` blocks
+
+### Packages
+
+- Replaced __Flobbster.Windows.Forms__ with NuGet package
+- Replaced __DockPanelSuite__ with NuGet package
+- Replaced __DirectX SDK__ with NuGet package and __Windows SDK__
+- Replaced __DirectXTex__ with NuGet package
+- Replaced __DirectXMesh__ with NuGet package
+- Replaced __Xiph__ libraries with NuGet packages
+- Replaced __zlib__ with NuGet package
+
+### Engine
+
+- Fixed `cam_inert` console command
+- Fixed bones synchronization
+- Fixed OGG related code of xrSound
+- Deleted `xrTheora_Surface_mmx` module
+- Deleted __SecuROM__ related code
+- Deleted unused modules from xrSound
+- Deleted `mailSlot` module
+- Deleted launcher related code
+- Implemented `hud_fov` item parameter
+- Implemented `g_info` and `d_info` console commands
+- Implemented `g_money` console command
+- Implement `g_spawn` and `g_spawn_inv` console command
+- Integrated __OpenAL Soft__ with __EFX__ extensions
+- Unified xrEngine refactoring with __IX-Ray 1.5__
+- Splitted engine and server applications
+- Replaced `-nointro` key with `keypress_on_start` command
+- Refactored some sound modules
+
+### Editors
+
+- Fixed floating types converting in weather editor
+- Fixed weather editor project
+- Deleted unused resource files from weather editor
+
+### Render
+
+- Fixed wrong attenuation of far sun shadows
+- Fixed __HDAO__ crashing on disabled G-Buffer optimization
+- Fixed texture quality changing in D3D11
+- Fixed sun flares for __FXAA__
+- Fixed `MaxAnisotropy` parameter for __Shader Model 5__
+- Fixed some memory leaks
+- Fixed enumeration of option definitions on __Direct3D 10+__
+- Fixed sunshafts on enabled `accum_sun_near_nomsaa_minmax` shader
+- Fixed transparent on static lightning
+- Fixed indentation of texture memory message
+- Added `r2_use_bump` command to disable bumps on R2+ renderers
+- Activated `R2FLAG_USE_BUMP` flag by default
+- Set `DXGI_ENUM_MODES_INTERLACED` flag
+- Replaced `asm` block with standard math functions
+- Replaced legacy __DirectX Tex__ with __DirectXTex__ analog
+- Replaced deprecated shader compiler with __Windows SDK__ analog
+- Refactored `dx11Texture` class
+- Decomposed screenshot creation methods
+- Deleted duplicated `END_EPS` constant
+- Deleted __Direct3D 10__ dependencies
+- Deleted unused mipped noise
+- Deleted __Intel GMA__ related code
+- Deleted unused `sunfilter` option
+- Deleted unused `accum_direct` methods
+- Deleted `bug` option in all renders
+- Deleted `sjitter` option in all renders
+- Deleted `depth16` option in all renders
+- Improved depth buffer format handling
+- Implemented disabling of anisotropic filtering in __Direct3D 10+__
+- Implemented `mipLodBias` property setter for __Direct3D 10+__
+- Implemented textures reloading directly in game
+- Implemented __FXAA__ support
+- Implemented __SMAA__ support
+- Implemented shader-based fog on static lightning
+- Unlocked __MSAA x8__
+
+### Gameplay
+
+- Fixed refreshing of trade list
+- Fixed actor visibility indicator after quickload
+- Fixed offset for answer numbers
+- Fixed detector animation playing
+- Fixed stuttering after reloading grenade launcher
+- Fixed rows and columns of artifact belt
+- Fixed animation playing on attached grenade launcher
+- Fixed playing idle animation on empty state
+- Fixed reload animation playing on active detector
+- Fixed switch animation playing
+- Fixed grenade launcher action
+- Fixed crashing of sliding type doors
+- Fixed crashing in adjust hud mode
+- Fixed flickering after game item usage
+- Fixed loading ammo in grenade mode
+- Fixed flight grenade
+- Enabled inertia control from HUD section
+- Implemented 100x100 icons support
+- Implemented custom autoreloading
+- Implemented custom autoreloading for grenade launcher
+- Implemented full and partial weapon reloading
+- Implemented misfire of weapon
+- Implemented reloadings in grenade launcher weapons
+- Implemented delay before reloading on active detector
+- Implemented scripted key blocking
+- Implemented blocking actor movement
+- Refactored some weapons and detectors methods
+
+### Resources
+
+- Fixed text line alignment for talk dialogs
+- Fixed `object_alive` condition in `bind_monster` script
+- Set weapon autoreloading settings
+- Implemented __SMAA__ support in assets
+- Implemented __FXAA__ support in assets
+- Updated shaders to Shader Model 3.0
+
 ## Release 0.5 (March 2023)
 
 ### Common
