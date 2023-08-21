@@ -8,7 +8,7 @@
   </p>
 
   <p>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.5">
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.6">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml">
@@ -24,7 +24,7 @@ Stable repository of the modernized _X-Ray_ 1.6 game engine
 - Visual Studio 2022 Community Edition
   - MFC
   - C++/CLI
-  - Windows SDK 10.0.19041.0
+  - Windows SDK 10.0.19041.0+
 
 ## Building
 
@@ -36,7 +36,11 @@ git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 
 ### Engine
 
-- Build `XRay.sln` on `Win32` without projects from `utils`
+- Build `XRay.Engine.slnf` on `Win32`
+
+### Compressor
+
+- Build `XRay.Compressor.slnf` on `Win32`
 
 ### Assets
 
