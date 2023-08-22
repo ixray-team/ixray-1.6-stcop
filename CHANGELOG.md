@@ -65,6 +65,8 @@ Full changelog of _IX-Ray_ 1.6 project
 - Deleted unused modules from xrSound
 - Deleted `mailSlot` module
 - Deleted launcher related code
+- Deleted `no_single` module
+- Deleted `dedicated_server_only` module and `PROTECT_API` macros
 - Implemented `hud_fov` item parameter
 - Implemented `g_info` and `d_info` console commands
 - Implemented `g_money` console command
