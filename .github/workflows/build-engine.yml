@@ -95,7 +95,7 @@ jobs:
       - name: Upload engine binaries
         uses: actions/upload-artifact@v3
         with:
-          name: engine-bin-x86-${{ matrix.config }}-${{ github.sha }}
+          name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             bin/Win32/${{ matrix.config }}/*.exe
             bin/Win32/${{ matrix.config }}/*.dll
@@ -103,7 +103,7 @@ jobs:
       - name: Upload server binaries
         uses: actions/upload-artifact@v3
         with:
-          name: dedicated-bin-x86-${{ matrix.config }}-${{ github.sha }}
+          name: bin-dedicated-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             bin/dedicated/Win32/${{ matrix.config }}/*.exe
             bin/dedicated/Win32/${{ matrix.config }}/*.dll
@@ -111,7 +111,7 @@ jobs:
       - name: Upload utilities binaries
         uses: actions/upload-artifact@v3
         with:
-          name: utils-bin-x86-${{ matrix.config }}-${{ github.sha }}
+          name: bin-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             bin/utils/Win32/${{ matrix.config }}/*.exe
             bin/utils/Win32/${{ matrix.config }}/*.dll
@@ -119,7 +119,7 @@ jobs:
       - name: Upload engine libraries
         uses: actions/upload-artifact@v3
         with:
-          name: engine-lib-x86-${{ matrix.config }}-${{ github.sha }}
+          name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             lib/Win32/${{ matrix.config }}/*.lib
             lib/Win32/${{ matrix.config }}/*.exp
@@ -127,7 +127,7 @@ jobs:
       - name: Upload server libraries
         uses: actions/upload-artifact@v3
         with:
-          name: dedicated-lib-x86-${{ matrix.config }}-${{ github.sha }}
+          name: lib-dedicated-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             lib/dedicated/Win32/${{ matrix.config }}/*.lib
             lib/dedicated/Win32/${{ matrix.config }}/*.exp
@@ -135,7 +135,7 @@ jobs:
       - name: Upload utilities libraries
         uses: actions/upload-artifact@v3
         with:
-          name: utils-lib-x86-${{ matrix.config }}-${{ github.sha }}
+          name: lib-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             lib/utils/Win32/${{ matrix.config }}/*.lib
             lib/utils/Win32/${{ matrix.config }}/*.exp
@@ -177,11 +177,11 @@ jobs:
       - name: Upload gamedata
         uses: actions/upload-artifact@v3
         with:
-          name: gamedata-${{ github.sha }}
+          name: gamedata-(${{ github.sha }})
           path: temp/gamedata/
 
       - name: Upload patch
         uses: actions/upload-artifact@v3
         with:
-          name: patch-${{ github.sha }}
+          name: patch-(${{ github.sha }})
           path: patches/xpatch_03.db
