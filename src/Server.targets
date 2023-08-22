@@ -1,21 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-        <Common-BinPath>$(MSBuildThisFileDirectory)\..\bin\</Common-BinPath>
-    </PropertyGroup>
+    <ItemGroup Condition="'$(Configuration.ToLower())' != 'mixed'">
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\libvorbis.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\libvorbisfile.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\openal32.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\lua.JIT.1.1.4.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\luabind.beta7-devel.rc4.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrAPI.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCDB.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCore.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCPU_Pipe.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrD3D9-Null.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrNetServer.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrSound.dll" />
+    </ItemGroup>
 
-    <ItemGroup>
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\libvorbis.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\libvorbisfile.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\lua.JIT.1.1.4.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\luabind.beta7-devel.rc4.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\openal32.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrAPI.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrCDB.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrCore.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrCPU_Pipe.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrD3D9-Null.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrNetServer.dll" />
-        <ReferenceCopyLocalPaths Include="$(Common-BinPath)\xrSound.dll" />
+    <ItemGroup Condition="'$(Configuration.ToLower())' != 'mixed'">
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\lua.JIT.1.1.4.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\luabind.beta7-devel.rc4.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrAPI.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCDB.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCore.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCPU_Pipe.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrD3D9-Null.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrNetServer.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrSound.pdb" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration.ToLower())' == 'mixed'">
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\libvorbis.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\libvorbisfile.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\openal32.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCDB.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCore.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCPU_Pipe.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrNetServer.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrSound.dll" />
+
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\lua.JIT.1.1.4.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\luabind.beta7-devel.rc4.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\xrAPI.dll" />
+
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\xrD3D9-Null.dll" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration.ToLower())' == 'mixed'">
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCDB.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCore.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCPU_Pipe.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrNetServer.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrSound.pdb" />
+
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\lua.JIT.1.1.4.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\luabind.beta7-devel.rc4.pdb" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\xrAPI.pdb" />
+
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\xrD3D9-Null.pdb" />
     </ItemGroup>
 </Project>

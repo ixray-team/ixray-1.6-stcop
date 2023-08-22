@@ -3,4 +3,8 @@
     <ItemGroup>
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCore.dll" />
     </ItemGroup>
+
+    <ItemGroup>
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\$(Configuration)\xrCore.pdb" />
+    </ItemGroup>
 </Project>
