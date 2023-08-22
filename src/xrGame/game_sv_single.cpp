@@ -10,7 +10,6 @@
 #include "xrServer.h"
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/dedicated_server_only.h"
-#include "../xrEngine/no_single.h"
 
 game_sv_Single::game_sv_Single			()
 {

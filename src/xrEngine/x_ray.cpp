@@ -10,7 +10,6 @@
 #include "igame_persistent.h"
 
 #include "dedicated_server_only.h"
-#include "no_single.h"
 #include "../xrNetServer/NET_AuthCheck.h"
 
 #include "xr_input.h"

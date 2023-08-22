@@ -8,8 +8,6 @@
 
 #include "pch_script.h"
 
-#ifndef DEDICATED_SERVER_ONLY
-
 #include "object_factory.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -101,5 +99,3 @@ void CObjectFactory::script_register(lua_State *L)
 			.def("register",	(void (CObjectFactory::*)(LPCSTR,LPCSTR,LPCSTR))(&CObjectFactory::register_script_class))
 	];
 }
-
-#endif // #ifndef DEDICATED_SERVER_ONLY
