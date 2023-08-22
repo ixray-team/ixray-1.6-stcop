@@ -20,7 +20,6 @@
 #include "alife_simulator.h"
 #include "moving_objects.h"
 #include "doors_manager.h"
-#include "../xrEngine/dedicated_server_only.h"
 
 ENGINE_API	bool g_dedicated_server;
 

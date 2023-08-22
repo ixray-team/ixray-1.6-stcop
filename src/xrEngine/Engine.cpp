@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "Engine.h"
-#include "dedicated_server_only.h"
 
 CEngine				Engine;
 xrDispatchTable		PSGP;
@@ -23,7 +22,7 @@ CEngine::~CEngine()
 	
 }
 
-PROTECT_API void CEngine::Initialize	(void)
+void CEngine::Initialize	(void)
 {
 	// Bind PSGP
 	hPSGP		= LoadLibrary("xrCPU_Pipe.dll");
