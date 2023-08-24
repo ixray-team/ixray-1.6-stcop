@@ -3,6 +3,16 @@
 
 IC	CStreamReader::CStreamReader						()
 {
+	m_window_size = 0;
+	m_current_map_view_of_file = nullptr;
+	m_current_offset_from_start = 0;
+	m_current_pointer = nullptr;
+	m_current_window_size = 0;
+	m_file_mapping_handle = nullptr;
+	m_file_size = 0;
+	m_start_offset = 0;
+	m_start_pointer = nullptr;
+	m_window_size = 0;
 }
 
 IC	CStreamReader::CStreamReader						(const CStreamReader &object) :
