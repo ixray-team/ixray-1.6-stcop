@@ -80,7 +80,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount, bool 
    // Validate render-target usage
 	//_hr = HW.pD3D->CheckDeviceFormat(
 		//HW.DevAdapter,
-		//HW.DevT,
+		//HW.m_DriverType,
 		//HW.Caps.fTarget,
 		//usage,
 		//D3DRTYPE_TEXTURE,
@@ -252,7 +252,7 @@ void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 	// Validate render-target usage
 	//_hr = HW.pD3D->CheckDeviceFormat(
 	//	HW.DevAdapter,
-	//	HW.DevT,
+	//	HW.m_DriverType,
 	//	HW.Caps.fTarget,
 	//	D3DUSAGE_RENDERTARGET,
 	//	D3DRTYPE_CUBETEXTURE,
