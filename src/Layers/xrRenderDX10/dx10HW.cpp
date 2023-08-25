@@ -152,7 +152,7 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 		if (SUCCEEDED(Res) && (xr_strcmp(Identifier.Description,"NVIDIA PerfHUD")==0))
 		{
 			DevAdapter	=Adapter;
-			DevT		=D3DDEVTYPE_REF;
+			m_DriverType		=D3DDEVTYPE_REF;
 			break;
 		}
 	}
@@ -202,32 +202,32 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	if (bWindowed)
 	{
 		fTarget = mWindowed.Format;
-		R_CHK(pD3D->CheckDeviceType	(DevAdapter,DevT,fTarget,fTarget,TRUE));
+		R_CHK(pD3D->CheckDeviceType	(DevAdapter,m_DriverType,fTarget,fTarget,TRUE));
 		fDepth  = selectDepthStencil(fTarget);
 	} else {
 		switch (psCurrentBPP) {
 		case 32:
 			fTarget = D3DFMT_X8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_A8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_UNKNOWN;
 			break;
 		case 16:
 		default:
 			fTarget = D3DFMT_R5G6B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_X1R5G5B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_X4R4G4B4;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_UNKNOWN;
 			break;
@@ -559,7 +559,7 @@ void CHW::selectResolution( u32 &dwWidth, u32 &dwHeight, BOOL bWindowed )
 u32	CHW::selectPresentInterval	()
 {
 	D3DCAPS9	caps;
-	pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
+	pD3D->GetDeviceCaps(DevAdapter,m_DriverType,&caps);
 
 	if (!psDeviceFlags.test(rsVSync)) 
 	{
@@ -576,7 +576,7 @@ u32 CHW::selectGPU ()
 	if (Caps.bForceGPU_SW) return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
 	D3DCAPS9	caps;
-	pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
+	pD3D->GetDeviceCaps(DevAdapter,m_DriverType,&caps);
 
 	if(caps.DevCaps&D3DDEVCAPS_HWTRANSFORMANDLIGHT)
 	{
@@ -669,7 +669,7 @@ BOOL CHW::support( D3DFORMAT fmt, DWORD type, DWORD usage)
 	//	TODO: DX10: implement stub for this code.
 	VERIFY(!"Implement CHW::support");
 	/*
-	HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,DevT,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);
+	HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,m_DriverType,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);
 	if (FAILED(hr))	return FALSE;
 	else			return TRUE;
 	*/

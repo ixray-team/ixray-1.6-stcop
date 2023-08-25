@@ -7,7 +7,7 @@
 #pragma warning(disable:4995)
 #include <d3dx9.h>
 #pragma warning(default:4995)
-#include "../xrRender/HW.h"
+#include "HW.h"
 #include "../../xrEngine/XR_IOConsole.h"
 
 #ifndef _EDITOR
@@ -98,7 +98,12 @@ void CHW::Reset		(HWND hwnd)
 
 void CHW::CreateD3D	()
 {
-#if 0
+//#ifndef DEDICATED_SERVER
+//	LPCSTR		_name			= "d3d9.dll";
+//#else
+//	LPCSTR		_name			= "xrd3d9-null.dll";
+//#endif
+
 	LPCSTR		_name			= "xrd3d9-null.dll";
 
 #ifndef _EDITOR
@@ -113,8 +118,6 @@ void CHW::CreateD3D	()
 	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*)GetProcAddress(hD3D,"Direct3DCreate9");	R_ASSERT(createD3D);
     this->pD3D 					= createD3D( D3D_SDK_VERSION );
     R_ASSERT2					(this->pD3D,"Please install DirectX 9.0c");
-#endif
-	this->pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 }
 
 void CHW::DestroyD3D()
@@ -141,11 +144,11 @@ D3DFORMAT CHW::selectDepthStencil	(D3DFORMAT fTarget)
 
 	for (int it = 0; it<fDS_Cnt; it++){
 		if (SUCCEEDED(pD3D->CheckDeviceFormat(
-			DevAdapter,DevT,fTarget,
+			DevAdapter,m_DriverType,fTarget,
 			D3DUSAGE_DEPTHSTENCIL,D3DRTYPE_SURFACE,fDS_Try[it])))
 		{
             if( SUCCEEDED( pD3D->CheckDepthStencilMatch(
-				DevAdapter,DevT,
+				DevAdapter,m_DriverType,
                 fTarget, fTarget, fDS_Try[it]) ) )
             {
 				return fDS_Try[it];
@@ -237,7 +240,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 #endif        
 
 	DevAdapter				= D3DADAPTER_DEFAULT;
-	DevT					= Caps.bForceGPU_REF?D3DDEVTYPE_REF:D3DDEVTYPE_HAL;
+	m_DriverType					= Caps.bForceGPU_REF?D3DDEVTYPE_REF:D3DDEVTYPE_HAL;
 
 #ifndef	MASTER_GOLD
 	// Look for 'NVIDIA NVPerfHUD' adapter
@@ -248,7 +251,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 		if (SUCCEEDED(Res) && (xr_strcmp(Identifier.Description,"NVIDIA PerfHUD")==0))
 		{
 			DevAdapter	=Adapter;
-			DevT		=D3DDEVTYPE_REF;
+			m_DriverType		=D3DDEVTYPE_REF;
 			break;
 		}
 	}
@@ -279,32 +282,32 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	if (bWindowed)
 	{
 		fTarget = mWindowed.Format;
-		R_CHK(pD3D->CheckDeviceType	(DevAdapter,DevT,fTarget,fTarget,TRUE));
+		R_CHK(pD3D->CheckDeviceType	(DevAdapter,m_DriverType,fTarget,fTarget,TRUE));
 		fDepth  = selectDepthStencil(fTarget);
 	} else {
 		switch (psCurrentBPP) {
 		case 32:
 			fTarget = D3DFMT_X8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_A8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_UNKNOWN;
 			break;
 		case 16:
 		default:
 			fTarget = D3DFMT_R5G6B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_X1R5G5B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_X4R4G4B4;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
 				break;
 			fTarget = D3DFMT_UNKNOWN;
 			break;
@@ -358,7 +361,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     // Create the device
 	u32 GPU		= selectGPU();	
 	HRESULT R	= HW.pD3D->CreateDevice(DevAdapter,
-										DevT,
+										m_DriverType,
 										m_hWnd,
 										GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
 										&P,
@@ -366,7 +369,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	
 	if (FAILED(R))	{
 		R	= HW.pD3D->CreateDevice(	DevAdapter,
-										DevT,
+										m_DriverType,
 										m_hWnd,
 										GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
 										&P,
@@ -417,7 +420,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 u32	CHW::selectPresentInterval	()
 {
 	D3DCAPS9	caps;
-	pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
+	pD3D->GetDeviceCaps(DevAdapter,m_DriverType,&caps);
 
 	if (!psDeviceFlags.test(rsVSync)) 
 	{
@@ -435,7 +438,7 @@ u32 CHW::selectGPU ()
 		return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
 	D3DCAPS9	caps;
-	pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
+	pD3D->GetDeviceCaps(DevAdapter,m_DriverType,&caps);
 
     if(caps.DevCaps&D3DDEVCAPS_HWTRANSFORMANDLIGHT)
 	{
@@ -470,7 +473,7 @@ u32 CHW::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 
 BOOL	CHW::support	(D3DFORMAT fmt, DWORD type, DWORD usage)
 {
-	HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,DevT,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);
+	HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,m_DriverType,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);
 	if (FAILED(hr))	return FALSE;
 	else			return TRUE;
 }

@@ -61,7 +61,7 @@ public:
 
 	CHWCaps					Caps;
 
-	D3D_DRIVER_TYPE		m_DriverType;	//	DevT equivalent
+	D3D_DRIVER_TYPE		m_DriverType;
 	DXGI_SWAP_CHAIN_DESC	m_ChainDesc;	//	DevPP equivalent
 	bool					m_bUsePerfhud;
 	D3D_FEATURE_LEVEL		FeatureLevel;
@@ -80,7 +80,7 @@ public:
 	CHWCaps					Caps;
 
 	UINT					DevAdapter;
-	D3DDEVTYPE				DevT;
+	D3DDEVTYPE				m_DriverType;
 	D3DPRESENT_PARAMETERS	DevPP;
 #endif
 
