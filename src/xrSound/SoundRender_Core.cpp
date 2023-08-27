@@ -73,23 +73,26 @@ void CSoundRender_Core::_initialize(int stage)
 }
 
 extern xr_vector<u8> g_target_temp_data;
-void CSoundRender_Core::_clear	()
+extern xr_vector<u8> g_target_temp_data_16;
+
+void CSoundRender_Core::_clear()
 {
-    bReady						= FALSE;
-	cache.destroy				();
-	env_unload					();
+	bReady = FALSE;
+	cache.destroy();
+	env_unload();
 
-    // remove sources
-	for (u32 sit=0; sit<s_sources.size(); sit++)
-    	xr_delete				(s_sources[sit]);
-    s_sources.clear				();
-    
-    // remove emmiters
-	for (u32 eit=0; eit<s_emitters.size(); eit++)
-    	xr_delete				(s_emitters[eit]);
-    s_emitters.clear			();
+	// remove sources
+	for (u32 sit = 0; sit < s_sources.size(); sit++)
+		xr_delete(s_sources[sit]);
+	s_sources.clear();
 
-	g_target_temp_data.clear	();
+	// remove emmiters
+	for (u32 eit = 0; eit < s_emitters.size(); eit++)
+		xr_delete(s_emitters[eit]);
+	s_emitters.clear();
+
+	g_target_temp_data.clear();
+	g_target_temp_data_16.clear();
 }
 
 void CSoundRender_Core::stop_emitters()
