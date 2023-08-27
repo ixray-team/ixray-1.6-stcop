@@ -719,11 +719,18 @@ void CWeaponMagazinedWGrenade::PlayAnimBore()
 
 void CWeaponMagazinedWGrenade::UpdateSounds	()
 {
+	if (Device.dwFrame == dwUpdateSounds_Frame)
+		return;
+
 	inherited::UpdateSounds			();
+
 	Fvector P						= get_LastFP();
-	m_sounds.SetPosition("sndShotG", P);
-	m_sounds.SetPosition("sndReloadG", P);
-	m_sounds.SetPosition("sndSwitch", P);
+	if (Device.dwFrame % 3 == 0)
+		m_sounds.SetPosition("sndShotG", P);
+	else if (Device.dwFrame % 3 == 1)
+		m_sounds.SetPosition("sndReloadG", P);
+	else if (Device.dwFrame % 3 == 2)
+		m_sounds.SetPosition("sndSwitch", P);
 }
 
 void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
