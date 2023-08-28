@@ -193,6 +193,7 @@ enum
 	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
 	RFLAG_ACTOR_SHADOW				= (1<<9),
 	R2FLAG_USE_BUMP					= (1<<10),
+	RFLAG_USE_CACHE					= (1<<11),
 };
 
 extern void						xrRender_initconsole	();
