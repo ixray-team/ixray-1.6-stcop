@@ -91,6 +91,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4005;4099;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>dxguid.lib;D3DCompiler.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -129,6 +130,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4005;4099;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>dxguid.lib;D3DCompiler.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
