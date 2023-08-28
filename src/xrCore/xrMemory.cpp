@@ -65,8 +65,7 @@ void	xrMemory::_initialize	(BOOL bDebug)
 	stat_calls				= 0;
 	stat_counter			= 0;
 
-	u32	features		= CPU::ID.feature;
-	if (features & _CPU_FEATURE_MMX)
+	if (CPU::ID.hasFeature(CPUFeature::MMXExt))
 	{
 		mem_copy	= xrMemCopy_MMX;
 		mem_fill	= xrMemFill_x86;

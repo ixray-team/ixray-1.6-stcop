@@ -18,7 +18,7 @@ extern xrPLC_calc3		PLC_calc3_SSE;
 
 
 extern "C" {
-	__declspec(dllexport) void	__cdecl	xrBind_PSGP	( xrDispatchTable* T , _processor_info* ID )
+	__declspec(dllexport) void	__cdecl	xrBind_PSGP	( xrDispatchTable* T , processor_info* ID )
 	{
 		// generic
 		T->skin1W	= xrSkin1W_x86;
@@ -29,7 +29,7 @@ extern "C" {
 		T->PLC_calc3 = PLC_calc3_x86;
 	
 		// SSE
-		if ( ID->feature & _CPU_FEATURE_SSE) {
+		if ( ID->hasFeature(CPUFeature::SSE)) {
 			T->PLC_calc3 = PLC_calc3_SSE;
 		}
 	}

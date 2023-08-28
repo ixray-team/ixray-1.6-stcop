@@ -1,38 +1,100 @@
-#ifndef _INC_CPUID
-#define _INC_CPUID
+using ulong_t = unsigned long long;
+using long_t = long long;
 
-#define _CPU_FEATURE_MMX    0x0001
-#define _CPU_FEATURE_SSE    0x0002
-#define _CPU_FEATURE_SSE2   0x0004
-#define _CPU_FEATURE_3DNOW  0x0008
+typedef HRESULT(WINAPI* NTQUERYSYSTEMINFORMATION)(UINT, PVOID, ULONG, PULONG);
 
-#define _CPU_FEATURE_SSE3	0x0010
-#define _CPU_FEATURE_SSSE3	0x0020
-#define _CPU_FEATURE_SSE4_1 0x0040
-#define _CPU_FEATURE_SSE4_2	0x0080
+#define SystemProcessorPerformanceInformation 8
+#define MAX_CPU 8
+#define MAX_HISTORY 512
 
-#define _CPU_FEATURE_MWAIT	0x0100
-#define _CPU_FEATURE_HTT	0x0200
+#pragma once
 
-struct _processor_info {
-    char		v_name[13];							// vendor name
-    char		model_name[49];						// Name of model eg. Intel_Pentium_Pro
-    
-	unsigned char family;							// family of the processor, eg. Intel_Pentium_Pro is family 6 processor
-    unsigned char model;							// model of processor, eg. Intel_Pentium_Pro is model 1 of family 6 processor
-    unsigned char stepping;							// Processor revision number
-    
-	unsigned int feature;							// processor Feature ( same as return value).
+typedef struct SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION
+{
+	LARGE_INTEGER	IdleTime;
+	LARGE_INTEGER	KernelTime;
+	LARGE_INTEGER	UserTime;
+	LARGE_INTEGER	Reserved1[2];
+	ULONG			Reserved2;
+} SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION;
 
-	unsigned int n_cores;							// number of available physical cores
-	unsigned int n_threads;							// number of available logical threads
+enum class CPUFeature : unsigned
+{
+	MMX = 1 << 0,
+	MMXExt = 1 << 1,
 
-	unsigned int affinity_mask;						// recommended affinity mask
-													// all processors available to process
-													// except 2nd (and upper) logical threads
-													// of the same physical core
+	SSE = 1 << 2,
+	SSE2 = 1 << 3,
+	SSE3 = 1 << 4,
+	SSSE3 = 1 << 5,
+	SSE41 = 1 << 6,
+	SSE4a = 1 << 7,
+	SSE42 = 1 << 8,
+
+	AVX = 1 << 9,
+	AVX2 = 1 << 10,
+	AVX512F = 1 << 11,
+	AVX512PF = 1 << 12,
+	AVX512ER = 1 << 13,
+	AVX512CD = 1 << 14,
+
+	AMD_3DNow = 1 << 15,
+	AMD_3DNowExt = 1 << 16,
+
+	MWait = 1 << 17,
+	HT = 1 << 18,
+	TM2 = 1 << 19,
+	AES = 1 << 20,
+	EST = 1 << 21,
+	VMX = 1 << 22,
+	AMD = 1 << 23,
+	XFSR = 1 << 24
 };
 
-int _cpuid ( _processor_info * );
+struct XRCORE_API processor_info
+{
+	processor_info();
+	~processor_info();
 
-#endif
+	DWORD m_dwNumberOfProcessors = 0;
+	SYSTEM_INFO sysInfo;
+	NTQUERYSYSTEMINFORMATION m_pNtQuerySystemInformation;
+	SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION* perfomanceInfo;
+	FILETIME prevSysIdle, prevSysKernel, prevSysUser;
+	DWORD m_dwTickCount[MAX_CPU];
+	DWORD m_dwCount;
+	LARGE_INTEGER m_idleTime[MAX_CPU];
+	FLOAT m_fltCpuUsage[MAX_CPU];
+	FLOAT m_fltCpuUsageHistory[MAX_CPU][512];
+	UINT m_nTimerID;
+	float* fUsage;
+
+	u8 family;	// family of the processor, eg. Intel_Pentium_Pro is family 6 processor
+	u8 model;	// model of processor, eg. Intel_Pentium_Pro is model 1 of family 6 processor
+	u8 stepping; // Processor revision number
+
+	bool isAmd;				// AMD flag
+	bool isIntel;			// IntelCore flag
+	char vendor[32];
+	char modelName[64];
+
+	unsigned features;		// processor Feature ( same as return value).
+
+	unsigned n_cores;		// number of available physical cores
+	unsigned n_threads;		// number of available logical threads
+
+	unsigned affinity_mask; // recommended affinity mask
+	// all processors available to process
+	// except 2nd (and upper) logical threads
+	// of the same physical core
+
+	bool hasFeature(const CPUFeature feature) const noexcept
+	{
+		return (features & static_cast<unsigned>(feature));
+	}
+
+	bool GetCPULoad(double& Val);
+	float* MTCPULoad();
+	float CalcMPCPULoad(DWORD dwCPU);
+
+};
