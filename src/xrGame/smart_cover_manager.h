@@ -10,7 +10,6 @@
 #define SMART_COVER_MANAGER_H_INCLUDED
 
 #include "smart_cover_detail.h"
-#include <boost/noncopyable.hpp>
 
 class CAI_Stalker;
 
@@ -24,15 +23,15 @@ namespace transitions {
 	class processor;
 } // namespace transitions
 
-class manager :
-	private boost::noncopyable,
-	private detail::make_final_debug<manager>
-{
+class manager : private detail::make_final_debug<manager> {
 public:
 	typedef transitions::action		transition_action;
 	typedef	transitions::processor	transition_processor;
 
 public:
+	manager(const manager& other) = delete;
+	manager& operator =(const manager& other) = delete;
+
 									manager				(CAI_Stalker *object);
 									~manager			();
 			loophole const			&enter_loophole		();
