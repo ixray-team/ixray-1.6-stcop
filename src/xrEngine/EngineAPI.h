@@ -25,12 +25,6 @@ typedef DLL_API  DLL_Pure*	  __cdecl Factory_Create	(CLASS_ID	CLS_ID);
 typedef DLL_API  void		  __cdecl Factory_Destroy	(DLL_Pure*	O);
 };
 
-// Tuning interface
-extern "C" {
-	typedef void __cdecl VTPause	(void);
-	typedef void __cdecl VTResume	(void);
-};
-
 class ENGINE_API		CEngineAPI
 {
 private:

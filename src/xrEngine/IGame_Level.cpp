@@ -135,10 +135,6 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	return TRUE;	
 }
 
-#ifndef _EDITOR
-#include "../xrCPU_Pipe/ttapi.h"
-#endif
-
 int		psNET_DedicatedSleep	= 5;
 void	IGame_Level::OnRender		( ) 
 {
