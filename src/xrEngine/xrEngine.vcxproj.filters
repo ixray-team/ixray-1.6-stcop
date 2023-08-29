@@ -249,9 +249,6 @@
     <ClInclude Include="_d3d_extensions.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="CopyProtection.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="defines.h">
       <Filter>General</Filter>
     </ClInclude>

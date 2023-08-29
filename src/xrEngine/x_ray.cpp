@@ -19,7 +19,6 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
-#include "CopyProtection.h"
 #include "Text_Console.h"
 
 //---------------------------------------------------------------------
@@ -109,7 +108,6 @@ void InitEngine		()
 	Engine.Initialize			( );
 	while (!g_bIntroFinished)	Sleep	(100);
 	Device.Initialize			( );
-	CheckCopyProtection			( );
 }
 
 struct path_excluder_predicate
@@ -282,8 +280,7 @@ void Startup()
 	logoWindow					= NULL;
 
 	// Main cycle
-	CheckCopyProtection			( );
-Memory.mem_usage();
+	Memory.mem_usage();
 	Device.Run					( );
 
 	// Destroy APP
@@ -1020,8 +1017,6 @@ void CApplication::LoadBegin	()
 #endif
 		phase_timer.Start	();
 		load_stage			= 0;
-
-		CheckCopyProtection	();
 	}
 }
 
@@ -1061,7 +1056,6 @@ void CApplication::LoadDraw		()
 		load_draw_internal			();
 
 	Device.End					();
-	CheckCopyProtection			();
 }
 
 void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
@@ -1186,8 +1180,6 @@ void CApplication::Level_Set(u32 L)
 
 	if(path[0])
 		m_pRender->setLevelLogo	(path);
-
-	CheckCopyProtection			();
 }
 
 int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
