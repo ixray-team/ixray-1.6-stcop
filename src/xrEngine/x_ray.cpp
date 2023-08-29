@@ -99,8 +99,6 @@ struct _SoundProcessor	: public pureFrame
 ENGINE_API	CApplication*	pApp			= NULL;
 static		HWND			logoWindow		= NULL;
 
-			int				doLauncher		();
-
 ENGINE_API	string512		g_sLaunchOnExit_params;
 ENGINE_API	string512		g_sLaunchOnExit_app;
 ENGINE_API	string_path		g_sLaunchWorkingFolder;
@@ -147,14 +145,6 @@ void InitSettings	()
 	path_excluder_predicate			tmp_excluder(&tmp_ignore_pathes);
 	CInifile::allow_include_func_t	tmp_functor;
 	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
-	pSettingsAuth					= xr_new<CInifile>(
-		fname,
-		TRUE,
-		TRUE,
-		FALSE,
-		0,
-		tmp_functor
-	);
 
 	FS.update_path				(fname,"$game_config$","game.ltx");
 	pGameIni					= xr_new<CInifile>	(fname,TRUE);

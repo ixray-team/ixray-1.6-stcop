@@ -4,7 +4,6 @@
 #include "fs_internal.h"
 
 XRCORE_API CInifile const * pSettings		= NULL;
-XRCORE_API CInifile const * pSettingsAuth	= NULL;
 
 CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly)
 {	return xr_new<CInifile>(szFileName,ReadOnly); }
@@ -486,19 +485,6 @@ CInifile::Sect& CInifile::r_section( LPCSTR S )const
 	RootCIt I = std::lower_bound(DATA.begin(),DATA.end(),section,sect_pred);
 	if (!(I!=DATA.end() && xr_strcmp(*(*I)->Name,section)==0))
 	{
-
-		//g_pStringContainer->verify();
-
-		//string_path			ini_dump_fn, path;
-		//strconcat			(sizeof(ini_dump_fn), ini_dump_fn, Core.ApplicationName, "_", Core.UserName, ".ini_log");
-		//
-		//FS.update_path		(path, "$logs$", ini_dump_fn);
-		//IWriter* F			= FS.w_open_ex(path);
-		//save_as				(*F);
-		//F->w_string			("shared strings:");
-		//g_pStringContainer->dump(F);
-		//FS.w_close			(F);
-
 		Debug.fatal			(DEBUG_INFO,"Can't open section '%s'. Please attach [*.ini_log] file to your bug report",S);
 	}
 	return	**I;

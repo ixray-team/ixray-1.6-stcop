@@ -35,22 +35,7 @@ void	CLocatorAPI::auth_runtime		(void*	params)
 {
 	m_auth_lock.Enter	()	;
 	auth_options*		_o	= (auth_options*)	params	;
-
-	CMemoryWriter			writer;
-	pSettingsAuth->save_as	(writer);
-	m_auth_code				= crc32(writer.pointer(), writer.size());
-
-#ifdef DEBUG
-	if (strstr(Core.Params,"auth_debug"))
-	{
-		string_path	tmp_path;
-		update_path(tmp_path, "$app_data_root$", "auth_psettings.ltx");
-		IWriter* tmp_dst = w_open(tmp_path);
-		pSettingsAuth->save_as(*tmp_dst, false);
-		w_close(tmp_dst);
-	}
-#endif
-
+	m_auth_code = 0;
 	bool				do_break = false;
 
 #ifdef DEBUG
