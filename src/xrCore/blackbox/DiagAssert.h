@@ -108,7 +108,7 @@ DISCUSSION      :
 PARAMETERS      :
     dwOverrideOpts - The DA_* options to override the global defaults
                      for this call into DiagAssert.
-    bAllowHalts    - If TRUE, doesn�t show Retry and Ignore buttons
+    bAllowHalts    - If TRUE, doesn’t show Retry and Ignore buttons
     szMsg          - The message to show. The Visual Basic side is responsible
                      for formatting the string.
 RETURNS         :

@@ -227,8 +227,9 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	for (; it!=end; it++)	{
 		R_constant*		Cs	= &**it;
 		VERIFY(Cs);
-		if (Cs && Cs->handler)
+		if (Cs && Cs->handler) {
 			Cs->handler->setup(Cs);
+		}
 	}
 }
 
