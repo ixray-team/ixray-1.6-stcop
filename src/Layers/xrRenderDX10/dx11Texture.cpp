@@ -18,17 +18,10 @@ void fix_texture_name(LPSTR fn) {
 int get_texture_load_lod(LPCSTR fn) {
     auto& sect = pSettings->r_section("reduce_lod_texture_list");
 
-    ENGINE_API bool is_enough_address_space_available();
-    static bool enough_address_space_available = is_enough_address_space_available();
-
     for (const auto& data : sect.Data) {
         if (strstr(fn, data.first.c_str())) {
             if (psTextureLOD < 1) {
-                if (enough_address_space_available) {
-                    return 0;
-                } else {
-                    return 1;
-                }
+                return 0;
             } else {
                 if (psTextureLOD < 3) {
                     return 1;
@@ -40,10 +33,7 @@ int get_texture_load_lod(LPCSTR fn) {
     }
 
     if (psTextureLOD < 2) {
-        // if ( enough_address_space_available )
         return 0;
-        // else
-        // return 1;
     } else {
         if (psTextureLOD < 4) {
             return 1;

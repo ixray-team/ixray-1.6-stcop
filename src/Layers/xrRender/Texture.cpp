@@ -5,10 +5,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(disable:4995)
-#include <d3dx9.h>
-#pragma warning(default:4995)
-
 #ifndef _EDITOR
 #include "dxRenderDeviceRender.h"
 #endif
@@ -27,53 +23,32 @@ void fix_texture_name(LPSTR fn)
 		*_ext = 0;
 }
 
-  ENGINE_API int g_current_renderer;
-  #ifndef _EDITOR
-  ENGINE_API bool is_enough_address_space_available();
-  #else
-  bool is_enough_address_space_available(){return true;}
-  #endif
+int get_texture_load_lod(LPCSTR fn) {
+    auto& sect = pSettings->r_section("reduce_lod_texture_list");
 
-int get_texture_load_lod(LPCSTR fn)
-{
-	CInifile::Sect& sect	= pSettings->r_section("reduce_lod_texture_list");
-	CInifile::SectCIt it_	= sect.Data.begin();
-	CInifile::SectCIt it_e_	= sect.Data.end();
+    for (const auto& data : sect.Data) {
+        if (strstr(fn, data.first.c_str())) {
+            if (psTextureLOD < 1) {
+                return 0;
+            } else {
+                if (psTextureLOD < 3) {
+                    return 1;
+                } else {
+                    return 2;
+                }
+            }
+        }
+    }
 
-	CInifile::SectCIt it	= it_;
-	CInifile::SectCIt it_e	= it_e_;
-
-	static bool enough_address_space_available = is_enough_address_space_available();
-
-	for(;it!=it_e;++it)
-	{
-		if( strstr(fn, it->first.c_str()) )
-		{
-			if(psTextureLOD<1) {
-				if ( enough_address_space_available || (g_current_renderer < 2) )
-					return 0;
-				else
-					return 1;
-			}
-			else
-			if(psTextureLOD<3)
-				return 1;
-			else
-				return 2;
-		}
-	}
-
-	if(psTextureLOD<2) {
-//		if ( enough_address_space_available || (g_current_renderer < 2) )
-			return 0;
-//		else
-//			return 1;
-	}
-	else
-	if(psTextureLOD<4)
-		return 1;
-	else
-		return 2;
+    if (psTextureLOD < 2) {
+        return 0;
+    } else {
+        if (psTextureLOD < 4) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
 }
 
 u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)

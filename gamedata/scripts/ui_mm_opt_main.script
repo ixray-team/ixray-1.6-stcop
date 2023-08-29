@@ -125,12 +125,6 @@ function options_dialog:UpdateDependControls()
 	local max_texture_lod = 4
 	local min_texture_lod = 0
 
-	if _current_id ~= 0 then
-		if not is_enough_address_space_available()	then
-			min_texture_lod = 1
-		end
-	end
-
 	self.texture_lod_track:SetOptIBounds(min_texture_lod, max_texture_lod)
 	self:OnAOOptionChange()
 end
