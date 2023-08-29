@@ -21,8 +21,6 @@
 #include "../xrcdb/ispatial.h"
 #include "CopyProtection.h"
 #include "Text_Console.h"
-#include <process.h>
-#include <locale.h>
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
@@ -52,67 +50,6 @@ static int days_in_month[12] = {
 static int start_day	= 31;	// 31
 static int start_month	= 1;	// January
 static int start_year	= 1999;	// 1999
-
-// binary hash, mainly for copy-protection
-
-#ifndef DEDICATED_SERVER
-
-#include "../xrGameSpy/gamespy/md5c.c"
-#include <ctype.h>
-
-#define DEFAULT_MODULE_HASH "3CAABCFCFF6F3A810019C6A72180F166"
-static char szEngineHash[33] = DEFAULT_MODULE_HASH;
-
-char * ComputeModuleHash( char * pszHash )
-{
-
-	char szModuleFileName[ MAX_PATH ];
-	HANDLE hModuleHandle = NULL , hFileMapping = NULL;
-	LPVOID lpvMapping = NULL;
-	MEMORY_BASIC_INFORMATION MemoryBasicInformation;
-
-	if ( ! GetModuleFileName( NULL , szModuleFileName , MAX_PATH ) )
-		return pszHash;
-
-	hModuleHandle = CreateFile( szModuleFileName , GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL );
-
-	if ( hModuleHandle == INVALID_HANDLE_VALUE )
-		return pszHash;
-
-	hFileMapping = CreateFileMapping( hModuleHandle , NULL , PAGE_READONLY , 0 , 0 , NULL );
-
-	if ( hFileMapping == NULL ) {
-		CloseHandle( hModuleHandle );
-		return pszHash;
-	}
-
-	lpvMapping = MapViewOfFile( hFileMapping , FILE_MAP_READ , 0 , 0 , 0 );
-
-	if ( lpvMapping == NULL ) {
-		CloseHandle( hFileMapping );
-		CloseHandle( hModuleHandle );
-		return pszHash;
-	}
-
-	ZeroMemory( &MemoryBasicInformation , sizeof( MEMORY_BASIC_INFORMATION ) );
-
-	VirtualQuery( lpvMapping , &MemoryBasicInformation , sizeof( MEMORY_BASIC_INFORMATION ) );
-
-	if ( MemoryBasicInformation.RegionSize ) {
-		char szHash[33];
-		MD5Digest( ( unsigned char *)lpvMapping , (unsigned int) MemoryBasicInformation.RegionSize , szHash );
-		MD5Digest( ( unsigned char *)szHash , 32 , pszHash );
-		for ( int i = 0 ; i < 32 ; ++i )
-			pszHash[ i ] = (char)toupper( pszHash[ i ] );
-	}
-
-	UnmapViewOfFile( lpvMapping );
-	CloseHandle( hFileMapping );
-	CloseHandle( hModuleHandle );
-
-	return pszHash;
-}
-#endif // DEDICATED_SERVER
 
 void compute_build_id	()
 {
@@ -195,10 +132,6 @@ struct path_excluder_predicate
 
 void InitSettings	()
 {
-	#ifndef DEDICATED_SERVER
-		Msg( "EH: %s\n" , ComputeModuleHash( szEngineHash ) );
-	#endif // DEDICATED_SERVER
-
 	string_path					fname; 
 	FS.update_path				(fname,"$game_config$","system.ltx");
 #ifdef DEBUG
