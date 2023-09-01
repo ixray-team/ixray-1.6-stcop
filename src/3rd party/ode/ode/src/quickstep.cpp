@@ -799,7 +799,7 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 		if(!(dValid(b->tacc[0])&&dValid(b->tacc[1])&&dValid(b->tacc[2])))
 		{
 			//char s[64];
-			//_snprintf (s,sizeof(s),"tmp %f,%f,%f \n avel %f,%f,%f",tmp[0],tmp[1],tmp[2],b->avel[0],b->avel[1],b->avel[2]);
+			//_snprintf_s(s,sizeof(s),"tmp %f,%f,%f \n avel %f,%f,%f",tmp[0],tmp[1],tmp[2],b->avel[0],b->avel[1],b->avel[2]);
 			//dUASSERT(0,"tmp %f,%f,%f \n avel %f,%f,%f",tmp[0],tmp[1],tmp[2],b->avel[0],b->avel[1],b->avel[2]);
 
 			dDebug (d_ERR_UASSERT," (%s:%d \n tmp %f,%f,%f \n avel %f,%f,%f)", __FILE__,__LINE__,tmp[0],tmp[1],tmp[2],b->avel[0],b->avel[1],b->avel[2]);
