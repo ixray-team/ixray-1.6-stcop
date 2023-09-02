@@ -107,6 +107,8 @@ void CHW::DestroyD3D()
 
 void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 {
+	CreateRDoc();
+
 	m_move_window			= move_window;
 	CreateD3D();
 
@@ -374,6 +376,26 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 #endif
 }
 
+void CHW::CreateRDoc() {
+	if (strstr(Core.Params, "-renderdoc")) {
+		rdoc_api = nullptr;
+		if (HMODULE mod = LoadLibraryA("renderdoc.dll")) {
+			pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+
+			int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_5_0, (void**)&rdoc_api);
+			assert(ret == 1);
+
+			int Major, Minor, Path;
+			rdoc_api->GetAPIVersion(&Major, &Minor, &Path);
+			Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
+
+			//rdoc_api->LaunchReplayUI(1, "IX-Ray 1.6.02");
+			//rdoc_api->SetActiveWindow(pDevice, Device.m_hWnd);
+		}
+	}
+
+}
+
 void CHW::DestroyDevice()
 {
 	//	Destroy state managers
@@ -382,6 +404,10 @@ void CHW::DestroyDevice()
 	DSSManager.ClearStateArray();
 	BSManager.ClearStateArray();
 	SSManager.ClearStateArray();
+
+	if (rdoc_api != nullptr) {
+		rdoc_api->Shutdown();
+	}
 
 	_SHOW_REF				("refCount:pBaseZB",pBaseZB);
 	_RELEASE				(pBaseZB);

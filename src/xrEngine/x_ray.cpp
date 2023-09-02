@@ -648,13 +648,10 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	RECT logoRect;
 	GetWindowRect(logoPicture, &logoRect);
 
+	HWND TopMost = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
+
 	SetWindowPos				(
-		logoWindow,
-#ifndef DEBUG
-		HWND_TOPMOST,
-#else
-		HWND_NOTOPMOST,
-#endif // NDEBUG
+		logoWindow, TopMost,
 		0,
 		0,
 		logoRect.right - logoRect.left,
