@@ -342,11 +342,6 @@
     <ClCompile Include="editor_environment_effects_manager.cpp" />
     <ClCompile Include="editor_environment_levels_manager.cpp" />
     <ClCompile Include="editor_environment_manager.cpp" />
-    <ClCompile Include="editor_environment_manager_properties.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="editor_environment_sound_channels_channel.cpp" />
     <ClCompile Include="editor_environment_sound_channels_manager.cpp" />
     <ClCompile Include="editor_environment_sound_channels_source.cpp" />

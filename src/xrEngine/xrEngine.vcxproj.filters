@@ -893,9 +893,6 @@
     <ClCompile Include="editor_environment_manager.cpp">
       <Filter>editor\environment\manager</Filter>
     </ClCompile>
-    <ClCompile Include="editor_environment_manager_properties.cpp">
-      <Filter>editor\environment\manager</Filter>
-    </ClCompile>
     <ClCompile Include="editor_environment_ambients_manager.cpp">
       <Filter>editor\environment\ambients</Filter>
     </ClCompile>
