@@ -59,7 +59,7 @@ bool CWeaponShotgun::Action(u16 cmd, u32 flags)
 	if(inherited::Action(cmd, flags))
 		return true;
 
-	if (m_bTriStateReload && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && cmd == kWPN_FIRE && flags & CMD_START) //остановить перезарядку
+	if (m_bTriStateReload && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && cmd == kWPN_FIRE && flags & CMD_START) //РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРµР·Р°СЂСЏРґРєСѓ
 	{
 		bStopReloadSignal = true;
 		return true;
@@ -96,6 +96,8 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 		case eSubstateReloadEnd:
 		{
 			bStopReloadSignal = false;
+			bReloadKeyPressed = false;
+			bAmmotypeKeyPressed = false;
 			SwitchState(eIdle);
 		}break;
 		
@@ -250,7 +252,7 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	//выкинуть коробку патронов, если она пустая
+	//РІС‹РєРёРЅСѓС‚СЊ РєРѕСЂРѕР±РєСѓ РїР°С‚СЂРѕРЅРѕРІ, РµСЃР»Рё РѕРЅР° РїСѓСЃС‚Р°СЏ
 	if(m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer()) 
 		m_pCurrentAmmo->SetDropManual(TRUE);
 

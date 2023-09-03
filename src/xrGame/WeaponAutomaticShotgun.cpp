@@ -49,7 +49,7 @@ bool CWeaponAutomaticShotgun::Action(u16 cmd, u32 flags)
 	if(inherited::Action(cmd, flags))
 		return true;
 
-	if(m_bTriStateReload && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && cmd == kWPN_FIRE && flags & CMD_START) //остановить перезарядку
+	if(m_bTriStateReload && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && cmd == kWPN_FIRE && flags & CMD_START) //РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРµР·Р°СЂСЏРґРєСѓ
 	{
 		bStopReloadSignal = true;
 		return true;
@@ -84,6 +84,8 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 		case eSubstateReloadEnd:
 		{
 			bStopReloadSignal = false;
+			bReloadKeyPressed = false;
+			bAmmotypeKeyPressed = false;
 			SwitchState(eIdle);
 		}break;
 		
@@ -238,7 +240,7 @@ u8 CWeaponAutomaticShotgun::AddCartridge		(u8 cnt)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	//выкинуть коробку патронов, если она пустая
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if(m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer()) 
 		m_pCurrentAmmo->SetDropManual(TRUE);
 
