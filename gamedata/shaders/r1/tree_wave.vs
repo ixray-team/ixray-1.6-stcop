@@ -51,7 +51,6 @@ vf main (av v)
 	float4 	L_unpack= c_scale*L_base+c_bias;							// unpacked and decompressed
 	float3 	L_rgb 	= L_unpack.xyz;										// precalculated RGB lighting
 	float3 	L_hemi 	= v_hemi_wrap(N,.75f)* L_unpack.w;					// hemisphere
-//	float3 	L_sun 	= v_sun_wrap (N,.25f)* (L_base*c_sun.x+c_sun.y);	// sun
 	float3 	L_sun 	= v_sun (N)* (L_base*c_sun.x+c_sun.y);				// sun
 	float3 	L_final	= L_rgb + L_hemi + L_sun + L_ambient;
 	o.COL0		= float4 (L_final,1);

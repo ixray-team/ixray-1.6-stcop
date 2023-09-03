@@ -157,15 +157,14 @@ float 	shadowtest_sun 	(float4 tc, float4 tcJ)			// jittered sampling
 	return	dot(r,1.h/4.h);
 }
 
-float 	shadow_high 	(float4 tc)			// jittered sampling
-{
-
+// jittered sampling
+float shadow_high(float4 tc) {  
 	const	float 	scale 	= (0.5f/float(SMAP_size));
 
 	float2 	tc_J	= frac(tc.xy/tc.w*SMAP_size/4.0f )*.5f;
 	float4	J0 	= tex2D	(jitter0,tc_J)*scale;
 
-	const float k = 1.f/float(SMAP_size);
+	const float k = 1.0f / float(SMAP_size);
 	float4	r;
 	r.x 	= test 	(tc,J0.xy+float2(-k,-k)).x;
 	r.y 	= test 	(tc,J0.wz+float2( k,-k)).y;
@@ -182,7 +181,7 @@ float 	shadow_high 	(float4 tc)			// jittered sampling
 	r1.z	= test	(tc,-2*J0.xy+float2( k1, 0.0f)).z;
  	r1.w	= test	(tc,-2*J0.wz+float2( 0.0f, k1)).x;
 
-	return ( r.x + r.y + r.z + r.w + r1.x + r1.y + r1.z + r1.w )*1.h/8.h;
+	return (r.x + r.y + r.z + r.w + r1.x + r1.y + r1.z + r1.w) * 1.0f/ 8.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

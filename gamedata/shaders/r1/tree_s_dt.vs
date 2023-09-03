@@ -54,8 +54,6 @@ vf main (av v)
 	float3 	L_rgb 	= L_unpack.xyz;								// precalculated RGB lighting
 	float3 	L_hemi 	= v_hemi_wrap(N,.75f)* L_unpack.w;			// hemisphere
 	float3 	L_sun 	= v_sun (N)* (L_base*c_sun.x+c_sun.y);			// sun
-	//float3 	L_sun 	= v_sun_wrap (N,.25f)* (L_base*c_sun.x+c_sun.y);			// sun
-	//float3 	L_sun 	= L_sun_color*(.25f+.75f*dot(N,-L_sun_dir_w))*(L_base*c_sun.x+c_sun.y);
 	float3 	L_final	= L_rgb + L_hemi + L_sun;
 
 	// final xform, color, tc
