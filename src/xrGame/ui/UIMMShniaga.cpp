@@ -79,7 +79,7 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 		CreateList			(m_buttons_new,			xml_doc, "menu_new_game");
 	}
 	else {
-		if (GameID() == eGameIDSingle) {
+		if (IsGameTypeSingle()) {
 			VERIFY			(Actor());
 			if (g_actor && !Actor()->g_Alive())
 				CreateList	(m_buttons, xml_doc, "menu_main_single_dead");

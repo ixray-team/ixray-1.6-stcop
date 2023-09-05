@@ -11,7 +11,7 @@ constexpr auto COLOR_BLUE = color_xrgb(0, 0, 255);
 
 class CBlend;
 
-// ����������� ��������� �������� (animation spec params)
+// специальные параметры анимаций (animation spec params)
 #define ASP_MOVE_BKWD			(1 << 0) 
 #define ASP_DRAG_CORPSE			(1 << 1) 
 #define ASP_CHECK_CORPSE		(1 << 2)
@@ -28,8 +28,8 @@ class CBlend;
 #define ASP_UPPER_STATE			(1 << 13)
 #define ASP_MOVE_SMELLING		(1 << 14)
 
-#define AA_FLAG_ATTACK_RAT		(1 << 0)			// ������ ����?
-#define AA_FLAG_FIRE_ANYWAY		(1 << 1)			// ����������� �� �����
+#define AA_FLAG_ATTACK_RAT		(1 << 0)			// аттака крыс?
+#define AA_FLAG_FIRE_ANYWAY		(1 << 1)			// трассировка не нужна
 
 #define CRITICAL_STAND_TIME		1400
 #define TIME_STAND_RECHECK		2000
@@ -261,12 +261,12 @@ enum EPState {
 typedef		shared_str			anim_string;
 #define		DEFAULT_ANIM		eAnimStandIdle
 
-// ������� ��������
+// элемент анимации
 struct SAnimItem {
 
 	anim_string		target_name;	// "stand_idle_"
-	int				spec_id;		// (-1) - any,  (0 - ...) - ������������� 3
-	u8				count;			// ���������� �������� : "idle_0", "idle_1", "idle_2" 
+	int				spec_id;		// (-1) - any,  (0 - ...) - идентификатор 3
+	u8				count;			// количество анимаций : "idle_0", "idle_1", "idle_2" 
 	
 	SVelocityParam	velocity;
 
@@ -296,7 +296,7 @@ struct STransition {
 	bool			skip_if_aggressive;
 };
 
-// ������� ��������
+// элемент движения
 struct SMotionItem {
 	EMotionAnim		anim;
 	bool			is_turn_params;
@@ -308,28 +308,28 @@ struct SMotionItem {
 	} turn;
 };
 
-// ������� �������� (���� *flag == true, �� ���������� �������� ��������)
+// подмена анимаций (если *flag == true, то необходимо заменить анимацию)
 struct SReplacedAnim {
 	EMotionAnim cur_anim;
 	EMotionAnim new_anim;
 	bool		*flag;
 };
 
-// ����������� ������� ������ �� ��������
+// Определение времени аттаки по анимации
 typedef struct {
-	EMotionAnim	anim;				// ��������� ���������� �������� 
+	EMotionAnim	anim;				// параметры конкретной анимации 
 	u32			anim_i3;
 
-	TTime		time_from;			// �������� ������� ����� ����� �������� hit (��)
-	TTime		time_to;		    // �������� ������� ����� ����� �������� hit (��)
+	TTime		time_from;			// диапазон времени когда можно наносить hit (от)
+	TTime		time_to;		    // диапазон времени когда можно наносить hit (до)
 
-	Fvector		trace_from;			// ����������� ����������� (������������ ������)
+	Fvector		trace_from;			// направление трассировки (относительно центра)
 	Fvector		trace_to;
 
-	u32			flags;				// ����������� �����
+	u32			flags;				// специальные флаги
 
-	float		damage;				// ���� ��� ������ �����
-	Fvector		hit_dir;			// ���� ����������� ���������� ���� � �������
+	float		damage;				// урон при данной атаке
+	Fvector		hit_dir;			// угол направления приложения силы к объекту
 
 	//-----------------------------------------
 	// temp 
@@ -475,7 +475,7 @@ enum EAccelValue {
 #define PATH_NEED_REBUILD() m_object->IsPathEnd(2,0.5f)
 
 
-// ��� ������� (�� ���������� ���)
+// тип монстра (по количеству ног)
 #define QUADRUPEDAL		4
 #define BIPEDAL			2
 

@@ -577,7 +577,7 @@ void CWeapon::net_Destroy	()
 {
 	inherited::net_Destroy	();
 
-	//������� ������� ���������
+	//удалить объекты партиклов
 	StopFlameParticles	();
 	StopFlameParticles2	();
 	StopLight			();
@@ -780,7 +780,7 @@ void CWeapon::OnActiveItem ()
 //-
 
 	inherited::OnActiveItem		();
-	//���� �� ����������� � ������ ���� � �����
+	//если мы занружаемся и оружие было в руках
 //.	SetState					(eIdle);
 //.	SetNextState				(eIdle);
 }
@@ -837,10 +837,10 @@ void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
 	UpdateHUDAddonsVisibility();
-	//��������� �� ��������
+	//подсветка от выстрела
 	UpdateLight				();
 
-	//���������� ��������
+	//нарисовать партиклы
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 
@@ -943,11 +943,11 @@ void CWeapon::renderable_Render		()
 {
 	UpdateXForm				();
 
-	//���������� ���������
+	//нарисовать подсветку
 
 	RenderLight				();	
 
-	//���� �� � ������ ���������, �� ��� HUD �������� �� ����
+	//если мы в режиме снайперки, то сам HUD рисовать не надо
 	if(IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
 		RenderHud		(FALSE);
 	else
@@ -990,7 +990,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE: 
 			{
-				//���� ������ ���-�� ������, �� ������ �� ������
+				//если оружие чем-то занято, то ничего не делать
 				{				
 					if(IsPending())		
 						return				false;
@@ -1159,7 +1159,7 @@ int CWeapon::GetSuitableAmmoTotal( bool use_item_to_spawn ) const
 		return ae_count;
 	}
 
-	//���� �� ������ ������ ����������
+	//чтоб не делать лишних пересчетов
 	if ( m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame )
 	{
 		return ae_count + m_iAmmoCurrentTotal;
@@ -1631,7 +1631,7 @@ int		g_iWeaponRemove = 1;
 
 bool CWeapon::NeedToDestroyObject()	const
 {
-	if (GameID() == eGameIDSingle) return false;
+	if (IsGameTypeSingle()) return false;
 	if (Remote()) return false;
 	if (H_Parent()) return false;
 	if (g_iWeaponRemove == -1) return false;

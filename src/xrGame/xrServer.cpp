@@ -603,7 +603,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	case M_STATISTIC_UPDATE_RESPOND:
 		{
 			//client method for collecting statistics are called from two places : 1 - this, 2 - game_sv_mp::WritePlayerStats
-			if (GameID() != eGameIDSingle)
+			if (!IsGameTypeSingle())
 			{
 				game_sv_mp* my_game = static_cast<game_sv_mp*>(game);
 				if (CL)

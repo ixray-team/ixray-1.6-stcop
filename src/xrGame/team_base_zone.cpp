@@ -80,7 +80,7 @@ BOOL CTeamBaseZone::net_Spawn	(CSE_Abstract* DC)
 		setEnabled				(TRUE);
 	}
 
-	if (GameID() != eGameIDSingle && !g_dedicated_server)
+	if (!IsGameTypeSingle() && !g_dedicated_server)
 	{
 		char BaseMapLocation[1024];
 		xr_sprintf (BaseMapLocation, "mp_team_base_%d_location", m_Team);

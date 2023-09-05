@@ -39,7 +39,7 @@
 bool g_bDisableAllInput = false;
 extern	float	g_fTimeFactor;
 
-#define CURRENT_ENTITY()	(game?((GameID() == eGameIDSingle) ? CurrentEntity() : CurrentControlEntity()):NULL)
+#define CURRENT_ENTITY()	(game?((IsGameTypeSingle()) ? CurrentEntity() : CurrentControlEntity()):NULL)
 
 void CLevel::IR_OnMouseWheel( int direction )
 {
@@ -84,7 +84,7 @@ void CLevel::IR_OnMouseMove( int dx, int dy )
 	}
 }
 
-// Îáðàáîòêà íàæàòèÿ êëàâèø
+// ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð½Ð°Ð¶Ð°Ñ‚Ð¸Ñ ÐºÐ»Ð°Ð²Ð¸Ñˆ
 extern bool g_block_pause;
 
 // Lain: added TEMP!!!
@@ -196,7 +196,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 #ifndef MASTER_GOLD
 	switch (key) {
 	case DIK_F7: {
-		if (GameID() != eGameIDSingle) return;
+		if (!IsGameTypeSingle()) return;
 		FS.get_path					("$game_config$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.rescan_pathes			();
@@ -299,7 +299,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		return;
 	}
 	case DIK_BACK:
-		if (GameID() == eGameIDSingle)
+		if (IsGameTypeSingle())
 			DRender->NextSceneMode();
 			//HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
 		return;
@@ -381,7 +381,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	}
 
 	case MOUSE_1: {
-		if (GameID() != eGameIDSingle)
+		if (!IsGameTypeSingle())
 			break;
 
 		if (pInput->iGetAsyncKeyState(DIK_LALT)) {

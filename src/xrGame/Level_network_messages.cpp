@@ -432,7 +432,7 @@ void CLevel::ClientReceive()
 		case M_BULLET_CHECK_RESPOND:
 			{
 				if (!game) break;
-				if (GameID() != eGameIDSingle)
+				if (!IsGameTypeSingle())
 					Game().m_WeaponUsageStatistic->On_Check_Respond(P);
 			}break;
 		case M_STATISTIC_UPDATE:
@@ -446,7 +446,7 @@ void CLevel::ClientReceive()
 			{
 				/*Msg("--- CL: On Update Respond");
 				if (!game) break;
-				if (GameID() != eGameIDSingle)
+				if (!IsGameTypeSingle())
 					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);*/
 			}break;
 		case M_FILE_TRANSFER:

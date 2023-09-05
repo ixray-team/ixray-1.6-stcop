@@ -78,7 +78,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 void CRadioactiveZone::feel_touch_new					(CObject* O	)
 {
 	inherited::feel_touch_new(O);
-	if (GameID() != eGameIDSingle)
+	if (!IsGameTypeSingle())
 	{
 		if (smart_cast<CActor*>(O))
 		{
@@ -102,7 +102,7 @@ BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 
 void CRadioactiveZone::UpdateWorkload					(u32	dt)
 {
-	if (IsEnabled() && GameID() != eGameIDSingle)
+	if (IsEnabled() && !IsGameTypeSingle())
 	{	
 		OBJECT_INFO_VEC_IT it;
 		Fvector pos; 

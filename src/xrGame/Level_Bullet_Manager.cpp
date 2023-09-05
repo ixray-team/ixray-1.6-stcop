@@ -1,5 +1,5 @@
-// Level_Bullet_Manager.cpp:	äëÿ îáåñïå÷åíèÿ ïîëåòà ïóëè ïî òðàåêòîðèè
-//								âñå ïóëè è îñêîëêè ïåðåäàþòñÿ ñþäà
+// Level_Bullet_Manager.cpp:	Ð´Ð»Ñ Ð¾Ð±ÐµÑÐ¿ÐµÑ‡ÐµÐ½Ð¸Ñ Ð¿Ð¾Ð»ÐµÑ‚Ð° Ð¿ÑƒÐ»Ð¸ Ð¿Ð¾ Ñ‚Ñ€Ð°ÐµÐºÑ‚Ð¾Ñ€Ð¸Ð¸
+//								Ð²ÑÐµ Ð¿ÑƒÐ»Ð¸ Ð¸ Ð¾ÑÐºÐ¾Ð»ÐºÐ¸ Ð¿ÐµÑ€ÐµÐ´Ð°ÑŽÑ‚ÑÑ ÑÑŽÐ´Ð°
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -709,7 +709,7 @@ BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 	Fvector& collide_position		= data.collide_position;
 	collide_position				= Fvector().mad(bullet.bullet_pos, bullet.dir, result.range);
 	
-	float const	air_resistance		= (GameID() == eGameIDSingle) ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
+	float const	air_resistance		= (IsGameTypeSingle()) ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
 
 	CBulletManager& bullet_manager	= Level().BulletManager();
 	Fvector const gravity			= { 0.f, -bullet_manager.m_fGravityConst, 0.f };
@@ -720,14 +720,14 @@ BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 	if ( fis_zero(data.collide_time) )
 		return						(TRUE);
 
-	//ñòàòè÷åñêèé îáúåêò
+	//ÑÑ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚
 	if (!result.O) {
 		CDB::TRI const& triangle	= *(Level().ObjectSpace.GetStaticTris() + result.element);
 		bullet_manager.RegisterEvent(EVENT_HIT, FALSE, &bullet, collide_position, result, triangle.material);
 		return						(FALSE);
 	}
 
-	//äèíàìè÷åñêèé îáúåêò
+	//Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚
 	VERIFY							( !(result.O->ID() == bullet.parent_id &&  bullet.fly_dist < parent_ignore_distance) );
 	IKinematics* const kinematics	= smart_cast<IKinematics*>(result.O->Visual());
 	if (!kinematics)
@@ -827,7 +827,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 	float const time_delta		= float(delta_time)/1000.f;
 	Fvector const gravity		= Fvector().set( 0.f, -m_fGravityConst, 0.f);
 
-	float const	air_resistance	= (GameID() == eGameIDSingle) ? m_fAirResistanceK : bullet.air_resistance;
+	float const	air_resistance	= (IsGameTypeSingle()) ? m_fAirResistanceK : bullet.air_resistance;
 	bullet.tracer_start_position= bullet.bullet_pos;
 
 #if 0//def DEBUG
@@ -948,9 +948,9 @@ void CBulletManager::Render	()
 	else
 		m_bullet_points.clear();
 
-	//0-ðèêîøåò
-	//1-çàñòðÿâàíèå ïóëè â ìàòåðèàëå
-	//2-ïðîáèâàíèå ìàòåðèàëà
+	//0-Ñ€Ð¸ÐºÐ¾ÑˆÐµÑ‚
+	//1-Ð·Ð°ÑÑ‚Ñ€ÑÐ²Ð°Ð½Ð¸Ðµ Ð¿ÑƒÐ»Ð¸ Ð² Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ðµ
+	//2-Ð¿Ñ€Ð¾Ð±Ð¸Ð²Ð°Ð½Ð¸Ðµ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ð°
 	if (g_bDrawBulletHit) {
 		extern FvectorVec g_hit[];
 		FvectorIt it;
@@ -1047,7 +1047,7 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			}break;
 		case EVENT_REMOVE:
 			{
-				if (E.bullet.flags.allow_sendhit && GameID() != eGameIDSingle)
+				if (E.bullet.flags.allow_sendhit && !IsGameTypeSingle())
 					Game().m_WeaponUsageStatistic->OnBullet_Remove(&E.bullet);
 				m_Bullets[E.tgt_material] = m_Bullets.back();
 				m_Bullets.pop_back();
@@ -1089,7 +1089,7 @@ void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bu
 				//	bullet->targetID = R.O->ID();
 
 				E.Repeated = (R.O->ID() == E.bullet.targetID);
-				if (GameID() == eGameIDSingle)
+				if (IsGameTypeSingle())
 				{
 					bullet->targetID = R.O->ID();
 				}

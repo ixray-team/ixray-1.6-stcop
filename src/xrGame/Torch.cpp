@@ -237,7 +237,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	glow_render->set_color	(clr);
 	glow_render->set_radius	(pUserData->r_float					("torch_definition","glow_radius"));
 
-	//âêëþ÷èòü/âûêëþ÷èòü ôîíàðèê
+	//Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ/Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ñ„Ð¾Ð½Ð°Ñ€Ð¸Ðº
 	Switch					(torch->m_active);
 	VERIFY					(!torch->m_active || (torch->ID_Parent != 0xffff));
 	
@@ -289,7 +289,7 @@ void CTorch::UpdateCL()
 		CActor*			actor = smart_cast<CActor*>(H_Parent());
 		if (actor)		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
 
-		if (H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition)<_sqr(OPTIMIZATION_DISTANCE) || GameID() != eGameIDSingle) {
+		if (H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition)<_sqr(OPTIMIZATION_DISTANCE) || !IsGameTypeSingle()) {
 			// near camera
 			smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones	();
 			M.mul_43				(XFORM(),BI.mTransform);
@@ -379,7 +379,7 @@ void CTorch::UpdateCL()
 	if (!lanim)							return;
 
 	int						frame;
-	// âîçâðàùàåò â ôîðìàòå BGR
+	// Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð² Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ BGR
 	u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); 
 
 	Fcolor					fclr;

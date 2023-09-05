@@ -222,7 +222,7 @@ public:
 		CCC_Token::Execute(args);
 		if (g_pGameLevel && Level().game){
 //#ifndef	DEBUG
-			if (GameID() != eGameIDSingle){
+			if (!IsGameTypeSingle()){
 				Msg("For this game type difficulty level is disabled.");
 				return;
 			};
@@ -319,7 +319,7 @@ class CCC_ALifeSwitchDistance : public IConsole_Command {
 public:
 	CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == eGameIDSingle)  &&ai().get_alife()) {
+		if ((IsGameTypeSingle())  &&ai().get_alife()) {
 			float id1 = 0.0f;
 			sscanf(args ,"%f",&id1);
 			if (id1 < 2.0f)
@@ -340,7 +340,7 @@ class CCC_ALifeProcessTime : public IConsole_Command {
 public:
 	CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == eGameIDSingle)  &&ai().get_alife()) {
+		if ((IsGameTypeSingle())  &&ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
 			VERIFY			(tpGame);
 			int id1 = 0;
@@ -361,7 +361,7 @@ class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
 	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == eGameIDSingle)  &&ai().get_alife()) {
+		if ((IsGameTypeSingle())  &&ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
 			VERIFY			(tpGame);
 			int id1 = 0;
@@ -377,7 +377,7 @@ class CCC_ALifeSwitchFactor : public IConsole_Command {
 public:
 	CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == eGameIDSingle)  &&ai().get_alife()) {
+		if ((IsGameTypeSingle())  &&ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
 			VERIFY			(tpGame);
 			float id1 = 0;
@@ -398,7 +398,7 @@ public:
 	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args) {
 		#ifndef	DEBUG
-		//if (GameID() != eGameIDSingle) 
+		//if (!IsGameTypeSingle()) 
 		//{
 		//	Msg("For this game type Demo Record is disabled.");
 		//	return;
@@ -423,7 +423,7 @@ public:
 	CCC_DemoRecordSetPos(LPCSTR N) : CCC_Vector3( N, &p, Fvector().set( -FLT_MAX, -FLT_MAX, -FLT_MAX ),Fvector().set( FLT_MAX, FLT_MAX, FLT_MAX ) ) {};
 	virtual void Execute(LPCSTR args) {
 		#ifndef	DEBUG
-		//if (GameID() != eGameIDSingle) 
+		//if (!IsGameTypeSingle()) 
 		//{
 		//	Msg("For this game type Demo Record is disabled.");
 		//	return;
@@ -446,7 +446,7 @@ public:
 	  { bEmptyArgsHandled = TRUE; };
 	  virtual void Execute(LPCSTR args) {
 		#ifndef	DEBUG
-		//if (GameID() != eGameIDSingle) 
+		//if (!IsGameTypeSingle()) 
 		//{
 		//	Msg("For this game type Demo Play is disabled.");
 		//	return;
@@ -763,7 +763,7 @@ public:
 #ifdef _DEBUG
 		  CCC_Float::Execute(args);
 #else
-		  if (!g_pGameLevel || GameID() == eGameIDSingle)
+		  if (!g_pGameLevel || IsGameTypeSingle())
 			  CCC_Float::Execute(args);
 		  else
 		  {
@@ -1099,7 +1099,7 @@ public:
 		  if( !physics_world() )	
 			  return;
 #ifndef DEBUG
-		  if (g_pGameLevel && Level().game && GameID() != eGameIDSingle)
+		  if (g_pGameLevel && Level().game && !IsGameTypeSingle())
 		  {
 			  Msg("Command is not available in Multiplayer");
 			  return;

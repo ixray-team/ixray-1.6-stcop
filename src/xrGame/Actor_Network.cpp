@@ -59,9 +59,9 @@ CActor*		g_actor						= NULL;
 
 CActor*			Actor()	
 {	
-	R_ASSERT2	(GameID() == eGameIDSingle, "Actor() method invokation must be only in Single Player game!");
+	R_ASSERT2	(IsGameTypeSingle(), "Actor() method invokation must be only in Single Player game!");
 	VERIFY		(g_actor);
-	/*if (GameID() != eGameIDSingle) 
+	/*if (!IsGameTypeSingle()) 
 		VERIFY	(g_actor == Level().CurrentControlEntity());*/
 	return		(g_actor); 
 };
@@ -122,7 +122,7 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 	/////////////////////////////////////////////////
 	u16 NumItems		= PHGetSyncItemsNumber();
 	
-	if (H_Parent() || (GameID() == eGameIDSingle) || ((NumItems > 1) && OnClient()))
+	if (H_Parent() || (IsGameTypeSingle()) || ((NumItems > 1) && OnClient()))
 		NumItems = 0;
 	
 	if (!g_Alive()) NumItems = 0;
@@ -614,7 +614,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_bInInterpolation = false;
 	m_bInterpolate = false;
 
-//	if (GameID() != eGameIDSingle)
+//	if (!IsGameTypeSingle())
 	{
 		processing_activate();
 	}
@@ -1781,7 +1781,7 @@ void				CActor::SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvect
 void				CActor::OnHitHealthLoss					(float NewHealth)
 {
 	if (!m_bWasHitted) return;
-	if (GameID() == eGameIDSingle || !OnServer()) return;
+	if (IsGameTypeSingle() || !OnServer()) return;
 	float fNewHealth = NewHealth;
 	m_bWasHitted = false;
 	
@@ -1803,7 +1803,7 @@ void				CActor::OnHitHealthLoss					(float NewHealth)
 
 void				CActor::OnCriticalHitHealthLoss			()
 {
-	if (GameID() == eGameIDSingle || !OnServer()) return;
+	if (IsGameTypeSingle() || !OnServer()) return;
 
 	CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
 	CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
@@ -1885,7 +1885,7 @@ void				CActor::OnCriticalHitHealthLoss			()
 	P.w_u8	(u8(SpecialHit));
 	u_EventSend(P);
 	//-------------------------------------------
-	if (GameID() != eGameIDSingle)
+	if (!IsGameTypeSingle())
 		Game().m_WeaponUsageStatistic->OnBullet_Check_Result(true);
 };
 
@@ -1910,7 +1910,7 @@ void				CActor::OnPlayHeadShotParticle (NET_Packet P)
 
 void				CActor::OnCriticalWoundHealthLoss		() 
 {
-	if (GameID() == eGameIDSingle || !OnServer()) return;
+	if (IsGameTypeSingle() || !OnServer()) return;
 #ifdef DEBUG
 	Msg("--- %s is bleed out", *cName());
 #endif // #ifdef DEBUG
@@ -1928,7 +1928,7 @@ void				CActor::OnCriticalWoundHealthLoss		()
 
 void				CActor::OnCriticalRadiationHealthLoss	() 
 {
-	if (GameID() == eGameIDSingle || !OnServer()) return;
+	if (IsGameTypeSingle() || !OnServer()) return;
 	//-------------------------------
 	Msg("%s killed by radiation", *cName());
 	NET_Packet P;
@@ -1975,7 +1975,7 @@ bool CActor::InventoryAllowSprint()
 
 BOOL CActor::BonePassBullet(int boneID)
 {
-	if (GameID() == eGameIDSingle) return inherited::BonePassBullet(boneID);
+	if (IsGameTypeSingle()) return inherited::BonePassBullet(boneID);
 
 	CCustomOutfit* pOutfit			= GetOutfit();
 	if(!pOutfit)

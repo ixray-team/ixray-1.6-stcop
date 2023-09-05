@@ -96,7 +96,7 @@ void CWeaponKnife::OnStateSwitch	(u32 S)
 			//fHitPower		= fHitPower_1;
 			if (ParentIsActor())
 			{
-				if (GameID() == eGameIDSingle)
+				if (IsGameTypeSingle())
 				{
 					fCurrentHit			= fvHitPower_1[g_SingleGameDifficulty];
 				}
@@ -120,7 +120,7 @@ void CWeaponKnife::OnStateSwitch	(u32 S)
 			//fHitPower		= fHitPower_2;
 			if (ParentIsActor())
 			{
-				if (GameID() == eGameIDSingle)
+				if (IsGameTypeSingle())
 				{
 					fCurrentHit			= fvHitPower_2[g_SingleGameDifficulty];
 				}

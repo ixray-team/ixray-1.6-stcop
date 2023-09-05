@@ -293,7 +293,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 //.		D->s_gameid			=	u8(GameID());
 		D->s_RP				=	0xff;
 		D->ID				=	0xffff;
-		if (GameID() == eGameIDSingle)
+		if (IsGameTypeSingle())
 		{
 			D->ID_Parent		=	u16(object().H_Parent()->ID());
 		}
@@ -346,7 +346,7 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 		net_Spawn_install_upgrades( pSE_InventoryItem->m_upgrades );
 	}
 
-	if (GameID() != eGameIDSingle)
+	if (!IsGameTypeSingle())
 		object().processing_activate();
 
 	m_dwItemIndependencyTime		= 0;
@@ -1390,7 +1390,7 @@ void CInventoryItem::modify_holder_params	(float &range, float &fov) const
 
 bool CInventoryItem::NeedToDestroyObject()	const
 {
-	if (GameID() == eGameIDSingle)
+	if (IsGameTypeSingle())
 		return false;
 
 	if (GameID() == eGameIDCaptureTheArtefact)

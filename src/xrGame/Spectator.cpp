@@ -100,7 +100,7 @@ void CSpectator::UpdateCL()
 		}
 	}
 
-	if (GameID() != eGameIDSingle)
+	if (!IsGameTypeSingle())
 	{
 		if (Game().local_player && (
 					(Game().local_player->GameID == ID()) ||
@@ -154,12 +154,12 @@ void CSpectator::UpdateCL()
 					}
 				}
 			}
-			// не найден объект с таким индексом - сбросим на первый объект
+			// РЅРµ РЅР°Р№РґРµРЅ РѕР±СЉРµРєС‚ СЃ С‚Р°РєРёРј РёРЅРґРµРєСЃРѕРј - СЃР±СЂРѕСЃРёРј РЅР° РїРµСЂРІС‹Р№ РѕР±СЉРµРєС‚
 			look_idx = 0;
-			// никого нет за кем смотреть - переключимся на 
+			// РЅРёРєРѕРіРѕ РЅРµС‚ Р·Р° РєРµРј СЃРјРѕС‚СЂРµС‚СЊ - РїРµСЂРµРєР»СЋС‡РёРјСЃСЏ РЅР° 
 			if (0==idx) cam_Set(eacFreeFly);
 		}
-		// по умолчанию eacFreeFly
+		// РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ eacFreeFly
 		cam_Update		(0);
 	}
 }
@@ -510,7 +510,7 @@ void			CSpectator::net_Destroy	()
 
 bool			CSpectator::SelectNextPlayerToLook	(bool const search_next)
 {
-	if (GameID() == eGameIDSingle) return false;
+	if (IsGameTypeSingle()) return false;
 	
 	game_PlayerState* PS = Game().local_player;
 	if (!PS) return false;
@@ -592,7 +592,7 @@ void			CSpectator::net_Relcase				(CObject *O)
 void CSpectator::GetSpectatorString		(string1024& pStr)
 {
 	if (!pStr) return;
-	if (GameID() == eGameIDSingle) return;
+	if (IsGameTypeSingle()) return;
 	
 	xr_string	SpectatorMsg;
 	CStringTable st;
