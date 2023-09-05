@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "fstaticrender_rendertarget.h"
 #include "../../xrEngine/IGame_Persistent.h"
-
+#include "../xrRender/blender_fxaa.h"
 
 static LPCSTR		RTname			= "$user$rendertarget";
+static LPCSTR		RTTempName = "$user$rendertarget_temp";
 static LPCSTR		RTname_color_map= "$user$rendertarget_color_map";
 static LPCSTR		RTname_distort	= "$user$distort";
 
@@ -41,6 +42,7 @@ CRenderTarget::CRenderTarget()
 
 BOOL CRenderTarget::Create	()
 {
+	b_fxaa = xr_new<CBlender_FXAA>();
 	curWidth			= Device.dwWidth;
 	curHeight			= Device.dwHeight;
 
@@ -55,6 +57,8 @@ BOOL CRenderTarget::Create	()
 
 	// Bufferts
 	RT.create			(RTname,			rtWidth,rtHeight,HW.Caps.fTarget);
+	RTTemp.create(RTTempName, rtWidth, rtHeight, HW.Caps.fTarget);
+
 	RT_distort.create	(RTname_distort,	rtWidth,rtHeight,HW.Caps.fTarget);
 	if (RImplementation.o.color_mapping)
 	{
@@ -62,6 +66,10 @@ BOOL CRenderTarget::Create	()
 		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, HW.Caps.fTarget);
 	}
 	//RImplementation.o.color_mapping = RT_color_map->valid();
+
+	//FXAA
+	s_fxaa.create(b_fxaa, "r1\\fxaa");
+	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
 
 	if ((rtHeight!=Device.dwHeight) || (rtWidth!=Device.dwWidth))	{
 		R_CHK		(HW.pDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,HW.Caps.fDepth,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,NULL));
@@ -91,8 +99,38 @@ BOOL CRenderTarget::Create	()
 	return	RT->valid() && RT_distort->valid();
 }
 
+void CRenderTarget::phase_fxaa(u32 pass) {
+	u32 Offset = 0;
+	float _w = float(curWidth);
+	float _h = float(curHeight);
+	float ddw = 1.0f / _w;
+	float ddh = 1.0f / _h;
+
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(FALSE);
+
+	FVF::V* pv = (FVF::V*)RCache.Vertex.Lock(4, g_fxaa->vb_stride, Offset);
+	pv->set(ddw - 0.5f, ddh + _h - 0.5f, 0.0f, 0.0f, 1.0f);
+	pv++;
+	pv->set(ddw - 0.5f, ddh - 0.5f, 0.0f, 0.0f, 0.0f);
+	pv++;
+	pv->set(ddw + _w - 0.5f, ddh + _h - 0.5f, 0.0f, 1.0f, 1.0f);
+	pv++;
+	pv->set(ddw + _w - 0.5f, ddh - 0.5f, 0.0f, 1.0f, 0.0f);
+	pv++;
+	RCache.Vertex.Unlock(4, g_fxaa->vb_stride);
+	
+	RCache.set_Element(s_fxaa->E[pass]);
+	RCache.set_Geometry(g_fxaa);
+	RCache.set_c("screen_res", _w, _h, ddw, ddh);
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+}
+
+
+
 CRenderTarget::~CRenderTarget	()
 {
+	xr_delete(b_fxaa);
 	_RELEASE					(pFB);
 	_RELEASE					(pTempZB);
 	_RELEASE					(ZB);
@@ -104,6 +142,7 @@ CRenderTarget::~CRenderTarget	()
 	RT_distort.destroy			();
 	RT_color_map.destroy		();
 	RT.destroy					();
+	RTTemp.destroy();
 }
 
 void	CRenderTarget::calc_tc_noise		(Fvector2& p0, Fvector2& p1)
@@ -200,8 +239,8 @@ BOOL CRenderTarget::NeedPostProcess()
 
 BOOL CRenderTarget::Perform		()
 {
-	return Available() && 
-		( ((BOOL)RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (ps_r__Supersample>1) || (frame_distort==(Device.dwFrame-1)));
+	return Available() &&
+		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (ps_r__Supersample>1) || (frame_distort==(Device.dwFrame-1)));
 }
 
 #include <dinput.h>
@@ -285,6 +324,14 @@ void CRenderTarget::DoAsyncScreenshot	()
 void CRenderTarget::End		()
 {
 	if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_main	()			;	// PP-UI
+
+	if (ps_r2_aa_type == 1) {
+		RCache.set_RT(RTTemp->pRT);
+		phase_fxaa(0);
+		RCache.set_RT(RT->pRT);
+		phase_fxaa(1);
+		//RCache.set_Stencil(FALSE);
+	}
 
 	// find if distortion is needed at all
 	BOOL	bPerform	= Perform				()	;
