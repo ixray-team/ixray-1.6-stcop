@@ -14,9 +14,15 @@ private:
 	u32					curHeight;
 
 	ref_rt				RT;
+	ref_rt				RTTemp;
 	ref_rt				RT_color_map;
 	ref_rt				RT_distort;
+
+	//FXAA
+	ref_shader s_fxaa;
+	ref_geom g_fxaa;
 	IDirect3DSurface9*	ZB;
+	IBlender* b_fxaa;
 
 	//	Can't implement in a single pass of a shader since
 	//	should be compiled only for the hardware that supports it.
@@ -92,4 +98,6 @@ public:
 
 			u32			get_rtwidth			()				{ return rtWidth;											}
 			u32			get_rtheight		()				{ return rtHeight;											}
+
+			void		phase_fxaa(u32 pass);
 };
