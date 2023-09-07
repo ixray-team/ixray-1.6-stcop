@@ -6,13 +6,9 @@
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\luabind.beta7-devel.rc4.dll" />
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\xrAPI.dll" />
 
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\editor.dll" />
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\editor_controls.dll" />
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\ImeSense.Controls.WinForms.PropertyGrid.dll" />
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\WeifenLuo.WinFormsUI.Docking.dll" />
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll" />
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\xrD3D9-Null.dll" />
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\xrGameSpy.dll" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration.ToLower())' == 'mixed'">
@@ -20,10 +16,5 @@
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\lua.JIT.1.1.4.pdb" />
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\luabind.beta7-devel.rc4.pdb" />
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Debug\xrAPI.pdb" />
-
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\editor.pdb" />
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\editor_controls.pdb" />
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\xrD3D9-Null.pdb" />
-        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)\..\bin\$(Platform)\Release\xrGameSpy.pdb" />
     </ItemGroup>
 </Project>
