@@ -155,7 +155,11 @@ void	CEffect_Rain::OnFrame	()
 	switch (state)
 	{
 	case stIdle:		
-		if (factor<EPS_L)		return;
+		if (factor < EPS_L) {
+			if (snd_Ambient._feedback())
+				snd_Ambient.stop();
+			return;
+		}
 		state					= stWorking;
 		snd_Ambient.play		(0,sm_Looped);
 		snd_Ambient.set_position(Fvector().set(0,0,0));
@@ -229,7 +233,7 @@ void	CEffect_Rain::Render	()
 		if (one.dwTime_Hit<Device.dwTimeGlobal)		Hit (one.Phit);
 		if (one.dwTime_Life<Device.dwTimeGlobal)	Born(one,source_radius);
 
-// ïîñëåäíÿÿ äåëüòà ??
+// Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÑÑ Ð´ÐµÐ»ÑŒÑ‚Ð° ??
 //.		float xdt		= float(one.dwTime_Hit-Device.dwTimeGlobal)/1000.f;
 //.		float dt		= Device.fTimeDelta;//xdt<Device.fTimeDelta?xdt:Device.fTimeDelta;
 		float dt		= Device.fTimeDelta;
