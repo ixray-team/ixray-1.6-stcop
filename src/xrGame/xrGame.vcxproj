@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -197,7 +197,7 @@
     <ClInclude Include="..\xrServerEntities\character_info.h" />
     <ClInclude Include="..\xrServerEntities\character_info_defs.h" />
     <ClInclude Include="..\xrServerEntities\clsid_game.h" />
-    <ClInclude Include="..\xrServerEntities\DrawUtils.h" />
+    <ClInclude Include="../Include/xrRender/DrawUtils.h" />
     <ClInclude Include="../xrCore/FastDelegate.h" />
     <ClInclude Include="..\xrServerEntities\gametype_chooser.h" />
     <ClInclude Include="..\xrServerEntities\game_base_space.h" />
@@ -788,7 +788,6 @@
     <ClInclude Include="Bolt.h" />
     <ClInclude Include="BoneProtections.h" />
     <ClInclude Include="bone_groups.h" />
-    <ClInclude Include="bone_utils.h" />
     <ClInclude Include="BottleItem.h" />
     <ClInclude Include="BreakableObject.h" />
     <ClInclude Include="builder_allocator_constructor.h" />
@@ -840,7 +839,7 @@
     <ClInclude Include="CustomRocket.h" />
     <ClInclude Include="CustomZone.h" />
     <ClInclude Include="DamagableItem.h" />
-    <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="../xrphysics/DamageSource.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="danger_cover_location.h" />
@@ -1290,7 +1289,7 @@
     <ClInclude Include="profiler_inline.h" />
     <ClInclude Include="profile_data_types.h" />
     <ClInclude Include="profile_store.h" />
-    <ClInclude Include="PropertiesListHelper.h" />
+    <ClInclude Include="../xrServerEntities/PropertiesListHelper.h" />
     <ClInclude Include="property_evaluator.h" />
     <ClInclude Include="property_evaluator_const.h" />
     <ClInclude Include="property_evaluator_const_inline.h" />

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="AI">
@@ -2496,7 +2496,7 @@
     <ClInclude Include="damage_manager_inline.h">
       <Filter>AI\AComponents\DamageManager</Filter>
     </ClInclude>
-    <ClInclude Include="DamageSource.h">
+    <ClInclude Include="../xrphysics/DamageSource.h">
       <Filter>AI\AComponents\DamageManager</Filter>
     </ClInclude>
     <ClInclude Include="wrapper_abstract.h">
@@ -5265,9 +5265,6 @@
     <ClInclude Include="ai_space_inline.h">
       <Filter>AI\ASpace</Filter>
     </ClInclude>
-    <ClInclude Include="bone_utils.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrServerEntities\pch_script.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -6252,7 +6249,7 @@
     <ClInclude Include="xrServerMapSync.h">
       <Filter>Core\Server</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrServerEntities\DrawUtils.h">
+    <ClInclude Include="../Include/xrRender/DrawUtils.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
     <ClInclude Include="../xrCore/FastDelegate.h">
@@ -6261,7 +6258,7 @@
     <ClInclude Include="..\xrServerEntities\ItemListTypes.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="PropertiesListHelper.h">
+    <ClInclude Include="../xrServerEntities/PropertiesListHelper.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\xrServerEntities\WaveForm.h">
