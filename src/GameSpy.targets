@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup Condition="'$(Configuration.ToLower())' == 'mixed'">
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\bin\$(Platform)\Release\xrGameSpy.dll" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration.ToLower())' == 'mixed'">
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\bin\$(Platform)\Release\xrGameSpy.pdb" />
+    </ItemGroup>
+</Project>
