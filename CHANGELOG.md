@@ -2,6 +2,39 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 0.6.1 (September 2023)
+
+### Common
+
+- Added logo icons and TortoiseGit config
+- Fixed incorrect including of `FastDelegate` header
+- Fixed project references and links
+- Replaced `_snprintf` with `_snprintf_s` in ODE
+- Deleted `IsPCAccessAllowed` function
+- Deleted `ComputeModuleHash` function
+- Deleted `is_enough_address_space_available` function
+- Deleted unused `ttapi` includes
+- Deleted unused `pSettingsAuth` pointer
+
+### Engine
+
+- Deleted `CopyProtection` module
+
+### Render
+
+- Fixed incorrect including of header files in renders projects
+
+### Gameplay
+
+- Fixed shotgun reload
+- Fixed incorrect including of header files in xrGame project
+- Deleted `boost::noncopyable` related code from xrGame
+
+### Resources
+
+- Fixed fog displaying on static lighting
+- Unified shaders refactoring with IX-Ray 1.5
+
 ## Release 0.6 (August 2023)
 
 ### Common
