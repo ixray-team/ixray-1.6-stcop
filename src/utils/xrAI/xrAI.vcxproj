@@ -276,7 +276,7 @@
     <ClInclude Include="..\..\xrServerEntities\character_info_defs.h" />
     <ClInclude Include="..\..\xrServerEntities\clsid_game.h" />
     <ClInclude Include="..\..\xrServerEntities\DrawUtils.h" />
-    <ClInclude Include="..\..\xrServerEntities\FastDelegate.h" />
+    <ClInclude Include="..\..\xrCore\FastDelegate.h" />
     <ClInclude Include="..\..\xrServerEntities\game_base_space.h" />
     <ClInclude Include="..\..\xrServerEntities\game_graph_space.h" />
     <ClInclude Include="..\..\xrServerEntities\InfoPortionDefs.h" />

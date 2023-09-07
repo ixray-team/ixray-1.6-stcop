@@ -429,7 +429,7 @@
     <ClInclude Include="cover_point_inline.h">
       <Filter>Compiler\cover_point</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xrServerEntities\FastDelegate.h">
+    <ClInclude Include="..\..\xrCore\FastDelegate.h">
       <Filter>Compiler\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="communicate.h">

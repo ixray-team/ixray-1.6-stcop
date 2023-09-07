@@ -189,7 +189,7 @@
     <ClInclude Include="xrSE_Factory_import_export.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xrServerEntities\FastDelegate.h">
+    <ClInclude Include="..\..\xrCore\FastDelegate.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
