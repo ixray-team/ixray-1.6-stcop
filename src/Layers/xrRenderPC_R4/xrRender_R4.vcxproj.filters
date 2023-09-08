@@ -127,9 +127,6 @@
     <Filter Include="Interfase implementations\RenderDeviceRender">
       <UniqueIdentifier>{bae485e5-09e5-409e-8736-48db2aecb0f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfase implementations\ConsoleRender">
-      <UniqueIdentifier>{62cbce47-50a9-49b4-ab5f-b35a77202e9c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfase implementations\ObjectSpaceRender">
       <UniqueIdentifier>{e3a5b11b-36eb-49ca-afdf-289fc852e55b}</UniqueIdentifier>
     </Filter>
@@ -611,12 +608,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h">
       <Filter>Interfase implementations\RenderDeviceRender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\xrRender\ConsoleRender.h">
-      <Filter>Interfase implementations\ConsoleRender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\dxConsoleRender.h">
-      <Filter>Interfase implementations\ConsoleRender</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\dxObjectSpaceRender.h">
       <Filter>Interfase implementations\ObjectSpaceRender</Filter>
@@ -1252,9 +1243,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
       <Filter>Interfase implementations\RenderDeviceRender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\dxConsoleRender.cpp">
-      <Filter>Interfase implementations\ConsoleRender</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp">
       <Filter>Interfase implementations\ObjectSpaceRender</Filter>
