@@ -16,7 +16,7 @@
 #include "../../../xrEngine/pure.h"
 class CGameFont;
 #include "..\..\include\xrRender\drawutils.h"
-#include "..\..\Layers\xrRender\xrD3dDefs.h"
+#include "..\..\Layers\xrRenderDX9\xrD3dDefs.h"
 #include "..\..\Layers\xrRender\shader.h"
 #include "..\..\Layers\xrRender\R_Backend.h"
 

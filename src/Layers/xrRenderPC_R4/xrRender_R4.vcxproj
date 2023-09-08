@@ -335,7 +335,6 @@
     <ClInclude Include="..\xrRender\Utils\dxHashHelper.h" />
     <ClInclude Include="..\xrRender\VertexCache.h" />
     <ClInclude Include="..\xrRender\WallmarksEngine.h" />
-    <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
     <ClInclude Include="..\xrRender\xrStripify.h" />
     <ClInclude Include="..\xrRender\xr_effgamma.h" />

@@ -195,9 +195,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\xrD3DDefs.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\xrRender_console.h">
       <Filter>Kernel</Filter>
     </ClInclude>
