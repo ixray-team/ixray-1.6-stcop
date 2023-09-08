@@ -695,7 +695,7 @@
     <ClCompile Include="..\xrRender\r__pixel_calculator.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\Texture.cpp">
+    <ClCompile Include="..\xrRenderDX9\dx9Texture.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\tga.cpp">

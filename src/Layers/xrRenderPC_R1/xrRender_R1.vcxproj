@@ -447,7 +447,7 @@
     <ClCompile Include="..\xrRender\SkeletonRigid.cpp" />
     <ClCompile Include="..\xrRender\SkeletonX.cpp" />
     <ClCompile Include="..\xrRender\stats_manager.cpp" />
-    <ClCompile Include="..\xrRender\Texture.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9Texture.cpp" />
     <ClCompile Include="..\xrRender\TextureDescrManager.cpp" />
     <ClCompile Include="..\xrRender\tga.cpp" />
     <ClCompile Include="..\xrRender\tss_def.cpp" />

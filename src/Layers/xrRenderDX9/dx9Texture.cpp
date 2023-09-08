@@ -6,7 +6,7 @@
 #pragma hdrstop
 
 #ifndef _EDITOR
-#include "dxRenderDeviceRender.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 #endif
 
 // #include "std_classes.h"
