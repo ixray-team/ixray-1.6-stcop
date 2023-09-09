@@ -44,13 +44,5 @@ extern "C" {
 			skin4W_func = xrSkin4W_SSE;
 			T->PLC_calc3 = PLC_calc3_SSE;
 		}
-
-		// Init helper threads
-		ttapi_Init( ID );
-
-		if ( ttapi_GetWorkersCount() > 1 ) {
-			// We can use threading
-			T->skin4W	= xrSkin4W_thread;
-		}
 	}
 };

@@ -13,9 +13,6 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{fd8cb683-a59c-4294-bd4c-cbfcba6cfd4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TTAPI">
-      <UniqueIdentifier>{d5082110-dc4f-4161-beeb-1952c91d8e39}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PLC">
       <UniqueIdentifier>{e6be6d91-0b05-4a8e-abb0-ab74eebc51b1}</UniqueIdentifier>
     </Filter>
@@ -33,12 +30,6 @@
     <ClCompile Include="xrSkin2W_SSE.cpp">
       <Filter>Skinning</Filter>
     </ClCompile>
-    <ClCompile Include="xrSkin2W_thread.cpp">
-      <Filter>Skinning</Filter>
-    </ClCompile>
-    <ClCompile Include="ttapi.cpp">
-      <Filter>TTAPI</Filter>
-    </ClCompile>
     <ClCompile Include="PLC.cpp">
       <Filter>PLC</Filter>
     </ClCompile>
@@ -52,9 +43,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="ttapi.h">
-      <Filter>TTAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
