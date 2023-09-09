@@ -14,6 +14,7 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 *.aps
+build/
 
 # Build results
 obj/
