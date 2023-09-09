@@ -723,6 +723,14 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(HW.Caps.raster_major >= 3); ++len;
 
+	if (ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)) {
+		defines[def_it].Name = "USE_SUNMASK";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)); ++len;
+	
+
 	if (HW.Caps.geometry.bVTF)	{
 		defines[def_it].Name		=	"USE_VTF";
 		defines[def_it].Definition	=	"1";

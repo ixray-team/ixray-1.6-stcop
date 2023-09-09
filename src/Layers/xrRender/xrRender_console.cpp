@@ -154,6 +154,7 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	|R2FLAG_SUN_TSM
 	|R2FLAG_TONEMAP
 	|R2FLAG_VOLUMETRIC_LIGHTS
+	| RFLAG_CLOUD_SHADOWS
 	};	// r2-only
 
 Flags32		ps_r2_ls_flags_ext			= {
@@ -695,6 +696,7 @@ void		xrRender_initconsole	()
 
 	CMD2(CCC_tf_Aniso, "r__tf_aniso", &ps_r__tf_Anisotropic); //	{1..16}
 	CMD2(CCC_tf_MipBias, "r__tf_mipbias", &ps_r__tf_Mipbias);//	{-3 +3}
+	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags, RFLAG_CLOUD_SHADOWS);	//Need restart
 
 	// R1
 	CMD4(CCC_Float,		"r1_ssa_lod_a",			&ps_r1_ssaLOD_A,			16,		96		);
