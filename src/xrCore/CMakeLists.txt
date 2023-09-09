@@ -1,0 +1,82 @@
+project(xrCore)
+
+# Files import
+file(GLOB CORE_SOURCE_STL_FILES
+    "*_std*.*"
+    "*_stl*.*"
+    "Fixed*.*"
+)
+file(GLOB CORE_SOURCE_MATH_FILES
+    "_*.cpp"
+    "_*.h"
+)
+file(GLOB CORE_SOURCE_LZO_FILES
+    "lzo_*.*"
+    "rt_lzo*.*"
+)
+file(GLOB CORE_SOURCE_RT_FILES
+    "rt_c*.*"
+)
+file(GLOB CORE_SOURCE_PPMD_FILES
+    "ppmd_*.*"
+)
+file(GLOB CORE_SOURCE_LZ_FILES
+    "LzHuf*.cpp"
+    "lzhuf.h"
+)
+file(GLOB CORE_SOURCE_MEMORY_FILES
+    "xrMemory*.*"
+    "memory_*.*"
+    "*malloc*.*"
+    "ptmalloc3/*.*"
+)
+file(GLOB CORE_SOURCE_FS_FILES
+    "FS*.*"
+    "File*.*"
+    "file*.*"
+    "Locator*.*"
+)
+file(GLOB_RECURSE CORE_SOURCE_ALL_FILES
+    "*.cpp"
+    "*.c"
+    "*.h"
+)
+
+set(CORE_SRC_FILES)
+
+source_group("core" FILES ${CORE_SOURCE_ALL_FILES})
+source_group("math" FILES ${CORE_SOURCE_MATH_FILES})
+source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
+source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
+source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
+source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
+source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
+source_group("fs" FILES ${CORE_SOURCE_FS_FILES})
+source_group("stl" FILES ${CORE_SOURCE_STL_FILES})
+
+# Apply list
+list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
+
+# Remove borlands files
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX  "ELocatorAPI.*")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "LocatorAPI_Notifications.cpp$")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "xrMemory_subst_borland.*")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "FileSystem_borland.cpp")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "blackbox/*")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/t-test*.*")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/ptmalloc3.c")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/tst-independent-alloc.c")
+list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
+
+# xrCore project
+add_library(xrCore SHARED ${CORE_SRC_FILES})
+target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_precompile_headers(xrCore PUBLIC "stdafx.h")	
+
+# Project defines
+target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
+target_compile_definitions(xrCore PRIVATE _WINDOWS)
+target_compile_definitions(xrCore PRIVATE _USRDLL)
+
+add_compile_options(/fp:fast)
+target_compile_definitions(xrCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
