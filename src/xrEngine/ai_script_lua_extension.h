@@ -11,7 +11,8 @@
 #include "ai_script_space.h"
 //struct CLuaVirtualMachine;
 
-namespace Script {
+namespace Script
+{
 #ifndef ENGINE_BUILD
 	void				vfExportGlobals				(CLuaVirtualMachine *tpLuaVM);
 	void				vfExportFvector				(CLuaVirtualMachine *tpLuaVM);

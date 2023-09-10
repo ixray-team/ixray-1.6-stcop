@@ -25,4 +25,5 @@ target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 target_precompile_headers(luabind PUBLIC "pch.h")
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
+target_compile_definitions(luabind PUBLIC LUABIND_NO_EXCEPTIONS)
 target_link_libraries(luabind PUBLIC luajit)

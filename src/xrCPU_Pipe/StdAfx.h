@@ -31,3 +31,6 @@
 
 #include "xrCPU_Pipe.h"
 #include "ttapi.h"
+
+#undef ENGINE_API
+#define ENGINE_API __declspec(dllimport)
