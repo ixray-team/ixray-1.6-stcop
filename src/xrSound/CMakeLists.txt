@@ -56,6 +56,7 @@ target_precompile_headers(xrSound PUBLIC "stdafx.h")
 # project defines 
 target_compile_definitions(xrSound PRIVATE XRSOUND_EXPORTS)
 target_compile_definitions(xrSound PRIVATE _WINDOWS)
+target_compile_definitions(xrSound PRIVATE LUABIND_NO_EXCEPTIONS)
 target_compile_definitions(xrSound PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)
@@ -66,20 +67,32 @@ target_link_libraries(xrSound PUBLIC xrCore)
 target_link_libraries(xrSound PUBLIC xrCDB)
 
 # Nuget
+set(SND_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
+set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
+set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
+
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
-    COMMAND ${CMAKE_HOME_DIRECTORY}/nuget restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_CACHEFILE_DIR}
+    COMMAND ${CMAKE_HOME_DIRECTORY}/nuget restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+)
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OGG}native/bin/Win32/Release/libogg.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OAL}native/bin/Win32/Release/OpenAL32.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/Win32/Release/libvorbisfile.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/Win32/Release/libvorbis.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## LibOGG
-target_link_libraries(xrSound PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/Win32/Release/libogg.lib)
-target_include_directories(xrSound PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")
+target_link_libraries(xrSound PRIVATE ${SND_OGG}native/lib/Win32/Release/libogg.lib)
+target_include_directories(xrSound PRIVATE "${SND_OGG}/native/include/")
 
 ## Vorbice
-target_link_libraries(xrSound PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/native/lib/Win32/Release/libvorbisfile.lib)
-target_link_libraries(xrSound PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/native/lib/Win32/Release/libvorbis.lib)
-target_include_directories(xrSound PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/native/include/")
+target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/Win32/Release/libvorbisfile.lib)
+target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/Win32/Release/libvorbis.lib)
+target_include_directories(xrSound PRIVATE "${SND_VOB}/native/include/")
 
 ## OpenAL
-target_link_libraries(xrSound PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/native/lib/Win32/Release/OpenAL32.lib)
-target_include_directories(xrSound PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/native/include/")
+target_link_libraries(xrSound PRIVATE ${SND_OAL}/native/lib/Win32/Release/OpenAL32.lib)
+target_include_directories(xrSound PRIVATE "${SND_OAL}/native/include/")

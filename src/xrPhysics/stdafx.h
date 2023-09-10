@@ -1,9 +1,11 @@
 
 #pragma once
 
+#ifndef XRGAME_EXPORTS
 #define	MTL_EXPORT_API
 #define ENGINE_API
 #define DLL_API		
+#endif
 #define ECORE_API
 //#include "../xrEngine/stdafx.h"
 

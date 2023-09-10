@@ -14,9 +14,9 @@ devsupport@gamespy.com
 ******/
 
 
-#include "gcdkeys.h"
-#include "../common/gsCommon.h"
-#include "../common/gsAvailable.h"
+#include "../gcdkeys.h"
+#include "../../common/gsCommon.h"
+#include "../../common/gsAvailable.h"
 #ifdef _WIN32
 	#include <conio.h>
 #endif

@@ -76,15 +76,23 @@ target_link_libraries(xrEngine PUBLIC "Vfw32.lib")
 target_link_libraries(xrEngine PUBLIC ${IXRAY_SDK_LIB}/FreeImage.lib)
 
 # Nuget
+set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
+
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
-    COMMAND ${CMAKE_HOME_DIRECTORY}/nuget restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_CACHEFILE_DIR}
+    COMMAND ${CMAKE_HOME_DIRECTORY}/nuget restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+)
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/Win32/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## Theora
-target_link_libraries(xrEngine PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/Win32/Release/libtheora.lib)
-target_include_directories(xrEngine PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/include/")
+target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/Win32/Release/libtheora.lib)
+target_include_directories(xrEngine PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/include/")
 
 ## LibOGG
-target_link_libraries(xrEngine PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/Win32/Release/libogg.lib)
-target_include_directories(xrEngine PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")
+target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/Win32/Release/libogg.lib)
+target_include_directories(xrEngine PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")

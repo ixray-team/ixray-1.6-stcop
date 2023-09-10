@@ -1,6 +1,4 @@
-#if !defined(__ximaCFG_h)
-#define __ximaCFG_h
-
+#pragma once
 #include "../../../xrCore/fastdelegate.h"
 
 extern "C" void*	cxalloc(size_t size);
@@ -10,27 +8,20 @@ extern "C" void*	cxrealloc(void* ptr, size_t size);
 //typedef void (*xima_progress_callback)(int progress);
 //extern xima_progress_callback	xima_jpeg_encode_process_cb;
 
-#ifdef CXIMAGE_AS_SHARED_LIBRARY //must be defined in Release_Shared configuration
-
 #include "../../../xrCore/xrCore.h"
 
 #ifdef DEBUG
 #include "../../../xrCore/ftimer.h"
 #endif //#ifdef DEBUG
 
-#ifdef	CXIMAGE_BUILD
-#	define	CXIMAGE_API	__declspec(dllexport)
-#else
-#	define	CXIMAGE_API	__declspec(dllimport)
-#endif //#ifdef	CXIMAGE_BUILD
-#else  //if CXIMAGE_AS_SHARED_LIBRARY linking as static library ...
-#	define	CXIMAGE_API
-#endif //CXIMAGE_AS_SHARED_LIBRARY
+# define CXIMAGE_API
 typedef void (*jpeg_encode_callback_func)(long);
 
 //CXIMAGE_API jpeg_encode_callback_func g_jpeg_encode_cb;
-extern "C" CXIMAGE_API fastdelegate::FastDelegate1< long > g_jpeg_encode_delegate;
-
+extern "C"
+{
+	extern fastdelegate::FastDelegate1<long> g_jpeg_encode_delegate;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CxImage supported features
@@ -84,5 +75,3 @@ extern "C" CXIMAGE_API fastdelegate::FastDelegate1< long > g_jpeg_encode_delegat
 //color to grey mapping <H. Muelner> <jurgene>
 //#define RGB2GRAY(r,g,b) (((b)*114 + (g)*587 + (r)*299)/1000)
 #define RGB2GRAY(r,g,b) (((b)*117 + (g)*601 + (r)*306) >> 10)
-
-#endif

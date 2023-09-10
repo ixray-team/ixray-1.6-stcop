@@ -13,8 +13,8 @@ devsupport@gamespy.com
 
 ******/
 
-#include "../common/gsCommon.h"
-#include "gcdkeyc.h"
+#include "../../common/gsCommon.h"
+#include "../gcdkeyc.h"
 
 #define DEFAULT_SERVER "127.0.0.1"	// Run gcdkeyserver app on local host
 #define DEFAULT_PORT 2000
