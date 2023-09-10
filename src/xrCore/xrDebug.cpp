@@ -47,16 +47,6 @@ HWND get_current_wnd()
 	return hWnd;
 }
 
-void LogStackTrace	(LPCSTR header)
-{
-	if (!shared_str_initialized)
-		return;
-
-	Msg("%s",header);
-	BuildStackTrace	();		
-
-}
-
 void xrDebug::gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, u32 const assertion_info_size)
 {
 	LPSTR				buffer_base = assertion_info;
@@ -120,8 +110,6 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"stack trace:%s%s",endline,endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-		BuildStackTrace	();		
 		
 		if (shared_str_initialized)
 			FlushLog	();
@@ -293,7 +281,6 @@ extern LPCSTR log_name();
 XRCORE_API string_path g_bug_report_file;
 
 #if 1
-extern void BuildStackTrace(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef LONG ( __stdcall *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
 extern "C" BOOL __stdcall SetCrashHandlerFilter ( PFNCHFILTFN pFn );
@@ -442,34 +429,79 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     #pragma comment( lib, "faultrep.lib" )
 #endif
 
+LONG WINAPI BuildStackTrace(PEXCEPTION_POINTERS pExceptionInfo)
+{
+	HANDLE process = GetCurrentProcess();
+	SymInitialize(process, NULL, TRUE);
+
+	// StackWalk64() may modify context record passed to it, so we will
+	// use a copy.
+	CONTEXT context_record = *pExceptionInfo->ContextRecord;
+	// Initialize stack walking.
+	STACKFRAME64 stack_frame;
+	memset(&stack_frame, 0, sizeof(stack_frame));
+
+#if defined(_WIN64)
+	int machine_type = IMAGE_FILE_MACHINE_AMD64;
+	stack_frame.AddrPC.Offset = context_record.Rip;
+	stack_frame.AddrFrame.Offset = context_record.Rbp;
+	stack_frame.AddrStack.Offset = context_record.Rsp;
+#else
+	int machine_type = IMAGE_FILE_MACHINE_I386;
+	stack_frame.AddrPC.Offset = context_record.Eip;
+	stack_frame.AddrFrame.Offset = context_record.Ebp;
+	stack_frame.AddrStack.Offset = context_record.Esp;
+#endif
+	stack_frame.AddrPC.Mode = AddrModeFlat;
+	stack_frame.AddrFrame.Mode = AddrModeFlat;
+	stack_frame.AddrStack.Mode = AddrModeFlat;
+
+	char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
+	const auto pSymbol = reinterpret_cast<PSYMBOL_INFO>(buffer);
+
+	pSymbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+	pSymbol->MaxNameLen = MAX_SYM_NAME;
+
+	Msg("%s", "Stack Trace : \n");
+
+	while (StackWalk64(machine_type, GetCurrentProcess(), GetCurrentThread(), &stack_frame, &context_record, NULL, &SymFunctionTableAccess64, &SymGetModuleBase64, NULL))
+	{
+		DWORD64 displacement = 0;
+
+		std::string Buffer = "";
+
+		if (SymFromAddr(process, (DWORD64)stack_frame.AddrPC.Offset, &displacement, pSymbol))
+		{
+			IMAGEHLP_MODULE64 moduleInfo;
+			FillMemory(&moduleInfo, sizeof(moduleInfo), 0);
+
+			moduleInfo.SizeOfStruct = sizeof(moduleInfo);
+
+			if (::SymGetModuleInfo64(process, pSymbol->ModBase, &moduleInfo))
+				Buffer += moduleInfo.ModuleName;
+
+			char buf[_MAX_U64TOSTR_BASE2_COUNT];
+			_itoa_s(displacement, buf, _countof(buf), 16);
+
+			Buffer += moduleInfo.ModuleName;
+			Buffer += "!";
+			Buffer += pSymbol->Name;
+			Buffer += displacement;
+			Buffer += "\r\n";
+		}
+
+		Msg("%s", Buffer.c_str());
+	}
+
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
 LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
 
-	if (!error_after_dialog && !strstr(GetCommandLine(), "-no_call_stack_assert")) 
-	{
-		CONTEXT save = *pExceptionInfo->ContextRecord;
-		//BuildStackTrace(pExceptionInfo);
-		*pExceptionInfo->ContextRecord = save;
-
-		if (shared_str_initialized)
-			Msg("stack trace:\n");
-
-		if (!IsDebuggerPresent())
-		{
-			os_clipboard::copy_to_clipboard("stack trace:\r\n\r\n");
-			BuildStackTrace();
-		}
-
-		if (*error_message) 
-		{
-			if (shared_str_initialized)
-				Msg("\n%s", error_message);
-
-			xr_strcat(error_message, sizeof(error_message), "\r\n");
-		}
-	}
+	BuildStackTrace(pExceptionInfo);
 
 	if (shared_str_initialized)
 		FlushLog			();
@@ -563,143 +595,10 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		
 		exit					(-1);
 	}
-
-	static void handler_base				(LPCSTR reason_string)
+	
+	void __cdecl debug_on_thread_spawn(void)
 	{
-		bool							ignore_always = false;
-		Debug.backend					(
-			"error handler is invoked!",
-			reason_string,
-			0,
-			0,
-			DEBUG_INFO,
-			ignore_always
-		);
-	}
-
-	static void invalid_parameter_handler	(
-			const wchar_t *expression,
-			const wchar_t *function,
-			const wchar_t *file,
-			unsigned int line,
-			uintptr_t reserved
-		)
-	{
-		bool							ignore_always = false;
-
-		string4096						expression_;
-		string4096						function_;
-		string4096						file_;
-		size_t							converted_chars = 0;
-//		errno_t							err = 
-		if (expression)
-			wcstombs_s	(
-				&converted_chars, 
-				expression_,
-				sizeof(expression_),
-				expression,
-				(wcslen(expression) + 1)*2*sizeof(char)
-			);
-		else
-			xr_strcpy					(expression_,"");
-
-		if (function)
-			wcstombs_s	(
-				&converted_chars, 
-				function_,
-				sizeof(function_),
-				function,
-				(wcslen(function) + 1)*2*sizeof(char)
-			);
-		else
-			xr_strcpy					(function_,__FUNCTION__);
-
-		if (file)
-			wcstombs_s	(
-				&converted_chars, 
-				file_,
-				sizeof(file_),
-				file,
-				(wcslen(file) + 1)*2*sizeof(char)
-			);
-		else {
-			line						= __LINE__;
-			xr_strcpy					(file_,__FILE__);
-		}
-
-		Debug.backend					(
-			"error handler is invoked!",
-			expression_,
-			0,
-			0,
-			file_,
-			line,
-			function_,
-			ignore_always
-		);
-	}
-
-	static void pure_call_handler			()
-	{
-		handler_base					("pure virtual function call");
-	}
-
-#ifdef XRAY_USE_EXCEPTIONS
-	static void unexpected_handler			()
-	{
-		handler_base					("unexpected program termination");
-	}
-#endif // XRAY_USE_EXCEPTIONS
-
-	static void abort_handler				(int signal)
-	{
-		handler_base					("application is aborting");
-	}
-
-	static void floating_point_handler		(int signal)
-	{
-		handler_base					("floating point error");
-	}
-
-	static void illegal_instruction_handler	(int signal)
-	{
-		handler_base					("illegal instruction");
-	}
-
-//	static void storage_access_handler		(int signal)
-//	{
-//		handler_base					("illegal storage access");
-//	}
-
-	static void termination_handler			(int signal)
-	{
-		handler_base					("termination with exit code 3");
-	}
-
-	void debug_on_thread_spawn			()
-	{
-		std::set_terminate				(_terminate);
-
-		_set_abort_behavior				(0,_WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-		signal							(SIGABRT,		abort_handler);
-		signal							(SIGABRT_COMPAT,abort_handler);
-		signal							(SIGFPE,		floating_point_handler);
-		signal							(SIGILL,		illegal_instruction_handler);
-		signal							(SIGINT,		0);
-//		signal							(SIGSEGV,		storage_access_handler);
-		signal							(SIGTERM,		termination_handler);
-
-		_set_invalid_parameter_handler	(&invalid_parameter_handler);
-
-		_set_new_mode					(1);
-		_set_new_handler				(&out_of_memory_handler);
-//		std::set_new_handler			(&std_out_of_memory_handler);
-
-		_set_purecall_handler			(&pure_call_handler);
-
-#if 0// should be if we use exceptions
-		std::set_unexpected				(_terminate);
-#endif
+		SetUnhandledExceptionFilter(UnhandledFilter);
 	}
 
     void	xrDebug::_initialize		(const bool &dedicated)
@@ -707,8 +606,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		static bool is_dedicated		= dedicated;
 
 		*g_bug_report_file				= 0;
-
-		debug_on_thread_spawn			();
 
 		previous_filter					= ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
 
