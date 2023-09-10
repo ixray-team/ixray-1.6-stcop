@@ -149,6 +149,12 @@ public:
 	CGameFont*					m_custom_text_font;
 	u32							m_custom_text_clr_inv;
 //	u32							m_custom_text_clr_hud; // used for pick_up_item on CUICellItem class
+	bool						m_custom_mark;
+	shared_str					m_custom_mark_texture;
+	Fvector2					m_custom_mark_offset;
+	Fvector2					m_custom_mark_size;
+	u32							m_custom_mark_clr;
+	LPCSTR						m_custom_mark_lanim;
 
 	SInvItemPlace				m_ItemCurrPlace;
 
