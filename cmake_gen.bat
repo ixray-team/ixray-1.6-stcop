@@ -1,0 +1,2 @@
+cmake -B build -DCMAKE_GENERATOR_PLATFORM=Win32
+pause
