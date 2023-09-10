@@ -1,13 +1,10 @@
-// HW.cpp: implementation of the CHW class.
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #pragma hdrstop
 
 #pragma warning(disable:4995)
 #include <d3dx9.h>
 #pragma warning(default:4995)
-#include "HW.h"
+#include "../xrRender/HW.h"
 #include "../../xrEngine/XR_IOConsole.h"
 
 #ifndef _EDITOR

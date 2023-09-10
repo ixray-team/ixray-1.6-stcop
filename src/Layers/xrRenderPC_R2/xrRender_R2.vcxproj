@@ -347,6 +347,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\xrEngine\ai_script_lua_debug.cpp" />
     <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9effgamma.cpp" />
     <ClCompile Include="..\xrRenderDX9\dx9RenderScreenshot.cpp" />
     <ClCompile Include="..\xrRenderDX9\dx9r_constants_cache.cpp" />
     <ClCompile Include="..\xrRender\Animation.cpp" />
@@ -383,7 +384,6 @@
     <ClCompile Include="..\xrRender\dxFontRender.cpp" />
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp" />
     <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp" />
-    <ClCompile Include="..\xrRender\dxParticleCustom.cpp" />
     <ClCompile Include="..\xrRender\dxRainRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderFactory.cpp" />
@@ -404,7 +404,8 @@
     <ClCompile Include="..\xrRender\FTreeVisual.cpp" />
     <ClCompile Include="..\xrRender\FVisual.cpp" />
     <ClCompile Include="..\xrRender\HOM.cpp" />
-    <ClCompile Include="..\xrRender\HW.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9HW.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9HWCaps.cpp" />
     <ClCompile Include="..\xrRender\HWCaps.cpp" />
     <ClCompile Include="..\xrRender\light.cpp" />
     <ClCompile Include="..\xrRender\LightTrack.cpp" />
@@ -423,8 +424,8 @@
     <ClCompile Include="..\xrRender\ResourceManager.cpp" />
     <ClCompile Include="..\xrRender\ResourceManager_Loader.cpp" />
     <ClCompile Include="..\xrRender\ResourceManager_Reset.cpp" />
-    <ClCompile Include="..\xrRender\ResourceManager_Resources.cpp" />
-    <ClCompile Include="..\xrRender\ResourceManager_Scripting.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9ResourceManager_Resources.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9ResourceManager_Scripting.cpp" />
     <ClCompile Include="..\xrRender\R_Backend.cpp" />
     <ClCompile Include="..\xrRender\R_Backend_DBG.cpp" />
     <ClCompile Include="..\xrRender\R_Backend_hemi.cpp" />
@@ -434,7 +435,6 @@
     <ClCompile Include="..\xrRender\r_constants.cpp" />
     <ClCompile Include="..\xrRender\R_DStreams.cpp" />
     <ClCompile Include="..\xrRender\R_sun.cpp" />
-    <ClCompile Include="..\xrRender\R_sun_support.cpp" />
     <ClCompile Include="..\xrRender\r__dsgraph_build.cpp" />
     <ClCompile Include="..\xrRender\r__dsgraph_render.cpp" />
     <ClCompile Include="..\xrRender\r__dsgraph_render_lods.cpp" />
@@ -446,8 +446,8 @@
     <ClCompile Include="..\xrRender\SH_Atomic.cpp" />
     <ClCompile Include="..\xrRender\SH_Constant.cpp" />
     <ClCompile Include="..\xrRender\SH_Matrix.cpp" />
-    <ClCompile Include="..\xrRender\SH_RT.cpp" />
-    <ClCompile Include="..\xrRender\SH_Texture.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9SH_RT.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9SH_Texture.cpp" />
     <ClCompile Include="..\xrRender\SkeletonAnimated.cpp" />
     <ClCompile Include="..\xrRender\SkeletonCustom.cpp" />
     <ClCompile Include="..\xrRender\SkeletonRigid.cpp" />
@@ -462,7 +462,6 @@
     <ClCompile Include="..\xrRender\WallmarksEngine.cpp" />
     <ClCompile Include="..\xrRender\xrRender_console.cpp" />
     <ClCompile Include="..\xrRender\xrStripify.cpp" />
-    <ClCompile Include="..\xrRender\xr_effgamma.cpp" />
     <ClCompile Include="blender_bloom_build.cpp" />
     <ClCompile Include="blender_combine.cpp" />
     <ClCompile Include="blender_deffer_aref.cpp" />

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "ResourceManager.h"
+#include "../xrRender/ResourceManager.h"
 
 #ifndef _EDITOR
 #include "../../xrEngine/render.h"
@@ -10,7 +10,7 @@
 #include "../../xrEngine/tntQAVI.h"
 #include "../../xrEngine/xrTheora_Surface.h"
 
-#include "dxRenderDeviceRender.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 #define		PRIORITY_HIGH	12
 #define		PRIORITY_NORMAL	8

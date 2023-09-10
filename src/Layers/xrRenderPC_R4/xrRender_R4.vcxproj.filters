@@ -1061,10 +1061,10 @@
     <ClCompile Include="..\xrRender\ColorMapManager.cpp">
       <Filter>Core_Target\ColorMap</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\dx10HW.cpp">
+    <ClCompile Include="..\xrRenderDX10\dx11HW.cpp">
       <Filter>Refactored\HW</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\HWCaps.cpp">
+    <ClCompile Include="..\xrRenderDX10\dx11HWCaps.cpp">
       <Filter>Refactored\HW</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\R_Backend.cpp">
@@ -1103,10 +1103,7 @@
     <ClCompile Include="..\xrRenderDX10\dx10r_constants.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\dx10SH_RT.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\dx10SH_Texture.cpp">
+    <ClCompile Include="..\xrRenderDX10\dx11SH_Texture.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\r_constants.cpp">
@@ -1133,10 +1130,10 @@
     <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\dx10ResourceManager_Resources.cpp">
+    <ClCompile Include="..\xrRenderDX10\dx11ResourceManager_Resources.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\dx10ResourceManager_Scripting.cpp">
+    <ClCompile Include="..\xrRenderDX10\dx11ResourceManager_Scripting.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\ETextureParams.cpp">
@@ -1193,9 +1190,6 @@
     <ClCompile Include="..\xrRender\du_sphere_part.cpp">
       <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\dxParticleCustom.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\FBasicVisual.cpp">
       <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
     </ClCompile>
@@ -1216,9 +1210,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\SkeletonX.cpp">
       <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\xr_effgamma.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\stats_manager.cpp">
       <Filter>Refactored\stats_manager</Filter>
@@ -1328,9 +1319,6 @@
     <ClCompile Include="..\xrRender\R_sun.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\R_sun_support.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\RenderScreenshot.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -1351,6 +1339,15 @@
     </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_smaa.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\HWCaps.cpp">
+      <Filter>Refactored\HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx11SH_RT.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx11effgamma.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

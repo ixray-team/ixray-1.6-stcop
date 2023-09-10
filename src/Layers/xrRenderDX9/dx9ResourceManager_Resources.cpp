@@ -7,10 +7,10 @@
 #endif
 #pragma warning(default:4995)
 
-#include "ResourceManager.h"
-#include "tss.h"
-#include "blenders\blender.h"
-#include "blenders\blender_recorder.h"
+#include "../xrRender/ResourceManager.h"
+#include "../xrRender/tss.h"
+#include "../xrRender/blenders/blender.h"
+#include "../xrRender/blenders/blender_recorder.h"
 
 #include <FlexibleVertexFormat.h>
 #include <d3dcompiler.h>

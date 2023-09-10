@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "ResourceManager.h"
+#include "../xrRender/ResourceManager.h"
 
-#include "dxRenderDeviceRender.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 CRT::CRT			()
 {
