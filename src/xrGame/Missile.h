@@ -75,6 +75,8 @@ protected:
 
 	CMissile				*m_fake_missile;
 
+	xr_vector<shared_str>	m_sCheckoutBones;
+
 	//параметры броска
 	
 	float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
