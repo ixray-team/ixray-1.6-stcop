@@ -30,6 +30,11 @@ file(GLOB CORE_SOURCE_LZ_FILES
     "lzhuf.h"
 )
 
+file(GLOB CORE_SOURCE_XML_FILES
+    "XMLCore/*.cpp"
+    "XMLCore/.h"
+)
+
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"
     "memory_*.*"
@@ -61,6 +66,7 @@ source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
 source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
 source_group("fs" FILES ${CORE_SOURCE_FS_FILES})
 source_group("stl" FILES ${CORE_SOURCE_STL_FILES})
+source_group("XML" FILES ${CORE_SOURCE_XML_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
