@@ -87,6 +87,7 @@ public:
 
 public:
 	virtual void				Load				(LPCSTR section);
+			void				ReadCustomTextAndMarks(LPCSTR section);
 
 			LPCSTR				NameItem			();// remove <virtual> by sea
 			LPCSTR				NameShort			();
@@ -143,6 +144,11 @@ public:
 	shared_str					m_name;
 	shared_str					m_nameShort;
 	shared_str					m_nameComplex;
+	shared_str					m_custom_text;
+	Fvector2					m_custom_text_offset;
+	CGameFont*					m_custom_text_font;
+	u32							m_custom_text_clr_inv;
+//	u32							m_custom_text_clr_hud; // used for pick_up_item on CUICellItem class
 
 	SInvItemPlace				m_ItemCurrPlace;
 

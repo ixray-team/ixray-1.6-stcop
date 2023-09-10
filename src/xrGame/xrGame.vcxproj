@@ -1764,6 +1764,7 @@
     <ClInclude Include="ui\UI_IB_Static.h" />
     <ClInclude Include="ui\xrUIXmlParser.h" />
     <ClInclude Include="ui_base.h" />
+    <ClInclude Include="UIFontDefines.h" />
     <ClInclude Include="ui_defs.h" />
     <ClInclude Include="UsableScriptObject.h" />
     <ClInclude Include="vertex_allocator_fixed.h" />
