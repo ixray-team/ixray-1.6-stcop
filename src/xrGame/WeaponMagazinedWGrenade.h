@@ -47,6 +47,7 @@ public:
 	virtual void	OnShot			();
 	virtual void	OnEvent			(NET_Packet& P, u16 type);
 	virtual void	ReloadMagazine	();
+	virtual void	UnloadMagazine	(bool spawn_ammo = true);
 
 	virtual bool	Action			(u16 cmd, u32 flags);
 
