@@ -27,9 +27,6 @@
     <ClCompile Include="xrSkin2W.cpp">
       <Filter>Skinning</Filter>
     </ClCompile>
-    <ClCompile Include="xrSkin2W_SSE.cpp">
-      <Filter>Skinning</Filter>
-    </ClCompile>
     <ClCompile Include="PLC.cpp">
       <Filter>PLC</Filter>
     </ClCompile>
