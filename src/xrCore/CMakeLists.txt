@@ -75,13 +75,17 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
-target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_precompile_headers(xrCore PUBLIC "stdafx.h")	
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _WINDOWS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
+
+# Linker list
+target_link_libraries(xrCore PRIVATE "dbghelp.lib")
+target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
 target_compile_definitions(xrCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
