@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "ResourceManager.h"
+#include "../xrRender/ResourceManager.h"
 
-#include "dxRenderDeviceRender.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 CRT::CRT			()
 {
@@ -61,7 +61,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 	// Validate render-target usage
 	_hr = HW.pD3D->CheckDeviceFormat(
 		HW.DevAdapter,
-		HW.m_DriverType,
+		HW.DevT,
 		HW.Caps.fTarget,
 		usage,
 		D3DRTYPE_TEXTURE,
@@ -152,7 +152,7 @@ void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 	// Validate render-target usage
 	_hr = HW.pD3D->CheckDeviceFormat(
 		HW.DevAdapter,
-		HW.m_DriverType,
+		HW.DevT,
 		HW.Caps.fTarget,
 		D3DUSAGE_RENDERTARGET,
 		D3DRTYPE_CUBETEXTURE,

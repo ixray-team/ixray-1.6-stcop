@@ -1,4 +1,4 @@
-<<<<<<<< HEAD:src/Layers/xrRenderDX9/Texture.cpp
+<<<<<<<< HEAD:src/Layers/xrRenderDX9/dx9Texture.cpp
 // Texture.cpp: implementation of the CTexture class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -1116,4 +1116,4 @@ _BUMP_from_base:
 		return				T_normal_1C;
 	}
 }
->>>>>>>> d462a23e (Move `Texture` module to D3D9 render directory):src/Layers/xrRenderDX9/dx9Texture.cpp
+>>>>>>>> fd30a8a2 (All engine ported to CMake):src/Layers/xrRenderDX9/Texture.cpp
