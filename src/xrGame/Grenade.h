@@ -40,6 +40,7 @@ public:
 
 	virtual void			OnH_B_Chield						()				{inherited::OnH_B_Chield();}
 
+	virtual bool			CheckGrenadeExplosionByHit			(SHit* SHit);
 	virtual	void			Hit									(SHit* pHDS);
 
 	virtual bool			NeedToDestroyObject					() const; 
@@ -54,6 +55,7 @@ public:
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
 	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
+	ALife::EHitType m_hit_type;
 protected:
 	ESoundTypes				m_eSoundCheckout;
 private:

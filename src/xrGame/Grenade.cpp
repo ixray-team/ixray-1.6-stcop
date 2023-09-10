@@ -14,11 +14,12 @@
 
 #define GRENADE_REMOVE_TIME		30000
 const float default_grenade_detonation_threshold_hit=100;
+
 CGrenade::CGrenade(void) 
 {
-
 	m_destroy_callback.clear();
 	m_eSoundCheckout = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
+	m_hit_type = ALife::eHitTypeMax;
 }
 
 CGrenade::~CGrenade(void) 
@@ -32,8 +33,14 @@ void CGrenade::Load(LPCSTR section)
 
 	m_sounds.LoadSound(section,"snd_checkout", "sndCheckout", false, m_eSoundCheckout);
 
+	if (pSettings->line_exist(section, "explosion_on_hit") && pSettings->r_bool(section, "explosion_on_hit")) {
+		if ((!pSettings->line_exist(section, "explosive_while_not_activated")) || pSettings->r_bool(section, "explosive_while_not_activated")) {
+			m_hit_type = static_cast<ALife::EHitType>(READ_IF_EXISTS(pSettings, r_s32, section, "explosion_hit_types", ALife::eHitTypeExplosion));
+		}
+	}
+
 	//////////////////////////////////////
-	//время убирания оружия с уровня
+	//РІСЂРµРјСЏ СѓР±РёСЂР°РЅРёСЏ РѕСЂСѓР¶РёСЏ СЃ СѓСЂРѕРІРЅСЏ
 	if(pSettings->line_exist(section,"grenade_remove_time"))
 		m_dwGrenadeRemoveTime = pSettings->r_u32(section,"grenade_remove_time");
 	else
@@ -41,9 +48,26 @@ void CGrenade::Load(LPCSTR section)
 	m_grenade_detonation_threshold_hit=READ_IF_EXISTS(pSettings,r_float,section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
 }
 
+bool CGrenade::CheckGrenadeExplosionByHit(SHit* SHit) {
+	if (m_hit_type == ALife::eHitTypeMax) {
+		return false;
+	}
+
+	if (m_grenade_detonation_threshold_hit < SHit->power) {
+		if (SHit->hit_type == m_hit_type) {
+			return true;
+		} else {
+			if (SHit->hit_type == ALife::eHitTypeExplosion) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void CGrenade::Hit					(SHit* pHDS)
 {
-	if( ALife::eHitTypeExplosion==pHDS->hit_type && m_grenade_detonation_threshold_hit<pHDS->damage()&&CExplosive::Initiator()==u16(-1)) 
+	if (ALife::eHitTypeExplosion == pHDS->hit_type && m_grenade_detonation_threshold_hit < pHDS->damage() && CExplosive::Initiator() == u16(-1) || CheckGrenadeExplosionByHit(pHDS))
 	{
 		CExplosive::SetCurrentParentID(pHDS->who->ID());
 		Destroy();
@@ -178,7 +202,7 @@ void CGrenade::Throw()
 	if (pGrenade) 
 	{
 		pGrenade->set_destroy_time(m_dwDestroyTimeMax);
-//установить ID того кто кинул гранату
+//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ ID С‚РѕРіРѕ РєС‚Рѕ РєРёРЅСѓР» РіСЂР°РЅР°С‚Сѓ
 		pGrenade->SetInitiator( H_Parent()->ID() );
 	}
 	inherited::Throw			();
@@ -224,7 +248,7 @@ void CGrenade::PutNextToSlot()
 	if (OnClient()) return;
 
 	VERIFY									(!getDestroy());
-	//выкинуть гранату из инвентаря
+	//РІС‹РєРёРЅСѓС‚СЊ РіСЂР°РЅР°С‚Сѓ РёР· РёРЅРІРµРЅС‚Р°СЂСЏ
 	NET_Packet						P;
 	if (m_pInventory)
 	{
@@ -288,7 +312,7 @@ bool CGrenade::Action(u16 cmd, u32 flags)
 
 	switch(cmd) 
 	{
-	//переключение типа гранаты
+	//РїРµСЂРµРєР»СЋС‡РµРЅРёРµ С‚РёРїР° РіСЂР°РЅР°С‚С‹
 	case kWPN_NEXT:
 		{
             if(flags&CMD_START) 
