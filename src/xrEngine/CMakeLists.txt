@@ -42,6 +42,9 @@ list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
 
 # xrEngine project
 add_executable(xrEngine WIN32 ${ENGINE_SRC_FILES})
+set_property(TARGET xrEngine PROPERTY ENABLE_EXPORTS ON)
+
+# Include directories
 target_include_directories(xrEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEngine PUBLIC "${IXRAY_SDK_INC}")
 
