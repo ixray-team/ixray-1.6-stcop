@@ -288,6 +288,7 @@ void CPHShell::Deactivate(){
 	CPHObject::UnsetRayMotions();
 }
 
+#include "PHElementInline.h"
 
 void	CPHShell::ActivatingBonePoses( IKinematics &K )
 {
