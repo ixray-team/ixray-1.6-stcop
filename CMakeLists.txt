@@ -3,6 +3,7 @@ project(IXRay)
 
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
+option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 
 # Output target
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -70,10 +71,13 @@ if(IXRAY_UTILS)
     add_subdirectory("src/utils/xrCompress")
     add_subdirectory("src/utils/xrSE_Factory")
     add_subdirectory("src/utils/xrAI")
-    add_subdirectory("src/utils/mp_balancer")
-    add_subdirectory("src/utils/mp_configs_verifyer")
-    add_subdirectory("src/utils/mp_screenshots_info")
-    add_subdirectory("src/utils/mp_gpprof_server")
+
+    if(IXRAY_MP)
+        add_subdirectory("src/utils/mp_balancer")
+        add_subdirectory("src/utils/mp_configs_verifyer")
+        add_subdirectory("src/utils/mp_screenshots_info")
+        add_subdirectory("src/utils/mp_gpprof_server")
+    endif()
 endif()
 
 # Move libraries
@@ -104,10 +108,13 @@ if(IXRAY_UTILS)
     set_target_properties(ETools PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrSE_Factory PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrAI PROPERTIES ${IXRAY_FOLDER_UTILS})
-    set_target_properties(mp_balancer PROPERTIES ${IXRAY_FOLDER_UTILS})
-    set_target_properties(mp_configs_verifyer PROPERTIES ${IXRAY_FOLDER_UTILS})
-    set_target_properties(mp_screenshots_info PROPERTIES ${IXRAY_FOLDER_UTILS})
-    set_target_properties(mp_gpprof_server PROPERTIES ${IXRAY_FOLDER_UTILS})
+
+    if(IXRAY_MP)
+        set_target_properties(mp_balancer PROPERTIES ${IXRAY_FOLDER_UTILS})
+        set_target_properties(mp_configs_verifyer PROPERTIES ${IXRAY_FOLDER_UTILS})
+        set_target_properties(mp_screenshots_info PROPERTIES ${IXRAY_FOLDER_UTILS})
+        set_target_properties(mp_gpprof_server PROPERTIES ${IXRAY_FOLDER_UTILS})
+    endif()
 endif()
 
 # Move 3rd
