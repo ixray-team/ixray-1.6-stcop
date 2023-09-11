@@ -164,7 +164,7 @@ namespace CPU
 		clk_per_second = GetCLK() - start;
 
 		// Detect RDTSC Overhead
-		u64 clk_overhead = 0;
+		clk_overhead = 0;
 		for (u32 i = 0; i < 256; i++) {
 			start = GetCLK();
 			clk_overhead += GetCLK() - start;
