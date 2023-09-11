@@ -192,7 +192,9 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 		switch (result) {
 			case IDCANCEL : {
-				DEBUG_INVOKE;
+				if (IsDebuggerPresent()) {
+					DEBUG_INVOKE;
+				}
 				// TODO: Maybe not correct
 				exit(-1);
 				break;
