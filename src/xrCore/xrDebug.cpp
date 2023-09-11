@@ -39,6 +39,13 @@ XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
 
+HWND get_current_wnd()
+{
+	HWND hWnd = GetActiveWindow();
+	if (hWnd == nullptr)
+		hWnd = GetForegroundWindow();
+	return hWnd;
+}
 void xrDebug::gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, u32 const assertion_info_size)
 {
 	LPSTR				buffer_base = assertion_info;
@@ -153,10 +160,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 #else
 
-	HWND hWnd = GetActiveWindow();
-	if (hWnd == nullptr)
-		hWnd = GetForegroundWindow();
-	ShowWindow(hWnd, SW_MINIMIZE);
+	ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
 	int result = MessageBox(
 		NULL, assertion_info, "Fatal Error",
@@ -178,7 +182,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 			case IDCONTINUE : {
 				error_after_dialog	= false;
 				ignore_always	= true;
-				ShowWindow(hWnd, SW_SHOWNORMAL);
+				ShowWindow(get_current_wnd(), SW_SHOWNORMAL);
 				break;
 			}
 			default: {
@@ -503,10 +507,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	if (shared_str_initialized)
 		FlushLog			();
 
-
 #ifdef USE_OWN_MINI_DUMP
-		save_mini_dump		(pExceptionInfo);
+	save_mini_dump		(pExceptionInfo);
 #endif // USE_OWN_MINI_DUMP
+
+	ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
 	if (!error_after_dialog) {
 		if (Debug.get_on_dialog())
