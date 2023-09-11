@@ -263,7 +263,7 @@ void		sort_tlist_mat
 
 void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 {
-
+	PIX_EVENT(SHADOWED_LIGHTS_RENDER_GRAPH);
 	//PIX_EVENT(r_dsgraph_render_graph);
 	Device.Statistic->RenderDUMP.Begin		();
 
@@ -574,6 +574,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 // strict-sorted render
 void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 {
+	PIX_EVENT(SHADOWED_LIGHTS_RENDER_SORTED);
+
 	// Sorted (back to front)
 	mapSorted.traverseRL	(sorted_L1);
 	mapSorted.clear			();

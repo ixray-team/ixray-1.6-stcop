@@ -18,6 +18,8 @@ struct vf
  	float2 	tc0	: TEXCOORD1	;	// base0
  	float2 	tc1	: TEXCOORD2	;	// base1
 	float4 	af	: COLOR1	;	// alpha&factor
+	float4  prev_hpos : POSITION0;
+	float4  cur_hpos : POSITION1;
 	float4 	hpos: SV_Position;
 };
 
@@ -37,6 +39,8 @@ vf 	main	( vv I )
 	float 	h 	= lerp		(I.rgbh0.w,I.rgbh1.w,factor)		*L_SCALE;
 
 	o.hpos 		= mul		(m_VP, 	pos);				// xform, input in world coords
+	o.cur_hpos 	= o.hpos;
+	o.prev_hpos = mul		(m_prevVP, 	pos);			// xform, input in world coords
 	o.Pe		= mul		(m_V,	pos);
 
 	// replicate TCs

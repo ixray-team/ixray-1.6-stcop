@@ -7,6 +7,8 @@
 #include "lmodel.h"
 #include "hmodel.h"
 
+#define DBG_TEST_MOTION
+
 uniform	Texture2D					s_half_depth;
 
 //#include "ssao_blur.ps"
@@ -210,6 +212,11 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 //. only lighting and specular
 					color 		= spec;
 #endif
+
+#ifdef 	       DBG_TEST_MOTION
+					color 		=hdiffuse + L.rgb + gbd.motion;
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
         // here should be distance fog

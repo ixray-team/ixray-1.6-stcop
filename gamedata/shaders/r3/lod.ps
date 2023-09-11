@@ -11,6 +11,8 @@ struct 	vf
  	float2	tc0			: TEXCOORD1;	// base0
  	float2	tc1			: TEXCOORD2;	// base1
 	float4	af			: COLOR1;		// alpha&factor
+	float4  prev_hpos : POSITION0;
+	float4  cur_hpos : POSITION1;
 	float4	hpos		: SV_Position;
 };
 
@@ -93,7 +95,8 @@ f_deffer 	main	( vf I )
       	
 #endif
   
-  float3 N 	= normalize	(H.xyz);
+  float3 N 	= normalize	(H.xyz);  
+	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
 
 //  D.xyz = float3(1,0,0);
 
@@ -102,13 +105,16 @@ f_deffer 	main	( vf I )
   O				= pack_gbuffer(
 								float4	(N					, H.w		),
 								float4 	(I.position + N*def_virtualh/2.h	, 0		),
-								float4	(D.x,	D.y,	D.z			, def_gloss	) );		// OUT: rgb.gloss
+								float4	(D.x,	D.y,	D.z			, def_gloss	),							
+								float4  (motion_vector.x, motion_vector.y, 0.0f, 0.0f)
+	);
 #else
   O				= pack_gbuffer(
 								float4	(N					, H.w		),
 								float4 	(I.position + N*def_virtualh/2.h	, 0		),
 								float4	(D.x,	D.y,	D.z			, def_gloss	),
-								mask );		// OUT: rgb.gloss
+								float4 ( motion_vector.x, motion_vector.y, 0.0f, 0.0f ),
+								mask );	
 #endif
 
   return O;

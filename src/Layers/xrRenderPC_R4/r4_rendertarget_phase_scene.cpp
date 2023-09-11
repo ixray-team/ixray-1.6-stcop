@@ -78,6 +78,8 @@ void	CRenderTarget::phase_scene_begin	()
    if( RImplementation.o.dx10_msaa )
       pZB = rt_MSAADepth->pZRT;
 
+   dwWidth = get_width();
+   dwHeight = get_height();
    if (!RImplementation.o.dx10_gbuffer_opt)
    {
 	   RCache.set_RT(rt_Position->pRT, 0);

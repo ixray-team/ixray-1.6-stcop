@@ -199,9 +199,9 @@ float gbuf_unpack_mtl( float mtl_hemi )
 }
 
 #ifndef EXTEND_F_DEFFER
-f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col )
+f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, float4 motion)
 #else
-f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, uint imask )
+f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, float4 motion, uint imask )
 #endif
 {
 	f_deffer res;
@@ -210,9 +210,11 @@ f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, uint imask )
 	res.position	= pos;
 	res.Ne			= norm;
 	res.C			   = col;
+	res.motion 		= motion;
 #else
 	res.position	= float4( gbuf_pack_normal( norm ), pos.z, gbuf_pack_hemi_mtl( norm.w, pos.w ) );
 	res.C			   = col;
+	res.motion 		= motion;
 #endif
 
 #ifdef EXTEND_F_DEFFER
@@ -264,8 +266,11 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d, int iSample 
    float4	C	= s_diffuse.Load( int3( pos2d, 0 ), iSample );
 #endif
 
-	gbd.C		= C.xyz;
+	float4	motion = s_motion.Load( int3( pos2d, 0 ), iSample );
+
+	gbd.C			= C.xyz;
 	gbd.gloss	= C.w;
+	gbd.motion 	= motion;
 
 	return gbd;
 }
@@ -318,9 +323,11 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, uint iSample )
 	float4	C	= s_diffuse.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
 #endif
 
+	float4	motion = s_motion.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
 
-	gbd.C		= C.xyz;
+	gbd.C			= C.xyz;
 	gbd.gloss	= C.w;
+	gbd.motion  = motion;
 
 	return gbd;
 }

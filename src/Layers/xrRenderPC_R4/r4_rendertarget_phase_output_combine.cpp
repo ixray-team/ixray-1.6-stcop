@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+extern void set_viewport(ID3DDeviceContext* dev, float w, float h);
+
 void CRenderTarget::phase_output_scale()
 {
     u32 Offset = 0;
@@ -12,6 +14,7 @@ void CRenderTarget::phase_output_scale()
 
 	u_setrt(w, h, rt_Output->pRT, nullptr, nullptr, HW.pBaseZB);
 
+    set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(false);
 

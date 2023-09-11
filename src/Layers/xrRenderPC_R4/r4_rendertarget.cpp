@@ -147,17 +147,11 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 // 2D texgen (texture adjustment matrix)
 void	CRenderTarget::u_compute_texgen_screen	(Fmatrix& m_Texgen)
 {
-	//float	_w						= float(Device.dwWidth);
-	//float	_h						= float(Device.dwHeight);
-	//float	o_w						= (.5f / _w);
-	//float	o_h						= (.5f / _h);
 	Fmatrix			m_TexelAdjust		= 
 	{
 		0.5f,				0.0f,				0.0f,			0.0f,
 		0.0f,				-0.5f,				0.0f,			0.0f,
 		0.0f,				0.0f,				1.0f,			0.0f,
-		//	Removing half pixel offset
-		//0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
 		0.5f,				0.5f ,				0.0f,			1.0f
 	};
 	m_Texgen.mul	(m_TexelAdjust,RCache.xforms.m_wvp);

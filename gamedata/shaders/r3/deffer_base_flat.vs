@@ -6,6 +6,7 @@
 #define	v_in	v_static
 #endif
 
+
 v2p_flat main ( v_in I )
 {
 	I.Nh			= unpack_D3DCOLOR(I.Nh);
@@ -14,10 +15,10 @@ v2p_flat main ( v_in I )
 
 	// Eye-space pos/normal
 	v2p_flat 		O;
-	float4	Pp 	= mul( m_WVP, I.P );
-	O.hpos 		= Pp;
-	O.cur_hpos 	= O.hpos;
-	O.prev_hpos	= mul 		(m_prevWVP,  I.P);
+	float4 pos 	= I.P;
+	O.hpos 		= mul( m_VP, pos );
+	O.cur_hpos	= O.hpos;
+	O.prev_hpos	= mul( m_prevVP, pos );
 	O.N 		= mul( (float3x3)m_WV, unpack_bx2(I.Nh) );
 	float3	Pe	= mul( m_WV, I.P );
 

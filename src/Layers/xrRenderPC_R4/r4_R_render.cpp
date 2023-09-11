@@ -311,6 +311,8 @@ void CRender::Render		()
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
+	rmNormal();
+
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{
@@ -434,6 +436,8 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_RAIN);
 		render_rain();
 	}
+
+	rmNormal();
 
 	// Directional light - fucking sun
 	if (bSUN)	
