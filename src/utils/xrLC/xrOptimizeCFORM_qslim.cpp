@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "build.h"
-#include <MxStdModel.h>
-#include <MxQSlim.h>
+#include "../xrQSlim/src/MxStdModel.h"
+#include "../xrQSlim/src/MxQSlim.h"
 #include "../../xrcdb/xrcdb.h"
 #include "../../common/face_smoth_flags.h"
 

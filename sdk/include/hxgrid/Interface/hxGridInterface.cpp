@@ -29,6 +29,7 @@ IGridUser* CreateGridUserObject(DWORD version)
 
 //==============================================================
 //==============================================================
+
 IGenericStream* CreateGenericStream()
 {
  static HINSTANCE DLLHandle(0);
