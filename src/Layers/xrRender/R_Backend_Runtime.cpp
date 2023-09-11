@@ -102,6 +102,7 @@ DX10_ONLY(gs					= NULL);
 	//	Since constant buffers are unmapped (for DirecX 10)
 	//	transform setting handlers should be unmapped too.
 	xforms.unmap	();
+	prev_xforms.unmap	();
 
 #ifdef USE_DX11
 	m_pInputLayout				= NULL;

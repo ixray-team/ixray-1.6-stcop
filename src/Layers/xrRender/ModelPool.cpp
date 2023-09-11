@@ -534,6 +534,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             if (fis_zero(m_fLOD,EPS)&&pV->m_lod){
 		        if (_IsValidShader(pV->m_lod,priority,strictB2F)){
 	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader:EDevice.m_WireShader);
+					RCache.set_prev_xform_world(mTransform);
     	            RCache.set_xform_world	(mTransform);
         	        pV->m_lod->Render		(1.f);
                 }
@@ -544,6 +545,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
                     if (_IsValidShader(*I,priority,strictB2F)){
                         RCache.set_Shader		((*I)->shader?(*I)->shader:EDevice.m_WireShader);
                         RCache.set_xform_world	(mTransform);
+                        RCache.set_prev_xform_world	(mTransform);
                         (*I)->Render		 	(m_fLOD);
                     }
                 }
@@ -558,6 +560,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             for (; I!=E; I++){
 		        if (_IsValidShader(*I,priority,strictB2F)){
 	                RCache.set_Shader		((*I)->shader?(*I)->shader:EDevice.m_WireShader);
+					RCache.set_prev_xform_world(mTransform);
     	            RCache.set_xform_world	(mTransform);
         	        (*I)->Render		 	(m_fLOD);
                 }
@@ -568,6 +571,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
         PS::CParticleGroup* pG			= dynamic_cast<PS::CParticleGroup*>(m_pVisual); VERIFY(pG);
 //		if (_IsBoxVisible(m_pVisual,mTransform))
         {
+			RCache.set_prev_xform_world(mTransform);
             RCache.set_xform_world	  		(mTransform);
             for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
                 xr_vector<dxRender_Visual*>	visuals;
@@ -582,6 +586,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
         {
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
                 RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:EDevice.m_WireShader);
+				RCache.set_prev_xform_world(mTransform);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }
@@ -591,6 +596,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
         if (_IsBoxVisible(m_pVisual,mTransform)){
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
                 RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:EDevice.m_WireShader);
+				RCache.set_prev_xform_world(mTransform);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }

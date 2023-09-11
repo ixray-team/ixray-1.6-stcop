@@ -60,8 +60,9 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		break;
 	case RM_SINGLE:	
 		{
-			Fmatrix	W;	W.mul_43	(RCache.xforms.m_w,Parent->LL_GetTransform_R	(u16(RMS_boneid)));
-			RCache.set_xform_world	(W);
+			Fmatrix	W;	W.mul_43(RCache.xforms.m_w,Parent->LL_GetTransform_R	(u16(RMS_boneid)));
+			RCache.set_xform_world(W);
+			RCache.set_prev_xform_world(W);
 			RCache.set_Geometry		(hGeom);
 			RCache.Render			(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
 			RCache.stat.r.s_dynamic_inst.add	(vCount);

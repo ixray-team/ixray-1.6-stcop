@@ -56,8 +56,9 @@ void CRenderDevice::Destroy	(void) {
 extern BOOL bNeed_re_create_env;
 void CRenderDevice::Reset		(bool precache)
 {
-	u32 dwWidth_before		= dwWidth;
-	u32 dwHeight_before		= dwHeight;
+	float Scale = RenderScale;
+	u32 dwWidth_before		= TargetWidth;
+	u32 dwHeight_before		= TargetHeight;
 
 	ShowCursor				(TRUE);
 	u32 tm_start			= TimerAsync();
@@ -66,7 +67,7 @@ void CRenderDevice::Reset		(bool precache)
 //.		g_pGamePersistent->Environment().OnDeviceDestroy();
 	}
 
-	m_pRender->Reset( m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
+	m_pRender->Reset( m_hWnd, TargetWidth, TargetHeight);
 
 	if (g_pGamePersistent)
 	{
@@ -89,7 +90,7 @@ void CRenderDevice::Reset		(bool precache)
 		
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	if(dwWidth_before!=dwWidth || dwHeight_before!=dwHeight) 
+	if(dwWidth_before != TargetWidth || dwHeight_before!= TargetHeight || Scale != RenderScale)
 	{
 		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
 	}

@@ -154,28 +154,28 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		Target->u_setrt(Target->rt_Output, 0, 0, HW.pBaseZB);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 
 	// Distort
 	{
 		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-		HW.pContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
+		Target->u_setrt(Target->rt_Distort,0,0,HW.pBaseZB);		// Now RT is a distortion mask
+		HW.pContext->ClearRenderTargetView(Target->rt_Distort->pRT, ColorRGBA);
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
 	Fvector2						p0,p1;
 	u32								Offset;
 	u32		C						= color_rgba	(255,255,255,255);
-	float	_w						= float(Device.dwWidth);
-	float	_h						= float(Device.dwHeight);
+	float	_w						= RCache.get_target_width();
+	float	_h						= RCache.get_target_height();
 	float	d_Z						= EPS_S;
 	float	d_W						= 1.f;
 	p0.set							(.5f/_w, .5f/_h);
@@ -212,7 +212,7 @@ void CRender::Render		()
 	if( !(g_pGameLevel && g_hud)
 		|| bMenu)	
 	{
-		Target->u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 		return;
 	}
 
@@ -247,8 +247,8 @@ void CRender::Render		()
 		float		z_distance	= ps_r2_zfill		;
 		Fmatrix		m_zfill, m_project				;
 		m_project.build_projection	(
-			deg2rad(Device.fFOV/* *Device.fASPECT*/), 
-			Device.fASPECT, VIEWPORT_NEAR, 
+			deg2rad(Device.fFOV/* *Device.fASPECT*/),
+			Device.fASPECT, VIEWPORT_NEAR,
 			z_distance * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 		m_zfill.mul	(m_project,Device.mView);
 		r_pmask										(true,false);	// enable priority "0"
@@ -291,6 +291,10 @@ void CRender::Render		()
 	q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
 	//CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 	CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
+
+	// Don't forget to clear motion vectors before rendering
+	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	HW.pContext->ClearRenderTargetView(Target->rt_Motion->pRT, ColorRGBA);
 
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
@@ -377,25 +381,6 @@ void CRender::Render		()
 	if (split_the_scene_to_minimize_wait)	
 	{
 		PIX_EVENT(DEFER_PART1_SPLIT);
-		// skybox can be drawn here
-		if (0)
-		{
-
-			if( !RImplementation.o.dx10_msaa )
-				Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
-			else
-				Target->u_setrt		( Target->rt_Generic_0_r,	Target->rt_Generic_1,0,RImplementation.Target->rt_MSAADepth->pZRT );
-			RCache.set_CullMode	( CULL_NONE );
-			RCache.set_Stencil	( FALSE		);
-
-			// draw skybox
-			RCache.set_ColorWriteEnable					();
-			//CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-			RCache.set_Z(FALSE);
-			g_pGamePersistent->Environment().RenderSky	();
-			//CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
-			RCache.set_Z(TRUE);
-		}
 
 		// level
 		Target->phase_scene_begin				();
@@ -462,8 +447,10 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_SELF_ILLUM);
 		Target->phase_accumulator			();
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
-		RCache.set_xform_project			(Device.mProject); 
-		RCache.set_xform_view				(Device.mView);
+		RCache.set_prev_xform_project(Device.mPrevProject);
+		RCache.set_prev_xform_view(Device.mPrevView);
+		RCache.set_xform_project(Device.mProject); 
+		RCache.set_xform_view(Device.mView);
 		// Stencil - write 0x1 at pixel pos - 
       if( !RImplementation.o.dx10_msaa )
 		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);

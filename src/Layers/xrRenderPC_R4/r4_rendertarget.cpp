@@ -11,6 +11,7 @@
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"
+#include "blender_output_scale.h"
 #include "dx11MinMaxSMBlender.h"
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
@@ -112,8 +113,8 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	VERIFY	(RImplementation.o.nvstencil);
 	//RCache.set_ColorWriteEnable	(FALSE);
 	u32		Offset;
-	float	_w					= float(Device.dwWidth);
-	float	_h					= float(Device.dwHeight);
+	float	_w					= RCache.get_width();
+	float	_h					= RCache.get_height();
 	u32		C					= color_rgba	(255,255,255,255);
 	float	eps					= 0;
 	float	_dw					= 0.5f;
@@ -176,8 +177,8 @@ void	CRenderTarget::u_compute_texgen_jitter	(Fmatrix&		m_Texgen_J)
 	m_Texgen_J.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
 
 	// rescale - tile it
-	float	scale_X			= float(Device.dwWidth)	/ float(TEX_jitter);
-	float	scale_Y			= float(Device.dwHeight)/ float(TEX_jitter);
+	float	scale_X			= RCache.get_width() / float(TEX_jitter);
+	float	scale_Y			= RCache.get_height() / float(TEX_jitter);
 	//float	offset			= (.5f / float(TEX_jitter));
 	m_TexelAdjust.scale			(scale_X,	scale_Y,1.f	);
 	//m_TexelAdjust.translate_over(offset,	offset,	0	);
@@ -261,6 +262,36 @@ void	generate_jitter	(DWORD*	dest, u32 elem_count)
 		*dest	= color_rgba(samples[2*it].x,samples[2*it].y,samples[2*it+1].y,samples[2*it+1].x);
 }
 
+u32 CRenderTarget::get_width()
+{
+	return dwWidth;
+}
+
+u32 CRenderTarget::get_height()
+{
+	return dwHeight;
+}
+
+u32 CRenderTarget::get_core_width()
+{
+	return RCache.get_width();
+}
+
+u32 CRenderTarget::get_core_height()
+{
+	return RCache.get_height();
+}
+
+u32 CRenderTarget::get_target_width()
+{
+	return RCache.get_target_width();
+}
+
+u32 CRenderTarget::get_target_height()
+{
+	return RCache.get_target_height();
+}
+
 CRenderTarget::CRenderTarget		()
 {
    u32 SampleCount = 1;
@@ -322,7 +353,7 @@ CRenderTarget::CRenderTarget		()
 	{
 		b_hdao_msaa_cs      = xr_new<CBlender_CS_HDAO_MSAA>     ();
 	}
-	const u32		s_dwWidth = Device.dwWidth, s_dwHeight = Device.dwHeight;
+	const u32		s_dwWidth = RCache.get_width(), s_dwHeight = RCache.get_height();
 	if( RImplementation.o.dx10_msaa )
 	{
 		int bound = RImplementation.o.dx10_msaa_samples;
@@ -389,7 +420,6 @@ CRenderTarget::CRenderTarget		()
 				}
 			} else {
 				// R4xx, no-fp-blend,-> albedo_wo
-				VERIFY						(RImplementation.o.albedo_wo);
 				rt_Color.create				(r2_RT_albedo, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8		, SampleCount );	// normal
 				rt_Accumulator.create		(r2_RT_accum, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
 				rt_Accumulator_temp.create	(r2_RT_accum_temp, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
@@ -406,13 +436,21 @@ CRenderTarget::CRenderTarget		()
 			rt_Generic.create		      (r2_RT_generic, s_dwWidth, s_dwHeight,   D3DFMT_A8R8G8B8, 1		);
 		}
 
-		rt_Back_Buffer.create(r2_RT_backbuffer_final, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8, 1);
+		rt_Distort.create(r2_RT_distort, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, SampleCount);
+		rt_AA_BackBuffer.create(r2_RT_AA_backbuffer, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8, 1);
 
 		//	Igor: for volumetric lights
 		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
 		if (RImplementation.o.advancedpp)
 			rt_Generic_2.create			(r2_RT_generic2, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+	}
+
+	rt_Output.create(r4_output, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, 1);
+	rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, D3DFMT_A16B16G16R16F, 1);
+	rt_MotionVectors.create(r4_motion_vectors, s_dwWidth, s_dwHeight, D3DFMT_G16R16F, 1);
+	if (RImplementation.o.fsr2)
+	{
 	}
 
 	// FXAA
@@ -429,6 +467,14 @@ CRenderTarget::CRenderTarget		()
 		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8);
 		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8);
 	}
+
+	// vertver:
+	{
+		b_output_scale = xr_new<CBlender_OutputScale>();
+		s_output_scale.create(b_output_scale);
+	}
+
+
 	// OCCLUSION
 	s_occq.create					(b_occq,		"r2\\occq");
 
@@ -454,7 +500,6 @@ CRenderTarget::CRenderTarget		()
 		//rt_smap_ZB					= NULL;
 		s_accum_mask.create			(b_accum_mask,				"r3\\accum_mask");
 		s_accum_direct.create		(b_accum_direct,			"r3\\accum_direct");
-
 
 		if( RImplementation.o.dx10_msaa )
 		{
@@ -631,7 +676,7 @@ CRenderTarget::CRenderTarget		()
 			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f};
 			HW.pContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
-		u_setrt						( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		u_setrt						(s_dwWidth, s_dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	}
 
 	// HBAO
@@ -641,13 +686,13 @@ CRenderTarget::CRenderTarget		()
 		u32		h = 0;
 		if (RImplementation.o.ssao_half_data)
 		{
-			w = Device.dwWidth / 2;
-			h = Device.dwHeight / 2;
+			w = s_dwWidth / 2;
+			h = s_dwHeight / 2;
 		}
 		else
 		{
-			w = Device.dwWidth;
-			h = Device.dwHeight;
+			w = s_dwWidth;
+			h = s_dwHeight;
 		}
 
 		D3DFORMAT	fmt = HW.Caps.id_vendor==0x10DE?D3DFMT_R32F:D3DFMT_R16F;
@@ -676,7 +721,7 @@ CRenderTarget::CRenderTarget		()
 	// HDAO
 	if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
 	{
-		u32		w = Device.dwWidth, h = Device.dwHeight;
+		u32		w = s_dwWidth, h = s_dwHeight;
 		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, D3DFMT_R16F, 1, true);
 		s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
 		if( RImplementation.o.dx10_msaa )
@@ -717,8 +762,8 @@ CRenderTarget::CRenderTarget		()
 		// Testure for async sreenshots
 		{
 			D3D_TEXTURE2D_DESC	desc;
-			desc.Width = Device.dwWidth;
-			desc.Height = Device.dwHeight;
+			desc.Width = s_dwWidth;
+			desc.Height = s_dwHeight;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
 			desc.SampleDesc.Count = 1;
@@ -967,8 +1012,8 @@ CRenderTarget::CRenderTarget		()
 	g_menu.create						(FVF::F_TL,RCache.Vertex.Buffer(),RCache.QuadIB);
 
 	// 
-	dwWidth		= Device.dwWidth;
-	dwHeight	= Device.dwHeight;
+	dwWidth		= s_dwWidth;
+	dwHeight	= s_dwHeight;
 }
 
 CRenderTarget::~CRenderTarget	()
@@ -1070,8 +1115,8 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 	if (bResetStencil)
 	{
 		u32		Offset;
-		float	_w					= float(Device.dwWidth);
-		float	_h					= float(Device.dwHeight);
+		float	_w					= RCache.get_width();
+		float	_h					= RCache.get_height();
 		u32		C					= color_rgba	(255,255,255,255);
 		float	eps					= 0;
 		float	_dw					= 0.5f;

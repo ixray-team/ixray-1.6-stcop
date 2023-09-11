@@ -119,6 +119,7 @@ void CPortalTraverser::fade_render	()
 	RCache.Vertex.Unlock			(_pcount*3,f_geom.stride());
 
 	// render
+	RCache.set_prev_xform_world		(Fidentity);
 	RCache.set_xform_world			(Fidentity);
 	RCache.set_Shader				(f_shader);
 	RCache.set_Geometry				(f_geom);
@@ -134,6 +135,9 @@ void CPortalTraverser::fade_render	()
 void CPortalTraverser::dbg_draw		()
 {
 	RCache.OnFrameEnd		();
+	RCache.set_prev_xform_world(Fidentity);
+	RCache.set_prev_xform_view(Fidentity);
+	RCache.set_prev_xform_project(Fidentity);
 	RCache.set_xform_world	(Fidentity);
 	RCache.set_xform_view	(Fidentity);
 	RCache.set_xform_project(Fidentity);

@@ -17,8 +17,8 @@ void CRenderTarget::phase_fxaa()
         Fvector4 uv6;
     };
 
-    float _w = float(Device.dwWidth);
-    float _h = float(Device.dwHeight);
+    float _w = RCache.get_width();
+    float _h = RCache.get_height();
     float ddw = 1.f / _w;
     float ddh = 1.f / _h;
 
@@ -28,7 +28,7 @@ void CRenderTarget::phase_fxaa()
     //////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    u_setrt(rt_Back_Buffer, nullptr, nullptr, HW.pBaseZB);
+    u_setrt(rt_AA_BackBuffer, nullptr, nullptr, HW.pBaseZB);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -82,5 +82,5 @@ void CRenderTarget::phase_fxaa()
 
     // Resolve RT
     ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
-    HW.pContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
+    HW.pContext->CopyResource(dest_rt->pTexture->surface_get(), rt_AA_BackBuffer->pTexture->surface_get());
 }

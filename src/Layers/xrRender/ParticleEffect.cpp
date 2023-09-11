@@ -549,18 +549,20 @@ void CParticleEffect::Render(float )
 				Fmatrix FTold						= Device.mFullTransform;
 				if(GetHudMode())
 				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV), 
-														Device.fASPECT, 
+					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV),
+														Device.fASPECT,
 														VIEWPORT_NEAR, 
 														g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);
+					RCache.set_prev_xform_project(Device.mPrevProject);
 					RCache.set_xform_project	(Device.mProject);
 					RImplementation.rmNear		();
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
 
+				RCache.set_prev_xform_world	(Fidentity);
 				RCache.set_xform_world	(Fidentity);
 				RCache.set_Geometry		(geom);
 
@@ -573,6 +575,7 @@ void CParticleEffect::Render(float )
 					RImplementation.rmNormal	();
 					Device.mProject				= Pold;
 					Device.mFullTransform		= FTold;
+					RCache.set_prev_xform_project(Device.mProject);
 					RCache.set_xform_project	(Device.mProject);
 					ApplyTexgen(Device.mFullTransform);
 				}
@@ -727,12 +730,14 @@ void CParticleEffect::Render(float )
 														g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);
+					RCache.set_prev_xform_project(Device.mPrevProject);
 					RCache.set_xform_project	(Device.mProject);
 					RImplementation.rmNear		();
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
 
+				RCache.set_prev_xform_world(Fidentity);
 				RCache.set_xform_world	(Fidentity);
 				RCache.set_Geometry		(geom);
 
@@ -746,6 +751,7 @@ void CParticleEffect::Render(float )
 					Device.mProject				= Pold;
 					Device.mFullTransform		= FTold;
 					RCache.set_xform_project	(Device.mProject);
+					RCache.set_prev_xform_project	(Device.mPrevProject);
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif

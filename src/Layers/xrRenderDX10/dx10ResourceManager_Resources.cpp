@@ -187,7 +187,14 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
 		if (strstr(data, "main_vs_4_0"))	{ c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
+		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+#ifdef DEBUG
+		flags |= D3DCOMPILE_DEBUG;
+		flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+		flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
+#endif
+
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
 		VERIFY(SUCCEEDED(_hr));
 
@@ -294,7 +301,14 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 		if (strstr(data,"main_ps_4_0"))			{ c_target = "ps_4_0"; c_entry = "main_ps_4_0"; }
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
+		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+#ifdef DEBUG
+		flags |= D3DCOMPILE_DEBUG;
+		flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+		flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
+#endif
+
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
 		VERIFY(SUCCEEDED(_hr));
 
@@ -361,7 +375,14 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 		LPCSTR						c_target	= "gs_4_0";
 		LPCSTR						c_entry		= "main";
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
+		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+#ifdef DEBUG
+		flags |= D3DCOMPILE_DEBUG;
+		flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+		flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
+#endif
+
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
 		VERIFY(SUCCEEDED(_hr));
 

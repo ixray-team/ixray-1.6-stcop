@@ -185,6 +185,10 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	if (hWnd == nullptr)
 		hWnd = GetForegroundWindow();
 	ShowWindow(hWnd, SW_MINIMIZE);
+	if (IsDebuggerPresent())
+	{
+		DEBUG_INVOKE;
+	}
 
 	int result = MessageBox(
 		NULL, assertion_info, "Fatal Error",
@@ -192,7 +196,6 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 		switch (result) {
 			case IDCANCEL : {
-				DEBUG_INVOKE;
 				// TODO: Maybe not correct
 				exit(-1);
 				break;

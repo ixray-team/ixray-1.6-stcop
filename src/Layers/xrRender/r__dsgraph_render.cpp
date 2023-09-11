@@ -51,6 +51,7 @@ void __fastcall mapMatrix_Render	(mapMatrixItems& N)
 	_MatrixItem				*I=&*N.begin(), *E = &*N.end();
 	for (; I!=E; I++)		{
 		_MatrixItem&	Ni				= *I;
+		RCache.set_prev_xform_world		(Ni.Matrix);
 		RCache.set_xform_world			(Ni.Matrix);
 		RImplementation.apply_object	(Ni.pObject);
 		RImplementation.apply_lmaterial	();
@@ -71,6 +72,7 @@ void __fastcall sorted_L1		(mapSorted_Node *N)
 	dxRender_Visual *V				= N->val.pVisual;
 	VERIFY (V && V->shader._get());
 	RCache.set_Element				(N->val.se);
+	RCache.set_prev_xform_world		(N->val.Matrix);
 	RCache.set_xform_world			(N->val.Matrix);
 	RImplementation.apply_object	(N->val.pObject);
 	RImplementation.apply_lmaterial	();
@@ -269,6 +271,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
 	{
+		RCache.set_prev_xform_world		(Fidentity);
 		RCache.set_xform_world			(Fidentity);
 
 		// Render several passes
@@ -466,15 +469,25 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	//PIX_EVENT(r_dsgraph_render_hud);
 
 	// Change projection
-	Fmatrix Pold				= Device.mProject;
-	Fmatrix FTold				= Device.mFullTransform;
+	Fmatrix ProjectOld				= Device.mProject;
+	Fmatrix FullTtransformOld		= Device.mFullTransform;
+	Fmatrix PrevProjectOld			= Device.mPrevProject;
+	Fmatrix PrevFullTtransformOld	= Device.mPrevFullTransform;
+
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
-		Device.fASPECT, VIEWPORT_NEAR, 
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-	Device.mFullTransform.mul	(Device.mProject, Device.mView);
-	RCache.set_xform_project	(Device.mProject);
+	Device.mPrevProject.build_projection(
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
+	RCache.set_prev_xform_project(Device.mPrevProject);
+	RCache.set_xform_project(Device.mProject);
 
 	// Rendering
 	rmNear						();
@@ -485,39 +498,15 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
 		r_dsgraph_render_hud_ui						();				// hud ui
 #endif
-	/*
-	if(g_hud && g_hud->RenderActiveItemUIQuery())
-	{
-#if	RENDER!=R_R1
-		// Targets, use accumulator for temporary storage
-		const ref_rt	rt_null;
-		//	Reset all rt.
-		//RCache.set_RT(0,	0);
-		RCache.set_RT(0,	1);
-		RCache.set_RT(0,	2);
-		//if (RImplementation.o.albedo_wo)	RCache.set_RT(RImplementation.Target->rt_Accumulator->pRT,	0);
-		//else								RCache.set_RT(RImplementation.Target->rt_Color->pRT,	0);
-		if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	HW.pBaseZB);
-		else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Color,			rt_null,	rt_null,	HW.pBaseZB);
-		//	View port is reset in DX9 when you change rt
-		rmNear						();
-#endif
-		g_hud->RenderActiveItemUI	();
-
-#if	RENDER!=R_R1
-		//RCache.set_RT(0,	0);
-		// Targets, use accumulator for temporary storage
-		if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Position,	RImplementation.Target->rt_Normal,	RImplementation.Target->rt_Accumulator,	HW.pBaseZB);
-		else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Position,	RImplementation.Target->rt_Normal,	RImplementation.Target->rt_Color,		HW.pBaseZB);
-#endif
-	}
-	*/
 
 	rmNormal					();
 
 	// Restore projection
-	Device.mProject				= Pold;
-	Device.mFullTransform		= FTold;
+	Device.mProject				= ProjectOld;
+	Device.mFullTransform		= FullTtransformOld;
+	Device.mPrevProject			= PrevProjectOld;
+	Device.mPrevFullTransform	= PrevFullTtransformOld;
+	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project	(Device.mProject);
 }
 
@@ -528,15 +517,25 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	extern ENGINE_API float		psHUD_FOV;
 
 	// Change projection
-	Fmatrix Pold				= Device.mProject;
-	Fmatrix FTold				= Device.mFullTransform;
+	Fmatrix ProjectOld = Device.mProject;
+	Fmatrix FullTtransformOld = Device.mFullTransform;
+	Fmatrix PrevProjectOld = Device.mPrevProject;
+	Fmatrix PrevFullTtransformOld = Device.mPrevFullTransform;
+
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
-		Device.fASPECT, VIEWPORT_NEAR, 
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-	Device.mFullTransform.mul	(Device.mProject, Device.mView);
-	RCache.set_xform_project	(Device.mProject);
+	Device.mPrevProject.build_projection(
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
+	RCache.set_prev_xform_project(Device.mPrevProject);
+	RCache.set_xform_project(Device.mProject);
 
 #if	RENDER!=R_R1
 	// Targets, use accumulator for temporary storage
@@ -544,15 +543,13 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	RCache.set_RT(0,	1);
 	RCache.set_RT(0,	2);
 #if	(RENDER==R_R4)
-	if( !RImplementation.o.dx10_msaa )
+	if (!RImplementation.o.dx10_msaa)
 	{
-		if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	HW.pBaseZB);
-		else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Color,			rt_null,	rt_null,	HW.pBaseZB);
+		RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, HW.pBaseZB);
 	}
 	else
 	{
-		if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	RImplementation.Target->rt_MSAADepth->pZRT);
-		else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Color,			rt_null,	rt_null,	RImplementation.Target->rt_MSAADepth->pZRT);
+		RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RImplementation.Target->rt_MSAADepth->pZRT);
 	}
 #else
 	if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	HW.pBaseZB);
@@ -565,9 +562,12 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	rmNormal					();
 
 	// Restore projection
-	Device.mProject				= Pold;
-	Device.mFullTransform		= FTold;
-	RCache.set_xform_project	(Device.mProject);
+	Device.mProject = ProjectOld;
+	Device.mFullTransform = FullTtransformOld;
+	Device.mPrevProject = PrevProjectOld;
+	Device.mPrevFullTransform = PrevFullTtransformOld;
+	RCache.set_prev_xform_project(Device.mPrevProject);
+	RCache.set_xform_project(Device.mProject);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -581,13 +581,24 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	ENGINE_API extern float psHUD_FOV;
 
 	// Change projection
-	Fmatrix Pold = Device.mProject;
-	Fmatrix FTold = Device.mFullTransform;
+	Fmatrix ProjectOld = Device.mProject;
+	Fmatrix FullTtransformOld = Device.mFullTransform;
+	Fmatrix PrevProjectOld = Device.mPrevProject;
+	Fmatrix PrevFullTtransformOld = Device.mPrevFullTransform;
+
 	Device.mProject.build_projection(
 		deg2rad(psHUD_FOV * Device.fFOV),
 		Device.fASPECT, VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mPrevProject.build_projection(
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
+	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
 
 	// Rendering
@@ -597,8 +608,11 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	rmNormal();
 
 	// Restore projection
-	Device.mProject = Pold;
-	Device.mFullTransform = FTold;
+	Device.mProject = ProjectOld;
+	Device.mFullTransform = FullTtransformOld;
+	Device.mPrevProject = PrevProjectOld;
+	Device.mPrevFullTransform = PrevFullTtransformOld;
+	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
 }
 
@@ -616,15 +630,25 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	extern ENGINE_API float		psHUD_FOV;
 
 	// Change projection
-	Fmatrix Pold				= Device.mProject;
-	Fmatrix FTold				= Device.mFullTransform;
+	Fmatrix ProjectOld = Device.mProject;
+	Fmatrix FullTtransformOld = Device.mFullTransform;
+	Fmatrix PrevProjectOld = Device.mPrevProject;
+	Fmatrix PrevFullTtransformOld = Device.mPrevFullTransform;
+
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
-		Device.fASPECT, VIEWPORT_NEAR, 
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-	Device.mFullTransform.mul	(Device.mProject, Device.mView);
-	RCache.set_xform_project	(Device.mProject);
+	Device.mPrevProject.build_projection(
+		deg2rad(psHUD_FOV * Device.fFOV),
+		Device.fASPECT, VIEWPORT_NEAR,
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
+	RCache.set_prev_xform_project(Device.mPrevProject);
+	RCache.set_xform_project(Device.mProject);
 
 	// Rendering
 	rmNear						();
@@ -635,9 +659,12 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	rmNormal					();
 
 	// Restore projection
-	Device.mProject				= Pold;
-	Device.mFullTransform		= FTold;
-	RCache.set_xform_project	(Device.mProject);
+	Device.mProject = ProjectOld;
+	Device.mFullTransform = FullTtransformOld;
+	Device.mPrevProject = PrevProjectOld;
+	Device.mPrevFullTransform = PrevFullTtransformOld;
+	RCache.set_prev_xform_project(Device.mPrevProject);
+	RCache.set_xform_project(Device.mProject);
 #endif
 }
 

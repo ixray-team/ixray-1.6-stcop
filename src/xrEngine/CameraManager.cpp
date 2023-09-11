@@ -307,7 +307,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	m_cam_info.r.crossproduct	(m_cam_info.n, m_cam_info.d);
 	m_cam_info.n.crossproduct	(m_cam_info.d, m_cam_info.r);
 
-	float aspect				= Device.fHeight_2/Device.fWidth_2;
+	float aspect				= (float)Device.TargetHeight * Device.RenderScale / (float)Device.TargetWidth * Device.RenderScale / 2;
 	float src					= 10*Device.fTimeDelta;	clamp(src,0.f,1.f);
 	float dst					= 1-src;
 	m_cam_info.fFov				= m_cam_info.fFov*dst		+ fFOV_Dest*src;

@@ -22,8 +22,8 @@ void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 	u32			shift_h				= im_noise_shift_h;
 	float		start_u				= (float(shift_w)+.5f)/(tw);
 	float		start_v				= (float(shift_h)+.5f)/(th);
-	u32			_w					= Device.dwWidth;
-	u32			_h					= Device.dwHeight;
+	u32			_w					= RCache.get_width();
+	u32			_h					= RCache.get_height();
 	u32			cnt_w				= _w / tw;
 	u32			cnt_h				= _h / th;
 	float		end_u				= start_u + float(cnt_w) + 1;
@@ -38,7 +38,7 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	// Calculate ordinaty TCs from blur and SS
 	float	tw			= float(dwWidth);
 	float	th			= float(dwHeight);
-	if (dwHeight!=Device.dwHeight)	param_blur = 1.f;
+	if (dwHeight!= RCache.get_height())	param_blur = 1.f;
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
@@ -106,19 +106,17 @@ struct TL_2c3uv		{
 void CRenderTarget::phase_pp		()
 {
 	// combination/postprocess
-	u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	u_setrt				(RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();
 	//RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
-	if( !RImplementation.o.dx10_msaa )
+	if( !RImplementation.o.dx10_msaa || RImplementation.o.fsr2)
 	{
-		//		RCache.set_Shader	(s_postprocess	);
 		RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
 	}
 	else
 	{
-		//		RCache.set_Shader( s_postprocess_msaa );
 		RCache.set_Element	(s_postprocess_msaa->E[bCMap ? 4 : 0]);
 	}
 
@@ -127,15 +125,10 @@ void CRenderTarget::phase_pp		()
 	u32					p_color			= subst_alpha		(param_color_base,nblend);
 	u32					p_gray			= subst_alpha		(param_color_gray,gblend);
 	Fvector				p_brightness	= param_color_add	;
-	// Msg				("param_gray:%f(%d),param_noise:%f(%d)",param_gray,gblend,param_noise,nblend);
-	// Msg				("base: %d,%d,%d",	color_get_R(p_color),		color_get_G(p_color),		color_get_B(p_color));
-	// Msg				("gray: %d,%d,%d",	color_get_R(p_gray),		color_get_G(p_gray),		color_get_B(p_gray));
-	// Msg				("add:  %d,%d,%d",	color_get_R(p_brightness),	color_get_G(p_brightness),	color_get_B(p_brightness));
-	
-	// Draw full-screen quad textured with our scene image
+
 	u32		Offset;
-	float	_w			= float(Device.dwWidth);
-	float	_h			= float(Device.dwHeight);
+	float	_w			= RCache.get_target_width();
+	float	_h			= RCache.get_target_height();
 	
 	Fvector2			n0,n1,r0,r1,l0,l1;
 	u_calc_tc_duality_ss	(r0,r1,l0,l1);

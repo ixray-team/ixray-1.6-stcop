@@ -62,6 +62,8 @@ void CBackend::dbg_DrawOBB		(Fmatrix& T_, Fvector& half_dim, u32 C_)
 	u16		aabb_id[12*2] = {
 		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
 	};
+
+	set_prev_xform_world(mL2W_Transform);
 	set_xform_world	(mL2W_Transform);
 	dbg_Draw(D3DPT_LINELIST,aabb,8,aabb_id,12);
 }
@@ -72,7 +74,8 @@ void CBackend::dbg_DrawTRI	(Fmatrix& T_, Fvector& p1, Fvector& p2, Fvector& p3, 
 	tri[1].p = p2; tri[1].color = C_;
 	tri[2].p = p3; tri[2].color = C_;
 
-	set_xform_world	(T_);
+	set_prev_xform_world(T_);
+	set_xform_world(T_);
 	dbg_Draw(D3DPT_TRIANGLESTRIP,tri,1);
 }
 void CBackend::dbg_DrawLINE(Fmatrix& T_, Fvector& p1, Fvector& p2, u32 C_)
@@ -81,7 +84,8 @@ void CBackend::dbg_DrawLINE(Fmatrix& T_, Fvector& p1, Fvector& p2, u32 C_)
 	line[0].p = p1; line[0].color = C_;
 	line[1].p = p2; line[1].color = C_;
 
-	set_xform_world	(T_);
+	set_prev_xform_world(T_);
+	set_xform_world(T_);
 	dbg_Draw(D3DPT_LINELIST,line,1);
 }
 void CBackend::dbg_DrawEllipse(Fmatrix& T_, u32 C_)
@@ -165,7 +169,8 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T_, u32 C_)
 		verts[i].set(gVertices[k],gVertices[k+1],gVertices[k+2],C_);
 	}
 
-	set_xform_world				(T_);
+	set_prev_xform_world(T_);
+	set_xform_world(T_);
 
 #ifdef USE_DX11
 	//	TODO: DX10: implement

@@ -747,6 +747,9 @@
     <ClInclude Include="..\xrRender\blender_smaa.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
+    <ClInclude Include="blender_output_scale.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1366,6 +1369,18 @@
     </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_smaa.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_motion_vectors.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_fsr2.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_output_combine.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_output_scale.cpp">
+      <Filter>Shading templates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

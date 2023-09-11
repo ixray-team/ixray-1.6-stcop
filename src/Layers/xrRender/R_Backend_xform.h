@@ -5,6 +5,8 @@
 class ECORE_API	R_xforms
 {
 public:
+	float			m_jitter_x;
+	float			m_jitter_y;
 	Fmatrix			m_w;		// Basic	- world
 	Fmatrix			m_invw;		// derived	- world2local, cached
 	Fmatrix			m_v;		// Basic	- view
@@ -21,10 +23,12 @@ public:
 	R_constant*		c_vp;
 	R_constant*		c_wvp;
 private:
+	bool			m_bPrev;
 	bool			m_bInvWValid;
 public:
-	R_xforms		();
+	R_xforms		(bool is_prev);
 	void			unmap		();
+	void			set_Jitter  (float JitterX, float JitterY);
 	void			set_W		(const Fmatrix& m);
 	void			set_V		(const Fmatrix& m);
 	void			set_P		(const Fmatrix& m);

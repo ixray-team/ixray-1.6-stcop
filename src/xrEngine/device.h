@@ -43,8 +43,9 @@ class ENGINE_API CRenderDeviceData
 {
 
 public:
-	u32										dwWidth;
-	u32										dwHeight;
+	u32										TargetWidth;
+	u32										TargetHeight;
+	float									RenderScale = 1.0f;
 	
 	u32										dwPrecacheFrame;
 	BOOL									b_is_Ready;
@@ -60,18 +61,29 @@ public:
 	u32										dwTimeGlobal;
 	u32										dwTimeContinual;
 
+	float									PreviousJitterX = 0.0f;
+	float									PreviousJitterY = 0.0f;
+	float									JitterX = 0.0f;
+	float									JitterY = 0.0f;
+
 	Fvector									vCameraPosition;
 	Fvector									vCameraDirection;
 	Fvector									vCameraTop;
 	Fvector									vCameraRight;
-
 	Fmatrix									mView;
 	Fmatrix									mProject;
 	Fmatrix									mFullTransform;
 
+	Fvector									vPrevCameraPosition;
+	Fvector									vPrevCameraDirection;
+	Fvector									vPrevCameraTop;
+	Fvector									vPrevCameraRight;
+	Fmatrix									mPrevView;
+	Fmatrix									mPrevProject;
+	Fmatrix									mPrevFullTransform;
+
 	// Copies of corresponding members. Used for synchronization.
 	Fvector									vCameraPosition_saved;
-
 	Fmatrix									mView_saved;
 	Fmatrix									mProject_saved;
 	Fmatrix									mFullTransform_saved;
@@ -132,7 +144,7 @@ public:
 	u32										dwPrecacheTotal;
 
 //	u32										dwWidth, dwHeight;
-	float									fWidth_2, fHeight_2;
+	float									HalfTargetWidth, HalfTargetHeight;
 //	BOOL									b_is_Ready;
 //	BOOL									b_is_Active;
 	void									OnWM_Activate(WPARAM wParam, LPARAM lParam);
@@ -152,7 +164,8 @@ public:
 			m_bNearer						= FALSE;
 			mProject._43					+= EPS_L;
 		}
-		m_pRender->SetCacheXform(mView, mProject);
+		m_pRender->SetCacheXform(mView, mProject, JitterX, JitterY);
+		m_pRender->SetCachePrevXform(mPrevView, mPrevProject, PreviousJitterX, PreviousJitterY);
 		//R_ASSERT(0);
 		//	TODO: re-implement set projection
 		//RCache.set_xform_project			(mProject);

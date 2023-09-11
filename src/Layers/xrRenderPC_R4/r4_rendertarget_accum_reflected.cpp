@@ -27,8 +27,8 @@ void CRenderTarget::accum_reflected		(light* L)
 	// 2D texgen (texture adjustment matrix)
 	Fmatrix			m_Texgen;
 	{
-		float	_w						= float(Device.dwWidth);
-		float	_h						= float(Device.dwHeight);
+		float	_w						= RCache.get_width();
+		float	_h						= RCache.get_height();
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			m_TexelAdjust		= 

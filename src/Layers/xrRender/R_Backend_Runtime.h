@@ -22,6 +22,11 @@ IC void		R_xforms::set_c_wv			(R_constant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);
 IC void		R_xforms::set_c_vp			(R_constant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
 IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	};
 
+
+IC	void	CBackend::set_xform_jitter(float jitterx, float jittery)
+{
+	xforms.set_Jitter(jitterx, jittery);
+}
 IC	void	CBackend::set_xform_world	(const Fmatrix& M_)
 { 
 	xforms.set_W(M_);	
@@ -37,6 +42,26 @@ IC	void	CBackend::set_xform_project	(const Fmatrix& M_)
 IC	const Fmatrix&	CBackend::get_xform_world	()	{ return xforms.get_W();	}
 IC	const Fmatrix&	CBackend::get_xform_view	()	{ return xforms.get_V();	}
 IC	const Fmatrix&	CBackend::get_xform_project	()	{ return xforms.get_P();	}
+
+IC	void	CBackend::set_prev_xform_jitter(float jitterx, float jittery)
+{
+	prev_xforms.set_Jitter(jitterx, jittery);
+}
+IC	void	CBackend::set_prev_xform_world	(const Fmatrix& M_)
+{ 
+	prev_xforms.set_W(M_);
+}
+IC	void	CBackend::set_prev_xform_view	(const Fmatrix& M_)
+{ 
+	prev_xforms.set_V(M_);
+}
+IC	void	CBackend::set_prev_xform_project	(const Fmatrix& M_)
+{ 
+	prev_xforms.set_P(M_);
+}
+IC	const Fmatrix&	CBackend::get_prev_xform_world	()	{ return prev_xforms.get_W();	}
+IC	const Fmatrix&	CBackend::get_prev_xform_view	()	{ return prev_xforms.get_V();	}
+IC	const Fmatrix&	CBackend::get_prev_xform_project()	{ return prev_xforms.get_P();	}
 
 IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
 {

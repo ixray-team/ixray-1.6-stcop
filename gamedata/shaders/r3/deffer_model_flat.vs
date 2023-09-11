@@ -10,6 +10,8 @@ v2p_flat _main( v_model I )
 	v2p_flat 		O;
 	float3	Pe	= mul( m_WV, I.P );
 	O.hpos 		= mul( m_WVP, I.P );
+	O.cur_hpos 	= O.hpos;
+	O.prev_hpos	= mul( m_prevWVP, I.P);
 	O.N 		= mul( (float3x3)m_WV, (float3)I.N );
 
 	O.tcdh 		= float4( I.tc.xyyy	);

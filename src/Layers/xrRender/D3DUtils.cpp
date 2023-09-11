@@ -326,6 +326,7 @@ void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, fl
 void CDrawUtilities::DrawPointLight(const Fvector& p, float radius, u32 c)
 {
 	RCache.set_xform_world(Fidentity);
+	RCache.set_prev_xform_world(Fidentity);
 	DrawCross(p, radius,radius,radius, radius,radius,radius, c, true);
 }
 
@@ -563,9 +564,9 @@ IC float 				_y2real			(float y)
 { return (y+1)*Device.m_RenderHeight_2;}
 #else
 IC float 				_x2real			(float x)
-{ return (x+1)*Device.dwWidth*0.5f;	}
+{ return (x+1)*Device.TargetWidth * Device.RenderScale *0.5f;	}
 IC float 				_y2real			(float y)
-{ return (y+1)*Device.dwHeight*0.5f;}
+{ return (y+1)*Device.TargetHeight * Device.RenderScale *0.5f;}
 #endif
 
 void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption, u32 clr_font)
@@ -697,6 +698,7 @@ void CDrawUtilities::DrawOBB(const Fmatrix& parent, const Fobb& box, u32 clr_s, 
     X.mul_43		(R,S);
     R.mul_43		(parent,X); 
 	RCache.set_xform_world(R);
+    RCache.set_prev_xform_world(R);
 	DrawIdentBox	(true,true,clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -708,6 +710,7 @@ void CDrawUtilities::DrawAABB(const Fmatrix& parent, const Fvector& center, cons
     S.translate_over(center);
     R.mul_43		(parent,S); 
 	RCache.set_xform_world(R);
+    RCache.set_prev_xform_world(R);
 	DrawIdentBox	(bSolid,bWire,clr_s,clr_w);
 }
 
@@ -718,6 +721,7 @@ void CDrawUtilities::DrawAABB(const Fvector& p0, const Fvector& p1, u32 clr_s, u
     R.scale			(_abs(p1.x-p0.x),_abs(p1.y-p0.y),_abs(p1.z-p0.z));
     R.translate_over(C);
 	RCache.set_xform_world(R);
+    RCache.set_prev_xform_world(R);
 	DrawIdentBox	(bSolid,bWire,clr_s,clr_w);
 }
 
@@ -728,6 +732,7 @@ void CDrawUtilities::DrawSphere(const Fmatrix& parent, const Fvector& center, fl
     B.translate_over	(center);
     B.mulA_43			(parent);
     RCache.set_xform_world(B);
+    RCache.set_prev_xform_world(B);
     DrawIdentSphere		(bSolid, bWire, clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -815,6 +820,7 @@ void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, 
     Fmatrix xf;			xf.mul (mR,mScale);
     xf.mulA_43			(parent);
     RCache.set_xform_world(xf);
+    RCache.set_prev_xform_world(xf);
 	DrawIdentCylinder	(bSolid,bWire,clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -841,6 +847,7 @@ void CDrawUtilities::DrawCone	(const Fmatrix& parent, const Fvector& apex, const
     Fmatrix xf;			xf.mul (mR,mScale);
     xf.mulA_43			(parent);
     RCache.set_xform_world(xf);
+    RCache.set_prev_xform_world(xf);
 	DrawIdentCone		(bSolid,bWire,clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -1014,8 +1021,8 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
     u32 vBase;
 	FVF::TL* pv	= (FVF::TL*)Stream->Lock(6,vs_TL->vb_stride,vBase);
     // transform to screen
-    float dx=-float(Device.dwWidth)/2.2f;
-    float dy=float(Device.dwHeight)/2.25f;
+    float dx=-float(Device.TargetWidth)/2.2f;
+    float dy=float(Device.TargetHeight)/2.25f;
 
     for (int i=0; i<6; i++,pv++){
 	    pv->color = c[i]; pv->transform(p[i],Device.mFullTransform);
@@ -1097,6 +1104,7 @@ void CDrawUtilities::DrawGrid()
     Fmatrix ddd;
     ddd.identity();
     RCache.set_xform_world(ddd);
+    RCache.set_prev_xform_world(ddd);
 	DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
     DU_DRAW_DP(D3DPT_LINELIST,vs_L,vBase,m_GridPoints.size()/2);
 }

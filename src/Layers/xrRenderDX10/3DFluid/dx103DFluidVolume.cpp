@@ -152,6 +152,7 @@ void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - m
 
 	}
 
+	RCache.set_prev_xform_world( m_FluidData.GetTransform() );
 	RCache.set_xform_world( m_FluidData.GetTransform() );
 
 	dwCount = u32( pv - pv_start );
@@ -165,6 +166,7 @@ void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - m
 	int iObstNum = Obstacles.size();
 	for (int i=0; i<iObstNum; ++i)
 	{
+		RCache.set_prev_xform_world( Obstacles[i] );
 		RCache.set_xform_world( Obstacles[i] );
 		//RCache.Render(D3DPT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
 	}

@@ -236,6 +236,16 @@ void CRenderDevice::on_idle		()
 
 	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 
+	PreviousJitterX = JitterX;
+	PreviousJitterY = JitterY;
+	vPrevCameraPosition = vCameraPosition;
+	vPrevCameraDirection = vCameraDirection;
+	vPrevCameraTop = vCameraTop;
+	vPrevCameraRight = vCameraRight;
+	mPrevView = mView;
+	mPrevProject = mProject;
+	mPrevFullTransform = mFullTransform;
+
 	if (psDeviceFlags.test(rsStatistic))	g_bEnableStatGather	= TRUE;
 	else									g_bEnableStatGather	= FALSE;
 	if(g_loading_events.size())
@@ -262,18 +272,17 @@ void CRenderDevice::on_idle		()
 	}
 
 	// Matrices
-	mFullTransform.mul			( mProject,mView	);
-	m_pRender->SetCacheXform(mView, mProject);
-	//RCache.set_xform_view		( mView				);
-	//RCache.set_xform_project	( mProject			);
-	
+	mFullTransform.mul(mProject,mView);
+	m_pRender->SetCacheXform(mView, mProject, JitterX, JitterY);
+	m_pRender->SetCachePrevXform(mPrevView, mPrevProject, PreviousJitterX, PreviousJitterY);
+
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
 
-	vCameraPosition_saved	= vCameraPosition;
-	mFullTransform_saved	= mFullTransform;
-	mView_saved				= mView;
-	mProject_saved			= mProject;
+	vCameraPosition_saved = vCameraPosition;
+	mFullTransform_saved = mFullTransform;
+	mView_saved = mView;
+	mProject_saved = mProject;
 
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle

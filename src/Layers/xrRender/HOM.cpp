@@ -368,6 +368,7 @@ void CHOM::OnRender	()
 				line[it*6+4].set(*(verts+T->verts[2]),0xFFFFFFFF);
 				line[it*6+5].set(*(verts+T->verts[0]),0xFFFFFFFF);
 			}
+			RCache.set_prev_xform_world(Fidentity);
 			RCache.set_xform_world(Fidentity);
 			// draw solid
 			Device.SetNearer(TRUE);

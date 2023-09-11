@@ -101,7 +101,8 @@ void dxLensFlareRender::Render(CLensFlare &owner, BOOL bSun, BOOL bFlares, BOOL 
 	}
 	RCache.Vertex.Unlock	(_2render.size()*4,hGeom.stride());
 
-	RCache.set_xform_world	(Fidentity);
+	RCache.set_prev_xform_world(Fidentity);
+	RCache.set_xform_world(Fidentity);
 	RCache.set_Geometry		(hGeom);
 	for (u32 i=0; i<_2render.size(); i++)
 	{

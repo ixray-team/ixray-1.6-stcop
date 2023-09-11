@@ -35,6 +35,8 @@ v2p_bumped 	main 	(v_tree I)
 	float3	Pe		= mul		(m_V,  	w_pos		);
 	O.tcdh 			= float4	(tc.xyyy			);
 	O.hpos 			= mul		(m_VP,	w_pos		);
+	O.cur_hpos 		= O.hpos;
+	O.prev_hpos		= mul 		(m_prevWVP, w_pos	);
 	O.position		= float4	(Pe, 	hemi		);
 
 #if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)

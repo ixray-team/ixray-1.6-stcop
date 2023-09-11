@@ -7,8 +7,8 @@ void CRenderTarget::draw_rain( light &RainSetup )
 	// Common calc for quad-rendering
 	u32		Offset;
 	u32		C					= color_rgba	(255,255,255,255);
-	float	_w					= float			(Device.dwWidth);
-	float	_h					= float			(Device.dwHeight);
+	float	_w					= RCache.get_width();
+	float	_h					= RCache.get_height();
 	Fvector2					p0,p1;
 	p0.set						(.5f/_w, .5f/_h);
 	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
@@ -159,7 +159,7 @@ void CRenderTarget::draw_rain( light &RainSetup )
 
 		// Make jitter texture
 		Fvector2					j0,j1;
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
+		float	scale_X				= RCache.get_width() / float(TEX_jitter);
 		//float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
 		float	offset				= (.5f / float(TEX_jitter));
 		j0.set						(offset,offset);
