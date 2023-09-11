@@ -70,6 +70,10 @@ if(IXRAY_UTILS)
     add_subdirectory("src/utils/xrCompress")
     add_subdirectory("src/utils/xrSE_Factory")
     add_subdirectory("src/utils/xrAI")
+    add_subdirectory("src/utils/mp_balancer")
+    add_subdirectory("src/utils/mp_configs_verifyer")
+    add_subdirectory("src/utils/mp_screenshots_info")
+    add_subdirectory("src/utils/mp_gpprof_server")
 endif()
 
 # Move libraries
@@ -100,6 +104,10 @@ if(IXRAY_UTILS)
     set_target_properties(ETools PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrSE_Factory PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrAI PROPERTIES ${IXRAY_FOLDER_UTILS})
+    set_target_properties(mp_balancer PROPERTIES ${IXRAY_FOLDER_UTILS})
+    set_target_properties(mp_configs_verifyer PROPERTIES ${IXRAY_FOLDER_UTILS})
+    set_target_properties(mp_screenshots_info PROPERTIES ${IXRAY_FOLDER_UTILS})
+    set_target_properties(mp_gpprof_server PROPERTIES ${IXRAY_FOLDER_UTILS})
 endif()
 
 # Move 3rd
