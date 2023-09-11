@@ -149,6 +149,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
+	ShowWindow(get_current_wnd(), SW_MINIMIZE);
 	MessageBox			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
@@ -508,12 +509,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	save_mini_dump		(pExceptionInfo);
 #endif // USE_OWN_MINI_DUMP
 
-	ShowWindow(get_current_wnd(), SW_MINIMIZE);
-
 	if (!error_after_dialog) {
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(true);
 
+		ShowWindow(get_current_wnd(), SW_MINIMIZE);
 		MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
@@ -582,6 +582,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		LPCSTR					endline = "\r\n";
 		LPSTR					buffer = assertion_info + xr_strlen(assertion_info);
 		buffer					+= xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
+
+		ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
 		MessageBox				(
 			/*GetTopWindow(NULL)*/ nullptr,
