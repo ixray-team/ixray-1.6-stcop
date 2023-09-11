@@ -952,27 +952,20 @@ HRESULT	CRender::shader_compile			(
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
 
+	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
 	if (FS.exist(file_name) && !!ps_r__common_flags.test(RFLAG_USE_CACHE))
 	{
-//		Msg				( "opening library or cache shader..." );
 		IReader* file = FS.r_open(file_name);
 		if (file->length()>4)
 		{
-			u32 crc = 0;
-			crc = file->r_u32();
+			u32 ShaderCRC = file->r_u32();
+			u32 CodeSRC = file->r_u32();
 
-			boost::crc_32_type		processor;
-			processor.process_block	( file->pointer(), ((char*)file->pointer()) + file->elapsed() );
-			u32 const real_crc		= processor.checksum( );
-
-			if ( real_crc == crc ) {
-				_result				= create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
-				//if ( !SUCCEEDED(_result) ) {
-				//	Msg				("! create shader failed");
-				//}
-				//else {
-				//	Msg				( "create shaders succeeded" );
-				//}
+			if (RealCodeCRC == CodeSRC) {
+				u32 const real_crc = crc32(file->pointer(), file->elapsed());
+				if (real_crc == ShaderCRC) {
+					_result = create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
+				}
 			}
 		}
 		file->close();
@@ -998,12 +991,11 @@ HRESULT	CRender::shader_compile			(
 //			Msg						( "shader compilation succeeded" );
 			IWriter* file = FS.w_open(file_name);
 
-			boost::crc_32_type		processor;
-			processor.process_block	( pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize() );
-			u32 const crc			= processor.checksum( );
+			u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 
-			file->w_u32				(crc);
-			file->w					( pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
+			file->w_u32(crc);
+			file->w_u32(RealCodeCRC);
+			file->w(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 			FS.w_close				(file);
 
 			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
