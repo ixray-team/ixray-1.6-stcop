@@ -67,7 +67,7 @@ public:
 	IC	cover_type const*		cover					() const;
 
 public:
-	IC	void					cover_loophole_id		(shared_str const& loophole_id);
+		void					cover_loophole_id		(shared_str const& loophole_id);
 		LPCSTR					cover_loophole_id		() const;
 		loophole_type const*	cover_loophole			() const;
 

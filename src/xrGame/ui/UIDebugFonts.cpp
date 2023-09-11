@@ -36,6 +36,7 @@ bool CUIDebugFonts::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 #include "../string_table.h"
 
 void CUIDebugFonts::FillUpList(){
+#ifdef DEBUG
 	CFontManager::FONTS_VEC& v = UI().Font().m_all_fonts;
 	CFontManager::FONTS_VEC_IT it	= v.begin();
 	CFontManager::FONTS_VEC_IT it_e = v.end();
@@ -59,5 +60,5 @@ void CUIDebugFonts::FillUpList(){
 		pItem->SetAutoDelete			(true);
 		AttachChild						(pItem);
 	}
-
+#endif
 }
