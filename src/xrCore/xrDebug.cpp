@@ -707,7 +707,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	void debug_on_thread_spawn			()
 	{
-		//std::set_terminate				(_terminate);
+		std::set_terminate				(_terminate);
 
 		_set_abort_behavior				(0,_WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 		signal							(SIGABRT,		abort_handler);
