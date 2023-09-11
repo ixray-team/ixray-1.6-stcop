@@ -76,6 +76,7 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
 target_precompile_headers(xrCore PUBLIC "stdafx.h")	
 
 # Project defines
