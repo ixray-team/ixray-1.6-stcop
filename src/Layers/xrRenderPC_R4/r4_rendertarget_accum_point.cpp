@@ -10,7 +10,6 @@ void CRenderTarget::accum_point		(light* L)
 	if (!shader)
 	{
 		shader			= s_accum_point;
-      shader_msaa    = s_accum_point_msaa;
 	}	
 
 	// Common
@@ -41,18 +40,12 @@ void CRenderTarget::accum_point		(light* L)
 
 	// backfaces: if (1<=stencil && zfail)	stencil = light_id
 	RCache.set_CullMode				(CULL_CW);
-   if( ! RImplementation.o.dx10_msaa )
    	RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
-   else
-	   RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
 	// frontfaces: if (1<=stencil && zfail)	stencil = 0x1
 	RCache.set_CullMode				(CULL_CCW);
-   if( ! RImplementation.o.dx10_msaa )
-	   RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
-   else
-	   RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,0x01,0x7f,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
+	RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
 	// nv-stencil recompression
@@ -91,98 +84,18 @@ void CRenderTarget::accum_point		(light* L)
 		RCache.set_c					("Ldynamic_color",	L_clr.x,L_clr.y,L_clr.z,L_spec);
 		RCache.set_c					("m_texgen",		m_Texgen);
 
-		// Fetch4 : enable
-//		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-//#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
-//		}
-
 		RCache.set_CullMode				(CULL_CW);		// back
-		// Render if (light_id <= stencil && z-pass)
-      if( ! RImplementation.o.dx10_msaa )
-      {
-		   RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID,0xff,0x00);
-		   draw_volume			(L);
-      }
-      else // checked Holger
-      {
-		   // per pixel
-		   RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID,0xff,0x00);
-		   draw_volume			(L);
-
-		   // per sample
-         if( RImplementation.o.dx10_msaa_opt )
-         {
-		      RCache.set_Element(shader_msaa[0]->E[ _id ]	);
-            RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);
-            RCache.set_CullMode( D3DCULL_CW );
-            draw_volume			(L);
-         }
-         else // checked Holger
-         {
-		      for( u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i )
-		      {
-			      RCache.set_Element		   (shader_msaa[i]->E[ _id ]	);
-               StateManager.SetSampleMask (u32(1)<<i);
-               RCache.set_Stencil         (TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);
-               RCache.set_CullMode        ( D3DCULL_CW );
-               draw_volume						(L);			
-		      }
-		      StateManager.SetSampleMask(0xffffffff);
-         }
-		   RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID,0xff,0x00);
-      }
-
-		// Fetch4 : disable
-//		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-//#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
-//		}
+		RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID,0xff,0x00);
+		draw_volume			(L);
 	}
 
 	// blend-copy
 	if (!RImplementation.o.fp16_blend)	{
-      if( ! RImplementation.o.dx10_msaa )
-	   	u_setrt						(rt_Accumulator,NULL,NULL,HW.pBaseZB);
-      else
-		   u_setrt						(rt_Accumulator,NULL,NULL,rt_MSAADepth->pZRT);
+	   	u_setrt						(rt_Accumulator,NULL,NULL, rt_HWDepth->pZRT);
 		RCache.set_Element	(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
 		RCache.set_c				("m_texgen",		m_Texgen);
-      if( ! RImplementation.o.dx10_msaa )
-      {
-         RCache.set_Stencil(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
-         draw_volume			(L);
-      }
-      else // checked Holger
-      {
-         // per pixel
-         RCache.set_CullMode( D3DCULL_CW );
-         RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID,0xff,0x00);		
-         draw_volume			(L);
-         if( RImplementation.o.dx10_msaa_opt )
-         {
-            // per sample
-		      RCache.set_Element(s_accum_mask_msaa[0]->E[SE_MASK_ACCUM_VOL]	);
-            RCache.set_CullMode( D3DCULL_CW );
-            RCache.set_Stencil(TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);		
-		      draw_volume			(L);
-         }
-         else // checked Holger	
-         {
-		      for( u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i )
-		      {
-			      RCache.set_Element	      (s_accum_mask_msaa[i]->E[SE_MASK_ACCUM_VOL]	);
-               RCache.set_CullMode        ( D3DCULL_CW );
-               StateManager.SetSampleMask ( u32(1) << i );
-               RCache.set_Stencil         (TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);		
-               draw_volume					   (L);
-		      }
-		      StateManager.SetSampleMask( 0xffffffff );
-         }
-         RCache.set_Stencil(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
-      }
+        RCache.set_Stencil(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
+        draw_volume			(L);
 	}
 
 	//CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));

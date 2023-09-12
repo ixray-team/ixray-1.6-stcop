@@ -12,7 +12,7 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
     {
     case 0:
         C.r_Pass("smaa_edge_detect", "smaa_edge_detect", FALSE, FALSE, FALSE);
-        C.r_dx10Texture("s_image", RImplementation.o.dx10_msaa ? r2_RT_generic : r2_RT_albedo);
+        C.r_dx10Texture("s_image", r2_RT_albedo);
         C.r_dx10Texture("s_position", r2_RT_P);
 
         C.r_dx10Sampler("smp_rtlinear");
@@ -37,7 +37,7 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
     case 2:
         C.r_Pass("smaa_neighbour_blend", "smaa_neighbour_blend", FALSE, FALSE, FALSE);
 
-        C.r_dx10Texture("s_image", RImplementation.o.dx10_msaa ? r2_RT_generic : r2_RT_albedo);
+        C.r_dx10Texture("s_image", r2_RT_albedo);
         C.r_dx10Texture("s_blendtex", r2_RT_smaa_blendtex);
 
         C.r_dx10Sampler("smp_rtlinear");

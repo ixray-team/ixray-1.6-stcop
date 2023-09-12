@@ -383,9 +383,6 @@ void CHW::DestroyDevice()
 	BSManager.ClearStateArray();
 	SSManager.ClearStateArray();
 
-	_SHOW_REF				("refCount:pBaseZB",pBaseZB);
-	_RELEASE				(pBaseZB);
-
 	_SHOW_REF				("refCount:pBaseRT",pBaseRT);
 	_RELEASE				(pBaseRT);
 //#ifdef DEBUG
@@ -442,10 +439,8 @@ void CHW::Reset (HWND hwnd)
 #ifdef DEBUG
 	//	_RELEASE			(dwDebugSB);
 #endif
-	_SHOW_REF				("refCount:pBaseZB",pBaseZB);
 	_SHOW_REF				("refCount:pBaseRT",pBaseRT);
 
-	_RELEASE(pBaseZB);
 	_RELEASE(pBaseRT);
 
 	CHK_DX(m_pSwapChain->ResizeBuffers(
@@ -955,34 +950,5 @@ void CHW::UpdateViews()
 	R = pDevice->CreateRenderTargetView( pBuffer, NULL, &pBaseRT);
 	pBuffer->Release();
 	R_CHK(R);
-
-	//	Create Depth/stencil buffer
-	ID3DTexture2D* pDepthStencil = nullptr;
-	D3D_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = sd.BufferDesc.Width;
-	descDepth.Height = sd.BufferDesc.Height;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // DXGI_FORMAT_D32_FLOAT_S8X24_UINT
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-	R = pDevice->CreateTexture2D( &descDepth,       // Texture desc
-		NULL,                  // Initial data
-		&pDepthStencil ); // [out] Texture
-	R_CHK(R);
-
-	//	Create Depth/stencil view
-	D3D_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-	depthStencilViewDesc.Format = descDepth.Format;
-	depthStencilViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-	R = pDevice->CreateDepthStencilView(pDepthStencil, &depthStencilViewDesc, &pBaseZB);
-	R_CHK(R);
-
-	pDepthStencil->Release();
 }
 #endif

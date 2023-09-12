@@ -1,16 +1,10 @@
 #include "common.h"
 
-float inv_lerp(float from, float to, float value){
-  return (value - from) / (to - from);
-}
-
 #ifdef GBUFFER_OPTIMIZATION
 float4 main ( p_TL I, float4 pos2d : SV_Position ) : SV_Target
 #else
 float4 main ( p_TL I ) : SV_Target
 #endif
 {
-	//gbuffer_data gbd = gbuffer_load_data(I.Tex0, pos2d, ISAMPLE);
-	float val = s_position.Sample( smp_nofilter, I.Tex0 ).z;
-	return inv_lerp(0, 2000, val); //gbd.P.z;
+    return s_depth.Sample(smp_nofilter, I.Tex0);
 }

@@ -19,8 +19,12 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
     m_contextDesc.displaySize = params.displaySize;
 
     // You should config the flags you need based on your own project
-    m_contextDesc.flags = 0;
-    //FFX_FSR2_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION
+    m_contextDesc.flags =
+#ifdef DEBUG
+        FFX_FSR2_ENABLE_DEBUG_CHECKING |
+#endif
+        FFX_FSR2_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION |
+        FFX_FSR2_ENABLE_AUTO_EXPOSURE;
     //| FFX_FSR2_ENABLE_HIGH_DYNAMIC_RANGE
     //| FFX_FSR2_ENABLE_DEPTH_INVERTED
     //| FFX_FSR2_ENABLE_AUTO_EXPOSURE;

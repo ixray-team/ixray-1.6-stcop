@@ -47,37 +47,3 @@ void	CBlender_SSAO_noMSAA::Compile			(CBlender_Compile& C)
 		break;
 	}
 }
-
-CBlender_SSAO_MSAA::CBlender_SSAO_MSAA	()	{	description.CLS		= 0;	}
-CBlender_SSAO_MSAA::~CBlender_SSAO_MSAA	()	{	}
-
-void	CBlender_SSAO_MSAA::Compile(CBlender_Compile& C)
-{
-	IBlender::Compile		(C);
-
-	if( Name )
-		::Render->m_MSAASample = atoi( Definition );
-	else
-		::Render->m_MSAASample = -1;
-
-	switch (C.iElement)
-	{
-	case 0:	// combine
-		C.r_Pass			("combine_1",		"ssao_calc_msaa",		FALSE,	FALSE,	FALSE);
-		C.r_Stencil			(TRUE, D3DCMP_EQUAL, 0x81);	// stencil should be >= 1
-		C.r_StencilRef		(0x81);
-		C.r_CullMode		(D3DCULL_NONE);
-
-		C.r_dx10Texture		("s_position",		r2_RT_P				);
-		C.r_dx10Texture		("s_normal",		r2_RT_N				);
-
-		jitter(C);
-
-		C.r_dx10Sampler		("smp_nofilter");
-		C.r_dx10Sampler		("smp_material");
-		C.r_dx10Sampler		("smp_rtlinear");
-		C.r_End				();
-		break;
-	}
-	::Render->m_MSAASample = -1;
-}    

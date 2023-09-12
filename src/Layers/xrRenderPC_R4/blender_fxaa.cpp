@@ -13,7 +13,7 @@ void CBlender_FXAA::Compile(CBlender_Compile& C)
             C.r_Pass("stub_notransform_aa_AA", "fxaa_main", FALSE, FALSE, FALSE);
             C.r_dx10Texture("s_motion", r4_motion);
             C.r_dx10Texture("s_motion_vectors", r4_motion_vectors);
-            C.r_dx10Texture("s_image", RImplementation.o.dx10_msaa ? r2_RT_generic : r2_RT_albedo);
+            C.r_dx10Texture("s_image", r2_RT_albedo);
             C.r_dx10Sampler("smp_nofilter");
             C.r_dx10Sampler("smp_rtlinear");
             C.r_End();

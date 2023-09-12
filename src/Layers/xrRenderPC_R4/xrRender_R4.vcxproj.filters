@@ -1037,9 +1037,6 @@
     <ClCompile Include="r4_rendertarget_enable_scissor.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="r4_rendertarget_mark_msaa_edges.cpp">
-      <Filter>Core_Target</Filter>
-    </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>

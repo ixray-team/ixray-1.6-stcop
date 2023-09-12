@@ -565,7 +565,6 @@
     <ClCompile Include="r4_rendertarget_draw_rain.cpp" />
     <ClCompile Include="r4_rendertarget_draw_volume.cpp" />
     <ClCompile Include="r4_rendertarget_enable_scissor.cpp" />
-    <ClCompile Include="r4_rendertarget_mark_msaa_edges.cpp" />
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp" />
     <ClCompile Include="r4_rendertarget_phase_bloom.cpp" />
     <ClCompile Include="r4_rendertarget_phase_combine.cpp" />

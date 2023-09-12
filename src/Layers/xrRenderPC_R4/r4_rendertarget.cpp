@@ -33,8 +33,7 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
 		zb->GetDesc(&desc);
 
-      if( !RImplementation.o.dx10_msaa )
-         VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
+        VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
 
 		ID3DResource *pRes;
 
@@ -70,8 +69,7 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthSten
 	{
 		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
 		zb->GetDesc(&desc);
-      if( ! RImplementation.o.dx10_msaa )
-		   VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
+		VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
 
 		ID3DResource *pRes;
 
@@ -294,16 +292,7 @@ CRenderTarget::CRenderTarget		()
 	   ps_r_ssao = _min(ps_r_ssao, 3);
 
 	RImplementation.o.ssao_ultra		= ps_r_ssao>3;
-   if( RImplementation.o.dx10_msaa )
-      SampleCount    = RImplementation.o.dx10_msaa_samples;
 
-#ifdef DEBUG
-	Msg			("MSAA samples = %d", SampleCount );
-	if( RImplementation.o.dx10_msaa_opt )
-		Msg		("dx10_MSAA_opt = on" );
-	if( RImplementation.o.dx10_gbuffer_opt )
-		Msg		("dx10_gbuffer_opt = on" );
-#endif // DEBUG
 	param_blur			= 0.f;
 	param_gray			= 0.f;
 	param_noise			= 0.f;
@@ -332,60 +321,17 @@ CRenderTarget::CRenderTarget		()
 	b_accum_spot			= xr_new<CBlender_accum_spot>			();
 	b_accum_reflected		= xr_new<CBlender_accum_reflected>		();
 	b_bloom					= xr_new<CBlender_bloom_build>			();
-	if( RImplementation.o.dx10_msaa )
-	{
-		b_bloom_msaa			= xr_new<CBlender_bloom_build_msaa>		();
-		b_postprocess_msaa	= xr_new<CBlender_postprocess_msaa>	();
-	}
 	b_luminance				= xr_new<CBlender_luminance>		();
 	b_combine				= xr_new<CBlender_combine>			();
 	b_ssao					= xr_new<CBlender_SSAO_noMSAA>		();
 
 	// HDAO
 	b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
-	if( RImplementation.o.dx10_msaa )
-	{
-		b_hdao_msaa_cs      = xr_new<CBlender_CS_HDAO_MSAA>     ();
-	}
 	const u32		s_dwWidth = RCache.get_width(), s_dwHeight = RCache.get_height();
-	if( RImplementation.o.dx10_msaa )
-	{
-		int bound = RImplementation.o.dx10_msaa_samples;
 
-		if( RImplementation.o.dx10_msaa_opt )
-			bound = 1;
-
-		for( int i = 0; i < bound; ++i )
-		{
-			static LPCSTR SampleDefs[] = { "0","1","2","3","4","5","6","7" };
-			b_combine_msaa[i]							= xr_new<CBlender_combine_msaa>					();
-			b_accum_mask_msaa[i]						= xr_new<CBlender_accum_direct_mask_msaa>		();
-			b_accum_direct_msaa[i]					= xr_new<CBlender_accum_direct_msaa>			();
-			b_accum_direct_volumetric_msaa[i]			= xr_new<CBlender_accum_direct_volumetric_msaa>	();
-			//b_accum_direct_volumetric_sun_msaa[i]	= xr_new<CBlender_accum_direct_volumetric_sun_msaa>			();
-			b_accum_spot_msaa[i]		 				= xr_new<CBlender_accum_spot_msaa>			();
-			b_accum_volumetric_msaa[i]				= xr_new<CBlender_accum_volumetric_msaa>	();
-			b_accum_point_msaa[i]						= xr_new<CBlender_accum_point_msaa>			();
-			b_accum_reflected_msaa[i]					= xr_new<CBlender_accum_reflected_msaa>		();
-			b_ssao_msaa[i]							= xr_new<CBlender_SSAO_MSAA>				();
-			static_cast<CBlender_accum_direct_mask_msaa*>( b_accum_mask_msaa[i] )->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_accum_direct_volumetric_msaa*>(b_accum_direct_volumetric_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			//static_cast<CBlender_accum_direct_volumetric_sun_msaa*>(b_accum_direct_volumetric_sun_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_accum_direct_msaa*>(b_accum_direct_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_accum_volumetric_msaa*>(b_accum_volumetric_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_accum_spot_msaa*>(b_accum_spot_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_accum_point_msaa*>(b_accum_point_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_accum_reflected_msaa*>(b_accum_reflected_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_combine_msaa*>(b_combine_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
-			static_cast<CBlender_SSAO_MSAA*>(b_ssao_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
-		}
-	}
 	//	NORMAL
 	{
 		rt_Position.create			(r2_RT_P, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
-
-		if( RImplementation.o.dx10_msaa )
-			rt_MSAADepth.create( r2_RT_MSAAdepth, s_dwWidth, s_dwHeight, D3DFMT_D24S8, SampleCount );
 
 		if( !RImplementation.o.dx10_gbuffer_opt )
 			rt_Normal.create			(r2_RT_N, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
@@ -423,13 +369,6 @@ CRenderTarget::CRenderTarget		()
 		// generic(LDR) RTs
 		rt_Generic_0.create		(r2_RT_generic0, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8, 1		);
 		rt_Generic_1.create		(r2_RT_generic1, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8, 1		);
-		if( RImplementation.o.dx10_msaa )
-		{
-			rt_Generic_0_r.create			(r2_RT_generic0_r, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8, SampleCount	);
-			rt_Generic_1_r.create			(r2_RT_generic1_r, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8, SampleCount		);
-			rt_Generic.create		      (r2_RT_generic, s_dwWidth, s_dwHeight,   D3DFMT_A8R8G8B8, 1		);
-		}
-
 		rt_Distort.create(r2_RT_distort, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, SampleCount);
 		rt_AA_BackBuffer.create(r2_RT_AA_backbuffer, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8, 1);
 
@@ -441,6 +380,7 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	rt_Depth.create(r2_RT_depth, s_dwWidth, s_dwHeight, D3DFMT_R32F, 1);
+	rt_HWDepth.create(r2_RT_HW_depth, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_D24S8, 1);
 	rt_Output.create(r4_output, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, 1);
 	rt_UpscaleOutput.create(r4_upscale_output, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, 1, true);
 	rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, D3DFMT_A16B16G16R16F, 1);
@@ -512,61 +452,13 @@ CRenderTarget::CRenderTarget		()
 		s_accum_mask.create			(b_accum_mask,				"r3\\accum_mask");
 		s_accum_direct.create		(b_accum_direct,			"r3\\accum_direct");
 
-		if( RImplementation.o.dx10_msaa )
-		{
-			int bound = RImplementation.o.dx10_msaa_samples;
-
-			if( RImplementation.o.dx10_msaa_opt )
-				bound = 1;
-
-			for( int i = 0; i < bound; ++i )
-			{
-				s_accum_direct_msaa[i].create		(b_accum_direct_msaa[i],			"r3\\accum_direct");
-				s_accum_mask_msaa[i].create		(b_accum_mask_msaa[i],			"r3\\accum_direct");
-			}
-		}
 		if (RImplementation.o.advancedpp)
 		{
 			s_accum_direct_volumetric.create("accum_volumetric_sun_nomsaa");
 
 			if (RImplementation.o.dx10_minmax_sm)
 				s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_nomsaa_minmax");
-
-			if( RImplementation.o.dx10_msaa )
-			{
-				static LPCSTR snames[] = { "accum_volumetric_sun_msaa0",
-					"accum_volumetric_sun_msaa1",
-					"accum_volumetric_sun_msaa2",
-					"accum_volumetric_sun_msaa3",
-					"accum_volumetric_sun_msaa4",
-					"accum_volumetric_sun_msaa5",
-					"accum_volumetric_sun_msaa6",
-					"accum_volumetric_sun_msaa7" };
-				int bound = RImplementation.o.dx10_msaa_samples;
-
-				if( RImplementation.o.dx10_msaa_opt )
-					bound = 1;
-
-				for( int i = 0; i < bound; ++i )
-				{
-					//s_accum_direct_volumetric_msaa[i].create		(b_accum_direct_volumetric_sun_msaa[i],			"r3\\accum_direct");
-					s_accum_direct_volumetric_msaa[i].create		(snames[i]);
-				}
-			}
 		}
-	}
-	else
-	{
-		//	TODO: DX10: Check if we need old-style SMap
-		VERIFY(!"Use HW SMAPs only!");
-		//u32	size					=RImplementation.o.smapsize	;
-		//rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
-		//rt_smap_depth				= NULL;
-		//R_CHK						(HW.pDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,NULL));
-		//s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
-		//s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
-		//if (RImplementation.o.advancedpp)
-		//	s_accum_direct_volumetric.create("accum_volumetric_sun");
 	}
 
 	//	RAIN
@@ -575,35 +467,6 @@ CRenderTarget::CRenderTarget		()
 	{
 		CBlender_rain	TempBlender;
 		s_rain.create( &TempBlender, "null");
-
-		if( RImplementation.o.dx10_msaa )
-		{
-			static LPCSTR SampleDefs[] = { "0","1","2","3","4","5","6","7" };
-			CBlender_rain_msaa	TempBlender_[8];
-
-			int bound = RImplementation.o.dx10_msaa_samples;
-
-			if( RImplementation.o.dx10_msaa_opt )
-				bound = 1;
-
-			for( int i = 0; i < bound; ++i )
-			{
-				TempBlender_[i].SetDefine( "ISAMPLE", SampleDefs[i] );
-				s_rain_msaa[i].create( &TempBlender_[i], "null");
-				s_accum_spot_msaa[i].create			(b_accum_spot_msaa[i],				"r2\\accum_spot_s",	"lights\\lights_spot01");
-				s_accum_point_msaa[i].create		(b_accum_point_msaa[i],			"r2\\accum_point_s");
-				//s_accum_volume_msaa[i].create(b_accum_direct_volumetric_msaa[i], "lights\\lights_spot01");
-				s_accum_volume_msaa[i].create(b_accum_volumetric_msaa[i], "lights\\lights_spot01");
-				s_combine_msaa[i].create					(b_combine_msaa[i],					"r2\\combine");
-			}
-		}
-	}
-
-	if( RImplementation.o.dx10_msaa )
-	{
-		CBlender_msaa TempBlender;
-
-		s_mark_msaa_edges.create( &TempBlender, "null" );
 	}
 
 	// POINT
@@ -632,18 +495,6 @@ CRenderTarget::CRenderTarget		()
 	// REFLECTED
 	{
 		s_accum_reflected.create	(b_accum_reflected,			"r2\\accum_refl");
-		if( RImplementation.o.dx10_msaa )
-		{
-			int bound = RImplementation.o.dx10_msaa_samples;
-
-			if( RImplementation.o.dx10_msaa_opt )
-				bound = 1;
-
-			for( int i = 0; i < bound; ++i )
-			{
-				s_accum_reflected_msaa[i].create( b_accum_reflected_msaa[i], "null");
-			}
-		}
 	}	
 
 	// BLOOM
@@ -659,11 +510,6 @@ CRenderTarget::CRenderTarget		()
 		s_bloom_dbg_1.create		("effects\\screen_set",		r2_RT_bloom1);
 		s_bloom_dbg_2.create		("effects\\screen_set",		r2_RT_bloom2);
 		s_bloom.create				(b_bloom,					"r2\\bloom");
-		if( RImplementation.o.dx10_msaa )
-		{
-			s_bloom_msaa.create		 (b_bloom_msaa,					"r2\\bloom");
-			s_postprocess_msaa.create(b_postprocess_msaa,			"r2\\post");
-		}
 		f_bloom_factor				= 0.5f;
 	}
 
@@ -687,7 +533,7 @@ CRenderTarget::CRenderTarget		()
 			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f};
 			HW.pContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
-		u_setrt						(s_dwWidth, s_dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		u_setrt						(s_dwWidth, s_dwHeight,HW.pBaseRT,NULL,NULL, rt_HWDepth->pZRT);
 	}
 
 	// HBAO
@@ -735,10 +581,6 @@ CRenderTarget::CRenderTarget		()
 		u32		w = s_dwWidth, h = s_dwHeight;
 		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, D3DFMT_R16F, 1, true);
 		s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
-		if( RImplementation.o.dx10_msaa )
-		{
-			s_hdao_cs_msaa.create			(b_hdao_msaa_cs, "r2\\ssao");
-		}
 	}
 
 	// COMBINE
@@ -1089,35 +931,9 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_ssao					);
 	xr_delete					(b_fxaa					);
 	xr_delete					(b_smaa					);
-
-   if( RImplementation.o.dx10_msaa )
-   {
-      int bound = RImplementation.o.dx10_msaa_samples;
-
-      if( RImplementation.o.dx10_msaa_opt )
-         bound = 1;
-
-	  for( int i = 0; i < bound; ++i )
-	  {
-		  xr_delete					(b_combine_msaa[i]);
-		  xr_delete					(b_accum_direct_msaa[i]);
-		  xr_delete					(b_accum_mask_msaa[i]);
-		  xr_delete					(b_accum_direct_volumetric_msaa[i]);
-		  //xr_delete					(b_accum_direct_volumetric_sun_msaa[i]);
-		  xr_delete					(b_accum_spot_msaa[i]);
-		  xr_delete					(b_accum_volumetric_msaa[i]);
-		  xr_delete					(b_accum_point_msaa[i]);
-		  xr_delete					(b_accum_reflected_msaa[i]);
-		  xr_delete					(b_ssao_msaa[i]);
-	  }
-   }
 	xr_delete					(b_accum_mask			);
 	xr_delete					(b_occq					);
 	xr_delete					(b_hdao_cs				);
-	if ( RImplementation.o.dx10_msaa )
-	{
-        xr_delete( b_hdao_msaa_cs );
-    }
 }
 
 extern float ps_r4_jitter_factor;
@@ -1169,9 +985,7 @@ void CRenderTarget::increment_light_marker()
 {
 	dwLightMarkerID += 2;
 
-	//if (dwLightMarkerID>10)
-	const u32 iMaxMarkerValue = RImplementation.o.dx10_msaa ? 127 : 255;
-	
+	const u32 iMaxMarkerValue = 255;
 	if ( dwLightMarkerID > iMaxMarkerValue )
 		reset_light_marker(true);
 }

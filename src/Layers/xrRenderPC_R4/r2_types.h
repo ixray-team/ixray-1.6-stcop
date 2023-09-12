@@ -2,8 +2,8 @@
 
 
 // r3xx code-path (MRT)
+#define		r2_RT_HW_depth		"$user$hwdepth"			      // MRT
 #define		r2_RT_depth			"$user$depth"			      // MRT
-#define		r2_RT_MSAAdepth		"$user$msaadepth"	          // MRT
 #define		r2_RT_P				"$user$position"		      // MRT
 #define		r2_RT_N				"$user$normal"			      // MRT
 #define		r2_RT_albedo		"$user$albedo"			      // MRT

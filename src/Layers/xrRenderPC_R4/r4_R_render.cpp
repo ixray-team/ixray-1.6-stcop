@@ -158,20 +158,20 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Output, 0, 0, HW.pBaseZB);		// LDR RT
+		Target->u_setrt(Target->rt_Output, 0, 0, Target->rt_HWDepth->pZRT);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 
 	// Distort
 	{
 		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Distort,0,0,HW.pBaseZB);		// Now RT is a distortion mask
+		Target->u_setrt(Target->rt_Distort,0,0, Target->rt_HWDepth->pZRT);		// Now RT is a distortion mask
 		HW.pContext->ClearRenderTargetView(Target->rt_Distort->pRT, ColorRGBA);
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, Target->rt_HWDepth->pZRT);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
@@ -216,7 +216,7 @@ void CRender::Render		()
 	if( !(g_pGameLevel && g_hud)
 		|| bMenu)	
 	{
-		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL, Target->rt_HWDepth->pZRT);
 		return;
 	}
 
@@ -347,8 +347,7 @@ void CRender::Render		()
 	Target->phase_occq							();
 	LP_normal.clear								();
 	LP_pending.clear							();
-   if( RImplementation.o.dx10_msaa )
-      RCache.set_ZB( RImplementation.Target->rt_MSAADepth->pZRT );
+
 	{
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
 		// perform tests
@@ -436,13 +435,6 @@ void CRender::Render		()
 		Target->phase_motion_vectors();
 	}
 
-   // full screen pass to mark msaa-edge pixels in highest stencil bit
-   if( RImplementation.o.dx10_msaa )
-   {
-	   PIX_EVENT( MARK_MSAA_EDGES );
-      Target->mark_msaa_edges();
-   }
-
 	//	TODO: DX10: Implement DX10 rain.
 	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
 	{
@@ -462,20 +454,15 @@ void CRender::Render		()
 
 	{
 		PIX_EVENT(DEFER_SELF_ILLUM);
-		Target->phase_accumulator			();
+		Target->phase_accumulator();
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
 		RCache.set_prev_xform_project(Device.mPrevProject);
 		RCache.set_prev_xform_view(Device.mPrevView);
 		RCache.set_xform_project(Device.mProject); 
 		RCache.set_xform_view(Device.mView);
-		// Stencil - write 0x1 at pixel pos - 
-      if( !RImplementation.o.dx10_msaa )
-		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-      else
-		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-		//RCache.set_Stencil				(TRUE,D3DCMP_ALWAYS,0x00,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-		RCache.set_CullMode					(CULL_CCW);
-		RCache.set_ColorWriteEnable			();
+		RCache.set_Stencil(TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+		RCache.set_CullMode(CULL_CCW);
+		RCache.set_ColorWriteEnable();
 		RImplementation.r_dsgraph_render_emissive();
 	}
 

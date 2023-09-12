@@ -12,7 +12,7 @@ void CRenderTarget::phase_motion_vectors()
     u32 w = RCache.get_width();
     u32 h = RCache.get_height();
 
-    u_setrt(w, h, rt_MotionVectors->pRT, nullptr, nullptr, HW.pBaseZB);
+    u_setrt(w, h, rt_MotionVectors->pRT, nullptr, nullptr, rt_HWDepth->pZRT);
 
     u32 CullMode = RCache.get_CullMode();
     RCache.set_CullMode(CULL_NONE);

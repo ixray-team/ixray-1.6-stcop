@@ -9,11 +9,7 @@ void CRenderTarget::phase_hdao	()
    if( ps_r_ssao > 0 )
    {
        ShaderElement* S;
-
-       if( !RImplementation.o.dx10_msaa )
-          S = (&*(s_hdao_cs->E[0]));
-       else
-          S = (&*(s_hdao_cs_msaa->E[0]));
+       S = (&*(s_hdao_cs->E[0]));
 
        SPass&	P = *(S->passes[0]);
        RCache.set_States		(P.state);
