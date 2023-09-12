@@ -6,6 +6,10 @@
 
 #include "../xrRender/QueryHelper.h"
 
+Fvector2 g_current_jitter;
+Fvector2 g_prev_jitter;
+void set_viewport(ID3DDeviceContext* dev, float w, float h);
+
 IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
 {
 	float	d1		= _1->spatial.sphere.P.distance_to_sqr	(Device.vCameraPosition);
@@ -222,6 +226,11 @@ void CRender::Render		()
 		return;
 	}
 
+	g_current_jitter = Target->get_jitter(false);
+	g_prev_jitter = Target->get_jitter(true);
+	RCache.set_xform_jitter(g_current_jitter);
+	RCache.set_prev_xform_jitter(g_prev_jitter);
+
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
@@ -421,6 +430,10 @@ void CRender::Render		()
 			}
 		}
 		Lights_LastFrame.clear	();
+	}
+
+	{
+		Target->phase_motion_vectors();
 	}
 
    // full screen pass to mark msaa-edge pixels in highest stencil bit

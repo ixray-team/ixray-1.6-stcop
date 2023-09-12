@@ -2,6 +2,6 @@
 
 float4 main(p_TL I) : SV_Target
 {
-	float4 color = s_image.Sample( smp_nofilter, I.Tex0);
+	float4 color = s_image.Sample( smp_rtlinear, I.Tex0);
 	return color;
 }

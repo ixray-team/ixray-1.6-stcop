@@ -69,6 +69,7 @@ public:
 	xr_vector<Fplane>												dbg_planes;
 #endif
 
+	ref_rt						rt_UpscaleOutput;	// target
 	ref_rt						rt_Output;			// target
 	ref_rt						rt_Distort;			// target
 
@@ -331,6 +332,8 @@ public:
 	virtual void				set_color_base			(u32	f)		{ param_color_base=f;				}
 	virtual void				set_color_gray			(u32	f)		{ param_color_gray=f;				}
 	virtual void				set_color_add			(const Fvector	&f)		{ param_color_add=f;		}
+
+	Fvector2					get_jitter(bool prevFrame);
 
 	virtual u32					get_width				();
 	virtual u32					get_height				();

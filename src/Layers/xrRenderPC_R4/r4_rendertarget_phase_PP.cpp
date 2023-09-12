@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
+void set_viewport(ID3DDeviceContext* dev, float w, float h);
+
 void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 {
 	CTexture*	T					= RCache.get_ActiveTexture	(2);
@@ -105,13 +107,18 @@ struct TL_2c3uv		{
 
 void CRenderTarget::phase_pp		()
 {
+	PIX_EVENT(phase_pp);
+
 	// combination/postprocess
-	u_setrt				(RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+	float	_w = RCache.get_target_width();
+	float	_h = RCache.get_target_height();
+	set_viewport(HW.pContext, _w, _h);
+	u_setrt				(_w, _h, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();
 	//RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
-	if( !RImplementation.o.dx10_msaa || RImplementation.o.fsr2)
+	if( !RImplementation.o.dx10_msaa || ps_r2_ls_flags.test(R4FLAG_FSR2))
 	{
 		RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
 	}
@@ -127,8 +134,6 @@ void CRenderTarget::phase_pp		()
 	Fvector				p_brightness	= param_color_add	;
 
 	u32		Offset;
-	float	_w			= RCache.get_target_width();
-	float	_h			= RCache.get_target_height();
 	
 	Fvector2			n0,n1,r0,r1,l0,l1;
 	u_calc_tc_duality_ss	(r0,r1,l0,l1);

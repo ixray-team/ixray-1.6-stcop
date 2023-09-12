@@ -750,6 +750,9 @@
     <ClInclude Include="blender_output_scale.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
+    <ClInclude Include="FSR2Wrapper.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1381,6 +1384,9 @@
     </ClCompile>
     <ClCompile Include="blender_output_scale.cpp">
       <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="FSR2_Wrapper.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

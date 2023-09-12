@@ -66,8 +66,10 @@ public:
 	virtual void	Clear();
 	virtual void	End();
 	virtual void	ClearTarget();
-	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject, float JitterX, float JitterY);
-	virtual void	SetCachePrevXform(Fmatrix &mView, Fmatrix &mProject, float JitterX, float JitterY);
+	virtual void	SetCacheXform(Fmatrix& mView, Fmatrix& mProject);
+	virtual void	SetCachePrevXform(Fmatrix& mView, Fmatrix& mProject);
+	virtual void	ResetXform(Fmatrix &mView, Fmatrix &mProject);
+	virtual void	ResetPrevXform(Fmatrix &mView, Fmatrix &mProject);
 	virtual void	OnAssetsChanged();
 
 public:

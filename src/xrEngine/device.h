@@ -61,11 +61,6 @@ public:
 	u32										dwTimeGlobal;
 	u32										dwTimeContinual;
 
-	float									PreviousJitterX = 0.0f;
-	float									PreviousJitterY = 0.0f;
-	float									JitterX = 0.0f;
-	float									JitterY = 0.0f;
-
 	Fvector									vCameraPosition;
 	Fvector									vCameraDirection;
 	Fvector									vCameraTop;
@@ -164,8 +159,9 @@ public:
 			m_bNearer						= FALSE;
 			mProject._43					+= EPS_L;
 		}
-		m_pRender->SetCacheXform(mView, mProject, JitterX, JitterY);
-		m_pRender->SetCachePrevXform(mPrevView, mPrevProject, PreviousJitterX, PreviousJitterY);
+
+		m_pRender->ResetXform(mView, mProject);
+		m_pRender->ResetPrevXform(mPrevView, mPrevProject);
 		//R_ASSERT(0);
 		//	TODO: re-implement set projection
 		//RCache.set_xform_project			(mProject);

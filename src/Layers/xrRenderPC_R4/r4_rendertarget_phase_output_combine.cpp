@@ -4,6 +4,8 @@ extern void set_viewport(ID3DDeviceContext* dev, float w, float h);
 
 void CRenderTarget::phase_output_scale()
 {
+    PIX_EVENT(OUTPUT_UPSCALE);
+
     u32 Offset = 0;
     float d_Z = EPS_S;
     float d_W = 1.0f;

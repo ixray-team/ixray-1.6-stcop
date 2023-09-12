@@ -102,7 +102,6 @@ public:
 		u32		forcegloss			: 1;
 		u32		forceskinw			: 1;
 		float	forcegloss_v		;
-		u32		fsr2;
 	}			o;
 	struct		_stats		{
 		u32		l_total,	l_visible;
@@ -193,8 +192,8 @@ public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
 	D3DVERTEXELEMENT9*				getVB_Format				(int id, BOOL	_alt=FALSE);
-	ID3DVertexBuffer*			getVB						(int id, BOOL	_alt=FALSE);
-	ID3DIndexBuffer*			getIB						(int id, BOOL	_alt=FALSE);
+	ID3DVertexBuffer*				getVB						(int id, BOOL	_alt=FALSE);
+	ID3DIndexBuffer*				getIB						(int id, BOOL	_alt=FALSE);
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();

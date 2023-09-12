@@ -373,18 +373,32 @@ void dxRenderDeviceRender::ClearTarget()
 #endif
 }
 
-void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject, float JitterX, float JitterY)
+void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
 {
 	RCache.set_xform_view(mView);
 	RCache.set_xform_project(mProject);
-	RCache.set_xform_jitter(JitterX, JitterY);
 }
 
-void dxRenderDeviceRender::SetCachePrevXform(Fmatrix& mView, Fmatrix& mProject, float JitterX, float JitterY)
+void dxRenderDeviceRender::SetCachePrevXform(Fmatrix& mView, Fmatrix& mProject)
 {
 	RCache.set_prev_xform_view(mView);
 	RCache.set_prev_xform_project(mProject);
-	RCache.set_prev_xform_jitter(JitterX, JitterY);
+}
+
+void dxRenderDeviceRender::ResetXform(Fmatrix &mView, Fmatrix &mProject)
+{
+	RCache.xforms.m_jitter_x = 0;
+	RCache.xforms.m_jitter_y = 0;
+	RCache.set_xform_view(mView);
+	RCache.set_xform_project(mProject);
+}
+
+void dxRenderDeviceRender::ResetPrevXform(Fmatrix& mView, Fmatrix& mProject)
+{
+	RCache.prev_xforms.m_jitter_x = 0;
+	RCache.prev_xforms.m_jitter_y = 0;
+	RCache.set_prev_xform_view(mView);
+	RCache.set_prev_xform_project(mProject);
 }
 
 bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()

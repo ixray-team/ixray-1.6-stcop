@@ -15,6 +15,20 @@ void CBlender_OutputScale::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
+        break; 
+    case 1:
+        C.r_Pass("stub_notransform_t_scaled", "copy_4to2", FALSE, FALSE, FALSE);
+        C.r_dx10Texture("s_image", r4_motion);
+        C.r_dx10Sampler("smp_nofilter");
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_End();
+        break;  
+    case 2:
+        C.r_Pass("stub_notransform_t_scaled", "copy_depth", FALSE, FALSE, FALSE);
+        C.r_dx10Texture("s_position", r2_RT_P);
+        C.r_dx10Sampler("smp_nofilter");
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_End();
         break;  
     }
 }

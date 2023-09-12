@@ -94,7 +94,7 @@
       <AdditionalIncludeDirectories>D:\Sources\ixray-1.6-stcop\sdk\include;D:\Sources\ixray-1.6-stcop\sdk\include\fsr2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;D3DCompiler.lib;d3d11.lib;dxgi.lib;ffx_fsr2_api_dx11_x86d.lib;ffx_fsr2_api_x86d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;D3DCompiler.lib;d3d11.lib;dxgi.lib;ffx_fsr2_api_dx11_x86.lib;ffx_fsr2_api_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -364,6 +364,7 @@
     <ClInclude Include="dx11HDAOCSBlender.h" />
     <ClInclude Include="dx11MinMaxSMBlender.h" />
     <ClInclude Include="..\xrRender\light.h" />
+    <ClInclude Include="FSR2Wrapper.h" />
     <ClInclude Include="light_gi.h" />
     <ClInclude Include="Light_Render_Direct.h" />
     <ClInclude Include="light_smapvis.h" />
@@ -539,6 +540,7 @@
     <ClCompile Include="CSCompiler.cpp" />
     <ClCompile Include="dx11HDAOCSBlender.cpp" />
     <ClCompile Include="dx11MinMaxSMBlender.cpp" />
+    <ClCompile Include="FSR2_Wrapper.cpp" />
     <ClCompile Include="light_GI.cpp" />
     <ClCompile Include="Light_Render_Direct.cpp" />
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />

@@ -293,7 +293,7 @@ void	CRenderTarget::phase_combine	()
 	// STAGE BEFORE SCALING
 	////////////////////////////////////////////////////////////
 
-	if (RImplementation.o.fsr2) {
+	if (ps_r2_ls_flags.test(R4FLAG_FSR2)) {
 		phase_fsr2_combine();
 	} else {
 		phase_output_scale();
@@ -346,10 +346,7 @@ void	CRenderTarget::phase_combine	()
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(FALSE);
 
-	PIX_EVENT(phase_flares);
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
-
-	PIX_EVENT(phase_pp);
 	phase_pp();
 
 #if 0

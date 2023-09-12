@@ -40,7 +40,6 @@ Texture2D 	s_dn_a;                	//
 
 sampler 	smp_material;
 
-//uniform sampler2D       s_depth;                //
 #ifdef USE_MSAA
 TEXTURE2DMS(float4, MSAA_SAMPLES)	s_position;	//	smp_nofilter or Load
 TEXTURE2DMS(float4, MSAA_SAMPLES)	s_normal;	//	smp_nofilter or Load

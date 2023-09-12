@@ -349,6 +349,8 @@ void CWallmarksEngine::Render()
 	RCache.set_xform_world		(Fidentity);
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project	(Device.mProject);
+	RCache.update_prev_projections_jitter();
+	RCache.update_projections_jitter();
 
 	Fmatrix	mSavedView			= Device.mView;
 	Fvector	mViewPos			;
@@ -356,6 +358,8 @@ void CWallmarksEngine::Render()
 	Device.mView.build_camera_dir	(mViewPos,Device.vCameraDirection,Device.vCameraTop);
 	RCache.set_prev_xform_view(Device.mPrevView);
 	RCache.set_xform_view(Device.mView);
+	RCache.update_prev_projections_jitter();
+	RCache.update_projections_jitter();
 
 	Device.Statistic->RenderDUMP_WM.Begin	();
 	Device.Statistic->RenderDUMP_WMS_Count	= 0;
@@ -459,4 +463,6 @@ void CWallmarksEngine::Render()
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_view(Device.mView);
 	RCache.set_xform_project(Device.mProject);
+	RCache.update_prev_projections_jitter();
+	RCache.update_projections_jitter();
 }

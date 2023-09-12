@@ -93,6 +93,8 @@ xr_token							aa_type_token[] = {
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
 
+float		ps_r4_jitter_factor			= 0.005f;
+
 //int		ps_r__Supersample			= 1		;
 int			ps_r__LightSleepFrames		= 10	;
 
@@ -854,6 +856,7 @@ void		xrRender_initconsole	()
 	//CMD3(CCC_Mask,		"r3_msaa_opt",					&ps_r2_ls_flags,			R3FLAG_MSAA_OPT);
 	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
 	CMD3(CCC_Mask,		"r4_fsr2",						&ps_r2_ls_flags,			R4FLAG_FSR2);
+	CMD4(CCC_Float,		"r4_jitter_factor",				&ps_r4_jitter_factor,		0, 1);
 	//CMD3(CCC_Mask,		"r3_msaa_alphatest",			&ps_r2_ls_flags,			(u32)R3FLAG_MSAA_ALPHATEST);
 	CMD3(CCC_Token,		"r3_msaa_alphatest",			&ps_r3_msaa_atest,			qmsaa__atest_token);
 	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);

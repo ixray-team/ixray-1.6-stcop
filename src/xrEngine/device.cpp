@@ -236,8 +236,6 @@ void CRenderDevice::on_idle		()
 
 	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 
-	PreviousJitterX = JitterX;
-	PreviousJitterY = JitterY;
 	vPrevCameraPosition = vCameraPosition;
 	vPrevCameraDirection = vCameraDirection;
 	vPrevCameraTop = vCameraTop;
@@ -273,8 +271,8 @@ void CRenderDevice::on_idle		()
 
 	// Matrices
 	mFullTransform.mul(mProject,mView);
-	m_pRender->SetCacheXform(mView, mProject, JitterX, JitterY);
-	m_pRender->SetCachePrevXform(mPrevView, mPrevProject, PreviousJitterX, PreviousJitterY);
+	m_pRender->ResetXform(mView, mProject);
+	m_pRender->ResetPrevXform(mPrevView, mPrevProject);
 
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));

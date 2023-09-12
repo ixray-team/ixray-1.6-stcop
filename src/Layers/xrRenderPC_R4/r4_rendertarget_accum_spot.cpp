@@ -38,6 +38,7 @@ void CRenderTarget::accum_spot	(light* L)
 		RCache.set_xform_world			(L->m_xform			);
 		RCache.set_xform_view			(Device.mView		);
 		RCache.set_xform_project		(Device.mProject	);
+		RCache.update_projections_jitter();
 		bIntersect						= enable_scissor	(L);
 		enable_dbt_bounds				(L);
 
@@ -283,6 +284,7 @@ void CRenderTarget::accum_volumetric(light* L)
 		RCache.set_xform_world			(L->m_xform			);
 		RCache.set_xform_view			(Device.mView		);
 		RCache.set_xform_project		(Device.mProject	);
+		RCache.update_projections_jitter();
 		bIntersect						= enable_scissor	(L);
 
 		//enable_dbt_bounds				(L);

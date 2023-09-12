@@ -3,10 +3,13 @@
 
 // r3xx code-path (MRT)
 #define		r2_RT_depth			"$user$depth"			      // MRT
-#define		r2_RT_MSAAdepth		"$user$msaadepth"	         // MRT
+#define		r2_RT_MSAAdepth		"$user$msaadepth"	          // MRT
 #define		r2_RT_P				"$user$position"		      // MRT
 #define		r2_RT_N				"$user$normal"			      // MRT
 #define		r2_RT_albedo		"$user$albedo"			      // MRT
+#define		r4_motion			"$user$motion"				  // MRT
+
+#define		r4_motion			"$user$motion"				  // MRT
 
 // other
 #define		r2_RT_accum			"$user$accum"			// ---	16 bit fp or 16 bit fx
@@ -49,7 +52,7 @@
 #define		r2_RT_distort		"$user$distort"		// ---
 #define		r2_RT_AA_backbuffer	"$user$backbuffer"
 #define		r4_output			"$user$output"
-#define		r4_motion			"$user$motion"
+#define		r4_upscale_output	"$user$upscale_output"
 #define		r4_motion_vectors	"$user$motion_vectors"
 #define		r4_fsr2_target		"$user$fsr2_target"
 

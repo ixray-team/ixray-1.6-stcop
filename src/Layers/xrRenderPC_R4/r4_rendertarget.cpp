@@ -440,11 +440,28 @@ CRenderTarget::CRenderTarget		()
 			rt_Generic_2.create			(r2_RT_generic2, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
 	}
 
+	rt_Depth.create(r2_RT_depth, s_dwWidth, s_dwHeight, D3DFMT_R32F, 1);
 	rt_Output.create(r4_output, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, 1);
+	rt_UpscaleOutput.create(r4_upscale_output, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, 1, true);
 	rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, D3DFMT_A16B16G16R16F, 1);
 	rt_MotionVectors.create(r4_motion_vectors, s_dwWidth, s_dwHeight, D3DFMT_G16R16F, 1);
-	if (RImplementation.o.fsr2)
+	if (ps_r2_ls_flags.test(R4FLAG_FSR2))
 	{
+		auto DisplaySize = g_Fsr2Wrapper.GetDisplaySize();
+		if (g_Fsr2Wrapper.IsCreated() && (DisplaySize.width != Device.TargetWidth || DisplaySize.height != Device.TargetHeight))
+		{
+			g_Fsr2Wrapper.Destroy();
+		}
+		
+		if (!g_Fsr2Wrapper.IsCreated())
+		{
+			Fsr2Wrapper::ContextParameters initParams;
+			initParams.device = HW.pDevice;
+			initParams.displaySize.width = Device.TargetWidth;
+			initParams.displaySize.height = Device.TargetHeight;
+			initParams.maxRenderSize = initParams.displaySize;
+			g_Fsr2Wrapper.Create(initParams);
+		}
 	}
 
 	// FXAA
@@ -1097,10 +1114,31 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_accum_mask			);
 	xr_delete					(b_occq					);
 	xr_delete					(b_hdao_cs				);
-	if( RImplementation.o.dx10_msaa )
+	if ( RImplementation.o.dx10_msaa )
 	{
         xr_delete( b_hdao_msaa_cs );
     }
+}
+
+extern float ps_r4_jitter_factor;
+
+Fvector2 CRenderTarget::get_jitter(bool prevFrame)
+{
+	static float g_CameraJitterX = 0.0f;
+	static float g_CameraJitterY = 0.0f;
+	if (!ps_r2_ls_flags.test(R4FLAG_FSR2)) {
+		//g_CameraJitterX = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
+		//g_CameraJitterY = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
+		g_CameraJitterX = 0.0f;
+		g_CameraJitterY = 0.0f;
+		return { g_CameraJitterX * ps_r4_jitter_factor, g_CameraJitterY * ps_r4_jitter_factor };
+	}
+	
+	const int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount(RCache.get_width(), RCache.get_target_width());
+	ffxFsr2GetJitterOffset(&g_CameraJitterX, &g_CameraJitterY, prevFrame ? Device.dwFrame - 1 : Device.dwFrame, jitterPhaseCount);
+	float jitterX = 2.0f * g_CameraJitterX / RCache.get_width();
+	float jitterY = -2.0f * g_CameraJitterY / RCache.get_height();
+	return { jitterX * ps_r4_jitter_factor, jitterY * ps_r4_jitter_factor };
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)
