@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.15)
 # Options
 option (NRI_DISABLE_XLIB_SUPPORT "Disable 'xlib' support" OFF)
 option (NRI_DISABLE_WAYLAND_SUPPORT "Disable 'wayland' support" OFF)
-option (NRI_STATIC_LIBRARY "Build static library" OFF)
+option (NRI_STATIC_LIBRARY "Build static library" ON)
 
 if (WIN32)
     option (NRI_ENABLE_STREAMLINE_SUPPORT "Enables streamline wrapper for streamline integration. Requires NRI_STREAMLINE_SDK_PATH to point to a valid streamline package" OFF)
@@ -23,7 +23,7 @@ if (NOT IS_SUBMODULE)
     set (CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "")
 endif()
 
-set (GLOBAL_BIN_OUTPUT_PATH "${SPARKLE_BIN_DIR}" CACHE STRING "")
+set (GLOBAL_BIN_OUTPUT_PATH "${IXRAY_SDK_BIN}" CACHE STRING "")
 
 # Create project
 file (READ "${CMAKE_CURRENT_SOURCE_DIR}/Include/NRI.h" ver_h)
@@ -304,7 +304,5 @@ endif ()
 
 set_property (TARGET ${PROJECT_NAME} PROPERTY FOLDER ${PROJECT_NAME})
 
-set_target_properties (${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${SPARKLE_BIN_DIR}/$<0:>")
-set_target_properties (${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${SPARKLE_LIB_DIR}/$<0:>")
-set_target_properties (${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${SPARKLE_LIB_DIR}/$<0:>")
+set_target_properties (${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${IXRAY_SDK_BIN}/$<0:>")
 message ("NRI output path: '${GLOBAL_BIN_OUTPUT_PATH}'")
