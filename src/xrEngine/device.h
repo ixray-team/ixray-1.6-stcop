@@ -55,6 +55,7 @@ public:
 		// Engine flow-control
 	u32										dwFrame;
 
+	float									fTrueTimeDelta;
 	float									fTimeDelta;
 	float									fTimeGlobal;
 	u32										dwTimeDelta;

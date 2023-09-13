@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <chrono>
 
 using namespace DirectX;
 
@@ -422,6 +423,7 @@ void CRenderDevice::FrameMove()
 	dwFrame			++;
 
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
+	static double g_PrevTime = TimerGlobal.GetElapsed_sec();
 
 	if (psDeviceFlags.test(rsConstantFPS))	{
 		// 20ms = 50fps
@@ -436,7 +438,8 @@ void CRenderDevice::FrameMove()
 		dwTimeGlobal	+=	33;
 	} else {
 		// Timer
-		float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
+		double fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
+
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
 		//fTimeDelta = 0.7f * fTimeDelta + 0.3f*fPreviousFrameTime;			// smooth random system activity
 		if (fTimeDelta>.1f)    
@@ -454,6 +457,11 @@ void CRenderDevice::FrameMove()
 		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
 		dwTimeDelta		= dwTimeGlobal-_old_global;
 	}
+
+	static auto current_time = std::chrono::steady_clock::now().time_since_epoch();
+	const auto new_time = std::chrono::steady_clock::now().time_since_epoch();
+	fTrueTimeDelta = static_cast<float>(static_cast<double>(new_time.count() - current_time.count()) / 1000000000.);	
+	current_time = new_time;
 
 	// Frame move
 	Statistic->EngineTOTAL.Begin	();
