@@ -36,11 +36,11 @@ public:
 	virtual void	OnDeviceDestroy( BOOL bKeepTextures);
 	virtual void	ValidateHW();
 	virtual void	DestroyHW();
-	virtual void	Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2);
+	virtual void	Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight);
 	//	Init
 	virtual void	SetupStates();
 	virtual void	OnDeviceCreate(LPCSTR shName);
-	virtual void	Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool);
+	virtual void	Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, bool);
 	virtual void	SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF);
 	//	Overdraw
 	virtual void	overdrawBegin();
@@ -66,7 +66,10 @@ public:
 	virtual void	Clear();
 	virtual void	End();
 	virtual void	ClearTarget();
-	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject);
+	virtual void	SetCacheXform(Fmatrix& mView, Fmatrix& mProject);
+	virtual void	SetCachePrevXform(Fmatrix& mView, Fmatrix& mProject);
+	virtual void	ResetXform(Fmatrix &mView, Fmatrix &mProject);
+	virtual void	ResetPrevXform(Fmatrix &mView, Fmatrix &mProject);
 	virtual void	OnAssetsChanged();
 
 public:

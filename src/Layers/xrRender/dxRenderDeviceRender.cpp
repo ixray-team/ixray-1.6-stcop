@@ -54,7 +54,7 @@ void dxRenderDeviceRender::DestroyHW()
 	HW.DestroyDevice			();
 }
 
-void  dxRenderDeviceRender::Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2)
+void  dxRenderDeviceRender::Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight)
 {
 #ifdef DEBUG
 	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:",HW.pDevice);
@@ -74,8 +74,6 @@ void  dxRenderDeviceRender::Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float
 	dwHeight				= HW.DevPP.BackBufferHeight;
 #endif
 
-	fWidth_2				= float(dwWidth/2);
-	fHeight_2				= float(dwHeight/2);
 	Resources->reset_end	();
 
 #ifdef DEBUG
@@ -151,7 +149,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 //#endif
 }
 
-void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool move_window)
+void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight,bool move_window)
 {
 	HW.CreateDevice		(hWnd, move_window);
 #ifdef USE_DX11
@@ -161,8 +159,6 @@ void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float
 	dwWidth					= HW.DevPP.BackBufferWidth;
 	dwHeight				= HW.DevPP.BackBufferHeight;
 #endif
-	fWidth_2			= float(dwWidth/2)			;
-	fHeight_2			= float(dwHeight/2)			;
 	Resources			= xr_new<CResourceManager>		();
 }
 
@@ -377,10 +373,32 @@ void dxRenderDeviceRender::ClearTarget()
 #endif
 }
 
-void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)
+void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
 {
 	RCache.set_xform_view(mView);
 	RCache.set_xform_project(mProject);
+}
+
+void dxRenderDeviceRender::SetCachePrevXform(Fmatrix& mView, Fmatrix& mProject)
+{
+	RCache.set_prev_xform_view(mView);
+	RCache.set_prev_xform_project(mProject);
+}
+
+void dxRenderDeviceRender::ResetXform(Fmatrix &mView, Fmatrix &mProject)
+{
+	RCache.xforms.m_jitter_x = 0;
+	RCache.xforms.m_jitter_y = 0;
+	RCache.set_xform_view(mView);
+	RCache.set_xform_project(mProject);
+}
+
+void dxRenderDeviceRender::ResetPrevXform(Fmatrix& mView, Fmatrix& mProject)
+{
+	RCache.prev_xforms.m_jitter_x = 0;
+	RCache.prev_xforms.m_jitter_y = 0;
+	RCache.set_prev_xform_view(mView);
+	RCache.set_prev_xform_project(mProject);
 }
 
 bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()

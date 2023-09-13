@@ -45,6 +45,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	// Flush if needed
 	RCache.Vertex.Unlock(vCount_Lock,hGeom_model->vb_stride);
 	RCache.Index.Unlock	(iCount_Lock);
+	RCache.set_prev_xform_world(Fidentity);
 	RCache.set_xform_world(Fidentity);
 	RCache.set_Shader	(pThRen->l_model->shader);
 	RCache.set_Geometry	(hGeom_model);
@@ -78,6 +79,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 		pv->set			(owner.lightning_center.x-vecSx.x+vecSy.x, owner.lightning_center.y-vecSx.y+vecSy.y, owner.lightning_center.z-vecSx.z+vecSy.z, c, 1, 1); pv++;
 	}
 	RCache.Vertex.Unlock	(8,hGeom_gradient.stride());
+	RCache.set_prev_xform_world(Fidentity);
 	RCache.set_xform_world	(Fidentity);
 	RCache.set_Geometry		(hGeom_gradient);
 	RCache.set_Shader		(((dxFlareRender*)&*owner.current->m_GradientTop->m_pFlare)->hShader);

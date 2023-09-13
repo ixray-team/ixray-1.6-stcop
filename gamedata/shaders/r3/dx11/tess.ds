@@ -79,15 +79,12 @@ v2p_bumped main( HS_CONSTANT_DATA_OUTPUT input,
 #	endif
 #endif
 	
-
 	[flatten]if( minc==0 )
 		output.position.xyz = triPos;
 
-	
-	//output.M1.z = Normal.x;
-	//output.M2.z = Normal.y;
-	//output.M3.z = Normal.z;
 	output.hpos	= mul(m_P, float4(output.position.xyz,1));
+	output.cur_hpos = output.hpos;
+	output.prev_hpos = mul(m_prevP, float4(output.position.xyz,1));
 
     return output;
 }

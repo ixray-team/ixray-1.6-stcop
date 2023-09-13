@@ -265,6 +265,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 
 	// Render
 	RCache.set_xform_world		(mSky);
+	RCache.set_prev_xform_world	(mSky);
 	RCache.set_Geometry			(sh_2geom);
 	RCache.set_Shader			(sh_2sky);
 //	RCache.set_Textures			(&env.CurrentEnv->sky_r_textures);
@@ -320,6 +321,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 
 	// Render
 	RCache.set_xform_world		(mXFORM);
+	RCache.set_prev_xform_world	(mXFORM);
 	RCache.set_Geometry			(clouds_geom);
 	RCache.set_Shader			(clouds_sh);
 	dxEnvDescriptorMixerRender	&mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;

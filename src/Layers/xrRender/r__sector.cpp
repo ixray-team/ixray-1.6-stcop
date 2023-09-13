@@ -44,6 +44,7 @@ void CPortal::OnRender	()
 		C.div				((float)poly.size());
 		V[0].set			(C,0x800000FF);
 
+		RCache.set_prev_xform_world(Fidentity);
 		RCache.set_xform_world(Fidentity);
 		// draw solid
 		RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);

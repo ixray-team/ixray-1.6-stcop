@@ -10,14 +10,16 @@
 v2p_bumped main( v_in I )
 {
 //	I.color.rgb 	= I.color.bgr;	//	Swizzle to compensate DX9/DX10 format mismatch
-	float4	w_pos	= I.P				;
-	float2 	tc		= unpack_tc_base	(I.tc,I.T.w,I.B.w);	// copy tc
-	float 	hemi 	= I.Nh.w			;
+	float4	w_pos	= I.P;
+	float2 	tc		= unpack_tc_base(I.tc,I.T.w,I.B.w);	// copy tc
+	float 	hemi 	= I.Nh.w;
 
 	// Eye-space pos/normal
 	v2p_bumped 	O;
 	float3	Pe	= mul		(m_WV,  w_pos		);
-	O.hpos 		= mul		(m_WVP,	w_pos		);
+	O.hpos 		= mul		(m_VP,	w_pos		);
+	O.cur_hpos 	= mul		(m_VPClean,		float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
+	O.prev_hpos = mul		(m_prevVPClean,	float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
 	O.tcdh 		= float4	(tc.xyyy			);
 	O.position	= float4	(Pe, hemi			);
 //	O.position	= float4	(O.hpos.xyz, hemi	);

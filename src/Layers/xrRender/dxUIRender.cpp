@@ -278,6 +278,7 @@ void dxUIRender::FlushPrimitive()
 
 void dxUIRender::CacheSetXformWorld(const Fmatrix& M)
 {
+	RCache.set_prev_xform_world(M);
 	RCache.set_xform_world(M);
 }
 

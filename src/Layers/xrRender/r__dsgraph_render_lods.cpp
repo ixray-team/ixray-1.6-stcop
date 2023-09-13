@@ -104,6 +104,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 		RCache.Vertex.Unlock		( iBatchSize*uiVertexPerImposter, firstV->geom->vb_stride );
 
 		// *** Render
+		RCache.set_prev_xform_world	(Fidentity);
 		RCache.set_xform_world		(Fidentity);
 		for ( u32 uiPass = 0; uiPass < SHADER_PASSES_MAX; ++uiPass)
 		{

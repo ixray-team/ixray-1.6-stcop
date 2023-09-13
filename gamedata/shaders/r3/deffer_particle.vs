@@ -15,11 +15,13 @@ struct 		v2p_particle
 
 v2p_particle main( vv I )
 {
-	float4 	w_pos 	= I.P;
+	float4 	w_pos 	= float4(I.P.x, I.P.y, I.P.z, 1.0f);
 
 	// Eye-space pos/normal
 	v2p_flat 		O;
 	O.hpos 		= mul		(m_WVP,		w_pos	);
+	O.cur_hpos	= mul		(m_WVPClean,		float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
+	O.prev_hpos	= mul		(m_prevWVPClean,	float4(w_pos.x, w_pos.y, w_pos.z, 1.0f));
 	O.N 		= normalize (eye_position-w_pos	);
 	float3	Pe	= mul		(m_WV, 		I.P		);
 	O.tcdh 		= float4	(I.tc.xyyy			);

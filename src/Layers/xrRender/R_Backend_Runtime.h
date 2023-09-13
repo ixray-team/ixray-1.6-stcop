@@ -12,6 +12,7 @@
 #include "../xrRenderDX10/StateManager/dx10State.h"
 #else //USE_DX11
 #include "../xrRenderDX9/dx9R_Backend_Runtime.h"
+#include "R_Backend_xform.h"
 #endif
 
 IC void		R_xforms::set_c_w			(R_constant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
@@ -20,7 +21,29 @@ IC void		R_xforms::set_c_v			(R_constant* C)		{	c_v		= C;	RCache.set_c(C,m_v);	}
 IC void		R_xforms::set_c_p			(R_constant* C)		{	c_p		= C;	RCache.set_c(C,m_p);	};
 IC void		R_xforms::set_c_wv			(R_constant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);	};
 IC void		R_xforms::set_c_vp			(R_constant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
-IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	};
+IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	}
+IC void		R_xforms::set_c_vp_clean	(R_constant* C)		{	c_vp_clean	= C;RCache.set_c(C,m_vp_clean);	};
+IC void		R_xforms::set_c_wvp_clean	(R_constant* C)		{	c_wvp_clean = C;RCache.set_c(C,m_wvp_clean);	}
+
+IC	void CBackend::set_xform_jitter(const Fvector2& Jitter)
+{
+	xforms.set_Jitter(Jitter.x, Jitter.y);
+}
+
+IC	Fvector2 CBackend::get_xform_jitter()
+{
+	return { xforms.m_jitter_x, xforms.m_jitter_y };
+}
+
+IC	void CBackend::set_prev_xform_jitter(const Fvector2& Jitter)
+{
+	prev_xforms.set_Jitter(Jitter.x, Jitter.y);
+}
+
+IC	Fvector2 CBackend::get_prev_xform_jitter()
+{
+	return { prev_xforms.m_jitter_x, prev_xforms.m_jitter_y };
+}
 
 IC	void	CBackend::set_xform_world	(const Fmatrix& M_)
 { 
@@ -37,6 +60,22 @@ IC	void	CBackend::set_xform_project	(const Fmatrix& M_)
 IC	const Fmatrix&	CBackend::get_xform_world	()	{ return xforms.get_W();	}
 IC	const Fmatrix&	CBackend::get_xform_view	()	{ return xforms.get_V();	}
 IC	const Fmatrix&	CBackend::get_xform_project	()	{ return xforms.get_P();	}
+
+IC	void	CBackend::set_prev_xform_world	(const Fmatrix& M_)
+{ 
+	prev_xforms.set_W(M_);
+}
+IC	void	CBackend::set_prev_xform_view	(const Fmatrix& M_)
+{ 
+	prev_xforms.set_V(M_);
+}
+IC	void	CBackend::set_prev_xform_project	(const Fmatrix& M_)
+{ 
+	prev_xforms.set_P(M_);
+}
+IC	const Fmatrix&	CBackend::get_prev_xform_world	()	{ return prev_xforms.get_W();	}
+IC	const Fmatrix&	CBackend::get_prev_xform_view	()	{ return prev_xforms.get_V();	}
+IC	const Fmatrix&	CBackend::get_prev_xform_project()	{ return prev_xforms.get_P();	}
 
 IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
 {

@@ -61,6 +61,8 @@ p_bumped main( InputPatch<p_bumped, 3> ip,
 
 	ouput.tcdh	= ip[i].tcdh;
 	ouput.position	= ip[i].position;
+	ouput.prev_hpos = ip[i].prev_hpos;
+	ouput.cur_hpos  = ip[i].cur_hpos;
 	ouput.M1		= ip[i].M1;
 	ouput.M2		= ip[i].M2;
 	ouput.M3		= ip[i].M3;

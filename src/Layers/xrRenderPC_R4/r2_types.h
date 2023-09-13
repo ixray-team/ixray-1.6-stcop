@@ -2,11 +2,14 @@
 
 
 // r3xx code-path (MRT)
+#define		r2_RT_HW_depth		"$user$hwdepth"			      // MRT
 #define		r2_RT_depth			"$user$depth"			      // MRT
-#define		r2_RT_MSAAdepth	"$user$msaadepth"	         // MRT
 #define		r2_RT_P				"$user$position"		      // MRT
 #define		r2_RT_N				"$user$normal"			      // MRT
 #define		r2_RT_albedo		"$user$albedo"			      // MRT
+#define		r4_motion			"$user$motion"				  // MRT
+
+#define		r4_motion			"$user$motion"				  // MRT
 
 // other
 #define		r2_RT_accum			"$user$accum"			// ---	16 bit fp or 16 bit fx
@@ -28,8 +31,6 @@
 #define		r2_RT_generic2		"$user$generic2"		// ---	//	Igor: for volumetric lights
 #define		r2_RT_generic		"$user$generic"		// ---
 
-#define		r2_RT_backbuffer_final "$user$backbuffer"
-
 #define		r2_RT_bloom1		"$user$bloom1"			// ---
 #define		r2_RT_bloom2		"$user$bloom2"			// ---
 
@@ -46,6 +47,14 @@
 
 #define		r2_material			"$user$material"		// ---
 #define		r2_ds2_fade			"$user$ds2_fade"		// ---
+
+// vertver:
+#define		r2_RT_distort		"$user$distort"		// ---
+#define		r2_RT_AA_backbuffer	"$user$backbuffer"
+#define		r4_output			"$user$output"
+#define		r4_upscale_output	"$user$upscale_output"
+#define		r4_motion_vectors	"$user$motion_vectors"
+#define		r4_fsr2_target		"$user$fsr2_target"
 
 #define		r2_jitter			"$user$jitter_"			// --- dither
 #define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither

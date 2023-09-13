@@ -41,31 +41,20 @@ u32 calc_progress_color(u32, u32, int, int);
 
 void dxApplicationRender::load_draw_internal(CApplication &owner)
 {
-#ifdef USE_DX11
 	//	TODO: DX10: remove this???
 	RImplementation.rmNormal();
 	RCache.set_RT(HW.pBaseRT);
-	RCache.set_ZB(HW.pBaseZB);
+	RCache.set_ZB(RImplementation.Target->rt_HWDepth->pZRT);
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	HW.pContext->ClearRenderTargetView( RCache.get_RT(), ColorRGBA);
-#else //USE_DX11
-	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, color_argb(0, 0, 0, 0), 1, 0));
-#endif
 
-	if(!sh_progress)
+	if (!sh_progress)
 	{
 		return;
 	}
 
-#ifdef USE_DX11
-	//	TODO: DX10: remove this
-//	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 1.0f, 0.0f};
-//	HW.pContext->ClearRenderTargetView( RCache.get_RT(), ColorRGBA);
-//	HW.pContext->ClearDepthStencilView( RCache.get_ZB(), D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-#endif //USE_DX11
-
-	float	_w					= (float)Device.dwWidth;
-	float	_h					= (float)Device.dwHeight;
+	float	_w					= RCache.get_target_width();
+	float	_h					= RCache.get_target_height();
 	bool	b_ws				= (_w/_h) > 1.34f;
 	bool	b_16x9				= b_ws && ((_w/_h)>1.77f);
 	float	ws_k				= (b_16x9) ? 0.75f : 0.8333f;	//16:9 or 16:10

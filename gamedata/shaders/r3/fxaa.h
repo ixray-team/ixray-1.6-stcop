@@ -1,6 +1,6 @@
 #include "common.h"
 
-uniform	float4	screen_res;
+uniform float   screen_scale;
 
 #define FXAA_PC 1
 #define FXAA_HLSL_5 1

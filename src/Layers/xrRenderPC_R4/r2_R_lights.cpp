@@ -100,89 +100,95 @@ void	CRender::render_lights	(light_Package& LP)
 			if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
 			else							r_pmask	(true,false	);
 			L->svis.begin							();
-         PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
-			r_dsgraph_render_subspace				(L->spatial.sector, L->X.S.combine, L->position, TRUE);
-			bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-			bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-			if ( bNormal || bSpecial)	{
-				stats.s_merged						++;
-				L_spot_s.push_back					(L);
-				Target->phase_smap_spot				(L);
-				RCache.set_xform_world				(Fidentity);
-				RCache.set_xform_view				(L->X.S.view);
-				RCache.set_xform_project			(L->X.S.project);
-				r_dsgraph_render_graph				(0);
-				L->X.S.transluent					= FALSE;
-				if (bSpecial)						{
-					L->X.S.transluent					= TRUE;
-					Target->phase_smap_spot_tsh			(L);
-               PIX_EVENT(SHADOWED_LIGHTS_RENDER_GRAPH);
-					r_dsgraph_render_graph				(1);			// normal level, secondary priority
-               PIX_EVENT(SHADOWED_LIGHTS_RENDER_SORTED);
-					r_dsgraph_render_sorted				( );			// strict-sorted geoms
+			{
+				PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
+				r_dsgraph_render_subspace				(L->spatial.sector, L->X.S.combine, L->position, TRUE);
+				bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
+				bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+				if ( bNormal || bSpecial)	{
+					stats.s_merged						++;
+					L_spot_s.push_back					(L);
+					Target->phase_smap_spot				(L);
+					RCache.set_xform_world				(Fidentity);
+					RCache.set_xform_view				(L->X.S.view);
+					RCache.set_xform_project			(L->X.S.project);
+					r_dsgraph_render_graph				(0);
+					L->X.S.transluent					= FALSE;
+					if (bSpecial)						{
+						L->X.S.transluent					= TRUE;
+						Target->phase_smap_spot_tsh			(L);
+						r_dsgraph_render_graph				(1);			// normal level, secondary priority
+						r_dsgraph_render_sorted				( );			// strict-sorted geoms
+					}
+				} else {
+					stats.s_finalclip					++;
 				}
-			} else {
-				stats.s_finalclip					++;
 			}
 			L->svis.end								();
 			r_pmask									(true,false);
 		}
 
-      PIX_EVENT(UNSHADOWED_LIGHTS);
+		{
+			PIX_EVENT(UNSHADOWED_LIGHTS);
 
-      //		switch-to-accumulator
-		Target->phase_accumulator			();
-		HOM.Disable							();
-  
-      PIX_EVENT(POINT_LIGHTS);
-  
-		//		if (has_point_unshadowed)	-> 	accum point unshadowed
-		if		(!LP.v_point.empty())	{
-			light*	L_	= LP.v_point.back	();		LP.v_point.pop_back		();
-			L_->vis_update				();
-			if (L_->vis.visible)			{ 
-				Target->accum_point		(L_);
-				render_indirect			(L_);
+			//		switch-to-accumulator
+			Target->phase_accumulator();
+			HOM.Disable();
+		}
+
+		{
+			PIX_EVENT(POINT_LIGHTS);
+
+			//		if (has_point_unshadowed)	-> 	accum point unshadowed
+			if (!LP.v_point.empty()) {
+				light* L_ = LP.v_point.back();		LP.v_point.pop_back();
+				L_->vis_update();
+				if (L_->vis.visible) {
+					Target->accum_point(L_);
+					render_indirect(L_);
+				}
 			}
 		}
 
-      PIX_EVENT(SPOT_LIGHTS);
+		{
+			PIX_EVENT(SPOT_LIGHTS);
 
-      //		if (has_spot_unshadowed)	-> 	accum spot unshadowed
-		if		(!LP.v_spot.empty())	{
-			light*	L_	= LP.v_spot.back	();		LP.v_spot.pop_back			();
-			L_->vis_update				();
-			if (L_->vis.visible)			{ 
-				LR.compute_xf_spot		(L_);
-				Target->accum_spot		(L_);
-				render_indirect			(L_);
+			//		if (has_spot_unshadowed)	-> 	accum spot unshadowed
+			if (!LP.v_spot.empty()) {
+				light* L_ = LP.v_spot.back();		LP.v_spot.pop_back();
+				L_->vis_update();
+				if (L_->vis.visible) {
+					LR.compute_xf_spot(L_);
+					Target->accum_spot(L_);
+					render_indirect(L_);
+				}
 			}
 		}
 
-      PIX_EVENT(SPOT_LIGHTS_ACCUM_VOLUMETRIC);
-		
-      //		if (was_spot_shadowed)		->	accum spot shadowed
-		if		(!L_spot_s.empty())
-		{ 
-         PIX_EVENT(ACCUM_SPOT);
-			for (u32 it=0; it<L_spot_s.size(); it++)
+		{
+			PIX_EVENT(SPOT_LIGHTS_ACCUM_VOLUMETRIC);
+
+			//		if (was_spot_shadowed)		->	accum spot shadowed
+			if (!L_spot_s.empty())
 			{
-				Target->accum_spot			(L_spot_s[it]);
-				render_indirect				(L_spot_s[it]);
+				for (u32 it = 0; it < L_spot_s.size(); it++)
+				{
+					Target->accum_spot(L_spot_s[it]);
+					render_indirect(L_spot_s[it]);
+				}
+
+				if (RImplementation.o.advancedpp && ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
+					for (u32 it = 0; it < L_spot_s.size(); it++)
+						Target->accum_volumetric(L_spot_s[it]);
+
+				L_spot_s.clear();
 			}
-
-         PIX_EVENT(ACCUM_VOLUMETRIC);
-			if (RImplementation.o.advancedpp && ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
-			for (u32 it=0; it<L_spot_s.size(); it++)
-				Target->accum_volumetric(L_spot_s[it]);
-
-			L_spot_s.clear	();
 		}
 	}
 
-   PIX_EVENT(POINT_LIGHTS_ACCUM);
 	// Point lighting (unshadowed, if left)
 	if (!LP.v_point.empty())		{
+		PIX_EVENT(POINT_LIGHTS_ACCUM);
 		xr_vector<light*>&	Lvec		= LP.v_point;
 		for	(u32 pid=0; pid<Lvec.size(); pid++)	{
 			Lvec[pid]->vis_update		();
@@ -194,9 +200,9 @@ void	CRender::render_lights	(light_Package& LP)
 		Lvec.clear	();
 	}
 
-   PIX_EVENT(SPOT_LIGHTS_ACCUM);
 	// Spot lighting (unshadowed, if left)
 	if (!LP.v_spot.empty())		{
+		PIX_EVENT(SPOT_LIGHTS_ACCUM);
 		xr_vector<light*>&	Lvec		= LP.v_spot;
 		for	(u32 pid=0; pid<Lvec.size(); pid++)	{
 			Lvec[pid]->vis_update		();

@@ -31,12 +31,16 @@ f_deffer main( p_flat I )
 # endif
 #endif
 
+	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
+
   // 2. Standart output
   float4 Ne		= float4( normalize((float3)I.N.xyz), h );
   O				= pack_gbuffer(
 								Ne,
 								float4( I.position.xyz + Ne.xyz*def_virtualh/2.h, ms ),
-								float4( D.rgb, def_gloss ) );	// OUT: rgb.gloss
+								float4( D.rgb, def_gloss ),	// OUT: rgb.gloss
+  						  float4( motion_vector.x, motion_vector.y, 0.0f, 0.0f )
+	 );
 
   return O;
 }

@@ -6,6 +6,10 @@
 
 #include "../xrRender/QueryHelper.h"
 
+Fvector2 g_current_jitter;
+Fvector2 g_prev_jitter;
+void set_viewport(ID3DDeviceContext* dev, float w, float h);
+
 IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
 {
 	float	d1		= _1->spatial.sphere.P.distance_to_sqr	(Device.vCameraPosition);
@@ -154,28 +158,28 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		Target->u_setrt(Target->rt_Output, 0, 0, Target->rt_HWDepth->pZRT);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 
 	// Distort
 	{
 		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-		HW.pContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
+		Target->u_setrt(Target->rt_Distort,0,0, Target->rt_HWDepth->pZRT);		// Now RT is a distortion mask
+		HW.pContext->ClearRenderTargetView(Target->rt_Distort->pRT, ColorRGBA);
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, Target->rt_HWDepth->pZRT);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
 	Fvector2						p0,p1;
 	u32								Offset;
 	u32		C						= color_rgba	(255,255,255,255);
-	float	_w						= float(Device.dwWidth);
-	float	_h						= float(Device.dwHeight);
+	float	_w						= RCache.get_target_width();
+	float	_h						= RCache.get_target_height();
 	float	d_Z						= EPS_S;
 	float	d_W						= 1.f;
 	p0.set							(.5f/_w, .5f/_h);
@@ -189,6 +193,8 @@ void CRender::render_menu	()
 	RCache.Vertex.Unlock			(4,Target->g_menu->vb_stride);
 	RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }
+
+extern float		ps_r4_jitter_factor;
 
 extern u32 g_r;
 void CRender::Render		()
@@ -212,7 +218,7 @@ void CRender::Render		()
 	if( !(g_pGameLevel && g_hud)
 		|| bMenu)	
 	{
-		Target->u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL, Target->rt_HWDepth->pZRT);
 		return;
 	}
 
@@ -222,7 +228,12 @@ void CRender::Render		()
 		return;
 	}
 
-//.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
+	g_current_jitter = Target->get_jitter(false).mul(ps_r4_jitter_factor);
+	g_prev_jitter = Target->get_jitter(true).mul(ps_r4_jitter_factor);
+	RCache.set_xform_jitter(g_current_jitter);
+	RCache.set_prev_xform_jitter(g_prev_jitter);
+	//
+//.	//VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
 	RImplementation.o.distortion				= FALSE;		// disable distorion
@@ -247,8 +258,8 @@ void CRender::Render		()
 		float		z_distance	= ps_r2_zfill		;
 		Fmatrix		m_zfill, m_project				;
 		m_project.build_projection	(
-			deg2rad(Device.fFOV/* *Device.fASPECT*/), 
-			Device.fASPECT, VIEWPORT_NEAR, 
+			deg2rad(Device.fFOV/* *Device.fASPECT*/),
+			Device.fASPECT, VIEWPORT_NEAR,
 			z_distance * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 		m_zfill.mul	(m_project,Device.mView);
 		r_pmask										(true,false);	// enable priority "0"
@@ -292,6 +303,10 @@ void CRender::Render		()
 	//CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 	CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
 
+	// Don't forget to clear motion vectors before rendering
+	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	HW.pContext->ClearRenderTargetView(Target->rt_Motion->pRT, ColorRGBA);
+
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
 	Device.Statistic->RenderCALC.Begin			();
@@ -306,6 +321,8 @@ void CRender::Render		()
 
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
+
+	rmNormal();
 
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
@@ -332,8 +349,7 @@ void CRender::Render		()
 	Target->phase_occq							();
 	LP_normal.clear								();
 	LP_pending.clear							();
-   if( RImplementation.o.dx10_msaa )
-      RCache.set_ZB( RImplementation.Target->rt_MSAADepth->pZRT );
+
 	{
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
 		// perform tests
@@ -377,25 +393,6 @@ void CRender::Render		()
 	if (split_the_scene_to_minimize_wait)	
 	{
 		PIX_EVENT(DEFER_PART1_SPLIT);
-		// skybox can be drawn here
-		if (0)
-		{
-
-			if( !RImplementation.o.dx10_msaa )
-				Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
-			else
-				Target->u_setrt		( Target->rt_Generic_0_r,	Target->rt_Generic_1,0,RImplementation.Target->rt_MSAADepth->pZRT );
-			RCache.set_CullMode	( CULL_NONE );
-			RCache.set_Stencil	( FALSE		);
-
-			// draw skybox
-			RCache.set_ColorWriteEnable					();
-			//CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-			RCache.set_Z(FALSE);
-			g_pGamePersistent->Environment().RenderSky	();
-			//CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
-			RCache.set_Z(TRUE);
-		}
 
 		// level
 		Target->phase_scene_begin				();
@@ -436,12 +433,9 @@ void CRender::Render		()
 		Lights_LastFrame.clear	();
 	}
 
-   // full screen pass to mark msaa-edge pixels in highest stencil bit
-   if( RImplementation.o.dx10_msaa )
-   {
-	   PIX_EVENT( MARK_MSAA_EDGES );
-      Target->mark_msaa_edges();
-   }
+	{
+		Target->phase_motion_vectors();
+	}
 
 	//	TODO: DX10: Implement DX10 rain.
 	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
@@ -449,6 +443,8 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_RAIN);
 		render_rain();
 	}
+
+	rmNormal();
 
 	// Directional light - fucking sun
 	if (bSUN)	
@@ -460,18 +456,15 @@ void CRender::Render		()
 
 	{
 		PIX_EVENT(DEFER_SELF_ILLUM);
-		Target->phase_accumulator			();
+		Target->phase_accumulator();
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
-		RCache.set_xform_project			(Device.mProject); 
-		RCache.set_xform_view				(Device.mView);
-		// Stencil - write 0x1 at pixel pos - 
-      if( !RImplementation.o.dx10_msaa )
-		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-      else
-		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-		//RCache.set_Stencil				(TRUE,D3DCMP_ALWAYS,0x00,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-		RCache.set_CullMode					(CULL_CCW);
-		RCache.set_ColorWriteEnable			();
+		RCache.set_prev_xform_project(Device.mPrevProject);
+		RCache.set_prev_xform_view(Device.mPrevView);
+		RCache.set_xform_project(Device.mProject); 
+		RCache.set_xform_view(Device.mView);
+		RCache.set_Stencil(TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+		RCache.set_CullMode(CULL_CCW);
+		RCache.set_ColorWriteEnable();
 		RImplementation.r_dsgraph_render_emissive();
 	}
 

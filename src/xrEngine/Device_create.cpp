@@ -175,18 +175,16 @@ cdb_bDebug		= &bDebug;
 	Log					("Starting RENDER device...");
 
 #ifdef _EDITOR
-	psCurrentVidMode[0]	= dwWidth;
-	psCurrentVidMode[1] = dwHeight;
+	psCurrentVidMode[0]	= TargetWidth;
+	psCurrentVidMode[1] = TargetHeight;
 #endif // #ifdef _EDITOR
 
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
 	m_pRender->Create	(
 		m_hWnd,
-		dwWidth,
-		dwHeight,
-		fWidth_2,
-		fHeight_2,
+		TargetWidth,
+		TargetHeight,
 #ifdef INGAME_EDITOR
 		editor() ? false :
 #endif // #ifdef INGAME_EDITOR

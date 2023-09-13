@@ -64,7 +64,7 @@ public:
 	};
 	enum
 	{
-		MaxCBuffers	= 14
+		MaxCBuffers	= 21
 	};
 #else //USE_DX11
 	enum	MaxTextures
@@ -84,6 +84,7 @@ public:
 	ID3DIndexBuffer*				old_QuadIB;
 	ID3DIndexBuffer*				CuboidIB;
 	R_xforms						xforms;
+	R_xforms						prev_xforms;
 	R_hemi							hemi;
 	R_tree							tree;
 #ifdef USE_DX11
@@ -228,14 +229,31 @@ public:
 	IC	R_constant_array&			get_ConstantCache_Pixel		()			{ return constants.a_pixel;		}
 #endif
 
+	IC  float							get_width();
+	IC  float							get_height();	
+	IC  float							get_target_width();
+	IC  float							get_target_height();
+
 	// API
 	IC	void						set_xform			(u32 ID, const Fmatrix& M);
+
+	IC	void						set_xform_jitter	(const Fvector2& Jitter);
 	IC	void						set_xform_world		(const Fmatrix& M);
 	IC	void						set_xform_view		(const Fmatrix& M);
 	IC	void						set_xform_project	(const Fmatrix& M);
 	IC	const Fmatrix&				get_xform_world		();
 	IC	const Fmatrix&				get_xform_view		();
-	IC	const Fmatrix&				get_xform_project	();
+	IC	const Fmatrix&				get_xform_project	();	
+	IC	Fvector2					get_xform_jitter	();	
+
+	IC	void						set_prev_xform_jitter	(const Fvector2& Jitter);
+	IC	void						set_prev_xform_world	(const Fmatrix& M);
+	IC	void						set_prev_xform_view		(const Fmatrix& M);
+	IC	void						set_prev_xform_project	(const Fmatrix& M);
+	IC	const Fmatrix&				get_prev_xform_world	();
+	IC	const Fmatrix&				get_prev_xform_view		();
+	IC	const Fmatrix&				get_prev_xform_project	();
+	IC	Fvector2					get_prev_xform_jitter();
 
 	IC	void						set_RT				(ID3DRenderTargetView* RT, u32 ID=0);
 	IC	void						set_ZB				(ID3DDepthStencilView* ZB);
@@ -399,7 +417,7 @@ public:
 	void dbg_DrawEllipse			(Fmatrix& T, u32 C);
 #endif
 
-	CBackend()						{	Invalidate(); };
+	CBackend() : xforms(false), prev_xforms(true)	{	Invalidate(); };
 
 #ifdef USE_DX11
 private:

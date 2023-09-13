@@ -21,6 +21,21 @@ BIND_DECLARE(p);
 BIND_DECLARE(wv);
 BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
+BIND_DECLARE(vp_clean);
+BIND_DECLARE(wvp_clean);
+
+#define	PREV_BIND_DECLARE(xf)	\
+class cl_xform_prev_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.prev_xforms.set_c_##xf (C); } }; \
+	static cl_xform_prev_##xf	binder_prev_##xf
+PREV_BIND_DECLARE(w);
+PREV_BIND_DECLARE(invw);
+PREV_BIND_DECLARE(v);
+PREV_BIND_DECLARE(p);
+PREV_BIND_DECLARE(wv);
+PREV_BIND_DECLARE(vp);
+PREV_BIND_DECLARE(wvp);
+PREV_BIND_DECLARE(vp_clean);
+PREV_BIND_DECLARE(wvp_clean);
 
 #define DECLARE_TREE_BIND(c)	\
 	class cl_tree_##c: public R_constant_setup	{virtual void setup(R_constant* C) {RCache.tree.set_c_##c(C);} };	\
@@ -231,6 +246,36 @@ class cl_eye_N		: public R_constant_setup {
 };
 static cl_eye_N		binder_eye_N;
 
+// eye-params
+class cl_prev_eye_P		: public R_constant_setup {
+	virtual void setup(R_constant* C)
+	{
+		Fvector&		V	= RDEVICE.vPrevCameraPosition;
+		RCache.set_c	(C,V.x,V.y,V.z,1);
+	}
+};
+static cl_prev_eye_P		binder_prev_eye_P;
+
+// eye-params
+class cl_prev_eye_D		: public R_constant_setup {
+	virtual void setup(R_constant* C)
+	{
+		Fvector&		V	= RDEVICE.vPrevCameraDirection;
+		RCache.set_c	(C,V.x,V.y,V.z,0);
+	}
+};
+static cl_prev_eye_D		binder_prev_eye_D;
+
+// eye-params
+class cl_prev_eye_N		: public R_constant_setup {
+	virtual void setup(R_constant* C)
+	{
+		Fvector&		V	= RDEVICE.vPrevCameraTop;
+		RCache.set_c	(C,V.x,V.y,V.z,0);
+	}
+};
+static cl_prev_eye_N		binder_prev_eye_N;
+
 #ifndef _EDITOR
 // D-Light0
 class cl_sun0_color	: public R_constant_setup {
@@ -299,9 +344,25 @@ static class cl_screen_res : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		RCache.set_c	(C, (float)RDEVICE.dwWidth, (float)RDEVICE.dwHeight, 1.0f/(float)RDEVICE.dwWidth, 1.0f/(float)RDEVICE.dwHeight);
+		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	}
 }	binder_screen_res;
+
+static class cl_target_screen_res : public R_constant_setup		
+{	
+	virtual void setup	(R_constant* C)
+	{
+		RCache.set_c(C, RCache.get_target_width(), RCache.get_target_height(), 1.0f/ RCache.get_target_width(), 1.0f/ RCache.get_target_height());
+	}
+}	binder_target_screen_res;
+
+static class cl_screen_scale : public R_constant_setup		
+{	
+	virtual void setup	(R_constant* C)
+	{
+		RCache.set_c(C, RDEVICE.RenderScale);
+	}
+} binder_screen_scale;
 
 
 // Standart constant-binding
@@ -314,7 +375,21 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_P",				&binder_p);
 	r_Constant				("m_WV",			&binder_wv);
 	r_Constant				("m_VP",			&binder_vp);
-	r_Constant				("m_WVP",			&binder_wvp);
+	r_Constant				("m_WVP",			&binder_wvp);	
+	r_Constant				("m_VP",			&binder_vp);
+	r_Constant				("m_WVP",			&binder_wvp);	
+	r_Constant				("m_VPClean",		&binder_vp_clean);
+	r_Constant				("m_WVPClean",		&binder_wvp_clean);	
+	
+	r_Constant				("m_prevW",			&binder_prev_w);
+	r_Constant				("m_previnvW",		&binder_prev_invw);
+	r_Constant				("m_prevV",			&binder_prev_v);
+	r_Constant				("m_prevP",			&binder_prev_p);
+	r_Constant				("m_prevWV",		&binder_prev_wv);
+	r_Constant				("m_prevVP",		&binder_prev_vp);
+	r_Constant				("m_prevWVP",		&binder_prev_wvp);
+	r_Constant				("m_prevVPClean",	&binder_prev_vp_clean);
+	r_Constant				("m_prevWVPClean",	&binder_prev_wvp_clean);
 
 	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
 	r_Constant				("m_xform",			&tree_binder_m_xform);
@@ -357,7 +432,9 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("L_hemi_color",	&binder_hemi_color);
 	r_Constant				("L_ambient",		&binder_amb_color);
 #endif
+	r_Constant				("target_screen_res",&binder_target_screen_res);
 	r_Constant				("screen_res",		&binder_screen_res);
+	r_Constant				("screen_scale",	&binder_screen_scale);
 
 	// detail
 	//if (bDetail	&& detail_scaler)

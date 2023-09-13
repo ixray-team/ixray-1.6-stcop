@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <chrono>
 
 using namespace DirectX;
 
@@ -236,6 +237,14 @@ void CRenderDevice::on_idle		()
 
 	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 
+	vPrevCameraPosition = vCameraPosition;
+	vPrevCameraDirection = vCameraDirection;
+	vPrevCameraTop = vCameraTop;
+	vPrevCameraRight = vCameraRight;
+	mPrevView = mView;
+	mPrevProject = mProject;
+	mPrevFullTransform = mFullTransform;
+
 	if (psDeviceFlags.test(rsStatistic))	g_bEnableStatGather	= TRUE;
 	else									g_bEnableStatGather	= FALSE;
 	if(g_loading_events.size())
@@ -262,18 +271,17 @@ void CRenderDevice::on_idle		()
 	}
 
 	// Matrices
-	mFullTransform.mul			( mProject,mView	);
-	m_pRender->SetCacheXform(mView, mProject);
-	//RCache.set_xform_view		( mView				);
-	//RCache.set_xform_project	( mProject			);
-	
+	mFullTransform.mul(mProject,mView);
+	m_pRender->ResetXform(mView, mProject);
+	m_pRender->ResetPrevXform(mPrevView, mPrevProject);
+
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
 
-	vCameraPosition_saved	= vCameraPosition;
-	mFullTransform_saved	= mFullTransform;
-	mView_saved				= mView;
-	mProject_saved			= mProject;
+	vCameraPosition_saved = vCameraPosition;
+	mFullTransform_saved = mFullTransform;
+	mView_saved = mView;
+	mProject_saved = mProject;
 
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
@@ -415,6 +423,7 @@ void CRenderDevice::FrameMove()
 	dwFrame			++;
 
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
+	static double g_PrevTime = TimerGlobal.GetElapsed_sec();
 
 	if (psDeviceFlags.test(rsConstantFPS))	{
 		// 20ms = 50fps
@@ -429,7 +438,8 @@ void CRenderDevice::FrameMove()
 		dwTimeGlobal	+=	33;
 	} else {
 		// Timer
-		float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
+		double fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
+
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
 		//fTimeDelta = 0.7f * fTimeDelta + 0.3f*fPreviousFrameTime;			// smooth random system activity
 		if (fTimeDelta>.1f)    
@@ -447,6 +457,11 @@ void CRenderDevice::FrameMove()
 		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
 		dwTimeDelta		= dwTimeGlobal-_old_global;
 	}
+
+	static auto current_time = std::chrono::steady_clock::now().time_since_epoch();
+	const auto new_time = std::chrono::steady_clock::now().time_since_epoch();
+	fTrueTimeDelta = static_cast<float>(static_cast<double>(new_time.count() - current_time.count()) / 1000000000.);	
+	current_time = new_time;
 
 	// Frame move
 	Statistic->EngineTOTAL.Begin	();

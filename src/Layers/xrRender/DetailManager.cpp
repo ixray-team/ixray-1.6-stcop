@@ -338,6 +338,7 @@ void CDetailManager::Render	()
 
 	RCache.set_CullMode		(CULL_NONE);
 	RCache.set_xform_world	(Fidentity);
+	RCache.set_prev_xform_world(Fidentity);
 	if (UseVS())			hw_Render	();
 	else					soft_Render	();
 	RCache.set_CullMode		(CULL_CCW);

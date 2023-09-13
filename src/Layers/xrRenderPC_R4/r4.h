@@ -65,7 +65,6 @@ public:
 		u32		mrtmixdepth			: 1;
 		u32		fp16_filter			: 1;
 		u32		fp16_blend			: 1;
-		u32		albedo_wo			: 1;						// work-around albedo on less capable HW
 		u32		HW_smap				: 1;
 		u32		HW_smap_PCF			: 1;
 		u32		HW_smap_FETCH4		: 1;
@@ -79,7 +78,6 @@ public:
 
 		u32		distortion			: 1;
 		u32		distortion_enabled	: 1;
-		u32		mblur				: 1;
 
 		u32		sunstatic			: 1;
 		u32		noshadows			: 1;
@@ -88,17 +86,10 @@ public:
 		u32		advancedpp			: 1;	//	advanced post process (DOF, SSAO, volumetrics, etc.)
 		u32		volumetricfog		: 1;
 
-      u32		dx10_msaa			: 1;	//	DX10.0 path
-	  u32		dx10_msaa_hybrid	: 1;	//	DX10.0 main path with DX10.1 A-test msaa allowed
-      u32		dx10_msaa_opt	    : 1;	//	DX10.1 path
-      u32		dx10_gbuffer_opt	: 1;	//	
-      u32		dx10_msaa_alphatest	: 2;	//	A-test mode
-	  u32		dx10_msaa_samples	: 4;
-
-	  u32		dx10_minmax_sm		: 2;
-	  u32		dx10_minmax_sm_screenarea_threshold;
-		
-	  u32		dx11_enable_tessellation : 1;
+        u32		dx10_gbuffer_opt	: 1;	//	
+	    u32		dx10_minmax_sm		: 2;
+	    u32		dx10_minmax_sm_screenarea_threshold;		
+	    u32		dx11_enable_tessellation : 1;
 
 		u32		forcegloss			: 1;
 		u32		forceskinw			: 1;
@@ -193,8 +184,8 @@ public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
 	D3DVERTEXELEMENT9*				getVB_Format				(int id, BOOL	_alt=FALSE);
-	ID3DVertexBuffer*			getVB						(int id, BOOL	_alt=FALSE);
-	ID3DIndexBuffer*			getIB						(int id, BOOL	_alt=FALSE);
+	ID3DVertexBuffer*				getVB						(int id, BOOL	_alt=FALSE);
+	ID3DIndexBuffer*				getIB						(int id, BOOL	_alt=FALSE);
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();

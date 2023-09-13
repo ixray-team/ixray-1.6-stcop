@@ -110,8 +110,15 @@
 			LPCSTR						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
 			LPCSTR						c_entry		= "main";
 
+			DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+#ifdef DEBUG
+			flags |= D3DCOMPILE_DEBUG;
+			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
+#endif
+
 			// Compile
-			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)sh);
 
 			FS.r_close					( file );
 

@@ -35,26 +35,16 @@ public:
 	IBlender*					b_bloom;
 	IBlender*					b_luminance;
 	IBlender*					b_combine;
-	IBlender*					b_postprocess_msaa;
-	IBlender*					b_bloom_msaa;
-	IBlender*					b_combine_msaa[8];
-	IBlender*					b_accum_mask_msaa[8];
-	IBlender*					b_accum_spot_msaa[8];
-	IBlender*					b_accum_direct_msaa[8];
-	IBlender*					b_accum_direct_volumetric_msaa[8];
-	IBlender*					b_accum_direct_volumetric_sun_msaa[8];
-	IBlender*					b_accum_volumetric_msaa[8];
-	IBlender*					b_accum_point_msaa[8];
-	IBlender*					b_accum_reflected_msaa[8];
 	IBlender*					b_ssao;
-	IBlender*					b_ssao_msaa[8];
 
 	IBlender*					b_fxaa;
 	IBlender*					b_smaa;
 
+	// vertver:
+	IBlender*					b_output_scale;
+
     // compute shader for hdao
     IBlender*                   b_hdao_cs;
-    IBlender*                   b_hdao_msaa_cs;
 
 #ifdef DEBUG
 	struct		dbg_line_t		{
@@ -66,28 +56,31 @@ public:
 	xr_vector<Fplane>												dbg_planes;
 #endif
 
+	ref_rt						rt_UpscaleOutput;	// target
+	ref_rt						rt_Output;			// target
+	ref_rt						rt_Distort;			// target
+
 	// MRT-path
-	ref_rt						rt_Depth;			// Z-buffer like - initial depth
-	ref_rt						rt_MSAADepth;     // z-buffer for MSAA deferred shading
-	ref_rt						rt_Generic_0_r;   // MRT generic 0
-	ref_rt						rt_Generic_1_r;   // MRT generic 1
-	ref_rt						rt_Generic;
-	ref_rt						rt_Back_Buffer;
-	ref_rt						rt_Position;		// 64bit,	fat	(x,y,z,?)				(eye-space)
-	ref_rt						rt_Normal;			// 64bit,	fat	(x,y,z,hemi)			(eye-space)
-	ref_rt						rt_Color;			// 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
+	ref_rt						rt_HWDepth;			// target
+	ref_rt						rt_Depth;			// scaled, Z-buffer like - initial depth
+	ref_rt						rt_AA_BackBuffer;	// scaled
+	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
+	ref_rt						rt_Position;		// scaled, 64bit,	fat	(x,y,z,?)				(eye-space)
+	ref_rt						rt_Normal;			// scaled, 64bit,	fat	(x,y,z,hemi)			(eye-space)
+	ref_rt						rt_Motion;			// scaled, 64bit,	fat	(mvx, mvy)				(eye-space)
+	ref_rt						rt_Color;			// scaled, 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
 
 	// 
-	ref_rt						rt_Accumulator;		// 64bit		(r,g,b,specular)
-	ref_rt						rt_Accumulator_temp;// only for HW which doesn't feature fp16 blend
-	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+	ref_rt						rt_Accumulator;		// scaled, 64bit		(r,g,b,specular)
+	ref_rt						rt_Accumulator_temp;// scaled, only for HW which doesn't feature fp16 blend
+	ref_rt						rt_Generic_0;		// scaled, 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+	ref_rt						rt_Generic_1;		// scaled, 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
-	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-	ref_rt						rt_Bloom_1;			// 32bit, dim/4	(r,g,b,?)
-	ref_rt						rt_Bloom_2;			// 32bit, dim/4	(r,g,b,?)
-	ref_rt						rt_LUM_64;			// 64bit, 64x64,	log-average in all components
-	ref_rt						rt_LUM_8;			// 64bit, 8x8,		log-average in all components
+	ref_rt						rt_Generic_2;		// scaled, 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+	ref_rt						rt_Bloom_1;			// scaled, 32bit, dim/4	(r,g,b,?)
+	ref_rt						rt_Bloom_2;			// scaled, 32bit, dim/4	(r,g,b,?)
+	ref_rt						rt_LUM_64;			// scaled, 64bit, 64x64,	log-average in all components
+	ref_rt						rt_LUM_8;			// scaled, 64bit, 8x8,		log-average in all components
 
 	ref_rt						rt_LUM_pool[CHWCaps::MAX_GPUS*2]	;	// 1xfp32,1x1,		exp-result -> scaler
 	ref_texture				t_LUM_src		;	// source
@@ -117,6 +110,9 @@ private:
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
 
+	// vertver:
+	ref_shader					s_output_scale;
+
 	// OCCq
 	ref_shader					s_occq;
 
@@ -128,9 +124,7 @@ private:
 	ref_rt						rt_ssao_temp;
 	ref_rt						rt_half_depth;
 	ref_shader					s_ssao;
-	ref_shader					s_ssao_msaa[8];
 	ref_shader					s_hdao_cs;
-	ref_shader					s_hdao_cs_msaa;
 
 	// Accum
 	ref_shader					s_accum_mask	;
@@ -147,16 +141,6 @@ private:
 
 	//	DX10 Rain
 	ref_shader					s_rain;
-	
-	ref_shader					s_rain_msaa[8]	; // up to 8 shaders for DX10.0 support
-	ref_shader              s_accum_direct_volumetric_msaa[8];
-	ref_shader					s_accum_mask_msaa[8];
-	ref_shader					s_accum_direct_msaa[8];
-   ref_shader					s_mark_msaa_edges;
-	ref_shader					s_accum_point_msaa[8]	;
-	ref_shader					s_accum_spot_msaa[8]	;
-	ref_shader					s_accum_reflected_msaa[8];
-	ref_shader					s_accum_volume_msaa[8];
 
 	ref_geom						g_accum_point	;
 	ref_geom						g_accum_spot	;
@@ -181,7 +165,6 @@ private:
 	ref_shader				s_bloom_dbg_1;
 	ref_shader				s_bloom_dbg_2;
 	ref_shader				s_bloom;
-   ref_shader				s_bloom_msaa;
 	float							f_bloom_factor;
 
 	// Luminance
@@ -199,11 +182,9 @@ private:
 	ref_shader				s_combine_dbg_1;
 	ref_shader				s_combine_dbg_Accumulator;
 	ref_shader				s_combine;
-   ref_shader				s_combine_msaa[8];
 	ref_shader				s_combine_volumetric;
 public:
 	ref_shader				s_postprocess;
-   ref_shader           s_postprocess_msaa;
 	ref_geom					g_postprocess;
 	ref_shader				s_menu;
 	ref_geom					g_menu;
@@ -281,8 +262,6 @@ public:
 
 	void						phase_rain				();
 	void						draw_rain				(light &RainSetup);
-	
-	void						mark_msaa_edges();
 
 	bool						need_to_render_sunshafts();
 	bool						use_minmax_sm_this_frame();
@@ -306,6 +285,11 @@ public:
 	void						phase_combine_volumetric();
 	void						phase_pp				();
 
+	void						phase_copy_depth		();
+	void						phase_motion_vectors	();
+	void						phase_fsr2_combine		();
+	void						phase_output_scale		();
+
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}
 	virtual void				set_duality_h			(float	f)		{ param_duality_h=_abs(f);			}
@@ -317,8 +301,14 @@ public:
 	virtual void				set_color_gray			(u32	f)		{ param_color_gray=f;				}
 	virtual void				set_color_add			(const Fvector	&f)		{ param_color_add=f;		}
 
-	virtual u32					get_width				()				{ return dwWidth;					}
-	virtual u32					get_height				()				{ return dwHeight;					}
+	Fvector2					get_jitter(bool prevFrame);
+
+	virtual u32					get_width				();
+	virtual u32					get_height				();
+	virtual u32					get_target_width		();
+	virtual u32					get_target_height		();
+	virtual u32					get_core_width			();
+	virtual u32					get_core_height			();
 
 	virtual void				set_cm_imfluence	(float	f)		{ param_color_map_influence = f;							}
 	virtual void				set_cm_interpolate	(float	f)		{ param_color_map_interpolate = f;							}

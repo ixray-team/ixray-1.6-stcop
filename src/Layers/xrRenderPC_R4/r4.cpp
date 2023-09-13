@@ -71,15 +71,15 @@ static class cl_LOD		: public R_constant_setup
 static class cl_pos_decompress_params		: public R_constant_setup		{	virtual void setup	(R_constant* C)
 {
 	float VertTan =  -1.0f * tanf( deg2rad(Device.fFOV/2.0f ) );
-	float HorzTan =  - VertTan / Device.fASPECT;
+	float HorzTan =  - VertTan / Device	.fASPECT;
 
-	RCache.set_c	( C, HorzTan, VertTan, ( 2.0f * HorzTan )/(float)Device.dwWidth, ( 2.0f * VertTan ) /(float)Device.dwHeight );
+	RCache.set_c	( C, HorzTan, VertTan, ( 2.0f * HorzTan )/ RCache.get_width(), (2.0f * VertTan) / RCache.get_height());
 
 }}	binder_pos_decompress_params;
 
 static class cl_pos_decompress_params2		: public R_constant_setup		{	virtual void setup	(R_constant* C)
 {
-	RCache.set_c	(C,(float)Device.dwWidth, (float)Device.dwHeight, 1.0f/(float)Device.dwWidth, 1.0f/(float)Device.dwHeight );
+	RCache.set_c	(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
 }}	binder_pos_decompress_params2;
 
@@ -231,9 +231,6 @@ void					CRender::create					()
 	}
 
 	VERIFY2				(o.mrt && (HW.Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
-	if (o.mrtmixdepth)		o.albedo_wo		= FALSE	;
-	else if (o.fp16_blend)	o.albedo_wo		= FALSE	;
-	else					o.albedo_wo		= TRUE	;
 
 	// nvstencil on NV40 and up
 	o.nvstencil			= FALSE;
@@ -266,7 +263,6 @@ void					CRender::create					()
 	o.volumetricfog		= ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
-	o.mblur				= (strstr(Core.Params,"-mblur"))?		TRUE	:FALSE	;
 	o.distortion_enabled= (strstr(Core.Params,"-nodistort"))?	FALSE	:TRUE	;
 	o.distortion		= o.distortion_enabled;
 	o.disasm			= (strstr(Core.Params,"-disasm"))?		TRUE	:FALSE	;
@@ -290,47 +286,9 @@ void					CRender::create					()
     if( o.ssao_hdao )
         o.ssao_opt_data = false;
 
-	//	MSAA option dependencies
-
-	o.dx10_msaa			= !!ps_r3_msaa;
-	o.dx10_msaa_samples = (1 << ps_r3_msaa);
-
-	o.dx10_msaa_opt		= ps_r2_ls_flags.test(R3FLAG_MSAA_OPT);
-	o.dx10_msaa_opt		= o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 )
-			|| o.dx10_msaa && (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
-
-	//o.dx10_msaa_hybrid	= ps_r2_ls_flags.test(R3FLAG_MSAA_HYBRID);
-	o.dx10_msaa_hybrid	= !o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 ) ;
-
-	//	Allow alpha test MSAA for DX10.0
-
-	//o.dx10_msaa_alphatest= ps_r2_ls_flags.test((u32)R3FLAG_MSAA_ALPHATEST);
-	//o.dx10_msaa_alphatest= o.dx10_msaa_alphatest && o.dx10_msaa;
-
-	//o.dx10_msaa_alphatest_atoc= (o.dx10_msaa_alphatest && !o.dx10_msaa_opt && !o.dx10_msaa_hybrid);
-
-	o.dx10_msaa_alphatest = 0;
-	if (o.dx10_msaa)
-	{
-		if ( o.dx10_msaa_opt || o.dx10_msaa_hybrid )
-		{
-			if (ps_r3_msaa_atest==1)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_1_ATOC;
-			else if (ps_r3_msaa_atest==2)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_1_NATIVE;
-		}
-		else
-		{
-			if (ps_r3_msaa_atest)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_0_ATOC;
-		}
-	}
-
-	o.dx10_gbuffer_opt	= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
-
+	o.dx10_gbuffer_opt= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
 	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
-
 	o.dx11_enable_tessellation = HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	if (o.dx10_minmax_sm==MMSM_AUTODETECT)
@@ -403,7 +361,7 @@ void					CRender::create					()
 	::PortalTraverser.initialize();
 	FluidManager.Initialize( 70, 70, 70 );
 //	FluidManager.Initialize( 100, 100, 100 );
-	FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+	FluidManager.SetScreenSize(RCache.get_width(), RCache.get_height());
 }
 
 void					CRender::destroy				()
@@ -469,7 +427,7 @@ void CRender::reset_end()
 	Target						=	xr_new<CRenderTarget>	();
 
 	xrRender_apply_tf			();
-	FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+	FluidManager.SetScreenSize(RCache.get_width(), RCache.get_height());
 
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)
@@ -1016,17 +974,6 @@ HRESULT	CRender::shader_compile			(
 		++len;
 	}
 
-	if (o.mblur)			{
-		defines[def_it].Name		=	"USE_MBLUR";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.mblur); 
-		++len;
-	}
-
 	if (o.sunstatic)		{
 		defines[def_it].Name		=	"USE_R2_STATIC_SUN";
 		defines[def_it].Definition	=	"1";
@@ -1101,31 +1048,6 @@ HRESULT	CRender::shader_compile			(
 			defines[def_it].Definition	=	"1";
 			def_it						++;
 		}
-	}
-
-    if( o.dx10_msaa )
-	{
-		static char def[ 256 ];
-		//if( m_MSAASample < 0 )
-		//{
-			def[0]= '0';
-		//	sh_name[len]='0'; ++len;
-		//}
-		//else
-		//{
-		//	def[0]= '0' + char(m_MSAASample);
-		//	sh_name[len]='0' + char(m_MSAASample); ++len;
-		//}
-		def[1] = 0;
-		defines[def_it].Name		=	"ISAMPLE";
-		defines[def_it].Definition	=	def;
-		def_it						++	;
-		sh_name[len]='0'; ++len;
-	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.dx10_msaa);
-		++len;
 	}
 
 	// skinning
@@ -1349,79 +1271,6 @@ HRESULT	CRender::shader_compile			(
    {
 	   sh_name[len] = '0' + static_cast<char>(o.dx10_minmax_sm != 0); 
 	   ++len;
-   }
-
-	//Be carefull!!!!! this should be at the end to correctly generate
-	//compiled shader name;
-	// add a #define for DX10_1 MSAA support
-   if( o.dx10_msaa )
-   {
-	   defines[def_it].Name		=	"USE_MSAA";
-	   defines[def_it].Definition	=	"1";
-	   def_it						++;
-       sh_name[len]='1'; ++len;
-
-	   static char samples[2];
-
-	   defines[def_it].Name		=	"MSAA_SAMPLES";
-	   samples[0] = static_cast<char>(o.dx10_msaa_samples) + '0';
-	   samples[1] = 0;
-	   defines[def_it].Definition	= samples;	
-	   def_it						++;
-	   sh_name[len]='0'+ static_cast<char>(o.dx10_msaa_samples); ++len;
-
-	   if( o.dx10_msaa_opt )
-	   {
-		   defines[def_it].Name		=	"MSAA_OPTIMIZATION";
-		   defines[def_it].Definition	=	"1";
-		   def_it						++;
-	   }
-	   else
-	   {
-		   sh_name[len] = '0' + static_cast<char>(o.dx10_msaa_opt); 
-		   ++len;
-	   }
-
-		switch(o.dx10_msaa_alphatest)
-		{
-		case MSAA_ATEST_DX10_0_ATOC:
-			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_0_ATOC";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-			sh_name[len]='1'; ++len;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-			break;
-		case MSAA_ATEST_DX10_1_ATOC:
-			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_1_ATOC";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='1'; ++len;
-			sh_name[len]='0'; ++len;
-			break;
-		case MSAA_ATEST_DX10_1_NATIVE:
-			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_1";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='1'; ++len;
-			break;
-		default:
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-		}
-   }
-   else 
-   {
-		sh_name[len]='0'; ++len;
-		sh_name[len]='0'; ++len;
-		sh_name[len]='0'; ++len;
-		sh_name[len]='0'; ++len;
-		sh_name[len]='0'; ++len;
-		sh_name[len]='0'; ++len;
    }
 
    sh_name[len] = 0;

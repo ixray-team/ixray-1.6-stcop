@@ -566,6 +566,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 
 	const Fmatrix &transform = FluidData.GetTransform();
 
+	RCache.set_prev_xform_world( transform );
 	RCache.set_xform_world( transform );
 
 	//pColorTexVar->SetResource(pSourceTexSRV);
@@ -699,10 +700,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//ID3DxxDepthStencilView* pDSV = DXUTGetD3DxxDepthStencilView();
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pRTV , pDSV ); 
 	//	Restore render state
-	if( !RImplementation.o.dx10_msaa )
-		pTarget->u_setrt( pTarget->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
-	else
-		pTarget->u_setrt( pTarget->rt_Generic_0_r,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
+		pTarget->u_setrt( pTarget->rt_Generic_0,0,0, pTarget->rt_HWDepth->pZRT);		// LDR RT
 
 	if (bRenderFire)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
@@ -714,10 +712,8 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//m_pD3DDevice->RSSetViewports(1,&rtViewport);
 	RImplementation.rmNormal();
 
-	//pRTWidthVar->SetFloat((float)g_Width);
-	RCache.set_c(strRTWidth, (float)Device.dwWidth);
-	//pRTHeightVar->SetFloat((float)g_Height);
-	RCache.set_c(strRTHeight, (float)Device.dwHeight);
+	RCache.set_c(strRTWidth, RCache.get_width());
+	RCache.set_c(strRTHeight, RCache.get_height());
 
 	RCache.set_c(strDiffuseLight, LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
@@ -750,10 +746,8 @@ void dx103DFluidRenderer::ComputeRayData()
 	//rtViewport.Height = g_Height;
 	//m_pD3DDevice->RSSetViewports(1,&rtViewport);
 	RImplementation.rmNormal();
-	//pRTWidthVar->SetFloat((float)g_Width);
-	RCache.set_c(strRTWidth, (float)Device.dwWidth);
-	//pRTHeightVar->SetFloat((float)g_Height);
-	RCache.set_c(strRTHeight, (float)Device.dwHeight);
+	RCache.set_c(strRTWidth, RCache.get_width());
+	RCache.set_c(strRTHeight, RCache.get_height());
 
 	// Render volume back faces
 	// We output xyz=(0,-1,0) and w=min(sceneDepth, boxDepth)

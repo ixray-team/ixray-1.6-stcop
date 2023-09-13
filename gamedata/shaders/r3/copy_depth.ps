@@ -1,0 +1,10 @@
+#include "common.h"
+
+#ifdef GBUFFER_OPTIMIZATION
+float4 main ( p_TL I, float4 pos2d : SV_Position ) : SV_Target
+#else
+float4 main ( p_TL I ) : SV_Target
+#endif
+{
+    return s_depth.Sample(smp_nofilter, I.Tex0);
+}

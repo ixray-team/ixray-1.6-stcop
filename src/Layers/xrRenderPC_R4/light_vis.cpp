@@ -22,7 +22,7 @@ void	light::vis_prepare			()
 
 	float	safe_area					= VIEWPORT_NEAR;
 	{
-		float	a0	= deg2rad(Device.fFOV*Device.fASPECT/2.f);
+		float	a0	= deg2rad(Device.fFOV * Device.fASPECT/2.f);
 		float	a1	= deg2rad(Device.fFOV/2.f);
 		float	x0	= VIEWPORT_NEAR/_cos	(a0);
 		float	x1	= VIEWPORT_NEAR/_cos	(a1);

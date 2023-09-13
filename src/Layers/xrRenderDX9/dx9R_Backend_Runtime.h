@@ -215,6 +215,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	if (ctable==C_)	return;
 	ctable			= C_;
 	xforms.unmap	();
+	prev_xforms.unmap();
 	hemi.unmap		();
 	tree.unmap		();
 	if (0==C_)		return;

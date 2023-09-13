@@ -24,12 +24,6 @@ using namespace				luabind;
 #define MDB
 #endif
 
-class	adopt_dx10options
-{
-public:
-	bool	_dx10_msaa_alphatest_atoc()			{	return (RImplementation.o.dx10_msaa_alphatest==CRender::MSAA_ATEST_DX10_0_ATOC); }
-};
-
 // wrapper
 class	adopt_dx10sampler
 {
@@ -103,9 +97,7 @@ public:
 	adopt_compiler&			_dx10StencilRef	(u32 Ref) {C->r_StencilRef(Ref);		return	*this;		}
 	adopt_compiler&			_dx10ATOC		(bool Enable)							{	C->RS.SetRS( XRDX10RS_ALPHATOCOVERAGE, Enable);	return *this;	}
 	adopt_compiler&			_dx10ZFunc		(u32 Func)								{	C->RS.SetRS	( D3DRS_ZFUNC, Func);			return	*this;		}
-	//adopt_dx10texture		_dx10texture	(LPCSTR _name)							{	u32 s = C->r_dx10Texture(_name,0);			return	adopt_dx10sampler(C,s);	}
-
-	adopt_dx10options		_dx10Options	()										{	return adopt_dx10options();										};
+	//adopt_dx10texture		_dx10texture	(LPCSTR _name)							{	u32 s = C->r_dx10Texture(_name,0);			return	adopt_dx10sampler(C,s);	}							};
 };
 #pragma warning( pop )
 
@@ -229,12 +221,6 @@ void	CResourceManager::LS_Load			()
 
 	module			(LSVM)
 	[
-		class_<adopt_dx10options>("_dx10options")
-		.def("dx10_msaa_alphatest_atoc",	&adopt_dx10options::_dx10_msaa_alphatest_atoc		)
-		//.def("",					&adopt_dx10options::_dx10Options		),	// returns options-object
-		,
-
-
 		class_<adopt_dx10sampler>("_dx10sampler")
 		//.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
 		//.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
@@ -279,8 +265,7 @@ void	CResourceManager::LS_Load			()
 			.def("dx10atoc",					&adopt_compiler::_dx10ATOC		,return_reference_to(_1))
 			.def("dx10zfunc",					&adopt_compiler::_dx10ZFunc		,return_reference_to(_1))			
 
-			.def("dx10sampler",					&adopt_compiler::_dx10sampler		)	// returns sampler-object
-			.def("dx10Options",					&adopt_compiler::_dx10Options		),	// returns options-object			
+			.def("dx10sampler",					&adopt_compiler::_dx10sampler		),	// returns sampler-object		
 
 
 		class_<adopt_blend>("blend")

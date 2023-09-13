@@ -4,6 +4,7 @@
 
 #include "StateManager/dx10StateManager.h"
 #include "StateManager/dx10ShaderResourceStateCache.h"
+#include "R_Backend.h"
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -506,6 +507,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	if (ctable==C_)	return;
 	ctable			= C_;
 	xforms.unmap	();
+	prev_xforms.unmap();
 	hemi.unmap		();
 	tree.unmap		();
 	LOD.unmap		();
@@ -738,6 +740,26 @@ IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData,
 		if (pGData)	*pGData = 0;
 		if (pPData)	*pPData = 0;
 	}
+}
+
+inline IC float CBackend::get_width()
+{
+	return float(RDEVICE.TargetWidth) * RDEVICE.RenderScale;
+}
+
+inline IC float CBackend::get_height()
+{
+	return float(RDEVICE.TargetHeight) * RDEVICE.RenderScale;
+}
+
+inline IC float CBackend::get_target_width()
+{
+	return RDEVICE.TargetWidth;
+}
+
+inline IC float CBackend::get_target_height()
+{
+	return RDEVICE.TargetHeight;
 }
 
 #endif	//	dx10R_Backend_Runtime_included

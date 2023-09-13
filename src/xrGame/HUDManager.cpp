@@ -74,7 +74,7 @@ LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 	else if(w<=1280)idx = 1;
 	else 			idx = 2;
 #else
-	u32 h = Device.dwHeight;
+	u32 h = Device.TargetHeight;
 
 	if(h<=600)		idx = 0;
 	else if(h<1024)	idx = 1;
