@@ -10,6 +10,7 @@ public:
         uint32_t        flags = 0;
         FfxDimensions2D maxRenderSize = { 0, 0 };
         FfxDimensions2D displaySize = { 0, 0 };
+        FfxFsr2Message fpMessage;
         ID3D11Device* device = nullptr;
     };
 

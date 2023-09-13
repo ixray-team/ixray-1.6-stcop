@@ -10,6 +10,8 @@ const int			quant	= 16384;
 const int			c_hdr	= 10;
 const int			c_size	= 4;
 
+static float g_PreviousDelta = 0.0f;
+
 static D3DVERTEXELEMENT9 dwDecl[] =
 {
 	{ 0, 0,  D3DDECLTYPE_FLOAT3,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,	0 },	// pos
@@ -98,6 +100,8 @@ void CDetailManager::hw_Render()
 	//RCache.set_c			(&*hwc_s_xform,	Device.mFullTransform);
 	//hw_Render_dump			(&*hwc_s_array,	0, 1, c_hdr );
 	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1);
+
+	g_PreviousDelta = fDelta;
 }
 
 void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, u32 var_id, u32 lod_id)

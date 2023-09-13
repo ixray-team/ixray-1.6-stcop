@@ -12,6 +12,7 @@
 #include "../xrRenderDX10/StateManager/dx10State.h"
 #else //USE_DX11
 #include "../xrRenderDX9/dx9R_Backend_Runtime.h"
+#include "R_Backend_xform.h"
 #endif
 
 IC void		R_xforms::set_c_w			(R_constant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
@@ -20,17 +21,9 @@ IC void		R_xforms::set_c_v			(R_constant* C)		{	c_v		= C;	RCache.set_c(C,m_v);	}
 IC void		R_xforms::set_c_p			(R_constant* C)		{	c_p		= C;	RCache.set_c(C,m_p);	};
 IC void		R_xforms::set_c_wv			(R_constant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);	};
 IC void		R_xforms::set_c_vp			(R_constant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
-IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	};
-
-IC  void CBackend::update_projections_jitter()
-{
-	xforms.set_Jitter(xforms.m_jitter_x, xforms.m_jitter_y);
-}
-
-IC  void CBackend::update_prev_projections_jitter()
-{
-	prev_xforms.set_Jitter(prev_xforms.m_jitter_x, prev_xforms.m_jitter_y);
-}
+IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	}
+IC void		R_xforms::set_c_vp_clean	(R_constant* C)		{	c_vp_clean	= C;RCache.set_c(C,m_vp_clean);	};
+IC void		R_xforms::set_c_wvp_clean	(R_constant* C)		{	c_wvp_clean = C;RCache.set_c(C,m_wvp_clean);	}
 
 IC	void CBackend::set_xform_jitter(const Fvector2& Jitter)
 {

@@ -488,8 +488,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 
 	// Rendering
 	rmNear						();
@@ -510,8 +508,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	Device.mPrevFullTransform	= PrevFullTtransformOld;
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project	(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
@@ -540,8 +536,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 
 #if	RENDER!=R_R1
 	// Targets, use accumulator for temporary storage
@@ -567,8 +561,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	Device.mPrevFullTransform = PrevFullTtransformOld;
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -603,8 +595,6 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 
 	// Rendering
 	rmNear();
@@ -619,8 +609,6 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	Device.mPrevFullTransform = PrevFullTtransformOld;
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -656,8 +644,6 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	Device.mPrevFullTransform.mul(Device.mPrevProject, Device.mPrevView);
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 
 	// Rendering
 	rmNear						();
@@ -674,8 +660,6 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	Device.mPrevFullTransform = PrevFullTtransformOld;
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
-	RCache.update_prev_projections_jitter();
-	RCache.update_projections_jitter();
 #endif
 }
 

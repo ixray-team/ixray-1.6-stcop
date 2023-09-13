@@ -370,5 +370,4 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	RCache.set_xform_world		(Fidentity			);
 	RCache.set_xform_view		(Device.mView		);
 	RCache.set_xform_project	(Device.mProject	);
-	RCache.update_projections_jitter();
 }

@@ -39,8 +39,8 @@ vf 	main	( vv I )
 	float 	h 	= lerp		(I.rgbh0.w,I.rgbh1.w,factor)		*L_SCALE;
 
 	o.hpos 		= mul		(m_VP, 	pos);				// xform, input in world coords
-	o.cur_hpos 	= o.hpos;
-	o.prev_hpos = mul		(m_prevVP, 	pos);			// xform, input in world coords
+	o.cur_hpos 	= mul		(m_VPClean, 		float4(pos.x, pos.y, pos.z, 1.0f));
+	o.prev_hpos = mul		(m_prevVPClean, 	float4(pos.x, pos.y, pos.z, 1.0f));	// xform, input in world coords
 	o.Pe		= mul		(m_V,	pos);
 
 	// replicate TCs

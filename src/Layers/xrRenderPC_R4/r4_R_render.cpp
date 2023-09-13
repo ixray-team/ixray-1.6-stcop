@@ -194,6 +194,8 @@ void CRender::render_menu	()
 	RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }
 
+extern float		ps_r4_jitter_factor;
+
 extern u32 g_r;
 void CRender::Render		()
 {
@@ -226,12 +228,12 @@ void CRender::Render		()
 		return;
 	}
 
-	g_current_jitter = Target->get_jitter(false);
-	g_prev_jitter = Target->get_jitter(true);
+	g_current_jitter = Target->get_jitter(false).mul(ps_r4_jitter_factor);
+	g_prev_jitter = Target->get_jitter(true).mul(ps_r4_jitter_factor);
 	RCache.set_xform_jitter(g_current_jitter);
 	RCache.set_prev_xform_jitter(g_prev_jitter);
-
-//.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
+	//
+//.	//VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
 	RImplementation.o.distortion				= FALSE;		// disable distorion

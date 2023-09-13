@@ -43,8 +43,8 @@ v2p_flat 	main (v_detail v)
 
 	// Final out
 	O.hpos 		= mul		(m_VP,	pos				);	
-	O.cur_hpos	= O.hpos;
-	O.prev_hpos	= mul 		(m_prevVP, pos 		);
+	O.cur_hpos	= mul		(m_VPClean,	float4(pos.x, pos.y, pos.z, 1.0f)			);	
+	O.prev_hpos	= mul 		(m_prevVPClean, float4(pos.x, pos.y, pos.z, 1.0f) 	);
 	O.N 		= mul		(m_WV,  normalize(norm)	);
 	float3	Pe	= mul		(m_WV,  pos				);
 //	O.tcdh 		= float4	((v.misc * consts).xy	);

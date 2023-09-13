@@ -26,7 +26,6 @@ void CRenderTarget::accum_point		(light* L)
 	RCache.set_xform_world			(L->m_xform);
 	RCache.set_xform_view			(Device.mView);
 	RCache.set_xform_project		(Device.mProject);
-	RCache.update_projections_jitter();
 	enable_scissor					(L);
 	enable_dbt_bounds				(L);
 

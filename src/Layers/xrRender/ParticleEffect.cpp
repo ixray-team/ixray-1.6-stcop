@@ -557,8 +557,6 @@ void CParticleEffect::Render(float )
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);
 					RCache.set_prev_xform_project(Device.mPrevProject);
 					RCache.set_xform_project	(Device.mProject);
-					RCache.update_prev_projections_jitter();
-					RCache.update_projections_jitter();
 					RImplementation.rmNear		();
 					ApplyTexgen(Device.mFullTransform);
 				}

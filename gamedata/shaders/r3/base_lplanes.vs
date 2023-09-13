@@ -13,10 +13,10 @@ vf main (v_static v)
 {
 	vf 		o;
 
-	float4 pos = float4(v.P.x, v.P.y, v.P.z, 1.0f);
+	float4 pos = v.P;;
 	o.hpos 		= mul			(m_WVP, pos);		// xform, input in world coords
-	o.cur_hpos	= o.hpos;
-	o.prev_hpos = mul			(m_prevWVP, pos);	
+	o.cur_hpos	= mul			(m_WVPClean, float4(pos.x, pos.y, pos.z, 1.0f));
+	o.prev_hpos = mul			(m_prevWVPClean, float4(pos.x, pos.y, pos.z, 1.0f));	
 	o.tc0		= unpack_tc_base(v.tc,v.T.w,v.B.w);	// copy tc
 
 	// calculate fade

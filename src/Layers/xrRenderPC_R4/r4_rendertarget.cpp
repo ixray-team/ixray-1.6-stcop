@@ -400,6 +400,11 @@ CRenderTarget::CRenderTarget		()
 			initParams.displaySize.width = Device.TargetWidth;
 			initParams.displaySize.height = Device.TargetHeight;
 			initParams.maxRenderSize = initParams.displaySize;
+			initParams.fpMessage = [](FfxFsr2MsgType type, const wchar_t* message) {
+				static char TempString[2048] = {};
+				int cnt = WideCharToMultiByte(CP_ACP, 0, message, -1, TempString, 2048, NULL, NULL);
+				Msg("[FSR]: %s", TempString);
+			};
 			g_Fsr2Wrapper.Create(initParams);
 		}
 	}
@@ -937,24 +942,24 @@ CRenderTarget::~CRenderTarget	()
 }
 
 extern float ps_r4_jitter_factor;
+float g_CameraJitterX = 0.0f;
+float g_CameraJitterY = 0.0f;
 
 Fvector2 CRenderTarget::get_jitter(bool prevFrame)
 {
-	static float g_CameraJitterX = 0.0f;
-	static float g_CameraJitterY = 0.0f;
 	if (!ps_r2_ls_flags.test(R4FLAG_FSR2)) {
 		//g_CameraJitterX = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
 		//g_CameraJitterY = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
 		g_CameraJitterX = 0.0f;
 		g_CameraJitterY = 0.0f;
-		return { g_CameraJitterX * ps_r4_jitter_factor, g_CameraJitterY * ps_r4_jitter_factor };
+		return { g_CameraJitterX, g_CameraJitterY };
 	}
 	
 	const int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount(RCache.get_width(), RCache.get_target_width());
 	ffxFsr2GetJitterOffset(&g_CameraJitterX, &g_CameraJitterY, prevFrame ? Device.dwFrame - 1 : Device.dwFrame, jitterPhaseCount);
-	float jitterX = 2.0f * g_CameraJitterX / RCache.get_width();
-	float jitterY = -2.0f * g_CameraJitterY / RCache.get_height();
-	return { jitterX * ps_r4_jitter_factor, jitterY * ps_r4_jitter_factor };
+	float jitterX = g_CameraJitterX;
+	float jitterY = g_CameraJitterY;
+	return { jitterX, jitterY};
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)

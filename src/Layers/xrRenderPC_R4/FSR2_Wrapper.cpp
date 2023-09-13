@@ -16,6 +16,7 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
     // This adds a ref to the device. The reference will get freed in ffxFsr2ContextDestroy
     m_contextDesc.device = ffxGetDeviceDX11(params.device);
     m_contextDesc.maxRenderSize = params.maxRenderSize;
+    m_contextDesc.fpMessage = params.fpMessage;
     m_contextDesc.displaySize = params.displaySize;
 
     // You should config the flags you need based on your own project
@@ -23,7 +24,7 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
 #ifdef DEBUG
         FFX_FSR2_ENABLE_DEBUG_CHECKING |
 #endif
-        FFX_FSR2_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION |
+     //   FFX_FSR2_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION |
         FFX_FSR2_ENABLE_AUTO_EXPOSURE;
     //| FFX_FSR2_ENABLE_HIGH_DYNAMIC_RANGE
     //| FFX_FSR2_ENABLE_DEPTH_INVERTED

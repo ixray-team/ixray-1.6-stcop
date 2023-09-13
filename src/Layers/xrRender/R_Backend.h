@@ -236,6 +236,7 @@ public:
 
 	// API
 	IC	void						set_xform			(u32 ID, const Fmatrix& M);
+
 	IC	void						set_xform_jitter	(const Fvector2& Jitter);
 	IC	void						set_xform_world		(const Fmatrix& M);
 	IC	void						set_xform_view		(const Fmatrix& M);
@@ -253,9 +254,6 @@ public:
 	IC	const Fmatrix&				get_prev_xform_view		();
 	IC	const Fmatrix&				get_prev_xform_project	();
 	IC	Fvector2					get_prev_xform_jitter();
-
-	IC  void						update_projections_jitter();
-	IC  void						update_prev_projections_jitter();
 
 	IC	void						set_RT				(ID3DRenderTargetView* RT, u32 ID=0);
 	IC	void						set_ZB				(ID3DDepthStencilView* ZB);

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
-extern Fvector2 g_current_jitter;
-extern Fvector2 g_prev_jitter;
+extern float g_CameraJitterX;
+extern float g_CameraJitterY; 
+extern float ps_r4_sharp_factor;
+extern int ps_r4_sharp_enable;
 
 void set_viewport(ID3DDeviceContext* dev, float w, float h);
 
@@ -42,26 +44,25 @@ void CRenderTarget::phase_fsr2_combine()
 
     phase_copy_depth();
 
-    Fsr2Wrapper::DrawParameters fsr2Params = {
-        HW.pContext,
-        rt_Generic_0->pSurface,
-        rt_MotionVectors->pSurface,
-        rt_Depth->pSurface,
-        nullptr,
-        nullptr,
-        rt_UpscaleOutput->pSurface,
-        RCache.get_width(),
-        RCache.get_height(),
-        false,
-        g_current_jitter.x,
-        g_current_jitter.y,
-        0.5,
-        0.5,
-        Device.fTimeDelta * 1000.0f,
-        0.02f,
-        0.99999f,
-        Device.fFOV,
-    };
+    Fsr2Wrapper::DrawParameters fsr2Params;
+    fsr2Params.deviceContext = HW.pContext;
+    fsr2Params.unresolvedColorResource = rt_Generic_0->pSurface;
+    fsr2Params.motionvectorResource = rt_MotionVectors->pSurface;
+    fsr2Params.depthbufferResource = rt_Depth->pSurface;
+    fsr2Params.reactiveMapResource = nullptr;
+    fsr2Params.transparencyAndCompositionResource = nullptr;
+    fsr2Params.resolvedColorResource = rt_UpscaleOutput->pSurface;
+    fsr2Params.renderWidth = RCache.get_width();
+    fsr2Params.renderHeight = RCache.get_height();
+    fsr2Params.cameraReset = false;
+    fsr2Params.cameraJitterX = g_CameraJitterX;
+    fsr2Params.cameraJitterY = g_CameraJitterY;
+    fsr2Params.enableSharpening = !!ps_r4_sharp_enable;
+    fsr2Params.sharpness = ps_r4_sharp_factor;
+    fsr2Params.frameTimeDelta = Device.fTimeDelta * 1000.0f;
+    fsr2Params.nearPlane = VIEWPORT_NEAR;
+    fsr2Params.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+    fsr2Params.fovH = deg2rad(Device.fFOV);
 
     g_Fsr2Wrapper.Draw(fsr2Params);
     HW.pContext->CopyResource(rt_Output->pSurface, rt_UpscaleOutput->pSurface);

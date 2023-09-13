@@ -12,8 +12,8 @@ v2p_bumped _main( v_model I )
 	// Eye-space pos/normal
 	v2p_bumped 	O;
 	O.hpos 		= mul( m_WVP, w_pos	);
-	O.cur_hpos 	= O.hpos;
-	O.prev_hpos	= mul( m_prevWVP, w_pos );
+	O.cur_hpos 	= mul( m_WVPClean, float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
+	O.prev_hpos	= mul( m_prevWVPClean, float4(w_pos.x, w_pos.y, w_pos.z, 1.0f) );
 	float2 	tc 	= I.tc;
 	float3	Pe	= mul( m_WV, w_pos );
 	O.tcdh 		= float4( tc.xyyy );

@@ -35,8 +35,8 @@ v2p_flat main (v_tree I)
 	float 	hemi 	= I.Nh.w*c_scale.w + c_bias.w;
     //float 	hemi 	= I.Nh.w;
 	o.hpos			= mul		(m_VP, f_pos				);
-	o.cur_hpos		= o.hpos;
-	o.prev_hpos		= mul		(m_prevVP, f_pos			);
+	o.cur_hpos		= mul		(m_VPClean, float4(f_pos.x, f_pos.y, f_pos.z, 1.0f)			);
+	o.prev_hpos		= mul		(m_prevVPClean, float4(f_pos.x, f_pos.y, f_pos.z, 1.0f)		);
 	o.N 			= mul		((float3x3)m_xform_v, unpack_bx2(I.Nh)	);
 	o.tcdh 			= float4	((I.tc * consts).xyyy		);
 	o.position		= float4	(Pe, hemi					);
