@@ -1,3 +1,5 @@
+#pragma once
+
 typedef xr_string::size_type StrSize;
 
 #define BEGIN  "%c["
