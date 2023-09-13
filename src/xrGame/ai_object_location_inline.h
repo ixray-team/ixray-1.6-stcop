@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "ai_space.h"
+#include "level_graph.h"
+#include "game_graph.h"
 
 IC	CAI_ObjectLocation::CAI_ObjectLocation							()
 {
