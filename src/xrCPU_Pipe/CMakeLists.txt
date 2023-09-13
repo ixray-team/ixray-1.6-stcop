@@ -2,7 +2,7 @@ project(xrCPU_Pipe)
 set(CPIPE_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE CPIPE_SOURCE_ALL_FILES
+file(GLOB_RECURSE CPIPE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
 	"*.h"
 )

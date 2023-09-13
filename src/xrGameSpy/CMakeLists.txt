@@ -2,7 +2,7 @@ project(xrGameSpy)
 set(XGS_SRC_FILES)
 
 # Files import
-file(GLOB XGS_SOURCE_ALL_FILES
+file(GLOB XGS_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 "DistributionFunc.cpp"
 "gamespy/common/gsAvailable.c"
 "gamespy/common/gsCore.c"

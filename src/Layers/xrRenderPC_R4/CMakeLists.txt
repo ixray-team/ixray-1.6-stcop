@@ -2,32 +2,32 @@ project(xrRender_R4)
 set(XRR4_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XRR4_SOURCE_ALL_FILES
+file(GLOB_RECURSE XRR4_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
 	"*.h"
 )
 
-file(GLOB_RECURSE XRR4_SOURCE_COMP_FILES
+file(GLOB_RECURSE XRR4_SOURCE_COMP_FILES CONFIGURE_DEPENDS
     "../xrRender/*.cpp"
 	"../xrRender/*.h"
 )
 
-file(GLOB_RECURSE XRR4_SOURCE_COMP_BLEND_FILES
+file(GLOB_RECURSE XRR4_SOURCE_COMP_BLEND_FILES CONFIGURE_DEPENDS
     "../xrRender/Blender_*.cpp"
 	"../xrRender/Blender_*.h"
 )
 
-file(GLOB_RECURSE XRR4_SOURCE_BLEND_FILES
+file(GLOB_RECURSE XRR4_SOURCE_BLEND_FILES CONFIGURE_DEPENDS
     "Blender_*.cpp"
 	"Blender_*.h"
 )
 
-file(GLOB_RECURSE XRR4_SOURCE_DX9_FILES
+file(GLOB_RECURSE XRR4_SOURCE_DX9_FILES CONFIGURE_DEPENDS
     "../xrRenderDX10/*.cpp"
 	"../xrRenderDX10/*.h"
 )
 
-file(GLOB_RECURSE XRR4_SOURCE_LUA_FILES
+file(GLOB_RECURSE XRR4_SOURCE_LUA_FILES CONFIGURE_DEPENDS
     "../../xrEngine/ai_script_lua*.cpp"
 	"../../xrEngine/ai_script_lua*.h"
 )
@@ -55,6 +55,7 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}/fsr2")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
 
 # project defines 

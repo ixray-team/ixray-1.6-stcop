@@ -1,55 +1,55 @@
 project(xrCore)
 # Files import
 
-file(GLOB CORE_SOURCE_STL_FILES
+file(GLOB CORE_SOURCE_STL_FILES CONFIGURE_DEPENDS
     "*_std*.*"
     "*_stl*.*"
     "Fixed*.*"
 )
 
-file(GLOB CORE_SOURCE_MATH_FILES
+file(GLOB CORE_SOURCE_MATH_FILES CONFIGURE_DEPENDS
     "_*.cpp"
     "_*.h"
 )
 
-file(GLOB CORE_SOURCE_LZO_FILES
+file(GLOB CORE_SOURCE_LZO_FILES CONFIGURE_DEPENDS
     "lzo_*.*"
     "rt_lzo*.*"
 )
 
-file(GLOB CORE_SOURCE_RT_FILES
+file(GLOB CORE_SOURCE_RT_FILES CONFIGURE_DEPENDS
     "rt_c*.*"
 )
 
-file(GLOB CORE_SOURCE_PPMD_FILES
+file(GLOB CORE_SOURCE_PPMD_FILES CONFIGURE_DEPENDS
     "ppmd_*.*"
 )
 
-file(GLOB CORE_SOURCE_LZ_FILES
+file(GLOB CORE_SOURCE_LZ_FILES CONFIGURE_DEPENDS
     "LzHuf*.cpp"
     "lzhuf.h"
 )
 
-file(GLOB CORE_SOURCE_XML_FILES
+file(GLOB CORE_SOURCE_XML_FILES CONFIGURE_DEPENDS
     "XMLCore/*.cpp"
     "XMLCore/.h"
 )
 
-file(GLOB CORE_SOURCE_MEMORY_FILES
+file(GLOB CORE_SOURCE_MEMORY_FILES CONFIGURE_DEPENDS
     "xrMemory*.*"
     "memory_*.*"
     "*malloc*.*"
     "ptmalloc3/*.*"
 )
 
-file(GLOB CORE_SOURCE_FS_FILES
+file(GLOB CORE_SOURCE_FS_FILES CONFIGURE_DEPENDS
     "FS*.*"
     "File*.*"
     "file*.*"
     "Locator*.*"
 )
 
-file(GLOB_RECURSE CORE_SOURCE_ALL_FILES
+file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.c"
 	"*.h"

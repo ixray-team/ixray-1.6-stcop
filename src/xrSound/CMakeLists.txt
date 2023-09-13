@@ -2,32 +2,32 @@ project(xrSound)
 set(SND_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE SND_SOURCE_ALL_FILES
+file(GLOB_RECURSE SND_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
 	"*.h"
 )
 
-file(GLOB_RECURSE SND_SOURCE_RENDER_FILES
+file(GLOB_RECURSE SND_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
     "SoundRender*.cpp"
 	"SoundRender*.h"
 )
 
-file(GLOB_RECURSE SND_SOURCE_CORE_FILES
+file(GLOB_RECURSE SND_SOURCE_CORE_FILES CONFIGURE_DEPENDS
     "SoundRender_Core*.cpp"
 	"SoundRender_Core*.h"
 )
 
-file(GLOB_RECURSE SND_SOURCE_TRG_FILES
+file(GLOB_RECURSE SND_SOURCE_TRG_FILES CONFIGURE_DEPENDS
     "SoundRender_Target*.cpp"
 	"SoundRender_Target*.h"
 )
 
-file(GLOB_RECURSE SND_SOURCE_EMIT_FILES
+file(GLOB_RECURSE SND_SOURCE_EMIT_FILES CONFIGURE_DEPENDS
     "SoundRender_Emitter*.cpp"
 	"SoundRender_Emitter*.h"
 )
 
-file(GLOB_RECURSE SND_SOURCE_3RDI_FILES
+file(GLOB_RECURSE SND_SOURCE_3RDI_FILES CONFIGURE_DEPENDS
     "ogg_utils.*"
 	"OpenALDeviceList.*"
 	"guids.*"

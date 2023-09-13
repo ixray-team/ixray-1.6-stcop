@@ -2,32 +2,32 @@ project(xrRender_R2)
 set(XRR2_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XRR2_SOURCE_ALL_FILES
+file(GLOB_RECURSE XRR2_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
 	"*.h"
 )
 
-file(GLOB_RECURSE XRR2_SOURCE_COMP_FILES
+file(GLOB_RECURSE XRR2_SOURCE_COMP_FILES CONFIGURE_DEPENDS
     "../xrRender/*.cpp"
 	"../xrRender/*.h"
 )
 
-file(GLOB_RECURSE XRR2_SOURCE_COMP_BLEND_FILES
+file(GLOB_RECURSE XRR2_SOURCE_COMP_BLEND_FILES CONFIGURE_DEPENDS
     "../xrRender/Blender_*.cpp"
 	"../xrRender/Blender_*.h"
 )
 
-file(GLOB_RECURSE XRR2_SOURCE_BLEND_FILES
+file(GLOB_RECURSE XRR2_SOURCE_BLEND_FILES CONFIGURE_DEPENDS
     "Blender_*.cpp"
 	"Blender_*.h"
 )
 
-file(GLOB_RECURSE XRR2_SOURCE_DX9_FILES
+file(GLOB_RECURSE XRR2_SOURCE_DX9_FILES CONFIGURE_DEPENDS
     "../xrRenderDX9/*.cpp"
 	"../xrRenderDX9/*.h"
 )
 
-file(GLOB_RECURSE XRR2_SOURCE_LUA_FILES
+file(GLOB_RECURSE XRR2_SOURCE_LUA_FILES CONFIGURE_DEPENDS
     "../../xrEngine/ai_script_lua*.cpp"
 	"../../xrEngine/ai_script_lua*.h"
 )
