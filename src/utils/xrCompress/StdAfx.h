@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef __cplusplus
 //. #define MOD_COMPRESS
 
 #include "../../xrcore/xrCore.h"
@@ -14,5 +14,4 @@
 #include <sys\stat.h>
 #include <malloc.h>
 #pragma warning	(default:4995)
-
-#pragma comment	(lib,"winmm")
+#endif

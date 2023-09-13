@@ -93,7 +93,7 @@ shared_str	CSpaceRestrictionManager::base_out_restrictions		(ALife::_OBJECT_ID i
 	return							((*I).second.m_base_out_restrictions);
 }
 
-IC	CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction	(ALife::_OBJECT_ID id)
+CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction	(ALife::_OBJECT_ID id)
 {
 	CLIENT_RESTRICTIONS::iterator	I = m_clients->find(id);
 	VERIFY							(m_clients->end() != I);

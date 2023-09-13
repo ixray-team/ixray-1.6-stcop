@@ -11,7 +11,7 @@
 #pragma hdrstop
 
 #include "object.h"
-#include "MxQMetric.h"
+#include "../xrQSlim/src/MxQMetric.h"
 #include "quad.h"
 
 #define QUAD_SIZE 5

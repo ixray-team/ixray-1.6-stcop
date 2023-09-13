@@ -8,11 +8,13 @@
 using namespace FVF;
 
 // misc
+#ifdef __BORLAND__
 __declspec( dllimport ) bool WINAPI FSColorPickerDoModal(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState);
 extern "C" __declspec(dllexport) bool  __stdcall FSColorPickerExecute(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState)
 {
 	return FSColorPickerDoModal(currentColor, originalColor, initialExpansionState);
 }
+#endif 
 
 extern "C"{ 
 	
