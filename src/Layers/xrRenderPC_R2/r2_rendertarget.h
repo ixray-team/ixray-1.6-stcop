@@ -246,9 +246,13 @@ public:
 	virtual void				set_color_base			(u32	f)		{ param_color_base=f;				}
 	virtual void				set_color_gray			(u32	f)		{ param_color_gray=f;				}
 	virtual void				set_color_add			(const Fvector	&f)		{ param_color_add=f;		}
-
-	virtual u32					get_width				()				{ return dwWidth;					}
-	virtual u32					get_height				()				{ return dwHeight;					}
+	
+	virtual u32					get_target_width	()				{ return dwWidth;					}
+	virtual u32					get_target_height	()				{ return dwWidth;					}
+	virtual u32					get_core_width		()				{ return dwWidth;					}
+	virtual u32					get_core_height		()				{ return dwWidth;					}
+	virtual u32					get_width				()			{ return dwWidth;					}
+	virtual u32					get_height				()			{ return dwHeight;					}
 
 	virtual void				set_cm_imfluence	(float	f)		{ param_color_map_influence = f;							}
 	virtual void				set_cm_interpolate	(float	f)		{ param_color_map_interpolate = f;							}

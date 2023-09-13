@@ -86,8 +86,8 @@ class cl_texgen : public R_constant_setup
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
 #else //USE_DX11
-		float	_w						= float(RDEVICE.dwWidth);
-		float	_h						= float(RDEVICE.dwHeight);
+		float	_w						= float(RCache.get_width());
+		float	_h						= float(RCache.get_height());
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			mTexelAdjust		= 
@@ -121,8 +121,8 @@ class cl_VPtexgen : public R_constant_setup
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
 #else //USE_DX11
-		float	_w						= float(RDEVICE.dwWidth);
-		float	_h						= float(RDEVICE.dwHeight);
+		float	_w						= float(RCache.get_width());
+		float	_h						= float(RCache.get_height());
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			mTexelAdjust		= 
@@ -356,6 +356,7 @@ static class cl_target_screen_res : public R_constant_setup
 	}
 }	binder_target_screen_res;
 
+#ifdef USE_DX11
 static class cl_screen_scale : public R_constant_setup		
 {	
 	virtual void setup	(R_constant* C)
@@ -363,7 +364,7 @@ static class cl_screen_scale : public R_constant_setup
 		RCache.set_c(C, RDEVICE.RenderScale);
 	}
 } binder_screen_scale;
-
+#endif
 
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
@@ -434,7 +435,10 @@ void	CBlender_Compile::SetMapping	()
 #endif
 	r_Constant				("target_screen_res",&binder_target_screen_res);
 	r_Constant				("screen_res",		&binder_screen_res);
+
+#ifdef USE_DX11
 	r_Constant				("screen_scale",	&binder_screen_scale);
+#endif
 
 	// detail
 	//if (bDetail	&& detail_scaler)

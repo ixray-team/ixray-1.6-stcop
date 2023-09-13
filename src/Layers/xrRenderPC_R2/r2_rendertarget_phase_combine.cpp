@@ -135,8 +135,8 @@ void	CRenderTarget::phase_combine	()
 		}
 
 		// Fill VB
-		float	_w					= float(Device.dwWidth);
-		float	_h					= float(Device.dwHeight);
+		float	_w					= float(RCache.get_width());
+		float	_h					= float(RCache.get_height());
 		p0.set						(.5f/_w, .5f/_h);
 		p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
@@ -149,8 +149,8 @@ void	CRenderTarget::phase_combine	()
 		//RCache.Vertex.Unlock		(4,g_combine_VP->vb_stride);
 
 		// Fill VB
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(RCache.get_width())	/ float(TEX_jitter);
+		float	scale_Y				= float(RCache.get_height())/ float(TEX_jitter);
 
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine_VP->vb_stride,Offset);
 		pv->set						(hclip(EPS,		_w),	hclip(_h+EPS,	_h),	p0.x, p1.y, 0, 0,			scale_Y	);	pv++;
@@ -234,8 +234,8 @@ void	CRenderTarget::phase_combine	()
 
 	// Combine everything + perform AA
 	if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT
-	else					u_setrt		( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-	//. u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	else					u_setrt		( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	//. u_setrt				( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
@@ -308,8 +308,8 @@ void	CRenderTarget::phase_combine	()
 	/*
 	if (0)		{
 		u32		C					= color_rgba	(255,255,255,255);
-		float	_w					= float(Device.dwWidth)/3;
-		float	_h					= float(Device.dwHeight)/3;
+		float	_w					= float(RCache.get_width())/3;
+		float	_h					= float(RCache.get_height())/3;
 
 		// draw light-spheres
 #ifdef DEBUG
@@ -427,8 +427,8 @@ void CRenderTarget::phase_combine_volumetric()
 		}
 
 		// Fill VB
-		float	_w					= float(Device.dwWidth);
-		float	_h					= float(Device.dwHeight);
+		float	_w					= float(RCache.get_width());
+		float	_h					= float(RCache.get_height());
 		p0.set						(.5f/_w, .5f/_h);
 		p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
@@ -442,8 +442,8 @@ void CRenderTarget::phase_combine_volumetric()
 
 
 		// Fill VB
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(RCache.get_width())	/ float(TEX_jitter);
+		float	scale_Y				= float(RCache.get_height())/ float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine_VP->vb_stride,Offset);
