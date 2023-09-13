@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 project(IXray)
 
 # CMake options
@@ -12,15 +12,16 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # VS options
 set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_DEBUG "/MD")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MD")
 
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
                     "$<$<CONFIG:RELWITHDEBINFO>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
 
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+add_compile_options("$<$<CONFIG:Debug>:/MD>")
 
 # Edit and Continue mode 
 add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")
@@ -37,48 +38,7 @@ set(IXRAY_FOLDER_RENDER FOLDER "Renders")
 set(IXRAY_FOLDER_GAME FOLDER "Game")
 set(IXRAY_FOLDER_3RD FOLDER "3rd Party")
 
-# 3rd libraries
-add_subdirectory("src/3rd party/luajit")
-add_subdirectory("src/3rd party/luabind")
-add_subdirectory("src/3rd party/ode")
-add_subdirectory("src/3rd party/crypto")
-add_subdirectory("src/3rd party/cximage")
-
-# Engine libraries
-add_subdirectory("src/Layers/xrAPI")
-add_subdirectory("src/xrCore")
-add_subdirectory("src/xrCDB")
-add_subdirectory("src/xrSound")
-add_subdirectory("src/xrNetServer")
-add_subdirectory("src/xrEngine")
-add_subdirectory("src/xrCPU_Pipe")
-add_subdirectory("src/xrPhysics")
-add_subdirectory("src/xrParticles")
-add_subdirectory("src/Layers/xrRenderPC_R1")
-add_subdirectory("src/Layers/xrRenderPC_R2")
-add_subdirectory("src/Layers/xrRenderPC_R4")
-add_subdirectory("src/xrGame/")
-add_subdirectory("src/xrGameSpy/")
-
-# Engine Utils
-if (IXRAY_UTILS)
-    add_subdirectory("src/utils/xrDXT")
-    add_subdirectory("src/utils/xrQSlim")
-    add_subdirectory("src/utils/xrLC_Light")
-    #add_subdirectory("src/utils/xrLC_LightStab")
-    add_subdirectory("src/utils/xrDO_Light")
-    add_subdirectory("src/utils/xrLC")
-    add_subdirectory("src/utils/ETools")
-    add_subdirectory("src/utils/xrCompress")
-    add_subdirectory("src/utils/xrSE_Factory")
-    add_subdirectory("src/utils/xrAI")
-    if (IXRAY_MP)
-        add_subdirectory("src/utils/mp_balancer")
-        add_subdirectory("src/utils/mp_configs_verifyer")
-        add_subdirectory("src/utils/mp_screenshots_info")
-        add_subdirectory("src/utils/mp_gpprof_server")
-    endif()
-endif()
+add_subdirectory("src")
 
 # Move libraries
 set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
@@ -93,6 +53,7 @@ set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
 set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
 
+set_target_properties(RenderNew PROPERTIES ${IXRAY_FOLDER_RENDER})
 set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
 set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
 set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
@@ -117,6 +78,14 @@ if (IXRAY_UTILS)
 endif()
 
 # Move 3rd
+set_target_properties(NRI_D3D11 PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(NRI_D3D12 PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(NRI_Shared PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(NRI_Validation PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(NRI_VK PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(NRI PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(TracyClient PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(luajit PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(luabind PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(ODE PROPERTIES ${IXRAY_FOLDER_3RD})

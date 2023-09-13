@@ -56,7 +56,6 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}/fsr2")
-target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
 
 # project defines 
 target_compile_definitions(xrRender_R4 PRIVATE _WINDOWS)
@@ -65,14 +64,18 @@ target_compile_definitions(xrRender_R4 PRIVATE USE_DX11)
 target_compile_definitions(xrRender_R4 PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)
+add_compile_options("$<$<CONFIG:Debug>:/MD>")
 target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
+target_link_directories(xrRender_R4 PRIVATE ${IXRAY_SDK_LIB})
 target_link_libraries(xrRender_R4 PUBLIC xrEngine)
 target_link_libraries(xrRender_R4 PUBLIC xrParticles)
 target_link_libraries(xrRender_R4 PUBLIC "d3dcompiler.lib")
 target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
 target_link_libraries(xrRender_R4 PUBLIC "d3d11.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x86.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x86.lib")
 
 # Nuget
 add_custom_command(TARGET ${PROJECT_NAME}
@@ -86,3 +89,5 @@ target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/dire
 
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/include/")
 target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x86/release/DirectXTex.lib)
+
+add_compile_options(xrRender_R4 )

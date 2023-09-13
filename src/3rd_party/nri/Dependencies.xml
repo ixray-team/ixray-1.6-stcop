@@ -1,0 +1,8 @@
+<project toolsVersion="5.0">
+  <dependency name="nvapi" linkPath="External/NVAPI">
+    <package name="nvapi" version="r520-developer-windows-x86_64" platforms="windows-x86_64" />
+  </dependency>
+  <dependency name="ags" linkPath="External/AGS">
+    <package name="ags" version="6.0.1-windows-x86_64" platforms="windows-x86_64" />
+  </dependency>
+</project>

@@ -1,0 +1,5 @@
+add_library(tinygltf INTERFACE)
+add_library(TinyGLTF::tinygltf ALIAS tinygltf)
+target_include_directories(tinygltf INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(tinygltf INTERFACE rapidjson)
+target_compile_definitions(tinygltf INTERFACE TINYGLTF_USE_RAPIDJSON)
