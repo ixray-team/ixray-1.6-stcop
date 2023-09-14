@@ -60,8 +60,15 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 {
 	actualize			();
 	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
-	VERIFY				((I != clsids().end()) && ((*I)->clsid() == clsid));
-	return				(**I);
+
+	if (I == clsids().end() || (*I)->clsid() != clsid) {
+		string16 TextID = "";
+		CLSID2TEXT(clsid, TextID);
+
+		Msg("! [ERROR]: Invalid clsid! %s", TextID);
+	}
+
+	return (**I);
 }
 #else
 IC	const CObjectItemAbstract *CObjectFactory::item	(const CLASS_ID &clsid, bool no_assert) const
