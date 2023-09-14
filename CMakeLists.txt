@@ -36,7 +36,7 @@ set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
 set(IXRAY_FOLDER_UTILS FOLDER "Utils")
 set(IXRAY_FOLDER_RENDER FOLDER "Renders")
 set(IXRAY_FOLDER_GAME FOLDER "Game")
-set(IXRAY_FOLDER_3RD FOLDER "3rd Party")
+set(IXRAY_FOLDER_3RD FOLDER "3rd_party")
 
 add_subdirectory("src")
 

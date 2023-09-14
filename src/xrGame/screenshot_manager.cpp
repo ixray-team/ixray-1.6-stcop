@@ -10,8 +10,8 @@
 #endif
 
 #include <ddraw.h>
-#include "../3rd party/cximage/cximage/ximage.h"
-#include "../3rd party/cximage/cximage/xmemfile.h"
+#include "../3rd_party/cximage/cximage/ximage.h"
+#include "../3rd_party/cximage/cximage/xmemfile.h"
 
 void*	cxalloc(size_t size)
 {

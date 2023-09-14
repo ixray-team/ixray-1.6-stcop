@@ -147,6 +147,7 @@ void CEngineAPI::CreateRendererList()
 
 	LPCSTR			r2_name	= "xrRender_R2.dll";
 	LPCSTR			r4_name	= "xrRender_R4.dll";
+	LPCSTR			new_name= "RenderNew.dll";
 
 	if (strstr(Core.Params,"-perfhud_hack"))
 	{
@@ -156,32 +157,16 @@ void CEngineAPI::CreateRendererList()
 	}
 	else
 	{
-		// try to initialize R2
 		Log				("Loading DLL:",	r2_name);
 		hRender			= LoadLibrary		(r2_name);
-		if (hRender)	
-		{
-			bSupports_r2 = true;
-			SupportsAdvancedRendering *test_rendering = (SupportsAdvancedRendering*) GetProcAddress(hRender,"SupportsAdvancedRendering");	
-			R_ASSERT(test_rendering);
-			bSupports_r2_5 = test_rendering();
-			FreeLibrary(hRender);
-		}
-
-		// try to initialize R4
 		Log				("Loading DLL:",	r4_name);
-		//	Hide "d3d11.dll not found" message box for XP
-		SetErrorMode	(SEM_FAILCRITICALERRORS);
 		hRender			= LoadLibrary		(r4_name);
-		//	Restore error handling
-		SetErrorMode	(0);
-		if (hRender)	
-		{
-			SupportsDX11Rendering *test_dx11_rendering = (SupportsDX11Rendering*) GetProcAddress(hRender,"SupportsDX11Rendering");
-			R_ASSERT(test_dx11_rendering);
-			bSupports_r4 = test_dx11_rendering();
-			FreeLibrary(hRender);
-		}
+		//Log				("Loading DLL:",	new_name);
+		//hRender			= LoadLibrary		(new_name);
+		//
+		bSupports_r2 = true;
+		bSupports_r2_5 = true;
+		bSupports_r4 = true;
 	}
 
 	hRender = 0;

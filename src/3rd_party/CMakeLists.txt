@@ -1,4 +1,5 @@
 add_subdirectory("tinygltf")
+add_subdirectory("dxmath")
 add_subdirectory("stb")
 add_subdirectory("grr")
 add_subdirectory("magic_enum")

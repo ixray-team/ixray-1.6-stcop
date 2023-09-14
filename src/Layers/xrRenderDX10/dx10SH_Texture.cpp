@@ -266,6 +266,16 @@ void CTexture::Apply(u32 dwStage)
 		VERIFY("Invalid stage");
 }
 
+u32 CTexture::get_Width()
+{
+	desc_enshure(); return desc.Width;
+}
+
+u32 CTexture::get_Height()
+{
+	desc_enshure(); return desc.Height;
+}
+
 void CTexture::apply_theora(u32 dwStage)
 {
 	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:Device.dwTimeContinual))

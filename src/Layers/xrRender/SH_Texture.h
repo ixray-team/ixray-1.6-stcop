@@ -7,6 +7,24 @@
 class  ENGINE_API CAviPlayerCustom;
 class  CTheoraSurface;
 
+#ifdef RENDER_NEW_EXPORTS
+struct ID3DBaseTexture;
+struct D3D_TEXTURE2D_DESC
+{
+	UINT Width;
+	UINT Height;
+	UINT MipLevels;
+	UINT ArraySize;
+	int Format;
+	UINT Count;
+	UINT Quality;
+	int Usage;
+	UINT BindFlags;
+	UINT CPUAccessFlags;
+	UINT MiscFlags;
+};
+#endif
+
 class  ECORE_API CTexture : public xr_resource_named
 {
 public:
@@ -40,8 +58,8 @@ public:
 	ID3DBaseTexture*					surface_get 	();
 
 	IC BOOL								isUser			()		{ return flags.bUser;					}
-	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
-	IC u32								get_Height		()		{ desc_enshure(); return desc.Height;	}
+	u32									get_Width		();
+	u32									get_Height		();
 
 	void								video_Sync		(u32 _time){m_play_time=_time;}
 	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);

@@ -2,6 +2,11 @@
 #define SH_RT_H
 #pragma once
 
+#ifdef RENDER_NEW_EXPORTS
+struct ID3DTexture2D;
+struct ID3DRenderTargetView;
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 class		CRT		:	public xr_resource_named	{
 public:

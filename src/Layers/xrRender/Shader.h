@@ -18,6 +18,11 @@
 typedef xr_vector<shared_str>	sh_list;
 class					CBlender_Compile;
 class					IBlender;
+#ifdef RENDER_NEW_EXPORTS
+struct ID3DVertexBuffer;
+struct ID3DIndexBuffer;
+struct ID3DVertexShader;
+#endif
 #define	SHADER_PASSES_MAX		2
 
 #pragma pack(push,4)

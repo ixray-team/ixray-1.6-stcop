@@ -23,6 +23,11 @@ struct ECORE_API SInputSignature : public xr_resource_flagged
 };
 typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
 #endif //USE_DX11
+#ifdef RENDER_NEW_EXPORTS
+struct ID3DVertexShader;
+struct ID3DPixelShader;
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 struct ECORE_API SVS : public xr_resource_named							
 {
@@ -79,6 +84,10 @@ struct ECORE_API SCS : public xr_resource_named
 };
 typedef	resptr_core< SCS, resptr_base<SCS> >	ref_cs;
 
+#endif
+
+#ifdef RENDER_NEW_EXPORTS
+struct ID3DState;
 #endif
 
 //////////////////////////////////////////////////////////////////////////

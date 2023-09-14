@@ -10,8 +10,8 @@
 #include "../level.h"
 #include "../game_cl_mp.h"
 #include <dinput.h>
-#include "../3rd party/cximage/cximage/ximage.h"
-#include "../3rd party/cximage/cximage/xmemfile.h"
+#include "../3rd_party/cximage/cximage/ximage.h"
+#include "../3rd_party/cximage/cximage/xmemfile.h"
 
 CUIServerInfo::CUIServerInfo()
 {

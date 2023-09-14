@@ -25,6 +25,7 @@ protected:
 	typedef typename inherited_action::_edge_value_type		_edge_value_type;
 	typedef typename inherited_action::_condition_type		_condition_type;
 	typedef typename inherited_action::_value_type			_value_type;
+	typedef typename inherited_planner::_world_operator		_world_operator;
 
 public:
 	typedef typename inherited_action::COperatorCondition	COperatorCondition;
@@ -32,11 +33,11 @@ public:
 #ifdef LOG_ACTION
 public:
 	virtual	void		set_use_log				(bool value);
-	virtual void		show					(LPCSTR offset = "");
+	virtual void		show					(const char* offset = "");
 #endif
 
 public:
-	IC					CActionPlannerAction	(_object_type *object = 0, LPCSTR action_name = "");
+	IC					CActionPlannerAction	(_object_type *object = 0, const char* action_name = "");
 	virtual				~CActionPlannerAction	();
 	virtual	void		setup					(_object_type *object, CPropertyStorage *storage);
 	virtual void		initialize				();

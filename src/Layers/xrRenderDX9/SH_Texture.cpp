@@ -65,6 +65,16 @@ ID3DBaseTexture*	CTexture::surface_get	()
 	return pSurface;
 }
 
+u32 CTexture::get_Width()
+{
+	desc_enshure(); return desc.Width;
+}
+
+u32 CTexture::get_Height()
+{
+	desc_enshure(); return desc.Height;
+}
+
 void CTexture::PostLoad	()
 {
 	if (pTheora)				bind		= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_theora);

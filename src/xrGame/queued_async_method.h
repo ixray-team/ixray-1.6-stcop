@@ -226,7 +226,7 @@ struct parameters_tuple4
 		return *this;
 	}
 
-	bool				operator == (parameters_tuple3 const & right) const
+	bool				operator == (parameters_tuple3<T1, T2, T3> const & right) const
 	{
 		return	(m_t1 == right.m_t1) &&
 				(m_t2 == right.m_t2) &&

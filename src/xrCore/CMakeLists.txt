@@ -97,6 +97,10 @@ target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
+target_link_libraries(xrCore PUBLIC "RapidJSON::rapidjson")
+target_link_libraries(xrCore PUBLIC "MagicEnum::magic_enum")
+target_link_libraries(xrCore PUBLIC "GRR::grr")
+target_link_libraries(xrCore PUBLIC "STB::stb")
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)

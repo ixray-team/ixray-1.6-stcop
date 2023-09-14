@@ -4,6 +4,11 @@
 
 #include "../xrRender/dxParticleCustom.h"
 
+namespace PAPI
+{
+	struct Particle;
+}
+
 namespace PS
 {
 	class CParticleEffect;
