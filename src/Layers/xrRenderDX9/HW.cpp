@@ -98,12 +98,7 @@ void CHW::Reset		(HWND hwnd)
 
 void CHW::CreateD3D	()
 {
-//#ifndef DEDICATED_SERVER
-//	LPCSTR		_name			= "d3d9.dll";
-//#else
-//	LPCSTR		_name			= "xrd3d9-null.dll";
-//#endif
-
+#if 0
 	LPCSTR		_name			= "xrd3d9-null.dll";
 
 #ifndef _EDITOR
@@ -118,6 +113,8 @@ void CHW::CreateD3D	()
 	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*)GetProcAddress(hD3D,"Direct3DCreate9");	R_ASSERT(createD3D);
     this->pD3D 					= createD3D( D3D_SDK_VERSION );
     R_ASSERT2					(this->pD3D,"Please install DirectX 9.0c");
+#endif
+	this->pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 }
 
 void CHW::DestroyD3D()
