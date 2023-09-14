@@ -63,7 +63,7 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     dispatchParameters.color = ffxGetResourceDX11(&m_context, params.unresolvedColorResource, L"FSR2_InputColor");
     dispatchParameters.depth = ffxGetResourceDX11(&m_context, params.depthbufferResource, L"FSR2_InputDepth");
     dispatchParameters.motionVectors = ffxGetResourceDX11(&m_context, params.motionvectorResource, L"FSR2_InputMotionVectors");
-    dispatchParameters.exposure = ffxGetResourceDX11(&m_context, nullptr, L"FSR2_InputExposure");
+    dispatchParameters.exposure = ffxGetResourceDX11(&m_context, params.exposureResource, L"FSR2_InputExposure");
     dispatchParameters.reactive = ffxGetResourceDX11(&m_context, params.reactiveMapResource, L"FSR2_InputReactiveMap");
     dispatchParameters.transparencyAndComposition = ffxGetResourceDX11(&m_context, params.transparencyAndCompositionResource, L"FSR2_TransparencyAndCompositionMap");
     dispatchParameters.output = ffxGetResourceDX11(&m_context, params.resolvedColorResource, L"FSR2_OutputUpscaledColor", FFX_RESOURCE_STATE_UNORDERED_ACCESS);

@@ -19,6 +19,7 @@ public:
         ID3D11DeviceContext* deviceContext = nullptr;
 
         // Inputs
+        ID3D11Texture2D* exposureResource = nullptr;
         ID3D11Texture2D* unresolvedColorResource = nullptr;
         ID3D11Texture2D* motionvectorResource = nullptr;
         ID3D11Texture2D* depthbufferResource = nullptr;
