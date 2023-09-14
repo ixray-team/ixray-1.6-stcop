@@ -315,6 +315,12 @@ struct                  f_deffer
 };
 #endif
 
+struct f_environment
+{
+	float4 color : SV_Target0;
+	float4 motion: SV_Target1;
+};
+
 struct					gbuffer_data
 {
 	float3  P; // position.( mtl or sun )

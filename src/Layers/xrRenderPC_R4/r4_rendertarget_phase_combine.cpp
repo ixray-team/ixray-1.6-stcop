@@ -72,35 +72,24 @@ void	CRenderTarget::phase_combine	()
 	// low/hi RTs
 	HW.pContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
 	HW.pContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
-	u_setrt				( rt_Generic_0,rt_Generic_1, 0, rt_HWDepth->pZRT);
 	RCache.set_CullMode	( CULL_NONE );
 	RCache.set_Stencil	( FALSE		);
 
 	BOOL	split_the_scene_to_minimize_wait			= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
-	// draw skybox
-	if (1)
-	{
-		//	Moved to shader!
-		//RCache.set_ColorWriteEnable					();
-		//	Moved to shader!
-		//RCache.set_Z(FALSE);
-		g_pGamePersistent->Environment().RenderSky	();
-
-		//	Igor: Render clouds before compine without Z-test
-		//	to avoid siluets. HOwever, it's a bit slower process.
-		g_pGamePersistent->Environment().RenderClouds	();
-
-		//	Moved to shader!
-		//RCache.set_Z(TRUE);
-	}
+	u_setrt(rt_Generic_0, rt_Generic_1, rt_Motion, rt_HWDepth->pZRT);
+	g_pGamePersistent->Environment().RenderSky();
+	u_setrt(rt_Generic_0, rt_Motion, rt_HWDepth->pZRT);
+	g_pGamePersistent->Environment().RenderClouds();
+	u_setrt(rt_Generic_0, rt_Generic_1, nullptr, rt_HWDepth->pZRT);
 
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
 	if (RImplementation.o.nvstencil) {
 		u_stencil_optimize(CRenderTarget::SO_Combine);
 		RCache.set_ColorWriteEnable();
 	}
+
 
 	// Draw full-screen quad textured with our scene image
 	if (!_menu_pp)

@@ -250,6 +250,10 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 	mSky.rotateY				(env.CurrentEnv->sky_rotation);
 	mSky.translate_over			(Device.vCameraPosition);
 
+	Fmatrix						mPrevSky;
+	mPrevSky.rotateY			(env.CurrentEnv->sky_rotation);
+	mPrevSky.translate_over		(Device.vPrevCameraPosition);
+
 	u32		i_offset,v_offset;
 	u32		C					= color_rgba(iFloor(env.CurrentEnv->sky_color.x*255.f), iFloor(env.CurrentEnv->sky_color.y*255.f), iFloor(env.CurrentEnv->sky_color.z*255.f), iFloor(env.CurrentEnv->weight*255.f));
 
@@ -265,7 +269,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 
 	// Render
 	RCache.set_xform_world		(mSky);
-	RCache.set_prev_xform_world	(mSky);
+	RCache.set_prev_xform_world	(mPrevSky);
 	RCache.set_Geometry			(sh_2geom);
 	RCache.set_Shader			(sh_2sky);
 //	RCache.set_Textures			(&env.CurrentEnv->sky_r_textures);
@@ -294,12 +298,17 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 	::Render->rmFar				();
 
 	Fmatrix						mXFORM, mScale;
-	mScale.scale				(10,0.4f,10);
-	mXFORM.rotateY				(env.CurrentEnv->sky_rotation);
-	mXFORM.mulB_43				(mScale);
-	mXFORM.translate_over		(Device.vCameraPosition);
+	mScale.scale(10, 0.4f, 10);
+	mXFORM.rotateY(env.CurrentEnv->sky_rotation);
+	mXFORM.mulB_43(mScale);
+	mXFORM.translate_over(Device.vCameraPosition);
 
-	Fvector wd0,wd1;
+	Fmatrix						mPrevXFORM;
+	mPrevXFORM.rotateY(env.CurrentEnv->sky_rotation);
+	mPrevXFORM.mulB_43(mScale);
+	mPrevXFORM.translate_over(Device.vPrevCameraPosition);
+
+	Fvector wd0, wd1;
 	Fvector4 wind_dir;
 	wd0.setHP					(PI_DIV_4,0);
 	wd1.setHP					(PI_DIV_4+PI_DIV_8,0);
@@ -321,7 +330,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 
 	// Render
 	RCache.set_xform_world		(mXFORM);
-	RCache.set_prev_xform_world	(mXFORM);
+	RCache.set_prev_xform_world	(mPrevXFORM);
 	RCache.set_Geometry			(clouds_geom);
 	RCache.set_Shader			(clouds_sh);
 	dxEnvDescriptorMixerRender	&mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;

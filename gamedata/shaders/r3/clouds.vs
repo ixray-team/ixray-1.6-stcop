@@ -13,6 +13,8 @@ struct 	vf
 	float4	color	: COLOR0;	// rgb. intensity, for SM3 - tonemap-prescaled, HI-res
   	float2	tc0		: TEXCOORD0;
   	float2	tc1		: TEXCOORD1;
+  	float4  prev_hpos : POSITION0;
+  	float4  cur_hpos  : POSITION1;
 	float4 	hpos	: SV_Position;
 };
 
@@ -21,6 +23,8 @@ vf main (vi v)
 	vf 		o;
 
 	o.hpos 		= mul		(m_WVP, v.p);	// xform, input in world coords
+	o.cur_hpos 	= mul		(m_WVPClean, v.p);	// xform, input in world coords
+	o.prev_hpos = mul		(m_prevWVPClean, v.p);	// xform, input in world coords
 	
 //	if (length(float3(v.p.x,0,v.p.z))>CLOUD_FADE)	o.color.w = 0	;
 

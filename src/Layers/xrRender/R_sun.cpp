@@ -316,6 +316,11 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	// Finalize & Cleanup
 	fuckingsun->X.D.combine					= cull_xform;	//*((Fmatrix*)&m_LightViewProj);
 
+	auto PrevJitter = RCache.get_prev_xform_jitter();
+	auto Jitter = RCache.get_xform_jitter();
+	RCache.set_prev_xform_jitter({});
+	RCache.set_xform_jitter({});
+
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
 	{
@@ -367,6 +372,8 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 			Target->accum_direct_cascade		(SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind-1].xform, m_sun_cascades[cascade_ind].bias);
 
 	// Restore XForms
+	RCache.set_prev_xform_jitter(PrevJitter);
+	RCache.set_xform_jitter		(Jitter);
 	RCache.set_xform_world		(Fidentity			);
 	RCache.set_xform_view		(Device.mView		);
 	RCache.set_xform_project	(Device.mProject	);

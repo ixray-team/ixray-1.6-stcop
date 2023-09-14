@@ -87,6 +87,11 @@ void	CRender::render_lights	(light_Package& LP)
 		xr_vector<light*>&	source		= LP.v_shadowed;
 		light*		L		= source.back	()	;
 		u16			sid		= L->vis.smap_ID	;
+
+		auto PrevJitter = RCache.get_prev_xform_jitter();
+		auto Jitter = RCache.get_xform_jitter();
+		RCache.set_prev_xform_jitter({});
+		RCache.set_xform_jitter({});
 		while (true)	
 		{
 			if	(source.empty())		break;
@@ -126,7 +131,10 @@ void	CRender::render_lights	(light_Package& LP)
 			}
 			L->svis.end								();
 			r_pmask									(true,false);
+
 		}
+		RCache.set_prev_xform_jitter(PrevJitter);
+		RCache.set_xform_jitter(Jitter);
 
 		{
 			PIX_EVENT(UNSHADOWED_LIGHTS);

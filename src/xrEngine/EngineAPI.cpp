@@ -159,8 +159,10 @@ void CEngineAPI::CreateRendererList()
 	{
 		Log				("Loading DLL:",	r2_name);
 		hRender			= LoadLibrary		(r2_name);
+		FreeLibrary(hRender);
 		Log				("Loading DLL:",	r4_name);
 		hRender			= LoadLibrary		(r4_name);
+		FreeLibrary(hRender);
 		//Log				("Loading DLL:",	new_name);
 		//hRender			= LoadLibrary		(new_name);
 		//

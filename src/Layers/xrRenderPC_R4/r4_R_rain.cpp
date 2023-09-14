@@ -233,6 +233,10 @@ void CRender::render_rain()
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
+	auto PrevJitter = RCache.get_prev_xform_jitter();
+	auto Jitter = RCache.get_xform_jitter();
+	RCache.set_prev_xform_jitter({});
+	RCache.set_xform_jitter({});
 	{
 		bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
@@ -246,6 +250,8 @@ void CRender::render_rain()
 			//	Details->Render					()	;
 		}
 	}
+	RCache.set_prev_xform_jitter(PrevJitter);
+	RCache.set_xform_jitter(Jitter);
 
 	// End SMAP-render
 	{
