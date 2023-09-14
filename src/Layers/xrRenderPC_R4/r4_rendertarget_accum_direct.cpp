@@ -151,12 +151,9 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 		// Compute textgen texture for pixel shader, for possitions texture.
 		Fmatrix			m_Texgen;
 		m_Texgen.identity();
-		RCache.xforms.set_W(m_Texgen);
-		RCache.xforms.set_V(Device.mView);
-		RCache.xforms.set_P(Device.mProject);
-		RCache.prev_xforms.set_W(m_Texgen);
-		RCache.prev_xforms.set_V(Device.mPrevView);
-		RCache.prev_xforms.set_P(Device.mPrevProject);
+		RCache.set_xform_world(m_Texgen);
+		RCache.set_xform_view(Device.mView);
+		RCache.set_xform_project(Device.mProject);
 		u_compute_texgen_screen(m_Texgen);
 
 		// Fill vertex buffer
