@@ -39,8 +39,6 @@ CEngineAPI::~CEngineAPI()
 extern u32 renderer_value; //con cmd
 ENGINE_API int g_current_renderer = 0;
 
-#ifndef DEDICATED_SERVER
-
 void CEngineAPI::InitializeNotDedicated()
 {
 	LPCSTR			r2_name	= "xrRender_R2.dll";
@@ -70,8 +68,8 @@ void CEngineAPI::InitializeNotDedicated()
 		}
 	}
 }
-#endif // DEDICATED_SERVER
 
+extern ENGINE_API bool g_dedicated_server;
 
 void CEngineAPI::Initialize(void)
 {
@@ -79,9 +77,8 @@ void CEngineAPI::Initialize(void)
 	// render
 	LPCSTR			r1_name	= "xrRender_R1.dll";
 
-	#ifndef DEDICATED_SERVER
+	if (!g_dedicated_server)
 		InitializeNotDedicated();
-	#endif // DEDICATED_SERVER
 
 	if (0==hRender)		
 	{
@@ -128,8 +125,8 @@ extern "C" {
 
 void CEngineAPI::CreateRendererList()
 {
-#ifdef DEDICATED_SERVER
-
+	if (g_dedicated_server)
+	{
 	vid_quality_token						= xr_alloc<xr_token>(2);
 
 	vid_quality_token[0].id			= 0;
@@ -138,7 +135,6 @@ void CEngineAPI::CreateRendererList()
 	vid_quality_token[1].id			= -1;
 	vid_quality_token[1].name		= NULL;
 
-#else
 	//	TODO: ask renderers if they are supported!
 	if(vid_quality_token != NULL)		return;
 	bool bSupports_r1 = false;
@@ -293,6 +289,5 @@ void CEngineAPI::CreateRendererList()
 		Msg							("[%s]",_tmp[i]);
 #endif // DEBUG
 	}
-	*/
-#endif //#ifndef DEDICATED_SERVER
+	}
 }

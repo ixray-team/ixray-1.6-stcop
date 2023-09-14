@@ -41,7 +41,7 @@ list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
 #list(FILTER ENGINE_SRC_FILES EXCLUDE REGEX "")
 
 # xrEngine project
-add_executable(xrEngine WIN32 ${ENGINE_SRC_FILES})
+add_library(xrEngine SHARED ${ENGINE_SRC_FILES})
 set_property(TARGET xrEngine PROPERTY ENABLE_EXPORTS ON)
 
 # Include directories

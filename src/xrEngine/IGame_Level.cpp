@@ -26,12 +26,9 @@ IGame_Level::IGame_Level	()
 	Device.DumpResourcesMemoryUsage();
 }
 
-//#include "resourcemanager.h"
-
-IGame_Level::~IGame_Level	()
+IGame_Level::~IGame_Level()
 {
 	if(strstr(Core.Params,"-nes_texture_storing") )
-		//Device.Resources->StoreNecessaryTextures();
 		Device.m_pRender->ResourcesStoreNecessaryTextures();
 	xr_delete					( pLevel		);
 
@@ -39,12 +36,16 @@ IGame_Level::~IGame_Level	()
 	Render->level_Unload		();
 	xr_delete					(m_pCameras);
 	// Unregister
-	Device.seqRender.Remove		(this);
-	Device.seqFrame.Remove		(this);
-	CCameraManager::ResetPP		();
-///////////////////////////////////////////
-	Sound->set_geometry_occ		(NULL);
-	Sound->set_handler			(NULL);
+	if (!g_dedicated_server)
+	{
+		Device.seqRender.Remove(this);
+	}
+
+	Device.seqFrame.Remove(this);
+	CCameraManager::ResetPP();
+
+	Sound->set_geometry_occ(NULL);
+	Sound->set_handler(NULL);
 	Device.DumpResourcesMemoryUsage();
 
 	u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
@@ -98,7 +99,6 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	R_ASSERT2					(XRCL_PRODUCTION_VERSION==H.XRLC_version,"Incompatible level version.");
 
 	// CForms
-//	g_pGamePersistent->LoadTitle	("st_loading_cform");
 	g_pGamePersistent->LoadTitle	();
 	ObjectSpace.Load			( build_callback );
 	//Sound->set_geometry_occ		( &Static );
@@ -114,22 +114,21 @@ BOOL IGame_Level::Load			(u32 dwNum)
 
 	// Render-level Load
 	Render->level_Load			(LL_Stream);
-	// tscreate.FrameEnd			();
-	// Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
 	// Objects
 	g_pGamePersistent->Environment().mods_load	();
 	R_ASSERT					(Load_GameSpecific_Before());
 	Objects.Load				();
-//. ANDY	R_ASSERT					(Load_GameSpecific_After ());
 
 	// Done
 	FS.r_close					( LL_Stream );
 	bReady						= true;
-	if (!g_dedicated_server)	IR_Capture();
-#ifndef DEDICATED_SERVER
-	Device.seqRender.Add		(this);
-#endif
+
+	if (!g_dedicated_server) {
+		IR_Capture();
+
+		Device.seqRender.Add(this);
+	}
 
 	Device.seqFrame.Add			(this);
 	return TRUE;	
@@ -138,27 +137,14 @@ BOOL IGame_Level::Load			(u32 dwNum)
 int		psNET_DedicatedSleep	= 5;
 void	IGame_Level::OnRender		( ) 
 {
-#ifndef DEDICATED_SERVER
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
-	// Level render, only when no client output required
-	if (!g_dedicated_server)	{
-		Render->Calculate			();
-		Render->Render				();
-	} else {
-		Sleep						(psNET_DedicatedSleep);
+	if (!g_dedicated_server) {
+		Render->Calculate();
+		Render->Render();
 	}
-
-	// Font
-//	pApp->pFontSystem->SetSizeI(0.023f);
-//	pApp->pFontSystem->OnRender	();
-#endif
 }
 
 void	IGame_Level::OnFrame		( ) 
 {
-	// Log				("- level:on-frame: ",u32(Device.dwFrame));
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
-
 	// Update all objects
 	VERIFY						(bReady);
 	Objects.Update				(false);

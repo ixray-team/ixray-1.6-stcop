@@ -56,8 +56,13 @@ add_subdirectory("src/xrParticles")
 add_subdirectory("src/Layers/xrRenderPC_R1")
 add_subdirectory("src/Layers/xrRenderPC_R2")
 add_subdirectory("src/Layers/xrRenderPC_R4")
-add_subdirectory("src/xrGame/")
-add_subdirectory("src/xrGameSpy/")
+add_subdirectory("src/xrGame")
+add_subdirectory("src/xrGameSpy")
+add_subdirectory("src/xrPlay")
+
+if(IXRAY_MP)
+    add_subdirectory("src/xrServer")
+endif()
 
 # Engine Utils
 if(IXRAY_UTILS)
@@ -89,6 +94,7 @@ set_target_properties(xrNetServer PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCPU_Pipe PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
+set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
 
 set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
 set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
