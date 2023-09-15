@@ -49,13 +49,6 @@ XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
 
-HWND get_current_wnd()
-{
-	HWND hWnd = GetActiveWindow();
-	if (hWnd == nullptr)
-		hWnd = GetForegroundWindow();
-	return hWnd;
-}
 void xrDebug::gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, u32 const assertion_info_size)
 {
 	LPSTR				buffer_base = assertion_info;
