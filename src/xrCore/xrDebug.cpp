@@ -35,6 +35,16 @@ extern bool shared_str_initialized;
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
 
+HWND get_current_wnd()
+{
+	HWND hWnd = GetActiveWindow();
+
+	if (hWnd == nullptr)
+		hWnd = GetForegroundWindow();
+
+	return hWnd;
+}
+
 XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;

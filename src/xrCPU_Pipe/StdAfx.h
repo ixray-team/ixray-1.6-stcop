@@ -13,8 +13,10 @@
 	#include <intrin.h>
 #pragma warning(default:4995)
 
-#define ENGINE_API
-#define ECORE_API
+#ifndef ENGINE_API
+#	define ENGINE_API
+#	define ECORE_API
+#endif 
 
 #ifdef _EDITOR
 #	include "skeletonX.h"
