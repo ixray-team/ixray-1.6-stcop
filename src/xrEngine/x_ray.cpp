@@ -19,7 +19,8 @@
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
 #include "Text_Console.h"
-
+#include <luabind/luabind.hpp>
+#include <luabind/memory_allocator.hpp>
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -355,6 +356,21 @@ struct damn_keys_filter {
 #undef dwFilterKeysStructSize
 #undef dwToggleKeysStructSize
 
+static void* __cdecl luabind_allocator(void* context, const void* pointer, size_t const size)
+{
+	if (!size)
+	{
+		void* non_const_pointer = const_cast<LPVOID>(pointer);
+		xr_free(non_const_pointer);
+		return nullptr;
+	}
+	if (!pointer)
+	{
+		return xr_malloc(size);
+	}
+	void* non_const_pointer = const_cast<LPVOID>(pointer);
+	return xr_realloc(non_const_pointer, size);
+}
 
 ENGINE_API	bool g_dedicated_server	= false;
 
@@ -391,8 +407,11 @@ ENGINE_API void EngineLoadStage2()
 	damn_keys_filter		filter;
 	(void)filter;
 
-		FPU::m24r				();
-		InitEngine				();
+	luabind::allocator = &luabind_allocator;
+	luabind::allocator_context = nullptr;
+
+	FPU::m24r();
+	InitEngine();
 
 		InitInput				();
 }

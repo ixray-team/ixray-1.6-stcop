@@ -67,10 +67,10 @@ void CScriptEffector::script_register(lua_State *L)
 			.def(								constructor<>())
 			.def("assign",						&SPPInfo_assign),
 
-		class_<CScriptEffector, CScriptEffectorWrapper>("effector")
+		class_<CScriptEffector, no_bases, default_holder, CScriptEffectorWrapper>("effector")
 			.def(								constructor<int,float>())
-			.def("start",						&add_effector,		adopt(_1))
-			.def("finish",						&remove_effector,	adopt(_1))
+			.def("start",						&add_effector,		adopt<1>())
+			.def("finish",						&remove_effector,	adopt<1>())
 			.def("process",	 					&CScriptEffector::process,	&CScriptEffectorWrapper::process_static)
 	];
 }
