@@ -85,9 +85,10 @@ xr_token							upscale_token[] = {
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
 
-float		ps_r4_jitter_factor			= 0.005f;
-float		ps_r4_jitter_scale_x		= 1.0;
-float		ps_r4_jitter_scale_y		= 1.0;
+float		ps_r4_jitter_factor			= 1.0f;
+float		ps_r4_jitter_scale_x		= -2.0;
+float		ps_r4_jitter_scale_y		= 2.0;
+float		ps_r4_motion_scale			= 0.5;
 float		ps_r4_sharp_factor			= 0.5f;
 int			ps_r4_sharp_enable			= 1;
 
@@ -819,9 +820,10 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
 	CMD3(CCC_Token,		"r4_upscale",					&ps_r4_upscale_type,		upscale_token);
-	CMD4(CCC_Float,		"r4_jitter_factor",				&ps_r4_jitter_factor,		-100, 100);
+	CMD4(CCC_Float,		"r4_jitter_factor",				&ps_r4_jitter_factor,		-10, 10);
 	CMD4(CCC_Float,		"r4_jitter_scale_x",			&ps_r4_jitter_scale_x,		-2, 2);
 	CMD4(CCC_Float,		"r4_jitter_scale_y",			&ps_r4_jitter_scale_y,		-2, 2);
+	CMD4(CCC_Float,		"r4_motion_scale",				&ps_r4_motion_scale,		0, 2);
 	CMD4(CCC_Float,		"r4_sharp_factor",				&ps_r4_sharp_factor,		0, 1);
 	CMD4(CCC_Integer,	"r4_sharp_enable",				&ps_r4_sharp_enable,		0, 1);
 	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);

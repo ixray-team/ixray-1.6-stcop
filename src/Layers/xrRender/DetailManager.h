@@ -104,6 +104,9 @@ public:
 	float							m_time_rot_1;
 	float							m_time_rot_2;
 	float							m_time_pos;
+	float							m_prev_time_rot_1;
+	float							m_prev_time_rot_2;
+	float							m_prev_time_pos;
 	float							m_global_time_old;
 public:
 	IReader*						dtFS;
@@ -162,7 +165,15 @@ public:
 	void							hw_Unload		();
 	void							hw_Render		();
 #ifdef USE_DX11
-	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4& prev_consts, const Fvector4 &wave, const Fvector4& prev_wave, const Fvector4 &wind, u32 var_id, u32 lod_id);
+	void							hw_Render_dump	(
+		const Fvector4 &consts, 
+		const Fvector4 &wave, 
+		const Fvector4& prev_wave,
+		const Fvector4& wind, 
+		const Fvector4& prev_wind, 
+		u32 var_id,
+		u32 lod_id
+	);
 #else //USE_DX11
 	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id, u32 c_base);
 #endif

@@ -86,6 +86,9 @@ CDetailManager::CDetailManager	()
 	m_time_rot_1 = 0;
 	m_time_rot_2 = 0;
 	m_time_pos	= 0;
+	m_prev_time_rot_1 = 0;
+	m_prev_time_rot_2 = 0;
+	m_prev_time_pos	= 0;
 	m_global_time_old = 0;
 }
 
@@ -334,8 +337,8 @@ void CDetailManager::Render	()
 #else
 	float factor			= 0.3f;
 #endif
-	swing_current.lerp		(swing_desc[0],swing_desc[1],factor);
 
+	swing_current.lerp		(swing_desc[0],swing_desc[1],factor);
 	RCache.set_CullMode		(CULL_NONE);
 	RCache.set_xform_world	(Fidentity);
 	RCache.set_prev_xform_world(Fidentity);

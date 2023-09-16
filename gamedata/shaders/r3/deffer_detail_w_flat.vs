@@ -1,10 +1,10 @@
 #include "common.h"
 
 uniform float4 		consts; // {1/quant,1/quant,diffusescale,ambient}
-uniform float4      prev_consts;
 uniform float4 		wave; 	// cx,cy,cz,tm
 uniform float4 		prev_wave; 	// cx,cy,cz,tm
 uniform float4 		dir2D; 
+uniform float4 		prev_dir2D; 
 
 uniform float4 		array[61*4];
 
@@ -38,8 +38,8 @@ v2p_flat 	main (v_detail v)
 	float 	prev_dp		= calc_cyclic   (dot(pos,prev_wave));
 	float 	prev_H 		= pos.y - base;			// height of vertex (scaled)
 	float 	prev_inten 	= prev_H * prev_dp;
-	float 	prev_frac 	= v.misc.z*prev_consts.x;		// fractional
-	float2 	prev_result = calc_xz_wave	(dir2D.xz*prev_inten,prev_frac);
+	float 	prev_frac 	= v.misc.z*consts.x;		// fractional
+	float2 	prev_result = calc_xz_wave	(prev_dir2D.xz*prev_inten,prev_frac);
 	prev_pos			= float4(pos.x+prev_result.x, pos.y, pos.z+prev_result.y, 1);
 
 	// Normal in world coords

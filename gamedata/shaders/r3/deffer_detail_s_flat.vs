@@ -1,10 +1,7 @@
 #include "common.h"
 
 uniform float4 		consts; // {1/quant,1/quant,diffusescale,ambient}
-uniform float4      prev_consts;
-
 uniform float4 		array[61*4];
-
 
 v2p_flat 	main (v_detail v)
 {

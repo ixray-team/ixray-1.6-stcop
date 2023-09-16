@@ -60,7 +60,7 @@ void CRenderTarget::phase_fsr2_combine()
     fsr2Params.cameraJitterY = g_CameraJitterY;
     fsr2Params.enableSharpening = !!ps_r4_sharp_enable;
     fsr2Params.sharpness = ps_r4_sharp_factor;
-    fsr2Params.frameTimeDelta = Device.fTimeDelta * 1000.0f;
+    fsr2Params.frameTimeDelta = Device.fTrueTimeDelta * 1000.0f;
     fsr2Params.nearPlane = VIEWPORT_NEAR;
     fsr2Params.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
     fsr2Params.fovH = deg2rad(Device.fFOV);

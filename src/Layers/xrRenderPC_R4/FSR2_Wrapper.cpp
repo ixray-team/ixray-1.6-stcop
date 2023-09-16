@@ -2,6 +2,8 @@
 
 Fsr2Wrapper g_Fsr2Wrapper;
 
+extern float ps_r4_motion_scale;
+
 void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
 {
     VERIFY(!m_created);
@@ -68,8 +70,8 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     dispatchParameters.output = ffxGetResourceDX11(&m_context, params.resolvedColorResource, L"FSR2_OutputUpscaledColor", FFX_RESOURCE_STATE_UNORDERED_ACCESS);
     dispatchParameters.jitterOffset.x = params.cameraJitterX;
     dispatchParameters.jitterOffset.y = params.cameraJitterY;
-    dispatchParameters.motionVectorScale.x = 0.5f * -(float)params.renderWidth;    // adjust the x direction in motion vector to fit FSR2's requirement
-    dispatchParameters.motionVectorScale.y = 0.5f * (float)params.renderHeight;
+    dispatchParameters.motionVectorScale.x = -(float)params.renderWidth * ps_r4_motion_scale;    // adjust the x direction in motion vector to fit FSR2's requirement
+    dispatchParameters.motionVectorScale.y = (float)params.renderHeight * ps_r4_motion_scale;
     dispatchParameters.reset = params.cameraReset;
     dispatchParameters.enableSharpening = params.enableSharpening;
     dispatchParameters.sharpness = params.sharpness;
