@@ -20,39 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "pch.h"
 
-#include <luabind/lua_include.hpp>
 
-#include <luabind/luabind.hpp>
+#include <luabind/lua_include.hpp>       // for lua_gettop, lua_touserdata, etc
+
+#include <luabind/detail/class_rep.hpp>  // for class_rep, is_class_rep
+#include <luabind/detail/object_rep.hpp> // for get_instance, object_rep
+
+#include <string>                        // for string
 
 using namespace luabind::detail;
 
-string_class luabind::detail::stack_content_by_name(lua_State* L, int start_index)
+luabind::string luabind::detail::stack_content_by_name(lua_State* L, int start_index)
 {
-	string_class ret;
+    luabind::string ret;
 	int top = lua_gettop(L);
-	for (int i = start_index; i <= top; ++i)
+	for(int i = start_index; i <= top; ++i)
 	{
-		object_rep* obj = is_class_object(L, i);
-		class_rep* crep = is_class_rep(L, i)?(class_rep*)lua_touserdata(L, i):0;
-		if (obj == 0 && crep == 0)
+		object_rep* obj = get_instance(L, i);
+		class_rep* crep = is_class_rep(L, i) ? (class_rep*)lua_touserdata(L, i) : 0;
+		if(obj == 0 && crep == 0)
 		{
 			int type = lua_type(L, i);
 			ret += lua_typename(L, type);
 		}
-		else if (obj)
+		else if(obj)
 		{
-			if (obj->flags() & object_rep::constant) ret += "const ";
+			if(obj->is_const()) ret += "const ";
 			ret += obj->crep()->name();
 		}
-		else if (crep)
+		else if(crep)
 		{
 			ret += "<";
 			ret += crep->name();
 			ret += ">";
 		}
-		if (i < top) ret += ", ";
+		if(i < top) ret += ", ";
 	}
 	return ret;
 }
