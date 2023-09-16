@@ -891,8 +891,6 @@ public:
 	}
 };
 
-#include <boost/crc.hpp>
-
 HRESULT	CRender::shader_compile			(
 	LPCSTR							name,
 	DWORD const*                    pSrcData,

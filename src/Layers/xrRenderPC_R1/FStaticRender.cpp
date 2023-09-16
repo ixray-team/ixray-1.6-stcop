@@ -692,8 +692,6 @@ public:
 	}
 };
 
-#include <boost/crc.hpp>
-
 static HRESULT create_shader				(
 		LPCSTR const	pTarget,
 		DWORD const*	buffer,
