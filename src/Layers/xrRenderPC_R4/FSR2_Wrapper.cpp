@@ -24,7 +24,6 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
 #ifdef DEBUG
         FFX_FSR2_ENABLE_DEBUG_CHECKING |
 #endif
-     //   FFX_FSR2_ENABLE_MOTION_VECTORS_JITTER_CANCELLATION |
         FFX_FSR2_ENABLE_AUTO_EXPOSURE;
     //| FFX_FSR2_ENABLE_HIGH_DYNAMIC_RANGE
     //| FFX_FSR2_ENABLE_DEPTH_INVERTED
@@ -69,8 +68,8 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     dispatchParameters.output = ffxGetResourceDX11(&m_context, params.resolvedColorResource, L"FSR2_OutputUpscaledColor", FFX_RESOURCE_STATE_UNORDERED_ACCESS);
     dispatchParameters.jitterOffset.x = params.cameraJitterX;
     dispatchParameters.jitterOffset.y = params.cameraJitterY;
-    dispatchParameters.motionVectorScale.x = -(float)params.renderWidth;    // adjust the x direction in motion vector to fit FSR2's requirement
-    dispatchParameters.motionVectorScale.y = (float)params.renderHeight;
+    dispatchParameters.motionVectorScale.x = 0.5f * -(float)params.renderWidth;    // adjust the x direction in motion vector to fit FSR2's requirement
+    dispatchParameters.motionVectorScale.y = 0.5f * (float)params.renderHeight;
     dispatchParameters.reset = params.cameraReset;
     dispatchParameters.enableSharpening = params.enableSharpening;
     dispatchParameters.sharpness = params.sharpness;
@@ -81,6 +80,11 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     dispatchParameters.cameraFar = params.farPlane;
     dispatchParameters.cameraNear = params.nearPlane;;
     dispatchParameters.cameraFovAngleVertical = params.fovH;
+    dispatchParameters.viewSpaceToMetersFactor = 1.0f;
+    dispatchParameters.autoTcThreshold = 1.0f;
+    dispatchParameters.autoTcScale = 1.0f;
+    dispatchParameters.autoReactiveScale = 1.0f;
+    dispatchParameters.autoReactiveMax = 1.0f;
 
     // EXPERIMENTAL feature, auto-generate reactive mask
     // Turn it off if you don't need it
