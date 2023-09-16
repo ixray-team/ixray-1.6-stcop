@@ -154,8 +154,8 @@ struct	vertHW_2W
 	void get_pos_bones( Fvector& p, CKinematics* Parent ) const
 	{
 			Fvector		P0,P1;
-			Fmatrix& xform0			= Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform; 
-			Fmatrix& xform1			= Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform; 
+			const Fmatrix& xform0			= Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform; 
+			const Fmatrix& xform1			= Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform; 
 			get_pos	(P0);	xform0.transform_tiny(P0);
 			get_pos	(P1);	xform1.transform_tiny(P1);
 			p.lerp			(P0,P1,get_weight());
@@ -224,9 +224,9 @@ struct	vertHW_3W
 	void get_pos_bones( Fvector& p, CKinematics* Parent ) const
 	{
 			Fvector		P0,P1,P2;
-			Fmatrix& xform0			= Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform; 
-			Fmatrix& xform1			= Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
-			Fmatrix& xform2			= Parent->LL_GetBoneInstance(get_bone(2)).mRenderTransform; 
+			const Fmatrix& xform0			= Parent->LL_GetBoneInstance(get_bone(0)).mRenderTransform; 
+			const Fmatrix& xform1			= Parent->LL_GetBoneInstance(get_bone(1)).mRenderTransform;
+			const Fmatrix& xform2			= Parent->LL_GetBoneInstance(get_bone(2)).mRenderTransform; 
 			get_pos	(P0);	xform0.transform_tiny(P0);
 			get_pos	(P1);	xform1.transform_tiny(P1);
 			get_pos	(P2);	xform2.transform_tiny(P2);
@@ -314,7 +314,7 @@ struct	vertHW_4W
 			Fvector		P[4];
 			for (u16 i=0; i<4; ++i)
 			{
-				Fmatrix& xform	= Parent->LL_GetBoneInstance(get_bone(i)).mRenderTransform;
+				const Fmatrix& xform	= Parent->LL_GetBoneInstance(get_bone(i)).mRenderTransform;
 				get_pos	(P[i]);
 				xform.transform_tiny(P[i]);
 			}
@@ -408,13 +408,9 @@ void CSkeletonX_ST::Load(const char* N, IReader *data, u32 dwFlags)
 
 void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 {
-	// Create HW VB in case this is possible
-//	BOOL	bSoft				= HW.Caps.geometry.bSoftware;
-//	u32		dwUsage				= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// VB may be read by wallmarks code
 	switch	(RenderMode)
 	{
 	case RM_SKINNING_SOFT:
-		//Msg					("skinning: software");
 		V.rm_geom.create		(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
@@ -428,19 +424,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 
 			u32 vStride = ComputeVertexSize(dwDecl_01W, 0);
 			VERIFY	(vStride==sizeof(vertHW_1W));
-//			BYTE*	bytes		= 0;
 			VERIFY				(NULL==V.p_rm_Vertices);
-
-			//R_CHK				(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			//R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			//vertHW_1W*		dst	= (vertHW_1W*)bytes;
-			//vertBoned1W*	src = (vertBoned1W*)_verts_;
-			//for (u32 it=0; it<V.vCount; it++)	{
-				//Fvector2	uv; uv.set(src->u,src->v);
-				//dst->set	(src->P,src->N,src->T,src->B,uv,src->matrix*3);
-				//dst++; src++;
-			//}
-			//V.p_rm_Vertices->Unlock	();
 
 			//	TODO: DX10: Check for memory fragmentation
 			vertHW_1W*		dstOriginal	= xr_alloc<vertHW_1W>(V.vCount);			
@@ -469,21 +453,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 
 			u32 vStride = ComputeVertexSize(dwDecl_2W, 0);
 			VERIFY				(vStride==sizeof(vertHW_2W));
-//			BYTE* bytes			= 0;
 			VERIFY				(NULL==V.p_rm_Vertices);
-
-			//R_CHK				(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			//R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			//vertHW_2W* dst		= (vertHW_2W*)bytes;
-			//vertBoned2W* src	= (vertBoned2W*)_verts_;
-
-			//for (u32 it=0; it<V.vCount; ++it)	
-			//{
-			//	Fvector2	uv; uv.set(src->u,src->v);
-			//	dst->set	(src->P,src->N,src->T,src->B,uv,int(src->matrix0)*3,int(src->matrix1)*3,src->w);
-			//	dst++;		src++;
-			//}
-			//V.p_rm_Vertices->Unlock	();
 
 			//	TODO: DX10: Check for memory fragmentation
 			vertHW_2W*		dstOriginal	= xr_alloc<vertHW_2W>(V.vCount);			
@@ -511,22 +481,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			u32 vStride = ComputeVertexSize(dwDecl_3W, 0);
 
 			VERIFY					(vStride==sizeof(vertHW_3W));
-//			BYTE*	bytes			= 0;
 			VERIFY					(NULL==V.p_rm_Vertices);
-
-			//R_CHK					(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			//R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			//vertHW_3W* dst			= (vertHW_3W*)bytes;
-			//vertBoned3W* src		= (vertBoned3W*)_verts_;
-
-			//for (u32 it=0; it<V.vCount; ++it)	
-			//{
-			//	Fvector2	uv; uv.set(src->u,src->v);
-			//	dst->set	(src->P,src->N,src->T,src->B,uv,int(src->m[0])*3,int(src->m[1])*3,int(src->m[2])*3,src->w[0],src->w[1]);
-			//	dst++;		
-			//	src++;
-			//}
-			//V.p_rm_Vertices->Unlock	();
 
 			//	TODO: DX10: Check for memory fragmentation
 			vertHW_3W*		dstOriginal	= xr_alloc<vertHW_3W>(V.vCount);
@@ -555,22 +510,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 
 			u32 vStride = ComputeVertexSize(dwDecl_4W, 0);
 			VERIFY					(vStride==sizeof(vertHW_4W));
-//			BYTE*	bytes			= 0;
 			VERIFY					(NULL==V.p_rm_Vertices);
-
-			//R_CHK					(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			//R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			//vertHW_4W* dst			= (vertHW_4W*)bytes;
-			//vertBoned4W* src		= (vertBoned4W*)_verts_;
-
-			//for (u32 it=0; it<V.vCount; ++it)
-			//{
-			//	Fvector2	uv; uv.set(src->u,src->v);
-			//	dst->set	(src->P,src->N,src->T,src->B,uv,int(src->m[0])*3,int(src->m[1])*3,int(src->m[2])*3,int(src->m[3])*3,src->w[0],src->w[1],src->w[2]);
-			//	dst++;		
-			//	src++;
-			//}
-			//V.p_rm_Vertices->Unlock	();
 
 			//	TODO: DX10: Check for memory fragmentation
 			vertHW_4W*		dstOriginal	= xr_alloc<vertHW_4W>(V.vCount);
@@ -583,6 +523,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst++;		
 				src++;
 			}
+
 			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			HW.stats_manager.increment_stats_vb			(V.p_rm_Vertices);
 			xr_free(dstOriginal);
@@ -1154,8 +1095,8 @@ void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& w
 			F.bone_id[k][0]			= vert.get_bone(0);
 			F.bone_id[k][1]			= vert.get_bone(1);
 			F.weight[k]				= vert.get_weight();
-			Fmatrix& xform0			= Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
-			Fmatrix& xform1			= Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
+			const Fmatrix& xform0			= Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
+			const Fmatrix& xform1			= Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
 			vert.get_pos			(F.vert[k]);		
 			xform0.transform_tiny	(P0,F.vert[k]);
 			xform1.transform_tiny	(P1,F.vert[k]);

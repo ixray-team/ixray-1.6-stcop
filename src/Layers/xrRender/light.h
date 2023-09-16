@@ -42,8 +42,6 @@ public:
 	float	        attenuation2;		// Quadratic attenuation	
 
 	light*						omnipart	[6]	;
-	xr_vector<light_indirect>	indirect		;
-	u32							indirect_photons;
 
 	smapvis			svis;		// used for 6-cubemap faces
 
@@ -129,7 +127,6 @@ public:
 
 	vis_data&		get_homdata				();
 #if (RENDER==R_R2) || (RENDER==R_R4)
-	void			gi_generate				();
 	void			xform_calc				();
 	void			vis_prepare				();
 	void			vis_update				();

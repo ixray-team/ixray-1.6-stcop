@@ -68,6 +68,7 @@ void CAttachableItem::OnH_A_Chield		()
 void CAttachableItem::renderable_Render	()
 {
 	::Render->set_Transform			(&object().XFORM());
+	::Render->set_PrevTransform		(&object().PrevXFORM());
 	::Render->add_Visual			(object().Visual());
 }
 

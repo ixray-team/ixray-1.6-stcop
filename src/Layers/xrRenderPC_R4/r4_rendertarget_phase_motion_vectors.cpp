@@ -25,7 +25,7 @@ void CRenderTarget::phase_motion_vectors()
     pv->set(w, 0, d_Z, d_W, C, 1, 0); pv++;
     RCache.Vertex.Unlock(4, g_combine->vb_stride);
 
-    RCache.set_Element(s_output_scale->E[1]);
+    RCache.set_Element(s_output_scale->E[SCALEPHASE_MOTION_VECTORS]);
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }

@@ -449,16 +449,21 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 	VERIFY				(bone_id<LL_BoneCount());      
     u64 mask 			= u64(1)<<bone_id;
     visimask.set		(mask,val);
-	if (!visimask.is(mask)){
+	if (!visimask.is(mask)) {
+        bone_instances[bone_id].mPrevTransform.scale(0.f,0.f,0.f);
         bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
-	}else{
+	} else {
 		CalculateBones_Invalidate	();
 	}
+
+	bone_instances[bone_id].mPrevRenderTransform.mul_43(bone_instances[bone_id].mPrevTransform,(*bones)[bone_id]->m2b_transform);
 	bone_instances[bone_id].mRenderTransform.mul_43(bone_instances[bone_id].mTransform,(*bones)[bone_id]->m2b_transform);
-    if (bRecursive)		{
-        for (xr_vector<CBoneData*>::iterator C=(*bones)[bone_id]->children.begin(); C!=(*bones)[bone_id]->children.end(); C++)
-            LL_SetBoneVisible((*C)->GetSelfID(),val,bRecursive);
+    if (bRecursive)	{
+		for (xr_vector<CBoneData*>::iterator C = (*bones)[bone_id]->children.begin(); C != (*bones)[bone_id]->children.end(); C++) {
+			LL_SetBoneVisible((*C)->GetSelfID(), val, bRecursive);
+		}
     }
+
 	Visibility_Invalidate			();
 }
 
@@ -478,6 +483,11 @@ void CKinematics::LL_SetBonesVisible(u64 mask)
 	}
 	CalculateBones_Invalidate		();
 	Visibility_Invalidate			();
+}
+
+void CKinematics::UpdateTransform(u16 bone_id)
+{
+	bone_instances[bone_id].mPrevRenderTransform = bone_instances[bone_id].mRenderTransform;
 }
 
 void CKinematics::Visibility_Update	()

@@ -109,6 +109,8 @@ public:
 	virtual void						Center				(Fvector& C) const;
 	IC const Fmatrix&					XFORM				()			 const	{ VERIFY(_valid(renderable.xform));	return renderable.xform;	}
 	ICF Fmatrix&						XFORM				()					{ return renderable.xform;			}
+	IC const Fmatrix&					PrevXFORM			()			 const	{ VERIFY(_valid(renderable.prev_xform));	return renderable.prev_xform;	}
+	ICF Fmatrix&						PrevXFORM			()					{ return renderable.prev_xform;			}
 	virtual void						spatial_register	();
 	virtual void						spatial_unregister	();
 	virtual void						spatial_move		();

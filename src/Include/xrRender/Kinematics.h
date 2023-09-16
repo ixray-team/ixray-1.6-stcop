@@ -83,6 +83,8 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual IRenderVisual*		_BCL 	dcast_RenderVisual() = 0;
 	virtual IKinematicsAnimated*		dcast_PKinematicsAnimated() = 0;
 
+	virtual void						UpdateTransform(u16 bone_id) = 0;
+
 	// debug
 #ifdef DEBUG
 	virtual void						DebugRender			(Fmatrix& XFORM) = 0;

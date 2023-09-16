@@ -22,6 +22,7 @@ class	R_dsgraph_structure										: public IRender_interface, public pureFrame
 public:
 	IRenderable*												val_pObject;
 	Fmatrix*													val_pTransform;
+	Fmatrix*													val_pPrevTransform;
 	BOOL														val_bHUD;
 	BOOL														val_bInvisible;
 	BOOL														val_bRecordMP;		// record nearest for multi-pass
@@ -84,6 +85,7 @@ public:
 	BOOL														b_loaded	;
 public:
 	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
+	virtual		void					set_PrevTransform		(Fmatrix*	M	)				{ VERIFY(M);	val_pPrevTransform = M;	}
 	virtual		void					set_HUD					(BOOL 		V	)				{ val_bHUD		= V;				}
 	virtual		BOOL					get_HUD					()								{ return		val_bHUD;			}
 	virtual		void					set_Invisible			(BOOL 		V	)				{ val_bInvisible= V;				}

@@ -214,6 +214,7 @@ bool  attachable_hud_item::need_renderable()
 void attachable_hud_item::render()
 {
 	::Render->set_Transform		(&m_item_transform);
+	::Render->set_Transform		(&m_item_transform);
 	::Render->add_Visual		(m_model->dcast_RenderVisual());
 	debug_draw_firedeps			();
 	m_parent_hud_item->render_hud_mode();
@@ -496,6 +497,7 @@ void player_hud::render_hud()
 	if(!b_r0 && !b_r1)									return;
 
 	::Render->set_Transform		(&m_transform);
+	::Render->set_PrevTransform	(&m_transform);
 	::Render->add_Visual		(m_model->dcast_RenderVisual());
 	
 	if(m_attached_items[0])

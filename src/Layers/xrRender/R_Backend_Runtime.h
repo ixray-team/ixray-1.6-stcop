@@ -22,8 +22,8 @@ IC void		R_xforms::set_c_p			(R_constant* C)		{	c_p		= C;	RCache.set_c(C,m_p);	}
 IC void		R_xforms::set_c_wv			(R_constant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);	};
 IC void		R_xforms::set_c_vp			(R_constant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
 IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	}
-IC void		R_xforms::set_c_vp_clean	(R_constant* C)		{	c_vp_clean	= C;RCache.set_c(C,m_vp_clean);	};
-IC void		R_xforms::set_c_wvp_clean	(R_constant* C)		{	c_wvp_clean = C;RCache.set_c(C,m_wvp_clean);	}
+IC void		R_xforms::set_c_vp_unjittered(R_constant* C)	{	c_vp_unjittered = C;RCache.set_c(C,m_vp_unjittered);	};
+IC void		R_xforms::set_c_wvp_unjittered(R_constant* C)	{	c_wvp_unjittered = C;RCache.set_c(C,m_wvp_unjittered);	}
 
 IC	void CBackend::set_xform_jitter(const Fvector2& Jitter)
 {

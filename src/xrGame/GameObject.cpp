@@ -687,6 +687,7 @@ void CGameObject::renderable_Render	()
 {
 	inherited::renderable_Render();
 	::Render->set_Transform		(&XFORM());
+	::Render->set_PrevTransform (&PrevXFORM());
 	::Render->add_Visual		(Visual());
 	Visual()->getVisData().hom_frame = Device.dwFrame;
 }
@@ -836,6 +837,8 @@ void CGameObject::shedule_Update	(u32 dt)
 	
 	if(!g_dedicated_server)
 		CScriptBinder::shedule_Update(dt);
+
+	PrevXFORM() = XFORM();
 }
 
 BOOL CGameObject::net_SaveRelevant	()
@@ -1023,11 +1026,11 @@ void CGameObject::UpdateCL			()
 	if (H_Parent())
 		return;
 
-	if (similar(XFORM(),m_previous_matrix,EPS))
+	if (similar(XFORM(), PrevXFORM(), EPS))
 		return;
 
-	on_matrix_change				(m_previous_matrix);
-	m_previous_matrix				= XFORM();
+	on_matrix_change				(PrevXFORM());
+	PrevXFORM() = XFORM();
 }
 
 void CGameObject::on_matrix_change	(const Fmatrix &previous)

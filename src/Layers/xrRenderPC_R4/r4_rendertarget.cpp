@@ -385,8 +385,7 @@ CRenderTarget::CRenderTarget		()
 	rt_UpscaleOutput.create(r4_upscale_output, RCache.get_target_width(), RCache.get_target_height(), D3DFMT_A8R8G8B8, 1, true);
 	rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, D3DFMT_A16B16G16R16F, 1);
 	rt_MotionVectors.create(r4_motion_vectors, s_dwWidth, s_dwHeight, D3DFMT_G16R16F, 1);
-	if (ps_r2_ls_flags.test(R4FLAG_FSR2))
-	{
+	if (ps_r4_upscale_type == SCALETYPE_FSR2) {
 		auto DisplaySize = g_Fsr2Wrapper.GetDisplaySize();
 		if (g_Fsr2Wrapper.IsCreated() && (DisplaySize.width != Device.TargetWidth || DisplaySize.height != Device.TargetHeight))
 		{
@@ -947,7 +946,7 @@ float g_CameraJitterY = 0.0f;
 
 Fvector2 CRenderTarget::get_jitter(bool prevFrame)
 {
-	if (!ps_r2_ls_flags.test(R4FLAG_FSR2)) {
+	if (ps_r4_upscale_type == SCALETYPE_LINEAR || ps_r4_upscale_type == SCALETYPE_NEAREST) {
 		//g_CameraJitterX = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
 		//g_CameraJitterY = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
 		g_CameraJitterX = 0.0f;

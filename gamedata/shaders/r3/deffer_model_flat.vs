@@ -9,9 +9,18 @@ v2p_flat _main( v_model I )
 	// Eye-space pos/normal
 	v2p_flat 		O;
 	float3	Pe	= mul( m_WV, I.P );
-	O.hpos 		= mul( m_WVP, I.P);
-	O.cur_hpos 	= mul( m_WVPClean, float4(I.P.x, I.P.y, I.P.z, 1.0f));
-	O.prev_hpos	= mul( m_prevWVPClean, float4(I.P.x, I.P.y, I.P.z, 1.0f));
+
+#ifdef 	SKIN_NONE
+	float4 w_prev_pos = I.P;
+#else
+	float4 w_prev_pos = I.PrevP;
+#endif
+	float4 w_pos = I.P;
+
+	O.hpos 		= mul( m_WVP, w_pos	);
+	O.cur_hpos 	= mul( m_WVP_Unjittered, float4(w_pos.x, w_pos.y, w_pos.z, 1.0f) );
+	O.prev_hpos	= mul( m_prevWVP_Unjittered, float4(w_prev_pos.x, w_prev_pos.y, w_prev_pos.z, 1.0f) );
+
 	O.N 		= mul( (float3x3)m_WV, (float3)I.N );
 
 	O.tcdh 		= float4( I.tc.xyyy	);

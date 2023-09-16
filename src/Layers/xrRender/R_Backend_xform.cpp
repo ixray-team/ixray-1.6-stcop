@@ -22,15 +22,15 @@ void	R_xforms::set_W			(const Fmatrix& m)
 	m_wv.mul_43(m_v, m_w);
 	m_vp.mul(jitter_p, m_v);
 	m_wvp.mul(jitter_p, m_wv);
-	m_vp_clean.mul(m_p, m_v);
-	m_wvp_clean.mul(m_p, m_wv);
+	m_vp_unjittered.mul(m_p, m_v);
+	m_wvp_unjittered.mul(m_p, m_wv);
 
 	if (c_w)		RCache.set_c(c_w,	m_w);
 	if (c_vp)		RCache.set_c(c_vp,  m_vp);
 	if (c_wv)		RCache.set_c(c_wv,  m_wv);
 	if (c_wvp)		RCache.set_c(c_wvp, m_wvp);
-	if (c_vp_clean)	RCache.set_c(c_vp_clean, m_vp_clean);
-	if (c_wvp_clean)RCache.set_c(c_wvp_clean, m_wvp_clean);
+	if (c_vp_unjittered)	RCache.set_c(c_vp_unjittered, m_vp_unjittered);
+	if (c_wvp_unjittered)RCache.set_c(c_wvp_unjittered, m_wvp_unjittered);
 	m_bInvWValid	= false;
 	if (c_invw)		apply_invw();
 
@@ -45,15 +45,15 @@ void	R_xforms::set_V			(const Fmatrix& m)
 	m_wv.mul_43(m_v, m_w);
 	m_vp.mul(jitter_p, m_v);
 	m_wvp.mul(jitter_p, m_wv);
-	m_vp_clean.mul(m_p, m_v);
-	m_wvp_clean.mul(m_p, m_wv);
+	m_vp_unjittered.mul(m_p, m_v);
+	m_wvp_unjittered.mul(m_p, m_wv);
 
 	if (c_v)		RCache.set_c(c_v,	m_v);
 	if (c_vp)		RCache.set_c(c_vp,	m_vp);
 	if (c_wv)		RCache.set_c(c_wv,	m_wv);
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
-	if (c_vp_clean)	RCache.set_c(c_vp_clean, m_vp_clean);
-	if (c_wvp_clean)RCache.set_c(c_wvp_clean, m_wvp_clean);
+	if (c_vp_unjittered)	RCache.set_c(c_vp_unjittered, m_vp_unjittered);
+	if (c_wvp_unjittered)RCache.set_c(c_wvp_unjittered, m_wvp_unjittered);
 
 	if (!m_bPrev)
 		RCache.set_xform(D3DTS_VIEW, m);
@@ -65,14 +65,14 @@ void	R_xforms::set_P			(const Fmatrix& m)
 
 	m_vp.mul(jitter_p, m_v);
 	m_wvp.mul(jitter_p, m_wv);
-	m_vp_clean.mul(m_p, m_v);
-	m_wvp_clean.mul(m_p, m_wv);
+	m_vp_unjittered.mul(m_p, m_v);
+	m_wvp_unjittered.mul(m_p, m_wv);
 
 	if (c_p)		RCache.set_c(c_p,	m_p);
 	if (c_vp)		RCache.set_c(c_vp,	m_vp);
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
-	if (c_vp_clean)	RCache.set_c(c_vp_clean, m_vp_clean);
-	if (c_wvp_clean)RCache.set_c(c_wvp_clean, m_wvp_clean);
+	if (c_vp_unjittered)	RCache.set_c(c_vp_unjittered, m_vp_unjittered);
+	if (c_wvp_unjittered)RCache.set_c(c_wvp_unjittered, m_wvp_unjittered);
 
 	if (!m_bPrev)
 		RCache.set_xform(D3DTS_PROJECTION,m);	
@@ -100,8 +100,8 @@ void	R_xforms::unmap			()
 	c_wv		= NULL;
 	c_vp		= NULL;
 	c_wvp		= NULL;
-	c_vp_clean	= NULL;
-	c_wvp_clean	= NULL;
+	c_vp_unjittered	= NULL;
+	c_wvp_unjittered	= NULL;
 }
 
 void R_xforms::set_Jitter(float JitterX, float JitterY)

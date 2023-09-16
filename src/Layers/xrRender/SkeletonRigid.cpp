@@ -52,7 +52,7 @@ void CKinematics::CalculateBones			(BOOL bForceExact)
 		{
 			if			(!LL_GetBoneVisible(u16(b)))		continue;
 			Fobb&		obb		= (*bones)[b]->obb;
-			Fmatrix&	Mbone	= bone_instances[b].mTransform;
+			const Fmatrix& Mbone = bone_instances[b].mTransform;
 			Fmatrix		Mbox;	obb.xform_get(Mbox);
 			Fmatrix		X;		X.mul_43(Mbone,Mbox);
 			Fvector&	S		= obb.m_halfsize;
@@ -99,7 +99,7 @@ void CKinematics::CalculateBones			(BOOL bForceExact)
 void check_kinematics(CKinematics* _k, LPCSTR s)
 {
 	CKinematics* K = _k;
-	Fmatrix&	MrootBone		= K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
+	const Fmatrix& MrootBone = K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
 	if(MrootBone.c.y >10000)
 	{	
 		Msg("all bones transform:--------[%s]",s);
@@ -119,6 +119,7 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 
 void	CKinematics::			BuildBoneMatrix			( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask/* = (1<<0)*/ )
 {
+	bi.mPrevTransform = bi.mTransform;
 	bi.mTransform.mul_43	(*parent,bd->bind_transform);
 }
 
@@ -144,6 +145,8 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 #endif // #ifndef MASTER_GOLD
 			}
 		}
+
+		bi.mPrevRenderTransform.mul_43(bi.mPrevTransform,bd->m2b_transform);
 		bi.mRenderTransform.mul_43(bi.mTransform,bd->m2b_transform);
 	}
 }
@@ -166,9 +169,11 @@ void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
 	CBoneInstance				&BONE_INST			= LL_GetBoneInstance(SelfID);
 	CLBone( bd, BONE_INST, parent, u8(-1) );
 	// Calculate children
-	for (xr_vector<CBoneData*>::iterator C=bd->children.begin(); C!=bd->children.end(); C++)
-		Bone_Calculate( *C, &BONE_INST.mTransform );
-
+	for (xr_vector<CBoneData*>::iterator C = bd->children.begin(); C != bd->children.end(); C++)
+	{
+		BONE_INST.mPrevTransform = BONE_INST.mTransform;
+		Bone_Calculate(*C, &BONE_INST.mTransform);
+	}
 }
 
 void	CKinematics::BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi, u8 mask_channel, bool ignore_callbacks)

@@ -63,6 +63,7 @@ struct attachable_hud_item
 	//runtime positioning
 	Fmatrix							m_attach_offset;
 	Fmatrix							m_item_transform;
+	Fmatrix							m_prev_item_transform;
 
 	player_hud_motion_container		m_hand_motions;
 			
@@ -134,6 +135,7 @@ private:
 	Fmatrix								m_attach_offset;
 
 	Fmatrix								m_transform;
+	Fmatrix								m_prev_transform;
 	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];

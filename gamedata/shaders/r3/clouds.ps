@@ -17,7 +17,7 @@ Texture2D	s_clouds1	: register(t1);
 struct _out
 {
 	float4 color : SV_Target0;
-	float4 motion: SV_Target1;
+	//float4 motion: SV_Target1;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -28,10 +28,10 @@ _out 	main	( v2p I )
 	float4 	s1		= s_clouds1.Sample( smp_base, I.tc1 );
 	float4 	mix 	= I.color * (s0 + s1)	;
 	float4 	rgb		= mix;
-	float2  motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
+	//float2  motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
 
 	_out o;
 	o.color = rgb;
-	o.motion = float4(motion_vector.x, motion_vector.y, 0.0f, 0.0f);
+	//o.motion = float4(motion_vector.x, motion_vector.y, 0.0f, 0.0f);
 	return o;
 }

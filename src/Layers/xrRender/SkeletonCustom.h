@@ -200,6 +200,7 @@ public:
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
+	ICF Fmatrix&					LL_GetPrevTransform_R(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mPrevRenderTransform;		}	// rendering only
 	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
 	const Fbox&				_BCL	GetBox				()const				{	return vis.box ;}
 	void							LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
@@ -212,6 +213,8 @@ public:
 	void							LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);
 	u64						_BCL	LL_GetBonesVisible	()					{	return visimask.get();	}
 	void							LL_SetBonesVisible	(u64 mask);
+
+	void							UpdateTransform(u16 bone_id)	override;
 
 	// Main functionality
 	virtual void					CalculateBones				(BOOL bForceExact	=	FALSE);		// Recalculate skeleton

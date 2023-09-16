@@ -58,6 +58,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		N->val.ssa				= SSA;
 		N->val.pObject			= RI.val_pObject;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= N->val.Matrix;
 		N->val.Matrix			= *RI.val_pTransform;
 		N->val.se				= sh_d;		// 4=L_special
 	}
@@ -69,7 +70,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 
 	// Create common node
 	// NOTE: Invisible elements exist only in R1
-	_MatrixItem		item	= {SSA,RI.val_pObject,pVisual,*RI.val_pTransform};
+	_MatrixItem		item	= {SSA,RI.val_pObject,pVisual,*RI.val_pTransform, *RI.val_pPrevTransform };
 
 	// HUD rendering
 	if (RI.val_bHUD)			
@@ -80,6 +81,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 			N->val.ssa				= SSA;
 			N->val.pObject			= RI.val_pObject;
 			N->val.pVisual			= pVisual;
+			N->val.PrevMatrix		= N->val.Matrix;
 			N->val.Matrix			= *RI.val_pTransform;
 			N->val.se				= sh;
 			return;
@@ -90,6 +92,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 			N->val.ssa				= SSA;
 			N->val.pObject			= RI.val_pObject;
 			N->val.pVisual			= pVisual;
+			N->val.PrevMatrix		= N->val.Matrix;
 			N->val.Matrix			= *RI.val_pTransform;
 			N->val.se				= sh;
 #if RENDER!=R_R1
@@ -99,6 +102,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 				N_->val.ssa				= SSA;
 				N_->val.pObject			= RI.val_pObject;
 				N_->val.pVisual			= pVisual;
+				N_->val.PrevMatrix		= N_->val.Matrix;
 				N_->val.Matrix			= *RI.val_pTransform;
 				N_->val.se				= &*pVisual->shader->E[4];		// 4=L_special
 			}
@@ -119,6 +123,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		N->val.ssa				= SSA;
 		N->val.pObject			= RI.val_pObject;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= N->val.Matrix;
 		N->val.Matrix			= *RI.val_pTransform;
 		N->val.se				= sh;
 		return;
@@ -135,6 +140,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		N->val.ssa				= SSA;
 		N->val.pObject			= RI.val_pObject;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= N->val.Matrix;
 		N->val.Matrix			= *RI.val_pTransform;
 		N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
 	}
@@ -143,6 +149,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		N->val.ssa				= SSA;
 		N->val.pObject			= RI.val_pObject;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= N->val.Matrix;
 		N->val.Matrix			= *RI.val_pTransform;
 		N->val.se				= sh;							
 		return					;
@@ -252,6 +259,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 		N->val.ssa				= SSA;
 		N->val.pObject			= NULL;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= Fidentity;
 		N->val.Matrix			= Fidentity;
 		N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
 	}
@@ -266,6 +274,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 		mapSorted_Node* N			= mapSorted.insertInAnyWay(distSQ);
 		N->val.pObject				= NULL;
 		N->val.pVisual				= pVisual;
+		N->val.PrevMatrix			= Fidentity;
 		N->val.Matrix				= Fidentity;
 		N->val.se					= sh;
 		return;
@@ -282,6 +291,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 		N->val.ssa				= SSA;
 		N->val.pObject			= NULL;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= Fidentity;
 		N->val.Matrix			= Fidentity;
 		N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
 	}
@@ -290,6 +300,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 		N->val.ssa				= SSA;
 		N->val.pObject			= NULL;
 		N->val.pVisual			= pVisual;
+		N->val.PrevMatrix		= Fidentity;
 		N->val.Matrix			= Fidentity;
 		N->val.se				= sh;							
 		return					;

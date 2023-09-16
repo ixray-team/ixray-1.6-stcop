@@ -250,6 +250,7 @@ void CParticlesObject::renderable_Render	()
 	}
 
 	::Render->set_Transform	(&renderable.xform);
+	::Render->set_PrevTransform(&renderable.prev_xform);
 	::Render->add_Visual	(renderable.visual);
 }
 

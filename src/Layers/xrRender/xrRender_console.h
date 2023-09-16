@@ -2,6 +2,21 @@
 #define xrRender_consoleH
 #pragma once
 
+enum OutputScalePhase
+{
+	SCALEPHASE_MOTION_VECTORS,
+	SCALEPHASE_COPY_DEPTH,
+	SCALEPHASE_SCALE_NEAREST,
+	SCALEPHASE_SCALE_LINEAR
+};
+
+enum UpscaleTypeEnum
+{
+	SCALETYPE_NEAREST,
+	SCALETYPE_LINEAR,
+	SCALETYPE_FSR2,
+};
+
 // Common
 extern ECORE_API	u32			ps_r_sun_shafts;	//=	0;
 extern ECORE_API	xr_token	qsun_shafts_token[];
@@ -15,21 +30,17 @@ extern ECORE_API	xr_token	qssao_mode_token[];
 extern ECORE_API	u32			ps_r_sun_quality;	//	=	0;
 extern ECORE_API	xr_token	qsun_quality_token[];
 
-extern ECORE_API	u32			ps_r3_msaa;	//	=	0;
-extern ECORE_API	xr_token	qmsaa_token[];
-
-extern ECORE_API	u32			ps_r3_msaa_atest; //=	0;
-extern ECORE_API	xr_token	qmsaa__atest_token[];
-
 extern ECORE_API	u32			ps_r3_minmax_sm;//	=	0;
 extern ECORE_API	xr_token	qminmax_sm_token[];
+
+extern ECORE_API	u32			ps_r4_upscale_type;
+extern ECORE_API	xr_token	upscale_token[];
 
 extern ECORE_API	u32			ps_r2_aa_type;//	=	0;
 extern ECORE_API	xr_token	aa_type_token[];
 
-extern ENGINE_API	int			ps_r__Supersample;
 extern ECORE_API	int			ps_r__LightSleepFrames;
-extern ECORE_API float ps_r__tf_Mipbias;
+extern ECORE_API	float		ps_r__tf_Mipbias;
 extern ECORE_API	float		ps_r__Detail_l_ambient;
 extern ECORE_API	float		ps_r__Detail_l_aniso;
 extern ECORE_API	float		ps_r__Detail_density;
@@ -94,14 +105,6 @@ extern ECORE_API float			ps_r2_ls_bloom_speed;		// r2-only
 extern ECORE_API float			ps_r2_ls_dsm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_psm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_ssm_kernel;		// r2-only
-extern ECORE_API Fvector		ps_r2_aa_barier;			// r2-only
-extern ECORE_API Fvector		ps_r2_aa_weight;			// r2-only
-extern ECORE_API float			ps_r2_aa_kernel;			// r2-only
-extern ECORE_API float			ps_r2_mblur;				// .5f
-extern ECORE_API int			ps_r2_GI_depth;				// 1..5
-extern ECORE_API int			ps_r2_GI_photons;			// 8..256
-extern ECORE_API float			ps_r2_GI_clip;				// EPS
-extern ECORE_API float			ps_r2_GI_refl;				// .9f
 extern ECORE_API float			ps_r2_ls_depth_scale;		// 1.0f
 extern ECORE_API float			ps_r2_ls_depth_bias;		// -0.0001f
 extern ECORE_API float			ps_r2_ls_squality;			// 1.0f
@@ -141,43 +144,30 @@ enum
 	R2FLAG_SUN_TSM				= (1<<2),
 	R2FLAG_SUN_DETAILS			= (1<<3),
 	R2FLAG_TONEMAP				= (1<<4),
-	R2FLAG_AA					= (1<<5),
-	R2FLAG_GI					= (1<<6),
-	R2FLAG_FASTBLOOM			= (1<<7),
-	R2FLAG_GLOBALMATERIAL		= (1<<8),
-	R2FLAG_ZFILL				= (1<<9),
-	R2FLAG_R1LIGHTS				= (1<<10),
-	R2FLAG_SUN_IGNORE_PORTALS	= (1<<11),
+	R2FLAG_FASTBLOOM			= (1<<5),
+	R2FLAG_GLOBALMATERIAL		= (1<<6),
+	R2FLAG_ZFILL				= (1<<7),
+	R2FLAG_R1LIGHTS				= (1<<8),
+	R2FLAG_SUN_IGNORE_PORTALS	= (1<<9),
 
-//	R2FLAG_SUN_STATIC			= (1<<12),
-	
-	R2FLAG_EXP_SPLIT_SCENE					= (1<<13),
-	R2FLAG_EXP_DONT_TEST_UNSHADOWED			= (1<<14),
-	R2FLAG_EXP_DONT_TEST_SHADOWED			= (1<<15),
+	R2FLAG_EXP_SPLIT_SCENE					= (1<<10),
+	R2FLAG_EXP_DONT_TEST_UNSHADOWED			= (1<<11),
+	R2FLAG_EXP_DONT_TEST_SHADOWED			= (1<<12),
 
-	R2FLAG_USE_NVDBT			= (1<<16),
-	R2FLAG_USE_NVSTENCIL		= (1<<17),
+	R2FLAG_EXP_MT_CALC			= (1<<15),
 
-	R2FLAG_EXP_MT_CALC			= (1<<18),
+	R2FLAG_SOFT_WATER			= (1<<16),	//	Igor: need restart
+	R2FLAG_SOFT_PARTICLES		= (1<<17),	//	Igor: need restart
+	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<18),
+	R2FLAG_STEEP_PARALLAX		= (1<<19),
+	R2FLAG_DOF					= (1<<20),
 
-	R2FLAG_SOFT_WATER			= (1<<19),	//	Igor: need restart
-	R2FLAG_SOFT_PARTICLES		= (1<<20),	//	Igor: need restart
-	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<21),
-	R2FLAG_STEEP_PARALLAX		= (1<<22),
-	R2FLAG_DOF					= (1<<23),
+	R1FLAG_DETAIL_TEXTURES		= (1<<21),
+	R2FLAG_DETAIL_BUMP			= (1<<22),
 
-	R1FLAG_DETAIL_TEXTURES		= (1<<24),
-
-	R2FLAG_DETAIL_BUMP			= (1<<25),
-
-	R3FLAG_DYN_WET_SURF			= (1<<26),
-	R3FLAG_VOLUMETRIC_SMOKE		= (1<<27),
-
-	//R3FLAG_MSAA					= (1<<28),
-	R3FLAG_MSAA_HYBRID			= (1<<28),
-	R3FLAG_MSAA_OPT				= (1<<29),
-	R3FLAG_GBUFFER_OPT			= (1<<30),
-	R4FLAG_FSR2					= (1<<31),
+	R3FLAG_DYN_WET_SURF			= (1<<23),
+	R3FLAG_VOLUMETRIC_SMOKE		= (1<<24),
+	R3FLAG_GBUFFER_OPT			= (1<<25)
 };
 
 enum

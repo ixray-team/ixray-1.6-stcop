@@ -119,8 +119,8 @@ public:
 	xr_vector<ref_shader>										Shaders;
 	typedef svector<D3DVERTEXELEMENT9,MAXD3DDECLLENGTH+1>		VertexDeclarator;
 	xr_vector<VertexDeclarator>									nDC,xDC;
-	xr_vector<ID3DVertexBuffer*>							nVB,xVB;
-	xr_vector<ID3DIndexBuffer*>							nIB,xIB;
+	xr_vector<ID3DVertexBuffer*>								nVB,xVB;
+	xr_vector<ID3DIndexBuffer*>									nIB,xIB;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
@@ -171,7 +171,6 @@ public:
 	void							render_main					(Fmatrix& mCombined, bool _fportals);
 	void							render_forward				();
 	void							render_smap_direct			(Fmatrix& mCombined);
-	void							render_indirect				(light*			L	);
 	void							render_lights				(light_Package& LP	);
 	void							render_menu					();
 	void							render_rain					();

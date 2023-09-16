@@ -11,7 +11,7 @@ v2p_postpr main ( v_postpr I )
 //	O.HPos	= I.P;
 
 	{
-//		I.P.xy += 0.5f;
+		I.P.xy += 0.5f;
 //		O.HPos.x = I.P.x/1024 * 2 - 1;
 //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
 		O.HPos.x = I.P.x * target_screen_res.z * 2 - 1;

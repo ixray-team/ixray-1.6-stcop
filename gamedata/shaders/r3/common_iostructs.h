@@ -451,7 +451,8 @@ struct	p_shadow_direct_aref
 //	Model
 struct	v_model
 {
-	float4	P		: POSITION;		// (float,float,float,1)
+	float4	P		: POSITION0;	// (float,float,float,1)
+	float4	PrevP	: POSITION1;	// (float,float,float,1)
 	float3	N		: NORMAL;		// (nx,ny,nz)
 	float3	T		: TANGENT;		// (nx,ny,nz)
 	float3	B		: BINORMAL;		// (nx,ny,nz)

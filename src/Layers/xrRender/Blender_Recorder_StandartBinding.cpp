@@ -21,8 +21,8 @@ BIND_DECLARE(p);
 BIND_DECLARE(wv);
 BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
-BIND_DECLARE(vp_clean);
-BIND_DECLARE(wvp_clean);
+BIND_DECLARE(vp_unjittered);
+BIND_DECLARE(wvp_unjittered);
 
 #define	PREV_BIND_DECLARE(xf)	\
 class cl_xform_prev_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.prev_xforms.set_c_##xf (C); } }; \
@@ -34,8 +34,8 @@ PREV_BIND_DECLARE(p);
 PREV_BIND_DECLARE(wv);
 PREV_BIND_DECLARE(vp);
 PREV_BIND_DECLARE(wvp);
-PREV_BIND_DECLARE(vp_clean);
-PREV_BIND_DECLARE(wvp_clean);
+PREV_BIND_DECLARE(vp_unjittered);
+PREV_BIND_DECLARE(wvp_unjittered);
 
 #define DECLARE_TREE_BIND(c)	\
 	class cl_tree_##c: public R_constant_setup	{virtual void setup(R_constant* C) {RCache.tree.set_c_##c(C);} };	\
@@ -370,74 +370,68 @@ static class cl_screen_scale : public R_constant_setup
 void	CBlender_Compile::SetMapping	()
 {
 	// matrices
-	r_Constant				("m_W",				&binder_w);
-	r_Constant				("m_invW",			&binder_invw);
-	r_Constant				("m_V",				&binder_v);
-	r_Constant				("m_P",				&binder_p);
-	r_Constant				("m_WV",			&binder_wv);
-	r_Constant				("m_VP",			&binder_vp);
-	r_Constant				("m_WVP",			&binder_wvp);	
-	r_Constant				("m_VP",			&binder_vp);
-	r_Constant				("m_WVP",			&binder_wvp);	
-	r_Constant				("m_VPClean",		&binder_vp_clean);
-	r_Constant				("m_WVPClean",		&binder_wvp_clean);	
+	r_Constant				("m_W",					&binder_w);
+	r_Constant				("m_invW",				&binder_invw);
+	r_Constant				("m_V",					&binder_v);
+	r_Constant				("m_P",					&binder_p);
+	r_Constant				("m_WV",				&binder_wv);
+	r_Constant				("m_VP",				&binder_vp);
+	r_Constant				("m_WVP",				&binder_wvp);	
+	r_Constant				("m_VP",				&binder_vp);
+	r_Constant				("m_WVP",				&binder_wvp);	
+	r_Constant				("m_VP_Unjittered",		&binder_vp_unjittered);
+	r_Constant				("m_WVP_Unjittered",	&binder_wvp_unjittered);
 	
-	r_Constant				("m_prevW",			&binder_prev_w);
-	r_Constant				("m_previnvW",		&binder_prev_invw);
-	r_Constant				("m_prevV",			&binder_prev_v);
-	r_Constant				("m_prevP",			&binder_prev_p);
-	r_Constant				("m_prevWV",		&binder_prev_wv);
-	r_Constant				("m_prevVP",		&binder_prev_vp);
-	r_Constant				("m_prevWVP",		&binder_prev_wvp);
-	r_Constant				("m_prevVPClean",	&binder_prev_vp_clean);
-	r_Constant				("m_prevWVPClean",	&binder_prev_wvp_clean);
+	r_Constant				("m_prevW",				&binder_prev_w);
+	r_Constant				("m_previnvW",			&binder_prev_invw);
+	r_Constant				("m_prevV",				&binder_prev_v);
+	r_Constant				("m_prevP",				&binder_prev_p);
+	r_Constant				("m_prevWV",			&binder_prev_wv);
+	r_Constant				("m_prevVP",			&binder_prev_vp);
+	r_Constant				("m_prevWVP",			&binder_prev_wvp);
+	r_Constant				("m_prevVP_Unjittered",	&binder_prev_vp_unjittered);
+	r_Constant				("m_prevWVP_Unjittered",&binder_prev_wvp_unjittered);
 
-	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
-	r_Constant				("m_xform",			&tree_binder_m_xform);
-	r_Constant				("consts",			&tree_binder_consts);
-	r_Constant				("wave",			&tree_binder_wave);
-	r_Constant				("wind",			&tree_binder_wind);
-	r_Constant				("c_scale",			&tree_binder_c_scale);
-	r_Constant				("c_bias",			&tree_binder_c_bias);
-	r_Constant				("c_sun",			&tree_binder_c_sun);
+	r_Constant				("m_xform_v",			&tree_binder_m_xform_v);
+	r_Constant				("m_xform",				&tree_binder_m_xform);
+	r_Constant				("consts",				&tree_binder_consts);
+	r_Constant				("wave",				&tree_binder_wave);
+	r_Constant				("wind",				&tree_binder_wind);
+	r_Constant				("c_scale",				&tree_binder_c_scale);
+	r_Constant				("c_bias",				&tree_binder_c_bias);
+	r_Constant				("c_sun",				&tree_binder_c_sun);
 
 	//hemi cube
 	r_Constant				("L_material",			&binder_material);
-	r_Constant				("hemi_cube_pos_faces",			&binder_hemi_cube_pos_faces);
-	r_Constant				("hemi_cube_neg_faces",			&binder_hemi_cube_neg_faces);
+	r_Constant				("hemi_cube_pos_faces",	&binder_hemi_cube_pos_faces);
+	r_Constant				("hemi_cube_neg_faces",	&binder_hemi_cube_neg_faces);
 
-	//	Igor	temp solution for the texgen functionality in the shader
+	//	Igor temp solution for the texgen functionality in the shader
 	r_Constant				("m_texgen",			&binder_texgen);
 	r_Constant				("mVPTexgen",			&binder_VPtexgen);
 
-#ifndef _EDITOR
 	// fog-params
-	r_Constant				("fog_plane",		&binder_fog_plane);
-	r_Constant				("fog_params",		&binder_fog_params);
-	r_Constant				("fog_color",		&binder_fog_color);
-#endif
+	r_Constant				("fog_plane",			&binder_fog_plane);
+	r_Constant				("fog_params",			&binder_fog_params);
+	r_Constant				("fog_color",			&binder_fog_color);
 	// time
-	r_Constant				("timers",			&binder_times);
+	r_Constant				("timers",				&binder_times);
 
 	// eye-params
-	r_Constant				("eye_position",	&binder_eye_P);
-	r_Constant				("eye_direction",	&binder_eye_D);
-	r_Constant				("eye_normal",		&binder_eye_N);
+	r_Constant				("eye_position",		&binder_eye_P);
+	r_Constant				("eye_direction",		&binder_eye_D);
+	r_Constant				("eye_normal",			&binder_eye_N);
 
-#ifndef _EDITOR
-	// global-lighting (env params)
-	r_Constant				("L_sun_color",		&binder_sun0_color);
-	r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
-	r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
-//	r_Constant				("L_lmap_color",	&binder_lm_color);
-	r_Constant				("L_hemi_color",	&binder_hemi_color);
-	r_Constant				("L_ambient",		&binder_amb_color);
-#endif
-	r_Constant				("target_screen_res",&binder_target_screen_res);
-	r_Constant				("screen_res",		&binder_screen_res);
+	r_Constant				("L_sun_color",			&binder_sun0_color);
+	r_Constant				("L_sun_dir_w",			&binder_sun0_dir_w);
+	r_Constant				("L_sun_dir_e",			&binder_sun0_dir_e);
+	r_Constant				("L_hemi_color",		&binder_hemi_color);
+	r_Constant				("L_ambient",			&binder_amb_color);
+	r_Constant				("target_screen_res",	&binder_target_screen_res);
+	r_Constant				("screen_res",			&binder_screen_res);
 
 #ifdef USE_DX11
-	r_Constant				("screen_scale",	&binder_screen_scale);
+	r_Constant				("screen_scale",		&binder_screen_scale);
 #endif
 
 	// detail

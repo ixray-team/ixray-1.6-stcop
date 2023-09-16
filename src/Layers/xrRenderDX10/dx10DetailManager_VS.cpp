@@ -10,7 +10,8 @@ const int			quant	= 16384;
 const int			c_hdr	= 10;
 const int			c_size	= 4;
 
-static float g_PreviousDelta = 0.0f;
+static Fvector4 g_PrevConsts;
+static Fvector4 g_PrevWave;
 
 static D3DVERTEXELEMENT9 dwDecl[] =
 {
@@ -40,6 +41,7 @@ void CDetailManager::hw_Load_Shaders()
 	R_constant_table&	T0	= *(S->E[0]->passes[0]->constants);
 	R_constant_table&	T1	= *(S->E[1]->passes[0]->constants);
 	hwc_consts			= T0.get("consts");
+	hwc_prev_consts		= T0.get("prev_consts");
 	hwc_wave			= T0.get("wave");
 	hwc_wind			= T0.get("dir2D");
 	hwc_array			= T0.get("array");
@@ -76,38 +78,37 @@ void CDetailManager::hw_Render()
 	// Wave0
 	float		scale			=	1.f/float(quant);
 	Fvector4	wave;
+	Fvector4	prev_wave;
 	Fvector4	consts;
+
 	consts.set				(scale,		scale,		ps_r__Detail_l_aniso,	ps_r__Detail_l_ambient);
-	//wave.set				(1.f/5.f,		1.f/7.f,	1.f/3.f,	Device.fTimeGlobal*swing_current.speed);
+
+	prev_wave = g_PrevConsts;
 	wave.set				(1.f/5.f,		1.f/7.f,	1.f/3.f,	m_time_pos);
-	//RCache.set_c			(&*hwc_consts,	scale,		scale,		ps_r__Detail_l_aniso,	ps_r__Detail_l_ambient);				// consts
-	//RCache.set_c			(&*hwc_wave,	wave.div(PI_MUL_2));	// wave
-	//RCache.set_c			(&*hwc_wind,	dir1);																					// wind-dir
-	//hw_Render_dump			(&*hwc_array,	1, 0, c_hdr );
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, 1, 0);
+	hw_Render_dump(consts, g_PrevConsts, wave.div(PI_MUL_2), prev_wave.div(PI_MUL_2), dir1, 1, 0);
 
 	// Wave1
-	//wave.set				(1.f/3.f,		1.f/7.f,	1.f/5.f,	Device.fTimeGlobal*swing_current.speed);
+	prev_wave = g_PrevConsts;
 	wave.set				(1.f/3.f,		1.f/7.f,	1.f/5.f,	m_time_pos);
-	//RCache.set_c			(&*hwc_wave,	wave.div(PI_MUL_2));	// wave
-	//RCache.set_c			(&*hwc_wind,	dir2);																					// wind-dir
-	//hw_Render_dump			(&*hwc_array,	2, 0, c_hdr );
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 2, 0);
+	hw_Render_dump(consts, g_PrevConsts, wave.div(PI_MUL_2), prev_wave.div(PI_MUL_2), dir2, 2, 0);
 
 	// Still
 	consts.set				(scale,		scale,		scale,				1.f);
-	//RCache.set_c			(&*hwc_s_consts,scale,		scale,		scale,				1.f);
-	//RCache.set_c			(&*hwc_s_xform,	Device.mFullTransform);
-	//hw_Render_dump			(&*hwc_s_array,	0, 1, c_hdr );
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1);
 
-	g_PreviousDelta = fDelta;
+	hw_Render_dump(consts, g_PrevConsts, wave.div(PI_MUL_2), prev_wave.div(PI_MUL_2), dir2, 0, 1);
+
+	wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
+
+	g_PrevConsts = consts;
+	g_PrevWave = wave;
 }
 
-void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, u32 var_id, u32 lod_id)
+void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& prev_consts, const Fvector4& wave, const Fvector4& prev_wave, const Fvector4& wind, u32 var_id, u32 lod_id)
 {
 	static shared_str strConsts("consts");
+	static shared_str strPrevConsts("prev_consts");
 	static shared_str strWave("wave");
+	static shared_str strPrevWave("prev_wave");
 	static shared_str strDir2D("dir2D");
 	static shared_str strArray("array");
 	static shared_str strXForm("xform");
@@ -143,16 +144,14 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 				//	This could be cached in the corresponding consatant buffer
 				//	as it is done for DX9
 				RCache.set_c(strConsts, consts);
+				RCache.set_c(strPrevConsts, prev_consts);
 				RCache.set_c(strWave, wave);
+				RCache.set_c(strPrevWave, prev_wave);
 				RCache.set_c(strDir2D, wind);
 				RCache.set_c(strXForm, Device.mFullTransform);
 
-				//ref_constant constArray = RCache.get_c(strArray);
-				//VERIFY(constArray);
-
-				//u32			c_base				= x_array->vs.index;
-				//Fvector4*	c_storage			= RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
 				Fvector4*	c_storage=0;
+
 				//	Map constants to memory directly
 				{
 					void*	pVData;
@@ -161,7 +160,6 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 						&pVData, 0, 0);
 					c_storage = (Fvector4*) pVData;
 				}
-				VERIFY(c_storage);
 
 				u32 dwBatch	= 0;
 
@@ -177,19 +175,18 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 
 						// Build matrix ( 3x4 matrix, last row - color )
 						float		scale		= Instance.scale_calculated;
-						Fmatrix&	M			= Instance.mRotY;
-						c_storage[base+0].set	(M._11*scale,	M._21*scale,	M._31*scale,	M._41	);
-						c_storage[base+1].set	(M._12*scale,	M._22*scale,	M._32*scale,	M._42	);
-						c_storage[base+2].set	(M._13*scale,	M._23*scale,	M._33*scale,	M._43	);
-						//RCache.set_ca(&*constArray, base+0, M._11*scale,	M._21*scale,	M._31*scale,	M._41	);
-						//RCache.set_ca(&*constArray, base+1, M._12*scale,	M._22*scale,	M._32*scale,	M._42	);
-						//RCache.set_ca(&*constArray, base+2, M._13*scale,	M._23*scale,	M._33*scale,	M._43	);
+						const Fmatrix&	M			= Instance.mRotY;
+						const Fmatrix&	PrevM		= Instance.mRotY;
+
+						c_storage[base + 0].set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
+						c_storage[base + 1].set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
+						c_storage[base + 2].set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
 
 						// Build color
 						// R2 only needs hemisphere
 						float		h			= Instance.c_hemi;
 						float		s			= Instance.c_sun;
-						c_storage[base+3].set	(s,				s,				s,				h		);
+						c_storage[base+3].set		(s,				s,				s,				h		);
 						//RCache.set_ca(&*constArray, base+3, s,				s,				s,				h		);
 						dwBatch	++;
 						if (dwBatch == hw_BatchSize)	{
@@ -213,7 +210,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 									&pVData, 0, 0);
 								c_storage = (Fvector4*) pVData;
 							}
-							VERIFY(c_storage);
+							VERIFY(c_storage);		
 						}
 					}
 				}
@@ -223,8 +220,6 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 					Device.Statistic->RenderDUMP_DT_Count	+= dwBatch;
 					u32 dwCNT_verts			= dwBatch * Object.number_vertices;
 					u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-					//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
-					//RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
 					RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
 					RCache.stat.r.s_details.add	(dwCNT_verts);
 				}

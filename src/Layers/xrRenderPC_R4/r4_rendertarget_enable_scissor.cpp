@@ -10,54 +10,6 @@ BOOL	tri_vs_sphere_intersect			(Fvector& SC, float R, Fvector& v0, Fvector& v1, 
 	return	CDB::TestSphereTri	(SC,R,v0,e0.sub(v1,v0),e1.sub(v2,v0));
 }
 
-void CRenderTarget::enable_dbt_bounds		(light* L)
-{
-	if (!RImplementation.o.nvdbt)					return;
-	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))		return;
-
-	u32	mask		= 0xffffffff;
-	EFC_Visible vis	= RImplementation.ViewBase.testSphere(L->spatial.sphere.P,L->spatial.sphere.R*1.01f,mask);
-	if (vis!=fcvFully)								return;
-
-	// xform BB
-	Fbox	BB;
-	Fvector	rr; rr.set(L->spatial.sphere.R,L->spatial.sphere.R,L->spatial.sphere.R);
-	BB.setb	(L->spatial.sphere.P, rr);
-
-	Fbox	bbp; bbp.invalidate();
-	for (u32 i=0; i<8; i++)		{
-		Fvector		pt;
-		BB.getpoint	(i,pt);
-		Device.mFullTransform.transform	(pt);
-		bbp.modify	(pt);
-	}
-	u_DBT_enable	(bbp.min.z,bbp.max.z);
-}
-
-// nv-DBT
-BOOL	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
-{
-	if (!RImplementation.o.nvdbt)					return	FALSE;
-	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))		return	FALSE;
-
-	return FALSE;
-
-	//	TODO: DX10: Check if DX10 supports this feature
-	// enable cheat
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,MAKEFOURCC('N','V','D','B'));
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z,*(DWORD*)&zMin);
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_W,*(DWORD*)&zMax); 
-
-	//return TRUE;
-}
-
-void	CRenderTarget::u_DBT_disable	()
-{
-	//	TODO: DX10: Check if DX10 supports this feature
-	//if (RImplementation.o.nvdbt && ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))	
-	//	HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,0);
-}
-
 BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
 {
 	// Msg	("%d: %x type(%d), pos(%f,%f,%f)",Device.dwFrame,u32(L),u32(L->flags.type),VPUSH(L->position));

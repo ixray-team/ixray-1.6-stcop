@@ -742,22 +742,22 @@ IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData,
 	}
 }
 
-inline IC float CBackend::get_width()
+inline float CBackend::get_width()
 {
 	return float(RDEVICE.TargetWidth) * RDEVICE.RenderScale;
 }
 
-inline IC float CBackend::get_height()
+inline float CBackend::get_height()
 {
 	return float(RDEVICE.TargetHeight) * RDEVICE.RenderScale;
 }
 
-inline IC float CBackend::get_target_width()
+inline float CBackend::get_target_width()
 {
 	return RDEVICE.TargetWidth;
 }
 
-inline IC float CBackend::get_target_height()
+inline float CBackend::get_target_height()
 {
 	return RDEVICE.TargetHeight;
 }

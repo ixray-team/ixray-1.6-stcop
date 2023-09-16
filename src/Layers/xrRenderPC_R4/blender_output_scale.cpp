@@ -9,21 +9,28 @@ void CBlender_OutputScale::Compile(CBlender_Compile& C)
     IBlender::Compile(C);
     switch (C.iElement)
     {
-    case 0:
-        C.r_Pass("stub_notransform_t_target", "output_scale", FALSE, FALSE, FALSE);
+    case SCALEPHASE_SCALE_LINEAR:
+        C.r_Pass("stub_notransform_t_target", "scale_linear", FALSE, FALSE, FALSE);
+        C.r_dx10Texture("s_image", r2_RT_generic0);
+        C.r_dx10Sampler("smp_nofilter");
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_End();
+        break;  
+    case SCALEPHASE_SCALE_NEAREST:
+        C.r_Pass("stub_notransform_t_target", "scale_nearest", FALSE, FALSE, FALSE);
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break; 
-    case 1:
+    case SCALEPHASE_MOTION_VECTORS:
         C.r_Pass("stub_notransform_t_scaled", "copy_4to2", FALSE, FALSE, FALSE);
         C.r_dx10Texture("s_image", r4_motion);
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;  
-    case 2:
+    case SCALEPHASE_COPY_DEPTH:
         C.r_Pass("stub_notransform_t", "copy_depth", FALSE, FALSE, FALSE);
         C.r_dx10Texture("s_depth", r2_RT_HW_depth);
         C.r_dx10Sampler("smp_nofilter");

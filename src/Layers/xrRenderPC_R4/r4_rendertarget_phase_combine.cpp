@@ -78,9 +78,9 @@ void	CRenderTarget::phase_combine	()
 	BOOL	split_the_scene_to_minimize_wait			= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
-	u_setrt(rt_Generic_0, rt_Generic_1, rt_Motion, rt_HWDepth->pZRT);
+	u_setrt(rt_Generic_0, rt_Generic_1, nullptr, rt_HWDepth->pZRT);
 	g_pGamePersistent->Environment().RenderSky();
-	u_setrt(rt_Generic_0, rt_Motion, rt_HWDepth->pZRT);
+	u_setrt(rt_Generic_0, nullptr, nullptr, rt_HWDepth->pZRT);
 	g_pGamePersistent->Environment().RenderClouds();
 	u_setrt(rt_Generic_0, rt_Generic_1, nullptr, rt_HWDepth->pZRT);
 
@@ -213,11 +213,20 @@ void	CRenderTarget::phase_combine	()
 	////////////////////////////////////////////////////////////
 	// STAGE BEFORE SCALING
 	////////////////////////////////////////////////////////////
-
-	if (ps_r2_ls_flags.test(R4FLAG_FSR2)) {
-		phase_fsr2_combine();
-	} else {
-		phase_output_scale();
+	switch (ps_r4_upscale_type) {
+	case 0:
+	case 1:
+		phase_output_scale(ps_r4_upscale_type == SCALETYPE_LINEAR);
+		break;
+	case 2:
+		if (!g_Fsr2Wrapper.IsCreated()) {
+			phase_output_scale(false);
+		} else {
+			phase_fsr2_combine();
+		}
+		break;
+	default:
+		break;
 	}
 
 	////////////////////////////////////////////////////////////

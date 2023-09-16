@@ -211,6 +211,7 @@ public:
 
 	// Main 
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
+	virtual	void					set_PrevTransform		(Fmatrix*	M	)							= 0;
 	virtual void					set_Transform			(Fmatrix*	M	)							= 0;
 	virtual void					set_HUD					(BOOL 		V	)							= 0;
 	virtual BOOL					get_HUD					()											= 0;

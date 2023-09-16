@@ -402,6 +402,9 @@ void CRender::Render		()
 		Target->phase_scene_end					();
 	}
 
+	RCache.set_xform_jitter(g_current_jitter);
+	RCache.set_prev_xform_jitter(g_prev_jitter);
+
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
 	{
 		Target->phase_wallmarks();
@@ -481,6 +484,9 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_LIGHT_OCCQ);
 		render_lights							(LP_pending);
 	}
+
+	RCache.set_xform_jitter(g_current_jitter);
+	RCache.set_prev_xform_jitter(g_prev_jitter);
 
 	// Postprocess
 	{

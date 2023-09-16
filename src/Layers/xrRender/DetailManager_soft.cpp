@@ -77,7 +77,7 @@ void CDetailManager::soft_Render	()
 					float	scale			= Instance.scale_calculated;
 
 					// Build matrix
-					Fmatrix& M = Instance.mRotY;
+					const Fmatrix& M = Instance.mRotY;
 					mXform._11=M._11*scale;	mXform._12=M._12*scale;	mXform._13=M._13*scale;	mXform._14=M._14;
 					mXform._21=M._21*scale;	mXform._22=M._22*scale;	mXform._23=M._23*scale;	mXform._24=M._24;
 					mXform._31=M._31*scale;	mXform._32=M._32*scale;	mXform._33=M._33*scale;	mXform._34=M._34;

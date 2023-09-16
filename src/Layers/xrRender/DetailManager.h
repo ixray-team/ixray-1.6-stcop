@@ -41,6 +41,7 @@ public:
 		float						scale;
 		float						scale_calculated;
 		Fmatrix						mRotY;
+		Fmatrix						mPrevRotY;
 		u32							vis_ID;				// индекс в visibility списке он же тип [не качается, качается1, качается2]
 		float						c_hemi;
 		float						c_sun;
@@ -147,19 +148,21 @@ public:
 	ID3DVertexBuffer*			hw_VB;
 	ID3DIndexBuffer*			hw_IB;
 	ref_constant					hwc_consts;
+	ref_constant					hwc_prev_consts;
 	ref_constant					hwc_wave;
 	ref_constant					hwc_wind;
 	ref_constant					hwc_array;
 	ref_constant					hwc_s_consts;
 	ref_constant					hwc_s_xform;
 	ref_constant					hwc_s_array;
+	ref_constant					hwc_s_prev_array;
 	void							hw_Load			();
 	void							hw_Load_Geom	();
 	void							hw_Load_Shaders	();
 	void							hw_Unload		();
 	void							hw_Render		();
 #ifdef USE_DX11
-	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, u32 var_id, u32 lod_id);
+	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4& prev_consts, const Fvector4 &wave, const Fvector4& prev_wave, const Fvector4 &wind, u32 var_id, u32 lod_id);
 #else //USE_DX11
 	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id, u32 c_base);
 #endif

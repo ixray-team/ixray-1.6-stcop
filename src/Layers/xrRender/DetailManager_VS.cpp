@@ -51,6 +51,7 @@ void CDetailManager::hw_Load	()
 void CDetailManager::hw_Load_Geom()
 {
 	// Analyze batch-size
+
 	hw_BatchSize	= (u32(HW.Caps.geometry.dwRegisters)-c_hdr)/c_size;
 	clamp			(hw_BatchSize,(u32)0,(u32)64);
 	Msg				("* [DETAILS] VertexConsts(%d), Batch(%d)",u32(HW.Caps.geometry.dwRegisters),hw_BatchSize);
@@ -276,7 +277,7 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 
 					// Build matrix ( 3x4 matrix, last row - color )
 					float		scale		= Instance.scale_calculated;
-					Fmatrix&	M			= Instance.mRotY;
+					const Fmatrix&	M			= Instance.mRotY;
 					c_storage[base+0].set	(M._11*scale,	M._21*scale,	M._31*scale,	M._41	);
 					c_storage[base+1].set	(M._12*scale,	M._22*scale,	M._32*scale,	M._42	);
 					c_storage[base+2].set	(M._13*scale,	M._23*scale,	M._33*scale,	M._43	);

@@ -56,23 +56,6 @@ xr_token							qsun_quality_token							[ ]={
 	{ 0,							0												}
 };
 
-u32			ps_r3_msaa				=	0;			//	=	0;
-xr_token							qmsaa_token							[ ]={
-	{ "st_opt_off",					0												},
-	{ "2x",							1												},
-	{ "4x",							2												},
-	{ "8x",							3												},
-	{ 0,							0												}
-};
-
-u32			ps_r3_msaa_atest		=	0;			//	=	0;
-xr_token							qmsaa__atest_token					[ ]={
-	{ "st_opt_off",					0												},
-	{ "st_opt_atest_msaa_dx10_0",	1												},
-//	{ "st_opt_atest_msaa_dx10_1",	2												},
-	{ 0,							0												}
-};
-
 u32			ps_r3_minmax_sm			=	0;			//	=	0;
 xr_token							qminmax_sm_token					[ ]={
 	{ "off",						0												},
@@ -89,6 +72,15 @@ xr_token							aa_type_token[] = {
 	{ "smaa",						2												},
 	{ 0,							0												}
 };
+
+u32			ps_r4_upscale_type = 0;			//	=	0;
+xr_token							upscale_token[] = {
+	{ "nearest",					SCALETYPE_NEAREST								},
+	{ "linear",						SCALETYPE_LINEAR								},
+	{ "fsr2",						SCALETYPE_FSR2									},
+	{ 0,							0												}
+};
+
 // Common
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
@@ -99,9 +91,7 @@ float		ps_r4_jitter_scale_y		= 1.0;
 float		ps_r4_sharp_factor			= 0.5f;
 int			ps_r4_sharp_enable			= 1;
 
-//int		ps_r__Supersample			= 1		;
-int			ps_r__LightSleepFrames		= 10	;
-
+int			ps_r__LightSleepFrames;
 float		ps_r__Detail_l_ambient		= 0.9f	;
 float		ps_r__Detail_l_aniso		= 0.25f	;
 float		ps_r__Detail_density		= 0.3f	;
@@ -145,7 +135,7 @@ float		ps_r2_ssaLOD_B				= 48.f	;
 Flags32		ps_r2_ls_flags				= { R2FLAG_SUN 
 	//| R2FLAG_SUN_IGNORE_PORTALS
 	| R2FLAG_EXP_DONT_TEST_UNSHADOWED 
-	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
+	| R2FLAG_EXP_SPLIT_SCENE 
 	| R2FLAG_EXP_MT_CALC | R3FLAG_DYN_WET_SURF
 	| R3FLAG_VOLUMETRIC_SMOKE
 	//| R3FLAG_MSAA 
@@ -183,14 +173,6 @@ float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_bloom_threshold	= .00001f;				// r2-only
-Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
-Fvector		ps_r2_aa_weight				= { .25f,.25f,0};	// r2-only
-float		ps_r2_aa_kernel				= .5f;				// r2-only
-float		ps_r2_mblur					= .0f;				// .5f
-int			ps_r2_GI_depth				= 1;				// 1..5
-int			ps_r2_GI_photons			= 16;				// 8..64
-float		ps_r2_GI_clip				= EPS_L;			// EPS
-float		ps_r2_GI_refl				= .9f;				// .9f
 float		ps_r2_ls_depth_scale		= 1.00001f;			// 1.00001f
 float		ps_r2_ls_depth_bias			= -0.0003f;			// -0.0001f
 float		ps_r2_ls_squality			= 1.0f;				// 1.00f
@@ -684,8 +666,6 @@ void		xrRender_initconsole	()
 #endif // DEBUG
 	CMD4(CCC_Float,		"r__wallmark_ttl",		&ps_r__WallmarkTTL,			1.0f,	5.f*60.f);
 
-	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		8		);
-
 	Fvector	tw_min,tw_max;
 	
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
@@ -751,7 +731,6 @@ void		xrRender_initconsole	()
 	//- Mad Max
 
 #ifdef DEBUG
-	CMD3(CCC_Mask,		"r2_use_nvdbt",			&ps_r2_ls_flags,			R2FLAG_USE_NVDBT);
 	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 #endif // DEBUG
 
@@ -778,16 +757,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_sun_lumscale_hemi",	&ps_r2_sun_lumscale_hemi,	0.0,	+3.0	);
 	CMD4(CCC_Float,		"r2_sun_lumscale_amb",	&ps_r2_sun_lumscale_amb,	0.0,	+3.0	);
 
-	CMD3(CCC_Mask,		"r2_aa",				&ps_r2_ls_flags,			R2FLAG_AA);
-	CMD4(CCC_Float,		"r2_aa_kernel",			&ps_r2_aa_kernel,			0.3f,	0.7f	);
-	CMD4(CCC_Float,		"r2_mblur",				&ps_r2_mblur,				0.0f,	1.0f	);
-
-	CMD3(CCC_Mask,		"r2_gi",				&ps_r2_ls_flags,			R2FLAG_GI);
-	CMD4(CCC_Float,		"r2_gi_clip",			&ps_r2_GI_clip,				EPS,	0.1f	);
-	CMD4(CCC_Integer,	"r2_gi_depth",			&ps_r2_GI_depth,			1,		5		);
-	CMD4(CCC_Integer,	"r2_gi_photons",		&ps_r2_GI_photons,			8,		256		);
-	CMD4(CCC_Float,		"r2_gi_refl",			&ps_r2_GI_refl,				EPS_L,	0.99f	);
-
 	CMD4(CCC_Integer,	"r2_wait_sleep",		&ps_r2_wait_sleep,			0,		1		);
 
 #ifndef MASTER_GOLD
@@ -808,12 +777,6 @@ void		xrRender_initconsole	()
 //	CMD4(CCC_Float,		"r2_parallax_range",	&ps_r2_df_parallax_range,	5.0f,	175.0f	);
 
 	CMD4(CCC_Float,		"r2_slight_fade",		&ps_r2_slight_fade,			.2f,	1.f		);
-
-	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);
-
-	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_weight",			&ps_r2_aa_weight,			tw_min, tw_max	);
 
 	//	Igor: Depth of field
 	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
@@ -854,18 +817,13 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
 	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
 
-	//CMD3(CCC_Mask,		"r3_msaa",						&ps_r2_ls_flags,			R3FLAG_MSAA);
-	CMD3(CCC_Token,		"r3_msaa",						&ps_r3_msaa,				qmsaa_token);
-	//CMD3(CCC_Mask,		"r3_msaa_hybrid",				&ps_r2_ls_flags,			R3FLAG_MSAA_HYBRID);
-	//CMD3(CCC_Mask,		"r3_msaa_opt",					&ps_r2_ls_flags,			R3FLAG_MSAA_OPT);
 	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
-	CMD3(CCC_Mask,		"r4_fsr2",						&ps_r2_ls_flags,			R4FLAG_FSR2);
+	CMD3(CCC_Token,		"r4_upscale",					&ps_r4_upscale_type,		upscale_token);
 	CMD4(CCC_Float,		"r4_jitter_factor",				&ps_r4_jitter_factor,		-100, 100);
 	CMD4(CCC_Float,		"r4_jitter_scale_x",			&ps_r4_jitter_scale_x,		-2, 2);
 	CMD4(CCC_Float,		"r4_jitter_scale_y",			&ps_r4_jitter_scale_y,		-2, 2);
 	CMD4(CCC_Float,		"r4_sharp_factor",				&ps_r4_sharp_factor,		0, 1);
 	CMD4(CCC_Integer,	"r4_sharp_enable",				&ps_r4_sharp_enable,		0, 1);
-	CMD3(CCC_Token,		"r3_msaa_alphatest",			&ps_r3_msaa_atest,			qmsaa__atest_token);
 	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);
 
 	CMD3(CCC_Token,		"r2_type_aa",					&ps_r2_aa_type,				aa_type_token);

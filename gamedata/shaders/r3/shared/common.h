@@ -9,11 +9,11 @@
 //	Used by VS
 cbuffer	dynamic_transforms
 {
-	uniform float4x4		m_WVPClean;
+	uniform float4x4		m_WVP_Unjittered;
 	uniform float4x4		m_WVP;
 	uniform float3x4		m_WV;
 	uniform float3x4	    m_W;
-	uniform float4x4		m_prevWVPClean;
+	uniform float4x4		m_prevWVP_Unjittered;
 	uniform float4x4		m_prevWVP;
 	uniform float3x4		m_prevWV;
 	uniform float3x4	    m_prevW;
@@ -35,11 +35,11 @@ cbuffer	static_globals
 	uniform float3x4	m_V;
 	uniform float4x4 	m_P;
 	uniform float4x4 	m_VP;
-	uniform float4x4 	m_VPClean;
+	uniform float4x4 	m_VP_Unjittered;
 	uniform float3x4	m_prevV;
 	uniform float4x4 	m_prevP;
 	uniform float4x4 	m_prevVP;
-	uniform float4x4 	m_prevVPClean;
+	uniform float4x4 	m_prevVP_Unjittered;
 
 	uniform float4		timers;
 

@@ -10,6 +10,7 @@ public:
 	struct 
 	{
 		Fmatrix							xform						;
+		Fmatrix							prev_xform					;
 		IRenderVisual*					visual						;
 		IRender_ObjectSpecific*			pROS						;
 		BOOL							pROS_Allowed				;

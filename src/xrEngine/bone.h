@@ -24,7 +24,10 @@ class ENGINE_API		CBoneInstance
 public:
 	// data
 	Fmatrix				mTransform;							// final x-form matrix (local to model)
+	Fmatrix				mPrevTransform;						// final x-form matrix (local to model)
+	Fmatrix				mPrevRenderTransform;				// final x-form matrix (model_base -> bone -> model)
 	Fmatrix				mRenderTransform;					// final x-form matrix (model_base -> bone -> model)
+
 private:
 	BoneCallback		Callback;
 	void*				Callback_Param;

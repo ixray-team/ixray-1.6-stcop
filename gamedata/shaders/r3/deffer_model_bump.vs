@@ -7,13 +7,19 @@
 
 v2p_bumped _main( v_model I )
 {
-	float4	w_pos = I.P;
-
 	// Eye-space pos/normal
 	v2p_bumped 	O;
+#ifdef SKIN_NONE
+	float4 w_prev_pos = I.P;
+#else
+	float4 w_prev_pos = I.PrevP;
+#endif
+	float4 w_pos = I.P;
+
 	O.hpos 		= mul( m_WVP, w_pos	);
-	O.cur_hpos 	= mul( m_WVPClean, float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
-	O.prev_hpos	= mul( m_prevWVPClean, float4(w_pos.x, w_pos.y, w_pos.z, 1.0f) );
+	O.cur_hpos 	= mul( m_WVP_Unjittered, float4(w_pos.x, w_pos.y, w_pos.z, 1.0f) );
+	O.prev_hpos	= mul( m_prevWVP_Unjittered, float4(w_prev_pos.x, w_prev_pos.y, w_prev_pos.z, 1.0f) );
+
 	float2 	tc 	= I.tc;
 	float3	Pe	= mul( m_WV, w_pos );
 	O.tcdh 		= float4( tc.xyyy );
@@ -38,11 +44,12 @@ v2p_bumped _main( v_model I )
 	float3 	N 	= I.N;		// just scale (assume normal in the -.5f, .5f)
 	float3 	T 	= I.T;		// 
 	float3 	B 	= I.B;		// 
-	float3x3 xform	= mul	((float3x3)m_WV, float3x3(
+	float3x3 xform	= mul((float3x3)m_WV, float3x3(
 						2*T.x,2*B.x,2*N.x,
 						2*T.y,2*B.y,2*N.y,
 						2*T.z,2*B.z,2*N.z
 				));
+
 	// The pixel shader operates on the bump-map in [0..1] range
 	// Remap this range in the matrix, anyway we are pixel-shader limited :)
 	// ...... [ 2  0  0  0]

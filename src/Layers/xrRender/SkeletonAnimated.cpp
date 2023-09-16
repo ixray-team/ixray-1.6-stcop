@@ -839,7 +839,7 @@ void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix 
 	{
 		if(j!=0&&keys.chanel_blend_conts[j]==0)
 			continue;
-		//data for channel mix cycle based on ch_count
+
 		channels.get_def ( j, BC[ch_count]	);
 		process_single_channel( channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j] );
 		++ch_count;
@@ -850,9 +850,9 @@ void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix 
 
 	Fmatrix					RES;
 	RES.mk_xform			(Result.Q,Result.T);
+	bi.mPrevTransform = bi.mTransform;
 	bi.mTransform.mul_43	(*parent,RES);
 #ifdef DEBUG
-#ifndef _EDITOR
 		if(!check_scale(RES))
 		{
 			VERIFY(check_scale(bi.mTransform));
@@ -861,93 +861,22 @@ void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix 
 		Fbox dbg_box;
 		float box_size = 100000.f;
 		dbg_box.set( -box_size, -box_size, -box_size, box_size, box_size, box_size );
-		//VERIFY(dbg_box.contains(bi.mTransform.c));
 		VERIFY2( dbg_box.contains(bi.mTransform.c), ( make_string( "model: %s has strange bone position, matrix : ", getDebugName().c_str() ) + get_string( bi.mTransform ) ).c_str() );
-
-		//if(!is_similar(PrevTransform,RES,0.3f))
-		//{
-		//	Msg("bone %s",*bd->name)	;
-		//}
-		//BONE_INST.mPrevTransform.set(RES);
-#endif
 #endif
 }
 
-void	CKinematicsAnimated::BuildBoneMatrix			( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask /*= (1<<0)*/ )
+void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
 {
-			
-			//CKey				R						[MAX_CHANNELS][MAX_BLENDED];	//all keys 
-			//float				BA						[MAX_CHANNELS][MAX_BLENDED];	//all factors
-			//int				b_counts				[MAX_CHANNELS]	= {0,0,0,0}; //channel counts
-			SKeyTable	keys;
-			LL_BuldBoneMatrixDequatize( bd, channel_mask, keys );
-
-			LL_BoneMatrixBuild( bi, parent, keys );
-
-			/*
-			if(bi.mTransform.c.y>10000)
-			{
-			Log("BLEND_INST",BLEND_INST.Blend.size());
-			Log("Bone",LL_BoneName_dbg(SelfID));
-			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-			Log("Result.T",Result.T);
-			Log("lp parent",(u32)parent);
-			Log("parent",*parent);
-			Log("RES",RES);
-			Log("mT",bi.mTransform);
-
-			CBlend*			B		=	*BI;
-			CMotion&		M		=	*LL_GetMotion(B->motionID,SelfID);
-			float			time	=	B->timeCurrent*float(SAMPLE_FPS);
-			u32				frame	=	iFloor(time);
-			u32				count	=	M.get_count();
-			float			delta	=	time-float(frame);
-
-			Log("flTKeyPresent",M.test_flag(flTKeyPresent));
-			Log("M._initT",M._initT);
-			Log("M._sizeT",M._sizeT);
-
-			// translate
-			if (M.test_flag(flTKeyPresent))
-			{
-			CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
-			CKeyQT*	K2t	= &M._keysT[(frame+1)%count];
-
-			Fvector T1,T2,Dt;
-			T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
-			T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
-			T1.z		= float(K1t->z)*M._sizeT.z+M._initT.z;
-			T2.x		= float(K2t->x)*M._sizeT.x+M._initT.x;
-			T2.y		= float(K2t->y)*M._sizeT.y+M._initT.y;
-			T2.z		= float(K2t->z)*M._sizeT.z+M._initT.z;
-
-			Dt.lerp	(T1,T2,delta);
-
-			Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-			Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
-
-			Log("count",count);
-			Log("frame",frame);
-			Log("T1",T1);
-			Log("T2",T2);
-			Log("delta",delta);
-			Log("Dt",Dt);
-
-			}else
-			{
-			D->T.set	(M._initT);
-			}
-			VERIFY(0);
-			}
-			*/
-
+	SKeyTable keys;
+	LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);
+	LL_BoneMatrixBuild(bi, parent, keys);
 }
 
 
 
 void CKinematicsAnimated::OnCalculateBones		()
 {
-	UpdateTracks	()	;
+	UpdateTracks();
 }
 IBlendDestroyCallback* CKinematicsAnimated::GetBlendDestroyCallback	( )
 {
@@ -963,22 +892,3 @@ void	CKinematicsAnimated::SetBlendDestroyCallback		( IBlendDestroyCallback	*cb )
 {
 	m_blend_destroy_callback = cb;
 }
-
-#ifdef _EDITOR
-MotionID CKinematicsAnimated::ID_Motion(LPCSTR  N, u16 slot)
-{
-	MotionID 				motion_ID;
-    if (slot<MAX_ANIM_SLOT){
-        shared_motions* s_mots	= &m_Motions[slot].motions;
-        // find in cycles
-        accel_map::iterator I 	= s_mots->cycle()->find(LPSTR(N));
-        if (I!=s_mots->cycle()->end())	motion_ID.set(slot,I->second);
-        if (!motion_ID.valid()){
-            // find in fx's
-            accel_map::iterator I 	= s_mots->fx()->find(LPSTR(N));
-            if (I!=s_mots->fx()->end())	motion_ID.set(slot,I->second);
-        }
-    }
-    return motion_ID;
-}
-#endif

@@ -17,6 +17,7 @@
 #include "../../xrCPU_Pipe/xrCPU_Pipe.h"
 
 shared_str	s_bones_array_const;
+shared_str	s_prev_bones_array_const;
 
 //////////////////////////////////////////////////////////////////////
 // Body Part
@@ -55,37 +56,44 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
-		_Render_soft		(hGeom,vCount,iOffset,pCount);
-		RCache.stat.r.s_dynamic_sw.add	(vCount);
+		_Render_soft(hGeom, vCount, iOffset, pCount);
+		RCache.stat.r.s_dynamic_sw.add(vCount);
 		break;
-	case RM_SINGLE:	
-		{
-			Fmatrix	W;	W.mul_43(RCache.xforms.m_w,Parent->LL_GetTransform_R	(u16(RMS_boneid)));
-			RCache.set_xform_world(W);
-			RCache.set_prev_xform_world(W);
-			RCache.set_Geometry		(hGeom);
-			RCache.Render			(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
-			RCache.stat.r.s_dynamic_inst.add	(vCount);
-		}
-		break;
+	case RM_SINGLE: {
+		Fmatrix	W; W.mul_43(RCache.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
+		Fmatrix	PrevW; PrevW.mul_43(RCache.prev_xforms.m_w, Parent->LL_GetPrevTransform_R(u16(RMS_boneid)));
+		RCache.set_xform_world(W);
+		RCache.set_prev_xform_world(PrevW);
+		RCache.set_Geometry(hGeom);
+		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+		RCache.stat.r.s_dynamic_inst.add(vCount);
+		Parent->UpdateTransform(u16(RMS_boneid));
+	}
+	break;
 	case RM_SKINNING_1B:
 	case RM_SKINNING_2B:
 	case RM_SKINNING_3B:
 	case RM_SKINNING_4B:
+	{
+		// transfer matrices
+		ref_constant			array = RCache.get_c(s_bones_array_const);
+		ref_constant			prev_array = RCache.get_c(s_prev_bones_array_const);
+		u32						count = RMS_bonecount;
+		for (u32 mid = 0; mid < count; mid++)
 		{
-			// transfer matrices
-			ref_constant			array	= RCache.get_c(s_bones_array_const);
-			u32						count	= RMS_bonecount;
-			for (u32 mid = 0; mid<count; mid++)	
-			{
-				Fmatrix&	M				= Parent->LL_GetTransform_R(u16(mid));
-				u32			id				= mid*3;
-				RCache.set_ca				(&*array,id+0,M._11,M._21,M._31,M._41);
-				RCache.set_ca				(&*array,id+1,M._12,M._22,M._32,M._42);
-				RCache.set_ca				(&*array,id+2,M._13,M._23,M._33,M._43);
-			}
+			Fmatrix& M = Parent->LL_GetTransform_R(u16(mid));
+			Fmatrix& PrevM = Parent->LL_GetPrevTransform_R(u16(mid));
+			u32 id = mid * 3;
+			RCache.set_ca(&*prev_array, id + 0, PrevM._11, PrevM._21, PrevM._31, PrevM._41);
+			RCache.set_ca(&*prev_array, id + 1, PrevM._12, PrevM._22, PrevM._32, PrevM._42);
+			RCache.set_ca(&*prev_array, id + 2, PrevM._13, PrevM._23, PrevM._33, PrevM._43);
+			RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
+			RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
+			RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
+			Parent->UpdateTransform(u16(mid));
+		}
 
-			// render
+		// render
 			RCache.set_Geometry				(hGeom);
 			RCache.Render					(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
 			if (RM_SKINNING_1B==RenderMode)	
@@ -165,6 +173,7 @@ void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCo
 void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount) 
 {	
 	s_bones_array_const		= "sbones_array";
+	s_prev_bones_array_const= "prev_sbones_array";
 	xr_vector<u16>			bids;
 
 	// Load vertices
@@ -367,8 +376,8 @@ void 	get_pos_bones(const vertBoned2W &vert, Fvector& p, CKinematics* Parent )
 {
 	Fvector		P0,P1;
 	
-	Fmatrix& xform0			= Parent->LL_GetBoneInstance( vert.matrix0 ).mRenderTransform; 
-	Fmatrix& xform1			= Parent->LL_GetBoneInstance( vert.matrix1 ).mRenderTransform; 
+	const Fmatrix& xform0			= Parent->LL_GetBoneInstance( vert.matrix0 ).mRenderTransform; 
+	const Fmatrix& xform1			= Parent->LL_GetBoneInstance( vert.matrix1 ).mRenderTransform; 
 	xform0.transform_tiny	( P0, vert.P );
 	xform1.transform_tiny	( P1, vert.P );
 	p.lerp					( P0, P1, vert.w );
@@ -376,9 +385,9 @@ void 	get_pos_bones(const vertBoned2W &vert, Fvector& p, CKinematics* Parent )
 
 void 	get_pos_bones(const vertBoned3W &vert, Fvector& p, CKinematics* Parent )
 {
-		Fmatrix& M0		= Parent->LL_GetBoneInstance( vert.m[0] ).mRenderTransform;
-        Fmatrix& M1		= Parent->LL_GetBoneInstance( vert.m[1] ).mRenderTransform;
-        Fmatrix& M2		= Parent->LL_GetBoneInstance( vert.m[2] ).mRenderTransform;
+		const Fmatrix& M0		= Parent->LL_GetBoneInstance( vert.m[0] ).mRenderTransform;
+        const Fmatrix& M1		= Parent->LL_GetBoneInstance( vert.m[1] ).mRenderTransform;
+        const Fmatrix& M2		= Parent->LL_GetBoneInstance( vert.m[2] ).mRenderTransform;
 
 		Fvector	P0,P1,P2;
 		M0.transform_tiny(P0, vert.P); P0.mul(vert.w[0]);
@@ -391,10 +400,10 @@ void 	get_pos_bones(const vertBoned3W &vert, Fvector& p, CKinematics* Parent )
 }
 void 	get_pos_bones(const vertBoned4W &vert, Fvector& p, CKinematics* Parent )
 {
-		Fmatrix& M0		= Parent->LL_GetBoneInstance( vert.m[0] ).mRenderTransform;
-        Fmatrix& M1		= Parent->LL_GetBoneInstance( vert.m[1] ).mRenderTransform;
-        Fmatrix& M2		= Parent->LL_GetBoneInstance( vert.m[2] ).mRenderTransform;
-		Fmatrix& M3		= Parent->LL_GetBoneInstance( vert.m[3] ).mRenderTransform;
+		const Fmatrix& M0		= Parent->LL_GetBoneInstance( vert.m[0] ).mRenderTransform;
+        const Fmatrix& M1		= Parent->LL_GetBoneInstance( vert.m[1] ).mRenderTransform;
+        const Fmatrix& M2		= Parent->LL_GetBoneInstance( vert.m[2] ).mRenderTransform;
+		const Fmatrix& M3		= Parent->LL_GetBoneInstance( vert.m[3] ).mRenderTransform;
 
 		Fvector	P0,P1,P2,P3;
 		M0.transform_tiny(P0, vert.P); P0.mul(vert.w[0]);
@@ -521,8 +530,8 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
 			F.bone_id[k][0]			= vert.matrix0;
 			F.bone_id[k][1]			= vert.matrix1;
 			F.weight[k]				= vert.w;
-			Fmatrix& xform0			= Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
-			Fmatrix& xform1			= Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
+			const Fmatrix& xform0	= Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
+			const Fmatrix& xform1	= Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
 			F.vert[k].set			(vert.P);		
 			xform0.transform_tiny	(P0,F.vert[k]);
 			xform1.transform_tiny	(P1,F.vert[k]);

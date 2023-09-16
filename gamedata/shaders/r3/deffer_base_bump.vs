@@ -18,8 +18,8 @@ v2p_bumped main( v_in I )
 	v2p_bumped 	O;
 	float3	Pe	= mul		(m_WV,  w_pos		);
 	O.hpos 		= mul		(m_VP,	w_pos		);
-	O.cur_hpos 	= mul		(m_VPClean,		float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
-	O.prev_hpos = mul		(m_prevVPClean,	float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
+	O.cur_hpos 	= mul		(m_VP_Unjittered,		float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
+	O.prev_hpos = mul		(m_prevVP_Unjittered,	float4(w_pos.x, w_pos.y, w_pos.z, 1.0f)	);
 	O.tcdh 		= float4	(tc.xyyy			);
 	O.position	= float4	(Pe, hemi			);
 //	O.position	= float4	(O.hpos.xyz, hemi	);

@@ -296,7 +296,6 @@ private:
 
 private:
 	ai_obstacle				*m_ai_obstacle;
-	Fmatrix					m_previous_matrix;
 
 public:
 	virtual	bool			is_ai_obstacle		() const;

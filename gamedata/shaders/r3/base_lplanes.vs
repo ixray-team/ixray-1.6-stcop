@@ -15,8 +15,8 @@ vf main (v_static v)
 
 	float4 pos = v.P;;
 	o.hpos 		= mul			(m_WVP, pos);		// xform, input in world coords
-	o.cur_hpos	= mul			(m_WVPClean, float4(pos.x, pos.y, pos.z, 1.0f));
-	o.prev_hpos = mul			(m_prevWVPClean, float4(pos.x, pos.y, pos.z, 1.0f));	
+	o.cur_hpos	= mul			(m_WVP_Unjittered, float4(pos.x, pos.y, pos.z, 1.0f));
+	o.prev_hpos = mul			(m_prevWVP_Unjittered, float4(pos.x, pos.y, pos.z, 1.0f));	
 	o.tc0		= unpack_tc_base(v.tc,v.T.w,v.B.w);	// copy tc
 
 	// calculate fade

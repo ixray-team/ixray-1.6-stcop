@@ -2,7 +2,7 @@
 
 extern void set_viewport(ID3DDeviceContext* dev, float w, float h);
 
-void CRenderTarget::phase_output_scale()
+void CRenderTarget::phase_output_scale(bool linear)
 {
     PIX_EVENT(OUTPUT_UPSCALE);
 
@@ -27,7 +27,7 @@ void CRenderTarget::phase_output_scale()
     pv->set(w, 0, d_Z, d_W, C, 1, 0); pv++;
     RCache.Vertex.Unlock(4, g_combine->vb_stride);
 
-    RCache.set_Element(s_output_scale->E[0]);
+    RCache.set_Element(s_output_scale->E[linear ? SCALEPHASE_SCALE_LINEAR : SCALEPHASE_SCALE_NEAREST]);
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }

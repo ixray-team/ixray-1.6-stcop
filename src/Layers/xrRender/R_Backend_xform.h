@@ -14,8 +14,8 @@ public:
 	Fmatrix			m_wv;		// Derived	- world2view
 	Fmatrix			m_vp;		// Derived	- view2projection
 	Fmatrix			m_wvp;		// Derived	- world2view2projection
-	Fmatrix			m_vp_clean;	// Derived	- view2projection
-	Fmatrix			m_wvp_clean;// Derived	- world2view2projection
+	Fmatrix			m_vp_unjittered;	// Derived	- view2projection
+	Fmatrix			m_wvp_unjittered;// Derived	- world2view2projection
 
 	R_constant*		c_w;
 	R_constant*		c_invw;
@@ -24,8 +24,8 @@ public:
 	R_constant*		c_wv;
 	R_constant*		c_vp;
 	R_constant*		c_wvp;
-	R_constant*		c_vp_clean;
-	R_constant*		c_wvp_clean;
+	R_constant*		c_vp_unjittered;
+	R_constant*		c_wvp_unjittered;
 private:
 	bool			m_bPrev;
 	bool			m_bInvWValid;
@@ -46,8 +46,8 @@ public:
 	IC void			set_c_wv	(R_constant* C);
 	IC void			set_c_vp	(R_constant* C);
 	IC void			set_c_wvp	(R_constant* C);
-	IC void			set_c_vp_clean(R_constant* C);
-	IC void			set_c_wvp_clean(R_constant* C);
+	IC void			set_c_vp_unjittered(R_constant* C);
+	IC void			set_c_wvp_unjittered(R_constant* C);
 private:
 	void			apply_invw	();
 };

@@ -51,7 +51,7 @@ void __fastcall mapMatrix_Render	(mapMatrixItems& N)
 	_MatrixItem				*I=&*N.begin(), *E = &*N.end();
 	for (; I!=E; I++)		{
 		_MatrixItem&	Ni				= *I;
-		RCache.set_prev_xform_world		(Ni.Matrix);
+		RCache.set_prev_xform_world		(Ni.PrevMatrix);
 		RCache.set_xform_world			(Ni.Matrix);
 		RImplementation.apply_object	(Ni.pObject);
 		RImplementation.apply_lmaterial	();
@@ -72,7 +72,7 @@ void __fastcall sorted_L1		(mapSorted_Node *N)
 	dxRender_Visual *V				= N->val.pVisual;
 	VERIFY (V && V->shader._get());
 	RCache.set_Element				(N->val.se);
-	RCache.set_prev_xform_world		(N->val.Matrix);
+	RCache.set_prev_xform_world		(N->val.PrevMatrix);
 	RCache.set_xform_world			(N->val.Matrix);
 	RImplementation.apply_object	(N->val.pObject);
 	RImplementation.apply_lmaterial	();
