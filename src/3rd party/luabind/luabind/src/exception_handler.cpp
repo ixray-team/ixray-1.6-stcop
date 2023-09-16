@@ -2,10 +2,7 @@
 // subject to the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-
-
 #include <luabind/lua_include.hpp>
-
 #include <luabind/config.hpp>           // for LUABIND_API
 
 #ifndef LUABIND_NO_EXCEPTIONS

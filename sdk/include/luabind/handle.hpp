@@ -19,15 +19,13 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
-
-#ifndef LUABIND_HANDLE_050420_HPP
-#define LUABIND_HANDLE_050420_HPP
-
+#pragma once
 #include <luabind/lua_include.hpp>
 #include <luabind/lua_proxy.hpp>
 #include <utility>
 
-namespace luabind {
+namespace luabind
+{
 
 	// A reference to a Lua value. Represents an entry in the
 	// registry table.
@@ -133,8 +131,4 @@ namespace luabind {
 			return true;
 		}
 	};
-
-} // namespace luabind
-
-#endif // LUABIND_HANDLE_050420_HPP
-
+}

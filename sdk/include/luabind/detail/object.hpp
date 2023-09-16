@@ -86,9 +86,10 @@ namespace luabind
 			template<class T>
 			index_proxy<object> operator[](T const& key) const
 			{
-				return index_proxy<object>(
-					*this, m_handle.interpreter(), key
-					);
+				return index_proxy<object>
+					   (
+					   		*this, m_handle.interpreter(), key
+					   );
 			}
 
 			void swap(object& other)

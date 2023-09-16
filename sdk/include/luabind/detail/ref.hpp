@@ -29,7 +29,7 @@
 
 namespace luabind::detail
 {
-	class lua_reference
+	class LUABIND_API lua_reference
 	{
 		lua_State* L;
 		int m_ref;
