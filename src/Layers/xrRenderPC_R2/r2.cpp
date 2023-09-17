@@ -235,7 +235,7 @@ void					CRender::create					()
 	}
 
 	// options
-	o.sunstatic			= !r2_sun_static ? (!ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE) : TRUE;
+	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
 	o.advancedpp		= r2_advanced_pp;
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
