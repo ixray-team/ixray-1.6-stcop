@@ -228,12 +228,9 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	CS.Leave			();
 }
 
-LPCSTR xrDebug::error2string	(long code)
-{
-	static string1024 desc_storage = "";
-
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, code, 0, desc_storage, 0, nullptr);
-
+LPCSTR xrDebug::error2string(long code) {
+	static char desc_storage[1024] = {};
+	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
 	return desc_storage;
 }
 

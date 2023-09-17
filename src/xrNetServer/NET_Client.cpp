@@ -436,14 +436,13 @@ if(!psNET_direct_connect)
 	net_Disconnected= FALSE;
 
 	//---------------------------
-	string1024 tmp="";
-	//---------------------------
     // Create the IDirectPlay8Client object.
     HRESULT CoCreateInstanceRes = CoCreateInstance	(CLSID_DirectPlay8Client, NULL, CLSCTX_INPROC_SERVER, IID_IDirectPlay8Client, (LPVOID*) &NET);
 	//---------------------------	
 	if (CoCreateInstanceRes != S_OK)
 	{
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, CoCreateInstanceRes, 0, tmp, 0, nullptr);
+		static char desc_storage[1024] = {};
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, CoCreateInstanceRes, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
 		CHK_DX(CoCreateInstanceRes );
 	}	
 	//---------------------------
@@ -639,9 +638,10 @@ if(!psNET_direct_connect)
 #ifdef DEBUG
 				else
 					Msg("! IPureClient : port %d is BUSY!", c_port);
-
-				string1024 tmp_ = "";
-				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp_, 0, nullptr);
+			{
+				static char desc_storage[1024] = {};
+				FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, res, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
+			}
 #endif				
 				c_port++;
 			}
@@ -689,8 +689,10 @@ if(!psNET_direct_connect)
 		net_csEnumeration.Leave		();
 		_RELEASE					(pHostAddress);
 #ifdef DEBUG
-		string1024 tmp_ = "";
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, res, 0, tmp_, 0, nullptr);
+	{
+		static char desc_storage[1024] = {};
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, res, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
+	}
 #endif
 		switch (res)
 		{
@@ -869,8 +871,8 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 #ifdef DEBUG
 					if (pMsg->hResultCode != S_OK)
 					{
-						string1024 tmp= "";
-						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, pMsg->hResultCode, 0, tmp, 0, nullptr);
+						static char desc_storage[1024] = {};
+						FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, pMsg->hResultCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
 					}					
 #endif
 					if (pMsg->dwApplicationReplyDataSize)
@@ -962,8 +964,8 @@ void	IPureClient::SendTo_LL(void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 	if( FAILED(hr) )	
 	{
 		Msg	("! ERROR: Failed to send net-packet, reason: %s",::Debug.error2string(hr));
-		string1024 tmp= "";
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, hr, 0, tmp, 0, nullptr);
+		static char desc_storage[1024] = {};
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
 	}
 
 //	UpdateStatistic();
