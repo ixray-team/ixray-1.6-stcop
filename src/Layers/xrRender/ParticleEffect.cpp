@@ -398,7 +398,7 @@ __forceinline void magnitude_sse( Fvector &vec , float &res )
 void ParticleRenderStream( LPVOID lpvParams )
 {
 			float sina = 0.0f , cosa = 0.0f;
-			DWORD angle = 0xFFFFFFFF;
+			float angle = 0xFFFFFFFF;
 
 			PRS_PARAMS* pParams = (PRS_PARAMS *) lpvParams;
 
