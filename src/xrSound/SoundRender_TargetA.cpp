@@ -101,30 +101,45 @@ void	CSoundRender_TargetA::update			()
 {
 	inherited::update();
 
-	ALint			processed;
-    // Get status
-    A_CHK			(alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed));
+	ALint processed, state;
 
-    if (processed > 0)
-	{
-        while (processed)
-		{
-			ALuint			BufferID;
-            A_CHK			(alSourceUnqueueBuffers(pSource, 1, &BufferID));
-            fill_block		(BufferID);
-            A_CHK			(alSourceQueueBuffers(pSource, 1, &BufferID));
-            --processed;
+    // Get status
+	A_CHK(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
+    A_CHK(alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed));
+    if (alGetError() != AL_NO_ERROR) {
+        Msg("!![%s] Source state error", __FUNCTION__);
+        return;
+    }
+
+    while (processed) {
+        ALuint BufferID;
+
+        A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
+        fill_block(BufferID);
+        A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
+        processed--;
+
+        if (alGetError() != AL_NO_ERROR) {
+            Msg("!![%s] Buffer queue error", __FUNCTION__);
+            return;
         }
-    }else{ 
-    	// processed == 0
-        // check play status -- if stopped then queue is not being filled fast enough
-        ALint		state;
-	    A_CHK		(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
-        if (state != AL_PLAYING)
-		{
-//			Log		("Queuing underrun detected.");
-			A_CHK	(alSourcePlay(pSource));
-        }
+    }
+
+	/* Check for underruns in the source buffer */
+	if (state != AL_PLAYING && state != AL_PAUSED) {
+		ALint queued;
+
+		/* If queue is empty, playback is finished */
+		alGetSourcei(pSource, AL_BUFFERS_QUEUED, &queued);
+		if (!queued) {
+			return;
+		}
+
+		alSourcePlay(pSource);
+		if (alGetError() != AL_NO_ERROR) {
+			Msg("!![%s] Playback restart error", __FUNCTION__);
+			return;
+		}
     }
 }
 
