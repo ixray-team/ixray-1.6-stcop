@@ -246,6 +246,10 @@ void					CRender::create					()
 	o.nvdbt				= false;
 	if (o.nvdbt)		Msg	("* NV-DBT supported and used");
 
+	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
+	if (o.no_ram_textures)
+		Msg("* Managed textures disabled");
+
 	// options (smap-pool-size)
 	if (strstr(Core.Params,"-smap1536"))	o.smapsize	= 1536;
 	if (strstr(Core.Params,"-smap2048"))	o.smapsize	= 2048;

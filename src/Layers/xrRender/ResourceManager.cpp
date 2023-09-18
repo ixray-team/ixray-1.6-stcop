@@ -340,13 +340,12 @@ void CResourceManager::DeferredUnload() {
 	if (!RDEVICE.b_is_Ready)
 		return;
 
-	Msg("CResourceManager::DeferredUnload -> Textures uloading started! Size = [%u]",
-		m_textures.size());
+	Msg("%s, texture unloading -> START, size = [%d]", __FUNCTION__, m_textures.size());
 
 	for (auto& texture : m_textures)
 		texture.second->Unload();
 
-	Msg("CResourceManager::DeferredUnload -> Textures unloading complete!");
+	Msg("%s, texture unloading -> COMPLETE", __FUNCTION__);
 }
 
 #ifdef _EDITOR

@@ -78,7 +78,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     TexMetadata imageInfo{};
 
     // Staging control
-    static bool bAllowStaging = !strstr(Core.Params, "-no_staging");
+    static bool bAllowStaging = !RImplementation.o.no_ram_textures;
     bStaging &= bAllowStaging;
 
     ID3DBaseTexture* pTexture2D = nullptr;
