@@ -2,8 +2,13 @@
 
 uniform	float4	screen_res;
 
+#ifdef SM_5
+    #define FXAA_HLSL_5 1
+#else
+    #define FXAA_HLSL_4 1
+#endif
+
 #define FXAA_PC 1
-#define FXAA_HLSL_5 1
 #define FXAA_QUALITY__PRESET 39
 #define FXAA_GREEN_AS_LUMA 1
 
