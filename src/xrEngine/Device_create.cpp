@@ -191,6 +191,9 @@ cdb_bDebug		= &bDebug;
 		true
 	);
 
+	HalfTargetWidth = TargetWidth * 0.5f;
+	HalfTargetHeight = TargetHeight * 0.5f;
+
 	string_path			fname; 
 	FS.update_path		(fname,"$game_data$","shaders.xr");
 

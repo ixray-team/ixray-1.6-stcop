@@ -62,6 +62,7 @@ public:
 
 	// MRT-path
 	ref_rt						rt_HWDepth;			// target
+	ref_rt						rt_Target;			// scaled, 32bit HDR (rgb)
 	ref_rt						rt_Depth;			// scaled, Z-buffer like - initial depth
 	ref_rt						rt_AA_BackBuffer;	// scaled
 	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
@@ -70,25 +71,24 @@ public:
 	ref_rt						rt_Motion;			// scaled, 64bit,	fat	(mvx, mvy)				(eye-space)
 	ref_rt						rt_Color;			// scaled, 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
 
-	// 
 	ref_rt						rt_Accumulator;		// scaled, 64bit		(r,g,b,specular)
 	ref_rt						rt_Accumulator_temp;// scaled, only for HW which doesn't feature fp16 blend
-	ref_rt						rt_Generic_0;		// scaled, 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-	ref_rt						rt_Generic_1;		// scaled, 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// scaled, 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+
 	ref_rt						rt_Bloom_1;			// scaled, 32bit, dim/4	(r,g,b,?)
 	ref_rt						rt_Bloom_2;			// scaled, 32bit, dim/4	(r,g,b,?)
 	ref_rt						rt_LUM_64;			// scaled, 64bit, 64x64,	log-average in all components
 	ref_rt						rt_LUM_8;			// scaled, 64bit, 8x8,		log-average in all components
 
-	ref_rt						rt_LUM_pool[CHWCaps::MAX_GPUS*2]	;	// 1xfp32,1x1,		exp-result -> scaler
-	ref_texture				t_LUM_src		;	// source
-	ref_texture				t_LUM_dest		;	// destination & usage for current frame
+	ref_rt						rt_LUM;				// 1xfp32,1x1,		exp-result -> scaler
+	ref_texture					t_LUM_src		;	// source
+	ref_texture					t_LUM_dest		;	// destination & usage for current frame
 
 	// env
-	ref_texture				t_envmap_0		;	// env-0
-	ref_texture				t_envmap_1		;	// env-1
+	ref_texture					t_envmap_0		;	// env-0
+	ref_texture					t_envmap_1		;	// env-1
 
 	// smap
 	ref_rt						rt_smap_surf;	// 32bit,		color
@@ -98,14 +98,14 @@ public:
 //	IDirect3DSurface9*			rt_smap_ZB;		//
 
 	//	Igor: for async screenshots
-	ID3DTexture2D*			t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
+	ID3DTexture2D*				t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
 
 	// Textures
-	ID3DTexture3D*			t_material_surf;
+	ID3DTexture3D*				t_material_surf;
 	ref_texture					t_material;
 
-	ID3DTexture2D*			t_noise_surf	[TEX_jitter_count];
-	ref_texture					t_noise				[TEX_jitter_count];
+	ID3DTexture2D*				t_noise_surf	[TEX_jitter_count];
+	ref_texture					t_noise			[TEX_jitter_count];
 private:
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
@@ -142,10 +142,10 @@ private:
 	//	DX10 Rain
 	ref_shader					s_rain;
 
-	ref_geom						g_accum_point	;
-	ref_geom						g_accum_spot	;
-	ref_geom						g_accum_omnipart;
-	ref_geom						g_accum_volumetric;
+	ref_geom					g_accum_point	;
+	ref_geom					g_accum_spot	;
+	ref_geom					g_accum_omnipart;
+	ref_geom					g_accum_volumetric;
 
 	ID3DVertexBuffer*		g_accum_point_vb;
 	ID3DIndexBuffer*		g_accum_point_ib;
@@ -172,15 +172,12 @@ private:
 	float						f_luminance_adapt;
 
 	// Combine
-	ref_geom					g_combine;
-	ref_geom					g_combine_VP;		// xy=p,zw=tc
-	ref_geom					g_combine_2UV;
-	ref_geom					g_combine_cuboid;
-	ref_geom					g_aa_blur;
-	ref_geom					g_aa_AA;
-	ref_shader				s_combine_dbg_0;
-	ref_shader				s_combine_dbg_1;
-	ref_shader				s_combine_dbg_Accumulator;
+	ref_geom				g_combine;
+	ref_geom				g_combine_VP;		// xy=p,zw=tc
+	ref_geom				g_combine_2UV;
+	ref_geom				g_combine_cuboid;
+	ref_geom				g_aa_blur;
+	ref_geom				g_aa_AA;
 	ref_shader				s_combine;
 	ref_shader				s_combine_volumetric;
 public:
@@ -232,7 +229,6 @@ public:
 	void						u_setrt					(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
 	void						u_calc_tc_noise			(Fvector2& p0, Fvector2& p1);
 	void						u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
-	BOOL						u_need_PP				();
 	bool						u_need_CM				();
 
 	void						phase_fxaa				();
@@ -278,6 +274,9 @@ public:
 	void						accum_volumetric		(light* L);
 	void						phase_bloom				();
 	void						phase_luminance			();
+	void						phase_forward			();
+	void						phase_distort			();
+	void						phase_final				();
 	void						phase_combine			();
 	void						phase_combine_volumetric();
 	void						phase_pp				();

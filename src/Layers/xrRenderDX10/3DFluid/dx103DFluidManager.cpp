@@ -302,7 +302,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 
 	//	Restore render state
 	CRenderTarget* pTarget = RImplementation.Target;
-	pTarget->u_setrt( pTarget->rt_Generic_0,0,0, pTarget->rt_HWDepth->pZRT);		// LDR RT
+	pTarget->u_setrt( pTarget->rt_Target, 0, 0, pTarget->rt_HWDepth->pZRT);	
 
 	RImplementation.rmNormal();
 	//RImplementation.Target->phase_scene_begin();
@@ -546,7 +546,7 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 
 	//	Restore render state
 	CRenderTarget* pTarget = RImplementation.Target;
-	pTarget->u_setrt( pTarget->rt_Generic_0,0,0, pTarget->rt_HWDepth->pZRT);		// LDR RT
+	pTarget->u_setrt( pTarget->rt_Target, 0,0, pTarget->rt_HWDepth->pZRT);
 	RImplementation.rmNormal();
 }
 

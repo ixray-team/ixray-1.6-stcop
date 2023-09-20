@@ -139,26 +139,17 @@ int		psNET_DedicatedSleep	= 5;
 void	IGame_Level::OnRender		( ) 
 {
 #ifndef DEDICATED_SERVER
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
-	// Level render, only when no client output required
 	if (!g_dedicated_server)	{
 		Render->Calculate			();
 		Render->Render				();
 	} else {
 		Sleep						(psNET_DedicatedSleep);
 	}
-
-	// Font
-//	pApp->pFontSystem->SetSizeI(0.023f);
-//	pApp->pFontSystem->OnRender	();
 #endif
 }
 
 void	IGame_Level::OnFrame		( ) 
 {
-	// Log				("- level:on-frame: ",u32(Device.dwFrame));
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
-
 	// Update all objects
 	VERIFY						(bReady);
 	Objects.Update				(false);

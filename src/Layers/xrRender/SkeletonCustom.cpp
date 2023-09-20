@@ -63,8 +63,8 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 	Fvector H1; H1.set(0.01f,0.01f,0.01f);
 	Fvector H2; H2.mul(H1,2);
 	for (u32 i=0; i<dbgLines.size(); i+=2)	{
-		Fmatrix& M1 = bone_instances[dbgLines[i]].mTransform;
-		Fmatrix& M2 = bone_instances[dbgLines[i+1]].mTransform;
+		const Fmatrix& M1 = bone_instances[dbgLines[i]].mTransform;
+		const Fmatrix& M2 = bone_instances[dbgLines[i+1]].mTransform;
 
 		Fvector P1,P2;
 		M1.transform_tiny(P1,Z);
@@ -80,7 +80,7 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 	for (u32 b=0; b<bones->size(); b++)
 	{
 		Fobb&		obb		= (*bones)[b]->obb;
-		Fmatrix&	Mbone	= bone_instances[b].mTransform;
+		const Fmatrix&	Mbone	= bone_instances[b].mTransform;
 		Fmatrix		Mbox;	obb.xform_get(Mbox);
 		Fmatrix		X;		X.mul(Mbone,Mbox);
 		Fmatrix		W;		W.mul(XFORM,X);

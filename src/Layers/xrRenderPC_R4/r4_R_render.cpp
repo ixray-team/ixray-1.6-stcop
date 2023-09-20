@@ -490,8 +490,8 @@ void CRender::Render		()
 
 	// Postprocess
 	{
-		PIX_EVENT(DEFER_LIGHT_COMBINE);
-		Target->phase_combine					();
+		PIX_EVENT(FINAL);
+		Target->phase_final();
 	}
 
 	VERIFY	(0==mapDistort.size());

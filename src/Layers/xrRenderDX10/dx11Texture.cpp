@@ -128,7 +128,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         img_size = reader->length();
         R_ASSERT(reader);
         R_CHK2(GetMetadataFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, imageInfo), fn);
-        if (imageInfo.miscFlags & D3D_RESOURCE_MISC_TEXTURECUBE) {
+        if (imageInfo.miscFlags & D3D_RESOURCE_MISC_TEXTURECUBE || imageInfo.dimension == TEX_DIMENSION_TEXTURE3D) {
             goto _DDS_CUBE;
         } else {
             goto _DDS_2D;

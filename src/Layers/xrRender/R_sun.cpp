@@ -363,6 +363,8 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	PIX_EVENT(SE_SUN_NEAR);
 #endif // USE_DX11
 
+	RCache.set_prev_xform_jitter(PrevJitter);
+	RCache.set_xform_jitter(Jitter);
 
 	if( cascade_ind == 0 )
 		Target->accum_direct_cascade		(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias );
@@ -373,8 +375,6 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 			Target->accum_direct_cascade		(SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind-1].xform, m_sun_cascades[cascade_ind].bias);
 
 	// Restore XForms
-	RCache.set_prev_xform_jitter(PrevJitter);
-	RCache.set_xform_jitter(Jitter);
 	RCache.set_xform_world		(Fidentity			);
 	RCache.set_xform_view		(Device.mView		);
 	RCache.set_xform_project	(Device.mProject	);

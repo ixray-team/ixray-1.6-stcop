@@ -26,6 +26,7 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
 #ifdef DEBUG
         FFX_FSR2_ENABLE_DEBUG_CHECKING |
 #endif
+        FFX_FSR2_ENABLE_HIGH_DYNAMIC_RANGE |
         FFX_FSR2_ENABLE_AUTO_EXPOSURE;
     //| FFX_FSR2_ENABLE_HIGH_DYNAMIC_RANGE
     //| FFX_FSR2_ENABLE_DEPTH_INVERTED

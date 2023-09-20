@@ -54,10 +54,10 @@ LPCSTR			dx103DFluidRenderer::m_pResourceRTNames[ RRT_NumRT ] =
 dx103DFluidRenderer::dx103DFluidRenderer():
 	m_bInited(false)
 {
-	RTFormats[RRT_RayDataTex] = D3DFMT_A32B32G32R32F;
-	RTFormats[RRT_RayDataTexSmall] = D3DFMT_A32B32G32R32F;
-	RTFormats[RRT_RayCastTex] = D3DFMT_A32B32G32R32F;
-	RTFormats[RRT_EdgeTex] = D3DFMT_R32F;
+	RTFormats[RRT_RayDataTex] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
+	RTFormats[RRT_RayDataTexSmall] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
+	RTFormats[RRT_RayCastTex] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
+	RTFormats[RRT_EdgeTex] = DxgiFormat::DXGI_FORMAT_R32_FLOAT;
 }
 
 dx103DFluidRenderer::~dx103DFluidRenderer()
@@ -464,78 +464,9 @@ void dx103DFluidRenderer::CalculateRenderTextureSize(int screenWidth, int screen
 }
 
 void dx103DFluidRenderer::CreateRayDataResources( int width, int height )
-{
-
-//	SAFE_RELEASE(pRayDataTex2D);
-//	SAFE_RELEASE(pRayDataSRV);
-//	SAFE_RELEASE(pRayDataRTV);
-//	SAFE_RELEASE(pRayDataSmallTex2D);
-//	SAFE_RELEASE(pRayDataSmallSRV);
-//	SAFE_RELEASE(pRayDataSmallRTV);
-//	SAFE_RELEASE(pRayCastTex2D);
-//	SAFE_RELEASE(pRayCastSRV);
-//	SAFE_RELEASE(pRayCastRTV);
-//	SAFE_RELEASE(pEdgeTex2D);
-//	SAFE_RELEASE(pEdgeSRV);
-//	SAFE_RELEASE(pEdgeRTV);
-
-	
+{	
 	// find a good resolution for raycasting purposes
 	CalculateRenderTextureSize(width, height);
-/*
-	DXGI_FORMAT volumeDataFmt = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-	D3D_TEXTURE2D_DESC desc;
-	desc.ArraySize = 1;
-	desc.BindFlags = D3D_BIND_SHADER_RESOURCE | D3Dxx_BIND_RENDER_TARGET;
-	desc.CPUAccessFlags = 0;
-	desc.MipLevels = 1;
-	desc.MiscFlags = 0;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.Width = width;
-	desc.Height = height;
-	desc.Format = volumeDataFmt;
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pRayDataTex2D));
-
-	desc.Width = m_iRenderTextureWidth;
-	desc.Height = m_iRenderTextureHeight;
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pRayDataSmallTex2D));
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pRayCastTex2D));
-
-	desc.Format = DXGI_FORMAT_R32_FLOAT;
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pEdgeTex2D));
-
-	D3Dxx_RENDER_TARGET_VIEW_DESC DescRT;
-	DescRT.Format = volumeDataFmt;
-	DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE2D;
-	DescRT.Texture2D.MipSlice = 0;
-	V_RETURN( m_pD3DDevice->CreateRenderTargetView(pRayDataTex2D, &DescRT, &pRayDataRTV));
-	V_RETURN( m_pD3DDevice->CreateRenderTargetView(pRayDataSmallTex2D, &DescRT, &pRayDataSmallRTV));
-	V_RETURN( m_pD3DDevice->CreateRenderTargetView(pRayCastTex2D, &DescRT, &pRayCastRTV));
-	DescRT.Format = DXGI_FORMAT_R32_FLOAT;
-	V_RETURN( m_pD3DDevice->CreateRenderTargetView(pEdgeTex2D, &DescRT, &pEdgeRTV));
-
-	D3Dxx_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	ZeroMemory( &SRVDesc, sizeof(SRVDesc) );
-	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MostDetailedMip = 0;
-	SRVDesc.Texture2D.MipLevels = 1;
-	SRVDesc.Format = volumeDataFmt;
-	V_RETURN(m_pD3DDevice->CreateShaderResourceView(pRayDataTex2D, &SRVDesc, &pRayDataSRV));
-	V_RETURN(m_pD3DDevice->CreateShaderResourceView(pRayDataSmallTex2D, &SRVDesc, &pRayDataSmallSRV));
-	V_RETURN(m_pD3DDevice->CreateShaderResourceView(pRayCastTex2D, &SRVDesc, &pRayCastSRV));
-	SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	V_RETURN(m_pD3DDevice->CreateShaderResourceView(pEdgeTex2D, &SRVDesc, &pEdgeSRV));
-
-
-	pRayDataVar = pEffect->GetVariableByName("rayDataTex")->AsShaderResource();
-	pRayDataSmallVar = pEffect->GetVariableByName("rayDataTexSmall")->AsShaderResource();
-	pRayCastVar = pEffect->GetVariableByName("rayCastTex")->AsShaderResource();
-	pEdgeVar    = pEffect->GetVariableByName("edgeTex")->AsShaderResource();
-	*/
-
 	RT[0] = 0;
 	RT[0].create( m_pRTNames[0], width, height, RTFormats[0]);
 
@@ -644,7 +575,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//  If and edge was detected at the current pixel we will raycast again to avoid
 	//  smoke aliasing artifacts at scene edges
 	//	Restore render state
-		pTarget->u_setrt( pTarget->rt_Generic_0,0,0, pTarget->rt_HWDepth->pZRT);		// LDR RT
+	pTarget->u_setrt(pTarget->rt_Target, 0, 0, pTarget->rt_HWDepth->pZRT);
 
 	if (bRenderFire)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);

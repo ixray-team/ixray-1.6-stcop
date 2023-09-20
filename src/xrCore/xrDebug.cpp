@@ -197,9 +197,10 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 LPCSTR xrDebug::error2string	(long code)
 {
-	static string1024 desc_storage = "";
-
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, code, 0, desc_storage, 0, nullptr);
+	static wchar_t* wide_desc_storage = nullptr;
+	static char desc_storage[1024] = {};
+	FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&wide_desc_storage, 0, nullptr);
+	WideCharToMultiByte(CP_UTF8, 0, wide_desc_storage, -1, desc_storage, 1024, NULL, NULL);
 
 	return desc_storage;
 }

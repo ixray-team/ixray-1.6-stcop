@@ -17,8 +17,9 @@ struct v_filter {
 
 void	CRenderTarget::phase_luminance()
 {
+	PIX_EVENT(LUMINANCE);
+
 	u32		Offset	= 0;
-//	float	eps		= EPS_S;
 	float	eps		= 0;
 
 	// Targets
@@ -26,11 +27,9 @@ void	CRenderTarget::phase_luminance()
 	RCache.set_CullMode						(CULL_NONE);
 	RCache.set_ColorWriteEnable				();
 	RCache.set_Z(FALSE);
-	//CHK_DX									(HW.pDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
 
 	// 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
 	u_setrt									(rt_LUM_64,NULL,NULL,NULL);
-	//RImplementation.rmNormal();
 	{
 		float		ts				= 64;
 		float		_w				= float(BLOOM_size_X);
@@ -60,7 +59,6 @@ void	CRenderTarget::phase_luminance()
 
 	// 111: Perform LUM-SAT, pass 1, 64x64 => 8x8
 	u_setrt									(rt_LUM_8,NULL,NULL,NULL);
-	//RImplementation.rmNormal();
 	{
 		// Build filter-kernel
 		float		_ts				= 8;
@@ -91,8 +89,7 @@ void	CRenderTarget::phase_luminance()
 
 	// 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
 	u32			gpu_id	= Device.dwFrame%HW.Caps.iGPUNum;
-	u_setrt		(rt_LUM_pool[gpu_id*2+1],NULL,NULL,NULL);
-	//RImplementation.rmNormal();
+	u_setrt		(rt_LUM, nullptr, nullptr, nullptr);
 	{
 		// Build filter-kernel
 		float		_ts				= 1;
@@ -131,6 +128,5 @@ void	CRenderTarget::phase_luminance()
 	}
 
 	// Cleanup states
-	//CHK_DX		(HW.pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));
 	RCache.set_Z(TRUE);
 }

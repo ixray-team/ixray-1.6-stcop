@@ -190,36 +190,10 @@ void					CRender::create					()
 
 	// SMAP / DST
 	o.HW_smap_FETCH4	= FALSE;
-	//	DX10 disabled
-	//o.HW_smap			= HW.support	(D3DFMT_D24X8,			D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
 	o.HW_smap			= true;
 	o.HW_smap_PCF		= o.HW_smap		;
-	if (o.HW_smap)		
-	{
-		//	For ATI it's much faster on DX10 to use D32F format
-		if (HW.Caps.id_vendor==0x1002)
-			o.HW_smap_FORMAT	= D3DFMT_D32F_LOCKABLE;
-		else
-			o.HW_smap_FORMAT	= D3DFMT_D24X8;
-		Msg				("* HWDST/PCF supported and used");
-	}
-
-	//	DX10 disabled
-	//o.fp16_filter		= HW.support	(D3DFMT_A16B16G16R16F,	D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_FILTER);
-	//o.fp16_blend		= HW.support	(D3DFMT_A16B16G16R16F,	D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING);
 	o.fp16_filter		= true;
 	o.fp16_blend		= true;
-
-	// search for ATI formats
-	if (!o.HW_smap && (0==strstr(Core.Params,"-nodf24")) )		{
-		o.HW_smap		= HW.support	((D3DFORMAT)(MAKEFOURCC('D','F','2','4')),	D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
-		if (o.HW_smap)	{
-			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
-			o.HW_smap_PCF	= FALSE			;
-			o.HW_smap_FETCH4= TRUE			;
-		}
-		Msg				("* DF24/F4 supported and used [%X]", o.HW_smap_FORMAT);
-	}
 
 	// emulate ATI-R4xx series
 	if (strstr(Core.Params,"-r4xx"))	{

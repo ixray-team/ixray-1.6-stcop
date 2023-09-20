@@ -9,6 +9,10 @@ IC		bool	pred_area		(light* _1, light* _2)
 
 void	CRender::render_lights	(light_Package& LP)
 {
+	auto PrevJitter = RCache.get_prev_xform_jitter();
+	auto Jitter = RCache.get_xform_jitter();
+	RCache.set_prev_xform_jitter({});
+	RCache.set_xform_jitter({});
 	//////////////////////////////////////////////////////////////////////////
 	// Refactor order based on ability to pack shadow-maps
 	// 1. calculate area + sort in descending order
@@ -211,4 +215,7 @@ void	CRender::render_lights	(light_Package& LP)
 		}
 		Lvec.clear	();
 	}
+
+	RCache.set_prev_xform_jitter(PrevJitter);
+	RCache.set_xform_jitter(Jitter);
 }

@@ -44,6 +44,12 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName,	LPCSTR texture)
 {
 	VERIFY(ResourceName);
 	if (!texture) return;
+
+	if (!strcmp(ResourceName, "s_tonemap_lut")) {
+		string256				TexNaame;
+		xr_strcpy(TexNaame, texture);
+	}
+
 	//
 	string256				TexName;
 	xr_strcpy				(TexName,texture);
