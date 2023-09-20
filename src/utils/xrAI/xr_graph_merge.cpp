@@ -610,7 +610,7 @@ CGraphMerger::CGraphMerger(
 	{
 		GRAPH_P_PAIR_IT				I_ = tpGraphs.begin();
 		GRAPH_P_PAIR_IT				E_ = tpGraphs.end();
-		for ( ; I_ != E_; I++) {
+		for ( ; I_ != E_; I_++) {
 			VERTEX_PAIR_IT			i = (*I_).second->m_tVertexMap.begin();
 			VERTEX_PAIR_IT			e = (*I_).second->m_tVertexMap.end();
 			for ( ; i != e; i++)
