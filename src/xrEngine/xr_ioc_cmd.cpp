@@ -400,8 +400,7 @@ public :
 		xr_strcpy(I,sizeof(I),"change screen resolution WxH");
 	}
 
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str, cur;
 		Status( cur );
 
