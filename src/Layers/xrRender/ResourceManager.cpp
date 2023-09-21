@@ -332,19 +332,19 @@ void CResourceManager::DeferredUpload()
 {
 	if (!RDEVICE.b_is_Ready) return;
 
-	CTimer timer;
-	timer.Start();
-
-	Msg("%s, [%s] texture loading -> START, size = [%d]", __FUNCTION__, ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) ? "MT" : "NO MT", m_textures.size());
-
 	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
-		std::for_each(std::execution::par_unseq, m_textures.begin(), m_textures.end(), [](auto& pair) { pair.second->Load(); });
+		std::for_each(
+#ifndef DEBUG
+			std::execution::par_unseq,
+#endif // DEBUG
+			m_textures.begin(), m_textures.end(), [](auto& pair) {
+				pair.second->Load();
+			});
 	} else {
-		for (auto& pair : m_textures)
+		for (auto& pair : m_textures) {
 			pair.second->Load();
+		}
 	}
-
-	Msg("%s, [%s] texture loading -> COMPLETE, elapsed time = [%d] ms", __FUNCTION__, ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) ? "MT" : "NO MT", timer.GetElapsed_ms());
 }
 
 void CResourceManager::DeferredUnload() {
