@@ -1,6 +1,6 @@
 #ifndef xrPoolH
 #define xrPoolH
-//#pragma once
+#pragma once
 
 template <class T, int granularity>
 class	poolSS

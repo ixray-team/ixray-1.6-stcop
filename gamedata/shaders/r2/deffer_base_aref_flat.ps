@@ -7,7 +7,7 @@ f_deffer 	main	( p_flat I )
 
   // 1. Base texture + kill pixels with low alpha
   float4 D 	= tbase	 	(I.tcdh);
-  clip		(D.w-def_aref);
+  clip		(D.w-def_aref.x);
 
 #ifdef	USE_TDETAIL
 	D.rgb	= 2*D.rgb*tex2D	(s_detail, I.tcdbump).rgb;

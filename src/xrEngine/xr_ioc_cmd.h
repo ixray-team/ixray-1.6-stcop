@@ -91,8 +91,7 @@ public		:
 	virtual void	Info	(TInfo& I)
 	{	xr_strcpy(I,"'on/off' or '1/0'"); }
 
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str;
 		xr_sprintf( str, sizeof(str), "%s  (current)  [on/off]", value->test(mask)?"on":"off" );
 		tips.push_back( str );
@@ -124,8 +123,7 @@ public		:
 	virtual void	Info	(TInfo& I)
 	{	xr_strcpy(I,"'on/off' or '1/0'"); }
 
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str;
 		xr_sprintf( str, sizeof(str), "%s  (current)  [on/off]", value->test(mask)?"on":"off" );
 		tips.push_back( str );

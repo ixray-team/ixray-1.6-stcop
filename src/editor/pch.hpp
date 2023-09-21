@@ -59,8 +59,7 @@ inline LPSTR to_string			(System::String ^string)
 	return						(result);
 }
 
-inline float to_single(System::String^ string)
-{
+inline float to_single(System::String^ string) {
 	pin_ptr<const wchar_t>		wch = PtrToStringChars(string);
 
 	size_t						convertedChars = 0;
@@ -68,23 +67,21 @@ inline float to_single(System::String^ string)
 	errno_t						err = 0;
 	LPSTR						result = (LPSTR)malloc(sizeInBytes);
 
-	err =
-		wcstombs_s(
+	err = wcstombs_s(
 			&convertedChars,
 			result,
 			sizeInBytes,
 			wch,
-			sizeInBytes
-		);
+			sizeInBytes);
 
-	if (err)
+	if (err) {
 		VERIFY(!"[tostring][failed] : wcstombs_s failed");
+	}
 
 	return (float) atof(result);
 }
 
-inline float to_single(System::Object^ string)
-{
+inline float to_single(System::Object^ string) {
 	return to_single(safe_cast<System::String^>(string));
 }
 

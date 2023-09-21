@@ -6,7 +6,7 @@ f_deffer 	main	( p_bumped I )
 	f_deffer		O;
 
 	surface_bumped 	S 		= sload 	(I);
-	clip					(S.base.w-def_aref);
+	clip					(S.base.w-def_aref.x);
 
 	// Sample normal, rotate it by matrix, encode position 
   	float3	Ne  = mul		(float3x3(I.M1, I.M2, I.M3), S.normal);

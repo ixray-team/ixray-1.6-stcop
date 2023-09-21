@@ -888,7 +888,7 @@ HRESULT nvDXT::process_command_line(int argc, char * argv[])
         }
 
 
-        else if (strcmp(token, "-flip") == 0)
+        else if (_strcmp(token, "-flip") == 0)
         {
             bLegalCommand = true;
             bFlipTopToBottom = true;

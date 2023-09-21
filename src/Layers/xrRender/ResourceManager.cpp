@@ -9,6 +9,7 @@
 #include "tss.h"
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
+#include <execution>
 
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
@@ -330,9 +331,19 @@ void CResourceManager::Delete(const Shader* S)
 void CResourceManager::DeferredUpload()
 {
 	if (!RDEVICE.b_is_Ready) return;
-	for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
-	{
-		t->second->Load();
+
+	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
+		std::for_each(
+#ifndef DEBUG
+			std::execution::par_unseq,
+#endif // DEBUG
+			m_textures.begin(), m_textures.end(), [](auto& pair) {
+				pair.second->Load();
+			});
+	} else {
+		for (auto& pair : m_textures) {
+			pair.second->Load();
+		}
 	}
 }
 
@@ -340,13 +351,12 @@ void CResourceManager::DeferredUnload() {
 	if (!RDEVICE.b_is_Ready)
 		return;
 
-	Msg("CResourceManager::DeferredUnload -> Textures uloading started! Size = [%u]",
-		m_textures.size());
+	Msg("%s, texture unloading -> START, size = [%d]", __FUNCTION__, m_textures.size());
 
 	for (auto& texture : m_textures)
 		texture.second->Unload();
 
-	Msg("CResourceManager::DeferredUnload -> Textures unloading complete!");
+	Msg("%s, texture unloading -> COMPLETE", __FUNCTION__);
 }
 
 #ifdef _EDITOR

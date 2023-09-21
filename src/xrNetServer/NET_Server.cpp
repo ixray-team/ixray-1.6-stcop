@@ -310,7 +310,8 @@ if(!psNET_direct_connect)
 	//---------------------------	
 	if (CoCreateInstanceRes != S_OK)
 	{
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, CoCreateInstanceRes, 0, tmp, 0, nullptr);
+		static char desc_storage[1024] = {};
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, CoCreateInstanceRes, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
 		CHK_DX(CoCreateInstanceRes );
 	}	
 	//---------------------------

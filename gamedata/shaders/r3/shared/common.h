@@ -45,7 +45,7 @@ cbuffer	static_globals
 
 	uniform float4 		pos_decompression_params;
 	uniform float4 		pos_decompression_params2;
-
+	uniform float def_aref;
 //	uniform float4		screen_res;		// Screen resolution (x-Width,y-Height, zw - 1/resolution)
 }
 

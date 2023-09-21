@@ -129,6 +129,7 @@ extern ECORE_API int			ps_r2_wait_sleep;
 extern ECORE_API Fvector3		ps_r2_dof;
 extern ECORE_API float			ps_r2_dof_sky;				//	distance to sky
 extern ECORE_API float			ps_r2_dof_kernel_size;		//	7.0f
+extern ECORE_API float			ps_r2_def_aref_quality;
 
 extern ECORE_API float			ps_r3_dyn_wet_surf_near;	// 10.0f
 extern ECORE_API float			ps_r3_dyn_wet_surf_far;		// 30.0f
@@ -194,6 +195,9 @@ enum
 	RFLAG_ACTOR_SHADOW				= (1<<9),
 	R2FLAG_USE_BUMP					= (1<<10),
 	RFLAG_USE_CACHE					= (1<<11),
+	RFLAG_CLOUD_SHADOWS = (1 << 12),
+	RFLAG_NO_RAM_TEXTURES = (1 << 13),
+	RFLAG_MT_TEX_LOAD     = (1 << 14),
 };
 
 extern void						xrRender_initconsole	();

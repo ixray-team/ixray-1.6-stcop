@@ -400,8 +400,7 @@ public :
 		xr_strcpy(I,sizeof(I),"change screen resolution WxH");
 	}
 
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
+	virtual void fill_tips(vecTips& tips, u32 mode) {
 		TStatus  str, cur;
 		Status( cur );
 
@@ -648,7 +647,7 @@ public		:
 };
 
 
-ENGINE_API float psHUD_FOV_def = 0.45f;
+ENGINE_API float psHUD_FOV_def = 33.75f;
 ENGINE_API float psHUD_FOV = psHUD_FOV_def;
 
 //extern int			psSkeletonUpdate;

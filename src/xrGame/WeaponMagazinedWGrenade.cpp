@@ -421,6 +421,17 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 	}
 }
 
+void CWeaponMagazinedWGrenade::UnloadMagazine(bool spawn_ammo) {
+	inherited::UnloadMagazine();
+
+	if (m_bGrenadeMode) {
+		if (getRocketCount()) {
+			u16 rocket_id = getCurrentRocket()->ID();
+			CRocketLauncher::DetachRocket(rocket_id, false);
+		}
+	}
+}
+
 void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S) 
 {
 	switch (S)

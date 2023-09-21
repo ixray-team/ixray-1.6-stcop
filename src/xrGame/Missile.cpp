@@ -76,6 +76,18 @@ void CMissile::Load(LPCSTR section)
 	m_vThrowDir			= pSettings->r_fvector3(section,"throw_dir");
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
+
+	if (pSettings->line_exist(section, "checkout_bones"))
+	{
+		m_sCheckoutBones.clear();
+		LPCSTR lineStr = pSettings->r_string(section, "checkout_bones");
+		for (int j = 0, cnt = _GetItemCount(lineStr); j < cnt; ++j)
+		{
+			string128 bone_name;
+			_GetItem(lineStr, j, bone_name);
+			m_sCheckoutBones.push_back(bone_name);
+		}
+	}
 }
 
 BOOL CMissile::net_Spawn(CSE_Abstract* DC) 
@@ -254,6 +266,22 @@ void CMissile::shedule_Update(u32 dt)
 			return;
 		}
 	} 
+
+	if (!Useful())
+	{
+		IKinematics* pGrenadeVisual = dynamic_cast<IKinematics*>(Visual());
+		u16 bone_id;
+
+		pGrenadeVisual->CalculateBones_Invalidate();
+		for (const auto& boneName : m_sCheckoutBones)
+		{
+			bone_id = pGrenadeVisual->LL_BoneID(boneName);
+			if (bone_id != BI_NONE && pGrenadeVisual->LL_GetBoneVisible(bone_id))
+				pGrenadeVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+		}
+		pGrenadeVisual->CalculateBones_Invalidate();
+		pGrenadeVisual->CalculateBones(TRUE);
+	}
 }
 
 void CMissile::State(u32 state) 

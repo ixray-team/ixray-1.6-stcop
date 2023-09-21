@@ -17,6 +17,7 @@
 //#include "R_Backend.h"
 
 #define VIEWPORT_NEAR  0.2f
+#define HUD_VIEWPORT_NEAR  0.05f
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -309,6 +310,8 @@ private:
 };
 
 extern		ENGINE_API		CRenderDevice		Device;
+extern ENGINE_API CTimer loading_save_timer;
+extern ENGINE_API bool loading_save_timer_started;
 
 #ifndef	_EDITOR
 #define	RDEVICE	Device

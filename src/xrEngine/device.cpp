@@ -30,8 +30,8 @@ using namespace DirectX;
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
-
-
+ENGINE_API CTimer loading_save_timer;
+ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API BOOL g_bRendering = FALSE; 
 
 BOOL		g_bLoaded = FALSE;
@@ -98,10 +98,14 @@ void CRenderDevice::End(void)
 			if (precache_light) precache_light.destroy();
 			::Sound->set_master_volume(1.f);
 
-			m_pRender->ResourcesDestroyNecessaryTextures();
-			Memory.mem_compact();
-			Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
-			Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
+			m_pRender->ResourcesDestroyNecessaryTextures	();
+			Memory.mem_compact								();
+			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
+			Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
+			if (loading_save_timer_started) {
+				Msg("* Game Loading Timer: Finished for %d ms", loading_save_timer.GetElapsed_ms());
+				loading_save_timer_started = false;
+			}
 
 #ifdef FIND_CHUNK_BENCHMARK_ENABLE
 			g_find_chunk_counter.flush();

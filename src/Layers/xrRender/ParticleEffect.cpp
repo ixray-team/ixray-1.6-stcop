@@ -398,7 +398,7 @@ __forceinline void magnitude_sse( Fvector &vec , float &res )
 void ParticleRenderStream( LPVOID lpvParams )
 {
 			float sina = 0.0f , cosa = 0.0f;
-			DWORD angle = 0xFFFFFFFF;
+			float angle = 0xFFFFFFFF;
 
 			PRS_PARAMS* pParams = (PRS_PARAMS *) lpvParams;
 
@@ -531,9 +531,9 @@ void CParticleEffect::Render(float) {
 				Fmatrix FTold						= Device.mFullTransform;
 				if(GetHudMode())
 				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV), 
+					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV),
 														Device.fASPECT, 
-														VIEWPORT_NEAR, 
+														HUD_VIEWPORT_NEAR, 
 														g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);
@@ -703,9 +703,9 @@ void CParticleEffect::Render(float )
 				Fmatrix FTold						= Device.mFullTransform;
 				if(GetHudMode())
 				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV), 
+					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV),
 														Device.fASPECT, 
-														VIEWPORT_NEAR, 
+														HUD_VIEWPORT_NEAR, 
 														g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);

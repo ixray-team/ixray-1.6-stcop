@@ -9,7 +9,7 @@ float4 	main	( v_shadow_direct_aref I )	: COLOR
 #else
 	// 1. Base texture + kill pixels with low alpha
 	float4 	C 	= tex2D		(s_base, I.tc0);
-	clip		(C.w - def_aref);
+	clip		(C.w - def_aref.x);
 
 	// 2.
 	return I.depth;
