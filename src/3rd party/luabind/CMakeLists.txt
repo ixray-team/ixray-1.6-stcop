@@ -29,3 +29,8 @@ target_precompile_headers(luabind PUBLIC "pch.h")
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
 target_compile_definitions(luabind PUBLIC LUABIND_NO_EXCEPTIONS)
 target_link_libraries(luabind PUBLIC "lua51.lib")
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}lua51.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
