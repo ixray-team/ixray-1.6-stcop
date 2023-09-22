@@ -8,6 +8,7 @@
 #include <filesystem>
 
 extern xr_token* vid_quality_token;
+xr_vector<shared_str> render_list;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -81,15 +82,15 @@ void CEngineAPI::Initialize(void)
 	if (!g_dedicated_server)
 		InitializeNotDedicated();
 
-	if (0==hRender)		
+	if (0==hRender && !render_list.empty())
 	{
 		// try to load R1
 		psDeviceFlags.set	(rsR4,FALSE);
 		psDeviceFlags.set	(rsR2,FALSE);
 		renderer_value		= 0; //con cmd
 
-		Log				("Loading DLL:",	vid_quality_token[0].name);
-		hRender			= LoadLibrary		(vid_quality_token[0].name);
+		Log				("Loading DLL:",	render_list[0].c_str());
+		hRender			= LoadLibrary		(render_list[0].c_str());
 		if (0==hRender)	R_CHK				(GetLastError());
 		R_ASSERT		(hRender);
 		g_current_renderer	= 1;
@@ -172,11 +173,20 @@ void CEngineAPI::CreateRendererList()
 		xr_vector<LPCSTR> _tmp;
 
 		if (bSupports_r1)
+		{
+			render_list.push_back(r1_name);
 			_tmp.push_back(xr_strdup("renderer_r1"));
+		}
 		if (bSupports_r2)
+		{
 			_tmp.push_back(xr_strdup("renderer_r2"));
+			render_list.push_back(r2_name);
+		}
 		if (bSupports_r4)
+		{
 			_tmp.push_back(xr_strdup("renderer_r4"));
+			render_list.push_back(r4_name);
+		}
 
 		auto _cnt = _tmp.size() + 1;
 		vid_quality_token = xr_alloc<xr_token>(_cnt);
