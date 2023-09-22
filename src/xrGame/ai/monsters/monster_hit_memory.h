@@ -21,7 +21,7 @@ public:
 	bool				is_hit					(CObject *pO);
 
 	// Lain: added
-	int                 get_num_hits            () {return m_hits.size(); }
+	int                 get_num_hits            () {return (u32)m_hits.size(); }
 
 	void				add_hit					(CObject *who, EHitSide side);
 	

@@ -72,7 +72,7 @@ void clear_and_reserve(xr_vector<T> &vector_object) {
     if (vector_object.capacity() <= (vector_object.size() + vector_object.size() / 4)) {
         vector_object.clear();
     } else {
-        u32 old = vector_object.size();
+        u32 old = (u32)vector_object.size();
         vector_object.clear();
         vector_object.reserve(old);
     }

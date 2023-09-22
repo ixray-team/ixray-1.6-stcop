@@ -151,7 +151,7 @@ namespace CDB
 		ICF RESULT*		r_end			()	{	return &*rd.end();			};
 		RESULT&			r_add			()	;
 		void			r_free			()	;
-		ICF int			r_count			()	{	return rd.size();			};
+		ICF int			r_count			()	{	return (u32)rd.size();			};
 		ICF void		r_clear			()	{	rd.clear();		};
 		ICF void		r_clear_compact	()	{	rd.clear();		};
 	};

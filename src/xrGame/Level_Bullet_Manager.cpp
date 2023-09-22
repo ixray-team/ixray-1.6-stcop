@@ -183,7 +183,7 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
 	if (bullet->m_whine_snd._feedback() != NULL)	return;
 	if(bullet->hit_type!=ALife::eHitTypeFireWound ) return;
 
-	bullet->m_whine_snd								= m_WhineSounds[Random.randI(0, m_WhineSounds.size())];
+	bullet->m_whine_snd								= m_WhineSounds[Random.randI(0, (u32)m_WhineSounds.size())];
 	bullet->m_whine_snd.play_at_pos					(object,pos);
 }
 

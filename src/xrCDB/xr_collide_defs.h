@@ -130,7 +130,7 @@ namespace collide
 			if (0==results.capacity())	results.reserve(8);
 			results.push_back			(res);
 		}
-		IC int			r_count			()	{ return results.size();	}
+		IC int			r_count			()	{ return (int)results.size();	}
 		IC rq_result*	r_begin			()	{ return &*results.begin();	}
 		IC rq_result*	r_end			()	{ return &*results.end();	}
 		IC void			r_clear			()	{ results.clear();	}

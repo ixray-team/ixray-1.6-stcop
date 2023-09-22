@@ -362,7 +362,7 @@ IC	void CPlanner::save	(NET_Packet &packet)
 	}
 
 	{
-		packet.w_u32				(m_storage.m_storage.size());
+		packet.w_u32				((u32)m_storage.m_storage.size());
 		typedef CPropertyStorage::CConditionStorage	CConditionStorage;
 		CConditionStorage::const_iterator	I = m_storage.m_storage.begin();
 		CConditionStorage::const_iterator	E = m_storage.m_storage.end();

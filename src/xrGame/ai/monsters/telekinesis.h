@@ -58,7 +58,7 @@ virtual		void	clear_notrelevant   ();
 			u32		get_objects_count	();
 
 			// вернуть количество контролируемых объектов (всех)
-			u32		get_objects_total_count() {return objects.size();}
+			u32		get_objects_total_count() {return (u32)objects.size();}
 
 
 			// вернуть объект по индексу в массиве

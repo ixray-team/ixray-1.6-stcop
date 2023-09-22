@@ -123,7 +123,7 @@ IC	const u8 &CGameGraph::CHeader::version							() const
 
 IC	GameGraph::_LEVEL_ID GameGraph::CHeader::level_count			() const
 {
-	VERIFY						(m_levels.size() < (u32(1) << (8*sizeof(GameGraph::_LEVEL_ID))));
+	VERIFY						((u32)m_levels.size() < (u32(1) << (8*sizeof(GameGraph::_LEVEL_ID))));
 	return						((GameGraph::_LEVEL_ID)m_levels.size());
 }
 
