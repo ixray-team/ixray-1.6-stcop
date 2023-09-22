@@ -21,7 +21,7 @@
 >
 
 TEMPLATE_SPECIALIZATION
-IC	CSGraphVertex::CVertex					(const _data_type &data, const _vertex_id_type &vertex_id, size_t *edge_count)
+IC	CSGraphVertex::CVertex					(const _data_type &data, const _vertex_id_type &vertex_id, u32 *edge_count)
 {
 	m_data					= data;
 	m_vertex_id				= vertex_id;
