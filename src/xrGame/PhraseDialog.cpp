@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "phrasedialog.h"
 #include "phrasedialogmanager.h"

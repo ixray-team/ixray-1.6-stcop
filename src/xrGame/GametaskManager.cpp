@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "GameTaskManager.h"
 #include "alife_registry_wrappers.h"

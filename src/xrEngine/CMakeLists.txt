@@ -48,8 +48,17 @@ set_property(TARGET xrEngine PROPERTY ENABLE_EXPORTS ON)
 target_include_directories(xrEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEngine PUBLIC "${IXRAY_SDK_INC}")
 
-# Precompiled header
+# Move precompiled header
+set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrEngine PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 target_precompile_headers(xrEngine PUBLIC "stdafx.h")
+
+file(GLOB_RECURSE ENGINE_SOURCE_PCH_FILES "stdafx.*")
+file(GLOB_RECURSE ENGINE_SOURCE_ALL_C_FILES "*.c")
+
+set_source_files_properties(${ENGINE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+source_group("pch" FILES ${ENGINE_SOURCE_PCH_FILES})
 
 # Project defines
 target_compile_definitions(xrEngine PRIVATE ENGINE_BUILD)

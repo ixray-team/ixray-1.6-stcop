@@ -6,6 +6,7 @@
 //	Description : Miscellanious routines for monsters
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_monsters_misc.h"
 #include "../ai_space.h"

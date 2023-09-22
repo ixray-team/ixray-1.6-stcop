@@ -6,6 +6,7 @@
 //	Description : Script action condition class script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_action_condition.h"
 

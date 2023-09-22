@@ -6,6 +6,7 @@
 //	Description : AI Behaviour for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "../ai_monsters_misc.h"

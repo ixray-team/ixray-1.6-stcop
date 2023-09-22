@@ -6,6 +6,7 @@
 //	Description : Script Engine help
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 
 #ifdef DEBUG

@@ -5,6 +5,7 @@
 //	Description : Smart cover description class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_description.h"
 #include "ai_space.h"

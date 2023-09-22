@@ -6,6 +6,7 @@
 //	Description : Hit memory manager
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "hit_memory_manager.h"
 #include "memory_space_impl.h"
