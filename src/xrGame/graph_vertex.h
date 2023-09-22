@@ -31,10 +31,10 @@ private:
 	// this is needed for the fast vertex removal
 	VERTICES							m_vertices;
 	// this counter is use for fast edge count computation in graph
-	size_t								*m_edge_count;
+	u32									*m_edge_count;
 
 public:
-	IC									CVertex				(const _data_type &data, const _vertex_id_type &vertex_id, size_t *edge_count);
+	IC									CVertex				(const _data_type &data, const _vertex_id_type &vertex_id, u32 *edge_count);
 	IC									~CVertex			();
 	IC		bool						operator==			(const CVertex &obj) const;
 	IC		void						add_edge			(CVertex *vertex, const _edge_weight_type &edge_weight);
