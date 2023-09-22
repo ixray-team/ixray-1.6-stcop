@@ -72,7 +72,12 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 ## DirectX SDK
-target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
+if(NOT "${CMAKE_GENERATOR}" MATCHES "(x64)")
+    target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
+else()
+    target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
+endif()
+
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
