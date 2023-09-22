@@ -151,22 +151,22 @@ bool CUIFixedScrollBar::OnMouseAction(float x, float y, EUIMessages mouse_action
 {
 	switch(mouse_action)
 	{
-		case WINDOW_MOUSE_WHEEL_DOWN:
+		case EUIMessages::WINDOW_MOUSE_WHEEL_DOWN:
 			TryScrollInc(true);
 			return true;
 			break;
-		case WINDOW_MOUSE_WHEEL_UP:
+		case EUIMessages::WINDOW_MOUSE_WHEEL_UP:
 			TryScrollDec(true);
 			return true;
 			break;
-		case WINDOW_LBUTTON_UP:
+		case EUIMessages::WINDOW_LBUTTON_UP:
 			SetCapture(m_ScrollBox, false);
 			m_mouse_state = 0;
 			return true;
-		case WINDOW_LBUTTON_DOWN:
+		case EUIMessages::WINDOW_LBUTTON_DOWN:
 			SetCapture(m_ScrollBox, true);
 			return true;
-		case WINDOW_MOUSE_MOVE:
+		case EUIMessages::WINDOW_MOUSE_MOVE:
 			{
 				bool im_capturer = (GetMouseCapturer() == m_ScrollBox);
 				bool cursor_over = false;
@@ -191,7 +191,7 @@ bool CUIFixedScrollBar::OnMouseAction(float x, float y, EUIMessages mouse_action
 						pos.y += delta.y;
 
 					m_ScrollBox->SetWndPos(pos);
-					m_ScrollBox->GetMessageTarget()->SendMessage(m_ScrollBox, SCROLLBOX_MOVE);
+					m_ScrollBox->GetMessageTarget()->SendMessage(m_ScrollBox, (s16)EUIMessages::SCROLLBOX_MOVE);
 				}
 				if ( !cursor_over )
 				{
@@ -265,17 +265,17 @@ void CUIFixedScrollBar::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
 	if(pWnd==m_DecButton)
 	{
-		if(msg==BUTTON_CLICKED || msg==BUTTON_DOWN)
+		if(msg== (s16)EUIMessages::BUTTON_CLICKED || msg== (s16)EUIMessages::BUTTON_DOWN)
 			TryScrollDec();
 	}
 	else if(pWnd==m_IncButton)
 	{
-		if(msg==BUTTON_CLICKED || msg==BUTTON_DOWN)
+		if(msg== (s16)EUIMessages::BUTTON_CLICKED || msg== (s16)EUIMessages::BUTTON_DOWN)
 			TryScrollInc();
 	}
 	else if(pWnd==m_ScrollBox)
 	{
-		if(msg==SCROLLBOX_MOVE)
+		if(msg== (s16)EUIMessages::SCROLLBOX_MOVE)
 		{
 			//вычислить новое положение прокрутки
 			ClampByViewRect();
@@ -283,13 +283,13 @@ void CUIFixedScrollBar::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			{
 				SetPosScrollFromView(m_ScrollBox->GetWndPos().x,m_ScrollBox->GetWidth(),GetHeight());
 				if(GetMessageTarget())
-					GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
+					GetMessageTarget()->SendMessage(this, (s16)EUIMessages::SCROLLBAR_HSCROLL);
 			}
 			else
 			{
 				SetPosScrollFromView(m_ScrollBox->GetWndPos().y,m_ScrollBox->GetHeight(),GetWidth());
 				if(GetMessageTarget())
-					GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
+					GetMessageTarget()->SendMessage(this, (s16)EUIMessages::SCROLLBAR_VSCROLL);
 			}
 		}
 	}

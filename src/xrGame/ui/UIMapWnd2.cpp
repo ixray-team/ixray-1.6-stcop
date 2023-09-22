@@ -23,17 +23,17 @@ void CUIMapWnd::init_xml_nav( CUIXml& xml )
 //.		m_btn_nav[i]->set_hint_wnd( hint_wnd );
 	}
 
-	AddCallback( m_btn_nav[btn_legend],						BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLegend_Push	) );
-//	AddCallback( m_btn_nav[btn_up]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnUp_Push		) );
-	AddCallback( m_btn_nav[btn_zoom_more],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomMore_Push) );
+	AddCallback( m_btn_nav[btn_legend],						(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLegend_Push	) );
+//	AddCallback( m_btn_nav[btn_up]->WindowName(),			(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnUp_Push		) );
+	AddCallback( m_btn_nav[btn_zoom_more],					(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomMore_Push) );
 
-//	AddCallback( m_btn_nav[btn_left]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLeft_Push	) );
-	AddCallback( m_btn_nav[btn_actor],						BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnActor_Push	) );
-//	AddCallback( m_btn_nav[btn_right]->WindowName(),		BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnRight_Push	) );
+//	AddCallback( m_btn_nav[btn_left]->WindowName(),			(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLeft_Push	) );
+	AddCallback( m_btn_nav[btn_actor],						(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnActor_Push	) );
+//	AddCallback( m_btn_nav[btn_right]->WindowName(),		(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnRight_Push	) );
 
-	AddCallback( m_btn_nav[btn_zoom_less],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomLess_Push) );
-//	AddCallback( m_btn_nav[btn_down]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnDown_Push	) );
-	AddCallback( m_btn_nav[btn_zoom_reset],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomReset_Push) );
+	AddCallback( m_btn_nav[btn_zoom_less],					(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomLess_Push) );
+//	AddCallback( m_btn_nav[btn_down]->WindowName(),			(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnDown_Push	) );
+	AddCallback( m_btn_nav[btn_zoom_reset],					(s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomReset_Push) );
 
 }
 

@@ -44,22 +44,22 @@ void CUITaskWnd::Init()
 
 	m_cbTreasures					= UIHelper::CreateCheck( xml, "filter_treasures", this );
 	m_cbTreasures					->SetCheck(true);
-	AddCallback						(m_cbTreasures, BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowTreasures));
+	AddCallback						(m_cbTreasures, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowTreasures));
 	m_bTreasuresEnabled				= true;
 
 	m_cbPrimaryObjects				= UIHelper::CreateCheck( xml, "filter_primary_objects", this );
 	m_cbPrimaryObjects				->SetCheck(true);
-	AddCallback						(m_cbPrimaryObjects, BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowPrimaryObjects));
+	AddCallback						(m_cbPrimaryObjects, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowPrimaryObjects));
 	m_bPrimaryObjectsEnabled		= true;
 
 	m_cbSecondaryTasks				= UIHelper::CreateCheck( xml, "filter_secondary_tasks", this );
 	m_cbSecondaryTasks				->SetCheck(true);
-	AddCallback						(m_cbSecondaryTasks, BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowSecondaryTasks));
+	AddCallback						(m_cbSecondaryTasks, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowSecondaryTasks));
 	m_bSecondaryTasksEnabled		= true;
 
 	m_cbQuestNpcs					= UIHelper::CreateCheck( xml, "filter_quest_npcs", this );
 	m_cbQuestNpcs					->SetCheck(true);
-	AddCallback						(m_cbQuestNpcs, BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowQuestNpcs));
+	AddCallback						(m_cbQuestNpcs, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function(this,&CUITaskWnd::OnShowQuestNpcs));
 	m_bQuestNpcsEnabled				= true;
 	
 	m_pMapWnd						= xr_new<CUIMapWnd>(); 
@@ -75,14 +75,14 @@ void CUITaskWnd::Init()
 	m_pStoryLineTaskItem->Init		(xml,"storyline_task_item");
 	AttachChild						(m_pStoryLineTaskItem);
 	m_pStoryLineTaskItem->SetAutoDelete(true);
-	AddCallback						(m_pStoryLineTaskItem, WINDOW_LBUTTON_DB_CLICK,   CUIWndCallback::void_function(this,&CUITaskWnd::OnTask1DbClicked));
+	AddCallback						(m_pStoryLineTaskItem, (s16)EUIMessages::WINDOW_LBUTTON_DB_CLICK,   CUIWndCallback::void_function(this,&CUITaskWnd::OnTask1DbClicked));
 	
 	m_btn_focus		= UIHelper::Create3tButton( xml, "btn_task_focus", this );
 	Register		(m_btn_focus);
-	AddCallback		(m_btn_focus,  BUTTON_DOWN, CUIWndCallback::void_function(this,&CUITaskWnd::OnTask1DbClicked));
+	AddCallback		(m_btn_focus, (s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function(this,&CUITaskWnd::OnTask1DbClicked));
 
 	m_BtnTaskListWnd		= UIHelper::Create3tButton( xml, "btn_second_task", this );
-	AddCallback				(m_BtnTaskListWnd, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowTaskListWnd));
+	AddCallback				(m_BtnTaskListWnd, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowTaskListWnd));
 
 	m_task_wnd					= xr_new<UITaskListWnd>(); 
 	m_task_wnd->SetAutoDelete	(true);
@@ -132,32 +132,32 @@ void CUITaskWnd::DrawHint()
 
 void CUITaskWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if ( msg == PDA_TASK_SET_TARGET_MAP && pData )
+	if ( msg == (s16)EUIMessages::PDA_TASK_SET_TARGET_MAP && pData )
 	{
 		CGameTask* task = static_cast<CGameTask*>( pData );
 		TaskSetTargetMap( task );
 		return;
 	}
-	if ( msg == PDA_TASK_SHOW_MAP_SPOT && pData && m_bSecondaryTasksEnabled)
+	if ( msg == (s16)EUIMessages::PDA_TASK_SHOW_MAP_SPOT && pData && m_bSecondaryTasksEnabled)
 	{
 		CGameTask* task = static_cast<CGameTask*>( pData );
 		TaskShowMapSpot( task, true );
 		return;
 	}
-	if ( msg == PDA_TASK_HIDE_MAP_SPOT && pData )
+	if ( msg == (s16)EUIMessages::PDA_TASK_HIDE_MAP_SPOT && pData )
 	{
 		CGameTask* task = static_cast<CGameTask*>( pData );
 		TaskShowMapSpot( task, false );
 		return;
 	}
 	
-	if ( msg == PDA_TASK_SHOW_HINT && pData )
+	if ( msg == (s16)EUIMessages::PDA_TASK_SHOW_HINT && pData )
 	{
 		CGameTask* task = static_cast<CGameTask*>( pData );
 		m_pMapWnd->ShowHintTask( task, pWnd );
 		return;
 	}
-	if ( msg == PDA_TASK_HIDE_HINT )
+	if ( msg == (s16)EUIMessages::PDA_TASK_HIDE_HINT )
 	{
 		m_pMapWnd->HideCurHint();
 		return;
@@ -439,9 +439,9 @@ bool CUITaskItem::OnMouseAction( float x, float y, EUIMessages mouse_action )
 
 	switch ( mouse_action )
 	{
-	case WINDOW_LBUTTON_DOWN:
-	case WINDOW_RBUTTON_DOWN:
-	case BUTTON_DOWN:
+	case EUIMessages::WINDOW_LBUTTON_DOWN:
+	case EUIMessages::WINDOW_RBUTTON_DOWN:
+	case EUIMessages::BUTTON_DOWN:
 		show_hint_can = false;
 		show_hint     = false;
 		break;

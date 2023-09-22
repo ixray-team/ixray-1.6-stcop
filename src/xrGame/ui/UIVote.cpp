@@ -100,7 +100,7 @@ void CUIVote::Update()
 
 void CUIVote::SendMessage(CUIWindow* pWnd, s16 msg_, void* pData)
 {
-    if (BUTTON_CLICKED == msg_)
+    if ((s16)EUIMessages::BUTTON_CLICKED == msg_)
 	{
 		if (btn_yes == pWnd)
 			OnBtnYes();

@@ -249,7 +249,7 @@ void CUIMMShniaga::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 	{
 		switch (msg)
 		{
-			case WINDOW_FOCUS_RECEIVED:
+			case(s16)EUIMessages::WINDOW_FOCUS_RECEIVED:
 				SelectBtn(pWnd);
 				break;
 		}
@@ -336,7 +336,7 @@ bool CUIMMShniaga::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	Fvector2 pos = UI().GetUICursor().GetCursorPosition();
     Frect r;
 	m_magnifier->GetAbsoluteRect(r);
-	if (WINDOW_LBUTTON_DOWN == mouse_action && r.in(pos.x, pos.y))
+	if (EUIMessages::WINDOW_LBUTTON_DOWN == mouse_action && r.in(pos.x, pos.y))
 	{
 		OnBtnClick();
 	}
@@ -350,7 +350,7 @@ void CUIMMShniaga::OnBtnClick(){
 	else if (0 == xr_strcmp("btn_new_back", m_selected->WindowName()))
 		ShowMain();
 	else
-		GetMessageTarget()->SendMessage(m_selected, BUTTON_CLICKED);
+		GetMessageTarget()->SendMessage(m_selected, (s16)EUIMessages::BUTTON_CLICKED);
 }
 
 #include <dinput.h>
@@ -358,7 +358,7 @@ void CUIMMShniaga::OnBtnClick(){
 bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 
-	if (WINDOW_KEY_PRESSED == keyboard_action)
+	if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action)
 	{
 		switch (dik)
 		{

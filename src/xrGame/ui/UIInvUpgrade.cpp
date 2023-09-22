@@ -198,24 +198,24 @@ bool UIUpgrade::OnMouseAction( float x, float y, EUIMessages mouse_action )
 	if ( m_bCursorOverWindow || m_point->CursorOverWindow())
 	{
 		highlight_relation( true );
-		if ( mouse_action == WINDOW_LBUTTON_DOWN )
+		if ( mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN )
 		{
 			OnClick();
 			return true;
 		}
-		if ( mouse_action == WINDOW_LBUTTON_DB_CLICK )
+		if ( mouse_action == EUIMessages::WINDOW_LBUTTON_DB_CLICK )
 		{
 			OnDbClick();
 			return true;
 		}
-		if ( mouse_action == WINDOW_RBUTTON_DOWN )
+		if ( mouse_action == EUIMessages::WINDOW_RBUTTON_DOWN )
 		{
 			OnRClick();
 			return true;
 		}
 	}// m_bCursorOverWindow
 
-	if ( mouse_action == WINDOW_LBUTTON_UP || mouse_action == WINDOW_RBUTTON_UP )
+	if ( mouse_action == EUIMessages::WINDOW_LBUTTON_UP || mouse_action == EUIMessages::WINDOW_RBUTTON_UP )
 	{
 		m_button_state = BUTTON_FREE;
 		return true;
@@ -374,23 +374,23 @@ bool CUIUpgradePoint::OnMouseAction( float x, float y, EUIMessages mouse_action 
 	if ( m_bCursorOverWindow )
 	{
 		m_parent_upgrade->highlight_relation( true );
-		if ( mouse_action == WINDOW_LBUTTON_DOWN )
+		if ( mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN )
 		{
 			m_parent_upgrade->OnClick();
 			return true;
 		}
-		if ( mouse_action == WINDOW_LBUTTON_DB_CLICK )
+		if ( mouse_action == EUIMessages::WINDOW_LBUTTON_DB_CLICK )
 		{
 			m_parent_upgrade->OnDbClick();
 			return true;
 		}
-		if ( mouse_action == WINDOW_RBUTTON_DOWN )
+		if ( mouse_action == EUIMessages::WINDOW_RBUTTON_DOWN )
 		{
 			m_parent_upgrade->OnRClick();
 			return true;
 		}
 	}
-	if ( mouse_action == WINDOW_LBUTTON_UP || mouse_action == WINDOW_RBUTTON_UP )
+	if ( mouse_action == EUIMessages::WINDOW_LBUTTON_UP || mouse_action == EUIMessages::WINDOW_RBUTTON_UP )
 	{
 		m_parent_upgrade->set_button_state(UIUpgrade::BUTTON_FREE);
 		return true;

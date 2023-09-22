@@ -84,7 +84,7 @@ void CUISpawnWnd::InitTeamLogo(){
 
 void CUISpawnWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if ((s16)EUIMessages::BUTTON_CLICKED == msg)
 	{
 		HideDialog							();
 		game_cl_mp * game = smart_cast<game_cl_mp*>(&Game());
@@ -109,7 +109,7 @@ void CUISpawnWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 bool CUISpawnWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (WINDOW_KEY_PRESSED != keyboard_action)
+	if (EUIMessages::WINDOW_KEY_PRESSED != keyboard_action)
 	{
 		if (dik == DIK_TAB)
 		{

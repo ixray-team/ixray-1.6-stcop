@@ -140,10 +140,10 @@ void CUILogsWnd::Init()
 	Register( m_prev_period );
 	Register( m_next_period );
 
-	AddCallback( m_filter_news, BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::UpdateChecks ) );
-	AddCallback( m_filter_talk, BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::UpdateChecks ) );
-	AddCallback( m_prev_period, BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::PrevPeriod ) );
-	AddCallback( m_next_period, BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::NextPeriod ) );
+	AddCallback( m_filter_news, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::UpdateChecks ) );
+	AddCallback( m_filter_talk, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::UpdateChecks ) );
+	AddCallback( m_prev_period, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::PrevPeriod ) );
+	AddCallback( m_next_period, (s16)EUIMessages::BUTTON_CLICKED, CUIWndCallback::void_function( this, &CUILogsWnd::NextPeriod ) );
 
 	m_start_game_time = Level().GetStartGameTime();
 	m_start_game_time = GetShiftPeriod( m_start_game_time, 0 );
@@ -312,7 +312,7 @@ ALife::_TIME_ID CUILogsWnd::GetShiftPeriod( ALife::_TIME_ID datetime, int shift_
 
 bool CUILogsWnd::OnKeyboardAction( int dik, EUIMessages keyboard_action )
 {
-	if ( keyboard_action == WINDOW_KEY_PRESSED )
+	if ( keyboard_action == EUIMessages::WINDOW_KEY_PRESSED )
 	{
 		switch ( dik )
 		{

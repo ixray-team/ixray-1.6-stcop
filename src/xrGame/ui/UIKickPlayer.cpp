@@ -96,12 +96,12 @@ bool CUIKickPlayer::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 void CUIKickPlayer::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (LIST_ITEM_SELECT == msg && pWnd == m_ui_players_list)
+	if ((s16)EUIMessages::LIST_ITEM_SELECT == msg && pWnd == m_ui_players_list)
 	{		
 		CUIListBoxItem* itm		= smart_cast<CUIListBoxItem*>(m_ui_players_list->GetSelected());
 		m_selected_item_text	= itm->GetText();
 	}
-	else if (BUTTON_CLICKED == msg)
+	else if ((s16)EUIMessages::BUTTON_CLICKED == msg)
 	{
 		if (pWnd == btn_ok)
 			OnBtnOk		();

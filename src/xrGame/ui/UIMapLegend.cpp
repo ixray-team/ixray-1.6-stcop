@@ -77,7 +77,7 @@ void UIMapLegend::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 {
 	if ( pWnd == m_btn_close )
 	{
-		if ( msg == BUTTON_DOWN )
+		if ( msg == (s16)EUIMessages::BUTTON_DOWN )
 		{
 			Show( false );
 			return;

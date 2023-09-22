@@ -69,7 +69,7 @@ void CUICustomSpin::InitSpin(Fvector2 pos, Fvector2 size)
 
 void CUICustomSpin::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if (EUIMessages::BUTTON_CLICKED == (EUIMessages)msg)
 	{
 		if (m_pBtnUp == pWnd)
 		{
@@ -96,12 +96,12 @@ void CUICustomSpin::Enable(bool status)
 
 void CUICustomSpin::OnBtnUpClick()
 {
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED);
+	GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED);
 }
 
 void CUICustomSpin::OnBtnDownClick()
 {
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED);
+	GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED);
 }
 
 void CUICustomSpin::Draw()

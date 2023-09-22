@@ -109,7 +109,7 @@ bool CServerList::NeedToRefreshCurServer	()
 };
 
 void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
-	if (m_bShowServerInfo && LIST_ITEM_CLICKED == msg && &m_list[LST_SERVER] == pWnd){
+	if (m_bShowServerInfo && (s16)EUIMessages::LIST_ITEM_CLICKED == msg && &m_list[LST_SERVER] == pWnd){
 		if (NeedToRefreshCurServer())
 		{
 			RefreshQuick();
@@ -120,7 +120,7 @@ void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 			FillUpDetailedServerInfo();
 		}
 	}
-	else if (BUTTON_CLICKED == msg){
+	else if ((s16)EUIMessages::BUTTON_CLICKED == msg){
 		if (pWnd == &m_header[1]){
 			SetSortFunc("server_name",true);
 		}
@@ -139,10 +139,10 @@ void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 		else if (pWnd == &m_header[6]){
 			SetSortFunc("version",true);
 		}
-	}else if( EDIT_TEXT_COMMIT == msg && pWnd==&m_edit_gs_filter){
+	}else if((s16)EUIMessages::EDIT_TEXT_COMMIT == msg && pWnd==&m_edit_gs_filter){
 		RefreshGameSpyList(m_b_local);
 	}
-	else if ( MESSAGE_BOX_YES_CLICKED == msg )
+	else if ((s16)EUIMessages::MESSAGE_BOX_YES_CLICKED == msg )
 	{
 		CUIListItemServer* item		= smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetSelectedItem());
 		if(!item)
@@ -152,7 +152,7 @@ void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 		item->CreateConsoleCommand	(command, m_playerName.c_str(), m_message_box->m_pMessageBox->GetUserPassword(), m_message_box->GetPassword() );
 		Console->Execute			(command.c_str());
 	}
-	else if ( WINDOW_LBUTTON_DB_CLICK == msg && &m_list[LST_SERVER] == pWnd )
+	else if ((s16)EUIMessages::WINDOW_LBUTTON_DB_CLICK == msg && &m_list[LST_SERVER] == pWnd )
 	{
 		ConnectToSelected();
 	}

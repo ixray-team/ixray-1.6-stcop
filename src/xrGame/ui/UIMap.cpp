@@ -260,7 +260,7 @@ void	CUICustomMap::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 bool CUIGlobalMap::OnMouseAction	(float x, float y, EUIMessages mouse_action)
 {
 	if(inherited::OnMouseAction(x,y,mouse_action)) return true;
-	if(mouse_action==WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)))
+	if(mouse_action== EUIMessages::WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)))
 	{
 		if( MapWnd() )
 		{
@@ -516,7 +516,7 @@ bool CUILevelMap::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	if (inherited::OnMouseAction(x,y,mouse_action))	return true;
 	if (MapWnd()->GlobalMap()->Locked())		return true;
 
-	if(mouse_action==WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)) )
+	if(mouse_action== EUIMessages::WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)) )
 	{
 		if( MapWnd() )
 		{
@@ -531,7 +531,7 @@ void CUILevelMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	inherited::SendMessage(pWnd, msg, pData);
 
-	if(msg==MAP_SHOW_HINT)
+	if(msg== (s16)EUIMessages::MAP_SHOW_HINT)
 	{
 		CMapSpot* sp			= smart_cast<CMapSpot*>(pWnd);
 		VERIFY					(sp);
@@ -540,11 +540,11 @@ void CUILevelMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 			MapWnd()->ShowHintSpot( sp );
 		}
 	}else
-	if(msg==MAP_HIDE_HINT)
+	if(msg== (s16)EUIMessages::MAP_HIDE_HINT)
 	{
 		MapWnd()->HideHint	(pWnd);
 	}else
-	if(msg==MAP_SELECT_SPOT)
+	if(msg== (s16)EUIMessages::MAP_SELECT_SPOT)
 		MapWnd()->SpotSelected	(pWnd);
 }
 

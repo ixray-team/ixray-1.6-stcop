@@ -157,15 +157,15 @@ void CUITalkWnd::UpdateQuestions()
 
 void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED)
+	if(pWnd == UITalkDialogWnd && msg == (s16)EUIMessages::TALK_DIALOG_TRADE_BUTTON_CLICKED)
 	{
 		SwitchToTrade();
 	}
-	else if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_UPGRADE_BUTTON_CLICKED)
+	else if(pWnd == UITalkDialogWnd && msg == (s16)EUIMessages::TALK_DIALOG_UPGRADE_BUTTON_CLICKED)
 	{
 		SwitchToUpgrade();
 	}
-	else if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_QUESTION_CLICKED)
+	else if(pWnd == UITalkDialogWnd && msg == (s16)EUIMessages::TALK_DIALOG_QUESTION_CLICKED)
 	{
 		AskQuestion();
 	}
@@ -362,7 +362,7 @@ void CUITalkWnd::SwitchToUpgrade()
 bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 
-	if (keyboard_action==WINDOW_KEY_PRESSED)
+	if (keyboard_action== EUIMessages::WINDOW_KEY_PRESSED)
 	{
 		if(is_binded(kUSE, dik) || is_binded(kQUIT, dik))
 		{

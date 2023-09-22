@@ -4,7 +4,7 @@
 
 void CUIBuyWeaponTab::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	if (TAB_CHANGED == msg)
+	if (EUIMessages::TAB_CHANGED == (EUIMessages)msg)
 	{
 		for (u32 i = 0; i < m_TabsArr.size(); ++i)
 		{

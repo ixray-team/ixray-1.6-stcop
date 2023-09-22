@@ -110,11 +110,11 @@ CMainMenu::CMainMenu	()
 			m_pMB_ErrDlgs.push_back		(pNewErrDlg);
 		}
 
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnRunDownloadedPatch));
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", MESSAGE_BOX_OK_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnConnectToMasterServerOkClicked));
+		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", (s16)EUIMessages::MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnRunDownloadedPatch));
+		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", (s16)EUIMessages::MESSAGE_BOX_OK_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnConnectToMasterServerOkClicked));
 
-		m_pMB_ErrDlgs[DownloadMPMap]->AddCallbackStr("button_copy", MESSAGE_BOX_COPY_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadMPMap_CopyURL));
-		m_pMB_ErrDlgs[DownloadMPMap]->AddCallbackStr("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadMPMap));
+		m_pMB_ErrDlgs[DownloadMPMap]->AddCallbackStr("button_copy", (s16)EUIMessages::MESSAGE_BOX_COPY_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadMPMap_CopyURL));
+		m_pMB_ErrDlgs[DownloadMPMap]->AddCallbackStr("button_yes", (s16)EUIMessages::MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadMPMap));
 
 		m_account_mngr			= xr_new<gamespy_gp::account_manager>		(m_pGameSpyFull->GetGameSpyGP());
 		m_login_mngr			= xr_new<gamespy_gp::login_manager>			(m_pGameSpyFull);
@@ -480,7 +480,7 @@ void CMainMenu::OnFrame()
 		if(b_is_16_9 !=m_activatedScreenRatio)
 		{
 			ReloadUI();
-			m_startDialog->SendMessage(m_startDialog, MAIN_MENU_RELOADED, NULL);
+			m_startDialog->SendMessage(m_startDialog, (s16)EUIMessages::MAIN_MENU_RELOADED, NULL);
 		}
 	}
 }
@@ -569,7 +569,7 @@ void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
 	m_sPatchURL = URL;
 	
 	Register						(m_pMB_ErrDlgs[NewPatchFound]);
-	m_pMB_ErrDlgs[NewPatchFound]->AddCallbackStr	("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadPatch));
+	m_pMB_ErrDlgs[NewPatchFound]->AddCallbackStr	("button_yes", (s16)EUIMessages::MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadPatch));
 	m_pMB_ErrDlgs[NewPatchFound]->ShowDialog(false);
 };
 

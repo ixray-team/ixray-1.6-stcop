@@ -49,16 +49,16 @@ bool  CUIButton::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 	case BUTTON_NORMAL:
 		{
-			if(mouse_action == WINDOW_LBUTTON_DOWN || mouse_action == WINDOW_LBUTTON_DB_CLICK)
+			if(mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN || mouse_action == EUIMessages::WINDOW_LBUTTON_DB_CLICK)
 			{
 				SetButtonState(BUTTON_PUSHED);
-				GetMessageTarget()->SendMessage(this, BUTTON_DOWN, NULL);
+				GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_DOWN, NULL);
 				return true;
 			}
 		}break;
 	case BUTTON_PUSHED:
 		{
-			if(mouse_action == WINDOW_LBUTTON_UP)
+			if(mouse_action == EUIMessages::WINDOW_LBUTTON_UP)
 			{
 				if(m_bCursorOverWindow)
 					OnClick();
@@ -66,7 +66,7 @@ bool  CUIButton::OnMouseAction(float x, float y, EUIMessages mouse_action)
 				if (!m_bIsSwitch)
 					SetButtonState(BUTTON_NORMAL);
 			}else 
-			if(mouse_action == WINDOW_MOUSE_MOVE)
+			if(mouse_action == EUIMessages::WINDOW_MOUSE_MOVE)
 			{
 				if(!m_bCursorOverWindow && !m_bIsSwitch)
 					SetButtonState(BUTTON_UP);
@@ -74,12 +74,12 @@ bool  CUIButton::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		}break;
 	case BUTTON_UP:
 		{
-			if(mouse_action == WINDOW_MOUSE_MOVE)
+			if(mouse_action == EUIMessages::WINDOW_MOUSE_MOVE)
 			{
 				if(m_bCursorOverWindow)
 					SetButtonState(BUTTON_PUSHED);
 			}else 
-			if(mouse_action == WINDOW_LBUTTON_UP)
+			if(mouse_action == EUIMessages::WINDOW_LBUTTON_UP)
 			{
 				SetButtonState(BUTTON_NORMAL);
 			}
@@ -90,7 +90,7 @@ bool  CUIButton::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 void CUIButton::OnClick()
 {
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED);
+	GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED);
 }	
 
 void CUIButton::DrawTexture()
@@ -186,7 +186,7 @@ void CUIButton::OnFocusLost()
 
 bool CUIButton::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (WINDOW_KEY_PRESSED == keyboard_action)
+	if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action)
 	{
 		if(IsAccelerator(dik) )
 		{

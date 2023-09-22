@@ -865,13 +865,13 @@ void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 			!inv.SlotIsPersistent(cur_slot) &&
 			inv.CanPutInSlot(item, cur_slot) )
 	{
-		m_UIPropertiesBox->AddItem( "st_move_to_slot",  NULL, INVENTORY_TO_SLOT_ACTION );
+		m_UIPropertiesBox->AddItem( "st_move_to_slot",  NULL, (s16)EUIMessages::INVENTORY_TO_SLOT_ACTION );
 		b_show = true;
 	}
 	if (	item->Belt() &&
 			inv.CanPutInBelt( item ) )
 	{
-		m_UIPropertiesBox->AddItem( "st_move_on_belt",  NULL, INVENTORY_TO_BELT_ACTION );
+		m_UIPropertiesBox->AddItem( "st_move_on_belt",  NULL, (s16)EUIMessages::INVENTORY_TO_BELT_ACTION );
 		b_show = true;
 	}
 
@@ -882,26 +882,26 @@ void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 		if( !pOutfit )
 		{
 			if( !pHelmet )
-				m_UIPropertiesBox->AddItem( "st_move_to_bag",  NULL, INVENTORY_TO_BAG_ACTION );
+				m_UIPropertiesBox->AddItem( "st_move_to_bag",  NULL, (s16)EUIMessages::INVENTORY_TO_BAG_ACTION );
 			else
-				m_UIPropertiesBox->AddItem( "st_undress_helmet",  NULL, INVENTORY_TO_BAG_ACTION );
+				m_UIPropertiesBox->AddItem( "st_undress_helmet",  NULL, (s16)EUIMessages::INVENTORY_TO_BAG_ACTION );
 		}
 		else
-			m_UIPropertiesBox->AddItem( "st_undress_outfit",  NULL, INVENTORY_TO_BAG_ACTION );
+			m_UIPropertiesBox->AddItem( "st_undress_outfit",  NULL, (s16)EUIMessages::INVENTORY_TO_BAG_ACTION );
 
 		bAlreadyDressed = true;
 		b_show			= true;
 	}
 	if ( pOutfit && !bAlreadyDressed )
 	{
-		m_UIPropertiesBox->AddItem( "st_dress_outfit",  NULL, INVENTORY_TO_SLOT_ACTION );
+		m_UIPropertiesBox->AddItem( "st_dress_outfit",  NULL, (s16)EUIMessages::INVENTORY_TO_SLOT_ACTION );
 		b_show			= true;
 	}
 
 	CCustomOutfit* outfit_in_slot = m_pActorInvOwner->GetOutfit();
 	if ( pHelmet && !bAlreadyDressed && (!outfit_in_slot || outfit_in_slot->bIsHelmetAvaliable))
 	{
-		m_UIPropertiesBox->AddItem( "st_dress_helmet",  NULL, INVENTORY_TO_SLOT_ACTION );
+		m_UIPropertiesBox->AddItem( "st_dress_helmet",  NULL, (s16)EUIMessages::INVENTORY_TO_SLOT_ACTION );
 		b_show			= true;
 	}
 }
@@ -919,7 +919,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 	{
 		if ( pWeapon->IsGrenadeLauncherAttached() )
 		{
-			m_UIPropertiesBox->AddItem( "st_detach_gl",  NULL, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON );
+			m_UIPropertiesBox->AddItem( "st_detach_gl",  NULL, (s16)EUIMessages::INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON );
 			b_show			= true;
 		}
 		else
@@ -930,7 +930,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 	{
 		if ( pWeapon->IsScopeAttached() )
 		{
-			m_UIPropertiesBox->AddItem( "st_detach_scope",  NULL, INVENTORY_DETACH_SCOPE_ADDON );
+			m_UIPropertiesBox->AddItem( "st_detach_scope",  NULL, (s16)EUIMessages::INVENTORY_DETACH_SCOPE_ADDON );
 			b_show			= true;
 		}
 		else
@@ -941,7 +941,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 	{
 		if ( pWeapon->IsSilencerAttached() )
 		{
-			m_UIPropertiesBox->AddItem( "st_detach_silencer",  NULL, INVENTORY_DETACH_SILENCER_ADDON );
+			m_UIPropertiesBox->AddItem( "st_detach_silencer",  NULL, (s16)EUIMessages::INVENTORY_DETACH_SILENCER_ADDON );
 			b_show			= true;
 		}
 		else
@@ -965,7 +965,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 		}
 		if ( b )
 		{
-			m_UIPropertiesBox->AddItem( "st_unload_magazine",  NULL, INVENTORY_UNLOAD_MAGAZINE );
+			m_UIPropertiesBox->AddItem( "st_unload_magazine",  NULL, (s16)EUIMessages::INVENTORY_UNLOAD_MAGAZINE );
 			b_show = true;
 		}
 	}
@@ -991,7 +991,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		{
 			shared_str str = CStringTable().translate("st_attach_scope_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
+			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, (s16)EUIMessages::INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_scope_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
@@ -999,7 +999,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		{
 			shared_str str = CStringTable().translate("st_attach_scope_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
+			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, (s16)EUIMessages::INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_scope_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
@@ -1012,7 +1012,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		{
 			shared_str str = CStringTable().translate("st_attach_silencer_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
+			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, (s16)EUIMessages::INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_silencer_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
@@ -1020,7 +1020,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		{
 			shared_str str = CStringTable().translate("st_attach_silencer_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
+			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, (s16)EUIMessages::INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_silencer_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
@@ -1033,7 +1033,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		{
 			shared_str str = CStringTable().translate("st_attach_gl_to_rifle");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
+			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, (s16)EUIMessages::INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_gl_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
@@ -1041,7 +1041,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		{
 			shared_str str = CStringTable().translate("st_attach_gl_to_rifle");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
+			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, (s16)EUIMessages::INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_gl_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
@@ -1083,7 +1083,7 @@ void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 	}
 	if ( act_str )
 	{
-		m_UIPropertiesBox->AddItem( act_str,  NULL, INVENTORY_EAT_ACTION );
+		m_UIPropertiesBox->AddItem( act_str,  NULL, (s16)EUIMessages::INVENTORY_EAT_ACTION );
 		b_show			= true;
 	}
 }
@@ -1095,7 +1095,7 @@ void CUIActorMenu::PropertiesBoxForPlaying(PIItem item, bool& b_show)
 		return;
 
 	LPCSTR act_str = "st_play";
-	m_UIPropertiesBox->AddItem(act_str,  NULL, INVENTORY_PLAY_ACTION);
+	m_UIPropertiesBox->AddItem(act_str,  NULL, (s16)EUIMessages::INVENTORY_PLAY_ACTION);
 	b_show = true;
 }
 
@@ -1103,12 +1103,12 @@ void CUIActorMenu::PropertiesBoxForDrop( CUICellItem* cell_item, PIItem item, bo
 {
 	if ( !item->IsQuestItem() )
 	{
-		m_UIPropertiesBox->AddItem( "st_drop", NULL, INVENTORY_DROP_ACTION );
+		m_UIPropertiesBox->AddItem( "st_drop", NULL, (s16)EUIMessages::INVENTORY_DROP_ACTION );
 		b_show = true;
 
 		if ( cell_item->ChildsCount() )
 		{
-			m_UIPropertiesBox->AddItem( "st_drop_all", (void*)33, INVENTORY_DROP_ACTION );
+			m_UIPropertiesBox->AddItem( "st_drop_all", (void*)33, (s16)EUIMessages::INVENTORY_DROP_ACTION );
 		}
 	}
 }
@@ -1121,7 +1121,7 @@ void CUIActorMenu::PropertiesBoxForRepair( PIItem item, bool& b_show )
 
 	if ( (pOutfit || pWeapon || pHelmet) && item->GetCondition() < 0.99f )
 	{
-		m_UIPropertiesBox->AddItem( "ui_inv_repair", NULL, INVENTORY_REPAIR );
+		m_UIPropertiesBox->AddItem( "ui_inv_repair", NULL, (s16)EUIMessages::INVENTORY_REPAIR );
 		b_show = true;
 	}
 }
@@ -1138,11 +1138,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
-	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;
-	case INVENTORY_TO_BELT_ACTION:	ToBelt( cell_item, false );		break;
-	case INVENTORY_TO_BAG_ACTION:	ToBag ( cell_item, false );		break;
-	case INVENTORY_EAT_ACTION:		TryUseItem( cell_item ); 		break;
-	case INVENTORY_DROP_ACTION:
+	case (s16)EUIMessages::INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;
+	case (s16)EUIMessages::INVENTORY_TO_BELT_ACTION:	ToBelt( cell_item, false );		break;
+	case (s16)EUIMessages::INVENTORY_TO_BAG_ACTION:	ToBag ( cell_item, false );		break;
+	case (s16)EUIMessages::INVENTORY_EAT_ACTION:		TryUseItem( cell_item ); 		break;
+	case (s16)EUIMessages::INVENTORY_DROP_ACTION:
 		{
 			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
 			if ( d_ == (void*)33 )
@@ -1155,7 +1155,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			}
 			break;
 		}
-	case INVENTORY_ATTACH_ADDON:
+	case (s16)EUIMessages::INVENTORY_ATTACH_ADDON:
 		{
 			PIItem item_ = CurrentIItem(); // temporary storing because of AttachAddon is setting curiitem to NULL
 			AttachAddon((PIItem)(m_UIPropertiesBox->GetClickedItem()->GetData()));
@@ -1164,7 +1164,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			
 			break;
 		}
-	case INVENTORY_DETACH_SCOPE_ADDON:
+	case (s16)EUIMessages::INVENTORY_DETACH_SCOPE_ADDON:
 		if ( weapon )
 		{
 			DetachAddon( weapon->GetScopeName().c_str() );
@@ -1180,7 +1180,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			}
 		}
 		break;
-	case INVENTORY_DETACH_SILENCER_ADDON:
+	case (s16)EUIMessages::INVENTORY_DETACH_SILENCER_ADDON:
 		if ( weapon )
 		{
 			DetachAddon( weapon->GetSilencerName().c_str() );
@@ -1196,7 +1196,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			}
 		}
 		break;
-	case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
+	case (s16)EUIMessages::INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
 		if ( weapon )
 		{
 			DetachAddon( weapon->GetGrenadeLauncherName().c_str() );
@@ -1212,13 +1212,13 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			}
 		}
 		break;
-	case INVENTORY_RELOAD_MAGAZINE:
+	case (s16)EUIMessages::INVENTORY_RELOAD_MAGAZINE:
 		if ( weapon )
 		{
 			weapon->Action( kWPN_RELOAD, CMD_START );
 		}
 		break;
-	case INVENTORY_UNLOAD_MAGAZINE:
+	case (s16)EUIMessages::INVENTORY_UNLOAD_MAGAZINE:
 		{
 			CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>( (CWeapon*)cell_item->m_pData );
 			if ( !weap_mag )
@@ -1237,13 +1237,13 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			}
 			break;
 		}
-	case INVENTORY_REPAIR:
+	case (s16)EUIMessages::INVENTORY_REPAIR:
 		{
 			TryRepairItem(this,0);
 			return;
 			break;
 		}
-	case INVENTORY_PLAY_ACTION:
+	case (s16)EUIMessages::INVENTORY_PLAY_ACTION:
 		{
 			CPda* pPda = smart_cast<CPda*>(item);
 			if(!pPda)

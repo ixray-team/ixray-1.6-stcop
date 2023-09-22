@@ -96,8 +96,8 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	SetWindowName				("----CUITalkDialogWnd");
 
 	Register					(&UIToTradeButton);
-	AddCallbackStr				("question_item",LIST_ITEM_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnQuestionClicked));
-	AddCallback					(&UIToTradeButton,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
+	AddCallbackStr				("question_item", (s16)EUIMessages::LIST_ITEM_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnQuestionClicked));
+	AddCallback					(&UIToTradeButton, (s16)EUIMessages::BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
 //	AddCallback					(&UIToExitButton,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnExitClicked));
 }
 
@@ -124,7 +124,7 @@ void CUITalkDialogWnd::Hide()
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
 {
 	m_ClickedQuestionID = ((CUIQuestionItem*)w)->m_s_value;
-	GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
+	GetMessageTarget()->SendMessage(this, (s16)EUIMessages::TALK_DIALOG_QUESTION_CLICKED);
 }
 
 void CUITalkDialogWnd::OnExitClicked(CUIWindow* w, void*)
@@ -136,17 +136,17 @@ void CUITalkDialogWnd::OnTradeClicked(CUIWindow* w, void*)
 {
 	if ( mechanic_mode )
 	{
-		GetTop()->SendMessage(this, TALK_DIALOG_UPGRADE_BUTTON_CLICKED);
+		GetTop()->SendMessage(this, (s16)EUIMessages::TALK_DIALOG_UPGRADE_BUTTON_CLICKED);
 	}
 	else
 	{
-		GetTop()->SendMessage(this, TALK_DIALOG_TRADE_BUTTON_CLICKED);
+		GetTop()->SendMessage(this, (s16)EUIMessages::TALK_DIALOG_TRADE_BUTTON_CLICKED);
 	}
 }
 
 void CUITalkDialogWnd::OnUpgradeClicked(CUIWindow* w, void*)
 {
-	GetTop()->SendMessage(this, TALK_DIALOG_UPGRADE_BUTTON_CLICKED);
+	GetTop()->SendMessage(this, (s16)EUIMessages::TALK_DIALOG_UPGRADE_BUTTON_CLICKED);
 }
 
 void CUITalkDialogWnd::SetTradeMode()
@@ -294,7 +294,7 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 	m_fOffset						= xml_doc->ReadAttribFlt(str, 0, "offset", 0);
 
 	Register						(m_text);
-	AddCallback						(m_text,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
+	AddCallback						(m_text, (s16)EUIMessages::BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
 
 	m_num_text						= xr_new<CUITextWnd>();
 	m_num_text->SetAutoDelete		(true);
@@ -314,7 +314,7 @@ void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text)
 
 void	CUIQuestionItem::OnTextClicked(CUIWindow* w, void*)
 {
-	GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, (void*)this);
+	GetMessageTarget()->SendMessage(this, (s16)EUIMessages::LIST_ITEM_CLICKED, (void*)this);
 }
 
 

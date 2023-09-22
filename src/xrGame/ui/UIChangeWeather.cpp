@@ -55,7 +55,7 @@ void CUIChangeWeather::InitChangeWeather(CUIXml& xml_doc)
 }
 
 void CUIChangeWeather::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
-	if (BUTTON_CLICKED == msg)
+	if ((s16)EUIMessages::BUTTON_CLICKED == msg)
 	{
 		if (btn_cancel == pWnd)
 			OnBtnCancel();
@@ -73,7 +73,7 @@ void CUIChangeWeather::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 
 bool CUIChangeWeather::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 	CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
-	if (WINDOW_KEY_PRESSED == keyboard_action){
+	if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action){
 		if (DIK_ESCAPE == dik){
 			OnBtnCancel();
 			return true;

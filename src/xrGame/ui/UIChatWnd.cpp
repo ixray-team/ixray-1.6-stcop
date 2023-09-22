@@ -65,8 +65,8 @@ void CUIChatWnd::Init(CUIXml& uiXml)
 	pending_edit_rect.rb.add	(pending_edit_rect.lt);
 
 	Register	(UIEditBox);
-	AddCallback	(UIEditBox,    EDIT_TEXT_COMMIT,   CUIWndCallback::void_function( this, &CUIChatWnd::OnChatCommit ) );
-	AddCallback	(UIEditBox,    EDIT_TEXT_CANCEL,   CUIWndCallback::void_function( this, &CUIChatWnd::OnChatCancel ) );
+	AddCallback	(UIEditBox,    (s16)EUIMessages::EDIT_TEXT_COMMIT,   CUIWndCallback::void_function( this, &CUIChatWnd::OnChatCommit ) );
+	AddCallback	(UIEditBox,    (s16)EUIMessages::EDIT_TEXT_CANCEL,   CUIWndCallback::void_function( this, &CUIChatWnd::OnChatCancel ) );
 }
 
 void CUIChatWnd::SetEditBoxPrefix(LPCSTR prefix)

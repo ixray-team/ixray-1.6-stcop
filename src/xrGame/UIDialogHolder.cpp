@@ -261,12 +261,12 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 	if(dik==MOUSE_1 || dik==MOUSE_2 || dik==MOUSE_3)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
-		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_DOWN :(dik==MOUSE_2)?WINDOW_RBUTTON_DOWN:WINDOW_CBUTTON_DOWN;
+		EUIMessages action = (dik==MOUSE_1)? EUIMessages::WINDOW_LBUTTON_DOWN :(dik==MOUSE_2) ? EUIMessages::WINDOW_RBUTTON_DOWN : EUIMessages::WINDOW_CBUTTON_DOWN;
 		if (TIR->OnMouseAction(cp.x,cp.y, action))
             return true;
 	}
 
-	if (TIR->OnKeyboardAction(dik,	WINDOW_KEY_PRESSED))
+	if (TIR->OnKeyboardAction(dik, EUIMessages::WINDOW_KEY_PRESSED))
 		return true;
 
 	if( !TIR->StopAnyMove() && g_pGameLevel )
@@ -297,12 +297,12 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 	if(dik==MOUSE_1 || dik==MOUSE_2 || dik==MOUSE_3)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
-		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_UP :(dik==MOUSE_2)?WINDOW_RBUTTON_UP:WINDOW_CBUTTON_UP;
+		EUIMessages action = (dik==MOUSE_1)? EUIMessages::WINDOW_LBUTTON_UP :(dik==MOUSE_2)? EUIMessages::WINDOW_RBUTTON_UP : EUIMessages::WINDOW_CBUTTON_UP;
 		if (TIR->OnMouseAction(cp.x, cp.y, action))
             return true;
 	}
 
-	if (TIR->OnKeyboardAction(dik,	WINDOW_KEY_RELEASED))
+	if (TIR->OnKeyboardAction(dik, EUIMessages::WINDOW_KEY_RELEASED))
 		return true;
 
 	if( !TIR->StopAnyMove() && g_pGameLevel )
@@ -350,7 +350,7 @@ bool CDialogHolder::IR_UIOnMouseWheel (int direction)
 
 	Fvector2 pos			= GetUICursor().GetCursorPosition();
 
-	TIR->OnMouseAction		(pos.x,pos.y,(direction>0)?WINDOW_MOUSE_WHEEL_UP:WINDOW_MOUSE_WHEEL_DOWN);
+	TIR->OnMouseAction		(pos.x,pos.y,(direction>0)? EUIMessages::WINDOW_MOUSE_WHEEL_UP: EUIMessages::WINDOW_MOUSE_WHEEL_DOWN);
 	return					true;
 }
 
@@ -363,7 +363,7 @@ bool CDialogHolder::IR_UIOnMouseMove(int dx, int dy)
 	{ 
 		GetUICursor().UpdateCursorPosition(dx, dy);
 		Fvector2 cPos			= GetUICursor().GetCursorPosition();
-		TIR->OnMouseAction		(cPos.x, cPos.y , WINDOW_MOUSE_MOVE);
+		TIR->OnMouseAction		(cPos.x, cPos.y , EUIMessages::WINDOW_MOUSE_MOVE);
 	}else 
 	if(!TIR->StopAnyMove() && g_pGameLevel )
 	{

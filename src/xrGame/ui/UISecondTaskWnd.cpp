@@ -56,7 +56,7 @@ void UITaskListWnd::init_from_xml( CUIXml& xml, LPCSTR path )
 	m_bt_close   = UIHelper::Create3tButton( xml, "btn_close", this );
 
 	Register( m_bt_close );
-	AddCallback( m_bt_close, BUTTON_DOWN, CUIWndCallback::void_function( this, &UITaskListWnd::OnBtnClose ) );
+	AddCallback( m_bt_close, (s16)EUIMessages::BUTTON_DOWN, CUIWndCallback::void_function( this, &UITaskListWnd::OnBtnClose ) );
 
 	m_list = xr_new<CUIScrollView>();
 	m_list->SetAutoDelete( true );
@@ -81,15 +81,15 @@ bool UITaskListWnd::OnMouseAction( float x, float y, EUIMessages mouse_action )
 
 void UITaskListWnd::OnMouseScroll( float iDirection )
 {
-	if ( iDirection == WINDOW_MOUSE_WHEEL_UP )
+	if ( iDirection == (s16)EUIMessages::WINDOW_MOUSE_WHEEL_UP )
 		m_list->ScrollBar()->TryScrollDec();
-	else if ( iDirection == WINDOW_MOUSE_WHEEL_DOWN )
+	else if ( iDirection == (s16)EUIMessages::WINDOW_MOUSE_WHEEL_DOWN )
 		m_list->ScrollBar()->TryScrollInc();
 }
 void UITaskListWnd::Show( bool status )
 {
 	inherited::Show( status );
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_HIDE_HINT, NULL );
 	if(status)
 		UpdateList();
 }
@@ -97,13 +97,13 @@ void UITaskListWnd::Show( bool status )
 void UITaskListWnd::OnFocusReceive()
 {
 	inherited::OnFocusReceive();
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_HIDE_HINT, NULL );
 }
 
 void UITaskListWnd::OnFocusLost()
 {
 	inherited::OnFocusLost();
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_HIDE_HINT, NULL );
 }
 
 void UITaskListWnd::Update()
@@ -226,7 +226,7 @@ void UITaskListWndItem::hide_hint()
 {
 	show_hint_can   = false;
 	show_hint       = false;
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_HIDE_HINT, NULL );
 }
 
 void UITaskListWndItem::Update()
@@ -239,7 +239,7 @@ void UITaskListWndItem::Update()
 		if ( Device.dwTimeGlobal > ( m_name->FocusReceiveTime() + 700 ) )
 		{
 			show_hint = true;
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SHOW_HINT, (void*)m_task );
+			GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_SHOW_HINT, (void*)m_task );
 			return;
 		}
 	}
@@ -286,9 +286,9 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 {
 	if ( pWnd == m_bt_focus )
 	{
-		if ( msg == BUTTON_DOWN )
+		if ( msg == (s16)EUIMessages::BUTTON_DOWN )
 		{
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SET_TARGET_MAP, (void*)m_task );
+			GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_SET_TARGET_MAP, (void*)m_task );
 		}
 	}
 /*	
@@ -310,15 +310,15 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 */
 	if ( pWnd == m_name )
 	{
-		if ( msg == BUTTON_DOWN )
+		if ( msg == (s16)EUIMessages::BUTTON_DOWN )
 		{
 			Level().GameTaskManager().SetActiveTask( m_task );
 			return;
 		}
 
-		if ( msg == WINDOW_LBUTTON_DB_CLICK )
+		if ( msg == (s16)EUIMessages::WINDOW_LBUTTON_DB_CLICK )
 		{
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SET_TARGET_MAP, (void*)m_task );
+			GetMessageTarget()->SendMessage( this, (s16)EUIMessages::PDA_TASK_SET_TARGET_MAP, (void*)m_task );
 		}
 	}
 
@@ -334,9 +334,9 @@ bool UITaskListWndItem::OnMouseAction( float x, float y, EUIMessages mouse_actio
 
 	switch ( mouse_action )
 	{
-	case WINDOW_LBUTTON_DOWN:
-	case WINDOW_RBUTTON_DOWN:
-	case BUTTON_DOWN:
+	case EUIMessages::WINDOW_LBUTTON_DOWN:
+	case EUIMessages::WINDOW_RBUTTON_DOWN:
+	case EUIMessages::BUTTON_DOWN:
 		{
 			hide_hint();
 			break;

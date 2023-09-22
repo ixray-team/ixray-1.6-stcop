@@ -242,17 +242,22 @@ CChangeLevelWnd::CChangeLevelWnd		()
 	AttachChild				(m_messageBox);
 }
 
-void CChangeLevelWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
+void CChangeLevelWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if(pWnd==m_messageBox){
-		if(msg==MESSAGE_BOX_YES_CLICKED){
-			OnOk									();
-		}else
-		if(msg==MESSAGE_BOX_NO_CLICKED || msg==MESSAGE_BOX_OK_CLICKED)
+	EUIMessages ValidMsg = EUIMessages(msg);
+
+	if (pWnd == m_messageBox)
+	{
+		if (ValidMsg == EUIMessages::MESSAGE_BOX_YES_CLICKED)
 		{
-			OnCancel								();
+			OnOk();
 		}
-	}else
+		else if (ValidMsg == EUIMessages::MESSAGE_BOX_NO_CLICKED || ValidMsg == EUIMessages::MESSAGE_BOX_OK_CLICKED)
+		{
+			OnCancel();
+		}
+	}
+	else
 		inherited::SendMessage(pWnd, msg, pData);
 }
 
@@ -278,7 +283,7 @@ void CChangeLevelWnd::OnCancel()
 
 bool CChangeLevelWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if(keyboard_action==WINDOW_KEY_PRESSED)
+	if(keyboard_action== EUIMessages::WINDOW_KEY_PRESSED)
 	{
 		if(is_binded(kQUIT, dik) )
 			OnCancel		();

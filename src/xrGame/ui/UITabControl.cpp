@@ -92,7 +92,7 @@ void CUITabControl::RemoveAll()
 
 void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	if (TAB_CHANGED == msg)
+	if ((s16)EUIMessages::TAB_CHANGED == msg)
 	{
 		for (u32 i = 0; i < m_TabsArr.size(); ++i)
 		{
@@ -109,14 +109,14 @@ void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		}
 	}
 
-	else if (WINDOW_FOCUS_RECEIVED	== msg	||
-			 WINDOW_FOCUS_LOST		== msg)
+	else if ((s16)EUIMessages::WINDOW_FOCUS_RECEIVED	== msg	||
+			 (s16)EUIMessages::WINDOW_FOCUS_LOST		== msg)
 	{
 		for (u8 i = 0; i < m_TabsArr.size(); ++i)
 		{
 			if (pWnd == m_TabsArr[i])
 			{				
-				if (msg == WINDOW_FOCUS_RECEIVED)
+				if (msg == (s16)EUIMessages::WINDOW_FOCUS_RECEIVED)
                     OnStaticFocusReceive(pWnd);
 				else
 					OnStaticFocusLost(pWnd);
@@ -131,12 +131,12 @@ void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 void CUITabControl::OnStaticFocusReceive(CUIWindow* pWnd)
 {
-	GetMessageTarget()->SendMessage			(this, WINDOW_FOCUS_RECEIVED, static_cast<void*>(pWnd));
+	GetMessageTarget()->SendMessage			(this, (s16)EUIMessages::WINDOW_FOCUS_RECEIVED, static_cast<void*>(pWnd));
 }
 
 void CUITabControl::OnStaticFocusLost(CUIWindow* pWnd)
 {
-	GetMessageTarget()->SendMessage			(this, WINDOW_FOCUS_LOST, static_cast<void*>(pWnd));
+	GetMessageTarget()->SendMessage			(this, (s16)EUIMessages::WINDOW_FOCUS_LOST, static_cast<void*>(pWnd));
 }
 
 void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)
@@ -144,11 +144,11 @@ void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)
 	CUITabButton* tb_cur					= GetButtonById			(sCur);
 	CUITabButton* tb_prev					= GetButtonById			(sPrev);
 	if(tb_prev)	
-		tb_prev->SendMessage				(tb_cur, TAB_CHANGED, NULL);
+		tb_prev->SendMessage				(tb_cur, (s16)EUIMessages::TAB_CHANGED, NULL);
 
-	tb_cur->SendMessage						(tb_cur, TAB_CHANGED, NULL);	
+	tb_cur->SendMessage						(tb_cur, (s16)EUIMessages::TAB_CHANGED, NULL);
 
-	GetMessageTarget()->SendMessage			(this, TAB_CHANGED, NULL);
+	GetMessageTarget()->SendMessage			(this, (s16)EUIMessages::TAB_CHANGED, NULL);
 }
 
 void CUITabControl::SetActiveTab(const shared_str& sNewTab)
@@ -165,7 +165,7 @@ void CUITabControl::SetActiveTab(const shared_str& sNewTab)
 bool CUITabControl::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 
-	if (GetAcceleratorsMode() && WINDOW_KEY_PRESSED == keyboard_action)
+	if (GetAcceleratorsMode() && EUIMessages::WINDOW_KEY_PRESSED == keyboard_action)
 	{
 		for (u32 i = 0; i < m_TabsArr.size(); ++i)
 		{

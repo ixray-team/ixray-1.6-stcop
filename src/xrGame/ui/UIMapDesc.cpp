@@ -95,7 +95,7 @@ void CUIMapDesc::Init(){
 }
 
 void CUIMapDesc::SendMessage(CUIWindow* pWnd,s16 msg, void* pData){
-	if (BUTTON_CLICKED == msg)
+	if ((s16)EUIMessages::BUTTON_CLICKED == msg)
 	{
 		game_cl_mp * dm = smart_cast<game_cl_mp *>(&(Game()));
 		HideDialog							();
@@ -108,7 +108,7 @@ void CUIMapDesc::SendMessage(CUIWindow* pWnd,s16 msg, void* pData){
 }
 
 bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
-	if (WINDOW_KEY_RELEASED == keyboard_action) 
+	if (EUIMessages::WINDOW_KEY_RELEASED == keyboard_action)
 	{
 		if (dik == DIK_TAB)
 		{

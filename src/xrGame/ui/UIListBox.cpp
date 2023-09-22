@@ -27,11 +27,11 @@ bool CUIListBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	if(CUIWindow::OnMouseAction(x,y,mouse_action)) return true;
 
 	switch (mouse_action){
-		case WINDOW_MOUSE_WHEEL_UP:
+		case EUIMessages::WINDOW_MOUSE_WHEEL_UP:
 			m_VScrollBar->TryScrollDec();
 			return true;
 		break;
-		case WINDOW_MOUSE_WHEEL_DOWN:
+		case EUIMessages::WINDOW_MOUSE_WHEEL_DOWN:
 			m_VScrollBar->TryScrollInc();
 			return true;
 		break;
@@ -89,14 +89,15 @@ void CUIListBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	if (m_pad->IsChild(pWnd))
 	{
-		switch (msg){
-			case LIST_ITEM_SELECT:	
-				GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, pData);
+		switch ((EUIMessages)msg)
+		{
+			case EUIMessages::LIST_ITEM_SELECT:
+				GetMessageTarget()->SendMessage(this, (s16)EUIMessages::LIST_ITEM_SELECT, pData);
 				break;
-			case LIST_ITEM_CLICKED:
-				GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pData);
+			case EUIMessages::LIST_ITEM_CLICKED:
+				GetMessageTarget()->SendMessage(this, (s16)EUIMessages::LIST_ITEM_CLICKED, pData);
 				break;
-			case LIST_ITEM_FOCUS_RECEIVED:
+			case EUIMessages::LIST_ITEM_FOCUS_RECEIVED:
 				if (m_bImmediateSelection)
                     SetSelected(pWnd);
 				break;

@@ -90,7 +90,7 @@ void CUIMapList::StartDedicatedServer(){
 
 
 void CUIMapList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData ){
-	if (BUTTON_CLICKED == msg)
+	if ((s16)EUIMessages::BUTTON_CLICKED == msg)
 	{
 		if (m_pBtnLeft == pWnd)
 			OnBtnLeftClick();
@@ -103,19 +103,19 @@ void CUIMapList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData ){
 		else if (m_pModeSelector == pWnd)
 			OnModeChange();
 	}
-	else if (WINDOW_LBUTTON_DB_CLICK == msg)
+	else if ((s16)EUIMessages::WINDOW_LBUTTON_DB_CLICK == msg)
 	{
 		if (m_pList1 ==pWnd)
 			OnBtnRightClick();
 		else if (m_pList2 ==pWnd)
 			OnBtnLeftClick();
 	}
-	else if (LIST_ITEM_CLICKED == msg)
+	else if ((s16)EUIMessages::LIST_ITEM_CLICKED == msg)
 	{
 		if (pWnd == m_pList1)
             OnListItemClicked();
 	}
-	else if (LIST_ITEM_SELECT == msg)
+	else if ((s16)EUIMessages::LIST_ITEM_SELECT == msg)
 	{
 		if (m_pModeSelector == pWnd)
 			OnModeChange();

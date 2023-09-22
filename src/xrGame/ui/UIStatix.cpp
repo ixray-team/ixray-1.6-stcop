@@ -66,7 +66,7 @@ void CUIStatix::OnFocusReceive()
 
 bool CUIStatix::OnMouseDown(int mouse_btn)
 {
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED);
+	GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED);
 	return true;
 }
 

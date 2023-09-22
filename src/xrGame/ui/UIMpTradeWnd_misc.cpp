@@ -19,12 +19,12 @@ bool CUIMpTradeWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 #ifdef DEBUG
 	//for debug only
-	if(keyboard_action==WINDOW_KEY_PRESSED && dik==DIK_NUMPAD7)
+	if(keyboard_action== EUIMessages::WINDOW_KEY_PRESSED && dik==DIK_NUMPAD7)
 	{
 		if(GetRank()>0)
 			SetRank( clampr(u32(GetRank()-1),u32(0),u32(4) ) );
 	}
-	if(keyboard_action==WINDOW_KEY_PRESSED && dik==DIK_NUMPAD8)
+	if(keyboard_action== EUIMessages::WINDOW_KEY_PRESSED && dik==DIK_NUMPAD8)
 	{
 		SetRank( clampr(u32(GetRank()+1),u32(0),u32(4) ) );
 	}
@@ -38,7 +38,7 @@ bool CUIMpTradeWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		m_root_tab_control->SetAcceleratorsMode		(false);
 	}
 
-	if ( keyboard_action == WINDOW_KEY_PRESSED )
+	if ( keyboard_action == EUIMessages::WINDOW_KEY_PRESSED )
 	{
 		if ( dik == DIK_Q )
 		{
@@ -54,7 +54,7 @@ bool CUIMpTradeWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		}
 	}
 
-	if ( keyboard_action == WINDOW_KEY_PRESSED && dik == DIK_NUMPADPLUS )
+	if ( keyboard_action == EUIMessages::WINDOW_KEY_PRESSED && dik == DIK_NUMPADPLUS )
 	{
 		return true;
 	}

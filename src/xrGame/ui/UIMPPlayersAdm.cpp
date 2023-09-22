@@ -153,7 +153,7 @@ void CUIMpPlayersAdm::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	switch(msg)
 	{
-	case BUTTON_CLICKED:
+	case (s16)EUIMessages::BUTTON_CLICKED:
 		{
 			if(pWnd==m_pRefreshBtn)
 				RefreshPlayersList();
