@@ -80,8 +80,7 @@ void	CSoundRender_Target::attach()
 
 void	CSoundRender_Target::dettach()
 {
-	if (m_wave)		{
-		ov_clear		(&m_ovf);
+	if (m_wave) {
 		FS.r_close		(m_wave);
 	}
 }
