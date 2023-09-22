@@ -311,7 +311,7 @@ u32 CGameTaskManager::GetTaskIndex( CGameTask* t, ETaskState state )
 	}
 
 	vGameTasks& v	= GetGameTasks();
-	u32 cnt			= v.size();
+	u32 cnt			= (u32)v.size();
 	u32 res			= 0;
 	for ( u32 i = 0; i < cnt; ++i )
 	{

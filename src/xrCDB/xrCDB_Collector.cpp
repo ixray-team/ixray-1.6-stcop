@@ -21,9 +21,9 @@ namespace CDB
 		)
 	{
 		TRI T;
-		T.verts		[0] = verts.size();
-		T.verts		[1] = verts.size()+1;
-		T.verts		[2] = verts.size()+2;  
+		T.verts		[0] = (u32)verts.size();
+		T.verts		[1] = (u32)verts.size()+1;
+		T.verts		[2] = (u32)verts.size()+2;  
 		T.dummy			= dummy;
 
 		verts.push_back(v0);
@@ -35,9 +35,9 @@ namespace CDB
 	void	Collector::add_face		(	const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector )
 	{
 		TRI			T;
-		T.verts	[0]		= verts.size();
-		T.verts	[1]		= verts.size()+1;
-		T.verts	[2]		= verts.size()+2;
+		T.verts	[0]		= (u32)verts.size();
+		T.verts	[1]		= (u32)verts.size()+1;
+		T.verts	[2]		= (u32)verts.size()+2;
 		T.material		= material;
 		T.sector		= sector;
 

@@ -217,7 +217,7 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*> &tpObjec
 template <typename Object>
 void CStateBurerAttackTele<Object>::FindObjects	()
 {
-	u32	res_size					= tele_objects.size		();
+	u32	res_size					= (u32)tele_objects.size		();
 	clear_and_reserve(tele_objects);
 
 	// получить список объектов вокруг врага

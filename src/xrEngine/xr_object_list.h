@@ -72,7 +72,7 @@ public:
 	void						o_remove			( Objects&	v,  CObject*	O);
 	void						o_activate			( CObject*		O		);
 	void						o_sleep				( CObject*		O		);
-	IC u32						o_count				()	{ return objects_active.size()+objects_sleeping.size(); };
+	IC u32						o_count				()	{ return u32(objects_active.size()+objects_sleeping.size()); };
 	IC CObject*					o_get_by_iterator	(u32 _it)	{
 		if (_it<objects_active.size())	return objects_active	[_it];
 		else							return objects_sleeping	[_it-objects_active.size()];

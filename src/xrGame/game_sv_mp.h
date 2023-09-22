@@ -159,7 +159,7 @@ public:
 	virtual		void				ConsoleCommands_Create	();
 	virtual		void				ConsoleCommands_Clear	();
 
-	virtual		u32					GetTeamCount			()	{return TeamList.size();};	
+	virtual		u32					GetTeamCount			()	{return (u32)TeamList.size();};
 				TeamStruct*			GetTeamData				(u32 Team);
 
 	virtual		u8					GetSpectatorModes		() {return m_u8SpectatorModes;};

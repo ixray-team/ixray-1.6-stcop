@@ -135,7 +135,7 @@ public:
 	IC	u32			AppendSubGraph	(EStyle S)
 	{
 		subgraphs.push_back(SSubGraph(S));
-		return subgraphs.size()-1;
+		return (u32)subgraphs.size()-1;
 	};
 
 	IC	void		AddMarker (EStyle Style, float pos, u32 Color)

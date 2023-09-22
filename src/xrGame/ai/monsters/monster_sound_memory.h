@@ -84,7 +84,7 @@ public:
 	IC	bool	IsRememberSound			() {return (!Sounds.empty());}		
 	
 	// Lain: added
-	int         GetNumSounds            () {return Sounds.size();}
+	int         GetNumSounds            () {return (u32)Sounds.size();}
 	void        GetFirstSound           (SoundElem& s, bool& bDangerous);
 
 	void		GetSound				(SoundElem& s, bool& bDangerous);	// возвращает самый опасный звук
