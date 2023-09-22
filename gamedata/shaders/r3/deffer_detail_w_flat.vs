@@ -26,20 +26,19 @@ v2p_flat 	main (v_detail v)
  	pos.z 		= dot	(m2, v.pos);
 	pos.w 		= 1;
 
+	float 	dp			= calc_cyclic   (dot(pos,wave));
+	float 	prev_dp		= calc_cyclic   (dot(pos,prev_wave));
+	
 	// 
 	float 	base 		= m1.w;
-	float 	dp			= calc_cyclic   (dot(pos,wave));
 	float 	H 			= pos.y - base;			// height of vertex (scaled)
 	float 	inten 		= H * dp;
 	float 	frac 		= v.misc.z*consts.x;		// fractional
+	
 	float2 	result 		= calc_xz_wave	(dir2D.xz*inten,frac);
 	pos					= float4(pos.x+result.x, pos.y, pos.z+result.y, 1);
 
-	float 	prev_dp		= calc_cyclic   (dot(pos,prev_wave));
-	float 	prev_H 		= pos.y - base;			// height of vertex (scaled)
-	float 	prev_inten 	= prev_H * prev_dp;
-	float 	prev_frac 	= v.misc.z*consts.x;		// fractional
-	float2 	prev_result = calc_xz_wave	(prev_dir2D.xz*prev_inten,prev_frac);
+	float2 	prev_result = calc_xz_wave	(prev_dir2D.xz*inten,frac);
 	prev_pos			= float4(pos.x+prev_result.x, pos.y, pos.z+prev_result.y, 1);
 
 	// Normal in world coords

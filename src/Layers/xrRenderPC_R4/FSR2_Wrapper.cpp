@@ -4,7 +4,7 @@ Fsr2Wrapper g_Fsr2Wrapper;
 
 extern float ps_r4_motion_scale;
 
-void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
+bool Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
 {
     VERIFY(!m_created);
 
@@ -13,7 +13,9 @@ void Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
     // Setup DX11 interface.
     m_scratchBuffer.resize(ffxFsr2GetScratchMemorySizeDX11());
     FfxErrorCode errorCode = ffxFsr2GetInterfaceDX11(&m_contextDesc.callbacks, params.device, m_scratchBuffer.data(), m_scratchBuffer.size());
-    R_ASSERT(errorCode == FFX_OK);
+    if (errorCode != FFX_OK) {
+        return false;
+    }
 
     // This adds a ref to the device. The reference will get freed in ffxFsr2ContextDestroy
     m_contextDesc.device = ffxGetDeviceDX11(params.device);

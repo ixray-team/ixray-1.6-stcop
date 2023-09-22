@@ -18,9 +18,42 @@ void CRenderTarget::DoAsyncScreenshot()
 	}
 }
 
+void set_viewport(ID3DDeviceContext* dev, float w, float h);
+
 inline float hclip(float v, float dim)
 {
 	return 2.f * v / dim - 1.f; 
+}
+
+void  CRenderTarget::phase_copy_depth()
+{
+	PIX_EVENT(Copy_Depth);
+
+	u32 Offset = 0;
+	float d_Z = EPS_S;
+	float d_W = 1.0f;
+	u32 C = color_rgba(0, 0, 0, 255);
+
+	u32 w = RCache.get_target_width();
+	u32 h = RCache.get_target_height();
+
+	set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
+	u_setrt(w, h, rt_Depth->pRT, nullptr, nullptr, nullptr);
+
+	u32 CullMode = RCache.get_CullMode();
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(false);
+
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+	pv->set(0, h, d_Z, d_W, C, 0, 1); pv++;
+	pv->set(0, 0, d_Z, d_W, C, 0, 0); pv++;
+	pv->set(w, h, d_Z, d_W, C, 1, 1); pv++;
+	pv->set(w, 0, d_Z, d_W, C, 1, 0); pv++;
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
+
+	RCache.set_Element(s_output_scale->E[SCALEPHASE_COPY_DEPTH]);
+	RCache.set_Geometry(g_combine);
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
 //	TODO: DX10: Remove half poxel offset
@@ -100,6 +133,12 @@ void CRenderTarget::phase_final()
 			phase_output_scale(false);
 		} else {
 			phase_fsr2_combine();
+		}
+	case 3:
+		if (!g_DLSSWrapper.IsCreated()) {
+			phase_output_scale(false);
+		} else {
+			phase_dlss_combine();
 		}
 		break;
 	default:

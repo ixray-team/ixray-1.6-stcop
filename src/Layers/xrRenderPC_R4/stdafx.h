@@ -7,6 +7,8 @@
 #include "../../xrEngine/stdafx.h"
 
 #include "FSR2Wrapper.h"
+#include "DLSS_Wrapper.h"
+
 #include <d3d11_1.h>
 #include <D3DCompiler.h>
 

@@ -284,6 +284,7 @@ public:
 	void						phase_copy_depth		();
 	void						phase_motion_vectors	();
 	void						phase_fsr2_combine		();
+	void						phase_dlss_combine		();
 	void						phase_output_scale		(bool linear);
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}

@@ -48,7 +48,7 @@ public:
     };
 
 public:
-    void Create(ContextParameters params);
+    bool Create(ContextParameters params);
     void Destroy();
 
     void Draw(const DrawParameters& params);

@@ -78,6 +78,7 @@ xr_token							upscale_token[] = {
 	{ "nearest",					SCALETYPE_NEAREST								},
 	{ "linear",						SCALETYPE_LINEAR								},
 	{ "fsr2",						SCALETYPE_FSR2									},
+	{ "dlss",						SCALETYPE_DLSS									},
 	{ 0,							0												}
 };
 

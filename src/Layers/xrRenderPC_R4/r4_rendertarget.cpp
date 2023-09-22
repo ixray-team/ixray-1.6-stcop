@@ -375,6 +375,23 @@ CRenderTarget::CRenderTarget		()
    rt_HWDepth.create(r2_RT_HW_depth, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS, 1);
    rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
    rt_MotionVectors.create(r4_motion_vectors, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);
+   if (ps_r4_upscale_type == SCALETYPE_DLSS) {
+       auto DisplaySize = g_DLSSWrapper.GetDisplaySize();
+       if (g_DLSSWrapper.IsCreated() && (DisplaySize.x != Device.TargetWidth || DisplaySize.y != Device.TargetHeight)) {
+           g_DLSSWrapper.Destroy();
+       }
+
+       if (!g_DLSSWrapper.IsCreated()) {
+           DLSSWrapper::ContextParameters initParams;
+           initParams.device = HW.pDevice;
+           initParams.displaySize = { (int)RCache.get_target_width(), (int)RCache.get_target_height() };
+           initParams.renderSize = { (int)RCache.get_width(), (int)RCache.get_height() };
+           if (!g_DLSSWrapper.Create(initParams)) {
+               ps_r4_upscale_type = SCALETYPE_FSR2;
+           }
+       }
+   }
+
    if (ps_r4_upscale_type == SCALETYPE_FSR2) {
        auto DisplaySize = g_Fsr2Wrapper.GetDisplaySize();
        if (g_Fsr2Wrapper.IsCreated() && (DisplaySize.width != Device.TargetWidth || DisplaySize.height != Device.TargetHeight)) {
@@ -393,9 +410,12 @@ CRenderTarget::CRenderTarget		()
                Msg("[FSR]: %s", TempString);
            };
 
-           g_Fsr2Wrapper.Create(initParams);
+           if (!g_Fsr2Wrapper.Create(initParams)) {
+               ps_r4_upscale_type = SCALETYPE_NEAREST;
+           }
        }
    }
+
 
    // FXAA
    {

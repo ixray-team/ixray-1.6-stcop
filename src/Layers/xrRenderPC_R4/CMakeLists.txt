@@ -56,6 +56,7 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}/fsr2")
+target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}/dlss")
 
 # project defines 
 target_compile_definitions(xrRender_R4 PRIVATE _WINDOWS)
@@ -86,11 +87,17 @@ target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/dire
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/include/")
 
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x86.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x86.lib")
-target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x86/release/DirectXTex.lib)
+    target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x86.lib")
+    target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x86.lib")
+    target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x86/release/DirectXTex.lib)
 else()
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x64.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x64.lib")
-target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x64/release/DirectXTex.lib)
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}nvngx_dlss.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+
+    target_link_libraries(xrRender_R4 PUBLIC "nvsdk_ngx_d.lib")
+    target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x64.lib")
+    target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x64.lib")
+    target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x64/release/DirectXTex.lib)
 endif()

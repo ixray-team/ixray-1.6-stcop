@@ -1,24 +1,53 @@
 #include "common.h"
-/*
-struct 	v2p
-{
-//D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX3
-	float4 	color:		COLOR0;		// multiplier, color.w = noise_amount
-	float4	gray:		COLOR1;		// (.3,.3,.3.,amount)
- 	float2 	tc0: 		TEXCOORD0;	// base1 (duality)
- 	float2 	tc1: 		TEXCOORD1;	// base2 (duality)
- 	float2 	tc2: 		TEXCOORD2;	// base  (noise)
-};
-*/
 
 Texture2D 	s_base0;
 Texture2D 	s_base1;
 Texture2D 	s_noise;
+Texture3D 	s_tonemap_lut;
 uniform float4 		c_brightness;
+
+//https://github.com/h3r2tic/tony-mc-mapface
+float3 tony_mc_mapface(float3 stimulus)
+{
+    // Apply a non-linear transform that the LUT is encoded with.
+    const float3 encoded = stimulus / (stimulus + 1.0); //reinhard-ish
+
+    // Align the encoded range to texel centers.
+    const float LUT_DIMS = 48.0;
+    const float3 uv = encoded * ((LUT_DIMS - 1.0) / LUT_DIMS) + 0.5 / LUT_DIMS;
+
+    return s_tonemap_lut.SampleLevel(smp_linear, uv, 0);
+}
+
+//credits: Jodie
+float bayer32(float2 a)
+{
+    uint2 b = uint2(a);
+    uint x = ((b.x^b.y)&0x1fu) | b.y<<5;
+    
+    x = (x & 0x048u)
+  | ((x & 0x024u) << 3)
+  | ((x & 0x002u) << 6)
+  | ((x & 0x001u) << 9)
+  | ((x & 0x200u) >> 9)
+  | ((x & 0x100u) >> 6)
+  | ((x & 0x090u) >> 3); // 22 ops
+  
+    return float(x)/32.0/32.0;
+}
+
+//moving frostbite to pbr
+float3 accurateLinearToSRGB(float3  linearCol)
+{
+    float3 sRGBLo = linearCol * 12.92f;
+    float3 sRGBHi = (pow(abs(linearCol), 1.0f/2.4f) * 1.055f) - 0.055f;
+    float3 sRGB = (linearCol  <= 0.0031308f) ? sRGBLo : sRGBHi;
+    return sRGB;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 main( p_postpr I ) : SV_Target
+float4 main( v2p_postpr I ) : SV_Target
 {
 	float3	t_0 	= s_base0.Sample( smp_nofilter, I.Tex0);
 	float3	t_1 	= s_base1.Sample( smp_nofilter, I.Tex1);	
@@ -31,6 +60,11 @@ float4 main( p_postpr I ) : SV_Target
 			image	= lerp( noised, image, I.Color.w); 	// lrp ?
 			image	= (image * I.Color + c_brightness)*2;		// mad
 
+	image *= 1.4;
+	image = tony_mc_mapface(image);
+	image = accurateLinearToSRGB(image);
+	image += bayer32(I.HPos.xy) / 255.0;
+
 	// out
-	return  float4( image, 1.0h);					// +mov
+	return float4(image, 1.0h);					// +mov
 }
