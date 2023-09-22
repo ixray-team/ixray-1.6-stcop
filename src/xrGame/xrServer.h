@@ -246,7 +246,7 @@ public:
 	// utilities
 	CSE_Abstract*			entity_Create		(LPCSTR name);
 	void					entity_Destroy		(CSE_Abstract *&P);
-	u32						GetEntitiesNum		()			{ return entities.size(); };
+	u32						GetEntitiesNum		()			{ return (u32)entities.size(); };
 	CSE_Abstract*			GetEntity			(u32 Num);
 	u32 const				GetLastUpdatesSize	() const { return m_last_updates_size; };
 

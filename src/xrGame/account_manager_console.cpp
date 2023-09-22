@@ -24,10 +24,10 @@ void CCC_CreateGameSpyAccount::Execute(LPCSTR args)
 	string256	tmp_password;
 	
 	sscanf_s(args, "%s %s %s %s",
-		tmp_nick, sizeof(tmp_nick),
-		tmp_unick, sizeof(tmp_unick),
-		tmp_email, sizeof(tmp_email),
-		tmp_password, sizeof(tmp_password));
+		tmp_nick, (u32)sizeof(tmp_nick),
+		tmp_unick, (u32)sizeof(tmp_unick),
+		tmp_email, (u32)sizeof(tmp_email),
+		tmp_password, (u32)sizeof(tmp_password));
 	
 	VERIFY(MainMenu() && MainMenu()->GetGS());
 	CGameSpy_GP* tmp_gp = MainMenu()->GetGS()->GetGameSpyGP();
@@ -63,8 +63,8 @@ void CCC_GapySpyListProfiles::Execute(LPCSTR args)
 	string256	tmp_password;
 			
 	sscanf_s(args, "%s %s",
-		tmp_email,		sizeof(tmp_email),
-		tmp_password,	sizeof(tmp_password));
+		tmp_email, (u32)sizeof(tmp_email),
+		tmp_password, (u32)sizeof(tmp_password));
 	
 	VERIFY(MainMenu() && MainMenu()->GetGS());
 	CGameSpy_GP* tmp_gp = MainMenu()->GetGS()->GetGameSpyGP();
@@ -91,9 +91,9 @@ void CCC_GameSpyLogin::Execute(LPCSTR args)
 	string256	tmp_password;
 			
 	sscanf_s(args, "%s %s %s", 
-		tmp_email,		sizeof(tmp_email),
-		tmp_nick,		sizeof(tmp_nick),
-		tmp_password,	sizeof(tmp_password)
+		tmp_email,		(u32)sizeof(tmp_email),
+		tmp_nick,		(u32)sizeof(tmp_nick),
+		tmp_password,	(u32)sizeof(tmp_password)
 	);
 	
 	VERIFY(MainMenu() && MainMenu()->GetGS());
@@ -181,7 +181,7 @@ void CCC_GameSpySuggestUNicks::Execute(LPCSTR args)
 	
 	VERIFY(MainMenu() && MainMenu()->GetGS());
 	string256	tmp_unick;
-	sscanf_s(args, "%s", tmp_unick, sizeof(tmp_unick));
+	sscanf_s(args, "%s", tmp_unick, (u32)sizeof(tmp_unick));
 	gamespy_gp::account_manager* tmp_amngr = MainMenu()->GetAccountMngr();
 	VERIFY(tmp_amngr);
 	tmp_amngr->suggest_unique_nicks(tmp_unick, gamespy_gp::suggest_nicks_cb());
@@ -191,7 +191,7 @@ void CCC_GameSpyRegisterUniqueNick::Execute(LPCSTR args)
 {
 	VERIFY(MainMenu() && MainMenu()->GetGS());
 	gamespy_gp::login_manager::unique_nick_t	tmp_unick;
-	sscanf_s(args, "%s", tmp_unick, sizeof(tmp_unick));
+	sscanf_s(args, "%s", tmp_unick, (u32)sizeof(tmp_unick));
 	gamespy_gp::login_manager*	tmp_lmngr = MainMenu()->GetLoginMngr();
 	VERIFY(tmp_lmngr);
 	tmp_lmngr->set_unique_nick(tmp_unick, gamespy_gp::login_operation_cb());
@@ -225,7 +225,7 @@ void CCC_GameSpyProfile::Execute(LPCSTR args)
 	}
 
 	string256	tmp_command;
-	sscanf_s(args, "%s", tmp_command, sizeof(tmp_command));
+	sscanf_s(args, "%s", tmp_command, (u32)sizeof(tmp_command));
 	if (!xr_strcmp(tmp_command, "load"))
 	{
 		/*tmp_prof_store->set_current_profile(

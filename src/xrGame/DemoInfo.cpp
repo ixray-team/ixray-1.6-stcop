@@ -136,7 +136,7 @@ void demo_info::write_to_file(IWriter* file_to_write) const
 	file_to_write->w_stringZ	(m_game_score);
 	file_to_write->w_stringZ	(m_author_name);
 	
-	file_to_write->w_u32		(m_players.size());
+	file_to_write->w_u32		((u32)m_players.size());
 	for (players_coll_t::const_iterator i = m_players.begin(),
 		ie = m_players.end(); i != ie; ++i)
 	{

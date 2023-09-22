@@ -337,7 +337,7 @@ void CRender::Render		()
 	{
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
 		// perform tests
-		u32	count			= 0;
+		size_t	count = 0;
 		light_Package&	LP	= Lights.package;
 
 		// stats
@@ -346,10 +346,10 @@ void CRender::Render		()
 		stats.l_total		= stats.l_shadowed + stats.l_unshadowed;
 
 		// perform tests
-		count				= _max	(count,LP.v_point.size());
-		count				= _max	(count,LP.v_spot.size());
-		count				= _max	(count,LP.v_shadowed.size());
-		for (u32 it=0; it<count; it++)	{
+		count = std::max(count, LP.v_point.size());
+		count = std::max(count, LP.v_spot.size());
+		count = std::max(count, LP.v_shadowed.size());
+		for (size_t it = 0; it < count; it++)	{
 			if (it<LP.v_point.size())		{
 				light*	L			= LP.v_point	[it];
 				L->vis_prepare		();

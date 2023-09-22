@@ -83,7 +83,7 @@ public:
 	LPCSTR				get_game_type		() const { return m_game_type.c_str(); };
 	LPCSTR				get_game_score		() const { return m_game_score.c_str(); }; 
 	LPCSTR				get_author_name		() const { return m_author_name.c_str(); };
-	u32 const 			get_players_count	() const { return m_players.size(); };
+	u32 const 			get_players_count	() const { return (u32)m_players.size(); };
 	
 	demo_player_info const *	get_player			(u32 player_index)				const;
 
