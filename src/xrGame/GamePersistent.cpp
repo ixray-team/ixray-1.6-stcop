@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "gamepersistent.h"
 #include "../xrEngine/fmesh.h"

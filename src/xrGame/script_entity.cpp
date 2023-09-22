@@ -6,6 +6,7 @@
 //	Description : Script entity class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_entity.h"
 #include "CustomMonster.h"

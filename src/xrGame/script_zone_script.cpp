@@ -6,6 +6,7 @@
 //	Description : Script zone object script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_zone.h"
 #include "smart_zone.h"

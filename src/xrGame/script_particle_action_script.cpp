@@ -6,6 +6,7 @@
 //	Description : Script particle action class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_particle_action.h"
 

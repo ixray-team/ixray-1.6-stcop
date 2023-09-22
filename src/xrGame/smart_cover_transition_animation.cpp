@@ -5,6 +5,7 @@
 //	Description : Animation transition class for smart_cover
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_transition_animation.hpp"
 

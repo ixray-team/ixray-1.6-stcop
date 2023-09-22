@@ -6,6 +6,7 @@
 //	Description : Memory manager
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"

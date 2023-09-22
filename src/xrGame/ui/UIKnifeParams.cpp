@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIKnifeParams.h"
 #include "UIXmlInit.h"

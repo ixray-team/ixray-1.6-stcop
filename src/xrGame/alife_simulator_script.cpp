@@ -6,6 +6,7 @@
 //	Description : ALife Simulator script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_simulator.h"
 #include "ai_space.h"

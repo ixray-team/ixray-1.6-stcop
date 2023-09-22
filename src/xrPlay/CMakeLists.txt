@@ -5,9 +5,19 @@ set(XPLAY_SRC_FILES)
 file(GLOB_RECURSE XPLAY_SOURCE_ALL_FILES
     "*.*"
 )
+file(GLOB_RECURSE XPLAY_SOURCE_CPP_FILES
+    "*.cpp"
+    "*.h"
+)
+file(GLOB_RECURSE XPLAY_SOURCE_RES_FILES
+    "*.ico"
+    "*.rc"
+    "*.bmp"
+)
 
 # File groups
-source_group("kernel" FILES ${XPLAY_SOURCE_ALL_FILES})
+source_group("Source Files" FILES ${XPLAY_SOURCE_CPP_FILES})
+source_group("Resources" FILES ${XPLAY_SOURCE_RES_FILES})
 
 # Apply list
 list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
@@ -15,7 +25,7 @@ list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
 # Remove files
 #list(FILTER CPIPE_SRC_FILES EXCLUDE REGEX "")
 
-# xrCPU_Pipe project
+# xrPlay project
 add_executable(xrPlay WIN32 ${XPLAY_SOURCE_ALL_FILES})
 target_include_directories(xrPlay PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrPlay PRIVATE "${IXRAY_SDK_INC}")

@@ -6,6 +6,7 @@
 //	Description : Visibility and look for monster "Rat"
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_rat.h"
 #include "../../../memory_manager.h"

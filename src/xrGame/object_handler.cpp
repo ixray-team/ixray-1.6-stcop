@@ -6,6 +6,7 @@
 //	Description : Object handler
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "object_handler.h"
 #include "object_handler_space.h"
