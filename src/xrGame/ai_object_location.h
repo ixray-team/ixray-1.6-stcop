@@ -34,7 +34,7 @@ public:
 	IC	const _GRAPH_ID		game_vertex_id		() const;
 	IC	void				level_vertex		(CLevelVertex const *level_vertex);
 	IC	void				level_vertex		(u32 const &level_vertex_id);
-	IC	const CLevelVertex	*level_vertex		() const;
+	const CLevelVertex	*level_vertex		() const;
 	IC	const u32			level_vertex_id		() const;
 };
 

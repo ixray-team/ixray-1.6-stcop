@@ -43,9 +43,3 @@ IC	void CAI_ObjectLocation::level_vertex						(CLevelVertex  const *level_vertex
 	VERIFY				(ai().level_graph().valid_vertex_id(ai().level_graph().vertex_id(level_vertex)));
 	m_level_vertex_id	= ai().level_graph().vertex_id(level_vertex);
 }
-
-IC	const CLevelGraph::CVertex *CAI_ObjectLocation::level_vertex() const
-{
-	VERIFY				(ai().level_graph().valid_vertex_id(m_level_vertex_id));
-	return				(ai().level_graph().vertex(m_level_vertex_id));
-}
