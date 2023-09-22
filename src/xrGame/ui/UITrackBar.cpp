@@ -28,7 +28,7 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 	switch (mouse_action)
 	{
-	case EUIMessages::WINDOW_MOUSE_MOVE:
+	case WINDOW_MOUSE_MOVE:
 		{
 			if(m_bCursorOverWindow && m_b_mouse_capturer)
 			{
@@ -36,19 +36,19 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 					UpdatePosRelativeToMouse();
 			}
 		}break;
-	case EUIMessages::WINDOW_LBUTTON_DOWN:
+	case WINDOW_LBUTTON_DOWN:
 		{
 			m_b_mouse_capturer = m_bCursorOverWindow;
 			if(m_b_mouse_capturer)
 				UpdatePosRelativeToMouse();
 		}break;
 
-	case EUIMessages::WINDOW_LBUTTON_UP:
+	case WINDOW_LBUTTON_UP:
 		{
 			m_b_mouse_capturer = false;
 		}
 		break;
-	case EUIMessages::WINDOW_MOUSE_WHEEL_UP:
+	case WINDOW_MOUSE_WHEEL_UP:
 		{
 			if(m_b_is_float)
 			{
@@ -60,12 +60,12 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 				m_i_val -= GetInvert()?-m_i_step:m_i_step;
 				clamp(m_i_val, m_i_min, m_i_max);
 			}
-			GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED, NULL);
+			GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
 			UpdatePos			();
 			OnChangedOptValue	();
 		}
 		break;
-	case EUIMessages::WINDOW_MOUSE_WHEEL_DOWN:
+	case WINDOW_MOUSE_WHEEL_DOWN:
 		{
 			if(m_b_is_float)
 			{
@@ -77,7 +77,7 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 				m_i_val += GetInvert()?-m_i_step:m_i_step;
 				clamp(m_i_val, m_i_min, m_i_max);
 			}
-			GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED, NULL);
+			GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
 			UpdatePos();
 			OnChangedOptValue	();
 		}
@@ -254,7 +254,7 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 	}
 
 	if(b_ch)
-		GetMessageTarget()->SendMessage(this, (s16)EUIMessages::BUTTON_CLICKED, NULL);
+		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
 
 	UpdatePos	();
 	OnChangedOptValue	();

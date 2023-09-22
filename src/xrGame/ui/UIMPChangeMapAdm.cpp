@@ -52,9 +52,9 @@ void CUIMpChangeMapAdm::Init(CUIXml& xml_doc)
 
 void CUIMpChangeMapAdm::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if((s16)EUIMessages::LIST_ITEM_SELECT==msg && pWnd==lst)
+	if(LIST_ITEM_SELECT==msg && pWnd==lst)
 		OnItemSelect();
-	else if((s16)EUIMessages::BUTTON_CLICKED==msg)
+	else if(BUTTON_CLICKED==msg)
 	{
 		if(pWnd==btn_ok)
 			OnBtnOk();

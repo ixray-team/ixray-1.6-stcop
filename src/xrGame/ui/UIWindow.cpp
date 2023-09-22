@@ -6,6 +6,8 @@
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UIRender.h"
 
+poolSS< _12b, 128>	ui_allocator;
+
 // #define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
 	int ListWndCount = 0;
@@ -281,14 +283,14 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	cursor_pos.y = y;
 
 
-	if(EUIMessages::WINDOW_LBUTTON_DOWN == mouse_action )
+	if( WINDOW_LBUTTON_DOWN == mouse_action )
 	{
 		static u32 _last_db_click_frame		= 0;
 		u32 dwCurTime						= Device.dwTimeContinual;
 
 		if( (_last_db_click_frame!=Device.dwFrame) && (dwCurTime-m_dwLastClickTime < DOUBLE_CLICK_TIME) )
 		{
-            mouse_action			= EUIMessages::WINDOW_LBUTTON_DB_CLICK;
+            mouse_action			= WINDOW_LBUTTON_DB_CLICK;
 			_last_db_click_frame	= Device.dwFrame;
 		}
 
@@ -317,19 +319,19 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 	// handle any action
 	switch (mouse_action){
-		case EUIMessages::WINDOW_MOUSE_MOVE:
+		case WINDOW_MOUSE_MOVE:
 			OnMouseMove();							break;
-		case EUIMessages::WINDOW_MOUSE_WHEEL_DOWN:
-			OnMouseScroll((s16)EUIMessages::WINDOW_MOUSE_WHEEL_DOWN); break;
-		case EUIMessages::WINDOW_MOUSE_WHEEL_UP:
-			OnMouseScroll((s16)EUIMessages::WINDOW_MOUSE_WHEEL_UP);	break;
-		case EUIMessages::WINDOW_LBUTTON_DOWN:
+		case WINDOW_MOUSE_WHEEL_DOWN:
+			OnMouseScroll(WINDOW_MOUSE_WHEEL_DOWN); break;
+		case WINDOW_MOUSE_WHEEL_UP:
+			OnMouseScroll(WINDOW_MOUSE_WHEEL_UP);	break;
+		case WINDOW_LBUTTON_DOWN:
 			if(OnMouseDown(MOUSE_1))				return true;	break;
-		case EUIMessages::WINDOW_RBUTTON_DOWN:
+		case WINDOW_RBUTTON_DOWN:
 			if(OnMouseDown(MOUSE_2))				return true;	break;
-		case EUIMessages::WINDOW_CBUTTON_DOWN:
+		case WINDOW_CBUTTON_DOWN:
 			if(OnMouseDown(MOUSE_3))				return true;	break;
-		case EUIMessages::WINDOW_LBUTTON_DB_CLICK:
+		case WINDOW_LBUTTON_DB_CLICK:
 			if (OnDbClick())						return true;	break;
 		default:
             break;
@@ -372,7 +374,7 @@ void CUIWindow::OnMouseScroll(float iDirection){
 
 bool CUIWindow::OnDbClick(){
 	if (GetMessageTarget())
-		GetMessageTarget()->SendMessage(this, (s16)EUIMessages::WINDOW_LBUTTON_DB_CLICK);
+		GetMessageTarget()->SendMessage(this, WINDOW_LBUTTON_DB_CLICK);
 	return false;
 }
 
@@ -389,7 +391,7 @@ void CUIWindow::OnFocusReceive()
 	m_bCursorOverWindow		= true;	
 
 	if (GetMessageTarget())
-        GetMessageTarget()->SendMessage(this, (s16)EUIMessages::WINDOW_FOCUS_RECEIVED, NULL);
+        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_RECEIVED, NULL);
 }
 
 void CUIWindow::OnFocusLost()
@@ -398,7 +400,7 @@ void CUIWindow::OnFocusLost()
 	m_bCursorOverWindow		= false;	
 
 	if (GetMessageTarget())
-        GetMessageTarget()->SendMessage(this, (s16)EUIMessages::WINDOW_FOCUS_LOST, NULL);
+        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_LOST, NULL);
 }
 
 
@@ -417,7 +419,7 @@ void CUIWindow::SetCapture(CUIWindow *pChildWindow, bool capture_status)
 	{
 		//оповестить дочернее окно о потере фокуса мыши
 		if(NULL!=m_pMouseCapturer)
-			m_pMouseCapturer->SendMessage(this, (s16)EUIMessages::WINDOW_MOUSE_CAPTURE_LOST);
+			m_pMouseCapturer->SendMessage(this, WINDOW_MOUSE_CAPTURE_LOST);
 
 		m_pMouseCapturer = pChildWindow;
 	}
@@ -491,7 +493,7 @@ void CUIWindow::SetKeyboardCapture(CUIWindow* pChildWindow, bool capture_status)
 	{
 		//оповестить дочернее окно о потере фокуса клавиатуры
 		if(NULL!=m_pKeyboardCapturer)
-			m_pKeyboardCapturer->SendMessage(this, (s16)EUIMessages::WINDOW_KEYBOARD_CAPTURE_LOST);
+			m_pKeyboardCapturer->SendMessage(this, WINDOW_KEYBOARD_CAPTURE_LOST);
 			
 		m_pKeyboardCapturer = pChildWindow;
 	}

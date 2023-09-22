@@ -79,21 +79,21 @@ void CUIDemoPlayControl::Init()
 
 
 	Register	(m_restart_btn);
-	AddCallback	(m_restart_btn,				(s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRestart ) );
+	AddCallback	(m_restart_btn,				BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRestart ) );
 	Register	(m_decrease_speed_btn);
-	AddCallback	(m_decrease_speed_btn,		(s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnDecresaseSpeed ) );
+	AddCallback	(m_decrease_speed_btn,		BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnDecresaseSpeed ) );
 	Register	(m_play_pause_btn);
-	AddCallback	(m_play_pause_btn,			(s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnPlayPause ) );
+	AddCallback	(m_play_pause_btn,			BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnPlayPause ) );
 	Register	(m_increase_speed_btn);
-	AddCallback	(m_increase_speed_btn,		(s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnIncreaseSpeed ) );
+	AddCallback	(m_increase_speed_btn,		BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnIncreaseSpeed ) );
 	Register	(m_rewind_until_btn);
-	AddCallback	(m_rewind_until_btn,		(s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRewindUntil ) );
+	AddCallback	(m_rewind_until_btn,		BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRewindUntil ) );
 	Register	(m_repeat_rewind_btn);
 	
-	AddCallback	(m_rewind_type,				(s16)EUIMessages::PROPERTY_CLICKED, CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRewindTypeSelected ) );
-	AddCallback	(m_all_players,				(s16)EUIMessages::PROPERTY_CLICKED, CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRewindPlayerSelected ) );
+	AddCallback	(m_rewind_type,				PROPERTY_CLICKED, CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRewindTypeSelected ) );
+	AddCallback	(m_all_players,				PROPERTY_CLICKED, CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRewindPlayerSelected ) );
 
-	AddCallback	(m_repeat_rewind_btn,		(s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRepeatRewind ) );
+	AddCallback	(m_repeat_rewind_btn,		BUTTON_CLICKED,   CUIWndCallback::void_function( this, &CUIDemoPlayControl::OnRepeatRewind ) );
 
 	InitRewindTypeList	();
 	InitAllPlayers		();
@@ -160,7 +160,7 @@ void CUIDemoPlayControl::InitAllPlayers		()
 
 bool CUIDemoPlayControl::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if ((dik == DIK_LCONTROL) && (keyboard_action == EUIMessages::WINDOW_KEY_RELEASED))
+	if ((dik == DIK_LCONTROL) && (keyboard_action == WINDOW_KEY_RELEASED))
 	{
 		m_last_curr_pos = GetUICursor().GetCursorPosition();
 		m_rewind_type->Hide();

@@ -293,7 +293,7 @@ void CUIMpServerAdm::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	switch(msg)
 	{
-	case (s16)EUIMessages::BUTTON_CLICKED:
+	case BUTTON_CLICKED:
 		{
 			if(pWnd==m_pBackBtn)
 				OnBackBtn();

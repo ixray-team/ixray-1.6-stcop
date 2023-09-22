@@ -72,7 +72,7 @@ void CUIVotingCategory::InitVotingCategory()
 
 void CUIVotingCategory::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if ((s16)EUIMessages::BUTTON_CLICKED == msg)
+	if (BUTTON_CLICKED == msg)
 	{
 		if (btn_cancel == pWnd)
 			OnBtnCancel();
@@ -91,7 +91,7 @@ bool CUIVotingCategory::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	
-	if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action)
+	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
 		if (DIK_ESCAPE == dik)
 		{

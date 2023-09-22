@@ -90,8 +90,8 @@ void CUIServerInfo::InitCallbacks()
 	Register	(m_btn_next);
 	Register	(m_btn_spectator);
 
-	AddCallback	(m_btn_next,		(s16)EUIMessages::BUTTON_CLICKED,		CUIWndCallback::void_function(this, &CUIServerInfo::OnNextBtnClick));
-	AddCallback	(m_btn_spectator,	(s16)EUIMessages::BUTTON_CLICKED,		CUIWndCallback::void_function(this, &CUIServerInfo::OnSpectatorBtnClick));
+	AddCallback	(m_btn_next,		BUTTON_CLICKED,		CUIWndCallback::void_function(this, &CUIServerInfo::OnNextBtnClick));
+	AddCallback	(m_btn_spectator,	BUTTON_CLICKED,		CUIWndCallback::void_function(this, &CUIServerInfo::OnSpectatorBtnClick));
 	//AddCallback	(this,				WINDOW_KEY_PRESSED,	CUIWndCallback::void_function(this, &CUIServerInfo::OnNextBtnClick));
 }
 

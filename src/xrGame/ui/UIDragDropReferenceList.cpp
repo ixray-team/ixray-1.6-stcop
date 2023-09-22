@@ -15,7 +15,7 @@
 
 CUIDragDropReferenceList::CUIDragDropReferenceList()
 {
-	AddCallbackStr("cell_item_reference", (s16)EUIMessages::WINDOW_LBUTTON_DB_CLICK, CUIWndCallback::void_function(this, &CUIDragDropReferenceList::OnItemDBClick));
+	AddCallbackStr("cell_item_reference", WINDOW_LBUTTON_DB_CLICK, CUIWndCallback::void_function(this, &CUIDragDropReferenceList::OnItemDBClick));
 }
 CUIDragDropReferenceList::~CUIDragDropReferenceList()
 {

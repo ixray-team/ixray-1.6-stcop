@@ -25,10 +25,10 @@ void CUIMessageBoxEx::InitMessageBox(LPCSTR xml_template)
 	SetWndSize( m_pMessageBox->GetWndSize() );
 	m_pMessageBox->SetWndPos( Fvector2().set(0,0) );
 
-	AddCallback( m_pMessageBox, (s16)EUIMessages::MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function( this, &CUIMessageBoxEx::OnOKClicked ) );
+	AddCallback( m_pMessageBox, MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function( this, &CUIMessageBoxEx::OnOKClicked ) );
 	CUIMessageBox::E_MESSAGEBOX_STYLE style = m_pMessageBox->GetBoxStyle();
 	if(style==CUIMessageBox::MESSAGEBOX_YES_NO || style==CUIMessageBox::MESSAGEBOX_QUIT_WINDOWS || style==CUIMessageBox::MESSAGEBOX_QUIT_GAME)
-		AddCallback( m_pMessageBox, (s16)EUIMessages::MESSAGE_BOX_NO_CLICKED, CUIWndCallback::void_function( this, &CUIMessageBoxEx::OnNOClicked ) );
+		AddCallback( m_pMessageBox, MESSAGE_BOX_NO_CLICKED, CUIWndCallback::void_function( this, &CUIMessageBoxEx::OnNOClicked ) );
 }
 
 void CUIMessageBoxEx::OnOKClicked( CUIWindow* w, void* d )
@@ -63,12 +63,12 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NUL
 	if (pWnd == m_pMessageBox)
 	{
 		switch (msg){
-			case (s16)EUIMessages::MESSAGE_BOX_OK_CLICKED:
-			case (s16)EUIMessages::MESSAGE_BOX_YES_CLICKED:
-			case (s16)EUIMessages::MESSAGE_BOX_NO_CLICKED:
-			case (s16)EUIMessages::MESSAGE_BOX_CANCEL_CLICKED:
-			case (s16)EUIMessages::MESSAGE_BOX_QUIT_WIN_CLICKED:
-			case (s16)EUIMessages::MESSAGE_BOX_QUIT_GAME_CLICKED:
+			case MESSAGE_BOX_OK_CLICKED:
+			case MESSAGE_BOX_YES_CLICKED:
+			case MESSAGE_BOX_NO_CLICKED:
+			case MESSAGE_BOX_CANCEL_CLICKED:
+			case MESSAGE_BOX_QUIT_WIN_CLICKED:
+			case MESSAGE_BOX_QUIT_GAME_CLICKED:
 				HideDialog();
 			default:
 				break;
@@ -92,7 +92,7 @@ LPCSTR CUIMessageBoxEx::GetPassword()
 
 bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if(keyboard_action== EUIMessages::WINDOW_KEY_PRESSED)
+	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
 		if ( dik == DIK_NUMPADENTER || dik == DIK_RETURN || dik == DIK_SPACE)
 		{

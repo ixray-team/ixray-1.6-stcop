@@ -106,7 +106,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		m_UIMainScrollH->SetPageSize	( (int)m_UILevelFrame->GetWidth() ); // iFloor
 		AttachChild						(m_UIMainScrollH);
 		Register						(m_UIMainScrollH);
-		AddCallback						(m_UIMainScrollH, (s16)EUIMessages::SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
+		AddCallback						(m_UIMainScrollH, SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
 
 		m_UIMainScrollV					= xr_new<CUIFixedScrollBar>(); m_UIMainScrollV->SetAutoDelete(true);
 		m_UIMainScrollV->InitScrollBar	(Fvector2().set(r.right-sx, r.top+dy), false);
@@ -114,7 +114,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		m_UIMainScrollV->SetPageSize	( (int)m_UILevelFrame->GetHeight() );
 		AttachChild						(m_UIMainScrollV);
 		Register						(m_UIMainScrollV);
-		AddCallback						(m_UIMainScrollV, (s16)EUIMessages::SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
+		AddCallback						(m_UIMainScrollV,SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
 	}
 
 	m_map_location_hint					= xr_new<CUIMapLocationHint>();
@@ -414,7 +414,7 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		switch ( mouse_action )
 		{
-		case EUIMessages::WINDOW_MOUSE_MOVE:
+		case WINDOW_MOUSE_MOVE:
 			if( pInput->iGetAsyncBtnState(0) )
 			{
 				GlobalMap()->MoveWndDelta		(GetUICursor().GetCursorPositionDelta());
@@ -424,11 +424,11 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 			}
 		break;
 
-		case EUIMessages::WINDOW_MOUSE_WHEEL_DOWN:
+		case WINDOW_MOUSE_WHEEL_DOWN:
 			UpdateZoom( true );
 			return true;
 		break;
-		case EUIMessages::WINDOW_MOUSE_WHEEL_UP:
+		case WINDOW_MOUSE_WHEEL_UP:
 			UpdateZoom( false );
 			return true;
 		break;

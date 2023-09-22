@@ -24,18 +24,18 @@ bool CUIScrollBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 	bool im_capturer = (GetParent()->GetMouseCapturer() == this);
 
-	if(mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN || mouse_action == EUIMessages::WINDOW_LBUTTON_DB_CLICK)
+	if(mouse_action == WINDOW_LBUTTON_DOWN || mouse_action == WINDOW_LBUTTON_DB_CLICK)
 	{
 		GetParent()->SetCapture(this, true);
 		return true;
 	}
-	if(mouse_action == EUIMessages::WINDOW_LBUTTON_UP)
+	if(mouse_action == WINDOW_LBUTTON_UP)
 	{		
 		GetParent()->SetCapture(this, false);
 		return true;
 	}
 	
-	if(im_capturer && mouse_action == EUIMessages::WINDOW_MOUSE_MOVE && cursor_over)
+	if(im_capturer && mouse_action == WINDOW_MOUSE_MOVE && cursor_over)
 	{
 		Fvector2	pos		= GetWndPos();
 		Fvector2	delta	= GetUICursor().GetCursorPositionDelta();
@@ -47,7 +47,7 @@ bool CUIScrollBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 		SetWndPos			(pos);
 
-		GetMessageTarget()->SendMessage(this, (s16)EUIMessages::SCROLLBOX_MOVE);
+		GetMessageTarget()->SendMessage(this, SCROLLBOX_MOVE);
 	}
 
 	if( !cursor_over )

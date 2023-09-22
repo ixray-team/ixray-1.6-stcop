@@ -133,7 +133,7 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 	float h1 = _max( pItem->UIIcon.GetHeight(), pItem->UIMsgText.GetWndPos().y + pItem->UIMsgText.GetHeight() );
 	pItem->SetHeight( h1 + 3.0f );
 
-	m_pGameLog->SendMessage(pItem, (s16)EUIMessages::CHILD_CHANGED_SIZE);
+	m_pGameLog->SendMessage(pItem,CHILD_CHANGED_SIZE);
 }
 
 void CUIMessagesWindow::AddChatMessage(shared_str msg, shared_str author)

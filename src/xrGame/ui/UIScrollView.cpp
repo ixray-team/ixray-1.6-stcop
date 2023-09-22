@@ -35,7 +35,7 @@ CUIScrollView::CUIScrollView(CUIFixedScrollBar* scroll_bar)
 	m_VScrollBar->SetAutoDelete(true);
 	AttachChild(m_VScrollBar);
 	Register(m_VScrollBar);
-	AddCallback(m_VScrollBar, (s16)EUIMessages::SCROLLBAR_VSCROLL, CUIWndCallback::void_function(this, &CUIScrollView::OnScrollV));
+	AddCallback(m_VScrollBar,	SCROLLBAR_VSCROLL, CUIWndCallback::void_function(this, &CUIScrollView::OnScrollV));
 }
 
 CUIScrollView::~CUIScrollView()
@@ -46,7 +46,7 @@ CUIScrollView::~CUIScrollView()
 void CUIScrollView::SendMessage	(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
-	if ((s16)EUIMessages::CHILD_CHANGED_SIZE == msg && m_pad->IsChild(pWnd))
+	if (CHILD_CHANGED_SIZE == msg && m_pad->IsChild(pWnd))
 		m_flags.set			(eNeedRecalc,TRUE);
 }
 
@@ -69,7 +69,7 @@ void CUIScrollView::InitScrollView()
 		m_VScrollBar->SetAutoDelete(true);
 		AttachChild					(m_VScrollBar);
 		Register					(m_VScrollBar);
-		AddCallback					(m_VScrollBar, (s16)EUIMessages::SCROLLBAR_VSCROLL, CUIWndCallback::void_function (this, &CUIScrollView::OnScrollV) );
+		AddCallback					(m_VScrollBar,	SCROLLBAR_VSCROLL, CUIWndCallback::void_function (this, &CUIScrollView::OnScrollV) );
 	}
 	CUIFixedScrollBar* tmp_scroll = smart_cast<CUIFixedScrollBar* >(m_VScrollBar);
 	if(tmp_scroll)
@@ -269,15 +269,15 @@ bool CUIScrollView::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	bool res = false;
 	int prev_pos	= m_VScrollBar->GetScrollPos();
 	switch (mouse_action){
-		case EUIMessages::WINDOW_MOUSE_WHEEL_UP:
+		case WINDOW_MOUSE_WHEEL_UP:
 			m_VScrollBar->TryScrollDec(true);
 			res = true;
 		break;
-		case EUIMessages::WINDOW_MOUSE_WHEEL_DOWN:
+		case WINDOW_MOUSE_WHEEL_DOWN:
 			m_VScrollBar->TryScrollInc(true);
 			res = true;
 		break;
-		case EUIMessages::WINDOW_MOUSE_MOVE:
+		case WINDOW_MOUSE_MOVE:
 			if( pInput->iGetAsyncBtnState(0) ){
 				Fvector2	curr_pad_pos = m_pad->GetWndPos	();
 				curr_pad_pos.y				+= GetUICursor().GetCursorPositionDelta().y;

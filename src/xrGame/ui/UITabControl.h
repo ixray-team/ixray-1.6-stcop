@@ -42,7 +42,7 @@ public:
 	const shared_str&	GetPrevActiveId				()								{ return m_sPrevPushedId; }
 			void		SetActiveTab				(const shared_str& sNewTab);
 			void		SetActiveTab_script			(LPCSTR sNewTab)				{SetActiveTab(sNewTab);};
-	const	u32			GetTabsCount				() const						{ return (u32)m_TabsArr.size(); }
+	const	u32			GetTabsCount				() const						{ return m_TabsArr.size(); }
 	
 	// –ежим клавилатурных акселераторов (вкл/выкл)
 	IC bool				GetAcceleratorsMode			() const						{ return m_bAcceleratorsEnable; }

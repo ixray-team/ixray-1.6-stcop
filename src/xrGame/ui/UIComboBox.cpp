@@ -93,7 +93,7 @@ void CUIComboBox::OnListItemSelect()
 	ShowList				(false);
 
 	if(bk_itoken_id!=m_itoken_id)
-		GetMessageTarget()->SendMessage(this, (s16)EUIMessages::LIST_ITEM_SELECT, NULL);
+		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, NULL);
 }
 
 void CUIComboBox::SetText(LPCSTR text)
@@ -285,14 +285,14 @@ bool CUIComboBox::OnMouseAction(float x, float y, EUIMessages mouse_action){
 	switch (m_eState){
 		case LIST_EXPANDED:			
 
-			if (  (!bCursorOverScb) &&  mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN)
+			if (  (!bCursorOverScb) &&  mouse_action == WINDOW_LBUTTON_DOWN)
 			{
                 ShowList(false);
 				return true;
 			}
 			break;
 		case LIST_FONDED:
-			if(mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN)
+			if(mouse_action==WINDOW_LBUTTON_DOWN)
 			{
 				OnBtnClicked();
 				return true;			
@@ -311,7 +311,7 @@ void CUIComboBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 	switch (msg)
 	{
-		case (s16)EUIMessages::LIST_ITEM_CLICKED:
+		case LIST_ITEM_CLICKED:
 			if (pWnd == &m_list_box)
 				OnListItemSelect();	
 			break;

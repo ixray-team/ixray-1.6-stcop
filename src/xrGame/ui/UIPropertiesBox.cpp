@@ -51,9 +51,9 @@ void CUIPropertiesBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
 	if(pWnd == &m_UIListWnd)
 	{
-		if(msg == (s16)EUIMessages::LIST_ITEM_CLICKED)
+		if(msg == LIST_ITEM_CLICKED)
 		{
-			GetMessageTarget()->SendMessage	(this, (s16)EUIMessages::PROPERTY_CLICKED);
+			GetMessageTarget()->SendMessage	(this, PROPERTY_CLICKED);
 			if (!m_sub_property_box)	//i'm the last sub menu 
 			{
 				Hide							();
@@ -114,7 +114,7 @@ bool CUIPropertiesBox::AddItem(LPCSTR  str, void* pData, u32 tag_value)
 	{
 		AddCallback(
 			itm,
-			(s16)EUIMessages::WINDOW_FOCUS_RECEIVED,
+			WINDOW_FOCUS_RECEIVED,
 			CUIWndCallback::void_function( this, &CUIPropertiesBox::OnItemReceivedFocus )
 		);
 		Register(itm);
@@ -181,22 +181,22 @@ bool CUIPropertiesBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	bool cursor_on_box;
 
 
-	if (x >= 0 && x < GetWidth() && y >= 0 && y < GetHeight())
+	if(x>=0 && x<GetWidth() && y>=0 && y<GetHeight())
 		cursor_on_box = true;
 	else
 		cursor_on_box = false;
 
 
-	if (mouse_action == EUIMessages::WINDOW_LBUTTON_DOWN && !cursor_on_box)
+	if ( mouse_action == WINDOW_LBUTTON_DOWN && !cursor_on_box )
 	{
 		Hide();
 		return true;
 	}
-	if (mouse_action == EUIMessages::WINDOW_RBUTTON_DOWN && !cursor_on_box)
+	if ( mouse_action == WINDOW_RBUTTON_DOWN && !cursor_on_box )
 	{
 		Hide();
 	}
-	if (mouse_action == EUIMessages::WINDOW_MOUSE_WHEEL_DOWN || mouse_action == EUIMessages::WINDOW_MOUSE_WHEEL_UP)
+	if ( mouse_action == WINDOW_MOUSE_WHEEL_DOWN || mouse_action == WINDOW_MOUSE_WHEEL_UP )
 		return true;
 
 	return inherited::OnMouseAction(x, y, mouse_action);

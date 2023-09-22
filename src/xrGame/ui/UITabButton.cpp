@@ -16,7 +16,7 @@ bool CUITabButton::OnMouseDown(int mouse_btn)
 {
 	if (mouse_btn==MOUSE_1)
 	{
-		GetMessageTarget()->SendMessage(this, (s16)EUIMessages::TAB_CHANGED, NULL);
+		GetMessageTarget()->SendMessage(this, TAB_CHANGED, NULL);
 		return true;
 	}else
 		return false;
@@ -29,7 +29,7 @@ void CUITabButton::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 	switch (msg)
 	{
-	case (s16)EUIMessages::TAB_CHANGED:
+	case TAB_CHANGED:
 		if (this == pWnd)
 		{
             SetButtonState	(BUTTON_PUSHED);

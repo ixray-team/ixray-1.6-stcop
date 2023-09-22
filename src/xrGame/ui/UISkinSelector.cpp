@@ -148,7 +148,7 @@ void CUISkinSelectorWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	game_cl_mp	*game = NULL;
 	//game_cl_Deathmatch * dm = NULL;
 	switch (msg){
-		case (s16)EUIMessages::BUTTON_CLICKED:
+		case BUTTON_CLICKED:
 			game = smart_cast<game_cl_mp*>(&(Game()));
 			//dm = smart_cast<game_cl_Deathmatch *>(&(Game()));
 /*
@@ -179,7 +179,7 @@ void CUISkinSelectorWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 						OnBtnOK();					
 					}
 			break;
-		case (s16)EUIMessages::WINDOW_FOCUS_RECEIVED:
+		case WINDOW_FOCUS_RECEIVED:
 /*
 			if (pWnd == m_pButtons[0])
 			{
@@ -225,7 +225,7 @@ bool CUISkinSelectorWnd::OnMouseAction(float x, float y, EUIMessages mouse_actio
 
 bool CUISkinSelectorWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (EUIMessages::WINDOW_KEY_PRESSED != keyboard_action)
+	if (WINDOW_KEY_PRESSED != keyboard_action)
 	{
 		if (dik == DIK_TAB)
 		{

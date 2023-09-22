@@ -140,57 +140,57 @@ void CUIWindow::script_register(lua_State *L)
 			.enum_("events")
 			[
 	// CUIWindow
-				value("WINDOW_LBUTTON_DOWN",			int(EUIMessages::WINDOW_LBUTTON_DOWN)),
-				value("WINDOW_RBUTTON_DOWN",			int(EUIMessages::WINDOW_RBUTTON_DOWN)),
-				value("WINDOW_LBUTTON_UP",				int(EUIMessages::WINDOW_LBUTTON_UP)),
-				value("WINDOW_RBUTTON_UP",				int(EUIMessages::WINDOW_RBUTTON_UP)),
-				value("WINDOW_MOUSE_MOVE",				int(EUIMessages::WINDOW_MOUSE_MOVE)),
-				value("WINDOW_LBUTTON_DB_CLICK",		int(EUIMessages::WINDOW_LBUTTON_DB_CLICK)),
-				value("WINDOW_KEY_PRESSED",				int(EUIMessages::WINDOW_KEY_PRESSED)),
-				value("WINDOW_KEY_RELEASED",			int(EUIMessages::WINDOW_KEY_RELEASED)),
-				value("WINDOW_KEYBOARD_CAPTURE_LOST",	int(EUIMessages::WINDOW_KEYBOARD_CAPTURE_LOST)),
+				value("WINDOW_LBUTTON_DOWN",			int(WINDOW_LBUTTON_DOWN)),
+				value("WINDOW_RBUTTON_DOWN",			int(WINDOW_RBUTTON_DOWN)),
+				value("WINDOW_LBUTTON_UP",				int(WINDOW_LBUTTON_UP)),
+				value("WINDOW_RBUTTON_UP",				int(WINDOW_RBUTTON_UP)),
+				value("WINDOW_MOUSE_MOVE",				int(WINDOW_MOUSE_MOVE)),
+				value("WINDOW_LBUTTON_DB_CLICK",		int(WINDOW_LBUTTON_DB_CLICK)),
+				value("WINDOW_KEY_PRESSED",				int(WINDOW_KEY_PRESSED)),
+				value("WINDOW_KEY_RELEASED",			int(WINDOW_KEY_RELEASED)),
+				value("WINDOW_KEYBOARD_CAPTURE_LOST",	int(WINDOW_KEYBOARD_CAPTURE_LOST)),
 
 
 	// CUIButton
-				value("BUTTON_CLICKED",					int(EUIMessages::BUTTON_CLICKED)),
-				value("BUTTON_DOWN",					int(EUIMessages::BUTTON_DOWN)),
+				value("BUTTON_CLICKED",					int(BUTTON_CLICKED)),
+				value("BUTTON_DOWN",					int(BUTTON_DOWN)),
 				
 	// CUITabControl
-				value("TAB_CHANGED",					int(EUIMessages::TAB_CHANGED)),
+				value("TAB_CHANGED",					int(TAB_CHANGED)),
 
 	// CUICheckButton
-				value("CHECK_BUTTON_SET",				int(EUIMessages::CHECK_BUTTON_SET)),
-				value("CHECK_BUTTON_RESET",				int(EUIMessages::CHECK_BUTTON_RESET)),
+				value("CHECK_BUTTON_SET",				int(CHECK_BUTTON_SET)),
+				value("CHECK_BUTTON_RESET",				int(CHECK_BUTTON_RESET)),
 				
 	// CUIRadioButton
-				value("RADIOBUTTON_SET",				int(EUIMessages::RADIOBUTTON_SET)),
+				value("RADIOBUTTON_SET",				int(RADIOBUTTON_SET)),
 
 	// CUIScrollBox
-				value("SCROLLBOX_MOVE",					int(EUIMessages::SCROLLBOX_MOVE)),
+				value("SCROLLBOX_MOVE",					int(SCROLLBOX_MOVE)),
 				
 	// CUIScrollBar
-				value("SCROLLBAR_VSCROLL",				int(EUIMessages::SCROLLBAR_VSCROLL)),
-				value("SCROLLBAR_HSCROLL",				int(EUIMessages::SCROLLBAR_HSCROLL)),
+				value("SCROLLBAR_VSCROLL",				int(SCROLLBAR_VSCROLL)),
+				value("SCROLLBAR_HSCROLL",				int(SCROLLBAR_HSCROLL)),
 
 	// CUIListWnd
-				value("LIST_ITEM_CLICKED",				int(EUIMessages::LIST_ITEM_CLICKED)),
-				value("LIST_ITEM_SELECT",				int(EUIMessages::LIST_ITEM_SELECT)),
+				value("LIST_ITEM_CLICKED",				int(LIST_ITEM_CLICKED)),
+				value("LIST_ITEM_SELECT",				int(LIST_ITEM_SELECT)),
 	
 	// UIPropertiesBox
-				value("PROPERTY_CLICKED",				int(EUIMessages::PROPERTY_CLICKED)),
+				value("PROPERTY_CLICKED",				int(PROPERTY_CLICKED)),
 
 	// CUIMessageBox
-				value("MESSAGE_BOX_OK_CLICKED",			int(EUIMessages::MESSAGE_BOX_OK_CLICKED)),
-				value("MESSAGE_BOX_YES_CLICKED",		int(EUIMessages::MESSAGE_BOX_YES_CLICKED)),
-				value("MESSAGE_BOX_NO_CLICKED",			int(EUIMessages::MESSAGE_BOX_NO_CLICKED)),
-				value("MESSAGE_BOX_CANCEL_CLICKED",		int(EUIMessages::MESSAGE_BOX_CANCEL_CLICKED)),
-				value("MESSAGE_BOX_COPY_CLICKED",		int(EUIMessages::MESSAGE_BOX_COPY_CLICKED)),
-				value("MESSAGE_BOX_QUIT_GAME_CLICKED",	int(EUIMessages::MESSAGE_BOX_QUIT_GAME_CLICKED)),
-				value("MESSAGE_BOX_QUIT_WIN_CLICKED",	int(EUIMessages::MESSAGE_BOX_QUIT_WIN_CLICKED)),
+				value("MESSAGE_BOX_OK_CLICKED",			int(MESSAGE_BOX_OK_CLICKED)),
+				value("MESSAGE_BOX_YES_CLICKED",		int(MESSAGE_BOX_YES_CLICKED)),
+				value("MESSAGE_BOX_NO_CLICKED",			int(MESSAGE_BOX_NO_CLICKED)),
+				value("MESSAGE_BOX_CANCEL_CLICKED",		int(MESSAGE_BOX_CANCEL_CLICKED)),
+				value("MESSAGE_BOX_COPY_CLICKED",		int(MESSAGE_BOX_COPY_CLICKED)),
+				value("MESSAGE_BOX_QUIT_GAME_CLICKED",	int(MESSAGE_BOX_QUIT_GAME_CLICKED)),
+				value("MESSAGE_BOX_QUIT_WIN_CLICKED",	int(MESSAGE_BOX_QUIT_WIN_CLICKED)),
 
-				value("EDIT_TEXT_COMMIT",				int(EUIMessages::EDIT_TEXT_COMMIT)),
+				value("EDIT_TEXT_COMMIT",				int(EDIT_TEXT_COMMIT)),
 	// CMainMenu
-				value("MAIN_MENU_RELOADED",				int(EUIMessages::MAIN_MENU_RELOADED))
+				value("MAIN_MENU_RELOADED",				int(MAIN_MENU_RELOADED))
 			]
 	];
 }

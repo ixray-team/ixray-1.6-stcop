@@ -319,7 +319,7 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	InfoCurItem( NULL );
 	if ( is_binded(kDROP, dik) )
 	{
-		if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action && CurrentIItem() && !CurrentIItem()->IsQuestItem()
+		if ( WINDOW_KEY_PRESSED == keyboard_action && CurrentIItem() && !CurrentIItem()->IsQuestItem()
 			&& CurrentIItem()->parent_id()==m_pActorInvOwner->object_id() )
 		{
 
@@ -331,7 +331,7 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 	if ( is_binded(kSPRINT_TOGGLE, dik) )
 	{
-		if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action )
+		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
 			OnPressUserKey();
 		}
@@ -340,7 +340,7 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 	if ( is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) )
 	{
-		if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action )
+		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
 			g_btnHint->Discard();
 			HideDialog();
@@ -350,7 +350,7 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 	if ( is_binded(kQUIT, dik) )
 	{
-		if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action )
+		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
 			g_btnHint->Discard();
 			HideDialog();
@@ -359,7 +359,7 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	}
 
 #ifdef DEBUG
-	if (EUIMessages::WINDOW_KEY_PRESSED == keyboard_action)
+	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
 		{
 			if (DIK_NUMPAD7 == dik && CurrentIItem() && CurrentIItem()->IsUsingCondition())

@@ -373,12 +373,12 @@ void CUIActorMenu::InitCallbacks()
 	VERIFY							(m_pUpgradeWnd);
 	Register						(m_pUpgradeWnd->m_btn_repair);
 
-	AddCallback(m_trade_buy_button, (s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeBuy));
-	AddCallback(m_trade_sell_button, (s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeSell));
-	AddCallback(m_takeall_button,  (s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TakeAllFromPartner));
-	AddCallback(m_exit_button,     (s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnExitClicked));
-	AddCallback(m_UIPropertiesBox, (s16)EUIMessages::PROPERTY_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::ProcessPropertiesBoxClicked));
-	AddCallback(m_pUpgradeWnd->m_btn_repair, (s16)EUIMessages::BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryRepairItem));
+	AddCallback(m_trade_buy_button,BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeBuy));
+	AddCallback(m_trade_sell_button,BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeSell));
+	AddCallback(m_takeall_button,  BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TakeAllFromPartner));
+	AddCallback(m_exit_button,     BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnExitClicked));
+	AddCallback(m_UIPropertiesBox, PROPERTY_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::ProcessPropertiesBoxClicked));
+	AddCallback(m_pUpgradeWnd->m_btn_repair, BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryRepairItem));
 }
 
 void CUIActorMenu::UpdateButtonsLayout()
