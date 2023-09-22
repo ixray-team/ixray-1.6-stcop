@@ -430,3 +430,8 @@ void CSightAction::execute_animation_direction	()
 
 	object().movement().m_head.target				= object().movement().m_body.current;
 }
+
+const CLevelGraph::CVertex* CAI_ObjectLocation::level_vertex() const {
+	VERIFY(ai().level_graph().valid_vertex_id(m_level_vertex_id));
+	return (ai().level_graph().vertex(m_level_vertex_id));
+}
