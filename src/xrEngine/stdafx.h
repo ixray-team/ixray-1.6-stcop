@@ -1,5 +1,4 @@
 #pragma once
-#ifdef __cplusplus
 #ifdef _EDITOR
 	#include "..\editors\ECore\stdafx.h"
 #else
@@ -80,4 +79,3 @@ extern ENGINE_API CInifile *pGameIni;
 	(((ltx)->line_exist(section, name)) ? ((ltx)->method(section, name)) : (default_value))
 
 #endif // !M_BORLAND
-#endif

@@ -1,13 +1,17 @@
 project(xrCore)
-# Files import
+set(CORE_SRC_FILES)
 
+# Files import
 file(GLOB CORE_SOURCE_STL_FILES
     "*_std*.*"
     "*_stl*.*"
+    "buffer_vector*.*"
+    "intrusive_ptr*.*"
     "Fixed*.*"
 )
 
 file(GLOB CORE_SOURCE_MATH_FILES
+    "vector.h"
     "_*.cpp"
     "_*.h"
 )
@@ -32,14 +36,24 @@ file(GLOB CORE_SOURCE_LZ_FILES
 
 file(GLOB CORE_SOURCE_XML_FILES
     "XMLCore/*.cpp"
-    "XMLCore/.h"
+    "XMLCore/*.h"
 )
 
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"
     "memory_*.*"
     "*malloc*.*"
+    "doug_lea_allocator.*"
+)
+
+
+file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES
     "ptmalloc3/*.*"
+)
+
+file(GLOB CORE_SOURCE_DEBUG_FILES
+    "xrDebug*.*"
+    "log.*"
 )
 
 file(GLOB CORE_SOURCE_FS_FILES
@@ -55,11 +69,11 @@ file(GLOB_RECURSE CORE_SOURCE_ALL_FILES
 	"*.h"
 )
 
-set(CORE_SRC_FILES)
-
 source_group("core" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("math" FILES ${CORE_SOURCE_MATH_FILES})
 source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
+source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
+source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
 source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
 source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
 source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
@@ -88,7 +102,17 @@ add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
 
-target_precompile_headers(xrCore PUBLIC "stdafx.h")	
+# PCH move
+set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrCore PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+target_precompile_headers(xrCore PUBLIC "stdafx.h")
+
+file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "stdafx.*")
+file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "*.c")
+
+set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
 
 # project defines 
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "rgd5.h"
 

@@ -6,6 +6,7 @@
 //	Description : Stalker get distance action classes
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_get_distance_actions.h"
 #include "ai/stalker/ai_stalker.h"

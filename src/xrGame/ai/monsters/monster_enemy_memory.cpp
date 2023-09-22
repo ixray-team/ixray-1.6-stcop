@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "monster_enemy_memory.h"
 #include "BaseMonster/base_monster.h"

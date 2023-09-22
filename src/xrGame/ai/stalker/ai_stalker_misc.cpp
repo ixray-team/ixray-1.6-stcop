@@ -6,6 +6,7 @@
 //	Description : Miscellaneous functions for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_space.h"

@@ -6,6 +6,7 @@
 //	Description : actor script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "actor.h"
 #include "level_changer.h"

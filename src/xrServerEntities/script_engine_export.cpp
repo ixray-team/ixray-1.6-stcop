@@ -6,6 +6,7 @@
 //	Description : XRay Script Engine export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 
 #define SCRIPT_REGISTRATOR

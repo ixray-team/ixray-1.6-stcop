@@ -1,5 +1,4 @@
 #pragma once
-#ifdef __cplusplus
 #pragma warning(disable:4995)
 #include "../xrEngine/stdafx.h"
 #include "DPlay/dplay8.h"
@@ -23,4 +22,3 @@
 #include "../xrEngine/igame_level.h"
 #include "../xrphysics/xrphysics.h"
 #include "smart_cast.h"
-#endif

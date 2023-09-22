@@ -6,6 +6,7 @@
 //	Description : Script world state script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_world_state.h"
 #include "condition_state.h"

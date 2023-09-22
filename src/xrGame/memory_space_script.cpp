@@ -6,6 +6,7 @@
 //	Description : Memory space script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "memory_space.h"
 #include "script_game_object.h"

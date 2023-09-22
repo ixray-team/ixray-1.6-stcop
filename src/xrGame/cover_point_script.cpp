@@ -6,6 +6,7 @@
 //	Description : Cover point class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "cover_point.h"
 

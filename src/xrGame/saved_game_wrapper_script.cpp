@@ -6,6 +6,7 @@
 //	Description : saved game wrapper class script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "saved_game_wrapper.h"
 #include "ai_space.h"

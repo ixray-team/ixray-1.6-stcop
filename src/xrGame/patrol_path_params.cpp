@@ -6,6 +6,7 @@
 //	Description : Patrol path parameters class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "patrol_path_params.h"
 #include "patrol_path_manager.h"

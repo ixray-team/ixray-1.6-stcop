@@ -5,6 +5,7 @@
 //	Description : Default behaviour planner for target selector
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_default_behaviour_planner.hpp"
 #include "script_game_object.h"

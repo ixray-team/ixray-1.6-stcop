@@ -38,3 +38,12 @@ target_compile_definitions(xrCDB PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrCDB PUBLIC xrCore)
 target_link_libraries(xrCDB PUBLIC xrAPI)
+
+# PCH move
+set_target_properties(xrCDB PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrCDB PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+target_precompile_headers(xrCDB PRIVATE "stdafx.h")
+
+file(GLOB_RECURSE CDB_SOURCE_PCH_FILES "stdafx.*")
+source_group("pch" FILES ${CDB_SOURCE_PCH_FILES})

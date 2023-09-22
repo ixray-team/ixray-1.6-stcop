@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "../xrEngine/xr_ioconsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"

@@ -6,6 +6,7 @@
 //	Description : Sound memory manager
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "sound_memory_manager.h"
 #include "memory_manager.h"

@@ -20,6 +20,16 @@ file(GLOB XPH_SOURCE_NET_FILES
 file(GLOB_RECURSE XPH_SOURCE_CORE_FILES
     "Physics*.cpp"
 	"Physics*.h"
+    "xrPhysics.*"
+)
+
+file(GLOB_RECURSE XPH_SOURCE_DTRI_FILES
+    "dTri*.*"
+    "dCylinder*.*"
+    "dxTriList*.*"
+    "dcTriangle*.*"
+    "TriPrimitiveCollideClassDef*.*"
+    "dSortTriPrimitive*.*"
 )
 
 # Source groups
@@ -27,6 +37,7 @@ source_group("kernel" FILES ${XPH_SOURCE_ALL_FILES})
 source_group("components" FILES ${XPH_SOURCE_COMP_FILES})
 source_group("core" FILES ${XPH_SOURCE_CORE_FILES})
 source_group("net" FILES ${XPH_SOURCE_NET_FILES})
+source_group("dTri" FILES ${XPH_SOURCE_DTRI_FILES})
 
 # Apply list
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_ALL_FILES})
@@ -37,7 +48,6 @@ list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*"
 
 # xrPhysics project
 add_library(xrPhysics SHARED ${XPH_SRC_FILES})
-target_precompile_headers(xrPhysics PRIVATE "stdafx.h")
 
 # Include directories
 target_include_directories(xrPhysics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -56,3 +66,15 @@ target_compile_definitions(xrPhysics PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_link_libraries(xrPhysics PUBLIC xrCore)
 target_link_libraries(xrPhysics PUBLIC xrCDB)
 target_link_libraries(xrPhysics PUBLIC ODE)
+
+# PCH move
+set_target_properties(xrPhysics PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrPhysics PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+target_precompile_headers(xrPhysics PRIVATE "stdafx.h")
+
+file(GLOB_RECURSE XPH_SOURCE_PCH_FILES "stdafx.*")
+file(GLOB_RECURSE XPH_SOURCE_ALL_C_FILES "*.c")
+
+set_source_files_properties(${XPH_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+source_group("pch" FILES ${XPH_SOURCE_PCH_FILES})
