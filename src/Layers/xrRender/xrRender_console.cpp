@@ -122,8 +122,11 @@ float ps_r__tf_Mipbias = 0.0f;
 Flags32		ps_r1_flags					= { R1FLAG_DLIGHTS | R1FLAG_TERRAIN_MASK };		// r1-only
 float		ps_r1_lmodel_lerp			= 0.1f	;
 float		ps_r1_dlights_clip			= 40.f	;
+
+#if RENDER!=R_R4
 float		ps_r1_pps_u					= 0.f	;
 float		ps_r1_pps_v					= 0.f	;
+#endif
 
 // R1-specific
 int			ps_r1_GlowsPerFrame			= 16	;					// r1-only
@@ -696,9 +699,11 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r1_lmodel_lerp",		&ps_r1_lmodel_lerp,			0,		0.333f	);
 	CMD3(CCC_Mask,		"r1_dlights",			&ps_r1_flags,				R1FLAG_DLIGHTS	);
 	CMD4(CCC_Float,		"r1_dlights_clip",		&ps_r1_dlights_clip,		10.f,	150.f	);
+
+#if RENDER!=R_R4
 	CMD4(CCC_Float,		"r1_pps_u",				&ps_r1_pps_u,				-1.f,	+1.f	);
 	CMD4(CCC_Float,		"r1_pps_v",				&ps_r1_pps_v,				-1.f,	+1.f	);
-
+#endif
 
 	// R1-specific
 	CMD4(CCC_Integer,	"r1_glows_per_frame",	&ps_r1_GlowsPerFrame,		2,		32		);

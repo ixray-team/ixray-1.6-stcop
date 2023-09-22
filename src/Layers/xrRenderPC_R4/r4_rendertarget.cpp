@@ -904,19 +904,28 @@ float g_CameraJitterY = 0.0f;
 
 Fvector2 CRenderTarget::get_jitter(bool prevFrame)
 {
-    if (ps_r4_upscale_type == SCALETYPE_LINEAR || ps_r4_upscale_type == SCALETYPE_NEAREST) {
+    switch (ps_r4_upscale_type)
+    {
+    case SCALETYPE_LINEAR:
+    case SCALETYPE_NEAREST:
         //g_CameraJitterX = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
         //g_CameraJitterY = (Device.dwFrame % 2) == prevFrame ? 0.1f : -0.1f;
         g_CameraJitterX = 0.0f;
         g_CameraJitterY = 0.0f;
         return { g_CameraJitterX, g_CameraJitterY };
+    case SCALETYPE_FSR2:
+    case SCALETYPE_DLSS: {
+        const int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount(RCache.get_width(), RCache.get_target_width());
+        ffxFsr2GetJitterOffset(&g_CameraJitterX, &g_CameraJitterY, prevFrame ? Device.dwFrame - 1 : Device.dwFrame, jitterPhaseCount);
+        float jitterX = g_CameraJitterX;
+        float jitterY = g_CameraJitterY;
+        return { jitterX, jitterY };
     }
-    
-    const int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount(RCache.get_width(), RCache.get_target_width());
-    ffxFsr2GetJitterOffset(&g_CameraJitterX, &g_CameraJitterY, prevFrame ? Device.dwFrame - 1 : Device.dwFrame, jitterPhaseCount);
-    float jitterX = g_CameraJitterX;
-    float jitterY = g_CameraJitterY;
-    return { jitterX, jitterY};
+    default:
+        break;
+    }
+
+    return {};
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)

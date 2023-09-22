@@ -51,6 +51,7 @@ bool DLSSWrapper::Create(const ContextParameters& Parameters)
         return false;
     }
 
+    m_created = true;
     return true;
 }
 

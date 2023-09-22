@@ -95,9 +95,9 @@ void dxFontRender::OnRender(CGameFont &owner)
 				}
 
 #ifdef USE_DX11		//	Vertex shader will cancel a DX9 correction, so make fake offset
-				X			-= 0.5f;
-				Y			-= 0.5f;
-				Y2			-= 0.5f;
+				//X			-= 0.5f;
+				//Y			-= 0.5f;
+				//Y2		-= 0.5f;
 #endif //USE_DX11
 
 				float	tu,tv;

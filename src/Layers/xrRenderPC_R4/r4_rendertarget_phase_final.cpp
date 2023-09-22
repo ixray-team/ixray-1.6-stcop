@@ -134,6 +134,7 @@ void CRenderTarget::phase_final()
 		} else {
 			phase_fsr2_combine();
 		}
+		break;
 	case 3:
 		if (!g_DLSSWrapper.IsCreated()) {
 			phase_output_scale(false);

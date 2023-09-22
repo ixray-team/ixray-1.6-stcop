@@ -5,19 +5,32 @@ struct         v2p
 	float4	factor	: COLOR0;        // for SM3 - factor.rgb - tonemap-prescaled
 	float3	tc0		: TEXCOORD0;
 	float3	tc1		: TEXCOORD1;
-  	//float4  prev_hpos : POSITION0;
-  	//float4  cur_hpos  : POSITION1;
+  	float4  prev_hpos : POSITION0;
+  	float4  cur_hpos  : POSITION1;
 };
 
 TextureCube	s_sky0	:register(t0);
 TextureCube	s_sky1	:register(t1);
 
+struct _out
+{
+	float3 target : SV_Target0;
+	float2 motion : SV_Target1;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float3 main( v2p I ) : SV_Target
+_out main( v2p I )
 {
 	float3	s0		= s_sky0.SampleLevel( smp_base, I.tc0, 0 );
 	float3	s1		= s_sky1.SampleLevel( smp_base, I.tc1, 0 );
 	float3	sky		= I.factor.zyx*lerp( s0, s1, I.factor.w );
-	return sky;
+
+	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
+
+	_out o;
+	o.target = sky;
+	o.motion = motion_vector;
+
+	return o;
 }

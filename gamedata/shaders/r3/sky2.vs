@@ -14,8 +14,8 @@ struct v2p
 	float3	tc0		: TEXCOORD0;
 	float3	tc1		: TEXCOORD1;
 	float4	hpos	: SV_Position;
-  	//float4  prev_hpos : POSITION0;
-  	//float4  cur_hpos  : POSITION1;
+  	float4  prev_hpos : POSITION0;
+  	float4  cur_hpos  : POSITION1;
 };
 
 v2p main (vi v)
@@ -25,10 +25,10 @@ v2p main (vi v)
 	float4	tpos	= mul(1000, v.p);
      o.hpos         = mul(m_WVP, tpos);						// xform, input in world coords, 1000 - magic number
 	o.hpos.z	    = o.hpos.w;
-	//o.cur_hpos		= mul(m_WVP_Unjittered, v.p);
-	//o.prev_hpos		= mul(m_prevWVP_Unjittered, v.p);
-	//o.cur_hpos.z 	= o.cur_hpos.w;
-	//o.prev_hpos.z 	= o.prev_hpos.w;
+	o.cur_hpos		= mul(m_WVP_Unjittered, tpos);
+	o.prev_hpos		= mul(m_prevWVP_Unjittered, tpos);
+	o.cur_hpos.z 	= o.cur_hpos.w;
+	o.prev_hpos.z 	= o.prev_hpos.w;
 	o.tc0			= v.tc0;                        					// copy tc
 	o.tc1			= v.tc1;                        					// copy tc
 	float	scale	= s_tonemap.Load( int3(0,0,0) ).x;

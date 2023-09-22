@@ -66,8 +66,11 @@ extern ECORE_API	float		ps_r1_ssaLOD_A;
 extern ECORE_API	float		ps_r1_ssaLOD_B;
 extern ECORE_API	float		ps_r1_lmodel_lerp;
 extern ECORE_API	float		ps_r1_dlights_clip;
+
+#if RENDER!=R_R4
 extern ECORE_API	float		ps_r1_pps_u;
 extern ECORE_API	float		ps_r1_pps_v;
+#endif
 
 // R1-specific
 extern ECORE_API	int			ps_r1_GlowsPerFrame;	// r1-only

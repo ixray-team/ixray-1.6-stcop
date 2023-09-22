@@ -48,8 +48,8 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 	float	_w = RCache.get_width();
 	float	_h = RCache.get_height();
 	Fvector2					p0, p1;
-	p0.set(.5f / _w, .5f / _h);
-	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	p0.set(0.0f, 0.0f);
+	p1.set(1.0f, 1.0f);
 	float	d_Z = EPS_S, d_W = 1.f;
 
 	// Common constants (light-related)

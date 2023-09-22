@@ -32,14 +32,16 @@ v2p_flat 	main (v_detail v)
 	// 
 	float 	base 		= m1.w;
 	float 	H 			= pos.y - base;			// height of vertex (scaled)
-	float 	inten 		= H * dp;
 	float 	frac 		= v.misc.z*consts.x;		// fractional
 	
+	float 	inten 		= H * dp;
 	float2 	result 		= calc_xz_wave	(dir2D.xz*inten,frac);
-	pos					= float4(pos.x+result.x, pos.y, pos.z+result.y, 1);
 
-	float2 	prev_result = calc_xz_wave	(prev_dir2D.xz*inten,frac);
+	float 	prev_inten 	= H * prev_dp;
+	float2 	prev_result = calc_xz_wave	(prev_dir2D.xz*prev_inten,frac);
+	
 	prev_pos			= float4(pos.x+prev_result.x, pos.y, pos.z+prev_result.y, 1);
+	pos					= float4(pos.x+result.x, pos.y, pos.z+result.y, 1);
 
 	// Normal in world coords
 	float3 	norm;	//	= float3(0,1,0);
