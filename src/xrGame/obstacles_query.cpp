@@ -43,16 +43,14 @@ void obstacles_query::set_intersection	(const obstacles_query &query)
 
 void obstacles_query::merge				(const AREA &object_area)
 {
-	u32							area_size = m_area.size();
-	u32							destination_size = area_size + object_area.size();
-	u32							buffer_size = destination_size*sizeof(u32);
-	u32							*temp = (u32*)_alloca(buffer_size);
-	Memory.mem_copy				(temp,&*m_area.begin(),area_size*sizeof(u32));
-	m_area.resize				(destination_size);
-	m_area.erase				(
+	AREA temp(std::move(m_area));
+	u32 area_size = temp.size();
+	u32 destination_size = area_size + object_area.size();
+	m_area.resize(destination_size);
+	m_area.erase(
 		std::set_union(
-			temp,
-			temp + area_size,
+			temp.begin(),
+			temp.end(),
 			object_area.begin(),
 			object_area.end(),
 			m_area.begin()

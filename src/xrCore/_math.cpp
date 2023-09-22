@@ -311,7 +311,7 @@ void thread_name(const char* name)
 	{
 		__try
 		{
-			RaiseException(0x406D1388, 0, sizeof(tn) / sizeof(DWORD), (DWORD*)&tn);
+			RaiseException(0x406D1388, 0, sizeof(tn) / sizeof(DWORD), (ULONG_PTR*)&tn);
 		}
 		__except (EXCEPTION_CONTINUE_EXECUTION)
 		{

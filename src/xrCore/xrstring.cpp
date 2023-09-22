@@ -6,7 +6,6 @@
 #include "FS_impl.h"
 
 XRCORE_API	extern		str_container*	g_pStringContainer	= NULL;
-#define		HEADER		16			// ref + len + crc + next
 
 #if 1
 
@@ -153,7 +152,7 @@ str_value*	str_container::dock		(str_c value)
 	// calc len
 	u32		s_len				= xr_strlen(value);
 	u32		s_len_with_zero		= (u32)s_len+1;
-	VERIFY	(HEADER+s_len_with_zero < 4096);
+	VERIFY	(sizeof(str_value) + s_len_with_zero < 4096);
 
 	// setup find structure
 	char	header[sizeof(str_value)];
@@ -176,7 +175,7 @@ str_value*	str_container::dock		(str_c value)
 #endif //DEBUG
 		) {
 
-		result					= (str_value*)Memory.mem_alloc(HEADER+s_len_with_zero
+		result					= (str_value*)Memory.mem_alloc(sizeof(str_value) + s_len_with_zero
 #ifdef DEBUG_MEMORY_NAME
 			, "storage: sstring"
 #endif // DEBUG_MEMORY_NAME
