@@ -8,8 +8,8 @@ void CRenderTarget::phase_smaa() {
     constexpr u32 C = color_rgba(0, 0, 0, 255);
     FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    float _w = float(Device.dwWidth);
-    float _h = float(Device.dwHeight);
+    float _w = float(Device.TargetWidth);
+    float _h = float(Device.TargetHeight);
 
     p0.set(.5f / _w, .5f / _h);
     p1.set((_w + .5f) / _w, (_h + .5f) / _h);

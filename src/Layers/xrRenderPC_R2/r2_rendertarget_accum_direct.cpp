@@ -234,12 +234,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMax);	Device.mFullTransform.transform	(center_pt);
 		zMax = center_pt.z	;
 
-		if (u_DBT_enable(zMin,zMax))	{
-			// z-test always
-			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		}
-
 		// Enable Z function only for near and middle cascades, the far one is restricted by only stencil.
 		if( (SE_SUN_NEAR==sub_phase || SE_SUN_MIDDLE==sub_phase) )
 			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
@@ -271,9 +265,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 #			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
 			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		}
-
-		// disable depth bounds
-		u_DBT_disable	();
 
 		//	Igor: draw volumetric here
 		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
@@ -393,19 +384,10 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		Device.mFullTransform.transform	(center_pt);
 		zMax = center_pt.z	;
 
-
-		if (u_DBT_enable(zMin,zMax))	{
-			// z-test always
-			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		}
+		if (SE_SUN_NEAR == sub_phase)
+			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATER);
 		else
-		{
-			if (SE_SUN_NEAR==sub_phase)
-				HW.pDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_GREATER);
-			else
-				HW.pDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		}
+			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 
 		// Fetch4 : enable
 		if (RImplementation.o.HW_smap_FETCH4)	{
@@ -425,8 +407,5 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 #			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
 			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		}
-
-		// disable depth bounds
-		u_DBT_disable	();
 	}
 }

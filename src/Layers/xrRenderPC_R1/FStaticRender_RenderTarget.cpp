@@ -46,7 +46,7 @@ BOOL CRenderTarget::Create	()
 	curHeight			= RCache.get_height();
 
 	// Select mode to operate in
-	float	amount		= ps_r__Supersample?float(ps_r__Supersample):1	;
+	float	amount		= 1;
 	float	scale		= _sqrt	(amount);
 	rtWidth				= clampr(iFloor(scale* RCache.get_width()  + .5f), 128, 2048);
 	rtHeight			= clampr(iFloor(scale*RCache.get_height() + .5f), 128, 2048);
@@ -235,7 +235,7 @@ BOOL CRenderTarget::NeedPostProcess()
 BOOL CRenderTarget::Perform		()
 {
 	return Available() &&
-		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (ps_r__Supersample>1) || (frame_distort==(Device.dwFrame-1)));
+		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (frame_distort==(Device.dwFrame-1)));
 }
 
 #include <dinput.h>

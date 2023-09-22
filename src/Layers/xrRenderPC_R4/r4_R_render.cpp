@@ -353,7 +353,7 @@ void CRender::Render		()
 	{
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
 		// perform tests
-		u32	count			= 0;
+		std::size_t	count			= 0;
 		light_Package&	LP	= Lights.package;
 
 	   // stats

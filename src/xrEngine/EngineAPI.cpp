@@ -175,9 +175,7 @@ void CEngineAPI::CreateRendererList()
 			SetErrorMode(0);
 			if (hRender)
 			{
-				SupportsDX11Rendering* test_dx11_rendering = (SupportsDX11Rendering*)GetProcAddress(hRender, "SupportsDX11Rendering");
-				R_ASSERT(test_dx11_rendering);
-				bSupports_r4 = test_dx11_rendering();
+				bSupports_r4 = true;
 				FreeLibrary(hRender);
 			}
 		}

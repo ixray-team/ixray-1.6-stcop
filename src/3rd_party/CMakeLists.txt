@@ -8,7 +8,6 @@ add_subdirectory("imgui")
 add_subdirectory("nri")
 add_subdirectory("tracy")
 
-add_subdirectory("luajit")
 add_subdirectory("luabind")
 add_subdirectory("ode")
 add_subdirectory("crypto")

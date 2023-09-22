@@ -17,6 +17,7 @@ add_subdirectory("xrGameSpy/")
 
 add_subdirectory("3rd_party")
 
+add_subdirectory("xrPlay")
 # Engine Utils
 if (IXRAY_UTILS)
     add_subdirectory("utils")

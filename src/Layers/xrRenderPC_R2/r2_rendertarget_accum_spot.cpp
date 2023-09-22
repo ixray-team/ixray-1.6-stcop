@@ -27,7 +27,6 @@ void CRenderTarget::accum_spot	(light* L)
 		RCache.set_xform_view			(Device.mView		);
 		RCache.set_xform_project		(Device.mProject	);
 		bIntersect						= enable_scissor	(L);
-		enable_dbt_bounds				(L);
 
 		// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 		// *** thus can cope without stencil clear with 127 lights
@@ -163,8 +162,6 @@ void CRenderTarget::accum_spot	(light* L)
 	CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	increment_light_marker();
-
-	u_DBT_disable				();
 }
 
 void CRenderTarget::accum_volumetric(light* L)

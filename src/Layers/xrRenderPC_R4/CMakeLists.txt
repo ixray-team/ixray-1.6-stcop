@@ -74,8 +74,6 @@ target_link_libraries(xrRender_R4 PUBLIC xrParticles)
 target_link_libraries(xrRender_R4 PUBLIC "d3dcompiler.lib")
 target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
 target_link_libraries(xrRender_R4 PUBLIC "d3d11.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x86.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x86.lib")
 
 # Nuget
 add_custom_command(TARGET ${PROJECT_NAME}
@@ -88,7 +86,11 @@ target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/dire
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/include/")
 
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x86.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x86.lib")
 target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x86/release/DirectXTex.lib)
 else()
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_x64.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_x64.lib")
 target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_win10.2023.6.14.1/native/lib/x64/release/DirectXTex.lib)
 endif()

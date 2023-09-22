@@ -200,7 +200,6 @@ CRenderTarget::CRenderTarget		()
 	dxRenderDeviceRender::Instance().Resources->Evict			();
 
 	// Blenders
-	b_occq							= xr_new<CBlender_light_occq>			();
 	b_accum_mask					= xr_new<CBlender_accum_direct_mask>	();
 	b_accum_direct_cascade			= xr_new<CBlender_accum_direct_cascade>	();
 	b_accum_point					= xr_new<CBlender_accum_point>			();
@@ -212,7 +211,7 @@ CRenderTarget::CRenderTarget		()
 	b_combine						= xr_new<CBlender_combine>				();
 	b_fxaa = xr_new<CBlender_FXAA>();
 
-	u32 w = Device.dwWidth, h = Device.dwHeight;
+	u32 w = Device.TargetWidth, h = Device.TargetHeight;
 
 	//	NORMAL
 	{
@@ -368,7 +367,7 @@ CRenderTarget::CRenderTarget		()
 
 	// SMAA
 	{
-		u32 w = Device.dwWidth, h = Device.dwHeight;
+		u32 w = Device.TargetWidth, h = Device.TargetHeight;
 
 		b_smaa = xr_new<CBlender_SMAA>();
 		s_smaa.create(b_smaa);
