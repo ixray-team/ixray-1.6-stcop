@@ -255,7 +255,7 @@ public:
 		csPlayers.Enter();
 		//LogStackTrace(
 		//	make_string("-S- Entered to csPlayers [%d]", GetCurrentThreadId()).c_str());
-		u32 ret_count = net_Players.size();
+		u32 ret_count = (u32)net_Players.size();
 		//Msg("-S- Leaving from csPlayers [%d]", GetCurrentThreadId());
 		csPlayers.Leave();
 		return ret_count;

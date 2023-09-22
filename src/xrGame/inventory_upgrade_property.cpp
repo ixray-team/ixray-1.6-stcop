@@ -6,6 +6,7 @@
 //	Description : inventory upgrade property class implementation
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_space.h"
 #include "../xrServerEntities/script_engine.h"

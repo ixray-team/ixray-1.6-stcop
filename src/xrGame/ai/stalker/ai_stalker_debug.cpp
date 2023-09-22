@@ -6,6 +6,7 @@
 //	Description : Debug functions for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 
 #ifdef DEBUG

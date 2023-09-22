@@ -5,7 +5,6 @@
 
 #ifndef _EDITOR
 #include <xmmintrin.h>
-#include "../../xrCPU_Pipe/ttapi.h"
 #endif
 
 using namespace PAPI;
@@ -265,13 +264,6 @@ IC void FillSprite_fpu	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const
 	pv->set		(b.x+pos.x,b.y+pos.y,b.z+pos.z,	clr, rb.x,lt.y);	pv++;
 }
 
-__forceinline void fsincos( const float angle , float &sine , float &cosine )
-{
-	sine = std::sinf(angle);
-	cosine = std::cosf(angle);
-}
-
-
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina , float cosa )
 {
 	__m128 Vr, Vt, _T , _R , _pos , _zz , _sa , _ca , a , b , c , d;
@@ -406,7 +398,7 @@ __forceinline void magnitude_sse( Fvector &vec , float &res )
 void ParticleRenderStream( LPVOID lpvParams )
 {
 			float sina = 0.0f , cosa = 0.0f;
-			DWORD angle = 0xFFFFFFFF;
+			float angle = 0xFFFFFFFF;
 
 			PRS_PARAMS* pParams = (PRS_PARAMS *) lpvParams;
 
@@ -424,10 +416,11 @@ void ParticleRenderStream( LPVOID lpvParams )
 
 				 _mm_prefetch( (char*) &particles[i + 1] , _MM_HINT_NTA );
 
-				if (angle != m.rot.x) {
+				 if (angle != m.rot.x) {
 					angle = m.rot.x;
-					fsincos(angle, sina, cosa);
-				}
+					sina = std::sinf(angle);
+					cosa = std::cosf(angle);
+				 }
 
 				 _mm_prefetch( 64 + (char*) &particles[i + 1] , _MM_HINT_NTA );
 
@@ -499,45 +492,34 @@ void ParticleRenderStream( LPVOID lpvParams )
 			}
 }
 
-void CParticleEffect::Render(float )
-{
-	u32			dwOffset,dwCount;
+void CParticleEffect::Render(float) {
+	u32 dwOffset, dwCount;
 	// Get a pointer to the particles in gp memory
-    PAPI::Particle* particles;
-    u32 			p_cnt;
-    ParticleManager()->GetParticles(m_HandleEffect,particles,p_cnt);
+	PAPI::Particle* particles;
+	u32 p_cnt;
+	ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
 
-	if(p_cnt>0){
-		if (m_Def&&m_Def->m_Flags.is(CPEDef::dfSprite)){
-			FVF::LIT* pv_start	= (FVF::LIT*)RCache.Vertex.Lock(p_cnt*4*4,geom->vb_stride,dwOffset);
-			FVF::LIT* pv		= pv_start;
+	if (p_cnt > 0)
+	{
+		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
+		{
+			FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
+			FVF::LIT* pv = pv_start;
 
-			u32 nWorkers = ttapi_GetWorkersCount();
-
-			if ( p_cnt < nWorkers * 20 )
-				nWorkers = 1;
-
-			PRS_PARAMS* prsParams = (PRS_PARAMS*) _alloca( sizeof(PRS_PARAMS) * nWorkers );
+			PRS_PARAMS prsParams{};
 
 			// Give ~1% more for the last worker
 			// to minimize wait in final spin
 			u32 nSlice = p_cnt / 128;
+			u32 nStep = ((p_cnt - nSlice));
 
-			u32 nStep = ( ( p_cnt - nSlice ) / nWorkers );
-			//u32 nStep = ( p_cnt  / nWorkers );
+			prsParams.pv = pv;
+			prsParams.p_from = 0;
+			prsParams.p_to = p_cnt;
+			prsParams.particles = particles;
+			prsParams.pPE = this;
 
-			//Msg( "Rnd: %u" , nStep );
-
-			for ( u32 i = 0 ; i < nWorkers ; ++i ) {
-				prsParams[i].pv = pv + i*nStep*4;
-				prsParams[i].p_from = i * nStep;
-				prsParams[i].p_to = ( i == ( nWorkers - 1 ) ) ? p_cnt : ( prsParams[i].p_from + nStep );
-				prsParams[i].particles = particles;
-				prsParams[i].pPE = this;
-				ttapi_AddWorker( ParticleRenderStream , (LPVOID) &prsParams[i] );
-			}
-
-			ttapi_RunAllWorkers();
+			ParticleRenderStream((LPVOID) &prsParams);
 
 			dwCount = p_cnt<<2;
 
@@ -549,9 +531,9 @@ void CParticleEffect::Render(float )
 				Fmatrix FTold						= Device.mFullTransform;
 				if(GetHudMode())
 				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV),
-														Device.fASPECT,
-														VIEWPORT_NEAR, 
+					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV),
+														Device.fASPECT, 
+														HUD_VIEWPORT_NEAR, 
 														g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);
@@ -724,9 +706,9 @@ void CParticleEffect::Render(float )
 				Fmatrix FTold						= Device.mFullTransform;
 				if(GetHudMode())
 				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV), 
+					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV),
 														Device.fASPECT, 
-														VIEWPORT_NEAR, 
+														HUD_VIEWPORT_NEAR, 
 														g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 					Device.mFullTransform.mul	(Device.mProject, Device.mView);

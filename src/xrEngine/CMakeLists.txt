@@ -46,15 +46,24 @@ list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
 #list(FILTER ENGINE_SRC_FILES EXCLUDE REGEX "")
 
 # xrEngine project
-add_executable(xrEngine WIN32 ${ENGINE_SRC_FILES})
+add_library(xrEngine SHARED ${ENGINE_SRC_FILES})
 set_property(TARGET xrEngine PROPERTY ENABLE_EXPORTS ON)
 
 # Include directories
 target_include_directories(xrEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEngine PUBLIC "${IXRAY_SDK_INC}")
 
-# PCH
+# PCH move
+set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrEngine PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 target_precompile_headers(xrEngine PUBLIC "stdafx.h")
+
+file(GLOB_RECURSE ENGINE_SOURCE_PCH_FILES "stdafx.*")
+file(GLOB_RECURSE ENGINE_SOURCE_ALL_C_FILES "*.c")
+
+set_source_files_properties(${ENGINE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+source_group("pch" FILES ${ENGINE_SOURCE_PCH_FILES})
 
 # project defines 
 target_compile_definitions(xrEngine PRIVATE ENGINE_BUILD)
@@ -67,7 +76,6 @@ target_link_libraries(xrEngine PUBLIC xrCore)
 target_link_libraries(xrEngine PUBLIC xrCDB)
 target_link_libraries(xrEngine PUBLIC xrAPI)
 target_link_libraries(xrEngine PUBLIC xrSound)
-target_link_libraries(xrEngine PUBLIC luajit)
 target_link_libraries(xrEngine PUBLIC luabind)
 target_link_libraries(xrEngine PUBLIC xrNetServer)
 target_link_libraries(xrEngine PUBLIC "Winmm.lib")
@@ -85,16 +93,16 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/Win32/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}dxil.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}dxcompiler.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## Theora
-target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/Win32/Release/libtheora.lib)
+target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
 target_include_directories(xrEngine PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/include/")
 
 ## LibOGG
-target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/Win32/Release/libogg.lib)
+target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
 target_include_directories(xrEngine PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")

@@ -97,6 +97,7 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 	InitAutoStaticGroup			(xml_doc, path, index, pWnd);
 //.	InitAutoFrameLineGroup		(xml_doc, path, index, pWnd);
 
+	pWnd->SetWindowNodeName		(path);
 	return true;
 }
 
@@ -519,6 +520,7 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, LPCSTR path, int index, CUI
 
 
 	pWnd->back_color		= GetColor( xml_doc, path, index, 0xFFFFFFFF );
+	pWnd->SetWindowNodeName(path);
 
 	return true;
 }
@@ -1220,6 +1222,7 @@ bool CUIXmlInit::InitListBox(CUIXml& xml_doc, LPCSTR path, int index, CUIListBox
 
 	float h					= xml_doc.ReadAttribFlt(path, index, "item_height", 20.0f);
 	pWnd->SetItemHeight		(h);
+	pWnd->SetWindowNodeName(path);
 	return true;
 }
 

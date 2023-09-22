@@ -421,6 +421,17 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 	}
 }
 
+void CWeaponMagazinedWGrenade::UnloadMagazine(bool spawn_ammo) {
+	inherited::UnloadMagazine();
+
+	if (m_bGrenadeMode) {
+		if (getRocketCount()) {
+			u16 rocket_id = getCurrentRocket()->ID();
+			CRocketLauncher::DetachRocket(rocket_id, false);
+		}
+	}
+}
+
 void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S) 
 {
 	switch (S)
@@ -719,11 +730,18 @@ void CWeaponMagazinedWGrenade::PlayAnimBore()
 
 void CWeaponMagazinedWGrenade::UpdateSounds	()
 {
+	if (Device.dwFrame == dwUpdateSounds_Frame)
+		return;
+
 	inherited::UpdateSounds			();
+
 	Fvector P						= get_LastFP();
-	m_sounds.SetPosition("sndShotG", P);
-	m_sounds.SetPosition("sndReloadG", P);
-	m_sounds.SetPosition("sndSwitch", P);
+	if (Device.dwFrame % 3 == 0)
+		m_sounds.SetPosition("sndShotG", P);
+	else if (Device.dwFrame % 3 == 1)
+		m_sounds.SetPosition("sndReloadG", P);
+	else if (Device.dwFrame % 3 == 2)
+		m_sounds.SetPosition("sndSwitch", P);
 }
 
 void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)

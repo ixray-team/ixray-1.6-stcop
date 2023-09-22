@@ -313,7 +313,6 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	C_CHECK					(ambient	);
 	C_CHECK					(hemi_color	);
 	C_CHECK					(sun_color	);
-	on_device_create		();
 }
 
 void CEnvDescriptor::on_device_create	()

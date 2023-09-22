@@ -17,6 +17,7 @@
 //#include "R_Backend.h"
 
 #define VIEWPORT_NEAR  0.2f
+#define HUD_VIEWPORT_NEAR  0.05f
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -118,7 +119,7 @@ public:
 // refs
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
-private:
+public:
     // Main objects used for creating and rendering the 3D scene
     u32										m_dwWindowStyle;
     RECT									m_rcWindowBounds;
@@ -319,6 +320,8 @@ private:
 };
 
 extern		ENGINE_API		CRenderDevice		Device;
+extern ENGINE_API CTimer loading_save_timer;
+extern ENGINE_API bool loading_save_timer_started;
 
 #ifndef	_EDITOR
 #define	RDEVICE	Device

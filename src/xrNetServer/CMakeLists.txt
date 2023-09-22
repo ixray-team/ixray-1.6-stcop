@@ -18,10 +18,6 @@ list(APPEND NETSERV_SRC_FILES ${NETSERV_SOURCE_ALL_FILES})
 # xrNetServer project
 add_library(xrNetServer SHARED ${NETSERV_SRC_FILES})
 target_include_directories(xrNetServer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_precompile_headers(xrNetServer PUBLIC "stdafx.h")
-
-# xrEngine project
-target_include_directories(xrNetServer PUBLIC "${IXRAY_SDK_INC}")
 
 # project defines 
 target_compile_definitions(xrNetServer PRIVATE XR_NETSERVER_EXPORTS)
@@ -34,3 +30,12 @@ target_compile_definitions(xrNetServer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrNetServer PUBLIC xrCore)
 target_link_libraries(xrNetServer PUBLIC "Ws2_32.lib")
+
+# PCH move
+set_target_properties(xrNetServer PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrNetServer PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+target_precompile_headers(xrNetServer PRIVATE "stdafx.h")
+
+file(GLOB_RECURSE NETSERV_SOURCE_PCH_FILES "stdafx.*")
+source_group("pch" FILES ${NETSERV_SOURCE_PCH_FILES})

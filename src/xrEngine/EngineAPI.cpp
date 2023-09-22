@@ -39,8 +39,6 @@ CEngineAPI::~CEngineAPI()
 extern u32 renderer_value; //con cmd
 ENGINE_API int g_current_renderer = 0;
 
-#ifndef DEDICATED_SERVER
-
 void CEngineAPI::InitializeNotDedicated()
 {
 	LPCSTR			r2_name	= "xrRender_R2.dll";
@@ -70,8 +68,8 @@ void CEngineAPI::InitializeNotDedicated()
 		}
 	}
 }
-#endif // DEDICATED_SERVER
 
+extern ENGINE_API bool g_dedicated_server;
 
 void CEngineAPI::Initialize(void)
 {
@@ -79,9 +77,8 @@ void CEngineAPI::Initialize(void)
 	// render
 	LPCSTR			r1_name	= "xrRender_R1.dll";
 
-	#ifndef DEDICATED_SERVER
+	if (!g_dedicated_server)
 		InitializeNotDedicated();
-	#endif // DEDICATED_SERVER
 
 	if (0==hRender)		
 	{
@@ -128,164 +125,118 @@ extern "C" {
 
 void CEngineAPI::CreateRendererList()
 {
-#ifdef DEDICATED_SERVER
-
-	vid_quality_token						= xr_alloc<xr_token>(2);
-
-	vid_quality_token[0].id			= 0;
-	vid_quality_token[0].name		= xr_strdup("renderer_r1");
-
-	vid_quality_token[1].id			= -1;
-	vid_quality_token[1].name		= NULL;
-
-#else
-	//	TODO: ask renderers if they are supported!
-	if(vid_quality_token != NULL)		return;
-	bool bSupports_r2 = false;
-	bool bSupports_r2_5 = false;
-	bool bSupports_r4 = false;
-
-	LPCSTR			r2_name	= "xrRender_R2.dll";
-	LPCSTR			r4_name	= "xrRender_R4.dll";
-	LPCSTR			new_name= "RenderNew.dll";
-
-	if (strstr(Core.Params,"-perfhud_hack"))
+	if (g_dedicated_server)
 	{
-		bSupports_r2 = true;
-		bSupports_r2_5 = true;
-		bSupports_r4 = true;
+		vid_quality_token = xr_alloc<xr_token>(2);
+
+		vid_quality_token[0].id = 0;
+		vid_quality_token[0].name = xr_strdup("renderer_r1");
+
+		vid_quality_token[1].id = -1;
+		vid_quality_token[1].name = NULL;
 	}
 	else
 	{
-		Log				("Loading DLL:",	r2_name);
-		hRender			= LoadLibrary		(r2_name);
-		FreeLibrary(hRender);
-		Log				("Loading DLL:",	r4_name);
-		hRender			= LoadLibrary		(r4_name);
-		FreeLibrary(hRender);
-		//Log				("Loading DLL:",	new_name);
-		//hRender			= LoadLibrary		(new_name);
-		//
-		bSupports_r2 = true;
-		bSupports_r2_5 = true;
-		bSupports_r4 = true;
-	}
+		//	TODO: ask renderers if they are supported!
+		if (vid_quality_token != NULL)		return;
+		bool bSupports_r2 = false;
+		bool bSupports_r2_5 = false;
+		bool bSupports_r4 = false;
 
-	hRender = 0;
+		LPCSTR			r2_name = "xrRender_R2.dll";
+		LPCSTR			r4_name = "xrRender_R4.dll";
 
-	xr_vector<LPCSTR>			_tmp;
-	bool bBreakLoop = false;
-
-	for (size_t i = 0; i < 5; ++i)
-	{
-		switch (i)
+		if (strstr(Core.Params, "-perfhud_hack"))
 		{
-		case 1:
-			if (!bSupports_r2)
-				bBreakLoop = true;
-			break;
-		case 3:		//"renderer_r2.5"
-			if (!bSupports_r2_5)
-				bBreakLoop = true;
-			break;
-		case 4:		//"renderer_r_dx11"
-			if (!bSupports_r4)
-				bBreakLoop = true;
-			break;
-		default:	;
+			bSupports_r2 = true;
+			bSupports_r2_5 = true;
+			bSupports_r4 = true;
+		}
+		else
+		{
+			// try to initialize R2
+			Log("Loading DLL:", r2_name);
+			hRender = LoadLibrary(r2_name);
+			if (hRender)
+			{
+				bSupports_r2 = true;
+				SupportsAdvancedRendering* test_rendering = (SupportsAdvancedRendering*)GetProcAddress(hRender, "SupportsAdvancedRendering");
+				R_ASSERT(test_rendering);
+				bSupports_r2_5 = test_rendering();
+				FreeLibrary(hRender);
+			}
+
+			// try to initialize R4
+			Log("Loading DLL:", r4_name);
+			//	Hide "d3d11.dll not found" message box for XP
+			SetErrorMode(SEM_FAILCRITICALERRORS);
+			hRender = LoadLibrary(r4_name);
+			//	Restore error handling
+			SetErrorMode(0);
+			if (hRender)
+			{
+				SupportsDX11Rendering* test_dx11_rendering = (SupportsDX11Rendering*)GetProcAddress(hRender, "SupportsDX11Rendering");
+				R_ASSERT(test_dx11_rendering);
+				bSupports_r4 = test_dx11_rendering();
+				FreeLibrary(hRender);
+			}
 		}
 
-		if (bBreakLoop) break;
+		hRender = 0;
 
-		_tmp.push_back				(NULL);
-		LPCSTR val					= NULL;
-		switch (i)
-		{
-		case 0: val ="renderer_r1";			break;
-		case 1: val ="renderer_r2a";		break;
-		case 2: val ="renderer_r2";			break;
-		case 3: val ="renderer_r2.5";		break;
-		case 4: val ="renderer_r4";			break; //  -)
-		}
-		if (bBreakLoop) break;
-		_tmp.back()					= xr_strdup(val);
-	}
-	u32 _cnt								= _tmp.size()+1;
-	vid_quality_token						= xr_alloc<xr_token>(_cnt);
-
-	vid_quality_token[_cnt-1].id			= -1;
-	vid_quality_token[_cnt-1].name			= NULL;
-
-#ifdef DEBUG
-	Msg("Available render modes[%d]:",_tmp.size());
-#endif // DEBUG
-	for(u32 i=0; i<_tmp.size();++i)
-	{
-		vid_quality_token[i].id				= i;
-		vid_quality_token[i].name			= _tmp[i];
-#ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
-#endif // DEBUG
-	}
-
-	/*
-	if(vid_quality_token != NULL)		return;
-
-	D3DCAPS9					caps;
-	CHW							_HW;
-	_HW.CreateD3D				();
-	_HW.pD3D->GetDeviceCaps		(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&caps);
-	_HW.DestroyD3D				();
-	u16		ps_ver_major		= u16 ( u32(u32(caps.PixelShaderVersion)&u32(0xf << 8ul))>>8 );
-
-	xr_vector<LPCSTR>			_tmp;
-	u32 i						= 0;
-	for(; i<5; ++i)
-	{
+		xr_vector<LPCSTR>			_tmp;
 		bool bBreakLoop = false;
-		switch (i)
+
+		for (size_t i = 0; i < 5; ++i)
 		{
-		case 3:		//"renderer_r2.5"
-			if (ps_ver_major < 3)
-				bBreakLoop = true;
-			break;
-		case 4:		//"renderer_r_dx10"
-			bBreakLoop = true;
-			break;
-		default:	;
+			switch (i)
+			{
+			case 1:
+				if (!bSupports_r2)
+					bBreakLoop = true;
+				break;
+			case 3:		//"renderer_r2.5"
+				if (!bSupports_r2_5)
+					bBreakLoop = true;
+				break;
+			case 4:		//"renderer_r_dx11"
+				if (!bSupports_r4)
+					bBreakLoop = true;
+				break;
+			default:;
+			}
+
+			if (bBreakLoop) break;
+
+			_tmp.push_back(NULL);
+			LPCSTR val = NULL;
+			switch (i)
+			{
+				case 0: val = "renderer_r1";		break;
+				case 1: val = "renderer_r2a";		break;
+				case 2: val = "renderer_r2";		break;
+				case 3: val = "renderer_r2.5";		break;
+				case 4: val = "renderer_r4";		break; //  -)
+			}
+			if (bBreakLoop) break;
+			_tmp.back() = xr_strdup(val);
 		}
+		u32 _cnt = _tmp.size() + 1;
+		vid_quality_token = xr_alloc<xr_token>(_cnt);
 
-		if (bBreakLoop) break;
-
-		_tmp.push_back				(NULL);
-		LPCSTR val					= NULL;
-		switch (i)
-		{
-		case 0: val ="renderer_r1";			break;
-		case 1: val ="renderer_r2a";		break;
-		case 2: val ="renderer_r2";			break;
-		case 3: val ="renderer_r2.5";		break;
-		case 4: val ="renderer_r_dx10";		break; //  -)
-		}
-		_tmp.back()					= xr_strdup(val);
-	}
-	u32 _cnt								= _tmp.size()+1;
-	vid_quality_token						= xr_alloc<xr_token>(_cnt);
-
-	vid_quality_token[_cnt-1].id			= -1;
-	vid_quality_token[_cnt-1].name			= NULL;
+		vid_quality_token[_cnt - 1].id = -1;
+		vid_quality_token[_cnt - 1].name = NULL;
 
 #ifdef DEBUG
-	Msg("Available render modes[%d]:",_tmp.size());
+		Msg("Available render modes[%d]:", _tmp.size());
 #endif // DEBUG
-	for(u32 i=0; i<_tmp.size();++i)
-	{
-		vid_quality_token[i].id				= i;
-		vid_quality_token[i].name			= _tmp[i];
+		for (u32 i = 0; i < _tmp.size(); ++i)
+		{
+			vid_quality_token[i].id = i;
+			vid_quality_token[i].name = _tmp[i];
 #ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
+			Msg("[%s]", _tmp[i]);
 #endif // DEBUG
+		}
 	}
-	*/
-#endif //#ifndef DEDICATED_SERVER
 }

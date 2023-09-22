@@ -5,6 +5,7 @@
 //	Description : UI Ranking window class implementation
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIRankingWnd.h"
 

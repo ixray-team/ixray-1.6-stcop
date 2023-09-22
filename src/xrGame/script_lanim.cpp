@@ -6,6 +6,7 @@
 //	Description : Script ini file class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_lanim.h"
 #include "../xrEngine/LightAnimLibrary.h"

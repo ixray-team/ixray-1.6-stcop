@@ -7,9 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifdef __cplusplus
-#include "stdafx.h"
-
 extern "C" {
 	#include <lua/lua.h>
 	#include <lua/lualib.h>
@@ -28,5 +25,3 @@ extern "C" {
 #include <luabind/return_reference_to_policy.hpp>
 #include <luabind/out_value_policy.hpp>
 #include <luabind/iterator_policy.hpp>
-
-#endif

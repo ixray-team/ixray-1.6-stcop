@@ -5,7 +5,7 @@
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/environment.h"
 #include "../../xrEngine/CustomHUD.h"
-#include "../../xrEngine\xr_object.h"
+#include "../../xrEngine/xr_object.h"
 
 #include "FBasicVisual.h"
 
@@ -475,8 +475,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	Fmatrix PrevFullTtransformOld	= Device.mPrevFullTransform;
 
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR, 
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
@@ -523,8 +523,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	Fmatrix PrevFullTtransformOld = Device.mPrevFullTransform;
 
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR, 
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
@@ -542,13 +542,14 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	const ref_rt	rt_null;
 	RCache.set_RT(0,	1);
 	RCache.set_RT(0,	2);
+
 #if	(RENDER==R_R4)
 	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RImplementation.Target->rt_HWDepth->pZRT);
 #else
 	if (RImplementation.o.albedo_wo)	RImplementation.Target->u_setrt		(RImplementation.Target->rt_Accumulator,	rt_null,	rt_null,	HW.pBaseZB);
 	else								RImplementation.Target->u_setrt		(RImplementation.Target->rt_Color,			rt_null,	rt_null,	HW.pBaseZB);
 #endif
-#endif // RENDER!=R_R1
+#endif
 
 	rmNear						();
 	g_hud->RenderActiveItemUI	();
@@ -582,8 +583,8 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	Fmatrix PrevFullTtransformOld = Device.mPrevFullTransform;
 
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
@@ -631,8 +632,8 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	Fmatrix PrevFullTtransformOld = Device.mPrevFullTransform;
 
 	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR, 
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(

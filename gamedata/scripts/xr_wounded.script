@@ -380,7 +380,7 @@ function init_wounded(npc, ini, section, st, scheme)
 	local def = {}
 	local npc_community = character_community(npc)
 	if npc_community == "monolith" then
-		local state = wounded_by_state[math.mod(npc:id(), 3)]
+		local state = wounded_by_state[math.fmod(npc:id(), 3)]
 		def.hp_state			= "20|"..state.."@nil"
 		def.hp_state_see		= "20|"..state.."@nil"
 		def.psy_state			= ""
@@ -408,7 +408,7 @@ function init_wounded(npc, ini, section, st, scheme)
 		def.enable_talk			= true
 		def.not_for_help		= true
 	else
-		local state = wounded_by_state[math.mod(npc:id(), 3)]
+		local state = wounded_by_state[math.fmod(npc:id(), 3)]
 		def.hp_state			= "20|"..state.."@help_heavy"
 		def.hp_state_see		= "20|"..state.."@help_heavy"
 		def.psy_state			= "20|{=best_pistol}psy_armed,psy_pain@wounded_psy|20|{=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy"

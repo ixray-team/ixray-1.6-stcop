@@ -80,7 +80,7 @@ IC	void CAbstractGraph::remove_edge		(const _vertex_id_type &vertex_id0, const _
 TEMPLATE_SPECIALIZATION
 IC	u32 CAbstractGraph::vertex_count		() const
 {
-	return						(m_vertices.size());
+	return						((u32)m_vertices.size());
 }
 
 TEMPLATE_SPECIALIZATION

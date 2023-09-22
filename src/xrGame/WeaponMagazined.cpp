@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 
 #include "WeaponMagazined.h"
@@ -475,13 +476,21 @@ void CWeaponMagazined::UpdateSounds	()
 	dwUpdateSounds_Frame = Device.dwFrame;
 
 	Fvector P						= get_LastFP();
-	m_sounds.SetPosition("sndShow", P);
-	m_sounds.SetPosition("sndHide", P);
-	m_sounds.SetPosition("sndReload", P);
-	if (m_sounds.FindSoundItem("sndReloadEmpty", false))
-		m_sounds.SetPosition("sndReloadEmpty", P);
-	if (m_sounds.FindSoundItem("sndReloadMis", false))
-		m_sounds.SetPosition("sndReloadMis", P);
+
+	if (Device.dwFrame % 3 == 0)
+		m_sounds.SetPosition("sndShow", P);
+	else if (Device.dwFrame % 3 == 1)
+	{
+		m_sounds.SetPosition("sndReload", P);
+		m_sounds.SetPosition("sndHide", P);
+	}
+	else if (Device.dwFrame % 3 == 2)
+	{
+		if (m_sounds.FindSoundItem("sndReloadEmpty", false))
+			m_sounds.SetPosition("sndReloadEmpty", P);
+		if (m_sounds.FindSoundItem("sndReloadMis", false))
+			m_sounds.SetPosition("sndReloadMis", P);
+	}
 }
 
 void CWeaponMagazined::state_Fire(float dt)

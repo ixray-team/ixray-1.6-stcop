@@ -356,36 +356,39 @@ void CRender::Render		()
 		u32	count			= 0;
 		light_Package&	LP	= Lights.package;
 
-		// stats
-		stats.l_shadowed	= LP.v_shadowed.size();
-		stats.l_unshadowed	= LP.v_point.size() + LP.v_spot.size();
-		stats.l_total		= stats.l_shadowed + stats.l_unshadowed;
+	   // stats
+	   stats.l_shadowed = LP.v_shadowed.size();
+	   stats.l_unshadowed = LP.v_point.size() + LP.v_spot.size();
+	   stats.l_total = stats.l_shadowed + stats.l_unshadowed;
 
-		// perform tests
-		count				= _max	(count,LP.v_point.size());
-		count				= _max	(count,LP.v_spot.size());
-		count				= _max	(count,LP.v_shadowed.size());
-		for (u32 it=0; it<count; it++)	{
-			if (it<LP.v_point.size())		{
-				light*	L			= LP.v_point	[it];
-				L->vis_prepare		();
-				if (L->vis.pending)	LP_pending.v_point.push_back	(L);
-				else				LP_normal.v_point.push_back		(L);
-			}
-			if (it<LP.v_spot.size())		{
-				light*	L			= LP.v_spot		[it];
-				L->vis_prepare		();
-				if (L->vis.pending)	LP_pending.v_spot.push_back		(L);
-				else				LP_normal.v_spot.push_back		(L);
-			}
-			if (it<LP.v_shadowed.size())	{
-				light*	L			= LP.v_shadowed	[it];
-				L->vis_prepare		();
-				if (L->vis.pending)	LP_pending.v_shadowed.push_back	(L);
-				else				LP_normal.v_shadowed.push_back	(L);
-			}
-		}
-	}
+	   // perform tests
+	   count = std::max(count, LP.v_point.size());
+	   count = std::max(count, LP.v_spot.size());
+	   count = std::max(count, LP.v_shadowed.size());
+	   for (size_t it = 0; it < count; it++) 
+	   {
+		   if (it < LP.v_point.size()) 
+		   {
+			   light* L = LP.v_point[it];
+			   L->vis_prepare();
+			   if (L->vis.pending)	LP_pending.v_point.push_back(L);
+			   else				LP_normal.v_point.push_back(L);
+		   }
+		   if (it < LP.v_spot.size()) 
+		   {
+			   light* L = LP.v_spot[it];
+			   L->vis_prepare();
+			   if (L->vis.pending)	LP_pending.v_spot.push_back(L);
+			   else				LP_normal.v_spot.push_back(L);
+		   }
+		   if (it < LP.v_shadowed.size()) {
+			   light* L = LP.v_shadowed[it];
+			   L->vis_prepare();
+			   if (L->vis.pending)	LP_pending.v_shadowed.push_back(L);
+			   else				LP_normal.v_shadowed.push_back(L);
+		   }
+	   }
+   }
 	LP_normal.sort							();
 	LP_pending.sort							();
 

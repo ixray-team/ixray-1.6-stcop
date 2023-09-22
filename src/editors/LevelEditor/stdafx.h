@@ -97,7 +97,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 // DirectX headers
 #include <d3d9.h>
 #include <d3dx9.h>
-#include "..\..\Layers\xrRender\xrD3dDefs.h"
+#include "..\..\Layers\xrRenderDX9\xrD3dDefs.h"
 #include <dinput.h>
 #include <dsound.h>
 

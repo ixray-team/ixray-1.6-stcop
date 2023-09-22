@@ -230,7 +230,8 @@ BOOL __stdcall RealAssert  ( DWORD  dwOverrideOpts  ,
     }
     else
     {
-        szRealLastErr = "**Last error code does not exist!!!!" ;
+        auto str = "**Last error code does not exist!!!!";
+        strncpy(szRealLastErr, "**Last error code does not exist!!!!", sizeof(str));
     }
 
     // Get the module name.

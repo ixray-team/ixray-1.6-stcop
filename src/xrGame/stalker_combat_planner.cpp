@@ -6,6 +6,7 @@
 //	Description : Stalker combat planner
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_combat_planner.h"
 #include "stalker_combat_actions.h"

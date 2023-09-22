@@ -6,6 +6,7 @@
 //	Description : lua studio engine class (copied from the lua studio SDK)
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "lua_studio.h"
 

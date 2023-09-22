@@ -71,6 +71,11 @@ target_link_libraries(xrRender_R2 PUBLIC xrParticles)
 target_link_libraries(xrRender_R2 PUBLIC "d3dcompiler.lib")
 
 ## DX SDK
-target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
+else()
+    target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
+endif()
+
+target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
+target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")

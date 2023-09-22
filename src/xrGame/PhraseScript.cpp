@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "PhraseScript.h"
 #include "script_engine.h"

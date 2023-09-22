@@ -326,12 +326,13 @@ IC	void CPlanner::save(NET_Packet& packet)
 	}
 
 	{
-		packet.w_u32((u32)m_storage.m_storage.size());
-
-		for (GraphEngineSpace::CSolverConditionValue& it : m_storage.m_storage)
-		{
-			packet.w(&it.m_condition, sizeof(it.m_condition));
-			packet.w(&it.m_value, sizeof(it.m_value));
+		packet.w_u32				((u32)m_storage.m_storage.size());
+		typedef CPropertyStorage::CConditionStorage	CConditionStorage;
+		CConditionStorage::const_iterator	I = m_storage.m_storage.begin();
+		CConditionStorage::const_iterator	E = m_storage.m_storage.end();
+		for ( ; I != E; ++I) {
+			packet.w				(&(*I).m_condition,sizeof((*I).m_condition));
+			packet.w				(&(*I).m_value,sizeof((*I).m_value));
 		}
 	}
 }

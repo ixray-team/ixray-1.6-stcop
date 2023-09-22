@@ -22,7 +22,7 @@ uniform float4 		c_brightness;
 float4 	main	( v2p I )	: COLOR
 {
 	float4 	distort	= tex2D		(s_distort, I.tc0);
-	float2	offset	= (distort.xy-.5h)*def_distort;
+	float2	offset	= (distort.xy - (127.0f / 255.0f)) * def_distort;
 	float3	t_0 	= tex2D		(s_base0,I.tc0+ offset);
 	float3	t_1 	= tex2D		(s_base1,I.tc1+ offset);	
 	float3 	image	= (t_0+t_1)*0.5f;					// add_d2

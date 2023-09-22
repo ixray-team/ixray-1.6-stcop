@@ -324,7 +324,7 @@ public:
 
 	IC GameMtlIt		FirstMaterial	(){return materials.begin();}
 	IC GameMtlIt		LastMaterial	(){return materials.end();}
-	IC u32				CountMaterial	(){return materials.size();}
+	IC u32				CountMaterial	(){return (u32)materials.size();}
 
 // material pair routine
 #ifdef _EDITOR

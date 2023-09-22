@@ -39,8 +39,8 @@ public:
 					CUIXmlInit				();
 	virtual			~CUIXmlInit				();
 		
-	static bool 	InitWindow				(CUIXml& xml_doc, LPCSTR path,	int index, CUIWindow* pWnd);
-	static bool 	InitFrameWindow			(CUIXml& xml_doc, LPCSTR path,	int index, CUIFrameWindow* pWnd);
+	static bool 	InitWindow				(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd);
+	static bool 	InitFrameWindow			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameWindow* pWnd);
 	static bool 	InitFrameLine			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameLineWnd* pWnd);
 	static bool 	InitCustomEdit			(CUIXml& xml_doc, LPCSTR paht, int index, CUICustomEdit* pWnd);
 	static bool 	InitEditBox				(CUIXml& xml_doc, LPCSTR paht, int index, CUIEditBox* pWnd);
@@ -55,10 +55,10 @@ public:
 	static bool 	InitProgressBar			(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressBar* pWnd);
 	static bool 	InitProgressShape		(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressShape* pWnd);
 	static bool 	InitFont				(CUIXml& xml_doc, LPCSTR path, int index, u32 &color, CGameFont *&pFnt);
-	static bool 	InitTabButtonMP			(CUIXml& xml_doc, LPCSTR path,	int index, CUITabButtonMP *pWnd);
-	static bool 	InitTabControl			(CUIXml& xml_doc, LPCSTR path,	int index, CUITabControl *pWnd);
-	static bool 	InitAnimatedStatic		(CUIXml& xml_doc, LPCSTR path,	int index, CUIAnimatedStatic *pWnd);
-	static bool 	InitSleepStatic			(CUIXml& xml_doc, LPCSTR path,	int index, CUISleepStatic *pWnd);
+	static bool 	InitTabButtonMP			(CUIXml& xml_doc, LPCSTR path, int index, CUITabButtonMP *pWnd);
+	static bool 	InitTabControl			(CUIXml& xml_doc, LPCSTR path, int index, CUITabControl *pWnd);
+	static bool 	InitAnimatedStatic		(CUIXml& xml_doc, LPCSTR path, int index, CUIAnimatedStatic *pWnd);
+	static bool 	InitSleepStatic			(CUIXml& xml_doc, LPCSTR path, int index, CUISleepStatic *pWnd);
 	static bool 	InitTextureOffset		(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd);
 	static bool 	InitSound				(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
 	static bool 	InitMultiTexture		(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);

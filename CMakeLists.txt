@@ -32,9 +32,9 @@ if (MSVC)
 endif()
 
 # SDK Folders
-set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/)
+set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)
+set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
-set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/)
 
 # Solution folders
 set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
@@ -54,6 +54,7 @@ set_target_properties(xrNetServer PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCPU_Pipe PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
+set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
 
 set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
 set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
@@ -102,4 +103,4 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # Set default project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrPlay)

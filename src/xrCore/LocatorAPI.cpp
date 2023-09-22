@@ -170,7 +170,7 @@ XRCORE_API void _dump_open_files(int mode)
 		}
 	}
 	if(bShow)
-		Log("----total count=",g_open_files.size());
+		Msg("----total count=%d",(int)g_open_files.size());
 }
 
 CLocatorAPI::CLocatorAPI()

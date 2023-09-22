@@ -15,7 +15,7 @@
 ENGINE_API	IGame_Level*	g_pGameLevel	= NULL;
 extern	BOOL g_bLoaded;
 
-IGame_Level::IGame_Level	()
+IGame_Level::IGame_Level()
 {
 	m_pCameras					= xr_new<CCameraManager>(true);
 	g_pGameLevel				= this;
@@ -26,33 +26,35 @@ IGame_Level::IGame_Level	()
 	Device.DumpResourcesMemoryUsage();
 }
 
-//#include "resourcemanager.h"
-
-IGame_Level::~IGame_Level	()
+IGame_Level::~IGame_Level()
 {
-	if(strstr(Core.Params,"-nes_texture_storing") )
-		//Device.Resources->StoreNecessaryTextures();
+	if (strstr(Core.Params, "-nes_texture_storing"))
 		Device.m_pRender->ResourcesStoreNecessaryTextures();
-	xr_delete					( pLevel		);
+
+	xr_delete(pLevel);
 
 	// Render-level unload
-	Render->level_Unload		();
-	xr_delete					(m_pCameras);
+	Render->level_Unload();
+	xr_delete(m_pCameras);
+
 	// Unregister
-	Device.seqRender.Remove		(this);
-	Device.seqFrame.Remove		(this);
-	CCameraManager::ResetPP		();
-///////////////////////////////////////////
-	Sound->set_geometry_occ		(NULL);
-	Sound->set_handler			(NULL);
+	if (!g_dedicated_server)
+	{
+		Device.seqRender.Remove(this);
+	}
+
+	Device.seqFrame.Remove(this);
+	CCameraManager::ResetPP();
+
+	Sound->set_geometry_occ(NULL);
+	Sound->set_handler(NULL);
 	Device.DumpResourcesMemoryUsage();
 
-	u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
-	if (Device.m_pRender) 
-		Device.m_pRender->ResourcesGetMemoryUsage(m_base,c_base,m_lmaps,c_lmaps);
+	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
+	if (Device.m_pRender)
+		Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
-	Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
-
+	Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
 }
 
 void IGame_Level::net_Stop			()
@@ -98,7 +100,6 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	R_ASSERT2					(XRCL_PRODUCTION_VERSION==H.XRLC_version,"Incompatible level version.");
 
 	// CForms
-//	g_pGamePersistent->LoadTitle	("st_loading_cform");
 	g_pGamePersistent->LoadTitle	();
 	ObjectSpace.Load			( build_callback );
 	//Sound->set_geometry_occ		( &Static );
@@ -114,58 +115,55 @@ BOOL IGame_Level::Load			(u32 dwNum)
 
 	// Render-level Load
 	Render->level_Load			(LL_Stream);
-	// tscreate.FrameEnd			();
-	// Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
 	// Objects
 	g_pGamePersistent->Environment().mods_load	();
 	R_ASSERT					(Load_GameSpecific_Before());
 	Objects.Load				();
-//. ANDY	R_ASSERT					(Load_GameSpecific_After ());
 
 	// Done
 	FS.r_close					( LL_Stream );
 	bReady						= true;
-	if (!g_dedicated_server)	IR_Capture();
-#ifndef DEDICATED_SERVER
-	Device.seqRender.Add		(this);
-#endif
+
+	if (!g_dedicated_server)
+	{
+		IR_Capture();
+
+		Device.seqRender.Add(this);
+	}
 
 	Device.seqFrame.Add			(this);
 	return TRUE;	
 }
 
-int		psNET_DedicatedSleep	= 5;
-void	IGame_Level::OnRender		( ) 
+int psNET_DedicatedSleep	= 5;
+void IGame_Level::OnRender()
 {
-#ifndef DEDICATED_SERVER
-	if (!g_dedicated_server)	{
-		Render->Calculate			();
-		Render->Render				();
-	} else {
-		Sleep						(psNET_DedicatedSleep);
+	if (!g_dedicated_server)
+	{
+		Render->Calculate();
+		Render->Render();
 	}
-#endif
 }
 
-void	IGame_Level::OnFrame		( ) 
+void	IGame_Level::OnFrame()
 {
 	// Update all objects
-	VERIFY						(bReady);
-	Objects.Update				(false);
-	g_hud->OnFrame				();
+	VERIFY(bReady);
+	Objects.Update(false);
+	g_hud->OnFrame();
 
 	// Ambience
 	if (Sounds_Random.size() && (Device.dwTimeGlobal > Sounds_Random_dwNextTime))
 	{
-		Sounds_Random_dwNextTime		= Device.dwTimeGlobal + ::Random.randI	(10000,20000);
+		Sounds_Random_dwNextTime = Device.dwTimeGlobal + ::Random.randI(10000, 20000);
 		Fvector	pos;
-		pos.random_dir().normalize().mul(::Random.randF(30,100)).add	(Device.vCameraPosition);
-		int		id						= ::Random.randI(Sounds_Random.size());
-		if (Sounds_Random_Enabled)		{
-			Sounds_Random[id].play_at_pos	(0,pos,0);
-			Sounds_Random[id].set_volume	(1.f);
-			Sounds_Random[id].set_range		(10,200);
+		pos.random_dir().normalize().mul(::Random.randF(30, 100)).add(Device.vCameraPosition);
+		int		id = ::Random.randI(Sounds_Random.size());
+		if (Sounds_Random_Enabled) {
+			Sounds_Random[id].play_at_pos(0, pos, 0);
+			Sounds_Random[id].set_volume(1.f);
+			Sounds_Random[id].set_range(10, 200);
 		}
 	}
 }

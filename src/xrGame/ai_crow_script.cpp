@@ -6,6 +6,7 @@
 //	Description : Crow script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai/crow/ai_crow.h"
 

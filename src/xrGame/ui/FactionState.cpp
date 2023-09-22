@@ -5,6 +5,7 @@
 //	Description : UI Faction War state class implementation
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 /*
 #include "FactionState.h"

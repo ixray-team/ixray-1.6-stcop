@@ -6,6 +6,7 @@
 //	Description : Stalker anomaly action classes
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_anomaly_actions.h"
 #include "ai/stalker/ai_stalker.h"

@@ -366,6 +366,18 @@ static class cl_screen_scale : public R_constant_setup
 } binder_screen_scale;
 #endif
 
+static class cl_def_aref : public R_constant_setup
+{
+	virtual void setup(R_constant* C) override {
+		float def_aref_cmd = ps_r2_def_aref_quality / 255.0f;
+	#ifdef USE_DX11
+		RCache.set_c(C, def_aref_cmd);
+	#else
+		RCache.set_c(C, def_aref_cmd, 0.0f, 0.0f, 0.0f);
+	#endif
+	}
+} binder_def_aref;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
 {
@@ -434,6 +446,8 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("screen_scale",		&binder_screen_scale);
 #endif
 
+	r_Constant				("screen_res",		&binder_screen_res);
+	r_Constant				("def_aref", 		&binder_def_aref);
 	// detail
 	//if (bDetail	&& detail_scaler)
 	//	Igor: bDetail can be overridden by no_detail_texture option.

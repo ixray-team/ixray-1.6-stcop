@@ -11,6 +11,7 @@
 #include "blender_luminance.h"
 #include "blender_ssao.h"
 #include "../xrRender/blender_fxaa.h"
+#include "../xrRender/blender_smaa.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
@@ -211,6 +212,8 @@ CRenderTarget::CRenderTarget		()
 	b_combine						= xr_new<CBlender_combine>				();
 	b_fxaa = xr_new<CBlender_FXAA>();
 
+	u32 w = Device.dwWidth, h = Device.dwHeight;
+
 	//	NORMAL
 	{
 		u32		w=RCache.get_width(), h=RCache.get_height();
@@ -362,6 +365,18 @@ CRenderTarget::CRenderTarget		()
 	//FXAA
 	s_fxaa.create(b_fxaa, "r2\\fxaa");
 	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
+
+	// SMAA
+	{
+		u32 w = Device.dwWidth, h = Device.dwHeight;
+
+		b_smaa = xr_new<CBlender_SMAA>();
+		s_smaa.create(b_smaa);
+
+		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, w, h, D3DFMT_A8R8G8B8);
+		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, w, h, D3DFMT_A8R8G8B8);
+	}
+	
 
 	// TONEMAP
 	{
@@ -625,6 +640,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_bloom				);
 	xr_delete					(b_ssao					);
 	xr_delete(b_fxaa);
+	xr_delete(b_smaa);
 	xr_delete					(b_accum_reflected		);
 	xr_delete					(b_accum_spot			);
 	xr_delete					(b_accum_point			);

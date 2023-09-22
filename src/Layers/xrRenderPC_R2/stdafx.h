@@ -14,7 +14,7 @@
 #pragma warning( 4 : 4244 )
 #pragma warning(disable:4237)
 
-#include "../xrRender/xrD3DDefs.h"
+#include "../xrRenderDX9/xrD3DDefs.h"
 
 #include "../xrRender/HW.h"
 #include "../xrRender/Shader.h"

@@ -6,6 +6,7 @@
 #include "soundrender_source.h"
 
 xr_vector<u8> g_target_temp_data;
+xr_vector<u8> g_target_temp_data_16;
 
 CSoundRender_TargetA::CSoundRender_TargetA():CSoundRender_Target()
 {
@@ -59,6 +60,7 @@ void CSoundRender_TargetA::start			(CSoundRender_Emitter* E)
 	// Calc storage
 	buf_block		= sdef_target_block * E->source()->m_wformat.nAvgBytesPerSec / 1000;
     g_target_temp_data.resize(buf_block);
+    g_target_temp_data_16.resize(buf_block * 2);
 }
 
 void	CSoundRender_TargetA::render		()
@@ -99,30 +101,45 @@ void	CSoundRender_TargetA::update			()
 {
 	inherited::update();
 
-	ALint			processed;
-    // Get status
-    A_CHK			(alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed));
+	ALint processed, state;
 
-    if (processed > 0)
-	{
-        while (processed)
-		{
-			ALuint			BufferID;
-            A_CHK			(alSourceUnqueueBuffers(pSource, 1, &BufferID));
-            fill_block		(BufferID);
-            A_CHK			(alSourceQueueBuffers(pSource, 1, &BufferID));
-            --processed;
+    // Get status
+	A_CHK(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
+    A_CHK(alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed));
+    if (alGetError() != AL_NO_ERROR) {
+        Msg("!![%s] Source state error", __FUNCTION__);
+        return;
+    }
+
+    while (processed) {
+        ALuint BufferID;
+
+        A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
+        fill_block(BufferID);
+        A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
+        processed--;
+
+        if (alGetError() != AL_NO_ERROR) {
+            Msg("!![%s] Buffer queue error", __FUNCTION__);
+            return;
         }
-    }else{ 
-    	// processed == 0
-        // check play status -- if stopped then queue is not being filled fast enough
-        ALint		state;
-	    A_CHK		(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
-        if (state != AL_PLAYING)
-		{
-//			Log		("Queuing underrun detected.");
-			A_CHK	(alSourcePlay(pSource));
-        }
+    }
+
+	/* Check for underruns in the source buffer */
+	if (state != AL_PLAYING && state != AL_PAUSED) {
+		ALint queued;
+
+		/* If queue is empty, playback is finished */
+		alGetSourcei(pSource, AL_BUFFERS_QUEUED, &queued);
+		if (!queued) {
+			return;
+		}
+
+		alSourcePlay(pSource);
+		if (alGetError() != AL_NO_ERROR) {
+			Msg("!![%s] Playback restart error", __FUNCTION__);
+			return;
+		}
     }
 }
 
@@ -164,14 +181,23 @@ void	CSoundRender_TargetA::fill_parameters()
 	VERIFY2(m_pEmitter,SE->source()->file_name());
 }
 
-void	CSoundRender_TargetA::fill_block	(ALuint BufferID)
+void	CSoundRender_TargetA::fill_block(ALuint BufferID)
 {
-	R_ASSERT			(m_pEmitter);
+    R_ASSERT(m_pEmitter);
+    ALuint format = (m_pEmitter->source()->m_wformat.nChannels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
 
-	m_pEmitter->fill_block(&g_target_temp_data.front(),buf_block);
-	ALuint format 		= (m_pEmitter->source()->m_wformat.nChannels==1)?AL_FORMAT_MONO16:AL_FORMAT_STEREO16;
-    A_CHK				(alBufferData(BufferID, format, &g_target_temp_data.front(), buf_block, m_pEmitter->source()->m_wformat.nSamplesPerSec));
+    if (format == AL_FORMAT_MONO16)
+    {
+        m_pEmitter->fill_block(&g_target_temp_data.front(), g_target_temp_data.size());
+        A_CHK(alBufferData(BufferID, format, &g_target_temp_data.front(), g_target_temp_data.size(), m_pEmitter->source()->m_wformat.nSamplesPerSec));
+    }
+    else
+    {
+        m_pEmitter->fill_block(&g_target_temp_data_16.front(), g_target_temp_data_16.size());
+        A_CHK(alBufferData(BufferID, format, &g_target_temp_data_16.front(), g_target_temp_data_16.size(), m_pEmitter->source()->m_wformat.nSamplesPerSec));
+    }
 }
+
 void CSoundRender_TargetA::source_changed()
 {
 	dettach();

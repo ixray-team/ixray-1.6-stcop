@@ -13,8 +13,10 @@
 	#include <intrin.h>
 #pragma warning(default:4995)
 
-#define ENGINE_API
-#define ECORE_API
+#ifndef ENGINE_API
+#	define ENGINE_API
+#	define ECORE_API
+#endif 
 
 #ifdef _EDITOR
 #	include "skeletonX.h"
@@ -32,7 +34,6 @@
 #endif // _EDITOR
 
 #include "xrCPU_Pipe.h"
-#include "ttapi.h"
 
 #undef ENGINE_API
 #define ENGINE_API __declspec(dllimport)

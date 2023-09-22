@@ -199,46 +199,4 @@ struct parameters_tuple3
 	T3	m_t3;
 };//class parameters_tuple3
 
-template<typename T1, typename T2, typename T3, typename T4>
-struct parameters_tuple4
-{
-	parameters_tuple4()
-	{}
-	parameters_tuple4(T1 t1, T2 t2, T3 t3, T4 t4) :
-		m_t1(t1),
-		m_t2(t2),
-		m_t3(t3),
-		m_t4(t4)
-	{};
-	parameters_tuple4(parameters_tuple4 const & copy) :
-		m_t1(copy.m_t1),
-		m_t2(copy.m_t2),
-		m_t3(copy.m_t3),
-		m_t4(copy.m_t4)
-	{};
-	
-	parameters_tuple4 &	operator =	(parameters_tuple4 const & copy)
-	{
-		m_t1 = copy.m_t1;
-		m_t2 = copy.m_t2;
-		m_t3 = copy.m_t3;
-		m_t4 = copy.m_t4;
-		return *this;
-	}
-
-	bool				operator == (parameters_tuple3<T1, T2, T3> const & right) const
-	{
-		return	(m_t1 == right.m_t1) &&
-				(m_t2 == right.m_t2) &&
-				(m_t3 == right.m_t3) &&
-				(m_t4 == right.m_t4);
-	}
-	
-	T1	m_t1;
-	T2	m_t2;
-	T3	m_t3;
-	T4	m_t4;
-};//class parameters_tuple4
-
-
 #endif //#ifndef QUEUED_ASYNC_METHOD_FACADE_H_INCLUDED

@@ -1,5 +1,4 @@
 #pragma once
-#ifdef __cplusplus
 #ifndef DEBUG
 #	define MASTER_GOLD
 #endif // DEBUG
@@ -267,5 +266,3 @@ public:
 
 
 extern XRCORE_API xrCore Core;
-
-#endif

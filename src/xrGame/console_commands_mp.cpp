@@ -607,8 +607,8 @@ protected:
 		param_name[0]	= 0;
 
 		sscanf_s(args_string, "%16s %32s",
-			action_name, sizeof(action_name),
-			param_name, sizeof(param_name));
+			action_name, (u32)sizeof(action_name),
+			param_name, (u32)sizeof(param_name));
 		m_action_param = param_name;
 
 		if (!xr_strcmp(action_name, "roundstart"))
@@ -1292,10 +1292,10 @@ public:
 		if (!tmp_sv_game) return;
 		string512 tmp_dest;
 		string512 filter_dest = "";
-		exclude_raid_from_args(args, tmp_dest, sizeof(tmp_dest));
+		exclude_raid_from_args(args, tmp_dest, (u32)sizeof(tmp_dest));
 		if (xr_strlen(tmp_dest))
 		{
-			sscanf_s(tmp_dest, "%s", filter_dest, sizeof(filter_dest));
+			sscanf_s(tmp_dest, "%s", filter_dest, (u32)sizeof(filter_dest));
 		}
 		tmp_sv_game->PrintBanList(filter_dest);
 		Level().Server->Print_Banned_Addreses();
@@ -1324,9 +1324,9 @@ public:
 		GameType[0]		=0;
 		
 		sscanf_s		(args,"%255s %255s %255s",
-			LevelName, sizeof(LevelName),
-			LevelVersion, sizeof(LevelVersion),
-			GameType, sizeof(GameType)
+			LevelName, (u32)sizeof(LevelName),
+			LevelVersion, (u32)sizeof(LevelVersion),
+			GameType, (u32)sizeof(GameType)
 		);
 
 		EGameIDs GameTypeID = ParseStringToGameType(GameType);
@@ -1424,8 +1424,8 @@ public:
 		LevelName[0]	=	0;
 		LevelVersion[0] =	0;
 		sscanf_s		(args,"%255s %255s",
-			LevelName, sizeof(LevelName),
-			LevelVersion, sizeof(LevelVersion)
+			LevelName, (u32)sizeof(LevelName),
+			LevelVersion, (u32)sizeof(LevelVersion)
 		);
 
 		string1024		argsNew;

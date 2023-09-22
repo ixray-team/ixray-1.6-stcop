@@ -7,6 +7,7 @@
 // Copyright 2004 GSC Game World
 //
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIComboBox.h"
 #include "UIListBoxItem.h"
@@ -28,6 +29,7 @@ void CUIComboBox::script_register(lua_State *L)
 		.def("AddItem",				&CUIComboBox::AddItem_)
 		.def("GetText",				&CUIComboBox::GetText)
 		.def("GetTextOf",			&CUIComboBox::GetTextOf)
+		.def("GetValueOf",			&CUIComboBox::GetValueOf)
 		.def("SetText",				&CUIComboBox::SetText)
 		.def("ClearList",			&CUIComboBox::ClearList)
 		.def("SetCurrentOptValue",	&CUIComboBox::SetCurrentOptValue)

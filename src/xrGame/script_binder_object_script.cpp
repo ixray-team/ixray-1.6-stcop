@@ -6,6 +6,7 @@
 //	Description : Script object binder script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_binder_object.h"
 #include "script_export_space.h"

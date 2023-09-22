@@ -78,7 +78,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     TexMetadata imageInfo{};
 
     // Staging control
-    static bool bAllowStaging = !strstr(Core.Params, "-no_staging");
+    static bool bAllowStaging = !RImplementation.o.no_ram_textures;
     bStaging &= bAllowStaging;
 
     ID3DBaseTexture* pTexture2D = nullptr;
@@ -128,7 +128,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         img_size = reader->length();
         R_ASSERT(reader);
         R_CHK2(GetMetadataFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, imageInfo), fn);
-        if (imageInfo.miscFlags & D3D_RESOURCE_MISC_TEXTURECUBE || imageInfo.dimension == TEX_DIMENSION_TEXTURE3D) {
+        if (imageInfo.IsCubemap() || imageInfo.IsVolumemap()) {
             goto _DDS_CUBE;
         } else {
             goto _DDS_2D;
@@ -169,7 +169,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
             mip_lod = old_mipmap_cnt - imageInfo.mipLevels;
         }
 
-        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages() + mip_lod, imageInfo.mipLevels,
+        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
         FS.r_close(reader);
         

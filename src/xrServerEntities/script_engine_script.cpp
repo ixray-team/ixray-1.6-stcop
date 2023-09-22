@@ -6,6 +6,7 @@
 //	Description : ALife Simulator script engine export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_engine.h"
 #include "ai_space.h"

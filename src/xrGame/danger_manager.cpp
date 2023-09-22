@@ -6,6 +6,7 @@
 //	Description : Danger manager
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "danger_manager.h"
 #include "custommonster.h"

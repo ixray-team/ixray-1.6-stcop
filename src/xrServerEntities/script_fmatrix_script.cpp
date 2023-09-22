@@ -6,6 +6,7 @@
 //	Description : Script float matrix script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_fmatrix.h"
 

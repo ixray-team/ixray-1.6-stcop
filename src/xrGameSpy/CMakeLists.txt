@@ -102,7 +102,6 @@ list(APPEND XGS_SRC_FILES ${XGS_SOURCE_ALL_FILES})
 
 # xrGameSpy project
 add_library(xrGameSpy SHARED ${XGS_SRC_FILES})
-target_precompile_headers(xrGameSpy PRIVATE "stdafx.h")
 
 # Include directories
 target_include_directories(xrGameSpy PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -118,3 +117,6 @@ target_compile_definitions(xrGameSpy PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrGameSpy PUBLIC xrCore)
+
+# PCH move
+set_target_properties(xrGameSpy PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

@@ -6,6 +6,7 @@
 //	Description : Visibility and look for all the biting monsters
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "base_monster.h"
 #include "../../../actor.h"

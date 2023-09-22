@@ -34,9 +34,10 @@
 #include "stdlib.h"
 
 #include <algorithm>
+
+
 #include <random>
-
-
+static thread_local auto rng = std::mt19937(std::random_device()());
 
 #define ALLOCA dALLOCA16
 
@@ -426,9 +427,15 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 #endif
 #ifdef RANDOMLY_REORDER_CONSTRAINTS
 		if ((iteration & 3) == 0) {
-			std::random_device rd;
-			std::mt19937 g(rd());
-			std::shuffle(order,order+m, g);
+			std::shuffle(order, order + m, rng);
+			/*
+			for (i=1; i<m; ++i) {
+				IndexError tmp = order[i];
+				int swapi = dRandInt(i+1);
+				order[i] = order[swapi];
+				order[swapi] = tmp;
+			}
+			*/
 		}
 #endif
 
@@ -481,7 +488,8 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 			// @@@ potential optimization: does SSE have clamping instructions
 			//     to save test+jump penalties here?
 			dReal new_lambda = lambda[index] + delta;
-			if (new_lambda < lo[index]) {
+			if (new_lambda < lo[index] && !isnan(lo[index]))
+			{
 				delta = lo[index]-lambda[index];
 				lambda[index] = lo[index];
 			}

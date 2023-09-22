@@ -6,6 +6,7 @@
 //	Description : Stalker sound data visitor
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_sound_data_visitor.h"
 #include "ai/stalker/ai_stalker.h"

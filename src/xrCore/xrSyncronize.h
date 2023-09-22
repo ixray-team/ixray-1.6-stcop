@@ -1,5 +1,6 @@
 #ifndef xrSyncronizeH
 #define xrSyncronizeH
+#pragma once
 
 #if 0//def DEBUG
 #	define PROFILE_CRITICAL_SECTIONS

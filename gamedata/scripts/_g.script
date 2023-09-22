@@ -2,6 +2,7 @@ if (jit == nil) then
 	profiler.setup_hook	()
 end
 
+string.gfind = string.gmatch
 
 function empty	(container)
 	if (type(container) == "function") then

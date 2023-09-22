@@ -32,6 +32,8 @@
 BOOL	b_toggle_weapon_aim		= FALSE;
 extern CUIXml*	pWpnScopeXml;
 
+ENGINE_API extern float psHUD_FOV_def;
+
 CWeapon::CWeapon()
 {
 	SetState				(eHidden);
@@ -80,6 +82,7 @@ CWeapon::CWeapon()
 	m_bRememberActorNVisnStatus = false;
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
+	m_HudFovZoom = 0.0f;
 }
 
 CWeapon::~CWeapon		()
@@ -249,10 +252,6 @@ void CWeapon::Load		(LPCSTR section)
 	iAmmoElapsed		= pSettings->r_s32		(section,"ammo_elapsed"		);
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
 	
-	////////////////////////////////////////////////////
-	// ��������� ��������
-
-	//������������� ������ �� ����� ������
 	u8 rm = READ_IF_EXISTS( pSettings, r_u8, section, "cam_return", 1 );
 	cam_recoil.ReturnMode = (rm == 1);
 	
@@ -300,7 +299,7 @@ void CWeapon::Load		(LPCSTR section)
 	
 	cam_recoil.DispersionFrac	= _abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", 0.7f ) );
 
-	//������������� ������ �� ����� ������ � ������ zoom ==> ironsight or scope
+	
 	//zoom_cam_recoil.Clone( cam_recoil ); ==== ������ !!!!!!!!!!
 	zoom_cam_recoil.RelaxSpeed		= cam_recoil.RelaxSpeed;
 	zoom_cam_recoil.RelaxSpeed_AI	= cam_recoil.RelaxSpeed_AI;
@@ -362,6 +361,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_pdm.m_fPDM_disp_crouch		= pSettings->r_float( section, "PDM_disp_crouch"		);
 	m_pdm.m_fPDM_disp_crouch_no_acc	= pSettings->r_float( section, "PDM_disp_crouch_no_acc" );
 	m_crosshair_inertion			= READ_IF_EXISTS(pSettings, r_float, section, "crosshair_inertion",	5.91f);
+	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
+
 	m_first_bullet_controller.load	(section);
 	fireDispersionConditionFactor = pSettings->r_float(section,"fire_dispersion_condition_factor");
 
@@ -1856,9 +1857,10 @@ float CWeapon::Weight() const
 	return res;
 }
 
+extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return !IsPending() && ( !IsZoomed() || !ZoomHideCrosshair() );
+	return !IsPending() && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
 }
 
 bool CWeapon::show_indicators()
@@ -1890,8 +1892,6 @@ BOOL CWeapon::ParentIsActor	()
 
 	return EA->cast_actor()!=0;
 }
-
-extern u32 hud_adj_mode;
 
 void CWeapon::debug_draw_firedeps()
 {
@@ -2012,6 +2012,13 @@ u32 CWeapon::Cost() const
 
 		res			+= iFloor(w*(iAmmoElapsed/bs));
 	}
-	return res;
 
+	return res;
+}
+
+float CWeapon::GetHudFov() {
+	auto base = inherited::GetHudFov();
+	auto zoom = m_HudFovZoom ? m_HudFovZoom : (psHUD_FOV_def * Device.fFOV / g_fov);
+	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
+	return base;
 }

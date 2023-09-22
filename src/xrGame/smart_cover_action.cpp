@@ -5,6 +5,7 @@
 //	Description : Action class for smart cover
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_action.h"
 #include "ai_monster_space.h"

@@ -14,8 +14,6 @@ void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 	Statistic->OnDeviceDestroy	();
 	::Render->destroy			();
 	m_pRender->OnDeviceDestroy(bKeepTextures);
-	//Resources->OnDeviceDestroy	(bKeepTextures);
-	//RCache.OnDeviceDestroy		();
 
 	Memory.mem_compact			();
 }
@@ -32,9 +30,6 @@ void CRenderDevice::Destroy	(void) {
 
 	// real destroy
 	m_pRender->DestroyHW();
-
-	//xr_delete					(Resources);
-	//HW.DestroyDevice			();
 
 	seqRender.R.clear			();
 	seqAppActivate.R.clear		();
@@ -54,43 +49,36 @@ void CRenderDevice::Destroy	(void) {
 #include "IGame_Level.h"
 #include "CustomHUD.h"
 extern BOOL bNeed_re_create_env;
-void CRenderDevice::Reset		(bool precache)
+void CRenderDevice::Reset(bool precache)
 {
 	float Scale = RenderScale;
 	u32 dwWidth_before		= TargetWidth;
 	u32 dwHeight_before		= TargetHeight;
 
-	ShowCursor				(TRUE);
-	u32 tm_start			= TimerAsync();
-	if (g_pGamePersistent){
-
-//.		g_pGamePersistent->Environment().OnDeviceDestroy();
-	}
-
+	ShowCursor(TRUE);
+	u32 tm_start = TimerAsync();
 	m_pRender->Reset( m_hWnd, TargetWidth, TargetHeight);
 
 	if (g_pGamePersistent)
 	{
-//.		g_pGamePersistent->Environment().OnDeviceCreate();
-		//bNeed_re_create_env = TRUE;
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
-	_SetupStates			();
+
+	_SetupStates();
 	if (precache)
-		PreCache			(20, true, false);
-	u32 tm_end				= TimerAsync();
-	Msg						("*** RESET [%d ms]",tm_end-tm_start);
+		PreCache(20, true, false);
+	u32 tm_end = TimerAsync();
+	Msg("*** RESET [%d ms]", tm_end - tm_start);
 
 	//	TODO: Remove this! It may hide crash
 	Memory.mem_compact();
 
-#ifndef DEDICATED_SERVER
-	ShowCursor	(FALSE);
-#endif
-		
+	if (!g_dedicated_server)
+		ShowCursor(FALSE);
+
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	if(dwWidth_before != TargetWidth || dwHeight_before!= TargetHeight || Scale != RenderScale)
+	if (dwWidth_before != TargetWidth || dwHeight_before!= TargetHeight || Scale != RenderScale)
 	{
 		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
 	}

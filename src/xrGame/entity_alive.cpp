@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "entity_alive.h"
 #include "inventoryowner.h"

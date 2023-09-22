@@ -5,6 +5,7 @@
 //	Description : Loophole class for smart cover
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_loophole.h"
 #include "object_broker.h"

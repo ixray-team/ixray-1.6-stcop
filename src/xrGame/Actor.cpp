@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Actor_Flags.h"
 #include "hudmanager.h"
@@ -515,7 +516,7 @@ void	CActor::Hit(SHit* pHDS)
 		!sndHit[HDS.hit_type].empty()	&&
 		conditions().PlayHitSound(pHDS)	)
 	{
-		ref_sound& S			= sndHit[HDS.hit_type][Random.randI(sndHit[HDS.hit_type].size())];
+		ref_sound& S			= sndHit[HDS.hit_type][Random.randI((u32)sndHit[HDS.hit_type].size())];
 		bool b_snd_hit_playing	= sndHit[HDS.hit_type].end() != std::find_if(sndHit[HDS.hit_type].begin(), sndHit[HDS.hit_type].end(), playing_pred());
 
 		if(ALife::eHitTypeExplosion == HDS.hit_type)
