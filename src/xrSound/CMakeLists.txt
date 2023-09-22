@@ -78,21 +78,21 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OGG}native/bin/Win32/Release/libogg.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OAL}native/bin/Win32/Release/OpenAL32.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/Win32/Release/libvorbisfile.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/Win32/Release/libvorbis.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OGG}native/bin/${CMAKE_GENERATOR_PLATFORM}/Release/libogg.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OAL}native/bin/${CMAKE_GENERATOR_PLATFORM}/Release/OpenAL32.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/${CMAKE_GENERATOR_PLATFORM}/Release/libvorbisfile.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/${CMAKE_GENERATOR_PLATFORM}/Release/libvorbis.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## LibOGG
-target_link_libraries(xrSound PRIVATE ${SND_OGG}native/lib/Win32/Release/libogg.lib)
+target_link_libraries(xrSound PRIVATE ${SND_OGG}native/lib/${CMAKE_GENERATOR_PLATFORM}/Release/libogg.lib)
 target_include_directories(xrSound PRIVATE "${SND_OGG}/native/include/")
 
 ## Vorbice
-target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/Win32/Release/libvorbisfile.lib)
-target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/Win32/Release/libvorbis.lib)
+target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/${CMAKE_GENERATOR_PLATFORM}/Release/libvorbisfile.lib)
+target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/${CMAKE_GENERATOR_PLATFORM}/Release/libvorbis.lib)
 target_include_directories(xrSound PRIVATE "${SND_VOB}/native/include/")
 
 ## OpenAL
-target_link_libraries(xrSound PRIVATE ${SND_OAL}/native/lib/Win32/Release/OpenAL32.lib)
+target_link_libraries(xrSound PRIVATE ${SND_OAL}/native/lib/${CMAKE_GENERATOR_PLATFORM}/Release/OpenAL32.lib)
 target_include_directories(xrSound PRIVATE "${SND_OAL}/native/include/")
