@@ -71,8 +71,6 @@ public:
 	bool					m_bUsePerfhud;
 	D3D_FEATURE_LEVEL		FeatureLevel;
 #else //USE_DX11
-private:
-	HINSTANCE 				hD3D;
 
 public:
 

@@ -27,7 +27,6 @@ IDirect3DStateBlock9*	dwDebugSB = 0;
 #endif
 
 CHW::CHW() : 
-	hD3D(NULL),
 	pD3D(NULL),
 	pDevice(NULL),
 	pBaseRT(NULL),
@@ -108,19 +107,12 @@ void CHW::CreateD3D	()
 #endif    
 		_name			= "d3d9.dll";
 
-
-	hD3D            			= LoadLibrary(_name);
-	R_ASSERT2	           	 	(hD3D,"Can't find 'd3d9.dll'\nPlease install latest version of DirectX before running this program");
-    typedef IDirect3D9 * WINAPI _Direct3DCreate9(UINT SDKVersion);
-	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*)GetProcAddress(hD3D,"Direct3DCreate9");	R_ASSERT(createD3D);
-    this->pD3D 					= createD3D( D3D_SDK_VERSION );
-    R_ASSERT2					(this->pD3D,"Please install DirectX 9.0c");
+	this->pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 }
 
 void CHW::DestroyD3D()
 {
 	_RELEASE					(this->pD3D);
-    FreeLibrary					(hD3D);
 }
 
 //////////////////////////////////////////////////////////////////////
