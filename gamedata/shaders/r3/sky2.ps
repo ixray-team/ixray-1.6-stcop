@@ -5,8 +5,8 @@ struct         v2p
 	float4	factor	: COLOR0;        // for SM3 - factor.rgb - tonemap-prescaled
 	float3	tc0		: TEXCOORD0;
 	float3	tc1		: TEXCOORD1;
-  	float4  prev_hpos : POSITION0;
-  	float4  cur_hpos  : POSITION1;
+  	float4  prev_hpos : TEXCOORD2;
+  	float4  cur_hpos  : TEXCOORD3;
 };
 
 TextureCube	s_sky0	:register(t0);

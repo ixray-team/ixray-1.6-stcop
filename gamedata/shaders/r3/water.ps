@@ -41,7 +41,7 @@ float4 main( vf I ) : SV_Target
 //	float4	base	= tex2D (s_base,I.tbase);
 //	float3	n0	= tex2D (s_nmap,I.tnorm0);
 //	float3	n1	= tex2D (s_nmap,I.tnorm1);
-	float4	base= s_base.Sample( smp_base, I.tbase);
+		float4	base= s_base.Sample( smp_base, I.tbase);
 	float3	n0	= s_nmap.Sample( smp_base, I.tnorm0);
 	float3	n1	= s_nmap.Sample( smp_base, I.tnorm1);
 	float3	Navg	= n0 + n1 - 1;
@@ -64,10 +64,12 @@ float4 main( vf I ) : SV_Target
 	float3	env0	= s_env0.Sample( smp_rtlinear, vreflect);
 	float3	env1	= s_env1.Sample( smp_rtlinear, vreflect);
 	float3	env	= lerp (env0,env1,L_ambient.w);
-			env	*= env*2;
+			//env	*= env*2;
+			env	*= env*env*2;
+			//env = env*env*sqrt(env)*3;
 
 	float	power	= pow(fresnel,9);
-	float	amount	= 0.15f+0.25f*power;	// 1=full env, 0=no env
+	float	amount	= 0.5f*power*power;	// 1=full env, 0=no env
 
 	float3	c_reflection       = env*amount;
 	float3	final              = lerp(c_reflection,base.rgb,base.a);

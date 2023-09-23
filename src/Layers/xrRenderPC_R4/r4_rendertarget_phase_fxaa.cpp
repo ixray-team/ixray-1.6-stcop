@@ -19,8 +19,8 @@ void CRenderTarget::phase_fxaa()
 
     float _w = RCache.get_width();
     float _h = RCache.get_height();
-    float ddw = 1.f / _w;
-    float ddh = 1.f / _h;
+    float ddw = 0;//1.f / _w;
+    float ddh = 0;//1.f / _h;
 
     p0.set(0.0f, 0.0f);
     p1.set(1.0f, 1.0f);

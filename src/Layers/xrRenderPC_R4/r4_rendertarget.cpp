@@ -115,13 +115,11 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
     float	_h					= RCache.get_height();
     u32		C					= color_rgba	(255,255,255,255);
     float	eps					= 0;
-    float	_dw					= 0.5f;
-    float	_dh					= 0.5f;
     FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-    pv->set						(-_dw,		_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
-    pv->set						(-_dw,		-_dh,		eps,	1.f, C, 0, 0);	pv++;
-    pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
-    pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
+    pv->set						(0,		_h,		eps,	1.f, C, 0, 0);	pv++;
+    pv->set						(0,		0,		eps,	1.f, C, 0, 0);	pv++;
+    pv->set						(_w,	_h,		eps,	1.f, C, 0, 0);	pv++;
+    pv->set						(_w,	0,		eps,	1.f, C, 0, 0);	pv++;
     RCache.Vertex.Unlock		(4,g_combine->vb_stride);
     RCache.set_Element			(s_occq->E[1]	);
 
@@ -938,13 +936,11 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
         float	_h					= RCache.get_height();
         u32		C					= color_rgba	(255,255,255,255);
         float	eps					= 0;
-        float	_dw					= 0.5f;
-        float	_dh					= 0.5f;
         FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-        pv->set						(-_dw,		_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
-        pv->set						(-_dw,		-_dh,		eps,	1.f, C, 0, 0);	pv++;
-        pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
-        pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
+        pv->set						(0,		_h,		eps,	1.f, C, 0, 0);	pv++;
+        pv->set						(0,		0,		eps,	1.f, C, 0, 0);	pv++;
+        pv->set						(_w,	_h,		eps,	1.f, C, 0, 0);	pv++;
+        pv->set						(_w,	0,		eps,	1.f, C, 0, 0);	pv++;
         RCache.Vertex.Unlock		(4,g_combine->vb_stride);
         RCache.set_Element			(s_occq->E[2]	);
         RCache.set_Geometry			(g_combine		);

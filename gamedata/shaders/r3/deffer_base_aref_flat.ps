@@ -21,6 +21,9 @@ f_deffer 	main	( p_flat I )
   float4 D 	= tbase	 	(I.tcdh);
 	clip					(D.w-def_aref);
 
+    // vertver: linear gamma fix
+    D = pow(D, 0.75);
+
 #ifdef	USE_TDETAIL
 	D.rgb	= 2*D.rgb * s_detail.Sample( smp_base, I.tcdbump ).rgb;
 #endif

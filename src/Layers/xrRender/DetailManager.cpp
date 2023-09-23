@@ -338,9 +338,9 @@ void CDetailManager::Render	()
 	float factor			= 0.3f;
 #endif
 
-	swing_current.lerp		(swing_desc[0],swing_desc[1],factor);
-	RCache.set_CullMode		(CULL_NONE);
-	RCache.set_xform_world	(Fidentity);
+	swing_current.lerp			(swing_desc[0],swing_desc[1],factor);
+	RCache.set_CullMode			(CULL_NONE);
+	RCache.set_xform_world		(Fidentity);
 	RCache.set_prev_xform_world(Fidentity);
 	if (UseVS())			hw_Render	();
 	else					soft_Render	();

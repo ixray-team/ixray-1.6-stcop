@@ -2,6 +2,7 @@
 
 uniform float4 		consts; // {1/quant,1/quant,diffusescale,ambient}
 uniform float4 		array[61*4];
+uniform float4x4	wv;
 
 v2p_flat 	main (v_detail v)
 {
@@ -30,8 +31,8 @@ v2p_flat 	main (v_detail v)
 	O.hpos 		= mul		(m_VP,	pos				);	
 	O.cur_hpos	= mul		(m_VP_Unjittered,	float4(pos.x, pos.y, pos.z, 1.0f)				);	
 	O.prev_hpos	= mul 		(m_prevVP_Unjittered, float4(pos.x, pos.y, pos.z, 1.0f) 		);
-	O.N 		= mul		(m_WV,  normalize(norm)	);
-	float3	Pe	= mul		(m_WV,  pos				);
+	O.N 		= mul		(wv,  normalize(norm)	);
+	float3	Pe	= mul		(wv,  pos				);
 	O.tcdh 		= float4	((v.misc * consts).xyyy	);
 
 # if defined(USE_R2_STATIC_SUN)

@@ -120,6 +120,7 @@ void CDetailManager::hw_Render_dump(
 	static shared_str strPrevDir2D("prev_dir2D");
 	static shared_str strArray("array");
 	static shared_str strXForm("xform");
+	static shared_str strWV("wv");
 
 	Device.Statistic->RenderDUMP_DT_Count	= 0;
 
@@ -157,6 +158,7 @@ void CDetailManager::hw_Render_dump(
 				RCache.set_c(strDir2D, wind);
 				RCache.set_c(strPrevDir2D, prev_wind);
 				RCache.set_c(strXForm, Device.mFullTransform);
+				RCache.set_c(strWV, RCache.xforms.m_wv);
 
 				Fvector4*	c_storage=0;
 
@@ -184,7 +186,6 @@ void CDetailManager::hw_Render_dump(
 						// Build matrix ( 3x4 matrix, last row - color )
 						float		scale		= Instance.scale_calculated;
 						const Fmatrix&	M			= Instance.mRotY;
-						const Fmatrix&	PrevM		= Instance.mRotY;
 
 						c_storage[base + 0].set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
 						c_storage[base + 1].set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);

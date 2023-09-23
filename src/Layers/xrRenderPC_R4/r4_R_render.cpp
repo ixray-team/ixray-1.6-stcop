@@ -517,7 +517,7 @@ void CRender::render_forward				()
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
 		PortalTraverser.fade_render				()	;					// faded-portals
 		r_dsgraph_render_sorted					()	;					// strict-sorted geoms
-		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
+		g_pGamePersistent->Environment().RenderLast()	;				// rain/thunder-bolts
 	}
 
 	RImplementation.o.distortion				= FALSE;				// disable distorion

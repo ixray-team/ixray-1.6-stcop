@@ -167,7 +167,7 @@ float3 main ( _input I ) : SV_Target
 #endif
 
 #ifdef 	       DBG_TEST_MOTION
-					color 	=	hdiffuse + L.rgb + gbd.motion;
+					color 	=	abs(gbd.motion);
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

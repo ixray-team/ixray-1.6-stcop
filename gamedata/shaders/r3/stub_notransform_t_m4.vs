@@ -1,4 +1,4 @@
-#include "common_iostructs.h"
+ #include "common_iostructs.h"
 
 uniform float4		target_screen_res;		// Screen resolution (x-Width,y-Height, zw - 1/resolution)
 
@@ -11,7 +11,7 @@ v2p_TL main ( v_TL_positiont I )
 //	O.HPos = P;
 
 	{
-		I.P.xy += 0.5f;
+//		I.P.xy += 0.5f;
 //		O.HPos.x = I.P.x/1024 * 2 - 1;
 //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
 		O.HPos.x = I.P.x * target_screen_res.z * 2 - 1;

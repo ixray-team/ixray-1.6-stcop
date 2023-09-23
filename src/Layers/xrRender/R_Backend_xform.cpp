@@ -8,9 +8,21 @@ extern float ps_r4_jitter_scale_y;
 
 static Fmatrix xform_apply_jitter(const Fmatrix& m_p, float jitter_x, float jitter_y)
 {
+#if 1
 	Fmatrix jitter_p = m_p;
 	jitter_p._31 += ps_r4_jitter_scale_x * jitter_x;
 	jitter_p._32 += ps_r4_jitter_scale_y * jitter_y;
+#else
+	Fmatrix jitter = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		ps_r4_jitter_scale_x * jitter_x, ps_r4_jitter_scale_y* jitter_y, 0.0f, 1.0f
+	};
+
+	Fmatrix jitter_p = m_p;
+	jitter_p.mulA_44(jitter);
+#endif
 	return jitter_p;
 }
 

@@ -2,9 +2,8 @@
 #include "lmodel.h"
 #include "shadow.h"
 
-#ifndef USE_SUNMASK
-	float3x4 m_sunmask; // ortho-projection
-#endif
+
+float3x4 m_sunmask;	// ortho-projection
 Texture3D s_water;
 Texture2D s_waterFall;
 float4	RainDensity;	//	float
