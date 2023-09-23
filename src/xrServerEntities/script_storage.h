@@ -37,15 +37,8 @@ private:
 	CScriptThread				*m_current_thread	;
 	BOOL						m_jit				;
 
-#ifdef DEBUG
-public:
-	bool						m_stack_is_ready	;
-#endif // #ifdef DEBUG
-
-#ifdef PRINT_CALL_STACK
 protected:
 	CMemoryWriter				m_output;
-#endif // #ifdef PRINT_CALL_STACK
 
 protected:
 	static	int					vscript_log					(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker);
@@ -54,9 +47,7 @@ protected:
 			void				reinit						();
 
 public:
-#ifdef PRINT_CALL_STACK
 			void				print_stack					();
-#endif // #ifdef PRINT_CALL_STACK
 
 public:
 								CScriptStorage				();
