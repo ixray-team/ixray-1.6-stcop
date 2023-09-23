@@ -1,51 +1,81 @@
 #include "common.h"
-/*
-struct 	v2p
-{
-//D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX3
-	float4 	color:		COLOR0;		// multiplier, color.w = noise_amount
-	float4	gray:		COLOR1;		// (.3,.3,.3.,amount)
- 	float2 	tc0: 		TEXCOORD0;	// base1 (duality)
- 	float2 	tc1: 		TEXCOORD1;	// base2 (duality)
- 	float2 	tc2: 		TEXCOORD2;	// base  (noise)
-};
-*/
 
+Texture2D 	s_grad0;
+Texture2D 	s_grad1;
 Texture2D 	s_base0;
 Texture2D 	s_base1;
 Texture2D 	s_noise;
+Texture3D 	s_tonemap_lut;
+uniform float4      c_colormap;
 uniform float4 		c_brightness;
-Texture2D 	s_grad0;
-Texture2D 	s_grad1;
-uniform float4 		c_colormap;
+
+//https://github.com/h3r2tic/tony-mc-mapface
+float3 tony_mc_mapface(float3 stimulus)
+{
+    // Apply a non-linear transform that the LUT is encoded with.
+    const float3 encoded = stimulus / (stimulus + 1.0); //reinhard-ish
+
+    // Align the encoded range to texel centers.
+    const float LUT_DIMS = 48.0;
+    const float3 uv = encoded * ((LUT_DIMS - 1.0) / LUT_DIMS) + 0.5 / LUT_DIMS;
+
+    return s_tonemap_lut.SampleLevel(smp_linear, uv, 0);
+}
+
+//credits: Jodie
+float bayer32(float2 a)
+{
+    uint2 b = uint2(a);
+    uint x = ((b.x^b.y)&0x1fu) | b.y<<5;
+    
+    x = (x & 0x048u)
+  | ((x & 0x024u) << 3)
+  | ((x & 0x002u) << 6)
+  | ((x & 0x001u) << 9)
+  | ((x & 0x200u) >> 9)
+  | ((x & 0x100u) >> 6)
+  | ((x & 0x090u) >> 3); // 22 ops
+  
+    return float(x)/32.0/32.0;
+}
+
+//moving frostbite to pbr
+float3 accurateLinearToSRGB(float3  linearCol)
+{
+    float3 sRGBLo = linearCol * 12.92f;
+    float3 sRGBHi = (pow(abs(linearCol), 1.0f/2.4f) * 1.055f) - 0.055f;
+    float3 sRGB = (linearCol  <= 0.0031308f) ? sRGBLo : sRGBHi;
+    return sRGB;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 main( p_postpr I ) : SV_Target
+float4 main( v2p_postpr I ) : SV_Target
 {
-//	float3	t_0 	= tex2D		(s_base0,I.tc0);
-//	float3	t_1 	= tex2D		(s_base1,I.tc1);
-	float3	t_0 	= s_base0.Sample( smp_rtlinear, I.Tex0);
-	float3	t_1 	= s_base1.Sample( smp_rtlinear, I.Tex1);	
+	float3	t_0 	= s_base0.Sample( smp_nofilter, I.Tex0);
+	float3	t_1 	= s_base1.Sample( smp_nofilter, I.Tex1);	
 	float3 	image_o	= (t_0+t_1)*.5;					// add_d2
 
-	float	grad_i 	= dot		(image_o,(0.3333h).xxx);
+     float  grad_i  = dot       (image_o,(0.3333h).xxx);
+    float3  image0  = s_grad0.Sample( smp_rtlinear, float2(grad_i,0.5));
+    float3  image1  = s_grad1.Sample( smp_rtlinear, float2(grad_i,0.5));
 
-	float3 	image0 	= s_grad0.Sample( smp_rtlinear, float2(grad_i,0.5));
-	float3 	image1 	= s_grad1.Sample( smp_rtlinear, float2(grad_i,0.5));
-	float3	image	= lerp		(image0, image1, c_colormap.y);
-			image	= lerp		(image_o, image, c_colormap.x);
+    float3  image   = lerp      (image0, image1, c_colormap.y);
+            image   = lerp      (image_o, image, c_colormap.x);
 
-	float	gray 	= dot		(image,I.Gray);			// dp3
-			image 	= lerp 		(gray,image,I.Gray.w);		// mul/mad
+    float   gray    = dot       (image,I.Gray);         // dp3
+            image   = lerp      (gray,image,I.Gray.w);      // mul/mad
+   
+    float4  t_noise = s_noise.Sample( smp_linear, I.Tex2);  
+    float3  noised  = image*t_noise*2;                          // mul_2x
+            image   = lerp( noised, image, I.Color.w);  // lrp ?
+            image   = (image * I.Color + c_brightness)*2;       // mad
 
-//	float4	t_noise	= tex2D		(s_noise,I.tc2);	
-	float4	t_noise	= s_noise.Sample( smp_linear, I.Tex2);	
-	float3 	noised 	= image*t_noise*2;                     		// mul_2x
-			image	= lerp( noised, image, I.Color.w); 	// lrp ?
-			image	= (image * I.Color + c_brightness)*2;		// mad
-//		image	= (image + c_brightness) * I.Color;		// mad ?
+	image *= 1.4;
+	image = tony_mc_mapface(image);
+	image = accurateLinearToSRGB(image);
+	image += bayer32(I.HPos.xy) / 255.0;
 
 	// out
-	return  float4( image, 1.0h);					// +mov
+	return float4(image, 1.0h);					// +mov
 }
