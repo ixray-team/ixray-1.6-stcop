@@ -1,46 +1,12 @@
-#ifndef xrCoreH
-#define xrCoreH
 #pragma once
+
+#ifdef __cplusplus
 
 #ifndef DEBUG
 #	define MASTER_GOLD
 #endif // DEBUG
 
-//#pragma warning(disable:4996)
-
-#if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
-	// "debug" or "mixed"
-	#if !defined(_CPPUNWIND)
-		#error Please enable exceptions...
-	#endif
-	#define _HAS_EXCEPTIONS		1	// STL
-	#define XRAY_EXCEPTIONS		1	// XRAY
-#else
-	// "release"
-	#if defined(_CPPUNWIND) && !defined __BORLANDC__
-		#error Please disable exceptions...
-	#endif
-	#define _HAS_EXCEPTIONS		1	// STL
-	#define XRAY_EXCEPTIONS		0	// XRAY
-	#define LUABIND_NO_EXCEPTIONS
-	#pragma warning(disable:4530)
-#endif
-
-#if !defined(_MT)
-	// multithreading disabled
-	#error Please enable multi-threaded library...
-#endif
-
 #	include "xrCore_platform.h"
-
-/*
-// stl-config
-// *** disable exceptions for both STLport and VC7.1 STL
-// #define _STLP_NO_EXCEPTIONS	1
-// #if XRAY_EXCEPTIONS
- 	#define _HAS_EXCEPTIONS		1	// force STL again
-// #endif
-*/
 
 // *** try to minimize code bloat of STLport
 #ifdef __BORLANDC__
@@ -305,4 +271,3 @@ public:
 extern XRCORE_API xrCore Core;
 
 #endif
-

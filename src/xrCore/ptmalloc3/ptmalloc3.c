@@ -45,6 +45,7 @@ PERFORMANCE OF THIS SOFTWARE.
 #endif
 #endif /*__STD_C*/
 
+#include <memoryapi.h>
 
 #if __STD_C
 #include <stddef.h>   /* for size_t */

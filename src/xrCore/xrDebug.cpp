@@ -39,10 +39,6 @@ XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
 
-extern void BuildStackTrace();
-extern char g_stackTrace[100][4096];
-extern int	g_stackTraceCount;
-
 HWND get_current_wnd()
 {
 	HWND hWnd = GetActiveWindow();
@@ -56,12 +52,9 @@ void LogStackTrace	(LPCSTR header)
 	if (!shared_str_initialized)
 		return;
 
+	Msg("%s",header);
 	BuildStackTrace	();		
 
-	Msg				("%s",header);
-
-	for (int i=1; i<g_stackTraceCount; ++i)
-		Msg			("%s",g_stackTrace[i]);
 }
 
 void xrDebug::gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, u32 const assertion_info_size)
@@ -129,16 +122,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 		BuildStackTrace	();		
-
-		for (int i=2; i<g_stackTraceCount; ++i) {
-			if (shared_str_initialized)
-				Msg		("%s",g_stackTrace[i]);
-
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-			buffer		+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"%s%s",g_stackTrace[i],endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-		}
-
+		
 		if (shared_str_initialized)
 			FlushLog	();
 
@@ -463,39 +447,27 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
 
-	if (!error_after_dialog && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
-		CONTEXT				save = *pExceptionInfo->ContextRecord;
-		BuildStackTrace		(pExceptionInfo);
+	if (!error_after_dialog && !strstr(GetCommandLine(), "-no_call_stack_assert")) 
+	{
+		CONTEXT save = *pExceptionInfo->ContextRecord;
+		//BuildStackTrace(pExceptionInfo);
 		*pExceptionInfo->ContextRecord = save;
 
 		if (shared_str_initialized)
-			Msg				("stack trace:\n");
+			Msg("stack trace:\n");
 
 		if (!IsDebuggerPresent())
 		{
-			os_clipboard::copy_to_clipboard	("stack trace:\r\n\r\n");
+			os_clipboard::copy_to_clipboard("stack trace:\r\n\r\n");
+			BuildStackTrace();
 		}
 
-		string4096			buffer;
-		for (int i=0; i<g_stackTraceCount; ++i) {
+		if (*error_message) 
+		{
 			if (shared_str_initialized)
-				Msg			("%s",g_stackTrace[i]);
-			xr_sprintf			(buffer, sizeof(buffer), "%s\r\n",g_stackTrace[i]);
-#ifdef DEBUG
-			if (!IsDebuggerPresent())
-				os_clipboard::update_clipboard(buffer);
-#endif // #ifdef DEBUG
-		}
+				Msg("\n%s", error_message);
 
-		if (*error_message) {
-			if (shared_str_initialized)
-				Msg			("\n%s",error_message);
-
-			xr_strcat			(error_message,sizeof(error_message),"\r\n");
-#ifdef DEBUG
-			if (!IsDebuggerPresent())
-				os_clipboard::update_clipboard(buffer);
-#endif // #ifdef DEBUG
+			xr_strcat(error_message, sizeof(error_message), "\r\n");
 		}
 	}
 
