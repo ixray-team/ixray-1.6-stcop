@@ -67,7 +67,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		RCache.set_Geometry(hGeom);
 		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
 		RCache.stat.r.s_dynamic_inst.add(vCount);
-		Parent->UpdateTransform(u16(RMS_boneid));
+		//Parent->UpdateTransform(u16(RMS_boneid));
 	}
 	break;
 	case RM_SKINNING_1B:
@@ -90,7 +90,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
 			RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
 			RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
-			Parent->UpdateTransform(u16(mid));
+			//Parent->UpdateTransform(u16(mid));
 		}
 
 		// render

@@ -478,7 +478,12 @@ void CKinematics::LL_SetBonesVisible(u64 mask)
 	    	Fmatrix& A		= bone_instances[b].mTransform;
 	    	Fmatrix& B		= bone_instances[b].mRenderTransform;
         	A.scale			(0.f,0.f,0.f);
-	        B.mul_43		(A,(*bones)[b]->m2b_transform);
+	        B.mul_43		(A,(*bones)[b]->m2b_transform);	   
+			
+			Fmatrix& PrevA		= bone_instances[b].mPrevTransform;
+	    	Fmatrix& PrevB		= bone_instances[b].mPrevRenderTransform;
+        	PrevA.scale			(0.f,0.f,0.f);
+	        PrevB.mul_43		(PrevA,(*bones)[b]->m2b_transform);
         }
 	}
 	CalculateBones_Invalidate		();
@@ -712,13 +717,13 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* 
 			Fvector P;
 			if (F.bone_id[k][0]==F.bone_id[k][1]){
 				// 1-link
-				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
+				const Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
 				xform0.transform_tiny	(P,F.vert[k]);
 			}else{
 				// 2-link
 				Fvector P0,P1;
-				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
-				Fmatrix& xform1			= LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
+				const Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				const Fmatrix& xform1			= LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
 				xform0.transform_tiny	(P0,F.vert[k]);
 				xform1.transform_tiny	(P1,F.vert[k]);
 				P.lerp					(P0,P1,F.weight[k]);
