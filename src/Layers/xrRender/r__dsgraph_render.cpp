@@ -480,8 +480,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
@@ -528,8 +528,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
@@ -588,8 +588,8 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
@@ -637,8 +637,8 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
-		deg2rad(psHUD_FOV * Device.fFOV),
-		Device.fASPECT, VIEWPORT_NEAR,
+		deg2rad(psHUD_FOV),
+		Device.fASPECT, HUD_VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
