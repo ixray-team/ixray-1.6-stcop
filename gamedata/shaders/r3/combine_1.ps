@@ -134,14 +134,14 @@ float4 main ( _input I ) : SV_Target
 	hdiffuse *= occ;
 	hspecular *= occ;
 
-    float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
-    float4         C           = D*light       ;                             // rgb.gloss * light(diffuse.specular)
+     float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
+    float4         C           = (D / 3.1415) *light       ;                             // rgb.gloss * light(diffuse.specular)
 	float3         spec        = C.www         + hspecular;      // replicated specular
 
 #ifdef         USE_SUPER_SPECULAR
                 spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;
 #endif
-		float3       color     = C.rgb + spec     ;
+		float3       color     = C.rgb + (spec / 3.1415)     ;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// For Test ///////////////////////////////////////////////////////////////////
@@ -173,7 +173,7 @@ float4 main ( _input I ) : SV_Target
 ////////////////////////////////////////////////////////////////////////////////
 
         // here should be distance fog
-        float		    fog_color_compensated 	= fog_color;
+        float           fog_color_compensated   = fog_color * (fog_color * (fog_color * 0.305306011 + 0.682171111) + 0.012522878);
         float3        	pos        		= P.xyz;
         float         	distance		= length		(pos);
         float         	fog			= saturate		(distance*fog_params.w + fog_params.x); //
