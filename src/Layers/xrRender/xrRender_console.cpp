@@ -266,6 +266,7 @@ public:
 			return;
 		}
 		float val = *value;
+		val += std::log2f(RCache.get_width() / RCache.get_target_width()) - 1.0f;
 		clamp(val, -3.0f, 3.0f);
 #ifdef USE_DX11
 		SSManager.SetMipLodBias(val);
