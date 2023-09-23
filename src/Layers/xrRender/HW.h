@@ -7,7 +7,8 @@
 #pragma once
 
 #include "hwcaps.h"
-#include <renderdoc/renderdoc_app.h>
+
+#include <renderdoc/api/app/renderdoc_app.h>
 
 #ifndef _MAYA_EXPORT
 #include "stats_manager.h"

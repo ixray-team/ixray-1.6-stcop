@@ -65,7 +65,7 @@ jobs:
         with:
           nuget-version: '>=5'
 
-      - name: Cache dependencies
+      - name: Cache packages
         uses: actions/cache@v3
         id: cache
         with:
@@ -76,10 +76,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Restore dependencies
+      - name: Restore packages
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           nuget restore $env:solution_name
+
+      - name: Restore sources
+        run: |
+          ${{ github.workspace }}/get-dependencies.bat
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.1
