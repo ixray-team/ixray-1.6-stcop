@@ -174,11 +174,12 @@ float4 main ( _input I ) : SV_Target
 
         // here should be distance fog
         float           fog_color_compensated   = fog_color * (fog_color * (fog_color * 0.305306011 + 0.682171111) + 0.012522878);
-        float3        	pos        		= P.xyz;
-        float         	distance		= length		(pos);
-        float         	fog			= saturate		(distance*fog_params.w + fog_params.x); //
-                      	color			= lerp     		(color,fog_color_compensated,fog);        			//
-        float        	skyblend		= saturate		(fog*fog);
+        fog_color_compensated *= fog_color_compensated;
+        float3          pos             = P.xyz;
+        float           distance        = length        (pos);
+        float           fog             = saturate      (distance*fog_params.w + fog_params.x); //
+                        color           = lerp          (color,fog_color_compensated,fog);                  //
+        float           skyblend        = saturate      (fog*fog*fog);
 
 #ifdef         DBG_TMAPPING
         color                        	= D.xyz;
