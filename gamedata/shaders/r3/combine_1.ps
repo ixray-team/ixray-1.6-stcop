@@ -68,7 +68,7 @@ struct	_input
 };
 
 //	TODO:	DX10: Replace Sample with Load
-float3 main ( _input I ) : SV_Target
+float4 main ( _input I ) : SV_Target
 {
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0, I.pos2d, ISAMPLE) );
 	
@@ -189,5 +189,5 @@ float3 main ( _input I ) : SV_Target
         color        	= spec          - hspecular	;
 #endif
 
-	return color;
+	return float4(color, skyblend);
 }
