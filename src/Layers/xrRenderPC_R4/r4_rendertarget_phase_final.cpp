@@ -29,20 +29,24 @@ void  CRenderTarget::phase_copy_depth()
 {
 	PIX_EVENT(Copy_Depth);
 
+	FLOAT ColorRGBA[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	HW.pContext->ClearRenderTargetView(rt_Depth->pRT, ColorRGBA);
+
 	u32 Offset = 0;
 	float d_Z = EPS_S;
 	float d_W = 1.0f;
 	u32 C = color_rgba(0, 0, 0, 255);
 
-	u32 w = RCache.get_target_width();
-	u32 h = RCache.get_target_height();
+	u32 w = RCache.get_width();
+	u32 h = RCache.get_height();
 
-	set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
+	set_viewport(HW.pContext, RCache.get_width(), RCache.get_height());
 	u_setrt(w, h, rt_Depth->pRT, nullptr, nullptr, nullptr);
 
 	u32 CullMode = RCache.get_CullMode();
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(false);
+
 
 	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
 	pv->set(0, h, d_Z, d_W, C, 0, 1); pv++;
@@ -53,7 +57,10 @@ void  CRenderTarget::phase_copy_depth()
 
 	RCache.set_Element(s_output_scale->E[SCALEPHASE_COPY_DEPTH]);
 	RCache.set_Geometry(g_combine);
+	RCache.set_c("far_plane", g_pGamePersistent->Environment().CurrentEnv->far_plane);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+	HW.pContext->CopyResource(rt_CopyDepth->pSurface, rt_Depth->pSurface);
 }
 
 //	TODO: DX10: Remove half poxel offset

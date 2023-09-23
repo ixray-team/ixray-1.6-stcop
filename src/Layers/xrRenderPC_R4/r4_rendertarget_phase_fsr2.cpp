@@ -16,7 +16,7 @@ void CRenderTarget::phase_fsr2_combine()
     fsr2Params.exposureResource = nullptr;
     fsr2Params.unresolvedColorResource = rt_Target->pSurface;
     fsr2Params.motionvectorResource = rt_MotionVectors->pSurface;
-    fsr2Params.depthbufferResource = rt_Depth->pSurface;
+    fsr2Params.depthbufferResource = rt_CopyDepth->pSurface;
     fsr2Params.reactiveMapResource = nullptr;
     fsr2Params.transparencyAndCompositionResource = nullptr;
     fsr2Params.resolvedColorResource = rt_UpscaleOutput->pSurface;

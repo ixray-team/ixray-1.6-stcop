@@ -16,7 +16,7 @@ void CRenderTarget::phase_dlss_combine()
     dlssParams.exposureResource = nullptr;
     dlssParams.unresolvedColorResource = rt_Target->pSurface;
     dlssParams.motionvectorResource = rt_MotionVectors->pSurface;
-    dlssParams.depthbufferResource = rt_Depth->pSurface;
+    dlssParams.depthbufferResource = rt_CopyDepth->pSurface;
     dlssParams.reactiveMapResource = nullptr;
     dlssParams.transparencyAndCompositionResource = nullptr;
     dlssParams.resolvedColorResource = rt_UpscaleOutput->pSurface;

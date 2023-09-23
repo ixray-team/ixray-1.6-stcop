@@ -370,6 +370,7 @@ CRenderTarget::CRenderTarget		()
    }
 
    rt_Depth.create(r2_RT_depth, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_FLOAT, 1);
+   rt_CopyDepth.create(r2_RT_copy_depth, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_D32_FLOAT, 1);
    rt_HWDepth.create(r2_RT_HW_depth, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS, 1);
    rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
    rt_MotionVectors.create(r4_motion_vectors, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);

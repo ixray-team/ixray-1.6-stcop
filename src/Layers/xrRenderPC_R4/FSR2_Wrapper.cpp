@@ -85,11 +85,12 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     dispatchParameters.cameraFar = params.farPlane;
     dispatchParameters.cameraNear = params.nearPlane;;
     dispatchParameters.cameraFovAngleVertical = params.fovH;
+
     dispatchParameters.viewSpaceToMetersFactor = 1.0f;
-    dispatchParameters.autoTcThreshold = 1.0f;
+    dispatchParameters.autoTcThreshold = 0.1f;
     dispatchParameters.autoTcScale = 1.0f;
-    dispatchParameters.autoReactiveScale = 1.0f;
-    dispatchParameters.autoReactiveMax = 1.0f;
+    dispatchParameters.autoReactiveScale = 5.0f;
+    dispatchParameters.autoReactiveMax = 0.9f;
 
     // EXPERIMENTAL feature, auto-generate reactive mask
     // Turn it off if you don't need it

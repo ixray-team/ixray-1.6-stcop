@@ -64,6 +64,7 @@ public:
 	ref_rt						rt_HWDepth;			// target
 	ref_rt						rt_Target;			// scaled, 32bit HDR (rgb)
 	ref_rt						rt_Depth;			// scaled, Z-buffer like - initial depth
+	ref_rt						rt_CopyDepth;			// scaled, Z-buffer like - initial depth
 	ref_rt						rt_AA_BackBuffer;	// scaled
 	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
 	ref_rt						rt_Position;		// scaled, 64bit,	fat	(x,y,z,?)				(eye-space)
