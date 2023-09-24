@@ -602,7 +602,6 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
 
 		// FX: We get the coordinates from the center of the window, taking into account the size of the item
 		AlignPos.sub(itm->GetWndSize());
-		AlignPos.add(ValidItemPos);
 		AlignPos.div(2);
 
 		itm->SetWndPos(AlignPos);
