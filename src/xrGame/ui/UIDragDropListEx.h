@@ -116,7 +116,7 @@ public:
 public:
 			// items management
 			virtual void	SetItem				(CUICellItem* itm); //auto
-			virtual void	SetItem				(CUICellItem* itm, Fvector2 abs_pos);  // start at cursor pos
+			virtual bool	SetItem				(CUICellItem* itm, Fvector2 abs_pos);  // start at cursor pos
 			virtual void	SetItem				(CUICellItem* itm, Ivector2 cell_pos); // start at cell
 					bool	CanSetItem			(CUICellItem* itm);
 			

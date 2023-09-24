@@ -14,7 +14,7 @@ public:
 	CUIDragDropReferenceList();
 	virtual ~CUIDragDropReferenceList();
 	virtual void SetItem(CUICellItem* itm);
-	virtual void SetItem(CUICellItem* itm, Fvector2 abs_pos);
+	virtual bool SetItem(CUICellItem* itm, Fvector2 abs_pos);
 	virtual void SetItem(CUICellItem* itm, Ivector2 cell_pos);
 	virtual CUICellItem* RemoveItem(CUICellItem* itm, bool force_root);
 
