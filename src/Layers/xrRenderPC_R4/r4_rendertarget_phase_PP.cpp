@@ -5,38 +5,12 @@ void set_viewport(ID3DDeviceContext* dev, float w, float h);
 
 void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 {
-	CTexture*	T					= RCache.get_ActiveTexture	(2);
-	VERIFY2		(T, "Texture #3 in noise shader should be setted up");
-	u32			tw					= iCeil(float(T->get_Width	())*param_noise_scale+EPS_S);
-	u32			th					= iCeil(float(T->get_Height ())*param_noise_scale+EPS_S);
-	VERIFY2		(tw && th, "Noise scale can't be zero in any way");
-
-	// calculate shift from FPSes
-	im_noise_time					-= Device.fTimeDelta;
-	if (im_noise_time<0)			{
-		im_noise_shift_w			= ::Random.randI(tw?tw:1);
-		im_noise_shift_h			= ::Random.randI(th?th:1);
-		float	fps_time			= 1/param_noise_fps;
-		while (im_noise_time<0)		im_noise_time += fps_time;
-	}
-
-	u32			shift_w				= im_noise_shift_w;
-	u32			shift_h				= im_noise_shift_h;
-	u32			_w					= RCache.get_target_width();
-	u32			_h					= RCache.get_target_height();
-	u32			cnt_w				= _w / tw;
-	u32			cnt_h				= _h / th;
- 
 	p0.set		(0,	0	);
 	p1.set		(1,	1	);
 }
 
 void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
 {
-	// Calculate ordinaty TCs from blur and SS
-	float	tw			= float(dwWidth);
-	float	th			= float(dwHeight);
-
 	Fvector2			p0,p1;
 	p0.set				(0, 0);
 	p1.set				(1, 1);
