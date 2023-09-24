@@ -12,6 +12,6 @@ namespace Lua {
 		eLuaMessageTypeHookTailReturn = u32(-1),
 	};
 
-	int __cdecl LuaOut(ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...);
+	int LuaOut(ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...);
 }
 

@@ -30,3 +30,6 @@
 #endif // _EDITOR
 
 #include "xrCPU_Pipe.h"
+
+#undef ENGINE_API
+#define ENGINE_API __declspec(dllimport)
