@@ -220,8 +220,12 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 	}
 }
 
+void set_viewport(ID3DDeviceContext* dev, float w, float h);
+
 void dxUIRender::FlushPrimitive()
 {
+	set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
+
 	u32 primCount					= 0;
 	_D3DPRIMITIVETYPE d3dPrimType	= D3DPT_FORCE_DWORD;
 	std::ptrdiff_t p_cnt			= 0;
