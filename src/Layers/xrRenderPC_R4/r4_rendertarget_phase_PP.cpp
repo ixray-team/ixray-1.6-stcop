@@ -22,17 +22,13 @@ void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 
 	u32			shift_w				= im_noise_shift_w;
 	u32			shift_h				= im_noise_shift_h;
-	float		start_u				= (float(shift_w)+.5f)/(tw);
-	float		start_v				= (float(shift_h)+.5f)/(th);
-	u32			_w					= RCache.get_width();
-	u32			_h					= RCache.get_height();
+	u32			_w					= RCache.get_target_width();
+	u32			_h					= RCache.get_target_height();
 	u32			cnt_w				= _w / tw;
 	u32			cnt_h				= _h / th;
-	float		end_u				= start_u + float(cnt_w) + 1;
-	float		end_v				= start_v + float(cnt_h) + 1;
  
-	p0.set		(start_u,	start_v	);
-	p1.set		(end_u,		end_v	);
+	p0.set		(0,	0	);
+	p1.set		(1,	1	);
 }
 
 void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
@@ -40,19 +36,16 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	// Calculate ordinaty TCs from blur and SS
 	float	tw			= float(dwWidth);
 	float	th			= float(dwHeight);
-	if (dwHeight!= RCache.get_height())	param_blur = 1.f;
-	Fvector2			shift,p0,p1;
-	shift.set			(.5f/tw, .5f/th);
-	shift.mul			(param_blur);
-	p0.set				(.5f/tw, .5f/th).add			(shift);
-	p1.set				((tw+.5f)/tw, (th+.5f)/th ).add	(shift);
+
+	Fvector2			p0,p1;
+	p0.set				(0, 0);
+	p1.set				(1, 1);
 
 	// Calculate Duality TC
-	float	shift_u		= param_duality_h*.5f;
-	float	shift_v		= param_duality_v*.5f;
-
-	r0.set(p0.x,p0.y);					r1.set(p1.x-shift_u,p1.y-shift_v);
-	l0.set(p0.x+shift_u,p0.y+shift_v);	l1.set(p1.x,p1.y);
+	r0.set(p0.x,p0.y);					
+	r1.set(p1.x,p1.y);
+	l0.set(p0.x,p0.y);	
+	l1.set(p1.x,p1.y);
 }
 
 bool CRenderTarget::u_need_CM()
