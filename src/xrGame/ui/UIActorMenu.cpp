@@ -693,7 +693,7 @@ void CUIActorMenu::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropList
 			continue;
 		}
 		CWeapon* weapon = smart_cast<CWeapon*>(item);
-		if ( !weapon || !(binoc||knife) )
+		if (!weapon || binoc || knife)
 		{
 			continue;
 		}
