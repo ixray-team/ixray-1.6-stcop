@@ -726,7 +726,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 
 			RECT			m_rcWindowBounds;
 			BOOL			bCenter = FALSE;
-			if (strstr(Core.Params, "-center_screen"))	bCenter = TRUE;
+			bCenter = !strstr(Core.Params, "-no_center_screen");
 
 			if (bCenter) {
 				RECT				DesktopRect;
@@ -756,6 +756,9 @@ void CHW::updateWindowProps(HWND m_hWnd)
 				( m_rcWindowBounds.bottom - m_rcWindowBounds.top ),
 				SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
 		}
+	}
+	else {
+		SetWindowLong(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_POPUP | WS_VISIBLE));
 	}
 
 	ShowCursor	(FALSE);
