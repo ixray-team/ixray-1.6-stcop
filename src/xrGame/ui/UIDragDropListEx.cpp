@@ -427,16 +427,19 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm) //auto
 	SetItem						(itm,dest_cell_pos);
 }
 
-void CUIDragDropListEx::SetItem(CUICellItem* itm, Fvector2 abs_pos) // start at cursor pos
+bool CUIDragDropListEx::SetItem(CUICellItem* itm, Fvector2 abs_pos) // start at cursor pos
 {
-	if(m_container->AddSimilar(itm))	return;
+	if (m_container->AddSimilar(itm))
+		return true;
 
-	const Ivector2 dest_cell_pos =	m_container->PickCell		(abs_pos);
+	const Ivector2 dest_cell_pos = m_container->PickCell(abs_pos);
 
-	if(m_container->ValidCell(dest_cell_pos) && m_container->IsRoomFree(dest_cell_pos,itm->GetGridSize()))
-		SetItem						(itm, dest_cell_pos);
+	if (m_container->ValidCell(dest_cell_pos) && m_container->IsRoomFree(dest_cell_pos, itm->GetGridSize()))
+		SetItem(itm, dest_cell_pos);
 	else
-		SetItem						(itm);
+		SetItem(itm);
+
+	return true;
 }
 
 void CUIDragDropListEx::SetItem(CUICellItem* itm, Ivector2 cell_pos) // start at cell

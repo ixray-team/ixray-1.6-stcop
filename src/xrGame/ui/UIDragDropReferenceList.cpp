@@ -38,21 +38,32 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm)
 {
 	inherited::SetItem(itm);
 }
-void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Fvector2 abs_pos)
+
+bool CUIDragDropReferenceList::SetItem(CUICellItem* itm, Fvector2 abs_pos)
 {
 	const Ivector2 dest_cell_pos = m_container->PickCell(abs_pos);
-	if(m_container->ValidCell(dest_cell_pos) && m_container->IsRoomFree(dest_cell_pos,itm->GetGridSize()))
+
+	Ivector2 ItmGridSize = itm->GetGridSize();
+	bool bGridIsFull = m_container->IsRoomFree(dest_cell_pos, ItmGridSize);
+
+	if (m_container->ValidCell(dest_cell_pos) && bGridIsFull) {
 		SetItem(itm, dest_cell_pos);
-	else
-	{
-		if(dest_cell_pos.x!=-1&&dest_cell_pos.y!=-1)
-		{
-			CUICellItem* old_itm = GetCellAt(dest_cell_pos).m_item;
-			RemoveItem(old_itm, false);
-			SetItem(itm, dest_cell_pos);
+	} else if (dest_cell_pos.x != -1 && dest_cell_pos.y != -1) {
+		CUICell& CellRef = GetCellAt(dest_cell_pos);
+		CUICellItem* old_itm = CellRef.m_item;
+
+		if (ItmGridSize.x > m_container->m_cellsCapacity.x || ItmGridSize.y > m_container->m_cellsCapacity.y) {
+			// FX: Big grid
+			return false;
 		}
+
+		RemoveItem(old_itm, false);
+		SetItem(itm, dest_cell_pos);
 	}
+
+	return true;
 }
+
 void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 {
 	CUIStatic* ref = m_references[cell_pos.x];
@@ -71,6 +82,7 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 		itm->SetOwnerList(this);
 	}
 }
+
 CUICellItem* CUIDragDropReferenceList::RemoveItem(CUICellItem* itm, bool force_root)
 {
 	Ivector2 vec2 = m_container->GetItemPos(itm);
