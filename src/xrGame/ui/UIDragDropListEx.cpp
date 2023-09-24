@@ -597,14 +597,12 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
 	}
 	else
 	{
-		Fvector2 ItemPos = ValidItemPos;
 		Fvector2 WndSize = m_pParentDragDropList->GetWndSize();
-
 		Fvector2 AlignPos = WndSize;
 
 		// FX: We get the coordinates from the center of the window, taking into account the size of the item
 		AlignPos.sub(itm->GetWndSize());
-		AlignPos.add(ItemPos);
+		AlignPos.add(ValidItemPos);
 		AlignPos.div(2);
 
 		itm->SetWndPos(AlignPos);
