@@ -260,9 +260,9 @@ v_model skinning_4 	(v_model_skinned_4	v)
 	float4  m1 		= m[0][1]*w[0];
 	float4  m2 		= m[0][2]*w[0];
 
-	float4  prev_m0 = m[0][0]*w[0];
-	float4  prev_m1 = m[0][1]*w[0];
-	float4  prev_m2 = m[0][2]*w[0];
+	float4  prev_m0 = prev_m[0][0]*w[0];
+	float4  prev_m1 = prev_m[0][1]*w[0];
+	float4  prev_m2 = prev_m[0][2]*w[0];
 
 	[unroll]
 	for (int i=1; i<4; ++i)

@@ -32,10 +32,6 @@ bool DLSSWrapper::Create(const ContextParameters& Parameters)
     }
 
     int32_t flags = 0;
-    if (ps_r4_sharp_enable) {
-        flags |= NVSDK_NGX_DLSS_Feature_Flags_DoSharpening;
-    }
-
     flags |= NVSDK_NGX_DLSS_Feature_Flags_MVLowRes;
     flags |= NVSDK_NGX_DLSS_Feature_Flags_IsHDR;
     flags |= NVSDK_NGX_DLSS_Feature_Flags_AutoExposure;
@@ -69,7 +65,6 @@ void DLSSWrapper::Draw(const DrawParameters& params)
     NVSDK_NGX_D3D11_DLSS_Eval_Params dlssEvalParams = {};
     dlssEvalParams.Feature.pInColor = resourceInput;
     dlssEvalParams.Feature.pInOutput = resourceOutput;
-    dlssEvalParams.Feature.InSharpness = params.sharpness;
     dlssEvalParams.pInDepth = resourceDepth;
     dlssEvalParams.pInMotionVectors = resourceMv;
     dlssEvalParams.InRenderSubrectDimensions.Width = params.renderWidth;

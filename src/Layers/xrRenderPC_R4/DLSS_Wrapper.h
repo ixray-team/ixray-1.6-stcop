@@ -37,9 +37,6 @@ public:
         float cameraJitterX = 0.f;
         float cameraJitterY = 0.f;
 
-        bool enableSharpening = true;
-        float sharpness = 0.f;
-
         float frameTimeDelta = 0.f;
 
         float nearPlane = 1.f;

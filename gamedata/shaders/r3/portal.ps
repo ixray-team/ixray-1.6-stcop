@@ -2,5 +2,7 @@
 
 float4 main ( float4 C:COLOR0 ) : SV_Target
 {
-	return	C;
+	float4 color = C;
+	color.rgb = C.rgb * (C.rgb * (C.rgb * 0.305306011 + 0.682171111) + 0.012522878);
+	return color;
 }

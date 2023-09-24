@@ -37,7 +37,9 @@ float4 main( v2p I ) : SV_Target
 
 	//	Fogging
 	final 	= lerp(fog_color, final, I.fog);
-	
+	final   = final * (final * (final * 0.305306011 + 0.682171111) + 0.012522878);
+	float4 _out = float4(final.r,final.g,final.b,t_base.a*I.fog);
+
 	// out
-	return  float4	(final.r,final.g,final.b,t_base.a*I.fog*I.fog);
+	return _out;
 }

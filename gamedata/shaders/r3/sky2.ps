@@ -26,11 +26,9 @@ _out main( v2p I )
 	float3	s1		= s_sky1.SampleLevel( smp_base, I.tc1, 0 );
 	float3	sky		= I.factor.zyx*lerp( s0, s1, I.factor.w );
 
-	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
-
 	_out o;
-	o.target = sky;
-	o.motion = motion_vector;
+	o.target = sky * (sky * (sky * 0.305306011 + 0.682171111) + 0.012522878);
+	o.motion = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
 
 	return o;
 }

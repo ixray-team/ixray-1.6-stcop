@@ -1,5 +1,5 @@
 function normal(shader, t_base, t_second, t_detail)
-  shader:begin("effects_wallmark","stub_default_ma")
+  shader:begin("effects_wallmark","stub_default_ma_linear")
 		: blend		(true,blend.destcolor,blend.srccolor)
 		: zb 		(true,false)
 	shader:dx10texture	("s_base", t_base)

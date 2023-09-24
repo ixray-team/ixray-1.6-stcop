@@ -11,5 +11,6 @@ struct	_input
 float4 main( _input I ) : SV_Target
 {
 	float4 color = s_vollight.Load(int3(I.tc0.xy*pos_decompression_params2.xy, 0));
+    color.rgb = color.rgb * (color.rgb * (color.rgb * 0.305306011 + 0.682171111) + 0.012522878);
 	return color;
 }

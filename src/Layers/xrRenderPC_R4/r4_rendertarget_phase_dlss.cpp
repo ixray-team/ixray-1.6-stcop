@@ -25,8 +25,6 @@ void CRenderTarget::phase_dlss_combine()
     dlssParams.cameraReset = false;
     dlssParams.cameraJitterX = g_CameraJitterX;
     dlssParams.cameraJitterY = g_CameraJitterY;
-    dlssParams.enableSharpening = !!ps_r4_sharp_enable;
-    dlssParams.sharpness = ps_r4_sharp_factor;
     dlssParams.frameTimeDelta = Device.fTrueTimeDelta * 1000.0f;
     dlssParams.nearPlane = VIEWPORT_NEAR;
     dlssParams.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;

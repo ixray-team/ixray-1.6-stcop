@@ -512,6 +512,7 @@ void CRender::render_forward				()
 		r_pmask									(false,true);			// enable priority "1"
 		phase									= PHASE_NORMAL;
 		render_main								(Device.mFullTransform,false);//
+
 		//	Igor: we don't want to render old lods on next frame.
 		mapLOD.clear							();
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority

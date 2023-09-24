@@ -1,5 +1,5 @@
 function normal		(shader, t_base, t_second, t_detail)
-	shader	:begin	("stub_default","stub_default")
+	shader	:begin	("stub_default","stub_default_linear")
 
 			:blend		(true,blend.srcalpha,blend.invsrcalpha)
 			:zb			(true,false)
