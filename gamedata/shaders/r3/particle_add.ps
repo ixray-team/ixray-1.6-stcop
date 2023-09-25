@@ -20,6 +20,7 @@ struct v2p
 float4 main( v2p I ) : SV_Target
 {
 	float4 result = I.c * s_base.Sample(smp_base, I.tc0);
+	result = result * (result * (result * 0.305306011 + 0.682171111) + 0.012522878);
 
 	//	Igor: additional depth test
 #ifdef	USE_SOFT_PARTICLES

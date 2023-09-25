@@ -14,6 +14,10 @@ float4 main( v2p I ) : SV_Target
 //	float4	t_base 	= tex2D	(s_base,I.tc0);
 	float4	t_base 	= s_base.Sample( smp_base, I.tc0 );
 
+	t_base = float4	(t_base.r,t_base.g,t_base.b,t_base.a * I.c0.a);
+    t_base = t_base * (t_base * (t_base * 0.305306011 + 0.682171111) + 0.012522878);
+
+
 	// out
-	return  float4	(t_base.r,t_base.g,t_base.b,t_base.a * I.c0.a);
+	return t_base;
 }
