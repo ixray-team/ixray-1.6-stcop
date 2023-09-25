@@ -542,11 +542,6 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 										SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
 		}
 	}
-	else
-	{
-		SetWindowLong			( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
-		SetWindowLong			( m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-	}
 
 #ifndef _EDITOR
 	if (!g_dedicated_server)

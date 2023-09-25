@@ -129,7 +129,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	}
 
 	// Show main wnd
-	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+	ShowWindow(Device.m_hWnd, SW_SHOW);
 
 	EngineLoadStage5();
 

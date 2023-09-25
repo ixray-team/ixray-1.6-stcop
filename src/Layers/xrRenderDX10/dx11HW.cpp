@@ -757,10 +757,6 @@ void CHW::updateWindowProps(HWND m_hWnd)
 				SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
 		}
 	}
-	else
-	{
-		SetWindowLong			( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
-	}
 
 	ShowCursor	(FALSE);
 	SetForegroundWindow( m_hWnd );
