@@ -236,16 +236,8 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 //--------------------------------------------------------------------------------------------------------------
 SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 {
-	string_path			name;
-	xr_strcpy				(name,_name);
-	if (0 == ::Render->m_MSAASample)	xr_strcat(name,"_0");
-	if (1 == ::Render->m_MSAASample)	xr_strcat(name,"_1");
-	if (2 == ::Render->m_MSAASample)	xr_strcat(name,"_2");
-	if (3 == ::Render->m_MSAASample)	xr_strcat(name,"_3");
-	if (4 == ::Render->m_MSAASample)	xr_strcat(name,"_4");
-	if (5 == ::Render->m_MSAASample)	xr_strcat(name,"_5");
-	if (6 == ::Render->m_MSAASample)	xr_strcat(name,"_6");
-	if (7 == ::Render->m_MSAASample)	xr_strcat(name,"_7");
+	string_path name;
+	xr_strcpy(name, _name);
 	LPSTR N				= LPSTR(name);
 	map_PS::iterator I	= m_ps.find	(N);
 	if (I!=m_ps.end())	return		I->second;

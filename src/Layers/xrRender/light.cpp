@@ -76,19 +76,6 @@ void light::set_texture		(LPCSTR name)
 	s_volumetric.create		("accum_volumetric", name);
 #else
 	s_volumetric.create		("accum_volumetric_nomsaa", name);
-	if( RImplementation.o.dx10_msaa )
-	{
-		int bound = 1;
-
-		if( !RImplementation.o.dx10_msaa_opt )
-			bound = RImplementation.o.dx10_msaa_samples;
-
-		for( int i = 0; i < bound; ++i )
-		{
-			s_spot_msaa[i].create				(RImplementation.Target->b_accum_spot_msaa[i],strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name);
-			s_volumetric_msaa[i].create	(RImplementation.Target->b_accum_volumetric_msaa[i],strconcat(sizeof(temp),temp,"r2\\accum_volumetric_",name),name);
-		}
-	}
 #endif
 }
 #endif
@@ -309,24 +296,6 @@ void	light::export_		(light_Package& package)
 						L->spatial.sector	= spatial.sector;	//. dangerous?
 						L->s_spot			= s_spot	;
 						L->s_point			= s_point	;
-						
-						// Holger - do we need to export msaa stuff as well ?
-#if	(RENDER==R_R4)
-						if( RImplementation.o.dx10_msaa )
-						{
-							int bound = 1;
-
-							if( !RImplementation.o.dx10_msaa_opt )
-								bound = RImplementation.o.dx10_msaa_samples;
-
-							for( int i = 0; i < bound; ++i )
-							{
-								L->s_point_msaa[i] = s_point_msaa[i];
-								L->s_spot_msaa[i] = s_spot_msaa[i];
-								//L->s_volumetric_msaa[i] = s_volumetric_msaa[i];
-							}
-						}
-#endif
 
 						//	Igor: add volumetric support
 						L->set_volumetric(flags.bVolumetric);

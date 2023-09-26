@@ -227,7 +227,6 @@
     <ClInclude Include="..\xrRenderDX10\dx10StateUtils.h" />
     <ClInclude Include="..\xrRenderDX10\dx10TextureUtils.h" />
     <ClInclude Include="..\xrRenderDX10\DXCommonTypes.h" />
-    <ClInclude Include="..\xrRenderDX10\MSAA\dx10MSAABlender.h" />
     <ClInclude Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.h" />
     <ClInclude Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.h" />
     <ClInclude Include="..\xrRenderDX10\StateManager\dx10State.h" />
@@ -398,7 +397,6 @@
     <ClCompile Include="..\xrRenderDX10\dx10TextureUtils.cpp" />
     <ClCompile Include="..\xrRenderDX10\dx11RenderScreenshot.cpp" />
     <ClCompile Include="..\xrRenderDX10\dx11Texture.cpp" />
-    <ClCompile Include="..\xrRenderDX10\MSAA\dx10MSAABlender.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10State.cpp" />
@@ -554,7 +552,6 @@
     <ClCompile Include="r4_rendertarget_draw_rain.cpp" />
     <ClCompile Include="r4_rendertarget_draw_volume.cpp" />
     <ClCompile Include="r4_rendertarget_enable_scissor.cpp" />
-    <ClCompile Include="r4_rendertarget_mark_msaa_edges.cpp" />
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp" />
     <ClCompile Include="r4_rendertarget_phase_bloom.cpp" />
     <ClCompile Include="r4_rendertarget_phase_combine.cpp" />

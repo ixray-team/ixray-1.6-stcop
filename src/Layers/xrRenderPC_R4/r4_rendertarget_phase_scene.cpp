@@ -25,41 +25,20 @@ void	CRenderTarget::phase_scene_prepare	()
 		)
 	{
 		//	TODO: DX10: Check if we need to set RT here.
-      if( !RImplementation.o.dx10_msaa )
-   		u_setrt	( Device.dwWidth,Device.dwHeight,rt_Position->pRT,NULL,NULL,HW.pBaseZB );
-      else
-         u_setrt	( Device.dwWidth,Device.dwHeight,rt_Position->pRT,NULL,NULL,rt_MSAADepth->pZRT );
-      
+		u_setrt(Device.dwWidth, Device.dwHeight, rt_Position->pRT, NULL, NULL, HW.pBaseZB);
+
 		//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 		HW.pContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
 		//HW.pContext->ClearRenderTargetView(rt_Normal->pRT, ColorRGBA);
 		//HW.pContext->ClearRenderTargetView(rt_Color->pRT, ColorRGBA);
-      if( !RImplementation.o.dx10_msaa )
-         HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-      else
-      {
-         HW.pContext->ClearRenderTargetView(rt_Color->pRT, ColorRGBA);
-				 HW.pContext->ClearRenderTargetView(rt_Accumulator->pRT, ColorRGBA);
-				 HW.pContext->ClearDepthStencilView(rt_MSAADepth->pZRT, D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-         HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-      }
-   }
+		HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+	}
 	else
 	{
-		//	TODO: DX10: Check if we need to set RT here.
-      if( !RImplementation.o.dx10_msaa )
-      {
-         u_setrt	( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB );
-         //CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
-         HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-      }
-      else
-      {
-         u_setrt	( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,rt_MSAADepth->pZRT );
-         //CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
-         HW.pContext->ClearDepthStencilView(rt_MSAADepth->pZRT, D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-      }
+		u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+		//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 	}
 
 	//	Igor: for volumetric lights
@@ -74,9 +53,6 @@ void	CRenderTarget::phase_scene_begin	()
 	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 
    ID3DDepthStencilView* pZB = HW.pBaseZB;
-
-   if( RImplementation.o.dx10_msaa )
-      pZB = rt_MSAADepth->pZRT;
 
 	// Targets, use accumulator for temporary storage
    if( !RImplementation.o.dx10_gbuffer_opt )
@@ -115,10 +91,7 @@ void	CRenderTarget::phase_scene_end		()
 	if (!RImplementation.o.albedo_wo)		return;
 
 	// transfer from "rt_Accumulator" into "rt_Color"
-   if( !RImplementation.o.dx10_msaa )
-   	u_setrt								( rt_Color,	0,	0,	HW.pBaseZB	);
-   else
-      u_setrt								( rt_Color,	0,	0,	rt_MSAADepth->pZRT	);
+	u_setrt(rt_Color, 0, 0, HW.pBaseZB);
 	RCache.set_CullMode					( CULL_NONE );
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
 	if (RImplementation.o.nvstencil)	u_stencil_optimize	(CRenderTarget::SO_Combine);
