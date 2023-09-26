@@ -192,9 +192,6 @@
         <cap_ssample x="20" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_supersample</text>
         </cap_ssample>
-        <track_ssample x="180" y="6" width="235" height="16" step="1" is_integer="1">
-            <options_item entry="r__supersample" group="mm_opt_video_adv" depend="vid"/>
-        </track_ssample>
         <combo_ssample x="180" y="0" width="235" height="20" list_length="4" always_show_scroll="0">
             <options_item entry="r3_msaa" group="mm_opt_video_adv" depend="vid"/>
             <list_font r="170" g="170" b="170" font="letterica16"/>

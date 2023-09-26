@@ -63,10 +63,6 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	xml:InitTrackBar("video_adv:track_aniso", _st)
 	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
 
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("video_adv:cap_ssample", _st)
-	ctl = xml:InitTrackBar("video_adv:track_ssample", _st)
-	table.insert(handler.m_preconditions, {func=mode_1, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_ssample", _st)
@@ -77,7 +73,6 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	xml:InitStatic("video_adv:cap_detail_density", _st)
 	xml:InitTrackBar("video_adv:track_detail_density", _st)
 	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
-
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_sun", _st)
