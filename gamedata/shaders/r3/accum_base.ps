@@ -12,19 +12,10 @@
 // USE_SHADOW
 //////////////////////////////////////////////////////////////////////////////////////////
 uniform float4              m_lmap        [2]        ;
-//float4 main( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : SV_Target
-#ifdef MSAA_OPTIMIZATION
-#ifdef GBUFFER_OPTIMIZATION
-float4 main( p_volume I, float4 pos2d : SV_Position, uint iSample : SV_SAMPLEINDEX ) : SV_Target
-#else
-float4 main( p_volume I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
-#endif
-#else
 #ifdef GBUFFER_OPTIMIZATION
 float4 main( p_volume I, float4 pos2d : SV_Position ) : SV_Target
 #else
 float4 main( p_volume I ) : SV_Target
-#endif
 #endif
 {
 //	float4 _P               = tex2Dproj         (s_position,         tc);
@@ -51,15 +42,15 @@ float4 main( p_volume I ) : SV_Target
         float4        		light   = plight_local( m, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr );
 
         // ----- shadow
-		float4          		P4      = float4( _P.x, _P.y, _P.z, 1);
+		float4 P4 = float4(_P.x, _P.y, _P.z, 1.0f);
         float4         		PS      = mul( m_shadow, P4 );
-        float         		s		= 1.h;
+        float s = 1.0f;
         #ifdef  USE_SHADOW
 		s		= shadow( PS );
         #endif
 
         // ----- lightmap
-        float4         lightmap= 1.h;
+        float4 lightmap= 1.0f;
         #ifdef        USE_LMAP
                 #ifdef         USE_LMAPXFORM
 							PS.x	= dot( P4, m_lmap[0] );

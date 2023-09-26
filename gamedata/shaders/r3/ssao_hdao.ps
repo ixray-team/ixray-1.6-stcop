@@ -19,24 +19,6 @@ static float g_fSSAOAcceptAngle       = 0.98f;	// Used by the ValleyAngle functi
 #define NUM_RING_1_GATHERS	(6)
 #define NUM_RING_2_GATHERS	(12)
 
-#if ( MSAA_SAMPLES == 2 )
-
-    #define MSAA_SAMPLE_INDEX ( 0 )
-
-#elif ( MSAA_SAMPLES == 4 )
-
-    #define MSAA_SAMPLE_INDEX ( 3 )
-
-#elif ( MSAA_SAMPLES == 8 )
-
-    #define MSAA_SAMPLE_INDEX ( 6 )
-
-#else
-
-    #define MSAA_SAMPLE_INDEX ( 0 )
-
-#endif
-
 #if SSAO_QUALITY == 3
 static const int g_iNumRingGathers = NUM_RING_2_GATHERS;
 static const int g_iNumRings 	   = RING_2;
@@ -112,12 +94,6 @@ float4 GatherZSamples( float2 f2TexCoord )
 
 	float2 f2InvRTSize = (1.0f).xx / pos_decompression_params2.xy;
 	
-#ifdef USE_MSAA
-	f4Ret.x = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 1,0 ) ).z;
-	f4Ret.y = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 1,1 ) ).z;
-	f4Ret.z = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 0,1 ) ).z;
-	f4Ret.w = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 0,0 ) ).z;
-#else  // !USE_MSAA
 #ifndef SM_5
 	f4Ret.x = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,0 ) ).z;
 	f4Ret.y = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,1 ) ).z;
@@ -126,21 +102,7 @@ float4 GatherZSamples( float2 f2TexCoord )
 #else // !SM_5
 	f4Ret = g_txDepth.GatherBlue( smp_nofilter, f2TexCoord );
 #endif // SM_5
-#endif // USE_MSAA
 
-#ifdef USE_MSAA
-    #ifdef GBUFFER_OPTIMIZATION
-	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 1,0 ) ).x;
-	f4Ret.y += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 1,1 ) ).x;
-	f4Ret.z += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 0,1 ) ).x;
-	f4Ret.w += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 0,0 ) ).x;
-	#else
-	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 1,0 ) ).z;
-	f4Ret.y += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 1,1 ) ).z;
-	f4Ret.z += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 0,1 ) ).z;
-	f4Ret.w += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), MSAA_SAMPLE_INDEX, int2( 0,0 ) ).z;
-	#endif
-#else  // !USE_MSAA
 #ifndef SM_5
     #ifdef GBUFFER_OPTIMIZATION
 	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,0 ) ).x;
@@ -160,7 +122,6 @@ float4 GatherZSamples( float2 f2TexCoord )
 	f4Ret += g_fHDAOZDispScale * g_txNormal.GatherBlue( smp_nofilter, f2TexCoord );
 	#endif
 #endif // SM_5
-#endif // USE_MSAA
       
 	return f4Ret;
 }
@@ -190,9 +151,9 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 	int2 i2MirrorOffsetScreenCoord;
 	
 #ifdef GBUFFER_OPTIMIZATION
-	float3 N = gbuf_unpack_normal( g_txNormal.Load( int3( u2ScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy );
+	float3 N = gbuf_unpack_normal( g_txNormal.Load( int3( u2ScreenCoord, 0), 0 ).xy );
 #else
-	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;
+	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), 0 ).xyz;
 #endif
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
@@ -208,13 +169,13 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
 #ifdef GBUFFER_OPTIMIZATION
-		f3N1.xy  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy;
+		f3N1.xy  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xy;
 		f3N1.xyz = gbuf_unpack_normal( f3N1.xy );
-		f3N2.xy  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy;				
+		f3N2.xy  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xy;				
 		f3N2.xyz = gbuf_unpack_normal( f3N2.xy );
 #else
-		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;
-		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;				
+		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xyz;
+		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xyz;				
 #endif
 		
 		fDot = dot( f3N1, N );
@@ -234,18 +195,10 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 }
 #endif
 
-#ifndef USE_MSAA
 #ifdef GBUFFER_OPTIMIZATION
 float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
 #else
 float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ )
-#endif
-#else
-#ifdef GBUFFER_OPTIMIZATION
-float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d, uint iSample )
-#else
-float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
-#endif
 #endif
 #ifndef	SSAO_QUALITY
 {
@@ -280,10 +233,8 @@ float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
 	ZDisp = P.z + g_fHDAOZDispScale * N.z;
 	
 	// For Gather we need to snap the screen coords
-#ifndef USE_MSAA
 #ifdef SM_4_1
 	f2ScreenCoord = float2( i2ScreenCoord );
-#endif
 #endif
 
 	// Sample the center pixel for camera Z

@@ -13,24 +13,6 @@
 // Textures, Buffers & Samplers
 //=================================================================================================================================
 
-#if ( MSAA_SAMPLES == 2 )
-
-    #define MSAA_SAMPLE_INDEX ( 0 )
-
-#elif ( MSAA_SAMPLES == 4 )
-
-    #define MSAA_SAMPLE_INDEX ( 3 )
-
-#elif ( MSAA_SAMPLES == 8 )
-
-    #define MSAA_SAMPLE_INDEX ( 6 )
-
-#else
-
-    #define MSAA_SAMPLE_INDEX ( 0 )
-
-#endif
-
 #ifdef SM_5_0
 // CS Output buffers
 RWTexture2D<float> g_ResultTexture : register( u0 );
@@ -377,9 +359,9 @@ float ValleyAngle( uint2 u2ScreenCoord )
 	int2 i2MirrorOffsetScreenCoord;
 	
     #ifdef GBUFFER_OPTIMIZATION
-	float3 N = gbuf_unpack_normal( g_txNormal.Load( int3( u2ScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy );
+	float3 N = gbuf_unpack_normal( g_txNormal.Load( int3( u2ScreenCoord, 0), 0).xy );
 	#else
-	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;
+	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), 0).xyz;
 	#endif
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
@@ -395,13 +377,13 @@ float ValleyAngle( uint2 u2ScreenCoord )
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
     #ifdef GBUFFER_OPTIMIZATION
-		f3N1.xy  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy;
+		f3N1.xy  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0).xy;
 		f3N1.xyz = gbuf_unpack_normal( f3N1.xy );
-		f3N2.xy  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xy;				
+		f3N2.xy  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0).xy;				
 		f3N2.xyz = gbuf_unpack_normal( f3N2.xy );
     #else
-		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;
-		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), MSAA_SAMPLE_INDEX ).xyz;				
+		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xyz;
+		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xyz;				
     #endif
 		
 		fDot = dot( f3N1, N );
@@ -517,39 +499,13 @@ float ValleyAngle( uint2 u2ScreenCoord )
 		    uRow = ( GI / GATHER_THREADS_PER_ROW ) * 2;
 		    f2ScreenCoord = float2( ( float2( Gid.x, Gid.y ) * float2( ALU_DIM, ALU_DIM ) ) - float2( GROUP_TEXEL_OVERLAP, GROUP_TEXEL_OVERLAP ) ) + float2( uColumn, uRow );
 		    
-            #ifndef USE_MSAA
-                
                 // Offset for the use of gather4
                 f2ScreenCoord += float2( 1.0f, 1.0f ); 
 
-            #endif
-    		
 		    // Gather from input textures and lay down in the LDS
 		    [unroll] 
             for( uint uGather=0; uGather<GATHER_PER_THREAD; uGather++ )
 		    {
-			    #ifdef USE_MSAA
-
-                    f2Coord    = float2( f2ScreenCoord.x + float( uGather * 2 ), f2ScreenCoord.y );
-                   
-                    f4Depth.x  = g_txDepth.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 0, 1, 0 ) ).z;
-	                f4Depth.y  = g_txDepth.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 1, 1, 0 ) ).z;
-	                f4Depth.z  = g_txDepth.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 1, 0, 0 ) ).z;
-	                f4Depth.w  = g_txDepth.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 0, 0, 0 ) ).z;
-                    
-                    #ifdef GBUFFER_OPTIMIZATION
-                        f4Normal.x = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 0, 1, 0 ) ).x;
-                        f4Normal.y = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 1, 1, 0 ) ).x;
-	                    f4Normal.z = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 1, 0, 0 ) ).x;
-	                    f4Normal.w = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 0, 0, 0 ) ).x;
-	                #else
-                        f4Normal.x = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 0, 1, 0 ) ).z;
-                        f4Normal.y = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 1, 1, 0 ) ).z;
-	                    f4Normal.z = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 1, 0, 0 ) ).z;
-	                    f4Normal.w = g_txNormal.Load( int3( f2Coord, 0 ), MSAA_SAMPLE_INDEX, int3( 0, 0, 0 ) ).z;
-	                #endif
-                #else
-
                     f2Coord  = float2( f2ScreenCoord.x + float( uGather * 2 ), f2ScreenCoord.y ) * f2InvTextureSize;
                     f4Depth  = g_txDepth.GatherBlue( g_SamplePoint, f2Coord );
                     #ifdef GBUFFER_OPTIMIZATION
@@ -557,7 +513,6 @@ float ValleyAngle( uint2 u2ScreenCoord )
                     #else
                         f4Normal = g_txNormal.GatherBlue( g_SamplePoint, f2Coord );
                     #endif
-                #endif
             
                 f4LDSValue = f4Depth + ( f4Normal * g_fHDAONormalScale.xxxx );
     		
@@ -590,18 +545,10 @@ float ValleyAngle( uint2 u2ScreenCoord )
 // HDAO PS: Performs valley detection in Camera Z space, and offsets by the Z 
 // component of the camera space normal
 //=================================================================================================================================
-#ifndef USE_MSAA
 #ifdef GBUFFER_OPTIMIZATION
 float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
 #else
 float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ )
-#endif
-#else
-#ifdef GBUFFER_OPTIMIZATION
-float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d, uint iSample )
-#else
-float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
-#endif
 #endif
 #ifndef	SSAO_QUALITY
 {
@@ -628,27 +575,27 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
 	fDot = ValleyAngle( u2CenterScreenCoord );
 
 	// Sample center texel, convert to camera space and add normal
-	float fDepth = g_txDepth.Load( int3( u2CenterScreenCoord, 0 ), MSAA_SAMPLE_INDEX ).z;
+	float fDepth = g_txDepth.Load( int3( u2CenterScreenCoord, 0 ), 0 ).z;
     #ifdef GBUFFER_OPTIMIZATION
-        fCenterZ = fDepth + ( g_txNormal.Load( int3( u2CenterScreenCoord, 0 ), MSAA_SAMPLE_INDEX ).x * g_fHDAONormalScale );
+        fCenterZ = fDepth + ( g_txNormal.Load( int3( u2CenterScreenCoord, 0 ), 0 ).x * g_fHDAONormalScale );
     #else
-        fCenterZ = fDepth + ( g_txNormal.Load( int3( u2CenterScreenCoord, 0 ), MSAA_SAMPLE_INDEX ).z * g_fHDAONormalScale );
+        fCenterZ = fDepth + ( g_txNormal.Load( int3( u2CenterScreenCoord, 0 ), 0 ).z * g_fHDAONormalScale );
     #endif
 	
 	// Loop through each valley
 	for( iValley = 0; iValley < NUM_VALLEYS; iValley ++ )
 	{
 		// Sample depth & convert to camera space
-        f2SampledZ.x = g_txDepth.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), MSAA_SAMPLE_INDEX ).z;
-		f2SampledZ.y = g_txDepth.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), MSAA_SAMPLE_INDEX ).z;
+        f2SampledZ.x = g_txDepth.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z;
+		f2SampledZ.y = g_txDepth.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z;
 
         // Sample normal and do a scaled add
         #ifdef GBUFFER_OPTIMIZATION
-	        f2SampledZ.x += ( g_txNormal.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), MSAA_SAMPLE_INDEX ).x * g_fHDAONormalScale ); 
-	        f2SampledZ.y += ( g_txNormal.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), MSAA_SAMPLE_INDEX ).x * g_fHDAONormalScale );
+	        f2SampledZ.x += ( g_txNormal.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).x * g_fHDAONormalScale ); 
+	        f2SampledZ.y += ( g_txNormal.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).x * g_fHDAONormalScale );
 	    #else
-	        f2SampledZ.x += ( g_txNormal.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), MSAA_SAMPLE_INDEX ).z * g_fHDAONormalScale ); 
-	        f2SampledZ.y += ( g_txNormal.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), MSAA_SAMPLE_INDEX ).z * g_fHDAONormalScale );
+	        f2SampledZ.x += ( g_txNormal.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z * g_fHDAONormalScale ); 
+	        f2SampledZ.y += ( g_txNormal.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z * g_fHDAONormalScale );
 	    #endif
 
 		// Detect valleys 

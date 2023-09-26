@@ -77,18 +77,10 @@ float3 fetch_eye_pos(float2 uv)
 {
 ////#define SSAO_OPT_DATA
 #ifndef SSAO_OPT_DATA
-#ifdef USE_MSAA
-#ifdef GBUFFER_OPTIMIZATION
-		gbuffer_data gbd = gbuffer_load_data_offset( tc, tap, pos2d, iSample ); // this is wrong - need to correct this
-#else
-		gbuffer_data gbd = gbuffer_load_data( tap, iSample );
-#endif
-#else
 #ifdef GBUFFER_OPTIMIZATION
 		gbuffer_data gbd = gbuffer_load_data_offset( tc, tap, pos2d ); // this is wrong - need to correct this
 #else
 		gbuffer_data gbd = gbuffer_load_data( tap );
-#endif
 #endif
 
 		//float3	tap_pos	= s_position.Sample(smp_nofilter,tap);
