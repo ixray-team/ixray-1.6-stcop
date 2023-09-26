@@ -46,9 +46,6 @@ public:
 	u32					stat_calls;
 	s32					stat_counter;
 public:
-	void				dbg_register	(void* _p,	size_t _size, const char* _name);
-	void				dbg_unregister	(void* _p);
-	void				dbg_check		();
 
 	u32					mem_usage		(u32* pBlocksUsed=NULL, u32* pBlocksFree=NULL);
 	void				mem_compact		();

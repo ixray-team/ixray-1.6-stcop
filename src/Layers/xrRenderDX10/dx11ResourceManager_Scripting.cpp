@@ -18,12 +18,6 @@
 
 using namespace				luabind;
 
-#ifdef	DEBUG
-#define MDB	Memory.dbg_check()
-#else
-#define MDB
-#endif
-
 class	adopt_dx10options
 {
 public:
@@ -127,7 +121,6 @@ public:
 
 void LuaLog(LPCSTR caMessage)
 {
-	MDB;	
 	Lua::LuaOut	(Lua::eLuaMessageTypeMessage,"%s",caMessage);
 }
 void LuaError(lua_State* L)
@@ -150,15 +143,9 @@ static void *lua_alloc	(void *ud, void *ptr, size_t osize, size_t nsize) {
 		return	NULL;
 	}
 	else
-#ifdef DEBUG_MEMORY_NAME
-		return Memory.mem_realloc		(ptr, nsize, "LUA");
-#else // DEBUG_MEMORY_MANAGER
 		return Memory.mem_realloc		(ptr, nsize);
-#endif // DEBUG_MEMORY_MANAGER
 }
 #else // USE_DL_ALLOCATOR
-
-#include "../../xrCore/memory_allocator_options.h"
 
 #ifdef USE_ARENA_ALLOCATOR
 	static const u32	s_arena_size = 8*1024*1024;
