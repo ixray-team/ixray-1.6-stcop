@@ -34,11 +34,7 @@ ICF	u32		get_pool			(size_t size)
 bool	g_use_pure_alloc		= false;
 #endif // PURE_ALLOC
 
-void*	xrMemory::mem_alloc		(size_t size
-#	ifdef DEBUG_MEMORY_NAME
-								 , const char* _name
-#	endif // DEBUG_MEMORY_NAME
-								 )
+void*	xrMemory::mem_alloc		(size_t size)
 {
 	stat_calls++;
 
@@ -58,7 +54,7 @@ void*	xrMemory::mem_alloc		(size_t size
 	if (g_use_pure_alloc) {
 		void							*result = malloc(size);
 #ifdef USE_MEMORY_MONITOR
-		memory_monitor::monitor_alloc	(result,size,_name);
+		memory_monitor::monitor_alloc	(result,size, "");
 #endif // USE_MEMORY_MONITOR
 		return							(result);
 	}
@@ -111,7 +107,7 @@ void*	xrMemory::mem_alloc		(size_t size
 	if (mem_initialized)		debug_cs.Leave		();
 #endif // DEBUG_MEMORY_MANAGER
 #ifdef USE_MEMORY_MONITOR
-	memory_monitor::monitor_alloc	(_ptr,size,_name);
+	memory_monitor::monitor_alloc	(_ptr,size, "");
 #endif // USE_MEMORY_MONITOR
 	return	_ptr;
 }
@@ -157,11 +153,7 @@ void	xrMemory::mem_free		(void* P)
 
 extern BOOL	g_bDbgFillMemory	;
 
-void*	xrMemory::mem_realloc	(void* P, size_t size
-#ifdef DEBUG_MEMORY_NAME
-								 , const char* _name
-#endif // DEBUG_MEMORY_NAME
-								 )
+void*	xrMemory::mem_realloc	(void* P, size_t size)
 {
 	stat_calls++;
 #ifdef PURE_ALLOC
@@ -169,17 +161,13 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 		void							*result = realloc(P,size);
 #	ifdef USE_MEMORY_MONITOR
 		memory_monitor::monitor_free	(P);
-		memory_monitor::monitor_alloc	(result,size,_name);
+		memory_monitor::monitor_alloc	(result,size,"");
 #	endif // USE_MEMORY_MONITOR
 		return							(result);
 	}
 #endif // PURE_ALLOC
 	if (0==P) {
-		return mem_alloc	(size
-#	ifdef DEBUG_MEMORY_NAME
-		,_name
-#	endif // DEBUG_MEMORY_NAME
-		);
+		return mem_alloc	(size);
 	}
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -223,7 +211,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 #endif // DEBUG_MEMORY_MANAGER
 #ifdef USE_MEMORY_MONITOR
 		memory_monitor::monitor_free	(P);
-		memory_monitor::monitor_alloc	(_ptr,size,_name);
+		memory_monitor::monitor_alloc	(_ptr,size,"");
 #endif // USE_MEMORY_MONITOR
 	} else if (1==p_mode)		{
 		// pooled realloc
@@ -232,11 +220,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 		u32		s_dest			= (u32)size;
 		void*	p_old			= P;
 
-		void*	p_new_			= mem_alloc(size
-#ifdef DEBUG_MEMORY_NAME
-			,_name
-#endif // DEBUG_MEMORY_NAME
-		);
+		void*	p_new_			= mem_alloc(size);
 		//	Igor: Reserve 1 byte for xrMemory header
 		//	Don't bother in this case?
 		mem_copy				(p_new_,p_old,_min(s_current-1,s_dest));
@@ -246,11 +230,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 	} else if (2==p_mode)		{
 		// relocate into another mmgr(pooled) from real
 		void*	p_old			= P;
-		void*	p_new_			= mem_alloc(size
-#	ifdef DEBUG_MEMORY_NAME
-			,_name
-#	endif // DEBUG_MEMORY_NAME
-		);
+		void*	p_new_			= mem_alloc(size);
 		mem_copy				(p_new_,p_old,(u32)size);
 		mem_free				(p_old);
 		_ptr					= p_new_;

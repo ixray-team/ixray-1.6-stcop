@@ -1,5 +1,3 @@
-#ifndef xrMemory_POOLh
-#define xrMemory_POOLh
 #pragma once
 
 class xrMemory;
@@ -48,4 +46,3 @@ public:
 		cs.Leave		();
 	}
 };
-#endif

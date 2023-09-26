@@ -266,11 +266,7 @@ char*			xr_strdup		(const char* string)
 {	
 	VERIFY	(string);
 	u32		len			= u32(xr_strlen(string))+1	;
-	char *	memory		= (char*)	Memory.mem_alloc( len
-#ifdef DEBUG_MEMORY_NAME
-		, "strdup"
-#endif // DEBUG_MEMORY_NAME
-	);
+	char *	memory		= (char*)	Memory.mem_alloc( len);
 	CopyMemory		(memory,string,len);
 	return	memory;
 }
