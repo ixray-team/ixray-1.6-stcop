@@ -33,15 +33,7 @@ public:
 		PHASE_NORMAL	= 0,	// E[0]
 		PHASE_SMAP		= 1,	// E[1]
 	};
-
-	enum
-	{
-		MSAA_ATEST_NONE				= 0x0,	//	Hi bit - DX10.1 mode
-		MSAA_ATEST_DX10_0_ATOC		= 0x1,	//	Lo bit - ATOC mode
-		MSAA_ATEST_DX10_1_NATIVE	= 0x2,
-		MSAA_ATEST_DX10_1_ATOC		= 0x3,
-	};
-
+	
 	enum
 	{
 		MMSM_OFF = 0,
@@ -92,8 +84,7 @@ public:
       u32		dx10_msaa			: 1;	//	DX10.0 path
 	  u32		dx10_msaa_hybrid	: 1;	//	DX10.0 main path with DX10.1 A-test msaa allowed
       u32		dx10_msaa_opt	    : 1;	//	DX10.1 path
-      u32		dx10_gbuffer_opt	: 1;	//	
-      u32		dx10_msaa_alphatest	: 2;	//	A-test mode
+      u32		dx10_gbuffer_opt	: 1;	//
 	  u32		dx10_msaa_samples	: 4;
 
 	  u32		dx10_minmax_sm		: 2;

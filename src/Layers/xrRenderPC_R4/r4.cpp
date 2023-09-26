@@ -306,30 +306,6 @@ void					CRender::create					()
 	//o.dx10_msaa_hybrid	= ps_r2_ls_flags.test(R3FLAG_MSAA_HYBRID);
 	o.dx10_msaa_hybrid	= !o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 ) ;
 
-	//	Allow alpha test MSAA for DX10.0
-
-	//o.dx10_msaa_alphatest= ps_r2_ls_flags.test((u32)R3FLAG_MSAA_ALPHATEST);
-	//o.dx10_msaa_alphatest= o.dx10_msaa_alphatest && o.dx10_msaa;
-
-	//o.dx10_msaa_alphatest_atoc= (o.dx10_msaa_alphatest && !o.dx10_msaa_opt && !o.dx10_msaa_hybrid);
-
-	o.dx10_msaa_alphatest = 0;
-	if (o.dx10_msaa)
-	{
-		if ( o.dx10_msaa_opt || o.dx10_msaa_hybrid )
-		{
-			if (ps_r3_msaa_atest==1)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_1_ATOC;
-			else if (ps_r3_msaa_atest==2)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_1_NATIVE;
-		}
-		else
-		{
-			if (ps_r3_msaa_atest)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_0_ATOC;
-		}
-	}
-
 	o.dx10_gbuffer_opt	= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
 
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
@@ -1388,38 +1364,9 @@ HRESULT	CRender::shader_compile			(
 		   sh_name[len] = '0' + static_cast<char>(o.dx10_msaa_opt); 
 		   ++len;
 	   }
-
-		switch(o.dx10_msaa_alphatest)
-		{
-		case MSAA_ATEST_DX10_0_ATOC:
-			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_0_ATOC";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-			sh_name[len]='1'; ++len;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-			break;
-		case MSAA_ATEST_DX10_1_ATOC:
-			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_1_ATOC";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='1'; ++len;
-			sh_name[len]='0'; ++len;
-			break;
-		case MSAA_ATEST_DX10_1_NATIVE:
-			defines[def_it].Name		=	"MSAA_ALPHATEST_DX10_1";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='1'; ++len;
-			break;
-		default:
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-			sh_name[len]='0'; ++len;
-		}
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
+		sh_name[len]='0'; ++len;
    }
    else 
    {

@@ -18,9 +18,6 @@ extern ECORE_API	xr_token	qsun_quality_token[];
 extern ECORE_API	u32			ps_r3_msaa;	//	=	0;
 extern ECORE_API	xr_token	qmsaa_token[];
 
-extern ECORE_API	u32			ps_r3_msaa_atest; //=	0;
-extern ECORE_API	xr_token	qmsaa__atest_token[];
-
 extern ECORE_API	u32			ps_r3_minmax_sm;//	=	0;
 extern ECORE_API	xr_token	qminmax_sm_token[];
 
@@ -183,7 +180,6 @@ enum
 	R3FLAG_MSAA_HYBRID			= (1<<28),
 	R3FLAG_MSAA_OPT				= (1<<29),
 	R3FLAG_GBUFFER_OPT			= (1<<30),
-	//R3FLAG_MSAA_ALPHATEST		= (1<<31),
 };
 
 enum
