@@ -1553,8 +1553,8 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	if (v_res.z < 0 || v_res.w < 0)	return;
 	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
 
-	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
 	pFont->SetAligment	(CGameFont::alCenter);
 	pFont->SetColor		(color);

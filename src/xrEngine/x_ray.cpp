@@ -425,7 +425,15 @@ LPCSTR _GetFontTexName(LPCSTR section)
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 
-	u32 h = Device.dwHeight;
+#if 0
+	u32 w = Device.TargetWidth;
+
+	if(w<=800)		idx = 0;
+	else if(w<=1280)idx = 1;
+	else 			idx = 2;
+#else
+	u32 h = Device.TargetHeight;
+#endif
 
 	if (h <= 600)		
 		idx = 0;
@@ -894,8 +902,8 @@ void CApplication::load_draw_internal()
 		// Draw logo
 		u32	Offset;
 		u32	C						= 0xffffffff;
-		u32	_w						= Device.dwWidth;
-		u32	_h						= Device.dwHeight;
+		u32	_w						= Device.TargetWidth;
+		u32	_h						= Device.TargetHeight;
 		FVF::TL* pv					= NULL;
 
 //progress

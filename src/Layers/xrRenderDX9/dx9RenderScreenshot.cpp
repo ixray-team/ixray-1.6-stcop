@@ -20,7 +20,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     // Create temp-surface
     IDirect3DSurface9* pFB;
     D3DLOCKED_RECT D;
-    HRESULT hr = HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth, Device.dwHeight, HW.DevPP.BackBufferFormat, D3DPOOL_SYSTEMMEM, &pFB, NULL);
+    HRESULT hr = HW.pDevice->CreateOffscreenPlainSurface(Device.TargetWidth, Device.TargetHeight, HW.DevPP.BackBufferFormat, D3DPOOL_SYSTEMMEM, &pFB, NULL);
     if (hr != D3D_OK) {
         return;
     }
@@ -37,7 +37,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
     // Image processing (gamma-correct)
     u32* pPixel = (u32*)D.pBits;
-    u32* pEnd = pPixel + (Device.dwWidth * Device.dwHeight);
+    u32* pEnd = pPixel + (Device.TargetWidth * Device.TargetHeight);
     //	IGOR: Remove inverse color correction and kill alpha
     /*
     D3DGAMMARAMP	G;
@@ -210,11 +210,11 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         }
 
         // save
-        u32* data = (u32*)xr_malloc(Device.dwHeight * Device.dwHeight * 4);
-        imf_Process(data, Device.dwHeight, Device.dwHeight, (u32*)D.pBits, Device.dwWidth, Device.dwHeight, imf_lanczos3);
-        p.scanlenght = Device.dwHeight * 4;
-        p.width = Device.dwHeight;
-        p.height = Device.dwHeight;
+        u32* data = (u32*)xr_malloc(Device.TargetHeight * Device.TargetHeight * 4);
+        imf_Process(data, Device.TargetHeight, Device.TargetHeight, (u32*)D.pBits, Device.TargetWidth, Device.TargetHeight, imf_lanczos3);
+        p.scanlenght = Device.TargetHeight * 4;
+        p.width = Device.TargetHeight;
+        p.height = Device.TargetHeight;
         p.data = data;
         p.maketga(*fs);
         xr_free(data);
@@ -246,8 +246,8 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
     u32 rtWidth = Target->get_rtwidth();
     u32 rtHeight = Target->get_rtheight();
 #else	//	RENDER != R_R1
-    u32 rtWidth = Device.dwWidth;
-    u32 rtHeight = Device.dwHeight;
+    u32 rtWidth = Device.TargetWidth;
+    u32 rtHeight = Device.TargetHeight;
 #endif	//	RENDER != R_R1
 
     // Image processing (gamma-correct)

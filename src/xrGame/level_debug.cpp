@@ -175,7 +175,7 @@ void CLevelDebug::draw_object_info()
 	// handle all of the objects
 	for (OBJECT_INFO_MAP_IT it = m_objects_info.begin(); it != m_objects_info.end(); ++it) {
 
-		// åñëè îáúåêò íåâàëèäíûé - óäàëèòü èíôîðìàöèþ
+		// ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ - ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ
 		if (!it->first || it->first->getDestroy()) {
 			for (CLASS_INFO_MAP_IT it_class = it->second.begin(); it_class != it->second.end(); ++it_class){
 				xr_delete(it_class->second);
@@ -202,8 +202,8 @@ void CLevelDebug::draw_object_info()
 			if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) continue;
 
 			// get real (x,y)
-			float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-			float y = (1.f - v_res.y)/2.f * (Device.dwHeight) - delta_height;
+			float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+			float y = (1.f - v_res.y)/2.f * (Device.TargetHeight) - delta_height;
 			float start_y = y;
 
 			// handle all of the text inside class
@@ -342,7 +342,7 @@ void CLevelDebug::on_destroy_object(CObject *obj)
 {
 	// handle all of the objects
 	for (OBJECT_INFO_MAP_IT it = m_objects_info.begin(); it != m_objects_info.end(); ++it) {
-		// åñëè îáúåêò íåâàëèäíûé - óäàëèòü èíôîðìàöèþ
+		// ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ - ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ
 		if (it->first == obj) {
 			for (CLASS_INFO_MAP_IT it_class = it->second.begin(); it_class != it->second.end(); ++it_class){
 				xr_delete(it_class->second);

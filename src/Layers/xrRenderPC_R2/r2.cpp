@@ -66,7 +66,7 @@ static class cl_pos_decompress_params		: public R_constant_setup		{	virtual void
 	float VertTan =  -1.0f * tanf( deg2rad(Device.fFOV/2.0f ) );
 	float HorzTan =  - VertTan / Device.fASPECT;
 
-	RCache.set_c	( C, HorzTan, VertTan, ( 2.0f * HorzTan )/(float)Device.dwWidth, ( 2.0f * VertTan ) /(float)Device.dwHeight );
+	RCache.set_c	( C, HorzTan, VertTan, ( 2.0f * HorzTan )/(float)Device.TargetWidth, ( 2.0f * VertTan ) /(float)Device.TargetHeight );
 
 }}	binder_pos_decompress_params;
 

@@ -308,12 +308,12 @@ BOOL CController::net_Spawn(CSE_Abstract *DC)
 
 void CController::UpdateControlled()
 {
-	// если есть враг, проверить может ли быть враг взят под контроль
+	// РµСЃР»Рё РµСЃС‚СЊ РІСЂР°Рі, РїСЂРѕРІРµСЂРёС‚СЊ РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РІСЂР°Рі РІР·СЏС‚ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ
 	if (EnemyMan.get_enemy()) {
 		CControlledEntityBase *entity = smart_cast<CControlledEntityBase *>(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
 		if (entity) {
 			if (!entity->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number)) {
-				// взять под контроль
+				// РІР·СЏС‚СЊ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ
 				entity->set_under_control	(this);
 				entity->set_task_follow		(this);
 				m_controlled_objects.push_back(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
@@ -439,20 +439,20 @@ void CController::UpdateCL()
 			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx", true);
 			
-			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent);
-			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent);
-			float x2 = Device.dwWidth  / 2 + ((Device.dwWidth	/ 2) * percent);
-			float y2 = Device.dwHeight / 2 + ((Device.dwHeight	/ 2) * percent);
+			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth	/ 2) * percent);
+			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight	/ 2) * percent);
+			float x2 = Device.TargetWidth  / 2 + ((Device.TargetWidth	/ 2) * percent);
+			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight	/ 2) * percent);
 
 			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else if (percent2 > 0){
 			CurrentGameUI()->RemoveCustomStatic("controller_fx");
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx2", true);
 			
-			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent2);
-			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent2);
-			float x2 = Device.dwWidth  / 2 + ((Device.dwWidth	/ 2) * percent2);
-			float y2 = Device.dwHeight / 2 + ((Device.dwHeight	/ 2) * percent2);
+			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth	/ 2) * percent2);
+			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight	/ 2) * percent2);
+			float x2 = Device.TargetWidth  / 2 + ((Device.TargetWidth	/ 2) * percent2);
+			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight	/ 2) * percent2);
 
 			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else {
@@ -520,7 +520,7 @@ void CController::draw_fire_particles()
 	CEntityAlive *enemy	= const_cast<CEntityAlive*>(EnemyMan.get_enemy());
 	if (!EnemyMan.see_enemy_now()) return;
 
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fvector my_head_pos;
 	my_head_pos.set	(get_head_position(this));
 	

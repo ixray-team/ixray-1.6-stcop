@@ -960,8 +960,8 @@ void CAI_Stalker::dbg_draw_vision	()
 	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f)
 		return;
 
-	float						x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float						y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float						x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+	float						y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
 	CNotYetVisibleObject		*object = memory().visual().not_yet_visible_object(smart_cast<CGameObject*>(Level().CurrentEntity()));
 	string64					out_text;
