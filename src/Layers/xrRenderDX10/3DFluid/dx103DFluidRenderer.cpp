@@ -699,10 +699,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//ID3DxxDepthStencilView* pDSV = DXUTGetD3DxxDepthStencilView();
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pRTV , pDSV ); 
 	//	Restore render state
-	if( !RImplementation.o.dx10_msaa )
-		pTarget->u_setrt( pTarget->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
-	else
-		pTarget->u_setrt( pTarget->rt_Generic_0_r,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
+	pTarget->u_setrt( pTarget->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
 
 	if (bRenderFire)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);

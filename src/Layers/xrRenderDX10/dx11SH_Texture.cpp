@@ -227,14 +227,6 @@ void CTexture::Apply(u32 dwStage)
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
-   //if( !RImplementation.o.dx10_msaa )
-   //   VERIFY( !((!pSurface)^(!m_pSRView)) );	//	Both present or both missing
-   //else
-   //{
-	//if( ((!pSurface)^(!m_pSRView)) )
-   //   return;
-   //}
-
 	if (dwStage<rstVertex)	//	Pixel shader stage resources
 	{
 		//HW.pDevice->PSSetShaderResources(dwStage, 1, &m_pSRView);

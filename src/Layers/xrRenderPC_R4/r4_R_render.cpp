@@ -332,8 +332,6 @@ void CRender::Render		()
 	Target->phase_occq							();
 	LP_normal.clear								();
 	LP_pending.clear							();
-   if( RImplementation.o.dx10_msaa )
-      RCache.set_ZB( RImplementation.Target->rt_MSAADepth->pZRT );
 	{
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
 		// perform tests
@@ -380,11 +378,7 @@ void CRender::Render		()
 		// skybox can be drawn here
 		if (0)
 		{
-
-			if( !RImplementation.o.dx10_msaa )
-				Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
-			else
-				Target->u_setrt		( Target->rt_Generic_0_r,	Target->rt_Generic_1,0,RImplementation.Target->rt_MSAADepth->pZRT );
+			Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
 			RCache.set_CullMode	( CULL_NONE );
 			RCache.set_Stencil	( FALSE		);
 
@@ -436,13 +430,6 @@ void CRender::Render		()
 		Lights_LastFrame.clear	();
 	}
 
-   // full screen pass to mark msaa-edge pixels in highest stencil bit
-   if( RImplementation.o.dx10_msaa )
-   {
-	   PIX_EVENT( MARK_MSAA_EDGES );
-      Target->mark_msaa_edges();
-   }
-
 	//	TODO: DX10: Implement DX10 rain.
 	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
 	{
@@ -465,10 +452,7 @@ void CRender::Render		()
 		RCache.set_xform_project			(Device.mProject); 
 		RCache.set_xform_view				(Device.mView);
 		// Stencil - write 0x1 at pixel pos - 
-      if( !RImplementation.o.dx10_msaa )
-		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-      else
-		   RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+		RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		//RCache.set_Stencil				(TRUE,D3DCMP_ALWAYS,0x00,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		RCache.set_CullMode					(CULL_CCW);
 		RCache.set_ColorWriteEnable			();

@@ -11,18 +11,6 @@ void CRenderTarget::DoAsyncScreenshot()
 	if (RImplementation.m_bMakeAsyncSS)
 	{
 		HRESULT hr;
-
-		//	HACK: unbind RT. CopyResourcess needs src and targetr to be unbound.
-		//u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-
-		//ID3DTexture2D *pTex = 0;
-		//if (RImplementation.o.dx10_msaa)
-		//	pTex = rt_Generic->pSurface;
-		//else
-		//	pTex = rt_Color->pSurface;
-
-
-		//HW.pDevice->CopyResource( t_ss_async, pTex );
 		ID3DTexture2D* pBuffer = nullptr;
 		hr = HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
 		HW.pContext->CopyResource( t_ss_async, pBuffer );
@@ -70,18 +58,9 @@ void	CRenderTarget::phase_combine	()
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	// low/hi RTs
-	if( !RImplementation.o.dx10_msaa )
-	{
-		HW.pContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
-		HW.pContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
-		u_setrt				( rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );
-	}
-	else
-	{
-		HW.pContext->ClearRenderTargetView(rt_Generic_0_r->pRT, ColorRGBA);
-		HW.pContext->ClearRenderTargetView(rt_Generic_1_r->pRT, ColorRGBA);
-		u_setrt				( rt_Generic_0_r,rt_Generic_1_r,0,RImplementation.Target->rt_MSAADepth->pZRT );
-	}
+	HW.pContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
+	HW.pContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
+	u_setrt(rt_Generic_0, rt_Generic_1, 0, HW.pBaseZB);
 	RCache.set_CullMode	( CULL_NONE );
 	RCache.set_Stencil	( FALSE		);
 
@@ -228,40 +207,13 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("ssao_noise_tile_factor",	fSSAONoise	);
 		RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
 
-      if( !RImplementation.o.dx10_msaa )
-		   RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-      else
-      {
-         RCache.set_Stencil( TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0 );
-         RCache.Render		( D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-         if( RImplementation.o.dx10_msaa_opt )
-         {
-            RCache.set_Element( s_combine_msaa[0]->E[0]	);
-            RCache.set_Stencil( TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0 );
-            RCache.Render		( D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-         }
-         else
-         {
-            for( u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i )
-            {
-               RCache.set_Element		   ( s_combine_msaa[i]->E[0]	);
-               StateManager.SetSampleMask ( u32(1) << i  );
-               RCache.set_Stencil         ( TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0 );
-               RCache.Render				   ( D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-            }
-            StateManager.SetSampleMask( 0xffffffff );
-         }
-         RCache.set_Stencil( FALSE, D3DCMP_EQUAL, 0x01, 0xff, 0 );
-      }  
-   }
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	}
 
 	// Forward rendering
 	{
 		PIX_EVENT(Forward_rendering);
-		if( !RImplementation.o.dx10_msaa )
-			u_setrt							(rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
-		else
-			u_setrt							(rt_Generic_0_r,0,0,RImplementation.Target->rt_MSAADepth->pZRT);		// LDR RT
+		u_setrt(rt_Generic_0, 0, 0, HW.pBaseZB);		// LDR RT
 		RCache.set_CullMode				(CULL_CCW);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
@@ -278,15 +230,6 @@ void	CRenderTarget::phase_combine	()
 
 	// Perform blooming filter and distortion if needed
 	RCache.set_Stencil	(FALSE);
-
-   if( RImplementation.o.dx10_msaa )
-   {
-      // we need to resolve rt_Generic_1 into rt_Generic_1_r
-      HW.pContext->ResolveSubresource( rt_Generic_1->pTexture->surface_get(), 0, rt_Generic_1_r->pTexture->surface_get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM );
-      HW.pContext->ResolveSubresource( rt_Generic_0->pTexture->surface_get(), 0, rt_Generic_0_r->pTexture->surface_get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM );
-   }
-
-   // for msaa we need a resolved color buffer - Holger
 	phase_bloom			( );												// HDR RT invalidated here
 
 	//RImplementation.rmNormal();
@@ -301,16 +244,8 @@ void	CRenderTarget::phase_combine	()
 		{
 			PIX_EVENT(render_distort_objects);
 			FLOAT ColorRGBA_[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-			if( !RImplementation.o.dx10_msaa )
-			{
-				u_setrt(rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-				HW.pContext->ClearRenderTargetView( rt_Generic_1->pRT, ColorRGBA_);
-			}
-			else
-			{
-				u_setrt(rt_Generic_1_r,0,0,RImplementation.Target->rt_MSAADepth->pZRT);		// Now RT is a distortion mask
-				HW.pContext->ClearRenderTargetView( rt_Generic_1_r->pRT, ColorRGBA_);
-			}
+			u_setrt(rt_Generic_1, 0, 0, HW.pBaseZB);		// Now RT is a distortion mask
+			HW.pContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
@@ -319,15 +254,6 @@ void	CRenderTarget::phase_combine	()
 			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
 	}
-
-/*
-   if( RImplementation.o.dx10_msaa )
-   {
-      // we need to resolve rt_Generic_1 into rt_Generic_1_r
-      if( bDistort )
-         HW.pDevice->ResolveSubresource( rt_Generic_1_r->pTexture->surface_get(), 0, rt_Generic_1->pTexture->surface_get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM );
-   }
-   */
 
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
@@ -338,16 +264,10 @@ void	CRenderTarget::phase_combine	()
    PP_Complex = TRUE;
 
 	// Combine everything + perform AA
-   if( RImplementation.o.dx10_msaa )
-   {
-	   if		(PP_Complex)	u_setrt		( rt_Generic,0,0,HW.pBaseZB );			// LDR RT
-	   else					   u_setrt		( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-   }
-   else
-   {
-      if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT
-      else					   u_setrt		( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-   }
+	if (PP_Complex)
+		u_setrt(rt_Color, 0, 0, HW.pBaseZB);			// LDR RT
+	else
+		u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
 	//. u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
@@ -388,16 +308,10 @@ void	CRenderTarget::phase_combine	()
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
 		// Draw COLOR
-      if( !RImplementation.o.dx10_msaa )
-      {
-		   if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
-		   else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
-      }
-      else
-      {
-         if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine_msaa[0]->E[bDistort?3:1]);	// look at blender_combine.cpp
-         else										RCache.set_Element	(s_combine_msaa[0]->E[bDistort?4:2]);	// look at blender_combine.cpp
-      }
+		if (ps_r2_ls_flags.test(R2FLAG_AA))
+			RCache.set_Element(s_combine->E[bDistort ? 3 : 1]);	// look at blender_combine.cpp
+		else
+			RCache.set_Element(s_combine->E[bDistort ? 4 : 2]);	// look at blender_combine.cpp
 		RCache.set_c				("e_barrier",	ps_r2_aa_barier.x,	ps_r2_aa_barier.y,	ps_r2_aa_barier.z,	0);
 		RCache.set_c				("e_weights",	ps_r2_aa_weight.x,	ps_r2_aa_weight.y,	ps_r2_aa_weight.z,	0);
 		RCache.set_c				("e_kernel",	ps_r2_aa_kernel,	ps_r2_aa_kernel,	ps_r2_aa_kernel,	0);
@@ -557,10 +471,7 @@ void CRenderTarget::phase_wallmarks		()
 	// Targets
 	RCache.set_RT(NULL,2);
 	RCache.set_RT(NULL,1);
-   if( !RImplementation.o.dx10_msaa )
-   	u_setrt								(rt_Color,NULL,NULL,HW.pBaseZB);
-   else
-      u_setrt								(rt_Color,NULL,NULL,rt_MSAADepth->pZRT);
+	u_setrt(rt_Color, NULL, NULL, HW.pBaseZB);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RCache.set_CullMode					(CULL_CCW);
@@ -576,10 +487,7 @@ void CRenderTarget::phase_combine_volumetric()
 	//	TODO: DX10: Remove half pixel offset here
 
 	//u_setrt(rt_Generic_0,0,0,HW.pBaseZB );			// LDR RT
-	if( !RImplementation.o.dx10_msaa )
-		u_setrt(rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );
-	else
-		u_setrt(rt_Generic_0_r,rt_Generic_1_r,0,RImplementation.Target->rt_MSAADepth->pZRT );
+	u_setrt(rt_Generic_0, rt_Generic_1, 0, HW.pBaseZB);
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{

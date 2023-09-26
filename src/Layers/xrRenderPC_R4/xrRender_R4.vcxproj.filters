@@ -163,9 +163,6 @@
     <Filter Include="Interfase implementations\UI\UISequenceVideoItem">
       <UniqueIdentifier>{11bff5a7-018a-4ab9-b6bc-4f2b692bf83d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfase implementations\MSAARender">
-      <UniqueIdentifier>{09c51b2e-4511-4b4a-b662-217d8472cd60}</UniqueIdentifier>
-    </Filter>
     <Filter Include="dx9 to dx10 Utils">
       <UniqueIdentifier>{0412165c-2269-419d-a8e9-56fe4c34b71f}</UniqueIdentifier>
     </Filter>
@@ -672,9 +669,6 @@
     <ClInclude Include="..\..\Include\xrRender\UISequenceVideoItem.h">
       <Filter>Interfase implementations\UI\UISequenceVideoItem</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRenderDX10\MSAA\dx10MSAABlender.h">
-      <Filter>Interfase implementations\MSAARender</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRenderDX10\dx10BufferUtils.h">
       <Filter>dx9 to dx10 Utils</Filter>
     </ClInclude>
@@ -1016,9 +1010,6 @@
     <ClCompile Include="r4_rendertarget_enable_scissor.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="r4_rendertarget_mark_msaa_edges.cpp">
-      <Filter>Core_Target</Filter>
-    </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
@@ -1261,9 +1252,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp">
       <Filter>Interfase implementations\UI\UISequenceVideoItem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\MSAA\dx10MSAABlender.cpp">
-      <Filter>Interfase implementations\MSAARender</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\dx10BufferUtils.cpp">
       <Filter>dx9 to dx10 Utils</Filter>

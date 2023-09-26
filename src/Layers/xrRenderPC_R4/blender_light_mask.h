@@ -13,25 +13,3 @@ public:
 	virtual ~CBlender_accum_direct_mask();
 };
 
-class CBlender_accum_direct_mask_msaa : public IBlender  
-{
-public:
-
-	virtual		LPCSTR	getComment()	{ return "INTERNAL: mask direct light msaa";	}
-	virtual		BOOL		canBeDetailed()	{ return FALSE;	}
-	virtual		BOOL		canBeLMAPped()	{ return FALSE;	}
-  virtual  void     SetDefine( LPCSTR Name_, LPCSTR Definition_ )
-  {
-      this->Name = Name_;
-      this->Definition = Definition_;
-  }
-
-	virtual		void		Compile			(CBlender_Compile& C);
-
-	CBlender_accum_direct_mask_msaa();
-	virtual ~CBlender_accum_direct_mask_msaa();
-
-  LPCSTR Name;
-  LPCSTR Definition;
-};
-

@@ -81,6 +81,6 @@ void CRenderTarget::phase_fxaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
+    ref_rt& dest_rt = rt_Color;
     HW.pContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
 }
