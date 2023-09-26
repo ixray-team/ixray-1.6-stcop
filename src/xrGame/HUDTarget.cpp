@@ -283,7 +283,7 @@ void CHUDTarget::Render()
 		UIRender->StartPrimitive	(6, IUIRender::ptTriList, UI().m_currentPointType);
 		
 		Fvector2		scr_size;
-		scr_size.set	(float(Device.dwWidth) ,float(Device.dwHeight));
+		scr_size.set	(float(Device.TargetWidth) ,float(Device.TargetHeight));
 		float			size_x = scr_size.x	* di_size;
 		float			size_y = scr_size.y * di_size;
 

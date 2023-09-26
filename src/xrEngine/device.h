@@ -44,8 +44,8 @@ class ENGINE_API CRenderDeviceData
 {
 
 public:
-	u32										dwWidth;
-	u32										dwHeight;
+	u32										TargetWidth;
+	u32										TargetHeight;
 	
 	u32										dwPrecacheFrame;
 	BOOL									b_is_Ready;
@@ -133,7 +133,7 @@ public:
 	u32										dwPrecacheTotal;
 
 //	u32										dwWidth, dwHeight;
-	float									fWidth_2, fHeight_2;
+	float									HalfTargetWidth, HalfTargetHeight;
 //	BOOL									b_is_Ready;
 //	BOOL									b_is_Active;
 	void									OnWM_Activate(WPARAM wParam, LPARAM lParam);

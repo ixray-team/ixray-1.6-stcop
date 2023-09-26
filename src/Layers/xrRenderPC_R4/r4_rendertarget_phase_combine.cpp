@@ -150,8 +150,8 @@ void	CRenderTarget::phase_combine	()
 
 		/*
 		// Fill VB
-		//float	_w					= float(Device.dwWidth);
-		//float	_h					= float(Device.dwHeight);
+		//float	_w					= float(Device.TargetWidth);
+		//float	_h					= float(Device.TargetHeight);
 		//p0.set						(.5f/_w, .5f/_h);
 		//p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 		//p0.set						(.5f/_w, .5f/_h);
@@ -171,8 +171,8 @@ void	CRenderTarget::phase_combine	()
 		*/
 
 		// Fill VB
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
+		float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
@@ -267,8 +267,8 @@ void	CRenderTarget::phase_combine	()
 	if (PP_Complex)
 		u_setrt(rt_Color, 0, 0, HW.pBaseZB);			// LDR RT
 	else
-		u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
-	//. u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
@@ -287,8 +287,8 @@ void	CRenderTarget::phase_combine	()
 			Fvector4	uv6;
 		};
 
-		float	_w					= float(Device.dwWidth);
-		float	_h					= float(Device.dwHeight);
+		float	_w					= float(Device.TargetWidth);
+		float	_h					= float(Device.TargetHeight);
 		float	ddw					= 1.f/_w;
 		float	ddh					= 1.f/_h;
 		p0.set						(.5f/_w, .5f/_h);
@@ -304,7 +304,7 @@ void	CRenderTarget::phase_combine	()
 
 		//	Set up variable
 		Fvector2	vDofKernel;
-		vDofKernel.set(0.5f/Device.dwWidth, 0.5f/Device.dwHeight);
+		vDofKernel.set(0.5f/Device.TargetWidth, 0.5f/Device.TargetHeight);
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
 		// Draw COLOR
@@ -400,8 +400,8 @@ void	CRenderTarget::phase_combine	()
 	/*
 	if (0)		{
 		u32		C					= color_rgba	(255,255,255,255);
-		float	_w					= float(Device.dwWidth)/3;
-		float	_h					= float(Device.dwHeight)/3;
+		float	_w					= float(Device.TargetWidth)/3;
+		float	_h					= float(Device.TargetHeight)/3;
 
 		// draw light-spheres
 #ifdef DEBUG
@@ -492,8 +492,8 @@ void CRenderTarget::phase_combine_volumetric()
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{
 		// Fill VB
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
+		float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);

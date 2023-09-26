@@ -224,10 +224,10 @@ void dxRenderDeviceRender::overdrawEnd()
 		u32	c = color_xrgb(_c, _c, _c);
 
 		FVF::TL	pv[4];
-		pv[0].set(float(0),			float(Device.dwHeight),	c,0,0);			
+		pv[0].set(float(0),			float(Device.TargetHeight),	c,0,0);			
 		pv[1].set(float(0),			float(0),			c,0,0);					
-		pv[2].set(float(Device.dwWidth),	float(Device.dwHeight),	c,0,0);	
-		pv[3].set(float(Device.dwWidth),	float(0),			c,0,0);
+		pv[2].set(float(Device.TargetWidth),	float(Device.TargetHeight),	c,0,0);	
+		pv[3].set(float(Device.TargetWidth),	float(0),			c,0,0);
 
 		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILREF,		I	));
 		CHK_DX(HW.pDevice->DrawPrimitiveUP	( D3DPT_TRIANGLESTRIP,	2,	pv, sizeof(FVF::TL) ));

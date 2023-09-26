@@ -17,8 +17,8 @@ void CRenderTarget::phase_fxaa()
         Fvector4 uv6;
     };
 
-    float _w = float(Device.dwWidth);
-    float _h = float(Device.dwHeight);
+    float _w = float(Device.TargetWidth);
+    float _h = float(Device.TargetHeight);
     float ddw = 1.f / _w;
     float ddh = 1.f / _h;
 

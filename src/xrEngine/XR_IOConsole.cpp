@@ -164,7 +164,7 @@ void CConsole::OnFrame()
 void CConsole::OutFont( LPCSTR text, float& pos_y )
 {
 	float str_length = pFont->SizeOf_( text );
-	float scr_width  = 1.98f * Device.fWidth_2;
+	float scr_width  = 1.98f * Device.HalfTargetWidth;
 	if( str_length > scr_width ) //1024.0f
 	{
 		float f	= 0.0f;
@@ -172,7 +172,7 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 		int ln	= 0;
 		PSTR one_line = (PSTR)_alloca( (CONSOLE_BUF_SIZE + 1) * sizeof(char) );
 		
-		while( text[sz] && (ln + sz < CONSOLE_BUF_SIZE-5) )// перенос строк
+		while( text[sz] && (ln + sz < CONSOLE_BUF_SIZE-5) )// РїРµСЂРµРЅРѕСЃ СЃС‚СЂРѕРє
 		{
 			one_line[ln+sz]   = text[sz];
 			one_line[ln+sz+1] = 0;
@@ -243,8 +243,8 @@ void CConsole::OnRender()
 	DrawBackgrounds( bGame );
 
 	float fMaxY;
-	float dwMaxY = (float)Device.dwHeight;
-	// float dwMaxX=float(Device.dwWidth/2);
+	float dwMaxY = (float)Device.TargetHeight;
+	// float dwMaxX=float(Device.TargetWidth/2);
 	if ( bGame )
 	{
 		fMaxY  = 0.0f;
@@ -256,10 +256,10 @@ void CConsole::OnRender()
 	}
 
 	float ypos  = fMaxY - LDIST * 1.1f;
-	float scr_x = 1.0f / Device.fWidth_2;
+	float scr_x = 1.0f / Device.HalfTargetWidth;
 
 	//---------------------------------------------------------------------------------
-	float scr_width  = 1.9f * Device.fWidth_2;
+	float scr_width  = 1.9f * Device.HalfTargetWidth;
 	float ioc_d      = pFont->SizeOf_(ioc_prompt);
 	float d1         = pFont->SizeOf_( "_" );
 
@@ -356,7 +356,7 @@ void CConsole::DrawBackgrounds(bool bGame) {
 	float ky = (bGame)? 0.5f : 1.0f;
 
 	Frect r;
-	r.set( 0.0f, 0.0f, float(Device.dwWidth), ky * float(Device.dwHeight) );
+	r.set( 0.0f, 0.0f, float(Device.TargetWidth), ky * float(Device.TargetHeight) );
 
 	UIRender->SetShader( **m_hShader_back );
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
@@ -394,7 +394,7 @@ void CConsole::DrawBackgrounds(bool bGame) {
 	pr.x2 = pr.x1 + list_w;
 
 	pr.y1 = UI_BASE_HEIGHT * 0.5f;
-	pr.y1 *= float(Device.dwHeight)/UI_BASE_HEIGHT;
+	pr.y1 *= float(Device.TargetHeight)/UI_BASE_HEIGHT;
 
 	pr.y2 = pr.y1 + tips_h;
 

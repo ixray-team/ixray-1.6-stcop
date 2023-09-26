@@ -45,8 +45,8 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 	// Common calc for quad-rendering
 	u32		Offset;
 	u32		C					= color_rgba	(255,255,255,255);
-	float	_w					= float			(Device.dwWidth);
-	float	_h					= float			(Device.dwHeight);
+	float	_w					= float			(Device.TargetWidth);
+	float	_h					= float			(Device.TargetHeight);
 	Fvector2					p0,p1;
 	p0.set						(.5f/_w, .5f/_h);
 	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
@@ -178,8 +178,8 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 		// Make jitter texture
 		Fvector2					j0,j1;
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		//float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
+		//float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
 		float	offset				= (.5f / float(TEX_jitter));
 		j0.set						(offset,offset);
 		j1.set						(scale_X,scale_X).add(offset);

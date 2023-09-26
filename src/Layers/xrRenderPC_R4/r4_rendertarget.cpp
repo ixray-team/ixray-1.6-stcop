@@ -109,8 +109,8 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	VERIFY	(RImplementation.o.nvstencil);
 	//RCache.set_ColorWriteEnable	(FALSE);
 	u32		Offset;
-	float	_w					= float(Device.dwWidth);
-	float	_h					= float(Device.dwHeight);
+	float	_w					= float(Device.TargetWidth);
+	float	_h					= float(Device.TargetHeight);
 	u32		C					= color_rgba	(255,255,255,255);
 	float	eps					= 0;
 	float	_dw					= 0.5f;
@@ -143,8 +143,8 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 // 2D texgen (texture adjustment matrix)
 void	CRenderTarget::u_compute_texgen_screen	(Fmatrix& m_Texgen)
 {
-	//float	_w						= float(Device.dwWidth);
-	//float	_h						= float(Device.dwHeight);
+	//float	_w						= float(Device.TargetWidth);
+	//float	_h						= float(Device.TargetHeight);
 	//float	o_w						= (.5f / _w);
 	//float	o_h						= (.5f / _h);
 	Fmatrix			m_TexelAdjust		= 
@@ -173,8 +173,8 @@ void	CRenderTarget::u_compute_texgen_jitter	(Fmatrix&		m_Texgen_J)
 	m_Texgen_J.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
 
 	// rescale - tile it
-	float	scale_X			= float(Device.dwWidth)	/ float(TEX_jitter);
-	float	scale_Y			= float(Device.dwHeight)/ float(TEX_jitter);
+	float	scale_X			= float(Device.TargetWidth)	/ float(TEX_jitter);
+	float	scale_Y			= float(Device.TargetHeight)/ float(TEX_jitter);
 	//float	offset			= (.5f / float(TEX_jitter));
 	m_TexelAdjust.scale			(scale_X,	scale_Y,1.f	);
 	//m_TexelAdjust.translate_over(offset,	offset,	0	);
@@ -304,7 +304,7 @@ CRenderTarget::CRenderTarget		()
 
 	// HDAO
 	b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
-	const u32		s_dwWidth = Device.dwWidth, s_dwHeight = Device.dwHeight;
+	const u32		s_dwWidth = Device.TargetWidth, s_dwHeight = Device.TargetHeight;
 	//	NORMAL
 	{
 		rt_Position.create			(r2_RT_P, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
@@ -490,7 +490,7 @@ CRenderTarget::CRenderTarget		()
 			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f};
 			HW.pContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
-		u_setrt						( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		u_setrt						( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	}
 
 	// HBAO
@@ -500,13 +500,13 @@ CRenderTarget::CRenderTarget		()
 		u32		h = 0;
 		if (RImplementation.o.ssao_half_data)
 		{
-			w = Device.dwWidth / 2;
-			h = Device.dwHeight / 2;
+			w = Device.TargetWidth / 2;
+			h = Device.TargetHeight / 2;
 		}
 		else
 		{
-			w = Device.dwWidth;
-			h = Device.dwHeight;
+			w = Device.TargetWidth;
+			h = Device.TargetHeight;
 		}
 
 		D3DFORMAT	fmt = HW.Caps.id_vendor==0x10DE?D3DFMT_R32F:D3DFMT_R16F;
@@ -517,7 +517,7 @@ CRenderTarget::CRenderTarget		()
 
 	//if (RImplementation.o.ssao_blur_on)
 	//{
-	//	u32		w = Device.dwWidth, h = Device.dwHeight;
+	//	u32		w = Device.TargetWidth, h = Device.TargetHeight;
 	//	rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F, SampleCount);
 	//	s_ssao.create				(b_ssao, "r2\\ssao");
 
@@ -535,7 +535,7 @@ CRenderTarget::CRenderTarget		()
 	// HDAO
 	if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
 	{
-		u32		w = Device.dwWidth, h = Device.dwHeight;
+		u32		w = Device.TargetWidth, h = Device.TargetHeight;
 		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, D3DFMT_R16F, 1, true);
 		s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
 	}
@@ -572,8 +572,8 @@ CRenderTarget::CRenderTarget		()
 		// Testure for async sreenshots
 		{
 			D3D_TEXTURE2D_DESC	desc;
-			desc.Width = Device.dwWidth;
-			desc.Height = Device.dwHeight;
+			desc.Width = Device.TargetWidth;
+			desc.Height = Device.TargetHeight;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
 			desc.SampleDesc.Count = 1;
@@ -822,8 +822,8 @@ CRenderTarget::CRenderTarget		()
 	g_menu.create						(FVF::F_TL,RCache.Vertex.Buffer(),RCache.QuadIB);
 
 	// 
-	dwWidth		= Device.dwWidth;
-	dwHeight	= Device.dwHeight;
+	dwWidth		= Device.TargetWidth;
+	dwHeight	= Device.TargetHeight;
 }
 
 CRenderTarget::~CRenderTarget	()
@@ -899,8 +899,8 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 	if (bResetStencil)
 	{
 		u32		Offset;
-		float	_w					= float(Device.dwWidth);
-		float	_h					= float(Device.dwHeight);
+		float	_w					= float(Device.TargetWidth);
+		float	_h					= float(Device.TargetHeight);
 		u32		C					= color_rgba	(255,255,255,255);
 		float	eps					= 0;
 		float	_dw					= 0.5f;

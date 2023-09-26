@@ -68,13 +68,13 @@ LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 #if 0
-	u32 w = Device.dwWidth;
+	u32 w = Device.TargetWidth;
 
 	if(w<=800)		idx = 0;
 	else if(w<=1280)idx = 1;
 	else 			idx = 2;
 #else
-	u32 h = Device.dwHeight;
+	u32 h = Device.TargetHeight;
 
 	if(h<=600)		idx = 0;
 	else if(h<1024)	idx = 1;
@@ -230,7 +230,7 @@ void   CHUDManager::RenderActiveItemUI()
 }
 
 extern ENGINE_API BOOL bShowPauseString;
-//îòðèñîâêà ýëåìåíòîâ èíòåðôåéñà
+//Ð¾Ñ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ° ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ°
 void  CHUDManager::RenderUI()
 {
 	if (!psHUD_Flags.is(HUD_DRAW_RT2))	

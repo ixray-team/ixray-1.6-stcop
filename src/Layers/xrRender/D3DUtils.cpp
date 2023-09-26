@@ -17,7 +17,7 @@
 
 CDrawUtilities DUImpl;
 
-#define LINE_DIVISION  32  // не меньше 6!!!!!
+#define LINE_DIVISION  32  // РЅРµ РјРµРЅСЊС€Рµ 6!!!!!
 // for drawing sphere
 static Fvector circledef1[LINE_DIVISION];
 static Fvector circledef2[LINE_DIVISION];
@@ -563,9 +563,9 @@ IC float 				_y2real			(float y)
 { return (y+1)*Device.m_RenderHeight_2;}
 #else
 IC float 				_x2real			(float x)
-{ return (x+1)*Device.dwWidth*0.5f;	}
+{ return (x+1)*Device.TargetWidth*0.5f;	}
 IC float 				_y2real			(float y)
-{ return (y+1)*Device.dwHeight*0.5f;}
+{ return (y+1)*Device.TargetHeight*0.5f;}
 #endif
 
 void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption, u32 clr_font)
@@ -1014,8 +1014,8 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
     u32 vBase;
 	FVF::TL* pv	= (FVF::TL*)Stream->Lock(6,vs_TL->vb_stride,vBase);
     // transform to screen
-    float dx=-float(Device.dwWidth)/2.2f;
-    float dy=float(Device.dwHeight)/2.25f;
+    float dx=-float(Device.TargetWidth)/2.2f;
+    float dy=float(Device.TargetHeight)/2.25f;
 
     for (int i=0; i<6; i++,pv++){
 	    pv->color = c[i]; pv->transform(p[i],Device.mFullTransform);
