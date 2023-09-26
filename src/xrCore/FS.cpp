@@ -33,12 +33,6 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 
 	g_file_mapped_memory			+= size;
 	++g_file_mapped_count;
-#ifdef USE_MEMORY_MONITOR
-//	memory_monitor::monitor_alloc	(addres,size,"file mapping");
-	string512						temp;
-	xr_sprintf						(temp, sizeof(temp),"file mapping: %s",file_name);
-	memory_monitor::monitor_alloc	(address,size,temp);
-#endif // USE_MEMORY_MONITOR
 }
 
 void unregister_file_mapping		(void *address, const u32 &size)
@@ -52,10 +46,6 @@ void unregister_file_mapping		(void *address, const u32 &size)
 //	Msg								("--unregister_file_mapping(%2d): [0x%08x]%s", g_file_mapped_count + 1, *((u32*)&address), (*I).second.second.c_str());
 
 	g_file_mappings.erase			(I);
-
-#ifdef USE_MEMORY_MONITOR
-	memory_monitor::monitor_free	(address);
-#endif // USE_MEMORY_MONITOR
 }
 
 XRCORE_API void dump_file_mappings	()

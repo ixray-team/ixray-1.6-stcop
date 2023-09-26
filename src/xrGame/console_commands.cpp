@@ -144,9 +144,7 @@ enum E_COMMON_FLAGS{
 CUIOptConCom g_OptConCom;
 
 #ifndef PURE_ALLOC
-//#	ifndef USE_MEMORY_MONITOR
 #		define SEVERAL_ALLOCATORS
-//#	endif // USE_MEMORY_MONITOR
 #endif // PURE_ALLOC
 
 #ifdef SEVERAL_ALLOCATORS
@@ -202,19 +200,7 @@ public:
 		full_memory_stats( );
 	}
 };
-#ifdef DEBUG
-class CCC_MemCheckpoint : public IConsole_Command
-{
-public:
-	CCC_MemCheckpoint(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = FALSE; };
-	virtual void Execute(LPCSTR args) 
-	{
-		memory_monitor::make_checkpoint(args);
-	}
-	virtual void	Save	(IWriter *F)	{}
-};
 
-#endif // #ifdef DEBUG
 // console commands
 class CCC_GameDifficulty : public CCC_Token {
 public:
@@ -238,10 +224,6 @@ public:
 		xr_strcpy(I,"game difficulty"); 
 	}
 };
-
-
-
-
 
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command {
@@ -1974,9 +1956,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
 
 	CMD1(CCC_MemStats,			"stat_memory"			);
-#ifdef DEBUG
-	CMD1(CCC_MemCheckpoint,		"stat_memory_checkpoint");
-#endif //#ifdef DEBUG	
 	// game
 	CMD3(CCC_Mask,				"g_crouch_toggle",		&psActorFlags,	AF_CROUCH_TOGGLE);
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);

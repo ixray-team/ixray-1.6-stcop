@@ -1,22 +1,5 @@
 #pragma once
 
-#include "memory_monitor.h"
-
-#ifdef USE_MEMORY_MONITOR
-#	define DEBUG_MEMORY_NAME
-#endif // USE_MEMORY_MONITOR
-
-#ifdef DEBUG_MEMORY_MANAGER
-	XRCORE_API	extern BOOL	g_bMEMO;
-#	ifndef DEBUG_MEMORY_NAME
-#		define DEBUG_MEMORY_NAME
-#	endif // DEBUG_MEMORY_NAME
-	extern XRCORE_API	void dump_phase	();
-#	define DUMP_PHASE	do {dump_phase();} while (0)
-#else // DEBUG_MEMORY_MANAGER
-#	define DUMP_PHASE	do {} while (0)
-#endif // DEBUG_MEMORY_MANAGER
-
 #include "xrMemory_pso.h"
 #include "xrMemory_POOL.h"
 
@@ -33,15 +16,6 @@ public:
 	xrMemory			();
 	void				_initialize		(BOOL _debug_mode=FALSE);
 	void				_destroy		();
-
-#ifdef DEBUG_MEMORY_MANAGER
-	BOOL				debug_mode;
-	xrCriticalSection	debug_cs;
-	std::vector<mdbg>	debug_info;
-	u32					debug_info_update;
-	u32					stat_strcmp		;
-	u32					stat_strdock	;
-#endif // DEBUG_MEMORY_MANAGER
 
 	u32					stat_calls;
 	s32					stat_counter;

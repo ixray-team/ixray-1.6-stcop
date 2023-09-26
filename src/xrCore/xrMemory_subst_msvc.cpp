@@ -40,9 +40,6 @@ void*	xrMemory::mem_alloc		(size_t size)
 
 	if (g_use_pure_alloc) {
 		void							*result = malloc(size);
-#ifdef USE_MEMORY_MONITOR
-		memory_monitor::monitor_alloc	(result,size, "");
-#endif // USE_MEMORY_MONITOR
 		return							(result);
 	}
 #endif // PURE_ALLOC
@@ -82,18 +79,12 @@ void*	xrMemory::mem_alloc		(size_t size)
 		}
 	}
 
-#ifdef USE_MEMORY_MONITOR
-	memory_monitor::monitor_alloc	(_ptr,size, "");
-#endif // USE_MEMORY_MONITOR
 	return	_ptr;
 }
 
 void	xrMemory::mem_free		(void* P)
 {
 	stat_calls++;
-#ifdef USE_MEMORY_MONITOR
-	memory_monitor::monitor_free(P);
-#endif // USE_MEMORY_MONITOR
 
 #ifdef PURE_ALLOC
 	if (g_use_pure_alloc) {
@@ -123,10 +114,6 @@ void*	xrMemory::mem_realloc	(void* P, size_t size)
 #ifdef PURE_ALLOC
 	if (g_use_pure_alloc) {
 		void							*result = realloc(P,size);
-#	ifdef USE_MEMORY_MONITOR
-		memory_monitor::monitor_free	(P);
-		memory_monitor::monitor_alloc	(result,size,"");
-#	endif // USE_MEMORY_MONITOR
 		return							(result);
 	}
 #endif // PURE_ALLOC
@@ -153,11 +140,6 @@ void*	xrMemory::mem_realloc	(void* P, size_t size)
 		void*	_real2			=	xr_aligned_offset_realloc	(_real,1+size+_footer,16,0x1);
 		_ptr					= (void*)(((u8*)_real2)+1);
 		*acc_header(_ptr)		= mem_generic;
-
-#ifdef USE_MEMORY_MONITOR
-		memory_monitor::monitor_free	(P);
-		memory_monitor::monitor_alloc	(_ptr,size,"");
-#endif // USE_MEMORY_MONITOR
 	} 
 	else if (1==p_mode)		
 	{
