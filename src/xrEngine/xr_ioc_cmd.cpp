@@ -669,7 +669,6 @@ extern Flags32		psEnvFlags;
 
 extern int			g_ErrorLineCount;
 
-ENGINE_API int			ps_r__Supersample			= 1;
 void CCC_Register()
 {
 	// General
@@ -717,8 +716,6 @@ void CCC_Register()
 #endif
 
 	// Render device states
-	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
-
 	CMD3(CCC_Mask, "read_sun_config", &psEnvironmentFlags, ENABLE_READ_SUN_CONFIG);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);

@@ -40,20 +40,22 @@ CRenderTarget::CRenderTarget()
 	Msg					("* SSample: %s",bAvailable?"enabled":"disabled");
 }
 
-BOOL CRenderTarget::Create	()
+BOOL CRenderTarget::Create()
 {
 	b_fxaa = xr_new<CBlender_FXAA>();
 	curWidth			= Device.dwWidth;
 	curHeight			= Device.dwHeight;
 
 	// Select mode to operate in
-	float	amount		= ps_r__Supersample?float(ps_r__Supersample):1	;
-	float	scale		= _sqrt	(amount);
-	rtWidth				= clampr(iFloor(scale*Device.dwWidth  + .5f), 128, 2048);
-	rtHeight			= clampr(iFloor(scale*Device.dwHeight + .5f), 128, 2048);
-	while (rtWidth%2)	rtWidth	--;
-	while (rtHeight%2)	rtHeight--;
-	Msg					("* SSample: %dx%d",rtWidth,rtHeight);
+	rtWidth = Device.dwWidth;
+	rtHeight = Device.dwHeight;
+
+	while (rtWidth % 2)
+		rtWidth--;
+
+	while (rtHeight % 2)
+		rtHeight--;
+	Msg("* SSample: %dx%d", rtWidth, rtHeight);
 
 	// Bufferts
 	RT.create			(RTname,			rtWidth,rtHeight,HW.Caps.fTarget);
@@ -240,7 +242,7 @@ BOOL CRenderTarget::NeedPostProcess()
 BOOL CRenderTarget::Perform		()
 {
 	return Available() &&
-		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (ps_r__Supersample>1) || (frame_distort==(Device.dwFrame-1)));
+		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (frame_distort==(Device.dwFrame-1)));
 }
 
 #include <dinput.h>

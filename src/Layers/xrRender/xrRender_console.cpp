@@ -93,7 +93,6 @@ xr_token							aa_type_token[] = {
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
 
-//int		ps_r__Supersample			= 1		;
 int			ps_r__LightSleepFrames		= 10	;
 
 float		ps_r__Detail_l_ambient		= 0.9f	;
@@ -714,8 +713,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r__wallmark_ttl",		&ps_r__WallmarkTTL,			1.0f,	5.f*60.f);
 
 	CMD3(CCC_Mask, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
-
-	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		8		);
 
 	Fvector	tw_min,tw_max;
 	
