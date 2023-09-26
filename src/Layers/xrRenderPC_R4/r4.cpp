@@ -1313,6 +1313,8 @@ HRESULT	CRender::shader_compile			(
 				pTarget = "vs_4_1";
 			else if( HW.FeatureLevel == D3D_FEATURE_LEVEL_11_0 )
 				pTarget = "vs_5_0";
+			else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_11_1)
+				pTarget = "vs_5_0";
 		}
 		else if ('p'==pTarget[0])
 		{
@@ -1321,6 +1323,8 @@ HRESULT	CRender::shader_compile			(
 			else if( HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1 )
 				pTarget = "ps_4_1";
 			else if( HW.FeatureLevel == D3D_FEATURE_LEVEL_11_0 )
+				pTarget = "ps_5_0";
+			else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_11_1)
 				pTarget = "ps_5_0";
 		}
 		else if ('g'==pTarget[0])		
@@ -1331,10 +1335,14 @@ HRESULT	CRender::shader_compile			(
 				pTarget = "gs_4_1";
 			else if( HW.FeatureLevel == D3D_FEATURE_LEVEL_11_0 )
 				pTarget = "gs_5_0";
+			else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_11_1)
+				pTarget = "gs_5_0";
 		}
 		else if ('c'==pTarget[0])		
 		{
 			if( HW.FeatureLevel == D3D_FEATURE_LEVEL_11_0 )
+				pTarget = "cs_5_0";
+			else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_11_1)
 				pTarget = "cs_5_0";
 		}
 	}
