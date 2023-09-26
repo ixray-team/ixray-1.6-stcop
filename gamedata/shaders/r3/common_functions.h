@@ -233,11 +233,7 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d, int iSample 
 	gbd.C = 0;
 	gbd.N = float3(0,0,0);
 
-#ifndef USE_MSAA
 	float4 P	= s_position.Sample( smp_nofilter, tc );
-#else
-	float4 P	= s_position.Load( int3( pos2d, 0 ), iSample );
-#endif
 
 	// 3d view space pos reconstruction math
 	// center of the plane (0,0) or (0.5,0.5) at distance 1 is eyepoint(0,0,0) + lookat (assuming |lookat| ==1
@@ -258,11 +254,7 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d, int iSample 
    // reconstruct hemi
    gbd.hemi = gbuf_unpack_hemi( P.w );
 
-#ifndef USE_MSAA
    float4	C	= s_diffuse.Sample( smp_nofilter, tc );
-#else
-   float4	C	= s_diffuse.Load( int3( pos2d, 0 ), iSample );
-#endif
 
 	gbd.C		= C.xyz;
 	gbd.gloss	= C.w;
@@ -294,30 +286,15 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, uint iSample )
 {
 	gbuffer_data gbd;
 
-#ifndef USE_MSAA
 	float4 P	= s_position.Sample( smp_nofilter, tc );
-#else
-   float4 P	= s_position.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
-#endif
-
 	gbd.P		= P.xyz;
 	gbd.mtl		= P.w;
 
-#ifndef USE_MSAA
 	float4 N	= s_normal.Sample( smp_nofilter, tc );
-#else
-	float4 N	= s_normal.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
-#endif
-
 	gbd.N		= N.xyz;
 	gbd.hemi	= N.w;
 
-#ifndef USE_MSAA
 	float4	C	= s_diffuse.Sample(  smp_nofilter, tc );
-#else
-	float4	C	= s_diffuse.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
-#endif
-
 
 	gbd.C		= C.xyz;
 	gbd.gloss	= C.w;
@@ -336,4 +313,5 @@ gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : T
 }
 
 #endif // GBUFFER_OPTIMIZATION
+
 #endif	//	common_functions_h_included

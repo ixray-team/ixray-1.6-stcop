@@ -15,11 +15,7 @@
 
 #include "shadow.h"
 
-#ifdef MSAA_OPTIMIZATION
-float4 main ( v2p_volume I,  uint iSample : SV_SAMPLEINDEX ) : SV_Target
-#else
 float4 main ( v2p_volume I ) : SV_Target
-#endif
 {
 	//float4 	_P	= tex2D( s_position, tc );
 	//float4	_N	= tex2D( s_normal, tc );

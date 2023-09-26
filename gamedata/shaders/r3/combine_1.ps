@@ -72,11 +72,7 @@ struct	_out
 };
 
 //	TODO:	DX10: Replace Sample with Load
-#ifndef MSAA_OPTIMIZATION
-_out main ( _input I )
-#else
-_out main ( _input I, uint iSample : SV_SAMPLEINDEX )
-#endif
+_out main ( _input I ) : SV_Target
 {
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0, I.pos2d, ISAMPLE) );
 	
@@ -84,15 +80,7 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 	float4	P = float4( gbd.P, gbd.mtl );	// position.(mtl or sun)
 	float4	N = float4( gbd.N, gbd.hemi );		// normal.hemi
 	float4	D = float4( gbd.C, gbd.gloss );		// rgb.gloss
-#ifndef USE_MSAA
 	float4	L = s_accumulator.Sample( smp_nofilter, I.tc0);	// diffuse.specular
-#else
-#	ifdef GBUFFER_OPTIMIZATION
-	float4	L = s_accumulator.Load( int3( I.pos2d.xy, 0 ), ISAMPLE);	// diffuse.specular
-#	else
-	float4   L = s_accumulator.Load( int3( I.tc0 * pos_decompression_params2.xy, 0 ), ISAMPLE );
-#	endif
-#endif
 
 #ifdef USE_SUPER_SPECULAR
 	{
@@ -124,21 +112,6 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 
 	//  Calculate SSAO
 
-#ifdef USE_MSAA
-#	ifdef GBUFFER_OPTIMIZATION
-	int2	texCoord = I.pos2d;
-#	else
-	int2	texCoord = int2( I.tc0 * pos_decompression_params2.xy );
-#	endif
-#endif
-	
-/*#ifdef USE_SSAO_BLUR	
-#	ifndef USE_MSAA
-	float	occ = ssao_blur_ps(I.tc0);
-#	else
-	float   occ = ssao_blur_ps( texCoord, ISAMPLE );
-#	endif*/
-
 #ifdef USE_HDAO
 #ifdef SM_5
 #if SSAO_QUALITY > 3
@@ -162,26 +135,17 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 #endif // USE_HDAO
 	
 	hmodel	(hdiffuse, hspecular, mtl, N.w, D.w, P.xyz, N.xyz);
-//      hmodel		(hdiffuse, hspecular, mtl, 1, D.w, P.xyz, N.xyz);
-//	hdiffuse*=hdiffuse;			//. high contrast hemi
-//	hdiffuse*=(D.rgb*0.8 + 0.2h);	// rise texture contrast for diffuse lighting
-//	hdiffuse = 0.8;
-//	hdiffuse *= (occ*(D.rgb + .1h));
 	hdiffuse *= occ;
 	hspecular *= occ;
 
         float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
         float4         C           = D*light       ;                             // rgb.gloss * light(diffuse.specular)
-//        float3         spec        = (C.rgb*.5h + .5h)*C.w + hspecular + hspecular + hspecular;			// replicated specular
 	float3         spec        = C.www         + hspecular;      // replicated specular
 
 #ifdef         USE_SUPER_SPECULAR
                       spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;
 #endif
-//		float3       color     = C.rgb + D.rgb*spec     ;
-//		float3       color     = C.rgb + (D.rgb*spec+spec)/0.5h;
 		float3       color     = C.rgb + spec     ;
-//		float3       color     = C.rgb + D.rgb*spec+hspecular+hspecular     ;	//	More realistic and contrast specular - Ugrumiy edition
 
 ////////////////////////////////////////////////////////////////////////////////
 /// For Test ///////////////////////////////////////////////////////////////////
