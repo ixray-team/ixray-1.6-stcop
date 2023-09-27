@@ -1039,26 +1039,18 @@ void	CCharacterPhysicsSupport::	AddActiveWeaponCollision		()
 		m_weapon_geoms.push_back(  weapon_element->geometry( i ) );
 	xr_vector<CODEGeom*>::iterator ii =m_weapon_geoms.begin(), ee = m_weapon_geoms.end();
 
-
-	//DBG_OpenCashedDraw();
-
 	for( ;ii!=ee; ++ii )
 	{
 		CODEGeom *g  =(*ii);
-		//g->dbg_draw( 0.01f, color_xrgb( 255, 0, 0 ), Flags32() );
 		weapon_element->remove_geom( g );
 		g->set_bone_id( weapon_attach_bone->m_SelfID );
 		weapon_attach_bone->add_geom( g );
-		//g->dbg_draw( 0.01f, color_xrgb( 0, 255, 0 ), Flags32() );
 	}
 	m_weapon_attach_bone = weapon_attach_bone;
 	m_active_item_obj	= &(active_weapon_item->object());
 
 
 	destroy_physics_shell( weapon_shell );
-
-	//m_pPhysicsShell->dbg_draw_geometry( 1, color_xrgb( 0, 0, 255 ) );
-	//DBG_ClosedCashedDraw( 50000 );
 }
 
 void	CCharacterPhysicsSupport::	CreateShell						( CObject* who, Fvector& dp, Fvector & velocity  )
@@ -1164,13 +1156,7 @@ void	CCharacterPhysicsSupport::	CreateShell						( CObject* who, Fvector& dp, Fv
 	m_eState=esDead;
 	m_flags.set(fl_skeleton_in_shell,TRUE);
 	
-	if(IsGameTypeSingle())
-	{
-		m_pPhysicsShell->SetPrefereExactIntegration	();//use exact integration for ragdolls in single
-		m_pPhysicsShell->SetRemoveCharacterCollLADisable();
-	}
-	else
-		m_pPhysicsShell->SetIgnoreDynamic();
+	m_pPhysicsShell->SetIgnoreDynamic();
 	m_pPhysicsShell->SetIgnoreSmall();
 	AddActiveWeaponCollision();
 }
@@ -1224,26 +1210,7 @@ if( dbg_draw_ragdoll_spawn )
 	m_pPhysicsShell->GetGlobalTransformDynamic(&mXFORM);
 	m_pPhysicsShell->mXFORM.set(mXFORM);
 
-
-
-	//if( false &&  anim_mov_ctrl && anim_mov_blend && anim_mov_blend->blend != CBlend::eFREE_SLOT &&  anim_mov_blend->timeCurrent + Device.fTimeDelta*anim_mov_blend->speed < anim_mov_blend->timeTotal-SAMPLE_SPF-EPS)//.
-	//{
-	//	const Fmatrix sv_xform = mXFORM;
-	//	mXFORM.set( start_xform );
-	//	//anim_mov_blend->blendPower = 1;
-	//	anim_mov_blend->timeCurrent  += Device.fTimeDelta * anim_mov_blend->speed;
-	//	m_pPhysicsShell->AnimToVelocityState( Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit );
-	//	mXFORM.set( sv_xform );
-	//}
 	IKinematics* K=smart_cast<IKinematics*>( m_EntityAlife.Visual( ) );
-	//u16 root =K->LL_GetBoneRoot();
-	//if( root!=0 )
-	//{
-	//	K->LL_GetTransform( 0 ).set( Fidentity );
-	//	
-	//	K->LL_SetBoneVisible( 0, FALSE, FALSE );
-	//}
-	
 	K->CalculateBones_Invalidate();
 	K->CalculateBones	(TRUE);
 }
