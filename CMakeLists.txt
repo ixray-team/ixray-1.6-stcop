@@ -5,6 +5,7 @@ project(IXRay)
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
+option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
 
 # Output target
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -22,7 +23,11 @@ add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>
                     "$<$<CONFIG:RELWITHDEBINFO>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 
-# Edit and Continue mode
+if (IXRAY_ASAN)
+    add_compile_options(-fsanitize=address)
+endif()
+
+# Edit and Continue mode 
 add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")
 
 # Set NuGet command

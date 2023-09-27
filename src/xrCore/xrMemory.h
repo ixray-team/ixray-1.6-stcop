@@ -1,24 +1,24 @@
 #pragma once
-
 #include "xrMemory_pso.h"
-#include "xrMemory_POOL.h"
 
-class XRCORE_API		xrMemory
+class IMemoryAllocator
 {
 public:
-	struct				mdbg {
-		void*			_p;
-		size_t 			_size;
-		const char*		_name;
-		u32				_dummy;
-	};
+	virtual void* alloc(size_t size) = 0;
+	virtual void* realloc(void* p, size_t size) = 0;
+	virtual void free(void* p) = 0;
+};
+
+class XRCORE_API xrMemory
+{
+	IMemoryAllocator* pAlloc = nullptr;
 public:
 	xrMemory			();
 	void				_initialize		(BOOL _debug_mode=FALSE);
 	void				_destroy		();
 
-	u32					stat_calls;
-	s32					stat_counter;
+	u32					stat_calls = 0;
+	s32					stat_counter = 0;
 public:
 
 	u32					mem_usage		(u32* pBlocksUsed=NULL, u32* pBlocksFree=NULL);
@@ -36,14 +36,7 @@ public:
 	pso_MemFill32*		mem_fill32;
 };
 
-extern XRCORE_API	xrMemory	Memory;
-
-#undef	ZeroMemory
-#undef	CopyMemory
-#undef	FillMemory
-#define ZeroMemory(a,b)		Memory.mem_fill(a,0,b)
-#define CopyMemory(a,b,c)	memcpy(a,b,c)			//. CopyMemory(a,b,c)
-#define FillMemory(a,b,c)	Memory.mem_fill(a,c,b)
+extern XRCORE_API xrMemory Memory;
 
 // delete
 #ifdef __BORLANDC__
@@ -74,7 +67,6 @@ XRCORE_API	char* 	xr_strdup	(const char* string);
 const		u32			mem_pools_count			=	54;
 const		u32			mem_pools_ebase			=	16;
 const		u32			mem_generic				=	mem_pools_count+1;
-extern		MEMPOOL		mem_pools				[mem_pools_count];
 extern		BOOL		mem_initialized;
 
 XRCORE_API void vminfo			(size_t *_free, size_t *reserved, size_t *committed);
