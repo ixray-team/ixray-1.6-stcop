@@ -37,8 +37,8 @@ void CRenderTarget::phase_ssao	()
 	{
 		Fmatrix	m_v2w;				m_v2w.invert(Device.mView);
 		// Fill VB
-		float	_w					= float(Device.TargetWidth);
-		float	_h					= float(Device.TargetHeight);
+		float	_w					= float(RCache.get_width());
+		float	_h					= float(RCache.get_height());
 		p0.set						(.5f/_w, .5f/_h);
 		p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
@@ -101,8 +101,8 @@ void CRenderTarget::phase_downsamp	()
 	{
 		Fmatrix	m_v2w;				m_v2w.invert(Device.mView);
 		// Fill VB
-		float	_w					= float(Device.TargetWidth) * 0.5f;
-		float	_h					= float(Device.TargetHeight) * 0.5f;
+		float	_w					= float(RCache.get_width()) * 0.5f;
+		float	_h					= float(RCache.get_height()) * 0.5f;
 		p0.set						(.5f/_w, .5f/_h);
 		p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 

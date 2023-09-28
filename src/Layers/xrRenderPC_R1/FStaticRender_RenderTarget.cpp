@@ -43,12 +43,12 @@ CRenderTarget::CRenderTarget()
 BOOL CRenderTarget::Create()
 {
 	b_fxaa = xr_new<CBlender_FXAA>();
-	curWidth			= Device.TargetWidth;
-	curHeight			= Device.TargetHeight;
+	curWidth			=  RCache.get_width();
+	curHeight			= RCache.get_height();
 
 	// Select mode to operate in
-	rtWidth = Device.TargetWidth;
-	rtHeight = Device.TargetHeight;
+	rtWidth = RCache.get_width();
+	rtHeight = RCache.get_height();
 
 	while (rtWidth % 2)
 		rtWidth--;
@@ -73,7 +73,7 @@ BOOL CRenderTarget::Create()
 	s_fxaa.create(b_fxaa, "r1\\fxaa");
 	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
 
-	if ((rtHeight!=Device.TargetHeight) || (rtWidth!=Device.TargetWidth))	{
+	if ((rtHeight!=RCache.get_height()) || (rtWidth!= RCache.get_width()))	{
 		R_CHK		(HW.pDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,HW.Caps.fDepth,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,NULL));
 	} else {
 		ZB			= HW.pBaseZB;
@@ -171,8 +171,8 @@ void	CRenderTarget::calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 	u32			shift_h				= im_noise_shift_h;
 	float		start_u				= (float(shift_w)+.5f)/(tw);
 	float		start_v				= (float(shift_h)+.5f)/(th);
-	u32			_w					= Device.TargetWidth;
-	u32			_h					= Device.TargetHeight;
+	u32			_w					=  RCache.get_width();
+	u32			_h					= RCache.get_height();
 	u32			cnt_w				= _w / tw;
 	u32			cnt_h				= _h / th;
 	float		end_u				= start_u + float(cnt_w) + 1;
@@ -187,7 +187,7 @@ void CRenderTarget::calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0
 	// Calculate ordinaty TCs from blur and SS
 	float	tw			= float(rtWidth);
 	float	th			= float(rtHeight);
-	if (rtHeight!=Device.TargetHeight)	param_blur = 1.f;
+	if (rtHeight!=RCache.get_height())	param_blur = 1.f;
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
@@ -273,8 +273,8 @@ void CRenderTarget::Begin		()
 		// Base RT
 		RCache.set_RT			(HW.pBaseRT);
 		RCache.set_ZB			(HW.pBaseZB);
-		curWidth				= Device.TargetWidth;
-		curHeight				= Device.TargetHeight;
+		curWidth				=  RCache.get_width();
+		curHeight				= RCache.get_height();
 	} else {
 		// Our 
 		RCache.set_RT			(RT->pRT);
@@ -346,8 +346,8 @@ void CRenderTarget::End		()
 	// combination/postprocess
 	RCache.set_RT		(HW.pBaseRT);
 	RCache.set_ZB		(HW.pBaseZB);
-	curWidth			= Device.TargetWidth;
-	curHeight			= Device.TargetHeight;
+	curWidth			=  RCache.get_width();
+	curHeight			= RCache.get_height();
 	
 	if (!bPerform)		return;
 
@@ -363,8 +363,8 @@ void CRenderTarget::End		()
 	
 	// Draw full-screen quad textured with our scene image
 	u32		Offset;
-	float	_w			= float(Device.TargetWidth);
-	float	_h			= float(Device.TargetHeight);
+	float	_w			= float( RCache.get_width());
+	float	_h			= float(RCache.get_height());
 	
 	Fvector2			n0,n1,r0,r1,l0,l1;
 	calc_tc_duality_ss	(r0,r1,l0,l1);

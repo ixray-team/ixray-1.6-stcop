@@ -96,6 +96,12 @@ public:
 	virtual u32			get_width			()				{ return curWidth;											}
 	virtual u32			get_height			()				{ return curHeight;											}
 
+	virtual u32			get_target_width	()				{ return curWidth;											}
+	virtual u32			get_target_height	()				{ return curHeight;											}
+	
+	virtual u32			get_core_width		()				{ return curWidth;											}
+	virtual u32			get_core_height		()				{ return curHeight;											}
+
 			u32			get_rtwidth			()				{ return rtWidth;											}
 			u32			get_rtheight		()				{ return rtHeight;											}
 

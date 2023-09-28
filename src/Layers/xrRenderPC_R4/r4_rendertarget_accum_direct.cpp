@@ -45,8 +45,8 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 	// Common calc for quad-rendering
 	u32		Offset;
 	u32		C					= color_rgba	(255,255,255,255);
-	float	_w					= float			(Device.TargetWidth);
-	float	_h					= float			(Device.TargetHeight);
+	float	_w = RCache.get_width();
+	float	_h = RCache.get_height();
 	Fvector2					p0,p1;
 	p0.set						(.5f/_w, .5f/_h);
 	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
@@ -61,10 +61,9 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 	// Perform masking (only once - on the first/near phase)
 	RCache.set_CullMode			(CULL_NONE	);
-	PIX_EVENT(SE_SUN_NEAR_sub_phase);
-	if (SE_SUN_NEAR==sub_phase)	//.
-		//if( 0 )
+	if (SE_SUN_NEAR==sub_phase)
 	{
+		PIX_EVENT(SE_SUN_NEAR_sub_phase);
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
 		pv->set						(EPS,			float(_h+EPS),	d_Z,	d_W, C, p0.x, p1.y);	pv++;
@@ -81,9 +80,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		RCache.set_Element			(s_accum_mask->E[SE_MASK_DIRECT]);		// masker
 		RCache.set_c				("Ldynamic_dir",		dir.x,dir.y,dir.z,0		);
 
-		// if (stencil>=1 && aref_pass)	stencil = light_id
-		//	Done in blender!
-		//RCache.set_ColorWriteEnable	(FALSE		);
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
@@ -96,29 +92,15 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 	// nv-stencil recompression
 	if (RImplementation.o.nvstencil  && (SE_SUN_NEAR==sub_phase))	u_stencil_optimize();	//. driver bug?
 
-	PIX_EVENT(Perform_lighting);
 
 	// Perform lighting
 	{
+		PIX_EVENT(Perform_lighting);
 		phase_accumulator					()	;
 		RCache.set_CullMode					(CULL_CCW); //******************************************************************
 		RCache.set_ColorWriteEnable			()	;
 
-		// texture adjustment matrix
-		//float			fTexelOffs			= (.5f / float(RImplementation.o.smapsize));
-		//float			fRange				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_scale:ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//Fmatrix			m_TexelAdjust		= 
-		//{
-		//	0.5f,				0.0f,				0.0f,			0.0f,
-		//	0.0f,				-0.5f,				0.0f,			0.0f,
-		//	0.0f,				0.0f,				fRange,			0.0f,
-		//	0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
-		//};
 		float			fRange				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_scale:ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	TODO: DX10: Remove this when fix inverse culling for far region
-//		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
 		Fmatrix			m_TexelAdjust		= 
 		{
 			0.5f,				0.0f,				0.0f,			0.0f,

@@ -78,8 +78,8 @@ cdb_bDebug		= &bDebug;
 	Log					("Starting RENDER device...");
 
 #ifdef _EDITOR
-	psCurrentVidMode[0]	= dwWidth;
-	psCurrentVidMode[1] = dwHeight;
+	psCurrentVidMode[0]	= TargetWidth;
+	psCurrentVidMode[1] = TargetHeight;
 #endif // #ifdef _EDITOR
 
 	fFOV				= 90.f;

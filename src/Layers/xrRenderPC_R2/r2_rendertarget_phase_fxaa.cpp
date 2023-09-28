@@ -4,8 +4,8 @@
 
 void CRenderTarget::phase_fxaa(u32 pass) {
     u32 Offset = 0;
-    float _w = float(Device.TargetWidth);
-    float _h = float(Device.TargetHeight);
+    float _w = float(RCache.get_width());
+    float _h = float(RCache.get_height());
     float ddw = 1.0f / _w;
     float ddh = 1.0f / _h;
 
