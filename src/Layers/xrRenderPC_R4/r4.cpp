@@ -269,7 +269,6 @@ void					CRender::create					()
 	o.volumetricfog		= ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
-	o.mblur				= (strstr(Core.Params,"-mblur"))?		TRUE	:FALSE	;
 	o.distortion_enabled= (strstr(Core.Params,"-nodistort"))?	FALSE	:TRUE	;
 	o.distortion		= o.distortion_enabled;
 	o.disasm			= (strstr(Core.Params,"-disasm"))?		TRUE	:FALSE	;
@@ -983,17 +982,6 @@ HRESULT	CRender::shader_compile			(
 	else
 	{
 		sh_name[len] = '0' + static_cast<char>(o.Tshadows); 
-		++len;
-	}
-
-	if (o.mblur)			{
-		defines[def_it].Name		=	"USE_MBLUR";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.mblur); 
 		++len;
 	}
 
