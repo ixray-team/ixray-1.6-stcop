@@ -336,7 +336,6 @@ CRenderTarget::CRenderTarget		()
 				}
 			} else {
 				// R4xx, no-fp-blend,-> albedo_wo
-				VERIFY						(RImplementation.o.albedo_wo);
 				rt_Color.create				(r2_RT_albedo, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8		, SampleCount );	// normal
 				rt_Accumulator.create		(r2_RT_accum, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
 				rt_Accumulator_temp.create	(r2_RT_accum_temp, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );

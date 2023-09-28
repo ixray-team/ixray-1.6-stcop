@@ -57,13 +57,11 @@ void	CRenderTarget::phase_scene_begin	()
 	// Targets, use accumulator for temporary storage
    if( !RImplementation.o.dx10_gbuffer_opt )
    {
-   	if (RImplementation.o.albedo_wo)	u_setrt		(rt_Position,	rt_Normal,	rt_Accumulator,	pZB);
-	   else								u_setrt		(rt_Position,	rt_Normal,	rt_Color,		pZB);
+	   u_setrt(rt_Position, rt_Normal, rt_Color, pZB);
    }
    else
    {
-   	if (RImplementation.o.albedo_wo)	u_setrt		(rt_Position, rt_Accumulator,	pZB);
-	   else								u_setrt		(rt_Position,	rt_Color,		pZB);
+	   u_setrt(rt_Position, rt_Color, pZB);
 	   //else								u_setrt		(rt_Position,	rt_Color, rt_Normal,		pZB);
    }
 
@@ -86,38 +84,5 @@ void	CRenderTarget::disable_aniso		()
 // end
 void	CRenderTarget::phase_scene_end		()
 {
-	disable_aniso	();
-
-	if (!RImplementation.o.albedo_wo)		return;
-
-	// transfer from "rt_Accumulator" into "rt_Color"
-	u_setrt(rt_Color, 0, 0, HW.pBaseZB);
-	RCache.set_CullMode					( CULL_NONE );
-	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
-	if (RImplementation.o.nvstencil)	u_stencil_optimize	(CRenderTarget::SO_Combine);
-	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
-	RCache.set_ColorWriteEnable			();
-
-	// common calc for quad-rendering
-	u32		Offset;
-	u32		C					= color_rgba	(255,255,255,255);
-	float	_w					= float			(Device.TargetWidth);
-	float	_h					= float			(Device.TargetHeight);
-	Fvector2					p0,p1;
-	p0.set						(.5f/_w, .5f/_h);
-	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-	float	d_Z	= EPS_S, d_W = 1.f;
-
-	// Fill vertex buffer
-	FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-	pv->set						(EPS,			float(_h+EPS),	d_Z,	d_W, C, p0.x, p1.y);	pv++;
-	pv->set						(EPS,			EPS,			d_Z,	d_W, C, p0.x, p0.y);	pv++;
-	pv->set						(float(_w+EPS),	float(_h+EPS),	d_Z,	d_W, C, p1.x, p1.y);	pv++;
-	pv->set						(float(_w+EPS),	EPS,			d_Z,	d_W, C, p1.x, p0.y);	pv++;
-	RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-	// if (stencil>=1 && aref_pass)	stencil = light_id
-	RCache.set_Element			(s_accum_mask->E[SE_MASK_ALBEDO]);		// masker
-	RCache.set_Geometry			(g_combine);
-	RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+	disable_aniso();
 }

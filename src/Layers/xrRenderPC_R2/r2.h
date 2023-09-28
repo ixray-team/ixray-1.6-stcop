@@ -47,8 +47,7 @@ public:
 		u32		mrt					: 1;
 		u32		mrtmixdepth			: 1;
 		u32		fp16_filter			: 1;
-		u32		fp16_blend			: 1;
-		u32		albedo_wo			: 1;						// work-around albedo on less capable HW
+		u32		fp16_blend			: 1;						// work-around albedo on less capable HW
 		u32		HW_smap				: 1;
 		u32		HW_smap_PCF			: 1;
 		u32		HW_smap_FETCH4		: 1;
