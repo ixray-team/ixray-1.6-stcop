@@ -230,9 +230,6 @@ void					CRender::create					()
 	}
 
 	VERIFY2				(o.mrt && (HW.Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
-	if (o.mrtmixdepth)		o.albedo_wo		= FALSE	;
-	else if (o.fp16_blend)	o.albedo_wo		= FALSE	;
-	else					o.albedo_wo		= TRUE	;
 
 	// nvstencil on NV40 and up
 	o.nvstencil			= FALSE;
