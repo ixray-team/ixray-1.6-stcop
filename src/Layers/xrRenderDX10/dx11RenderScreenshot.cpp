@@ -141,7 +141,9 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
     HW.pContext->Map(pTex, 0, D3D_MAP_READ, 0, &MappedData);
     {
         auto pPixel = (u32*)MappedData.pData;
-        auto pEnd = pPixel + (Device.TargetWidth * Device.TargetHeight);
+        u32 Width = (u32)(RCache.get_target_width());
+        u32 Height = (u32)(RCache.get_target_height());
+        auto pEnd = pPixel + Width * Height;
 
         //	Kill alpha and swap r and b.
         for (; pPixel != pEnd; pPixel++) {
@@ -153,9 +155,9 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
             );
         }
 
-        memory_writer.w(&Device.TargetWidth, sizeof(Device.TargetWidth));
-        memory_writer.w(&Device.TargetHeight, sizeof(Device.TargetHeight));
-        memory_writer.w(MappedData.pData, (Device.TargetWidth * Device.TargetHeight) * 4);
+        memory_writer.w(&Width, sizeof(Width));
+        memory_writer.w(&Height, sizeof(Height));
+        memory_writer.w(MappedData.pData, (Width * Height) * 4);
     }
 
     HW.pContext->Unmap(pTex, 0);

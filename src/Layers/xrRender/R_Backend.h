@@ -228,6 +228,11 @@ public:
 	IC	R_constant_array&			get_ConstantCache_Pixel		()			{ return constants.a_pixel;		}
 #endif
 
+	IC  float							get_width();
+	IC  float							get_height();	
+	IC  float							get_target_width();
+	IC  float							get_target_height();
+
 	// API
 	IC	void						set_xform			(u32 ID, const Fmatrix& M);
 	IC	void						set_xform_world		(const Fmatrix& M);

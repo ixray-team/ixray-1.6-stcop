@@ -57,15 +57,8 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 		return;
 	}
 
-#ifdef USE_DX11
-	//	TODO: DX10: remove this
-//	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 1.0f, 0.0f};
-//	HW.pContext->ClearRenderTargetView( RCache.get_RT(), ColorRGBA);
-//	HW.pContext->ClearDepthStencilView( RCache.get_ZB(), D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
-#endif //USE_DX11
-
-	float	_w					= (float)Device.TargetWidth;
-	float	_h					= (float)Device.TargetHeight;
+	float	_w					= RCache.get_target_width();
+	float	_h					= RCache.get_target_height();
 	bool	b_ws				= (_w/_h) > 1.34f;
 	bool	b_16x9				= b_ws && ((_w/_h)>1.77f);
 	float	ws_k				= (b_16x9) ? 0.75f : 0.8333f;	//16:9 or 16:10

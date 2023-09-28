@@ -9,8 +9,8 @@ void CRenderTarget::phase_smaa()
     u32 C = color_rgba(0, 0, 0, 255);
     FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    float _w = float(Device.TargetWidth);
-    float _h = float(Device.TargetHeight);
+    float _w = RCache.get_width();
+    float _h = RCache.get_height();
 
     p0.set(0.0f, 0.0f);
     p1.set(1.0f, 1.0f);

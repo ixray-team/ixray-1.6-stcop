@@ -133,8 +133,8 @@ void	CRenderTarget::phase_combine	()
 		}
 
 		// Fill VB
-		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
+		float	scale_X				= RCache.get_width() / float(TEX_jitter);
+		float	scale_Y				= RCache.get_height() / float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
@@ -452,8 +452,8 @@ void CRenderTarget::phase_combine_volumetric()
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{
 		// Fill VB
-		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
+		float	scale_X				= RCache.get_width() / float(TEX_jitter);
+		float	scale_Y				= RCache.get_height() / float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);

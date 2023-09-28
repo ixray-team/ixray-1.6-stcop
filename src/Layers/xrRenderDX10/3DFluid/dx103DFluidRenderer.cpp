@@ -711,10 +711,8 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//m_pD3DDevice->RSSetViewports(1,&rtViewport);
 	RImplementation.rmNormal();
 
-	//pRTWidthVar->SetFloat((float)g_Width);
-	RCache.set_c(strRTWidth, (float)Device.TargetWidth);
-	//pRTHeightVar->SetFloat((float)g_Height);
-	RCache.set_c(strRTHeight, (float)Device.TargetHeight);
+	RCache.set_c(strRTWidth, RCache.get_width());
+	RCache.set_c(strRTHeight, RCache.get_height());
 
 	RCache.set_c(strDiffuseLight, LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
@@ -747,10 +745,8 @@ void dx103DFluidRenderer::ComputeRayData()
 	//rtViewport.Height = g_Height;
 	//m_pD3DDevice->RSSetViewports(1,&rtViewport);
 	RImplementation.rmNormal();
-	//pRTWidthVar->SetFloat((float)g_Width);
-	RCache.set_c(strRTWidth, (float)Device.TargetWidth);
-	//pRTHeightVar->SetFloat((float)g_Height);
-	RCache.set_c(strRTHeight, (float)Device.TargetHeight);
+	RCache.set_c(strRTWidth, RCache.get_width());
+	RCache.set_c(strRTHeight, RCache.get_height());
 
 	// Render volume back faces
 	// We output xyz=(0,-1,0) and w=min(sceneDepth, boxDepth)

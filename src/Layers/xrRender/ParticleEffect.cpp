@@ -26,8 +26,8 @@ static void ApplyTexgen( const Fmatrix &mVP )
 		0.5f,				0.5f,				0.0f,			1.0f
 	};
 #else //USE_DX11
-	float	_w						= float(RDEVICE.TargetWidth);
-	float	_h						= float(RDEVICE.TargetHeight);
+	float	_w						= float(RCache.get_width());
+	float	_h						= float(RCache.get_height());
 	float	o_w						= (.5f / _w);
 	float	o_h						= (.5f / _h);
 	Fmatrix			mTexelAdjust		= 

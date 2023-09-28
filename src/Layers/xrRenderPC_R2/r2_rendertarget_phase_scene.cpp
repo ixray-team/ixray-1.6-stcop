@@ -21,12 +21,12 @@ void	CRenderTarget::phase_scene_prepare	()
 			)
 		)
 	{
-		u_setrt	( Device.TargetWidth,Device.TargetHeight,rt_Position->pRT,NULL,NULL,HW.pBaseZB );
+		u_setrt	( RCache.get_width(),RCache.get_height(),rt_Position->pRT,NULL,NULL,HW.pBaseZB );
 		CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	}
 	else
 	{
-		u_setrt	( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB );
+		u_setrt	( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB );
 		CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	}
 

@@ -161,15 +161,15 @@ void CRender::render_menu	()
 	}
 
 	// Actual Display
-	Target->u_setrt					( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
 	Fvector2						p0,p1;
 	u32								Offset;
 	u32		C						= color_rgba	(255,255,255,255);
-	float	_w						= float(Device.TargetWidth);
-	float	_h						= float(Device.TargetHeight);
+	float	_w						= float(RCache.get_width());
+	float	_h						= float(RCache.get_height());
 	float	d_Z						= EPS_S;
 	float	d_W						= 1.f;
 	p0.set							(.5f/_w, .5f/_h);

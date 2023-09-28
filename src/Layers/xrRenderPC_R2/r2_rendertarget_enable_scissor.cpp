@@ -90,11 +90,11 @@ BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
 	CSector*	S	= (CSector*)L->spatial.sector;
 	_scissor	bb	= S->r_scissor_merged;
 	Irect		R;
-	R.x1		= clampr	(iFloor	(bb.min.x*Device.TargetWidth),	int(0),int(Device.TargetWidth));
-	R.x2		= clampr	(iCeil	(bb.max.x*Device.TargetWidth),	int(0),int(Device.TargetWidth));
-	R.y1		= clampr	(iFloor	(bb.min.y*Device.TargetHeight),	int(0),int(Device.TargetHeight));
-	R.y2		= clampr	(iCeil	(bb.max.y*Device.TargetHeight),	int(0),int(Device.TargetHeight));
-	if	( (Device.TargetWidth==u32(R.right - R.left)) && (Device.TargetHeight==u32(R.bottom-R.top)) )
+	R.x1		= clampr	(iFloor	(bb.min.x*RCache.get_width()),	int(0),int(RCache.get_width()));
+	R.x2		= clampr	(iCeil	(bb.max.x*RCache.get_width()),	int(0),int(RCache.get_width()));
+	R.y1		= clampr	(iFloor	(bb.min.y*RCache.get_height()),	int(0),int(RCache.get_height()));
+	R.y2		= clampr	(iCeil	(bb.max.y*RCache.get_height()),	int(0),int(RCache.get_height()));
+	if	( (RCache.get_width()==u32(R.right - R.left)) && (RCache.get_height()==u32(R.bottom-R.top)) )
 	{
 		// full-screen -> do nothing
 	} else {

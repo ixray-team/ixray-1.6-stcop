@@ -255,6 +255,10 @@ public:
 	virtual void				set_color_gray			(u32	f)		{ param_color_gray=f;				}
 	virtual void				set_color_add			(const Fvector	&f)		{ param_color_add=f;		}
 
+	virtual u32					get_target_width	()				{ return dwWidth;					}
+	virtual u32					get_target_height	()				{ return dwHeight;					}
+	virtual u32					get_core_width		()				{ return dwWidth;					}
+	virtual u32					get_core_height		()				{ return dwHeight;					}
 	virtual u32					get_width				()				{ return dwWidth;					}
 	virtual u32					get_height				()				{ return dwHeight;					}
 
