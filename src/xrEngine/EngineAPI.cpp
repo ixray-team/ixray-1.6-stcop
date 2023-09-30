@@ -118,11 +118,6 @@ void CEngineAPI::Destroy	(void)
 	XRC.r_clear_compact		();
 }
 
-extern "C" {
-	typedef bool __cdecl SupportsAdvancedRendering	(void);
-	typedef bool _declspec(dllexport) SupportsDX11Rendering();
-};
-
 void CEngineAPI::CreateRendererList()
 {
 	if (g_dedicated_server)
@@ -167,9 +162,7 @@ void CEngineAPI::CreateRendererList()
 		hRender			= LoadLibrary		(r2_name);
 		if (hRender)	
 		{
-			SupportsAdvancedRendering *test_rendering = (SupportsAdvancedRendering*) GetProcAddress(hRender,"SupportsAdvancedRendering");	
-			R_ASSERT(test_rendering);
-			bSupports_r2 = test_rendering();
+			bSupports_r2 = true;
 			FreeLibrary(hRender);
 		}
 
@@ -182,9 +175,7 @@ void CEngineAPI::CreateRendererList()
 		SetErrorMode	(0);
 		if (hRender)	
 		{
-			SupportsDX11Rendering *test_dx11_rendering = (SupportsDX11Rendering*) GetProcAddress(hRender,"SupportsDX11Rendering");
-			R_ASSERT(test_dx11_rendering);
-			bSupports_r4 = test_dx11_rendering();
+			bSupports_r4 = true;
 			FreeLibrary(hRender);
 		}
 	}
