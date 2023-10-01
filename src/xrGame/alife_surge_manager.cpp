@@ -29,21 +29,23 @@ CALifeSurgeManager::~CALifeSurgeManager	()
 
 void CALifeSurgeManager::spawn_new_spawns			()
 {
-	xr_vector<ALife::_SPAWN_ID>::const_iterator	I = m_temp_spawns.begin();
-	xr_vector<ALife::_SPAWN_ID>::const_iterator	E = m_temp_spawns.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*object, *spawn = smart_cast<CSE_ALifeDynamicObject*>(&spawns().spawns().vertex(*I)->data()->object());
-		VERIFY3					(spawn,spawns().spawns().vertex(*I)->data()->object().name(),spawns().spawns().vertex(*I)->data()->object().name_replace());
+	// FX: Dirty hack
+	for (auto Iter = m_temp_spawns.begin(); Iter < m_temp_spawns.end(); Iter++) {
+		auto& AbstarctObject = spawns().spawns().vertex(*Iter)->data()->object();
+		if (smart_cast<CSE_ALifeCreatureActor*>(&AbstarctObject)) {
+			u16 ID = *Iter;
+			m_temp_spawns.erase(Iter);
+			m_temp_spawns.emplace(m_temp_spawns.begin(), ID);
+			break;
+		}
+	}
 
-#ifdef DEBUG
-		CTimer					timer;
-		timer.Start				();
-#endif
-		create					(object,spawn,*I);
-#ifdef DEBUG
-		if (psAI_Flags.test(aiALife))
-			Msg					("LSS : SURGE : SPAWN : [%s],[%s], level %s, time %f ms",*spawn->s_name,spawn->name_replace(),*ai().game_graph().header().level(ai().game_graph().vertex(spawn->m_tGraphID)->level_id()).name(),timer.GetElapsed_sec()*1000.f);
-#endif
+	for (u16 ObjectID : m_temp_spawns) {
+		CSE_ALifeDynamicObject* object = nullptr;
+		auto& AbstarctObject = spawns().spawns().vertex(ObjectID)->data()->object();
+		CSE_ALifeDynamicObject* spawn = smart_cast<CSE_ALifeDynamicObject*>(&AbstarctObject);
+
+		create(object, spawn, ObjectID);
 	}
 }
 

@@ -192,7 +192,9 @@ ICF	u32	script_time_global_async	()	{ return Device.TimerAsync_MMT(); }
 ICF	u32	script_time_global	()	{ return 0; }
 ICF	u32	script_time_global_async	()	{ return 0; }
 #endif
-
+void SemiLog(const char* Msg) {
+	Log(Msg);
+}
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
@@ -209,6 +211,7 @@ void CScriptEngine::script_register(lua_State *L)
 	];
 
 	function	(L,	"log",								LuaLog);
+	function	(L,	"SemiLog",							SemiLog);
 	function	(L,	"error_log",						ErrorLog);
 	function	(L,	"flush",							FlushLogs);
 	function	(L,	"prefetch",							prefetch_module);
