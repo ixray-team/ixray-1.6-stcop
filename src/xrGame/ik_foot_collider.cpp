@@ -280,7 +280,7 @@ void ik_foot_collider::collide( SIKCollideData &cld, const ik_foot_geom &foot_ge
 	{
 		DBG_DrawPoint(pos_toe, 0.01f, color_xrgb(255, 0, 0));
 		if (cld.collided)
-			DBG_DrawPoint(r_toe.position, 0.01, color_xrgb(0, 0, 255));
+			DBG_DrawPoint(r_toe.position, 0.01f, color_xrgb(0, 0, 255));
 	}
 #endif
 
@@ -325,7 +325,7 @@ void ik_foot_collider::collide( SIKCollideData &cld, const ik_foot_geom &foot_ge
 #ifdef DEBUG
 			if( ph_dbg_draw_mask1.test( phDbgDrawIKCollision ) )
 			{
-				DBG_DrawPoint(pos_toe, 0.01, color_xrgb(255, 0, 0));
+				DBG_DrawPoint(pos_toe, 0.01f, color_xrgb(255, 0, 0));
 				if(cld.collided)
 				{
 					DBG_DrawTri(r_toe.position, r_heel.position, r_side.position, color_xrgb(0, 0, 255), false);

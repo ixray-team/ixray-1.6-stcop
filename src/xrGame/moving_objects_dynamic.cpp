@@ -162,7 +162,7 @@ void moving_objects::fill_nearest_moving		(moving_object *object)
 		m_nearest_moving.end()
 	);
 
-	u32							size = m_nearest_moving.size();
+	size_t size = m_nearest_moving.size();
 	moving_object				**temp = (moving_object**)_alloca(size*sizeof(moving_object*));
 	std::copy					(m_nearest_moving.begin(),m_nearest_moving.end(),temp);
 	std::sort					(temp, temp + size);
