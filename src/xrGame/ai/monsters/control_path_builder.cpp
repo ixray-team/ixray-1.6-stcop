@@ -178,7 +178,7 @@ bool CControlPathBuilder::is_path_end(float dist_to_end)
 		return true;
 	
 	u32 cur_point_idx	= detail().curr_travel_point_index();
-	u32	path_size		= detail().path().size();
+	u32	path_size		= (u32)detail().path().size();
 	if (path_size < 2)
 		return true;
 	if (cur_point_idx + 1 >= path_size)	
