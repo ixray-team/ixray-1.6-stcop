@@ -10,6 +10,7 @@
 
 struct ALDeviceDesc{
 	string256			name;
+	string256			name_al;
 	int	ALminor_ver;
 	int	ALmajor_ver;
 	int	EFXminor_ver;
@@ -27,9 +28,10 @@ struct ALDeviceDesc{
 		u16 storage;
 	};
 	ESndProps				props;
-	ALDeviceDesc(LPCSTR nm, int almn, int almj, int efxmn, int efxmj)
+	ALDeviceDesc(LPCSTR nm,LPCSTR nml, int almn, int almj, int efxmn, int efxmj)
 	{
 		xr_strcpy(name, nm);
+		xr_strcpy(name_al, nml);
 		ALminor_ver = almn;
 		ALmajor_ver = almj;
 		EFXminor_ver = efxmn;
