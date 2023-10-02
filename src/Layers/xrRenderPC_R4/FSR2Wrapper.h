@@ -28,6 +28,7 @@ public:
 
         // Output
         ID3D11Texture2D* resolvedColorResource = nullptr;
+        ID3D11Texture2D* opaqueColorResource = nullptr;
 
         // Arguments
         uint32_t renderWidth = 0;

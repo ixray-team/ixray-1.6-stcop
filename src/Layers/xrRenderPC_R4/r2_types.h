@@ -1,6 +1,7 @@
 #pragma once
 
 #define		r2_RT_target		"$user$target"			      // MRT
+#define		r2_RT_target_opaque	"$user$target_opaque"	      // MRT
 #define		r2_RT_HW_depth		"$user$hwdepth"			      // MRT
 #define		r2_RT_HW_target_depth	"$user$hwtargetdepth"     // MRT
 #define		r2_RT_copy_depth	"$user$copy_depth"		      // MRT

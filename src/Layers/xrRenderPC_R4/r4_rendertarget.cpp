@@ -357,6 +357,7 @@ CRenderTarget::CRenderTarget		()
    // generic HDR RTs
    // TODO: HDR support
    rt_Target.create(r2_RT_target, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
+   rt_OpaqueTarget.create(r2_RT_target_opaque, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
    rt_Output.create(r4_output, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
    rt_UpscaleOutput.create(r4_upscale_output, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1, true);
 

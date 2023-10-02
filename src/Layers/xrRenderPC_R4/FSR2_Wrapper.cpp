@@ -95,7 +95,7 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     // EXPERIMENTAL feature, auto-generate reactive mask
     // Turn it off if you don't need it
     dispatchParameters.enableAutoReactive = true;
-    dispatchParameters.colorOpaqueOnly = ffxGetResourceDX11(&m_context, params.unresolvedColorResource, L"FSR2_InputColor");
+    dispatchParameters.colorOpaqueOnly = ffxGetResourceDX11(&m_context, params.opaqueColorResource, L"FSR2_OpaqueInputColor");
 
 #if COMPILE_FROM_HLSL
     memcpy(&s_initializationParameters, &initializationParameters, sizeof(FfxFsr2ContextDescriptor));

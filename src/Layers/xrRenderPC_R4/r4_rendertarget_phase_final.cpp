@@ -67,6 +67,7 @@ void CRenderTarget::phase_final()
 
 	// Draw full-screen quad textured with our scene image
 	phase_combine();
+	HW.pContext->CopyResource(rt_OpaqueTarget->pSurface, rt_Target->pSurface);
 
 	//	Igor: for volumetric lights
 	//	combine light volume here

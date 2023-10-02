@@ -65,6 +65,7 @@ public:
 	ref_rt						rt_HWCopyDepth;		// target
 	ref_rt						rt_HWDepth;			// scaled
 	ref_rt						rt_Target;			// scaled, 32bit HDR (rgb)
+	ref_rt						rt_OpaqueTarget;	// scaled, 32bit HDR (rgb)
 	ref_rt						rt_AA_BackBuffer;	// scaled
 	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
 	ref_rt						rt_Position;		// scaled, 64bit,	fat	(x,y,z,?)				(eye-space)

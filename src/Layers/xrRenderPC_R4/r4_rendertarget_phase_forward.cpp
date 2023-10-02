@@ -8,7 +8,7 @@ void CRenderTarget::phase_forward()
 	if (ps_r4_native_forward) {
 		u_setrt(RCache.get_target_width(), RCache.get_target_height(), rt_Output->pRT, 0, 0, rt_HWScaledTargetDepth->pZRT);
 	} else {
-		u_setrt(RCache.get_width(), RCache.get_height(), rt_Target->pRT, 0, 0, rt_HWDepth->pZRT);
+		u_setrt(RCache.get_width(), RCache.get_height(), rt_Target->pRT, rt_Motion->pRT, 0, rt_HWDepth->pZRT);
 	}
 
 	RCache.set_CullMode(CULL_CCW);

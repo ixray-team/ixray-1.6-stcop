@@ -12,6 +12,7 @@ void CRenderTarget::phase_fsr2_combine()
     Fsr2Wrapper::DrawParameters fsr2Params;
     fsr2Params.deviceContext = HW.pContext;
     fsr2Params.exposureResource = nullptr;
+    fsr2Params.opaqueColorResource = rt_OpaqueTarget->pSurface;
     fsr2Params.unresolvedColorResource = rt_Target->pSurface;
     fsr2Params.motionvectorResource = rt_MotionVectors->pSurface;
     fsr2Params.depthbufferResource = rt_HWDepth->pSurface;
