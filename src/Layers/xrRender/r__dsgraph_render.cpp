@@ -524,12 +524,12 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 
 	Device.mProject.build_projection(
 		deg2rad(psHUD_FOV),
-		Device.fASPECT, HUD_VIEWPORT_NEAR, 
+		Device.fASPECT, VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mPrevProject.build_projection(
 		deg2rad(psHUD_FOV),
-		Device.fASPECT, HUD_VIEWPORT_NEAR,
+		Device.fASPECT, VIEWPORT_NEAR,
 		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul(Device.mProject, Device.mView);
