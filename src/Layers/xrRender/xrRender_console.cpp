@@ -92,6 +92,7 @@ float		ps_r4_jitter_scale_y		= 2.0;
 float		ps_r4_motion_scale			= 0.5;
 float		ps_r4_sharp_factor			= 0.5f;
 int			ps_r4_sharp_enable			= 1;
+int			ps_r4_native_forward		= 0;
 
 int			ps_r__LightSleepFrames;
 float		ps_r__Detail_l_ambient		= 0.9f	;
@@ -841,6 +842,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r4_motion_scale",				&ps_r4_motion_scale,		0, 2);
 	CMD4(CCC_Float,		"r4_sharp_factor",				&ps_r4_sharp_factor,		0, 1);
 	CMD4(CCC_Integer,	"r4_sharp_enable",				&ps_r4_sharp_enable,		0, 1);
+	CMD4(CCC_Integer,	"r4_native_forward",			&ps_r4_native_forward,		0, 1);
 	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);
 
 	CMD3(CCC_Token,		"r2_type_aa",					&ps_r2_aa_type,				aa_type_token);

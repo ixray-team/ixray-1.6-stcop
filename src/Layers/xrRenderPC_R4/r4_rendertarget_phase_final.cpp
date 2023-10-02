@@ -25,6 +25,8 @@ inline float hclip(float v, float dim)
 	return 2.f * v / dim - 1.f; 
 }
 
+extern int			ps_r4_native_forward;
+
 //	TODO: DX10: Remove half poxel offset
 void CRenderTarget::phase_final()
 {
@@ -76,7 +78,10 @@ void CRenderTarget::phase_final()
 	RCache.set_Stencil(FALSE);
 
 	// for msaa we need a resolved color buffer - Holger
-	phase_forward();
+	if (ps_r4_native_forward == 0) {
+		phase_forward();
+	}
+
 	phase_bloom();												// HDR RT invalidated here
 
 	if (ps_r2_aa_type == 1) {
@@ -120,6 +125,10 @@ void CRenderTarget::phase_final()
 	////////////////////////////////////////////////////////////
 
 	phase_depth_scale();
+	if (ps_r4_native_forward == 1) {
+		phase_forward();
+	}
+
 	phase_distort();
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(FALSE);
