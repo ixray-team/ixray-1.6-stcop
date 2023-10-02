@@ -20,7 +20,7 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 	case SE_SUN_NEAR:		// near pass - enable Z-test to perform depth-clipping
 	case SE_SUN_MIDDLE:		// middle pass - enable Z-test to perform depth-clipping
 		//	FVF::TL2uv
-		C.r_Pass			("accum_sun","accum_sun_near_nomsaa_nominmax",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+		C.r_Pass			("accum_sun","accum_sun_near_nominmax",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
 
 		C.r_CullMode		(D3DCULL_NONE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
@@ -44,7 +44,7 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 	case SE_SUN_FAR:		// far pass, only stencil clipping performed
 		//	FVF::TL2uv
 		//C.r_Pass			("null",			"accum_sun_far",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
-		C.r_Pass			("accum_sun","accum_sun_far_nomsaa",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+		C.r_Pass			("accum_sun","accum_sun_far",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
 		C.r_CullMode		(D3DCULL_NONE);
 		//C.r_Sampler_rtf		("s_position",		r2_RT_P			);
 		//C.r_Sampler_rtf		("s_normal",		r2_RT_N			);
@@ -81,7 +81,7 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 		break;
 	case SE_SUN_LUMINANCE:	// luminance pass
 		//C.r_Pass			("null",			"accum_sun",		false,	FALSE,	FALSE);
-		C.r_Pass			("stub_notransform_aa_AA","accum_sun_nomsaa",		false,	FALSE,	FALSE);
+		C.r_Pass			("stub_notransform_aa_AA","accum_sun",		false,	FALSE,	FALSE);
 		C.r_CullMode		(D3DCULL_NONE);
 		//C.r_Sampler_rtf		("s_position",		r2_RT_P			);
 		//C.r_Sampler_rtf		("s_normal",		r2_RT_N			);
@@ -103,7 +103,7 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 		//	SE_SUN_NEAR for min/max
 	case SE_SUN_NEAR_MINMAX:		// near pass - enable Z-test to perform depth-clipping
 		//	FVF::TL2uv
-		C.r_Pass			("accum_sun","accum_sun_near_nomsaa_minmax",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+		C.r_Pass			("accum_sun","accum_sun_near_minmax",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
 		C.r_CullMode		(D3DCULL_NONE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 
@@ -127,7 +127,7 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 	//	SE_SUN_FAR for min/max
 	case 5:		// far pass, only stencil clipping performed
 		//	FVF::TL2uv
-		C.r_Pass			("stub_notransform_2uv","accum_sun_far_nomsaa",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
+		C.r_Pass			("stub_notransform_2uv","accum_sun_far",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
 		C.r_CullMode		(D3DCULL_NONE);
 
 		C.r_dx10Texture		("s_position",		r2_RT_P);

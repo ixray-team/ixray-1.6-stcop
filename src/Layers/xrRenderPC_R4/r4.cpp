@@ -1194,7 +1194,7 @@ HRESULT	CRender::shader_compile			(
 		++len;
 	}
 
-	if (xr_strcmp(name, "accum_sun_near_nomsaa_minmax") == 0)
+	if (xr_strcmp(name, "accum_sun_near_minmax") == 0)
 	{
 		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
 		defines[def_it].Name = "SUN_QUALITY";

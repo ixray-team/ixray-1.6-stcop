@@ -330,7 +330,7 @@ CRenderTarget::CRenderTarget		()
 	b_bloom					= xr_new<CBlender_bloom_build>			();
 	b_luminance				= xr_new<CBlender_luminance>		();
 	b_combine				= xr_new<CBlender_combine>			();
-	b_ssao					= xr_new<CBlender_SSAO_noMSAA>		();
+	b_ssao					= xr_new<CBlender_SSAO>		();
 
 	// HDAO
 	b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
@@ -428,10 +428,10 @@ CRenderTarget::CRenderTarget		()
 
 		if (RImplementation.o.advancedpp)
 		{
-			s_accum_direct_volumetric.create("accum_volumetric_sun_nomsaa");
+			s_accum_direct_volumetric.create("accum_volumetric_sun");
 
 			if (RImplementation.o.dx10_minmax_sm)
-				s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_nomsaa_minmax");
+				s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_minmax");
 		}
 	}
 
@@ -537,16 +537,6 @@ CRenderTarget::CRenderTarget		()
 	//	u32		w = Device.TargetWidth, h = Device.TargetHeight;
 	//	rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F, SampleCount);
 	//	s_ssao.create				(b_ssao, "r2\\ssao");
-
-	//	if( RImplementation.o.dx10_msaa )
-	//	{
-	//		int bound = RImplementation.o.dx10_msaa_opt ? 1 : RImplementation.o.dx10_msaa_samples;
-
-	//		for( int i = 0; i < bound; ++i )
-	//		{
-	//			s_ssao_msaa[i].create( b_ssao_msaa[i], "null");
-	//		}
-	//	}
 	//}
 
 	// HDAO

@@ -3,17 +3,17 @@
 
 #include "Blender_SSAO.h"
 
-CBlender_SSAO_noMSAA::CBlender_SSAO_noMSAA	()	{	description.CLS		= 0;	}
-CBlender_SSAO_noMSAA::~CBlender_SSAO_noMSAA	()	{	}
+CBlender_SSAO::CBlender_SSAO	()	{	description.CLS		= 0;	}
+CBlender_SSAO::~CBlender_SSAO	()	{	}
 
-void	CBlender_SSAO_noMSAA::Compile			(CBlender_Compile& C)
+void	CBlender_SSAO::Compile			(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
 
 	switch (C.iElement)
 	{
 	case 0:		// calculate SSAO
-		C.r_Pass			("combine_1",		"ssao_calc_nomsaa",	FALSE,	FALSE,	FALSE);
+		C.r_Pass			("combine_1",		"ssao_calc",	FALSE,	FALSE,	FALSE);
 		C.r_Stencil			(TRUE, D3DCMP_LESSEQUAL, 0xFF);	// stencil should be >= 1
 		C.r_StencilRef		(0x01);
 		C.r_CullMode		(D3DCULL_NONE);
