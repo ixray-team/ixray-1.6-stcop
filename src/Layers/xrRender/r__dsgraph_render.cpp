@@ -655,7 +655,12 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	RCache.set_xform_project(Device.mProject);
 
 	// Rendering
-	rmNear						();
+
+	IRender_Target* T = getTarget();
+	D3D_VIEWPORT VP = { 0,0,(float)T->get_width(),(float)T->get_height(),0,0.01f };
+
+	HW.pContext->RSSetViewports(1, &VP);
+
 	// Sorted (back to front)
 	mapHUDEmissive.traverseLR	(sorted_L1);
 	mapHUDEmissive.clear		();

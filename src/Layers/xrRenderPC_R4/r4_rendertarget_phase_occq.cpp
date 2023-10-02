@@ -2,7 +2,7 @@
 
 void	CRenderTarget::phase_occq	()
 {
-	u_setrt						(RCache.get_width(), RCache.get_height(), HW.pBaseRT, NULL, NULL, rt_HWDepth->pZRT);
+	u_setrt						(RCache.get_width(), RCache.get_height(), rt_Target->pRT, NULL, NULL, rt_HWDepth->pZRT);
 	RCache.set_Shader			( s_occq	);
 	RCache.set_CullMode			( CULL_CCW	);
 	RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
