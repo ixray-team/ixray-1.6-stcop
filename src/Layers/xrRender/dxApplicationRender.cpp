@@ -45,7 +45,7 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 #ifdef USE_DX11
 	RImplementation.rmNormal();
 	RCache.set_RT(HW.pBaseRT);
-	RCache.set_ZB(RImplementation.Target->rt_HWDepth->pZRT);
+	RCache.set_ZB(nullptr);
 
 	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);

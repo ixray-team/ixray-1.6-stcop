@@ -61,10 +61,10 @@ public:
 	ref_rt						rt_Distort;			// target
 
 	// MRT-path
-	ref_rt						rt_HWDepth;			// target
+	ref_rt						rt_HWScaledTargetDepth;	// target
+	ref_rt						rt_HWCopyDepth;		// target
+	ref_rt						rt_HWDepth;			// scaled
 	ref_rt						rt_Target;			// scaled, 32bit HDR (rgb)
-	ref_rt						rt_Depth;			// scaled, Z-buffer like - initial depth
-	ref_rt						rt_CopyDepth;			// scaled, Z-buffer like - initial depth
 	ref_rt						rt_AA_BackBuffer;	// scaled
 	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
 	ref_rt						rt_Position;		// scaled, 64bit,	fat	(x,y,z,?)				(eye-space)
@@ -282,11 +282,11 @@ public:
 	void						phase_combine_volumetric();
 	void						phase_pp				();
 
-	void						phase_copy_depth		();
 	void						phase_motion_vectors	();
 	void						phase_fsr2_combine		();
 	void						phase_dlss_combine		();
 	void						phase_output_scale		(bool linear);
+	void						phase_depth_scale		();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}

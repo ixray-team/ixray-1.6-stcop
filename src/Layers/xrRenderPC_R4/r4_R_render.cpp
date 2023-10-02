@@ -158,20 +158,20 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Output, 0, 0, Target->rt_HWDepth->pZRT);		// LDR RT
+		Target->u_setrt(Target->rt_Output, 0, 0, nullptr);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 
 	// Distort
 	{
 		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Distort,0,0, Target->rt_HWDepth->pZRT);		// Now RT is a distortion mask
+		Target->u_setrt(Target->rt_Distort,0,0, nullptr);		// Now RT is a distortion mask
 		HW.pContext->ClearRenderTargetView(Target->rt_Distort->pRT, ColorRGBA);
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, Target->rt_HWDepth->pZRT);
+	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, nullptr);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
@@ -218,7 +218,7 @@ void CRender::Render		()
 	if( !(g_pGameLevel && g_hud)
 		|| bMenu)	
 	{
-		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL, Target->rt_HWDepth->pZRT);
+		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL, nullptr);
 		return;
 	}
 
@@ -463,6 +463,7 @@ void CRender::Render		()
 	{
 		PIX_EVENT(DEFER_SELF_ILLUM);
 		Target->phase_accumulator();
+
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
 		RCache.set_prev_xform_project(Device.mPrevProject);
 		RCache.set_prev_xform_view(Device.mPrevView);

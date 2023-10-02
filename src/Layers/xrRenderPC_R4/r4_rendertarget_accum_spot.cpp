@@ -26,6 +26,8 @@ void CRenderTarget::accum_spot	(light* L)
 		}	
 	}
 
+	auto PrevJitter = RCache.get_prev_xform_jitter();
+	auto Jitter = RCache.get_xform_jitter();
 	BOOL	bIntersect			= FALSE; //enable_scissor(L);
 	{
 		// setup xform

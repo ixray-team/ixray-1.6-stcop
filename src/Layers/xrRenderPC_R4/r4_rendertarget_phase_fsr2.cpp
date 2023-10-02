@@ -9,14 +9,12 @@ void CRenderTarget::phase_fsr2_combine()
 {
     PIX_EVENT(FSR2);
 
-    phase_copy_depth();
-
     Fsr2Wrapper::DrawParameters fsr2Params;
     fsr2Params.deviceContext = HW.pContext;
     fsr2Params.exposureResource = nullptr;
     fsr2Params.unresolvedColorResource = rt_Target->pSurface;
     fsr2Params.motionvectorResource = rt_MotionVectors->pSurface;
-    fsr2Params.depthbufferResource = rt_CopyDepth->pSurface;
+    fsr2Params.depthbufferResource = rt_HWDepth->pSurface;
     fsr2Params.reactiveMapResource = nullptr;
     fsr2Params.transparencyAndCompositionResource = nullptr;
     fsr2Params.resolvedColorResource = rt_UpscaleOutput->pSurface;

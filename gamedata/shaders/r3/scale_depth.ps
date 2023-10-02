@@ -1,0 +1,12 @@
+#include "common.h"
+
+uniform float far_plane;
+
+#ifdef GBUFFER_OPTIMIZATION
+float4 main ( p_TL I, float4 pos2d : SV_Position ) : SV_Target
+#else
+float4 main ( p_TL I ) : SV_Target
+#endif
+{
+    return s_depth.Sample(smp_rtlinear, I.Tex0);
+}

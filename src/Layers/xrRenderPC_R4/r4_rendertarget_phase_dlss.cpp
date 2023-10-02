@@ -9,14 +9,12 @@ void CRenderTarget::phase_dlss_combine()
 {
     PIX_EVENT(DLSS);
 
-    phase_copy_depth();
-
     DLSSWrapper::DrawParameters dlssParams;
     dlssParams.deviceContext = HW.pContext;
     dlssParams.exposureResource = nullptr;
     dlssParams.unresolvedColorResource = rt_Target->pSurface;
     dlssParams.motionvectorResource = rt_MotionVectors->pSurface;
-    dlssParams.depthbufferResource = rt_CopyDepth->pSurface;
+    dlssParams.depthbufferResource = rt_HWDepth->pSurface;
     dlssParams.reactiveMapResource = nullptr;
     dlssParams.transparencyAndCompositionResource = nullptr;
     dlssParams.resolvedColorResource = rt_UpscaleOutput->pSurface;

@@ -617,9 +617,17 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 {
 #if	RENDER!=R_R1
-	// Sorted (back to front)
-	mapEmissive.traverseLR	(sorted_L1);
-	mapEmissive.clear		();
+	if (1)
+	{
+		IRender_Target* T = getTarget();
+		D3D_VIEWPORT VP = { 0,0,(float)T->get_width(),(float)T->get_height(),0,0.999f };
+
+		HW.pContext->RSSetViewports(1, &VP);
+
+		// Sorted (back to front)
+		mapEmissive.traverseLR(sorted_L1);
+		mapEmissive.clear();
+	}
 
 	//	HACK: Calculate this only once
 

@@ -93,6 +93,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	Fvector3					cull_COP;
 	CSector*					cull_sector;
 	Fmatrix						cull_xform;
+
 	{
 		FPU::m64r					();
 		// Lets begin from base frustum
@@ -323,6 +324,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
+	if (1)
 	{
 		bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
