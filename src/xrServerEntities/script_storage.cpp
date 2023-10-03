@@ -405,6 +405,10 @@ void CScriptStorage::print_stack() {
 		//lua_pop(L, 1);
 	}
 
+	if (!strstr(Core.Params, "-use_callstack")) {
+		return;
+	}
+
 	lua_Debug LuaDebugInfo;
 	const char* LocalVarName;
 
