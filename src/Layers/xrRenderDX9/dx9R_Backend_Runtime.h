@@ -234,22 +234,22 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	}
 }
 
-inline IC float CBackend::get_width()
+IC float CBackend::get_width()
 {
 	return RDEVICE.TargetWidth;
 }
 
-inline IC float CBackend::get_height()
+IC float CBackend::get_height()
 {
 	return RDEVICE.TargetHeight;
 }
 
-inline IC float CBackend::get_target_width()
+IC float CBackend::get_target_width()
 {
 	return RDEVICE.TargetWidth;
 }
 
-inline IC float CBackend::get_target_height()
+IC float CBackend::get_target_height()
 {
 	return RDEVICE.TargetHeight;
 }
