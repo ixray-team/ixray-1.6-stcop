@@ -13,17 +13,19 @@ f_deffer main(p_particle II)
   p_flat I;	
 
   I=II.base;
+  
+  // 1. Base texture + kill pixels with low alpha
   float4 D = s_base.Sample( smp_base, I.tcdh);
 	D	*= II.color;
-
 	clip(D.w-def_aref);
+
 	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
   float4 Ne = float4(normalize((float3)I.N.xyz), I.position.w);
 
   // 2. Standart output
   O	 = pack_gbuffer( 
 								Ne,
-								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h	, xmaterial		),
+								float4 	(I.position.xyz + Ne.xyz*def_virtualh / 2.0f, xmaterial		),
 								float4	(D.xyz,			def_gloss),						
 								float4  (motion_vector.x, motion_vector.y, 0.0f, 0.0f)
 	);							

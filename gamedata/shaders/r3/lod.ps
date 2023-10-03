@@ -47,8 +47,8 @@ f_deffer 	main	( vf I )
   float4 D;
   float4 H;
   
-  sample_Textures(D, H, I.tc1, I.tc0, I.af, float2(0,0));
-	clip(D.w-(96.h/255.h));
+	sample_Textures(D, H, I.tc1, I.tc0, I.af, float2(0,0));
+	clip(D.w - (96.0f / 255.0f));
   
   float3 N 	= normalize	(H.xyz);  
 	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
@@ -56,7 +56,7 @@ f_deffer 	main	( vf I )
   // 2. Standart output
   O	= pack_gbuffer(
 								float4	(N					, H.w		),
-								float4 	(I.position + N*def_virtualh/2.h	, 0		),
+								float4 	(I.position + N*def_virtualh/2.0f, 0.0f),
 								float4	(D.x,	D.y,	D.z			, def_gloss	),							
 								float4  (motion_vector.x, motion_vector.y, 0.0f, 0.0f)
 	);
