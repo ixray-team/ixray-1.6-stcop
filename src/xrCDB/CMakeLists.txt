@@ -36,6 +36,7 @@ target_compile_definitions(xrCDB PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrCDB PUBLIC xrCore)
+target_link_libraries(xrCDB PUBLIC xrAPI)
 
 # Move precompiled header
 set_target_properties(xrCDB PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
