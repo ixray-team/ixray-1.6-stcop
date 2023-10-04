@@ -114,6 +114,7 @@ extern XRCORE_API	xrMemory	Memory;
 #endif // DEBUG_MEMORY_NAME
 
 XRCORE_API	char* 	xr_strdup	(const char* string);
+XRCORE_API	wchar_t* 	xr_strdup	(const wchar_t* string);
 
 #ifdef DEBUG_MEMORY_NAME
 // Global new/delete override

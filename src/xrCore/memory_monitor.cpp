@@ -58,7 +58,7 @@ union _allocation_size {
 
 STATIC bool use_monitor					()
 {
-	return						(!!strstr(GetCommandLine(),"-memory_monitor"));
+	return						(!!strstr(GetCommandLineA(),"-memory_monitor"));
 }
 }
 
@@ -148,7 +148,7 @@ void memory_monitor::make_checkpoint	(LPCSTR checkpoint_name)
 	strconcat				(sizeof(fn),fn,output_folder,checkpoint_name,output_extension);
 
 	Msg						("Creating memory checkpoint file[%s]...", fn);
-	CopyFile				(file_name(),fn,FALSE);
+	CopyFileA				(file_name(),fn,FALSE);
 	Msg						("Done");
 }
 

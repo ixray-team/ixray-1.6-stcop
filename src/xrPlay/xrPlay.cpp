@@ -23,12 +23,12 @@ void CreateGameWindow() {
 
 		// Register the windows class
 		HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
-		WNDCLASS wndClass = { 0, WndProc, 0, 0, hInstance,
+		WNDCLASSA wndClass = { 0, WndProc, 0, 0, hInstance,
 							  LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)),
 							  LoadCursor(NULL, IDC_ARROW),
 							  (HBRUSH)GetStockObject(BLACK_BRUSH),
 							  NULL, wndclass };
-		RegisterClass(&wndClass);
+		RegisterClassA(&wndClass);
 
 		// Set the window's initial style
 		Device.m_dwWindowStyle = WS_BORDER | WS_DLGFRAME;
@@ -39,7 +39,7 @@ void CreateGameWindow() {
 		AdjustWindowRect(&rc, Device.m_dwWindowStyle, FALSE);
 
 		// Create the render window
-		Device.m_hWnd = CreateWindowEx(WS_EX_TOPMOST,
+		Device.m_hWnd = CreateWindowExA(WS_EX_TOPMOST,
 			wndclass, "S.T.A.L.K.E.R.: Call of Pripyat", Device.m_dwWindowStyle,
 			/*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
 			(rc.right - rc.left), (rc.bottom - rc.top), 0L,

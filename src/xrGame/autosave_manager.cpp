@@ -78,7 +78,7 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 
 	MainMenu()->Screenshot		(IRender_interface::SM_FOR_GAMESAVE,S1);
 
-	SetFileAttributes			( S1, FILE_ATTRIBUTE_HIDDEN );
+	SetFileAttributes			(ANSI_TO_TCHAR(S1), FILE_ATTRIBUTE_HIDDEN );
 	
 	CurrentGameUI()->AddCustomStatic("autosave", true);
 }

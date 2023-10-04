@@ -103,7 +103,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 	memory_monitor::flush_each_time	(false);
 #endif // USE_MEMORY_MONITOR
 
-	if (!IsDebuggerPresent() && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
+	if (!IsDebuggerPresent() && !strstr(GetCommandLineA(),"-no_call_stack_assert")) {
 		if (shared_str_initialized)
 			Msg			("stack trace:\n");
 
@@ -122,7 +122,7 @@ void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
 	ShowWindow(get_current_wnd(), SW_MINIMIZE);
-	MessageBox			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBoxA			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
 
@@ -164,7 +164,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
-	int result = MessageBox(
+	int result = MessageBoxA(
 		NULL, assertion_info, "Fatal Error",
 		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY);
 
@@ -409,7 +409,7 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 		return;
 	}
 
-    FormatMessage(
+    FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM,
         NULL,
@@ -515,7 +515,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			Debug.get_on_dialog()	(true);
 
 		ShowWindow(get_current_wnd(), SW_MINIMIZE);
-		MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+		MessageBoxA			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
 #ifndef _EDITOR
@@ -554,7 +554,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	void _terminate		()
 	{
-		if (strstr(GetCommandLine(),"-silent_error_mode"))
+		if (strstr(GetCommandLineA(),"-silent_error_mode"))
 			exit				(-1);
 
 		string4096				assertion_info;
@@ -586,7 +586,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
-		MessageBox				(
+		MessageBoxA				(
 			/*GetTopWindow(NULL)*/ nullptr,
 			assertion_info,
 			"Fatal Error",

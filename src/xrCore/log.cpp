@@ -44,8 +44,8 @@ void AddOne				(const char *split)
 	logCS.Enter			();
 
 	if (IsDebuggerPresent()) {
-		OutputDebugString(split);
-		OutputDebugString("\n");
+		OutputDebugStringA(split);
+		OutputDebugStringA("\n");
 	}
 
 //	DUMP_PHASE;
@@ -187,7 +187,7 @@ void CreateLog			(BOOL nl)
 	if (!no_log){
         IWriter *f		= FS.w_open	(logFName);
         if (f==NULL){
-        	MessageBox	(NULL,"Can't create log file.","Error",MB_ICONERROR);
+        	MessageBoxA	(NULL,"Can't create log file.","Error",MB_ICONERROR);
         	abort();
         }
         FS.w_close		(f);
