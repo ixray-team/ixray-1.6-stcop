@@ -5,7 +5,7 @@ void CFileStreamReader::construct	(LPCSTR file_name, const u32 &window_size)
 {
 	m_file_handle			=
 		CreateFile(
-			file_name,
+			ANSI_TO_TCHAR(file_name),
 			GENERIC_READ,
 			FILE_SHARE_READ,
 			0,

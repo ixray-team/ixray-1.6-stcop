@@ -10,7 +10,7 @@ CGameSpy_Patching::CGameSpy_Patching()
 
 	LPCSTR			g_name	= "xrGameSpy.dll";
 	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibrary	(g_name);
+	m_hGameSpyDLL			= LoadLibraryA	(g_name);
 	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
 	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -41,7 +41,7 @@ static char const * QueryPatchVersionString(char* dest, u32 dest_size)
 {
 	HKEY KeyCDKey = 0;
 	
-	long res = RegOpenKeyEx(REGISTRY_BASE, 
+	long res = RegOpenKeyExA(REGISTRY_BASE, 
 		REGISTRY_PATH, 0, KEY_READ, &KeyCDKey);
 
 	if (res != ERROR_SUCCESS || KeyCDKey == 0)
@@ -53,7 +53,7 @@ static char const * QueryPatchVersionString(char* dest, u32 dest_size)
 	DWORD KeyValueType = REG_SZ;
 
 	//RegQueryValueEx(KeyCDKey, REGISTRY_VALUE_LANGUAGE, NULL, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
-	RegQueryValueEx(KeyCDKey, REGISTRY_VALUE_SKU, NULL, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
+	RegQueryValueExA(KeyCDKey, REGISTRY_VALUE_SKU, NULL, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
 
 	xr_sprintf(dest, dest_size, "-%s", LangID);
 		

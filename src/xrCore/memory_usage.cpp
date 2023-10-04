@@ -35,7 +35,7 @@ XRCORE_API void log_vminfo	()
 
 u32	mem_usage_impl	(u32* pBlocksUsed, u32* pBlocksFree)
 {
-	static bool no_memory_usage = !!strstr( GetCommandLine(), "-no_memory_usage");
+	static bool no_memory_usage = !!strstr( GetCommandLineA(), "-no_memory_usage");
 	if ( no_memory_usage )
 		return		0;
 
