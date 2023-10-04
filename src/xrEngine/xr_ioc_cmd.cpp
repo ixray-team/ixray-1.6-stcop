@@ -194,7 +194,7 @@ public:
 		
 		BOOL b_allow = TRUE;
 		if ( FS.exist(cfg_full_name) )
-			b_allow = SetFileAttributes(cfg_full_name,FILE_ATTRIBUTE_NORMAL);
+			b_allow = SetFileAttributes(ANSI_TO_TCHAR(cfg_full_name),FILE_ATTRIBUTE_NORMAL);
 
 		if ( b_allow ){
 			IWriter* F			= FS.w_open(cfg_full_name);

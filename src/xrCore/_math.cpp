@@ -239,8 +239,26 @@ void _initialize_cpu	(void)
 
 	g_initialize_cpu_called = true;
 
-	auto Kernellib = GetModuleHandle("kernel32.dll");
+	auto Kernellib = GetModuleHandle(L"kernel32.dll");
 	SetThreadDescriptionProc = (SetThreadDescriptionDesc)GetProcAddress(Kernellib, "SetThreadDescription");
+}
+
+XRCORE_API wchar_t* ANSI_TO_TCHAR(const char* C) {
+	int len = strlen(C);
+	static wchar_t WName[4096];
+	RtlZeroMemory(&WName, sizeof(WName));
+
+	// Converts the path to wide characters
+	int needed = MultiByteToWideChar(CP_UTF8, 0, C, len + 1, WName, len + 1);
+	return WName;
+}
+
+XRCORE_API void ANSI_TO_UTF8(char* C) {
+	static wchar_t WName[256];
+	RtlZeroMemory(&WName, sizeof(WName));
+
+	MultiByteToWideChar(1251, 0, C, strlen(C), WName, strlen(C));
+	WideCharToMultiByte(CP_UTF8, 0, WName, wcslen(WName), C, 256, 0, 0);
 }
 
 #ifdef M_BORLAND
@@ -299,13 +317,7 @@ void thread_name(const char* name)
 
 	if (SetThreadDescriptionProc != nullptr)
 	{
-		int len = strlen(name);
-		wchar_t* WName = new wchar_t[len + 1];
-
-		// Converts the path to wide characters
-		int needed = MultiByteToWideChar(0, 0, name, len + 1, WName, len + 1);
-		SetThreadDescriptionProc(GetCurrentThread(), WName);
-		delete[] WName;
+		SetThreadDescriptionProc(GetCurrentThread(), ANSI_TO_TCHAR(name));
 	}
 	else
 	{

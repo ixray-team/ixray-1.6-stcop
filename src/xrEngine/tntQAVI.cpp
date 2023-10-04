@@ -41,7 +41,7 @@ BOOL CAviPlayerCustom::Load (char* fname)
 	}
 
 	// Открыть через mmioOpen( ) AVI файл
-	HMMIO hmmioFile = mmioOpen( fname, NULL, MMIO_READ /*MMIO_EXCLUSIVE*/ );
+	HMMIO hmmioFile = mmioOpenA( fname, NULL, MMIO_READ /*MMIO_EXCLUSIVE*/ );
 	if( hmmioFile == NULL ) {
 
 		return FALSE;
@@ -97,7 +97,7 @@ BOOL CAviPlayerCustom::Load (char* fname)
 
     AVIFileInit		();
 	PAVIFILE aviFile = 0;
-	if( AVIERR_OK != AVIFileOpen( &aviFile, fname, OF_READ, 0 ) )	return FALSE;
+	if( AVIERR_OK != AVIFileOpenA( &aviFile, fname, OF_READ, 0 ) )	return FALSE;
 
 	AVIFILEINFO		aviInfo;
 	ZeroMemory		(&aviInfo,sizeof(aviInfo));

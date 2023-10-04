@@ -41,16 +41,16 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 #endif
 		// Init COM so we can use CoCreateInstance
 //		HRESULT co_res = 
-		if (!strstr(GetCommandLine(),"-editor"))
+		if (!strstr(GetCommandLineA(),"-editor"))
 			CoInitializeEx	(NULL, COINIT_MULTITHREADED);
 
-		xr_strcpy			(Params,sizeof(Params),GetCommandLine());
+		xr_strcpy			(Params,sizeof(Params),GetCommandLineA());
 		_strlwr_s			(Params,sizeof(Params));
 
 		string_path		fn,dr,di;
 
 		// application path
-        GetModuleFileName(GetModuleHandle(MODULE_NAME),fn,sizeof(fn));
+        GetModuleFileNameA(GetModuleHandleA(MODULE_NAME),fn,sizeof(fn));
         _splitpath		(fn,dr,di,0,0);
         strconcat		(sizeof(ApplicationPath),ApplicationPath,dr,di);
 #ifndef _EDITOR
@@ -67,14 +67,14 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
         }
 #endif
 
-		GetCurrentDirectory(sizeof(WorkingPath),WorkingPath);
+		GetCurrentDirectoryA(sizeof(WorkingPath),WorkingPath);
 
 		// User/Comp Name
 		DWORD	sz_user		= sizeof(UserName);
-		GetUserName			(UserName,&sz_user);
+		GetUserNameA		(UserName,&sz_user);
 
 		DWORD	sz_comp		= sizeof(CompName);
-		GetComputerName		(CompName,&sz_comp);
+		GetComputerNameA	(CompName,&sz_comp);
 
 		// Mathematics & PSI detection
 		CPU::Detect			();
@@ -172,7 +172,7 @@ void xrCore::_destroy		()
 //.		LogFile.reserve		(256);
 		break;
 	case DLL_THREAD_ATTACH:
-		if (!strstr(GetCommandLine(),"-editor"))
+		if (!strstr(GetCommandLineA(),"-editor"))
 			CoInitializeEx	(NULL, COINIT_MULTITHREADED);
 		timeBeginPeriod	(1);
 		break;

@@ -31,7 +31,7 @@ xrMemory::xrMemory()
 	mem_fill32	= xrMemFill32_x86;
 
 #ifndef PURE_ONLY
-	if (!!strstr(GetCommandLine(), "-pure_alloc")) {
+	if (!!strstr(GetCommandLineA(), "-pure_alloc")) {
 		pAlloc = CMemAllocPure::Create();
 	} else {
 		pAlloc = CMemAllocXRay::Create();
@@ -98,6 +98,13 @@ char*			xr_strdup		(const char* string)
 	char *	memory		= (char*) Memory.mem_alloc(len);
 	CopyMemory		(memory,string,len);
 	return	memory;
+}
+wchar_t* xr_strdup(const wchar_t* string) {
+	VERIFY(string);
+	size_t len = u32(wcslen(string)) + 1;
+	wchar_t* memory = new wchar_t[len];
+	CopyMemory(memory, string, len);
+	return memory;
 }
 
 XRCORE_API		BOOL			is_stack_ptr		( void* _ptr)
