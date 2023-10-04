@@ -208,7 +208,7 @@ public:
 	virtual		BOOL				IsAnomaliesEnabled		();
 	virtual		u32					GetAnomaliesTime		();
 
-	virtual		u32					GetNumTeams				() {return teams.size();};
+	virtual		u32					GetNumTeams				() {return (u32)teams.size();};
 
 	// adtitional methods for predicates
 	void		__stdcall			RespawnPlayerAsSpectator(IClient* client);

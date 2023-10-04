@@ -49,7 +49,7 @@ public:
 						ALDeviceList			();
 						~ALDeviceList			();
 
-	u32					GetNumDevices			()				{return m_devices.size();}
+	u32					GetNumDevices			()				{return (u32)m_devices.size();}
 	const ALDeviceDesc&	GetDeviceDesc			(u32 index)		{return m_devices[index];}
 	LPCSTR				GetDeviceName			(u32 index);
 	void GetDeviceVersion(u32 index, int* ALmajor, int* ALminor, int* EFXmajor, int* EFXminor);

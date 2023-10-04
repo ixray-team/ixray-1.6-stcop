@@ -20,7 +20,7 @@ public:
 		xr_vector<item*>		m_childs;
 		xr_vector<shared_str>	m_items_in_group;
 		CUITabButtonMP*			m_button;
-		IC u32					ChildCount			()								const		{return m_childs.size();}
+		IC u32					ChildCount			()								const		{return (u32)m_childs.size();}
 		IC const item&			Child				(const shared_str& id)			const;
 		IC const item&			ChildAtIdx			(u32 idx)						const		{VERIFY(idx<=ChildCount()); return *m_childs[idx];};
 		IC bool					HasSubLevels		()								const		{return ChildCount()!=0;}
