@@ -15,38 +15,41 @@ void * 			FileDecompress	(const char *fn, const char* sign, u32* size=NULL);
 class CFileWriter : public IWriter
 {
 private:
-	FILE*			hf;
+	FILE* hf;
 public:
-	CFileWriter		(const char *name, bool exclusive)
+	CFileWriter (const char *name, bool exclusive)
 	{
 		R_ASSERT	(name && name[0]);
 		fName		= name;
+		wchar_t* wName = ANSI_TO_TCHAR(name);
 		VerifyPath	(*fName);
         if (exclusive){
-    		int handle	= _sopen(*fName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
+    		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
 #ifdef _EDITOR
     		if (handle==-1)
     			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
 #endif
-    		hf		= _fdopen(handle,"wb");
+    		hf		= _wfdopen(handle,L"wb");
         }else{
-			fopen_s(&hf, *fName,"wb");
+			_wfopen_s(&hf, wName, L"wb");
 			if (hf==0)
 				Msg		("!Can't write file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
 		}
 	}
 
-	virtual 		~CFileWriter()
+	virtual ~CFileWriter()
 	{
-		if (0!=hf){	
-        	fclose				(hf);
-        	// release RO attrib
-	        DWORD dwAttr 		= GetFileAttributes(*fName);
-	        if ((dwAttr != u32(-1))&&(dwAttr&FILE_ATTRIBUTE_READONLY)){
-                dwAttr 			&=~ FILE_ATTRIBUTE_READONLY;
-                SetFileAttributes(*fName, dwAttr);
-            }
-        }
+		if (0 != hf) {
+			wchar_t* wName = ANSI_TO_TCHAR(*fName);
+			fclose(hf);
+			// release RO attrib
+			DWORD dwAttr = GetFileAttributes(wName);
+
+			if ((dwAttr != u32(-1)) && (dwAttr & FILE_ATTRIBUTE_READONLY)) {
+				dwAttr &= ~FILE_ATTRIBUTE_READONLY;
+				SetFileAttributes(wName, dwAttr);
+			}
+		}
 	}
 	// kernel
 	virtual void	w			(const void* _ptr, u32 count) 
