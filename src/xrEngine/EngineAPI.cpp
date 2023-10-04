@@ -49,7 +49,7 @@ void CEngineAPI::InitializeNotDedicated()
 	if (psDeviceFlags.test(rsR4)) {
 		// try to initialize R4
 		Log				("Loading DLL:",	r4_name);
-		hRender			= LoadLibrary		(r4_name);
+		hRender			= LoadLibraryA		(r4_name);
 		if (0==hRender) {
 			// try to load R1
 			Msg			("! ...Failed - incompatible hardware/pre-Vista OS.");
@@ -61,7 +61,7 @@ void CEngineAPI::InitializeNotDedicated()
 		// try to initialize R2
 		psDeviceFlags.set	(rsR4,FALSE);
 		Log				("Loading DLL:",	r2_name);
-		hRender			= LoadLibrary		(r2_name);
+		hRender			= LoadLibraryA		(r2_name);
 		if (0==hRender) {
 			// try to load R1
 			Msg			("! ...Failed - incompatible hardware.");
@@ -90,7 +90,7 @@ void CEngineAPI::Initialize(void)
 		renderer_value		= 0; //con cmd
 
 		Log				("Loading DLL:",	r1_name);
-		hRender			= LoadLibrary		(r1_name);
+		hRender			= LoadLibraryA		(r1_name);
 		if (0==hRender)	R_CHK				(GetLastError());
 		//R_ASSERT		(hRender);
 		g_current_renderer	= 1;
@@ -102,7 +102,7 @@ void CEngineAPI::Initialize(void)
 	{
 		LPCSTR			g_name	= "xrGame.dll";
 		Log				("Loading DLL:",g_name);
-		hGame			= LoadLibrary	(g_name);
+		hGame			= LoadLibraryA	(g_name);
 		if (0==hGame)	R_CHK			(GetLastError());
 		R_ASSERT2		(hGame,"Game DLL raised exception during loading or there is no game DLL at all");
 		pCreate			= (Factory_Create*)		GetProcAddress(hGame,"xrFactory_Create"		);	R_ASSERT(pCreate);

@@ -28,7 +28,7 @@ int GetGameDistribution	()
 {
 	HKEY KeyCDKey = 0;
 	
-	long res = RegOpenKeyEx(REGISTRY_BASE, 
+	long res = RegOpenKeyExA(REGISTRY_BASE, 
 		REGISTRY_PATH, 0, KEY_READ, &KeyCDKey);
 
 //	char	KeyValue[1024] = "";
@@ -37,7 +37,7 @@ int GetGameDistribution	()
 	DWORD KeyValueType = REG_DWORD;
 	if (res == ERROR_SUCCESS && KeyCDKey != 0)
 	{
-		res = RegQueryValueEx(KeyCDKey, REGISTRY_VALUE_INSTALL_PATCH_ID, NULL, &KeyValueType, (LPBYTE)&KeyValue, &KeyValueSize);
+		res = RegQueryValueExA(KeyCDKey, REGISTRY_VALUE_INSTALL_PATCH_ID, NULL, &KeyValueType, (LPBYTE)&KeyValue, &KeyValueSize);
 	};
 	if (KeyCDKey != 0) RegCloseKey(KeyCDKey);
 

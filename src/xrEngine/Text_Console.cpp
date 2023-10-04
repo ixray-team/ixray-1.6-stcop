@@ -42,12 +42,12 @@ void	CTextConsole::CreateConsoleWnd()
 	const char*	wndclass ="TEXT_CONSOLE";
 
 	// Register the windows class
-	WNDCLASS wndClass = { 0, TextConsole_WndProc, 0, 0, hInstance,
+	WNDCLASSA wndClass = { 0, TextConsole_WndProc, 0, 0, hInstance,
 		NULL,
 		LoadCursor( hInstance, IDC_ARROW ),
 		GetStockBrush(GRAY_BRUSH),
 		NULL, wndclass };
-	RegisterClass( &wndClass );
+	RegisterClassA( &wndClass );
 
 	// Set the window's initial style
 	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE;// | WS_CLIPSIBLINGS;// | WS_CLIPCHILDREN;
@@ -58,7 +58,7 @@ void	CTextConsole::CreateConsoleWnd()
 //	AdjustWindowRect( &rc, dwWindowStyle, FALSE );
 
 	// Create the render window
-	m_hConsoleWnd = CreateWindow( wndclass, "XRAY Text Console", dwWindowStyle,
+	m_hConsoleWnd = CreateWindowA( wndclass, "XRAY Text Console", dwWindowStyle,
 		lX, lY,
 		lWidth, lHeight, *m_pMainWnd,
 		0, hInstance, 0L );
@@ -81,12 +81,12 @@ void	CTextConsole::CreateLogWnd()
 	const char*	wndclass ="TEXT_CONSOLE_LOG_WND";
 
 	// Register the windows class
-	WNDCLASS wndClass = { 0, TextConsole_LogWndProc, 0, 0, hInstance,
+	WNDCLASSA wndClass = { 0, TextConsole_LogWndProc, 0, 0, hInstance,
 		NULL,
 		LoadCursor( NULL, IDC_ARROW ),
 		GetStockBrush(BLACK_BRUSH),
 		NULL, wndclass };
-	RegisterClass( &wndClass );
+	RegisterClassA( &wndClass );
 
 	// Set the window's initial style
 	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE;// | WS_CLIPSIBLINGS;
@@ -98,7 +98,7 @@ void	CTextConsole::CreateLogWnd()
 //	AdjustWindowRect( &rc, dwWindowStyle, FALSE );
 
 	// Create the render window
-	m_hLogWnd = CreateWindow(wndclass, "XRAY Text Console Log", dwWindowStyle,
+	m_hLogWnd = CreateWindowA(wndclass, "XRAY Text Console Log", dwWindowStyle,
 		lX, lY,
 		lWidth, lHeight, m_hConsoleWnd,
 		0, hInstance, 0L );
@@ -108,7 +108,7 @@ void	CTextConsole::CreateLogWnd()
 	ShowWindow(m_hLogWnd, SW_SHOW); 
 	UpdateWindow(m_hLogWnd);
 	//-----------------------------------------------
-	LOGFONT lf; 
+	LOGFONTA lf; 
 	lf.lfHeight = -12; 
 	lf.lfWidth = 0;
 	lf.lfEscapement = 0; 
@@ -124,7 +124,7 @@ void	CTextConsole::CreateLogWnd()
 	lf.lfPitchAndFamily = VARIABLE_PITCH | FF_SWISS;
 	xr_sprintf(lf.lfFaceName,sizeof(lf.lfFaceName),"");
 
-	m_hLogWndFont = CreateFontIndirect(&lf);
+	m_hLogWndFont = CreateFontIndirectA(&lf);
 	R_ASSERT2(m_hLogWndFont, "Unable to Create Font for Log Window");
 	//------------------------------------------------
 	m_hDC_LogWnd = GetDC(m_hLogWnd);
@@ -250,18 +250,18 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 	int xb = 25;
 	
 	SetTextColor( hDC, RGB(255, 255, 255) );
-	TextOut( hDC, xb, Height-tm.tmHeight-1, buf, cur_len-1 );
+	TextOutA( hDC, xb, Height-tm.tmHeight-1, buf, cur_len-1 );
 	buf[ cur0_len ] = 0;
 	
 	SetTextColor(hDC, RGB(0, 0, 0));
-	TextOut( hDC, xb, Height-tm.tmHeight-1, buf, cur0_len );
+	TextOutA( hDC, xb, Height-tm.tmHeight-1, buf, cur0_len );
 
 
 	SetTextColor( hDC, RGB(255, 255, 255) );
-	TextOut( hDC, 0, Height-tm.tmHeight-3, ioc_prompt, xr_strlen(ioc_prompt) ); // ">>> "
+	TextOutA( hDC, 0, Height-tm.tmHeight-3, ioc_prompt, xr_strlen(ioc_prompt) ); // ">>> "
 
 	SetTextColor( hDC, (COLORREF)bgr2rgb(get_mark_color( mark11 )) );
-	TextOut( hDC, xb, Height-tm.tmHeight-3, s_edt, xr_strlen(s_edt) );
+	TextOutA( hDC, xb, Height-tm.tmHeight-3, s_edt, xr_strlen(s_edt) );
 
 	SetTextColor( hDC, RGB(205, 205, 225) );
 	u32 log_line = LogFile->size()-1;
@@ -272,7 +272,7 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 	xr_strcat( q2, sizeof(q2), "]" );
 	u32 qn = xr_strlen( q2 );
 
-	TextOut( hDC, Width - 8 * qn, Height-tm.tmHeight-tm.tmHeight, q2, qn );
+	TextOutA( hDC, Width - 8 * qn, Height-tm.tmHeight-tm.tmHeight, q2, qn );
 
 	int ypos = Height - tm.tmHeight - tm.tmHeight;
 	for( int i = LogFile->size()-1-scroll_delta; i >= 0; --i ) 
@@ -294,7 +294,7 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 		u8 b = (is_mark( cm ))? 2 : 0;
 		LPCSTR pOut = ls + b;
 
-		BOOL res = TextOut( hDC, 10, ypos, pOut, xr_strlen(pOut) );
+		BOOL res = TextOutA( hDC, 10, ypos, pOut, xr_strlen(pOut) );
 		if ( !res )
 		{
 			R_ASSERT2( 0, "TextOut(..) return NULL" );
@@ -313,7 +313,7 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 	for ( u32 i = 0; i < m_server_info.Size(); ++i )
 	{
 		SetTextColor( hDC, m_server_info[i].color );
-		TextOut( hDC, 10, ypos, m_server_info[i].name, xr_strlen(m_server_info[i].name) );
+		TextOutA( hDC, 10, ypos, m_server_info[i].name, xr_strlen(m_server_info[i].name) );
 
 		ypos += tm.tmHeight;
 		if ( ypos > y_top_max )

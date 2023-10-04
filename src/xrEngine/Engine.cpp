@@ -25,7 +25,7 @@ CEngine::~CEngine()
 void CEngine::Initialize	(void)
 {
 	// Bind PSGP
-	hPSGP		= LoadLibrary("xrCPU_Pipe.dll");
+	hPSGP		= LoadLibraryA("xrCPU_Pipe.dll");
 	R_ASSERT	(hPSGP);
 	xrBinder*	bindCPU	= (xrBinder*)	GetProcAddress(hPSGP,"xrBind_PSGP");	R_ASSERT(bindCPU);
 	bindCPU		(&PSGP, &CPU::ID );

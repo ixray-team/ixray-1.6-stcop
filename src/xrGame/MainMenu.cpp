@@ -593,7 +593,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 
 	string4096 FilePath = "";
 	char* FileName = NULL;
-	GetFullPathName(fileName, 4096, FilePath, &FileName);
+	GetFullPathNameA(fileName, 4096, FilePath, &FileName);
 
 	string_path		fname;
 	if (FS.path_exist("$downloads$"))
@@ -844,7 +844,7 @@ void CMainMenu::OnDownloadMPMap(CUIWindow* w, void* d)
 	LPCSTR url = m_downloaded_mp_map_url.c_str();
 	LPCSTR params = NULL;
 	STRCONCAT(params, "/C start ", url);
-	ShellExecute(0, "open", "cmd.exe", params, NULL, SW_SHOW);
+	ShellExecuteA(0, "open", "cmd.exe", params, NULL, SW_SHOW);
 }
 
 demo_info const * CMainMenu::GetDemoInfo(LPCSTR file_name)
