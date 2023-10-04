@@ -591,7 +591,7 @@ bool	CIKLimb::blend_collide( ik_goal_matrix &m, const SCalculateData& cd,  const
 		{
 			Fvector l_toe; m_foot.ToePosition( l_toe );
 			Fvector	v; fm.transform_tiny( v, l_toe );
-			DBG_DrawPoint(v, 0.1, color_xrgb(0, (ik_goal_matrix::cl_free == m0.collide_state()) * 255, (ik_goal_matrix::cl_aligned == m0.collide_state()) * 255));
+			DBG_DrawPoint(v, 0.1f, color_xrgb(0, (ik_goal_matrix::cl_free == m0.collide_state()) * 255, (ik_goal_matrix::cl_aligned == m0.collide_state()) * 255));
 		}
 #endif
 		return ret;
@@ -827,7 +827,7 @@ void CIKLimb::DBGDrawSetNewGoal	( SCalculateData& cd, const SIKCollideData &cld 
 		if( cd.state.foot_step && state_valide( sv_state ) )
 		{
 			DBG_DrawMatrix( cd.state.collide_pos.get(), 1.0f, 100 );
-			DBG_DrawPoint(cd.state.collide_pos.get().c, 0.1, color_xrgb(0, 255, 255));
+			DBG_DrawPoint(cd.state.collide_pos.get().c, 0.1f, color_xrgb(0, 255, 255));
 		}
 
 		if( ph_dbg_draw_mask1.test(phDbgDrawIKBlending) && cd.state.blending )
@@ -1155,7 +1155,7 @@ Matrix &CIKLimb::Goal			( Matrix &gl, const Fmatrix &xm, const SCalculateData& c
 			DBG_DrawLine(sv_state.goal(m).get().c, DBGG.c, color_xrgb(255, 0, 255));
 
 			DBG_DrawPoint(sv_state.goal(m).get().c, 0.05, color_xrgb(255, 255, 255));
-			DBG_DrawPoint(DBGG.c, 0.04, color_xrgb(0, 255, 0));
+			DBG_DrawPoint(DBGG.c, 0.04f, color_xrgb(0, 255, 0));
 			Fvector ch; ch.sub( DBGG.c, sv_state.goal( m ).get().c );
 			if( ch.magnitude( ) > 0.5f )
 			{

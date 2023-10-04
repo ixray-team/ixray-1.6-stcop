@@ -66,7 +66,7 @@ public:
 								SThunderboltCollection	();
 								~SThunderboltCollection	();
 						void	load					(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
-	SThunderboltDesc*			GetRandomDesc			(){VERIFY(palette.size()>0); return palette[Random.randI(palette.size())];}
+	SThunderboltDesc*			GetRandomDesc			(){VERIFY(palette.size()>0); return palette[Random.randI((u32)palette.size())];}
 };
 
 #define THUNDERBOLT_CACHE_SIZE	8

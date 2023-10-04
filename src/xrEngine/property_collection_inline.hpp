@@ -48,7 +48,7 @@ void PROPERTY_COLLECTION::clear							()
 SPECIALIZATION
 u32 PROPERTY_COLLECTION::size							()
 {
-	return				(m_container.size());
+	return				((u32)m_container.size());
 }
 
 SPECIALIZATION
