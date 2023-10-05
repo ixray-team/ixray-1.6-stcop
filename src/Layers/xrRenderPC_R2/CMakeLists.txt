@@ -65,7 +65,16 @@ target_link_libraries(xrRender_R2 PUBLIC xrEngine)
 target_link_libraries(xrRender_R2 PUBLIC xrParticles)
 target_link_libraries(xrRender_R2 PUBLIC "d3dcompiler.lib")
 
+# Nuget
+add_custom_command(TARGET ${PROJECT_NAME}
+    PRE_BUILD
+    COMMAND ${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+)
+
 ## DirectX SDK
 target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_CACHEFILE_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_CACHEFILE_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+
+## RenderDoc
+target_include_directories(xrRender_R2 PUBLIC "${CMAKE_HOME_DIRECTORY}/dep/renderdoc/")

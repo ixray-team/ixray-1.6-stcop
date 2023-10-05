@@ -6,7 +6,6 @@ file(GLOB_RECURSE CXI_SRC
     "CxImage/*.c"
     "CxImage/*.h"
 )
-
 file(GLOB_RECURSE JPG_SRC
     "jpeg/*.cpp"
     "jpeg/*.c"

@@ -5,6 +5,10 @@ project(IXRay)
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
 
+# Output target
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 # VS options
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS ON)
@@ -23,12 +27,15 @@ set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/)
 # Solution folders
 set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
 set(IXRAY_FOLDER_RENDER FOLDER "Renders")
+set(IXRAY_FOLDER_GAME FOLDER "Game")
 set(IXRAY_FOLDER_3RD FOLDER "3rd Party")
 
 # 3rd libraries
 add_subdirectory("src/3rd party/luajit")
 add_subdirectory("src/3rd party/luabind")
 add_subdirectory("src/3rd party/ode")
+add_subdirectory("src/3rd party/crypto")
+add_subdirectory("src/3rd party/cximage")
 
 # Engine libraries
 add_subdirectory("src/Layers/xrAPI")
@@ -41,23 +48,33 @@ add_subdirectory("src/xrCPU_Pipe")
 add_subdirectory("src/xrPhysics")
 add_subdirectory("src/xrParticles")
 add_subdirectory("src/Layers/xrRenderPC_R1")
+add_subdirectory("src/Layers/xrRenderPC_R2")
+add_subdirectory("src/Layers/xrRenderPC_R4")
+add_subdirectory("src/xrGame/")
+add_subdirectory("src/xrGameSpy/")
 
 # Move libraries
 set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrAPI PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCDB PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrSound PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrNetServer PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCPU_Pipe PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
+
+set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
+
 set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
+set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
+set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
 
 # Move dependencies
 set_target_properties(luajit PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(luabind PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(ODE PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(crypto PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(CxImage PROPERTIES ${IXRAY_FOLDER_3RD})
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
