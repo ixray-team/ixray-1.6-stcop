@@ -102,19 +102,18 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	EngineLoadStage2();
 
+	Engine.External.CreateRendererList();
+
 	Console = xr_new<CConsole>();
 	EngineLoadStage3();
-
-	Engine.External.CreateRendererList();
 
 	if (strstr(Core.Params, "-r2a"))
 		Console->Execute("renderer renderer_r2a");
 	else if (strstr(Core.Params, "-r2"))
 		Console->Execute("renderer renderer_r2");
 	else {
-		CCC_LoadCFG_custom* pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
-		pTmp->Execute(Console->ConfigFile);
-		xr_delete(pTmp);
+		// Костыль, пока не перепишем итератор рендера с нуля
+		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
 	}
 
 	Engine.External.Initialize();
