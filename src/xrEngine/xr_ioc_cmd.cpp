@@ -521,7 +521,7 @@ class CCC_r2 : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_r2(LPCSTR N) :inherited(N, &renderer_value, NULL){renderer_value=0;};
+	CCC_r2(LPCSTR N) :inherited(N, &renderer_value, vid_quality_token){renderer_value=0; };
 	virtual			~CCC_r2	()
 	{
 		//free_render_mode_list();
