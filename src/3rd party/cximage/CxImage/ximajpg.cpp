@@ -464,10 +464,6 @@ bool CxImageJPG::Encode(CxFile * hFile)
 
 	CImageIterator iter(this);
 
-#ifdef DEBUG
-	CTimer tmp_dbg_timer;
-	tmp_dbg_timer.Start();
-#endif //#ifdef DEBUG
 	long new_progress = 0;
 	long last_progress = 0;
 
@@ -489,11 +485,6 @@ bool CxImageJPG::Encode(CxFile * hFile)
 		iter.PrevRow();
 		(void) jpeg_write_scanlines(&cinfo, buffer, 1);
 	}
-
-#ifdef DEBUG
-	Msg("JPEG compressing cycle time : %u ms", tmp_dbg_timer.GetElapsed_ms());
-#endif
-
 
 	/* Step 6: Finish compression */
 	jpeg_finish_compress(&cinfo);
