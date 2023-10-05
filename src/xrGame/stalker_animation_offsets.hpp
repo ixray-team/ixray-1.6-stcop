@@ -8,14 +8,12 @@
 #ifndef STALKER_ANIMATION_OFFSETS_HPP_INCLUDED
 #define STALKER_ANIMATION_OFFSETS_HPP_INCLUDED
 
-#include "debug_make_final.hpp"
 #include "associative_vector.h"
 #include "xrServer_Objects.h"
 
 struct SRotation;
 
-class animation_offsets :
-	private debug::make_final <animation_offsets>
+class animation_offsets final
 {
 private:
 	class anim_id_predicate {
