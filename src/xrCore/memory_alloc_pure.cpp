@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "memory_alloc_pure.h"
 
-CMemAllocPure gMemPure;
-
 void* CMemAllocPure::alloc(size_t size)
 {
 	return malloc(size);
@@ -19,8 +17,8 @@ void CMemAllocPure::free(void* p)
 	::free(p);
 }
 
-#include <new>
 CMemAllocPure* CMemAllocPure::Create()
 {
-	return new CMemAllocPure;
+	static CMemAllocPure gMemPure;
+	return &gMemPure;
 }
