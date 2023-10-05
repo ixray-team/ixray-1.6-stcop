@@ -857,5 +857,4 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		return			_ps;
 	}
 }
-
 #endif
