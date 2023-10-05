@@ -177,6 +177,7 @@ function get_tip_number(level_name)
 	if(#tbl==0) then
 		return 1
 	else
+		math.randomseed(device():time_global())
 		return tbl[math.random(#tbl)]
 	end
 end
@@ -191,6 +192,7 @@ function get_mp_tip_number(level_name)
 	if(#tbl==0) then
 		return 1
 	else
+		math.randomseed(device():time_global())
 		return tbl[math.random(#tbl)]
 	end
 end
