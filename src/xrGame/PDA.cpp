@@ -89,10 +89,10 @@ void CPda::UpdateActiveContacts	()
 void CPda::feel_touch_new(CObject* O) 
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
+	CInventoryOwner* pNewContactInvOwner = smart_cast<CInventoryOwner*>(O);
 
-	if (!entity_alive->cast_base_monster())
+	if (!entity_alive->cast_base_monster() && pNewContactInvOwner)
 	{
-		CInventoryOwner* pNewContactInvOwner = smart_cast<CInventoryOwner*>(O);
 		CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()); VERIFY(pOwner);
 		pOwner->NewPdaContact(pNewContactInvOwner);
 	}
@@ -105,10 +105,10 @@ void CPda::feel_touch_delete(CObject* O)
 
 
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
+	CInventoryOwner* pLostContactInvOwner = smart_cast<CInventoryOwner*>(O);
 
-	if (!entity_alive->cast_base_monster())
+	if (!entity_alive->cast_base_monster() && pLostContactInvOwner)
 	{
-		CInventoryOwner* pLostContactInvOwner = smart_cast<CInventoryOwner*>(O);
 		CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()); VERIFY(pOwner);
 
 		pOwner->LostPdaContact(pLostContactInvOwner);
@@ -142,7 +142,7 @@ void CPda::OnH_A_Chield()
 {
 	VERIFY(IsOff());
 
-	//включить PDA только если оно находится у первого владельца
+	//ГўГЄГ«ГѕГ·ГЁГІГј PDA ГІГ®Г«ГјГЄГ® ГҐГ±Г«ГЁ Г®Г­Г® Г­Г ГµГ®Г¤ГЁГІГ±Гї Гі ГЇГҐГ°ГўГ®ГЈГ® ГўГ«Г Г¤ГҐГ«ГјГ¶Г 
 	if(H_Parent()->ID() == m_idOriginalOwner){
 		TurnOn					();
 		if(m_sFullName.empty()){
@@ -158,7 +158,7 @@ void CPda::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 	
-	//выключить
+	//ГўГ»ГЄГ«ГѕГ·ГЁГІГј
 	TurnOff();
 }
 
