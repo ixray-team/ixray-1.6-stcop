@@ -62,7 +62,7 @@ add_compile_options(/fp:fast)
 target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrRender_R4 PUBLIC xrEngine)
+target_link_libraries(xrRender_R4 PUBLIC xrAbstractions)
 target_link_libraries(xrRender_R4 PUBLIC xrParticles)
 target_link_libraries(xrRender_R4 PUBLIC "d3dcompiler.lib")
 target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")

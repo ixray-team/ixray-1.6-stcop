@@ -1,4 +1,4 @@
-project(xrPlay)
+project(xrEngine)
 set(XPLAY_SRC_FILES)
 
 # Files import
@@ -25,16 +25,16 @@ list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
 # Remove files
 #list(FILTER CPIPE_SRC_FILES EXCLUDE REGEX "")
 
-# xrPlay project
-add_executable(xrPlay WIN32 ${XPLAY_SOURCE_ALL_FILES})
-target_include_directories(xrPlay PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrPlay PRIVATE "${IXRAY_SDK_INC}")
+# xrEngine project
+add_executable(xrEngine WIN32 ${XPLAY_SOURCE_ALL_FILES})
+target_include_directories(xrEngine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrEngine PRIVATE "${IXRAY_SDK_INC}")
 
 # Project defines
-#target_compile_definitions(xrPlay PRIVATE XRPLAY_EXPORT)
+#target_compile_definitions(xrEngine PRIVATE XRPLAY_EXPORT)
 
 add_compile_options(/fp:fast)
-target_compile_definitions(xrPlay PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrPlay PUBLIC xrEngine)
+target_link_libraries(xrEngine PUBLIC xrAbstractions)

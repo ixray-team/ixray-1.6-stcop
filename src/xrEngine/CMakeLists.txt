@@ -1,4 +1,4 @@
-project(xrEngine)
+project(xrAbstractions)
 set(ENGINE_SRC_FILES)
 
 # Files import
@@ -40,19 +40,19 @@ list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
 # Remove files
 #list(FILTER ENGINE_SRC_FILES EXCLUDE REGEX "")
 
-# xrEngine project
-add_library(xrEngine SHARED ${ENGINE_SRC_FILES})
-set_property(TARGET xrEngine PROPERTY ENABLE_EXPORTS ON)
+# xrAbstractions project
+add_library(xrAbstractions SHARED ${ENGINE_SRC_FILES})
+set_property(TARGET xrAbstractions PROPERTY ENABLE_EXPORTS ON)
 
 # Include directories
-target_include_directories(xrEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrEngine PUBLIC "${IXRAY_SDK_INC}")
+target_include_directories(xrAbstractions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}")
 
 # Move precompiled header
-set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-set_target_properties(xrEngine PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_target_properties(xrAbstractions PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrAbstractions PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-target_precompile_headers(xrEngine PUBLIC "stdafx.h")
+target_precompile_headers(xrAbstractions PUBLIC "stdafx.h")
 
 file(GLOB_RECURSE ENGINE_SOURCE_PCH_FILES "stdafx.*")
 file(GLOB_RECURSE ENGINE_SOURCE_ALL_C_FILES "*.c")
@@ -61,22 +61,22 @@ set_source_files_properties(${ENGINE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMP
 source_group("pch" FILES ${ENGINE_SOURCE_PCH_FILES})
 
 # Project defines
-target_compile_definitions(xrEngine PRIVATE ENGINE_BUILD)
+target_compile_definitions(xrAbstractions PRIVATE ENGINE_BUILD)
 
 add_compile_options(/fp:fast)
-target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+target_compile_definitions(xrAbstractions PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrEngine PUBLIC xrCore)
-target_link_libraries(xrEngine PUBLIC xrCDB)
-target_link_libraries(xrEngine PUBLIC xrAPI)
-target_link_libraries(xrEngine PUBLIC xrSound)
-target_link_libraries(xrEngine PUBLIC luabind)
-target_link_libraries(xrEngine PUBLIC xrNetServer)
-target_link_libraries(xrEngine PUBLIC "Winmm.lib")
-target_link_libraries(xrEngine PUBLIC "Vfw32.lib")
+target_link_libraries(xrAbstractions PUBLIC xrCore)
+target_link_libraries(xrAbstractions PUBLIC xrCDB)
+target_link_libraries(xrAbstractions PUBLIC xrAPI)
+target_link_libraries(xrAbstractions PUBLIC xrSound)
+target_link_libraries(xrAbstractions PUBLIC luabind)
+target_link_libraries(xrAbstractions PUBLIC xrNetServer)
+target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
+target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
 
-target_link_libraries(xrEngine PUBLIC ${IXRAY_SDK_LIB}/FreeImage.lib)
+target_link_libraries(xrAbstractions PUBLIC ${IXRAY_SDK_LIB}/FreeImage.lib)
 
 # Nuget
 set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
@@ -93,9 +93,9 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 ## Theora
-target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
-target_include_directories(xrEngine PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/include/")
+target_link_libraries(xrAbstractions PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
+target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/include/")
 
 ## OGG
-target_link_libraries(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
-target_include_directories(xrEngine PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")
+target_link_libraries(xrAbstractions PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
+target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")

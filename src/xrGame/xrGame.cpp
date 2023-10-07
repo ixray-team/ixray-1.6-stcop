@@ -12,8 +12,6 @@
 #include "xr_level_controller.h"
 #include "profiler.h"
 
-#pragma comment(lib,"xrEngine.lib")
-
 extern "C" {
 	DLL_API DLL_Pure*	__cdecl xrFactory_Create		(CLASS_ID clsid)
 	{
