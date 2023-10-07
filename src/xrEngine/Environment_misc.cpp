@@ -388,7 +388,7 @@ void CEnvDescriptorMixer::clear	()
 	*/
 }
 
-void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
+void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
 {
 	float	modif_power		=	1.f/(modifier_power+1);	// the environment itself
 	float	fi				=	1-f;
@@ -475,6 +475,11 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	}
 
 	sun_color.lerp			(A.sun_color,B.sun_color,f);
+
+	if (rain_density > 0.f)
+		Env->wetness_factor += rain_density / 10000.f;
+	else
+		Env->wetness_factor -= 0.00001f;
 
 	R_ASSERT				( _valid(A.sun_dir) );
 	R_ASSERT				( _valid(B.sun_dir) );
