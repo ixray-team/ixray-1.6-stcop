@@ -32,9 +32,9 @@ if(NOT NUGET_COMMAND)
     message("Downloading NuGet...")
     if(NOT EXISTS "${CMAKE_HOME_DIRECTORY}/dep/nuget")
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/dep/nuget")
+        file(DOWNLOAD https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+             "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
     endif()
-    file(DOWNLOAD https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-         "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
     set(NUGET_COMMAND "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
     message("NuGet downloaded: ${NUGET_COMMAND}")
 else()
