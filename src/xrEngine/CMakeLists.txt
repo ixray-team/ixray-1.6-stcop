@@ -83,7 +83,7 @@ set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3
 
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
-    COMMAND ${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 )
 
 add_custom_command(TARGET ${PROJECT_NAME}

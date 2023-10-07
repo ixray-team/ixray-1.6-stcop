@@ -24,6 +24,30 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 # Edit and Continue mode
 add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")
 
+# Set NuGet command
+find_program(NUGET_COMMAND nuget)
+if(NOT NUGET_COMMAND)
+    message("NuGet not found in PATH!")
+    message("Downloading NuGet...")
+    if(NOT EXISTS "${CMAKE_HOME_DIRECTORY}/dep/nuget")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/dep/nuget")
+    endif()
+    file(DOWNLOAD https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+         "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
+    set(NUGET_COMMAND "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
+    message("NuGet downloaded: ${NUGET_COMMAND}")
+else()
+    message("NuGet found: ${NUGET_COMMAND}")
+endif()
+
+# Get dependencies
+set(RENDERDOC_SRC "${CMAKE_HOME_DIRECTORY}/dep/renderdoc")
+if(NOT EXISTS "${CMAKE_HOME_DIRECTORY}/dep/renderdoc")
+    message("Downloading RenderDoc sources...")
+    execute_process(COMMAND git clone --branch v1.28 --depth 1 https://github.com/baldurk/renderdoc.git "${CMAKE_HOME_DIRECTORY}/dep/renderdoc" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY})
+    message("RenderDoc sources downloaded")
+endif()
+
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/)
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
