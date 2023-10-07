@@ -24,7 +24,18 @@ list(FILTER COMPR_SRC_FILES EXCLUDE REGEX "lzo/*.ch")
 # xrCompressor project
 add_executable(xrCompressor ${COMPR_SRC_FILES})
 target_include_directories(xrCompressor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_precompile_headers(xrCompressor PRIVATE "stdafx.h")
+
+# Move precompiled header
+set_target_properties(xrCompressor PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrCompressor PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+target_precompile_headers(xrCompressor PUBLIC "stdafx.h")
+
+file(GLOB_RECURSE COMPRESSOR_PCH_FILES "stdafx.*")
+file(GLOB_RECURSE COMPRESSOR_SOURCE_ALL_C_FILES "*.c")
+
+set_source_files_properties(${COMPRESSOR_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+source_group("pch" FILES ${COMPRESSOR_PCH_FILES})
 
 # Project defines
 target_compile_definitions(xrCompressor PRIVATE _WINDOWS)

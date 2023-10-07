@@ -90,6 +90,11 @@ target_include_directories(mp_gpprof_server PRIVATE "libraries/fcgi-2.4.0/includ
 target_include_directories(mp_gpprof_server PRIVATE "libraries/gamespy")
 target_include_directories(mp_gpprof_server PRIVATE "libraries/pthreads-w32-2-8-0-release")
 
+# Move precompiled header
+set_target_properties(mp_gpprof_server PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+file(GLOB_RECURSE MPGF_SOURCE_ALL_C_FILES "*.c")
+set_source_files_properties(${MPGF_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
 # Project defines
 target_compile_definitions(mp_gpprof_server PRIVATE XRAY_DISABLE_GAMESPY_WARNINGS)
 target_compile_definitions(mp_gpprof_server PRIVATE PTW32_STATIC_LIB)

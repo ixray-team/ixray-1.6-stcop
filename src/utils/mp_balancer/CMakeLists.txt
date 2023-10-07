@@ -1,31 +1,28 @@
-project(mp_configs_verifyer)
-set(MPCF_SRC_FILES)
+project(mp_balancer)
+set(MPB_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE MPCF_SOURCE_ALL_FILES
+file(GLOB_RECURSE MPB_SOURCE_ALL_FILES
     "*.cpp"
     "*.h"
 )
 
 # Source groups
-source_group("kernel" FILES ${MPCF_SOURCE_ALL_FILES})
+source_group("kernel" FILES ${MPB_SOURCE_ALL_FILES})
 
 # Apply list
-list(APPEND MPCF_SRC_FILES ${MPCF_SOURCE_ALL_FILES})
+list(APPEND MPB_SRC_FILES ${MPB_SOURCE_ALL_FILES})
 
-# Remove unused files
-#list(FILTER MPCF_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
-
-# mp_configs_verifyer project
-add_executable(mp_configs_verifyer ${MPCF_SRC_FILES})
-target_include_directories(mp_configs_verifyer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+# mp_balancer project
+add_executable(mp_balancer ${MPB_SRC_FILES})
+target_include_directories(mp_balancer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Project defines
-target_compile_definitions(mp_configs_verifyer PRIVATE MPCF_EXPORTS)
-target_compile_definitions(mp_configs_verifyer PRIVATE _WINDOWS)
+target_compile_definitions(mp_balancer PRIVATE MPB_EXPORTS)
+target_compile_definitions(mp_balancer PRIVATE _WINDOWS)
 
 add_compile_options(/fp:fast)
-target_compile_definitions(mp_configs_verifyer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+target_compile_definitions(mp_balancer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(mp_configs_verifyer PUBLIC xrCore)
+target_link_libraries(mp_balancer PUBLIC xrCore)
