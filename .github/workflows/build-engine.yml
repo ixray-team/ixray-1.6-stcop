@@ -7,28 +7,20 @@ on:
     paths:
       - '.github/workflows/**'
       - 'gamedata/**'
-      - 'proj/**'
       - 'sdk/**'
       - 'src/**'
-      - '*.sln'
-      - '*.props'
-      - '*.targets'
-      - '*.ltx'
-      - '*.bat'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
   pull_request:
     branches:
       - '**'
     paths:
       - '.github/workflows/**'
       - 'gamedata/**'
-      - 'proj/**'
       - 'sdk/**'
       - 'src/**'
-      - '*.sln'
-      - '*.props'
-      - '*.targets'
-      - '*.ltx'
-      - '*.bat'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
 
 defaults:
   run:
@@ -36,7 +28,7 @@ defaults:
 
 jobs:
   build-engine:
-    name: 'Build'
+    name: 'Build engine'
 
     strategy:
       matrix:
@@ -44,15 +36,12 @@ jobs:
           - windows-2022
         config:
           - Debug
-          - Mixed
           - Release
         platform:
-          - x86
+          - Win32
+          - x64
 
     runs-on: ${{ matrix.system }}
-
-    env:
-      solution_name: XRay.sln
 
     steps:
       - name: Checkout
@@ -65,89 +54,59 @@ jobs:
         with:
           nuget-version: '>=5'
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+
       - name: Cache packages
         uses: actions/cache@v3
         id: cache
         with:
           path: |
-            ${{ github.workspace }}/packages
+            ${{ github.workspace }}/build/packages
           key: |
             ${{ runner.os }}-nuget-${{ hashFiles('**/*.nupkg') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Restore packages
+      - name: Check cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          nuget restore $env:solution_name
+            echo "Cache exists"
 
-      - name: Restore sources
+      - name: Configure project
         run: |
-          ${{ github.workspace }}/get-dependencies.bat
+          cmake `
+            -S ${{ github.workspace }} `
+            -B ${{ github.workspace }}/build `
+            -G "Visual Studio 17 2022" `
+            -A ${{ matrix.platform }} `
+            -T host=x64 `
+            -D IXRAY_UTILS=OFF `
+            -D IXRAY_MP=OFF `
+            -D IXRAY_COMPRESSOR_ONLY=OFF
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
-
-      - name: Build solution
+      - name: Build project
         run: |
-          msbuild $env:solution_name `
-            -p:Configuration=${{ matrix.config }} `
-            -p:Platform=${{ matrix.platform }} `
-            -maxCpuCount `
-            -nologo
+          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
 
-      - name: Upload engine binaries
+      - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
           name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
-            bin/Win32/${{ matrix.config }}/*.exe
-            bin/Win32/${{ matrix.config }}/*.dll
+            build/bin/${{ matrix.config }}/*.exe
+            build/bin/${{ matrix.config }}/*.dll
 
-      - name: Upload server binaries
-        uses: actions/upload-artifact@v3
-        with:
-          name: bin-dedicated-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            bin/dedicated/Win32/${{ matrix.config }}/*.exe
-            bin/dedicated/Win32/${{ matrix.config }}/*.dll
-
-      - name: Upload utilities binaries
-        uses: actions/upload-artifact@v3
-        with:
-          name: bin-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            bin/utils/Win32/${{ matrix.config }}/*.exe
-            bin/utils/Win32/${{ matrix.config }}/*.dll
-
-      - name: Upload engine libraries
+      - name: Upload libraries
         uses: actions/upload-artifact@v3
         with:
           name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
-            lib/Win32/${{ matrix.config }}/*.lib
-            lib/Win32/${{ matrix.config }}/*.exp
+            build/lib/${{ matrix.config }}/*.lib
+            build/lib/${{ matrix.config }}/*.exp
 
-      - name: Upload server libraries
-        uses: actions/upload-artifact@v3
-        with:
-          name: lib-dedicated-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            lib/dedicated/Win32/${{ matrix.config }}/*.lib
-            lib/dedicated/Win32/${{ matrix.config }}/*.exp
-
-      - name: Upload utilities libraries
-        uses: actions/upload-artifact@v3
-        with:
-          name: lib-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            lib/utils/Win32/${{ matrix.config }}/*.lib
-            lib/utils/Win32/${{ matrix.config }}/*.exp
-
-  pack-assets:
-    name: 'Pack'
-
-    needs: build-engine
+  build-compressor:
+    name: 'Build compressor'
 
     strategy:
       matrix:
@@ -156,7 +115,56 @@ jobs:
         config:
           - Release
         platform:
-          - x86
+          - Win32
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Configure project
+        run: |
+          cmake `
+            -S ${{ github.workspace }} `
+            -B ${{ github.workspace }}/build `
+            -G "Visual Studio 17 2022" `
+            -A ${{ matrix.platform }} `
+            -T host=x64 `
+            -D IXRAY_UTILS=OFF `
+            -D IXRAY_MP=OFF `
+            -D IXRAY_COMPRESSOR_ONLY=ON
+
+      - name: Build project
+        run: |
+          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
+
+      - name: Upload compressor
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          path: |
+            build/bin/${{ matrix.config }}/xrCompressor.exe
+            build/bin/${{ matrix.config }}/xrCore.dll
+
+  pack-assets:
+    name: 'Pack assets'
+
+    needs: build-compressor
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        config:
+          - Release
+        platform:
+          - Win32
 
     runs-on: ${{ matrix.system }}
 
@@ -169,8 +177,8 @@ jobs:
       - name: Get binaries
         uses: actions/download-artifact@v3
         with:
-          name: bin-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: bin/utils/Win32/${{ matrix.config }}/
+          name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          path: build/bin/${{ matrix.config }}/
 
       - name: Generate patch
         run: |
