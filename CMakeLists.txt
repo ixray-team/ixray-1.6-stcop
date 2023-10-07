@@ -134,7 +134,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(xrCPU_Pipe PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
-    set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
+    set_target_properties(xrAbstractions PROPERTIES ${IXRAY_FOLDER_ENGINE})
 
     set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
     set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
@@ -181,7 +181,7 @@ set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # Set default project
 if(NOT IXRAY_COMPRESSOR_ONLY)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrPlay)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
 else()
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrCompress)
 endif()

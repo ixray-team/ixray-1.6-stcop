@@ -61,7 +61,7 @@ add_compile_options(/fp:fast)
 target_compile_definitions(xrRender_R2 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrRender_R2 PUBLIC xrEngine)
+target_link_libraries(xrRender_R2 PUBLIC xrAbstractions)
 target_link_libraries(xrRender_R2 PUBLIC xrParticles)
 target_link_libraries(xrRender_R2 PUBLIC "d3dcompiler.lib")
 

@@ -30,4 +30,4 @@ add_compile_options(/fp:fast)
 target_compile_definitions(xrServer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrServer PUBLIC xrEngine)
+target_link_libraries(xrServer PUBLIC xrAbstractions)
