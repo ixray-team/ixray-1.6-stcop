@@ -149,8 +149,7 @@ jobs:
         with:
           name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
-            build/bin/${{ matrix.config }}/xrCompressor.exe
-            build/bin/${{ matrix.config }}/xrCore.dll
+            build/bin/${{ matrix.config }}/
 
   pack-assets:
     name: 'Pack assets'
