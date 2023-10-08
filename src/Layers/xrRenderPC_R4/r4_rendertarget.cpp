@@ -899,6 +899,8 @@ CRenderTarget::~CRenderTarget	()
     xr_delete					(b_accum_mask			);
     xr_delete					(b_occq					);
     xr_delete					(b_hdao_cs				);
+    g_Fsr2Wrapper.Destroy();
+    g_DLSSWrapper.Destroy();
 }
 
 extern float ps_r4_jitter_factor;

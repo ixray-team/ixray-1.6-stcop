@@ -47,15 +47,15 @@ bool Fsr2Wrapper::Create(Fsr2Wrapper::ContextParameters params)
     ffxFsr2ContextCreate(&m_context, &m_contextDesc);
 
     m_created = true;
+    return true;
 }
 
 void Fsr2Wrapper::Destroy()
 {
-    VERIFY(m_created);
-
-    ffxFsr2ContextDestroy(&m_context);
-
-    m_created = false;
+    if (m_created) {
+        ffxFsr2ContextDestroy(&m_context);
+        m_created = false;
+    }
 }
 
 void Fsr2Wrapper::Draw(const DrawParameters& params)

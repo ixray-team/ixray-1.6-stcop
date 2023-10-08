@@ -4,13 +4,19 @@ extern int ps_r4_sharp_enable;
 extern float ps_r4_motion_scale;
 DLSSWrapper g_DLSSWrapper;
 
+bool DLSSInited = false;
+
 bool DLSSWrapper::Create(const ContextParameters& Parameters)
 {
     VERIFY(!m_created);
+    NVSDK_NGX_Result result;
+    if (!DLSSInited) {
+        result = NVSDK_NGX_D3D11_Init(1602, L"", HW.pDevice);
+        if (result != NVSDK_NGX_Result_Success) {
+            return false;
+        }
 
-    NVSDK_NGX_Result result = NVSDK_NGX_D3D11_Init(1602, L"", HW.pDevice);
-    if (result != NVSDK_NGX_Result_Success) {
-        return false;
+        DLSSInited = true;
     }
 
     result = NVSDK_NGX_D3D11_GetCapabilityParameters(&NgxParameters);
@@ -51,8 +57,24 @@ bool DLSSWrapper::Create(const ContextParameters& Parameters)
     return true;
 }
 
-void DLSSWrapper::Destroy()
+void DLSSWrapper::Destroy() 
 {
+    if (Handle != nullptr) {
+        NVSDK_NGX_D3D11_ReleaseFeature(Handle);
+        Handle = nullptr;
+    }
+
+    if (NgxParameters != nullptr) {
+        NVSDK_NGX_D3D11_DestroyParameters(NgxParameters);
+        NgxParameters = nullptr;
+    }
+
+    if (DLSSInited) {
+        NVSDK_NGX_D3D11_Shutdown1(nullptr);
+        DLSSInited = false;
+    }
+
+    m_created = false;
 }
 
 void DLSSWrapper::Draw(const DrawParameters& params)
@@ -82,4 +104,6 @@ void DLSSWrapper::Draw(const DrawParameters& params)
 
 DLSSWrapper::~DLSSWrapper()
 {
+    if (IsCreated())
+        Destroy();
 }
