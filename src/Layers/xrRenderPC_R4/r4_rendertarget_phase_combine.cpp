@@ -90,6 +90,71 @@ void	CRenderTarget::phase_combine	()
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
+void CRenderTarget::phase_combine_bloom()
+{
+	// 
+	struct v_aa {
+		Fvector4	p;
+		Fvector2	uv0;
+		Fvector2	uv1;
+		Fvector2	uv2;
+		Fvector2	uv3;
+		Fvector2	uv4;
+		Fvector4	uv5;
+		Fvector4	uv6;
+	};
+
+	Fvector2	p0, p1;
+	float	_w = RCache.get_width();
+	float	_h = RCache.get_height();
+	float	ddw = 1.f / _w;
+	float	ddh = 1.f / _h;
+	p0.set(0, 0);
+	p1.set((_w ) / _w, (_h) / _h);
+	u_setrt(_w, _h, rt_TargetCombined->pRT, nullptr, nullptr, nullptr);
+
+	// Fill vertex buffer
+	u32 Offset = 0;
+	v_aa* pv = (v_aa*)RCache.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
+	pv->p.set(EPS, float(_h + EPS), EPS, 1.f); pv->uv0.set(p0.x, p1.y); pv->uv1.set(p0.x - ddw, p1.y - ddh); pv->uv2.set(p0.x + ddw, p1.y + ddh); pv->uv3.set(p0.x + ddw, p1.y - ddh); pv->uv4.set(p0.x - ddw, p1.y + ddh); pv->uv5.set(p0.x - ddw, p1.y, p1.y, p0.x + ddw); pv->uv6.set(p0.x, p1.y - ddh, p1.y + ddh, p0.x); pv++;
+	pv->p.set(EPS, EPS, EPS, 1.f); pv->uv0.set(p0.x, p0.y); pv->uv1.set(p0.x - ddw, p0.y - ddh); pv->uv2.set(p0.x + ddw, p0.y + ddh); pv->uv3.set(p0.x + ddw, p0.y - ddh); pv->uv4.set(p0.x - ddw, p0.y + ddh); pv->uv5.set(p0.x - ddw, p0.y, p0.y, p0.x + ddw); pv->uv6.set(p0.x, p0.y - ddh, p0.y + ddh, p0.x); pv++;
+	pv->p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f); pv->uv0.set(p1.x, p1.y); pv->uv1.set(p1.x - ddw, p1.y - ddh); pv->uv2.set(p1.x + ddw, p1.y + ddh); pv->uv3.set(p1.x + ddw, p1.y - ddh); pv->uv4.set(p1.x - ddw, p1.y + ddh); pv->uv5.set(p1.x - ddw, p1.y, p1.y, p1.x + ddw); pv->uv6.set(p1.x, p1.y - ddh, p1.y + ddh, p1.x); pv++;
+	pv->p.set(float(_w + EPS), EPS, EPS, 1.f); pv->uv0.set(p1.x, p0.y); pv->uv1.set(p1.x - ddw, p0.y - ddh); pv->uv2.set(p1.x + ddw, p0.y + ddh); pv->uv3.set(p1.x + ddw, p0.y - ddh); pv->uv4.set(p1.x - ddw, p0.y + ddh); pv->uv5.set(p1.x - ddw, p0.y, p0.y, p1.x + ddw); pv->uv6.set(p1.x, p0.y - ddh, p0.y + ddh, p1.x); pv++;
+	RCache.Vertex.Unlock(4, g_aa_AA->vb_stride);
+
+	//	Set up variable
+	Fvector2	vDofKernel;
+	vDofKernel.set(0, 0);
+	vDofKernel.mul(ps_r2_dof_kernel_size);
+
+	// Draw COLOR
+	Fmatrix		m_previous, m_current;
+	Fvector2	m_blur_scale;
+	{
+		// (new-camera) -> (world) -> (old_viewproj)
+		static Fmatrix		m_saved_viewproj;
+		Fmatrix	m_invview;	m_invview.invert(Device.mView);
+		m_previous.mul(m_saved_viewproj, m_invview);
+		m_current.set(Device.mProject);
+		m_saved_viewproj.set(Device.mFullTransform);
+		m_blur_scale.set(0,0);
+	}
+
+	RCache.set_Element(s_combine->E[2]);	// look at blender_combine.cpp
+	RCache.set_c("m_current", m_current);
+	RCache.set_c("m_previous", m_previous);
+	RCache.set_c("m_blur", m_blur_scale.x, m_blur_scale.y, 0, 0);
+	Fvector3					dof;
+	g_pGamePersistent->GetCurrentDof(dof);
+	RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
+	RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
+
+	RCache.set_Geometry(g_aa_AA);
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+	u_setrt(_w, _h, nullptr, nullptr, nullptr, nullptr);
+}
+
 void CRenderTarget::phase_wallmarks		()
 {
 	// Targets

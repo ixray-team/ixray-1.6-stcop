@@ -177,6 +177,7 @@ public:
 	// feature level
 	virtual	GenerationLevel			get_generation			()											= 0;
 
+	virtual bool					is_hud					() { return false;}
 	virtual bool					is_sun_static			() =0;
 	virtual DWORD					get_dx_level			() =0;
 

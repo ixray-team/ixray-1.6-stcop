@@ -510,8 +510,16 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	RCache.set_xform_project	(Device.mProject);
 }
 
+bool RenderingHUD = false;
+
+bool R_dsgraph_structure::is_hud()
+{
+	return RenderingHUD;
+}
+
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 {
+	RenderingHUD = true;
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
 	extern ENGINE_API float		psHUD_FOV;
@@ -562,6 +570,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	Device.mPrevFullTransform = PrevFullTtransformOld;
 	RCache.set_prev_xform_project(Device.mPrevProject);
 	RCache.set_xform_project(Device.mProject);
+	RenderingHUD = false;
 }
 
 //////////////////////////////////////////////////////////////////////////

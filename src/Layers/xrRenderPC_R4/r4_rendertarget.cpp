@@ -325,57 +325,58 @@ CRenderTarget::CRenderTarget		()
 
    // HDAO
    b_hdao_cs = xr_new<CBlender_CS_HDAO>();
-   const u32		s_dwWidth = RCache.get_width(), s_dwHeight = RCache.get_height();
+   const u32 RenderWidth = RCache.get_width(), RenderHeight = RCache.get_height();
 
 
-   rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+   rt_Position.create(r2_RT_P, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 
    if (!RImplementation.o.dx10_gbuffer_opt)
-       rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+       rt_Normal.create(r2_RT_N, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 
    // select albedo & accum
    if (RImplementation.o.mrtmixdepth) {
-       rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);
-       rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+       rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);
+       rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
    } else {
        // can't - mix-depth
        if (RImplementation.o.fp16_blend) {
            if (!RImplementation.o.dx10_gbuffer_opt) {
-               rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
-               rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+               rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
+               rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
            } else {
-               rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// expand to full
-               rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+               rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// expand to full
+               rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
            }
        } else { 
-           rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// normal
-           rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-           rt_Accumulator_temp.create(r2_RT_accum_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+           rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// normal
+           rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+           rt_Accumulator_temp.create(r2_RT_accum_temp, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
        }
    }
 
    // generic HDR RTs
    // TODO: HDR support
-   rt_Target.create(r2_RT_target, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
-   rt_OpaqueTarget.create(r2_RT_target_opaque, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
+   rt_Target.create(r2_RT_target, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
+   rt_TargetCombined.create(r2_RT_target_combined, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
+   rt_OpaqueTarget.create(r2_RT_target_opaque, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
    rt_Output.create(r4_output, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1);
    rt_UpscaleOutput.create(r4_upscale_output, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, 1, true);
 
    // generic LDR RTs
    rt_Distort.create(r2_RT_distort, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);
-   rt_AA_BackBuffer.create(r2_RT_AA_backbuffer, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+   rt_AA_BackBuffer.create(r2_RT_AA_backbuffer, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 
    // Igor: for volumetric lights
    if (RImplementation.o.advancedpp) {
-       rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+       rt_Generic_2.create(r2_RT_generic2, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
    }
 
-   rt_HWDepth.create(r2_RT_HW_depth, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
+   rt_HWDepth.create(r2_RT_HW_depth, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
    rt_HWCopyDepth.create(r2_RT_copy_depth, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R32_FLOAT);
    rt_HWScaledTargetDepth.create(r2_RT_HW_target_depth, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_D32_FLOAT);
 
-   rt_Motion.create(r4_motion, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
-   rt_MotionVectors.create(r4_motion_vectors, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);
+   rt_Motion.create(r4_motion, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
+   rt_MotionVectors.create(r4_motion_vectors, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);
    if (ps_r4_upscale_type == SCALETYPE_DLSS) {
        auto DisplaySize = g_DLSSWrapper.GetDisplaySize();
        if (g_DLSSWrapper.IsCreated() && (DisplaySize.x != Device.TargetWidth || DisplaySize.y != Device.TargetHeight)) {
@@ -429,8 +430,8 @@ CRenderTarget::CRenderTarget		()
        b_smaa = xr_new<CBlender_SMAA>();
        s_smaa.create(b_smaa);
 
-       rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
-       rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
+       rt_smaa_edgetex.create(r2_RT_smaa_edgetex, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
+       rt_smaa_blendtex.create(r2_RT_smaa_blendtex, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
    }
 
    // vertver:
@@ -531,13 +532,14 @@ CRenderTarget::CRenderTarget		()
         f_luminance_adapt = 0.5f;
 
         rt_LUM.create(r2_RT_luminance_pool, 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
+        rt_LUMPrev.create(r2_RT_luminance_pool_prev, 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
         t_LUM_src.create(r2_RT_luminance_src);
         t_LUM_dest.create(r2_RT_luminance_cur);
 
         FLOAT ColorRGBA[4] = { 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f };
         HW.pContext->ClearRenderTargetView(rt_LUM->pRT, ColorRGBA);
 
-        u_setrt(s_dwWidth, s_dwHeight, HW.pBaseRT, NULL, NULL, rt_HWDepth->pZRT);
+        u_setrt(RenderWidth, RenderHeight, HW.pBaseRT, NULL, NULL, rt_HWDepth->pZRT);
     }
 
     // HBAO
@@ -547,13 +549,13 @@ CRenderTarget::CRenderTarget		()
         u32		h = 0;
         if (RImplementation.o.ssao_half_data)
         {
-            w = s_dwWidth / 2;
-            h = s_dwHeight / 2;
+            w = RenderWidth / 2;
+            h = RenderHeight / 2;
         }
         else
         {
-            w = s_dwWidth;
-            h = s_dwHeight;
+            w = RenderWidth;
+            h = RenderHeight;
         }
 
         DxgiFormat	fmt = DxgiFormat::DXGI_FORMAT_R16_FLOAT;
@@ -582,7 +584,7 @@ CRenderTarget::CRenderTarget		()
     // HDAO
     if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
     {
-        u32		w = s_dwWidth, h = s_dwHeight;
+        u32		w = RenderWidth, h = RenderHeight;
         rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1, true);
         s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
     }
@@ -616,8 +618,8 @@ CRenderTarget::CRenderTarget		()
         // Testure for async sreenshots
         {
             D3D_TEXTURE2D_DESC	desc;
-            desc.Width = s_dwWidth;
-            desc.Height = s_dwHeight;
+            desc.Width = RenderWidth;
+            desc.Height = RenderHeight;
             desc.MipLevels = 1;
             desc.ArraySize = 1;
             desc.SampleDesc.Count = 1;
@@ -828,8 +830,8 @@ CRenderTarget::CRenderTarget		()
     g_menu.create						(FVF::F_TL,RCache.Vertex.Buffer(),RCache.QuadIB);
 
     // 
-    dwWidth		= s_dwWidth;
-    dwHeight	= s_dwHeight;
+    dwWidth		= RenderWidth;
+    dwHeight	= RenderHeight;
 }
 
 CRenderTarget::~CRenderTarget	()

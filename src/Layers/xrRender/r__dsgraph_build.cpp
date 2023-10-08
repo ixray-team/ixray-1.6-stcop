@@ -8,6 +8,7 @@
 #include "flod.h"
 #include "particlegroup.h"
 #include "FTreeVisual.h"
+#include "r__dsgraph_structure.h"
 
 using	namespace R_dsgraph;
 

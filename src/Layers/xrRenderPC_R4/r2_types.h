@@ -1,14 +1,15 @@
 #pragma once
 
-#define		r2_RT_target		"$user$target"			      // MRT
-#define		r2_RT_target_opaque	"$user$target_opaque"	      // MRT
-#define		r2_RT_HW_depth		"$user$hwdepth"			      // MRT
-#define		r2_RT_HW_target_depth	"$user$hwtargetdepth"     // MRT
-#define		r2_RT_copy_depth	"$user$copy_depth"		      // MRT
-#define		r2_RT_P				"$user$position"		      // MRT
-#define		r2_RT_N				"$user$normal"			      // MRT
-#define		r2_RT_albedo		"$user$albedo"			      // MRT
-#define		r4_motion			"$user$motion"				  // MRT
+#define		r2_RT_target			"$user$target"			      // MRT
+#define		r2_RT_target_combined	"$user$target_combined"	      // MRT
+#define		r2_RT_target_opaque		"$user$target_opaque"	      // MRT
+#define		r2_RT_HW_depth			"$user$hwdepth"			      // MRT
+#define		r2_RT_HW_target_depth	"$user$hwtargetdepth"         // MRT
+#define		r2_RT_copy_depth		"$user$copy_depth"		      // MRT
+#define		r2_RT_P					"$user$position"		      // MRT
+#define		r2_RT_N					"$user$normal"			      // MRT
+#define		r2_RT_albedo			"$user$albedo"			      // MRT
+#define		r4_motion				"$user$motion"				  // MRT
 
 // other
 #define		r2_RT_accum			"$user$accum"			// ---	16 bit fp or 16 bit fx
@@ -35,6 +36,7 @@
 #define		r2_RT_luminance_src	"$user$tonemap_src"		// --- prev-frame-result
 #define		r2_RT_luminance_cur	"$user$tonemap"			// --- result
 #define		r2_RT_luminance_pool "$user$luminance"		// --- pool
+#define		r2_RT_luminance_pool_prev "$user$luminance_prev"		// --- pool
 
 #define		r2_RT_smap_surf		"$user$smap_surf"		// --- directional
 #define		r2_RT_smap_depth	"$user$smap_depth"		// ---directional
@@ -47,6 +49,7 @@
 #define		r2_RT_distort		"$user$distort"		// ---
 #define		r2_RT_AA_backbuffer	"$user$backbuffer"
 #define		r4_output			"$user$output"
+#define		r4_output_combined	"$user$output_combined"
 #define		r4_upscale_output	"$user$upscale_output"
 #define		r4_motion_vectors	"$user$motion_vectors"
 #define		r4_fsr2_target		"$user$fsr2_target"

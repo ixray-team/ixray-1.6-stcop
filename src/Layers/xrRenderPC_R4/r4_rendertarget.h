@@ -65,6 +65,7 @@ public:
 	ref_rt						rt_HWCopyDepth;		// target
 	ref_rt						rt_HWDepth;			// scaled
 	ref_rt						rt_Target;			// scaled, 32bit HDR (rgb)
+	ref_rt						rt_TargetCombined;  // scaled
 	ref_rt						rt_OpaqueTarget;	// scaled, 32bit HDR (rgb)
 	ref_rt						rt_AA_BackBuffer;	// scaled
 	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
@@ -85,6 +86,7 @@ public:
 	ref_rt						rt_LUM_8;			// scaled, 64bit, 8x8,		log-average in all components
 
 	ref_rt						rt_LUM;				// 1xfp32,1x1,		exp-result -> scaler
+	ref_rt						rt_LUMPrev;			// 1xfp32,1x1,		exp-result -> scaler
 	ref_texture					t_LUM_src		;	// source
 	ref_texture					t_LUM_dest		;	// destination & usage for current frame
 
@@ -280,6 +282,7 @@ public:
 	void						phase_distort			();
 	void						phase_final				();
 	void						phase_combine			();
+	void						phase_combine_bloom		();
 	void						phase_combine_volumetric();
 	void						phase_pp				();
 

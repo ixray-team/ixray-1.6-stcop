@@ -84,6 +84,8 @@ public:
 	u32															counter_D	;
 	BOOL														b_loaded	;
 public:
+	bool is_hud() override;
+
 	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
 	virtual		void					set_PrevTransform		(Fmatrix*	M	)				{ VERIFY(M);	val_pPrevTransform = M;	}
 	virtual		void					set_HUD					(BOOL 		V	)				{ val_bHUD		= V;				}

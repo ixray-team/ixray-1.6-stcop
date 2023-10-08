@@ -43,8 +43,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		//	Can use simpler VS (need only Tex0)
 		C.r_Pass			("stub_notransform_aa_AA","combine_2_NAA",	FALSE,	FALSE,	FALSE);
 		C.r_dx10Texture		("s_position",		r2_RT_P);
-		C.r_dx10Texture		("s_motion",		r4_motion);
-		C.r_dx10Texture		("s_motion_vectors",r4_motion_vectors);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_image",			r2_RT_target);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
@@ -58,8 +56,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		//	Can use simpler VS (need only Tex0)
 		C.r_Pass			("stub_notransform_aa_AA","combine_2_NAA_D",	FALSE,	FALSE,	FALSE);
 		C.r_dx10Texture		("s_position",		r2_RT_P);
-		C.r_dx10Texture		("s_motion",		r4_motion);
-		C.r_dx10Texture		("s_motion_vectors",r4_motion_vectors);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_image",			r2_RT_target);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);

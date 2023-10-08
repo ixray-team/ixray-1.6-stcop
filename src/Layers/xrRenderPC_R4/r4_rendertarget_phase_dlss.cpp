@@ -12,7 +12,7 @@ void CRenderTarget::phase_dlss_combine()
     DLSSWrapper::DrawParameters dlssParams;
     dlssParams.deviceContext = HW.pContext;
     dlssParams.exposureResource = nullptr;
-    dlssParams.unresolvedColorResource = rt_Target->pSurface;
+    dlssParams.unresolvedColorResource = rt_TargetCombined->pSurface;
     dlssParams.motionvectorResource = rt_MotionVectors->pSurface;
     dlssParams.depthbufferResource = rt_HWDepth->pSurface;
     dlssParams.reactiveMapResource = nullptr;

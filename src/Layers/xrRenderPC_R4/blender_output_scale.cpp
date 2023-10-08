@@ -11,14 +11,14 @@ void CBlender_OutputScale::Compile(CBlender_Compile& C)
     {
     case SCALEPHASE_SCALE_LINEAR:
         C.r_Pass("stub_notransform_t_target", "scale_linear", FALSE, FALSE, FALSE);
-        C.r_dx10Texture("s_image", r2_RT_target);
+        C.r_dx10Texture("s_image", r2_RT_target_combined);
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;  
     case SCALEPHASE_SCALE_NEAREST:
         C.r_Pass("stub_notransform_t_target", "scale_nearest", FALSE, FALSE, FALSE);
-        C.r_dx10Texture("s_image", r2_RT_target);
+        C.r_dx10Texture("s_image", r2_RT_target_combined);
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();

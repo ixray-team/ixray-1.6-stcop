@@ -147,6 +147,8 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 	}
 }
 
+extern bool RenderingHUD;
+
 void CRender::render_menu	()
 {
 	PIX_EVENT(render_menu);

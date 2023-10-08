@@ -33,13 +33,12 @@ void CRenderTarget::phase_final()
 	PIX_EVENT(phase_combine);
 
 	//*** exposure-pipeline
-	t_LUM_src->surface_set(rt_LUM->pSurface);
+	t_LUM_src->surface_set(rt_LUMPrev->pSurface);
 	t_LUM_dest->surface_set(rt_LUM->pSurface);
+	HW.pContext->CopyResource(rt_LUMPrev->pSurface, rt_LUM->pSurface);
 
 	if (RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra) {
-		if (ps_r_ssao > 0) {
-			phase_hdao();
-		}
+		phase_hdao();
 	} else {
 		if (RImplementation.o.ssao_opt_data) {
 			phase_downsamp();
@@ -84,16 +83,7 @@ void CRenderTarget::phase_final()
 	}
 
 	phase_bloom();												// HDR RT invalidated here
-
-	if (ps_r2_aa_type == 1) {
-		PIX_EVENT(phase_fxaa);
-		phase_fxaa();
-		RCache.set_Stencil(FALSE);
-	} else if (ps_r2_aa_type == 2) {
-		PIX_EVENT(phase_smaa);
-		phase_smaa();
-		RCache.set_Stencil(FALSE);
-	}
+	phase_combine_bloom();
 
 	////////////////////////////////////////////////////////////
 	// STAGE BEFORE SCALING
@@ -134,6 +124,7 @@ void CRenderTarget::phase_final()
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(FALSE);
 
+	u_setrt(rt_Output, nullptr, nullptr, rt_HWScaledTargetDepth->pZRT);
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 	phase_pp();
 

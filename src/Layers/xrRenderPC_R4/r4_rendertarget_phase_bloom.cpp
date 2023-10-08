@@ -86,7 +86,7 @@ void CRenderTarget::phase_bloom	()
 		float		_aspect_w		= _2w/tw;
 		float		_aspect_h		= _2h/th;
 		Fvector2	one				= { 1.f/_w, 1.f/_h };	one.x*=_aspect_w; one.y*=_aspect_h;
-		Fvector2	half			= { .5f/_w, .5f/_h };
+		Fvector2	half			= { 0, 0 };
 		Fvector2	a_0				= { half.x + 0,		half.y + 0		};
 		Fvector2	a_1				= { half.x + one.x, half.y + 0		};
 		Fvector2	a_2				= { half.x + 0,		half.y + one.y	};
@@ -124,34 +124,7 @@ void CRenderTarget::phase_bloom	()
 	// Capture luminance values
 	phase_luminance					( );
 
-	if (ps_r2_ls_flags.test(R2FLAG_FASTBLOOM))
 	{
-		// FAST FILTER
-		float	_w					= BLOOM_size_X;
-		float	_h					= BLOOM_size_Y;
-		float	ddw					= (1.f/_w)*ps_r2_ls_bloom_kernel_b;
-		float	ddh					= (1.f/_h)*ps_r2_ls_bloom_kernel_b;
-		Fvector2	p0;	p0.set		(.5f/_w, .5f/_h);
-		Fvector2	p1;	p1.set		((_w+.5f)/_w, (_h+.5f)/_h );
-
-		v_build* pv					= (v_build*) RCache.Vertex.Lock	(4,g_bloom_build->vb_stride,Offset);
-		pv->p.set(EPS,			float(_h+EPS),	EPS,1.f); pv->uv0.set(p0.x-ddw,p1.y-ddh);pv->uv1.set(p0.x+ddw,p1.y+ddh);pv->uv2.set(p0.x+ddw,p1.y-ddh);pv->uv3.set(p0.x-ddw,p1.y+ddh);pv++;
-		pv->p.set(EPS,			EPS,			EPS,1.f); pv->uv0.set(p0.x-ddw,p0.y-ddh);pv->uv1.set(p0.x+ddw,p0.y+ddh);pv->uv2.set(p0.x+ddw,p0.y-ddh);pv->uv3.set(p0.x-ddw,p0.y+ddh);pv++;
-		pv->p.set(float(_w+EPS),float(_h+EPS),	EPS,1.f); pv->uv0.set(p1.x-ddw,p1.y-ddh);pv->uv1.set(p1.x+ddw,p1.y+ddh);pv->uv2.set(p1.x+ddw,p1.y-ddh);pv->uv3.set(p1.x-ddw,p1.y+ddh);pv++;
-		pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->uv0.set(p1.x-ddw,p0.y-ddh);pv->uv1.set(p1.x+ddw,p0.y+ddh);pv->uv2.set(p1.x+ddw,p0.y-ddh);pv->uv3.set(p1.x-ddw,p0.y+ddh);pv++;
-		RCache.Vertex.Unlock		(4,g_bloom_build->vb_stride);
-		RCache.set_Geometry			(g_bloom_build);
-
-		// P0
-		u_setrt						(rt_Bloom_2,NULL,NULL,NULL);			// No need for ZBuffer at all
-		RCache.set_Element			(s_bloom->E[3]);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-
-		// P1
-		u_setrt						(rt_Bloom_1,NULL,NULL,NULL);			// No need for ZBuffer at all
-		RCache.set_Element			(s_bloom->E[4]);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-	} else {
 		// SLOW FILTER
 		// Transfer into Bloom2, horizontal filter
 		{
@@ -159,7 +132,7 @@ void CRenderTarget::phase_bloom	()
 			float		_h				= BLOOM_size_Y;
 			Fvector2	two				= { 2.f/_w, 2.f/_h };
 			Fvector2	one				= { 1.f/_w, 1.f/_h };
-			Fvector2	half			= { .5f/_w, .5f/_h };
+			Fvector2	half			= { 0, 0 };
 			Fvector4	a_0				= { half.x,					half.y,	half.y,		half.x					};	// center
 			Fvector4	a_1				= { a_0.x - one.x - half.x, half.y,	half.y,		a_0.w + one.x + half.x	};	// -1,+1i
 			Fvector4	a_2				= { a_1.x - two.x,			half.y,	half.y,		a_1.w + two.x			};	// -2,+2i
@@ -239,7 +212,7 @@ void CRenderTarget::phase_bloom	()
 			float		_h				= BLOOM_size_Y;
 			Fvector2	two				= { 2.f/_w, 2.f/_h };
 			Fvector2	one				= { 1.f/_w, 1.f/_h };
-			Fvector2	half			= { .5f/_w, .5f/_h };
+			Fvector2	half			= { 0, 0 };
 			Fvector4	a_0				= { half.x,	half.y,					half.y,						half.x	};	// center
 			Fvector4	a_1				= { half.x, a_0.y - one.y - half.y,	half.y + one.y + a_0.z,		half.x	};	// -1,+1i
 			Fvector4	a_2				= { half.x,			a_1.y - two.y,	two.y + a_1.z,				half.x	};	// -2,+2i

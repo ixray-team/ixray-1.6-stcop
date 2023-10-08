@@ -137,6 +137,8 @@ void dxUIRender::FlushLineList()
 	PrimitiveType = ptNone;
 }
 */
+extern bool RenderingHUD;
+
 void dxUIRender::SetScissor(Irect* rect)
 {
 #if RENDER == R_R4
@@ -227,7 +229,9 @@ void set_viewport(ID3DDeviceContext* dev, float w, float h);
 void dxUIRender::FlushPrimitive()
 {
 #ifdef USE_DX11
-	set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
+	if (!RenderingHUD) {
+		set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
+	}
 #else
 	D3D_VIEWPORT viewport[1] =
 	{
