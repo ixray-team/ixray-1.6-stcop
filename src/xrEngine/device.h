@@ -141,7 +141,6 @@ public:
 	u32										dwPrecacheTotal;
 
 //	u32										dwWidth, dwHeight;
-	float									HalfTargetWidth, HalfTargetHeight;
 //	BOOL									b_is_Ready;
 //	BOOL									b_is_Active;
 	void									OnWM_Activate(WPARAM wParam, LPARAM lParam);

@@ -48,6 +48,12 @@ void CBackend::OnFrameBegin	()
 		RImplementation.rmNormal();
 		set_RT				(HW.pBaseRT);
 		set_ZB				(RImplementation.Target->rt_HWScaledTargetDepth->pZRT);
+#else
+		Invalidate();
+		//	DX9 sets base rt nd base zb by default
+		RImplementation.rmNormal();
+		set_RT(HW.pBaseRT);
+		set_ZB(HW.pBaseZB);
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));
 		Vertex.Flush		();

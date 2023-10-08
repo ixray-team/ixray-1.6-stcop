@@ -253,6 +253,7 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	// OCCLUSION
+	b_occq = xr_new<CBlender_light_occq>();
 	s_occq.create					(b_occq,		"r2\\occq");
 
 	// DIRECT (spot)

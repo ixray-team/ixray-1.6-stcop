@@ -125,19 +125,11 @@ void	CRenderTarget::phase_combine	()
 		p0.set						(.5f/_w, .5f/_h);
 		p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
-		// Fill vertex buffer
-		//Fvector4* pv				= (Fvector4*)	RCache.Vertex.Lock	(4,g_combine_VP->vb_stride,Offset);
-		//pv->set						(hclip(EPS,		_w),	hclip(_h+EPS,	_h),	p0.x, p1.y);	pv++;
-		//pv->set						(hclip(EPS,		_w),	hclip(EPS,		_h),	p0.x, p0.y);	pv++;
-		//pv->set						(hclip(_w+EPS,	_w),	hclip(_h+EPS,	_h),	p1.x, p1.y);	pv++;
-		//pv->set						(hclip(_w+EPS,	_w),	hclip(EPS,		_h),	p1.x, p0.y);	pv++;
-		//RCache.Vertex.Unlock		(4,g_combine_VP->vb_stride);
-
 		// Fill VB
 		float	scale_X				= float(RCache.get_width())	/ float(TEX_jitter);
 		float	scale_Y				= float(RCache.get_height())/ float(TEX_jitter);
 
-		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine_VP->vb_stride,Offset);
+		FVF::TL* pv					= (FVF::TL*)RCache.Vertex.Lock(4,g_combine_VP->vb_stride,Offset);
 		pv->set						(hclip(EPS,		_w),	hclip(_h+EPS,	_h),	p0.x, p1.y, 0, 0,			scale_Y	);	pv++;
 		pv->set						(hclip(EPS,		_w),	hclip(EPS,		_h),	p0.x, p0.y, 0, 0,			0		);	pv++;
 		pv->set						(hclip(_w+EPS,	_w),	hclip(_h+EPS,	_h),	p1.x, p1.y, 0, scale_X,	scale_Y	);	pv++;
@@ -204,28 +196,18 @@ void	CRenderTarget::phase_combine	()
 		}
 	}
 
-	if (ps_r2_aa_type == 1) {
-		u_setrt(rt_Accumulator, 0, 0, 0);
-		phase_fxaa(0);
-		u_setrt(rt_Generic_0, 0, 0, 0);
-		phase_fxaa(1);
-		RCache.set_Stencil(FALSE);
-	}
 
 	// PP enabled ?
-	//	Render to RT texture to be able to copy RT even in windowed mode.
-	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
+	BOOL	PP_Complex = TRUE;
 	if (_menu_pp)			PP_Complex	= FALSE;
 
 	// Combine everything + perform AA
-	if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT
-	else					u_setrt		( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-	//. u_setrt				( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	u_setrt		( rt_Color,0,0,HW.pBaseZB );
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
-	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares	();	// lens-flares
+	g_pGamePersistent->Environment().RenderFlares	();	// lens-flares
 
 	//	Igor: screenshot will not have postprocess applied.
 	//	TODO: fox that later
@@ -289,69 +271,6 @@ void	CRenderTarget::phase_combine	()
 	}
 #endif
 
-	// ********************* Debug
-	/*
-	if (0)		{
-		u32		C					= color_rgba	(255,255,255,255);
-		float	_w					= float(RCache.get_width())/3;
-		float	_h					= float(RCache.get_height())/3;
-
-		// draw light-spheres
-#ifdef DEBUG
-		if (0) for (u32 it=0; it<dbg_spheres.size(); it++)
-		{
-			Fsphere				S	= dbg_spheres[it].first;
-			Fmatrix				M;	
-			u32				ccc		= dbg_spheres[it].second.get();
-			M.scale					(S.R,S.R,S.R);
-			M.translate_over		(S.P);
-			RCache.dbg_DrawEllipse	(M,ccc);
-			RCache.dbg_DrawAABB		(S.P,.05f,.05f,.05f,ccc);
-		}
-#endif
-		// Draw quater-screen quad textured with our direct-shadow-map-image
-		if (1) 
-		{
-			u32							IX=0,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-			// Fill vertex buffer
-			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
-			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-			// Draw COLOR
-			RCache.set_Shader			(s_combine_dbg_0);
-			RCache.set_Geometry			(g_combine);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		}
-
-		// Draw quater-screen quad textured with our accumulator
-		if (0)
-		{
-			u32							IX=1,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-			// Fill vertex buffer
-			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
-			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-			// Draw COLOR
-			RCache.set_Shader			(s_combine_dbg_1);
-			RCache.set_Geometry			(g_combine);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		}
-	}
-	*/
 #ifdef DEBUG
 	dbg_spheres.clear	();
 	dbg_lines.clear		();

@@ -228,6 +228,13 @@ void dxUIRender::FlushPrimitive()
 {
 #ifdef USE_DX11
 	set_viewport(HW.pContext, RCache.get_target_width(), RCache.get_target_height());
+#else
+	D3D_VIEWPORT viewport[1] =
+	{
+		0, 0,  RCache.get_target_width(), RCache.get_target_height(), 0.f, 1.f
+	};
+
+	HW.pDevice->SetViewport(viewport);
 #endif
 
 	u32 primCount					= 0;

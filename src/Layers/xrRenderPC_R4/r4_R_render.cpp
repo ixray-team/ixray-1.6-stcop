@@ -8,7 +8,6 @@
 
 Fvector2 g_current_jitter;
 Fvector2 g_prev_jitter;
-void set_viewport(ID3DDeviceContext* dev, float w, float h);
 
 IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
 {
@@ -215,8 +214,7 @@ void CRender::Render		()
 	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
-	if( !(g_pGameLevel && g_hud)
-		|| bMenu)	
+	if( !(g_pGameLevel && g_hud) || bMenu)	
 	{
 		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL, nullptr);
 		return;

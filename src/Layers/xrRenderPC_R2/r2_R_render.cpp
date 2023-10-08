@@ -150,18 +150,18 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt						(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		Target->u_setrt						(Target->rt_Generic_0,0,0,nullptr);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 	// Distort
 	{
-		Target->u_setrt						(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
+		Target->u_setrt						(Target->rt_Generic_1,0,0, nullptr);		// Now RT is a distortion mask
 		CHK_DX(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL, nullptr);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
@@ -190,6 +190,8 @@ void CRender::Render		()
 	g_r						= 1;
 	VERIFY					(0==mapDistort.size());
 
+	rmNormal();
+
 	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	if (_menu_pp)			{
 		render_menu			()	;
@@ -199,7 +201,10 @@ void CRender::Render		()
 	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
-	if( !(g_pGameLevel && g_hud) || bMenu)	return;
+	if (!(g_pGameLevel && g_hud) || bMenu) {
+		Target->u_setrt(RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT, NULL, NULL, nullptr);
+		return;
+	}
 
 	if( m_bFirstFrameAfterReset )
 	{
@@ -284,6 +289,8 @@ void CRender::Render		()
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
+	rmNormal();
+
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{
@@ -352,20 +359,6 @@ void CRender::Render		()
 
 	//******* Main render :: PART-1 (second)
 	if (split_the_scene_to_minimize_wait)	{
-		// skybox can be drawn here
-		if (0)
-		{
-			Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
-			RCache.set_CullMode	( CULL_NONE );
-			RCache.set_Stencil	( FALSE		);
-
-			// draw skybox
-			RCache.set_ColorWriteEnable					();
-			CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-			g_pGamePersistent->Environment().RenderSky	();
-			CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
-		}
-
 		// level
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
@@ -401,6 +394,8 @@ void CRender::Render		()
 		}
 		Lights_LastFrame.clear	();
 	}
+
+	rmNormal();
 
 	// Directional light - fucking sun
 	if (bSUN)	{

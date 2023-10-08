@@ -619,10 +619,15 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 #if	RENDER!=R_R1
 	if (1)
 	{
+#if RENDER != R_R4
+		IRender_Target* T = getTarget();
+		D3DVIEWPORT9 VP = { 0,0,(float)T->get_width(),(float)T->get_height(),0,0.999f };
+		CHK_DX(HW.pDevice->SetViewport(&VP));
+#else
 		IRender_Target* T = getTarget();
 		D3D_VIEWPORT VP = { 0,0,(float)T->get_width(),(float)T->get_height(),0,0.999f };
-
 		HW.pContext->RSSetViewports(1, &VP);
+#endif
 
 		// Sorted (back to front)
 		mapEmissive.traverseLR(sorted_L1);
@@ -659,7 +664,11 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	IRender_Target* T = getTarget();
 	D3D_VIEWPORT VP = { 0,0,(float)T->get_width(),(float)T->get_height(),0,0.01f };
 
+#if RENDER != R_R4
+	HW.pDevice->SetViewport(&VP);
+#else
 	HW.pContext->RSSetViewports(1, &VP);
+#endif
 
 	// Sorted (back to front)
 	mapHUDEmissive.traverseLR	(sorted_L1);

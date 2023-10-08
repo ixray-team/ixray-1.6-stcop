@@ -121,9 +121,9 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 		R_CHK			(pIB->Lock(0,0,(LPVOID*)&bytes,0));
 		Memory.mem_copy	(bytes,indices,i_cnt*sizeof(u16));
 		R_CHK			(pIB->Unlock());
-		OnRender.bind	(this,&SPrimitiveBuffer::Render);
+		OnRender.bind	(this,&SPrimitiveBuffer::RenderDIP);
 	}else{
-		OnRender.bind	(this,&SPrimitiveBuffer::Render);
+		OnRender.bind	(this,&SPrimitiveBuffer::RenderDIP);
 	}
 	pGeom.create		(FVF,pVB,pIB);
 #endif
@@ -564,9 +564,9 @@ IC float 				_y2real			(float y)
 { return (y+1)*Device.m_RenderHeight_2;}
 #else
 IC float 				_x2real			(float x)
-{ return (x+1)*Device.TargetWidth * Device.RenderScale *0.5f;	}
+{ return (x+1)*(Device.TargetWidth * 0.5f) * Device.RenderScale;	}
 IC float 				_y2real			(float y)
-{ return (y+1)*Device.TargetHeight * Device.RenderScale *0.5f;}
+{ return (y+1)*(Device.TargetHeight * 0.5f) * Device.RenderScale *0.5f;}
 #endif
 
 void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption, u32 clr_font)

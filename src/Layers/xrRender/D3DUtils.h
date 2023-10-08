@@ -25,6 +25,8 @@ struct SPrimitiveBuffer {
     TOnRender				OnRender;
 public:
     SPrimitiveBuffer() :OnRender(0), pGeom(0) { ; }
+    void                    RenderDIP() { DU_DRAW_DIP(p_type, pGeom, 0, 0, v_cnt, 0, p_cnt); }
+    void                    RenderDP() { DU_DRAW_DP(p_type, pGeom, 0, p_cnt); }
     void					CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices = 0, u32 _i_cnt = 0);
     void					Destroy();
     void					Render() { OnRender(); }

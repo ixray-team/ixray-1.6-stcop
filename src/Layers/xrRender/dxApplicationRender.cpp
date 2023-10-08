@@ -51,6 +51,9 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 
 #else
+	RImplementation.rmNormal();
+	RCache.set_RT(HW.pBaseRT);
+	RCache.set_ZB(nullptr);
 	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, color_argb(0, 0, 0, 0), 1, 0));
 #endif
 
