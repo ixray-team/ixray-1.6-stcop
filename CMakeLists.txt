@@ -23,7 +23,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "/MD")
 
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
-                    "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELEASE>:/GR->" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
+                    "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 
 ## Edit and Continue mode
