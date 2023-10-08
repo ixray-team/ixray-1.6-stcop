@@ -26,7 +26,6 @@
 #include "../ActorHelmet.h"
 #include "../eatable_item.h"
 #include "UICellItem.h"
-#include "IXRayGameConstants.h"
 
 extern const LPCSTR g_inventory_upgrade_xml;
 
@@ -334,8 +333,8 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 		Irect item_grid_rect				= pInvItem->GetInvGridRect();
 		Frect texture_rect;
-		texture_rect.lt.set					(item_grid_rect.x1*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()),	item_grid_rect.y1*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
-		texture_rect.rb.set					(item_grid_rect.x2*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()),	item_grid_rect.y2*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
+		texture_rect.lt.set					(item_grid_rect.x1*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),	item_grid_rect.y1*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
+		texture_rect.rb.set					(item_grid_rect.x2*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),	item_grid_rect.y2*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
 		texture_rect.rb.add					(texture_rect.lt);
 		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
 		UIItemImage->TextureOn				();
@@ -343,15 +342,15 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 		Fvector2 v_r{};
 
-		if (GameConstants::GetUseHQ_Icons())
+		if (EngineExternal()[EEngineExternalUI::HQIcons])
 		{
-			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(GameConstants::GetUseHQ_Icons()) / 2,
-				item_grid_rect.y2 * INV_GRID_HEIGHT2(GameConstants::GetUseHQ_Icons()) / 2 };
+			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(EngineExternal()[EEngineExternalUI::HQIcons]) / 2,
+				item_grid_rect.y2 * INV_GRID_HEIGHT2(EngineExternal()[EEngineExternalUI::HQIcons]) / 2 };
 		}
 		else
 		{
-			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(GameConstants::GetUseHQ_Icons()),
-				item_grid_rect.y2 * INV_GRID_HEIGHT2(GameConstants::GetUseHQ_Icons()) };
+			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(EngineExternal()[EEngineExternalUI::HQIcons]),
+				item_grid_rect.y2 * INV_GRID_HEIGHT2(EngineExternal()[EEngineExternalUI::HQIcons]) };
 		}
 
 		v_r.x								*= UI().get_current_kx();

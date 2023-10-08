@@ -10,7 +10,6 @@
 #include "ui/UIInventoryUtilities.h"
 #include "object_broker.h"
 #include "../Include/xrRender/UIShader.h"
-#include "IXRayGameConstants.h"
 
 using namespace InventoryUtilities;
 
@@ -78,10 +77,10 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	{
 		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader());
 		Frect				tex_rect;
-		tex_rect.x1			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()));
-		tex_rect.y1			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
-		tex_rect.x2			= float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()));
-		tex_rect.y2			= float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
+		tex_rect.x1			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]));
+		tex_rect.y1			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
+		tex_rect.x2			= float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]));
+		tex_rect.y2			= float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
 		tex_rect.rb.add		(tex_rect.lt);
 		data()->image.GetUIStaticItem().SetTextureRect(tex_rect);
 	}
