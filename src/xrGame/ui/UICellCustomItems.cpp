@@ -4,7 +4,6 @@
 #include "../Weapon.h"
 #include "UIDragDropListEx.h"
 #include "UIProgressBar.h"
-#include "IXRayGameConstants.h"
 
 #define INV_GRID_WIDTHF(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
 #define INV_GRID_HEIGHTF(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
@@ -32,11 +31,11 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 
 	m_grid_size.set									(itm->GetInvGridRect().rb);
 	Frect rect; 
-	rect.lt.set										(INV_GRID_WIDTHF(GameConstants::GetUseHQ_Icons()) * itm->GetInvGridRect().x1,
-														INV_GRID_HEIGHTF(GameConstants::GetUseHQ_Icons()) * itm->GetInvGridRect().y1 );
+	rect.lt.set										(INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * itm->GetInvGridRect().x1,
+														INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * itm->GetInvGridRect().y1 );
 
-	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF(GameConstants::GetUseHQ_Icons()) * m_grid_size.x,
-														rect.lt.y+INV_GRID_HEIGHTF(GameConstants::GetUseHQ_Icons()) * m_grid_size.y);
+	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.x,
+														rect.lt.y+INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.y);
 
 	inherited::SetTextureRect						(rect);
 	inherited::SetStretchTexture					(true);
@@ -347,57 +346,55 @@ void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 
 void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_offset, bool b_rotate)
 {
-	
-		Frect					tex_rect;
-		Fvector2				base_scale;
+	Frect tex_rect;
+	Fvector2 base_scale;
 
-		if(Heading())
-		{
-			base_scale.x			= GetHeight()/(INV_GRID_WIDTHF(GameConstants::GetUseHQ_Icons()) * m_grid_size.x);
-			base_scale.y			= GetWidth()/(INV_GRID_HEIGHTF(GameConstants::GetUseHQ_Icons()) * m_grid_size.y);
-		}else
-		{
-			base_scale.x			= GetWidth()/(INV_GRID_WIDTHF(GameConstants::GetUseHQ_Icons()) * m_grid_size.x);
-			base_scale.y			= GetHeight()/(INV_GRID_HEIGHTF(GameConstants::GetUseHQ_Icons()) * m_grid_size.y);
-		}
-		Fvector2				cell_size;
-		cell_size.x				= pSettings->r_u32(section, "inv_grid_width")*INV_GRID_WIDTHF(GameConstants::GetUseHQ_Icons());
-		cell_size.y				= pSettings->r_u32(section, "inv_grid_height")*INV_GRID_HEIGHTF(GameConstants::GetUseHQ_Icons());
+	if (Heading())
+	{
+		base_scale.x = GetHeight() / (INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.x);
+		base_scale.y = GetWidth() / (INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.y);
+	}
+	else
+	{
+		base_scale.x = GetWidth() / (INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.x);
+		base_scale.y = GetHeight() / (INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.y);
+	}
 
-		tex_rect.x1				= pSettings->r_u32(section, "inv_grid_x")*INV_GRID_WIDTHF(GameConstants::GetUseHQ_Icons());
-		tex_rect.y1				= pSettings->r_u32(section, "inv_grid_y")*INV_GRID_HEIGHTF(GameConstants::GetUseHQ_Icons());
+	Fvector2 cell_size;
+	cell_size.x = pSettings->r_u32(section, "inv_grid_width") * INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]);
+	cell_size.y = pSettings->r_u32(section, "inv_grid_height") * INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]);
 
-		tex_rect.rb.add			(tex_rect.lt,cell_size);
+	tex_rect.x1 = pSettings->r_u32(section, "inv_grid_x") * INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]);
+	tex_rect.y1 = pSettings->r_u32(section, "inv_grid_y") * INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]);
 
-		cell_size.mul			(base_scale);
+	tex_rect.rb.add(tex_rect.lt, cell_size);
 
-		if(b_rotate)
-		{
-			s->SetWndSize		(Fvector2().set(cell_size.y, cell_size.x) );
-			Fvector2 new_offset;
-			new_offset.x		= addon_offset.y*base_scale.x;
-			new_offset.y		= GetHeight() - addon_offset.x*base_scale.x - cell_size.x;
-			addon_offset		= new_offset;
-			addon_offset.x		*= UI().get_current_kx();
-		}else
-		{
-			s->SetWndSize		(cell_size);
-			addon_offset.mul	(base_scale);
-		}
+	cell_size.mul(base_scale);
 
-		s->SetWndPos			(addon_offset);
-		s->SetTextureRect		(tex_rect);
-		s->SetStretchTexture	(true);
+	if (b_rotate) {
+		s->SetWndSize(Fvector2().set(cell_size.y, cell_size.x));
+		Fvector2 new_offset;
+		new_offset.x = addon_offset.y * base_scale.x;
+		new_offset.y = GetHeight() - addon_offset.x * base_scale.x - cell_size.x;
+		addon_offset = new_offset;
+		addon_offset.x *= UI().get_current_kx();
+	} else {
+		s->SetWndSize(cell_size);
+		addon_offset.mul(base_scale);
+	}
 
-		s->EnableHeading		(b_rotate);
-		
-		if(b_rotate)
-		{
-			s->SetHeading			(GetHeading());
-			Fvector2 offs;
-			offs.set				(0.0f, s->GetWndSize().y);
-			s->SetHeadingPivot		(Fvector2().set(0.0f,0.0f), /*Fvector2().set(0.0f,0.0f)*/offs, true);
-		}
+	s->SetWndPos(addon_offset);
+	s->SetTextureRect(tex_rect);
+	s->SetStretchTexture(true);
+
+	s->EnableHeading(b_rotate);
+
+	if (b_rotate) {
+		s->SetHeading(GetHeading());
+		Fvector2 offs;
+		offs.set(0.0f, s->GetWndSize().y);
+		s->SetHeadingPivot(Fvector2().set(0.0f, 0.0f), /*Fvector2().set(0.0f,0.0f)*/offs, true);
+	}
 }
 
 CUIDragItem* CUIWeaponCellItem::CreateDragItem()
