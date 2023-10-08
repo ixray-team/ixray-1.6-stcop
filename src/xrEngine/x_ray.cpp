@@ -384,6 +384,8 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 			xr_strcpy( Core.UserName , sizeof( Core.UserName ) , "Player" );
 			xr_strcpy( Core.CompName , sizeof( Core.CompName ) , "Computer" );
 	}
+
+	EngineExternal();
 }
 
 ENGINE_API void EngineLoadStage2()
