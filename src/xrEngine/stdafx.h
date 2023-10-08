@@ -45,6 +45,7 @@
 #define ECORE_API
 
 // Our headers
+#include "EngineExternal.h"
 #include "engine.h"
 #include "defines.h"
 #ifndef NO_XRLOG

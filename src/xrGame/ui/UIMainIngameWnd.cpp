@@ -52,7 +52,6 @@
 #include "game_cl_capture_the_artefact.h"
 #include "UIHudStatesWnd.h"
 #include "UIActorMenu.h"
-#include "IXRayGameConstants.h"
 
 void test_draw	();
 void test_key	(int dik);
@@ -590,19 +589,19 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
 
 	float scale_x = m_iPickUpItemIconWidth /
-		float(m_iGridWidth * INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()));
+		float(m_iGridWidth * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]));
 	float scale_y = m_iPickUpItemIconHeight /
-		float(m_iGridHeight * INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
+		float(m_iGridHeight * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
 
 	scale_x = (scale_x>1) ? 1.0f : scale_x;
 	scale_y = (scale_y>1) ? 1.0f : scale_y;
 
-	if (GameConstants::GetUseHQ_Icons())
+	if (EngineExternal()[EEngineExternalUI::HQIcons])
 	{
 		scale_x = m_iPickUpItemIconWidth /
-			(m_iGridWidth * INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()) / 2);
+			(m_iGridWidth * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) / 2);
 		scale_y = m_iPickUpItemIconHeight /
-			(m_iGridHeight * INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()) / 2);
+			(m_iGridHeight * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]) / 2);
 
 		scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
 		scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
@@ -611,15 +610,15 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
 	Frect					texture_rect;
-	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()), m_iYPos*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
-	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()), m_iGridHeight*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()));
+	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]), m_iYPos*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
+	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]), m_iGridHeight*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
 	texture_rect.rb.add		(texture_rect.lt);
 	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
 	UIPickUpItemIcon->SetStretchTexture(true);
 
 
-	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons()) * scale*UI().get_current_kx());
-	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons()) * scale);
+	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) * scale*UI().get_current_kx());
+	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]) * scale);
 
 	UIPickUpItemIcon->SetWndPos(Fvector2().set(	m_iPickUpItemIconX+(m_iPickUpItemIconWidth-UIPickUpItemIcon->GetWidth())/2.0f,
 												m_iPickUpItemIconY+(m_iPickUpItemIconHeight-UIPickUpItemIcon->GetHeight())/2.0f) );
@@ -872,10 +871,10 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				CUIStatic* main_slot = m_quick_slots_icons[i];
 				main_slot->SetShader(InventoryUtilities::GetEquipmentIconsShader());
 				Frect texture_rect;
-				texture_rect.x1	= pSettings->r_float(item_name, "inv_grid_x")		*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons());
-				texture_rect.y1	= pSettings->r_float(item_name, "inv_grid_y")		*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons());
-				texture_rect.x2	= pSettings->r_float(item_name, "inv_grid_width")	*INV_GRID_WIDTH(GameConstants::GetUseHQ_Icons());
-				texture_rect.y2	= pSettings->r_float(item_name, "inv_grid_height")*INV_GRID_HEIGHT(GameConstants::GetUseHQ_Icons());
+				texture_rect.x1	= pSettings->r_float(item_name, "inv_grid_x")		*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
+				texture_rect.y1	= pSettings->r_float(item_name, "inv_grid_y")		*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
+				texture_rect.x2	= pSettings->r_float(item_name, "inv_grid_width")	*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
+				texture_rect.y2	= pSettings->r_float(item_name, "inv_grid_height")*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
 				texture_rect.rb.add(texture_rect.lt);
 				main_slot->SetTextureRect(texture_rect);
 				main_slot->TextureOn();
