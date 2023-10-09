@@ -961,7 +961,7 @@ public:
 
 		char hex_digest[64];
 		s32 ban_time = 0;
-		if (sscanf_s(args_, "%s %i", &hex_digest, sizeof(hex_digest), &ban_time) != 2)
+		if (sscanf_s(args_, "%s %i", &hex_digest, (u32) sizeof(hex_digest), &ban_time) != 2)
 		{
 			Msg("! ERROR: bad command parameters.");
 			Msg("Ban player. Format: \"sv_banplayer_by_digest <hex digest> <ban_time_in_sec>\". To get player hex digest you can enter: sv_listplayers_banned");
@@ -999,7 +999,7 @@ public:
 			tmp_sv_game->UnBanPlayer(last_printed_player_banned);
 		} else
 		{
-			size_t player_index = 0;
+			u32 player_index = 0;
 			if (sscanf_s(args_, "%u", &player_index) != 1)
 			{
 				Msg("! ERROR: bad command parameters.");
@@ -1212,7 +1212,7 @@ public:
 			exclude_raid_from_args(args, tmp_dest, sizeof(tmp_dest));
 			if (xr_strlen(tmp_dest))
 			{
-				sscanf_s(tmp_dest, "%s", filter_string, sizeof(filter_string));
+				sscanf_s(tmp_dest, "%s", filter_string, (u32) sizeof(filter_string));
 				tmp_functor.filter_string = filter_string;
 			}
 		}
@@ -1337,10 +1337,11 @@ public:
 		};
 		//-----------------------------------------
 
-		const SGameTypeMaps& M		= gMapListHelper.GetMapListFor(GameTypeID);
-		u32 cnt						= M.m_map_names.size();
-		bool bMapFound				= false;
-		for(u32 i=0; i<cnt; ++i)
+		const SGameTypeMaps& M = gMapListHelper.GetMapListFor(GameTypeID);
+		bool bMapFound = false;
+
+		size_t cnt = M.m_map_names.size();
+		for (size_t i = 0; i < cnt; ++i)
 		{
 			const SGameTypeMaps::SMapItm& itm = M.m_map_names[i];
 			if (!xr_strcmp(itm.map_name.c_str(), LevelName) &&
