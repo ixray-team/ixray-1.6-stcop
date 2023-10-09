@@ -6,6 +6,10 @@ option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
 
+# Wrap CMake general configs 
+set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
+set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
+
 # Output target
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -19,10 +23,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "/MD")
 
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
-                    "$<$<CONFIG:RELWITHDEBINFO>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
+                    "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 
-# Edit and Continue mode
+## Edit and Continue mode
 add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")
 
 # Configure NuGet
@@ -155,7 +159,6 @@ set_target_properties(CxImage PROPERTIES ${IXRAY_FOLDER_3RD})
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # Set default project
 if(NOT IXRAY_COMPRESSOR_ONLY)
