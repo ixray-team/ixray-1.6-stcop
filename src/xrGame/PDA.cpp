@@ -88,40 +88,50 @@ void CPda::UpdateActiveContacts	()
 
 void CPda::feel_touch_new(CObject* O) 
 {
-	if ( CInventoryOwner* pNewContactInvOwner = smart_cast<CInventoryOwner*>(O) )
+	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
+	CInventoryOwner* pNewContactInvOwner = smart_cast<CInventoryOwner*>(O);
+
+	if (!entity_alive->cast_base_monster() && pNewContactInvOwner)
 	{
-		CInventoryOwner* pOwner	=	smart_cast<CInventoryOwner*>( H_Parent() );VERIFY(pOwner);
-		pOwner->NewPdaContact		(pNewContactInvOwner);
+		CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()); VERIFY(pOwner);
+		pOwner->NewPdaContact(pNewContactInvOwner);
 	}
 }
 
 void CPda::feel_touch_delete(CObject* O) 
 {
-	if(!H_Parent())							return;
-	if ( CInventoryOwner* pLostContactInvOwner = smart_cast<CInventoryOwner*>(O) )
+	if(!H_Parent()) {
+		return;
+	}
+
+	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
+	CInventoryOwner* pLostContactInvOwner = smart_cast<CInventoryOwner*>(O);
+
+	if (!entity_alive->cast_base_monster() && pLostContactInvOwner)
 	{
-		CInventoryOwner* pOwner	=	smart_cast<CInventoryOwner*>( H_Parent() );VERIFY(pOwner);
-		pOwner->LostPdaContact		(pLostContactInvOwner);
+		CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()); VERIFY(pOwner);
+		pOwner->LostPdaContact(pLostContactInvOwner);
 	}
 }
 
-BOOL CPda::feel_touch_contact(CObject* O) 
+BOOL CPda::feel_touch_contact(CObject* O)
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
 
-	if ( entity_alive && entity_alive->cast_base_monster() )
+	if (entity_alive && entity_alive->cast_base_monster())
 	{
 		return TRUE;
 	}
-	else if ( CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(O) )
+	else if (CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(O))
 	{
-		if( this!=pInvOwner->GetPDA() )
+		if (this != pInvOwner->GetPDA())
 		{
 			CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(O);
-			if(pEntityAlive)
+			if (pEntityAlive)
 				return TRUE;
-		}else
-		return FALSE;
+		}
+		else
+			return FALSE;
 	}
 
 	return FALSE;
@@ -131,7 +141,7 @@ void CPda::OnH_A_Chield()
 {
 	VERIFY(IsOff());
 
-	//âêëþ÷èòü PDA òîëüêî åñëè îíî íàõîäèòñÿ ó ïåðâîãî âëàäåëüöà
+	//Ã¢ÃªÃ«Ã¾Ã·Ã¨Ã²Ã¼ PDA Ã²Ã®Ã«Ã¼ÃªÃ® Ã¥Ã±Ã«Ã¨ Ã®Ã­Ã® Ã­Ã ÃµÃ®Ã¤Ã¨Ã²Ã±Ã¿ Ã³ Ã¯Ã¥Ã°Ã¢Ã®Ã£Ã® Ã¢Ã«Ã Ã¤Ã¥Ã«Ã¼Ã¶Ã 
 	if(H_Parent()->ID() == m_idOriginalOwner){
 		TurnOn					();
 		if(m_sFullName.empty()){
@@ -147,7 +157,7 @@ void CPda::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 	
-	//âûêëþ÷èòü
+	//Ã¢Ã»ÃªÃ«Ã¾Ã·Ã¨Ã²Ã¼
 	TurnOff();
 }
 
