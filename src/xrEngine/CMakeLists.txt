@@ -23,7 +23,7 @@ file(GLOB_RECURSE ENGINE_SOURCE_WEDIT_FILES
 file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
     "x_ray.*"
     "EngineAPI.*"
-    "EngineExternal.*"
+    "EngineExternal*.*"
 )
 file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
