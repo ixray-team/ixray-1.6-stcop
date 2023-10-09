@@ -106,6 +106,9 @@ target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _WINDOWS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
+## Disable user-cheats for Shipping build
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
+
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
