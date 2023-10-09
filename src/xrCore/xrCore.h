@@ -1,10 +1,6 @@
 #pragma once
 
-#ifndef DEBUG
-#	define MASTER_GOLD
-#endif // DEBUG
-
-#	include "xrCore_platform.h"
+#include "xrCore_platform.h"
 
 // *** try to minimize code bloat of STLport
 #ifdef __BORLANDC__
