@@ -78,19 +78,11 @@ static LPVOID __cdecl luabind_allocator	(
 	}
 
 	if (!pointer) {
-#ifdef DEBUG
-		return	( Memory.mem_alloc(size, "luabind") );
-#else // #ifdef DEBUG
-		return	( Memory.mem_alloc(size) );
-#endif // #ifdef DEBUG
+		return (Memory.mem_alloc(size));
 	}
 
 	LPVOID		non_const_pointer = const_cast<LPVOID>(pointer);
-#ifdef DEBUG
-	return		( Memory.mem_realloc(non_const_pointer, size, "luabind") );
-#else // #ifdef DEBUG
-	return		( Memory.mem_realloc(non_const_pointer, size) );
-#endif // #ifdef DEBUG
+	return (Memory.mem_realloc(non_const_pointer, size));
 }
 
 void setup_luabind_allocator		()
@@ -508,11 +500,7 @@ bool CScriptStorage::load_buffer	(lua_State *L, LPCSTR caBuffer, size_t tSize, L
 			if (total_size < 768*1024)
 				script					= (LPSTR)_alloca(total_size);
 			else {
-#ifdef DEBUG
-				script					= (LPSTR)Memory.mem_alloc(total_size, "lua script file");
-#else //#ifdef DEBUG
-				script					= (LPSTR)Memory.mem_alloc(total_size);
-#endif //#ifdef DEBUG
+				script = (LPSTR) Memory.mem_alloc(total_size);
 				dynamic_allocation		= true;
 			}
 		}
@@ -520,11 +508,7 @@ bool CScriptStorage::load_buffer	(lua_State *L, LPCSTR caBuffer, size_t tSize, L
 		{
 			int							errcode = _resetstkoflw();
 			R_ASSERT2					(errcode, "Could not reset the stack after \"Stack overflow\" exception!");
-#ifdef DEBUG
-			script					= (LPSTR)Memory.mem_alloc(total_size, "lua script file (after exception)");
-#else //#ifdef DEBUG
-			script					= (LPSTR)Memory.mem_alloc(total_size);
-#endif //#ifdef DEBUG			
+			script = (LPSTR) Memory.mem_alloc(total_size);
 			dynamic_allocation			= true;
 		};
 

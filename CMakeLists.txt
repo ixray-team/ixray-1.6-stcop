@@ -5,6 +5,11 @@ project(IXRay)
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
+option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
+
+# Wrap CMake general configs 
+set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
+set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # Wrap CMake general configs 
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
@@ -25,6 +30,10 @@ string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
                     "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+
+if(IXRAY_ASAN)
+    add_compile_options(-fsanitize=address)
+endif()
 
 ## Edit and Continue mode
 add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")

@@ -1,14 +1,9 @@
-#ifndef xrMemory_POOLh
-#define xrMemory_POOLh
 #pragma once
 
 class xrMemory;
 
 class	MEMPOOL
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	friend class xrMemory;
-#endif // DEBUG_MEMORY_MANAGER
 private:
 	xrCriticalSection	cs;
 	u32					s_sector;		// large-memory sector size
@@ -22,10 +17,6 @@ private:
 	void				block_create	();
 public:
 	void				_initialize		(u32 _element, u32 _sector, u32 _header);
-
-#ifdef PROFILE_CRITICAL_SECTIONS
-	ICF					MEMPOOL			(): cs(MUTEX_PROFILE_ID(memory_pool)){}
-#endif // PROFILE_CRITICAL_SECTIONS
 	
 	ICF u32				get_block_count	()	{ return block_count; }
 	ICF u32				get_element		()	{ return s_element; }
@@ -48,4 +39,3 @@ public:
 		cs.Leave		();
 	}
 };
-#endif

@@ -81,8 +81,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		
 		Memory._initialize	(strstr(Params,"-mem_debug") ? TRUE : FALSE);
 
-		DUMP_PHASE;
-
 		InitLog				();
 		_initialize_cpu		();
 
@@ -181,9 +179,6 @@ void xrCore::_destroy		()
 	case DLL_THREAD_DETACH:
 		break;
 	case DLL_PROCESS_DETACH:
-#ifdef USE_MEMORY_MONITOR
-		memory_monitor::flush_each_time	(true);
-#endif // USE_MEMORY_MONITOR
 		break;
 	}
     return TRUE;

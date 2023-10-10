@@ -51,7 +51,7 @@ file(GLOB CORE_SOURCE_FS_FILES
     "file*.*"
     "Locator*.*"
 )
-file(GLOB_RECURSE CORE_SOURCE_ALL_FILES
+file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.c"
     "*.h"
@@ -88,6 +88,10 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
+
+if(IXRAY_ASAN)
+    add_compile_definitions(PURE_ONLY)
+endif()
 
 # Move precompiled header
 set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
