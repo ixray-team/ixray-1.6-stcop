@@ -13,7 +13,6 @@
 #include "first_bullet_controller.h"
 
 #include "CameraRecoil.h"
-#include "IXRayGameConstants.h"
 
 class CEntity;
 class ENGINE_API CMotionDef;
@@ -159,18 +158,14 @@ public:
 
 	int	GetScopeX()
 	{ 
-		if (GameConstants::GetUseHQ_Icons())
-			return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * 2;
-		else
-			return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x");
+		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
+		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + UseHQ);
 	}
 
 	int	GetScopeY()
 	{
-		if (GameConstants::GetUseHQ_Icons())
-			return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * 2;
-		else
-			return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y");
+		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
+		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + UseHQ);
 	}
 
 	int	GetSilencerX() {return m_iSilencerX;}

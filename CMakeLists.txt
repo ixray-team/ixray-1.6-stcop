@@ -11,6 +11,10 @@ option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
+# Wrap CMake general configs 
+set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
+set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
+
 # Output target
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

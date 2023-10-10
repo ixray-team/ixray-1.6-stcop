@@ -2,7 +2,7 @@ project(xrGame)
 set(XGM_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XGM_SOURCE_ALL_FILES
+file(GLOB_RECURSE XGM_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.cxx"
     "*.c"

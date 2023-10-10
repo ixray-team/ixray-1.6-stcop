@@ -29,7 +29,6 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "UI/UIGameTutorial.h"
-#include "IXRayGameConstants.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -177,7 +176,6 @@ void CGamePersistent::OnGameStart()
 {
 	__super::OnGameStart		();
 	UpdateGameType				();
-	GameConstants::LoadConstants();
 }
 
 LPCSTR GameTypeToString(EGameIDs gt, bool bShort)

@@ -160,7 +160,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 	R_ASSERT						(snd_device_id>=0 && snd_device_id<pDeviceList->GetNumDevices());
 	const ALDeviceDesc& deviceDesc	= pDeviceList->GetDeviceDesc(snd_device_id);
     // OpenAL device
-    pDevice						= alcOpenDevice		(deviceDesc.name);
+    pDevice						= alcOpenDevice		(deviceDesc.name_al);
 	if (pDevice == nullptr)
 	{
 		CHECK_OR_EXIT			(0,"SOUND: OpenAL: Failed to create device.");
