@@ -48,11 +48,6 @@ void CScriptBinder::clear			()
 
 void CScriptBinder::reinit			()
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
 	if (m_object) {
 		try {
 			m_object->reinit	();
@@ -61,13 +56,6 @@ void CScriptBinder::reinit			()
 			clear			();
 		}
 	}
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO) {
-//		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-//		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		Msg					("CScriptBinder::reinit() : %d",Memory.mem_usage() - start);
-	}
-#endif // DEBUG_MEMORY_MANAGER
 }
 
 void CScriptBinder::Load			(LPCSTR section)
@@ -76,11 +64,6 @@ void CScriptBinder::Load			(LPCSTR section)
 
 void CScriptBinder::reload			(LPCSTR section)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
 #ifndef DBG_DISABLE_SCRIPTS
 	VERIFY					(!m_object);
 	if (!pSettings->line_exist(section,"script_binding"))
@@ -111,22 +94,10 @@ void CScriptBinder::reload			(LPCSTR section)
 		}
 	}
 #endif
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO) {
-//		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-//		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		Msg					("CScriptBinder::reload() : %d",Memory.mem_usage() - start);
-	}
-#endif // DEBUG_MEMORY_MANAGER
 }
 
 BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
 	CSE_Abstract			*abstract = (CSE_Abstract*)DC;
 	CSE_ALifeObject			*object = smart_cast<CSE_ALifeObject*>(abstract);
 	if (object && m_object) {
@@ -137,14 +108,6 @@ BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 			clear			();
 		}
 	}
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO) {
-//		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-//		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		Msg					("CScriptBinder::net_Spawn() : %d",Memory.mem_usage() - start);
-	}
-#endif // DEBUG_MEMORY_MANAGER
 
 	return					(TRUE);
 }
