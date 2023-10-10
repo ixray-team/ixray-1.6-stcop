@@ -534,24 +534,6 @@ void CLevel::ProcessGameEvents		()
 		Game().m_WeaponUsageStatistic->Send_Check_Respond();
 }
 
-#ifdef DEBUG_MEMORY_MANAGER
-	extern Flags32				psAI_Flags;
-	extern float				debug_on_frame_gather_stats_frequency;
-
-struct debug_memory_guard {
-	inline debug_memory_guard	()
-	{
-		mem_alloc_gather_stats				(!!psAI_Flags.test(aiDebugOnFrameAllocs));
-		mem_alloc_gather_stats_frequency	(debug_on_frame_gather_stats_frequency);
-	}
-
-	inline ~debug_memory_guard	()
-	{
-//		mem_alloc_gather_stats				(false);
-	}
-};
-#endif // DEBUG_MEMORY_MANAGER
-
 void CLevel::MakeReconnect()
 {
 	if (!Engine.Event.Peek("KERNEL:disconnect"))
@@ -579,10 +561,6 @@ void CLevel::MakeReconnect()
 
 void CLevel::OnFrame	()
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	debug_memory_guard					__guard__;
-#endif // DEBUG_MEMORY_MANAGER
-
 #ifdef DEBUG
 	 DBG_RenderUpdate( );
 #endif // #ifdef DEBUG
