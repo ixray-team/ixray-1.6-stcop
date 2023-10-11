@@ -33,6 +33,7 @@ string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
                     "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>" /wd4595 /wd4996)
 
 if (IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
