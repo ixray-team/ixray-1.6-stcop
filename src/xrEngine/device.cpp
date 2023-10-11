@@ -67,6 +67,8 @@ BOOL CRenderDevice::Begin	()
 
 	FPU::m24r();
 	g_bRendering = TRUE;
+
+	return TRUE;
 }
 
 void CRenderDevice::Clear	()
