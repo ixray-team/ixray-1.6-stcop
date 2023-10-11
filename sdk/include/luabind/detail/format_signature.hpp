@@ -145,7 +145,7 @@ namespace luabind {
 			    lua_concat(L, static_cast<int>(ncat));
 			    ncat = 1;
 			}
-			return ncat;
+			return (int)ncat;
 		}
 
 	} // namespace detail
