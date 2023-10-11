@@ -64,7 +64,7 @@ void CFontManager::InitializeFonts()
 
 LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 {
-	static char* tex_names[]={"texture800","texture","texture1600"};
+	static const char* tex_names[]={"texture800","texture","texture1600"};
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 #if 0

@@ -91,7 +91,7 @@ IC	bool CHashFixedVertexManager::is_opened	(const CGraphVertex &vertex) const
 TEMPLATE_SPECIALIZATION
 IC	u32	 CHashFixedVertexManager::hash_index(const _index_type &vertex_id) const
 {
-	return					(hash_fixed_vertex_manager::to_u32(vertex_id) % hash_size);
+	return					(this->hash_fixed_vertex_manager::to_u32(vertex_id) % hash_size);
 }
 
 TEMPLATE_SPECIALIZATION

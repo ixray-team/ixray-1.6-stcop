@@ -108,7 +108,7 @@ void CALifeMonsterPatrolPathManager::actualize				()
 			break;
 		}
 		case PatrolPathManager::ePatrolStartTypeLast : {
-			m_current_vertex_index		= path().vertices().size() - 1;
+			m_current_vertex_index		= (u32)path().vertices().size() - 1;
 			break;
 		}
 		case PatrolPathManager::ePatrolStartTypeNearest : {

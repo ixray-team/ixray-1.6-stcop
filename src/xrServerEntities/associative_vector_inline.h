@@ -279,7 +279,7 @@ IC	typename _associative_vector::iterator _associative_vector::find						(const 
 	if (I == end())
 		return			(end());
 
-	if (operator()(key,(*I).first))
+	if (this->operator()(key,(*I).first))
 		return			(end());
 
 	return				(I);
@@ -293,7 +293,7 @@ IC	typename _associative_vector::const_iterator _associative_vector::find					(c
 	if (I == end())
 		return			(end());
 
-	if (operator()(key,(*I).first))
+	if (this->operator()(key,(*I).first))
 		return			(end());
 
 	return				(I);
