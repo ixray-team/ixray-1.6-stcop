@@ -19,10 +19,7 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-#ifndef LUABIND_REF_HPP_INCLUDED
-#define LUABIND_REF_HPP_INCLUDED
+#pragma once
 
 #include <cassert>
 #include <algorithm>
@@ -30,21 +27,13 @@
 #include <luabind/config.hpp>
 #include <luabind/lua_include.hpp>
 
-struct lua_State;
-
-namespace luabind { namespace detail
+namespace luabind::detail
 {
-
-	int LUABIND_API ref(lua_State *L);
-	void LUABIND_API unref(lua_State *L, int ref);
-
-	inline void getref(lua_State* L, int r)
+	class LUABIND_API lua_reference
 	{
-		lua_rawgeti(L, LUA_REGISTRYINDEX, r);
-	}
-
-	struct lua_reference
-	{
+		lua_State* L;
+		int m_ref;
+	public:
 		lua_reference(lua_State* L_ = 0)
 			: L(L_)
 			, m_ref(LUA_NOREF)
@@ -71,13 +60,15 @@ namespace luabind { namespace detail
 		}
 
 		bool is_valid() const
-		{ return m_ref != LUA_NOREF; }
+		{
+			return m_ref != LUA_NOREF;
+		}
 
 		void set(lua_State* L_)
 		{
 			reset();
 			L = L_;
-			m_ref = ref(L);
+			m_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 		}
 
 		void replace(lua_State* L_)
@@ -93,12 +84,12 @@ namespace luabind { namespace detail
 		{
 			assert(m_ref != LUA_NOREF);
 			assert(L_);
-			getref(L_, m_ref);
+			lua_rawgeti(L_, LUA_REGISTRYINDEX, m_ref);
 		}
 
 		void reset()
 		{
-			if (L && m_ref != LUA_NOREF) unref(L, m_ref);
+			if (L && m_ref != LUA_NOREF) luaL_unref(L, LUA_REGISTRYINDEX, m_ref);
 			m_ref = LUA_NOREF;
 		}
 
@@ -107,13 +98,5 @@ namespace luabind { namespace detail
 			assert(r.L == L);
 			std::swap(r.m_ref, m_ref);
 		}
-
-	private:
-		lua_State* L;
-		int m_ref;
 	};
-
-}}
-
-#endif // LUABIND_REF_HPP_INCLUDED
-
+}

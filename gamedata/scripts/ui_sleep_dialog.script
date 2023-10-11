@@ -11,7 +11,6 @@ function sleep_dialog:__init() super()
 	xml:ParseFile("ui_sleep_dialog.xml")
 
 	self.back = xml:InitStatic("background", self)
---	self.sleep_static = xml:InitSleepStatic("sleep_static", self.back)
 
 	self.sleep_static = xml:InitStatic("sleep_static", self.back)
 	self.sleep_static2 = xml:InitStatic("sleep_static", self.back)
@@ -68,14 +67,14 @@ function sleep_dialog:Initialize()
 	self.sleep_static2:SetWndSize(vector2():set(width, 118))
 
 	local pos = self.sleep_static2:GetWndPos()
-	pos.x = self.sleep_static:GetWndPos().x+self.sleep_static:GetWidth()
-	self.sleep_static2:SetWndPos(pos)
+	local pos_x = self.sleep_static:GetWndPos().x+self.sleep_static:GetWidth()
+	self.sleep_static2:SetWndPos(vector2():set(pos_x, pos.y))
 end
 
 function sleep_dialog:TestAndShow()
-	if(db.actor.bleeding>0 or db.actor.radiation>0) then
+	if(db.actor.bleeding > 0 or db.actor.radiation > 0) then
 		self.sleep_mb:InitMessageBox("message_box_ok")
-		if(db.actor.bleeding>0 and db.actor.radiation>0) then
+		if(db.actor.bleeding > 0 and db.actor.radiation > 0) then
 			self.sleep_mb:SetText("sleep_warning_all_pleasures")
 		elseif(db.actor.bleeding>0) then
 			self.sleep_mb:SetText("sleep_warning_bleeding")

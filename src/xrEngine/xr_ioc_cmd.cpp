@@ -517,16 +517,14 @@ public:
 	virtual void	Save	(IWriter *F)	
 	{
 		//fill_render_mode_list	();
-		tokens					= vid_quality_token;
-		if( !strstr(Core.Params, "-r2") )
-		{
-			inherited::Save(F);
-		}
+		tokens = vid_quality_token;
+		inherited::Save(F);
 	}
+
 	virtual xr_token* GetToken()
 	{
-		tokens					= vid_quality_token;
-		return					inherited::GetToken();
+		tokens = vid_quality_token;
+		return inherited::GetToken();
 	}
 
 };
