@@ -20,118 +20,247 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "pch.h"
+
 
 #include <luabind/detail/object_rep.hpp>
 #include <luabind/detail/class_rep.hpp>
 
-//#define TEST_GARBAGE_COLLECTOR
-
-#ifdef TEST_GARBAGE_COLLECTOR
-#	include "pch.h"
-	string256	debug_test_constructor, debug_test_destructor;
-	LPCSTR		debug_class = "AttackError";//"stateAttackThreaten";
+#if LUA_VERSION_NUM < 502
+# define lua_getuservalue lua_getfenv
+# define lua_setuservalue lua_setfenv
 #endif
 
-namespace luabind { namespace detail
-{
+namespace luabind {
+	namespace detail {
 
-	// dest is a function that is called to delete the c++ object this struct holds
-	object_rep::object_rep(void* obj, class_rep* crep, int flags, void(*dest)(void*))
-		: m_object(obj)
-		, m_classrep(crep)
-		, m_flags(flags)
-		, m_destructor(dest)
-		, m_dependency_cnt(1)
-	{
-		// if the object is owned by lua, a valid destructor must be given
-		assert((((m_flags & owner) && dest) || !(m_flags & owner)) && "internal error, please report");
-#ifdef TEST_GARBAGE_COLLECTOR
-		sprintf(debug_test_constructor,"%s %x %x",m_classrep->name(),m_object,this);
-		if (!sz_cmp(debug_class,m_classrep->name()))
-			Log(debug_test_constructor);
-#endif
-	}
-
-	object_rep::object_rep(class_rep* crep, int flags, detail::lua_reference const& table_ref)
-		: m_object(0)
-		, m_classrep(crep)
-		, m_flags(flags)
-		, m_lua_table_ref(table_ref)
-		, m_destructor(0)
-		, m_dependency_cnt(1)
-	{
-#ifdef TEST_GARBAGE_COLLECTOR
-		sprintf(debug_test_constructor,"%s %x %x",m_classrep->name(),m_object,this);
-		if (!sz_cmp(debug_class,m_classrep->name()))
-			Log(debug_test_constructor);
-#endif
-	}
-
-	object_rep::~object_rep() 
-	{
-#ifdef TEST_GARBAGE_COLLECTOR
-		sprintf(debug_test_destructor,"%s %x %x",m_classrep->name(),m_object,this);
-		if (!sz_cmp(debug_class,m_classrep->name()))
-			Log(debug_test_destructor);
-#endif
-		if (m_flags & owner && m_destructor) m_destructor(m_object);
-	}
-
-	void object_rep::remove_ownership()
-	{
-		assert((m_flags & owner) && "cannot remove ownership of object that's not owned");
-		assert(m_classrep->get_class_type() == class_rep::cpp_class
-			|| m_classrep->bases().size() == 1 && "can only adopt c++ types or lua classes that derives from a c++ class");
-
-        // daniel040727 Bogus assert above? C++ types can be adopted just fine
-        // without a hierarchy?
-
-		m_flags &= ~owner;
-		// if this is a type with a wrapper we also have to
-		// transform the wrappers weak_ref into a strong
-		// reference, to make sure the lua part
-		// stays alive as long as the c++ part stays
-		// alive.
-/*		if (m_classrep->get_class_type() == class_rep::cpp_class)
-			m_classrep->adopt(m_flags & constant, m_object);
-		else*/
-
-        // daniel040727 I changed the above. It just seems wrong. adopt()
-        // should only be called on the wrapper type.
-        if (m_classrep->get_class_type() == class_rep::lua_class)
-			m_classrep->bases().front().base->adopt(m_flags & constant, m_object);
-	}
-
-	void object_rep::set_destructor(void(*ptr)(void*))
-	{
-		m_destructor = ptr;
-	}
-
-	void object_rep::add_dependency(lua_State* L, int index)
-	{
-		if (!m_dependency_ref.is_valid())
+		// dest is a function that is called to delete the c++ object this struct holds
+		object_rep::object_rep(instance_holder* instance, class_rep* crep)
+			: m_instance(instance)
+			, m_classrep(crep)
 		{
-			lua_newtable(L);
-			m_dependency_ref.set(L);
 		}
 
-		m_dependency_ref.get(L);
-		lua_pushvalue(L, index);
-		lua_rawseti(L, -2, m_dependency_cnt);
-		lua_pop(L, 1);
-		++m_dependency_cnt;
+		object_rep::~object_rep()
+		{
+			if(!m_instance)
+				return;
+			m_instance->~instance_holder();
+			deallocate(m_instance);
+		}
+
+		void object_rep::add_dependency(lua_State* L, int index)
+		{
+			if(!m_dependency_ref.is_valid())
+			{
+				lua_newtable(L);
+				m_dependency_ref.set(L);
+			}
+			m_dependency_ref.get(L);
+
+			lua_pushvalue(L, index);
+			lua_pushnumber(L, 0);
+			lua_rawset(L, -3);
+			lua_pop(L, 1);
+		}
+
+		int destroy_instance(lua_State* L)
+		{
+			object_rep* instance = static_cast<object_rep*>(lua_touserdata(L, 1));
+
+			lua_pushstring(L, "__finalize");
+			lua_gettable(L, 1);
+
+			if(lua_isnil(L, -1))
+			{
+				lua_pop(L, 1);
+			}
+			else
+			{
+				lua_pushvalue(L, 1);
+				lua_call(L, 1, 0);
+			}
+
+			instance->~object_rep();
+
+			lua_pushnil(L);
+			lua_setmetatable(L, 1);
+			return 0;
+		}
+
+		namespace
+		{
+
+			int set_instance_value(lua_State* L)
+			{
+				lua_getuservalue(L, 1);
+				lua_pushvalue(L, 2);
+				lua_rawget(L, -2);
+
+				if(lua_isnil(L, -1) && lua_getmetatable(L, -2))
+				{
+					lua_pushvalue(L, 2);
+					lua_rawget(L, -2);
+					lua_replace(L, -3);
+					lua_pop(L, 1);
+				}
+
+				if(lua_tocfunction(L, -1) == &property_tag)
+				{
+					// this member is a property, extract the "set" function and call it.
+					lua_getupvalue(L, -1, 2);
+
+					if(lua_isnil(L, -1))
+					{
+						lua_pushfstring(L, "property '%s' is read only", lua_tostring(L, 2));
+						lua_error(L);
+					}
+
+					lua_pushvalue(L, 1);
+					lua_pushvalue(L, 3);
+					lua_call(L, 2, 0);
+					return 0;
+				}
+
+				lua_pop(L, 1);
+
+				if(!lua_getmetatable(L, 4))
+				{
+					lua_newtable(L);
+					lua_pushvalue(L, -1);
+					lua_setuservalue(L, 1);
+					lua_pushvalue(L, 4);
+					lua_setmetatable(L, -2);
+				}
+				else
+				{
+					lua_pop(L, 1);
+				}
+
+				lua_pushvalue(L, 2);
+				lua_pushvalue(L, 3);
+				lua_rawset(L, -3);
+
+				return 0;
+			}
+
+			int get_instance_value(lua_State* L)
+			{
+				lua_getuservalue(L, 1);
+				lua_pushvalue(L, 2);
+				lua_rawget(L, -2);
+
+				if(lua_isnil(L, -1) && lua_getmetatable(L, -2))
+				{
+					lua_pushvalue(L, 2);
+					lua_rawget(L, -2);
+				}
+
+				if(lua_tocfunction(L, -1) == &property_tag)
+				{
+					// this member is a property, extract the "get" function and call it.
+					lua_getupvalue(L, -1, 1);
+					lua_pushvalue(L, 1);
+					lua_call(L, 1, 1);
+				}
+
+				return 1;
+			}
+
+			int dispatch_operator(lua_State* L)
+			{
+				for(int i = 0; i < 2; ++i)
+				{
+					if(get_instance(L, 1 + i))
+					{
+						int nargs = lua_gettop(L);
+
+						lua_pushvalue(L, lua_upvalueindex(1));
+						lua_gettable(L, 1 + i);
+
+						if(lua_isnil(L, -1))
+						{
+							lua_pop(L, 1);
+							continue;
+						}
+
+						lua_insert(L, 1); // move the function to the bottom
+
+						nargs = lua_toboolean(L, lua_upvalueindex(2)) ? 1 : nargs;
+
+						if(lua_toboolean(L, lua_upvalueindex(2))) // remove trailing nil
+							lua_remove(L, 3);
+
+						lua_call(L, nargs, 1);
+						return 1;
+					}
+				}
+
+				lua_pop(L, lua_gettop(L));
+				lua_pushstring(L, "No such operator defined");
+				lua_error(L);
+
+				return 0;
+			}
+
+		} // namespace unnamed
+
+		LUABIND_API void push_instance_metatable(lua_State* L)
+		{
+			lua_newtable(L);
+
+			// This is used as a tag to determine if a userdata is a luabind
+			// instance. We use a numeric key and a cclosure for fast comparison.
+			lua_pushnumber(L, 1);
+			lua_pushcclosure(L, get_instance_value, 0);
+			lua_rawset(L, -3);
+
+			lua_pushcclosure(L, destroy_instance, 0);
+			lua_setfield(L, -2, "__gc");
+
+			lua_pushcclosure(L, get_instance_value, 0);
+			lua_setfield(L, -2, "__index");
+
+			lua_pushcclosure(L, set_instance_value, 0);
+			lua_setfield(L, -2, "__newindex");
+
+			for(int op = 0; op < number_of_operators; ++op)
+			{
+				lua_pushstring(L, get_operator_name(op));
+				lua_pushvalue(L, -1);
+				lua_pushboolean(L, op == op_unm || op == op_len);
+				lua_pushcclosure(L, &dispatch_operator, 2);
+				lua_settable(L, -3);
+			}
+		}
+
+		LUABIND_API object_rep* get_instance(lua_State* L, int index)
+		{
+			object_rep* result = static_cast<object_rep*>(lua_touserdata(L, index));
+
+			if(!result || !lua_getmetatable(L, index))
+				return 0;
+
+			lua_rawgeti(L, -1, 1);
+
+			if(lua_tocfunction(L, -1) != &get_instance_value)
+				result = 0;
+
+			lua_pop(L, 2);
+
+			return result;
+		}
+
+		LUABIND_API object_rep* push_new_instance(lua_State* L, class_rep* cls)
+		{
+			void* storage = lua_newuserdata(L, sizeof(object_rep));
+			object_rep* result = new (storage) object_rep(0, cls);
+			cls->get_table(L);
+			lua_setuservalue(L, -2);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, cls->metatable_ref());
+			lua_setmetatable(L, -2);
+			return result;
+		}
+
 	}
-
-	int object_rep::garbage_collector(lua_State* L)
-	{
-		object_rep* obj = static_cast<object_rep*>(lua_touserdata(L, -1));
-
-		finalize(L, obj->crep());
-
-		obj->~object_rep();
-		return 0;
-	}
-
-}}
+}
 

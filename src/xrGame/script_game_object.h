@@ -117,24 +117,20 @@ class CArtefact;
 
 class CScriptGameObject;
 
-namespace SightManager {
+namespace SightManager 
+{
 	enum ESightType;
 }
 
-struct CSightParams {
+struct CSightParams 
+{
 	SightManager::ESightType	m_sight_type;
 	CScriptGameObject			*m_object;
 	Fvector						m_vector;
 };
 
-namespace luabind {
-	template <typename return_type>
-	class functor;
-
-	class object;
-} // namespace luabind
-
-class CScriptGameObject {
+class CScriptGameObject 
+{
 	mutable CGameObject		*m_game_object;
 							CScriptGameObject		(CScriptGameObject const& game_object);
 

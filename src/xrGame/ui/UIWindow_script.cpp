@@ -67,7 +67,7 @@ void CUIWindow::script_register(lua_State *L)
 
 		class_<CUIWindow>("CUIWindow")
 		.def(							constructor<>())
-		.def("AttachChild",				&CUIWindow::AttachChild, adopt(_2))
+		.def("AttachChild",				&CUIWindow::AttachChild, adopt<2>())
 		.def("DetachChild",				&CUIWindow::DetachChild)
 		.def("SetAutoDelete",			&CUIWindow::SetAutoDelete)
 		.def("IsAutoDelete",			&CUIWindow::IsAutoDelete)
