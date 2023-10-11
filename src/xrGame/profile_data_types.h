@@ -97,15 +97,15 @@ typedef associative_vector<enum_best_score_type, s32> all_best_scores_t;
 
 typedef mixed_delegate<void (bool, char const *), store_operation_cb_tag>	store_operation_cb;
 
-extern char * profile_table_name;
+extern const char * profile_table_name;
 
-extern char * profile_store_file_name;
-extern char * award_count_line;
-extern char * award_rdate_line;
-extern char * best_score_value_line;
-extern char * profile_data_section;
-extern char * profile_id_line;
-extern char * profile_last_submit_time;
+extern const char * profile_store_file_name;
+extern const char * award_count_line;
+extern const char * award_rdate_line;
+extern const char * best_score_value_line;
+extern const char * profile_data_section;
+extern const char * profile_id_line;
+extern const char * profile_last_submit_time;
 
 } //namespace gamespy_profile
 

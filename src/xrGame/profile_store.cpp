@@ -70,7 +70,7 @@ void profile_store::load_current_profile(store_operation_cb progress_indicator_c
 {
 	if (!complete_cb)
 	{
-		complete_cb.bind(this, &profile_store::onlylog_completion);
+		complete_cb.bind_cpp(this, &profile_store::onlylog_completion);
 	}
 	gamespy_gp::login_manager*	tmp_lmngr		= MainMenu()->GetLoginMngr();
 	R_ASSERT(tmp_lmngr);
@@ -109,7 +109,7 @@ void profile_store::stop_loading()
 {
 	m_load_current_profile_qam.stop();
 	m_progress_indicator.clear();
-	m_progress_indicator.bind(this, &profile_store::onlylog_operation);
+	m_progress_indicator.bind_cpp(this, &profile_store::onlylog_operation);
 }
 
 void profile_store::release_current_profile	(bool, char const *)
@@ -122,7 +122,7 @@ void profile_store::load_profile(store_operation_cb progress_indicator_cb)
 	VERIFY(!m_progress_indicator);
 	if (!progress_indicator_cb)
 	{
-		m_progress_indicator.bind(this, &profile_store::onlylog_operation);
+		m_progress_indicator.bind_cpp(this, &profile_store::onlylog_operation);
 	} else
 	{
 		m_progress_indicator = progress_indicator_cb;

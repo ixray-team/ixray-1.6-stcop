@@ -39,7 +39,7 @@ public:
 	virtual void	HitEntityInJump		(const CEntity *pEntity);
 
 	virtual IStateManagerBase *create_state_manager	();
-	virtual	char*	get_monster_class_name () { return "pseudodog"; }
+	virtual	char*	get_monster_class_name () { return (char*)"pseudodog"; }
 
 private:
 #ifdef _DEBUG	

@@ -25,16 +25,7 @@ public:
         _vector3<T> kU, kV, kW = m_direction;
         _vector3<T>::generate_orthonormal_basis(kW,kU,kV);
         _vector3<T> kD; kD.set(kU.dotproduct(dir),kV.dotproduct(dir),kW.dotproduct(dir));
-#ifdef DEBUG
-		if(kD.square_magnitude() <= std::numeric_limits<T>::min())
-		{
-			Msg("dir :%f,%f,%f",dir.x,dir.y,dir.z);
-			Msg("kU :%f,%f,%f",kU.x,kU.y,kU.z);
-			Msg("kV :%f,%f,%f",kV.x,kV.y,kV.z);
-			Msg("kW :%f,%f,%f",kW.x,kW.y,kW.z);
-			VERIFY2(0,"KD is zero");
-		}
-#endif
+
         T fDLength = kD.normalize_magn();
         T fInvDLength = 1.0f/fDLength;
         _vector3<T> kDiff; kDiff.sub(start,m_center);

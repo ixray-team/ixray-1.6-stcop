@@ -16,6 +16,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     if (!Device.b_is_Ready) {
         return;
     }
+    u32* pPixel = nullptr;
+    u32* pEnd   = nullptr;
 
     // Create temp-surface
     IDirect3DSurface9* pFB;

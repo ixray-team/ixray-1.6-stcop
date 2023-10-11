@@ -119,7 +119,7 @@ LPCSTR const* manager::collection	()
 
 u32 manager::collection_size		()
 {
-	return							(m_weathers.weather_ids().size());
+	return							u32(m_weathers.weather_ids().size());
 }
 
 void manager::fill					()

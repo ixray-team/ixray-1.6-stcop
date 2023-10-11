@@ -1344,7 +1344,7 @@ LPCSTR CScriptGameObject::aim_bone_id				() const
 	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker) {
 		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member aim_bone_id!");
-		return							(false);
+		return							(nullptr);
 	}
 
 	return								(stalker->aim_bone_id().c_str());

@@ -275,6 +275,7 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	R_ASSERT				(fRName);
 	R_ASSERT				(fRName[0]);
 
+	HRESULT result_ = {};
 	// make file name
 	string_path				fname;
 	xr_strcpy(fname,fRName); //. andy if (strext(fname)) *strext(fname)=0;
@@ -310,8 +311,8 @@ _DDS:
 #endif // DEBUG
 		img_size				= S->length	();
 		R_ASSERT				(S);
-		HRESULT const result	= D3DXGetImageInfoFromFileInMemory	(S->pointer(),S->length(),&IMG);
-		if ( FAILED(result) ) {
+		result_	= D3DXGetImageInfoFromFileInMemory	(S->pointer(),S->length(),&IMG);
+		if ( FAILED(result_) ) {
 			Msg					("! Can't get image info for texture '%s'",fn);
 			FS.r_close			(S);
 			string_path			temp;
@@ -326,7 +327,7 @@ _DDS:
 
 _DDS_CUBE:
 		{
-			HRESULT const result_	=
+			result_	=
 				D3DXCreateCubeTextureFromFileInMemoryEx(
 					HW.pDevice,
 					S->pointer(),S->length(),

@@ -344,7 +344,7 @@ u32 CGameTaskManager::GetTaskCount( ETaskState state )
 	return res;
 }
 
-char* sTaskStates[]=
+static const char* sTaskStates[]=
 {
 	"eTaskStateFail",
 	"TaskStateInProgress",

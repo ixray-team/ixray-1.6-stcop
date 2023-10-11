@@ -1,13 +1,11 @@
 // SkeletonX.h: interface for the CSkeletonX class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef SkeletonXH
-#define SkeletonXH
 #pragma once
-
+#include "../xrEngine/cl_intersect.h"
 #include "SkeletonCustom.h"
 #include "SkeletonXVertRender.h"
+#include "FVisual.h"
 
 // refs
 class 	CKinematics;
@@ -129,5 +127,3 @@ BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result &r, float dist, con
 	return intersect;
 }
 #endif //USE_DX11
-
-#endif // SkeletonXH

@@ -18,13 +18,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # VS options
 set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS_DEBUG "/MD")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
 
-#add_compile_options(-fsanitize=address)
-#add_link_options(-fsanitize=address)
+# Enable gcc/clang style 
+add_compile_options(/permissive-)
 
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
@@ -136,7 +136,6 @@ set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
 set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
 set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
 set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
-
 
 if(IXRAY_UTILS)
     if(NOT IXRAY_COMPRESSOR_ONLY)

@@ -33,7 +33,7 @@ TEMPLATE_SPECIALIZATION
 IC	void CDoubleLinkedList::init			()
 {
 	inherited::init			();
-	m_list_tail->prev()		= m_list_head;
+	this->m_list_tail->prev()		= this->m_list_head;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -41,13 +41,13 @@ IC	void CDoubleLinkedList::add_opened		(CGraphVertex &vertex)
 {
 	inherited_base::add_opened	(vertex);
 	if (!sorted) {
-		m_list_head->next()->prev()	= &vertex;
-		vertex.next()				= m_list_head->next();
-		m_list_head->next()			= &vertex;
-		vertex.prev()				= m_list_head;
+		this->m_list_head->next()->prev()	= &vertex;
+		vertex.next()				= this->m_list_head->next();
+		this->m_list_head->next()			= &vertex;
+		vertex.prev()				= this->m_list_head;
 	}
 	else {
-		for (CGraphVertex *i = m_list_head->next(); ; i = i->next())
+		for (CGraphVertex *i = this->m_list_head->next(); ; i = i->next())
 			if (i->f() >= vertex.f()) {
 				vertex.next()		= i;
 				vertex.prev()		= i->prev();
@@ -61,7 +61,7 @@ IC	void CDoubleLinkedList::add_opened		(CGraphVertex &vertex)
 TEMPLATE_SPECIALIZATION
 IC	void CDoubleLinkedList::decrease_opened	(CGraphVertex &vertex, const _dist_type value)
 {
-	VERIFY					(!is_opened_empty());
+	VERIFY					(!this->is_opened_empty());
 	
 	if (!sorted)
 		return;
@@ -72,14 +72,14 @@ IC	void CDoubleLinkedList::decrease_opened	(CGraphVertex &vertex, const _dist_ty
 	vertex.prev()->next()			= vertex.next();
 	vertex.next()->prev()			= vertex.prev();
 
-	if (vertex.f() <= m_list_head->next()->f()) {
-		vertex.prev()			= m_list_head;
-		vertex.next()			= m_list_head->next();
-		m_list_head->next()->prev() = &vertex;
-		m_list_head->next()		= &vertex;
+	if (vertex.f() <= this->m_list_head->next()->f()) {
+		vertex.prev()			= this->m_list_head;
+		vertex.next()			= this->m_list_head->next();
+		this->m_list_head->next()->prev() = &vertex;
+		this->m_list_head->next()		= &vertex;
 	}
 	else {
-		if (vertex.prev()->f() - vertex.f() < m_switch_factor*(vertex.f() - m_list_head->next()->f()))
+		if (vertex.prev()->f() - vertex.f() < m_switch_factor*(vertex.f() - this->m_list_head->next()->f()))
 			for (CGraphVertex *i = vertex.prev()->prev(); ; i = i->prev()) {
 				if (i->f() <= vertex.f()) {
 					vertex.next() = i->next();
@@ -90,7 +90,7 @@ IC	void CDoubleLinkedList::decrease_opened	(CGraphVertex &vertex, const _dist_ty
 				}
 			}
 		else
-			for (CGraphVertex *i = m_list_head->next(); ; i = i->next())
+			for (CGraphVertex *i = this->m_list_head->next(); ; i = i->next())
 				if (i->f() >= vertex.f()) {
 					vertex.next() = i;
 					vertex.prev() = i->prev();
@@ -104,34 +104,36 @@ IC	void CDoubleLinkedList::decrease_opened	(CGraphVertex &vertex, const _dist_ty
 TEMPLATE_SPECIALIZATION
 IC	void CDoubleLinkedList::remove_best_opened	()
 {
-	VERIFY					(!is_opened_empty());
-	m_list_head->next()->next()->prev()	= m_list_head;
+	VERIFY					(!this->is_opened_empty());
+	this->m_list_head->next()->next()->prev()	= this->m_list_head;
 	inherited::remove_best_opened();
 }
 
 TEMPLATE_SPECIALIZATION
 IC	typename CDoubleLinkedList::CGraphVertex &CDoubleLinkedList::get_best	() const
 {
-	VERIFY					(!is_opened_empty());
+	VERIFY					(!this->is_opened_empty());
 	if (sorted)
-		return				(*m_list_head->next());
+		return				(*this->m_list_head->next());
 
-	_dist_type				fmin = m_max_distance;
-	for (CGraphVertex *i = m_list_head->next(), *best = 0; i; i = i->next())
+	_dist_type				fmin = this->m_max_distance;
+
+	CGraphVertex* best = nullptr;
+	for (CGraphVertex *i = this->m_list_head->next(); i; i = i->next())
 		if (i->f() < fmin) {
 			fmin			= i->f();
 			best			= i;
 		}
 	VERIFY					(best);
-	if (best->prev() != m_list_head) {
+	if (best->prev() != this->m_list_head) {
 		best->prev()->next()		= best->next();
 		best->next()->prev()		= best->prev();
-		best->next()				= m_list_head->next();
-		best->prev()				= m_list_head;
-		m_list_head->next()->prev() = best;
-		m_list_head->next()			= best;
+		best->next()				= this->m_list_head->next();
+		best->prev()				= this->m_list_head;
+		this->m_list_head->next()->prev() = best;
+		this->m_list_head->next()			= best;
 	}
-	return					(*m_list_head->next());
+	return					(*this->m_list_head->next());
 }
 
 TEMPLATE_SPECIALIZATION
