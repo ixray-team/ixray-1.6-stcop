@@ -16,7 +16,7 @@ public:
 
 		queued_async_method	()
 		{
-			pending_proxy_exec.bind(this, &queued_async_method::proxy_execution);
+			pending_proxy_exec.bind_cpp(this, &queued_async_method::proxy_execution);
 		}
 		~queued_async_method() {};
 

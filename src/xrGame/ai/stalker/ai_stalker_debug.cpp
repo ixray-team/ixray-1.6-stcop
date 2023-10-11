@@ -161,10 +161,10 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 		DBG_OutText("%s%s%s%s",start_indent,indent,indent,_brain.action2string(brain.solution()[i]));
 	// current
 	DBG_OutText	("%s%scurrent world state",start_indent,indent);
-	planner_type::EVALUATORS::const_iterator	I = brain.evaluators().begin();
-	planner_type::EVALUATORS::const_iterator	E = brain.evaluators().end();
+	typename planner_type::EVALUATORS::const_iterator	I = brain.evaluators().begin();
+	typename planner_type::EVALUATORS::const_iterator	E = brain.evaluators().end();
 	for ( ; I != E; ++I) {
-		xr_vector<planner_type::COperatorCondition>::const_iterator J = std::lower_bound(brain.current_state().conditions().begin(),brain.current_state().conditions().end(),planner_type::CWorldProperty((*I).first,false));
+		auto J = std::lower_bound(brain.current_state().conditions().begin(),brain.current_state().conditions().end(),planner_type::CWorldProperty((*I).first,false));
 		char				temp = '?';
 		if ((J != brain.current_state().conditions().end()) && ((*J).condition() == (*I).first)) {
 			temp			= (*J).value() ? '+' : '-';
@@ -175,7 +175,7 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 	DBG_OutText	("%s%starget world state",start_indent,indent);
 	I = brain.evaluators().begin();
 	for ( ; I != E; ++I) {
-		xr_vector<planner_type::COperatorCondition>::const_iterator J = std::lower_bound(brain.target_state().conditions().begin(),brain.target_state().conditions().end(),planner_type::CWorldProperty((*I).first,false));
+		auto J = std::lower_bound(brain.target_state().conditions().begin(),brain.target_state().conditions().end(),planner_type::CWorldProperty((*I).first,false));
 		char				temp = '?';
 		if ((J != brain.target_state().conditions().end()) && ((*J).condition() == (*I).first)) {
 			temp			= (*J).value() ? '+' : '-';

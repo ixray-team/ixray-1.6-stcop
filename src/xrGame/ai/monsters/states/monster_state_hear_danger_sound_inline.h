@@ -14,46 +14,46 @@
 TEMPLATE_SPECIALIZATION
 CStateMonsterHearDangerousSoundAbstract::CStateMonsterHearDangerousSound(_Object *obj) : inherited(obj)
 {
-	add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterHideFromPoint<_Object> >(obj));
-	add_state	(eStateHearDangerousSound_FaceOpenPlace,	xr_new<CStateMonsterLookToUnprotectedArea<_Object> >(obj));
-	add_state	(eStateHearDangerousSound_StandScared,		xr_new<CStateMonsterCustomAction<_Object> >(obj));
-	add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<_Object> >(obj));
+	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterHideFromPoint<_Object> >(obj));
+	this->add_state	(eStateHearDangerousSound_FaceOpenPlace,	xr_new<CStateMonsterLookToUnprotectedArea<_Object> >(obj));
+	this->add_state	(eStateHearDangerousSound_StandScared,		xr_new<CStateMonsterCustomAction<_Object> >(obj));
+	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<_Object> >(obj));
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateMonsterHearDangerousSoundAbstract::reselect_state()
 {
-	if (get_state(eStateHearDangerousSound_Home)->check_start_conditions())	{
-		select_state(eStateHearDangerousSound_Home);
+	if (this->get_state(eStateHearDangerousSound_Home)->check_start_conditions())	{
+		this->select_state(eStateHearDangerousSound_Home);
 		return;
 	}
 
-	if (prev_substate == u32(-1)){
-		select_state(eStateHearDangerousSound_Hide);
+	if (this->prev_substate == u32(-1)){
+		this->select_state(eStateHearDangerousSound_Hide);
 		return;
 	}
 
-	if (prev_substate == eStateHearDangerousSound_Hide) {
-		select_state(eStateHearDangerousSound_FaceOpenPlace);
+	if (this->prev_substate == eStateHearDangerousSound_Hide) {
+		this->select_state(eStateHearDangerousSound_FaceOpenPlace);
 		return;
 	}
 
-	select_state(eStateHearDangerousSound_StandScared);
+	this->select_state(eStateHearDangerousSound_StandScared);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 {
-	state_ptr state = get_state_current();
+	state_ptr state = this->get_state_current();
 
-	if (current_substate == eStateHearDangerousSound_Hide) {
+	if (this->current_substate == eStateHearDangerousSound_Hide) {
 		SStateHideFromPoint data;
 
 		Fvector run_away_point;
 		Fvector dir;
-		dir.sub	(object->Position(), object->SoundMemory.GetSound().position);
+		dir.sub	(this->object->Position(), this->object->SoundMemory.GetSound().position);
 		dir.normalize_safe();
-		run_away_point.mad(object->Position(), dir, 1.f);
+		run_away_point.mad(this->object->Position(), dir, 1.f);
 		
 		data.point				= run_away_point;
 		data.accelerated		= true;
@@ -62,32 +62,32 @@ void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 		data.distance			= 40.f;
 		data.action.action		= ACT_RUN;
 		data.action.sound_type	= (u32)MonsterSound::eMonsterSoundDummy;
-		data.action.sound_delay = object->db().m_dwAttackSndDelay;
+		data.action.sound_delay = this->object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateHideFromPoint));
 
 		return;
 	}
 
-	if (current_substate == eStateHearDangerousSound_FaceOpenPlace) {
+	if (this->current_substate == eStateHearDangerousSound_FaceOpenPlace) {
 		SStateDataAction data;
 		data.action			= ACT_STAND_IDLE;
 		data.spec_params	= ASP_STAND_SCARED;
 		data.time_out		= 2000;
 		data.sound_type	= (u32)MonsterSound::eMonsterSoundDummy;
-		data.sound_delay = object->db().m_dwAttackSndDelay;
+		data.sound_delay = this->object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 		
 		return;
 	}
 
-	if (current_substate == eStateHearDangerousSound_StandScared) {
+	if (this->current_substate == eStateHearDangerousSound_StandScared) {
 		SStateDataAction data;
 		data.action			= ACT_STAND_IDLE;
 		data.spec_params	= ASP_STAND_SCARED;
 		data.sound_type	= (u32)MonsterSound::eMonsterSoundDummy;
-		data.sound_delay = object->db().m_dwAttackSndDelay;
+		data.sound_delay = this->object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 

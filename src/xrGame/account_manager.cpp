@@ -227,7 +227,7 @@ void account_manager::create_profile(char const * nick,
 									 account_operation_cb opcb)
 {
 	if (!opcb)
-		m_account_creation_cb.bind(this, &account_manager::only_log_creation_cb);
+		m_account_creation_cb.bind_cpp(this, &account_manager::only_log_creation_cb);
 	else
 		m_account_creation_cb = opcb;
 		
@@ -258,7 +258,7 @@ void account_manager::delete_profile(account_operation_cb dpcb)
 {
 	if (!dpcb)
 	{
-		m_profile_deleting_cb.bind(this, &account_manager::only_log_profdel_cb);
+		m_profile_deleting_cb.bind_cpp(this, &account_manager::only_log_profdel_cb);
 	} else
 	{
 		m_profile_deleting_cb = dpcb;
@@ -288,7 +288,7 @@ void account_manager::get_account_profiles(char const * email,
 {
 	if (!profiles_cb)
 	{
-		profiles_cb.bind(this, &account_manager::only_log_profiles);
+		profiles_cb.bind_cpp(this, &account_manager::only_log_profiles);
 	}
 
 	m_result_profiles.clear			();
@@ -347,7 +347,7 @@ void account_manager::search_for_email(char const * email,
 {
 	if (!found_cb)
 	{
-		found_cb.bind(this, &account_manager::only_log_found_email);
+		found_cb.bind_cpp(this, &account_manager::only_log_found_email);
 	}
 	
 	if (!email || (xr_strlen(email) == 0))
@@ -406,7 +406,7 @@ void account_manager::suggest_unique_nicks(char const * unick,
 {
 	if (!sncb)
 	{
-		sncb.bind(this, &account_manager::only_log_suggestions);
+		sncb.bind_cpp(this, &account_manager::only_log_suggestions);
 	}
 	
 	suggest_uniqie_nicks_params_t tmp_args(unick);

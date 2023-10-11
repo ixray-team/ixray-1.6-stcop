@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "script_game_object.h"
 
 #define TEMPLATE_SPECIALIZATION		template <typename _object_type>
 #define CSActionPlannerActionScript	CActionPlannerActionScript<_object_type>

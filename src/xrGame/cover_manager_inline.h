@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "cover_point.h"
 
 IC	CCoverManager::CPointQuadTree &CCoverManager::covers		() const
 {

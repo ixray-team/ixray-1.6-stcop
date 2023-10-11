@@ -17,7 +17,7 @@ namespace award_system
 {
 
 #ifdef DEBUG
-extern char* player_values_strtable[];
+extern const char* player_values_strtable[];
 #endif //#ifdef DEBUG
 
 class game_state_accumulator : public game_events_handler

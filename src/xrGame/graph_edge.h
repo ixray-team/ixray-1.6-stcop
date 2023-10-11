@@ -29,11 +29,6 @@ public:
 	IC		const _edge_weight_type	&weight		() const;
 	IC		_vertex_type			*vertex		() const;
 	IC		const _vertex_id_type	&vertex_id	() const;
-	
-	IC		bool					operator==	(const _vertex_id_type& vertex_id) const
-	{
-		return (this->vertex()->vertex_id() == vertex_id);
-	}
 };
 
 template <
@@ -47,6 +42,7 @@ private:
 
 private:
 	_edge_data_type					m_data;
+	using _vertex_id_type = inherited::_vertex_id_type;
 
 public:
 	IC								CEdge		(const _edge_weight_type &weight, _vertex_type *vertex);
@@ -54,9 +50,9 @@ public:
 	IC		const _edge_data_type	&data		() const;
 	IC		_edge_data_type			&data		();
 
-	IC		bool					operator==	(const inherited::_vertex_id_type& vertex_id) const
+	IC		bool					operator==	(const _vertex_id_type& vertex_id) const
 	{
-		return inherited::operator==(vertex_id);
+		return (this->vertex()->vertex_id() == vertex_id);
 	}
 };
 
@@ -67,14 +63,15 @@ template <
 class CEdge<_edge_weight_type, _vertex_type, Loki::EmptyType> : public CEdgeBase<_edge_weight_type,_vertex_type> {
 private:
 	typedef CEdgeBase<_edge_weight_type,_vertex_type>	inherited;
+	using _vertex_id_type = inherited::_vertex_id_type;
 
 public:
 	IC								CEdge		(const _edge_weight_type &weight, _vertex_type *vertex);
 	IC		bool					operator==	(const CEdge &obj) const;
 
-	IC		bool					operator==	(const inherited::_vertex_id_type& vertex_id) const
+	IC		bool					operator==	(const _vertex_id_type& vertex_id) const
 	{
-		return inherited::operator==(vertex_id);
+		return (this->vertex()->vertex_id() == vertex_id);
 	}
 };
 

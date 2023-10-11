@@ -19,15 +19,15 @@ CStateMonsterFindEnemyAngryAbstract::~CStateMonsterFindEnemyAngry()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterFindEnemyAngryAbstract::execute()
 {
-	object->set_action					(ACT_STAND_IDLE);
-	object->anim().SetSpecParams		(ASP_THREATEN);
-	object->set_state_sound				(MonsterSound::eMonsterSoundAggressive);
+	this->object->set_action				(ACT_STAND_IDLE);
+	this->object->anim().SetSpecParams		(ASP_THREATEN);
+	this->object->set_state_sound			(MonsterSound::eMonsterSoundAggressive);
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterFindEnemyAngryAbstract::check_completion()
 {	
-	if (time_state_started + 4000 > Device.dwTimeGlobal) return false;
+	if (this->time_state_started + 4000 > Device.dwTimeGlobal) return false;
 	return true;
 }
 

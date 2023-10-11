@@ -5,9 +5,14 @@
 //	Author		: Dmitriy Iassenev
 //	Description : aimers base class inline functions
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef AIMERS_BASE_INLINE_H_INCLUDED
-#define AIMERS_BASE_INLINE_H_INCLUDED
+#pragma once
+#include "../xrEngine/bone.h"
+#include "../xrEngine/SkeletonMotions.h"
+#include "../xrEngine/SkeletonMotionDefs.h"
+#include "../Include/xrRender/animation_blend.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "animation_movement_controller.h"
+#include "GameObject.h"
 
 template <u32 bone_count0, u32 bone_count1>
 inline void aimers::base::fill_bones	(
@@ -21,7 +26,7 @@ inline void aimers::base::fill_bones	(
 
 	u16 const root_bone_id				= m_kinematics.LL_GetBoneRoot();
 	CBoneInstance& root_bone			= m_kinematics.LL_GetBoneInstance(root_bone_id);
-	BoneCallback callback				= root_bone.callback();
+	auto callback				= root_bone.callback();
 	void* callback_params				= root_bone.callback_param();
 
 	if (!m_animation_start || !m_object.animation_movement() || !m_object.animation_movement()->IsBlending())
@@ -69,5 +74,3 @@ inline void aimers::base::fill_bones	(
 
 	root_bone.set_callback				( bctCustom, callback, callback_params );
 }
-
-#endif // #ifndef AIMERS_BASE_INLINE_H_INCLUDED

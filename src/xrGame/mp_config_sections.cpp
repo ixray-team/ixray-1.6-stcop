@@ -5,7 +5,7 @@
 namespace mp_anticheat
 {
 
-static char* important_sections[] = 
+static const char* important_sections[] = 
 {
 	"mp_actor",
 	"mp_actor_damage",

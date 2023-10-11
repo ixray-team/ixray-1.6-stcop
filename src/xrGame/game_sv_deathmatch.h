@@ -178,7 +178,7 @@ public:
 	virtual		void				LoadSkinsForTeam		(const shared_str& caSection, TEAM_SKINS_NAMES* pTeamSkins);
 	virtual		void				LoadDefItemsForTeam		(const shared_str& caSection, /*TEAM_WPN_LIST *pWpnList,*/ DEF_ITEMS_LIST* pDefItems);
 
-	virtual		char*				GetAnomalySetBaseName	() {return "deathmatch_game_anomaly_sets";};
+	virtual		char*				GetAnomalySetBaseName	() {return (char*)"deathmatch_game_anomaly_sets";};
 	virtual		void				LoadAnomalySets			();
 				
 				void				LoadItemRespawns		();

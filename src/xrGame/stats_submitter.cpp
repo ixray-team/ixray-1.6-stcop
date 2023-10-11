@@ -37,7 +37,7 @@ void stats_submitter::reward_with_award(enum_awards_t award_id, u32 const count,
 {
 	if (!opcb)
 	{
-		m_last_operation_cb.bind(this, &stats_submitter::onlylog_operation);
+		m_last_operation_cb.bind_cpp(this, &stats_submitter::onlylog_operation);
 	} else
 	{
 		m_last_operation_cb = opcb;
@@ -58,7 +58,7 @@ void stats_submitter::set_best_scores(all_best_scores_t const * scores, gamespy_
 {
 	if (!opcb)
 	{
-		m_last_operation_cb.bind(this, &stats_submitter::onlylog_operation);
+		m_last_operation_cb.bind_cpp(this, &stats_submitter::onlylog_operation);
 	} else
 	{
 		m_last_operation_cb = opcb;
@@ -79,7 +79,7 @@ void stats_submitter::submit_all(all_awards_t const * awards,
 {
 	if (!opcb)
 	{
-		m_last_operation_cb.bind(this, &stats_submitter::onlylog_operation);
+		m_last_operation_cb.bind_cpp(this, &stats_submitter::onlylog_operation);
 	} else
 	{
 		m_last_operation_cb = opcb;

@@ -14,7 +14,7 @@ public:
 
 	virtual	void		execute					();
 	virtual void		setup_substates			();
-	virtual bool 		check_completion		() {return (object->b_state_end);}
+	virtual bool 		check_completion		() {return (this->object->b_state_end);}
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
 

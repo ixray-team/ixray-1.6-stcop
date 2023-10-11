@@ -13,7 +13,7 @@ enum EActiveComAction {
 	eAdd			
 };
 
-char*   make_xrstr (ControlCom::EControlType e)
+const char* make_xrstr (ControlCom::EControlType e)
 {
 	switch ( e )
 	{
@@ -241,26 +241,6 @@ void CControl_Manager::capture(CControl_Com *com, ControlCom::EControlType type)
 	
 	// 1. Check if can capture
 	CControl_Com *capturer = target->ced()->capturer();
-	
-	#ifdef DEBUG
-		if ( capturer && !is_base(capturer) )
-		{
-			if ( CBaseMonster* p_monster = m_object )
-			{
-				debug::text_tree root_s;
-				p_monster->add_debug_info(root_s);
-				debug::log_text_tree(root_s);
-
-				debug::text_tree& args_s = root_s.add_line("func_args");
-				args_s.add_line("com", make_xrstr(com_type(com)));
-				args_s.add_line("type", make_xrstr(type));
-				args_s.add_line("target", make_xrstr(com_type(target)));
-				args_s.add_line("capturer", make_xrstr(com_type(capturer)));
-			}
-		}
-
-		VERIFY(!capturer || is_base(capturer));
-	#endif
 
 	if (target->is_active()) {
 		target->ced()->on_release						();
@@ -447,22 +427,5 @@ void CControl_Manager::check_active_com(CControl_Com *com, bool b_add)
 void CControl_Manager::add_debug_info(debug::text_tree& root_s)
 {
 	u32 index = 0;
-	for ( CONTROLLERS_MAP_IT it=m_control_elems.begin(); it!=m_control_elems.end(); ++it, ++index )
-	{
-		if ( !it->second->is_inited() ) continue;
-
-		debug::text_tree& con_s = root_s.add_line(make_xrstr(it->first), it->second->is_active());
-		
-		if ( it->second->ced() )
-		{
-			con_s.add_line("Capturer", it->second->ced()->capturer() ?
-				            make_xrstr(com_type(it->second->ced()->capturer())) : "-");
-			con_s.add_line("Locked", it->second->ced()->is_locked());
-		}
-		else
-		{
-			con_s.add_line("IsBase", "-");
-		}
-	}
 }
 #endif //DEBUG
