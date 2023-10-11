@@ -1,4 +1,5 @@
 #pragma once
+#include "ExtendedGeom.h"
 #include "phsimplecharacter.h"
 #include "PHActorCharacterInline.h"
 

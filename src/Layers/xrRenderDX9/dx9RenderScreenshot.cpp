@@ -16,6 +16,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     if (!Device.b_is_Ready) {
         return;
     }
+    u32* pPixel = nullptr;
+    u32* pEnd   = nullptr;
 
     // Create temp-surface
     IDirect3DSurface9* pFB;
@@ -36,8 +38,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     }
 
     // Image processing (gamma-correct)
-    u32* pPixel = (u32*)D.pBits;
-    u32* pEnd = pPixel + (Device.dwWidth * Device.dwHeight);
+    pPixel = (u32*)D.pBits;
+    pEnd   = pPixel + (Device.dwWidth * Device.dwHeight);
     //	IGOR: Remove inverse color correction and kill alpha
     /*
     D3DGAMMARAMP	G;

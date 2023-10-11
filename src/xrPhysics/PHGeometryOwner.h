@@ -96,7 +96,7 @@ template< typename geometry_type >
 void t_get_extensions( const xr_vector<geometry_type*>& geoms, const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) 
 {
 	lo_ext=dInfinity;hi_ext=-dInfinity;
-	xr_vector<geometry_type*>::const_iterator i=geoms.begin(),e=geoms.end();
+	typename xr_vector<geometry_type*>::const_iterator i=geoms.begin(),e=geoms.end();
 	for(;i!=e;++i)
 	{
 		float temp_lo_ext,temp_hi_ext;
