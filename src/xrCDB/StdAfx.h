@@ -10,7 +10,6 @@
 #include "../xrCore/xrCore.h"
 
 #include "../xrCore/doug_lea_allocator.h"
-#include "../xrCore/memory_allocator_options.h"
 
 #ifdef USE_ARENA_ALLOCATOR
 	extern doug_lea_allocator	g_collision_allocator;

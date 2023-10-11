@@ -6,21 +6,32 @@ file(GLOB_RECURSE ENGINE_SOURCE_INTERFACE_FILES
     "I*.cpp"
     "I*.h"
 )
+
 file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES
     "ai*.cpp"
     "ai*.h"
 )
+
 file(GLOB_RECURSE ENGINE_SOURCE_DEVICE_FILES
     "device*.*"
     "Device*.*"
 )
+
 file(GLOB_RECURSE ENGINE_SOURCE_ENV_FILES
     "Environment*.*"
 )
+
 file(GLOB_RECURSE ENGINE_SOURCE_WEDIT_FILES
     "editor*.*"
 )
-file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES
+
+file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
+    "x_ray.*"
+    "EngineAPI.*"
+    "EngineExternal*.*"
+)
+
+file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.c"
     "*.h"
@@ -28,6 +39,7 @@ file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES
 
 # File groups
 source_group("core" FILES ${ENGINE_SOURCE_ALL_FILES})
+source_group("kernel" FILES ${ENGINE_SOURCE_KERNEL_FILES})
 source_group("interfaces" FILES ${ENGINE_SOURCE_INTERFACE_FILES})
 source_group("lua" FILES ${ENGINE_SOURCE_LUA_FILES})
 source_group("device" FILES ${ENGINE_SOURCE_DEVICE_FILES})

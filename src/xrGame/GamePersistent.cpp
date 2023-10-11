@@ -29,7 +29,6 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "UI/UIGameTutorial.h"
-#include "IXRayGameConstants.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -38,16 +37,6 @@
 #ifndef _EDITOR
 #	include "ai_debug.h"
 #endif // _EDITOR
-
-//#ifdef DEBUG_MEMORY_MANAGER
-//	static	void *	ode_alloc	(size_t size)								{ return Memory.mem_alloc(size,"ODE");			}
-//	static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return Memory.mem_realloc(ptr,newsize,"ODE");	}
-//	static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);							}
-//#else // DEBUG_MEMORY_MANAGER
-//	static	void *	ode_alloc	(size_t size)								{ return xr_malloc(size);			}
-//	static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return xr_realloc(ptr,newsize);	}
-//	static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);				}
-//#endif // DEBUG_MEMORY_MANAGER
 
 extern int g_keypress_on_start;
 
@@ -187,7 +176,6 @@ void CGamePersistent::OnGameStart()
 {
 	__super::OnGameStart		();
 	UpdateGameType				();
-	GameConstants::LoadConstants();
 }
 
 LPCSTR GameTypeToString(EGameIDs gt, bool bShort)

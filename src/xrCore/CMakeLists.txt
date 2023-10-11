@@ -51,7 +51,7 @@ file(GLOB CORE_SOURCE_FS_FILES
     "file*.*"
     "Locator*.*"
 )
-file(GLOB_RECURSE CORE_SOURCE_ALL_FILES
+file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.c"
     "*.h"
@@ -89,6 +89,10 @@ add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
 
+if (IXRAY_ASAN)
+    add_compile_definitions(PURE_ONLY)
+endif()
+
 # Move precompiled header
 set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 set_target_properties(xrCore PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
@@ -105,6 +109,9 @@ source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _WINDOWS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
+
+## Disable user-cheats for Shipping build
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")

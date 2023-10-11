@@ -2,9 +2,7 @@
 
 #include "../../xrCore/fixedmap.h"
 
-//#ifndef USE_MEMORY_MONITOR
-#	define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-//#endif // USE_MEMORY_MONITOR
+#define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 
 #ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 #	include	"../../xrCore/doug_lea_allocator.h"
