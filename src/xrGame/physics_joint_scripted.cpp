@@ -25,6 +25,7 @@ cphysics_element_scripted*	cphysics_joint_scripted::	PSecond_element	()
 
 void cphysics_joint_scripted::script_register(lua_State *L)
 {
+	constexpr auto out_value_23 = policy_list<policy::out_value<2>, policy::out_value<3>>();
 
 	module(L)
 		[
@@ -43,9 +44,9 @@ void cphysics_joint_scripted::script_register(lua_State *L)
 			.def("set_axis_dir_vs_second_element",		(void(cphysics_joint_scripted::*)(const float,const float,const float,const int ))(&cphysics_joint_scripted::SetAxisDirVsSecondElement))
 			.def("set_limits",							&cphysics_joint_scripted::SetLimits)
 			.def("set_max_force_and_velocity",			&cphysics_joint_scripted::SetForceAndVelocity)
-			.def("get_max_force_and_velocity",			&cphysics_joint_scripted::GetMaxForceAndVelocity)
+			.def("get_max_force_and_velocity",			&cphysics_joint_scripted::GetMaxForceAndVelocity, out_value_23)
 			.def("get_axis_angle",						&cphysics_joint_scripted::GetAxisAngle)
-			.def("get_limits",							&cphysics_joint_scripted::GetLimits,out_value(_2) + out_value(_3))
+			.def("get_limits",							&cphysics_joint_scripted::GetLimits, out_value_23)
 			.def("get_axis_dir",						&cphysics_joint_scripted::GetAxisDirDynamic)
 			.def("get_anchor",							&cphysics_joint_scripted::GetAnchorDynamic)
 			.def("is_breakable",						&cphysics_joint_scripted::isBreakable)

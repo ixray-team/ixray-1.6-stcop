@@ -1,0 +1,14 @@
+# exclude binaries and temporary files
+ipch/
+
+# User-specific files
+*.suo
+*.sdf
+*.opensdf
+*.user
+*.VC.opendb
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx

@@ -26,6 +26,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS_DEBUG "/MD")
 
+#add_compile_options(-fsanitize=address)
+#add_link_options(-fsanitize=address)
+
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>" "$<$<CONFIG:DEBUG>:/EHsc>"
                     "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")

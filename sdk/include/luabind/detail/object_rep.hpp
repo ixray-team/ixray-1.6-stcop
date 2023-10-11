@@ -25,112 +25,127 @@
 #define LUABIND_OBJECT_REP_HPP_INCLUDED
 
 #include <luabind/config.hpp>
+#include <luabind/detail/class_rep.hpp>
+#include <luabind/detail/instance_holder.hpp>
 #include <luabind/detail/ref.hpp>
+#include <type_traits>	// std::aligned_storage
+#include <cstdlib>
 
-namespace luabind { namespace detail
-{
-	class class_rep;
+namespace luabind {
+	namespace detail {
 
-	void finalize(lua_State* L, class_rep* crep);
+		void finalize(lua_State* L, class_rep* crep);
 
-	// this class is allocated inside lua for each pointer.
-	// it contains the actual c++ object-pointer.
-	// it also tells if it is const or not.
-	class LUABIND_API object_rep
-	{
-	public:
-		enum { constant = 1, owner = 2, lua_class = 4, call_super = 8 };
-
-		// dest is a function that is called to delete the c++ object this struct holds
-		object_rep(void* obj, class_rep* crep, int flags, void(*dest)(void*));
-		object_rep(class_rep* crep, int flags, detail::lua_reference const& table_ref);
-		~object_rep();
-
-		void* ptr() const { return m_object; }
-
-		void* ptr(int pointer_offset) const
+		// this class is allocated inside lua for each pointer.
+		// it contains the actual c++ object-pointer.
+		// it also tells if it is const or not.
+		class LUABIND_API object_rep
 		{
-			return reinterpret_cast<char*>(m_object) + pointer_offset;
-		}
+		public:
+			object_rep(instance_holder* instance, class_rep* crep);
+			~object_rep();
 
-		const class_rep* crep() const { return m_classrep; }
-		class_rep* crep() { return m_classrep; }
-		int flags() const { return m_flags; }
-		void set_flags(int flags) { m_flags = flags; }
+			const class_rep* crep() const { return m_classrep; }
+			class_rep* crep() { return m_classrep; }
 
-		detail::lua_reference& get_lua_table() { return m_lua_table_ref; }
-		detail::lua_reference const& get_lua_table() const { return m_lua_table_ref; }
+			void set_instance(instance_holder* instance) { m_instance = instance; }
 
-		void remove_ownership();
-		void set_destructor(void(*ptr)(void*));
+			void add_dependency(lua_State* L, int index);
 
-		void set_object(void* p) { m_object = p; }
+			std::pair<void*, int> get_instance(class_id target) const
+			{
+				if(m_instance == 0)
+					return std::pair<void*, int>(nullptr, -1);
+				return m_instance->get(m_classrep->casts(), target);
+			}
 
-		void add_dependency(lua_State* L, int index);
+			bool is_const() const
+			{
+				return m_instance && m_instance->pointee_const();
+			}
 
-		static int garbage_collector(lua_State* L);
+			void release()
+			{
+				if(m_instance)
+					m_instance->release();
+			}
 
-	private:
+			void* allocate(std::size_t size)
+			{
+				if(size <= 32) {
+					return &m_instance_buffer;
+				}
+				else {
+					return std::malloc(size);
+				}
 
-		void* m_object; // pointer to the c++ object or holder / if lua class, this is a pointer the the instance of the
-									// c++ base or 0.
-		class_rep* m_classrep; // the class information about this object's type
-		int m_flags;
-#pragma warning(push)
-#pragma warning(disable:4251)
-		detail::lua_reference m_lua_table_ref; // reference to lua table if this is a lua class
-#pragma warning(pop)
-		void(*m_destructor)(void*); // this could be in class_rep? it can't: see intrusive_ptr
-		int m_dependency_cnt; // counts dependencies
-#pragma warning(push)
-#pragma warning(disable:4251)
-		detail::lua_reference m_dependency_ref; // reference to lua table holding dependency references
-#pragma warning(pop)
+			}
 
-		// ======== the new way, separate object_rep from the holder
-//		instance_holder* m_instance;
-	};
+			void deallocate(void* storage)
+			{
+				if(storage == &m_instance_buffer) {
+					return;
+				}
+				else {
+					std::free(storage);
+				}
+			}
 
-	template<class T>
-	struct delete_s
-	{
-		static void apply(void* ptr)
+		private:
+			object_rep(object_rep const&) = delete;
+			void operator=(object_rep const&) = delete;
+
+			instance_holder* m_instance;
+			std::aligned_storage<32>::type m_instance_buffer;
+			class_rep* m_classrep; // the class information about this object's type
+			detail::lua_reference m_dependency_ref; // reference to lua table holding dependency references
+		};
+
+		template<class T>
+		struct delete_s
 		{
-			T*				temp = static_cast<T*>(ptr);
-			luabind_delete	(temp);
-		}
-	};
+			static void apply(void* ptr)
+			{
+				luabind_delete(static_cast<T*>(ptr));
+			}
+		};
 
-	template<class T>
-	struct destruct_only_s
-	{
-		static void apply(void* ptr)
+		template<class T>
+		struct destruct_only_s
 		{
+			static void apply(void* ptr)
+			{
+				// Removes unreferenced formal parameter warning on VC7.
+				(void)ptr;
 #ifndef NDEBUG
-			int completeness_check[sizeof(T)];
-			(void)completeness_check;
+				int completeness_check[sizeof(T)];
+				(void)completeness_check;
 #endif
-			static_cast<T*>(ptr)->~T();
+				static_cast<T*>(ptr)->~T();
+			}
+		};
+
+		LUABIND_API object_rep* get_instance(lua_State* L, int index);
+		LUABIND_API void push_instance_metatable(lua_State* L);
+		LUABIND_API object_rep* push_new_instance(lua_State* L, class_rep* cls);
+
+		inline object_rep* is_class_object(lua_State* L, int index)
+		{
+			object_rep* obj = static_cast<detail::object_rep*>(lua_touserdata(L, index));
+			if (!obj) return 0;
+			if (lua_getmetatable(L, index) == 0) return 0;
+
+			lua_pushstring(L, "__luabind_class");
+			lua_gettable(L, -2);
+			bool confirmation = lua_toboolean(L, -1) != 0;
+			lua_pop(L, 2);
+			if (!confirmation) return 0;
+			return obj;
+
 		}
-	};
+	}	// namespace detail
 
-
-	inline object_rep* is_class_object(lua_State* L, int index)
-	{
-		object_rep* obj = static_cast<detail::object_rep*>(lua_touserdata(L, index));
-		if (!obj) return 0;
-		if (lua_getmetatable(L, index) == 0) return 0;
-
-		lua_pushstring(L, "__luabind_class");
-		lua_gettable(L, -2);
-		bool confirmation = lua_toboolean(L, -1) != 0;
-		lua_pop(L, 2);
-		if (!confirmation) return 0;
-		return obj;
-
-	}
-
-}}
+}	// namespace luabind
 
 #endif // LUABIND_OBJECT_REP_HPP_INCLUDED
 
