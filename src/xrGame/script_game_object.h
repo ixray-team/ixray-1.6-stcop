@@ -127,13 +127,6 @@ struct CSightParams {
 	Fvector						m_vector;
 };
 
-namespace luabind {
-	template <typename return_type>
-	class functor;
-
-	class object;
-} // namespace luabind
-
 class CScriptGameObject {
 	mutable CGameObject		*m_game_object;
 							CScriptGameObject		(CScriptGameObject const& game_object);

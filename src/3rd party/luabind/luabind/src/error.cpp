@@ -20,18 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "pch.h"
+
 
 #include <luabind/error.hpp>
+#ifndef LUA_INCLUDE_HPP_INCLUDED
+#include <luabind/lua_include.hpp>
+#endif
 
 
-namespace luabind
-{
+namespace luabind {
 
+#ifndef LUABIND_NO_EXCEPTIONS	
+	error::error(lua_State* L)
+	{
+		const char* message = lua_tostring(L, -1);
+
+		if(message)
+		{
+			m_message = message;
+		}
+
+		lua_pop(L, 1);
+	}
+
+
+	const char* error::what() const throw()
+	{
+		return m_message.c_str();
+	}
+#endif
 	namespace
 	{
 		pcall_callback_fun pcall_callback = 0;
-		pregister_callback_fun pregister_callback = 0;
 #ifdef LUABIND_NO_EXCEPTIONS
 		error_callback_fun error_callback = 0;
 		cast_failed_callback_fun cast_failed_callback = 0;
@@ -40,9 +60,6 @@ namespace luabind
 
 
 #ifdef LUABIND_NO_EXCEPTIONS
-
-	typedef void(*error_callback_fun)(lua_State*);
-	typedef void(*cast_failed_callback_fun)(lua_State*, LUABIND_TYPE_INFO);
 
 	void set_error_callback(error_callback_fun e)
 	{
@@ -75,15 +92,10 @@ namespace luabind
 	{
 		return pcall_callback;
 	}
-
-	void set_pregister_callback(pregister_callback_fun e)
-	{
-		pregister_callback = e;
+    
+    unresolved_name::unresolved_name(const char* desc, const char* name) :
+		std::exception((luabind::string(desc) + ": " + name).c_str())
+    {
 	}
-
-	pregister_callback_fun get_pregister_callback()
-	{
-		return pregister_callback;
-	}
-
 }
+

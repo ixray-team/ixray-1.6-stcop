@@ -13,7 +13,7 @@
 using namespace luabind;
 
 template <typename T>
-T& set(T *self, const typename T::TYPE mask, bool value)
+T& lset(T *self, const typename T::TYPE mask, bool value)
 {
 	return	(self->set(mask,value));
 }
@@ -94,7 +94,7 @@ void CScriptFlags::script_register(lua_State *L)
 			.def("or",		(Flags16& (Flags16::*)(const Flags16&,const Flags16::TYPE))(&Flags16::bor))
 			.def("and",		(Flags16& (Flags16::*)(const Flags16::TYPE))(&Flags16::band))
 			.def("and",		(Flags16& (Flags16::*)(const Flags16&,const Flags16::TYPE))(&Flags16::band))
-			.def("set",		&set<Flags16>)
+			.def("set",		&lset<Flags16>)
 			.def("is",		&is<Flags16>)
 			.def("is_any",	&is_any<Flags16>)
 			.def("test",	&test<Flags16>)
@@ -115,7 +115,7 @@ void CScriptFlags::script_register(lua_State *L)
 			.def("or",		(Flags32& (Flags32::*)(const Flags32&,const Flags32::TYPE))(&Flags32::bor))
 			.def("and",		(Flags32& (Flags32::*)(const Flags32::TYPE))(&Flags32::band))
 			.def("and",		(Flags32& (Flags32::*)(const Flags32&,const Flags32::TYPE))(&Flags32::band))
-			.def("set",		&set<Flags32>)
+			.def("set",		&lset<Flags32>)
 			.def("is",		&is<Flags32>)
 			.def("is_any",	&is_any<Flags32>)
 			.def("test",	&test<Flags32>)

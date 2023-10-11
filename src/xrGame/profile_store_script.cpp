@@ -15,8 +15,8 @@ void profile_store::script_register	(lua_State *L)
 		class_<profile_store>("profile_store")
 			.def("load_current_profile",		&profile_store::load_current_profile)
 			.def("stop_loading",				&profile_store::stop_loading)
-			.def("get_awards",				&profile_store::get_awards,			return_stl_iterator)
-			.def("get_best_scores",			&profile_store::get_best_scores,	return_stl_iterator)
+			.def("get_awards",				&profile_store::get_awards,			return_stl_iterator())
+			.def("get_best_scores",			&profile_store::get_best_scores,	return_stl_iterator())
 			
 			.enum_("enum_awards_t")
 			[

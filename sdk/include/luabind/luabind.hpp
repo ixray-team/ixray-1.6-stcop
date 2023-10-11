@@ -21,10 +21,10 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#ifdef __cplusplus
+
 #include <luabind/config.hpp>
 #include <luabind/class.hpp>
 #include <luabind/function.hpp>
-#include <luabind/functor.hpp>
 #include <luabind/open.hpp>
-#endif
+#include <luabind/detail/conversion_policies/conversion_policies.hpp>
+#include <luabind/functor.hpp>

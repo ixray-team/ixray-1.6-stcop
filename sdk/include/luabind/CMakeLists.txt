@@ -1,0 +1,129 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(xrLuabindApi)
+
+set(LUABIND_API_HEADERS
+	"back_reference.hpp"
+	"back_reference_fwd.hpp"
+	"class.hpp"
+	"class_info.hpp"
+	"config.hpp"
+	"error.hpp"
+	"error_callback_fun.hpp"
+	"exception_handler.hpp"
+	"lua_extensions.hpp"
+	"from_stack.hpp"
+	"function.hpp"
+	"function_introspection.hpp"
+	"get_main_thread.hpp"
+	"handle.hpp"
+	"luabind.hpp"
+	"lua_argument_proxy.hpp"
+	"lua_include.hpp"
+	"lua_index_proxy.hpp"
+	"lua_iterator_proxy.hpp"
+	"lua_proxy.hpp"
+	"lua_proxy_interface.hpp"
+	"lua_state_fwd.hpp"
+	"make_function.hpp"
+	"memory.hpp"
+	"memory_allocator.hpp"
+	"nil.hpp"
+	"no_dependency.hpp"
+	"object.hpp"
+	"open.hpp"
+	"operator.hpp"
+	"pointer_traits.hpp"
+	"prefix.hpp"
+	"scope.hpp"
+	"set_package_preload.hpp"
+	"shared_ptr_converter.hpp"
+	"typeid.hpp"
+	"types.hpp"
+	"version.hpp"
+	"weak_ref.hpp"
+	"wrapper_base.hpp"
+)
+
+set(LUABIND_DETAIL_API_HEADER
+	"detail/call.hpp"
+	"detail/call_function.hpp"
+	"detail/call_member.hpp"
+	"detail/call_shared.hpp"
+	"detail/call_traits.hpp"
+	"detail/class_registry.hpp"
+	"detail/class_rep.hpp"
+	"detail/constructor.hpp"
+	"detail/conversion_storage.hpp"
+	"detail/convert_to_lua.hpp"
+	"detail/crtp_iterator.hpp"
+	"detail/debug.hpp"
+	"detail/decorate_type.hpp"
+	"detail/deduce_signature.hpp"
+	"detail/enum_maker.hpp"
+	"detail/format_signature.hpp"
+	"detail/garbage_collector.hpp"
+	"detail/has_get_pointer.hpp"
+	"detail/inheritance.hpp"
+	"detail/instance_holder.hpp"
+	"detail/link_compatibility.hpp"
+	"detail/make_instance.hpp"
+	"detail/meta.hpp"
+	"detail/most_derived.hpp"
+	"detail/object.hpp"
+	"detail/object_rep.hpp"
+	"detail/open.hpp"
+	"detail/operator_id.hpp"
+	"detail/other.hpp"
+	"detail/pcall.hpp"
+	"detail/pointee_sizeof.hpp"
+	"detail/pointee_typeid.hpp"
+	"detail/policy.hpp"
+	"detail/primitives.hpp"
+	"detail/property.hpp"
+	"detail/ref.hpp"
+	"detail/signature_match.hpp"
+	"detail/stack_utils.hpp"
+	"detail/typetraits.hpp"
+	"detail/yes_no.hpp"
+)
+
+set(LUABIND_DEFAULT_POLICIES_HEADERS
+	"detail/conversion_policies/conversion_base.hpp"
+	"detail/conversion_policies/conversion_policies.hpp"
+	"detail/conversion_policies/enum_converter.hpp"
+	"detail/conversion_policies/function_converter.hpp"
+	"detail/conversion_policies/lua_proxy_converter.hpp"
+	"detail/conversion_policies/native_converter.hpp"
+	"detail/conversion_policies/pointer_converter.hpp"
+	"detail/conversion_policies/reference_converter.hpp"
+	"detail/conversion_policies/value_converter.hpp"
+)
+
+set(LUABIND_USER_POLICIES_HEADERS
+	"adopt_policy.hpp"
+	"container_policy.hpp"
+	"copy_policy.hpp"
+	"dependency_policy.hpp"
+	"discard_result_policy.hpp"
+	"iterator_policy.hpp"
+	"out_value_policy.hpp"
+	"raw_policy.hpp"
+	"return_reference_to_policy.hpp"
+	"yield_policy.hpp"
+)
+
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(${PROJECT_NAME}
+	INTERFACE
+	${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+target_sources(${PROJECT_NAME}
+	INTERFACE
+	${LUABIND_API_HEADERS}
+	${LUABIND_DETAIL_API_HEADERS}
+	${LUABIND_DEFAULT_POLICIES_HEADERS}
+	${LUABIND_USER_POLICIES_HEADERS}
+)

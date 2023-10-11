@@ -20,175 +20,91 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef BACK_REFERENCE_040510_HPP
-#define BACK_REFERENCE_040510_HPP
+#ifndef LUABIND_BACK_REFERENCE_040510_HPP
+#define LUABIND_BACK_REFERENCE_040510_HPP
 
-#include <luabind/lua_include.hpp>
+#include <luabind/config.hpp>
+#include <luabind/lua_state_fwd.hpp>
+#include <type_traits>
+
+#if !defined(LUABIND_NO_RTTI) && !defined(LUABIND_WRAPPER_BASE_HPP_INCLUDED)
 #include <luabind/wrapper_base.hpp>
-#include <boost/type_traits/is_polymorphic.hpp>
-#include <boost/mpl/if.hpp>
+#endif
+
+#include <luabind/pointer_traits.hpp>
 
 namespace luabind {
+	struct wrap_base;
 
-#if !(defined(BOOST_MSVC) && BOOST_MSVC <= 1300)
-    template<class T>
-    T* get_pointer(T& ref)
-    {
-        return &ref;
-    }
+	namespace detail
+	{
+		template<class T>
+		wrap_base const* get_back_reference_aux0(T const* p, std::true_type)
+		{
+			return dynamic_cast<wrap_base const*>(p);
+		}
 
-    namespace detail {
-#else
-    namespace detail {
+		template<class T>
+		wrap_base const* get_back_reference_aux0(T const*, std::false_type)
+		{
+			return 0;
+		}
 
-        struct no_overload_tag {};
+		template<class T>
+		wrap_base const* get_back_reference_aux1(T const* p)
+		{
+			return get_back_reference_aux0(p, std::is_polymorphic<T>());
+		}
 
-    } // namespace detail
+		template<class T>
+		wrap_base const* get_back_reference_aux2(T const& x, std::true_type)
+		{
+			return get_back_reference_aux1(get_pointer(x));
+		}
 
-    detail::no_overload_tag get_pointer(...);
+		template<class T>
+		wrap_base const* get_back_reference_aux2(T const& x, std::false_type)
+		{
+			return get_back_reference_aux1(&x);
+		}
 
-    namespace detail {
+		template<class T>
+		wrap_base const* get_back_reference(T const& x)
+		{
+			return detail::get_back_reference_aux2(x, has_get_pointer<T>());
+		}
 
-    typedef char(&yes_overload)[1];
-    typedef char(&no_overload)[2];
+	} // namespace detail
 
-    no_overload check_overload(no_overload_tag);
-    template<class T>
-    yes_overload check_overload(T const&);
-
-#endif
-
-    template<class T>
-    struct extract_wrap_base
-    {
-# if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
-        BOOST_STATIC_CONSTANT(bool,
-            value = sizeof(check_overload(get_pointer(*(T*)0)))
-                 == sizeof(yes_overload)
-        );
-
-        static wrap_base const* extract(T const* ptr)
-        {
-            return extract_impl(ptr, boost::mpl::bool_<value>());
-        }
-
-        static wrap_base const* extract_impl(T const* ptr, boost::mpl::true_)
-        {
-            return dynamic_cast<wrap_base const*>(
-                get_pointer(*ptr));
-        }
-
-        static wrap_base const* extract_impl(T const* ptr, boost::mpl::false_)
-        {
-            return dynamic_cast<wrap_base const*>(ptr);
-        }
-
-        static wrap_base* extract(T* ptr)
-        {
-            return extract_impl(ptr, boost::mpl::bool_<value>());
-        }
-
-        static wrap_base* extract_impl(T* ptr, boost::mpl::true_)
-        {
-            return dynamic_cast<wrap_base*>(
-                get_pointer(*ptr));
-        }
-
-        static wrap_base* extract_impl(T* ptr, boost::mpl::false_)
-        {
-            return dynamic_cast<wrap_base*>(ptr);
-        }
-# else       
-       static wrap_base const* extract(T const* ptr)
-        {
-            return dynamic_cast<wrap_base const*>(get_pointer(*ptr));
-        }
-
-        static wrap_base* extract(T* ptr)
-        {
-            return dynamic_cast<wrap_base*>(get_pointer(*ptr));
-        }
-# endif
-    };
-
-    struct default_back_reference {};
-
-    template<class T>
-    struct back_reference_impl : default_back_reference
-    {
-        static bool extract(lua_State* L, T const* ptr)
-        {
-            if (!has_wrapper) return false;
-
-            if (wrap_base const* p = extract_wrap_base<T>::extract(ptr))
-            {
-                wrap_access::ref(*p).get(L);
-                return true;
-            }
-
-            return false;
-        }
-
-        static bool move(lua_State* L, T* ptr)
-        {
-            if (!has_wrapper) return false;
-
-            if (wrap_base* p = extract_wrap_base<T>::extract(ptr))
-            {
-                assert(wrap_access::ref(*p).m_strong_ref.is_valid());
-                wrap_access::ref(*p).get(L);
-                wrap_access::ref(*p).m_strong_ref.reset();
-                return true;
-            }
-
-            return false;
-        }
-
-        static bool has_wrapper;
-    };
-
-    template<class T>
-    bool back_reference_impl<T>::has_wrapper = false;
-
-    template<class T>
-    struct back_reference_do_nothing
-    {
-        static bool extract(lua_State*, T const*)
-        {
-            return false;
-        }
-
-        static bool move(lua_State*, T*)
-        {
-            return false;
-        }
-    };
-
-    } // namespace detail
-
+	template<class T>
+	bool get_back_reference(lua_State* L, T const& x)
+	{
 #ifndef LUABIND_NO_RTTI
-
-    template<class T>
-    struct back_reference
-        : boost::mpl::if_<
-              boost::is_polymorphic<T>
-            , detail::back_reference_impl<T>
-            , detail::back_reference_do_nothing<T>
-          >::type
-    {
-    };
-
-#else
-
-    template<class T>
-    struct back_reference
-        : detail::back_reference_do_nothing<T>
-    {
-    };
-
+		if(wrap_base const* w = detail::get_back_reference(x))
+		{
+			detail::wrap_access::ref(*w).get(L);
+			return true;
+		}
 #endif
+		return false;
+	}
+
+	template<class T>
+	bool move_back_reference(lua_State* L, T const& x)
+	{
+#ifndef LUABIND_NO_RTTI
+		if(wrap_base* w = const_cast<wrap_base*>(detail::get_back_reference(x)))
+		{
+			assert(detail::wrap_access::ref(*w).m_strong_ref.is_valid());
+			detail::wrap_access::ref(*w).get(L);
+			detail::wrap_access::ref(*w).m_strong_ref.reset();
+			return true;
+		}
+#endif
+		return false;
+	}
 
 } // namespace luabind
 
-#endif // BACK_REFERENCE_040510_HPP
+#endif // LUABIND_BACK_REFERENCE_040510_HPP
 

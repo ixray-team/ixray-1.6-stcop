@@ -102,7 +102,7 @@ void CSE_Abstract::script_register(lua_State *L)
 	typedef CWrapperBase<CSE_Abstract> WrapType;
 	typedef CSE_Abstract BaseType;
 	module(L)[
-		class_<CSE_Abstract,WrapType,CPureServerObject>	("cse_abstract")
+		class_<CSE_Abstract, CPureServerObject, WrapType, default_holder>	("cse_abstract")
 			.def_readonly	("id",				&BaseType::ID)
 			.def_readonly	("parent_id",		&BaseType::ID_Parent)
 			.def_readonly	("script_version",	&BaseType::m_script_version)

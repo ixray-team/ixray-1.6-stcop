@@ -17,8 +17,6 @@ void CPhysicObject::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CDestroyablePhysicsObject,CGameObject>("CDestroyablePhysicsObject")
-			.def(constructor<>()),
 		class_<CPhysicObject,CGameObject>("CPhysicObject")
 			.def(constructor<>())
 			.def("run_anim_forward",				&CPhysicObject::run_anim_forward)
@@ -29,7 +27,9 @@ void CPhysicObject::script_register(lua_State *L)
 			.def("play_bones_sound",				&CPhysicObject::play_bones_sound)
 			.def("stop_bones_sound",				&CPhysicObject::stop_bones_sound)
 			.def("set_door_ignore_dynamics",		&CPhysicObject::set_door_ignore_dynamics)
-			.def("unset_door_ignore_dynamics",		&CPhysicObject::unset_door_ignore_dynamics)
+			.def("unset_door_ignore_dynamics",		&CPhysicObject::unset_door_ignore_dynamics),
 
+		class_<CDestroyablePhysicsObject, CPhysicObject>("CDestroyablePhysicsObject")
+			.def(constructor<>())
 	];
 }

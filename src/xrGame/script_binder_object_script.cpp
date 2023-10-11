@@ -20,7 +20,7 @@ void CScriptBinderObject::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CScriptBinderObject,CScriptBinderObjectWrapper>("object_binder")
+		class_<CScriptBinderObject, no_bases, default_holder, CScriptBinderObjectWrapper>("object_binder")
 			.def_readonly("object",				&CScriptBinderObject::m_object)
 			.def(								constructor<CScriptGameObject*>())
 			.def("reinit",						&CScriptBinderObject::reinit,			&CScriptBinderObjectWrapper::reinit_static)

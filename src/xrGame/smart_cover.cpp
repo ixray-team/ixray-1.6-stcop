@@ -50,21 +50,20 @@ cover::cover					(
 {
 	m_is_smart_cover			= 1;
 
-	m_loopholes.reserve			( m_description->loopholes().size( ) );
-	Loopholes::const_iterator	I = m_description->loopholes().begin();
-	Loopholes::const_iterator	E = m_description->loopholes().end();
-	for ( ; I != E; ++I) {
-		luabind::object::iterator	i = loopholes_availability.begin( );
-		luabind::object::iterator	e = loopholes_availability.end( );
-		for ( ; i != e; ++i ) {
-			LPCSTR const loophole_id= luabind::object_cast< LPCSTR >( i.key( ) );
-			if ( xr_strcmp( loophole_id, (*I)->id( ) ) )
+	m_loopholes.reserve(m_description->loopholes().size());
+
+	for (const auto& it : m_description->loopholes()) {
+		for (luabind::iterator i(loopholes_availability), e; i != e; ++i) {
+			const char* const loophole_id = luabind::object_cast<const char*>(i.key());
+			if (xr_strcmp(loophole_id, it->id())) {
 				continue;
+			}
 
-			if ( !luabind::object_cast< bool >( *i ) )
+			if (!luabind::object_cast<bool>(*i)) {
 				break;
+			}
 
-			m_loopholes.push_back	( *I );
+			m_loopholes.push_back(it);
 			break;
 		}
 	}

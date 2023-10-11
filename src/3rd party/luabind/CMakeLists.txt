@@ -3,11 +3,14 @@ set(LUABIND_SRC_FILES)
 
 # Files import
 file(GLOB_RECURSE LUABIND_SOURCE_ALL_FILES
-    "luabind_memory.cpp"
     "luabind/src/*.*"
+)
+file(GLOB_RECURSE LUABIND_INCL_ALL_FILES
+    "${IXRAY_SDK_INC}/luabind/*.*"
 )
 
 source_group("src" FILES ${LUABIND_SOURCE_ALL_FILES})
+source_group("include" FILES ${LUABIND_INCL_ALL_FILES})
 
 # Apply list
 list(APPEND LUABIND_SRC_FILES ${LUABIND_SOURCE_ALL_FILES})
@@ -25,7 +28,6 @@ target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 target_link_directories(luabind PUBLIC "${IXRAY_SDK_LIB}/")
 
-target_precompile_headers(luabind PUBLIC "pch.h")
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
 target_compile_definitions(luabind PUBLIC LUABIND_NO_EXCEPTIONS)
 
