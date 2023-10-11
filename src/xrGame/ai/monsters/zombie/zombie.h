@@ -34,7 +34,7 @@ public:
 			void	vfAssignBones		();
 
 	virtual bool	use_center_to_aim				() const {return true;}
-	virtual	char*	get_monster_class_name () { return "zombie"; }
+	virtual	char*	get_monster_class_name () { return (char*) "zombie"; }
 
 
 	CBoneInstance			*bone_spine;

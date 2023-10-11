@@ -1,5 +1,7 @@
 #pragma once
 
+#include "basemonster/base_monster.h"
+
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
 >
@@ -161,25 +163,17 @@ TEMPLATE_SPECIALIZATION
 void   CStateAbstract::add_debug_info (debug::text_tree& root_s)
 {
 	typedef debug::text_tree TextTree;
-	if ( !substates.size() )
+	if (!substates.empty())
 	{
-		root_s.add_line("Current");		
-	}
-	else
-	{
-		for ( SubStates::const_iterator i=substates.begin(), e=substates.end();
-			  i!=e; ++i )
+		for (typename SubStates::const_iterator i = substates.begin(), e = substates.end();
+			i != e; ++i)
 		{
 			TextTree& current_state_s = root_s.add_line(EMonsterState((*i).first));
-			if ( current_substate == (*i).first )
+			if (current_substate == (*i).first)
 			{
-				if ( (*i).second )
+				if ((*i).second)
 				{
 					(*i).second->add_debug_info(current_state_s);
-				}
-				else
-				{
-					current_state_s.add_line("Current");
 				}
 			}
 		}
@@ -210,8 +204,8 @@ EMonsterState CStateAbstract::get_state_type()
 TEMPLATE_SPECIALIZATION
 void CStateAbstract::remove_links	(CObject* object_)
 {
-	SubStates::iterator	i = substates.begin();
-	SubStates::iterator	e = substates.end();
+	typename SubStates::iterator	i = substates.begin();
+	typename SubStates::iterator	e = substates.end();
 	for ( ; i != e; ++i)
 		(*i).second->remove_links	(object_);
 }

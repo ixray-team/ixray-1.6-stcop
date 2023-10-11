@@ -47,11 +47,20 @@ public:
 
 	{
 	};
-	
-	template<class ThisRef, class ClassType>
-	void bind(ThisRef* ptr_this,
-		R (xr_stdcall ClassType::*func_ptr)(Param1, Param2))
-	{
+
+	mixed_delegate& operator=(const mixed_delegate& other) {
+		if (this == &other) {
+			return *this;
+		}
+
+		m_cpp_delegate = other.m_cpp_delegate;
+		m_lua_delegate = other.m_lua_delegate;
+
+		return *this;
+	}
+
+	template <class ThisRef, class ClassType>
+	void bind_cpp(ThisRef* ptr_this, R(ClassType::* func_ptr)(Param1, Param2)) {
 		m_cpp_delegate.bind(ptr_this, func_ptr);
 	}
 	

@@ -48,7 +48,7 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 		CHARACTER_GOODWILL phrase_goodwill = NO_GOODWILL;
 		//если не найдем более подходяещей выводим фразу
 		//последнюю из списка (самую грубую)
-		int phrase_num = phrase_dialog->PhraseList().size()-1;
+		int phrase_num = (int) phrase_dialog->PhraseList().size()-1;
 		for(u32 i=0; i<phrase_dialog->PhraseList().size(); ++i)
 		{
 			phrase_goodwill = phrase_dialog->PhraseList()[phrase_num]->GoodwillLevel();
@@ -65,7 +65,7 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 				phrases.push_back(i);
 		}
 		
-		phrase_num = phrases[Random.randI(0, phrases.size())];
+		phrase_num = phrases[Random.randI(0, (int) phrases.size())];
 
 		shared_str phrase_id = phrase_dialog->PhraseList()[phrase_num]->GetID();
 		

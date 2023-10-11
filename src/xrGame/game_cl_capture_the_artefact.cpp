@@ -1248,7 +1248,7 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	char*				player = static_cast<char*>(_alloca(psize));
 	char*				cmd_name = static_cast<char*>(_alloca(psize));
 	char*				tcmd_name = cmd_name;
-	static char*		scans_format = "%s %s %s %s %s";
+	static const char*		scans_format = "%s %s %s %s %s";
 	
 	char*				args[MAX_VOTE_PARAMS];
 	for (u32 i = 0; i < MAX_VOTE_PARAMS; ++i)
@@ -1642,11 +1642,11 @@ char* game_cl_CaptureTheArtefact::getTeamSection(int Team)
 	{
 	case 0:
 		{
-			return "capturetheartefact_team1";
+			return (char*) "capturetheartefact_team1";
 		}break;
 	case 1:
 		{
-			return "capturetheartefact_team2";
+			return (char*) "capturetheartefact_team2";
 		}break;
 	default:
 		NODEFAULT;

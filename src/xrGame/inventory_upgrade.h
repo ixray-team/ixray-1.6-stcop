@@ -33,7 +33,7 @@ struct functor : public functor_base<return_type>
 {
 	IC	return_type	operator()	() const
 	{
-		return	functr( parameter );
+		return	this->functr( this->parameter );
 	}
 };
 
@@ -44,7 +44,7 @@ struct functor2 : public functor<return_type>
 
 	IC	return_type	operator()	() const
 	{
-		return	functr( parameter, parameter2 );
+		return	this->functr(this->parameter, parameter2 );
 	}
 };
 
@@ -55,7 +55,7 @@ struct functor3 : public functor2<return_type>
 
 	IC	return_type	operator()	() const
 	{
-		return	functr( parameter, parameter2, parameter3 );
+		return	this->functr(this->parameter, this->parameter2, parameter3 );
 	}
 };
 

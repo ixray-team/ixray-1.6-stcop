@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #define DECL_ENUM_ELEMENT( element ) #element
-#define BEGIN_ENUM( ENUM_NAME ) char* gs_##ENUM_NAME [] =
-#define END_ENUM( ENUM_NAME ) ; char* getString##ENUM_NAME(\
+#define BEGIN_ENUM( ENUM_NAME ) const char* gs_##ENUM_NAME [] =
+#define END_ENUM( ENUM_NAME ) ; const char* getString##ENUM_NAME(\
             ENUM_NAME index){ return gs_##ENUM_NAME [(size_t)index]; }
 
 BEGIN_ENUM(EEngineExternalUI) {

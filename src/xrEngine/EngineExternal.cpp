@@ -2,10 +2,10 @@
 
 ENGINE_API CEngineExternal* g_pEngineExternal = nullptr;
 
-char* getStringEEngineExternalUI(EEngineExternalUI);
-char* getStringEEngineExternalPhysical(EEngineExternalPhysical);
-char* getStringEEngineExternalGame(EEngineExternalGame);
-char* getStringEEngineExternalRender(EEngineExternalRender);
+const char* getStringEEngineExternalUI(EEngineExternalUI);
+const char* getStringEEngineExternalPhysical(EEngineExternalPhysical);
+const char* getStringEEngineExternalGame(EEngineExternalGame);
+const char* getStringEEngineExternalRender(EEngineExternalRender);
 
 CEngineExternal::CEngineExternal() {
 	string_path fname;

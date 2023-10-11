@@ -16,10 +16,10 @@ TEMPLATE_SPECIALIZATION
 void CStateChimeraThreatenRoarAbstract::execute()
 {
 
-	object->set_action				(ACT_STAND_IDLE);
-	object->anim().SetSpecParams	(ASP_THREATEN);
-	object->set_state_sound			(MonsterSound::eMonsterSoundThreaten);
-	object->dir().face_target		(object->EnemyMan.get_enemy(), 1200);
+	this->object->set_action			(ACT_STAND_IDLE);
+	this->object->anim().SetSpecParams	(ASP_THREATEN);
+	this->object->set_state_sound		(MonsterSound::eMonsterSoundThreaten);
+	this->object->dir().face_target		(this->object->EnemyMan.get_enemy(), 1200);
 }
 
 #define STATE_TIME_OUT	4000
@@ -27,7 +27,7 @@ void CStateChimeraThreatenRoarAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraThreatenRoarAbstract::check_completion()
 {	
-	if (time_state_started + STATE_TIME_OUT < Device.dwTimeGlobal) return true;
+	if (this->time_state_started + STATE_TIME_OUT < Device.dwTimeGlobal) return true;
 	return false;
 }
 

@@ -40,7 +40,7 @@ public:
 //				void	on_phantom_appear	();
 		virtual IStateManagerBase *create_state_manager	();
 
-		virtual	char*	get_monster_class_name () { return "psydog"; }
+		virtual	char*	get_monster_class_name () { return (char*) "psydog"; }
 
 				u8		get_phantoms_count	();
 				bool	must_hide			() {return get_phantoms_count() == 0;}

@@ -9,6 +9,8 @@
 #pragma once
 
 #include "object_handler.h"
+#include "object_handler_space.h"
+#include "HudItem.h"
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionBase
@@ -80,6 +82,6 @@ template <typename _item_type>
 void CObjectActionMember<_item_type>::execute			()
 {
 	inherited::execute		();
-	if (completed())
-		set_property		(m_condition_id,m_value);
+	if (this->completed())
+		this->set_property		(m_condition_id,m_value);
 }

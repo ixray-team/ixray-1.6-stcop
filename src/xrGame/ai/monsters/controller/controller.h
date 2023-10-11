@@ -161,7 +161,7 @@ public:
 
 	SAnimationTripleData anim_triple_control;
 
-	virtual	char*		get_monster_class_name		() { return "controller"; }
+	virtual	char*		get_monster_class_name		() { return (char*) "controller"; }
 
 private:
 	float				m_stamina_hit;

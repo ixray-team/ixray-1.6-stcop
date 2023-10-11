@@ -545,19 +545,18 @@ IC	void CLevelGraph::assign_y_values		(xr_vector<T> &path)
 	const CVertex				*_vertex;
 	u32							prev_id = u32(-1);
 
-	xr_vector<T>::iterator		I = path.begin();
-	xr_vector<T>::iterator		E = path.end();
-	for ( ; I != E; ++I) {
-		if (prev_id != (*I).get_vertex_id()) {
-			_vertex				= vertex((*I).get_vertex_id());
+	for (auto& PathNode : path) {
+		if (prev_id != PathNode.get_vertex_id()) {
+			_vertex				= vertex(PathNode.get_vertex_id());
 			pvDecompress		(normal,_vertex->plane());
 			vertex_position		(P,_vertex->position());
 			PL.build			(P,normal);
-			prev_id				= (*I).get_vertex_id();
+			prev_id				= PathNode.get_vertex_id();
 		}
-		(*I).get_position().y	= P.y;
-		PL.intersectRayPoint	((*I).get_position(),DUP,v1);	
-		(*I).get_position().y	= v1.y;
+
+		PathNode.get_position().y	= P.y;
+		PL.intersectRayPoint	(PathNode.get_position(),DUP,v1);
+		PathNode.get_position().y	= v1.y;
 	}
 }
 

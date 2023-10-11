@@ -4,17 +4,17 @@
 namespace gamespy_profile
 {
 
-char * profile_table_name = "PlayerStats_v1";
+const char * profile_table_name = "PlayerStats_v1";
 
-char * profile_store_file_name	= "mp_profile.ltx";
-char * award_count_line			= "count";
-char * award_rdate_line			= "rdate";
-char * best_score_value_line	= "value";
-char * profile_data_section		= "profile_data";
-char * profile_id_line			= "id";
-char * profile_last_submit_time	= "last_submit";
+const char * profile_store_file_name	= "mp_profile.ltx";
+const char * award_count_line			= "count";
+const char * award_rdate_line			= "rdate";
+const char * best_score_value_line	= "value";
+const char * profile_data_section		= "profile_data";
+const char * profile_id_line			= "id";
+const char * profile_last_submit_time	= "last_submit";
 
-static char const * awards_names[at_awards_count] = 
+static char const * awards_names[at_awards_count] =
 {
 	"mp_award_massacre",
 	"mp_award_paranoia",

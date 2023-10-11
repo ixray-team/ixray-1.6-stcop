@@ -42,7 +42,7 @@ void login_manager::login(char const * email,
 {
 	if (!logincb)
 	{
-		logincb.bind(this, &login_manager::only_log_login);
+		logincb.bind_cpp(this, &login_manager::only_log_login);
 	}
 	login_params_t tmp_args(email, nick, password);
 	m_login_qam.execute(this, tmp_args, logincb);
@@ -109,7 +109,7 @@ void login_manager::login_offline(char const * nick, login_operation_cb logincb)
 	}
 	if (!logincb)
 	{
-		m_login_operation_cb.bind(this, &login_manager::only_log_login);
+		m_login_operation_cb.bind_cpp(this, &login_manager::only_log_login);
 	} else
 	{
 		m_login_operation_cb = logincb;
@@ -162,7 +162,7 @@ void login_manager::set_unique_nick(char const * new_unick,
 {
 	if (!logincb)
 	{
-		logincb.bind(this, &login_manager::only_log_login);
+		logincb.bind_cpp(this, &login_manager::only_log_login);
 	}
 	set_unick_params_t	tmp_arg(new_unick);
 	m_unique_nick_qam.execute(this, tmp_arg, logincb);

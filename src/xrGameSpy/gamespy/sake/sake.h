@@ -218,7 +218,7 @@ SAKERequest SAKE_CALL sakeSearchForRecords(SAKE sake, SAKESearchForRecordsInput 
 // get my records
 typedef struct
 {
-	char      *mTableId;
+	const char *mTableId;
 	char     **mFieldNames;
 	int        mNumFields;
 } SAKEGetMyRecordsInput;

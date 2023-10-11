@@ -51,29 +51,30 @@ struct CCloner {
 	IC	static void clone(const svector<T,size> &_1, svector<T,size> &_2)
 	{
 		_2.resize						(_1.size());
-		svector<T,size>::iterator		J = _2.begin();
-		svector<T,size>::const_iterator	I = _1.begin(); 
-		svector<T,size>::const_iterator	E = _1.end();
+		typename svector<T,size>::iterator		J = _2.begin();
+		typename svector<T,size>::const_iterator	I = _1.begin(); 
+		typename svector<T,size>::const_iterator	E = _1.end();
 		for ( ; I != E; ++I, ++J)
 			clone						(*I,*J);
 	}
 
 	template <typename T1, typename T2>
-	IC	static void clone(const std::queue<T1,T2> &__1, std::queue<T1,T2> &__2)
+	IC	static void clone(const std::queue<T1, T2>& __1, std::queue<T1, T2>& __2)
 	{
-		std::queue<T1,T2>			_1 = __1;
-		std::queue<T1,T2>			_2;
-		
-		for ( ; !_1.empty(); _1.pop())
-			_2.push					(_1.front());
+		std::queue<T1, T2> _1 = __1;
+		std::queue<T1, T2> _2;
+
+		for (; !_1.empty(); _1.pop()) {
+			_2.push(_1.front());
+		}
 
 		while (!__2.empty())
 			__2.pop();
 
-		for ( ; !_2.empty(); _2.pop()) {
-			std::queue<T1,T2>::value_type	t;
-			CCloner::clone			(_2.front(),t);
-			__2.push				(t);
+		for (; !_2.empty(); _2.pop()) {
+			typename std::queue<T1, T2>::value_type	t;
+			CCloner::clone(_2.front(), t);
+			__2.push(t);
 		}
 	}
 
@@ -90,7 +91,7 @@ struct CCloner {
 			__2.pop();
 
 		for ( ; !_2.empty(); _2.pop()) {
-			T1<T2,T3>::value_type	t;
+			typename T1<T2,T3>::value_type	t;
 			CCloner::clone			(_2.top(),t);
 			__2.push				(t);
 		}
@@ -109,7 +110,7 @@ struct CCloner {
 			__2.pop();
 
 		for ( ; !_2.empty(); _2.pop()) {
-			T1<T2,T3,T4>::value_type	t;
+			typename T1<T2,T3,T4>::value_type	t;
 			CCloner::clone			(_2.top(),t);
 			__2.push				(t);
 		}
@@ -144,10 +145,10 @@ struct CCloner {
 		IC	static void clone(const T &_1, T &_2)
 		{
 			_2.clear			();
-			T::const_iterator	I = _1.begin();
-			T::const_iterator	E = _1.end();
+			typename T::const_iterator	I = _1.begin();
+			typename T::const_iterator	E = _1.end();
 			for ( ; I != E; ++I) {
-				T::value_type	t;
+				typename T::value_type	t;
 				CCloner::clone	(*I,t);
 				add				(_2,t);
 			}

@@ -1235,30 +1235,30 @@ void	game_sv_Deathmatch::LoadTeamData			(const shared_str& caSection)
 	//-------------------------------------------------------------
 	if( pSettings->section_exist(caSection) )//money
 	{
-		NewTeam.m_iM_Start				= GetMoneyAmount(caSection, "money_start");
-		NewTeam.m_iM_OnRespawn			= GetMoneyAmount(caSection, "money_respawn");
-		NewTeam.m_iM_Min				= GetMoneyAmount(caSection, "money_min");
+		NewTeam.m_iM_Start				= GetMoneyAmount(caSection, (char*) "money_start");
+		NewTeam.m_iM_OnRespawn			= GetMoneyAmount(caSection, (char*) "money_respawn");
+		NewTeam.m_iM_Min				= GetMoneyAmount(caSection, (char*) "money_min");
 
-		NewTeam.m_iM_KillRival			= GetMoneyAmount(caSection, "kill_rival");
-		NewTeam.m_iM_KillSelf			= GetMoneyAmount(caSection, "kill_self");
-		NewTeam.m_iM_KillTeam			= GetMoneyAmount(caSection, "kill_team");
+		NewTeam.m_iM_KillRival			= GetMoneyAmount(caSection, (char*) "kill_rival");
+		NewTeam.m_iM_KillSelf			= GetMoneyAmount(caSection, (char*) "kill_self");
+		NewTeam.m_iM_KillTeam			= GetMoneyAmount(caSection, (char*) "kill_team");
 
-		NewTeam.m_iM_TargetRival		= GetMoneyAmount(caSection, "target_rival");
-		NewTeam.m_iM_TargetTeam			= GetMoneyAmount(caSection, "target_team");
-		NewTeam.m_iM_TargetSucceed		= GetMoneyAmount(caSection, "target_succeed");
-		NewTeam.m_iM_TargetSucceedAll	= GetMoneyAmount(caSection, "target_succeed_all");
-		NewTeam.m_iM_TargetFailed		= GetMoneyAmount(caSection, "target_failed");
+		NewTeam.m_iM_TargetRival		= GetMoneyAmount(caSection, (char*) "target_rival");
+		NewTeam.m_iM_TargetTeam			= GetMoneyAmount(caSection, (char*) "target_team");
+		NewTeam.m_iM_TargetSucceed		= GetMoneyAmount(caSection, (char*) "target_succeed");
+		NewTeam.m_iM_TargetSucceedAll	= GetMoneyAmount(caSection, (char*) "target_succeed_all");
+		NewTeam.m_iM_TargetFailed		= GetMoneyAmount(caSection, (char*) "target_failed");
 
-		NewTeam.m_iM_RoundWin			= GetMoneyAmount(caSection, "round_win");
-		NewTeam.m_iM_RoundLoose			= GetMoneyAmount(caSection, "round_loose");
-		NewTeam.m_iM_RoundDraw			= GetMoneyAmount(caSection, "round_draw");
+		NewTeam.m_iM_RoundWin			= GetMoneyAmount(caSection, (char*) "round_win");
+		NewTeam.m_iM_RoundLoose			= GetMoneyAmount(caSection, (char*) "round_loose");
+		NewTeam.m_iM_RoundDraw			= GetMoneyAmount(caSection, (char*) "round_draw");
 
-		NewTeam.m_iM_RoundWin_Minor		= GetMoneyAmount(caSection, "round_win_minor");
-		NewTeam.m_iM_RoundLoose_Minor	= GetMoneyAmount(caSection, "round_loose_minor");
+		NewTeam.m_iM_RoundWin_Minor		= GetMoneyAmount(caSection, (char*) "round_win_minor");
+		NewTeam.m_iM_RoundLoose_Minor	= GetMoneyAmount(caSection, (char*) "round_loose_minor");
 
-		NewTeam.m_iM_RivalsWipedOut		= GetMoneyAmount(caSection, "rivals_wiped_out");
+		NewTeam.m_iM_RivalsWipedOut		= GetMoneyAmount(caSection, (char*) "rivals_wiped_out");
 
-		NewTeam.m_iM_ClearRunBonus		= GetMoneyAmount(caSection, "clear_run_bonus");
+		NewTeam.m_iM_ClearRunBonus		= GetMoneyAmount(caSection, (char*) "clear_run_bonus");
 		//---------------------------------------------------------------------------
 		if (pSettings->line_exist(caSection, "kill_while_invincible"))
 			NewTeam.m_fInvinsibleKillModifier = pSettings->r_float(caSection, "kill_while_invincible");

@@ -22,31 +22,31 @@ TEMPLATE_SPECIALIZATION
 void CStateControlFireAbstract::initialize()
 {
 	inherited::initialize			();
-	object->set_psy_fire_delay_zero	();
-	m_time_started					= time();
+	this->object->set_psy_fire_delay_zero	();
+	this->m_time_started					= time();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControlFireAbstract::execute()
 {
-	object->dir().face_target				(object->EnemyMan.get_enemy());
-	object->custom_dir().head_look_point	(get_head_position(const_cast<CEntityAlive *>(object->EnemyMan.get_enemy())));
+	this->object->dir().face_target				(this->object->EnemyMan.get_enemy());
+	this->object->custom_dir().head_look_point	(get_head_position(const_cast<CEntityAlive *>(this->object->EnemyMan.get_enemy())));
 	
-	object->custom_anim().set_body_state	(CControllerAnimation::eTorsoIdle,CControllerAnimation::eLegsTypeSteal);
+	this->object->custom_anim().set_body_state	(CControllerAnimation::eTorsoIdle,CControllerAnimation::eLegsTypeSteal);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControlFireAbstract::finalize()
 {
 	inherited::finalize();
-	object->set_psy_fire_delay_default	();
+	this->object->set_psy_fire_delay_default	();
 	m_time_state_last_execute			= time();
 }
 TEMPLATE_SPECIALIZATION
 void CStateControlFireAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
-	object->set_psy_fire_delay_default	();
+	this->object->set_psy_fire_delay_default	();
 	m_time_state_last_execute			= time();
 }
 
@@ -54,8 +54,8 @@ void CStateControlFireAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateControlFireAbstract::check_start_conditions()
 {
-	if (!object->EnemyMan.see_enemy_now()) return false;
-	if (object->EnemyMan.get_enemy()->Position().distance_to(object->Position()) < MIN_ENEMY_DISTANCE) return false;
+	if (!this->object->EnemyMan.see_enemy_now()) return false;
+	if (this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position()) < MIN_ENEMY_DISTANCE) return false;
 	if (m_time_state_last_execute + STATE_EXECUTE_DELAY > time()) return false;
 
 	return true;
@@ -64,10 +64,10 @@ bool CStateControlFireAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateControlFireAbstract::check_completion()
 {
-	if (!object->EnemyMan.see_enemy_now()) return true;
-	if (object->HitMemory.is_hit()) return true;
-	if (object->EnemyMan.get_enemy()->Position().distance_to(object->Position()) < MIN_ENEMY_DISTANCE) return true;
-	if (m_time_started + STATE_MAX_TIME < time()) return true;
+	if (!this->object->EnemyMan.see_enemy_now()) return true;
+	if (this->object->HitMemory.is_hit()) return true;
+	if (this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position()) < MIN_ENEMY_DISTANCE) return true;
+	if (this->m_time_started + STATE_MAX_TIME < time()) return true;
 
 	return false;
 }

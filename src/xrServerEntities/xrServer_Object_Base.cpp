@@ -178,16 +178,19 @@ CSE_Motion* CSE_Abstract::motion			()
 
 CInifile &CSE_Abstract::spawn_ini			()
 {
-	if (!m_ini_file) 
-#pragma warning(push)
-#pragma warning(disable:4238)
-		m_ini_file			= xr_new<CInifile>(
-			&IReader			(
-				(void*)(*(m_ini_string)),
-				m_ini_string.size()
-			),
+	if (!m_ini_file) {
+		IReader temp(
+			(void*) (*(m_ini_string)),
+			m_ini_string.size()
+		);
+
+		m_ini_file = xr_new<CInifile>(
+			&temp,
 			FS.get_path("$game_config$")->m_Path
 		);
+	}
+#pragma warning(push)
+#pragma warning(disable:4238)
 #pragma warning(pop)
 	return						(*m_ini_file);
 }

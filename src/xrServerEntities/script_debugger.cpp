@@ -9,9 +9,9 @@
 
 void CScriptDebugger::SendMessageToIde	(CMailSlotMsg& msg)
 {
-	if(CheckExisting(IDE_MAIL_SLOT))
+	if(CheckExisting((char*) IDE_MAIL_SLOT))
 	{
-		SendMailslotMessage(IDE_MAIL_SLOT, msg);
+		SendMailslotMessage((char*) IDE_MAIL_SLOT, msg);
 		m_bIdePresent = true;
 	}
 	else
@@ -147,18 +147,18 @@ CScriptDebugger::CScriptDebugger()
 	ZeroMemory(m_curr_connected_mslot,sizeof(m_curr_connected_mslot));
 //	m_pDebugger					= this;
 	m_nLevel					= 0;
-	m_mailSlot					= CreateMailSlotByName(DEBUGGER_MAIL_SLOT);
+	m_mailSlot					= CreateMailSlotByName((char*) DEBUGGER_MAIL_SLOT);
 
 	if (m_mailSlot == INVALID_HANDLE_VALUE) {
 		m_bIdePresent	= false;
 		return;
 	}
-	Connect(IDE_MAIL_SLOT);
+	Connect((char*) IDE_MAIL_SLOT);
 }
 
 void CScriptDebugger::Connect(LPCSTR mslot_name)
 {
-	m_bIdePresent = CheckExisting(IDE_MAIL_SLOT);
+	m_bIdePresent = CheckExisting((char*) IDE_MAIL_SLOT);
 	ZeroMemory(m_curr_connected_mslot,sizeof(m_curr_connected_mslot));
 	if (Active())
 	{

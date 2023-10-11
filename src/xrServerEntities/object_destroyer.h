@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include "object_interfaces.h"
+#include <queue>
+
 struct CDestroyer {
 	IC	static void delete_data(LPCSTR data)
 	{
@@ -28,8 +31,8 @@ struct CDestroyer {
 	template <typename T, int size>
 	IC	static void delete_data(svector<T,size> &data)
 	{
-		svector<T,size>::iterator	I = data.begin();
-		svector<T,size>::iterator	E = data.end();
+		typename svector<T,size>::iterator	I = data.begin();
+		typename svector<T,size>::iterator	E = data.end();
 		for ( ; I != E; ++I)
 			delete_data				(*I);
 		data.clear					();
@@ -113,13 +116,11 @@ struct CDestroyer {
 
 	struct CHelper3 {
 		template <typename T>
-		IC	static void delete_data(T &data)
-		{
-			T::iterator					I = data.begin();
-			T::iterator					E = data.end();
-			for ( ; I != E; ++I)
-				CDestroyer::delete_data	(*I);
-			data.clear					();
+		IC	static void delete_data(T& data) {
+			for (auto DataValue : data) {
+				CDestroyer::delete_data(DataValue);
+			}
+			data.clear();
 		}
 	};
 

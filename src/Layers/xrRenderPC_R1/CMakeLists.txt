@@ -2,11 +2,11 @@ project(xrRender_R1)
 set(XRR1_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XRR1_SOURCE_ALL_FILES
+file(GLOB_RECURSE XRR1_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )
-file(GLOB_RECURSE XRR1_SOURCE_COMP_FILES
+file(GLOB_RECURSE XRR1_SOURCE_COMP_FILES CONFIGURE_DEPENDS
     "../xrRender/*.cpp"
     "../xrRender/*.h"
 )

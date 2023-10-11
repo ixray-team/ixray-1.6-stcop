@@ -34,7 +34,7 @@ namespace award_system
 {
 
 #ifdef DEBUG
-char* player_values_strtable[] =
+const char* player_values_strtable[] =
 {
 	"command_switch_count",
 	"kill_in_raw_count",

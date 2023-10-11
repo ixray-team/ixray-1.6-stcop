@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "graph_engine_space.h"
+
 #define TEMPLATE_SPECIALIZATION \
 	template <\
 		typename _path_id_type,\
@@ -88,10 +90,22 @@ IC	bool CHashFixedVertexManager::is_opened	(const CGraphVertex &vertex) const
 	return					(vertex.opened());
 }
 
+template <typename T>
+u32 MakeMeUnsigned(T InType) {
+	if constexpr (std::is_same_v<T, shared_str>) {
+		const str_value* get = InType._get();
+		return (*(u32 const*)&get);
+	} else if constexpr (std::is_same_v<T, GraphEngineSpace::CWorldState>) {
+		return	(InType.hash_value());
+	} else {
+		static_assert(true, "Type not supported yet");
+	}
+}
+
 TEMPLATE_SPECIALIZATION
 IC	u32	 CHashFixedVertexManager::hash_index(const _index_type &vertex_id) const
 {
-	return					(hash_fixed_vertex_manager::to_u32(vertex_id) % hash_size);
+	return					(MakeMeUnsigned(vertex_id) % hash_size);
 }
 
 TEMPLATE_SPECIALIZATION

@@ -1,6 +1,7 @@
-#ifndef	_PHYSICS_EXTERNAL_COMMON_
-#define _PHYSICS_EXTERNAL_COMMON_
 #pragma once
+
+#include "MathUtils.h"
+
 struct dContactGeom;
 struct dContact;
 struct SGameMtl;
@@ -46,5 +47,3 @@ enum ERestrictionType
 	rtNone								,
 	rtActor
 };
-#endif
-

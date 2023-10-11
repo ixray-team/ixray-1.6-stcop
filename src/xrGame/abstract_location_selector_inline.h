@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "ai_space.h"
 #include "profiler.h"
 
 #define TEMPLATE_SPECIALIZATION template <\

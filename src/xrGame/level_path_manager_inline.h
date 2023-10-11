@@ -33,7 +33,7 @@ IC	void CLevelManagerTemplate::reinit(const CLevelGraph *graph)
 TEMPLATE_SPECIALIZATION
 IC	bool CLevelManagerTemplate::actual() const
 {
-	return						(inherited::actual(m_object->object().ai_location().level_vertex_id(),dest_vertex_id()));
+	return						(inherited::actual(this->m_object->object().ai_location().level_vertex_id(), this->dest_vertex_id()));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -46,8 +46,8 @@ IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id
 	inherited::build_path		(start_vertex_id,dest_vertex_id);
 
 #ifdef DEBUG
-	if (failed()) {
-		Msg						("! NPC %s couldn't build path from \n~ [%d][%f][%f][%f]\n~ to\n~ [%d][%f][%f][%f]",*m_object->object().cName(),start_vertex_id,VPUSH(ai().level_graph().vertex_position(start_vertex_id)),dest_vertex_id,VPUSH(ai().level_graph().vertex_position(dest_vertex_id)));
+	if (this->failed()) {
+		Msg						("! NPC %s couldn't build path from \n~ [%d][%f][%f][%f]\n~ to\n~ [%d][%f][%f][%f]",*this->m_object->object().cName(),start_vertex_id,VPUSH(ai().level_graph().vertex_position(start_vertex_id)),dest_vertex_id,VPUSH(ai().level_graph().vertex_position(dest_vertex_id)));
 	}
 #endif
 
@@ -57,31 +57,31 @@ IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id
 TEMPLATE_SPECIALIZATION
 IC	void CLevelManagerTemplate::before_search			(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
 {
-	if (m_object) {
-		m_object->add_border	(start_vertex_id,dest_vertex_id);
-		VERIFY					(!m_object->applied() || ai().level_graph().is_accessible(start_vertex_id));
-		VERIFY					(!m_object->applied() || ai().level_graph().is_accessible(dest_vertex_id));
+	if (this->m_object) {
+		this->m_object->add_border	(start_vertex_id,dest_vertex_id);
+		VERIFY					(!this->m_object->applied() || ai().level_graph().is_accessible(start_vertex_id));
+		VERIFY					(!this->m_object->applied() || ai().level_graph().is_accessible(dest_vertex_id));
 	}
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CLevelManagerTemplate::after_search			()
 {
-	if (m_object)
-		m_object->remove_border();
+	if (this->m_object)
+		this->m_object->remove_border();
 }
 
 TEMPLATE_SPECIALIZATION
 IC	bool CLevelManagerTemplate::check_vertex			(const _vertex_id_type vertex_id) const
 {
-	return						(inherited::check_vertex(vertex_id) && (!m_object || object().accessible(vertex_id)));
+	return						(inherited::check_vertex(vertex_id) && (!this->m_object || this->object().accessible(vertex_id)));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CLevelManagerTemplate::on_restrictions_change	()
 {
-	m_failed_start_vertex_id	= _vertex_id_type(-1);
-	m_failed_dest_vertex_id		= _vertex_id_type(-1);
+	this->m_failed_start_vertex_id	= _vertex_id_type(-1);
+	this->m_failed_dest_vertex_id		= _vertex_id_type(-1);
 }
 
 #undef TEMPLATE_SPECIALIZATION

@@ -90,7 +90,7 @@ namespace PS
                 if (_effect)				visuals.push_back(_effect);
                 visuals.insert				(visuals.end(),_children_related.begin(),_children_related.end());
                 visuals.insert				(visuals.end(),_children_free.begin(),_children_free.end());
-                return visuals.size();
+                return u32(visuals.size());
             }
             
             void			OnDeviceCreate	();

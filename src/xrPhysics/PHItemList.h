@@ -93,7 +93,7 @@ template<class T>
 	public:	
 		void			push_back		(T* item)	
 		{
-			item->stack_pos=size;
+			item->stack_pos=this->size;
 			CPHItemList<T>::push_back(item);
 		}
 	};

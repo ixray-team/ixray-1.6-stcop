@@ -345,7 +345,7 @@ void game_cl_mp::GetActiveVoting()
 }
 
 u32		Color_Teams_u32[3]	= {color_rgba(255,240,190,255), color_rgba(64,255,64,255), color_rgba(64,64,255,255)};
-LPSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
+LPCSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
 char	Color_Main[]	= "%c[255,192,192,192]";
 u32		Color_Neutral_u32	= color_rgba(255,0,255,255);
 char	Color_Red[]	= "%c[255,255,1,1]";
