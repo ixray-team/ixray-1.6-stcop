@@ -29,7 +29,8 @@ target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 target_link_directories(luabind PUBLIC "${IXRAY_SDK_LIB}/")
 
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
-target_compile_definitions(luabind PUBLIC LUABIND_NO_EXCEPTIONS)
+target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:LUABIND_NO_EXCEPTIONS>")
+target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPTIONS>")
 
 # NuGet
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LuaJIT.2.1.0-beta3/)
