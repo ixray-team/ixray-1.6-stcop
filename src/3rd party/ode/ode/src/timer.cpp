@@ -308,7 +308,7 @@ void dTimerEnd()
   if (num < MAXNUM) {
     serialize();
     getClockCount (event[num].cc);
-    event[num].description = "TOTAL";
+    event[num].description = (char*)"TOTAL";
     num++;
   }
 }
