@@ -15,7 +15,29 @@ float calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ )
 }
 #endif
 #else	//	SSAO_QUALITY
-#if SSAO_QUALITY == 3
+#if SSAO_QUALITY == 4
+#define RINGS 3
+#define DIRS 8
+static const float rads[4] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.20000f,
+	0.57735f,
+	0.81650f,
+	1.00000f
+};
+static const float angles[9] =
+{
+	0.0000f,
+	0.7854f,
+	1.5708f,
+	2.3562f,
+	3.1416f,
+	3.9267f,
+	4.7124f,
+	5.4978f,
+	6.2832f
+};
+#elif SSAO_QUALITY == 3
 #define RINGS 3
 #define DIRS 8
 static const float rads[4] =

@@ -551,10 +551,6 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
 float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ )
 #endif
 {
-	return 1.0f;
-}
-#elif SSAO_QUALITY >= 3
-{
 	// Locals
 	uint2 u2CenterScreenCoord;
     float2 f2ScreenCoord;
@@ -614,8 +610,6 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ )
 	
 	return fOcclusion;
 }
-#endif
-
 #endif
 
 //=================================================================================================================================

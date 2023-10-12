@@ -1,35 +1,34 @@
 uniform	float4		screen_res;
-uniform	Texture2D					s_occ;
+
+float blur(float Input, float Size, float2 uv)
+{    
+    float Pi = 6.28318530718; // Pi*2
+    float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+    float Quality = 5.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
+    float2 Radius = Size / pos_decompression_params2.xy;
+
+    float sum = 0.0f;
+    for (float d = 0.0; d < Pi; d+= Pi / Directions) {
+        for (float i = 1.0 / Quality; i <= 1.0; i+= 1.0 / Quality) {
+            sum += s_occ.Sample( smp_rtlinear, uv+float2(cos(d),sin(d))*Radius*i);    
+        }
+    }
+
+    sum /= Quality * Directions - (Directions - 1);
+    return sum;
+}
 
 float ssao_blur_ps(float2 centerTC)
 {
-  // low weight center sample - will be used on edges
-   float  fSumWeight = 0.025f;
-   float2 centerData = s_occ.Sample( smp_nofilter, centerTC);
-   float  fOcclusion  = centerData.r * fSumWeight;
-   float  centerDepth = centerData.g;
+    float2 centerData = s_occ.Sample( smp_nofilter, centerTC);
+    float  fOcclusion = centerData.r;
 
-   float2 arrOffsets[4] =
-   {
-     float2( 1,-1),
-     float2(-1,-1),
-     float2( 1, 1),
-     float2(-1, 1)
-   };
+    float sum = fOcclusion;
+    sum = blur(sum, 48, centerTC);
+    sum = blur(sum, 24, centerTC);
+    sum = blur(sum, 12, centerTC);
+    sum = blur(sum, 6, centerTC);
 
-  [unroll]
-  for(int i=0; i<4; i++)
-  {
-        float2 sampleTC   = centerTC + pos_decompression_params2.zw * arrOffsets[i];
-        float2 sampleData = s_occ.Sample( smp_nofilter, sampleTC); 
-		float fDepth  = sampleData.g;
-		float fDiff	  = 8*abs(fDepth-centerDepth)/min(fDepth,centerDepth);
-     	float fWeight = saturate(1-fDiff);
-        fOcclusion += sampleData.r * fWeight;
-        fSumWeight += fWeight;
-  }
-
-  fOcclusion /= fSumWeight;   
-
-  return fOcclusion;
+    sum = pow(sum, 3.5);
+    return sum;
 }

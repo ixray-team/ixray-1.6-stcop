@@ -37,14 +37,12 @@ void CRenderTarget::phase_final()
 	t_LUM_dest->surface_set(rt_LUM->pSurface);
 	HW.pContext->CopyResource(rt_LUMPrev->pSurface, rt_LUM->pSurface);
 
-	if (RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra) {
+	if (RImplementation.o.ssao_ultra) {
 		phase_hdao();
-	} else {
-		if (RImplementation.o.ssao_opt_data) {
-			phase_downsamp();
-		} else if (RImplementation.o.ssao_blur_on) {
-			phase_ssao();
-		}
+	} else if (RImplementation.o.ssao_opt_data) {
+		phase_downsamp();
+	} else if (RImplementation.o.ssao_blur_on) {
+		phase_ssao();
 	}
 
 	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };

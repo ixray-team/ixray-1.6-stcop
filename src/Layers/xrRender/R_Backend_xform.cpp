@@ -80,7 +80,7 @@ void	R_xforms::set_P			(const Fmatrix& m)
 	m_vp_unjittered.mul(m_p, m_v);
 	m_wvp_unjittered.mul(m_p, m_wv);
 
-	if (c_p)		RCache.set_c(c_p,	m_p);
+	if (c_p)		RCache.set_c(c_p,	jitter_p);
 	if (c_vp)		RCache.set_c(c_vp,	m_vp);
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
 	if (c_vp_unjittered)	RCache.set_c(c_vp_unjittered, m_vp_unjittered);

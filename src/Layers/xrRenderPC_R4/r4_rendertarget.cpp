@@ -543,26 +543,23 @@ CRenderTarget::CRenderTarget		()
     }
 
     // HBAO
-    if (RImplementation.o.ssao_opt_data)
+    u32		w = 0;
+    u32		h = 0;
+    if (RImplementation.o.ssao_half_data)
     {
-        u32		w = 0;
-        u32		h = 0;
-        if (RImplementation.o.ssao_half_data)
-        {
-            w = RenderWidth / 2;
-            h = RenderHeight / 2;
-        }
-        else
-        {
-            w = RenderWidth;
-            h = RenderHeight;
-        }
-
-        DxgiFormat	fmt = DxgiFormat::DXGI_FORMAT_R16_FLOAT;
-        rt_half_depth.create		(r2_RT_half_depth, w, h, fmt);
-
-        s_ssao.create				(b_ssao, "r2\\ssao");
+        w = RenderWidth / 2;
+        h = RenderHeight / 2;
     }
+    else
+    {
+        w = RenderWidth;
+        h = RenderHeight;
+    }
+
+    DxgiFormat	fmt = DxgiFormat::DXGI_FORMAT_R16_FLOAT;
+    rt_half_depth.create(r2_RT_half_depth, w, h, fmt);
+
+    s_ssao.create(b_ssao, "r2\\ssao");
 
     //if (RImplementation.o.ssao_blur_on)
     //{
@@ -582,7 +579,7 @@ CRenderTarget::CRenderTarget		()
     //}
 
     // HDAO
-    if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
+    if( RImplementation.o.ssao_hdao || ps_r_ssao_mode == 2)
     {
         u32		w = RenderWidth, h = RenderHeight;
         rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1, true);

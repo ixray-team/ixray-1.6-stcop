@@ -60,11 +60,14 @@ float4 main( v2p_postpr I ) : SV_Target
 			image	= lerp( noised, image, I.Color.w); 	// lrp ?
 			image	= (image * I.Color + c_brightness)*2;		// mad
 
-	image *= 1.4;
+    image *= 1.6;
+    image = pow(image, 1.1);
     image = saturate(image);
-	image = tony_mc_mapface(image);
-	image = accurateLinearToSRGB(image);
-	image += bayer32(I.HPos.xy) / 255.0;
+    image = tony_mc_mapface(image);
+    image = accurateLinearToSRGB(image);
+    image += bayer32(I.HPos.xy) / 255.0;
+    image += c_brightness;
+    image *= 1.2;
 
 	// out
 	return float4(image, 1.0h);					// +mov

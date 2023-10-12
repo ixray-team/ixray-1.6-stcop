@@ -168,7 +168,7 @@ void	CRender::render_lights	(light_Package& LP)
 				}
 			}
 		}
-
+			
 		{
 			PIX_EVENT(SPOT_LIGHTS_ACCUM_VOLUMETRIC);
 

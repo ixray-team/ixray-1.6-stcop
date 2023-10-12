@@ -12,23 +12,23 @@ void set_viewport(ID3DDeviceContext *dev, float w, float h)
 
 void CRenderTarget::phase_ssao	()
 {
+	PIX_EVENT(phase_ssao);
 	u32	Offset	= 0;
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	HW.pContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
 	
 	// low/hi RTs
-	u_setrt				( rt_ssao_temp, 0, 0, rt_HWDepth->pZRT);
+	u_setrt				( rt_ssao_temp, 0, 0, nullptr);
 	RCache.set_Stencil	(FALSE);
 
-	/*RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
-	if (RImplementation.o.nvstencil)	{
-		u_stencil_optimize				(CRenderTarget::SO_Combine);
-		RCache.set_ColorWriteEnable		();
-	}*/
-
-	// Compute params
-	Fmatrix		m_v2w;			m_v2w.invert				(Device.mView		);
+	Fvector2	p0, p1;
+	Fmatrix	m_v2w;				m_v2w.invert(Device.mView);
+	// Fill VB
+	float	_w = float(RCache.get_width());
+	float	_h = float(RCache.get_height());
+	p0.set(0, 0);
+	p1.set((_w) / _w, (_h) / _h);
 
 	float		fSSAONoise = 2.0f;
 	fSSAONoise *= tan(deg2rad(67.5f));
@@ -38,28 +38,23 @@ void CRenderTarget::phase_ssao	()
 	fSSAOKernelSize *= tan(deg2rad(67.5f));
 	fSSAOKernelSize /= tan(deg2rad(Device.fFOV));
 
-	// Fill VB
-	float	scale_X				= RCache.get_width() * 0.5f / float(TEX_jitter);
-	float	scale_Y				= RCache.get_height() * 0.5f / float(TEX_jitter);
-
-	float _w = RCache.get_width() * 0.5f;
-	float _h = RCache.get_height() * 0.5f;
-
-	set_viewport(HW.pContext, _w, _h);
+	float	scale_X = _w / float(TEX_jitter);
+	float	scale_Y = _h / float(TEX_jitter);
 
 	// Fill vertex buffer
-	FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-	pv->set						( -1,  1, 0, 1, 0,		0,	scale_Y	);	pv++;
-	pv->set						( -1, -1, 0, 0, 0,		0,		  0	);	pv++;
-	pv->set						(  1,  1, 1, 1, 0, scale_X,	scale_Y	);	pv++;
-	pv->set						(  1, -1, 1, 0, 0, scale_X,		  0	);	pv++;
-	RCache.Vertex.Unlock		(4,g_combine->vb_stride);
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+	pv->set(-1, 1, 0, 1, 0, 0, scale_Y);	pv++;
+	pv->set(-1, -1, 0, 0, 0, 0, 0);	pv++;
+	pv->set(1, 1, 1, 1, 0, scale_X, scale_Y);	pv++;
+	pv->set(1, -1, 1, 0, 0, scale_X, 0);	pv++;
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
 
 	// Draw
 	RCache.set_Element			(s_ssao->E[0]	);
 	RCache.set_Geometry			(g_combine		);
 
 	RCache.set_c				("m_v2w",			m_v2w	);
+	RCache.set_c				("ssao_params",		fSSAONoise, fSSAOKernelSize, 0.0f, 0.0f);
 	RCache.set_c				("ssao_noise_tile_factor",	fSSAONoise	);
 	RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
 	RCache.set_c				("resolution", _w, _h, 1.0f / _w, 1.0f / _h	);
