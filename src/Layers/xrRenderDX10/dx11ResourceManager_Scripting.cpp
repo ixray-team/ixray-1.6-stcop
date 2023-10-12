@@ -153,7 +153,8 @@ void	CResourceManager::LS_Load			()
 	luaopen_jit		(LSVM);
 
 	luabind::open						(LSVM);
-#ifdef XRAY_EXCEPTIONS
+  
+#ifdef LUABIND_NO_EXCEPTIONS
 	if (0==luabind::get_error_callback())
 		luabind::set_error_callback		(LuaError);
 #endif

@@ -97,7 +97,7 @@ void				TW_Save	(ID3DTexture2D* T, LPCSTR name, LPCSTR prefix, LPCSTR postfix)
 		if ('\\'==fn[it])	fn[it]	= '_';
 	string256		fn2;	strconcat	(sizeof(fn2),fn2,"debug\\",fn,".dds");
 	Log						("* debug texture save: ",fn2);
-	R_CHK					(D3DXSaveTextureToFile	(fn2,D3DXIFF_DDS,T,0));
+	R_CHK					(D3DXSaveTextureToFileA	(fn2,D3DXIFF_DDS,T,0));
 }
 
 ID3DTexture2D*	TW_LoadTextureFromTexture

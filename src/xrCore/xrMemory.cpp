@@ -6,7 +6,7 @@
 #include	"xrsharedmem.h"
 #include	"xrMemory_pure.h"
 
-// FX: Хак для установки уровня инициализации переменной в глобальном пространстве
+// FX: Г•Г ГЄ Г¤Г«Гї ГіГ±ГІГ Г­Г®ГўГЄГЁ ГіГ°Г®ГўГ­Гї ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© Гў ГЈГ«Г®ГЎГ Г«ГјГ­Г®Г¬ ГЇГ°Г®Г±ГІГ°Г Г­Г±ГІГўГҐ
 #pragma section(".Hook",read)
 
 BOOL		mem_initialized	= FALSE;
@@ -29,7 +29,7 @@ xrMemory::xrMemory()
 	mem_fill32	= xrMemFill32_x86;
 
 #ifndef PURE_ONLY
-	if (!!strstr(GetCommandLine(), "-pure_alloc"))
+	if (!!strstr(GetCommandLineA(), "-pure_alloc"))
 	{
 		pAlloc = CMemAllocPure::Create();
 	}
@@ -97,6 +97,14 @@ char*			xr_strdup		(const char* string)
 	u32		len			= u32(xr_strlen(string))+1	;
 	char *	memory		= (char*)	Memory.mem_alloc( len);
 	CopyMemory		(memory,string,len);
+	return	memory;
+}
+wchar_t* xr_strdup(const wchar_t* string)
+{
+	VERIFY(string);
+	size_t len = u32(wcslen(string)) + 1;
+	wchar_t* memory = new wchar_t[len];
+	CopyMemory(memory, string, len);
 	return	memory;
 }
 

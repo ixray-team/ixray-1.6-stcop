@@ -98,7 +98,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 		}
 	}
 
-	if (!IsDebuggerPresent() && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
+	if (!IsDebuggerPresent() && !strstr(GetCommandLineA(), "-no_call_stack_assert")) {
 		if (shared_str_initialized)
 			Msg			("stack trace:\n");
 
@@ -117,7 +117,7 @@ void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
 	ShowWindow(get_current_wnd(), SW_MINIMIZE);
-	MessageBox			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBoxA			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
 
@@ -154,12 +154,12 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	FlushLog			();
 
 #ifdef XRCORE_STATIC
-	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBoxA			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 #else
 
 	ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
-	int result = MessageBox(
+	int result = MessageBoxA(
 		NULL, assertion_info, "Fatal Error",
 		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY);
 
@@ -297,23 +297,23 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 	HMODULE hDll	= NULL;
 	string_path		szDbgHelpPath;
 
-	if (GetModuleFileName( NULL, szDbgHelpPath, _MAX_PATH ))
+	if (GetModuleFileNameA( NULL, szDbgHelpPath, _MAX_PATH ))
 	{
 		char *pSlash = strchr( szDbgHelpPath, '\\' );
 		if (pSlash)
 		{
 			xr_strcpy	(pSlash+1, sizeof(szDbgHelpPath)-(pSlash - szDbgHelpPath), "DBGHELP.DLL" );
-			hDll = ::LoadLibrary( szDbgHelpPath );
+			hDll = ::LoadLibraryA( szDbgHelpPath );
 		}
 	}
 
 	if (hDll==NULL)
 	{
 		// load any version we can
-		hDll = ::LoadLibrary( "DBGHELP.DLL" );
+		hDll = ::LoadLibraryA( "DBGHELP.DLL" );
 	}
 
-	LPCTSTR szResult = NULL;
+	const char* szResult = NULL;
 
 	if (hDll)
 	{
@@ -344,12 +344,12 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
             }
 
 			// create the file
-			HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+			HANDLE hFile = ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 			if (INVALID_HANDLE_VALUE==hFile)	
 			{
 				// try to place into current directory
 				MoveMemory	(szDumpPath,szDumpPath+5,strlen(szDumpPath));
-				hFile		= ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+				hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 			}
 			if (hFile!=INVALID_HANDLE_VALUE)
 			{
@@ -404,7 +404,7 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 		return;
 	}
 
-    FormatMessage(
+    FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM,
         NULL,
@@ -476,7 +476,7 @@ LONG WINAPI BuildStackTrace(PEXCEPTION_POINTERS pExceptionInfo)
 				Buffer += moduleInfo.ModuleName;
 
 			char buf[_MAX_U64TOSTR_BASE2_COUNT];
-			_itoa_s(displacement, buf, _countof(buf), 16);
+			_itoa_s((int)displacement, buf, _countof(buf), 16);
 
 			Buffer += moduleInfo.ModuleName;
 			Buffer += "!";
@@ -510,7 +510,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			Debug.get_on_dialog()	(true);
 
 		ShowWindow(get_current_wnd(), SW_MINIMIZE);
-		MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+		MessageBoxA			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
 #ifndef _EDITOR
@@ -549,7 +549,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	void _terminate		()
 	{
-		if (strstr(GetCommandLine(),"-silent_error_mode"))
+		if (strstr(GetCommandLineA(),"-silent_error_mode"))
 			exit				(-1);
 
 		string4096				assertion_info;
@@ -581,7 +581,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
-		MessageBox				(
+		MessageBoxA				(
 			/*GetTopWindow(NULL)*/ nullptr,
 			assertion_info,
 			"Fatal Error",

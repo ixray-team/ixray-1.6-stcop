@@ -21,6 +21,10 @@ set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS_DEBUG "/MD")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
+
+#add_compile_options(-fsanitize=address)
+#add_link_options(-fsanitize=address)
 
 # Enable gcc/clang style 
 add_compile_options(/permissive-)

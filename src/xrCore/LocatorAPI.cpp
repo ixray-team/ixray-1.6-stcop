@@ -402,7 +402,7 @@ void CLocatorAPI::archive::open()
 	if(hSrcFile && hSrcMap)
 		return;
 
-	hSrcFile		= CreateFile(*path, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	hSrcFile		= CreateFile(ANSI_TO_TCHAR(*path), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 	R_ASSERT		(hSrcFile!=INVALID_HANDLE_VALUE);
 	hSrcMap			= CreateFileMapping	(hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT		(hSrcMap!=INVALID_HANDLE_VALUE);
@@ -421,7 +421,11 @@ void CLocatorAPI::archive::close()
 void CLocatorAPI::ProcessArchive(LPCSTR _path)
 {
 	// find existing archive
-	shared_str path				= _path;
+	string_path NormalPath = {};
+	xr_strcpy(NormalPath, _path);
+
+	ANSI_TO_UTF8(NormalPath);
+	shared_str path = NormalPath;
 
 	for (archives_it it=m_archives.begin(); it!=m_archives.end(); ++it)
 		if (it->path==path)	
@@ -542,7 +546,11 @@ bool ignore_name(const char* _name)
 // be interpolated by FindNextFile()
 
 bool ignore_path(const char* _path){
-	HANDLE h = CreateFile( _path, 0, 0, NULL, OPEN_EXISTING,
+	string_path ValidPath = {};
+	xr_strcpy(ValidPath, _path);
+	ANSI_TO_UTF8(ValidPath);
+
+	HANDLE h = CreateFile(ANSI_TO_TCHAR(ValidPath), 0, 0, NULL, OPEN_EXISTING,
 		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, NULL);
 
 	if (h!=INVALID_HANDLE_VALUE)
@@ -1527,6 +1535,7 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
 	FS_Path* P		= xr_new<FS_Path>(root,add,LPCSTR(0),LPCSTR(0),0);
 	bNoRecurse		= !recursive;
 	Recurse			(P->m_Path);
+
 	pathes.insert	(std::make_pair(xr_strdup(path_alias),P));
 	return P;
 }

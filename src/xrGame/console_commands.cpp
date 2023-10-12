@@ -527,19 +527,20 @@ public:
 
 		Console->Execute			("stat_memory");
 
-		string_path				S, S1;
-		S[0]					= 0;
+		string_path				S = {}, S_UTF8 = {}, S1 = {};
 		strncpy_s				(S, sizeof(S), args, _MAX_PATH - 1 );
-		
+
+		xr_strcpy(S_UTF8, S);
+		ANSI_TO_UTF8(S_UTF8);
 #ifdef DEBUG
 		CTimer					timer;
 		timer.Start				();
 #endif
 		if (!xr_strlen(S)){
-			strconcat			(sizeof(S),S,Core.UserName," - ","quicksave");
+			strconcat			(sizeof(S_UTF8), S_UTF8,Core.UserName," - ","quicksave");
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
-			net_packet.w_stringZ(S);
+			net_packet.w_stringZ(S_UTF8);
 			net_packet.w_u8		(0);
 			Level().Send		(net_packet,net_flags(TRUE));
 		}else{
@@ -550,7 +551,7 @@ public:
 
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
-			net_packet.w_stringZ(S);
+			net_packet.w_stringZ(S_UTF8);
 			net_packet.w_u8		(1);
 			Level().Send		(net_packet,net_flags(TRUE));
 		}
@@ -562,8 +563,8 @@ public:
 		STRCONCAT					(save_name, CStringTable().translate("st_game_saved").c_str(), ": ", S);
 		_s->wnd()->TextItemControl()->SetText(save_name);
 
-		xr_strcat				(S,".dds");
-		FS.update_path			(S1,"$game_saves$",S);
+		xr_strcat				(S_UTF8,".dds");
+		FS.update_path			(S1,"$game_saves$", S_UTF8);
 		
 #ifdef DEBUG
 		timer.Start				();
@@ -671,7 +672,11 @@ public:
 		
 		if (saved_game && *saved_game)
 		{
-			xr_strcpy				(g_last_saved_game,saved_game);
+			xr_strcpy(g_last_saved_game, saved_game);
+			wchar_t WName[256];
+			MultiByteToWideChar(CP_ACP, 0, g_last_saved_game, strlen(g_last_saved_game), WName, strlen(g_last_saved_game));
+			WideCharToMultiByte(CP_UTF8, 0, WName, strlen(g_last_saved_game), g_last_saved_game, strlen(g_last_saved_game), 0, 0);
+
 			return;
 		}
 
