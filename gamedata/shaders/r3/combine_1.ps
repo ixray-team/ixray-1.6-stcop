@@ -141,7 +141,6 @@ float4 main ( _input I ) : SV_Target
 	hmodel	(hdiffuse, hspecular, mtl, N.w, D.w, P.xyz, N.xyz);
 
 	occ *= 0.8;
-	occ *= occ;
 
 	hdiffuse *= occ;
 	hspecular *= occ;
