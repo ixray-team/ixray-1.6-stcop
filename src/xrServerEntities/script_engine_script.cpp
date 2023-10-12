@@ -211,7 +211,7 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time),
 
-		def("log",								&LuaLog),
+		//def("log",								&LuaLog),
 		def("error_log",						&ErrorLog),
 		def("flush",							&FlushLogs),
 		def("prefetch",							&prefetch_module),

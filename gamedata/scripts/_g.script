@@ -3,6 +3,7 @@ if (jit == nil) then
 end
 
 string.gfind = string.gmatch
+debug_log = false
 
 function empty	(container)
 	if (type(container) == "function") then
@@ -24,6 +25,12 @@ end
 
 schemes = {} -- соответствие схем модулям
 stypes = {} -- типы схем
+
+function log(...) 
+    if debug_log then
+        SemiLog(...)
+    end
+end
 
 -- Загружает схему из файла на диске и активирует в мотиваторе.
 -- Здесь:
