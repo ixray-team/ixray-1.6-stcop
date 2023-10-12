@@ -7,7 +7,7 @@ float blur(float Input, float Size, float2 uv)
     float Quality = 5.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
     float2 Radius = Size / pos_decompression_params2.xy;
 
-    float sum = 0.0f;
+    float sum = Input;
     for (float d = 0.0; d < Pi; d+= Pi / Directions) {
         for (float i = 1.0 / Quality; i <= 1.0; i+= 1.0 / Quality) {
             sum += s_occ.Sample( smp_rtlinear, uv+float2(cos(d),sin(d))*Radius*i);    
