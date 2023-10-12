@@ -6,10 +6,10 @@
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
 static Fvector3		corners [8]			= {
-	{ -1, -1,  0.7 },	{ -1, -1, +1},
-	{ -1, +1, +1 },		{ -1, +1,  0.7},
-	{ +1, +1, +1 },		{ +1, +1,  0.7},
-	{ +1, -1, +1 },		{ +1, -1,  0.7}
+	{ -1.0f, -1.0f,  0.7f },	{ -1.0f, -1.0f, +1.0f},
+	{ -1.0f, +1.0f, +1.0f },	{ -1.0f, +1.0f,  0.7f},
+	{ +1.0f, +1.0f, +1.0f },	{ +1.0f, +1.0f,  0.7f},
+	{ +1.0f, -1.0f, +1.0f },	{ +1.0f, -1.0f,  0.7f}
 };
 static u16			facetable[16][3]		= {
 	{ 3, 2, 1 },  
@@ -309,14 +309,14 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 	//	Set correct depth surface
 	//	It's slow. Make this when shader is created
 	{
-		char*		pszSMapName;
+		const char* pszSMapName;
 		BOOL		b_HW_smap	= RImplementation.o.HW_smap;
 		BOOL		b_HW_PCF	= RImplementation.o.HW_smap_PCF;
-		if (b_HW_smap)		{
-			if (b_HW_PCF)	pszSMapName = r2_RT_smap_depth;
-			else			pszSMapName = r2_RT_smap_depth;
+		if (b_HW_smap) {
+			pszSMapName = r2_RT_smap_depth;
+		} else {
+			pszSMapName = r2_RT_smap_surf;
 		}
-		else				pszSMapName = r2_RT_smap_surf;
 		//s_smap
 
 		STextureList* _T = &*s_accum_direct_volumetric_cascade->E[0]->passes[0]->T;
