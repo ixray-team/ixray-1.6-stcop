@@ -83,8 +83,8 @@ v2p_bumped main( HS_CONSTANT_DATA_OUTPUT input,
 		output.position.xyz = triPos;
 
 	output.hpos	= mul(m_P, float4(output.position.xyz,1));
-	output.cur_hpos = output.hpos;
-	output.prev_hpos = mul(m_prevP, float4(output.position.xyz,1));
+	output.cur_hpos	= bp[0].cur_hpos*w + bp[1].cur_hpos*v + bp[2].cur_hpos*u;
+	output.prev_hpos = bp[0].prev_hpos*w + bp[1].prev_hpos*v + bp[2].prev_hpos*u;
 
     return output;
 }
