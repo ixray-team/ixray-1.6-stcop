@@ -82,4 +82,4 @@ target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/Micr
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
 ## RenderDoc
-target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_SRC}")
+target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")

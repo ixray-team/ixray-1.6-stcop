@@ -86,4 +86,4 @@ else()
 endif()
 
 ## RenderDoc
-target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_SRC}")
+target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")
