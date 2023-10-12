@@ -15,6 +15,7 @@ ipch/
 *.VC.VC.opendb
 *.aps
 build/
+build_win32/
 
 # Build results
 obj/
