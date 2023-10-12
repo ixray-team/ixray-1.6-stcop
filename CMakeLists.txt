@@ -25,29 +25,24 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 # Edit and Continue mode
 add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")
 
-# Set NuGet command
+# Configure NuGet
 find_program(NUGET_COMMAND nuget)
 if(NOT NUGET_COMMAND)
     message("NuGet not found in PATH!")
     message("Downloading NuGet...")
-    if(NOT EXISTS "${CMAKE_HOME_DIRECTORY}/dep/nuget")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/dep/nuget")
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/dep/nuget")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/dep/nuget")
         file(DOWNLOAD https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-             "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
+             "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
     endif()
-    set(NUGET_COMMAND "${CMAKE_HOME_DIRECTORY}/dep/nuget/nuget.exe")
+    set(NUGET_COMMAND "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
     message("NuGet downloaded: ${NUGET_COMMAND}")
 else()
     message("NuGet found: ${NUGET_COMMAND}")
 endif()
 
-# Get dependencies
-set(RENDERDOC_SRC "${CMAKE_HOME_DIRECTORY}/dep/renderdoc")
-if(NOT EXISTS "${CMAKE_HOME_DIRECTORY}/dep/renderdoc")
-    message("Downloading RenderDoc sources...")
-    execute_process(COMMAND git clone --branch v1.28 --depth 1 https://github.com/baldurk/renderdoc.git "${CMAKE_HOME_DIRECTORY}/dep/renderdoc" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY})
-    message("RenderDoc sources downloaded")
-endif()
+# Configure dependencies
+set(RENDERDOC_API "${CMAKE_CURRENT_SOURCE_DIR}/src/Dependencies/renderdoc")
 
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/)
@@ -133,6 +128,7 @@ if(IXRAY_UTILS)
     if(NOT IXRAY_COMPRESSOR_ONLY)
         set_target_properties(xrCompress PROPERTIES ${IXRAY_FOLDER_UTILS})
     endif()
+
     set_target_properties(xrDXT PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(QSlim PROPERTIES ${IXRAY_FOLDER_UTILS})
     #set_target_properties(xrLC_LightStab PROPERTIES ${IXRAY_FOLDER_UTILS})
@@ -142,6 +138,7 @@ if(IXRAY_UTILS)
     set_target_properties(ETools PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrSE_Factory PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrAI PROPERTIES ${IXRAY_FOLDER_UTILS})
+
     if(IXRAY_MP)
         set_target_properties(mp_balancer PROPERTIES ${IXRAY_FOLDER_UTILS})
         set_target_properties(mp_configs_verifyer PROPERTIES ${IXRAY_FOLDER_UTILS})
@@ -172,6 +169,7 @@ else()
 
     if(IXRAY_UTILS)
         set_target_properties(QSlim xrDXT xrLC_Light xrDO_Light xrLC ETools xrSE_Factory xrAI PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+
         if (IXRAY_MP)
             set_target_properties(mp_configs_verifyer mp_balancer mp_screenshots_info mp_gpprof_server PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
         endif()
