@@ -121,6 +121,7 @@ void CDetailManager::hw_Render_dump(
 	static shared_str strArray("array");
 	static shared_str strXForm("xform");
 	static shared_str strWV("wv");
+	static shared_str strWVP("wvp");
 
 	Device.Statistic->RenderDUMP_DT_Count	= 0;
 
@@ -159,6 +160,7 @@ void CDetailManager::hw_Render_dump(
 				RCache.set_c(strPrevDir2D, prev_wind);
 				RCache.set_c(strXForm, Device.mFullTransform);
 				RCache.set_c(strWV, RCache.xforms.m_wv);
+				RCache.set_c(strWVP, RCache.xforms.m_wvp);
 
 				Fvector4*	c_storage=0;
 

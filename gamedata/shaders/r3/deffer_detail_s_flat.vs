@@ -3,6 +3,7 @@
 uniform float4 		consts; // {1/quant,1/quant,diffusescale,ambient}
 uniform float4 		array[61*4];
 uniform float4x4	wv;
+uniform float4x4	wvp;
 
 v2p_flat 	main (v_detail v)
 {
@@ -28,7 +29,7 @@ v2p_flat 	main (v_detail v)
 		norm.z	= pos.z - m2.w	;
 
 	// Final out
-	O.hpos 		= mul		(m_VP,	pos				);	
+	O.hpos 		= mul		(wvp,	pos				);	
 	O.cur_hpos	= mul		(m_VP_Unjittered,	float4(pos.x, pos.y, pos.z, 1.0f)				);	
 	O.prev_hpos	= mul 		(m_prevVP_Unjittered, float4(pos.x, pos.y, pos.z, 1.0f) 		);
 	O.N 		= mul		(wv,  normalize(norm)	);

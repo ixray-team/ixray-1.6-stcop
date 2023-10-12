@@ -6,6 +6,7 @@ uniform float4 		prev_wave; 	// cx,cy,cz,tm
 uniform float4 		dir2D; 
 uniform float4 		prev_dir2D; 
 uniform float4x4	wv;
+uniform float4x4	wvp;
 
 uniform float4 		array[61*4];
 
@@ -51,7 +52,7 @@ v2p_flat 	main (v_detail v)
 		norm.z	= pos.z - m2.w	;
 
 	// Final out
-	O.hpos 		= mul		(m_VP,	pos				);	
+	O.hpos 		= mul		(wvp,	pos				);	
 	O.cur_hpos	= mul		(m_VP_Unjittered,		float4(pos.x, pos.y, pos.z, 1.0f)			);	
 	O.prev_hpos	= mul 		(m_prevVP_Unjittered, 	float4(prev_pos.x, prev_pos.y, prev_pos.z, 1.0f) 	);
 	O.N 		= mul		(wv,  normalize(norm)	);
