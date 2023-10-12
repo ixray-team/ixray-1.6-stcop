@@ -125,7 +125,6 @@ void CRenderTarget::phase_fxaa(u32 pass) {
 
 CRenderTarget::~CRenderTarget	()
 {
-	xr_delete(b_fxaa);
 	_RELEASE					(pFB);
 	_RELEASE					(pTempZB);
 	_RELEASE					(ZB);
