@@ -188,7 +188,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	string_path		fn;				
 	strconcat		(sizeof(fn), fn, target_name.c_str(), "\\", path);
 
-	if (::GetFileAttributes(fn)==u32(-1))
+	if (::GetFileAttributesA(fn)==u32(-1))
 	{
 		filesSKIP	++;
 		printf		(" - CAN'T OPEN");
@@ -437,7 +437,7 @@ void xrCompressor::PerformWork()
 		for (u32 it=0; it<files_list->size(); it++)
 		{
 			xr_sprintf				(caption,"Compress files: %d/%d - %d%%",it,files_list->size(),(it*100)/files_list->size());
-			SetWindowText		(GetConsoleWindow(),caption);
+			SetWindowTextA		(GetConsoleWindow(),caption);
 			printf				("\n%-80s   ",(*files_list)[it]);
 
 			if (fs_pack_writer->tell()>XRP_MAX_SIZE)

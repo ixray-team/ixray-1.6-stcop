@@ -81,7 +81,7 @@ struct file_comparer{
 
 int ProcessDifference()
 {
-	LPCSTR params = GetCommandLine();
+	LPCSTR params = GetCommandLineA();
 	Flags32 _flags;
 	_flags.zero();
 	if(strstr(params,"-diff /?")){
@@ -152,7 +152,7 @@ int ProcessDifference()
 	{
 		LPCSTR fn = target_file_list[i];
 		xr_sprintf(stats,"%d of %d (%3.1f%%)", i, total, 100.0f*((float)i/(float)total));
-		SetConsoleTitle		(stats);
+		SetConsoleTitleA(stats);
 
 		strconcat(sizeof(out_path),out_path,target_folder,"\\",fn);
 		VerifyPath(out_path);

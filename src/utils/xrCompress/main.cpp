@@ -11,7 +11,7 @@ int __cdecl main	(int argc, char* argv[])
 	Core._initialize	("xrCompress",0,FALSE);
 	printf				("\n\n");
 
-	LPCSTR params = GetCommandLine();
+	LPCSTR params = GetCommandLineA();
 	xrCompressor		C;
 
 	C.SetStoreFiles(NULL!=strstr(params,"-store"));
