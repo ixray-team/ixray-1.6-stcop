@@ -86,9 +86,10 @@ void dxRenderDeviceRender::SetupStates()
 	HW.Caps.Update			();
 
 #ifdef USE_DX11
-	//	TODO: DX10: Implement Resetting of render states into default mode
 	float MipBias = ps_r__tf_Mipbias;
-	MipBias += std::log2f(RCache.get_width() / RCache.get_target_width()) - 1.0f;
+	if (RCache.get_target_width() > RCache.get_width()) {
+		MipBias += std::log2f(RCache.get_width() / RCache.get_target_width()) - 1.0f;
+	}
 
 	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 	SSManager.SetMipLodBias(MipBias);
