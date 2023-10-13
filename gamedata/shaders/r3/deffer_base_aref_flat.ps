@@ -27,6 +27,7 @@ f_deffer 	main	( p_flat I )
 #ifdef	USE_TDETAIL
 	D.rgb	= 2*D.rgb * s_detail.Sample( smp_base, I.tcdbump ).rgb;
 #endif
+	D.rgb *= 0.75f;
 
 	// hemi,sun,material
 	float 	ms	= xmaterial		;

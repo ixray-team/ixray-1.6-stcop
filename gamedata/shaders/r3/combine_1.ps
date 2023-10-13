@@ -82,6 +82,9 @@ float4 main ( _input I ) : SV_Target
 	float4	L = s_accumulator.Sample( smp_nofilter, I.tc0);	// diffuse.specular
 
     L.rgb = L.rgb * (L.rgb * (L.rgb * 0.305306011 + 0.682171111) + 0.012522878);
+	N.w *= 0.8f;
+
+	L.rgb *= 2.f;
 
 #ifdef USE_SUPER_SPECULAR
 	{
@@ -140,16 +143,13 @@ float4 main ( _input I ) : SV_Target
 	
 	hmodel	(hdiffuse, hspecular, mtl, N.w, D.w, P.xyz, N.xyz);
 
-	occ *= 0.8;
+	occ *= 0.5;
 
 	hdiffuse *= occ;
 	hspecular *= occ;
-	
-    //hdiffuse = 2 * hdiffuse * (hdiffuse * (hdiffuse * 0.305306011 + 0.682171111) + 0.012522878);
-   // hspecular =2 *  hspecular * (hspecular* (hspecular* 0.305306011 + 0.682171111) + 0.012522878);
 
-     float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
-    float4         C           = (D / 3.1415) *light       ;                             // rgb.gloss * light(diffuse.specular)
+     	float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
+    	float4         C           = (D / 3.1415) *light       ;     // rgb.gloss * light(diffuse.specular)
     	C.w *= 0.5;
 	float3         spec        = C.www         + hspecular;      // replicated specular
 
@@ -209,6 +209,6 @@ float4 main ( _input I ) : SV_Target
         color        	= spec          - hspecular	;
 #endif
 
-	color *= 5;
+	color *= 3;
 	return float4(color, skyblend);
 }
