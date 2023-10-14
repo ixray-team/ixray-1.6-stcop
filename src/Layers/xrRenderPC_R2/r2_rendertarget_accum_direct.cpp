@@ -277,7 +277,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 		//	Igor: draw volumetric here
 		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
-		if ( RImplementation.o.advancedpp&&(ps_r_sun_shafts>0) && sub_phase == SE_SUN_FAR)
+		if ((ps_r_sun_shafts>0) && sub_phase == SE_SUN_FAR)
 			accum_direct_volumetric	(sub_phase, Offset, m_shadow);
 	}
 }
@@ -286,7 +286,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 {
 	if ( (sub_phase!=SE_SUN_NEAR) && (sub_phase!=SE_SUN_MIDDLE) && (sub_phase!=SE_SUN_FAR) ) return;
 
-	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+	if (!ps_r_sun_shafts)
 		return;
 
 	{

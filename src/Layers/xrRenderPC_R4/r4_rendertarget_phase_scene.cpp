@@ -16,13 +16,9 @@ void	CRenderTarget::phase_scene_prepare	()
 
 	//	TODO: DX10: Check if complete clear of _ALL_ rendertargets will increase
 	//	FPS. Make check for SLI configuration.
-	if ( RImplementation.o.advancedpp &&
-			(
-				ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES|R2FLAG_DOF) ||
-				( (ps_r_sun_shafts>0) && (fValue>=0.0001) ) ||
-				(ps_r_ssao>0)
-			)
-		)
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES | R2FLAG_DOF) ||
+		((ps_r_sun_shafts > 0) && (fValue >= 0.0001)) ||
+		(ps_r_ssao > 0))
 	{
 		//	TODO: DX10: Check if we need to set RT here.
 		u_setrt(RCache.get_width(), RCache.get_height(), rt_Position->pRT, NULL, NULL, HW.pBaseZB);

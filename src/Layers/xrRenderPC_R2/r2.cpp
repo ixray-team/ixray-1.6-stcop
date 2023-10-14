@@ -91,7 +91,6 @@ static class cl_sun_shafts_intensity : public R_constant_setup
 }	binder_sun_shafts_intensity;
 
 extern ENGINE_API BOOL r2_sun_static;
-extern ENGINE_API BOOL r2_advanced_pp;	//	advanced post process and effects
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void					CRender::create					()
@@ -237,7 +236,6 @@ void					CRender::create					()
 
 	// options
 	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
-	o.advancedpp		= r2_advanced_pp;
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
 	o.distortion_enabled= (strstr(Core.Params,"-nodistort"))?	FALSE	:TRUE	;
@@ -842,7 +840,7 @@ HRESULT	CRender::shader_compile			(
 	sh_name[len]='0'+char(4==m_skinning); ++len;
 	
 	//	Igor: need restart options
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
 	{
 		defines[def_it].Name		=	"USE_SOFT_WATER";
 		defines[def_it].Definition	=	"1";
@@ -854,7 +852,7 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
 	{
 		defines[def_it].Name		=	"USE_SOFT_PARTICLES";
 		defines[def_it].Definition	=	"1";
@@ -866,7 +864,7 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
+	if (ps_r2_ls_flags.test(R2FLAG_DOF))
 	{
 		defines[def_it].Name		=	"USE_DOF";
 		defines[def_it].Definition	=	"1";
@@ -878,7 +876,7 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r_sun_shafts)
+	if (ps_r_sun_shafts)
 	{
 		xr_sprintf					(c_sun_shafts,"%d",ps_r_sun_shafts);
 		defines[def_it].Name		=	"SUN_SHAFTS_QUALITY";
@@ -891,7 +889,7 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r_ssao)
+	if (ps_r_ssao)
 	{
 		xr_sprintf					(c_ssao,"%d",ps_r_ssao);
 		defines[def_it].Name		=	"SSAO_QUALITY";
@@ -904,7 +902,7 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r_sun_quality)
+	if (ps_r_sun_quality)
 	{
 		xr_sprintf					(c_sun_quality,"%d",ps_r_sun_quality);
 		defines[def_it].Name		=	"SUN_QUALITY";
@@ -917,7 +915,7 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
+	if (ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
 	{
 		defines[def_it].Name		=	"ALLOW_STEEPPARALLAX";
 		defines[def_it].Definition	=	"1";

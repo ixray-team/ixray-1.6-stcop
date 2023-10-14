@@ -246,8 +246,7 @@ CRenderTarget::CRenderTarget		()
 		//	Igor: for volumetric lights
 		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
-		if (RImplementation.o.advancedpp)
-			rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A16B16G16R16F);
+		rt_Generic_2.create(r2_RT_generic2, w, h, D3DFMT_A16B16G16R16F);
 	}
 
 	// OCCLUSION
@@ -267,10 +266,7 @@ CRenderTarget::CRenderTarget		()
 		rt_smap_ZB					= NULL;
 		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
 		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
-		if (RImplementation.o.advancedpp)
-		{
-			s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
-		}
+		s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
 	}
 	else
 	{
@@ -280,10 +276,7 @@ CRenderTarget::CRenderTarget		()
 		R_CHK						(HW.pDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,NULL));
 		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
 		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
-		if (RImplementation.o.advancedpp)
-		{
-			s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
-		}
+		s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
 	}
 
 	// POINT
@@ -703,7 +696,7 @@ void CRenderTarget::increment_light_marker()
 
 bool CRenderTarget::need_to_render_sunshafts()
 {
-	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+	if (!ps_r_sun_shafts)
 		return false;
 
 	{

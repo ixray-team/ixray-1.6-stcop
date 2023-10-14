@@ -111,7 +111,6 @@ static class cl_alpha_ref	: public R_constant_setup
 	}
 } binder_alpha_ref;
 
-extern ENGINE_API BOOL r2_advanced_pp;	//	advanced post process and effects
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void					CRender::create					()
@@ -262,7 +261,6 @@ void					CRender::create					()
 
 	// options
 	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
-	o.advancedpp		= r2_advanced_pp;
 	o.volumetricfog		= ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
@@ -1010,11 +1008,8 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.ssao_blur_on);
-		++len;
-	}
+	sh_name[len] = '0' + char(o.ssao_blur_on);
+	++len;
 
     if (o.ssao_hdao)
     {
@@ -1027,12 +1022,13 @@ HRESULT	CRender::shader_compile			(
     }
 	else 
 	{
-		sh_name[len]='0'; 
+		sh_name[len] = '0';
 		++len;
-		sh_name[len]='0'+ static_cast<char>(o.ssao_hbao); 
+		sh_name[len] = '0' + char(o.ssao_hbao);
 		++len;
-		sh_name[len]='0'+ static_cast<char>(o.ssao_half_data); 
+		sh_name[len] = '0' + char(o.ssao_half_data);
 		++len;
+
 		if (o.ssao_hbao) {
 			defines[def_it].Name		=	"SSAO_OPT_DATA";
 			if (o.ssao_half_data)
@@ -1127,7 +1123,7 @@ HRESULT	CRender::shader_compile			(
 	}
 
 	//	Igor: need restart options
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
 	{
 		defines[def_it].Name		=	"USE_SOFT_WATER";
 		defines[def_it].Definition	=	"1";
@@ -1136,11 +1132,11 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len]='0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER));
+		sh_name[len] = '0';
 		++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
 	{
 		defines[def_it].Name		=	"USE_SOFT_PARTICLES";
 		defines[def_it].Definition	=	"1";
@@ -1149,11 +1145,11 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES));
+		sh_name[len] = '0';
 		++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
+	if (ps_r2_ls_flags.test(R2FLAG_DOF))
 	{
 		defines[def_it].Name		=	"USE_DOF";
 		defines[def_it].Definition	=	"1";
@@ -1162,11 +1158,11 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF));
+		sh_name[len] = '0';
 		++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r_sun_shafts)
+	if (ps_r_sun_shafts)
 	{
 		xr_sprintf					(c_sun_shafts,"%d",ps_r_sun_shafts);
 		defines[def_it].Name		=	"SUN_SHAFTS_QUALITY";
@@ -1176,11 +1172,11 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r_sun_shafts);
+		sh_name[len] = '0';
 		++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r_ssao)
+	if (ps_r_ssao)
 	{
 		xr_sprintf					(c_ssao,"%d",ps_r_ssao);
 		defines[def_it].Name		=	"SSAO_QUALITY";
@@ -1190,7 +1186,7 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r_ssao);
+		sh_name[len] = '0';
 		++len;
 	}
 
@@ -1220,7 +1216,7 @@ HRESULT	CRender::shader_compile			(
 		++len;
 	}
 
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
+	if (ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
 	{
 		defines[def_it].Name		=	"ALLOW_STEEPPARALLAX";
 		defines[def_it].Definition	=	"1";
@@ -1229,7 +1225,7 @@ HRESULT	CRender::shader_compile			(
 	}
 	else
 	{
-		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX));
+		sh_name[len] = '0' + static_cast<char>(ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX));
 		++len;
 	}
 
