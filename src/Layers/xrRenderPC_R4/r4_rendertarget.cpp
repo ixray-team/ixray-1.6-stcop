@@ -382,8 +382,7 @@ CRenderTarget::CRenderTarget		()
 		//	Igor: for volumetric lights
 		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
-		if (RImplementation.o.advancedpp)
-			rt_Generic_2.create			(r2_RT_generic2, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, D3DFMT_A16B16G16R16F, SampleCount);
 	}
 
 	// FXAA
@@ -426,12 +425,10 @@ CRenderTarget::CRenderTarget		()
 		s_accum_mask.create			(b_accum_mask,				"r3\\accum_mask");
 		s_accum_direct.create		(b_accum_direct,			"r3\\accum_direct");
 
-		if (RImplementation.o.advancedpp)
-		{
-			s_accum_direct_volumetric.create("accum_volumetric_sun");
+		s_accum_direct_volumetric.create("accum_volumetric_sun");
 
-			if (RImplementation.o.dx10_minmax_sm)
-				s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_minmax");
+		if (RImplementation.o.dx10_minmax_sm) {
+			s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_minmax");
 		}
 	}
 
@@ -936,7 +933,7 @@ void CRenderTarget::increment_light_marker()
 
 bool CRenderTarget::need_to_render_sunshafts()
 {
-	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+	if (!ps_r_sun_shafts)
 		return false;
 
 	{

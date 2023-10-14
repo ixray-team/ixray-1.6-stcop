@@ -13,13 +13,9 @@ void	CRenderTarget::phase_scene_prepare	()
 	//	TODO: add multiplication by sun color here
 	//if (fValue<0.0001) FlagSunShafts = 0;
 
-	if ( RImplementation.o.advancedpp &&
-			(
-				ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES|R2FLAG_DOF) ||
-				( (ps_r_sun_shafts>0) && (fValue>=0.0001) ) ||
-				(ps_r_ssao>0)
-			)
-		)
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES | R2FLAG_DOF) ||
+		((ps_r_sun_shafts > 0) && (fValue >= 0.0001)) ||
+		(ps_r_ssao > 0))
 	{
 		u_setrt	( RCache.get_width(),RCache.get_height(),rt_Position->pRT,NULL,NULL,HW.pBaseZB );
 		CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
