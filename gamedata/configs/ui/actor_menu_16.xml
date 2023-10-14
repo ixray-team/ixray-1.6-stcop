@@ -140,7 +140,7 @@
 		<text align="l" font="letterica16" color="ui_7"/>
 	</partner_weight>
 
-	<!-- partner  ---------------------------------------------------------------- -->
+	<!-- partner  -->
 	<left_delimiter x="102" y="226" width="273" height="163" stretch="1">
 		<texture>ui_inGame2_center_trade_devider</texture>
 		<trade_caption x="118" y="74" width="48" height="16">
@@ -153,7 +153,7 @@
 			<text align="l" font="letterica16" color="ui_3"/>
 		</trade_weight_max>
 	</left_delimiter>
-	<!-- actor  ---------------------------------------------------------------- -->
+	<!-- actor -->
 	<right_delimiter x="648" y="226" width="273" height="163" stretch="1">
 	    <texture>ui_inGame2_center_trade_devider</texture>
 	    <trade_caption x="118" y="74" width="48" height="16">
@@ -317,7 +317,7 @@
 
 	    <health_state x="11" y="31" width="171" height="16">
 	        <hint_text delay="800">st_ui_health_sensor</hint_text>
-	        <state_progress x="0" y="0" width="171" height="16" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="0" y="0" width="171" height="16" horz="1" min="0" max="1" pos="0" expression="floor(fltPlayerHealth * 55.0) / 55.0">
 	    	    <progress stretch="1">
 	        		<texture r="194" g="8" b="8" a="200">ui_inGame2_inventory_health_bar</texture>
 		        </progress>
@@ -352,10 +352,8 @@
 
 	    <radia_sensor x="12" y="72" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_radiation_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitRadiationProtection + fltActorHelmetRadiationProtection + fltActorBoostRadiationProtection + fltArtefactsRadiationProtection / fltZoneMaxPowerRadiationProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -364,10 +362,8 @@
 
 	    <acid_sensor x="12" y="100" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_chemical_burn_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitChemicalBurnProtection + fltActorHelmetChemicalBurnProtection + fltActorBoostChemicalBurnProtection + fltArtefactsChemicalBurnProtection / fltZoneMaxPowerChemicalBurnProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -376,10 +372,8 @@
 
 	    <shock_sensor x="12" y="128" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_shock_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitShockProtection + fltActorHelmetShockProtection + fltArtefactsShockProtection / fltZoneMaxPowerShockProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -388,10 +382,8 @@
 
 	    <fire_sensor x="12" y="156" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_burn_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitBurnProtection + fltActorHelmetBurnProtection + fltArtefactsBurnProtection / fltZoneMaxPowerBurnProtection * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 		        </progress>
@@ -400,10 +392,8 @@
 
 	    <psi_sensor x="139" y="72" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_telepatic_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitTelepaticProtection + fltActorHelmetTelepaticProtection + fltActorBoostTelepaticProtection + fltArtefactsTelepaticProtection / fltZoneMaxPowerTelepaticProtection * 31.0) /31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
@@ -412,11 +402,9 @@
 
 	    <wound_sensor x="139" y="100" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_wound_protection</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
-		        <progress stretch="1">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0"
+			expression="floor(fltActorOutfitWoundProtection + fltActorHelmetWoundProtection + fltArtefactsWoundProtection / fltZoneMaxPowerWoundProtection * 31.0) / 31.0">
+		       <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>
 	        </state_progress>
@@ -436,10 +424,7 @@
 
 	    <power_sensor x="139" y="156" width="116" height="18">
 	        <hint_text delay="800">ui_inv_outfit_power_restore</hint_text>
-	        <icon x="0" y="0" width="14" height="18" magnitude="100" stretch="1">
-		        <text align="c" vert_align="c" font="graffiti22" color="ui_7">99</text>
-	        </icon>
-	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0">
+	        <state_progress x="19" y="1" width="98" height="18" horz="1" min="0" max="1" pos="0" expression="floor(fltPlayerRestoreSpeed * 31.0) / 31.0">
 		        <progress stretch="1">
 	    		    <texture r="142" g="149" b="149">ui_inGame2_inventory_progress_bar</texture>
 	        	</progress>

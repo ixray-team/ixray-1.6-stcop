@@ -32,6 +32,7 @@ extern "C" {
 
 void CCC_RegisterCommands	();
 void setup_luabind_allocator();
+void RegisterExpressionDelegates();
 
 BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 {
@@ -41,6 +42,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 			CCC_RegisterCommands();
 			// keyboard binding
 			CCC_RegisterInput	();
+
+			// register xml-script namespace
+			RegisterExpressionDelegates();
 
 			setup_luabind_allocator	();
 #ifdef DEBUG

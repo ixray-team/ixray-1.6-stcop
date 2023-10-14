@@ -1,6 +1,7 @@
 // xrCore.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h"
+#include "XmlParser/Expression.h"
 #pragma hdrstop
 
 #include <mmsystem.h>
@@ -91,7 +92,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		xr_FS				= xr_new<CLocatorAPI>	();
 
 		xr_EFS				= xr_new<EFS_Utils>		();
-//.		R_ASSERT			(co_res==S_OK);
+		g_uiExpressionMgr = new CExpressionManager();
 	}
 	if (init_fs){
 		u32 flags			= 0;

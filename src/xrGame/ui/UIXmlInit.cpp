@@ -74,6 +74,16 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 	pWnd->SetWndPos(pos);
 	pWnd->SetWndSize(size);
 
+	const char* expressionStr = xml_doc.ReadAttrib(path, index, "expression");
+	if (expressionStr != nullptr)
+	{
+		xr_string expression(expressionStr);
+		if (!expression.empty())
+		{
+			pWnd->m_expression.CompileExpression(expression);
+		}
+	}
+
    	string512 buf;
 
 	strconcat(sizeof(buf),buf,path,":window_name");
@@ -528,6 +538,16 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path,
 	size.x				= xml_doc.ReadAttribFlt(path, index, "width");
 	size.y				= xml_doc.ReadAttribFlt(path, index, "height");
 	
+	const char* expressionStr = xml_doc.ReadAttrib(path, index, "expression");
+	if (expressionStr != nullptr)
+	{
+		xr_string expression(expressionStr);
+		if (!expression.empty())
+		{
+			pWnd->m_expression.CompileExpression(expression);
+		}
+	}
+
 	CUIProgressBar::EOrientMode mode = CUIProgressBar::om_vert;
 	int mode_horz     = xml_doc.ReadAttribInt(path, index, "horz", 0);
 	LPCSTR mode_str = xml_doc.ReadAttrib(path, index, "mode");

@@ -45,6 +45,8 @@ public:
 	virtual void 		ChangeAlcohol				(const float value);
 	virtual void 		ChangeSatiety				(const float value);
 
+	float				GetBoosterValueByType		(EBoostParams type) const;
+
 	void 				BoostParameters				(const SBooster& B);
 	void 				DisableBoostParameters		(const SBooster& B);
 	IC void				BoostMaxWeight				(const float value);
