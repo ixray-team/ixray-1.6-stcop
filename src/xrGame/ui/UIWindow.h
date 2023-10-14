@@ -1,5 +1,6 @@
 #pragma once
 #include "../xr_level_controller.h"
+#include "../xrCore/XmlParser/Expression.h"
 class CUIWindow;
 
 #define	 ui_list xr_vector
@@ -125,6 +126,10 @@ public:
 	
 	IC bool					GetCustomDraw		() const					{return m_bCustomDraw;}
 	IC void					SetCustomDraw		(bool b) 					{m_bCustomDraw = b;}
+
+public:
+	// Expression that provide data for this widget
+	CExpression             m_expression;
 
 protected:
 	IC void					SafeRemoveChild(CUIWindow* child)				{WINDOW_LIST_it it = std::find(m_ChildWndList.begin(),m_ChildWndList.end(),child); if(it!=m_ChildWndList.end())m_ChildWndList.erase(it);};

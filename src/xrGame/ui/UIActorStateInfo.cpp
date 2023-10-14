@@ -86,13 +86,7 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		return;
 	}
 
-	float value = 0.0f;
-	
-	value = actor->conditions().GetHealth();
-	value = floor(value * 55) / 55; // number of sticks in progress bar
-// show bleeding icon
-	m_state[stt_health]->set_progress(value);
-	value = actor->conditions().BleedingSpeed();					
+	float value = actor->conditions().BleedingSpeed();					
 	m_state[stt_bleeding]->show_static(false, 1);
 	m_state[stt_bleeding]->show_static(false, 2);
 	m_state[stt_bleeding]->show_static(false, 3);
@@ -124,46 +118,11 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 	PIItem itm = actor->inventory().ItemFromSlot(HELMET_SLOT);
 	CHelmet* helmet = smart_cast<CHelmet*>(itm);
 
-	m_state[stt_fire]->set_progress(0.0f);
-	m_state[stt_radia]->set_progress(0.0f);
-	m_state[stt_acid]->set_progress(0.0f);
-	m_state[stt_psi]->set_progress(0.0f);
 	m_state[stt_wound]->set_progress(0.0f);
-	m_state[stt_fire_wound]->set_progress(0.0f);
-	m_state[stt_shock]->set_progress(0.0f);
-	m_state[stt_power]->set_progress(0.0f);
-
-	float burn_value = 0.0f;
-	float radi_value = 0.0f;
-	float cmbn_value = 0.0f;
-	float tele_value = 0.0f;
-	float woun_value = 0.0f;
-	float shoc_value = 0.0f;
 	float fwou_value = 0.0f;
-
-	CEntityCondition::BOOSTER_MAP cur_booster_influences = actor->conditions().GetCurBoosterInfluences();
-	CEntityCondition::BOOSTER_MAP::const_iterator it;
-	it = cur_booster_influences.find(eBoostRadiationProtection);
-	if(it!=cur_booster_influences.end())
-		radi_value += it->second.fBoostValue;
-
-	it = cur_booster_influences.find(eBoostChemicalBurnProtection);
-	if(it!=cur_booster_influences.end())
-		cmbn_value += it->second.fBoostValue;
-
-	it = cur_booster_influences.find(eBoostTelepaticProtection);
-	if(it!=cur_booster_influences.end())
-		tele_value += it->second.fBoostValue;
 
 	if(outfit)
 	{
-		burn_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeBurn);
-		radi_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeRadiation);
-		cmbn_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeChemicalBurn);
-		tele_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeTelepatic);
-		woun_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeWound);
-		shoc_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeShock);
-
 		IKinematics* ikv = smart_cast<IKinematics*>(actor->Visual());
 		VERIFY(ikv);
 		u16 spine_bone = ikv->LL_BoneID("bip01_spine");
@@ -176,71 +135,17 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 	}
 	if(helmet)
 	{
-		burn_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeBurn);
-		radi_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeRadiation);
-		cmbn_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeChemicalBurn);
-		tele_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeTelepatic);
-		woun_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeWound);
-		shoc_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeShock);
-
 		IKinematics* ikv = smart_cast<IKinematics*>(actor->Visual());
 		VERIFY(ikv);
 		u16 spine_bone = ikv->LL_BoneID("bip01_head");
 		fwou_value += helmet->GetBoneArmor(spine_bone)*helmet->GetCondition();
 	}
 	
-//fire burn protection progress bar
-	{
-		burn_value += actor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeBurn);
-		float max_power = actor->conditions().GetZoneMaxPower(ALife::eHitTypeBurn);
-		burn_value = floor(burn_value / max_power * 31) / 31; // number of sticks in progress bar
-		m_state[stt_fire]->set_progress(burn_value);//0..1
-	}
-//radiation protection progress bar
-	{
-		radi_value += actor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeRadiation);
-		float max_power = actor->conditions().GetZoneMaxPower(ALife::eHitTypeRadiation);
-		radi_value = floor(radi_value / max_power * 31) / 31; // number of sticks in progress bar
-		m_state[stt_radia]->set_progress(radi_value);//0..1
-	}
-//chemical burn protection progress bar
-	{
-		cmbn_value += actor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeChemicalBurn);
-		float max_power = actor->conditions().GetZoneMaxPower(ALife::eHitTypeChemicalBurn);
-		cmbn_value = floor(cmbn_value / max_power * 31) / 31; // number of sticks in progress bar
-		m_state[stt_acid]->set_progress(cmbn_value);//0..1
-	}
-//telepatic protection progress bar
-	{
-		tele_value += actor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeTelepatic);
-		float max_power = actor->conditions().GetZoneMaxPower(ALife::eHitTypeTelepatic);
-		tele_value = floor(tele_value / max_power * 31) / 31; // number of sticks in progress bar  
-		m_state[stt_psi]->set_progress(tele_value);//0..1
-	}
-//wound protection progress bar
-	{
-		float max_power = actor->conditions().GetMaxWoundProtection();
-		woun_value = floor(woun_value / max_power * 31) / 31; // number of sticks in progress bar
-		m_state[stt_wound]->set_progress(woun_value);//0..1
-	}
-//shock protection progress bar
-	{
-		shoc_value += actor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeShock);
-		float max_power = actor->conditions().GetZoneMaxPower(ALife::eHitTypeShock);
-		shoc_value = floor(shoc_value / max_power * 31) / 31; // number of sticks in progress bar  
-		m_state[stt_shock]->set_progress(shoc_value);//0..1
-	}
 //fire wound protection progress bar
 	{
 		float max_power = actor->conditions().GetMaxFireWoundProtection();
 		fwou_value = floor(fwou_value / max_power * 31) / 31; // number of sticks in progress bar
 		m_state[stt_fire_wound]->set_progress(fwou_value);
-	}
-//power restore speed progress bar
-	{
-		value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / actor->conditions().GetMaxPowerRestoreSpeed();;
-		value = floor(value * 31) / 31; // number of sticks in progress bar  
-		m_state[stt_power]->set_progress(value);//0..1
 	}
 // -----------------------------------------------------------------------------------
 

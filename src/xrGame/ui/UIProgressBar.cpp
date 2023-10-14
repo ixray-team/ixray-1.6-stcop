@@ -67,6 +67,9 @@ void CUIProgressBar::UpdateProgressBar()
 
 void CUIProgressBar::SetProgressPos(float _Pos)				
 { 
+	if (m_ProgressPos.y == _Pos)
+		return;
+
 	m_ProgressPos.y		= _Pos; 
 	clamp(m_ProgressPos.y,m_MinPos,m_MaxPos);
 	UpdateProgressBar	();
@@ -79,6 +82,13 @@ float _sign(const float& v)
 void CUIProgressBar::Update()
 {
 	inherited::Update();
+
+	if (m_expression.IsCompiled())
+	{
+		ExpressionVarVariadic Result = m_expression.ExecuteExpression();
+		SetProgressPos(Result.Flt);
+	}
+
 	if(!fsimilar(m_ProgressPos.x, m_ProgressPos.y))
 	{
 		if( fsimilar(m_MaxPos,m_MinPos) ) m_MaxPos	+= EPS;	//hack ^(

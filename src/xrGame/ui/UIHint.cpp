@@ -129,7 +129,13 @@ void UIHintWindow::update_hint_text()
 
 void UIHintWindow::Update()
 {
-	inherited::Update();
+	inherited::Update(); 
+
+	if (m_expression.IsCompiled())
+	{
+		ExpressionVarVariadic Var = m_expression.ExecuteExpression();
+		m_hint_text = Var.Str;
+	}
 	update_hint_text();
 }
 

@@ -30,7 +30,7 @@ file(GLOB CORE_SOURCE_LZ_FILES
 )
 file(GLOB CORE_SOURCE_XML_FILES
     "XmlParser/*.cpp"
-    "XmlParser/.h"
+    "XmlParser/*.h"
 )
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"

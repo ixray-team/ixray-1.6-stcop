@@ -604,6 +604,17 @@ void CActorCondition::ChangeSatiety(float value)
 	clamp		(m_fSatiety, 0.0f, 1.0f);
 }
 
+float CActorCondition::GetBoosterValueByType(EBoostParams type) const
+{
+	auto BoostInfluenceIter = m_booster_influences.find(type);
+	if (BoostInfluenceIter != m_booster_influences.end())
+	{
+		return BoostInfluenceIter->second.fBoostValue;
+	}
+
+	return 0.0f;
+}
+
 void CActorCondition::BoostParameters(const SBooster& B)
 {
 	if(OnServer())

@@ -232,73 +232,7 @@ void CUIHudStatesWnd::Update()
 
 void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 {
-//	if ( Device.dwTimeGlobal - m_timer_1sec > 1000 ) // 1 sec
-//	{
-//		m_timer_1sec = Device.dwTimeGlobal;
-//	}
-	
-	float cur_health = actor->GetfHealth();
-	m_ui_health_bar->SetProgressPos(iCeil(cur_health * 100.0f * 35.f) / 35.f);
-	if ( _abs(cur_health - m_last_health) > m_health_blink )
-	{
-		m_last_health = cur_health;
-		m_ui_health_bar->m_UIProgressItem.ResetColorAnimation();
-	}
-	
-	float cur_stamina = actor->conditions().GetPower();
-	m_ui_stamina_bar->SetProgressPos(iCeil(cur_stamina * 100.0f * 35.f) / 35.f);
-	if ( !actor->conditions().IsCantSprint() )
-	{
-		m_ui_stamina_bar->m_UIProgressItem.ResetColorAnimation();
-	}
-
-/*
-	CCustomOutfit* outfit = actor->GetOutfit();
-	if ( outfit )
-	{
-		m_static_armor->Show( true );
-		m_ui_armor_bar->Show( true );
-		m_ui_armor_bar->SetProgressPos( outfit->GetCondition() * 100.0f );
-	}
-	else
-	{
-		m_static_armor->Show( false );
-		m_ui_armor_bar->Show( false );
-	}
-*/	
-	/*
-	float bleeding_speed = actor->conditions().BleedingSpeed();
-	if(bleeding_speed > 0.01f)
-		m_bleeding_lev1->Show(true);
-	else
-		m_bleeding_lev1->Show(false);
-
-	if(bleeding_speed > 0.35f)
-		m_bleeding_lev2->Show(true);
-	else
-		m_bleeding_lev2->Show(false);
-	
-	if(bleeding_speed > 0.7f)
-		m_bleeding_lev3->Show(true);
-	else
-		m_bleeding_lev3->Show(false);
-	
-	
-	if(m_radia_self > 0.01f)
-		m_radiation_lev1->Show(true);
-	else
-		m_radiation_lev1->Show(false);
-
-	if(m_radia_self > 0.35f)
-		m_radiation_lev2->Show(true);
-	else
-		m_radiation_lev2->Show(false);
-	
-	if(m_radia_self > 0.7f)
-		m_radiation_lev3->Show(true);
-	else
-		m_radiation_lev3->Show(false);
-		*/
+	// FX: No need now
 }
 
 void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
