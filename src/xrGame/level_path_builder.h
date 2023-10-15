@@ -67,10 +67,10 @@ public:
 
 			void			register_to_process	()
 	{
-		m_object->m_wait_for_distributed_computation	= true;
 		if ( Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail )
 			return;
 
+		m_object->m_wait_for_distributed_computation	= true;
 		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevelPathBuilder::process));
 	}
 
