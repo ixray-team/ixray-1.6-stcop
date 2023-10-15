@@ -3,9 +3,13 @@
 
 void CFileStreamReader::construct	(LPCSTR file_name, const u32 &window_size)
 {
+	string_path ValidName = {};
+	xr_strcat(ValidName, file_name);
+	ANSI_TO_UTF8(ValidName);
+	
 	m_file_handle			=
 		CreateFile(
-			ANSI_TO_TCHAR(file_name),
+			ANSI_TO_TCHAR(ValidName),
 			GENERIC_READ,
 			FILE_SHARE_READ,
 			0,
