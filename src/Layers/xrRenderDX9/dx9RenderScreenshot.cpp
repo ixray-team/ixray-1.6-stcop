@@ -38,8 +38,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     }
 
     // Image processing (gamma-correct)
-    u32* pPixel = (u32*)D.pBits;
-    u32* pEnd = pPixel + u32(RCache.get_width() * RCache.get_height());
+    pPixel = (u32*)D.pBits;
+    pEnd = pPixel + u32(RCache.get_width() * RCache.get_height());
     //	IGOR: Remove inverse color correction and kill alpha
     /*
     D3DGAMMARAMP	G;

@@ -167,12 +167,12 @@ void	CResourceManager::LS_Load			()
 			.def("blend",						&adopt_compiler::_blend			,return_reference_to<1>())
 			.def("aref",						&adopt_compiler::_aref			,return_reference_to<1>())
 			//	For compatibility only
-			.def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable,return_reference_to(_1))
-			.def("color_write_enable",			&adopt_compiler::_dx10color_write_enable,return_reference_to(_1))
-			.def("dx10texture",					&adopt_compiler::_dx10texture	,return_reference_to(_1))
-			.def("dx10stencil",					&adopt_compiler::_dx10Stencil	,return_reference_to(_1))
-			.def("dx10stencil_ref",				&adopt_compiler::_dx10StencilRef,return_reference_to(_1))
-			.def("dx10zfunc",					&adopt_compiler::_dx10ZFunc		,return_reference_to(_1))			
+			.def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
+			.def("color_write_enable",			&adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
+			.def("dx10texture",					&adopt_compiler::_dx10texture	,return_reference_to<1>())
+			.def("dx10stencil",					&adopt_compiler::_dx10Stencil	,return_reference_to<1>())
+			.def("dx10stencil_ref",				&adopt_compiler::_dx10StencilRef,return_reference_to<1>())
+			.def("dx10zfunc",					&adopt_compiler::_dx10ZFunc		,return_reference_to<1>())			
 
 			.def("dx10sampler",					&adopt_compiler::_dx10sampler		),	// returns sampler-object
 
