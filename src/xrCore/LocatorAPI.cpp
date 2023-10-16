@@ -421,11 +421,7 @@ void CLocatorAPI::archive::close()
 void CLocatorAPI::ProcessArchive(LPCSTR _path)
 {
 	// find existing archive
-	string_path NormalPath = {};
-	xr_strcpy(NormalPath, _path);
-
-	ANSI_TO_UTF8(NormalPath);
-	shared_str path = NormalPath;
+	shared_str path = ANSI_TO_UTF8(_path).c_str();
 
 	for (archives_it it=m_archives.begin(); it!=m_archives.end(); ++it)
 		if (it->path==path)	
@@ -545,12 +541,9 @@ bool ignore_name(const char* _name)
 // because Unicode file names can 
 // be interpolated by FindNextFile()
 
-bool ignore_path(const char* _path){
-	string_path ValidPath = {};
-	xr_strcpy(ValidPath, _path);
-	ANSI_TO_UTF8(ValidPath);
-
-	HANDLE h = CreateFile(ANSI_TO_TCHAR(ValidPath), 0, 0, NULL, OPEN_EXISTING,
+bool ignore_path(const char* _path)
+{
+	HANDLE h = CreateFile(ANSI_TO_TCHAR_U8(_path), 0, 0, NULL, OPEN_EXISTING,
 		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, NULL);
 
 	if (h!=INVALID_HANDLE_VALUE)

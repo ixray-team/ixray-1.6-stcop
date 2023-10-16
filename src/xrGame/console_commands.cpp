@@ -526,8 +526,7 @@ public:
 		string_path				S = {}, S_UTF8 = {}, S1 = {};
 		strncpy_s				(S, sizeof(S), args, _MAX_PATH - 1 );
 
-		xr_strcpy(S_UTF8, S);
-		ANSI_TO_UTF8(S_UTF8);
+		xr_strcpy(S_UTF8, ANSI_TO_UTF8(S).c_str());
 #ifdef DEBUG
 		CTimer					timer;
 		timer.Start				();

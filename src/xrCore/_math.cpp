@@ -253,12 +253,27 @@ XRCORE_API wchar_t* ANSI_TO_TCHAR(const char* C) {
 	return WName;
 }
 
-XRCORE_API void ANSI_TO_UTF8(char* C) {
-	static wchar_t WName[256];
-	RtlZeroMemory(&WName, sizeof(WName));
+XRCORE_API wchar_t* ANSI_TO_TCHAR_U8(const char* C) {
+	return ANSI_TO_TCHAR(ANSI_TO_UTF8(C).c_str());
+}
 
-	MultiByteToWideChar(1251, 0, C, strlen(C), WName, strlen(C));
-	WideCharToMultiByte(CP_UTF8, 0, WName, wcslen(WName), C, 256, 0, 0);
+XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi) {
+	wchar_t* wcs = nullptr;
+	int need_length = MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), ansi.size(), wcs, 0);
+	wcs = new wchar_t[need_length + 1];
+	MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), ansi.size(), wcs, need_length);
+	wcs[need_length] = L'\0';
+
+	char* u8s = nullptr;
+	need_length = WideCharToMultiByte(CP_UTF8, 0, wcs, std::wcslen(wcs), u8s, 0, nullptr, nullptr);
+	u8s = new char[need_length + 1];
+	WideCharToMultiByte(CP_UTF8, 0, wcs, std::wcslen(wcs), u8s, need_length, nullptr, nullptr);
+	u8s[need_length] = '\0';
+
+	xr_string result(u8s);
+	delete[] wcs;
+	delete[] u8s;
+	return result;
 }
 
 #ifdef M_BORLAND
