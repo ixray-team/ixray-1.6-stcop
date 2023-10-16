@@ -41,9 +41,6 @@ namespace CPU {
 extern XRCORE_API	void	_initialize_cpu			();
 extern XRCORE_API	void	_initialize_cpu_thread	();
 
-XRCORE_API wchar_t* ANSI_TO_TCHAR(const char* C);
-XRCORE_API void ANSI_TO_UTF8(char* C);
-
 // threading
 typedef				void	thread_t				( void * );
 extern XRCORE_API	void	thread_name				( const char* name);
