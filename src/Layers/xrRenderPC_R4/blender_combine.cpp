@@ -16,8 +16,8 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_Pass			("combine_1",		"combine_1",		FALSE,	FALSE,	FALSE, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
 		C.r_Stencil			(TRUE,D3DCMP_LESSEQUAL,0xff,0x00);	// stencil should be >= 1
 		C.r_StencilRef		(0x01);
-
-		C.r_dx10Texture		("s_position",		r2_RT_P				);
+		
+		C.r_dx10Texture		("s_depth",		r2_RT_copy_depth			);
 		C.r_dx10Texture		("s_motion",		r4_motion);
 		C.r_dx10Texture		("s_motion_vectors",r4_motion_vectors	);
 		C.r_dx10Texture		("s_normal",		r2_RT_N				);
@@ -42,7 +42,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 	case 1:	// non-AA
 		//	Can use simpler VS (need only Tex0)
 		C.r_Pass			("stub_notransform_aa_AA","combine_2_NAA",	FALSE,	FALSE,	FALSE);
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_image",			r2_RT_target);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
@@ -55,7 +55,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 	case 2:	// non-AA + DISTORTION
 		//	Can use simpler VS (need only Tex0)
 		C.r_Pass			("stub_notransform_aa_AA","combine_2_NAA_D",	FALSE,	FALSE,	FALSE);
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_image",			r2_RT_target);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);

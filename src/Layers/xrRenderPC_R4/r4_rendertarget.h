@@ -69,7 +69,6 @@ public:
 	ref_rt						rt_OpaqueTarget;	// scaled, 32bit HDR (rgb)
 	ref_rt						rt_AA_BackBuffer;	// scaled
 	ref_rt						rt_MotionVectors;	// scaled, 32bit,	half
-	ref_rt						rt_Position;		// scaled, 64bit,	fat	(x,y,z,?)				(eye-space)
 	ref_rt						rt_Normal;			// scaled, 64bit,	fat	(x,y,z,hemi)			(eye-space)
 	ref_rt						rt_Motion;			// scaled, 64bit,	fat	(mvx, mvy)				(eye-space)
 	ref_rt						rt_Color;			// scaled, 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
@@ -290,7 +289,6 @@ public:
 	void						phase_fsr2_combine		();
 	void						phase_dlss_combine		();
 	void						phase_output_scale		(bool linear);
-	void						phase_depth_scale		();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}

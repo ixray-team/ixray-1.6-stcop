@@ -6,8 +6,7 @@
 float4 main_ps_4_0(PS_INPUT_RAYDATA_BACK input) : SV_Target
 {
     float4 output;
-//    float sceneZ = sceneDepthTex.SampleLevel( samLinearClamp, float2(input.pos.x/RTWidth, input.pos.y/RTHeight),0).r;
-    float sceneZ = sceneDepthTex.SampleLevel( samLinearClamp, float2(input.pos.x/RTWidth, input.pos.y/RTHeight),0).z;
+    float sceneZ = s_depth.SampleLevel( samLinearClamp, float2(input.pos.x/RTWidth, input.pos.y/RTHeight),0);
 	if ( sceneZ < Z_EPSILON ) sceneZ = Z_MAX;
     
     // This value will only remain if no fragments get blended on top in the next pass (front-faces)

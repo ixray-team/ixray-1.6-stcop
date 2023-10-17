@@ -264,7 +264,6 @@ void					CRender::create					()
     if( o.ssao_hdao )
         o.ssao_opt_data = false;
 
-	o.dx10_gbuffer_opt= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
 	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
 	o.dx11_enable_tessellation = HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
@@ -1205,18 +1204,6 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len] = '0' + static_cast<char>(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX));
 		++len;
 	}
-
-   if( o.dx10_gbuffer_opt )
-	{
-		defines[def_it].Name		=	"GBUFFER_OPTIMIZATION";
-		defines[def_it].Definition	=	"1";
-		def_it						++;
-	}
-   else
-   {
-	   sh_name[len] = '0' + static_cast<char>(o.dx10_gbuffer_opt); 
-	   ++len;
-   }
 
    if(HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1)
    {

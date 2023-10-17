@@ -14,7 +14,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 
 		C.r_dx10Texture		("s_motion",		r4_motion);
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -43,7 +44,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 		
 		C.r_dx10Texture		("s_motion",		r4_motion);
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		//C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -79,7 +81,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 		
 		C.r_dx10Texture		("s_motion",		r4_motion);
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
 		//C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		//C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -98,11 +101,7 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_patched_normal",	r2_RT_accum);
 
 		//	Normal can be packed into R and G
-		if (RImplementation.o.dx10_gbuffer_opt)
-			C.r_ColorWriteEnable( true, true, false, false );
-		else
-			C.r_ColorWriteEnable( true, true, true, false );
-
+		C.r_ColorWriteEnable( true, true, false, false );
 		C.r_End				();
 
 		break;
@@ -114,7 +113,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 		
 		C.r_dx10Texture		("s_motion",		r4_motion);
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
 		//C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		//C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -166,7 +166,8 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
 		C.r_Pass	("stub_notransform_2uv", "rain_patch_normal_msaa", false,	TRUE,	FALSE, FALSE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		//C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -201,8 +202,9 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
 		C.r_Pass	("stub_notransform_2uv", "rain_apply_normal_msaa", false,	TRUE,	FALSE, FALSE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
 		//C.r_dx10Texture		("s_normal",		r2_RT_N);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_material",		r2_material);
 		//C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
 		C.r_dx10Texture		("s_lmap",			r2_sunmask);
@@ -220,11 +222,7 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_patched_normal",	r2_RT_accum);
 
 		//	Normal can be packed into R and G
-		if (RImplementation.o.dx10_gbuffer_opt)
-			C.r_ColorWriteEnable( true, true, false, false );
-		else
-			C.r_ColorWriteEnable( true, true, true, false );
-
+		C.r_ColorWriteEnable( true, true, false, false );
 		C.r_End				();
 
 		break;
@@ -235,8 +233,9 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
 		C.r_Pass	("stub_notransform_2uv", "rain_apply_gloss_msaa", false,	TRUE,	FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
 
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		//C.r_dx10Texture		("s_position",		r2_RT_P);
 		//C.r_dx10Texture		("s_normal",		r2_RT_N);
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_material",		r2_material);
 		//C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
 		C.r_dx10Texture		("s_lmap",			r2_sunmask);

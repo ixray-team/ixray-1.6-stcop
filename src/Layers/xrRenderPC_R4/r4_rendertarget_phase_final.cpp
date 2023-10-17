@@ -54,7 +54,7 @@ void CRenderTarget::phase_final()
 	g_pGamePersistent->Environment().RenderSky();
 	u_setrt(rt_Target, nullptr, nullptr, rt_HWDepth->pZRT);
 	g_pGamePersistent->Environment().RenderClouds();
-	u_setrt(rt_Target, nullptr, nullptr, rt_HWDepth->pZRT);
+	u_setrt(rt_Target, nullptr, nullptr, nullptr);
 
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
 	if (RImplementation.o.nvstencil) {
@@ -113,7 +113,6 @@ void CRenderTarget::phase_final()
 	// STAGE AFTER SCALING
 	////////////////////////////////////////////////////////////
 
-	phase_depth_scale();
 	if (ps_r4_native_forward == 1) {
 		phase_forward();
 	}

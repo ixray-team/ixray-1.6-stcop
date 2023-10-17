@@ -32,11 +32,7 @@ float3	water_intensity;
 ////////////////////////////////////////////////////////////////////////////////
 // Pixel
 
-#ifdef GBUFFER_OPTIMIZATION
-float4 main( vf I, float4 pos2d : SV_Position ) : SV_Target
-#else
 float4 main( vf I ) : SV_Target
-#endif
 {
 //	float4	base	= tex2D (s_base,I.tbase);
 //	float3	n0	= tex2D (s_nmap,I.tnorm0);
@@ -86,13 +82,8 @@ float4 main( vf I ) : SV_Target
 
 #ifdef	USE_SOFT_WATER
 	//	Igor: additional depth test
-//	float4 _P = 	tex2Dproj( s_position, I.tctexgen);
 	float2 PosTc = I.tctexgen.xy/I.tctexgen.z;
-#ifdef GBUFFER_OPTIMIZATION
-	gbuffer_data gbd = gbuffer_load_data( PosTc, pos2d );
-#else
 	gbuffer_data gbd = gbuffer_load_data( PosTc );
-#endif
 	float4 _P = 	float4( gbd.P, gbd.mtl );
 
 	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;

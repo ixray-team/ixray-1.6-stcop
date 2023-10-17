@@ -21,8 +21,8 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 
 		C.r_CullMode		(D3DCULL_NONE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
-
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -41,8 +41,8 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 	case SE_SUN_FAR:		// far pass, only stencil clipping performed
 		C.r_Pass			("accum_sun","accum_sun_far_nomsaa",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
 		C.r_CullMode		(D3DCULL_NONE);
-
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		C.r_dx10Texture		("s_accumulator",	r2_RT_accum);
@@ -64,8 +64,8 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 	case SE_SUN_LUMINANCE:	// luminance pass
 		C.r_Pass			("stub_notransform_aa_AA","accum_sun_nomsaa",		false,	FALSE,	FALSE);
 		C.r_CullMode		(D3DCULL_NONE);
-
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		C.r_dx10Texture		("s_smap",			r2_RT_target);
@@ -82,8 +82,8 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 		C.r_Pass			("accum_sun","accum_sun_near_nomsaa_minmax",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
 		C.r_CullMode		(D3DCULL_NONE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
-
-		C.r_dx10Texture		("s_position",		r2_RT_P);
+		
+		C.r_dx10Texture		("s_depth", r2_RT_copy_depth);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
 		C.r_dx10Texture		("s_accumulator",	r2_RT_accum);

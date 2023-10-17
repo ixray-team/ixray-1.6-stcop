@@ -146,7 +146,6 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	| R3FLAG_VOLUMETRIC_SMOKE
 	//| R3FLAG_MSAA 
 	//| R3FLAG_MSAA_OPT
-	| R3FLAG_GBUFFER_OPT
 	|R2FLAG_DETAIL_BUMP
 	//|R2FLAG_DOF
 	|R2FLAG_SOFT_PARTICLES
@@ -833,7 +832,6 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
 	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
 
-	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
 	CMD3(CCC_Token,		"r4_upscale",					&ps_r4_upscale_type,		upscale_token);
 	CMD4(CCC_Float,		"r4_jitter_factor",				&ps_r4_jitter_factor,		-10, 10);
 	CMD4(CCC_Float,		"r4_jitter_scale_x",			&ps_r4_jitter_scale_x,		-2, 2);

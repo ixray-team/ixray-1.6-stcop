@@ -32,14 +32,14 @@ void CBlender_OutputScale::Compile(CBlender_Compile& C)
         break;  
     case SCALEPHASE_COPY_DEPTH:
         C.r_Pass("stub_notransform_t_scaled", "copy_depth", FALSE, FALSE, FALSE, FALSE);
-        C.r_dx10Texture("s_depth", r2_RT_P);
+        C.r_dx10Texture("s_depth", r2_RT_copy_depth);
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
         break;    
     case SCALEPHASE_SCALE_DEPTH:
         C.r_Pass("stub_notransform_t_target", "scale_depth", FALSE, FALSE, FALSE, FALSE);
-        C.r_dx10Texture("s_depth", r2_RT_HW_depth);
+        C.r_dx10Texture("s_depth", r2_RT_copy_depth);
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();

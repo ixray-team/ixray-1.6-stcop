@@ -21,34 +21,17 @@ uniform float4 		e_kernel;	// x=norm, y=depth, z=clr
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-#ifdef GBUFFER_OPTIMIZATION
-float4 main ( v_aa_AA I, float4 pos2d : SV_POSITION ) : SV_Target
-#else
 float4 main ( v_aa_AA I ) : SV_Target
-#endif
 {
-#ifdef GBUFFER_OPTIMIZATION
-  gbuffer_data gbd0 = gbuffer_load_data(I.Tex0, pos2d);
-  gbuffer_data gbd1 = gbuffer_load_data_offset(I.Tex0,I.Tex1, pos2d);
-  gbuffer_data gbd2 = gbuffer_load_data_offset(I.Tex0,I.Tex2, pos2d);
-  gbuffer_data gbd3 = gbuffer_load_data_offset(I.Tex0,I.Tex3, pos2d);
-  gbuffer_data gbd4 = gbuffer_load_data_offset(I.Tex0,I.Tex4, pos2d);
-#else
   gbuffer_data gbd0 = gbuffer_load_data(I.Tex0);
   gbuffer_data gbd1 = gbuffer_load_data(I.Tex1);
   gbuffer_data gbd2 = gbuffer_load_data(I.Tex2);
   gbuffer_data gbd3 = gbuffer_load_data(I.Tex3);
   gbuffer_data gbd4 = gbuffer_load_data(I.Tex4);
-#endif
   
   // Normal discontinuety filter
-  //float3 nc		=  tex2D	(s_normal,   	I.tc0);
 	float3 nc		=  gbd0.N;
   float4 nd;
-//	nd.x 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc1));
-//	nd.y 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc2));
-//	nd.z 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc3));
-//	nd.w 		=  dot 		(nc, (float3)tex2D(s_normal,I.tc4));
 	nd.x 		=  dot 		(nc, (float3)( gbd1 ).N);
 	nd.y 		=  dot 		(nc, (float3)( gbd2 ).N);
 	nd.z 		=  dot 		(nc, (float3)( gbd3 ).N);
@@ -61,26 +44,14 @@ float4 main ( v_aa_AA I ) : SV_Target
   float4 tc5r 		=  I.Tex5.wzyx;
   float4 tc6r 		=  I.Tex6.wzyx;
   
-#ifdef GBUFFER_OPTIMIZATION
-  gbuffer_data gbd5 = gbuffer_load_data_offset(I.Tex0,I.Tex5, pos2d); 
-  gbuffer_data gbd6 = gbuffer_load_data_offset(I.Tex0,I.Tex6, pos2d); 
-  gbuffer_data gbd5r = gbuffer_load_data_offset(I.Tex0,tc5r, pos2d); 
-  gbuffer_data gbd6r = gbuffer_load_data_offset(I.Tex0,tc6r, pos2d); 
-#else
   gbuffer_data gbd5 = gbuffer_load_data(I.Tex5); 
   gbuffer_data gbd6 = gbuffer_load_data(I.Tex6); 
   gbuffer_data gbd5r = gbuffer_load_data(tc5r); 
   gbuffer_data gbd6r = gbuffer_load_data(tc6r); 
-#endif
 
   // Depth filter : compute gradiental difference: (c-sample1)+(c-sample1_opposite)
-//  float4 dc		=  tex2D 	(s_position, I.tc0); 
   float4 dc		=  float4( gbd0.P, gbd0.mtl ); 
   float4 dd;
-//	dd.x 		=  (float)tex2D(s_position,I.tc1).z + (float)tex2D(s_position,I.tc2).z;
-//	dd.y 		=  (float)tex2D(s_position,I.tc3).z + (float)tex2D(s_position,I.tc4).z;
-//	dd.z 		=  (float)tex2D(s_position,I.tc5).z + (float)tex2D(s_position,tc5r).z;
-//	dd.w 		=  (float)tex2D(s_position,I.tc6).z + (float)tex2D(s_position,tc6r).z;
 	dd.x 		=  	(float)gbd1.P.z 
 				+	(float)gbd2.P.z;
 	dd.y 		=  	(float)gbd3.P.z 
@@ -109,10 +80,6 @@ float4 main ( v_aa_AA I ) : SV_Target
   // (a-c)*w + c = a*w + c(1-w)
 
 	float2	offset 	=  center * (1-w);
-//  float4 	s0 	=  tex2D	(s_image, offset + I.tc1*w);
-//  float4 	s1 	=  tex2D	(s_image, offset + I.tc2*w);
-//  float4 	s2 	=  tex2D	(s_image, offset + I.tc3*w);
-//  float4 	s3 	=  tex2D	(s_image, offset + I.tc4*w);
 	float4	s0	=  s_image.Sample( smp_rtlinear, offset + I.Tex1*w);
 	float4	s1	=  s_image.Sample( smp_rtlinear, offset + I.Tex2*w);
 	float4	s2 	=  s_image.Sample( smp_rtlinear, offset + I.Tex3*w);

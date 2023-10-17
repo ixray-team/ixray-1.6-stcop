@@ -85,7 +85,6 @@ public:
 		u32		advancedpp			: 1;	//	advanced post process (DOF, SSAO, volumetrics, etc.)
 		u32		volumetricfog		: 1;
 
-        u32		dx10_gbuffer_opt	: 1;	//	
 	    u32		dx10_minmax_sm		: 2;
 	    u32		dx10_minmax_sm_screenarea_threshold;		
 	    u32		dx11_enable_tessellation : 1;

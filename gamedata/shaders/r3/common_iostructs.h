@@ -292,28 +292,15 @@ struct	v_static_color
 
 ////////////////////////////////////////////////////////////////
 //	defer
-#ifndef GBUFFER_OPTIMIZATION
 struct                  f_deffer        		
 {
-	float4	position: SV_Target0;        // px,py,pz, m-id
-	float4	Ne		  : SV_Target1;        // nx,ny,nz, hemi
-	float4	C		  : SV_Target2;        // r, g, b,  gloss
-	float4	motion  : SV_Target3;        // motion vectors + reserved
-#ifdef EXTEND_F_DEFFER
-   uint     mask    : SV_COVERAGE;
-#endif
-};
-#else
-struct                  f_deffer        		
-{
-	float4	position: SV_Target0;        // xy=encoded normal, z = pz, w = encoded(m-id,hemi)
+	float4	Ne		  : SV_Target0;        // oct_nx, oct_ny, m-id, hemi
 	float4	C		  : SV_Target1;        // r, g, b,  gloss
-   float4   motion  : SV_Target2;    // motion vectors + reserved
+	float4	motion  : SV_Target2;        // motion vectors + reserved
 #ifdef EXTEND_F_DEFFER
    uint     mask    : SV_COVERAGE;
 #endif
 };
-#endif
 
 struct f_environment
 {
@@ -323,6 +310,8 @@ struct f_environment
 
 struct					gbuffer_data
 {
+	float3  P_Unjittered; // position.( mtl or sun )
+	float   align;
 	float3  P; // position.( mtl or sun )
 	float   mtl; // material id
 	float3  N; // normal

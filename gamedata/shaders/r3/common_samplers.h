@@ -37,7 +37,6 @@ Texture2D 	s_dn_a;                	//
 sampler 	smp_material;
 
 Texture2D	s_depth;	//	smp_nofilter or Load
-Texture2D	s_position;	//	smp_nofilter or Load
 Texture2D	s_normal;	//	smp_nofilter or Load
 Texture2D	s_lmap;		// 2D/???cube projector lightmap
 Texture3D	s_material;	//	smp_material

@@ -42,7 +42,7 @@ v2p_shadow_direct main ( v_shadow_direct I )
 
 	float4 	f_pos 	= float4(pos.x+result.x, pos.y, pos.z+result.y, 1);
 
-	O.hpos 	= mul		(m_VP,	f_pos	);
+	O.hpos 	= mul		(m_VP_Unjittered,	f_pos	);
 #ifdef	USE_AREF
 	O.tc0 	= (I.tc * consts).xy;		//	+ result;
 #endif	//	USE_AREF

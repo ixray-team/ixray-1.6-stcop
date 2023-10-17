@@ -40,15 +40,8 @@ f_deffer 	main	( p_bumped I )
 #endif
 
 	float2 motion_vector = (I.cur_hpos.xy / I.cur_hpos.w) - (I.prev_hpos.xy / I.prev_hpos.w);
-
-	O = pack_gbuffer(
-						float4	(Ne,										h),
-  						float4 	(I.position.xyz + Ne*S.height*def_virtualh, ms),
-  						float4	(S.base.x,S.base.y,S.base.z,				S.gloss),
-  						float4  (motion_vector.x, motion_vector.y, 0.0f, 0.0f)
-  	);
-
-	return 	O	;
+	O = pack_gbuffer(Ne, ms, h, float4(S.base.xyz, S.gloss), float4(motion_vector.xy, 0.0f, 0.0f));
+	return 	O;
 }
 
 #endif //	ATOC

@@ -15,9 +15,9 @@
 class cl_xform_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.xforms.set_c_##xf (C); } }; \
 	static cl_xform_##xf	binder_##xf
 BIND_DECLARE(w);
-BIND_DECLARE(invw);
 BIND_DECLARE(v);
 BIND_DECLARE(p);
+BIND_DECLARE(invp);
 BIND_DECLARE(wv);
 BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
@@ -27,13 +27,6 @@ BIND_DECLARE(wvp_unjittered);
 #define	PREV_BIND_DECLARE(xf)	\
 class cl_xform_prev_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.prev_xforms.set_c_##xf (C); } }; \
 	static cl_xform_prev_##xf	binder_prev_##xf
-PREV_BIND_DECLARE(w);
-PREV_BIND_DECLARE(invw);
-PREV_BIND_DECLARE(v);
-PREV_BIND_DECLARE(p);
-PREV_BIND_DECLARE(wv);
-PREV_BIND_DECLARE(vp);
-PREV_BIND_DECLARE(wvp);
 PREV_BIND_DECLARE(vp_unjittered);
 PREV_BIND_DECLARE(wvp_unjittered);
 
@@ -364,6 +357,14 @@ static class cl_screen_scale : public R_constant_setup
 		RCache.set_c(C, RDEVICE.RenderScale);
 	}
 } binder_screen_scale;
+
+static class cl_jitter : public R_constant_setup
+{	
+	virtual void setup	(R_constant* C)
+	{
+		RCache.set_c(C, RCache.get_xform_jitter().x, RCache.get_xform_jitter().y, 0, 0);
+	}
+} binder_jitter;
 #endif
 
 static class cl_def_aref : public R_constant_setup
@@ -383,24 +384,16 @@ void	CBlender_Compile::SetMapping	()
 {
 	// matrices
 	r_Constant				("m_W",					&binder_w);
-	r_Constant				("m_invW",				&binder_invw);
-	r_Constant				("m_V",					&binder_v);
 	r_Constant				("m_P",					&binder_p);
+	r_Constant				("m_invP",				&binder_invp);
 	r_Constant				("m_WV",				&binder_wv);
 	r_Constant				("m_VP",				&binder_vp);
 	r_Constant				("m_WVP",				&binder_wvp);	
 	r_Constant				("m_VP",				&binder_vp);
 	r_Constant				("m_WVP",				&binder_wvp);	
+
 	r_Constant				("m_VP_Unjittered",		&binder_vp_unjittered);
 	r_Constant				("m_WVP_Unjittered",	&binder_wvp_unjittered);
-	
-	r_Constant				("m_prevW",				&binder_prev_w);
-	r_Constant				("m_previnvW",			&binder_prev_invw);
-	r_Constant				("m_prevV",				&binder_prev_v);
-	r_Constant				("m_prevP",				&binder_prev_p);
-	r_Constant				("m_prevWV",			&binder_prev_wv);
-	r_Constant				("m_prevVP",			&binder_prev_vp);
-	r_Constant				("m_prevWVP",			&binder_prev_wvp);
 	r_Constant				("m_prevVP_Unjittered",	&binder_prev_vp_unjittered);
 	r_Constant				("m_prevWVP_Unjittered",&binder_prev_wvp_unjittered);
 
@@ -423,6 +416,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("mVPTexgen",			&binder_VPtexgen);
 
 	// fog-params
+	r_Constant				("camera_jitter",			&binder_jitter);
 	r_Constant				("fog_plane",			&binder_fog_plane);
 	r_Constant				("fog_params",			&binder_fog_params);
 	r_Constant				("fog_color",			&binder_fog_color);

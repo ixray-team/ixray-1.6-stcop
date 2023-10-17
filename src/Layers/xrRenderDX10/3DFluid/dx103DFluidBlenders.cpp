@@ -187,7 +187,7 @@ void SetupTextures(CBlender_Compile& C)
 
 	
 	//	Renderer
-	C.r_dx10Texture("sceneDepthTex", r2_RT_P);
+	C.r_dx10Texture("s_depth", r2_RT_copy_depth);
 	//C.r_dx10Texture("colorTex", "Texture_color");
 	C.r_dx10Texture("colorTex", TNames[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
 	C.r_dx10Texture("jitterTex", "$user$NVjitterTex");

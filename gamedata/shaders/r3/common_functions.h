@@ -15,22 +15,10 @@ float Contrast(float Input, float ContrastPower)
 void tonemap( out float4 low, out float4 high, float3 rgb, float scale)
 {
 	rgb		=	rgb*scale;
-
 	const float fWhiteIntensity = 1.7f;
-
 	const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
-
-//	low		=	(rgb/(rgb + 1)).xyzz;
 	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1.0f) ).xyzz;
-
 	high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
-
-/*
-	rgb		=	rgb*scale;
-
-	low		=	rgb.xyzz;
-	high	=	low/def_hdr;	// 8x dynamic range
-*/
 }
 
 float4 combine_bloom( float3  low, float4 high)	
@@ -122,29 +110,6 @@ float3	calc_reflection( float3 pos_w, float3 norm_w )
 #define USABLE_BIT_15               uint(0x80000000)
 #define MUST_BE_SET                 uint(0x40000000)   // This flag *must* be stored in the floating-point representation of the bit flag to store
 
-/*
-float2 gbuf_pack_normal( float3 norm )
-{
-   float2 res;
-
-   res = 0.5 * ( norm.xy + float2( 1, 1 ) ) ;
-   res.x *= ( norm.z < 0 ? -1.0 : 1.0 );
-
-   return res;
-}
-
-float3 gbuf_unpack_normal( float2 norm )
-{
-   float3 res;
-
-   res.xy = ( 2.0 * abs( norm ) ) - float2(1,1);
-
-   res.z = ( norm.x < 0 ? -1.0 : 1.0 ) * sqrt( abs( 1 - res.x * res.x - res.y * res.y ) );
-
-   return res;
-}
-*/
-
 // Holger Gruen AMD - I change normal packing and unpacking to make sure N.z is accessible without ALU cost
 // this help the HDAO compute shader to run more efficiently
 float2 gbuf_pack_normal( float3 norm )
@@ -171,51 +136,60 @@ float3 gbuf_unpack_normal( float2 norm )
 
 float gbuf_pack_hemi_mtl( float hemi, float mtl )
 {
-   uint packed_mtl = uint( ( mtl / 1.333333333 ) * 31.0 );
-//   uint packed = ( MUST_BE_SET + ( uint( hemi * 255.0 ) << 13 ) + ( ( packed_mtl & uint( 31 ) ) << 21 ) );
-	//	Clamp hemi max value
+	uint packed_mtl = uint( ( mtl / 1.333333333 ) * 31.0 );
 	uint packed = ( MUST_BE_SET + ( uint( saturate(hemi) * 255.9 ) << 13 ) + ( ( packed_mtl & uint( 31 ) ) << 21 ) );
 
-   if( ( packed & USABLE_BIT_13 ) == 0 )
-      packed |= USABLE_BIT_14;
+	if( ( packed & USABLE_BIT_13 ) == 0 )
+		packed |= USABLE_BIT_14;
 
-   if( packed_mtl & uint( 16 ) )
-      packed |= USABLE_BIT_15;
+	if( packed_mtl & uint( 16 ) )
+		packed |= USABLE_BIT_15;
 
    return asfloat( packed );
 }
 
 float gbuf_unpack_hemi( float mtl_hemi )
 {
-//   return float( ( asuint( mtl_hemi ) >> 13 ) & uint(255) ) * (1.0/255.0);
-	return float( ( asuint( mtl_hemi ) >> 13 ) & uint(255) ) * (1.0/254.8);
+	return float((asuint( mtl_hemi) >> 13) & uint(255)) * (1.0/254.8);
 }
 
 float gbuf_unpack_mtl( float mtl_hemi )
 {
-   uint packed       = asuint( mtl_hemi );
-   uint packed_hemi  = ( ( packed >> 21 ) & uint(15) ) + ( ( packed & USABLE_BIT_15 ) == 0 ? 0 : 16 );
-   return float( packed_hemi ) * (1.0/31.0) * 1.333333333;
+	uint packed       = asuint( mtl_hemi );
+	uint packed_hemi  = ( ( packed >> 21 ) & uint(15) ) + ( ( packed & USABLE_BIT_15 ) == 0 ? 0 : 16 );
+	return float( packed_hemi ) * (1.0/31.0) * 1.333333333;
+}
+
+float2 PackNormalOctEncode(float3 n)
+{
+	float l1norm    = dot(abs(n), 1.0);
+	float2 res0     = n.xy * (1.0 / l1norm);
+	float2 val      = 1.0 - abs(res0.yx);
+	return (n.zz < float2(0.0, 0.0) ? (res0 >= 0.0 ? val : -val) : res0);
+}
+
+float3 UnpackNormalOctEncode(float2 f)
+{
+	float3 n = float3(f.x, f.y, 1.0 - abs(f.x) - abs(f.y));
+	float2 val = 1.0 - abs(n.yx);
+	n.xy = (n.zz < float2(0.0, 0.0) ? (n.xy >= 0.0 ? val : -val) : n.xy);
+	return normalize(n);
 }
 
 #ifndef EXTEND_F_DEFFER
-f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, float4 motion)
+f_deffer pack_gbuffer( float3 norm, float material_id, float hemi, float4 col, float4 motion)
 #else
-f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, float4 motion, uint imask )
+f_deffer pack_gbuffer( float3 norm, float material_id, float hemi, float4 col, float4 motion, uint imask )
 #endif
 {
 	f_deffer res;
 
-#ifndef GBUFFER_OPTIMIZATION
-	res.position	= pos;
-	res.Ne			= norm;
-	res.C			   = col;
-	res.motion 		= motion;
-#else
-	res.position	= float4( gbuf_pack_normal( norm ), pos.z, gbuf_pack_hemi_mtl( norm.w, pos.w ) );
-	res.C			   = col;
-	res.motion 		= motion;
-#endif
+	res.Ne.xy = PackNormalOctEncode(norm.xyz);
+	res.Ne.z = material_id;
+	res.Ne.w = hemi;
+
+	res.C = col;
+	res.motion = motion;
 
 #ifdef EXTEND_F_DEFFER
    res.mask = imask;
@@ -224,86 +198,44 @@ f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, float4 motion, uint 
 	return res;
 }
 
-#ifdef GBUFFER_OPTIMIZATION
-gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d, int iSample )
+float3 gbuf_unpack_position(float2 tc)
 {
-	gbuffer_data gbd;
-
-	gbd.P = float3(0,0,0);
-	gbd.hemi = 0;
-	gbd.mtl = 0;
-	gbd.C = 0;
-	gbd.N = float3(0,0,0);
-
-	float4 P	= s_position.Sample( smp_nofilter, tc );
-
-	// 3d view space pos reconstruction math
-	// center of the plane (0,0) or (0.5,0.5) at distance 1 is eyepoint(0,0,0) + lookat (assuming |lookat| ==1
-	// left/right = (0,0,1) -/+ tan(fHorzFOV/2) * (1,0,0 ) 
-	// top/bottom = (0,0,1) +/- tan(fVertFOV/2) * (0,1,0 )
-	// lefttop		= ( -tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
-	// righttop		= (  tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
-	// leftbottom   = ( -tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
-	// rightbottom	= (  tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
-	gbd.P  = float3( P.z * ( pos2d * pos_decompression_params.zw - pos_decompression_params.xy ), P.z );
-
-	// reconstruct N
-	gbd.N = gbuf_unpack_normal( P.xy );
-
-	// reconstruct material
-	gbd.mtl	= gbuf_unpack_mtl( P.w );
-
-   // reconstruct hemi
-   gbd.hemi = gbuf_unpack_hemi( P.w );
-
-   float4	C	= s_diffuse.Sample( smp_nofilter, tc );
-	float4	motion = s_motion.Load( int3( pos2d, 0 ), iSample );
-
-	gbd.C			= C.xyz;
-	gbd.gloss	= C.w;
-	gbd.motion 	= motion;
-
-	return gbd;
+	float depth	= s_depth.Sample(smp_nofilter, tc);
+   tc = tc * 2.f - 1.f;
+   depth = m_P._34 / (depth - m_P._33);  
+   return float3(tc * pos_decompression_params.xy, 1.f) * depth;
 }
 
-gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d )
-{
-   return gbuffer_load_data( tc, pos2d, 0 );
+float3 gbuf_unpack_position_unjiterred(float2 tc)
+{	
+	float depth	= s_depth.Sample(smp_nofilter, tc);
+	float j_x = camera_jitter.x;
+	float j_y = camera_jitter.y;
+	tc.x += j_x;
+	tc.y += j_y;
+	tc += pos_decompression_params2.zw * -0.5f;
+   tc = tc * 2.f - 1.f;
+   depth = m_P._34 / (depth - m_P._33);  
+   return float3(tc * pos_decompression_params.xy, 1.f) * depth;
 }
 
-gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, float2 pos2d )
-{
-	float2  delta	  = ( ( OffsetTC - tc ) * pos_decompression_params2.xy );
-
-	return gbuffer_load_data( OffsetTC, pos2d + delta, 0 );
-}
-
-gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, float2 pos2d, uint iSample )
-{
-   float2  delta	  = ( ( OffsetTC - tc ) * pos_decompression_params2.xy );
-
-   return gbuffer_load_data( OffsetTC, pos2d + delta, iSample );
-}
-
-#else // GBUFFER_OPTIMIZATION
 gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, uint iSample )
 {
 	gbuffer_data gbd;
 
-	float4 P	= s_position.Sample( smp_nofilter, tc );
-	gbd.P		= P.xyz;
-	gbd.mtl		= P.w;
+	float4 N				= s_normal.Sample( smp_nofilter, tc );
+	gbd.P 				= gbuf_unpack_position(tc);
+	gbd.P_Unjittered 	= gbuf_unpack_position_unjiterred(tc);
+	gbd.N					= UnpackNormalOctEncode(N.xy);
+	gbd.hemi				= N.w;
+	gbd.mtl				= N.z;
 
-	float4 N	= s_normal.Sample( smp_nofilter, tc );
-	gbd.N		= N.xyz;
-	gbd.hemi	= N.w;
+	float4	C			= s_diffuse.Sample(  smp_nofilter, tc );
+	float4	motion 	= s_motion.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
 
-	float4	C	= s_diffuse.Sample(  smp_nofilter, tc );
-	float4	motion = s_motion.Load( int3( tc * pos_decompression_params2.xy, 0 ), iSample );
-
-	gbd.C			= C.xyz;
-	gbd.gloss	= C.w;
-	gbd.motion  = motion;
+	gbd.C					= C.xyz;
+	gbd.gloss			= C.w;
+	gbd.motion  		= motion;
 
 	return gbd;
 }
@@ -317,7 +249,5 @@ gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : T
 {
    return gbuffer_load_data( OffsetTC, iSample );
 }
-
-#endif // GBUFFER_OPTIMIZATION
 
 #endif	//	common_functions_h_included

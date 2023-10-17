@@ -12,8 +12,9 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
     {
     case 0:
         C.r_Pass("smaa_edge_detect", "smaa_edge_detect", FALSE, FALSE, FALSE);
-        C.r_dx10Texture("s_image", r2_RT_albedo);
-        C.r_dx10Texture("s_position", r2_RT_P);
+        C.r_dx10Texture("s_image", r2_RT_albedo);		
+        C.r_dx10Texture("s_depth",		r2_RT_copy_depth			);
+
 
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");

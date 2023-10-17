@@ -414,6 +414,9 @@ void CRender::Render		()
 		r_dsgraph_render_hud_ui();
 	}
 
+	Target->u_setrt(Target->get_width(), Target->get_height(), nullptr, nullptr, nullptr, nullptr);
+	HW.pContext->CopyResource(Target->rt_HWCopyDepth->pSurface, Target->rt_HWDepth->pSurface);
+
 	// Wall marks
 	if(Wallmarks)	
 	{

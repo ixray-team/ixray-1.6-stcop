@@ -160,7 +160,7 @@ void CRenderTarget::phase_wallmarks		()
 	// Targets
 	RCache.set_RT(NULL,2);
 	RCache.set_RT(NULL,1);
-   	u_setrt								(rt_Color,NULL,NULL, rt_HWDepth->pZRT);
+   	u_setrt								(rt_Color,NULL,NULL, nullptr);
 
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
@@ -174,7 +174,7 @@ void CRenderTarget::phase_combine_volumetric()
 	u32			Offset					= 0;
 
 	//	TODO: DX10: Remove half pixel offset here
-	u_setrt(rt_Target, nullptr, nullptr, rt_HWDepth->pZRT);
+	u_setrt(rt_Target, nullptr, nullptr, nullptr);
 
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);

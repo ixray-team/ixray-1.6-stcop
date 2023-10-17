@@ -44,8 +44,7 @@ float4 	main (v2p_volume  I) : SV_Target
 	return float4(0,0,0,0);
 #else	//	SUN_SHAFTS_QUALITY
 
-	//float3	P = tex2D(s_position, tc).xyz;
-	float3	P = gbd.P;
+	float3	P = gbd.P_Unjittered;
 
 #ifndef	JITTER_SUN_SHAFTS
 //	Fixed ray length, fixed step dencity

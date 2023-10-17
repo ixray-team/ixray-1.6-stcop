@@ -327,11 +327,7 @@ CRenderTarget::CRenderTarget		()
    b_hdao_cs = xr_new<CBlender_CS_HDAO>();
    const u32 RenderWidth = RCache.get_width(), RenderHeight = RCache.get_height();
 
-
-   rt_Position.create(r2_RT_P, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-
-   if (!RImplementation.o.dx10_gbuffer_opt)
-       rt_Normal.create(r2_RT_N, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+   rt_Normal.create(r2_RT_N, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 
    // select albedo & accum
    if (RImplementation.o.mrtmixdepth) {
@@ -340,13 +336,8 @@ CRenderTarget::CRenderTarget		()
    } else {
        // can't - mix-depth
        if (RImplementation.o.fp16_blend) {
-           if (!RImplementation.o.dx10_gbuffer_opt) {
-               rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
-               rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-           } else {
-               rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// expand to full
-               rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-           }
+           rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// expand to full
+           rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
        } else { 
            rt_Color.create(r2_RT_albedo, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// normal
            rt_Accumulator.create(r2_RT_accum, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
@@ -372,7 +363,7 @@ CRenderTarget::CRenderTarget		()
    }
 
    rt_HWDepth.create(r2_RT_HW_depth, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
-   rt_HWCopyDepth.create(r2_RT_copy_depth, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_R32_FLOAT);
+   rt_HWCopyDepth.create(r2_RT_copy_depth, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
    rt_HWScaledTargetDepth.create(r2_RT_HW_target_depth, RCache.get_target_width(), RCache.get_target_height(), DxgiFormat::DXGI_FORMAT_D32_FLOAT);
 
    rt_Motion.create(r4_motion, RenderWidth, RenderHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);

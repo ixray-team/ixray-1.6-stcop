@@ -15,19 +15,22 @@
 #include "R_Backend_xform.h"
 #endif
 
-IC void		R_xforms::set_c_w			(R_constant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
-IC void		R_xforms::set_c_invw		(R_constant* C)		{	c_invw	= C;	apply_invw();			};
-IC void		R_xforms::set_c_v			(R_constant* C)		{	c_v		= C;	RCache.set_c(C,m_v);	};
-IC void		R_xforms::set_c_p			(R_constant* C)		{	c_p		= C;	RCache.set_c(C,m_p);	};
-IC void		R_xforms::set_c_wv			(R_constant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);	};
-IC void		R_xforms::set_c_vp			(R_constant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
-IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	}
-IC void		R_xforms::set_c_vp_unjittered(R_constant* C)	{	c_vp_unjittered = C;RCache.set_c(C,m_vp_unjittered);	};
-IC void		R_xforms::set_c_wvp_unjittered(R_constant* C)	{	c_wvp_unjittered = C;RCache.set_c(C,m_wvp_unjittered);	}
+IC void		R_xforms::set_c_w					(R_constant* C)		{	c_w		= C;			RCache.set_c(C,m_w);	};
+IC void		R_xforms::set_c_v					(R_constant* C)		{	c_v		= C;			RCache.set_c(C,m_v);	};
+IC void		R_xforms::set_c_p					(R_constant* C)		{	c_p		= C;			RCache.set_c(C,m_p);	}
+;
+IC void		R_xforms::set_c_wv					(R_constant* C)		{	c_wv	= C;			RCache.set_c(C,m_wv);	};
+IC void		R_xforms::set_c_vp					(R_constant* C)		{	c_vp	= C;			RCache.set_c(C,m_vp);	};
+IC void		R_xforms::set_c_wvp					(R_constant* C)		{	c_wvp	= C;			RCache.set_c(C,m_wvp);	}
+IC void		R_xforms::set_c_vp_unjittered		(R_constant* C)		{	c_vp_unjittered = C;	RCache.set_c(C,m_vp_unjittered);	};
+IC void		R_xforms::set_c_wvp_unjittered		(R_constant* C)		{	c_wvp_unjittered = C;	RCache.set_c(C,m_wvp_unjittered);	}
+
+IC void		R_xforms::set_c_invp				(R_constant* C)		{	c_invp = C;				apply_invp();	}
+IC void		R_xforms::set_c_invp_unjittered	(R_constant* C)		{	c_invp_unjittered = C;	apply_invp();	};
 
 IC	void CBackend::set_xform_jitter(const Fvector2& Jitter)
 {
-	xforms.set_Jitter(Jitter.x, Jitter.y);
+	xforms.set_jitter(Jitter.x, Jitter.y);
 }
 
 IC	Fvector2 CBackend::get_xform_jitter()
@@ -37,7 +40,7 @@ IC	Fvector2 CBackend::get_xform_jitter()
 
 IC	void CBackend::set_prev_xform_jitter(const Fvector2& Jitter)
 {
-	prev_xforms.set_Jitter(Jitter.x, Jitter.y);
+	prev_xforms.set_jitter(Jitter.x, Jitter.y);
 }
 
 IC	Fvector2 CBackend::get_prev_xform_jitter()
@@ -105,29 +108,6 @@ ICF void	CBackend::set_States		(ID3DState* _state)
 	}
 }
 
-#ifdef _EDITOR
-IC void CBackend::set_Matrices			(SMatrixList*	_M)
-{
-	if (M != _M)
-	{
-		M = _M;
-		if (M)	{
-			for (u32 it=0; it<M->size(); it++)
-			{
-				CMatrix*	mat = &*((*M)[it]);
-				if (mat && matrices[it]!=mat)
-				{
-					matrices	[it]	= mat;
-					mat->Calculate		();
-					set_xform			(D3DTS_TEXTURE0+it,mat->xform);
-	//				stat.matrices		++;
-				}
-			}
-		}
-	}
-}
-#endif
-
 IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 {
 	SPass&	P		= *(S->passes[pass]);
@@ -142,9 +122,6 @@ IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 #endif //USE_DX11
 	set_Constants	(P.constants);
 	set_Textures	(P.T);
-#ifdef _EDITOR
-	set_Matrices	(P.M);
-#endif
 }
 
 ICF void CBackend::set_Shader			(Shader* S, u32 pass)

@@ -6,7 +6,6 @@
 #define		r2_RT_HW_depth			"$user$hwdepth"			      // MRT
 #define		r2_RT_HW_target_depth	"$user$hwtargetdepth"         // MRT
 #define		r2_RT_copy_depth		"$user$copy_depth"		      // MRT
-#define		r2_RT_P					"$user$position"		      // MRT
 #define		r2_RT_N					"$user$normal"			      // MRT
 #define		r2_RT_albedo			"$user$albedo"			      // MRT
 #define		r4_motion				"$user$motion"				  // MRT

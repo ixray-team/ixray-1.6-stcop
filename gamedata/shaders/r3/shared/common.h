@@ -14,9 +14,6 @@ cbuffer	dynamic_transforms
 	uniform float3x4		m_WV;
 	uniform float3x4	    m_W;
 	uniform float4x4		m_prevWVP_Unjittered;
-	uniform float4x4		m_prevWVP;
-	uniform float3x4		m_prevWV;
-	uniform float3x4	    m_prevW;
 
 	//	Used by VS only
 	uniform float4		L_material;	// 0,0,0,mid
@@ -34,15 +31,15 @@ cbuffer	static_globals
 {
 	uniform float3x4	m_V;
 	uniform float4x4 	m_P;
+	uniform float4x4 	m_invP;
+	uniform float4x4 	m_invP_Unjittered;
 	uniform float4x4 	m_VP;
-	uniform float4x4 	m_VP_Unjittered;
-	uniform float3x4	m_prevV;
-	uniform float4x4 	m_prevP;
-	uniform float4x4 	m_prevVP;
+	uniform float4x4 	m_VP_Unjittered;	
 	uniform float4x4 	m_prevVP_Unjittered;
 
 	uniform float4		timers;
 
+	uniform float4		camera_jitter;
 	uniform float4		fog_plane;
 	uniform float4		fog_params;		// x=near*(1/(far-near)), ?,?, w = -1/(far-near)
 	uniform float4		fog_color;
