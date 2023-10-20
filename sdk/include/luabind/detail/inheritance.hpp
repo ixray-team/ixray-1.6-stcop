@@ -83,7 +83,7 @@ namespace luabind::detail
 
 	inline class_id class_id_map::get_local(type_id const& type)
 	{
-		std::pair<map_type::iterator, bool> result = m_classes.insert(std::make_pair(type, 0));
+		std::pair<map_type::iterator, bool> result = m_classes.try_emplace(type, 0);
 
 		if (result.second) result.first->second = m_local_id++;
 		assert(m_local_id >= local_id_base);
@@ -94,8 +94,7 @@ namespace luabind::detail
 	{
 		assert(id < local_id_base);
 
-		std::pair<map_type::iterator, bool> result = m_classes.insert(
-			std::make_pair(type, 0));
+		std::pair<map_type::iterator, bool> result = m_classes.try_emplace(type, 0);
 
 		assert(
 			result.second

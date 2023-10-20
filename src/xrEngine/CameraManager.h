@@ -5,7 +5,7 @@
 struct ENGINE_API SPPInfo {
 	struct SColor{
 		float r, g, b;
-		SColor					(){}
+		SColor() = default;
 		SColor					(float _r, float _g, float _b):r(_r),g(_g),b(_b){}
 		IC operator u32()										{
 			int		_r	= clampr	(iFloor(r*255.f+.5f),0,255);
@@ -34,7 +34,7 @@ struct ENGINE_API SPPInfo {
 	float		blur, gray;
 	struct SDuality { 
 		float h, v; 
-		SDuality				(){}
+		SDuality() = default;
 		SDuality				(float _h, float _v):h(_h),v(_v){}
 		IC SDuality& set		(float _h, float _v)			{
 			h=_h;v=_v;
@@ -44,7 +44,7 @@ struct ENGINE_API SPPInfo {
 	struct SNoise	{
 		float		intensity, grain;
 		float		fps;
-		SNoise					(){}
+		SNoise() = default;
 		SNoise					(float _i, float _g, float _f):intensity(_i),grain(_g),fps(_f){}
 		IC SNoise& set			(float _i, float _g, float _f){
 			intensity=_i;grain=_g;fps=_f;

@@ -254,7 +254,7 @@ namespace luabind {
 
 		void class_base::add_base(type_id const& base, cast_function cast)
 		{
-			m_registration->m_bases.push_back(std::make_pair(base, cast));
+			m_registration->m_bases.emplace_back(base, cast);
 		}
 
 		void class_base::add_member(registration* member)
@@ -287,7 +287,7 @@ namespace luabind {
 		void class_base::add_cast(
 			class_id src, class_id target, cast_function cast)
 		{
-			m_registration->m_casts.push_back(cast_entry(src, target, cast));
+			m_registration->m_casts.emplace_back(src, target, cast);
 		}
 
 		void add_custom_name(type_id const& i, luabind::string& s)

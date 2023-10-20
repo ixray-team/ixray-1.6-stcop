@@ -300,16 +300,18 @@ bool engine_impl::weather_paused		()
 	return					(g_pGamePersistent->Environment().m_paused);
 }
 
-void engine_impl::weather_time_factor	(float const &value_raw)
+void engine_impl::weather_time_factor(float const& value_raw)
 {
-	float					value = value_raw;
-	clamp					(value, .01f, 100000.f);
-	
-	if (g_pGameLevel)
-		g_pGameLevel->SetEnvironmentGameTimeFactor	(iFloor(g_pGamePersistent->Environment().GetGameTime()*1000.f), value);
+	float value = value_raw;
+	clamp(value, .01f, 100000.f);
 
-	if (g_pGamePersistent)
-		g_pGamePersistent->Environment().fTimeFactor= value;
+	if (g_pGamePersistent == nullptr)
+		return;
+
+	if (g_pGameLevel)
+		g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(g_pGamePersistent->Environment().GetGameTime() * 1000.f), value);
+
+	g_pGamePersistent->Environment().fTimeFactor = value;
 }
 
 float engine_impl::weather_time_factor	()

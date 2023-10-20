@@ -106,9 +106,10 @@ namespace luabind {
 	}
 
 	LUABIND_API int bind_function_introspection(lua_State * L) {
-		module(L, "function_info")[
-			def("get_function_overloads", &get_function_overloads),
-				def("get_function_name", &get_function_name)
+		module(L, "function_info")
+		[
+			def("get_function_overloads",	&get_function_overloads),
+			def("get_function_name",		&get_function_name)
 		];
 		return 0;
 	}

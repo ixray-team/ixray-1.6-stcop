@@ -978,39 +978,14 @@ static void _STDCALL StartModelRare(int MaxOrder,MR_METHOD MRMethod)
     }
     else
     {    
-    
-        UINT i, k, m;
-
         memset( CharMask, 0, sizeof(CharMask) );
         EscCount=PrintCount=1;
         ::OrderFall = ::MaxOrder = MaxOrder;          
         ::MRMethod  = MRMethod;
         
-///        InitSubAllocator();
         RunLength = InitRL = -((MaxOrder < 12) ? MaxOrder : 12) - 1;
-///        MaxContext = (PPM_CONTEXT*) AllocContext();
-///        MaxContext->Suffix = NULL;
-
         MaxContext  = context;
         FoundState  = 0;
-
-/*
-        if( !trained_model || _PPMD_E_GETC(trained_model) > MaxOrder ) 
-        {
-            MaxContext->SummFreq=(MaxContext->NumStats=255)+2;
-            MaxContext->Stats = (PPM_CONTEXT::STATE*) AllocUnits(256/2);
-            for( PrevSuccess=i=0;i < 256;i++) 
-            {
-                MaxContext->Stats[i].Symbol=i;  MaxContext->Stats[i].Freq=1;
-                MaxContext->Stats[i].Successor=NULL;
-            }
-        } 
-        else 
-        {
-            MaxContext->read(trained_model,0xFF);
-            MaxContext->makeSuffix();
-        }
-*/
     }
 }
 

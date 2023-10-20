@@ -148,12 +148,12 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
                 D.Load				(MP,dwFlags,vers);
 //.             m_mdefs.push_back	(D);
 				
-				if (dwFlags&esmFX)	
-					m_fx.insert		(std::make_pair(nm,mot_i));
+				if (dwFlags & esmFX)
+					m_fx.try_emplace(nm, mot_i);
 				else				
-					m_cycle.insert	(std::make_pair(nm,mot_i));
+					m_cycle.try_emplace(nm,mot_i);
 
-                m_motion_map.insert	(std::make_pair(nm,mot_i));
+                m_motion_map.try_emplace(nm,mot_i);
 			}
 		}
 		MP->close();

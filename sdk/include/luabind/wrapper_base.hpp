@@ -59,7 +59,7 @@ namespace luabind
 	struct wrap_base
 	{
 		friend struct detail::wrap_access;
-		wrap_base() {}
+		wrap_base() = default;
 
 		template<class R, typename... Args>
 		R call(char const* name, Args&&... args) const

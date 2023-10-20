@@ -61,8 +61,8 @@ struct	BTHREAD_params
 {
 	MODEL*				M;
 	Fvector*			V;
-	int					Vcnt;
 	TRI*				T;
+	int					Vcnt;
 	int					Tcnt;
 	build_callback*		BC;
 	void*				BCP;
@@ -95,7 +95,7 @@ void	MODEL::build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc,
 		status						= S_READY;
 	}else
 	{
-		BTHREAD_params				P = { this, V, Vcnt, T, Tcnt, bc, bcp };
+		BTHREAD_params				P = { this, V, T, Vcnt, Tcnt, bc, bcp };
 		thread_spawn				(build_thread,"CDB-construction",0,&P);
 		while						(S_INIT	== status)	Sleep	(5);
 	}

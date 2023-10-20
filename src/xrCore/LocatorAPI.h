@@ -32,10 +32,12 @@ public:
 	struct	archive
 	{
 		shared_str				path;
-		void					*hSrcFile, *hSrcMap;
-		u32						size;
+		void					*hSrcFile;
+		void					*hSrcMap;
 		CInifile*				header;
+		u32						size;
 		u32						vfs_idx;
+
 		archive():hSrcFile(NULL),hSrcMap(NULL),header(NULL),size(0),vfs_idx(u32(-1)){}
 		void					open();
 		void					close();

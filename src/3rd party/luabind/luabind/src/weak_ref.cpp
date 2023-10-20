@@ -117,8 +117,9 @@ namespace luabind
 		}
 
 		int count;
-		lua_State* state;
 		int ref;
+		lua_State* state;
+
 	};
 
 	weak_ref::weak_ref()
