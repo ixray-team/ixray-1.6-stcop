@@ -297,9 +297,10 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	UINT createDeviceFlags = 0;
-#ifdef DEBUG
-	//createDeviceFlags |= D3Dxx_CREATE_DEVICE_DEBUG;
-#endif
+	if (strstr(Core.Params, "-dxdebug")) {
+		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	}
+
    HRESULT R;
 	// Create the device
 	//	DX10 don't need it?
