@@ -70,16 +70,16 @@ static DWORD    low=0, code=0, range=0;
 
 
 inline void 
-rcEncNormalize( _PPMD_FILE* stream )
+rcEncNormalize(_PPMD_FILE* stream)
 {
-    while(      (low ^ (low+range)) < TOP 
-            ||  range < BOT 
-            &&  ((range= -low & (BOT-1)),1)
-         ) 
+    while ((low ^ (low + range)) < TOP
+        || range < BOT
+        && ((range = -((int)low) & (BOT - 1)), 1)
+        )
     {
-        _PPMD_E_PUTC( low >> 24, stream );
-        range   <<= 8;                        
-        low     <<= 8;
+        _PPMD_E_PUTC(low >> 24, stream);
+        range <<= 8;
+        low <<= 8;
     }
 }
 
@@ -116,7 +116,7 @@ rcDecNormalize( _PPMD_FILE* stream )
 {
     while(      (low ^ (low+range)) < TOP 
             ||  range < BOT 
-            &&  ((range= -low & (BOT-1)),1) 
+            &&  ((range= -((int)low) & (BOT-1)),1)
          ) 
     {
         code    = (code << 8) | _PPMD_D_GETC(stream);

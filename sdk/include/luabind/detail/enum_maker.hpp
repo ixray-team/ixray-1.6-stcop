@@ -64,7 +64,7 @@ namespace luabind {
 
 	private:
 
-		value() {}
+		value() = default;
 	};
 
 	inline value_vector::value_vector()

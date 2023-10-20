@@ -513,8 +513,8 @@ void CObjectList::relcase_register		(RELCASE_CALLBACK cb, int *ID)
 													cb);
 	VERIFY(It==m_relcase_callbacks.end());
 #endif
-	*ID								= m_relcase_callbacks.size();
-	m_relcase_callbacks.push_back	(SRelcasePair(ID,cb));
+	*ID = m_relcase_callbacks.size();
+	m_relcase_callbacks.emplace_back(ID,cb);
 }
 
 void CObjectList::relcase_unregister	(int* ID)

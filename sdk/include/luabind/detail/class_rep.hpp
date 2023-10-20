@@ -91,7 +91,7 @@ namespace luabind::detail
 		// INSTANTIATED!
 		class_rep(lua_State* L, const char* name);
 
-		~class_rep();
+		~class_rep() = default;
 
 		std::pair<void*, void*> allocate(lua_State* L) const;
 

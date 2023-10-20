@@ -102,10 +102,6 @@ luabind::detail::class_rep::class_rep(lua_State* L, const char* name)
 	shared_init(L);
 }
 
-luabind::detail::class_rep::~class_rep()
-{
-}
-
 // leaves object on lua stack
 std::pair<void*, void*>
 luabind::detail::class_rep::allocate(lua_State* L) const

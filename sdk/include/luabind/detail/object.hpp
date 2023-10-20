@@ -51,8 +51,7 @@ namespace luabind
 			public lua_proxy_interface<object>
 		{
 		public:
-			object()
-			{}
+			object() = default;
 
 			explicit object(handle const& other)
 				: m_handle(other)

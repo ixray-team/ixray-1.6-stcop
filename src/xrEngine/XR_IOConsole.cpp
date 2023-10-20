@@ -748,7 +748,7 @@ bool CConsole::add_internal_cmds( LPCSTR in_str, vecTipsEx& out_v )
 				temp._set( name );
 				bool dup = ( std::find( out_v.begin(), out_v.end(), temp ) != out_v.end() );
 				if (!dup) {
-					out_v.push_back( TipString( temp, 0, in_sz ) );
+					out_v.emplace_back(temp, 0, in_sz);
 					res = true;
 				}
 			}
@@ -772,7 +772,7 @@ bool CConsole::add_internal_cmds( LPCSTR in_str, vecTipsEx& out_v )
 			if (!dup) {
 				u32 name_sz = xr_strlen( name );
 				int   fd_sz = name_sz - xr_strlen( fd_str );
-				out_v.push_back( TipString( temp, fd_sz, fd_sz + in_sz ) );
+				out_v.emplace_back(temp, fd_sz, fd_sz + in_sz);
 				res = true;
 			}
 		}
@@ -834,7 +834,7 @@ void CConsole::update_tips() {
 				select_for_filter( last, m_temp_tips, m_tips );
 
 				if (m_tips.size() == 0) {
-					m_tips.push_back( TipString( "(empty)" ) );
+					m_tips.emplace_back("(empty)");
 				}
 				if ((int)m_tips.size() <= m_select_tip) {
 					reset_selected_tip();
@@ -862,29 +862,27 @@ void CConsole::update_tips() {
 
 }
 
-void CConsole::select_for_filter( LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v )
+void CConsole::select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v)
 {
 	out_v.clear();
+
 	u32 in_count = in_v.size();
 	if (in_count == 0 || !filter_str) {
 		return;
 	}
 
-	bool all = ( xr_strlen(filter_str) == 0 );
+	bool all = (xr_strlen(filter_str) == 0);
 
-	vecTips::iterator itb = in_v.begin();
-	vecTips::iterator ite = in_v.end();
-	for (; itb != ite; ++itb) {
-		shared_str const& str = (*itb);
+	for (shared_str const& str : in_v) {
 		if (all) {
-			out_v.push_back( TipString( str ) );
+			out_v.emplace_back(str);
 		} else {
-			LPCSTR fd_str = strstr( str.c_str(), filter_str );
+			LPCSTR fd_str = strstr(str.c_str(), filter_str);
 			if (fd_str) {
-				int   fd_sz = str.size() - xr_strlen( fd_str );
-				TipString ts( str, fd_sz, fd_sz + xr_strlen(filter_str) );
-				out_v.push_back( ts );
+				int   fd_sz = str.size() - xr_strlen(fd_str);
+				TipString ts(str, fd_sz, fd_sz + xr_strlen(filter_str));
+				out_v.push_back(ts);
 			}
 		}
-	}//for
+	}
 }

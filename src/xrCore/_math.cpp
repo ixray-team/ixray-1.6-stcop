@@ -244,7 +244,7 @@ void _initialize_cpu	(void)
 }
 
 XRCORE_API wchar_t* ANSI_TO_TCHAR(const char* C) {
-	int len = strlen(C);
+	int len = (int) strlen(C);
 	static wchar_t WName[4096];
 	RtlZeroMemory(&WName, sizeof(WName));
 
@@ -261,13 +261,13 @@ XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi) {
 	wchar_t* wcs = nullptr;
 	int need_length = MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), ansi.size(), wcs, 0);
 	wcs = new wchar_t[need_length + 1];
-	MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), ansi.size(), wcs, need_length);
+	MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), (int) ansi.size(), wcs, need_length);
 	wcs[need_length] = L'\0';
 
 	char* u8s = nullptr;
-	need_length = WideCharToMultiByte(CP_UTF8, 0, wcs, std::wcslen(wcs), u8s, 0, nullptr, nullptr);
+	need_length = WideCharToMultiByte(CP_UTF8, 0, wcs, (int) std::wcslen(wcs), u8s, 0, nullptr, nullptr);
 	u8s = new char[need_length + 1];
-	WideCharToMultiByte(CP_UTF8, 0, wcs, std::wcslen(wcs), u8s, need_length, nullptr, nullptr);
+	WideCharToMultiByte(CP_UTF8, 0, wcs, (int) std::wcslen(wcs), u8s, need_length, nullptr, nullptr);
 	u8s[need_length] = '\0';
 
 	xr_string result(u8s);
