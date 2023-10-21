@@ -500,7 +500,7 @@ u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, con
 	u32 crc = crc32(src + offset, count);
 //	Msg					("decompressed %d -> ? [0x%08x]",count,crc);
     if( crc != *((u32*)(src + 1)) )
-        Msg( "!CRC mismatch" );
+		EngineLog( "!CRC mismatch" );
         
 	R_ASSERT2(crc == *((u32*)(src + 1)),make_string("crc is different! (0x%08x != 0x%08x)",crc,*((u32*)(src + 1))));
     #endif // NET_USE_COMPRESSION_CRC
@@ -519,12 +519,12 @@ void NET_Compressor::DumpStats(bool brief)
 	xr_map<u32,SCompressorStats::SStatPacket>::const_iterator it		= m_stats.m_packets.begin();
 	xr_map<u32,SCompressorStats::SStatPacket>::const_iterator it_e	= m_stats.m_packets.end();
 
-	Msg("---------NET_Compressor::DumpStats-----------");
+	EngineLog("---------NET_Compressor::DumpStats-----------");
 	
-	Msg("Active=[%s]",g_net_compressor_enabled?"yes":"no");
+	EngineLog("Active=[{}]",g_net_compressor_enabled?"yes":"no");
 
-	Msg("uncompressed [%d]",m_stats.total_uncompressed_bytes);
-	Msg("compressed   [%d]",m_stats.total_compressed_bytes);
+	EngineLog("uncompressed [{}]",m_stats.total_uncompressed_bytes);
+	EngineLog("compressed   [{}]",m_stats.total_compressed_bytes);
 	
 	u32 total_hits		= 0;
 	u32 unlucky_hits	= 0;
@@ -535,9 +535,9 @@ void NET_Compressor::DumpStats(bool brief)
 		unlucky_hits	+= it->second.unlucky_attempts;
 		if(!brief)
 		{
-			Msg	("size[%d] count[%d] unlucky[%d] avg_c[%d]",it->first, it->second.hit_count, it->second.unlucky_attempts, iFloor(float(it->second.compressed_size)/float(it->second.hit_count)) );
+			EngineLog("size[{}] count[{}] unlucky[{}] avg_c[{}]",it->first, it->second.hit_count, it->second.unlucky_attempts, iFloor(float(it->second.compressed_size)/float(it->second.hit_count)) );
 		}
 	}
-	Msg("total   [%d]",	total_hits);
-	Msg("unlucky [%d]",	unlucky_hits);
+	EngineLog("total   [{}]",	total_hits);
+	EngineLog("unlucky [{}]",	unlucky_hits);
 }

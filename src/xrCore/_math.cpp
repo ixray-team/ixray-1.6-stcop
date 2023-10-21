@@ -192,7 +192,7 @@ static SetThreadDescriptionDesc SetThreadDescriptionProc;
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
-	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
+	EngineLog("* Detected CPU: {} [{}], F{}/M{}/S{}, %.2f mhz, %d-clk 'rdtsc'",
 		CPU::ID.modelName, CPU::ID.vendor,
 		CPU::ID.family,CPU::ID.model,CPU::ID.stepping,
 		float(CPU::clk_per_second/u64(1000000)),
@@ -228,8 +228,8 @@ void _initialize_cpu	(void)
     if (CPU::ID.hasFeature (CPUFeature::HT))	
 		xr_strcat(features, ", HT");
 
-	Msg("* CPU features: %s" , features );
-	Msg("* CPU cores/threads: %d/%d\n" , CPU::ID.n_cores , CPU::ID.n_threads );
+	EngineLog("* CPU features: {}" , features );
+	EngineLog("* CPU cores/threads: {}/{}\n" , CPU::ID.n_cores , CPU::ID.n_threads );
 
 	Fidentity.identity		();	// Identity matrix
 	Didentity.identity		();	// Identity matrix

@@ -119,7 +119,7 @@ CInifile::CInifile(LPCSTR szFileName,
 
 {
 	if(szFileName && strstr(szFileName,"system"))
-		Msg("-----loading %s",szFileName);
+		EngineLog("-----loading {}",szFileName);
 
 	m_file_name[0]	= 0;
 	m_flags.zero	();
@@ -148,18 +148,18 @@ CInifile::CInifile(LPCSTR szFileName,
 	}
 }
 
-CInifile::~CInifile( )
+CInifile::~CInifile()
 {
-	if (!m_flags.test(eReadOnly) && m_flags.test(eSaveAtEnd)) 
+	if (!m_flags.test(eReadOnly) && m_flags.test(eSaveAtEnd))
 	{
 		if (!save_as())
-			Log		("!Can't save inifile:",m_file_name);
+			EngineLog("!Can't save inifile: {}", m_file_name);
 	}
 
 	RootIt			I = DATA.begin();
 	RootIt			E = DATA.end();
-	for ( ; I != E; ++I)
-		xr_delete	(*I);
+	for (; I != E; ++I)
+		xr_delete(*I);
 }
 
 static void	insert_item(CInifile::Sect *tgt, const CInifile::Item& I)

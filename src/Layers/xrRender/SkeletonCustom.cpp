@@ -355,7 +355,7 @@ void CKinematics::LL_Validate()
                     BD.IK_data.ik_flags.set(SJointIKData::flBreakable,FALSE);
             }
 #ifdef DEBUG            
-            Msg						("! ERROR: Invalid breakable object: '%s'",*dbg_name);
+			EngineLog("! ERROR: Invalid breakable object: '{}'",*dbg_name);
 #endif
         }
     }
@@ -417,7 +417,7 @@ void CKinematics::Depart		()
 		u32 count = bones->size();
 #ifdef DEBUG
     	if (count > 64)
-        	Msg("ahtung !!! %d", count);
+			EngineLog("ahtung !!! {}", count);
 #endif // #ifdef DEBUG
 		for (u32 b=0; b<count; b++) visimask.set((u64(1)<<b),TRUE);
 	}
@@ -749,7 +749,7 @@ CSkeletonWallmark::~CSkeletonWallmark()
 {
 		if(used_in_render!=u32(-1))
 		{
-			Msg		("used_in_render=%d",used_in_render);
+			EngineLog("used_in_render={}",used_in_render);
 			VERIFY	(used_in_render==u32(-1));
 		}
 }

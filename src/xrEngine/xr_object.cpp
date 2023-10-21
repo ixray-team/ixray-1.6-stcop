@@ -406,25 +406,18 @@ void CObject::OnH_B_Independent	(bool just_before_destroy)
 {
 }
 
-void CObject::setDestroy			(BOOL _destroy)
+void CObject::setDestroy(BOOL _destroy)
 {
 	if (_destroy == (BOOL)Props.bDestroy)
 		return;
 
-	Props.bDestroy	= _destroy?1:0;
+	Props.bDestroy = _destroy ? 1 : 0;
 	if (_destroy)
 	{
-		g_pGameLevel->Objects.register_object_to_destroy	(this);
-#ifdef DEBUG
-		extern BOOL debug_destroy;
-		if(debug_destroy)
-			Msg("cl setDestroy [%d][%d]",ID(),Device.dwFrame);
-#endif
-#ifdef MP_LOGGING
-		Msg("cl setDestroy [%d][%d]",ID(),Device.dwFrame);
-#endif //#ifdef MP_LOGGING
-	}else
-		VERIFY		(!g_pGameLevel->Objects.registered_object_to_destroy(this));
+		g_pGameLevel->Objects.register_object_to_destroy(this);
+	}
+	else
+		VERIFY(!g_pGameLevel->Objects.registered_object_to_destroy(this));
 }
 
 Fvector CObject::get_new_local_point_on_mesh	( u16& bone_id ) const

@@ -111,7 +111,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 		if (!FS.exist(fn, "$level$", name))
 			if (!FS.exist(fn, "$game_meshes$", name)){
 #ifdef _EDITOR
-				Msg("!Can't find model file '%s'.",name);
+				EngineLog("!Can't find model file '{}'.",name);
                 return 0;
 #else            
 				Debug.fatal(DEBUG_INFO,"Can't find model file '%s'.",name);
@@ -123,7 +123,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	
 	// Actual loading
 #ifdef DEBUG
-	if (bLogging)		Msg		("- Uncached model loading: %s",fn);
+	if (bLogging)		EngineLog("- Uncached model loading: {}",fn);
 #endif // DEBUG
 
 	IReader*			data	= FS.r_open(fn);
@@ -412,7 +412,7 @@ dxRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
 
 void CModelPool::dump()
 {
-	Log	("--- model pool --- begin:");
+	EngineLog("--- model pool --- begin:");
 	u32 sz					= 0;
 	u32 k					= 0;
 	for (xr_vector<ModelDef>::iterator I=Models.begin(); I!=Models.end(); I++) {
@@ -420,10 +420,10 @@ void CModelPool::dump()
 		if (K){
 			u32 cur			= K->mem_usage	(false);
 			sz				+= cur;
-			Msg("#%3d: [%3d/%5d Kb] - %s",k++,I->refs,cur/1024,I->name.c_str());
+			EngineLog("#{}: [{}/{} Kb] - %s",k++,I->refs,cur/1024,I->name.c_str());
 		}
 	}
-	Msg ("--- models: %d, mem usage: %d Kb ",k,sz/1024);
+	EngineLog("--- models: {}, mem usage: {} Kb ",k,sz/1024);
 	sz						= 0;
 	k						= 0;
 	int free_cnt			= 0;
@@ -436,11 +436,11 @@ void CModelPool::dump()
 			sz				+= cur;
 			bool b_free		= (Pool.find(it->second)!=Pool.end() );
 			if(b_free)		++free_cnt;
-			Msg("#%3d: [%s] [%5d Kb] - %s",k++, (b_free)?"free":"used", cur/1024,it->second.c_str());
+			EngineLog("#{}: [{}] [{} Kb] - {}",k++, (b_free)?"free":"used", cur/1024,it->second.c_str());
 		}
 	}
-	Msg ("--- instances: %d, free %d, mem usage: %d Kb ",k, free_cnt, sz/1024);
-	Log	("--- model pool --- end.");
+	EngineLog("--- instances: {}, free {}, mem usage: {} Kb ",k, free_cnt, sz/1024);
+	EngineLog("--- model pool --- end.");
 }
 
 void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system )

@@ -89,7 +89,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"%s",endline);
 		if (!i) {
 			if (shared_str_initialized) {
-				Msg		("%s",assertion_info);
+				EngineLog(assertion_info);
 				FlushLog();
 			}
 			buffer		= assertion_info;
@@ -100,7 +100,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 
 	if (!IsDebuggerPresent() && !strstr(GetCommandLineA(), "-no_call_stack_assert")) {
 		if (shared_str_initialized)
-			Msg			("stack trace:\n");
+			EngineLog("stack trace:\n");
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"stack trace:%s%s",endline,endline);
@@ -183,7 +183,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 				break;
 			}
 			default: {
-				Msg("! xrDebug::backend default reached");
+				EngineLog("! xrDebug::backend default reached");
 				break;
 			}
 		}
@@ -263,8 +263,8 @@ int out_of_memory_handler	(size_t size)
 		u32					process_heap	= mem_usage_impl(nullptr, nullptr);
 		int					eco_strings		= (int)g_pStringContainer->stat_economy			();
 		int					eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
-		Msg					("* [x-ray]: process heap[%d K]", process_heap / 1024);
-		Msg					("* [x-ray]: economy: strings[%d K], smem[%d K]",eco_strings/1024,eco_smem);
+		EngineLog("* [x-ray]: process heap[{} K]", process_heap / 1024);
+		EngineLog("* [x-ray]: economy: strings[{} K], smem[{} K]",eco_strings/1024,eco_smem);
 	}
 
 	Debug.fatal				(DEBUG_INFO,"Out of memory. Memory request: %d K",size/1024);
@@ -457,7 +457,7 @@ LONG WINAPI BuildStackTrace(PEXCEPTION_POINTERS pExceptionInfo)
 	pSymbol->SizeOfStruct = sizeof(SYMBOL_INFO);
 	pSymbol->MaxNameLen = MAX_SYM_NAME;
 
-	Msg("%s", "Stack Trace : \n");
+	EngineLog("Stack Trace : \n");
 
 	while (StackWalk64(machine_type, GetCurrentProcess(), GetCurrentThread(), &stack_frame, &context_record, NULL, &SymFunctionTableAccess64, &SymGetModuleBase64, NULL))
 	{
@@ -485,7 +485,7 @@ LONG WINAPI BuildStackTrace(PEXCEPTION_POINTERS pExceptionInfo)
 			Buffer += "\r\n";
 		}
 
-		Msg("%s", Buffer.c_str());
+		EngineLog(Buffer);
 	}
 
 	return EXCEPTION_CONTINUE_SEARCH;

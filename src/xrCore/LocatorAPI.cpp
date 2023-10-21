@@ -83,7 +83,7 @@ void _check_open_file(const shared_str& _fname)
 {
 	xr_vector<_open_file>::iterator it	= std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_check(_fname) );
 	if(it!=g_open_files.end())
-		Log("file opened at least twice", _fname.c_str());
+		EngineLog("file opened at least twice {}", _fname.c_str());
 }
 
 _open_file& find_free_item(const shared_str& _fname)
@@ -153,24 +153,24 @@ XRCORE_API void _dump_open_files(int mode)
 			if(_of._reader!=NULL)
 			{
 				if(!bShow)
-					Log("----opened files");
+					EngineLog("----opened files");
 
 				bShow = true;
-				Msg("[%d] fname:%s", _of._used ,_of._fn.c_str());
+				EngineLog("[{}] fname:{}", _of._used ,_of._fn.c_str());
 			}
 		}
 	}else
 	{
-		Log("----un-used");
+		EngineLog("----un-used");
 		for(it = g_open_files.begin(); it!=it_e; ++it)
 		{
 			_open_file& _of = *it;
 			if(_of._reader==NULL)
-				Msg("[%d] fname:%s", _of._used ,_of._fn.c_str());
+				EngineLog("[{}] fname:{}", _of._used ,_of._fn.c_str());
 		}
 	}
 	if(bShow)
-		Msg("----total count=%d",(int)g_open_files.size());
+		EngineLog("----total count={}", g_open_files.size());
 }
 
 CLocatorAPI::CLocatorAPI()
@@ -453,7 +453,7 @@ void CLocatorAPI::unload_archive(CLocatorAPI::archive& A)
 		if(entry.vfs==A.vfs_idx)
 		{
 #ifndef MASTER_GOLD
-			Msg("unregistering file [%s]", I->name);
+			EngineLog("unregistering file [{}]", I->name);
 #endif // #ifndef MASTER_GOLD
 			char* str		= LPSTR(I->name);
 			xr_free			(str);
@@ -636,7 +636,7 @@ void CLocatorAPI::setup_fs_path		(LPCSTR fs_name)
 
 	FS_Path				*path = xr_new<FS_Path>(full_current_directory,"","","",0);
 #ifdef DEBUG
-	Msg					("$fs_root$ = %s", full_current_directory);
+	EngineLog("$fs_root$ = {}", full_current_directory);
 #endif // #ifdef DEBUG
 
 	pathes.insert		(
@@ -660,7 +660,7 @@ IReader *CLocatorAPI::setup_fs_ltx	(LPCSTR fs_name)
 	if (fs_name && *fs_name)
 		fs_file_name= fs_name;
 				
-	Log				("using fs-ltx",fs_file_name);
+	EngineLog("using fs-ltx: {}",fs_file_name);
 
 	int				file_handle;
 	u32				file_size;
@@ -690,7 +690,7 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	if (m_Flags.is(flReady))return;
 	CTimer t;
 	t.Start();
-	Log				("Initializing File System...");
+	EngineLog("Initializing File System...");
 	u32	M1			= Memory.mem_usage();
 
 	m_Flags.set		(flags,TRUE);
@@ -798,11 +798,11 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		
 
 	u32	M2			= Memory.mem_usage();
-	Msg				("FS: %d files cached %d archives, %dKb memory used.",m_files.size(),m_archives.size(), (M2-M1)/1024);
+	EngineLog("FS: {} files cached {} archives, {}Kb memory used.",m_files.size(),m_archives.size(), (M2-M1)/1024);
 
 	m_Flags.set		(flReady,TRUE);
 
-	Msg("Init FileSystem %f sec",t.GetElapsed_sec());
+	EngineLog("Init FileSystem {} sec",t.GetElapsed_sec());
 	//-----------------------------------------------------------
 	if (strstr(Core.Params, "-overlaypath"))
 	{
@@ -1072,7 +1072,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 			// use
 		} else {
 			// copy & use
-			Msg			("copy: db[%X],cache[%X] - '%s', ",desc.modif,fc.modif,fname);
+			EngineLog("copy: db[{}],cache[{}] - '{}', ",desc.modif,fc.modif,fname);
 			bCopy		= TRUE;
 		}
 	} else {
@@ -1219,7 +1219,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
 
 	IWriter* W = w_open		(cpy_name);
     if (!W) {
-        Log					("!Can't build:",source_name);
+		EngineLog("!Can't build: {}",source_name);
 		return;
 	}
 
@@ -1570,7 +1570,7 @@ void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
     tm.modtime	= age;
     int res 	= _utime(nm,&tm);
     if (0!=res){
-    	Msg			("!Can't set file age: '%s'. Error: '%s'",nm,_sys_errlist[errno]);
+		EngineLog("!Can't set file age: '{}'. Error: '{}'",nm,_sys_errlist[errno]);
     }else{
         // update record
         files_it I 		= file_find_it(nm);

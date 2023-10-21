@@ -86,7 +86,7 @@ void	CSoundRender_Cache::initialize	(u32 _total_kb_approx, u32 bytes_per_line)
 	_count		= ((_total_kb_approx*1024)/bytes_per_line + 1);
 	_total		= _count*_line;
 	R_ASSERT	(_count<CAT_FREE);
-	Msg			("* sound : cache: %d kb, %d lines, %d bpl",_total/1024,_count,_line);
+	EngineLog("* sound : cache: {} kb, {} lines, {} bpl",_total/1024,_count,_line);
 
 	// alloc structs
 	data		= xr_alloc<u8>			(_total);

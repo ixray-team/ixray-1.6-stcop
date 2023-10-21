@@ -134,7 +134,7 @@ void IGame_Persistent::OnGameStart()
 #ifndef _EDITOR
 	loading_save_timer.Start();
 	loading_save_timer_started = true;
-	Msg("* Game Loading Timer: Started!");
+	EngineLog("* Game Loading Timer: Started!");
 //	LoadTitle("st_prefetching_objects");
 	LoadTitle();
 	if(!strstr(Core.Params,"-noprefetch"))
@@ -149,18 +149,18 @@ void IGame_Persistent::Prefetch()
 	float	p_time		=			1000.f*Device.GetTimerGlobal()->GetElapsed_sec();
 	u32	mem_0			=			Memory.mem_usage()	;
 
-	Log("Loading objects...");
+	EngineLog("Loading objects...");
 	ObjectPool.prefetch();
-	Log("Loading models...");
+	EngineLog("Loading models...");
 	Render->models_Prefetch();
-	Log("Loading textures...");
+	EngineLog("Loading textures...");
 	Device.m_pRender->ResourcesDeferredUpload();
 
 	p_time				=			1000.f*Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
 	u32		p_mem		=			Memory.mem_usage() - mem_0	;
 
-	Msg					("* [prefetch] time:    %d ms",	iFloor(p_time));
-	Msg					("* [prefetch] memory:  %dKb",	p_mem/1024);
+	EngineLog("* [prefetch] time:    {} ms",	iFloor(p_time));
+	EngineLog("* [prefetch] memory:  {}Kb",	p_mem/1024);
 }
 #endif
 
@@ -200,7 +200,7 @@ void IGame_Persistent::OnFrame		()
 		VERIFY					(psi);
 		if (psi->Locked())
 		{
-			Log("--locked");
+			EngineLog("--locked");
 			break;
 		}
 		ps_destroy.pop_back		();

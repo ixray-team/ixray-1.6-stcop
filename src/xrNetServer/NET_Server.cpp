@@ -38,7 +38,7 @@ void ip_address::set(LPCSTR src_string)
 		m_data.a4	= u8(buff[3]&0xff);
 	}else
 	{
-		Msg			("! Bad ipAddress format [%s]",src_string);
+		EngineLog("! Bad ipAddress format [{}]",src_string);
 		m_data.data		= 0;
 	}
 }
@@ -71,7 +71,7 @@ void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 
 	BanTime						= mktime(&_tm_banned);
 	
-	Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
+	EngineLog("- loaded banned client {} to {}", HAddr.to_string().c_str(), BannedTimeTo().c_str());
 }
 
 void IBannedClient::Save(CInifile& ini)
@@ -172,7 +172,7 @@ void
 IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
 {
 	if (data_size >= NET_PacketSizeLimit) {
-		Msg		("! too large packet size[%d] received, DoS attack?", data_size);
+		EngineLog("! too large packet size[{}] received, DoS attack?", data_size);
 		return;
 	}
 
@@ -278,7 +278,7 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options, GameDescriptionData &
 	}
 	if (dwMaxPlayers > 32 || dwMaxPlayers<1) dwMaxPlayers = 32;
 #ifdef DEBUG
-	Msg("MaxPlayers = %d", dwMaxPlayers);
+	EngineLog("MaxPlayers = {}", dwMaxPlayers);
 #endif // #ifdef DEBUG
 
 	//-------------------------------------------------------------------
@@ -394,12 +394,12 @@ if(!psNET_direct_connect)
 //			xr_string res = Debug.error2string(HostSuccess);
 				if (bPortWasSet) 
 				{
-					Msg("! IPureServer : port %d is BUSY!", psNET_Port);
+					EngineLog("! IPureServer : port {} is BUSY!", psNET_Port);
 					return ErrConnect;
 				}
 				else
 				{
-					Msg("! IPureServer : port %d is BUSY!", psNET_Port);
+					EngineLog("! IPureServer : port {} is BUSY!", psNET_Port);
 				}
 
 				psNET_Port++;
@@ -410,7 +410,7 @@ if(!psNET_direct_connect)
 		}
 		else
 		{
-			Msg("- IPureServer : created on port %d!", psNET_Port);
+			EngineLog("- IPureServer : created on port {}!", psNET_Port);
 		}
 	};
 	
@@ -710,11 +710,11 @@ u32	IPureServer::OnMessage	(NET_Packet& P, ClientID sender)	// Non-Zero means br
 
 void IPureServer::OnCL_Connected		(IClient* CL)
 {
-	Msg("* Player 0x%08x connected.\n",	CL->ID.value());
+	EngineLog("* Player {} connected.\n",	CL->ID.value());
 }
 void IPureServer::OnCL_Disconnected		(IClient* CL)
 {
-	Msg("* Player 0x%08x disconnected.\n", CL->ID.value());
+	EngineLog("* Player {} disconnected.\n", CL->ID.value());
 }
 
 BOOL IPureServer::HasBandwidth			(IClient* C)
@@ -893,7 +893,7 @@ void IPureServer::BanAddress(const ip_address& Address, u32 BanTimeSec)
 {
 	if (GetBannedClient(Address)) 
 	{
-		Msg("Already banned\n");
+		EngineLog("Already banned\n");
 		return;
 	};
 
@@ -912,7 +912,7 @@ void IPureServer::UnBanAddress	(const ip_address& Address)
 {
 	if (!GetBannedClient(Address)) 
 	{
-		Msg("! Can't find address %s in ban list.", Address.to_string().c_str() );
+		EngineLog("! Can't find address {} in ban list.", Address.to_string().c_str() );
 		return;
 	};
 
@@ -923,7 +923,7 @@ void IPureServer::UnBanAddress	(const ip_address& Address)
 		{
 			xr_delete				(BannedAddresses[it]);
 			BannedAddresses.erase	(BannedAddresses.begin()+it);
-			Msg						("Unbanning %s", Address.to_string().c_str() );
+			EngineLog("Unbanning {}", Address.to_string().c_str() );
 			BannedList_Save			();
 			break;
 		}
@@ -932,13 +932,13 @@ void IPureServer::UnBanAddress	(const ip_address& Address)
 
 void IPureServer::Print_Banned_Addreses	()
 {
-	Msg("- ----banned ip list begin-------");
+	EngineLog("- ----banned ip list begin-------");
 	for (u32 i=0; i<BannedAddresses.size(); i++)
 	{
 		IBannedClient* pBClient = BannedAddresses[i];
-		Msg("- %s to %s", pBClient->HAddr.to_string().c_str(), pBClient->BannedTimeTo().c_str() );
+		EngineLog("- {} to {}", pBClient->HAddr.to_string().c_str(), pBClient->BannedTimeTo().c_str() );
 	}
-	Msg("- ----banned ip list end-------");
+	EngineLog("- ----banned ip list end-------");
 }
 
 void IPureServer::BannedList_Save	()
@@ -976,12 +976,12 @@ void IPureServer::BannedList_Load()
 
 void IPureServer::IpList_Load()
 {
-	Msg("* Initializing IP filter.");
+	EngineLog("* Initializing IP filter.");
 	m_ip_filter.load();
 }
 void IPureServer::IpList_Unload()
 {
-	Msg("* Deinitializing IP filter.");
+	EngineLog("* Deinitializing IP filter.");
 	m_ip_filter.unload();
 }
 bool IPureServer::IsPlayerIPDenied(u32 ip_address)

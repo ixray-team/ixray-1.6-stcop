@@ -104,10 +104,10 @@ void CRenderDevice::End		(void)
 
 			m_pRender->ResourcesDestroyNecessaryTextures	();
 			Memory.mem_compact								();
-			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
-			Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
+			EngineLog("* MEMORY USAGE: {} K",Memory.mem_usage()/1024);
+			EngineLog("* End of synchronization A[{}] R[{}]",b_is_Active, b_is_Ready);
 			if (loading_save_timer_started) {
-				Msg("* Game Loading Timer: Finished for %d ms", loading_save_timer.GetElapsed_ms());
+				EngineLog("* Game Loading Timer: Finished for {} ms", loading_save_timer.GetElapsed_ms());
 				loading_save_timer_started = false;
 			}
 
@@ -329,7 +329,7 @@ void CRenderDevice::Run			()
 {
 //	DUMP_PHASE;
 	g_bLoaded		= FALSE;
-	Log				("Starting engine...");
+	EngineLog("Starting engine...");
 	thread_name		("X-RAY Primary thread");
 
 	// Startup timers and calculate timer delta
@@ -480,7 +480,7 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 				snd_emitters_ =				::Sound->pause_emitters(false);
 			} else {
 #ifdef DEBUG
-				Log("Sound->pause_emitters underflow");
+				EngineLog("Sound->pause_emitters underflow");
 #endif // DEBUG
 			}
 		}

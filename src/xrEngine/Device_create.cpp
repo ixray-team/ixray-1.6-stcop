@@ -75,7 +75,7 @@ cdb_bDebug		= &bDebug;
 	if (!m_pRender)
 		m_pRender			= RenderFactory->CreateRenderDeviceRender();
 	SetupGPU(m_pRender);
-	Log					("Starting RENDER device...");
+	EngineLog("Starting RENDER device...");
 
 #ifdef _EDITOR
 	psCurrentVidMode[0]	= TargetWidth;

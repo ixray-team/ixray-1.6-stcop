@@ -71,10 +71,10 @@ void CHOM::Load			()
 	FS.update_path	(fName,"$level$","level.hom");
 	if (!FS.exist(fName))
 	{
-		Msg		(" WARNING: Occlusion map '%s' not found.",fName);
+		EngineLog(" WARNING: Occlusion map '{}' not found.",fName);
 		return;
 	}
-	Msg	("* Loading HOM: %s",fName);
+	EngineLog("* Loading HOM: {}",fName);
 	
 	IReader* fs				= FS.r_open(fName);
 	IReader* S				= fs->open_chunk(1);
@@ -107,7 +107,7 @@ void CHOM::Load			()
 		rT.flags		= clT.dummy;
 		rT.area			= Area	(v0,v1,v2);
 		if (rT.area<EPS_L)	{
-			Msg	("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)",VPUSH(v0),VPUSH(v1),VPUSH(v2));
+			EngineLog("! Invalid HOM triangle {}-{}-{}", (v0), (v1), (v2));
 		}
 		rT.plane.build	(v0,v1,v2);
 		rT.skip			= 0;

@@ -382,7 +382,7 @@ case rtStalkerSmall:
 		//else ch->SetRestrictionType(rtStalker);
 #ifdef DEBUG
 		if(debug_output().ph_dbg_draw_mask1().test(ph_m1_DbgActorRestriction))
-				Msg("restriction ready to change small -> large");
+			EngineLog("restriction ready to change small -> large");
 #endif
 	}
 	break;
@@ -391,7 +391,7 @@ case rtStalker:
 	{
 #ifdef DEBUG
 		if(debug_output().ph_dbg_draw_mask1().test(ph_m1_DbgActorRestriction))
-						Msg("restriction  change large ->  small");
+			EngineLog("restriction  change large ->  small");
 #endif
 		ch->SetRestrictionType(rtStalkerSmall);
 		Enable();

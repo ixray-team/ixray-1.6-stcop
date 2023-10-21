@@ -141,7 +141,7 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
 {
 	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_elements,S))						return;
-	Msg	("! ERROR: Failed to find compiled 'shader-element'");
+	EngineLog("! ERROR: Failed to find compiled 'shader-element'");
 }
 
 Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
@@ -325,7 +325,7 @@ void CResourceManager::Delete(const Shader* S)
 {
 	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_shaders,S))						return;
-	Msg	("! ERROR: Failed to find complete shader");
+	EngineLog("! ERROR: Failed to find complete shader");
 }
 
 void CResourceManager::DeferredUpload()
@@ -351,12 +351,12 @@ void CResourceManager::DeferredUnload() {
 	if (!RDEVICE.b_is_Ready)
 		return;
 
-	Msg("%s, texture unloading -> START, size = [%d]", __FUNCTION__, m_textures.size());
+	EngineLog("{}, texture unloading -> START, size = [{}]", __FUNCTION__, m_textures.size());
 
 	for (auto& texture : m_textures)
 		texture.second->Unload();
 
-	Msg("%s, texture unloading -> COMPLETE", __FUNCTION__);
+	EngineLog("{}, texture unloading -> COMPLETE", __FUNCTION__);
 }
 
 #ifdef _EDITOR
@@ -419,7 +419,7 @@ void	CResourceManager::_DumpMemoryUsage		()
 		xr_multimap<u32,std::pair<u32,shared_str> >::iterator I = mtex.begin	();
 		xr_multimap<u32,std::pair<u32,shared_str> >::iterator E = mtex.end		();
 		for (; I!=E; I++)
-			Msg			("* %4.1f : [%4d] %s",float(I->first)/1024.f, I->second.first, I->second.second.c_str());
+			EngineLog("* {} : [{}] {}",float(I->first)/1024.f, I->second.first, I->second.second.c_str());
 	}
 }
 

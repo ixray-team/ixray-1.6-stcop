@@ -99,8 +99,8 @@ void CElevatorState::SwitchState(Estate new_state)
 {
 	if(!StateSwitchInertion(new_state))return;
 #ifdef DEBUG
-if(debug_output().ph_dbg_draw_mask().test(phDbgLadder))
-				Msg("%s",dbg_state[new_state]);
+	if(debug_output().ph_dbg_draw_mask().test(phDbgLadder))
+		EngineLog(dbg_state[new_state]);
 #endif
 	VERIFY(m_character);
 	if((m_state!=clbClimbingUp&&m_state!=clbClimbingDown) &&
@@ -286,7 +286,7 @@ bool CElevatorState::GetControlDir(Fvector& dir)
 #ifdef DEBUG
 										if(debug_output().ph_dbg_draw_mask().test(phDbgLadder))
 										{
-											Msg("no c dir");
+											EngineLog("no c dir");
 										}
 #endif
 										ret=false;

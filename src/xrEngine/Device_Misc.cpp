@@ -17,10 +17,10 @@ static struct _DF {
 
 void CRenderDevice::DumpFlags()
 {
-	Log("- Dumping device flags");
+	EngineLog("- Dumping device flags");
 	_DF *p = DF;
 	while (p->name) {
-		Msg("* %20s %s",p->name,psDeviceFlags.test(p->mask)?"on":"off");
+		EngineLog("* {} {}",p->name,psDeviceFlags.test(p->mask)?"on":"off");
 		p++;
 	}
 }

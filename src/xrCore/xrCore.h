@@ -131,16 +131,12 @@
 #include <map>
 
 #ifndef _EDITOR
-#	if _MSC_VER <= 1500
-#		include <hash_map>
-#		include <hash_set>
-#	else
-#		include <unordered_map>
-#		include <unordered_set>
-#	endif
+#	include <unordered_map>
+#	include <unordered_set>
 #endif
 
 #include <string>
+#include <format>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
 
@@ -229,6 +225,7 @@ using RTokenVecIt = RStringVec::iterator;
 #include "intrusive_ptr.h"
 
 #include "net_utils.h"
+#include "_std_formatter.h"
 
 // destructor
 template <class T>

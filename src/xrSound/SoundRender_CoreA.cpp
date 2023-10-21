@@ -34,7 +34,7 @@ int CSoundRender_CoreA::load_reverb(ALuint effect_, const EFXEAXREVERBPROPERTIES
     alEffecti(effect_, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        Msg("Failed to load the EAX reverb effect: %s (0x%04x)\n", alGetString(err), err);
+        EngineLog("Failed to load the EAX reverb effect: {} ({})\n", alGetString(err), err);
         return 0;
     }
 
@@ -66,7 +66,7 @@ int CSoundRender_CoreA::load_reverb(ALuint effect_, const EFXEAXREVERBPROPERTIES
     // Check if an error occured, and return failure if so.
     if ((err = alGetError()) != AL_NO_ERROR)
     {
-        Msg("Error setting up reverb effect: %s\n", alGetString(err));
+        EngineLog("Error setting up reverb effect: {}\n", alGetString(err));
         return 0;
     }
    
@@ -252,7 +252,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     }
     else
     {
-        Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
+        EngineLog("SOUND: OpenAL: Failed to init EFX: {}", alGetString(err));
         if (alIsEffect(effect))
             alDeleteEffects(1, &effect);
     }
@@ -271,7 +271,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 				s_targets.push_back	(T);
 			}else
 			{
-        		Log					("! SOUND: OpenAL: Max targets - ",tit);
+                EngineLog("! SOUND: OpenAL: Max targets - {}",tit);
 				T->_destroy			();
         		xr_delete			(T);
         		break;

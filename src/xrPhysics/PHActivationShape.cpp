@@ -33,7 +33,7 @@ static	const float dynamic_erp				= 1.f / 1000.f;//static_erp;//
 */
 
 #ifdef DEBUG
-#define	CHECK_POS(pos,msg,br)			if (!valid_pos(pos,phBoundaries)){Msg("pos:%f,%f,%f",pos.x,pos.y,pos.z);Msg(msg);VERIFY(!br);}
+#define	CHECK_POS(pos,msg,br)			if (!valid_pos(pos,phBoundaries)){EngineLog("pos: {} \r\n {}", pos, msg);VERIFY(!br);}
 
 #else
 #define	CHECK_POS(pos,msg,br)				

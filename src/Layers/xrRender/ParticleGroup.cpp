@@ -54,7 +54,7 @@ BOOL CPGDef::Load(IReader& F)
 	u16 version		= F.r_u16();
 
     if (version!=PGD_VERSION){
-		Log			("!Unsupported PG version. Load failed.");
+        EngineLog("!Unsupported PG version. Load failed.");
     	return FALSE;
     }
 

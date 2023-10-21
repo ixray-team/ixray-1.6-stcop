@@ -19,6 +19,6 @@
 #include "NET_Shared.h"	
 
 #define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }
-#define _SHOW_REF(msg, x)   { if(x) { x->AddRef(); Log(msg,u32(x->Release()));}}
+#define _SHOW_REF(msg, x)   { if(x) { x->AddRef(); EngineLog(msg,u32(x->Release()));}}
 
 #endif //stdafxH

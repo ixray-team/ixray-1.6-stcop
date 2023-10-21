@@ -129,7 +129,7 @@ class CCC_Help : public IConsole_Command
 public:
 	CCC_Help(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-		Log("- --- Command listing: start ---");
+		EngineLog("- --- Command listing: start ---");
 		CConsole::vecCMD_IT it;
 		for (it=Console->Commands.begin(); it!=Console->Commands.end(); it++)
 		{
@@ -137,27 +137,27 @@ public:
 			TStatus _S; C.Status(_S);
 			TInfo	_I;	C.Info	(_I);
 			
-			Msg("%-20s (%-10s) --- %s",	C.Name(), _S, _I);
+			EngineLog("{} ({}) --- {}",	C.Name(), _S, _I);
 		}
-		Log("Key: Ctrl + A         === Select all ");
-		Log("Key: Ctrl + C         === Copy to clipboard ");
-		Log("Key: Ctrl + V         === Paste from clipboard ");
-		Log("Key: Ctrl + X         === Cut to clipboard ");
-		Log("Key: Ctrl + Z         === Undo ");
-		Log("Key: Ctrl + Insert    === Copy to clipboard ");
-		Log("Key: Shift + Insert   === Paste from clipboard ");
-		Log("Key: Shift + Delete   === Cut to clipboard ");
-		Log("Key: Insert           === Toggle mode <Insert> ");
-		Log("Key: Back / Delete          === Delete symbol left / right ");
+		EngineLog("Key: Ctrl + A         === Select all ");
+		EngineLog("Key: Ctrl + C         === Copy to clipboard ");
+		EngineLog("Key: Ctrl + V         === Paste from clipboard ");
+		EngineLog("Key: Ctrl + X         === Cut to clipboard ");
+		EngineLog("Key: Ctrl + Z         === Undo ");
+		EngineLog("Key: Ctrl + Insert    === Copy to clipboard ");
+		EngineLog("Key: Shift + Insert   === Paste from clipboard ");
+		EngineLog("Key: Shift + Delete   === Cut to clipboard ");
+		EngineLog("Key: Insert           === Toggle mode <Insert> ");
+		EngineLog("Key: Back / Delete          === Delete symbol left / right ");
 
-		Log("Key: Up   / Down            === Prev / Next command in tips list ");
-		Log("Key: Ctrl + Up / Ctrl + Down === Prev / Next executing command ");
-		Log("Key: Left, Right, Home, End {+Shift/+Ctrl}       === Navigation in text ");
-		Log("Key: PageUp / PageDown      === Scrolling history ");
-		Log("Key: Tab  / Shift + Tab     === Next / Prev possible command from list");
-		Log("Key: Enter  / NumEnter      === Execute current command ");
+		EngineLog("Key: Up   / Down            === Prev / Next command in tips list ");
+		EngineLog("Key: Ctrl + Up / Ctrl + Down === Prev / Next executing command ");
+		EngineLog("Key: Left, Right, Home, End {+Shift/+Ctrl}       === Navigation in text ");
+		EngineLog("Key: PageUp / PageDown      === Scrolling history ");
+		EngineLog("Key: Tab  / Shift + Tab     === Next / Prev possible command from list");
+		EngineLog("Key: Enter  / NumEnter      === Execute current command ");
 		
-		Log("- --- Command listing: end ----");
+		EngineLog("- --- Command listing: end ----");
 	}
 };
 
@@ -202,9 +202,9 @@ public:
 				for (it=Console->Commands.begin(); it!=Console->Commands.end(); it++)
 					it->second->Save(F);
 				FS.w_close			(F);
-				Msg("Config-file [%s] saved successfully",cfg_full_name);
+				EngineLog("Config-file [{}] saved successfully",cfg_full_name);
 		}else
-			Msg("!Cannot store config file [%s]", cfg_full_name);
+			EngineLog("!Cannot store config file [{}]", cfg_full_name);
 	}
 };
 CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) 
@@ -212,7 +212,7 @@ CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N)
 
 void CCC_LoadCFG::Execute(LPCSTR args) 
 {
-		Msg("Executing config-script \"%s\"...",args);
+	EngineLog("Executing config-script \"{}\"...",args);
 		string_path						cfg_name;
 
 		xr_strcpy							(cfg_name, args);
@@ -239,9 +239,9 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 					Console->Execute	(str);
 			}
 			FS.r_close(F);
-			Msg("[%s] successfully loaded.",cfg_full_name);
+			EngineLog("[{}] successfully loaded.",cfg_full_name);
 		} else {
-			Msg("! Cannot open script file [%s]",cfg_full_name);
+			EngineLog("! Cannot open script file [{}]",cfg_full_name);
 		}
 }
 
@@ -319,7 +319,7 @@ public:
 
 		if ((0==xr_strlen(op_client)) && (0 == xr_strlen(op_demo)))
 		{
-			Log("! Can't start game without client. Arguments: '%s'.",args);
+			EngineLog("! Can't start game without client. Arguments: '{}'.",args);
 			return;
 		}
 		if (g_pGameLevel)
@@ -366,7 +366,7 @@ public :
 			psCurrentVidMode[0] = _w;
 			psCurrentVidMode[1] = _h;
 		}else{
-			Msg("! Wrong video mode [%s]", args);
+			EngineLog("! Wrong video mode [{}]", args);
 			return;
 		}
 	}

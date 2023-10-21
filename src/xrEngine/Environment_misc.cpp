@@ -243,7 +243,7 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	trees_wave.set(.1f, .01f, .11f);
 }
 
-#define	C_CHECK(C)	if (C.x<0 || C.x>2 || C.y<0 || C.y>2 || C.z<0 || C.z>2)	{ Msg("! Invalid '%s' in env-section '%s'",#C,m_identifier.c_str());}
+#define	C_CHECK(C)	if (C.x<0 || C.x>2 || C.y<0 || C.y>2 || C.z<0 || C.z>2)	{ EngineLog("! Invalid '{}' in env-section '{}'",#C,m_identifier.c_str());}
 void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 {
 	Ivector3 tm				={0,0,0};

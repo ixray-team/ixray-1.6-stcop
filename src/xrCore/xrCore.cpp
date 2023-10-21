@@ -112,12 +112,12 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	#endif
 #endif
 		FS._initialize		(flags,0,fs_fname);
-		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
+		EngineLog("'{}' build {}, {}\n", MODULE_NAME, build_id, build_date);
 		EFS._initialize		();
 #ifdef DEBUG
     #ifndef	_EDITOR
-		Msg					("CRT heap 0x%08x",_get_heap_handle());
-		Msg					("Process heap 0x%08x",GetProcessHeap());
+		EngineLog("CRT heap 0x{}",_get_heap_handle());
+		EngineLog("Process heap 0x{}",GetProcessHeap());
     #endif
 #endif // DEBUG
 	}

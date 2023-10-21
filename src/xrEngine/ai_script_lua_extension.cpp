@@ -90,7 +90,7 @@ int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
 	xr_strcpy	(S2,S);
 	S1		= S2 + xr_strlen(S);
 	int		l_iResult = vsprintf(S1,caFormat,l_tMarker);
-	Msg		("%s",S2);
+	EngineLog(S2);
 	
 	xr_strcpy	(S2,SS);
 	S1		= S2 + xr_strlen(SS);

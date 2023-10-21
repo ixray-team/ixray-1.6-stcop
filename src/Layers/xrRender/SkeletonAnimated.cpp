@@ -92,27 +92,25 @@ static LPCSTR name_blend_type( CBlend::ECurvature blend )
 static void dump_blend( CKinematicsAnimated* K, CBlend &B, u32 index )
 {
 	VERIFY( K );
-	Msg( "----------------------------------------------------------" );
-	Msg( "blend index: %d, poiter: %p ", index, &B );
-	Msg( "time total: %f, speed: %f , power: %f ", B.timeTotal, B.speed, B.blendPower   );
-	Msg( "ammount: %f, time current: %f, frame %d ", B.blendAmount, B.timeCurrent,B.dwFrame );
-	Msg( "accrue: %f, fallof: %f ", B.blendAccrue, B.blendFalloff ); 
+	EngineLog( "----------------------------------------------------------" );
+	EngineLog( "time total: {}, speed: {} , power: {} ", B.timeTotal, B.speed, B.blendPower   );
+	EngineLog( "ammount: {}, time current: {}, frame {} ", B.blendAmount, B.timeCurrent,B.dwFrame );
+	EngineLog( "accrue: {}, fallof: {} ", B.blendAccrue, B.blendFalloff );
 
-	Msg( "bonepart: %d, channel: %d, stop_at_end: %s, fall_at_end: %s "
+	EngineLog( "bonepart: {}, channel: {}, stop_at_end: {}, fall_at_end: {} "
 		, B.bone_or_part, B.channel, name_bool( B.stop_at_end ), name_bool( B.fall_at_end ) );
-	Msg( "state: %s, playing: %s, stop_at_end_callback: %s ", name_blend_type( B.blend_state() ), name_bool( B.playing ), name_bool( B.stop_at_end_callback ));
-	Msg( "callback: %p callback param: %p", B.Callback, B.CallbackParam );
+	EngineLog( "state: {}, playing: {}, stop_at_end_callback: {} ", name_blend_type( B.blend_state() ), name_bool( B.playing ), name_bool( B.stop_at_end_callback ));
 	
 	if( B.blend_state() != CBlend::eFREE_SLOT )
 	{
-		Msg( "motion : name %s, set: %s ", K->LL_MotionDefName_dbg( B.motionID ).first, K->LL_MotionDefName_dbg( B.motionID ).second );
+		EngineLog( "motion : name {}, set: {} ", K->LL_MotionDefName_dbg( B.motionID ).first, K->LL_MotionDefName_dbg( B.motionID ).second );
 	}
-	Msg( "----------------------------------------------------------" );
+	EngineLog( "----------------------------------------------------------" );
 }
 
 void	CKinematicsAnimated::LL_DumpBlends_dbg	( )
 {
-	Msg( "==================dump blends=================================================" );
+	EngineLog( "==================dump blends=================================================" );
 	CBlend *I=blend_pool.begin(), *E=blend_pool.end();
 	for (; I!=E; I++)
 		dump_blend( this, *I, u32(I - blend_pool.begin()) );
@@ -719,7 +717,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 				m_Motions.back().motions.create	(nm,NULL,bones);
             else{
             	m_Motions.pop_back	();
-                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+				EngineLog("! error in model [{}]. Unable to load motion file '{}'.", N, nm);
                 }
     	}
     }else
@@ -738,7 +736,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
                 if (!FS.exist(fn, "$game_meshes$", nm))
                 {
 #ifdef _EDITOR
-                    Msg			("!Can't find motion file '%s'.",nm);
+					EngineLog("!Can't find motion file '%s'.",nm);
                     return;
 #else
                     Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
@@ -758,7 +756,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 				m_Motions.back().motions.create	(nm,NULL,bones);
             else{
             	m_Motions.pop_back	();
-                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+				EngineLog("! error in model [{}]. Unable to load motion file '{}'.", N, nm);
                 }
     	}
     }else    
@@ -889,7 +887,7 @@ void	CKinematicsAnimated::BuildBoneMatrix			( const CBoneData* bd, CBoneInstance
 			{
 			Log("BLEND_INST",BLEND_INST.Blend.size());
 			Log("Bone",LL_BoneName_dbg(SelfID));
-			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
+			Msg("Result.Q {},{},{},{}",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
 			Log("Result.T",Result.T);
 			Log("lp parent",(u32)parent);
 			Log("parent",*parent);
@@ -923,8 +921,8 @@ void	CKinematicsAnimated::BuildBoneMatrix			( const CBoneData* bd, CBoneInstance
 
 			Dt.lerp	(T1,T2,delta);
 
-			Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-			Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
+			Msg("K1t {},{},{}",K1t->x,K1t->y,K1t->z);
+			Msg("K2t {},{},{}",K2t->x,K2t->y,K2t->z);
 
 			Log("count",count);
 			Log("frame",frame);

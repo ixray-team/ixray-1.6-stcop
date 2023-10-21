@@ -15,7 +15,7 @@ u32 GetGpuNum()
 	//	code will fail.
 	VERIFY(res>0);
 
-	Msg("* Starting rendering as %d-GPU.", res);
+	EngineLog("* Starting rendering as {}-GPU.", res);
 	
 	return res;
 }

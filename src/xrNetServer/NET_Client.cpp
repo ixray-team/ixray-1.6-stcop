@@ -115,7 +115,7 @@ void	dump_URL	(LPCSTR p, IDirectPlay8Address* A)
 	string256	aaaa;
 	DWORD		aaaa_s			= sizeof(aaaa);
 	R_CHK		(A->GetURLA(aaaa,&aaaa_s));
-	Log			(p,aaaa);
+	EngineLog(p,aaaa);
 }
 
 // 
@@ -317,7 +317,7 @@ IPureClient::_Recieve( const void* data, u32 data_size, u32 /*param*/ )
 			net_Connected = EnmConnectionCompleted;
 			return;
 		}
-		Msg( "! Unknown system message" );
+		EngineLog( "! Unknown system message" );
 		return;
 	} 
 	else if( net_Connected == EnmConnectionCompleted )
@@ -539,12 +539,12 @@ if(!psNET_direct_connect)
 
 				if (bPortWasSet) 
 				{
-					Msg("! IPureClient : port %d is BUSY!", c_port);
+					EngineLog("! IPureClient : port {} is BUSY!", c_port);
 					return FALSE;
 				}				
 				else
 				{
-					Msg("! IPureClient : port %d is BUSY!", c_port);
+					EngineLog("! IPureClient : port {} is BUSY!", c_port);
 				}
 
 				c_port++;
@@ -555,7 +555,7 @@ if(!psNET_direct_connect)
 			}
 			else
 			{
-				Msg("- IPureClient : created on port %d!", c_port);
+				EngineLog("- IPureClient : created on port {}!", c_port);
 			}
 		};
 
@@ -632,12 +632,12 @@ if(!psNET_direct_connect)
 
 				if (bPortWasSet) 
 				{
-					Msg("! IPureClient : port %d is BUSY!", c_port);
+					EngineLog("! IPureClient : port {} is BUSY!", c_port);
 					return FALSE;
 				}				
 #ifdef DEBUG
 				else
-					Msg("! IPureClient : port %d is BUSY!", c_port);
+					EngineLog("! IPureClient : port {} is BUSY!", c_port);
 			{
 				static char desc_storage[1024] = {};
 				FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, res, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
@@ -647,7 +647,7 @@ if(!psNET_direct_connect)
 			}
 			else
 			{
-				Msg("- IPureClient : created on port %d!", c_port);
+				EngineLog("- IPureClient : created on port {}!", c_port);
 			}
 		};
 
@@ -671,7 +671,7 @@ if(!psNET_direct_connect)
 		net_csEnumeration.Enter		();
 		// real connect
 		for (u32 I=0; I<net_Hosts.size(); I++) 
-			Msg("* HOST #%d: %s\n",I+1,*net_Hosts[I].dpSessionName);
+			EngineLog("* HOST #{}: {}\n",I+1,*net_Hosts[I].dpSessionName);
 		
 		R_CHK(net_Hosts.front().pHostAddress->Duplicate(&pHostAddress ) );
 		// dump_URL		("! c2s ",	pHostAddress);
@@ -706,7 +706,7 @@ if(!psNET_direct_connect)
 			}break;
 			case DPNERR_CANTCREATEPLAYER:
 				{
-					Msg("! Error: Can\'t create player");
+					EngineLog("! Error: Can\'t create player");
 				}break;
 		}
 		if (res != S_OK) return FALSE;
@@ -745,11 +745,11 @@ void IPureClient::Disconnect()
 	net_csEnumeration.Leave			();
 
 	// Release interfaces
-	_SHOW_REF	("cl_netADR_Server",net_Address_server);
+	_SHOW_REF	("cl_netADR_Server {}",net_Address_server);
 	_RELEASE	(net_Address_server);
-	_SHOW_REF	("cl_netADR_Device",net_Address_device);
+	_SHOW_REF	("cl_netADR_Device {}",net_Address_device);
 	_RELEASE	(net_Address_device);
-	_SHOW_REF	("cl_netCORE",NET);
+	_SHOW_REF	("cl_netCORE {}",NET);
 	_RELEASE	(NET);
 
 	net_Connected = EnmConnectionWait;
@@ -844,14 +844,14 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 			{
 				OnSessionTerminate(m_data);
 #ifdef DEBUG				
-				Msg("- Session terminated : %s", m_data);
+				EngineLog("- Session terminated : {}", m_data);
 #endif
 			}
 			else
 			{
 #ifdef DEBUG
 				OnSessionTerminate( (::Debug.error2string(m_hResultCode)));
-				Msg("- Session terminated : %s", (::Debug.error2string(m_hResultCode)));
+				EngineLog("- Session terminated : {}", (::Debug.error2string(m_hResultCode)));
 #endif
 			}
 		};
@@ -879,7 +879,7 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 					{
 						string256 ResStr = "";
 						strncpy_s(ResStr, (char*)(pMsg->pvApplicationReplyData), pMsg->dwApplicationReplyDataSize);
-						Msg("Connection result : %s", ResStr);
+						EngineLog("Connection result : {}", ResStr);
 					}
 					else
 						msg	= "DPN_MSGID_CONNECT_COMPLETE"; 
@@ -963,7 +963,7 @@ void	IPureClient::SendTo_LL(void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 //	Msg("- Client::SendTo_LL [%d]", size);
 	if( FAILED(hr) )	
 	{
-		Msg	("! ERROR: Failed to send net-packet, reason: %s",::Debug.error2string(hr));
+		EngineLog("! ERROR: Failed to send net-packet, reason: {}",::Debug.error2string(hr));
 		static char desc_storage[1024] = {};
 		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
 	}
@@ -1069,13 +1069,13 @@ void	IPureClient::Sync_Thread	()
 			if (0==NET || net_Disconnected)	break;
 
 			if (FAILED(NET->Send(&desc,1,0,0,&hAsync,net_flags(FALSE,FALSE,TRUE))))	{
-				Msg("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
+				EngineLog("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
 				break;
 			}
 		} 
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{
-			Msg("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
+			EngineLog("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
 			break;
 		}
 		

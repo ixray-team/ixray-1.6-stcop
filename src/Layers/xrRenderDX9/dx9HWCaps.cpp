@@ -34,7 +34,7 @@ void CHWCaps::Update() {
 	raster.dwInstructions		= (caps.PS20Caps.NumInstructionSlots);
 
 	// ***************** Info
-	Msg							("* GPU shading: vs(%x/%d.%d/%d), ps(%x/%d.%d/%d)",
+	EngineLog("* GPU shading: vs({}/{}.{}/{}), ps({}/{}.{}/{})",
 		caps.VertexShaderVersion,	geometry_major, geometry_minor, CAP_VERSION(geometry_major,	geometry_minor),
 		caps.PixelShaderVersion,	raster_major,	raster_minor,	CAP_VERSION(raster_major,	raster_minor)
 		);
@@ -55,7 +55,7 @@ void CHWCaps::Update() {
 		if (1==vc.OptMethod	)	geometry.dwVertexCache	= vc.CacheSize;
 		else					geometry.dwVertexCache	= 16;
 	}
-	Msg					("* GPU vertex cache: %s, %d",(1==vc.OptMethod)?"recognized":"unrecognized",u32(geometry.dwVertexCache));
+	EngineLog("* GPU vertex cache: {}, {}",(1==vc.OptMethod)?"recognized":"unrecognized",u32(geometry.dwVertexCache));
 
 	// *******1********** Compatibility : vertex shader
 	if (0==raster_major)		geometry_major=0;		// Disable VS if no PS

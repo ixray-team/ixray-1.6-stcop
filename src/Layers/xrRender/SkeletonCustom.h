@@ -190,8 +190,8 @@ public:
         VERIFY(bones);
 		u32	sz = sizeof(vecBones);
 		u32	sz1=  sizeof(((*bones)[bone_id])->children);
-		Msg("sz: %d",sz);
-		Msg("sz1: %d",sz1);
+		EngineLog("sz: {}",sz);
+		EngineLog("sz1: {}",sz1);
         CBoneData* bd =  ((*bones)[bone_id]) ;
         return bd;
 	}

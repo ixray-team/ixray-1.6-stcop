@@ -63,7 +63,7 @@ public:
 	}
 
 	IC virtual void Dump() const {
-		Msg("* Elapsed time (sec): %f", GetElapsed_sec());
+		EngineLog("* Elapsed time (sec): {}", GetElapsed_sec());
 	}
 
 	IC CTimer& operator=(const CTimer& other_timer) {

@@ -109,7 +109,7 @@ void	CResourceManager::LS_Load			()
 {
 	LSVM			= luaL_newstate();
 	if (!LSVM)		{
-		Msg			("! ERROR : Cannot initialize LUA VM!");
+		EngineLog("! ERROR : Cannot initialize LUA VM!");
 		return;
 	}
 
@@ -199,7 +199,7 @@ void	CResourceManager::LS_Load			()
 			Script::bfLoadFileIntoNamespace	(LSVM,fn,namesp,true);
 		} catch (...)
 		{
-			Log(lua_tostring(LSVM,-1));
+			EngineLog(lua_tostring(LSVM,-1));
 		}
 	}
 	FS.file_list_close			(folder);

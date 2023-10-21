@@ -68,7 +68,7 @@ struct str_container_impl
 
 	void			 verify ()
 	{
-		Msg			("strings verify started");
+		EngineLog("strings verify started");
 		for ( u32 i=0; i<buffer_size; ++i )
 		{
 			str_value* value = buffer[i];
@@ -81,7 +81,7 @@ struct str_container_impl
 				value = value->next;
 			}
 		}
-		Msg			("strings verify completed");
+		EngineLog("strings verify completed");
 	}
 
 	void			dump (FILE* f) const
@@ -176,7 +176,7 @@ str_value*	str_container::dock		(str_c value)
 		if ( is_leaked_string )
 		{
 			++num_leaked_string;
-			Msg("leaked_string: %d 0x%08x", num_leaked_string, result);
+			EngineLog("leaked_string: {} 0x{}", num_leaked_string, (size_t)&result);
 		}
 #endif // DEBUG
 

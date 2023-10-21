@@ -44,11 +44,11 @@ rtc9_initialize()
 		reader->r( _LZO_Dictionary, _LZO_DictionarySize );
 		FS.r_close( reader );
 
-        Msg( "using LZO-dictionary \"%s\"", file_name );
+		EngineLog( "using LZO-dictionary \"{}\"", file_name );
 	}
 	else
 	{
-	    Msg( "\"%s\" not found", file_name );
+		EngineLog( "\"{}\" not found", file_name );
 	}
 
 	initialized = true;

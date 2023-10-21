@@ -247,7 +247,7 @@ void			ISpatial_DB::_insert	(ISpatial_NODE* N, Fvector& n_C, float n_R)
 		rt_insert_object->spatial.node_radius		= n_vR;
 	}
 }
-
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 void			ISpatial_DB::insert		(ISpatial* S)
 {
 	cs.Enter			();

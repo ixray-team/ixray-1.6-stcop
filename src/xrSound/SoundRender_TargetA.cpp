@@ -34,7 +34,7 @@ BOOL	CSoundRender_TargetA::_initialize		()
         A_CHK(alSourcef	(pSource, AL_PITCH,	cache_pitch));
         return			TRUE;
     }else{
-    	Msg				("! sound: OpenAL: Can't create source. Error: %s.",(LPCSTR)alGetString(error_));
+        EngineLog("! sound: OpenAL: Can't create source. Error: {}.",(LPCSTR)alGetString(error_));
         return 			FALSE;
     }
 }
@@ -107,7 +107,7 @@ void	CSoundRender_TargetA::update			()
 	A_CHK(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
     A_CHK(alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed));
     if (alGetError() != AL_NO_ERROR) {
-        Msg("!![%s] Source state error", __FUNCTION__);
+        EngineLog("!![{}] Source state error", __FUNCTION__);
         return;
     }
 
@@ -120,7 +120,7 @@ void	CSoundRender_TargetA::update			()
         processed--;
 
         if (alGetError() != AL_NO_ERROR) {
-            Msg("!![%s] Buffer queue error", __FUNCTION__);
+            EngineLog("!![{}] Buffer queue error", __FUNCTION__);
             return;
         }
     }
@@ -137,7 +137,7 @@ void	CSoundRender_TargetA::update			()
 
 		alSourcePlay(pSource);
 		if (alGetError() != AL_NO_ERROR) {
-			Msg("!![%s] Playback restart error", __FUNCTION__);
+            EngineLog("!![{}] Playback restart error", __FUNCTION__);
 			return;
 		}
     }

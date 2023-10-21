@@ -77,44 +77,18 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dB
 		float dbg_free_energy=KK;
 		LPCSTR name= PhysicsRefObject()->ObjectName();
 		
-		Msg("-----------------------------------------------------------------------------------------");
-		Msg("cd %s -effective vell %f",		name,				c_vel);
-		Msg("cd %s -my_norm_vell %f",		name,				dbg_my_norm_vell);
-		Msg("cd %s -obj_norm_vell %f",		name,				dbg_obj_norm_vell);
-		Msg("cd %s -my_kinetic_e %f",		name,				dbg_my_kinetic_e);
-		Msg("cd %s -obj_kinetic_e %f",		name,				dbg_obj_kinetic_e);
-		Msg("cd %s -my_effective_e %f",		name,				dbg_my_effective_e);
-		Msg("cd %s -obj_effective_e %f",	name,				dbg_obj_effective_e);
-		Msg("cd %s -effective_acceted_e %f",name,				accepted_energy);
-		Msg("cd %s -real_acceted_e %f",		name,				Kself+Kobj-KK);
-		Msg("cd %s -free_energy %f",		name,				dbg_free_energy);
-		Msg("-----------------------------------------------------------------------------------------");
-		/*
-		static float dbg_my_norm_vell=0.f;
-		static float dbg_obj_norm_vell=0.f;
-		static float dbg_my_kinetic_e=0.f;
-		static float dbg_obj_kinetic_e=0.f;
-		static float dbg_my_effective_e=0.f;
-		static float dbg_obj_effective_e=0.f;
-		static float dbg_free_energy=0.f;
-		if()
-			dbg_my_norm_vell=norm_vel;
-			dbg_obj_norm_vell=norm_obj_vel;
-			dbg_my_kinetic_e=Kself;
-			dbg_obj_kinetic_e=Kobj;
-			dbg_my_effective_e=Kself*m_collision_damage_factor;
-			dbg_obj_effective_e=Kobj*object_damage_factor;
-			dbg_free_energy=KK;
-		DBG_OutText("-----dbg obj collision damage-------");
-		DBG_OutText("my_norm_vell %f",dbg_my_norm_vell);
-		DBG_OutText("obj_norm_vell %f",dbg_obj_norm_vell);
-		DBG_OutText("my_kinetic_e %f",dbg_my_kinetic_e);
-		DBG_OutText("obj_kinetic_e %f", dbg_obj_kinetic_e);
-		DBG_OutText("my_effective_e %f",dbg_my_effective_e);
-		DBG_OutText("obj_effective_e %f",dbg_obj_effective_e);
-		DBG_OutText("free_energy %f",dbg_free_energy);
-		DBG_OutText("-----------------------------------");
-		*/
+		EngineLog("-----------------------------------------------------------------------------------------");
+		EngineLog("cd {} -effective vell {}",		name,				c_vel);
+		EngineLog("cd {} -my_norm_vell {}",		name,				dbg_my_norm_vell);
+		EngineLog("cd {} -obj_norm_vell {}",		name,				dbg_obj_norm_vell);
+		EngineLog("cd {} -my_kinetic_e {}",		name,				dbg_my_kinetic_e);
+		EngineLog("cd {} -obj_kinetic_e {}",		name,				dbg_obj_kinetic_e);
+		EngineLog("cd {} -my_effective_e {}",		name,				dbg_my_effective_e);
+		EngineLog("cd {} -obj_effective_e {}",	name,				dbg_obj_effective_e);
+		EngineLog("cd {} -effective_acceted_e {}",name,				accepted_energy);
+		EngineLog("cd {} -real_acceted_e {}",		name,				Kself+Kobj-KK);
+		EngineLog("cd {} -free_energy {}",		name,				dbg_free_energy);
+		EngineLog("-----------------------------------------------------------------------------------------");
 	}
 #endif
 	if(c_vel>m_collision_damage_info.m_contact_velocity) 

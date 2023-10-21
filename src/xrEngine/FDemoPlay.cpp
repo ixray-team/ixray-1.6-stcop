@@ -16,7 +16,7 @@
 
 CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo,life_time/*,FALSE*/)
 {
-	Msg					("*** Playing demo: %s",name);
+	EngineLog("*** Playing demo: {}",name);
 	Console->Execute	("hud_weapon 0");
 
 	fSpeed				= ms;
@@ -54,7 +54,7 @@ CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : 
 		m_count			= seq.size();
 		CopyMemory	(&*seq.begin(),fs->pointer(),sz);
 		FS.r_close		(fs);
-		Log				("~ Total key-frames: ",m_count);
+		EngineLog("~ Total key-frames: {}",m_count);
 	}
 	stat_started		= FALSE;
 	Device.PreCache		(50, true, false);
@@ -142,7 +142,7 @@ void CDemoPlay::stat_Stop	()
 	rfps_middlepoint		/= float(stat_table.size()-1);
 	*/
 
-	Msg("* [DEMO] FPS: average[%f], min[%f], max[%f], middle[%f]",rfps_average,rfps_min,rfps_max,rfps_middlepoint);
+	EngineLog("* [DEMO] FPS: average[}{], min[{}], max[{}], middle[{}]",rfps_average,rfps_min,rfps_max,rfps_middlepoint);
 }
 
 #define FIX(a) while (a>=m_count) a-=m_count

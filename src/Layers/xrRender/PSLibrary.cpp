@@ -182,7 +182,7 @@ bool CPSLibrary::Load2()
 #ifdef _EDITOR
     if(pb) UI->ProgressEnd		(pb);
 #endif
-	Msg				("Loaded particles :%d", files.size());
+    EngineLog("Loaded particles :{}", files.size());
 	return true;
 }
 
@@ -191,7 +191,7 @@ bool CPSLibrary::Load(const char* nm)
 {
     if (!FS.exist(nm))
     {
-        Msg("Can't find file: '%s'",nm);
+        EngineLog("Can't find file: '{}'",nm);
         return 				false;
     }
     
@@ -246,7 +246,7 @@ void CPSLibrary::Reload()
 {
 	OnDestroy();
     OnCreate();
-	Msg( "PS Library was succesfully reloaded." );
+    EngineLog( "PS Library was succesfully reloaded." );
 }
 //----------------------------------------------------
 

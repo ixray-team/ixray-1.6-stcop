@@ -27,13 +27,13 @@ public:
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
 #ifdef _EDITOR
     		if (handle==-1)
-    			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
+				EngineLog("!Can't create file: '{}'. Error: '{}'.",*fName,_sys_errlist[errno]);
 #endif
     		hf		= _wfdopen(handle,L"wb");
         }else{
 			_wfopen_s(&hf, wName, L"wb");
 			if (hf==0)
-				Msg		("!Can't write file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
+				EngineLog("!Can't write file: '{}'. Error: '{}'.",*fName,_sys_errlist[errno]);
 		}
 	}
 

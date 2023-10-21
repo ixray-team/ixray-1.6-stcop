@@ -37,7 +37,7 @@ CRenderTarget::CRenderTarget()
 	param_color_add.set( 0.0f, 0.0f, 0.0f );
 
 	bAvailable			= Create	();
-	Msg					("* SSample: %s",bAvailable?"enabled":"disabled");
+	EngineLog("* SSample: {}",bAvailable?"enabled":"disabled");
 }
 
 BOOL CRenderTarget::Create()
@@ -55,7 +55,7 @@ BOOL CRenderTarget::Create()
 
 	while (rtHeight % 2)
 		rtHeight--;
-	Msg("* SSample: %dx%d", rtWidth, rtHeight);
+	EngineLog("* SSample: {}x{}", rtWidth, rtHeight);
 
 	// Bufferts
 	RT.create			(RTname,			rtWidth,rtHeight,HW.Caps.fTarget);

@@ -33,9 +33,9 @@ void CSheduler::Destroy			()
 	{
 		string1024		_objects; _objects[0]=0;
 
-		Msg				("! Sheduler work-list is not empty");
+		EngineLog("! Sheduler work-list is not empty");
 		for (u32 it=0; it<Items.size(); it++)
-			Msg("%s", Items[it].Object->shedule_Name().c_str());
+			EngineLog(Items[it].Object->shedule_Name().c_str());
 	}
 #endif // DEBUG
 	ItemsRT.clear		();
@@ -151,7 +151,7 @@ bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_fou
 
 #ifdef DEBUG
 	if (warn_on_not_found)
-		Msg							("! scheduled object %s tries to unregister but is not registered",*O->shedule_Name());
+		EngineLog("! scheduled object %s tries to unregister but is not registered",*O->shedule_Name());
 #endif // DEBUG
 
 	return							(false);

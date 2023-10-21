@@ -74,7 +74,7 @@ void CHW::Reset		(HWND hwnd)
 	while	(TRUE)	{
 		HRESULT _hr							= HW.pDevice->Reset	(&DevPP);
 		if (SUCCEEDED(_hr))					break;
-		Msg		("! ERROR: [%dx%d]: %s",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.error2string(_hr));
+		EngineLog("! ERROR: [{}x{}]: {}",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.error2string(_hr));
 		Sleep	(100);
 	}
 	R_CHK				(pDevice->GetRenderTarget			(0,&pBaseRT));
@@ -237,13 +237,13 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	// Display the name of video board
 	D3DADAPTER_IDENTIFIER9	adapterID;
 	R_CHK	(pD3D->GetAdapterIdentifier(DevAdapter,0,&adapterID));
-	Msg		("* GPU [vendor:%X]-[device:%X]: %s",adapterID.VendorId,adapterID.DeviceId,adapterID.Description);
+	EngineLog("* GPU [vendor:{}]-[device:{}]: {}",adapterID.VendorId,adapterID.DeviceId,adapterID.Description);
 
 	u16	drv_Product		= HIWORD(adapterID.DriverVersion.HighPart);
 	u16	drv_Version		= LOWORD(adapterID.DriverVersion.HighPart);
 	u16	drv_SubVersion	= HIWORD(adapterID.DriverVersion.LowPart);
 	u16	drv_Build		= LOWORD(adapterID.DriverVersion.LowPart);
-	Msg		("* GPU driver: %d.%d.%d.%d",u32(drv_Product),u32(drv_Version),u32(drv_SubVersion), u32(drv_Build));
+	EngineLog("* GPU driver: {}.{}.{}.{}",u32(drv_Product),u32(drv_Version),u32(drv_SubVersion), u32(drv_Build));
 
 	Caps.id_vendor	= adapterID.VendorId;
 	Caps.id_device	= adapterID.DeviceId;
@@ -292,7 +292,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	}
 
 	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
-		Msg					("Failed to initialize graphics hardware.\n"
+		EngineLog			("Failed to initialize graphics hardware.\n"
 							 "Please try to restart the game.\n"
 							 "Can not find matching format for back buffer."
 							 );
@@ -353,7 +353,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	}
 	if (D3DERR_DEVICELOST==R)	{
 		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\n"
+		EngineLog("{}", "Failed to initialize graphics hardware.\n"
 							 "Please try to restart the game.\n"
 							 "CreateDevice returned 0x%08x(D3DERR_DEVICELOST)", R);
 		FlushLog			();
@@ -366,16 +366,16 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	switch (GPU)
 	{
 	case D3DCREATE_SOFTWARE_VERTEXPROCESSING:
-		Log	("* Vertex Processor: SOFTWARE");
+		EngineLog("* Vertex Processor: SOFTWARE");
 		break;
 	case D3DCREATE_MIXED_VERTEXPROCESSING:
-		Log	("* Vertex Processor: MIXED");
+		EngineLog("* Vertex Processor: MIXED");
 		break;
 	case D3DCREATE_HARDWARE_VERTEXPROCESSING:
-		Log	("* Vertex Processor: HARDWARE");
+		EngineLog("* Vertex Processor: HARDWARE");
 		break;
 	case D3DCREATE_HARDWARE_VERTEXPROCESSING|D3DCREATE_PUREDEVICE:
-		Log	("* Vertex Processor: PURE HARDWARE");
+		EngineLog("* Vertex Processor: PURE HARDWARE");
 		break;
 	}
 
@@ -386,7 +386,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
 	R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
 	u32	memory									= pDevice->GetAvailableTextureMem	();
-	Msg		("* Texture memory: %d M",		memory/(1024*1024));
+	EngineLog("* Texture memory: {} M",		memory/(1024*1024));
 #ifndef _EDITOR
 	updateWindowProps							(m_hWnd);
 	fill_vid_mode_list							(this);
@@ -659,14 +659,14 @@ void fill_vid_mode_list(CHW* _hw)
 	vid_mode_token[_cnt-1].name		= NULL;
 
 #ifdef DEBUG
-	Msg("Available video modes[%d]:",_tmp.size());
+	EngineLog("Available video modes[{}]:",_tmp.size());
 #endif // DEBUG
 	for(i=0; i<_tmp.size();++i)
 	{
 		vid_mode_token[i].id		= i;
 		vid_mode_token[i].name		= _tmp[i];
 #ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
+		EngineLog(_tmp[i]);
 #endif // DEBUG
 	}
 }

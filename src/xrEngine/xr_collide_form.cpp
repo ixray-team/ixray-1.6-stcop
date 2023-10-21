@@ -158,12 +158,12 @@ void CCF_Skeleton::BuildState()
 				bool b						= I->b_IM.invert_b	(TW);
 				// check matrix validity
 				if (!b)	{
-					Msg						("! ERROR: invalid bone xform . Bone disabled.");
-					Msg						("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]",I->elem_id,VPUSH(TW.c));
-					Msg						("visual name %s",owner->cNameVisual().c_str());
-					Msg						("object name %s",owner->cName().c_str());
+					EngineLog("! ERROR: invalid bone xform . Bone disabled.");
+					EngineLog("! ERROR: bone_id=[{}], world_pos {}", I->elem_id, TW.c);
+					EngineLog("visual name {}",owner->cNameVisual().c_str());
+					EngineLog("object name {}",owner->cName().c_str());
 #ifdef DEBUG
-					Msg						( dbg_object_full_dump_string( owner ).c_str() );
+					EngineLog( dbg_object_full_dump_string( owner ).c_str() );
 #endif //#ifdef DEBUG
 					I->elem_id				= u16(-1);				//. hack - disable invalid bone
 				}

@@ -8,8 +8,8 @@ void IGame_Level::LL_CheckTextures()
 	//Device.Resources->_GetMemoryUsage		(m_base,c_base,m_lmaps,c_lmaps);
 	Device.m_pRender->ResourcesGetMemoryUsage(m_base,c_base,m_lmaps,c_lmaps);
 
-	Msg	("* t-report - base: %d, %d K",	c_base,		m_base/1024);
-	Msg	("* t-report - lmap: %d, %d K",	c_lmaps,	m_lmaps/1024);
+	EngineLog("* t-report - base: {}, {} K",	c_base,		m_base/1024);
+	EngineLog("* t-report - lmap: {}, {} K",	c_lmaps,	m_lmaps/1024);
 	BOOL	bError	= FALSE;
 	if (m_base>64*1024*1024 || c_base>400)
 	{
@@ -21,7 +21,7 @@ void IGame_Level::LL_CheckTextures()
 	{
 #ifdef DEBUG
 		LPCSTR msg	= "Too many lmap-textures (limit: 8 textures or 32M).\n        Reduce pixel density (worse) or use more vertex lighting (better).";
-		Msg			("***FATAL***: %s",msg);
+		EngineLog("***FATAL***: {}",msg);
 #endif // #ifdef DEBUG
 		bError		= TRUE;
 	}

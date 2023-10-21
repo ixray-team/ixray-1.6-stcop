@@ -96,7 +96,7 @@ void				TW_Save	(ID3DTexture2D* T, LPCSTR name, LPCSTR prefix, LPCSTR postfix)
 	for (int it=0; it<int(xr_strlen(fn)); it++)	
 		if ('\\'==fn[it])	fn[it]	= '_';
 	string256		fn2;	strconcat	(sizeof(fn2),fn2,"debug\\",fn,".dds");
-	Log						("* debug texture save: ",fn2);
+	EngineLog("* debug texture save: ",fn2);
 	R_CHK					(D3DXSaveTextureToFileA	(fn2,D3DXIFF_DDS,T,0));
 }
 
@@ -293,7 +293,7 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	return 0;
 #else
 
-	Msg("! Can't find texture '%s'",fname);
+	EngineLog("! Can't find texture '{}'",fname);
 	R_ASSERT(FS.exist(fn,"$game_textures$",	"ed\\ed_not_existing_texture",".dds"));
 	goto _DDS;
 
@@ -306,14 +306,11 @@ _DDS:
 		// Load and get header
 		D3DXIMAGE_INFO			IMG;
 		S						= FS.r_open	(fn);
-#ifdef DEBUG
-		Msg						("* Loaded: %s[%d]b",fn,S->length());
-#endif // DEBUG
 		img_size				= S->length	();
 		R_ASSERT				(S);
 		result_	= D3DXGetImageInfoFromFileInMemory	(S->pointer(),S->length(),&IMG);
 		if ( FAILED(result_) ) {
-			Msg					("! Can't get image info for texture '%s'",fn);
+			EngineLog("! Can't get image info for texture '{}'",fn);
 			FS.r_close			(S);
 			string_path			temp;
 			R_ASSERT			( FS.exist( temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds" ) );
@@ -343,7 +340,7 @@ _DDS_CUBE:
 			FS.r_close				(S);
 
 			if ( FAILED(result_) ) {
-				Msg					("! Can't load texture '%s'",fn);
+				EngineLog("! Can't load texture '{}'",fn);
 				string_path			temp;
 				R_ASSERT			( FS.exist( temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds" ) );
 				R_ASSERT			( xr_strcmp(temp,fn) );
@@ -379,7 +376,7 @@ _DDS_2D:
 			FS.r_close				(S);
 
 			if ( FAILED(result_) ) {
-				Msg					("! Can't load texture '%s'",fn);
+				EngineLog("! Can't load texture '{}'",fn);
 				string_path			temp;
 				R_ASSERT			( FS.exist( temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds" ) );
 				_strlwr				(temp);
@@ -471,7 +468,7 @@ _BUMP:
 	*/
 _BUMP_from_base:
 	{
-		Msg			("! auto-generated bump map: %s",fname);
+		EngineLog("! auto-generated bump map: {}",fname);
 //////////////////
 #ifndef _EDITOR
 		if (strstr(fname,"_bump#"))

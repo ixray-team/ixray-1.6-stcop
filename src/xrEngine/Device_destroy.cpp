@@ -21,7 +21,7 @@ void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 void CRenderDevice::Destroy	(void) {
 	if (!b_is_Ready)			return;
 
-	Log("Destroying Direct3D...");
+	EngineLog("Destroying Direct3D...");
 
 	ShowCursor	(TRUE);
 	m_pRender->ValidateHW();
@@ -67,7 +67,7 @@ void CRenderDevice::Reset		(bool precache)
 	if (precache)
 		PreCache			(20, true, false);
 	u32 tm_end				= TimerAsync();
-	Msg						("*** RESET [%d ms]",tm_end-tm_start);
+	EngineLog("*** RESET [{} ms]",tm_end-tm_start);
 
 	//	TODO: Remove this! It may hide crash
 	Memory.mem_compact();

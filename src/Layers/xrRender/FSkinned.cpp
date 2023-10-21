@@ -710,11 +710,10 @@ static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinema
 	for( u8 i =0; i<vertex_type::bones_count; ++i )
 		if( v.get_bone_id(i) >= Parent->LL_BoneCount() )
 		{
-			Msg( "v.get_bone_id(i): %d, Parent->LL_BoneCount() %d ", v.get_bone_id(i), Parent->LL_BoneCount() );
-			Msg( "&v: %p, &V: %p, indices: %p", &v, V, indices );
-			Msg( " iBase: %d, iCount: %d, V->iBase %d, V->iCount %d, V->vBase: %d,  V->vCount  %d, vertex_idx: %d, idx: %d", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount, vertex_idx, idx  );
-			Msg( " v.P: %s , v.N: %s, v.T: %s, v.B: %s", get_string( v.P ).c_str(),get_string(  v.N ).c_str(),get_string(  v.T ).c_str(),get_string(  v.B  ).c_str());
-			Msg( "Parent->dbg_name: %s ", Parent->dbg_name.c_str() );
+			EngineLog( "v.get_bone_id(i): {}, Parent->LL_BoneCount() {} ", v.get_bone_id(i), Parent->LL_BoneCount() );
+			EngineLog( " iBase: {}, iCount: {}, V->iBase {}, V->iCount {}, V->vBase: {},  V->vCount  {}, vertex_idx: {}, idx: {}", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount, vertex_idx, idx  );
+			EngineLog( " v.P: {} , v.N: {}, v.T: {}, v.B: {}", get_string( v.P ).c_str(),get_string(  v.N ).c_str(),get_string(  v.T ).c_str(),get_string(  v.B  ).c_str());
+			EngineLog( "Parent->dbg_name: {} ", Parent->dbg_name.c_str() );
 			FlushLog();
 			FATAL( "v.get_bone_id(i) >= Parent->LL_BoneCount()" );
 		}

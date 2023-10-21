@@ -278,7 +278,7 @@ void	CSoundRender_Core::attach_tail				( ref_sound& S, const char* fName)
 	if(S._p->fn_attached[0].size()&&S._p->fn_attached[1].size())
 	{
 #ifdef DEBUG
-		Msg("! 2 file already in queue [%s][%s]",S._p->fn_attached[0].c_str(),S._p->fn_attached[1].c_str());
+		EngineLog("! 2 file already in queue [{}][{}]",S._p->fn_attached[0].c_str(),S._p->fn_attached[1].c_str());
 #endif // #ifdef DEBUG
 		return;
 	}

@@ -1145,7 +1145,7 @@ void CPHSimpleCharacter::SetVelocity(Fvector vel)
 		float mag=_sqrt(sq_mag);
 		vel.mul(default_l_limit/mag);
 #ifdef DEBUG
-		Msg("set velocity magnitude is too large %f",mag);
+		EngineLog("set velocity magnitude is too large {}",mag);
 #endif
 	}
 	dBodySetLinearVel(m_body,vel.x,vel.y,vel.z);
@@ -1935,7 +1935,7 @@ bool	CPHSimpleCharacter::	UpdateRestrictionType(CPHCharacter* ach)
 	m_new_restriction_type=old;
 #ifdef DEBUG
 	if(debug_output().ph_dbg_draw_mask1().test(ph_m1_DbgActorRestriction))
-		Msg("restriction can not change change small -> large");
+		EngineLog("restriction can not change change small -> large");
 #endif
 	return false;
 }

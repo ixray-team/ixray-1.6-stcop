@@ -94,7 +94,7 @@ void light::set_active		(bool a)
 #ifdef DEBUG
 		Fvector	zero = {0,-1000,0}			;
 		if (position.similar(zero))			{
-			Msg	("- Uninitialized light position.");
+			EngineLog("- Uninitialized light position.");
 		}
 #endif // DEBUG
 	}

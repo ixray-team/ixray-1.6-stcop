@@ -161,7 +161,7 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 
 u32 MODEL::memory	()
 {
-	if (S_BUILD==status)	{ Msg	("! xrCDB: model still isn't ready"); return 0; }
+	if (S_BUILD==status)	{ EngineLog("! xrCDB: model still isn't ready"); return 0; }
 	u32 V					= verts_count*sizeof(Fvector);
 	u32 T					= tris_count *sizeof(TRI);
 	return tree->GetUsedBytes()+V+T+sizeof(*this)+sizeof(*tree);

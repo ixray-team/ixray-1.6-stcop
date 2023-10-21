@@ -43,7 +43,7 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 {
 	g_exclusive							= !!bExclusive;
 
-	Log("Starting INPUT device...");
+	EngineLog("Starting INPUT device...");
 
 	pDI 								=	NULL;
 	pMouse								=	NULL;
@@ -112,7 +112,7 @@ CInput::~CInput(void)
 		_RELEASE	(pKeyboard);
 	}
 
-	_SHOW_REF	("Input: ",pDI);
+	_SHOW_REF	("Input: {}",pDI);
 	_RELEASE	(pDI);
 }
 
@@ -138,7 +138,7 @@ HRESULT CInput::CreateInputDevice( LPDIRECTINPUTDEVICE8* device, GUID guidDevice
 #endif // #ifdef INGAME_EDITOR
 	{
 		HRESULT	hr = (*device)->SetCooperativeLevel( RDEVICE.m_hWnd, dwFlags );
-		if (FAILED(hr) && (hr==E_NOTIMPL)) Msg("! INPUT: Can't set coop level. Emulation???");
+		if (FAILED(hr) && (hr==E_NOTIMPL)) EngineLog("! INPUT: Can't set coop level. Emulation???");
 		else R_CHK(hr);
 	}
 
@@ -316,7 +316,7 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	int cnt						= WideCharToMultiByte(CP_ACP,0,keyname.wsz,-1,dest_str,dest_sz,NULL,NULL);
 	if(cnt==-1)
 	{
-		Msg("! cant convert dik_name for dik[%d], prop=[%S]", dik, keyname.wsz);
+		EngineLog("! cant convert dik_name for dik[{}], prop=[{}]", dik /*, keyname.wsz */);
 		return					false;
 	}
 	return						(cnt!=-1);

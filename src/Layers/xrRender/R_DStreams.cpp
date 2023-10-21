@@ -38,7 +38,7 @@ void _VertexStream::Create	()
 	mPosition				= 0;
 	mDiscardID				= 0;
 
-	Msg("* DVB created: %dK", mSize/1024);
+	EngineLog("* DVB created: {}K", mSize/1024);
 }
 
 void _VertexStream::Destroy	()
@@ -85,7 +85,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		HRESULT res = pVB->Lock( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
 
 		if( res != D3D_OK )
-			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData );
+			EngineLog( " pVB->Lock - failed: res = {},mPosition = {}, bytes_need = {}, &pData = {}, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (size_t)&pData );
 
 #endif
 	} else {
@@ -101,7 +101,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		HRESULT res = pVB->Lock			( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
 		
 		if( res != D3D_OK )
-			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData );
+			EngineLog(" pVB->Lock - failed: res = {},mPosition = {}, bytes_need = {}, &pData = {}, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (size_t)&pData);
 
 #endif
 	}
@@ -182,7 +182,7 @@ void	_IndexStream::Create	()
 	mPosition				= 0;
 	mDiscardID				= 0;
 
-	Msg("* DIB created: %dK", mSize/1024);
+	EngineLog("* DIB created: {}K", mSize/1024);
 }
 
 void	_IndexStream::Destroy()

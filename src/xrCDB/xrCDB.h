@@ -85,7 +85,7 @@ namespace CDB
 		{
 			if (S_READY!=status)
 			{
-				Log						("! WARNING: syncronized CDB::query");
+				EngineLog("! WARNING: syncronized CDB::query");
 				xrCriticalSection*	C	= (xrCriticalSection*) &cs;
 				C->Enter				();
 				C->Leave				();

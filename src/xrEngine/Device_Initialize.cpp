@@ -12,7 +12,7 @@ void CRenderDevice::initialize_editor	()
 {
 	m_editor_module		= LoadLibraryA("editor.dll");
 	if (!m_editor_module) {
-		Msg				("! cannot load library \"editor.dll\"");
+		EngineLog("! cannot load library \"editor.dll\"");
 		return;
 	}
 
@@ -33,7 +33,7 @@ void CRenderDevice::initialize_editor	()
 
 void CRenderDevice::Initialize			()
 {
-	Log("Initializing Engine...");
+	EngineLog("Initializing Engine...");
 	TimerGlobal.Start			();
 	TimerMM.Start				();
 

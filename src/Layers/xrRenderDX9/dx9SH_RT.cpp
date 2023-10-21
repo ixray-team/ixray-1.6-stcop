@@ -78,7 +78,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 
 	// OK
 #ifdef DEBUG
-	Msg			("* created RT(%s), %dx%d",Name,w,h);
+	EngineLog("* created RT({}), {}x{}",Name,w,h);
 #endif // DEBUG
 	R_CHK		(pSurface->GetSurfaceLevel	(0,&pRT));
 	pTexture	= DEV->_CreateTexture	(Name);

@@ -57,7 +57,7 @@ void CEventAPI::Dump()
 {
 	std::sort(Events.begin(),Events.end(),ev_sort);
 	for (u32 i=0; i<Events.size(); i++)
-		Msg("* [%d] %s",Events[i]->RefCount(),Events[i]->GetFull());
+		EngineLog("* [{}] {}",Events[i]->RefCount(),Events[i]->GetFull());
 }
 
 EVENT	CEventAPI::Create(const char* N)

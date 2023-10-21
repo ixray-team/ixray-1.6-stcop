@@ -46,8 +46,8 @@ public		:
 	LPCSTR			Name()			{ return cName;	}
 	void			InvalidSyntax() {
 		TInfo I; Info(I);
-		Msg("~ Invalid syntax in call to '%s'",cName);
-		Msg("~ Valid arguments: %s", I);
+		EngineLog("~ Invalid syntax in call to '{}'",cName);
+		EngineLog("~ Valid arguments: {}", I);
 	}
 	virtual void	Execute	(LPCSTR args)	= 0;
 	virtual void	Status	(TStatus& S)	{ S[0]=0; }
@@ -116,7 +116,7 @@ public		:
 		value->set(mask,!GetValue());
 		TStatus S;
 		strconcat(sizeof(S),S,cName," is ", value->test(mask)?"on":"off");
-		Log(S);
+		EngineLog(S);
 	}
 	virtual void	Status	(TStatus& S)
 	{	xr_strcpy(S,value->test(mask)?"on":"off"); }

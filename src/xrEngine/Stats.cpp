@@ -35,7 +35,7 @@ CStats::~CStats()
 	Device.seqRender.Remove		(this);
 	xr_delete		(pFont);
 }
-
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 void _draw_cam_pos(CGameFont* pFont)
 {
 	float sz		= pFont->GetHeight();

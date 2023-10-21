@@ -67,7 +67,7 @@ void		CResourceManager::_DeleteState		(const SState* state)
 {
 	if (0==(state->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_states,state))						return;
-	Msg	("! ERROR: Failed to find compiled stateblock");
+	EngineLog("! ERROR: Failed to find compiled stateblock");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ void		CResourceManager::_DeletePass			(const SPass* P)
 {
 	if (0==(P->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_passes,P))						return;
-	Msg	("! ERROR: Failed to find compiled pass");
+	EngineLog("! ERROR: Failed to find compiled pass");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 {
 	if (0==(dcl->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_declarations,dcl))					return;
-	Msg	("! ERROR: Failed to find compiled vertex-declarator");
+	EngineLog("! ERROR: Failed to find compiled vertex-declarator");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		LPCSTR c_target = "vs_3_0";
 		LPCSTR c_entry = "main";
 
-		Msg("compiling shader %s", name);
+		EngineLog("compiling shader {}", name);
 		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
 
 		if ( FAILED(_hr) ) {
@@ -207,7 +207,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 		m_vs.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
+	EngineLog("! ERROR: Failed to find compiled vertex-shader '{}'",*vs->cName);
 }
 
 #ifndef _EDITOR
@@ -246,7 +246,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		LPCSTR c_target = "ps_3_0";
 		LPCSTR c_entry = "main";
 
-		Msg("compiling shader %s", name);
+		EngineLog("compiling shader {}", name);
 		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
 
 		if ( FAILED(_hr) ) {
@@ -272,7 +272,7 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 		m_ps.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
+	EngineLog("! ERROR: Failed to find compiled pixel-shader '{}'",*ps->cName);
 }
 
 R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
@@ -288,7 +288,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 {
 	if (0==(C->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_constant_tables,C))				return;
-	Msg	("! ERROR: Failed to find compiled constant-table");
+	EngineLog("! ERROR: Failed to find compiled constant-table");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -318,7 +318,7 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 		m_rtargets.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
+	EngineLog("! ERROR: Failed to find render-target '{}'",*RT->cName);
 }
 
 //	DX10 cut 
@@ -407,7 +407,7 @@ void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 {
 	if (0==(Geom->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_geoms,Geom))							return;
-	Msg	("! ERROR: Failed to find compiled geometry-declaration");
+	EngineLog("! ERROR: Failed to find compiled geometry-declaration");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -449,7 +449,7 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 		m_textures.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
+	EngineLog("! ERROR: Failed to find texture surface '{}'",*T->cName);
 }
 
 #ifdef DEBUG
@@ -494,7 +494,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 		m_matrices.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
+	EngineLog("! ERROR: Failed to find xform-def '{}'",*M->cName);
 }
 void	CResourceManager::ED_UpdateMatrix		(LPCSTR Name, CMatrix* data)
 {
@@ -528,7 +528,7 @@ void	CResourceManager::_DeleteConstant		(const CConstant* C)
 		m_constants.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find R1-constant-def '%s'",*C->cName);
+	EngineLog("! ERROR: Failed to find R1-constant-def '{}'",*C->cName);
 }
 
 void	CResourceManager::ED_UpdateConstant	(LPCSTR Name, CConstant* data)
@@ -558,7 +558,7 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_textures,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of textures");
+	EngineLog("! ERROR: Failed to find compiled list of textures");
 }
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
@@ -581,7 +581,7 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_matrices,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of xform-defs");
+	EngineLog("! ERROR: Failed to find compiled list of xform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
@@ -604,7 +604,7 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_constants,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
+	EngineLog("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 
 #ifdef _EDITOR

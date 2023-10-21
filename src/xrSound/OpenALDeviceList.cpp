@@ -67,7 +67,7 @@ void ALDeviceList::Enumerate()
 	int	ALmajor, ALminor, EFXmajor, EFXminor, index;
 	const char* actualDeviceName;
 	
-	Msg("SOUND: OpenAL: enumerate devices...");
+	EngineLog("SOUND: OpenAL: enumerate devices...");
 	// have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
 	// -- empty all the lists and reserve space for 10 devices
 	m_devices.clear				();
@@ -107,7 +107,7 @@ void ALDeviceList::Enumerate()
 		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER));
 		
 		xr_strcpy(m_defaultDeviceName, DeviceNameList[0]);
-		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName);
+		EngineLog("SOUND: OpenAL: system  default SndDevice name is {}", m_defaultDeviceName);
 
 		index				= 0;
 		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
@@ -138,16 +138,16 @@ void ALDeviceList::Enumerate()
 					alcDestroyContext(context);
 				}else
 				{
-					Msg("SOUND: OpenAL: cant create context for %s",device);
+					EngineLog("SOUND: OpenAL: cant create context for {}", Device);
 				}
 				alcCloseDevice(device);
 			}else
 			{
-				Msg("SOUND: OpenAL: cant open device %s", Device);
+				EngineLog("SOUND: OpenAL: cant open device {}", Device);
 			}
 		}
 	}else
-		Msg("SOUND: OpenAL: EnumerationExtension NOT Present");
+		EngineLog("SOUND: OpenAL: EnumerationExtension NOT Present");
 
 //make token
 	u32 _cnt								= GetNumDevices();
@@ -169,13 +169,13 @@ void ALDeviceList::Enumerate()
 //--
 
 	if(0!=GetNumDevices())
-		Msg("SOUND: OpenAL: All available devices:");
+		EngineLog("SOUND: OpenAL: All available devices:");
 
 	for (u32 j = 0; j < GetNumDevices(); j++)
 	{
 		GetDeviceVersion(j, &ALmajor, &ALminor, &EFXmajor, &EFXminor);
 		// Assume EFX by default, we only care about the spec version.
-		Msg("%d. %s, Spec Version %d.%d, EFX Spec Version %d.%d",
+		EngineLog("{}. {}, Spec Version {}.{}, EFX Spec Version {}.{}",
 			j+1, 
 			GetDeviceName(j), 
 			ALmajor,
@@ -226,9 +226,9 @@ void ALDeviceList::SelectBestDevice()
 		snd_device_id = new_device_id;
 	}
 	if(GetNumDevices()==0)
-		Msg("SOUND: Can't select device. List empty");
+		EngineLog("SOUND: Can't select device. List empty");
 	else
-		Msg("SOUND: Selected device is %s", GetDeviceName(snd_device_id));
+		EngineLog("SOUND: Selected device is {}", GetDeviceName(snd_device_id));
 }
 
 void ALDeviceList::GetDeviceVersion(u32 index, int* ALmajor, int* ALminor, int* EFXmajor, int* EFXminor)

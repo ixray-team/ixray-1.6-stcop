@@ -70,13 +70,13 @@ void					CRender::create					()
 	if ( v_dev >= v_need )						o.distortion = TRUE;
 	else										o.distortion = FALSE;
 	if (strstr(Core.Params,"-nodistort"))		o.distortion = FALSE;
-	Msg				("* distortion: %s, dev(%d),need(%d)",o.distortion?"used":"unavailable",v_dev,v_need);
+	EngineLog("* distortion: %s, dev({}),need({})",o.distortion?"used":"unavailable",v_dev,v_need);
 
 	//	Color mapping
 	if ( v_dev >= v_need )						o.color_mapping = TRUE;
 	else										o.color_mapping = FALSE;
 	if (strstr(Core.Params,"-nocolormap"))		o.color_mapping = FALSE;
-	Msg				("* color_mapping: %s, dev(%d),need(%d)",o.color_mapping?"used":"unavailable",v_dev,v_need);
+	EngineLog("* color_mapping: {}, dev({}),need({})",o.color_mapping?"used":"unavailable",v_dev,v_need);
 
 	m_skinning					= -1;
 
@@ -88,7 +88,7 @@ void					CRender::create					()
 
 	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
 	if (o.no_ram_textures)
-		Msg("* Managed textures disabled");
+		EngineLog("* Managed textures disabled");
 
 	m_bMakeAsyncSS				= false;
 
@@ -710,8 +710,8 @@ static HRESULT create_shader				(
 		SPS* sps_result = (SPS*)result;
 		_result			= HW.pDevice->CreatePixelShader(buffer, &sps_result->ps);
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! PS: ", file_name);
-			Msg			("! CreatePixelShader hr == 0x%08x", _result);
+			EngineLog("! PS: {}", file_name);
+			EngineLog("! CreatePixelShader hr == {}", _result);
 			return		E_FAIL;
 		}
 
@@ -724,16 +724,16 @@ static HRESULT create_shader				(
 		} 
 		else
 		{
-			Log			("! PS: ", file_name);
-			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
+			EngineLog("! PS: {}", file_name);
+			EngineLog("! D3DXFindShaderComment hr == {}", _result);
 		}
 	}
 	else {
 		SVS* svs_result = (SVS*)result;
 		_result			= HW.pDevice->CreateVertexShader(buffer, &svs_result->vs);
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! VS: ", file_name);
-			Msg			("! CreatePixelShader hr == 0x%08x", _result);
+			EngineLog("! VS: {}", file_name);
+			EngineLog("! CreatePixelShader hr == {}", _result);
 			return		E_FAIL;
 		}
 
@@ -746,8 +746,8 @@ static HRESULT create_shader				(
 		} 
 		else
 		{
-			Log			("! VS: ", file_name);
-			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
+			EngineLog("! VS: {}", file_name);
+			EngineLog("! D3DXFindShaderComment hr == {}", _result);
 		}
 	}
 
@@ -902,11 +902,11 @@ HRESULT	CRender::shader_compile			(
 			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
 		else {
-			Log						("! ", file_name);
+			EngineLog("! {}", file_name);
 			if ( pErrorBuf )
-				Log					("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
+				EngineLog("! error: {}",(LPCSTR)pErrorBuf->GetBufferPointer());
 			else
-				Msg					("Can't compile shader hr=0x%08x", _result);
+				EngineLog("Can't compile shader hr={}", _result);
 		}
 	}
 

@@ -66,7 +66,7 @@ void CGameMtlLibrary::Load()
 {
 	string_path			name;
 	if (!FS.exist(name,	_game_data_,GAMEMTL_FILENAME)){
-    	Log				("! Can't find game material file: ",name);
+        EngineLog("! Can't find game material file: ",name);
     	return;
     }
 
@@ -79,7 +79,7 @@ void CGameMtlLibrary::Load()
     R_ASSERT(fs.find_chunk(GAMEMTLS_CHUNK_VERSION));
     u16 version			= fs.r_u16();
     if (GAMEMTL_CURRENT_VERSION!=version){
-        Log				("CGameMtlLibrary: invalid version. Library can't load.");
+        EngineLog("CGameMtlLibrary: invalid version. Library can't load.");
 		FS.r_close		(F);
     	return;
     }

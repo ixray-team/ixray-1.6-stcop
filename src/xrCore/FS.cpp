@@ -50,13 +50,13 @@ void unregister_file_mapping		(void *address, const u32 &size)
 
 XRCORE_API void dump_file_mappings	()
 {
-	Msg								("* active file mappings (%d):",g_file_mappings.size());
+	EngineLog("* active file mappings ({}):",g_file_mappings.size());
 
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.begin();
 	FILE_MAPPINGS::const_iterator	E = g_file_mappings.end();
 	for ( ; I != E; ++I)
-		Msg							(
-			"* [0x%08x][%d][%s]",
+		EngineLog(
+			"* [0x{}][{}][{}]",
 			(*I).first,
 			(*I).second.first,
 			(*I).second.second.c_str()
@@ -178,8 +178,10 @@ void*  FileDecompress	(const char *fn, const char* sign, u32* size)
 	int	H = _open	(fn,O_BINARY|O_RDONLY);
 	R_ASSERT2(H>0,fn);
 	_read	(H,&F,8);
-	if (strncmp(M,F,8)!=0)		{
-		F[8]=0;		Msg("FATAL: signatures doesn't match, file(%s) / requested(%s)",F,sign);
+	if (strncmp(M,F,8)!=0)		
+	{
+		F[8]=0;		
+		EngineLog("FATAL: signatures doesn't match, file({}) / requested({})",F,sign);
 	}
     R_ASSERT(strncmp(M,F,8)==0);
 

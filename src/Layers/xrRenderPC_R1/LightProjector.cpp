@@ -76,7 +76,7 @@ void CLightProjector::set_object	(IRenderable* O)
 				spatial->spatial_updatesector	();
 				if (0==spatial->spatial.sector)	{
 					CObject*		obj = dynamic_cast<CObject*>(O);
-					if (obj)		Msg	("! Invalid object '%s' position. Outside of sector structure.",obj->cName().c_str());
+					if (obj)		EngineLog("! Invalid object '{}' position. Outside of sector structure.",obj->cName().c_str());
 					current			= 0;
 				}
 			}
@@ -211,30 +211,30 @@ void CLightProjector::calculate	()
 #ifdef DEBUG
 		if ((v.x*v.x+v.y*v.y+v.z*v.z)<=flt_zero)	{
 			CObject* OO = dynamic_cast<CObject*>(R.O);
-			Msg("Object[%s] Visual[%s] has invalid position. ",*OO->cName(),*OO->cNameVisual());
+			EngineLog("Object[{}] Visual[{}] has invalid position. ",*OO->cName(),*OO->cNameVisual());
 			Fvector cc;
 			OO->Center(cc);
-			Log("center=",cc);
+			EngineLog("center={}",cc);
 
-			Log("visual_center=",OO->Visual()->getVisData().sphere.P);
+			EngineLog("visual_center={}",OO->Visual()->getVisData().sphere.P);
 			
-			Log("full_matrix=",OO->XFORM());
+			EngineLog("full_matrix={}",OO->XFORM());
 
-			Log	("v_N",v_N);
-			Log	("v_C",v_C);
-			Log	("v_Cs",v_Cs);
+			EngineLog("v_N {}",v_N);
+			EngineLog("v_C {}",v_C);
+			EngineLog("v_Cs {}",v_Cs);
 
-			Log("all bones transform:--------");
+			EngineLog("all bones transform:--------");
 			CKinematics* K = dynamic_cast<CKinematics*>(OO->Visual());
 			
 			for(u16 ii=0; ii<K->LL_BoneCount();++ii){
 				Fmatrix tr;
 
 				tr = K->LL_GetTransform(ii);
-				Log("bone ",K->LL_BoneName_dbg(ii));
-				Log("bone_matrix",tr);
+				EngineLog("bone {}",K->LL_BoneName_dbg(ii));
+				EngineLog("bone_matrix {}",tr);
 			}
-			Log("end-------");
+			EngineLog("end-------");
 		}
 #endif
 		// handle invalid object-bug

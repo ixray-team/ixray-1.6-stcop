@@ -50,7 +50,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 #ifdef DEBUG
 	if(ovi->channels==2)
 	{
-		Msg("stereo sound source [%s]", pname.c_str());
+		EngineLog("stereo sound source [{}]", pname.c_str());
 	}
 #endif // #ifdef DEBUG
 
@@ -90,10 +90,10 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 			m_uGameType		= F.r_u32	();
 			m_fMaxAIDist	= F.r_float	();
 		}else{
-			Log				("! Invalid ogg-comment version, file: ", pname.c_str());
+			EngineLog("! Invalid ogg-comment version, file: {}", pname.c_str());
 		}
 	}else{
-		Log					("! Missing ogg-comment, file: ", pname.c_str());
+		EngineLog("! Missing ogg-comment, file: {}", pname.c_str());
 	}
 	R_ASSERT3((m_fMaxAIDist>=0.1f)&&(m_fMaxDist>=0.1f),"Invalid max distance.", pname.c_str());
 }
@@ -110,9 +110,10 @@ void CSoundRender_Source::load(LPCSTR name)
 	strconcat			(sizeof(fn),fn,N,".ogg");
 	if (!FS.exist("$level$",fn))	FS.update_path	(fn,"$game_sounds$",fn);
 
-	if (!FS.exist(fn)) {
+	if (!FS.exist(fn)) 
+	{
 		FS.update_path(fn,"$game_sounds$", "$no_sound.ogg");
-		Msg("! Can't find sound '%s'", fname.c_str());
+		EngineLog("! Can't find sound '{}'", fname.c_str());
 	}
 
 	LoadWave			(fn);

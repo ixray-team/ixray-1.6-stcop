@@ -11,7 +11,7 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) {
 void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer) {
     if (mode != SM_FOR_MPSENDING)
     {
-        Log("~ Not implemented screenshot mode...");
+        EngineLog("~ Not implemented screenshot mode...");
         return;
     }
     ScreenshotImpl(mode, NULL, &memory_writer);

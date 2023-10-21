@@ -45,7 +45,7 @@ void	Surface_FormatExt(FREE_IMAGE_FORMAT f)
 }
 void	Surface_Init()
 {
-	Msg("* ImageLibrary version: %s",FreeImage_GetVersion());
+	EngineLog("* ImageLibrary version: {}",FreeImage_GetVersion());
 
     formats.format_register("tga");
 	Surface_FormatExt(FIF_BMP);
@@ -71,7 +71,7 @@ void	Surface_Init()
 	Surface_FormatExt(FIF_PSD);
 	Surface_FormatExt(FIF_IFF);
 
-	Msg("* %d supported formats",formats.size());
+	EngineLog("* {} supported formats",formats.size());
 }
 
 BOOL	Surface_Detect(string_path& F, LPSTR N)

@@ -175,13 +175,13 @@ bool EFS_Utils::GetOpenNameInternal( LPCSTR initial,  LPSTR buffer, int sz_buf, 
 		switch(err)
 		{
 			case FNERR_BUFFERTOOSMALL:
-				Log("Too many files selected.");
+				EngineLog("Too many files selected.");
 			break;
 		}
 	}
 	if (bRes && bMulti)
 	{
-		Log				("buff=",buffer);
+		EngineLog("buff= {}",buffer);
 		int cnt			= _GetItemCount(buffer,0x0);
 		if (cnt>1)
 		{
@@ -259,7 +259,7 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset,
 	if (!bRes){
 		u32 err = CommDlgExtendedError();
 		switch(err){
-		case FNERR_BUFFERTOOSMALL: 	Log("Too many file selected."); break;
+		case FNERR_BUFFERTOOSMALL: 	EngineLog("Too many file selected."); break;
 		}
 	}
 	_strlwr(buffer);

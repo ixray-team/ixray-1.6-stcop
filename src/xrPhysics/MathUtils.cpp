@@ -467,7 +467,7 @@ void capped_cylinder_ray_collision_test()
 		dir_.random_dir();pos_.random_point(Fvector().set(2,2,2));
 		RAYvsCYLINDER(c_,pos_,dir_,R_,TRUE);
 	}
-	Msg("my RAYvsCYLINDE time %f ms",t.GetElapsed_sec()*1000.f);
+	EngineLog("my RAYvsCYLINDE time {} ms",t.GetElapsed_sec()*1000.f);
 	t.Start();
 	for(int i=0;i<1000000;i++)
 	{
@@ -481,6 +481,6 @@ void capped_cylinder_ray_collision_test()
 		dir_.random_dir();pos_.random_point(Fvector().set(2,2,2));
 		c_.intersect(pos_,dir_,ir,code);
 	}
-		Msg("current intersect time %f ms",t.GetElapsed_sec()*1000.f);
+	EngineLog("current intersect time {} ms",t.GetElapsed_sec()*1000.f);
 
 }

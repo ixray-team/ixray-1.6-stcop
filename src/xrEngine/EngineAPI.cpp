@@ -48,11 +48,11 @@ void CEngineAPI::InitializeNotDedicated()
 
 	if (psDeviceFlags.test(rsR4)) {
 		// try to initialize R4
-		Log				("Loading DLL:",	r4_name);
+		EngineLog("Loading DLL: {}",	r4_name);
 		hRender			= LoadLibraryA		(r4_name);
 		if (0==hRender) {
 			// try to load R1
-			Msg			("! ...Failed - incompatible hardware/pre-Vista OS.");
+			EngineLog("! ...Failed - incompatible hardware/pre-Vista OS.");
 			psDeviceFlags.set	(rsR2,TRUE);
 		}
 	}
@@ -60,11 +60,11 @@ void CEngineAPI::InitializeNotDedicated()
 	if (psDeviceFlags.test(rsR2)) {
 		// try to initialize R2
 		psDeviceFlags.set	(rsR4,FALSE);
-		Log				("Loading DLL:",	r2_name);
+		EngineLog("Loading DLL: {}",	r2_name);
 		hRender			= LoadLibraryA		(r2_name);
 		if (0==hRender) {
 			// try to load R1
-			Msg			("! ...Failed - incompatible hardware.");
+			EngineLog("! ...Failed - incompatible hardware.");
 		} else {
 			g_current_renderer = 2;
 		}
@@ -89,7 +89,7 @@ void CEngineAPI::Initialize(void)
 		psDeviceFlags.set	(rsR2,FALSE);
 		renderer_value		= 0; //con cmd
 
-		Log				("Loading DLL:",	r1_name);
+		EngineLog("Loading DLL: {}",	r1_name);
 		hRender			= LoadLibraryA		(r1_name);
 		if (0==hRender)	R_CHK				(GetLastError());
 		//R_ASSERT		(hRender);
@@ -101,7 +101,7 @@ void CEngineAPI::Initialize(void)
 	// game	
 	{
 		LPCSTR			g_name	= "xrGame.dll";
-		Log				("Loading DLL:",g_name);
+		EngineLog("Loading DLL: {}",g_name);
 		hGame			= LoadLibraryA	(g_name);
 		if (0==hGame)	R_CHK			(GetLastError());
 		R_ASSERT2		(hGame,"Game DLL raised exception during loading or there is no game DLL at all");
@@ -183,14 +183,14 @@ void CEngineAPI::CreateRendererList()
 		vid_quality_token[_cnt - 1].name = NULL;
 
 #ifdef DEBUG
-		Msg("Available render modes[%d]:",_tmp.size());
+		EngineLog("Available render modes[{}]:",_tmp.size());
 #endif // DEBUG
 		for(u32 i=0; i<_tmp.size();++i)
 		{
 			vid_quality_token[i].id				= i;
 			vid_quality_token[i].name			= _tmp[i];
 #ifdef DEBUG
-			Msg							("[%s]",_tmp[i]);
+			EngineLog(_tmp[i]);
 #endif // DEBUG
 		}
 	}

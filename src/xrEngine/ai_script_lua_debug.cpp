@@ -50,30 +50,30 @@ void Script::vfPrintError(CLuaVirtualMachine *tpLuaVirtualMachine, int iErrorCod
 {
 	switch (iErrorCode) {
 		case LUA_ERRRUN : {
-			Msg ("! SCRIPT RUNTIME ERROR");
+			EngineLog("! SCRIPT RUNTIME ERROR");
 			break;
 		}
 		case LUA_ERRMEM : {
-			Msg ("! SCRIPT ERROR (memory allocation)");
+			EngineLog("! SCRIPT ERROR (memory allocation)");
 			break;
 		}
 		case LUA_ERRERR : {
-			Msg ("! SCRIPT ERROR (while running the error handler function)");
+			EngineLog("! SCRIPT ERROR (while running the error handler function)");
 			break;
 		}
 		case LUA_ERRFILE : {
-			Msg ("! SCRIPT ERROR (while running file)");
+			EngineLog("! SCRIPT ERROR (while running file)");
 			break;
 		}
 		case LUA_ERRSYNTAX : {
-			Msg ("! SCRIPT SYNTAX ERROR");
+			EngineLog("! SCRIPT SYNTAX ERROR");
 			break;
 		}
 		default : NODEFAULT;
 	}
 	
 	for (int i=0; ; ++i) {
-		Msg		("! Stack level %d",i);
+		EngineLog("! Stack level {}",i);
 		if (!bfListLevelVars(tpLuaVirtualMachine,i))
 			return;
 	}

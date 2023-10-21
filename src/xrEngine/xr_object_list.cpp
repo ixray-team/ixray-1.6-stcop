@@ -121,59 +121,11 @@ void	CObjectList::SingleUpdate	(CObject* O)
 	O->UpdateCL					();
 
 	VERIFY3						(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'",*O->cName());
-#if 0//ndef DEBUG
-	__try
+	if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()) )	
 	{
-#endif
-		if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()) )	
-		{
-			// Push to destroy-queue if it isn't here already
-			Msg	("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]",O->ID(),*O->cName(),*O->cNameSect(),O->H_Parent()->ID(),*O->H_Parent()->cName());
-		}
-#if 0//ndef DEBUG
+		// Push to destroy-queue if it isn't here already
+		EngineLog("! ERROR: incorrect destroy sequence for object[{}:{}], section[{}], parent[{}:{}]",O->ID(),*O->cName(),*O->cNameSect(),O->H_Parent()->ID(),*O->H_Parent()->cName());
 	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		CObject* parent_obj = O->H_Parent();
-		CObject* root_obj	= O->H_Root();
-		Msg	("! ERROR: going to crush: [%d:%s], section[%s], parent_obj_addr[0x%08x], root_obj_addr[0x%08x]",O->ID(),*O->cName(),*O->cNameSect(), *((u32*)&parent_obj), *((u32*)&root_obj));
-		if (parent_obj)
-		{
-			__try
-			{
-				Msg("! Parent object: [%d:%s], section[%s]", 
-					parent_obj->ID(), 
-					parent_obj->cName().c_str(),
-					parent_obj->cNameSect().c_str());
-
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				Msg("! Failed to get parent object info.");
-			}
-		}
-		if (root_obj)
-		{
-			__try
-			{
-				Msg("! Root object: [%d:%s], section[%s]", 
-					root_obj->ID(), 
-					root_obj->cName().c_str(),
-					root_obj->cNameSect().c_str());
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				Msg("! Failed to get root object info.");
-			}
-		}
-		R_ASSERT(false);
-	} //end of __except
-#endif
-
-#ifdef DEBUG
-//	if (O->getDestroy())
-//		Msg						("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.dwFrame);
-#endif // #ifdef DEBUG
 }
 
 void CObjectList::clear_crow_vec(Objects& o)
@@ -286,11 +238,6 @@ void CObjectList::Update		(bool bForce)
 		for (int it = destroy_queue.size()-1; it>=0; it--)
 		{
 			CObject*		O	= destroy_queue[it];
-//			Msg				("Object [%x]", O);
-#ifdef DEBUG
-			if( debug_destroy )
-				Msg			("Destroying object[%x][%x] [%d][%s] frame[%d]",dynamic_cast<void*>(O), O, O->ID(),*O->cName(), Device.dwFrame);
-#endif // DEBUG
 			O->net_Destroy	( );
 			Destroy			(O);
 		}
@@ -304,32 +251,19 @@ void CObjectList::net_Register		(CObject* O)
 	R_ASSERT		(O->ID() < 0xffff);
 
 	map_NETID[O->ID()] = O;
-	
-	
-
-//.	map_NETID.insert(std::make_pair(O->ID(),O));
-	//Msg			("-------------------------------- Register: %s",O->cName());
 }
 
 void CObjectList::net_Unregister	(CObject* O)
 {
-	//R_ASSERT		(O->ID() < 0xffff);
 	if (O->ID() < 0xffff)				//demo_spectator can have 0xffff
 		map_NETID[O->ID()] = NULL;
-/*
-	xr_map<u32,CObject*>::iterator	it = map_NETID.find(O->ID());
-	if ((it!=map_NETID.end()) && (it->second == O))	{
-		// Msg			("-------------------------------- Unregster: %s",O->cName());
-		map_NETID.erase(it);
-	}
-*/
 }
 
 int	g_Dump_Export_Obj = 0;
 
 u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_size	)
 {
-	if (g_Dump_Export_Obj) Msg("---- net_export --- ");
+	if (g_Dump_Export_Obj) EngineLog("---- net_export --- ");
 
 	NET_Packet& Packet	= *_Packet;
 	u32			position;
@@ -351,7 +285,7 @@ u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_si
 			if (g_Dump_Export_Obj)
 			{
 				u32 size_				= u32		(Packet.w_tell()-position)-sizeof(u8);
-				Msg("* %s : %d", *(P->cNameSect()), size_);
+				EngineLog("* {} : {}", *(P->cNameSect()), size_);
 			}
 			Packet.w_chunk_close8	(position);
 //			if (0==(--count))		
@@ -360,7 +294,7 @@ u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_si
 				break;
 		}
 	}
-	if (g_Dump_Export_Obj) Msg("------------------- ");
+	if (g_Dump_Export_Obj) EngineLog("------------------- ");
 	return	start+1;
 }
 
@@ -368,7 +302,7 @@ int	g_Dump_Import_Obj = 0;
 
 void CObjectList::net_Import		(NET_Packet* Packet)
 {
-	if (g_Dump_Import_Obj) Msg("---- net_import --- ");
+	if (g_Dump_Import_Obj) EngineLog("---- net_import --- ");
 
 	while (!Packet->r_eof())
 	{
@@ -382,13 +316,13 @@ void CObjectList::net_Import		(NET_Packet* Packet)
 			
 			P->net_Import	(*Packet);
 
-			if (g_Dump_Import_Obj) Msg("* %s : %d - %d", *(P->cNameSect()), size, Packet->r_tell() - rsize);
+			if (g_Dump_Import_Obj) EngineLog("* {} : {} - {}", *(P->cNameSect()), size, Packet->r_tell() - rsize);
 
 		}
 		else		Packet->r_advance(size);
 	}
 
-	if (g_Dump_Import_Obj) Msg("------------------- ");
+	if (g_Dump_Import_Obj) EngineLog("------------------- ");
 }
 
 /*
@@ -407,18 +341,18 @@ void CObjectList::Load		()
 void CObjectList::Unload	( )
 {
 	if (objects_sleeping.size() || objects_active.size())
-		Msg			("! objects-leaked: %d",objects_sleeping.size() + objects_active.size());
+		EngineLog("! objects-leaked: {}",objects_sleeping.size() + objects_active.size());
 
 	// Destroy objects
 	while (objects_sleeping.size())
 	{
 		CObject*	O	= objects_sleeping.back	();
-		Msg				("! [%x] s[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
+		EngineLog("! [{}] s[{}]-[{}]-[{}]", (size_t)O, O->ID(), *O->cNameSect(), *O->cName());
 		O->setDestroy	( true );
 		
 #ifdef DEBUG
 		if( debug_destroy )
-			Msg				("Destroying object [%d][%s]",O->ID(),*O->cName());
+			EngineLog("Destroying object [{}][{}]",O->ID(),*O->cName());
 #endif
 		O->net_Destroy	(   );
 		Destroy			( O );
@@ -426,12 +360,12 @@ void CObjectList::Unload	( )
 	while (objects_active.size())
 	{
 		CObject*	O	= objects_active.back	();
-		Msg				("! [%x] a[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
+		EngineLog("! [{}] a[{}]-[{}]-[{}]", (size_t)O, O->ID(), *O->cNameSect(), *O->cName());
 		O->setDestroy	( true );
 
 #ifdef DEBUG
 		if( debug_destroy )
-			Msg				("Destroying object [%d][%s]",O->ID(),*O->cName());
+			EngineLog("Destroying object [{}][{}]",O->ID(),*O->cName());
 #endif
 		O->net_Destroy	(   );
 		Destroy			( O );
@@ -453,12 +387,12 @@ void		CObjectList::Destroy			( CObject*	O		)
 
 	if ( !Device.Paused() ) {
 		if ( !m_crows[1].empty() ) {
-			Msg								( "assertion !m_crows[1].empty() failed: %d", m_crows[1].size() );
+			EngineLog( "assertion !m_crows[1].empty() failed: {}", m_crows[1].size() );
 
 			Objects::const_iterator i		= m_crows[1].begin( );
 			Objects::const_iterator	const e	= m_crows[1].end( );
 			for (u32 j=0; i != e; ++i, ++j )
-				Msg							( "%d %s", j, (*i)->cName().c_str() );
+				EngineLog( "{} {}", j, (*i)->cName().c_str() );
 			VERIFY							( Device.Paused() || m_crows[1].empty() );
 			m_crows[1].clear();
 		}
@@ -530,10 +464,10 @@ void CObjectList::dump_list(Objects& v, LPCSTR reason)
 	Objects::iterator it = v.begin();
 	Objects::iterator it_e = v.end();
 #ifdef DEBUG
-	Msg("----------------dump_list [%s]",reason);
+	EngineLog("----------------dump_list [{}]",reason);
 	for(;it!=it_e;++it)
-		Msg("%x - name [%s] ID[%d] parent[%s] getDestroy()=[%s]", 
-			(*it),
+		EngineLog("{} - name [{}] ID[{}] parent[{}] getDestroy()=[{}]",
+			size_t(*it),
 			(*it)->cName().c_str(), 
 			(*it)->ID(), 
 			((*it)->H_Parent())?(*it)->H_Parent()->cName().c_str():"", 
@@ -564,7 +498,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		CObject* O = *it;
 		if(!O->getDestroy() && O->H_Parent()==object_to_destroy)
 		{
-			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
+			EngineLog("setDestroy called, but not-destroyed child found parent[{}] child[{}]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
 			O->setDestroy(TRUE);
 		}
 	}
@@ -576,7 +510,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		CObject* O = *it;
 		if(!O->getDestroy() && O->H_Parent()==object_to_destroy)
 		{
-			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
+			EngineLog("setDestroy called, but not-destroyed child found parent[{}] child[{}]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
 			O->setDestroy(TRUE);
 		}
 	}

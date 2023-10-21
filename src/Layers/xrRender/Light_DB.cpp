@@ -207,18 +207,18 @@ void			CLight_DB::Update			()
 		if(E.sun_dir.y>=0)
 		{
 //			Log("sect_name", E.sect_name.c_str());
-			Log("E.sun_dir", E.sun_dir);
-			Log("E.wind_direction",E.wind_direction);
-			Log("E.wind_velocity",E.wind_velocity);
-			Log("E.sun_color",E.sun_color);
-			Log("E.rain_color",E.rain_color);
-			Log("E.rain_density",E.rain_density);
-			Log("E.fog_distance",E.fog_distance);
-			Log("E.fog_density",E.fog_density);
-			Log("E.fog_color",E.fog_color);
-			Log("E.far_plane",E.far_plane);
-			Log("E.sky_rotation",E.sky_rotation);
-			Log("E.sky_color",E.sky_color);
+			EngineLog("E.sun_dir {}", E.sun_dir);
+			EngineLog("E.wind_direction {}",E.wind_direction);
+			EngineLog("E.wind_velocity {}",E.wind_velocity);
+			EngineLog("E.sun_color {}",E.sun_color);
+			EngineLog("E.rain_color {}",E.rain_color);
+			EngineLog("E.rain_density {}",E.rain_density);
+			EngineLog("E.fog_distance {}",E.fog_distance);
+			EngineLog("E.fog_density {}",E.fog_density);
+			EngineLog("E.fog_color {}",E.fog_color);
+			EngineLog("E.far_plane {}",E.far_plane);
+			EngineLog("E.sky_rotation {}",E.sky_rotation);
+			EngineLog("E.sky_color {}",E.sky_color);
 		}
 #endif
 

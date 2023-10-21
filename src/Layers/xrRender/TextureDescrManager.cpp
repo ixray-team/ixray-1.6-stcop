@@ -33,7 +33,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 	FS_FileSet				flist;
 	FS.file_list			(flist, initial, FS_ListFiles, "*.thm");
 #ifdef DEBUG
-	Msg						("count of .thm files=%d", flist.size());
+	EngineLog("count of .thm files={}", flist.size());
 #endif // #ifdef DEBUG
 	FS_FileSetIt It			= flist.begin();
 	FS_FileSetIt It_e		= flist.end();
@@ -113,7 +113,7 @@ void CTextureDescrMngr::Load()
 	LoadTHM					("$level$");
 
 #ifdef DEBUG
-	Msg("load time=%d ms",TT.GetElapsed_ms());
+	EngineLog("load time={} ms",TT.GetElapsed_ms());
 #endif // #ifdef DEBUG
 }
 

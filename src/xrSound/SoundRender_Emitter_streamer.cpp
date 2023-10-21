@@ -131,13 +131,13 @@ void	CSoundRender_Emitter::fill_block	(void* ptr, u32 size)
 				rem						= (m_cur_handle_cursor+bt_handle) - get_cursor(true);
 
 #ifdef DEBUG
-				Msg						("reminder from prev source %d",rem);
+				EngineLog("reminder from prev source {}",rem);
 #endif // #ifdef DEBUG
 				fill_data				(dest, get_cursor(false), rem);
 				move_cursor				(rem);
 			}
 #ifdef DEBUG
-			Msg							("recurce from next source %d", size-rem);
+			EngineLog("recurce from next source {}", size-rem);
 #endif // #ifdef DEBUG
 			fill_block					(dest+rem,	size-rem);
 		}else

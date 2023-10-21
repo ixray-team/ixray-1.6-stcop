@@ -524,7 +524,7 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 
 		if ( m_last_cmd.c_str() == 0 || xr_strcmp( m_last_cmd, edt ) != 0 )
 		{
-			Log( c, edt );
+			EngineLog("{} {}", c, edt);
 			add_cmd_history( edt );
 			m_last_cmd = edt;
 		}
@@ -552,7 +552,7 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 				{
 					IConsole_Command::TStatus stat;
 					cc->Status( stat );
-					Msg( "- %s %s", cc->Name(), stat );
+					EngineLog( "- {} {}", cc->Name(), stat );
 				}
 			}
 			else
@@ -566,13 +566,13 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 		}
 		else
 		{
-			Log("! Command disabled.");
+			EngineLog("! Command disabled.");
 		}
 	}
 	else
 	{
 		first[CONSOLE_BUF_SIZE-21] = 0;
-		Log( "! Unknown command: ", first );
+		EngineLog( "! Unknown command: {}", first );
 	}
 
 	if ( record_cmd )

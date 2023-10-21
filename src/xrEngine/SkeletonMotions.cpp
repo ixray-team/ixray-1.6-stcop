@@ -18,7 +18,7 @@ u16 CPartition::part_id(const shared_str& name) const
 		if(pd.Name == name)
 			return i;
 	}
-	Msg("!there is no part named [%s]", name.c_str() );
+	EngineLog("!there is no part named [{}]", name.c_str() );
 	return u16(-1);
 }
 
@@ -309,14 +309,14 @@ void motions_container::dump()
 {
 	SharedMotionsMapIt it	= container.begin();
 	SharedMotionsMapIt _E	= container.end();
-	Log	("--- motion container --- begin:");
+	EngineLog("--- motion container --- begin:");
 	u32 sz					= sizeof(*this);
 	for (u32 k=0; it!=_E; k++,it++){
 		sz					+= it->second->mem_usage();
-		Msg("#%3d: [%3d/%5d Kb] - %s",k,it->second->m_dwReference,it->second->mem_usage()/1024,it->first.c_str());
+		EngineLog("#{}: [{}/{} Kb] - %s",k,it->second->m_dwReference,it->second->mem_usage()/1024,it->first.c_str());
 	}
-	Msg ("--- items: %d, mem usage: %d Kb ",container.size(),sz/1024);
-	Log	("--- motion container --- end.");
+	EngineLog("--- items: {}, mem usage: {} Kb ",container.size(),sz/1024);
+	EngineLog("--- motion container --- end.");
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -52,7 +52,7 @@ IGame_Level::~IGame_Level()
 	if (Device.m_pRender) 
 		Device.m_pRender->ResourcesGetMemoryUsage(m_base,c_base,m_lmaps,c_lmaps);
 
-	Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
+	EngineLog("* [ D3D ]: textures[{} K]", (m_base+m_lmaps)/1024);
 
 }
 

@@ -82,10 +82,10 @@ void CKinematics::CalculateBones			(BOOL bForceExact)
 			for(u16 ii=0; ii<LL_BoneCount();++ii){
 				Fmatrix tr;
 				tr = LL_GetTransform(ii);
-				Log("bone ",LL_BoneName_dbg(ii));
-				Log("bone_matrix",tr);
+				EngineLog("bone {}",LL_BoneName_dbg(ii));
+				EngineLog("bone_matrix {}",tr);
 			}
-			Log("end-------");
+			EngineLog("end-------");
 		}
 		VERIFY3	(vis.sphere.R<1000.f,						"Invalid bones-xform in model", dbg_name.c_str());
 #endif
@@ -102,16 +102,16 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 	Fmatrix&	MrootBone		= K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
 	if(MrootBone.c.y >10000)
 	{	
-		Msg("all bones transform:--------[%s]",s);
+		EngineLog("all bones transform:--------[{}]",s);
 		
 		for(u16 ii=0; ii<K->LL_BoneCount();++ii){
 			Fmatrix tr;
 
 			tr = K->LL_GetTransform(ii);
-			Log("bone ",K->LL_BoneName_dbg(ii));
-			Log("bone_matrix",tr);
+			EngineLog("bone {}",K->LL_BoneName_dbg(ii));
+			EngineLog("bone_matrix {}",tr);
 		}
-		Log("end-------");
+		EngineLog("end-------");
 		VERIFY3(0,"check_kinematics failed for ", s);
 	}
 }

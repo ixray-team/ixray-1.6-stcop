@@ -289,7 +289,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
         EnvsMapIt it		= WeatherCycles.find(name);
 		if (it == WeatherCycles.end())
 		{
-			Msg("! Invalid weather name: %s", name.c_str());
+			EngineLog("! Invalid weather name: {}", name.c_str());
 			return;
 		}
         R_ASSERT3			(it!=WeatherCycles.end(),"Invalid weather name.",*name);
@@ -301,7 +301,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 		}
 		if (forced)			{SelectEnvs(fGameTime);	}
 #ifdef WEATHER_LOGGING
-		Msg					("Starting Cycle: %s [%s]",*name,forced?"forced":"deferred");
+		EngineLog("Starting Cycle: {} [{}]",*name,forced?"forced":"deferred");
 #endif
     }else{
 #ifndef _EDITOR
@@ -355,7 +355,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		Current[0]			= C0;
 		Current[1]			= C1;
 #ifdef WEATHER_LOGGING
-		Msg					("Starting WFX: '%s' - %3.2f sec",*name,wfx_time);
+		EngineLog("Starting WFX: '{}' - {} sec",*name,wfx_time);
 //		for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
 //			Msg				(". Env: '%s' Tm: %3.2f",*(*l_it)->m_identifier.c_str(),(*l_it)->exec_time);
 #endif
@@ -396,7 +396,7 @@ void CEnvironment::StopWFX	()
 	Current[1]->on_device_create();
 
 #ifdef WEATHER_LOGGING
-	Msg						("WFX - end. Weather: '%s' Desc: '%s'/'%s' GameTime: %3.2f",CurrentWeatherName.c_str(),Current[0]->m_identifier.c_str(),Current[1]->m_identifier.c_str(),fGameTime);
+	EngineLog("WFX - end. Weather: '{}' Desc: '{}'/'{}' GameTime: {}",CurrentWeatherName.c_str(),Current[0]->m_identifier.c_str(),Current[1]->m_identifier.c_str(),fGameTime);
 #endif
 }
 
@@ -449,7 +449,7 @@ void CEnvironment::SelectEnvs(float gt)
 			SelectEnv	(CurrentWeather,Current[1],gt);
 			Current[1]->on_device_create();
 #ifdef WEATHER_LOGGING
-			Msg			("Weather: '%s' Desc: '%s' Time: %3.2f/%3.2f",CurrentWeatherName.c_str(),Current[1]->m_identifier.c_str(),Current[1]->exec_time,fGameTime);
+			EngineLog("Weather: '{}' Desc: '{}' Time: {}/{}",CurrentWeatherName.c_str(),Current[1]->m_identifier.c_str(),Current[1]->exec_time,fGameTime);
 #endif
 		}
     }
@@ -516,12 +516,12 @@ void CEnvironment::OnFrame()
 #ifndef MASTER_GOLD
 	if(CurrentEnv->sun_dir.y>0)
 	{
-		Log("CurrentEnv->sun_dir", CurrentEnv->sun_dir);
+		EngineLog("CurrentEnv->sun_dir {}", CurrentEnv->sun_dir);
 //		Log("current_weight", current_weight);
 //		Log("mpower", mpower);
 
-		Log("Current[0]->sun_dir", Current[0]->sun_dir);
-		Log("Current[1]->sun_dir", Current[1]->sun_dir);
+		EngineLog("Current[0]->sun_dir {}", Current[0]->sun_dir);
+		EngineLog("Current[1]->sun_dir {}", Current[1]->sun_dir);
 
 	}
 	VERIFY2						(CurrentEnv->sun_dir.y<0,"Invalid sun direction settings in lerp");

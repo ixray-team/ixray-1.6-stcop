@@ -41,10 +41,10 @@ void ActivateShapePhysShellHolder(IPhysicsShellHolder *obj, const Fmatrix &in_xf
 
 #ifdef DEBUG
 	if (!valid_pos(out_pos,phBoundaries)) {
-		Msg("not valid position	%f,%f,%f",out_pos.x,out_pos.y,out_pos.z);
-		Msg("size	%f,%f,%f",in_size.x,in_size.y,in_size.z);
-		Msg("Object: %s",obj->ObjectName());
-		Msg("Visual: %s",obj->ObjectNameVisual());
+		EngineLog("not valid position {}", out_pos);
+		EngineLog("size {}",in_size);
+		EngineLog("Object: {}",obj->ObjectName());
+		EngineLog("Visual: {}",obj->ObjectNameVisual());
 		//Msg("Object	pos	%f,%f,%f",Position().x,Position().y,Position().z);
 	}
 #endif // DEBUG

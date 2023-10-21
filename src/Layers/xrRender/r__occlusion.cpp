@@ -45,7 +45,7 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 	if (pool.empty())
 	{
 		if ((Device.dwFrame % 40) == 0)
-			Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
+			EngineLog(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
 		ID = iInvalidHandle;
 		return 0;
 	}
