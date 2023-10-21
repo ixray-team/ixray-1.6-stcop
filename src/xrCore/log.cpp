@@ -36,7 +36,7 @@ void FlushLog			()
     }
 }
 
-void AddOne				(const char *split) 
+void AddOne(const char *split) 
 {
 	if(!LogFile)		
 						return;
@@ -61,7 +61,7 @@ void AddOne				(const char *split)
 	logCS.Leave				();
 }
 
-void Log				(const char *s) 
+XRCORE_API void CorrectLog(const char *s)
 {
 	int		i,j;
 
@@ -85,78 +85,9 @@ void Log				(const char *s)
 	AddOne(split);
 }
 
-void __cdecl Msg		( const char *format, ...)
+void LogWinErr(const char *msg, long err_code)
 {
-	va_list		mark;
-	string2048	buf;
-	va_start	(mark, format );
-	int sz		= _vsnprintf(buf, sizeof(buf)-1, format, mark ); buf[sizeof(buf)-1]=0;
-    va_end		(mark);
-	if (sz)		Log(buf);
-}
-
-void Log				(const char *msg, const char *dop) {
-	if (!dop) {
-		Log		(msg);
-		return;
-	}
-
-	u32			buffer_size = (xr_strlen(msg) + 1 + xr_strlen(dop) + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-	strconcat	(buffer_size, buf, msg, " ", dop);
-	Log			(buf);
-}
-
-void Log				(const char *msg, u32 dop) {
-	u32			buffer_size = (xr_strlen(msg) + 1 + 10 + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size, "%s %d", msg, dop);
-	Log			(buf);
-}
-
-void Log				(const char *msg, int dop) {
-	u32			buffer_size = (xr_strlen(msg) + 1 + 11 + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size, "%s %i", msg, dop);
-	Log			(buf);
-}
-
-void Log				(const char *msg, float dop) {
-	// actually, float string representation should be no more, than 40 characters,
-	// but we will count with slight overhead
-	u32			buffer_size = (xr_strlen(msg) + 1 + 64 + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size, "%s %f", msg, dop);
-	Log			(buf);
-}
-
-void Log				(const char *msg, const Fvector &dop) {
-	u32			buffer_size = (xr_strlen(msg) + 2 + 3*(64 + 1) + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size,"%s (%f,%f,%f)",msg, VPUSH(dop) );
-	Log			(buf);
-}
-
-void Log				(const char *msg, const Fmatrix &dop)	{
-	u32			buffer_size = (xr_strlen(msg) + 2 + 4*( 4*(64 + 1) + 1 ) + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size,"%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",
-		msg,
-		dop.i.x, dop.i.y, dop.i.z, dop._14_,
-		dop.j.x, dop.j.y, dop.j.z, dop._24_,
-		dop.k.x, dop.k.y, dop.k.z, dop._34_,
-		dop.c.x, dop.c.y, dop.c.z, dop._44_
-	);
-	Log			(buf);
-}
-
-void LogWinErr			(const char *msg, long err_code)	{
-	Msg					("%s: %s",msg,Debug.error2string(err_code)	);
+	EngineLog("{}: {}", msg, Debug.error2string(err_code));
 }
 
 LogCallback SetLogCB	(LogCallback cb)

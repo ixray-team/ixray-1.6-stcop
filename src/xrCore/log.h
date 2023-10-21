@@ -1,17 +1,20 @@
-#ifndef logH
-#define logH
+#pragma once
 
-#define VPUSH(a)	((a).x), ((a).y), ((a).z)
+void XRCORE_API CorrectLog(const char* s);
 
-void 	XRCORE_API	__cdecl		Msg	(LPCSTR format, ...);
-void 	XRCORE_API		Log			(LPCSTR msg);
-void 	XRCORE_API		Log			(LPCSTR msg);
-void 	XRCORE_API		Log			(LPCSTR msg, LPCSTR			dop);
-void 	XRCORE_API		Log			(LPCSTR msg, u32			dop);
-void 	XRCORE_API		Log			(LPCSTR msg, int  			dop);
-void 	XRCORE_API		Log			(LPCSTR msg, float			dop);
-void 	XRCORE_API		Log			(LPCSTR msg, const Fvector& dop);
-void 	XRCORE_API		Log			(LPCSTR msg, const Fmatrix& dop);
+template<typename ...Args>
+void EngineLog(std::string_view Format, Args&&... ArgList)
+{
+	auto FormattedText = std::vformat(Format, std::make_format_args(ArgList...));
+	CorrectLog(FormattedText.c_str());
+}
+
+template<>
+inline void EngineLog(std::string_view Message)
+{
+	CorrectLog(Message.data());
+}
+
 void 	XRCORE_API		LogWinErr	(LPCSTR msg, long 			err_code);
 
 typedef void	( * LogCallback)	(LPCSTR string);
@@ -23,6 +26,3 @@ void	XRCORE_API				FlushLog	();
 
 extern 	XRCORE_API	xr_vector<shared_str>*		LogFile;
 extern 	XRCORE_API	BOOL						LogExecCB;
-
-#endif
-
