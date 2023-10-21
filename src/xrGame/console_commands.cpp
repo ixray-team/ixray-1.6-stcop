@@ -526,6 +526,7 @@ public:
 		string_path				S = {}, S_UTF8 = {}, S1 = {};
 		strncpy_s				(S, sizeof(S), args, _MAX_PATH - 1 );
 
+		xr_string SaveDrawName = S;
 		xr_strcpy(S_UTF8, ANSI_TO_UTF8(S).c_str());
 #ifdef DEBUG
 		CTimer					timer;
@@ -538,9 +539,10 @@ public:
 			net_packet.w_stringZ(S_UTF8);
 			net_packet.w_u8		(0);
 			Level().Send		(net_packet,net_flags(TRUE));
+			SaveDrawName = S_UTF8;
 		}else{
 			if(!valid_saved_game_name(S)){
-				EngineLog("! Save failed: invalid file name - %s", S);
+				EngineLog("! Save failed: invalid file name - {}", S);
 				return;
 			}
 
@@ -555,7 +557,7 @@ public:
 #endif
 		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
 		LPSTR						save_name;
-		STRCONCAT					(save_name, CStringTable().translate("st_game_saved").c_str(), ": ", S);
+		STRCONCAT					(save_name, CStringTable().translate("st_game_saved").c_str(), ": ", SaveDrawName.c_str());
 		_s->wnd()->TextItemControl()->SetText(save_name);
 
 		xr_strcat				(S_UTF8,".dds");
