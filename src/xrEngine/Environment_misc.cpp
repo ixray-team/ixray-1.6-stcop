@@ -388,6 +388,8 @@ void CEnvDescriptorMixer::clear	()
 	*/
 }
 
+constexpr float NO_RAIN_TO_RAINY_TIME_OFFSET = 0.4f;
+
 void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
 {
 	float	modif_power		=	1.f/(modifier_power+1);	// the environment itself
@@ -410,6 +412,38 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	*/
 
 	weight					=	f;
+
+	// rain specific time weght, for making smoother rain and thunder
+	float rain_f = f;
+	{
+		if (A.rain_density <= 0.01f) // if the previous desc did not have the rain at all - make a
+			// delayed rain begining
+			if (f < NO_RAIN_TO_RAINY_TIME_OFFSET) // dont start rain and rain effects, untill we are
+				// close to the half of the cycle time
+				rain_f = 0.f;
+			else // if we are close to the half of the cycle time - start lerping rain
+				rain_f = (f - NO_RAIN_TO_RAINY_TIME_OFFSET) /
+				(1.f -
+					NO_RAIN_TO_RAINY_TIME_OFFSET); // get the 0.0 - 1.0 value from offseted
+		// weight for the rest of the time, when we
+		// need the rain and rain effects enabled
+
+		else if (B.rain_density <= 0.01f) // if next weather is not rainy at all - then DO rain only
+			// untill half of the cycle time is past
+			if (f <
+				1.f - NO_RAIN_TO_RAINY_TIME_OFFSET) // dont start rain and rain effects, untill we
+				// are at least close to the half of the cycle
+				rain_f =
+				f /
+				(1.f -
+					NO_RAIN_TO_RAINY_TIME_OFFSET); // get the 0.0 - 1.0 value from offseted weight
+			else // if we passed half of the time - stop rain and effects
+				rain_f = 1.f;
+	}
+
+	float rain_fi = 1.f - rain_f;
+
+	R_ASSERT2(rain_f >= 0.f && rain_f <= 1.f, make_string("rain_f = %f", rain_f));
 
 	clouds_color.lerp		(A.clouds_color,B.clouds_color,f);
 
@@ -438,10 +472,11 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	fog_near				=	(1.0f - fog_density)*0.85f * fog_distance;
 	fog_far					=	0.99f * fog_distance;
 	
-	rain_density			=	fi*A.rain_density + f*B.rain_density;
-	rain_color.lerp			(A.rain_color,B.rain_color,f);
-	bolt_period				=	fi*A.bolt_period + f*B.bolt_period;
-	bolt_duration			=	fi*A.bolt_duration + f*B.bolt_duration;
+	rain_density = rain_fi * A.rain_density + rain_f * B.rain_density;
+	rain_color.lerp(A.rain_color, B.rain_color, rain_f);
+	bolt_period = rain_fi * A.bolt_period + rain_f * B.bolt_period;
+	bolt_duration = rain_fi * A.bolt_duration + rain_f * B.bolt_duration;
+
 	// wind
 	wind_velocity			=	fi*A.wind_velocity + f*B.wind_velocity;
 	wind_direction			=	fi*A.wind_direction + f*B.wind_direction;
