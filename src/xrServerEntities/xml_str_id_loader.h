@@ -64,7 +64,7 @@ public:
 		return item?item->id:default_id;
 	}
 
-	static const int		GetMaxIndex	()					 {return m_pItemDataVector->size()-1;}
+	static const int		GetMaxIndex	()					 {return (u32)m_pItemDataVector->size()-1;}
 
 	//удаление статичекого массива
 	static void					DeleteIdToIndexData		();
@@ -108,7 +108,7 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bo
 	{
 		int i=0;
 		for(T_VECTOR::iterator it_ = m_pItemDataVector->begin();	m_pItemDataVector->end() != it_; it_++,i++)
-			Msg("[%d]=[%s]",i,*(*it_).id );
+			EngineLog("[{}]=[{}]",i,*(*it_).id );
 
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;

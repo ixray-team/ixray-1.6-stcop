@@ -26,7 +26,7 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 	xr_vector<u16>::iterator c	= std::find	(C.begin(),C.end(),id_entity);
 	if (c == C.end())
 	{
-		EngineLog("! ERROR: SV: can't find children [{}] of parent [{}]", id_entity, e_parent);
+		EngineLog("! ERROR: SV: can't find children [{}] of parent [{}]", id_entity, e_parent->ID);
 		return false;
 	}
 
@@ -40,7 +40,7 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 	}
 
 	// Rebuild parentness
-//.	Msg("---ID_Parent [%d], id_parent [%d]", e_entity->ID_Parent, id_parent);
+//.	EngineLog("---ID_Parent [%d], id_parent [%d]", e_entity->ID_Parent, id_parent);
 	
 	//R_ASSERT(e_entity->ID_Parent == id_parent);
 	if (e_entity->ID_Parent != id_parent)

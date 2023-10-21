@@ -11,5 +11,5 @@
 
 void print_help(lua_State* L)
 {
-	Msg("! Release build doesn't support lua-help :(");
+	EngineLog("! Release build doesn't support lua-help :(");
 }

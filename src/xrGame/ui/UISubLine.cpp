@@ -20,10 +20,10 @@ struct DBGList{
 };
 xr_vector<DBGList>	dbg_list_sublines;
 void dump_list_sublines(){
-	Msg("------Total  SubLines %d",dbg_list_sublines.size());
+	EngineLog("------Total  SubLines %d",dbg_list_sublines.size());
 	xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
 	for(;_it!=dbg_list_sublines.end();++_it)
-		Msg("--leak detected ---- SubLine = %d",(*_it).num);
+		EngineLog("--leak detected ---- SubLine = %d",(*_it).num);
 }
 #else
 void dump_list_sublines(){}
@@ -76,7 +76,7 @@ CUISubLine::~CUISubLine(){
 		}
 	}
 	if(!bOK)
-		Msg("CUISubLine::~CUISubLine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
+		EngineLog("CUISubLine::~CUISubLine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
 #endif
 
 }

@@ -192,7 +192,7 @@ void CCustomMonster::Load		(LPCSTR section)
 	// Health & Armor
 //	fArmor					= 0;
 
-	// Msg				("! cmonster size: %d",sizeof(*this));
+	// EngineLog				("! cmonster size: %d",sizeof(*this));
 }
 
 void CCustomMonster::reinit		()
@@ -719,7 +719,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	SetfHealth							(E->get_health());
 	if (!g_Alive()) {
 		set_death_time			();
-//		Msg						("%6d : Object [%d][%s][%s] is spawned DEAD",Device.dwTimeGlobal,ID(),*cName(),*cNameSect());
+//		EngineLog						("%6d : Object [%d][%s][%s] is spawned DEAD",Device.dwTimeGlobal,ID(),*cName(),*cNameSect());
 	}
 
 	if (ai().get_level_graph() && UsedAI_Locations() && (e->ID_Parent == 0xffff)) {
@@ -1066,7 +1066,7 @@ bool CCustomMonster::update_critical_wounded	(const u16 &bone_id, const float &p
 	clamp							(m_critical_wound_accumulator,0.f,m_critical_wound_threshold);
 
 #if 0//def _DEBUG
-	Msg								(
+	EngineLog								(
 		"%6d [%s] update_critical_wounded: %f[%f] (%f,%f) [%f]",
 		Device.dwTimeGlobal,
 		*cName(),

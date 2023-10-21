@@ -23,7 +23,7 @@ IC	void CALifeSpawnRegistry::assign_artefact_position		(CSE_ALifeAnomalousZone	*
 	object->m_fDistance				= m_artefact_spawn_positions[index].distance();
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg							("[LSS] Zone %s[%f][%f][%f] %d: generated artefact position %s[%f][%f][%f]",anomaly->name_replace(),VPUSH(anomaly->o_Position),anomaly->m_artefact_position_offset,object->name_replace(),VPUSH(object->o_Position));
+		EngineLog("[LSS] Zone {}{} {}: generated artefact position {}{}",anomaly->name_replace(),anomaly->o_Position,anomaly->m_artefact_position_offset,object->name_replace(),object->o_Position);
 	}
 #endif
 }

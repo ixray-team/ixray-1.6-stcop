@@ -38,7 +38,7 @@ void CStepManager::reload(LPCSTR section)
 	if (!pSettings->section_exist(anim_section))
 	{
 #ifdef	DEBUG
-		Msg( "! no step_params section for :%s section :s", m_object->cName().c_str(), section );
+		EngineLog( "! no step_params section for :%s section :s", m_object->cName().c_str(), section );
 #endif
 		return;
 	}
@@ -55,7 +55,7 @@ void CStepManager::reload(LPCSTR section)
 	VERIFY3(skeleton_animated, "object is not animated", m_object->cNameVisual().c_str());
 #ifdef	DEBUG
 		if( debug_step_info_load )
-			Msg( "loading step_params for object :%s, visual: %s, section: %s, step_params section: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), section, anim_section );
+			EngineLog( "loading step_params for object :%s, visual: %s, section: %s, step_params section: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), section, anim_section );
 #endif
 
 	for (u32 i=0; pSettings->r_line(anim_section,i,&anim_name,&val); ++i) {
@@ -78,7 +78,7 @@ void CStepManager::reload(LPCSTR section)
 			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 			VERIFY( KA );
 			
-			Msg( "! (CStepManager::reload) no anim :%s object:%s, visual: %s, step_params section: %s ", anim_name, m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_section );
+			EngineLog( "! (CStepManager::reload) no anim :%s object:%s, visual: %s, step_params section: %s ", anim_name, m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_section );
 
 #endif		
 			continue;
@@ -89,7 +89,7 @@ void CStepManager::reload(LPCSTR section)
 			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 			VERIFY( KA );
 			std::pair<LPCSTR,LPCSTR> anim_name_ = KA->LL_MotionDefName_dbg( motion_id );
-			Msg( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name_.first, anim_name_.second );
+			EngineLog( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name_.first, anim_name_.second );
 		}
 #endif
 		m_steps_map.insert(std::make_pair(motion_id, param));
@@ -97,7 +97,7 @@ void CStepManager::reload(LPCSTR section)
 
 #ifdef	DEBUG
 	if( m_steps_map.empty() )
-		Msg( "! no steps info loaded for :%s, section :s, step_params section: %s ", m_object->cName().c_str(), section, anim_section );
+		EngineLog( "! no steps info loaded for :%s, section :s, step_params section: %s ", m_object->cName().c_str(), section, anim_section );
 #endif
 	// reload foot bones
 	for (u32 i = 0; i < MAX_LEGS_COUNT; i++) m_foot_bones[i] = BI_NONE;
@@ -127,7 +127,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 			VERIFY( KA );
 			std::pair<LPCSTR,LPCSTR> anim_name = KA->LL_MotionDefName_dbg( motion_id );
-			Msg( "! no step_params found for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name.first, anim_name.second );
+			EngineLog( "! no step_params found for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name.first, anim_name.second );
 		}
 #endif
 		m_step_info.disable = true;

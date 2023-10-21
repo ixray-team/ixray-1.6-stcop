@@ -7,7 +7,7 @@
 
 #ifndef SMART_COVER_H_INCLUDED
 #define SMART_COVER_H_INCLUDED
-
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 #include "smart_cover_description.h"
 #include "cover_point.h"
 #include "smart_cover_loophole.h"

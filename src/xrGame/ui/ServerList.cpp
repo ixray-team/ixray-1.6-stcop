@@ -486,7 +486,7 @@ void CServerList::ConnectToSelected()
 		return;
 	if (!browser().CheckDirectConnection(item->GetInfo()->info.Index))
 	{
-		Msg("! Direct connection to this server is not available -> its behind firewall");
+		EngineLog("! Direct connection to this server is not available -> its behind firewall");
 		return;
 	}
 

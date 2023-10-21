@@ -80,7 +80,7 @@ void server_site::update_transfer()
 		IClient* tmp_client = Level().Server->GetClientByID(ti->first.first);//dst
 		if (!tmp_client)
 		{
-			Msg("! ERROR: SV: client [%u] not found for transfering file", ti->first);
+			EngineLog("! ERROR: SV: client [%u] not found for transfering file", ti->first.first.value());
 			to_stop_transfers.push_back(ti->first);
 			ti->second->signal_callback(sending_rejected_by_peer);
 			continue;
@@ -197,7 +197,7 @@ void server_site::start_transfer_file(shared_str const & file_name,
 {
 	if (is_transfer_active(to_client, from_client))
 	{
-		Msg("! ERROR: SV: transfering file to client [%d] already active.", to_client);
+		EngineLog("! ERROR: SV: transfering file to client [{}] already active.", to_client.value());
 		return;
 	}
 	filetransfer_node* ftnode = xr_new<filetransfer_node>(
@@ -208,7 +208,7 @@ void server_site::start_transfer_file(shared_str const & file_name,
 	m_transfers.insert(std::make_pair(tkey, ftnode));
 	if (!ftnode->opened())
 	{
-		Msg("! ERROR: SV: failed to open file [%s]", file_name.c_str());
+		EngineLog("! ERROR: SV: failed to open file [%s]", file_name.c_str());
 		stop_transfer_file(tkey);
 	}
 }
@@ -222,7 +222,7 @@ void server_site::start_transfer_file(CMemoryWriter& mem_writer,
 {
 	if (is_transfer_active(to_client, from_client))
 	{
-		Msg("! ERROR: SV: transfering file to client [%d] already active.", to_client);
+		EngineLog("! ERROR: SV: transfering file to client [{}] already active.", to_client.value());
 		return;
 	}
 	filetransfer_node* ftnode = xr_new<filetransfer_node>(
@@ -247,7 +247,7 @@ void server_site::start_transfer_file(u8* data_ptr,
 {
 	if (is_transfer_active(to_client, from_client))
 	{
-		Msg("! ERROR: SV: transfering file to client [%d] already active.", to_client);
+		EngineLog("! ERROR: SV: transfering file to client [{}] already active.", to_client.value());
 		return;
 	}
 	filetransfer_node* ftnode = xr_new<filetransfer_node>(
@@ -272,7 +272,7 @@ void server_site::start_transfer_file(buffer_vector<mutable_buffer_t> & vector_o
 {
 	if (is_transfer_active(to_client, from_client))
 	{
-		Msg("! ERROR: SV: transfering file to client [%d] already active.", to_client);
+		EngineLog("! ERROR: SV: transfering file to client [{}] already active.", to_client.value());
 		return;
 	}
 	filetransfer_node* ftnode = xr_new<filetransfer_node>(
@@ -294,8 +294,8 @@ void server_site::stop_transfer_file(dst_src_pair_t const & tkey)
 	transfer_sessions_t::iterator temp_iter = m_transfers.find(tkey);
 	if (temp_iter == m_transfers.end())
 	{
-		Msg("! ERROR: SV: no file transfer for client [%d] found from client [%d].", 
-			tkey.first, tkey.second);
+		EngineLog("! ERROR: SV: no file transfer for client [{}] found from client [{}].", 
+			tkey.first.value(), tkey.second.value());
 		return;
 	}
 	if (!temp_iter->second->is_complete())
@@ -318,14 +318,14 @@ filereceiver_node* server_site::start_receive_file(shared_str const & file_name,
 	receiving_sessions_t::iterator temp_iter = m_receivers.find(from_client);
 	if (temp_iter != m_receivers.end())
 	{
-		Msg("! ERROR: SV: file already receiving from client [%d]", from_client);
+		EngineLog("! ERROR: SV: file already receiving from client [{}]", from_client.value());
 		return NULL;
 	}
 	filereceiver_node* frnode = xr_new<filereceiver_node>(file_name, rstate_callback);
 	m_receivers.insert(std::make_pair(from_client, frnode));
 	if (!frnode->get_writer())
 	{
-		Msg("! ERROR: SV: failed to create file [%s]", file_name.c_str());
+		EngineLog("! ERROR: SV: failed to create file [{}]", file_name.c_str());
 		stop_receive_file(from_client);
 		return NULL;
 	}
@@ -339,7 +339,7 @@ filereceiver_node* server_site::start_receive_file(CMemoryWriter& mem_writer,
 	receiving_sessions_t::iterator temp_iter = m_receivers.find(from_client);
 	if (temp_iter != m_receivers.end())
 	{
-		Msg("! ERROR: SV: file already receiving from client [%d]", from_client);
+		EngineLog("! ERROR: SV: file already receiving from client [{}]", from_client.value());
 		return NULL;
 	}
 	filereceiver_node* frnode = xr_new<filereceiver_node>(&mem_writer, rstate_callback);
@@ -353,7 +353,7 @@ void server_site::stop_receive_file(ClientID const & from_client)
 	receiving_sessions_t::iterator temp_iter = m_receivers.find(from_client);
 	if (temp_iter == m_receivers.end())
 	{
-		Msg("! ERROR: SV: no file receiving from client [%u] found", from_client);
+		EngineLog("! ERROR: SV: no file receiving from client [{}] found", from_client.value());
 		return;
 	}
 	if (!temp_iter->second->is_complete())
@@ -471,7 +471,7 @@ void client_site::on_message(NET_Packet* packet)
 				stop_receive_file(from_client);
 			} else
 			{
-				Msg("! WARNING: CL: server sent unknown abort receive message");
+				EngineLog("! WARNING: CL: server sent unknown abort receive message");
 			}
 		}break;
 	case receive_rejected:
@@ -483,7 +483,7 @@ void client_site::on_message(NET_Packet* packet)
 				stop_transfer_file();
 			} else
 			{
-				Msg("! WARNING: CL: server sent unknown receive reject message"); 
+				EngineLog("! WARNING: CL: server sent unknown receive reject message"); 
 			}
 		}break;
 	};
@@ -495,13 +495,13 @@ void client_site::start_transfer_file(shared_str const & file_name,
 {
 	if (is_transfer_active())
 	{
-		Msg("! ERROR: CL: transfering file already active.");
+		EngineLog("! ERROR: CL: transfering file already active.");
 		return;
 	}
 	m_transfering = xr_new<filetransfer_node>(file_name, data_min_chunk_size, tstate_callback);
 	if (!m_transfering->opened())
 	{
-		Msg("! ERROR: CL: failed to open file [%s]", file_name.c_str());
+		EngineLog("! ERROR: CL: failed to open file [{}]", file_name.c_str());
 		stop_transfer_file();
 	}
 }
@@ -511,12 +511,12 @@ void client_site::start_transfer_file(u8* data, u32 size,
 {
 	if (is_transfer_active())
 	{
-		Msg("! ERROR: CL: transfering file already active.");
+		EngineLog("! ERROR: CL: transfering file already active.");
 		return;
 	}
 	if (!size || !data)
 	{
-		Msg("! ERROR: CL: no data to transfer ...");
+		EngineLog("! ERROR: CL: no data to transfer ...");
 		return;
 	}
 	m_transfering = xr_new<filetransfer_node>(data,
@@ -547,14 +547,14 @@ filereceiver_node* client_site::start_receive_file(shared_str const & file_name,
 {
 	if (is_receiving_active(from_client))
 	{
-		Msg("! ERROR: CL: file already receiving from client [%d]", from_client);
+		EngineLog("! ERROR: CL: file already receiving from client [{}]", from_client.value());
 		return NULL;
 	}
 	filereceiver_node* frnode = xr_new<filereceiver_node>(file_name, rstate_callback);
 	m_receivers.insert(std::make_pair(from_client, frnode));
 	if (!frnode->get_writer())
 	{
-		Msg("! ERROR: CL: failed to create file [%s]", file_name.c_str());
+		EngineLog("! ERROR: CL: failed to create file [{}]", file_name.c_str());
 		stop_receive_file(from_client);
 		return NULL;
 	}
@@ -567,7 +567,7 @@ filereceiver_node* client_site::start_receive_file(CMemoryWriter& mem_writer,
 {
 	if (is_receiving_active(from_client))
 	{
-		Msg("! ERROR: CL: file already receiving from client [%d]", from_client);
+		EngineLog("! ERROR: CL: file already receiving from client [{}]", from_client.value());
 		return NULL;
 	}
 	mem_writer.clear();
@@ -582,7 +582,7 @@ void client_site::stop_receive_file(ClientID const & from_client)
 	receiving_sessions_t::iterator temp_iter = m_receivers.find(from_client);
 	if (temp_iter == m_receivers.end())
 	{
-		Msg("! ERROR: CL: no file receiving from client [%u] found", from_client);
+		EngineLog("! ERROR: CL: no file receiving from client [{}] found", from_client.value());
 		return;
 	}
 	if (!temp_iter->second->is_complete())

@@ -329,7 +329,7 @@ void CExplosive::Explode()
 		DBG_DrawPoint(pos, 0.3f, color_xrgb(255, 0, 0));
 	}
 #endif
-//	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
+//	EngineLog("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
 	OnBeforeExplosion();
 	//играем звук взрыва
 	Sound->play_at_pos(sndExplode, 0, pos, false);
@@ -484,7 +484,7 @@ void CExplosive::UpdateCL()
 		StopLight();
 		
 
-//		Msg("---------CExplosive OnAfterExplosion [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
+//		EngineLog("---------CExplosive OnAfterExplosion [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
 
 	} 
 	else
@@ -527,7 +527,7 @@ void CExplosive::OnAfterExplosion()
 	
 //	NET_Packet			P;
 //	cast_game_object()->u_EventGen			(P,GE_DESTROY,cast_game_object()->ID());
-//	//		Msg					("ge_destroy: [%d] - %s",ID(),*cName());
+//	//		EngineLog					("ge_destroy: [%d] - %s",ID(),*cName());
 //	if (cast_game_object()->Local()) cast_game_object()->u_EventSend			(P);
 }
 void CExplosive::OnBeforeExplosion()
@@ -536,7 +536,7 @@ void CExplosive::OnBeforeExplosion()
 	if (m_bHideInExplosion) 
 	{
 		HideExplosive();
-		//	Msg("---------CExplosive OnBeforeExplosion setVisible(false) [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
+		//	EngineLog("---------CExplosive OnBeforeExplosion setVisible(false) [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
 	}
 }
 void CExplosive::HideExplosive()

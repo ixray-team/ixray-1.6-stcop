@@ -24,20 +24,20 @@ void __stdcall account_manager::only_log_creation_cb(bool success, char const * 
 {
 	if (success)
 	{
-		Msg("* New profile has created successfully !");
+		EngineLog("* New profile has created successfully !");
 		return;
 	}
-	Msg("! GameSpy account creation ERROR: %s", descr ? descr : "unknown");
+	EngineLog("! GameSpy account creation ERROR: {}", descr ? descr : "unknown");
 }
 
 void	__stdcall account_manager::only_log_profdel_cb(bool success, char const * descr)
 {
 	if (success)
 	{
-		Msg("* Profile has been deleted. And logged out.");
+		EngineLog("* Profile has been deleted. And logged out.");
 		return;
 	}
-	Msg("! FAILED to delete GameSpy profile: %s", descr ? descr : "unknown");
+	EngineLog("! FAILED to delete GameSpy profile: {}", descr ? descr : "unknown");
 }
 
 
@@ -46,26 +46,26 @@ void __stdcall account_manager::only_log_profiles(u32 const profiles_count,
 {
 	if (profiles_count)
 	{
-		Msg("- GameSpy account profiles:");
+		EngineLog("- GameSpy account profiles:");
 		for (profiles_store_t::const_iterator i = m_result_profiles.begin(),
 			ie = m_result_profiles.end(); i != ie; ++i)
 		{
-			Msg("- %s", i->c_str());
+			EngineLog("- %s", i->c_str());
 		}
 		return;
 	}
-	Msg("- No GameSpy account profiles found: %s", description ? description : "unknown error");
+	EngineLog("- No GameSpy account profiles found: {}", description ? description : "unknown error");
 }
 void __stdcall account_manager::only_log_suggestions(u32 const profiles_count,
 													 char const * description)
 {
 	if (description)
-		Msg("- GameSpy suggested unique nicks: %s", description);
+		EngineLog("- GameSpy suggested unique nicks: {}", description);
 
 	for (suggested_nicks_t::const_iterator i = m_suggested_nicks.begin(),
 		ie = m_suggested_nicks.end(); i != ie; ++i)
 	{
-		Msg("- %s", i->c_str());
+		EngineLog("- %s", i->c_str());
 	}
 }
 
@@ -74,31 +74,31 @@ void __stdcall account_manager::only_log_found_email(bool found,
 {
 	if (!found)
 	{
-		Msg("- Such email not found: %s", user_name ? user_name : "");
+		EngineLog("- Such email not found: {}", user_name ? user_name : "");
 		return;
 	}
-	Msg("- Found email, user nick is: %s", user_name);
+	EngineLog("- Found email, user nick is: %s", user_name);
 }
 
 bool account_manager::verify_nick(char const * nick)
 {
 	if (!nick)
 	{
-		Msg("! ERROR: nick name is empty");
+		EngineLog("! ERROR: nick name is empty");
 		m_verifyer_error = "mp_gp_no_nick";
 		return false;
 	}
 	u32 nick_length = xr_strlen(nick);
 	if (nick_length == 0)
 	{
-		Msg("! ERROR: nick name is empty");
+		EngineLog("! ERROR: nick name is empty");
 		m_verifyer_error = "mp_gp_no_nick";
 		return false;
 	}
 
 	if (nick_length >= GP_NICK_LEN)
 	{
-		Msg("! ERROR: nick name is empty");
+		EngineLog("! ERROR: nick name is empty");
 		m_verifyer_error = "mp_gp_nick_is_too_big";
 		return false;
 	}	
@@ -110,40 +110,40 @@ bool account_manager::verify_unique_nick	(char const * unick)
 	static char const * denyed_first_symbols = "@+:#1234567890";
 	if (!unick)
 	{
-		Msg("! ERROR: unique nick name is empty");
+		EngineLog("! ERROR: unique nick name is empty");
 		m_verifyer_error = "mp_gp_no_unique_nick";
 		return false;
 	}
 	u32 unick_length = xr_strlen(unick);
 	if (unick_length == 0)
 	{
-		Msg("! ERROR: unique nick name is empty");
+		EngineLog("! ERROR: unique nick name is empty");
 		m_verifyer_error = "mp_gp_no_unique_nick";
 		return false;
 	}
 	if (unick_length < GP_UNIQUENICK_MIN_LEN)
 	{
-		Msg("! ERROR: unique nick name is too short (must be greater that 2 character)");
+		EngineLog("! ERROR: unique nick name is too short (must be greater that 2 character)");
 		m_verifyer_error = "mp_gp_unique_nick_too_short";
 		return false;
 	}
 	if (unick_length >= GP_UNIQUENICK_LEN)
 	{
-		Msg("! ERROR: nick name is too big");
+		EngineLog("! ERROR: nick name is too big");
 		m_verifyer_error = "mp_gp_unique_nick_is_too_big";
 		return false;
 	}
 
 	if (strchr(denyed_first_symbols, unick[0]))
 	{
-		Msg("! ERROR: first symbol is invalid");
+		EngineLog("! ERROR: first symbol is invalid");
 		m_verifyer_error = "mp_gp_unique_nick_bad_first_symbol";
 		return false;
 	}
 	
 	if (strchr(unick, ' '))
 	{
-		Msg("! ERROR: unique nick can't contain spaces");
+		EngineLog("! ERROR: unique nick can't contain spaces");
 		m_verifyer_error = "mp_gp_unique_nick_must_contain_nospaces";
 		return false;
 	}
@@ -154,7 +154,7 @@ bool account_manager::verify_unique_nick	(char const * unick)
 			(unick[i] != 44) && (unick[i] != 92) && (unick[i] != 39) && (unick[i] != '%');
 		if (!valid)
 		{
-			Msg("! ERROR: bad %d symbol", i);
+			EngineLog("! ERROR: bad %d symbol", i);
 			m_verifyer_error = "mp_gp_unique_nick_must_contain_only";
 			return false;
 		}
@@ -166,14 +166,14 @@ bool account_manager::verify_email	(char const * email)
 {
 	if (!email || (xr_strlen(email) == 0))
 	{
-		Msg("! ERROR: email is empty");
+		EngineLog("! ERROR: email is empty");
 		m_verifyer_error = "mp_gp_no_email";
 		return false;
 	}
 	u32 email_length = xr_strlen(email);
 	if (email_length >= GP_EMAIL_LEN)
 	{
-		Msg("! ERROR: email is too big");
+		EngineLog("! ERROR: email is too big");
 		m_verifyer_error = "mp_gp_email_is_too_big";
 		return false;
 	}
@@ -189,7 +189,7 @@ bool account_manager::verify_email	(char const * email)
 		!isalnum(*(tmp_char + 1)) ||
 		!isalnum(*(tmp_char - 1)))
 	{
-		Msg("! ERROR: bad email");
+		EngineLog("! ERROR: bad email");
 		m_verifyer_error = "mp_gp_bad_email";
 		return false;
 	}
@@ -200,20 +200,20 @@ bool account_manager::verify_password	(char const * pass)
 {
 	if (!pass)
 	{
-		Msg("! ERROR: password is empty");
+		EngineLog("! ERROR: password is empty");
 		m_verifyer_error = "mp_gp_password_is_too_small";
 		return false;
 	}
 	u32 pass_length = xr_strlen(pass);
 	if (pass_length <= 1)
 	{
-		Msg("! ERROR: password is too small, must be greater than 1 symbol");
+		EngineLog("! ERROR: password is too small, must be greater than 1 symbol");
 		m_verifyer_error = "mp_gp_password_is_too_small";
 		return false;
 	}
 	if (pass_length >= GP_PASSWORD_LEN)
 	{
-		Msg("! ERROR: password is too big");
+		EngineLog("! ERROR: password is too big");
 		m_verifyer_error = "mp_gp_password_is_too_big";
 		return false;
 	}

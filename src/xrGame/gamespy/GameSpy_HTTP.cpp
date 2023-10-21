@@ -9,7 +9,7 @@ CGameSpy_HTTP::CGameSpy_HTTP()
 	m_LastRequest	= -1;
 
 	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
+	EngineLog("Loading DLL: {}",g_name);
 	m_hGameSpyDLL			= LoadLibraryA	(g_name);
 	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
 	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
@@ -104,7 +104,7 @@ GHTTPBool	__cdecl	CompletedCallBack	(GHTTPRequest request, GHTTPResult result, c
 		MainMenu()->OnDownloadPatchSuccess();
 		break;
 	default:
-		Msg ("! CompletedCallBack Result - %s", GHTTPResultStr[result]);
+		EngineLog("! CompletedCallBack Result - {}", GHTTPResultStr[result]);
 		MainMenu()->OnDownloadPatchError();
 		break;
 
@@ -119,10 +119,10 @@ void		CGameSpy_HTTP::DownloadFile(LPCSTR URL, LPCSTR FileName)
 {	
 
 //	GHTTPRequest res = xrGS_ghttpSaveA(URL, FileName, GHTTPFalse, CompletedCallBack, this);
-	Msg		("URL:  %s",URL);
-	Msg		("File: %s",FileName);
+	EngineLog("URL:  {}",URL);
+	EngineLog("File: {}",FileName);
 	m_LastRequest = xrGS_ghttpSaveExA(URL, FileName, "", NULL, GHTTPFalse, GHTTPFalse, ProgressCallback, CompletedCallBack, this);
-	Msg		("Code: %d",m_LastRequest);
+	EngineLog("Code: {}",m_LastRequest);
 	if (m_LastRequest < 0)
 	{
 		MainMenu()->OnDownloadPatchError();

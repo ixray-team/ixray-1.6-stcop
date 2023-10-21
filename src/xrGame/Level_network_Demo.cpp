@@ -280,18 +280,18 @@ void CLevel::SetDemoPlayPos(float const pos)
 {
 	if (!IsDemoPlayStarted())
 	{
-		Msg("! ERROR: demo play not started");
+		EngineLog("! ERROR: demo play not started");
 		return;
 	}
 	if (pos > 1.f)
 	{
-		Msg("! ERROR: incorect demo play position");
+		EngineLog("! ERROR: incorect demo play position");
 		return;
 	}
 	float cur_pos = GetDemoPlayPos();
 	if (cur_pos >= pos)
 	{
-		Msg("! demo play position must be greater than current position");
+		EngineLog("! demo play position must be greater than current position");
 		return;
 	}
 	
@@ -300,7 +300,7 @@ void CLevel::SetDemoPlayPos(float const pos)
 	u32				file_pos = u32(float(m_reader->length()) * pos);
 	if (file_pos <= old_file_pos)
 	{
-		Msg("! demo play position already at the current point");
+		EngineLog("! demo play position already at the current point");
 		return;
 	}
 

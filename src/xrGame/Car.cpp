@@ -403,7 +403,7 @@ void CCar::UpdateEx			(float fov)
 	DbgUbdateCl();
 	#endif
 
-	//	Log("UpdateCL",Device.dwFrame);
+	//	EngineLog("UpdateCL",Device.dwFrame);
 	//XFORM().set(m_pPhysicsShell->mXFORM);
 	VisualUpdate(fov);
 	if(OwnerActor() && OwnerActor()->IsMyCamera()) 
@@ -1319,7 +1319,7 @@ void CCar::Transmission(size_t num)
 		}
 	}
 #ifdef DEBUG
-	//Log("Transmission switch %d",(u32)num);
+	//EngineLog("Transmission switch %d",(u32)num);
 #endif
 }
 void CCar::CircleSwitchTransmission()

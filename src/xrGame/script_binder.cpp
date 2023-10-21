@@ -116,7 +116,7 @@ void CScriptBinder::net_Destroy		()
 {
 	if (m_object) {
 #ifdef _DEBUG
-		Msg						("* Core object %s is UNbinded from the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
+		EngineLog						("* Core object {} is UNbinded from the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
 #endif // _DEBUG
 		try {
 			m_object->net_Destroy	();
@@ -133,7 +133,7 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 	if (IsGameTypeSingle()) {
 		VERIFY2				(!m_object,"Cannot bind to the object twice!");
 #ifdef _DEBUG
-		Msg					("* Core object %s is binded with the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
+		EngineLog					("* Core object {} is binded with the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
 #endif // _DEBUG
 		m_object			= object;
 	} else {

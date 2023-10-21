@@ -179,7 +179,7 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 				}
 				/*if (Level().CurrentControlEntity()){
 						CGameObject* GO = smart_cast<CGameObject*>(Level().CurrentControlEntity());
-						Msg("---I'm ready (ID = %d) sending player ready packet !!!", GO->ID());
+						EngineLog("---I'm ready (ID = %d) sending player ready packet !!!", GO->ID());
 						NET_Packet			P;
 						GO->u_EventGen		(P,GE_GAME_EVENT,GO->ID()	);
 						P.w_u16(GAME_EVENT_PLAYER_READY);
@@ -686,7 +686,7 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 	local_player->skin				= NewSkin;
 	m_bSkinSelected					= TRUE;
 	m_bSpectatorSelected			= FALSE;
-	Msg("* player [%s][%d] changed skin to %d", local_player->getName(), local_player->GameID, local_player->skin);
+	EngineLog("* player [%s][%d] changed skin to %d", local_player->getName(), local_player->GameID, local_player->skin);
 	ReInitRewardGenerator			(local_player);
 	//SpawnMe();
 }
@@ -714,7 +714,7 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeTeam(NET_Packet& P)
 	local_player->team = newTeam;
 	m_bTeamSelected = TRUE;
 	VERIFY(local_player);
-	Msg("* player [%s][%d] changed team to %d", local_player->getName(), local_player->GameID, local_player->team);
+	EngineLog("* player [%s][%d] changed team to %d", local_player->getName(), local_player->GameID, local_player->team);
 	/*shared_str const & teamSection = GetLocalPlayerTeamSection();
 	m_game_ui->UpdateBuyMenu(teamSection, BASECOST_SECTION);
 	m_game_ui->UpdateSkinMenu(teamSection);*/
@@ -895,9 +895,9 @@ void game_cl_CaptureTheArtefact::SetInvinciblePlayer(u16 const gameId, bool cons
 	CActor* pActor		= static_cast<CActor*>		(pObject);
 	VERIFY(pActor);
 	/*if (invincible)
-		Msg("---Player %d is invincible now...", gameId);
+		EngineLog("---Player %d is invincible now...", gameId);
 	else
-		Msg("---Player %d is not invincible now...", gameId);*/
+		EngineLog("---Player %d is not invincible now...", gameId);*/
 
 	pActor->conditions().SetCanBeHarmedState		(!invincible);
 }
@@ -1070,7 +1070,7 @@ bool game_cl_CaptureTheArtefact::CanBeReady()
 		return false;
 	}
 #ifndef MASTER_GOLD
-	Msg("---CanBeReady = true: [%s][%d]", local_player->getName(), local_player->GameID);
+	EngineLog("---CanBeReady = true: [%s][%d]", local_player->getName(), local_player->GameID);
 #endif // #ifndef MASTER_GOLD
 	return true;
 }
@@ -1165,7 +1165,7 @@ void game_cl_CaptureTheArtefact::OnGameRoundStarted	()
 	{
 		OnTeamChanged			(); //updates buy menu...
 #ifdef DEBUG
-		Msg("--- CTA: Round started !!!");
+		EngineLog("--- CTA: Round started !!!");
 #endif // #ifdef DEBUG
 	}
 	if (m_reward_generator)
@@ -1269,14 +1269,14 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	u32					tcmd_len = cmd_len;
 
 #ifdef CLIENT_CTA_LOG
-	Msg("---Received vote begin message: (command: %s), (player: %s)", command, player);
+	EngineLog("---Received vote begin message: (command: %s), (player: %s)", command, player);
 #endif
 
 	if (!cmd_len)
 		return;
 
 #ifdef CLIENT_CTA_LOG
-	Msg("---Vote command: %s", cmd_name);
+	EngineLog("---Vote command: %s", cmd_name);
 #endif
 
 	int					args_count = sscanf_s(command + cmd_len, 
@@ -1290,7 +1290,7 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 		args_count = 0;
 
 #ifdef CLIENT_CTA_LOG
-	Msg("---Args count: %d", args_count);
+	EngineLog("---Args count: %d", args_count);
 #endif
 
 	
@@ -1304,7 +1304,7 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 			tcmd_name		= static_cast<char*>(_alloca(tcmd_len));
 			xr_strcpy(tcmd_name, tcmd_len, ted_str);
 #ifdef CLIENT_CTA_LOG
-			Msg("---Translated command to: %s", tcmd_name);
+			EngineLog("---Translated command to: %s", tcmd_name);
 #endif
 			break;
 		}
@@ -1316,7 +1316,7 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	for (int i = 0; i < args_count; ++i)
 	{
 #ifdef CLIENT_CTA_LOG
-		Msg("---Next cat iteration state: %s", vstr);
+		EngineLog("---Next cat iteration state: %s", vstr);
 #endif
 		xr_strcat(vstr, vstr_size, " ");
 		xr_strcat(vstr, vstr_size, st.translate(args[i]).c_str());
@@ -1327,13 +1327,13 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	char*				fin_str = static_cast<char*>(_alloca(fin_str_size));
 
 #ifdef CLIENT_CTA_LOG
-	Msg("---Making finally string: (t_vote_str: %s), (vstr: %s), (player: %s)", t_vote_str, vstr, player);
+	EngineLog("---Making finally string: (t_vote_str: %s), (vstr: %s), (player: %s)", t_vote_str, vstr, player);
 #endif
 	
 	xr_sprintf			(fin_str, fin_str_size, t_vote_str, vstr, player);
 
 #ifdef CLIENT_CTA_LOG
-	Msg("---Starting vote: %s", fin_str);
+	EngineLog("---Starting vote: %s", fin_str);
 #endif
 
 	m_game_ui->SetVoteMessage(fin_str);
@@ -1394,7 +1394,7 @@ void game_cl_CaptureTheArtefact::OnVoteStop(NET_Packet& P)
 {
 	inherited::OnVoteStop(P);
 #ifdef CLIENT_CTA_LOG
-	Msg("---Voting stoped...");
+	EngineLog("---Voting stoped...");
 #endif
 	if (m_game_ui)
 	{

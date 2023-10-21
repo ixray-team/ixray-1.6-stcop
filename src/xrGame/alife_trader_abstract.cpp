@@ -106,7 +106,7 @@ bool CSE_ALifeTraderAbstract::check_inventory_consistency	()
 
 #ifdef DEBUG
 //	if (psAI_Flags.test(aiALife)) {
-//		Msg						("[LSS] [%s] inventory is consistent [%f][%d]",base()->name_replace(),mass,volume);
+//		EngineLog						("[LSS] [%s] inventory is consistent [%f][%d]",base()->name_replace(),mass,volume);
 //	}
 #endif
 
@@ -177,9 +177,9 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 
 #ifdef DEBUG
 //		if (psAI_Flags.test(aiALife))
-//			Msg					("[LSS] Spawning item [%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeDynamicObject->ID);
-		Msg						(
-			"[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'",
+//			EngineLog					("[LSS] Spawning item [%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeDynamicObject->ID);
+		EngineLog						(
+			"[LSS][{}] Going online [{}][{}][{}] with parent [{}][{}] on '{}'",
 			Device.dwFrame,
 			Device.dwTimeGlobal,
 			l_tpALifeInventoryItem->base()->name_replace(),
@@ -224,8 +224,8 @@ void add_offline_impl						(CSE_ALifeDynamicObject *object, const xr_vector<ALif
 		VERIFY2					(inventory_item,"Non inventory item object has parent?!");
 #ifdef DEBUG
 //		if (psAI_Flags.test(aiALife))
-//			Msg					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
-		Msg						(
+//			EngineLog					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
+		EngineLog						(
 			"[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'",
 			Device.dwFrame,
 			Device.dwTimeGlobal,

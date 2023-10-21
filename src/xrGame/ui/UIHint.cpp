@@ -79,7 +79,7 @@ void UIHintWindow::disable_hint()
 {
 	if ( !m_hint_wnd )
 	{
-//		Msg( "! class <UIHintWindow> has not <hint_wnd>!" );
+//		EngineLog( "! class <UIHintWindow> has not <hint_wnd>!" );
 		return;
 	}		
 	m_hint_wnd->set_text( NULL );
@@ -120,7 +120,7 @@ void UIHintWindow::update_hint_text()
 	
 	if ( !m_hint_wnd )
 	{
-		Msg( "! class <UIHintWindow> has not <hint_wnd> (%s)!", m_hint_text.c_str() );
+		EngineLog( "! class <UIHintWindow> has not <hint_wnd> ({})!", m_hint_text.c_str() );
 		return;
 	}		
 

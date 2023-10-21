@@ -756,12 +756,12 @@ void CAI_Stalker::update_object_handler	()
 		}
 #if defined(DEBUG) && !defined(LUABIND_NO_EXCEPTIONS)
 		catch (luabind::cast_failed &message) {
-			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info().name());
+			EngineLog						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info().name());
 			throw;
 		}
 #endif
 		catch (std::exception &message) {
-			Msg						("! Expression \"%s\"",message.what());
+			EngineLog						("! Expression \"%s\"",message.what());
 			throw;
 		}
 		catch(...) {
@@ -902,7 +902,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		STOP_PROFILE
 	}
 //	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
-//		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
+//		EngineLog				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
 	// Queue shrink
 	VERIFY				(_valid(Position()));
 	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
@@ -1047,22 +1047,22 @@ void CAI_Stalker::Think			()
 //		}
 #ifdef DEBUG
 //		catch (luabind::cast_failed &message) {
-//			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
+//			EngineLog						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
 			//throw;
 //		}
 #endif
 //		catch (std::exception &message) {
-//			Msg						("! Expression \"%s\"",message.what());
+//			EngineLog						("! Expression \"%s\"",message.what());
 //			throw;
 //		}
 //		catch (...) {
-//			Msg						("! unknown exception occured");
+//			EngineLog						("! unknown exception occured");
 //			throw;
 //		}
 //	}
 //	catch(...) {
 #ifdef DEBUG
-//		Msg						("! Last action being executed : %s",brain().current_action().m_action_name);
+//		EngineLog						("! Last action being executed : %s",brain().current_action().m_action_name);
 #endif
 //		brain().setup			(this);
 //		brain().update			(update_delta);
@@ -1078,19 +1078,19 @@ void CAI_Stalker::Think			()
 //	}
 #if 0//def DEBUG
 	catch (luabind::cast_failed &message) {
-		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
+		EngineLog						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
 		movement().initialize	();
 		movement().update		(update_delta);
 		throw;
 	}
 	catch (std::exception &message) {
-		Msg						("! Expression \"%s\"",message.what());
+		EngineLog						("! Expression \"%s\"",message.what());
 		movement().initialize	();
 		movement().update		(update_delta);
 		throw;
 	}
 	catch (...) {
-		Msg						("! unknown exception occured");
+		EngineLog						("! unknown exception occured");
 		movement().initialize	();
 		movement().update		(update_delta);
 		throw;

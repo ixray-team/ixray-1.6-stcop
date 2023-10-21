@@ -237,15 +237,15 @@ u32	CLevel::Objects_net_Save	(NET_Packet* _Packet, u32 start, u32 max_object_siz
 	for (; start<Objects.o_count(); start++)	{
 		CObject		*_P = Objects.o_get_by_iterator(start);
 		CGameObject *P = smart_cast<CGameObject*>(_P);
-//		Msg			("save:iterating:%d:%s, size[%d]",P->ID(),*P->cName(), Packet.w_tell() );
+//		EngineLog			("save:iterating:%d:%s, size[%d]",P->ID(),*P->cName(), Packet.w_tell() );
 		if (P && !P->getDestroy() && P->net_SaveRelevant())	{
 			Packet.w_u16			(u16(P->ID())	);
 			Packet.w_chunk_open16	(position);
-//			Msg						("save:saving:%d:%s",P->ID(),*P->cName());
+//			EngineLog						("save:saving:%d:%s",P->ID(),*P->cName());
 			P->net_Save				(Packet);
 #ifdef DEBUG
 			u32 size				= u32		(Packet.w_tell()-position)-sizeof(u16);
-//			Msg						("save:saved:%d bytes:%d:%s",size,P->ID(),*P->cName());
+//			EngineLog						("save:saved:%d bytes:%d:%s",size,P->ID(),*P->cName());
 			if				(size>=65536)			{
 				Debug.fatal	(DEBUG_INFO,"Object [%s][%d] exceed network-data limit\n size=%d, Pend=%d, Pstart=%d",
 					*P->cName(), P->ID(), size, Packet.w_tell(), position);
@@ -421,7 +421,7 @@ void			CLevel::OnBuildVersionChallenge		()
 	P.w_begin				(M_CL_AUTH);
 #ifdef USE_DEBUG_AUTH
 	u64 auth = MP_DEBUG_AUTH;
-	Msg("* Sending auth value ...");
+	EngineLog("* Sending auth value ...");
 #else
 	u64 auth = FS.auth_get();
 #endif //#ifdef DEBUG

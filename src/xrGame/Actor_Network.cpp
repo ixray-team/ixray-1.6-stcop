@@ -1067,7 +1067,7 @@ void	CActor::CalculateInterpolationParams()
 	pIEnd->o_torso.pitch	= pIRec->o_torso.pitch	;	
 	pIEnd->o_torso.roll		= pIRec->o_torso.roll	;	
 	/////////////////////////////////////////////////////////////////////
-//	Msg("from %f, to %f", IStart.o_torso.yaw/PI*180.0f, IEnd.o_torso.yaw/PI*180.0f);
+//	EngineLog("from %f, to %f", IStart.o_torso.yaw/PI*180.0f, IEnd.o_torso.yaw/PI*180.0f);
 	/////////////////////////////////////////////////////////////////////
 	Fvector SP0, SP1, SP2, SP3;
 	Fvector HP0, HP1, HP2, HP3;
@@ -1120,10 +1120,10 @@ void	CActor::CalculateInterpolationParams()
 	float res = d0.dotproduct(d1);
 	if (res < 0)
 	{
-	Msg ("! %f", res);
+	EngineLog ("! %f", res);
 	}
 	else
-	Msg ("%f", res);
+	EngineLog ("%f", res);
 	}
 	*/
 	/////////////////////////////////////////////////////////////////////////////

@@ -35,7 +35,7 @@ BOOL object::net_Spawn		(CSE_Abstract *server_entity)
 	VERIFY							(smart_cover);
 
 	if (!smart_cover->m_description.size())
-		Msg							("! smart cover %s has no description", smart_cover->name_replace());
+		EngineLog							("! smart cover %s has no description", smart_cover->name_replace());
 
 	CCF_Shape						*shape = xr_new<CCF_Shape>(this);
 	collidable.model				= shape;

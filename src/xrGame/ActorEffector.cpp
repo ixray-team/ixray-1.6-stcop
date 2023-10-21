@@ -190,7 +190,7 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 		Mdef.k						= info.d;
 		Mdef.i.crossproduct			(info.n, info.d);
 		Mdef.c						= info.p;
-//		Msg("fr[%d] %2.3f,%2.3f,%2.3f", Device.dwFrame,m.c.x,m.c.y,m.c.z);
+//		EngineLog("fr[%d] %2.3f,%2.3f,%2.3f", Device.dwFrame,m.c.x,m.c.y,m.c.z);
 		Fmatrix mr;
 		mr.mul						(Mdef,m);
 		info.d						= mr.k;

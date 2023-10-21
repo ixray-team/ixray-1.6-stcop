@@ -752,7 +752,7 @@ void CVisualMemoryManager::save	(NET_Packet &packet) const
 	if (!m_object->g_Alive())
 		return;
 
-//	Msg("before saving object %s[%d]", m_object->cName().c_str(), packet.w_tell() );
+//	EngineLog("before saving object %s[%d]", m_object->cName().c_str(), packet.w_tell() );
 	u32 count					= 0;
 	VISIBLES::const_iterator	I = objects().begin();
 	VISIBLES::const_iterator const	E = objects().end();
@@ -800,7 +800,7 @@ void CVisualMemoryManager::save	(NET_Packet &packet) const
 		packet.w_u64			((*I).m_visible.flags);
 	}
 
-//	Msg("after saving object %s[%d]", m_object->cName().c_str(), packet.w_tell() );
+//	EngineLog("after saving object %s[%d]", m_object->cName().c_str(), packet.w_tell() );
 }
 
 void CVisualMemoryManager::load	(IReader &packet)

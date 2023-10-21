@@ -161,7 +161,7 @@ void CPHSkeleton::Update(u32 dt)
 		NET_Packet			P;
 		obj->u_EventGen		(P,GE_DESTROY,obj->ID());
 #ifdef DEBUG
-		Msg					("ge_destroy: [%d] - %s",obj->ID(),*(obj->cName()));
+		EngineLog					("ge_destroy: [%d] - %s",obj->ID(),*(obj->cName()));
 #endif
 		if (obj->Local())	obj->u_EventSend			(P);
 */
@@ -318,7 +318,7 @@ void CPHSkeleton::PHSplit()
 	u16 spawned=u16(m_unsplited_shels.size());
 	PPhysicsShellHolder()->PPhysicsShell()->SplitProcess(m_unsplited_shels);
 	u16 i=u16(m_unsplited_shels.size())-spawned;
-	//	Msg("%o,spawned,%d",this,i);
+	//	EngineLog("%o,spawned,%d",this,i);
 	for(;i;--i) SpawnCopy();
 
 
@@ -329,7 +329,7 @@ void CPHSkeleton::PHSplit()
 
 void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 {
-	//Msg("%o,received has %d,",this,m_unsplited_shels.size());
+	//EngineLog("%o,received has %d,",this,m_unsplited_shels.size());
 	if (0==m_unsplited_shels.size())	return;	//. hack
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	CPhysicsShellHolder* O =SO->PPhysicsShellHolder();

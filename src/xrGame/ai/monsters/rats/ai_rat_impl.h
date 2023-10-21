@@ -26,7 +26,7 @@ IC void CAI_Rat::add_active_member	(bool bForceActive)
 		shedule.t_max	= m_dwActiveScheduleMax;
 		vfRemoveStandingMember();
 	}
-	//Msg("* Group : alive[%2d], active[%2d]",Group.m_dwAliveCount,Group.m_dwActiveCount);
+	//EngineLog("* Group : alive[%2d], active[%2d]",Group.m_dwAliveCount,Group.m_dwActiveCount);
 };
 
 IC void CAI_Rat::vfRemoveActiveMember()
@@ -40,7 +40,7 @@ IC void CAI_Rat::vfRemoveActiveMember()
 		shedule.t_min	= m_dwPassiveScheduleMin;
 		shedule.t_max	= m_dwPassiveScheduleMax;
 	}
-	//Msg("* Group : alive[%2d], active[%2d]",Group.m_dwAliveCount,Group.m_dwActiveCount);
+	//EngineLog("* Group : alive[%2d], active[%2d]",Group.m_dwAliveCount,Group.m_dwActiveCount);
 };
 
 IC void CAI_Rat::vfAddStandingMember()

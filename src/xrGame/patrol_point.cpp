@@ -135,7 +135,7 @@ const GameGraph::_GRAPH_ID &CPatrolPoint::game_vertex_id	() const
 			m_level_vertex_id,
 			m_name.c_str(),
 			m_path->m_name.c_str(),
-			VPUSH(m_position)
+			m_position.x, m_position.y, m_position.z
 		)
 	);
 

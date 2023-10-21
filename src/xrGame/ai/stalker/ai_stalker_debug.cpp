@@ -142,23 +142,24 @@ void restore_actor()
 template <typename planner_type>
 void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR indent, LPCSTR planner_id)
 {
+#if 0
 	planner_type						&_brain = const_cast<planner_type&>(brain);
 	if (brain.solution().empty())
 		return;
 
-	CScriptActionPlannerAction			*planner = smart_cast<CScriptActionPlannerAction*>(&_brain.action(brain.solution().front()));
-	if (planner)
-		draw_planner					(*planner,start_indent,indent,_brain.action2string(brain.solution().front()));
+	//CScriptActionPlannerAction			*planner = smart_cast<CScriptActionPlannerAction*>(&_brain.action(brain.solution().front()));
+	//if (planner)
+	//	draw_planner					(*planner,start_indent,indent,_brain.action2string(brain.solution().front()));
 
 	DBG_OutText	("%s ",start_indent);
 	DBG_OutText	("%splanner %s",start_indent,planner_id);
 	DBG_OutText	("%s%sevaluators  : %d",start_indent,indent,brain.evaluators().size());
 	DBG_OutText	("%s%soperators   : %d",start_indent,indent,brain.operators().size());
-	DBG_OutText	("%s%sselected    : %s",start_indent,indent,_brain.action2string(brain.solution().front()));
-	// solution
-	DBG_OutText	("%s%ssolution",start_indent,indent);
-	for (int i=0; i<(int)brain.solution().size(); ++i)
-		DBG_OutText("%s%s%s%s",start_indent,indent,indent,_brain.action2string(brain.solution()[i]));
+	//DBG_OutText	("%s%sselected    : %s",start_indent,indent,_brain.action2string(brain.solution().front()));
+	//// solution
+	//DBG_OutText	("%s%ssolution",start_indent,indent);
+	//for (int i=0; i<(int)brain.solution().size(); ++i)
+	//	DBG_OutText("%s%s%s%s",start_indent,indent,indent,_brain.action2string(brain.solution()[i]));
 	// current
 	DBG_OutText	("%s%scurrent world state",start_indent,indent);
 	typename planner_type::EVALUATORS::const_iterator	I = brain.evaluators().begin();
@@ -182,6 +183,7 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 			DBG_OutText	("%s%s%s    %5c : [%d][%s]",start_indent,indent,indent,temp,(*I).first,_brain.property2string((*I).first));
 		}
 	}
+#endif
 }
 
 LPCSTR animation_name(CAI_Stalker *self, const MotionID &animation)

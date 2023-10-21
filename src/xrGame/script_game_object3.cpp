@@ -403,7 +403,7 @@ void CScriptGameObject::set_dest_level_vertex_id(u32 level_vertex_id)
 	else {
 
 		if (!ai().level_graph().valid_vertex_id(level_vertex_id)) {
-#ifdef DEBUG
+#if 0
 			ai().script_engine().script_log				(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : invalid vertex id being setup by action %s!",stalker->brain().CStalkerPlanner::current_action().m_action_name);
 #endif
 			return;
@@ -430,7 +430,7 @@ void CScriptGameObject::set_dest_game_vertex_id( GameGraph::_GRAPH_ID game_verte
 	else {
 
 		if (!ai().game_graph().valid_vertex_id(game_vertex_id)) {
-#ifdef DEBUG
+#if 0
 			ai().script_engine().script_log				(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : invalid vertex id being setup by action %s!",stalker->brain().CStalkerPlanner::current_action().m_action_name);
 #endif
 			return;
@@ -837,7 +837,7 @@ bool CScriptGameObject::weapon_strapped	() const
 	}
 
 	bool const result	= stalker->weapon_strapped();
-//	Msg					( "[%6d][%s] weapon_strapped = %s", Device.dwTimeGlobal, stalker->cName().c_str(), result ? "true" : "false" );
+//	EngineLog					( "[%6d][%s] weapon_strapped = %s", Device.dwTimeGlobal, stalker->cName().c_str(), result ? "true" : "false" );
 	return			(result);
 }
 
@@ -849,7 +849,7 @@ bool CScriptGameObject::weapon_unstrapped	() const
 		return		(false);
 	}
 	bool const result	= stalker->weapon_unstrapped();
-//	Msg					( "[%6d][%s] weapon_unstrapped = %s", Device.dwTimeGlobal, stalker->cName().c_str(), result ? "true" : "false" );
+//	EngineLog					( "[%6d][%s] weapon_unstrapped = %s", Device.dwTimeGlobal, stalker->cName().c_str(), result ? "true" : "false" );
 	return			(result);
 }
 

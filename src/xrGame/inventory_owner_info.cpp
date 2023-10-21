@@ -58,7 +58,7 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 
 #ifdef DEBUG
 	if(psAI_Flags.test(aiInfoPortion))
-		Msg("[%s] Received Info [%s]", Name(), *info_id);
+		EngineLog("[%s] Received Info [%s]", Name(), *info_id);
 #endif
 
 	return true;
@@ -68,13 +68,13 @@ void CInventoryOwner::DumpInfo() const
 {
 	KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();
 
-	Msg("------------------------------------------");	
-	Msg("Start KnownInfo dump for [%s]",Name());	
+	EngineLog("------------------------------------------");	
+	EngineLog("Start KnownInfo dump for [%s]",Name());	
 	KNOWN_INFO_VECTOR_IT it = known_info.begin();
 	for(int i=0;it!=known_info.end();++it,++i){
-		Msg("known info[%d]:%s",i,(*it).c_str());	
+		EngineLog("known info[%d]:%s",i,(*it).c_str());	
 	}
-	Msg("------------------------------------------");	
+	EngineLog("------------------------------------------");	
 
 }
 #endif
@@ -86,7 +86,7 @@ void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 	
 #ifdef DEBUG
 	if(psAI_Flags.test(aiInfoPortion))
-		Msg("[%s] Disabled Info [%s]", Name(), info_id.c_str());
+		EngineLog("[%s] Disabled Info [%s]", Name(), info_id.c_str());
 #endif
 
 	KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();

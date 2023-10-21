@@ -339,7 +339,7 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 		NET_Packet			np;
 		Hit.Write_Packet	(np);
 		
-//		Msg("Hit sended: %d[%d,%d]", Hit.whoID, Hit.weaponID, Hit.BulletID);
+//		EngineLog("Hit sended: %d[%d,%d]", Hit.whoID, Hit.weaponID, Hit.BulletID);
 		CGameObject::u_EventSend(np);
 	}
 }
@@ -388,7 +388,7 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 		{
 			if ( bullet->density_mode )
 			{
-//				Log("WARNING: Material in material found while bullet tracing. Incorrect behaviour of shooting is possible.");
+//				EngineLog("WARNING: Material in material found while bullet tracing. Incorrect behaviour of shooting is possible.");
 			}
 			bullet->density_mode = true;
 			SGameMtl* mtl = GMLib.GetMaterialByIdx(target_material);

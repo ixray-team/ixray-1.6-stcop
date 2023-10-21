@@ -21,10 +21,10 @@
 	};
 	xr_vector<DBGList>	dbg_list_lines;
 	void dump_list_lines(){
-		Msg("------Total  Lines %d",dbg_list_lines.size());
+		EngineLog("------Total  Lines %d",dbg_list_lines.size());
 		xr_vector<DBGList>::iterator _it = dbg_list_lines.begin();
 		for(;_it!=dbg_list_lines.end();++_it)
-			Msg("--leak detected ---- Line = %d",(*_it).num);
+			EngineLog("--leak detected ---- Line = %d",(*_it).num);
 	}
 #else
 	void dump_list_lines(){}
@@ -54,7 +54,7 @@ CUILine::~CUILine(){
 		}
 	}
 	if(!bOK)
-		Msg("CUILine::~CUILine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
+		EngineLog("CUILine::~CUILine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
 #endif
 }
 

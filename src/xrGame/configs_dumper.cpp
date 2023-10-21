@@ -204,7 +204,7 @@ void configs_dumper::dump_config(complete_callback_t complete_cb)
 	if (is_active())
 	{
 #ifdef DEBUG
-		Msg("! ERROR: CL: dump making already in progress...");
+		EngineLog("! ERROR: CL: dump making already in progress...");
 #endif
 		return;
 	}
@@ -297,7 +297,7 @@ void configs_dumper::realloc_compress_buffer(u32 need_size)
 	if (m_buffer_for_compress && (need_size <= m_buffer_for_compress_capacity))
 		return;
 #ifdef DEBUG	
-	Msg("* reallocing compression buffer.");
+	EngineLog("* reallocing compression buffer.");
 #endif
 	m_buffer_for_compress_capacity = need_size * 2;
 	void* new_buffer = xr_realloc(m_buffer_for_compress, m_buffer_for_compress_capacity);
@@ -313,7 +313,7 @@ void configs_dumper::timer_begin(LPCSTR comment)
 
 void configs_dumper::timer_end()
 {
-	Msg("* %s : %u ms", m_timer_comment.c_str(), m_debug_timer.GetElapsed_ms());
+	EngineLog("* %s : %u ms", m_timer_comment.c_str(), m_debug_timer.GetElapsed_ms());
 }
 #endif	//#ifdef DEBUG
 

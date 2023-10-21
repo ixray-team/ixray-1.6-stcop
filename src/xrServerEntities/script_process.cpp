@@ -20,7 +20,7 @@ CScriptProcess::CScriptProcess	(shared_str name, shared_str scripts) :
 	m_name						(name)
 {
 #ifdef DEBUG
-	Msg				("* Initializing %s script process",*m_name);
+	EngineLog("* Initializing {} script process",*m_name);
 #endif
 	
 	string256		I;

@@ -27,21 +27,21 @@ static void show_restrictions	(LPCSTR restrictions)
 {
 	string256			temp;
 	for (int i=0, n=_GetItemCount(restrictions); i<n; ++i)
-		Msg				("     %s",_GetItem(restrictions,i,temp));
+		EngineLog				("     %s",_GetItem(restrictions,i,temp));
 }
 
 bool show_restrictions			(CRestrictedObject *object)
 {
-	Msg					("DEFAULT OUT RESTRICTIONS :");
+	EngineLog					("DEFAULT OUT RESTRICTIONS :");
 	show_restrictions	(*Level().space_restriction_manager().default_out_restrictions() ? *Level().space_restriction_manager().default_out_restrictions() : "");
 
-	Msg					("DEFAULT IN RESTRICTIONS  :");
+	EngineLog					("DEFAULT IN RESTRICTIONS  :");
 	show_restrictions	(*Level().space_restriction_manager().default_in_restrictions()  ? *Level().space_restriction_manager().default_in_restrictions()  : "");
 
-	Msg					("OUT RESTRICTIONS         :");
+	EngineLog					("OUT RESTRICTIONS         :");
 	show_restrictions	(*object->out_restrictions() ? *object->out_restrictions() : "");
 
-	Msg					("IN RESTRICTIONS          :");
+	EngineLog					("IN RESTRICTIONS          :");
 	show_restrictions	(*object->in_restrictions()  ? *object->in_restrictions()  : "");
 
 	return				(false);

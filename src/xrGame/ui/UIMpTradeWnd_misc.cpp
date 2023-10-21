@@ -124,7 +124,7 @@ void CUIMpTradeWnd::SetInfoString(LPCSTR str)
 	m_static_information->SetText			(str);
 	m_static_information->ResetColorAnimation	();
 #ifndef MASTER_GOLD
-	Msg("Buy menu message:%s", str);
+	EngineLog("Buy menu message:%s", str);
 #endif // #ifndef MASTER_GOLD
 }
 
@@ -513,7 +513,7 @@ void CUIMpTradeWnd::SetMoneyAmount(u32 money)
 void CUIMpTradeWnd::ResetItems()
 {
 #ifdef DEBUG
-	Msg("--ResetItems");
+	EngineLog("--ResetItems");
 #endif // #ifdef DEBUG
 	ResetToOrigin						();
 	CleanUserItems						();

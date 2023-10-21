@@ -110,7 +110,7 @@ UpgradeStateResult UpgradeBase::can_install( CInventoryItem& item, bool loading 
 	{
 		if ( g_upgrades_log == 1 )
 		{
-			Msg( "- Upgrade <%s> (id = %d) is in mode <unknown>.", id_str(), item.object_id() );
+			EngineLog( "- Upgrade <%s> (id = %d) is in mode <unknown>.", id_str(), item.object_id() );
 		}
 		return result_e_unknown;
 	}
@@ -119,7 +119,7 @@ UpgradeStateResult UpgradeBase::can_install( CInventoryItem& item, bool loading 
 	{
 		if ( g_upgrades_log == 1 )
 		{
-			Msg( "- Upgrade <%s> (id = %d) is installed already.", id_str(), item.object_id() );
+			EngineLog( "- Upgrade <%s> (id = %d) is installed already.", id_str(), item.object_id() );
 		}
 		/*if ( loading )
 		{

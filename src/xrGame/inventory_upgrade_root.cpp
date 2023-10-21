@@ -82,7 +82,7 @@ void Root::log_hierarchy( LPCSTR nest )
 	u32 sz =  (xr_strlen(nest) + 4) * sizeof(char);
 	PSTR	nest2 = (PSTR)_alloca( sz );
 	xr_strcpy( nest2, sz, nest );
-	Msg( "%s[r] %s", nest2, id_str() );
+	EngineLog( "%s[r] %s", nest2, id_str() );
 
 	inherited::log_hierarchy( nest2 );
 }
@@ -97,7 +97,7 @@ void Root::test_all_upgrades( CInventoryItem& item )
 
 		if ( g_upgrades_log == 1 )
 		{
-			Msg( "# Checking upgrade <%s> (id = %d) is successful: %s ", (*ib)->section(), item.object_id(), res ? "OK" : "FAILED" );
+			EngineLog( "# Checking upgrade <%s> (id = %d) is successful: %s ", (*ib)->section(), item.object_id(), res ? "OK" : "FAILED" );
 		}
 	}
 }

@@ -207,7 +207,7 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	if ( !m_pPartnerInvOwner->AllowItemToTrade( iitem, pl ) )
 	{
 		///R_ASSERT2( 0, make_string( "Partner can`t cell item (%s)", iitem->NameItem() ) );
-		Msg( "! Partner can`t cell item (%s)", iitem->NameItem() );
+		EngineLog( "! Partner can`t cell item (%s)", iitem->NameItem() );
 		return false;
 	}
 

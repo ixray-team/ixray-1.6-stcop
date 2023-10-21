@@ -10,7 +10,7 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 	R_ASSERT2				(CL,"Process_update client not found");
 
 #ifndef MASTER_GOLD
-	if (g_Dump_Update_Read) Msg("---- UPDATE_Read --- ");
+	if (g_Dump_Update_Read) EngineLog("---- UPDATE_Read --- ");
 #endif // #ifndef MASTER_GOLD
 
 	R_ASSERT(CL->flags.bLocal);
@@ -27,11 +27,11 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 		CSE_Abstract	*E	= ID_to_entity(ID);
 		
 		if (E) {
-			//Msg				("sv_import: %d '%s'",E->ID,E->name_replace());
+			//EngineLog				("sv_import: %d '%s'",E->ID,E->name_replace());
 			E->net_Ready	= TRUE;
 			E->UPDATE_Read	(P);
 
-			if (g_Dump_Update_Read) Msg("* %s : %d - %d", E->name(), size, P.r_tell() - _pos);
+			if (g_Dump_Update_Read) EngineLog("* %s : %d - %d", E->name(), size, P.r_tell() - _pos);
 
 			if ((P.r_tell()-_pos) != size)	{
 				string16	tmp;
@@ -50,7 +50,7 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 			P.r_advance	(size);
 	}
 #ifndef MASTER_GOLD
-	if (g_Dump_Update_Read) Msg("-------------------- ");
+	if (g_Dump_Update_Read) EngineLog("-------------------- ");
 #endif // #ifndef MASTER_GOLD
 
 }
@@ -83,7 +83,7 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 		s32				_pos_end	= P.r_tell	();
 		s32				_size		= size;
 		if				(_size != (_pos_end-_pos_start))	{
-			Msg			("! load/save mismatch, object: '%s'",E?E->name_replace():"unknown");
+			EngineLog			("! load/save mismatch, object: '%s'",E?E->name_replace():"unknown");
 			s32			_rollback	= _pos_start+_size;
 			P.r_seek	(_rollback);
 		}

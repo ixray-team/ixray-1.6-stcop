@@ -15,9 +15,9 @@ void CDelayedActionFuse::SetTimer(float current_condition)
 	ChangeCondition(m_fSpeedChangeCondition-current_condition);
 	VERIFY(!fis_zero(m_fTime)||m_dafflags.test(flNoConditionChange));
 	if(!m_dafflags.test(flNoConditionChange))m_fSpeedChangeCondition/=m_fTime;
-	//Msg("to_expl moment %f",m_fTime);
+	//EngineLog("to_expl moment %f",m_fTime);
 	m_fTime+=Device.fTimeGlobal;//+current_condition/m_fSpeedChangeCondition;
-	//Msg("expl moment %f",m_fTime);
+	//EngineLog("expl moment %f",m_fTime);
 	StartTimerEffects();
 
 }

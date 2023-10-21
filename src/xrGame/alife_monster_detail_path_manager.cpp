@@ -42,7 +42,7 @@ void CALifeMonsterDetailPathManager::target					(const GameGraph::_GRAPH_ID &gam
 	m_destination.m_level_vertex_id	= level_vertex_id;
 	m_destination.m_position		= position;
 
-//	Msg								("[%6d][%s][%f][%f][%f]",Device.dwTimeGlobal,object().name_replace(),VPUSH(m_destination.m_position));
+//	EngineLog								("[%6d][%s][%f][%f][%f]",Device.dwTimeGlobal,object().name_replace(),VPUSH(m_destination.m_position));
 }
 
 void CALifeMonsterDetailPathManager::target					(const GameGraph::_GRAPH_ID &game_vertex_id)
@@ -58,7 +58,7 @@ void CALifeMonsterDetailPathManager::target					(const CALifeSmartTerrainTask &t
 
 void CALifeMonsterDetailPathManager::target					(const CALifeSmartTerrainTask *task)
 {
-//	Msg								("[%6d][%s][%s]",Device.dwTimeGlobal,object().name_replace(),*task->patrol_path_name());
+//	EngineLog								("[%6d][%s][%s]",Device.dwTimeGlobal,object().name_replace(),*task->patrol_path_name());
 	target							(*task);
 }
 
@@ -96,7 +96,7 @@ void CALifeMonsterDetailPathManager::update					()
 		return;
 
 //	if (ai().game_graph().vertex(object().m_tGraphID)->level_id() == ai().level_graph().level_id())
-//		Msg							("[detail::update][%6d][%s]",Device.dwTimeGlobal,object().name_replace());
+//		EngineLog							("[detail::update][%6d][%s]",Device.dwTimeGlobal,object().name_replace());
 
 	ALife::_TIME_ID					time_delta = current_time - m_last_update_time;
 	update							(time_delta);
@@ -126,37 +126,37 @@ void CALifeMonsterDetailPathManager::actualize				()
 
 #ifdef DEBUG
 	if (failed) {
-		Msg							("! %s couldn't build game path from",object().get_object().name_replace());
+		EngineLog("! {} couldn't build game path from",object().get_object().name_replace());
 		{
 			const CGameGraph::CVertex	*vertex = ai().game_graph().vertex(object().get_object().m_tGraphID);
-			Msg						(
-				"! [%d][%s][%f][%f][%f]",
+			EngineLog(
+				"! {}{}{}",
 				object().get_object().m_tGraphID,
 				*ai().game_graph().header().level(
 					vertex->level_id()
 				).name(),
-				VPUSH(vertex->level_point())
+				vertex->level_point()
 			);
-			Msg						("! game_graph_mask -> [ %d, %d, %d, %d]", vertex->vertex_type()[0], vertex->vertex_type()[1], vertex->vertex_type()[2], vertex->vertex_type()[3]);
+			EngineLog("! game_graph_mask -> [ {} {} {} {}]", vertex->vertex_type()[0], vertex->vertex_type()[1], vertex->vertex_type()[2], vertex->vertex_type()[3]);
 		}
 		
 		{
 			const CGameGraph::CVertex	*vertex = ai().game_graph().vertex(m_destination.m_game_vertex_id);
-			Msg						(
-				"! [%d][%s][%f][%f][%f]",
+			EngineLog(
+				"! {}{}{}",
 				m_destination.m_game_vertex_id,
 				*ai().game_graph().header().level(
 					vertex->level_id()
 				).name(),
-				VPUSH(vertex->level_point())
+				vertex->level_point()
 			);
-			Msg						("! game_graph_mask -> [ %d, %d, %d, %d]", vertex->vertex_type()[0], vertex->vertex_type()[1], vertex->vertex_type()[2], vertex->vertex_type()[3]);
+			EngineLog("! game_graph_mask -> [{} {} {} {}]", vertex->vertex_type()[0], vertex->vertex_type()[1], vertex->vertex_type()[2], vertex->vertex_type()[3]);
 		}
-		Msg						("! List of available game_graph masks:");
+		EngineLog("! List of available game_graph masks:");
 		xr_vector<GameGraph::STerrainPlace>::iterator I = object().m_tpaTerrain.begin();
 		xr_vector<GameGraph::STerrainPlace>::iterator E = object().m_tpaTerrain.end();
 		for ( ; I != E; ++I) {
-			Msg							("! [%d , %d , %d , %d]",(*I).tMask[0],(*I).tMask[1],(*I).tMask[2],(*I).tMask[3]);
+			EngineLog("! [{} {} {} {}]",(*I).tMask[0],(*I).tMask[1],(*I).tMask[2],(*I).tMask[3]);
 		};
 	}
 #endif
@@ -248,7 +248,7 @@ void CALifeMonsterDetailPathManager::follow_path				(const ALife::_TIME_ID &time
 
 		m_walked_distance				= 0.f;
 		m_path.pop_back					();
-//		Msg									("%6d %s changes graph point from %d to %d",Device.dwTimeGlobal,object().name_replace(),object().m_tGraphID,(GameGraph::_GRAPH_ID)m_path.back());
+//		EngineLog									("%6d %s changes graph point from %d to %d",Device.dwTimeGlobal,object().name_replace(),object().m_tGraphID,(GameGraph::_GRAPH_ID)m_path.back());
 		object().get_object().alife().graph().change		(&object().get_object(),object().get_object().m_tGraphID,(GameGraph::_GRAPH_ID)m_path.back());
 		VERIFY								(m_path.back() == object().get_object().m_tGraphID);
 

@@ -127,7 +127,7 @@ bool CUIXmlInit::InitOptionsItem(CUIXml& xml_doc, LPCSTR path, int index, CUIOpt
 			if(0==_stricmp(depends,"runtime"))
 				d = CUIOptionsItem::sdApplyOnChange;
 			else
-				Msg("! unknown param [%s] in optionsItem [%s]", depends, entry.c_str());
+				EngineLog("! unknown param [{}] in optionsItem [{}]", depends, entry.c_str());
 
 			pWnd->SetSystemDepends		(d);
 		}

@@ -57,7 +57,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	VERIFY		(m_magazine.size());
 
 	CCartridge &l_cartridge = m_magazine.back();
-//	Msg("ammo - %s", l_cartridge.m_ammoSect.c_str());
+//	EngineLog("ammo - %s", l_cartridge.m_ammoSect.c_str());
 	VERIFY		(u16(-1) != l_cartridge.bullet_material_idx);
 	//-------------------------------------------------------------	
 	bool is_tracer	= m_bHasTracers && !!l_cartridge.m_flags.test(CCartridge::cfTracer);
@@ -70,7 +70,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	//-------------------------------------------------------------
 	//повысить изношенность оружия с учетом влияния конкретного патрона
 //	float Deterioration = GetWeaponDeterioration();
-//	Msg("Deterioration = %f", Deterioration);
+//	EngineLog("Deterioration = %f", Deterioration);
 	ChangeCondition(-GetWeaponDeterioration()*l_cartridge.param_s.impair);
 
 	

@@ -62,10 +62,10 @@ void CObjectHandlerPlanner::set_goal	(MonsterSpace::EObjectAction object_action,
 	else
 		condition_id		= u32(eWorldPropertyNoItemsIdle);
 
-#ifdef DEBUG
+#if 0
 	if (m_use_log) {
-		Msg					("%6d : Active item %s",Device.dwTimeGlobal,object().inventory().ActiveItem() ? *object().inventory().ActiveItem()->object().cName() : "no active items");
-		Msg					("%6d : Goal %s",Device.dwTimeGlobal,property2string(condition_id));
+		EngineLog					("%6d : Active item %s",Device.dwTimeGlobal,object().inventory().ActiveItem() ? *object().inventory().ActiveItem()->object().cName() : "no active items");
+		EngineLog					("%6d : Goal %s",Device.dwTimeGlobal,property2string(condition_id));
 	}
 #endif
 	CState					condition;

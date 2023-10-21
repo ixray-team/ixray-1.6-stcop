@@ -368,7 +368,7 @@ BOOL		g_bDebugEvents = FALSE	;
 
 void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 {
-	//			Msg				("--- event[%d] for [%d]",type,dest);
+	//			EngineLog				("--- event[%d] for [%d]",type,dest);
 	CObject*	 O	= Objects.net_Find	(dest);
 	if (0==O)		{
 #ifdef DEBUG
@@ -391,7 +391,7 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 //			if ( GO->H_Parent() )
 //			{
 // = GameObject.cpp (210)
-//				Msg( "! ERROR (Level): GE_DESTROY arrived to object[%d][%s], that has parent[%d][%s], frame[%d]",
+//				EngineLog( "! ERROR (Level): GE_DESTROY arrived to object[%d][%s], that has parent[%d][%s], frame[%d]",
 //					GO->ID(), GO->cNameSect().c_str(),
 //					GO->H_Parent()->ID(), GO->H_Parent()->cName().c_str(), Device.dwFrame );
 //			}
@@ -439,7 +439,7 @@ void CLevel::ProcessGameEvents		()
 
 		/*
 		if (!game_events->queue.empty())	
-			Msg("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
+			EngineLog("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
 		*/
 
 		while	(game_events->available(svT))

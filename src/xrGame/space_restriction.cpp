@@ -257,8 +257,8 @@ void CSpaceRestriction::initialize					()
 #ifdef DEBUG
 	if (m_out_space_restriction) {
 		if (!m_out_space_restriction->object().correct()) {
-			Msg						("~ BAD out restrictions combination :");
-			Msg						("~ %s",*m_out_space_restriction->name());
+			EngineLog						("~ BAD out restrictions combination :");
+			EngineLog						("~ %s",*m_out_space_restriction->name());
 		}
 	}
 #endif

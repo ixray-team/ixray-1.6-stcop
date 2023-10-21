@@ -15,7 +15,7 @@ void CCC_CreateGameSpyAccount::Execute(LPCSTR args)
 	{
 		TInfo tmp_info;
 		Info(tmp_info);
-		Msg(tmp_info);
+		EngineLog(tmp_info);
 		return;
 	}
 	string256	tmp_nick;
@@ -56,7 +56,7 @@ void CCC_GapySpyListProfiles::Execute(LPCSTR args)
 	{
 		TInfo tmp_info;
 		Info(tmp_info);
-		Msg(tmp_info);
+		EngineLog(tmp_info);
 		return;
 	}
 	string256	tmp_email;
@@ -83,7 +83,7 @@ void CCC_GameSpyLogin::Execute(LPCSTR args)
 	{
 		TInfo tmp_info;
 		Info(tmp_info);
-		Msg(tmp_info);
+		EngineLog(tmp_info);
 		return;
 	}
 	string256	tmp_email;
@@ -135,18 +135,18 @@ void CCC_GameSpyPrintProfile::Execute(LPCSTR args)
 	gamespy_gp::profile const * tmp_profile = tmp_lmngr->get_current_profile();
 	if (tmp_profile)
 	{
-		Msg("- Current profile:");
-		Msg("- ProfileID  : %u", tmp_profile->m_profile_id);
-		Msg("- UniqueNick : %s", tmp_profile->m_unique_nick.c_str());
+		EngineLog("- Current profile:");
+		EngineLog("- ProfileID  : %u", tmp_profile->m_profile_id);
+		EngineLog("- UniqueNick : %s", tmp_profile->m_unique_nick.c_str());
 
 		gamespy_profile::profile_store* tmp_store = MainMenu()->GetProfileStore();
 		if (!tmp_store)
 		{
-			Msg("! No profile store available");
+			EngineLog("! No profile store available");
 			return;
 		}
 		
-		Msg("- Player awards:");
+		EngineLog("- Player awards:");
 		gamespy_profile::all_awards_t const & tmp_awards = tmp_store->get_awards();
 		for (gamespy_profile::all_awards_t::const_iterator i = tmp_awards.begin(),
 			ie = tmp_awards.end(); i < ie; ++i)
@@ -154,25 +154,25 @@ void CCC_GameSpyPrintProfile::Execute(LPCSTR args)
 			string64 rdate_str;
 			rdate_str[0]	= 0;
 			print_time		(i->second.m_last_reward_date, rdate_str);
-			Msg("- (award: %s), (count: %u), (last reward date: %s)",
+			EngineLog("- (award: %s), (count: %u), (last reward date: %s)",
 				gamespy_profile::get_award_name(static_cast<gamespy_profile::enum_awards_t>(i->first)),
 				i->second.m_count,
 				rdate_str);
 		}
 
-		Msg("- Best player scores:");
+		EngineLog("- Best player scores:");
 		gamespy_profile::all_best_scores_t const & tmp_best_scores = tmp_store->get_best_scores();
 		for (gamespy_profile::all_best_scores_t::const_iterator i = tmp_best_scores.begin(),
 			ie = tmp_best_scores.end(); i < ie; ++i)
 		{
-			Msg("- (score: %s), (score: %d)", 
+			EngineLog("- (score: %s), (score: %d)", 
 				gamespy_profile::get_best_score_name(static_cast<gamespy_profile::enum_best_score_type>(i->first)),
 				i->second
 			);
 		}
 	} else
 	{
-		Msg("- No profile. You are not loged in.");
+		EngineLog("- No profile. You are not loged in.");
 	}
 }
 
@@ -220,7 +220,7 @@ void CCC_GameSpyProfile::Execute(LPCSTR args)
 	gamespy_gp::profile const * tmp_curr_prof	= tmp_lmngr->get_current_profile();
 	if (!tmp_curr_prof)
 	{
-		Msg("- No profile. You are not loged in.");
+		EngineLog("- No profile. You are not loged in.");
 		return;
 	}
 
@@ -246,7 +246,7 @@ void CCC_GameSpyProfile::Execute(LPCSTR args)
 
 		if (!sscanf_s(tmp_reward_id_str, "%u", &tmp_award_id))
 		{
-			Msg("! Bad award id");
+			EngineLog("! Bad award id");
 			return;
 		}
 		tmp_ssubmitter->reward_with_award(
@@ -264,12 +264,12 @@ void CCC_GameSpyProfile::Execute(LPCSTR args)
 		int score_value				= 0;
 		if (sscanf_s(tmp_scores_str, "%u %u", &score_id, &score_value) != 2)
 		{
-			Msg("! Not enough parameters");
+			EngineLog("! Not enough parameters");
 			return;
 		}
 		if (score_id >= gamespy_profile::bst_score_types_count)
 		{
-			Msg("! Bad scoreid");
+			EngineLog("! Bad scoreid");
 		}
 		debug_best_scores.clear();
 		debug_best_scores.insert(

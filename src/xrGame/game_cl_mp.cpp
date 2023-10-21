@@ -201,7 +201,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 		{
 				CGameObject* GO = smart_cast<CGameObject*>(curr);
 #ifdef DEBUG
-				Msg("---I'm ready (ID = %d) sending player ready packet !!!", GO->ID());
+				EngineLog("---I'm ready (ID = %d) sending player ready packet !!!", GO->ID());
 #endif // #ifdef DEBUG
 				NET_Packet			P;
 				GO->u_EventGen		(P,GE_GAME_EVENT,GO->ID()	);
@@ -212,7 +212,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 		else
 		{
 #ifdef DEBUG
-			Msg("---I'm not ready, is_actor = %d, is_spectator = %d", is_actor, is_spectator);
+			EngineLog("---I'm not ready, is_actor = %d, is_spectator = %d", is_actor, is_spectator);
 #endif // #ifdef DEBUG
 			return false;
 		}
@@ -403,7 +403,7 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		{
 			OnGameRoundStarted();
 #ifdef DEBUG
-			Msg("--- On round started !!!");
+			EngineLog("--- On round started !!!");
 #endif // #ifdef DEBUG
 		}break;
 	case GAME_EVENT_ROUND_END:
@@ -411,7 +411,7 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			string64 reason;
 			P.r_stringZ(reason);
 #ifdef DEBUG
-			Msg("--- On round end !!!");
+			EngineLog("--- On round end !!!");
 #endif // #ifdef DEBUG
 		}break;
 	case GAME_EVENT_SERVER_STRING_MESSAGE:
@@ -425,7 +425,7 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		{
 			string1024 mess;
 			P.r_stringZ(mess);
-			Msg( mess );
+			EngineLog( mess );
 			if ( MainMenu() && !g_dedicated_server )
 			{
 				MainMenu()->OnSessionTerminate( mess );
@@ -461,7 +461,7 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 				ClientID tmp_client(P.r_u32());
 				shared_str error_msg;
 				P.r_stringZ(error_msg);
-				Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
+				EngineLog("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
 			}
 		}break;
 	case GAME_EVENT_RECEIVE_SERVER_LOGO:
@@ -541,9 +541,9 @@ void game_cl_mp::OnChatMessage(NET_Packet* P)
 	CStringTable st;
 	switch (team)
 	{
-	case 0: Msg("%s: %s : %s",		*st.translate("mp_chat"), PlayerName.c_str(), ChatMsg.c_str()); break;
-	case 1: Msg("- %s: %s : %s",	*st.translate("mp_chat"), PlayerName.c_str(), ChatMsg.c_str()); break;
-	case 2: Msg("@ %s: %s : %s",	*st.translate("mp_chat"), PlayerName.c_str(), ChatMsg.c_str()); break;
+	case 0: EngineLog("%s: %s : %s",		*st.translate("mp_chat"), PlayerName.c_str(), ChatMsg.c_str()); break;
+	case 1: EngineLog("- %s: %s : %s",	*st.translate("mp_chat"), PlayerName.c_str(), ChatMsg.c_str()); break;
+	case 2: EngineLog("@ %s: %s : %s",	*st.translate("mp_chat"), PlayerName.c_str(), ChatMsg.c_str()); break;
 	}
 	
 //#endif
@@ -828,7 +828,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 	if (!pPlayer)
 	{
 #ifndef MASTER_GOLD
-		Msg("! Non existant player[%d] killed by [%d] with [%d]", KilledID, KillerID, WeaponID);
+		EngineLog("! Non existant player[%d] killed by [%d] with [%d]", KilledID, KillerID, WeaponID);
 #endif // #ifndef MASTER_GOLD
 		return;
 	}
@@ -896,7 +896,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						KMS.m_initiator.m_rect.y1 = 202;
 						KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 31;
 						KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
-						Msg("%s killed by anomaly", *KMS.m_victim.m_name);
+						EngineLog("%s killed by anomaly", *KMS.m_victim.m_name);
 						break;
 					}
 				};
@@ -987,12 +987,12 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 30;
 				KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
 				//-------------------------------------
-				Msg(sWeapon[0] ? "%s killed himself by %s" : "%s killed himself" , *KMS.m_killer.m_name, sWeapon[0] ? sWeapon+5 : "");
+				EngineLog(sWeapon[0] ? "%s killed himself by %s" : "%s killed himself" , *KMS.m_killer.m_name, sWeapon[0] ? sWeapon+5 : "");
 			}
 			else
 			{
 				//-------------------------------------
-				Msg("%s killed %s %s%s", *KMS.m_killer.m_name, *KMS.m_victim.m_name, sWeapon, sSpecial[0] ? sSpecial : "");
+				EngineLog("%s killed %s %s%s", *KMS.m_killer.m_name, *KMS.m_victim.m_name, sWeapon, sSpecial[0] ? sSpecial : "");
 			}
 		}break;
 		//-----------------------------------------------------------
@@ -1015,7 +1015,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 31;
 						KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
 
-					Msg("%s died from bleeding, thanks to anomaly", *KMS.m_victim.m_name);
+					EngineLog("%s died from bleeding, thanks to anomaly", *KMS.m_victim.m_name);
 					break;
 				}
 			};
@@ -1025,12 +1025,12 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				KMS.m_killer.m_name = pKiller ? pKiller->getName() : *(pOKiller->cNameSect());
 				KMS.m_killer.m_color = pKiller ? Color_Teams_u32[ModifyTeam(pKiller->team) + 1] : Color_Neutral_u32;
 				//-----------------------------------------------------------------------				
-				Msg("%s died from bleeding, thanks to %s ", *KMS.m_victim.m_name, *KMS.m_killer.m_name);
+				EngineLog("%s died from bleeding, thanks to %s ", *KMS.m_victim.m_name, *KMS.m_killer.m_name);
 			}
 			else
 			{
 				//-----------------------------------------------------------------
-				Msg("%s died from bleeding", *KMS.m_victim.m_name);
+				EngineLog("%s died from bleeding", *KMS.m_victim.m_name);
 			};			
 		}break;
 		//-----------------------------------------------------------
@@ -1042,7 +1042,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 			KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 24;
 			KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 24;
 			//---------------------------------------------------------
-			Msg("%s killed by radiation", *KMS.m_victim.m_name);
+			EngineLog("%s killed by radiation", *KMS.m_victim.m_name);
 		}break;
 	default:
 		break;
@@ -1066,7 +1066,7 @@ void	game_cl_mp::OnPlayerChangeName		(NET_Packet& P)
 	string1024 resStr;
 	xr_sprintf(resStr, "%s\"%s\" %s%s %s\"%s\"", Color_Teams[Team], OldName, Color_Main, *st.translate("mp_is_now"),Color_Teams[Team], NewName);
 	if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(resStr);
-	Msg( NewName );
+	EngineLog( NewName );
 	//-------------------------------------------
 	CObject* pObj = Level().Objects.net_Find(ObjID);
 	if (pObj)
@@ -1098,7 +1098,7 @@ void	game_cl_mp::OnRankChanged	(u8 OldRank)
 	xr_sprintf(RankStr, "%s : %s", *st.translate("mp_your_rank"), *st.translate(READ_IF_EXISTS(pSettings, r_string, tmp, "rank_name", "")));
 	if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(RankStr);	
 #ifdef DEBUG
-	Msg("- %s", RankStr);
+	EngineLog("- %s", RankStr);
 #endif
 	if (m_reward_generator)
 		m_reward_generator->OnPlayerRankdChanged();
@@ -1429,13 +1429,13 @@ void game_cl_mp::OnRadminMessage(u16 type, NET_Packet* P)
 						m_pAdminMenuWindow->ShowMessageBox(CUIMessageBox::MESSAGEBOX_OK, buff);
 				}
 
-				Msg				("# srv: %s",buff);
+				EngineLog				("# srv: %s",buff);
 		}break;
 	case M_REMOTE_CONTROL_CMD:
 		{
 				string4096		buff;
 				P->r_stringZ	(buff);
-				Msg				("# srv: %s",buff);
+				EngineLog				("# srv: %s",buff);
 		}break;
 	}
 }
@@ -1453,21 +1453,21 @@ void __stdcall game_cl_mp::sending_screenshot_callback(file_transfer::sending_st
 	case file_transfer::sending_data:
 		{
 #ifdef DEBUG
-			Msg("* screenshot: %d of %d bytes sent ...", bytes_sent, data_size);
+			EngineLog("* screenshot: %d of %d bytes sent ...", bytes_sent, data_size);
 #endif
 		}break;
 	case file_transfer::sending_aborted_by_user:
 		{
-			Msg("* screenshot: sending aborted by user...");
+			EngineLog("* screenshot: sending aborted by user...");
 		}break;
 	case file_transfer::sending_rejected_by_peer:
 		{
-			Msg("* screenshot: sending rejected by peer ...");
+			EngineLog("* screenshot: sending rejected by peer ...");
 		}break;
 	case file_transfer::sending_complete:
 		{
 #ifdef DEBUG
-			Msg("* screenshot: sending complete successfully !");
+			EngineLog("* screenshot: sending complete successfully !");
 #endif
 		}break;
 	};
@@ -1478,7 +1478,7 @@ void game_cl_mp::reinit_compress_buffer(u32 need_size)
 	if (buffer_for_compress && (need_size <= buffer_for_compress_size))
 		return;
 	
-	Msg("* reiniting compression buffer.");
+	EngineLog("* reiniting compression buffer.");
 	buffer_for_compress_size = need_size * 2;
 	void* new_buffer = xr_realloc(buffer_for_compress, buffer_for_compress_size);
 	buffer_for_compress = static_cast<u8*>(new_buffer);
@@ -1493,7 +1493,7 @@ void game_cl_mp::SendCollectedData(u8 const* buffer, u32 buffer_size, u32 uncomp
 {
 	if (!buffer_size)
 	{
-		Msg("! ERROR: CL: no data to send...");
+		EngineLog("! ERROR: CL: no data to send...");
 		return;
 	}
 	file_transfer::sending_state_callback_t sending_cb = 
@@ -1593,7 +1593,7 @@ void game_cl_mp::PrepareToReceiveFile(ClientID const & from_client, shared_str c
 	fr_callback_binder* tmp_binder = get_receiver_cb_binder();
 	if (!tmp_binder)
 	{
-		Msg("! ERROR: CL: not enough receive channels (max is 32)");
+		EngineLog("! ERROR: CL: not enough receive channels (max is 32)");
 		return;
 	}
 	
@@ -1623,7 +1623,7 @@ void game_cl_mp::PrepareToReceiveFile(ClientID const & from_client, shared_str c
 	);
 	if (!tmp_binder->m_frnode)
 	{
-		Msg("* screenshot: receiving failed ...");
+		EngineLog("* screenshot: receiving failed ...");
 		tmp_binder->m_active = false;
 	}
 }
@@ -1644,28 +1644,28 @@ void __stdcall	game_cl_mp::fr_callback_binder::receiving_file_callback(
 	{
 	case file_transfer::receiving_data:
 		{
-			Msg("* file: %d of %d bytes received ...", bytes_received, data_size);
+			EngineLog("* file: %d of %d bytes received ...", bytes_received, data_size);
 			m_downloaded_size = bytes_received;
 			m_max_size = data_size;
 		}break;
 	case file_transfer::receiving_aborted_by_peer:
 		{
-			Msg("* file: receiving aborted by peer...");
+			EngineLog("* file: receiving aborted by peer...");
 			m_active = false;
 		}break;
 	case file_transfer::receiving_aborted_by_user:
 		{
-			Msg("* file: receiving aborted by user...");
+			EngineLog("* file: receiving aborted by user...");
 			m_active = false;
 		}break;
 	case file_transfer::receiving_timeout:
 		{
-			Msg("* file: receiving timeout...");
+			EngineLog("* file: receiving timeout...");
 			m_active = false;
 		}break;
 	case file_transfer::receiving_complete:
 		{
-			Msg("* file: download complete successfully !");
+			EngineLog("* file: download complete successfully !");
 			switch (m_response_type)
 			{
 			case e_screenshot_response:
@@ -1705,7 +1705,7 @@ void __stdcall game_cl_mp::fr_callback_binder::receiving_serverinfo_callback(
 	case file_transfer::receiving_data:
 		{
 #ifdef DEBUG
-			Msg("* serverinfo: %d of %d bytes received ...", bytes_received, data_size);
+			EngineLog("* serverinfo: %d of %d bytes received ...", bytes_received, data_size);
 #endif
 			m_downloaded_size = bytes_received;
 			m_max_size = data_size;
@@ -1713,24 +1713,24 @@ void __stdcall game_cl_mp::fr_callback_binder::receiving_serverinfo_callback(
 	case file_transfer::receiving_aborted_by_peer:
 		{
 			m_owner->extract_server_info(NULL, 0);
-			Msg("* serverinfo: server logo transfer aborted ...");
+			EngineLog("* serverinfo: server logo transfer aborted ...");
 			m_active = false;
 		}break;
 	case file_transfer::receiving_aborted_by_user:
 		{
 			m_owner->extract_server_info(NULL, 0);
-			Msg("* serverinfo: receiving aborted by user...");
+			EngineLog("* serverinfo: receiving aborted by user...");
 			m_active = false;
 		}break;
 	case file_transfer::receiving_timeout:
 		{
 			m_owner->extract_server_info(NULL, 0);
-			Msg("* serverinfo: receiving timeout...");
+			EngineLog("* serverinfo: receiving timeout...");
 			m_active = false;
 		}break;
 	case file_transfer::receiving_complete:
 		{
-			Msg("* serverinfo: download complete successfully !");
+			EngineLog("* serverinfo: download complete successfully !");
 			R_ASSERT2(m_owner->m_game_ui_custom || g_dedicated_server, "game ui not initialized");
 			if (m_owner->m_game_ui_custom)
 				m_owner->extract_server_info(m_writer.pointer(), m_writer.size());
@@ -1744,7 +1744,7 @@ void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 
 {
 	if (!file_size)
 	{
-		Msg("! ERROR: file size to save is 0...");
+		EngineLog("! ERROR: file size to save is 0...");
 		return;
 	}
 
@@ -1759,7 +1759,7 @@ void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 
 	
 	if (original_size != file_size)
 	{
-		Msg("! WARNING: original and downloaded file size are different !");
+		EngineLog("! WARNING: original and downloaded file size are different !");
 	}
 	string_path screen_shot_path;
 	FS.update_path(screen_shot_path, "$screenshots$", file_name);
@@ -1768,7 +1768,7 @@ void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 
 	IWriter* ftosave = FS.w_open(screen_shot_path);
 	if (!ftosave)
 	{
-		Msg("! ERROR: failed to create file [%s]", file_name);
+		EngineLog("! ERROR: failed to create file [%s]", file_name);
 		return;
 	}
 	ftosave->w(buffer_for_compress, file_size);
@@ -1779,7 +1779,7 @@ void game_cl_mp::decompress_and_process_config(LPCSTR file_name, u8* data, u32 d
 {
 	if (!file_size)
 	{
-		Msg("! ERROR: file size to save is 0...");
+		EngineLog("! ERROR: file size to save is 0...");
 		return;
 	}
 
@@ -1796,7 +1796,7 @@ void game_cl_mp::decompress_and_process_config(LPCSTR file_name, u8* data, u32 d
 	
 	if (original_size != file_size)
 	{
-		Msg("! WARNING: original and downloaded file size are different !");
+		EngineLog("! WARNING: original and downloaded file size are different !");
 	}
 	string_path screen_shot_path;
 	FS.update_path(screen_shot_path, "$screenshots$", file_name);
@@ -1805,7 +1805,7 @@ void game_cl_mp::decompress_and_process_config(LPCSTR file_name, u8* data, u32 d
 	IWriter* ftosave = FS.w_open(screen_shot_path);
 	if (!ftosave)
 	{
-		Msg("! ERROR: failed to create file [%s]", file_name);
+		EngineLog("! ERROR: failed to create file [%s]", file_name);
 		return;
 	}
 	ftosave->w			(buffer_for_compress, file_size);
@@ -1814,7 +1814,7 @@ void game_cl_mp::decompress_and_process_config(LPCSTR file_name, u8* data, u32 d
 	if (!cd_verifyer.verify(buffer_for_compress, file_size, tmp_diff))
 	{
 		add_detected_cheater(file_name, tmp_diff);
-		Msg("! CHEATER detected: %s, %s", file_name, tmp_diff);
+		EngineLog("! CHEATER detected: %s, %s", file_name, tmp_diff);
 	}
 }
 
@@ -1910,7 +1910,7 @@ void game_cl_mp::extract_server_info(u8* data_ptr, u32 data_size)
 	split_received_to_buffers		(data_ptr, data_size, tmp_vector);
 	if (tmp_vector.empty())
 	{
-		Msg("! ERROR: received corrupted server info");
+		EngineLog("! ERROR: received corrupted server info");
 		return;
 	}
 	tmp_ui_mp_game->SetServerLogo	(tmp_vector[0].first, tmp_vector[0].second);

@@ -77,7 +77,7 @@ void CtaGameArtefact::OnAnimationEnd(u32 state)
 	if (!H_Parent())
 	{
 #ifndef MASTER_GOLD
-		Msg("! ERROR: enemy artefact activation, H_Parent is NULL.");
+		EngineLog("! ERROR: enemy artefact activation, H_Parent is NULL.");
 #endif // #ifndef MASTER_GOLD
 		return;
 	}
@@ -96,7 +96,7 @@ void CtaGameArtefact::UpdateCLChild()
 	if (!m_artefact_rpoint)
 	{
 #ifdef DEBUG
-		Msg("--- Waiting for sync packet, for artefact rpoint.");
+		EngineLog("--- Waiting for sync packet, for artefact rpoint.");
 #endif // #ifdef DEBUG
 		return;
 	}

@@ -102,14 +102,14 @@ void CUIServerInfo::SetServerLogo(u8 const * data_ptr, u32 const data_size)
 	CxImage		tmp_image;
 	if (!tmp_image.Decode(&tmp_memfile, CXIMAGE_FORMAT_JPG))
 	{
-		Msg("! ERROR: Failed to decode server logo image as JPEG formated.");
+		EngineLog("! ERROR: Failed to decode server logo image as JPEG formated.");
 		return;
 	}
 	
 	IWriter* tmp_writer = FS.w_open("$game_saves$", tmp_logo_file_name);
 	if (!tmp_writer)
 	{
-		Msg("! ERROR: failed to create temporary dds file");
+		EngineLog("! ERROR: failed to create temporary dds file");
 		return;
 	}
 	tmp_writer->w			((void*)data_ptr, data_size);	//sorry :(

@@ -13,7 +13,7 @@ cdkey_ban_list::~cdkey_ban_list()
 
 void cdkey_ban_list::load()
 {
-	Msg("* Loading ban list...");
+	EngineLog("* Loading ban list...");
 	string_path		banlist_file;
 	FS.update_path			(banlist_file, "$app_data_root$", "banned_list.ltx");
 	CInifile		bl_ini	(banlist_file);
@@ -27,7 +27,7 @@ void cdkey_ban_list::load()
 			m_ban_list.push_back(tmp_client);
 		} else
 		{
-			Msg("! ERROR: load [%s] ban item section", (*i)->Name.size() > 0 ? (*i)->Name.c_str() : "");
+			EngineLog("! ERROR: load [%s] ban item section", (*i)->Name.size() > 0 ? (*i)->Name.c_str() : "");
 			xr_delete(tmp_client);
 		}
 	}
@@ -55,16 +55,16 @@ bool cdkey_ban_list::is_player_banned(char const * hexstr_digest, shared_str & b
 	if (!hexstr_digest)
 		return false;
 	
-	Msg("* checking for ban player [%s]", hexstr_digest);
+	EngineLog("* checking for ban player [{}]", hexstr_digest);
 	
 	erase_expired_ban_items();
 	for (ban_list_t::iterator i = m_ban_list.begin(),
 		ie = m_ban_list.end(); i != ie; ++i)
 	{
-//		Msg("* comparing with cheater [%s]", (*i)->client_hexstr_digest.c_str());
+//		EngineLog("* comparing with cheater [%s]", (*i)->client_hexstr_digest.c_str());
 		if (!xr_strcmp((*i)->client_hexstr_digest, hexstr_digest))
 		{
-			Msg("* found banned client [%s] by admin [%s]", 
+			EngineLog("* found banned client [%s] by admin [{}]", 
 				hexstr_digest,
 				(*i)->admin_name.size() ? (*i)->admin_name.c_str() : "Server");
 			buy_who = (*i)->admin_name;
@@ -79,13 +79,13 @@ void cdkey_ban_list::ban_player(xrClientData const * player_data, s32 end_time_s
 	banned_client* tmp_client = xr_new<banned_client>();
 	if (player_data->m_admin_rights.m_has_admin_rights)
 	{
-		Msg("! ERROR: Can't ban player with admin rights");
+		EngineLog("! ERROR: Can't ban player with admin rights");
 		xr_delete(tmp_client);
 		return;
 	}
 	if (!player_data->m_cdkey_digest.size())
 	{
-		Msg("! ERROR: Can't ban client without unique digest, try to ban by IP address.");
+		EngineLog("! ERROR: Can't ban client without unique digest, try to ban by IP address.");
 		xr_delete(tmp_client);
 		return;
 	}
@@ -121,7 +121,7 @@ void cdkey_ban_list::ban_player_ll(char const * hexstr_digest, s32 end_time_sec,
 	banned_client* tmp_client = xr_new<banned_client>();
 	if (!xr_strlen(hexstr_digest))
 	{
-		Msg("! ERROR: Can't ban client without unique digest, try to ban by IP address.");
+		EngineLog("! ERROR: Can't ban client without unique digest, try to ban by IP address.");
 		xr_delete(tmp_client);
 		return;
 	}
@@ -152,7 +152,7 @@ void cdkey_ban_list::unban_player_by_index(size_t const index)
 {
 	if (m_ban_list.size() <= index)
 	{
-		Msg("! ERROR: bad player index");
+		EngineLog("! ERROR: bad player index");
 		return;
 	}
 	xr_delete(m_ban_list[index]);
@@ -181,7 +181,7 @@ void cdkey_ban_list::print_ban_list(char const * filter_string)
 	char const * to_filter = NULL;
 	if (filter_string && xr_strlen(filter_string))
 		to_filter = filter_string;
-	Msg("- ----banned players list begin-------");
+	EngineLog("- ----banned players list begin-------");
 	string512 tmp_string;
 	u32 index = 0;
 	for (ban_list_t::iterator i = m_ban_list.begin(),
@@ -198,14 +198,14 @@ void cdkey_ban_list::print_ban_list(char const * filter_string)
 		if (filter_string)
 		{
 			if (strstr(tmp_string, filter_string))
-				Msg(tmp_string);
+				EngineLog(tmp_string);
 		} else
 		{
-			Msg(tmp_string);
+			EngineLog(tmp_string);
 		}
 		++index;
 	}
-	Msg("- ----banned players list end-------");
+	EngineLog("- ----banned players list end-------");
 }
 
 cdkey_ban_list::banned_client::banned_client()
@@ -257,7 +257,7 @@ bool cdkey_ban_list::banned_client::load(CInifile* ini, shared_str const & name_
 	ban_end_time = get_time_from_string(tmp_string);
 	if (ban_end_time == 0)
 	{
-		Msg("! ERROR bad ban_end_time in section [%s]", name_sect.c_str());
+		EngineLog("! ERROR bad ban_end_time in section [%s]", name_sect.c_str());
 		return false;
 	}
 	tmp_string = ini->r_string(name_sect, CLIENT_BAN_START_TIME_KEY);
@@ -307,7 +307,7 @@ void cdkey_ban_list::erase_expired_ban_items()
 		{
 			if (bclient->ban_end_time < current_time)
 			{
-				Msg("- Ban of %s is expired", bclient->client_name.c_str());
+				EngineLog("- Ban of %s is expired", bclient->client_name.c_str());
 				xr_delete(bclient);
 				return true;
 			}

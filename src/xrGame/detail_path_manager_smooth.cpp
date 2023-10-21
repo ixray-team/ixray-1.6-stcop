@@ -210,7 +210,7 @@ bool CDetailPathManager::build_circle_trajectory(
 		int				m = _min(iFloor(_abs(angle)/position.angular_velocity*10.f + 1.5f),iFloor(position.radius*_abs(angle)/min_dist + 1.5f));
 #ifdef DEBUG
 		if (m>=10000) {
-			Msg			("! [position.radius=%f],[angle=%f],[m=%d]",position.radius,angle,m);
+			EngineLog			("! [position.radius=%f],[angle=%f],[m=%d]",position.radius,angle,m);
 			VERIFY		(m<10000);
 		}
 #endif
@@ -838,7 +838,7 @@ void CDetailPathManager::build_smooth_path		(
 	u32						intermediate_index
 )
 {
-//	Msg									("[%6d][%s] started to build detail path",Device.dwFrame,*m_restricted_object->object().cName());
+//	EngineLog									("[%6d][%s] started to build detail path",Device.dwFrame,*m_restricted_object->object().cName());
 	START_PROFILE("Build Path/Detail Path");
 	
 	m_failed							= true;
@@ -865,7 +865,7 @@ void CDetailPathManager::build_smooth_path		(
 		bool							asp = m_restricted_object->accessible(start_pos);
 		VERIFY							(ai().level_graph().inside(start.vertex_id,start_pos));
 		if (!((alvi && asp) || (!asp && !alvi))) {
-			Msg							("! vertex [%d], position [%f][%f][%f], alvi[%c], asp[%c]",start.vertex_id,VPUSH(start_pos), alvi ? '+' : '-', asp ? '+' : '-');
+			EngineLog							("! vertex [%d], position {}, alvi[{}], asp[{}]",start.vertex_id,(start_pos), alvi ? '+' : '-', asp ? '+' : '-');
 		}
 		VERIFY3							((alvi && asp) || (!asp && !alvi) || show_restrictions(m_restricted_object),"Invalid restrictions (see log for details) for object ",*m_restricted_object->object().cName());
 #endif
@@ -888,5 +888,5 @@ void CDetailPathManager::build_smooth_path		(
 		m_restricted_object->remove_border();
 
 	STOP_PROFILE;
-//	Msg									("[%6d][%s] build_detail_path [%d][%d][%d]",Device.dwFrame,*m_restricted_object->object().cName(),path().size(),curr_travel_point_index(),last_patrol_point());
+//	EngineLog									("[%6d][%s] build_detail_path [%d][%d][%d]",Device.dwFrame,*m_restricted_object->object().cName(),path().size(),curr_travel_point_index(),last_patrol_point());
 }

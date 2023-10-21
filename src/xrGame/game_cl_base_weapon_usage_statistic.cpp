@@ -180,7 +180,7 @@ bool victims_table::add_name(shared_str const & player_name)
 {
 	if (m_data.size() > 254)
 	{
-		Msg("! WARNING: victims table in statistics exceeds limit count");
+		EngineLog("! WARNING: victims table in statistics exceeds limit count");
 		return false;
 	}
 	victims_table_t::const_iterator tmp_iter = std::find(
@@ -451,9 +451,6 @@ PLAYERS_STATS_it WeaponUsageStatistic::FindPlayer(LPCSTR PlayerName)
 	PLAYERS_STATS_it pPlayerI;
 	if (!GetPlayer(PlayerName, pPlayerI))
 	{
-#ifdef DEBUG
-		Msg("--- Adding new player [%s] to statistics", PlayerName);
-#endif // #ifdef DEBUG
 		aPlayersStatistic.push_back	(Player_Statistic(PlayerName));
 		pPlayerI					= aPlayersStatistic.end()-1;
 	};
@@ -477,9 +474,6 @@ WEAPON_STATS_it	Player_Statistic::FindPlayersWeapon	(LPCSTR WeaponName)
 		aWeaponStats.push_back(Weapon_Statistic(WeaponName));		
 		pWeaponI = aWeaponStats.end()-1;
 		pWeaponI->InvName = pSettings->r_string_wb(WeaponName, "inv_name");
-#ifdef DEBUG
-		Msg("--- Just added weapon %s to statistics", WeaponName);
-#endif // #ifdef DEBUG
 	}
 	return pWeaponI;
 };
@@ -561,14 +555,14 @@ void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& car
 	//-----------------------------------------------------------------------------------
 	ActiveBullets.push_back(BulletData(object_parent->cName(), object_weapon->cNameSect(), pBullet));
 	
-//	Msg("! OnBullet Fire ID[%d]", pBullet->m_dwID);
+//	EngineLog("! OnBullet Fire ID[%d]", pBullet->m_dwID);
 }
 
 void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation)
 {
 	statistic_sync_quard syncg(m_mutex);
 	if (!pBullet || !pBullet->flags.allow_sendhit) return;
-//	Msg("! OnBullet Hit ID[%d]", pBullet->m_dwID);
+//	EngineLog("! OnBullet Hit ID[%d]", pBullet->m_dwID);
 	ABULLETS_it BulletIt;
 	if (!FindBullet(pBullet->m_dwID, BulletIt)) return;
 	//-----------------------------------------------------
@@ -608,7 +602,7 @@ void WeaponUsageStatistic::OnBullet_Remove(SBullet* pBullet)
 	if (!pBullet || !pBullet->flags.allow_sendhit)	return;
 	ABULLETS_it		BulletIt;
 	if (!FindBullet(pBullet->m_dwID, BulletIt))		return;
-//	Msg("! Bullet Removed ID[%d]", BulletIt->Bullet.m_dwID);
+//	EngineLog("! Bullet Removed ID[%d]", BulletIt->Bullet.m_dwID);
 	BulletIt->Removed = true;
 	RemoveBullet	(BulletIt);
 }
@@ -648,7 +642,7 @@ void WeaponUsageStatistic::OnBullet_Check_Result(bool Result)
 		}
 		else
 		{
-			Msg ("! Warning can't Find Check!");
+			EngineLog("! Warning can't Find Check!");
 			R_ASSERT(0);
 		}
 		m_dwLastRequestSenderID = 0;
@@ -702,7 +696,7 @@ void WeaponUsageStatistic::Send_Check_Respond()
 		}
 		//-----------------------------------------------------
 		P.w_begin(M_BULLET_CHECK_RESPOND);		
-//		Msg("%d-%d || %d-%d", NumFalse, BChA_Request.NumFalse, NumTrue, BChA_Request.NumTrue);
+//		EngineLog("%d-%d || %d-%d", NumFalse, BChA_Request.NumFalse, NumTrue, BChA_Request.NumTrue);
 		P.w_u8(BChA_Request.NumFalse);		BChA_Request.NumFalse = 0;
 		P.w_u8(BChA_Request.NumTrue);		BChA_Request.NumTrue = 0;
 
@@ -728,7 +722,7 @@ void WeaponUsageStatistic::On_Check_Respond(NET_Packet* P)
 		u32 BulletID = P->r_u32();
 		if (!FindBullet(BulletID, BulletIt)) 
 		{
-			Msg("! Warning: No bullet found! ID[%d]", BulletID);
+			EngineLog("! Warning: No bullet found! ID[{}]", BulletID);
 			continue;
 		};
 		BulletIt->HitResponds++;
@@ -741,7 +735,7 @@ void WeaponUsageStatistic::On_Check_Respond(NET_Packet* P)
 		s16 BoneID = P->r_s16();
 		if (!FindBullet(BulletID, BulletIt)) 
 		{
-			Msg("! Warning: No bullet found! ID[%d]", BulletID);
+			EngineLog("! Warning: No bullet found! ID[{}]", BulletID);
 			continue;
 		};
 		BulletIt->HitResponds++;
@@ -898,7 +892,7 @@ u8 WeaponUsageStatistic::ConvertToTeamIndex(s16 team)
 	{
 		if (team_index == -1)
 		{
-//			Msg("! ERROR: can't process spectators in deathmatch statistics.");
+//			EngineLog("! ERROR: can't process spectators in deathmatch statistics.");
 			return 1;
 		}
 	} else
@@ -1022,7 +1016,7 @@ void WeaponUsageStatistic::OnUpdateRespond(NET_Packet* P, shared_str const & sen
 	Player_Statistic& PS = *(FindPlayer(*PName));
 	PS.PDigest	= sender_digest;
 	PS.PID		= sender_pid;
-	Msg("--- CL: On Update Respond from [%s]", PName.c_str());
+	EngineLog("--- CL: On Update Respond from [{}]", PName.c_str());
 	PS.net_load(P);
 };
 

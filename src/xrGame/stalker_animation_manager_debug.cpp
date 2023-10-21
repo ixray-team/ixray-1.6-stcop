@@ -110,9 +110,9 @@ void show_animations		()
 	const ANIMATION_STATS_PAIR		**const e = animations + animation_count;
 	std::sort						(animations,e,&predicate::frame_count);
 
-	Msg								("frames starts animation                        animation_set");
+	EngineLog								("frames starts animation                        animation_set");
 	for (i = animations; i != e; ++i)
-        Msg					(
+        EngineLog					(
 			"%6d %6d %-32s %s",
 			(*i)->second.m_frame_count,
 			(*i)->second.m_start_count,
@@ -141,9 +141,9 @@ void show_blends			()
 	const BLEND_STATS_PAIR			**const e = blends + blend_count;
 	std::sort						(blends,e,&predicate::blend_count);
 
-	Msg								("       animation_set1                                  animation1    count     animation2                                  animation_set2");
+	EngineLog								("       animation_set1                                  animation1    count     animation2                                  animation_set2");
 	for (i = blends; i != e; ++i)
-        Msg					(
+        EngineLog					(
 			"%-32s %32s ->[%6d]-> %-32s %32s",
 			*(*i)->first.second.second,
 			*(*i)->first.second.first,
@@ -160,7 +160,7 @@ void show_animation_stats	()
 		return;
 
 	show_animations				();
-	Msg							("--------------------------------------------------");
+	EngineLog							("--------------------------------------------------");
 	show_blends					();
 #endif
 }

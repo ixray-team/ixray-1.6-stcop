@@ -276,7 +276,7 @@ void set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
 }
 void CActor::Load	(LPCSTR section )
 {
-	// Msg						("Loading actor: %s",section);
+	// EngineLog						("Loading actor: %s",section);
 	inherited::Load				(section);
 	material().Load				(section);
 	CInventoryOwner::Load		(section);
@@ -829,7 +829,7 @@ void	CActor::SwitchOutBorder(bool new_border_state)
 	}
 	else 
 	{
-//.		Msg("enter level border");
+//.		EngineLog("enter level border");
 		callback(GameObject::eEnterLevelBorder)(lua_game_object());
 	}
 	m_bOutBorder=new_border_state;
@@ -1104,13 +1104,13 @@ void CActor::shedule_Update	(u32 DT)
 			}else
 			{
 					g_player_hud->detach_item_idx	( 0 );
-					//Msg("---No active item in inventory(), item 0 detached.");
+					//EngineLog("---No active item in inventory(), item 0 detached.");
 			}
 		}
 		else
 		{
 			g_player_hud->detach_all_items();
-			//Msg("---No hud view found, all items detached.");
+			//EngineLog("---No hud view found, all items detached.");
 		}
 			
 	}
@@ -1270,7 +1270,7 @@ void CActor::shedule_Update	(u32 DT)
 				m_DangerSnd.set_position(snd_pos);
 
 			float v = bs+0.25f;
-//			Msg( "bs            = %.2f", bs );
+//			EngineLog( "bs            = %.2f", bs );
 
 			m_DangerSnd.set_volume	(v);
 		}

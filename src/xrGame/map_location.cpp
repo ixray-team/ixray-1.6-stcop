@@ -453,22 +453,22 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 			static bool bbb = false;
 			if(!bDone&&bbb)
 			{
-				Msg("! Error. Path from actor to selected map spot does not contain level changer :(");
-				Msg("Path:");
+				EngineLog("! Error. Path from actor to selected map spot does not contain level changer :(");
+				EngineLog("Path:");
 				xr_vector<u32>::iterator it_			= map_point_path.begin();
 				xr_vector<u32>::iterator it_e_		= map_point_path.end();
 				for(; it_!=it_e_;++it_){
-					//					Msg("%d-%s",(*it),ai().game_graph().vertex(*it));
-					Msg("[%d] level[%s]",(*it_),*ai().game_graph().header().level(ai().game_graph().vertex(*it_)->level_id()).name());
+					//					EngineLog("%d-%s",(*it),ai().game_graph().vertex(*it));
+					EngineLog("[%d] level[%s]",(*it_),*ai().game_graph().header().level(ai().game_graph().vertex(*it_)->level_id()).name());
 				}
-				Msg("- Available LevelChangers:");
+				EngineLog("- Available LevelChangers:");
 				xr_vector<CLevelChanger*>::iterator lit_,lit_e;
 				lit_e							= g_lchangers.end();
 				for(lit_=g_lchangers.begin();lit_!=lit_e; ++lit_){
 					GameGraph::_GRAPH_ID gid = (*lit_)->ai_location().game_vertex_id();
-					Msg("[%d]",gid);
+					EngineLog("[%d]",gid);
 					Fvector p = ai().game_graph().vertex(gid)->level_point();
-					Msg("lch_name=%s pos=%f %f %f",*ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y, p.z);
+					EngineLog("lch_name=%s pos=%f %f %f",*ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y, p.z);
 				}
 
 
@@ -860,6 +860,6 @@ void CRelationMapLocation::UpdateLevelMap(CUICustomMap* map)
 void CRelationMapLocation::Dump							()
 {
 	inherited::Dump();
-	Msg("--CRelationMapLocation m_curr_spot_name=[%s]",*m_curr_spot_name);
+	EngineLog("--CRelationMapLocation m_curr_spot_name=[%s]",*m_curr_spot_name);
 }
 #endif

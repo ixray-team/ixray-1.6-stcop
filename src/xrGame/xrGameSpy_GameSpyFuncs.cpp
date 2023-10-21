@@ -54,13 +54,13 @@ void			xrGameSpyServer::OnCDKey_Validation				(int LocalID, int res, char* error
 	{
 		CL->m_bCDKeyAuth = true;
 #ifndef MASTER_GOLD
-		Msg("xrGS::CDKey: Validation successful - <%s>", errormsg);
+		EngineLog("xrGS::CDKey: Validation successful - <%s>", errormsg);
 #endif // #ifndef MASTER_GOLD
 		Check_GameSpy_CDKey_Success(CL);
 	}
 	else
 	{
-		Msg						("CDKey: Validation failed - <%s>", errormsg);
+		EngineLog						("CDKey: Validation failed - <%s>", errormsg);
 		SendConnectResult		(CL, u8(res), ecr_cdkey_validation_failed, errormsg);
 	}
 };

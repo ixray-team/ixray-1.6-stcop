@@ -113,7 +113,7 @@ void CAgentMemberManager::register_in_combat	(const CAI_Stalker *object)
 //		return;
 
 #if 0//def DEBUG
-	Msg							(
+	EngineLog							(
 		"%6d registering stalker %s in combat: 0x%08x -> 0x%08x",
 		Device.dwTimeGlobal,
 		*object->cName(),
@@ -135,7 +135,7 @@ void CAgentMemberManager::unregister_in_combat	(const CAI_Stalker *object)
 //	}
 
 #if 0//def DEBUG
-	Msg							(
+	EngineLog							(
 		"%6d UNregistering stalker %s in combat: 0x%08x -> 0x%08x",
 		Device.dwTimeGlobal,
 		*object->cName(),

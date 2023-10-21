@@ -54,7 +54,7 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector
 			"vertex_id[%d], object[%s], position[%f][%f][%f]",
 			selected,
 			*name(),
-			VPUSH(position)
+			position.x, position.y, position.z
 		)
 	);
 

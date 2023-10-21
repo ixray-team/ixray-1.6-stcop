@@ -32,7 +32,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 		return;
 	}
 //-------------------------------------------------
-//.	Msg ("M_SPAWN - %s[%d][%x] - %d %d", *s_name,  E->ID, E,E->ID_Parent, Device.dwFrame);
+//.	EngineLog ("M_SPAWN - %s[%d][%x] - %d %d", *s_name,  E->ID, E,E->ID_Parent, Device.dwFrame);
 //-------------------------------------------------
 	//force object to be local for server client
 	if (OnServer())		{
@@ -88,7 +88,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 //	CTimer		T(false);
 
 #ifdef DEBUG
-//	Msg					("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
+//	EngineLog					("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
 #endif
 
 	// Optimization for single-player only	- minimize traffic between client and server
@@ -111,7 +111,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	{
 		if(!g_dedicated_server)
 			client_spawn_manager().callback(O);
-		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
+		//EngineLog			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
 		
 		if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && 
 			(E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)) )	

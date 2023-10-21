@@ -24,7 +24,7 @@ void atlas_submit_queue::submit_all()
 	gamespy_gp::profile const * tmp_curr_prof	= tmp_lmngr->get_current_profile();
 	if (!tmp_curr_prof || !tmp_curr_prof->online())
 	{
-		Msg("! ATLAS submit can be only in online profile mode");
+		EngineLog("! ATLAS submit can be only in online profile mode");
 		return;
 	}
 	submit_task	tmp_task;
@@ -41,7 +41,7 @@ void atlas_submit_queue::submit_reward(gamespy_profile::enum_awards_t const awar
 	gamespy_gp::profile const * tmp_curr_prof	= tmp_lmngr->get_current_profile();
 	if (!tmp_curr_prof->online())
 	{
-		Msg("! ATLAS submit can be only in online profile mode");
+		EngineLog("! ATLAS submit can be only in online profile mode");
 		return;
 	}
 	m_stats_submitter->quick_reward_with_award(award_id, tmp_curr_prof);
@@ -68,7 +68,7 @@ void atlas_submit_queue::submit_best_results()
 	gamespy_gp::profile const * tmp_curr_prof	= tmp_lmngr->get_current_profile();
 	if (!tmp_curr_prof->online())
 	{
-		Msg("! ATLAS submit can be only in online profile mode");
+		EngineLog("! ATLAS submit can be only in online profile mode");
 		return;
 	}
 
@@ -154,10 +154,10 @@ void xr_stdcall atlas_submit_queue::atlas_submitted(bool result, char const * er
 {
 	if (result)
 	{
-		Msg("* submit complete successfully !");
+		EngineLog("* submit complete successfully !");
 	} else
 	{
-		Msg("! failed to submit atlas report: %s", err_string);
+		EngineLog("! failed to submit atlas report: {}", err_string);
 	}
 	m_atlas_in_process = false;	
 }

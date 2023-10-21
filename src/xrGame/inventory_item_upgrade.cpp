@@ -121,14 +121,14 @@ bool CInventoryItem::equal_upgrades( Upgrades_type const& other_upgrades ) const
 #ifdef DEBUG	
 void CInventoryItem::log_upgrades()
 {
-	Msg( "* all upgrades of item = %s", m_section_id.c_str() );
+	EngineLog( "* all upgrades of item = %s", m_section_id.c_str() );
 	Upgrades_type::const_iterator ib = m_upgrades.begin();
 	Upgrades_type::const_iterator ie = m_upgrades.end();
 	for ( ; ib != ie; ++ib )
 	{
-		Msg( "    %s", (*ib).c_str() );
+		EngineLog( "    %s", (*ib).c_str() );
 	}
-	Msg( "* finish - upgrades of item = %s", m_section_id.c_str() );
+	EngineLog( "* finish - upgrades of item = %s", m_section_id.c_str() );
 }
 #endif // DEBUG
 

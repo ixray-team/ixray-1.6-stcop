@@ -531,7 +531,7 @@ JOINT_P_PAIR_IT		I = l_tpJointMap->begin();
 JOINT_P_PAIR_IT		E = l_tpJointMap->end();
 for ( ; I != E; ++I) {
 (*I).second->joint_method();
-Msg("%s",(*I).first);
+EngineLog("%s",(*I).first);
 }
 
 */
@@ -601,12 +601,12 @@ void CPhysicObject::net_Export_PH_Params(NET_Packet& P, SPHNetState& State, mask
 {
 	//UI().Font().pFontStat->OutSet(100.0f,100.0f);
 	P.w_vec3				(State.force);
-	//Msg("Export State.force.y:%4.6f",State.force.y);
+	//EngineLog("Export State.force.y:%4.6f",State.force.y);
 	P.w_vec3				(State.torque);
 	//UI().Font().pFontStat->OutNext("Export State.torque:%4.6f",State.torque.magnitude());
 	P.w_vec3				(State.position);
-	//Msg("Export State.position.y:%4.6f",State.position.y);
-	//Msg("Export State.enabled:%i",int(State.enabled));
+	//EngineLog("Export State.position.y:%4.6f",State.position.y);
+	//EngineLog("Export State.enabled:%i",int(State.enabled));
 
 	float					magnitude = _sqrt(State.quaternion.magnitude());
 	if (fis_zero(magnitude)) {
@@ -653,11 +653,11 @@ void CPhysicObject::net_Export_PH_Params(NET_Packet& P, SPHNetState& State, mask
 		P.w_float		(State.linear_vel.x);
 		P.w_float		(State.linear_vel.y);
 		P.w_float		(State.linear_vel.z);
-		//Msg("Export State.linear_vel.y:%4.6f",State.linear_vel.y);
+		//EngineLog("Export State.linear_vel.y:%4.6f",State.linear_vel.y);
 	}
 	else
 	{
-		//Msg("Export State.linear_vel.y:%4.6f",0.0f);
+		//EngineLog("Export State.linear_vel.y:%4.6f",0.0f);
 	}
 }
 
@@ -726,11 +726,11 @@ void CPhysicObject::net_Import_PH_Params(NET_Packet& P, net_update_PItem& N, mas
 	//N.State.torque.set			(0.f,0.f,0.f);
 	//UI().Font().pFontStat->OutSet(100.0f,100.0f);
 	P.r_vec3					(N.State.force);
-	//Msg("Import N.State.force.y:%4.6f",N.State.force.y);
+	//EngineLog("Import N.State.force.y:%4.6f",N.State.force.y);
 	P.r_vec3					(N.State.torque);
 
 	P.r_vec3					(N.State.position);
-	//Msg("Import N.State.position.y:%4.6f",N.State.position.y);
+	//EngineLog("Import N.State.position.y:%4.6f",N.State.position.y);
 
 	P.r_float(N.State.quaternion.x);
 	P.r_float(N.State.quaternion.y);
@@ -756,7 +756,7 @@ void CPhysicObject::net_Import_PH_Params(NET_Packet& P, net_update_PItem& N, mas
 	}
 	else
 		N.State.linear_vel.set	(0.f,0.f,0.f);
-	//Msg("Import N.State.linear_vel.y:%4.6f",N.State.linear_vel.y);
+	//EngineLog("Import N.State.linear_vel.y:%4.6f",N.State.linear_vel.y);
 	
 	N.State.previous_position	= N.State.position;
 	N.State.previous_quaternion	= N.State.quaternion;
@@ -842,8 +842,8 @@ void CPhysicObject::Interpolate()
 		{
 
 			float ret_interpolate = interpolate_states(p->NET_IItem.front(), p->NET_IItem.back(), newState);
-			//Msg("Interpolation factor is %0.4f", ret_interpolate);
-			//Msg("Current position is: x = %3.3f, y = %3.3f, z = %3.3f", newState.position.x, newState.position.y, newState.position.z);
+			//EngineLog("Interpolation factor is %0.4f", ret_interpolate);
+			//EngineLog("Current position is: x = %3.3f, y = %3.3f, z = %3.3f", newState.position.x, newState.position.y, newState.position.z);
 			if (ret_interpolate >= 1.f)
 			{
 				p->NET_IItem.pop_front();

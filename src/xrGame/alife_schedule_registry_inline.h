@@ -29,7 +29,7 @@ IC	void CALifeScheduleRegistry::update						()
 		objects().empty() ? 0 : inherited::update( CUpdatePredicate(m_objects_per_update), false );
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-//		Msg						("[LSS][SU][%d : %d]",count, objects().size());
+//		EngineLog						("[LSS][SU][%d : %d]",count, objects().size());
 	}
 #endif
 }

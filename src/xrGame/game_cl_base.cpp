@@ -254,7 +254,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PS->getName(),Color_Main,*st.translate("mp_connected"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//---------------------------------------
-			Msg("%s connected", PS->getName());
+			EngineLog("{} connected", PS->getName());
 		}break;
 	case GAME_EVENT_PLAYER_DISCONNECTED:
 		{
@@ -264,7 +264,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_disconnected"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//---------------------------------------
-			Msg("%s disconnected", PlayerName);
+			EngineLog("{} disconnected", PlayerName);
 		}break;
 	case GAME_EVENT_PLAYER_ENTERED_GAME:
 		{

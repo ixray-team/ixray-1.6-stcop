@@ -184,14 +184,14 @@ void CWalmarkManager::StartWorkflow()
 
 	}
 /*
-	Msg("----------------------------------");
-	Msg("tri count=%d",						XRC.r_count());
-	Msg("far_dist=%d",						_not_dist);
-	Msg("RayTest = %d",						_ray_test);
-	Msg("c==tdBehind = %d",					_tri_behind);
-	Msg	("c!=tdPlane && dist>ndist = %d",	_tri_not_plane);
-	Msg("Wallmarks added = %d",				wm_count);
-	Msg("Time: %d",							T.GetElapsed_ms());
+	EngineLog("----------------------------------");
+	EngineLog("tri count=%d",						XRC.r_count());
+	EngineLog("far_dist=%d",						_not_dist);
+	EngineLog("RayTest = %d",						_ray_test);
+	EngineLog("c==tdBehind = %d",					_tri_behind);
+	EngineLog	("c!=tdPlane && dist>ndist = %d",	_tri_not_plane);
+	EngineLog("Wallmarks added = %d",				wm_count);
+	EngineLog("Time: %d",							T.GetElapsed_ms());
 
 	DBG_ClosedCashedDraw	(10000);
 */

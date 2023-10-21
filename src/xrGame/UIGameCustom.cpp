@@ -382,7 +382,7 @@ void CMapListHelper::LoadMapInfo(LPCSTR map_cfg_fn, const xr_string& map_name, L
 			SGameTypeMaps* M			= GetMapListInt(game_type);
 			if(!M)
 			{
-				Msg						("--unknown game type-%s",game_type.c_str());
+				EngineLog("--unknown game type-{}",game_type.c_str());
 				m_storage.resize		(m_storage.size()+1);
 				SGameTypeMaps&	Itm		= m_storage.back();
 				Itm.m_game_type_name	= game_type;
@@ -396,12 +396,9 @@ void CMapListHelper::LoadMapInfo(LPCSTR map_cfg_fn, const xr_string& map_name, L
 			
 			if(M->m_map_names.end()!=std::find(M->m_map_names.begin(),M->m_map_names.end(),Itm))
 			{
-				Msg("! duplicate map found [%s] [%s]", _map_name.c_str(), _map_ver.c_str());
+				EngineLog("! duplicate map found [{}] [{}]", _map_name.c_str(), _map_ver.c_str());
 			}else
 			{
-#ifndef MASTER_GOLD
-				Msg("added map [%s] [%s]", _map_name.c_str(), _map_ver.c_str());
-#endif // #ifndef MASTER_GOLD
 				M->m_map_names.push_back	(Itm);
 			}
 		}			

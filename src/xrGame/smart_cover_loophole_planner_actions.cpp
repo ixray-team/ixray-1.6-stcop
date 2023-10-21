@@ -463,7 +463,7 @@ void loophole_fire::on_mark				()
 		return;
 
 	u32 const magazine_size		= best_weapon->GetAmmoMagSize();
-//	Msg							( "started firing: %d", magazine_size );
+//	EngineLog							( "started firing: %d", magazine_size );
 	object().set_goal			(eObjectActionFireNoReload,object().best_weapon(), magazine_size, magazine_size);
 }
 

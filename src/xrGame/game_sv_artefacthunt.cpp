@@ -355,7 +355,7 @@ void	game_sv_ArtefactHunt::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	//-----------------------------------------------------------------------------
 	u32		Team				= RP_2_Use(E);
 #ifdef DEBUG
-	Msg("--- ArtefactHunt RPoint for %s uses team %d", ps_who->getName(), Team);
+	EngineLog("--- ArtefactHunt RPoint for %s uses team %d", ps_who->getName(), Team);
 #endif // #ifdef DEBUG
 	R_ASSERT					(rpoints[Team].size());
 	
@@ -367,7 +367,7 @@ void	game_sv_ArtefactHunt::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	if(!assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, true) )
 	{
 #ifdef DEBUG
-		Msg("--- No free Arthfacthunt rpoints found, trying to find rpoints with enemies!");
+		EngineLog("--- No free Arthfacthunt rpoints found, trying to find rpoints with enemies!");
 #endif // #ifdef DEBUG
 		assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, false);
 	}
@@ -937,7 +937,7 @@ void game_sv_ArtefactHunt::Assign_Artefact_RPoint(CSE_Abstract* E)
 */	
 	u32 ID				= ArtefactChooserRandom.randI((int)rp.size());
 #ifndef MASTER_GOLD
-	Msg					("---select artefact RPoint [%d]", ID);
+	EngineLog					("---select artefact RPoint [%d]", ID);
 #endif // #ifndef MASTER_GOLD
 	r					= rp[ID];
 	E->o_Position.set	(r.P);
@@ -1503,7 +1503,7 @@ void game_sv_ArtefactHunt::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoun
 	VERIFY(xrCData->ps);
 	game_PlayerState*	ps	=	xrCData->ps;
 #ifndef MASTER_GOLD
-	Msg("---Destroying player [%s] items before spawning new bought items.", ps->getName());
+	EngineLog("---Destroying player [%s] items before spawning new bought items.", ps->getName());
 #endif // #ifndef MASTER_GOLD
 	
 	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));

@@ -309,7 +309,7 @@ int __cdecl callback_count(qr2_key_type keytype, void *userdata)
 
 void __cdecl callback_adderror(qr2_error_t error, gsi_char *errmsg, void *userdata)
 {
-	Msg("! Error while adding this server to master list ->%s.", errmsg);
+	EngineLog("! Error while adding this server to master list ->%s.", errmsg);
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
 	if (pServer) pServer->OnError_Add(error);
 	

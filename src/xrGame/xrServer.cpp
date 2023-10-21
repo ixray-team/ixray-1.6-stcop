@@ -130,7 +130,7 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 	net_players.AddNewClient(newCL);
 
 #ifndef MASTER_GOLD
-	Msg		("# New player created.");
+	EngineLog("# New player created.");
 #endif // #ifndef MASTER_GOLD
 	return newCL;
 };
@@ -170,7 +170,7 @@ void		xrServer::client_Destroy	(IClient* C)
 			if(it!=m_aDelayedPackets.end())
 			{
 				m_aDelayedPackets.erase	(it);
-				Msg("removing packet from delayed event storage");
+				EngineLog("removing packet from delayed event storage");
 			}else
 				break;
 		}while(true);
@@ -312,10 +312,9 @@ void xrServer::MakeUpdatePackets()
 			u32 ObjectSize					= u32(tmpPacket.w_tell()-position)-sizeof(u8);
 			tmpPacket.w_chunk_close8		(position);
 
-			if (ObjectSize == 0)			continue;					
-#ifdef DEBUG
-			if (g_Dump_Update_Write) Msg("* %s : %d", Test.name(), ObjectSize);
-#endif
+			if (ObjectSize == 0)			
+				continue;
+
 			m_updator.write_update_for		(Test.ID, tmpPacket);
 		}
 	}//all entities
@@ -406,7 +405,7 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 			{
 				string1024			buff;
 				P.r_stringZ			(buff);
-				Msg("* Radmin [%s] is running command: %s", CL->ps->getName(), buff);
+				EngineLog("* Radmin [{}] is running command: {}", CL->ps->getName(), buff);
 				SetLogCB			(console_log_cb);
 				_tmp_log.clear		();
 				LPSTR		result_command;
@@ -618,7 +617,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 					}
 				} else
 				{
-					Msg("! ERROR: SV: update respond received from unknown sender");
+					EngineLog("! ERROR: SV: update respond received from unknown sender");
 				}
 			}			
 			//if (SV_Client) SendTo	(SV_Client->ID, P, net_flags(TRUE, TRUE));
@@ -642,7 +641,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 					CL->ps->resetFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS);
 				}
 				xr_strcpy				(reason,"logged off");
-				Msg("# Remote administrator logged off.");
+				EngineLog("# Remote administrator logged off.");
 			}else
 			{
 				P.r_stringZ				(pass);
@@ -654,9 +653,9 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 					{
 						CL->ps->setFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS);
 					}
-					Msg("# User [%s] logged as remote administrator.", user.c_str());
+					EngineLog("# User [{}] logged as remote administrator.", user.c_str());
 				}else
-					Msg("# User [%s] tried to login as remote administrator. Access denied.", user.c_str());
+					EngineLog("# User [{}] tried to login as remote administrator. Access denied.", user.c_str());
 
 			}
 			NET_Packet			P_answ;			
@@ -781,7 +780,7 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 {
 #ifdef DEBUG
 if( dbg_net_Draw_Flags.test( dbg_destroy ) )
-		Msg	("xrServer::entity_Destroy : [%d][%s][%s]",P->ID,P->name(),P->name_replace());
+EngineLog("xrServer::entity_Destroy : [{}][{}][{}]",P->ID,P->name(),P->name_replace());
 #endif
 	R_ASSERT					(P);
 	entities.erase				(P->ID);
@@ -824,7 +823,7 @@ void			xrServer::Server_Client_Check	( IClient* CL )
 	{
 		CL->flags.bLocal	= 1;
 		SV_Client			= (xrClientData*)CL;
-		Msg( "New SV client 0x%08x", SV_Client->ID.value());
+		EngineLog( "New SV client {}", SV_Client->ID.value());
 	}else
 	{
 		CL->flags.bLocal	= 0;
@@ -1119,7 +1118,7 @@ void xrServer::KickCheaters			()
 		IClient* tmp_client = GetClientByID(i->cheater_id);
 		if (!tmp_client)
 		{
-			Msg("! ERROR: KickCheaters: client [%u] not found", i->cheater_id);
+			EngineLog("! ERROR: KickCheaters: client [{}] not found", i->cheater_id.value());
 			continue;
 		}
 		ClientID tmp_client_id = tmp_client->ID;
@@ -1145,11 +1144,11 @@ void xrServer::MakeScreenshot(ClientID const & admin_id, ClientID const & cheate
 		if (!m_screenshot_proxies[i]->is_active())
 		{
 			m_screenshot_proxies[i]->make_screenshot(admin_id, cheater_id);
-			Msg("* admin [%d] is making screeshot of client [%d]", admin_id, cheater_id);
+			EngineLog("* admin [{}] is making screeshot of client [{}]", admin_id.value(), cheater_id.value());
 			return;
 		}
 	}
-	Msg("! ERROR: SV: not enough file transfer proxies for downloading screenshot, please try later ...");
+	EngineLog("! ERROR: SV: not enough file transfer proxies for downloading screenshot, please try later ...");
 }
 void xrServer::MakeConfigDump(ClientID const & admin_id, ClientID const & cheater_id)
 {
@@ -1162,11 +1161,11 @@ void xrServer::MakeConfigDump(ClientID const & admin_id, ClientID const & cheate
 		if (!m_screenshot_proxies[i]->is_active())
 		{
 			m_screenshot_proxies[i]->make_config_dump(admin_id, cheater_id);
-			Msg("* admin [%d] is making config dump of client [%d]", admin_id, cheater_id);
+			EngineLog("* admin [{}] is making config dump of client [{}]", admin_id.value(), cheater_id.value());
 			return;
 		}
 	}
-	Msg("! ERROR: SV: not enough file transfer proxies for downloading file, please try later ...");
+	EngineLog("! ERROR: SV: not enough file transfer proxies for downloading file, please try later ...");
 }
 
 

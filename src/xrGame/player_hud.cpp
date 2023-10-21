@@ -85,7 +85,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 					pm->m_animations.back().mid		= motion_ID;
 					pm->m_animations.back().name	= buff;
 #ifdef DEBUG
-//					Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
+//					EngineLog(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
 #endif // #ifdef DEBUG
 				}
 			}
@@ -345,7 +345,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 			M2							= ka->ID_Cycle_Safe("idle");
 		else
 			if(bDebug)
-				Msg						("playing item animation [%s]",item_anm_name.c_str());
+				EngineLog						("playing item animation [%s]",item_anm_name.c_str());
 		
 		R_ASSERT3(M2.valid(),"model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
 
@@ -448,7 +448,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 		}
 	}
 	
-//	Msg("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
+//	EngineLog("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
 
 	if(!b_reload)
 	{

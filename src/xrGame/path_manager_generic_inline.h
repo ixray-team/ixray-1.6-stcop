@@ -84,7 +84,7 @@ template <typename T>
 IC	void CGenericPathManager::create_path			(T &vertex)
 {
 	VERIFY					(data_storage);
-//		Msg						("Path [IC=xxx][VNC=%d][BV=%f]",data_storage->get_visited_node_count(),data_storage->get_best().f());
+//		EngineLog						("Path [IC=xxx][VNC=%d][BV=%f]",data_storage->get_visited_node_count(),data_storage->get_best().f());
 	if (path)
 		data_storage->get_node_path	(*path,&vertex);
 }

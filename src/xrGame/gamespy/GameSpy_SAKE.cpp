@@ -47,7 +47,7 @@ void CGameSpy_SAKE::Init()
 	VERIFY(startup_result == SAKEStartupResult_SUCCESS);
 	if (startup_result != SAKEStartupResult_SUCCESS)
 	{
-		Msg("! GameSpy SAKE: failed to initialize, error code: %d", startup_result);
+		EngineLog("! GameSpy SAKE: failed to initialize, error code: {}", (int)startup_result);
 	}
 }
 

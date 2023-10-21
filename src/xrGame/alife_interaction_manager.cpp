@@ -96,7 +96,7 @@ public:
 			case eMeetActionTypeAttack : {
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
-					Msg("[LSS] %s started combat versus %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
+					EngineLog("[LSS] %s started combat versus %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
 				}
 #endif
 				ECombatResult	l_tCombatResult = eCombatResultRetreat12;
@@ -105,7 +105,7 @@ public:
 					if (eCombatActionAttack == manager->choose_combat_action(l_iGroupIndex)) {
 #ifdef DEBUG
 						if (psAI_Flags.test(aiALife)) {
-							Msg("[LSS] %s choosed to attack %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
+							EngineLog("[LSS] %s choosed to attack %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
 						}
 #endif
 						manager->vfPerformAttackAction(l_iGroupIndex);
@@ -117,13 +117,13 @@ public:
 							break;
 #ifdef DEBUG
 						if (psAI_Flags.test(aiALife)) {
-							Msg("[LSS] %s choosed to retreat from %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
+							EngineLog("[LSS] %s choosed to retreat from %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
 						}
 #endif
 						if (manager->bfCheckIfRetreated(l_iGroupIndex)) {
 #ifdef DEBUG
 							if (psAI_Flags.test(aiALife)) {
-								Msg("[LSS] %s did retreat from %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
+								EngineLog("[LSS] %s did retreat from %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
 							}
 #endif
 							l_tCombatResult	= l_iGroupIndex ? eCombatResultRetreat2 : eCombatResultRetreat1;
@@ -132,7 +132,7 @@ public:
 						l_bDoNotContinue = true;
 #ifdef DEBUG
 						if (psAI_Flags.test(aiALife)) {
-							Msg("[LSS] %s didn't retreat from %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
+							EngineLog("[LSS] %s didn't retreat from %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
 						}
 #endif
 					}
@@ -142,7 +142,7 @@ public:
 					if (manager->m_tpaCombatGroups[l_iGroupIndex].empty()) {
 #ifdef DEBUG
 						if (psAI_Flags.test(aiALife)) {
-							Msg("[LSS] %s is dead",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace());
+							EngineLog("[LSS] %s is dead",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace());
 						}
 #endif
 						l_tCombatResult	= l_iGroupIndex ? eCombatResult1Kill2 : eCombatResult2Kill1;
@@ -152,7 +152,7 @@ public:
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
 					if (eCombatResultRetreat12 == l_tCombatResult)
-						Msg("[LSS] both combat groups decided not to continue combat");
+						EngineLog("[LSS] both combat groups decided not to continue combat");
 				}
 #endif
 				manager->vfFinishCombat	(l_tCombatResult);
@@ -164,7 +164,7 @@ public:
 				R_ASSERT2				(l_tpALifeHumanAbstract2,"Non-human objects ñannot communicate with each other");
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
-					Msg					("[LSS] %s interacted with %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
+					EngineLog					("[LSS] %s interacted with %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());
 				}
 #endif
 				manager->vfPerformCommunication	();
@@ -173,7 +173,7 @@ public:
 			case eMeetActionTypeIgnore : {
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
-					Msg					("[LSS] %s refused from combat",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace());
+					EngineLog					("[LSS] %s refused from combat",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace());
 				}
 #endif
 				return;

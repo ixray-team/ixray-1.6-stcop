@@ -1666,10 +1666,10 @@ BOOL game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, BOOL bForc
 		// if it is myne artefact
 		if (artefactOfTeam->first == ps_who->team)
 		{
-			/*Msg("server artefact position (%2.04f,%2.04f,%2.04f), rpoint position (%2.04f,%2.04f,%2.04f)",
+			/*EngineLog("server artefact position (%2.04f,%2.04f,%2.04f), rpoint position (%2.04f,%2.04f,%2.04f)",
 				tempArtefact->o_Position.x, tempArtefact->o_Position.y, tempArtefact->o_Position.z,
 				tempRPoint.P.x, tempRPoint.P.y, tempRPoint.P.z);
-			Msg("server actor position: (%2.04f, %2.04f, %2.04f)",
+			EngineLog("server actor position: (%2.04f, %2.04f, %2.04f)",
 				e_who->o_Position.x, e_who->o_Position.y, e_who->o_Position.z);*/
 			if (!tempArtefact->o_Position.similar(tempRPoint.P, g_sv_cta_artefactsBaseRadius))
 			{

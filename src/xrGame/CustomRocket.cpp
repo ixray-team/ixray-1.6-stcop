@@ -82,7 +82,7 @@ BOOL CCustomRocket::net_Spawn(CSE_Abstract* DC)
 
 void CCustomRocket::net_Destroy() 
 {
-//	Msg("---------net_Destroy [%d] frame[%d]",ID(), Device.dwFrame);
+//	EngineLog("---------net_Destroy [%d] frame[%d]",ID(), Device.dwFrame);
 	CPHUpdateObject::Deactivate();
 	inherited::net_Destroy();
 	
@@ -101,7 +101,7 @@ void CCustomRocket::SetLaunchParams (const Fmatrix& xform,
 	m_vLaunchVelocity			= vel;
 //	if(m_pOwner->ID()==Actor()->ID())
 //	{
-//		Msg("set p start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
+//		EngineLog("set p start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
 //	}
 	m_vLaunchAngularVelocity	= angular_vel;
 	m_time_to_explode			= Device.fTimeGlobal + pSettings->r_float(cNameSect(), "force_explode_time")/1000.0f;
@@ -125,7 +125,7 @@ void CCustomRocket::activate_physic_shell	()
 
 //	if(m_pOwner->ID()==Actor()->ID())
 //	{
-//		Msg("start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
+//		EngineLog("start v:	%f,%f,%f	\n",m_vLaunchVelocity.x,m_vLaunchVelocity.y,m_vLaunchVelocity.z);
 //	}
 	m_pPhysicsShell->Activate(m_LaunchXForm, m_vLaunchVelocity, m_vLaunchAngularVelocity);
 	m_pPhysicsShell->Update	();
@@ -363,13 +363,13 @@ void CCustomRocket::OnH_B_Chield		()
 {
 	VERIFY(m_eState == eInactive);
 	inherited::OnH_B_Chield		();
-//	Msg("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
+//	EngineLog("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
 }
 void CCustomRocket::OnH_A_Chield		()
 {
 	VERIFY(m_eState == eInactive);
 	inherited::OnH_A_Chield		();
-//	Msg("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
+//	EngineLog("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
 }
 
 
@@ -390,7 +390,7 @@ void CCustomRocket::OnH_A_Independent()
 	setVisible					(true);
 	StartFlying					();
 	StartEngine					();
-//	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.dwFrame);
+//	EngineLog("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.dwFrame);
 
 }
 
@@ -419,7 +419,7 @@ void CCustomRocket::UpdateCL()
 		if(m_time_to_explode<Device.fTimeGlobal)
 		{
 			Contact(Position(), Direction());
-//			Msg("--contact");
+//			EngineLog("--contact");
 		}
 	}
 }

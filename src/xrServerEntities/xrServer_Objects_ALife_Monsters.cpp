@@ -1462,7 +1462,7 @@ void CSE_ALifeCreatureActor::UPDATE_Read	(NET_Packet	&tNetPacket)
 		return;
 	};	
 	////////////// Import dead body ////////////////////
-	Msg	("A mi ni hera tut ne chitaem (m_u16NumItems == %d)",m_u16NumItems);
+	EngineLog	("A mi ni hera tut ne chitaem (m_u16NumItems == %d)",m_u16NumItems);
 	{
 		m_BoneDataSize = tNetPacket.r_u8();
 		u32 BodyDataSize = 24 + m_BoneDataSize*m_u16NumItems;

@@ -31,7 +31,7 @@ void CStalkerAnimationManager::global_play_callback			(CBlend *blend)
 	pair.on_animation_end		();
 
 //	std::pair<LPCSTR,LPCSTR>	pair_id = smart_cast<IKinematicsAnimated*>(object->Visual())->LL_MotionDefName_dbg(blend->motionID);
-//	Msg							("[%6d] global callback [%s][%s]", Device.dwTimeGlobal, pair_id.first, pair_id.second);
+//	EngineLog							("[%6d] global callback [%s][%s]", Device.dwTimeGlobal, pair_id.first, pair_id.second);
 
 	if (!manager.m_global_callback)
 		return;

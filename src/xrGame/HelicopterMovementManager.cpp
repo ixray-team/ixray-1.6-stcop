@@ -160,7 +160,7 @@ bool SHeliMovementState::AlreadyOnPoint()
 		res = new_dist>dist;
 	}
 //	if(res)
-//		Msg("--------OnPoint id=[%d] dist=[%f]", currPatrolVertex->vertex_id(), dist);
+//		EngineLog("--------OnPoint id=[%d] dist=[%f]", currPatrolVertex->vertex_id(), dist);
 
 	return res;
 }

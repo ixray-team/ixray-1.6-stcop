@@ -99,7 +99,7 @@ void stats_submitter::shedule_Update(u32 dt)
 {
 	VERIFY(m_fullgs_obj && m_atlas_obj);
 #ifdef DEBUG
-	Msg("--- GameSpy core and atlas thinking ...");
+	EngineLog("--- GameSpy core and atlas thinking ...");
 #endif
 	m_fullgs_obj->CoreThink(10);	//10 milliseconds on update
 	m_atlas_obj->Think();
@@ -110,10 +110,10 @@ void __stdcall stats_submitter::onlylog_operation(bool const result, char const 
 {
 	if (!result)
 	{
-		Msg("! Store operation ERROR: %s", err_descr ? err_descr : "unknown");
+		EngineLog("! Store operation ERROR: %s", err_descr ? err_descr : "unknown");
 		return;
 	}
-	Msg("* Store operation successfullly complete.");
+	EngineLog("* Store operation successfullly complete.");
 }
 
 u32 const stats_submitter::operation_timeout_value = 60000; //60 seconds

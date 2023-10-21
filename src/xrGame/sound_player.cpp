@@ -174,7 +174,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 	CSoundCollectionParamsFull	&sound = (*I).second.first;
 	if ((*I).second.second->m_sounds.empty()) {
 #ifdef DEBUG
-		Msg						("- There are no sounds in sound collection \"%s\" with internal type %d (sound_script = %d)",*sound.m_sound_prefix,internal_type,StalkerSpace::eStalkerSoundScript);
+		EngineLog						("- There are no sounds in sound collection \"{}\" with internal type {} (sound_script = {})",*sound.m_sound_prefix,internal_type,(int)StalkerSpace::eStalkerSoundScript);
 #endif
 		return;
 	}
@@ -267,7 +267,7 @@ CSoundPlayer::CSoundCollection::CSoundCollection	(const CSoundCollectionParams &
 	}
 #ifdef DEBUG
 	if (m_sounds.empty())
-		Msg								("- There are no sounds with prefix %s",*params.m_sound_prefix);
+		EngineLog								("- There are no sounds with prefix %s",*params.m_sound_prefix);
 #endif
 }
 

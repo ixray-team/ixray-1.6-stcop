@@ -36,7 +36,7 @@ CALifeSpawnRegistry::~CALifeSpawnRegistry	()
 
 void CALifeSpawnRegistry::save				(IWriter &memory_stream)
 {
-	Msg							("* Saving spawns...");
+	EngineLog							("* Saving spawns...");
 	memory_stream.open_chunk	(SPAWN_CHUNK_DATA);
 	
 	memory_stream.open_chunk	(0);
@@ -56,7 +56,7 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, LPCSTR game_name)
 	R_ASSERT					(FS.exist(game_name));
 
 	IReader						*chunk, *chunk0;
-	Msg							("* Loading spawn registry...");
+	EngineLog							("* Loading spawn registry...");
 	R_ASSERT2					(file_stream.find_chunk(SPAWN_CHUNK_DATA),"Cannot find chunk SPAWN_CHUNK_DATA!");
 	chunk0						= file_stream.open_chunk(SPAWN_CHUNK_DATA);
 	
@@ -80,7 +80,7 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, LPCSTR game_name)
 
 void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 {
-	Msg							("* Loading spawn registry...");
+	EngineLog							("* Loading spawn registry...");
 	m_spawn_name				= spawn_name;
 	string_path					file_name;
 	R_ASSERT3					(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"),"Can't find spawn file:",*m_spawn_name);
@@ -126,7 +126,7 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 
 		dummy					*_dummy = (dummy*)((void*)base->m_self.m_impl);
 		lua_State				**_state = &_dummy->state;
-		Msg						("0x%08x",*(int*)&_state);
+		EngineLog						("0x%08x",*(int*)&_state);
 		break;
 	}
 #endif
@@ -154,7 +154,7 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 
 	build_root_spawns			();
 
-	Msg							("* %d spawn points are successfully loaded",m_spawns.vertex_count());
+	EngineLog							("* {} spawn points are successfully loaded",m_spawns.vertex_count());
 }
 
 void CALifeSpawnRegistry::save_updates		(IWriter &stream)

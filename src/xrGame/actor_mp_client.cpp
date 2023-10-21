@@ -59,7 +59,7 @@ void CActorMP::use_booster(NET_Packet &packet)
 	VERIFY2(tmp_booster, "using unknown or deleted booster");
 	if (!tmp_booster)
 	{
-		Msg("! ERROR: trying to use unkown booster object, ID = %d", tmp_booster_id);
+		EngineLog("! ERROR: trying to use unkown booster object, ID = {}", tmp_booster_id);
 		return;
 	}
 
@@ -67,7 +67,7 @@ void CActorMP::use_booster(NET_Packet &packet)
 	VERIFY2(tmp_eatable, "using not eatable object");
 	if (!tmp_eatable)
 	{
-		Msg("! ERROR: trying to use not eatable object, ID = %d", tmp_booster_id);
+		EngineLog("! ERROR: trying to use not eatable object, ID = {}", tmp_booster_id);
 		return;
 	}
 	tmp_eatable->UseBy(this);

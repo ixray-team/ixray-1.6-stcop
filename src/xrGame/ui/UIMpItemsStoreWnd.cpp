@@ -50,7 +50,7 @@ void CStoreHierarchy::LoadLevel(CUIXml& xml, int index, item* _item, int depth_l
 	buff[0] = 0;
 	for(int c = 0; c<depth_level; ++c) xr_strcat(buff,"-");
 #ifndef MASTER_GOLD
-	Msg("%s%s",buff,_item->m_name.c_str());
+	EngineLog("%s%s",buff,_item->m_name.c_str());
 #endif // #ifndef MASTER_GOLD
 
 	int cnt				= xml.GetNodesNum("level", index, "level");
@@ -100,9 +100,9 @@ void CStoreHierarchy::InitItemsInGroup(const shared_str& sect, item* _itm)
 			VERIFY3(g_mp_restrictions.GetItemGroup(buff).size(),"item has no group in restrictions", buff);
 		}
 #ifndef MASTER_GOLD
-		Msg("group[%s]", _itm->m_name.c_str());
-		Msg("items[%s]", v.c_str());
-		Msg("");
+		EngineLog("group[%s]", _itm->m_name.c_str());
+		EngineLog("items[%s]", v.c_str());
+		EngineLog("");
 #endif // #ifndef MASTER_GOLD
 	}else
 		for(u32 i=0; i<cnt;++i)

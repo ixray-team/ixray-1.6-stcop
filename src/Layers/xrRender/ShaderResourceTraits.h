@@ -142,7 +142,7 @@
 			sh_map.erase(I);
 			return;
 		}
-		Msg	("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
+		EngineLog("! ERROR: Failed to find compiled geometry shader '{}'", *sh->cName);
 	}
 
 #endif

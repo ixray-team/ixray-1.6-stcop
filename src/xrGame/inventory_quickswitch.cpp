@@ -170,7 +170,7 @@ bool CInventory::ActivateNextItemInActiveSlot()
 	P.w_u16								(m_iActiveSlot);
 	new_item->object().u_EventSend		(P);
 
-//	Msg( "Weapon change" );
+//	EngineLog( "Weapon change" );
 	return true;
 }
 

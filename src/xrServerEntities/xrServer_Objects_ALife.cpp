@@ -146,7 +146,7 @@ void	SFillPropData::load			()
 		{
 			location_colors[N]  = color;
 		}else
-			Msg("! invalid record format in [graph_points_draw_color_palette] %s=%s",N,V);
+			EngineLog("! invalid record format in [graph_points_draw_color_palette] %s=%s",N,V);
 	}
     
 	// level names/ids
@@ -1246,7 +1246,7 @@ void CSE_ALifeObjectPhysic::UPDATE_Write	(NET_Packet	&tNetPacket)
 		}
 
 	}
-//.	Msg("--- Sync PH [%d].", ID);
+//.	EngineLog("--- Sync PH [%d].", ID);
 	tNetPacket.w_u8(1);	//not freezed - doesn't mean anything..
 
 #ifdef XRGAME_EXPORTS
@@ -1556,7 +1556,7 @@ bool CSE_ALifeObjectHangingLamp::validate			()
 	if (flags.test(flR1) || flags.test(flR2))
 		return					(true);
 
-	Msg							("! Render type is not set properly!");
+	EngineLog							("! Render type is not set properly!");
 	return						(false);
 }
 

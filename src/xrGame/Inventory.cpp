@@ -312,12 +312,12 @@ bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict
 	}
 
 
-//.	Msg("To Slot %s[%d]", *pIItem->object().cName(), pIItem->object().ID());
+//.	EngineLog("To Slot %s[%d]", *pIItem->object().cName(), pIItem->object().ID());
 
 	if(!strict_placement && !CanPutInSlot(pIItem,slot_id)) 
 	{
 #ifdef _DEBUG
-		Msg("there is item %s[%d,%x] in slot %d[%d,%x]", 
+		EngineLog("there is item %s[%d,%x] in slot %d[%d,%x]", 
 				ItemFromSlot(pIItem->CurrSlot())->object().cName().c_str(), 
 				ItemFromSlot(pIItem->CurrSlot())->object().ID(), 
 				ItemFromSlot(pIItem->CurrSlot()), 

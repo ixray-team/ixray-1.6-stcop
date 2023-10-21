@@ -207,7 +207,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 #endif
 
 #if 0
-	Msg			("CSpecificCharacter::load_shared() takes %f milliseconds",timer.GetElapsed_sec()*1000.f);
+	EngineLog			("CSpecificCharacter::load_shared() takes %f milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
 }
 

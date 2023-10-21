@@ -95,7 +95,7 @@ void CALifeGraphRegistry::attach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 {
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg						("[LSS] Attaching item [%s][%d] to [%s][%d]",item->base()->name_replace(),item->base()->ID,object.name_replace(),object.ID);
+		EngineLog("[LSS] Attaching item [{}][{}] to [{}][{}]",item->base()->name_replace(),item->base()->ID,object.name_replace(),object.ID);
 	}
 #endif
 	if (alife_query)
@@ -113,7 +113,7 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 {
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg						("[LSS] Detaching item [%s][%d] from [%s][%d]",item->base()->name_replace(),item->base()->ID,object.name_replace(),object.ID);
+		EngineLog("[LSS] Detaching item [{}][{}] from [{}][{}]",item->base()->name_replace(),item->base()->ID,object.name_replace(),object.ID);
 	}
 #endif
 	if (alife_query)
@@ -136,7 +136,7 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 #ifdef DEBUG
 		bool					value = std::find(object.children.begin(),object.children.end(),item->base()->ID) != object.children.end();
 		if (!value) {
-			Msg					("! ERROR: can't detach independant object. entity[%s:%d], parent[%s:%d], section[%s]",
+			EngineLog("! ERROR: can't detach independant object. entity[{}:{}], parent[{}:{}], section[{}]",
 				item->base()->name_replace(),item->base()->ID,object.name_replace(),object.ID, *item->base()->s_name);
 		}
 #endif // DEBUG
@@ -148,7 +148,7 @@ void CALifeGraphRegistry::add	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH
 {
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg						("[LSS] adding object [%s][%d] to graph point %d",object->name_replace(),object->ID,game_vertex_id);
+		EngineLog("[LSS] adding object [{}]{}] to graph point {}",object->name_replace(),object->ID,game_vertex_id);
 	}
 #endif
 	if (!object->m_bOnline && object->used_ai_locations() /**&& object->interactive()/**/) {
@@ -171,7 +171,7 @@ void CALifeGraphRegistry::remove	(CSE_ALifeDynamicObject *object, GameGraph::_GR
 	if (object->used_ai_locations() /**&& object->interactive()/**/) {
 	#ifdef DEBUG
 		if (psAI_Flags.test(aiALife)) {
-			Msg					("[LSS] removing object [%s][%d] from graph point %d",object->name_replace(),object->ID,game_vertex_id);
+			EngineLog("[LSS] removing object [{}][{}] from graph point {}",object->name_replace(),object->ID,game_vertex_id);
 		}
 	#endif
 		m_objects[game_vertex_id].objects().remove(object->ID);

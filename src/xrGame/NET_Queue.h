@@ -99,7 +99,7 @@ public:
 		default: EventName = _itoa(E.type, tmp, 10); break;
 		}
 
-		Msg("Event %s to %d - at %d", *EventName, E.destination, E.timestamp);		
+		EngineLog("Event %s to %d - at %d", *EventName, E.destination, E.timestamp);		
 #endif
 		//-------------------------------------------
 		//*/

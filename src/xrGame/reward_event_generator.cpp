@@ -170,12 +170,12 @@ void __stdcall reward_event_generator::AddRewardTask(u32 award_id)
 	gamespy_gp::profile const * tmp_curr_prof		= tmp_lmngr->get_current_profile();
 	if (!tmp_curr_prof)
 	{
-		Msg("! ERROR: can't reward player - not logged in");
+		EngineLog("! ERROR: can't reward player - not logged in");
 		return;
 	}
 	if ((m_rewarded >= m_max_rewards) && (m_max_rewards != u32(-1)))
 	{
-		Msg("! You have been rewarded by award [%s], but maximum rewards per game reached... sorry :(",
+		EngineLog("! You have been rewarded by award [%s], but maximum rewards per game reached... sorry :(",
 			gamespy_profile::get_award_name(tmp_award_type));
 		return;
 	}
@@ -187,7 +187,7 @@ void __stdcall reward_event_generator::AddRewardTask(u32 award_id)
 
 	if (!tmp_curr_prof->online())
 	{
-		Msg("* An offline player has been rewarded by [%s] award",
+		EngineLog("* An offline player has been rewarded by [{}] award",
 			get_award_name(tmp_award_type));
 		return;
 	}
@@ -204,7 +204,7 @@ void reward_event_generator::CommitBestResults()
 	gamespy_gp::profile const * tmp_curr_prof		= tmp_lmngr->get_current_profile();
 	if (!tmp_curr_prof)
 	{
-		Msg("! ERROR: can't submit best scores - not logged in");
+		EngineLog("! ERROR: can't submit best scores - not logged in");
 		return;
 	}
 	if (!tmp_curr_prof->online())

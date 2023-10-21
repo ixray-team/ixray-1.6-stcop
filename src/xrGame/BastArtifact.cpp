@@ -130,8 +130,8 @@ void CBastArtefact::shedule_Update(u32 dt)
 
 void CBastArtefact::UpdateCLChild() 
 {
-	//Log						("--- A - CBastArtefact",*cName());
-	//Log						("--- A - CBastArtefact",renderable.xform);
+	//EngineLog						("--- A - CBastArtefact",*cName());
+	//EngineLog						("--- A - CBastArtefact",renderable.xform);
 
 	//современем энергия по немногу тоже уменьшается
 	if(m_fEnergy>0) m_fEnergy -= m_fEnergyDecreasePerTime*Device.fTimeDelta;

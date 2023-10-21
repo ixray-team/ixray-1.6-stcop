@@ -54,7 +54,7 @@ void profile_store::shedule_Update(u32 dt)
 {
 	VERIFY(m_fullgs_obj);
 #ifdef DEBUG
-	Msg("--- GameSpy core (SAKE) thinking ...");
+	EngineLog("--- GameSpy core (SAKE) thinking ...");
 #endif
 	m_fullgs_obj->CoreThink(10);	//10 milliseconds on update
 }
@@ -94,7 +94,7 @@ void profile_store::load_current_profile_raw(load_prof_params_t const & args,
 {
 	if (m_complete_cb)
 	{
-		Msg("! ERROR: loading already in progress.");
+		EngineLog("! ERROR: loading already in progress.");
 		if (complete_cb)
 		{
 			complete_cb(false, "mp_loading_already_in_progress");
@@ -237,7 +237,7 @@ void profile_store::loaded_fields(bool const result, char const * err_descr)
 {
 	if (!m_complete_cb)
 	{
-		Msg("WARNING: loading awards terminated by user");
+		EngineLog("WARNING: loading awards terminated by user");
 		VERIFY(!m_progress_indicator);
 		Engine.Sheduler.Unregister(this);
 		return;
@@ -270,20 +270,20 @@ void __stdcall	profile_store::onlylog_operation(bool const result, char const * 
 {
 	if (!result)
 	{
-		Msg("! Profile store ERROR: %s", descr ? descr : "unknown");
+		EngineLog("! Profile store ERROR: %s", descr ? descr : "unknown");
 		return;
 	}
-	Msg("* Profile store: %s", descr ? descr : "");
+	EngineLog("* Profile store: %s", descr ? descr : "");
 }
 
 void __stdcall profile_store::onlylog_completion(bool const result, char const * err_descr)
 {
 	if (!result)
 	{
-		Msg("! Profile loading ERROR: %s", err_descr ? err_descr : "unknown");
+		EngineLog("! Profile loading ERROR: %s", err_descr ? err_descr : "unknown");
 		return;
 	}
-	Msg("* Profile loading successfully complete");
+	EngineLog("* Profile loading successfully complete");
 }
 
 #ifdef DEBUG

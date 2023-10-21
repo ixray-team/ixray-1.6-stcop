@@ -28,7 +28,7 @@ void player_account::load_account()
 
 	if (!tmp_curr_prof)
 	{
-		Msg("* WARNING: player not logged in");
+		EngineLog("* WARNING: player not logged in");
 	}
 
 	if (tmp_curr_prof)

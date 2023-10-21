@@ -149,7 +149,7 @@ CSE_ALifeOnlineOfflineGroup::MEMBER *CSE_ALifeOnlineOfflineGroup::member(ALife::
 	MEMBERS::iterator			I = m_members.find(member_id);
 	if (I == m_members.end()) {
 		if (!no_assert)
-			Msg					("! There is no member with id %d in the OnlineOfflineGroup id %d",member_id,ID);
+			EngineLog					("! There is no member with id %d in the OnlineOfflineGroup id %d",member_id,ID);
 		VERIFY					(no_assert);
 		return					(0);
 	}

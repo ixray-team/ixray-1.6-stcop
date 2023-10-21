@@ -28,7 +28,7 @@ CGameSpy_Browser::CGameSpy_Browser()
 	m_pServerList = NULL;
 	//-------------------------
 	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
+	EngineLog("Loading DLL: {}",g_name);
 	m_hGameSpyDLL			= LoadLibraryA	(g_name);
 	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
 	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
@@ -67,10 +67,10 @@ void	CGameSpy_Browser::InitInternalData(HMODULE hGameSpyDLL)
 	m_pGSBrowser = xrGS_ServerBrowserNewA(SBFalse, SBCallback, this);
 	if (!m_pGSBrowser)
 	{
-		Msg("! Unable to init Server Browser!");
+		EngineLog("! Unable to init Server Browser!");
 	}
 	//	else
-	//		Msg("- GS Server Browser Inited!");
+	//		EngineLog("- GS Server Browser Inited!");
 
 
 };
@@ -196,7 +196,7 @@ void			CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 	if((state != sb_connected) && (state != sb_disconnected))
 	{
 		xrGS_ServerBrowserHalt(m_pGSBrowser);
-		Msg("xrGSB Refresh Stopped\n");		
+		EngineLog("xrGSB Refresh Stopped\n");		
 	};
 	xrGS_ServerBrowserClear(m_pGSBrowser);
 
@@ -227,7 +227,7 @@ void			CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 
 	if (error != sbe_noerror)
 	{
-		Msg("! xrGSB Error - %s", xrGS_ServerBrowserErrorDescA(m_pGSBrowser, error));
+		EngineLog("! xrGSB Error - %s", xrGS_ServerBrowserErrorDescA(m_pGSBrowser, error));
 	}
 };
 
@@ -240,7 +240,7 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	case sbc_serveradded : //a server was added to the list, may just have an IP & port at this point
 		{
 #ifdef _DEBUG
-//.			Msg("sbc_serveradded");
+//.			EngineLog("sbc_serveradded");
 #endif
 //			pGSBrowser->SortBrowserByPing();
 //			pGSBrowser->UpdateServerList();			
@@ -248,7 +248,7 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	case sbc_serverupdated : //server information has been updated - either basic or full information is now available about this server
 		{
 #ifdef _DEBUG
-//.			Msg("sbc_serverupdated");
+//.			EngineLog("sbc_serverupdated");
 #endif
 //			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
@@ -256,7 +256,7 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	case sbc_serverupdatefailed : //an attempt to retrieve information about this server, either directly or from the master, failed
 		{
 #ifdef _DEBUG
-//.			Msg("sbc_serverupdatefailed");
+//.			EngineLog("sbc_serverupdatefailed");
 #endif
 //			pGSBrowser->OnUpdateFailed(server);
 //			pGSBrowser->SortBrowserByPing();
@@ -265,7 +265,7 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	case sbc_serverdeleted : //a server was removed from the list
 		{
 #ifdef _DEBUG
-			Msg("sbc_serverdeleted");
+			EngineLog("sbc_serverdeleted");
 #endif
 //			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
@@ -273,7 +273,7 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	case sbc_updatecomplete : //the server query engine is now idle 
 		{
 #ifdef _DEBUG
-//.			Msg("sbc_updatecomplete");
+//.			EngineLog("sbc_updatecomplete");
 #endif
 //			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
@@ -281,13 +281,13 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	case sbc_queryerror		://the master returned an error string for the provided query
 		{
 #ifdef _DEBUG
-			Msg("sbc_queryerror");
+			EngineLog("sbc_queryerror");
 #endif
 		}break;
 	case sbc_serverchallengereceived:
 		{
 #ifdef _DEBUG
-//.			Msg("sbc_serverchallengereceived");
+//.			EngineLog("sbc_serverchallengereceived");
 #endif
 		}break;
 	default:

@@ -181,11 +181,6 @@ IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const p
 
 std::ostream& operator<<(std::ostream& os, const profile_timer_script& pt) { return os << pt.time(); }
 
-void MyLog(const char* A)
-{
-	Log(A);
-}
-
 #ifdef XRGAME_EXPORTS
 ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
 ICF	u32	script_time_global_async	()	{ return Device.TimerAsync_MMT(); }
@@ -193,8 +188,9 @@ ICF	u32	script_time_global_async	()	{ return Device.TimerAsync_MMT(); }
 ICF	u32	script_time_global	()	{ return 0; }
 ICF	u32	script_time_global_async	()	{ return 0; }
 #endif
-void SemiLog(const char* Msg) {
-	Log(Msg);
+
+void SemiLog(const char* Log) {
+	EngineLog(Log);
 }
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
@@ -226,7 +222,8 @@ void CScriptEngine::script_register(lua_State *L)
 		def("time_global_async",				&script_time_global_async)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
-		def("TinyLog",							&MyLog)
+
+		def("SemiLog",							&SemiLog)
 #endif // #ifdef XRGAME_EXPORTS
 	];
 }

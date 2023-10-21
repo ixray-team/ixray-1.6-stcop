@@ -11,6 +11,7 @@
 #include "gameobject.h"
 #include "../include/xrrender/kinematics.h"
 #include "animation_movement_controller.h"
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 
 using aimers::base;
 
@@ -58,7 +59,7 @@ void base::aim_at_position		(
 	)
 {
 #if 0
-	Msg									(
+	EngineLog									(
 		"[%d][%s] bone_position[%f][%f][%f] object_position[%f][%f][%f] object_direction[%f][%f][%f]",
 		Device.dwFrame,
 		m_animated.LL_MotionDefName_dbg(m_animation_id).first,

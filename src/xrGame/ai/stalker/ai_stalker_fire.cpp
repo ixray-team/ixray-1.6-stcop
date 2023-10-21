@@ -102,10 +102,8 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 {
 //.	VERIFY				(inventory().ActiveItem());
-	if (!inventory().ActiveItem()) {
-#ifdef DEBUG
-		Msg				("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
-#endif // DEBUG
+	if (!inventory().ActiveItem()) 
+	{
 		P				= Position();
 		D				= Fvector().set(0.f,0.f,1.f);
 		return;
@@ -297,7 +295,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 	#ifdef DEBUG
 				tpKinematics->LL_GetBoneInstance	(HDS.bone());
 				if (HDS.bone() >= tpKinematics->LL_BoneCount()) {
-					Msg					("tpKinematics has no bone_id %d",HDS.bone());
+					EngineLog("tpKinematics has no bone_id {}",HDS.bone());
 					HDS._dump			();
 				}
 	#endif
@@ -1102,7 +1100,7 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
 	if (!agent_manager().member().registered_in_combat(this))
 		return						(false);
 
-//	Msg								("%6d executing critical hit",Device.dwTimeGlobal);
+//	EngineLog								("%6d executing critical hit",Device.dwTimeGlobal);
 	animation().global().make_inactual	();
 	return							(true);
 }

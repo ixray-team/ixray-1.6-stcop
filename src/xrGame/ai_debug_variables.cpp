@@ -82,11 +82,11 @@ void   show_var (const char* name)
 
 	if ( v.type == var::real )
 	{
-		Msg("%s = %f", (*it).first.c_str(), v.fval);
+		EngineLog("{} = {}", (*it).first.c_str(), v.fval);
 	}
 	else if ( v.type == var::string )
 	{
-		Msg("%s = \"%s\"", (*it).first.c_str(), v.str);
+		EngineLog("{} = \"{}\"", (*it).first.c_str(), v.str);
 	}
 }
 

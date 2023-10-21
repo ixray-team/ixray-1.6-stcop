@@ -13,7 +13,7 @@
 
 CScriptEffector::~CScriptEffector	()
 {
-	Msg								("CScriptEffector::~CScriptEffector() called");
+	EngineLog								("CScriptEffector::~CScriptEffector() called");
 }
 
 BOOL CScriptEffector::Process		(SPPInfo	&pp)

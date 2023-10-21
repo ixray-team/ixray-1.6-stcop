@@ -89,7 +89,7 @@ float CEnemyManager::do_evaluate			(const CEntityAlive *object) const
 
 float CEnemyManager::evaluate				(const CEntityAlive *object) const
 {
-//	Msg						("[%6d] enemy manager %s evaluates %s",Device.dwTimeGlobal,*m_object->cName(),*object->cName());
+//	EngineLog						("[%6d] enemy manager %s evaluates %s",Device.dwTimeGlobal,*m_object->cName(),*object->cName());
 
 	bool					actor = (!!smart_cast<CActor const*>(object));
 	if (actor)
@@ -182,7 +182,7 @@ void CEnemyManager::set_ready_to_save		()
 	if (m_ready_to_save)
 		return;
 
-//	Msg							("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
+//	EngineLog							("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
 	Level().autosave_manager().dec_not_ready();
 	m_ready_to_save				= true;
 }
@@ -333,7 +333,7 @@ void CEnemyManager::process_wounded			(bool &only_wounded)
 	if (only_wounded) {
 #if 0//def _DEBUG
 		if (g_enemy_manager_second_update)
-			Msg					("%6d ONLY WOUNDED LEFT %s",Device.dwTimeGlobal,*m_object->cName());
+			EngineLog					("%6d ONLY WOUNDED LEFT %s",Device.dwTimeGlobal,*m_object->cName());
 #endif // _DEBUG
 		return;
 	}
@@ -406,7 +406,7 @@ void CEnemyManager::update					()
 	START_PROFILE("Memory Manager/enemies::update")
 
 	if (!m_ready_to_save) {
-//		Msg						("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
+//		EngineLog						("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
 		Level().autosave_manager().dec_not_ready();
 	}
 
@@ -420,13 +420,13 @@ void CEnemyManager::update					()
 	}
 
 	if (!m_ready_to_save) {
-//		Msg						("%6d %s INcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()+1);
+//		EngineLog						("%6d %s INcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()+1);
 		Level().autosave_manager().inc_not_ready();
 	}
 
 #if 0//def _DEBUG
 	if (g_enemy_manager_second_update && selected() && smart_cast<const CAI_Stalker*>(selected()) && smart_cast<const CAI_Stalker*>(selected())->wounded())
-		Msg						("%6d WOUNDED CHOOSED %s",Device.dwTimeGlobal,*m_object->cName());
+		EngineLog						("%6d WOUNDED CHOOSED %s",Device.dwTimeGlobal,*m_object->cName());
 #endif // _DEBUG
 
 	STOP_PROFILE

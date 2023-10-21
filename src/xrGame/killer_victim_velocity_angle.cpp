@@ -69,8 +69,8 @@ void killer_victim_angle::OnPlayerKilled(u16 killer_id,
 	victim_velocity.normalize	();
 	
 	m_killer_victim_angle_cos	= _abs(killer_dir.dotproduct(victim_velocity));
-	//Msg("* Killer victim angle cos: %1.3f", m_killer_victim_angle_cos);
-	//Msg("* Killer victim angle: %d", get_u32_param());
+	//EngineLog("* Killer victim angle cos: %1.3f", m_killer_victim_angle_cos);
+	//EngineLog("* Killer victim angle: %d", get_u32_param());
 }
 
 }//namespace award_system

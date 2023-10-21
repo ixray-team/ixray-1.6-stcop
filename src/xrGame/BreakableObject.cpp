@@ -241,7 +241,7 @@ void CBreakableObject::SendDestroy()
 	if (Local())	DestroyObject	();
 //	NET_Packet		P;
 //	u_EventGen		(P,GE_DESTROY,ID());
-//	Msg				("ge_destroy: [%d] - %s",ID(),*cName());
+//	EngineLog				("ge_destroy: [%d] - %s",ID(),*cName());
 //	if (Local())	u_EventSend			(P);
 	bRemoved=true;
 }

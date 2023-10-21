@@ -61,7 +61,7 @@ void login_manager::login_raw		(login_params_t const & login_args,
 
 	if (m_current_profile)
 	{
-		Msg("! WARNING: first you need to log out...");
+		EngineLog("! WARNING: first you need to log out...");
 		m_login_operation_cb(NULL, "mp_first_need_to_logout");
 		m_login_operation_cb.clear();
 		return;
@@ -104,7 +104,7 @@ void login_manager::login_offline(char const * nick, login_operation_cb logincb)
 {
 	if (m_login_operation_cb)
 	{
-		Msg("! WARNING: login in process...");
+		EngineLog("! WARNING: login in process...");
 		return;
 	}
 	if (!logincb)
@@ -118,7 +118,7 @@ void login_manager::login_offline(char const * nick, login_operation_cb logincb)
 	VERIFY2(!m_current_profile, "please, logout first (gs_logout)");
 	if (m_current_profile)
 	{
-		Msg("! WARNING: first you need to log out...");
+		EngineLog("! WARNING: first you need to log out...");
 		m_login_operation_cb(NULL, "mp_first_need_to_logout");
 		m_login_operation_cb.clear();
 		return;
@@ -143,7 +143,7 @@ void login_manager::login_offline(char const * nick, login_operation_cb logincb)
 
 	if (!has_non_white_chars)
 	{
-		Msg("! ERROR: nick name is empty");
+		EngineLog("! ERROR: nick name is empty");
 		m_login_operation_cb(NULL, "mp_nick_name_not_valid");
 		m_login_operation_cb.clear();
 		return;
@@ -180,14 +180,14 @@ void login_manager::set_unique_nick_raw(set_unick_params_t const & new_unick,
 	
 	if (!m_current_profile)
 	{
-		Msg("! WARNING: first you need to log in...");
+		EngineLog("! WARNING: first you need to log in...");
 		logincb(NULL, "mp_first_need_to_login");
 		return;
 	}
 
 	if (!new_unick.m_t1.size())
 	{
-		Msg("! ERROR: nick name is empty");
+		EngineLog("! ERROR: nick name is empty");
 		logincb(NULL, "mp_unique_nick_not_valid");
 		return;
 	}
@@ -227,7 +227,7 @@ void login_manager::logout()
 		m_gamespy_gp->Disconnect	(); 
 	}
 	delete_profile_obj();
-	Msg	("* GameSpy: Logged out.");
+	EngineLog	("* GameSpy: Logged out.");
 }
 
 void login_manager::reinit_connection_tasks()
@@ -235,17 +235,17 @@ void login_manager::reinit_connection_tasks()
 	account_manager* tmp_acc_mngr = MainMenu()->GetAccountMngr();
 	if (tmp_acc_mngr->is_get_account_profiles_active())
 	{
-		Msg("! WARNING: reiniting get account profiles");
+		EngineLog("! WARNING: reiniting get account profiles");
 		tmp_acc_mngr->reinit_get_account_profiles();
 	}
 	if (tmp_acc_mngr->is_email_searching_active())
 	{
-		Msg("! WARNING: reiniting searching emails");
+		EngineLog("! WARNING: reiniting searching emails");
 		tmp_acc_mngr->reinit_email_searching();
 	}
 	if (tmp_acc_mngr->is_suggest_unique_nicks_active())
 	{
-		Msg("! WARNING: reiniting suggesting unique nicks");
+		EngineLog("! WARNING: reiniting suggesting unique nicks");
 		tmp_acc_mngr->reinit_suggest_unique_nicks();
 	}
 }
@@ -260,11 +260,11 @@ void __stdcall login_manager::only_log_login(profile const * res_profile,
 {
 	if (!res_profile)
 	{
-		Msg("! GameSpy login ERROR: %s", 
+		EngineLog("! GameSpy login ERROR: %s", 
 			description ? description : "unknown");
 		return;
 	}
-	Msg("* GameSpy login operation success ! Hello %s !", res_profile->m_unique_nick.c_str());
+	EngineLog("* GameSpy login operation success ! Hello %s !", res_profile->m_unique_nick.c_str());
 }
 
 void __cdecl login_manager::setunick_cb(GPConnection * connection,
@@ -319,7 +319,7 @@ void __cdecl login_manager::login_cb(GPConnection * connection,
 	VERIFY(tmp_lticket_res == GP_NO_ERROR);
 	if (tmp_lticket_res != GP_NO_ERROR)
 	{
-		Msg("! ERROR: failed to get login ticket");
+		EngineLog("! ERROR: failed to get login ticket");
 		tmp_ticket_dest[0] = 0;
 	}
 
@@ -375,7 +375,7 @@ void login_manager::save_email_to_registry(char const * email)
 {
 	if (!email || (xr_strlen(email) == 0))
 	{
-		Msg("! ERROR: email is empty");
+		EngineLog("! ERROR: email is empty");
 		return;
 	}
 	WriteRegistry_StrValue(REGISTRY_VALUE_USEREMAIL, email);
@@ -396,7 +396,7 @@ void login_manager::save_password_to_registry(char const * password)
 	using namespace secure_messaging;
 	if (!password || (xr_strlen(password) == 0))
 	{
-		Msg("! ERROR: password is empty");
+		EngineLog("! ERROR: password is empty");
 		return;
 	}
 

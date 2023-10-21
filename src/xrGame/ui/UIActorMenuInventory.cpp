@@ -270,7 +270,7 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					pl.slot_id	= GRENADE_SLOT;
 				}
 #ifndef MASTER_GOLD
-				Msg("item place [%d]", pl);
+				EngineLog("item place [{}]", pl.value);
 #endif // #ifndef MASTER_GOLD
 
 				if(pl.type==eItemPlaceSlot)
@@ -341,7 +341,7 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					if(RemoveItemFromList(curr, pItem))
 					{
 #ifndef MASTER_GOLD
-						Msg("all ok. item [%d] removed from list", pItem->object_id());
+						EngineLog("all ok. item [%d] removed from list", pItem->object_id());
 #endif // #ifndef MASTER_GOLD
 						break;
 					}

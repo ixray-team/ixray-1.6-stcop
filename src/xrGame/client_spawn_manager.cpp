@@ -160,15 +160,15 @@ void CClientSpawnManager::dump	() const
 	if (m_registry.empty())
 		return;
 
-	Msg								("dumping client spawn manager(%d objects being waited):",m_registry.size());
+	EngineLog								("dumping client spawn manager(%d objects being waited):",m_registry.size());
 	REQUEST_REGISTRY::const_iterator	I = m_registry.begin();
 	REQUEST_REGISTRY::const_iterator	E = m_registry.end();
 	for ( ; I != E; ++I) {
-		Msg							("[%d], i.e. object with id %d left with hanging callbacks on it",(*I).first,(*I).first);
+		EngineLog							("[%d], i.e. object with id %d left with hanging callbacks on it",(*I).first,(*I).first);
 		REQUESTED_REGISTRY::const_iterator	i = (*I).second.begin();
 		REQUESTED_REGISTRY::const_iterator	e = (*I).second.end();
 		for ( ; i != e; ++i)
-			Msg						("[%d][%d], i.e. object with id %d waits for object with id %d",(*I).first,(*i).first,(*i).first,(*I).first);
+			EngineLog						("[%d][%d], i.e. object with id %d waits for object with id %d",(*I).first,(*i).first,(*i).first,(*I).first);
 	}
 }
 
@@ -178,12 +178,12 @@ void CClientSpawnManager::dump		(ALife::_OBJECT_ID	requesting_id) const
 	REQUEST_REGISTRY::const_iterator		E = m_registry.end();
 	for ( ; I != E; ++I) {
 		if ((*I).first == requesting_id)
-			Msg								("! CClientSpawnManager::dump[hanging id %d]",requesting_id);
+			EngineLog								("! CClientSpawnManager::dump[hanging id %d]",requesting_id);
 
 		REQUESTED_REGISTRY::const_iterator	i = (*I).second.begin();
 		REQUESTED_REGISTRY::const_iterator	e = (*I).second.end();
 		for ( ; i != e; ++i)
-			Msg								("! CClientSpawnManager::dump[id %d waits for %d]",requesting_id,(*i).first);
+			EngineLog								("! CClientSpawnManager::dump[id %d waits for %d]",requesting_id,(*i).first);
 	}
 }
 #endif // DEBUG

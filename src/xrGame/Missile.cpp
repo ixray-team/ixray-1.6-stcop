@@ -508,7 +508,7 @@ void CMissile::Throw()
 	m_fake_missile->m_throw_direction	= m_throw_direction;
 	m_fake_missile->m_throw_matrix		= m_throw_matrix;
 //.	m_fake_missile->m_throw				= true;
-//.	Msg("fm %d",m_fake_missile->ID());
+//.	EngineLog("fm %d",m_fake_missile->ID());
 		
 	CInventoryOwner						*inventory_owner = smart_cast<CInventoryOwner*>(H_Parent());
 	VERIFY								(inventory_owner);

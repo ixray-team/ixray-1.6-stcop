@@ -290,15 +290,15 @@ void	animation_movement_controller::NewBlend	( CBlend* B, const Fmatrix &new_mat
 	LPCSTR new_anim_set		= m_pKinematicsC->dcast_PKinematicsAnimated( )->LL_MotionDefName_dbg( B->motionID ).second;
 	
 	if( ControlBlend( )->playing )
-		Msg( " ! obj movement anim not yet ended anim: %s anim set: %s \n and already another started anim: %s anim set: %s", 	
+		EngineLog( " ! obj movement anim not yet ended anim: %s anim set: %s \n and already another started anim: %s anim set: %s", 	
 			new_anim_name,new_anim_set,old_anim_name,old_anim_set
 			);
 	if( !ControlBlend( )->stop_at_end )
-		Msg( " ! obj movement anim  : %s anim set: %s  is not stop-at-end but fallowed in chain by another obj movement anim: %s anim set: %s", 	
+		EngineLog( " ! obj movement anim  : %s anim set: %s  is not stop-at-end but fallowed in chain by another obj movement anim: %s anim set: %s", 	
 			old_anim_name,old_anim_set,new_anim_name,new_anim_set
 			);
 	if( !B->stop_at_end )
-		Msg( " ! obj movement anim  : %s anim set: %s  is not stop-at-end but fallowing after another obj movement anim: %s anim set: %s", 	
+		EngineLog( " ! obj movement anim  : %s anim set: %s  is not stop-at-end but fallowing after another obj movement anim: %s anim set: %s", 	
 			new_anim_name,new_anim_set,old_anim_name,old_anim_set
 			);
 #endif
@@ -375,7 +375,7 @@ void animation_movement_controller::RootBoneCallback( CBoneInstance* B )
 	//}
 
 	//else
-	//	Msg("blending");
+	//	EngineLog("blending");
 	B->mTransform.set( Fidentity );
 
 
@@ -393,7 +393,7 @@ bool	animation_movement_controller::IsActive() const
 void animation_movement_controller::BlendDestroy		( CBlend& blend )
 {
 	VERIFY( m_control_blend );
-	//Msg("deinit");
+	//EngineLog("deinit");
 	if( m_control_blend == &blend )
 							deinitialize();
 }

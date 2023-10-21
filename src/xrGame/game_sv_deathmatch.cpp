@@ -761,7 +761,7 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	VERIFY				(E);
 	u32		Team		= RP_2_Use(E);
 #ifdef DEBUG
-	Msg("--- Deathmatch RPoint for %s uses team %d", ps_who->getName(), Team);
+	EngineLog("--- Deathmatch RPoint for %s uses team %d", ps_who->getName(), Team);
 #endif // #ifdef DEBUG
 	VERIFY				(rpoints[Team].size());
 
@@ -969,7 +969,7 @@ void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 	{
 		s16	ItemID;
 		P.r_s16(ItemID);
-//		Msg("------------- Player wants %d", ItemID);
+//		EngineLog("------------- Player wants %d", ItemID);
 		ItemsDesired.push_back(ItemID);
 	};
 
@@ -1045,7 +1045,7 @@ void	game_sv_Deathmatch::SpawnWeaponsForActor(CSE_Abstract* pE, game_PlayerState
 	{
 		u16 ItemID			= ps->pItemList.front();
 #ifdef DEBUG
-		Msg("--- Server: spawning item [%d] for actor [%s]", ItemID, ps->getName());
+		EngineLog("--- Server: spawning item [%d] for actor [%s]", ItemID, ps->getName());
 #endif // #ifdef DEBUG
 		SpawnWeapon4Actor	(pA->ID, *m_strWeaponsData->GetItemName(ItemID& 0x00FF), u8((ItemID & 0xFF00)>>0x08), ps->pItemList);
 		//Game().m_WeaponUsageStatistic->OnWeaponBought(ps, *m_strWeaponsData->GetItemName(ItemID& 0x00FF));
@@ -1151,7 +1151,7 @@ void game_sv_Deathmatch::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 		};
 	};
 	xr_strcat(SkinName, ".ogf");
-	Msg("* Skin - %s", SkinName);
+	EngineLog("* Skin - %s", SkinName);
 	int len = xr_strlen(SkinName);
 	R_ASSERT2(len < 64, "Skin Name is too LONG!!!");
 	pV->set_visual(SkinName);
@@ -1561,7 +1561,7 @@ void	game_sv_Deathmatch::StartAnomalies			(int AnomalySet)
 		Send_EventPack_for_AnomalySet(m_dwLastAnomalySetID, CCustomZone::eZoneStateIdle); //Idle
 	m_dwLastAnomalyStartTime = Level().timeServer();
 #ifdef DEBUG
-	Msg("Anomaly Set %d Activated", m_dwLastAnomalySetID);
+	EngineLog("Anomaly Set %d Activated", m_dwLastAnomalySetID);
 #endif
 };
 
@@ -2043,7 +2043,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 	ANOMALIES_it It = std::find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(),pCustomZone->name_replace());
 	if (It == m_AnomaliesPermanent.end())
 	{
-		Msg("! Anomaly Not Found in any Set : %s", pCustomZone->name_replace());
+		EngineLog("! Anomaly Not Found in any Set : %s", pCustomZone->name_replace());
 
 		NET_Packet P;
 		u_EventGen		(P,GE_ZONE_STATE_CHANGE,eid_who);
@@ -2244,7 +2244,7 @@ void game_sv_Deathmatch::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector
 //	R_ASSERT2( pActor, make_string("Actor not found. actor_id = [%d]", actor->ID).c_str() );
 	VERIFY2  ( pActor, make_string("Actor not found. actor_id = [%d]", actor->ID).c_str() );
 	if ( !pActor ) {
-		Msg             ( "! ERROR: Actor not found. actor_id = [%d]", actor->ID );
+		EngineLog             ( "! ERROR: Actor not found. actor_id = [%d]", actor->ID );
 		return;
 	}
 
@@ -2258,7 +2258,7 @@ void game_sv_Deathmatch::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector
 		if (!item)
 		{
 #ifndef MASTER_GOLD
-			Msg("! ERROR: item from slot[%d] is NULL", active_slot);
+			EngineLog("! ERROR: item from slot[%d] is NULL", active_slot);
 #endif // #ifndef MASTER_GOLD
 			return;
 		}
@@ -2266,7 +2266,7 @@ void game_sv_Deathmatch::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector
 		if (!server_item)
 		{
 #ifndef MASTER_GOLD
-			Msg("! ERROR: server entity is NULL, object_id = [%d]", item->object_id());
+			EngineLog("! ERROR: server entity is NULL, object_id = [%d]", item->object_id());
 #endif // #ifndef MASTER_GOLD
 			return;
 		}

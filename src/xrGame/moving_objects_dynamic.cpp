@@ -133,12 +133,12 @@ void moving_objects::fill_nearest_moving		(moving_object *object)
 	float						radius = (max_linear_velocity + linear_velocity)*time_to_check;
 	m_tree->nearest				(object->position(),radius,m_nearest_moving);
 #if 0
-	Msg							("%6d nearest moving[%d] object[%s]", Device.dwFrame, m_nearest_moving.size(),object->object().cName().c_str());
+	EngineLog							("%6d nearest moving[%d] object[%s]", Device.dwFrame, m_nearest_moving.size(),object->object().cName().c_str());
 	{
 		NEAREST_MOVING::const_iterator	I = m_nearest_moving.begin();
 		NEAREST_MOVING::const_iterator	E = m_nearest_moving.end();
 		for ( ; I != E; ++I) {
-			Msg					("    %s",(*I)->object().cName().c_str());
+			EngineLog					("    %s",(*I)->object().cName().c_str());
 		}
 	}
 #endif // 0
@@ -568,7 +568,7 @@ void moving_objects::query_action_dynamic		(moving_object *object)
 	}
 
 #if 0//def DEBUG
-	Msg							("%6d end of iteration", Device.dwFrame);
+	EngineLog							("%6d end of iteration", Device.dwFrame);
 #endif // DEBUG
 
 	if (!m_collisions.empty()) {
@@ -580,11 +580,11 @@ void moving_objects::query_action_dynamic		(moving_object *object)
 
 #if 0//def DEBUG
 	{
-		Msg							("Frame[%d], collisions[%d]",Device.dwFrame, m_visited_emitters.size());
+		EngineLog							("Frame[%d], collisions[%d]",Device.dwFrame, m_visited_emitters.size());
 		NEAREST_MOVING::iterator	I = m_visited_emitters.begin();
 		NEAREST_MOVING::iterator	E = m_visited_emitters.end();
 		for ( ; I != E; ++I)
-			Msg						("  %s",*(*I)->object().cName());
+			EngineLog						("  %s",*(*I)->object().cName());
 	}
 #endif // DEBUG
 

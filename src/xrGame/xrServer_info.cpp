@@ -74,13 +74,13 @@ void xrServer::LoadServerInfo()
 	m_server_logo = FS.r_open("$app_data_root$", SERVER_LOGO_FN);
 	if (!m_server_logo)
 	{
-		Msg("! ERROR: failed to open server logo file %s", SERVER_LOGO_FN);
+		EngineLog("! ERROR: failed to open server logo file {}", SERVER_LOGO_FN);
 		return;
 	}
 	m_server_rules = FS.r_open("$app_data_root$", SERVER_RULES_FN);
 	if (!m_server_rules)
 	{
-		Msg("! ERROR: failed to open server rules file %s", SERVER_RULES_FN);
+		EngineLog("! ERROR: failed to open server rules file {}", SERVER_RULES_FN);
 		FS.r_close(m_server_logo);
 		m_server_logo = NULL;
 		return;
@@ -172,7 +172,7 @@ void __stdcall server_info_uploader::upload_server_info_callback(
 	case file_transfer::sending_data:
 		{
 #ifdef DEBUG
-			Msg("* uploaded %d from %d bytes of server logo to client [%d]", uploaded, total, m_to_client.value());
+		EngineLog("* uploaded {} from {} bytes of server logo to client [{}]", uploaded, total, m_to_client.value());
 #endif
 			return;
 		}break;
@@ -182,11 +182,11 @@ void __stdcall server_info_uploader::upload_server_info_callback(
 		}break;
 	case file_transfer::sending_rejected_by_peer:
 		{
-			Msg("* upload server logo terminated by peer [%d]", m_to_client.value());
+		EngineLog("* upload server logo terminated by peer [{}]", m_to_client.value());
 		}break;
 	case file_transfer::sending_complete:
 		{
-			Msg("* upload server info to client [%d] complete !", m_to_client.value());
+		EngineLog("* upload server info to client [{}] complete !", m_to_client.value());
 		}break;
 	};
 	m_state = eUploadNotActive;

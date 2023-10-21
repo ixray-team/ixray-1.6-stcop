@@ -58,7 +58,7 @@ bool CGameSpy_GP::Init()
 	VERIFY2(init_res == GP_NO_ERROR, "GameSpy GP: failed to initialize");
 	if (init_res != GP_NO_ERROR)
 	{
-		Msg("! GameSpy GP: failed to initialize, error code: %d", init_res);
+		EngineLog("! GameSpy GP: failed to initialize, error code: {}", (int)init_res);
 		return false;
 	}
 	xrGS_gpSetCallback(&m_GPConnection, GP_ERROR, &CGameSpy_GP::OnGameSpyErrorCb, this);
@@ -69,13 +69,13 @@ void CGameSpy_GP::Think()
 {
 	if (!m_GPConnection)
 	{
-		Msg("! GameSpy GP ERROR: GameSpy GP connection not ititialized");
+		EngineLog("! GameSpy GP ERROR: GameSpy GP connection not ititialized");
 		return;
 	}
 	GPResult process_res = xrGS_gpProcess(&m_GPConnection);
 	if (process_res != GP_NO_ERROR)
 	{
-		Msg("! GameSpy GP ERROR: process failed: %d", process_res);
+		EngineLog("! GameSpy GP ERROR: process failed: {}", (int)process_res);
 	}
 }
 
@@ -230,13 +230,13 @@ void __cdecl CGameSpy_GP::OnGameSpyErrorCb(GPConnection * connection,
 	char const * error_descr = earg->errorString ? earg->errorString : "unknown";
 	if (earg->fatal)
 	{
-		Msg("! GameSpy FATAL GP ERROR: error code: %d, description: %s",
-			earg->errorCode,
+		EngineLog("! GameSpy FATAL GP ERROR: error code: {}, description: {}",
+			(int)earg->errorCode,
 			error_descr);
 		//MainMenu()->GetLoginMngr()->delete_profile_obj();
 		return;
 	}
-	Msg("! GameSpy GP ERROR: error code: %d, description: %s", 
-		earg->errorCode,
+	EngineLog("! GameSpy GP ERROR: error code: {}, description: {}", 
+		(int)earg->errorCode,
 		error_descr);
 }

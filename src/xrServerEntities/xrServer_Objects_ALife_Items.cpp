@@ -195,7 +195,7 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 {
 	tNetPacket.r_u8					(m_u8NumItems);
 	if (!m_u8NumItems) {
-		//Msg("--- Object [%d] has no sync items", this->cast_abstract()->ID);
+		//EngineLog("--- Object [%d] has no sync items", this->cast_abstract()->ID);
 		return;
 	}
 

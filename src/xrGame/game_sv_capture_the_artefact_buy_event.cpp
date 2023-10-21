@@ -65,7 +65,7 @@ void game_sv_CaptureTheArtefact::OnPlayerCloseBuyMenu(xrClientData const * pclie
 			return;
 
 #ifdef DEBUG
-	Msg("--- Player [%s] closes buy menu", pclient->ps->getName());
+	EngineLog("--- Player [%s] closes buy menu", pclient->ps->getName());
 #endif // #ifdef DEBUG
 		if (temp_iter->second == buyMenuPlayerReadyToSpawn)
 		{
@@ -82,7 +82,7 @@ void game_sv_CaptureTheArtefact::OnPlayerOpenBuyMenu(xrClientData const * pclien
 		return;
 	//R_ASSERT2(pclient->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD), "only dead players can open buy menu in async mode");
 #ifdef DEBUG
-	Msg("--- Player [%s] opens buy menu", pclient->ps->getName());
+	EngineLog("--- Player [%s] opens buy menu", pclient->ps->getName());
 #endif // #ifdef DEBUG
 	m_buyMenuPlayerStates.insert(std::make_pair(pclient, buyMenuPlayerOpensBuyMenu));
 }
@@ -104,7 +104,7 @@ void game_sv_CaptureTheArtefact::SetReadyToSpawnPlayer(xrClientData const * pcli
 	//	return;
 	//R_ASSERT2(pclient->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD), "only dead players can open buy menu in async mode");
 #ifdef DEBUG
-	Msg("--- Player [%s] opens buy menu", pclient->ps->getName());
+	EngineLog("--- Player [%s] opens buy menu", pclient->ps->getName());
 #endif // #ifdef DEBUG
 	m_buyMenuPlayerStates.insert(std::make_pair(pclient, buyMenuPlayerReadyToSpawn));
 }

@@ -225,14 +225,14 @@ void CSE_ALifeHumanAbstract::vfProcessItems()
 				alife().m_temp_item_vector.push_back(l_tpALifeInventoryItem);
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
-					Msg		("[LSS] %s detected item %s on the graph point %d (probability %f, speed %f)",name_replace(),l_tpALifeInventoryItem->base()->name_replace(),m_tGraphID,m_detect_probability,m_fCurSpeed);
+					EngineLog		("[LSS] %s detected item %s on the graph point %d (probability %f, speed %f)",name_replace(),l_tpALifeInventoryItem->base()->name_replace(),m_tGraphID,m_detect_probability,m_fCurSpeed);
 				}
 #endif
 			}
 			else {
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
-					Msg		("[LSS] %s didn't detect item %s on the graph point %d (probability %f, speed %f)",name_replace(),l_tpALifeInventoryItem->base()->name_replace(),m_tGraphID,m_detect_probability,m_fCurSpeed);
+					EngineLog		("[LSS] %s didn't detect item %s on the graph point %d (probability %f, speed %f)",name_replace(),l_tpALifeInventoryItem->base()->name_replace(),m_tGraphID,m_detect_probability,m_fCurSpeed);
 				}
 #endif
 			}

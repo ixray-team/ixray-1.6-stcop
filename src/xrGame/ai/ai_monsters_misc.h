@@ -24,12 +24,12 @@ namespace GroupHierarchyHolder {
 
 #ifdef WRITE_LOG
 	#define WRITE_TO_LOG(S) {\
-		Msg("%s,%s,%d,p[%.2f,%.2f,%.2f],%.2f,h[%.2f,%.2f],t[%.2f,%.2f]",*cName(),S,Device.dwTimeGlobal,Position().x,Position().y,Position().z,m_fCurSpeed,m_head.current.yaw,m_head.target.yaw,m_body.current.yaw,m_body.target.yaw);\
+		EngineLog("%s,%s,%d,p[%.2f,%.2f,%.2f],%.2f,h[%.2f,%.2f],t[%.2f,%.2f]",*cName(),S,Device.dwTimeGlobal,Position().x,Position().y,Position().z,m_fCurSpeed,m_head.current.yaw,m_head.target.yaw,m_body.current.yaw,m_body.target.yaw);\
 		vfUpdateDynamicObjects();\
 		m_bStopThinking = true;\
 	}
-	#define WRITE_QUERY_TO_LOG(S) ;//Msg(S);
-		//	Msg("%d",Level().Teams[g_Team()].Squads[g_Squad()].Groups[g_Group()].m_tpaSuspiciousNodes.size());\
+	#define WRITE_QUERY_TO_LOG(S) ;//EngineLog(S);
+		//	EngineLog("%d",Level().Teams[g_Team()].Squads[g_Squad()].Groups[g_Group()].m_tpaSuspiciousNodes.size());\
 
 #else
 	#define WRITE_QUERY_TO_LOG(S)

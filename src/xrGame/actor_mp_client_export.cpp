@@ -51,17 +51,17 @@ void CActorMP::fill_state	(actor_mp_state &state)
 //	static test = false;
 //	if (test) {
 #if 0
-		Msg							("Frame [%d], object [%d]",Device.dwFrame,ID());
-//		Msg							("quaternion   : [%f][%f][%f][%f]",State.quaternion.x,State.quaternion.y,State.quaternion.z,State.quaternion.w);
-//		Msg							("angular      : [%f][%f][%f]",State.angular_vel.x,State.angular_vel.y,State.angular_vel.z);
-		Msg							("linear       : [%f][%f][%f]",State.linear_vel.x,State.linear_vel.y,State.linear_vel.z);
-//		Msg							("force        : [%f][%f][%f]",State.force.x,State.force.y,State.force.z);
-//		Msg							("torque       : [%f][%f][%f]",State.torque.x,State.torque.y,State.torque.z);
-//		Msg							("acceleration : [%f][%f][%f]",NET_SavedAccel.x,NET_SavedAccel.y,NET_SavedAccel.z);
-		Msg							("model_yaw    : [%f]",angle_normalize(r_model_yaw));
-		Msg							("camera_yaw   : [%f]",angle_normalize(unaffected_r_torso.yaw));
-//		Msg							("camera_pitch : [%f]",angle_normalize(unaffected_r_torso.pitch));
-//		Msg							("camera_roll  : [%f]",angle_normalize(unaffected_r_torso.roll));
+		EngineLog							("Frame [%d], object [%d]",Device.dwFrame,ID());
+//		EngineLog							("quaternion   : [%f][%f][%f][%f]",State.quaternion.x,State.quaternion.y,State.quaternion.z,State.quaternion.w);
+//		EngineLog							("angular      : [%f][%f][%f]",State.angular_vel.x,State.angular_vel.y,State.angular_vel.z);
+		EngineLog							("linear       : [%f][%f][%f]",State.linear_vel.x,State.linear_vel.y,State.linear_vel.z);
+//		EngineLog							("force        : [%f][%f][%f]",State.force.x,State.force.y,State.force.z);
+//		EngineLog							("torque       : [%f][%f][%f]",State.torque.x,State.torque.y,State.torque.z);
+//		EngineLog							("acceleration : [%f][%f][%f]",NET_SavedAccel.x,NET_SavedAccel.y,NET_SavedAccel.z);
+		EngineLog							("model_yaw    : [%f]",angle_normalize(r_model_yaw));
+		EngineLog							("camera_yaw   : [%f]",angle_normalize(unaffected_r_torso.yaw));
+//		EngineLog							("camera_pitch : [%f]",angle_normalize(unaffected_r_torso.pitch));
+//		EngineLog							("camera_roll  : [%f]",angle_normalize(unaffected_r_torso.roll));
 //	}
 #endif // 0
 
@@ -119,7 +119,7 @@ void CActorMP::net_Export	(NET_Packet &packet)
 {
 	if (OnClient())
 	{
-		//Msg("net_Export: ID is: 0x%08x, is going to send health %2.04f", this->ID(), m_state_holder.state().health);
+		//EngineLog("net_Export: ID is: 0x%08x, is going to send health %2.04f", this->ID(), m_state_holder.state().health);
 		//R_ASSERT						(g_Alive());
 		//R_ASSERT						(PHGetSyncItemsNumber() == 1);
 	}

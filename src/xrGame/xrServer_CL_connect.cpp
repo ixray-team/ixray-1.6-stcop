@@ -12,7 +12,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	xr_vector<u16>::iterator it = std::find(conn_spawned_ids.begin(), conn_spawned_ids.end(), E->ID);
 	if(it != conn_spawned_ids.end())
 	{
-//.		Msg("Rejecting redundant SPAWN data [%d]", E->ID);
+//.		EngineLog("Rejecting redundant SPAWN data [%d]", E->ID);
 		return;
 	}
 	
@@ -21,7 +21,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	if (E->net_Processed)						return;
 	if (E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))	return;
 
-//.	Msg("Perform connect spawn [%d][%s]", E->ID, E->s_name.c_str());
+//.	EngineLog("Perform connect spawn [%d][%s]", E->ID, E->s_name.c_str());
 
 	// Connectivity order
 	CSE_Abstract* Parent = ID_to_entity	(E->ID_Parent);
@@ -86,13 +86,13 @@ void xrServer::SendConnectionData(IClient* _CL)
 	SendServerInfoToClient			(CL->ID);
 
 /*
-	Msg("--- Our sended SPAWN IDs:");
+	EngineLog("--- Our sended SPAWN IDs:");
 	xr_vector<u16>::iterator it = conn_spawned_ids.begin();
 	for (; it != conn_spawned_ids.end(); ++it)
 	{
-		Msg("%d", *it);
+		EngineLog("%d", *it);
 	}
-	Msg("---- Our sended SPAWN END");
+	EngineLog("---- Our sended SPAWN END");
 */
 };
 
@@ -213,8 +213,8 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	u64 _him		=	P.r_u64();
 
 #ifdef USE_DEBUG_AUTH
-	Msg("_our = %d", _our);
-	Msg("_him = %d", _him);
+	EngineLog("_our = %d", _our);
+	EngineLog("_him = %d", _him);
 	_our = MP_DEBUG_AUTH;
 #endif // USE_DEBUG_AUTH
 

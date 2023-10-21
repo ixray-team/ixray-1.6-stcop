@@ -315,10 +315,10 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
-				Log("current_state", GetState() );
-				Log("next_state", GetNextState());
-				Log("item_sect", cNameSect().c_str());
-				Log("H_Parent", H_Parent()->cNameSect().c_str());
+				EngineLog("current_state {}", GetState() );
+				EngineLog("next_state {}", GetNextState());
+				EngineLog("item_sect {}", cNameSect().c_str());
+				EngineLog("H_Parent {}", H_Parent()->cNameSect().c_str());
 			}
 			E->g_fireParams		(this, p1,d);
 		}

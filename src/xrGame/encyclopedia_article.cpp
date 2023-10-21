@@ -133,7 +133,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	if(0==_stricmp(atricle_type.c_str(),"info")){
 		data()->articleType = ARTICLE_DATA::eInfoArticle;
 	}else{
-		Msg("incorrect article type definition for [%s]",*item_data.id);
+		EngineLog("incorrect article type definition for [%s]",*item_data.id);
 	}
 
 	data()->ui_template_name = pXML->ReadAttrib(pNode, "ui_template", "common");

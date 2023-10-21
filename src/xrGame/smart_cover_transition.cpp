@@ -96,17 +96,10 @@ animation_action const &action::animation	(MonsterSpace::EBodyState const &targe
 	
 	if (found == m_animations.end()) {
 #ifndef MASTER_GOLD
-		Msg						("! There is no animation which can transfer bot to body_state [%i], selecting random transition", target_body_state);
+		EngineLog						("! There is no animation which can transfer bot to body_state [{}], selecting random transition", (int)target_body_state);
 #endif // #ifndef MASTER_GOLD
 		return					(animation());
 	}
-
-#if 0 //for testing
-	VERIFY2						(
-		found != m_animations.end(),
-		make_string("There is no animation which can transfer bot to body_state [%i]", target_body_state)
-	);
-#endif
 
 	return						(**found);
 }

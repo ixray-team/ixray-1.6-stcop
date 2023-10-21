@@ -136,7 +136,7 @@ void Upgrade::log_hierarchy( LPCSTR nest )
 	PSTR	nest2 = (PSTR)_alloca( sz );
 	xr_strcpy( nest2, sz, nest );
 	xr_strcat( nest2, sz, "   " );
-	Msg( "%s<u> %s", nest2, id_str() );
+	EngineLog( "{}<u> {}", nest2, id_str() );
 
 	inherited::log_hierarchy( nest2 );
 }

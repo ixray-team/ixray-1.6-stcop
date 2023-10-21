@@ -123,7 +123,7 @@ bool IsImportantSave()
 void check_object(CScriptGameObject *object)
 {
 	try {
-		Msg	("check_object %s",object->Name());
+		EngineLog	("check_object %s",object->Name());
 	}
 	catch(...) {
 		object = object;
@@ -465,7 +465,7 @@ void add_call(const luabind::object &lua_object, LPCSTR condition,LPCSTR action)
 //	}
 //	catch(...)
 //	{
-//		Msg("add_call excepted!!");
+//		EngineLog("add_call excepted!!");
 //	}
 }
 
@@ -515,14 +515,14 @@ void disable_input()
 {
 	g_bDisableAllInput = true;
 #ifdef DEBUG
-	Msg("input disabled");
+	EngineLog("input disabled");
 #endif // #ifdef DEBUG
 }
 void enable_input()
 {
 	g_bDisableAllInput = false;
 #ifdef DEBUG
-	Msg("input enabled");
+	EngineLog("input enabled");
 #endif // #ifdef DEBUG
 }
 

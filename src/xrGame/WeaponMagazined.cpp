@@ -79,7 +79,7 @@ bool CWeaponMagazined::WeaponSoundExist(LPCSTR section, LPCSTR sound_name)
 	else
 	{
 #ifdef DEBUG
-		Msg("~ [WARNING] ------ Sound [%s] does not exist in [%s]", sound_name, section);
+		EngineLog("~ [WARNING] ------ Sound [{}] does not exist in [{}]", sound_name, section);
 #endif
 		return false;
 	}
@@ -506,17 +506,17 @@ void CWeaponMagazined::state_Fire(float dt)
 		if (!H_Parent()) return;
 		if (smart_cast<CMPPlayersBag*>(H_Parent()) != NULL)
 		{
-			Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+			EngineLog("! WARNING: state_Fire of object [{}][{}] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
 			return;
 		}
 
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 		if(NULL == io->inventory().ActiveItem())
 		{
-				Log("current_state", GetState() );
-				Log("next_state", GetNextState());
-				Log("item_sect", cNameSect().c_str());
-				Log("H_Parent", H_Parent()->cNameSect().c_str());
+			EngineLog("current_state {}", GetState() );
+			EngineLog("next_state {}", GetNextState());
+			EngineLog("item_sect {}", cNameSect().c_str());
+			EngineLog("H_Parent {}", H_Parent()->cNameSect().c_str());
 		}
 
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
@@ -570,7 +570,7 @@ void CWeaponMagazined::state_Fire(float dt)
 /*
 		if(bDebug && H_Parent() && (H_Parent()->ID() != Actor()->ID()))
 		{
-			Msg("stop shooting w=[%s] magsize=[%d] sshot=[%s] qsize=[%d] shotnum=[%d]",
+			EngineLog("stop shooting w=[%s] magsize=[%d] sshot=[%s] qsize=[%d] shotnum=[%d]",
 					IsWorking()?"true":"false", 
 					m_magazine.size(),
 					m_bFireSingleShot?"true":"false",
@@ -681,37 +681,9 @@ void CWeaponMagazined::switch2_Fire	()
 {
 	CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 	CInventoryItem* ii		= smart_cast<CInventoryItem*>(this);
-#ifdef DEBUG
+
 	if (!io)
 		return;
-	//VERIFY2					(io,make_string("no inventory owner, item %s",*cName()));
-
-	if (ii != io->inventory().ActiveItem())
-		Msg					("! not an active item, item %s, owner %s, active item %s",*cName(),*H_Parent()->cName(),io->inventory().ActiveItem() ? *io->inventory().ActiveItem()->object().cName() : "no_active_item");
-
-	if ( !(io && (ii == io->inventory().ActiveItem())) ) 
-	{
-		CAI_Stalker			*stalker = smart_cast<CAI_Stalker*>(H_Parent());
-		if (stalker) {
-			stalker->planner().show						();
-			stalker->planner().show_current_world_state	();
-			stalker->planner().show_target_world_state	();
-		}
-	}
-#else
-	if (!io)
-		return;
-#endif // DEBUG
-
-//
-//	VERIFY2(
-//		io && (ii == io->inventory().ActiveItem()),
-//		make_string(
-//			"item[%s], parent[%s]",
-//			*cName(),
-//			H_Parent() ? *H_Parent()->cName() : "no_parent"
-//		)
-//	);
 
 	m_bStopedAfterQueueFired = false;
 	m_bFireSingleShot = true;
@@ -971,7 +943,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 	{
 		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) == 0)
 		{
-			Msg("ERROR: scope addon already detached.");
+			EngineLog("ERROR: scope addon already detached.");
 			return true;
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
@@ -986,7 +958,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 	{
 		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0)
 		{
-			Msg("ERROR: silencer addon already detached.");
+			EngineLog("ERROR: silencer addon already detached.");
 			return true;
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
@@ -1000,7 +972,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 	{
 		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0)
 		{
-			Msg("ERROR: grenade launcher addon already detached.");
+			EngineLog("ERROR: grenade launcher addon already detached.");
 			return true;
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;

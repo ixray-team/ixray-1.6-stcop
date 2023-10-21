@@ -229,7 +229,7 @@ void CControlPathBuilder::fix_position(const Fvector &pos, u32 node, Fvector &re
 		
 #ifdef DEBUG		
 		if (level_vertex_id != node) {
-			Msg		("! src_node[%d] res_node[%d] src_pos[%f,%f,%f] res_pos[%f,%f,%f]",node,level_vertex_id,VPUSH(pos),VPUSH(res_pos));
+			EngineLog("! src_node[{}] res_node[{}] src_pos[{}] res_pos[{}]",node,level_vertex_id,pos,res_pos);
 		}
 		VERIFY3((level_vertex_id == node) || show_restrictions(m_restricted_object),"Invalid restrictions (see log for details) for object ",*(CControl_Com::m_object->cName()));
 #endif

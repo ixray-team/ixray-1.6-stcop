@@ -50,7 +50,7 @@ void CStringTable::Init		()
 		Load			(fn);
 	}
 #ifdef DEBUG
-	Msg("StringTable: loaded %d files", fset.size());
+	EngineLog("StringTable: loaded %d files", fset.size());
 #endif // #ifdef DEBUG
 //---
 	ReparseKeyBindings();
@@ -76,7 +76,7 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 		LPCSTR string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  NULL);
 
 		if(m_bWriteErrorsToLog && string_text)
-			Msg("[string table] '%s' no translation in '%s'", string_name, pData->m_sLanguage.c_str() );
+			EngineLog("[string table] '%s' no translation in '%s'", string_name, pData->m_sLanguage.c_str() );
 		
 		VERIFY3						(string_text, "string table entry does not has a text", string_name);
 		

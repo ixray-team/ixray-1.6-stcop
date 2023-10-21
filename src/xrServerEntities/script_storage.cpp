@@ -73,7 +73,7 @@ void setup_luabind_allocator		()
 
 /* ---- start of LuaJIT extensions */
 static void l_message (lua_State* state, const char *msg) {
-	Msg	("! [LUA_JIT] %s", msg);
+	EngineLog	("! [LUA_JIT] %s", msg);
 }
 
 static int report (lua_State *L, int status) {
@@ -183,7 +183,7 @@ void CScriptStorage::reinit	()
 	m_virtual_machine		= luaL_newstate();
 
 	if (!m_virtual_machine) {
-		Msg					("! ERROR : Cannot initialize script virtual machine!");
+		EngineLog("! ERROR : Cannot initialize script virtual machine!");
 		return;
 	}
 
@@ -280,7 +280,7 @@ int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType
 	xr_strcpy	(S2,S);
 	S1		= S2 + xr_strlen(S);
 	int		l_iResult = vsprintf(S1,caFormat,marker);
-	Msg		("%s",S2);
+	EngineLog(S2);
 	
 	xr_strcpy	(S2,SS);
 	S1		= S2 + xr_strlen(SS);
@@ -325,24 +325,24 @@ void LogLuaVariable(lua_State* L, const char* Name, int Level, bool bOpenTable, 
 
 	switch (LuaType) {
 		case LUA_TNUMBER: {
-			Msg("%s %s %s : %.02f", TabBuffer, TypeName, Name, lua_tonumber(L, Index));
+			EngineLog("{} {} {} : {}", TabBuffer, TypeName, Name, lua_tonumber(L, Index));
 			break;
 		}
 		case LUA_TBOOLEAN: {
-			Msg("%s %s %s : %.02f", TabBuffer, TypeName, Name, lua_toboolean(L, Index) == 1 ? TEXT("true") : TEXT("false"));
+			EngineLog("{} {} {} :{}", TabBuffer, TypeName, Name, lua_toboolean(L, Index) == 1 ? ("true") : ("false"));
 			break;
 		}
 		case LUA_TSTRING: {
-			Msg("%s %s %s : %s", TabBuffer, TypeName, Name, lua_tostring(L, Index));
+			EngineLog("{} {} {} : {}", TabBuffer, TypeName, Name, lua_tostring(L, Index));
 			break;
 		}
 		case LUA_TTABLE: {
 			if (bOpenTable) {
-				Msg("%s %s %s : Table", TabBuffer, TypeName, Name);
+				EngineLog("{} {} {} : Table", TabBuffer, TypeName, Name);
 
 				LuaLogTable(L, Name, Level + 1, Index);
 			} else {
-				Msg("%s %s %s : Table [...]", TabBuffer, TypeName, Name);
+				EngineLog("{} {} {}: Table [...]", TabBuffer, TypeName, Name);
 			}
 			break;
 		}
@@ -354,16 +354,16 @@ void LogLuaVariable(lua_State* L, const char* Name, int Level, bool bOpenTable, 
 			if (objectClass != nullptr) {
 				std::stringstream ss;
 				ss << UserDataPtr;
-				Msg("%s Userdata: %s(%s:0x%s)", TabBuffer, Name, objectClass->name(), ss.str().c_str());
+				EngineLog("{} Userdata: {}({}:{})", TabBuffer, Name, objectClass->name(), ss.str().c_str());
 			} else {
-				Msg("%s Userdata: %s", TabBuffer, Name);
+				EngineLog("{} Userdata: {}", TabBuffer, Name);
 			}
 
 			return;
 			break;
 		}
 		default: {
-			Log("[not available]");
+			EngineLog("[not available]");
 			break;
 		}
 	}
@@ -373,7 +373,7 @@ void CScriptStorage::print_stack() {
 	lua_State* L = lua();
 
 	if (lua_isstring(L, -1)) {
-		Msg("[LUA] Error: %s\n", lua_tostring(L, -1));
+		EngineLog("[LUA] Error: {}\n", lua_tostring(L, -1));
 		//lua_pop(L, 1);
 	}
 
@@ -398,7 +398,7 @@ void CScriptStorage::print_stack() {
 		int Iter = 1;
 		while ((LocalVarName = lua_getlocal(L, &LuaDebugInfo, Iter++)) != NULL) {
 			if (bPringName) {
-				Log("Local variables:");
+				EngineLog("Local variables:");
 				bPringName = false;
 			}
 			LogLuaVariable(L, LocalVarName, 1, true, -1);
@@ -551,7 +551,7 @@ bool CScriptStorage::do_file	(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 	if (0)	//.
 	{
 	    for (int i=0; lua_type(lua(), -i-1); i++)
-            Msg	("%2d : %s",-i-1,lua_typename(lua(), lua_type(lua(), -i-1)));
+            EngineLog	("%2d : %s",-i-1,lua_typename(lua(), lua_type(lua(), -i-1)));
 	}
 
 	// because that's the first and the only call of the main chunk - there is no point to compile it
@@ -715,7 +715,7 @@ struct raii_guard {
 			if ( break_on_assert )
 				R_ASSERT2		( !m_error_code, m_error_description );
 			else
-				Msg				( "! SCRIPT ERROR: %s", m_error_description );
+				EngineLog				( "! SCRIPT ERROR: %s", m_error_description );
 		}
 	}
 }; // struct raii_guard
@@ -731,7 +731,7 @@ bool CScriptStorage::print_output(lua_State *L, LPCSTR caScriptFileName, int iEr
 
 	if (lua_pcall(L, 0, 1, 0)) {
 		const char* err = lua_tostring(L, -1);
-		Msg("[LUA] Error in debug.traceback() call: %s\n", err);
+		EngineLog("[LUA] Error in debug.traceback() call: {}\n", err);
 	}
 #endif
 
@@ -782,21 +782,21 @@ void CScriptStorage::flush_log()
 }
 #endif // DEBUG
 
-int CScriptStorage::error_log	(LPCSTR	format, ...)
+int CScriptStorage::error_log(LPCSTR	format, ...)
 {
 	va_list			marker;
-	va_start		(marker,format);
+	va_start(marker, format);
 
 	LPCSTR			S = "! [LUA][ERROR] ";
 	LPSTR			S1;
 	string4096		S2;
-	xr_strcpy		(S2,S);
-	S1				= S2 + xr_strlen(S);
+	xr_strcpy(S2, S);
+	S1 = S2 + xr_strlen(S);
 
-	int				result = vsprintf(S1,format,marker);
-	va_end			(marker);
+	int				result = vsprintf(S1, format, marker);
+	va_end(marker);
 
-	Msg				("%s",S2);
+	EngineLog(S2);
 
 	return			(result);
 }

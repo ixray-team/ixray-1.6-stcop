@@ -635,7 +635,7 @@ void CWeapon::net_Import(NET_Packet& P)
 	default:
 		{
 			if (ammoType >= m_ammoTypes.size())
-				Msg("!! Weapon [%d], State - [%d]", ID(), wstate);
+				EngineLog("!! Weapon [{}], State - [{}]", ID(), wstate);
 			else
 			{
 				m_ammoType = ammoType;
@@ -1366,7 +1366,7 @@ void CWeapon::UpdateAddonsVisibility()
 		pWeaponVisual->LL_GetBoneVisible(bone_id) )
 	{
 		pWeaponVisual->LL_SetBoneVisible					(bone_id,FALSE,TRUE);
-//		Log("scope", pWeaponVisual->LL_GetBoneVisible		(bone_id));
+//		EngineLog("scope", pWeaponVisual->LL_GetBoneVisible		(bone_id));
 	}
 	bone_id = pWeaponVisual->LL_BoneID						(wpn_silencer);
 	if(SilencerAttachable())
@@ -1383,7 +1383,7 @@ void CWeapon::UpdateAddonsVisibility()
 		pWeaponVisual->LL_GetBoneVisible(bone_id) )
 	{
 		pWeaponVisual->LL_SetBoneVisible					(bone_id,FALSE,TRUE);
-//		Log("silencer", pWeaponVisual->LL_GetBoneVisible	(bone_id));
+//		EngineLog("silencer", pWeaponVisual->LL_GetBoneVisible	(bone_id));
 	}
 
 	bone_id = pWeaponVisual->LL_BoneID						(wpn_grenade_launcher);
@@ -1402,7 +1402,7 @@ void CWeapon::UpdateAddonsVisibility()
 		pWeaponVisual->LL_GetBoneVisible(bone_id) )
 	{
 		pWeaponVisual->LL_SetBoneVisible					(bone_id,FALSE,TRUE);
-//		Log("gl", pWeaponVisual->LL_GetBoneVisible			(bone_id));
+//		EngineLog("gl", pWeaponVisual->LL_GetBoneVisible			(bone_id));
 	}
 	
 
@@ -1486,7 +1486,7 @@ void CWeapon::SwitchState(u32 S)
 #ifndef MASTER_GOLD
 	if ( bDebug )
 	{
-		Msg("---Server is going to send GE_WPN_STATE_CHANGE to [%d], weapon_section[%s], parent[%s]",
+		EngineLog("---Server is going to send GE_WPN_STATE_CHANGE to [{}], weapon_section[{}], parent[{}]",
 			S, cNameSect().c_str(), H_Parent() ? H_Parent()->cName().c_str() : "NULL Parent");
 	}
 #endif // #ifndef MASTER_GOLD

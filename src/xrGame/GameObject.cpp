@@ -187,7 +187,7 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 			SHit	HDS;
 			HDS.PACKET_TYPE = type;
 			HDS.Read_Packet_Cont(P);
-//			Msg("Hit received: %d[%d,%d]", HDS.whoID, HDS.weaponID, HDS.BulletID);
+//			EngineLog("Hit received: %d[%d,%d]", HDS.whoID, HDS.weaponID, HDS.BulletID);
 			CObject*	Hitter = Level().Objects.net_Find(HDS.whoID);
 			CObject*	Weapon = Level().Objects.net_Find(HDS.weaponID);
 			HDS.who		= Hitter;
@@ -280,7 +280,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	setID							(E->ID);
 //	if (!IsGameTypeSingle())
-//		Msg ("CGameObject::net_Spawn -- object %s[%x] setID [%d]", *(E->s_name), this, E->ID);
+//		EngineLog ("CGameObject::net_Spawn -- object %s[%x] setID [%d]", *(E->s_name), this, E->ID);
 	
 	// XForm
 	XFORM().setXYZ					(E->o_Angle);
@@ -345,12 +345,12 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	//load custom user data from server
 	if(!E->client_data.empty())
 	{	
-//		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
+//		EngineLog				("client data is present for object [%d][%s], load is processed",ID(),*cName());
 		IReader			ireader = IReader(&*E->client_data.begin(), E->client_data.size());
 		net_Load		(ireader);
 	}
 	else {
-//		Msg				("no client data for object [%d][%s], load is skipped",ID(),*cName());
+//		EngineLog				("no client data for object [%d][%s], load is skipped",ID(),*cName());
 	}
 
 	// if we have a parent
@@ -818,7 +818,7 @@ void CGameObject::shedule_Update	(u32 dt)
 		DestroyObject			();
 	}
 
-	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
+	// EngineLog							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
 	
 	if(!g_dedicated_server)

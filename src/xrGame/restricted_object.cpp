@@ -80,22 +80,6 @@ BOOL CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 		construct_string		(temp1,sizeof(temp1),monster->m_dynamic_in_restrictions);
 	}
 
-#if 0
-	string4096					temp2;
-	string4096					temp3;
-
-	construct_id_string			(temp2,monster->m_dynamic_out_restrictions);
-	construct_id_string			(temp3,monster->m_dynamic_in_restrictions);
-
-	Msg							("Restricting object %s with",monster->name_replace());
-	Msg							("STATIC OUT  : %s",*monster->m_out_space_restrictors);
-	Msg							("STATIC IN   : %s",*monster->m_in_space_restrictors);
-	Msg							("DYNAMIC OUT : %s",temp2);
-	Msg							("DYNAMIC IN  : %s",temp3);
-	Msg							("OUT         : %s",temp0);
-	Msg							("IN          : %s",temp1);
-#endif
-
 	Level().space_restriction_manager().restrict	(monster->ID,temp0,temp1);
 
 	actual						(true);
@@ -116,7 +100,7 @@ u32	CRestrictedObject::accessible_nearest	(const Fvector &position, Fvector &res
 		make_string(
 			"[%s] [%f][%f][%f]",
 			object().cName().c_str(),
-			VPUSH(position)
+			position.x, position.y, position.z
 		)
 	);
 

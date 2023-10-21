@@ -61,11 +61,11 @@ void CTrade::RemovePartner()
 //void CTrade::Communicate() 
 //{
 //	// Вывести приветствие
-////	Msg("--TRADE::----------------------------------------------");
-////	Msg("--TRADE::          TRADE ACIVATED                      ");
-////	Msg("--TRADE::----------------------------------------------");
-////	Msg("--TRADE:: - Hello, my name is [%s]", *pThis.base->cName());
-////	Msg("--TRADE::   Wanna trade with me?" );
+////	EngineLog("--TRADE::----------------------------------------------");
+////	EngineLog("--TRADE::          TRADE ACIVATED                      ");
+////	EngineLog("--TRADE::----------------------------------------------");
+////	EngineLog("--TRADE:: - Hello, my name is [%s]", *pThis.base->cName());
+////	EngineLog("--TRADE::   Wanna trade with me?" );
 //
 //	if (pPartner.inv_owner->GetTrade()->OfferTrade(pThis)) { 
 //		StartTrade();
@@ -164,7 +164,7 @@ void CTrade::StopTrade()
 {
 	TradeState = false;
 	m_dwLastTradeTime = 0;
-//	Msg("--TRADE:: [%s]: Trade stopped...",*pThis.base->cName());
+//	EngineLog("--TRADE:: [%s]: Trade stopped...",*pThis.base->cName());
 
 	CAI_Trader* pTrader = NULL;
 	if (pThis.type == TT_TRADER)

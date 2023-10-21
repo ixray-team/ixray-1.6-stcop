@@ -48,7 +48,7 @@ void CMaterialManager::Load			(LPCSTR section)
 				SGameMtl *m = GMLib.GetMaterialByIdx( m_my_material_idx );
 
 				VERIFY( m );
-				Msg( "(CMaterialManager::Load(LPCSTR section)) material: %s loaded for %s, from section: %s ", m->m_Name.c_str(), entity_alive->cName().c_str(), section ); 
+				EngineLog( "(CMaterialManager::Load(LPCSTR section)) material: %s loaded for %s, from section: %s ", m->m_Name.c_str(), entity_alive->cName().c_str(), section ); 
 			}
 		}
 #endif
@@ -77,7 +77,7 @@ void CMaterialManager::reinit		()
 			VERIFY( GAMEMTL_NONE_IDX != m_my_material_idx );
 			SGameMtl *m = GMLib.GetMaterialByIdx( m_my_material_idx );
 			VERIFY( m );
-			Msg( "(CMaterialManager::reinit) material: %s loaded for %s ", m->m_Name.c_str(), entity_alive->cName().c_str() ); 
+			EngineLog( "(CMaterialManager::reinit) material: %s loaded for %s ", m->m_Name.c_str(), entity_alive->cName().c_str() ); 
 		}
 #endif
 	}

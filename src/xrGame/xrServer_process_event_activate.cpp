@@ -9,7 +9,7 @@ void xrServer::Process_event_activate	(NET_Packet& P, const ClientID sender, con
 	CSE_Abstract*		e_entity	= game->get_entity_from_eid	(id_entity);
 
 #ifndef MASTER_GOLD
-	Msg("---Artefact activate (parent = %d) (item = %d)", id_parent, id_entity);
+	EngineLog("---Artefact activate (parent = %d) (item = %d)", id_parent, id_entity);
 #endif // #ifndef MASTER_GOLD
 	
 	R_ASSERT2			(e_parent, make_string("parent not found. id_parent=%d id_entity=%d frame=%d",id_parent,id_entity, Device.dwFrame).c_str());
@@ -22,7 +22,7 @@ void xrServer::Process_event_activate	(NET_Packet& P, const ClientID sender, con
 	if (0xffff == e_entity->ID_Parent) 
 	{
 #ifndef MASTER_GOLD
-		Msg	("~ ERROR: can't activate independant object. entity[%s:%d], parent[%s:%d], section[%s]",
+		EngineLog	("~ ERROR: can't activate independant object. entity[%s:%d], parent[%s:%d], section[%s]",
 			e_entity->name_replace(),id_entity,e_parent->name_replace(),id_parent, *e_entity->s_name);
 #endif // #ifndef MASTER_GOLD
 		return;

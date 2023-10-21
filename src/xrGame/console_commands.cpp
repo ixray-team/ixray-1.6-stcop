@@ -169,18 +169,18 @@ static void full_memory_stats	( )
 
 	log_vminfo	();
 
-	Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
+	EngineLog		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
 
 #ifndef SEVERAL_ALLOCATORS
-	Msg		("* [x-ray]: process heap[%d K]",_process_heap/1024);
+	EngineLog		("* [x-ray]: process heap[%d K]",_process_heap/1024);
 #else // SEVERAL_ALLOCATORS
-	Msg		("* [x-ray]: process heap[%d K], game lua[%d K], render[%d K]",_process_heap/1024,_game_lua/1024,_render/1024);
+	EngineLog		("* [x-ray]: process heap[%d K], game lua[%d K], render[%d K]",_process_heap/1024,_game_lua/1024,_render/1024);
 #endif // SEVERAL_ALLOCATORS
 
-	Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
+	EngineLog		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
 
 #ifdef DEBUG
-	Msg		("* [x-ray]: file mapping: memory[%d K], count[%d]",g_file_mapped_memory/1024,g_file_mapped_count);
+	EngineLog		("* [x-ray]: file mapping: memory[%d K], count[%d]",g_file_mapped_memory/1024,g_file_mapped_count);
 	dump_file_mappings	();
 #endif // DEBUG
 }
@@ -206,7 +206,7 @@ public:
 		if (g_pGameLevel && Level().game){
 //#ifndef	DEBUG
 			if (!IsGameTypeSingle()){
-				Msg("For this game type difficulty level is disabled.");
+				EngineLog("For this game type difficulty level is disabled.");
 				return;
 			};
 //#endif
@@ -227,25 +227,25 @@ public:
 	CCC_ALifePath(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
 		if (!ai().get_level_graph())
-			Msg("! there is no graph!");
+			EngineLog("! there is no graph!");
 		else {
 			int id1=-1, id2=-1;
 			sscanf(args ,"%d %d",&id1,&id2);
 			if ((-1 != id1) && (-1 != id2))
 				if (_max(id1,id2) > (int)ai().game_graph().header().vertex_count() - 1)
-					Msg("! there are only %d vertexes!",ai().game_graph().header().vertex_count());
+					EngineLog("! there are only {} vertexes!",ai().game_graph().header().vertex_count());
 				else
 					if (_min(id1,id2) < 0)
-						Msg("! invalid vertex number (%d)!",_min(id1,id2));
+						EngineLog("! invalid vertex number ({})!",_min(id1,id2));
 					else {
 //						Sleep				(1);
 //						CTimer				timer;
 //						timer.Start			();
 //						float				fValue = ai().m_tpAStar->ffFindMinimalPath(id1,id2);
-//						Msg					("* %7.2f[%d] : %11I64u cycles (%.3f microseconds)",fValue,ai().m_tpAStar->m_tpaNodes.size(),timer.GetElapsed_ticks(),timer.GetElapsed_ms()*1000.f);
+//						EngineLog					("* %7.2f[%d] : %11I64u cycles (%.3f microseconds)",fValue,ai().m_tpAStar->m_tpaNodes.size(),timer.GetElapsed_ticks(),timer.GetElapsed_ms()*1000.f);
 					}
 			else
-				Msg("! not enough parameters!");
+				EngineLog("! not enough parameters!");
 		}
 	}
 };
@@ -258,7 +258,7 @@ public:
 		float id1 = 0.0f;
 		sscanf(args ,"%f",&id1);
 		if (id1 < EPS_L)
-			Msg("Invalid time factor! (%.4f)",id1);
+			EngineLog("Invalid time factor! (%.4f)",id1);
 		else {
 			if (!OnServer())
 				return;
@@ -302,7 +302,7 @@ public:
 			float id1 = 0.0f;
 			sscanf(args ,"%f",&id1);
 			if (id1 < 2.0f)
-				Msg("Invalid online distance! (%.4f)",id1);
+				EngineLog("Invalid online distance! (%.4f)",id1);
 			else {
 				NET_Packet		P;
 				P.w_begin		(M_SWITCH_DISTANCE);
@@ -311,7 +311,7 @@ public:
 			}
 		}
 		else
-			Log("!Not a single player game!");
+			EngineLog("!Not a single player game!");
 	}
 };
 
@@ -325,12 +325,12 @@ public:
 			int id1 = 0;
 			sscanf(args ,"%d",&id1);
 			if (id1 < 1)
-				Msg("Invalid process time! (%d)",id1);
+				EngineLog("Invalid process time! ({})",id1);
 			else
 				tpGame->alife().set_process_time(id1);
 		}
 		else
-			Log("!Not a single player game!");
+			EngineLog("!Not a single player game!");
 	}
 
 };
@@ -348,7 +348,7 @@ public:
 			tpGame->alife().objects_per_update(id1);
 		}
 		else
-			Log("!Not a single player game!");
+			EngineLog("!Not a single player game!");
 	}
 };
 
@@ -365,7 +365,7 @@ public:
 			tpGame->alife().set_switch_factor(id1);
 		}
 		else
-			Log		("!Not a single player game!");
+			EngineLog		("!Not a single player game!");
 	}
 };
 
@@ -379,7 +379,7 @@ public:
 		#ifndef	DEBUG
 		//if (!IsGameTypeSingle()) 
 		//{
-		//	Msg("For this game type Demo Record is disabled.");
+		//	EngineLog("For this game type Demo Record is disabled.");
 		//	return;
 		//};
 		#endif
@@ -404,7 +404,7 @@ public:
 		#ifndef	DEBUG
 		//if (!IsGameTypeSingle()) 
 		//{
-		//	Msg("For this game type Demo Record is disabled.");
+		//	EngineLog("For this game type Demo Record is disabled.");
 		//	return;
 		//};
 		#endif
@@ -427,13 +427,13 @@ public:
 		#ifndef	DEBUG
 		//if (!IsGameTypeSingle()) 
 		//{
-		//	Msg("For this game type Demo Play is disabled.");
+		//	EngineLog("For this game type Demo Play is disabled.");
 		//	return;
 		//};
 		#endif
 		  if (0==g_pGameLevel)
 		  {
-			  Msg	("! There are no level(s) started");
+			  EngineLog	("! There are no level(s) started");
 		  } else {
 			  Console->Hide			();
 			  string_path			fn;
@@ -507,17 +507,17 @@ public:
 		
 #if 0
 		if (!Level().autosave_manager().ready_for_autosave()) {
-			Msg		("! Cannot save the game right now!");
+			EngineLog		("! Cannot save the game right now!");
 			return;
 		}
 #endif
 		if(!IsGameTypeSingle()){
-			Msg("for single-mode only");
+			EngineLog("for single-mode only");
 			return;
 		}
 		if(!g_actor || !Actor()->g_Alive())
 		{
-			Msg("cannot make saved game because actor is dead :(");
+			EngineLog("cannot make saved game because actor is dead :(");
 			return;
 		}
 
@@ -540,7 +540,7 @@ public:
 			Level().Send		(net_packet,net_flags(TRUE));
 		}else{
 			if(!valid_saved_game_name(S)){
-				Msg("! Save failed: invalid file name - %s", S);
+				EngineLog("! Save failed: invalid file name - %s", S);
 				return;
 			}
 
@@ -551,7 +551,7 @@ public:
 			Level().Send		(net_packet,net_flags(TRUE));
 		}
 #ifdef DEBUG
-		Msg						("Game save overhead  : %f milliseconds",timer.GetElapsed_sec()*1000.f);
+		EngineLog						("Game save overhead  : {} milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
 		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
 		LPSTR						save_name;
@@ -567,7 +567,7 @@ public:
 		MainMenu()->Screenshot		(IRender_interface::SM_FOR_GAMESAVE,S1);
 
 #ifdef DEBUG
-		Msg						("Screenshot overhead : %f milliseconds",timer.GetElapsed_sec()*1000.f);
+		EngineLog						("Screenshot overhead : {} milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
 	}//virtual void Execute
 
@@ -587,28 +587,28 @@ public:
 		strncpy_s				(saved_game, sizeof(saved_game), args, _MAX_PATH - 1 );
 
 		if (!ai().get_alife()) {
-			Log						("! ALife simulator has not been started yet");
+			EngineLog						("! ALife simulator has not been started yet");
 			return;
 		}
 
 		if (!xr_strlen(saved_game)) {
-			Log						("! Specify file name!");
+			EngineLog						("! Specify file name!");
 			return;
 		}
 
 		if (!CSavedGameWrapper::saved_game_exist(saved_game)) {
-			Msg						("! Cannot find saved game %s",saved_game);
+			EngineLog						("! Cannot find saved game %s",saved_game);
 			return;
 		}
 
 		if (!CSavedGameWrapper::valid_saved_game(saved_game)) {
-			Msg						("! Cannot load saved game %s, version mismatch or saved game is corrupted",saved_game);
+			EngineLog						("! Cannot load saved game %s, version mismatch or saved game is corrupted",saved_game);
 			return;
 		}
 
 		if ( !valid_saved_game_name(saved_game) )
 		{
-			Msg						("! Cannot load saved game %s, invalid file name",saved_game);
+			EngineLog						("! Cannot load saved game %s, invalid file name",saved_game);
 			return;
 		}
 
@@ -676,23 +676,23 @@ public:
 		}
 
 		if (!*g_last_saved_game) {
-			Msg					("! cannot load last saved game since it hasn't been specified");
+			EngineLog					("! cannot load last saved game since it hasn't been specified");
 			return;
 		}
 
 		if (!CSavedGameWrapper::saved_game_exist(g_last_saved_game)) {
-			Msg						("! Cannot find saved game %s",g_last_saved_game);
+			EngineLog						("! Cannot find saved game %s",g_last_saved_game);
 			return;
 		}
 
 		if (!CSavedGameWrapper::valid_saved_game(g_last_saved_game)) {
-			Msg						("! Cannot load saved game %s, version mismatch or saved game is corrupted",g_last_saved_game);
+			EngineLog						("! Cannot load saved game %s, version mismatch or saved game is corrupted",g_last_saved_game);
 			return;
 		}
 
 		if ( !valid_saved_game_name(g_last_saved_game) )
 		{
-			Msg						("! Cannot load saved game %s, invalid file name",g_last_saved_game);
+			EngineLog						("! Cannot load saved game %s, invalid file name",g_last_saved_game);
 			return;
 		}
 
@@ -721,7 +721,7 @@ public:
 	CCC_FlushLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR /**args/**/) {
 		FlushLog();
-		Msg		("* Log file has been saved successfully!");
+		EngineLog		("* EngineLog file has been saved successfully!");
 	}
 };
 
@@ -731,7 +731,7 @@ public:
 	virtual void Execute(LPCSTR) {
 		LogFile->clear();
 		FlushLog				();
-		Msg						("* Log file has been cleaned successfully!");
+		EngineLog						("* EngineLog file has been cleaned successfully!");
 	}
 };
 
@@ -750,7 +750,7 @@ public:
 			  CCC_Float::Execute(args);
 		  else
 		  {
-			  Msg ("! Command disabled for this type of game");
+			  EngineLog ("! Command disabled for this type of game");
 		  }
 #endif
 	  }
@@ -832,7 +832,7 @@ public:
 
 		const GameGraph::SLevel	*level = ai().game_graph().header().level(args,true);
 		if (!level) {
-			Msg				("! There is no level %s in the game graph",args);
+			EngineLog				("! There is no level %s in the game graph",args);
 			return;
 		}
 
@@ -853,9 +853,9 @@ public:
 			if(d->Active())
 				d->initiateDebugBreak();
 			else
-				Msg("Script debugger not active.");
+				EngineLog("Script debugger not active.");
 		}else
-			Msg("Script debugger not present.");
+			EngineLog("Script debugger not present.");
 		}
 		else if(strstr(cName,"script_debug_stop")==cName ){
 			ai().script_engine().stopDebugger();
@@ -953,7 +953,7 @@ public:
 		for ( ; I != E; ++I) {
 			CSE_ALifeCreatureAbstract *obj = smart_cast<CSE_ALifeCreatureAbstract *>(I->second);
 			if (obj) {
-				Msg("\"%s\",",obj->name_replace());
+				EngineLog("\"%s\",",obj->name_replace());
 			}
 		}		
 
@@ -1084,7 +1084,7 @@ public:
 #ifndef DEBUG
 		  if (g_pGameLevel && Level().game && !IsGameTypeSingle())
 		  {
-			  Msg("Command is not available in Multiplayer");
+			  EngineLog("Command is not available in Multiplayer");
 			  return;
 		  }
 #endif
@@ -1167,7 +1167,7 @@ struct CCC_JumpToLevel : public IConsole_Command {
 	{
 		if ( !ai().get_alife() )
 		{
-			Msg				("! ALife simulator is needed to perform specified command!");
+			EngineLog				("! ALife simulator is needed to perform specified command!");
 			return;
 		}
 
@@ -1179,7 +1179,7 @@ struct CCC_JumpToLevel : public IConsole_Command {
 				ai().alife().jump_to_level(level);
 				return;
 			}
-		Msg							("! There is no level \"%s\" in the game graph!",level);
+		EngineLog							("! There is no level \"%s\" in the game graph!",level);
 	}
 
 	virtual void	Save	(IWriter *F)	{};
@@ -1187,7 +1187,7 @@ struct CCC_JumpToLevel : public IConsole_Command {
 	{
 		if ( !ai().get_alife() )
 		{
-			Msg				("! ALife simulator is needed to perform specified command!");
+			EngineLog				("! ALife simulator is needed to perform specified command!");
 			return;
 		}
 
@@ -1209,7 +1209,7 @@ public:
 	{
 		if ( !xr_strlen(args) )
 		{
-			Log("* Specify script name!");
+			EngineLog("* Specify script name!");
 		}
 		else
 		{
@@ -1243,7 +1243,7 @@ public:
 	virtual void	Execute				(LPCSTR args)
 	{
 		if (!xr_strlen(args))
-			Log("* Specify string to run!");
+			EngineLog("* Specify string to run!");
 		else {
 			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)) {
 				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(args,true,true);
@@ -1485,7 +1485,7 @@ public		:
 	{
 		if( CAttachableItem::m_dbgItem){
 			CAttachableItem::m_dbgItem = NULL;	
-			Msg("CCC_TuneAttachableItem switched to off");
+			EngineLog("CCC_TuneAttachableItem switched to off");
 			return;
 		};
 
@@ -1506,9 +1506,9 @@ public		:
 		}
 
 		if(CAttachableItem::m_dbgItem)
-			Msg("CCC_TuneAttachableItem switched to ON for [%s]",args);
+			EngineLog("CCC_TuneAttachableItem switched to ON for [%s]",args);
 		else
-			Msg("CCC_TuneAttachableItem cannot find attached item [%s]",args);
+			EngineLog("CCC_TuneAttachableItem cannot find attached item [%s]",args);
 	}
 
 	virtual void	Info	(TInfo& I)
@@ -1536,7 +1536,7 @@ public:
 	virtual void Execute(LPCSTR arguments)
 	{
 		if (!arguments || !*arguments) {
-			Msg					("! no arguments passed");
+			EngineLog					("! no arguments passed");
 			return;
 		}
 
@@ -1550,7 +1550,7 @@ public:
 		string_path				fn;
 
 		if (!FS.exist(arguments) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, "$game_meshes$", name)) {
-			Msg					("! Cannot find visual \"%s\"",arguments);
+			EngineLog					("! Cannot find visual \"%s\"",arguments);
 			return;
 		}
 
@@ -1558,13 +1558,13 @@ public:
 		IKinematics				*kinematics = smart_cast<IKinematics*>(visual);
 		if (!kinematics) {
 			Render->model_Delete(visual);
-			Msg					("! Invalid visual type \"%s\" (not a IKinematics)",arguments);
+			EngineLog					("! Invalid visual type \"%s\" (not a IKinematics)",arguments);
 			return;
 		}
 
-		Msg						("bones for model \"%s\"",arguments);
+		EngineLog						("bones for model \"%s\"",arguments);
 		for (u16 i=0, n=kinematics->LL_BoneCount(); i<n; ++i)
-			Msg					("%s",*kinematics->LL_GetData(i).name);
+			EngineLog					("%s",*kinematics->LL_GetData(i).name);
 		
 		Render->model_Delete	(visual);
 	}
@@ -1617,7 +1617,7 @@ public:
 		}
 		else
 		{
-			Msg( "- Current item in ActorMenu is unknown!" );
+			EngineLog( "- Current item in ActorMenu is unknown!" );
 		}
 	}
 };
@@ -1641,11 +1641,11 @@ public:
 		sscanf( args, "%d", &d );
 		if ( ui_game_sp->ActorMenu().DropAllItemsFromRuck( d == 1 ) )
 		{
-			Msg( "- All items from ruck of Actor is dropping now." );
+			EngineLog( "- All items from ruck of Actor is dropping now." );
 		}
 		else
 		{
-			Msg( "! ActorMenu is not in state `Inventory`" );
+			EngineLog( "! ActorMenu is not in state `Inventory`" );
 		}
 	}
 }; // CCC_InvDropAllItems
@@ -1672,7 +1672,7 @@ public:
 		shared_str result_string;
 		if (!GSA.CheckAvailableServices(result_string))
 		{
-			Msg(*result_string);
+			EngineLog(*result_string);
 //			return;
 		};
 		CGameSpy_Patching GameSpyPatching;
@@ -1842,7 +1842,7 @@ public:
 		}
 
 		if (!pSettings->section_exist(args)) {
-			Msg("! Can't find section: %s", args);
+			EngineLog("! Can't find section: %s", args);
 			return;
 		}
 
@@ -1868,7 +1868,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override {
 		if (!ai().get_alife()) {
-			Msg("! ALife simulator is needed to perform specified command!");
+			EngineLog("! ALife simulator is needed to perform specified command!");
 			return;
 		}
 
@@ -1900,7 +1900,7 @@ public:
 		}
 
 		if (!pSettings->section_exist(args)) {
-			Msg("! Can't find section: %s", args);
+			EngineLog("! Can't find section: %s", args);
 			return;
 		}
 
@@ -1913,7 +1913,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override {
 		if (!ai().get_alife()) {
-			Msg("! ALife simulator is needed to perform specified command!");
+			EngineLog("! ALife simulator is needed to perform specified command!");
 			return;
 		}
 

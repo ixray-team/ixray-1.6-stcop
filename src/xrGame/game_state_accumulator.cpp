@@ -405,7 +405,7 @@ bool game_state_accumulator::check_accumulative_value(enum_accumulative_player_v
 		make_string("accumulative parameter %d not found", param_id).c_str());
 	bool ret_value = func->exec(tmp_iter->second->get_u32_param(), right_arg);
 #ifdef DEBUG
-	Msg("* checking accumulative value: %s, result = %s",
+	EngineLog("* checking accumulative value: %s, result = %s",
 		player_values_strtable[param_id],
 		ret_value ? "true" : "false");
 #endif

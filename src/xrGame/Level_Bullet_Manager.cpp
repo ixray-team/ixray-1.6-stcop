@@ -834,7 +834,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 	extern BOOL g_bDrawBulletHit;
 	if (g_bDrawBulletHit)
 	{
-		Msg	(
+		EngineLog	(
 			"free fly velocity: %f",
 			trajectory_velocity(
 				bullet.start_velocity,
@@ -852,7 +852,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 	Fvector	previous_position	= start_position;
 	float low					= bullet.life_time;
 	float high					= bullet.life_time + time_delta;
-//	Msg							("process_bullet0: low[%f], high[%f]", low, high);
+//	EngineLog							("process_bullet0: low[%f], high[%f]", low, high);
 
 	bullet.change_rajectory_count	= 0;
 

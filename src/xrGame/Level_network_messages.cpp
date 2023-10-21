@@ -97,7 +97,7 @@ void CLevel::ClientReceive()
 				/*/
 				cl_Process_Spawn(*P);
 				/*/
-				//Msg("--- Client received M_SPAWN message...");
+				//EngineLog("--- Client received M_SPAWN message...");
 				game_events->insert		(*P);
 				if (g_bDebugEvents)		ProcessGameEvents();
 				//*/
@@ -106,10 +106,10 @@ void CLevel::ClientReceive()
 		case M_EVENT:
 			/*if (!game_configured)
 			{
-				Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+				EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 				break;
 			}*/
-			//Msg("Client received M_EVENT message...");
+			//EngineLog("Client received M_EVENT message...");
 			game_events->insert		(*P);
 			if (g_bDebugEvents)		ProcessGameEvents();
 			break;
@@ -117,7 +117,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				NET_Packet	tmpP;
@@ -162,7 +162,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				if (OnClient()) break;
@@ -182,7 +182,7 @@ void CLevel::ClientReceive()
 				if ((Level().timeServer() + Ping) < P->timeReceive)
 				{
 #ifdef DEBUG
-//					Msg("! TimeServer[%d] < TimeReceive[%d]", Level().timeServer(), P->timeReceive);
+//					EngineLog("! TimeServer[%d] < TimeReceive[%d]", Level().timeServer(), P->timeReceive);
 #endif
 					dTime = Ping;
 				}
@@ -199,7 +199,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				game_events->insert		(*P);
@@ -210,7 +210,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				u8 Count = P->r_u8();
@@ -233,7 +233,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				P->r_u16		(ID);
@@ -273,7 +273,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				char	buffer[256];
@@ -285,7 +285,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				if (!game) break;
@@ -337,7 +337,7 @@ void CLevel::ClientReceive()
 			{
 				/*if (!game_configured)
 				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
+					EngineLog("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
 				if (!game) break;
@@ -444,7 +444,7 @@ void CLevel::ClientReceive()
 			}break;
 		case M_STATISTIC_UPDATE_RESPOND: //deprecated, see  xrServer::OnMessage
 			{
-				/*Msg("--- CL: On Update Respond");
+				/*EngineLog("--- CL: On Update Respond");
 				if (!game) break;
 				if (!IsGameTypeSingle())
 					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);*/

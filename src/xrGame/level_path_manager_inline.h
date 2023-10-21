@@ -47,7 +47,7 @@ IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id
 
 #ifdef DEBUG
 	if (this->failed()) {
-		Msg						("! NPC %s couldn't build path from \n~ [%d][%f][%f][%f]\n~ to\n~ [%d][%f][%f][%f]",*this->m_object->object().cName(),start_vertex_id,VPUSH(ai().level_graph().vertex_position(start_vertex_id)),dest_vertex_id,VPUSH(ai().level_graph().vertex_position(dest_vertex_id)));
+		EngineLog("! NPC {} couldn't build path from \n~ [{}]{}\n~ to\n~ [{}]{}",*this->m_object->object().cName(),start_vertex_id,ai().level_graph().vertex_position(start_vertex_id),dest_vertex_id,ai().level_graph().vertex_position(dest_vertex_id));
 	}
 #endif
 

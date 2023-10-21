@@ -171,7 +171,7 @@ bool buffers_vector_reader::make_data_packet(NET_Packet & packet, u32 chunk_size
 		} else if (chunk_size <= buff_size_header)
 		{
 #ifdef DEBUG
-			Msg("! Not enough chunk, writing is deferred ...");
+			EngineLog("! Not enough chunk, writing is deferred ...");
 #endif
 			break;
 		}

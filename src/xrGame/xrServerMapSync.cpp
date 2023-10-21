@@ -5,9 +5,6 @@
 
 void xrServer::OnProcessClientMapData(NET_Packet& P, ClientID const & clientID)
 {
-#ifdef DEBUG
-	Msg("--- Sending map data to client 0x%08x", clientID);
-#endif // #ifdef DEBUG
 	NET_Packet	responseP;
 	string128	client_map_name;
 	string128	client_map_version;
@@ -26,10 +23,6 @@ void xrServer::OnProcessClientMapData(NET_Packet& P, ClientID const & clientID)
 		(xr_strcmp(server_map_version, client_map_version)))
 	{
 		responseP.w_u8(static_cast<u8>(YouHaveOtherMap));
-#ifdef DEBUG
-		Msg("--- Client [0x%08x] has incorrect map [%s] or version [%s]",
-			client_map_name, client_map_version);
-#endif // #ifdef DEBUG
 		//here we can make hard disconnect of this client...
 	} else if (!Level().IsChecksumsEqual(client_geom_crc32))
 	{

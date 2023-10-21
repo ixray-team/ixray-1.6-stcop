@@ -16,7 +16,7 @@ public:
 	
 	static			void DestroySingleton	()	{
 		if(!_self) return;
-		Log			("DestroySingleton::RefCounter:",_refcount);
+		EngineLog			("DestroySingleton::RefCounter:",_refcount);
 		VERIFY(_on_self_delete == false); 
 		VERIFY(_refcount == 0);
 		xr_delete(_self);
@@ -147,7 +147,7 @@ public:
 //
 //	//5. access to shared data
 //	void Smth() {
-//		Msg("shared: a = [%d] b =[%d]", inherited_shared::get_sd()->a, inherited_shared::get_sd()->b);
+//		EngineLog("shared: a = [%d] b =[%d]", inherited_shared::get_sd()->a, inherited_shared::get_sd()->b);
 //	}
 //};
 

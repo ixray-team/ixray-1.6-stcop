@@ -122,7 +122,7 @@ void CPHCommander::remove_call(PHCALL_I i,PHCALL_STORAGE& cs)
 		float m = f.magnitude();
 		if(m>EPS_S)
 				f.mul(1.f/m);
-		//Msg(" const force removed: force: %f,  remove step: %d  world step: %d ,dir(%f,%f,%f) ", m, esc->step(), (u32)physics_world()->StepsNum(), f.x, f.y , f.z ); 
+		//EngineLog(" const force removed: force: %f,  remove step: %d  world step: %d ,dir(%f,%f,%f) ", m, esc->step(), (u32)physics_world()->StepsNum(), f.x, f.y , f.z ); 
 	}
 #endif
 	delete_call(*i);

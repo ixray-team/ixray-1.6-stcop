@@ -178,7 +178,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 	
 	m_character->GetSavedVelocity(vVelocity); 
 	fActualVelocity=vVelocity.magnitude();
-	//Msg("saved avel %f", fActualVelocity);
+	//EngineLog("saved avel %f", fActualVelocity);
 	gcontact_Was=m_character->ContactWas();
 
 //////

@@ -15,11 +15,11 @@
 	};
 	xr_vector<DBGList>	dbg_list_wnds;
 	void dump_list_wnd(){
-		Msg("------Total  wnds %d",dbg_list_wnds.size());
+		EngineLog("------Total  wnds %d",dbg_list_wnds.size());
 		xr_vector<DBGList>::iterator _it = dbg_list_wnds.begin();
 		for(;_it!=dbg_list_wnds.end();++_it)
 			if(!(*_it).closed)
-				Msg("--leak detected ---- wnd = %d",(*_it).num);
+				EngineLog("--leak detected ---- wnd = %d",(*_it).num);
 	}
 #else
 	void dump_list_wnd(){}
@@ -139,12 +139,12 @@ CUIWindow::~CUIWindow()
 			break;
 		}
 		if( (*_it).num==m_dbg_id && (*_it).closed){
-			Msg("--CUIWindow [%d] already deleted", m_dbg_id);
+			EngineLog("--CUIWindow [%d] already deleted", m_dbg_id);
 			bOK = true;
 		}
 	}
 	if(!bOK)
-		Msg("CUIWindow::~CUIWindow.[%d] cannot find window in list", m_dbg_id);
+		EngineLog("CUIWindow::~CUIWindow.[%d] cannot find window in list", m_dbg_id);
 #endif
 }
 

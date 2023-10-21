@@ -65,10 +65,10 @@ void CWeaponRG6::FireStart ()
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
+				EngineLog("current_state {}", GetState() );
+				EngineLog("next_state {}", GetNextState());
+				EngineLog("item_sect {}", cNameSect().c_str());
+				EngineLog("H_Parent {}", H_Parent()->cNameSect().c_str());
 			}
 			E->g_fireParams (this, p1,d);
 		}
@@ -110,7 +110,7 @@ void CWeaponRG6::FireStart ()
 #endif*/
 				if (canfire0 != 0)
 				{
-//					Msg ("d[%f,%f,%f] - res [%f,%f,%f]", d.x, d.y, d.z, res[0].x, res[0].y, res[0].z);
+//					EngineLog ("d[%f,%f,%f] - res [%f,%f,%f]", d.x, d.y, d.z, res[0].x, res[0].y, res[0].z);
 					d = res[0];
 				};
 			}

@@ -28,11 +28,11 @@ struct DBGList_{
 xr_vector<DBGList_>	dbg_list_xmls;
 void dump_list_xmls()
 {
-	Msg("------Total  xmls %d",dbg_list_xmls.size());
+	EngineLog("------Total  xmls %d",dbg_list_xmls.size());
 	xr_vector<DBGList_>::iterator _it = dbg_list_xmls.begin();
 	for(;_it!=dbg_list_xmls.end();++_it)
 		if(!(*_it).closed)
-			Msg("--leak detected ---- xml = %d",(*_it).num);
+			EngineLog("--leak detected ---- xml = %d",(*_it).num);
 }
 #else
 	void dump_list_xmls(){}
@@ -62,11 +62,11 @@ CUIXml::~CUIXml()
 			break;
 		}
 		if( (*_it).num==m_dbg_id && (*_it).closed){
-			Msg("--XML [%d] already deleted", m_dbg_id);
+			EngineLog("--XML [%d] already deleted", m_dbg_id);
 			bOK = true;
 		}
 	}
 	if(!bOK)
-		Msg("CUIXml::~CUIXml.[%d] cannot find xml in list", m_dbg_id);
+		EngineLog("CUIXml::~CUIXml.[%d] cannot find xml in list", m_dbg_id);
 #endif
 }

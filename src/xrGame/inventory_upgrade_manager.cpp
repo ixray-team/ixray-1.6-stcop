@@ -166,7 +166,7 @@ void Manager::load_all_inventory()
 
 	if ( g_upgrades_log == 1 )
 	{
-		Msg( "# Inventory upgrade manager is loaded." );
+		EngineLog( "# Inventory upgrade manager is loaded." );
 	}
 
 	CInifile::Sect&		inv_section = pSettings->r_section( items_section );
@@ -182,14 +182,14 @@ void Manager::load_all_inventory()
 
 	if ( g_upgrades_log == 1 )
 	{
-		Msg( "# Upgrades of inventory items loaded." );
+		EngineLog( "# Upgrades of inventory items loaded." );
 	}
 
 	/*
 	float low, high; ///? <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	LPCSTR param = "cost";
 	compute_range( param, low ,high );
-	Msg( "Parameter <%s> min = %.3f, max = %.3f", param, low, high );
+	EngineLog( "Parameter <%s> min = %.3f, max = %.3f", param, low, high );
 	*/
 }
 
@@ -211,7 +211,7 @@ void Manager::load_all_properties()
 
 	if ( g_upgrades_log == 1 )
 	{
-		Msg( "# Upgrades properties of inventory itmes loaded." );
+		EngineLog( "# Upgrades properties of inventory itmes loaded." );
 	}
 }
 
@@ -222,46 +222,46 @@ void Manager::load_all_properties()
 void Manager::log_hierarchy()
 {
 	{ // roots
-		Msg( "# inventory upgrades roots: [%d] ", m_roots.size() );
+		EngineLog( "# inventory upgrades roots: [{}] ", m_roots.size() );
 		Roots_type::iterator ib = m_roots.begin();
 		Roots_type::iterator ie = m_roots.end();
 		for ( ; ib != ie ; ++ib )
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			EngineLog( "   {}", (*ib).first.c_str() );
 		}
 	}
 
 	{ // groups
-		Msg( "# inventory upgrades groups: [%d] ", m_groups.size() );
+		EngineLog( "# inventory upgrades groups: [{}] ", m_groups.size() );
 		Groups_type::iterator ib = m_groups.begin();
 		Groups_type::iterator ie = m_groups.end();
 		for ( ; ib != ie ; ++ib )
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			EngineLog("   {}", (*ib).first.c_str());
 		}
 	}
 
 	{ // upgrades
-		Msg( "# inventory upgrades: [%d] ", m_upgrades.size() );
+		EngineLog( "# inventory upgrades: [{}] ", m_upgrades.size() );
 		Upgrades_type::iterator ib = m_upgrades.begin();
 		Upgrades_type::iterator ie = m_upgrades.end();
 		for ( ; ib != ie ; ++ib )
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			EngineLog("   {}", (*ib).first.c_str());
 		}
 	}
 
 	{ // properties
-		Msg( "# inventory upgrade properties: [%d] ", m_properties.size() );
+		EngineLog( "# inventory upgrade properties: [{}] ", m_properties.size() );
 		Properties_type::iterator ib = m_properties.begin();
 		Properties_type::iterator ie = m_properties.end();
 		for ( ; ib != ie ; ++ib )
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			EngineLog("   {}", (*ib).first.c_str());
 		}
 	}
 
-	Msg( "- ----- ----- ----- inventory upgrades hierarchy: begin ----- ----- -----" );
+	EngineLog( "- ----- ----- ----- inventory upgrades hierarchy: begin ----- ----- -----" );
 	
 	Roots_type::iterator ib = m_roots.begin();
 	Roots_type::iterator ie = m_roots.end();
@@ -270,7 +270,7 @@ void Manager::log_hierarchy()
 		((*ib).second)->log_hierarchy( "" );
 	}
 	
-	Msg( "- ----- ----- ----- inventory upgrades hierarchy: end   ----- ----- -----" );
+	EngineLog( "- ----- ----- ----- inventory upgrades hierarchy: end   ----- ----- -----" );
 }
 
 void Manager::test_all_upgrades( CInventoryItem& item )
@@ -281,7 +281,7 @@ void Manager::test_all_upgrades( CInventoryItem& item )
 
 	if ( g_upgrades_log == 1 )
 	{
-		Msg( "- Checking all upgrades of item <%s> (id = %d) is successful.", root_p->id_str(), item.object_id() );
+		EngineLog( "- Checking all upgrades of item <{}> (id = {}) is successful.", root_p->id_str(), item.object_id() );
 	}
 }
 
@@ -354,7 +354,7 @@ bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_i
 
 			if ( g_upgrades_log == 1 )
 			{
-				Msg( "# Upgrade <%s> of inventory item [%s] (id = %d) is installed.",
+				EngineLog( "# Upgrade <{}> of inventory item [{}] (id = {}) is installed.",
 					upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id() );
 			}
 			return true;
@@ -368,8 +368,8 @@ bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_i
 
 	if ( g_upgrades_log == 1 )
 	{
-		Msg( "- Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed. Error = %d",
-			upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id(), res );
+		EngineLog( "- Upgrade <{}> of inventory item [{}] (id = {}) can`t be installed. Error = {}",
+			upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id(), (u32)res );
 	}
 	return false;
 }

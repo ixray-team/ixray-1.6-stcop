@@ -235,7 +235,7 @@ stalker_movement_manager_smart_cover::transition_action const &stalker_movement_
 			loophole_id0.c_str(),
 			loophole_id1.c_str(),
 			!target_body_state ? "" : (*target_body_state == eBodyStateStand ? "stand" : (*target_body_state == eBodyStateCrouch ? "crouch" : "invalid!")),
-			VPUSH(position)
+			position.x, position.y, position.z
 		)
 	);
 	return					(*result);
@@ -539,9 +539,6 @@ void stalker_movement_manager_smart_cover::go_next_loophole				()
 	if (m_path[0]._get() == smart_cover::transform_vertex("", true)._get()) {
 		VERIFY					(m_target.cover());
 		VERIFY					(!m_current.cover());
-#ifdef DEBUG
-		Msg						("setting up cover (direct from target): %s (%s)", m_target.cover_id().c_str(), m_enter_cover_id.c_str());
-#endif // #ifdef DEBUG
 		m_current.cover_id		(m_target.cover_id());
 		m_current.cover_loophole_id	(m_path[1]);
 		return;
@@ -551,9 +548,6 @@ void stalker_movement_manager_smart_cover::go_next_loophole				()
 
 	if (m_path[1]._get() == smart_cover::transform_vertex("", false)._get()) {
 		VERIFY					(m_path.size() == 2);
-#ifdef DEBUG
-		Msg						("exiting from cover: %s", m_current.cover_id().c_str());
-#endif // #ifdef DEBUG
 		m_current.cover_id		("");
 		on_smart_cover_exit		();
 		return;

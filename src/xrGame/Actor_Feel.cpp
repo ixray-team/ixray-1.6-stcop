@@ -341,7 +341,7 @@ void CActor::Feel_Grenade_Update( float rad )
 		}
 		if ( HUD().AddGrenade_ForMark( grn ) )
 		{
-			//.	Msg("__ __ Add new grenade! id = %d ", grn->ID() );
+			//.	EngineLog("__ __ Add new grenade! id = %d ", grn->ID() );
 		}
 	}// for it
 

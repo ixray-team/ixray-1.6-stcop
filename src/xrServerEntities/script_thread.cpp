@@ -29,9 +29,9 @@ const LPCSTR main_function = "console_command_run_string_main_thread_function";
 
 //void print_stack_(lua_State *L)
 //{
-//	Msg(" ");
+//	EngineLog(" ");
 //	for (int i=0; lua_type(L, -i-1); i++)
-//		Msg("%2d : %s",-i-1,lua_typename(L, lua_type(L, -i-1)));
+//		EngineLog("%2d : %s",-i-1,lua_typename(L, lua_type(L, -i-1)));
 //}
 
 //extern "C" __declspec(dllimport) lua_State *lua_newcthread(lua_State *OL, int cstacksize);
@@ -83,7 +83,7 @@ CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload
 //			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeInfo,"%s",g_ca_stdout);
 //			fflush							(stderr);
 //		}
-//		Msg					("lua get top %d",lua_gettop(ai().script_engine().lua()));
+//		EngineLog					("lua get top %d",lua_gettop(ai().script_engine().lua()));
 //		print_stack_		(ai().script_engine().lua());
 		
 #ifndef USE_LUA_STUDIO
@@ -115,7 +115,7 @@ CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload
 CScriptThread::~CScriptThread()
 {
 #ifdef DEBUG
-	Msg						("* Destroying script thread %s",*m_script_name);
+	EngineLog("* Destroying script thread {}",*m_script_name);
 #endif
 	try {
 #if defined(USE_DEBUGGER) && defined(USE_LUA_STUDIO)

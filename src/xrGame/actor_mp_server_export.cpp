@@ -41,7 +41,7 @@ void CSE_ActorMP::UPDATE_Write	(NET_Packet &packet)
 		fill_state					(state);
 		m_state_holder.relevant		(state);
 	}
-	//Msg("--- Client 0x%08x UPDATE_Write, health is: %2.04f", this->ID, m_state_holder.state().health);
+	//EngineLog("--- Client 0x%08x UPDATE_Write, health is: %2.04f", this->ID, m_state_holder.state().health);
 	R_ASSERT2(valid_pos(m_state_holder.state().position), "trying to write bad position");
 	m_state_holder.write			(packet);
 }

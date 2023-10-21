@@ -13,7 +13,7 @@
 CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName):CParticlesObject(caParticlesName,FALSE,true)
 {
 //	CScriptParticlesCustom* self = this;
-//	Msg							("CScriptParticlesCustom: 0x%08x",*(int*)&self);
+//	EngineLog							("CScriptParticlesCustom: 0x%08x",*(int*)&self);
 	m_owner						= owner;
 	m_animator					= 0;
 }
@@ -23,7 +23,7 @@ CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR c
 CScriptParticlesCustom::~CScriptParticlesCustom()
 {
 //	CScriptParticlesCustom* self = this;
-//	Msg							("~CScriptParticlesCustom: 0x%08x",*(int*)&self);
+//	EngineLog							("~CScriptParticlesCustom: 0x%08x",*(int*)&self);
 //	if ( g_verify_stalkers )
 //		g_verify_stalkers		();
 

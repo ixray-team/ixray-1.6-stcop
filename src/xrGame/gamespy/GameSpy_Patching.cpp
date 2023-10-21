@@ -9,7 +9,7 @@ CGameSpy_Patching::CGameSpy_Patching()
 	m_hGameSpyDLL = NULL;
 
 	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
+	EngineLog("Loading DLL: {}",g_name);
 	m_hGameSpyDLL			= LoadLibraryA	(g_name);
 	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
 	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
@@ -103,16 +103,16 @@ void __cdecl GS_ptPatchCallback ( PTBool available, PTBool mandatory, const char
 	if (!MainMenu()) return;
 	if (!available)
 	{
-		Msg("No new patches are available.");
+		EngineLog("No new patches are available.");
 		if (g_bInformUserThatNoPatchFound)
 			MainMenu()->OnNoNewPatchFound();		
 		return;
 	};
-	Msg("Found NewPatch: %s - %s", versionName, downloadURL);
+	EngineLog("Found NewPatch: %s - %s", versionName, downloadURL);
 	u32 new_url_size = APPEND_DWURL_INFO_LEN + (downloadURL ? xr_strlen(downloadURL) : 0);
 	char* new_download_url = static_cast<char*>(_alloca(new_url_size));
 	char const * new_url = ModifyDownloadUrl(new_download_url, new_url_size, downloadURL);
-	Msg("NewPatch url after updating: %s", new_url);
+	EngineLog("NewPatch url after updating: %s", new_url);
 	MainMenu()->OnNewPatchFound(versionName, new_url);
 };
 
@@ -126,7 +126,7 @@ void	CGameSpy_Patching::CheckForPatch(bool InformOfNoPatch)
 	);	
 	if (!res)
 	{
-		Msg("! Unable to send query for patch!");
+		EngineLog("! Unable to send query for patch!");
 
 	}
 };

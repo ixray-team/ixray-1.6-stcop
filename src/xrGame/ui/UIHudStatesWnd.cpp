@@ -435,7 +435,7 @@ void CUIHudStatesWnd::UpdateZones()
 
 /*	if ( Device.dwFrame % 20 == 0 )
 	{
-		Msg(" self = %.2f   hit = %.2f", m_radia_self, m_radia_hit );
+		EngineLog(" self = %.2f   hit = %.2f", m_radia_self, m_radia_hit );
 	}*/
 
 //	m_arrow->SetNewValue( m_radia_hit );

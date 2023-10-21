@@ -32,7 +32,7 @@ GameEvent*		GameEventQueue::Create	()
 		ge					= ready.back	();
 		//---------------------------------------------
 #ifdef _DEBUG
-//		Msg ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
+//		EngineLog ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
 #endif
 		LastTimeCreate = GetTickCount64();
 		//---------------------------------------------
@@ -52,7 +52,7 @@ GameEvent*		GameEventQueue::CreateSafe	(NET_Packet& P, u16 type, u32 time, Clien
 		if (m_blocked_clients.find(clientID) != m_blocked_clients.end())
 		{
 #ifdef DEBUG
-			Msg("--- Ignoring event type[%d] time[%d] clientID[0x%08x]", type, time, clientID);
+			EngineLog("--- Ignoring event type[%d] time[%d] clientID[0x%08x]", type, time, clientID.value());
 #endif // #ifdef DEBUG
 			return NULL;
 		}
@@ -70,7 +70,7 @@ GameEvent*		GameEventQueue::Create	(NET_Packet& P, u16 type, u32 time, ClientID 
 		ge					= ready.back	();
 		//---------------------------------------------
 #ifdef _DEBUG
-//		Msg ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
+//		EngineLog ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
 #endif
 		LastTimeCreate = GetTickCount64();
 		//---------------------------------------------
@@ -102,7 +102,7 @@ GameEvent*		GameEventQueue::Retreive	()
 			xr_delete(unused.back());
 			unused.pop_back();
 #ifdef _DEBUG
-//			Msg ("GameEventQueue::Retreive - ready %d, unused %d", ready.size(), unused.size());
+//			EngineLog ("GameEventQueue::Retreive - ready %d, unused %d", ready.size(), unused.size());
 #endif
 		}		
 	}
@@ -122,7 +122,7 @@ void			GameEventQueue::Release	()
 	{
 		xr_delete(ready.front());
 #ifdef _DEBUG
-//		Msg ("GameEventQueue::Release - ready %d, unused %d", ready.size(), unused.size());
+//		EngineLog ("GameEventQueue::Release - ready %d, unused %d", ready.size(), unused.size());
 #endif
 	}
 	else
@@ -137,14 +137,14 @@ void GameEventQueue::SetIgnoreEventsFor(bool ignore, ClientID clientID)
 	if (ignore)
 	{
 #ifdef DEBUG
-		Msg("--- Setting ignore messages for client 0x%08x", clientID);
+		EngineLog("--- Setting ignore messages for client {}", clientID.value());
 #endif // #ifdef DEBUG
 		m_blocked_clients.insert(clientID);	
 	}
 	else
 	{
 #ifdef DEBUG
-		Msg("--- Setting receive messages for client 0x%08x", clientID);
+		EngineLog("--- Setting receive messages for client {}", clientID.value());
 #endif // #ifdef DEBUG
 		m_blocked_clients.erase(clientID);
 	}
@@ -171,17 +171,10 @@ u32 GameEventQueue::EraseEvents(event_predicate to_del)
 		if ((LastTimeCreate < tmp_time) &&  (size > 32))
 		{
 			xr_delete(*need_to_erase);
-#ifdef _DEBUG
-//			Msg ("GameEventQueue::EraseEvents - ready %d, unused %d", ready.size(), unused.size());
-#endif
 		} else
 		{
 			unused.push_back(*need_to_erase);
 		}
-		//-----
-#ifdef DEBUG
-		Msg("! GameEventQueue::EraseEvents - destroying event type[%d], sender[0x%08x]", (*need_to_erase)->type, (*need_to_erase)->sender);
-#endif
 		ready.erase(need_to_erase);
 		++ret_val;
 		need_to_erase = std::find_if(ready.begin(), ready.end(), to_del);

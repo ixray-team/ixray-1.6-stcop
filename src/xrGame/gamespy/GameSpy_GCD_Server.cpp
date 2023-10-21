@@ -9,7 +9,6 @@ CGameSpy_GCD_Server::CGameSpy_GCD_Server()
 	m_hGameSpyDLL = NULL;
 
 	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
 	m_hGameSpyDLL			= LoadLibraryA	(g_name);
 	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
 	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
@@ -48,11 +47,11 @@ bool	CGameSpy_GCD_Server::Init()
 	int res = xrGS_gcd_init_qr2(NULL);
 	if (res == -1)
 	{
-		Msg("! xrGS::CDKey : Failes to Initialize!");
+		EngineLog("! xrGS::CDKey : Failes to Initialize!");
 		return false;
 	};
 #ifndef MASTER_GOLD
-	Msg("- xrGS::CDKey : Initialized");
+	EngineLog("- xrGS::CDKey : Initialized");
 #endif // #ifndef MASTER_GOLD
 	return true;
 };

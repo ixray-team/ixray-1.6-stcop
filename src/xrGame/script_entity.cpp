@@ -245,7 +245,7 @@ void CScriptEntity::ProcessScripts()
 		VERIFY		(l_tpEntityAction);
 #ifdef _DEBUG
 //		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Processing action : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
+//			EngineLog			("%6d Processing action : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
 #endif
 		
 		if (m_tpCurrentEntityAction != l_tpEntityAction)
@@ -258,14 +258,14 @@ void CScriptEntity::ProcessScripts()
 
 #ifdef _DEBUG
 //		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
+//			EngineLog			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
 #endif
 
 		vfFinishAction(l_tpEntityAction);
 
 #ifdef DEBUG
 		if (psAI_Flags.is(aiLua))
-			Msg("Entity Action removed!!!");
+			EngineLog("Entity Action removed!!!");
 #endif
 		if (true /*psAI_Flags.is(aiLua)*/ )
 		{
@@ -381,7 +381,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction *tpEntityAction)
 		if (!m_current_sound->_feedback())
 			if (!l_tSoundAction.m_bStartedToPlay) {
 #ifdef _DEBUG
-//				Msg									("%6d Starting sound %s",Device.dwTimeGlobal,*l_tSoundAction.m_caSoundToPlay);
+//				EngineLog									("%6d Starting sound %s",Device.dwTimeGlobal,*l_tSoundAction.m_caSoundToPlay);
 #endif
 				const Fmatrix	&l_tMatrix = GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,l_tSoundAction.m_tSoundAngles);
 				m_current_sound->play_at_pos(m_object,l_tMatrix.c,l_tSoundAction.m_bLooped ? sm_Looped : 0);
@@ -458,7 +458,7 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction *tpEntityAction)
 			R_ASSERT(l_tpGameObject);
 #endif
 			m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
-//			Msg			("%6d Object %s, position [%f][%f][%f]",Device.dwTimeGlobal,*l_tpGameObject->cName(),VPUSH(l_tpGameObject->Position()));
+//			EngineLog			("%6d Object %s, position [%f][%f][%f]",Device.dwTimeGlobal,*l_tpGameObject->cName(),VPUSH(l_tpGameObject->Position()));
 			m_monster->movement().detail().set_dest_position(l_tpGameObject->Position());
 			m_monster->movement().set_level_dest_vertex(l_tpGameObject->ai_location().level_vertex_id());
 			break;
@@ -591,7 +591,7 @@ bool CScriptEntity::bfScriptAnimation()
 
 #ifdef DEBUG
 			//if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-			//	Msg				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
+			//	EngineLog				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
 #endif
 			m_tpScriptAnimation = m_tpNextAnimation;
 			IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(object().Visual());

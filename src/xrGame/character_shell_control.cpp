@@ -125,7 +125,7 @@ void character_shell_control::TestForWounded(const Fmatrix& xform,  IKinematics*
 #ifdef	DEBUG
 		if( death_anim_debug )
 		{
-			Msg( "death anim: test for wounded %s ", m_was_wounded ? "true" : "false" );
+			EngineLog( "death anim: test for wounded %s ", m_was_wounded ? "true" : "false" );
 			
 		}
 #endif

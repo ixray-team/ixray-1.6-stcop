@@ -119,7 +119,7 @@ void CDangerManager::update			()
 	OBJECTS::const_iterator	I = m_objects.begin();
 	OBJECTS::const_iterator	E = m_objects.end();
 	for ( ; I != E; ++I) {
-//		Msg					("%6d : Danger : [%d][%d]",(*I).time(),(*I).type(),(*I).perceive_type());
+//		EngineLog					("%6d : Danger : [%d][%d]",(*I).time(),(*I).type(),(*I).perceive_type());
 		float				value = do_evaluate(*I);
 		if (result > value) {
 			result			= value;

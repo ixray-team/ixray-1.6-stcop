@@ -21,7 +21,7 @@
 #pragma warning(pop)
 
 #if 0
-#	define MSG(...) Msg(__VA_ARGS__)
+#	define MSG(...) EngineLog(__VA_ARGS__)
 #else
 #	define MSG(...)
 #endif
@@ -166,32 +166,32 @@ void moving_objects::resolve_collision			(boxes &current, moving_object *object0
 {
 #if 0
 	if (object0->action_frame() == Device.dwFrame) {
-		Msg						("%6d Oooooooops",Device.dwFrame);
+		EngineLog						("%6d Oooooooops",Device.dwFrame);
 		{
-			Msg					("  visited emitters[%d]",m_visited_emitters.size());
+			EngineLog					("  visited emitters[%d]",m_visited_emitters.size());
 			NEAREST_MOVING::const_iterator	I = m_visited_emitters.begin();
 			NEAREST_MOVING::const_iterator	E = m_visited_emitters.end();
 			for ( ; I != E; ++I) {
-				Msg				("    %s",(*I)->object().cName().c_str());
+				EngineLog				("    %s",(*I)->object().cName().c_str());
 			}
 		}
 		{
-			Msg					("  collision emitters[%d]",m_collision_emitters.size());
+			EngineLog					("  collision emitters[%d]",m_collision_emitters.size());
 			NEAREST_MOVING::const_iterator	I = m_collision_emitters.begin();
 			NEAREST_MOVING::const_iterator	E = m_collision_emitters.end();
 			for ( ; I != E; ++I) {
-				Msg				("    %s",(*I)->object().cName().c_str());
+				EngineLog				("    %s",(*I)->object().cName().c_str());
 			}
 		}
 		{
-			Msg					("  nearest moving[%d]",m_nearest_moving.size());
+			EngineLog					("  nearest moving[%d]",m_nearest_moving.size());
 			NEAREST_MOVING::const_iterator	I = m_nearest_moving.begin();
 			NEAREST_MOVING::const_iterator	E = m_nearest_moving.end();
 			for ( ; I != E; ++I) {
-				Msg				("    %s",(*I)->object().cName().c_str());
+				EngineLog				("    %s",(*I)->object().cName().c_str());
 			}
 		}
-		Msg						("%6d Eng of \"Oooooooops\"",Device.dwFrame);
+		EngineLog						("%6d Eng of \"Oooooooops\"",Device.dwFrame);
 	}
 #endif // 0
 	VERIFY2						(object0->action_frame() != Device.dwFrame, make_string("%d %s",Device.dwFrame,*object0->object().cName()));

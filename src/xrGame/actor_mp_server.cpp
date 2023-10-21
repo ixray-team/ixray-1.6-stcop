@@ -10,20 +10,11 @@ CSE_ActorMP::CSE_ActorMP		(LPCSTR section) :
 void CSE_ActorMP::STATE_Read	(NET_Packet &packet, u16 size)
 {
 	inherited::STATE_Read	(packet,size);
-	
-#ifdef DEBUG
-	Msg("--- Actor %d[%s] STATE_Read, health is: %2.04f", this->ID, this->name_replace(),
-		m_state_holder.state().health);
-#endif // #ifdef DEBUG
 }
 
 void CSE_ActorMP::STATE_Write	(NET_Packet &packet)
 {
 	inherited::STATE_Write	(packet);
-#ifdef DEBUG
-	Msg("--- Actor %d[%s] STATE_Write, health is: %2.04f", this->ID, this->name_replace(),
-		m_state_holder.state().health);
-#endif // #ifdef DEBUG
 }
 
 BOOL CSE_ActorMP::Net_Relevant	()

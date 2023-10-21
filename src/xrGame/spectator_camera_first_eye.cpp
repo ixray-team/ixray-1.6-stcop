@@ -17,7 +17,7 @@ CSpectrCameraFirstEye::~CSpectrCameraFirstEye()
 
 void CSpectrCameraFirstEye::Move( int cmd, float val, float factor )
 {
-	//Msg("Current ftimedelta = %0.4f", m_fTimeDelta);
+	//EngineLog("Current ftimedelta = %0.4f", m_fTimeDelta);
 	if (bClampPitch)
 	{
 		while (pitch < lim_pitch[0])

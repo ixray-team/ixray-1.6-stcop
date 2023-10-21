@@ -678,7 +678,7 @@ void CUIGameCTA::ShowSkinMenu(s8 currentSkin)
 	if (!m_pCurSkinMenu)
 	{
 #ifdef CLIENT_CTA_LOG
-		Msg("Warning: current skin window not initialized while trying to show it");
+		EngineLog("Warning: current skin window not initialized while trying to show it");
 #endif
 		return;
 	}

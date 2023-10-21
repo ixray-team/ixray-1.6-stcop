@@ -155,8 +155,8 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 
 	if (!(result.x1>=0&&result.y1>=0&&result.x2<=UI_BASE_WIDTH&&result.y2<=UI_BASE_HEIGHT) )
 	{
-		Msg("! r_tgt [%.3f][%.3f][%.3f][%.3f]", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
-		Msg("! result [%.3f][%.3f][%.3f][%.3f]", result.x1, result.y1, result.x2, result.y2);
+		EngineLog("! r_tgt  {}, {}, {}, {}", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
+		EngineLog("! result {}, {}, {}, {}", result.x1, result.y1, result.x2, result.y2);
 		VERIFY(result.x1>=0&&result.y1>=0&&result.x2<=UI_BASE_WIDTH&&result.y2<=UI_BASE_HEIGHT);
 	}
 	m_Scissors.push		(result);
@@ -289,7 +289,7 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 			if ( NULL==strext(fn) ) xr_strcat(str, ".xml");
 		}
 #ifdef DEBUG
-		Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);
+		EngineLog("[16-9] get_xml_name for[{}] returns [{}]", fn, str);
 #endif // #ifdef DEBUG
 	}
 	return str;

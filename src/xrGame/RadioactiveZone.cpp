@@ -63,13 +63,13 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 						m_eHitTypeBlowout);
 #ifdef DEBUG
 //		if(bDebug)
-/*		Msg			(	"Zone[%s]-hit->[%s] Power=%3.3f Frame=%d Time=%3.3f", 
+/*		EngineLog			(	"Zone[%s]-hit->[%s] Power=%3.3f Frame=%d Time=%3.3f", 
 						cName().c_str(), 
 						O->object->cName().c_str(), 
 						send_power, 
 						Device.dwFrame, 
 						tg);*/
-///		Msg( "Zone hit ___   damage = %.4f    Frame=%d ", send_power, Device.dwFrame );
+///		EngineLog( "Zone hit ___   damage = %.4f    Frame=%d ", send_power, Device.dwFrame );
 #endif
 		O->f_time_affected += one;
 	}//while

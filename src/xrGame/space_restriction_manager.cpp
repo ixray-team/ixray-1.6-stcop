@@ -36,15 +36,15 @@ void show_restriction				(const shared_str &restrictions)
 {
 	string256						temp;
 	for (int i=0, n=_GetItemCount(*restrictions); i<n; ++i)
-		Msg							("     %s",_GetItem(*restrictions,i,temp));
+		EngineLog							("     {}",_GetItem(*restrictions,i,temp));
 }
 
 typedef intrusive_ptr<CSpaceRestriction,RestrictionSpace::CTimeIntrusiveBase> CRestrictionPtr;
 void show_restriction				(const CRestrictionPtr &restriction)
 {
-	Msg								("out");
+	EngineLog								("out");
 	show_restriction				(restriction->out_restrictions());
-	Msg								("in");
+	EngineLog								("in");
 	show_restriction				(restriction->in_restrictions());
 }
 

@@ -25,7 +25,7 @@ LPCSTR xrServer::get_map_download_url(LPCSTR level_name, LPCSTR level_version)
 	if (!level_ini)
 	{
 		if(!IsGameTypeSingle())
-			Msg("! Warning: level [%s][%s] has not header ltx", level_name, level_version);
+			EngineLog("! Warning: level [{}][{}] has not header ltx", level_name, level_version);
 
 		return ret_url;
 	}
@@ -40,7 +40,7 @@ LPCSTR xrServer::get_map_download_url(LPCSTR level_name, LPCSTR level_version)
 xrServer::EConnect xrServer::Connect(shared_str &session_name, GameDescriptionData & game_descr)
 {
 #ifdef DEBUG
-	Msg						("* sv_Connect: %s",	*session_name);
+	EngineLog("* sv_Connect: {}",	*session_name);
 #endif
 
 	// Parse options and create game
@@ -75,7 +75,7 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name, GameDescriptionDa
 		FS.auth_generate		(tmp_ignore, tmp_check);
 	}
 #ifdef DEBUG
-	Msg("* Created server_game %s",game->type_name());
+	EngineLog("* Created server_game {}",game->type_name());
 #endif
 	
 	ZeroMemory(&game_descr, sizeof(game_descr));
@@ -165,7 +165,7 @@ void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 	if (server_game->IsPlayerBanned(xrCL->m_cdkey_digest.c_str(), admin_name))
 	{
 		R_ASSERT2(tmp_client != GetServerClient(), "can't disconnect server client");
-		Msg("--- Client [%s] tried to connect - rejecting connection (he is banned by %s) ...",
+		EngineLog("--- Client [{}] tried to connect - rejecting connection (he is banned by {}) ...",
 			tmp_client->m_cAddress.to_string().c_str(),
 			admin_name.size() ? admin_name.c_str() : "Server");
 		LPSTR message_to_user;

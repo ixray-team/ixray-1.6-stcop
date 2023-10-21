@@ -75,9 +75,9 @@ void CPlanner::update				()
 		if (this->m_solution_changed) {
 			show_current_world_state();
 			show_target_world_state	();
-			Msg						("%6d : Solution for object %s [%d vertices searched]",Device.dwTimeGlobal,object_name(),ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
+			EngineLog						("%6d : Solution for object %s [%d vertices searched]",Device.dwTimeGlobal,object_name(),ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
 			for (int i=0; i<(int)this->solution().size(); ++i)
-				Msg					("%s",action2string(this->solution()[i]));
+				EngineLog					("%s",action2string(this->solution()[i]));
 		}
 	}
 #endif
@@ -87,9 +87,9 @@ void CPlanner::update				()
 		// printing current world state
 		show						();
 
-		Msg							("! ERROR : there is no action sequence, which can transfer current world state to the target one");
-		Msg							("Time : %6d",Device.dwTimeGlobal);
-		Msg							("Object : %s",object_name());
+		EngineLog							("! ERROR : there is no action sequence, which can transfer current world state to the target one");
+		EngineLog							("Time : %6d",Device.dwTimeGlobal);
+		EngineLog							("Object : %s",object_name());
 
 		show_current_world_state	();
 		show_target_world_state		();
@@ -156,28 +156,28 @@ IC	bool CPlanner::initialized	() const
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_condition	(_world_operator *action, _condition_type condition_id, _value_type condition_value)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string(
-			"do not change preconditions during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string(
+	//		"do not change preconditions during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	action->add_condition	(CWorldProperty(condition_id,condition_value));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_effect		(_world_operator *action, _condition_type condition_id, _value_type condition_value)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string(
-			"do not change effects during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string(
+	//		"do not change effects during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	action->add_effect		(CWorldProperty(condition_id,condition_value));
 }
 
@@ -204,14 +204,14 @@ LPCSTR CPlanner::object_name		() const
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _operator)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string(
-			"do not add operators during planner update, object %s, id[%d]",
-			object_name(),
-			operator_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string(
+	//		"do not add operators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		operator_id
+	//	)
+	//);
 	inherited::add_operator	(operator_id,_operator);
 	_operator->setup		(m_object,&m_storage);
 #ifdef LOG_ACTION
@@ -222,28 +222,28 @@ IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _o
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::remove_operator	(const _edge_type	&operator_id)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string(
-			"do not remove operators during planner update, object %s, id[%d]",
-			object_name(),
-			operator_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string(
+	//		"do not remove operators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		operator_id
+	//	)
+	//);
 	inherited::remove_operator	(operator_id);
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition_evaluator_ptr evaluator)
 {
-	VERIFY2						(
-		!m_solving,
-		make_string(
-			"do not add evaluators during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2						(
+	//	!m_solving,
+	//	make_string(
+	//		"do not add evaluators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	inherited::add_evaluator	(condition_id,evaluator);
 	evaluator->setup			(m_object,&m_storage);
 }
@@ -251,14 +251,14 @@ IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::remove_evaluator	(const _condition_type &condition_id)
 {
-	VERIFY2						(
-		!m_solving,
-		make_string(
-			"do not remove evaluators during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2						(
+	//	!m_solving,
+	//	make_string(
+	//		"do not remove evaluators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	inherited::remove_evaluator	(condition_id);
 }
 
@@ -276,7 +276,7 @@ IC	void CPlanner::set_use_log		(bool value)
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::show_current_world_state	()
 {
-	Msg						("Current world state :");
+	EngineLog						("Current world state :");
 	auto	I = this->evaluators().begin();
 	auto	E = this->evaluators().end();
 	for ( ; I != E; ++I) {
@@ -284,7 +284,7 @@ IC	void CPlanner::show_current_world_state	()
 		char				temp = '?';
 		if ((J != this->current_state().conditions().end()) && ((*J).condition() == (*I).first)) {
 			temp			= (*J).value() ? '+' : '-';
-			Msg				("%5c : [%d][%s]",temp,(*I).first,property2string((*I).first));
+			EngineLog				("%5c : [%d][%s]",temp,(*I).first,property2string((*I).first));
 		}
 	}
 }
@@ -292,7 +292,7 @@ IC	void CPlanner::show_current_world_state	()
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::show_target_world_state	()
 {
-	Msg						("Target world state :");
+	EngineLog						("Target world state :");
 	auto I = this->evaluators().begin();
 	auto E = this->evaluators().end();
 	for ( ; I != E; ++I) {
@@ -300,7 +300,7 @@ IC	void CPlanner::show_target_world_state	()
 		char				temp = '?';
 		if ((J != this->target_state().conditions().end()) && ((*J).condition() == (*I).first)) {
 			temp			= (*J).value() ? '+' : '-';
-			Msg				("%5c : [%d][%s]",temp,(*I).first,property2string((*I).first));
+			EngineLog				("%5c : [%d][%s]",temp,(*I).first,property2string((*I).first));
 		}
 	}
 }
@@ -311,34 +311,34 @@ IC	void CPlanner::show				(LPCSTR offset)
 	string256		temp;
 	strconcat		(sizeof(temp),temp,offset,"    ");
 	{
-		Msg			("\n%sEVALUATORS : %d\n",offset, this->evaluators().size());
+		EngineLog			("\n%sEVALUATORS : %d\n",offset, this->evaluators().size());
 		auto	I = this->evaluators().begin();
 		auto	E = this->evaluators().end();
 		for ( ; I != E; ++I)
-			Msg		("%sevaluator   [%d][%s]",offset,(*I).first,property2string((*I).first));
+			EngineLog		("%sevaluator   [%d][%s]",offset,(*I).first,property2string((*I).first));
 	}
 	{
-		Msg			("\n%sOPERATORS : %d\n",offset, this->operators().size());
+		EngineLog			("\n%sOPERATORS : %d\n",offset, this->operators().size());
 		auto I = this->operators().begin();
 		auto E = this->operators().end();
 		for ( ; I != E; ++I) {
-			Msg		("%soperator    [%d][%s]",offset,(*I).m_operator_id,(*I).m_operator->m_action_name);
+			EngineLog		("%soperator    [%d][%s]",offset,(*I).m_operator_id,(*I).m_operator->m_action_name);
 
 			{
 				auto i = (*I).m_operator->conditions().conditions().begin();
 				auto e = (*I).m_operator->conditions().conditions().end();
 				for ( ; i != e; ++i)
-					Msg	("%s	condition [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "TRUE" : "FALSE");
+					EngineLog	("%s	condition [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "TRUE" : "FALSE");
 			}
 			{
 				auto i = (*I).m_operator->effects().conditions().begin();
 				auto e = (*I).m_operator->effects().conditions().end();
 				for ( ; i != e; ++i)
-					Msg	("%s	effect    [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "TRUE" : "FALSE");
+					EngineLog	("%s	effect    [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "TRUE" : "FALSE");
 			}
 
 			(*I).m_operator->show(temp);
-			Msg	(" ");
+			EngineLog	(" ");
 		}
 	}
 }

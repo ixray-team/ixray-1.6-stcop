@@ -186,7 +186,7 @@ void CIKLimb::SetGoal( SCalculateData &cd )
 #if	0
 	if(!state_valide(sv_state))
 	{
-		Msg( "st ! valide:-: time: %d ;time delta: %d ; sv_state.calc_time: %d", Device.dwTimeGlobal, Device.dwTimeDelta,  sv_state.calc_time );
+		EngineLog( "st ! valide:-: time: %d ;time delta: %d ; sv_state.calc_time: %d", Device.dwTimeGlobal, Device.dwTimeDelta,  sv_state.calc_time );
 	}
 #endif
 	SetNewGoal(cld,cd);
@@ -325,7 +325,7 @@ u16 get_ik_bone( IKinematics* K, LPCSTR	S, u16 i )
 #ifdef	DEBUG
 	if( BI_NONE == bone )
 	{
-		Msg( "ik bone: %s does not found in visual: %s", sbone, *smart_cast<IRenderVisual*>(K)->getDebugName() );
+		EngineLog( "ik bone: %s does not found in visual: %s", sbone, *smart_cast<IRenderVisual*>(K)->getDebugName() );
 		VERIFY( false );
 	}
 #endif
@@ -492,7 +492,7 @@ static Fmatrix* dm = 0;
 void	print_det()
 {
 	if(dm)
-		Msg("det : %f", DET( *dm ) );
+		EngineLog("det : %f", DET( *dm ) );
 }
 float det_tolerance = 0.2f;
 #endif
@@ -923,7 +923,7 @@ IC void	CIKLimb::GetPickDir( Fvector &v, SCalculateData& cd ) const
 		VERIFY( _valid( v ) );
 #ifdef	DEBUG
 		if( ph_dbg_draw_mask.test( phDbgIK ) )
-			Msg( "prev state not valide" );
+			EngineLog( "prev state not valide" );
 #endif
 		return;
 	}

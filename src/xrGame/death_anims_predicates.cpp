@@ -95,7 +95,7 @@ void type_motion_diagnostic( LPCSTR message, type_motion::edirection dr, const C
 	if( m.valid() )
 		motion_name = KA->LL_MotionDefName_dbg( m ).first;
 
-	Msg( "death anims: %s, dir: %s, motion: %s,  obj: %s, model: %s, bone: %s " ,message ,motion_dirs[ dr ].name, motion_name, ea.cName().c_str(), ea.cNameVisual().c_str(), bone_name );
+	EngineLog( "death anims: %s, dir: %s, motion: %s,  obj: %s, model: %s, bone: %s " ,message ,motion_dirs[ dr ].name, motion_name, ea.cName().c_str(), ea.cNameVisual().c_str(), bone_name );
 
 #endif
 }
@@ -158,7 +158,7 @@ class	type_motion1: public type_motion
 		m = MotionID();
 //#ifdef DEBUG		
 //		if( death_anim_debug )
-//			Msg( " type_motion1: 2.	Изрешетить пулями  " );
+//			EngineLog( " type_motion1: 2.	Изрешетить пулями  " );
 //#endif
 		return false;
 	}

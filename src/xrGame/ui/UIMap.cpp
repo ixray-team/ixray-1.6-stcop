@@ -39,7 +39,7 @@ void CUICustomMap::Initialize(shared_str name, LPCSTR sh_name)
 		Init_internal	(name, *levelIni, "level_map", sh_name);
 	}else
 	{
-		Msg("! default LevelMap used for level[%s]",name.c_str());
+		EngineLog("! default LevelMap used for level[%s]",name.c_str());
 		Init_internal	(name, *pGameIni, "def_map", sh_name);
 		m_name			= name;
 	}
@@ -434,8 +434,8 @@ void CUILevelMap::Init_internal	(const shared_str& name, CInifile& pLtx, const s
 
 	if(FALSE==fsimilar(kw,kh,EPS_L))
 	{
-		Msg(" --incorrect global rect definition for map [%s]  kw=%f kh=%f",*MapName(),kw,kh);
-		Msg(" --try x2=%f or  y2=%f",m_GlobalRect.x1+kh*BoundRect().width(), m_GlobalRect.y1+kw*BoundRect().height());
+		EngineLog(" --incorrect global rect definition for map [%s]  kw=%f kh=%f",*MapName(),kw,kh);
+		EngineLog(" --try x2=%f or  y2=%f",m_GlobalRect.x1+kh*BoundRect().width(), m_GlobalRect.y1+kw*BoundRect().height());
 	}
 #endif
 }

@@ -245,7 +245,7 @@ void CStalkerActionCombatBase::play_attack_sound	(u32 max_start_time, u32 min_st
 	u32						sound_type = eStalkerSoundAttackNoAllies;
 #ifdef DEBUG
 	if (object().agent_manager().member().combat_members().empty())
-		Msg					(
+		EngineLog					(
 			"! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
 			*object().cName(),
 			object().g_Team(),
@@ -280,7 +280,7 @@ void CStalkerActionCombatBase::play_start_search_sound	(u32 max_start_time, u32 
 
 #ifdef DEBUG
 	if (object().agent_manager().member().combat_members().empty())
-		Msg					("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
+		EngineLog					("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
 			*object().cName(),
 			object().g_Team(),
 			object().g_Squad(),
@@ -309,7 +309,7 @@ void CStalkerActionCombatBase::play_enemy_lost_sound	(u32 max_start_time, u32 mi
 
 #ifdef DEBUG
 	if (object().agent_manager().member().combat_members().empty())
-		Msg					("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
+		EngineLog					("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
 			*object().cName(),
 			object().g_Team(),
 			object().g_Squad(),

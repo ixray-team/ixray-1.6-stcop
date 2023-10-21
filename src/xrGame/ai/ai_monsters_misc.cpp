@@ -186,7 +186,7 @@ void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 			A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))
-				Msg		("* Loaded animation %s",S1);
+				EngineLog		("* Loaded animation %s",S1);
 #endif
 		}
 		else
@@ -194,7 +194,7 @@ void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 				A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))
-				Msg		("* Loaded animation fx %s",S1);
+				EngineLog		("* Loaded animation fx %s",S1);
 #endif
 			}
 			else

@@ -204,7 +204,7 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 
 	STOP_PROFILE
 }
-
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 u32	CLevelGraph::vertex_id				(const Fvector &position) const
 {
 	VERIFY2				(

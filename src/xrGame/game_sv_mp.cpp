@@ -1088,7 +1088,7 @@ void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 			}
 			//} else
 			//{
-			//	Msg("! ERROR: failed to extract ban time from vote string.");
+			//	EngineLog("! ERROR: failed to extract ban time from vote string.");
 			//}
 			xr_strcpy(resVoteCommand, VoteCommand);
 		} else

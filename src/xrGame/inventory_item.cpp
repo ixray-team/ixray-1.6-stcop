@@ -90,11 +90,11 @@ CInventoryItem::~CInventoryItem()
 	if(!B_GOOD)
 	{
 		CObject* p	= object().H_Parent();
-		Msg("inventory ptr is [%s]",m_pInventory?"not-null":"null");
+		EngineLog("inventory ptr is [%s]",m_pInventory?"not-null":"null");
 		if(p)
-			Msg("parent name is [%s]",p->cName().c_str());
+			EngineLog("parent name is [%s]",p->cName().c_str());
 
-			Msg("! ERROR item_id[%d] H_Parent=[%s][%d] [%d]",
+			EngineLog("! ERROR item_id[%d] H_Parent=[%s][%d] [%d]",
 				object().ID(),
 				p ? p->cName().c_str() : "none",
 				p ? p->ID() : -1,
@@ -465,7 +465,7 @@ void CInventoryItem::save(NET_Packet &packet)
 void CInventoryItem::net_Import			(NET_Packet& P) 
 {	
 	//copy from CPhysicObject
-	//Msg("Inventory item [%d][%s] net_Import...", object().ID(), object().cName().c_str());
+	//EngineLog("Inventory item [%d][%s] net_Import...", object().ID(), object().cName().c_str());
 	u8							NumItems = 0;
 	NumItems					= P.r_u8();
 	if (!NumItems)
@@ -513,7 +513,7 @@ void CInventoryItem::net_Import			(NET_Packet& P)
 	if (!m_activated)
 	{
 #ifdef DEBUG
-		Msg("Activating object [%d] before interpolation starts", object().ID());		
+		EngineLog("Activating object [%d] before interpolation starts", object().ID());		
 #endif // #ifdef DEBUG
 		object().processing_activate();
 		m_activated = true;
@@ -591,11 +591,11 @@ void CInventoryItem::net_Import_PH_Params(NET_Packet& P, net_update_IItem& N, ma
 	//N.State.torque.set			(0.f,0.f,0.f);
 	//UI().Font().pFontStat->OutSet(100.0f,100.0f);
 	P.r_vec3					(N.State.force);
-	//Msg("Import N.State.force.y:%4.6f",N.State.force.y);
+	//EngineLog("Import N.State.force.y:%4.6f",N.State.force.y);
 	P.r_vec3					(N.State.torque);
 
 	P.r_vec3					(N.State.position);
-	//Msg("Import N.State.position.y:%4.6f",N.State.position.y);
+	//EngineLog("Import N.State.position.y:%4.6f",N.State.position.y);
 
 	P.r_float(N.State.quaternion.x);
 	P.r_float(N.State.quaternion.y);
@@ -621,7 +621,7 @@ void CInventoryItem::net_Import_PH_Params(NET_Packet& P, net_update_IItem& N, ma
 	}
 	else
 		N.State.linear_vel.set	(0.f,0.f,0.f);
-	//Msg("Import N.State.linear_vel.y:%4.6f",N.State.linear_vel.y);
+	//EngineLog("Import N.State.linear_vel.y:%4.6f",N.State.linear_vel.y);
 	
 	N.State.previous_position	= N.State.position;
 	N.State.previous_quaternion	= N.State.quaternion;
@@ -631,12 +631,12 @@ void CInventoryItem::net_Export_PH_Params(NET_Packet& P, SPHNetState& State, mas
 {
 	//UI().Font().pFontStat->OutSet(100.0f,100.0f);
 	P.w_vec3				(State.force);
-	//Msg("Export State.force.y:%4.6f",State.force.y);
+	//EngineLog("Export State.force.y:%4.6f",State.force.y);
 	P.w_vec3				(State.torque);
 	//UI().Font().pFontStat->OutNext("Export State.torque:%4.6f",State.torque.magnitude());
 	P.w_vec3				(State.position);
-	//Msg("Export State.position.y:%4.6f",State.position.y);
-	//Msg("Export State.enabled:%i",int(State.enabled));
+	//EngineLog("Export State.position.y:%4.6f",State.position.y);
+	//EngineLog("Export State.enabled:%i",int(State.enabled));
 
 	float					magnitude = _sqrt(State.quaternion.magnitude());
 	if (fis_zero(magnitude)) {
@@ -683,11 +683,11 @@ void CInventoryItem::net_Export_PH_Params(NET_Packet& P, SPHNetState& State, mas
 		P.w_float		(State.linear_vel.x);
 		P.w_float		(State.linear_vel.y);
 		P.w_float		(State.linear_vel.z);
-		//Msg("Export State.linear_vel.y:%4.6f",State.linear_vel.y);
+		//EngineLog("Export State.linear_vel.y:%4.6f",State.linear_vel.y);
 	}
 	else
 	{
-		//Msg("Export State.linear_vel.y:%4.6f",0.0f);
+		//EngineLog("Export State.linear_vel.y:%4.6f",0.0f);
 	}
 }
 
@@ -725,7 +725,7 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 	if (!num_items.common)
 	{
 #ifdef DEBUG
-		Msg("--- Number of sync items of inv item object is 0");
+		EngineLog("--- Number of sync items of inv item object is 0");
 #endif // #ifdef DEBUG
 		return;
 	}
@@ -944,7 +944,7 @@ void CInventoryItem::PH_A_CrPr		()
 		VERIFY( K );
 		if (!object().PPhysicsShell())
 		{
-			Msg("! ERROR: PhysicsShell is NULL, object [%s][%d]", object().cName().c_str(), object().ID());
+			EngineLog("! ERROR: PhysicsShell is NULL, object [%s][%d]", object().cName().c_str(), object().ID());
 			VERIFY2(0, "physical shell is NULL");
 			return;
 		}
@@ -1216,15 +1216,15 @@ void CInventoryItem::Interpolate()
 		{
 
 			float ret_interpolate = interpolate_states(p->NET_IItem.front(), p->NET_IItem.back(), newState);
-			//Msg("Interpolation factor is %0.4f", ret_interpolate);
-			//Msg("Current position is: x = %3.3f, y = %3.3f, z = %3.3f", newState.position.x, newState.position.y, newState.position.z);
+			//EngineLog("Interpolation factor is %0.4f", ret_interpolate);
+			//EngineLog("Current position is: x = %3.3f, y = %3.3f, z = %3.3f", newState.position.x, newState.position.y, newState.position.z);
 			if (ret_interpolate >= 1.f)
 			{
 				p->NET_IItem.pop_front();
 				if (m_activated)
 				{
 #ifdef DEBUG
-					Msg("Deactivating object [%d] after interpolation finish", object().ID());
+					EngineLog("Deactivating object [%d] after interpolation finish", object().ID());
 #endif // #ifdef DEBUG
 					object().processing_deactivate();
 					m_activated = false;
@@ -1566,7 +1566,7 @@ void CInventoryItem::SetDropManual(BOOL val)
 	{
 		if (!!m_name)
 		{
-			Msg("! WARNING: trying to set drop manual flag to item [%d][%s] to %d", object_id(), m_name.c_str(), val);
+			EngineLog("! WARNING: trying to set drop manual flag to item [%d][%s] to %d", object_id(), m_name.c_str(), val);
 		}
 	}
 #endif // #ifdef DEBUG

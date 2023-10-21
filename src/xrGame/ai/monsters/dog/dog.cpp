@@ -416,7 +416,7 @@ void CAI_Dog::debug_on_key(int key)
 
 	switch (key){
 	case DIK_1:
-		Msg("Ohhhhhhhhhhhhhhh! Here it is!");
+		EngineLog("Ohhhhhhhhhhhhhhh! Here it is!");
 		// strafe left
 		//com_man().seq_run(skel->ID_Cycle_Safe("stand_turn_ls_0"));
 		break;
@@ -429,7 +429,7 @@ void CAI_Dog::debug_on_key(int key)
 		com_man().seq_run(skel->ID_Cycle_Safe("stand_threaten_0"));
 		break;
 	case DIK_0:
-		Msg("Ohhhhhhhhhhhhhhh! Here it is!");
+		EngineLog("Ohhhhhhhhhhhhhhh! Here it is!");
 		break;
 	}
 }

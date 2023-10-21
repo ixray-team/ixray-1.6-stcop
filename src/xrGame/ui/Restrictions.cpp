@@ -229,33 +229,33 @@ const CRestrictions::restr_item* CRestrictions::find_restr_item(const u32& rank,
 void CRestrictions::Dump() const
 {
 #ifndef MASTER_GOLD
-	Msg("------------item groups ---count=[%d]-------------------",m_goups.size());
+	EngineLog("------------item groups ---count=[%d]-------------------",m_goups.size());
 	Groups::const_iterator it = m_goups.begin();
 	Groups::const_iterator it_e = m_goups.end();
 	for(; it!=it_e; ++it)
 	{
-		Msg("group [%s]",it->first.c_str());
+		EngineLog("group [%s]",it->first.c_str());
 		group_items::const_iterator it2		= it->second.begin();
 		group_items::const_iterator it2_e	= it->second.end();
 		for(;it2!=it2_e;++it2)
-			Msg("	[%s]",(*it2).c_str());
+			EngineLog("	[%s]",(*it2).c_str());
 	}
-	Msg("------------rank restrictions------------");
+	EngineLog("------------rank restrictions------------");
 	for(u32 i=0; i<_RANK_COUNT+1; ++i)
 	{
 		const rank_rest_vec& v = m_restrictions[i];
 		rank_rest_vec::const_iterator it_		= v.begin();
 		rank_rest_vec::const_iterator it_e_		= v.end();
 		if(i<_RANK_COUNT)
-			Msg("---	for rank %d  ---count=[%d]", i, v.size());
+			EngineLog("---	for rank %d  ---count=[%d]", i, v.size());
 		else
-			Msg("---	base restrictions ---count=[%d]", v.size());
+			EngineLog("---	base restrictions ---count=[%d]", v.size());
 
 		for(;it_!=it_e_;++it_)
 		{
-			Msg("	[%s]:[%d]", (*it_).first.c_str(), (*it_).second);
+			EngineLog("	[%s]:[%d]", (*it_).first.c_str(), (*it_).second);
 		}
-		Msg("-----------------------------------------");
+		EngineLog("-----------------------------------------");
 	}
 #endif // #ifndef MASTER_GOLD
 }

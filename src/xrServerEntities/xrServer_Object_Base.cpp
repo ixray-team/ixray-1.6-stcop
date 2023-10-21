@@ -147,7 +147,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 
 		}
 		else
-			Msg					( "! cannot open config file %s", raw_file_name );
+			EngineLog( "! cannot open config file {}", raw_file_name );
 	}
 
 #ifndef AI_COMPILER
@@ -227,7 +227,7 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, BOOL bLocal)
 	//client object custom data serialization SAVE
 	u16 client_data_size		= (u16)client_data.size(); //не может быть больше 256 байт
 	tNetPacket.w_u16			(client_data_size);
-//	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
+//	EngineLog							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 	if (client_data_size > 0) {
 		tNetPacket.w			(&*client_data.begin(),client_data_size);
 	}
@@ -321,7 +321,7 @@ BOOL CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	if (m_wVersion > 70) {
 		u16 client_data_size	= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
 		if (client_data_size > 0) {
-//			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
+//			EngineLog					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 			client_data.resize	(client_data_size);
 			tNetPacket.r		(&*client_data.begin(),client_data_size);
 		}
@@ -369,7 +369,7 @@ void	CSE_Abstract::load			(NET_Packet	&tNetPacket)
 	u16 client_data_size		= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
 	if (client_data_size > 0) {
 #ifdef DEBUG
-//		Msg						("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
+//		EngineLog						("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 #endif // DEBUG
 		client_data.resize		(client_data_size);
 		tNetPacket.r			(&*client_data.begin(),client_data_size);
@@ -377,7 +377,7 @@ void	CSE_Abstract::load			(NET_Packet	&tNetPacket)
 	else {
 #ifdef DEBUG
 		if (!client_data.empty())
-			Msg					("CSE_Abstract::load: client_data is cleared for [%d][%s]",ID,name_replace());
+			EngineLog("CSE_Abstract::load: client_data is cleared for [{}][{}]",ID,name_replace());
 #endif // DEBUG
         client_data.clear		();
 	}

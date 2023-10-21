@@ -425,7 +425,7 @@ void CTorch::net_Export			(NET_Packet& P)
 			F |= eAttached;
 	}
 	P.w_u8(F);
-//	Msg("CTorch::net_export - NV[%d]", m_bNightVisionOn);
+//	EngineLog("CTorch::net_export - NV[%d]", m_bNightVisionOn);
 }
 
 void CTorch::net_Import			(NET_Packet& P)
@@ -439,7 +439,7 @@ void CTorch::net_Import			(NET_Packet& P)
 	if (new_m_switched_on != m_switched_on)			Switch						(new_m_switched_on);
 	if (new_m_bNightVisionOn != m_bNightVisionOn)	
 	{
-//		Msg("CTorch::net_Import - NV[%d]", new_m_bNightVisionOn);
+//		EngineLog("CTorch::net_Import - NV[%d]", new_m_bNightVisionOn);
 
 		const CActor *pA = smart_cast<const CActor *>(H_Parent());
 		if (pA)

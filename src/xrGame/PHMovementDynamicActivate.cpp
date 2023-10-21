@@ -71,12 +71,12 @@ bool CPHMovementControl:: ActivateBoxDynamic(DWORD id,int num_it/*=8*/,int num_s
 
 		SetPosition(pos);
 		
-		//Msg("can not activate!");
+		//EngineLog("can not activate!");
 	}
 	else
 	{
 		ActivateBox(id);
-		//Msg("activate!");
+		//EngineLog("activate!");
 	}
 
 //	SetOjectContactCallback(saved_callback);

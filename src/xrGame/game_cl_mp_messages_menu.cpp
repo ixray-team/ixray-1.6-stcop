@@ -55,8 +55,8 @@ void				game_cl_mp::AddMessageMenu			(LPCSTR	menu_section, LPCSTR snd_path, LPCS
 				{
 					pNewTeamSound->push_back(cl_Message_Sound());
 					cl_Message_Sound* pMsgSound = &(pNewTeamSound->back());
-					pMsgSound->mSound_Voice.create(FileName_Voice,st_Effect,sg_SourceType);	//Msg("-- %s Loaded", FileName_Voice);
-					pMsgSound->mSound_Radio.create(FileName_Radio,st_Effect,sg_SourceType);	//Msg("-- %s Loaded", FileName_Radio);
+					pMsgSound->mSound_Voice.create(FileName_Voice,st_Effect,sg_SourceType);	//EngineLog("-- %s Loaded", FileName_Voice);
+					pMsgSound->mSound_Radio.create(FileName_Radio,st_Effect,sg_SourceType);	//EngineLog("-- %s Loaded", FileName_Radio);
 				}
 				else
 				{
@@ -123,7 +123,7 @@ void		game_cl_mp::OnMessageSelected		(CUISpeechMenu* pMenu, u8 PhraseID)
 	if (PhraseID >= pMMenu->m_aMessages.size()) return;
 	cl_Menu_Message* pMMessage = &(pMMenu->m_aMessages[PhraseID]);
 	u8 VariantID = (pMMessage->aVariants.size() <= 1) ? 0 : u8(::Random.randI(pMMessage->aVariants.size()) & 0xff);
-//	Msg ("Variant %d from %d", VariantID, pMMessage->aVariants.size());
+//	EngineLog ("Variant %d from %d", VariantID, pMMessage->aVariants.size());
 	//-------------------------------------------------------------------
 	NET_Packet P;
 	u_EventGen		(P,GE_GAME_EVENT, local_player->GameID);
@@ -180,7 +180,7 @@ void				game_cl_mp::OnSpeechMessage			(NET_Packet& P)
 		{
 			pMSound->mSound_Radio.play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
 		}
-		Msg("%s said: %s", ps->getName(), *CStringTable().translate(pMMessage->pMessage));
+		EngineLog("%s said: %s", ps->getName(), *CStringTable().translate(pMMessage->pMessage));
 	}
 	else
 	{

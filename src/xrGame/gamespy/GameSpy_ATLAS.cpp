@@ -44,7 +44,7 @@ void CGameSpy_ATLAS::Init()
 	VERIFY(init_res == SCResult_NO_ERROR);
 	if (init_res != SCResult_NO_ERROR)
 	{
-		Msg("! GameSpy ATLAS: failed to initialize, error code: %d", init_res);
+		EngineLog("! GameSpy ATLAS: failed to initialize, error code: {}", (int)init_res);
 	}
 }
 

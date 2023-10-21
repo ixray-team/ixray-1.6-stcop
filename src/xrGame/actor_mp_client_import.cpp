@@ -23,7 +23,7 @@ void CActorMP::net_Import	( NET_Packet &P)
 	{
 /*#ifdef DEBUG
 		if (GetfHealth() != m_state_holder.state().health)
-			Msg("net_Import: [%d][%s], is going to set health to %2.04f", this->ID(), Name(), m_state_holder.state().health);
+			EngineLog("net_Import: [%d][%s], is going to set health to %2.04f", this->ID(), Name(), m_state_holder.state().health);
 #endif*/
 		
 		game_PlayerState* ps = Game().GetPlayerByGameID(this->object_id());
@@ -53,9 +53,6 @@ void CActorMP::net_Import	( NET_Packet &P)
 
 	if (OnClient() && (inventory().GetActiveSlot()!=ActiveSlot) )
 	{
-#ifdef DEBUG
-		Msg("Client-SetActiveSlot[%d][%d]",ActiveSlot, Device.dwFrame);
-#endif // #ifdef DEBUG
 		inventory().SetActiveSlot(ActiveSlot);
 	}
 

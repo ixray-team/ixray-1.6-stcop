@@ -267,10 +267,9 @@ void	CWeaponAutomaticShotgun::net_Import	(NET_Packet& P)
 		u8 LocalAmmoType = P.r_u8();
 		if (i>=m_magazine.size()) continue;
 		CCartridge& l_cartridge = *(m_magazine.begin()+i);
-		if (LocalAmmoType == l_cartridge.m_LocalAmmoType) continue;
-#ifdef DEBUG
-		Msg("! %s reload to %s", *l_cartridge.m_ammoSect, m_ammoTypes[LocalAmmoType].c_str());
-#endif
+		if (LocalAmmoType == l_cartridge.m_LocalAmmoType) 
+			continue;
+
 		l_cartridge.Load( m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType );
 	}
 }

@@ -42,7 +42,7 @@ IC	void moving_object::action								(const action_type &action)
 	m_action_position	= Fvector().set(flt_max,flt_max,flt_max);
 	m_action_time		= Device.dwTimeGlobal;
 #if 0//def DEBUG
-	Msg					("%6d %s %s",Device.dwFrame,*object().cName(),action == moving_object::action_wait ? "wait" : "move");
+	EngineLog					("%6d %s %s",Device.dwFrame,*object().cName(),action == moving_object::action_wait ? "wait" : "move");
 #endif // DEBUG
 }
 
@@ -57,7 +57,7 @@ IC	void moving_object::action								(const action_type &action, const Fvector &
 	m_action_position	= action_position;
 	m_action_time		= Device.dwTimeGlobal;
 #if 0//def DEBUG
-	Msg					("%6d %s %s",Device.dwFrame,*object().cName(),action == moving_object::action_wait ? "wait" : "move");
+	EngineLog					("%6d %s %s",Device.dwFrame,*object().cName(),action == moving_object::action_wait ? "wait" : "move");
 #endif // DEBUG
 }
 

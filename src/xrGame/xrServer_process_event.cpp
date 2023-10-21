@@ -160,7 +160,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		if (creature)
 			creature->set_killer_id( id_src );
 
-//		Msg							("[%d][%s] killed [%d][%s]",id_src,id_src==u16(-1) ? "UNKNOWN" : game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
+//		EngineLog							("[%d][%s] killed [%d][%s]",id_src,id_src==u16(-1) ? "UNKNOWN" : game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
 
 		break;
 	}
@@ -183,7 +183,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 #ifndef MASTER_GOLD
 			if ((game->Type() != eGameIDSingle) && l_pC && l_pC->owner)
 			{
-				Msg					("* [%2d] killed by [%2d] - sended by [0x%08x]", id_dest, id_src, l_pC->ID.value());
+				EngineLog					("* [%2d] killed by [%2d] - sended by [0x%08x]", id_dest, id_src, l_pC->ID.value());
 			}
 #endif // #ifndef MASTER_GOLD
 
@@ -194,7 +194,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 
 #ifndef MASTER_GOLD
 			if (game->Type() != eGameIDSingle)
-				Msg				("* [%2d] is [%s:%s]", id_dest, *e_dest->s_name, e_dest->name_replace());
+				EngineLog				("* [%2d] is [%s:%s]", id_dest, *e_dest->s_name, e_dest->name_replace());
 #endif // #ifndef MASTER_GOLD
 
 			CSE_Abstract*		e_src		= game->get_entity_from_eid	(id_src	);	// кто убил
@@ -205,13 +205,13 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			VERIFY				(e_src);
 			if (!e_src)
 			{
-				Msg("! ERROR: SV: src killer not exist.");
+				EngineLog("! ERROR: SV: src killer not exist.");
 				return;
 			}
 //			R_ASSERT2			(e_dest && e_src, "Killer or/and being killed are offline or not exist at all :(");
 #ifndef MASTER_GOLD
 			if (game->Type() != eGameIDSingle)
-				Msg				("* [%2d] is [%s:%s]", id_src, *e_src->s_name, e_src->name_replace());
+				EngineLog				("* [%2d] is [%s:%s]", id_src, *e_src->s_name, e_src->name_replace());
 #endif // #ifndef MASTER_GOLD
 
 			game->on_death		(e_dest,e_src);

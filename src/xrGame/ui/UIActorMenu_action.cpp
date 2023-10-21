@@ -88,7 +88,7 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 
 	if ( !AllowItemDrops(t_old, t_new) )
 	{
-		Msg("incorrect action [%d]->[%d]",t_old, t_new);
+		EngineLog("incorrect action [{}]->[{}]",(int)t_old, (int)t_new);
 		return true;
 	}
 	switch(t_new)

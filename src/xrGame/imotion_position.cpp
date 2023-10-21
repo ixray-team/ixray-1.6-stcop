@@ -53,7 +53,7 @@ static void interactive_motion_diag( LPCSTR message, const CBlend &b, CPhysicsSh
 	CPhysicsShellHolder* O = smart_cast<CPhysicsShellHolder*>(s->get_ElementByStoreOrder( 0 )->PhysicsRefObject());
 	VERIFY( O );
 	LPCSTR motion_name = KA->LL_MotionDefName_dbg( m ).first;
-	Msg( "death anims - interactive_motion:- %s, motion: %s, blend time %f , total blend time %f , time left: %f , obj: %s, model:  %s ", message, motion_name, b.timeCurrent, b.timeTotal, time_left, O->cName().c_str(), O->cNameVisual().c_str());
+	EngineLog( "death anims - interactive_motion:- {}, motion: {}, blend time {} , total blend time {}, time left: {}, obj: {}, model:  {}", message, motion_name, b.timeCurrent, b.timeTotal, time_left, O->cName().c_str(), O->cNameVisual().c_str());
 #endif
 }
 
@@ -109,7 +109,7 @@ void disable_bone_calculation(IKinematics &K, bool v )
 			continue;
 #ifdef DEBUG
 		if( v && bi.callback_overwrite() == BOOL(v) )
-			Msg( "! bone callback_overwrite may have different states" );
+			EngineLog( "! bone callback_overwrite may have different states" );
 #endif
 		bi.set_callback_overwrite( v );
 	}
@@ -147,7 +147,7 @@ void imotion_position::state_start( )
 #ifdef DEBUG
 	if(!get_blend.blend)
 	{
-		Msg( "bad animation params : %p", anim_callback );
+		EngineLog( "bad animation params!");
 		KA->LL_DumpBlends_dbg();
 		NODEFAULT;
 	}

@@ -23,7 +23,7 @@ template <typename TList> struct Register
 		Register<TList::Tail>::_Register(L);
 #ifdef XRGAME_EXPORTS
 #	ifdef _DEBUG
-		Msg("Exporting %s",typeid(TList::Head).name());
+		EngineLog("Exporting %s",typeid(TList::Head).name());
 #	endif
 #endif
 		TList::Head::script_register(L);
@@ -65,7 +65,7 @@ template <typename TFullList> struct DynamicCast
 		template <>
 		static void declare<true>()
 		{
-			Msg		("Exporting function to cast from \"%s\" to \"%s\"",typeid(T).name(),typeid(Head).name());
+			EngineLog		("Exporting function to cast from \"%s\" to \"%s\"",typeid(T).name(),typeid(Head).name());
 		}
 	};
 
