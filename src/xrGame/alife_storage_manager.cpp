@@ -70,7 +70,7 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 		void					*source_data = stream.pointer();
 		dest_count				= rtc_csize(source_count);
 		dest_data				= xr_malloc(dest_count);
-		dest_count				= rtc_compress(dest_data,dest_count,source_data,source_count);
+		dest_count				= (u32)rtc_compress(dest_data,dest_count,source_data,source_count);
 	}
 
 	string_path					temp;
@@ -84,7 +84,7 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 	xr_free						(dest_data);
 	FS.w_close					(writer);
 
-	EngineLog("* Game {} is successfully saved to file '{}'",m_save_name,temp);
+	EngineLog("* Game {} is successfully saved to file '{}'", UTF8_TO_ANSI(m_save_name), UTF8_TO_ANSI(temp));
 
 	if (!update_name)
 		xr_strcpy					(m_save_name,save);

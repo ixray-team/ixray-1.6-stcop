@@ -259,6 +259,31 @@ XRCORE_API wchar_t* ANSI_TO_TCHAR_U8(const char* C)
 	return ANSI_TO_TCHAR(ANSI_TO_UTF8(C).c_str());
 }
 
+XRCORE_API xr_string UTF8_TO_ANSI(const xr_string& utf8_str)
+{
+	const char* src_str = utf8_str.data();
+	const int byte_len = static_cast<int>(utf8_str.length() * sizeof(char));
+	int len = MultiByteToWideChar(CP_UTF8, 0, src_str, byte_len, nullptr, 0);
+	const size_t wsz_ansi_length = static_cast<size_t>(len) + 1U;
+	auto wsz_ansi = new wchar_t[wsz_ansi_length];
+	memset(wsz_ansi, 0, sizeof(wsz_ansi[0]) * wsz_ansi_length);
+	MultiByteToWideChar(CP_UTF8, 0, src_str, byte_len, wsz_ansi, len);
+
+	len = WideCharToMultiByte(CP_ACP, 0, wsz_ansi, -1, nullptr, 0, nullptr, nullptr);
+	const size_t sz_ansi_length = static_cast<size_t>(len) + 1;
+	auto sz_ansi = new char[sz_ansi_length];
+	memset(sz_ansi, 0, sizeof(sz_ansi[0]) * sz_ansi_length);
+	WideCharToMultiByte(CP_ACP, 0, wsz_ansi, -1, sz_ansi, len, nullptr, nullptr);
+	xr_string strTemp(sz_ansi);
+
+	delete[] wsz_ansi;
+	wsz_ansi = nullptr;
+	delete[] sz_ansi;
+	sz_ansi = nullptr;
+
+	return strTemp;
+}
+
 XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi)
 {
 	wchar_t* wcs = nullptr;
