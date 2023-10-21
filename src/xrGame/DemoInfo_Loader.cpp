@@ -29,7 +29,7 @@ demo_info* demo_info_loader::load_demofile(LPCSTR demo_file_name)
 	CStreamReader*	tmp_reader	= FS.rs_open("$logs$", demo_file_name);
 	if (!tmp_reader)
 	{
-		Msg("ERROR: failed to open file [%s] ...", demo_file_name);
+		EngineLog("ERROR: failed to open file [{}] ...", demo_file_name);
 		return NULL;
 	}
 	CLevel::DemoHeader		tmp_fake_header;

@@ -9,6 +9,13 @@ void EngineLog(std::string_view Format, Args&&... ArgList)
 	CorrectLog(FormattedText.c_str());
 }
 
+template<typename ...Args>
+void EngineLogW(std::wstring_view Format, Args&&... ArgList)
+{
+	std::wstring FormattedText = std::vformat(Format, std::make_wformat_args(ArgList...));
+	CorrectLog(std::string(FormattedText.begin(), FormattedText.end()).c_str());
+}
+
 template<>
 inline void EngineLog(std::string_view Message)
 {

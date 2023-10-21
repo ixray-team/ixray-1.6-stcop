@@ -9,7 +9,7 @@
 void						CLevel::OnGameSpyChallenge			(NET_Packet* P)
 {
 #ifndef MASTER_GOLD
-	Msg("xrGS::CDKey::Level : Responding on Challenge");
+	EngineLog("xrGS::CDKey::Level : Responding on Challenge");
 #endif // #ifndef MASTER_GOLD
 
 	u8	Reauth = P->r_u8();

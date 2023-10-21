@@ -321,9 +321,6 @@ void filetransfer_node::calculate_chunk_size(u32 peak_throughput, u32 current_th
 	if (m_last_peak_throughput < peak_throughput)		//peak throughput is increasing, so we can increase upload size :)
 	{
 		m_chunk_size += data_min_chunk_size;
-#ifdef MP_LOGGING
-		Msg("* peak throughout is not reached - increasing upload rate : (m_chunk_size: %d)", m_chunk_size);
-#endif
 	} else //peak is reached
 	{
 		if (OnServer())
@@ -336,10 +333,6 @@ void filetransfer_node::calculate_chunk_size(u32 peak_throughput, u32 current_th
 
 		m_chunk_size = static_cast<u32>(
 			Random.randI(data_min_chunk_size, data_max_chunk_size));
-#ifdef MP_LOGGING
-		Msg("* peak throughout is reached, (current_throughput: %d), (peak_throughput: %d), (m_chunk_size: %d)",
-			current_throughput, peak_throughput, m_chunk_size);
-#endif
 	}
 	clamp(m_chunk_size, data_min_chunk_size, data_max_chunk_size);
 	m_last_peak_throughput			= peak_throughput;

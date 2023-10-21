@@ -50,7 +50,7 @@ IBlender* CResourceManager::_GetBlender		(LPCSTR Name)
 #ifdef USE_DX11
 	if (I==m_blenders.end())	
 	{
-		Msg("DX10: Shader '%s' not found in library.",Name); 
+		EngineLog("DX10: Shader '{}' not found in library.",Name); 
 		return 0;
 	}
 #endif

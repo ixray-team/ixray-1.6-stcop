@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 
 class CPhysicsShellHolder;
 class CInventoryItem;

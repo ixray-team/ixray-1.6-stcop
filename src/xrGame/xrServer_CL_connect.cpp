@@ -114,7 +114,7 @@ void xrServer::OnCL_Connected		(IClient* _CL)
 	VERIFY2(CL->ps, "Player state not created");
 	if (!CL->ps)
 	{
-		Msg("! ERROR: Player state not created - incorect message sequence!");
+		EngineLog("! ERROR: Player state not created - incorect message sequence!");
 		return;
 	}
 
@@ -140,9 +140,6 @@ void	xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
 
 	if (!res)			//need disconnect 
 	{
-#ifdef MP_LOGGING
-		Msg("* Server disconnecting client, resaon: %s", ResultStr);
-#endif
 		Flush_Clients_Buffers	();
 		DisconnectClient		(CL, ResultStr);
 	}
@@ -242,7 +239,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 		}
 		else
 		{
-			Msg("* Client 0x%08x has an incorrect password", CL->ID.value());
+			EngineLog("* Client {} has an incorrect password", CL->ID.value());
 			xr_strcat( res_check, "Invalid password.");
 			SendConnectResult( CL, 0, ecr_password_verification_failed, res_check );
 		}

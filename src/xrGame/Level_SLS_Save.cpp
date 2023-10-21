@@ -6,7 +6,7 @@
 void	CLevel::net_Save				(LPCSTR name)		// Game Save
 {
 	if (0==Server)		{
-		Msg("KERNEL::Can't save game on pure client");
+		EngineLog("KERNEL::Can't save game on pure client");
 		return;
 	}
 

@@ -265,7 +265,7 @@ void game_sv_CaptureTheArtefact::SM_SwitchOnNextActivePlayer()
 	};
 	SM_SwitchOnPlayer				(pNewObject);
 #ifndef MASTER_GOLD
-	Msg("---SM Switched on player %s", pNewObject->cName().c_str());
+	EngineLog("---SM Switched on player {}", pNewObject->cName().c_str());
 #endif // #ifndef MASTER_GOLD
 };
 
@@ -443,7 +443,7 @@ void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name,
 	CSE_Abstract* actor = m_server->ID_to_entity(GameID);
 	if (!actor)
 	{
-		Msg("! WARNING: actor [%d] not found, on player disconnect", GameID);
+		EngineLog("! WARNING: actor [{}] not found, on player disconnect", GameID);
 		inherited::OnPlayerDisconnect(id_who, Name, GameID);
 		return;
 	}
@@ -511,7 +511,7 @@ void game_sv_CaptureTheArtefact::OnPlayerReady(ClientID id_who)
 		
 #ifndef MASTER_GOLD
 		VERIFY(xrCData->ps);
-		Msg("---Respawning player %s - he's ready", xrCData->ps->getName());
+		EngineLog("---Respawning player {} - he's ready", xrCData->ps->getName());
 #endif // #ifndef MASTER_GOLD
 		RespawnPlayer(id_who, false);
 		pOwner = xrCData->owner;
@@ -565,7 +565,7 @@ void game_sv_CaptureTheArtefact::Create(shared_str &options)
 	teams[etGreenTeam].score = 0;
 	teams[etBlueTeam].score = 0;
 #ifndef MASTER_GOLD
-	Msg("---Starting new round, scores: [ %d : %d ]",
+	EngineLog("---Starting new round, scores: [{} : {}]",
 		teams[etGreenTeam].score, teams[etBlueTeam].score);
 #endif // #ifndef MASTER_GOLD
 	m_iMoney_for_BuySpawn	= READ_IF_EXISTS(pSettings, r_s32, "capturetheartefact_gamedata", "spawn_cost", -10000);
@@ -999,7 +999,7 @@ bool game_sv_CaptureTheArtefact::LoadAnomaliesItems(
 	
 	if (!level_ini_file->line_exist(CTA_ANOMALY_SET_BASE_NAME, ini_set_id))
 	{
-		Msg("! Warning: \"permanent\" string not found in [%s]", CTA_ANOMALY_SET_BASE_NAME);
+		EngineLog("! Warning: \"permanent\" string not found in [{}]", CTA_ANOMALY_SET_BASE_NAME);
 		return false;
 	}
 
@@ -1095,7 +1095,7 @@ void game_sv_CaptureTheArtefact::ReStartRandomAnomaly()
 
 	SendAnomalyStates();
 #ifdef DEBUG
-	Msg("Anomaly states updated, started set # %d", to_start);
+	EngineLog("Anomaly states updated, started set # {}", to_start);
 #endif
 }
 
@@ -1872,7 +1872,7 @@ void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, x
 		if (!item)
 		{
 #ifndef MASTER_GOLD
-			Msg("! ERROR: item from slot %d is NULL", active_slot);
+			EngineLog("! ERROR: item from slot {} is NULL", active_slot);
 #endif // #ifndef MASTER_GOLD
 			return;
 		}
@@ -1881,7 +1881,7 @@ void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, x
 		if (!server_item)
 		{
 #ifndef MASTER_GOLD
-			Msg("! ERROR: server entity is NULL, object ID[%d]", item->object_id());
+			EngineLog("! ERROR: server entity is NULL, object ID[{}]", item->object_id());
 #endif // #ifndef MASTER_GOLD
 			return;
 		}
@@ -1891,9 +1891,6 @@ void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, x
 			return;
 		}
 		//R_ASSERT		(server_item);
-#ifdef MP_LOGGING
-		Msg("--- SV: to_reject [%d]", server_item->ID);
-#endif
 		to_reject.push_back(server_item);
 
 	}
@@ -2047,7 +2044,7 @@ void game_sv_CaptureTheArtefact::RespawnClient(xrClientData const * pclient)
 	{
 #ifndef MASTER_GOLD
 		VERIFY(pclient->ps);
-		Msg("---Respawning dead player [%s]", pclient->ps->getName());
+		EngineLog("---Respawning dead player [{}]", pclient->ps->getName());
 #endif // #ifndef MASTER_GOLD
 		RespawnPlayer(pclient->ID, true);
 		VERIFY(pclient->ps);
@@ -2212,7 +2209,7 @@ void game_sv_CaptureTheArtefact::StartNewRound()
 	m_item_respawner.respawn_level_items();
 	VERIFY(TeamList.size() >= 2);
 #ifndef MASTER_GOLD
-	Msg("---Starting new round, scores: [ %d : %d ]",
+	EngineLog("---Starting new round, scores: [{} : {}]",
 		teams[etGreenTeam].score, teams[etBlueTeam].score);
 #endif // #ifndef MASTER_GOLD
 }
@@ -2312,9 +2309,6 @@ void game_sv_CaptureTheArtefact::CheckForArtefactDelivering()
 		VERIFY2(xrCData, "client data for actor sv object not found");
 		if (!xrCData)
 		{
-#ifdef MP_LOGGING
-			Msg("! WARNING: bad actor [%d] tries to deliver artefact", tempActor->ID);
-#endif //#ifdef MP_LOGGING
 			continue;
 		}
 		if (!xrCData->net_Ready)

@@ -251,7 +251,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		{
 			if (GameID()!=eGameIDSingle) 
 			{
-				Msg("For this game type Demo Record is disabled.");
+				EngineLog("For this game type Demo Record is disabled.");
 ///				return;
 			};
 			if(!pInput->iGetAsyncKeyState(DIK_LSHIFT))

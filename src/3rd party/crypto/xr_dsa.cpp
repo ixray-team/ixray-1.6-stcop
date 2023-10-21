@@ -70,7 +70,7 @@ bool		xr_dsa::verify				(public_key_t const & pub_key,
 
 static void dsa_genparams_cb(int p, int n, void *arg)
 {
-	Msg("* dsa genparams cb(%d, %d)", p, n);
+	EngineLog("* dsa genparams cb({}, {})", p, n);
 }
 
 static unsigned char rnd_seed[] = "S.T.A.L.K.E.R. 4ever Rulezz !!!";
@@ -97,7 +97,7 @@ void print_big_number(BIGNUM* big_num, u32 max_columns = 8)
 		xr_sprintf(tmp_buff, "0x%02x, ", bin_buff[i]);
 		xr_strcat(result_buffer, tmp_buff);
 	}
-	Msg(result_buffer);
+	EngineLog(result_buffer);
 };
 
 void xr_dsa::generate_params()
@@ -126,33 +126,33 @@ void xr_dsa::generate_params()
 	VERIFY				(tmp_dsa_params->pub_key->top * sizeof(u32) == public_key_length);
 	VERIFY				(tmp_dsa_params->priv_key->top * sizeof(u32)== private_key_length);
 	
-	Msg("// DSA params ");
+	EngineLog("// DSA params ");
 	
-	Msg("u8 const p_number[crypto::xr_dsa::public_key_length] = {");
+	EngineLog("u8 const p_number[crypto::xr_dsa::public_key_length] = {");
 	print_big_number	(tmp_dsa_params->p);
-	Msg("};//p_number");
+	EngineLog("};//p_number");
 
 	
-	Msg("u8 const q_number[crypto::xr_dsa::private_key_length] = {");
+	EngineLog("u8 const q_number[crypto::xr_dsa::private_key_length] = {");
 	print_big_number	(tmp_dsa_params->q);
-	Msg("};//q_number");
+	EngineLog("};//q_number");
 	
 	
-	Msg("u8 const g_number[crypto::xr_dsa::public_key_length] = {");
+	EngineLog("u8 const g_number[crypto::xr_dsa::public_key_length] = {");
 	print_big_number	(tmp_dsa_params->g);
-	Msg("};//g_number");
+	EngineLog("};//g_number");
 
-	Msg("u8 const public_key[crypto::xr_dsa::public_key_length] = {");
+	EngineLog("u8 const public_key[crypto::xr_dsa::public_key_length] = {");
 	print_big_number	(tmp_dsa_params->pub_key);
-	Msg("};//public_key");
+	EngineLog("};//public_key");
 
 	
 	u8	priv_bin[private_key_length];
 	BN_bn2bin			(tmp_dsa_params->priv_key, priv_bin);
-	Msg("// Private key:");
+	EngineLog("// Private key:");
 	for (int i = 0; i < private_key_length; ++i)
 	{
-		Msg("	m_private_key.m_value[%d]	= 0x%02x;", i, priv_bin[i]);
+		EngineLog("	m_private_key.m_value[%d]	= {};", i, priv_bin[i]);
 	}
 
 	u8	debug_digest[]		= "this is a test";

@@ -313,7 +313,7 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
 
 	if(bDebug && item().m_pInventory)
 	{
-		Msg("-[%s] as[%d] [%d]anim_play [%s][%d]",
+		EngineLog("-[{}] as[{}] [{}]anim_play [{}][{}]",
 			HudItemData()?"HUD":"Simulating", 
 			item().m_pInventory->GetActiveSlot(), 
 			item().object_id(),
@@ -435,10 +435,7 @@ bool CHudItem::isHUDAnimationExist(LPCSTR anim_name)
 			return true;
 	}
 
-
-#ifdef DEBUG
-	Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
-#endif
+	EngineLog("~ [WARNING] ------ Animation [{}] does not exist in [{}]", anim_name, HudSection().c_str());
 	return false;
 }
 

@@ -165,7 +165,7 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	DXGI_ADAPTER_DESC Desc;
 	R_CHK( m_pAdapter->GetDesc(&Desc) );
 	//	Warning: Desc.Description is wide string
-	Msg		("* GPU [vendor:%X]-[device:%X]: %S", Desc.VendorId, Desc.DeviceId, Desc.Description);
+	EngineLogW(L"* GPU [vendor:{}]-[device:{}]: {}", Desc.VendorId, Desc.DeviceId, Desc.Description);
 	/*
 	// Display the name of video board
 	D3DADAPTER_IDENTIFIER9	adapterID;
@@ -333,9 +333,9 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	if (FAILED(R))
 	{
 		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\n"
+		EngineLog("{} :{}", "Failed to initialize graphics hardware.\n"
 							 "Please try to restart the game.\n"
-							 "CreateDevice returned 0x%08x", R
+							 "CreateDevice returned", R
 							 );
 		FlushLog			();
 		MessageBoxA			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
@@ -372,7 +372,7 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 
 	//u32	memory									= pDevice->GetAvailableTextureMem	();
 	size_t	memory									= Desc.DedicatedVideoMemory;
-	Msg		("* Texture memory: %d M",		memory/(1024*1024));
+	EngineLog("* Texture memory: {} M",		memory/(1024*1024));
 #ifndef _EDITOR
 	updateWindowProps							(m_hWnd);
 	fill_vid_mode_list							(this);
@@ -390,7 +390,7 @@ void CHW::CreateRDoc() {
 
 			int Major, Minor, Path;
 			rdoc_api->GetAPIVersion(&Major, &Minor, &Path);
-			Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
+			EngineLog("RenderDoc API: {}.{}.{}", Major, Minor, Path);
 
 			//rdoc_api->LaunchReplayUI(1, "IX-Ray 1.6.02");
 			//rdoc_api->SetActiveWindow(pDevice, Device.m_hWnd);
@@ -907,7 +907,7 @@ void fill_vid_mode_list(CHW* _hw)
 //	_tmp.push_back				(NULL);
 //	_tmp.back()					= xr_strdup("1024x768");
 
-	u32 _cnt						= _tmp.size()+1;
+	u32 _cnt						= (u32)_tmp.size()+1;
 
 	vid_mode_token					= xr_alloc<xr_token>(_cnt);
 
@@ -915,59 +915,13 @@ void fill_vid_mode_list(CHW* _hw)
 	vid_mode_token[_cnt-1].name		= NULL;
 
 #ifdef DEBUG
-	Msg("Available video modes[%d]:",_tmp.size());
+	EngineLog("Available video modes[{}]:",_tmp.size());
 #endif // DEBUG
-	for( u32 i=0; i<_tmp.size(); ++i )
+	for( size_t i=0; i<_tmp.size(); ++i )
 	{
 		vid_mode_token[i].id		= i;
 		vid_mode_token[i].name		= _tmp[i];
-#ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
-#endif // DEBUG
 	}
-
-	/*	Old code
-	if(vid_mode_token != NULL)		return;
-	xr_vector<LPCSTR>	_tmp;
-	u32 cnt = _hw->pD3D->GetAdapterModeCount	(_hw->DevAdapter, _hw->Caps.fTarget);
-
-	u32 i;
-	for(i=0; i<cnt;++i)
-	{
-		D3DDISPLAYMODE	Mode;
-		string32		str;
-
-		_hw->pD3D->EnumAdapterModes(_hw->DevAdapter, _hw->Caps.fTarget, i, &Mode);
-		if(Mode.Width < 800)		continue;
-
-		xr_sprintf						(str,sizeof(str),"%dx%d", Mode.Width, Mode.Height);
-
-		if(_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
-			continue;
-
-		_tmp.push_back				(NULL);
-		_tmp.back()					= xr_strdup(str);
-	}
-
-	u32 _cnt						= _tmp.size()+1;
-
-	vid_mode_token					= xr_alloc<xr_token>(_cnt);
-
-	vid_mode_token[_cnt-1].id			= -1;
-	vid_mode_token[_cnt-1].name		= NULL;
-
-#ifdef DEBUG
-	Msg("Available video modes[%d]:",_tmp.size());
-#endif // DEBUG
-	for(i=0; i<_tmp.size();++i)
-	{
-		vid_mode_token[i].id		= i;
-		vid_mode_token[i].name		= _tmp[i];
-#ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
-#endif // DEBUG
-	}
-	*/
 }
 
 void CHW::UpdateViews()

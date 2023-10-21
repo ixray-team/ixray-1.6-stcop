@@ -377,7 +377,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 		DBG_DrawPoint(global_point, 0.03f, color_rgba(255, 0, 0, 255));
 	}
 	if(!fsimilar( _abs( DET( g_anim ) - 1.f ), _abs( DET( m.get() ) - 1.f ), 0.001f ) )
-		Msg("scale g_anim: %f scale m: %f ",  DET( g_anim ) ,  DET( m.get() ) );
+		EngineLog("scale g_anim: {} scale m: {} ",  DET( g_anim ) ,  DET( m.get() ) );
 #endif
 
 	return true;

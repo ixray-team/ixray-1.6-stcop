@@ -154,21 +154,20 @@ IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const _LEVEL_ID &id) c
 	return						((*I).second);
 }
 
-IC	const GameGraph::SLevel &GameGraph::CHeader::level				(LPCSTR level_name) const
+IC	const GameGraph::SLevel& GameGraph::CHeader::level(LPCSTR level_name) const
 {
 	LEVEL_MAP::const_iterator	I = levels().begin();
 	LEVEL_MAP::const_iterator	E = levels().end();
-	for ( ; I != E; ++I)
-		if (!xr_strcmp((*I).second.name(),level_name))
+	for (; I != E; ++I)
+		if (!xr_strcmp((*I).second.name(), level_name))
 			return				((*I).second);
-	
+
 #ifdef DEBUG
-	Msg							("! There is no specified level %s in the game graph!",level_name);
-	return						(levels().begin()->second);
+	EngineLog("! There is no specified level %s in the game graph! {}", level_name);
 #else
-	R_ASSERT3					(false,"There is no specified level in the game graph!",level_name);
-	NODEFAULT;
+	R_ASSERT3(false, "There is no specified level in the game graph!", level_name);
 #endif
+	return (levels().begin()->second);
 }
 
 IC	const GameGraph::SLevel *GameGraph::CHeader::level				(LPCSTR level_name, bool) const

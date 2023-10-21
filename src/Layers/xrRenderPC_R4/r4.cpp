@@ -135,7 +135,7 @@ void					CRender::create					()
 	};
 	*/
 	if (o.nullrt)		{
-		Msg				("* NULLRT supported");
+		EngineLog("* NULLRT supported");
 
 		//.	    _tzset			();
 		//.		??? _strdate	( date, 128 );	???
@@ -182,7 +182,7 @@ void					CRender::create					()
 			}
 			if (disable_nullrt)	o.nullrt=false;
 		};
-		if (o.nullrt)	Msg				("* ...and used");
+		if (o.nullrt)	EngineLog("* ...and used");
 	};
 
 
@@ -199,7 +199,7 @@ void					CRender::create					()
 			o.HW_smap_FORMAT	= D3DFMT_D32F_LOCKABLE;
 		else
 			o.HW_smap_FORMAT	= D3DFMT_D24X8;
-		Msg				("* HWDST/PCF supported and used");
+		EngineLog("* HWDST/PCF supported and used");
 	}
 
 	//	DX10 disabled
@@ -216,7 +216,7 @@ void					CRender::create					()
 			o.HW_smap_PCF	= FALSE			;
 			o.HW_smap_FETCH4= TRUE			;
 		}
-		Msg				("* DF24/F4 supported and used [%X]", o.HW_smap_FORMAT);
+		EngineLog("* DF24/F4 supported and used [{}]", (u32)o.HW_smap_FORMAT);
 	}
 
 	// emulate ATI-R4xx series
@@ -239,11 +239,13 @@ void					CRender::create					()
 	//	DX10 disabled
 	//o.nvdbt				= HW.support	((D3DFORMAT)MAKEFOURCC('N','V','D','B'), D3DRTYPE_SURFACE, 0);
 	o.nvdbt				= false;
-	if (o.nvdbt)		Msg	("* NV-DBT supported and used");
+
+	if (o.nvdbt)		
+		EngineLog("* NV-DBT supported and used");
 
 	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
 	if (o.no_ram_textures)
-		Msg("* Managed textures disabled");
+		EngineLog("* Managed textures disabled");
 
 	// options (smap-pool-size)
 	if (strstr(Core.Params,"-smap1536"))	o.smapsize	= 1536;
@@ -397,7 +399,7 @@ void CRender::reset_begin()
 				Lights_LastFrame[it]->svis.resetoccq ()	;
 			} catch (...)
 			{
-				Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
+				EngineLog("! Failed to flush-OCCq on light [{}] {}",it,*(u32*)(&Lights_LastFrame[it]));
 			}
 		}
 		Lights_LastFrame.clear	();
@@ -679,7 +681,7 @@ static HRESULT create_shader				(
 	}
 	else
 	{
-		Msg("! D3DReflectShader %s hr == 0x%08x", file_name, _hr);
+		EngineLog("! D3DReflectShader {} hr == {}", file_name, _hr);
 	}
 
 	return				_hr;
@@ -699,8 +701,7 @@ static HRESULT create_shader				(
 		SPS* sps_result = (SPS*)result;
 		_result			= HW.pDevice->CreatePixelShader(buffer, buffer_size, 0, &sps_result->ps);
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! PS: ", file_name);
-			Msg			("! CreatePixelShader hr == 0x%08x", _result);
+			EngineLog("! PS: {} ", file_name);
 			return		E_FAIL;
 		}
 
@@ -719,8 +720,7 @@ static HRESULT create_shader				(
 		}
 		else
 		{
-			Log	("! PS: ", file_name);
-			Msg	("! D3DReflectShader hr == 0x%08x", _result);
+			EngineLog("! PS: {}", file_name);
 		}
 	}
 	else if (pTarget[0] == 'v') {
@@ -728,8 +728,7 @@ static HRESULT create_shader				(
 		_result			= HW.pDevice->CreateVertexShader(buffer, buffer_size, 0, &svs_result->vs);
 
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! VS: ", file_name);
-			Msg			("! CreatePixelShader hr == 0x%08x", _result);
+			EngineLog("! VS: {}", file_name);
 			return		E_FAIL;
 		}
 
@@ -759,16 +758,14 @@ static HRESULT create_shader				(
 		}
 		else
 		{
-			Log			("! VS: ", file_name);
-			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
+			EngineLog("! VS: {}", file_name);
 		}
 	}
 	else if (pTarget[0] == 'g') {
 		SGS* sgs_result = (SGS*)result;
 		_result			= HW.pDevice->CreateGeometryShader(buffer, buffer_size, 0, &sgs_result->gs);
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! GS: ", file_name);
-			Msg			("! CreateGeometryShaderhr == 0x%08x", _result);
+			EngineLog("! GS: {}", file_name);
 			return		E_FAIL;
 		}
 
@@ -787,8 +784,7 @@ static HRESULT create_shader				(
 		}
 		else
 		{
-			Log	("! PS: ", file_name);
-			Msg	("! D3DReflectShader hr == 0x%08x", _result);
+			EngineLog("! PS: {}", file_name);
 		}
 	}
 	else if (pTarget[0] == 'c') {
@@ -1397,11 +1393,11 @@ HRESULT	CRender::shader_compile			(
 		}
 		else {
 //			Msg						( "! shader compilation failed" );
-			Log						("! ", file_name);
+			EngineLog("! {}", file_name);
 			if ( pErrorBuf )
-				Log					("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
+				EngineLog("! error: {}",(LPCSTR)pErrorBuf->GetBufferPointer());
 			else
-				Msg					("Can't compile shader hr=0x%08x", _result);
+				EngineLog("Can't compile shader hr={}", (size_t)&_result);
 		}
 	}
 

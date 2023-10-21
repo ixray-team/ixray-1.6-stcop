@@ -723,9 +723,6 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 void start_tutorial(LPCSTR name);
 void CActor::Die	(CObject* who)
 {
-#ifdef DEBUG
-	Msg("--- Actor [%s] dies !", this->Name());
-#endif // #ifdef DEBUG
 	inherited::Die		(who);
 
 	if (OnServer())

@@ -93,7 +93,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	if (!loading_save_timer_started) {
 		loading_save_timer.Start();
 		loading_save_timer_started = true;
-		Msg("* Game Loading Timer: Started from net_Start");
+		EngineLog("* Game Loading Timer: Started from net_Start");
 	}
 
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start1));
@@ -139,7 +139,7 @@ bool CLevel::net_start1				()
 			int							id = pApp->Level_ID(map_data.m_name.c_str(), l_ver.c_str(), true);
 
 			if (id<0) {
-				Log						("Can't find level: ",map_data.m_name.c_str());
+				EngineLog("Can't find level: {}",map_data.m_name.c_str());
 				net_start_result_total	= FALSE;
 				return true;
 			}
@@ -159,7 +159,7 @@ bool CLevel::net_start2				()
 		if ((m_connect_server_err=Server->Connect(m_caServerOptions, game_descr))!=xrServer::ErrNoError)
 		{
 			net_start_result_total = false;
-			Msg				("! Failed to start server.");
+			EngineLog("! Failed to start server.");
 			return true;
 		}
 		Server->SLS_Default		();
@@ -262,7 +262,7 @@ bool CLevel::net_start6				()
 			Console->Execute		(buf);
 		}
 	}else{
-		Msg				("! Failed to start client. Check the connection or level existance.");
+		EngineLog("! Failed to start client. Check the connection or level existance.");
 		
 		if (m_connect_server_err==xrServer::ErrConnect&&!psNET_direct_connect && !g_dedicated_server) 
 		{
@@ -342,7 +342,7 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	
 	xr_delete(game);
 #ifdef DEBUG
-	Msg("- Game configuring : Started ");
+	EngineLog("- Game configuring : Started ");
 #endif // #ifdef DEBUG
 	CLASS_ID clsid			= game_GameState::getCLASS_ID(game_type_name,false);
 	game					= smart_cast<game_cl_GameState*> ( NEW_INSTANCE ( clsid ) );

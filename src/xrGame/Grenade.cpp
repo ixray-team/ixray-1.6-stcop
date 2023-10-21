@@ -139,9 +139,6 @@ void CGrenade::State(u32 state)
 				PutNextToSlot			();
 				if (Local())
 				{
-#ifndef MASTER_GOLD
-					Msg( "Destroying local grenade[%d][%d]", ID(), Device.dwFrame );
-#endif // #ifndef MASTER_GOLD
 					DestroyObject();
 				}
 				
@@ -259,7 +256,7 @@ void CGrenade::PutNextToSlot()
 		this->u_EventSend				(P);
 	}
 	else
-		Msg ("! PutNextToSlot : m_pInventory = NULL [%d][%d]", ID(), Device.dwFrame);	
+		EngineLog("! PutNextToSlot : m_pInventory = NULL [{}][{}]", ID(), Device.dwFrame);
 
 	if (smart_cast<CInventoryOwner*>(H_Parent()) && m_pInventory)
 	{

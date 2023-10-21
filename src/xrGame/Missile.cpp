@@ -119,7 +119,7 @@ void CMissile::PH_A_CrPr		()
 		VERIFY( K );
 		if (!obj.PPhysicsShell())
 		{
-			Msg("! ERROR: PhysicsShell is NULL, object [%s][%d]", obj.cName().c_str(), obj.ID());
+			EngineLog("! ERROR: PhysicsShell is NULL, object [{}][{}]", obj.cName().c_str(), obj.ID());
 			return;
 		}
 		if(!obj.PPhysicsShell()->isFullActive())
@@ -205,7 +205,7 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 
 		if(GetState() == eThrow)
 		{
-			Msg("Throw on reject");
+			EngineLog("Throw on reject");
 			Throw				();
 		}
 	}
@@ -458,23 +458,27 @@ void CMissile::setup_throw_params()
 	Fmatrix					trans;
 	trans.identity			();
 	Fvector					FirePos, FireDir;
+
 	if (this == inventory_owner->inventory().ActiveItem())
 	{
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(NULL == io->inventory().ActiveItem())
+		if (NULL == io->inventory().ActiveItem())
 		{
-				Log("current_state", GetState() );
-				Log("next_state", GetNextState());
-				Log("state_time", m_dwStateTime);
-				Log("item_sect", cNameSect().c_str());
-				Log("H_Parent", H_Parent()->cNameSect().c_str());
+			EngineLog("current_state {}", GetState());
+			EngineLog("next_state {}", GetNextState());
+			EngineLog("state_time {}", m_dwStateTime);
+			EngineLog("item_sect {}", cNameSect().c_str());
+			EngineLog("H_Parent {}", H_Parent()->cNameSect().c_str());
 		}
 
 		entity->g_fireParams(this, FirePos, FireDir);
-	}else{
+	}
+	else
+	{
 		FirePos				= XFORM().c;
 		FireDir				= XFORM().k;
 	}
+
 	trans.k.set				(FireDir);
 	Fvector::generate_orthonormal_basis(trans.k, trans.j,trans.i);
 	trans.c.set				(FirePos);
@@ -496,7 +500,7 @@ void CMissile::OnMotionMark(u32 state, const motion_marks& M)
 void CMissile::Throw() 
 {
 #ifndef MASTER_GOLD
-	Msg("throw [%d]", Device.dwFrame);
+	EngineLog("throw [{}]", Device.dwFrame);
 #endif // #ifndef MASTER_GOLD
 	VERIFY								(smart_cast<CEntity*>(H_Parent()));
 	setup_throw_params					();

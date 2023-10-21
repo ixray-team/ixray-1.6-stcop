@@ -1034,7 +1034,7 @@ void CBulletManager::CommitRenderSet		()	// @ the end of frame
 void CBulletManager::CommitEvents			()	// @ the start of frame
 {
 	if (m_Events.size() > 1000)
-		Msg			("! too many bullets during single frame: %d", m_Events.size());
+		EngineLog("! too many bullets during single frame: {}", m_Events.size());
 
 	for (u32 _it=0; _it<m_Events.size(); _it++)	{
 		_event&		E	= m_Events[_it];

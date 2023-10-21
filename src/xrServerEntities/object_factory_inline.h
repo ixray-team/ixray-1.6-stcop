@@ -65,7 +65,7 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 		string16 TextID = "";
 		CLSID2TEXT(clsid, TextID);
 
-		Msg("! [ERROR]: Invalid clsid! %s", TextID);
+		EngineLog("! [ERROR]: Invalid clsid! {}", TextID);
 	}
 
 	return (**I);

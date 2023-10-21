@@ -488,10 +488,10 @@ void CCustomRocket::UpdateEngine				()
 	//	VERIFY( getVisible() );
 	//	VERIFY( m_pPhysicsShell);
 	if( !m_pPhysicsShell )
-		Msg("! CCustomRocket::UpdateEngine called, but m_pPhysicsShell is NULL");
+		EngineLog("! CCustomRocket::UpdateEngine called, but m_pPhysicsShell is NULL");
 
 	if( !getVisible() ){
-		Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%d]",ID(),Device.dwFrame);
+		EngineLog("! CCustomRocket::UpdateEngine called, but false==getVisible() id[{}] frame[{}]",ID(),Device.dwFrame);
 	}
 
 	if (m_dwEngineTime <= 0) 

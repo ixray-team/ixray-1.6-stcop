@@ -296,10 +296,6 @@ CRenderTarget::CRenderTarget		()
 
 	RImplementation.o.ssao_ultra		= ps_r_ssao>3;
 
-#ifdef DEBUG
-	if( RImplementation.o.dx10_gbuffer_opt )
-		Msg		("dx10_gbuffer_opt = on" );
-#endif // DEBUG
 	param_blur			= 0.f;
 	param_gray			= 0.f;
 	param_noise			= 0.f;

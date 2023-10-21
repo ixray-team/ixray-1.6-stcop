@@ -421,7 +421,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 				M_torso					= TW->drop;
 				if (!M_torso)	
 				{
-					Msg("! drop animation for %s", *(H->object().cName()));
+					EngineLog("! drop animation for {}", *(H->object().cName()));
 					M_torso = ST->m_torso_idle;
 				};
 				m_bAnimTorsoPlayed		= TRUE;

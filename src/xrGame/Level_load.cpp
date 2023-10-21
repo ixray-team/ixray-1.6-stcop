@@ -57,7 +57,7 @@ BOOL CLevel::Load_GameSpecific_After()
 				{
 					ver		= OBJ->r_u32();
 #ifndef MASTER_GOLD
-					Msg		("PS new version, %d", ver);
+					EngineLog("PS new version, {}", ver);
 #endif // #ifndef MASTER_GOLD
 					continue;
 				}

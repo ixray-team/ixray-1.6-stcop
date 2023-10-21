@@ -159,15 +159,7 @@ void CActor::SelectBestWeapon	(CObject* O)
 				PIItem best_item = inventory().ItemFromSlot(BestWeaponSlots[i]);
 				if (best_item && best_item->can_kill())
 				{
-#ifdef DEBUG
-					Msg("--- Selecting best weapon [%d], Frame[%d]", BestWeaponSlots[i], Device.dwFrame);
-#endif // #ifdef DEBUG
 					inventory().Activate(BestWeaponSlots[i]);
-				} else
-				{
-#ifdef DEBUG
-					Msg("--- Weapon is not best...");
-#endif // #ifdef DEBUG
 				}
 			}
 			return;

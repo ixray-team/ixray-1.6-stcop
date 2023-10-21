@@ -61,8 +61,8 @@ void CEntity::OnEvent		(NET_Packet& P, u16 type)
 			CObject			*who = Level().Objects.net_Find	(id);
 			if (who && !IsGameTypeSingle())
 			{
-				if (this!=who)	/*if(bDebug) */ Msg( "%s killed by %s ...", cName().c_str(), who->cName().c_str() );
-				else			/*if(bDebug) */ Msg( "%s dies himself ...", cName().c_str() );
+				if (this!=who)	/*if(bDebug) */ EngineLog( "{} killed by {} ...", cName().c_str(), who->cName().c_str() );
+				else			/*if(bDebug) */ EngineLog( "{} dies himself ...", cName().c_str() );
 			}
 			Die				(who);
 		}
@@ -249,13 +249,13 @@ void CEntity::KillEntity(u16 whoID)
 	if (whoID != ID()) {
 #ifdef DEBUG
 		if (m_killer_id != ALife::_OBJECT_ID(-1)) {
-			Msg			("! Entity [%s][%s] already has killer with id %d, but new killer id arrived - %d",*cNameSect(),*cName(),m_killer_id,whoID);
+			EngineLog("! Entity [{}][{}] already has killer with id {}, but new killer id arrived - {}",*cNameSect(),*cName(),m_killer_id,whoID);
 
 			CObject		*old_killer = Level().Objects.net_Find(m_killer_id);
-			Msg			("! Old killer is %s",old_killer ? *old_killer->cName() : "unknown");
+			EngineLog("! Old killer is {}",old_killer ? *old_killer->cName() : "unknown");
 
 			CObject		*new_killer = Level().Objects.net_Find(whoID);
-			Msg			("! New killer is %s",new_killer ? *new_killer->cName() : "unknown");
+			EngineLog("! New killer is {}",new_killer ? *new_killer->cName() : "unknown");
 
 			VERIFY		(m_killer_id == ALife::_OBJECT_ID(-1));
 		}

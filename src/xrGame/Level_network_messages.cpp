@@ -88,7 +88,7 @@ void CLevel::ClientReceive()
 			{
 				if (!bReady) //!m_bGameConfigStarted || 
 				{
-					Msg ("! Unconventional M_SPAWN received : map_data[%s] | bReady[%s] | deny_m_spawn[%s]",
+					EngineLog("! Unconventional M_SPAWN received : map_data[{}] | bReady[{}] | deny_m_spawn[{}]",
 						(map_data.m_map_sync_received) ? "true" : "false",
 						(bReady) ? "true" : "false",
 						deny_m_spawn ? "true" : "false");
@@ -252,7 +252,7 @@ void CLevel::ClientReceive()
 			{
 				game_configured			= TRUE;
 	#ifdef DEBUG
-				Msg("- Game configuring : Finished ");
+				EngineLog("- Game configuring : Finished ");
 	#endif // #ifdef DEBUG
 				if (IsDemoPlayStarted() && !m_current_spectator)
 				{
@@ -278,7 +278,7 @@ void CLevel::ClientReceive()
 				}*/
 				char	buffer[256];
 				P->r_stringZ(buffer);
-				Msg		("- %s",buffer);
+				EngineLog("- {}",buffer);
 			}
 			break;
 		case M_GAMEMESSAGE:
@@ -297,7 +297,7 @@ void CLevel::ClientReceive()
 		case M_CHANGE_LEVEL:
 			{
 #ifdef DEBUG
-				Msg("--- Changing level message received...");
+			EngineLog("--- Changing level message received...");
 #endif // #ifdef DEBUG
 				if(m_type==M_LOAD_GAME)
 				{
@@ -363,7 +363,7 @@ void CLevel::ClientReceive()
 			}break;
 		case M_CHANGE_LEVEL_GAME:
 			{
-				Msg("- M_CHANGE_LEVEL_GAME Received");
+			EngineLog("- M_CHANGE_LEVEL_GAME Received");
 
 				if (OnClient())
 				{
@@ -437,7 +437,7 @@ void CLevel::ClientReceive()
 			}break;
 		case M_STATISTIC_UPDATE:
 			{
-				Msg("--- CL: On Update Request");
+			EngineLog("--- CL: On Update Request");
 					if (!game) break;
 				game_events->insert		(*P);
 				if (g_bDebugEvents)		ProcessGameEvents();

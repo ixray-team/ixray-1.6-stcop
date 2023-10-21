@@ -65,7 +65,7 @@ void CBlender_Compile::i_dx10Address(u32 s, u32 address)
 	//VERIFY(s!=u32(-1));
    if( s == u32(-1) )
    {
-      Msg( "s != u32(-1)" );
+	   EngineLog( "s != u32(-1)" );
    }
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSU,	address);
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSV,	address);

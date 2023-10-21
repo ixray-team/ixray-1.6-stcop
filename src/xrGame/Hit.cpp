@@ -143,16 +143,16 @@ void SHit::Write_Packet			(NET_Packet	&Packet)
 #ifdef DEBUG
 void SHit::_dump()
 {
-	Msg("SHit::_dump()---begin");
-	Log("power=",power);
-	Log("impulse=",impulse);
-	Log("dir=",dir);
-	Log("whoID=",whoID);
-	Log("weaponID=",weaponID);
-	Log("element=",boneID);
-	Log("p_in_bone_space=",p_in_bone_space);
-	Log("hit_type=",(int)hit_type);
-	Log("armor_piercing=",armor_piercing);
-	Msg("SHit::_dump()---end");
+	EngineLog("SHit::_dump()---begin");
+	EngineLog("power={}",power);
+	EngineLog("impulse={}",impulse);
+	EngineLog("dir={}",dir);
+	EngineLog("whoID={}",whoID);
+	EngineLog("weaponID={}",weaponID);
+	EngineLog("element={}",boneID);
+	EngineLog("p_in_bone_space={}",p_in_bone_space);
+	EngineLog("hit_type={}",(int)hit_type);
+	EngineLog("armor_piercing={}",armor_piercing);
+	EngineLog("SHit::_dump()---end");
 }
 #endif

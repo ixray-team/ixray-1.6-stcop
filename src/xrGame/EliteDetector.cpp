@@ -220,7 +220,7 @@ void CUIArtefactDetectorElite::RegisterItemToDraw(const Fvector& p, const shared
 	xr_map<shared_str,CUIStatic*>::iterator it = m_palette.find(palette_idx);
 	if(it==m_palette.end())		
 	{
-		Msg("! RegisterItemToDraw. static not found for [%s]", palette_idx.c_str());
+		EngineLog("! RegisterItemToDraw. static not found for [{}]", palette_idx.c_str());
 		return;
 	}
 	CUIStatic* S				= m_palette[palette_idx];

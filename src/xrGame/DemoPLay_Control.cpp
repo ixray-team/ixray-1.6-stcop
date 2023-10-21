@@ -24,7 +24,7 @@ void demoplay_control::pause_on(EAction const action, shared_str const & param)
 {
 	if (m_current_mode != not_active)
 	{
-		Msg("! ERROR: already active.");
+		EngineLog("! ERROR: already active.");
 		return;
 	}
 	if (Device.Paused())
@@ -39,7 +39,7 @@ void demoplay_control::cancel_pause_on()
 {
 	if (m_current_mode != waiting_for_actions)
 	{
-		Msg("! ERROR: pause on is not active");
+		EngineLog("! ERROR: pause on is not active");
 		return;
 	}
 	deactivate_filter();
@@ -51,7 +51,7 @@ bool demoplay_control::rewind_until(EAction const action, shared_str const & par
 {
 	if (m_current_mode != not_active)
 	{
-		Msg("! ERROR: already active.");
+		EngineLog("! ERROR: already active.");
 		return false;
 	}
 	if (Device.Paused())

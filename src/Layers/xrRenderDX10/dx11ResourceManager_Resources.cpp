@@ -81,11 +81,15 @@ SState*		CResourceManager::_CreateState		(SimulatorStates& state_code)
 	return v_states.back();
 }
 
-void		CResourceManager::_DeleteState		(const SState* state)
+void CResourceManager::_DeleteState(const SState* state)
 {
-	if (0==(state->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	if (reclaim(v_states,state))						return;
-	Msg	("! ERROR: Failed to find compiled stateblock");
+	if (0 == (state->dwFlags & xr_resource_flagged::RF_REGISTERED))
+		return;
+
+	if (reclaim(v_states, state))
+		return;
+
+	EngineLog("! ERROR: Failed to find compiled stateblock");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -117,9 +121,13 @@ SPass*		CResourceManager::_CreatePass			(const SPass& proto)
 
 void		CResourceManager::_DeletePass			(const SPass* P)
 {
-	if (0==(P->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	if (reclaim(v_passes,P))						return;
-	Msg	("! ERROR: Failed to find compiled pass");
+	if (0==(P->dwFlags&xr_resource_flagged::RF_REGISTERED))
+		return;
+
+	if (reclaim(v_passes,P))					
+		return;
+
+	EngineLog("! ERROR: Failed to find compiled pass");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -164,9 +172,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
 		if (!file)
 		{
-			string1024			tmp;
-			xr_sprintf			(tmp, "DX10: %s is missing. Replace with stub_default.vs", cname);
-			Msg					(tmp);
+			EngineLog("DX10: {} is missing. Replace with stub_default.vs", cname);
 			strconcat			(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".vs");
 			FS.update_path		(cname,	"$game_shaders$", cname);
 			file				= FS.r_open(cname);
@@ -230,7 +236,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 		}
 		return;
 	}
-	Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
+	EngineLog("! ERROR: Failed to find compiled vertex-shader '{}'", *vs->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -267,11 +273,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
 		if (!R)
 		{
-			string1024			tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
-			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.ps", cname);
-			Msg					(tmp);
+			EngineLog("DX10: {} is missing. Replace with stub_default.ps", cname);
 			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".ps");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			R		= FS.r_open(cname);
@@ -318,14 +320,19 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 void	CResourceManager::_DeletePS			(const SPS* ps)
 {
-	if (0==(ps->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
+	if (0==(ps->dwFlags&xr_resource_flagged::RF_REGISTERED))	
+		return;
+
 	LPSTR N				= LPSTR		(*ps->cName);
 	map_PS::iterator I	= m_ps.find	(N);
-	if (I!=m_ps.end())	{
+
+	if (I!=m_ps.end())	
+	{
 		m_ps.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
+
+	EngineLog("! ERROR: Failed to find compiled pixel-shader '{}'",*ps->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -358,7 +365,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 			//	TODO: HACK: Test failure
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.gs", cname);
-			Msg					(tmp);
+			EngineLog(tmp);
 			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".gs");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			R		= FS.r_open(cname);
@@ -402,7 +409,8 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 		m_gs.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
+
+	EngineLog("! ERROR: Failed to find compiled geometry shader '{}",*gs->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -440,7 +448,7 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 {
 	if (0==(dcl->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_declarations,dcl))					return;
-	Msg	("! ERROR: Failed to find compiled vertex-declarator");
+	EngineLog("! ERROR: Failed to find compiled vertex-declarator");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -458,7 +466,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 {
 	if (0==(C->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_constant_tables,C))				return;
-	Msg	("! ERROR: Failed to find compiled constant-table");
+	EngineLog("! ERROR: Failed to find compiled constant-table");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -488,7 +496,7 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 		m_rtargets.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
+	EngineLog("! ERROR: Failed to find render-target '{}'",*RT->cName);
 }
 /*	//	DX10 cut 
 //--------------------------------------------------------------------------------------------------------------
@@ -573,9 +581,13 @@ SGeometry*	CResourceManager::CreateGeom		(u32 FVF, ID3DVertexBuffer* vb, ID3DInd
 
 void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 {
-	if (0==(Geom->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	if (reclaim(v_geoms,Geom))							return;
-	Msg	("! ERROR: Failed to find compiled geometry-declaration");
+	if (0==(Geom->dwFlags&xr_resource_flagged::RF_REGISTERED))	
+		return;
+
+	if (reclaim(v_geoms,Geom))
+		return;
+
+	EngineLog("! ERROR: Failed to find compiled geometry-declaration");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -608,11 +620,14 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 	if (0==(T->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	LPSTR N					= LPSTR		(*T->cName);
 	map_Texture::iterator I	= m_textures.find	(N);
-	if (I!=m_textures.end())	{
+
+	if (I!=m_textures.end())	
+	{
 		m_textures.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
+
+	EngineLog("! ERROR: Failed to find texture surface '{}'",*T->cName);
 }
 
 #ifdef DEBUG
@@ -657,7 +672,8 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 		m_matrices.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
+
+	EngineLog("! ERROR: Failed to find xform-def '{}'",*M->cName);
 }
 void	CResourceManager::ED_UpdateMatrix		(LPCSTR Name, CMatrix* data)
 {
@@ -691,7 +707,7 @@ void	CResourceManager::_DeleteConstant		(const CConstant* C)
 		m_constants.erase(I);
 		return;
 	}
-	Msg	("! ERROR: Failed to find R1-constant-def '%s'",*C->cName);
+	EngineLog("! ERROR: Failed to find R1-constant-def '{}'",*C->cName);
 }
 
 void	CResourceManager::ED_UpdateConstant	(LPCSTR Name, CConstant* data)
@@ -721,7 +737,7 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_textures,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of textures");
+	EngineLog("! ERROR: Failed to find compiled list of textures");
 }
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
@@ -744,7 +760,7 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_matrices,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of xform-defs");
+	EngineLog("! ERROR: Failed to find compiled list of xform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
@@ -767,7 +783,7 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_constants,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
+	EngineLog("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
 dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
@@ -794,7 +810,7 @@ void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
 {
 	if (0==(pBuffer->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_constant_buffer,pBuffer))						return;
-	Msg	("! ERROR: Failed to find compiled constant buffer");
+	EngineLog("! ERROR: Failed to find compiled constant buffer");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -822,7 +838,11 @@ SInputSignature* CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
 //--------------------------------------------------------------------------------------------------------------
 void CResourceManager::_DeleteInputSignature(const SInputSignature* pSignature)
 {
-	if (0==(pSignature->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	if (reclaim(v_input_signature, pSignature))						return;
-	Msg	("! ERROR: Failed to find compiled constant buffer");
+	if (0==(pSignature->dwFlags&xr_resource_flagged::RF_REGISTERED))	
+		return;
+
+	if (reclaim(v_input_signature, pSignature))					
+		return;
+
+	EngineLog("! ERROR: Failed to find compiled constant buffer");
 }

@@ -282,7 +282,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract* e)
 #ifdef DEBUG
 		if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && _stricmp(PH_DBG_ObjectTrackName(), *m_EntityAlife.cName()) == 0)
 		{
-			Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj %s before collision correction %f,%f,%f", PH_DBG_ObjectTrackName(), m_EntityAlife.Position().x, m_EntityAlife.Position().y, m_EntityAlife.Position().z);
+			EngineLog("CCharacterPhysicsSupport::SpawnInitPhysics obj {} before collision correction {}", PH_DBG_ObjectTrackName(), m_EntityAlife.Position());
 		}
 #endif
 #ifdef	USE_IK
@@ -297,7 +297,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract* e)
 #ifdef DEBUG  
 		if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && _stricmp(PH_DBG_ObjectTrackName(), *m_EntityAlife.cName()) == 0)
 		{
-			Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj %s after collision correction %f,%f,%f", PH_DBG_ObjectTrackName(), m_EntityAlife.Position().x, m_EntityAlife.Position().y, m_EntityAlife.Position().z);
+			EngineLog("CCharacterPhysicsSupport::SpawnInitPhysics obj {} after collision correction {}", PH_DBG_ObjectTrackName(), m_EntityAlife.Position());
 		}
 #endif
 	}
@@ -315,7 +315,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract* e)
 		)
 	{
 #ifdef DEBUG
-		Msg("! saved bones %d , current bones %d, object :%s", saved_bones.size(), m_EntityAlife.PHGetSyncItemsNumber(), m_EntityAlife.cName().c_str());
+		EngineLog("! saved bones %d , current bones {}, object :{}", saved_bones.size(), m_EntityAlife.PHGetSyncItemsNumber(), m_EntityAlife.cName().c_str());
 #endif
 		po->_flags.set(CSE_PHSkeleton::flSavedData, FALSE);
 		saved_bones.clear();
@@ -455,7 +455,7 @@ void CCharacterPhysicsSupport::KillHit(SHit& H)
 {
 #ifdef	DEBUG
 	if (death_anim_debug)
-		Msg("death anim: kill hit  ");
+		EngineLog("death anim: kill hit  ");
 #endif
 	VERIFY(m_EntityAlife.Visual());
 	VERIFY(m_EntityAlife.Visual()->dcast_PKinematics());
@@ -509,8 +509,8 @@ void CCharacterPhysicsSupport::KillHit(SHit& H)
 #ifdef	DEBUG
 		if (death_anim_debug)
 		{
-			Msg("death anim: kill hit use free ragdoll ");
-			Msg("death anim: fatal impulse: %f, ", H.impulse);
+			EngineLog("death anim: kill hit use free ragdoll ");
+			EngineLog("death anim: fatal impulse: {}, ", H.impulse);
 		}
 #endif
 
@@ -558,7 +558,7 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 #ifdef	DEBUG
 		if (is_killing && death_anim_debug && !is_imotion(m_interactive_motion))
 		{
-			Msg("death anim: applied fatal impulse dir: (%f,%f,%f), value: (%f) ", H.dir.x, H.dir.y, H.dir.z, H.impulse);
+			EngineLog("death anim: applied fatal impulse dir: {}, value: ({}) ", H.dir, H.impulse);
 		}
 #endif
 		m_pPhysicsShell->applyHit(H.bone_space_position(), H.direction(), H.phys_impulse(), H.bone(), H.type());
@@ -708,7 +708,7 @@ void CCharacterPhysicsSupport::CreateSkeleton(CPhysicsShell*& pShell)
 
 
 #ifdef DEBUG	
-	Msg("shell for %s[%d] created in %f ms", *m_EntityAlife.cName(), m_EntityAlife.ID(), t.GetElapsed_sec() * 1000.f);
+	EngineLog("shell for {}[{}] created in {} ms", *m_EntityAlife.cName(), m_EntityAlife.ID(), t.GetElapsed_sec() * 1000.f);
 #endif
 }
 
@@ -1221,7 +1221,7 @@ void	CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector&
 #ifdef	DEBUG
 	if (death_anim_debug)
 	{
-		Msg("death anim: ragdoll velocity picked from char controller =(%f,%f,%f), velocity applied to ragdoll =(%f,%f,%f)  ", velocity.x, velocity.y, velocity.z, v.x, v.y, v.z);
+		EngineLog("death anim: ragdoll velocity picked from char controller = {}, velocity applied to ragdoll = {}", velocity, v);
 	}
 #endif
 
@@ -1357,21 +1357,7 @@ void CCharacterPhysicsSupport::FlyTo(const	Fvector& disp)
 	for (u16 i = 0; steps_num > i; ++i)
 	{
 		m_pPhysicsShell->set_LinearVel(vel);
-#if	0
-		DBG_OpenCashedDraw();
-		//m_pPhysicsShell->dbg_draw_geometry( 0.2f, color_xrgb( 255, 100, 0 ) );
-		m_pPhysicsShell->dbg_draw_velocity(0.01f, color_xrgb(0, 255, 0));
-		m_pPhysicsShell->dbg_draw_force(0.1f, color_xrgb(0, 0, 255));
-		//	DBG_ClosedCashedDraw( 50000 );
-#endif
 		physics_world()->Step();
-#if	0
-		//	DBG_OpenCashedDraw();
-			//m_pPhysicsShell->dbg_draw_geometry( 0.2f, color_xrgb( 255, 100, 0 ) );
-		m_pPhysicsShell->dbg_draw_velocity(0.01f, color_xrgb(100, 255, 0));
-		m_pPhysicsShell->dbg_draw_force(0.1f, color_xrgb(100, 0, 255));
-		DBG_ClosedCashedDraw(50000);
-#endif
 	}
 	//u16 step_num=disp.magnitude()/fixed_step;
 	m_pPhysicsShell->set_ApplyByGravity(g);

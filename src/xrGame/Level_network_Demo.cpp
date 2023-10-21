@@ -28,7 +28,7 @@ void CLevel::PrepareToSaveDemo		()
 		Time.wMinute,
 		Time.wSecond
 	);
-	Msg					("Demo would be stored in - %s", demo_name);
+	EngineLog("Demo would be stored in - {}", demo_name);
 	FS.update_path      (demo_path, "$logs$", demo_name);
 	m_writer			= FS.w_open(demo_path);
 	m_DemoSave			= TRUE;
@@ -40,12 +40,12 @@ bool CLevel::PrepareToPlayDemo		(shared_str const & file_name)
 	m_reader	= FS.rs_open("$logs$", file_name.c_str());
 	if (!m_reader)
 	{
-		Msg("ERROR: failed to open file [%s] to play demo...", file_name.c_str());
+		EngineLog("ERROR: failed to open file [{}] to play demo...", file_name.c_str());
 		return false;
 	}
 	if (!LoadDemoHeader())
 	{
-		Msg("ERROR: bad demo file...");
+		EngineLog("ERROR: bad demo file...");
 		return false;
 	}
 	m_DemoPlay	= TRUE;
@@ -71,26 +71,15 @@ void CLevel::StartPlayDemo()
 	SetDemoPlaySpeed	(1.0f);
 	m_starting_spawns_pos	= 0;
 	m_starting_spawns_dtime	= 0;
-	Msg("! ------------- Demo Started ------------");
+	EngineLog("! ------------- Demo Started ------------");
 	CatchStartingSpawns	();
-
-	//if using some filter ...
-#ifdef MP_LOGGING
-	message_filter* tmp_msg_filter = GetMessageFilter();
-	if (tmp_msg_filter)
-	{
-		string_path demo_msg_path;
-		FS.update_path(demo_msg_path, "$logs$", "dbg_msg.log");
-		tmp_msg_filter->dbg_set_message_log_file(demo_msg_path);
-	}
-#endif //#ifdef MP_LOGGING
 }
 
 void CLevel::RestartPlayDemo()
 {
 	if (!IsDemoPlay() || (m_starting_spawns_pos == 0))
 	{
-		Msg("! ERROR: no demo play started");
+		EngineLog("! ERROR: no demo play started");
 		return;
 	}
 	if (IsDemoPlayStarted())
@@ -114,7 +103,7 @@ void CLevel::RestartPlayDemo()
 	m_reader->seek		(m_starting_spawns_pos);
 
 	SetDemoPlaySpeed	(1.0f);
-	Msg("! ------------- Demo ReStarted ------------");
+	EngineLog("! ------------- Demo ReStarted ------------");
 }
 
 void CLevel::StopPlayDemo()
@@ -127,7 +116,7 @@ void CLevel::StopPlayDemo()
 		m_DemoPlayStarted	= FALSE;
 		m_DemoPlayStoped	= TRUE;
 	}
-	Msg("! ------------- Demo Stoped ------------");
+	EngineLog("! ------------- Demo Stoped ------------");
 }
 
 void CLevel::StartSaveDemo(shared_str const & server_options)
@@ -338,12 +327,12 @@ void CLevel::SetDemoPlaySpeed(float const time_factor)
 {
 	if (!IsDemoPlayStarted())
 	{
-		Msg("! ERROR: demo play not started");
+		EngineLog("! ERROR: demo play not started");
 		return;
 	}
 	if (time_factor > MAX_PLAY_SPEED)
 	{
-		Msg("! Sorry, maximum play speed is: %1.1f", MAX_PLAY_SPEED);
+		EngineLog("! Sorry, maximum play speed is: {}", MAX_PLAY_SPEED);
 		return;
 	}
 	Device.time_factor(time_factor);

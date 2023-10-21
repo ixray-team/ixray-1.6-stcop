@@ -31,7 +31,7 @@ extern bool	g_b_ClearGameCaptions;
 
 void CLevel::remove_objects	()
 {
-	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - Start");
+	if (!IsGameTypeSingle()) EngineLog("CLevel::remove_objects - Start");
 	BOOL						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 	
 	int loop = 5;
@@ -57,9 +57,6 @@ void CLevel::remove_objects	()
 			ClientReceive			();
 			ProcessGameEvents		();
 			Objects.Update			(false);
-			#ifdef DEBUG
-			Msg						("Update objects list...");
-			#endif // #ifdef DEBUG
 			Objects.dump_all_objects();
 		}
 
@@ -68,7 +65,7 @@ void CLevel::remove_objects	()
 		else
 		{
 			--loop;
-			Msg						("Objects removal next loop. Active objects count=%d", Objects.o_count());
+			EngineLog("Objects removal next loop. Active objects count={}", Objects.o_count());
 		}
 
 	}
@@ -108,7 +105,7 @@ void CLevel::remove_objects	()
 
 //.	xr_delete									(m_seniority_hierarchy_holder);
 //.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
-	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - End");
+	if (!IsGameTypeSingle()) EngineLog("CLevel::remove_objects - End");
 }
 
 #ifdef DEBUG
@@ -120,7 +117,7 @@ extern CUISequencer * g_tutorial2;
 
 void CLevel::net_Stop		()
 {
-	Msg							("- Disconnect");
+	EngineLog("- Disconnect");
 
 	if(CurrentGameUI())
 	{
@@ -382,7 +379,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 		}
 		//-----------------------------------------
 	}
-	Msg							("%c client : connection %s - <%s>", m_bConnectResult ?'*':'!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
+	EngineLog("{} client : connection {} - <{}>", m_bConnectResult ?'*':'!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
 	if		(!m_bConnectResult) 
 	{
 		if(Server)
@@ -532,9 +529,6 @@ void			CLevel::ClearAllObjects				()
 			//-------------------------------------------------------------
 			ParentFound = true;
 			//-------------------------------------------------------------
-#ifdef DEBUG
-			Msg ("Rejection of %s[%d] from %s[%d]", *(pObj->cNameSect()), pObj->ID(), *(pObj->H_Parent()->cNameSect()), pObj->H_Parent()->ID());
-#endif
 		};
 		ProcessGameEvents();
 	};
@@ -551,7 +545,7 @@ void			CLevel::ClearAllObjects				()
 				FATAL("pObj->H_Parent()==NULL");
 			} else
 			{
-				Msg("! ERROR: object's parent is not NULL");
+				EngineLog("! ERROR: object's parent is not NULL");
 			}
 		}
 		
@@ -566,10 +560,6 @@ void			CLevel::ClearAllObjects				()
 		if (g_bDebugEvents)	ProcessGameEvents();
 		//-------------------------------------------------------------
 		ParentFound = true;
-		//-------------------------------------------------------------
-#ifdef DEBUG
-		Msg ("Destruction of %s[%d]", *(pObj->cNameSect()), pObj->ID());
-#endif
 	};
 	ProcessGameEvents();
 };

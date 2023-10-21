@@ -116,7 +116,7 @@ CCustomMonster::~CCustomMonster	()
 	}
 
 #ifdef DEBUG
-	Msg							("dumping client spawn manager stuff for object with id %d",ID());
+	EngineLog("dumping client spawn manager stuff for object with id {}",ID());
 	if(!g_dedicated_server)
 		Level().client_spawn_manager().dump	(ID());
 #endif // DEBUG

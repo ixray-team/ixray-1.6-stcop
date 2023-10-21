@@ -1745,16 +1745,16 @@ void CActor::net_Save(NET_Packet& P)
 {
 #ifdef DEBUG
 	u32					pos;
-	Msg					("Actor net_Save");
+	EngineLog("Actor net_Save");
 	
 	pos					= P.w_tell();
 	inherited::net_Save	(P);
-	Msg					("inherited::net_Save() : %d",P.w_tell() - pos);
+	EngineLog("inherited::net_Save() : {}",P.w_tell() - pos);
 
 	pos					= P.w_tell();
 	m_pPhysics_support->in_NetSave(P);
 	P.w_u16(m_holderID);
-	Msg					("m_pPhysics_support->in_NetSave() : %d",P.w_tell() - pos);
+	EngineLog("m_pPhysics_support->in_NetSave() : {}",P.w_tell() - pos);
 #else
 	inherited::net_Save	(P);
 	m_pPhysics_support->in_NetSave(P);
@@ -1789,7 +1789,7 @@ void				CActor::OnHitHealthLoss					(float NewHealth)
 	if (m_iLastHitterID != u16(-1))
 	{
 #ifndef MASTER_GOLD
-		Msg("On hit health loss of actor[%d], last hitter[%d]", ID(), m_iLastHitterID);
+		EngineLog("On hit health loss of actor[{}], last hitter[{}]", ID(), m_iLastHitterID);
 #endif // #ifndef MASTER_GOLD
 		NET_Packet P;
 		u_EventGen		(P,GE_GAME_EVENT,ID());
@@ -1810,7 +1810,7 @@ void				CActor::OnCriticalHitHealthLoss			()
 	CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
 
 #ifdef DEBUG
-	Msg("%s killed by hit from %s %s", 
+	EngineLog("%s killed by hit from {} {}",
 		*cName(),
 		(pLastHitter ? *(pLastHitter->cName()) : ""), 
 		((pLastHittingWeapon && pLastHittingWeapon != pLastHitter) ? *(pLastHittingWeapon->cName()) : ""));
@@ -1819,7 +1819,7 @@ void				CActor::OnCriticalHitHealthLoss			()
 	if (m_iLastHitterID != u16(-1))
 	{
 #ifndef MASTER_GOLD
-		Msg("On hit of actor[%d], last hitter[%d]", ID(), m_iLastHitterID);
+		EngineLog("On hit of actor[{}], last hitter[{}]", ID(), m_iLastHitterID);
 #endif // #ifndef MASTER_GOLD
 		NET_Packet P;
 		u_EventGen		(P,GE_GAME_EVENT,ID());
@@ -1913,7 +1913,7 @@ void				CActor::OnCriticalWoundHealthLoss		()
 {
 	if (IsGameTypeSingle() || !OnServer()) return;
 #ifdef DEBUG
-	Msg("--- %s is bleed out", *cName());
+	EngineLog("--- {} is bleed out", *cName());
 #endif // #ifdef DEBUG
 	//-------------------------------
 	NET_Packet P;
@@ -1931,7 +1931,7 @@ void				CActor::OnCriticalRadiationHealthLoss	()
 {
 	if (IsGameTypeSingle() || !OnServer()) return;
 	//-------------------------------
-	Msg("%s killed by radiation", *cName());
+	EngineLog("{} killed by radiation", *cName());
 	NET_Packet P;
 	u_EventGen		(P,GE_GAME_EVENT,ID());
 	P.w_u16(GAME_EVENT_PLAYER_KILLED);
@@ -1943,7 +1943,7 @@ void				CActor::OnCriticalRadiationHealthLoss	()
 	u_EventSend(P);
 };
 
-bool				CActor::Check_for_BackStab_Bone			(u16 element)
+bool CActor::Check_for_BackStab_Bone(u16 element)
 {
 	if (element == m_head) return true;
 	else
@@ -1990,8 +1990,5 @@ BOOL CActor::BonePassBullet(int boneID)
 
 void CActor::On_B_NotCurrentEntity()
 {
-#ifndef MASTER_GOLD
-	Msg("CActor::On_B_NotCurrentEntity");
-#endif // #ifndef MASTER_GOLD
 	inventory().Items_SetCurrentEntityHud(false);
 };

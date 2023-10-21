@@ -67,9 +67,6 @@ vGameTasks&	CGameTaskManager::GetGameTasks	()
 	if(!m_gametasks)
 	{
 		m_gametasks = &m_gametasks_wrapper->registry().objects();
-#ifdef DEBUG
-		Msg("m_gametasks size=%d",m_gametasks->size());
-#endif // #ifdef DEBUG
 	}
 
 	return *m_gametasks;
@@ -90,7 +87,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	t->CommitScriptHelperContents	();
 	if(/* bCheckExisting &&*/ HasGameTask(t->m_ID, true) ) 
 	{
- 		Msg("! task [%s] already inprocess",t->m_ID.c_str());
+		EngineLog("! task [{}] already inprocess",t->m_ID.c_str());
 		VERIFY2( 0, make_string( "give_task : Task [%s] already inprocess!", t->m_ID.c_str()) );
 		return NULL;
 	}
@@ -144,7 +141,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state)
 void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state)
 {
 	CGameTask* t				= HasGameTask(id, true);
-	if (NULL==t)				{Msg("actor does not has task [%s] or it is completed", *id);	return;}
+	if (NULL==t)				{ EngineLog("actor does not has task [{}] or it is completed", *id);	return;}
 	SetTaskState				(t, state);
 }
 
@@ -359,7 +356,7 @@ void CGameTaskManager::DumpTasks()
 	for(; it!=it_e; ++it)
 	{
 		const CGameTask* gt = (*it).game_task;
-		Msg( " ID=[%s] state=[%s] prio=[%d] ",
+		EngineLog( " ID=[{}] state=[{}] prio=[{}] ",
 			gt->m_ID.c_str(),
 			sTaskStates[gt->GetTaskState()],
 			gt->m_priority );

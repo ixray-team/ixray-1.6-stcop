@@ -105,7 +105,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 		if(!g_dedicated_server)
 			client_spawn_manager().clear(O->ID());
 		Objects.Destroy			(O);
-		Msg						("! Failed to spawn entity '%s'",*E->s_name);
+		EngineLog("! Failed to spawn entity '{}'",*E->s_name);
 	} 
 	else 
 	{

@@ -190,37 +190,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	
 	hud_zones_list = NULL;
 
-//	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
-//	{
-//		Demo_PrepareToStore();
-//	};
-	//---------------------------------------------------------
-//	m_bDemoPlayMode = FALSE;
-//	m_aDemoData.clear();
-//	m_bDemoStarted	= FALSE;
-
-	Msg("%s", Core.Params);
-	/*
-	if (strstr(Core.Params,"-tdemo ") || strstr(Core.Params,"-tdemof ")) {		
-		string1024				f_name;
-		if (strstr(Core.Params,"-tdemo "))
-		{
-			sscanf					(strstr(Core.Params,"-tdemo ")+7,"%[^ ] ",f_name);
-			m_bDemoPlayByFrame = FALSE;
-
-			Demo_Load	(f_name);	
-		}
-		else
-		{
-			sscanf					(strstr(Core.Params,"-tdemof ")+8,"%[^ ] ",f_name);
-			m_bDemoPlayByFrame = TRUE;
-
-			m_lDemoOfs = 0;
-			Demo_Load_toFrame(f_name, 100, m_lDemoOfs);
-		};		
-	}
-	*/
-	//---------------------------------------------------------	
 	m_file_transfer					= NULL;
 	m_trained_stream				= NULL;
 	m_lzo_working_memory			= NULL;
@@ -235,7 +204,7 @@ CLevel::~CLevel()
 	delete_data					(hud_zones_list);
 	hud_zones_list				= NULL;
 
-	Msg							("- Destroying level");
+	EngineLog("- Destroying level");
 
 	Engine.Event.Handler_Detach	(eEntitySpawn,	this);
 
@@ -403,14 +372,14 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 	CObject*	 O	= Objects.net_Find	(dest);
 	if (0==O)		{
 #ifdef DEBUG
-		Msg("* WARNING: c_EVENT[%d] to [%d]: unknown dest",type,dest);
+		EngineLog("* WARNING: c_EVENT[{}] to [{}]: unknown dest",type,dest);
 #endif // DEBUG
 		return;
 	}
 	CGameObject* GO = smart_cast<CGameObject*>(O);
 	if (!GO)		{
 #ifndef MASTER_GOLD
-		Msg("! ERROR: c_EVENT[%d] : non-game-object",dest);
+		EngineLog("! ERROR: c_EVENT[{}] : non-game-object",dest);
 #endif // #ifndef MASTER_GOLD
 		return;
 	}
@@ -439,7 +408,7 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 		CObject			*D	= Objects.net_Find	(id);
 		if (0==D)		{
 #ifndef MASTER_GOLD
-			Msg			("! ERROR: c_EVENT[%d] : unknown dest",id);
+			EngineLog("! ERROR: c_EVENT[{}] : unknown dest",id);
 #endif // #ifndef MASTER_GOLD
 			ok			= false;
 		}
@@ -447,7 +416,7 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 		CGameObject		*GD = smart_cast<CGameObject*>(D);
 		if (!GD)		{
 #ifndef MASTER_GOLD
-			Msg			("! ERROR: c_EVENT[%d] : non-game-object",id);
+			EngineLog("! ERROR: c_EVENT[{}] : non-game-object",id);
 #endif // #ifndef MASTER_GOLD
 			ok			= false;
 		}
@@ -582,7 +551,7 @@ void CLevel::OnFrame	()
 		if (OnClient() && !IsGameTypeSingle())
 		{
 #ifdef DEBUG
-			Msg("--- I'm disconnected, so clear all objects...");
+			EngineLog("--- I'm disconnected, so clear all objects...");
 #endif // #ifdef DEBUG
 			ClearAllObjects();
 		}
@@ -968,7 +937,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	physics_world()->StepsNum() -= m_dwNumSteps;
 	if(ph_console::g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
 	{
-		Msg("!!!TOO MANY PHYSICS STEPS FOR CORRECTION PREDICTION = %d !!!",m_dwNumSteps);
+		EngineLog("!!!TOO MANY PHYSICS STEPS FOR CORRECTION PREDICTION = {} !!!",m_dwNumSteps);
 		m_dwNumSteps = 10;
 	};
 //////////////////////////////////////////////////////////////////////////////////

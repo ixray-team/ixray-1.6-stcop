@@ -10,7 +10,7 @@ static const u32 r_buffer_size = 131072;	//128 Kb
 void CLevel::CalculateLevelCrc32()
 {
 	void* read_buffer	= _alloca(r_buffer_size);
-	Msg("* calculating checksum of level.geom");
+	EngineLog("* calculating checksum of level.geom");
 	CStreamReader*		geom = FS.rs_open	("$level$","level.geom");
 	R_ASSERT2			(geom, "failed to open level.geom file");
 	u32 remaind			= geom->elapsed();
@@ -44,19 +44,19 @@ bool CLevel::synchronize_map_data()
 	}
 
 #ifndef MASTER_GOLD
-	Msg					("* synchronizing map data...");
+	EngineLog("* synchronizing map data...");
 #endif // #ifndef MASTER_GOLD
 
 	map_data.CheckToSendMapSync	();
 
 #ifdef DEBUG
-	Msg("--- Waiting for server map name...");
+	EngineLog("--- Waiting for server map name...");
 #endif // #ifdef DEBUG
 	ClientReceive(); 
 
 	if ((map_data.m_wait_map_time >= 1000) && (!map_data.m_map_sync_received) && !IsDemoPlay())//about 5 seconds
 	{
-		Msg("Wait map data time out: reconnecting...");
+		EngineLog("Wait map data time out: reconnecting...");
 		MakeReconnect();
 		g_loading_events.erase(++g_loading_events.begin(), g_loading_events.end());
 		return true;
@@ -71,7 +71,7 @@ bool CLevel::synchronize_map_data()
 			
 	if (map_data.IsInvalidMapOrVersion())
 	{
-		Msg("! Incorect map or version, reconnecting...");
+		EngineLog("! Incorect map or version, reconnecting...");
 		MakeReconnect();
 		g_loading_events.erase(++g_loading_events.begin(), g_loading_events.end());
 		return true;
@@ -102,7 +102,7 @@ bool	CLevel::synchronize_client()
 		return true;
 	}
 #ifdef DEBUG
-	Msg("--- Waiting for server configuration...");
+	EngineLog("--- Waiting for server configuration...");
 #endif // #ifdef DEBUG
 	if(Server)
 	{

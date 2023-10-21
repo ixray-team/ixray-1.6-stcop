@@ -340,7 +340,7 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
 	float r_verify = maxLinearSpeed*GetAngSpeedHeading(maxLinearSpeed);
 	if(r_verify>radius_){
 #ifndef MASTER_GOLD
-		Msg("! Helicopter: cannot build round path R=%f. Min R=%f",radius_,r_verify);
+		EngineLog("! Helicopter: cannot build round path R={}. Min R={}",radius_,r_verify);
 #endif // #ifndef MASTER_GOLD
 		return;
 	} 

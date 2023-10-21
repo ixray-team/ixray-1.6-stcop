@@ -113,7 +113,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     return 0;
 #else
 
-    Msg("! Can't find texture '%s'", fname);
+    EngineLog("! Can't find texture '{}'", fname);
     R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
     goto _DDS;
 
@@ -123,7 +123,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         // Load and get header
         reader = FS.r_open(fn);
 #ifdef DEBUG
-        Msg("* Loaded: %s[%d]b", fn, reader->length());
+        EngineLog("* Loaded: {}[{}]b", fn, reader->length());
 #endif // DEBUG
         img_size = reader->length();
         R_ASSERT(reader);
@@ -179,7 +179,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     }
 }
     _BUMP_from_base: {
-        Msg("! Fallback to default bump map: %s", fname);
+        EngineLog("! Fallback to default bump map: {}", fname);
         if (strstr(fname, "_bump#")) {
             R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
             reader = FS.r_open(fn);

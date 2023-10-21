@@ -145,7 +145,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 		//.intepolate_pos
 	}
 	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&!Visual())
-		Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual",*cName());
+		EngineLog("! WARNING: lamp, obj name [{}],flag physics set, but has no visual",*cName());
 //.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
 	if (Alive() && m_bState)
 		TurnOn	();

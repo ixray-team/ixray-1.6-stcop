@@ -116,7 +116,7 @@ void CExplosiveRocket::PH_A_CrPr			()
 		VERIFY( K );
 		if (!obj.PPhysicsShell())
 		{
-			Msg("! ERROR: PhysicsShell is NULL, object [%s][%d]", obj.cName().c_str(), obj.ID());
+			EngineLog("! ERROR: PhysicsShell is NULL, object [{}][{}]", obj.cName().c_str(), obj.ID());
 			return;
 		}
 		if(!obj.PPhysicsShell()->isFullActive())

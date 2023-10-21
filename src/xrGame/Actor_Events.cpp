@@ -39,14 +39,14 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 //			R_ASSERT2( Obj, make_string("GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id).c_str() );
 			VERIFY2  ( Obj, make_string("GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id).c_str() );
 			if ( !Obj ) {
-				Msg                 ( "! GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id );
+				EngineLog( "! GE_OWNERSHIP_TAKE: Object not found. object_id = [{}]", id );
 				break;
 			}
 		
 			CGameObject* _GO		= smart_cast<CGameObject*>(Obj);
 			if (!IsGameTypeSingle() && !g_Alive())
 			{
-				Msg("! WARNING: dead player [%d][%s] can't take items [%d][%s]",
+				EngineLog("! WARNING: dead player [{}][{}] can't take items [{}][{}]",
 					ID(), Name(), _GO->ID(), _GO->cNameSect().c_str());
 				break;
 			}
@@ -54,13 +54,6 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			if( inventory().CanTakeItem(smart_cast<CInventoryItem*>(_GO)) )
 			{
 				Obj->H_SetParent		(smart_cast<CObject*>(this));
-				
-#ifdef MP_LOGGING
-				string64 act;
-				xr_strcpy( act, (type == GE_TRADE_BUY)? "buys" : "takes" );
-				Msg("--- Actor [%d][%s]  %s  [%d][%s]", ID(), Name(), act, _GO->ID(), _GO->cNameSect().c_str());
-#endif // MP_LOGGING
-				
 				inventory().Take	(_GO, false, true);
 			
 				SelectBestWeapon(Obj);
@@ -75,7 +68,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 					u_EventSend		(P_);
 				} else
 				{
-					Msg("! ERROR: Actor [%d][%s]  tries to drop on take [%d][%s]", ID(), Name(), _GO->ID(), _GO->cNameSect().c_str());
+					EngineLog("! ERROR: Actor [{}][{}]  tries to drop on take [{}][{}]", ID(), Name(), _GO->ID(), _GO->cNameSect().c_str());
 				}
 			}
 		}
@@ -89,7 +82,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 //			R_ASSERT2( Obj, make_string("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str() );
 			VERIFY2  ( Obj, make_string("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str() );
 			if ( !Obj ) {
-				Msg                 ( "! GE_OWNERSHIP_REJECT: Object not found, id = %d", id );
+				EngineLog( "! GE_OWNERSHIP_REJECT: Object not found, id = {}", id );
 				break;
 			}
 
@@ -99,16 +92,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			
 			CGameObject * GO = smart_cast<CGameObject*>(Obj);
 			
-#ifdef MP_LOGGING
-			string64 act;
-			xr_strcpy( act, (type == GE_TRADE_SELL)? "sells" : "rejects" );
-			Msg("--- Actor [%d][%s]  %s  [%d][%s]", ID(), Name(), act, GO->ID(), GO->cNameSect().c_str());
-#endif // MP_LOGGING
-			
 			VERIFY( GO->H_Parent() );
 			if ( !GO->H_Parent() )
 			{
-				Msg("! ERROR: Actor [%d][%s] tries to reject item [%d][%s] that has no parent", 
+				EngineLog("! ERROR: Actor [{}][{}] tries to reject item [{}][{}] that has no parent",
 					ID(), Name(), GO->ID(), GO->cNameSect().c_str());
 				break;
 			}
@@ -120,7 +107,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			if ( GO->H_Parent()->ID() != ID() )
 			{
 				CActor* real_parent = smart_cast<CActor*>(GO->H_Parent());
-				Msg("! ERROR: Actor [%d][%s] tries to drop not own item [%d][%s], his parent is [%d][%s]",
+				EngineLog("! ERROR: Actor [{}][{}] tries to drop not own item [{}][{}], his parent is [{}][{}]",
 					ID(), Name(), GO->ID(), GO->cNameSect().c_str(), real_parent->ID(), real_parent->Name());
 				break;
 			}
@@ -203,7 +190,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
 			if (!IsGameTypeSingle() && !g_Alive())
 			{
-				Msg("! WARNING: dead player [%d][%s] can't use items [%d][%s]",
+				EngineLog("! WARNING: dead player [{}][{}] can't use items [{}][{}]",
 					ID(), Name(), Obj->ID(), Obj->cNameSect().c_str());
 				break;
 			}
@@ -214,7 +201,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	//			R_ASSERT2( pArtefact, make_string("GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id).c_str() );
 				VERIFY2  ( pArtefact, make_string("GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id).c_str() );
 				if ( !pArtefact ) {
-					Msg                       ( "! GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id );
+					EngineLog( "! GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [{}]", id );
 					break;//1
 				}
 				
@@ -257,7 +244,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		{
 			s8 cmd				= P.r_s8();
 			m_block_sprint_counter = m_block_sprint_counter+cmd;
-			Msg("m_block_sprint_counter=%d",m_block_sprint_counter);
+			EngineLog("m_block_sprint_counter={}",m_block_sprint_counter);
 			if(m_block_sprint_counter>0)
 			{
 				mstate_wishful	&=~mcSprint;
@@ -293,7 +280,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			u16 id_ = P.r_u16();
 			CObject* O	= Level().Objects.net_Find	(id_);
 			if (!O){
-				Msg("! Error: No object to attach holder [%d]", id_);
+				EngineLog("! Error: No object to attach holder [{}]", id_);
 				break;
 			}
 			VERIFY(m_holder==NULL);

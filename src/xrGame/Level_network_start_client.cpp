@@ -101,7 +101,7 @@ bool	CLevel::net_start_client3				()
 			Disconnect			();
 
 			connected_to_server = FALSE;
-			Msg("! Level (name:%s), (version:%s), not found, try to download from:%s",
+			EngineLog("! Level (name:{}), (version:{}), not found, try to download from: {}",
 				level_name, level_ver, download_url);
 			map_data.m_name					= level_name;
 			map_data.m_map_version			= level_ver;
@@ -109,9 +109,7 @@ bool	CLevel::net_start_client3				()
 			map_data.m_map_loaded			= false;
 			return false;
 		}
-#ifdef DEBUG
-		Msg("--- net_start_client3: level_id [%d], level_name[%s], level_version[%s]", level_id, level_name, level_ver);
-#endif // #ifdef DEBUG
+
 		map_data.m_name					= level_name;
 		map_data.m_map_version			= level_ver;
 		map_data.m_map_download_url		= download_url;
@@ -164,7 +162,7 @@ bool	CLevel::net_start_client4				()
 			// Waiting for connection/configuration completition
 			CTimer	timer_sync	;	timer_sync.Start	();
 			while	(!net_isCompleted_Connect())	Sleep	(5);
-			Msg		("* connection sync: %d ms", timer_sync.GetElapsed_ms());
+			EngineLog("* connection sync: {} ms", timer_sync.GetElapsed_ms());
 			while	(!net_isCompleted_Sync())	{ ClientReceive(); Sleep(5); }
 		}
 /*
@@ -190,9 +188,6 @@ bool	CLevel::net_start_client4				()
 
 void CLevel::ClientSendProfileData	()
 {
-#ifdef DEBUG
-	Msg("* Sending profile data");
-#endif
 	NET_Packet								NP;
 	NP.w_begin								(M_CREATE_PLAYER_STATE);
 	game_PlayerState	tmp_player_state	(NULL);
@@ -240,10 +235,6 @@ bool	CLevel::net_start_client6				()
 			g_hud->Load						();
 			g_hud->OnConnected				();
 		}
-
-#ifdef DEBUG
-		Msg("--- net_start_client6");
-#endif // #ifdef DEBUG
 
 		if (game)
 		{

@@ -584,7 +584,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 	shared_str result_string;
 	if (!GSA.CheckAvailableServices(result_string))
 	{
-		Msg(*result_string);
+		EngineLog(*result_string);
 		return;
 	};
 	

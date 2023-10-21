@@ -348,7 +348,7 @@ float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_typ
 		new_hit_power = pHelmet->HitThroughArmor(new_hit_power, element, ap, add_wound, hit_type);
 
 	if(bDebug)	
-		Msg("new_hit_power = %.3f  hit_type = %s  ap = %.3f", new_hit_power, ALife::g_cafHitType2String(hit_type), ap);
+		EngineLog("new_hit_power = {}  hit_type = {}  ap = {}", new_hit_power, ALife::g_cafHitType2String(hit_type), ap);
 
 	return new_hit_power;
 }
@@ -495,7 +495,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
 	if (bDebug && !is_special_hit_2_self ) 
 	{
-		Msg("%s hitted in %s with %f[%f]", m_object->Name(), 
+		EngineLog("%s hitted in %s with {}[{}]", m_object->Name(),
 			smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_org);
 	}
 	//раны добавляются только живому

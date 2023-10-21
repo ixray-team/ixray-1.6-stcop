@@ -122,7 +122,7 @@ void		CPhysicObject::play_bones_sound()
 {
 	if(!bones_snd_player)
 	{
-		Msg( "! no sound loaded for obj: %s, model :%s - can not play", cName().c_str(), cNameVisual().c_str() );
+		EngineLog( "! no sound loaded for obj: {}, model :{} - can not play", cName().c_str(), cNameVisual().c_str() );
 		return;
 	}
 	if( is_active( bones_snd_player ) )
@@ -229,7 +229,7 @@ IC	bool check_blend(CBlend * b, LPCSTR name, LPCSTR sect, LPCSTR visual)
 {
 #ifdef	DEBUG
 	if(!b)
-		Msg(" ! can not control anim - model is not animated name[%s] sect[%s] visual[%s]", name, sect, visual);
+		EngineLog(" ! can not control anim - model is not animated name[{}] sect[{}] visual[{}]", name, sect, visual);
 #endif
 	return !!b;
 }
@@ -272,7 +272,7 @@ void	CPhysicObject::		anim_time_set					( float time )
 	if( time < 0.f || time > m_anim_blend->timeTotal )
 	{
 #ifdef	DEBUG	
-		Msg( " ! can not set blend time %f - it must be in range 0 - %f(timeTotal) obj: %s, model: %s, anim: %s", time, m_anim_blend->timeTotal, cName().c_str(), cNameVisual().c_str(), smart_cast<IKinematicsAnimated*>( PPhysicsShell()->PKinematics() )->LL_MotionDefName_dbg( m_anim_blend->motionID ).first );
+		EngineLog( " ! can not set blend time {} - it must be in range 0 - {}(timeTotal) obj: {}, model: {}, anim: {}", time, m_anim_blend->timeTotal, cName().c_str(), cNameVisual().c_str(), smart_cast<IKinematicsAnimated*>( PPhysicsShell()->PKinematics() )->LL_MotionDefName_dbg( m_anim_blend->motionID ).first );
 #endif
 		return;
 	}
@@ -712,7 +712,7 @@ void CPhysicObject::net_Import			(NET_Packet& P)
 	if (!m_activated)
 	{
 #ifdef DEBUG
-		Msg("Activating object [%d] before interpolation starts", ID());		
+		EngineLog("Activating object [{}] before interpolation starts", ID());
 #endif // #ifdef DEBUG
 		processing_activate();
 		m_activated = true;
@@ -849,7 +849,7 @@ void CPhysicObject::Interpolate()
 				p->NET_IItem.pop_front();
 				if (m_activated)
 				{
-					Msg("Deactivating object [%d] after interpolation finish", ID());
+					EngineLog("Deactivating object [{}] after interpolation finish", ID());
 					processing_deactivate();
 					m_activated = false;
 				}

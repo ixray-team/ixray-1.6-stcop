@@ -50,11 +50,6 @@ dx10StateCache<ID3DRasterizerState, D3D_RASTERIZER_DESC>
 ::CreateState( D3D_RASTERIZER_DESC desc, ID3DRasterizerState** ppIState )
 {
 	CHK_DX(HW.pDevice->CreateRasterizerState( &desc, ppIState));
-
-	//	TODO: DX10: Remove this.
-#ifdef	DEBUG
-	Msg("ID3DRasterizerState #%d created.", m_StateArray.size());
-#endif	//	DEBUG
 }
 
 template <>
@@ -63,11 +58,6 @@ dx10StateCache<ID3DDepthStencilState, D3D_DEPTH_STENCIL_DESC>
 ::CreateState( D3D_DEPTH_STENCIL_DESC desc, ID3DDepthStencilState** ppIState )
 {
 	CHK_DX(HW.pDevice->CreateDepthStencilState( &desc, ppIState));
-
-	//	TODO: DX10: Remove this.
-#ifdef	DEBUG
-	Msg("ID3DDepthStencilState #%d created.", m_StateArray.size());
-#endif	//	DEBUG
 }
 
 template <>
@@ -76,11 +66,6 @@ dx10StateCache<ID3DBlendState, D3D_BLEND_DESC>
 ::CreateState( D3D_BLEND_DESC desc, ID3DBlendState** ppIState )
 {
 	CHK_DX(HW.pDevice->CreateBlendState( &desc, ppIState));
-
-	//	TODO: DX10: Remove this.
-#ifdef	DEBUG
-	Msg("ID3DBlendState #%d created.", m_StateArray.size());
-#endif	//	DEBUG
 }
 
 /*

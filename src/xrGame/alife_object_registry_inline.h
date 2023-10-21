@@ -37,7 +37,7 @@ IC	CSE_ALifeDynamicObject *CALifeObjectRegistry::object	(const ALife::_OBJECT_ID
 	if (objects().end() == I) {
 #ifdef DEBUG
 		if (!no_assert)
-			Msg					("There is no object with id %d!",id);
+			EngineLog("There is no object with id {}!",id);
 #endif
 		THROW2					(no_assert,"Specified object hasn't been found in the object registry!");
 		return					(0);

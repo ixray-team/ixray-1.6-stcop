@@ -185,7 +185,7 @@ void CCustomZone::Load(LPCSTR section)
 		if (s32(m_dwBlowoutParticlesTime)>m_StateTime[eZoneStateBlowout])	{
 			m_dwBlowoutParticlesTime=m_StateTime[eZoneStateBlowout];
 #ifndef MASTER_GOLD
-			Msg("! ERROR: invalid 'blowout_particles_time' in '%s'",section);
+			EngineLog("! ERROR: invalid 'blowout_particles_time' in '{}'",section);
 #endif // #ifndef MASTER_GOLD
 		}
 	}
@@ -198,7 +198,7 @@ void CCustomZone::Load(LPCSTR section)
 		if (s32(m_dwBlowoutLightTime)>m_StateTime[eZoneStateBlowout])	{
 			m_dwBlowoutLightTime=m_StateTime[eZoneStateBlowout];
 #ifndef MASTER_GOLD
-			Msg("! ERROR: invalid 'blowout_light_time' in '%s'",section);
+			EngineLog("! ERROR: invalid 'blowout_light_time' in '{}'",section);
 #endif // #ifndef MASTER_GOLD
 		}
 	}
@@ -211,7 +211,7 @@ void CCustomZone::Load(LPCSTR section)
 		if (s32(m_dwBlowoutSoundTime)>m_StateTime[eZoneStateBlowout])	{
 			m_dwBlowoutSoundTime=m_StateTime[eZoneStateBlowout];
 #ifndef MASTER_GOLD
-			Msg("! ERROR: invalid 'blowout_sound_time' in '%s'",section);
+			EngineLog("! ERROR: invalid 'blowout_sound_time' in '{}'",section);
 #endif // #ifndef MASTER_GOLD
 		}
 	}
@@ -223,7 +223,7 @@ void CCustomZone::Load(LPCSTR section)
 		if (s32(m_dwBlowoutExplosionTime)>m_StateTime[eZoneStateBlowout])	{
 			m_dwBlowoutExplosionTime=m_StateTime[eZoneStateBlowout];
 #ifndef MASTER_GOLD
-			Msg("! ERROR: invalid 'blowout_explosion_time' in '%s'",section);
+			EngineLog("! ERROR: invalid 'blowout_explosion_time' in '{}'",section);
 #endif // #ifndef MASTER_GOLD
 		}
 	}
@@ -241,7 +241,7 @@ void CCustomZone::Load(LPCSTR section)
 		if((s32)m_dwBlowoutWindTimeEnd < m_StateTime[eZoneStateBlowout]){
 			m_dwBlowoutWindTimeEnd =u32( m_StateTime[eZoneStateBlowout]-1);
 #ifndef MASTER_GOLD
-			Msg("! ERROR: invalid 'blowout_wind_time_end' in '%s'",section);
+			EngineLog("! ERROR: invalid 'blowout_wind_time_end' in '{}'",section);
 #endif // #ifndef MASTER_GOLD
 		}
 
