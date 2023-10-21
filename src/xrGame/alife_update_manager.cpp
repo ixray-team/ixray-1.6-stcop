@@ -339,7 +339,7 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 	bool								failed = !ai().graph_engine().search(ai().game_graph(),graph().actor()->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
 	if (failed) {
 #ifndef MASTER_GOLD
-		EngineLog								("! Cannot build path via game graph from the current level to the level %s!",level_name);
+		EngineLog								("! Cannot build path via game graph from the current level to the level {}!",level_name);
 #endif // #ifndef MASTER_GOLD
 		float							min_dist = flt_max;
 		Fvector							current = ai().game_graph().vertex(graph().actor()->m_tGraphID)->game_point();
@@ -353,7 +353,7 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 				}
 			}
 		if (!ai().game_graph().vertex(dest)) {
-			EngineLog							("! There is no game vertices on the level %s, cannot jump to the specified level",level_name);
+			EngineLog							("! There is no game vertices on the level {}, cannot jump to the specified level",level_name);
 			return;
 		}
 	}
@@ -376,20 +376,20 @@ void CALifeUpdateManager::teleport_object	(ALife::_OBJECT_ID id, GameGraph::_GRA
 {
 	CSE_ALifeDynamicObject					*object = objects().object(id,true);
 	if (!object) {
-		EngineLog									("! cannot teleport entity with id %d",id);
+		EngineLog									("! cannot teleport entity with id {}",id);
 		return;
 	}
 
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		EngineLog									("[LSS] teleporting object [%s][%s][%d] from level [%s], position [%f][%f][%f] to level [%s], position [%f][%f][%f]",
+		EngineLog									("[LSS] teleporting object [{}][{}][{}] from level [{}], position {} to level [{}], position {}",
 			object->name_replace(),
 			*object->s_name,
 			object->ID,
 			*(ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name()),
-			VPUSH(ai().game_graph().vertex(object->m_tGraphID)->level_point()),
+			(ai().game_graph().vertex(object->m_tGraphID)->level_point()),
 			*(ai().game_graph().header().level(ai().game_graph().vertex(game_vertex_id)->level_id()).name()),
-			VPUSH(ai().game_graph().vertex(game_vertex_id)->level_point())
+			(ai().game_graph().vertex(game_vertex_id)->level_point())
 		);
 	}
 #endif
@@ -434,7 +434,7 @@ void CALifeUpdateManager::add_restriction	(ALife::_OBJECT_ID id, ALife::_OBJECT_
 		case RestrictionSpace::eRestrictorTypeOut : {
 #ifdef DEBUG
 			if (std::find(creature->m_dynamic_out_restrictions.begin(),creature->m_dynamic_out_restrictions.end(),restriction_id) != creature->m_dynamic_out_restrictions.end()) {
-				EngineLog							("! cannot add out-restriction with id {}, name %s to the entity with id {}, name {}, because it is already added",restriction_id,restrictor->name_replace(),id,creature->name_replace());
+				EngineLog							("! cannot add out-restriction with id {}, name {} to the entity with id {}, name {}, because it is already added",restriction_id,restrictor->name_replace(),id,creature->name_replace());
 				return;
 			}
 #endif
@@ -446,7 +446,7 @@ void CALifeUpdateManager::add_restriction	(ALife::_OBJECT_ID id, ALife::_OBJECT_
 		case RestrictionSpace::eRestrictorTypeIn : {
 #ifdef DEBUG
 			if (std::find(creature->m_dynamic_in_restrictions.begin(),creature->m_dynamic_in_restrictions.end(),restriction_id) != creature->m_dynamic_in_restrictions.end()) {
-				EngineLog("! cannot add in-restriction with id {}, name %s to the entity with id {}, name {}, because it is already added",restriction_id,restrictor->name_replace(),id,creature->name_replace());
+				EngineLog("! cannot add in-restriction with id {}, name {} to the entity with id {}, name {}, because it is already added",restriction_id,restrictor->name_replace(),id,creature->name_replace());
 				EngineLog("! Please report this log file to Lain");
 				return;
 			}
@@ -467,25 +467,25 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 {
 	CSE_ALifeDynamicObject					*object = objects().object(id,true);
 	if (!object) {
-		EngineLog									("! cannot remove restriction with id %d to the entity with id %d, because there is no creature with the specified id",restriction_id,id);
+		EngineLog									("! cannot remove restriction with id {} to the entity with id {}, because there is no creature with the specified id",restriction_id,id);
 		return;
 	}
 	
 	CSE_ALifeDynamicObject					*object_restrictor = objects().object(restriction_id,true);
 	if (!object_restrictor) {
-		EngineLog									("! cannot remove restriction with id %d to the entity with id %d, because there is no space restrictor with the specified id",restriction_id,id);
+		EngineLog									("! cannot remove restriction with id {} to the entity with id {}, because there is no space restrictor with the specified id",restriction_id,id);
 		return;
 	}
 
 	CSE_ALifeCreatureAbstract				*creature = smart_cast<CSE_ALifeCreatureAbstract*>(object);
 	if (!creature) {
-		EngineLog									("! cannot remove restriction with id %d to the entity with id %d, because there is an object with the specified id, but it is not a creature",restriction_id,id);
+		EngineLog									("! cannot remove restriction with id {} to the entity with id {}, because there is an object with the specified id, but it is not a creature",restriction_id,id);
 		return;
 	}
 	
 	CSE_ALifeSpaceRestrictor				*restrictor = smart_cast<CSE_ALifeSpaceRestrictor*>(object_restrictor);
 	if (!restrictor) {
-		EngineLog									("! cannot remove restriction with id %d to the entity with id %d, because there is an object with the specified id, but it is not a space restrictor",restriction_id,id);
+		EngineLog									("! cannot remove restriction with id {} to the entity with id {}, because there is an object with the specified id, but it is not a space restrictor",restriction_id,id);
 		return;
 	}
 
@@ -493,7 +493,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 		case RestrictionSpace::eRestrictorTypeOut : {
 			xr_vector<ALife::_OBJECT_ID>::iterator	I = std::find(creature->m_dynamic_out_restrictions.begin(),creature->m_dynamic_out_restrictions.end(),restriction_id);
 			if (I == creature->m_dynamic_out_restrictions.end()) {
-				EngineLog							("~ cannot remove restriction with id [%d][%s] to the entity with id [%d][%s], because it is not added",restriction_id,object_restrictor->name_replace(),id,object->name_replace());
+				EngineLog							("~ cannot remove restriction with id [{}][{}] to the entity with id [{}][{}], because it is not added",restriction_id,object_restrictor->name_replace(),id,object->name_replace());
 				return;
 			}
 

@@ -226,7 +226,7 @@ void add_offline_impl						(CSE_ALifeDynamicObject *object, const xr_vector<ALif
 //		if (psAI_Flags.test(aiALife))
 //			EngineLog					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
 		EngineLog						(
-			"[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'",
+			"[LSS][{}] Going offline [{}][{}][{}] with parent [{}][{}] on '{}'",
 			Device.dwFrame,
 			Device.dwTimeGlobal,
 			inventory_item->base()->name_replace(),
