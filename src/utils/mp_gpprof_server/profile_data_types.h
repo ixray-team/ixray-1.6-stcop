@@ -91,7 +91,7 @@ char const *			get_best_score_name				(enum_best_score_type bst);
 unsigned short			get_best_score_id_stat			(enum_best_score_type bst);
 enum_best_score_type	get_best_score_type_by_sname	(char const * stat_name);
 
-extern char * profile_table_name;
+extern const char * profile_table_name;
 
 
 typedef award_data awards_map_t[at_awards_count];

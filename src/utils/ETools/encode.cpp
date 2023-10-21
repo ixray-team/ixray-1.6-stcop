@@ -22,7 +22,7 @@
 //#include "i18n.h"
 
 #define READSIZE 1024
-#define _(a) a
+#define _(a) (char*)a
 
 
 int oe_write_page(ogg_page *page, FILE *fp);
@@ -370,7 +370,7 @@ cleanup:
 
 void update_statistics_full(char *fn, long total, long done, double time)
 {
-	static char *spinner="|/-\\";
+	static const char *spinner="|/-\\";
 	static int spinpoint = 0;
 	double remain_time;
 	int minutes=0,seconds=0;
@@ -386,7 +386,7 @@ void update_statistics_full(char *fn, long total, long done, double time)
 
 void update_statistics_notime(char *fn, long total, long done, double time)
 {
-	static char *spinner="|/-\\";
+	static const char *spinner="|/-\\";
 	static int spinpoint =0;
 	
 	fprintf(stderr, "\r");

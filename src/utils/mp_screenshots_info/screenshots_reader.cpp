@@ -60,7 +60,7 @@ reader::reader(IReader* freader)
 	
 	if (!tmp_info_begin)
 	{
-		Msg("Can't find info section");
+		EngineLog("Can't find info section");
 		return;
 	}
 	--tmp_info_begin;//- '['

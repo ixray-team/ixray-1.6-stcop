@@ -34,9 +34,9 @@ inline void ARGBToAlphaAndVector(const rgba_t& inColor,
 {
 
                         
-    outVector.x = (float)inColor.r / 127.5 - 1.0;
-    outVector.y = (float)inColor.g / 127.5 - 1.0;
-    outVector.z = (float)inColor.b / 127.5 - 1.0;
+    outVector.x = (float)inColor.r / 127.5f - 1.0f;
+    outVector.y = (float)inColor.g / 127.5f - 1.0f;
+    outVector.z = (float)inColor.b / 127.5f - 1.0f;
 
     outVector.a = theHeight;
 
@@ -48,9 +48,9 @@ inline void ARGBToAlphaAndVector(const rgba_t * inColor,
 {
 
                         
-    outVector.x = (float)inColor->r / 127.5 - 1.0;
-    outVector.y = (float)inColor->g / 127.5 - 1.0;
-    outVector.z = (float)inColor->b / 127.5 - 1.0;
+    outVector.x = (float)inColor->r / 127.5f - 1.0f;
+    outVector.y = (float)inColor->g / 127.5f - 1.0f;
+    outVector.z = (float)inColor->b / 127.5f - 1.0f;
 
     outVector.a = theHeight;
 
@@ -60,9 +60,9 @@ inline void ARGBToAlphaAndVector(const rgba_t * inColor,
 inline void ColorToVector(rgba_t color, float & r, float & g, float & b)
 {
 
-    r = (float)(color.r) / 127.5 - 1.0;
-    g = (float)(color.g) / 127.5 - 1.0;
-    b = (float)(color.b) / 127.5 - 1.0;
+    r = (float)(color.r) / 127.5f - 1.0f;
+    g = (float)(color.g) / 127.5f - 1.0f;
+    b = (float)(color.b) / 127.5f - 1.0f;
 }
 
 

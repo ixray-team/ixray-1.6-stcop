@@ -21,7 +21,7 @@
 typedef HRESULT (__cdecl *MIPcallback)(void * data, int miplevel, DWORD size, int width, int height, void * user_data);
                      
 
-inline char * GetDXTCVersion() { return "Version 7.33";}
+inline const char * GetDXTCVersion() { return "Version IXR 7.34";}
 
 
 enum NVDXT_OPTIONS

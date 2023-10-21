@@ -253,7 +253,7 @@ bool sake_processor::create_request_string()
 void sake_processor::fetch()
 {
 	memset(&m_get_records_input, 0, sizeof(m_get_records_input));
-	m_get_records_input.mTableId	= gamespy_profile::profile_table_name;
+	m_get_records_input.mTableId	= (char*)gamespy_profile::profile_table_name;
 	m_get_records_input.mFieldNames	= m_field_names_store;
 	m_get_records_input.mNumFields	= merged_fields_count;
 	m_get_records_input.mCacheFlag	= gsi_true;

@@ -94,7 +94,7 @@ bool Image_DXTC::LoadFromFile(LPCSTR filename )
 	// only understands .dds files for now
 	// return true if success
 
-	char * exts[] = { ".DDS" };
+	const char * exts[] = { ".DDS" };
 	int next = 1;
 
 	char fileupper[256];

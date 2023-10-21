@@ -271,11 +271,11 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
     _close					(gFileOut);
 	if (hr!=DD_OK){
 		switch (hr){
-		case DXTERR_INPUT_POINTER_ZERO:			MessageBox(0,"Empty source.","DXT compress error",MB_ICONERROR|MB_OK);			break;
-		case DXTERR_DEPTH_IS_NOT_3_OR_4:		MessageBox(0,"Source depth is not 3 or 4.","DXT compress error",MB_ICONERROR|MB_OK);			break;
-		case DXTERR_NON_POWER_2:				MessageBox(0,"Source size non power 2.","DXT compress error",MB_ICONERROR|MB_OK);					break;
-		case DXTERR_INCORRECT_NUMBER_OF_PLANES:	MessageBox(0,"Source incorrect number of planes.","DXT compress error",MB_ICONERROR|MB_OK);	break;
-		case DXTERR_NON_MUL4:					MessageBox(0,"Source size non mul 4.","DXT compress error",MB_ICONERROR|MB_OK);						break;
+		case DXTERR_INPUT_POINTER_ZERO:			MessageBoxA(0,"Empty source.","DXT compress error",MB_ICONERROR|MB_OK);			break;
+		case DXTERR_DEPTH_IS_NOT_3_OR_4:		MessageBoxA(0,"Source depth is not 3 or 4.","DXT compress error",MB_ICONERROR|MB_OK);			break;
+		case DXTERR_NON_POWER_2:				MessageBoxA(0,"Source size non power 2.","DXT compress error",MB_ICONERROR|MB_OK);					break;
+		case DXTERR_INCORRECT_NUMBER_OF_PLANES:	MessageBoxA(0,"Source incorrect number of planes.","DXT compress error",MB_ICONERROR|MB_OK);	break;
+		case DXTERR_NON_MUL4:					MessageBoxA(0,"Source size non mul 4.","DXT compress error",MB_ICONERROR|MB_OK);						break;
 		}
 		_unlink				(out_name);
 		return 0;

@@ -181,7 +181,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	{
 		filesSKIP	++;
 		printf		(" - a SKIP");
-		Msg			("%-80s   - SKIP",path);
+		EngineLog("%-80s   - SKIP {}",path);
 		return;
 	}
 
@@ -192,7 +192,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	{
 		filesSKIP	++;
 		printf		(" - CAN'T OPEN");
-		Msg			("%-80s   - CAN'T OPEN",path);
+		EngineLog("{}   - CAN'T OPEN {}",path);
 		return;
 	}
 
@@ -201,7 +201,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	{
 		filesSKIP	++;
 		printf		(" - CAN'T OPEN");
-		Msg			("%-80s   - CAN'T OPEN",path);
+		EngineLog	("%-80s   - CAN'T OPEN {}",path);
 		return;
 	}
 
@@ -218,7 +218,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	{
 		filesALIAS			++;
 		printf				("ALIAS");
-		Msg					("%-80s   - ALIAS (%s)",path,A->path);
+		EngineLog("{}   - ALIAS ({})",path,A->path);
 
 		// Alias found
 		c_ptr				= A->c_ptr;
@@ -236,7 +236,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 			c_size_compressed	= src->length();
 			fs_pack_writer->w	(src->pointer(),c_size_real);
 			printf				("VFS");
-			Msg					("%-80s   - VFS",path);
+			EngineLog("{}   - VFS {}",path);
 		} else 
 		{ //if(testVFS(path))
 			// Compress into BaseFS
@@ -267,7 +267,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 					c_size_compressed	= c_size_real;
 					fs_pack_writer->w	(src->pointer(),c_size_real);
 					printf				("VFS (R)");
-					Msg					("%-80s   - VFS (R)",path);
+					EngineLog("{}   - VFS (R) {}",path);
 				} else 
 				{
 					// Compressed OK - optimize
@@ -281,7 +281,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 					}//bFast
 					fs_pack_writer->w	(c_data,c_size_compressed);
 					printf				("%3.1f%%",	100.f*float(c_size_compressed)/float(src->length()));
-					Msg					("%-80s   - OK (%3.1f%%)",path,100.f*float(c_size_compressed)/float(src->length()));
+					EngineLog("{}   - OK ({})",path,100.f*float(c_size_compressed)/float(src->length()));
 				}
 
 				// cleanup
@@ -291,7 +291,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 				filesVFS				++;
 				c_size_compressed		= c_size_real;
 				printf					("VFS (R)");
-				Msg						("%-80s   - EMPTY FILE",path);
+				EngineLog("{}   - EMPTY FILE",path);
 			}
 		}//test VFS
 	} //(A)
@@ -392,14 +392,14 @@ void xrCompressor::ClosePack()
 	fs_pack_writer->close_chunk	(); 
 	// save list
 	bytesDST		= fs_pack_writer->tell	();
-	Msg				("...Writing pack desc");
+	EngineLog("...Writing pack desc");
 
 	fs_pack_writer->w_chunk		(1|CFS_CompressMark, fs_desc.pointer(),fs_desc.size());
 
 
-	Msg				("Data size: %d. Desc size: %d.",bytesDST,fs_desc.size());
+	EngineLog("Data size: {}. Desc size: {}.",bytesDST,fs_desc.size());
 	FS.w_close		(fs_pack_writer);
-	Msg				("Pack saved.");
+	EngineLog("Pack saved.");
 	u32	dwTimeEnd	= timeGetTime();
 	printf			("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %dK/%dK, %3.1f%%\nElapsed time: %d:%d\nCompression speed: %3.1f Mb/s",
 		filesTOTAL,filesSKIP,filesVFS,filesALIAS,
@@ -409,7 +409,7 @@ void xrCompressor::ClosePack()
 		((dwTimeEnd-dwTimeStart)/1000)%60,
 		float((float(bytesDST)/float(1024*1024))/(t_compress.GetElapsed_sec()))
 		);
-	Msg			("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %dK/%dK, %3.1f%%\nElapsed time: %d:%d\nCompression speed: %3.1f Mb/s\n\n",
+	EngineLog("\n\nFiles total/skipped/VFS/aliased: {}/{}/{}/{}\nOveral: {}K/{}K, {}\nElapsed time: {}:{}\nCompression speed: {} Mb/s\n\n",
 		filesTOTAL,filesSKIP,filesVFS,filesALIAS,
 		bytesDST/1024,bytesSRC/1024,
 		100.f*float(bytesDST)/float(bytesSRC),
@@ -453,7 +453,7 @@ void xrCompressor::PerformWork()
 			xr_free				(c_heap);
 	}else 
 	{
-		Msg						("ERROR: folder not found.");
+		EngineLog("ERROR: folder not found.");
 	}
 }
 
@@ -476,7 +476,7 @@ void xrCompressor::GatherFiles(LPCSTR path)
 {
 	xr_vector<char*>*	i_list	= FS.file_list_open	("$target_folder$",path,FS_ListFiles|FS_RootOnly);
 	if (!i_list){
-		Msg				("ERROR: Unable to open file list:%s", path);
+		EngineLog("ERROR: Unable to open file list: {}", path);
 		return;
 	}
 	xr_vector<char*>::iterator it	= i_list->begin();
@@ -488,7 +488,7 @@ void xrCompressor::GatherFiles(LPCSTR path)
 		{
 			files_list->push_back	(xr_strdup(tmp_path.c_str()));
 		}else{
-			Msg				("-f: %s",tmp_path.c_str());
+			EngineLog("-f: {}",tmp_path.c_str());
 		}
 	}
 	FS.file_list_close	(i_list);
@@ -542,8 +542,7 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 			u32 path_len		= xr_strlen(path);
 			if ((0!=path_len)&&(path[path_len-1]!='\\')) xr_strcat(path,"\\");
 
-			Msg					("");
-			Msg					("Processing folder: '%s'",path);
+			EngineLog("Processing folder: '{}'",path);
 			BOOL efRecurse;
 			BOOL val			= IsFolderAccepted(ltx,path,efRecurse);
 			if (val || (!val&&!efRecurse))
@@ -554,7 +553,7 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 				xr_vector<char*>*	i_fl_list	= FS.file_list_open	("$target_folder$",path,folder_mask);
 				if (!i_fl_list)
 				{
-					Msg			("ERROR: Unable to open folder list:", path);
+					EngineLog("ERROR: Unable to open folder list: {}", path);
 					continue;
 				}
 
@@ -567,19 +566,19 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 					if (val)
 					{
 						folders_list->push_back(xr_strdup(tmp_path.c_str()));
-						Msg			("+F: %s",tmp_path.c_str());
+						EngineLog("+F: {}",tmp_path.c_str());
 						// collect files
 						if (ifRecurse) 
 							GatherFiles (tmp_path.c_str());
 					}else
 					{
-						Msg			("-F: %s",tmp_path.c_str());
+						EngineLog("-F: {}",tmp_path.c_str());
 					}
 				}
 				FS.file_list_close	(i_fl_list);
 			}else
 			{
-				Msg					("-F: %s",path);
+				EngineLog("-F: {}",path);
 			}
 		}
 	}//if(ltx.section_exist("include_folders"))

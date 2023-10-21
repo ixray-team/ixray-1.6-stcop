@@ -49,21 +49,21 @@ void screenshot_info(IReader* screenshot)
 	reader	tmp_reader(screenshot);
 	if (!tmp_reader.is_valid())
 	{
-		Msg("ERROR: screenshot not valid or corrupted.");
+		EngineLog("ERROR: screenshot not valid or corrupted.");
 		return;
 	}
-	Msg("Verifying screenshot digital sign...");
+	EngineLog("Verifying screenshot digital sign...");
 	bool verify_res = tmp_reader.verify();
-	Msg("Screenshot verification: %s", verify_res ? "Succeeded" : "FAILED");
+	EngineLog("Screenshot verification: {}", verify_res ? "Succeeded" : "FAILED");
 	if (!verify_res)
 	{
 		return;
 	}
-	Msg("Screenshot info:");
-	Msg("	Player name:		%s", tmp_reader.player_name().c_str());
-	Msg("	Player cdkey digest:	%s", tmp_reader.player_cdkey_digest().c_str());
+	EngineLog("Screenshot info:");
+	EngineLog("	Player name:		{}", tmp_reader.player_name().c_str());
+	EngineLog("	Player cdkey digest:	{}", tmp_reader.player_cdkey_digest().c_str());
 	//Msg("	Admin name:		%s", tmp_reader.admin_name().c_str());
-	Msg("	Creation date:		%s", tmp_reader.creation_date().c_str());
+	EngineLog("	Creation date:		{}", tmp_reader.creation_date().c_str());
 }
 
 

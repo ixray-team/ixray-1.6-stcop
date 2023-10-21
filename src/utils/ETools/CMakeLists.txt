@@ -47,19 +47,24 @@ set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
 set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
 
 # DirectX SDK
-target_link_libraries(ETools PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
+## DirectX SDK
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    target_link_libraries(ETools PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
+else()
+    target_link_libraries(ETools PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
+endif()
 target_include_directories(ETools PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(ETools PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
 ## OGG
-target_link_libraries(ETools PRIVATE ${SND_OGG}native/lib/Win32/Release/libogg.lib)
+target_link_libraries(ETools PRIVATE ${SND_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
 target_include_directories(ETools PRIVATE "${SND_OGG}/native/include/")
 
 ## Vorbis
-target_link_libraries(ETools PRIVATE ${SND_VOB}/native/lib/Win32/Release/libvorbisfile.lib)
-target_link_libraries(ETools PRIVATE ${SND_VOB}/native/lib/Win32/Release/libvorbis.lib)
+target_link_libraries(ETools PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.lib)
+target_link_libraries(ETools PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib)
 target_include_directories(ETools PRIVATE "${SND_VOB}/native/include/")
 
 ## OpenAL
-target_link_libraries(ETools PRIVATE ${SND_OAL}/native/lib/Win32/Release/OpenAL32.lib)
+target_link_libraries(ETools PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
 target_include_directories(ETools PRIVATE "${SND_OAL}/native/include/")
