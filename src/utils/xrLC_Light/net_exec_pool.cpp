@@ -197,7 +197,7 @@ namespace lc_net
 		{
 			if(!ok)
 			{
-				Msg("accept run task");
+				EngineLog("accept run task");
 				goto run_task;
 			}
 		}
@@ -247,7 +247,7 @@ namespace lc_net
 		}
 		 __except( EXCEPTION_EXECUTE_HANDLER )
 		 {
-			 Msg( "accept!" );
+			 EngineLog( "accept!" );
 			 return 0;
 		 }
 		

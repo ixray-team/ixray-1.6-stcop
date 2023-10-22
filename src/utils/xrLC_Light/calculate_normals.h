@@ -27,7 +27,7 @@ public:
 static void	calc_normals( vecVertex &vertices, vecFace &faces )
 {
 	
-	u32		Vcount	= vertices.size();
+	u32		Vcount	= (u32)vertices.size();
 	float	p_total = 0;
 	float	p_cost  = 1.f/(Vcount);
 
@@ -57,8 +57,8 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 		while ( pTestVertex->m_adjacents.size() )	
 		{
 			vecFace new_adj;
-			itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
-			itterate_adjacents_type::RecurseTri( 0, p );// pTestVertex, new_adj, sm_cos );
+			typename itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
+			typename itterate_adjacents_type::RecurseTri( 0, p );// pTestVertex, new_adj, sm_cos );
 			VERIFY( !new_adj.empty() );
 
 			type_vertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );

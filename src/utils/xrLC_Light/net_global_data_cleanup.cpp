@@ -26,7 +26,8 @@ namespace lc_net
 	{
 		 *stream  = CreateGenericStream();
 		 u8 buff[data_cleanup_callback_read_write_buff_size];
-		 w_pod_vector( INetMemoryBuffWriter( *stream,  sizeof(buff), buff ), _cleanup.vec_cleanup );  
+		 INetMemoryBuffWriter temp(*stream, sizeof(buff), buff);
+		 w_pod_vector(temp, _cleanup.vec_cleanup);
 		// w_pod_vector( INetIWriterGenStream( *stream, 512 ), _cleanup.vec_cleanup );  
 	}
 
@@ -50,13 +51,14 @@ namespace lc_net
 		 }
 		 R_ASSERT( globalDataStream );
 		 u8 buff[data_cleanup_callback_read_write_buff_size];
-		 r_pod_vector( INetBlockReader( globalDataStream, buff, sizeof(buff) ), vec_cleanup );
+		 INetBlockReader temp(globalDataStream, buff, sizeof(buff));
+		 r_pod_vector(temp, vec_cleanup );
 		//  r_pod_vector( INetReaderGenStream( globalDataStream ), vec_cleanup );
 
 		 free(globalDataStream->GetCurPointer());
 		 id_state = state;
 #ifdef CL_NET_LOG
-		 Msg("cleanup call");
+		 EngineLog("cleanup call");
 #endif
 		 globals().cleanup();
 		 lock.Leave();

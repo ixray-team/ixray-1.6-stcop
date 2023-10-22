@@ -91,7 +91,7 @@ bool	lm_layer::similar			( const lm_layer &layer, float eps/* =EPS*/ ) const
 	{
 		if( !surface[i].similar( layer.surface[i], EPS ) )
 		{
-			Msg("sufface diff id: %d", i);
+			EngineLog("sufface diff id: %d", i);
 			return false;
 		}
 	}

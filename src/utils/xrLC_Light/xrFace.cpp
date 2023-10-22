@@ -169,7 +169,7 @@ Tface<DataVertex>::~Tface()
 	lmap_layer				= NULL;
 }
 
-//#define VPUSH(a) ((a).x), ((a).y), ((a).z)
+#define VPUSH(a) ((a).x), ((a).y), ((a).z)
 
 template<>
 void Face::	Failure		()

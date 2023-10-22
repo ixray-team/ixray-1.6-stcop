@@ -5,85 +5,85 @@
 
 #include "net_execution_globals.h"
 #include "../../xrcore/xrPool.h"
-namespace lc_net{
+namespace lc_net {
 
 
 
 
-		template < execution_types etype > class tnet_execution :
+	template < execution_types etype > class tnet_execution :
 		public tnet_execution_base< etype >
 	{
 	private:
 		typedef	tnet_execution<etype> self_type;
-		net_execution_impl					execution_impl;
+		using net_execution_impl = tnet_execution_base< etype >::net_execution_impl;
+		net_execution_impl execution_impl;
 
-		
 	public:
-		
-		tnet_execution	( u32 id ): tnet_execution_base< etype >(id)
+
+		tnet_execution(u32 id) : tnet_execution_base< etype >(id)
 		{
-				on_construct( );
+			on_construct();
 		}
-		
-	explicit	tnet_execution	(  ): tnet_execution_base< etype >(u32(-1))
-	{
-			on_construct( );
-	}
+
+		explicit	tnet_execution() : tnet_execution_base< etype >(u32(-1))
+		{
+			on_construct();
+		}
 	private:
-		void on_construct( )
+		void on_construct()
 		{
 			const xr_vector<e_net_globals>& v = exe_gl_reg().get_globals(etype);
-			u32 size = v.size();
-			for(u32 i = 0; i< size; ++i )
+			u32 size = (u32)v.size();
+			for (u32 i = 0; i < size; ++i)
 				globals().get(v[i]).add_ref();
 		}
-		virtual		net_execution_impl	&implementation	( ) 
+		virtual net_execution_impl& implementation() override
 		{
 			return execution_impl;
 		};
 
-		virtual		void					send_task		( IGridUser& user, IGenericStream* outStream, u32  id )	 
+		virtual void send_task(IGridUser& user, IGenericStream* outStream, u32  id) override
 		{
 			const xr_vector<e_net_globals>& v = exe_gl_reg().get_globals(etype);
-			u32 size = v.size();
-			for(u32 i = 0; i< size; ++i )
+			u32 size = (u32)v.size();
+			for (u32 i = 0; i < size; ++i)
 				globals().get(v[i]).on_task_send(outStream);
-			tnet_execution_base< etype >::send_task( user, outStream, id );
-			execution_impl.send_task( outStream );
+			tnet_execution_base< etype >::send_task(user, outStream, id);
+			execution_impl.send_task(outStream);
 		};
-	
-		virtual		void					receive_result	( IGenericStream* outStream )	
+
+		virtual void receive_result(IGenericStream* outStream)
 		{
 			execution_impl.receive_result(outStream);
 		};
-		virtual		bool					receive_task	( IAgent* agent, DWORD sessionId, IGenericStream* inStream ) 
+		virtual bool receive_task(IAgent* agent, DWORD sessionId, IGenericStream* inStream) override
 		{
 			const xr_vector<e_net_globals>& v = exe_gl_reg().get_globals(etype);
-			u32 size = v.size();
-			for(u32 i = 0; i< size; ++i )
-				if( ! globals().get(v[i]).on_task_receive(agent,sessionId,inStream) )
+			u32 size = (u32)v.size();
+			for (u32 i = 0; i < size; ++i)
+				if (!globals().get(v[i]).on_task_receive(agent, sessionId, inStream))
 					return false;
-			return execution_impl.receive_task( agent, sessionId, inStream );
+			return execution_impl.receive_task(agent, sessionId, inStream);
 		};
-		virtual		void					send_result		( IGenericStream* outStream )	
+		virtual void send_result(IGenericStream* outStream)
 		{
-			execution_impl.send_result( outStream );
+			execution_impl.send_result(outStream);
 		};
-		virtual		bool					execute			( IAgent* agent, DWORD sessionId )	
+		virtual bool execute(IAgent* agent, DWORD sessionId)
 		{
-			net_task_callback callback( agent, sessionId );
-			return execution_impl.execute( callback  ) && !callback.break_all( );
+			net_task_callback callback(agent, sessionId);
+			return execution_impl.execute(callback) && !callback.break_all();
 		};
-		virtual		LPCSTR					data_files		(string_path &buf)
+		virtual LPCSTR data_files(string_path& buf)
 		{
 			const xr_vector<e_net_globals>& v = exe_gl_reg().get_globals(etype);
 			//xr_vector<e_net_globals>::const_iterator i = v.begin(), e = v.end();
-			u32 size = v.size();
+			u32 size = (u32)v.size();
 			buf[0] = 0;
-			for(u32 i = 0; i< size; ++i )
+			for (u32 i = 0; i < size; ++i)
 			{
 				string_path lbuf;
-				strconcat( sizeof(string_path), buf, buf,globals().get(v[i]).files(lbuf));
+				strconcat(sizeof(string_path), buf, buf, globals().get(v[i]).files(lbuf));
 			}
 			return buf;
 		}
@@ -91,45 +91,45 @@ namespace lc_net{
 		virtual ~tnet_execution()
 		{
 			const xr_vector<e_net_globals>& v = exe_gl_reg().get_globals(etype);
-			u32 size = v.size();
-			for(u32 i = 0; i< size; ++i )
+			u32 size = (u32)v.size();
+			for (u32 i = 0; i < size; ++i)
 				globals().get(v[i]).free_ref();
 		}
 	};
 
 
-	template<typename execution > 
-	class execution_type_creator: 
+	template<typename execution >
+	class execution_type_creator :
 		public base_execution_type_creator
 	{
-		
-		 poolSS<execution,8*1024>				pool;
-		
 
-		virtual	void			set_pool_size	( u32 size ) {};
-		virtual	void			free_pool		( )			 
+		poolSS<execution, 8 * 1024>				pool;
+
+
+		virtual	void			set_pool_size(u32 size) {};
+		virtual	void			free_pool()
 		{
 			pool.clear();
 		}
 
-		virtual	net_execution* create( u32 _net_id )
+		virtual	net_execution* create(u32 _net_id)
 		{
 			return xr_new<execution>(_net_id);
 		}
-		virtual	net_execution* pool_create( )
+		virtual	net_execution* pool_create()
 		{
-			
+
 			return xr_new<execution>(u32(-1));
 			//return pool.create() ;	
 			return pool.create();//spool<execution>::pool.create() ;
 		}
-		virtual	void pool_destroy( net_execution* &e )
+		virtual	void pool_destroy(net_execution*& e)
 		{
 			net_execution* _e = e;
-			
-			execution* ex= static_cast<execution*>(_e);
-			VERIFY( ex == dynamic_cast<execution*>(_e) );
-			pool.destroy( ex );
+
+			execution* ex = static_cast<execution*>(_e);
+			VERIFY(ex == dynamic_cast<execution*>(_e));
+			pool.destroy(ex);
 			e = 0;
 		}
 		virtual	u32 type() { return execution::class_type; }
@@ -140,27 +140,27 @@ namespace lc_net{
 	template<typename execution>
 	static void	register_type()
 	{
-		execution_factory.register_type(  xr_new< execution_type_creator<execution> >() );
+		execution_factory.register_type(xr_new< execution_type_creator<execution> >());
 	}
 
 
 	template < execution_types i >
 	struct it
 	{
-		static const execution_types et =	   (execution_types)(i);
-		static const execution_types next_et = (execution_types)(i+1);
+		static const execution_types et = (execution_types)(i);
+		static const execution_types next_et = (execution_types)(i + 1);
 		typedef	it<next_et> next;
 		next ni;
-		it(){ register_type< tnet_execution< et > >();  }
+		it() { register_type< tnet_execution< et > >(); }
 
-	} ;
+	};
 	template<> struct it<et_last>
 	{};
 
 
-	void	factory::register_all( )
+	void	factory::register_all()
 	{
-		vec_types.resize( et_last, 0 );
+		vec_types.resize(et_last, 0);
 		it< et_lightmaps > i;
 	}
 

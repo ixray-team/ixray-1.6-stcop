@@ -13,7 +13,7 @@ void r_pod_vector( INetReader	&r, xr_vector<T> & v )
 template<typename T>
 void w_pod_vector( IWriter	&w, const xr_vector<T> & v )
 {
-	u32 cnt	= v.size();
+	u32 cnt	= (u32)v.size();
 	w.w_u32( cnt );
 	w.w(&*v.begin(),cnt*sizeof( T ));
 }
@@ -35,7 +35,7 @@ void r_vector( INetReader	&r, xr_vector<T> & v )
 {
 	u32 cnt	= r.r_u32();
 	v.resize(cnt);
-	xr_vector<T>::iterator i= v.begin(), e = v.end();
+	auto i= v.begin(), e = v.end();
 	for(;i!=e;++i)
 		i->read(r);
 
@@ -44,9 +44,9 @@ void r_vector( INetReader	&r, xr_vector<T> & v )
 template<typename T>
 void w_vector( IWriter	&w, const xr_vector<T> & v )
 {
-	u32 cnt	= v.size();
+	u32 cnt	= (u32)v.size();
 	w.w_u32( cnt );
-	xr_vector<T>::const_iterator i= v.begin(), e = v.end();
+	auto i= v.begin(), e = v.end();
 	for(;i!=e;++i)
 		i->write(w);
 }
@@ -61,7 +61,7 @@ void r_pointer( INetReader &r, T* &p, xr_vector<T> &storage )
 template<typename T>
 void w_pointer( IWriter	&w,const T* p, const xr_vector<T> &storage )
 {
-	u32 size = storage.size();
+	u32 size = (u32)storage.size();
 	for(u32 i=0;i<size;++i)
 		if(p == &storage[i])
 		{
@@ -74,9 +74,9 @@ void w_pointer( IWriter	&w,const T* p, const xr_vector<T> &storage )
 template< typename T, const int dim >
 void r_vector( INetReader	&r, svector< T, dim > & v )
 {
-	u32 cnt	= r.r_u32();
+	u32 cnt	= (u32)r.r_u32();
 	v.resize(cnt);
-	svector<T,dim>::iterator i= v.begin(), e = v.end();
+	auto i= v.begin(), e = v.end();
 	for(;i!=e;++i)
 		i->read(r);
 
@@ -85,9 +85,9 @@ void r_vector( INetReader	&r, svector< T, dim > & v )
 template< typename T, const int dim >
 void w_vector( IWriter	&w, const svector< T, dim > & v )
 {
-	u32 cnt	= v.size();
+	u32 cnt	= (u32)v.size();
 	w.w_u32( cnt );
-	svector<T,dim>::const_iterator i= v.begin(), e = v.end();
+	auto i= v.begin(), e = v.end();
 	for(;i!=e;++i)
 		i->write(w);
 }
@@ -116,7 +116,7 @@ public:
 	{
 		if( f == 0 )
 			return id_none;
-		xr_vector<type*>::const_iterator F = std::find( vec.begin(), vec.end(), f );
+		auto F = std::find( vec.begin(), vec.end(), f );
 		VERIFY( F != vec.end() );
 		return u32( F - vec.begin() );
 	}
@@ -129,7 +129,7 @@ class get_id_self_index
 public:
 	static	void		preset			(   const xr_vector<type*>& vec )
 	{
-		const u32 number = vec.size();
+		const u32 number = (u32)vec.size();
 		for( u32 i=0; i< number; ++i	)
 			vec[i]->set_index( i );
 	}
@@ -162,8 +162,8 @@ private:
 
 	void write( IWriter &w ) const 
 	{
-		xr_vector<T*>::const_iterator i = vec.begin(), e =  vec.end();
-		w.w_u32(vec.size());
+		auto i = vec.begin(), e =  vec.end();
+		w.w_u32((u32)vec.size());
 		for( ;i!= e; ++i )
 				(*i)->write(w);
 	}
@@ -177,8 +177,8 @@ private:
 
 	void	write_ref( IWriter &w,const xr_vector<T*>& ref_vec ) const
 	{
-		w.w_u32( ref_vec.size() );
-		xr_vector<T*>::const_iterator i = ref_vec.begin(), e =  ref_vec.end();
+		w.w_u32( (u32)ref_vec.size() );
+		auto i = ref_vec.begin(), e =  ref_vec.end();
 		for( ;i!= e; ++i )
 					write( w, *i );
 	}
@@ -263,7 +263,7 @@ static	u32		get_id			(  const type* f, const xr_vector<type*>& vec )
 		return id_type::get_id(f,vec);
 		//if( f == 0 )
 		//	return id_none;
-		//xr_vector<type*>::const_iterator F = std::find( vec.begin(), vec.end(), f );
+		//auto F = std::find( vec.begin(), vec.end(), f );
 		//VERIFY( F != vec.end() );
 		//return u32( F - vec.begin() );
 	}

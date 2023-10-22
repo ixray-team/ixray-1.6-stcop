@@ -25,7 +25,7 @@ void	xrLight			()
 		Threads.start		(T);
 	}
 	Threads.wait			();
-	Msg						("%d seconds elapsed.",(start_time.GetElapsed_ms())/1000);
+	EngineLog("{} seconds elapsed.",(start_time.GetElapsed_ms())/1000);
 }
 
 void xrCompileDO( bool net )

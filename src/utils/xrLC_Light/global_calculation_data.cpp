@@ -51,7 +51,7 @@ void global_claculation_data::xrLoad()
 		Fvector*	verts	= (Fvector*)fs->pointer();
 		CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
 		RCAST_Model.build	( verts, H.vertcount, tris, H.facecount );
-		Msg("* Level CFORM: %dK",RCAST_Model.memory()/1024);
+		EngineLog("* Level CFORM: {}K",RCAST_Model.memory()/1024);
 
 		g_rc_faces.resize	(H.facecount);
 		R_ASSERT(fs->find_chunk(1));
@@ -183,7 +183,7 @@ void global_claculation_data::xrLoad()
 							BT.THM.SetHasSurface(TRUE);
 							R_ASSERT2	(BT.pSurface,"Can't load surface");
 							if ((w != BT.dwWidth) || (h != BT.dwHeight))
-								Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+								EngineLog("! THM doesn't correspond to the texture: {}x{} -> {}x{}", BT.dwWidth, BT.dwHeight, w, h);
 							BT.Vflip	();
 						} else {
 							// Free surface memory

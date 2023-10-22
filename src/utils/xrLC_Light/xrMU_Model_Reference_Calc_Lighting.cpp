@@ -125,6 +125,6 @@ void xrMU_Reference::calc_lighting	()
 		}
 
 		for (u32 index=0; index<5; index++)
-			o_test	(4,index,color.size(),&model->color.front(),&color.front(),_s[index],_b[index]);
+			o_test	(4,index, (u32)color.size(),&model->color.front(),&color.front(),_s[index],_b[index]);
 	}
 }

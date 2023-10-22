@@ -19,7 +19,7 @@ void __cdecl	clLog( const char *format, ...)
 
 	if(!lc_log)
 	{
-		Msg( "clMsg: %s", buf );
+		EngineLog("clMsg: {}", buf);
 		return;
 	}
 
@@ -35,7 +35,7 @@ void __cdecl clMsg( const char *format, ...)
 
 	if(!lc_log)
 	{
-		Msg( "clMsg: %s", buf );
+		EngineLog("clMsg: {}", buf);
 		return;
 	}
 
@@ -53,7 +53,7 @@ void __cdecl Status	(const char *format, ...)
 
 	if(!lc_log)
 	{
-		Msg( "Status: %s", status );
+		EngineLog("Status: {}", status);
 		return;
 	}
 
@@ -66,7 +66,7 @@ void Phase		( LPCSTR phase_name )
 {
 	if(!lc_log)
 	{
-		Msg( "Phase: %s", phase_name );
+		EngineLog( "Phase: {}", phase_name );
 		return;
 	}
 	
@@ -77,7 +77,7 @@ void Progress	( const float F )
 {
 	if(!lc_log)
 	{
-		Msg( "Progress: %f", F );
+		EngineLog( "Progress: {}", F );
 		return;
 	}
 
