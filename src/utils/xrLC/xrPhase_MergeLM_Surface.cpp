@@ -59,9 +59,12 @@ bool Place_Perpixel	(L_rect& R, lm_layer* D, BOOL bRotate)
 			// accelerated part
 			for ( x = 0; x < s_x - 8 ; x += 8 , P += 8 , S += 8 ) {
 				// if ( (*P) && ( *S >= alpha_ref ) ) goto r_false;	// overlap
-				__m128i mm_max = _mm_max_epu8( *(__m128i*)S , mm_alpha_ref );
+				__m128i mm_reg_s = _mm_set1_epi64x(*(__int64*)S);
+				__m128i mm_reg_p = _mm_set1_epi64x(*(__int64*)P);
+
+				__m128i mm_max = _mm_max_epu8(mm_reg_s, mm_alpha_ref );
 				__m128i mm_cmp = _mm_cmpeq_epi8( mm_max , mm_alpha_ref );
-				__m128i mm_andn = _mm_andnot_si128( mm_cmp , *(__m128i*)P );
+				__m128i mm_andn = _mm_andnot_si128( mm_cmp , mm_reg_p);
 				__m128i mm_sad = _mm_sad_epu8( mm_andn , mm_zero );
 				if (_mm_cvtsi128_si32( mm_sad ) ) {
 					//_mm_empty();
@@ -108,7 +111,8 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 			// accelerated part
 			for ( _X = 0 ; _X < x_max - 8 ; ) {
 
-				__m128i m64_cmp = _mm_cmpeq_epi8( *(__m128i*)( temp_surf + _X ) , _mm_setzero_si128() );
+				__m128i mm_reg = _mm_set1_epi64x(*(__int64*)(temp_surf + _X));
+				__m128i m64_cmp = _mm_cmpeq_epi8(mm_reg, _mm_setzero_si128() );
 				__m128i m64_work = _mm_sad_epu8( m64_cmp , _mm_setzero_si128() );
 
 				if ( !_mm_cvtsi128_si32( m64_work ) ) {

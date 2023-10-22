@@ -30,7 +30,7 @@ void CImage::SaveTGA(LPCSTR name, BOOL b24)
 	tga.format	= b24?IMG_24B:IMG_32B;
 	tga.height	= dwHeight;
 	tga.width	= dwWidth;
-	tga.scanlenght=dwWidth*4;
+	tga.scanlength =dwWidth*4;
 
 	IWriter* F	= FS.w_open(name);
     if (F){
