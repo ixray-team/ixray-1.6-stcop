@@ -77,7 +77,7 @@ void __cdecl Status	(const char *format, ...)
 	va_start			( mark, format );
 	vsprintf			( status, format, mark );
 	bStatusChange		= TRUE;
-	Msg					("    | %s",status);
+	EngineLog("    | {}",status);
 	csLog.Leave			();
 }
 
@@ -110,14 +110,14 @@ void Phase			(const char *phase_name)
 	// Start _new phase
 	phase_start_time	= timeGetTime();
 	xr_strcpy				(phase,  phase_name);
-	SetWindowText		( hwStage,		phase_name );
+	SetWindowTextA		( hwStage,		phase_name );
 	xr_sprintf				( tbuf,"--:--:-- * %s",phase);
 	SendMessage			( hwPhaseTime,  LB_ADDSTRING, 0, (LPARAM) tbuf);
 	SendMessage			( hwPhaseTime,	LB_SETTOPINDEX, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	Progress			(0);
 
 	// Release focus
-	Msg("\n* New phase started: %s",phase_name);
+	EngineLog("\n* New phase started: {}",phase_name);
 	csLog.Leave			();
 }
 
@@ -145,16 +145,16 @@ void logThread(void *dummy)
 	SendMessage(hwProgress, PBM_SETRANGE,	0, MAKELPARAM(0, 1000)); 
 	SendMessage(hwProgress, PBM_SETPOS,		0, 0); 
 
-	Msg("\"LevelBuilder v4.1\" beta build\nCompilation date: %s\n",__DATE__);
+	EngineLog("\"LevelBuilder v4.1\" beta build\nCompilation date: {}\n",__DATE__);
 	{
 		char tmpbuf[128];
-		Msg("Startup time: %s",_strtime(tmpbuf));
+		EngineLog("Startup time: {}",_strtime(tmpbuf));
 	}
 
 	BOOL		bHighPriority	= FALSE;
 	string256	u_name;
 	unsigned long		u_size	= sizeof(u_name)-1;
-	GetUserName	(u_name,&u_size);
+	GetUserNameA	(u_name,&u_size);
 	_strlwr		(u_name);
 	if ((0==xr_strcmp(u_name,"oles"))||(0==xr_strcmp(u_name,"alexmx")))	bHighPriority	= TRUE;
 
@@ -206,20 +206,20 @@ void logThread(void *dummy)
 					make_time(secElapsed).c_str(),
 					make_time(secRemain).c_str()
 					);
-				SetWindowText	( hwTime, tbuf );
+				SetWindowTextA	( hwTime, tbuf );
 			} else {
-				SetWindowText	( hwTime, "" );
+				SetWindowTextA	( hwTime, "" );
 			}
 
 			// percentage text
 			xr_sprintf(tbuf,"%3.2f%%",progress*100.f);
-			SetWindowText	( hwPText, tbuf );
+			SetWindowTextA	( hwPText, tbuf );
 		}
 
 		if (bStatusChange) {
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
-			SetWindowText	( hwInfo,	status);
+			SetWindowTextA	( hwInfo,	status);
 		}
 		if (bWasChanges) {
 			UpdateWindow	( logWindow);
@@ -239,7 +239,7 @@ void logThread(void *dummy)
 void clLog( LPCSTR msg )
 {
 	csLog.Enter		();
-	Log				(msg);
+	EngineLog(msg);
 	csLog.Leave		();
 }
 

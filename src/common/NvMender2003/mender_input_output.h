@@ -35,7 +35,7 @@ static void fill_mender_input(	const	xr_vector<type_vertex>						&vertices,
 	for ( u32 i = 0; i < vertices_number; ++i )
 			set_vertex( theVerts[i], vertices[i] );
 	// fill inputs ( indices )
-	for ( xr_vector<type_face>::const_iterator face_it=faces.begin(); face_it!=faces.end(); face_it++ )
+	for (typename xr_vector<type_face>::const_iterator face_it=faces.begin(); face_it!=faces.end(); face_it++ )
 		add_face( theIndices, *face_it );
 
 }

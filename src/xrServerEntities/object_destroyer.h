@@ -8,6 +8,7 @@
 
 #pragma once
 #include "object_interfaces.h"
+#include "object_type_traits.h"
 #include <queue>
 
 struct CDestroyer {

@@ -2,9 +2,7 @@
 #include "build.h"
 #include "xrPhase_MergeLM_Rect.h"
 #include "../xrlc_light/xrdeflector.h"
-
 #include <mmintrin.h>
-#include <emmintrin.h>
 
 static	BYTE	surface			[c_LMAP_size*c_LMAP_size];
 const	u32		alpha_ref		= 254-BORDER;
@@ -50,8 +48,8 @@ bool Place_Perpixel	(L_rect& R, lm_layer* D, BOOL bRotate)
 	int	s_y			= D->height + 2 * BORDER;
 	int x;
 
-	const __m64 mm_alpha_ref = _mm_set1_pi8( alpha_ref );
-	const __m64 mm_zero = _mm_setzero_si64();
+	const __m128i mm_alpha_ref = _mm_set1_epi8( alpha_ref );
+	const __m128i mm_zero = _mm_setzero_si128();
 	
 	if ( !bRotate ) {
 		// Normal (and fastest way)
@@ -61,19 +59,19 @@ bool Place_Perpixel	(L_rect& R, lm_layer* D, BOOL bRotate)
 			// accelerated part
 			for ( x = 0; x < s_x - 8 ; x += 8 , P += 8 , S += 8 ) {
 				// if ( (*P) && ( *S >= alpha_ref ) ) goto r_false;	// overlap
-				__m64 mm_max = _mm_max_pu8( *(__m64*)S , mm_alpha_ref );
-				__m64 mm_cmp = _mm_cmpeq_pi8( mm_max , mm_alpha_ref );
-				__m64 mm_andn = _mm_andnot_si64( mm_cmp , *(__m64*)P );
-				__m64 mm_sad = _mm_sad_pu8( mm_andn , mm_zero );
-				if ( _mm_cvtsi64_si32( mm_sad ) ) {
-					_mm_empty();
+				__m128i mm_max = _mm_max_epu8( *(__m128i*)S , mm_alpha_ref );
+				__m128i mm_cmp = _mm_cmpeq_epi8( mm_max , mm_alpha_ref );
+				__m128i mm_andn = _mm_andnot_si128( mm_cmp , *(__m128i*)P );
+				__m128i mm_sad = _mm_sad_epu8( mm_andn , mm_zero );
+				if (_mm_cvtsi128_si32( mm_sad ) ) {
+					//_mm_empty();
 					return false;
 				}
 			}
 			// remainder part
 			for ( ; x < s_x ; x++ , P++ , S++ ) 
 				if ( (*P) && ( *S >= alpha_ref ) ) {
-					_mm_empty();
+					//_mm_empty();
 					return false;
 				}
 		}
@@ -83,14 +81,14 @@ bool Place_Perpixel	(L_rect& R, lm_layer* D, BOOL bRotate)
 			BYTE* P = surface + ( y + R.a.y ) * c_LMAP_size + R.a.x;	// destination scan-line
 			for ( x=0 ; x < s_y ; x++ , P++ )
 				if ( (*P) && ( lm[ x * s_x + y ] >= alpha_ref ) ) {
-					_mm_empty();
+					//_mm_empty();
 					return false;
 				}
 		}
 	}
 	
 	// It's OK to place it
-	_mm_empty();
+	//_mm_empty();
 	return true;
 }
 
@@ -110,10 +108,10 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 			// accelerated part
 			for ( _X = 0 ; _X < x_max - 8 ; ) {
 
-				__m64 m64_cmp = _mm_cmpeq_pi8( *(__m64*)( temp_surf + _X ) , _mm_setzero_si64() );
-				__m64 m64_work = _mm_sad_pu8( m64_cmp , _mm_setzero_si64() );
+				__m128i m64_cmp = _mm_cmpeq_epi8( *(__m128i*)( temp_surf + _X ) , _mm_setzero_si128() );
+				__m128i m64_work = _mm_sad_epu8( m64_cmp , _mm_setzero_si128() );
 
-				if ( ! _mm_cvtsi64_si32( m64_work ) ) {
+				if ( !_mm_cvtsi128_si32( m64_work ) ) {
 					_X += 8;
 					continue;
 				}
@@ -130,7 +128,7 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 				if (Place_Perpixel( R , D , FALSE ) ) {
 					_rect_register( R , D , FALSE );
 					r.set( R );
-					_mm_empty();
+					//_mm_empty();
 					return TRUE;
 				}
 			}
@@ -141,7 +139,7 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 				if (Place_Perpixel( R , D , FALSE ) ) {
 					_rect_register( R , D , FALSE );
 					r.set( R );
-					_mm_empty();
+					//_mm_empty();
 					return TRUE;
 				}
 			}
@@ -157,10 +155,10 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 			// accelerated part
 			for ( _X = 0 ; _X < x_max - 8 ; ) {
 				
-				__m64 m64_cmp = _mm_cmpeq_pi8( *(__m64*)( temp_surf + _X ) , _mm_setzero_si64() );
-				__m64 m64_work = _mm_sad_pu8( m64_cmp , _mm_setzero_si64() );
+				__m128i m64_cmp = _mm_cmpeq_epi8( *(__m128i*)( temp_surf + _X ) , _mm_setzero_si128() );
+				__m128i m64_work = _mm_sad_epu8( m64_cmp , _mm_setzero_si128() );
 
-				if ( ! _mm_cvtsi64_si32( m64_work ) ) {
+				if ( ! _mm_cvtsi128_si32( m64_work ) ) {
 					_X += 8;
 					continue;
 				}
@@ -177,7 +175,7 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 				if ( Place_Perpixel( R , D ,TRUE ) ) {
 					_rect_register( R , D , TRUE );
 					r.set( R );
-					_mm_empty();
+					//_mm_empty();
 					return TRUE;
 				}
 			}
@@ -188,13 +186,13 @@ BOOL _rect_place(L_rect &r, lm_layer* D)
 				if ( Place_Perpixel( R , D ,TRUE ) ) {
 					_rect_register( R , D , TRUE );
 					r.set( R );
-					_mm_empty();
+					//_mm_empty();
 					return TRUE;
 				}
 			}
 		}
 	}
 	
-	_mm_empty();
+	//_mm_empty();
 	return FALSE;
 }

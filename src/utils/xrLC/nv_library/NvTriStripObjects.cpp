@@ -340,28 +340,28 @@ IC int NvStripifier::GetNextIndex(const WordVec &indices, NvFaceInfo *face){
 	
 	if (fv0 != v0 && fv0 != v1){
 		if ((fv1 != v0 && fv1 != v1) || (fv2 != v0 && fv2 != v1)){
-			Msg("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
-			Msg("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
+			EngineLog("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
+			EngineLog("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
 		}
 		return fv0;
 	}
 	if (fv1 != v0 && fv1 != v1){
 		if ((fv0 != v0 && fv0 != v1) || (fv2 != v0 && fv2 != v1)){
-			Msg("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
-			Msg("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
+			EngineLog("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
+			EngineLog("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
 		}
 		return fv1;
 	}
 	if (fv2 != v0 && fv2 != v1){
 		if ((fv0 != v0 && fv0 != v1) || (fv1 != v0 && fv1 != v1)){
-			Msg("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
-			Msg("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
+			EngineLog("! WARNING: GetNextIndex: Triangle doesn't have all of its vertices");
+			EngineLog("! WARNING: GetNextIndex: Duplicate triangle probably got us derailed");
 		}
 		return fv2;
 	}
 	
 	// shouldn't get here
-	Msg("! WARNING: GetNextIndex: Duplicate triangle sent");
+	EngineLog("! WARNING: GetNextIndex: Duplicate triangle sent");
 	return -1;
 }
 

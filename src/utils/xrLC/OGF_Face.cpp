@@ -44,7 +44,7 @@ BOOL x_vertex::similar	(OGF* ogf, x_vertex& V)
 {
 	return P.similar(V.P);
 }
-u16 OGF::x_BuildVertex	(x_vertex& V1)
+u16 OGF::x_BuildVertex	(x_vertex&& V1)
 {
 	for (itXV it=fast_path_data.vertices.begin(); it!=fast_path_data.vertices.end(); it++)
 		if (it->similar(this,V1)) return u16(it-fast_path_data.vertices.begin());
@@ -152,7 +152,7 @@ void OGF::Optimize	()
 				VERIFY	(fast_path_data.vertices.size()	<= data.vertices.size()	);
 				VERIFY	(fast_path_data.faces.size()		== data.faces.size()		);
 			} catch(...) {
-				Msg	("* ERROR: optimize: x-geom : verify: failed");
+				EngineLog("* ERROR: optimize: x-geom : verify: failed");
 			}
 
 			// Optimize texture coordinates
@@ -184,7 +184,7 @@ void OGF::Optimize	()
 			*/
 		}
 	} catch(...) {
-		Msg	("* ERROR: optimize: x-geom : failed");
+		EngineLog("* ERROR: optimize: x-geom : failed");
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -195,7 +195,7 @@ void OGF::Optimize	()
 		const Shader_xrLC*	SH	= pBuild->shaders().Get(pBuild->materials()[material].reserved);
 		if (!SH->flags.bOptimizeUV)		return;
 	} catch(...) {
-		Msg	("* ERROR: optimize: std-geom : find relevant UV");
+		EngineLog("* ERROR: optimize: std-geom : find relevant UV");
 	}
 
 	// Build p-rep
@@ -240,7 +240,7 @@ void OGF::Optimize	()
 			Tdelta.x = floorf((Tmax.x-Tmin.x)/2+Tmin.x);
 			Tdelta.y = floorf((Tmax.y-Tmin.y)/2+Tmin.y);
 		} catch(...) {
-			Msg	("* ERROR: optimize: std-geom : delta UV");
+			EngineLog("* ERROR: optimize: std-geom : delta UV");
 		}
 
 		// 2. Recalc UV mapping
@@ -248,7 +248,7 @@ void OGF::Optimize	()
 			for (u32 i=0; i<selection.size(); i++)
 				data.vertices[selection[i]].UV[0].sub(Tdelta);
 		} catch(...) {
-			Msg	("* ERROR: optimize: std-geom : recalc UV");
+			EngineLog("* ERROR: optimize: std-geom : recalc UV");
 		}
 		selection.clear	();
 	}

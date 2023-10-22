@@ -37,7 +37,7 @@ void CImage::SaveTGA(LPCSTR name, BOOL b24)
 		tga.maketga	(*F);
     	FS.w_close	(F);
     }else{
-        Log			("!Can't save tga:",name);
+        EngineLog("!Can't save tga:",name);
     }
 }
 
@@ -200,20 +200,20 @@ bool CImage::LoadTGA(LPCSTR name)
 	TGA().r(&hdr,sizeof(TGAHeader));
 
 	if (!((hdr.imgtype==2)||(hdr.imgtype==10))){
-    	Msg("Unsupported texture format (%s)",name);
+		EngineLog("Unsupported texture format ({})",name);
         return false;
     }
 	if (!((hdr.pixsize==24)||(hdr.pixsize==32))){
-    	Msg("Texture (%s) - invalid pixsize: %d",name,hdr.pixsize);
+		EngineLog("Texture ({}) - invalid pixsize: {}",name,hdr.pixsize);
         return false;
     }
 #ifndef _EDITOR
 	if (!btwIsPow2(hdr.width)){
-    	Msg("Texture (%s) - invalid width: %d",name,hdr.width);
+		EngineLog("Texture ({}) - invalid width: {}",name,hdr.width);
         return false;
     }
 	if (!btwIsPow2(hdr.height)){
-    	Msg("Texture (%s) - invalid height: %d",name,hdr.height);
+		EngineLog("Texture ({}) - invalid height: {}",name,hdr.height);
         return false;
     }
 #endif

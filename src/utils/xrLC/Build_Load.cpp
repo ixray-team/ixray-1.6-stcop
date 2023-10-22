@@ -349,7 +349,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						R_ASSERT2	(BT.pSurface,"Can't load surface");
 						if ((w != BT.dwWidth) || (h != BT.dwHeight))
 						{
-							Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+							EngineLog("! THM doesn't correspond to the texture: {}x{} -> {}x{}", BT.dwWidth, BT.dwHeight, w, h);
 							BT.dwWidth	= BT.THM.width = w;
 							BT.dwHeight	= BT.THM.height = h;
 						}

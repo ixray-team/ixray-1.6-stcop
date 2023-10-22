@@ -26,14 +26,14 @@ CScriptPropertiesListHelper	*g_property_list_helper = 0;
 
 void load_prop_helper			()
 {
-	prop_helper_module		= LoadLibrary(prop_helper_library);
+	prop_helper_module		= LoadLibraryA(prop_helper_library);
 	if (!prop_helper_module) {
-		Msg					("! Cannot find library %s",prop_helper_library);
+		EngineLog("! Cannot find library {}",prop_helper_library);
 		return;
 	}
 	_PHelper				= (TPHelper)GetProcAddress(prop_helper_module,prop_helper_func);
 	if (!_PHelper) {
-		Msg					("! Cannot find entry point of the function %s in the library %s",prop_helper_func,prop_helper_func);
+		EngineLog("! Cannot find entry point of the function %s in the library {}",prop_helper_func,prop_helper_func);
 		return;
 	}
 
