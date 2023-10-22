@@ -10,7 +10,7 @@ from the use or inability to use this file or items derived from it.
 
 Comments:
 A class to load and decompress DXT textures to 32-bit raw image data format.
-.RAW output files can be loaded into photoshop by specifying the resolution 
+.RAW output files can be loaded into photoshop by specifying the resolution
 and 4 color channels of 8-bit, interleaved.
 
 A few approaches to block decompression are in place and a simple code timing
@@ -18,76 +18,54 @@ function is called.  Output of timing test is saved to a local .txt file.
 
 ******************************************************************************/
 
-
-
-#if !defined(AFX_IMAGE_DXTC_H__4B89D8D0_7857_11D4_9630_00A0C996DE3D__INCLUDED_)
-#define AFX_IMAGE_DXTC_H__4B89D8D0_7857_11D4_9630_00A0C996DE3D__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
+#include "dds\ddsTypes.h"
+#include "dds.h"
 
-#include <ddraw.h>
-
-
-
-//struct TimingInfo;		// defined in Image_DXTC.cpp
-
+//struct TimingInfo; // defined in Image_DXTC.cpp
 
 enum PixFormat
 {
-	PF_ARGB,
-	PF_DXT1,
-	PF_DXT2,
-	PF_DXT3,
-	PF_DXT4,
-	PF_DXT5,
-	PF_UNKNOWN
+    PF_ARGB,
+    PF_DXT1,
+    PF_DXT2,
+    PF_DXT3,
+    PF_DXT4,
+    PF_DXT5,
+    PF_UNKNOWN
 };
 
-
-class Image_DXTC  
+class Image_DXTC
 {
-	BYTE*			m_pCompBytes;		// compressed image bytes
-	BYTE*			m_pDecompBytes;
+    BYTE* m_pCompBytes; // compressed image bytes
+    BYTE* m_pDecompBytes;
+    int m_nCompSize;
+    int m_nCompLineSz;
+    string256 m_strFormat;
+    PixFormat m_CompFormat;
+    DDS_HEADER m_DDSD; // read from dds file
+    bool m_bMipTexture; // texture has mipmaps?
+    int m_nWidth; // in pixels of uncompressed image 
+    int m_nHeight;
 
-	int				m_nCompSize;
-	int				m_nCompLineSz;
-
-	string256		m_strFormat;
-	PixFormat		m_CompFormat;
-
-	DDSURFACEDESC2  m_DDSD;				// read from dds file
-	bool			m_bMipTexture;		// texture has mipmaps?
-
-	int				m_nWidth;			// in pixels of uncompressed image 
-	int				m_nHeight;
 private:
-	void			DecompressDXT1		();
-	void			DecompressDXT2		();
-	void			DecompressDXT3		();
-	void			DecompressDXT4		();
-	void			DecompressDXT5		();
+    void DecompressDXT1();
+    void DecompressDXT3();
+    void DecompressDXT5();
+    void DecodePixelFormat(LPSTR strPixelFormat, DDS_PIXELFORMAT* pddpf);
+    void AllocateDecompBytes();
 
-	void			DecodePixelFormat	(LPSTR strPixelFormat, DDPIXELFORMAT* pddpf );
-	void			AllocateDecompBytes	();
 public:
-					Image_DXTC			();
-	virtual			~Image_DXTC			();
+    Image_DXTC();
+    virtual ~Image_DXTC();
 
-	bool			LoadFromFile		(LPCSTR filename);		// true if success
-	void			Decompress			();
-
-	void			SaveAsRaw			();							// save decompressed bits
-
-	BYTE*			GetCompDataPointer	() { return( m_pCompBytes );	};
-	BYTE*			GetDecompDataPointer() { return( m_pDecompBytes );	};
-
-	int				Width				() { return( m_nWidth );		}
-	int				Height				() { return( m_nHeight );		}
-
-	bool			MipTexture			() { return( m_bMipTexture );	}
+    bool LoadFromFile(LPCSTR filename); // true if success
+    void Decompress();
+    void SaveAsRaw(); // save decompressed bits
+    BYTE* GetCompDataPointer() { return m_pCompBytes; };
+    BYTE* GetDecompDataPointer() { return m_pDecompBytes; };
+    int Width() { return m_nWidth; }
+    int Height() { return m_nHeight; }
+    bool MipTexture() { return m_bMipTexture; }
 };
-
-#endif // !defined(AFX_IMAGE_DXTC_H__4B89D8D0_7857_11D4_9630_00A0C996DE3D__INCLUDED_)

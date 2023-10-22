@@ -2,32 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Convert">
-      <UniqueIdentifier>{b2e93a6e-5e2a-494d-90dc-fdd4faf42668}</UniqueIdentifier>
+      <UniqueIdentifier>{ddff1d4d-a7dd-4a0b-bc3e-340b0197fd66}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared">
-      <UniqueIdentifier>{15644fbf-ff75-4101-b424-1df85b395cc3}</UniqueIdentifier>
+      <UniqueIdentifier>{936f6f84-9c83-4eb7-b599-ef77daaa9793}</UniqueIdentifier>
     </Filter>
     <Filter Include="NormalMap">
-      <UniqueIdentifier>{a225d1d3-1d23-4a06-a2d8-bfd1ba9a624e}</UniqueIdentifier>
+      <UniqueIdentifier>{c504033e-d6b5-4241-8e08-b50f011421fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="colorconvert.h">
-      <Filter>Convert</Filter>
-    </ClInclude>
-    <ClInclude Include="ddsTypes.h">
-      <Filter>Convert</Filter>
-    </ClInclude>
     <ClInclude Include="dxtlib.h">
-      <Filter>Convert</Filter>
-    </ClInclude>
-    <ClInclude Include="nvdxt_options.h">
-      <Filter>Convert</Filter>
-    </ClInclude>
-    <ClInclude Include="tPixel.h">
-      <Filter>Convert</Filter>
-    </ClInclude>
-    <ClInclude Include="tVector.h">
       <Filter>Convert</Filter>
     </ClInclude>
     <ClInclude Include="ETextureParams.h">
@@ -48,14 +33,18 @@
     <ClInclude Include="tga.h">
       <Filter>NormalMap</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h" />
     <ClInclude Include="dds.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="ddsw.hpp" />
+    <ClInclude Include="dds\ConvertColor.h" />
+    <ClInclude Include="dds\ddsTypes.h" />
+    <ClInclude Include="dds\nvdxt_options.h" />
+    <ClInclude Include="dds\nvErrorCodes.h" />
+    <ClInclude Include="dds\tPixel.h" />
+    <ClInclude Include="dds\tVector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXT.cpp">
-      <Filter>Convert</Filter>
-    </ClCompile>
-    <ClCompile Include="nvdxt.cpp">
       <Filter>Convert</Filter>
     </ClCompile>
     <ClCompile Include="ETextureParams.cpp">
@@ -77,8 +66,6 @@
       <Filter>NormalMap</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ClCompile Include="ddsw.cpp" />
   </ItemGroup>
 </Project>
