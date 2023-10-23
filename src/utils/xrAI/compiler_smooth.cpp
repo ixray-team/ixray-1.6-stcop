@@ -34,7 +34,7 @@ BOOL	ValidNode(vertex& N)
 	BoxQuery(BB,false	);
 	u32	dwCount = XRC.r_count();
 	if (dwCount==0)	{
-		Log("chasm1");
+		EngineLog("chasm1");
 		return FALSE;			// chasm?
 	}
 
@@ -58,7 +58,7 @@ BOOL	ValidNode(vertex& N)
 		tris.inc	();
 	}
 	if (tris.size()==0)	{
-		Log("chasm2");
+		EngineLog("chasm2");
 		return FALSE;			// chasm?
 	}
 
@@ -97,7 +97,7 @@ BOOL	ValidNode(vertex& N)
 		}
 	}
 	if (float(num_successed_rays)/float(RCAST_Total) < 0.5f) {
-		Msg		("Floating node.");
+		EngineLog("Floating node.");
 		return	FALSE;
 	}
 	return TRUE;
@@ -270,5 +270,5 @@ void	xrSmoothNodes()
 	}
 	g_nodes = smoothed;
 
-	if (inv_count) Msg("%d invalid nodes detected",inv_count);
+	if (inv_count) EngineLog("{} invalid nodes detected",inv_count);
 }

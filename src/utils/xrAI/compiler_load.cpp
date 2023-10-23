@@ -75,7 +75,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
 			Level.build			( verts, H.vertcount, tris, H.facecount );
 			Level.syncronize	();
-			Msg("* Level CFORM: %dK",Level.memory()/1024);
+			EngineLog("* Level CFORM: {}K",Level.memory()/1024);
 
 			g_rc_faces.resize	(H.facecount);
 			R_ASSERT(fs->find_chunk(1));
@@ -174,7 +174,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 								BT.pSurface = Surface_Load(N_,w,h); 
 								R_ASSERT2	(BT.pSurface,"Can't load surface");
 								if ((w != BT.dwWidth) || (h != BT.dwHeight))
-									Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+									EngineLog("! THM doesn't correspond to the texture: {}x{} -> {}x{}", BT.dwWidth, BT.dwHeight, w, h);
 								BT.Vflip	();
 							} else {
 								// Free surface memory
@@ -232,7 +232,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				F->r		(&temp,sizeof(temp));
 				Flight&		L = temp.data;
 				if (_abs(L.range) > 10000.f) {
-					Msg		("! BAD light range : %f",L.range);
+					EngineLog("! BAD light range : {}",L.range);
 					L.range	= L.range > 0.f ? 10000.f : -10000.f;
 				}
 
@@ -316,6 +316,6 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		F->close			();
 
 		if (!strstr(Core.Params,"-keep_temp_files"))
-			DeleteFile		(file_name);
+			DeleteFileA		(file_name);
 	}
 }

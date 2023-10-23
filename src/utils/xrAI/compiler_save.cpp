@@ -139,9 +139,9 @@ public:
 
 void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 {
-	Msg				("NS: %d, CNS: %d, ratio: %f%%",sizeof(vertex),sizeof(CLevelGraph::CVertex),100*float(sizeof(CLevelGraph::CVertex))/float(sizeof(vertex)));
+	EngineLog("NS: {}, CNS: {}, ratio: {}",sizeof(vertex),sizeof(CLevelGraph::CVertex),100*float(sizeof(CLevelGraph::CVertex))/float(sizeof(vertex)));
 
-	Msg				("Renumbering nodes...");
+	EngineLog("Renumbering nodes...");
 
 	string_path		fName; 
 	strconcat		(sizeof(fName),fName,N,out_name);
@@ -181,7 +181,7 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	}
 	// Stats
 	u32	SizeTotal	= fs->tell();
-	Msg				("%dK saved",SizeTotal/1024);
+	EngineLog("{}K saved",SizeTotal/1024);
 
 	FS.w_close		(fs);
 }

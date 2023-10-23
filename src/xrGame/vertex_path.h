@@ -8,7 +8,7 @@
 
 #pragma once
 
-template <bool	 bEuclidianHeuristics = true>
+template <bool  bEuclidianHeuristics = true>
 struct CVertexPath {
 
 #pragma pack(push,1)

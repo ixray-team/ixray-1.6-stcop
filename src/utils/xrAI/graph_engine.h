@@ -9,14 +9,14 @@
 #pragma once
 
 #include "a_star.h"
-#include "edge_path.h"
-#include "vertex_manager_fixed.h"
-#include "vertex_manager_hash_fixed.h"
-#include "vertex_allocator_fixed.h"
-#include "data_storage_bucket_list.h"
-#include "data_storage_binary_heap.h"
+#include "../xrGame/edge_path.h"
+#include "../xrGame/vertex_manager_fixed.h"
+#include "../xrGame/vertex_manager_hash_fixed.h"
+#include "../xrGame/vertex_allocator_fixed.h"
+#include "../xrGame/data_storage_bucket_list.h"
+#include "../xrGame/data_storage_binary_heap.h"
 #include "path_manager.h"
-#include "graph_engine_space.h"
+#include "../xrGame/graph_engine_space.h"
 #include "profiler.h"
 
 #ifndef AI_COMPILER

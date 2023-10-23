@@ -24,6 +24,7 @@
 #include <random>
 
 #define IGNORE_ZERO_SPAWN_POSITIONS
+#define VPUSH(a)	((a).x), ((a).y), ((a).z)
 
 extern thread_local std::mt19937 rng;
 
@@ -625,7 +626,7 @@ void CLevelSpawnConstructor::update								()
 
 void CLevelSpawnConstructor::verify_space_restrictors			()
 {
-	Msg									("Level [%s] : searching for AI map separators space restrictors",*m_level.name());
+	EngineLog("Level [{}] : searching for AI map separators space restrictors",*m_level.name());
 	SPACE_RESTRICTORS::iterator			I = m_space_restrictors.begin();
 	SPACE_RESTRICTORS::iterator			E = m_space_restrictors.end();
 	for ( ; I != E; ++I) {
@@ -640,5 +641,5 @@ void CLevelSpawnConstructor::verify_space_restrictors			()
 	delete_data							(m_space_restrictors);
 
 	if (m_no_separator_check)
-		Msg								("Level [%s] : no separators found",*m_level.name());
+		EngineLog("Level [{}] : no separators found",*m_level.name());
 }

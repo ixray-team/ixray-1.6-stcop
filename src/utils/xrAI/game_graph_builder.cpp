@@ -27,7 +27,7 @@ CGameGraphBuilder::CGameGraphBuilder		()
 
 CGameGraphBuilder::~CGameGraphBuilder		()
 {
-	Msg						("Freeing resources");
+	EngineLog("Freeing resources");
 
 	xr_delete				(m_level_graph);
 	xr_delete				(m_graph);
@@ -50,12 +50,12 @@ void CGameGraphBuilder::load_level_graph	(const float &start, const float &amoun
 {
 	Progress				(start);
 
-	Msg						("Loading AI map");
+	EngineLog("Loading AI map");
 	
 	VERIFY					(!m_level_graph);
 	m_level_graph			= xr_new<CLevelGraph>(*m_level_name);
 	
-	Msg						("%d nodes loaded",level_graph().header().vertex_count());
+	EngineLog("{} nodes loaded",level_graph().header().vertex_count());
 	
 	Progress				(start + amount);
 }
@@ -73,7 +73,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 
 	CSE_Abstract			*entity = F_entity_Create(section_id);
 	if (!entity) {
-		Msg					("Cannot create entity from section %s, skipping",section_id);
+		EngineLog("Cannot create entity from section {}, skipping",section_id);
 		return;
 	}
 
@@ -93,7 +93,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 		graph_type::const_vertex_iterator	E = graph().vertices().end();
 		for ( ; I != E; ++I) {
 			if ((*I).second->data().tLocalPoint.distance_to_sqr(vertex.tLocalPoint) < EPS_L) {
-				Msg			("! removing graph point [%s][%f][%f][%f] because it is too close to the another graph point",entity->name_replace(),VPUSH(entity->o_Position));
+				EngineLog("! removing graph point {}{} because it is too close to the another graph point",entity->name_replace(),(entity->o_Position));
 				F_entity_Destroy(entity);
 				return;
 			}
@@ -103,7 +103,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	vertex.tGlobalPoint		= graph_point->o_Position;
 	vertex.tNodeID			= level_graph().valid_vertex_position(vertex.tLocalPoint) ? level_graph().vertex_id(vertex.tLocalPoint) : u32(-1);
 	if (!level_graph().valid_vertex_id(vertex.tNodeID)) {
-		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map",entity->name_replace(),VPUSH(entity->o_Position));
+		EngineLog("! removing graph point {}{} because it is outside of the AI map",entity->name_replace(),(entity->o_Position));
 		F_entity_Destroy	(entity);
 		return;
 	}
@@ -113,7 +113,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 		graph_type::const_vertex_iterator	E = graph().vertices().end();
 		for ( ; I != E; ++I) {
 			if ((*I).second->data().tNodeID == vertex.tNodeID) {
-				Msg			("! removing graph point [%s][%f][%f][%f] because it has the same AI node as another graph point",entity->name_replace(),VPUSH(entity->o_Position));
+				EngineLog("! removing graph point {}{} because it has the same AI node as another graph point",entity->name_replace(),(entity->o_Position));
 				F_entity_Destroy	(entity);
 				return;
 			}
@@ -135,7 +135,7 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 {
 	Progress				(start);
 
-	Msg						("Loading graph points");
+	EngineLog("Loading graph points");
 
 	string_path				spawn_file_name;
 	strconcat				(sizeof(spawn_file_name),spawn_file_name,*m_level_name,"level.spawn");
@@ -155,7 +155,7 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 	
 	FS.r_close				(reader);
 
-	Msg						("%d graph points loaded",graph().vertices().size());
+	EngineLog("{} graph points loaded",graph().vertices().size());
 
 	Progress				(start + amount);
 }
@@ -325,7 +325,7 @@ void CGameGraphBuilder::save_cross_table	(const float &start, const float &amoun
 {
 	Progress							(start);
 
-	Msg									("Saving cross table");
+	EngineLog("Saving cross table");
 
 //	CTimer								timer;
 //	timer.Start							();
@@ -377,7 +377,7 @@ void CGameGraphBuilder::build_cross_table	(const float &start, const float &amou
 {
 	Progress				(start);
 	
-	Msg						("Building cross table");
+	EngineLog("Building cross table");
 
 //	CTimer					timer;
 //	timer.Start				();
@@ -400,7 +400,7 @@ void CGameGraphBuilder::load_cross_table	(const float &start, const float &amoun
 {
 	Progress				(start);
 
-	Msg						("Loading cross table");
+	EngineLog("Loading cross table");
 
 	VERIFY					(!m_cross_table);
 	m_cross_table			= xr_new<CGameLevelCrossTable>(m_cross_table_name);
@@ -486,8 +486,8 @@ float CGameGraphBuilder::path_distance		(const u32 &game_vertex_id0, const u32 &
 	if (successfull)
 		return				(parameters.m_distance);
 
-	Msg						("Cannot build path from [%d] to [%d]",game_vertex_id0,game_vertex_id1);
-	Msg						("Cannot build path from [%f][%f][%f] to [%f][%f][%f]",VPUSH(vertex0.data().level_point()),VPUSH(vertex1.data().level_point()));
+	EngineLog("Cannot build path from {} to {}",game_vertex_id0,game_vertex_id1);
+	EngineLog("Cannot build path from {} to {}",(vertex0.data().level_point()),(vertex1.data().level_point()));
 	R_ASSERT2				(false,"Cannot build path, check AI map");
 	return					(flt_max);
 }
@@ -509,7 +509,7 @@ void CGameGraphBuilder::generate_edges		(const float &start, const float &amount
 {
 	Progress				(start);
 
-	Msg						("Generating edges");
+	EngineLog("Generating edges");
 	
 	graph_type::const_vertex_iterator	I = graph().vertices().begin();
 	graph_type::const_vertex_iterator	E = graph().vertices().end();
@@ -518,7 +518,7 @@ void CGameGraphBuilder::generate_edges		(const float &start, const float &amount
 		generate_edges		((*I).second->vertex_id());
 	}
 
-	Msg						("%d edges built",graph().edge_count());
+	EngineLog("{} edges built",graph().edge_count());
 
 	Progress				(start + amount);
 }
@@ -527,7 +527,7 @@ void CGameGraphBuilder::connectivity_check	(const float &start, const float &amo
 {
 	Progress				(start);
 
-	Msg						("Checking graph connectivity");
+	EngineLog("Checking graph connectivity");
 
 
 	Progress				(start + amount);
@@ -606,9 +606,9 @@ void CGameGraphBuilder::optimize_graph		(const float &start, const float &amount
 {
 	Progress					(start);
 
-	Msg							("Optimizing graph");
+	EngineLog("Optimizing graph");
 
-	Msg							("edges before optimization : %d",graph().edge_count());
+	EngineLog("edges before optimization : {}",graph().edge_count());
 
 	create_tripples				(start + .00f, amount*.50f);
 
@@ -617,7 +617,7 @@ void CGameGraphBuilder::optimize_graph		(const float &start, const float &amount
 	for ( ; I != E; ++I)
 		process_tripple			(*I);
 
-	Msg							("edges after optimization : %d",graph().edge_count());
+	EngineLog("edges after optimization : {}",graph().edge_count());
 
 	Progress					(start + amount);
 }
@@ -626,7 +626,7 @@ void CGameGraphBuilder::save_graph			(const float &start, const float &amount)
 {
 	Progress				(start);
 
-	Msg						("Saving graph");
+	EngineLog("Saving graph");
 
 	// header
 	CMemoryWriter				writer;
@@ -687,7 +687,7 @@ void CGameGraphBuilder::save_graph			(const float &start, const float &amount)
 	}
 
 	writer.save_to				(m_graph_name);
-	Msg							("%d bytes saved",int(writer.size()));
+	EngineLog("{} bytes saved",int(writer.size()));
 
 	Progress					(start + amount);
 }
@@ -696,7 +696,7 @@ void CGameGraphBuilder::build_graph			(const float &start, const float &amount)
 {
 	Progress				(start);
 
-	Msg						("Building graph");
+	EngineLog("Building graph");
 
 	CTimer					timer;
 	timer.Start				();
@@ -729,7 +729,7 @@ void CGameGraphBuilder::build_graph			(
 	)
 {
 	Phase					("Building level game graph");
-	Msg						("level \"%s\"",level_name);
+	EngineLog("level \"{}\"",level_name);
 
 	m_graph_name			= graph_name;
 	m_cross_table_name		= cross_table_name;
@@ -749,5 +749,5 @@ void CGameGraphBuilder::build_graph			(
 	build_graph				(0.887752f,0.112248f);
 //	Msg						("%f",timer.GetElapsed_sec());
 
-	Msg						("Level graph is generated successfully");
+	EngineLog("Level graph is generated successfully");
 }

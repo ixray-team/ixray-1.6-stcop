@@ -137,7 +137,7 @@ public:
 				if ((!l_tpAI_Map->valid_vertex_id(m_tpGraph->vertex(i)->level_vertex_id()) ||
 					(l_tpCrossTable->vertex(m_tpGraph->vertex(i)->level_vertex_id()).game_vertex_id() != i) ||
 					!l_tpAI_Map->inside(m_tpGraph->vertex(i)->level_vertex_id(),m_tpGraph->vertex(i)->level_point()))) {
-						Msg				("! Graph doesn't correspond to the cross table");
+						EngineLog				("! Graph doesn't correspond to the cross table");
 						R_ASSERT2		(false,"Graph doesn't correspond to the cross table");
 				}
 		}
@@ -255,7 +255,7 @@ public:
 						for ( ; II != EE; ++II)
 							if (T.tOldGraphID == (*II).second.tOldGraphID) {
 								ok						= false;
-								Msg						("Graph point %s is removed,because it has the same position as some another graph point",E_->name_replace());
+								EngineLog("Graph point {} is removed,because it has the same position as some another graph point",E_->name_replace());
 								break;
 							}
 
@@ -268,7 +268,7 @@ public:
 				F_entity_Destroy					(E_);
 			}
 			if (i != m_tpGraph->header().vertex_count())
-				Msg									("Graph for the level %s doesn't correspond to the graph points from Level Editor! (%d : %d)",*m_tLevel.name(),i,m_tpGraph->header().vertex_count());
+				EngineLog("Graph for the level {} doesn't correspond to the graph points from Level Editor! ({} : {})",*m_tLevel.name(),i,m_tpGraph->header().vertex_count());
 			
 			VERTEX_MAP::const_iterator				I_ = m_tVertexMap.begin();
 			VERTEX_MAP::const_iterator				E_ = m_tVertexMap.end();
@@ -414,22 +414,22 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 		_strlwr			(N);
 
 		if (!Ini->section_exist(N)) {
-			Msg			("! There is no section %s in the %s!",N,GAME_CONFIG);
+			EngineLog("! There is no section {} in the {}!",N,GAME_CONFIG);
 			continue;
 		}
 
 		if (!Ini->line_exist(N,"name")) {
-			Msg			("! There is no line \"name\" in the section %s!",N);
+			EngineLog("! There is no line \"name\" in the section {}!",N);
 			continue;
 		}
 		
 		if (!Ini->line_exist(N,"id")) {
-			Msg			("! There is no line \"id\" in the section %s!",N);
+			EngineLog("! There is no line \"id\" in the section {}!",N);
 			continue;
 		}
 
 		if (!Ini->line_exist(N,"offset")) {
-			Msg			("! There is no line \"offset\" in the section %s!",N);
+			EngineLog("! There is no line \"offset\" in the section {}!",N);
 			continue;
 		}
 
@@ -459,17 +459,17 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 			xr_set<CLevelInfo>::const_iterator	E = levels.end();
 			for ( ; I != E; ++I) {
 				if (!xr_strcmp((*I).m_section,N)) {
-					Msg	("! Duplicated line %s in section \"levels\" in the %s",N,GAME_CONFIG);
+					EngineLog("! Duplicated line %s in section \"levels\" in the {}",N,GAME_CONFIG);
 					ok	= false;
 					break;
 				}
 				if (!xr_strcmp((*I).m_name,S)) {
-					Msg	("! Duplicated level name %s in the %s, sections %s, %s",S,GAME_CONFIG,*(*I).m_section,N);
+					EngineLog("! Duplicated level name %s in the %s, sections {}, {}",S,GAME_CONFIG,*(*I).m_section,N);
 					ok	= false;
 					break;
 				}
 				if ((*I).m_id == id) {
-					Msg	("! Duplicated level id %d in the %s, section %s, level %s",id,GAME_CONFIG,N,S);
+					EngineLog("! Duplicated level id %d in the %s, section {}, level {}",id,GAME_CONFIG,N,S);
 					ok	= false;
 					break;
 				}
@@ -482,7 +482,7 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 		strconcat		(sizeof(caFileName),caFileName,S,"\\",LEVEL_GRAPH_NAME);
 		FS.update_path	(file_name,"$game_levels$",caFileName);
 		if (!FS.exist(file_name)) {
-			Msg			("! There is no ai-map for the level %s! (level is not included into the game graph)",S);
+			EngineLog("! There is no ai-map for the level {}! (level is not included into the game graph)",S);
 			continue;
 		}
 		
@@ -492,7 +492,7 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 			reader->r				(&header,sizeof(header));
 			FS.r_close				(reader);
 			if (header.version() != XRAI_CURRENT_VERSION) {
-				Msg					("! AI-map for the level %s is incompatible (version mismatch)! (level is not included into the game graph)",S);
+				EngineLog("! AI-map for the level {} is incompatible (version mismatch)! (level is not included into the game graph)",S);
 				continue;
 			}
 		}
@@ -581,7 +581,7 @@ CGraphMerger::CGraphMerger(
 		strconcat					(sizeof(S1),S1,S2,"\\");
 		tLevel.m_id					= (*I).m_id;
 		tLevel.m_section			= (*I).m_section;
-		Msg							("%9s %2d %s","level",tLevel.id(),*tLevel.m_name);
+		EngineLog("{} {} {}","level",tLevel.id(),*tLevel.m_name);
 		string_path					path0, path1;
 		generate_temp_file_name		("local_graph_",*tLevel.m_name, path0);
 		generate_temp_file_name		("raw_cross_table_",*tLevel.m_name, path1);
@@ -621,17 +621,17 @@ CGraphMerger::CGraphMerger(
 					SConnectionVertex			&tConnectionVertex = (*i).second;
 					K							= tpGraphs.find(tConnectionVertex.dwLevelID);
 					if (K == tpGraphs.end()) {
-						Msg						("Cannot find level with level_id %d. Connection point will not be generated!",tConnectionVertex.dwLevelID);
+						EngineLog("Cannot find level with level_id {}. Connection point will not be generated!",tConnectionVertex.dwLevelID);
 						continue;
 					}
 					R_ASSERT					(K != tpGraphs.end());
 					M							= (*K).second->m_tVertexMap.find(tConnectionVertex.caConnectName);
 					if (M == (*K).second->m_tVertexMap.end()) {
-						Msg						("Level %s with id %d has an INVALID connection point %s,\nwhich references to graph point %s on the level %s with id %d\n",*(*I_).second->m_tLevel.name(),(*I_).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
+						EngineLog("Level %s with id {} has an INVALID connection point {},\nwhich references to graph point {} on the level {} with id {}\n",*(*I_).second->m_tLevel.name(),(*I_).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
 						R_ASSERT				(M != (*K).second->m_tVertexMap.end());
 					}
 
-					Msg							("Level %s with id %d has VALID connection point %s,\nwhich references to graph point %s on the level %s with id %d\n",*(*I_).second->m_tLevel.name(),(*I_).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
+					EngineLog("Level {} with id {} has VALID connection point {},\nwhich references to graph point {} on the level {} with id {}\n",*(*I_).second->m_tLevel.name(),(*I_).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
 
 					VERIFY						(((*M).second.tGraphID + (*K).second->m_dwOffset) < (u32(1) << (8*sizeof(GameGraph::_GRAPH_ID))));
 					tGraphEdge.m_vertex_id		= (GameGraph::_GRAPH_ID)((*M).second.tGraphID + (*K).second->m_dwOffset);
@@ -704,7 +704,7 @@ CGraphMerger::CGraphMerger(
 		GRAPH_P_PAIR_IT			I__ = tpGraphs.begin();
 		GRAPH_P_PAIR_IT			E__ = tpGraphs.end();
 		for ( ; I__ != E__; I__++) {
-			Msg					("cross_table offset: %d",F.size());
+			EngineLog("cross_table offset: {}",F.size());
 			(*I__).second->save_cross_table	(F);
 		}
 	}

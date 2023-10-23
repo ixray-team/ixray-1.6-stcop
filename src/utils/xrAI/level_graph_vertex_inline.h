@@ -320,10 +320,10 @@ IC void CLevelGraph::intersect(SSegment &tSegment, const SContour &tContour0, co
 
 	if (bFound) {
 		tSegment.v2 = tSegment.v1;
-		Log("! AI_PathNodes: segment has null length");
+		EngineLog("! AI_PathNodes: segment has null length");
 	}
 	else
-		Log("! AI_PathNodes: Can't find intersection segment");
+		EngineLog("! AI_PathNodes: Can't find intersection segment");
 }
 
 IC float CLevelGraph::nearest(Fvector& Dest, const Fvector& P, const Fvector& A, const Fvector& B) const

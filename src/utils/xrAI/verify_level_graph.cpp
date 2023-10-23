@@ -56,7 +56,7 @@ bool verify_invalid_links	(const CLevelGraph &graph)
 				continue;
 
 			if (vertex_id == link_vertex_id) {
-				Msg						("Vertex [%d][%f][%f][%f] has link to itself",vertex_id,VPUSH(graph.vertex_position(I)));
+				EngineLog("Vertex {}{} has link to itself",vertex_id,(graph.vertex_position(I)));
 				result					= false;
 				continue;
 			}
@@ -67,20 +67,20 @@ bool verify_invalid_links	(const CLevelGraph &graph)
 
 void verify_level_graph	(LPCSTR name, bool verbose)
 {
-	Msg				("Verifying level %s",name);
+	EngineLog("Verifying level {}",name);
 	Phase			("Verifying level graph");
 	Progress		(0.f);
 	CLevelGraph		*level_graph = xr_new<CLevelGraph>(name);
 	if (!level_graph->header().vertex_count()) {
 		Progress	(1.f);
-		Msg			("Level graph is empty!");
+		EngineLog("Level graph is empty!");
 		xr_delete	(level_graph);
 		return;
 	}
 
 	if (!verify_invalid_links(*level_graph)) {
 		Progress	(1.f);
-		Msg			("AI map is CORRUPTED : REGENERATE AI-MAP");
+		EngineLog("AI map is CORRUPTED : REGENERATE AI-MAP");
 		xr_delete	(level_graph);
 		return;
 	}
@@ -122,9 +122,9 @@ void verify_level_graph	(LPCSTR name, bool verbose)
 			xr_vector<u32>::const_iterator	I = single_links.begin();
 			xr_vector<u32>::const_iterator	E = single_links.end();
 			for ( ; I != E; ++I)
-				Msg					("Vertex %d[%f][%f][%f] is single linked!",*I,VPUSH(level_graph->vertex_position(*I)));
+				EngineLog("Vertex {}{} is single linked!",*I,(level_graph->vertex_position(*I)));
 		}
-		Msg							("There are %d single linked nodes!",single_links.size());
+		EngineLog("There are {} single linked nodes!",single_links.size());
 	}
 
 	Progress						(0.15f);
@@ -139,7 +139,7 @@ void verify_level_graph	(LPCSTR name, bool verbose)
 		for ( ; II != EE; ++II)
 			if (!*II) {
 				valid	= false;
-				Msg		("AI-map is NOT valid :\nNode \n%6d[%f][%f][%f]\ncannot be reached from the node\n%6d[%f][%f][%f]\n",u32(II - BB),VPUSH(level_graph->vertex_position(u32(II - BB))),*I,VPUSH(level_graph->vertex_position(*I)));
+				EngineLog("AI-map is NOT valid :\nNode \n{}{}\ncannot be reached from the node\n{}{}\n",u32(II - BB),(level_graph->vertex_position(u32(II - BB))),*I,(level_graph->vertex_position(*I)));
 				break;
 			}
 
@@ -152,7 +152,7 @@ void verify_level_graph	(LPCSTR name, bool verbose)
 	xr_delete		(level_graph);
 	Progress		(1.f);
 	if (valid)
-		Msg			("AI-map is valid!");
+		EngineLog("AI-map is valid!");
 
-	Msg				("Verifying level %s completed",name);
+	EngineLog("Verifying level {} completed",name);
 }

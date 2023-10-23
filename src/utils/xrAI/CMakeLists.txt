@@ -2,7 +2,7 @@ project(xrAI)
 set(XAI_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XAI_SOURCE_ALL_FILES
+file(GLOB_RECURSE XAI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )

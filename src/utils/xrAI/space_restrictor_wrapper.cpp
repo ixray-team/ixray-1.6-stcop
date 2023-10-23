@@ -233,7 +233,7 @@ void CSpaceRestrictorWrapper::verify_connectivity	()
 		}
 
 	if (!level_graph().valid_vertex_id(start_vertex_id)) {
-		Msg							("Warning : restrictor %s covers the whole AI map");
+		EngineLog("Warning : restrictor %s covers the whole AI map");
 		return;
 	}
 
@@ -259,7 +259,7 @@ void CSpaceRestrictorWrapper::verify_connectivity	()
 	if (nodes.size() + m_internal.size() == level_graph().header().vertex_count())
 		return;
 
-	Msg								("! %d nodes are disconnected!",level_graph().header().vertex_count() - (nodes.size() + m_internal.size()));
+	EngineLog("! {} nodes are disconnected!",level_graph().header().vertex_count() - (nodes.size() + m_internal.size()));
 
 	R_ASSERT3						(
 		nodes.size() + m_internal.size() == level_graph().header().vertex_count(),

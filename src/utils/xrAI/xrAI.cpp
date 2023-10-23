@@ -46,7 +46,7 @@ static const char* h_str =
 	"NOTE: The last key is required for any functionality\n";
 
 void Help()
-{	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
+{	MessageBoxA(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
 
 string_path INI_FILE;
 
@@ -158,7 +158,7 @@ void Startup(LPSTR     lpCmdLine)
 	extern				HWND logWindow;
 	u32					dwEndTime = timeGetTime();
 	xr_sprintf				(stats,"Time elapsed: %s",make_time((dwEndTime-dwStartupTime)/1000).c_str());
-	MessageBox			(logWindow,stats,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+	MessageBoxA			(logWindow,stats,"Congratulation!",MB_OK|MB_ICONINFORMATION);
 
 	bClose				= TRUE;
 	FlushLog			();
@@ -186,8 +186,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	HMODULE					hFactory;
 	LPCSTR					g_name	= "xrSE_Factory.dll";
-	Log						("Loading DLL:",g_name);
-	hFactory				= LoadLibrary	(g_name);
+	EngineLog				("Loading DLL:",g_name);
+	hFactory				= LoadLibraryA	(g_name);
 	if (0==hFactory)		R_CHK			(GetLastError());
 	R_ASSERT2				(hFactory,"Factory DLL raised exception during loading or there is no factory DLL at all");
 

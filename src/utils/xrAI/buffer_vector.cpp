@@ -20,8 +20,8 @@ void buffer_vector_test	()
 //	typedef buffer_vector<u16>			ContainerType;
 	typedef ContainerType::value_type	value_type;
 	ContainerType	container(_alloca(16*sizeof(value_type)), 16);
-	Msg				("%s", container.empty() ? "true" : "false");
-	Msg				("%d", container.size());
+	EngineLog(container.empty() ? "true" : "false");
+	EngineLog("{}", container.size());
 	
 	for (u32 i=0; i<8; ++i)
 		container.push_back	(value_type());

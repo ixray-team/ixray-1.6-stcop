@@ -19,7 +19,7 @@ IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light& L)
 	}
 
 	// 2. Polygon doesn't pick - real database query
-	try { DB.ray_query(&Level,P,D,r); } catch (...) { Msg("* ERROR: Failed to trace ray"); }
+	try { DB.ray_query(&Level,P,D,r); } catch (...) { EngineLog("* ERROR: Failed to trace ray"); }
 	if (0==DB.r_count()) {
 		return false;
 	} else {

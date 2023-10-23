@@ -100,7 +100,7 @@ void CGameSpawnConstructor::load_spawns	(LPCSTR name, bool no_separator_check)
 		level.m_offset					= (*I).m_offset;
 		level.m_name					= (*I).m_name;
 		level.m_id						= (*I).m_id;
-		Msg								("%9s %2d %s","level",level.id(),*(*I).m_name);
+		EngineLog("{} {} {}","level",level.id(),*(*I).m_name);
 		m_level_spawns.push_back		(xr_new<CLevelSpawnConstructor>(level,this,no_separator_check));
 	}
 
@@ -157,11 +157,11 @@ void CGameSpawnConstructor::verify_level_changers	()
 	if (m_level_changers.empty())
 		return;
 
-	Msg										("List of the level changers which are invalid for some reasons");
+	EngineLog("List of the level changers which are invalid for some reasons");
 	LEVEL_CHANGER_STORAGE::const_iterator	I = m_level_changers.begin();
 	LEVEL_CHANGER_STORAGE::const_iterator	E = m_level_changers.end();
 	for ( ; I != E; ++I)
-		Msg									("%s",(*I)->name_replace());
+		EngineLog((*I)->name_replace());
 
 	VERIFY2									(m_level_changers.empty(),"Some of the level changers setup incorrectly");
 }
@@ -224,8 +224,8 @@ void CGameSpawnConstructor::add_story_object	(ALife::_STORY_ID id, CSE_ALifeDyna
 
 	ALife::STORY_P_PAIR_IT		I = m_story_objects.find(id);
 	if (I != m_story_objects.end()) {
-		Msg						("Object %s, story id %d",object->name_replace(),object->m_story_id);
-		Msg						("Object %s, story id %d",(*I).second->name_replace(),(*I).second->m_story_id);
+		EngineLog("Object {}, story id {}",object->name_replace(),object->m_story_id);
+		EngineLog("Object {}, story id {}",(*I).second->name_replace(),(*I).second->m_story_id);
 		VERIFY3					(I == m_story_objects.end(),"There are several objects which has the same unique story ID, level ",level_name);
 	}
 	
@@ -255,7 +255,7 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 		if (!(*I)->actor())
 			continue;
 
-		Msg							("Actor is on the level %s",*game_graph().header().level(game_graph().vertex((*I)->actor()->m_tGraphID)->level_id()).name());
+		EngineLog("Actor is on the level {}",*game_graph().header().level(game_graph().vertex((*I)->actor()->m_tGraphID)->level_id()).name());
 		VERIFY2						(!m_actor,"There must be the SINGLE level with ACTOR!");
 		m_actor						= (*I)->actor();
 	}
@@ -275,7 +275,7 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 
 	bool							failed = !graph_engine->search(game_graph(),m_actor->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
 	if (failed) {
-		Msg							("! Cannot build path via game graph from the current level to the level %s!",start_level_name);
+		EngineLog("! Cannot build path via game graph from the current level to the level {}!",start_level_name);
 		float						min_dist = flt_max;
 		Fvector						current = game_graph().vertex(m_actor->m_tGraphID)->game_point();
 		GameGraph::_GRAPH_ID			n = game_graph().header().vertex_count();
@@ -289,7 +289,7 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 			}
 		}
 		if (!game_graph().vertex(dest)) {
-			Msg						("! There is no game vertices on the level %s, cannot jump to the specified level",start_level_name);
+			EngineLog("! There is no game vertices on the level {}, cannot jump to the specified level",start_level_name);
 			return;
 		}
 	}
@@ -327,9 +327,9 @@ void clear_temp_folder	()
 	FILES::const_iterator	I = files.begin();
 	FILES::const_iterator	E = files.end();
 	for ( ; I != E; ++I) {
-		if (DeleteFile(**I))
-			Msg		("file %s is successfully deleted",**I);
+		if (DeleteFileA(**I))
+			EngineLog("file {} is successfully deleted",**I);
 		else
-			Msg		("cannot delete file %s",**I);
+			EngineLog("cannot delete file {}",**I);
 	}
 }

@@ -12,6 +12,7 @@
 #include "ai_space.h"
 #include "script_engine.h"
 #include "script_token_list.h"
+#include <luabind/out_value_policy.hpp>
 
 using namespace luabind;
 
@@ -117,11 +118,11 @@ void CScriptPropertiesListHelper::script_register(lua_State *L)
 			.def("vector_on_after_edit",	&CScriptPropertiesListHelper::FvectorRDOnAfterEdit)
 			.def("vector_on_before_edit",	&CScriptPropertiesListHelper::FvectorRDOnBeforeEdit)
 //			.def("vector_on_draw",			&CScriptPropertiesListHelper::FvectorRDOnDraw)
-			.def("float_on_after_edit",		&CScriptPropertiesListHelper::floatRDOnAfterEdit)
-			.def("float_on_before_edit",	&CScriptPropertiesListHelper::floatRDOnBeforeEdit)
+			.def("float_on_after_edit",		&CScriptPropertiesListHelper::floatRDOnAfterEdit, luabind::policy::out_value<3>())
+			.def("float_on_before_edit",	&CScriptPropertiesListHelper::floatRDOnBeforeEdit, luabind::policy::out_value<3>())
 //			.def("float_on_draw",			&CScriptPropertiesListHelper::floatRDOnDraw)
-			.def("name_after_edit",			&CScriptPropertiesListHelper::NameAfterEdit)
-			.def("name_before_edit",		&CScriptPropertiesListHelper::NameBeforeEdit)
+			.def("name_after_edit",			&CScriptPropertiesListHelper::NameAfterEdit, luabind::policy::pure_out_value<3>())
+			.def("name_before_edit",		&CScriptPropertiesListHelper::NameBeforeEdit, luabind::policy::pure_out_value<3>())
 //			.def("name_on_draw",			&CScriptPropertiesListHelper::NameDraw)
 
 			.def("create_caption",&CScriptPropertiesListHelper::CreateCaption)

@@ -69,7 +69,7 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 			b_rc_face& F								= g_rc_faces		[rpinf.id];
 
 			if (F.dwMaterial >= g_materials.size())
-				Msg					("[%d] -> [%d]",F.dwMaterial, g_materials.size());
+				EngineLog("[{}] -> [{}]",F.dwMaterial, g_materials.size());
 			b_material& M	= g_materials				[F.dwMaterial];
 			b_texture&	T	= g_textures				[M.surfidx];
 			Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
@@ -583,7 +583,7 @@ void	xrCover	(bool pure_covers)
 //		Threads.wait		();
 	}
 	Threads.wait			();
-	Msg("%d seconds elapsed.",(timeGetTime()-start_time)/1000);
+	EngineLog("{} seconds elapsed.",(timeGetTime()-start_time)/1000);
 
 	if (!pure_covers) {
 		compute_non_covers	();
