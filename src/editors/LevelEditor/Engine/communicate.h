@@ -54,6 +54,15 @@ struct b_texture
 	u32*				pSurface;
 };
 
+struct b_texture64
+{
+	string128			name;
+	u32					dwWidth;
+	u32					dwHeight;
+	BOOL				bHasAlpha;
+	DWORD				pSurface;
+};
+
 struct b_light_control						// controller or "layer", 30fps
 {
 	string64			name;				// empty for base layer

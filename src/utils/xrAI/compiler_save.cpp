@@ -163,8 +163,11 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 //		fs->w		(&g_covers_palette[j],sizeof(g_covers_palette[j]));
 
 	// All nodes
-	Status			("Saving nodes...");
-	for (u32 i=0; i<g_nodes.size(); ++i) {
+	Status("Saving nodes...");
+	compressed_nodes.reserve(g_nodes.size());
+
+	for (u32 i=0; i<g_nodes.size(); ++i) 
+	{
 		vertex			&N_	= g_nodes[i];
 		NodeCompressed	NC;
 		Compress		(NC,N_,H);

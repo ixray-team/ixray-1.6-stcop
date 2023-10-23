@@ -1,14 +1,11 @@
 #include "stdafx.h"
-
 #include "global_calculation_data.h"
 
 #include "../shader_xrlc.h"
 #include "serialize.h"
+#include "BuildTris.h"
 
 global_claculation_data	gl_data;
-
-
-
 
 template <class T>
 void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
@@ -47,10 +44,24 @@ void global_claculation_data::xrLoad()
 		hdrCFORM			H;
 		fs->r				(&H,sizeof(hdrCFORM));
 		R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
-		
-		Fvector*	verts	= (Fvector*)fs->pointer();
-		CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
-		RCAST_Model.build	( verts, H.vertcount, tris, H.facecount );
+
+		Fvector* verts = (Fvector*)fs->pointer();
+#ifdef _M_X64
+		TRI_Build* build_tris = (TRI_Build*)(verts + H.vertcount);
+
+		auto tris = std::make_unique<CDB::TRI[]>(H.facecount);
+
+		for (u32 i = 0; i != H.facecount; i++) 
+		{
+			memcpy(tris[i].verts, build_tris[i].verts, sizeof(tris[i].verts));
+			tris[i].dummy = build_tris[i].dummy_low;
+		}
+		RCAST_Model.build(verts, H.vertcount, tris.get(), H.facecount);
+#else		
+		TRI_Build*	tris	= (TRI_Build*)(verts+H.vertcount);
+		RCAST_Model.build(verts, H.vertcount, tris, H.facecount);
+#endif
+
 		EngineLog("* Level CFORM: {}K",RCAST_Model.memory()/1024);
 
 		g_rc_faces.resize	(H.facecount);
@@ -111,26 +122,39 @@ void global_claculation_data::xrLoad()
 		transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
 		post_process_materials( *g_shaders_xrlc, g_shader_compile, g_materials );
 		// process textures
-#ifdef	DEBUG
-		xr_vector<b_texture> dbg_textures;
-#endif
+
 		Status			("Processing textures...");
 		{
 			Surface_Init		();
 			F = fs->open_chunk	(EB_Textures);
-			u32 tex_count	= F->length()/sizeof(b_texture);
+
+#ifdef _M_X64
+			u32 tex_count = F->length() / sizeof(b_texture64);
+#else
+			u32 tex_count = F->length() / sizeof(b_texture);
+#endif			
+			bool is_thm_missing = false;
+			bool is_tga_missing = false;
+
 			for (u32 t=0; t<tex_count; t++)
 			{
 				Progress		(float(t)/float(tex_count));
 
-				b_texture		TEX;
-				F->r			(&TEX,sizeof(TEX));
-#ifdef	DEBUG
-				dbg_textures.push_back( TEX );
-#endif
-
+#ifdef _M_X64
+				b_texture64	TEX;
+				F->r(&TEX, sizeof(TEX));
 				b_BuildTexture	BT;
-				CopyMemory		(&BT,&TEX,sizeof(TEX));
+
+				// ptr should be copied separately
+				CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+				BT.pSurface = (u32*)TEX.pSurface;
+#else
+				b_texture TEX;
+				F->r(&TEX, sizeof(TEX));
+
+				b_BuildTexture BT;
+				CopyMemory(&BT, &TEX, sizeof(TEX));
+#endif
 
 				// load thumbnail
 				LPSTR N			= BT.name;
@@ -147,7 +171,13 @@ void global_claculation_data::xrLoad()
 				} else {
 					xr_strcat				(N,sizeof(BT.name),".thm");
 					IReader* THM			= FS.r_open("$game_textures$",N);
-					R_ASSERT2				(THM,	N);
+
+					if (!THM) 
+					{
+						clMsg("cannot find thm: %s", N);
+						is_thm_missing = true;
+						continue;
+					}
 
 					// version
 					u32 version				= 0;
@@ -173,6 +203,7 @@ void global_claculation_data::xrLoad()
 					BT.bHasAlpha			= BT.THM.HasAlphaChannel();
 					BT.pSurface				= 0;
 					BT.THM.SetHasSurface(FALSE);
+
 					if (!bLOD) 
 					{
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
@@ -181,7 +212,14 @@ void global_claculation_data::xrLoad()
 							u32			w=0, h=0;
 							BT.pSurface		= Surface_Load(N,w,h);
 							BT.THM.SetHasSurface(TRUE);
-							R_ASSERT2	(BT.pSurface,"Can't load surface");
+
+							if (!BT.pSurface)
+							{
+								clMsg("cannot find tga texture: %s", N);
+								is_tga_missing = true;
+								continue;
+							}
+
 							if ((w != BT.dwWidth) || (h != BT.dwHeight))
 								EngineLog("! THM doesn't correspond to the texture: {}x{} -> {}x{}", BT.dwWidth, BT.dwHeight, w, h);
 							BT.Vflip	();
@@ -194,6 +232,9 @@ void global_claculation_data::xrLoad()
 				// save all the stuff we've created
 				g_textures.push_back	(BT);
 			}
+
+			R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+			R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
 		}
 	}
 }

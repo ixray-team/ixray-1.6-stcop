@@ -1,19 +1,7 @@
-#ifndef __MESHSTRUCTURE_H__
-#define __MESHSTRUCTURE_H__
+#pragma once
 
-//#ifdef MESHSTRUCTURE_EXSPORTS_IMPORTS
-#	define MESHSTRUCTURE_API XRLC_LIGHT_API
-//#else
-//#	define MESHSTRUCTURE_API 
-//#endif
+#define MESHSTRUCTURE_API XRLC_LIGHT_API
 
-	//typedef	xr_vector<_vertex*>		v_vertices;
-	//typedef	v_vertices::iterator	v_vertices_it;
-	
-	//typedef v_faces::iterator		v_faces_it;
-	//typedef xr_vector<_subdiv>		v_subdivs;
-	//typedef v_subdivs::iterator		v_subdivs_it;
-//extern	volatile	u32		dwInvalidFaces;
 class MESHSTRUCTURE_API vector_item
 {
 protected:
@@ -111,7 +99,7 @@ virtual	void	write_vertices		( IWriter	&w )const;
 	{
 		return (v[0]==v[1] || v[0]==v[2] || v[1]==v[2]);
 	};
-	IC float	EdgeLen			(int edge)
+	IC float	EdgeLen			(int edge) const
 	{
 		type_vertex* V1 = v[edge2idx[edge][0]];
 		type_vertex* V2 = v[edge2idx[edge][1]];
@@ -196,12 +184,10 @@ virtual	void	write_vertices		( IWriter	&w )const;
 
 	float CalcArea() const
 	{
-		float	e1 = v[0]->P.distance_to(v[1]->P);
-		float	e2 = v[0]->P.distance_to(v[2]->P);
-		float	e3 = v[1]->P.distance_to(v[2]->P);
-
-		float	p  = (e1+e2+e3)/2.f;
-		return	_sqrt( p*(p-e1)*(p-e2)*(p-e3) );
+		auto e1 = Fvector().sub(v[0]->P, v[1]->P);
+		auto e2 = Fvector().sub(v[0]->P, v[2]->P);
+		float area = Fvector().crossproduct(e1, e2).magnitude() / 2;
+		return area;
 	}
 	float CalcMaxEdge()
 	{
@@ -348,8 +334,3 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	if	(_count)		
 		clMsg	("::compact:: %d verts removed",_count);
 }
-
-
-
-
-#endif //__MESHSTRUCTURE_H__
