@@ -863,6 +863,8 @@ void CLevel::OnRender()
 	}
 #endif
 
+	void renderAiMap();
+	renderAiMap();
 #ifdef DEBUG
 	if (bDebug) {
 		DBG().draw_object_info				();
