@@ -24,14 +24,15 @@ IC void BoxQuery(Fbox& BB, bool exact)
 	XRC.box_query	(&Level,C,D);
 }
 
-struct tri	{
+struct tri	
+{
 	Fvector v[3];
 	u32	sector;
 	Fvector	N;
 };
 
 const float RCAST_VALID = 0.55f;
-BOOL	CreateNode(Fvector& vAt, vertex& N)
+BOOL CreateNode(Fvector& vAt, vertex& N)
 {
 	// *** Query and cache polygons for ray-casting
 	Fvector	PointUp;		PointUp.set(vAt);	PointUp.y	+= RCAST_Depth;		SnapXZ	(PointUp);
@@ -82,39 +83,46 @@ BOOL	CreateNode(Fvector& vAt, vertex& N)
 	for (int x=-RCAST_Count; x<=RCAST_Count; x++) 
 	{
 		P.x = vAt.x + coeff*float(x);
-		for (int z=-RCAST_Count; z<=RCAST_Count; z++) {
-			P.z = vAt.z + coeff*float(z);
+		for (int z = -RCAST_Count; z <= RCAST_Count; z++)
+		{
+			P.z = vAt.z + coeff * float(z);
 			P.y = vAt.y + 10.f;
 
-			float	tri_min_range	= flt_max;
-			int		tri_selected	= -1;
-			float	range,u,v;
-			for (u32 i=0; i<u32(tris.size()); i++) 
+			float	tri_min_range = flt_max;
+			int		tri_selected = -1;
+			float	range, u, v;
+			for (u32 i = 0; i < u32(tris.size()); i++)
 			{
-				if (CDB::TestRayTri(P,D,tris[i].v,u,v,range,false)) 
+				if (CDB::TestRayTri(P, D, tris[i].v, u, v, range, false))
 				{
-					if (range<tri_min_range) {
-						tri_min_range	= range;
-						tri_selected	= i;
+					if (range < tri_min_range)
+					{
+						tri_min_range = range;
+						tri_selected = i;
 					}
 				}
 			}
-			if (tri_selected>=0) {
+			if (tri_selected >= 0) 
+			{
 				P.y -= tri_min_range;
 				points.push_back(P);
 				normals.push_back(tris[tri_selected].N);
 				WORD TS = WORD(tris[tri_selected].sector);
-				if (Sector==0xfffe)	Sector = TS;
-				else 				if (Sector!=TS) Sector=InvalidSector;
+
+				if (Sector == 0xfffe)	
+					Sector = TS;
+				else if (Sector != TS) 
+					Sector = InvalidSector;
 			}
 		}
 	}
-	if (points.size()<3) {
-//		Msg		("Failed to create node at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
+
+	if (points.size() < 3)
+	{
 		return	FALSE;
 	}
-	if (float(points.size())/float(RCAST_Total) < 0.7f) {
-//		Msg		("Partial chasm at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
+	if (float(points.size()) / float(RCAST_Total) < 0.7f)
+	{
 		return	FALSE;
 	}
 
@@ -125,25 +133,7 @@ BOOL	CreateNode(Fvector& vAt, vertex& N)
 		vNorm.add(normals[n]);
 	vNorm.div(float(normals.size()));
 	vNorm.normalize();
-	/*
-	{
-		// second algorithm (Magic)
-		Fvector N,O;
-		N.set(vNorm);
-		O.set(points[0]);
-		Mgc::OrthogonalPlaneFit(
-			points.size(),(Mgc::Vector3*)points.begin(),
-			*((Mgc::Vector3*)&O),
-			*((Mgc::Vector3*)&N)
-		);
-		if (N.y<0) N.invert();
-		N.normalize();
-		vNorm.lerp(vNorm,N,.3f);
-		vNorm.normalize();
-	}
-	*/
 
- 
 	// *** Align plane
 	Fvector vOffs;
 	vOffs.set(0,-1000,0);
@@ -319,7 +309,8 @@ u32 BuildNode(Fvector& vFrom, Fvector& vAt)	// return node's index
 	// *** Test if we can travel this path
 	SnapXZ			(vAt);
 
-	if (!CanTravel(vFrom, vAt))	return InvalidNode;
+	if (!CanTravel(vFrom, vAt))
+		return InvalidNode;
 
 	// *** set up xr_new<node
 	vertex N;
@@ -337,95 +328,3 @@ u32 BuildNode(Fvector& vFrom, Fvector& vAt)	// return node's index
 		}
 	} else return InvalidNode;
 }
-
-#if 0
-#define VPUSH(a)	a.x,a.y,a.z
-void xrBuildNodes()
-{
-	// begin
-	XRC.box_options	(CDB::OPT_FULL_TEST);
-	XRC.ray_options	(CDB::OPT_CULL | CDB::OPT_ONLYNEAREST);
-	g_nodes.reserve	(1024*1024);
-
-	// Initialize hash
-	hash_Initialize ();
-
-	for (u32 em=0; em<Emitters.size(); em++) 
-	{
-		// Align emitter
-		Fvector			Pos = Emitters[em];
-		SnapXZ			(Pos);
-		Pos.y			+=1;
-		Fvector			Dir; Dir.set(0,-1,0);
-		
-		XRC.ray_query	(&Level,Pos,Dir,3);
-		if (XRC.r_count()==0) {
-			Msg		("Can't align emitter");
-			abort	();
-		} else {
-			CDB::RESULT& R = *XRC.r_begin();
-			Pos.y = Pos.y - R.range;
-		}
-		
-		// Build first node
-		int oldcount = g_nodes.size();
-		int start = BuildNode		(Pos,Pos);
-		if (start==InvalidNode)		continue;
-		if (start<oldcount)			continue;
-
-		// Estimate nodes
-		Fvector	LevelSize;
-		LevelBB.getsize				(LevelSize);
-		u32	estimated_nodes		= iFloor(LevelSize.x/g_params.fPatchSize)*iFloor(LevelSize.z/g_params.fPatchSize);
-		
-		// General cycle
-		for (u32 i=0; i<g_nodes.size(); i++)
-		{
-			// left 
-			if (g_nodes[i].n1==UnkonnectedNode)
-			{
-				Pos.set			(g_nodes[i].Pos);
-				Pos.x			-=	g_params.fPatchSize;
-				int	id			=	BuildNode(g_nodes[i].Pos,Pos);
-				g_nodes[i].n1	=	id;
-			}
-			// fwd
-			if (g_nodes[i].n2==UnkonnectedNode)
-			{
-				Pos.set			(g_nodes[i].Pos);
-				Pos.z			+=	g_params.fPatchSize;
-				int id			=	BuildNode(g_nodes[i].Pos,Pos);
-				g_nodes[i].n2	=	id;
-			}
-			// right
-			if (g_nodes[i].n3==UnkonnectedNode)
-			{
-				Pos.set			(g_nodes[i].Pos);
-				Pos.x			+=	g_params.fPatchSize;
-				int id			=	BuildNode(g_nodes[i].Pos,Pos);
-				g_nodes[i].n3	=	id;
-			}
-			// back
-			if (g_nodes[i].n4==UnkonnectedNode)
-			{
-				Pos.set			(g_nodes[i].Pos);
-				Pos.z			-=	g_params.fPatchSize;
-				int	id			=	BuildNode(g_nodes[i].Pos,Pos);
-				g_nodes[i].n4	=	id;
-			}
-			if (i%512==0) {
-				Status("%d / %d nodes created.",g_nodes.size()-i,g_nodes.size());
-
-				float	p1	= float(i)/float(g_nodes.size());
-				float	p2	= float(g_nodes.size())/estimated_nodes;
-				float	p	= 0.1f*p1+0.9f*p2;
-
-				clamp	(p,0.f,1.f);
-				Progress(p);
-			}
-		}
-	}
-	Msg("Freeing memory...");
-	hash_Destroy	();
-}
-#endif
