@@ -670,6 +670,9 @@ void CCC_Register()
 	CMD1(CCC_E_Dump,	"e_list"				);
 	CMD1(CCC_E_Signal,	"e_signal"				);
 
+	extern float psShedulerMax;
+	CMD4(CCC_Float,		"ai_sheduler_max",		&psShedulerMax,		4.0f,	66.0f);
+	
 	CMD3(CCC_Mask,		"rs_wireframe",			&psDeviceFlags,		rsWireframe);
 	CMD3(CCC_Mask,		"rs_clear_bb",			&psDeviceFlags,		rsClearBB);
 	CMD3(CCC_Mask,		"rs_occlusion",			&psDeviceFlags,		rsOcclusion);

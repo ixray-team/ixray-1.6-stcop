@@ -4,6 +4,7 @@
 
 //#define DEBUG_SCHEDULER
 
+float			psShedulerMax			= 10.f	;
 float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
 const	float	psShedulerReaction		= 0.1f	;
@@ -460,7 +461,7 @@ void CSheduler::Update				()
 #ifdef DEBUG_SCHEDULER
 	Msg								("SCHEDULER: PROCESS STEP FINISHED %d",Device.dwFrame);
 #endif // DEBUG_SCHEDULER
-	clamp							(psShedulerTarget,3.f,66.f);
+	clamp							(psShedulerTarget,3.f,psShedulerMax);
 	psShedulerCurrent				= 0.9f*psShedulerCurrent + 0.1f*psShedulerTarget;
 	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
 
