@@ -1,19 +1,7 @@
-#ifndef __MESHSTRUCTURE_H__
-#define __MESHSTRUCTURE_H__
+#pragma once
 
-//#ifdef MESHSTRUCTURE_EXSPORTS_IMPORTS
-#	define MESHSTRUCTURE_API XRLC_LIGHT_API
-//#else
-//#	define MESHSTRUCTURE_API 
-//#endif
+#define MESHSTRUCTURE_API XRLC_LIGHT_API
 
-	//typedef	xr_vector<_vertex*>		v_vertices;
-	//typedef	v_vertices::iterator	v_vertices_it;
-	
-	//typedef v_faces::iterator		v_faces_it;
-	//typedef xr_vector<_subdiv>		v_subdivs;
-	//typedef v_subdivs::iterator		v_subdivs_it;
-//extern	volatile	u32		dwInvalidFaces;
 class MESHSTRUCTURE_API vector_item
 {
 protected:
@@ -111,7 +99,7 @@ virtual	void	write_vertices		( IWriter	&w )const;
 	{
 		return (v[0]==v[1] || v[0]==v[2] || v[1]==v[2]);
 	};
-	IC float	EdgeLen			(int edge)
+	IC float	EdgeLen			(int edge) const
 	{
 		type_vertex* V1 = v[edge2idx[edge][0]];
 		type_vertex* V2 = v[edge2idx[edge][1]];
@@ -145,16 +133,21 @@ virtual	void	write_vertices		( IWriter	&w )const;
 		Fvector*	v2 = &(v[2]->P);
 		t1.sub			(*v1,*v0);
 		t2.sub			(*v2,*v1);
-		N.crossproduct	(t1,t2);
-		float mag		= N.magnitude();
+		this->N.crossproduct	(t1,t2);
+		float mag		= this->N.magnitude();
+
 		if (mag<EPS_S)
 		{
-			Fvector3		save_N	= N;
-			if (exact_normalize(save_N))	N			=save_N;
-			else							CalcNormal2	();
-		} else {
-			N.div		(mag);
-			N.normalize	();
+			Fvector3		save_N	= this->N;
+			if (exact_normalize(save_N))	
+				this->N = save_N;
+			else
+				CalcNormal2	();
+		} 
+		else 
+		{
+			this->N.div		(mag);
+			this->N.normalize	();
 		}
 	}
 
@@ -176,27 +169,25 @@ virtual	void	write_vertices		( IWriter	&w )const;
 			Nabs.abs	(dN);
 
 	#define SIGN(a) ((a>=0.f)?1.f:-1.f)
-			if (Nabs.x>Nabs.y && Nabs.x>Nabs.z)			N.set(SIGN(N.x),0.f,0.f);
-			else if (Nabs.y>Nabs.x && Nabs.y>Nabs.z)	N.set(0.f,SIGN(N.y),0.f);
-			else if (Nabs.z>Nabs.x && Nabs.z>Nabs.y)	N.set(0.f,0.f,SIGN(N.z));
+			if (Nabs.x>Nabs.y && Nabs.x>Nabs.z)			this->N.set(SIGN(this->N.x),0.f,0.f);
+			else if (Nabs.y>Nabs.x && Nabs.y>Nabs.z)	this->N.set(0.f,SIGN(this->N.y),0.f);
+			else if (Nabs.z>Nabs.x && Nabs.z>Nabs.y)	this->N.set(0.f,0.f,SIGN(this->N.z));
 			else {
-				N.set	(0,1,0); 
+				this->N.set	(0,1,0);
 			}
 	#undef SIGN
 		} else {
 			dN.div	(mag);
-			N.set	(dN);
+			this->N.set	(dN);
 		}
 	}
 
 	float CalcArea() const
 	{
-		float	e1 = v[0]->P.distance_to(v[1]->P);
-		float	e2 = v[0]->P.distance_to(v[2]->P);
-		float	e3 = v[1]->P.distance_to(v[2]->P);
-
-		float	p  = (e1+e2+e3)/2.f;
-		return	_sqrt( p*(p-e1)*(p-e2)*(p-e3) );
+		auto e1 = Fvector().sub(v[0]->P, v[1]->P);
+		auto e2 = Fvector().sub(v[0]->P, v[2]->P);
+		float area = Fvector().crossproduct(e1, e2).magnitude() / 2;
+		return area;
 	}
 	float CalcMaxEdge()
 	{
@@ -251,12 +242,13 @@ virtual	void	write		( IWriter	&w )const;
 
 
 
-	IC	type_vertex*	Tvertex::CreateCopy	( v_vertices& vertises_storage )							
-		{
-			type_vertex* V = CreateCopy_NOADJ( vertises_storage );	
-			V->m_adjacents = m_adjacents;	
-			return V;	
-		}
+	IC	type_vertex* CreateCopy(v_vertices& vertises_storage)
+	{
+		type_vertex* V = CreateCopy_NOADJ(vertises_storage);
+		V->m_adjacents = m_adjacents;
+		return V;
+	}
+
 	IC	void	prep_add(type_face* F)
 	{	
 		 v_faces_it I = std::find(m_adjacents.begin(),m_adjacents.end(),F);
@@ -273,10 +265,10 @@ virtual	void	write		( IWriter	&w )const;
 
 	IC void	normalFromAdj()
 	{
-		N.set( 0, 0, 0 );
+		this->N.set( 0, 0, 0 );
 		for ( v_faces_it ad = m_adjacents.begin(); ad!=m_adjacents.end(); ++ad )
-			N.add( (*ad)->N );
-		exact_normalize	( N );
+			this->N.add( (*ad)->N );
+		exact_normalize	(this->N );
 	}
 
 };
@@ -309,7 +301,7 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 {
 	if (bProgress)		Status		("Isolating vertices...");
 	//g_bUnregister		= false;
-	const u32 verts_old		= vertices.size();
+	const u32 verts_old		= (u32)vertices.size();
 
 	for (int it=0; it<int(verts_old); ++it)	
 	{
@@ -322,7 +314,7 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	}
 	VERIFY( verts_old == vertices.size() );
 
-	xr_vector<typeVertex*>::iterator	_end	= std::remove	(vertices.begin(),vertices.end(),(typeVertex*)0);
+	auto _end	= std::remove	(vertices.begin(),vertices.end(),(typeVertex*)0);
 
 /*
 	remove_pred<typeVertex> rp;
@@ -336,14 +328,9 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	if (bProgress)	
 			Progress	(1.f);
 
-	u32 verts_new		= vertices.size();
+	u32 verts_new		= (u32)vertices.size();
 	u32	_count			= verts_old-verts_new;
 	
 	if	(_count)		
 		clMsg	("::compact:: %d verts removed",_count);
 }
-
-
-
-
-#endif //__MESHSTRUCTURE_H__

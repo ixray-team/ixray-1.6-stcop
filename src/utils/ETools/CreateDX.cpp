@@ -144,7 +144,7 @@ extern "C"{
 		LPD3DXBUFFER*                   ppErrorMsgs,
 		LPD3DXCONSTANTTABLE*            ppConstantTable)
 	{
-		return D3DXCompileShaderFromFile(
+		return D3DXCompileShaderFromFileA(
 			pSrcFile, pDefines, pInclude, pFunctionName, pTarget,
 			Flags, ppShader, ppErrorMsgs, ppConstantTable);
 	}

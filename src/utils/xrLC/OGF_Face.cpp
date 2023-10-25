@@ -44,7 +44,7 @@ BOOL x_vertex::similar	(OGF* ogf, x_vertex& V)
 {
 	return P.similar(V.P);
 }
-u16 OGF::x_BuildVertex	(x_vertex& V1)
+u16 OGF::x_BuildVertex	(x_vertex&& V1)
 {
 	for (itXV it=fast_path_data.vertices.begin(); it!=fast_path_data.vertices.end(); it++)
 		if (it->similar(this,V1)) return u16(it-fast_path_data.vertices.begin());

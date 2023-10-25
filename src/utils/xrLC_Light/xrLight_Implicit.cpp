@@ -285,7 +285,7 @@ void ImplicitLightingExec(BOOL b_net)
 			//defl.lmap.Pack			(packed);
 
 			string_path				name, out_name;
-			sscanf					(strstr(GetCommandLine(),"-f")+2,"%s",name);
+			sscanf					(strstr(GetCommandLineA(),"-f")+2,"%s",name);
 			b_BuildTexture& TEX		=	*defl.texture;
 			strconcat				(sizeof(out_name),out_name,name,"\\",TEX.name,"_lm.dds");
 			FS.update_path			(out_name,"$game_levels$",out_name);

@@ -30,12 +30,12 @@ static void fill_mender_input(	const	xr_vector<type_vertex>						&vertices,
 	theVerts.clear();
 	theIndices.clear();
 	// fill inputs ( verts )
-	const u32 vertices_number =  vertices.size();
+	const u32 vertices_number =  (u32)vertices.size();
 	theVerts.resize( vertices_number );
 	for ( u32 i = 0; i < vertices_number; ++i )
 			set_vertex( theVerts[i], vertices[i] );
 	// fill inputs ( indices )
-	for ( xr_vector<type_face>::const_iterator face_it=faces.begin(); face_it!=faces.end(); face_it++ )
+	for ( auto face_it=faces.begin(); face_it!=faces.end(); face_it++ )
 		add_face( theIndices, *face_it );
 
 }
@@ -53,7 +53,7 @@ static void retrive_data_from_mender_otput( xr_vector<type_vertex>					&vertices
       old_vertices.clear();
       old_vertices =  vertices;// save old vertices to retrive through mappingNewToOldVert data that missing in MeshMender::Vertex 
       // retriving data
-      const u32 face_count = faces.size();
+      const u32 face_count = (u32)faces.size();
       for (u32 i = 0; i< face_count; ++i )
           set_face( faces[i], theIndices[ 3*i + 0 ],
                               theIndices[ 3*i + 1 ],

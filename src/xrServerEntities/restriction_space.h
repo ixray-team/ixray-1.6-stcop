@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
+#include "../xrEngine/device.h"
 namespace RestrictionSpace {
 	struct CTimeIntrusiveBase : public intrusive_base {
 		u32			m_last_time_dec;

@@ -166,7 +166,7 @@ struct OGF : public OGF_Base
 
 	BOOL				dbg_SphereContainsVertex	(Fvector& c, float R);
 
-	u16					x_BuildVertex		(x_vertex&	V);
+	u16					x_BuildVertex		(x_vertex&&	V);
 	void				x_BuildFace			(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_);
 	u16					_BuildVertex		(OGF_Vertex& V1);
 	void				_BuildFace			(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_ = true);

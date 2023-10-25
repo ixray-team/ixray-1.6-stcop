@@ -2,7 +2,7 @@ project(xrAI)
 set(XAI_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XAI_SOURCE_ALL_FILES
+file(GLOB_RECURSE XAI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )
@@ -23,13 +23,21 @@ file(GLOB_RECURSE XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Object_Base.cpp"
 )
 
+file(GLOB_RECURSE XAI_SOURCE_RES_FILES
+    "*.ico"
+    "*.rc"
+    "*.bmp"
+)
+
 # Source groups
 source_group("kernel" FILES ${XAI_SOURCE_ALL_FILES})
 source_group("entt" FILES ${XAI_SOURCE_ENTT_FILES})
+source_group("res" FILES ${XAI_SOURCE_RES_FILES})
 
 # Apply list
 list(APPEND XAI_SRC_FILES ${XAI_SOURCE_ALL_FILES})
 list(APPEND XAI_SRC_FILES ${XAI_SOURCE_ENTT_FILES})
+list(APPEND XAI_SRC_FILES ${XAI_SOURCE_RES_FILES})
 
 # Remove unused files
 #list(FILTER XAI_SRC_FILES EXCLUDE REGEX "lzo/*.ch")

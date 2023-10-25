@@ -71,9 +71,10 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			fs->r				(&H,sizeof(hdrCFORM));
 			R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 
-			Fvector*	verts	= (Fvector*)fs->pointer();
-			CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
-			Level.build			( verts, H.vertcount, tris, H.facecount );
+			Fvector* verts = (Fvector*)fs->pointer();
+			CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+			Level.build(verts, H.vertcount, tris, H.facecount);
+
 			Level.syncronize	();
 			Msg("* Level CFORM: %dK",Level.memory()/1024);
 
@@ -106,20 +107,37 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
 
 			// process textures
+			bool is_thm_missing = false;
+			bool is_tga_missing = false;
+
 			Status			("Processing textures...");
 			{
 				Surface_Init		();
 				F = fs->open_chunk	(EB_Textures);
-				u32 tex_count		= F->length()/sizeof(b_texture);
+#ifdef _M_X64
+				u32 tex_count = F->length() / sizeof(b_texture64);
+#else
+				u32 tex_count = F->length() / sizeof(b_texture);
+#endif
 				for (u32 t=0; t<tex_count; t++)
 				{
 					Progress		(float(t)/float(tex_count));
 
-					b_texture		TEX;
-					F->r			(&TEX,sizeof(TEX));
-
+#ifdef _M_X64
+					b_texture64	TEX;
+					F->r(&TEX, sizeof(TEX));
 					b_BuildTexture	BT;
-					CopyMemory		(&BT,&TEX,sizeof(TEX));
+
+					// ptr should be copied separately
+					CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+					BT.pSurface = (u32*)TEX.pSurface;
+#else
+					b_texture TEX;
+					F->r(&TEX, sizeof(TEX));
+
+					b_BuildTexture BT;
+					CopyMemory(&BT, &TEX, sizeof(TEX));
+#endif
 
 					// load thumbnail
 					string128		&N_ = BT.name;
@@ -129,18 +147,25 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 					xr_strlwr		(N_);
 
-					if (0==xr_strcmp(N_,"level_lods"))	{
+					if (0==xr_strcmp(N_,"level_lods"))	
+					{
 						// HACK for merged lod textures
 						BT.dwWidth	= 1024;
 						BT.dwHeight	= 1024;
 						BT.bHasAlpha= TRUE;
 						BT.pSurface	= 0;
-					} else {
+					} 
+					else 
+					{
 						xr_strcat		(N_,".thm");
 						IReader* THM	= FS.r_open("$game_textures$",N_);
-//						if (!THM)		continue;
-						
-						R_ASSERT2		(THM,	N_);
+
+						if (!THM)
+						{
+							clMsg("cannot find thm: %s", N);
+							is_thm_missing = true;
+							continue;
+						}
 
 						// version
 						u32 version_				= 0;
@@ -172,9 +197,21 @@ void xrLoad(LPCSTR name, bool draft_mode)
 								clMsg		("- loading: %s",N_);
 								u32			w=0, h=0;
 								BT.pSurface = Surface_Load(N_,w,h); 
-								R_ASSERT2	(BT.pSurface,"Can't load surface");
+
+								if (!BT.pSurface)
+								{
+									clMsg("cannot find tga texture: %s", N);
+									is_tga_missing = true;
+									continue;
+								}
+
 								if ((w != BT.dwWidth) || (h != BT.dwHeight))
-									Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+								{
+									Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+
+									BT.dwWidth = BT.THM.width = w;
+									BT.dwHeight = BT.THM.height = h;
+								}
 								BT.Vflip	();
 							} else {
 								// Free surface memory
@@ -185,6 +222,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					// save all the stuff we've created
 					g_textures.push_back	(BT);
 				}
+				R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+				R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
 			}
 		}
 	}
@@ -232,7 +271,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				F->r		(&temp,sizeof(temp));
 				Flight&		L = temp.data;
 				if (_abs(L.range) > 10000.f) {
-					Msg		("! BAD light range : %f",L.range);
+					Msg("! BAD light range : %f",L.range);
 					L.range	= L.range > 0.f ? 10000.f : -10000.f;
 				}
 
@@ -292,16 +331,20 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		H.size_y			= 1.f;
 		H.aabb				= LevelBB;
 		
-		typedef BYTE NodeLink[3];
+		typedef u32 NodeLink;
 		for (u32 i=0; i<N_; i++) {
 			NodeLink			id;
 			u16 				pl;
 			SNodePositionOld 	_np;
 			NodePosition 		np;
 			
-			for (int j=0; j<4; ++j) {
-				F->r			(&id,3);
-				g_nodes[i].n[j]	= (*LPDWORD(&id)) & 0x00ffffff;
+			for (int j=0; j<4; ++j) 
+			{
+				F->r(&id, 3);
+				id = id & 0x00ffffff;
+				if (id == InvalidNode)
+					id = InvalidNode;
+				g_nodes[i].n[j] = id;
 			}
 
 			pl				= F->r_u16();
@@ -310,12 +353,14 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			CNodePositionConverter(_np,H,np);
 			g_nodes[i].Pos	= vertex_position(np,LevelBB,g_params);
 
+
 			g_nodes[i].Plane.build(g_nodes[i].Pos,g_nodes[i].Plane.n);
+
 		}
 
 		F->close			();
 
-		if (!strstr(Core.Params,"-keep_temp_files"))
-			DeleteFile		(file_name);
+		if (strstr(Core.Params,"-clear_temp_files"))
+			DeleteFileA		(file_name);
 	}
 }

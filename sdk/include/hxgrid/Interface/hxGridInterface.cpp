@@ -13,7 +13,7 @@ IGridUser* CreateGridUserObject(DWORD version)
  
  if (DLLHandle==0)
   {
-   DLLHandle = LoadLibrary("hxGridUserDLL.dll");
+   DLLHandle = LoadLibraryA("hxGridUserDLL.dll");
    assert(DLLHandle!=0);
   } 
   
@@ -35,7 +35,7 @@ IGenericStream* CreateGenericStream()
  
  if (DLLHandle==0)
   {
-   DLLHandle = LoadLibrary("hxGridUserDLL.dll");
+   DLLHandle = LoadLibraryA("hxGridUserDLL.dll");
    assert(DLLHandle!=0);
   } 
   

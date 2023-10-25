@@ -26,9 +26,8 @@ void	ImplicitThread ::	Execute	()
 		execute.Execute(0);
 	}
 
-
-
-#define	NUM_THREADS	8
+// 2 : Mainthread + UI thread
+#define	NUM_THREADS	 CPU::ID.n_threads - 2
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 		// Start threads

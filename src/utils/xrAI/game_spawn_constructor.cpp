@@ -17,15 +17,35 @@
 #include "patrol_path_storage.h"
 
 extern LPCSTR GAME_CONFIG;
-extern LPCSTR generate_temp_file_name			(LPCSTR header0, LPCSTR header1, string_path& buffer);
+extern LPCSTR generate_temp_file_name(LPCSTR header0, LPCSTR header1, string_path& buffer);
 
 #define NO_MULTITHREADING
 
-CGameSpawnConstructor::CGameSpawnConstructor	(LPCSTR name, LPCSTR output, LPCSTR start, bool no_separator_check)
+static void* __cdecl luabind_allocator(void* context, const void* pointer, size_t const size)
+{
+	if (!size)
+	{
+		void* non_const_pointer = const_cast<LPVOID>(pointer);
+		xr_free(non_const_pointer);
+		return nullptr;
+	}
+	if (!pointer)
+	{
+		return xr_malloc(size);
+	}
+	void* non_const_pointer = const_cast<LPVOID>(pointer);
+	return xr_realloc(non_const_pointer, size);
+}
+
+CGameSpawnConstructor::CGameSpawnConstructor(LPCSTR name, LPCSTR output, LPCSTR start, bool no_separator_check)
 #ifdef PROFILE_CRITICAL_SECTIONS
 	:m_critical_section(MUTEX_PROFILE_ID(CGameSpawnConstructor))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
+
+	luabind::allocator = &luabind_allocator;
+	luabind::allocator_context = nullptr;
+
 	load_spawns						(name,no_separator_check);
 	process_spawns					();
 	process_actor					(start);
@@ -327,7 +347,7 @@ void clear_temp_folder	()
 	FILES::const_iterator	I = files.begin();
 	FILES::const_iterator	E = files.end();
 	for ( ; I != E; ++I) {
-		if (DeleteFile(**I))
+		if (DeleteFileA(**I))
 			Msg		("file %s is successfully deleted",**I);
 		else
 			Msg		("cannot delete file %s",**I);

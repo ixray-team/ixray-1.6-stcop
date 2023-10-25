@@ -10,6 +10,9 @@ void	global_slots_data::	Load			( )
 	//if()
 	
 	IReader*	R		= FS.r_open	( "$level$", "build.details" );
+
+	R_ASSERT2(R != nullptr, "build.details not found!");
+
 	R->r_chunk			( 0, &dtH );
 	R->seek				( 0 );
 	u32 check_sum		= crc32( R-> pointer(), R->length());

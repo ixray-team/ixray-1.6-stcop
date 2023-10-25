@@ -51,7 +51,7 @@ void	ImplicitCalcGlobs::read				( INetReader	&r )
 		R_ASSERT( defl );
 		Fbox2 bounds;
 		defl->Bounds_Summary			(bounds);
-		Hash().initialize	(bounds,defl->faces.size());
+		Hash().initialize	(bounds,(u32)defl->faces.size());
 		for (u32 fid=0; fid<defl->faces.size(); fid++)
 		{
 			Face* F				= defl->faces[fid];

@@ -9,6 +9,8 @@
 #include "xrface.h"
 #include "serialize.h"
 
+XRLC_LIGHT_API u32 c_LMAP_size = 1024;
+
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	R_ASSERT(ds_x>=(ss_x+px));

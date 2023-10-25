@@ -7,11 +7,19 @@ file(GLOB_RECURSE DOL_SOURCE_ALL_FILES
     "*.h"
 )
 
+file(GLOB_RECURSE DOL_SOURCE_RES_FILES
+    "*.ico"
+    "*.rc"
+    "*.bmp"
+)
+
 # Source groups
 source_group("kernel" FILES ${DOL_SOURCE_ALL_FILES})
+source_group("res" FILES ${DOL_SOURCE_RES_FILES})
 
 # Apply list
 list(APPEND DOL_SRC_FILES ${DOL_SOURCE_ALL_FILES})
+list(APPEND DOL_SRC_FILES ${DOL_SOURCE_RES_FILES})
 
 # Remove unused files
 #list(FILTER DOL_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")

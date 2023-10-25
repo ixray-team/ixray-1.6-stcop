@@ -173,14 +173,22 @@ void		xrLC_GlobalData	::				initialize		()
 
 //*((u32*)&F)
 
-base_Face* convert_nax( u32 dummy )
+xr_vector<base_Face*> FacesStorage;
+
+XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
 {
-	return (base_Face*)(*((void**)&dummy));
+	if (FacesStorage.size() < dummy)
+	{
+		DebugBreak();
+	}
+
+	return FacesStorage[dummy];
 }
 
-u32 convert_nax( base_Face* F )
+XRLC_LIGHT_API u32 convert_nax(base_Face* F)
 {
-	return *((u32*)&F);
+	FacesStorage.push_back(F);
+	return FacesStorage.size() - 1;
 }
 
 void write( IWriter	&w, const CDB::TRI &tri )

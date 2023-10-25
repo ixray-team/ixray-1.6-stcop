@@ -92,7 +92,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		if (!bAlready) 
 		{
 			F->flags.bProcessed	= true;
-			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, *((u32*)&F), F->sm_group );
+			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, convert_nax(F), F->sm_group );
 		}
 	}
 
@@ -134,7 +134,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		// Prepare faces
 		for (u32 k=0; k<CL.getTS(); k++){
 			CDB::TRI& T			= CL.getT( k );
-			base_Face* F		= (base_Face*)(*((void**)&T.dummy));
+			base_Face* F		= convert_nax(T.dummy);
 			b_rc_face& cf		= rc_faces[k];
 			cf.dwMaterial		= F->dwMaterial;
 			cf.dwMaterialGame	= F->dwMaterialGame;

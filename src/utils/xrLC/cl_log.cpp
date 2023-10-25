@@ -77,7 +77,7 @@ void __cdecl Status	(const char *format, ...)
 	va_start			( mark, format );
 	vsprintf			( status, format, mark );
 	bStatusChange		= TRUE;
-	Msg					("    | %s",status);
+	Msg("    | %s",status);
 	csLog.Leave			();
 }
 
@@ -104,16 +104,16 @@ void Phase			(const char *phase_name)
 	bPhaseChange		= TRUE;
 	phase_total_time	= timeGetTime()-phase_start_time;
 	xr_sprintf				( tbuf,"%s : %s",make_time(phase_total_time/1000).c_str(),	phase);
-	SendMessage			( hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
-	SendMessage			( hwPhaseTime, LB_ADDSTRING, 0, (LPARAM) tbuf);
+	SendMessageA			( hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
+	SendMessageA			( hwPhaseTime, LB_ADDSTRING, 0, (LPARAM) tbuf);
 
 	// Start _new phase
 	phase_start_time	= timeGetTime();
 	xr_strcpy				(phase,  phase_name);
-	SetWindowText		( hwStage,		phase_name );
+	SetWindowTextA		( hwStage,		phase_name );
 	xr_sprintf				( tbuf,"--:--:-- * %s",phase);
-	SendMessage			( hwPhaseTime,  LB_ADDSTRING, 0, (LPARAM) tbuf);
-	SendMessage			( hwPhaseTime,	LB_SETTOPINDEX, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
+	SendMessageA			( hwPhaseTime,  LB_ADDSTRING, 0, (LPARAM) tbuf);
+	SendMessageA			( hwPhaseTime,	LB_SETTOPINDEX, SendMessageA(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	Progress			(0);
 
 	// Release focus
@@ -142,8 +142,8 @@ void logThread(void *dummy)
 	hwPText		= GetDlgItem(logWindow, IDC_P_TEXT);
 	hwPhaseTime	= GetDlgItem(logWindow, IDC_PHASE_TIME);
 
-	SendMessage(hwProgress, PBM_SETRANGE,	0, MAKELPARAM(0, 1000)); 
-	SendMessage(hwProgress, PBM_SETPOS,		0, 0); 
+	SendMessageA(hwProgress, PBM_SETRANGE,	0, MAKELPARAM(0, 1000)); 
+	SendMessageA(hwProgress, PBM_SETPOS,		0, 0); 
 
 	Msg("\"LevelBuilder v4.1\" beta build\nCompilation date: %s\n",__DATE__);
 	{
@@ -154,7 +154,7 @@ void logThread(void *dummy)
 	BOOL		bHighPriority	= FALSE;
 	string256	u_name;
 	unsigned long		u_size	= sizeof(u_name)-1;
-	GetUserName	(u_name,&u_size);
+	GetUserNameA	(u_name,&u_size);
 	_strlwr		(u_name);
 	if ((0==xr_strcmp(u_name,"oles"))||(0==xr_strcmp(u_name,"alexmx")))	bHighPriority	= TRUE;
 
@@ -183,16 +183,16 @@ void logThread(void *dummy)
 			{
 				const char *S = *(*LogFile)[LogSize];
 				if (0==S)	S = "";
-				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
+				SendMessageA	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
 			}
-			SendMessage		( hwLog, LB_SETTOPINDEX, LogSize-1, 0);
+			SendMessageA		( hwLog, LB_SETTOPINDEX, LogSize-1, 0);
 			//FlushLog		( );
 		}
 		csLog.Leave		();
 		if (_abs(PrSave-progress)>EPS_L) {
 			bWasChanges = TRUE;
 			PrSave = progress;
-			SendMessage		( hwProgress, PBM_SETPOS, u32(progress*1000.f), 0);
+			SendMessageA		( hwProgress, PBM_SETPOS, u32(progress*1000.f), 0);
 
 			// timing
 			if (progress>0.005f) {
@@ -206,20 +206,20 @@ void logThread(void *dummy)
 					make_time(secElapsed).c_str(),
 					make_time(secRemain).c_str()
 					);
-				SetWindowText	( hwTime, tbuf );
+				SetWindowTextA	( hwTime, tbuf );
 			} else {
-				SetWindowText	( hwTime, "" );
+				SetWindowTextA	( hwTime, "" );
 			}
 
 			// percentage text
 			xr_sprintf(tbuf,"%3.2f%%",progress*100.f);
-			SetWindowText	( hwPText, tbuf );
+			SetWindowTextA	( hwPText, tbuf );
 		}
 
 		if (bStatusChange) {
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
-			SetWindowText	( hwInfo,	status);
+			SetWindowTextA	( hwInfo,	status);
 		}
 		if (bWasChanges) {
 			UpdateWindow	( logWindow);
@@ -239,7 +239,7 @@ void logThread(void *dummy)
 void clLog( LPCSTR msg )
 {
 	csLog.Enter		();
-	Log				(msg);
+	Log(msg);
 	csLog.Leave		();
 }
 

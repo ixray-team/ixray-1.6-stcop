@@ -233,7 +233,7 @@ class NVMeshMender
             DontWeightNormalsByFaceSize
 		};
 
-        bool NVMeshMender::Munge( const NVMeshMender::VAVector& input, 
+        bool Munge( const NVMeshMender::VAVector& input, 
 			                   NVMeshMender::VAVector& output, 
 							   const float bSmoothCreaseAngleRadians = 3.141592654f / 3.0f,
 							   const float* pTextureMatrix = 0,
@@ -241,7 +241,7 @@ class NVMeshMender
 							   const Option _FixCylindricalTexGen = FixCylindricalTexGen,
                                const Option _WeightNormalsByFaceSize = WeightNormalsByFaceSize
 							   );
-		bool NVMeshMender::MungeD3DX( const NVMeshMender::VAVector& input, 
+		bool MungeD3DX( const NVMeshMender::VAVector& input, 
 			                   NVMeshMender::VAVector& output, 
 							   const float bSmoothCreaseAngleRadians = 3.141592654f / 3.0f,
 							   const float* pTextureMatrix = 0,

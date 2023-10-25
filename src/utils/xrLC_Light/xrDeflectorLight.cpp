@@ -346,7 +346,6 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
 	return NEW_ApplyBorders( lm, ref );
 }
 
-
 float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip, BOOL bUseFaceDisable)
 {
 	u32		tris_count	= DB->r_count();
@@ -361,7 +360,9 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 
 			// Access to texture
 			CDB::TRI& clT										= MDL->get_tris()[rpinf.id];
-			base_Face* F										= (base_Face*)(*((void**)&clT.dummy));
+
+			base_Face* F										= convert_nax(clT.dummy);
+
 			if (0==F)											continue;
 			if (skip==F)										continue;
 
