@@ -21,7 +21,7 @@ public:
 	{
 		R_ASSERT	(name && name[0]);
 		fName		= name;
-		wchar_t* wName = ANSI_TO_TCHAR(name);
+		wchar_t* wName = ANSI_TO_TCHAR_U8(name);
 		VerifyPath	(*fName);
         if (exclusive){
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
@@ -41,7 +41,7 @@ public:
 	{
 		if (0 != hf)
 		{
-			wchar_t* wName = ANSI_TO_TCHAR(*fName);
+			wchar_t* wName = ANSI_TO_TCHAR_U8(*fName);
 			fclose(hf);
 			// release RO attrib
 			DWORD dwAttr = GetFileAttributes(wName);
