@@ -33,8 +33,10 @@ TEMPLATE_SPECIALIZATION
 IC	void CConditionStateAbstract::add_condition_back	(const COperatorCondition &condition)
 {
 	THROW					(m_conditions.empty() || (m_conditions.back().condition() < condition.condition()));
-	m_conditions.push_back	(condition);
-	m_hash					^= condition.hash_value();
+	if (m_conditions.empty() || (m_conditions.back().condition() < condition.condition())) {
+		m_conditions.push_back(condition);
+		m_hash ^= condition.hash_value();
+	}
 }
 
 TEMPLATE_SPECIALIZATION
@@ -42,8 +44,10 @@ IC	void CConditionStateAbstract::add_condition	(const COperatorCondition &condit
 {
 	typename xr_vector<COperatorCondition>::iterator	I = std::lower_bound(m_conditions.begin(),m_conditions.end(),condition);
 	THROW					((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
-	m_conditions.insert		(I,condition);
-	m_hash					^= condition.hash_value();
+	if ((I == m_conditions.end()) || ((*I).condition() != condition.condition())) {
+		m_conditions.insert(I, condition);
+		m_hash ^= condition.hash_value();
+	}
 }
 
 TEMPLATE_SPECIALIZATION
@@ -51,8 +55,10 @@ IC	void CConditionStateAbstract::remove_condition	(const typename COperatorCondi
 {
 	typename xr_vector<COperatorCondition>::iterator	I = std::lower_bound(m_conditions.begin(),m_conditions.end(),COperatorCondition(condition,COperatorCondition::_value_type(0)));
 	THROW					((I != m_conditions.end()) && ((*I).condition() == condition));
-	m_hash					^= (*I).hash_value();
-	m_conditions.erase		(I);
+	if ((I != m_conditions.end()) && ((*I).condition() == condition)) {
+		m_hash ^= (*I).hash_value();
+		m_conditions.erase(I);
+	}
 }
 
 TEMPLATE_SPECIALIZATION
