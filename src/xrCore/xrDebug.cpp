@@ -150,7 +150,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	if (g_pEventManager == nullptr || g_pEventManager->IsEventThread())
 	{
-		show_dialog(buffer, ignore_always);
+		show_dialog(assertion_info, ignore_always);
 	}
 	else
 	{
