@@ -19,14 +19,14 @@ CPHCall::~CPHCall()
 	xr_delete(m_action);
 	xr_delete(m_condition);
 }
-bool CPHCall::obsolete()
-{
-	return m_action->obsolete()||m_condition->obsolete();
+bool CPHCall::obsolete() {
+	return !m_action || m_action->obsolete() || !m_condition || m_condition->obsolete();
 }
-
 void CPHCall::check()
 {
-	if(m_condition->is_true())m_action->run();
+	if (m_condition && m_condition->is_true() && m_action) {
+		m_action->run();
+	}
 }
 
 bool CPHCall::equal(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
