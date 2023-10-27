@@ -91,7 +91,11 @@ CDetailManager::CDetailManager	()
 
 CDetailManager::~CDetailManager	()
 {
-
+	if (dtFS)
+	{
+		FS.r_close(dtFS);
+		dtFS = 0;
+	}
 }
 /*
 */
@@ -180,7 +184,8 @@ void CDetailManager::Unload		()
 	m_visibles[0].clear	();
 	m_visibles[1].clear	();
 	m_visibles[2].clear	();
-	FS.r_close			(dtFS);
+	FS.r_close(dtFS);
+	dtFS = 0;
 }
 
 extern ECORE_API float r_ssaDISCARD;
