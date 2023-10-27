@@ -28,13 +28,20 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector
 {
 #pragma todo("Dima to Dima : _Warning : this place can be optimized in case of a slowdown")
 	VERIFY							(initialized());
-	VERIFY							(!restriction->border().empty());
-	VERIFY							(!restriction->accessible_neighbour_border(restriction,out_restriction).empty());
+	VERIFY2(!restriction->border().empty(), make_string("[%s]: %s has border().empty()", __FUNCTION__, name().c_str()));
+	VERIFY2(!restriction->accessible_neighbour_border(restriction, out_restriction).empty(),
+		make_string("[%s]: %s has accessible_neighbour_border().empty()", __FUNCTION__, name().c_str()));
 
 	float							min_dist_sqr = flt_max;
 	u32								selected = u32(-1);
 	xr_vector<u32>::const_iterator	I = restriction->accessible_neighbour_border(restriction,out_restriction).begin();
 	xr_vector<u32>::const_iterator	E = restriction->accessible_neighbour_border(restriction,out_restriction).end();
+
+    if (I == E) {
+        Msg("! [%s]: %s: empty accessible_neighbour_border()", __FUNCTION__, *name());
+        selected = ai().level_graph().header().vertex_count() - 1;
+    }
+
 	for ( ; I != E; ++I) {
 		VERIFY2						(
 			ai().level_graph().valid_vertex_id(*I),
@@ -49,15 +56,12 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector
 			selected				= *I;
 		}
 	}
-	VERIFY2							(
-		ai().level_graph().valid_vertex_id(selected),
-		make_string(
-			"vertex_id[%d], object[%s], position[%f][%f][%f]",
-			selected,
-			*name(),
-			VPUSH(position)
-		)
-	);
+    VERIFY2(ai().level_graph().valid_vertex_id(selected),
+        make_string("vertex_id[%d], object[%s], position[%f][%f][%f]", selected, *name(), VPUSH(position)));
+
+	if (!ai().level_graph().valid_vertex_id(selected)) {
+        return u32(-1);
+	}
 
 	{
 		min_dist_sqr = flt_max;
@@ -84,6 +88,9 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector
 		selected	= new_selected;
 	}
 	VERIFY	(ai().level_graph().valid_vertex_id(selected));
+    if (!ai().level_graph().valid_vertex_id(selected)) {
+        return u32(-1);
+	}
 
 	{
 		Fvector		center = ai().level_graph().vertex_position(selected);
@@ -121,6 +128,10 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector
 	}
 	VERIFY		(ai().level_graph().valid_vertex_id(selected));
 	
+    if (!ai().level_graph().valid_vertex_id(selected)) {
+        return u32(-1);
+	}
+
 	return		(selected);
 }
 
