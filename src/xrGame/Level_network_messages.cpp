@@ -308,7 +308,7 @@ void CLevel::ClientReceive()
 						CSavedGameWrapper			wrapper(saved_name);
 						if (wrapper.level_id() == ai().level_graph().level_id()) 
 						{
-							Engine.Event.Defer	("Game:QuickLoad", size_t(xr_strdup(saved_name)), 0);
+							g_pEventManager->Event.Defer	("Game:QuickLoad", size_t(xr_strdup(saved_name)), 0);
 
 							break;
 						}

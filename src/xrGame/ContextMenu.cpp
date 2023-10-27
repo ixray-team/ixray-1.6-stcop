@@ -6,7 +6,7 @@ const float fade_speed = 8.0f;
 
 CContextMenu::~CContextMenu(){
 	for (xr_vector<MenuItem>::iterator I=Items.begin(); Items.end()!=I; ++I){
-		Engine.Event.Destroy(I->Event);
+		g_pEventManager->Event.Destroy(I->Event);
 		xr_free(I->Name);
 		xr_free(I->Param);
 	}
@@ -20,7 +20,7 @@ void CContextMenu::Load(CInifile* INI, LPCSTR SECT){
 		sscanf		(*I->second,"%[^,],%s",Event,Param);
 		MenuItem	Item;
 		Item.Name	= xr_strdup(*I->first);
-		Item.Event	= Engine.Event.Create(Event);
+		Item.Event	= g_pEventManager->Event.Create(Event);
 		Item.Param	= xr_strdup(Param);
 		Items.push_back(Item);
 	}
@@ -40,6 +40,6 @@ void CContextMenu::Select(int I)
 {
 	if (I>=0 && I<(int)(Items.size())){
 		MenuItem& M = Items[I];
-		Engine.Event.Signal(M.Event, u64(M.Param));
+		g_pEventManager->Event.Signal(M.Event, u64(M.Param));
 	}
 }

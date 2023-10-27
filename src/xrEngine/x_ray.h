@@ -32,13 +32,6 @@ private:
 	int						load_stage;
 
 	u32						ll_dwReference;
-private:
-	EVENT					eQuit;
-	EVENT					eStart;
-	EVENT					eStartLoad;
-	EVENT					eDisconnect;
-	EVENT					eConsole;
-	EVENT					eStartMPDemo;
 
 	void					Level_Append		(LPCSTR lname);
 public:

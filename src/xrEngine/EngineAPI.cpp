@@ -116,7 +116,7 @@ void CEngineAPI::Destroy	(void)
 	if (hRender)			{ FreeLibrary(hRender); hRender = 0; }
 	pCreate					= 0;
 	pDestroy				= 0;
-	Engine.Event._destroy	();
+	g_pEventManager->Event._destroy	();
 	XRC.r_clear_compact		();
 }
 

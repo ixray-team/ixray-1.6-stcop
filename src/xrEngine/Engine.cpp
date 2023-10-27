@@ -14,12 +14,12 @@ xrDispatchTable		PSGP;
 
 CEngine::CEngine()
 {
-	
+	g_pEventManager = new CEventManager;
 }
 
 CEngine::~CEngine()
 {
-	
+	delete g_pEventManager;
 }
 
 void CEngine::Initialize	(void)
