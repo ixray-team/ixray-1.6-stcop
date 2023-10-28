@@ -216,12 +216,10 @@ public:
 	ICF BOOL		_box_sse	(const Fvector& bCenter, const Fvector& bExtents, float&  dist )
 	{
 		aabb_t		box;
-	/*
-		box.min.sub (bCenter,bExtents);	box.min.pad = 0;
-		box.max.add	(bCenter,bExtents); box.max.pad = 0;
-	*/
+
 		__m128 CN = _mm_unpacklo_ps( _mm_load_ss( (float*) &bCenter.x ) , _mm_load_ss( (float*) &bCenter.y ) );
 		CN = _mm_movelh_ps( CN , _mm_load_ss( (float*) &bCenter.z ) );
+
 		__m128 EX = _mm_unpacklo_ps( _mm_load_ss( (float*) &bExtents.x ) , _mm_load_ss( (float*) &bExtents.y ) );
 		EX = _mm_movelh_ps( EX , _mm_load_ss( (float*) &bExtents.z ) );
 

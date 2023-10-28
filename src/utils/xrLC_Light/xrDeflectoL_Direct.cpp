@@ -101,11 +101,11 @@ void CDeflector::L_Direct(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH
 
                     // World space
                     Fvector		wP, wN, B;
-                    for (UVtri** it = &*space.begin(); it != &*space.end(); it++)
+                    for (UVtri* &it : space)
                     {
-                        if ((*it)->isInside(P, B)) {
+                        if (it->isInside(P, B)) {
                             // We found triangle and have barycentric coords
-                            Face* F = (*it)->owner;
+                            Face* F = it->owner;
                             Vertex* V1 = F->v[0];
                             Vertex* V2 = F->v[1];
                             Vertex* V3 = F->v[2];
