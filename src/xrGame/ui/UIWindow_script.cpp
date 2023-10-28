@@ -23,7 +23,7 @@ CGameFont* GetFontMedium()
 {return mngr().pFontMedium;}
 CGameFont* GetFontDI()
 {return mngr().pFontDI;}
-//øðèôòû äëÿ èíòåðôåéñà
+//ÑˆÑ€Ð¸Ñ„Ñ‚Ñ‹ Ð´Ð»Ñ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ°
 CGameFont* GetFontGraffiti19Russian()
 {return mngr().pFontGraffiti19Russian;}
 CGameFont* GetFontGraffiti22Russian()
@@ -43,10 +43,10 @@ CGameFont* GetFontLetterica25()
 int GetARGB(u16 a, u16 r, u16 g, u16 b)
 {return color_argb(a,r,g,b);}
 
-const Fvector2* get_wnd_pos(CUIWindow* w)
-{
-	return &w->GetWndPos();
+const Fvector2 get_wnd_pos(CUIWindow* w) {
+	return w->GetWndPos();
 }
+
 using namespace luabind;
 #pragma optimize("s",on)
 void CUIWindow::script_register(lua_State *L)
