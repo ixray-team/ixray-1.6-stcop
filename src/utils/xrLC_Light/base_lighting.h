@@ -4,7 +4,7 @@
 
 class INetReader;
 
-#pragma pack(push,4)
+//#pragma pack(push,4)
 class XRLC_LIGHT_API base_lighting
 {
 public:
@@ -23,3 +23,4 @@ public:
     void					read(INetReader& r);
     void					write(IWriter& w) const;
 };
+//#pragma pack(pop)
