@@ -26,7 +26,8 @@ struct SBuildOptions
 	BOOL						b_radiosity;
 	BOOL						b_noise;
 	BOOL						b_net_light;
-	SBuildOptions				():b_radiosity(FALSE), b_noise(FALSE), b_net_light(FALSE) 
+	bool b_optix_accel;
+	SBuildOptions				():b_radiosity(FALSE), b_noise(FALSE), b_net_light(FALSE), b_optix_accel(false)
 	{
 
 	}

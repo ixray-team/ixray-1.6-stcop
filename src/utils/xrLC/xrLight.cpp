@@ -88,7 +88,13 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		// Main process (4 threads)
 		Status			("Lighting...");
 		CThreadManager	threads;
-		const	u32	thNUM	= CPU::ID.n_threads - 2;
+		u32	thNUM	= 1;
+		
+		if (!g_build_options.b_optix_accel)
+		{
+			thNUM = CPU::ID.n_threads - 2;
+		}
+
 		CTimer	start_time;	start_time.Start();				
 		for				(int L=0; L<thNUM; L++)	threads.start(xr_new<CLMThread> (L));
 		threads.wait	(500);
@@ -156,6 +162,22 @@ void CBuild::Light()
 
 		xrPhase_MergeLM	();
 	}
+}
+
+//routine enabled, when using new hardware light feature
+void	CBuild::LMapsRedux() {
+	mem_Compact();
+
+
+	//new system not multithreaded... but using some handmade tricks to speedup coputation process
+	Status("Lighting...");
+
+	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
+		task_pool.push_back(dit);
+
+	//pick deflectors, until reaching ray quota
+
+
 }
 
 void CBuild::LightVertex	()

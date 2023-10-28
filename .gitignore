@@ -49,3 +49,4 @@ temp/
 gamedata_origin/
 patch/
 *.log
+src/utils/xrLC_Light/LightPoint.obj

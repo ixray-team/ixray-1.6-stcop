@@ -6,6 +6,26 @@
 #define BORDER 1
 #endif
 
+struct XRLC_LIGHT_API LightpointRequest
+{
+	u32 X;
+	u32 Y;
+
+	Fvector Position;
+	Fvector Normal;
+
+	void* FaceToSkip;
+
+	LightpointRequest(u32 InX, u32 InY, Fvector InPosition, Fvector InNormal, void* InFaceToSkip) {
+		X = InX;
+		Y = InY;
+
+		Position = InPosition;
+		Normal = InNormal;
+
+		FaceToSkip = InFaceToSkip;
+	}
+};
 
 class INetReader;
 struct XRLC_LIGHT_API  lm_layer
@@ -21,6 +41,8 @@ struct XRLC_LIGHT_API  lm_layer
 	u32						height;
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
+
+	xr_vector <LightpointRequest> SurfaceLightRequests;
 private:
 //	LMODE					mode;	
 public:

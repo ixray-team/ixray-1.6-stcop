@@ -4,13 +4,25 @@
 #define LT_POINT		1
 #define LT_SECONDARY	2
 
+//On CUDA device we use different vector type, so there is a workaround
+#ifndef VECTORWORKAROUND_DEFINE
+#define VECTORWORKAROUND_DEFINE
+
+#ifdef __CUDACC__
+typedef HardwareVector VectorType;
+#else
+typedef Fvector VectorType;
+#endif // end __CUDACC__
+
+#endif //end VECTORWORKAROUND_DEFINE
+
 struct R_Light
 {
 	u16				type;				// Type of light source		
 	u16				level;				// GI level
-	Fvector         diffuse;			// Diffuse color of light	
-	Fvector         position;			// Position in world space	
-	Fvector         direction;			// Direction in world space	
+	VectorType      diffuse;			// Diffuse color of light	
+	VectorType      position;			// Position in world space	
+	VectorType      direction;			// Direction in world space	
 	float		    range;				// Cutoff range
 	float			range2;				// ^2
 	float			falloff;			// precalc to make light aqal to zero at light range
@@ -19,11 +31,13 @@ struct R_Light
 	float	        attenuation2;		// Quadratic attenuation	
 	float			energy;				// For radiosity ONLY
 
-	Fvector			tri[3];
+	VectorType		tri[3];
 
-	R_Light()		{
-		tri[0].set	(0,0,0);
-		tri[1].set	(0,0,EPS_S);
-		tri[2].set	(EPS_S,0,0);
+#ifndef __CUDACC__
+	R_Light() {
+		tri[0].set(0, 0, 0);
+		tri[1].set(0, 0, EPS_S);
+		tri[2].set(EPS_S, 0, 0);
 	}
+#endif
 };

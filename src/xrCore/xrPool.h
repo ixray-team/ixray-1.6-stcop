@@ -6,7 +6,7 @@ template <class T, int granularity>
 class	poolSS
 {
 private:
-	T*					list;
+	T*					list = nullptr;
 	xr_vector<T*>		blocks;
 private:
 	T**					access			(T* P)	{ return (T**) LPVOID(P);	}

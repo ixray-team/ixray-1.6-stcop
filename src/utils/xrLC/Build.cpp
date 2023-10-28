@@ -230,11 +230,11 @@ void CBuild::Run	(LPCSTR P)
 	}
 
 	//****************************************** GLOBAL-RayCast model
-	FPU::m64r					();
-	Phase						("Building rcast-CFORM model...");
-	mem_Compact					();
-	Light_prepare				();
-	BuildRapid					(TRUE);
+	//FPU::m64r					();
+	//Phase						("Building rcast-CFORM model...");
+	//mem_Compact					();
+	//Light_prepare				();
+	//BuildRapid					(TRUE);
 
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			

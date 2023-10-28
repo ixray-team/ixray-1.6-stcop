@@ -100,6 +100,7 @@ public:
 	void	Light					();
 	void	LMapsLocal				();
 	void	LMaps					();
+	void LMapsRedux();
 	//void	Light_R2				();
 	void	LightVertex				();
 	void	xrPhase_MergeLM			();

@@ -9,6 +9,11 @@
 #include "light_point.h"
 #include "xrface.h"
 #include "net_task.h"
+#include "xrRayDefinition.h"
+#include <cuda_runtime.h>
+#include "optix\putil\Buffer.h"
+#include "xrHardwareLight.h"
+
 //const	u32	rms_discard			= 8;
 //extern	BOOL		gl_linear	;
 
@@ -327,9 +332,8 @@ BOOL OLD_ApplyBorders	(lm_layer &lm, u32 ref)
 	return bNeedContinue;
 }
 
-BOOL ApplyBorders( lm_layer &lm, u32 ref ) 
-{
-	
+BOOL ApplyBorders(lm_layer& lm, u32 ref) {
+
 	//lm_layer r_new = lm;
 	//BOOL bres_new = NEW_ApplyBorders( r_new, ref );
 	//lm_layer r_old = lm;
@@ -342,8 +346,12 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
 	//lm = r_new;
 	//return bres_new;
 	//
-	
-	return NEW_ApplyBorders( lm, ref );
+
+	return NEW_ApplyBorders(lm, ref);
+}
+
+float getLastRP_Scale_Refactored(xr_vector<Hit>& VertexHits, CDB::MODEL* RaycastedModel) {
+	return 1.0f;
 }
 
 float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip, BOOL bUseFaceDisable)
@@ -419,190 +427,517 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 	return scale;
 }
 
-float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
-{
-	R_ASSERT	(DB);
+float rayTrace(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable) {
+	R_ASSERT(DB);
 
 	// 1. Check cached polygon
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
+	float _u, _v, range;
+	bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
 	if (res) {
-		if (range>0 && range<R) return 0;
+		if (range > 0 && range < R) return 0;
 	}
 
 	// 2. Polygon doesn't pick - real database query
-	DB->ray_query	(MDL,P,D,R);
+	DB->ray_query(MDL, P, D, R);
 
 	// 3. Analyze polygons and cache nearest if possible
-	if (0==DB->r_count()) {
+	if (0 == DB->r_count()) {
 		return 1;
-	} else {
-		return getLastRP_Scale(DB,MDL, L,skip,bUseFaceDisable);
+	}
+	else {
+		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
 	}
 	return 0;
 }
 
-void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip)
-{
-	Fvector		Ldir,Pnew;
-	Pnew.mad	(P,N,0.01f);
-
-	BOOL		bUseFaceDisable	= flags&LP_UseFaceDisable;
-
-	if (0==(flags&LP_dont_rgb))
+void GetLightsForVertex(Fvector& Position, Fvector& Normal, base_lighting& lights, u32 flags, xr_vector <int>& OutRGBIndexes, xr_vector <int>& OutSunIndexes, xr_vector <int>& OutHemiIndexes) {
+	Fvector LightDirection;
+	if ((flags & LP_dont_rgb) == 0)
 	{
-		DB->ray_options	(0);
-		R_Light	*L	= &*lights.rgb.begin(), *E = &*lights.rgb.end();
-		for (;L!=E; L++)
+		for (int RGBLightIndex = 0; RGBLightIndex < lights.rgb.size(); RGBLightIndex++)
+		{
+			R_Light& LightObject = lights.rgb[RGBLightIndex];
+			switch (LightObject.type)
+			{
+			case LT_DIRECT:
+			{
+				LightDirection.invert(LightObject.direction);
+				float DirectionFactor = LightDirection.dotproduct(Normal);
+				if (DirectionFactor <= 0) continue;
+
+				OutRGBIndexes.push_back(RGBLightIndex);
+			}
+			break;
+			case LT_POINT:
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float D = LightDirection.dotproduct(Normal);
+				if (D <= 0)			continue;
+
+				OutRGBIndexes.push_back(RGBLightIndex);
+			}
+			break;
+			case LT_SECONDARY:
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float	D = LightDirection.dotproduct(Normal);
+				if (D <= 0) continue;
+				D *= -LightDirection.dotproduct(LightObject.direction);
+				if (D <= 0) continue;
+
+				OutRGBIndexes.push_back(RGBLightIndex);
+			}
+			break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if ((flags & LP_dont_sun) == 0)
+	{
+		for (int SunLightIndex = 0; SunLightIndex < lights.sun.size(); SunLightIndex++)
+		{
+			R_Light& LightObject = lights.sun[SunLightIndex];
+			if (LightObject.type == LT_DIRECT)
+			{
+				LightDirection.invert(LightObject.direction);
+				float DirectionFactor = LightDirection.dotproduct(Normal);
+				if (DirectionFactor <= 0) continue;
+
+				OutSunIndexes.push_back(SunLightIndex);
+			}
+			else
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float D = LightDirection.dotproduct(Normal);
+				if (D <= 0)			continue;
+
+				OutSunIndexes.push_back(SunLightIndex);
+			}
+		}
+	}
+	if ((flags & LP_dont_hemi) == 0)
+	{
+		for (int HemiLightIndex = 0; HemiLightIndex < lights.hemi.size(); HemiLightIndex++)
+		{
+			R_Light& LightObject = lights.hemi[HemiLightIndex];
+			if (LightObject.type == LT_DIRECT)
+			{
+				LightDirection.invert(LightObject.direction);
+				float DirectionFactor = LightDirection.dotproduct(Normal);
+				if (DirectionFactor <= 0) continue;
+
+				OutHemiIndexes.push_back(HemiLightIndex);
+			}
+			else
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float D = LightDirection.dotproduct(Normal);
+				if (D <= 0) continue;
+
+				OutHemiIndexes.push_back(HemiLightIndex);
+			}
+		}
+	}
+}
+
+extern XRLC_LIGHT_API void GetRaysFromVertex(Fvector& Position, Fvector& Normal, base_lighting& lights, u32 flags, xr_vector <Ray>& OutRays, xr_vector <Ray_Detail>& OutRayDetails) {
+	Fvector		PositionCorrected;
+	PositionCorrected.mad(Position, Normal, 0.01f);
+
+
+	Fvector LightDirection;
+	if ((flags & LP_dont_rgb) == 0)
+	{
+		for (const R_Light& LightObject : lights.rgb)
+		{
+			switch (LightObject.type)
+			{
+			case LT_DIRECT:
+			{
+				LightDirection.invert(LightObject.direction);
+				float DirectionFactor = LightDirection.dotproduct(Normal);
+				if (DirectionFactor <= 0) continue;
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_RGB, LightType::T_DIRECT };
+				OutRayDetails.push_back(details);
+			}
+			break;
+			case LT_POINT:
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float D = LightDirection.dotproduct(Normal);
+				if (D <= 0)			continue;
+
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_RGB, LightType::T_POINT };
+				OutRayDetails.push_back(details);
+			}
+			break;
+			case LT_SECONDARY:
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float	D = LightDirection.dotproduct(Normal);
+				if (D <= 0) continue;
+				D *= -LightDirection.dotproduct(LightObject.direction);
+				if (D <= 0) continue;
+
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_RGB, LightType::T_SECONDARY };
+				OutRayDetails.push_back(details);
+			}
+			break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if ((flags & LP_dont_sun) == 0)
+	{
+		for (const R_Light& LightObject : lights.sun)
+		{
+			if (LightObject.type == LT_DIRECT)
+			{
+				LightDirection.invert(LightObject.direction);
+				float DirectionFactor = LightDirection.dotproduct(Normal);
+				if (DirectionFactor <= 0) continue;
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_SUN, LightType::T_DIRECT };
+				OutRayDetails.push_back(details);
+			}
+			else
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float D = LightDirection.dotproduct(Normal);
+				if (D <= 0)			continue;
+
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_SUN, LightType::T_SECONDARY };
+				OutRayDetails.push_back(details);
+			}
+		}
+	}
+	if ((flags & LP_dont_hemi) == 0)
+	{
+		for (const R_Light& LightObject : lights.hemi)
+		{
+			if (LightObject.type == LT_DIRECT)
+			{
+				LightDirection.invert(LightObject.direction);
+				float DirectionFactor = LightDirection.dotproduct(Normal);
+				if (DirectionFactor <= 0) continue;
+				Fvector		PositionMoved;	PositionMoved.mad(PositionCorrected, LightDirection, 0.001f);
+
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_HEMI, LightType::T_DIRECT };
+				OutRayDetails.push_back(details);
+			}
+			else
+			{
+				// Distance
+				float sqD = Position.distance_to_sqr(LightObject.position);
+				if (sqD > LightObject.range2) continue;
+
+				// Dir
+				LightDirection.sub(LightObject.position, Position);
+				LightDirection.normalize_safe();
+				float D = LightDirection.dotproduct(Normal);
+				if (D <= 0) continue;
+
+				Ray ray;
+				ray.Origin = PositionCorrected;
+				ray.Direction = LightDirection;
+
+				ray.tmin = 0.0f;
+				ray.tmax = 1000.0f;
+				OutRays.push_back(ray);
+
+				Ray_Detail details{ LightCategory::T_HEMI, LightType::T_DIRECT };
+				OutRayDetails.push_back(details);
+			}
+		}
+	}
+}
+
+void LightPoint_Hardware(xrHardwareLight& LightCaster, CDB::MODEL* RaycastModel, base_color_c& Color, Fvector& Position, Fvector& Normal, base_lighting& Ligtings, u32 flags, Face* skip) {
+	//NEW Scheme:
+	//Get all light count for vertex (from optimizing GSC algorithms)
+	//Send light indexes to device
+	//invoke LightPoint_Hardware (int iteration = 0)
+	//Get result from LightPoint_Hardware. The number that we got - least rays to calc
+	//When number drops to zero - get color
+	//return color
+
+	//PHASE 1: Get all light count for vertex (from optimizing GSC algorithms)
+	xr_vector<int> RGBLightIndexes; RGBLightIndexes.reserve(Ligtings.rgb.size());
+	xr_vector<int> SunLightIndexes; SunLightIndexes.reserve(Ligtings.sun.size());
+	xr_vector<int> HemiLightIndexes; HemiLightIndexes.reserve(Ligtings.hemi.size());
+
+	GetLightsForVertex(Position, Normal, Ligtings, flags, RGBLightIndexes, SunLightIndexes, HemiLightIndexes);
+	//PHASE 2: Send light indexes to device
+
+	//next phase implement as part of xrHardwareLight
+	LightCaster.GetEnergyFromSelectedLight(RGBLightIndexes, SunLightIndexes, HemiLightIndexes);
+	//xr_vector <Hit> Hits;
+	//LightCaster.PerformRaycast(VertexRays, Hits);
+
+	//PHASE 3: Get ray energy
+
+
+}
+
+void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip) {
+	Fvector		Ldir, Pnew;
+	Pnew.mad(P, N, 0.01f);
+
+	BOOL		bUseFaceDisable = flags & LP_UseFaceDisable;
+
+	if (0 == (flags & LP_dont_rgb))
+	{
+		DB->ray_options(0);
+		R_Light* L = &*lights.rgb.begin(), * E = &*lights.rgb.end();
+		for (; L != E; L++)
 		{
 			switch (L->type)
 			{
 			case LT_DIRECT:
-				{
-					// Cos
-					Ldir.invert	(L->direction);
-					float D		= Ldir.dotproduct( N );
-					if( D <=0 ) continue;
+			{
+				// Cos
+				Ldir.invert(L->direction);
+				float D = Ldir.dotproduct(N);
+				if (D <= 0) continue;
 
-					// Trace Light
-					float scale	=	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable);
-					C.rgb.x		+=	scale * L->diffuse.x; 
-					C.rgb.y		+=	scale * L->diffuse.y;
-					C.rgb.z		+=	scale * L->diffuse.z;
-				}
-				break;
+				// Trace Light
+				float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, 1000.f, skip, bUseFaceDisable);
+				C.rgb.x += scale * L->diffuse.x;
+				C.rgb.y += scale * L->diffuse.y;
+				C.rgb.z += scale * L->diffuse.z;
+			}
+			break;
 			case LT_POINT:
+			{
+				// Distance
+				float sqD = P.distance_to_sqr(L->position);
+				if (sqD > L->range2) continue;
+
+				// Dir
+				Ldir.sub(L->position, P);
+				Ldir.normalize_safe();
+				float D = Ldir.dotproduct(N);
+				if (D <= 0)			continue;
+
+				// Trace Light
+				float R = _sqrt(sqD);
+				float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable);
+				float A;
+				if (inlc_global_data()->gl_linear())
+					A = 1 - R / L->range;
+				else
 				{
-					// Distance
-					float sqD	=	P.distance_to_sqr	(L->position);
-					if (sqD > L->range2) continue;
-
-					// Dir
-					Ldir.sub			(L->position,P);
-					Ldir.normalize_safe	();
-					float D				= Ldir.dotproduct( N );
-					if( D <=0 )			continue;
-
-					// Trace Light
-					float R		= _sqrt(sqD);
-					float scale = D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
-					float A		;
-					if ( inlc_global_data()->gl_linear() )
-						A	= 1-R/L->range;
-					else
-					{
-						//	Igor: let A equal 0 at the light boundary
-						A	= scale * 
-							(
-								1/(L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD) - 
-								R*L->falloff
+					//	Igor: let A equal 0 at the light boundary
+					A = scale *
+						(
+							1 / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD) -
+							R * L->falloff
 							);
 
-					}
-
-					C.rgb.x += A * L->diffuse.x;
-					C.rgb.y += A * L->diffuse.y;
-					C.rgb.z += A * L->diffuse.z;
 				}
-				break;
+
+				C.rgb.x += A * L->diffuse.x;
+				C.rgb.y += A * L->diffuse.y;
+				C.rgb.z += A * L->diffuse.z;
+			}
+			break;
 			case LT_SECONDARY:
+			{
+				// Distance
+				float sqD = P.distance_to_sqr(L->position);
+				if (sqD > L->range2) continue;
+
+				// Dir
+				Ldir.sub(L->position, P);
+				Ldir.normalize_safe();
+				float	D = Ldir.dotproduct(N);
+				if (D <= 0) continue;
+				D *= -Ldir.dotproduct(L->direction);
+				if (D <= 0) continue;
+
+				// Jitter + trace light -> monte-carlo method
+				Fvector	Psave = L->position, Pdir;
+				L->position.mad(Pdir.random_dir(L->direction, PI_DIV_4), .05f);
+				float R = _sqrt(sqD);
+				float scale = powf(D, 1.f / 8.f) * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable);
+				float A = scale * (1 - R / L->range);
+				L->position = Psave;
+
+				C.rgb.x += A * L->diffuse.x;
+				C.rgb.y += A * L->diffuse.y;
+				C.rgb.z += A * L->diffuse.z;
+			}
+			break;
+			}
+		}
+	}
+	if (0 == (flags & LP_dont_sun))
+	{
+		DB->ray_options(0);
+		R_Light* L = &*(lights.sun.begin()), * E = &*(lights.sun.end());
+		for (; L != E; L++)
+		{
+			if (L->type == LT_DIRECT) {
+				// Cos
+				Ldir.invert(L->direction);
+				float D = Ldir.dotproduct(N);
+				if (D <= 0) continue;
+
+				// Trace Light
+				float scale = L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, 1000.f, skip, bUseFaceDisable);
+				C.sun += scale;
+			}
+			else {
+				// Distance
+				float sqD = P.distance_to_sqr(L->position);
+				if (sqD > L->range2) continue;
+
+				// Dir
+				Ldir.sub(L->position, P);
+				Ldir.normalize_safe();
+				float D = Ldir.dotproduct(N);
+				if (D <= 0)			continue;
+
+				// Trace Light
+				float R = _sqrt(sqD);
+				float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable);
+				float A = scale / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD);
+
+				C.sun += A;
+			}
+		}
+	}
+	if (0 == (flags & LP_dont_hemi))
+	{
+		R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
+		int DebugIndex = 0;
+		for (; L != E; L++)
+		{
+			if (L->type == LT_DIRECT) {
+				// Cos
+				Ldir.invert(L->direction);
+				float D = Ldir.dotproduct(N);
+
+				// Trace Light
+				Fvector		PMoved;	PMoved.mad(Pnew, Ldir, 0.001f);
+				float scale = L->energy * rayTrace(DB, MDL, *L, PMoved, Ldir, 1000.f, skip, bUseFaceDisable);
+				C.hemi += scale;
+			}
+			else {
+				// Distance
+				float sqD = P.distance_to_sqr(L->position);
+				if (sqD > L->range2)
 				{
-					// Distance
-					float sqD	=	P.distance_to_sqr	(L->position);
-					if (sqD > L->range2) continue;
-
-					// Dir
-					Ldir.sub	(L->position,P);
-					Ldir.normalize_safe();
-					float	D	=	Ldir.dotproduct		( N );
-					if( D <=0 ) continue;
-							D	*=	-Ldir.dotproduct	(L->direction);
-					if( D <=0 ) continue;
-
-					// Jitter + trace light -> monte-carlo method
-					Fvector	Psave	= L->position, Pdir;
-					L->position.mad	(Pdir.random_dir(L->direction,PI_DIV_4),.05f);
-					float R			= _sqrt(sqD);
-					float scale		= powf(D, 1.f/8.f)*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
-					float A			= scale * (1-R/L->range);
-					L->position		= Psave;
-
-					C.rgb.x += A * L->diffuse.x;
-					C.rgb.y += A * L->diffuse.y;
-					C.rgb.z += A * L->diffuse.z;
+					DebugIndex++;
+					continue;
 				}
-				break;
-			}
-		}
-	}
-	if (0==(flags&LP_dont_sun))
-	{
-		DB->ray_options	(0);
-		R_Light	*L		= &*(lights.sun.begin()), *E = &*(lights.sun.end());
-		for (;L!=E; L++)
-		{
-			if (L->type==LT_DIRECT) {
-				// Cos
-				Ldir.invert	(L->direction);
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable);
-				C.sun		+=	scale;
-			} else {
-				// Distance
-				float sqD	=	P.distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
 
 				// Dir
-				Ldir.sub			(L->position,P);
-				Ldir.normalize_safe	();
-				float D				= Ldir.dotproduct( N );
-				if( D <=0 )			continue;
+				Ldir.sub(L->position, P);
+				Ldir.normalize_safe();
+				float D = Ldir.dotproduct(N);
 
 				// Trace Light
-				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
-				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
+				float R = _sqrt(sqD);
+				float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable);
+				float A = scale / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD);
 
-				C.sun		+=	A;
+				C.hemi += A;
 			}
-		}
-	}
-	if (0==(flags&LP_dont_hemi))
-	{
-		R_Light	*L	= &*lights.hemi.begin(), *E = &*lights.hemi.end();
-		for (;L!=E; L++)
-		{
-			if (L->type==LT_DIRECT) {
-				// Cos
-				Ldir.invert	(L->direction);
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				Fvector		PMoved;	PMoved.mad	(Pnew,Ldir,0.001f);
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip,bUseFaceDisable);
-				C.hemi		+=	scale;
-			}else{
-				// Distance
-				float sqD	=	P.distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub			(L->position,P);
-				Ldir.normalize_safe	();
-				float D		=	Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
-				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
-
-				C.hemi		+=	A;
-			}
+			DebugIndex++;
 		}
 	}
 }
@@ -613,58 +948,58 @@ IC u32	rms_diff	(u32 a, u32 b)
 	else		return b-a;
 }
 
-BOOL	__stdcall rms_test	(lm_layer& lm, u32 w, u32 h, u32 rms)
-{
-	if ((w<=1) || (h<=1))	return FALSE;
+BOOL	__stdcall rms_test(lm_layer& lm, u32 w, u32 h, u32 rms) {
+	if ((w <= 1) || (h <= 1))	return FALSE;
 
 	// scale down(lanczos3) and up (bilinear, as video board) //.
-	xr_vector<u32>	pOriginal_base;	lm.Pack					(pOriginal_base);
-	xr_vector<u32>	pScaled_base;	pScaled_base.resize		(w*h);
-	xr_vector<u32>	pRestored_base;	pRestored_base.resize	(lm.width*lm.height);
-	xr_vector<u32>	pOriginal_hemi;	lm.Pack_hemi			(pOriginal_hemi);
-	xr_vector<u32>	pScaled_hemi;	pScaled_hemi.resize		(w*h);
-	xr_vector<u32>	pRestored_hemi;	pRestored_hemi.resize	(lm.width*lm.height);
+	xr_vector<u32>	pOriginal_base;	lm.Pack(pOriginal_base);
+	xr_vector<u32>	pScaled_base;	pScaled_base.resize(w * h);
+	xr_vector<u32>	pRestored_base;	pRestored_base.resize(lm.width * lm.height);
+	xr_vector<u32>	pOriginal_hemi;	lm.Pack_hemi(pOriginal_hemi);
+	xr_vector<u32>	pScaled_hemi;	pScaled_hemi.resize(w * h);
+	xr_vector<u32>	pRestored_hemi;	pRestored_hemi.resize(lm.width * lm.height);
 
-	try{
+	try {
 		// rgb + sun
-		imf_Process	(&*pScaled_base.begin(),	w,			h,			&*pOriginal_base.begin(),	lm.width,lm.height,imf_lanczos3	);
-		imf_Process	(&*pRestored_base.begin(),	lm.width,	lm.height,	&*pScaled_base.begin(),		w,h,imf_filter					);
+		imf_Process(&*pScaled_base.begin(), w, h, &*pOriginal_base.begin(), lm.width, lm.height, imf_lanczos3);
+		imf_Process(&*pRestored_base.begin(), lm.width, lm.height, &*pScaled_base.begin(), w, h, imf_filter);
 		// hemi
 		//.
 		/*
 		if ((lm.width/2>1)&&(lm.height/2>1)){
-			imf_Process	(&*pRestored_hemi.begin(),	lm.width/2,	lm.height/2,&*pOriginal_hemi.begin(),	lm.width,lm.height,		imf_lanczos3	);
-			imf_Process	(&*pOriginal_hemi.begin(),	lm.width,	lm.height,	&*pRestored_hemi.begin(),	lm.width/2,	lm.height/2,imf_filter		);
+		imf_Process	(&*pRestored_hemi.begin(),	lm.width/2,	lm.height/2,&*pOriginal_hemi.begin(),	lm.width,lm.height,		imf_lanczos3	);
+		imf_Process	(&*pOriginal_hemi.begin(),	lm.width,	lm.height,	&*pRestored_hemi.begin(),	lm.width/2,	lm.height/2,imf_filter		);
 		}
 		*/
-		imf_Process	(&*pScaled_hemi.begin(),	w,			h,			&*pOriginal_hemi.begin(),	lm.width,lm.height,imf_lanczos3	);
-		imf_Process	(&*pRestored_hemi.begin(),	lm.width,	lm.height,	&*pScaled_hemi.begin(),		w,h,imf_filter					);
-	}catch (...){
-		clMsg	("* ERROR: imf_Process");
+		imf_Process(&*pScaled_hemi.begin(), w, h, &*pOriginal_hemi.begin(), lm.width, lm.height, imf_lanczos3);
+		imf_Process(&*pRestored_hemi.begin(), lm.width, lm.height, &*pScaled_hemi.begin(), w, h, imf_filter);
+	}
+	catch (...) {
+		clMsg("* ERROR: imf_Process");
 		return	FALSE;
 	}
 
 	// compare them
-	const u32 limit = 254-BORDER;
-	for (u32 y=0; y<lm.height; y++)
+	const u32 limit = 254 - BORDER;
+	for (u32 y = 0; y < lm.height; y++)
 	{
-		u32		offset			= y*lm.width;
-		u8*		scan_mark		= (u8*)	&*(lm.marker.begin()+offset);		//.
-		u32*	scan_lmap_base	= (u32*)&*(pOriginal_base.begin()+offset);	
-		u32*	scan_rest_base	= (u32*)&*(pRestored_base.begin()+offset);	
-		u32*	scan_lmap_hemi	= (u32*)&*(pOriginal_hemi.begin()+offset);	
-		u32*	scan_rest_hemi	= (u32*)&*(pRestored_hemi.begin()+offset);	
-		for (u32 x=0; x<lm.width; x++){
-			if (scan_mark[x]>=limit){
-				u32 pixel_base		= scan_lmap_base[x];
-				u32 pixel_r_base	= scan_rest_base[x];
-				u32 pixel_hemi		= scan_lmap_hemi[x];
-				u32 pixel_r_hemi	= scan_rest_hemi[x];
-				if (rms_diff(color_get_R(pixel_r_base),color_get_R(pixel_base))>rms)			return FALSE;
-				if (rms_diff(color_get_G(pixel_r_base),color_get_G(pixel_base))>rms)			return FALSE;
-				if (rms_diff(color_get_B(pixel_r_base),color_get_B(pixel_base))>rms)			return FALSE;
-				if (rms_diff(color_get_A(pixel_r_base),color_get_A(pixel_base))>rms)			return FALSE;
-				if (rms_diff(color_get_R(pixel_r_hemi),color_get_R(pixel_hemi))>((rms*4)/3))	return FALSE;
+		u32		offset = y * lm.width;
+		u8* scan_mark = (u8*)&*(lm.marker.begin() + offset);		//.
+		u32* scan_lmap_base = (u32*)&*(pOriginal_base.begin() + offset);
+		u32* scan_rest_base = (u32*)&*(pRestored_base.begin() + offset);
+		u32* scan_lmap_hemi = (u32*)&*(pOriginal_hemi.begin() + offset);
+		u32* scan_rest_hemi = (u32*)&*(pRestored_hemi.begin() + offset);
+		for (u32 x = 0; x < lm.width; x++) {
+			if (scan_mark[x] >= limit) {
+				u32 pixel_base = scan_lmap_base[x];
+				u32 pixel_r_base = scan_rest_base[x];
+				u32 pixel_hemi = scan_lmap_hemi[x];
+				u32 pixel_r_hemi = scan_rest_hemi[x];
+				if (rms_diff(color_get_R(pixel_r_base), color_get_R(pixel_base)) > rms)			return FALSE;
+				if (rms_diff(color_get_G(pixel_r_base), color_get_G(pixel_base)) > rms)			return FALSE;
+				if (rms_diff(color_get_B(pixel_r_base), color_get_B(pixel_base)) > rms)			return FALSE;
+				if (rms_diff(color_get_A(pixel_r_base), color_get_A(pixel_base)) > rms)			return FALSE;
+				if (rms_diff(color_get_R(pixel_r_hemi), color_get_R(pixel_hemi)) > ((rms * 4) / 3))	return FALSE;
 			}
 		}
 	}
@@ -715,182 +1050,186 @@ u32	__stdcall rms_average	(lm_layer& lm, base_color_c& C)
 }
 
 
-BOOL	compress_Zero		(lm_layer& lm, u32 rms)
-{
+BOOL compress_Zero(lm_layer& lm, u32 rms) {
 	// Average color
 	base_color_c	_c;
-	u32				_count	= rms_average(lm,_c);
+	u32				_count = rms_average(lm, _c);
 
-	if (0==_count)	{
-		clMsg	("* ERROR: Lightmap not calculated (T:%d)");
+	if (0 == _count) {
+		clMsg("* ERROR: Lightmap not calculated (T:%d)");
 		return	FALSE;
-	} else		_c.scale(_count);
+	}
+	else		_c.scale(_count);
 
 	// Compress if needed
-	u8	_r	= u8_clr	(_c.rgb.x	); //.
-	u8	_g	= u8_clr	(_c.rgb.y	);
-	u8	_b	= u8_clr	(_c.rgb.z	);
-	u8	_s	= u8_clr	(_c.sun		);
-	u8	_h	= u8_clr	(_c.hemi	);
-	if (rms_test(lm,_r,_g,_b,_s,_h,rms))
+	u8	_r = u8_clr(_c.rgb.x); //.
+	u8	_g = u8_clr(_c.rgb.y);
+	u8	_b = u8_clr(_c.rgb.z);
+	u8	_s = u8_clr(_c.sun);
+	u8	_h = u8_clr(_c.hemi);
+	if (rms_test(lm, _r, _g, _b, _s, _h, rms))
 	{
-		u32		c_x			= BORDER*2;
-		u32		c_y			= BORDER*2;
+		u32		c_x = BORDER * 2;
+		u32		c_y = BORDER * 2;
 		base_color ccc;		ccc._set(_c);
-		lm.surface.assign	(c_x*c_y,ccc);
-		lm.marker.assign	(c_x*c_y,255);
-		lm.height			= 0;
-		lm.width			= 0;
+		lm.surface.assign(c_x * c_y, ccc);
+		lm.marker.assign(c_x * c_y, 255);
+		lm.height = 0;
+		lm.width = 0;
 		return TRUE;
 	}
 	return FALSE;
 }
 
-BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
-{
+BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h) {
 	// *** Try to bilinearly filter lightmap down and up
-	w=0, h=0;
-	if (lm.width>=2)	{
-		w = lm.width/2;
-		if (!rms_test(lm,w,lm.height,rms))	{
+	w = 0, h = 0;
+	if (lm.width >= 2) {
+		w = lm.width / 2;
+		if (!rms_test(lm, w, lm.height, rms)) {
 			// 3/4
-			w = (lm.width*3)/4;
-			if (!rms_test(lm,w,lm.height,rms))	w = 0;
-		} else {
+			w = (lm.width * 3) / 4;
+			if (!rms_test(lm, w, lm.height, rms))	w = 0;
+		}
+		else {
 			// 1/4
-			u32 nw = (lm.width*1)/4;
-			if (rms_test(lm,nw,lm.height,rms))	w = nw;
+			u32 nw = (lm.width * 1) / 4;
+			if (rms_test(lm, nw, lm.height, rms))	w = nw;
 		}
 	}
-	if (lm.height>=2)	{
-		h = lm.height/2;
-		if (!rms_test(lm,lm.width,h,rms))		{
+	if (lm.height >= 2) {
+		h = lm.height / 2;
+		if (!rms_test(lm, lm.width, h, rms)) {
 			// 3/4
-			h = (lm.height*3)/4;
-			if (!rms_test(lm,lm.width,h,rms))		h = 0;
-		} else {
+			h = (lm.height * 3) / 4;
+			if (!rms_test(lm, lm.width, h, rms))		h = 0;
+		}
+		else {
 			// 1/4
-			u32 nh = (lm.height*1)/4;
-			if (rms_test(lm,lm.width,nh,rms))		h = nh;
+			u32 nh = (lm.height * 1) / 4;
+			if (rms_test(lm, lm.width, nh, rms))		h = nh;
 		}
 	}
-	if (w || h)	{
-		if (0==w)	w = lm.width;
-		if (0==h)	h = lm.height;
+	if (w || h) {
+		if (0 == w)	w = lm.width;
+		if (0 == h)	h = lm.height;
 		//		clMsg	("* RMS: [%d,%d] => [%d,%d]",lm.width,lm.height,w,h);
 		return TRUE;
 	}
 	return FALSE;
 }
 
-
-
-void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
-{
+void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H) {
 	// Geometrical bounds
-	Fbox bb;		bb.invalidate	();
+	Fbox bb;		bb.invalidate();
 	try {
-		for (u32 fid=0; fid<UVpolys.size(); fid++)
+		for (u32 fid = 0; fid < UVpolys.size(); fid++)
 		{
-			Face*	F		= UVpolys[fid].owner;
-			for (int i=0; i<3; i++)	bb.modify(F->v[i]->P);
+			Face* F = UVpolys[fid].owner;
+			for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
 		}
-		bb.getsphere(Sphere.P,Sphere.R);
-	} catch (...)
+		bb.getsphere(Sphere.P, Sphere.R);
+	}
+	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - sphere calc");
 	}
 
-	// Convert lights to local form
-	LightsSelected->select(inlc_global_data()->L_static(),Sphere.P,Sphere.R);
+
+	//#INFO: we must use this information, because too many rays. And we count every ray count on batchering mode
+	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 
 	// Calculate and fill borders
-	L_Calculate			(DB,LightsSelected,H);
-	if(_net_session && !_net_session->test_connection())
-			 return;
-	for (u32 ref=254; ref>0; ref--) if (!ApplyBorders(layer,ref)) break;
+	L_Calculate(DB, LightsSelected, H);
+	if (_net_session && !_net_session->test_connection())
+		return;
+	for (u32 ref = 254; ref > 0; ref--) if (!ApplyBorders(layer, ref)) break;
 
 	// Compression
 	try {
-		u32	w,h;
-		if (compress_Zero(layer,rms_zero))	return;		// already with borders
-		else if (compress_RMS(layer,rms_shrink,w,h))	
+		u32	w, h;
+		if (compress_Zero(layer, rms_zero))	return;		// already with borders
+		else if (compress_RMS(layer, rms_shrink, w, h))
 		{
 			// Reacalculate lightmap at lower resolution
-			layer.create	(w,h);
-			L_Calculate		(DB,LightsSelected,H);
-			if(_net_session && !_net_session->test_connection())
-			 return;
+			layer.create(w, h);
+			L_Calculate(DB, LightsSelected, H);
+			if (_net_session && !_net_session->test_connection())
+				return;
 		}
-	} catch (...)
+	}
+	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - Compression");
 	}
 
 	// Expand with borders
 	try {
-		if (layer.width==1)	
+		if (layer.width == 1)
 		{
 			// Horizontal ZERO - vertical line
 			lm_layer		T;
-			T.create		(2*BORDER,layer.height+2*BORDER);
+			T.create(2 * BORDER, layer.height + 2 * BORDER);
 
 			// Transfer
-			for (u32 y=0; y<T.height; y++)
+			for (u32 y = 0; y < T.height; y++)
 			{
-				int			py		= int(y)-BORDER;
-				clamp				(py,0,int(layer.height-1));
-				base_color	C		= layer.surface[py];
-				T.surface[y*2+0]	= C; 
-				T.marker [y*2+0]	= 255;
-				T.surface[y*2+1]	= C;
-				T.marker [y*2+1]	= 255;
+				int			py = int(y) - BORDER;
+				clamp(py, 0, int(layer.height - 1));
+				base_color	C = layer.surface[py];
+				T.surface[y * 2 + 0] = C;
+				T.marker[y * 2 + 0] = 255;
+				T.surface[y * 2 + 1] = C;
+				T.marker[y * 2 + 1] = 255;
 			}
 
 			// Exchange
-			T.width			= 0;
-			T.height		= layer.height;
-			layer			= T;
-		} else if (layer.height==1) 
+			T.width = 0;
+			T.height = layer.height;
+			layer = T;
+		}
+		else if (layer.height == 1)
 		{
 			// Vertical ZERO - horizontal line
 			lm_layer		T;
-			T.create		(layer.width+2*BORDER, 2*BORDER);
+			T.create(layer.width + 2 * BORDER, 2 * BORDER);
 
 			// Transfer
-			for (u32 x=0; x<T.width; x++)
+			for (u32 x = 0; x < T.width; x++)
 			{
-				int			px			= int(x)-BORDER;
-				clamp					(px,0,int(layer.width-1));
-				base_color	C			= layer.surface[px];
-				T.surface	[0*T.width+x]	= C;
-				T.marker	[0*T.width+x]	= 255;
-				T.surface	[1*T.width+x]	= C;
-				T.marker	[1*T.width+x]	= 255;
+				int			px = int(x) - BORDER;
+				clamp(px, 0, int(layer.width - 1));
+				base_color	C = layer.surface[px];
+				T.surface[0 * T.width + x] = C;
+				T.marker[0 * T.width + x] = 255;
+				T.surface[1 * T.width + x] = C;
+				T.marker[1 * T.width + x] = 255;
 			}
 
 			// Exchange
-			T.width			= layer.width;
-			T.height		= 0;
-			layer			= T;
-		} else {
-			// Generic blit
-			lm_layer		lm_old	= layer;
-			lm_layer		lm_new;
-			lm_new.create			(lm_old.width+2*BORDER,lm_old.height+2*BORDER);
-			lblit					(lm_new,lm_old,BORDER,BORDER,255-BORDER);
-			layer					= lm_new;
-			ApplyBorders			(layer,254);
-			ApplyBorders			(layer,253);
-			ApplyBorders			(layer,252);
-			ApplyBorders			(layer,251);
-			for	(u32 ref=250; ref>0; ref--) if (!ApplyBorders(layer,ref)) break;
-			layer.width				= lm_old.width;
-			layer.height			= lm_old.height;
+			T.width = layer.width;
+			T.height = 0;
+			layer = T;
 		}
-	} catch (...)
+		else {
+			// Generic blit
+			lm_layer		lm_old = layer;
+			lm_layer		lm_new;
+			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
+			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
+			layer = lm_new;
+			ApplyBorders(layer, 254);
+			ApplyBorders(layer, 253);
+			ApplyBorders(layer, 252);
+			ApplyBorders(layer, 251);
+			for (u32 ref = 250; ref > 0; ref--) if (!ApplyBorders(layer, ref)) break;
+			layer.width = lm_old.width;
+			layer.height = lm_old.height;
+		}
+	}
+	catch (...)
 	{
-		
+
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
 
 	}

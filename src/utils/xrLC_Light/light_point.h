@@ -9,5 +9,13 @@ enum
 	LP_dont_sun			= (1<<3),
 };
 
+enum LightSource
+{
+	LS_UNKNOWN,
+	LS_RGB,
+	LS_SUN,
+	LS_HEMI
+};
+
 
 //XRCL_LIGHT_API void  LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);

@@ -56,6 +56,8 @@ void Startup(LPSTR     lpCmdLine)
 	_strlwr(cmd);
 	if (strstr(cmd,"-?") || strstr(cmd,"-h"))			{ Help(); return; }
 	if (strstr(cmd,"-f")==0)							{ Help(); return; }
+
+	if (strstr(cmd, "-cuda")) 							g_build_options.b_optix_accel = true;
 	if (strstr(cmd,"-o"))								bModifyOptions	= TRUE;
 	if (strstr(cmd,"-gi"))								g_build_options.b_radiosity		= TRUE;
 	if (strstr(cmd,"-noise"))							g_build_options.b_noise			= TRUE;
@@ -130,7 +132,7 @@ void Startup(LPSTR     lpCmdLine)
 	
 	// Conversion
 	Phase					("Converting data structures...");
-	pBuild					= xr_new<CBuild>();
+	pBuild					= new CBuild();
 	pBuild->Load			(Params,*F);
 	FS.r_close				(F);
 	

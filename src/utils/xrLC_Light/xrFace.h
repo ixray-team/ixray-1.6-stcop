@@ -35,8 +35,8 @@ public:
 virtual	void		read	(INetReader	&r );
 virtual	void		write	(IWriter	&w )const;
 
-	DataVertex				(){};
-	virtual		~DataVertex				(){};
+	DataVertex				() = default;
+	virtual		~DataVertex				() = default;
 };
 
 typedef	 Tface<DataVertex>  Face;
