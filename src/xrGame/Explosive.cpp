@@ -561,6 +561,10 @@ void CExplosive::OnEvent(NET_Packet& P, u16 type)
 {
 	switch (type) {
 		case GE_GRENADE_EXPLODE : {
+			if (m_explosion_flags.test(flExploding)) {
+				break;
+			}
+
 			Fvector pos, normal;
 			u16 parent_id;
 			P.r_u16(parent_id);
