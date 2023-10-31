@@ -41,10 +41,12 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	if(hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
 
 	if (Remote())		return;
-
 	if (IsTalking())	return;
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
-	
+	if (load_screen_renderer.IsActive()) {
+		return;
+	}
+
 	switch (cmd)
 	{
 	case kWPN_FIRE:
@@ -421,7 +423,7 @@ void CActor::ActorUse()
 					TryToTalk();
 				}else
 				{
-					//только если находимся в режиме single
+					//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 					if ( pGameSP )
 					{
