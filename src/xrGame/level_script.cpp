@@ -757,6 +757,10 @@ CUISequencer* g_tutorial2 = NULL;
 
 void start_tutorial(LPCSTR name)
 {
+	if (load_screen_renderer.IsActive()) {
+		return;
+	}
+
 	if(g_tutorial){
 		VERIFY				(!g_tutorial2);
 		g_tutorial2			= g_tutorial;
