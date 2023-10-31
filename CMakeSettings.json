@@ -1,0 +1,216 @@
+﻿{
+    "configurations": [
+        {
+            "name": "Engine-x86-Debug",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}"
+        },
+        {
+            "name": "Engine-x86-Release",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}"
+        },
+        {
+            "name": "Engine-x64-Debug",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}"
+        },
+        {
+            "name": "Engine-x64-Release",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}"
+        },
+        {
+            "name": "Server-x86-Debug",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Server-x86-Release",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Server-x64-Debug",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Server-x64-Release",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Utilities-x86-Debug",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Utilities-x86-Release",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Utilities-x64-Debug",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Utilities-x64-Release",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Compressor-x86-Debug",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Compressor-x86-Release",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Compressor-x64-Debug",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Compressor-x64-Release",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "installRoot": "${projectDir}\\install\\${name}",
+            "variables": [
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        }
+    ]
+}
