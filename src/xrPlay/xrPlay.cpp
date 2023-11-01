@@ -46,7 +46,6 @@ void CreateGameWindow() {
 			0, hInstance, 0L);
 	}
 }
-
 int APIENTRY WinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	char* lpCmdLine,
@@ -115,6 +114,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		CCC_LoadCFG_custom* pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
 		pTmp->Execute(Console->ConfigFile);
 		xr_delete(pTmp);
+		// В любом случае надо вызывать команду CCC_R2
+		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
 	}
 	Engine.External.Initialize();
 
