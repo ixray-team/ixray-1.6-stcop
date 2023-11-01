@@ -122,6 +122,8 @@ struct ECORE_API	R_constant			:public xr_resource
 		case RC_dest_compute:
 			return cs;
 #endif
+		case RC_dest_sampler:
+			return samp;
 		default:
 			FATAL("invalid enumeration for shader");
 		}
