@@ -58,7 +58,11 @@ MotionID CStalkerAnimationManager::global_critical_hit		()
 		)
 	);
 
-	u32							animation_slot = weapon->animation_slot();
+	u32 animation_slot = 1;
+
+	if (weapon)
+		animation_slot = weapon->animation_slot();
+
 	VERIFY						(animation_slot >= 1);
 	VERIFY						(animation_slot <= 3);
 
