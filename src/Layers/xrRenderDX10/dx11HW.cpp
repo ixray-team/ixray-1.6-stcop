@@ -273,25 +273,8 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	sd.OutputWindow = m_hWnd;
 	sd.Windowed = bWindowed;
 
-	// Depth/stencil
-	// DX10 don't need this?
-	//P.EnableAutoDepthStencil= TRUE;
-	//P.AutoDepthStencilFormat= fDepth;
-	//P.Flags					= 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
-
-	// Refresh rate
-	//P.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
-	//if( !bWindowed )		P.FullScreen_RefreshRateInHz	= selectRefresh	(P.BackBufferWidth, P.BackBufferHeight,fTarget);
-	//else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
-	if (bWindowed)
-	{
-		sd.BufferDesc.RefreshRate.Numerator = 60;
-		sd.BufferDesc.RefreshRate.Denominator = 1;
-	}
-	else
-	{
-		sd.BufferDesc.RefreshRate = selectRefresh( sd.BufferDesc.Width, sd.BufferDesc.Height, sd.BufferDesc.Format);
-	}
+	sd.BufferDesc.RefreshRate =
+		selectRefresh(sd.BufferDesc.Width, sd.BufferDesc.Height, sd.BufferDesc.Format);
 
 	//	Additional set up
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -456,13 +439,7 @@ void CHW::Reset (HWND hwnd)
 
 	selectResolution(desc.Width, desc.Height, bWindowed);
 
-	if (bWindowed)
-	{
-		desc.RefreshRate.Numerator = 60;
-		desc.RefreshRate.Denominator = 1;
-	}
-	else
-		desc.RefreshRate = selectRefresh( desc.Width, desc.Height, desc.Format);
+	desc.RefreshRate = selectRefresh(desc.Width, desc.Height, desc.Format);
 
 	CHK_DX(m_pSwapChain->ResizeTarget(&desc));
 
@@ -619,58 +596,12 @@ u32 CHW::selectGPU ()
 */
 DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 {
-	DXGI_RATIONAL	res;
-
-	res.Numerator = 60;
-	res.Denominator = 1;
-
-	float	CurrentFreq = 60.0f;
-
-	if (psDeviceFlags.is(rsRefresh60hz))	
-	{
-		return res;
-	}
-	else
-	{
-		xr_vector<DXGI_MODE_DESC>	modes;
-
-		IDXGIOutput *pOutput;
-		m_pAdapter->EnumOutputs(0, &pOutput);
-		VERIFY(pOutput);
-
-		UINT num = 0;
-		DXGI_FORMAT format = fmt;
-		UINT flags = DXGI_ENUM_MODES_INTERLACED;
-
-		// Get the number of display modes available
-		pOutput->GetDisplayModeList( format, flags, &num, 0);
-
-		// Get the list of display modes
-		modes.resize(num);
-		pOutput->GetDisplayModeList( format, flags, &num, &modes.front());
-
-		_RELEASE(pOutput);
-
-		for (u32 i=0; i<num; ++i)
-		{
-			DXGI_MODE_DESC &desc = modes[i];
-
-			if( (desc.Width == dwWidth) 
-				&& (desc.Height == dwHeight)
-				)
-			{
-				VERIFY(desc.RefreshRate.Denominator);
-				float TempFreq = float(desc.RefreshRate.Numerator)/float(desc.RefreshRate.Denominator);
-				if ( TempFreq > CurrentFreq )
-				{
-					CurrentFreq = TempFreq;
-					res = desc.RefreshRate;
-				}
-			}
-		}
-
-		return res;
-	}
+	// utak3r: when resizing target, let DXGI calculate the refresh rate for itself.
+	// This is very important for performance, this value is correct.
+	DXGI_RATIONAL refresh;
+	refresh.Numerator = 0;
+	refresh.Denominator = 1;
+	return refresh;
 }
 
 void CHW::OnAppActivate()
