@@ -566,7 +566,7 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 		}
 		else
 		{
-			Log("! Command disabled.");
+			Log("! Command disabled.", first);
 		}
 	}
 	else
