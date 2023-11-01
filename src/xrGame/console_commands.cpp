@@ -376,14 +376,17 @@ public:
 
 	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		//if (!IsGameTypeSingle()) 
-		//{
-		//	Msg("For this game type Demo Record is disabled.");
-		//	return;
-		//};
-		#endif
+		if (!g_pGameLevel) // level not loaded
+		{
+			Msg("! Demo Record is disabled when level is not loaded.");
+			return;
+		}
+
 		Console->Hide	();
+
+		// close main menu if it is open
+		if (MainMenu()->IsActive())
+			MainMenu()->Activate(false);
 
 		LPSTR			fn_; 
 		STRCONCAT		(fn_, args, ".xrdemo");
@@ -401,13 +404,6 @@ public:
 
 	CCC_DemoRecordSetPos(LPCSTR N) : CCC_Vector3( N, &p, Fvector().set( -FLT_MAX, -FLT_MAX, -FLT_MAX ),Fvector().set( FLT_MAX, FLT_MAX, FLT_MAX ) ) {};
 	virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		//if (!IsGameTypeSingle()) 
-		//{
-		//	Msg("For this game type Demo Record is disabled.");
-		//	return;
-		//};
-		#endif
 		CDemoRecord::GetGlobalPosition( p );
 		CCC_Vector3::Execute(args);
 		CDemoRecord::SetGlobalPosition( p );
@@ -424,13 +420,6 @@ public:
 	  IConsole_Command(N) 
 	  { bEmptyArgsHandled = TRUE; };
 	  virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		//if (!IsGameTypeSingle()) 
-		//{
-		//	Msg("For this game type Demo Play is disabled.");
-		//	return;
-		//};
-		#endif
 		  if (0==g_pGameLevel)
 		  {
 			  Msg	("! There are no level(s) started");
