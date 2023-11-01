@@ -403,6 +403,7 @@ player_hud::player_hud()
 	m_attached_items[0]		= NULL;
 	m_attached_items[1]		= NULL;
 	m_transform.identity	();
+	m_transformL.identity	();
 }
 
 
@@ -435,6 +436,9 @@ void player_hud::load(const shared_str& player_hud_sect)
 	m_sect_name					= player_hud_sect;
 	const shared_str& model_name= pSettings->r_string(player_hud_sect, "visual");
 	m_model						= smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+
+	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, LeftArmCallback, this);
 
 	CInifile::Sect& _sect		= pSettings->r_section(player_hud_sect);
 	CInifile::SectCIt _b		= _sect.Data.begin();
@@ -561,6 +565,17 @@ const Fvector& player_hud::attach_pos() const {
 	}
 }
 
+void player_hud::LeftArmCallback(CBoneInstance* B)
+{
+	player_hud* PlayerHud = static_cast<player_hud*>(B->callback_param());
+
+	Fmatrix inv_main_trans;
+	inv_main_trans.invert(PlayerHud->m_transform_fake);
+
+	B->mTransform.mulA_44(PlayerHud->m_transformL_fake);
+	B->mTransform.mulA_44(inv_main_trans);
+}
+
 void player_hud::update(const Fmatrix& cam_trans)
 {
 	Fmatrix	trans					= cam_trans;
@@ -572,11 +587,27 @@ void player_hud::update(const Fmatrix& cam_trans)
 	m_attach_offset.setHPB			(ypr.x,ypr.y,ypr.z);
 	m_attach_offset.translate_over	(attach_pos());
 	m_transform.mul					(trans, m_attach_offset);
-	// insert inertion here
 
-	m_model->UpdateTracks				();
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
-	m_model->dcast_PKinematics()->CalculateBones				(TRUE);
+	// insert inertion here
+	if (m_attached_items[1]) 
+	{
+		ypr = m_attached_items[1]->hands_attach_rot();
+		ypr.mul(PI / 180.f);
+		m_attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
+		m_attach_offset.translate_over(m_attached_items[1]->hands_attach_pos());
+		m_transformL.mul(trans, m_attach_offset);
+	}
+
+	if (!m_attached_items[1]) 
+	{
+		m_transformL.set(m_transform);
+	}
+
+	m_transform_fake = m_transform;
+	m_transformL_fake = m_transformL;
+	m_model->UpdateTracks();
+	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+	m_model->dcast_PKinematics()->CalculateBones(TRUE);
 
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
@@ -613,7 +644,7 @@ void player_hud::update_additional	(Fmatrix& trans)
 		m_attached_items[0]->update_hud_additional(trans);
 
 	if(m_attached_items[1])
-		m_attached_items[1]->update_hud_additional(trans);
+		m_attached_items[1]->update_hud_additional(m_transformL);
 }
 
 void player_hud::update_inertion(Fmatrix& trans)
