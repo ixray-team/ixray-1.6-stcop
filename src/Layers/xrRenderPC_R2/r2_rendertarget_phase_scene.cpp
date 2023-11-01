@@ -8,6 +8,10 @@ void	CRenderTarget::phase_scene_prepare	()
 	//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	//	Igor: soft particles
 
+	// we need to clean up G-buffer every frame to avoid some glithces
+	u_setrt(rt_Position, rt_Normal, rt_Color, 0);
+	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, 0x0, 1.0f, 0L));
+
 	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 	float fValue = E.m_fSunShaftsIntensity;
 	//	TODO: add multiplication by sun color here
