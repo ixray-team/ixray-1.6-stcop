@@ -88,7 +88,7 @@ static int mtlChannelNameIDS[] = {
 static int mtlStdIDToChannel[N_ID_CHANNELS] = { -1, -1, -1, -1, -1,	-1,   -1, -1, 0, 1, 2, 3  };
 
 // internal non-local parsable channel map names
-static TCHAR* mtlChannelInternalNames[STD2_NMAX_TEXMAPS] = {
+static const TCHAR* mtlChannelInternalNames[STD2_NMAX_TEXMAPS] = {
 	_T("bumpMap"), _T("reflectionMap"), _T("refractionMap"), _T("displacementMap"),
 		_T(""),	_T(""),	_T(""),	_T(""),
 
@@ -1257,7 +1257,7 @@ XRayMtl::XRayMtl(BOOL loading) : mReshadeRQ(RR_None), mInRQ(RR_None) // mjm - 06
 	for ( int i = 0; i < 12; ++i )
 		stdIDToChannel[i] = -1;
 
-	for ( i = 0; i < STD2_NMAX_TEXMAPS; ++i )
+	for (int i = 0; i < STD2_NMAX_TEXMAPS; ++i )
 		channelTypes[i] = UNSUPPORTED_CHANNEL;
 
 	ivalid.SetEmpty();
@@ -1330,7 +1330,7 @@ RefTargetHandle XRayMtl::Clone(RemapDir &remap) {
 	for ( int i = 0; i < 12; ++i )
 		mnew->stdIDToChannel[i] = stdIDToChannel[i];
 
-	for ( i = 0; i < STD2_NMAX_TEXMAPS; ++i )
+	for (int i = 0; i < STD2_NMAX_TEXMAPS; ++i )
 		mnew->channelTypes[i] = channelTypes[i];
 	macroRecorder->Enable();
 	BaseClone(this, mnew, remap);
@@ -1970,7 +1970,7 @@ void XRayMtl::UpdateTexmaps()
 	}
 
 	// last do the Channel Ids from stdMat
-	for ( i = 0; i < N_ID_CHANNELS; ++i ){
+	for (int i = 0; i < N_ID_CHANNELS; ++i ){
 		int chan = pShader->StdIDToChannel(i);
 		if ( chan >= 0 ) {
 			stdIDToChannel[i] = chan;
@@ -2004,7 +2004,7 @@ void XRayMtl::UpdateTexmaps()
 
 }
 
-static TCHAR* mapStates[] = { _T(" "), _T("m"),  _T("M") };
+static const TCHAR* mapStates[] = { _T(" "), _T("m"),  _T("M") };
 
 void XRayMtl::UpdateMapButtons() 
 {
@@ -2271,7 +2271,7 @@ void XRayMtl::ShuffleTexMaps( Shader* newShader, Shader* oldShader )
 	}// end, for each new map
 
 	// now do the mtl maps
-	for ( int n = 0; n < MTL_NTEXMAPS; ++n ){
+	for ( int n = 0, oldChan, newChan = 0; n < MTL_NTEXMAPS; ++n ){
 		newChan = n + nNewShadeMaps;
 		oldChan = n + nOldShadeMaps;
 		maps->txmap[newChan].amtCtrl = oldMaps[oldChan].amtCtrl; 
@@ -2732,15 +2732,18 @@ void XRayMtl::SetTexmapAmt(int imap, float amt, TimeValue t) {
 // shaders
 void XRayMtl::SetShaderIndx( long indx, BOOL update ) 
 {
-	if( !update ) shaderId = NO_UPDATE; 
-	pb_shader->SetValue(std2_shader_type, 0, indx<0 ? 0 : indx );
+	if( !update ) shaderId = NO_UPDATE;
+	int ValToSet = indx < 0 ? 0 : indx;
+	pb_shader->SetValue(std2_shader_type, 0, ValToSet);
 	shaderId = indx; 
 }
 
 void XRayMtl::SetSamplerIndx( long indx, BOOL update )
 {
 	if( !update ) samplerId = NO_UPDATE;
-	pb_sampling->SetValue(std2_ssampler, 0, indx<0 ? 0 : indx );
+
+	int ValToSet = indx < 0 ? 0 : indx;
+	pb_sampling->SetValue(std2_ssampler, 0, ValToSet);
 	samplerId = indx; 
 }
 
@@ -2949,7 +2952,7 @@ default:
 }
 
 // returns the index of the shader in the list
-int XRayMtl::FindShader( Class_ID& findId, ClassDesc** ppCD )
+int XRayMtl::FindShader(const Class_ID& findId, ClassDesc** ppCD )
 {
 	for (int i = 0; i < XRayMtl::NumShaders(); i++) {
 		ClassDesc* pCD = XRayMtl::GetShaderCD(i);
@@ -3757,7 +3760,7 @@ IllumParams* CloneIp( IllumParams& ip )
 	pClone->refractAmt = ip.refractAmt;
 	pClone->reflectAmt = ip.reflectAmt;
 
-	for( i=0; i < STD2_NMAX_TEXMAPS; ++i )
+	for(int i=0; i < STD2_NMAX_TEXMAPS; ++i )
 		pClone->channels[ i ] = ip.channels[ i ];
 
 	return pClone;
@@ -4151,7 +4154,7 @@ void XRayMtl::SetupGfxMultiMaps(TimeValue t, Material *mtl, MtlMakerCallback &cb
 	mtl->texture.setLengthUsed(nmaps);
 	if (nmaps==0) 
 		return;
-	for (i=0; i<nmaps; i++)
+	for (int i=0; i<nmaps; i++)
 		mtl->texture[i].textHandle = NULL;
 	texHandleValid.SetInfinite();
 	Interval  valid;
@@ -4691,17 +4694,20 @@ void XRayMtl::UnloadXRayShaderList()
 
 void XRayMtl::SetEShaderIndx( long indx ) 
 {
-	pb_xray->SetValue(std2_eshader_type, 0, indx<0 ? 0 : indx );
+	int ValToSet = indx < 0 ? 0 : indx;
+	pb_xray->SetValue(std2_eshader_type, 0, ValToSet);
 	eshaderId = indx; 
 }
 void XRayMtl::SetCShaderIndx( long indx ) 
 {
-	pb_xray->SetValue(std2_cshader_type, 0, indx<0 ? 0 : indx );
+	int ValToSet = indx < 0 ? 0 : indx;
+	pb_xray->SetValue(std2_cshader_type, 0, ValToSet);
 	cshaderId = indx; 
 }
 void XRayMtl::SetGameMtlIndx( long indx ) 
 {
-	pb_xray->SetValue(std2_gamemtl_type, 0, indx<0 ? 0 : indx );
+	int ValToSet = indx < 0 ? 0 : indx;
+	pb_xray->SetValue(std2_gamemtl_type, 0, ValToSet);
 	gamemtlId = indx; 
 }
 LPCSTR	XRayMtl::GetEShader	(DWORD i)
