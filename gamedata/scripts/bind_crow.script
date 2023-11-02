@@ -53,16 +53,26 @@ end
 -- Net destroy
 function crow_binder:net_destroy()
     self.object:set_callback(callback.death, nil)
-    bind_crow.crow_storage[self.object:id()] = nil
-	bind_crow.crow_counter = bind_crow.crow_counter - 1
+    if (bind_crow.crow_storage[self.object:id()] ~= nil) then --*Crow FIX*
+        bind_crow.crow_storage[self.object:id()] = nil
+        bind_crow.crow_counter = bind_crow.crow_counter - 1
+        if (bind_crow.crow_counter < 0) then --*Crow FIX*
+            bind_crow.crow_counter = 0 --*Crow FIX*
+        end --*Crow FIX*
+    end --*Crow FIX*
     db.del_obj(self.object)
     object_binder.net_destroy(self)
 end
 -- Crow death callback
 function crow_binder:death_callback(victim, who)
     self.body_timer = time_global()
-    bind_crow.crow_storage[self.object:id()] = nil
-	bind_crow.crow_counter = bind_crow.crow_counter - 1
+    if (bind_crow.crow_storage[self.object:id()] ~= nil) then --*Crow FIX*
+        bind_crow.crow_storage[self.object:id()] = nil
+        bind_crow.crow_counter = bind_crow.crow_counter - 1
+        if (bind_crow.crow_counter < 0) then --*Crow FIX*
+            bind_crow.crow_counter = 0 --*Crow FIX*
+        end --*Crow FIX*
+    end --*Crow FIX*
 end
 -- Standart function for save
 function crow_binder:net_save_relevant()
