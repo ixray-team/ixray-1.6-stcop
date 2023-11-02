@@ -1,4 +1,5 @@
 set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/sdk-3dsdk-3dsmax.zip)
+set(IXRAY_FOLDER_PLUGIN FOLDER "Plugin")
 
 if (IXRAY_PLUGIN_MAX)
     if (NOT EXISTS ${IXR_3DS_MAX_SDK})
@@ -20,4 +21,7 @@ if (IXRAY_PLUGIN_MAX)
 
     add_subdirectory("Max/Material")
     #add_subdirectory("Max/Export")
+
+    set_target_properties(xrMax_Materials PROPERTIES ${IXRAY_FOLDER_PLUGIN})
+    #set_target_properties(xrMax_Export PROPERTIES ${IXRAY_FOLDER_PLUGIN})
 endif()
