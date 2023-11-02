@@ -1,9 +1,6 @@
 //----------------------------------------------------
 // file: stdafx.h
 //----------------------------------------------------
-#ifndef __INCDEF_STDAFX_H_
-#define __INCDEF_STDAFX_H_
-
 #pragma once
 
 #define _WIN32_WINNT 0x0600        
@@ -92,10 +89,3 @@ using AStringIt = AStringVec::iterator;
 #define _game_data_ "$game_data$"
 
 #pragma warning (default:4995)
-
-#endif /*_INCDEF_STDAFX_H_*/
-
-
-
-
-
