@@ -14,6 +14,15 @@ xr_token							qpreset_token							[ ]={
 	{ 0,							0											}
 };
 
+u32 ps_r__smapsize = 2048;
+xr_token qsmapsize_token[] = {
+	{ "1024", 1024 },
+	{ "2048", 2048 },
+	{ "3072", 3072 },
+	{ "4096", 4096 },
+	{ nullptr, 0   }
+};
+
 u32			ps_r_ssao_mode			=	2;
 xr_token							qssao_mode_token						[ ]={
 	{ "disabled",					0											},
@@ -709,6 +718,7 @@ void		xrRender_initconsole	()
 
 	CMD2(CCC_tf_Aniso, "r__tf_aniso", &ps_r__tf_Anisotropic); //	{1..16}
 	CMD2(CCC_tf_MipBias, "r__tf_mipbias", &ps_r__tf_Mipbias);//	{-3 +3}
+	CMD3(CCC_Token, "r__smap_size", &ps_r__smapsize, qsmapsize_token);
 	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags, RFLAG_CLOUD_SHADOWS);	//Need restart
 
 	//CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);

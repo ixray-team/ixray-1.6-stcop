@@ -777,6 +777,21 @@
 	<string id="ui_mm_r1_detail_textures">
 		<text>Детальные текстуры</text>
 	</string>
+	<string id="ui_mm_r__smap_size">
+		<text>Карта теней</text>
+	</string>
+	<string id="1024">
+		<text>1024x1024</text>
+	</string>
+	<string id="2048">
+		<text>2048x2048</text>
+	</string>
+	<string id="3072">
+		<text>3072x3072</text>
+	</string>
+	<string id="4096">
+		<text>4096x4096</text>
+	</string>
 	<string id="mm_mp_demo">
 		<text>Ролики</text>
 	</string>

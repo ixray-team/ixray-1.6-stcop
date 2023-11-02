@@ -261,6 +261,18 @@
             <options_item entry="r2_slight_fade" group="mm_opt_video_adv"/>
         </track_light_distance>
 
+        <cap_smap_size x="20" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r__smap_size</text>
+        </cap_smap_size>
+        <combo_smap_size x="180" y="0" width="235" height="20" always_show_scroll="1">
+            <options_item entry="r__smap_size" group="mm_opt_video" depend="restart"/>
+            <list_font r="170" g="170" b="170" font="letterica16"/>
+            <text_color>
+	            <e r="170" g="170" b="170"/>
+	            <d r="70" g="70" b="70"/>
+            </text_color>
+        </combo_smap_size>
+
         <cap_npc_torch x="20" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_npc_torch</text>
         </cap_npc_torch>
