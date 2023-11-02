@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "MeshExpUtility.h"
-
+#include "../../Shared/MaxStringAdapter.h"
 
 //-------------------------------------------------------------------
 // Class Descriptor
@@ -13,10 +13,11 @@ class MeshExpUtilityClassDesc : public ClassDesc {
 	public:
 	int 			IsPublic()					{ return 1; }
 	void *			Create( BOOL loading )		{ return &U; }
-	const TCHAR *	ClassName()					{ return "S.T.A.L.K.E.R. Export"; }
+	const TCHAR *	ClassName()					{ return _T("S.T.A.L.K.E.R. Export"); }
 	SClass_ID		SuperClassID()				{ return UTILITY_CLASS_ID; }
 	Class_ID 		ClassID()					{ return Class_ID(EXP_UTILITY_CLASSID,0); }
-	const TCHAR* 	Category()					{ return "S.T.A.L.K.E.R. Export";  }
+	const TCHAR* 	Category()					{ return _T("S.T.A.L.K.E.R. Export");  }
+	const TCHAR*	NonLocalizedClassName()		{ return _T("S.T.A.L.K.E.R. Export");  }
 };
 
 MeshExpUtility U;
@@ -28,7 +29,7 @@ HINSTANCE hInstance;
 int controlsInit = FALSE;
 
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved) 
+int WINAPI DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved) 
 {
 	hInstance = hinstDLL;
 
@@ -37,7 +38,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved)
 		Core._initialize("S.T.A.L.K.E.R.Plugin",ELogCallback,FALSE);
 		FS._initialize	(CLocatorAPI::flScanAppRoot,NULL,"xray_path.ltx");
 		FPU::m64r	(); // нужно чтобы макс не сбрасывал контрольки в 0
-		InitCustomControls(hInstance);
+		//InitCustomControls(hInstance);
 		InitCommonControls();
 		ELog.Msg(mtInformation,"S.T.A.L.K.E.R. Object Export (ver. %d.%02d)",EXPORTER_VERSION,EXPORTER_BUILD);
 		ELog.Msg(mtInformation,"-------------------------------------------------------" );
@@ -62,7 +63,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved)
 
 
 __declspec( dllexport ) const TCHAR *
-LibDescription() { return "S.T.A.L.K.E.R. Mesh Export utility"; }
+LibDescription() { return _T("S.T.A.L.K.E.R. Mesh Export utility"); }
 
 
 __declspec( dllexport ) int LibNumberClasses() {

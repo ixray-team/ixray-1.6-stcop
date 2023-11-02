@@ -19,8 +19,9 @@ BOOL CEditableObject::ExtractTexName(Texmap *src, LPSTR dest)
 	if( src->ClassID() != Class_ID(BMTEX_CLASS_ID,0) )
 		return FALSE;
 	BitmapTex *bmap = (BitmapTex*)src;
-	_splitpath( bmap->GetMapName(), 0, 0, dest, 0 );
-	EFS.AppendFolderToName(dest,1,TRUE);
+	std::wstring wc = bmap->GetMapName();
+	_splitpath(std::string(wc.begin(), wc.end()).c_str(), 0, 0, dest, 0 );
+	EFS.AppendFolderToName(dest, strlen(dest), 1,TRUE);
 	return TRUE;
 }
 
@@ -51,7 +52,7 @@ BOOL CEditableObject::ParseStdMaterial(StdMat* src, CSurface* dest)
 	}
 	dest->m_Flags.set(CSurface::sf2Sided,!!src->GetTwoSided());
 	if (src->GetTwoSided()) ELog.Msg(mtInformation,"  - material 2-sided");
-	dest->SetName(GenerateSurfaceName(src->GetName()));
+	dest->SetName(GenerateSurfaceName(src->GetName().ToCStr().data()));
 	dest->SetFVF(D3DFVF_XYZ|D3DFVF_NORMAL|(1<<D3DFVF_TEXCOUNT_SHIFT));
 	dest->SetVMap("Texture");
 	dest->SetShader("default");
@@ -165,7 +166,10 @@ bool CEditableObject::ImportMAXSkeleton(CExporter* E)
 
 		BONE->SetWMap		(bone->name.c_str());
 		BONE->SetName		(bone->name.c_str());
-		BONE->SetParentName	(Helper::ConvertSpace(string(bone->pBone->GetParentNode()->GetName())).c_str());
+
+		std::wstring wc = bone->pBone->GetParentNode()->GetName();
+
+		BONE->SetParentName	(Helper::ConvertSpace(string(wc.begin(), wc.end())).c_str());
 		BONE->SetRestParams	(length,offset,rotate);
 	}
 

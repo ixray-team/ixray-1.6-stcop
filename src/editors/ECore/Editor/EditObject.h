@@ -60,6 +60,11 @@ public:
     shared_str			m_GameMtlName;
     Flags32			m_Flags;
     u32				m_dwFVF;
+    
+#ifdef _MAX_EXPORT
+	u32				mid;
+	Mtl*			mtl;
+#endif
 
 	Flags32			m_RTFlags;
 	u32				tag;
@@ -427,7 +432,15 @@ public:
     bool			ExportOBJ				(LPCSTR name);
 
 	LPCSTR			GenerateSurfaceName		(LPCSTR base_name);
-#ifdef _MAYA_EXPORT
+#ifdef _MAX_EXPORT
+	BOOL			ExtractTexName			(Texmap *src, LPSTR dest);
+	BOOL			ParseStdMaterial		(StdMat* src, CSurface* dest);
+	BOOL			ParseMultiMaterial		(MultiMtl* src, u32 mid, CSurface* dest);
+	BOOL			ParseXRayMaterial		(XRayMtl* src, u32 mid, CSurface* dest);
+	CSurface*		CreateSurface			(Mtl* M, u32 mat_id);
+	bool			ImportMAXSkeleton		(CExporter* exporter);
+#endif
+#if defined(_MAYA_EXPORT)
 	BOOL			ParseMAMaterial			(CSurface* dest, SXRShaderData& d);
 	CSurface*		CreateSurface			(LPCSTR m_name, SXRShaderData& d);
 	CSurface*		CreateSurface			(MObject shader);

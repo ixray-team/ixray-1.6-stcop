@@ -482,7 +482,7 @@ void CSMotion::Optimize()
 void CSMotion::SortBonesBySkeleton(BoneVec& bones)
 {
 	BoneMotionVec new_bone_mots;
-	for (BoneIt b_it=bones.begin(); b_it!=bones.end(); b_it++){
+	for (auto b_it=bones.begin(); b_it!=bones.end(); b_it++){
     	st_BoneMotion* BM = FindBoneMotion((*b_it)->Name()); R_ASSERT(BM);
 		new_bone_mots.push_back(*BM);
     }

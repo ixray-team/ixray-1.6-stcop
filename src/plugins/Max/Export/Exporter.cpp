@@ -168,7 +168,7 @@ void CExporter::ScanMesh(INode *pNode)
 //		LPCSTR nm = pNode->GetName();
 		if (pNode->Selected()){
 			if (m_bFindMesh){
-				ERR("Single mesh support only.");
+				ERR("Single mesh support only.", "");
 				m_bHasError = TRUE; 
 				return;
 			}
@@ -190,7 +190,7 @@ BOOL CExporter::Capture()
 	Matrix3				matZero;
 
 	if (!m_MeshNode){
-		ERR("Select mesh and try again.");
+		ERR("Select mesh and try again.", "");
 		m_bHasError=TRUE; 
 		return FALSE;
 	}
@@ -198,7 +198,7 @@ BOOL CExporter::Capture()
 	
 	pObject				= m_MeshNode->GetObjectRef();
 	if (!IsExportableMesh(m_MeshNode,pObject)){
-		ERR("Can't receive node references.");
+		ERR("Can't receive node references.", "");
 		m_bHasError=TRUE; 
 		return FALSE;
 	}
@@ -206,13 +206,13 @@ BOOL CExporter::Capture()
 	// Get export interface
 	pPhysique			= FindPhysiqueModifier(m_MeshNode);
 	if (!pPhysique){
-		ERR("Can't find Physique modifier.");
+		ERR("Can't find Physique modifier.", "");
 		m_bHasError=TRUE; 
 		return FALSE;
 	}
 	pExport		= (IPhysiqueExport *)pPhysique->GetInterface(I_PHYINTERFACE);
 	if (!pExport){
-		ERR("Can't find Physique interface.");
+		ERR("Can't find Physique interface.", "");
 		m_bHasError=TRUE; 
 		return FALSE;
 	}
@@ -221,7 +221,7 @@ BOOL CExporter::Capture()
 	int rval = CGINTM(m_MeshNode,pExport->GetInitNodeTM(m_MeshNode, matMesh));
 	matZero.Zero();
 	if (rval || matMesh.Equals(matZero, 0.0)){
-		ERR("Old CS version. Can't export mesh");
+		ERR("Old CS version. Can't export mesh", "");
 		matMesh.IdentityMatrix();
 	}
 
@@ -230,7 +230,7 @@ BOOL CExporter::Capture()
 
 	if (eExportMotion==m_Style){
 		if (m_AllBones.empty()){
-			ERR("Invalid skin object. Bone not found.");
+			ERR("Invalid skin object. Bone not found.", "");
 			return FALSE;
 		}
 
@@ -248,7 +248,7 @@ BOOL CExporter::Capture()
 		// ModContext Interface from the Physique Export Interface:
 		pContext = (IPhyContextExport *)pExport->GetContextInterface(m_MeshNode);
 		if (!pContext){
-			ERR("Can't find Physique context interface.");
+			ERR("Can't find Physique context interface.", "");
 			return FALSE;
 		}
 
@@ -272,7 +272,7 @@ BOOL CExporter::Capture()
 			case RIGID_TYPE:{			
 				INode* node				= pRigidVertex->GetNode(); 
 				R_ASSERT				(node);
-				LPCSTR nm				= node->GetName();
+				//LPCSTR nm				= node->GetName();
 				// get bone and create vertex
 				CVertexDef* pVertex		= AddVertex();
 				int boneId				= AddBone(node,matMesh,pExport);
@@ -288,7 +288,7 @@ BOOL CExporter::Capture()
 				for (int i=0; i<cnt; i++){
 					INode* node			= pBlendedRigidVertex->GetNode(i); 
 					R_ASSERT			(node);
-					LPCSTR nm			= node->GetName();
+					//LPCSTR nm			= node->GetName();
 					// get bone and create vertex
 					int boneId			= AddBone(node,matMesh,pExport);
 					if(BONE_NONE==boneId){
@@ -328,7 +328,7 @@ BOOL CExporter::Capture()
 		R_ASSERT	(pObject);
 		TriObject *	pTriObject	= GetTriObjectFromObjRef(pObject, &bDeleteTriObject);
 		if (!pTriObject){
-			ERR("Can't create tri object.");
+			ERR("Can't create tri object.", "");
 			return FALSE;
 		}
 		Mesh&		M = pTriObject->mesh;
@@ -339,7 +339,7 @@ BOOL CExporter::Capture()
 			int iNumVert = M.getNumVerts();
 			if (!(iNumVert==numVertices && iNumVert==m_Vertices.size()))
 			{
-				ERR("Non attached vertices found.");
+				ERR("Non attached vertices found.", "");
 				if (bDeleteTriObject)	delete(pTriObject);
 				return FALSE;
 			}

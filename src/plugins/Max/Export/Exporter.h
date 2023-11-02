@@ -12,9 +12,13 @@ IC void ERR(LPCSTR s, LPCSTR dop="")
 { 
 	Msg("!Error: %s%s",s,dop);
 }
+IC void ERR(LPCSTR s, const wchar_t* dop=L"") 
+{ 
+	Msg("!Error: %s",s);
+}
 IC int CGINTM(INode* node, int r)
 {
-	char* msg = 0;
+	const char* msg = 0;
 	switch (r) {
 	case MATRIX_RETURNED:		return r;
 	case NODE_NOT_FOUND:		msg = "NODE_NOT_FOUND"; break;

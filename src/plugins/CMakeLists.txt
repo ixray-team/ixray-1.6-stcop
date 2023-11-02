@@ -19,4 +19,5 @@ if (IXRAY_PLUGIN_MAX)
     set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/sdk/3d_sdk/3dsmax/ver-6.0/)
 
     add_subdirectory("Max/Material")
+    #add_subdirectory("Max/Export")
 endif()
