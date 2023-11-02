@@ -92,10 +92,17 @@ int CLog::DlgMsg (TMsgDlgType mt, TMsgDlgButtons btn, LPCSTR _Format, ...)
 	}
 #endif
 #ifdef _MAX_PLUGIN
-	switch(mt){
-	case mtError:		MessageBox(0,buf,"Error",		MB_OK|MB_ICONERROR);		break;
-	case mtInformation: MessageBox(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	break;
-	default:			MessageBox(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	break;
+	switch(mt)
+	{
+		case mtError:		
+			MessageBoxA(0,buf,"Error",		MB_OK|MB_ICONERROR);		
+			break;
+		case mtInformation: 
+			MessageBoxA(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	
+			break;
+		default:			
+			MessageBoxA(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	
+			break;
 	}
 #endif
 
@@ -139,10 +146,17 @@ int CLog::DlgMsg (TMsgDlgType mt, LPCSTR _Format, ...)
 	}
 #endif
 #ifdef _MAX_PLUGIN
-	switch(mt){
-	case mtError:		MessageBox(0,buf,"Error",		MB_OK|MB_ICONERROR);		break;
-	case mtInformation: MessageBox(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	break;
-	default:			MessageBox(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	break;
+	switch(mt)
+	{
+		case mtError:		
+			MessageBoxA(0,buf,"Error",		MB_OK|MB_ICONERROR);		
+			break;
+		case mtInformation: 
+			MessageBoxA(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	
+			break;
+		default:			
+			MessageBoxA(0,buf,"Information",	MB_OK|MB_ICONINFORMATION);	
+			break;
 	}
 #endif
 

@@ -2,6 +2,7 @@
 //  Texmaps
 //-----------------------------------------------------------------------------
 
+#include <strclass.h>
 #define MAPACTIVE(i) ((*maps)[i].IsActive())
 #define MAX_TEXTURE_CHANNELS	32
 
@@ -61,23 +62,30 @@ class TexmapSlot {
 };
 
 
+#if defined(GetClassName)
+#undef GetClassName
+#endif
+
 class Texmaps: public TexmapContainer {
 	public:  
 		MtlBase *client;
 		TexmapSlot txmap[32];
 		BOOL loadingOld;
+		ReferenceTarget* mLastNotifyTarget;
 
 		Texmaps();
 		Texmaps(MtlBase *mb);
 		void SetClientPtr(MtlBase *mb) { client = mb; }
 		TexmapSlot& operator[](int i) { return txmap[i]; }
+		ReferenceTarget* GetLastNotifyTarget();
 
 		Class_ID ClassID();
+		virtual void GetClassName(MSTR& s, bool localized) const override { s = _M("Texmaps"); }
 
 		void DeleteThis();
-		RefTargetHandle Clone(RemapDir &remap = NoRemap());	
-		RefResult NotifyRefChanged( Interval changeInt, RefTargetHandle hTarget, 
-		   PartID& partID, RefMessage message );
+		RefTargetHandle Clone(RemapDir &remap = DefaultRemapDir());
+		RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
+			PartID& partID, RefMessage message, BOOL propagate);
 
 		void RescaleWorldUnits(float f);
 
@@ -88,7 +96,7 @@ class Texmaps: public TexmapContainer {
 
 		int NumSubs();
 	    Animatable* SubAnim(int i);
-		TSTR SubAnimName(int i);
+		TSTR SubAnimName(int i, bool localized) override;
 		int SubNumToRefNum(int subNum) {return subNum; }
 		BOOL InvisibleProperty() { return TRUE; }  // maps are made visible in scripter by pb_maps paramblock in the material so don't expose them as a subanim
 		

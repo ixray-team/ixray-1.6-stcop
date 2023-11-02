@@ -6,11 +6,21 @@
 
 #pragma once
 
-#define _WIN32_WINNT 0x0500        
+#define _WIN32_WINNT 0x0600        
 
 #pragma warning (disable:4995)
 #include "Max.h"
 
+#ifndef DYN_BOUNCE
+// ID's for different DynamicProperties: passed into
+// GetDynamicProperty()
+
+#define DYN_BOUNCE 1
+#define DYN_STATIC_FRICTION 2
+#define DYN_SLIDING_FRICTION 3
+#endif
+
+#include "../../Shared/MaxStringAdapter.h"
 #include "../../../xrCore/xrCore.h"
 
 #undef _MIN
@@ -66,9 +76,6 @@ typedef TMsgDlgBtn TMsgDlgButtons[mbHelp];
 using AStringVec = xr_vector<AnsiString>;
 using AStringIt = AStringVec::iterator;
 
-//#include "clsid.h"
-//#include "Engine.h"
-//#include "Properties.h"
 #include "..\..\Shared\ELog.h"
 
 #define THROW R_ASSERT(0)
