@@ -33,8 +33,6 @@
 #ifndef SMAP_size
 #define SMAP_size        1024
 #endif
-#define PARALLAX_H 0.02
-#define parallax float2(PARALLAX_H, -PARALLAX_H/2)
 
 #ifdef        USE_R2_STATIC_SUN
 #  define xmaterial float(1.0f/4.0f)
@@ -42,7 +40,8 @@
 #  define xmaterial float(L_material.w)
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
-uniform float4 def_aref;
+uniform float4				  def_aref;
+uniform float4				  parallax;
 uniform float4                hemi_cube_pos_faces;
 uniform float4                hemi_cube_neg_faces;
 uniform float4                L_material;                            // 0,0,0,mid
