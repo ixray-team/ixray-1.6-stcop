@@ -12,7 +12,7 @@
 //  Dialog Handler for Utility
 
 
-static BOOL CALLBACK DefaultDlgProc(
+static INT_PTR CALLBACK DefaultDlgProc(
 		HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) {
@@ -77,7 +77,7 @@ void MeshExpUtility::BeginEditParams(Interface *ip,IUtil *iu)
 	this->ip = ip;
 	EConsole.Init( hInstance, 0 );
 
-	hPanel = ip->AddRollupPage(hInstance, MAKEINTRESOURCE(IDD_MWND), DefaultDlgProc, "S.T.A.L.K.E.R. Export", 0);
+	hPanel = ip->AddRollupPage(hInstance, MAKEINTRESOURCE(IDD_MWND), DefaultDlgProc, L"S.T.A.L.K.E.R. Export", 0);
 }
 	
 void MeshExpUtility::EndEditParams(Interface *ip,IUtil *iu) 
@@ -175,7 +175,8 @@ BOOL MeshExpUtility::BuildObject(CEditableObject*& exp_obj, LPCSTR m_ExportName)
 			if(m_ObjectFlipFaces)		submesh->FlipFaces();
 			submesh->RecomputeBBox();
 			// append mesh
-			submesh->SetName			(it->pNode->GetName());
+			std::wstring wc = it->pNode->GetName();
+			submesh->SetName(std::string(wc.begin(), wc.end()).c_str());
 			exp_obj->m_Meshes.push_back	(submesh);
 		}else{
 			ELog.Msg(mtError,"! can't convert", it->pNode->GetName());

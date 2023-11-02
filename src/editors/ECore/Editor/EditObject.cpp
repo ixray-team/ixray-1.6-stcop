@@ -210,7 +210,7 @@ LPCSTR CEditableObject::GenerateSurfaceName(const char* base_name)
 
 bool CEditableObject::VerifyBoneParts()
 {
-	U8Vec b_use(BoneCount(),0);
+	xr_vector<u8> b_use(BoneCount(),0);
     for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++)
         for (int i=0; i<int(bp_it->bones.size()); i++){
         	int idx = FindBoneByNameIdx(bp_it->bones[i].c_str());
@@ -222,7 +222,7 @@ bool CEditableObject::VerifyBoneParts()
             }
         }
 
-    for (U8It u_it=b_use.begin(); u_it!=b_use.end(); u_it++)
+    for (xr_vector<u8>::iterator u_it=b_use.begin(); u_it!=b_use.end(); u_it++)
     	if (*u_it!=1) return false;
     return true;
 }

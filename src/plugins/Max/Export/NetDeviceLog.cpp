@@ -14,7 +14,7 @@
 CExportConsole EConsole;
 
 //----------------------------------------------------
-BOOL CALLBACK ConsoleDialogProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp){
+INT_PTR CALLBACK ConsoleDialogProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp){
 	
 	std::list<CExportConsole::_ConsoleMsg>::iterator _F;
 	std::list<CExportConsole::_ConsoleMsg>::iterator _E;

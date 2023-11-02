@@ -18,7 +18,7 @@ private:
 	 const IntVec			&a_lst;
 	 const type_face		*m_Faces;
 		   u32				m_FaceCount;
-		   U8Vec			m_procesed;
+		   xr_vector<u8>	m_procesed;
 public:
 	itterate_adjacents_params_dynamic(
 	

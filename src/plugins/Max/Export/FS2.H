@@ -9,7 +9,7 @@ private:
 	std::stack<u16>	subchunk_pos;
 	void		revbytes		( void *bp, int elsize, int elcount )
 	{
-		register unsigned char *p, *q;
+		unsigned char *p, *q;
 
 		p = ( unsigned char * ) bp;
 
