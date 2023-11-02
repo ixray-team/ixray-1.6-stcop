@@ -5,12 +5,14 @@
 #include "BlenderListLoader.h"
 
 #include "macrorec.h"
+#include "MaxStringAdapter.h"
 
 class XRayMtlClassDesc:public ClassDesc2 {
 public:
 	int 			IsPublic		()				{ return 1; }
 	void *			Create			(BOOL loading)	{ return xr_new<XRayMtl>(loading); }
-	const TCHAR *	ClassName		()				{ return GetString(IDS_CLASS_NAME); }
+	const TCHAR*	ClassName		()				{ return GetString(IDS_CLASS_NAME); }
+	const TCHAR*	NonLocalizedClassName()			{ return GetString(IDS_CLASS_NAME); }
 	SClass_ID		SuperClassID	()				{ return MATERIAL_CLASS_ID; }
 	Class_ID 		ClassID			()				{ return XRAYMTL_CLASS_ID; }
 	const TCHAR* 	Category		()				{ return GetString(IDS_CATEGORY);  }
@@ -185,7 +187,7 @@ static ShaderPBAccessor shaderPBAccessor;
 class ShaderDlgProc : public ParamMap2UserDlgProc 
 {
 public:
-	BOOL DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	INT_PTR DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (msg) 
 		{
@@ -217,31 +219,31 @@ static ParamBlockDesc2 std2_shader_blk ( std2_shader, _T("newShaderParameters"),
 										p_default, 		3, 
 										p_ui, 			TYPE_INTLISTBOX, IDC_SHADER, 0,
 										p_accessor,		&shaderPBAccessor,
-										end, 
+										p_end, 
 										std2_wire, 		_T("wire"), 		TYPE_BOOL, 				0, 		IDS_DS_WIREFRAME, 	
 										p_default, 		FALSE, 
 										p_ui, 			TYPE_SINGLECHEKBOX, IDC_WIRE, 
 										p_accessor,		&shaderPBAccessor,
-										end, 
+										p_end, 
 										std2_two_sided, 	_T("twoSided"), TYPE_BOOL, 				0, 		IDS_JW_TWOSIDED, 	
 										p_default, 		FALSE, 
 										p_ui, 			TYPE_SINGLECHEKBOX, IDC_2SIDE, 
 										p_accessor,		&shaderPBAccessor,
-										end, 
+										p_end, 
 										std2_face_map, 	_T("faceMap"), 		TYPE_BOOL, 				0, 		IDS_JW_FACEMAP, 	
 										p_default, 		FALSE, 
 										p_ui, 			TYPE_SINGLECHEKBOX, IDC_FACE_MAP, 
 										p_accessor,		&shaderPBAccessor,
-										end, 
+										p_end, 
 										std2_faceted, 		_T("faceted"), 		TYPE_BOOL, 			0, 		IDS_KE_FACETED, 	
 										p_default, 		FALSE, 
 										p_ui, 			TYPE_SINGLECHEKBOX, IDC_FACETED, 
 										p_accessor,		&shaderPBAccessor,
-										end,
+										p_end,
 										std2_shader_by_name, _T("shaderByName"), TYPE_STRING, 		0, 		IDS_JW_SHADERBYNAME, 	
 										p_accessor,		&shaderPBAccessor,
-										end,
-										end
+										p_end,
+										p_end
 										);
 
 ////////////////////////
@@ -302,7 +304,7 @@ static ExtendedPBAccessor extendedPBAccessor;
 class ExtraDlgProc : public ParamMap2UserDlgProc 
 {
 public:
-	BOOL DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	INT_PTR DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (msg) 
 		{
@@ -329,70 +331,70 @@ static ParamBlockDesc2 std2_extended_blk ( std2_extended, _T("extendedParameters
 										  p_range, 		0, 2, 
 										  p_ui, 			TYPE_RADIO, 	3, IDC_TR_SUB2, IDC_TR_SUB, IDC_TR_ADD, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_opacity,		_T("opacity"), 	TYPE_PCNT_FRAC, 	P_ANIMATABLE, 	IDS_DS_OPACITY, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 100.0,   // UI us in the shader rollout
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_filter_color, 	 _T("filterColor"), TYPE_RGBA, 		P_ANIMATABLE, 	IDS_DS_FILTER, 	
 										  p_default, 		Color(0, 0, 0), 
 										  p_ui, 			TYPE_COLORSWATCH, IDC_FILTER_CS, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ep_filter_map, _T("filterMap"), 	TYPE_TEXMAP, 	P_SUBTEX + P_NO_AUTO_LABELS, IDS_JW_FILTERMAP, 
 										  p_subtexno, 	ID_FI, 
 										  p_ui, 			TYPE_TEXMAPBUTTON, IDC_MAPON_FI, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_falloff_type,  _T("opacityFallOffType"), 	TYPE_INT, 	0, 			IDS_JW_FALLOFFTYPE, 	 
 										  p_default, 		0, 
 										  p_range, 		0, 1, 
 										  p_ui, 			TYPE_RADIO, 	2, IDC_TF_IN, IDC_TF_OUT, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_falloff_amnt, _T("opacityFallOff"), TYPE_PCNT_FRAC, 	P_ANIMATABLE, 	IDS_DS_FALLOFF, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 100.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_INT, IDC_TF_EDIT, IDC_TF_SPIN, 0.1, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ior, 			_T("ior"), 			TYPE_FLOAT, 	P_ANIMATABLE, 	IDS_DS_IOR, 
 										  p_default, 		1.5, 
 										  p_range, 		0.0, 10.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_IOR_EDIT, IDC_IOR_SPIN, 0.01, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_wire_size, 		_T("wireSize"), TYPE_FLOAT, 	P_ANIMATABLE, 	IDS_DS_WIRESZ, 
 										  p_default, 		1.0, 
 										  p_range, 		0.0, 100.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_WIRE_EDIT, IDC_WIRE_SPIN, 1.0, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_wire_units, 	_T("wireUnits"), 	TYPE_INT, 		0, 				IDS_JW_WIREUNITS, 	 
 										  p_default, 		0, 
 										  p_range, 		0, 1, 
 										  p_ui, 			TYPE_RADIO, 	2, IDC_PIXELS, IDC_UNITS, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_apply_refl_dimming, _T("applyReflectionDimming"), 	TYPE_BOOL, 	0, 	IDS_JW_APPLYREFDIM, 	
 										  p_default, 		FALSE, 
 										  p_ui, 			TYPE_SINGLECHEKBOX, IDC_DIM_REFL, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_dim_lvl, 		_T("dimLevel"), 		TYPE_FLOAT, 	P_ANIMATABLE, 	IDS_DS_DIMLEV, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_DIM_AMT, IDC_DIM_AMTSPIN, 0.01, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_refl_lvl, 		_T("reflectionLevel"), 	TYPE_FLOAT, 	P_ANIMATABLE, 	IDS_DS_DIMMULT, 
 										  p_default, 		1.0, 
 										  p_range, 		0.1, 10.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_DIM_MULT, IDC_DIM_MULTSPIN, 0.01, 
 										  p_accessor,		&extendedPBAccessor,
-										  end, 
-										  end
+										  p_end, 
+										  p_end
 										  );
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -478,7 +480,7 @@ static SamplingPBAccessor samplingPBAccessor;
 class SamplingDlgProc : public ParamMap2UserDlgProc 
 {
 public:
-	BOOL DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	INT_PTR DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (msg) 
 		{
@@ -517,60 +519,61 @@ static ParamBlockDesc2 std2_sampling_blk ( std2_sampling, _T("samplingParameters
 										  p_default, 		0, 
 										  p_ui, 			TYPE_INTLISTBOX, IDC_PIX_SAMPLER, 0, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_qual, _T("samplerQuality"), TYPE_FLOAT, P_ANIMATABLE, IDS_JW_SAMPLERQUAL, 
 										  p_default, 		0.5, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_SAMPLEQUALITY_EDIT, IDC_SAMPLEQUALITY_SPIN, 0.01, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_enable, _T("samplerEnable"), TYPE_BOOL, P_ANIMATABLE, IDS_JW_SAMPLERENABLE, 	
 										  p_default, 		FALSE, 
 										  p_ui, 			TYPE_SINGLECHEKBOX, IDC_SUPER_SAMP, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_adapt_threshold, _T("samplerAdaptThreshold"), TYPE_FLOAT, 0, IDS_KE_SAMPLERADAPTTHRESH, 
 										  p_default, 		0.1, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_THRESHOLD_EDIT, IDC_THRESHOLD_SPIN, 0.001, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_adapt_on, _T("samplerAdaptOn"), TYPE_BOOL, 0, IDS_KE_SAMPLERADAPTON, 	
 										  p_default, 		TRUE, 
 										  p_ui, 			TYPE_SINGLECHEKBOX, IDC_ADAPT_ON, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_subsample_tex_on, _T("subSampleTextureOn"), TYPE_BOOL, 0, IDS_KE_SUBSAMPLE_TEX_ON, 	
 										  p_default, 		TRUE, 
 										  p_ui, 			TYPE_SINGLECHEKBOX, IDC_SAMPLE_TEX, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_advanced, _T("samplerAdvancedOptions"), TYPE_BOOL, 0, IDS_KE_SAMPLERADVANCED, 	
 										  p_default, 		TRUE, 
 										  p_ui, 			TYPE_SINGLECHEKBOX, IDC_ADVANCED_BUTTON, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_by_name, _T("samplerByName"), TYPE_STRING, 		0, 		IDS_JW_SAMPLERBYNAME, 	
 										  p_accessor,		&samplingPBAccessor,
-										  end,
+										  p_end,
 										  std2_ssampler_param0, _T("UserParam0"), TYPE_FLOAT, 0, IDS_KE_SAMPLER_PARAM0, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_PARAM0_EDIT, IDC_PARAM0_SPIN, 0.01, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
+										  p_end, 
 										  std2_ssampler_param1, _T("UserParam1"), TYPE_FLOAT, 0, IDS_KE_SAMPLER_PARAM1, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_PARAM1_EDIT, IDC_PARAM1_SPIN, 0.01, 
 										  p_accessor,		&samplingPBAccessor,
-										  end, 
-										  end
+										  p_end, 
+										  p_end
 										  );
 
 class XRayPBAccessor : public PBAccessor
 {
 public:
+	MCHAR* ww;
 	void Set(PB2Value& v, ReferenceMaker* owner, ParamID id, int tabIndex, TimeValue t)    // set from v
 	{
 		XRayMtl* m = (XRayMtl*)owner;
@@ -585,18 +588,24 @@ public:
 		case std2_gamemtl_type:
 			m->gamemtlId = (m->GetGameMtl(v.i))?v.i:-1;
 			break;
-		case std2_eshader_by_name: {
-			int idx = m->FindEShader(v.s);
+		case std2_eshader_by_name: 
+		{
+			int idx = m->FindEShader(NormalizeFromMaxString(v.s).c_str());
 			if (idx>=0) m->pb_xray->SetValue(std2_eshader_type, 0, idx);
-								   }break;
-		case std2_cshader_by_name: {
-			int idx = m->FindCShader(v.s);
+		}
+		break;
+		case std2_cshader_by_name: 
+		{
+			int idx = m->FindCShader(NormalizeFromMaxString(v.s).c_str());
 			if (idx>=0) m->pb_xray->SetValue(std2_cshader_type, 0, idx);
-								   }break;
-		case std2_gamemtl_by_name: {
-			int idx = m->FindGameMtl(v.s);
+		}
+		break;
+		case std2_gamemtl_by_name: 
+		{
+			int idx = m->FindGameMtl(NormalizeFromMaxString(v.s).c_str());
 			if (idx>=0) m->pb_xray->SetValue(std2_gamemtl_type, 0, idx);
-								   }break;
+		}
+		break;
 		}
 	}
 
@@ -605,15 +614,21 @@ public:
 		XRayMtl* m = (XRayMtl*)owner;
 		switch (id)
 		{
-		case std2_eshader_by_name:{
-			v.s = m->GetEShader(m->eshaderId);
-								  }break;
-		case std2_cshader_by_name:{
-			v.s = m->GetCShader(m->cshaderId);
-								  }break;
-		case std2_gamemtl_by_name:{
-			v.s = m->GetGameMtl(m->gamemtlId);
-								  }break;
+			case std2_eshader_by_name:
+				{
+					v.s = NormalizeToMaxString(m->GetEShader(m->eshaderId));
+				}
+				break;
+			case std2_cshader_by_name:
+				{
+					v.s = NormalizeToMaxString(m->GetCShader(m->cshaderId));
+				}
+				break;
+			case std2_gamemtl_by_name:
+				{
+					v.s = NormalizeToMaxString(m->GetGameMtl(m->gamemtlId));
+				}
+				break;
 		}
 	}
 };
@@ -624,7 +639,7 @@ static XRayPBAccessor xrayPBAccessor;
 class XRayDlgProc : public ParamMap2UserDlgProc 
 {
 public:
-	BOOL DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	INT_PTR DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (msg) 
 		{
@@ -677,27 +692,27 @@ static ParamBlockDesc2 std2_xray_blk ( std2_xray, _T("Parameters"),  0, &stdmtl2
 									  p_default, 		0, 
 									  p_ui, 			TYPE_INTLISTBOX, IDC_ESHADER, 0,
 									  p_accessor,		&xrayPBAccessor,
-									  end, 
+									  p_end, 
 									  std2_cshader_type, _T("CShaderType"),		TYPE_INT, 		0,		IDS_JW_CSHADERTYPE,
 									  p_default, 		0, 
 									  p_ui, 			TYPE_INTLISTBOX, IDC_CSHADER, 0,
 									  p_accessor,		&xrayPBAccessor,
-									  end, 
+									  p_end, 
 									  std2_gamemtl_type, _T("GameMtlType"),		TYPE_INT, 		0,		IDS_JW_GAMEMTLTYPE,
 									  p_default, 		0, 
 									  p_ui, 			TYPE_INTLISTBOX, IDC_GAMEMTL, 0,
 									  p_accessor,		&xrayPBAccessor,
-									  end, 
+									  p_end, 
 									  std2_eshader_by_name, _T("EShaderByName"),TYPE_STRING,	0,		IDS_JW_ESHADERBYNAME,
 									  p_accessor,		&xrayPBAccessor,
-									  end, 
+									  p_end, 
 									  std2_cshader_by_name, _T("CShaderByName"),TYPE_STRING, 	0,		IDS_JW_CSHADERBYNAME,
 									  p_accessor,		&xrayPBAccessor,
-									  end, 
+									  p_end, 
 									  std2_gamemtl_by_name, _T("GameMtlByName"),TYPE_STRING, 	0,		IDS_JW_GAMEMTLBYNAME,
 									  p_accessor,		&xrayPBAccessor,
-									  end, 
-									  end
+									  p_end, 
+									  p_end
 									  );
 
 //////////////////////////////////////////end, sampling
@@ -740,7 +755,7 @@ static void LoadXRayMtlResources()
 class StdMapsDlgProc : public ParamMap2UserDlgProc 
 {
 public:
-	BOOL DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	INT_PTR DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		XRayMtl* m = (XRayMtl*)map->GetParamBlock()->GetOwner();
 		switch (msg) 
@@ -913,7 +928,7 @@ static ParamBlockDesc2 std_maps_blk ( std_maps, _T("maps"),  0, &stdmtl2CD, P_AU
 									 IDC_USEMAP_16, IDC_USEMAP_17, IDC_USEMAP_18, IDC_USEMAP_19,
 									 IDC_USEMAP_20, IDC_USEMAP_21, IDC_USEMAP_22, IDC_USEMAP_23,
 									 p_accessor,		&mapsPBAccessor,
-									 end, 
+									 p_end, 
 									 std2_maps, 			_T("maps"), 		TYPE_TEXMAP_TAB, STD2_NMAX_TEXMAPS,	P_NO_REF,		IDS_JW_MAPS, 
 									 p_ui, 			TYPE_TEXMAPBUTTON,  IDC_MAP_0, IDC_MAP_1, IDC_MAP_2, IDC_MAP_3, 
 									 IDC_MAP_4, IDC_MAP_5, IDC_MAP_6, IDC_MAP_7, 
@@ -922,7 +937,7 @@ static ParamBlockDesc2 std_maps_blk ( std_maps, _T("maps"),  0, &stdmtl2CD, P_AU
 									 IDC_MAP_16, IDC_MAP_17, IDC_MAP_18, IDC_MAP_19, 
 									 IDC_MAP_20, IDC_MAP_21, IDC_MAP_22, IDC_MAP_23, 
 									 p_accessor,		&mapsPBAccessor,
-									 end, 
+									 p_end, 
 									 std2_map_amnts, 	_T("mapAmounts"), 	TYPE_PCNT_FRAC_TAB, STD2_NMAX_TEXMAPS, 0, 				IDS_JW_MAPAMOUNTS, 
 									 p_default, 		1.0,   // default is given in internal units   JBW 10.8.99
 									 p_range, 		0.0, 100.0, 
@@ -940,13 +955,13 @@ static ParamBlockDesc2 std_maps_blk ( std_maps, _T("maps"),  0, &stdmtl2CD, P_AU
 									 IDC_AMTEDIT_22, IDC_AMTSPIN_22, IDC_AMTEDIT_23, IDC_AMTSPIN_23, 
 									 1.0, 
 									 p_accessor,		&mapsPBAccessor,
-									 end, 
+									 p_end, 
 									 std2_mp_ad_texlock, _T("adTextureLock"), 	TYPE_BOOL, 			0,				IDS_JW_ADTEXLOCK, 	
 									 p_default, 		TRUE, 
 									 p_ui, 			TYPE_CHECKBUTTON, IDC_LOCK_TEX01, 
 									 p_accessor,		&mapsPBAccessor,
-									 end, 
-									 end
+									 p_end, 
+									 p_end
 									 );
 
 #ifndef DESIGN_VER
@@ -959,18 +974,18 @@ static ParamBlockDesc2 std2_dynamics_blk ( std2_dynamics, _T("dynamicsParameters
 										  p_default, 		1.0, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_BOUNCE_EDIT, IDC_BOUNCE_SPIN, 0.01, 
-										  end, 
+										  p_end, 
 										  std2_static_friction, 	_T("staticFriction"), 	TYPE_FLOAT, 	P_ANIMATABLE, 	IDS_DS_STATFRIC, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_STATFRIC_EDIT, IDC_STATFRIC_SPIN, 0.01, 
-										  end, 
+										  p_end, 
 										  std2_sliding_friction, 	_T("slidingFriction"), 	TYPE_FLOAT, 	P_ANIMATABLE, 	IDS_DS_SLIDFRIC, 
 										  p_default, 		0.0, 
 										  p_range, 		0.0, 1.0, 
 										  p_ui, 			TYPE_SPINNER, EDITTYPE_FLOAT, IDC_SLIDFRIC_EDIT, IDC_SLIDFRIC_SPIN, 0.01, 
-										  end, 
-										  end
+										  p_end, 
+										  p_end
 										  );
 #endif
 
@@ -1013,6 +1028,8 @@ static ParamBlockDesc2 std2_dynamics_blk ( std2_dynamics, _T("dynamicsParameters
 #define XRAYMTL_PBVERSION	1
 #define NEWSTDMTL_PBVERSION	9
 
+constexpr unsigned int std2_noid = static_cast<unsigned int>(-1);
+
 // conversion descriptors for old ParamBlocks to ParamBlock2s
 // here we have two version descriptors, one for parameters going into 
 // new pb_extended pblock, the other for params going into the
@@ -1026,24 +1043,24 @@ static ParamBlockDescID extVer10[] = {
 	{ TYPE_RGBA,  NULL, TRUE, std2_filter_color },	// filter
 	{ TYPE_FLOAT, NULL, TRUE, std2_wire_size },		// wireSize
 	{ TYPE_FLOAT, NULL, TRUE, std2_ior },			// index of refraction
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// bounce
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// static friction
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// sliding friction
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// bounce
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// static friction
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// sliding friction
 	{ TYPE_FLOAT, NULL, TRUE, std2_dim_lvl },		// reflect dim level
 	{ TYPE_FLOAT, NULL, TRUE, std2_refl_lvl },		// reflect dim multiplier 
 };
 
 static ParamBlockDescID dynVer10[] = {
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// opacity
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// opfalloff
-	{ TYPE_RGBA,  NULL, TRUE, -1 },					// filter
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// wireSize
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// index of refraction
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// opacity
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// opfalloff
+	{ TYPE_RGBA,  NULL, TRUE, std2_noid },					// filter
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// wireSize
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// index of refraction
 	{ TYPE_FLOAT, NULL, TRUE, std2_bounce },		// bounce
 	{ TYPE_FLOAT, NULL, TRUE, std2_static_friction }, // static friction
 	{ TYPE_FLOAT, NULL, TRUE, std2_sliding_friction }, // sliding friction
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// reflect dim level
-	{ TYPE_FLOAT, NULL, TRUE, -1 },					// reflect dim multiplier 
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// reflect dim level
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },					// reflect dim multiplier 
 };
 
 // v10 Param Block Descriptor
@@ -1092,16 +1109,16 @@ static ParamBlockDescID stdmtlPB2[ NPARAMS_O ] = {
 	{ TYPE_FLOAT, NULL, TRUE, shdr_glossiness },		// shininess
 	{ TYPE_FLOAT, NULL, TRUE, shdr_spec_lvl },			// shini_strength
 	{ TYPE_FLOAT, NULL, TRUE, shdr_self_illum_amnt },   // self-illum
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// opacity
-	{ TYPE_FLOAT, NULL, TRUE, -1 }, 					// opfalloff
-	{ TYPE_RGBA,  NULL, TRUE, -1 },						// filter
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// wireSize
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// index of refraction
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// bounce
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// static friction
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// sliding friction
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// reflect dim level
-	{ TYPE_FLOAT, NULL, TRUE, -1 },						// reflect dim multiplier 
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// opacity
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid }, 					// opfalloff
+	{ TYPE_RGBA,  NULL, TRUE, std2_noid },						// filter
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// wireSize
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// index of refraction
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// bounce
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// static friction
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// sliding friction
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// reflect dim level
+	{ TYPE_FLOAT, NULL, TRUE, std2_noid },						// reflect dim multiplier 
 	{ TYPE_FLOAT, NULL, TRUE, shdr_soften }				// soften
 }; 
 #define NUMOLDVER 1
@@ -1200,6 +1217,7 @@ void XRayMtl::Reset()
 	SetWireSize(1.0f, 0);
 	int bumpChan = stdIDToChannel[ ID_BU ];
 	SetTexmapAmt(bumpChan, BUMP_DEF_AMT, 0);
+	
 	SetDynamicsProperty(0, 0, DYN_BOUNCE, 1.0f);
 	SetDynamicsProperty(0, 0, DYN_STATIC_FRICTION, 0.0f);
 	SetDynamicsProperty(0, 0, DYN_SLIDING_FRICTION, 0.0f);
@@ -1592,7 +1610,7 @@ void XRayMtl::SwitchShader(Shader* newShader, BOOL loadDlg )
 	{
 		if ( pb_extended ) {
 			int n = pb_extended->IDtoIndex( std2_opacity );
-			pb_extended->RemoveController( n, 0);
+			pb_extended->RemoveControllerByIndex( n, 0);
 		}
 
 		theHold.Suspend(); //-----------------------------------------------------
@@ -1763,8 +1781,8 @@ public:
 	TSTR Description() { return(TSTR(_T("SwitchSamplerRestore"))); }
 
 	// ReferenceMaker 
-	RefResult NotifyRefChanged( Interval changeInt,RefTargetHandle hTarget, 
-		PartID& partID, RefMessage message ) { 
+	RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
+		PartID& partID, RefMessage message, BOOL propagate) {
 			if (message==REFMSG_TARGET_DELETED) {
 				if (hTarget==saveSampler) 
 					saveSampler = NULL;
@@ -2441,18 +2459,6 @@ void XRayMtl::DeleteThis()
 	xr_delete((XRayMtl*)this);
 }
 
-
-TSTR XRayMtl::SubAnimName(int i) { 
-	switch(i){
-case TEXMAPS_SUB: return TSTR(GetString( IDS_DS_TEXMAPS ));
-case SHADER_SUB: return TSTR(GetString( IDS_KE_SHADER ));
-case EXTRA_PB_SUB:	return TSTR(GetString( IDS_DS_EXTRA ));
-case SAMPLING_PB_SUB:	return TSTR(GetString( IDS_KE_SAMPLING ));
-case DYNAMICS_PB_SUB:	return TSTR(GetString( IDS_DS_DYNAMICS ));
-	}
-	return TSTR("");
-}		
-
 Animatable* XRayMtl::SubAnim(int i) {
 	switch(i) {
 case TEXMAPS_SUB: return maps;
@@ -2615,8 +2621,8 @@ void XRayMtl::UpdateReshadeRequirements(RefTargetHandle hTarget, PartID partID)
 // mjm - end
 
 // invaldate for the viewport
-RefResult XRayMtl::NotifyRefChanged( Interval changeInt, RefTargetHandle hTarget, 
-									   PartID& partID, RefMessage message ) 
+RefResult XRayMtl::NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
+	PartID& partID, RefMessage message, BOOL propagate)
 {
 	switch (message) {
 case REFMSG_WANT_SHOWPARAMLEVEL:
@@ -2670,17 +2676,6 @@ case REFMSG_CHANGE:
 }
 
 Class_ID XRayMtl::ClassID() { return XRAYMTL_CLASS_ID; }
-
-TSTR XRayMtl::GetSubTexmapSlotName(int i) {
-	if ( pShader ){
-		long nShaderChan = pShader->nTexChannelsSupported();
-		if ( i < nShaderChan )
-			return pShader->GetTexChannelName( i );
-		else
-			return GetString( mtlChannelNameIDS[i - nShaderChan] );
-	} else return TSTR("");
-}
-
 
 void XRayMtl::EnableMap(int i, BOOL onoff) { 
 	pb_maps->SetValue(std2_map_enables, TimeValue(0), onoff, i);
@@ -4126,7 +4121,7 @@ static Color whiteCol(1.0f, 1.0f, 1.0f);
 
 void XRayMtl::SetupGfxMultiMaps(TimeValue t, Material *mtl, MtlMakerCallback &cb) {
 	if (texHandleValid.InInterval(t)) {
-		mtl->texture.SetCount(numTexHandlesUsed);
+		mtl->texture.setLengthUsed(numTexHandlesUsed);
 		for (int i=0; i<numTexHandlesUsed; i++) {
 			if (texHandle[i]) {
 				mtl->texture[i].textHandle = texHandle[i]->GetHandle();
@@ -4153,7 +4148,7 @@ void XRayMtl::SetupGfxMultiMaps(TimeValue t, Material *mtl, MtlMakerCallback &cb
 		if (tx[i]) nmaps ++;
 		bmi[i] = NULL;
 	}
-	mtl->texture.SetCount(nmaps);
+	mtl->texture.setLengthUsed(nmaps);
 	if (nmaps==0) 
 		return;
 	for (i=0; i<nmaps; i++)
@@ -4219,7 +4214,7 @@ void XRayMtl::SetupGfxMultiMaps(TimeValue t, Material *mtl, MtlMakerCallback &cb
 		mtl->texture[0].textHandle = texHandle[0]->GetHandle();
 		SetTexOps(mtl,0,op);
 	}
-	mtl->texture.SetCount(ntx);
+	mtl->texture.setLengthUsed(ntx);
 	numTexHandlesUsed = ntx;
 }
 
@@ -4709,17 +4704,17 @@ void XRayMtl::SetGameMtlIndx( long indx )
 	pb_xray->SetValue(std2_gamemtl_type, 0, indx<0 ? 0 : indx );
 	gamemtlId = indx; 
 }
-TCHAR*	XRayMtl::GetEShader	(DWORD i)
+LPCSTR	XRayMtl::GetEShader	(DWORD i)
 { 
-	return (i<EShaders.size())?(TCHAR*)EShaders[i]:0;
+	return (i<EShaders.size())?EShaders[i]:0;
 }
-TCHAR*	XRayMtl::GetCShader	(DWORD i)
+LPCSTR	XRayMtl::GetCShader	(DWORD i)
 { 
-	return (i<CShaders.size())?(TCHAR*)CShaders[i]:0;
+	return (i<CShaders.size())?CShaders[i]:0;
 }
-TCHAR*	XRayMtl::GetGameMtl	(DWORD i)
+LPCSTR	XRayMtl::GetGameMtl	(DWORD i)
 { 
-	return (i<GameMtls.size())?(TCHAR*)GameMtls[i]:0;
+	return (i<GameMtls.size())?GameMtls[i]:0;
 }
 
 int		XRayMtl::FindEShader(LPCSTR name)

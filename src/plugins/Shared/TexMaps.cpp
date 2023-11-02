@@ -7,6 +7,8 @@
 #include	"texmaps.h"
 #include	"XRayMtlRes.h"
 
+#include "filters.h"
+
 extern TCHAR *GetString(int id);
 
 #define MAX_TEXTURE_CHANNELS	32
@@ -20,6 +22,7 @@ class OldTexmapsClassDesc:public ClassDesc {
 	int 			IsPublic() { return 0; }
 	void *			Create(BOOL loading) { 	return xr_new<Texmaps>((MtlBase*)NULL); }
 	const TCHAR *	ClassName() { return GetString(IDS_DS_CLASSTEXMAPS); }
+	const TCHAR *	NonLocalizedClassName() { return GetString(IDS_DS_CLASSTEXMAPS); }
 	SClass_ID		SuperClassID() { return REF_MAKER_CLASS_ID; }
 	Class_ID 		ClassID() { return TexmapsClassID; }
 	const TCHAR* 	Category() { return _T("");  }
@@ -31,6 +34,7 @@ class TexmapsClassDesc:public ClassDesc {
 	int 			IsPublic() { return 0; }
 	void *			Create(BOOL loading) { 	return xr_new<Texmaps>((MtlBase*)NULL); }
 	const TCHAR *	ClassName() { return GetString(IDS_DS_CLASSTEXMAPS); }
+	const TCHAR *	NonLocalizedClassName() { return GetString(IDS_DS_CLASSTEXMAPS); }
 	SClass_ID		SuperClassID() { return TEXMAP_CONTAINER_CLASS_ID; }
 	Class_ID 		ClassID() { return TexmapsClassID; }
 	const TCHAR* 	Category() { return _T("");  }
@@ -76,7 +80,7 @@ SvGraphNodeReference Texmaps::SvTraverseAnimGraph(IGraphObjectManager *gom, Anim
 	{
 	int i, nUsedSlots;
 
-	if (!gom->TestFilter(SV_FILTER_MAPS))
+	if (!gom->TestFilter(SV_FILTER_MATPARAMS))
 		return SvGraphNodeReference();
 
 	nUsedSlots = 0;
@@ -109,19 +113,19 @@ Animatable* Texmaps::SubAnim(int i) {
 		return txmap[i/2].amtCtrl;
 	}
 
-TSTR Texmaps::SubAnimName(int i) {
-	if (i&1)
-		return client->GetSubTexmapTVName(i/2);
-	else  {
+TSTR Texmaps::SubAnimName(int i, bool localized) {
+	if (i & 1) {
+		return client ? client->GetSubTexmapTVName(i / 2, localized) : _T("");
+	} else {
 		TSTR nm;
-//		nm = GetString(texNameID[i/2]);
-//		nm = textureChannelNames[ i/2 ];
-		nm = txmap[ i/2 ].name;
-		nm += TSTR(" ");
-		nm += TSTR(GetString(IDS_DS_AMOUNT));
+		//		nm = GetString(texNameID[i/2]);
+		//		nm = textureChannelNames[ i/2 ];
+		nm = txmap[i / 2].name;
+		nm += _T(" ");
+		nm += localized ? GetString(IDS_DS_AMOUNT) : _T("Amount");
 		return nm;
-		}
 	}
+}
 
 RefTargetHandle Texmaps::GetReference(int i) {
 	if (i&1)
@@ -143,19 +147,22 @@ void Texmaps::SetReference(int i, RefTargetHandle rtarg) {
 
 void Texmaps::DeleteThis() { xr_delete((Texmaps*)this);}
 
-RefResult Texmaps::NotifyRefChanged(Interval changeInt, RefTargetHandle hTarget, 
-   PartID& partID, RefMessage message ) {
+RefResult Texmaps::NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
+	PartID& partID, RefMessage message, BOOL propagate) {
 	switch (message) {
-		case REFMSG_GET_PARAM_DIM: {
-			GetParamDim *gpd = (GetParamDim*)partID;
-			gpd->dim = defaultDim; 
-			break;
-			}
-		case REFMSG_GET_PARAM_NAME: {
-			GetParamName *gpn = (GetParamName*)partID;
-			return REF_STOP; 
-			}
-		}
+	case REFMSG_GET_PARAM_DIM: {
+		GetParamDim* gpd = (GetParamDim*)partID;
+		gpd->dim = defaultDim;
+		return REF_HALT;
+	}
+	case REFMSG_GET_PARAM_NAME_LOCALIZED: {
+		return REF_HALT;
+	}
+	case REFMSG_GET_PARAM_NAME_NONLOCALIZED: {
+		return REF_HALT;
+	}
+	}
+	mLastNotifyTarget = hTarget;
 	return(REF_SUCCEED);
 	}
 

@@ -46,7 +46,7 @@ class XRayMtlDlg;
 
 // IDs for all the ParamBlocks and their parameters.  One block UI per rollout.
 enum { std2_shader, std2_extended, std2_sampling, std_maps, std2_dynamics, std2_xray };  // pblock IDs
-enum{
+enum {
 	std2_eshader_type,
 	std2_cshader_type,
 	std2_eshader_by_name,	// virtual param for accessing shader type by name
@@ -216,7 +216,7 @@ public:
 	void SetFlag(ULONG f, ULONG val);
 	void EnableMap(int i, BOOL onoff);
 	BOOL IsMapEnabled(int i) { return (*maps)[i].mapOn; }
-	BOOL KeyAtTime(int id,TimeValue t) { return (id == OPACITY_PARAM) ? pb_extended->KeyFrameAtTime(std2_opacity, t) : FALSE; }
+	BOOL KeyAtTimeByID(ParamID id,TimeValue t) { return (id == OPACITY_PARAM) ? pb_extended->KeyFrameAtTimeByID(std2_opacity, t) : FALSE; }
 	BOOL AmtKeyAtTime(int i, TimeValue t);
 	int  GetMapState( int indx ); //returns 0 = no map, 1 = disable, 2 = mapon
 	TSTR  GetMapName( int indx ); 
@@ -291,9 +291,9 @@ public:
 
 	static void		XRayMtl::LoadXRayShaderList		();
 	static void		XRayMtl::UnloadXRayShaderList	();
-	virtual TCHAR*	GetEShader	(DWORD i);
-	virtual TCHAR*	GetCShader	(DWORD i);
-	virtual TCHAR*	GetGameMtl	(DWORD i);
+	virtual LPCSTR	GetEShader	(DWORD i);
+	virtual LPCSTR	GetCShader	(DWORD i);
+	virtual LPCSTR	GetGameMtl	(DWORD i);
 	virtual int		FindEShader	(LPCSTR name);
 	virtual int		FindCShader	(LPCSTR name);
 	virtual int		FindGameMtl	(LPCSTR name);
@@ -434,19 +434,16 @@ public:
 	Texmap* GetSubTexmap(int i) { return (*maps)[i].map; }
 	int MapSlotType(int i);
 	void SetSubTexmap(int i, Texmap *m);
-	TSTR GetSubTexmapSlotName(int i);
 	int SubTexmapOn(int i) { return  MAPACTIVE(i); } 
 	long StdIDToChannel( long id ){ return stdIDToChannel[id]; }
 
 	Class_ID ClassID();
 	SClass_ID SuperClassID() { return MATERIAL_CLASS_ID; }
-	void GetClassName(TSTR& s) { s = GetString(IDS_CLASS_NAME); }  
 
 	void DeleteThis();
 
 	int NumSubs() { return NUM_SUB_ANIMS; }  
 	Animatable* SubAnim(int i);
-	TSTR SubAnimName(int i);
 	int SubNumToRefNum(int subNum);
 
 	// JBW: add direct ParamBlock access
@@ -459,9 +456,9 @@ public:
 	RefTargetHandle GetReference(int i);
 	void SetReference(int i, RefTargetHandle rtarg);
 
-	RefTargetHandle Clone(RemapDir &remap = NoRemap());
-	RefResult NotifyRefChanged( Interval changeInt, RefTargetHandle hTarget, 
-		PartID& partID, RefMessage message );
+	RefTargetHandle Clone(RemapDir &remap = DefaultRemapDir());
+	RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
+		PartID& partID, RefMessage message, BOOL propagate);
 
 	// IO
 	IOResult Save(ISave *isave);
