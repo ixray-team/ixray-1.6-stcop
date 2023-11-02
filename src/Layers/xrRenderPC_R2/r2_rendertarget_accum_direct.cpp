@@ -224,9 +224,8 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 			zMin = 0;
 			zMax = ps_r2_sun_near;
 		} else {
-			extern float	OLES_SUN_LIMIT_27_01_07;
 			zMin = ps_r2_sun_near;
-			zMax = OLES_SUN_LIMIT_27_01_07;
+			zMax = ps_r2_sun_far;
 		}
 		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMin);	Device.mFullTransform.transform	(center_pt);
 		zMin = center_pt.z	;
@@ -377,9 +376,8 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 			zMin = 0;
 			zMax = ps_r2_sun_near;
 		} else {
-			extern float OLES_SUN_LIMIT_27_01_07;
 			zMin = 0;
-			zMax = OLES_SUN_LIMIT_27_01_07;
+			zMax = ps_r2_sun_far;
 		}
 
 		RCache.set_c("volume_range", zMin, zMax, 0, 0);

@@ -97,8 +97,9 @@ extern ECORE_API float			ps_r2_GI_refl;				// .9f
 extern ECORE_API float			ps_r2_ls_depth_scale;		// 1.0f
 extern ECORE_API float			ps_r2_ls_depth_bias;		// -0.0001f
 extern ECORE_API float			ps_r2_ls_squality;			// 1.0f
-extern ECORE_API float			ps_r2_sun_near;				// 10.0f
-extern ECORE_API float			ps_r2_sun_near_border;		// 1.0f
+extern ECORE_API float			ps_r2_sun_far;
+extern ECORE_API float			ps_r2_sun_near;
+extern ECORE_API float			ps_r2_sun_near_border;
 extern ECORE_API float			ps_r2_sun_tsm_projection;	// 0.2f
 extern ECORE_API float			ps_r2_sun_tsm_bias;			// 0.0001f
 extern ECORE_API float			ps_r2_sun_depth_far_scale;	// 1.00001f

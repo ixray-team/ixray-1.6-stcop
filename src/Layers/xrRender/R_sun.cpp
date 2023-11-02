@@ -8,8 +8,6 @@
 using namespace DirectX;
 
 constexpr float tweak_COP_initial_offs = 1200.0f;
-
-float OLES_SUN_LIMIT_27_01_07 = 100.0f;
  
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
