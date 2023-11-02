@@ -25,3 +25,10 @@ if (IXRAY_PLUGIN_MAX)
     set_target_properties(xrMax_Materials PROPERTIES ${IXRAY_FOLDER_PLUGIN})
     #set_target_properties(xrMax_Export PROPERTIES ${IXRAY_FOLDER_PLUGIN})
 endif()
+
+if (IXRAY_PLUGIN_LW)
+    set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_2020)
+
+    add_subdirectory("lw/Server")
+    set_target_properties(xrLW_Server PROPERTIES ${IXRAY_FOLDER_PLUGIN})
+endif()
