@@ -199,9 +199,8 @@ void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
 
 void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
 {
-	VERIFY(PrimitiveType==ptNone);
-	VERIFY(m_PointType==ptNone);
-//.	R_ASSERT(pointType==pttLIT);
+	VERIFY(PrimitiveType == ptNone);
+	VERIFY(m_PointType == pttNone);
 
 	m_iMaxVerts = iMaxVerts;
 	PrimitiveType = primType;
