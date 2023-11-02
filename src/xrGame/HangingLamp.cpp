@@ -42,7 +42,8 @@ void CHangingLamp::Init()
 void CHangingLamp::RespawnInit()
 {
 	Init();
-	if(Visual()){
+	if(Visual())
+	{
 		IKinematics* K = smart_cast<IKinematics*>(Visual());
 		K->LL_SetBonesVisible(u64(-1));
 		K->CalculateBones_Invalidate();
@@ -146,7 +147,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	}
 	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&!Visual())
 		Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual",*cName());
-//.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
+	
 	if (Alive() && m_bState)
 		TurnOn	();
 	else{
@@ -249,7 +250,7 @@ void CHangingLamp::UpdateCL	()
 		
 		if (lanim){
 			int frame;
-			u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); // âîçâðàùàåò â ôîðìàòå BGR
+			u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); // Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð² Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ BGR
 			Fcolor					fclr;
 			fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
 			fclr.mul_rgb			(fBrightness/255.f);
@@ -308,8 +309,7 @@ void CHangingLamp::TurnOff	()
 		K->LL_SetBoneVisible(light_bone, FALSE, TRUE);
 		VERIFY2( K->LL_GetBonesVisible() != 0, make_string("can not Turn Off lamp: %s, visual %s - because all bones become invisible", cNameVisual().c_str(), cName().c_str() ));
 	}
-	if(!PPhysicsShell())//if we have physiccs_shell it will call processing deactivate when disable
-		processing_deactivate	();
+	processing_deactivate();
 	m_bState				= 0;
 		
 }
