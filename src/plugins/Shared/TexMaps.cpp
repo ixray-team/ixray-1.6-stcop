@@ -115,8 +115,9 @@ Animatable* Texmaps::SubAnim(int i) {
 
 TSTR Texmaps::SubAnimName(int i, bool localized)
 {
+	static const MSTR Empty = _T("");
 	if (i & 1)
-		return client ? client->GetSubTexmapTVName(i / 2, localized) : _T("");
+		return client ? client->GetSubTexmapTVName(i / 2, localized) : Empty;
 	else
 	{
 		TSTR nm;
@@ -218,23 +219,27 @@ RefTargetHandle Texmaps::Clone(RemapDir &remap) {
 #define TEX_AMTE 0x510E
 #define TEX_AMTF 0x510F
 
-IOResult Texmaps::Save(ISave *isave) { 
+IOResult Texmaps::Save(ISave* isave) 
+{
 	isave->BeginChunk(TEX_ONOFF_CHUNK);
-	ULONG nb,f=0;
-	for ( int i=0; i<STD2_NMAX_TEXMAPS; i++) 
-		if (txmap[i].mapOn) f|= (1<<i);
-	isave->Write(&f,sizeof(f),&nb);			
+	ULONG nb, f = 0;
+
+	for (int i = 0; i < STD2_NMAX_TEXMAPS; i++)
+		if (txmap[i].mapOn) f |= (1 << i);
+
+	isave->Write(&f, sizeof(f), &nb);
 	isave->EndChunk();
 
-	for ( i=0; i<STD2_NMAX_TEXMAPS; i++) {
-		if (txmap[i].amount!=1.0f) {
-			isave->BeginChunk(TEX_AMT0+i);
-			isave->Write(&txmap[i].amount,sizeof(float),&nb);			
+	for (int i = 0; i < STD2_NMAX_TEXMAPS; i++) 
+	{
+		if (txmap[i].amount != 1.0f) {
+			isave->BeginChunk(TEX_AMT0 + i);
+			isave->Write(&txmap[i].amount, sizeof(float), &nb);
 			isave->EndChunk();
-			}
 		}
-	return IO_OK;
 	}
+	return IO_OK;
+}
 
 class TexmapsPostLoad : public PostLoadCallback {
 	public:

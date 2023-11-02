@@ -25,7 +25,8 @@ file(GLOB_RECURSE MAX_MATERIAL_SHARED_FILES
     "../../Shared/GameMaterial.h" 			
     "../../Shared/GameMtlLib.cpp"			
     "../../Shared/GameMtlLib.h" 			
-    "../../Shared/TexMaps.cpp" 				
+    "../../Shared/TexMaps.*" 				
+    "../../Shared/MaxStringAdapter.*" 				
     "../../Shared/Shader_xrLC.h"			
     "../../Shared/GameMaterial.def"			
 )
@@ -45,7 +46,8 @@ list(FILTER MAX_MATERIAL_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # xrMax_Materials project
 add_library(xrMax_Materials SHARED ${MAX_MATERIAL_SRC_FILES})
 target_include_directories(xrMax_Materials PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrMax_Materials PUBLIC "${IXR_3DS_MAX_SDK}")
+target_include_directories(xrMax_Materials PUBLIC "${IXR_3DS_MAX_SDK}/include")
+target_link_directories(xrMax_Materials PUBLIC "${IXR_3DS_MAX_SDK}/lib/x64/Release")
 target_precompile_headers(xrMax_Materials PRIVATE "stdafx.h")
 
 # Project defines
@@ -59,7 +61,15 @@ target_compile_definitions(xrMax_Materials PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrMax_Materials PUBLIC xrCore)
-target_link_libraries(xrMax_Materials PUBLIC xrAPI)
+target_link_libraries(xrMax_Materials PUBLIC "mesh.lib")
+target_link_libraries(xrMax_Materials PUBLIC "core.lib")
+target_link_libraries(xrMax_Materials PUBLIC "maxutil.lib")
+target_link_libraries(xrMax_Materials PUBLIC "maxscrpt.lib")
+target_link_libraries(xrMax_Materials PUBLIC "ManipSys.lib")
+target_link_libraries(xrMax_Materials PUBLIC "paramblk2.lib")
+target_link_libraries(xrMax_Materials PUBLIC "geom.lib")
+target_link_libraries(xrMax_Materials PUBLIC "gfx.lib")
+target_link_libraries(xrMax_Materials PUBLIC "comctl32.lib")
 
 # Move precompiled header
 set_target_properties(xrMax_Materials PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

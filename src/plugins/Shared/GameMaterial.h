@@ -269,15 +269,15 @@ public:
 	void SwitchShader(Shader* pNewShader, BOOL loadDlg = FALSE);
 	void SwitchShader(ClassDesc* pNewCD);
 	BOOL SwitchShader(Class_ID shaderId);
-	int FindShader( Class_ID& findId, ClassDesc** ppCD=NULL );
+	int FindShader(const Class_ID& findId, ClassDesc** ppCD=NULL );
 	BOOL IsShaderInUI() { return pb_shader && pb_shader->GetMap() && pShader && pShader->GetParamDlg(); }
 
-	static void XRayMtl::LoadShaderList();
-	static int XRayMtl::NumShaders();
-	static ClassDesc* XRayMtl::GetShaderCD(int i);
-	static void XRayMtl::LoadSamplerList();
-	static int XRayMtl::NumSamplers();
-	static ClassDesc* XRayMtl::GetSamplerCD(int i);
+	static void LoadShaderList();
+	static int NumShaders();
+	static ClassDesc* GetShaderCD(int i);
+	static void LoadSamplerList();
+	static int NumSamplers();
+	static ClassDesc* GetSamplerCD(int i);
 
 	void SetEShaderIndx(long shaderId);
 	void SetCShaderIndx(long shaderId);
@@ -289,8 +289,8 @@ public:
 	LPCSTR GetCShaderName(){ return GetCShader(cshaderId); }
 	LPCSTR GetGameMtlName(){ return GetGameMtl(gamemtlId); }
 
-	static void		XRayMtl::LoadXRayShaderList		();
-	static void		XRayMtl::UnloadXRayShaderList	();
+	static void		LoadXRayShaderList		();
+	static void		UnloadXRayShaderList	();
 	virtual LPCSTR	GetEShader	(DWORD i);
 	virtual LPCSTR	GetCShader	(DWORD i);
 	virtual LPCSTR	GetGameMtl	(DWORD i);
@@ -456,7 +456,7 @@ public:
 	RefTargetHandle GetReference(int i);
 	void SetReference(int i, RefTargetHandle rtarg);
 
-	RefTargetHandle Clone(RemapDir &remap = DefaultRemapDir());
+	RefTargetHandle Clone(RemapDir &remap);
 	RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
 		PartID& partID, RefMessage message, BOOL propagate);
 

@@ -83,7 +83,7 @@ class Texmaps: public TexmapContainer {
 		virtual void GetClassName(MSTR& s, bool localized) const override { s = _M("Texmaps"); }
 
 		void DeleteThis();
-		RefTargetHandle Clone(RemapDir &remap = DefaultRemapDir());
+		RefTargetHandle Clone(RemapDir &remap);
 		RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget,
 			PartID& partID, RefMessage message, BOOL propagate);
 
