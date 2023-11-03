@@ -1,23 +1,25 @@
-set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/sdk-3dsdk-3dsmax.zip)
 set(IXRAY_FOLDER_PLUGIN FOLDER "Plugin")
 
 if (IXRAY_PLUGIN_MAX)
+    set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_2024.zip)
     if (NOT EXISTS ${IXR_3DS_MAX_SDK})
         file(
             DOWNLOAD
-            https://github.com/ixray-team/ixray-1.6-stcop/releases/download/v1.6.02-2/sdk-3dsdk-3dsmax.zip
-            ${CMAKE_BINARY_DIR}/dep/sdk-3dsdk-3dsmax.zip 
+            https://github.com/ixray-team/packages_storage/releases/download/initial/max_2024.zip
+            ${CMAKE_BINARY_DIR}/dep/max_2024.zip
             SHOW_PROGRESS
         )
 
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/)
+
         execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/sdk-3dsdk-3dsmax.zip 
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/
+            COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/max_2024.zip
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/
         )
     
     endif()
 
-    set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/sdk/3d_sdk/3dsmax/ver-6.0/)
+    set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_sdk/)
 
     add_subdirectory("Max/Material")
     #add_subdirectory("Max/Export")
@@ -27,7 +29,23 @@ if (IXRAY_PLUGIN_MAX)
 endif()
 
 if (IXRAY_PLUGIN_LW)
-    set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_2020)
+    set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip)
+    if (NOT EXISTS ${IXR_LW_SDK})
+        file(
+            DOWNLOAD
+            https://github.com/ixray-team/packages_storage/releases/download/initial/lw_sdk_2020.zip
+            ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
+            SHOW_PROGRESS
+        )
+
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/
+        )
+    
+    endif()
+
+    set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020/)
 
     add_subdirectory("lw/Server")
     set_target_properties(xrLW_Server PROPERTIES ${IXRAY_FOLDER_PLUGIN})

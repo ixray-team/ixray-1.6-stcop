@@ -18,7 +18,7 @@ list(APPEND LW_SERVERSRC_FILES ${LW_SERVERSOURCE_ALL_FILES})
 # xrLW_Server project
 add_library(xrLW_Server STATIC ${LW_SERVERSRC_FILES})
 target_include_directories(xrLW_Server PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrLW_Server PUBLIC "${IXR_LW_SDK}")
+target_include_directories(xrLW_Server PUBLIC "${IXR_LW_SDK}/include")
 
 # Project defines
 target_compile_definitions(xrLW_Server PRIVATE _WINDOWS)
