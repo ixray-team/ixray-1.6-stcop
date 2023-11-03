@@ -40,7 +40,7 @@
 #ifdef _MAX_PLUGIN
 #define GM_NON_GAME
 #endif
-#ifdef _LW_SHADER
+#ifdef _LW_PLUGIN
 #define GM_NON_GAME
 #endif
 #ifdef _MAYA_PLUGIN

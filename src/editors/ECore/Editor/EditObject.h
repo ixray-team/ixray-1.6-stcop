@@ -255,6 +255,11 @@ public:
     LPCSTR			GetName					(){ return m_LibName.c_str();}
 
 	void			SetVersionToCurrent		(BOOL bCreate, BOOL bModif);
+    
+#ifdef _LW_EXPORT
+    bool			Import_LWO(LPCSTR fname, bool bNeedOptimize);
+	Flags32         m_Flags;
+#endif
 
     void			Optimize				();
 

@@ -20,26 +20,26 @@ ascending numerical order.  This takes only linear time if point IDs
 arrive in order.
 ====================================================================== */
 
-static int pntScan( ObjectDB *odb, LWPntID id )
+static size_t pntScan( void *odb, LWPntID id )
 {
    int j;
-
-   j = odb->npoints;
+   ObjectDB* ObjDB = (ObjectDB*)odb;
+   j = ObjDB->npoints;
 
    if ( j == 0 ) {
-      odb->pt[ 0 ].id = id;
-      ++odb->npoints;
+       ObjDB->pt[ 0 ].id = id;
+      ++ObjDB->npoints;
       return 0;
    }
 
-   while ( odb->pt[ j - 1 ].id > id ) {
-      odb->pt[ j ].id = odb->pt[ j - 1 ].id;
+   while (ObjDB->pt[ j - 1 ].id > id ) {
+       ObjDB->pt[ j ].id = ObjDB->pt[ j - 1 ].id;
       --j;
       if ( j == 0 ) break;
    }
 
-   odb->pt[ j ].id = id;
-   ++odb->npoints;
+   ObjDB->pt[ j ].id = id;
+   ++ObjDB->npoints;
 
    return 0;
 }
@@ -52,8 +52,9 @@ polScan()
 Polygon scan callback.  Just store the ID.
 ====================================================================== */
 
-static int polScan( ObjectDB *odb, LWPolID id )
+static size_t polScan( void *podb, LWPolID id )
 {
+    ObjectDB* odb = (ObjectDB*)podb;
    odb->pol[ odb->npolygons ].id = id;
    ++odb->npolygons;
    return 0;
@@ -237,7 +238,7 @@ ObjectDB *getObjectDB( LWItemID id, GlobalFunc *global )
    odb->pt = (st_DBPoint*)calloc( npts, sizeof( DBPoint ));
    if ( !odb->pt ) goto Finish;
 
-   if ( mesh->scanPoints( mesh, (int (__cdecl *)(void *,struct st_GCoreVertex *))pntScan, odb ))
+   if ( mesh->scanPoints( mesh, pntScan, odb ))
       goto Finish;
 
    /* alloc and init the polygons array */
@@ -246,7 +247,7 @@ ObjectDB *getObjectDB( LWItemID id, GlobalFunc *global )
    odb->pol = (st_DBPolygon*)calloc( npols, sizeof( DBPolygon ));
    if ( !odb->pol ) goto Finish;
 
-   if ( mesh->scanPolys( mesh, (int (__cdecl *)(void *,struct st_GCorePolygon *))polScan, odb ))
+   if ( mesh->scanPolys( mesh, polScan, odb ))
       goto Finish;
 
    /* get the vertices of each polygon */
@@ -347,7 +348,7 @@ and 1 for final.
 int printObjectDB( ObjectDB *odb, FILE *fp, int c )
 {
    DBVMap *vmap;
-   char *tag;
+   const char *tag;
    int i, j, k, n;
 
    fprintf( fp, "%08.8x %s\n\n", odb->id, odb->filename );

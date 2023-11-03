@@ -5,7 +5,12 @@
 #include "ExportObjectOGF.h"
 #include "EditObject.h"
 #include "EditMesh.h"
+
+#if defined(_MAX_EXPORT) || defined(_LW_EXPORT) 
+#include "../../xrEngine/Fmesh.h"
+#else
 #include "fmesh.h"
+#endif
 
 #include "std_classes.h"
 #include "bone.h"
@@ -436,6 +441,7 @@ void CExportSkeleton::SSplit::MakeProgressive()
 
 void CExportSkeleton::SSplit::MakeStripify()
 {
+#if 0
 //	int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //	Log("SRC:",ccc);
 	// alternative stripification - faces
@@ -471,6 +477,7 @@ void CExportSkeleton::SSplit::MakeStripify()
 //	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //		Log("Y:",ccc);
     }
+#endif
 }
 
 
@@ -624,7 +631,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 
                 {
                     SSkelVert 							v[3];
-					tmp_bone_lst.clear_not_free			();
+					tmp_bone_lst.clear			();
                    	u32 			link_type 			= _max(MESH->m_SVertices[f_idx*3+0].bones.size(),MESH->m_SVertices[f_idx*3+1].bones.size());
                    	link_type 							= _max(link_type,MESH->m_SVertices[f_idx*3+2].bones.size());
                     VERIFY								(link_type>0 && link_type<=(u32)influence);
@@ -861,7 +868,7 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
     bool bRes = true;
                     
     F.open_chunk(OGF_S_IKDATA);
-    for (bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); ++bone_it,++bone_idx)
+    for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); ++bone_it,++bone_idx)
         if (!(*bone_it)->ExportOGF(F)) 
 			bRes=false; 
 
@@ -1035,7 +1042,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             }
         }
         // free temp storage
-        for (itm_idx=0; itm_idx<b_lst.size(); ++itm_idx)
+        for (auto itm_idx=0; itm_idx<b_lst.size(); ++itm_idx)
         {
         	bm_item& BM 	= items[itm_idx];
             // check T
@@ -1072,7 +1079,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
                 Msg("animation [%s] is 16bit-transform (%f)m", cur_motion->Name(), St.magnitude());
             }
             
-            for (t_idx=0; t_idx<dwLen; ++t_idx)
+            for (auto t_idx=0; t_idx<dwLen; ++t_idx)
             {
                 Fvector& t	= BM._keysT[t_idx];
                 CKeyQR& r	= BM._keysQR[t_idx];

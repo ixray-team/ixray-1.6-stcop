@@ -1,52 +1,61 @@
 set(IXRAY_FOLDER_PLUGIN FOLDER "Plugin")
 
-if (IXRAY_PLUGIN_MAX)
-    set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_2024.zip)
-    if (NOT EXISTS ${IXR_3DS_MAX_SDK})
-        file(
-            DOWNLOAD
-            https://github.com/ixray-team/packages_storage/releases/download/initial/max_2024.zip
-            ${CMAKE_BINARY_DIR}/dep/max_2024.zip
-            SHOW_PROGRESS
-        )
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    if (IXRAY_PLUGIN_MAX)
+        set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_2024.zip)
+        if (NOT EXISTS ${IXR_3DS_MAX_SDK})
+            file(
+                DOWNLOAD
+                https://github.com/ixray-team/packages_storage/releases/download/initial/max_2024.zip
+                ${CMAKE_BINARY_DIR}/dep/max_2024.zip
+                SHOW_PROGRESS
+            )
 
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/)
+            file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/)
 
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/max_2024.zip
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/
-        )
-    
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/max_2024.zip
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/
+            )
+
+        endif()
+
+        set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_sdk/)
+
+        add_subdirectory("Max/Material")
+        add_subdirectory("Max/Export")
+
+        set_target_properties(xrMax_Materials PROPERTIES ${IXRAY_FOLDER_PLUGIN})
+        set_target_properties(xrMax_Export PROPERTIES ${IXRAY_FOLDER_PLUGIN})
     endif()
 
-    set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_sdk/)
+    if (IXRAY_PLUGIN_LW)
+        set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip)
+        if (NOT EXISTS ${IXR_LW_SDK})
+            file(
+                DOWNLOAD
+                https://github.com/ixray-team/packages_storage/releases/download/initial/lw_sdk_2020.zip
+                ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
+                SHOW_PROGRESS
+            )
 
-    add_subdirectory("Max/Material")
-    #add_subdirectory("Max/Export")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/
+            )
 
-    set_target_properties(xrMax_Materials PROPERTIES ${IXRAY_FOLDER_PLUGIN})
-    #set_target_properties(xrMax_Export PROPERTIES ${IXRAY_FOLDER_PLUGIN})
-endif()
+        endif()
 
-if (IXRAY_PLUGIN_LW)
-    set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip)
-    if (NOT EXISTS ${IXR_LW_SDK})
-        file(
-            DOWNLOAD
-            https://github.com/ixray-team/packages_storage/releases/download/initial/lw_sdk_2020.zip
-            ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
-            SHOW_PROGRESS
-        )
+        set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020/)
 
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/
-        )
-    
+        add_subdirectory("lw/Server")
+        add_subdirectory("lw/Export/LWO")
+        add_subdirectory("lw/Export")
+        add_subdirectory("lw/Shader")
+
+        set_target_properties(xrLW_Server PROPERTIES ${IXRAY_FOLDER_PLUGIN})
+        set_target_properties(xrLW_Shader PROPERTIES ${IXRAY_FOLDER_PLUGIN})
+        set_target_properties(xrLW_Export PROPERTIES ${IXRAY_FOLDER_PLUGIN})
+        set_target_properties(lwo PROPERTIES ${IXRAY_FOLDER_3RD})
     endif()
-
-    set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020/)
-
-    add_subdirectory("lw/Server")
-    set_target_properties(xrLW_Server PROPERTIES ${IXRAY_FOLDER_PLUGIN})
 endif()

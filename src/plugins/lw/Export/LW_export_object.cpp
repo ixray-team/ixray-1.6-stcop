@@ -125,7 +125,7 @@ extern "C" {
 							else{ 
 								obj->m_Flags.set(CEditableObject::eoDynamic,TRUE);
 								obj->Optimize	();
-								obj->SaveObject	(buf);
+								obj->Save	(buf);
 							}
 						}else
 							bErr = true;

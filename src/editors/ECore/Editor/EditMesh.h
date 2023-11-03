@@ -103,12 +103,12 @@ public:
     IC const FloatVec& getVM	()	const				{return vm;}
 	IC float*		getVMdata	()						{return &*vm.begin();}
     IC float*		getVMdata	(int start)				{return &*(vm.begin()+start*dim);}
-    IC int			VMdatasize	()						{return vm.size()*sizeof(float);}
+    IC int			VMdatasize	()						{return int(vm.size()*sizeof(float));}
     IC int*			getVIdata	()						{return &*vindices.begin();}
-    IC int			VIdatasize	()						{return vindices.size()*sizeof(int);}
+    IC int			VIdatasize	()						{return int(vindices.size()*sizeof(int));}
     IC int*			getPIdata	()						{return &*pindices.begin();}
-    IC int			PIdatasize	()						{return pindices.size()*sizeof(int);}
-    IC int			size		()						{return vm.size()/dim;}
+    IC int			PIdatasize	()						{return int(pindices.size()*sizeof(int));}
+    IC int			size		()						{return int(vm.size()/dim);}
     IC void			resize		(int cnt)				{vm.resize(cnt*dim);vindices.resize(cnt);if (polymap) pindices.resize(cnt); }
 	IC void			appendUV	(const float u, const float v)	{vm.push_back(u);vm.push_back(v);}
 	IC void			appendUV	(const Fvector2& uv)			{appendUV(uv.x,uv.y);}

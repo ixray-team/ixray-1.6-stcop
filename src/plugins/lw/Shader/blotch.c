@@ -14,7 +14,8 @@ data, and it should be resolved in later builds.
 ====================================================================== */
 
 #include <lwserver.h>
-#include <lwshader.h>
+#include <lwnodes.h>
+//#include <lwshader.h>
 #include <lwsurf.h>
 #include <lwhost.h>
 #include <lwxpanel.h>
@@ -315,7 +316,7 @@ else, so we return just the color bit.
 XCALL_( static unsigned int )
 Flags( XRShader *inst )
 {
-   return LWSHF_COLOR;
+   return (1 << 1);
 }
 
 
@@ -330,7 +331,7 @@ computed for that spot.
 ====================================================================== */
 
 XCALL_( static void )
-Evaluate( XRShader *inst, LWShaderAccess *sa )
+Evaluate( XRShader *inst, LWShadingGeometry*a, NodeOutputID b, NodeValue c)
 {
 }
 
@@ -344,10 +345,10 @@ callback fields of the handler structure.
 ====================================================================== */
 
 XCALL_( static int )
-Handler( long version, GlobalFunc *global, LWShaderHandler *local,
+Handler( long version, GlobalFunc *global, LWNodeHandler*local,
    void *serverData)
 {
-   if ( version != LWSHADER_VERSION ) return AFUNC_BADVERSION;
+   if ( version != LWNODECLASS_VERSION ) return AFUNC_BADVERSION;
 
    local->inst->create   = Create;
    local->inst->destroy  = Destroy;
@@ -453,7 +454,7 @@ void ui_chgnotify( LWXPanelID panel, unsigned long cid, unsigned long vid,
 
    if ( event == LWXPEVENT_VALUE )
       if ( dat = xpanf->getData( panel, 0 ))
-         lwupdate( LWSHADER_HCLASS, dat );
+         lwupdate( LWNODE_HCLASS, dat );
 }
 
 
@@ -535,8 +536,8 @@ Interface( long version, GlobalFunc *global, LWInterface *local,
 }
 
 ServerRecord ServerDesc[] = {
-   { LWSHADER_HCLASS, SH_PLUGIN_NAME, Handler },
-   { LWSHADER_ICLASS, SH_PLUGIN_NAME, Interface },
+   { LWNODE_HCLASS, SH_PLUGIN_NAME, Handler },
+   { LWNODE_ICLASS, SH_PLUGIN_NAME, Interface },
    { NULL }
 };
 
