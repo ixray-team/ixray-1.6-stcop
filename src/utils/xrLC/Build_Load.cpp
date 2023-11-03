@@ -147,7 +147,11 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		if (InvalideFaces())	
 		{
 			err_save		();
-			Debug.fatal		(DEBUG_INFO,"* FATAL: %d invalid faces. Compilation aborted",InvalideFaces());
+			if (lc_global_data()->GetSkipInvalid()) {
+				clMsg("* Total %d invalid faces. Do something.", InvalideFaces());
+			} else {
+				Debug.fatal(DEBUG_INFO, "* FATAL: %d invalid faces. Compilation aborted", InvalideFaces());
+			}
 		}
 	}
 
@@ -201,7 +205,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				F->r				(temp.control.name,sizeof(temp.control.name));
 				u32 cnt				= F->r_u32();
 				temp.control.data.resize(cnt);
-				F->r				(&*temp.control.data.begin(),cnt*sizeof(u32));
+				F->r(temp.control.data.data(), cnt * sizeof(u32));
 
 				L_layers.push_back	(temp);
 			}

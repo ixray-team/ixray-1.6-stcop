@@ -33,6 +33,7 @@ static const char* h_str =
 	"-? or -h	== this help\n"
 	"-o			== modify build options\n"
 	"-nosun		== disable sun-lighting\n"
+	"-skipinvalid\t== skip crash if invalid faces exists\n"
 	"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
 	"\n"
 	"NOTE: The last key is required for any functionality\n";
@@ -61,6 +62,9 @@ void Startup(LPSTR     lpCmdLine)
 	if (strstr(cmd,"-net"))								g_build_options.b_net_light		= TRUE;
 	VERIFY( lc_global_data() );
 	lc_global_data()->b_nosun_set						( !!strstr(cmd,"-nosun") );
+
+	lc_global_data()->SetSkipInvalid(strstr(cmd, "-skipinvalid") != nullptr);
+
 	//if (strstr(cmd,"-nosun"))							b_nosun			= TRUE;
 	
 	// Give a LOG-thread a chance to startup
@@ -96,7 +100,7 @@ void Startup(LPSTR     lpCmdLine)
 
 	string256 inf;
 	IReader*	F			= FS.r_open(prjName);
-	if (NULL==F){
+	if (NULL==F) {
 		xr_sprintf				(inf,"Build failed!\nCan't find level: '%s'",name);
 		clMsg				(inf);
 		MessageBoxA			(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
