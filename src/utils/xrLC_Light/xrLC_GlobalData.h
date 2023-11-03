@@ -51,6 +51,9 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 
 		bool							_b_nosun;
 		bool							_gl_linear;
+
+private:
+	bool _skipInvalid;
 private:
 		bool							b_vert_not_register;
 public:
@@ -143,10 +146,10 @@ public:
 		void						clear_mu_models			();	
 		void						mu_models_calc_materials();
 	//	void						cdb_read_create	() ;
-private:
-
-
-};													
+public:
+	bool GetSkipInvalid() { return _skipInvalid; }
+	void SetSkipInvalid(bool v) { _skipInvalid = v; }
+};
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
 extern "C" XRLC_LIGHT_API void				create_global_data();
