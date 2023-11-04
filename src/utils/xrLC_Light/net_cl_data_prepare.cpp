@@ -8,7 +8,7 @@
 #include "lcnet_task_manager.h"
 #include "xrlc_globaldata.h"
 #include "mu_light_net.h"
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "../../xrcore/xrSyncronize.h"
 
 bool					global_compile_data_initialized = false;
@@ -80,10 +80,10 @@ void		SetGlobalCompileDataInitialized( )
 {
 	
 	lc_net::globals().get<lc_net::gl_cl_data>().init();
-	clLog( "mem usage before collision model destroy: %u", Memory.mem_usage() );
+	clMsg( "mem usage before collision model destroy: %u", Memory.mem_usage() );
 	inlc_global_data()->destroy_rcmodel	();
 	Memory.mem_compact();
-	clLog( "mem usage after collision model destroy: %u", Memory.mem_usage() );
+	clMsg( "mem usage after collision model destroy: %u", Memory.mem_usage() );
 //	inlc_global_data()->clear_build_textures_surface();
 	wait_lock.Enter();
 		//cl_data_prepare.wait();

@@ -2,7 +2,7 @@
 #include "build.h"
 
 #include "../xrlc_light/xrdeflector.h"
-#include "../xrlc_light/xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrLightVertex.h"
 
@@ -19,7 +19,7 @@ xrCriticalSection	task_CS
 
 #include <random>
 
-thread_local std::mt19937 rng = std::mt19937(std::random_device()());
+static thread_local std::mt19937 rng = std::mt19937(std::random_device()());
 xr_vector<int>		task_pool;
 
 class CLMThread		: public CThread

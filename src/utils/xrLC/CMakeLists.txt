@@ -2,7 +2,7 @@ project(xrLC)
 set(XLC_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XLC_SOURCE_ALL_FILES
+file(GLOB_RECURSE XLC_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
     "../xrDXT/tga.cpp"
@@ -27,7 +27,7 @@ list(APPEND XLC_SRC_FILES ${XLC_SOURCE_RES_FILES})
 #list(FILTER XLC_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
 
 # xrLC project
-add_executable(xrLC WIN32 ${XLC_SRC_FILES})
+add_library(xrLC ${XLC_SRC_FILES})
 target_include_directories(xrLC PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_precompile_headers(xrLC PRIVATE "stdafx.h")
 

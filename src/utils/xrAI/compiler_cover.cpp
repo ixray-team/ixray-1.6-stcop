@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "compiler.h"
 #include "cl_intersect.h"
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include <mmsystem.h>
 
 #include "quadtree.h"

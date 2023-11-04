@@ -13,7 +13,7 @@
 
 //#include "mu_model_face.h"
 
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "../../xrcore/xrSyncronize.h"
 
 

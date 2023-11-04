@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "xrLightVertex.h"
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "xrface.h"
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
