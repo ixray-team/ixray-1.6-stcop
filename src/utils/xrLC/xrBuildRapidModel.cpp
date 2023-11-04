@@ -166,5 +166,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		MFS->open_chunk			(1);
 		MFS->w					(&*rc_faces.begin(),(u32)rc_faces.size()*sizeof(b_rc_face));
 		MFS->close_chunk		();
+
+		FS.w_close(MFS);
 	}
 }
