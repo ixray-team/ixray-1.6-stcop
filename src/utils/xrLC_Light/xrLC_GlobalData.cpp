@@ -109,18 +109,18 @@ void	xrLC_GlobalData	::destroy_rcmodel	()
 }
 void xrLC_GlobalData::clear_build_textures_surface()
 {
-	clLog( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
+	clMsg( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
 	//xr_vector<b_BuildTexture>		_textures;
 	xr_vector<b_BuildTexture>::iterator i = textures().begin();
 	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
 	for(;i!=e;++i)
 		::clear((*i));
 	Memory.mem_compact();
-	clLog( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
+	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
 }
 void xrLC_GlobalData::clear_build_textures_surface( const xr_vector<u32> &exept )
 {
-	clLog( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
+	clMsg( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
 	xr_vector<b_BuildTexture>::iterator i = textures().begin();
 	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
 	xr_vector<b_BuildTexture>::const_iterator b = textures().begin();
@@ -131,7 +131,7 @@ void xrLC_GlobalData::clear_build_textures_surface( const xr_vector<u32> &exept 
 			::clear((*i));
 	}
 	Memory.mem_compact();
-	clLog( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
+	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
 }
 
 void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
@@ -145,33 +145,6 @@ void		xrLC_GlobalData	::				initialize		()
 {
 	if (strstr(Core.Params,"-att"))	_gl_linear	= true;
 }
-
-
-/*
-		xr_vector<b_BuildTexture>		_textures;
-		xr_vector<b_material>			_materials;
-		Shader_xrLC_LIB					_shaders;				
-		CMemoryWriter					_err_invalid;
-		b_params						_g_params;
-		vecVertex						_g_vertices;
-		vecFace							_g_faces;
-		vecDefl							_g_deflectors;
-		base_lighting					_L_static;
-		CDB::MODEL*						_RCAST_Model;
-		bool							_b_nosun;
-		bool							_gl_linear;
-*/
-
-//void			xrLC_GlobalData	::				cdb_read_create	() 
-//{
-//	VERIFY(!_RCAST_Model);
-//	_RCAST_Model = xr_new<CDB::MODEL> ();
-//	_RCAST_Model->build( &*verts.begin(), (int)verts.size(), &*tris.begin(), (int)tris.size() );
-//}
-
-//base_Face* F		= (base_Face*)(*((void**)&T.dummy));
-
-//*((u32*)&F)
 
 xr_vector<base_Face*> FacesStorage;
 
@@ -630,69 +603,52 @@ void vec_spetial_clear( xr_vector<T> &v )
 }
 
 void mu_mesh_clear();
-void	xrLC_GlobalData::clear_mu_models	()
-{	
+void xrLC_GlobalData::clear_mu_models()
+{
 
-		clLog( "mem usage before mu_clear %d", Memory.mem_usage() );
-		vec_clear(_mu_models);// not clear ogf
-		vec_clear(_mu_refs);
-		mu_mesh_clear();
-		Memory.mem_compact();
-		clLog( "mem usage after mu_clear: %d", Memory.mem_usage() );
+	clMsg("mem usage before mu_clear %d", Memory.mem_usage());
+	vec_clear(_mu_models);// not clear ogf
+	vec_clear(_mu_refs);
+	mu_mesh_clear();
+	Memory.mem_compact();
+	clMsg("mem usage after mu_clear: %d", Memory.mem_usage());
 
 }
-void		xrLC_GlobalData::				clear			()
+
+void xrLC_GlobalData::clear()
 {
-		vec_spetial_clear(_cl_globs._textures );
-		_cl_globs._materials.clear();
-		_cl_globs._shaders.Unload();
-	//	CMemoryWriter					_err_invalid;
-	//	b_params						_g_params;
-		close_models_read();
-		close_models_write();
+	vec_spetial_clear(_cl_globs._textures);
+	_cl_globs._materials.clear();
+	_cl_globs._shaders.Unload();
 
-		vec_clear(_g_lightmaps);
-		vec_clear(_mu_models);//mem leak
-		vec_clear(_mu_refs);
-		mu_mesh_clear();
-		gl_mesh_clear();
-		//VertexPool;
-		//FacePool;
+	close_models_read();
+	close_models_write();
 
-	
+	vec_clear(_g_lightmaps);
+	vec_clear(_mu_models);//mem leak
+	vec_clear(_mu_refs);
+	mu_mesh_clear();
+	gl_mesh_clear();
 
-	//	vecVertex						_g_vertices;
-	//	vecFace							_g_faces;
-		gl_mesh_clear	();
-	    vec_clear		(_g_deflectors);
+	gl_mesh_clear();
+	vec_clear(_g_deflectors);
 
-		//base_lighting					_L_static;
-		xr_delete(_cl_globs._RCAST_Model);
+	xr_delete(_cl_globs._RCAST_Model);
 
-		xr_delete( write_lightmaps );
-		xr_delete( ::write_vertices );
-		//xr_delete( write_faces );
-		xr_delete( write_deflectors );
+	xr_delete(write_lightmaps);
+	xr_delete(::write_vertices);
+	xr_delete(write_deflectors);
 
-		xr_delete( read_lightmaps );
-		xr_delete( ::read_vertices );
-		//xr_delete( read_faces );
-		xr_delete( read_deflectors );
-//		bool							_b_nosun;
-//		bool							_gl_linear;
+	xr_delete(read_lightmaps);
+	xr_delete(::read_vertices);
+	xr_delete(read_deflectors);
 }
 
 
 void		xrLC_GlobalData::set_faces_indexses		()
 {
-	//const u32 number = g_faces		().size();
-	//for( u32 i=0; i< number; ++i	)
-	//	g_faces()[i]->set_index( i );
 }
 void		xrLC_GlobalData::set_vertices_indexses	()
 {
-//	const u32 number = g_vertices().size();
-//	for( u32 i=0; i< number; ++i	)
-//		g_vertices()[i]->set_index( i );
 }
 

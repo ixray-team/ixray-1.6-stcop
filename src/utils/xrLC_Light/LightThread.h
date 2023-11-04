@@ -1,8 +1,5 @@
-#ifndef __LIGHTTHREAD_H__
-#define __LIGHTTHREAD_H__
-
-
-#include "xrthread.h"
+#pragma once
+#include "../xrForms/xrThread.h"
 #include "detail_slot_calculate.h"
 
 class	LightThread : public CThread
@@ -18,4 +15,3 @@ public:
 	virtual void		Execute();
 
 };
-#endif //__LIGHTTHREAD_H__

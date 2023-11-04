@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <sys\stat.h>
 
+#undef ENGINE_API
 #define ENGINE_API
 #define XR_EPROPS_API
 #define ECORE_API

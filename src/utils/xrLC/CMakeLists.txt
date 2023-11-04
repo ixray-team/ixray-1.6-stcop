@@ -2,7 +2,7 @@ project(xrLC)
 set(XLC_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XLC_SOURCE_ALL_FILES
+file(GLOB_RECURSE XLC_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
     "../xrDXT/tga.cpp"
@@ -28,7 +28,7 @@ list(APPEND XLC_SRC_FILES ${XLC_SOURCE_RES_FILES})
 #list(FILTER XLC_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
 
 # xrLC project
-add_executable(xrLC WIN32 ${XLC_SRC_FILES})
+add_library(xrLC ${XLC_SRC_FILES})
 target_include_directories(xrLC PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_precompile_headers(xrLC PRIVATE "stdafx.h")
 
@@ -45,10 +45,3 @@ target_link_libraries(xrLC PUBLIC xrCDB)
 target_link_libraries(xrLC PUBLIC xrLC_Light)
 target_link_libraries(xrLC PUBLIC QSlim)
 target_link_libraries(xrLC PUBLIC ETools)
-
-# sdk bins
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}MagicFM.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)

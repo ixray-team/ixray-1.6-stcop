@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "compiler.h"
 #include "cl_intersect.h"
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include <mmsystem.h>
 
 const int	LIGHT_Count			=2;
 const int	LIGHT_Total			=(2*LIGHT_Count+1)*(2*LIGHT_Count+1);
 
-typedef	svector<R_Light*,1024>	LSelection;
+typedef	svector<R_Light_Fast*,1024>	LSelection;
 
-IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light& L)
+IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light_Fast& L)
 {
 	// 1. Check cached polygon
 	float _u,_v,range;
@@ -39,12 +39,12 @@ float LightPoint(CDB::COLLIDER& DB, Fvector &P, Fvector &N, LSelection& SEL)
 	Fvector		Ldir,Pnew;
 	Pnew.mad	(P,N,0.05f);
 
-	R_Light	**IT = SEL.begin(), **E = SEL.end();
+	R_Light_Fast**IT = SEL.begin(), **E = SEL.end();
 
 	float	amount = 0;
 	for (; IT!=E; IT++)
 	{
-		R_Light* L = *IT;
+		R_Light_Fast* L = *IT;
 		if (L->type==LT_DIRECT) 
 		{
 			// Cos
@@ -88,7 +88,7 @@ public:
 		CDB::COLLIDER DB;
 		DB.ray_options	(CDB::OPT_ONLYFIRST);
 
-		xr_vector<R_Light>	Lights = g_lights;
+		xr_vector<R_Light_Fast>	Lights = g_lights;
 
 		Fvector			P,D,PLP;
 		D.set			(0,1,0);
@@ -104,7 +104,7 @@ public:
 			Selected.clear();
 			for (u32 L=0; L<Lights.size(); L++)
 			{
-				R_Light&	R = g_lights[L];
+				R_Light_Fast&	R = g_lights[L];
 				if (R.type==LT_DIRECT)	Selected.push_back(&R);
 				else {
 					float dist = N.Pos.distance_to(R.position);

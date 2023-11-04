@@ -100,10 +100,10 @@ namespace lc_net
 		if( l_completed == size )
 		{
 			string64 buf;
-			clLog	( " %s, calculation complited", _name );
+			clMsg( " %s, calculation complited", _name );
 			//clMsg	("%f %s calculation seconds",start_time.GetElapsed_sec(), _name );
 
-			clLog	("%s %s calculation time",make_time( buf,start_time.GetElapsed_sec() ), _name );
+			clMsg("%s %s calculation time",make_time( buf,start_time.GetElapsed_sec() ), _name );
 			//Status	("%s %s calculation time",make_time( buf,start_time.GetElapsed_sec() ), _name );
 
 			//xr_sprintf( buf, "%s %s calculation time",make_time( buf,start_time.GetElapsed_sec() ), _name ); 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 //#include "build.h"
 //#include "std_classes.h"
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "xrdeflector.h"
 #include "xrlc_globaldata.h"
 #include "light_point.h"

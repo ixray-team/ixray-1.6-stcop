@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "xrlight_implicitrun.h"
-#include "xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "xrLight_Implicit.h"
 #include "xrlight_implicitdeflector.h"
 class ImplicitThread : public CThread
@@ -27,7 +27,7 @@ void	ImplicitThread ::	Execute	()
 	}
 
 // 2 : Mainthread + UI thread
-#define	NUM_THREADS	 CPU::ID.n_threads - 2
+#define	NUM_THREADS	 CPU::ID.n_threads - 1
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 		// Start threads

@@ -253,7 +253,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			u32 cnt		= F->length()/sizeof(temp);
 			for				(u32 i=0; i<cnt; i++)
 			{
-				R_Light		RL;
+				R_Light_Fast RL;
 				F->r		(&temp,sizeof(temp));
 				Flight&		L = temp.data;
 				if (_abs(L.range) > 10000.f) {

@@ -2,7 +2,7 @@
 #include "xrHemisphere.h"
 #include "build.h"
 
-#include "../xrlc_light/xrThread.h"
+#include "../xrForms/xrThread.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrface.h"
 

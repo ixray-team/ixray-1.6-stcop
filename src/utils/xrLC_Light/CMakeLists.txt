@@ -16,7 +16,7 @@ source_group("kernel" FILES ${LCL_SOURCE_ALL_FILES})
 list(APPEND LCL_SRC_FILES ${LCL_SOURCE_ALL_FILES})
 
 # xrLC_Light project
-add_library(xrLC_Light SHARED ${LCL_SRC_FILES})
+add_library(xrLC_Light ${LCL_SRC_FILES})
 target_include_directories(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrLC_Light PUBLIC "${IXRAY_SDK_INC}")
 target_link_directories(xrLC_Light PUBLIC "${IXRAY_SDK_LIB}")
@@ -24,7 +24,6 @@ target_link_directories(xrLC_Light PUBLIC "${IXRAY_SDK_LIB}")
 target_precompile_headers(xrLC_Light PRIVATE "stdafx.h")
 
 # Project defines
-target_compile_definitions(xrLC_Light PRIVATE XRLC_LIGHT_EXPORTS)
 target_compile_definitions(xrLC_Light PRIVATE _WINDOWS)
 target_compile_definitions(xrLC_Light PRIVATE _USRDLL)
 

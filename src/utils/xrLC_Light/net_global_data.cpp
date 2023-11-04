@@ -129,7 +129,7 @@ bool	global_data_file_path(LPCSTR name, IAgent* agent, DWORD sessionId, string_p
 
 			const xr_vector<e_net_globals>& v = gl_gl_reg().get_globals(gl_type);
 			//xr_vector<e_net_globals>::const_iterator i = v.begin(), e = v.end();
-			u32 size = v.size();
+			u32 size = (u32)v.size();
 			buf[0] = 0;
 			for(u32 i = 0; i< size; ++i )
 			{

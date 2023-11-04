@@ -58,7 +58,7 @@ namespace lc_net
 		 free(globalDataStream->GetCurPointer());
 		 id_state = state;
 #ifdef CL_NET_LOG
-		 EngineLog("cleanup call");
+		 Log("cleanup call");
 #endif
 		 globals().cleanup();
 		 lock.Leave();

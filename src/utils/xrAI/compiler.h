@@ -71,7 +71,7 @@ void	Compress	(CLevelGraph::CVertex& Dest, vertex& Src);
 #define LT_POINT		1
 #define LT_SECONDARY	2
 
-struct R_Light
+struct R_Light_Fast
 {
     u32           type;				// Type of light source		
     float			amount;				// Diffuse color of light	
@@ -102,7 +102,7 @@ using Vectors_it = Vectors::iterator;
 using Marks = xr_vector<BYTE>;
 using Marks_it = Marks::iterator;
 
-using Lights = xr_vector<R_Light>;
+using Lights = xr_vector<R_Light_Fast>;
 using Lights_it = Lights::iterator;
 
 // data
