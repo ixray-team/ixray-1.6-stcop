@@ -20,7 +20,10 @@ struct dxGeomTransform : public dxGeom {
 		obj = 0;
 		cleanup = 0;
 		infomode = 0;
-		dSetZero (final_pos,4);
+
+		constexpr size_t dVecCounter = sizeof(dVector3) / sizeof(dReal);
+
+		dSetZero (final_pos, dVecCounter);
 		dRSetIdentity (final_R);
 	}
 };
