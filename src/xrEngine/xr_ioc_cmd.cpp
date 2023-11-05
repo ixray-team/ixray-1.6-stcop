@@ -682,6 +682,8 @@ void CCC_Register()
 	// Render device states
 	CMD3(CCC_Mask, "read_sun_config", &psEnvironmentFlags, ENABLE_READ_SUN_CONFIG);
 
+	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
+
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
 	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);

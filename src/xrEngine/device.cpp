@@ -305,6 +305,9 @@ void CRenderDevice::message_loop_editor	()
 
 void CRenderDevice::message_loop()
 {
+	if (psDeviceFlags.test(rsDeviceActive))
+		b_is_Active = true;
+
 #ifdef INGAME_EDITOR
 	if (editor()) {
 		message_loop_editor	();
@@ -494,6 +497,9 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
+	if (psDeviceFlags.test(rsDeviceActive))
+		return;
+
 	u16 fActive						= LOWORD(wParam);
 	BOOL fMinimized					= (BOOL) HIWORD(wParam);
 	BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
