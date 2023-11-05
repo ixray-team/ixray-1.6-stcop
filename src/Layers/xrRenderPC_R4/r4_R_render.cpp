@@ -13,7 +13,7 @@ IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
 	return	d1<d2	;
 }
 
-void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
+void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals, bool first_pass)
 {
 	PIX_EVENT(render_main);
 //	Msg						("---begin");
@@ -25,24 +25,27 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 		//!!! BECAUSE OF PARALLEL HOM RENDERING TRY TO DELAY ACCESS TO HOM AS MUCH AS POSSIBLE
 		//!!!
 		{
-			// Traverse object database
-			g_SpatialSpace->q_frustum
-				(
-				lstRenderables,
-				ISpatial_DB::O_ORDERED,
-				STYPE_RENDERABLE + STYPE_LIGHTSOURCE,
-				ViewBase
-				);
+			if (first_pass)
+			{
+				// Traverse object database
+				g_SpatialSpace->q_frustum
+					(
+					lstRenderablesMain,
+					ISpatial_DB::O_ORDERED,
+					STYPE_RENDERABLE + STYPE_LIGHTSOURCE,
+					ViewBase
+					);
 
-			// (almost) Exact sorting order (front-to-back)
-			std::sort			(lstRenderables.begin(),lstRenderables.end(),pred_sp_sort);
+				// (almost) Exact sorting order (front-to-back)
+				std::sort			(lstRenderablesMain.begin(), lstRenderablesMain.end(),pred_sp_sort);
+			}
 
 			// Determine visibility for dynamic part of scene
 			set_Object							(0);
 			u32 uID_LTRACK						= 0xffffffff;
 			if (phase==PHASE_NORMAL)			{
 				uLastLTRACK	++;
-				if (lstRenderables.size())		uID_LTRACK	= uLastLTRACK%lstRenderables.size();
+				if (lstRenderablesMain.size())		uID_LTRACK	= uLastLTRACK% lstRenderablesMain.size();
 
 				// update light-vis for current entity / actor
 				CObject*	O					= g_pGameLevel->CurrentViewEntity();
@@ -53,8 +56,8 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 
 				// update light-vis for selected entity
 				// track lighting environment
-				if (lstRenderables.size())		{
-					IRenderable*	renderable		= lstRenderables[uID_LTRACK]->dcast_Renderable	();
+				if (lstRenderablesMain.size())		{
+					IRenderable*	renderable		= lstRenderablesMain[uID_LTRACK]->dcast_Renderable	();
 					if (renderable)	{
 						CROS_impl*		T = (CROS_impl*)renderable->renderable_ROS	();
 						if (T)			T->update	(renderable);
@@ -86,9 +89,9 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 		}
 
 		// Traverse frustums
-		for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
+		for (u32 o_it=0; o_it< lstRenderablesMain.size(); o_it++)
 		{
-			ISpatial*	spatial		= lstRenderables[o_it];		spatial->spatial_updatesector	();
+			ISpatial*	spatial		= lstRenderablesMain[o_it];		spatial->spatial_updatesector	();
 			CSector*	sector		= (CSector*)spatial->spatial.sector;
 			if	(0==sector)										continue;	// disassociated from S/P structure
 
@@ -254,7 +257,7 @@ void CRender::Render		()
 		r_pmask										(true,false);	// enable priority "0"
 		set_Recorder								(NULL)		;
 		phase										= PHASE_SMAP;
-		render_main									(m_zfill,false)	;
+		render_main									(m_zfill,false, true)	;
 		r_pmask										(true,false);	// disable priority "1"
 		Device.Statistic->RenderCALC.End				( )			;
 
@@ -299,7 +302,7 @@ void CRender::Render		()
 	if (bSUN)									set_Recorder	(&main_coarse_structure);
 	else										set_Recorder	(NULL);
 	phase										= PHASE_NORMAL;
-	render_main									(Device.mFullTransform,true);
+	render_main									(Device.mFullTransform,true, !ps_r2_ls_flags.test(R2FLAG_ZFILL));
 	set_Recorder								(NULL);
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
@@ -478,7 +481,7 @@ void CRender::render_forward				()
 		// level
 		r_pmask									(false,true);			// enable priority "1"
 		phase									= PHASE_NORMAL;
-		render_main								(Device.mFullTransform,false);//
+		render_main								(Device.mFullTransform,false,false);//
 		//	Igor: we don't want to render old lods on next frame.
 		mapLOD.clear							();
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
