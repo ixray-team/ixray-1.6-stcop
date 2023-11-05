@@ -199,19 +199,15 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	switch(C.iElement) 
 	{
 	case SE_R2_NORMAL_HQ: 		// deffer
+		// Landshaft sorting 
+		C.SH->flags.bLandscape = true;
+		C.r_Pass("shadow_direct_base", "shadow_direct_base", FALSE, TRUE, TRUE);
+		C.r_ColorWriteEnable(false, false, false, false);
+		C.r_End();
+		// End
+
 		uber_deffer		(C, true,	"impl","impl",false,oT2_Name[0]?oT2_Name:0,true);
-		//C.r_Sampler		("s_mask",	mask);
-		//C.r_Sampler		("s_lmap",	C.L_textures[1]);
-
-		//C.r_Sampler		("s_dt_r",	oR_Name,	false,	D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC);
-		//C.r_Sampler		("s_dt_g",	oG_Name,	false,	D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC);
-		//C.r_Sampler		("s_dt_b",	oB_Name,	false,	D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC);
-		//C.r_Sampler		("s_dt_a",	oA_Name,	false,	D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC);
-
-		//C.r_Sampler		("s_dn_r",	strconcat(sizeof(mask),mask,oR_Name,"_bump")	);
-		//C.r_Sampler		("s_dn_g",	strconcat(sizeof(mask),mask,oG_Name,"_bump") );
-		//C.r_Sampler		("s_dn_b",	strconcat(sizeof(mask),mask,oB_Name,"_bump") );
-		//C.r_Sampler		("s_dn_a",	strconcat(sizeof(mask),mask,oA_Name,"_bump") );
+		C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 
 		C.r_dx10Texture		("s_mask",	mask);
 		C.r_dx10Texture		("s_lmap",	C.L_textures[1]);
@@ -235,7 +231,16 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_End			();
 		break;
 	case SE_R2_NORMAL_LQ: 		// deffer
+
+		// Landshaft sorting 
+		C.SH->flags.bLandscape = true;
+		C.r_Pass("shadow_direct_base", "shadow_direct_base", FALSE, TRUE, TRUE);
+		C.r_ColorWriteEnable(false, false, false, false);
+		C.r_End();
+
 		uber_deffer		(C, false,	"base","impl",false,oT2_Name[0]?oT2_Name:0,true);
+
+		C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 
 		//C.r_Sampler		("s_lmap",	C.L_textures[1]);
 

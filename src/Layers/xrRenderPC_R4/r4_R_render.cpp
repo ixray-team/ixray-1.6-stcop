@@ -310,6 +310,11 @@ void CRender::Render		()
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
+
+	// Landshaft phase 
+	Target->u_setrt(Device.TargetWidth, Device.TargetHeight, NULL, NULL, NULL, HW.pBaseZB);
+	r_dsgraph_render_landscape(0, false);
+
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{
@@ -320,6 +325,7 @@ void CRender::Render		()
 		r_dsgraph_render_graph					(0);
 		r_dsgraph_render_lods					(true,true);
 		if(Details)	Details->Render				();
+		r_dsgraph_render_landscape				(1, true);
 		Target->phase_scene_end					();
 	} 
 	else 
@@ -328,6 +334,7 @@ void CRender::Render		()
 		// level, SPLIT
 		Target->phase_scene_begin				();
 		r_dsgraph_render_graph					(0);
+		r_dsgraph_render_landscape				(1, true);
 		Target->disable_aniso					();
 	}
 

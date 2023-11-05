@@ -40,6 +40,7 @@ public:
 	R_dsgraph::mapMatrixPasses_T								mapMatrixPasses	[2]	;
 	R_dsgraph::mapSorted_T										mapSorted;
 	R_dsgraph::mapHUD_T											mapHUD;
+	R_dsgraph::mapLandscape_T									mapLandscape;
 	R_dsgraph::mapLOD_T											mapLOD;
 	R_dsgraph::mapSorted_T										mapDistort;
 	R_dsgraph::mapHUD_T											mapHUDSorted;
@@ -161,6 +162,7 @@ public:
 	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center);
 	void		r_dsgraph_insert_static							(dxRender_Visual	*pVisual);
 
+	void		r_dsgraph_render_landscape						(u32 pass, bool bClear);
 	void		r_dsgraph_render_graph							(u32	_priority,	bool _clear=true);
 	void		r_dsgraph_render_hud							();
 	void		r_dsgraph_render_hud_ui							();
