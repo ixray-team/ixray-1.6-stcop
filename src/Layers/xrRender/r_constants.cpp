@@ -215,6 +215,7 @@ void R_constant_table::merge(R_constant_table* T)
 			C->cs				=	src->cs;
 #endif
 			C->samp				=	src->samp;
+			C->handler = src->handler;
 			table_tmp.push_back(C);
 		} 
 		else 
