@@ -44,6 +44,7 @@ list(APPEND XRR1_SRC_FILES ${XRR1_SOURCE_LUA_FILES})
 # Remove unused files
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__pixel_calculator.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/R_sun.cpp")
+list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/Light_Render_Direct_ComputeXFS.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/R_sun_support.cpp")
 
 # xrRender_R1 project
