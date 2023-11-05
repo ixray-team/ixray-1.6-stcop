@@ -498,6 +498,7 @@ BOOL CRenderDevice::Paused()
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
 	if (psDeviceFlags.test(rsDeviceActive))
+		ShowCursor(FALSE);
 		return;
 
 	u16 fActive						= LOWORD(wParam);
