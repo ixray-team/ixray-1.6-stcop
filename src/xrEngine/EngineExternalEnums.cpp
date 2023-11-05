@@ -25,6 +25,6 @@ END_ENUM(EEngineExternalGame)
 
 BEGIN_ENUM(EEngineExternalRender)
 {
-	DECL_ENUM_ELEMENT(None),
+	DECL_ENUM_ELEMENT(LoadScreenTips),
 } 
 END_ENUM(EEngineExternalRender)

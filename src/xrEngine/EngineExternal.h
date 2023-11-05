@@ -19,6 +19,7 @@ enum class EEngineExternalGame
 
 enum class EEngineExternalRender
 {
+	LoadScreenTips,
 	None
 };
 
