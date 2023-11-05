@@ -1045,6 +1045,22 @@ public:
 };
 #endif
 
+struct CCC_ReloadSystemLtx : public IConsole_Command {
+	CCC_ReloadSystemLtx(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args) {
+		string_path fname;
+		FS.update_path(fname, "$game_config$", "system.ltx");
+		CInifile::Destroy(pSettings);
+		pSettings = new CInifile(fname, TRUE);
+		CHECK_OR_EXIT(
+			0 != pSettings->section_count(),
+			make_string("Cannot find file %s.\nReinstalling application may fix this problem.",
+				fname));
+		Msg("system.ltx was reloaded.");
+	}
+};
+
 class CCC_PHIterations : public CCC_Integer {
 public:
 		CCC_PHIterations(LPCSTR N) :
@@ -2113,6 +2129,8 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 	CMD1(CCC_ScriptCommand,	"run_string");
 	CMD1(CCC_TimeFactor,	"time_factor");		
 //#endif // MASTER_GOLD
+
+	CMD1(CCC_ReloadSystemLtx, "reload_system_ltx");
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 	CMD3(CCC_Mask,		"g_dynamic_music",		&psActorFlags,	AF_DYNAMIC_MUSIC);
