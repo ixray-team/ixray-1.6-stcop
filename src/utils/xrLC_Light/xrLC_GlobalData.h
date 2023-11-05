@@ -54,7 +54,7 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 
 private:
 	bool _skipInvalid;
-
+	bool _skipTesselate;
 private:
 		bool							b_vert_not_register;
 public:
@@ -150,7 +150,10 @@ public:
 
 public:
 	bool GetSkipInvalid() { return _skipInvalid; }
-	void SetSkipInvalid(bool v) { _skipInvalid = v; }
+	void SetSkipInvalid(bool skipInvalid) { _skipInvalid = skipInvalid; }
+
+	bool GetSkipTesselate() { return _skipTesselate; }
+	void SetSkipTesselate(bool skipTesselate) { _skipTesselate = skipTesselate; }
 };
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
