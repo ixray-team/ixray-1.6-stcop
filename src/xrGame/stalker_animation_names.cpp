@@ -47,12 +47,14 @@ LPCSTR weapon_action_names	[] = {
 	"unstrap_",			// 12
 	"look_beack_ls_",	// 13
 	"look_beack_rs_",	// 14
+	"escape_",			// 15
 	0
 };
 
 LPCSTR movement_names		[] = {
 	"walk_",
 	"run_",
+	"escape_",
 	0
 };
 
@@ -61,6 +63,7 @@ LPCSTR movement_action_names[] = {
 	"back_",
 	"ls_",
 	"rs_",
+	"0",
 	0
 };
 

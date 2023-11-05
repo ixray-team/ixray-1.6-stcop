@@ -239,7 +239,12 @@ void CStalkerAnimationManager::update						()
 	}
 	catch(...) {
 		Msg					("! error in stalker with visual %s",*object().cNameVisual());
-		throw;
+		// Prevent game from crashing
+		global().reset();
+		head().reset();
+		torso().reset();
+		legs().reset();
+		return;
 	}
 	STOP_PROFILE
 }

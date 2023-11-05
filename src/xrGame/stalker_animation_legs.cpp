@@ -154,6 +154,10 @@ MotionID CStalkerAnimationManager::legs_move_animation		()
 		m_target_speed			= movement.speed(eMovementDirectionForward);
 		m_last_non_zero_speed	= m_target_speed;
 
+		if (movement.movement_type() == eMovementTypeRun &&
+			movement.mental_state() == eMentalStatePanic)
+			return (m_data_storage->m_part_animations.A[eBodyStateStand].m_movement.A[2].A[4].A[0]);
+
 		return					(
 			m_data_storage->m_part_animations.A[
 				body_state()
