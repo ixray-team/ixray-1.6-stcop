@@ -560,6 +560,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 			xr_free(Levels[i].folder);
 			xr_free(Levels[i].name);
 		}
+		Levels.clear();
 	}
 	else if(E== g_pEventManager->eStart)
 	{
