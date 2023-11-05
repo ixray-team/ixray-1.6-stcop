@@ -269,7 +269,7 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					pl.type		= eItemPlaceRuck;
 					pl.slot_id	= GRENADE_SLOT;
 				}
-#ifndef MASTER_GOLD
+#ifdef _DEBUG
 				Msg("item place [%d]", pl);
 #endif // #ifndef MASTER_GOLD
 
