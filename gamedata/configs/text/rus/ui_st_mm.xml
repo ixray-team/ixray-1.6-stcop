@@ -954,4 +954,7 @@
 	<string id="ui_mm_confirm_changes">
 		<text>Применить сделанные изменения? Все изменения будут отменены через</text>
 	</string>
+	<string id="ui_rs_device_active">
+		<text>Always Active</text>
+	</string>
 </string_table>

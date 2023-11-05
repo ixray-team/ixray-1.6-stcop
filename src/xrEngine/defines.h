@@ -39,6 +39,8 @@ enum {
 	rsCameraPos						= (1ul<<18ul),
 	rsR2							= (1ul<<19ul),
 	rsR4							= (1ul<<20ul),
+
+	rsDeviceActive					= (1ul<<21ul),
 	// 22-32 bit - reserved to Editor
 };
 
