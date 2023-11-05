@@ -175,6 +175,12 @@ MotionID CStalkerAnimationManager::weapon_animation	(u32 slot, const EBodyState 
 {
 	const xr_vector<CAniVector>		&animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[slot].A;
 
+	if (eMentalStatePanic == object().movement().mental_state() &&
+		eMovementTypeRun == object().movement().movement_type() && body_state == eBodyStateStand &&
+		!fis_zero(object().movement().speed(object().character_physics_support()->movement()))) {
+		return (animation[15].A[0]);
+	}
+
 	switch (m_weapon->GetState()) {
 		case CWeapon::eReload : {
 			switch (m_weapon->GetReloadState()){
