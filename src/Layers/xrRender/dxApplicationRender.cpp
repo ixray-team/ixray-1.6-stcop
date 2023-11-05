@@ -189,22 +189,24 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 		draw_face					(hLevelLogo_Add, back_coords, back_tex_coords, tsz);
 	}
 
+	if (EngineExternal()[EEngineExternalRender::LoadScreenTips])
+	{
+		// Draw title
+		VERIFY							(owner.pFontSystem);
+		owner.pFontSystem->Clear		();
+		owner.pFontSystem->SetColor		(color_rgba(103,103,103,255));
+		owner.pFontSystem->SetAligment	(CGameFont::alCenter);
+		back_size.set					(_w/2,622.0f*k.y);
+		owner.pFontSystem->OutSet		(back_size.x, back_size.y);
+		owner.pFontSystem->OutNext		(owner.ls_header);
+		owner.pFontSystem->OutNext		("");
+		owner.pFontSystem->OutNext		(owner.ls_tip_number);
 
-	// Draw title
-	VERIFY							(owner.pFontSystem);
-	owner.pFontSystem->Clear		();
-	owner.pFontSystem->SetColor		(color_rgba(103,103,103,255));
-	owner.pFontSystem->SetAligment	(CGameFont::alCenter);
-	back_size.set					(_w/2,622.0f*k.y);
-	owner.pFontSystem->OutSet		(back_size.x, back_size.y);
-	owner.pFontSystem->OutNext		(owner.ls_header);
-	owner.pFontSystem->OutNext		("");
-	owner.pFontSystem->OutNext		(owner.ls_tip_number);
+		float fTargetWidth				= 600.0f*k.x*(b_ws?0.8f:1.0f);
+		draw_multiline_text				(owner.pFontSystem, fTargetWidth, owner.ls_tip);
 
-	float fTargetWidth				= 600.0f*k.x*(b_ws?0.8f:1.0f);
-	draw_multiline_text				(owner.pFontSystem, fTargetWidth, owner.ls_tip);
-
-	owner.pFontSystem->OnRender		();
+		owner.pFontSystem->OnRender		();
+	}
 
 	//draw level-specific screenshot
 	if(hLevelLogo)
