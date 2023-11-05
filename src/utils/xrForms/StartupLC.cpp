@@ -11,6 +11,7 @@ static const char* h_str =
 "-o			== modify build options\n"
 "-nosun		== disable sun-lighting\n"
 "-skipinvalid\t== skip crash if invalid faces exists\n"
+"-notess	== do not use tesselate geometry\n"
 "-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
 "\n"
 "NOTE: The last key is required for any functionality\n";
@@ -37,6 +38,7 @@ void StartupLC(LPSTR lpCmdLine)
 	VERIFY(lc_global_data());
 	lc_global_data()->b_nosun_set(!!strstr(cmd, "-nosun"));
 	lc_global_data()->SetSkipInvalid(strstr(cmd, "-skipinvalid") != nullptr);
+	lc_global_data()->SetSkipTesselate(strstr(cmd, "-notess") != nullptr);
 
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
