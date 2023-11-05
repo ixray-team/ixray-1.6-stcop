@@ -420,8 +420,9 @@ void CConsole::DrawBackgrounds(bool bGame) {
 	// --------------------------- highlight words --------------------
 
 	if (m_select_tip < (int)m_tips.size()) {
-		Frect r_;
+		Frect r_{};
 
+		xr_string tmp;
 		vecTipsEx::iterator itb_ = m_tips.begin() + m_start_tip;
 		vecTipsEx::iterator ite_ = m_tips.end();
 		for (u32 i = 0; itb_ != ite_; ++itb_, ++i) { // tips 
@@ -435,14 +436,12 @@ void CConsole::DrawBackgrounds(bool bGame) {
 			}
 
 			r_.null();
-			LPSTR  tmp      = (PSTR)_alloca( (str_size + 1) * sizeof(char) );
-
-			strncpy_s( tmp, str_size+1, ts.text.c_str(), ts.HL_start );
-			r_.x1 = pr.x1 + w1 + pFont->SizeOf_( tmp );
+			tmp.assign(ts.text.c_str(), ts.HL_start);
+			r.x1 = pr.x1 + w1 + pFont->SizeOf_(tmp.c_str());
 			r_.y1 = pr.y1 + i * font_h;
 
-			strncpy_s( tmp, str_size+1, ts.text.c_str(), ts.HL_finish );
-			r_.x2 = pr.x1 + w1 + pFont->SizeOf_( tmp );
+			tmp.assign(ts.text.c_str(), ts.HL_finish);
+			r.x2 = pr.x1 + w1 + pFont->SizeOf_(tmp.c_str());
 			r_.y2 = r_.y1 + font_h;
 
 			DrawRect( r_, tips_word_color );
