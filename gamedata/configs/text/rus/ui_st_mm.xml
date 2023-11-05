@@ -411,9 +411,6 @@
 	<string id="st_team_deathmatch">
 		<text>Команда против команды</text>
 	</string>
-	<string id="ui_mm_60_hz">
-		<text>Частота 60Гц</text>
-	</string>
 	<string id="ui_mm_action">
 		<text>Действие</text>
 	</string>
