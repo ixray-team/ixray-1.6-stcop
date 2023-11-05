@@ -498,11 +498,11 @@ void CConsole::DrawRect( Frect const& r, u32 color )
 
 void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 {
-	u32  str_size = xr_strlen( cmd_str );
-	PSTR edt   = (PSTR)_alloca( (str_size + 1) * sizeof(char) );
-	PSTR first = (PSTR)_alloca( (str_size + 1) * sizeof(char) );
-	PSTR last  = (PSTR)_alloca( (str_size + 1) * sizeof(char) );
-	
+	u32  str_size = xr_strlen( cmd_str );	
+	char* edt = new char[str_size + 1];
+	char* first = new char[str_size + 1];
+	char* last = new char[str_size + 1];
+
 	xr_strcpy( edt, str_size+1, cmd_str );
 	edt[str_size] = 0;
 
@@ -572,6 +572,10 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 	{
 		Log( "! Unknown command: ", first );
 	}
+
+	xr_delete(edt);
+	xr_delete(first);
+	xr_delete(last);
 
 	if ( record_cmd )
 	{
