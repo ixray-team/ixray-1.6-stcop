@@ -55,6 +55,7 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 private:
 	bool _skipInvalid;
 	bool _skipTesselate;
+	bool _lmapRGBA;
 private:
 		bool							b_vert_not_register;
 public:
@@ -154,6 +155,9 @@ public:
 
 	bool GetSkipTesselate() { return _skipTesselate; }
 	void SetSkipTesselate(bool skipTesselate) { _skipTesselate = skipTesselate; }
+
+	bool GetLmapRGBA() { return _lmapRGBA; }
+	void SetLmapRGBA(bool lmapRGBA) { _lmapRGBA = lmapRGBA; }
 };
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
