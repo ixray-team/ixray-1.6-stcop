@@ -113,6 +113,12 @@ BOOL IGame_Level::Load			(u32 dwNum)
 		g_hud					= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
 
 	// Render-level Load
+	try {
+		Render->level_Unload(); // try to unload old data
+	}
+	catch (...) {
+		Msg("Level data empty: %s", temp);
+	}
 	Render->level_Load			(LL_Stream);
 
 	// Objects
