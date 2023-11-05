@@ -9,7 +9,7 @@
 #include "../xrAI/spawn_patcher.h"
 
 #include "../xrAI/factory_api.h"
-#include "../xrAI/quadtree.h"
+#include "../../xrGame/quadtree.h"
 
 static const char* h_str =
 "The following keys are supported / required:\n"

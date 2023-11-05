@@ -4,7 +4,7 @@
 #include "../xrForms/xrThread.h"
 #include <mmsystem.h>
 
-#include "quadtree.h"
+#include "../../xrGame/quadtree.h"
 #include "cover_point.h"
 #include "object_broker.h"
 
