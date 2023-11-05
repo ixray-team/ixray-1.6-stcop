@@ -6,14 +6,20 @@ file(GLOB_RECURSE UTILS_FORMS_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
     "*.hpp"
+)
+file(GLOB_RECURSE UTILS_FORMS_RES_FILES
+    "*.ico"
     "*.rc"
+    "*.bmp"
 )
 
 # Source groups
-source_group("kernel" FILES ${UTILS_FORMS_SOURCE_ALL_FILES})
+source_group("core" FILES ${UTILS_FORMS_SOURCE_ALL_FILES})
+source_group("res" FILES ${UTILS_FORMS_RES_FILES})
 
 # Apply list
 list(APPEND UTILS_FORMS_SRC_FILES ${UTILS_FORMS_SOURCE_ALL_FILES})
+list(APPEND UTILS_FORMS_SRC_FILES ${UTILS_FORMS_RES_FILES})
 
 # Remove unused files
 #list(FILTER UTILS_FORMS_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
