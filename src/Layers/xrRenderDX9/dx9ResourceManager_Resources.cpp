@@ -181,17 +181,9 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		LPCSTR c_target = "vs_3_0";
 		LPCSTR c_entry = "main";
 
-		Msg("compiling shader %s", name);
 		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
 
-		if ( FAILED(_hr) ) {
-			FlushLog();
-		}
-
-		CHECK_OR_EXIT			(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-		);
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 
 		return					_vs;
 	}
@@ -246,17 +238,9 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		LPCSTR c_target = "ps_3_0";
 		LPCSTR c_entry = "main";
 
-		Msg("compiling shader %s", name);
 		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3DCOMPILE_DEBUG | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
 
-		if ( FAILED(_hr) ) {
-			FlushLog();
-		}
-
-		CHECK_OR_EXIT		(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-		);
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 
 		return					_ps;
 	}
@@ -745,10 +729,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		_RELEASE	(pErrorBuf);
 		pConstants	= NULL;
 
-		CHECK_OR_EXIT		(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-		);
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 
 		return		_vs;
 	}
@@ -849,10 +830,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		_RELEASE		(pErrorBuf);
 		pConstants		= NULL;
 
-		CHECK_OR_EXIT		(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-		);
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 
 		return			_ps;
 	}
