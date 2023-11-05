@@ -51,9 +51,9 @@ void	destroy_global_data()
 xrLC_GlobalData::xrLC_GlobalData	():
  _b_nosun(false),_gl_linear(false),
 	b_vert_not_register( false ),
-	_skipInvalid(false), _skipTesselate(false), _lmapRGBA(false)
+	_skipInvalid(false), _skipTesselate(false), _lmapRGBA(false),
+	_skipSubdivide(false)
 {
-	
 	_cl_globs._RCAST_Model = 0;
 	write_faces = xr_new< twrite_faces	>( &_g_faces );
 	read_faces = xr_new< tread_faces	>( &_g_faces );

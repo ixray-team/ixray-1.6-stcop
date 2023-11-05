@@ -274,12 +274,16 @@ void CBuild::Run	(LPCSTR P)
 	}
 	
 	//****************************************** Subdivide geometry
-	FPU::m64r					();
-	Phase						("Subdividing geometry...");
-	mem_Compact					();
-	xrPhase_Subdivide			();
-	//IsolateVertices				(TRUE);
-	lc_global_data()->vertices_isolate_and_pool_reload();
+	if (!lc_global_data()->GetSkipSubdivide())
+	{
+		FPU::m64r();
+		Phase("Subdividing geometry...");
+		mem_Compact();
+		xrPhase_Subdivide();
+		//IsolateVertices(TRUE);
+		lc_global_data()->vertices_isolate_and_pool_reload();
+	}
+
 	//****************************************** All lighting + lmaps building and saving
 #ifdef NET_CMP
 	mu_base.wait				(500);

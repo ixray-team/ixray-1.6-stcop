@@ -56,6 +56,7 @@ private:
 	bool _skipInvalid;
 	bool _skipTesselate;
 	bool _lmapRGBA;
+	bool _skipSubdivide;
 private:
 		bool							b_vert_not_register;
 public:
@@ -157,6 +158,9 @@ public:
 
 	bool GetLmapRGBA() { return _lmapRGBA; }
 	void SetLmapRGBA(bool lmapRGBA) { _lmapRGBA = lmapRGBA; }
+
+	bool GetSkipSubdivide() { return _skipSubdivide; }
+	void SetSkipSubdivide(bool skipSubdivide) { _skipSubdivide = skipSubdivide; }
 };
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
