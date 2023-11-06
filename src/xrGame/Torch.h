@@ -25,6 +25,7 @@ protected:
 	ref_light		light_omni;
 	ref_glow		glow_render;
 	Fvector			m_focus;
+	ref_sound 		m_switch_sound;
 private:
 	inline	bool	can_use_dynamic_lights	();
 
