@@ -14,8 +14,6 @@ typedef unsigned int gsi_time;  // must be 32 bits - sorry for copying :(
 
 class CGameSpy_Full
 {
-	HMODULE	m_hGameSpyDLL;
-
 	void	LoadGameSpy();
 
 	bool	m_bServicesAlreadyChecked;

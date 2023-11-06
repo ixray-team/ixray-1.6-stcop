@@ -5,41 +5,17 @@
 
 CGameSpy_HTTP::CGameSpy_HTTP()
 {
-	m_hGameSpyDLL = NULL;
 	m_LastRequest	= -1;
-
-	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibraryA	(g_name);
-	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
-	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
-
-	LoadGameSpy(m_hGameSpyDLL);
-
+	LoadGameSpy();
 	StartUp();
-};
-
-CGameSpy_HTTP::CGameSpy_HTTP(HMODULE hGameSpyDLL)
-{
-	m_hGameSpyDLL = NULL;
-	m_LastRequest	= -1;
-
-	LoadGameSpy(hGameSpyDLL);
-
-	StartUp();
-};
+}
 
 CGameSpy_HTTP::~CGameSpy_HTTP()
 {
 	CleanUp();
+}
 
-	if (m_hGameSpyDLL)
-	{
-		FreeLibrary(m_hGameSpyDLL);
-		m_hGameSpyDLL = NULL;
-	}
-};
-void	CGameSpy_HTTP::LoadGameSpy(HMODULE hGameSpyDLL)
+void CGameSpy_HTTP::LoadGameSpy()
 {
 	//-----------------------------------------------------
 	GAMESPY_LOAD_FN(xrGS_ghttpStartup);
@@ -54,20 +30,21 @@ void	CGameSpy_HTTP::LoadGameSpy(HMODULE hGameSpyDLL)
 
 }
 
-void		CGameSpy_HTTP::StartUp		()
+void CGameSpy_HTTP::StartUp		()
 {
 	xrGS_ghttpStartup();
 }
 
-void		CGameSpy_HTTP::CleanUp		()
+void CGameSpy_HTTP::CleanUp		()
 {
 	xrGS_ghttpCleanup();
 }
 
-void		CGameSpy_HTTP::Think		()
+void CGameSpy_HTTP::Think		()
 {
 	xrGS_ghttpThink();
 }
+
 void __cdecl ProgressCallback ( GHTTPRequest request, GHTTPState state, const char * buffer, GHTTPByteCount bufferLen, GHTTPByteCount bytesReceived, GHTTPByteCount totalSize, void * param )
 {
 	if (state == GHTTPReceivingFile && totalSize != 0)

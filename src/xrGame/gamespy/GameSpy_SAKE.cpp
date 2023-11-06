@@ -30,7 +30,7 @@ shared_str const CGameSpy_SAKE::TryToTranslate(SAKEStartRequestResult const & re
 	return tmp_string;
 }
 
-void CGameSpy_SAKE::LoadGameSpySAKE(HMODULE hGameSpyDLL)
+void CGameSpy_SAKE::LoadGameSpySAKE()
 {
 	GAMESPY_LOAD_FN(xrGS_sakeStartup);
 	GAMESPY_LOAD_FN(xrGS_sakeShutdown);
@@ -51,10 +51,10 @@ void CGameSpy_SAKE::Init()
 	}
 }
 
-CGameSpy_SAKE::CGameSpy_SAKE(HMODULE hGameSpyDLL)
+CGameSpy_SAKE::CGameSpy_SAKE()
 {
 	m_sake_inst		= NULL;
-	LoadGameSpySAKE	(hGameSpyDLL);
+	LoadGameSpySAKE	();
 	Init			();
 }
 

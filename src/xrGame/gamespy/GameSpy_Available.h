@@ -5,12 +5,9 @@
 class CGameSpy_Available
 {
 private:
-	HMODULE	m_hGameSpyDLL;
-
-	void	LoadGameSpy(HMODULE hGameSpyDLL);
+	void	LoadGameSpy();
 public:
 	CGameSpy_Available();
-	CGameSpy_Available(HMODULE hGameSpyDLL);
 	~CGameSpy_Available();
 
 	bool	CheckAvailableServices	(shared_str& resultstr);

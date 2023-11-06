@@ -21,43 +21,17 @@ CGameSpy_Browser::CGameSpy_Browser()
 #endif // PROFILE_CRITICAL_SECTIONS
 
 {
-	//-------------------------
-	m_hGameSpyDLL = NULL;
 	m_pQR2 = NULL;
 	m_pGSBrowser = NULL;
 	m_pServerList = NULL;
-	//-------------------------
-	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibraryA	(g_name);
-	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
-	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
-	//-------------------------
-	LoadGameSpy(m_hGameSpyDLL);
-	//-------------------------
-	InitInternalData(m_hGameSpyDLL);
+
+	LoadGameSpy();
+	InitInternalData();
 };
 
-CGameSpy_Browser::CGameSpy_Browser(HMODULE hGameSpyDLL)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_refresh_lock(MUTEX_PROFILE_ID(CGameSpy_Browser::m_refresh_lock))
-#endif // PROFILE_CRITICAL_SECTIONS
-
+void	CGameSpy_Browser::InitInternalData()
 {
-	//-------------------------
-	m_hGameSpyDLL = NULL;
-	m_pQR2 = NULL;
-	m_pGSBrowser = NULL;
-	m_pServerList = NULL;
-	//-------------------------
-	LoadGameSpy(hGameSpyDLL);
-	//-------------------------
-	InitInternalData(hGameSpyDLL);
-};
-
-void	CGameSpy_Browser::InitInternalData(HMODULE hGameSpyDLL)
-{
-	m_pQR2	= xr_new<CGameSpy_QR2>(hGameSpyDLL);
+	m_pQR2	= xr_new<CGameSpy_QR2>();
 	m_pQR2->RegisterAdditionalKeys();
 
 	m_bAbleToConnectToMasterServer = true;
@@ -69,10 +43,6 @@ void	CGameSpy_Browser::InitInternalData(HMODULE hGameSpyDLL)
 	{
 		Msg("! Unable to init Server Browser!");
 	}
-	//	else
-	//		Msg("- GS Server Browser Inited!");
-
-
 };
 
 CGameSpy_Browser::~CGameSpy_Browser()
@@ -90,15 +60,9 @@ CGameSpy_Browser::~CGameSpy_Browser()
 		xrGS_ServerBrowserFree(m_pGSBrowser);
 		m_pGSBrowser = NULL;
 	}
-
-	if (m_hGameSpyDLL)
-	{
-		FreeLibrary(m_hGameSpyDLL);
-		m_hGameSpyDLL = NULL;
-	}	
 };
 
-void	CGameSpy_Browser::LoadGameSpy(HMODULE hGameSpyDLL)
+void	CGameSpy_Browser::LoadGameSpy()
 {	
 	GAMESPY_LOAD_FN(xrGS_ServerBrowserNewA);	
 	GAMESPY_LOAD_FN(xrGS_ServerBrowserFree);
@@ -237,48 +201,33 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 	if (!pGSBrowser) return;
 	switch (reason)
 	{
-	case sbc_serveradded : //a server was added to the list, may just have an IP & port at this point
+	case sbc_serveradded :
+		//a server was added to the list, may just have an IP & port at this point
+		{	
+		}
+		break;
+	case sbc_serverupdated : 
+		//server information has been updated - either basic or full information is now available about this server
 		{
-#ifdef _DEBUG
-//.			Msg("sbc_serveradded");
-#endif
-//			pGSBrowser->SortBrowserByPing();
-//			pGSBrowser->UpdateServerList();			
-		}break;
-	case sbc_serverupdated : //server information has been updated - either basic or full information is now available about this server
-		{
-#ifdef _DEBUG
-//.			Msg("sbc_serverupdated");
-#endif
-//			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
 		}break;
-	case sbc_serverupdatefailed : //an attempt to retrieve information about this server, either directly or from the master, failed
+	case sbc_serverupdatefailed :
+		//an attempt to retrieve information about this server, either directly or from the master, failed
 		{
-#ifdef _DEBUG
-//.			Msg("sbc_serverupdatefailed");
-#endif
-//			pGSBrowser->OnUpdateFailed(server);
-//			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
 		}break;
-	case sbc_serverdeleted : //a server was removed from the list
+	case sbc_serverdeleted : 
+		//a server was removed from the list
 		{
-#ifdef _DEBUG
-			Msg("sbc_serverdeleted");
-#endif
-//			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
 		}break;
-	case sbc_updatecomplete : //the server query engine is now idle 
+	case sbc_updatecomplete : 
+		//the server query engine is now idle 
 		{
-#ifdef _DEBUG
-//.			Msg("sbc_updatecomplete");
-#endif
-//			pGSBrowser->SortBrowserByPing();
 			pGSBrowser->UpdateServerList();
 		}break;
-	case sbc_queryerror		://the master returned an error string for the provided query
+	case sbc_queryerror		:
+		//the master returned an error string for the provided query
 		{
 #ifdef _DEBUG
 			Msg("sbc_queryerror");
@@ -286,9 +235,6 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 		}break;
 	case sbc_serverchallengereceived:
 		{
-#ifdef _DEBUG
-//.			Msg("sbc_serverchallengereceived");
-#endif
 		}break;
 	default:
 		{
@@ -494,33 +440,38 @@ void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 	}
 };
 
-void			CGameSpy_Browser::RefreshQuick(int Index)
+void CGameSpy_Browser::RefreshQuick(int Index)
 {
 	void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, Index);
-	if (!pServer) return;
+	if (!pServer) 
+		return;
+
 	ServerInfo xServerInfo;
 	ReadServerInfo(&xServerInfo, pServer);
 	xrGS_ServerBrowserAuxUpdateServer(m_pGSBrowser, pServer, SBFalse, SBTrue);
 };
 
-bool			CGameSpy_Browser::CheckDirectConnection(int Index)
+bool CGameSpy_Browser::CheckDirectConnection(int Index)
 {
 	void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, Index);
-	if (!pServer) return false;
+	if (!pServer) 
+		return false;
+
 	SBBool res = xrGS_SBServerDirectConnect(pServer);
 	return res == SBTrue;
 };
 
-void			CGameSpy_Browser::OnUpdateFailed		(void* server)
+void CGameSpy_Browser::OnUpdateFailed(void* server)
 {
 	xrGS_ServerBrowserRemoveServer(m_pGSBrowser, server);
 }
 
-void			CGameSpy_Browser::Update()
+void CGameSpy_Browser::Update()
 {
 	xrGS_ServerBrowserThink(m_pGSBrowser);	
 	if (!m_bTryingToConnectToMasterServer)
 		if (MainMenu()) MainMenu()->Hide_CTMS_Dialog();
+
 	if (m_bShowCMSErr)
 	{
 		if (MainMenu()) MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
@@ -528,28 +479,27 @@ void			CGameSpy_Browser::Update()
 	}
 };
 
-void			CGameSpy_Browser::UpdateServerList()
+void CGameSpy_Browser::UpdateServerList()
 {
-//	SortBrowserByPing();
 	if (m_pServerList) 
 	{
-//		m_pServerList->SetSortFunc("", false);
-//		m_pServerList->SetSortFunc("ping", false);
 		m_pServerList->RefreshList();
 	}
 }
 
-void			CGameSpy_Browser::SortBrowserByPing	()
+void CGameSpy_Browser::SortBrowserByPing	()
 {
 	xrGS_ServerBrowserSortA(m_pGSBrowser, SBTrue, "ping", sbcm_int);
 }
 
-bool			CGameSpy_Browser::HasAllKeys(int Index)
+bool CGameSpy_Browser::HasAllKeys(int Index)
 {
 	void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, Index);
-	if (!pServer) return true;
+	if (!pServer)
+		return true;
+
 	ServerInfo xServerInfo;
 	ReadServerInfo(&xServerInfo, pServer);
-//	xrGS_ServerBrowserAuxUpdateServer(m_pGSBrowser, pServer, SBFalse, SBTrue);
+
 	return (xrGS_SBServerHasFullKeys(pServer) == SBTrue);
 };

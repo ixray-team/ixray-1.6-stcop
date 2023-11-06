@@ -7,7 +7,7 @@
 class CGameSpy_ATLAS
 {
 public:
-				CGameSpy_ATLAS			(HMODULE hGameSpyDLL);
+				CGameSpy_ATLAS			();
 				~CGameSpy_ATLAS			();
 
 	void		Think					();
@@ -70,7 +70,7 @@ private:
 	SCInterfacePtr					m_interface;
 
 	void							Init							();
-	void							LoadGameSpyATLAS				(HMODULE hGameSpyDLL);
+	void							LoadGameSpyATLAS				();
 
 	GAMESPY_FN_VAR_DECL(gsi_u32,			wsLoginProfile,			(const gsi_char * profileNick,
 																	 const gsi_char * email,

@@ -5,12 +5,9 @@
 class CGameSpy_HTTP
 {
 private:
-	HMODULE	m_hGameSpyDLL;
-
-	void	LoadGameSpy(HMODULE hGameSpyDLL);
+	void	LoadGameSpy();
 public:
 	CGameSpy_HTTP();
-	CGameSpy_HTTP(HMODULE hGameSpyDLL);
 	~CGameSpy_HTTP();
 
 	void		StartUp		();

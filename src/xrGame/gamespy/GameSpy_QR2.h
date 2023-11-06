@@ -5,14 +5,9 @@
 class CGameSpy_QR2
 {
 private:
-//	string16	m_SecretKey;
-
-	HMODULE	m_hGameSpyDLL;
-
-	void	LoadGameSpy(HMODULE hGameSpyDLL);
+	void	LoadGameSpy();
 public:
 	CGameSpy_QR2();
-	CGameSpy_QR2(HMODULE hGameSpyDLL);
 	~CGameSpy_QR2();
 
 //	bool	Init		(u32 PortID, int Public, void* instance);

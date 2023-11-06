@@ -40,10 +40,10 @@ shared_str CGameSpy_GP::TryToTranslate(GPResult const & res)
 	return tmp_string;
 }
 
-CGameSpy_GP::CGameSpy_GP(HMODULE hGameSpyDLL)
+CGameSpy_GP::CGameSpy_GP()
 {
 	m_GPConnection	= NULL;	//GPConnection type is: void*
-	LoadGameSpyGP	(hGameSpyDLL);
+	LoadGameSpyGP	();
 	Init			();
 }
 
@@ -203,7 +203,7 @@ GPResult CGameSpy_GP::SetUniqueNick(shared_str const & unique_nick,
 	);
 }
 
-void CGameSpy_GP::LoadGameSpyGP(HMODULE hGameSpyDLL)
+void CGameSpy_GP::LoadGameSpyGP()
 {
 	GAMESPY_LOAD_FN(xrGS_gpInitialize);
 	GAMESPY_LOAD_FN(xrGS_gpDestroy);

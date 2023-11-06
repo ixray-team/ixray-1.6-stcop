@@ -101,7 +101,6 @@ CMainMenu::CMainMenu	()
 	{
 		g_btnHint						= xr_new<CUIButtonHint>();
 		g_statHint						= xr_new<CUIButtonHint>();
-		m_pGameSpyFull					= xr_new<CGameSpy_Full>();
 		
 		for (u32 i=0; i<u32(ErrMax); i++)
 		{
@@ -110,6 +109,7 @@ CMainMenu::CMainMenu	()
 			m_pMB_ErrDlgs.push_back		(pNewErrDlg);
 		}
 
+		m_pGameSpyFull					= xr_new<CGameSpy_Full>();
 		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnRunDownloadedPatch));
 		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", MESSAGE_BOX_OK_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnConnectToMasterServerOkClicked));
 
@@ -784,12 +784,12 @@ void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 LPCSTR CMainMenu::GetGSVer()
 {
 	static string256	buff;
-	if(m_pGameSpyFull)
+	if(m_pGameSpyFull && Engine.External.hGameSpy != 0)
 	{
 		xr_strcpy(buff, m_pGameSpyFull->GetGameVersion());
 	}else
 	{
-		buff[0]	= 0;
+		xr_strcpy(buff, "1.6.02");
 	}
 
 	return buff;

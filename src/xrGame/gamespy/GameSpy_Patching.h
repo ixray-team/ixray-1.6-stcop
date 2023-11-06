@@ -5,12 +5,9 @@
 class CGameSpy_Patching
 {
 private:
-	HMODULE	m_hGameSpyDLL;
-
-	void	LoadGameSpy(HMODULE hGameSpyDLL);
+	void	LoadGameSpy();
 public:
 	CGameSpy_Patching();
-	CGameSpy_Patching(HMODULE hGameSpyDLL);
 	~CGameSpy_Patching();
 
 	void CheckForPatch	(bool InformOfNoPatch);

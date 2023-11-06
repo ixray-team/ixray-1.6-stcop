@@ -5,12 +5,10 @@
 class CGameSpy_GCD_Client
 {
 	private:
-		HMODULE	m_hGameSpyDLL;
+		void	LoadGameSpy();
 
-		void	LoadGameSpy(HMODULE hGameSpyDLL);
 	public:
 		CGameSpy_GCD_Client();
-		CGameSpy_GCD_Client(HMODULE hGameSpyDLL);
 		~CGameSpy_GCD_Client();
 
 		void CreateRespond	(char* RespondStr, char* ChallengeStr, u8 Reauth);
