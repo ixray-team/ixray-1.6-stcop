@@ -66,15 +66,12 @@ struct ServerInfo{
 class CGameSpy_Browser
 {
 private:
-//	string16	m_SecretKey;
-
-	HMODULE	m_hGameSpyDLL;
 	void*	m_pGSBrowser;
 	CGameSpy_QR2*	m_pQR2;
 	CServerList*	m_pServerList;
 
-	void	InitInternalData(HMODULE hGameSpyDLL);
-	void	LoadGameSpy(HMODULE hGameSpyDLL);
+	void	InitInternalData();
+	void	LoadGameSpy();
 	
 	void	ReadServerInfo	(ServerInfo* pServerInfo, void* pServer);
 
@@ -87,7 +84,6 @@ private:
 
 public:
 	CGameSpy_Browser();
-	CGameSpy_Browser(HMODULE hGameSpyDLL);
 	~CGameSpy_Browser();
 
 	bool			Init(CServerList* pServerList);

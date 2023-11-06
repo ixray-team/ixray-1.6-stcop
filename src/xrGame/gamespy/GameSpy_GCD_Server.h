@@ -6,12 +6,9 @@
 class CGameSpy_GCD_Server
 {
 	private:
-		HMODULE	m_hGameSpyDLL;
-
-		void	LoadGameSpy(HMODULE hGameSpyDLL);
+		void	LoadGameSpy();
 	public:
 		CGameSpy_GCD_Server();
-		CGameSpy_GCD_Server(HMODULE hGameSpyDLL);
 		~CGameSpy_GCD_Server();		
 
 		bool	Init();

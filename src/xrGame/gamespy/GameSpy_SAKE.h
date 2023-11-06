@@ -13,7 +13,7 @@ namespace gamespy_sake
 class CGameSpy_SAKE
 {
 public:
-							CGameSpy_SAKE	(HMODULE hGameSpyDLL);
+							CGameSpy_SAKE	();
 							~CGameSpy_SAKE	();
 
 
@@ -38,7 +38,7 @@ private:
 	SAKE								m_sake_inst;
 	
 	void										Init						();
-	void										LoadGameSpySAKE				(HMODULE hGameSpyDLL);
+	void										LoadGameSpySAKE				();
 
 	GAMESPY_FN_VAR_DECL(SAKEStartupResult,		sakeStartup,				(SAKE *sakePtr));
 	GAMESPY_FN_VAR_DECL(void,					sakeShutdown,				(SAKE sake));

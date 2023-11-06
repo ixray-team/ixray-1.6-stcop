@@ -6,36 +6,14 @@
 
 CGameSpy_QR2::CGameSpy_QR2()
 {
-	//-------------------------------
-	m_hGameSpyDLL = NULL;
-
-	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibraryA	(g_name);
-	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
-	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
-
-	LoadGameSpy(m_hGameSpyDLL);
-};
-
-CGameSpy_QR2::CGameSpy_QR2(HMODULE hGameSpyDLL)
-{
-	//-------------------------------
-	m_hGameSpyDLL = NULL;
-
-	LoadGameSpy(hGameSpyDLL);
-};
+	LoadGameSpy();
+}
 
 CGameSpy_QR2::~CGameSpy_QR2()
 {
-	if (m_hGameSpyDLL)
-	{
-		FreeLibrary(m_hGameSpyDLL);
-		m_hGameSpyDLL = NULL;
-	}
-};
+}
 
-void	CGameSpy_QR2::LoadGameSpy(HMODULE hGameSpyDLL)
+void CGameSpy_QR2::LoadGameSpy()
 {
 
 	GAMESPY_LOAD_FN(xrGS_RegisteredKey);
@@ -102,17 +80,10 @@ void	CGameSpy_QR2::RegisterAdditionalKeys	()
 	xrGS_qr2_register_keyA(G_RETURN_PLAYERS_KEY,			("returnplayers"));
 	xrGS_qr2_register_keyA(G_BEARER_CANT_SPRINT_KEY,		("bearercant_sprint"));
 
-	//---- Player keys	
-//	xrGS_qr2_register_keyA(P_NAME__KEY,					("name_"));
-//	xrGS_qr2_register_keyA(P_FRAGS__KEY,					("frags_"));
-//	xrGS_qr2_register_keyA(P_DEATH__KEY,					("death_"));
-//	xrGS_qr2_register_keyA(P_RANK__KEY,					("rank_"));
-//	xrGS_qr2_register_keyA(P_TEAM__KEY,					("p_team_"));
 	xrGS_qr2_register_keyA(P_SPECTATOR__KEY,				("spectator_"));
 	xrGS_qr2_register_keyA(P_ARTEFACTS__KEY,				("artefacts_"));
 
 	//---- Team keys
-//	xrGS_qr2_register_keyA(T_NAME_KEY,					("t_name_key"));
 	xrGS_qr2_register_keyA(T_SCORE_T_KEY,					("t_score_t"));
 	xrGS_qr2_register_keyA(SERVER_UP_TIME_KEY,			("server_up_time"));
 };
@@ -123,7 +94,6 @@ bool	CGameSpy_QR2::Init		(int PortID, int Public, void* instance)
 	//--------- QR2 Init -------------------------/
 	//call qr_init with the query port number and gamename, default IP address, and no user data
 	
-//	if (xrGS_qr2_initA(NULL,NULL,PortID, GAMESPY_GAMENAME, m_SecretKey, Public, 0,
 	qr2_error_t err = xrGS_qr2_initA(
 		NULL,
 		NULL,

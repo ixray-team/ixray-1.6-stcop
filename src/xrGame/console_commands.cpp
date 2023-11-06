@@ -1671,6 +1671,9 @@ public:
 	virtual void Execute(LPCSTR arguments)
 	{
 		if (!MainMenu()) return;
+
+		if (Engine.External.hGameSpy == 0)
+			return;
 		/*
 		CGameSpy_Available GSA;
 		shared_str result_string;

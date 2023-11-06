@@ -108,12 +108,13 @@ endif()
 
 add_subdirectory("src/Layers/xrRenderPC_R4")
 add_subdirectory("src/xrGame")
-add_subdirectory("src/xrGameSpy")
-add_subdirectory("src/xrPlay")
 
 if(IXRAY_MP)
     add_subdirectory("src/xrServer")
+    add_subdirectory("src/xrGameSpy")
 endif()
+
+add_subdirectory("src/xrPlay")
 
 # Engine Utils
 if(IXRAY_UTILS OR IXRAY_COMPRESSOR_ONLY)
@@ -151,7 +152,10 @@ set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrAbstractions PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
-set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
+
+if(IXRAY_MP)
+    set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
+endif()
 
 if(IXRAY_USE_R1)
     set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
@@ -201,7 +205,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
 else()
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrCompress)
-    set_target_properties(xrEngine xrAPI xrCDB xrSound xrCPU_Pipe xrPhysics xrParticles xrGame xrGameSpy xrRender_R4 xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    set_target_properties(xrEngine xrAPI xrCDB xrSound xrCPU_Pipe xrPhysics xrParticles xrGame xrRender_R4 xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     set_target_properties(ODE luabind crypto CxImage PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 
     set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})

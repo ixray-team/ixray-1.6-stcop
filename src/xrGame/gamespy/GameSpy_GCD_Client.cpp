@@ -6,39 +6,22 @@
 
 CGameSpy_GCD_Client::CGameSpy_GCD_Client()
 {
-	m_hGameSpyDLL = NULL;
-
-	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibraryA	(g_name);
-	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
-	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
-
-	LoadGameSpy(m_hGameSpyDLL);
-};
-CGameSpy_GCD_Client::CGameSpy_GCD_Client(HMODULE hGameSpyDLL)
-{
-	m_hGameSpyDLL = NULL;
-
-	LoadGameSpy(hGameSpyDLL);
+	LoadGameSpy();
 };
 
 CGameSpy_GCD_Client::~CGameSpy_GCD_Client()
 {
-	if (m_hGameSpyDLL)
-	{
-		FreeLibrary(m_hGameSpyDLL);
-		m_hGameSpyDLL = NULL;
-	}
-};
-void	CGameSpy_GCD_Client::LoadGameSpy(HMODULE hGameSpyDLL)
-{
+}
 
+void	CGameSpy_GCD_Client::LoadGameSpy()
+{
 	GAMESPY_LOAD_FN(xrGS_gcd_compute_response);	
 }
 
 string64	gsCDKey = "";
+
 extern	void	GetCDKey_FromRegistry(char* CDKeyStr);
+
 void CGameSpy_GCD_Client::CreateRespond	(char* RespondStr, char* ChallengeStr, u8 Reauth)
 {
 	string512	CDKey = "";

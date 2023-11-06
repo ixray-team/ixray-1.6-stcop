@@ -6,32 +6,14 @@
 
 CGameSpy_GCD_Server::CGameSpy_GCD_Server()
 {
-	m_hGameSpyDLL = NULL;
+	LoadGameSpy();
+}
 
-	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibraryA	(g_name);
-	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
-	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
-
-	LoadGameSpy(m_hGameSpyDLL);
-};
-CGameSpy_GCD_Server::CGameSpy_GCD_Server(HMODULE hGameSpyDLL)
-{
-	m_hGameSpyDLL = NULL;
-
-	LoadGameSpy(hGameSpyDLL);
-};
 CGameSpy_GCD_Server::~CGameSpy_GCD_Server()
 {
-	if (m_hGameSpyDLL)
-	{
-		FreeLibrary(m_hGameSpyDLL);
-		m_hGameSpyDLL = NULL;
-	}
-};
+}
 
-void	CGameSpy_GCD_Server::LoadGameSpy(HMODULE hGameSpyDLL)
+void CGameSpy_GCD_Server::LoadGameSpy()
 {
 
 	GAMESPY_LOAD_FN(xrGS_gcd_init_qr2);
@@ -43,7 +25,7 @@ void	CGameSpy_GCD_Server::LoadGameSpy(HMODULE hGameSpyDLL)
 	GAMESPY_LOAD_FN(xrGS_gcd_getkeyhash);
 }
 
-bool	CGameSpy_GCD_Server::Init()
+bool CGameSpy_GCD_Server::Init()
 {
 	int res = xrGS_gcd_init_qr2(NULL);
 	if (res == -1)

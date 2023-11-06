@@ -19,6 +19,10 @@ CGameSpy_Browser* g_gs_browser = NULL;
 CServerList::CServerList()
 {
 	m_GSBrowser	= MainMenu()->GetGS()->GetGameSpyBrowser();
+
+	if (m_GSBrowser == nullptr)
+		return;
+
 	browser().Init(this);
 
 	for (int i = 0; i<LST_COLUMN_COUNT; i++)

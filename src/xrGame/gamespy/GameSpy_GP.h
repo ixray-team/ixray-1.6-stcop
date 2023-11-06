@@ -8,7 +8,7 @@
 class CGameSpy_GP
 {
 public:
-	explicit						CGameSpy_GP		(HMODULE hGameSpyDLL);
+	explicit						CGameSpy_GP		();
 									~CGameSpy_GP	();
 				
 				bool				Init			();
@@ -116,7 +116,7 @@ private:
 															 GPCallback callback,
 															 void * param));
 	
-	void							LoadGameSpyGP			(HMODULE hGameSpyDLL);
+	void							LoadGameSpyGP			();
 	//main callbacks
 	static void __cdecl				OnGameSpyErrorCb		(GPConnection * connection,
 															 void * arg,

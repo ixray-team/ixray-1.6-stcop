@@ -27,6 +27,10 @@ class ENGINE_API		CEngineAPI
 private:
 	HMODULE				hGame;
 	HMODULE				hRender;
+	
+public:
+	HMODULE				hGameSpy;
+
 public:
 	Factory_Create*		pCreate;
 	Factory_Destroy*	pDestroy;

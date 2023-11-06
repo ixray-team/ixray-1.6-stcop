@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "GameSpy_ATLAS.h"
 
-CGameSpy_ATLAS::CGameSpy_ATLAS	(HMODULE hGameSpyDLL)
+CGameSpy_ATLAS::CGameSpy_ATLAS	()
 {
 	m_interface			= NULL;
-	LoadGameSpyATLAS	(hGameSpyDLL);
+	LoadGameSpyATLAS	();
 	Init				();
 }
 
@@ -16,7 +16,7 @@ CGameSpy_ATLAS::~CGameSpy_ATLAS	()
 	}
 }
 
-void CGameSpy_ATLAS::LoadGameSpyATLAS(HMODULE hGameSpyDLL)
+void CGameSpy_ATLAS::LoadGameSpyATLAS()
 {
 	GAMESPY_LOAD_FN(xrGS_wsLoginProfile);
 	GAMESPY_LOAD_FN(xrGS_scInitialize);
