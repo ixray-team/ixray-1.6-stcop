@@ -84,6 +84,8 @@ void CTorch::Load(LPCSTR section)
 
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section,"night_vision");
+
+	m_switch_sound.create("device\\torch_click", st_Effect, sg_SourceType);
 }
 
 void CTorch::SwitchNightVision()
@@ -167,6 +169,14 @@ void CTorch::Switch()
 	if (OnClient())			return;
 	bool bActive			= !m_switched_on;
 	Switch					(bActive);
+
+	if (H_Parent() == g_actor)
+	{
+		if (m_switch_sound._feedback())
+			m_switch_sound.stop();
+
+		m_switch_sound.play(nullptr, sm_2D);
+	}
 }
 
 void CTorch::Switch(bool light_on)
