@@ -300,47 +300,52 @@ void CTorch::UpdateCL()
 			M.c.y	+= H_Parent()->Radius	()*2.f/3.f;
 		}
 
-		if (actor) 
+		if (actor)
 		{
-			m_prev_hp.x		= angle_inertion_var(m_prev_hp.x,-actor->cam_FirstEye()->yaw,TORCH_INERTION_SPEED_MIN,TORCH_INERTION_SPEED_MAX,TORCH_INERTION_CLAMP,Device.fTimeDelta);
-			m_prev_hp.y		= angle_inertion_var(m_prev_hp.y,-actor->cam_FirstEye()->pitch,TORCH_INERTION_SPEED_MIN,TORCH_INERTION_SPEED_MAX,TORCH_INERTION_CLAMP,Device.fTimeDelta);
+			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_FirstEye()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
 
-			Fvector			dir,right,up;	
-			dir.setHP		(m_prev_hp.x+m_delta_h,m_prev_hp.y);
-			Fvector::generate_orthonormal_basis_normalized(dir,up,right);
+			Fvector			dir, right, up;
+			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
+			Fvector::generate_orthonormal_basis_normalized(dir, up, right);
 
 
-			if (true)
+			Fvector offset = M.c;
+			offset.mad(M.i, TORCH_OFFSET.x);
+			offset.mad(M.j, TORCH_OFFSET.y);
+			offset.mad(M.k, TORCH_OFFSET.z);
+			light_render->set_position(offset);
+
+			if (true /*false*/)
 			{
-				Fvector offset				= M.c; 
-				offset.mad					(M.i,TORCH_OFFSET.x);
-				offset.mad					(M.j,TORCH_OFFSET.y);
-				offset.mad					(M.k,TORCH_OFFSET.z);
-				light_render->set_position	(offset);
+				offset = M.c;
+				offset.mad(M.i, OMNI_OFFSET.x);
+				offset.mad(M.j, OMNI_OFFSET.y);
+				offset.mad(M.k, OMNI_OFFSET.z);
+				light_omni->set_position(offset);
+			}
 
-				if(true /*false*/)
-				{
-					offset						= M.c; 
-					offset.mad					(M.i,OMNI_OFFSET.x);
-					offset.mad					(M.j,OMNI_OFFSET.y);
-					offset.mad					(M.k,OMNI_OFFSET.z);
-					light_omni->set_position	(offset);
-				}
-			}//if (true)
-			glow_render->set_position	(M.c);
+			glow_render->set_position(M.c);
 
-			if (true)
+			if (!actor->HUDview())
 			{
-				light_render->set_rotation	(dir, right);
-				
-				if(true /*false*/)
-				{
-					light_omni->set_rotation	(dir, right);
-				}
-			}//if (true)
-			glow_render->set_direction	(dir);
+				u16 head_bone = actor->Visual()->dcast_PKinematics()->LL_BoneID("bip01_head");
 
-		}// if(actor)
+				CBoneInstance& BI2 = actor->Visual()->dcast_PKinematics()->LL_GetBoneInstance(head_bone);
+				Fmatrix M2;
+				M2.mul(actor->XFORM(), BI2.mTransform);
+
+				light_render->set_rotation(M2.k, M2.i);
+			}
+			else
+			{
+				light_render->set_rotation(dir, right);
+			}
+
+			light_omni->set_rotation(dir, right);
+			glow_render->set_direction(dir);
+
+		}
 		else 
 		{
 			if (can_use_dynamic_lights()) 
