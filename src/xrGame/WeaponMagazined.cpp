@@ -46,6 +46,9 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_eSoundShot				= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING | eSoundType);
 	m_eSoundEmptyClick			= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING | eSoundType);
 	m_eSoundReload				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING | eSoundType);
+	m_eSoundAim 				= ESoundTypes(SOUND_TYPE_WEAPON | eSoundType);
+	m_eSoundAimOut 				= ESoundTypes(SOUND_TYPE_WEAPON | eSoundType);
+	
 	m_sounds_enabled			= true;
 	
 	m_sSndShotCurrent			= NULL;
@@ -101,6 +104,12 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	
 	if (WeaponSoundExist(section, "snd_reload_misfire") && isHUDAnimationExist("anm_reload_misfire"))
 		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload);
+
+	if (WeaponSoundExist(section, "snd_aim"))
+		m_sounds.LoadSound(section, "snd_aim", "sndAim", true, m_eSoundAim);
+
+	if (WeaponSoundExist(section, "snd_aim_out"))
+		m_sounds.LoadSound(section, "snd_aim_out", "sndAimOut", true, m_eSoundAimOut);
 
 	m_sSndShotCurrent = "sndShot";
 		
@@ -736,6 +745,7 @@ void CWeaponMagazined::switch2_Empty()
 	else
 		OnEmptyClick();
 }
+
 void CWeaponMagazined::PlayReloadSound()
 {
 	if(!m_sounds_enabled)
@@ -1149,13 +1159,25 @@ void CWeaponMagazined::PlayAnimAim()
 	PlayHUDMotion("anm_idle_aim", TRUE, NULL, GetState());
 }
 
+void CWeaponMagazined::PlaySoundAim(bool in)
+{
+	if (!m_sounds_enabled)
+		return;
+
+	if (in && m_sounds.FindSoundItem("sndAim", false))
+		PlaySound("sndAim", get_LastFP());
+	else if (m_sounds.FindSoundItem("sndAimOut", false))
+		PlaySound("sndAimOut", get_LastFP());
+}
+
 void CWeaponMagazined::PlayAnimIdle()
 {
-	if(GetState()!=eIdle)	return;
-	if(IsZoomed())
-	{
+	if (GetState() != eIdle)
+		return;
+
+	if (IsZoomed())
 		PlayAnimAim();
-	}else
+	else
 		inherited::PlayAnimIdle();
 }
 
@@ -1172,21 +1194,24 @@ void CWeaponMagazined::OnZoomIn			()
 	if(GetState() == eIdle)
 		PlayAnimIdle();
 
-
-	CActor* pActor = smart_cast<CActor*>(H_Parent());
-	if(pActor)
+	CActor* actor = smart_cast<CActor*>(H_Parent());
+	if (actor)
 	{
-		CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(pActor->Cameras().GetCamEffector(eCEZoom));
-		if (!S)	
+		CEffectorZoomInertion* effectorZoomInertion = smart_cast<CEffectorZoomInertion*>(actor->Cameras().GetCamEffector(eCEZoom));
+		if (!effectorZoomInertion)
 		{
-			S = (CEffectorZoomInertion*)pActor->Cameras().AddCamEffector(xr_new<CEffectorZoomInertion> ());
-			S->Init(this);
+			effectorZoomInertion = (CEffectorZoomInertion*)actor->Cameras().AddCamEffector(xr_new<CEffectorZoomInertion>());
+			effectorZoomInertion->Init(this);
 		};
-		S->SetRndSeed			(pActor->GetZoomRndSeed());
-		R_ASSERT				(S);
+
+		effectorZoomInertion->SetRndSeed(actor->GetZoomRndSeed());
+		R_ASSERT(effectorZoomInertion);
 	}
+
+	PlaySoundAim();
 }
-void CWeaponMagazined::OnZoomOut		()
+
+void CWeaponMagazined::OnZoomOut()
 {
 	if(!IsZoomed())	 
 		return;
@@ -1196,11 +1221,11 @@ void CWeaponMagazined::OnZoomOut		()
 	if(GetState()==eIdle)
 		PlayAnimIdle		();
 
-	CActor* pActor			= smart_cast<CActor*>(H_Parent());
-
-	if(pActor)
-		pActor->Cameras().RemoveCamEffector	(eCEZoom);
-
+	CActor* actor = smart_cast<CActor*>(H_Parent());
+	if (actor)
+		actor->Cameras().RemoveCamEffector(eCEZoom);
+	
+	PlaySoundAim(false);
 }
 
 //переключение режимов стрельбы одиночными и очередями

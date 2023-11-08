@@ -28,6 +28,9 @@ protected:
 	ESoundTypes		m_eSoundShot;
 	ESoundTypes		m_eSoundEmptyClick;
 	ESoundTypes		m_eSoundReload;
+	ESoundTypes		m_eSoundAim;
+	ESoundTypes		m_eSoundAimOut;
+
 	bool			m_sounds_enabled;
 	// General
 	//кадр момента пересчета UpdateSounds
@@ -159,6 +162,7 @@ protected:
 	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
 	virtual void	PlayAnimAim			();
+	virtual void    PlaySoundAim		(bool in = true);
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
