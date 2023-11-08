@@ -36,7 +36,7 @@ ENGINE_API extern float psHUD_FOV_def;
 CWeapon::CWeapon()
 {
 	SetState				(eHidden);
-	SetNextState			(eHidden);
+	SetNextState			(eHidden); 
 	m_sub_state				= eSubstateReloadBegin;
 	m_bTriStateReload		= false;
 	SetDefaults				();
@@ -87,7 +87,7 @@ CWeapon::CWeapon()
 CWeapon::~CWeapon		()
 {
 	xr_delete				(m_UIScope);
-	delete_data				( m_scopes );
+	delete_data				(m_scopes);
 }
 
 void CWeapon::Hit					(SHit* pHDS)
@@ -1420,33 +1420,27 @@ float CWeapon::CurrentZoomFactor()
 	return IsScopeAttached() ? m_zoom_params.m_fScopeZoomFactor : m_zoom_params.m_fIronSightZoomFactor;
 };
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
+
 void CWeapon::OnZoomIn()
 {
 	m_zoom_params.m_bIsZoomModeNow		= true;
 	if(m_zoom_params.m_bUseDynamicZoom)
 		SetZoomFactor(m_fRTZoomFactor);
-	else
-		m_zoom_params.m_fCurrentZoomFactor	= CurrentZoomFactor();
-	
-	//if(m_zoom_params.m_bZoomDofEnabled && !IsScopeAttached())
-	//	GamePersistent().SetEffectorDOF	(m_zoom_params.m_ZoomDof);
+	else if (CurrentZoomFactor() != 0)
+		m_zoom_params.m_fCurrentZoomFactor = CurrentZoomFactor();
 
-	if(GetHUDmode())
+	if (GetHUDmode())
 		GamePersistent().SetPickableEffectorDOF(true);
 
-	if(m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && NULL==m_zoom_params.m_pVision) 
-		m_zoom_params.m_pVision	= xr_new<CBinocularsVision>(m_zoom_params.m_sUseBinocularVision/*"wpn_binoc"*/);
+	if (m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && NULL == m_zoom_params.m_pVision)
+		m_zoom_params.m_pVision = xr_new<CBinocularsVision>(m_zoom_params.m_sUseBinocularVision);
 
 	if(m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
 	{
-		CActor *pA = smart_cast<CActor *>(H_Parent());
-		if(pA)
-		{
-			if(NULL==m_zoom_params.m_pNight_vision)
-			{
-				m_zoom_params.m_pNight_vision	= xr_new<CNightVisionEffector>(m_zoom_params.m_sUseZoomPostprocess/*"device_torch"*/);
-			}
-		}
+		CActor* actor = smart_cast<CActor*>(H_Parent());
+
+		if (actor && NULL == m_zoom_params.m_pNight_vision)
+			m_zoom_params.m_pNight_vision = xr_new<CNightVisionEffector>(m_zoom_params.m_sUseZoomPostprocess);
 	}
 }
 
