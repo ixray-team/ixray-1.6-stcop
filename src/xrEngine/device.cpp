@@ -305,9 +305,6 @@ void CRenderDevice::message_loop_editor	()
 
 void CRenderDevice::message_loop()
 {
-	if (psDeviceFlags.test(rsDeviceActive))
-		b_is_Active = true;
-
 #ifdef INGAME_EDITOR
 	if (editor()) {
 		message_loop_editor	();
@@ -497,43 +494,43 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
-	if (psDeviceFlags.test(rsDeviceActive))
-		ShowCursor(FALSE);
-		return;
+	u16 fActive = LOWORD(wParam);
+	BOOL fMinimized = (BOOL)HIWORD(wParam);
+	BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
 
-	u16 fActive						= LOWORD(wParam);
-	BOOL fMinimized					= (BOOL) HIWORD(wParam);
-	BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
-	
-	if (bActive!=Device.b_is_Active)
+	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || bActive;
+
+	if (Device.b_is_Active)
 	{
-		Device.b_is_Active			= bActive;
+		Device.seqAppActivate.Process(rp_AppActivate);
+		app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
 
-		if (Device.b_is_Active)	
+		if (!g_dedicated_server) 
 		{
-			Device.seqAppActivate.Process(rp_AppActivate);
-			app_inactive_time		+= TimerMM.GetElapsed_ms() - app_inactive_time_start;
-
-			if (!g_dedicated_server) {
 #	ifdef INGAME_EDITOR
-				if (!editor())
-#	endif // #ifdef INGAME_EDITOR
-					ShowCursor(FALSE);
-			}
-		} else {
-			app_inactive_time_start	= TimerMM.GetElapsed_ms();
-			Device.seqAppDeactivate.Process(rp_AppDeactivate);
-			ShowCursor				(TRUE);
+			if (!editor())
+#	endif
+				ShowCursor(FALSE);
 		}
+	}
+	else if (!psDeviceFlags.test(rsDeviceActive))
+	{
+		app_inactive_time_start = TimerMM.GetElapsed_ms();
+		Device.seqAppDeactivate.Process(rp_AppDeactivate);
+		ShowCursor(TRUE);
+	}
+	else
+	{
+		ShowCursor(TRUE);
 	}
 }
 
-void	CRenderDevice::AddSeqFrame			( pureFrame* f, bool mt )
+void CRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
 {
-		if ( mt )	
-		seqFrameMT.Add	(f,REG_PRIORITY_HIGH);
-	else								
-		seqFrame.Add		(f,REG_PRIORITY_LOW);
+	if (mt)
+		seqFrameMT.Add(f, REG_PRIORITY_HIGH);
+	else
+		seqFrame.Add(f, REG_PRIORITY_LOW);
 
 }
 
