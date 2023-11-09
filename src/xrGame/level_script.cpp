@@ -238,6 +238,15 @@ float get_time_factor()
 	return			(Level().GetGameTimeFactor());
 }
 
+void set_global_time_factor(float tf) {
+	if (!OnServer())
+		return;
+
+	Device.time_factor(tf);
+}
+
+float get_global_time_factor() { return (Device.time_factor()); }
+
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
 	g_SingleGameDifficulty		= dif;
@@ -821,6 +830,9 @@ void CLevel::script_register(lua_State *L)
 		
 		def("set_time_factor",					set_time_factor),
 		def("get_time_factor",					get_time_factor),
+
+		def("set_global_time_factor", &set_global_time_factor),
+		def("get_global_time_factor", &get_global_time_factor),
 
 		def("set_game_difficulty",				set_game_difficulty),
 		def("get_game_difficulty",				get_game_difficulty),
