@@ -215,7 +215,7 @@ public:
 #endif // #ifdef PROFILE_CRITICAL_SECTIONS
 	{
 	    m_hWnd              = NULL;
-		b_is_Active			= FALSE;
+		b_is_Active			= true;
 		b_is_Ready			= FALSE;
 		Timer.Start			();
 		m_bNearer			= FALSE;
