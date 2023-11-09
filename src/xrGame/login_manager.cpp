@@ -22,11 +22,11 @@ login_manager::login_manager(CGameSpy_Full* fullgs_obj)
 {
 	VERIFY(fullgs_obj);
 	m_gamespy_gp			= fullgs_obj->GetGameSpyGP();
-	VERIFY(m_gamespy_gp);
+	VERIFY(Engine.External.hGameSpy == 0 || m_gamespy_gp);
 	m_gamespy_atlas			= fullgs_obj->GetGameSpyATLAS();
-	VERIFY(m_gamespy_atlas);
+	VERIFY(Engine.External.hGameSpy == 0 || m_gamespy_atlas);
 	m_gamespy_patching		= fullgs_obj->GetGameSpyPatching();
-	VERIFY(m_gamespy_patching);
+	VERIFY(Engine.External.hGameSpy == 0 || m_gamespy_patching);
 	m_current_profile		= NULL;
 }
 

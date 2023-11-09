@@ -20,7 +20,7 @@ profile_store::profile_store(CGameSpy_Full* fullgs_obj) :
 		stats_submitter::g_number,
 		stats_submitter::public_key)
 {
-	VERIFY(fullgs_obj && fullgs_obj->GetGameSpySAKE());
+	VERIFY(Engine.External.hGameSpy == 0 || (fullgs_obj && fullgs_obj->GetGameSpySAKE()));
 	m_fullgs_obj		= fullgs_obj;
 	m_sake_obj			= fullgs_obj->GetGameSpySAKE();
 

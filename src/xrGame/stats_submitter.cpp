@@ -22,7 +22,7 @@ stats_submitter::stats_submitter(CGameSpy_Full* fullgs) :
 	VERIFY(fullgs);
 	m_fullgs_obj				= fullgs;
 	m_atlas_obj					= fullgs->GetGameSpyATLAS();
-	VERIFY(m_atlas_obj);
+	VERIFY(Engine.External.hGameSpy == 0 || m_atlas_obj);
 	m_last_operation_profile	= NULL;
 	m_atlas_report				= NULL;
 	m_last_best_scores			= NULL;
