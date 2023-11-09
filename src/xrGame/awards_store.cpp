@@ -9,7 +9,7 @@ namespace gamespy_profile
 
 awards_store::awards_store(CGameSpy_Full* fullgs_obj)
 {
-	VERIFY(fullgs_obj && fullgs_obj->GetGameSpySAKE());
+	VERIFY(Engine.External.hGameSpy == 0 || fullgs_obj && fullgs_obj->GetGameSpySAKE());
 	m_fullgs_obj		= fullgs_obj;
 	m_sake_obj			= fullgs_obj->GetGameSpySAKE();
 	

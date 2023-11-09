@@ -14,7 +14,7 @@ namespace gamespy_gp
 account_manager::account_manager(CGameSpy_GP* gsgp_inst)
 {
 	m_gamespy_gp = gsgp_inst;
-	VERIFY(m_gamespy_gp);
+	VERIFY(Engine.External.hGameSpy == 0 || m_gamespy_gp);
 }
 
 account_manager::~account_manager()

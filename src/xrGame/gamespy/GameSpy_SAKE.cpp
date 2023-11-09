@@ -60,7 +60,7 @@ CGameSpy_SAKE::CGameSpy_SAKE()
 
 CGameSpy_SAKE::~CGameSpy_SAKE()
 {
-	if (m_sake_inst)
+	if (Engine.External.hGameSpy != 0 && m_sake_inst)
 	{
 		xrGS_sakeShutdown(m_sake_inst);
 	}
