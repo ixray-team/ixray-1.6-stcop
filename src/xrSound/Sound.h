@@ -39,6 +39,8 @@ XRSOUND_API extern int				psSoundTargets			;
 XRSOUND_API extern int				psSoundCacheSizeMB		;
 XRSOUND_API extern xr_token*		snd_devices_token		;
 XRSOUND_API extern u32				snd_device_id			;
+XRSOUND_API extern float psSoundTimeFactor;       //--#SM+#--
+XRSOUND_API extern float psSoundLinearFadeFactor; //--#SM+#--
 
 // Flags
 enum {
@@ -293,7 +295,7 @@ public:
 extern XRSOUND_API CSound_manager_interface*		Sound;
 
 /// ********* Sound ********* (utils, accessors, helpers)
-IC ref_sound_data::ref_sound_data				()																{	handle=0;feedback=0;g_type=0;g_object=0;s_type=st_Effect;			}
+IC ref_sound_data::ref_sound_data				()																{ handle=0; feedback=0; g_type=0; g_object=0; s_type=st_Effect; dwBytesTotal = 0; fTimeTotal = 0.0f;}
 IC ref_sound_data::ref_sound_data				( LPCSTR fName, esound_type sound_type, int	game_type )	{	::Sound->_create_data			(*this,fName, sound_type, game_type);							}
 IC ref_sound_data::~ref_sound_data				()																{	::Sound->_destroy_data			(*this);																}
 
