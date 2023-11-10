@@ -13,6 +13,7 @@ CSoundRender_TargetA::CSoundRender_TargetA():CSoundRender_Target()
     cache_gain			= 0.f;
     cache_pitch			= 1.f;
     pSource				= 0;
+    Slot = u32(-1);
 }
 
 CSoundRender_TargetA::~CSoundRender_TargetA()
@@ -74,7 +75,12 @@ void	CSoundRender_TargetA::render()
         fill_block(pBuffers[buf_idx]);
 
     A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
-    A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, Slot, 0, AL_FILTER_NULL));
+    
+    if (Slot != u32(-1))
+    {
+        A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, Slot, 0, AL_FILTER_NULL));
+    }
+    
     A_CHK(alSourcePlay(pSource));
 
     inherited::render();
