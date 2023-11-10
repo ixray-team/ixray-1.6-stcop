@@ -5,7 +5,7 @@
 #include "SoundRender_Core.h"
 #include "SoundRender_CoreA.h"
 #include "SoundRender_Emitter.h"
-#include "SoundRender_Target.h"
+#include "SoundRender_TargetA.h"
 #include "SoundRender_Source.h"
 
 CSoundRender_Emitter*	CSoundRender_Core::i_play(ref_sound* S, BOOL _loop, float delay)
@@ -120,9 +120,14 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 	// Start rendering of pending targets
 	if (!s_targets_defer.empty())
 	{
+		CSoundRender_CoreA* Core = (CSoundRender_CoreA*)this;
 		//Msg	("! update: start render");
-		for (it=0; it<s_targets_defer.size(); it++)
-			s_targets_defer[it]->render	();
+		for (it = 0; it < s_targets_defer.size(); it++)
+		{
+			CSoundRender_TargetA* Ptr = (CSoundRender_TargetA*)s_targets_defer[it]; 
+			Ptr->SetSlot(Core->slot);
+			Ptr->render();
+		}
 	}
 
 	// Events

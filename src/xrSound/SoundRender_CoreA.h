@@ -70,11 +70,12 @@ class CSoundRender_CoreA: public CSoundRender_Core
 	LPALGETAUXILIARYEFFECTSLOTF alGetAuxiliaryEffectSlotf{};
 	LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv{};
 
+
+public:
 	ALuint effect{};
 	ALuint effectfv{};
 	ALuint slot{};
 
-protected:
 	virtual void			update_listener			( const Fvector& P, const Fvector& D, const Fvector& N, float dt );
 public:	
 						    CSoundRender_CoreA		();
