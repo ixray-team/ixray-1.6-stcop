@@ -19,6 +19,11 @@ CSoundRender_TargetA::~CSoundRender_TargetA()
 {
 }
 
+void CSoundRender_TargetA::SetSlot(ALuint NewSlot)
+{
+    Slot = NewSlot;
+}
+
 BOOL	CSoundRender_TargetA::_initialize		()
 {
 	inherited::_initialize();
@@ -63,13 +68,14 @@ void CSoundRender_TargetA::start			(CSoundRender_Emitter* E)
     g_target_temp_data_16.resize(buf_block * 2);
 }
 
-void	CSoundRender_TargetA::render		()
+void	CSoundRender_TargetA::render()
 {
-	for (u32 buf_idx=0; buf_idx<sdef_target_count; buf_idx++)
-		fill_block	(pBuffers[buf_idx]);
+    for (u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
+        fill_block(pBuffers[buf_idx]);
 
-	A_CHK			(alSourceQueueBuffers	(pSource, sdef_target_count, pBuffers));	
-	A_CHK			(alSourcePlay			(pSource));
+    A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
+    A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, Slot, 0, AL_FILTER_NULL));
+    A_CHK(alSourcePlay(pSource));
 
     inherited::render();
 }
