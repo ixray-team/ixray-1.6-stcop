@@ -249,16 +249,24 @@ void CSoundRender_CoreA::_initialize(int stage)
 
     // Check if an error occured, and clean up if so.
     ALenum err = alGetError();
-    if (err == AL_NO_ERROR)
+
+    if (psSoundFlags.test(ss_EFX))
     {
-        m_is_supported = true;
-        alGenAuxiliaryEffectSlots(1, &slot);
+        if (err == AL_NO_ERROR)
+        {
+            m_is_supported = true;
+            alGenAuxiliaryEffectSlots(1, &slot);
+        }
+        else
+        {
+            Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
+            if (alIsEffect(effect))
+                alDeleteEffects(1, &effect);
+        }
     }
     else
     {
-        Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
-        if (alIsEffect(effect))
-            alDeleteEffects(1, &effect);
+        m_is_supported = false;
     }
 
     inherited::_initialize		(stage);
