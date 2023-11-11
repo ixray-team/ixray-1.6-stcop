@@ -64,6 +64,7 @@ enum {
 enum {
 	sm_Looped			= (1ul<<0ul),	//!< Looped
 	sm_2D				= (1ul<<1ul),	//!< 2D mode
+	sm_Intro			= (1ul<<2ul),	//!< Only for music and video
 	sm_forcedword		= u32(-1),
 };
 enum esound_type{
@@ -183,6 +184,7 @@ class XRSOUND_API			CSound_emitter
 public:
 	virtual BOOL					is_2D					()															= 0;
 	virtual void					switch_to_2D			()															= 0;
+	virtual void					switch_to_Intro			()															= 0;
 	virtual void					switch_to_3D			()															= 0;
 	virtual void					set_position			(const Fvector &pos)										= 0;
 	virtual void					set_frequency			(float freq)												= 0;

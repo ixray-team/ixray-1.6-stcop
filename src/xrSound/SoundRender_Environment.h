@@ -1,10 +1,9 @@
-#ifndef soundrender_environmentH
-#define soundrender_environmentH
 #pragma once
 
 #include <AL/efx-presets.h>
 
-const EFXEAXREVERBPROPERTIES reverbs[113] = {
+constexpr EFXEAXREVERBPROPERTIES reverbs[] = 
+{
     // Default presets
     EFX_REVERB_PRESET_GENERIC,
     EFX_REVERB_PRESET_PADDEDCELL,
@@ -134,6 +133,9 @@ const EFXEAXREVERBPROPERTIES reverbs[113] = {
     EFX_REVERB_PRESET_SMALLWATERROOM
 };
 
+#define SNDENV_VER_COP 4
+#define SNDENV_VER_IXR 5
+
 // refs
 class XRSOUND_EDITOR_API		CSoundRender_Environment		: public CSound_environment
 {
@@ -197,4 +199,3 @@ public:
 	void						Remove	(int id);
 	SE_VEC&						Library	();
 };
-#endif
