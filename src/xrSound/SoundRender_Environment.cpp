@@ -18,7 +18,7 @@ CSoundRender_Environment::~CSoundRender_Environment()
 
 void CSoundRender_Environment::set_default	()
 {
-    Room = reverbs->flGain;
+    Room = 0.f; //reverbs->flGain;
     RoomHF = reverbs->flGainHF;
     RoomLF = reverbs->flGainLF;
     Density = reverbs->flDensity;
@@ -102,40 +102,75 @@ void CSoundRender_Environment::clamp		()
     ::clamp(DecayHFLimit, AL_EAXREVERB_MIN_DECAY_HFLIMIT, AL_EAXREVERB_MAX_DECAY_HFLIMIT);
 }
 
-bool CSoundRender_Environment::load			(IReader* fs)
+bool CSoundRender_Environment::load(IReader* fs)
 {
-	version							= fs->r_u32();
+    version = fs->r_u32();
 
-        fs->r_stringZ			    (name);
+    fs->r_stringZ(name);
 
-        Room                		= fs->r_float();
-        RoomHF              		= fs->r_float();
-    //RoomLF = fs->r_float();
-        RoomRolloffFactor   		= fs->r_float();
-        DecayTime           		= fs->r_float();
-        DecayHFRatio        		= fs->r_float();
-        Reflections         		= fs->r_float();
-        ReflectionsDelay    		= fs->r_float();
-    //ReflectionsPan[0] = fs->r_float();
-        Reverb              		= fs->r_float();
-        ReverbDelay         		= fs->r_float();
-    //ReverbPan[0] = fs->r_float();
-        EnvironmentSize     		= fs->r_float();
-        EnvironmentDiffusion		= fs->r_float();
-        AirAbsorptionHF     		= fs->r_float();
+    auto mB_to_gain = [](float mb) 
+    { 
+        return powf(10.0f, mb / 2000.0f); 
+    };
 
-	        Environment     		= fs->r_u32();
+    if (version <= SNDENV_VER_COP)
+    {
+        Room = mB_to_gain(fs->r_float());
+        RoomHF = mB_to_gain(fs->r_float());
+    }
+    else
+    {
+        Room = fs->r_float();
+        RoomHF = fs->r_float();
+    }
 
-    //DecayHFLimit = fs->r_u32();
-    //EchoTime = fs->r_float();
-    //EchoDepth = fs->r_float();
-    //ReverbDelay = fs->r_float();
-    //DecayLFRatio = fs->r_float();
-    //ModulationTime = fs->r_float();
-    //ModulationDepth = fs->r_float();
-    //HFReference = fs->r_float();
-    //LFReference = fs->r_float();
-    //Density = fs->r_float();
+    RoomRolloffFactor = fs->r_float();
+    DecayTime = fs->r_float();
+    DecayHFRatio = fs->r_float();
+    Reflections = fs->r_float();
+    ReflectionsDelay = fs->r_float();
+
+    if (version <= SNDENV_VER_COP)
+    {
+        Reverb = mB_to_gain(fs->r_float());
+    }
+    else
+    {
+        Reverb = fs->r_float();
+    }
+
+    ReverbDelay = fs->r_float();
+    EnvironmentSize = fs->r_float();
+    EnvironmentDiffusion = fs->r_float();
+
+    if (version <= SNDENV_VER_COP)
+    {
+        AirAbsorptionHF = mB_to_gain(fs->r_float());
+    }
+    else
+    {
+        AirAbsorptionHF = fs->r_float();
+    }
+
+    Environment = fs->r_u32();
+
+    if (version == SNDENV_VER_IXR)
+    {
+        RoomLF = fs->r_float();
+        ReflectionsPan[0] = fs->r_float();
+        ReverbPan[0] = fs->r_float();
+
+        DecayHFLimit = fs->r_u32();
+        EchoTime = fs->r_float();
+        EchoDepth = fs->r_float();
+        ReverbDelay = fs->r_float();
+        DecayLFRatio = fs->r_float();
+        ModulationTime = fs->r_float();
+        ModulationDepth = fs->r_float();
+        HFReference = fs->r_float();
+        LFReference = fs->r_float();
+        Density = fs->r_float();
+    }
 
     return true;
 }
@@ -147,32 +182,17 @@ void CSoundRender_Environment::save	(IWriter* fs)
 
     fs->w_float	                    (Room                );
     fs->w_float	                    (RoomHF              );
-    //fs->w_float(RoomLF);
     fs->w_float	                    (RoomRolloffFactor   );
     fs->w_float	                    (DecayTime           );
     fs->w_float	                    (DecayHFRatio        );
     fs->w_float	                    (Reflections         );
     fs->w_float	                    (ReflectionsDelay    );
-    //fs->w_float(ReflectionsPan[0]);
     fs->w_float	                    (Reverb              );
     fs->w_float	                    (ReverbDelay         );
-    //fs->w_float(ReverbPan[0]);
     fs->w_float	                    (EnvironmentSize     );
     fs->w_float	                    (EnvironmentDiffusion);
     fs->w_float	                    (AirAbsorptionHF     );
-
 	fs->w_u32						(Environment		 );
-
-    //fs->w_u32(DecayHFLimit);
-    //fs->w_float(EchoTime);
-    //fs->w_float(EchoDepth);
-    //fs->w_float(ReverbDelay);
-    //fs->w_float(DecayLFRatio);
-    //fs->w_float(ModulationTime);
-    //fs->w_float(ModulationDepth);
-    //fs->w_float(HFReference);
-    //fs->w_float(LFReference);
-    //fs->w_float(Density);
 }
 
 //////////////////////////////////////////////////////////////////////////
