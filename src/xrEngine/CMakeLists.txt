@@ -50,7 +50,7 @@ source_group("environment" FILES ${ENGINE_SOURCE_ENV_FILES})
 list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
 
 # Remove files
-#list(FILTER ENGINE_SRC_FILES EXCLUDE REGEX "")
+list(FILTER ENGINE_SRC_FILES EXCLUDE REGEX "xrLoadSurface.cpp")
 
 # xrAbstractions project
 add_library(xrAbstractions SHARED ${ENGINE_SRC_FILES})
@@ -88,7 +88,7 @@ target_link_libraries(xrAbstractions PUBLIC xrNetServer)
 target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
 target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
 
-target_link_libraries(xrAbstractions PUBLIC ${IXRAY_SDK_LIB}/FreeImage.lib)
+#target_link_libraries(xrAbstractions PUBLIC ${IXRAY_SDK_LIB}/FreeImage.lib)
 
 # Nuget
 set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
@@ -101,7 +101,6 @@ add_custom_command(TARGET ${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## Theora
