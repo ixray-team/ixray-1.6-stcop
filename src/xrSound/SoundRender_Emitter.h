@@ -53,6 +53,7 @@ public:
 	int							iPaused;
 	BOOL						bMoved;
 	BOOL						b2D;
+	bool						bIntro;
 	BOOL						bStopping;
 	BOOL						bRewind;
 	float						fTimeStarted;			// time of "Start"
@@ -73,6 +74,7 @@ public:
 
 	virtual BOOL				is_2D					()						{ return b2D; }
 	virtual void				switch_to_2D			();
+	virtual void				switch_to_Intro			() override;
 	virtual void				switch_to_3D			();
 	virtual void				set_position			(const Fvector &pos);
 	virtual void				set_frequency			(float scale)			{ VERIFY(_valid(scale));			p_source.freq=scale;}

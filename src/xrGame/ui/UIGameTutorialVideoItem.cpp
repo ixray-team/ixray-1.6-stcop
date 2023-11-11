@@ -142,7 +142,7 @@ void CUISequenceVideoItem::Update()
 			// sync start
 			if (m_flags.test(etiNeedStart))
 			{
-				m_sound.play_at_pos		(NULL, Fvector().set(0.0f,0.f,0.0f), sm_2D);
+				m_sound.play_at_pos		(NULL, Fvector().set(0.0f,0.f,0.0f), sm_Intro);
 				m_texture->video_Play	(FALSE, m_sync_time);
 				m_flags.set				(etiNeedStart,FALSE);
 				CUIWindow* w			= m_owner->MainWnd()->FindChild("back");
