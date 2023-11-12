@@ -503,7 +503,7 @@ void *mmap ( void *ptr, INTERNAL_INTPTR_T size, INTERNAL_INTPTR_T prot, INTERNAL
 		if(ptr)
 		{	/* prot==PROT_NONE also appears to be a euphemism for free */
 			MEMORY_BASIC_INFORMATION mbi;
-			DWORD read=0;
+			DWORD_PTR read=0;
 			for(p=((char *)ptr)+read; read<(DWORD) size && VirtualQuery(p, &mbi, sizeof(mbi)); read+=mbi.RegionSize)
 			{
 				if(mbi.State & MEM_COMMIT)
@@ -537,13 +537,13 @@ void *mmap ( void *ptr, INTERNAL_INTPTR_T size, INTERNAL_INTPTR_T prot, INTERNAL
 			ptr = (void *) MORECORE_FAILURE;
 			goto mmap_exit;
 		}
-		assert ((unsigned) ptr % rounding == 0);
+		assert ((INTERNAL_INTPTR_T) ptr % rounding == 0);
 		size=rounding;
 	}
 	else
 	{
 		/* Assert postconditions */
-		assert ((unsigned) ptr % g_regionsize == 0);
+		assert ((INTERNAL_INTPTR_T) ptr % g_regionsize == 0);
 	}
 #ifdef TRACE
 	printf ("%s %p %d %d %d\n", (type & MAP_NORESERVE) ? "Reserve" : "Commit", ptr, size, prot, type);
