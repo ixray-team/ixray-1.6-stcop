@@ -10,6 +10,9 @@ file(GLOB_RECURSE XRR4_SOURCE_COMP_FILES
     "../xrRender/*.cpp"
     "../xrRender/*.h"
 )
+file(GLOB_RECURSE XRR4_SOURCE_INCL_FILES
+    "../../Include/*.h"
+)
 file(GLOB_RECURSE XRR4_SOURCE_COMP_BLEND_FILES
     "../xrRender/Blender_*.cpp"
     "../xrRender/Blender_*.h"
@@ -28,7 +31,8 @@ file(GLOB_RECURSE XRR4_SOURCE_LUA_FILES
 )
 
 # Source groups
-source_group("render" FILES ${XRR4_SOURCE_ALL_FILES})
+source_group("render/src" FILES ${XRR4_SOURCE_ALL_FILES})
+source_group("render/include" FILES ${XRR4_SOURCE_INCL_FILES})
 source_group("layers" FILES ${XRR4_SOURCE_COMP_FILES})
 source_group("general_dx11" FILES ${XRR4_SOURCE_DX9_FILES})
 source_group("lua_ext" FILES ${XRR4_SOURCE_LUA_FILES})
@@ -40,6 +44,7 @@ list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_ALL_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_COMP_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_DX9_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_LUA_FILES})
+list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 
 # Remove unused files
 #list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "../xrRender/HW.cpp")
