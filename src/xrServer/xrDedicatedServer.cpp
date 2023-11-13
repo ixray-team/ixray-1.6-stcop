@@ -13,7 +13,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void CreateGameWindow() {
 	// Unless a substitute hWnd has been specified, create a window to render into
-	if (Device.m_hWnd == NULL) {
+	if (g_AppInfo.WindowHandle == NULL) {
 		const wchar_t* wndclass = L"_XRAY_1.6";
 
 		// Register the windows class
@@ -34,7 +34,7 @@ void CreateGameWindow() {
 		AdjustWindowRect(&rc, Device.m_dwWindowStyle, FALSE);
 
 		// Create the render window
-		Device.m_hWnd = CreateWindowEx(WS_EX_TOPMOST,
+		g_AppInfo.WindowHandle = CreateWindowEx(WS_EX_TOPMOST,
 			wndclass, L"S.T.A.L.K.E.R.: Call of Pripyat", Device.m_dwWindowStyle,
 			/*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
 			(rc.right - rc.left), (rc.bottom - rc.top), 0L,
@@ -72,7 +72,7 @@ int APIENTRY WinMain
 	EngineLoadStage4();
 
 	// Show main wnd
-	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+	ShowWindow(g_AppInfo.WindowHandle, SW_SHOWNORMAL);
 
 	EngineLoadStage5();
 

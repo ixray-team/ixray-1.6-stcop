@@ -137,7 +137,7 @@ HRESULT CInput::CreateInputDevice( LPDIRECTINPUTDEVICE8* device, GUID guidDevice
 	if (!Device.editor())
 #endif // #ifdef INGAME_EDITOR
 	{
-		HRESULT	hr = (*device)->SetCooperativeLevel( RDEVICE.m_hWnd, dwFlags );
+		HRESULT	hr = (*device)->SetCooperativeLevel(g_AppInfo.WindowHandle, dwFlags );
 		if (FAILED(hr) && (hr==E_NOTIMPL)) Msg("! INPUT: Can't set coop level. Emulation???");
 		else R_CHK(hr);
 	}
@@ -259,44 +259,8 @@ void CInput::KeyUpdate	( )
 
 #ifndef _EDITOR
 	if(b_alt_tab)
-		SendMessage(Device.m_hWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+		SendMessage(g_AppInfo.WindowHandle, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 #endif
-/*
-#ifndef _EDITOR
-//update xinput if exist
-    for( DWORD iUserIndex=0; iUserIndex<DXUT_MAX_CONTROLLERS; iUserIndex++ )
-	{
-        DXUTGetGamepadState( iUserIndex, &g_GamePads[iUserIndex], true, false );
-
-        if( !g_GamePads[iUserIndex].bConnected )
-            continue; // unplugged?
-
-		bool new_b, old_b;
-		new_b = !!(g_GamePads[iUserIndex].wPressedButtons & XINPUT_GAMEPAD_A);
-		old_b = !!(g_GamePads[iUserIndex].wLastButtons & XINPUT_GAMEPAD_A);
-
-		if(new_b != old_b)
-		{
-			if(old_b)
-				cbStack.back()->IR_OnMousePress(0);
-			else
-				cbStack.back()->IR_OnMouseRelease(0);
-		}
-		int dx,dy;
-		dx = iFloor(g_GamePads[iUserIndex].fThumbRX*6);
-		dy = iFloor(g_GamePads[iUserIndex].fThumbRY*6);
-		if(dx || dy)
-			cbStack.back()->IR_OnMouseMove	( dx, dy );
-	}
-
-	if(Device.fTimeGlobal > stop_vibration_time)
-	{
-		stop_vibration_time		= flt_max;
-		set_vibration			(0, 0);
-	}
-//xinput
-#endif
-*/
 }
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
@@ -548,7 +512,7 @@ void CInput::acquire				(const bool &exclusive)
 #ifdef INGAME_EDITOR
 		Device.editor() ? Device.editor()->main_handle() : 
 #endif // #ifdef INGAME_EDITOR
-		RDEVICE.m_hWnd,
+		g_AppInfo.WindowHandle,
 		(exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND
 	);
 	pKeyboard->Acquire				();
@@ -557,7 +521,7 @@ void CInput::acquire				(const bool &exclusive)
 #ifdef INGAME_EDITOR
 		Device.editor() ? Device.editor()->main_handle() :
 #endif // #ifdef INGAME_EDITOR
-		RDEVICE.m_hWnd,
+		g_AppInfo.WindowHandle,
 		(exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY
 	);
 	pMouse->Acquire					();
