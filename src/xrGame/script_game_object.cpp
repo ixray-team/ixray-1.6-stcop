@@ -247,10 +247,10 @@ bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject *tpLuaGame
 			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member CheckObjectVisibility!");
 			return		(false);
 		}
-		return			(actor->memory().visual().visible_now(&tpLuaGameObject->object()));
+		return tpLuaGameObject ? (actor->memory().visual().visible_now(&tpLuaGameObject->object())) : false;
 	}
 
-	return				(script_entity->CheckObjectVisibility(&tpLuaGameObject->object()));
+	return tpLuaGameObject ? (script_entity->CheckObjectVisibility(&tpLuaGameObject->object())) : false;
 }
 
 //////////////////////////////////////////////////////////////////////////
