@@ -156,11 +156,13 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	{
 		static std::string LastError = "";
 		LastError = assertion_info;
-#ifdef DEBUG
+
 		g_pEventManager->Event.Defer("KERNEL:assert", (size_t)&LastError, (size_t)&ignore_always);
-#else
-		g_pEventManager->Event.Signal("KERNEL:assert", (size_t)&LastError, (size_t)&ignore_always);
-#endif
+
+		if (IsDebuggerPresent())
+		{
+			DebugBreak();
+		}
 	}
 
 	CS.Leave();
@@ -176,40 +178,43 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 
 	FlushLog();
 
-#ifdef XRCORE_STATIC
-	MessageBoxA(NULL, assertion_info, "X-Ray error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-#else
+	int result = MessageBoxA
+	(
+		NULL, 
+		message.c_str(), 
+		"Fatal Error",
+		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY
+	);
 
-	//ShowWindow(get_current_wnd(), SW_MINIMIZE);
-
-	int result = MessageBoxA(
-		NULL, message.c_str(), "Fatal Error",
-		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY);
-
-	switch (result) {
-	case IDCANCEL: {
-		if (IsDebuggerPresent()) {
+	switch (result) 
+	{
+	case IDCANCEL: 
+	{
+		if (IsDebuggerPresent())
+		{
 			DEBUG_INVOKE;
 		}
 		// TODO: Maybe not correct
 		exit(-1);
 		break;
 	}
-	case IDTRYAGAIN: {
+	case IDTRYAGAIN: 
+	{
 		error_after_dialog = false;
 		break;
 	}
-	case IDCONTINUE: {
+	case IDCONTINUE: 
+	{
 		error_after_dialog = false;
 		ignore_always = true;
 		break;
 	}
-	default: {
+	default: 
+	{
 		Msg("! xrDebug::backend default reached");
 		break;
 	}
 	}
-#endif
 
 	if (get_on_dialog())
 		get_on_dialog()	(false);
