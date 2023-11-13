@@ -57,7 +57,7 @@ void CRenderDevice::Reset		(bool precache)
 	ShowCursor				(TRUE);
 	u32 tm_start			= TimerAsync();
 
-	m_pRender->Reset( m_hWnd, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
+	m_pRender->Reset(g_AppInfo.WindowHandle, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
 
 	if (g_pGamePersistent)
 	{

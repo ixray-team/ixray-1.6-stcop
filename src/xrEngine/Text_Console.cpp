@@ -154,7 +154,7 @@ void CTextConsole::Initialize()
 {
 	inherited::Initialize();
 	
-	m_pMainWnd         = &Device.m_hWnd;
+	m_pMainWnd         = &g_AppInfo.WindowHandle;
 	m_dwLastUpdateTime = Device.dwTimeGlobal;
 	m_last_time        = Device.dwTimeGlobal;
 

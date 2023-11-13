@@ -430,7 +430,7 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		if (HW.rdoc_api) {
-			HW.rdoc_api->StartFrameCapture(HW.pDevice, Device.m_hWnd);
+			HW.rdoc_api->StartFrameCapture(HW.pDevice, g_AppInfo.WindowHandle);
 		}
 	}
 };
@@ -443,7 +443,7 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		if (HW.rdoc_api) {
-			HW.rdoc_api->EndFrameCapture(HW.pDevice, Device.m_hWnd);
+			HW.rdoc_api->EndFrameCapture(HW.pDevice, g_AppInfo.WindowHandle);
 		}
 	}
 };

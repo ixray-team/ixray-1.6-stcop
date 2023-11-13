@@ -16,8 +16,6 @@ private:
 	EVENT eConsole;
 	EVENT eStartMPDemo;
 
-	size_t EventMainThread;
-
 public:
 	CEventManager();
 

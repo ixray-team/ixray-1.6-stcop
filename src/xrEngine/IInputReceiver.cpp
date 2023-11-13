@@ -64,7 +64,7 @@ void	IInputReceiver::IR_GetMousePosReal				(HWND hwnd, Ivector2 &p)
 }
 void	IInputReceiver::IR_GetMousePosReal				(Ivector2 &p)
 {
-	IR_GetMousePosReal(RDEVICE.m_hWnd,p);
+	IR_GetMousePosReal(g_AppInfo.WindowHandle,p);
 }
 void	IInputReceiver::IR_GetMousePosIndependent		(Fvector2 &f)
 {

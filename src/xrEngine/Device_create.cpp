@@ -85,7 +85,7 @@ cdb_bDebug		= &bDebug;
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
 	m_pRender->Create	(
-		m_hWnd,
+		g_AppInfo.WindowHandle,
 		TargetWidth,
 		TargetHeight,
 		HalfTargetWidth,

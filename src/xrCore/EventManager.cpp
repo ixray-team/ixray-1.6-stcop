@@ -4,7 +4,13 @@
 XRCORE_API CEventManager* g_pEventManager = nullptr;
 
 CEventManager::CEventManager() {
-	EventMainThread = GetCurrentThreadId();
+	eQuit			= nullptr;
+	eStart			= nullptr;
+	eAssert			= nullptr;
+	eStartLoad		= nullptr;
+	eDisconnect		= nullptr;
+	eConsole		= nullptr;
+	eStartMPDemo	= nullptr;
 }
 
 void CEventManager::Attach(IEventReceiver* Holder) noexcept {
@@ -34,5 +40,5 @@ void CEventManager::OnEvent(EVENT E, u64 P1, u64 P2) {
 }
 
 bool CEventManager::IsEventThread() const {
-	return EventMainThread == GetCurrentThreadId();
+	return g_AppInfo.IsPrimaryThread();
 }

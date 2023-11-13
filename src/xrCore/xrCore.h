@@ -219,6 +219,7 @@ using RTokenVecIt = RStringVec::iterator;
 #include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
+#include "appinfo.h"
 #ifdef NO_FS_SCAN
 #	include "ELocatorAPI.h"
 #else

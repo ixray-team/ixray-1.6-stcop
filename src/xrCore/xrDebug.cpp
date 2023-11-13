@@ -42,14 +42,6 @@ XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
 
-HWND get_current_wnd()
-{
-	HWND hWnd = GetActiveWindow();
-	if (hWnd == nullptr)
-		hWnd = GetForegroundWindow();
-	return hWnd;
-}
-
 void xrDebug::gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, u32 const assertion_info_size)
 {
 	LPSTR				buffer_base = assertion_info;
@@ -119,7 +111,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
-	ShowWindow(get_current_wnd(), SW_MINIMIZE);
+	ShowWindow(g_AppInfo.WindowHandle, SW_MINIMIZE);
 	MessageBoxA			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
@@ -534,7 +526,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(true);
 
-		ShowWindow(get_current_wnd(), SW_MINIMIZE);
+		ShowWindow(g_AppInfo.WindowHandle, SW_MINIMIZE);
 		MessageBoxA			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
@@ -600,11 +592,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			assertion_info
 		);
 		
-		LPCSTR					endline = "\r\n";
-		LPSTR					buffer = assertion_info + xr_strlen(assertion_info);
-		buffer					+= xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
+		LPCSTR endline = "\r\n";
+		LPSTR buffer = assertion_info + xr_strlen(assertion_info);
+		buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
-		ShowWindow(get_current_wnd(), SW_MINIMIZE);
+		ShowWindow(g_AppInfo.WindowHandle, SW_MINIMIZE);
 
 		MessageBoxA				(
 			/*GetTopWindow(NULL)*/ nullptr,
@@ -613,7 +605,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			MB_OK|MB_ICONERROR|MB_SYSTEMMODAL
 		);
 		
-		exit					(-1);
+		exit(-1);
 	}
 	
 	void __cdecl debug_on_thread_spawn(void)

@@ -118,7 +118,7 @@ void CRenderDevice::End		(void)
 			if(g_pGamePersistent->GameType()==1)//haCk
 			{
 				WINDOWINFO	wi;
-				GetWindowInfo(m_hWnd,&wi);
+				GetWindowInfo(g_AppInfo.WindowHandle,&wi);
 				if(wi.dwWindowStatus!=WS_ACTIVECAPTION)
 					Pause(TRUE,TRUE,TRUE,"application start");
 			}
@@ -136,32 +136,37 @@ void CRenderDevice::End		(void)
 #	endif
 }
 
-
-volatile u32	mt_Thread_marker		= 0x12345678;
-void 			mt_Thread	(void *ptr)	{
-	while (true) {
+volatile u32 mt_Thread_marker = 0x12345678;
+void mt_Thread(void* ptr)
+{
+	g_AppInfo.SecondaryThread = GetCurrentThread();
+	while (true)
+	{
 		// waiting for Device permission to execute
-		Device.mt_csEnter.Enter	();
+		Device.mt_csEnter.Enter();
 
-		if (Device.mt_bMustExit) {
+		if (Device.mt_bMustExit)
+		{
 			Device.mt_bMustExit = FALSE;				// Important!!!
 			Device.mt_csEnter.Leave();					// Important!!!
 			return;
 		}
+
 		// we has granted permission to execute
-		mt_Thread_marker			= Device.dwFrame;
- 
-		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]	();
+		mt_Thread_marker = Device.dwFrame;
+
+		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+			Device.seqParallel[pit]();
+
 		Device.seqParallel.clear();
-		Device.seqFrameMT.Process	(rp_Frame);
+		Device.seqFrameMT.Process(rp_Frame);
 
 		// now we give control to device - signals that we are ended our work
-		Device.mt_csEnter.Leave	();
+		Device.mt_csEnter.Leave();
 		// waits for device signal to continue - to start again
-		Device.mt_csLeave.Enter	();
+		Device.mt_csLeave.Enter();
 		// returns sync signal to device
-		Device.mt_csLeave.Leave	();
+		Device.mt_csLeave.Leave();
 	}
 }
 
@@ -348,7 +353,9 @@ void CRenderDevice::Run			()
 //	InitializeCriticalSection	(&mt_csLeave);
 	mt_csEnter.Enter			();
 	mt_bMustExit				= FALSE;
-	thread_spawn				(mt_Thread,"X-RAY Secondary thread",0,0);
+
+	g_AppInfo.MainThread = GetCurrentThread();
+	thread_spawn(mt_Thread,"X-RAY Secondary thread",0,0);
 
 	// Message cycle
 	seqAppStart.Process			(rp_AppStart);
