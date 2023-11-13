@@ -885,65 +885,42 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.fp16_filter); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.fp16_filter); ++len;
 
 	if (o.fp16_blend)		{
 		defines[def_it].Name		=	"FP16_BLEND";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.fp16_blend); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.fp16_blend); ++len;
 
 	if (o.HW_smap)			{
 		defines[def_it].Name		=	"USE_HWSMAP";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.HW_smap);
-		++len;
-	}
+	sh_name[len] = '0' + char(o.HW_smap); ++len;
 
 	if (o.HW_smap_PCF)			{
 		defines[def_it].Name		=	"USE_HWSMAP_PCF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.HW_smap_PCF); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.HW_smap_PCF); ++len;
+
 	if (o.HW_smap_FETCH4)			{
 		defines[def_it].Name		=	"USE_FETCH4";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.HW_smap_FETCH4); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.HW_smap_FETCH4); ++len;
 
 	if (HW.Caps.raster_major >= 3)	{
 		defines[def_it].Name		=	"USE_BRANCHING";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(HW.Caps.raster_major >= 3); 
-		++len;
-	}
+	sh_name[len] = '0' + char(HW.Caps.raster_major >= 3); ++len;
 
 	if (ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)) {
 		defines[def_it].Name = "USE_SUNMASK";
@@ -957,33 +934,21 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(HW.Caps.geometry.bVTF); 
-		++len;
-	}
+	sh_name[len] = '0' + char(HW.Caps.geometry.bVTF); ++len;
 
 	if (o.Tshadows)			{
 		defines[def_it].Name		=	"USE_TSHADOWS";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.Tshadows); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.Tshadows); ++len;
 
 	if (o.sunstatic)		{
 		defines[def_it].Name		=	"USE_R2_STATIC_SUN";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.sunstatic); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.sunstatic); ++len;
 
 	if (o.forcegloss)
 	{
@@ -992,19 +957,14 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition = c_gloss;
 		def_it++;
 	}
-	sh_name[len] = '0' + char(o.forcegloss);
-	++len;
+	sh_name[len] = '0' + char(o.forcegloss); ++len;
 
 	if (o.forceskinw)		{
 		defines[def_it].Name		=	"SKIN_COLOR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(o.forceskinw); 
-		++len;
-	}
+	sh_name[len] = '0' + char(o.forceskinw); ++len;
 
 	if (o.ssao_blur_on)
 	{
@@ -1012,8 +972,7 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len] = '0' + char(o.ssao_blur_on);
-	++len;
+	sh_name[len] = '0' + char(o.ssao_blur_on); ++len;
 
     if (o.ssao_hdao)
     {
@@ -1067,8 +1026,7 @@ HRESULT	CRender::shader_compile			(
 	}
 	else 
 	{
-		sh_name[len]='0' + static_cast<char>(m_skinning<0);;
-		++len;
+		sh_name[len] = '0'; ++len;
 	}
 
 	if (0==m_skinning)		{
@@ -1076,55 +1034,35 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(0 == m_skinning); 
-		++len;
-	}
+	sh_name[len] = '0' + char(0 == m_skinning); ++len;
 
 	if (1==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_1";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(1 == m_skinning); 
-		++len;
-	}
+	sh_name[len] = '0' + char(1 == m_skinning); ++len;
 
 	if (2==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_2";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(2 == m_skinning); 
-		++len;
-	}
+	sh_name[len] = '0' + char(2 == m_skinning); ++len;
 
 	if (3==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_3";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(3 == m_skinning); 
-		++len;
-	}
+	sh_name[len] = '0' + char(3 == m_skinning); ++len;
 
 	if (4==m_skinning)		{
 		defines[def_it].Name		=	"SKIN_4";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	else
-	{
-		sh_name[len] = '0' + static_cast<char>(4 == m_skinning); 
-		++len;
-	}
+	sh_name[len] = '0' + char(4 == m_skinning); ++len;
 
 	//	Igor: need restart options
 	if (ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
@@ -1251,11 +1189,7 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	=	"1";
 	   def_it++;
    }
-   else
-   {
-	   sh_name[len] = '0' + 0 * static_cast<char>(HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1); 
-	   ++len;
-   }
+   sh_name[len] = '0' + char(HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1); ++len;
 
    if( HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 )
    {
@@ -1263,11 +1197,7 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	=	"1";
 	   def_it++;
    }
-   else
-   {
-	   sh_name[len] = '0' + static_cast<char>(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0); 
-	   ++len;
-   }
+   sh_name[len] = '0' + char(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0); ++len;
 
    if (o.dx10_minmax_sm)
    {
@@ -1275,11 +1205,8 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	=	"1";
 	   def_it++;
    }
-   else
-   {
-	   sh_name[len] = '0' + static_cast<char>(o.dx10_minmax_sm != 0); 
-	   ++len;
-   }
+   sh_name[len] = '0' + char(o.dx10_minmax_sm != 0); ++len;
+
    sh_name[len] = 0;
 
 	// finish
