@@ -751,8 +751,10 @@ void remove_spaces(char* str) // in & out
 	}
 
 	std::memcpy(str, Input.data(), Input.size());
-}
 
+	if (strlen(str) > Input.size())
+		str[Input.size()] = 0;
+}
 
 void split_cmd( PSTR first, PSTR second, LPCSTR str )
 {
