@@ -498,7 +498,8 @@ LONG WINAPI BuildStackTrace(PEXCEPTION_POINTERS pExceptionInfo)
 			Buffer += moduleInfo.ModuleName;
 			Buffer += "!";
 			Buffer += pSymbol->Name;
-			Buffer += displacement;
+			Buffer += ":";
+			Buffer += std::to_string(displacement);
 			Buffer += "\r\n";
 		}
 
