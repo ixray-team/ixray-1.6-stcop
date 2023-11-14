@@ -101,6 +101,7 @@ inline const vec2 operator*(const vec2&u, const vec2&v)
 	return vec2(u.x * v.x, u.y * v.y);
 }
 
+#undef _T
 template<class _T>
 struct vec3t
 {

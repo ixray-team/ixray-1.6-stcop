@@ -12,6 +12,7 @@
 #include "global_calculation_data.h"
 #include "../shader_xrlc.h"
 
+#undef LP_DEFAULT
 enum
 {
 	LP_DEFAULT			= 0,
