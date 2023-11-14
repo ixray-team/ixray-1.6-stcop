@@ -51,9 +51,28 @@ target_link_libraries(xrForms PUBLIC xrLC)
 target_link_libraries(xrForms PUBLIC "Winmm.lib")
 target_link_libraries(xrForms PUBLIC "comctl32.lib")
 
-# sdk bins
+# MagicFM
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}MagicFM.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
+
+# NuGet
+set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.3.18.0.20230819)
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    PRE_BUILD
+    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+)
+
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/x86/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/x64/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+endif()
