@@ -32,6 +32,12 @@ file(GLOB CORE_SOURCE_XML_FILES
     "XmlParser/*.cpp"
     "XmlParser/*.h"
 )
+file(GLOB CORE_SOURCE_DISCORD_FILES
+    "discord/*.*"
+)
+file(GLOB CORE_SOURCE_DISCORD_API_FILES
+    "discord/api/*.*"
+)
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"
     "memory_*.*"
@@ -69,6 +75,8 @@ source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
 source_group("fs" FILES ${CORE_SOURCE_FS_FILES})
 source_group("stl" FILES ${CORE_SOURCE_STL_FILES})
 source_group("XML" FILES ${CORE_SOURCE_XML_FILES})
+source_group("discord" FILES ${CORE_SOURCE_DISCORD_FILES})
+source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
@@ -88,6 +96,7 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
+target_link_directories(xrCore PUBLIC "${IXRAY_SDK_LIB}")
 
 if (IXRAY_ASAN)
     add_compile_definitions(PURE_ONLY)
@@ -115,7 +124,13 @@ target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
+target_link_libraries(xrCore PRIVATE "discord_game_sdk.dll.lib")
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
 target_compile_definitions(xrCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)

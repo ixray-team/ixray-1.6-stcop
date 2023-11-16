@@ -38,6 +38,9 @@
 #	include "ai_debug.h"
 #endif // _EDITOR
 
+#include "../xrCore/discord/discord.h"
+#include "string_table.h"
+
 extern int g_keypress_on_start;
 
 CGamePersistent::CGamePersistent(void)
@@ -464,6 +467,7 @@ void CGamePersistent::game_loaded()
 {
 	if(Device.dwPrecacheFrame<=2)
 	{
+		SetDiscordStatus();
 		if(	g_pGameLevel &&
 			g_pGameLevel->bReady &&
 			g_keypress_on_start &&
@@ -554,8 +558,9 @@ void CGamePersistent::OnFrame	()
 	if(!g_dedicated_server && Device.dwPrecacheFrame==0 && !m_intro && m_intro_event.empty())
 		load_screen_renderer.stop();
 
-	if( !m_pMainMenu->IsActive() )
+	if (!m_pMainMenu->IsActive()) {
 		m_pMainMenu->DestroyInternal(false);
+	}
 
 	if(!g_pGameLevel)			return;
 	if(!g_pGameLevel->bReady)	return;
@@ -903,4 +908,19 @@ void CGamePersistent::OnAssetsChanged()
 {
 	IGame_Persistent::OnAssetsChanged	();
 	CStringTable().rescan				();
+}
+
+void CGamePersistent::SetDiscordStatus() const {
+	if (g_pGameLevel != nullptr)
+	{
+		static CStringTable strTable;
+		
+		// Get level name
+		xr_string levelName = strTable.translate("st_discord_level").c_str();
+
+		levelName += '\t';
+		levelName += strTable.translate(Level().name().c_str()).c_str();
+
+		g_Discord.SetPhase(ANSI_TO_UTF8(levelName).c_str());
+	}
 }

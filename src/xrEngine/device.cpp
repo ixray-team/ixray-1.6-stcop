@@ -3,6 +3,7 @@
 using namespace DirectX;
 
 #include "../xrCDB/frustum.h"
+#include "../xrCore/discord/discord.h"
 
 #pragma warning(disable:4995)
 // mmsystem.h
@@ -154,6 +155,8 @@ void mt_Thread(void* ptr)
 
 		// we has granted permission to execute
 		mt_Thread_marker = Device.dwFrame;
+
+		g_Discord.Update();
 
 		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 			Device.seqParallel[pit]();

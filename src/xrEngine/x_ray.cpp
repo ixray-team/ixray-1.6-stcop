@@ -21,6 +21,9 @@
 #include "Text_Console.h"
 #include <luabind/luabind.hpp>
 #include <luabind/memory_allocator.hpp>
+
+#include "../xrCore/discord/discord.h"
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -409,6 +412,8 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	EngineExternal();
+
+	g_Discord.SetStatus(EngineExternal().GetTitle().c_str());
 }
 
 ENGINE_API void EngineLoadStage2()
