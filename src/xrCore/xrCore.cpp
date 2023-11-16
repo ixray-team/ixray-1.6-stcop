@@ -7,6 +7,7 @@
 #include <mmsystem.h>
 #include <objbase.h>
 #include "xrCore.h"
+#include "discord/discord.h"
  
 #pragma comment(lib,"winmm.lib")
 
@@ -93,7 +94,10 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 
 		xr_EFS				= xr_new<EFS_Utils>		();
 		g_uiExpressionMgr = new CExpressionManager();
+
+		g_Discord.Init();
 	}
+
 	if (init_fs){
 		u32 flags			= 0;
 		if (0!=strstr(Params,"-build"))	 flags |= CLocatorAPI::flBuildCopy;

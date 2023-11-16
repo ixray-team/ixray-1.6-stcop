@@ -17,6 +17,10 @@ CEngineExternal::~CEngineExternal() {
 	xr_delete(pOptions);
 }
 
+xr_string CEngineExternal::GetTitle() const {
+	return pOptions->r_string_wb("general", "title").c_str();
+}
+
 bool CEngineExternal::operator[](const EEngineExternalUI& ID) const {
 	return pOptions->r_bool("ui", getStringEEngineExternalUI(ID));
 }

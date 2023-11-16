@@ -26,6 +26,8 @@ public:
 	CEngineExternal();
 	~CEngineExternal();
 
+	xr_string GetTitle() const;
+
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
 	bool operator[](const EEngineExternalGame& ID) const;
