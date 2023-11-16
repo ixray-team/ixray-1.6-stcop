@@ -1069,7 +1069,7 @@ void game_sv_GameState::OnRoundStart			()
 		}
 	};
 	rpointsBlocked.clear			();
-}// старт раунда
+}// СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
 
 void game_sv_GameState::OnRoundEnd()
 { 
@@ -1087,7 +1087,7 @@ void game_sv_GameState::OnRoundEnd()
 	{
 		m_bFastRestart = true;
 	}
-}// конец раунда
+}// РєРѕРЅРµС† СЂР°СѓРЅРґР°
 
 void game_sv_GameState::SaveMapList				()
 {
@@ -1118,7 +1118,7 @@ shared_str game_sv_GameState::parse_level_version			(const shared_str &server_op
 	string128	result_version;
 	if (map_ver)
 	{
-		map_ver += sizeof(map_ver_string);
+		map_ver += strlen(map_ver_string);
 		if (strchr(map_ver, '/'))
 			strncpy_s(result_version, map_ver, strchr(map_ver, '/') - map_ver);
 		else
