@@ -7,11 +7,21 @@
 #include "ActorHelmet.h"
 #include "ActorCondition.h"
 #include "PDA.h"
+#include "Level.h"
+#include "actor_mp_client.h"
+
+inline CActor* GetActor()
+{
+    if (IsGameTypeSingle())
+        return Actor();
+
+    return smart_cast<CActorMP*>(Level().CurrentViewEntity());
+}
 
 #define DECLARE_OUTFIT_PROTECTION_DELEGATE(protectionType) \
 float GetOutfit##protectionType##Protection() \
 { \
-    if (CCustomOutfit* ActorOutfit = Actor()->GetOutfit()) \
+    if (CCustomOutfit* ActorOutfit = GetActor()->GetOutfit()) \
     { \
         return ActorOutfit->GetDefHitTypeProtection(ALife::protectionType); \
     } \
@@ -33,7 +43,7 @@ DECLARE_OUTFIT_PROTECTION_DELEGATE(eHitTypeExplosion);
 #define DECLARE_HELMET_PROTECTION_DELEGATE(protectionType) \
 float GetHelmet##protectionType##Protection() \
 { \
-    PIItem itm = Actor()->inventory().ItemFromSlot(HELMET_SLOT); \
+    PIItem itm = GetActor()->inventory().ItemFromSlot(HELMET_SLOT); \
     CHelmet* helmet = smart_cast<CHelmet*>(itm); \
     if (helmet != nullptr) \
     { \
@@ -57,7 +67,7 @@ DECLARE_HELMET_PROTECTION_DELEGATE(eHitTypeExplosion);
 #define DECLARE_BOOSTER_PROTECTION_DELEGATE(boosterType) \
 float GetBooster##boosterType() \
 { \
-    return Actor()->conditions().GetBoosterValueByType(boosterType); \
+    return GetActor()->conditions().GetBoosterValueByType(boosterType); \
 }
 
 DECLARE_BOOSTER_PROTECTION_DELEGATE(eBoostRadiationProtection);
@@ -69,7 +79,7 @@ DECLARE_BOOSTER_PROTECTION_DELEGATE(eBoostTelepaticProtection);
 #define DECLARE_ARTEFACTS_ON_BELT_PROTECTION_DELEGATE(protectionType) \
 float GetArtefacts##protectionType##Protection() \
 { \
-    return Actor()->GetProtection_ArtefactsOnBelt(ALife::protectionType); \
+    return GetActor()->GetProtection_ArtefactsOnBelt(ALife::protectionType); \
 }
 
 DECLARE_ARTEFACTS_ON_BELT_PROTECTION_DELEGATE(eHitTypeBurn);
@@ -87,7 +97,7 @@ DECLARE_ARTEFACTS_ON_BELT_PROTECTION_DELEGATE(eHitTypeExplosion);
 #define DECLARE_ZONEMAXPOWER_PROTECTION_DELEGATE(protectionType) \
 float GetZoneMaxPower##protectionType() \
 { \
-    return Actor()->conditions().GetZoneMaxPower(ALife::protectionType); \
+    return GetActor()->conditions().GetZoneMaxPower(ALife::protectionType); \
 }
 
 DECLARE_ZONEMAXPOWER_PROTECTION_DELEGATE(eHitTypeBurn);
@@ -102,17 +112,17 @@ DECLARE_ZONEMAXPOWER_PROTECTION_DELEGATE(eHitTypeExplosion);
 
 #undef DECLARE_ZONEMAXPOWER_PROTECTION_DELEGATE
 
-int GetActorPDAContactsName()	{return (int)Actor()->GetPDA()->ActiveContactsNum();	        }
-const char* GetPlayerName()		{ return Actor()->Name();					    			    }
+int GetActorPDAContactsName()	{return (int)GetActor()->GetPDA()->ActiveContactsNum();	        }
+const char* GetPlayerName()		{ return GetActor()->Name();					    			    }
 
-float GetPlayerHealth()			  { return Actor()->conditions().GetHealth();				    }
-float GetPlayerPsyHealth()		  { return Actor()->conditions().GetPsy();				        }
-float GetPlayerRad()			  { return Actor()->conditions().GetRadiation();			    }
-float GetPlayerPower()			  { return Actor()->conditions().GetPower();				    }
-float GetPlayerSatiety()		  { return Actor()->conditions().GetSatiety();				    }
-float GetPlayerBleedingSpeed()	  { return Actor()->conditions().BleedingSpeed();				}
-float GetPlayerRestoreSpeed()	  { return Actor()->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / Actor()->conditions().GetMaxPowerRestoreSpeed();}
-float GetOutfiteMaxFireWoundProtection() { return Actor()->conditions().GetMaxFireWoundProtection();	}
+float GetPlayerHealth()			  { return GetActor()->conditions().GetHealth();				    }
+float GetPlayerPsyHealth()		  { return GetActor()->conditions().GetPsy();				        }
+float GetPlayerRad()			  { return GetActor()->conditions().GetRadiation();			    }
+float GetPlayerPower()			  { return GetActor()->conditions().GetPower();				    }
+float GetPlayerSatiety()		  { return GetActor()->conditions().GetSatiety();				    }
+float GetPlayerBleedingSpeed()	  { return GetActor()->conditions().BleedingSpeed();				}
+float GetPlayerRestoreSpeed()	  { return GetActor()->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / GetActor()->conditions().GetMaxPowerRestoreSpeed();}
+float GetOutfiteMaxFireWoundProtection() { return GetActor()->conditions().GetMaxFireWoundProtection();	}
 
 void RegisterExpressionDelegates ()
 {
