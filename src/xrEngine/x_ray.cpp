@@ -412,8 +412,6 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	EngineExternal();
-
-	g_Discord.SetStatus(EngineExternal().GetTitle().c_str());
 }
 
 ENGINE_API void EngineLoadStage2()
