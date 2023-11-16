@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
+    <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Зов Припяти</text>
+    </string>
     <string id="st_discord_menu">
         <text>Главное меню</text>
     </string>
-        <string id="st_discord_level">
+    <string id="st_discord_level">
         <text>Уровень:</text>
     </string>
 </string_table>

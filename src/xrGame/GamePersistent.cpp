@@ -42,6 +42,7 @@
 #include "string_table.h"
 
 extern int g_keypress_on_start;
+static CStringTable strTable;
 
 CGamePersistent::CGamePersistent(void)
 {
@@ -94,6 +95,8 @@ CGamePersistent::CGamePersistent(void)
 	eQuickLoad				= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
 	SetBaseDof				(*DofValue);
+
+	g_Discord.SetStatus(ANSI_TO_UTF8(strTable.translate(EngineExternal().GetTitle().c_str()).c_str()).c_str());
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -912,9 +915,7 @@ void CGamePersistent::OnAssetsChanged()
 
 void CGamePersistent::SetDiscordStatus() const {
 	if (g_pGameLevel != nullptr)
-	{
-		static CStringTable strTable;
-		
+	{	
 		// Get level name
 		xr_string levelName = strTable.translate("st_discord_level").c_str();
 

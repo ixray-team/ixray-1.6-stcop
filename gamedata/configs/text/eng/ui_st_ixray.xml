@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Call of Pripyat</text>
+    </string>
+    <string id="st_discord_menu">
+        <text>Main menu</text>
+    </string>
+    <string id="st_discord_level">
+        <text>Level:</text>
+    </string>
+</string_table>
