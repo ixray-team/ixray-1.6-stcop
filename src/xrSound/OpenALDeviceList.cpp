@@ -65,7 +65,6 @@ ALDeviceList::~ALDeviceList()
 void ALDeviceList::Enumerate()
 {
 	int	ALmajor, ALminor, EFXmajor, EFXminor, index;
-	const char* actualDeviceName;
 	
 	Msg("SOUND: OpenAL: enumerate devices...");
 	// have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
@@ -74,7 +73,7 @@ void ALDeviceList::Enumerate()
 	
 	CoUninitialize();
 
-	xr_vector<const char*> DeviceNameList;
+	xr_vector<xr_string> DeviceNameList;
 	xr_vector<const char*> DeviceOALNameList;
 	auto list_audio_devices = [&DeviceNameList, &DeviceOALNameList](const ALCchar* devices)
 	{
@@ -86,10 +85,21 @@ void ALDeviceList::Enumerate()
 			len = strlen(device);
 			wchar_t* wDevice = new wchar_t[len];
 			ZeroMemory(wDevice, sizeof(wchar_t) * len);
-			char* cDevice = new char[len];
+
+			char* AnsiDevice = new char[len];
+
 
 			MultiByteToWideChar(CP_UTF8, 0, device, len, wDevice, len);
-			WideCharToMultiByte(CP_ACP, 0, wDevice, len, cDevice, len, NULL, NULL);
+			WideCharToMultiByte(CP_ACP, 0, wDevice, len, AnsiDevice, len, NULL, NULL);
+
+			xr_string cDevice = AnsiDevice;
+			delete[] AnsiDevice;
+
+			size_t SubStrPos = cDevice.find('(');
+			if (SubStrPos != xr_string::npos)
+			{
+				cDevice = cDevice.substr(SubStrPos + 1, cDevice.find(')') - SubStrPos - 1);
+			}
 
 			DeviceNameList.push_back(cDevice);
 			DeviceOALNameList.push_back(device);
@@ -101,12 +111,17 @@ void ALDeviceList::Enumerate()
 		}
 	};
 
+	// Open default device
+	
+	DeviceNameList.push_back("Default Device");
+	DeviceOALNameList.push_back(alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER));
+	
 	// grab function pointers for 1.0-API functions, and if successful proceed to enumerate all devices
 	if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATE_ALL_EXT"))
 	{
 		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER));
 		
-		xr_strcpy(m_defaultDeviceName, DeviceNameList[0]);
+		xr_strcpy(m_defaultDeviceName, DeviceNameList[0].c_str());
 		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName);
 
 		index				= 0;
@@ -131,7 +146,7 @@ void ALDeviceList::Enumerate()
 						alcGetIntegerv(device, ALC_EFX_MAJOR_VERSION, sizeof(int), &EFXmajor);
 						alcGetIntegerv(device, ALC_EFX_MINOR_VERSION, sizeof(int), &EFXminor);
 
-						m_devices.push_back(ALDeviceDesc(DeviceNameList[Iter], Device, ALminor, ALmajor, EFXminor, EFXmajor));
+						m_devices.push_back(ALDeviceDesc(DeviceNameList[Iter].c_str(), Device, ALminor, ALmajor, EFXminor, EFXmajor));
 
 						++index;
 					}
