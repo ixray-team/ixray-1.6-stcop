@@ -7,11 +7,12 @@ private:
     volatile bool NeedSync = false;
 
 protected:
-    discord::Activity activity;
+    discord::Activity Activity; 
+    discord::Core* Core = nullptr;
 
 public:
-    constexpr DiscordShared() : activity({}) {}
-    virtual ~DiscordShared() = default;
+    constexpr DiscordShared() : Activity({}) {}
+    virtual ~DiscordShared();
 
     virtual void Init() noexcept;
     virtual void Update() noexcept;
