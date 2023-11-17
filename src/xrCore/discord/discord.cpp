@@ -6,13 +6,17 @@ XRCORE_API DiscordShared g_Discord;
 
 DiscordShared::~DiscordShared()
 {
-	delete Core;
+	xr_delete(Core);
 }
 
 // Called when the game starts or when spawned
 void DiscordShared::Init() noexcept 
 {
 	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_Default, &Core);
+
+	if (Core == nullptr)
+		return;
+
 	Core->SetLogHook
 	(
 		discord::LogLevel::Error,
@@ -43,6 +47,9 @@ void DiscordShared::Init() noexcept
 // Called every frame
 void DiscordShared::Update() noexcept 
 {
+	if (Core == nullptr)
+		return;
+
 	if (NeedSync)
 	{
 		SyncActivity();
