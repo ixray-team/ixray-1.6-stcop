@@ -62,6 +62,7 @@ file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.c"
     "*.h"
 )
+file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
 
 source_group("core" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("math" FILES ${CORE_SOURCE_MATH_FILES})
@@ -80,6 +81,7 @@ source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
+list(APPEND CORE_SRC_FILES ${CORE_NATVIS_FILES})
 
 # Remove borlands files
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX  "ELocatorAPI.*")
