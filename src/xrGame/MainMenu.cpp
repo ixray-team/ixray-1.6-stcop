@@ -221,7 +221,7 @@ void CMainMenu::Activate	(bool bActivate)
 
 		Console->Execute					("stat_memory");
 
-		g_Discord.SetPhase(ANSI_TO_UTF8(StrMainMenu).c_str());
+		g_Discord.SetPhase(StrMainMenu);
 	}else{
 		m_deactivated_frame					= Device.dwFrame;
 		m_Flags.set							(flActive,				FALSE);

@@ -6,62 +6,81 @@ XRCORE_API DiscordShared g_Discord;
 
 DiscordShared::~DiscordShared()
 {
-    delete Core;
+	delete Core;
 }
 
 // Called when the game starts or when spawned
 void DiscordShared::Init() noexcept 
 {
-    auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_Default, &Core);
-    Core->SetLogHook
-    (
-        discord::LogLevel::Error,
-        [](discord::LogLevel, char const* msg)
-        {
-            Msg("! [Discord]: %s", msg);
-        }
-    );
+	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_Default, &Core);
+	Core->SetLogHook
+	(
+		discord::LogLevel::Error,
+		[](discord::LogLevel MsgLvl, char const* msg)
+		{
+			const char* Mark = nullptr;
+
+			switch (MsgLvl)
+			{
+				case discord::LogLevel::Info: Mark = "(Info)"; break;
+				case discord::LogLevel::Warn: Mark = "(Warning)"; break;
+				case discord::LogLevel::Error: Mark = "(Error)"; break;
+				case discord::LogLevel::Debug: Mark = "(Dbg)"; break;
+			}
+
+			Msg("! [Discord] %s: %s", Mark, msg);
+		}
+	);
+
+	Activity.GetAssets().SetLargeImage("logo");
+	Activity.SetInstance(true);
+	Activity.SetType(discord::ActivityType::Playing);
+
+	auto start_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	Activity.GetTimestamps().SetStart(start_time);
 }
 
 // Called every frame
 void DiscordShared::Update() noexcept 
 {
-    if (NeedSync)
-    {
-        SyncActivity();
-        NeedSync = false;
-    }
+	if (NeedSync)
+	{
+		SyncActivity();
+		NeedSync = false;
+	}
 
-    Core->RunCallbacks();
+	Core->RunCallbacks();
 }
 
-void DiscordShared::SetStatus(const char* Name) noexcept 
+void DiscordShared::SetStatus(const xr_string& Name) noexcept
 {
-    Activity.SetDetails(Name);
-    NeedSync = true;
+	Status = Name;
+	NeedSync = true;
 }
 
-void DiscordShared::SetPhase(const char* Name) noexcept 
+void DiscordShared::SetPhase(const xr_string& Name) noexcept
 {
-    Activity.SetState(Name);
-    NeedSync = true;
+	Phase = Name;
+	NeedSync = true;
 }
 
 void DiscordShared::SyncActivity() noexcept 
 {
-    static bool isCorrect = true;
-    Core->ActivityManager().UpdateActivity
-    (
-        Activity, 
-        [](discord::Result result) 
-        {
-            if (isCorrect && result != discord::Result::Ok)
-            {
-                Msg("! [ERROR] Discord API: Invalid request");
-                isCorrect = false;
-            }
-        }
-    );
+	static bool isCorrect = true;
 
+	Activity.SetDetails(ANSI_TO_UTF8(Status).c_str());
+	Activity.SetState(ANSI_TO_UTF8(Phase).c_str());
 
+	Core->ActivityManager().UpdateActivity
+	(
+		Activity, 
+		[](discord::Result result) 
+		{
+			if (isCorrect && result != discord::Result::Ok)
+			{
+				Msg("! [ERROR] Discord API: Invalid request");
+				isCorrect = false;
+			}
+		}
+	);
 }
