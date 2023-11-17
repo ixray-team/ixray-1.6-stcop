@@ -5,6 +5,8 @@ class XRCORE_API DiscordShared
 {
 private:
     volatile bool NeedSync = false;
+    xr_string Status;
+    xr_string Phase;
 
 protected:
     discord::Activity Activity; 
@@ -17,8 +19,8 @@ public:
     virtual void Init() noexcept;
     virtual void Update() noexcept;
 
-    void SetStatus(const char* Name) noexcept;
-    void SetPhase(const char* Name) noexcept;
+    void SetStatus(const xr_string&) noexcept;
+    void SetPhase(const xr_string&) noexcept;
 
 protected:
     void SyncActivity() noexcept;

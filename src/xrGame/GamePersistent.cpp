@@ -96,7 +96,7 @@ CGamePersistent::CGamePersistent(void)
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
 	SetBaseDof				(*DofValue);
 
-	g_Discord.SetStatus(ANSI_TO_UTF8(strTable.translate(EngineExternal().GetTitle().c_str()).c_str()).c_str());
+	g_Discord.SetStatus(strTable.translate(EngineExternal().GetTitle().c_str()).c_str());
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -922,6 +922,6 @@ void CGamePersistent::SetDiscordStatus() const {
 		levelName += '\t';
 		levelName += strTable.translate(Level().name().c_str()).c_str();
 
-		g_Discord.SetPhase(ANSI_TO_UTF8(levelName).c_str());
+		g_Discord.SetPhase(levelName);
 	}
 }
