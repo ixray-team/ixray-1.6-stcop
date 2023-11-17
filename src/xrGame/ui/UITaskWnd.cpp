@@ -16,7 +16,6 @@
 #include "../map_location_defs.h"
 #include "../map_manager.h"
 #include "UIInventoryUtilities.h"
-#include "../string_table.h"
 #include "../level.h"
 #include "../gametaskmanager.h"
 #include "../actor.h"

@@ -12,7 +12,7 @@
 #include "../game_cl_base.h"
 #include "../game_cl_mp.h"
 #include "../../xrEngine/xr_ioconsole.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 extern int g_sv_adm_menu_ping_limit;
 xr_token g_ban_times[] = {
@@ -191,7 +191,7 @@ void CUIMpPlayersAdm::SetMaxPingLimitText()
 {
 	int ping_limit = m_pPingLimitTrack->GetIValue();
 	string512 tmp_string;
-	xr_sprintf(tmp_string, "%s %d", CStringTable().translate("ui_mp_am_ping_limit").c_str(), ping_limit*10);
+	xr_sprintf(tmp_string, "%s %d", g_pStringTable->translate("ui_mp_am_ping_limit").c_str(), ping_limit*10);
 	m_pPingLimitText->SetText(tmp_string);
 }
 void CUIMpPlayersAdm::GetSelPlayerScreenshot()

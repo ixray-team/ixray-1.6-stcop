@@ -21,7 +21,7 @@
 #include "Text_Console.h"
 #include <luabind/luabind.hpp>
 #include <luabind/memory_allocator.hpp>
-
+#include "string_table.h"
 #include "../xrCore/discord/discord.h"
 
 //---------------------------------------------------------------------
@@ -425,7 +425,9 @@ ENGINE_API void EngineLoadStage2()
 	FPU::m24r();
 	InitEngine();
 
-		InitInput				();
+	InitInput();
+
+	g_pStringTable = new CStringTable();
 }
 
 ENGINE_API void EngineLoadStage3()

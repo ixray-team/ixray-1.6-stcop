@@ -24,7 +24,7 @@
 #include "../game_news.h"
 #include "../alife_time_manager.h"
 #include "../alife_registry_wrappers.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "UINewsItemWnd.h"
 #include "../../xrEngine/xr_input.h"
 
@@ -110,7 +110,7 @@ void CUILogsWnd::Init()
 
 	string256 buf;
 	xr_strcpy( buf, sizeof(buf), m_center_caption->GetText() );
-	xr_strcat( buf, sizeof(buf), CStringTable().translate("ui_logs_center_caption").c_str() );
+	xr_strcat( buf, sizeof(buf), g_pStringTable->translate("ui_logs_center_caption").c_str() );
 	m_center_caption->SetText( buf );
 
 	CUIFixedScrollBar* tmp_scroll = xr_new<CUIFixedScrollBar>();

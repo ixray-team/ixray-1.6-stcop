@@ -2,6 +2,7 @@
 #include "../xrEngine/stdafx.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
+#include "../xrEngine/string_table.h"
 #include "../xrCore/xrCore_platform.h"
 #include "DynamicSplashScreen.h"
 
@@ -56,7 +57,7 @@ int APIENTRY WinMain
 	HINSTANCE hPrevInstance,
 	char* lpCmdLine,
 	int nCmdShow
-) 
+)
 {
 	Debug._initialize(false);
 
@@ -72,7 +73,8 @@ int APIENTRY WinMain
 		if (hCheckPresenceMutex == NULL)
 			// Shit happens
 			return 2;
-	} else {
+	}
+	else {
 		// Already running
 		CloseHandle(hCheckPresenceMutex);
 		return 1;
@@ -112,11 +114,10 @@ int APIENTRY WinMain
 	EngineLoadStage4();
 
 	// Destroy LOGO
-	//if (!g_dedicated_server) {
-		DestroyWindow(logoWindow);
-		logoWindow = NULL;
-	//}
+	DestroyWindow(logoWindow);
+	logoWindow = NULL;
 
+	xr_delete(g_pStringTable);
 	// Show main wnd
 	ShowWindow(g_AppInfo.WindowHandle, SW_SHOW);
 

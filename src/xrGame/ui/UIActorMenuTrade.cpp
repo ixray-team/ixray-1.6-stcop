@@ -19,7 +19,7 @@
 #include "../Weapon.h"
 #include "../trade_parameters.h"
 #include "../inventory_item_object.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../ai/monsters/BaseMonster/base_monster.h"
 #include "../ai_space.h"
 #include "../../xrServerEntities/script_engine.h"
@@ -372,7 +372,7 @@ void CUIActorMenu::UpdatePartnerBag()
 		m_PartnerMoney->SetText( buf );
 	}	
 
-	LPCSTR kg_str = CStringTable().translate( "st_kg" ).c_str();
+	LPCSTR kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 	float total	= CalcItemsWeight( m_pTradePartnerBagList );
 	xr_sprintf( buf, "%.1f %s", total, kg_str );
 	m_PartnerWeight->SetText( buf );
@@ -387,7 +387,7 @@ void CUIActorMenu::UpdatePartnerBag()
 
 void CUIActorMenu::UpdatePrices()
 {
-	LPCSTR kg_str = CStringTable().translate( "st_kg" ).c_str();
+	LPCSTR kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 
 	UpdateActor();
 	UpdatePartnerBag();

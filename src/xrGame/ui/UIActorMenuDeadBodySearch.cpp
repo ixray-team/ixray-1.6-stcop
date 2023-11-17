@@ -15,7 +15,7 @@
 #include "../Inventory.h"
 #include "../Inventory_item.h"
 #include "../InventoryBox.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../ai/monsters/BaseMonster/base_monster.h"
 
 void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
@@ -186,7 +186,7 @@ void CUIActorMenu::UpdateDeadBodyBag()
 {
 	string64 buf;
 
-	LPCSTR kg_str = CStringTable().translate( "st_kg" ).c_str();
+	LPCSTR kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 	float total	= CalcItemsWeight( m_pDeadBodyBagList );
 	xr_sprintf( buf, "%.1f %s", total, kg_str );
 	m_PartnerWeight->SetText( buf );

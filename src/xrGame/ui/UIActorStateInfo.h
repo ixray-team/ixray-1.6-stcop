@@ -49,7 +49,7 @@ private:
 	UIHint*					m_hint_wnd;
 
 public:
-							ui_actor_state_wnd	();
+							ui_actor_state_wnd	() = default;
 	virtual					~ui_actor_state_wnd	();
 			void			init_from_xml			( CUIXml& xml, LPCSTR path );
 			void			UpdateActorInfo			( CInventoryOwner* owner );

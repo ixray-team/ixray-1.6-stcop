@@ -11,7 +11,7 @@
 #include "UILines.h"
 #include "UIXmlInit.h"
 #include "uilinestd.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 
 CUILines::CUILines()
@@ -88,7 +88,7 @@ void CUILines::SetText(const char* text){
 }
 void CUILines::SetTextST(LPCSTR str_id)
 {
-	SetText	(*CStringTable().translate(str_id));
+	SetText	(*g_pStringTable->translate(str_id));
 }
 
 

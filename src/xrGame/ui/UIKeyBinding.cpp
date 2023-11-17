@@ -4,8 +4,6 @@
 #include "xrUIXmlParser.h"
 #include "UIEditKeyBind.h"
 #include "UIScrollView.h"
-#include "../xr_level_controller.h"
-#include "../string_table.h"
 
 CUIKeyBinding::CUIKeyBinding()
 {
@@ -34,7 +32,6 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 {
 	string256		buf;
 	CUIXml			xml_doc;
-	CStringTable	st;
 	xml_doc.Load							(CONFIG_PATH, UI_PATH, "ui_keybinding.xml");
 
 	int groupsCount = xml_doc.GetNodesNum	("",0,"group");

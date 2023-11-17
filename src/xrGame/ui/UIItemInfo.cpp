@@ -11,7 +11,7 @@
 
 #include "ai_space.h"
 #include "alife_simulator.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../Inventory_Item.h"
 #include "UIInventoryUtilities.h"
 #include "../PhysicsShellHolder.h"
@@ -214,7 +214,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	}
 	if ( UIWeight )
 	{
-		LPCSTR  kg_str = CStringTable().translate( "st_kg" ).c_str();
+		LPCSTR  kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 		float	weight = pInvItem->Weight();
 		
 		if ( !weight )
@@ -273,7 +273,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 			UITradeTip->Show(false);
 		else
 		{
-			UITradeTip->SetText(CStringTable().translate(trade_tip).c_str());
+			UITradeTip->SetText(g_pStringTable->translate(trade_tip).c_str());
 			UITradeTip->AdjustHeightToText();
 			UITradeTip->SetWndPos(pos);
 			UITradeTip->Show(true);

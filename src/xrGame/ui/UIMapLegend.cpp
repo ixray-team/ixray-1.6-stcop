@@ -21,14 +21,7 @@
 #include "UIHint.h"
 
 #include "UIInventoryUtilities.h"
-#include "../string_table.h"
 #include "../level.h"
-
-
-UIMapLegend::UIMapLegend()
-{
-
-}
 
 UIMapLegend::~UIMapLegend()
 {

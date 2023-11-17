@@ -12,7 +12,6 @@
 #include "UIInventoryUpgradeWnd.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
 
 void CUIInventoryUpgradeWnd::LoadCellsBacks( CUIXml& uiXml )
 {

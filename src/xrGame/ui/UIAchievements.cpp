@@ -9,7 +9,7 @@
 #include "UICursor.h"
 #include "../ai_space.h"
 #include "../../xrServerEntities/script_engine.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIAchievements::CUIAchievements(CUIScrollView* parent):m_parent(parent)
 {
@@ -82,7 +82,7 @@ void CUIAchievements::SetDescription(LPCSTR desc)
 
 void CUIAchievements::SetHint(LPCSTR hint)
 {
-	m_hint->set_text(CStringTable().translate(hint).c_str());
+	m_hint->set_text(g_pStringTable->translate(hint).c_str());
 }
 
 void CUIAchievements::SetIcon(LPCSTR icon)

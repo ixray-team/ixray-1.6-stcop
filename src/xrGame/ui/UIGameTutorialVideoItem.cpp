@@ -6,7 +6,6 @@
 #include "UIXmlInit.h"
 #include "object_broker.h"
 #include "../../xrEngine/xr_input.h"
-#include "../xr_level_controller.h"
 
 #include "../Include/xrRender/UISequenceVideoItem.h"
 #include "../Include/xrRender/UIShader.h"

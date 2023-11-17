@@ -12,7 +12,7 @@
 #include "UIFrameWindow.h"
 #include "UIXmlInit.h"
 #include "UIHelper.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 UIHint::UIHint()
 {
@@ -104,7 +104,7 @@ void UIHintWindow::set_hint_text( shared_str const& text )
 
 void UIHintWindow::set_hint_text_ST( shared_str const& text )
 {
-	set_hint_text( CStringTable().translate( text ) );
+	set_hint_text(g_pStringTable->translate( text ) );
 }
 
 void UIHintWindow::update_hint_text()

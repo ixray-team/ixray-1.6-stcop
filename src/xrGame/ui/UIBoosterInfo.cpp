@@ -7,7 +7,7 @@
 #include "../ActorCondition.h"
 #include "UIXmlInit.h"
 #include "UIHelper.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIBoosterInfo::CUIBoosterInfo()
 {
@@ -68,7 +68,7 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 		m_booster_items[i]->Init(xml, ef_boosters_section_names[i]);
 		m_booster_items[i]->SetAutoDelete(false);
 
-		LPCSTR name = CStringTable().translate(boost_influence_caption[i]).c_str();
+		LPCSTR name = g_pStringTable->translate(boost_influence_caption[i]).c_str();
 		m_booster_items[i]->SetCaption(name);
 
 		xml.SetLocalRoot(base_node);
@@ -77,21 +77,21 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 	m_booster_satiety = xr_new<UIBoosterInfoItem>();
 	m_booster_satiety->Init(xml, "boost_satiety");
 	m_booster_satiety->SetAutoDelete(false);
-	LPCSTR name = CStringTable().translate("ui_inv_satiety").c_str();
+	LPCSTR name = g_pStringTable->translate("ui_inv_satiety").c_str();
 	m_booster_satiety->SetCaption(name);
 	xml.SetLocalRoot( base_node );
 
 	m_booster_anabiotic = xr_new<UIBoosterInfoItem>();
 	m_booster_anabiotic->Init(xml, "boost_anabiotic");
 	m_booster_anabiotic->SetAutoDelete(false);
-	name = CStringTable().translate("ui_inv_survive_surge").c_str();
+	name = g_pStringTable->translate("ui_inv_survive_surge").c_str();
 	m_booster_anabiotic->SetCaption(name);
 	xml.SetLocalRoot( base_node );
 
 	m_booster_time = xr_new<UIBoosterInfoItem>();
 	m_booster_time->Init(xml, "boost_time");
 	m_booster_time->SetAutoDelete(false);
-	name = CStringTable().translate("ui_inv_effect_time").c_str();
+	name = g_pStringTable->translate("ui_inv_effect_time").c_str();
 	m_booster_time->SetCaption(name);
 
 	xml.SetLocalRoot( stored_root );
@@ -236,7 +236,7 @@ void UIBoosterInfoItem::Init(CUIXml& xml, LPCSTR section)
 	m_show_sign = (xml.ReadAttribInt("value", 0, "show_sign", 1) == 1);
 	
 	LPCSTR unit_str = xml.ReadAttrib("value", 0, "unit_str", "");
-	m_unit_str._set(CStringTable().translate(unit_str));
+	m_unit_str._set(g_pStringTable->translate(unit_str));
 	
 	LPCSTR texture_minus = xml.Read("texture_minus", 0, "");
 	if(texture_minus && xr_strlen(texture_minus))

@@ -5,7 +5,7 @@
 #	include "../../xrEngine/xr_ioconsole.h"
 #	include "../../xrEngine/xr_ioc_cmd.h"
 #endif //#ifdef DEBUG
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 CRestrictions g_mp_restrictions;
 
 shared_str	g_ranks[_RANK_COUNT];
@@ -70,7 +70,7 @@ void CRestrictions::InitGroups()
 		xr_sprintf				(rank,"rank_%d", i);
 		
         AddRestriction4rank	(i, pSettings->r_string(rank, "amount_restriction"));
-		m_names[i]			= CStringTable().translate( pSettings->r_string(rank, "rank_name"));
+		m_names[i]			= g_pStringTable->translate( pSettings->r_string(rank, "rank_name"));
 	}
 
 #ifndef MASTER_GOLD
