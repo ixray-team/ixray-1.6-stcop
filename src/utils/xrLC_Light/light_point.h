@@ -1,5 +1,5 @@
 #pragma once
-
+#undef LP_DEFAULT
 enum
 {
 	LP_DEFAULT			= 0,

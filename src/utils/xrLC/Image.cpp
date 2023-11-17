@@ -8,13 +8,13 @@
 #include "Image.h"
 #include "tga.h"
 
-void CImage::Create(u32 w, u32 h, u32* data)
+void DXT::CImage::Create(u32 w, u32 h, u32* data)
 {
 	Create(w,h);
     CopyMemory(pData,data,w*h*sizeof(u32));
 }
 
-void CImage::Create(u32 w, u32 h)
+void DXT::CImage::Create(u32 w, u32 h)
 {
 	xr_free		(pData);
 	dwWidth		= w;
@@ -22,7 +22,7 @@ void CImage::Create(u32 w, u32 h)
 	pData		= (u32*)(xr_malloc(w*h*sizeof(u32)));
 }
 
-void CImage::SaveTGA(LPCSTR name, BOOL b24)
+void DXT::CImage::SaveTGA(LPCSTR name, BOOL b24)
 {
 	// Save
 	TGAdesc		tga;
@@ -41,7 +41,7 @@ void CImage::SaveTGA(LPCSTR name, BOOL b24)
     }
 }
 
-void CImage::Vflip()
+void DXT::CImage::Vflip()
 {
 	R_ASSERT(pData);
 	for (u32 y=0; y<dwHeight/2; y++)
@@ -54,7 +54,7 @@ void CImage::Vflip()
 		}
 	}
 }
-void CImage::Hflip()
+void DXT::CImage::Hflip()
 {
 	R_ASSERT(pData);
 	for (u32 y=0; y<dwHeight; y++)
@@ -75,7 +75,7 @@ IC BYTE ClampColor(float a)
     return BYTE(c);
 }
 
-void CImage::Contrast(float _fc)
+void DXT::CImage::Contrast(float _fc)
 {
 	R_ASSERT(pData);
 
@@ -91,7 +91,7 @@ void CImage::Contrast(float _fc)
 		}
     }
 }
-void CImage::Grayscale()
+void DXT::CImage::Grayscale()
 {
 	R_ASSERT(pData);
 
@@ -184,13 +184,13 @@ struct TGAHeader
 
 extern u32 *Surface_Load(char*,u32&,u32&);
 
-void CImage::Load	(LPCSTR name)
+void DXT::CImage::Load	(LPCSTR name)
 {
 	VERIFY		(!pData);
 	pData		= Surface_Load((LPSTR)name,dwWidth,dwHeight);
 }
 
-bool CImage::LoadTGA(LPCSTR name)
+bool DXT::CImage::LoadTGA(LPCSTR name)
 {
 	destructor<IReader>	TGA(FS.r_open(name));
 
