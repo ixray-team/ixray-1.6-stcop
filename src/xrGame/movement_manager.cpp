@@ -303,7 +303,7 @@ bool CMovementManager::distance_to_destination_greater	(const float &distance_to
 		return				(true);
 
 	float					accumulator = 0.f;
-	for (u32 i = detail().curr_travel_point_index(), n=detail().path().size()-1; i<n; ++i) {
+	for (u32 i = detail().curr_travel_point_index(), n= (u32)detail().path().size()-1; i<n; ++i) {
 		accumulator			+= detail().path()[i].position.distance_to(detail().path()[i+1].position);
 		if (accumulator >= distance_to_check)
 			return			(true);
@@ -407,7 +407,7 @@ Fvector CMovementManager::predict_position	(const float &time_delta, const Fvect
 
 	float					distance_to_check = velocity*time_delta;
 
-	const u32				&path_size = path.size();
+	const u32				&path_size = (u32)path.size();
 	if (current_travel_point == path_size - 1)
 		return				(path.back().position);
 

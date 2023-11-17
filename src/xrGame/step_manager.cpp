@@ -198,7 +198,7 @@ void CStepManager::update(bool b_hud_view)
 			// Играть партиклы
 			if(b_play && !mtl_pair->CollideParticles.empty())	
 			{
-				LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.size())];
+				LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, (u32)mtl_pair->CollideParticles.size())];
 
 				//отыграть партиклы столкновения материалов
 				CParticlesObject* ps = CParticlesObject::Create(ps_name,TRUE);

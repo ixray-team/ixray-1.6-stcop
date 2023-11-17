@@ -266,7 +266,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 		if(current_travel_point + 1 < detail().path().size())
 			detail().m_current_travel_point = current_travel_point + 1;
 		else
-			detail().m_current_travel_point = detail().path().size() - 1;
+			detail().m_current_travel_point = (u32)detail().path().size() - 1;
 		m_speed			= 0.f;
 		//Msg				("[%6d][%s] strange exit, curr_tp=%d",Device.dwFrame,*object().cName(),detail().m_current_travel_point);
 		return;

@@ -727,7 +727,7 @@ void stalker_movement_manager_base::check_for_bad_path	(stalker_movement_params&
 	typedef xr_vector<STravelPathPoint>	PATH;
 	const PATH							&path = detail().path();
 
-	u32									point_count = path.size();
+	u32									point_count = (u32)path.size();
 	u32									point_index = detail().curr_travel_point_index();
 	if (point_index + 2 >= point_count)
 		return;
