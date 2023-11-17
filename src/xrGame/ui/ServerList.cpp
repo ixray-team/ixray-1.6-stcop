@@ -207,10 +207,10 @@ void CServerList::FillUpDetailedServerInfo()
 			CUIListBoxItem* pItemAdv;
 
 			// TEAM 1
-			xr_vector<PlayerInfo>::iterator it;
+			xr_vector<BrowserPlayerInfo>::iterator it;
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); ++it)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				if (1 != pf.Team)
 					continue;
 				if (pf.Spectator)
@@ -249,7 +249,7 @@ void CServerList::FillUpDetailedServerInfo()
 			// TEAM 2
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				if (2 != pf.Team)
 					continue;
 				if (pf.Spectator)
@@ -283,7 +283,7 @@ void CServerList::FillUpDetailedServerInfo()
 			// SPECTATORS
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end();++it)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				if (!pf.Spectator)
 					continue;
 
@@ -311,10 +311,10 @@ void CServerList::FillUpDetailedServerInfo()
 		}
 		else
 		{
-			xr_vector<PlayerInfo>::iterator it;
+			xr_vector<BrowserPlayerInfo>::iterator it;
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); ++it)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				CUIListBoxItem* pItemAdv		= m_list[LST_PLAYERS].AddItem();
 
 				char buf[16];

@@ -183,7 +183,7 @@ void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)
 		else{
 			VERIFY(ir && _find_remove);
 
-			u32 cnt = m_input_receivers.size();
+			u32 cnt = (u32)m_input_receivers.size();
 			for(;cnt>0;--cnt)
 				if( m_input_receivers[cnt-1].m_item == ir ){
 					m_input_receivers[cnt].m_flags.set(recvItem::eCrosshair, m_input_receivers[cnt-1].m_flags.test(recvItem::eCrosshair) );

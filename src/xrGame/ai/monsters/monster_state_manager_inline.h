@@ -21,7 +21,7 @@ TEMPLATE_SPECIALIZATION
 void CMonsterStateManagerAbstract::update()
 {
 	// Lain: added
-	if ( !detail::object_exists_in_alife_registry (this->object->ID()) )
+	if ( !::detail::object_exists_in_alife_registry(this->object->ID()))
 	{
 		return;
 	}

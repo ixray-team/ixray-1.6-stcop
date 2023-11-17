@@ -58,6 +58,7 @@ bool CStateChimeraThreatenWalkAbstract::check_start_conditions()
 	return false;
 }
 
+#undef MAX_DISTANCE_TO_ENEMY
 #undef TEMPLATE_SPECIALIZATION
 #undef CStateChimeraThreatenWalkAbstract
 

@@ -60,7 +60,7 @@ void CStateManagerDog::execute()
 				squad->set_home_in_danger();
 			}
 
-			if ( object->Position().distance_to(enemy_pos) < detail::dog::atack_decision_maxdist )
+			if ( object->Position().distance_to(enemy_pos) < ::detail::dog::atack_decision_maxdist )
 			{
 				squad->set_home_in_danger();
 			}

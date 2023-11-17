@@ -839,9 +839,9 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	}
 	R_ASSERT(tmpPoints.size());
 	std::sort(tmpPoints.begin(), tmpPoints.end());
-	u32 HalfList = tmpPoints.size()/(tmp_functor.pEnemies.empty() ? 1 : 2);
-	u32 NewPointID = (HalfList) ? (tmpPoints.size()-HalfList + ::Random.randI(HalfList)) : 0;
-	VERIFY2(NewPointID < tmpPoints.size(), "problem with random rpoints");
+	u32 HalfList = (u32)tmpPoints.size()/(tmp_functor.pEnemies.empty() ? 1 : 2);
+	u32 NewPointID = (HalfList) ? ((u32)tmpPoints.size()-HalfList + ::Random.randI(HalfList)) : 0;
+	VERIFY2(NewPointID < (u32)tmpPoints.size(), "problem with random rpoints");
 
 	m_dwLastRPoints[Team] = m_vFreeRPoints[Team][tmpPoints[NewPointID].PointID];
 	m_vFreeRPoints[Team].erase(m_vFreeRPoints[Team].begin() + tmpPoints[NewPointID].PointID);

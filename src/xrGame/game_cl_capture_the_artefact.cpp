@@ -31,17 +31,17 @@
 #include "reward_event_generator.h"
 
 
-//#define TEAM0_MENU		"artefacthunt_team0"
-#define	GREENTEAM_MENU		"capturetheartefact_team1"
-#define	BLUETEAM_MENU		"capturetheartefact_team2"
-#define BASECOST_SECTION	"capturetheartefact_base_cost"
-#define MESSAGE_MENUS		"capturetheartefact_messages_menu"
+//#define TEAM0_MENU			"artefacthunt_team0"
+#define	GREENTEAM_MENU			"capturetheartefact_team1"
+#define	BLUETEAM_MENU			"capturetheartefact_team2"
+#define BASECOST_SECTION		"capturetheartefact_base_cost"
+#define MESSAGE_MENUS			"capturetheartefact_messages_menu"
 
-#define ARTEFACT_NEUTRAL "mp_af_neutral_location"
-#define FREE_ARTEFACT_FRIEND "mp_free_af_friend_location"
-#define FRIEND_LOCATION	"mp_friend_location"
-#define ARTEFACT_FRIEND "mp_af_friend_location"
-#define ARTEFACT_ENEMY "mp_af_enemy_location"
+#define ARTEFACT_NEUTRAL		"mp_af_neutral_location"
+#define FREE_ARTEFACT_FRIEND	"mp_free_af_friend_location"
+#define FRIEND_LOCATION			"mp_friend_location"
+#define ARTEFACT_FRIEND			"mp_af_friend_location"
+#define ARTEFACT_ENEMY			"mp_af_enemy_location"
 
 #define CLIENT_CTA_LOG
 
@@ -1672,3 +1672,13 @@ void game_cl_CaptureTheArtefact::OnConnected()
 		m_game_ui->SetClGame	(this);
 	}
 }
+
+#undef GREENTEAM_MENU
+#undef BLUETEAM_MENU
+#undef BASECOST_SECTION
+#undef MESSAGE_MENUS
+#undef ARTEFACT_NEUTRAL
+#undef FREE_ARTEFACT_FRIEND
+#undef FRIEND_LOCATION
+#undef ARTEFACT_FRIEND
+#undef ARTEFACT_ENEMY	

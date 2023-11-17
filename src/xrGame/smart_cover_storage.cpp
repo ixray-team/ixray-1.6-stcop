@@ -19,24 +19,25 @@ using smart_cover::description;
 
 typedef storage::DescriptionPtr		DescriptionPtr;
 
-struct id_predicate {
-	shared_str		m_id;
-
-public:
-	IC				id_predicate	(shared_str const &id) :
-		m_id				(id)
-	{
-	}
-
-	IC	bool		operator()		(::description* const &ptr) const
-	{
-		return				(m_id._get() == ptr->table_id()._get());
-	}
-};
-
 DescriptionPtr storage::description(shared_str const &table_id)
 {
 	collect_garbage			();
+
+	struct id_predicate
+	{
+		shared_str m_id;
+
+	public:
+		IC id_predicate(shared_str const& id) :
+			m_id(id)
+		{
+		}
+
+		IC bool operator() (::description* const& ptr) const
+		{
+			return (m_id._get() == ptr->table_id()._get());
+		}
+	};
 
 	Descriptions::iterator	found =
 		std::find_if(

@@ -49,9 +49,11 @@ static void log_callback			(LPCSTR message)
 	ai().script_engine().debugger()->add_log_line	(message);
 }
 
-static void initialize_lua_studio	( lua_State* state, cs::lua_studio::world*& world, lua_studio_engine*& engine)
+#include "lua_studio.h"
+
+static void initialize_lua_studio	( lua_State* state, cs::lua_studio::world*& world, lua_studio_engine*& InEngine)
 {
-	engine							= 0;
+	InEngine = 0;
 	world							= 0;
 
 	u32 const old_error_mode		= SetErrorMode(SEM_FAILCRITICALERRORS);
@@ -78,8 +80,8 @@ static void initialize_lua_studio	( lua_State* state, cs::lua_studio::world*& wo
 		);
 	R_ASSERT2						(s_destroy_world, "can't find function \"cs_lua_studio_backend_destroy_world\" in the library");
 
-	engine							= xr_new<lua_studio_engine>();
-	world							= s_create_world( *engine, false, false );
+	InEngine = new lua_studio_engine();
+	world							= s_create_world( *InEngine, false, false );
 	VERIFY							(world);
 
 	s_old_log_callback				= SetLogCB(&log_callback);

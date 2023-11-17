@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#undef min
+#undef max
 
 template <
 	typename _dist_type,
@@ -20,7 +22,7 @@ struct SBaseParameters {
 
 	IC	SBaseParameters(
 			_dist_type		max_range				= type_max(_dist_type),
-			_iteration_type	max_iteration_count		= _iteration_type(-1),
+			_iteration_type	_max_iteration_count		= _iteration_type(-1),
 #ifndef AI_COMPILER
 			u32				max_visited_node_count	= 65500
 #else
@@ -28,7 +30,7 @@ struct SBaseParameters {
 #endif
 		) :
 			max_range				(max_range),
-			max_iteration_count		(max_iteration_count),
+			max_iteration_count		(_max_iteration_count),
 			max_visited_node_count	(max_visited_node_count)
 	{
 	}

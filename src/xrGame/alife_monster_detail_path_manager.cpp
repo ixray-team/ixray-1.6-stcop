@@ -277,7 +277,7 @@ Fvector CALifeMonsterDetailPathManager::draw_level_position	() const
 	if (path().empty())
 		return						(object().get_object().Position());
 
-	u32								path_size = path().size();
+	u32								path_size = (u32)path().size();
 	if (path_size == 1)
 		return						(object().get_object().Position());
 

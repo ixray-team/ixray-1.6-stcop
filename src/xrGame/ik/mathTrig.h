@@ -41,7 +41,7 @@
 #define _TRIGH
 
 
-inline float iszero(float x) 
+inline float t_iszero(float x) 
 {
     return x*x < 1e-6;
 }

@@ -216,7 +216,7 @@ void CSE_ALifeInventoryBox::add_offline	(const xr_vector<ALife::_OBJECT_ID> &sav
 {
 	CSE_ALifeDynamicObjectVisual		*object = (this);
 
-	for (u32 i=0, n=saved_children.size(); i<n; ++i) {
+	for (u32 i=0, n=(u32)saved_children.size(); i<n; ++i) {
 		CSE_ALifeDynamicObject	*child = smart_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i],true));
 		R_ASSERT				(child);
 		child->m_bOnline		= false;

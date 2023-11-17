@@ -17,6 +17,8 @@ namespace steering_behaviour
 {
 
 #define STEER_ASSERT VERIFY
+#undef min
+#undef max
 
 namespace detail
 {
@@ -34,9 +36,6 @@ namespace detail
 			                          local::random_component()) );
 	}
 
-	ICF float min (float a, float b) { return a < b ? a : b; }
-	ICF float max (float a, float b) { return a < b ? a : b; }
-
 } // namespace detail
 
 //----------------------------------------------------------
@@ -51,7 +50,7 @@ float   base::calc_dist_factor (float dist) const
 float   base::calc_dist_factor (vec_arg factor, float dist) const
 {
 	STEER_ASSERT(m_p_params->min_factor_dist >= s_min_factor_dist);
-	const float  r   = detail::min(dist, m_p_params->min_factor_dist);
+	const float  r   = std::min(dist, m_p_params->min_factor_dist);
 	const float  r2  = r*r;
 
 	return factor.x + factor.y/r + factor.z/r2;
@@ -66,7 +65,7 @@ vec   evade::calc_acceleration ()
 	const vec   dest2pos     = m_p_params->dest - m_p_params->pos;
 	const float dest2pos_mag = magnitude(dest2pos);
 
-	const float dist = detail::max(dest2pos_mag, detail::near_zero);
+	const float dist = std::max(dest2pos_mag, detail::near_zero);
 
 	if ( dist > m_p_params->max_evade_range )
 	{

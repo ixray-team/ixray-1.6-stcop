@@ -334,7 +334,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 		foot.transform_tiny(global_point, heel );
 #ifdef DEBUG
 		if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
-			DBG_DrawPoint(global_point, 0.01, color_xrgb(0, 255, 255));
+			DBG_DrawPoint(global_point, 0.01f, color_xrgb(0, 255, 255));
 #endif
 		Fmatrix foot_to_ref;
 		ref_bone_to_foot_transform(foot_to_ref).transform_tiny(local_point, heel );

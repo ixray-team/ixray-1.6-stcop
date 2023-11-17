@@ -807,7 +807,7 @@ void CDetailPathManager::postprocess_key_points(
 
 void CDetailPathManager::add_patrol_point()
 {
-	m_last_patrol_point					= m_path.size() - 1;
+	m_last_patrol_point					= (u32)m_path.size() - 1;
 	if ((m_path.size() > 1) && m_state_patrol_path && !fis_zero(extrapolate_length())) {
 		STravelPathPoint				t;
 		Fvector							v;

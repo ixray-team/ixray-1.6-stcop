@@ -262,7 +262,7 @@ void ai_obstacle::compute_impl		()
 		return;
 	}
 
-	m_crc = crc32(&*m_area.begin(), m_area.size());
+	m_crc = crc32(&*m_area.begin(), (u32)m_area.size());
 }
 
 void ai_obstacle::on_move			()

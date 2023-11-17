@@ -102,7 +102,7 @@ void CSE_ALifeInventoryItem::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 	State.position				= base()->o_Position;
 }
 
-static inline bool check (const u8 &mask, const u8 &test)
+static inline bool check1 (const u8 &mask, const u8 &test)
 {
 	return							(!!(mask & test));
 }
@@ -175,13 +175,13 @@ void CSE_ALifeInventoryItem::UPDATE_Write	(NET_Packet &tNetPacket)
 		tNetPacket.w_float			(State.quaternion.z);
 		tNetPacket.w_float			(State.quaternion.w);	
 
-		if (!check(num_items.mask,inventory_item_angular_null)) {
+		if (!check1(num_items.mask,inventory_item_angular_null)) {
 			tNetPacket.w_float		(State.angular_vel.x);
 			tNetPacket.w_float		(State.angular_vel.y);
 			tNetPacket.w_float		(State.angular_vel.z);
 		}
 
-		if (!check(num_items.mask,inventory_item_linear_null)) {
+		if (!check1(num_items.mask,inventory_item_linear_null)) {
 			tNetPacket.w_float		(State.linear_vel.x);
 			tNetPacket.w_float		(State.linear_vel.y);
 			tNetPacket.w_float		(State.linear_vel.z);
@@ -230,9 +230,9 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 		tNetPacket.r_float			(State.quaternion.z);
 		tNetPacket.r_float			(State.quaternion.w);	
 
-		State.enabled					= check(num_items.mask,inventory_item_state_enabled);
+		State.enabled					= check1(num_items.mask,inventory_item_state_enabled);
 
-		if (!check(num_items.mask,inventory_item_angular_null)) {
+		if (!check1(num_items.mask,inventory_item_angular_null)) {
 			tNetPacket.r_float		(State.angular_vel.x);
 			tNetPacket.r_float		(State.angular_vel.y);
 			tNetPacket.r_float		(State.angular_vel.z);
@@ -240,7 +240,7 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 		else
 			State.angular_vel.set		(0.f,0.f,0.f);
 
-		if (!check(num_items.mask,inventory_item_linear_null)) {
+		if (!check1(num_items.mask,inventory_item_linear_null)) {
 			tNetPacket.r_float		(State.linear_vel.x);
 			tNetPacket.r_float		(State.linear_vel.y);
 			tNetPacket.r_float		(State.linear_vel.z);

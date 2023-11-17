@@ -52,7 +52,7 @@ void game_cl_Deathmatch::OnBuyMenu_Ok	()
 			_p	= &(pCurBuyMenu->GetPreset(_preset_idx_origin));
 	}
 	
-	u32 ItemsCount							= _p->size();
+	u32 ItemsCount = (u32)_p->size();
 	for (u32 i=0; i<ItemsCount; ++i)
 	{
 		const _preset_item& _pitem = _p[0][i];
@@ -143,7 +143,7 @@ void game_cl_Deathmatch::SetBuyMenuItems		(PRESET_ITEMS* pItems, BOOL OnlyPreset
 	if (pCurActor)
 	{
 		//defusing all weapons
-		u32 max_addammo_count = pCurActor->inventory().m_all.size();
+		u32 max_addammo_count = (u32)pCurActor->inventory().m_all.size();
 		aditional_ammo_t add_ammo(
 			_alloca(
 				sizeof(aditional_ammo_t::value_type) * (max_addammo_count * 2)

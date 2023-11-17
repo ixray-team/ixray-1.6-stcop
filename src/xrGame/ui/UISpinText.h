@@ -1,3 +1,4 @@
+#pragma once
 #include "UICustomSpin.h"
 
 class CUISpinText : public CUICustomSpin

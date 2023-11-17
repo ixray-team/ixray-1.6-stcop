@@ -11,7 +11,7 @@ struct GameInfo	{
 	GameInfo(LPCSTR Name, LPCSTR Data) { InfoName._set(Name); InfoData._set(Data); };
 };
 
-struct PlayerInfo {
+struct BrowserPlayerInfo {
 	string128	Name;
 	s16			Frags;
 	u16			Deaths;
@@ -49,7 +49,7 @@ struct ServerInfo{
 	s16						m_Port, m_HPort;
 
 	xr_vector<GameInfo>		m_aInfos;
-	xr_vector<PlayerInfo>	m_aPlayers;
+	xr_vector<BrowserPlayerInfo> m_aPlayers;
 	xr_vector<TeamInfo>		m_aTeams;
 
 	int						Index;

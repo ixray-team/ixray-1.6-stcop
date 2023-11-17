@@ -413,7 +413,7 @@ void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 	//--------- Read Players Info -------------------------//	
 	for (int i=0; i<pServerInfo->m_ServerNumPlayers; i++)
 	{
-		PlayerInfo PInfo;
+		BrowserPlayerInfo PInfo;
 		_snprintf_s(PInfo.Name, sizeof(PInfo.Name)-1, "%s", xrGS_SBServerGetPlayerStringValueA(pServer, i,	"player", "Unknown"));
 		PInfo.Name[sizeof(PInfo.Name)-1] = 0;
 		PInfo.Frags =		s16(xrGS_SBServerGetPlayerIntValueA(pServer, i,			"score", 0));

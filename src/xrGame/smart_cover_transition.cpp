@@ -18,10 +18,9 @@ using smart_cover::detail::parse_table;
 using smart_cover::detail::parse_string;
 using smart_cover::detail::parse_fvector;
 using smart_cover::detail::parse_int;
-using smart_cover::transitions::action;
 using smart_cover::transitions::animation_action;
 
-action::action					(luabind::object const &table)
+smart_cover::transitions::action::action					(luabind::object const &table)
 {
 	VERIFY						(luabind::type(table) == LUA_TTABLE);
 
@@ -33,12 +32,12 @@ action::action					(luabind::object const &table)
 	load_animations				(anim_table);
 }
 
-action::~action()
+smart_cover::transitions::action::~action()
 {
 	delete_data(m_animations);
 }
 
-bool action::applicable			() const
+bool smart_cover::transitions::action::applicable			() const
 {
 	luabind::functor<bool>		functor;
 
@@ -50,7 +49,7 @@ bool action::applicable			() const
 	return						(functor(m_precondition_params.c_str()));
 }
 
-void action::load_animations	(luabind::object const &table)
+void smart_cover::transitions::action::load_animations	(luabind::object const &table)
 {
 	luabind::iterator it(table), end;
 	const size_t count = luabind::distance(it, end);
@@ -69,7 +68,8 @@ void action::load_animations	(luabind::object const &table)
 	}
 }
 
-class body_state_predicate {
+class body_state_predicate
+{
 	MonsterSpace::EBodyState	m_body_state;
 
 public:
@@ -82,14 +82,11 @@ public:
 	{
 		VERIFY					(animation_action);
 
-		//if (!animation_action->has_animation())
-		//	return				(false);
-
 		return					(m_body_state == animation_action->body_state());
 	}
 };
 
-animation_action const &action::animation	(MonsterSpace::EBodyState const &target_body_state) const
+animation_action const & smart_cover::transitions::action::animation	(MonsterSpace::EBodyState const &target_body_state) const
 {
 	Animations::const_iterator found = 
 		std::find_if			(m_animations.begin(), m_animations.end(), body_state_predicate(target_body_state));
@@ -111,7 +108,7 @@ animation_action const &action::animation	(MonsterSpace::EBodyState const &targe
 	return						(**found);
 }
 
-animation_action const	&action::animation	() const
+animation_action const	& smart_cover::transitions::action::animation	() const
 {
-	return						(*m_animations[Random.randI(m_animations.size())]);
+	return (*m_animations[Random.randI(m_animations.size())]);
 }

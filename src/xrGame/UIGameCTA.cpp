@@ -567,7 +567,7 @@ void CUIGameCTA::SetPlayerItemsToBuyMenu()
 
 	if (actor && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
-		u32 max_addammo_count = actor->inventory().m_all.size();
+		u32 max_addammo_count = (u32)actor->inventory().m_all.size();
 		aditional_ammo_t add_ammo(
 			_alloca(
 				sizeof(aditional_ammo_t::value_type) * (max_addammo_count * 2)

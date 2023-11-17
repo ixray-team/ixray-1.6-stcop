@@ -21,13 +21,13 @@ interactive_animation::~interactive_animation( )
 {
 	
 }
-static float depth = 0;
+static float anim_depth = 0;
 bool interactive_animation::collide( )
 {
 	
-	depth = 0;	
+	anim_depth = 0;
 	physics_shell	->CollideAll( );
-	if( depth > 0.05 )
+	if(anim_depth > 0.05 )
 			return true;
 	return false;
 }
@@ -60,7 +60,7 @@ void	interactive_animation::contact_callback(bool& do_colide,bool bo1,dContact& 
 	VERIFY( gd1 );
 	if( gd2 && gd2->ph_ref_object == gd1->ph_ref_object )
 		return;
-	 save_max( depth, c.geom.depth );
+	 save_max(anim_depth, c.geom.depth );
 	//if(gd1&&gd2&&(CPhysicsShellHolder*)gd1->callback_data==gd2->ph_ref_object)	
 	//																			do_colide=false;
 }

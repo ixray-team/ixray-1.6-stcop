@@ -124,6 +124,10 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIStalkersRankingWnd.*")
 
 # xrGame project
 add_library(xrGame SHARED ${XGM_SRC_FILES})
+#set_target_properties(xrGame PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE 32)
+#target_compile_options(xrGame PRIVATE /bigobj)
+set_source_files_properties(../xrServerEntities/script_engine_export.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+set_source_files_properties(../xrServerEntities/object_factory_register.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 
 # Include directories
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -151,9 +155,7 @@ set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 set_target_properties(xrGame PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 target_precompile_headers(xrGame PUBLIC "stdafx.h")
-
-file(GLOB_RECURSE GAME_SOURCE_PCH_FILES "stdafx.*")
 file(GLOB_RECURSE GAME_SOURCE_ALL_C_FILES "*.c" "../xrGameSpy/gamespy/md5c.c")
-
 set_source_files_properties(${GAME_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+file(GLOB_RECURSE GAME_SOURCE_PCH_FILES "stdafx.*")
 source_group("pch" FILES ${GAME_SOURCE_PCH_FILES})

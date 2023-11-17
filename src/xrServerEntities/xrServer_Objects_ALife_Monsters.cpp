@@ -352,11 +352,11 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 
 #ifdef XRGAME_EXPORTS
 		if(m_CheckedCharacters.empty())
-			char_info.m_SpecificCharacterId = m_DefaultCharacters[Random.randI(m_DefaultCharacters.size())];
+			char_info.m_SpecificCharacterId = m_DefaultCharacters[Random.randI((u32)m_DefaultCharacters.size())];
 		else
-			char_info.m_SpecificCharacterId = m_CheckedCharacters[Random.randI(m_CheckedCharacters.size())];
+			char_info.m_SpecificCharacterId = m_CheckedCharacters[Random.randI((u32)m_CheckedCharacters.size())];
 #else
-			char_info.m_SpecificCharacterId = m_DefaultCharacters[Random.randI(m_DefaultCharacters.size())];
+			char_info.m_SpecificCharacterId = m_DefaultCharacters[Random.randI((u32)m_DefaultCharacters.size())];
 #endif
 
 		set_specific_character(char_info.m_SpecificCharacterId);

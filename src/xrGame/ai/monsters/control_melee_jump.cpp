@@ -91,3 +91,4 @@ void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEvent
 		break;
 	}
 }
+#undef MAX_DISTANCE_TO_ENEMY

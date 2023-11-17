@@ -134,9 +134,9 @@ public:
 	IC		const	Fvector						vertex_position	(u32 vertex_id) const;
 	IC		const	Fvector						vertex_position	(const CVertex &vertex) const;
 	IC		const	Fvector						vertex_position	(const CVertex *vertex) const;
-	IC		float	vertex_plane_y				(const CVertex &vertex, const float X, const float Z) const;
-	IC		float	vertex_plane_y				(const CVertex *vertex, const float X, const float Z) const;
-	IC		float	vertex_plane_y				(const u32 vertex_id,	const float X, const float Z) const;
+	IC		float	vertex_plane_y				(const CVertex &vertex, const float InX, const float InZ) const;
+	IC		float	vertex_plane_y				(const CVertex *vertex, const float InX, const float InZ) const;
+	IC		float	vertex_plane_y				(const u32 vertex_id,	const float InX, const float InZ) const;
 	IC		float	vertex_plane_y				(const CVertex &vertex) const;
 	IC		float	vertex_plane_y				(const CVertex *vertex) const;
 	IC		float	vertex_plane_y				(const u32 vertex_id) const;

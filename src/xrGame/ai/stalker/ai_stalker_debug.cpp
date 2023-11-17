@@ -796,7 +796,7 @@ void CAI_Stalker::debug_text			()
 		CSoundPlayer::SOUND_COLLECTIONS::const_iterator	I = sound().objects().begin();
 		CSoundPlayer::SOUND_COLLECTIONS::const_iterator	E = sound().objects().end();
 		for ( ; I != E; ++I)
-			object_count	+= (*I).second.second->m_sounds.size();
+			object_count	+= (u32)(*I).second.second->m_sounds.size();
 		DBG_OutText("%s%sobjects     : %d",indent,indent,object_count);
 	}
 	{

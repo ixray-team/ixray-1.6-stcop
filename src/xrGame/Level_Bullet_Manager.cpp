@@ -171,7 +171,7 @@ void CBulletManager::PlayExplodePS( const Fmatrix& xf )
 	if ( m_ExplodeParticles.empty() )
 		return;
 
-	shared_str const& ps_name	= m_ExplodeParticles[Random.randI(0, m_ExplodeParticles.size())];
+	shared_str const& ps_name	= m_ExplodeParticles[Random.randI(0, (u32)m_ExplodeParticles.size())];
 	CParticlesObject* const	ps	= CParticlesObject::Create(*ps_name,TRUE);
 	ps->UpdateParent			(xf,zero_vel);
 	GamePersistent().ps_needtoplay.push_back(ps);
@@ -967,7 +967,7 @@ void CBulletManager::Render	()
 	if(m_BulletsRendered.empty()) return;
 
 	//u32	vOffset			=	0	;
-	u32 bullet_num		=	m_BulletsRendered.size();
+	u32 bullet_num		= (u32)m_BulletsRendered.size();
 
 	UIRender->StartPrimitive((u32)bullet_num*12, IUIRender::ptTriList, IUIRender::pttLIT);
 
