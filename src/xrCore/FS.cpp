@@ -50,6 +50,7 @@ void unregister_file_mapping		(void *address, const u32 &size)
 
 XRCORE_API void dump_file_mappings	()
 {
+#if 0
 	Msg								("* active file mappings (%d):",g_file_mappings.size());
 
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.begin();
@@ -61,6 +62,7 @@ XRCORE_API void dump_file_mappings	()
 			(*I).second.first,
 			(*I).second.second.c_str()
 		);
+#endif
 }
 #endif // DEBUG
 //////////////////////////////////////////////////////////////////////
