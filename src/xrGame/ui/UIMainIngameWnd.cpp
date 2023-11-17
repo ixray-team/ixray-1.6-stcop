@@ -38,7 +38,7 @@
 #include "UIPdaWnd.h"
 #include "../alife_registry_wrappers.h"
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #ifdef DEBUG
 #	include "../attachable_item.h"
@@ -825,25 +825,25 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 void CUIMainIngameWnd::UpdateQuickSlots()
 {
 	string32 tmp;
-	LPCSTR str = CStringTable().translate("quick_use_str_1").c_str();
+	LPCSTR str = g_pStringTable->translate("quick_use_str_1").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
 	if(tmp[2]==',')
 		tmp[1] = '\0';
 	m_QuickSlotText1->SetTextST(tmp);
 
-	str = CStringTable().translate("quick_use_str_2").c_str();
+	str = g_pStringTable->translate("quick_use_str_2").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
 	if(tmp[2]==',')
 		tmp[1] = '\0';
 	m_QuickSlotText2->SetTextST(tmp);
 
-	str = CStringTable().translate("quick_use_str_3").c_str();
+	str = g_pStringTable->translate("quick_use_str_3").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
 	if(tmp[2]==',')
 		tmp[1] = '\0';
 	m_QuickSlotText3->SetTextST(tmp);
 
-	str = CStringTable().translate("quick_use_str_4").c_str();
+	str = g_pStringTable->translate("quick_use_str_4").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
 	if(tmp[2]==',')
 		tmp[1] = '\0';

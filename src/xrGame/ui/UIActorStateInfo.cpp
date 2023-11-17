@@ -32,10 +32,6 @@
 #include "../ActorHelmet.h"
 #include "../Inventory.h"
 #include "../Artefact.h"
-#include "../string_table.h"
-ui_actor_state_wnd::ui_actor_state_wnd()
-{
-}
 
 ui_actor_state_wnd::~ui_actor_state_wnd()
 {

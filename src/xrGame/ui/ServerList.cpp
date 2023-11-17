@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "ServerList.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_ioconsole.h"
 #include "UIEditBox.h"
 #include "UIMessageBoxEx.h"
@@ -218,7 +218,7 @@ void CServerList::FillUpDetailedServerInfo()
 
 				if (!t1)		// add header
 				{
-					STRCONCAT(_buff, CStringTable().translate("ui_st_team").c_str(),
+					STRCONCAT(_buff, g_pStringTable->translate("ui_st_team").c_str(),
 						"\"", CTeamInfo::GetTeam1_name().c_str(), "\"");
 
 					pItemAdv					= m_list[LST_PLAYERS].AddItem();
@@ -257,7 +257,7 @@ void CServerList::FillUpDetailedServerInfo()
 
 				if (!t2)
 				{
-					STRCONCAT(_buff, CStringTable().translate("ui_st_team").c_str(),
+					STRCONCAT(_buff, g_pStringTable->translate("ui_st_team").c_str(),
 						"\"", CTeamInfo::GetTeam2_name().c_str(), "\"");
 
 					m_list[LST_PLAYERS].AddTextItem	(_buff);
@@ -289,7 +289,7 @@ void CServerList::FillUpDetailedServerInfo()
 
 				if (!spect)
 				{
-					pItemAdv					= m_list[LST_PLAYERS].AddTextItem(CStringTable().translate("mp_spectator").c_str());
+					pItemAdv					= m_list[LST_PLAYERS].AddTextItem(g_pStringTable->translate("mp_spectator").c_str());
 					spect = true;
 				}
 

@@ -8,7 +8,7 @@
 #include "../eatable_item.h"
 #include "../Level.h"
 #include "../date_time.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../Inventory.h"
 #include "../InventoryOwner.h"
 
@@ -336,7 +336,7 @@ const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDate
 
 	split_time(date, year, month, day, hours, mins, secs, milisecs);
 	VERIFY( 1 <= month && month <= 12 );
-	LPCSTR month_str = CStringTable().translate( st_months[month-1] ).c_str();
+	LPCSTR month_str = g_pStringTable->translate( st_months[month-1] ).c_str();
 
 	// Date
 	switch (datePrec)
@@ -369,19 +369,19 @@ LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife
 	_buff[0]	= 0;
 
 	if(month1!=month2)
-		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s ",month2-month1, *CStringTable().translate("ui_st_months"));
+		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s ",month2-month1, *g_pStringTable->translate("ui_st_months"));
 
 	if(!cnt && day1!=day2)
-		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",day2-day1, *CStringTable().translate("ui_st_days"));
+		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",day2-day1, *g_pStringTable->translate("ui_st_days"));
 
 	if(!cnt && hours1!=hours2)
-		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",hours2-hours1, *CStringTable().translate("ui_st_hours"));
+		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",hours2-hours1, *g_pStringTable->translate("ui_st_hours"));
 
 	if(!cnt && mins1!=mins2)
-		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",mins2-mins1, *CStringTable().translate("ui_st_mins"));
+		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",mins2-mins1, *g_pStringTable->translate("ui_st_mins"));
 
 	if(!cnt && secs1!=secs2)
-		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",secs2-secs1, *CStringTable().translate("ui_st_secs"));
+		cnt = xr_sprintf(_buff+cnt,buff_sz-cnt,"%d %s",secs2-secs1, *g_pStringTable->translate("ui_st_secs"));
 
 	return _buff;
 }
@@ -396,7 +396,7 @@ void InventoryUtilities::UpdateWeightStr(CUITextWnd &wnd, CUITextWnd &wnd_max, C
 	float total		= pInvOwner->inventory().CalcTotalWeight();
 	float max		= pInvOwner->MaxCarryWeight();
 
-	LPCSTR kg_str	= CStringTable().translate( "st_kg" ).c_str();
+	LPCSTR kg_str	= g_pStringTable->translate( "st_kg" ).c_str();
 	xr_sprintf		(buf, "%.1f %s", total, kg_str);
 	wnd.SetText	(buf);
 

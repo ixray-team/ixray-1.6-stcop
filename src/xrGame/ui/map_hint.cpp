@@ -8,7 +8,7 @@
 #include "../gametaskmanager.h"
 #include "../gametask.h"
 #include "UIInventoryUtilities.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIStatic* init_static_field(CUIXml& uiXml, LPCSTR path, LPCSTR path2)
 {
@@ -123,7 +123,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 		string512		buff, buff2;
 		InventoryUtilities::GetTimePeriodAsString(buff, sizeof(buff), Level().GetGameTime(), task->m_TimeToComplete);
 		
-		strconcat		(sizeof(buff2),buff2, CStringTable().translate("ui_st_time_remains").c_str(), " ", buff);
+		strconcat		(sizeof(buff2),buff2, g_pStringTable->translate("ui_st_time_remains").c_str(), " ", buff);
 		S->TextItemControl()->SetText		(buff2);
 	}
 	pos				= S->GetWndPos();

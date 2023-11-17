@@ -7,7 +7,6 @@
 #include "UIStatix.h"
 #include "UIScrollView.h"
 #include "UI3tButton.h"
-#include "../xr_level_controller.h"
 #include "uicursor.h"
 #include "uigamecustom.h"
 

@@ -7,7 +7,7 @@
 #include "object_broker.h"
 #include "UIXmlInit.h"
 #include "UIHelper.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 u32 const red_clr   = color_argb(255,210,50,50);
 u32 const green_clr = color_argb(255,170,170,170);
@@ -114,7 +114,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_immunity_item[i]->Init( xml, af_immunity_section_names[i] );
 		m_immunity_item[i]->SetAutoDelete(false);
 
-		LPCSTR name = CStringTable().translate(af_immunity_caption[i]).c_str();
+		LPCSTR name = g_pStringTable->translate(af_immunity_caption[i]).c_str();
 		m_immunity_item[i]->SetCaption( name );
 
 		xml.SetLocalRoot( base_node );
@@ -126,7 +126,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_restore_item[i]->Init( xml, af_restore_section_names[i] );
 		m_restore_item[i]->SetAutoDelete(false);
 
-		LPCSTR name = CStringTable().translate(af_restore_caption[i]).c_str();
+		LPCSTR name = g_pStringTable->translate(af_restore_caption[i]).c_str();
 		m_restore_item[i]->SetCaption( name );
 
 		xml.SetLocalRoot( base_node );
@@ -137,7 +137,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_additional_weight->Init( xml, "additional_weight" );
 		m_additional_weight->SetAutoDelete(false);
 
-		LPCSTR name = CStringTable().translate( "ui_inv_weight" ).c_str();
+		LPCSTR name = g_pStringTable->translate( "ui_inv_weight" ).c_str();
 		m_additional_weight->SetCaption( name );
 
 		//xml.SetLocalRoot( base_node );
@@ -250,7 +250,7 @@ void UIArtefactParamItem::Init( CUIXml& xml, LPCSTR section )
 	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
 	
 	LPCSTR unit_str = xml.ReadAttrib( "value", 0, "unit_str", "" );
-	m_unit_str._set( CStringTable().translate( unit_str ) );
+	m_unit_str._set( g_pStringTable->translate( unit_str ) );
 	
 	LPCSTR texture_minus = xml.Read( "texture_minus", 0, "" );
 	if ( texture_minus && xr_strlen(texture_minus) )

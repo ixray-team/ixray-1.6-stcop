@@ -25,6 +25,12 @@ file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
     "EngineAPI.*"
     "EngineExternal*.*"
 )
+
+file(GLOB_RECURSE ENGINE_SOURCE_INPUT_FILES
+    "xr_input.*"
+    "xr_level_controller.*"
+)
+
 file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.c"
@@ -35,6 +41,7 @@ file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 source_group("core" FILES ${ENGINE_SOURCE_ALL_FILES})
 source_group("kernel" FILES ${ENGINE_SOURCE_KERNEL_FILES})
 source_group("interfaces" FILES ${ENGINE_SOURCE_INTERFACE_FILES})
+source_group("input" FILES ${ENGINE_SOURCE_INPUT_FILES})
 source_group("lua" FILES ${ENGINE_SOURCE_LUA_FILES})
 source_group("device" FILES ${ENGINE_SOURCE_DEVICE_FILES})
 source_group("weather_editor" FILES ${ENGINE_SOURCE_WEDIT_FILES})

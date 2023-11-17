@@ -6,7 +6,7 @@
 #include "UIStatsIcon.h"
 #include "../game_cl_artefacthunt.h"
 #include "../level.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIStatsPlayerInfo::CUIStatsPlayerInfo(xr_vector<PI_FIELD_INFO>* info, CGameFont* pF, u32 text_col)
 {
@@ -99,9 +99,9 @@ void CUIStatsPlayerInfo::AddField(float len, CGameFont* pF, u32 text_col, bool i
 	AttachChild(wnd);
 }
 
-const char* CUIStatsPlayerInfo::GetInfoByID(const char* id){
+const char* CUIStatsPlayerInfo::GetInfoByID(const char* id)
+{
 	static string64 ans;
-	CStringTable st;
 
 	if (0 == xr_strcmp(id,"name"))
 		xr_strcpy(ans,m_pPlayerInfo->getName());
@@ -145,7 +145,7 @@ const char* CUIStatsPlayerInfo::GetInfoByID(const char* id){
 	else if (0 == xr_strcmp(id, "status"))
 	{
 		if (m_pPlayerInfo->testFlag(GAME_PLAYER_FLAG_READY))
-			xr_strcpy(ans,*st.translate("st_mp_ready"));
+			xr_strcpy(ans,*g_pStringTable->translate("st_mp_ready"));
 		else
 			xr_strcpy(ans,"");
 	}

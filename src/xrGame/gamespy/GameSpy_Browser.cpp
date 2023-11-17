@@ -10,7 +10,7 @@
 #include "GameSpy_QR2.h"
 
 #include "object_broker.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer server, void *instance);
 EGameIDs ParseStringToGameType(LPCSTR str);
@@ -267,25 +267,25 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo* pServerInfo, int idx)
 	pServerInfo->Index = idx;
 }
 
-#define ADD_BOOL_INFO(i, s, t, k)	i->m_aInfos.push_back(GameInfo(t, ((xrGS_SBServerGetBoolValueA(s, m_pQR2->xrGS_RegisteredKey(k), SBFalse)) == SBTrue)? *st.translate("mp_si_yes") : *st.translate("mp_si_no")))
+#define ADD_BOOL_INFO(i, s, t, k)	i->m_aInfos.push_back(GameInfo(t, ((xrGS_SBServerGetBoolValueA(s, m_pQR2->xrGS_RegisteredKey(k), SBFalse)) == SBTrue)? *g_pStringTable->translate("mp_si_yes") : *g_pStringTable->translate("mp_si_no")))
 #define ADD_INT_INFO(i, s, t, k)	{string256 tmp; xr_sprintf(tmp, "%d", xrGS_SBServerGetIntValueA(s, m_pQR2->xrGS_RegisteredKey(k), 0));\
 	i->m_aInfos.push_back(GameInfo(t, tmp));}
 
 #define ADD_INT_INFO_N(i, s, m, t1, t2, k)	{if (xrGS_SBServerGetIntValueA(s, m_pQR2->xrGS_RegisteredKey(k), 0))\
 {string256 tmp; xr_sprintf(tmp, "%d" t2, xrGS_SBServerGetIntValueA(s, m_pQR2->xrGS_RegisteredKey(k), 0)*m);\
 	i->m_aInfos.push_back(GameInfo(t1, tmp));}\
-	else {i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));}}
+	else {i->m_aInfos.push_back(GameInfo(t1, *g_pStringTable->translate("mp_si_no")));}}
 
 #define ADD_TIME_INFO(i, s, m, t1, t2, t3, k)	{if (xrGS_SBServerGetIntValueA(s, m_pQR2->xrGS_RegisteredKey(k), 0))\
 {string256 tmp; xr_sprintf(tmp,t2, xrGS_SBServerGetFloatValueA(s, m_pQR2->xrGS_RegisteredKey(k), 0)*m, t3);\
 	i->m_aInfos.push_back(GameInfo(t1, tmp));}\
-	else {i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));}}
+	else {i->m_aInfos.push_back(GameInfo(t1, *g_pStringTable->translate("mp_si_no")));}}
 
 void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 {
-	CStringTable st;
+	if (!pServer || !pServerInfo)
+		return;
 
-	if (!pServer || !pServerInfo) return;
 	xr_sprintf(pServerInfo->m_Address, "%s:%d", xrGS_SBServerGetPublicAddress(pServer), xrGS_SBServerGetPublicQueryPort(pServer));
 	xr_sprintf(pServerInfo->m_HostName, "%s", xrGS_SBServerGetPublicAddress(pServer));
 	xr_sprintf(pServerInfo->m_ServerName, "%s", xrGS_SBServerGetStringValueA(pServer, m_pQR2->xrGS_RegisteredKey(HOSTNAME_KEY), pServerInfo->m_HostName));
@@ -317,95 +317,95 @@ void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 	if (xrGS_SBServerHasFullKeys(pServer) == SBFalse) return;
 
 //	pServerInfo->m_aInfos.push_back(GameInfo("Version:", pServerInfo->m_ServerVersion));
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_servername"), pServerInfo->m_ServerName));
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_version"), pServerInfo->m_ServerVersion));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_servername"), pServerInfo->m_ServerName));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_version"), pServerInfo->m_ServerVersion));
 	
-	ADD_INT_INFO_N (pServerInfo, pServer, 1, *st.translate("mp_si_max_ping"), "", G_MAX_PING_KEY);	
-	ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_maprotation"), G_MAP_ROTATION_KEY);
+	ADD_INT_INFO_N (pServerInfo, pServer, 1, *g_pStringTable->translate("mp_si_max_ping"), "", G_MAX_PING_KEY);
+	ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_maprotation"), G_MAP_ROTATION_KEY);
 	
 	pServerInfo->m_aInfos.push_back(
-		GameInfo(*st.translate("mp_si_voting"), 
+		GameInfo(*g_pStringTable->translate("mp_si_voting"),
 		(xrGS_SBServerGetBoolValueA(pServer, m_pQR2->xrGS_RegisteredKey(G_VOTING_ENABLED_KEY), SBFalse) == SBTrue) ?
-			*st.translate("mp_si_enabled") : *st.translate("mp_si_disabled")));
+			*g_pStringTable->translate("mp_si_enabled") : *g_pStringTable->translate("mp_si_disabled")));
 
-//	ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_voting"), G_VOTING_ENABLED_KEY);
+//	ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_voting"), G_VOTING_ENABLED_KEY);
 	//-----------------------------------------------------------------------
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_spectatormodes"), ""));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_spectatormodes"), ""));
 	int SpectrModes = xrGS_SBServerGetIntValueA(pServer, m_pQR2->xrGS_RegisteredKey(G_SPECTATOR_MODES_KEY), 0);
 	
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_free_fly"), ((SpectrModes & (1<<CSpectator::eacFreeFly	)) != 0) ? *st.translate("mp_si_yes") : *st.translate("mp_si_no")));
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_first_eye"), ((SpectrModes & (1<<CSpectator::eacFirstEye	)) != 0) ? *st.translate("mp_si_yes") : *st.translate("mp_si_no")));
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_look_at"), ((SpectrModes & (1<<CSpectator::eacLookAt	)) != 0) ? *st.translate("mp_si_yes") : *st.translate("mp_si_no")));
-	pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_free_look"), ((SpectrModes & (1<<CSpectator::eacFreeLook	)) != 0) ? *st.translate("mp_si_yes") : *st.translate("mp_si_no")));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_free_fly"), ((SpectrModes & (1<<CSpectator::eacFreeFly	)) != 0) ? *g_pStringTable->translate("mp_si_yes") : *g_pStringTable->translate("mp_si_no")));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_first_eye"), ((SpectrModes & (1<<CSpectator::eacFirstEye	)) != 0) ? *g_pStringTable->translate("mp_si_yes") : *g_pStringTable->translate("mp_si_no")));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_look_at"), ((SpectrModes & (1<<CSpectator::eacLookAt	)) != 0) ? *g_pStringTable->translate("mp_si_yes") : *g_pStringTable->translate("mp_si_no")));
+	pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_free_look"), ((SpectrModes & (1<<CSpectator::eacFreeLook	)) != 0) ? *g_pStringTable->translate("mp_si_yes") : *g_pStringTable->translate("mp_si_no")));
 	if (pServerInfo->m_GameType != eGameIDDeathmatch)
-		pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_team_only"), ((SpectrModes & (1<<CSpectator::eacMaxCam	)) != 0) ? *st.translate("mp_si_yes") : *st.translate("mp_si_no")));
+		pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_team_only"), ((SpectrModes & (1<<CSpectator::eacMaxCam	)) != 0) ? *g_pStringTable->translate("mp_si_yes") : *g_pStringTable->translate("mp_si_no")));
 	//-----------------------------------------------------------------------
 	
 	if (pServerInfo->m_GameType == eGameIDDeathmatch || pServerInfo->m_GameType == eGameIDTeamDeathmatch) 
 	{
-		ADD_INT_INFO_N (pServerInfo, pServer, 1, *st.translate("mp_si_fraglimit"), "", G_FRAG_LIMIT_KEY);	
+		ADD_INT_INFO_N (pServerInfo, pServer, 1, *g_pStringTable->translate("mp_si_fraglimit"), "", G_FRAG_LIMIT_KEY);	
 	}
 
-	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_time_limit"), "%.0f %s",*st.translate("mp_si_min"), G_TIME_LIMIT_KEY);
+	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_time_limit"), "%.0f %s",*g_pStringTable->translate("mp_si_min"), G_TIME_LIMIT_KEY);
 
 	if (xrGS_SBServerGetIntValueA(pServer, m_pQR2->xrGS_RegisteredKey(G_DAMAGE_BLOCK_TIME_KEY), 0) != 0)
 	{
-		pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_invinsibility"), ""));
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_invinsibility_indicators"), G_DAMAGE_BLOCK_INDICATOR_KEY);
-		ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_invinsibility_time"), "%.f %s",*st.translate("mp_si_sec"), G_DAMAGE_BLOCK_TIME_KEY);
+		pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_invinsibility"), ""));
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_invinsibility_indicators"), G_DAMAGE_BLOCK_INDICATOR_KEY);
+		ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_invinsibility_time"), "%.f %s",*g_pStringTable->translate("mp_si_sec"), G_DAMAGE_BLOCK_TIME_KEY);
 	}	
 
-	ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_anomalies"), G_ANOMALIES_ENABLED_KEY);
+	ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_anomalies"), G_ANOMALIES_ENABLED_KEY);
 	if ((xrGS_SBServerGetBoolValueA(pServer, m_pQR2->xrGS_RegisteredKey(G_ANOMALIES_ENABLED_KEY), SBFalse)) == SBTrue)
 	{
 		if (xrGS_SBServerGetIntValueA(pServer, m_pQR2->xrGS_RegisteredKey(G_ANOMALIES_TIME_KEY),0) != 0)
 		{
-			ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_anomalies_period"), "%.1f %s",*st.translate("mp_si_min"), G_ANOMALIES_TIME_KEY);
+			ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_anomalies_period"), "%.1f %s",*g_pStringTable->translate("mp_si_min"), G_ANOMALIES_TIME_KEY);
 		}
 		else
-			pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_anomalies_period"), *st.translate("mp_si_infinite")));
+			pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_anomalies_period"), *g_pStringTable->translate("mp_si_infinite")));
 	}
 
-	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_forcerespawn"), "%.f %s",*st.translate("mp_si_sec"), G_FORCE_RESPAWN_KEY);
-	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_warmuptime"), "%.0f %s",*st.translate("mp_si_sec"), G_WARM_UP_TIME_KEY);
+	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_forcerespawn"), "%.f %s",*g_pStringTable->translate("mp_si_sec"), G_FORCE_RESPAWN_KEY);
+	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_warmuptime"), "%.0f %s",*g_pStringTable->translate("mp_si_sec"), G_WARM_UP_TIME_KEY);
 
 	if (   pServerInfo->m_GameType == eGameIDTeamDeathmatch
 		|| pServerInfo->m_GameType == eGameIDArtefactHunt
 		|| pServerInfo->m_GameType == eGameIDCaptureTheArtefact)
 	{
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_autoteam_balance"), G_AUTO_TEAM_BALANCE_KEY);
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_autoteam_swap"), G_AUTO_TEAM_SWAP_KEY);
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_indicators"), G_FRIENDLY_INDICATORS_KEY);
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_names"), G_FRIENDLY_NAMES_KEY);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_autoteam_balance"), G_AUTO_TEAM_BALANCE_KEY);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_autoteam_swap"), G_AUTO_TEAM_SWAP_KEY);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_friendly_indicators"), G_FRIENDLY_INDICATORS_KEY);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_friendly_names"), G_FRIENDLY_NAMES_KEY);
 
-		ADD_INT_INFO_N (pServerInfo, pServer, 1/100.0f, *st.translate("mp_si_friendly_fire"), " %%", G_FRIENDLY_FIRE_KEY);
+		ADD_INT_INFO_N (pServerInfo, pServer, 1/100.0f, *g_pStringTable->translate("mp_si_friendly_fire"), " %%", G_FRIENDLY_FIRE_KEY);
 	};
 
 	if (pServerInfo->m_GameType == eGameIDArtefactHunt || pServerInfo->m_GameType == eGameIDCaptureTheArtefact)
 	{
-		pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_artefacts"), ""));
-		ADD_INT_INFO(pServerInfo, pServer, *st.translate("mp_si_afcount"),					G_ARTEFACTS_COUNT_KEY	);
+		pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_artefacts"), ""));
+		ADD_INT_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_afcount"),					G_ARTEFACTS_COUNT_KEY	);
 
-		ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_afstaytime"), "%.2f %s",*st.translate("mp_si_min"), G_ARTEFACT_STAY_TIME_KEY);
-		ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_afrespawntime"), "%.0f %s",*st.translate("mp_si_sec"), G_ARTEFACT_RESPAWN_TIME_KEY);
+		ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_afstaytime"), "%.2f %s",*g_pStringTable->translate("mp_si_min"), G_ARTEFACT_STAY_TIME_KEY);
+		ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_afrespawntime"), "%.0f %s",*g_pStringTable->translate("mp_si_sec"), G_ARTEFACT_RESPAWN_TIME_KEY);
 
 		int Reinforcement = atoi(xrGS_SBServerGetStringValueA(pServer, m_pQR2->xrGS_RegisteredKey(G_REINFORCEMENT_KEY), "0"));		
 		switch (Reinforcement)
 		{
 		case -1:
-			pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_players_respawn"), *st.translate("mp_si_artefact_captured")));
+			pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_players_respawn"), *g_pStringTable->translate("mp_si_artefact_captured")));
 			break;
 		case 0:
-			pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_players_respawn"), *st.translate("mp_si_any_time")));
+			pServerInfo->m_aInfos.push_back(GameInfo(*g_pStringTable->translate("mp_si_players_respawn"), *g_pStringTable->translate("mp_si_any_time")));
 			break;
 		default:
-			ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_players_respawn"), "%.0f %s",*st.translate("mp_si_sec"), G_REINFORCEMENT_KEY);
+			ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *g_pStringTable->translate("mp_si_players_respawn"), "%.0f %s",*g_pStringTable->translate("mp_si_sec"), G_REINFORCEMENT_KEY);
 			break;
 		}
 
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_shielded_bases"),					G_SHIELDED_BASES_KEY	);
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_return_players"),					G_RETURN_PLAYERS_KEY	);
-		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_afbearer_cant_sprint"),			G_BEARER_CANT_SPRINT_KEY);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_shielded_bases"),					G_SHIELDED_BASES_KEY	);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_return_players"),					G_RETURN_PLAYERS_KEY	);
+		ADD_BOOL_INFO(pServerInfo, pServer, *g_pStringTable->translate("mp_si_afbearer_cant_sprint"),			G_BEARER_CANT_SPRINT_KEY);
 	}
 	pServerInfo->m_aInfos.push_back(GameInfo("Uptime", pServerInfo->m_ServerUpTime));
 

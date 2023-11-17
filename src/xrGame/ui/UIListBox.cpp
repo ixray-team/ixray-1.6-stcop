@@ -39,14 +39,14 @@ bool CUIListBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	return false;
 }
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 CUIListBoxItem* CUIListBox::AddTextItem(LPCSTR text)
 {
 	CUIListBoxItem* pItem			= AddItem();
 
 	pItem->SetWndSize				(Fvector2().set(GetDesiredChildWidth(), m_def_item_height));
 	pItem->SetTextColor				(m_text_color);
-	pItem->SetText					(CStringTable().translate(text).c_str());
+	pItem->SetText					(g_pStringTable->translate(text).c_str());
 	pItem->GetTextItem()->SetWidth	(GetDesiredChildWidth());
 	return							pItem;
 }

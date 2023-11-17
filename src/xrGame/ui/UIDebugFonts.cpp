@@ -33,7 +33,7 @@ bool CUIDebugFonts::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 
     return true;
 }
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 void CUIDebugFonts::FillUpList(){
 #ifdef DEBUG
@@ -49,7 +49,7 @@ void CUIDebugFonts::FillUpList(){
 		CUITextWnd* pItem				= xr_new<CUITextWnd>();
 		pItem->SetWndPos				(pos);
 		pItem->SetWndSize				(sz);
-		xr_sprintf						(str, "%s:%s", F->m_font_name.c_str(), CStringTable().translate("Test_Font_String").c_str());
+		xr_sprintf						(str, "%s:%s", F->m_font_name.c_str(), g_pStringTable->translate("Test_Font_String").c_str());
 		pItem->SetFont	(F);
 		pItem->SetText					(str);
 		pItem->SetTextComplexMode		(false);

@@ -2,7 +2,7 @@
 #include "UIXmlInit.h"
 #include "../level.h"
 #include "../UIFontDefines.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "UIFrameWindow.h"
 #include "UICheckButton.h"
 #include "UICustomSpin.h"
@@ -24,10 +24,6 @@
 #include "UIDragDropReferenceList.h"
 #include "UItabButtonMP.h"
 #include "UILines.h"
-
-extern int keyname_to_dik(LPCSTR);
-
-
 //////////////////////////////////////////////////////////////////////////
 
 const char * const		COLOR_DEFINITIONS					= "color_defs.xml";
@@ -340,13 +336,11 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 
 	shared_str text = xml_doc.Read(path, index, NULL);
 	if (text.size())
-		pLines->SetText(CStringTable().translate(text).c_str());
+		pLines->SetText(g_pStringTable->translate(text).c_str());
 
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-extern int keyname_to_dik(LPCSTR);
-
 bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd)
 {
 	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
@@ -406,7 +400,7 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButt
 
 	LPCSTR text_hint		= xml_doc.ReadAttrib	(path, index, "hint", NULL);
 	if(text_hint)
-		pWnd->m_hint_text	= CStringTable().translate(text_hint);
+		pWnd->m_hint_text	= g_pStringTable->translate(text_hint);
 
 	return true;
 }

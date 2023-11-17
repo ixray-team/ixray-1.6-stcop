@@ -13,7 +13,6 @@
 
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
 
 #include "../actor.h"
 #include "../../xrServerEntities/script_process.h"

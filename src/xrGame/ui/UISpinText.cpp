@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "UISpinText.h"
 #include "UILines.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUISpinText::CUISpinText()
 :m_curItem(-1)
@@ -12,7 +12,7 @@ void CUISpinText::AddItem_(const char* item, int id)
 {
 	SInfo			_info;
 	_info._orig		= item;
-	_info._transl	= CStringTable().translate(item);
+	_info._transl	= g_pStringTable->translate(item);
 	_info._id		= id;
 
 	m_list.push_back( _info );
