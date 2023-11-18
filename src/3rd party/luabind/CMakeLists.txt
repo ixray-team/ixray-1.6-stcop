@@ -32,7 +32,7 @@ target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:LUABIND_NO
 target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPTIONS>")
 
 # NuGet
-set(LUAJIT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LuaJIT.2.1.0-beta3/)
+set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.2023.8.23-open/)
 
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
@@ -42,18 +42,18 @@ add_custom_command(TARGET ${PROJECT_NAME}
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT}native/bin/x86/Release/lua51.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT}native/bin/x86/lua51.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 else()
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT}native/bin/x64/Release/lua51.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT}native/bin/x64/lua51.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 endif()
 
 ## LuaJIT
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(luabind PUBLIC ${LUAJIT}native/lib/x86/release/lua51.lib)
+    target_link_libraries(luabind PUBLIC ${LUAJIT}native/lib/x86/lua51.lib)
 else()
-    target_link_libraries(luabind PUBLIC ${LUAJIT}native/lib/x64/release/lua51.lib)
+    target_link_libraries(luabind PUBLIC ${LUAJIT}native/lib/x64/lua51.lib)
 endif()
