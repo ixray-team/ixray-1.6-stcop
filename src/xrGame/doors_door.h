@@ -35,7 +35,7 @@ public:
 	Fmatrix const&		get_matrix			( ) const;
 	Fvector const&		get_vector			( door_state state ) const;
 	bool				is_locked			( door_state state ) const;
-	bool				is_blocked			( door_state state ) const;
+	bool				is_blocked			( door_state state, CObject* Initiator = nullptr) const;
 
 private:
 	void				change_state		( actor* initiator, door_state start_state, door_state stop_state );

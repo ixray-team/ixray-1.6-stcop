@@ -108,16 +108,16 @@ bool door::is_locked			( door_state const state ) const
 	return						false;
 }
 
-bool door::is_blocked			( door_state const state ) const
+bool door::is_blocked(door_state const state, CObject* Initiator) const 
 {
-	VERIFY						( valid(m_state) );
-	VERIFY						( valid(m_target_state) );
-	VERIFY						( valid(m_previous_state) );
+	VERIFY(valid(m_state));
+	VERIFY(valid(m_target_state));
+	VERIFY(valid(m_previous_state));
 
-	if ( m_initiators.empty() )
-		return					false;
+	if (m_initiators.empty() || Initiator == g_pGameLevel->CurrentViewEntity())
+		return false;
 
-	return						( m_target_state != state );
+	return (m_target_state != state);
 }
 
 #ifdef DEBUG
