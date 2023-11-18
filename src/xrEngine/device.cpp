@@ -506,11 +506,13 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
 	u16 fActive = LOWORD(wParam);
 	BOOL fMinimized = (BOOL)HIWORD(wParam);
-	BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
 
-	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || bActive;
+	BOOL NewState = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+	bool OldState = Device.b_is_Active;
 
-	if (Device.b_is_Active)
+	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || NewState;
+
+	if (Device.b_is_Active && !OldState)
 	{
 		Device.seqAppActivate.Process(rp_AppActivate);
 		app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
@@ -531,7 +533,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	}
 	else
 	{
-		ShowCursor(TRUE);
+		ShowCursor(!NewState);
 	}
 }
 

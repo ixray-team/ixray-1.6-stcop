@@ -30,7 +30,7 @@ void CreateGameWindow() {
 		RegisterClass(&wndClass);
 
 		// Set the window's initial style
-		Device.m_dwWindowStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
+		Device.m_dwWindowStyle = WS_POPUP | WS_VISIBLE;
 
 		// Create the render window
 		u32 screen_width = GetSystemMetrics(SM_CXSCREEN);
