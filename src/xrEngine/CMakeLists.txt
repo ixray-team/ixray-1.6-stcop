@@ -76,10 +76,9 @@ target_link_libraries(xrAbstractions PUBLIC xrNetServer)
 target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
 target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
 
-target_link_libraries(xrAbstractions PUBLIC ${IXRAY_SDK_LIB}/FreeImage.lib)
-
 # Nuget
 set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
+set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
 
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
@@ -89,7 +88,6 @@ add_custom_command(TARGET ${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## Theora
@@ -99,3 +97,18 @@ target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/I
 ## OGG
 target_link_libraries(xrAbstractions PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
 target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")
+
+## FreeImage
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/x86/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+    target_link_libraries(xrAbstractions PUBLIC ${FREEIMAGE}/native/lib/x86/Release/FreeImage.lib)
+else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/x64/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+    target_link_libraries(xrAbstractions PUBLIC ${FREEIMAGE}/native/lib/x64/Release/FreeImage.lib)
+endif()
