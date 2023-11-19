@@ -15,7 +15,7 @@ CRT::CRT			()
 	pUAView			= NULL;
 	dwWidth			= 0;
 	dwHeight		= 0;
-	fmt				= D3DFMT_UNKNOWN;
+	fmt = DxgiFormat::DXGI_FORMAT_UNKNOWN;
 }
 CRT::~CRT			()
 {
@@ -25,7 +25,7 @@ CRT::~CRT			()
 	DEV->_DeleteRT	(this);
 }
 
-void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount, bool useUAV )
+void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool useUAV )
 {
 	if (pSurface)	return;
 
@@ -50,32 +50,26 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount, bool 
 	//}
 
 	// Check width-and-height of render target surface
-	if (w>D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION)		return;
-	if (h>D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION)		return;
+	if (w > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION)		return;
+	if (h > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION)		return;
 
 	// Select usage
-	u32 usage	= 0;
-	if (D3DFMT_D24X8==fmt)									usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D24S8		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D15S1		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D16			==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D16_LOCKABLE==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D32F_LOCKABLE==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if ((D3DFORMAT)MAKEFOURCC('D','F','2','4') == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
-	else													usage = D3DUSAGE_RENDERTARGET;
+	u32 usage = 0;
+	if (DxgiFormat::DXGI_FORMAT_D24_UNORM_S8_UINT == fmt)		    usage = D3DUSAGE_DEPTHSTENCIL;
+	else if (DxgiFormat::DXGI_FORMAT_R24_UNORM_X8_TYPELESS == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
+	else if (DxgiFormat::DXGI_FORMAT_D16_UNORM == fmt) {
+		usage = D3DUSAGE_DEPTHSTENCIL;
+		fmt = DxgiFormat::DXGI_FORMAT_R16_TYPELESS;
+	}
+	else if (DxgiFormat::DXGI_FORMAT_D32_FLOAT == fmt) {
+		usage = D3DUSAGE_DEPTHSTENCIL;
+		fmt = DxgiFormat::DXGI_FORMAT_R32_TYPELESS;
+	}
+	else if (DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS == fmt)			usage = D3DUSAGE_DEPTHSTENCIL;
+	else														    usage = D3DUSAGE_RENDERTARGET;
 
-
-	DXGI_FORMAT dx10FMT;
-   
-   if( fmt != D3DFMT_D24S8 )
-      dx10FMT = dx10TextureUtils::ConvertTextureFormat(fmt);
-   else
-      {
-      dx10FMT = DXGI_FORMAT_R24G8_TYPELESS;
-      usage = D3DUSAGE_DEPTHSTENCIL;
-      }
-
-	bool	bUseAsDepth = (usage == D3DUSAGE_RENDERTARGET)?false:true;
+	DXGI_FORMAT dx10FMT = (DXGI_FORMAT)fmt;
+	bool bUseAsDepth = (usage == D3DUSAGE_RENDERTARGET) ? false : true;
 
    // Validate render-target usage
 	//_hr = HW.pD3D->CheckDeviceFormat(
@@ -196,7 +190,7 @@ void CRT::reset_end		()
 	create		(*cName,dwWidth,dwHeight,fmt);
 }
 
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool useUAV )
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool useUAV )
 {
 	_set			(DEV->_CreateRT(Name,w,h,f, SampleCount, useUAV ));
 }
