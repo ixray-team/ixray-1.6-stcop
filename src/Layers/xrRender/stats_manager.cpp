@@ -204,7 +204,7 @@ stats_manager::~stats_manager ()
 //	R_ASSERT( m_buffers_list.size() == 0);	//  Some buffers stats are not removed from the list.
 #endif 
 }
-
+#ifndef USE_DX11
 u32 get_format_pixel_size( D3DFORMAT format )
 {
 	switch ( format )
@@ -253,7 +253,7 @@ u32 get_format_pixel_size( D3DFORMAT format )
 	}
 }
 
-#ifdef USE_DX11
+#else
 u32 get_format_pixel_size ( DXGI_FORMAT format )
 {
 	if( format >= DXGI_FORMAT_R32G32B32A32_TYPELESS && format <= DXGI_FORMAT_R32G32B32A32_SINT)

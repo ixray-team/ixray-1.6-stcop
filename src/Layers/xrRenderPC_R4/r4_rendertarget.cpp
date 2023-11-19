@@ -338,17 +338,17 @@ CRenderTarget::CRenderTarget		()
 
 	//	NORMAL
 	{
-		rt_Position.create			(r2_RT_P, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 
 		if( !RImplementation.o.dx10_gbuffer_opt )
-			rt_Normal.create			(r2_RT_N, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+			rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
 		{
 			// NV50
-			rt_Color.create			(r2_RT_albedo, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8		, SampleCount );
-			rt_Accumulator.create	(r2_RT_accum, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+			rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);
+			rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 		}
 		else		
 		{
@@ -357,32 +357,32 @@ CRenderTarget::CRenderTarget		()
 				// NV40
 				if( !RImplementation.o.dx10_gbuffer_opt )
 				{
-					rt_Color.create				(r2_RT_albedo, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );	// expand to full
-					rt_Accumulator.create		(r2_RT_accum, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+					rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
+					rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 				}
 				else
 				{
-					rt_Color.create				(r2_RT_albedo, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8,       SampleCount );	// expand to full
-					rt_Accumulator.create		(r2_RT_accum, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F,  SampleCount );
+					rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// expand to full
+					rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 				}
 			} else {
 				// R4xx, no-fp-blend,-> albedo_wo
-				rt_Color.create				(r2_RT_albedo, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8		, SampleCount );	// normal
-				rt_Accumulator.create		(r2_RT_accum, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
-				rt_Accumulator_temp.create	(r2_RT_accum_temp, s_dwWidth, s_dwHeight,D3DFMT_A16B16G16R16F, SampleCount );
+				rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// normal
+				rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+				rt_Accumulator_temp.create(r2_RT_accum_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 			}
 		}
 
 		// generic(LDR) RTs
-		rt_Generic_0.create		(r2_RT_generic0, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8, 1		);
-		rt_Generic_1.create		(r2_RT_generic1, s_dwWidth, s_dwHeight,D3DFMT_A8R8G8B8, 1		);
+		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 
-		rt_Back_Buffer.create(r2_RT_backbuffer_final, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8, 1);
+		rt_Back_Buffer.create(r2_RT_backbuffer_final, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 
 		//	Igor: for volumetric lights
 		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
-		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, D3DFMT_A16B16G16R16F, SampleCount);
+		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 	}
 
 	// FXAA
@@ -396,14 +396,14 @@ CRenderTarget::CRenderTarget		()
 		b_smaa = xr_new<CBlender_SMAA>();
 		s_smaa.create(b_smaa);
 
-		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8);
-		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, D3DFMT_A8R8G8B8);
+		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
+		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 	// OCCLUSION
 	s_occq.create					(b_occq,		"r2\\occq");
 
 	// DIRECT (spot)
-	D3DFORMAT						depth_format	= (D3DFORMAT)RImplementation.o.HW_smap_FORMAT;
+	DxgiFormat depth_format	= (DxgiFormat) RImplementation.o.HW_smap_FORMAT;
 
 	if (RImplementation.o.HW_smap)
 	{
@@ -415,7 +415,7 @@ CRenderTarget::CRenderTarget		()
 
 		if (RImplementation.o.dx10_minmax_sm)
 		{
-			rt_smap_depth_minmax.create( r2_RT_smap_depth_minmax,	size/4,size/4, D3DFMT_R32F	);
+			rt_smap_depth_minmax.create( r2_RT_smap_depth_minmax,	size/4,size/4, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
 			CBlender_createminmax TempBlender;
 			s_create_minmax_sm.create( &TempBlender, "null" );
 		}
@@ -470,7 +470,7 @@ CRenderTarget::CRenderTarget		()
 
 	// BLOOM
 	{
-		D3DFORMAT	fmt				= D3DFMT_A8R8G8B8;			//;		// D3DFMT_X8R8G8B8
+		DxgiFormat	fmt = DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM;			//;		// D3DFMT_X8R8G8B8
 		u32	w=BLOOM_size_X, h=BLOOM_size_Y;
 		u32 fvf_build				= D3DFVF_XYZRHW|D3DFVF_TEX4|D3DFVF_TEXCOORDSIZE2(0)|D3DFVF_TEXCOORDSIZE2(1)|D3DFVF_TEXCOORDSIZE2(2)|D3DFVF_TEXCOORDSIZE2(3);
 		u32 fvf_filter				= (u32)D3DFVF_XYZRHW|D3DFVF_TEX8|D3DFVF_TEXCOORDSIZE4(0)|D3DFVF_TEXCOORDSIZE4(1)|D3DFVF_TEXCOORDSIZE4(2)|D3DFVF_TEXCOORDSIZE4(3)|D3DFVF_TEXCOORDSIZE4(4)|D3DFVF_TEXCOORDSIZE4(5)|D3DFVF_TEXCOORDSIZE4(6)|D3DFVF_TEXCOORDSIZE4(7);
@@ -486,8 +486,8 @@ CRenderTarget::CRenderTarget		()
 
 	// TONEMAP
 	{
-		rt_LUM_64.create			(r2_RT_luminance_t64,	64, 64,	D3DFMT_A16B16G16R16F	);
-		rt_LUM_8.create				(r2_RT_luminance_t8,	8,	8,	D3DFMT_A16B16G16R16F	);
+		rt_LUM_64.create			(r2_RT_luminance_t64,	64, 64, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_LUM_8.create				(r2_RT_luminance_t8,	8,	8, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 		s_luminance.create			(b_luminance,				"r2\\luminance");
 		f_luminance_adapt			= 0.5f;
 
@@ -498,7 +498,7 @@ CRenderTarget::CRenderTarget		()
 		for (u32 it=0; it<HW.Caps.iGPUNum*2; it++)	{
 			string256					name;
 			xr_sprintf						(name,"%s_%d",	r2_RT_luminance_pool,it	);
-			rt_LUM_pool[it].create		(name,	1,	1,	D3DFMT_R32F				);
+			rt_LUM_pool[it].create		(name,	1,	1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
 			//u_setrt						(rt_LUM_pool[it],	0,	0,	0			);
 			//CHK_DX						(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0x7f7f7f7f,	1.0f, 0L));
 			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f};
@@ -523,10 +523,10 @@ CRenderTarget::CRenderTarget		()
 			h = s_dwHeight;
 		}
 
-		D3DFORMAT	fmt = HW.Caps.id_vendor==0x10DE?D3DFMT_R32F:D3DFMT_R16F;
-		rt_half_depth.create		(r2_RT_half_depth, w, h, fmt);
+		DxgiFormat fmt = HW.Caps.id_vendor == 0x10DE ? DxgiFormat::DXGI_FORMAT_R32_FLOAT : DxgiFormat::DXGI_FORMAT_R16_FLOAT;
+		rt_half_depth.create(r2_RT_half_depth, w, h, fmt);
 
-		s_ssao.create				(b_ssao, "r2\\ssao");
+		s_ssao.create(b_ssao, "r2\\ssao");
 	}
 
 	//if (RImplementation.o.ssao_blur_on)
@@ -540,7 +540,7 @@ CRenderTarget::CRenderTarget		()
 	if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
 	{
 		u32		w = s_dwWidth, h = s_dwHeight;
-		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, D3DFMT_R16F, 1, true);
+		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1, true);
 		s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
 	}
 
