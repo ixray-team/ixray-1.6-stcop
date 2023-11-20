@@ -195,9 +195,6 @@ void					CRender::create					()
 	if (o.HW_smap)		
 	{
 		//	For ATI it's much faster on DX10 to use D32F format
-		if (HW.Caps.id_vendor==0x1002)
-			o.HW_smap_FORMAT	= DXGI_FORMAT_R32_TYPELESS;
-		else
 			o.HW_smap_FORMAT	= DXGI_FORMAT_R24G8_TYPELESS;
 		Msg				("* HWDST/PCF supported and used");
 	}
