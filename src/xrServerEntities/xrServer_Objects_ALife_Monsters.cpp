@@ -280,11 +280,6 @@ void CSE_ALifeTraderAbstract::OnChangeProfile(PropValue* sender)
 
 shared_str CSE_ALifeTraderAbstract::specific_character()
 {
-#ifdef XRGAME_EXPORTS
-#pragma todo("Dima to Yura, MadMax : Remove that hacks, please!")
-	if (g_pGameLevel && Level().game && (!IsGameTypeSingle())) return m_SpecificCharacter;
-#endif
-
 	if(m_SpecificCharacter.size())
 		return m_SpecificCharacter;
 
@@ -980,11 +975,16 @@ u32	 CSE_ALifeCreatureAbstract::ef_detector_type() const
 }
 
 #ifdef XRGAME_EXPORTS
-void CSE_ALifeCreatureAbstract::on_death		(CSE_Abstract *killer)
+void CSE_ALifeCreatureAbstract::on_death(CSE_Abstract* killer)
 {
-	VERIFY						(!m_game_death_time);
-	m_game_death_time			= ai().get_alife() ? alife().time_manager().game_time() : Level().GetGameTime();
-	fHealth						= -1.f;
+	VERIFY(!m_game_death_time);
+
+	if (GameID() == eGameIDSingle)
+		m_game_death_time = ai().get_alife() ? alife().time_manager().game_time() : Level().GetGameTime();
+	else
+		m_game_death_time = Level().GetGameTime();
+
+	fHealth = -1.f;
 }
 #endif // XRGAME_EXPORTS
 

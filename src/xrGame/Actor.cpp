@@ -195,7 +195,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_iLastHittingWeaponID	= u16(-1);
 	m_statistic_manager		= NULL;
 	//-----------------------------------------------------------------------------------
-	m_memory				= g_dedicated_server ? 0 : xr_new<CActorMemory>(this);
+	m_memory				= xr_new<CActorMemory>(this);
 	m_bOutBorder			= false;
 	m_hit_probability		= 1.f;
 	m_feel_touch_characters = 0;

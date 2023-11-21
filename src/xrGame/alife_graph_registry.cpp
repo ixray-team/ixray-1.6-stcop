@@ -50,9 +50,10 @@ void CALifeGraphRegistry::update			(CSE_ALifeDynamicObject *object)
 	if (!object->m_bDirectControl)
 		return;
 
-	if (object->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)) {
-		m_actor						= smart_cast<CSE_ALifeCreatureActor*>(object);
-		R_ASSERT2					(m_actor,"Invalid flag M_SPAWN_OBJECT_ASPLAYER for non-actor object!");
+	if (smart_cast<CSE_ALifeCreatureActor*>(object))
+	{
+		m_actor = smart_cast<CSE_ALifeCreatureActor*>(object);
+		R_ASSERT2(m_actor, "Invalid flag M_SPAWN_OBJECT_ASPLAYER for non-actor object!");
 	}
 
 	if (m_actor && !m_level)

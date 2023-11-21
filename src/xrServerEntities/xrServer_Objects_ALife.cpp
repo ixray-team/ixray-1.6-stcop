@@ -558,14 +558,24 @@ bool CSE_ALifeObject::used_ai_locations		() const
 	return						(!!m_flags.is(flUsedAI_Locations));
 }
 
+
+#ifndef XRGAME_EXPORTS
+static inline bool IsGameTypeSingle()
+{
+	return true;
+}
+#else
+extern bool IsGameTypeSingle();
+#endif
+
 bool CSE_ALifeObject::can_switch_online		() const
 {
-	return						(match_configuration() && !!m_flags.is(flSwitchOnline));
+	return IsGameTypeSingle() ? (match_configuration() && !!m_flags.is(flSwitchOnline)) : true;
 }
 
 bool CSE_ALifeObject::can_switch_offline	() const
 {
-	return						(!match_configuration() || !!m_flags.is(flSwitchOffline));
+	return IsGameTypeSingle() ? (!match_configuration() || !!m_flags.is(flSwitchOffline)) : false;
 }
 
 bool CSE_ALifeObject::can_save				() const

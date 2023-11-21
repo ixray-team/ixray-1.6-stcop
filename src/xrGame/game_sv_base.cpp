@@ -38,37 +38,12 @@ xr_token	round_end_result_str[]=
 	{ 0,						0							}
 };
 
-// Main
-/*game_PlayerState*	game_sv_GameState::get_it					(u32 it)
-{
-	xrClientData*	C	= (xrClientData*)m_server->client_Get			(it);
-	if (0==C)			return 0;
-	else				return C->ps;
-}*/
-
 game_PlayerState*	game_sv_GameState::get_id					(ClientID id)							
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
 	if (0==C)			return NULL;
 	else				return C->ps;
 }
-
-/*ClientID				game_sv_GameState::get_it_2_id				(u32 it)
-{
-	xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
-	if (0==C){
-		ClientID clientID;clientID.set(0);
-		return clientID;
-	}
-	else				return C->ID;
-}
-
-LPCSTR				game_sv_GameState::get_name_it				(u32 it)
-{
-	xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
-	if (0==C)			return 0;
-	else				return *C->name;
-}*/
 
 LPCSTR				game_sv_GameState::get_name_id				(ClientID id)							
 {
@@ -213,7 +188,6 @@ float					game_sv_GameState::get_option_f				(LPCSTR lst, LPCSTR name, float def
 		int cnt		= sscanf(found+xr_strlen(op),"%f",&val);
 		VERIFY		(cnt==1);
 		return		val;
-//.		return atoi	(strstr(lst,op)+xr_strlen(op));
 	}else
 		return def;
 }
@@ -438,23 +412,22 @@ void game_sv_GameState::Create					(shared_str &options)
 		FS.r_close	(F);
 	}
 
-	if (!g_dedicated_server)
+	// loading scripts
+	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
+	string_path					S;
+	FS.update_path(S, "$game_config$", "script.ltx");
+	CInifile* l_tpIniFile = xr_new<CInifile>(S);
+	R_ASSERT(l_tpIniFile);
+
+	if (l_tpIniFile->section_exist(type_name()))
 	{
-		// loading scripts
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
-		string_path					S;
-		FS.update_path				(S,"$game_config$","script.ltx");
-		CInifile					*l_tpIniFile = xr_new<CInifile>(S);
-		R_ASSERT					(l_tpIniFile);
-
-		if( l_tpIniFile->section_exist( type_name() ) )
-			if (l_tpIniFile->r_string(type_name(),"script"))
-				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame,xr_new<CScriptProcess>("game",l_tpIniFile->r_string(type_name(),"script")));
-			else
-				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame,xr_new<CScriptProcess>("game",""));
-
-		xr_delete					(l_tpIniFile);
+		if (l_tpIniFile->r_string(type_name(), "script"))
+			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", l_tpIniFile->r_string(type_name(), "script")));
+		else
+			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", ""));
 	}
+
+	xr_delete(l_tpIniFile);
 
 	//---------------------------------------------------------------------
 	ConsoleCommands_Create();
@@ -630,33 +603,31 @@ void game_sv_GameState::u_EventSend(NET_Packet& P, u32 dwFlags)
 	m_server->SendBroadcast(BroadcastCID,P,dwFlags);
 }
 
-void game_sv_GameState::Update		()
+void game_sv_GameState::Update()
 {
 	struct ping_filler
 	{
 		void operator()(IClient* client)
 		{
-			xrClientData*	C			= static_cast<xrClientData*>(client);
+			xrClientData* C = static_cast<xrClientData*>(client);
 			if (!C->ps)
 				return;
-			C->ps->ping					= u16(C->stats.getPing());
+			C->ps->ping = u16(C->stats.getPing());
 		}
 	};
 	ping_filler tmp_functor;
 	m_server->ForEachClientDo(tmp_functor);
-	
+
 	if (!IsGameTypeSingle() && (Phase() == GAME_PHASE_INPROGRESS))
 	{
 		m_item_respawner.update(Level().timeServer());
 	}
-	
-	if (!g_dedicated_server)
+
+	if (Level().game)
 	{
-		if (Level().game) {
-			CScriptProcess				*script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
-			if (script_process)
-				script_process->update	();
-		}
+		CScriptProcess* script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
+		if (script_process)
+			script_process->update();
 	}
 }
 
@@ -681,8 +652,7 @@ game_sv_GameState::game_sv_GameState()
 
 game_sv_GameState::~game_sv_GameState()
 {
-	if (!g_dedicated_server)
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
+	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 	xr_delete(m_event_queue);
 
 	SaveMapList();

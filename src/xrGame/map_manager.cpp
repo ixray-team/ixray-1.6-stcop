@@ -105,7 +105,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 	CMapLocation* l = xr_new<CMapLocation>(spot_type.c_str(), id);
 	Locations().push_back( SLocationKey(spot_type, id) );
 	Locations().back().location = l;
-	if (IsGameTypeSingle()&& g_actor)
+	if (g_actor)
 		Actor()->callback(GameObject::eMapLocationAdded)(spot_type.c_str(), id);
 
 	return l;
@@ -142,8 +142,7 @@ void CMapManager::RemoveMapLocation(const shared_str& spot_type, u16 id)
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it!=Locations().end() )
 	{
-		if(IsGameTypeSingle())
-			Level().GameTaskManager().MapLocationRelcase((*it).location);
+		Level().GameTaskManager().MapLocationRelcase((*it).location);
 
 		Destroy					((*it).location);
 		Locations().erase		(it);
@@ -156,8 +155,7 @@ void CMapManager::RemoveMapLocationByObjectID(u16 id) //call on destroy object
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
 	while( it!= Locations().end() )
 	{
-		if(IsGameTypeSingle())
-			Level().GameTaskManager().MapLocationRelcase((*it).location);
+		Level().GameTaskManager().MapLocationRelcase((*it).location);
 
 		Destroy					((*it).location);
 		Locations().erase		(it);
@@ -173,8 +171,7 @@ void CMapManager::RemoveMapLocation(CMapLocation* ml)
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
 	if( it!=Locations().end() )
 	{
-		if(IsGameTypeSingle())
-			Level().GameTaskManager().MapLocationRelcase((*it).location);
+		Level().GameTaskManager().MapLocationRelcase((*it).location);
 
 		Destroy					((*it).location);
 		Locations().erase		(it);
@@ -243,10 +240,9 @@ void CMapManager::Update()
 
 	while( (!Locations().empty())&&(!Locations().back().actual) )
 	{
-		if(IsGameTypeSingle())
-			Level().GameTaskManager().MapLocationRelcase(Locations().back().location);
+		Level().GameTaskManager().MapLocationRelcase(Locations().back().location);
 
-		Destroy					(Locations().back().location);
+		Destroy(Locations().back().location);
 		Locations().pop_back();
 	}
 }

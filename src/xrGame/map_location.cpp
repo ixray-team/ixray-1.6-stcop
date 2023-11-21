@@ -342,30 +342,22 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 			return;
 		}
 
-		if ( b_alife && m_owner_se_object->m_flags.test(CSE_ALifeObject::flVisibleForMap) == FALSE )
+		CGameTask* ml_task = Level().GameTaskManager().HasGameTask( this, true );
+		if (ml_task)
 		{
-			return;
-		}
-
-		if ( IsGameTypeSingle() )
-		{
-			CGameTask* ml_task = Level().GameTaskManager().HasGameTask( this, true );
-			if ( ml_task )
+			CGameTask* active_task = Level().GameTaskManager().ActiveTask();
+			bool border_show = (ml_task == active_task);
+			if (m_minimap_spot)
 			{
-				CGameTask* active_task = Level().GameTaskManager().ActiveTask();
-				bool border_show = ( ml_task == active_task );
-				if ( m_minimap_spot )
-				{
-					m_minimap_spot->show_static_border( border_show );
-				}
-				if ( m_level_spot )
-				{
-					m_level_spot->show_static_border( border_show );
-				}
-				if ( m_complex_spot )
-				{
-					m_complex_spot->show_static_border( border_show );
-				}
+				m_minimap_spot->show_static_border(border_show);
+			}
+			if (m_level_spot)
+			{
+				m_level_spot->show_static_border(border_show);
+			}
+			if (m_complex_spot)
+			{
+				m_complex_spot->show_static_border(border_show);
 			}
 		}
 
@@ -391,16 +383,12 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 			map->AttachChild	(sp);
 		}
 
-		if ( IsGameTypeSingle() )
+		CMapSpot* s = GetSpotBorder(sp);
+		if (s)
 		{
-			CMapSpot* s = GetSpotBorder( sp );
-			if ( s )
-			{
-				s->SetWndPos( sp->GetWndPos() );
-				map->AttachChild( s );
-			}
+			s->SetWndPos(sp->GetWndPos());
+			map->AttachChild(s);
 		}
-
 
 		bool b_pointer =( GetSpotPointer(sp) && map->NeedShowPointer(wnd_rect));
 
@@ -509,10 +497,13 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 
 void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp )
 {
-	if(sp->GetParent()) return ;// already is child
+	if(sp->GetParent()) 
+		return ;// already is child
+
 	float		heading;
 	Fvector2	pointer_pos;
-	if( map->GetPointerTo(m_position_on_map, sp->GetWidth()/2, pointer_pos, heading) )
+
+	if (map->GetPointerTo(m_position_on_map, sp->GetWidth() / 2, pointer_pos, heading))
 	{
 		sp->SetWndPos(pointer_pos);
 		sp->SetHeading(heading);
@@ -521,32 +512,29 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp )
 
 		Fvector2 tt = map->ConvertLocalToReal(m_position_on_map, map->BoundRect());
 		Fvector ttt;
-		ttt.set		(tt.x, 0.0f, tt.y);
+		ttt.set(tt.x, 0.0f, tt.y);
 
-		if (IsGameTypeSingle())
+		float dist_to_target = Level().CurrentEntity()->Position().distance_to(ttt);
+		CGameTask* task = Level().GameTaskManager().HasGameTask(this, true);
+		if (task)
 		{
-			float dist_to_target = Level().CurrentEntity()->Position().distance_to(ttt);
-			CGameTask*	task = Level().GameTaskManager().HasGameTask(this, true);
-			if ( task )
-			{
-				map->SetPointerDistance	(dist_to_target);
-			}
-
-			u32 clr = sp->GetTextureColor();
-			u32 a	= 0xff;
-			if(dist_to_target>=0.0f && dist_to_target<10.0f)
-				a=255;
-			else
-			if(dist_to_target>=10.0f && dist_to_target<50.0f)
-				a=200;
-			else
-			if(dist_to_target>=50.0f && dist_to_target<100.0f)
-				a=150;
-			else
-				a=100;
-
-			sp->SetTextureColor( subst_alpha(clr,a));
+			map->SetPointerDistance(dist_to_target);
 		}
+
+		u32 clr = sp->GetTextureColor();
+		u32 a = 0xff;
+		if (dist_to_target >= 0.0f && dist_to_target < 10.0f)
+			a = 255;
+		else
+			if (dist_to_target >= 10.0f && dist_to_target < 50.0f)
+				a = 200;
+			else
+				if (dist_to_target >= 50.0f && dist_to_target < 100.0f)
+					a = 150;
+				else
+					a = 100;
+
+		sp->SetTextureColor(subst_alpha(clr, a));
 	}
 }
 

@@ -2200,9 +2200,10 @@ void		game_sv_Deathmatch::check_for_WarmUp()
 
 void		game_sv_Deathmatch::on_death	(CSE_Abstract *e_dest, CSE_Abstract *e_src)
 {
-	CSE_ALifeCreatureActor	*pVictim= smart_cast<CSE_ALifeCreatureActor*>(e_dest);
+	CSE_ALifeCreatureAbstract* pVictim= smart_cast<CSE_ALifeCreatureAbstract*>(e_dest);
 	if (!pVictim)
 		return;
+
 	pVictim->on_death(e_src);
 }
 
