@@ -30,7 +30,7 @@ void CreateGameWindow() {
 		RegisterClass(&wndClass);
 
 		// Set the window's initial style
-		Device.m_dwWindowStyle = WS_POPUP | WS_VISIBLE;
+		Device.m_dwWindowStyle = WS_POPUP;
 
 		// Create the render window
 		u32 screen_width = GetSystemMetrics(SM_CXSCREEN);
@@ -117,12 +117,12 @@ int APIENTRY WinMain
 	DestroyWindow(logoWindow);
 	logoWindow = NULL;
 
-	xr_delete(g_pStringTable);
 	// Show main wnd
-	ShowWindow(g_AppInfo.WindowHandle, SW_SHOW);
-
+	Console->Execute("vid_restart");
+	
 	EngineLoadStage5();
 
+	xr_delete(g_pStringTable);
 	Core._destroy();
 
 #ifdef NO_MULTI_INSTANCES		
