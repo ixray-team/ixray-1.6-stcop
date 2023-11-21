@@ -7,7 +7,10 @@
 #include "cdkey_ban_list.h"
 
 class		CItemMgr;
-class		xrClientData;
+class		xrClientData; 
+class       CALifeSimulator;
+class		xrServer;
+
 #define		VOTE_LENGTH_TIME		1
 #define		VOTE_QUOTA				0.51f
 
@@ -68,7 +71,8 @@ protected:
 	u8			m_u8SpectatorModes		;
 
 	cdkey_ban_list	m_cdkey_ban_list;
-	
+	CALifeSimulator* m_alife_simulator;
+
 protected:
 
 	virtual		void				SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 KillerID, u16 WeaponID, SPECIAL_KILL_TYPE SpecialKill);
@@ -211,5 +215,17 @@ public:
 	virtual		void				Player_ExperienceFin	(game_PlayerState* ps);
 	virtual		void				Player_AddMoney			(game_PlayerState* ps, s32 MoneyAmount);
 				void				SpawnPlayer				(ClientID id, LPCSTR N);
+
+	IC xrServer& server() const
+	{
+		VERIFY(m_server);
+		return (*m_server);
+	}
+
+	IC CALifeSimulator& alife() const
+	{
+		VERIFY(m_alife_simulator);
+		return (*m_alife_simulator);
+	}
 };
 

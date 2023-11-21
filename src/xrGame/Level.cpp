@@ -118,41 +118,31 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_dwNumSteps				= 0;
 	m_dwDeltaUpdate				= u32(fixed_step*1000);
 	m_dwLastNetUpdateTime		= 0;
-	//VERIFY						( physics_world() );
-	//physics_world()->set_step_time_callback((PhysicsStepTimeCallback*) &PhisStepsCallback);
-	//physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
+
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
-	if(!g_dedicated_server)
-	{
 		m_level_sound_manager		= xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager		= xr_new<CClientSpawnManager>();
 		m_autosave_manager			= xr_new<CAutosaveManager>();
 
-	#ifdef DEBUG
-		m_debug_renderer			= xr_new<CDebugRenderer>();
-		m_level_debug				= xr_new<CLevelDebug>();
-		m_bEnvPaused				= false;
-	#endif
-
-	}else
+#ifdef DEBUG
+	if (!g_dedicated_server)
 	{
-		m_level_sound_manager		= NULL;
-		m_client_spawn_manager		= NULL;
-		m_autosave_manager			= NULL;
-		m_space_restriction_manager = NULL;
-	#ifdef DEBUG
-		m_debug_renderer			= NULL;
-		m_level_debug				= NULL;
-	#endif
+		m_debug_renderer = xr_new<CDebugRenderer>();
+		m_level_debug = xr_new<CLevelDebug>();
+		m_bEnvPaused = false;
 	}
+	else
+	{
+		m_debug_renderer = nullptr;
+		m_level_debug = nullptr;
+	}
+#endif
 
 
-	
 	m_ph_commander						= xr_new<CPHCommander>();
 	m_ph_commander_scripts				= xr_new<CPHCommander>();
-	//m_ph_commander_physics_worldstep	= xr_new<CPHCommander>();
 		
 #ifdef DEBUG
 	m_bSynchronization			= false;
@@ -190,41 +180,16 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	
 	hud_zones_list = NULL;
 
-//	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
-//	{
-//		Demo_PrepareToStore();
-//	};
-	//---------------------------------------------------------
-//	m_bDemoPlayMode = FALSE;
-//	m_aDemoData.clear();
-//	m_bDemoStarted	= FALSE;
-
 	Msg("%s", Core.Params);
-	/*
-	if (strstr(Core.Params,"-tdemo ") || strstr(Core.Params,"-tdemof ")) {		
-		string1024				f_name;
-		if (strstr(Core.Params,"-tdemo "))
-		{
-			sscanf					(strstr(Core.Params,"-tdemo ")+7,"%[^ ] ",f_name);
-			m_bDemoPlayByFrame = FALSE;
-
-			Demo_Load	(f_name);	
-		}
-		else
-		{
-			sscanf					(strstr(Core.Params,"-tdemof ")+8,"%[^ ] ",f_name);
-			m_bDemoPlayByFrame = TRUE;
-
-			m_lDemoOfs = 0;
-			Demo_Load_toFrame(f_name, 100, m_lDemoOfs);
-		};		
-	}
-	*/
 	//---------------------------------------------------------	
 	m_file_transfer					= NULL;
 	m_trained_stream				= NULL;
 	m_lzo_working_memory			= NULL;
 	m_lzo_working_buffer			= NULL;
+
+	m_game_graph = 0;
+	m_chunk = 0;
+	spawn = 0;
 }
 
 extern CAI_Space *g_ai_space;
@@ -342,6 +307,10 @@ CLevel::~CLevel()
 		StopSaveDemo();
 	}
 	deinit_compression();
+
+	xr_delete(m_game_graph);
+	m_chunk->close();
+	FS.r_close(spawn);
 }
 
 shared_str	CLevel::name		() const

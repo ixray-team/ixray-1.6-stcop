@@ -12,6 +12,7 @@
 #include "game_base.h"
 #include "ai_space.h"
 #include "game_graph.h"
+#include "GamePersistent.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -67,9 +68,18 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, LPCSTR game_name)
 	chunk->r					(&guid,sizeof(guid));
 	chunk->close				();
 
-	string_path					file_name;
-	bool						file_exists = !!FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn");
-	R_ASSERT3					(file_exists,"Can't find spawn file:",*m_spawn_name);
+	string_path					file_name; 
+
+	if (g_pGamePersistent->GameType() == eGameIDSingle) 
+	{
+		bool file_exists = !!FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn");
+		R_ASSERT3(file_exists, "Can't find spawn file:", *m_spawn_name);
+	}
+	else
+	{
+		bool file_exists = !!FS.exist(file_name, "$level$", "alife", ".spawn");
+		R_ASSERT3(file_exists, "Can't find spawn file:", "alife.spawn");
+	}
 	
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
@@ -82,8 +92,16 @@ void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 {
 	Msg							("* Loading spawn registry...");
 	m_spawn_name				= spawn_name;
-	string_path					file_name;
-	R_ASSERT3					(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"),"Can't find spawn file:",*m_spawn_name);
+	string_path					file_name; 
+
+	if (g_pGamePersistent->GameType() == eGameIDSingle)
+	{
+		R_ASSERT3(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"), "Can't find spawn file:", *m_spawn_name);
+	}
+	else
+	{
+		R_ASSERT3(FS.exist(file_name, "$level$", "alife", ".spawn"), "Can't find spawn file:", "alife.spawn");
+	}
 	
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
