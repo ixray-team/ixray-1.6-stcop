@@ -81,6 +81,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     static bool bAllowStaging = !RImplementation.o.no_ram_textures;
     bStaging &= bAllowStaging;
 
+    DDS_FLAGS textureFlag = DDS_FLAGS::DDS_FLAGS_NONE;
     ID3DBaseTexture* pTexture2D = nullptr;
     string_path fn;
     u32 img_size = 0;
@@ -127,7 +128,19 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 #endif // DEBUG
         img_size = reader->length();
         R_ASSERT(reader);
-        R_CHK2(GetMetadataFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, imageInfo), fn);
+        R_CHK2(GetMetadataFromDDSMemory(reader->pointer(), reader->length(), textureFlag, imageInfo), fn);
+        {
+            UINT flags = 0;
+            UINT test_flags = D3D11_FORMAT_SUPPORT_SHADER_LOAD | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
+            HW.pDevice->CheckFormatSupport(imageInfo.format, &flags);
+
+            if (test_flags != (flags & test_flags)) {
+                textureFlag = DDS_FLAGS::DDS_FLAGS_NO_16BPP;
+                VERIFY3(false, fn, "Bad texture format");
+                Msg("! Bad texture format [%s]", fn);
+            }
+        }
+
         if (imageInfo.IsCubemap() || imageInfo.IsVolumemap()) {
             goto _DDS_CUBE;
         } else {
@@ -135,7 +148,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         }
     _DDS_CUBE: {
         auto scratchImage = std::make_unique<ScratchImage>();
-        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, &imageInfo, *scratchImage);
+        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
         auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
         auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
         auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
@@ -156,7 +169,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         img_loaded_lod = get_texture_load_lod(fn);
 
         auto scratchImage = std::make_unique<ScratchImage>();
-        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, &imageInfo, *scratchImage);
+        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
         
         auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
         auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
