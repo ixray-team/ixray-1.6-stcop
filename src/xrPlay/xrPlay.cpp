@@ -116,6 +116,8 @@ int APIENTRY WinMain
 	// Destroy LOGO
 	DestroyWindow(logoWindow);
 	logoWindow = NULL;
+	
+	ShowWindow(g_AppInfo.WindowHandle, SW_SHOW);
 
 	// Show main wnd
 	Console->Execute("vid_restart");
