@@ -542,6 +542,8 @@ void CWeaponMagazined::state_Fire(float dt)
 				Log("next_state", GetNextState());
 				Log("item_sect", cNameSect().c_str());
 				Log("H_Parent", H_Parent()->cNameSect().c_str());
+				StopShooting();
+				return;
 		}
 
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
