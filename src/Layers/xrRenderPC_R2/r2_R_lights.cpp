@@ -123,10 +123,10 @@ void	CRender::render_lights	(light_Package& LP)
 			r_pmask									(true,false);
 		}
 
-		//		switch-to-accumulator
+      //		switch-to-accumulator
 		Target->phase_accumulator			();
 		HOM.Disable							();
-
+  
 		//		if (has_point_unshadowed)	-> 	accum point unshadowed
 		if		(!LP.v_point.empty())	{
 			light*	L_	= LP.v_point.back	();		LP.v_point.pop_back		();
@@ -137,7 +137,7 @@ void	CRender::render_lights	(light_Package& LP)
 			}
 		}
 
-		//		if (has_spot_unshadowed)	-> 	accum spot unshadowed
+      //		if (has_spot_unshadowed)	-> 	accum spot unshadowed
 		if		(!LP.v_spot.empty())	{
 			light*	L_	= LP.v_spot.back	();		LP.v_spot.pop_back			();
 			L_->vis_update				();
@@ -148,21 +148,19 @@ void	CRender::render_lights	(light_Package& LP)
 			}
 		}
 
-		//		if (was_spot_shadowed)		->	accum spot shadowed
-		if		(!L_spot_s.empty())
-		{ 
-			for (u32 it=0; it<L_spot_s.size(); it++)
-			{
-				Target->accum_spot			(L_spot_s[it]);
-				render_indirect				(L_spot_s[it]);
-			}
+      //		if (was_spot_shadowed)		->	accum spot shadowed
+	  if (!L_spot_s.empty())
+	  {
+		  for (u32 it = 0; it < L_spot_s.size(); it++)
+		  {
+			  Target->accum_spot(L_spot_s[it]);
+			  if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
+				  Target->accum_volumetric(L_spot_s[it]);
+			  render_indirect(L_spot_s[it]);
+		  }
 
-			if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
-			for (u32 it=0; it<L_spot_s.size(); it++)
-				Target->accum_volumetric(L_spot_s[it]);
-
-			L_spot_s.clear	();
-		}
+		  L_spot_s.clear();
+	  }
 	}
 
 	// Point lighting (unshadowed, if left)
