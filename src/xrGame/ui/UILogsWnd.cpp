@@ -75,8 +75,8 @@ void CUILogsWnd::Update()
 
 	if(!m_items_ready.empty())
 	{
-		WINDOW_LIST::reverse_iterator it	= m_items_ready.rbegin();
-		WINDOW_LIST::reverse_iterator it_e	= m_items_ready.rend();
+		WINDOW_LIST::iterator it = m_items_ready.begin();
+		WINDOW_LIST::iterator it_e = m_items_ready.end();
 		for(; it!=it_e; ++it)
 			m_list->AddWindow			(*it, true);
 		
