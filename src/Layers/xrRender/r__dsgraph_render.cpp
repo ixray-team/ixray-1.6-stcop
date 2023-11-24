@@ -715,7 +715,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 			(
 			lstRenderables,
 			ISpatial_DB::O_ORDERED,
-			STYPE_RENDERABLE,
+			STYPE_RENDERABLE + STYPE_RENDERABLESHADOW,
 			ViewBase
 			);
 
@@ -738,13 +738,6 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 				renderable->renderable_Render	();
 			}
 		}
-#if RENDER != R_R1
-		if (phase == RImplementation.PHASE_SMAP && ps_r__common_flags.test(RFLAG_ACTOR_SHADOW)) {
-			if (g_pGameLevel && g_pGameLevel->CurrentViewEntity()) {
-				g_pGameLevel->CurrentViewEntity()->renderable_Render();
-			}
-		}
-#endif
 	}
 
 	// Restore

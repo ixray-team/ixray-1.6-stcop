@@ -62,8 +62,9 @@ extern ECORE_API	int			ps_r1_use_terrain_mask;
 
 enum
 {
-	R1FLAG_DLIGHTS				= (1<<0),
-	R1FLAG_TERRAIN_MASK			= (1<<1),
+	R1FLAG_DLIGHTS		= (1 << 0),
+	R1FLAG_TERRAIN_MASK	= (1 << 1),
+	R1FLAG_ACTOR_SHADOW	= (1 << 2),
 };
 
 extern ECORE_API Flags32		ps_r__common_flags;
@@ -190,12 +191,11 @@ enum
 	R2FLAGEXT_WIREFRAME				= (1<<6),
 	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
 	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
-	RFLAG_ACTOR_SHADOW				= (1<<9),
-	R2FLAG_USE_BUMP					= (1<<10),
-	RFLAG_USE_CACHE					= (1<<11),
-	RFLAG_CLOUD_SHADOWS = (1 << 12),
-	RFLAG_NO_RAM_TEXTURES = (1 << 13),
-	RFLAG_MT_TEX_LOAD     = (1 << 14),
+	R2FLAG_USE_BUMP					= (1<<9),
+	RFLAG_USE_CACHE					= (1<<10),
+	RFLAG_CLOUD_SHADOWS = (1 << 11),
+	RFLAG_NO_RAM_TEXTURES = (1 << 12),
+	RFLAG_MT_TEX_LOAD     = (1 << 13),
 };
 
 extern void						xrRender_initconsole	();

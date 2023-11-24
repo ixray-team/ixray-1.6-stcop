@@ -39,7 +39,7 @@ enum
 	STYPE_OBSTACLE				= (1<<6),
 	STYPE_SHAPE					= (1<<7),
 	STYPE_LIGHTSOURCEHEMI		= (1<<8),
-
+	STYPE_RENDERABLESHADOW		= (1<<9),
 	STYPEFLAG_INVALIDSECTOR		= (1<<16)
 };
 //////////////////////////////////////////////////////////////////////////
