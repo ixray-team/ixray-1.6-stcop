@@ -32,7 +32,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals, bool first
 					(
 					lstRenderablesMain,
 					ISpatial_DB::O_ORDERED,
-					STYPE_RENDERABLE + STYPE_LIGHTSOURCE,
+					STYPE_RENDERABLE + STYPE_LIGHTSOURCE + STYPE_RENDERABLESHADOW,
 					ViewBase
 					);
 

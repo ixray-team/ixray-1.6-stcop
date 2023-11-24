@@ -1081,6 +1081,9 @@ void CActor::set_state_box(u32	mstate)
 	else 
 		character_physics_support()->movement()->ActivateBox(0, true);
 }
+
+BOOL g_actor_shadow = 0;
+
 void CActor::shedule_Update	(u32 DT)
 {
 	setSVU							(OnServer());
@@ -1290,8 +1293,16 @@ void CActor::shedule_Update	(u32 DT)
 	}
 	
 	//если в режиме HUD, то сама модель актера не рисуется
-	if(!character_physics_support()->IsRemoved())
-		setVisible				(!HUDview	());
+	BOOL has_visible = 1;
+	BOOL has_shadow_only = 0;
+	if (character_physics_support()->IsRemoved())
+		has_visible = 0;
+	if (HUDview())
+	{
+		has_visible = 0;
+		has_shadow_only = g_actor_shadow;
+	}
+	setVisible(has_visible, has_shadow_only);
 
 	//что актер видит перед собой
 	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();

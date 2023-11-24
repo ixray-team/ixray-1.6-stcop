@@ -150,7 +150,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	void								processing_deactivate	();				// request	to disable	UpdateCL
 	bool								processing_enabled		()				{ return 0!=Props.bActiveCounter;	}
 
-	void								setVisible			(BOOL _visible);
+	void                                setVisible(BOOL _visible, BOOL _visibleshadow = FALSE);
 	ICF BOOL							getVisible			()			const	{ return Props.bVisible;			}
 	void								setEnabled			(BOOL _enabled);
 	ICF BOOL							getEnabled			()			const	{ return Props.bEnabled;			}

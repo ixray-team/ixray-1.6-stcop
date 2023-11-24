@@ -128,15 +128,24 @@ void CObject::setEnabled			(BOOL _enabled)
 		spatial.type							&=	~STYPE_COLLIDEABLE;
 	}
 }
-void CObject::setVisible			(BOOL _visible)
+
+void CObject::setVisible(BOOL _visible, BOOL _visibleshadow)
 {
-	if (_visible){				// Parent should control object visibility itself (??????)
-		Props.bVisible							= 1;
-		if (renderable.visual)	spatial.type	|=	STYPE_RENDERABLE;
-	}else{
-		Props.bVisible							= 0;
-		spatial.type							&=	~STYPE_RENDERABLE;
+	if (_visible)
+	{ // Parent should control object visibility itself (??????)
+		Props.bVisible = 1;
+		if (renderable.visual)
+			spatial.type |= STYPE_RENDERABLE;
 	}
+	else
+	{
+		Props.bVisible = 0;
+		spatial.type &= ~STYPE_RENDERABLE;
+	}
+	if (_visibleshadow)
+		spatial.type |= STYPE_RENDERABLESHADOW;
+	else
+		spatial.type &= ~STYPE_RENDERABLESHADOW;
 }
 
 //void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->vis.sphere.P);	}
