@@ -40,7 +40,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState( D3D_SAMPLER_DESC
 		StateRecord rec{};
 		rec.m_crc = crc;
 		CreateState(desc, &rec.m_pState);
-		hResult = m_StateArray.size();
+		hResult = (u32)m_StateArray.size();
 		m_StateArray.push_back(rec);
 	}
 
@@ -179,13 +179,15 @@ void dx10SamplerStateCache::SetMaxAnisotropy( UINT uiMaxAniso)
 	}
 
 	m_uiMaxAnisotropy = uiMaxAniso;
-	StateDecs samplerDesc = {};
-	for (auto& rec : m_StateArray) {
-		rec.m_pState->GetDesc(&samplerDesc);
-		samplerDesc.MaxAnisotropy = m_uiMaxAnisotropy;
-		dx10StateUtils::ValidateState(samplerDesc);
-		_RELEASE(rec.m_pState);
-		CreateState(samplerDesc, &rec.m_pState);
+	for (u32 i = 0; i < m_StateArray.size(); ++i)
+	{
+		StateRecord& rec = m_StateArray[i];
+		StateDecs desc;
+		rec.m_pState->GetDesc(&desc);
+		desc.MaxAnisotropy = m_uiMaxAnisotropy;
+		dx10StateUtils::ValidateState(desc);
+		rec.m_pState->Release();
+		CreateState(desc, &rec.m_pState);
 	}
 }
 
@@ -197,13 +199,16 @@ void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) {
 	}
 
 	m_mipLodBias = mipMapLodBias;
-	StateDecs samplerDesc = {};
-	for (auto& rec : m_StateArray) {
-		rec.m_pState->GetDesc(&samplerDesc);
-		samplerDesc.MipLODBias = m_mipLodBias;
-		dx10StateUtils::ValidateState(samplerDesc);
-		_RELEASE(rec.m_pState);
-		CreateState(samplerDesc, &rec.m_pState);
+
+	for (u32 i = 0; i < m_StateArray.size(); ++i)
+	{
+		StateRecord& rec = m_StateArray[i];
+		StateDecs desc;
+		rec.m_pState->GetDesc(&desc);
+		desc.MipLODBias = m_mipLodBias;
+		dx10StateUtils::ValidateState(desc);
+		rec.m_pState->Release();
+		CreateState(desc, &rec.m_pState);
 	}
 }
 
