@@ -13,7 +13,7 @@ option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 
 # Wrap CMake general configs 
-set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
+set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release;Shipping" CACHE STRING "" FORCE)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # Output target
@@ -36,7 +36,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 endif()
 
 # Enable gcc/clang style 
-add_compile_options(/permissive-)
+add_compile_options(/permissive- /fp:fast /wd4073)
 
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:DEBUG>:/Od>" "/Ob1" "$<$<CONFIG:DEBUG>:/EHsc>"
@@ -44,12 +44,17 @@ add_compile_options("$<$<CONFIG:DEBUG>:/Od>" "/Ob1" "$<$<CONFIG:DEBUG>:/EHsc>"
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" "$<$<CONFIG:DEBUG>:/wd4251>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>" /wd4595 /wd4996)
 
+# Shipping config
+add_compile_options("$<$<CONFIG:Shipping>:/wd4530>" "$<$<CONFIG:Shipping>:/wd4251>" "$<$<CONFIG:Shipping>:/wd4275>" "$<$<CONFIG:Shipping>:/wd4577>" "$<$<CONFIG:Shipping>:/Ob2>" )
+add_compile_options("$<$<CONFIG:Shipping>:/WX>")
+
+
 if(IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
 endif()
 
 ## Edit and Continue mode
-add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>")
+add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
 
 # Configure NuGet
 find_program(NUGET_COMMAND nuget)
