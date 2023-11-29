@@ -262,7 +262,7 @@ XRCORE_API wchar_t* ANSI_TO_TCHAR_U8(const char* C)
 XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi)
 {
 	wchar_t* wcs = nullptr;
-	int need_length = MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), ansi.size(), wcs, 0);
+	int need_length = MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), (int)ansi.size(), wcs, 0);
 	wcs = new wchar_t[need_length + 1];
 	MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), (int)ansi.size(), wcs, need_length);
 	wcs[need_length] = L'\0';

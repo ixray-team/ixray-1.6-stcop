@@ -727,22 +727,25 @@ inline void PPM_CONTEXT::update2(STATE* p)
     if (p->Freq > MAX_FREQ)                 rescale();
     EscCount++;                             RunLength=InitRL;
 }
+
 inline SEE2_CONTEXT* PPM_CONTEXT::makeEscFreq2() const
 {
-    BYTE* pb=(BYTE*) Stats;                 UINT t=2*NumStats;
-    PrefetchData(pb);                       PrefetchData(pb+t);
-    PrefetchData(pb += 2*t);                PrefetchData(pb+t);
+    BYTE* pb = (BYTE*)Stats;                 UINT t = 2 * NumStats;
+    PrefetchData(pb);                       PrefetchData(pb + t);
+    PrefetchData(pb += 2 * t);                PrefetchData(pb + t);
     SEE2_CONTEXT* psee2c;
     if (NumStats != 0xFF) {
-        t=Suffix->NumStats;
-        psee2c=SEE2Cont[QTable[NumStats+2]-3]+(SummFreq > 11*(NumStats+1));
-        psee2c += 2*(2*NumStats < t+NumMasked)+Flags;
-        SubRange.scale=psee2c->getMean();
-    } else {
-        psee2c=&DummySEE2Cont;              SubRange.scale=1;
+        t = Suffix->NumStats;
+        psee2c = SEE2Cont[QTable[NumStats + 2] - 3] + (SummFreq > 11 * (NumStats + 1));
+        psee2c += 2 * (u32(2 * NumStats) < u32(t + NumMasked)) + Flags;
+        SubRange.scale = psee2c->getMean();
+    }
+    else {
+        psee2c = &DummySEE2Cont;              SubRange.scale = 1;
     }
     return psee2c;
 }
+
 inline void PPM_CONTEXT::encodeSymbol2(int symbol)
 {
     SEE2_CONTEXT* psee2c=makeEscFreq2();
@@ -755,7 +758,7 @@ inline void PPM_CONTEXT::encodeSymbol2(int symbol)
         LoCnt += p->Freq;
     } while ( --i );
     SubRange.high=(SubRange.scale += (SubRange.low=LoCnt));
-    psee2c->Summ += SubRange.scale;            NumMasked = NumStats;
+    psee2c->Summ += (WORD)SubRange.scale;            NumMasked = NumStats;
     return;
 SYMBOL_FOUND:
     SubRange.low=LoCnt;                        SubRange.high=(LoCnt += p->Freq);
@@ -787,7 +790,7 @@ inline void PPM_CONTEXT::decodeSymbol2()
         SubRange.low=HiCnt;                    SubRange.high=SubRange.scale;
         i=NumStats-NumMasked;               NumMasked = NumStats;
         do { CharMask[(*pps)->Symbol]=EscCount; pps++; } while ( --i );
-        psee2c->Summ += SubRange.scale;
+        psee2c->Summ += (WORD)SubRange.scale;
     }
 }
 inline void ClearMask(_PPMD_FILE* EncodedFile,_PPMD_FILE* DecodedFile)
