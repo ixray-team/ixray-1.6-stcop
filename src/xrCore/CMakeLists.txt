@@ -123,6 +123,7 @@ target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 ## Disable user-cheats for Shipping build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")

@@ -50,11 +50,15 @@ if(inistream)\
 	inistream->what_to_do;\
 }
 
+#ifdef SHIPPING_BUILD
+#define INI_ASSERT(what_to_do)
+#else
 #define INI_ASSERT(what_to_do)\
 {\
 if(inistream)\
 	R_ASSERT3(0,#what_to_do,"not implemented");\
 }
+#endif
 
 struct	NET_Buffer
 {
