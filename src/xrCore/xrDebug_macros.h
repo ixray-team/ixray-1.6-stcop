@@ -23,12 +23,21 @@
 
 #	define CHECK_OR_EXIT(expr,message)	do {if (!(expr)) ::Debug.do_exit(message);} while (0)
 
+#ifdef SHIPPING_BUILD
+#	define R_ASSERT(expr)
+#	define R_ASSERT2(expr,e2)
+#	define R_ASSERT3(expr,e2,e3)
+#	define R_CHK(expr)
+#	define R_CHK2(expr,e2)
+#else
 #	define R_ASSERT(expr)				do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(_TRE(#expr),DEBUG_INFO,ignore_always);} while(0)
 #	define R_ASSERT2(expr,e2)			do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(_TRE(#expr),_TRE(e2),DEBUG_INFO,ignore_always);} while(0)
 #	define R_ASSERT3(expr,e2,e3)		do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(_TRE(#expr),_TRE(e2),_TRE(e3),DEBUG_INFO,ignore_always);} while(0)
 #	define R_ASSERT4(expr,e2,e3,e4)		do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(_TRE(#expr),_TRE(e2),_TRE(e3),_TRE(e4),DEBUG_INFO,ignore_always);} while(0)
 #	define R_CHK(expr)					do {static bool ignore_always = false; HRESULT __hr = expr; if (!ignore_always && FAILED(__hr)) ::Debug.error(__hr,_TRE(#expr),DEBUG_INFO,ignore_always);} while(0)
 #	define R_CHK2(expr,e2)				do {static bool ignore_always = false; HRESULT hr = expr; if (!ignore_always && FAILED(hr)) ::Debug.error(hr,_TRE(#expr),_TRE(e2),DEBUG_INFO,ignore_always);} while(0)
+#endif
+
 #	define FATAL(description)			Debug.fatal(DEBUG_INFO,description)
 
 #	ifdef VERIFY
