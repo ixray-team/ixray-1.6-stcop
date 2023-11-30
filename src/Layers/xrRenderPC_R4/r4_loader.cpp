@@ -212,7 +212,9 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 			// count, size
 			u32 vCount			= fs->r_u32	();
 			u32 vSize = ComputeVertexSize(dcl, 0);
-			Msg	("* [Loading VB] %d verts, %d Kb",vCount,(vCount*vSize)/1024);
+#ifdef DEBUG
+			Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
+#endif // DEBUG
 
 			// Create and fill
 			//BYTE*	pData		= 0;
@@ -241,7 +243,9 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 		for (u32 i=0; i<count; i++)
 		{
 			u32 iCount			= fs->r_u32	();
-			Msg("* [Loading IB] %d indices, %d Kb",iCount,(iCount*2)/1024);
+#ifdef DEBUG
+			Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
+#endif // DEBUG
 
 			// Create and fill
 			//BYTE*	pData		= 0;

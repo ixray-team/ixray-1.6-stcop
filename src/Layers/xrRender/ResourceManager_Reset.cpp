@@ -95,7 +95,9 @@ void	CResourceManager::reset_end				()
 
 	// create everything, renderer may use
 	::Render->reset_end		();
-	Dump					(true);
+#ifdef DEBUG
+	Dump(true);
+#endif
 }
 
 template<class C>	void mdump(C c)
@@ -109,7 +111,9 @@ template<class C>	void mdump(C c)
 CResourceManager::~CResourceManager		()
 {
 	DestroyNecessaryTextures	();
-	Dump						(false);
+#ifdef DEBUG
+	Dump(false);
+#endif
 }
 
 void CResourceManager::Dump(bool bBrief)

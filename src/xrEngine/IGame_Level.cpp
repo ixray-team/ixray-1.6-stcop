@@ -23,7 +23,9 @@ IGame_Level::IGame_Level	()
 	bReady						= false;
 	pCurrentEntity				= NULL;
 	pCurrentViewEntity			= NULL;
+#ifdef DEBUG
 	Device.DumpResourcesMemoryUsage();
+#endif // DEBUG
 }
 
 IGame_Level::~IGame_Level()
@@ -46,7 +48,9 @@ IGame_Level::~IGame_Level()
 
 	Sound->set_geometry_occ(NULL);
 	Sound->set_handler(NULL);
+#ifdef DEBUG
 	Device.DumpResourcesMemoryUsage();
+#endif // DEBUG
 
 	u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
 	if (Device.m_pRender) 
