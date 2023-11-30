@@ -1916,6 +1916,21 @@ bool CWeapon::unlimited_ammo()
 			
 };
 
+float CWeapon::GetMagazineWeight(const decltype(CWeapon::m_magazine)& mag) const {
+	float res = 0;
+	const char* last_type = nullptr;
+	float last_ammo_weight = 0;
+	for (auto& c : mag) {
+		// Usually ammos in mag have same type, use this fact to improve performance
+		if (last_type != c.m_ammoSect.c_str()) {
+			last_type = c.m_ammoSect.c_str();
+			last_ammo_weight = c.Weight();
+		}
+		res += last_ammo_weight;
+	}
+	return res;
+}
+
 float CWeapon::Weight() const
 {
 	float res = CInventoryItemObject::Weight();
@@ -1929,13 +1944,8 @@ float CWeapon::Weight() const
 		res += pSettings->r_float(GetSilencerName(),"inv_weight");
 	}
 	
-	if(iAmmoElapsed)
-	{
-		float w		= pSettings->r_float(m_ammoTypes[m_ammoType].c_str(),"inv_weight");
-		float bs	= pSettings->r_float(m_ammoTypes[m_ammoType].c_str(),"box_size");
+	res += GetMagazineWeight(m_magazine);
 
-		res			+= w*(iAmmoElapsed/bs);
-	}
 	return res;
 }
 

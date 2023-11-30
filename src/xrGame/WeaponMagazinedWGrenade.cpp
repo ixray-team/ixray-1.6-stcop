@@ -793,6 +793,13 @@ void CWeaponMagazinedWGrenade::net_Import	(NET_Packet& P)
 	inherited::net_Import		(P);
 }
 
+float CWeaponMagazinedWGrenade::Weight() const {
+	float res = inherited::Weight();
+	res += GetMagazineWeight(m_magazine2);
+
+	return res;
+}
+
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
 {
 	return (	std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() ||
