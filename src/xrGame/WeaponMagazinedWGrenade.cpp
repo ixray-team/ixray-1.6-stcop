@@ -932,22 +932,20 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 	else
 	{
 		u8 ammo_type = m_bGrenadeMode ? m_ammoType2 : m_ammoType;
-		xr_sprintf(int_str, "%d", m_bGrenadeMode ? GetAmmoCount2(0) : GetAmmoCount(0));
-		if(ammo_type==0)
-			info.fmj_ammo._set(int_str);
-		else
-			info.ap_ammo._set(int_str);
-
-		if(at_size == 2)
-		{
-			xr_sprintf(int_str, "%d", m_bGrenadeMode ? GetAmmoCount2(1) : GetAmmoCount(1));
-			if(ammo_type==0)
-				info.ap_ammo._set(int_str);
-			else
+		int add_ammo_count = 0;
+		for (int i = 0; i < at_size; i++) {
+			if (ammo_type == i) {
+				xr_sprintf(int_str, "%d", m_bGrenadeMode ? GetAmmoCount2(i) : GetAmmoCount(i));
 				info.fmj_ammo._set(int_str);
+			} else {
+				add_ammo_count += m_bGrenadeMode ? GetAmmoCount2(i) : GetAmmoCount(i);
+			}
 		}
+		if (at_size > 1)
+			xr_sprintf(int_str, "%d", add_ammo_count);
 		else
-			info.ap_ammo._set("");
+			xr_sprintf(int_str, "%s", "");
+		info.ap_ammo._set(int_str);
 	}
 
 	if(ae != 0 && m_magazine.size() != 0)

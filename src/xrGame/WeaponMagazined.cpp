@@ -1381,25 +1381,20 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	else
 	{
 		//GetSuitableAmmoTotal(); //mp = all type
-
-		xr_sprintf( int_str, "%d", GetAmmoCount( 0 ) ); // !!!!!!!!!!! == 0 temp
-		if(m_ammoType==0)
-			info.fmj_ammo			= int_str;
-		else
-			info.ap_ammo			= int_str;
-
-		if ( at_size == 2 )
-		{
-			xr_sprintf( int_str, "%d", GetAmmoCount( 1 ) );
-			if(m_ammoType==0)
-				info.ap_ammo		= int_str;
-			else
-				info.fmj_ammo		= int_str;
+		int add_ammo_count = 0;
+		for (int i = 0; i < at_size; i++) {
+			if (m_ammoType == i) {
+				xr_sprintf(int_str, "%d", GetAmmoCount(i));
+				info.fmj_ammo = int_str;
+			} else {
+				add_ammo_count += GetAmmoCount(i);
+			}
 		}
+		if (at_size > 1)
+			xr_sprintf(int_str, "%d", add_ammo_count);
 		else
-		{
-			info.ap_ammo			= "";
-		}
+			xr_sprintf(int_str, "%s", "");
+		info.ap_ammo = int_str;
 	}
 	
 	if ( ae != 0 && m_magazine.size() != 0 )
