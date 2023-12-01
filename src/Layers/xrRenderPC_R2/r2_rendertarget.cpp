@@ -428,7 +428,7 @@ CRenderTarget::CRenderTarget		()
 			t_material->surface_set		(t_material_surf);
 
 			// Fill it (addr: x=dot(L,N),y=dot(L,H))
-			D3DLOCKED_BOX				R;
+			D3DLOCKED_BOX R{};
 			R_CHK						(t_material_surf->LockBox	(0,&R,0,0));
 			for (u32 slice=0; slice<4; slice++)
 			{

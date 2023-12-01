@@ -19,7 +19,7 @@ void dxDebugRender::Render()
 		return;
 
 	RCache.set_xform_world			(Fidentity);
-	RCache.dbg_Draw					(D3DPT_LINELIST,&*m_line_vertices.begin(),m_line_vertices.size(),&*m_line_indices.begin(),m_line_indices.size()/2);
+	RCache.dbg_Draw					(D3DPT_LINELIST,&*m_line_vertices.begin(), (int)m_line_vertices.size(),&*m_line_indices.begin(), (int)m_line_indices.size()/2);
 	m_line_vertices.resize			(0);
 	m_line_indices.resize			(0);
 }
@@ -43,7 +43,7 @@ void _add_lines		(  xr_vector<FVF::L> &vertices, xr_vector<u16>& indices, Fvecto
 	VERIFY							(vertices.size() < u16(-1));
 	u16								vertices_size = (u16)vertices.size();
 
-	u32								indices_size = indices.size();
+	u32								indices_size = (u32)indices.size();
 	indices.resize					(indices_size + 2*pair_count);
 	xr_vector<u16>::iterator				I = indices.begin() + indices_size;
 	xr_vector<u16>::iterator				E = indices.end();

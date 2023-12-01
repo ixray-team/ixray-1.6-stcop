@@ -104,8 +104,8 @@ void		CResourceManager::_DeletePass			(const SPass* P)
 static BOOL	dcl_equal			(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 {
 	// check sizes
-	u32 a_size = GetDeclLength(a);
-	u32 b_size = GetDeclLength(b);
+	u32 a_size = (u32)GetDeclLength(a);
+	u32 b_size = (u32)GetDeclLength(b);
 	if (a_size!=b_size)	return FALSE;
 	return 0==memcmp	(a,b,a_size*sizeof(D3DVERTEXELEMENT9));
 }
@@ -121,7 +121,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 
 	// Create _new
 	SDeclaration* D			= xr_new<SDeclaration>();
-	u32 dcl_size = GetDeclLength(dcl) + 1;
+	u32 dcl_size = (u32)GetDeclLength(dcl) + 1;
 	CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);
 	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
@@ -360,7 +360,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IDirect3DVerte
 	R_ASSERT			(decl && vb);
 
 	SDeclaration* dcl	= _CreateDecl			(decl);
-	u32 vb_stride = ComputeVertexSize(decl, 0);
+	u32 vb_stride = (u32)ComputeVertexSize(decl, 0);
 
 	// ***** first pass - search already loaded shader
 	for (u32 it=0; it<v_geoms.size(); it++)

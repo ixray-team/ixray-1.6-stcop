@@ -159,7 +159,7 @@ void dx103DFluidObstacles::ProcessStaticObstacles( const dx103DFluidData &FluidD
 	RCache.set_Element(m_ObstacleTechnique[OS_OOBB]);
 
 	const xr_vector<Fmatrix> &Obstacles = FluidData.GetObstaclesList();
-	int iObstNum = Obstacles.size();
+	int iObstNum = (int)Obstacles.size();
 	for (int i=0; i<iObstNum; ++i)
 	{
 		Fmatrix Transform;
@@ -237,13 +237,13 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 	RCache.set_c(strWorldToLocal, WorldToFluid);	
 	RCache.set_c(strLocalToWorld, FluidToWorld);
 
-	int iShellsNum = m_lstShells.size();
+	int iShellsNum = (int)m_lstShells.size();
 	for (int i=0; i<iShellsNum; ++i)
 	{
 		RenderPhysicsShell( m_lstShells[i], WorldToFluid, timestep );
 	}
 
-	int iElementsNum = m_lstElements.size();
+	int iElementsNum = (int)m_lstElements.size();
 	for (int i=0; i<iElementsNum; ++i)
 	{
 		RenderPhysicsElement( *m_lstElements[i], WorldToFluid, timestep );

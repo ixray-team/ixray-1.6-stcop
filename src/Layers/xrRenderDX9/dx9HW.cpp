@@ -249,7 +249,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	Caps.id_device	= adapterID.DeviceId;
 
 	// Retreive windowed mode
-	D3DDISPLAYMODE mWindowed;
+	D3DDISPLAYMODE mWindowed{};
 	R_CHK(pD3D->GetAdapterDisplayMode(DevAdapter, &mWindowed));
 
 	// Select back-buffer & depth-stencil format
@@ -651,7 +651,7 @@ void fill_vid_mode_list(CHW* _hw)
 		_tmp.back()					= xr_strdup(str);
 	}
 
-	u32 _cnt						= _tmp.size()+1;
+	u32 _cnt = u32(_tmp.size() + 1);
 
 	vid_mode_token					= xr_alloc<xr_token>(_cnt);
 

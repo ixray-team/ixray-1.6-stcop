@@ -547,12 +547,12 @@ void NvStripInfo::Build(NvEdgeInfoVec &edgeInfos, NvFaceInfoVec &faceInfos){
 void NvStripInfo::Combine(const NvFaceInfoVec &forward, const NvFaceInfoVec &backward){
 	
 	// add backward faces
-	int numFaces = backward.size();
+	int numFaces = (int)backward.size();
 	for (int i = numFaces - 1; i >= 0; i--)
 		m_faces.push_back(backward[i]);
 	
 	// add forward faces
-	numFaces = forward.size();
+	numFaces = (int)forward.size();
 	for (u32 i = 0; i < numFaces; i++)
 		m_faces.push_back(forward[i]);
 }
@@ -597,7 +597,7 @@ bool NvStripInfo::SharesEdge(const NvFaceInfo* faceInfo, NvEdgeInfoVec &edgeInfo
 void NvStripifier::CommitStrips(NvStripInfoVec &allStrips, const NvStripInfoVec &strips)
 {	
 	// Iterate through strips
-	int numStrips = strips.size();
+	int numStrips = (int)strips.size();
 	for (int i = 0; i < numStrips; i++){
 		
 		// Tell the strip that it is now real
@@ -610,7 +610,7 @@ void NvStripifier::CommitStrips(NvStripInfoVec &allStrips, const NvStripInfoVec 
 		// Iterate through the faces of the strip
 		// Tell the faces of the strip that they belong to a real strip now
 		const NvFaceInfoVec &faces = strips[i]->m_faces;
-		int numFaces = faces.size();
+		int numFaces = (int)faces.size();
 
 		for (int j = 0; j < numFaces; j++)
 		{
@@ -698,7 +698,7 @@ void NvStripifier::RemoveSmallStrips(NvStripInfoVec& allStrips, NvStripInfoVec& 
 	if (tempFaceList.empty())
 		return;
 
-	bool *bVisitedList	= xr_alloc<bool> (tempFaceList.size());
+	bool *bVisitedList	= xr_alloc<bool> ((u32)tempFaceList.size());
 	ZeroMemory			(bVisitedList, tempFaceList.size()*sizeof(bool));
 	
 	VertexCache* vcache = xr_new<VertexCache> (cacheSize);
@@ -775,7 +775,7 @@ void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIn
 	assert(numSeparateStrips == 0);
 
 	NvFaceInfo tLastFace(0, 0, 0);
-	int nStripCount = allStrips.size();
+	int nStripCount = (int)allStrips.size();
 	assert(nStripCount > 0);
 
 	//we infer the cw/ccw ordering depending on the number of indices
@@ -786,7 +786,7 @@ void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIn
 	for (int i = 0; i < nStripCount; i++)
 	{
 		NvStripInfo *strip = allStrips[i];
-		int nStripFaceCount = strip->m_faces.size();
+		int nStripFaceCount = (int)strip->m_faces.size();
 		assert(nStripFaceCount > 0);
 
 		// Handle the first face in the strip
@@ -830,7 +830,7 @@ void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIn
 				stripIndices.push_back(tFirstFace.m_v0);
 	
 				// Check CW/CCW ordering
-				if (NextIsCW(stripIndices.size() - accountForNegatives) != IsCW(strip->m_faces[0], tFirstFace.m_v0, tFirstFace.m_v1))
+				if (NextIsCW((int)stripIndices.size() - accountForNegatives) != IsCW(strip->m_faces[0], tFirstFace.m_v0, tFirstFace.m_v1))
 				{
 					stripIndices.push_back(tFirstFace.m_v0);
 				}
@@ -963,8 +963,8 @@ void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoVec &allStrips, NvStripIn
 		if(allStrips[i]->m_faces.size() > threshold)
 		{
 			
-			int numTimes    = allStrips[i]->m_faces.size() / threshold;
-			int numLeftover = allStrips[i]->m_faces.size() % threshold;
+			int numTimes    = (int)allStrips[i]->m_faces.size() / threshold;
+			int numLeftover = (int)allStrips[i]->m_faces.size() % threshold;
 			
 			int j;
 			for(j = 0; j < numTimes; j++)
@@ -1201,10 +1201,10 @@ int NvStripifier::NumNeighbors(NvFaceInfo* face, NvEdgeInfoVec& edgeInfoVec)
 //
 float NvStripifier::AvgStripSize(const NvStripInfoVec &strips){
 	int sizeAccum = 0;
-	int numStrips = strips.size();
+	int numStrips = (int)strips.size();
 	for (int i = 0; i < numStrips; i++){
 		NvStripInfo *strip = strips[i];
-		sizeAccum += strip->m_faces.size();
+		sizeAccum += (int)strip->m_faces.size();
 	}
 	return ((float)sizeAccum) / ((float)numStrips);
 }
@@ -1355,7 +1355,7 @@ void NvStripifier::FindAllStrips(NvStripInfoVec &allStrips,
 		{
 			if (i != bestIndex)
 			{
-				int numStrips = experiments[i].size();
+				int numStrips = (int)experiments[i].size();
 				for (int j = 0; j < numStrips; j++)
 				{
 					xr_delete(experiments[i][j]);
@@ -1379,7 +1379,7 @@ int NvStripifier::CountRemainingTris(	xr_list<NvStripInfo*>::iterator		iter,
 {
 	int count = 0;
 	while (iter != end){
-		count += (*iter)->m_faces.size();
+		count += (int)(*iter)->m_faces.size();
 		iter++;
 	}
 	return count;

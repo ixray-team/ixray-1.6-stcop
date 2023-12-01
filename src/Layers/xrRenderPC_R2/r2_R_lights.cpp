@@ -33,7 +33,7 @@ void	CRender::render_lights	(light_Package& LP)
 		xr_vector<light*>&		source		= LP.v_shadowed;
 		xr_vector<light*>		refactored	;
 		refactored.reserve		(source.size());
-		u32						total		= source.size();
+		u32						total		= (u32)source.size();
 
 		for		(u16 smap_ID=0; refactored.size()!=total; smap_ID++)
 		{
