@@ -59,7 +59,7 @@ void xrLC_GlobalData	::gl_mesh_clear	()
 
 void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 {
-	const u32 inital_verts_count = _g_vertices.size();
+	const u32 inital_verts_count = (u32)_g_vertices.size();
 	u32 not_empty_verts = 0;
 
 	string_path path_name;

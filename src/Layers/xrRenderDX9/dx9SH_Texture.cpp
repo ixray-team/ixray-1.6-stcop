@@ -85,7 +85,7 @@ void CTexture::apply_theora	(u32 dwStage)
     {
 		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
 		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
-		D3DLOCKED_RECT		R;
+		D3DLOCKED_RECT R{};
 		RECT rect;
 		rect.left			= 0;
 		rect.top			= 0;
@@ -110,7 +110,7 @@ void CTexture::apply_avi	(u32 dwStage)
 		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
 
 		// AVI
-		D3DLOCKED_RECT R;
+		D3DLOCKED_RECT R{};
 		R_CHK	(T2D->LockRect(0,&R,NULL,0));
 		R_ASSERT(R.Pitch == int(pAVI->m_dwWidth*4));
 		//		R_ASSERT(pAVI->DecompressFrame((u32*)(R.pBits)));
@@ -125,7 +125,7 @@ void CTexture::apply_avi	(u32 dwStage)
 void CTexture::apply_seq	(u32 dwStage)	{
 	// SEQ
 	u32	frame		=RDEVICE.dwTimeContinual/seqMSPF; //RDEVICE.dwTimeGlobal
-	u32	frame_data	= seqDATA.size();
+	u32	frame_data	= (u32)seqDATA.size();
 	if (flags.seqCycles)		{
 		u32	frame_id	= frame%(frame_data*2);
 		if (frame_id>=frame_data)	frame_id = (frame_data-1) - (frame_id%frame_data);

@@ -82,7 +82,7 @@ void CDetailManager::hw_Load_Geom()
 
 	// Fill VB
 	{
-		vertHW*			pV;
+		vertHW* pV{};
 #ifdef USE_DX11
 		vertHW*			pVOriginal;
 		pVOriginal	=	xr_alloc<vertHW>(dwVerts);
@@ -121,7 +121,7 @@ void CDetailManager::hw_Load_Geom()
 
 	// Fill IB
 	{
-		u16*			pI;
+		u16* pI{};
 #ifdef USE_DX11
 		u16*			pIOriginal;
 		pIOriginal = xr_alloc<u16>(dwIndices);

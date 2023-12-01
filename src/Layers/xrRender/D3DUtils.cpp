@@ -105,10 +105,10 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 	p_type				= _pt;
 	v_cnt				= _v_cnt;
 	i_cnt				= _i_cnt;
-	u32 stride = FVF::ComputeVertexSize(FVF);
+	u32 stride = (u32)FVF::ComputeVertexSize(FVF);
 	R_CHK(HW.pDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
 	HW.stats_manager.increment_stats_vb	(pVB);
-	u8* 				bytes;
+    u8* bytes{};
 	R_CHK				(pVB->Lock(0,0,(LPVOID*)&bytes,0));
 	FLvertexVec	verts	(v_cnt);
 	for (u32 k=0; k<v_cnt; ++k)

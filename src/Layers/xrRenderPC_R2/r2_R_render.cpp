@@ -311,8 +311,8 @@ void CRender::Render		()
 		light_Package& LP = Lights.package;
 
 		// stats
-		stats.l_shadowed = LP.v_shadowed.size();
-		stats.l_unshadowed = LP.v_point.size() + LP.v_spot.size();
+		stats.l_shadowed = (u32)LP.v_shadowed.size();
+		stats.l_unshadowed = (u32)LP.v_point.size() + (u32)LP.v_spot.size();
 		stats.l_total = stats.l_shadowed + stats.l_unshadowed;
 
 		// perform tests

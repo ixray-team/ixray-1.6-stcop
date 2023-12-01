@@ -215,7 +215,7 @@ void		sort_tlist_nrm
  BOOL	bSSA
  )
 {
-	int amount			= textures.begin()->key->size();
+	int amount			= (int)textures.begin()->key->size();
 	if (bSSA)	
 	{
 		if (amount<=1)
@@ -261,7 +261,7 @@ void		sort_tlist_mat
  BOOL	bSSA
  )
 {
-	int amount			= textures.begin()->key->size();
+	int amount			= (int)textures.begin()->key->size();
 	if (bSSA)	
 	{
 		if (amount<=1)

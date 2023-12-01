@@ -36,7 +36,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (hr == D3D_OK) {
             auto fs = FS.w_open(name);
             if (fs) {
-                fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                fs->w(saved->GetBufferPointer(), (u32)saved->GetBufferSize());
                 FS.w_close(fs);
             }
         }
@@ -62,11 +62,11 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
             if (!memory_writer) {
                 auto fs = FS.w_open(name);
                 if (fs) {
-                    fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                    fs->w(saved->GetBufferPointer(), (u32)saved->GetBufferSize());
                     FS.w_close(fs);
                 }
             } else {
-                memory_writer->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                memory_writer->w(saved->GetBufferPointer(), (u32)saved->GetBufferSize());
             }
         }
     }
@@ -121,7 +121,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
             strconcat(sizeof(buf), buf, name, ".tga");
             auto fs = FS.w_open("$screenshots$", buf);
             if (fs) {
-                fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                fs->w(saved->GetBufferPointer(), (u32)saved->GetBufferSize());
                 FS.w_close(fs);
             }
         }

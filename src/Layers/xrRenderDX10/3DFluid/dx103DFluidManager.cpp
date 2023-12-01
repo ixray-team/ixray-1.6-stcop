@@ -754,7 +754,7 @@ void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, floa
 #ifdef	DEBUG
 void dx103DFluidManager::RegisterFluidData(dx103DFluidData* pData, const xr_string &SectionName)
 {
-	int iDataNum = m_lstFluidData.size();
+	int iDataNum = (int)m_lstFluidData.size();
 
 	int i;
 
@@ -777,7 +777,7 @@ void dx103DFluidManager::RegisterFluidData(dx103DFluidData* pData, const xr_stri
 
 void dx103DFluidManager::DeregisterFluidData(dx103DFluidData* pData)
 {
-	int iDataNum = m_lstFluidData.size();
+	int iDataNum = (int)m_lstFluidData.size();
 
 	int i;
 
@@ -802,7 +802,7 @@ void dx103DFluidManager::DeregisterFluidData(dx103DFluidData* pData)
 
 void dx103DFluidManager::UpdateProfiles()
 {
-	int iDataNum = m_lstFluidData.size();
+	int iDataNum = (int)m_lstFluidData.size();
 
 	int i;
 

@@ -35,7 +35,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 	fmt			= f;
 
 	// Get caps
-	D3DCAPS9	caps;
+	D3DCAPS9	caps{};
 	R_CHK		(HW.pDevice->GetDeviceCaps(&caps));
 
 	// Pow2

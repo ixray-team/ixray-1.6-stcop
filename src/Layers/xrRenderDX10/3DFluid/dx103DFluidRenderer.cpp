@@ -863,7 +863,7 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 		size
 		);
 
-	u32 iNumRenderables = m_lstRenderables.size();
+	u32 iNumRenderables = (u32)m_lstRenderables.size();
 	// Determine visibility for dynamic part of scene
 	for (u32 i=0; i<iNumRenderables; ++i)
 	{

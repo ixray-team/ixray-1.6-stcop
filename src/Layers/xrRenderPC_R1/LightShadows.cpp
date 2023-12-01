@@ -485,7 +485,7 @@ void CLightShadows::render	()
 			CI->Op					= CI->O->renderable.xform.c;
 			CI->L					= S.L;
 			CI->Lp					= CI->L->position;
-			CI->tcnt				= tess.size();
+			CI->tcnt				= (u32)tess.size();
 			//Msg						("---free--- %x",u32(CI->tris));
 			xr_free					(CI->tris);	VERIFY(0==CI->tris);	
 			if (tess.size())		{

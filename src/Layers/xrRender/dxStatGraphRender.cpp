@@ -32,15 +32,15 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		{
 		case CStatGraph::stBar: 
 			{
-				TriElem += it->elements.size()*4;
+				TriElem += (u32)it->elements.size()*4;
 			}break;
 		case CStatGraph::stCurve: 
 			{
-				LineElem += it->elements.size()*2;
+				LineElem += (u32)it->elements.size()*2;
 			}break;
 		case CStatGraph::stBarLine: 
 			{
-				LineElem += it->elements.size()*4;
+				LineElem += (u32)it->elements.size()*4;
 			}break;
 		case CStatGraph::stPoint: 
 			{
@@ -97,7 +97,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 	if (!owner.m_Markers.empty())
 	{
 		dwOffsetLine = 0;
-		LineElem = owner.m_Markers.size()*2;
+		LineElem = (u32)owner.m_Markers.size()*2;
 
 		pv_Line_start = (FVF::TL0uv*)RCache.Vertex.Lock(LineElem,hGeomLine->vb_stride,dwOffsetLine);
 		pv_Line = pv_Line_start;

@@ -131,7 +131,7 @@ void CPGDef::Save(IWriter& F)
 	F.w_chunk		(PGD_CHUNK_FLAGS,&m_Flags,sizeof(m_Flags));
 
 	F.open_chunk	(PGD_CHUNK_EFFECTS);
-    F.w_u32			(m_Effects.size());
+    F.w_u32			((u32)m_Effects.size());
     for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
     	F.w_stringZ	((*it)->m_EffectName);
     	F.w_stringZ	((*it)->m_OnPlayChildName);
@@ -154,7 +154,7 @@ void CPGDef::Save2(CInifile& ini)
 
 	ini.w_u32		("_group", "flags", m_Flags.get());
 
-    ini.w_u32		("_group", "effects_count", m_Effects.size());
+    ini.w_u32		("_group", "effects_count", (u32)m_Effects.size());
 
 	u32 counter		= 0;
 	string256		buff;

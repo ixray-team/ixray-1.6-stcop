@@ -195,7 +195,7 @@ void CRender::LoadBuffers	(CStreamReader *base_fs)
 			fs->r				(dcl,buffer_size);
 			fs->advance			(-(int)buffer_size);
 
-			u32 dcl_len = GetDeclLength(dcl) + 1;
+			u32 dcl_len = u32(GetDeclLength(dcl) + 1);
 
 			DCL[i].resize		(dcl_len);
 			fs->r				(DCL[i].begin(),dcl_len*sizeof(D3DVERTEXELEMENT9));
@@ -203,7 +203,7 @@ void CRender::LoadBuffers	(CStreamReader *base_fs)
 
 			// count, size
 			u32 vCount			= fs->r_u32	();
-			u32 vSize = ComputeVertexSize(dcl, 0);
+			u32 vSize = (u32)ComputeVertexSize(dcl, 0);
 #ifdef DEBUG
 			Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
 #endif // DEBUG

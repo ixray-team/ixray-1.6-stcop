@@ -169,7 +169,7 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 				stripLength = i_ - startingLoc;
 			}
 			else
-				stripLength = stripIndices.size();
+				stripLength = (int)stripIndices.size();
 			
 			primGroups[stripCtr].type       = PT_STRIP;
 			primGroups[stripCtr].indices    = xr_alloc<u16>	(stripLength);
@@ -187,8 +187,8 @@ void GenerateStrips(const u16* in_indices, const s32 in_numIndices, xr_vector<Pr
 		{
 			int faceGroupLoc					= numGroups - 1;    //the face group is the last one
 			primGroups[faceGroupLoc].type       = PT_LIST;
-			primGroups[faceGroupLoc].indices    = xr_alloc<u16>	(tempFaces.size() * 3);
-			primGroups[faceGroupLoc].numIndices = tempFaces.size() * 3;
+			primGroups[faceGroupLoc].indices    = xr_alloc<u16>	((u32)tempFaces.size() * 3);
+			primGroups[faceGroupLoc].numIndices = (u32)tempFaces.size() * 3;
 			int indexCtr = 0;
 			for(int i_ = 0; i_ < tempFaces.size(); i_++)
 			{

@@ -111,7 +111,7 @@ ID3DTexture2D*	TW_LoadTextureFromTexture
 {
 	// Calculate levels & dimensions
 	ID3DTexture2D*		t_dest			= NULL;
-	D3DSURFACE_DESC			t_from_desc0	;
+	D3DSURFACE_DESC			t_from_desc0{};
 	R_CHK					(t_from->GetLevelDesc	(0,&t_from_desc0));
 	int levels_exist		= t_from->GetLevelCount();
 	int top_width			= t_from_desc0.Width;
@@ -137,7 +137,7 @@ ID3DTexture2D*	TW_LoadTextureFromTexture
 	for (; L_dst>=0; L_src--,L_dst--)
 	{
 		// Get surfaces
-		IDirect3DSurface9		*S_src, *S_dst;
+		IDirect3DSurface9* S_src{}, * S_dst{};
 		R_CHK	(T_src->GetSurfaceLevel	(L_src,&S_src));
 		R_CHK	(T_dst->GetSurfaceLevel	(L_dst,&S_dst));
 
@@ -499,10 +499,10 @@ _BUMP_from_base:
 		R_ASSERT2	(FS.exist(fn,"$game_textures$",	fname,	".dds"),fname);
 
 		// Load   SYS-MEM-surface, bound to device restrictions
-		D3DXIMAGE_INFO			IMG;
+		D3DXIMAGE_INFO IMG{};
 		S						= FS.r_open	(fn);
 		img_size				= S->length	();
-		ID3DTexture2D*		T_base;
+		ID3DTexture2D* T_base{};
 		R_CHK2(D3DXCreateTextureFromFileInMemoryEx(
 			HW.pDevice,	S->pointer(),S->length(),
 			D3DX_DEFAULT,D3DX_DEFAULT,	D3DX_DEFAULT,0,D3DFMT_A8R8G8B8,

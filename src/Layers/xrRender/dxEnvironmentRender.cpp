@@ -310,13 +310,13 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 	// Fill index buffer
 	u16*	pib					= RCache.Index.Lock	((u32)env.CloudsIndices.size(),i_offset);
 	CopyMemory					(pib,&env.CloudsIndices.front(),env.CloudsIndices.size()*sizeof(u16));
-	RCache.Index.Unlock			(env.CloudsIndices.size());
+	RCache.Index.Unlock			((u32)env.CloudsIndices.size());
 
 	// Fill vertex buffer
-	v_clouds* pv				= (v_clouds*)	RCache.Vertex.Lock	(env.CloudsVerts.size(),clouds_geom.stride(),v_offset);
+	v_clouds* pv				= (v_clouds*)	RCache.Vertex.Lock	((u32)env.CloudsVerts.size(),clouds_geom.stride(),v_offset);
 	for (FvectorIt it=env.CloudsVerts.begin(); it!=env.CloudsVerts.end(); it++,pv++)
 		pv->set					(*it,C0,C1);
-	RCache.Vertex.Unlock		(env.CloudsVerts.size(),clouds_geom.stride());
+	RCache.Vertex.Unlock		((u32)env.CloudsVerts.size(),clouds_geom.stride());
 
 	// Render
 	RCache.set_xform_world		(mXFORM);
@@ -324,7 +324,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 	RCache.set_Shader			(clouds_sh);
 	dxEnvDescriptorMixerRender	&mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 	RCache.set_Textures			(&mixRen.clouds_r_textures);
-	RCache.Render				(D3DPT_TRIANGLELIST,v_offset,0,env.CloudsVerts.size(),i_offset,env.CloudsIndices.size()/3);
+	RCache.Render				(D3DPT_TRIANGLELIST,v_offset,0, (u32)env.CloudsVerts.size(),i_offset, (u32)env.CloudsIndices.size()/3);
 
 	::Render->rmNormal			();
 }

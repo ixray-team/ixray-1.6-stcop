@@ -414,7 +414,7 @@ void CKinematics::Depart		()
 	visimask.zero				();
 	if(bones)
 	{
-		u32 count = bones->size();
+		u32 count = (u32)bones->size();
 #ifdef DEBUG
     	if (count > 64)
         	Msg("ahtung !!! %d", count);
@@ -742,7 +742,7 @@ int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16> >& groups)
             }
         }
     }
-    return groups.size();
+    return (int)groups.size();
 }
 
 #ifdef DEBUG

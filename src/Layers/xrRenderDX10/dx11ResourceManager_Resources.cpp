@@ -529,7 +529,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, ID3DVertexBuff
 	R_ASSERT			(decl && vb);
 
 	SDeclaration* dcl	= _CreateDecl			(decl);
-	u32 vb_stride = ComputeVertexSize(decl, 0);
+	u32 vb_stride = (u32)ComputeVertexSize(decl, 0);
 
 	// ***** first pass - search already loaded shader
 	for (u32 it=0; it<v_geoms.size(); it++)
