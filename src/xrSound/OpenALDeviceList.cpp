@@ -89,8 +89,8 @@ void ALDeviceList::Enumerate()
 			char* AnsiDevice = new char[len];
 
 
-			MultiByteToWideChar(CP_UTF8, 0, device, len, wDevice, len);
-			WideCharToMultiByte(CP_ACP, 0, wDevice, len, AnsiDevice, len, NULL, NULL);
+			MultiByteToWideChar(CP_UTF8, 0, device, (int)len, wDevice, (int)len);
+			WideCharToMultiByte(CP_ACP, 0, wDevice, (int)len, AnsiDevice, (int)len, NULL, NULL);
 
 			xr_string cDevice = AnsiDevice;
 			delete[] AnsiDevice;

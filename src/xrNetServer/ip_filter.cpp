@@ -89,7 +89,7 @@ u32 ip_filter::load()
 		m_all_subnets.push_back(tmp_item);
 	};
 	std::sort(m_all_subnets.begin(), m_all_subnets.end(), subnet_comparator());
-	return m_all_subnets.size();
+	return (u32)m_all_subnets.size();
 }
 
 bool ip_filter::is_ip_present(u32 ip_address)

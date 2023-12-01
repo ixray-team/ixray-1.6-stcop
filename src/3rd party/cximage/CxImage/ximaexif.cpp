@@ -100,7 +100,7 @@ bool CxImageJPG::CxExifInfo::DecodeExif(CxFile * hFile, int nReadMode)
         Data[0] = (BYTE)lh;
         Data[1] = (BYTE)ll;
 
-        got = hFile->Read(Data+2, 1, itemlen-2); // Read the whole section.
+        got = (int)hFile->Read(Data+2, 1, itemlen-2); // Read the whole section.
         if (got != itemlen-2){
             strcpy(m_szLastError,"Premature end of file?");
 			return false;
@@ -126,7 +126,7 @@ bool CxImageJPG::CxExifInfo::DecodeExif(CxFile * hFile, int nReadMode)
 						return false;
                     }
 
-                    got = hFile->Read(Data, 1, size);
+                    got = (int)hFile->Read(Data, 1, size);
                     if (got != size){
                         strcpy(m_szLastError,"could not read the rest of the image");
 						return false;

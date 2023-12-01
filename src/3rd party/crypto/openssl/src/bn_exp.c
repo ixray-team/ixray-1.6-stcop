@@ -112,7 +112,8 @@
 
 #include "cryptlib.h"
 #include "bn_lcl.h"
-
+#pragma warning(push)
+#pragma warning(disable: 4311)
 /* maximum precomputation table size for *variable* sliding windows */
 #define TABLE_SIZE	32
 
@@ -988,3 +989,5 @@ err:
 	return(ret);
 	}
 
+
+#pragma warning(pop)

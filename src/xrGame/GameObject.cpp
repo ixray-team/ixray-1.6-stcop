@@ -354,7 +354,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if(!E->client_data.empty())
 	{	
 //		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
-		IReader			ireader = IReader(&*E->client_data.begin(), E->client_data.size());
+		IReader			ireader = IReader(&*E->client_data.begin(), (int)E->client_data.size());
 		net_Load		(ireader);
 	}
 	else {

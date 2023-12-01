@@ -56,7 +56,7 @@ ComputeShader& ComputeShader::set_c(shared_str name, float x, float y, float z, 
 
 void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 {
-	u32 count = m_ctable->m_CBTable.size();
+	u32 count = (u32)m_ctable->m_CBTable.size();
 
 	for (u32 i=0; i<count; ++i)
 	{
@@ -82,15 +82,15 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 	HW.pContext->CSSetConstantBuffers(0, count, tempBuffer);
 
 	if (!m_Textures.empty())
-		HW.pContext->CSSetShaderResources(0, m_Textures.size(), &m_Textures[0]);
+		HW.pContext->CSSetShaderResources(0, (u32)m_Textures.size(), &m_Textures[0]);
 
 	if (!m_Samplers.empty())
-		HW.pContext->CSSetSamplers(0, m_Samplers.size(), &m_Samplers[0]);
+		HW.pContext->CSSetSamplers(0, (u32)m_Samplers.size(), &m_Samplers[0]);
 
 	if (!m_Outputs.empty())
 	{
 		UINT num = 0;
-		HW.pContext->CSSetUnorderedAccessViews(0, m_Outputs.size(), &m_Outputs[0], &num);
+		HW.pContext->CSSetUnorderedAccessViews(0, (u32)m_Outputs.size(), &m_Outputs[0], &num);
 	}
 
 	HW.pContext->Dispatch(dimx, dimy, dimz);

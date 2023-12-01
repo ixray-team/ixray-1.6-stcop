@@ -158,7 +158,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 
         FS.r_close(reader);
-        mip_cnt = imageInfo.mipLevels;
+        mip_cnt = (int)imageInfo.mipLevels;
         ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
         return pTexture2D;
         }
@@ -177,16 +177,16 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         auto miscFlags = imageInfo.miscFlags;
         int old_mipmap_cnt = 0, mip_lod = 0;
         if (img_loaded_lod) {
-            old_mipmap_cnt = imageInfo.mipLevels;
+            old_mipmap_cnt = (int)imageInfo.mipLevels;
             Reduce(imageInfo.width, imageInfo.height, imageInfo.mipLevels, img_loaded_lod);
-            mip_lod = old_mipmap_cnt - imageInfo.mipLevels;
+            mip_lod = old_mipmap_cnt - (int)imageInfo.mipLevels;
         }
 
         hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
         FS.r_close(reader);
         
-        mip_cnt = imageInfo.mipLevels;
+        mip_cnt = (int)imageInfo.mipLevels;
         ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
         return pTexture2D;
     }

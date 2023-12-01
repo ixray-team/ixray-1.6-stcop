@@ -218,7 +218,7 @@ void CUIMMShniaga::ShowNetworkGame()
     m_view->Clear();
 
 	for (u32	i = 0,
-				count = m_buttons_new_network.size(); i < count; ++i)
+				count = (u32)m_buttons_new_network.size(); i < count; ++i)
 	{
 		m_view->AddWindow(m_buttons_new_network[i], false);
 	}
@@ -236,7 +236,7 @@ bool CUIMMShniaga::IsButton(CUIWindow* st)
 		if (m_buttons_new[i] == st)
 			return true;
 
-	for (u32 i = 0, count = m_buttons_new_network.size(); i<count; ++i)
+	for (u32 i = 0, count = (u32)m_buttons_new_network.size(); i<count; ++i)
 		if (m_buttons_new_network[i] == st)
 			return true;
 

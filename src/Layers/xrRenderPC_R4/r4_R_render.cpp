@@ -170,7 +170,7 @@ void CRender::render_menu	()
 	}
 
 	// Actual Display
-	Target->u_setrt					( RCache.get_target_width(), RCache.get_target_height(), HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
@@ -215,7 +215,7 @@ void CRender::Render		()
 	if( !(g_pGameLevel && g_hud)
 		|| bMenu)	
 	{
-		Target->u_setrt				(RCache.get_target_width(), RCache.get_target_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		Target->u_setrt				((u32)RCache.get_target_width(), (u32)RCache.get_target_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 		return;
 	}
 
@@ -349,8 +349,8 @@ void CRender::Render		()
 		light_Package&	LP	= Lights.package;
 
 		// stats
-		stats.l_shadowed	= LP.v_shadowed.size();
-		stats.l_unshadowed	= LP.v_point.size() + LP.v_spot.size();
+		stats.l_shadowed	= (u32)LP.v_shadowed.size();
+		stats.l_unshadowed	= (u32)(LP.v_point.size() + LP.v_spot.size());
 		stats.l_total		= stats.l_shadowed + stats.l_unshadowed;
 
 		// perform tests

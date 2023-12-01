@@ -264,7 +264,7 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 	TextOutA( hDC, xb, Height-tm.tmHeight-3, s_edt, xr_strlen(s_edt) );
 
 	SetTextColor( hDC, RGB(205, 205, 225) );
-	u32 log_line = LogFile->size()-1;
+	u32 log_line = (u32)LogFile->size()-1;
 	string16 q, q2;
 	_itoa( log_line, q, 10 );
 	xr_strcpy( q2, sizeof(q2), "[" );
@@ -275,7 +275,7 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 	TextOutA( hDC, Width - 8 * qn, Height-tm.tmHeight-tm.tmHeight, q2, qn );
 
 	int ypos = Height - tm.tmHeight - tm.tmHeight;
-	for( int i = LogFile->size()-1-scroll_delta; i >= 0; --i ) 
+	for( int i = (int)LogFile->size()-1-scroll_delta; i >= 0; --i )
 	{
 		ypos -= tm.tmHeight;
 		if ( ypos < y_top_max )

@@ -26,7 +26,7 @@ void	CRenderTarget::phase_scene_prepare	()
 		(ps_r_ssao > 0))
 	{
 		//	TODO: DX10: Check if we need to set RT here.
-		u_setrt(RCache.get_width(), RCache.get_height(), rt_Position->pRT, NULL, NULL, HW.pBaseZB);
+		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Position->pRT, NULL, NULL, HW.pBaseZB);
 
 		//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -37,7 +37,7 @@ void	CRenderTarget::phase_scene_prepare	()
 	}
 	else
 	{
-		u_setrt(RCache.get_width(), RCache.get_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
 		//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 		HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 	}

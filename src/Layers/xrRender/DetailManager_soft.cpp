@@ -40,13 +40,13 @@ void CDetailManager::soft_Render	()
 		xr_vector <SlotItemVec* >::iterator _vE = _vis.end();
 		for (; _vI!=_vE; _vI++){
 			SlotItemVec*	items	= *_vI;
-			u32	vCount_Total		= items->size()*vCount_Object;
+			u32	vCount_Total		= (u32)items->size()*vCount_Object;
 			// calculate lock count needed
 			u32	lock_count			= vCount_Total/vs_size;
 			if	(vCount_Total>(lock_count*vs_size))	lock_count++;
 
 			// calculate objects per lock
-			u32	o_total			= items->size();
+			u32	o_total			= (u32)items->size();
 			u32	o_per_lock		= o_total/lock_count;
 			if  (o_total > (o_per_lock*lock_count))	o_per_lock++;
 

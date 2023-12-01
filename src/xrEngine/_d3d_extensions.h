@@ -99,11 +99,11 @@ struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
 	void set(u32 FVF) {
 		auto vec = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
 		CHK_DX(FVF::CreateDeclFromFVF(FVF, vec));
-		resize(FVF::GetDeclLength(begin()) + 1);
+		resize((int)FVF::GetDeclLength(begin()) + 1);
 		CopyMemory(begin(), vec.data(), size() * sizeof(D3DVERTEXELEMENT9));
 	}
 	void set(D3DVERTEXELEMENT9* dcl) {
-		resize(FVF::GetDeclLength(dcl) + 1);
+		resize((int)FVF::GetDeclLength(dcl) + 1);
 		CopyMemory(begin(), dcl, size() * sizeof(D3DVERTEXELEMENT9));
 	}
 	void	set		(const VDeclarator& d)
@@ -111,7 +111,7 @@ struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
 		*this		= d;
 	}
 	u32 vertex() {
-		return FVF::ComputeVertexSize(begin(), 0);
+		return (u32)FVF::ComputeVertexSize(begin(), 0);
 	}
 	BOOL	equal	(VDeclarator& d)
 	{

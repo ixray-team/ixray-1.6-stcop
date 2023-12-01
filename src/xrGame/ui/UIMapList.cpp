@@ -341,7 +341,7 @@ void CUIMapList::UpdateMapList(EGameIDs GameType)
 	m_pList1->Clear				();
 
 	const SGameTypeMaps& M		= gMapListHelper.GetMapListFor(GameType);
-	u32 cnt						= M.m_map_names.size();
+	u32 cnt						= (u32)M.m_map_names.size();
 	for (u32 i=0; i<cnt; ++i)
 	{
 		CUIListBoxItem* itm		= m_pList1->AddTextItem( g_pStringTable->translate(M.m_map_names[i].map_name).c_str() );

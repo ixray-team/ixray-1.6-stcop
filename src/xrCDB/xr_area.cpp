@@ -70,7 +70,7 @@ int CObjectSpace::GetNearest		( xr_vector<ISpatial*>& q_spatial, xr_vector<CObje
 		if (Q.intersect(mS))	q_nearest.push_back(O);
 	}
 
-	return q_nearest.size();
+	return (int)q_nearest.size();
 }
 
 //----------------------------------------------------------------------

@@ -196,7 +196,7 @@ NET_Packet*		INetQueue::Retreive	()
 	else
 	{
 		auto tmp_time = GetTickCount64()-60000;
-		u32 size = unused.size();
+		size_t size = unused.size();
 		if ((LastTimeCreate < tmp_time) &&  (size > 32))
 		{
 			xr_delete(unused.back());
@@ -216,7 +216,7 @@ void			INetQueue::Release	()
 	VERIFY			(!ready.empty());
 	//---------------------------------------------
 	auto tmp_time = GetTickCount64()-60000;
-	u32 size = unused.size();
+	size_t size = unused.size();
 	ready.front()->B.count = 0;
 	if ((LastTimeCreate < tmp_time) &&  (size > 32))
 	{
@@ -462,7 +462,7 @@ if(!psNET_direct_connect)
     R_CHK(net_Address_device->SetSP(bSimulator? &CLSID_NETWORKSIMULATOR_DP8SP_TCPIP : &CLSID_DP8SP_TCPIP ));	
 	
     // Create our IDirectPlay8Address Server Address, --- Set the SP for our Server Address
-	WCHAR	ServerNameUNICODE	[256];
+	WCHAR	ServerNameUNICODE[256] = {};
 	R_CHK(MultiByteToWideChar(CP_ACP, 0, server_name, -1, ServerNameUNICODE, 256 ));
 
 	net_Address_server = NULL;

@@ -351,7 +351,7 @@ dxQuadTreeSpace::dxQuadTreeSpace(dSpaceID _space, dVector3 Center, dVector3 Exte
 
 	int BlockCount = 0;
 	for (int i = 0; i <= Depth; i++){
-		BlockCount += (int)powf(SPLITS, i);
+		BlockCount += (int)powf(SPLITS, (float)i);
 	}
 
 	Blocks = (Block*)dAlloc(BlockCount * sizeof(Block));
@@ -384,7 +384,7 @@ dxQuadTreeSpace::~dxQuadTreeSpace(){
 
 	int BlockCount = 0;
 	for (int i = 0; i < Depth; i++){
-		BlockCount += (int)powf(SPLITS, i);
+		BlockCount += (int)powf(SPLITS, (float)i);
 	}
 
 	dFree(Blocks, BlockCount * sizeof(Block));

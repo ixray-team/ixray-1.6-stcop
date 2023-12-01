@@ -1090,15 +1090,15 @@ void CDrawUtilities::DrawGrid()
 	_VertexStream*	Stream	= &RCache.Vertex;
     u32 vBase;
 	// fill VB
-	FVF::L*	pv	= (FVF::L*)Stream->Lock(m_GridPoints.size(),vs_L->vb_stride,vBase);
+	FVF::L*	pv	= (FVF::L*)Stream->Lock((u32)m_GridPoints.size(),vs_L->vb_stride,vBase);
     for (FLvertexIt v_it=m_GridPoints.begin(); v_it!=m_GridPoints.end(); v_it++,pv++) pv->set(*v_it);
-	Stream->Unlock(m_GridPoints.size(),vs_L->vb_stride);
+	Stream->Unlock((u32)m_GridPoints.size(),vs_L->vb_stride);
 	// Render it as triangle list
     Fmatrix ddd;
     ddd.identity();
     RCache.set_xform_world(ddd);
 	DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
-    DU_DRAW_DP(D3DPT_LINELIST,vs_L,vBase,m_GridPoints.size()/2);
+    DU_DRAW_DP(D3DPT_LINELIST,vs_L,vBase, (u32)m_GridPoints.size()/2);
 }
 
 void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd){

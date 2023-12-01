@@ -35,12 +35,12 @@ wm_shader dxWallMarkArray::GenerateWallmark()
 {
 	wm_shader	res;
 	if (!m_CollideMarks.empty())
-		((dxUIShader*)&*res)->hShader = m_CollideMarks[::Random.randI(0,m_CollideMarks.size())];
+		((dxUIShader*)&*res)->hShader = m_CollideMarks[::Random.randI(0,(int)m_CollideMarks.size())];
 	return res;
 }
 
 ref_shader*	dxWallMarkArray::dxGenerateWallmark()
 {
 	return m_CollideMarks.empty()?NULL:
-		&m_CollideMarks[::Random.randI(0,m_CollideMarks.size())];
+		&m_CollideMarks[::Random.randI(0,(int)m_CollideMarks.size())];
 }

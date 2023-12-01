@@ -84,7 +84,7 @@ bool NvStripifier::AlreadyExists(NvFaceInfo* faceInfo, NvFaceInfoVec& faceInfos)
 void NvStripifier::BuildStripifyInfo(NvFaceInfoVec &faceInfos, NvEdgeInfoVec &edgeInfos){
 	
 	// reserve space for the face infos, but do not resize them.
-	int numIndices = indices.size();
+	int numIndices = (int)indices.size();
 	faceInfos.reserve(numIndices);
 	
 	// we actually resize the edge infos, so we must initialize to NULL
@@ -221,7 +221,7 @@ NvFaceInfo* NvStripifier::FindGoodResetPoint(NvFaceInfoVec &faceInfos, NvEdgeInf
 	
 	if(result == NULL)
 	{
-		int numFaces   = faceInfos.size();
+		int numFaces   = (int)faceInfos.size();
 		int startPoint;
 		if(bFirstTimeResetPoint)
 		{
@@ -328,7 +328,7 @@ int NvStripifier::GetSharedVertex(NvFaceInfo *faceA, NvFaceInfo *faceB){
 //
 IC int NvStripifier::GetNextIndex(const WordVec &indices, NvFaceInfo *face){
 	
-	int numIndices = indices.size();
+	int numIndices = (int)indices.size();
 	assert(numIndices >= 2);
 	
 	int v0  = indices[numIndices-2];

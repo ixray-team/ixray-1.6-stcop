@@ -142,7 +142,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 static	u32	g_saved_event_count		= 0;
 void	CSoundRender_Core::update_events		()
 {
-	g_saved_event_count				= s_events.size();
+	g_saved_event_count				= (u32)s_events.size();
 	for (u32 it=0; it<s_events.size(); it++)
 	{
 		event&	E	= s_events[it];
@@ -159,7 +159,7 @@ void	CSoundRender_Core::statistic			(CSound_stats*  dest, CSound_stats_ext*  ext
 			CSoundRender_Target*	T	= s_targets	[it];
 			if (T->get_emitter() && T->get_Rendering())	dest->_rendered++;
 		}
-		dest->_simulated	= s_emitters.size();
+		dest->_simulated	= (u32)s_emitters.size();
 		dest->_cache_hits	= cache._stat_hit;
 		dest->_cache_misses	= cache._stat_miss;
 		dest->_events		= g_saved_event_count;

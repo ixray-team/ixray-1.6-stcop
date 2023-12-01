@@ -198,7 +198,7 @@ void CServerList::FillUpDetailedServerInfo()
 	{
 		ServerInfo srvInfo;
 		browser().GetServerInfoByIndex(&srvInfo, pItem->GetInfo()->info.Index);
-		u32 teams = srvInfo.m_aTeams.size();
+		u32 teams = (u32)srvInfo.m_aTeams.size();
 
 		if (2 == teams)
 		{
@@ -855,6 +855,6 @@ CUIListItemServer* CServerList::GetFreeItem()
 		}
 	}
 	m_items_cache.push_back(SrvItem(m_list[LST_SERVER].GetItemHeight()));
-	m_last_retreived_index	= m_items_cache.size() - 1; 
+	m_last_retreived_index	= (u32)m_items_cache.size() - 1;
 	return					m_items_cache.back().m_ui_item;
 }

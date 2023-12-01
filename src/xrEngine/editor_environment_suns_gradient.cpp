@@ -104,7 +104,7 @@ void gradient::fill			(
 		m_shader.c_str(),
 		m_shader,
 		&*manager.m_environment.shader_ids().begin(),
-		manager.m_environment.shader_ids().size(),
+		(u32)manager.m_environment.shader_ids().size(),
 		editor::property_holder::value_editor_tree_view,
 		editor::property_holder::cannot_enter_text
 	);

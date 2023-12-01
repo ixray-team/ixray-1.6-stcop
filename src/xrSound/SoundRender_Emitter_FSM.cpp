@@ -70,7 +70,7 @@ void CSoundRender_Emitter::update(float dt)
 	case stStartingLooped:
 		if (iPaused)						break;
 		fTimeStarted						= fTime;
-		fTimeToStop							= 0xffffffff;
+		fTimeToStop							= FLT_MAX;
 		fTimeToPropagade					= fTime;
 		fade_volume							= 1.f;
 		occluder_volume						= SoundRender->get_occlusion	(p_source.position,.2f,occluder);

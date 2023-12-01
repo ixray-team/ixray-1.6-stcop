@@ -112,7 +112,7 @@ void thunderbolt::fill			(
 		m_color_animator.c_str(),
 		m_color_animator,
 		&*environment.light_animator_ids().begin(),
-		environment.light_animator_ids().size(),
+		(u32)environment.light_animator_ids().size(),
 		editor::property_holder::value_editor_tree_view,
 		editor::property_holder::cannot_enter_text
 	);

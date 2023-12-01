@@ -161,32 +161,32 @@ void time::id_setter		(LPCSTR value_)
 
 LPCSTR const* time::ambients_collection		()
 {
-	return				(&*m_manager.ambients().ambients_ids().begin());
+	return (&*m_manager.ambients().ambients_ids().begin());
 }
 
 u32 time::ambients_collection_size			()
 {
-	return				(m_manager.ambients().ambients_ids().size());
+	return (u32)(m_manager.ambients().ambients_ids().size());
 }
 
 LPCSTR const* time::suns_collection			()
 {
-	return				(&*m_manager.suns().suns_ids().begin());
+	return (&*m_manager.suns().suns_ids().begin());
 }
 
 u32 time::suns_collection_size				()
 {
-	return				(m_manager.suns().suns_ids().size());
+	return (u32)(m_manager.suns().suns_ids().size());
 }
 
 LPCSTR const* time::thunderbolts_collection	()
 {
-	return				(&*m_manager.thunderbolts().collections_ids().begin());
+	return (&*m_manager.thunderbolts().collections_ids().begin());
 }
 
 u32 time::thunderbolts_collection_size		()
 {
-	return				(m_manager.thunderbolts().collections_ids().size());
+	return (u32)(m_manager.thunderbolts().collections_ids().size());
 }
 
 float time::sun_altitude_getter				() const

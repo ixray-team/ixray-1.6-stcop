@@ -486,7 +486,7 @@ void OPENSSL_showfatal (const char *fmta,...)
 	if (fmtw == NULL) { fmt=(const TCHAR *)L"no stack?"; break; }
 
 #ifndef OPENSSL_NO_MULTIBYTE
-	if (!MultiByteToWideChar(CP_ACP,0,fmta,len_0,fmtw,len_0))
+	if (!MultiByteToWideChar(CP_ACP,0,fmta,(int)len_0,fmtw, (int)len_0))
 #endif
 	    for (i=0;i<len_0;i++) fmtw[i]=(WCHAR)fmta[i];
 

@@ -124,7 +124,7 @@ void sun::fill				(editor::property_holder_collection* collection)
 		m_shader.c_str(),
 		m_shader,
 		&*m_manager.m_environment.shader_ids().begin(),
-		m_manager.m_environment.shader_ids().size(),
+		(u32)m_manager.m_environment.shader_ids().size(),
 		editor::property_holder::value_editor_tree_view,
 		editor::property_holder::cannot_enter_text
 	);

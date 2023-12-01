@@ -139,7 +139,7 @@ void effect::fill		(editor::property_holder_collection* collection)
 		particles.c_str(),
 		particles,
 		&*m_manager.environment().particle_ids().begin(),
-		m_manager.environment().particle_ids().size(),
+		(u32)m_manager.environment().particle_ids().size(),
 		editor::property_holder::value_editor_tree_view,
 		editor::property_holder::cannot_enter_text
 	);
