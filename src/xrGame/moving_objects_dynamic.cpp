@@ -349,7 +349,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 		COLLISIONS::iterator	e = m_collisions.end();
 		for ( ; i_ != e; ++i_) {
 			if ((*i_).second.second.first == object) {
-				if (exchange_all((*i_).second.second.second, object, collision_count))
+				if (exchange_all((*i_).second.second.second, object, (u32)collision_count))
 					continue;
 
 				(*i_).second.second.first	= 0;
@@ -357,7 +357,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 			}
 
 			VERIFY				((*i_).second.second.second == object);
-			if (!exchange_all((*i_).second.second.first, object, collision_count))
+			if (!exchange_all((*i_).second.second.first, object, (u32)collision_count))
 				(*i_).second.second.first	= 0;
 		}
 

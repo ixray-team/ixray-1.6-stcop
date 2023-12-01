@@ -44,8 +44,10 @@ CUIXmlInit::~CUIXmlInit()
 
 //////////////////////////////////////////////////////////////////////////
 
-Frect CUIXmlInit::GetFRect(CUIXml& xml_doc, LPCSTR path, int index){
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+Frect CUIXmlInit::GetFRect(CUIXml& xml_doc, LPCSTR path, int index)
+{
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 	Frect rect;
 	rect.set(0,0,0,0);
 	rect.x1 = xml_doc.ReadAttribFlt(path, index, "x");
@@ -59,7 +61,8 @@ Frect CUIXmlInit::GetFRect(CUIXml& xml_doc, LPCSTR path, int index){
 bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path, 	
 							int index, CUIWindow* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 	
 	Fvector2 pos, size;
 	pos.x = xml_doc.ReadAttribFlt(path, index, "x");
@@ -98,7 +101,8 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 bool CUIXmlInit::InitFrameWindow(CUIXml& xml_doc, LPCSTR path, 
 									int index, CUIFrameWindow* pWnd)
 {
-	R_ASSERT4		(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4		(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitTexture		(xml_doc, path, index, pWnd);
 	InitWindow		(xml_doc, path, index, pWnd);
@@ -146,7 +150,8 @@ bool CUIXmlInit::InitOptionsItem(CUIXml& xml_doc, LPCSTR path, int index, CUIOpt
 bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path, 
 									int index, CUIStatic* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitWindow			(xml_doc, path, index, pWnd);
 
@@ -197,7 +202,8 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 
 bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitWindow			(xml_doc, path, index, pWnd);
 
@@ -343,7 +349,8 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	pWnd->m_frameline_mode = (xml_doc.ReadAttribInt(path, index, "frame_mode", 0) == 1)? true : false;
 
@@ -453,7 +460,8 @@ bool CUIXmlInit::InitSound(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton*
 
 bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, LPCSTR path, int index, CUIDragDropListEx* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	Fvector2 pos, size;
 	pos.x			= xml_doc.ReadAttribFlt(path, index, "x");
@@ -518,7 +526,8 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, LPCSTR path, int index, CUI
 bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path, 
 						int index, CUIProgressBar* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitAutoStaticGroup			(xml_doc, path, index, pWnd);
 
@@ -609,8 +618,10 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path,
 	return true;
 }
 
-bool CUIXmlInit::InitProgressShape(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressShape* pWnd){
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+bool CUIXmlInit::InitProgressShape(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressShape* pWnd)
+{
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitStatic						(xml_doc, path, index, pWnd);
 
@@ -791,7 +802,8 @@ bool CUIXmlInit::InitFont(CUIXml &xml_doc, LPCSTR path, int index, u32 &color, C
 
 bool CUIXmlInit::InitTabControl(CUIXml &xml_doc, LPCSTR path, int index, CUITabControl *pWnd)
 {
-	R_ASSERT4				(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4				(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 	
 	bool status				= true;
 
@@ -901,7 +913,8 @@ bool CUIXmlInit::InitEditBox(CUIXml& xml_doc, LPCSTR path, int index, CUIEditBox
 
 bool CUIXmlInit::InitAnimatedStatic(CUIXml &xml_doc, const char *path, int index, CUIAnimatedStatic *pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitStatic(xml_doc, path, index, pWnd);
     
@@ -929,7 +942,8 @@ bool CUIXmlInit::InitAnimatedStatic(CUIXml &xml_doc, const char *path, int index
 
 bool CUIXmlInit::InitSleepStatic(CUIXml &xml_doc, const char *path, int index, CUISleepStatic *pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitStatic(xml_doc, path, index, pWnd);
     
@@ -1159,7 +1173,8 @@ void CUIXmlInit::InitColorDefs()
 
 bool CUIXmlInit::InitScrollView	(CUIXml& xml_doc, LPCSTR path, int index, CUIScrollView* pWnd)
 {
-	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
 	InitWindow							(xml_doc, path, index, pWnd);
 	pWnd->SetRightIndention				(xml_doc.ReadAttribFlt	(path, index, "right_ident",	0.0f));

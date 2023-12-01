@@ -354,7 +354,7 @@ void					CRender::create					()
 	::PortalTraverser.initialize();
 	FluidManager.Initialize( 70, 70, 70 );
 //	FluidManager.Initialize( 100, 100, 100 );
-	FluidManager.SetScreenSize(RCache.get_width(), RCache.get_height());
+	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 }
 
 void					CRender::destroy				()
@@ -420,7 +420,7 @@ void CRender::reset_end()
 	Target						=	xr_new<CRenderTarget>	();
 
 	xrRender_apply_tf			();
-	FluidManager.SetScreenSize(RCache.get_width(), RCache.get_height());
+	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)

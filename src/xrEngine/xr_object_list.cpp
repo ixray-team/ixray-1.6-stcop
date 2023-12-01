@@ -224,7 +224,7 @@ void CObjectList::Update		(bool bForce)
 #	endif // ifdef DEBUG
 #endif
 
-			Device.Statistic->UpdateClient_crows	= crows.size	();
+			Device.Statistic->UpdateClient_crows	= (u32)crows.size	();
 			Objects* workload			= 0;
 			if (!psDeviceFlags.test(rsDisableObjectsAsCrows))	
 				workload				= &crows;
@@ -234,10 +234,10 @@ void CObjectList::Update		(bool bForce)
 			}
 
 			Device.Statistic->UpdateClient.Begin	();
-			Device.Statistic->UpdateClient_active	= objects_active.size();
-			Device.Statistic->UpdateClient_total	= objects_active.size() + objects_sleeping.size();
+			Device.Statistic->UpdateClient_active	= (u32)objects_active.size();
+			Device.Statistic->UpdateClient_total	= (u32)(objects_active.size() + objects_sleeping.size());
 
-			u32 const objects_count		= workload->size();
+			size_t const objects_count = workload->size();
 			CObject** objects			= (CObject**)_alloca(objects_count*sizeof(CObject*));
 			std::copy					( workload->begin(), workload->end(), objects );
 
@@ -262,13 +262,13 @@ void CObjectList::Update		(bool bForce)
 	{
 		// Info
 		for (Objects::iterator oit=objects_active.begin(); oit!=objects_active.end(); oit++)
-			for (int it = destroy_queue.size()-1; it>=0; it--){	
+			for (int it = (int)destroy_queue.size()-1; it>=0; it--){
 				(*oit)->net_Relcase		(destroy_queue[it]);
 			}
 		for (Objects::iterator oit=objects_sleeping.begin(); oit!=objects_sleeping.end(); oit++)
-			for (int it = destroy_queue.size()-1; it>=0; it--)	(*oit)->net_Relcase	(destroy_queue[it]);
+			for (int it = (int)destroy_queue.size()-1; it>=0; it--)	(*oit)->net_Relcase	(destroy_queue[it]);
 
-		for (int it = destroy_queue.size()-1; it>=0; it--)	Sound->object_relcase	(destroy_queue[it]);
+		for (int it = (int)destroy_queue.size()-1; it>=0; it--)	Sound->object_relcase	(destroy_queue[it]);
 		
 		RELCASE_CALLBACK_VEC::iterator It	= m_relcase_callbacks.begin();
 		RELCASE_CALLBACK_VEC::iterator Ite	= m_relcase_callbacks.end();
@@ -283,7 +283,7 @@ void CObjectList::Update		(bool bForce)
 		}
 
 		// Destroy
-		for (int it = destroy_queue.size()-1; it>=0; it--)
+		for (int it = (int)destroy_queue.size()-1; it>=0; it--)
 		{
 			CObject*		O	= destroy_queue[it];
 //			Msg				("Object [%x]", O);
@@ -513,7 +513,7 @@ void CObjectList::relcase_register		(RELCASE_CALLBACK cb, int *ID)
 													cb);
 	VERIFY(It==m_relcase_callbacks.end());
 #endif
-	*ID = m_relcase_callbacks.size();
+	*ID = (int)m_relcase_callbacks.size();
 	m_relcase_callbacks.emplace_back(ID,cb);
 }
 

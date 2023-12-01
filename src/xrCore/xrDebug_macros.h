@@ -27,6 +27,7 @@
 #	define R_ASSERT(expr)
 #	define R_ASSERT2(expr,e2)
 #	define R_ASSERT3(expr,e2,e3)
+#	define R_ASSERT4(expr,e2,e3,e4)
 #	define R_CHK(expr)
 #	define R_CHK2(expr,e2)
 #else

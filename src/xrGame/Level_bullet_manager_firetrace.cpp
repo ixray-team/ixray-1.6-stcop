@@ -204,7 +204,7 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 	}
 
 	LPCSTR ps_name = ( !mtl_pair || mtl_pair->CollideParticles.empty() ) ? NULL : 
-		*mtl_pair->CollideParticles[ ::Random.randI(0,mtl_pair->CollideParticles.size()) ];
+		*mtl_pair->CollideParticles[ ::Random.randI(0, (int)mtl_pair->CollideParticles.size()) ];
 
 	SGameMtl*	tgt_mtl = GMLib.GetMaterialByIdx(target_material);
 	BOOL bStatic = !tgt_mtl->Flags.test(SGameMtl::flDynamic);

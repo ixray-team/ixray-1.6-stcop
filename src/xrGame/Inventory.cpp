@@ -1115,7 +1115,7 @@ bool CInventory::CanPutInRuck(PIItem pIItem) const
 
 u32	CInventory::dwfGetObjectCount()
 {
-	return		(m_all.size());
+	return		(u32)(m_all.size());
 }
 
 CInventoryItem	*CInventory::tpfGetObjectByIndex(int iIndex)

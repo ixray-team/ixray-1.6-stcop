@@ -1786,7 +1786,7 @@ static int ray_sphere_helper (dxRay *ray, dVector3 sphere_pos, dReal radius,
   contact->pos[0] = ray->pos[0] + alpha*ray->R[0*4+2];
   contact->pos[1] = ray->pos[1] + alpha*ray->R[1*4+2];
   contact->pos[2] = ray->pos[2] + alpha*ray->R[2*4+2];
-  dReal nsign = (C < 0 || mode) ? -1.0 : 1.0;
+  dReal nsign = (C < 0 || mode) ? -1.0f : 1.0f;
   contact->normal[0] = nsign*(contact->pos[0] - sphere_pos[0]);
   contact->normal[1] = nsign*(contact->pos[1] - sphere_pos[1]);
   contact->normal[2] = nsign*(contact->pos[2] - sphere_pos[2]);
@@ -1987,7 +1987,7 @@ int dCollideRayCCylinder (dxGeom *o1, dxGeom *o2,
       q[1] = contact->pos[1] - ccyl->pos[1];
       q[2] = contact->pos[2] - ccyl->pos[2];
       k = dDOT14(q,ccyl->R+2);
-      dReal nsign = inside_ccyl ? -1.0 : 1.0;
+      dReal nsign = inside_ccyl ? -1.0f : 1.0f;
       if (k >= -lz2 && k <= lz2) {
 	contact->normal[0] = nsign * (contact->pos[0] -
 				      (ccyl->pos[0] + k*ccyl->R[0*4+2]));
@@ -2026,7 +2026,7 @@ int dCollideRayPlane (dxGeom *o1, dxGeom *o2, int flags,
 
   dReal alpha = plane->p[3] - dDOT (plane->p,ray->pos);
   // note: if alpha > 0 the starting point is below the plane
-  dReal nsign = (alpha > 0) ? -1.0 : 1.0;
+  dReal nsign = (alpha > 0) ? -1.0f : 1.0f;
   dReal k = dDOT14(plane->p,ray->R+2);
   if (k==0) return 0;		// ray parallel to plane
   alpha /= k;

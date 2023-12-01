@@ -12,13 +12,20 @@ option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 
+# VS options
+set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_DEBUG "/MD")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
+
 # Add new build types
 SET(CMAKE_CXX_FLAGS_SHIPPING
-    "${CMAKE_CXX_FLAGS_DEBUG}"
+    "${CMAKE_CXX_FLAGS}"
     CACHE STRING "Flags used by the C++ compiler during coverage builds."
     FORCE )
 SET(CMAKE_C_FLAGS_SHIPPING
-    "${CMAKE_CXX_FLAGS_DEBUG}"
+    "${CMAKE_C_FLAGS}"
     CACHE STRING "Flags used by the C compiler during coverage builds."
     FORCE )
 SET(CMAKE_EXE_LINKER_FLAGS_SHIPPING
@@ -44,22 +51,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# VS options
-set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_DEBUG "/MD")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
-
-# Win32 extensions
-if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
-    ADD_DEFINITIONS(/arch:SSE2)
-endif()
-
 # Enable gcc/clang style 
-add_compile_options(/permissive- /fp:fast /wd4073)
+add_compile_options(/permissive- /fp:fast /wd4073 /wd4390)
 
 string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_compile_options("$<$<CONFIG:DEBUG>:/Od>" "/Ob1" "$<$<CONFIG:DEBUG>:/EHsc>"
@@ -71,8 +64,7 @@ add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" 
 add_compile_options("$<$<CONFIG:Shipping>:/wd4530>" "$<$<CONFIG:Shipping>:/wd4251>" "$<$<CONFIG:Shipping>:/wd4275>" "$<$<CONFIG:Shipping>:/wd4577>" "$<$<CONFIG:Shipping>:/Ob2>" )
 add_compile_options("$<$<CONFIG:Shipping>:/WX>")
 
-
-if(IXRAY_ASAN)
+if (IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
 endif()
 

@@ -201,7 +201,7 @@ static int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
 			else
 				ERR_clear_error(); /* clear error */
 			}
-		i=c.p-p;/* header length */
+		i= (int)(c.p-p);/* header length */
 		off+=i;	/* end of data */
 
 		if (c.inf & 1)

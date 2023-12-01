@@ -93,30 +93,30 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 	//VERIFY( g_pGameLevel );
 	CDB::TRI*       T_array                         = inl_ph_world().ObjectSpace().GetStaticTris();
 	const Fvector*	 V_array						 = inl_ph_world().ObjectSpace().GetStaticVerts();
-	if(no_last_pos||!last_box.contains(box))
+	if (no_last_pos || !last_box.contains(box))
 	{
-		
-		Fvector aabb;aabb.set(AABB);
-		aabb.mul(ph_console::ph_tri_query_ex_aabb_rate);
-	///////////////////////////////////////////////////////////////////////////////////////////////
-		XRC.box_options                (0);
-		//VERIFY( g_pGameLevel );
-		XRC.box_query                  (inl_ph_world().ObjectSpace().GetStaticModel(),cast_fv(p),aabb);
 
-		CDB::RESULT*    R_begin                         = XRC.r_begin()	;
-		CDB::RESULT*    R_end                           = XRC.r_end()	;
+		Fvector aabb; aabb.set(AABB);
+		aabb.mul(ph_console::ph_tri_query_ex_aabb_rate);
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		XRC.box_options(0);
+		//VERIFY( g_pGameLevel );
+		XRC.box_query(inl_ph_world().ObjectSpace().GetStaticModel(), cast_fv(p), aabb);
+
+		CDB::RESULT* R_begin = XRC.r_begin();
+		CDB::RESULT* R_end = XRC.r_end();
 #ifdef DEBUG
-		
-		debug_output().dbg_total_saved_tries()-=data->cashed_tries.size();
+
+		debug_output().dbg_total_saved_tries() -= (u32)data->cashed_tries.size();
 		debug_output().dbg_new_queries_per_step()++;
 #endif
-		data->cashed_tries								.clear()		;
-		for (CDB::RESULT* Res=R_begin; Res!=R_end; ++Res)
+		data->cashed_tries.clear();
+		for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
 		{
 			data->cashed_tries.push_back(Res->id);
 		}
 #ifdef DEBUG
-		debug_output().dbg_total_saved_tries()+=data->cashed_tries.size();
+		debug_output().dbg_total_saved_tries() += (u32)data->cashed_tries.size();
 #endif
 		data->last_aabb_pos.set(cast_fv(p));
 		data->last_aabb_size.set(aabb);

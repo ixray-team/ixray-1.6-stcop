@@ -811,7 +811,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 		}break;
 	default:
 		{
-			string16 tmp;
+			string16 tmp = {};
 			R_ASSERT3	(0,"Game Event not implemented!!!", _itoa(type, tmp, 10));
 		};
 	};
@@ -995,7 +995,7 @@ u32 game_sv_GameState::getRPcount (u16 team_idx)
 	if ( !(team_idx<TEAM_COUNT) )
 		return 0;
 	else
-		return rpoints[team_idx].size();
+		return (u32)rpoints[team_idx].size();
 }
 
 RPoint game_sv_GameState::getRP (u16 team_idx, u32 rp_idx)

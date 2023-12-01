@@ -336,7 +336,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 #endif
     {
 		crc					= crc32(&*bids.begin(),bids.size()*sizeof(u16)); 
-		BonesUsed.create	(crc,bids.size(),&*bids.begin());
+		BonesUsed.create	(crc,(u32)bids.size(),&*bids.begin());
 	}
 }
 

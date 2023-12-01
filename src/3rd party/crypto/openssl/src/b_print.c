@@ -67,7 +67,8 @@
  * Stolen from tjh's ssl/ssl_trc.c stuff.
  */
 
-#pragma warning(disable:4244)
+#pragma warning(push)
+#pragma warning(disable:4244 4311)
 
 #include <stdio.h>
 #include <string.h>
@@ -186,10 +187,10 @@ _dopr(
     int state;
     int flags;
     int cflags;
-    size_t currlen;
+    size_t currlen = 0;
 
     state = DP_S_DEFAULT;
-    flags = currlen = cflags = min = 0;
+    flags = cflags = min = 0;
     max = -1;
     ch = *format++;
 
@@ -372,7 +373,7 @@ _dopr(
 		    if (buffer)
 			max = INT_MAX;
 		    else
-			max = *maxlen;
+			max = (int)*maxlen;
 		}
                 fmtstr(sbuffer, buffer, &currlen, maxlen, strvalue,
                        flags, min, max);
@@ -398,7 +399,7 @@ _dopr(
                 } else {
                     int    *num;
                     num = va_arg(args, int *);
-                    *num = currlen;
+                    *num = (int)currlen;
                 }
                 break;
             case '%':
@@ -843,4 +844,4 @@ int BIO_vsnprintf(char *buf, size_t n, const char *format, va_list args)
 		return (retlen <= INT_MAX) ? (int)retlen : -1;
 	}
 
-#pragma warning(default:4244)
+#pragma warning(pop)

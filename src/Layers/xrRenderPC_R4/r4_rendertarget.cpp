@@ -270,22 +270,22 @@ u32 CRenderTarget::get_height()
 
 u32 CRenderTarget::get_core_width()
 {
-	return RCache.get_width();
+	return (u32)RCache.get_width();
 }
 
 u32 CRenderTarget::get_core_height()
 {
-	return RCache.get_height();
+	return (u32)RCache.get_height();
 }
 
 u32 CRenderTarget::get_target_width()
 {
-	return RCache.get_target_width();
+	return (u32)RCache.get_target_width();
 }
 
 u32 CRenderTarget::get_target_height()
 {
-	return RCache.get_target_height();
+	return (u32)RCache.get_target_height();
 }
 
 CRenderTarget::CRenderTarget		()
@@ -334,7 +334,7 @@ CRenderTarget::CRenderTarget		()
 
 	// HDAO
 	b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
-	const u32		s_dwWidth = RCache.get_width(), s_dwHeight = RCache.get_height();
+	const u32		s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
 
 	//	NORMAL
 	{

@@ -3223,7 +3223,8 @@ static void reset_on_error(mstate m) {
   init_bins(m);
 }
 #endif /* PROCEED_ON_ERROR */
-
+#pragma warning(push)
+#pragma warning(disable: 4267)
 /* Allocate chunk and prepend remainder with chunk in successor base. */
 static void* prepend_alloc(mstate m, char* newbase, char* oldbase,
                            size_t nb) {
@@ -3253,12 +3254,12 @@ static void* prepend_alloc(mstate m, char* newbase, char* oldbase,
   else {
     if (!cinuse(oldfirst)) {
       size_t nsize = chunksize(oldfirst);
-      unlink_chunk(m, oldfirst, nsize);
+      unlink_chunk(m, oldfirst, (bindex_t)nsize);
       oldfirst = chunk_plus_offset(oldfirst, nsize);
       qsize += nsize;
     }
     set_free_with_pinuse(q, qsize, oldfirst);
-    insert_chunk(m, q, qsize);
+    insert_chunk(m, q, (bindex_t)qsize);
     check_free_chunk(m, q);
   }
 
@@ -3314,7 +3315,7 @@ static void add_segment(mstate m, char* tbase, size_t tsize, flag_t mmapped) {
     size_t psize = csp - old_top;
     mchunkptr tn = chunk_plus_offset(q, psize);
     set_free_with_pinuse(q, psize, tn);
-    insert_chunk(m, q, psize);
+    insert_chunk(m, q, (bindex_t)psize);
   }
 
   check_top_chunk(m, m->top);
@@ -3683,7 +3684,7 @@ static void* tmalloc_large(mstate m, size_t nb) {
         else {
           set_size_and_pinuse_of_inuse_chunk(m, v, nb);
           set_size_and_pinuse_of_free_chunk(r, rsize);
-          insert_chunk(m, r, rsize);
+          insert_chunk(m, r, (bindex_t)rsize);
         }
         return chunk2mem(v);
       }
@@ -3722,7 +3723,7 @@ static void* tmalloc_small(mstate m, size_t nb) {
       else {
         set_size_and_pinuse_of_inuse_chunk(m, v, nb);
         set_size_and_pinuse_of_free_chunk(r, rsize);
-        replace_dv(m, r, rsize);
+        replace_dv(m, r, (bindex_t)rsize);
       }
       return chunk2mem(v);
     }
@@ -4052,7 +4053,7 @@ void* dlmalloc(size_t bytes) {
       bindex_t idx;
       binmap_t smallbits;
       nb = (bytes < MIN_REQUEST)? MIN_CHUNK_SIZE : pad_request(bytes);
-      idx = small_index(nb);
+      idx = small_index((bindex_t)nb);
       smallbits = gm->smallmap >> idx;
 
       if ((smallbits & 0x3U) != 0) { /* Remainderless fit to a smallbin. */
@@ -4088,7 +4089,7 @@ void* dlmalloc(size_t bytes) {
             set_size_and_pinuse_of_inuse_chunk(gm, p, nb);
             r = chunk_plus_offset(p, nb);
             set_size_and_pinuse_of_free_chunk(r, rsize);
-            replace_dv(gm, r, rsize);
+            replace_dv(gm, r, (bindex_t)rsize);
           }
           mem = chunk2mem(p);
           check_malloced_chunk(gm, mem, nb);
@@ -4191,7 +4192,7 @@ void dlfree(void* mem) {
             p = prev;
             if (RTCHECK(ok_address(fm, prev))) { /* consolidate backward */
               if (p != fm->dv) {
-                unlink_chunk(fm, p, prevsize);
+                unlink_chunk(fm, p, (bindex_t)prevsize);
               }
               else if ((next->head & INUSE_BITS) == INUSE_BITS) {
                 fm->dvsize = psize;
@@ -4237,7 +4238,7 @@ void dlfree(void* mem) {
           }
           else
             set_free_with_pinuse(p, psize, next);
-          insert_chunk(fm, p, psize);
+          insert_chunk(fm, p, (bindex_t)psize);
           check_free_chunk(fm, p);
           goto postaction;
         }
@@ -5060,3 +5061,5 @@ History:
          structure of old version,  but most details differ.)
  
 */
+
+#pragma warning(pop)

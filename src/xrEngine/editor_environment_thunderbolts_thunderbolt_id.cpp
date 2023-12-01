@@ -33,12 +33,12 @@ thunderbolt_id::~thunderbolt_id			()
 
 LPCSTR const* thunderbolt_id::collection()
 {
-	return							(&*m_manager.thunderbolts_ids().begin());
+	return (&*m_manager.thunderbolts_ids().begin());
 }
 
 u32 thunderbolt_id::collection_size		()
 {
-	return							(m_manager.thunderbolts_ids().size());
+	return (u32)(m_manager.thunderbolts_ids().size());
 }
 
 void thunderbolt_id::fill				(editor::property_holder_collection* collection)

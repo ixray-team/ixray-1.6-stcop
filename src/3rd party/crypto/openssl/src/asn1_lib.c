@@ -56,7 +56,8 @@
  * [including the GNU Public Licence.]
  */
 
-#pragma warning(disable:4244)
+#pragma warning(push)
+#pragma warning(disable:4244 4311)
 
 #include <stdio.h>
 #include <limits.h>
@@ -471,4 +472,4 @@ int ASN1_STRING_type(ASN1_STRING *x)
 unsigned char * ASN1_STRING_data(ASN1_STRING *x)
 { return M_ASN1_STRING_data(x); }
 
-#pragma warning(default:4244)
+#pragma warning(pop)

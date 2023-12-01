@@ -502,7 +502,7 @@ int RAND_poll(void)
 			if (heaplist_first(handle, &hlist))
 				do
 					{
-					RAND_add(&hlist, hlist.dwSize, 3);
+					RAND_add(&hlist, (int)hlist.dwSize, 3);
 					hentry.dwSize = sizeof(HEAPENTRY32);
 					if (heap_first(&hentry,
 						hlist.th32ProcessID,
@@ -511,7 +511,7 @@ int RAND_poll(void)
 						int entrycnt = 80;
 						do
 							RAND_add(&hentry,
-								hentry.dwSize, 5);
+								(int)hentry.dwSize, 5);
 						while (heap_next(&hentry)
 							&& --entrycnt > 0);
 						}

@@ -450,7 +450,7 @@ IC void CBackend::ApplyVertexLayout()
 
 		CHK_DX(HW.pDevice->CreateInputLayout(
 			&decl->dx10_dcl_code[0],
-			decl->dx10_dcl_code.size()-1,
+			(u32)decl->dx10_dcl_code.size()-1,
 			m_pInputSignature->GetBufferPointer(),
 			m_pInputSignature->GetBufferSize(),
 			&pLayout
@@ -752,12 +752,12 @@ IC float CBackend::get_height()
 
 IC float CBackend::get_target_width()
 {
-	return RDEVICE.TargetWidth;
+	return (float)RDEVICE.TargetWidth;
 }
 
 IC float CBackend::get_target_height()
 {
-	return RDEVICE.TargetHeight;
+	return (float)RDEVICE.TargetHeight;
 }
 
 #endif	//	dx10R_Backend_Runtime_included

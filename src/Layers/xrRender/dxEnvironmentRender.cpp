@@ -308,7 +308,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 	u32		C1					= color_rgba(iFloor(env.CurrentEnv->clouds_color.x*255.f),iFloor(env.CurrentEnv->clouds_color.y*255.f),iFloor(env.CurrentEnv->clouds_color.z*255.f),iFloor(env.CurrentEnv->clouds_color.w*255.f));
 
 	// Fill index buffer
-	u16*	pib					= RCache.Index.Lock	(env.CloudsIndices.size(),i_offset);
+	u16*	pib					= RCache.Index.Lock	((u32)env.CloudsIndices.size(),i_offset);
 	CopyMemory					(pib,&env.CloudsIndices.front(),env.CloudsIndices.size()*sizeof(u16));
 	RCache.Index.Unlock			(env.CloudsIndices.size());
 

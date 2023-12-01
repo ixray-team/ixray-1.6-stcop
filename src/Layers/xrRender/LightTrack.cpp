@@ -34,8 +34,11 @@ CROS_impl::CROS_impl	()
 	sun_value			= 0.2f;
 	sun_smooth			= 0.2f;
 
-	std::memset(hemi_cube, 0.1f, sizeof(hemi_cube));
-	std::memset(hemi_cube_smooth, 0.1f, sizeof(hemi_cube_smooth));
+	for (int Iter = 0; Iter < 6; Iter++)
+	{
+		hemi_cube[Iter]			= 1.0f;
+		hemi_cube_smooth[Iter]	= 1.0f;
+	}
 
 #if RENDER!=R_R1
 	last_position.set( 0.0f, 0.0f, 0.0f );

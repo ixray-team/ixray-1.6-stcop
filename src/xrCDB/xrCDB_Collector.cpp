@@ -12,7 +12,7 @@ namespace CDB
 		I=verts.begin();	E=verts.end();
 		for (;I!=E;I++)		if (I->similar(V,eps)) return u32(I-verts.begin());
 		verts.push_back		(V);
-		return verts.size	()-1;
+		return (u32)verts.size	()-1;
 	}
 
 	void	Collector::add_face_D	(
@@ -112,7 +112,7 @@ namespace CDB
 	{
 #if 1
 		VERIFY							(faces.size() < 65536);
-		const u32						edge_count = faces.size()*3;
+		const u32						edge_count = (u32)faces.size()*3;
 #ifdef _EDITOR
 		xr_vector<edge> _edges			(edge_count);
 		edge 							*edges = &*_edges.begin();
@@ -353,7 +353,7 @@ namespace CDB
 		}
 		if (0xffffffff==P)
 		{
-			P = verts.size();
+			P = (u32)verts.size();
 			verts.push_back(V);
 
 			VM[ix][iy][iz].push_back(P);

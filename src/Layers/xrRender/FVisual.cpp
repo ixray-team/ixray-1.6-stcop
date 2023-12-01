@@ -125,7 +125,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			CHK_DX(CreateDeclFromFVF(fvf, dcl));
 			vFormat = dcl.data();
 			vCount				= data->r_u32				();
-			u32 vStride = ComputeVertexSize(fvf);
+			u32 vStride = (u32)ComputeVertexSize(fvf);
 
 #ifdef USE_DX11
 			VERIFY				(NULL==p_rm_Vertices);

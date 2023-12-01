@@ -125,7 +125,7 @@ void gradient::fill	(
 		string_getter,
 		string_setter,
 		&*environment.shader_ids().begin(),
-		environment.shader_ids().size(),
+		(u32)environment.shader_ids().size(),
 		editor::property_holder::value_editor_tree_view,
 		editor::property_holder::cannot_enter_text
 	);

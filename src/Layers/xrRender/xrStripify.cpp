@@ -27,7 +27,7 @@ void xrStripify		(xr_vector<u16> &indices, xr_vector<u16> &perturb, int iCacheSi
 
 	// Generate strips
 	xr_vector<PrimitiveGroup>	PGROUP;
-	GenerateStrips	(&*indices.begin(),indices.size(),PGROUP);
+	GenerateStrips	(&*indices.begin(),(int)indices.size(),PGROUP);
 	VERIFY			(PGROUP.size()==1);
 	VERIFY			(PGROUP[0].type==PT_LIST);
 	VERIFY			(indices.size()==PGROUP[0].numIndices);

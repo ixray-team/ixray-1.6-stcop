@@ -630,7 +630,7 @@ void CScriptEntity::UpdateCL		()
 
 u32	 CScriptEntity::GetActionCount	() const
 {
-	return							(m_tpActionQueue.size());
+	return u32(m_tpActionQueue.size());
 }
 
 const CScriptEntityAction *CScriptEntity::GetActionByIndex	(u32 action_index) const

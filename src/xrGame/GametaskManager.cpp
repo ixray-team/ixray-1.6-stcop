@@ -154,7 +154,7 @@ void CGameTaskManager::UpdateTasks						()
 
 	Level().MapManager().DisableAllPointers();
 
-	u32					task_count = GetGameTasks().size();
+	u32					task_count = (u32)GetGameTasks().size();
 	if(0==task_count)	return;
 
 	{
@@ -274,7 +274,7 @@ CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inpro
 CGameTask* CGameTaskManager::IterateGet(CGameTask* t, ETaskState state, bool bForward)
 {
 	vGameTasks& v		= GetGameTasks();
-	u32 cnt				= v.size();
+	u32 cnt				= (u32)v.size();
 	for(u32 i=0; i<cnt; ++i)
 	{
 		CGameTask* gt	= v[i].game_task;
@@ -331,7 +331,7 @@ u32 CGameTaskManager::GetTaskIndex( CGameTask* t, ETaskState state )
 u32 CGameTaskManager::GetTaskCount( ETaskState state )
 {
 	vGameTasks& v	= GetGameTasks();
-	u32 cnt			= v.size();
+	u32 cnt			= (u32)v.size();
 	u32 res			= 0;
 	for ( u32 i = 0; i < cnt; ++i )
 	{

@@ -22,8 +22,8 @@ void	CRenderTarget::u_calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 	u32			shift_h				= im_noise_shift_h;
 	float		start_u				= (float(shift_w)+.5f)/(tw);
 	float		start_v				= (float(shift_h)+.5f)/(th);
-	u32			_w					= RCache.get_width();
-	u32			_h					= RCache.get_height();
+	u32			_w					= (u32)RCache.get_width();
+	u32			_h					= (u32)RCache.get_height();
 	u32			cnt_w				= _w / tw;
 	u32			cnt_h				= _h / th;
 	float		end_u				= start_u + float(cnt_w) + 1;
@@ -38,7 +38,7 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	// Calculate ordinaty TCs from blur and SS
 	float	tw			= float(dwWidth);
 	float	th			= float(dwHeight);
-	if (dwHeight!= RCache.get_height())	param_blur = 1.f;
+	if (dwHeight!= (u32)RCache.get_height())	param_blur = 1.f;
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
@@ -106,9 +106,9 @@ struct TL_2c3uv		{
 void CRenderTarget::phase_pp		()
 {
 	// combination/postprocess
-	float	_w = RCache.get_target_width();
-	float	_h = RCache.get_target_height();
-	u_setrt				(_w,_h,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	u32 _w = (u32)RCache.get_target_width();
+	u32 _h = (u32)RCache.get_target_height();
+	u_setrt(_w,_h,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();

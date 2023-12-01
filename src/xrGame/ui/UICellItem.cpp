@@ -317,7 +317,7 @@ bool CUICellItem::EqualTo(CUICellItem* itm)
 
 u32 CUICellItem::ChildsCount()
 {
-	return m_childs.size();
+	return (u32)m_childs.size();
 }
 
 void CUICellItem::PushChild(CUICellItem* c)

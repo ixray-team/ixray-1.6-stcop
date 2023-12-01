@@ -57,7 +57,7 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 		VERIFY				( pool.size() );
 		used[ID]			= pool.back	();
 	} else {
-		ID					= used.size	();
+		ID					= (u32)used.size	();
 		VERIFY				( pool.size() );
 		used.push_back		(pool.back());
 	}
