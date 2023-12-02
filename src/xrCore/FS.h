@@ -12,12 +12,13 @@ XRCORE_API void VerifyPath	(LPCSTR path);
 
 
 #ifdef DEBUG
-	XRCORE_API	extern	u32		g_file_mapped_memory;
-	XRCORE_API	extern	u32		g_file_mapped_count;
-	XRCORE_API			void	dump_file_mappings		();
-				extern	void	register_file_mapping	(void *address, const u32 &size, LPCSTR file_name);
-				extern	void	unregister_file_mapping	(void *address, const u32 &size);
+XRCORE_API extern size_t g_file_mapped_memory;
+XRCORE_API extern size_t g_file_mapped_count;
+XRCORE_API void	dump_file_mappings();
+extern void register_file_mapping(void* address, const size_t& size, LPCSTR file_name);
+extern void unregister_file_mapping(void* address, const size_t& size);
 #endif // DEBUG
+
 
 //------------------------------------------------------------------------------------
 // Write
