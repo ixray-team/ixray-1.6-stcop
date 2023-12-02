@@ -29,6 +29,7 @@ target_include_directories(ODE PUBLIC "${IXRAY_SDK_INC}")
 target_compile_definitions(ODE PRIVATE _WINDOWS)
 target_compile_definitions(ODE PRIVATE dSINGLE)
 target_compile_definitions(ODE PRIVATE _USRDLL)
+target_compile_definitions(ODE PRIVATE dNODEBUG)
 
 add_compile_options(/fp:fast)
 target_compile_definitions(ODE PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
