@@ -6,6 +6,10 @@
 #include "../xrCore/xrCore_platform.h"
 #include "DynamicSplashScreen.h"
 
+#ifndef DEBUG
+#define NO_MULTI_INSTANCES
+#endif
+
 ENGINE_API void EngineLoadStage1(char* Cmd);
 ENGINE_API void EngineLoadStage2();
 ENGINE_API void EngineLoadStage3();
@@ -63,7 +67,7 @@ int APIENTRY WinMain
 
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
-#define STALKER_PRESENCE_MUTEX "Local\\STALKER-COP"
+#define STALKER_PRESENCE_MUTEX TEXT("Local\\STALKER-COP")
 
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
 	hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
