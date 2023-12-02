@@ -19,7 +19,7 @@ void CallFunction(shared_str const& func)
 {
 	luabind::functor<void>		functor_to_call;
 	bool functor_exists			= ai().script_engine().functor(func.c_str() ,functor_to_call);
-	THROW3						(functor_exists, "Cannot find script function described in tutorial item ", func.c_str());
+	VERIFY3						(functor_exists, "Cannot find script function described in tutorial item ", func.c_str());
 	if( functor_to_call.is_valid() ) 
 		functor_to_call();
 }
@@ -81,7 +81,7 @@ void CUISequenceItem::Start()
 	if(m_onframe_lua_function.size())
 	{
 		bool functor_exists			= ai().script_engine().functor(m_onframe_lua_function.c_str() ,m_onframe_functor);
-		THROW3						(functor_exists, "Cannot find script function described in tutorial item ", m_onframe_lua_function.c_str());
+		VERIFY3						(functor_exists, "Cannot find script function described in tutorial item ", m_onframe_lua_function.c_str());
 	}
 }
 
@@ -198,7 +198,7 @@ CUISequenceItem* CUISequencer::GetNextItem()
 			break;
 
 		bool functor_exists			= ai().script_engine().functor(f.c_str() ,functor_to_call);
-		THROW3						(functor_exists, "Cannot find script function described in tutorial item ", f.c_str());
+		VERIFY3						(functor_exists, "Cannot find script function described in tutorial item ", f.c_str());
 		
 		bool call_result			= true;
 		if( functor_to_call.is_valid() ) 
