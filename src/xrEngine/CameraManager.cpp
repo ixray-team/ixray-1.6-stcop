@@ -366,50 +366,50 @@ void CCameraManager::UpdateCamEffectors()
 
 void CCameraManager::UpdatePPEffectors()
 {
-	pp_affected.validate		("before applying pp");
+	pp_affected.validate("before applying pp");
 
-	int		_count	= 0;
-	if(m_EffectorsPP.size()) 
+	int _count = 0;
+	if (m_EffectorsPP.size())
 	{
 		bool b = false;
 		pp_affected = pp_identity;
-		for(size_t i = m_EffectorsPP.size()-1; i >= 0; --i) 
+		for (int i = (int)m_EffectorsPP.size() - 1; i >= 0; --i)
 		{
-			CEffectorPP* eff	= m_EffectorsPP[i];
-			SPPInfo l_PPInf		= pp_zero;
-			if(eff->Valid() && eff->Process(l_PPInf))
+			CEffectorPP* eff = m_EffectorsPP[i];
+			SPPInfo l_PPInf = pp_zero;
+			if (eff->Valid() && eff->Process(l_PPInf))
 			{
 				++_count;
-				if(!b)
+				if (!b)
 				{
-					pp_affected.add		(l_PPInf);
-					pp_affected.sub		(pp_identity);
+					pp_affected.add(l_PPInf);
+					pp_affected.sub(pp_identity);
 					pp_affected.validate("in cycle");
 				}
-				if(!eff->bOverlap)
+				if (!eff->bOverlap)
 				{
-					b				= true;
-					pp_affected		= l_PPInf;
+					b = true;
+					pp_affected = l_PPInf;
 				}
-			}else 
-				RemovePPEffector	(eff->Type());
+			}
+			else
+				RemovePPEffector(eff->Type());
 		}
-		if (0==_count)	
-			pp_affected				= pp_identity;
-		else			
-			pp_affected.normalize	();
-	} else 
+		if (0 == _count)
+			pp_affected = pp_identity;
+		else
+			pp_affected.normalize();
+	}
+	else
 	{
-		pp_affected					= pp_identity;
+		pp_affected = pp_identity;
 	}
 
-	if( !positive(pp_affected.noise.grain) ) 
-		pp_affected.noise.grain		= pp_identity.noise.grain;
-	
-	pp_affected.validate			("after applying pp");
+	if (!positive(pp_affected.noise.grain))
+		pp_affected.noise.grain = pp_identity.noise.grain;
+
+	pp_affected.validate("after applying pp");
 }
-
-
 
 void CCameraManager::ApplyDevice (float _viewport_near)
 {
