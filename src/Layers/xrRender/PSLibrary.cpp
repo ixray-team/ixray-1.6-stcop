@@ -197,7 +197,10 @@ bool CPSLibrary::Load(const char* nm)
     
 	IReader*	F			= FS.r_open(nm);
 	bool bRes 				= true;
-    R_ASSERT(F->find_chunk(PS_CHUNK_VERSION));
+
+    bool FoundedChunk = !!F->find_chunk(PS_CHUNK_VERSION);
+    R_ASSERT2(FoundedChunk, "Not found chunk PS_CHUNK_VERSION");
+
     u16 ver					= F->r_u16();
     if (ver!=PS_VERSION) return false;
     // second generation

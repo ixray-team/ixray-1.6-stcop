@@ -106,8 +106,10 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	}
 
 	// read vertices
-	if (!loaded_v && (dwFlags&VLOAD_NOVERTICES)==0) {
-		if (data->find_chunk(OGF_VCONTAINER)) {
+	if (!loaded_v && (dwFlags & VLOAD_NOVERTICES) == 0)
+	{
+		if (data->find_chunk(OGF_VCONTAINER)) 
+		{
 			R_ASSERT2			(0,"pls notify andy about this.");
 #ifndef _EDITOR
 			u32 ID				= data->r_u32				();
@@ -118,8 +120,12 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			p_rm_Vertices->AddRef();
 			vFormat				= RImplementation.getVB_Format	(ID);
 #endif
-		} else {
-			R_ASSERT			(data->find_chunk(OGF_VERTICES));
+		} 
+		else 
+		{
+			bool FoundedChunk = data->find_chunk(OGF_VERTICES);
+			R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");
+
 			vBase				= 0;
 			u32 fvf				= data->r_u32				();
 			CHK_DX(CreateDeclFromFVF(fvf, dcl));
@@ -146,9 +152,11 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	}
 
 	// indices
-	if (!loaded_v) {
+	if (!loaded_v)
+	{
 		dwPrimitives = 0;
-		if (data->find_chunk(OGF_ICONTAINER)) {
+		if (data->find_chunk(OGF_ICONTAINER)) 
+		{
 			R_ASSERT2			(0,"pls notify andy about this.");
 #ifndef _EDITOR
 			u32 ID				= data->r_u32			();
@@ -159,8 +167,12 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			p_rm_Indices		= RImplementation.getIB	(ID);
 			p_rm_Indices->AddRef	();
 #endif
-		} else {
-			R_ASSERT			(data->find_chunk(OGF_INDICES));
+		} 
+		else
+		{
+			bool FoundedChunk = data->find_chunk(OGF_INDICES);
+			R_ASSERT2(FoundedChunk, "Not found chunk OGF_INDICES");
+
 			iBase				= 0;
 			iCount				= data->r_u32();
 			dwPrimitives		= iCount/3;

@@ -134,9 +134,9 @@ void *FileDownload		(LPCSTR file_name, const int &file_handle, u32 &file_size)
 	);
 
 //	file_size			= r_bytes;
-
+	bool CloseComplete = !_close(file_handle);
 	R_ASSERT3			(
-		!_close(file_handle),
+		CloseComplete,
 		"can't close file : ",
 		file_name
 	);
@@ -147,8 +147,9 @@ void *FileDownload		(LPCSTR file_name, const int &file_handle, u32 &file_size)
 void *FileDownload		(LPCSTR file_name, u32 *buffer_size)
 {
 	int					file_handle;
+	bool HandleComplete = file_handle_internal(file_name, *buffer_size, file_handle);
 	R_ASSERT3			(
-		file_handle_internal(file_name, *buffer_size, file_handle),
+		HandleComplete,
 		"can't open file : ",
 		file_name
 	);

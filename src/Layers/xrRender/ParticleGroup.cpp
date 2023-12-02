@@ -50,7 +50,9 @@ void CPGDef::Clone	(CPGDef* source)
 //------------------------------------------------------------------------------
 BOOL CPGDef::Load(IReader& F)
 {
-	R_ASSERT		(F.find_chunk(PGD_CHUNK_VERSION));
+    bool FoundedChunk = !!F.find_chunk(PGD_CHUNK_VERSION);
+    R_ASSERT2(FoundedChunk, "Not found chunk PGD_CHUNK_VERSION");
+
 	u16 version		= F.r_u16();
 
     if (version!=PGD_VERSION){
@@ -58,7 +60,9 @@ BOOL CPGDef::Load(IReader& F)
     	return FALSE;
     }
 
-	R_ASSERT		(F.find_chunk(PGD_CHUNK_NAME));
+    FoundedChunk = !!F.find_chunk(PGD_CHUNK_NAME);
+    R_ASSERT2(FoundedChunk, "Not found chunk PGD_CHUNK_NAME");
+
 	F.r_stringZ		(m_Name);
 
 	F.r_chunk		(PGD_CHUNK_FLAGS,&m_Flags);

@@ -91,6 +91,8 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     R_ASSERT(fRName);
     R_ASSERT(fRName[0]);
 
+    bool FileExist = false;
+
     // make file name
     string_path fname;
     xr_strcpy(fname, fRName);
@@ -115,7 +117,8 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 #else
 
     Msg("! Can't find texture '%s'", fname);
-    R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+    FileExist = FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds") != nullptr;
+    R_ASSERT2(FileExist, "File not found: ed\\ed_not_existing_texture.dds");
     goto _DDS;
 
 #endif
@@ -193,15 +196,21 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 }
     _BUMP_from_base: {
         Msg("! Fallback to default bump map: %s", fname);
-        if (strstr(fname, "_bump#")) {
-            R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
+        if (strstr(fname, "_bump#")) 
+        {
+            bool FileExist = FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds") != nullptr;
+            R_ASSERT2(FileExist, "File not found: ed\\ed_dummy_bump#.dds");
+
             reader = FS.r_open(fn);
             R_ASSERT2(reader, fn);
             img_size = reader->length();
             goto _DDS_2D;
         }
-        if (strstr(fname, "_bump")) {
-            R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
+        if (strstr(fname, "_bump")) 
+        {
+            bool FileExist = FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds") != nullptr;
+            R_ASSERT2(FileExist, "File not found: ed\\ed_dummy_bump.dds");
+
             reader = FS.r_open(fn);
             R_ASSERT2(reader, fn);
             img_size = reader->length();

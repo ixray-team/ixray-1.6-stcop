@@ -37,7 +37,9 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	D3DVERTEXELEMENT9*	vFormat	= NULL;
 
 	// read vertices
-	R_ASSERT			(data->find_chunk(OGF_GCONTAINER));
+	bool FoundedChunk = !!data->find_chunk(OGF_GCONTAINER);
+	R_ASSERT2(FoundedChunk, "Not found chunk OGF_GCONTAINER");
+
 	{
 		// verts
 		u32 ID				= data->r_u32				();
@@ -63,7 +65,9 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	}
 
 	// load tree-def
-	R_ASSERT			(data->find_chunk(OGF_TREEDEF2));
+	FoundedChunk = !!data->find_chunk(OGF_TREEDEF2);
+	R_ASSERT2(FoundedChunk, "Not found chunk OGF_TREEDEF2");
+
 	{
 		data->r			(&xform,	sizeof(xform));
 		data->r			(&c_scale,	sizeof(c_scale));	c_scale.rgb.mul	(.5f);	c_scale.hemi*=.5f;	c_scale.sun	*=.5f;
@@ -213,7 +217,10 @@ void FTreeVisual_PM::Release	()
 void FTreeVisual_PM::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load				(N,data,dwFlags);
-	R_ASSERT					(data->find_chunk(OGF_SWICONTAINER));
+
+	bool FoundedChunk = !!data->find_chunk(OGF_SWICONTAINER);
+	R_ASSERT2(FoundedChunk, "Not found chunk OGF_SWICONTAINER");
+
 	{
 		u32 ID					= data->r_u32				();
 		pSWI					= RImplementation.getSWI	(ID);
