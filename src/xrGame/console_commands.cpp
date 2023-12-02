@@ -1941,13 +1941,14 @@ void CCC_RegisterCommands()
 	// options
 	g_OptConCom.Init();
 
+#ifndef MASTER_GOLD
 	CMD1(CCC_SetWeather, "set_weather");
 	CMD1(CCC_ReceiveInfo, "g_info");
 	CMD1(CCC_DisableInfo, "d_info");
 	CMD1(CCC_GiveMoney, "g_money");
-
 	CMD1(CCC_GSpawn, "g_spawn");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
+#endif
 
 	CMD1(CCC_MemStats,			"stat_memory"			);
 	// game
@@ -2125,18 +2126,17 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 	CMD3(CCC_Mask,				"g_no_clip",					&psActorFlags,	AF_NO_CLIP	);
 #endif // DEBUG
 
-//#ifndef MASTER_GOLD
+#ifndef MASTER_GOLD
 	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
-	CMD3(CCC_Mask,			"g_autoreload",		&psActorFlags,	AF_AUTORELOAD	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
 	CMD1(CCC_Script,		"run_script");
 	CMD1(CCC_ScriptCommand,	"run_string");
 	CMD1(CCC_TimeFactor,	"time_factor");		
-//#endif // MASTER_GOLD
+#endif // MASTER_GOLD
 
 	CMD1(CCC_ReloadSystemLtx, "reload_system_ltx");
-
+	CMD3(CCC_Mask, "g_autoreload", &psActorFlags, AF_AUTORELOAD);
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 	CMD3(CCC_Mask,		"g_dynamic_music",		&psActorFlags,	AF_DYNAMIC_MUSIC);
 	CMD3(CCC_Mask,		"g_important_save",		&psActorFlags,	AF_IMPORTANT_SAVE);
