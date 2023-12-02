@@ -16,6 +16,7 @@
 #include "alife_simulator_header.h"
 #include "alife_simulator.h"
 #include "alife_spawn_registry.h"
+#include <string_table.h>
 
 extern LPCSTR alife_section;
 
@@ -155,7 +156,10 @@ CSavedGameWrapper::CSavedGameWrapper			(LPCSTR saved_game_name)
 		{
 			CGameGraph			graph(*chunk);
 			m_level_id			= graph.vertex(object->m_tGraphID)->level_id();
-			m_level_name		= graph.header().level(m_level_id).name();
+			if (graph.header().level_exist(m_level_id))
+				m_level_name = graph.header().level(m_level_id).name();
+			else
+				m_level_name = CStringTable().translate("ui_st_error");
 		}
 
 		chunk->close			();
