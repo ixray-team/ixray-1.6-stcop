@@ -73,7 +73,6 @@ void CLight_DB::Load			(IReader *fs)
 				L->set_range		(Ldata.range		);
 				L->set_color		(Ldata.diffuse		);
 				L->set_active		(true				);
-//				R_ASSERT			(L->spatial.sector	);
 			}
 		}
 
@@ -143,7 +142,6 @@ void	CLight_DB::LoadHemi	()
 						L->set_active		(true				);
 						L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff);
 						L->spatial.type = STYPE_LIGHTSOURCEHEMI;
-						//				R_ASSERT			(L->spatial.sector	);
 					}
 				}
 

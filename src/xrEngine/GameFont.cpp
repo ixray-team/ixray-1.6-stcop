@@ -72,7 +72,10 @@ void CGameFont::Initialize		(LPCSTR cShader, LPCSTR cTextureName)
 	// check ini exist
 	string_path fn,buf;
 	xr_strcpy		(buf,cTexture); if (strext(buf)) *strext(buf)=0;
-	R_ASSERT2	(FS.exist(fn,"$game_textures$",buf,".ini"),fn);
+
+	bool FileExist = FS.exist(fn, "$game_textures$", buf, ".ini") != nullptr;
+	R_ASSERT2(FileExist, fn);
+
 	CInifile* ini				= CInifile::Create(fn);
 
 	nNumChars = 0x100;

@@ -175,16 +175,22 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 //------------------------------------------------------------------------------
 BOOL CPEDef::Load(IReader& F)
 {
-	R_ASSERT		(F.find_chunk(PED_CHUNK_VERSION));
+	bool FoundedChunk = !!F.find_chunk(PED_CHUNK_VERSION);
+	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_VERSION");
+
 	u16 version		= F.r_u16();
 
 	if (version!=PED_VERSION)
 		return FALSE;
 
-	R_ASSERT		(F.find_chunk(PED_CHUNK_NAME));
+	FoundedChunk = !!F.find_chunk(PED_CHUNK_NAME);
+	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_NAME");
+
 	F.r_stringZ		(m_Name);
 
-	R_ASSERT		(F.find_chunk(PED_CHUNK_EFFECTDATA));
+	FoundedChunk = !!F.find_chunk(PED_CHUNK_EFFECTDATA);
+	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_EFFECTDATA");
+
 	m_MaxParticles	= F.r_u32();
 
 	{
@@ -197,26 +203,34 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfSprite))
 	{
-		R_ASSERT	(F.find_chunk(PED_CHUNK_SPRITE));
+		FoundedChunk = !!F.find_chunk(PED_CHUNK_SPRITE);
+		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_SPRITE");
+
 		F.r_stringZ	(m_ShaderName);
 		F.r_stringZ	(m_TextureName);
 	}
 
 	if (m_Flags.is(dfFramed))
 	{
-		R_ASSERT	(F.find_chunk(PED_CHUNK_FRAME));
+		FoundedChunk = !!F.find_chunk(PED_CHUNK_FRAME);
+		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_FRAME");
+
 		F.r			(&m_Frame,sizeof(SFrame));
 	}
 
 	if (m_Flags.is(dfTimeLimit))
 	{
-		R_ASSERT(F.find_chunk(PED_CHUNK_TIMELIMIT));
+		FoundedChunk = !!F.find_chunk(PED_CHUNK_TIMELIMIT);
+		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_TIMELIMIT");
+
 		m_fTimeLimit= F.r_float();
 	}
 
 	if (m_Flags.is(dfCollision))
 	{
-		R_ASSERT(F.find_chunk(PED_CHUNK_COLLISION));
+		FoundedChunk = !!F.find_chunk(PED_CHUNK_COLLISION);
+		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_COLLISION");
+
 		m_fCollideOneMinusFriction 	= F.r_float();
 		m_fCollideResilience		= F.r_float();
 		m_fCollideSqrCutoff			= F.r_float();
@@ -224,13 +238,16 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfVelocityScale))
 	{
-		R_ASSERT(F.find_chunk(PED_CHUNK_VEL_SCALE));
+		FoundedChunk = !!F.find_chunk(PED_CHUNK_VEL_SCALE);
+		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_VEL_SCALE");
+
 		F.r_fvector3				(m_VelocityScale); 
 	}
 
 	if (m_Flags.is(dfAlignToPath))
 	{
-		if (F.find_chunk(PED_CHUNK_ALIGN_TO_PATH)){
+		if (F.find_chunk(PED_CHUNK_ALIGN_TO_PATH))
+		{
 			F.r_fvector3			(m_APDefaultRotation);
 		}
 	}

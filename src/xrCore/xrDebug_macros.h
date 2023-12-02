@@ -28,8 +28,8 @@
 #	define R_ASSERT2(expr,e2)
 #	define R_ASSERT3(expr,e2,e3)
 #	define R_ASSERT4(expr,e2,e3,e4)
-#	define R_CHK(expr)
-#	define R_CHK2(expr,e2)
+#	define R_CHK(expr) expr
+#	define R_CHK2(expr,e2) expr
 #else
 #	define R_ASSERT(expr)				do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(_TRE(#expr),DEBUG_INFO,ignore_always);} while(0)
 #	define R_ASSERT2(expr,e2)			do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(_TRE(#expr),_TRE(e2),DEBUG_INFO,ignore_always);} while(0)

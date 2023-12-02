@@ -47,7 +47,9 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		xr_strcpy			(fn,(*It).name.c_str());
 		fix_texture_thm_name(fn);
 
-		R_ASSERT			(F->find_chunk(THM_CHUNK_TYPE));
+		bool FoundedChunk = !!F->find_chunk(THM_CHUNK_TYPE);
+		R_ASSERT2(FoundedChunk, "Not found chunk THM_CHUNK_TYPE");
+
 		F->r_u32			();
 		tp.Clear			();
 		tp.Load				(*F);

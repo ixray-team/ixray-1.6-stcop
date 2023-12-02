@@ -205,7 +205,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 #pragma todo("container is created in stack!")
 	xr_vector<shared_str>	L_parents;
 
-	R_ASSERT		(data->find_chunk(OGF_S_BONE_NAMES));
+	bool FoundedChunk = !!data->find_chunk(OGF_S_BONE_NAMES);
+	R_ASSERT2(FoundedChunk, "Not found chunk OGF_S_BONE_NAMES");
 
     visimask.zero	();
 	int dwCount 	= data->r_u32();

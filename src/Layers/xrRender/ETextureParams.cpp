@@ -66,7 +66,9 @@ xr_token					tbmode_token							[ ]={
 
 void STextureParams::Load(IReader& F)
 {
-    R_ASSERT(F.find_chunk(THM_CHUNK_TEXTUREPARAM));
+    bool FoundedChunk = !!F.find_chunk(THM_CHUNK_TEXTUREPARAM);
+    R_ASSERT2(FoundedChunk, "Not found chunk THM_CHUNK_TEXTUREPARAM");
+
     F.r					(&fmt,sizeof(ETFormat));
     flags.assign(F.r_u32());
     border_color= F.r_u32();
