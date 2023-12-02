@@ -96,8 +96,8 @@ int APIENTRY WinMain
 	Console = xr_new<CConsole>();
 	EngineLoadStage3();
 
-	if (strstr(Core.Params, "-r2a"))
-		Console->Execute("renderer renderer_r2a");
+	if (strstr(Core.Params, "-r4"))
+		Console->Execute("renderer renderer_r4");
 	else if (strstr(Core.Params, "-r2"))
 		Console->Execute("renderer renderer_r2");
 	else {
