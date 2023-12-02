@@ -37,15 +37,9 @@ inline void ComputeRowColsForFlat3DTexture( int depth, int *outCols, int *outRow
 #define VERTICES_PER_LINE 2
 #define LINES_PER_SLICE 4
 
-dx103DFluidGrid::dx103DFluidGrid()
-{
+dx103DFluidGrid::dx103DFluidGrid() {}
 
-}
-
-dx103DFluidGrid::~dx103DFluidGrid()
-{
-	//	TODO: implement init/deinit functionality and guards
-}
+dx103DFluidGrid::~dx103DFluidGrid() { DestroyVertexBuffers(); }
 
 void dx103DFluidGrid::Initialize( int gridWidth, int gridHeight, int gridDepth)
 {
@@ -153,6 +147,13 @@ void dx103DFluidGrid::CreateVertexBuffers()
 
 	xr_free(boundaryLines);
 	boundaryLines = NULL;
+}
+
+void dx103DFluidGrid::DestroyVertexBuffers() {
+	_RELEASE(m_pRenderQuadBuffer);
+	_RELEASE(m_pSlicesBuffer);
+	_RELEASE(m_pBoundarySlicesBuffer);
+	_RELEASE(m_pBoundaryLinesBuffer);
 }
 
 void dx103DFluidGrid::InitScreenSlice(VS_INPUT_FLUIDSIM_STRUCT** vertices, int z, int& index )
