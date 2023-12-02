@@ -170,10 +170,14 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 		if (m_stalker && !(*I).m_squad_mask.test(mask))
 			continue;
 
+		if ((*I).m_object->getDestroy()) {
+			continue;
+		}
+
 		danger().add				(*I);
 		
 		if (add_enemies) {
-			const CEntityAlive		*entity_alive = smart_cast<const CEntityAlive*>((*I).m_object);
+			const CEntityAlive *entity_alive = smart_cast<const CEntityAlive*>((*I).m_object);
 			if (entity_alive && enemy().add(entity_alive))
 				continue;
 		}
