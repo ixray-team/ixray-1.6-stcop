@@ -35,18 +35,28 @@ bool CItemManager::is_useful		(const CGameObject *object) const
 
 bool CItemManager::useful			(const CGameObject *object) const
 {
+	if (object->getDestroy())
+		return false;
+
+	if (!object->getEnabled())
+		return false;
+
+	if (!&object->ai_location())
+		return false;
+
 	if (!inherited::is_useful(object))
-		return				(false);
+		return false;
 
 	if (m_object->getDestroy())
-		return				(false);
+		return false;
 
 	// we do not want to keep in memory attached objects
 	if (m_object->H_Parent())
-		return				(false);
+		return false;
 
-	if (!const_cast<CGameObject*>(object)->UsedAI_Locations())
-		return				(false);
+	auto gameObject = const_cast<CGameObject*>(object);
+	if (gameObject == nullptr && gameObject->UsedAI_Locations())
+		return false;
 
 	if (!m_object->movement().restrictions().accessible(object->Position()))
 		return				(false);
