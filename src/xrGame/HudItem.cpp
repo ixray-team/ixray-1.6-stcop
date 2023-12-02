@@ -354,11 +354,12 @@ void CHudItem::StopCurrentAnimWithoutCallback()
 
 BOOL CHudItem::GetHUDmode()
 {
-	if(object().H_Parent())
+	if (object().H_Parent())
 	{
 		CActor* A = smart_cast<CActor*>(object().H_Parent());
-		return ( A && A->HUDview() && HudItemData() && HudItemData() );
-	}else
+		return (A && A->HUDview() && HudItemData());
+	}
+	else
 		return FALSE;
 }
 
