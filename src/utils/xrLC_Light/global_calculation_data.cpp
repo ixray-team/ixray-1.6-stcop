@@ -2,7 +2,7 @@
 #include "global_calculation_data.h"
 
 #include "../shader_xrlc.h"
-#include "serialize.h"=
+#include "serialize.h"
 
 global_claculation_data	gl_data;
 
