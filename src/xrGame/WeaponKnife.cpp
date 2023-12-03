@@ -199,18 +199,17 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 
 	PlaySound						("sndShot",pos);
 
-	Level().BulletManager().AddBullet(	pos, 
-										dir, 
-										m_fStartBulletSpeed, 
-										fCurrentHit, 
-										fHitImpulse_cur, 
-										H_Parent()->ID(), 
-										ID(), 
-										m_eHitType, 
-										fireDistance, 
-										cartridge, 
-										1.f, 
-										SendHit);
+	CActor* actor = smart_cast<CActor*>(H_Parent());
+	if (actor->active_cam() != eacFirstEye) {
+		Level().BulletManager().AddBullet(pos, dir, m_fStartBulletSpeed, fCurrentHit,
+			fHitImpulse_cur, H_Parent()->ID(), ID(), m_eHitType,
+			fireDistance + 1.5f, cartridge, 1.f, SendHit);
+	}
+	else {
+		Level().BulletManager().AddBullet(pos, dir, m_fStartBulletSpeed, fCurrentHit,
+			fHitImpulse_cur, H_Parent()->ID(), ID(), m_eHitType,
+			fireDistance, cartridge, 1.f, SendHit);
+	}
 }
 
 void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
