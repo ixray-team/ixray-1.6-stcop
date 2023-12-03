@@ -806,6 +806,14 @@ bool is_accessible_vertex_id(u32 level_vertex_id) {
 	return ai().level_graph().is_accessible(level_vertex_id);
 }
 
+void disable_vertex(u32 vertex_id) {
+	ai().level_graph().set_mask(vertex_id);
+}
+
+void enable_vertex(u32 vertex_id) {
+	ai().level_graph().clear_mask(vertex_id);
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -907,6 +915,8 @@ void CLevel::script_register(lua_State *L)
 		
 		def("valid_vertex_id", valid_vertex_id),
 		def("is_accessible_vertex_id", is_accessible_vertex_id),
+		def("disable_vertex", disable_vertex),
+		def("enable_vertex", enable_vertex),
 		def("vertex_id",						&vertex_id),
 
 		def("game_id", &GameID),
