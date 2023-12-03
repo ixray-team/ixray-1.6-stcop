@@ -101,7 +101,10 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 
 void CCameraLook2::Update(Fvector& point, Fvector&)
 {
-	m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
+	if (psActorFlags.test(AF_RIGHT_SHOULDER))
+		m_cam_offset = Fvector().set(-0.400f, 0.2f, 0.0f);
+	else
+		m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
 
 	if(!m_locked_enemy)
 	{//autoaim
