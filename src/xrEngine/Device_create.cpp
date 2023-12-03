@@ -82,10 +82,12 @@ cdb_bDebug		= &bDebug;
 	psCurrentVidMode[1] = TargetHeight;
 #endif // #ifdef _EDITOR
 
+
+	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
 	m_pRender->Create	(
-		g_AppInfo.WindowHandle,
+		hwnd,
 		TargetWidth,
 		TargetHeight,
 		HalfTargetWidth,

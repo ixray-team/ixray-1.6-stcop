@@ -155,7 +155,7 @@ void InitInput		()
 {
 	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
 
-	pInput						= xr_new<CInput>		(bCaptureInput);
+	pInput						= xr_new<CInput>		();
 }
 void destroyInput	()
 {

@@ -2,13 +2,15 @@
 #include "XR_IOConsole.h"
 #include "IGame_Level.h"
 
+struct SDL_Window;
+
 class ENGINE_API CTextConsole : public CConsole
 {
 private:
 	typedef CConsole inherited;
 
 private:
-	HWND*	m_pMainWnd;
+	SDL_Window**	m_pMainWnd;
 
 	HWND	m_hConsoleWnd;
 	void	CreateConsoleWnd	();

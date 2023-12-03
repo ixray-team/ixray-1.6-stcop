@@ -590,7 +590,7 @@ public:
 			value	= false;
 		else InvalidSyntax();
 		
-		pInput->exclusive_mode	(value);
+		//pInput->exclusive_mode	(value);
 	}
 
 	virtual void	Save	(IWriter *F)	

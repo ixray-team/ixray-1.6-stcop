@@ -432,7 +432,8 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		if (HW.rdoc_api) {
-			HW.rdoc_api->StartFrameCapture(HW.pDevice, g_AppInfo.WindowHandle);
+			HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+			HW.rdoc_api->StartFrameCapture(HW.pDevice, hwnd);
 		}
 	}
 };
@@ -445,7 +446,8 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		if (HW.rdoc_api) {
-			HW.rdoc_api->EndFrameCapture(HW.pDevice, g_AppInfo.WindowHandle);
+			HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+			HW.rdoc_api->EndFrameCapture(HW.pDevice, hwnd);
 		}
 	}
 };

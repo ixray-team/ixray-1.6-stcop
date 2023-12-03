@@ -116,6 +116,7 @@ void CRenderDevice::End		(void)
 			g_find_chunk_counter.flush();
 #endif
 
+#if 0
 			if(g_pGamePersistent->GameType()==1)//haCk
 			{
 				WINDOWINFO	wi;
@@ -123,6 +124,7 @@ void CRenderDevice::End		(void)
 				if(wi.dwWindowStatus!=WS_ACTIVECAPTION)
 					Pause(TRUE,TRUE,TRUE,"application start");
 			}
+#endif
 		}
 	}
 
@@ -320,17 +322,22 @@ void CRenderDevice::message_loop()
 	}
 #endif // #ifdef INGAME_EDITOR
 
-	MSG						msg;
-    PeekMessage				(&msg, NULL, 0U, 0U, PM_NOREMOVE );
-	while (msg.message != WM_QUIT) {
-		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage	(&msg);
-			continue;
+	bool quiting = false;
+	while (!quiting) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			if (!on_event(event)) {
+				quiting = true;
+				break;
+			}
 		}
 
-		on_idle				();
-    }
+		if (quiting) {
+			break;
+		}
+
+		on_idle();
+	}
 }
 
 void CRenderDevice::Run			()

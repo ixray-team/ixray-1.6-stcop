@@ -55,16 +55,17 @@ BOOL IInputReceiver::IR_GetBtnState(int btn)
 
 void	IInputReceiver::IR_GetMousePosScreen			(Ivector2& p)
 {
-	GetCursorPos((LPPOINT)&p);
-}
-void	IInputReceiver::IR_GetMousePosReal				(HWND hwnd, Ivector2 &p)
-{
-	IR_GetMousePosScreen(p);
-	if (hwnd) ScreenToClient(hwnd,(LPPOINT)&p);
+	float mouse_x, mouse_y;
+	SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
+	p.x = mouse_x;
+	p.y = mouse_y;
 }
 void	IInputReceiver::IR_GetMousePosReal				(Ivector2 &p)
 {
-	IR_GetMousePosReal(g_AppInfo.WindowHandle,p);
+	float mouse_x, mouse_y;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+	p.x = mouse_x;
+	p.y = mouse_y;
 }
 void	IInputReceiver::IR_GetMousePosIndependent		(Fvector2 &f)
 {

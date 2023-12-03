@@ -57,7 +57,8 @@ void CRenderDevice::Reset		(bool precache)
 	ShowCursor				(TRUE);
 	u32 tm_start			= TimerAsync();
 
-	m_pRender->Reset(g_AppInfo.WindowHandle, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
+	auto Window = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+	m_pRender->Reset(Window, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
 
 	if (g_pGamePersistent)
 	{

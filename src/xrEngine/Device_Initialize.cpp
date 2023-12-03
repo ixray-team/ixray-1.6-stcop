@@ -45,8 +45,8 @@ void CRenderDevice::Initialize			()
 #endif // #ifdef INGAME_EDITOR
 
     // Save window properties
-    m_dwWindowStyle = GetWindowLong(g_AppInfo.WindowHandle, GWL_STYLE );
-    GetWindowRect	(g_AppInfo.WindowHandle, &m_rcWindowBounds );
-    GetClientRect	(g_AppInfo.WindowHandle, &m_rcWindowClient );
+
+	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Width, &Height);
+	SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
 }
 

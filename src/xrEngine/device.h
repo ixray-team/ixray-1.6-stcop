@@ -29,6 +29,7 @@
 #endif // #ifdef INGAME_EDITOR
 
 class engine_impl;
+union SDL_Event;
 
 #pragma pack(push,4)
 
@@ -108,10 +109,7 @@ public:
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
 public:
-    // Main objects used for creating and rendering the 3D scene
-    u32										m_dwWindowStyle;
-    RECT									m_rcWindowBounds;
-    RECT									m_rcWindowClient;
+	int Width = 0, Height = 0, PosX = 0, PosY = 0;
 
 	CTimer									TimerMM;
 
@@ -232,7 +230,7 @@ public:
 
 public:
 			void xr_stdcall		on_idle				();
-			bool xr_stdcall		on_message			(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT &result);
+			bool xr_stdcall		on_event			(SDL_Event& Event);
 
 private:
 			void					message_loop		();
