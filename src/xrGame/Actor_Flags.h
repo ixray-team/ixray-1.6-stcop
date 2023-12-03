@@ -6,7 +6,6 @@ enum{
 		AF_UNLIMITEDAMMO	=(1<<3),
 		AF_RUN_BACKWARD		=(1<<4),
 		AF_AUTOPICKUP		=(1<<5),
-		AF_PSP				=(1<<6),
 		AF_DYNAMIC_MUSIC	=(1<<7),
 		AF_GODMODE_RT		=(1<<8),
 		AF_IMPORTANT_SAVE	=(1<<9),
