@@ -798,6 +798,10 @@ bool has_active_tutotial()
 	return (g_tutorial!=NULL);
 }
 
+bool valid_vertex_id(u32 level_vertex_id) {
+	return ai().level_graph().valid_vertex_id(level_vertex_id);
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -897,6 +901,7 @@ void CLevel::script_register(lua_State *L)
 		def("add_complex_effector",				&add_complex_effector),
 		def("remove_complex_effector",			&remove_complex_effector),
 		
+		def("valid_vertex_id", valid_vertex_id),
 		def("vertex_id",						&vertex_id),
 
 		def("game_id", &GameID),
