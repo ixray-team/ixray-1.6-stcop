@@ -46,6 +46,7 @@ enum EMoveCommand
 	mcAnyAction = (mcAnyMove|mcJump|mcFall|mcLanding|mcLanding2), //mcTurn|
 	mcAnyState	= (mcCrouch|mcAccel|mcClimb|mcSprint),
 	mcLookout	= (mcLLookout|mcRLookout),
+	mcJumpSeq = (mcJump | mcFall | mcLanding | mcLanding2),
 };
 
 // enum для определения действия над вещью на которую наведен в текущее время прицел.

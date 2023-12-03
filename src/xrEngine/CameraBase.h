@@ -24,6 +24,7 @@ public:
 		flRelativeLink		= (1<<0),
 		flPositionRigid		= (1<<1),
 		flDirectionRigid	= (1<<2),
+		flKeepPitch = (1 << 3),
 	};
 	Flags32			m_Flags;
 

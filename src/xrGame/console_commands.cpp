@@ -103,6 +103,8 @@ extern	BOOL	g_ai_use_old_vision;
 float			g_aim_predict_time = 0.44f;
 int				g_keypress_on_start	= 1;
 
+extern ENGINE_API int m_look_cam_fp_zoom;
+
 ENGINE_API extern float	g_console_sensitive;
 
 void register_mp_console_commands();
@@ -1956,6 +1958,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 
 	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
+
+	CMD4(CCC_Integer, "g_cam_fp_zoom", &m_look_cam_fp_zoom, 0, 1);
 
 	// alife
 #ifdef DEBUG

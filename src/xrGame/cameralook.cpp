@@ -78,10 +78,12 @@ void CCameraLook::Move( int cmd, float val, float factor)
 
 void CCameraLook::OnActivate( CCameraBase* old_cam )
 {
-	if (old_cam&&(m_Flags.is(flRelativeLink)==old_cam->m_Flags.is(flRelativeLink)))
-	{
-		yaw				= old_cam->yaw;
-		vPosition.set	(old_cam->vPosition);
+	if (old_cam) {
+		if (m_Flags.is(flRelativeLink) == old_cam->m_Flags.is(flRelativeLink))
+			yaw = (old_cam)->yaw;
+
+		if (m_Flags.is(flKeepPitch))
+			pitch = (old_cam)->pitch;
 	}
 	if (yaw>PI_MUL_2) yaw-=PI_MUL_2;
 	if (yaw<-PI_MUL_2)yaw+=PI_MUL_2;
