@@ -494,12 +494,9 @@ BOOL CRenderDevice::Paused()
 	return g_pauseMngr.Paused();
 };
 
-void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
+void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 {
-	u16 fActive = LOWORD(wParam);
-	BOOL fMinimized = (BOOL)HIWORD(wParam);
-
-	BOOL NewState = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+	BOOL NewState = (active && (!minimized)) ? TRUE : FALSE;
 	bool OldState = Device.b_is_Active;
 
 	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || NewState;

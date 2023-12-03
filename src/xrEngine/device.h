@@ -122,7 +122,7 @@ public:
 	u32										dwPrecacheTotal;
 
 	float									HalfTargetWidth, HalfTargetHeight;
-	void									OnWM_Activate(WPARAM wParam, LPARAM lParam);
+	void									OnWM_Activate(bool active, bool minimized);
 
 public:
 	IRenderDeviceRender						*m_pRender;

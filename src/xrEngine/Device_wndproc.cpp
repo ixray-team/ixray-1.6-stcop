@@ -4,7 +4,17 @@
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	switch (Event.type) {
+	case SDL_EVENT_WINDOW_MOUSE_ENTER:
+		OnWM_Activate(true, false);
+		break;
+	case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+		OnWM_Activate(false, false);
+		break;
 	case SDL_EVENT_WINDOW_SHOWN:
+		OnWM_Activate(true, false);
+		break;
+	case SDL_EVENT_WINDOW_HIDDEN:
+		OnWM_Activate(false, true);
 		break;
 	case SDL_EVENT_QUIT:
 		g_pEventManager->Event.Signal("KERNEL:disconnect");
