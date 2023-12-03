@@ -129,6 +129,12 @@ bool CControlAnimationBase::accel_check_braking(float before_interval, float nom
 {
 	if (!m_man->path_builder().is_moving_on_path())						return (braking_mode = false);
 	if (!accel_active(eAV_Braking))										return (braking_mode = false);
+	
+	u32 curr_travel_point_index = m_man->path_builder().detail().curr_travel_point_index();
+	if (m_man->path_builder().detail().path()[curr_travel_point_index].velocity == MonsterMovement::eVelocityParameterStand) {
+		return braking_mode = false;
+	}
+	
 	if (m_man->path_builder()
 		.detail()
 		.path()[m_man->path_builder().detail().curr_travel_point_index()]
