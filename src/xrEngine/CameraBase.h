@@ -64,6 +64,9 @@ public:
 	virtual float	CheckLimYaw		( );
 	virtual float	CheckLimPitch	( );
 	virtual float	CheckLimRoll	( );
+
+	virtual void save(NET_Packet& output_packet) {};
+	virtual void load(IReader& input_packet) {};
 };
 
 

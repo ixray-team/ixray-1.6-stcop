@@ -5,6 +5,7 @@
 #include "../xrEngine/Cameramanager.h"
 #include "xr_level_controller.h"
 #include "actor.h"
+#include "object_broker.h"
 
 #include "../xrEngine/GameMtlLib.h"
 #include "CustomRocket.h"
@@ -28,6 +29,10 @@ void CCameraLook::Load(LPCSTR section)
 CCameraLook::~CCameraLook()
 {
 }
+
+void CCameraLook::save(NET_Packet& packet) { save_data(pitch, packet); }
+
+void CCameraLook::load(IReader& packet) { load_data(pitch, packet); }
 
 void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 {

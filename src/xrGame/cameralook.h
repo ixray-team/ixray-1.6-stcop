@@ -21,6 +21,10 @@ public:
 
 	virtual float	GetWorldYaw		( )	{ return -yaw;	};
 	virtual float	GetWorldPitch	( )	{ return pitch; };
+
+	void save(NET_Packet& output_packet) override;
+	void load(IReader& input_packet) override;
+
 protected:
 			void	UpdateDistance	( Fvector& point );
 };
