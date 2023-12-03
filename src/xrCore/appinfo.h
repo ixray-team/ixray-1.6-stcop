@@ -5,7 +5,7 @@ struct SDL_Window;
 class XRCORE_API CAppInfo
 {
 public:
-	SDL_Window* Window = nullptr;
+	HWND WindowHandle = nullptr;
 
 	HANDLE MainThread = nullptr;
 	HANDLE SecondaryThread = nullptr;
