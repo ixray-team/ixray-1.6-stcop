@@ -607,9 +607,9 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	unaffected_r_torso.pitch= r_torso.pitch;
 	unaffected_r_torso.roll	= r_torso.roll;
 
-	cam_Set(eacFirstEye);
-
-	cam_Active()->Set		(-E->o_torso.yaw,E->o_torso.pitch,0);//E->o_Angle.z);
+	cam_Active()->Set(-E->o_torso.yaw,
+		(cam_active != eacFirstEye) ? E->o_torso.pitch : cameras[eacFirstEye]->pitch,
+		0); // E->o_Angle.z);
 
 	// *** movement state - respawn
 	//mstate_wishful			= 0;
@@ -1377,6 +1377,9 @@ void CActor::save(NET_Packet &output_packet)
 	output_packet.w_u8(task_wnd->IsSecondaryTasksEnabled() ? 1 : 0);
 	output_packet.w_u8(task_wnd->IsPrimaryObjectsEnabled() ? 1 : 0);
 
+	cam_Active()->save(output_packet);
+	output_packet.w_u8(cam_active);
+
 	output_packet.w_stringZ(g_quick_use_slots[0]);
 	output_packet.w_stringZ(g_quick_use_slots[1]);
 	output_packet.w_stringZ(g_quick_use_slots[2]);
@@ -1393,6 +1396,10 @@ void CActor::load(IReader &input_packet)
 	task_wnd->QuestNpcsEnabled(!!input_packet.r_u8());
 	task_wnd->SecondaryTasksEnabled(!!input_packet.r_u8());
 	task_wnd->PrimaryObjectsEnabled(!!input_packet.r_u8());
+
+	cam_Active()->load(input_packet);
+	cam_Set(EActorCameras(input_packet.r_u8()));
+
 	//need_quick_slot_reload = true;
 
 	input_packet.r_stringZ(g_quick_use_slots[0], sizeof(g_quick_use_slots[0]));
