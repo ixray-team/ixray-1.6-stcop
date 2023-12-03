@@ -270,15 +270,20 @@ public:
 			bool				IsSingleHanded		()	const		{	return m_bIsSingleHanded; }
 
 public:
+	int m_strap_bone0_id;
+	int m_strap_bone1_id;
+	bool m_strapped_mode_rifle;
 	IC		LPCSTR			strap_bone0			() const {return m_strap_bone0;}
 	IC		LPCSTR			strap_bone1			() const {return m_strap_bone1;}
 	IC		void			strapped_mode		(bool value) {m_strapped_mode = value;}
 	IC		bool			strapped_mode		() const {return m_strapped_mode;}
+	bool m_can_be_strapped_rifle;
 
 protected:
 	LPCSTR					m_strap_bone0;
 	LPCSTR					m_strap_bone1;
 	Fmatrix					m_StrapOffset;
+	Fmatrix m_StrapOffset_alt;
 	bool					m_strapped_mode;
 	bool					m_can_be_strapped;
 
@@ -297,7 +302,8 @@ private:
 
 protected:
 	virtual void			UpdateFireDependencies_internal	();
-	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
+	virtual void UpdatePosition(const Fmatrix& transform);
+	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
