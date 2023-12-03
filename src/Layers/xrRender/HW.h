@@ -14,6 +14,8 @@
 #include "stats_manager.h"
 #endif
 
+struct SDL_Window;
+
 class  CHW
 #ifdef USE_DX11
 	:	public pureAppActivate, 
@@ -27,7 +29,7 @@ public:
 
 	void					CreateD3D				();
 	void					DestroyD3D				();
-	void					CreateDevice			(HWND hw, bool move_window);
+	void					CreateDevice			(SDL_Window* window, bool move_window);
 
 #ifdef USE_DX11
 	void					CreateRDoc				();
@@ -35,14 +37,14 @@ public:
 
 	void					DestroyDevice			();
 
-	void					Reset					(HWND hw);
+	void					Reset					(SDL_Window* window);
 
 	void					selectResolution		(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed);
 	D3DFORMAT				selectDepthStencil		(D3DFORMAT);
 	u32						selectPresentInterval	();
 	u32						selectGPU				();
 	u32						selectRefresh			(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
-	void					updateWindowProps		(HWND hw);
+	void					updateWindowProps		(SDL_Window* window);
 	BOOL					support					(D3DFORMAT fmt, DWORD type, DWORD usage);
 
 #ifdef DEBUG

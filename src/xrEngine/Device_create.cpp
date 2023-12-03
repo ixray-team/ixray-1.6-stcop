@@ -65,12 +65,12 @@ void CRenderDevice::Create	()
 	if (b_is_Ready)		return;		// prevent double call
 	Statistic			= xr_new<CStats>();
 
-#ifdef	DEBUG
-cdb_clRAY		= &Statistic->clRAY;				// total: ray-testing
-cdb_clBOX		= &Statistic->clBOX;				// total: box query
-cdb_clFRUSTUM	= &Statistic->clFRUSTUM;			// total: frustum query
-cdb_bDebug		= &bDebug;
-#endif
+	#ifdef	DEBUG
+	cdb_clRAY		= &Statistic->clRAY;				// total: ray-testing
+	cdb_clBOX		= &Statistic->clBOX;				// total: box query
+	cdb_clFRUSTUM	= &Statistic->clFRUSTUM;			// total: frustum query
+	cdb_bDebug		= &bDebug;
+	#endif
 
 	if (!m_pRender)
 		m_pRender			= RenderFactory->CreateRenderDeviceRender();
@@ -83,11 +83,10 @@ cdb_bDebug		= &bDebug;
 #endif // #ifdef _EDITOR
 
 
-	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
 	m_pRender->Create	(
-		hwnd,
+		g_AppInfo.Window,
 		TargetWidth,
 		TargetHeight,
 		HalfTargetWidth,

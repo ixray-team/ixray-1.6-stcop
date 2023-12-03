@@ -51,10 +51,6 @@ public:
 	void						KeyPressed					(int SDLCode);	
 	void						KeyReleased					(int SDLCode);	
 
-	void						SetAllAcquire				( BOOL bAcquire = TRUE );
-	void						SetMouseAcquire				( BOOL bAcquire );
-	void						SetKBDAcquire				( BOOL bAcquire );
-
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );
 	BOOL						iGetAsyncKeyState			( int dik );
@@ -71,10 +67,8 @@ public:
 	IInputReceiver*				CurrentIR					();
 
 public:
-			void				exclusive_mode				(const bool &exclusive);
-	IC		bool				get_exclusive_mode			();
 			void				unacquire					();
-			void				acquire						(const bool &exclusive);
+			void				acquire						();
 			bool				get_dik_name				(int dik, LPSTR dest, int dest_sz);
 
 			void				feedback					(u16 s1, u16 s2, float time);

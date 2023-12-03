@@ -105,11 +105,11 @@ void CHW::DestroyD3D()
 //	FreeLibrary(hD3D);
 }
 
-void CHW::CreateDevice( HWND m_hWnd, bool move_window )
+void CHW::CreateDevice(SDL_Window* window, bool move_window )
 {
 	CreateRDoc();
 
-	m_move_window			= move_window;
+	m_move_window = move_window;
 	CreateD3D();
 
 	// General - select adapter and device
@@ -121,56 +121,15 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	if (m_bUsePerfhud)
 		m_DriverType = D3D_DRIVER_TYPE_REFERENCE;
 
-	//	For DirectX 10 adapter is already created in create D3D.
-	/*
-	//. #ifdef DEBUG
-	// Look for 'NVIDIA NVPerfHUD' adapter
-	// If it is present, override default settings
-	for (UINT Adapter=0;Adapter<pD3D->GetAdapterCount();Adapter++)	{
-		D3DADAPTER_IDENTIFIER9 Identifier;
-		HRESULT Res=pD3D->GetAdapterIdentifier(Adapter,0,&Identifier);
-		if (SUCCEEDED(Res) && (xr_strcmp(Identifier.Description,"NVIDIA PerfHUD")==0))
-		{
-			DevAdapter	=Adapter;
-			m_DriverType		=D3DDEVTYPE_REF;
-			break;
-		}
-	}
-	//. #endif
-	*/
-
 	// Display the name of video board
 	DXGI_ADAPTER_DESC Desc;
 	R_CHK( m_pAdapter->GetDesc(&Desc) );
 	//	Warning: Desc.Description is wide string
 	Msg		("* GPU [vendor:%X]-[device:%X]: %S", Desc.VendorId, Desc.DeviceId, Desc.Description);
-	/*
-	// Display the name of video board
-	D3DADAPTER_IDENTIFIER9	adapterID;
-	R_CHK	(pD3D->GetAdapterIdentifier(DevAdapter,0,&adapterID));
-	Msg		("* GPU [vendor:%X]-[device:%X]: %s",adapterID.VendorId,adapterID.DeviceId,adapterID.Description);
-
-	u16	drv_Product		= HIWORD(adapterID.DriverVersion.HighPart);
-	u16	drv_Version		= LOWORD(adapterID.DriverVersion.HighPart);
-	u16	drv_SubVersion	= HIWORD(adapterID.DriverVersion.LowPart);
-	u16	drv_Build		= LOWORD(adapterID.DriverVersion.LowPart);
-	Msg		("* GPU driver: %d.%d.%d.%d",u32(drv_Product),u32(drv_Version),u32(drv_SubVersion), u32(drv_Build));
-	*/
-
-	/*
-	Caps.id_vendor	= adapterID.VendorId;
-	Caps.id_device	= adapterID.DeviceId;
-	*/
 
 	Caps.id_vendor	= Desc.VendorId;
 	Caps.id_device	= Desc.DeviceId;
 
-	/*
-	// Retreive windowed mode
-	D3DDISPLAYMODE mWindowed;
-	R_CHK(pD3D->GetAdapterDisplayMode(DevAdapter, &mWindowed));
-
-	*/
 	// Select back-buffer & depth-stencil format
 	D3DFORMAT&	fTarget	= Caps.fTarget;
 	D3DFORMAT&	fDepth	= Caps.fDepth;
@@ -178,77 +137,18 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	//	HACK: DX10: Embed hard target format.
 	fTarget = D3DFMT_X8R8G8B8;	//	No match in DX10. D3DFMT_A8B8G8R8->DXGI_FORMAT_R8G8B8A8_UNORM
 	fDepth = selectDepthStencil(fTarget);
-	/*
-	if (bWindowed)
-	{
-		fTarget = mWindowed.Format;
-		R_CHK(pD3D->CheckDeviceType	(DevAdapter,m_DriverType,fTarget,fTarget,TRUE));
-		fDepth  = selectDepthStencil(fTarget);
-	} else {
-		switch (psCurrentBPP) {
-		case 32:
-			fTarget = D3DFMT_X8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
-				break;
-			fTarget = D3DFMT_A8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
-				break;
-			fTarget = D3DFMT_R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
-				break;
-			fTarget = D3DFMT_UNKNOWN;
-			break;
-		case 16:
-		default:
-			fTarget = D3DFMT_R5G6B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
-				break;
-			fTarget = D3DFMT_X1R5G5B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
-				break;
-			fTarget = D3DFMT_X4R4G4B4;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,m_DriverType,fTarget,fTarget,FALSE)))
-				break;
-			fTarget = D3DFMT_UNKNOWN;
-			break;
-		}
-		fDepth  = selectDepthStencil(fTarget);
-	}
-	
-
-	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		FlushLog			();
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	}
-
-	*/
-	
 	// Set up the presentation parameters
 	DXGI_SWAP_CHAIN_DESC	&sd	= m_ChainDesc;
 	ZeroMemory				( &sd, sizeof(sd) );
 
+	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 	selectResolution	(sd.BufferDesc.Width, sd.BufferDesc.Height, bWindowed);
-
-	// Back buffer
-	//.	P.BackBufferWidth		= dwWidth;
-	//. P.BackBufferHeight		= dwHeight;
-	//	TODO: DX10: implement dynamic format selection
-	//sd.BufferDesc.Format		= fTarget;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferCount = 1;
-
-	// Multisample
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
-
-	// Windoze
-	//P.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
-	//P.hDeviceWindow			= m_hWnd;
-	//P.Windowed				= bWindowed;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.OutputWindow = m_hWnd;
+	sd.OutputWindow = hwnd;
 	sd.Windowed = bWindowed;
 
 	sd.BufferDesc.RefreshRate =
@@ -258,16 +158,11 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	UINT createDeviceFlags = 0;
-	if (strstr(Core.Params, "-dxdebug"))
-	{
+	if (strstr(Core.Params, "-dxdebug")) {
 		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 	}
 
-   HRESULT R;
-	// Create the device
-	//	DX10 don't need it?
-	//u32 GPU		= selectGPU();
-
+	HRESULT R;
     D3D_FEATURE_LEVEL pFeatureLevels[] =
     {
         D3D_FEATURE_LEVEL_11_1,
@@ -290,7 +185,6 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 										  &pContext);
 
 
-	//if (D3DERR_DEVICELOST==R)	{
 	if (FAILED(R))
 	{
 		// Fatal error! Cannot create rendering device AT STARTUP !!!
@@ -305,37 +199,13 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	R_CHK(R);
 
 	_SHOW_REF	("* CREATE: DeviceREF:",HW.pDevice);
-	/*
-	switch (GPU)
-	{
-	case D3DCREATE_SOFTWARE_VERTEXPROCESSING:
-		Log	("* Vertex Processor: SOFTWARE");
-		break;
-	case D3DCREATE_MIXED_VERTEXPROCESSING:
-		Log	("* Vertex Processor: MIXED");
-		break;
-	case D3DCREATE_HARDWARE_VERTEXPROCESSING:
-		Log	("* Vertex Processor: HARDWARE");
-		break;
-	case D3DCREATE_HARDWARE_VERTEXPROCESSING|D3DCREATE_PUREDEVICE:
-		Log	("* Vertex Processor: PURE HARDWARE");
-		break;
-	}
-	*/
-
-	// Capture misc data
-//	DX10: Don't neeed this?
-//#ifdef DEBUG
-//	R_CHK	(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
-//#endif
-	//	Create render target and depth-stencil views here
 	UpdateViews();
 
 	//u32	memory									= pDevice->GetAvailableTextureMem	();
 	size_t	memory									= Desc.DedicatedVideoMemory;
 	Msg		("* Texture memory: %d M",		memory/(1024*1024));
 #ifndef _EDITOR
-	updateWindowProps							(m_hWnd);
+	updateWindowProps							(window);
 	fill_vid_mode_list							(this);
 #endif
 }
@@ -400,7 +270,7 @@ void CHW::DestroyDevice()
 //////////////////////////////////////////////////////////////////////
 // Resetting device
 //////////////////////////////////////////////////////////////////////
-void CHW::Reset (HWND hwnd)
+void CHW::Reset (SDL_Window* window)
 {
 	DXGI_SWAP_CHAIN_DESC &cd = m_ChainDesc;
 
@@ -436,8 +306,7 @@ void CHW::Reset (HWND hwnd)
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
 	UpdateViews();
-
-	updateWindowProps	(hwnd);
+	updateWindowProps	(window);
 }
 
 D3DFORMAT CHW::selectDepthStencil	(D3DFORMAT fTarget)
@@ -508,68 +377,19 @@ BOOL CHW::support( D3DFORMAT fmt, DWORD type, DWORD usage)
 	return TRUE;
 }
 
-void CHW::updateWindowProps(HWND m_hWnd)
+void CHW::updateWindowProps(SDL_Window* window)
 {
-	//	BOOL	bWindowed				= strstr(Core.Params,"-dedicated") ? TRUE : !psDeviceFlags.is	(rsFullscreen);
-	BOOL	bWindowed				= !psDeviceFlags.is	(rsFullscreen);
-
-	u32		dwWindowStyle			= 0;
-	// Set window properties depending on what mode were in.
-	if (bWindowed)		{
-		if (m_move_window) {
-			if (strstr(Core.Params,"-no_dialog_header"))
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
-			else
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
-			// When moving from fullscreen to windowed mode, it is important to
-			// adjust the window size after recreating the device rather than
-			// beforehand to ensure that you get the window size you want.  For
-			// example, when switching from 640x480 fullscreen to windowed with
-			// a 1000x600 window on a 1024x768 desktop, it is impossible to set
-			// the window size to 1000x600 until after the display mode has
-			// changed to 1024x768, because windows cannot be larger than the
-			// desktop.
-
-			RECT			m_rcWindowBounds;
-			BOOL			bCenter = FALSE;
-			bCenter = !strstr(Core.Params, "-no_center_screen");
-
-			if (bCenter) {
-				RECT				DesktopRect;
-
-				GetClientRect		(GetDesktopWindow(), &DesktopRect);
-
-				SetRect(			&m_rcWindowBounds, 
-					(DesktopRect.right-m_ChainDesc.BufferDesc.Width)/2, 
-					(DesktopRect.bottom-m_ChainDesc.BufferDesc.Height)/2, 
-					(DesktopRect.right+m_ChainDesc.BufferDesc.Width)/2, 
-					(DesktopRect.bottom+m_ChainDesc.BufferDesc.Height)/2);
-			}else{
-				SetRect(			&m_rcWindowBounds,
-					0, 
-					0, 
-					m_ChainDesc.BufferDesc.Width, 
-					m_ChainDesc.BufferDesc.Height);
-			};
-
-			AdjustWindowRect		(	&m_rcWindowBounds, dwWindowStyle, FALSE );
-
-			SetWindowPos			(	m_hWnd, 
-				HWND_NOTOPMOST,	
-				m_rcWindowBounds.left, 
-				m_rcWindowBounds.top,
-				( m_rcWindowBounds.right - m_rcWindowBounds.left ),
-				( m_rcWindowBounds.bottom - m_rcWindowBounds.top ),
-				SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
-		}
-	}
-	else 
-	{
-		SetWindowLong(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_POPUP | WS_VISIBLE));
+	if (!psDeviceFlags.is(rsFullscreen)) {
+		const bool Centered = strstr(Core.Params, "-no_center_screen") == nullptr;
+		SDL_SetWindowSize(window, m_ChainDesc.BufferDesc.Width, m_ChainDesc.BufferDesc.Height);
+		SDL_SetWindowBordered(window, m_move_window);
+		SDL_SetWindowPosition(window, Centered ? SDL_WINDOWPOS_CENTERED : 0, Centered ? SDL_WINDOWPOS_CENTERED : 0);
+	} else {
+		SDL_SetWindowBordered(window, false);
 	}
 
-	ShowCursor	(FALSE);
-	SetForegroundWindow( m_hWnd );
+	SDL_HideCursor();
+	SDL_RaiseWindow(window);
 }
 
 

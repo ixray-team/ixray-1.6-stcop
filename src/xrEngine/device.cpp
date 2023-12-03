@@ -207,29 +207,33 @@ ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 void CRenderDevice::on_idle		()
 {
 	if (!b_is_Ready) {
-		Sleep	(100);
+		Sleep(100);
 		return;
 	}
+
+	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
+	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
+	SDL_SetWindowGrab(g_AppInfo.Window, Focus);
 
 	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
-	if(g_loading_events.size())
+	if (g_loading_events.size())
 	{
-		if( g_loading_events.front()() )
+		if (g_loading_events.front()())
 			g_loading_events.pop_front();
-		pApp->LoadDraw				();
+
+		pApp->LoadDraw();
 		return;
-	}else 
-	{
-		FrameMove						( );
+	} else {
+		FrameMove();
 	}
 
 	// Precache
 	if (dwPrecacheFrame)
 	{
-		float factor					= float(dwPrecacheFrame)/float(dwPrecacheTotal);
+		float factor					= float(dwPrecacheFrame) / float(dwPrecacheTotal);
 		float angle						= PI_MUL_2 * factor;
 		vCameraDirection.set			(_sin(angle),0,_cos(angle));	vCameraDirection.normalize	();
 		vCameraTop.set					(0,1,0);
@@ -340,49 +344,43 @@ void CRenderDevice::message_loop()
 	}
 }
 
-void CRenderDevice::Run			()
+void CRenderDevice::Run()
 {
-//	DUMP_PHASE;
-	g_bLoaded		= FALSE;
-	Log				("Starting engine...");
-	thread_name		("X-RAY Primary thread");
+	//	DUMP_PHASE;
+	g_bLoaded = FALSE;
+	Log("Starting engine...");
+	thread_name("X-RAY Primary thread");
 
 	// Startup timers and calculate timer delta
-	dwTimeGlobal				= 0;
-	Timer_MM_Delta				= 0;
+	dwTimeGlobal = 0;
+	Timer_MM_Delta = 0;
 	{
-		u32 time_mm			= timeGetTime	();
-		while (timeGetTime()==time_mm);			// wait for next tick
-		u32 time_system		= timeGetTime	();
-		u32 time_local		= TimerAsync	();
-		Timer_MM_Delta		= time_system-time_local;
+		u32 time_mm = timeGetTime();
+		while (timeGetTime() == time_mm);			// wait for next tick
+		u32 time_system = timeGetTime();
+		u32 time_local = TimerAsync();
+		Timer_MM_Delta = time_system - time_local;
 	}
 
 	// Start all threads
-//	InitializeCriticalSection	(&mt_csEnter);
-//	InitializeCriticalSection	(&mt_csLeave);
-	mt_csEnter.Enter			();
-	mt_bMustExit				= FALSE;
+	mt_csEnter.Enter();
+	mt_bMustExit = FALSE;
 
 	g_AppInfo.MainThread = GetCurrentThread();
-	thread_spawn(mt_Thread,"X-RAY Secondary thread",0,0);
+	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
 
 	// Message cycle
-	seqAppStart.Process			(rp_AppStart);
+	seqAppStart.Process(rp_AppStart);
 
-	//CHK_DX(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,color_xrgb(0,0,0),1,0));
-	m_pRender->ClearTarget		();
+	m_pRender->ClearTarget();
+	message_loop();
 
-	message_loop				();
-
-	seqAppEnd.Process		(rp_AppEnd);
+	seqAppEnd.Process(rp_AppEnd);
 
 	// Stop Balance-Thread
-	mt_bMustExit			= TRUE;
-	mt_csEnter.Leave		();
+	mt_bMustExit = TRUE;
+	mt_csEnter.Leave();
 	while (mt_bMustExit)	Sleep(0);
-//	DeleteCriticalSection	(&mt_csEnter);
-//	DeleteCriticalSection	(&mt_csLeave);
 }
 
 u32 app_inactive_time		= 0;
@@ -392,49 +390,35 @@ void ProcessLoading(RP_FUNC *f);
 void CRenderDevice::FrameMove()
 {
 	dwFrame			++;
-
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
 
 	if (psDeviceFlags.test(rsConstantFPS))	{
-		// 20ms = 50fps
-		//fTimeDelta		=	0.020f;			
-		//fTimeGlobal		+=	0.020f;
-		//dwTimeDelta		=	20;
-		//dwTimeGlobal	+=	20;
-		// 33ms = 30fps
 		fTimeDelta		=	0.033f;			
 		fTimeGlobal		+=	0.033f;
 		dwTimeDelta		=	33;
 		dwTimeGlobal	+=	33;
 	} else {
-		// Timer
 		float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
-		//fTimeDelta = 0.7f * fTimeDelta + 0.3f*fPreviousFrameTime;			// smooth random system activity
+
 		if (fTimeDelta>.1f)    
 			fTimeDelta = .1f;							// limit to 15fps minimum
 
 		if (fTimeDelta <= 0.f) 
 			fTimeDelta = EPS_S + EPS_S;					// limit to 15fps minimum
 
-		if(Paused())	
+		if (Paused()) {
 			fTimeDelta = 0.0f;
+		}
 
-//		u64	qTime		= TimerGlobal.GetElapsed_clk();
-		fTimeGlobal		= TimerGlobal.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
+		fTimeGlobal		= TimerGlobal.GetElapsed_sec();
 		u32	_old_global	= dwTimeGlobal;
 		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
 		dwTimeDelta		= dwTimeGlobal-_old_global;
 	}
 
-	// Frame move
 	Statistic->EngineTOTAL.Begin	();
-
-	//	TODO: HACK to test loading screen.
-	//if(!g_bLoaded) 
-		ProcessLoading				(rp_Frame);
-	//else
-	//	seqFrame.Process			(rp_Frame);
+	ProcessLoading				(rp_Frame);
 	Statistic->EngineTOTAL.End	();
 }
 
@@ -529,18 +513,22 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 #	ifdef INGAME_EDITOR
 			if (!editor())
 #	endif
-				ShowCursor(FALSE);
+			SDL_HideCursor();
 		}
 	}
 	else if (!psDeviceFlags.test(rsDeviceActive))
 	{
 		app_inactive_time_start = TimerMM.GetElapsed_ms();
 		Device.seqAppDeactivate.Process(rp_AppDeactivate);
-		ShowCursor(TRUE);
+		SDL_ShowCursor();
 	}
 	else
 	{
-		ShowCursor(!NewState);
+		if (NewState) {
+			SDL_ShowCursor();
+		} else {
+			SDL_HideCursor();
+		}
 	}
 }
 
