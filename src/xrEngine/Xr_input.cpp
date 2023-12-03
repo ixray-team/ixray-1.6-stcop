@@ -71,12 +71,17 @@ CInput::~CInput(void)
 //-----------------------------------------------------------------------
 
 void						
-CInput::MouseMotion(float dx, float dy, float scroll)
+CInput::MouseMotion(float dx, float dy)
 {
 	mouseMoved = true;
 	offs[0] += dx;
 	offs[1] += dy;
-	offs[2] = scroll;
+}
+
+void CInput::MouseScroll(float d)
+{
+	mouseScrolled = true;
+	offs[2] += d;
 }
 
 void					
@@ -181,8 +186,12 @@ void CInput::MouseUpdate( )
 
 	if (mouseMoved) {
 		cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
-		//cbStack.back()->IR_OnMouseWheel(offs[2]);
 		mouseMoved = false;
+	}
+
+	if (mouseScrolled) {
+		cbStack.back()->IR_OnMouseWheel(offs[2]);
+		mouseScrolled = false;
 	}
 
 	std::memcpy(old_mouseState, mouseState, sizeof(mouseState));

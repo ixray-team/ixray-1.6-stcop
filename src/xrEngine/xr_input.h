@@ -29,6 +29,7 @@ public:
 	};
 private:
 	bool						mouseMoved = false;
+	bool						mouseScrolled = false;
 	char						mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						KBState[COUNT_KB_BUTTONS] = {};
 	int 						offs[COUNT_MOUSE_AXIS] = {};
@@ -45,7 +46,8 @@ private:
 public:
 	u32							dwCurTime;
 	
-	void						MouseMotion					(float dx, float dy, float scroll);
+	void						MouseMotion					(float dx, float dy);
+	void						MouseScroll					(float d);
 	void						MousePressed				(int button);
 	void						MouseReleased				(int button);
 	void						KeyPressed					(int SDLCode);	

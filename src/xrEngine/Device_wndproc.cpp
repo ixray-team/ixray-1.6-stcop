@@ -17,12 +17,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		pInput->KeyReleased(Event.key.keysym.sym);
 		break;
 	case SDL_EVENT_MOUSE_MOTION:
-		pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel, Event.motion.x);
-		//mouseMoved = true;
-		//offs[0] += event.motion.xrel;
-		//offs[1] += event.motion.yrel;
-		//mouseAxisState[0] = event.motion.x;
-		//mouseAxisState[1] = event.motion.y;
+		pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+		break;
+	case SDL_EVENT_MOUSE_WHEEL:
+		pInput->MouseScroll(Event.wheel.y);
 		break;
 	case SDL_EVENT_MOUSE_BUTTON_DOWN:	
 	case SDL_EVENT_MOUSE_BUTTON_UP:
