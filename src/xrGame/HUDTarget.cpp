@@ -22,6 +22,7 @@
 
 #include <ai/monsters/poltergeist/poltergeist.h>
 #include "UIFontDefines.h"
+#include "Actor.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
@@ -141,6 +142,16 @@ void CHUDTarget::Render()
 		return;
 
 	VERIFY				(g_bRendering);
+
+	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
+	if (!Actor)
+		return;
+
+	bool get_motions = Actor->active_cam() == eacLookAt &&
+		((Actor->MovingState() & mcSprint) || (Actor->MovingState() & mcJumpSeq));
+
+	if (get_motions)
+		return;
 
 	CObject*	O		= Level().CurrentEntity();
 	if (0==O)			return;

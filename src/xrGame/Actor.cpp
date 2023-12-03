@@ -103,7 +103,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
 	game_news_registry		= xr_new<CGameNewsRegistryWrapper		>();
 	// Cameras
-	cameras[eacFirstEye]	= xr_new<CCameraFirstEye>				(this);
+	cameras[eacFirstEye] = xr_new<CCameraFirstEye>(this, CCameraBase::flKeepPitch);
 	cameras[eacFirstEye]->Load("actor_firsteye_cam");
 
 	cameras[eacLookAt] = xr_new<CCameraLook2>(this);
@@ -910,7 +910,7 @@ float CActor::currentFOV()
 
 	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 
-	if (eacFirstEye == cam_active && pWeapon &&
+	if (eacFreeLook != cam_active && pWeapon &&
 		pWeapon->IsZoomed() && 
 		( !pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()) )
 		 )
@@ -922,6 +922,8 @@ float CActor::currentFOV()
 	}
 }
 
+static bool bLook_cam_fp_zoom = false;
+extern ENGINE_API int m_look_cam_fp_zoom;
 void CActor::UpdateCL	()
 {
 	if(g_Alive() && Level().CurrentViewEntity() == this)
@@ -986,6 +988,18 @@ void CActor::UpdateCL	()
 				S->SetParams(full_fire_disp);
 
 			SetZoomAimingMode		(true);
+			// Force switch to first-person for zooming
+			if (m_look_cam_fp_zoom == 1 && !bLook_cam_fp_zoom && cam_active == eacLookAt) {
+				cam_Set(eacFirstEye);
+				bLook_cam_fp_zoom = true;
+			}
+		}
+		else {
+			// Switch back to third-person if was forced
+			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
+				cam_Set(eacLookAt);
+				bLook_cam_fp_zoom = false;
+			}
 		}
 
 		if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
@@ -1021,6 +1035,12 @@ void CActor::UpdateCL	()
 		{
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
+
+			// Switch back to third-person if was forced
+			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
+				cam_Set(eacLookAt);
+				bLook_cam_fp_zoom = false;
+			}
 		}
 	}
 
@@ -1044,11 +1064,7 @@ void CActor::UpdateCL	()
 			xr_delete(m_sndShockEffector);
 	}
 	Fmatrix							trans;
-	if(cam_Active() == cam_FirstEye())
-	{
-		Cameras().hud_camera_Matrix		(trans);
-	}else
-		Cameras().camera_Matrix			(trans);
+	Cameras().hud_camera_Matrix(trans);
 	
 	if(IsFocused())
 		g_player_hud->update			(trans);

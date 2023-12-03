@@ -388,11 +388,6 @@ void CActor::cam_Update(float dt, float fFOV)
 	C->Update						(point,dangle);
 	C->f_fov						= fFOV;
 
-	if(eacFirstEye != cam_active)
-	{
-		cameras[eacFirstEye]->Update	(point,dangle);
-		cameras[eacFirstEye]->f_fov		= fFOV;
-	} 
 	if (Level().CurrentEntity() == this)
 	{
 		collide_camera( *cameras[eacFirstEye], _viewport_near, this );
