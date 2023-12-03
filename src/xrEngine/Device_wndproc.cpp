@@ -5,6 +5,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	switch (Event.type) {
 	case SDL_EVENT_WINDOW_SHOWN:
+		break;
 	case SDL_EVENT_QUIT:
 		g_pEventManager->Event.Defer("KERNEL:disconnect");
 		g_pEventManager->Event.Defer("KERNEL:quit");
