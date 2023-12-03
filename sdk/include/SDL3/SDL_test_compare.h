@@ -1,0 +1,86 @@
+/*
+  Simple DirectMedia Layer
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+/**
+ *  \file SDL_test_compare.h
+ *
+ *  Comparison function of SDL test framework.
+ *
+ *  This code is a part of the SDL test library, not the main SDL library.
+ */
+
+/*
+
+ Defines comparison functions (i.e. for surfaces).
+
+*/
+
+#ifndef SDL_test_compare_h_
+#define SDL_test_compare_h_
+
+#include <SDL3/SDL.h>
+
+#include <SDL3/SDL_begin_code.h>
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Retrieves a single pixel from a surface.
+ *
+ * This function prioritizes correctness over speed: it is suitable for
+ * unit tests, but is not intended for use in a game engine.
+ *
+ * Like SDL_GetRGBA, this uses the entire 0..255 range when converting
+ * color components from pixel formats with less than 8 bits per RGB
+ * component.
+ *
+ * \param surface The surface
+ * \param x Horizontal coordinate, 0 <= x < width
+ * \param y Vertical coordinate, 0 <= y < height
+ * \param r Pointer to location to store red channel, 0-255
+ * \param g Pointer to location to store green channel, 0-255
+ * \param b Pointer to location to store blue channel, 0-255
+ * \param a Pointer to location to store alpha channel, 0-255
+ * \returns 0 if the surface is valid and the coordinates are in-bounds
+ */
+int SDLTest_ReadSurfacePixel(SDL_Surface *surface, int x, int y, Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a);
+
+/**
+ * Compares a surface and with reference image data for equality
+ *
+ * \param surface Surface used in comparison
+ * \param referenceSurface Test Surface used in comparison
+ * \param allowable_error Allowable difference (=sum of squared difference for each RGB component) in blending accuracy.
+ *
+ * \returns 0 if comparison succeeded, >0 (=number of pixels for which the comparison failed) if comparison failed, -1 if any of the surfaces were NULL, -2 if the surface sizes differ.
+ */
+int SDLTest_CompareSurfaces(SDL_Surface *surface, SDL_Surface *referenceSurface, int allowable_error);
+
+
+/* Ends C function definitions when using C++ */
+#ifdef __cplusplus
+}
+#endif
+#include <SDL3/SDL_close_code.h>
+
+#endif /* SDL_test_compare_h_ */

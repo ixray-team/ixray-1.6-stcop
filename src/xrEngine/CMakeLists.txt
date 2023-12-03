@@ -65,12 +65,14 @@ set_property(TARGET xrAbstractions PROPERTY ENABLE_EXPORTS ON)
 # Include directories
 target_include_directories(xrAbstractions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}")
+target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}SDL3")
 
 # Move precompiled header
 set_target_properties(xrAbstractions PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 set_target_properties(xrAbstractions PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 target_precompile_headers(xrAbstractions PUBLIC "stdafx.h")
+target_link_directories(xrAbstractions PUBLIC "${IXRAY_SDK_LIB}")
 
 file(GLOB_RECURSE ENGINE_SOURCE_PCH_FILES "stdafx.*")
 file(GLOB_RECURSE ENGINE_SOURCE_ALL_C_FILES "*.c")
@@ -105,6 +107,11 @@ add_custom_command(TARGET ${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_LIB}SDL3.lib ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## Theora
