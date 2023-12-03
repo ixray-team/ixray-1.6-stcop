@@ -133,6 +133,18 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 			SetWeaponHideState		(INV_STATE_LADDER, bOnClimbNow );
 		};
 	};
+
+	if (mstate_real & mcSprint) {
+		if (eacLookAt == cam_active && (mstate_real & mcJump)) {
+			mstate_wishful ^= mcAccel; // interrupt sprinting when jumping to avoid model shaking
+		}
+	}
+	else {
+		if (eacLookAt == cam_active && (mstate_old & mcSprint) && (mstate_real & mcAccel) &&
+			m_bJumpKeyPressed) {
+			mstate_wishful ^= mcSprint; // continue sprinting
+		}
+	}
 };
 
 void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Jump, float dt)
@@ -239,10 +251,12 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			mstate_real|=mcSprint;
 		else
 			mstate_real&=~mcSprint;
-		if(!(mstate_real&(mcFwd|mcLStrafe|mcRStrafe))||mstate_real&(mcCrouch|mcClimb)|| !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
-		{
-			mstate_real&=~mcSprint;
-			mstate_wishful&=~mcSprint;
+		if (!(mstate_real & mcFwd) || (mstate_real & mcFwd && mstate_real & mcBack) ||
+			(mstate_real & mcLStrafe && mstate_real & mcRStrafe) ||
+			mstate_real & (mcCrouch | mcClimb) ||
+			!isActorAccelerated(mstate_wf, IsZoomAimingMode())) {
+			mstate_real &= ~mcSprint;
+			mstate_wishful &= ~mcSprint;
 		}
 				
 		// check player move state
@@ -554,11 +568,7 @@ bool CActor::CanRun()
 bool CActor::CanSprint()
 {
 	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() &&
-						Game().PlayerCanSprint(this)
-						&& CanRun()
-						&& !(mstate_real&mcLStrafe || mstate_real&mcRStrafe)
-						&& InventoryAllowSprint()
-						;
+		Game().PlayerCanSprint(this) && CanRun() && InventoryAllowSprint();
 
 	return can_Sprint && (m_block_sprint_counter<=0);
 }
