@@ -7,9 +7,9 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	case SDL_EVENT_WINDOW_SHOWN:
 		break;
 	case SDL_EVENT_QUIT:
-		g_pEventManager->Event.Defer("KERNEL:disconnect");
-		g_pEventManager->Event.Defer("KERNEL:quit");
-		break;
+		g_pEventManager->Event.Signal("KERNEL:disconnect");
+		g_pEventManager->Event.Signal("KERNEL:quit");
+		return false;
 	case SDL_EVENT_KEY_DOWN:
 		pInput->KeyPressed(Event.key.keysym.sym);
 		break;

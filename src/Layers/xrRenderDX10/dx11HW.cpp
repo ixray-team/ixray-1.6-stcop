@@ -141,7 +141,7 @@ void CHW::CreateDevice(SDL_Window* window, bool move_window )
 	DXGI_SWAP_CHAIN_DESC	&sd	= m_ChainDesc;
 	ZeroMemory				( &sd, sizeof(sd) );
 
-	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(window), "SDL.window.win32.hwnd", nullptr);
 	selectResolution	(sd.BufferDesc.Width, sd.BufferDesc.Height, bWindowed);
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferCount = 1;

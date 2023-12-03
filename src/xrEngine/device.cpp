@@ -214,9 +214,7 @@ void CRenderDevice::on_idle		()
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
 	SDL_SetWindowGrab(g_AppInfo.Window, Focus);
-	if (Focus) {
-		SDL_SetRelativeMouseMode(Focus);
-	}
+	SDL_SetRelativeMouseMode(Focus);
 
 	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 
