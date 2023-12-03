@@ -802,6 +802,10 @@ bool valid_vertex_id(u32 level_vertex_id) {
 	return ai().level_graph().valid_vertex_id(level_vertex_id);
 }
 
+bool is_accessible_vertex_id(u32 level_vertex_id) {
+	return ai().level_graph().is_accessible(level_vertex_id);
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -902,6 +906,7 @@ void CLevel::script_register(lua_State *L)
 		def("remove_complex_effector",			&remove_complex_effector),
 		
 		def("valid_vertex_id", valid_vertex_id),
+		def("is_accessible_vertex_id", is_accessible_vertex_id),
 		def("vertex_id",						&vertex_id),
 
 		def("game_id", &GameID),
