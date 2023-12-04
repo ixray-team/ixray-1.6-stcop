@@ -348,24 +348,7 @@ void CCustomDetector::TurnDetectorInternal(bool b)
 	UpdateNightVisionMode	(b);
 }
 
-
-
 #include "game_base_space.h"
 void CCustomDetector::UpdateNightVisionMode(bool b_on)
 {
-}
-
-BOOL CAfList::feel_touch_contact	(CObject* O)
-{
-	TypesMapIt it				= m_TypesMap.find(O->cNameSect());
-
-	bool res					 = (it!=m_TypesMap.end());
-	if(res)
-	{
-		CArtefact*	pAf				= smart_cast<CArtefact*>(O);
-		
-		if(pAf->GetAfRank()>m_af_rank)
-			res = false;
-	}
-	return						res;
 }
