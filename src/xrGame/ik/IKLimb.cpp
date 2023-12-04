@@ -596,109 +596,6 @@ bool	CIKLimb::blend_collide( ik_goal_matrix &m, const SCalculateData& cd,  const
 #endif
 		return ret;
 }
-/*
-bool	CIKLimb::blend_collide( ik_goal_matrix &m, const SCalculateData& cd,  const ik_goal_matrix &m0, const ik_goal_matrix &m1 )
-{
-	bool ret = false;
-	VERIFY( m0.collide_state() != ik_goal_matrix::cl_undefined );
-	VERIFY( m1.collide_state() != ik_goal_matrix::cl_undefined );
-
-#ifdef DEBUG
-	Fvector l_toe; m_foot.ToePosition( l_toe );
-#endif
-
-	if(	m0.collide_state() == m1.collide_state() && 
-		(ik_goal_matrix::cl_free == m0.collide_state() || 
-		 ik_goal_matrix::cl_aligned == m0.collide_state() 
-		) 
-	)
-	{
-		Fmatrix fm =  m1.get() ;
-		ret = clamp_change( fm, m0.get(), cd.l, cd.a );
-		m.set( fm, m0.collide_state() );
-		m_foot.GetFootStepMatrix( m, fm, collide_data, true, true );
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-		Fvector	v; fm.transform_tiny( v, l_toe );
-		DBG_DrawPoint( v, 0.1, color_xrgb( 0, (ik_goal_matrix::cl_free == m0.collide_state()) * 255 ,(ik_goal_matrix::cl_aligned == m0.collide_state()) * 255 ) );
-#endif
-		return ret;
-	}
-
-	if( ik_goal_matrix::cl_free == m0.collide_state() )
-	{
-		Fmatrix fm =  m1.get() ;
-		ret = clamp_change( fm, m0.get(), cd.l, cd.a );
-		ik_goal_matrix r;
-		//r.set( fm, m0.collide_state( ) );
-		bool collided = m_foot.GetFootStepMatrix( r, fm, collide_data, true, true );
-		if( r.collide_state() ==  ik_goal_matrix::cl_free )
-		{
-			m = r;
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-			Fvector	v; r.get().transform_tiny( v, l_toe );
-			DBG_DrawPoint( v, 0.1, color_xrgb( (!collided) * 255, 255 , 255 ) );
-#endif
-			return ret;
-		} 
-		else
-		{
-			//NR
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-		Fvector	v; r.get().transform_tiny( v, l_toe );
-		DBG_DrawPoint( v, 0.1, color_xrgb( 255, 0 , 0 ) );
-#endif
-			m = r;
-			return false;
-			//bool bl = true, ba = true;
-			//cmp_matrix( bl, ba, m0.get(), m1.get(), linear_tolerance, angular_tolerance );
-
-		}
-	} else if( ik_goal_matrix::cl_free == m1.collide_state() )
-	{
-		Fmatrix fm =  m1.get() ;//m0
-		ret = clamp_change( fm, m0.get(), cd.l, cd.a );//m1
-		ik_goal_matrix r;
-		//r.set( fm, m0.collide_state( ) );
-		m_foot.GetFootStepMatrix( r, fm, collide_data, true, true );	
-		if( r.collide_state() == ik_goal_matrix::cl_free )
-		{
-#ifdef DEBUG
-		Fvector	v; r.get().transform_tiny( v, l_toe );
-		DBG_DrawPoint( v, 0.1, color_xrgb( 255, 255 , 0 ) );
-#endif
-			m = r;
-			return ret;
-		} 
-		else
-		{
-#ifdef DEBUG
-		Fvector	v; r.get().transform_tiny( v, l_toe );
-		DBG_DrawPoint( v, 0.1, color_xrgb( 255, 0 , 0 ) );
-#endif
-			//NR
-			m = r;
-			return false;
-		}
-	
-	} else
-	{
-		Fmatrix fm =  m1.get() ;
- 		ret = clamp_change( fm, m0.get(), cd.l, cd.a );
-		
-		ik_goal_matrix r;
-		r.set( fm, m0.collide_state( ) );
-		m_foot.GetFootStepMatrix( r, fm, collide_data, true, true );
-
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-		Fvector	v; r.get().transform_tiny( v, l_toe );
-		DBG_DrawPoint( v, 0.1, color_xrgb( 255, 0 , 255 ) );
-#endif
-
-		m = r;
-		return ret;
-	}
-}
-*/
 
 void	CIKLimb::Blending			( SCalculateData& cd )
 {
@@ -887,68 +784,10 @@ void	CIKLimb::ToeTimeDiffPredict	( Fvector &v ) const
 	v.set(0,-1,0);
 }
 
-static const float pick_dir_mix_in_factor = 0.01f;
-static const float pick_dir_mix_in_doun_factor = 0.01f;
-void pick_dir_update( Fvector &v, const Fvector& previous_dir, const Fvector& new_dir ) 
-{
-
-	Fvector dir = new_dir;
-	dir.mul(  pick_dir_mix_in_factor );
-
-	if(dir.y > 0)
-			dir.y = -dir.y;
-	
-	dir.add( previous_dir );
-
-	dir.add( Fvector( ).set( 0, -0.05f, 0 ) );
-
-	float m = dir.magnitude( );
-
-	if(m < EPS)
-		v.set( previous_dir );
-	else 
-		v.set( dir.mul( 1.f/m ) );
-
-	VERIFY( _valid( v ) );
-
-}
-
 IC void	CIKLimb::GetPickDir( Fvector &v, SCalculateData& cd ) const
 {
 	v.set( 0, -1, 0 );
-/*
-	if( !state_valide( sv_state ) )
-	{
-		cd.state.pick = v;
-		VERIFY( _valid( v ) );
-#ifdef	DEBUG
-		if( ph_dbg_draw_mask.test( phDbgIK ) )
-			Msg( "prev state not valide" );
-#endif
-		return;
-	}
-//
-	Fvector dir;
-	ToeTimeDiff( dir, cd );
-
-	Fvector lpick; sv_state.pick( lpick );
-
-	pick_dir_update( v, lpick, dir );
-
-	cd.state.pick =v;
-
-#ifdef DEBUG
-	if( ph_dbg_draw_mask.test( phDbgDrawIKGoal )  )
-	{
-		Fvector p ; m_foot.ToePosition( p );
-		cd.state.anim_pos.transform_tiny( p );
-		DBG_DrawLine( p, Fvector().add( p, Fvector( ).mul( cd.state.pick, 1 ) ), color_xrgb( 255, 0, 255 ) );
-	}
-#endif
-*/
 }
-
-
 
 void	CIKLimb::	AnimGoal			( Fmatrix &gl )
 {
