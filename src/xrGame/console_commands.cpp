@@ -2316,7 +2316,8 @@ CMD4(CCC_FloatBlock,		"dbg_text_height_scale",	&dbg_text_height_scale	,			0.2f	,
 	CMD3(CCC_Mask,		"ai_use_torch_dynamic_lights",	&g_uCommonFlags, flAiUseTorchDynamicLights);
 
 #ifndef MASTER_GOLD
-	CMD4(CCC_Vector3,		"psp_cam_offset",				&CCameraLook2::m_cam_offset, Fvector().set(-1000,-1000,-1000),Fvector().set(1000,1000,1000));
+	CMD4(CCC_Vector3, "psp_cam_offset_r", &CCameraLook2::m_cam_offset_r, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
+	CMD4(CCC_Vector3, "psp_cam_offset_l", &CCameraLook2::m_cam_offset_l, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
 #endif // MASTER_GOLD
 	extern BOOL isRenderAiMap;
 	CMD4(CCC_Integer, "render_ai_map", &isRenderAiMap, FALSE, TRUE);

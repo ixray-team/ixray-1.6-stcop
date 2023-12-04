@@ -101,7 +101,8 @@ void CCameraLook::OnActivate( CCameraBase* old_cam )
 
 int cam_dik = DIK_LSHIFT;
 
-Fvector CCameraLook2::m_cam_offset;
+Fvector CCameraLook2::m_cam_offset_r;
+Fvector CCameraLook2::m_cam_offset_l;
 void CCameraLook2::OnActivate( CCameraBase* old_cam )
 {
 	CCameraLook::OnActivate( old_cam );
@@ -109,11 +110,6 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 
 void CCameraLook2::Update(Fvector& point, Fvector&)
 {
-	if (psActorFlags.test(AF_RIGHT_SHOULDER))
-		m_cam_offset = Fvector().set(-0.400f, 0.2f, 0.0f);
-	else
-		m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
-
 	Fmatrix mR;
 	mR.setHPB						(-yaw,-pitch,-roll);
 
@@ -123,7 +119,13 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
 	Fmatrix							a_xform;
 	a_xform.setXYZ					(0, -yaw, 0);
 	a_xform.translate_over			(point);
-	Fvector _off					= m_cam_offset;
+
+	Fvector _off;
+	if (psActorFlags.test(AF_RIGHT_SHOULDER))
+		_off = m_cam_offset_r;
+	else
+		_off = m_cam_offset_l;
+
 	a_xform.transform_tiny			(_off);
 	vPosition.set					(_off);
 
@@ -134,10 +136,8 @@ void CCameraLook2::Load(LPCSTR section)
 {
 	CCameraLook::Load		(section);
 
-	if (psActorFlags.test(AF_RIGHT_SHOULDER))
-		m_cam_offset = Fvector().set(-0.400f, 0.2f, 0.0f);
-	else
-		m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
+	m_cam_offset_r = pSettings->r_fvector3(section, "offset_right");
+	m_cam_offset_l = pSettings->r_fvector3(section, "offset_left");
 
 	dist = 1.4f;
 	prev_d = 0.0f;
