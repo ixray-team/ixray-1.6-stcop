@@ -166,9 +166,17 @@ void CWeapon::UpdateXForm	()
 	if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
 		boneL				= boneR2;
 
-	V->CalculateBones		();
-	Fmatrix& mL				= V->LL_GetTransform(u16(boneL));
-	Fmatrix& mR				= V->LL_GetTransform(u16(boneR));
+	Fmatrix mL, mR;
+	if (smart_cast<CActor*>(H_Parent())) {
+		V->Bone_GetAnimPos(mL, boneL, u8(-1), false);
+		V->Bone_GetAnimPos(mR, boneR, u8(-1), false);
+	}
+	else {
+		V->CalculateBones();
+		mL = V->LL_GetTransform(boneL);
+		mR = V->LL_GetTransform(boneR);
+	}
+
 	// Calculate
 	Fmatrix					mRes;
 	Fvector					R,D,N;
