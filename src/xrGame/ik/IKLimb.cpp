@@ -989,15 +989,23 @@ void	CIKLimb::Update( CGameObject *O, const CBlend *b, const extrapolation::poin
 	step_predict( O, b, state_predict, object_pose_extrapolation );
 }
 
-float	CIKLimb::ObjShiftDown( float current_shift, const SCalculateData& cd )  const
+float CIKLimb::ObjShiftDown(float current_shift, const SCalculateData& cd) const
 {
 	Fvector hip;
-	cd.m_obj->transform_tiny( hip, Kinematics()->LL_GetTransform( m_bones[0] ).c );
+	cd.m_obj->transform_tiny(hip, Kinematics()->LL_GetTransform(m_bones[0]).c);
 	hip.y -= current_shift;
+
 	Fmatrix m;
-	Fvector g; g.sub( m_foot.ref_bone_to_foot( m, cd.state.goal.get() ).c, hip );
+	Fvector g; 
+	g.sub(m_foot.ref_bone_to_foot(m, cd.state.goal.get()).c, hip);
+
 	float l = m_limb.Length();
-	return -g.y - _sqrt( l*l - g.x*g.x - g.z*g.z );
+
+	float ShiftAbs = l * l - g.x * g.x - g.z * g.z;
+	ShiftAbs = std::abs(ShiftAbs);
+
+	float Result = -g.y - _sqrt(ShiftAbs);
+	return Result;
 }
 
 float	CIKLimb::get_time_to_step_begin	( const CBlend& B )	const 
