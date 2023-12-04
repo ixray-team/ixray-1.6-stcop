@@ -1638,9 +1638,9 @@ void CWeapon::reload(LPCSTR section) {
 	}
 
 	m_ef_main_weapon_type =
-		READ_IF_EXISTS(pSettings, r_u32, section, "ef_main_weapon_type", std::uint32_t(-1));
+		READ_IF_EXISTS(pSettings, r_u32, section, "ef_main_weapon_type", u32(-1));
 	m_ef_weapon_type =
-		READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", std::uint32_t(-1));
+		READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", u32(-1));
 }
 
 void CWeapon::create_physic_shell()

@@ -103,30 +103,24 @@ void  CActor::VehicleHeadCallback(CBoneInstance* B)
 
 void STorsoWpn::Create(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1)
 {
-	char			buf[128];
-	if (!xr_strcmp(base1, "_0")) {
+	char buf[128];
+	if (!xr_strcmp(base1, "_0"))
+	{
 		if (xr_strcmp(base0, "norm"))
-			moving[eIdle] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_1"));
+			moving[eIdle] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_1"));
 		else
-			moving[eIdle] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_idle_1"));
-		moving[eWalk] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_walk_1"));
-		moving[eRun] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_run_1"));
-		moving[eSprint] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_escape_0"));
+			moving[eIdle] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_idle_1"));
+
+		moving[eWalk]   = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_walk_1"));
+		moving[eRun]    = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_run_1"));
+		moving[eSprint] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_escape_0"));
 	}
-	else {
-		moving[eIdle] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_1"));
-		moving[eWalk] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_2"));
-		moving[eRun] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_3"));
-		moving[eSprint] =
-			K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_escape_0"));
+	else 
+	{
+		moving[eIdle]   = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_1"));
+		moving[eWalk]   = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_2"));
+		moving[eRun]    = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_aim_3"));
+		moving[eSprint] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_escape_0"));
 	}
 
 	zoom			= K->ID_Cycle_Safe(xr_strconcat(buf,base0,"_torso",base1,"_aim_0"));

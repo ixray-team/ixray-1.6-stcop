@@ -25,9 +25,15 @@ CCameraLook::~CCameraLook()
 {
 }
 
-void CCameraLook::save(NET_Packet& packet) { save_data(pitch, packet); }
+void CCameraLook::save(NET_Packet& packet) 
+{
+	save_data(pitch, packet);
+}
 
-void CCameraLook::load(IReader& packet) { load_data(pitch, packet); }
+void CCameraLook::load(IReader& packet) 
+{
+	load_data(pitch, packet);
+}
 
 void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 {
@@ -197,7 +203,12 @@ void CCameraLook2::UpdateAutoAim()
 void CCameraLook2::Load(LPCSTR section)
 {
 	CCameraLook::Load		(section);
-	m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
+
+	if (psActorFlags.test(AF_RIGHT_SHOULDER))
+		m_cam_offset = Fvector().set(-0.400f, 0.2f, 0.0f);
+	else
+		m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
+
 	dist = 1.4f;
 	prev_d = 0.0f;
 

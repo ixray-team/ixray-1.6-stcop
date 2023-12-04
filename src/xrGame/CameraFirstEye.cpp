@@ -24,9 +24,15 @@ void CCameraFirstEye::Load(LPCSTR section)
 	style				= csFirstEye;
 }
 
-void CCameraFirstEye::save(NET_Packet& packet) { save_data(pitch, packet); }
+void CCameraFirstEye::save(NET_Packet& packet) 
+{ 
+	save_data(pitch, packet); 
+}
 
-void CCameraFirstEye::load(IReader& packet) { load_data(pitch, packet); }
+void CCameraFirstEye::load(IReader& packet)
+{
+	load_data(pitch, packet); 
+}
 
 void CCameraFirstEye::UpdateLookat()
 {
