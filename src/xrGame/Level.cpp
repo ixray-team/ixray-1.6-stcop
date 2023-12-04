@@ -1211,43 +1211,11 @@ u32	GameID()
 {
 	return Game().Type();
 }
-/*
-#include "../xrEngine/IGame_Persistent.h"
 
-IC bool	IsGameTypeSingle()
-{
-	return (g_pGamePersistent->GameType() == eGameIDSingle);
-}
-*/
-
+#include "CustomDetectorZones.h"
 CZoneList* CLevel::create_hud_zones_list()
 {
 	hud_zones_list = xr_new<CZoneList>();
 	hud_zones_list->clear();
 	return hud_zones_list;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-BOOL CZoneList::feel_touch_contact( CObject* O )
-{
-	TypesMapIt it	= m_TypesMap.find(O->cNameSect());
-	bool res		= ( it != m_TypesMap.end() );
-
-	CCustomZone *pZone = smart_cast<CCustomZone*>(O);
-	if ( pZone && !pZone->IsEnabled() )
-	{
-		res = false;
-	}
-	return res;
-}
-
-CZoneList::CZoneList()
-{
-}
-
-CZoneList::~CZoneList()
-{
-	clear();
-	destroy();
 }

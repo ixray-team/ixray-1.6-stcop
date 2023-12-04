@@ -91,4 +91,8 @@ void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEvent
 		break;
 	}
 }
-#undef MAX_DISTANCE_TO_ENEMY
+
+#undef CHECK_YAW				
+#undef ROTATION_JUMP_DELAY_MIN	
+#undef ROTATION_JUMP_DELAY_MAX	
+#undef MAX_DISTANCE_TO_ENEMY	
