@@ -1954,6 +1954,12 @@ function stop_sr_cutscene(actor,npc,p)
 	if(obj.active_scheme~=nil) then
 		obj[obj.active_scheme].signals["cam_effector_stop"] = true
 	end
+	
+	-- Restore camera at end if needed
+	if xr_state:get_camera_state() then 
+		set_third_person()
+		xr_state:reg_camera_change(false)
+	end
 end
 
 --[[
@@ -3087,6 +3093,14 @@ end
 
 
 function create_cutscene_actor_with_weapon(actor, npc, p)
+    -- Handle camera change to play cutscenes properly
+	if not is_first_person() then
+		set_first_person()
+		if not xr_state:get_camera_state() then 
+			xr_state:reg_camera_change(true)
+		end 
+	end 
+	
 	--' p[1] - секция кого спаунить
 	--' p[2] - имя патрульного пути где спаунить.
 	--' p[3] - точка патрульного пути

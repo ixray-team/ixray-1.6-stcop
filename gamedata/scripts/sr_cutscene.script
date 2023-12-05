@@ -165,6 +165,14 @@ function action_cutscene:update(delta)
 end
 --' тут нужно запустить сцену
 function action_cutscene:zone_enter()
+    -- Handle camera change to play cutscenes properly
+	if not is_first_person() then
+		set_first_person()
+		if not xr_state:get_camera_state() then 
+			xr_state:reg_camera_change(true)
+		end 
+	end
+	
 	self.state = "run"
 	--' телепорт в выбранную точку
 	--printf("%s ZONE ENTER %s", self.object:name(), device():time_global())
@@ -218,6 +226,13 @@ function action_cutscene:cutscene_callback()
 				level.remove_complex_effector(1999)
 				--level.remove_pp_effector(1999)
 			end
+			
+			-- Restore camera at end if needed
+		    if xr_state:get_camera_state() then 
+				set_third_person()
+				xr_state:reg_camera_change(false)
+		    end
+			
 			if(self.ui_disabled) then
 				if not db.actor:is_talking() and self.st.enable_ui_on_end then
 					xr_effects.enable_ui(db.actor, nil)
