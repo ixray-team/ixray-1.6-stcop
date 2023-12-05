@@ -96,6 +96,7 @@ set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_N
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 
 # Solution folders
+set(IXRAY_FOLDER_PREBUILD FOLDER "Pre Build")
 set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
 set(IXRAY_FOLDER_RENDER FOLDER "Renders")
 set(IXRAY_FOLDER_GAME FOLDER "Game")
@@ -106,6 +107,9 @@ add_subdirectory("src/3rd party/luabind")
 add_subdirectory("src/3rd party/ode")
 add_subdirectory("src/3rd party/crypto")
 add_subdirectory("src/3rd party/cximage")
+
+# Prebuild Tools
+add_subdirectory("src/GitParser")
 
 # Engine libraries
 add_subdirectory("src/xrCore")
@@ -140,6 +144,7 @@ add_subdirectory("src/xrPlay")
 add_subdirectory("src/utils")
 
 # Move libraries
+set_target_properties(GitParser PROPERTIES ${IXRAY_FOLDER_PREBUILD})
 set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrAPI PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCDB PROPERTIES ${IXRAY_FOLDER_ENGINE})

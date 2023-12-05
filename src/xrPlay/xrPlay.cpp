@@ -6,6 +6,8 @@
 #include "../xrCore/xrCore_platform.h"
 #include "DynamicSplashScreen.h"
 
+#include "../GitParser/git_version.h"
+
 #ifndef DEBUG
 #define NO_MULTI_INSTANCES
 #endif
@@ -114,6 +116,8 @@ int APIENTRY WinMain
 	Engine.External.Initialize();
 
 	Console->Execute("stat_memory");
+
+	Msg("IX-Ray 1.6.02 build info: hash[%s] branch[%s] commit author[%s]", _HASH, _BRANCH, _AUTHOR);
 
 	EngineLoadStage4();
 

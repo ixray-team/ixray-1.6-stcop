@@ -137,3 +137,13 @@ add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
+
+# GitParser settings
+add_custom_command(TARGET ${PROJECT_NAME}
+    PRE_LINK
+    COMMAND echo Parsing git...
+    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/../GitParser
+    COMMAND start ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/GitParser.exe
+)
+
+add_dependencies(xrCore GitParser)

@@ -49,3 +49,4 @@ temp/
 gamedata_origin/
 patch/
 *.log
+src/GitParser/git_version.h
