@@ -271,8 +271,11 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			// normalize and analyze crouch and run
 			float	scale			= vControlAccel.magnitude();
 			if(scale>EPS)	
-			{
-				scale = (m_fWalkAccel - m_fDecreaseWalkAccel) / scale;
+			{	
+				if (eacLookAt != cam_active)
+					scale = (m_fWalkAccel - m_fDecreaseWalkAccel) / scale;
+				else
+					scale = m_fWalkAccel / scale;
 				if (bAccelerated)
 					if (mstate_real&mcBack)
 						scale *= m_fRunBackFactor;
