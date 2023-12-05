@@ -403,3 +403,12 @@ end
 function anim_update(type, npc)
 	return db.storage[npc:id()].state:anim_update(type)
 end
+
+local camera_was_changed = false
+function reg_camera_change(state)
+	camera_was_changed = state
+end 
+
+function get_camera_state()
+	return camera_was_changed
+end 
