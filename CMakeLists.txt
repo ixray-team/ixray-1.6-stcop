@@ -107,6 +107,7 @@ add_subdirectory("src/3rd party/luabind")
 add_subdirectory("src/3rd party/ode")
 add_subdirectory("src/3rd party/crypto")
 add_subdirectory("src/3rd party/cximage")
+add_subdirectory("src/3rd party/imgui")
 
 # Prebuild Tools
 add_subdirectory("src/GitParser")
@@ -175,6 +176,7 @@ set_target_properties(luabind PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(ODE PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(crypto PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(CxImage PROPERTIES ${IXRAY_FOLDER_3RD})
+set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

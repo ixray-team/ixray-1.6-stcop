@@ -1,6 +1,7 @@
 #ifndef xr_device
 #define xr_device
 #pragma once
+#include <functional>
 
 // Note:
 // ZNear - always 0.0f
@@ -66,6 +67,12 @@ public:
 
 	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
 	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
+
+	virtual				void				BeginRender() = 0;
+	virtual				void				EndRender() = 0;
+	virtual				void				DrawUI() = 0;
+	virtual				void				AddUICommand(const char* Name, std::function<void()>&& Function) = 0;
+	virtual				void				RemoveUICommand(const char* Name) = 0;
 };
 
 class ENGINE_API CRenderDeviceData
@@ -161,6 +168,12 @@ public:
 
 	D3D_FEATURE_LEVEL GetFeatureLevel() override;
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
+
+	void BeginRender() override;
+	void EndRender() override;
+	void DrawUI() override;
+	void AddUICommand(const char* Name, std::function<void()>&& Function) override;
+	void RemoveUICommand(const char* Name) override;
 
 public:
 	LRESULT									MsgProc		(HWND,UINT,WPARAM,LPARAM);

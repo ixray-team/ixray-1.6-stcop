@@ -1,12 +1,22 @@
 #include "stdafx.h"
 #include "../xrCore/_std_extensions.h"
+#include "imgui_impl_sdl3.h"
 
 #include <d3d11.h>
 #include <d3d9.h>
+#include "imgui.h"
 
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
+
+namespace ImGui
+{
+	ImFont* LightFont = nullptr;
+	ImFont* RegularFont = nullptr;
+	ImFont* MediumFont = nullptr;
+	ImFont* BoldFont = nullptr;
+}
 
 static APILevel CurrentAPILevel = APILevel::DX11;
 
@@ -22,6 +32,8 @@ static void* RenderRTV = nullptr;
 
 static void* RenderDSV = nullptr;
 static void* SwapChainRTV = nullptr;
+
+static xr_map<xr_string, std::function<void()>>* DrawCommands = nullptr;
 
 void free_vid_mode_list()
 {
@@ -106,7 +118,6 @@ void fill_vid_mode_list()
 	}
 }
 
-
 static bool CreateD3D9()
 {
 	return false;
@@ -127,6 +138,7 @@ static bool UpdateBuffersD3D11()
 	R_CHK(R);
 
 	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
@@ -348,9 +360,140 @@ void DestroyD3D11()
 	}
 }
 
+static void LoadImGuiFont(ImFont*& FontHandle, const char* Font)
+{
+	string_path FullPath;
+	FS.update_path(FullPath, _game_fonts_, Font);
+	ImFontConfig FontConfig = {};
+	FontConfig.OversampleH = 2;
+
+	FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(FullPath, 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	R_ASSERT(FontHandle);
+}
+
+static void InitImGui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	//io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
+	//io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+
+	ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+
+	ImGuiStyle& Style = ImGui::GetStyle();
+	Style.WindowPadding.x = 8;
+	Style.WindowPadding.y = 8;
+	Style.FramePadding.x = 5;
+	Style.FramePadding.y = 5;
+	Style.CellPadding.x = 2;
+	Style.CellPadding.y = 2;
+	Style.ItemSpacing.x = 8;
+	Style.ItemSpacing.y = 4;
+	Style.ItemInnerSpacing.x = 6;
+	Style.ItemInnerSpacing.y = 6;
+	Style.ScrollbarSize = 16;
+	Style.GrabMinSize = 16;
+	Style.FrameRounding = 2;
+	Style.PopupRounding = 2;
+	Style.ScrollbarRounding = 2;
+	Style.GrabRounding = 2;
+	Style.TabRounding = 2;
+
+	ImVec4* colors = Style.Colors;
+	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	colors[ImGuiCol_TextDisabled] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+	colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+	colors[ImGuiCol_Border] = ImVec4(0.16f, 0.16f, 0.18f, 0.50f);
+	colors[ImGuiCol_BorderShadow] = ImVec4(0.05f, 0.05f, 0.05f, 0.00f);
+	colors[ImGuiCol_FrameBg] = ImVec4(0.13f, 0.13f, 0.13f, 0.54f);
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.27f, 0.27f, 0.27f, 0.54f);
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_TitleBg] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+	colors[ImGuiCol_CheckMark] = ImVec4(0.83f, 0.83f, 0.83f, 0.54f);
+	colors[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.95f, 0.95f, 0.95f, 1.00f);
+	colors[ImGuiCol_Button] = ImVec4(0.21f, 0.21f, 0.21f, 0.54f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.46f, 0.46f, 0.46f, 0.54f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.75f, 0.75f, 0.75f, 0.54f);
+	colors[ImGuiCol_Header] = ImVec4(0.25f, 0.25f, 0.25f, 0.54f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.46f, 0.46f, 0.46f, 0.54f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_Separator] = ImVec4(0.25f, 0.25f, 0.25f, 0.54f);
+	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.46f, 0.46f, 0.46f, 0.54f);
+	colors[ImGuiCol_SeparatorActive] = ImVec4(0.75f, 0.74f, 0.74f, 0.54f);
+	colors[ImGuiCol_ResizeGrip] = ImVec4(0.25f, 0.25f, 0.25f, 0.54f);
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.75f, 0.74f, 0.74f, 0.54f);
+	colors[ImGuiCol_Tab] = ImVec4(0.21f, 0.21f, 0.21f, 0.54f);
+	colors[ImGuiCol_TabHovered] = ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
+	colors[ImGuiCol_TabActive] = ImVec4(0.46f, 0.46f, 0.46f, 0.54f);
+	colors[ImGuiCol_TabUnfocused] = ImVec4(0.21f, 0.21f, 0.21f, 0.54f);
+	colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.42f, 0.42f, 0.42f, 0.54f);
+	colors[ImGuiCol_DockingPreview] = ImVec4(0.46f, 0.46f, 0.46f, 0.54f);
+	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.00f);
+	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+	colors[ImGuiCol_TableHeaderBg] = ImVec4(0.19f, 0.19f, 0.20f, 1.00f);
+	colors[ImGuiCol_TableBorderStrong] = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);
+	colors[ImGuiCol_TableBorderLight] = ImVec4(0.23f, 0.23f, 0.25f, 1.00f);
+	colors[ImGuiCol_TableRowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
+	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.46f, 0.46f, 0.46f, 0.54f);
+	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+	colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+
+	ImFontConfig FontConfig = {};
+	FontConfig.OversampleH = 2;
+
+	LoadImGuiFont(ImGui::RegularFont, "RobotoMono.ttf");
+	LoadImGuiFont(ImGui::LightFont, "RobotoMono-Light.ttf");
+	LoadImGuiFont(ImGui::MediumFont, "RobotoMono-Medium.ttf");
+	LoadImGuiFont(ImGui::BoldFont, "RobotoMono-Bold.ttf");
+	
+	io.Fonts->Build();
+}
+
 bool CRenderDevice::InitRenderDevice(APILevel API)
 {
+	if (DrawCommands == nullptr) {
+		DrawCommands = xr_new<xr_map<xr_string, std::function<void()>>>();
+	}
+
 	fill_vid_mode_list();
+	InitImGui();
+	if (!ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window)) {
+		return false;
+	}
+
+	AddUICommand("default", [this]() {
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(TargetWidth, TargetHeight));
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::Begin("Hello", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+		ImGui::Image(RenderSRV, ImVec2(TargetWidth, TargetHeight));
+		ImGui::End();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+	});
 
 	switch (API) {
 
@@ -395,6 +538,7 @@ void CRenderDevice::DestroyRenderDevice()
 	}
 
 	free_vid_mode_list();
+	xr_delete(DrawCommands);
 }
 
 void* CRenderDevice::GetRenderDevice()
@@ -409,7 +553,7 @@ void* CRenderDevice::GetRenderContext()
 
 void* CRenderDevice::GetRenderTexture()
 {
-	return SwapChainRTV;//RenderRTV;
+	return RenderRTV;
 }
 
 void* CRenderDevice::GetDepthTexture()
@@ -461,4 +605,36 @@ D3D_FEATURE_LEVEL CRenderDevice::GetFeatureLevel()
 RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 {
 	return nullptr;
+}
+
+void CRenderDevice::BeginRender()
+{
+	ImGui_ImplSDL3_NewFrame();
+}
+
+void CRenderDevice::EndRender()
+{
+}
+
+void CRenderDevice::DrawUI()
+{
+	for (const auto& [Name, Command] : *DrawCommands) {
+		Command();
+	}
+}
+
+void CRenderDevice::AddUICommand(const char* Name, std::function<void()>&& Function)
+{
+	VERIFY(!DrawCommands->contains(Name));
+	if (!DrawCommands->contains(Name)) {
+		DrawCommands->emplace(xr_string(Name), Function);
+	}
+}
+
+void CRenderDevice::RemoveUICommand(const char* Name)
+{
+	VERIFY(DrawCommands->contains(Name));
+	if (DrawCommands->contains(Name)) {
+		DrawCommands->erase(Name);
+	}
 }

@@ -211,6 +211,7 @@ void CRenderDevice::on_idle		()
 		return;
 	}
 
+	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
 	SDL_SetWindowGrab(g_AppInfo.Window, Focus);
@@ -305,6 +306,7 @@ void CRenderDevice::on_idle		()
 		}
 	}
 
+	Device.EndRender();
 	if (!b_is_Active)
 		Sleep		(1);
 }

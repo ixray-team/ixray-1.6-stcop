@@ -117,6 +117,7 @@ target_link_libraries(xrAbstractions PUBLIC xrNetServer)
 target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
 target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
 target_link_libraries(xrAbstractions PUBLIC "SDL3.lib" imm32)
+target_link_libraries(xrAbstractions PUBLIC imgui)
 target_link_libraries(xrAbstractions PRIVATE "freetype.lib")
 
 # Nuget
