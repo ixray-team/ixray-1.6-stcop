@@ -389,9 +389,9 @@ public:
 	{ VERIFY(!"Not implemented"); }
 #else //USE_DX11
 	IC void	dbg_SetRS				(D3DRENDERSTATETYPE p1, u32 p2)
-	{ CHK_DX(HW.pDevice->SetRenderState(p1,p2)); }
+	{ CHK_DX(RDevice->SetRenderState(p1,p2)); }
 	IC void	dbg_SetSS				(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
-	{ CHK_DX(HW.pDevice->SetSamplerState(sampler,type,value)); }
+	{ CHK_DX(RDevice->SetSamplerState(sampler,type,value)); }
 #endif
 #ifdef DEBUG
 	void dbg_Draw					(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);

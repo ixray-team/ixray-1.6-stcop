@@ -26,7 +26,7 @@ void	CRenderTarget::phase_luminance()
 	RCache.set_CullMode						(CULL_NONE);
 	RCache.set_ColorWriteEnable				();
 	RCache.set_Z(FALSE);
-	//CHK_DX									(HW.pDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
+	//CHK_DX									(RDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
 
 	// 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
 	u_setrt									(rt_LUM_64,NULL,NULL,NULL);
@@ -90,7 +90,7 @@ void	CRenderTarget::phase_luminance()
 	}
 
 	// 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
-	u32			gpu_id	= Device.dwFrame%HW.Caps.iGPUNum;
+	u32			gpu_id	= Device.dwFrame % 1;
 	u_setrt		(rt_LUM_pool[gpu_id*2+1],NULL,NULL,NULL);
 	//RImplementation.rmNormal();
 	{
@@ -131,6 +131,6 @@ void	CRenderTarget::phase_luminance()
 	}
 
 	// Cleanup states
-	//CHK_DX		(HW.pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));
+	//CHK_DX		(RDevice->SetRenderState(D3DRS_ZENABLE,TRUE));
 	RCache.set_Z(TRUE);
 }

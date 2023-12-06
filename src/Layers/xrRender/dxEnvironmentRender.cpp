@@ -174,19 +174,9 @@ void dxEnvironmentRender::OnFrame(CEnvironment &env)
 	dxEnvDescriptorMixerRender &mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
 	if (::Render->get_generation()==IRender_interface::GENERATION_R2){
-		//. very very ugly hack
-		if (HW.Caps.raster_major >= 3 && HW.Caps.geometry.bVTF){
-			// tonemapping in VS
-			mixRen.sky_r_textures.push_back		(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-			mixRen.sky_r_textures_env.push_back	(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-			mixRen.clouds_r_textures.push_back	(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-		} else {
-			// tonemapping in PS
-			mixRen.sky_r_textures.push_back		(std::make_pair(2,tonemap));								//. hack
-			mixRen.sky_r_textures_env.push_back	(std::make_pair(2,tonemap));								//. hack
-			mixRen.clouds_r_textures.push_back	(std::make_pair(2,tonemap));								//. hack
-		}
-
+		mixRen.sky_r_textures.push_back(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap));	//. hack
+		mixRen.sky_r_textures_env.push_back(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap));	//. hack
+		mixRen.clouds_r_textures.push_back(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap));	//. hack
 	}
 
 	//. Setup skybox textures, somewhat ugly
@@ -208,9 +198,9 @@ void dxEnvironmentRender::OnFrame(CEnvironment &env)
 	Fvector3	&fog_color = env.CurrentEnv->fog_color;
 #endif	//	RENDER==R_R1
 
-	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGCOLOR,	 color_rgba_f(fog_color.x,fog_color.y,fog_color.z,0) ));
-	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGSTART,	*(u32 *)(&env.CurrentEnv->fog_near)	));
-	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGEND,	*(u32 *)(&env.CurrentEnv->fog_far)	));
+	CHK_DX(RDevice->SetRenderState( D3DRS_FOGCOLOR,	 color_rgba_f(fog_color.x,fog_color.y,fog_color.z,0) ));
+	CHK_DX(RDevice->SetRenderState( D3DRS_FOGSTART,	*(u32 *)(&env.CurrentEnv->fog_near)	));
+	CHK_DX(RDevice->SetRenderState( D3DRS_FOGEND,	*(u32 *)(&env.CurrentEnv->fog_far)	));
 #endif
 }
 

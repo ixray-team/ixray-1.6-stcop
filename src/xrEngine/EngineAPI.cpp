@@ -207,3 +207,12 @@ void CEngineAPI::CreateRendererList()
 		}
 	}
 }
+
+APILevel CEngineAPI::GetAPI()
+{
+	if (psDeviceFlags.test(rsR4)) {
+		return APILevel::DX11;
+	}
+
+	return APILevel::DX9;
+}

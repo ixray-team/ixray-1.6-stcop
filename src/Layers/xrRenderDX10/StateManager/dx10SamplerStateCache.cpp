@@ -49,7 +49,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState( D3D_SAMPLER_DESC
 
 void dx10SamplerStateCache::CreateState( StateDecs desc, IDeviceState** ppIState )
 {
-	CHK_DX(HW.pDevice->CreateSamplerState( &desc, ppIState));
+	CHK_DX(RDevice->CreateSamplerState( &desc, ppIState));
 }
 
 dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState( const StateDecs& desc, u32 StateCRC )
@@ -121,7 +121,7 @@ void dx10SamplerStateCache::VSApplySamplers(HArray &samplers)
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aVSSamplers, uiMin, uiMax);
-	HW.pContext->VSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	RContext->VSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
 }
 
 void dx10SamplerStateCache::PSApplySamplers(HArray &samplers)
@@ -130,7 +130,7 @@ void dx10SamplerStateCache::PSApplySamplers(HArray &samplers)
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aPSSamplers, uiMin, uiMax);
-	HW.pContext->PSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	RContext->PSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
 }
 
 void dx10SamplerStateCache::GSApplySamplers(HArray &samplers)
@@ -139,7 +139,7 @@ void dx10SamplerStateCache::GSApplySamplers(HArray &samplers)
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aGSSamplers, uiMin, uiMax);
-	HW.pContext->GSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	RContext->GSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
 }
 
 void dx10SamplerStateCache::HSApplySamplers(HArray &samplers)
@@ -148,7 +148,7 @@ void dx10SamplerStateCache::HSApplySamplers(HArray &samplers)
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aHSSamplers, uiMin, uiMax);
-	HW.pContext->HSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	RContext->HSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
 }
 
 void dx10SamplerStateCache::DSApplySamplers(HArray &samplers)
@@ -157,7 +157,7 @@ void dx10SamplerStateCache::DSApplySamplers(HArray &samplers)
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aDSSamplers, uiMin, uiMax);
-	HW.pContext->DSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	RContext->DSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
 }
 
 void dx10SamplerStateCache::CSApplySamplers(HArray &samplers)
@@ -166,7 +166,7 @@ void dx10SamplerStateCache::CSApplySamplers(HArray &samplers)
 	u32 uiMin;
 	u32 uiMax;
 	PrepareSamplerStates( samplers, pSS, m_aCSSamplers, uiMin, uiMax);
-	HW.pContext->CSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
+	RContext->CSSetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin]);
 }
 
 

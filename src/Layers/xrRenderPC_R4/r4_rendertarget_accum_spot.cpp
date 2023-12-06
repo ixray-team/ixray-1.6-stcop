@@ -147,7 +147,7 @@ void CRenderTarget::accum_spot	(light* L)
 //		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 //#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
+//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
 //		}
 
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
@@ -156,13 +156,13 @@ void CRenderTarget::accum_spot	(light* L)
 //		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 //#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
+//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 //		}
 	}
 
 	// blend-copy
 	if (!RImplementation.o.fp16_blend)	{
-		u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
+		u_setrt(rt_Accumulator, NULL, NULL, RDepth);
 		RCache.set_Element	(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
 		RCache.set_c			("m_texgen",		m_Texgen);
 		RCache.set_c			("m_texgen_J",		m_Texgen_J	);
@@ -171,7 +171,7 @@ void CRenderTarget::accum_spot	(light* L)
 	}	
 	
 	RCache.set_Scissor(0);
-	//CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
+	//CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	increment_light_marker();
 
@@ -406,7 +406,7 @@ void CRenderTarget::accum_volumetric(light* L)
 			//	Transform frustum to clip space
 			Fmatrix PlaneTransform;
 			PlaneTransform.transpose(Device.mInvFullTransform);
-			//HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
+			//RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
 
 			for ( int i=0; i<6; ++i)
 			{
@@ -415,7 +415,7 @@ void CRenderTarget::accum_volumetric(light* L)
 				PlaneTransform.transform(TransformedPlane, ClipPlane);
 				TransformedPlane.mul(-1.0f);
 				RCache.set_ca(strFrustumClipPlane, i, TransformedPlane);
-				//HW.pDevice->SetClipPlane( i, &TransformedPlane.x);
+				//RDevice->SetClipPlane( i, &TransformedPlane.x);
 			}
 			/*
 			for ( int i=0; i<6; ++i)
@@ -431,7 +431,7 @@ void CRenderTarget::accum_volumetric(light* L)
 			//	Transform frustum to clip space
 			Fmatrix PlaneTransform;
 			PlaneTransform.transpose(Device.mInvFullTransform);
-			HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
+			RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
 
 			for ( int i=0; i<6; ++i)
 			{
@@ -439,7 +439,7 @@ void CRenderTarget::accum_volumetric(light* L)
 				Fvector4	TransformedPlane;
 				PlaneTransform.transform(TransformedPlane, ClipPlane);
 				TransformedPlane.mul(-1.0f);
-				HW.pDevice->SetClipPlane( i, &TransformedPlane.x);
+				RDevice->SetClipPlane( i, &TransformedPlane.x);
 			}
 			*/
 		}
@@ -451,7 +451,7 @@ void CRenderTarget::accum_volumetric(light* L)
 		clip[1] = 
 		clip[2] = 
 		clip[3] = 0;
-		HW.pDevice->SetClipPlane( 0, clip);
+		RDevice->SetClipPlane( 0, clip);
 		*/
 
 
@@ -459,7 +459,7 @@ void CRenderTarget::accum_volumetric(light* L)
 //		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 //#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
+//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
 //		}
 
 		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
@@ -473,23 +473,23 @@ void CRenderTarget::accum_volumetric(light* L)
 //		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 //#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
+//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 //		}
 
 		//	Restore clip planes
-		//HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
+		//RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
 		RCache.set_ClipPlanes (FALSE,(Fmatrix *)0,0);
 	}
 /*
 	// blend-copy
 	if (!RImplementation.o.fp16_blend)	{
-		u_setrt						(rt_Accumulator,NULL,NULL,HW.pBaseZB);
+		u_setrt						(rt_Accumulator,NULL,NULL,RDepth);
 		RCache.set_Element			(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
 		RCache.set_c				("m_texgen",		m_Texgen);
 		RCache.set_c				("m_texgen_J",		m_Texgen_J	);
 		draw_volume					(L);
 	}
 */
-	//CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
+	//CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 	RCache.set_Scissor(0);
 }

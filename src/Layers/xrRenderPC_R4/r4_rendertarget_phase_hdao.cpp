@@ -25,17 +25,17 @@ void CRenderTarget::phase_hdao	()
        ID3D11RenderTargetView* rtv[8]={0,0,0,0,0,0,0,0};
        ID3D11ShaderResourceView* srv[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
        //ID3D11ShaderResourceView* new_srv[2]={rt_ssao_temp1->pTexture->m_pSRView,rt_ssao_temp2->pTexture->m_pSRView};
-       HW.pContext->OMGetRenderTargets( 8, oldrtv, &olddsv );
-       HW.pContext->OMSetRenderTargets( 8, rtv, NULL );
-       //HW.pContext->CSSetShaderResources( 0, 2, new_srv );
-       HW.pContext->CSSetUnorderedAccessViews( 0, 1, &rt_ssao_temp->pUAView, &UAVInitialCounts );
+       RContext->OMGetRenderTargets( 8, oldrtv, &olddsv );
+       RContext->OMSetRenderTargets( 8, rtv, NULL );
+       //RContext->CSSetShaderResources( 0, 2, new_srv );
+       RContext->CSSetUnorderedAccessViews( 0, 1, &rt_ssao_temp->pUAView, &UAVInitialCounts );
 
        int iGroupsX = (int)ceil( (float)dwWidth / (float)g_uGroupTexelDimensionAfterOverlap );
        int iGroupsY = (int)ceil( (float)dwHeight / (float)g_uGroupTexelDimensionAfterOverlap );
        RCache.Compute( iGroupsX, iGroupsY, 1 );
 
-       HW.pContext->CSSetUnorderedAccessViews( 0, 1, uav, &UAVInitialCounts );
-       HW.pContext->CSSetShaderResources( 0, 16, srv );
-       HW.pContext->OMSetRenderTargets( 8, oldrtv, olddsv );
+       RContext->CSSetUnorderedAccessViews( 0, 1, uav, &UAVInitialCounts );
+       RContext->CSSetShaderResources( 0, 16, srv );
+       RContext->OMSetRenderTargets( 8, oldrtv, olddsv );
    }
 }

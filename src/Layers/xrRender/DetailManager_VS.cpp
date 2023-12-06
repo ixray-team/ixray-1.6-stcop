@@ -51,9 +51,9 @@ void CDetailManager::hw_Load	()
 void CDetailManager::hw_Load_Geom()
 {
 	// Analyze batch-size
-	hw_BatchSize	= (u32(HW.Caps.geometry.dwRegisters)-c_hdr)/c_size;
+	hw_BatchSize	= (u32(256)-c_hdr)/c_size;
 	clamp			(hw_BatchSize,(u32)0,(u32)64);
-	Msg				("* [DETAILS] VertexConsts(%d), Batch(%d)",u32(HW.Caps.geometry.dwRegisters),hw_BatchSize);
+	Msg				("* [DETAILS] VertexConsts(%d), Batch(%d)",u32(256),hw_BatchSize);
 
 	// Pre-process objects
 	u32			dwVerts		= 0;
@@ -72,9 +72,9 @@ void CDetailManager::hw_Load_Geom()
 	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
 
 	// Create VB/IB
-	R_CHK			(HW.pDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
+	R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
 	HW.stats_manager.increment_stats_vb				(hw_VB);
-	R_CHK			(HW.pDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
+	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
 	HW.stats_manager.increment_stats_ib				(hw_IB);
 
 #endif	//	USE_DX11
@@ -112,7 +112,6 @@ void CDetailManager::hw_Load_Geom()
 		}
 #ifdef USE_DX11
 		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
-		HW.stats_manager.increment_stats_vb		( hw_VB);
 		xr_free(pVOriginal);
 #else //USE_DX11
 		R_CHK			(hw_VB->Unlock());
@@ -142,7 +141,6 @@ void CDetailManager::hw_Load_Geom()
 		}
 #ifdef USE_DX11
 		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
-		HW.stats_manager.increment_stats_ib		(hw_IB);
 		xr_free(pIOriginal);
 #else //USE_DX11
 		R_CHK			(hw_IB->Unlock());
@@ -157,8 +155,6 @@ void CDetailManager::hw_Unload()
 {
 	// Destroy VS/VB/IB
 	hw_Geom.destroy				();
-	HW.stats_manager.decrement_stats_vb		( hw_VB);
-	HW.stats_manager.decrement_stats_ib		( hw_IB);
 	_RELEASE					(hw_IB);
 	_RELEASE					(hw_VB);
 }

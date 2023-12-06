@@ -228,6 +228,10 @@ ENGINE_API void EngineLoadStage4()
 
 	// Initialize APP
 	g_FontManager = new CFontManager();
+	if (!Device.InitRenderDevice(Engine.External.GetAPI())) {
+		R_ASSERT(false, "KAL");
+	}
+
 	Device.Create();
 	g_FontManager->InitializeFonts();
 }

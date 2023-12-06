@@ -218,7 +218,7 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 
 			// Create and fill
 			//BYTE*	pData		= 0;
-			//R_CHK				(HW.pDevice->CreateVertexBuffer(vCount*vSize,dwUsage,0,D3DPOOL_MANAGED,&_VB[i],0));
+			//R_CHK				(RDevice->CreateVertexBuffer(vCount*vSize,dwUsage,0,D3DPOOL_MANAGED,&_VB[i],0));
 			//R_CHK				(_VB[i]->Lock(0,0,(void**)&pData,0));
 //			CopyMemory			(pData,fs().pointer(),vCount*vSize);
 			//fs->r				(pData,vCount*vSize);
@@ -249,7 +249,7 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 
 			// Create and fill
 			//BYTE*	pData		= 0;
-			//R_CHK				(HW.pDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&_IB[i],0));
+			//R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&_IB[i],0));
 			//R_CHK				(_IB[i]->Lock(0,0,(void**)&pData,0));
 //			CopyMemory			(pData,fs().pointer(),iCount*2);
 			//fs->r				(pData,iCount*2);

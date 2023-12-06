@@ -69,7 +69,7 @@ dx103DFluidData::~dx103DFluidData()
 void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
 	// Create the texture
-	CHK_DX( HW.pDevice->CreateTexture3D(&TexDesc,NULL,&m_pRTTextures[rtIndex]));
+	CHK_DX( RDevice->CreateTexture3D(&TexDesc,NULL,&m_pRTTextures[rtIndex]));
 	// Create the render target view
 	
 	D3D_RENDER_TARGET_VIEW_DESC DescRT;
@@ -79,11 +79,11 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
 	DescRT.Texture3D.MipSlice = 0;
 	DescRT.Texture3D.WSize = TexDesc.Depth;
 
-	CHK_DX( HW.pDevice->CreateRenderTargetView( m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]) );
+	CHK_DX( RDevice->CreateRenderTargetView( m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]) );
 
 	float color[4] = {0, 0, 0, 0 };
 
-	HW.pContext->ClearRenderTargetView( m_pRenderTargetViews[rtIndex], color );
+	RContext->ClearRenderTargetView( m_pRenderTargetViews[rtIndex], color );
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)

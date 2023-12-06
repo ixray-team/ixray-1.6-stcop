@@ -28,7 +28,7 @@ void CRenderTarget::phase_fxaa()
     //////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    u_setrt(rt_Back_Buffer, nullptr, nullptr, HW.pBaseZB);
+    u_setrt(rt_Back_Buffer, nullptr, nullptr, RDepth);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -82,5 +82,5 @@ void CRenderTarget::phase_fxaa()
 
     // Resolve RT
     ref_rt& dest_rt = rt_Color;
-    HW.pContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
+    RContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
 }

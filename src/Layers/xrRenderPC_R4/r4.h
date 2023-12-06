@@ -229,7 +229,7 @@ public:
 	virtual	GenerationLevel			get_generation			()	{ return IRender_interface::GENERATION_R2; }
 
 	virtual bool					is_sun_static			()	{ return o.sunstatic;}
-	virtual DWORD					get_dx_level			()	{ return HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1?0x000A0001:0x000A0000; }
+	virtual DWORD					get_dx_level			()	{ return 0x000A0001; }
 
 	// Loading / Unloading
 	virtual void					create						();

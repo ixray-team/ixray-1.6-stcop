@@ -238,13 +238,13 @@ class CCC_tf_Aniso		: public CCC_Integer
 {
 public:
 	void	apply	()	{
-		if (0==HW.pDevice)	return	;
+		if (0==RDevice)	return	;
 		int	val = *value;	clamp(val,1,16);
 #ifdef USE_DX11
 		SSManager.SetMaxAnisotropy(val);
 #else //USE_DX11
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
-			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
+			CHK_DX(RDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
 #endif //USE_DX11
 	}
 	CCC_tf_Aniso(LPCSTR N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
@@ -264,7 +264,7 @@ class CCC_tf_MipBias: public CCC_Float {
 public:
 	CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -3.0f, 3.0f) {};
 	void apply() {
-		if (0 == HW.pDevice) {
+		if (0 == RDevice) {
 			return;
 		}
 		float val = *value;
@@ -273,7 +273,7 @@ public:
 		SSManager.SetMipLodBias(val);
 #else //USE_DX11
 		for (u32 i = 0; i < HW.Caps.raster.dwStages; i++) {
-			CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, val));
+			CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, val));
 		}
 #endif
 	}
@@ -431,9 +431,9 @@ public:
 	};
 
 	virtual void Execute(LPCSTR args) {
-		if (HW.rdoc_api) {
+		if (Device.GetRenderDocAPI()) {
 			HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
-			HW.rdoc_api->StartFrameCapture(HW.pDevice, hwnd);
+			Device.GetRenderDocAPI()->StartFrameCapture(RDevice, hwnd);
 		}
 	}
 };
@@ -445,9 +445,9 @@ public:
 	};
 
 	virtual void Execute(LPCSTR args) {
-		if (HW.rdoc_api) {
+		if (Device.GetRenderDocAPI()) {
 			HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
-			HW.rdoc_api->EndFrameCapture(HW.pDevice, hwnd);
+			Device.GetRenderDocAPI()->EndFrameCapture(RDevice, hwnd);
 		}
 	}
 };
@@ -469,30 +469,6 @@ public		:
 		u32 c_lmaps = 0;
 
 		dxRenderDeviceRender::Instance().ResourcesGetMemoryUsage( m_base, c_base, m_lmaps, c_lmaps );
-
-		Msg		("memory usage  mb \t \t video    \t managed      \t system \n" );
-
-		float vb_video		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_DEFAULT]/1024/1024;
-		float vb_managed	= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_MANAGED]/1024/1024;
-		float vb_system		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_SYSTEMMEM]/1024/1024;
-		Msg		("vertex buffer      \t \t %f \t %f \t %f ",	vb_video, vb_managed, vb_system);
-
-		float ib_video		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_DEFAULT]/1024/1024; 
-		float ib_managed	= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_MANAGED]/1024/1024; 
-		float ib_system		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_SYSTEMMEM]/1024/1024; 
-		Msg		("index buffer      \t \t %f \t %f \t %f ",	ib_video, ib_managed, ib_system);
-		
-		float textures_managed = (float)(m_base+m_lmaps)/1024/1024;
-		Msg		("textures          \t \t %f \t %f \t %f ",	0.f, textures_managed, 0.f);
-
-		float rt_video		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_DEFAULT]/1024/1024;
-		float rt_managed	= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_MANAGED]/1024/1024;
-		float rt_system		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_SYSTEMMEM]/1024/1024;
-		Msg		("R-Targets         \t \t %f \t %f \t %f ",	rt_video, rt_managed, rt_system);									
-
-		Msg		("\nTotal             \t \t %f \t %f \t %f ",	vb_video+ib_video+rt_video,
-																textures_managed + vb_managed+ib_managed+rt_managed,
-																vb_system+ib_system+rt_system);
 	}
 
 };

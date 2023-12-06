@@ -427,7 +427,7 @@ void	CResourceManager::Evict()
 {
 	//	TODO: DX10: check if we really need this method
 #ifndef USE_DX11
-	CHK_DX	(HW.pDevice->EvictManagedResources());
+	CHK_DX	(RDevice->EvictManagedResources());
 #endif //USE_DX11
 }
 /*

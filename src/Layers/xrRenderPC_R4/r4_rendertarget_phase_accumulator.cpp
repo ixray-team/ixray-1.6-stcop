@@ -6,22 +6,22 @@ void	CRenderTarget::phase_accumulator()
 	if (dwAccumulatorClearMark==Device.dwFrame)	{
 		// normal operation - setup
 		if (RImplementation.o.fp16_blend)
-			u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
+			u_setrt(rt_Accumulator, NULL, NULL, RDepth);
 		else
-			u_setrt(rt_Accumulator_temp, NULL, NULL, HW.pBaseZB);
+			u_setrt(rt_Accumulator_temp, NULL, NULL, RDepth);
 	} else {
 		// initial setup
 		dwAccumulatorClearMark				= Device.dwFrame;
 
 		// clear
-		u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
+		u_setrt(rt_Accumulator, NULL, NULL, RDepth);
 		//dwLightMarkerID						= 5;					// start from 5, increment in 2 units
 		reset_light_marker();
 		//	Igor: AMD bug workaround. Should be fixed in 8.7 catalyst
 //		u32		clr4clear					= color_rgba(0,0,0,0);	// 0x00
-		//CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clear, 1.0f, 0L));
+		//CHK_DX	(RDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clear, 1.0f, 0L));
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-		HW.pContext->ClearRenderTargetView( rt_Accumulator->pRT, ColorRGBA);
+		RContext->ClearRenderTargetView( rt_Accumulator->pRT, ColorRGBA);
 
 		//	render this after sun to avoid troubles with sun
 		/*
@@ -51,15 +51,15 @@ void	CRenderTarget::phase_vol_accumulator()
 	if (!m_bHasActiveVolumetric)
 	{
 		m_bHasActiveVolumetric = true;
-		u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+		u_setrt(rt_Generic_2, NULL, NULL, RDepth);
 		//u32		clr4clearVol				= color_rgba(0,0,0,0);	// 0x00
-		//CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clearVol, 1.0f, 0L));
+		//CHK_DX	(RDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clearVol, 1.0f, 0L));
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-		HW.pContext->ClearRenderTargetView( rt_Generic_2->pRT, ColorRGBA);
+		RContext->ClearRenderTargetView( rt_Generic_2->pRT, ColorRGBA);
 	}
 	else
 	{
-		u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+		u_setrt(rt_Generic_2, NULL, NULL, RDepth);
 	}
 
 	RCache.set_Stencil							(FALSE);

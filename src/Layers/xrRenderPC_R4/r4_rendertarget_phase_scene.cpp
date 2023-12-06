@@ -5,8 +5,8 @@ void	CRenderTarget::phase_scene_prepare	()
 {
 	PIX_EVENT(phase_scene_prepare);
 	// Clear depth & stencil
-	//u_setrt	( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB );
-	//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+	//u_setrt	( Device.TargetWidth,Device.TargetHeight,RTarget,NULL,NULL,RDepth );
+	//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	//	Igor: soft particles
 
 	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
@@ -17,7 +17,7 @@ void	CRenderTarget::phase_scene_prepare	()
 	// we need to clean up G-buffer every frame to avoid some glithces
 	u_setrt(rt_Position, rt_Normal, rt_Color, 0);
 	float ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+	RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 
 	//	TODO: DX10: Check if complete clear of _ALL_ rendertargets will increase
 	//	FPS. Make check for SLI configuration.
@@ -26,20 +26,20 @@ void	CRenderTarget::phase_scene_prepare	()
 		(ps_r_ssao > 0))
 	{
 		//	TODO: DX10: Check if we need to set RT here.
-		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Position->pRT, NULL, NULL, HW.pBaseZB);
+		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Position->pRT, NULL, NULL, RDepth);
 
-		//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-		HW.pContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
-		//HW.pContext->ClearRenderTargetView(rt_Normal->pRT, ColorRGBA);
-		//HW.pContext->ClearRenderTargetView(rt_Color->pRT, ColorRGBA);
-		HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+		RContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
+		//RContext->ClearRenderTargetView(rt_Normal->pRT, ColorRGBA);
+		//RContext->ClearRenderTargetView(rt_Color->pRT, ColorRGBA);
+		RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 	}
 	else
 	{
-		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), HW.pBaseRT, NULL, NULL, HW.pBaseZB);
-		//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
-		HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), RTarget, NULL, NULL, RDepth);
+		//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 	}
 
 	//	Igor: for volumetric lights
@@ -53,7 +53,7 @@ void	CRenderTarget::phase_scene_begin	()
 	// Enable ANISO
 	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 
-   ID3DDepthStencilView* pZB = HW.pBaseZB;
+   ID3DDepthStencilView* pZB = RDepth;
 
    dwWidth = get_width();
    dwHeight = get_height();
@@ -72,7 +72,7 @@ void	CRenderTarget::phase_scene_begin	()
 
 	// Misc		- draw only front-faces
 	//	TODO: DX10: siable two-sided stencil here
-	//CHK_DX(HW.pDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));
+	//CHK_DX(RDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));
 	RCache.set_CullMode					( CULL_CCW );
 	RCache.set_ColorWriteEnable			( );
 }

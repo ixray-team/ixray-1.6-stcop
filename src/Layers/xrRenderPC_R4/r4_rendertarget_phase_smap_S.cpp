@@ -5,10 +5,10 @@ void	CRenderTarget::phase_smap_spot_clear()
 	/*
 	if (RImplementation.b_HW_smap)		u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_d_depth->pRT);
 	else								u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_d_ZB);
-	CHK_DX								(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
+	CHK_DX								(RDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 	*/
 
-	HW.pContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+	RContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
 }
 
 void	CRenderTarget::phase_smap_spot		(light* L)
@@ -19,8 +19,8 @@ void	CRenderTarget::phase_smap_spot		(light* L)
 	//else								u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_ZB);
 	else								VERIFY(!"Use HW SMap only for DX10!");
 	D3D_VIEWPORT VP					=	{(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
-	//CHK_DX								(HW.pDevice->SetViewport(&VP));
-	HW.pContext->RSSetViewports(1, &VP);
+	//CHK_DX								(RDevice->SetViewport(&VP));
+	RContext->RSSetViewports(1, &VP);
 
 	// Misc		- draw only front-faces //back-faces
 	RCache.set_CullMode					( CULL_CCW	);
@@ -28,9 +28,9 @@ void	CRenderTarget::phase_smap_spot		(light* L)
 	// no transparency
 	#pragma todo("can optimize for multi-lights covering more than say 50%...")
 	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	(FALSE);
-	//CHK_DX								(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
+	//CHK_DX								(RDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 	//	Do it once per smap generation pass in phase_smap_spot_clear
-	//HW.pContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+	//RContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
 }
 
 void	CRenderTarget::phase_smap_spot_tsh	(light* L)
@@ -40,9 +40,9 @@ void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 	RCache.set_ColorWriteEnable		();
 	if (IRender_Light::OMNIPART == L->flags.type)	{
 		// omni-part
-		//CHK_DX							(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0xffffffff,	1.0f, 0L));
+		//CHK_DX							(RDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0xffffffff,	1.0f, 0L));
 		FLOAT ColorRGBA[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-		HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+		RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 	} else {
 		// real-spot
 		// Select color-mask

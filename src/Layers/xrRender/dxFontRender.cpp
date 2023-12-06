@@ -144,11 +144,11 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	FontData.SysMemPitch = width * 4;
 
 	ID3DTexture2D* Texture = nullptr;
-	R_CHK(HW.pDevice->CreateTexture2D(&descFontAtlas, &FontData, &Texture));
+	R_CHK(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &Texture));
 #else
 	D3DLOCKED_RECT LockedRect = {};
 	ID3DTexture2D* Texture = nullptr;
-	R_CHK(D3DXCreateTexture(HW.pDevice, width, height, 1, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &Texture));
+	R_CHK(D3DXCreateTexture(RDevice, width, height, 1, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &Texture));
 	R_CHK(Texture->LockRect(0, &LockedRect, nullptr, 0));
 
 	for (int y = 0; y < height; y++) {

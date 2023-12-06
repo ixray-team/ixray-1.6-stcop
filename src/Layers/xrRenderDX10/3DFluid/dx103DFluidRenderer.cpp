@@ -204,7 +204,6 @@ void dx103DFluidRenderer::CreateGridBox ()
 	//V_RETURN( m_pD3DDevice->CreateBuffer( &bd, &InitData, &pGridBoxIndexBuffer ) );
 
 	CHK_DX(dx10BufferUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
-	HW.stats_manager.increment_stats				(sizeof(indices), enum_stats_buffer_type_index, D3DPOOL_MANAGED);
 
 	// Define the input layout
 	//D3Dxx_INPUT_ELEMENT_DESC layout[] =
@@ -303,7 +302,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	ID3DTexture2D* NoiseTexture = NULL;
 	//ID3DxxShaderResourceView* JitterTextureSRV = NULL;
 
-	CHK_DX( HW.pDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
+	CHK_DX( RDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
 
 	//( m_pD3DDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture) );
 
@@ -428,7 +427,7 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 
 	ID3DTexture1D* HHGGTexture = NULL;
 
-	CHK_DX( HW.pDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
+	CHK_DX( RDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
 
 	m_HHGGTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVHHGGTex");
 	m_HHGGTexture->surface_set(HHGGTexture);
@@ -666,7 +665,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	// Raycast into the temporary render target: 
 	//  raycasting is done at the smaller resolution, using a fullscreen quad
 	//m_pD3DDevice->ClearRenderTargetView( pRayCastRTV, color );
-	HW.pContext->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
+	RContext->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayCastRTV , NULL ); 
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayCastTex],0,0,0);		// LDR RT
@@ -699,7 +698,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//ID3DxxDepthStencilView* pDSV = DXUTGetD3DxxDepthStencilView();
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pRTV , pDSV ); 
 	//	Restore render state
-	pTarget->u_setrt( pTarget->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+	pTarget->u_setrt( pTarget->rt_Generic_0,0,0,RDepth);		// LDR RT
 
 	if (bRenderFire)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
@@ -728,7 +727,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	// Clear the color buffer to 0
 	float blackColor[4] = {0, 0, 0, 0 };
 	//m_pD3DDevice->ClearRenderTargetView(pRayDataRTV, blackColor);
-	HW.pContext->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
+	RContext->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
 	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, NULL);
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT

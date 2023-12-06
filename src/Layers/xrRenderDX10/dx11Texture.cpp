@@ -135,7 +135,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         {
             UINT flags = 0;
             UINT test_flags = D3D11_FORMAT_SUPPORT_SHADER_LOAD | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
-            HW.pDevice->CheckFormatSupport(imageInfo.format, &flags);
+            RDevice->CheckFormatSupport(imageInfo.format, &flags);
 
             if (test_flags != (flags & test_flags)) {
                 textureFlag = DDS_FLAGS::DDS_FLAGS_NO_16BPP;
@@ -157,7 +157,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
         auto miscFlags = imageInfo.miscFlags;
         
-        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
+        hr = CreateTextureEx(RDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 
         FS.r_close(reader);
@@ -185,7 +185,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
             mip_lod = old_mipmap_cnt - (int)imageInfo.mipLevels;
         }
 
-        hr = CreateTextureEx(HW.pDevice, scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
+        hr = CreateTextureEx(RDevice, scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
         FS.r_close(reader);
         

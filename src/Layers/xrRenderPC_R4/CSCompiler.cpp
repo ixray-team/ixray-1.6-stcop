@@ -117,7 +117,7 @@ CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName, const D3D_SAMPLER_DESC& 
 	if (stage >= m_Samplers.size())
 		m_Samplers.resize(stage+1);
 
-	R_CHK(HW.pDevice->CreateSamplerState(&def, &m_Samplers[stage]));
+	R_CHK(RDevice->CreateSamplerState(&def, &m_Samplers[stage]));
 
 	return *this;
 }
