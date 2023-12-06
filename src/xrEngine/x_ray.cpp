@@ -526,6 +526,7 @@ CApplication::~CApplication()
 }
 
 extern CRenderDevice Device;
+extern bool quiting;
 
 void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
@@ -533,8 +534,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 
 	if (E == g_pEventManager->eQuit)
 	{
-		PostQuitMessage(0);
-
+		quiting = true;
 		for (u32 i = 0; i < Levels.size(); i++)
 		{
 			xr_free(Levels[i].folder);

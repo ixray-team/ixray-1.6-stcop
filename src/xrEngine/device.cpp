@@ -318,6 +318,8 @@ void CRenderDevice::message_loop_editor	()
 }
 #endif // #ifdef INGAME_EDITOR
 
+bool quiting = false;
+
 void CRenderDevice::message_loop()
 {
 #ifdef INGAME_EDITOR
@@ -327,7 +329,6 @@ void CRenderDevice::message_loop()
 	}
 #endif // #ifdef INGAME_EDITOR
 
-	bool quiting = false;
 	while (!quiting) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
