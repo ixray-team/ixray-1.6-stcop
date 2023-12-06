@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../xrCore/_std_extensions.h"
 #include "imgui_impl_sdl3.h"
+#include "imgui_internal.h"
 
 #include <d3d11.h>
 #include <d3d9.h>
@@ -488,11 +489,13 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		ImGui::Begin("Hello", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+		ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
 		ImGui::Image(RenderSRV, ImVec2(TargetWidth, TargetHeight));
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
+
+		//ImGui::ShowDemoWindow();
 	});
 
 	switch (API) {
@@ -607,6 +610,11 @@ RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 	return nullptr;
 }
 
+bool CRenderDevice::IsCapturingInputs()
+{
+	return CaptureInputs;
+}
+
 void CRenderDevice::BeginRender()
 {
 	ImGui_ImplSDL3_NewFrame();
@@ -618,8 +626,27 @@ void CRenderDevice::EndRender()
 
 void CRenderDevice::DrawUI()
 {
-	for (const auto& [Name, Command] : *DrawCommands) {
-		Command();
+	if (DrawUIRender) {
+		for (const auto& [Name, Command] : *DrawCommands) {
+			Command();
+		}
+
+		if (!CaptureInputs) {
+			for (auto& Window : ImGui::GetCurrentContext()->Windows) {
+				Window->Flags |= ImGuiWindowFlags_NoInputs;
+			}
+		}
+	} else {
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(TargetWidth, TargetHeight));
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+		ImGui::Image(RenderSRV, ImVec2(TargetWidth, TargetHeight));
+		ImGui::End();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
 	}
 }
 

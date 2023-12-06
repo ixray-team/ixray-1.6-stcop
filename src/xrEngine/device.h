@@ -68,6 +68,7 @@ public:
 	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
 	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 
+	virtual				bool				IsCapturingInputs() = 0;
 	virtual				void				BeginRender() = 0;
 	virtual				void				EndRender() = 0;
 	virtual				void				DrawUI() = 0;
@@ -143,6 +144,8 @@ public:
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
 public:
+	bool CaptureInputs = false;
+	bool DrawUIRender = false;
 	int Width = 0, Height = 0, PosX = 0, PosY = 0;
 
 	CTimer									TimerMM;
@@ -169,6 +172,7 @@ public:
 	D3D_FEATURE_LEVEL GetFeatureLevel() override;
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
+	bool IsCapturingInputs() override;
 	void BeginRender() override;
 	void EndRender() override;
 	void DrawUI() override;
@@ -212,26 +216,7 @@ public:
 	// Engine flow-control
 	Fmatrix									mInvFullTransform;
 	
-	CRenderDevice			()
-		:
-		m_pRender(0)
-#ifdef INGAME_EDITOR
-		,m_editor_module(0),
-		m_editor_initialize(0),
-		m_editor_finalize(0),
-		m_editor(0),
-		m_engine(0)
-#endif // #ifdef INGAME_EDITOR
-#ifdef PROFILE_CRITICAL_SECTIONS
-		,mt_csEnter(MUTEX_PROFILE_ID(CRenderDevice::mt_csEnter))
-		,mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
-#endif // #ifdef PROFILE_CRITICAL_SECTIONS
-	{
-		b_is_Active			= true;
-		b_is_Ready			= FALSE;
-		Timer.Start			();
-		m_bNearer			= FALSE;
-	};
+	CRenderDevice();
 
 	void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
 	BOOL	Paused							();

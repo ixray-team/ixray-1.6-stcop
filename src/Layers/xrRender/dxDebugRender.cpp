@@ -9,45 +9,23 @@ dxDebugRender DebugRenderImpl;
 dxDebugRender DebugRenderImpl_1;
 dxDebugRender::dxDebugRender()
 {
-	m_line_indices.reserve			(line_vertex_limit);
-	m_line_vertices.reserve			(line_index_limit);
+	m_lines.reserve			(line_vertex_limit);
 }
 
 void dxDebugRender::Render()
 {
-	if (m_line_vertices.empty())
-		return;
-
-	RCache.set_xform_world			(Fidentity);
-	RCache.dbg_Draw					(D3DPT_LINELIST,&*m_line_vertices.begin(), (int)m_line_vertices.size(),&*m_line_indices.begin(), (int)m_line_indices.size()/2);
-	m_line_vertices.resize			(0);
-	m_line_indices.resize			(0);
 }
 
-void dxDebugRender::try_render		(u32 const &vertex_count, u32 const &index_count)
+#if 0
+void _add_lines		(  xr_vector<FVF::L> &vertices, xr_vector<u32>& indices, Fvector const *pvertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color)
 {
-	VERIFY							((m_line_indices.size() % 2) == 0);
-
-	if ((m_line_vertices.size() + vertex_count) >= line_vertex_limit) {
-		Render						();
-		return;
-	}
-
-	if ((m_line_indices.size() + 2*index_count) >= line_index_limit) {
-		Render						();
-		return;
-	}
-}
-void _add_lines		(  xr_vector<FVF::L> &vertices, xr_vector<u16>& indices, Fvector const *pvertices, u32 const &vertex_count, u16 const *pairs, u32 const &pair_count, u32 const &color)
-{
-	VERIFY							(vertices.size() < u16(-1));
-	u16								vertices_size = (u16)vertices.size();
+	u32								vertices_size = (u32)vertices.size();
 
 	u32								indices_size = (u32)indices.size();
 	indices.resize					(indices_size + 2*pair_count);
-	xr_vector<u16>::iterator				I = indices.begin() + indices_size;
-	xr_vector<u16>::iterator				E = indices.end();
-	const u16						*J = pairs;
+	xr_vector<u32>::iterator				I = indices.begin() + indices_size;
+	xr_vector<u32>::iterator				E = indices.end();
+	const u32*J = pairs;
 	for ( ; I != E; ++I, ++J)
 		*I							= vertices_size + *J;
 
@@ -57,13 +35,56 @@ void _add_lines		(  xr_vector<FVF::L> &vertices, xr_vector<u16>& indices, Fvecto
 	Fvector const					*j = pvertices;
 	for ( ; i != e; ++i, ++j) {
 		(*i).color					= color;
-		(*i).p						= *j;
+		auto Pos = *j;
+		Device.mFullTransform_saved.transform(Pos);
+		Pos.x = (Pos.x * 0.5f + 0.5f) * Device.TargetWidth;
+		Pos.y = (-Pos.y * 0.5f + 0.5f) * Device.TargetHeight;
+		(*i).p						= Pos;
 	}
 }
-void dxDebugRender::add_lines		(Fvector const *vertices, u32 const &vertex_count, u16 const *pairs, u32 const &pair_count, u32 const &color)
+#endif
+
+void dxDebugRender::add_lines		(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color)
 {
-	try_render						(vertex_count, pair_count);
-	_add_lines( m_line_vertices, m_line_indices, vertices, vertex_count, pairs, pair_count, color );
+	for (size_t i = 0; i < pair_count * 2; i += 2) {
+		u32 i0 = pairs[i];
+		u32 i1 = pairs[i + 1];
+		FVF::L v0 = {};
+		FVF::L v1 = {};
+		v0.p = vertices[i0];
+		v1.p = vertices[i1];
+		v0.color = color;
+		v1.color = color;
+
+		Device.mView_saved.transform(v0.p);
+		Device.mView_saved.transform(v1.p);
+
+		if (v0.p.z > 0 && v1.p.z <= 0) {
+			Fvector fp = v1.p;
+			fp.lerp(v0.p, v1.p, v0.p.z / (v0.p.z - v1.p.z));
+			v1.p = fp;
+		}
+
+		if (v0.p.z <= 0 && v1.p.z > 0) {
+			Fvector fp = v0.p;
+			fp.lerp(v1.p, v0.p, v1.p.z / (v1.p.z - v0.p.z));
+			v0.p = fp;
+		}
+
+		if (v0.p.z <= 0 && v1.p.z <= 0) {
+			continue;
+		}
+
+		Device.mProject_saved.transform(v0.p);
+		Device.mProject_saved.transform(v1.p);
+		v0.p.x = (v0.p.x * 0.5f + 0.5f) * Device.TargetWidth;
+		v0.p.y = (-v0.p.y * 0.5f + 0.5f) * Device.TargetHeight;
+
+		v1.p.x = (v1.p.x * 0.5f + 0.5f) * Device.TargetWidth;
+		v1.p.y = (-v1.p.y * 0.5f + 0.5f) * Device.TargetHeight;
+
+		m_lines.emplace_back(v0, v1);
+	}
 
 }
 
@@ -147,8 +168,7 @@ struct RDebugRender:
 	public pureRender
 {
 private:
- xr_vector<u16>		_line_indices;
- xr_vector<FVF::L>	_line_vertices;
+ xr_vector<std::pair<FVF::L, FVF::L>>		_lines;
 
 //	Vertices		_line_vertices;
 //	Indices			_line_indices;
@@ -167,18 +187,53 @@ virtual	~RDebugRender()
 void OnRender()
 	{
 
-		m_line_indices =	_line_indices;
-		m_line_vertices =	 _line_vertices;
-		
+		m_lines =	_lines;
 		Render();
 
 
 	}
-virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u16 const *pairs, u32 const &pair_count, u32 const &color)
+virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color)
 {
-	_line_indices.resize(0);
-	_line_vertices.resize(0);	
-	_add_lines( _line_vertices, _line_indices, vertices, vertex_count, pairs, pair_count, color );
+	_lines.resize(0);
+	for (size_t i = 0; i < pair_count * 2; i += 2) {
+	u32 i0 = pairs[i];
+		u32 i1 = pairs[i + 1];
+		FVF::L v0 = {};
+		FVF::L v1 = {};
+		v0.p = vertices[i0];
+		v1.p = vertices[i1];
+		v0.color = color;
+		v1.color = color;
+
+		Device.mView_saved.transform(v0.p);
+		Device.mView_saved.transform(v1.p);
+
+		if (v0.p.z > 0 && v1.p.z <= 0) {
+			Fvector fp = v1.p; 
+			fp.lerp(v0.p, v1.p, v0.p.z / (v0.p.z - v1.p.z));
+			v1.p = fp;
+		}
+
+		if (v0.p.z <= 0 && v1.p.z > 0) {
+			Fvector fp = v0.p;
+			fp.lerp(v1.p, v0.p, v1.p.z / (v1.p.z - v0.p.z));
+			v0.p = fp;
+		}
+
+		if (v0.p.z <= 0 && v1.p.z <= 0) {
+			continue;
+		}
+
+		Device.mProject_saved.transform(v0.p);
+		Device.mProject_saved.transform(v1.p);
+		v0.p.x = (v0.p.x * 0.5f + 0.5f) * Device.TargetWidth;
+		v0.p.y = (-v0.p.y * 0.5f + 0.5f) * Device.TargetHeight;
+
+		v1.p.x = (v1.p.x * 0.5f + 0.5f) * Device.TargetWidth;
+		v1.p.y = (-v1.p.y * 0.5f + 0.5f) * Device.TargetHeight;
+
+		_lines.emplace_back(v0, v1);
+	}
 }
 } rdebug_render_impl;
 dxDebugRender *rdebug_render = &rdebug_render_impl; 

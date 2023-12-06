@@ -18,8 +18,6 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T_, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 #ifdef USE_DX11
-	//	TODO: DX10: implement
-	//VERIFY(!"CBackend::dbg_Draw not implemented.");
 #else //USE_DX11
 	OnFrameEnd					();
 	CHK_DX(RDevice->SetFVF	(FVF::F_L));

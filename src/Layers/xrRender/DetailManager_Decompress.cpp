@@ -56,7 +56,7 @@ static void draw_obb		( const Fmatrix &matrix, const u32 &color )
 	matrix.transform_tiny			(aabb[6],Fvector().set( +1, +1, +1)); // 6
 	matrix.transform_tiny			(aabb[7],Fvector().set( +1, -1, +1)); // 7
 
-	u16								aabb_id[12*2] = {
+	u32								aabb_id[12*2] = {
 		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
 	};
 

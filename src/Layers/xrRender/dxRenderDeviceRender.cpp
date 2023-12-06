@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
 
+#ifdef DEBUG
+#include "dxDebugRender.h"
+#endif
+
 #include "ResourceManager.h"
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -168,6 +172,28 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	fWidth_2			= float(dwWidth/2)			;
 	fHeight_2			= float(dwHeight/2)			;
 	Resources			= xr_new<CResourceManager>		();
+
+	Device.AddUICommand("dxDebugRenderer", []() {
+		if (DebugRenderImpl.m_lines.empty())
+			return;
+
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(Device.TargetWidth, Device.TargetHeight));
+		ImGui::SetNextWindowBgAlpha(0.0f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::Begin("DebugRender", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+		
+		ImDrawList& CmdList = *ImGui::GetWindowDrawList();
+		for (const auto& Line : DebugRenderImpl.m_lines) {
+			CmdList.AddLine(ImVec2(Line.first.p.x, Line.first.p.y), ImVec2(Line.second.p.x, Line.second.p.y), Line.first.color);
+		}
+
+		ImGui::End();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+	});
 }
 
 void dxRenderDeviceRender::SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
@@ -345,28 +371,22 @@ void dxRenderDeviceRender::End()
 
 	DoAsyncScreenshot();
 
+	ImGui_ImplDX11_NewFrame();
 	ID3D11RenderTargetView* RTV = RSwapchainTarget;
 	RContext->OMSetRenderTargets(1, &RTV, nullptr);
-	ImGui_ImplDX11_NewFrame();
 	ImGui::NewFrame();
 	Device.DrawUI();
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-#ifdef USE_DX11
-	if (psDeviceFlags.test(rsVSync)) {
-		RSwapchain->Present(1, 0);
-	} else {
-		RSwapchain->Present(0, 0);
-	}
-	
-#else //USE_DX11
-	CHK_DX				(RDevice->EndScene());
+	DebugRenderImpl.m_lines.resize(0);
 
+#ifdef USE_DX11
+	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+#else
+	CHK_DX				(RDevice->EndScene());
 	RDevice->Present( NULL, NULL, NULL, NULL );
 #endif
-	//HRESULT _hr		= RDevice->Present( NULL, NULL, NULL, NULL );
-	//if				(D3DERR_DEVICELOST==_hr)	return;			// we will handle this later
 }
 
 void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()

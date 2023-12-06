@@ -40,8 +40,9 @@ private:
 //	xr_stack<IInputReceiver*>	cbStack;
 	xr_vector<IInputReceiver*>	cbStack;
 
+	void						NoInputUpdate				( );
 	void						MouseUpdate					( );
-	void						KeyboardUpdate					( );
+	void						KeyboardUpdate				( );
 
 public:
 	u32							dwCurTime;

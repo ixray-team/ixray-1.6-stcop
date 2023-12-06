@@ -15,7 +15,7 @@ CUICursor::CUICursor()
 	vPrevPos.set			(0.0f, 0.0f);
 	vPos.set				(0.f,0.f);
 	InitInternal			();
-	Device.seqRender.Add	(this,-3/*2*/);
+	Device.seqRender.Add	(this,-1023/*2*/);
 	Device.seqResolutionChanged.Add(this);
 }	
 //--------------------------------------------------------------------
@@ -100,16 +100,19 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
-	vPrevPos = vPos;
-
-	SDL_GetMouseState(&vPos.x, &vPos.y);
-	vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
-	vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
-	clamp(vPos.x, 0.f, UI_BASE_WIDTH);
-	clamp(vPos.y, 0.f, UI_BASE_HEIGHT);
+	if (!Device.IsCapturingInputs()) {
+		vPrevPos = vPos;
+		SDL_GetMouseState(&vPos.x, &vPos.y);
+		vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
+		vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+		clamp(vPos.x, 0.f, UI_BASE_WIDTH);
+		clamp(vPos.y, 0.f, UI_BASE_HEIGHT);
+	}
 }
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	vPos = pos;
+	if (!Device.IsCapturingInputs()) {
+		vPos = pos;
+	}
 }

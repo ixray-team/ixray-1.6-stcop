@@ -734,11 +734,13 @@ void ImGui_ImplSDL3_NewFrame()
     else
         io.BackendFlags &= ~ImGuiBackendFlags_HasMouseHoveredViewport;
 
-    ImGui_ImplSDL3_UpdateMouseData();
-    ImGui_ImplSDL3_UpdateMouseCursor();
+    if (Device.IsCapturingInputs()) {
+        ImGui_ImplSDL3_UpdateMouseData();
+        ImGui_ImplSDL3_UpdateMouseCursor();
 
-    // Update game controllers (if enabled and available)
-    ImGui_ImplSDL3_UpdateGamepads();
+        // Update game controllers (if enabled and available)
+        ImGui_ImplSDL3_UpdateGamepads();
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------
