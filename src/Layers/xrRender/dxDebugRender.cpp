@@ -59,19 +59,19 @@ void dxDebugRender::add_lines		(Fvector const *vertices, u32 const &vertex_count
 		Device.mView_saved.transform(v0.p);
 		Device.mView_saved.transform(v1.p);
 
-		if (v0.p.z > 0 && v1.p.z <= 0) {
+		if (v0.p.z > VIEWPORT_NEAR && v1.p.z <= VIEWPORT_NEAR) {
 			Fvector fp = v1.p;
-			fp.lerp(v0.p, v1.p, v0.p.z / (v0.p.z - v1.p.z));
+			fp.lerp(v0.p, v1.p, (v0.p.z - VIEWPORT_NEAR) / (v0.p.z - v1.p.z));
 			v1.p = fp;
 		}
 
-		if (v0.p.z <= 0 && v1.p.z > 0) {
+		if (v0.p.z <= VIEWPORT_NEAR && v1.p.z > VIEWPORT_NEAR) {
 			Fvector fp = v0.p;
-			fp.lerp(v1.p, v0.p, v1.p.z / (v1.p.z - v0.p.z));
+			fp.lerp(v1.p, v0.p, (v1.p.z - VIEWPORT_NEAR) / (v1.p.z - v0.p.z));
 			v0.p = fp;
 		}
 
-		if (v0.p.z <= 0 && v1.p.z <= 0) {
+		if (v0.p.z <= VIEWPORT_NEAR && v1.p.z <= VIEWPORT_NEAR) {
 			continue;
 		}
 
@@ -208,19 +208,19 @@ virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 
 		Device.mView_saved.transform(v0.p);
 		Device.mView_saved.transform(v1.p);
 
-		if (v0.p.z > 0 && v1.p.z <= 0) {
-			Fvector fp = v1.p; 
-			fp.lerp(v0.p, v1.p, v0.p.z / (v0.p.z - v1.p.z));
+		if (v0.p.z > VIEWPORT_NEAR && v1.p.z <= VIEWPORT_NEAR) {
+			Fvector fp = v1.p;
+			fp.lerp(v0.p, v1.p, (v0.p.z - VIEWPORT_NEAR) / (v0.p.z - v1.p.z));
 			v1.p = fp;
 		}
 
-		if (v0.p.z <= 0 && v1.p.z > 0) {
+		if (v0.p.z <= VIEWPORT_NEAR && v1.p.z > VIEWPORT_NEAR) {
 			Fvector fp = v0.p;
-			fp.lerp(v1.p, v0.p, v1.p.z / (v1.p.z - v0.p.z));
+			fp.lerp(v1.p, v0.p, (v1.p.z - VIEWPORT_NEAR) / (v1.p.z - v0.p.z));
 			v0.p = fp;
 		}
 
-		if (v0.p.z <= 0 && v1.p.z <= 0) {
+		if (v0.p.z <= VIEWPORT_NEAR && v1.p.z <= VIEWPORT_NEAR) {
 			continue;
 		}
 
