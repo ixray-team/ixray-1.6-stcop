@@ -523,9 +523,9 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 	else
 	{
 		if (NewState) {
-			SDL_ShowCursor();
-		} else {
 			SDL_HideCursor();
+		} else {
+			SDL_ShowCursor();
 		}
 	}
 }
