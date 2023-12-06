@@ -149,32 +149,10 @@ void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section) {
 
 	if (pSettings->line_exist(section, "item_custom_text_font")) {
 		shared_str font_str = pSettings->r_string(section, "item_custom_text_font");
-		if (!xr_strcmp(font_str, GRAFFITI19_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontGraffiti19Russian;
-		} else if(!xr_strcmp(font_str, GRAFFITI22_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontGraffiti22Russian;
-		} else if(!xr_strcmp(font_str, GRAFFITI32_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontGraffiti32Russian;
-		} else if(!xr_strcmp(font_str, GRAFFITI50_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontGraffiti50Russian;
-		} else if(!xr_strcmp(font_str, ARIAL14_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontArial14;
-		} else if(!xr_strcmp(font_str, MEDIUM_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontMedium;
-		} else if(!xr_strcmp(font_str, SMALL_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontStat;
-		} else if(!xr_strcmp(font_str, LETTERICA16_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontLetterica16Russian;
-		} else if(!xr_strcmp(font_str, LETTERICA18_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontLetterica18Russian;
-		} else if(!xr_strcmp(font_str, LETTERICA25_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontLetterica25;
-		} else if(!xr_strcmp(font_str, DI_FONT_NAME)) {
-			m_custom_text_font = UI().Font().pFontDI;
-		} else {
-			m_custom_text_font = nullptr;
-		}
+		m_custom_text_font = UI().Font().GetFont(font_str);
+		m_custom_text_font = nullptr;
 	}
+
 	if (pSettings->line_exist(section, "item_custom_text_clr_inv")) {
 		m_custom_text_clr_inv = pSettings->r_color(section, "item_custom_text_clr_inv");
 	} else {

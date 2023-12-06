@@ -66,6 +66,7 @@ set_property(TARGET xrAbstractions PROPERTY ENABLE_EXPORTS ON)
 target_include_directories(xrAbstractions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}SDL3")
+target_include_directories(xrAbstractions PRIVATE "${IXRAY_SDK_INC}/freetype")
 
 # Move precompiled header
 set_target_properties(xrAbstractions PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
@@ -96,6 +97,7 @@ target_link_libraries(xrAbstractions PUBLIC xrNetServer)
 target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
 target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
 target_link_libraries(xrAbstractions PUBLIC "SDL3.lib" imm32)
+target_link_libraries(xrAbstractions PRIVATE "freetype.lib")
 
 # Nuget
 set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
@@ -108,6 +110,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}freetype.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 add_custom_command(TARGET ${PROJECT_NAME}

@@ -36,7 +36,7 @@ bool CUIDebugFonts::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 #include "../../xrEngine/string_table.h"
 
 void CUIDebugFonts::FillUpList(){
-#ifdef DEBUG
+#if 0
 	CFontManager::FONTS_VEC& v = UI().Font().m_all_fonts;
 	CFontManager::FONTS_VEC_IT it	= v.begin();
 	CFontManager::FONTS_VEC_IT it_e = v.end();

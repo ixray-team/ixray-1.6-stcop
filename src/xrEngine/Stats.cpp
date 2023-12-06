@@ -39,7 +39,6 @@ CStats::~CStats()
 void _draw_cam_pos(CGameFont* pFont)
 {
 	float sz		= pFont->GetHeight();
-	pFont->SetHeightI(0.02f);
 	pFont->SetColor	(0xffffffff);
 	pFont->Out		(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]",VPUSH(Device.vCameraPosition));
 	pFont->SetHeight(sz);
@@ -146,7 +145,6 @@ void CStats::Show()
 
 	CGameFont& F = *pFont;
 	float		f_base_size	= 0.01f;
-				F.SetHeightI	(f_base_size);
 
 	// Show them
 	if (psDeviceFlags.test(rsStatistic))
@@ -264,19 +262,16 @@ void CStats::Show()
 */
 		//////////////////////////////////////////////////////////////////////////
 		// Renderer specific
-		F.SetHeightI						(f_base_size);
 		F.OutSet						(200,0);
 		Render->Statistics				(&F);
 
 		//////////////////////////////////////////////////////////////////////////
 		// Game specific
-		F.SetHeightI						(f_base_size);
 		F.OutSet						(400,0);
 		g_pGamePersistent->Statistics	(&F);
 
 		//////////////////////////////////////////////////////////////////////////
 		// process PURE STATS
-		F.SetHeightI						(f_base_size);
 		seqStats.Process				(rp_Stats);
 		pFont->OnRender					();
 	};
@@ -293,7 +288,6 @@ void CStats::Show()
 		CGameFont&	F_ = *((CGameFont*)pFont);
 		F_.SetColor						(color_rgba(255,16,16,255));
 		F_.OutSet						(300,300);
-		F_.SetHeightI						(f_base_size*2);
 		if (fFPS<30)					F_.OutNext	("FPS       < 30:   %3.1f",	fFPS);
 		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
 		m_pRender->GuardVerts(F_);
@@ -319,7 +313,6 @@ void CStats::Show()
 		CGameFont&	F_ = *((CGameFont*)pFont);
 		F_.SetColor	(color_rgba(255,16,16,191));
 		F_.OutSet	(200,0);
-		F_.SetHeightI	(f_base_size);
 #if 0
 		for (u32 it=0; it<errors.size(); it++)
 			F_.OutNext("%s",errors[it].c_str());
@@ -404,7 +397,7 @@ void CStats::OnDeviceCreate			()
 	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
 
 	if (!g_dedicated_server) {
-		pFont = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
+		pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
 	}
 	
 	if(!pSettings->section_exist("evaluation")

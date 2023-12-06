@@ -1,115 +1,189 @@
-#ifndef GameFontH
-#define GameFontH
 #pragma once
-
 #include "MbHelpers.h"
-
 #include "../Include/xrRender/FontRender.h"
 
 class ENGINE_API CGameFont
 {
 	friend class dxFontRender;
+	friend class FontRender;
+
+	enum EStyle : u64
+	{
+		eBold = 4196692,
+		eStrike = 4196725,
+		eUnderline = 4196715,
+		eItalic = 4196708
+	};
 public:
-	enum EAligment{
-		alLeft				= 0,
+	enum EAligment
+	{
+		alLeft = 0,
 		alRight,
 		alCenter
 	};
+
 private:
 	struct String
 	{
-		string1024	string;
-		float		x,y;
-		float		height;
-		u32			c;
-		EAligment	align;
+		string1024 string;
+		float x, y;
+		float height;
+		u32 c;
+		EAligment align;
 	};
+
+	struct BaseData
+	{
+		u16 Size;
+		const char* Name;
+		const char* Shader;
+		const char* Style;
+	};
+
+	BaseData Data;
 protected:
-	Fvector2				vHalfPixel;
-	Ivector2				vTS;
+	float fCurrentHeight = 0.0f;
+	float fCurrentX = 0.0f;
+	float fCurrentY = 0.0f;
 
-	EAligment				eCurrentAlignment;
-	u32						dwCurrentColor;
-	float					fCurrentHeight;
-	float					fCurrentX, fCurrentY;
-	Fvector2				vInterval;
+	u32 uFlags;
+	u32 dwCurrentColor;
 
-	Fvector 				*TCMap;
-	float					fHeight;
-	float					fXStep;
-	float					fYStep;
-	float					fTCHeight;
-	xr_vector<String>		strings;
-
-	IFontRender				*pFontRender;
-
-	u32						nNumChars;
-
-	u32						uFlags;
+	EAligment eCurrentAlignment;
+	xr_vector<String> strings;
+	IFontRender* pFontRender;
 
 public:
 	enum
 	{
-		fsGradient			= (1<<0),
-		fsDeviceIndependent	= (1<<1),
-		fsValid 			= (1<<2),
+		fsGradient = (1 << 0),
+		fsDeviceIndependent = (1 << 1), //#DELETE_ME deprecated
+		fsValid = (1 << 2),
 
-		fsMultibyte			= (1<<3),
+		fsMultibyte = (1 << 3),
 
-		fsForceDWORD		= u32(-1)
+		fsForceDWORD = u32(-1)
 	};
 
-protected:
-	IC const Fvector&		GetCharTC		(u16 c)		{return TCMap[c];}
 
 public:
-							CGameFont		(LPCSTR section, u32 flags=0);
-							CGameFont		(LPCSTR shader, LPCSTR texture, u32 flags=0);
-							~CGameFont		();
+	CGameFont(const char* section, u32 flags = 0);
+	//CGameFont(const char* shader, const char* texture, u32 flags = 0);
+	~CGameFont();
 
-	void					Initialize		(LPCSTR shader, LPCSTR texture);
+	void ReInit();
+	inline void SetColor(u32 C) { dwCurrentColor = C; };
 
-	IC void					SetColor		(u32 C)		{dwCurrentColor=C;};
+	//inline void SetHeightI(float S);
+	inline void SetHeight(float S);
 
-	IC void					SetHeightI		(float S);
-	IC void					SetHeight		(float S);
+	inline float GetHeight() { return fCurrentHeight; };
+	inline void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
 
-	IC float				GetHeight		(){return fCurrentHeight;};
-	IC void					SetInterval		(float x, float y) {vInterval.set(x,y);};
-	IC void					SetInterval		(const Fvector2& v) {vInterval.set(v);};
-	IC void					SetAligment		(EAligment aligment){ eCurrentAlignment=aligment; }
+	float SizeOf_(const char* s);
+	float SizeOf_(const wide_char* wsStr);
+	float SizeOf_(const char cChar);  // only ANSII
 
-	float					SizeOf_			( LPCSTR s );
-	float					SizeOf_			( const wide_char *wsStr );
+	float CurrentHeight_();
 
-	float					SizeOf_			( const char cChar );  // only ANSII 
+	void OutSetI(float x, float y);
+	void OutSet(float x, float y);
 
-	float					CurrentHeight_	();
+	void MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, const char* fmt, va_list p);
 
-	void					OutSetI			(float x, float y);
-	void					OutSet			(float x, float y);
+	BOOL IsMultibyte() {
+		return uFlags & fsMultibyte;
+	};
+	u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
+	u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
-	void 					MasterOut( 	BOOL bCheckDevice , BOOL bUseCoords , BOOL bScaleCoords , BOOL bUseSkip ,
-										float _x , float _y , float _skip , LPCSTR fmt , va_list p );
+	void OutI(float _x, float _y, const char* fmt, ...);
+	void Out(float _x, float _y, const char* fmt, ...);
+	void OutNext(const char* fmt, ...);
 
-	u32						smart_strlen( const char* S );
-	BOOL					IsMultibyte() { return ( uFlags & fsMultibyte ); };
-	u16						SplitByWidth( u16 * puBuffer , u16 uBufferSize , float fTargetWidth , const char * pszText );
-	u16						GetCutLengthPos( float fTargetWidth , const char * pszText );
+	void OutSkip(float val = 1.f);
 
-	void  					OutI			( float _x , float _y , LPCSTR fmt , ... );
-	void  					Out				( float _x , float _y , LPCSTR fmt , ... );
-	void             		OutNext			( LPCSTR fmt , ... );
+	void OnRender();
 
-	void					OutSkip			(float val=1.f);
+	inline void Clear() { strings.clear(); };
 
-	void					OnRender		();
+	//shared_str m_font_name;
 
-	IC	void				Clear			()  { strings.clear(); };
+	struct Style
+	{
+		u32 bold : 1;
+		u32 italic : 1;
+		u32 underline : 1;
+		u32 strike : 1;
+	};
 
-#ifdef DEBUG
-	shared_str				m_font_name;
-#endif
+	struct Glyph
+	{
+		RECT TextureCoord;
+		ABC Abc;
+		int yOffset;
+	};
+
+	inline u32 GetSize()
+	{
+		return Size;
+	}
+
+	inline float GetLetterSpacing()
+	{
+		return LetterSpacing;
+	}
+
+	inline void SetLetterSpacing(float spacing)
+	{
+		LetterSpacing = spacing;
+	}
+
+	inline float GetLineSpacing()
+	{
+		return LineSpacing;
+	}
+
+	inline void SetLineSpacing(float spacing)
+	{
+		LineSpacing = spacing;
+	}
+
+	inline Style GetStyle()
+	{
+		return Style;
+	}
+
+	inline const char* GetName()
+	{
+		return Name;
+	}
+
+	const Glyph* GetGlyphInfo(char ch);
+
+	// returns symbol width in pixels
+	int WidthOf(const char ch);
+	int WidthOf(const char* str);
+
+private:
+	static const u32 FirstChar = 0x04;
+	static const u32 LastChar = 0xFF;
+
+	float LetterSpacing; //that must be in CUIText from new font system
+	float LineSpacing; //that must be in CUIText from new font system
+
+	const char* Name; //#TODO change type
+
+	u32 Size;
+	Style Style;
+
+	xr_map<char, Glyph> GlyphData;
+
+	void Prepare(const char* name, const char* shader, const char* style, u32 size);
+	void Initialize(const char* name, const char* shader, const char* style, u32 size);
+	void Initialize2(const char* name, const char* shader, const char* style, u32 size);
+
+	static bool bFreetypeInitialized;
+
+	static void InitializeFreetype();
 };
-
-#endif // _XR_GAMEFONT_H_

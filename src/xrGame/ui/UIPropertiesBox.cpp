@@ -3,6 +3,7 @@
 #include "../level.h"
 #include "UIListBoxItem.h"
 #include "UIXmlInit.h"
+#include "UIFontDefines.h"
 
 #define OFFSET_X (5.0f)
 #define OFFSET_Y (5.0f)
@@ -10,7 +11,7 @@
 
 CUIPropertiesBox::CUIPropertiesBox(CUIPropertiesBox* sub_property_box)
 {
-	m_UIListWnd.SetFont					(UI().Font().pFontArial14);
+	m_UIListWnd.SetFont					(UI().Font().GetFont(ARIAL14_FONT_NAME));
 	m_UIListWnd.SetImmediateSelection	(true);
 	
 	m_sub_property_box			= sub_property_box;
