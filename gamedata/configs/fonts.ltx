@@ -1,82 +1,79 @@
-[stat_font]
-shader 			= font
-texture			= ui\ui_font_hud_01
+;used
+[font_default]
+shader			= hud\font ;font
+size 			= 14
+name			= Arial ;Arial is default font by system
+
+[font_letterica]:font_default
+shader			= hud\font
+name			= Letterica
+
+[font_graffiti]:font_default
+shader			= hud\font
+name 			= Graffiti1CTT
+
+[font_statistic]:font_default
+size			= 13
 interval		= 0.75,1
 
-[hud_font_small]:stat_font
+[stat_font]:font_statistic ;TODO deprecated
 
-[hud_font_medium]
-shader 			= font
-texture			= ui\ui_font_hud_02
-	
-[hud_font_di]
-shader 			= hud\font
-texture			= ui\ui_font_console_02
+[ui_font_console]:font_default
+name			= consola
 
-[hud_font_di2]
+[hud_font_di]:ui_font_console ;TODO deprecated
+
+[ui_font_console_2]:ui_font_console
 shader 			= hud\font2
-texture			= ui\ui_font_console_02
 
+[hud_font_di2]:ui_font_console_2 ;TODO deprecated
 
-[ui_font_arial_14]
-shader			= hud\font
-texture			= ui\ui_font_arial_14_1024
-texture800		= ui\ui_font_arial_14_800
-texture1600		= ui\ui_font_arial_14_1600
+[ui_font_hud]:font_default
+size			= 16
 
-;not used
-[ui_font_arial_21]
-shader			= hud\font
-texture			= ui\ui_font_arial_21_1024
-texture800		= ui\ui_font_arial_21_800
-texture1600		= ui\ui_font_arial_21_1600
+[hud_font_medium]:ui_font_hud ;TODO deprecated
 
-[ui_font_graffiti19_russian]
-shader			= hud\font
-texture			= ui\ui_font_graff_19_1024
-texture800		= ui\ui_font_graff_19_800
-texture1600		= ui\ui_font_graff_19_1600
+[ui_font_letterica16]:font_letterica
+size			= 16
 
-[ui_font_graffiti22_russian]
-shader			= hud\font
-texture			= ui\ui_font_graff_22_1024
-texture800		= ui\ui_font_graff_22_800
-texture1600		= ui\ui_font_graff_22_1600
+[ui_font_letterica16_russian]:ui_font_letterica16 ;TODO deprecated
 
-[ui_font_graff_32]
-shader			= hud\font
-texture			= ui\ui_font_graff_32_1024
-texture800		= ui\ui_font_graff_32_800
-texture1600		= ui\ui_font_graff_32_1600
+[letterica16]:ui_font_letterica16 ;TODO deprecated
 
-;not used
-[ui_font_graff_40]
-shader			= hud\font
-texture			= ui\ui_font_graff_40_1024
-texture800		= ui\ui_font_graff_40_800
-texture1600		= ui\ui_font_graff_40_1600
+[ui_font_letterica18]:font_letterica
+size			= 18
 
-[ui_font_graff_50]
-shader			= hud\font
-texture			= ui\ui_font_graff_50_1024
-texture800		= ui\ui_font_graff_50_800
-texture1600		= ui\ui_font_graff_50_1600
+[ui_font_letterica18_russian]:ui_font_letterica18 ;TODO deprecated
 
+[ui_font_letterica25]:font_letterica
+size			= 25
 
-[ui_font_letterica16_russian]
-shader			= hud\font
-texture			= ui\ui_font_letter_16_1024
-texture800		= ui\ui_font_letter_16_800
-texture1600		= ui\ui_font_letter_16_1600
+[ui_font_letter_25]:ui_font_letterica25 ;TODO deprecated
 
-[ui_font_letterica18_russian]
-shader			= hud\font
-texture			= ui\ui_font_letter_18_1024
-texture800		= ui\ui_font_letter_18_800
-texture1600		= ui\ui_font_letter_18_1600
+[ui_font_graffiti19]:font_graffiti
+size			= 19
 
-[ui_font_letter_25]
-shader			= hud\font
-texture			= ui\ui_font_letter_25_1024
-texture800		= ui\ui_font_letter_25_800
-texture1600		= ui\ui_font_letter_25_1600
+[graffiti19]:ui_font_graffiti19 ;TODO deprecated
+
+[ui_font_graffiti19_russian]:ui_font_graffiti19 ;TODO deprecated
+
+[ui_font_graffiti22]:font_graffiti
+size			= 22
+
+[ui_font_graff_50]:font_graffiti
+size			= 50
+
+[ui_font_graff_32]:font_graffiti
+size			= 32
+
+[ui_font_graff_40]:font_graffiti
+size			= 40
+
+[ui_font_graffiti22_russian]:ui_font_graffiti22 ;TODO deprecated
+
+[ui_font_graffiti32]:font_graffiti
+size			= 32
+
+[ui_font_arial_14]:font_default ;TODO deprecated
+
+[arial_14]:ui_font_arial_14 ;TODO deprecated
