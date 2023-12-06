@@ -1,9 +1,15 @@
 #pragma once
 #include "../xrEngine/feel_touch.h"
+#include "HudSound.h"
+#include "ParticlesObject.h"
+#include "../xrServerEntities/ai_sounds.h"
+#include "Artefact.h"
+#include "CustomZone.h"
 
 struct ITEM_TYPE
 {
-	Fvector2 freq; //min,max
+	//min,max
+	Fvector2 freq; 
 	HUD_SOUND_ITEM detect_snds;
 
 	shared_str zone_map_location;
