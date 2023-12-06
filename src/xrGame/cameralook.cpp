@@ -7,6 +7,11 @@
 #include "actor.h"
 #include "object_broker.h"
 
+#include "../xrEngine/GameMtlLib.h"
+#include "CustomRocket.h"
+#include "Missile.h"
+#include "Car.h"
+
 CCameraLook::CCameraLook(CObject* p, u32 flags ) 
 :CCameraBase(p, flags)
 {
@@ -51,6 +56,58 @@ void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 	UpdateDistance		(point);
 }
 
+ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+{
+	collide::rq_result* RQ = (collide::rq_result*)params;
+
+	if (result.O)
+	{
+		if (CCustomRocket* pRocket = smart_cast<CCustomRocket*>(result.O))
+		{
+			if (!pRocket->Useful())
+				return TRUE;
+		}
+
+		if (CMissile* pMissile = smart_cast<CMissile*>(result.O))
+		{
+			if (!pMissile->Useful())
+				return TRUE;
+		}
+
+		if (CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity()))
+		{
+			if (result.O == pActor)
+				return TRUE;
+			if (pActor->Holder())
+			{
+				CCar* car = smart_cast<CCar*>(pActor->Holder());
+				if (car && result.O == car)
+					return TRUE;
+			}
+		}
+	}
+	else
+	{
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T->material);
+		if (pMtl && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+			return TRUE;
+	}
+
+	*RQ = result;
+	return FALSE;
+}
+
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
+{
+	collide::rq_result RQ;
+	RQ.set(NULL, range, -1);
+	collide::rq_results RQR;
+	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
+	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, NULL, ignore);
+	return RQ;
+}
+
 void CCameraLook::UpdateDistance(Fvector& point) 
 {
 	Fvector vDir;
@@ -58,7 +115,7 @@ void CCameraLook::UpdateDistance(Fvector& point)
 
 	collide::rq_result R;
 	float covariance = VIEWPORT_NEAR * 6.0f;
-	g_pGameLevel->ObjectSpace.RayPick(point, vDir, dist + covariance, collide::rqtBoth, R, parent);
+	R = GetPickResult(point, vDir, dist + covariance, parent);
 
 	float d = psCamSlideInert * prev_d + (1.0f - psCamSlideInert) * (R.range - covariance);
 	prev_d = d;
