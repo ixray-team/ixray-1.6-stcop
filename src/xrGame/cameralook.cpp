@@ -165,10 +165,22 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 	CCameraLook::OnActivate( old_cam );
 }
 
-void CCameraLook2::Update(Fvector& point, Fvector&)
+void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 {
-	Fmatrix mR;
-	mR.setHPB						(-yaw,-pitch,-roll);
+	Fmatrix mR, R;
+	Fmatrix rX, rY, rZ;
+	rX.rotateX(noise_dangle.x);
+	rY.rotateY(-noise_dangle.y);
+	rZ.rotateZ(noise_dangle.z);
+	R.mul_43(rY, rX);
+	R.mulB_43(rZ);
+
+	mR.identity();
+	Fquaternion Q;
+	Q.rotationYawPitchRoll(roll, yaw, pitch);
+	mR.rotation(Q);
+	mR.transpose();
+	mR.mulB_43(R);
 
 	vDirection.set					(mR.k);
 	vNormal.set						(mR.j);
