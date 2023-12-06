@@ -1,5 +1,5 @@
 function normal		(shader, t_base, t_second, t_detail)
-	shader:begin	("stub_notransform_t","font2")
+	shader:begin	("stub_notransform_t_font","hud_font2")
 			: fog		(false)
 			: zb 		(false,false)
 			: blend		(true,blend.srcalpha,blend.invsrcalpha)
