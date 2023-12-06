@@ -79,7 +79,7 @@ IFontRender* CFontAtlas::AddFontUser(CGameFont * const User, shared_str ShaderNa
 	else
 	{
 		FontRender = FontRenderIter->second;
-		FontRender->UpdatePartOfFontAtlas(UsedHeight, HeightRequired, Name.c_str(), GreyscaleBitmap);
+		R_ASSERT(false);
 	}
 	
 	UsedHeight += HeightRequired;
