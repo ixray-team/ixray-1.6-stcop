@@ -34,6 +34,7 @@ private:
 
 	struct BaseData
 	{
+		bool OpenType = false;
 		u16 Size;
 		const char* Name;
 		const char* Shader;

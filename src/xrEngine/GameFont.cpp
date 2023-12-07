@@ -48,6 +48,9 @@ CGameFont::CGameFont(const char* section, u32 flags) : Name(section)
 	Data.Size = 14;
 	if (pSettings->line_exist(section, "size"))
 		Data.Size = (u16)pSettings->r_u32(section, "size");
+	
+	if (pSettings->line_exist(section, "opentype"))
+		Data.OpenType = pSettings->r_bool(section, "opentype");
 
 	if (pSettings->line_exist(section, "letter_spacing"))
 		LetterSpacing = pSettings->r_float(section, "letter_spacing");
@@ -89,7 +92,7 @@ xr_vector<xr_string> split(const xr_string& s, char delim)
 	}
 	return std::move(elems);
 }
-
+#include <freetype/ftfntfmt.h>
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	if (!bFreetypeInitialized)
@@ -168,8 +171,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	u32 TargetX = 0;
 	u32 TargetY = 0;
 	u32 TargetX2 = 0;
-
-	//FT_Select_Charmap(OurFont, FT_ENCODING_UNICODE);
 
 // 	FTError = FT_Set_Pixel_Sizes(OurFont, 0, fHeight);
 // 	R_ASSERT3(FTError == 0, "FT_Set_Pixel_Sizes return error", FullPath);
@@ -259,11 +260,18 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			TargetY = TargetYSaved;
 		};
 
+	//const char* Format = FT_Get_Font_Format(OurFont);
+
 	for (u32 glyphID = FirstChar; glyphID <= LastChar; glyphID++)
 	{
-		//u32 TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
+		u32 TrueGlyph = glyphID;
+		if (Data.OpenType)
+		{
+			TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
 
-		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, glyphID);
+		}
+
+		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
 
 		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER);
 		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
