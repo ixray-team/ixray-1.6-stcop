@@ -1,6 +1,5 @@
 #pragma once
 #include "GameFont.h"
-#include "FontAtlas.h"
 
 class ENGINE_API CFontManager : public pureDeviceReset
 {

@@ -14,8 +14,6 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 *.aps
-build/
-build_win32/
 
 # Build results
 obj/
@@ -50,3 +48,8 @@ gamedata_origin/
 patch/
 *.log
 src/GitParser/git_version.h
+
+# CMake
+build/
+build_win32/
+build32/

@@ -251,7 +251,7 @@ void CConsole::OnRender()
 	const char* strSelected = ec().str_mark();
 	const char* strAfterSelected = ec().str_after_mark();
 
-	float strWidth = m_prompt_width + pFont->WidthOf(strBeforeCursor);
+	float strWidth = float(m_prompt_width + pFont->WidthOf(strBeforeCursor));
 
 	float outX = 0.0f;
 	if (strWidth > maxStrWidth)

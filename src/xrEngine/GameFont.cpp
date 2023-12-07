@@ -193,7 +193,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			{
 				TargetX = 0;
 				TargetX2 = GlyphBitmap.width;
-				TargetY += (float)FontSizeInPixels + 5;
+				TargetY += (u32)FontSizeInPixels + 5;
 
 				R_ASSERT2(TargetY <= TextureDimension, "Font too large, or dimension texture is too small");
 			}
@@ -203,7 +203,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 			u32 TargetY2 = TargetY + (u32)FontSizeInPixels;
 			u32 TargetYSaved = TargetY;
-			TargetY = TargetY + FontSizeInPixels - (float)GlyphBitmap.rows;
+			TargetY = TargetY + u32(FontSizeInPixels - (float)GlyphBitmap.rows);
 
 			switch (GlyphBitmap.pixel_mode)
 			{
@@ -276,17 +276,17 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		region.left = TargetX;
 		region.right = TargetX + Glyph->bitmap.width;
 		region.top = TargetY;
-		region.bottom = TargetY + FontSizeInPixels;
+		region.bottom = long(TargetY + FontSizeInPixels);
 
 		ABC widths;
 		widths.abcA = FT_CEIL(GlyphMetrics.horiBearingX);
 		widths.abcB = Glyph->bitmap.width;
 		widths.abcC = FT_CEIL(GlyphMetrics.horiAdvance) - widths.abcB - widths.abcA;
 
-		int GlyphTopScanlineOffset = FontSizeInPixels - Glyph->bitmap.rows;
-		int yOffset = -Glyph->bitmap_top - GlyphTopScanlineOffset; //#GIPERION: Magic thing, that align text by baseline.
-		yOffset += FontSizeInPixels; // Return back to the center pos
-		yOffset -= (FontSizeInPixels / 4);
+		int GlyphTopScanlineOffset = int(FontSizeInPixels - Glyph->bitmap.rows);
+		int yOffset = -Glyph->bitmap_top - GlyphTopScanlineOffset;
+		yOffset += (int)FontSizeInPixels; // Return back to the center pos
+		yOffset -= (int)(FontSizeInPixels / 4);
 
 		GlyphData[(char)glyphID] = { region, widths, yOffset };
 

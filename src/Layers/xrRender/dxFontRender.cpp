@@ -53,7 +53,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 			if (str.align)
 			{
-				float width = owner.WidthOf(str.string);
+				float width = (float)owner.WidthOf(str.string);
 
 				switch (str.align)
 				{
@@ -152,7 +152,7 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	R_CHK(Texture->LockRect(0, &LockedRect, nullptr, 0));
 
 	for (int y = 0; y < height; y++) {
-		memcpy((unsigned char*)LockedRect.pBits + (size_t)LockedRect.Pitch * y, (u8*)bitmap + (size_t)width * 4 * y, (size_t)width * 4);
+		memcpy((u8*)LockedRect.pBits + (size_t)LockedRect.Pitch * y, (u8*)bitmap + (size_t)width * 4 * y, (size_t)width * 4);
 	}
 
 	R_CHK(Texture->UnlockRect(0));

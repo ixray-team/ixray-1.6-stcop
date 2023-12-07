@@ -7,7 +7,7 @@ file(GLOB_RECURSE ENGINE_SOURCE_INTERFACE_FILES
     "I*.h"
 )
 
-file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES
+file(GLOB_RECURSE ENGINE_SOURCE_LUA_FILES
     "ai*.cpp"
     "ai*.h"
 )
@@ -19,21 +19,39 @@ file(GLOB_RECURSE ENGINE_SOURCE_DEVICE_FILES
 
 file(GLOB_RECURSE ENGINE_SOURCE_ENV_FILES
     "Environment*.*"
+    "Rain.*"
+    "thunderbolt.*"
 )
 
 file(GLOB_RECURSE ENGINE_SOURCE_WEDIT_FILES
     "editor*.*"
+    "engine_impl*.*"
 )
 
 file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
     "x_ray.*"
+    "Engine.*"
     "EngineAPI.*"
+    "EngineFactory.*"
     "EngineExternal*.*"
+    "defines.*"
 )
 
 file(GLOB_RECURSE ENGINE_SOURCE_INPUT_FILES
     "xr_input.*"
     "xr_level_controller.*"
+)
+
+file(GLOB_RECURSE ENGINE_SOURCE_CONSOLE_FILES
+    "xr_ioc_cmd.*"
+    "XR_IOConsole*.*"
+    "line_editor.*"
+    "line_edit_control.*"
+)
+
+file(GLOB_RECURSE ENGINE_SOURCE_FONTS_FILES
+    "FontManager.*"
+    "GameFont.*"
 )
 
 file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
@@ -43,14 +61,16 @@ file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 )
 
 # File groups
-source_group("core" FILES ${ENGINE_SOURCE_ALL_FILES})
+source_group("src" FILES ${ENGINE_SOURCE_ALL_FILES})
+source_group("core/fonts" FILES ${ENGINE_SOURCE_FONTS_FILES})
+source_group("core/device" FILES ${ENGINE_SOURCE_DEVICE_FILES})
+source_group("core/input" FILES ${ENGINE_SOURCE_INPUT_FILES})
+source_group("core/console" FILES ${ENGINE_SOURCE_CONSOLE_FILES})
 source_group("kernel" FILES ${ENGINE_SOURCE_KERNEL_FILES})
 source_group("interfaces" FILES ${ENGINE_SOURCE_INTERFACE_FILES})
-source_group("input" FILES ${ENGINE_SOURCE_INPUT_FILES})
 source_group("lua" FILES ${ENGINE_SOURCE_LUA_FILES})
-source_group("device" FILES ${ENGINE_SOURCE_DEVICE_FILES})
-source_group("weather_editor" FILES ${ENGINE_SOURCE_WEDIT_FILES})
 source_group("environment" FILES ${ENGINE_SOURCE_ENV_FILES})
+source_group("environment/weather_editor_old" FILES ${ENGINE_SOURCE_WEDIT_FILES})
 
 # Apply list
 list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
