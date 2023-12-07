@@ -53,6 +53,7 @@ private:
 
 	u32					frame_distort;
 public:
+
 	IDirect3DSurface9*	pTempZB;
 
 	//	Igor: for async screenshots

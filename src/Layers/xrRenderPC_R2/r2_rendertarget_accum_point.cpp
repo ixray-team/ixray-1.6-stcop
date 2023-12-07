@@ -101,7 +101,7 @@ void CRenderTarget::accum_point		(light* L)
 		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 #			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
+			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
 		}
 
 		// Render if (stencil >= light_id && z-pass)
@@ -112,19 +112,19 @@ void CRenderTarget::accum_point		(light* L)
 		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 #			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
+			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		}
 	}
 
 	// blend-copy
 	if (!RImplementation.o.fp16_blend)	{
-		u_setrt						(rt_Accumulator,NULL,NULL,HW.pBaseZB);
+		u_setrt						(rt_Accumulator,NULL,NULL,RDepth);
 		RCache.set_Element			(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
 		RCache.set_c				("m_texgen",		m_Texgen);
 		draw_volume					(L);
 	}
 
-	CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
+	CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 
 	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	increment_light_marker();

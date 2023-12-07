@@ -8,8 +8,8 @@ using namespace DirectX;
 #ifndef USE_DX11
 void	r_pixel_calculator::begin	()
 {
-	rt.create		("$user$test",		rt_dimensions,rt_dimensions,HW.Caps.fTarget);
-	R_CHK			(RDevice->CreateDepthStencilSurface	(rt_dimensions,rt_dimensions,HW.Caps.fDepth,D3DMULTISAMPLE_NONE,0,TRUE,&zb,NULL));
+	rt.create		("$user$test",		rt_dimensions,rt_dimensions, D3DFMT_X8R8G8B8);
+	R_CHK			(RDevice->CreateDepthStencilSurface	(rt_dimensions,rt_dimensions, D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&zb,NULL));
 
 	RCache.set_RT	(rt->pRT);
 	RCache.set_ZB	(zb);

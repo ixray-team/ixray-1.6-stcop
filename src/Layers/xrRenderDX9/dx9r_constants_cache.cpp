@@ -16,7 +16,7 @@ void R_constants::flush_cache()
 				if (count)			{
 					count = (count>31)?31:count;
 					PGO		(Msg("PGO:P_CONST:%d",count));
-					CHK_DX	(HW.pDevice->SetPixelShaderConstantF	(F.r_lo(), (float*)F.access(F.r_lo()),count));
+					CHK_DX	(RDevice->SetPixelShaderConstantF	(F.r_lo(), (float*)F.access(F.r_lo()),count));
 					F.flush	();
 				}
 			}
@@ -31,15 +31,15 @@ void R_constants::flush_cache()
 			u32		count		= F.r_hi()-F.r_lo();
 			if (count)			{
 #ifdef DEBUG
-				if (F.r_hi() > HW.Caps.geometry.dwRegisters)
+				if (F.r_hi() > dxRenderDeviceRender::Instance().Caps.geometry.dwRegisters)
 				{
 					Debug.fatal(DEBUG_INFO,"Internal error setting VS-constants: overflow\nregs[%d],hi[%d]",
-						HW.Caps.geometry.dwRegisters,F.r_hi()
+						dxRenderDeviceRender::Instance().Caps.geometry.dwRegisters,F.r_hi()
 						);
 				}
 				PGO		(Msg("PGO:V_CONST:%d",count));
 #endif				&
-				CHK_DX	(HW.pDevice->SetVertexShaderConstantF	(F.r_lo(), (float*)F.access(F.r_lo()),count));
+				CHK_DX	(RDevice->SetVertexShaderConstantF	(F.r_lo(), (float*)F.access(F.r_lo()),count));
 				F.flush	();
 			}
 		}

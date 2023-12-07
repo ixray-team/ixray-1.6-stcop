@@ -58,14 +58,14 @@ BOOL CRenderTarget::Create()
 	Msg("* SSample: %dx%d", rtWidth, rtHeight);
 
 	// Bufferts
-	RT.create			(RTname,			rtWidth,rtHeight,HW.Caps.fTarget);
-	RTTemp.create(RTTempName, rtWidth, rtHeight, HW.Caps.fTarget);
+	RT.create			(RTname,			rtWidth,rtHeight,D3DFMT_X8R8G8B8);
+	RTTemp.create(RTTempName, rtWidth, rtHeight, D3DFMT_X8R8G8B8);
 
-	RT_distort.create	(RTname_distort,	rtWidth,rtHeight,HW.Caps.fTarget);
+	RT_distort.create	(RTname_distort,	rtWidth,rtHeight,D3DFMT_X8R8G8B8);
 	if (RImplementation.o.color_mapping)
 	{
-		//RT_color_map.create	(RTname_color_map,	rtWidth,rtHeight,HW.Caps.fTarget);
-		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, HW.Caps.fTarget);
+		//RT_color_map.create	(RTname_color_map,	rtWidth,rtHeight,D3DFMT_X8R8G8B8);
+		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, D3DFMT_X8R8G8B8);
 	}
 	//RImplementation.o.color_mapping = RT_color_map->valid();
 
@@ -74,20 +74,20 @@ BOOL CRenderTarget::Create()
 	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
 
 	if ((rtHeight!=RCache.get_height()) || (rtWidth!= RCache.get_width()))	{
-		R_CHK		(HW.pDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,HW.Caps.fDepth,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,NULL));
+		R_CHK		(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,NULL));
 	} else {
-		ZB			= HW.pBaseZB;
+		ZB			= RDepth;
 		ZB->AddRef	();
 	}
 
 	// Temp ZB, used by some of the shadowing code
-	R_CHK	(HW.pDevice->CreateDepthStencilSurface	(512,512,HW.Caps.fDepth,D3DMULTISAMPLE_NONE,0,TRUE,&pTempZB,NULL));
+	R_CHK	(RDevice->CreateDepthStencilSurface	(512,512,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&pTempZB,NULL));
 
 	//	Igor: TMP
 	//	Create an RT for online screenshot makining
 	//u32		w = Device.TargetWidth, h = Device.TargetHeight;
-	//HW.pDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,NULL);
-	HW.pDevice->CreateOffscreenPlainSurface(rtWidth,rtHeight,HW.Caps.fTarget,D3DPOOL_SYSTEMMEM,&pFB,NULL);
+	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,NULL);
+	RDevice->CreateOffscreenPlainSurface(rtWidth,rtHeight,D3DFMT_X8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,NULL);
 
 	// Shaders and stream
 	s_postprocess[0].create				("postprocess");
@@ -271,8 +271,8 @@ void CRenderTarget::Begin		()
 	if (!Perform())	
 	{
 		// Base RT
-		RCache.set_RT			(HW.pBaseRT);
-		RCache.set_ZB			(HW.pBaseZB);
+		RCache.set_RT			(RTarget);
+		RCache.set_ZB			(RDepth);
 		curWidth				=  RCache.get_width();
 		curHeight				= RCache.get_height();
 	} else {
@@ -308,14 +308,14 @@ void CRenderTarget::DoAsyncScreenshot	()
 	{
 		HRESULT hr;
 
-		IDirect3DSurface9*	pFBSrc = HW.pBaseRT;
+		IDirect3DSurface9*	pFBSrc = RTarget;
 		//	Don't addref, no need to release.
 		//ID3DTexture2D *pTex = RT->pSurface;
 
 		//hr = pTex->GetSurfaceLevel(0, &pFBSrc);
 
 		//	SHould be async function
-		hr = HW.pDevice->GetRenderTargetData( pFBSrc, pFB );
+		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
 
 		//pFBSrc->Release();
 
@@ -344,8 +344,8 @@ void CRenderTarget::End		()
 	if (bDistort)		phase_distortion		();
 
 	// combination/postprocess
-	RCache.set_RT		(HW.pBaseRT);
-	RCache.set_ZB		(HW.pBaseZB);
+	RCache.set_RT		(RTarget);
+	RCache.set_ZB		(RDepth);
 	curWidth			=  RCache.get_width();
 	curHeight			= RCache.get_height();
 	
@@ -390,7 +390,7 @@ void CRenderTarget::End		()
 		RCache.set_c		(s_colormap, param_color_map_influence,param_color_map_interpolate,0,0);
 		RCache.Render		(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 
-		RCache.set_RT		(HW.pBaseRT);
+		RCache.set_RT		(RTarget);
 		//return;
 	}
 
@@ -419,7 +419,7 @@ void	CRenderTarget::phase_distortion	()
 	RCache.set_ZB								(ZB);
 	RCache.set_CullMode							(CULL_CCW);
 	RCache.set_ColorWriteEnable					( );
-	CHK_DX(HW.pDevice->Clear					( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,127,127), 1.0f, 0L));
+	CHK_DX(RDevice->Clear					( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,127,127), 1.0f, 0L));
 	
 	if(g_pGameLevel && g_pGamePersistent && !g_pGamePersistent->OnRenderPPUI_query() )
 		RImplementation.r_dsgraph_render_distort	( );

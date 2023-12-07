@@ -8,7 +8,7 @@ extern u32 GetGpuNum();
 
 void CHWCaps::Update() {
 	D3DCAPS9					caps;
-	HW.pDevice->GetDeviceCaps	(&caps);
+	RDevice->GetDeviceCaps	(&caps);
 
 	// ***************** GEOMETRY
 	geometry_major				= u16 ( (u32(caps.VertexShaderVersion)&(0xf << 8ul))>>8 );
@@ -21,7 +21,7 @@ void CHWCaps::Update() {
 	geometry.dwRegisters		= cnt;
 	geometry.dwInstructions		= 256;
 	geometry.dwClipPlanes		= _min(caps.MaxUserClipPlanes,15);
-	geometry.bVTF				= (geometry_major>=3) && HW.support(D3DFMT_R32F,D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_VERTEXTEXTURE);
+	geometry.bVTF				= (geometry_major>=3);
 
 	// ***************** PIXEL processing
 	raster_major				= u16 ( u32(u32(caps.PixelShaderVersion)&u32(0xf << 8ul))>>8 );
@@ -42,7 +42,7 @@ void CHWCaps::Update() {
 	// *******1********** Vertex cache
 	ID3DQuery*	q_vc;
 	D3DDEVINFO_VCACHE	vc;
-	HRESULT _hr			= HW.pDevice->CreateQuery(D3DQUERYTYPE_VCACHE,&q_vc);
+	HRESULT _hr			= RDevice->CreateQuery(D3DQUERYTYPE_VCACHE,&q_vc);
 	if (FAILED(_hr))
 	{
 		vc.OptMethod			= 0;
@@ -70,7 +70,7 @@ void CHWCaps::Update() {
 	bStencil			=	FALSE;
 	IDirect3DSurface9*	surfZS=0;
 	D3DSURFACE_DESC		surfDESC;
-	CHK_DX		(HW.pDevice->GetDepthStencilSurface(&surfZS));
+	CHK_DX		(RDevice->GetDepthStencilSurface(&surfZS));
 	R_ASSERT	(surfZS);
 	CHK_DX		(surfZS->GetDesc(&surfDESC));
 	_RELEASE	(surfZS);

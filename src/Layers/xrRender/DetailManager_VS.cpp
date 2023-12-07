@@ -73,9 +73,7 @@ void CDetailManager::hw_Load_Geom()
 
 	// Create VB/IB
 	R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
-	HW.stats_manager.increment_stats_vb				(hw_VB);
 	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
-	HW.stats_manager.increment_stats_ib				(hw_IB);
 
 #endif	//	USE_DX11
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);

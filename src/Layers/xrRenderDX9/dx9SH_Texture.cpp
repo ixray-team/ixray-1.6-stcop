@@ -101,7 +101,7 @@ void CTexture::apply_theora	(u32 dwStage)
 		VERIFY				(u32(_pos) == rect.bottom*_w);
 		R_CHK				(T2D->UnlockRect(0));
 	}
-	CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
+	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
 };
 void CTexture::apply_avi	(u32 dwStage)	
 {
@@ -120,7 +120,7 @@ void CTexture::apply_avi	(u32 dwStage)
 
 		R_CHK	(T2D->UnlockRect(0));
 	}
-	CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
+	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
 };
 void CTexture::apply_seq	(u32 dwStage)	{
 	// SEQ
@@ -134,10 +134,10 @@ void CTexture::apply_seq	(u32 dwStage)	{
 		u32	frame_id	= frame%frame_data;
 		pSurface 			= seqDATA[frame_id];
 	}
-	CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
+	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
 };
 void CTexture::apply_normal	(u32 dwStage)	{
-	CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
+	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
 };
 
 void CTexture::Preload	()
@@ -191,7 +191,7 @@ void CTexture::Load		()
 				u32 _w = pTheora->Width(false);
 				u32 _h = pTheora->Height(false);
 
-				HRESULT hrr = HW.pDevice->CreateTexture(
+				HRESULT hrr = RDevice->CreateTexture(
 					_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, NULL );
 
 				pSurface = pTexture;
@@ -221,7 +221,7 @@ void CTexture::Load		()
 
 				// Now create texture
 				ID3DTexture2D*	pTexture = 0;
-				HRESULT hrr = HW.pDevice->CreateTexture(
+				HRESULT hrr = RDevice->CreateTexture(
 					pAVI->m_dwWidth,pAVI->m_dwHeight,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,
 					&pTexture,NULL
 					);

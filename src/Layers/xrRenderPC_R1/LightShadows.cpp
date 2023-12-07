@@ -139,7 +139,7 @@ void CLightShadows::calculate	()
 
 	BOOL bRTS					= FALSE;
 	Device.Statistic->RenderDUMP_Scalc.Begin	();
-	HW.pDevice->SetRenderState	(D3DRS_ZENABLE, D3DZB_FALSE);
+	RDevice->SetRenderState	(D3DRS_ZENABLE, D3DZB_FALSE);
 	
 	// iterate on objects
 	int	slot_id		= 0;
@@ -168,7 +168,7 @@ void CLightShadows::calculate	()
 				bRTS						= TRUE;
 				RCache.set_RT				(RT_temp->pRT);
 				RCache.set_ZB				(RImplementation.Target->pTempZB);
-				HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(255, 255, 255), 1, 0);
+				RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(255, 255, 255), 1, 0);
 			}
 
 			// calculate light center
@@ -251,7 +251,7 @@ void CLightShadows::calculate	()
 			int		s_x			=	slot_id%slot_line;
 			int		s_y			=	slot_id/slot_line;
 			D3DVIEWPORT9 VP		=	{(unsigned long) s_x*S_size, (unsigned long) s_y*S_size,S_size,S_size,0,1 };
-			CHK_DX					(HW.pDevice->SetViewport(&VP));
+			CHK_DX					(RDevice->SetViewport(&VP));
 			
 			// Render object-parts
 			for (u32 n_it=0; n_it<C.nodes.size(); n_it++)
@@ -301,7 +301,7 @@ void CLightShadows::calculate	()
 	}
 	
 	// Finita la comedia
-	HW.pDevice->SetRenderState				(D3DRS_ZENABLE, D3DZB_TRUE);
+	RDevice->SetRenderState				(D3DRS_ZENABLE, D3DZB_TRUE);
 	Device.Statistic->RenderDUMP_Scalc.End	();
 	
 	RCache.set_xform_project	(Device.mProject);

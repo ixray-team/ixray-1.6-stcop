@@ -243,7 +243,7 @@ public:
 #ifdef USE_DX11
 		SSManager.SetMaxAnisotropy(val);
 #else //USE_DX11
-		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
+		for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.raster.dwStages; i++)
 			CHK_DX(RDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
 #endif //USE_DX11
 	}
@@ -272,7 +272,7 @@ public:
 #ifdef USE_DX11
 		SSManager.SetMipLodBias(val);
 #else //USE_DX11
-		for (u32 i = 0; i < HW.Caps.raster.dwStages; i++) {
+		for (u32 i = 0; i < dxRenderDeviceRender::Instance().Caps.raster.dwStages; i++) {
 			CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, val));
 		}
 #endif

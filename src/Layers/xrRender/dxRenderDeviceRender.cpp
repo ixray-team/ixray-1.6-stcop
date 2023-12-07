@@ -7,7 +7,12 @@
 
 #include "ResourceManager.h"
 #include "imgui.h"
+
+#ifdef USE_DX11
 #include "imgui_impl_dx11.h"
+#else
+#include "../xrRenderDX9/imgui_impl_dx9.h"
+#endif
 
 dxRenderDeviceRender::dxRenderDeviceRender()
 	:	Resources(0)
@@ -56,7 +61,11 @@ void dxRenderDeviceRender::ValidateHW()
 void dxRenderDeviceRender::DestroyHW()
 {
 	xr_delete					(Resources);
+#ifdef USE_DX11
 	ImGui_ImplDX11_Shutdown();
+#else
+	ImGui_ImplDX9_Shutdown();
+#endif
 }
 
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2)
@@ -71,17 +80,16 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	Device.ResizeBuffers(psCurrentVidMode[0], psCurrentVidMode[1]);
 	ResourcesDeferredUpload();
 
-#ifdef USE_DX11
-	dwWidth					= Device.GetSwapchainWidth();
-	dwHeight				= Device.GetSwapchainHeight();
-#else //USE_DX11
-	dwWidth					= HW.DevPP.BackBufferWidth;
-	dwHeight				= HW.DevPP.BackBufferHeight;
-#endif
+	dwWidth = Device.GetSwapchainWidth();
+	dwHeight = Device.GetSwapchainHeight();
+	fWidth_2 = float(dwWidth / 2);
+	fHeight_2 = float(dwHeight / 2);
+	Resources->reset_end();
 
-	fWidth_2				= float(dwWidth/2);
-	fHeight_2				= float(dwHeight/2);
-	Resources->reset_end	();
+#ifndef USE_DX11
+	ImGui_ImplDX9_Shutdown();
+	ImGui_ImplDX9_Init(RDevice);
+#endif
 
 #ifdef DEBUG
 	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:",RDevice);
@@ -95,7 +103,7 @@ void dxRenderDeviceRender::SetupStates()
 	// SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 	// SSManager.SetMipLodBias(ps_r__tf_Mipbias);
 #else //USE_DX11
-	for (u32 i=0; i<HW.Caps.raster.dwStages; i++)				{
+	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.raster.dwStages; i++)				{
 		CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic));
 		CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *(LPDWORD)&ps_r__tf_Mipbias));
 		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MINFILTER,	D3DTEXF_LINEAR 		));
@@ -123,7 +131,7 @@ void dxRenderDeviceRender::SetupStates()
 	// ******************** Fog parameters
 	CHK_DX(RDevice->SetRenderState( D3DRS_FOGCOLOR,			0					));
 	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	FALSE				));
-	if (HW.Caps.bTableFog)	{
+	if (dxRenderDeviceRender::Instance().Caps.bTableFog)	{
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR		));
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE			));
 	} else {
@@ -136,6 +144,10 @@ void dxRenderDeviceRender::SetupStates()
 
 void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
+#ifndef USE_DX11
+	Caps.Update();
+#endif
+
 	// Signal everyone - device created
 	RCache.OnDeviceCreate		();
 	m_Gamma.Update				();
@@ -159,21 +171,17 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 #ifdef USE_DX11
 	ImGui_ImplDX11_Init(RDevice, RContext);
 #else
-#error HUY
+	ImGui_ImplDX9_Init(RDevice);
 #endif
 
-#ifdef USE_DX11
-	dwWidth					= Device.GetSwapchainWidth();
-	dwHeight				= Device.GetSwapchainHeight();
-#else //USE_DX11
-	dwWidth					= HW.DevPP.BackBufferWidth;
-	dwHeight				= HW.DevPP.BackBufferHeight;
-#endif
-	fWidth_2			= float(dwWidth/2)			;
-	fHeight_2			= float(dwHeight/2)			;
-	Resources			= xr_new<CResourceManager>		();
+	dwWidth = Device.GetSwapchainWidth();
+	dwHeight = Device.GetSwapchainHeight();
+	fWidth_2 = float(dwWidth / 2);
+	fHeight_2 = float(dwHeight / 2);
+	Resources = xr_new<CResourceManager>();
 
-	Device.AddUICommand("dxDebugRenderer", []() {
+#ifdef DEBUG
+	Device.AddUICommand("dxDebugRenderer", 100, []() {
 		if (DebugRenderImpl.m_lines.empty())
 			return;
 
@@ -187,13 +195,18 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 		
 		ImDrawList& CmdList = *ImGui::GetWindowDrawList();
 		for (const auto& Line : DebugRenderImpl.m_lines) {
-			CmdList.AddLine(ImVec2(Line.first.p.x, Line.first.p.y), ImVec2(Line.second.p.x, Line.second.p.y), Line.first.color);
+			CmdList.AddLine(
+				ImVec2(Line.first.p.x, Line.first.p.y),
+				ImVec2(Line.second.p.x, Line.second.p.y), 
+				Line.first.color
+			);
 		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	});
+#endif
 }
 
 void dxRenderDeviceRender::SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
@@ -217,7 +230,7 @@ void dxRenderDeviceRender::overdrawBegin()
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILFAIL,		D3DSTENCILOP_KEEP		));
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILPASS,		D3DSTENCILOP_INCRSAT	));
 
-	if (1==HW.Caps.SceneMode)		
+	if (1==dxRenderDeviceRender::Instance().Caps.SceneMode)		
 	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_KEEP		)); }	// Overdraw
 	else 
 	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_INCRSAT	)); }	// ZB access
@@ -335,7 +348,7 @@ void dxRenderDeviceRender::Begin()
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);
-	//if (HW.Caps.SceneMode)	overdrawBegin	();
+	//if (dxRenderDeviceRender::Instance().Caps.SceneMode)	overdrawBegin	();
 }
 
 void dxRenderDeviceRender::Clear()
@@ -353,7 +366,7 @@ void dxRenderDeviceRender::Clear()
 	CHK_DX(RDevice->Clear(0,0,
 		D3DCLEAR_ZBUFFER|
 		(psDeviceFlags.test(rsClearBB)?D3DCLEAR_TARGET:0)|
-		(HW.Caps.bStencil?D3DCLEAR_STENCIL:0),
+		(dxRenderDeviceRender::Instance().Caps.bStencil?D3DCLEAR_STENCIL:0),
 		color_xrgb(0,0,0),1,0
 		));
 #endif
@@ -365,21 +378,34 @@ void dxRenderDeviceRender::End()
 {
 	VERIFY	(RDevice);
 
-	//if (HW.Caps.SceneMode)	overdrawEnd();
+	//if (dxRenderDeviceRender::Instance().Caps.SceneMode)	overdrawEnd();
 
 	RCache.OnFrameEnd	();
 
 	DoAsyncScreenshot();
 
+#ifdef USE_DX11
 	ImGui_ImplDX11_NewFrame();
 	ID3D11RenderTargetView* RTV = RSwapchainTarget;
 	RContext->OMSetRenderTargets(1, &RTV, nullptr);
+#else
+	ImGui_ImplDX9_NewFrame();
+	RDevice->SetRenderTarget(0, RSwapchainTarget);
+#endif
+
 	ImGui::NewFrame();
 	Device.DrawUI();
 	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
+#ifdef USE_DX11
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#else
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+#endif
+
+#ifdef DEBUG
 	DebugRenderImpl.m_lines.resize(0);
+#endif
 
 #ifdef USE_DX11
 	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);

@@ -122,7 +122,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	// Create _new
 	SDeclaration* D			= xr_new<SDeclaration>();
 	u32 dcl_size = (u32)GetDeclLength(dcl) + 1;
-	CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
+	CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);
 	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 	v_declarations.push_back(D);
@@ -663,8 +663,8 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		// Select target
 		LPCSTR						c_target	= "vs_2_0";
 		LPCSTR						c_entry		= "main";
-		/*if (HW.Caps.geometry.dwVersion>=CAP_VERSION(3,0))			target="vs_3_0";
-		else*/ if (HW.Caps.geometry_major>=2)						c_target="vs_2_0";
+		/*if (dxRenderDeviceRender::Instance().Caps.geometry.dwVersion>=CAP_VERSION(3,0))			target="vs_3_0";
+		else*/ if (dxRenderDeviceRender::Instance().Caps.geometry_major>=2)						c_target="vs_2_0";
 		else 														c_target="vs_1_1";
 
 		u32 needed_len				= fs->length() + 1;
@@ -686,7 +686,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		{
 			if (pShaderBuf)
 			{
-				_hr = HW.pDevice->CreateVertexShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_vs->vs);
+				_hr = RDevice->CreateVertexShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_vs->vs);
 				if (SUCCEEDED(_hr))	
 				{
 					LPCVOID			data		= NULL;
@@ -788,7 +788,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		{
 			if (pShaderBuf)
 			{
-				_hr = HW.pDevice->CreatePixelShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_ps->ps);
+				_hr = RDevice->CreatePixelShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_ps->ps);
 				if (SUCCEEDED(_hr))	{
 					LPCVOID			data		= NULL;
 					_hr	= D3DXFindShaderComment	((DWORD*)pShaderBuf->GetBufferPointer(),MAKEFOURCC('C','T','A','B'),&data,NULL);

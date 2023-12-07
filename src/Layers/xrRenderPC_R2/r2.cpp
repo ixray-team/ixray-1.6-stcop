@@ -101,12 +101,12 @@ void					CRender::create					()
 
 	// hardware
 	o.smapsize			= ps_r__smapsize;
-	o.mrt				= (HW.Caps.raster.dwMRT_count >= 3);
-	o.mrtmixdepth		= (HW.Caps.raster.b_MRT_mixdepth);
+	o.mrt				= (dxRenderDeviceRender::Instance().Caps.raster.dwMRT_count >= 3);
+	o.mrtmixdepth		= (dxRenderDeviceRender::Instance().Caps.raster.b_MRT_mixdepth);
 
 	// Check for NULL render target support
 	D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
-	o.nullrt			= HW.support	(nullrt,			D3DRTYPE_SURFACE, D3DUSAGE_RENDERTARGET);
+	o.nullrt			=false;
 	/*
 	if (o.nullrt)		{
 	Msg				("* NULLRT supported and used");
@@ -120,7 +120,7 @@ void					CRender::create					()
 		//.		??? if (date < 22-march-07)		
 		if (0)
 		{
-			u32 device_id	= HW.Caps.id_device;
+			u32 device_id	= dxRenderDeviceRender::Instance().Caps.id_device;
 			bool disable_nullrt = false;
 			switch (device_id)	
 			{
@@ -166,19 +166,19 @@ void					CRender::create					()
 
 	// SMAP / DST
 	o.HW_smap_FETCH4	= FALSE;
-	o.HW_smap			= HW.support	(D3DFMT_D24X8,			D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
+	o.HW_smap			= true;
 	o.HW_smap_PCF		= o.HW_smap		;
 	if (o.HW_smap)		{
 		o.HW_smap_FORMAT	= D3DFMT_D24X8;
 		Msg				("* HWDST/PCF supported and used");
 	}
 
-	o.fp16_filter		= HW.support	(D3DFMT_A16B16G16R16F,	D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_FILTER);
-	o.fp16_blend		= HW.support	(D3DFMT_A16B16G16R16F,	D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING);
+	o.fp16_filter		= true;
+	o.fp16_blend		= true;
 
 	// search for ATI formats
 	if (!o.HW_smap && (0==strstr(Core.Params,"-nodf24")) )		{
-		o.HW_smap		= HW.support	((D3DFORMAT)(MAKEFOURCC('D','F','2','4')),	D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
+		o.HW_smap = true;
 		if (o.HW_smap)	{
 			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
 			o.HW_smap_PCF	= FALSE			;
@@ -196,25 +196,24 @@ void					CRender::create					()
 		o.fp16_blend	= FALSE;
 	}
 
-	VERIFY2				(o.mrt && (HW.Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
+	VERIFY2				(o.mrt && (dxRenderDeviceRender::Instance().Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
 
 	// nvstencil on NV40 and up
 	// nvstencil should be enabled only for GF 6xxx and GF 7xxx
 	// if hardware support early stencil (>= GF 8xxx) stencil reset trick only
 	// slows down.
 	o.nvstencil			= FALSE;
-	if ((HW.Caps.id_vendor==0x10DE)&&(HW.Caps.id_device>=0x40))	
+	if ((dxRenderDeviceRender::Instance().Caps.id_vendor==0x10DE)&&(dxRenderDeviceRender::Instance().Caps.id_device>=0x40))	
 	{
 		//o.nvstencil = HW.support	((D3DFORMAT)MAKEFOURCC('R','A','W','Z'), D3DRTYPE_SURFACE, 0);
 		//o.nvstencil = TRUE;
-		o.nvstencil = ( S_OK==HW.pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8 , 0, D3DRTYPE_TEXTURE, (D3DFORMAT MAKEFOURCC('R','A','W','Z'))) );
+		o.nvstencil = false;
 	}
 
 	if (strstr(Core.Params,"-nonvs"))		o.nvstencil	= FALSE;
 
 	// nv-dbt
-	o.nvdbt				= HW.support	((D3DFORMAT)MAKEFOURCC('N','V','D','B'), D3DRTYPE_SURFACE, 0);
-	if (o.nvdbt)		Msg	("* NV-DBT supported and used");
+	o.nvdbt = false;
 
 	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
 	if (o.no_ram_textures)
@@ -241,7 +240,7 @@ void					CRender::create					()
 	o.ssao_half_data	= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
 	o.ssao_hbao			= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
 	
-	if ((HW.Caps.id_vendor==0x1002)&&(HW.Caps.id_device<=0x72FF))	
+	if ((dxRenderDeviceRender::Instance().Caps.id_vendor==0x1002)&&(dxRenderDeviceRender::Instance().Caps.id_device<=0x72FF))	
 	{
 		o.ssao_opt_data = false;
 		o.ssao_hbao = false;
@@ -266,11 +265,11 @@ void					CRender::create					()
 
 	//rmNormal					();
 	marker						= 0;
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
+	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
+	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
 	ZeroMemory(q_sync_point, sizeof(q_sync_point));
-	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
-		R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
+	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
+		R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
 
 	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
@@ -282,7 +281,7 @@ void					CRender::destroy				()
 	::PortalTraverser.destroy	();
 	//_RELEASE					(q_sync_point[1]);
 	//_RELEASE					(q_sync_point[0]);
-	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
+	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
 		_RELEASE(q_sync_point[i]);
 	HWOCC.occq_destroy			();
 	xr_delete					(Models);
@@ -314,16 +313,16 @@ void CRender::reset_begin()
 	HWOCC.occq_destroy			();
 	//_RELEASE					(q_sync_point[1]);
 	//_RELEASE					(q_sync_point[0]);
-	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
+	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
 		_RELEASE(q_sync_point[i]);
 }
 
 void CRender::reset_end()
 {
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
-	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
-		R_CHK					(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
+	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
+	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
+	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
+		R_CHK					(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
 	HWOCC.occq_create			(occq_size);
 
 	Target						=	xr_new<CRenderTarget>	();
@@ -485,19 +484,19 @@ void					CRender::rmNear				()
 {
 	IRender_Target* T	=	getTarget	();
 	D3DVIEWPORT9 VP		=	{0,0,T->get_width(),T->get_height(),0,0.02f };
-	CHK_DX				(HW.pDevice->SetViewport(&VP));
+	CHK_DX				(RDevice->SetViewport(&VP));
 }
 void					CRender::rmFar				()
 {
 	IRender_Target* T	=	getTarget	();
 	D3DVIEWPORT9 VP		=	{0,0,T->get_width(),T->get_height(),0.99999f,1.f };
-	CHK_DX				(HW.pDevice->SetViewport(&VP));
+	CHK_DX				(RDevice->SetViewport(&VP));
 }
 void					CRender::rmNormal			()
 {
 	IRender_Target* T	=	getTarget	();
 	D3DVIEWPORT9 VP		= {0,0,T->get_width(),T->get_height(),0,1.f };
-	CHK_DX				(HW.pDevice->SetViewport(&VP));
+	CHK_DX				(RDevice->SetViewport(&VP));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -553,7 +552,7 @@ static HRESULT create_shader				(
 	HRESULT		_result = E_FAIL;
 	if (pTarget[0] == 'p') {
 		SPS* sps_result = (SPS*)result;
-		_result			= HW.pDevice->CreatePixelShader(buffer, &sps_result->ps);
+		_result			= RDevice->CreatePixelShader(buffer, &sps_result->ps);
 		if ( !SUCCEEDED(_result) ) {
 			Log			("! PS: ", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
@@ -575,7 +574,7 @@ static HRESULT create_shader				(
 	}
 	else {
 		SVS* svs_result = (SVS*)result;
-		_result			= HW.pDevice->CreateVertexShader(buffer, &svs_result->vs);
+		_result			= RDevice->CreateVertexShader(buffer, &svs_result->vs);
 		if ( !SUCCEEDED(_result) ) {
 			Log			("! VS: ", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
@@ -707,12 +706,12 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.HW_smap_FETCH4); ++len;
 
-	if (HW.Caps.raster_major >= 3)	{
+	if (dxRenderDeviceRender::Instance().Caps.raster_major >= 3)	{
 		defines[def_it].Name		=	"USE_BRANCHING";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(HW.Caps.raster_major >= 3); ++len;
+	sh_name[len]='0'+char(dxRenderDeviceRender::Instance().Caps.raster_major >= 3); ++len;
 
 	if (ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)) {
 		defines[def_it].Name = "USE_SUNMASK";
@@ -722,12 +721,12 @@ HRESULT	CRender::shader_compile			(
 	sh_name[len] = '0' + char(ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)); ++len;
 	
 
-	if (HW.Caps.geometry.bVTF)	{
+	if (dxRenderDeviceRender::Instance().Caps.geometry.bVTF)	{
 		defines[def_it].Name		=	"USE_VTF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(HW.Caps.geometry.bVTF); ++len;
+	sh_name[len]='0'+char(dxRenderDeviceRender::Instance().Caps.geometry.bVTF); ++len;
 
 	if (o.Tshadows)			{
 		defines[def_it].Name		=	"USE_TSHADOWS";

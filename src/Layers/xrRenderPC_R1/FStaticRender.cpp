@@ -64,8 +64,9 @@ void					CRender::create					()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("L_dynamic_color",	&r1_dlight_binder_color);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("L_dynamic_xform",	&r1_dlight_binder_xform);
 
+
 	// distortion
-	u32		v_dev	= CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
+	u32		v_dev	= CAP_VERSION(dxRenderDeviceRender::Instance().Caps.raster_major, dxRenderDeviceRender::Instance().Caps.raster_minor);
 	u32		v_need	= CAP_VERSION(1,4);
 	if ( v_dev >= v_need )						o.distortion = TRUE;
 	else										o.distortion = FALSE;
@@ -552,19 +553,19 @@ void	CRender::rmNear		()
 {
 	IRender_Target* T	=	getTarget	();
 	D3DVIEWPORT9 VP		=	{0,0,T->get_width(),T->get_height(),0,0.02f };
-	CHK_DX				(HW.pDevice->SetViewport(&VP));
+	CHK_DX				(RDevice->SetViewport(&VP));
 }
 void	CRender::rmFar		()
 {
 	IRender_Target* T	=	getTarget	();
 	D3DVIEWPORT9 VP		=	{0,0,T->get_width(),T->get_height(),0.99999f,1.f };
-	CHK_DX				(HW.pDevice->SetViewport(&VP));
+	CHK_DX				(RDevice->SetViewport(&VP));
 }
 void	CRender::rmNormal	()
 {
 	IRender_Target* T	=	getTarget	();
 	D3DVIEWPORT9 VP		= {0,0,T->get_width(),T->get_height(),0,1.f };
-	CHK_DX				(HW.pDevice->SetViewport(&VP));
+	CHK_DX				(RDevice->SetViewport(&VP));
 }
 
 extern u32 g_r;
@@ -708,7 +709,7 @@ static HRESULT create_shader				(
 	HRESULT		_result = E_FAIL;
 	if (pTarget[0] == 'p') {
 		SPS* sps_result = (SPS*)result;
-		_result			= HW.pDevice->CreatePixelShader(buffer, &sps_result->ps);
+		_result			= RDevice->CreatePixelShader(buffer, &sps_result->ps);
 		if ( !SUCCEEDED(_result) ) {
 			Log			("! PS: ", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
@@ -730,7 +731,7 @@ static HRESULT create_shader				(
 	}
 	else {
 		SVS* svs_result = (SVS*)result;
-		_result			= HW.pDevice->CreateVertexShader(buffer, &svs_result->vs);
+		_result			= RDevice->CreateVertexShader(buffer, &svs_result->vs);
 		if ( !SUCCEEDED(_result) ) {
 			Log			("! VS: ", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
