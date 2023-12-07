@@ -337,6 +337,34 @@ public		:
 	}
 };
 
+class ENGINE_API CCC_Boolean : public IConsole_Command
+{
+protected	:
+	bool*			value;
+public		:
+	  const int GetValue	() const {return *value;};
+
+	CCC_Boolean(LPCSTR N, bool* V) :
+	  IConsole_Command(N),
+	  value(V)
+	{};
+
+	virtual void	Execute	(LPCSTR args)
+	{
+		int v = atoi(args);
+		*value = !!v;
+	}
+	virtual void	Status	(TStatus& S)
+	{	
+		bool bStatus = *value;
+
+		if (bStatus)
+			xr_strcat(S, "true");
+		else
+			xr_strcat(S, "false");
+	}
+};
+
 class ENGINE_API	CCC_String : public IConsole_Command
 {
 protected:
