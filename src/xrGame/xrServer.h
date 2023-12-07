@@ -286,7 +286,7 @@ public:
 };
 
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 		enum e_dbg_net_Draw_Flags
 		{
 

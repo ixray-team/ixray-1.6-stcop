@@ -16,7 +16,7 @@ struct	_scissor					: public Fbox2
 
 // Connector
 class	CPortal						: public IRender_Portal
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	, public pureRender
 #endif
 {
@@ -42,7 +42,7 @@ public:
 									CPortal			();
 	virtual							~CPortal		();
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void					OnRender		();
 #endif
 };

@@ -54,7 +54,7 @@
 #include "debug_text_tree.h"
 #include "../xrPhysics/IPHWorld.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #   include "animation_movement_controller.h"
 #endif // DEBUG
@@ -779,7 +779,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	return TRUE;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CCustomMonster::OnHUDDraw(CCustomHUD *hud)
 {
 }
@@ -1099,7 +1099,7 @@ bool CCustomMonster::update_critical_wounded	(const u16 &bone_id, const float &p
 	return (false);
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 extern void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 void draw_visiblity_rays	(CCustomMonster *self, const CObject *object, collide::rq_results& rq_storage);
@@ -1238,6 +1238,7 @@ void CCustomMonster::OnRender()
 	}
 #endif // #if 0
 
+#ifdef DEBUG
 	if (m_jump_picks.size() < 1)
 		return;
 
@@ -1316,6 +1317,7 @@ void CCustomMonster::OnRender()
 		Level().debug_renderer().draw_line(unit, v1, v3, color_xrgb(255, 255, 255));
 		Level().debug_renderer().draw_line(unit, v2, v3, color_xrgb(255, 255, 255));
 	}
+#endif
 }
 #endif // DEBUG
 

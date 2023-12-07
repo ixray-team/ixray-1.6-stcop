@@ -27,7 +27,7 @@ CPortal::~CPortal		()
 #endif
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CPortal::OnRender	()
 {
 	if (psDeviceFlags.is(rsOcclusionDraw)){

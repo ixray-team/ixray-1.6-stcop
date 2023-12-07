@@ -159,7 +159,7 @@ public:
 	virtual bool		is_base_monster_with_enemy	() { return false; }
 
 	// debug
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void		OnRender				( );
 	virtual void		OnHUDDraw				(CCustomHUD* hud);
 #endif

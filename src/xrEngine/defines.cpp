@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	ECORE_API BOOL bDebug	= FALSE;
 	
 #endif

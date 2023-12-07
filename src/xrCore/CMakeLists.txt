@@ -122,7 +122,10 @@ target_compile_definitions(xrCore PRIVATE _WINDOWS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 ## Disable user-cheats for Shipping build
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:MASTER_GOLD>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 
 # Linker list
@@ -131,7 +134,7 @@ target_link_libraries(xrCore PRIVATE "discord_game_sdk.dll.lib")
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
-target_compile_definitions(xrCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD

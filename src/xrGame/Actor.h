@@ -68,7 +68,7 @@ class	CActor:
 	public CPhraseDialogManager,
 	public CStepManager,
 	public Feel::Sound
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	,public pureRender
 #endif
 {
@@ -106,7 +106,7 @@ public:
 	virtual	void						feel_sound_new				(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power);
 	virtual	Feel::Sound*				dcast_FeelSound				()	{ return this;	}
 			float						m_snd_noise;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void						OnRender			();
 
 #endif

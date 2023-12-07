@@ -13,7 +13,7 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 	RCache.Render			(pt,baseV,startV,countV,startI,PC);
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T_, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {

@@ -160,7 +160,7 @@ protected:
 	friend class stalker_movement_manager_obstacles;
 	friend class CPoltergeisMovementManager;
 	friend class CDetailPathBuilder;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	friend class CLevelGraph;
 	friend class CCustomMonster;
 #endif

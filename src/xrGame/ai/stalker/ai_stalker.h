@@ -213,7 +213,7 @@ public:
 	virtual	void						PHHit								(SHit &H);
 	virtual BOOL						feel_vision_isRelevant				(CObject* who);
 	virtual float						Radius								() const;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void						OnHUDDraw							(CCustomHUD* hud);
 	virtual void						OnRender							();
 			void						debug_text							();

@@ -343,7 +343,7 @@ void CHOM::Enable		()
 	bEnabled			= m_pModel?TRUE:FALSE;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CHOM::OnRender	()
 {
 	Raster.on_dbg_render();
@@ -390,6 +390,9 @@ void CHOM::OnRender	()
 		}
 	}
 }
+#endif
+
+#ifdef DEBUG
 void CHOM::stats()
 {
 	if (m_pModel){

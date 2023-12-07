@@ -137,7 +137,8 @@ void CExplosiveRocket::PH_Ch_CrPr			()
 {
 	inherited::PH_Ch_CrPr		();
 }
-
+#endif
+#ifdef DEBUG_DRAW
 void CExplosiveRocket::OnRender				()
 {
 	inherited::OnRender			();

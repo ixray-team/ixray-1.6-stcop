@@ -454,14 +454,14 @@ void CActor::update_camera (CCameraShotEffector* effector)
 }
 
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 extern	Flags32	dbg_net_Draw_Flags;
 extern	BOOL g_bDrawBulletHit;
 
 void CActor::OnRender	()
 {
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	if (inventory().ActiveItem())
 		inventory().ActiveItem()->OnRender();
 #endif
@@ -471,9 +471,9 @@ void CActor::OnRender	()
 		character_physics_support()->movement()->dbg_Draw	();
 
 	
-
+#ifdef DEBUG
 	OnRender_Network();
-
+#endif
 	inherited::OnRender();
 }
 #endif

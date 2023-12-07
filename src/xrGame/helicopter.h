@@ -347,7 +347,7 @@ public:
 	float					GetHeliHealth					() const		{return inherited::GetfHealth();}
 	float					SetHeliHealth					(float value)	{return inherited::SetfHealth(value);}
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 public:
 	virtual void			OnRender						();
 #endif

@@ -18,7 +18,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 		::DU						= &DUImpl;
 		//::vid_mode_token			= inited by HW;
 		UIRender					= &UIRenderImpl;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 		DRender						= &DebugRenderImpl;
 #endif	//	DEBUG
 		xrRender_initconsole		();

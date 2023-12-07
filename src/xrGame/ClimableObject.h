@@ -9,7 +9,7 @@ struct SGameMtl;
 class CClimableObject: 
 public CPhysicsShellHolder,
 public IClimableObject
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 ,public pureRender
 #endif
 {
@@ -35,7 +35,7 @@ public:
 ////////////////////////////////////////////////////////////////////
 	virtual IPhysicsShellHolder			*cast_IPhysicsShellHolder	(){ return this; }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void	OnRender			();
 #endif
 protected:

@@ -425,7 +425,7 @@ void CStats::OnDeviceDestroy		()
 
 void CStats::OnRender				()
 {
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	if (g_stats_flags.is(st_sound)){
 		CSound_stats_ext				snd_stat_ext;
 		::Sound->statistic				(0,&snd_stat_ext);

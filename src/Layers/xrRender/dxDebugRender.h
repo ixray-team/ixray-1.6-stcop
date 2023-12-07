@@ -1,8 +1,6 @@
-#ifndef	dxDebugRender_included
-#define	dxDebugRender_included
 #pragma once
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 #include "../../Include/xrRender/DebugRender.h"
 
@@ -27,7 +25,7 @@ public:
 	virtual void	SetDebugShader		(dbgShaderHandle shdHandle);
 	virtual void	DestroyDebugShader	(dbgShaderHandle shdHandle);
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void	dbg_DrawTRI			(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
 #endif	//	DEBUG
 
@@ -47,5 +45,3 @@ private:
 extern dxDebugRender DebugRenderImpl;
 extern dxDebugRender* rdebug_render;
 #endif // DEBUG
-
-#endif	//	dxDebugRender_included

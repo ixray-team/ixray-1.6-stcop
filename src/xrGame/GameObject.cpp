@@ -40,7 +40,7 @@ extern MagicBox3 MagicMinBox (int iQuantity, const Fvector* akPoint);
 #include <malloc.h>
 #pragma warning(pop)
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #	include "PHDebug.h"
 #endif
@@ -1028,7 +1028,7 @@ void CGameObject::on_matrix_change	(const Fmatrix &previous)
 	obstacle().on_move				();
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 void render_box						(IRenderVisual *visual, const Fmatrix &xform, const Fvector &additional, bool draw_child_boxes, const u32 &color)
 {

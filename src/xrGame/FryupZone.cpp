@@ -8,7 +8,7 @@ CFryupZone::~CFryupZone()
 {
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CFryupZone::OnRender()
 {
 }

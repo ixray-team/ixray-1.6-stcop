@@ -8,7 +8,7 @@
 class occTri;
 
 class CHOM  
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	: public pureRender
 #endif
 {
@@ -55,8 +55,10 @@ public:
 	CHOM	();
 	~CHOM	();
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void			OnRender	();
+#endif
+#ifdef DEBUG
 			void			stats		();
 #endif
 };
