@@ -19,9 +19,19 @@ public:
 };
 
 // Class creation/destroying interface
-extern "C" {
+extern "C" 
+{
 typedef DLL_API  DLL_Pure*	  __cdecl Factory_Create	(CLASS_ID	CLS_ID);
 typedef DLL_API  void		  __cdecl Factory_Destroy	(DLL_Pure*	O);
+};
+
+enum class EditorUI
+{
+	Shaders,
+	Weather,
+	DebugDraw,
+
+	Force
 };
 
 class ENGINE_API		CEngineAPI
@@ -29,9 +39,11 @@ class ENGINE_API		CEngineAPI
 private:
 	HMODULE				hGame;
 	HMODULE				hRender;
-	
+
 public:
 	HMODULE				hGameSpy;
+
+	xr_hash_map<EditorUI, bool> EditorStates;
 
 public:
 	Factory_Create*		pCreate;

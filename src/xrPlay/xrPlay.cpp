@@ -8,6 +8,7 @@
 #include "DynamicSplashScreen.h"
 
 #include "../GitParser/git_version.h"
+#include "UIEditorMain.h"
 
 #ifndef DEBUG
 #define NO_MULTI_INSTANCES
@@ -96,9 +97,8 @@ int APIENTRY WinMain
 	Console->Execute("stat_memory");
 
 	Msg("IX-Ray 1.6.02 build info: hash[%s] branch[%s] commit author[%s]", _HASH, _BRANCH, _AUTHOR);
-
+	
 	EngineLoadStage4();
-
 
 	// Destroy LOGO
 	DestroyWindow(logoWindow);
@@ -108,7 +108,8 @@ int APIENTRY WinMain
 
 	// Show main wnd
 	Console->Execute("vid_restart");
-	
+	RenderUI();
+
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);

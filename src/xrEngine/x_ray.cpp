@@ -212,25 +212,24 @@ void execUserScript				( )
 
 ENGINE_API void EngineLoadStage4()
 {
-	InitSound1		();
-	execUserScript	();
-	InitSound2		();
+	InitSound1();
+	execUserScript();
+	InitSound2();
 
 	// ...command line for auto start
 	{
-		LPCSTR	pStartup			= strstr				(Core.Params,"-start ");
-		if (pStartup)				Console->Execute		(pStartup+1);
+		LPCSTR	pStartup = strstr(Core.Params, "-start ");
+		if (pStartup)				Console->Execute(pStartup + 1);
 	}
 	{
-		LPCSTR	pStartup			= strstr				(Core.Params,"-load ");
-		if (pStartup)				Console->Execute		(pStartup+1);
+		LPCSTR	pStartup = strstr(Core.Params, "-load ");
+		if (pStartup)				Console->Execute(pStartup + 1);
 	}
 
 	// Initialize APP
 	g_FontManager = new CFontManager();
-	if (!Device.InitRenderDevice(Engine.External.GetAPI())) {
-		R_ASSERT(false, "KAL");
-	}
+	bool ValidRenderDeviceInit = Device.InitRenderDevice(Engine.External.GetAPI());
+	R_ASSERT(ValidRenderDeviceInit);
 
 	Device.Create();
 	g_FontManager->InitializeFonts();

@@ -145,8 +145,11 @@ static void LoadImGuiFont(ImFont*& FontHandle, const char* Font)
 	ImFontConfig FontConfig = {};
 	FontConfig.OversampleH = 2;
 
-	FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(FullPath, 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-	R_ASSERT(FontHandle);
+	if (FS.exist(FullPath))
+	{
+		FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(ANSI_TO_UTF8(FullPath).c_str(), 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		R_ASSERT(FontHandle);
+	}
 }
 
 static void InitImGui()

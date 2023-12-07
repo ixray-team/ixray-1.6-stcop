@@ -312,7 +312,7 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	Device.AddUICommand("GraphicDebug", 2, [this]() {
-		if (!ps_r__GraphicDebug) {
+		if (!Engine.External.EditorStates[EditorUI::Shaders]) {
 			return;
 		}
 
