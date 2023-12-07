@@ -253,7 +253,7 @@ void			ISpatial_DB::_insert	(ISpatial_NODE* N, Fvector& n_C, float n_R)
 void			ISpatial_DB::insert		(ISpatial* S)
 {
 	cs.Enter			();
-#ifdef DEBUG
+#if 0
 	stat_insert.Begin	();
 
 	BOOL		bValid	= _valid(S->spatial.sphere.R) && _valid(S->spatial.sphere.P);

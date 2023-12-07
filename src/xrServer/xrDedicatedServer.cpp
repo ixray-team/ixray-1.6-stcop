@@ -9,36 +9,13 @@ ENGINE_API void EngineLoadStage3();
 ENGINE_API void EngineLoadStage4();
 ENGINE_API void EngineLoadStage5();
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-void CreateGameWindow() {
-	// Unless a substitute hWnd has been specified, create a window to render into
-	if (g_AppInfo.WindowHandle == NULL) {
-		const wchar_t* wndclass = L"_XRAY_1.6";
-
-		// Register the windows class
-		HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
-		WNDCLASS wndClass = { 0, WndProc, 0, 0, hInstance,
-							  LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)),
-							  LoadCursor(NULL, IDC_ARROW),
-							  (HBRUSH)GetStockObject(BLACK_BRUSH),
-							  NULL, wndclass };
-		RegisterClass(&wndClass);
-
-		// Set the window's initial style
-		Device.m_dwWindowStyle = WS_BORDER | WS_DLGFRAME;
-
-		// Set the window's initial width
-		RECT rc;
-		SetRect(&rc, 0, 0, 640, 480);
-		AdjustWindowRect(&rc, Device.m_dwWindowStyle, FALSE);
-
-		// Create the render window
-		g_AppInfo.WindowHandle = CreateWindowEx(WS_EX_TOPMOST,
-			wndclass, L"S.T.A.L.K.E.R.: Call of Pripyat", Device.m_dwWindowStyle,
-			/*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
-			(rc.right - rc.left), (rc.bottom - rc.top), 0L,
-			0, hInstance, 0L);
+void CreateGameWindow()
+{
+	if (g_AppInfo.Window == NULL) {
+		SDL_WindowFlags window_flags = SDL_WINDOW_HIDDEN;
+		u32 screen_width = GetSystemMetrics(SM_CXSCREEN);
+		u32 screen_height = GetSystemMetrics(SM_CYSCREEN);
+		g_AppInfo.Window = SDL_CreateWindow("IXRay HypeEngine", screen_width, screen_height, window_flags);
 	}
 }
 
@@ -72,7 +49,7 @@ int APIENTRY WinMain
 	EngineLoadStage4();
 
 	// Show main wnd
-	ShowWindow(g_AppInfo.WindowHandle, SW_SHOWNORMAL);
+	SDL_ShowWindow(g_AppInfo.Window);
 
 	EngineLoadStage5();
 
