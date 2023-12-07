@@ -6,34 +6,6 @@ void RenderUI()
 {
 	static bool FirstDraw = true;
 
-	Device.AddUICommand("Editor Main Draw", 2, []() {
-		auto& States = Engine.External.EditorStates;
-
-		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu("File")) {
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Edit")) {
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("View")) {
-				ImGui::EndMenu();
-			}
-			
-			if (ImGui::BeginMenu("Tools")) {
-				ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
-				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
-				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
-				ImGui::MenuItem("Command line variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
-				ImGui::EndMenu();
-			}
-
-			ImGui::EndMainMenuBar();
-		}
-	});
-
 	Device.AddUICommand("Editor Weather Draw", 2, RenderUIWeather);
 };
 
