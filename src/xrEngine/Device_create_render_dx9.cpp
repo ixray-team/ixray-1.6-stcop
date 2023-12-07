@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include <d3d9.h>
 
 extern void* HWSwapchain;
 
 IDirect3D9* D3D = nullptr;
+IDirect3DStateBlock9* DebugSB = nullptr;
 extern void* HWRenderDevice;
 extern void* HWRenderContext;
 
@@ -87,12 +87,7 @@ D3DPRESENT_PARAMETERS GetPresentParameter(int Width = psCurrentVidMode[0], int H
 
 	// Refresh rate
 	P.PresentationInterval = !psDeviceFlags.test(rsVSync) ? selectPresentInterval() : D3DPRESENT_INTERVAL_DEFAULT;
-	if (psDeviceFlags.is(rsFullscreen)) {
-		P.FullScreen_RefreshRateInHz = selectRefresh(P.BackBufferWidth, P.BackBufferHeight, D3DFMT_X8R8G8B8);
-	} else {
-		P.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-	}
-
+	P.FullScreen_RefreshRateInHz = psDeviceFlags.is(rsFullscreen) ? selectRefresh(Width, Height, D3DFMT_X8R8G8B8) : D3DPRESENT_RATE_DEFAULT;
 	return P;
 }
 
@@ -121,19 +116,34 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 		((IDirect3DTexture9*)RenderTexture)->Release();
 		RenderTexture = nullptr;
 	}
-
-	if (HWRenderDevice != nullptr) {
-		((IDirect3DDevice9*)HWRenderDevice)->Release();
-		HWRenderDevice = nullptr;
+	
+	if (DebugSB != nullptr) {
+		DebugSB->Release();
+		DebugSB = nullptr;
 	}
 
+	IDirect3DDevice9*& Device = *((IDirect3DDevice9**)&HWRenderDevice);
 	auto P = GetPresentParameter(Width, Height);
-	HRESULT hr = D3D->CreateDevice(
-		D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, P.hDeviceWindow,
-		D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, &P,
-		(IDirect3DDevice9**)&HWRenderDevice
-	);
-	R_CHK(hr);
+	if (HWRenderDevice != nullptr) {
+		while (TRUE) {
+			HRESULT _hr = Device->Reset(&P);
+			if (SUCCEEDED(_hr))					break;
+			Msg("! ERROR: [%dx%d]: %s", P.BackBufferWidth, P.BackBufferHeight, Debug.error2string(_hr));
+			Sleep(100);
+		}
+	} else {
+		HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+		HRESULT hr = D3D->CreateDevice(
+			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
+			D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, &P,
+			&Device
+		);
+		R_CHK(hr);
+	}
+
+#ifdef DEBUG
+	R_CHK(Device->CreateStateBlock(D3DSBT_ALL, &DebugSB));
+#endif
 
 	UpdateBuffersD3D9();
 }
@@ -141,14 +151,17 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 bool CreateD3D9()
 {
 	D3D = Direct3DCreate9(D3D_SDK_VERSION);
-	auto P = GetPresentParameter();
 
-	HRESULT hr = D3D->CreateDevice(
-		D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, P.hDeviceWindow,
-		D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, &P,
-		(IDirect3DDevice9**)&HWRenderDevice
-	);
-	R_CHK(hr);
+	auto P = GetPresentParameter();
+	if (HWRenderDevice == nullptr) {
+		HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+		HRESULT hr = D3D->CreateDevice(
+			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
+			D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, &P,
+			(IDirect3DDevice9**)&HWRenderDevice
+		);
+		R_CHK(hr);
+	}
 
 	UpdateBuffersD3D9();
 	return true;
@@ -178,6 +191,11 @@ void DestroyD3D9()
 	if (RenderTexture != nullptr) {
 		((IDirect3DTexture9*)RenderTexture)->Release();
 		RenderTexture = nullptr;
+	}
+
+	if (DebugSB != nullptr) {
+		DebugSB->Release();
+		DebugSB = nullptr;
 	}
 
 	if (HWRenderDevice != nullptr) {

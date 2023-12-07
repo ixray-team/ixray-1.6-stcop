@@ -73,10 +73,13 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 #ifdef DEBUG
 	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:",RDevice);
 #endif // DEBUG	
-
+	
 	Resources->reset_begin	();
 	Memory.mem_compact		();
 	ResourcesDeferredUnload();
+#ifndef USE_DX11
+	ImGui_ImplDX9_Shutdown();
+#endif
 	Device.ResizeBuffers(psCurrentVidMode[0], psCurrentVidMode[1]);
 	ResourcesDeferredUpload();
 
@@ -87,7 +90,6 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	Resources->reset_end();
 
 #ifndef USE_DX11
-	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplDX9_Init(RDevice);
 #endif
 
