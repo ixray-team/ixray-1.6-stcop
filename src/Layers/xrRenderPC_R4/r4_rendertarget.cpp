@@ -17,6 +17,7 @@
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
 #include "../xrRender/dxRenderDeviceRender.h"
+#include "magic_enum/magic_enum.hpp"
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
@@ -288,8 +289,90 @@ u32 CRenderTarget::get_target_height()
 	return (u32)RCache.get_target_height();
 }
 
+#include "imgui_impl_dx11.h"
+ImGui_ImplDX11_Data* ImGui_ImplDX11_GetBackendData();
+
+xr_map<xr_string, float> PowerMap;
+
 CRenderTarget::CRenderTarget		()
 {
+	if (g_debug_blend_state == nullptr) {
+		D3D11_BLEND_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.AlphaToCoverageEnable = false;
+		desc.RenderTarget[0].BlendEnable = false;
+		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		desc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_COLOR;
+		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
+	}
+
+	Device.AddUICommand("GraphicDebug", 2, [this]() {
+		if (!ps_r__GraphicDebug) {
+			return;
+		}
+
+
+		auto State = g_debug_blend_state;
+		auto DisplayTarget = [State](const ref_rt& rt) {
+			if (rt._get() == nullptr || rt->pTexture == nullptr || rt->pTexture->get_SRView() == nullptr) {
+				return;
+			}
+
+			const auto& Texture = *rt->pTexture;
+			ImGui::Text(
+				"Target %s (fmt: %s, width: %i, height: %i)",
+				Texture.cName.c_str(), magic_enum::enum_name(rt->fmt).data(), rt->dwWidth, rt->dwHeight
+			);
+
+			auto ContentRegion = ImGui::GetContentRegionAvail();
+			float scale = ImGui::GetContentRegionAvail().x / rt->dwWidth;
+			auto& DrawList = *ImGui::GetWindowDrawList();
+			
+			if (!PowerMap.contains(Texture.cName.c_str())) {
+				PowerMap[Texture.cName.c_str()] = 1;
+			}
+
+			float& ImagePower = PowerMap[Texture.cName.c_str()];
+			ImGui::SliderFloat(Texture.cName.c_str(), &ImagePower, 0.0f, 1.0f);
+
+			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
+				const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+				RContext->OMSetBlendState((ID3D11BlendState*)cmd->UserCallbackData, blend_factor, 0xffffffff);
+				}, State);
+			ImGui::Image(
+				rt->pTexture->get_SRView(),
+				ImVec2(ImGui::GetContentRegionAvail().x, rt->dwHeight * scale), 
+				ImVec2(0,0), ImVec2(1,1), ImVec4(ImagePower, ImagePower, ImagePower, 1.0f)
+			);
+			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
+				auto bd = ImGui_ImplDX11_GetBackendData();
+				if (bd != nullptr) {
+					const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+					RContext->OMSetBlendState((ID3D11BlendState*)bd->pBlendState, blend_factor, 0xffffffff);
+				}
+			}, State);
+		};
+
+		ID3D11BlendState* BlendState = nullptr;
+		ImGui::Begin("GraphicDebug");
+		DisplayTarget(rt_Generic_0);
+		DisplayTarget(rt_Generic_1);
+		DisplayTarget(rt_Generic_2);
+		DisplayTarget(rt_Generic);
+		DisplayTarget(rt_Back_Buffer);
+		DisplayTarget(rt_Position);
+		DisplayTarget(rt_Color);
+		DisplayTarget(rt_Accumulator);
+		DisplayTarget(rt_smap_surf);
+		DisplayTarget(rt_smap_depth);	
+		ImGui::End();
+	});
+
 	int SampleCount = 1;
    if (ps_r_ssao_mode!=2/*hdao*/)
 	   ps_r_ssao = _min(ps_r_ssao, 3);
@@ -895,6 +978,12 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_accum_mask			);
 	xr_delete					(b_occq					);
 	xr_delete					(b_hdao_cs				);
+
+	Device.RemoveUICommand("GraphicDebug");
+	if (g_debug_blend_state != nullptr) {
+		g_debug_blend_state->Release();
+		g_debug_blend_state = nullptr;
+	}
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)

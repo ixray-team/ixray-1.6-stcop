@@ -87,6 +87,7 @@ xr_token							aa_type_token[] = {
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
 
+int			ps_r__GraphicDebug = 0;
 int			ps_r__LightSleepFrames		= 10	;
 
 float		ps_r__Detail_l_ambient		= 0.9f	;
@@ -657,6 +658,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
+	CMD4(CCC_Integer,	"ps_r__graphic_debug",	&ps_r__GraphicDebug,0,		1	);
 #ifdef	DEBUG
 	CMD1(CCC_DumpResources,		"dump_resources");
 #endif	//	 DEBUG
