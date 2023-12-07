@@ -91,9 +91,6 @@ void CRenderDevice::Create	()
 		TargetHeight,
 		HalfTargetWidth,
 		HalfTargetHeight,
-#ifdef INGAME_EDITOR
-		editor() ? false :
-#endif // #ifdef INGAME_EDITOR
 		true
 	);
 
