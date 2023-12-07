@@ -213,7 +213,7 @@ void CRenderDevice::on_idle		()
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
+	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !Device.IsCapturingInputs();
 	SDL_SetWindowGrab(g_AppInfo.Window, Focus);
 	SDL_SetRelativeMouseMode(Focus);
 
@@ -449,7 +449,7 @@ CRenderDevice::CRenderDevice() :
 	, mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
 #endif // #ifdef PROFILE_CRITICAL_SECTIONS
 {
-	CaptureInputs = false;
+	CaptureInputs = true;
 	DrawUIRender = true;
 	b_is_Active = true;
 	b_is_Ready = FALSE;
@@ -534,9 +534,9 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 		if (!g_dedicated_server) 
 		{
 #	ifdef INGAME_EDITOR
-			if (!editor())
+			//if (!editor())
 #	endif
-			SDL_HideCursor();
+			//SDL_HideCursor();
 		}
 	}
 	else if (!psDeviceFlags.test(rsDeviceActive))
