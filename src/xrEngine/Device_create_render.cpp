@@ -274,8 +274,6 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
-
-		ImGui::ShowDemoWindow();
 	});
 
 	switch (API) {

@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
-#endif
-
 void CBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
 	RCache.set_Geometry		(geom);
@@ -17,6 +14,7 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 	RCache.Render			(pt,baseV,startV,countV,startI,PC);
 }
 
+#ifdef DEBUG_DRAW
 #define RGBA_GETALPHA(rgb)      ((rgb) >> 24)
 void CBackend::dbg_DrawOBB		(Fmatrix& T_, Fvector& half_dim, u32 C_)
 {
@@ -170,3 +168,4 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T_, u32 C_)
 
 	DebugRenderImpl.add_lines(verts, vcnt, pairs, 224 * 3, bgr2rgb(C_));
 }
+#endif
