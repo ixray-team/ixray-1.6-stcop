@@ -6,6 +6,7 @@
 
 #include "../xrCore/xrCore.h"
 #include "../Include/xrAPI/xrAPI.h"
+#include "imgui.h"
 #include <SDL3/SDL.h>
 
 #ifdef _DEBUG

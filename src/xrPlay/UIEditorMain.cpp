@@ -6,30 +6,35 @@ void RenderUI()
 {
 	static bool FirstDraw = true;
 
-	Device.AddUICommand("Editor Main Draw", 100,
-		[&]()
-		{
-			ImGui::SetNextWindowBgAlpha(0.9f);
-			ImGui::SetNextWindowSizeConstraints({250, 120}, {500, 500});
-			
-			if (FirstDraw)
-			{
-				ImGui::SetNextWindowPos({ (float)Device.TargetWidth - 275, 25 });
-				FirstDraw = false;
+	Device.AddUICommand("Editor Main Draw", 2, []() {
+		auto& States = Engine.External.EditorStates;
+
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				ImGui::EndMenu();
 			}
 
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 4.0f);
-			ImGui::Begin("Editor Main	(Alt+I)", nullptr, ImGuiWindowFlags_NoScrollbar);
+			if (ImGui::BeginMenu("Edit")) {
+				ImGui::EndMenu();
+			}
 
-			ImGui::Checkbox("Debug Render", &Engine.External.EditorStates[EditorUI::DebugDraw]);
-			ImGui::Checkbox("Shader Debug", &Engine.External.EditorStates[EditorUI::Shaders]);
-			ImGui::Checkbox("Weather Editor", &Engine.External.EditorStates[EditorUI::Weather]);
+			if (ImGui::BeginMenu("View")) {
+				ImGui::EndMenu();
+			}
+			
+			if (ImGui::BeginMenu("Tools")) {
+				ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
+				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
+				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
+				ImGui::MenuItem("Command line variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
+				ImGui::EndMenu();
+			}
 
-			ImGui::End();
-			ImGui::PopStyleVar();
-		});
+			ImGui::EndMainMenuBar();
+		}
+	});
 
-	Device.AddUICommand("Editor Weather Draw", 100, RenderUIWeather);
+	Device.AddUICommand("Editor Weather Draw", 2, RenderUIWeather);
 };
 
 bool ImGui_ListBox(const char* label, int* current_item, bool(*items_getter)(void*, int, const char**), void* data,

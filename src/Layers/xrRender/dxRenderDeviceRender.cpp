@@ -185,7 +185,7 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 #ifdef DEBUG_DRAW
 	Device.AddUICommand("dxDebugRenderer", 100, []()
 	{
-		if (!Engine.External.EditorStates[EditorUI::DebugDraw] || DebugRenderImpl.m_lines.empty())
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty())
 			return;
 
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
