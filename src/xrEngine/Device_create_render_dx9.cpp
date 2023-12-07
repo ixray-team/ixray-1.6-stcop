@@ -140,8 +140,8 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 
 bool CreateD3D9()
 {
-	auto P = GetPresentParameter();
 	D3D = Direct3DCreate9(D3D_SDK_VERSION);
+	auto P = GetPresentParameter();
 
 	HRESULT hr = D3D->CreateDevice(
 		D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, P.hDeviceWindow,
