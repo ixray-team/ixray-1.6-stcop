@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
 #endif
 
@@ -182,7 +182,7 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	fHeight_2 = float(dwHeight / 2);
 	Resources = xr_new<CResourceManager>();
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	Device.AddUICommand("dxDebugRenderer", 100, []()
 	{
 		if (!Engine.External.EditorStates[EditorUI::DebugDraw] || DebugRenderImpl.m_lines.empty())
@@ -406,7 +406,7 @@ void dxRenderDeviceRender::End()
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	DebugRenderImpl.m_lines.resize(0);
 #endif
 

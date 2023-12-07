@@ -394,8 +394,6 @@ public:
 	{ CHK_DX(RDevice->SetSamplerState(sampler,type,value)); }
 #endif
 #ifdef DEBUG_DRAW
-	void dbg_Draw					(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
-	void dbg_Draw					(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
 	IC void dbg_DrawAABB			(Fvector& T_, float sx, float sy, float sz, u32 C_)						{	Fvector half_dim;	half_dim.set(sx,sy,sz); Fmatrix	TM;	TM.translate(T_); dbg_DrawOBB(TM,half_dim,C_);	}
 	void dbg_DrawOBB				(Fmatrix& T, Fvector& half_dim, u32 C);
 	IC void dbg_DrawTRI				(Fmatrix& T_, Fvector* p, u32 C_)											{	dbg_DrawTRI(T_,p[0],p[1],p[2],C_);	}

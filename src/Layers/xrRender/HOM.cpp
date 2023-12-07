@@ -344,49 +344,74 @@ void CHOM::Enable		()
 }
 
 #ifdef DEBUG_DRAW
+#include "dxDebugRender.h"
+
 void CHOM::OnRender	()
 {
 	Raster.on_dbg_render();
 
 	if (psDeviceFlags.is(rsOcclusionDraw)){
-		if (m_pModel){
+
+		if (m_pModel) {
+			xr_vector<u32> pairs;
+			pairs.resize(m_pModel->get_tris_count() * 6);
+			for (size_t i = 0; i < m_pModel->get_tris_count(); i++) {
+				CDB::TRI* T = m_pModel->get_tris() + i;
+				Fvector* verts = m_pModel->get_verts();
+				pairs[(i * 6) + 0] = T->verts[0];
+				pairs[(i * 6) + 1] = T->verts[1];
+				pairs[(i * 6) + 2] = T->verts[1];
+				pairs[(i * 6) + 3] = T->verts[2];
+				pairs[(i * 6) + 4] = T->verts[2];
+				pairs[(i * 6) + 5] = T->verts[0];
+			}
+
+			DebugRenderImpl.add_lines(
+				m_pModel->get_verts(), m_pModel->get_verts_count(),
+				pairs.data(), pairs.size() / 2, 0xFFFFFFFF
+			);
+#if 0 
 			using LVec = xr_vector<FVF::L>;
 			using LVecIt = LVec::iterator;
 
-			static LVec	poly;	poly.resize(m_pModel->get_tris_count()*3);
-			static LVec	line;	line.resize(m_pModel->get_tris_count()*6);
-			for (int it=0; it<m_pModel->get_tris_count(); it++){
-				CDB::TRI* T		= m_pModel->get_tris()+it;
-				Fvector* verts	= m_pModel->get_verts();
-				poly[it*3+0].set(*(verts+T->verts[0]),0x80FFFFFF);
-				poly[it*3+1].set(*(verts+T->verts[1]),0x80FFFFFF);
-				poly[it*3+2].set(*(verts+T->verts[2]),0x80FFFFFF);
-				line[it*6+0].set(*(verts+T->verts[0]),0xFFFFFFFF);
-				line[it*6+1].set(*(verts+T->verts[1]),0xFFFFFFFF);
-				line[it*6+2].set(*(verts+T->verts[1]),0xFFFFFFFF);
-				line[it*6+3].set(*(verts+T->verts[2]),0xFFFFFFFF);
-				line[it*6+4].set(*(verts+T->verts[2]),0xFFFFFFFF);
-				line[it*6+5].set(*(verts+T->verts[0]),0xFFFFFFFF);
+			static LVec	poly;	poly.resize(m_pModel->get_tris_count() * 3);
+			static LVec	line;	line.resize(m_pModel->get_tris_count() * 6);
+			for (int it = 0; it < m_pModel->get_tris_count(); it++) {
+				CDB::TRI* T = m_pModel->get_tris() + it;
+				Fvector* verts = m_pModel->get_verts();
+				poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);
+				poly[it * 3 + 1].set(*(verts + T->verts[1]), 0x80FFFFFF);
+				poly[it * 3 + 2].set(*(verts + T->verts[2]), 0x80FFFFFF);
+				line[it * 6 + 0].set(*(verts + T->verts[0]), 0xFFFFFFFF);
+				line[it * 6 + 1].set(*(verts + T->verts[1]), 0xFFFFFFFF);
+				line[it * 6 + 2].set(*(verts + T->verts[1]), 0xFFFFFFFF);
+				line[it * 6 + 3].set(*(verts + T->verts[2]), 0xFFFFFFFF);
+				line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
+				line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
 			}
 			RCache.set_xform_world(Fidentity);
 			// draw solid
 			Device.SetNearer(TRUE);
-			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
-			RCache.dbg_Draw		(D3DPT_TRIANGLELIST,&*poly.begin(), (int)poly.size() / 3);
+			RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
+			RCache.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), (int)poly.size() / 3);
 			Device.SetNearer(FALSE);
 			// draw wire
-			if (bDebug){
+			if (bDebug) {
 				RImplementation.rmNear();
-			}else{
+			}
+			else {
 				Device.SetNearer(TRUE);
 			}
-			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
-			RCache.dbg_Draw		(D3DPT_LINELIST,&*line.begin(), (int)line.size() / 2);
-			if (bDebug){
+			RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
+			RCache.dbg_Draw(D3DPT_LINELIST, &*line.begin(), (int)line.size() / 2);
+			if (bDebug) {
 				RImplementation.rmNormal();
-			}else{
+			}
+			else {
 				Device.SetNearer(FALSE);
 			}
+		}
+#endif
 		}
 	}
 }

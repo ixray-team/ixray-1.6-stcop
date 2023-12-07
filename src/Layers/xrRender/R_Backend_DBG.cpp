@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#ifdef DEBUG_DRAW
+#include "dxDebugRender.h"
+#endif
+
 void CBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
 	RCache.set_Geometry		(geom);
@@ -13,32 +17,6 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 	RCache.Render			(pt,baseV,startV,countV,startI,PC);
 }
 
-#ifdef DEBUG_DRAW
-
-void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T_, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
-{
-#ifdef USE_DX11
-#else //USE_DX11
-	OnFrameEnd					();
-	CHK_DX(RDevice->SetFVF	(FVF::F_L));
-	CHK_DX(RDevice->DrawIndexedPrimitiveUP(T_, 0, vcnt, pcnt,
-		pIdx, D3DFMT_INDEX16,
-		pVerts, sizeof(FVF::L)
-		));
-#endif
-}
-void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T_, FVF::L* pVerts, int pcnt)
-{
-#ifdef USE_DX11
-	//	TODO: DX10: implement
-	//VERIFY(!"CBackend::dbg_Draw not implemented.");
-#else //USE_DX11
-	OnFrameEnd					();
-	CHK_DX(RDevice->SetFVF	(FVF::F_L));
-	CHK_DX(RDevice->DrawPrimitiveUP(T_, pcnt, pVerts, sizeof(FVF::L)	));
-#endif
-}
-
 #define RGBA_GETALPHA(rgb)      ((rgb) >> 24)
 void CBackend::dbg_DrawOBB		(Fmatrix& T_, Fvector& half_dim, u32 C_)
 {
@@ -47,40 +25,58 @@ void CBackend::dbg_DrawOBB		(Fmatrix& T_, Fvector& half_dim, u32 C_)
 	mScaleTransform.scale(half_dim);
 	mL2W_Transform.mul_43(T_,mScaleTransform);
 
-	FVF::L  aabb[8];
-	aabb[0].set( -1, -1, -1, C_ ); // 0
-	aabb[1].set( -1, +1, -1, C_ ); // 1
-	aabb[2].set( +1, +1, -1, C_ ); // 2
-	aabb[3].set( +1, -1, -1, C_ ); // 3
-	aabb[4].set( -1, -1, +1, C_ ); // 4
-	aabb[5].set( -1, +1, +1, C_ ); // 5
-	aabb[6].set( +1, +1, +1, C_ ); // 6
-	aabb[7].set( +1, -1, +1, C_ ); // 7
+	Fvector aabb[8] = {};
+	aabb[0] = Fvector( -1, -1, -1); // 0
+	aabb[1] = Fvector( -1, +1, -1); // 1
+	aabb[2] = Fvector( +1, +1, -1); // 2
+	aabb[3] = Fvector( +1, -1, -1); // 3
+	aabb[4] = Fvector( -1, -1, +1); // 4
+	aabb[5] = Fvector( -1, +1, +1); // 5
+	aabb[6] = Fvector( +1, +1, +1); // 6
+	aabb[7] = Fvector( +1, -1, +1); // 7
 
-	u16		aabb_id[12*2] = {
+	const u32 aabb_id[12*2] = {
 		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
 	};
-	set_xform_world	(mL2W_Transform);
-	dbg_Draw(D3DPT_LINELIST,aabb,8,aabb_id,12);
+
+	for (size_t i = 0; i < 8; i++) {
+		mL2W_Transform.transform(aabb[i]);
+	}
+
+	DebugRenderImpl.add_lines(aabb, 8, aabb_id, 12, bgr2rgb(C_));
 }
 void CBackend::dbg_DrawTRI	(Fmatrix& T_, Fvector& p1, Fvector& p2, Fvector& p3, u32 C_)
 {
-	FVF::L	tri[3];
-	tri[0].p = p1; tri[0].color = C_;
-	tri[1].p = p2; tri[1].color = C_;
-	tri[2].p = p3; tri[2].color = C_;
+	Fvector	tri[3] = {};
+	tri[0] = p1;
+	tri[1] = p2;
+	tri[2] = p3;
 
-	set_xform_world	(T_);
-	dbg_Draw(D3DPT_TRIANGLESTRIP,tri,1);
+	const u32 pairs[3 * 2] = {
+		0, 1, 1, 2, 2, 0
+	};
+
+	for (size_t i = 0; i < 3; i++) {
+		T_.transform(tri[i]);
+	}
+
+	DebugRenderImpl.add_lines(tri, 3, pairs, 3, bgr2rgb(C_));
 }
 void CBackend::dbg_DrawLINE(Fmatrix& T_, Fvector& p1, Fvector& p2, u32 C_)
 {
-	FVF::L	line[2];
-	line[0].p = p1; line[0].color = C_;
-	line[1].p = p2; line[1].color = C_;
+	Fvector line[2] = {};
+	line[0] = p1; 
+	line[1] = p2;
 
-	set_xform_world	(T_);
-	dbg_Draw(D3DPT_LINELIST,line,1);
+	const u32 pairs[2] = {
+		0, 1
+	};
+
+	for (size_t i = 0; i < 2; i++) {
+		T_.transform(line[i]);
+	}
+
+	DebugRenderImpl.add_lines(line, 2, pairs, 1, bgr2rgb(C_));
 }
 void CBackend::dbg_DrawEllipse(Fmatrix& T_, u32 C_)
 {
@@ -125,10 +121,9 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T_, u32 C_)
 			0.3536f,-0.1464f,-0.9239f,  0.3827f,0.0000f,-0.9239f,  0.3536f,0.1464f,-0.9239f,
 			0.2706f,0.2706f,-0.9239f,  0.1464f,0.3536f,-0.9239f,  0.0000f,0.0000f,-1.0000f
 	};
-#ifndef USE_DX11
-	u16 gFaces[224*3] =
+	u32 gFaces[224*3] =
 	{
-		0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,6, 0,6,7, 0,7,8, 0,8,9, 0,9,10,
+			0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,6, 0,6,7, 0,7,8, 0,8,9, 0,9,10,
 			0,10,11, 0,11,12, 0,12,13, 0,13,14, 0,14,15, 0,15,16, 0,16,1, 1,17,18, 1,18,2,
 			2,18,19, 2,19,3, 3,19,20, 3,20,4, 4,20,21, 4,21,5, 5,21,22, 5,22,6, 6,22,23,
 			6,23,7, 7,23,24, 7,24,8, 8,24,25, 8,25,9, 9,25,26, 9,26,10, 10,26,27, 10,27,11,
@@ -154,26 +149,24 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T_, u32 C_)
 			96,97,81, 113,98,97, 113,99,98, 113,100,99, 113,101,100, 113,102,101, 113,103,102, 113,104,103, 113,105,104,
 			113,106,105, 113,107,106, 113,108,107, 113,109,108, 113,110,109, 113,111,110, 113,112,111, 113,97,112
 	};
-#endif // #ifdef USE_DX11
 
 	const int vcnt = sizeof(gVertices)/(sizeof(float)*3);
-	FVF::L  verts[vcnt];
+	Fvector verts[vcnt] = {};
 	for (int i=0; i<vcnt; i++) {
 		int k=i*3;
-		verts[i].set(gVertices[k],gVertices[k+1],gVertices[k+2],C_);
+		verts[i] = Fvector(gVertices[k],gVertices[k+1],gVertices[k+2]);
+		T_.transform(verts[i]);
 	}
 
-	set_xform_world				(T_);
+	u32 pairs[224 * 6] = {};
+	for (size_t i = 0; i < 224 * 3; i += 3) {
+		pairs[i * 2]		= gFaces[i];
+		pairs[i * 2 + 1]	= gFaces[i + 1];
+		pairs[i * 2 + 2]	= gFaces[i + 1];
+		pairs[i * 2 + 3]	= gFaces[i + 2];
+		pairs[i * 2 + 4]	= gFaces[i + 2];
+		pairs[i * 2 + 5]	= gFaces[i];
+	}
 
-#ifdef USE_DX11
-	//	TODO: DX10: implement
-	//VERIFY(!"CBackend::dbg_Draw not implemented.");
-	//dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
-#else //USE_DX11
-	RDevice->SetRenderState	(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
-	RDevice->SetRenderState	(D3DRS_FILLMODE, D3DFILL_SOLID);
-#endif
+	DebugRenderImpl.add_lines(verts, vcnt, pairs, 224 * 3, bgr2rgb(C_));
 }
-
-#endif
