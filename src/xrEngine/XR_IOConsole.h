@@ -95,7 +95,12 @@ private:
 	int				m_prompt_width;
 	int				m_cursor_width;
 	float			m_line_height;
+
+	void			DrawUIConsole();
+	void			DrawUIConsoleVars();
+
 public:
+
 					CConsole			();
 	virtual			~CConsole			();
 	virtual	void	Initialize			();

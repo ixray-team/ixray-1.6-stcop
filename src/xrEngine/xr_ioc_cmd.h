@@ -53,7 +53,7 @@ public		:
 	virtual void	Status	(TStatus& S)	{ S[0]=0; }
 	virtual void	Info	(TInfo& I)		{ xr_strcpy(I,"(no arguments)"); }
 	virtual void	Save	(IWriter *F)	{
-		TStatus		S;	Status(S);
+		TStatus		S = {};	Status(S);
 		if (S[0])	F->w_printf("%s %s\r\n",cName,S); 
 	}
 
@@ -134,9 +134,10 @@ public		:
 class ENGINE_API	CCC_Token : public IConsole_Command
 {
 protected	:
-	u32*			value;
 	xr_token*		tokens;
 public		:
+	u32* value;
+
 	CCC_Token(LPCSTR N, u32* V, xr_token* T) :
 	  IConsole_Command(N),
 	  value(V),
@@ -259,9 +260,9 @@ class ENGINE_API	CCC_Vector3 : public IConsole_Command
 {
 protected	:
 	Fvector*		value;
-	Fvector			min,max;
-public		
-:
+public:
+	Fvector			min, max;
+
 	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) :
 	  IConsole_Command(N),
 	  value(V)
@@ -303,7 +304,6 @@ protected	:
 	int*			value;
 public		:
 	int				min, max;
-
 	  const int GetValue	() const {return *value;};
 	void GetBounds(int& imin, int& imax) const {
 		imin = min;
@@ -337,13 +337,15 @@ public		:
 		tips.push_back( str );
  		IConsole_Command::fill_tips( tips, mode );
 	}
+
 };
 
 class ENGINE_API CCC_Boolean : public IConsole_Command
 {
 protected	:
-	bool*			value;
 public		:
+	bool* value;
+
 	  const int GetValue	() const {return *value;};
 
 	CCC_Boolean(LPCSTR N, bool* V) :
@@ -353,8 +355,16 @@ public		:
 
 	virtual void	Execute	(LPCSTR args)
 	{
-		int v = atoi(args);
-		*value = !!v;
+		int Value = 0;
+		if (std::from_chars(args, args + std::strlen(args), Value).ec != std::errc{}) {
+			if (!strcmp(args, "true")) {
+				*value = true;
+			} else if (!strcmp(args, "false")) {
+				*value = false;
+			} 
+		} else {
+			*value = !!Value;
+		}
 	}
 	virtual void	Status	(TStatus& S)
 	{	
@@ -364,6 +374,13 @@ public		:
 			xr_strcat(S, "true");
 		else
 			xr_strcat(S, "false");
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) {
+		TStatus str = {};
+		xr_sprintf(str, sizeof(str), "%s  (current)  [%s,%s]", *value ? "true" : "false", "true", "false");
+		tips.push_back(str);
+		IConsole_Command::fill_tips(tips, mode);
 	}
 };
 
