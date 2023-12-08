@@ -578,7 +578,8 @@ void CInventory::Activate(u16 slot, bool bForce)
 			CHudItem* tempItem = active_item->cast_hud_item();
 			R_ASSERT2(tempItem, active_item->object().cNameSect().c_str());
 			
-			tempItem->SendDeactivateItem();
+			if (!tempItem->SendDeactivateItem())
+				return;
 
 		} else //in case where weapon is going to destroy
 		{

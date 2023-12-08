@@ -172,20 +172,13 @@ void CGrenade::DiscardState()
 		OnStateSwitch(eIdle);
 }
 
-void CGrenade::SendHiddenItem						()
+bool CGrenade::SendDeactivateItem()
 {
-	if (GetState()==eThrow)
-	{
-//		Msg("MotionMarks !!![%d][%d]", ID(), Device.dwFrame);
-		Throw				();
-	}
-	CActor* pActor = smart_cast<CActor*>( m_pInventory->GetOwner());
-	if (pActor && (GetState()==eReady || GetState()==eThrow))
-	{
-		return;
-	}
+	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
+	if (pActor && (GetState() == eReady || GetState() == eThrow))
+		return false;
 
-	inherited::SendHiddenItem();
+	return inherited::SendDeactivateItem();
 }
 
 void CGrenade::Throw() 

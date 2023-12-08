@@ -181,10 +181,16 @@ void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 	SwitchState(eHidden);
 }
 
-void CHudItem::SendDeactivateItem	()
+bool CHudItem::SendDeactivateItem()
 {
-	SendHiddenItem	();
+	if (GetState() == eHiding)
+		return false;
+
+	SendHiddenItem();
+
+	return true;
 }
+
 void CHudItem::SendHiddenItem()
 {
 	if (!object().getDestroy())
