@@ -670,7 +670,7 @@ class includer : public ID3DInclude {
 public:
 	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
-		strconcat(sizeof(pname), pname, ::Render->getShaderPath(), pFileName);
+		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open("$game_shaders$", pname);
 		if (0 == R) {
 			// possibly in shared directory or somewhere else - open directly
@@ -757,7 +757,7 @@ static HRESULT create_shader				(
 		ID3DBlob* disasm_ = 0;
 		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
 		string_path dname;
-		strconcat(sizeof(dname), dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+		xr_strconcat(dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
 		IWriter* W = FS.w_open("$logs$", dname);
 		W->w(disasm_->GetBufferPointer(), disasm_->GetBufferSize());
 		FS.w_close(W);

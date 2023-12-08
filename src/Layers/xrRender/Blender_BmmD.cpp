@@ -93,7 +93,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		case SE_R1_NORMAL_HQ:
 			if (ps_r1_flags.test(R1FLAG_TERRAIN_MASK)) {
 				string256 mask;
-				strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_mask");
+				xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
 				C.r_Pass("impl_dt", "impl_dt_hq", TRUE);
 				C.r_Sampler("s_mask", mask);
