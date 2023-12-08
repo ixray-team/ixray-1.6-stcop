@@ -42,10 +42,14 @@ void DrawMainViewport()
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowViewport(Viewport->ID);
+	ImGui::SetNextWindowBgAlpha(0.f);
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) {
+		ImGui::SetCursorPos(ImVec2(0, 0));
+		ImGui::GetWindowDrawList()->AddRect(ImVec2(0, 0), ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight), 0xFFFFFFFF);
+		ImGui::SetCursorPos(ImVec2(0, 0));
 		ImGui::Image(RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	}
 	ImGui::End();
