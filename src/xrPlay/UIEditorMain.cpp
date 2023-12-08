@@ -57,7 +57,7 @@ void RenderUI()
 					Counter--;
 				}
 
-				float Time = float(Event.EndTimestamp - Event.BeginTimestamp) / 1000.0f;
+				float Time = float(Event.EndTimestamp - Event.BeginTimestamp) / 1000000.0f;
 				Events[HashValue<u64>(Event.Name)].Name = Event.Name;
 				Events[HashValue<u64>(Event.Name)].Counter = Counter;
 				Events[HashValue<u64>(Event.Name)].Time += Time;
