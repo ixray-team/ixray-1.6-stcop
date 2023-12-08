@@ -149,20 +149,25 @@ void CConsole::PageDown_tips() {
 	check_next_selected_tip();
 }
 
-void CConsole::Execute_cmd() { // DIK_RETURN, DIK_NUMPADENTER
-	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size()) {
+void CConsole::Execute_cmd()
+{ 
+	// DIK_RETURN, DIK_NUMPADENTER
+	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size()) 
+	{
 		shared_str const& str = m_tips[m_select_tip].text;
 		if (m_tips_mode == 1) {
-			LPSTR buf;
-			STRCONCAT( buf, str.c_str(), " " );
+			string512 buf = {};
+			xr_strconcat( buf, str.c_str(), " " );
 			ec().set_edit( buf );
 		} else if (m_tips_mode == 2) {
-			LPSTR buf;
-			STRCONCAT( buf, m_cur_cmd.c_str(), " ", str.c_str() );
+			string512 buf = {};
+			xr_strconcat( buf, m_cur_cmd.c_str(), " ", str.c_str() );
 			ec().set_edit( buf );
 		}
 		reset_selected_tip();
-	} else {
+	}
+	else 
+	{
 		ExecuteCommand( ec().str_edit() );
 	}
 	m_disable_tips = false;

@@ -44,9 +44,9 @@ void DrawMainViewport()
 	ImGui::SetNextWindowViewport(Viewport->ID);
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::SetNextWindowSize(ImVec2(Device.TargetWidth, Device.TargetHeight));
+	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) {
-		ImGui::Image(RenderSRV, ImVec2(Device.TargetWidth, Device.TargetHeight));
+		ImGui::Image(RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	}
 	ImGui::End();
 

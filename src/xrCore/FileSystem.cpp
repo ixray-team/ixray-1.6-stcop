@@ -297,7 +297,7 @@ LPCSTR EFS_Utils::GenerateName(LPCSTR base_path, LPCSTR base_name, LPCSTR def_ex
 	int cnt = 0;
 	string_path fn;
 	if (base_name)	
-		strconcat		(sizeof(fn), fn, base_path,base_name,def_ext);
+		xr_strconcat(fn, base_path,base_name,def_ext);
 	else 			
 		xr_sprintf		(fn, sizeof(fn), "%s%02d%s",base_path,cnt++,def_ext);
 

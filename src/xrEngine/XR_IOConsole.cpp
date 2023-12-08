@@ -655,8 +655,8 @@ IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 	bool b_ra  = (in_str == strstr( in_str, radmin_cmd_name ) );
 	u32 offset = (b_ra)? xr_strlen( radmin_cmd_name ) : 0;
 
-	LPSTR t2;
-	STRCONCAT( t2, in_str + offset, " " );
+	string256 t2;
+	xr_strconcat( t2, in_str + offset, " " );
 
 	vecCMD_IT it = Commands.lower_bound( t2 );
 	if (it != Commands.end()) {
@@ -680,8 +680,8 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v) {
 		return false;
 	}
 
-	LPSTR t2;
-	STRCONCAT( t2, in_str, " " );
+	string256 t2;
+	xr_strconcat( t2, in_str, " " );
 
 	shared_str temp;
 	IConsole_Command* cc = find_next_cmd( t2, temp );
@@ -701,8 +701,8 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v) {
 		if (out_v.size() >= MAX_TIPS_COUNT) {
 			break; // for
 		}
-		LPSTR t3;
-		STRCONCAT( t3, out_v.back().text.c_str(), " " );
+		string256 t3;
+		xr_strconcat( t3, out_v.back().text.c_str(), " " );
 		cc = find_next_cmd( t3, temp );
 		if (!cc) {
 			break; // for

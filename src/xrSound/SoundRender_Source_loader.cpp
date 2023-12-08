@@ -107,7 +107,7 @@ void CSoundRender_Source::load(LPCSTR name)
 
 	fname				= N;
 
-	strconcat			(sizeof(fn),fn,N,".ogg");
+	xr_strconcat(fn,N,".ogg");
 	if (!FS.exist("$level$",fn))	FS.update_path	(fn,"$game_sounds$",fn);
 
 	if (!FS.exist(fn)) {

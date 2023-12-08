@@ -28,9 +28,9 @@ void CUIFrameLineWnd::InitTexture(LPCSTR texture, LPCSTR sh_name)
 	m_bTextureVisible			= true;
 	dbg_tex_name				= texture;
 	string256					buf;
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[flBack]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[flFirst]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_e"),	sh_name, m_shader, m_tex_rect[flSecond]);
+	CUITextureMaster::InitTexture(xr_strconcat( buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[flBack]);
+	CUITextureMaster::InitTexture(xr_strconcat( buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[flFirst]);
+	CUITextureMaster::InitTexture(xr_strconcat( buf, texture,"_e"),	sh_name, m_shader, m_tex_rect[flSecond]);
 	if(bHorizontal)
 	{
 		R_ASSERT2(fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flSecond].height()), texture );

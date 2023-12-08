@@ -551,8 +551,8 @@ void game_cl_mp::OnChatMessage(NET_Packet* P)
 
 	if ( team < 0 || 2 < team )	{ team = 0; }
 	
-	LPSTR colPlayerName;
-	STRCONCAT(colPlayerName, Color_Teams[team], PlayerName, ":%c[default]");
+	string256 colPlayerName;
+	xr_strconcat(colPlayerName, Color_Teams[team], PlayerName.c_str(), ":%c[default]");
 	if (Level().CurrentViewEntity() && CurrentGameUI())
 		CurrentGameUI()->m_pMessagesWnd->AddChatMessage(ChatMsg, colPlayerName);
 };
@@ -1582,8 +1582,8 @@ void game_cl_mp::start_receive_server_info	(ClientID const & svclient_id)
 void game_cl_mp::PrepareToReceiveFile(ClientID const & from_client, shared_str const & client_session_id, clientdata_event_t response_event)
 {
 	string_path screen_shot_fn;
-	LPCSTR dest_file_name = NULL;
-	STRCONCAT(dest_file_name,
+	string256 dest_file_name = {};
+	xr_strconcat(dest_file_name,
 		make_file_name(client_session_id.c_str(), screen_shot_fn)		
 	);
 	SYSTEMTIME			date_time;

@@ -15,7 +15,7 @@ CUIStatic* init_static_field(CUIXml& uiXml, LPCSTR path, LPCSTR path2)
 	CUIStatic* S					= xr_new<CUIStatic>();
 	string512						buff;
 	S->SetAutoDelete				(true);
-	strconcat						(sizeof(buff),buff,path,":",path2);
+	xr_strconcat(buff,path,":",path2);
 	CUIXmlInit::InitStatic			(uiXml,buff,0,S);
 
 	return							S;
@@ -123,7 +123,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 		string512		buff, buff2;
 		InventoryUtilities::GetTimePeriodAsString(buff, sizeof(buff), Level().GetGameTime(), task->m_TimeToComplete);
 		
-		strconcat		(sizeof(buff2),buff2, g_pStringTable->translate("ui_st_time_remains").c_str(), " ", buff);
+		xr_strconcat(buff2, g_pStringTable->translate("ui_st_time_remains").c_str(), " ", buff);
 		S->TextItemControl()->SetText		(buff2);
 	}
 	pos				= S->GetWndPos();

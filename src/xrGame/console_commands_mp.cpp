@@ -326,11 +326,11 @@ struct SearcherClientByName
 	bool operator()(IClient* client)
 	{
 		xrClientData*	temp_client = smart_cast<xrClientData*>(client);
-		LPSTR tmp_player = NULL;
+		string256 tmp_player = {};
 		if (!temp_client->ps)
 			return false;
 
-		STRCONCAT(tmp_player, temp_client->ps->getName());
+		xr_strconcat(tmp_player, temp_client->ps->getName());
 		xr_strlwr(tmp_player);
 
 		if (!xr_strcmp(player_name, tmp_player))
@@ -668,8 +668,8 @@ public:
 
 	virtual void	Info	(TInfo& I)
 	{
-		LPCSTR info_str = NULL;
-		STRCONCAT(info_str,
+		string256 info_str = {};
+		xr_strconcat(info_str,
 			"Play demo until specified event (then pause playing). Format: mpdemoplay_pause_on ",
 			DemoPlayControlArgParser::GetInfoString());
 		xr_strcpy(I, info_str);
@@ -721,8 +721,8 @@ public:
 
 	virtual void	Info	(TInfo& I)
 	{
-		LPCSTR info_str = NULL;
-		STRCONCAT(info_str,
+		string256 info_str = {};
+		xr_strconcat(info_str,
 			"Rewind demo until specified event (then pause playing). Format: mpdemoplay_rewind_until ",
 			DemoPlayControlArgParser::GetInfoString());
 		xr_strcpy(I, info_str);
@@ -1903,8 +1903,8 @@ public:
 			game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game);
 			if ( game )
 			{
-				LPSTR msg;
-				STRCONCAT(msg,args);
+				string256 msg;
+				xr_strconcat(msg,args);
 				if ( xr_strlen(msg) > 256 )
 				{
 					msg[256] = 0;

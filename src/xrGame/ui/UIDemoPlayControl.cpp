@@ -294,7 +294,7 @@ void CUIDemoPlayControl::OnRepeatRewind(CUIWindow* w, void* d)
 
 void CUIDemoPlayControl::Update()
 {
-	LPCSTR		demo_play_string = NULL;
+	string512		demo_play_string = {};
 	string32	demo_pos;
 	string32	demo_speed;
 	//st.translate("demo play active : ").c_str() (need to translate ?)
@@ -303,12 +303,12 @@ void CUIDemoPlayControl::Update()
 	xr_sprintf	(demo_pos,		": %2d %%, ", int(Level().GetDemoPlayPos() * 100));
 	xr_sprintf	(demo_speed,	": %1.1fx", Level().GetDemoPlaySpeed());
 	
-	STRCONCAT(demo_play_string, 
+	xr_strconcat(demo_play_string,
 		Device.Paused() ?
-			st.translate("mpdemoplay_paused") :
-			st.translate("mpdemoplay_active"),
+			st.translate("mpdemoplay_paused").c_str() :
+			st.translate("mpdemoplay_active").c_str(),
 		demo_pos,
-		st.translate("mpdemoplay_speed"),
+		st.translate("mpdemoplay_speed").c_str(),
 		demo_speed);
 	//m_game_ui->SetDemoPlayCaption(demo_play_string);
 	m_progress_bar->SetProgressPos(Level().GetDemoPlayPos());

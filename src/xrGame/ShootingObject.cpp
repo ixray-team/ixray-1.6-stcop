@@ -156,12 +156,12 @@ void CShootingObject::LoadLights		(LPCSTR section, LPCSTR prefix)
 	// light
 	if(m_bLightShotEnabled) 
 	{
-		Fvector clr			= pSettings->r_fvector3		(section, strconcat(sizeof(full_name),full_name, prefix, "light_color"));
+		Fvector clr			= pSettings->r_fvector3		(section, xr_strconcat(full_name, prefix, "light_color"));
 		light_base_color.set(clr.x,clr.y,clr.z,1);
-		light_base_range	= pSettings->r_float		(section, strconcat(sizeof(full_name),full_name, prefix, "light_range")		);
-		light_var_color		= pSettings->r_float		(section, strconcat(sizeof(full_name),full_name, prefix, "light_var_color")	);
-		light_var_range		= pSettings->r_float		(section, strconcat(sizeof(full_name),full_name, prefix, "light_var_range")	);
-		light_lifetime		= pSettings->r_float		(section, strconcat(sizeof(full_name),full_name, prefix, "light_time")		);
+		light_base_range	= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_range")		);
+		light_var_color		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_var_color")	);
+		light_var_range		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_var_range")	);
+		light_lifetime		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_time")		);
 		light_time			= -1.f;
 	}
 }
@@ -254,12 +254,12 @@ void CShootingObject::UpdateParticles (CParticlesObject*& pParticles,
 void CShootingObject::LoadShellParticles (LPCSTR section, LPCSTR prefix)
 {
 	string256 full_name;
-	strconcat(sizeof(full_name),full_name, prefix, "shell_particles");
+	xr_strconcat(full_name, prefix, "shell_particles");
 
 	if(pSettings->line_exist(section,full_name)) 
 	{
 		m_sShellParticles	= pSettings->r_string	(section,full_name);
-		vLoadedShellPoint	= pSettings->r_fvector3	(section,strconcat(sizeof(full_name),full_name, prefix, "shell_point"));
+		vLoadedShellPoint	= pSettings->r_fvector3	(section, xr_strconcat(full_name, prefix, "shell_point"));
 	}
 }
 
@@ -268,15 +268,15 @@ void CShootingObject::LoadFlameParticles (LPCSTR section, LPCSTR prefix)
 	string256 full_name;
 
 	// flames
-	strconcat(sizeof(full_name),full_name, prefix, "flame_particles");
+	xr_strconcat(full_name, prefix, "flame_particles");
 	if(pSettings->line_exist(section, full_name))
 		m_sFlameParticles	= pSettings->r_string (section, full_name);
 
-	strconcat(sizeof(full_name),full_name, prefix, "smoke_particles");
+	xr_strconcat(full_name, prefix, "smoke_particles");
 	if(pSettings->line_exist(section, full_name))
 		m_sSmokeParticles = pSettings->r_string (section, full_name);
 
-	strconcat(sizeof(full_name),full_name, prefix, "shot_particles");
+	xr_strconcat(full_name, prefix, "shot_particles");
 	if(pSettings->line_exist(section, full_name))
 		m_sShotParticles = pSettings->r_string (section, full_name);
 

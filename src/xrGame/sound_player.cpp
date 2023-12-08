@@ -247,17 +247,16 @@ CSoundPlayer::CSoundCollection::CSoundCollection	(const CSoundCollectionParams &
 	m_sounds.clear						();
 	for (int j=0, N = _GetItemCount(*params.m_sound_prefix); j<N; ++j) {
 		string_path						fn, s, temp;
-		LPSTR							S = (LPSTR)&s;
 		_GetItem						(*params.m_sound_prefix,j,temp);
-		strconcat						(sizeof(s),S,*params.m_sound_player_prefix,temp);
-		if (FS.exist(fn,"$game_sounds$",S,".ogg")) {
-			ref_sound					*temp_ = add(params.m_type,S);
+		xr_strconcat(s,*params.m_sound_player_prefix,temp);
+		if (FS.exist(fn,"$game_sounds$",s,".ogg")) {
+			ref_sound					*temp_ = add(params.m_type,s);
 			if (temp_)
 				m_sounds.push_back		(temp_);
 		}
 		for (u32 i=0; i<params.m_max_count; ++i){
 			string256					name;
-			xr_sprintf						(name,"%s%d",S,i);
+			xr_sprintf						(name,"%s%d",s,i);
 			if (FS.exist(fn,"$game_sounds$",name,".ogg")) {
 				ref_sound				*temp_ = add(params.m_type,name);
 				if (temp_)

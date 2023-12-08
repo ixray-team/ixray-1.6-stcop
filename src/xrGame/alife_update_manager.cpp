@@ -200,11 +200,11 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	}
 
 	string256						autoave_name;
-	strconcat						(sizeof(autoave_name),autoave_name,Core.UserName," - ","autosave");
+	xr_strconcat(autoave_name,Core.UserName," - ","autosave");
 	LPCSTR							temp0 = strstr(**m_server_command_line,"/");
 	VERIFY							(temp0);
 	string256						temp;
-	*m_server_command_line			= strconcat(sizeof(temp),temp,autoave_name,temp0);
+	*m_server_command_line			= xr_strconcat(temp,autoave_name,temp0);
 	
 	save							(autoave_name);
 
@@ -294,7 +294,7 @@ bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
 {
 	{
 		string_path				temp,file_name;
-		strconcat				(sizeof(temp),temp,game_name,SAVE_EXTENSION);
+		xr_strconcat(temp,game_name,SAVE_EXTENSION);
 		FS.update_path			(file_name,"$game_saves$",temp);
 		if (!FS.exist(file_name)) {
 			R_ASSERT3			(no_assert,"There is no saved game ",file_name);
@@ -305,7 +305,7 @@ bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
 	xr_strcpy						(S,**m_server_command_line);
 	LPSTR						temp = strchr(S,'/');
 	R_ASSERT2					(temp,"Invalid server options!");
-	strconcat					(sizeof(S1),S1,game_name,temp);
+	xr_strconcat(S1,game_name,temp);
 	*m_server_command_line		= S1;
 	return						(true);
 }

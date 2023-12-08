@@ -118,7 +118,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (hr == D3D_OK) {
             string_path buf;
             VERIFY(name);
-            strconcat(sizeof(buf), buf, name, ".tga");
+            xr_strconcat(buf, name, ".tga");
             auto fs = FS.w_open("$screenshots$", buf);
             if (fs) {
                 fs->w(saved->GetBufferPointer(), (u32)saved->GetBufferSize());

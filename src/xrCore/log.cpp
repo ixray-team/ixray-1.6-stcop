@@ -95,16 +95,17 @@ void __cdecl Msg		( const char *format, ...)
 	if (sz)		Log(buf);
 }
 
-void Log				(const char *msg, const char *dop) {
+void Log(const char* msg, const char* dop)
+{
 	if (!dop) {
-		Log		(msg);
+		Log(msg);
 		return;
 	}
 
-	u32			buffer_size = (xr_strlen(msg) + 1 + xr_strlen(dop) + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-	strconcat	(buffer_size, buf, msg, " ", dop);
-	Log			(buf);
+	//u32			buffer_size = (xr_strlen(msg) + 1 + xr_strlen(dop) + 1) * sizeof(char);
+	string1024 buf;
+	xr_strconcat(buf, msg, " ", dop);
+	Log(buf);
 }
 
 void Log				(const char *msg, u32 dop) {
@@ -181,7 +182,7 @@ void InitLog()
 void CreateLog			(BOOL nl)
 {
     no_log				= nl;
-	strconcat			(sizeof(log_file_name),log_file_name,Core.ApplicationName,"_",Core.UserName,".log");
+	xr_strconcat(log_file_name,Core.ApplicationName,"_",Core.UserName,".log");
 	if (FS.path_exist("$logs$"))
 		FS.update_path	(logFName,"$logs$",log_file_name);
 	if (!no_log){

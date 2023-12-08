@@ -178,11 +178,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		FS.rescan_pathes			();
 #endif // DEBUG
 		string_path					saved_game,command;
-		strconcat					(sizeof(saved_game),saved_game,Core.UserName," - ","quicksave");
+		xr_strconcat(saved_game,Core.UserName," - ","quicksave");
 		if (!CSavedGameWrapper::valid_saved_game(saved_game))
 			return;
 
-		strconcat					(sizeof(command),command,"load ",saved_game);
+		xr_strconcat(command,"load ",saved_game);
 		Console->Execute			(command);
 		return;
 	}

@@ -46,7 +46,7 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 	xr_strcpy					(save,m_save_name);
 	if (save_name)
 	{
-		strconcat				(sizeof(m_save_name), m_save_name, save_name, SAVE_EXTENSION);
+		xr_strconcat(m_save_name, save_name, SAVE_EXTENSION);
 	}
 	else {
 		if (!xr_strlen(m_save_name)) {
@@ -145,7 +145,7 @@ bool CALifeStorageManager::load	(LPCSTR save_name_no_check)
 	}
 	else
 	{
-		strconcat				(sizeof(m_save_name), m_save_name, save_name, SAVE_EXTENSION);
+		xr_strconcat(m_save_name, save_name, SAVE_EXTENSION);
 	}
 	string_path					file_name;
 	FS.update_path				(file_name,"$game_saves$",m_save_name);

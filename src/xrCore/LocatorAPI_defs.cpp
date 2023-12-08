@@ -65,7 +65,7 @@ void	FS_Path::_set	(LPCSTR add)
 
 	// m_Path
 	string_path		temp;
-	strconcat		(sizeof(temp),temp,m_Root,m_Add);
+	xr_strconcat(temp,m_Root,m_Add);
 	if (temp[xr_strlen(temp)-1]!='\\') xr_strcat(temp,"\\");
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
@@ -80,7 +80,7 @@ void	FS_Path::_set_root	(LPCSTR root)
 	m_Root			= xr_strlwr(xr_strdup(temp));
 
 	// m_Path
-	strconcat		(sizeof(temp),temp,m_Root,m_Add ? m_Add : "");
+	xr_strconcat(temp,m_Root,m_Add ? m_Add : "");
 	if (*temp && temp[xr_strlen(temp)-1]!='\\') xr_strcat(temp,"\\");
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
@@ -92,7 +92,7 @@ LPCSTR FS_Path::_update(string_path& dest, LPCSTR src)const
     R_ASSERT			(src);
 	string_path			temp;
 	xr_strcpy			(temp, sizeof(temp), src);
-	strconcat			(sizeof(dest), dest, m_Path, temp);
+	xr_strconcat(dest, m_Path, temp);
 	return xr_strlwr	(dest);
 }
 /*

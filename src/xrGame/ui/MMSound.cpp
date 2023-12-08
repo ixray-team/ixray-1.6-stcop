@@ -23,11 +23,11 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path){
 		m_play_list.push_back(xml_doc.Read("menu_music", i, ""));		
 	xml_doc.SetLocalRoot(xml_doc.GetRoot());
 
-    strconcat(sizeof(_path),_path, path,":whell_sound");
+   xr_strconcat(_path, path,":whell_sound");
 	if (check_file(xml_doc.Read(_path, 0, "")))
         m_whell.create(xml_doc.Read(_path, 0, "") ,st_Effect,sg_SourceType);
 
-	strconcat(sizeof(_path),_path, path,":whell_click");
+	xr_strconcat(_path, path,":whell_click");
 	if (check_file(xml_doc.Read(_path, 0, "")))
         m_whell_click.create(xml_doc.Read(_path, 0, ""),st_Effect,sg_SourceType );
 
@@ -35,7 +35,7 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path){
 
 bool CMMSound::check_file(LPCSTR fname){
 	string_path		_path;
-	strconcat		(sizeof(_path),_path, fname, ".ogg");
+	xr_strconcat(_path, fname, ".ogg");
 	return FS.exist("$game_sounds$", _path) ? true : false;		
 }
 
@@ -72,7 +72,7 @@ void CMMSound::music_Play()
 	int i = Random.randI(m_play_list.size());
 
 	string_path		_path;
-	strconcat		(sizeof(_path),_path, m_play_list[i].c_str(), ".ogg");
+	xr_strconcat(_path, m_play_list[i].c_str(), ".ogg");
 	VERIFY			(FS.exist("$game_sounds$", _path ));	
 
 	m_music_stereo.create(_path,st_Music,sg_SourceType);

@@ -34,7 +34,7 @@ public:
 		A.resize		(j);
 		for (int i=0; i<j; ++i) 
 		{
-			strconcat	(sizeof(S),S,caBaseName,caBaseNames[i]);
+			xr_strconcat(S,caBaseName,caBaseNames[i]);
 			A[i]		= tpKinematics->ID_Cycle_Safe(S);
 #ifdef DEBUG
 			if (A[i] && psAI_Flags.test(aiAnimation))
@@ -56,6 +56,6 @@ public:
 		for (; caBaseNames[j]; ++j);
 		A.resize	(j);
 		for (int i=0; i<j; ++i)
-			A[i].Load	(tpKinematics,strconcat(sizeof(S),S,caBaseName,caBaseNames[i]));
+			A[i].Load	(tpKinematics, xr_strconcat(S,caBaseName,caBaseNames[i]));
 	}
 };

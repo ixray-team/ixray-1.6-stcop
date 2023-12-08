@@ -39,20 +39,20 @@ void CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 	{
 		inherited::SetWndSize		(Fvector2().set(length, height));
 
-        strconcat					(sizeof(_path),_path, profile, ":left_arrow");
+        xr_strconcat(_path, profile, ":left_arrow");
 		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_DecButton);
 		m_DecButton->SetWndPos		(Fvector2().set(0,0));
 
-		strconcat					(sizeof(_path),_path, profile, ":right_arrow");
+		xr_strconcat(_path, profile, ":right_arrow");
 		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_IncButton);
 		m_IncButton->SetWndPos		(Fvector2().set(length - m_IncButton->GetWidth(), 0.0f));
 
 		m_ScrollBox->SetHorizontal	(true);
 
-		strconcat					(sizeof(_path),_path, profile, ":box");
+		xr_strconcat(_path, profile, ":box");
 		CUIXmlInit::InitFrameLine	(xml_doc, _path, 0, m_ScrollBox);
 
-		strconcat					(sizeof(_path),_path, profile, ":back:texture");
+		xr_strconcat(_path, profile, ":back:texture");
 		LPCSTR texture				= xml_doc.Read(_path, 0, "");
 		R_ASSERT					(texture);
 		m_FrameBackground->InitTexture(texture);
@@ -61,20 +61,20 @@ void CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 	{
 		inherited::SetWndSize		(Fvector2().set(height, length));
 
-		strconcat					(sizeof(_path),_path, profile, ":up_arrow");
+		xr_strconcat(_path, profile, ":up_arrow");
 		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_DecButton);
 		m_DecButton->SetWndPos		(Fvector2().set(0,0));
 
-		strconcat					(sizeof(_path),_path, profile, ":down_arrow");
+		xr_strconcat(_path, profile, ":down_arrow");
  		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_IncButton);
 		m_IncButton->SetWndPos		(Fvector2().set(0.0f, length - m_IncButton->GetHeight()));
 
 		m_ScrollBox->SetHorizontal	(false);
 
-		strconcat					(sizeof(_path),_path, profile, ":box_v");
+		xr_strconcat(_path, profile, ":box_v");
 		CUIXmlInit::InitFrameLine	(xml_doc, _path, 0, m_ScrollBox);	
 
-		strconcat					(sizeof(_path),_path, profile, ":back_v:texture");
+		xr_strconcat(_path, profile, ":back_v:texture");
 		LPCSTR texture				= xml_doc.Read(_path, 0, "");
 		R_ASSERT					(texture);
 

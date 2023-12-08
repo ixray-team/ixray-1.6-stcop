@@ -51,10 +51,10 @@ void reward_manager::load_rewards		()
 	CInifile	rewards_config(tmp_reader);
 	
 	u32			reward_index = 0;
-	LPCSTR		section_name = NULL;
+	string256		section_name = {};
 	char		tmp_dst_buff[16];
 
-	STRCONCAT	(section_name,
+	xr_strconcat(section_name,
 		section_name_prefix,
 		_itoa(reward_index, tmp_dst_buff, 10));
 	
@@ -62,7 +62,7 @@ void reward_manager::load_rewards		()
 	{
 		load_reward_item(rewards_config, reward_index, section_name);
 		++reward_index;
-		STRCONCAT	(section_name,
+		xr_strconcat(section_name,
 			section_name_prefix,
 			_itoa(reward_index, tmp_dst_buff, 10));
 	}

@@ -71,27 +71,27 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	string512						pth;
 	CUIXmlInit						xml_init;
-	strconcat						(sizeof(pth),pth,start_from,":main_wnd");
+	xr_strconcat(pth,start_from,":main_wnd");
 	xml_init.InitWindow				(uiXml, pth, 0, this);
 
 	m_map_move_step					= uiXml.ReadAttribFlt( start_from, 0, "map_move_step", 10.0f );
 
 	m_UILevelFrame					= xr_new<CUIWindow>(); m_UILevelFrame->SetAutoDelete(true);
-	strconcat(sizeof(pth),pth,start_from,":level_frame");
+	xr_strconcat(pth,start_from,":level_frame");
 	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
 //	m_UIMainFrame->AttachChild		(m_UILevelFrame);
 	AttachChild						(m_UILevelFrame);
 
 	m_UIMainFrame					= xr_new<CUIFrameWindow>(); m_UIMainFrame->SetAutoDelete(true);
 	AttachChild						(m_UIMainFrame);
-	strconcat(sizeof(pth),pth,start_from,":main_map_frame");
+	xr_strconcat(pth,start_from,":main_map_frame");
 	xml_init.InitFrameWindow		(uiXml, pth, 0, m_UIMainFrame);
 
 	m_scroll_mode = (uiXml.ReadAttribInt(start_from, 0, "scroll_enable", 0) == 1)? true : false;
 	if ( m_scroll_mode )
 	{
 		float dx, dy, sx, sy;
-		strconcat(sizeof(pth),pth,start_from,":main_map_frame");
+		xr_strconcat(pth,start_from,":main_map_frame");
 		dx = uiXml.ReadAttribFlt( pth, 0, "dx", 0.0f );
 		dy = uiXml.ReadAttribFlt( pth, 0, "dy", 0.0f );
 		sx = uiXml.ReadAttribFlt( pth, 0, "sx", 5.0f );
@@ -118,7 +118,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 
 	m_map_location_hint					= xr_new<CUIMapLocationHint>();
-	strconcat							(sizeof(pth),pth,start_from,":map_hint_item");
+	xr_strconcat(pth,start_from,":map_hint_item");
 	m_map_location_hint->Init			(uiXml, pth);
 	m_map_location_hint->SetAutoDelete	(false);
 

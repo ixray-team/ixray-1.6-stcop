@@ -269,9 +269,9 @@ void set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
 	Fbox	bb;Fvector	vBOX_center,vBOX_size;
 	// m_PhysicMovementControl: BOX
 	string64 buff, buff1;
-	strconcat( sizeof(buff), buff, "ph_box",_itoa( box_num, buff1, 10 ),"_center" );
+	xr_strconcat(buff, "ph_box",_itoa( box_num, buff1, 10 ),"_center" );
 	vBOX_center= pSettings->r_fvector3	(section, buff	);
-	strconcat( sizeof(buff), buff, "ph_box",_itoa( box_num, buff1, 10 ),"_size" );
+	xr_strconcat(buff, "ph_box",_itoa( box_num, buff1, 10 ),"_size" );
 	vBOX_size	= pSettings->r_fvector3	(section, buff);
 	vBOX_size.y += cammera_into_collision_shift/2.f;
 	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
@@ -394,10 +394,10 @@ if(!g_dedicated_server)
 		}
 		char buf[256];
 
-		::Sound->create		(sndDie[0],			strconcat(sizeof(buf),buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[1],			strconcat(sizeof(buf),buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[2],			strconcat(sizeof(buf),buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[3],			strconcat(sizeof(buf),buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[0],			xr_strconcat(buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[1],			xr_strconcat(buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[2],			xr_strconcat(buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[3],			xr_strconcat(buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
 
 		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
@@ -1914,13 +1914,13 @@ void CActor::OnDifficultyChanged	()
 	VERIFY(g_SingleGameDifficulty>=egdNovice && g_SingleGameDifficulty<=egdMaster); 
 	LPCSTR diff_name				= get_token_name(difficulty_type_token, g_SingleGameDifficulty);
 	string128						tmp;
-	strconcat						(sizeof(tmp),tmp,"actor_immunities_",diff_name);
+	xr_strconcat(tmp,"actor_immunities_",diff_name);
 	conditions().LoadImmunities		(tmp,pSettings);
 	// hit probability
-	strconcat						(sizeof(tmp),tmp,"hit_probability_",diff_name);
+	xr_strconcat(tmp,"hit_probability_",diff_name);
 	m_hit_probability				= pSettings->r_float(*cNameSect(),tmp);
 	// two hits death parameters
-	strconcat						(sizeof(tmp),tmp,"actor_thd_",diff_name);
+	xr_strconcat(tmp,"actor_thd_",diff_name);
 	conditions().LoadTwoHitsDeathParams(tmp);
 }
 

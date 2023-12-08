@@ -25,8 +25,8 @@ void	uber_deffer	(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BO
 
 
 	string256		ps,vs,dt;
-	strconcat		(sizeof(vs),vs,"deffer_", _vspec, lmap?"_lmh":""	);
-	strconcat		(sizeof(ps),ps,"deffer_", _pspec, lmap?"_lmh":""	);
+	xr_strconcat(vs,"deffer_", _vspec, lmap?"_lmh":""	);
+	xr_strconcat(ps,"deffer_", _pspec, lmap?"_lmh":""	);
 	xr_strcpy		(dt,sizeof(dt),_detail_replace?_detail_replace:( C.detail_texture?C.detail_texture:"" ) );
 
 	// detect detail bump
@@ -65,7 +65,7 @@ void	uber_deffer	(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BO
 	else 
 	{
 		xr_strcpy			(fnameA,_t.bump_get().c_str());
-		strconcat		(sizeof(fnameB),fnameB,fnameA,"#");
+		xr_strconcat(fnameB,fnameA,"#");
 		xr_strcat			(vs,"_bump");
 		if (hq && C.bUseSteepParallax)
 		{
@@ -131,10 +131,10 @@ void	uber_deffer	(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BO
 		
 		xr_strcat(params, ")");
 
-		strconcat(sizeof(vs),vs,"deffer_", _vspec, "_bump", params);
-		strconcat(sizeof(ps),ps,"deffer_", _pspec, _aref?"_aref":"", "_bump", params);
-		strconcat(sizeof(hs),hs,"DX11\\tess", params);
-		strconcat(sizeof(ds),ds,"DX11\\tess", params);
+		xr_strconcat(vs,"deffer_", _vspec, "_bump", params);
+		xr_strconcat(ps,"deffer_", _pspec, _aref?"_aref":"", "_bump", params);
+		xr_strconcat(hs,"DX11\\tess", params);
+		xr_strconcat(ds,"DX11\\tess", params);
 	
 		VERIFY(strstr(vs, "bump")!=0);
 		VERIFY(strstr(ps, "bump")!=0);
@@ -260,7 +260,7 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
 	else 
 	{
 		xr_strcpy			(fnameA,_t.bump_get().c_str());
-		strconcat		(sizeof(fnameB),fnameB,fnameA,"#");
+		xr_strconcat(fnameB,fnameA,"#");
 	}
 
 	if (bump && RImplementation.o.dx11_enable_tessellation && C.TessMethod!=0)
@@ -300,9 +300,9 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
 		
 		xr_strcat(params, ")");
 
-		strconcat(sizeof(vs),vs,"deffer_", _vspec, "_bump", params);
-		strconcat(sizeof(hs),hs,"DX11\\tess", params);
-		strconcat(sizeof(ds),ds,"DX11\\tess_shadow", params);
+		xr_strconcat(vs,"deffer_", _vspec, "_bump", params);
+		xr_strconcat(hs,"DX11\\tess", params);
+		xr_strconcat(ds,"DX11\\tess_shadow", params);
 	
 		C.r_TessPass	(vs, hs, ds, "null", "dumb", FALSE,TRUE,TRUE,FALSE);
 		RImplementation.clearAllShaderOptions();

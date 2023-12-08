@@ -168,13 +168,13 @@ void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 		Msg("--- Client [%s] tried to connect - rejecting connection (he is banned by %s) ...",
 			tmp_client->m_cAddress.to_string().c_str(),
 			admin_name.size() ? admin_name.c_str() : "Server");
-		LPSTR message_to_user;
+		string256 message_to_user;
 		if (admin_name.size())
 		{
-			STRCONCAT(message_to_user, "mp_you_have_been_banned_by ", admin_name.c_str());
+			xr_strconcat(message_to_user, "mp_you_have_been_banned_by ", admin_name.c_str());
 		} else
 		{
-			message_to_user = (char*)"";
+			xr_strcat(message_to_user, "");
 		}
 		SendConnectResult(tmp_client, 0, ecr_have_been_banned, message_to_user);
 		return;

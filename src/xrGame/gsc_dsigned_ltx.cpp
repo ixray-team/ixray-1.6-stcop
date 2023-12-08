@@ -32,8 +32,8 @@ void gsc_dsigned_ltx_writer::sign_and_save(IWriter& writer)
 	);
 
 	m_mem_writer.seek	(tmp_write_pos);
-	LPCSTR append_value = NULL;
-	STRCONCAT(append_value,
+	string256 append_value = {};
+	xr_strconcat(append_value,
 		"\r\n[",
 		dsign_secion,
 		"]\r\n	date		=	",

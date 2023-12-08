@@ -115,7 +115,7 @@ public		:
 	{
 		value->set(mask,!GetValue());
 		TStatus S;
-		strconcat(sizeof(S),S,cName," is ", value->test(mask)?"on":"off");
+		xr_strconcat(S,cName," is ", value->test(mask)?"on":"off");
 		Log(S);
 	}
 	virtual void	Status	(TStatus& S)

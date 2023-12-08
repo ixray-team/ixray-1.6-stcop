@@ -979,7 +979,7 @@ void CUIGameCTA::LoadDefItemsForRank()
 	char tmp[5];
 	for (int i=1; i<=local_player->rank; i++)
 	{
-		strconcat(sizeof(RankStr),RankStr,"rank_",_itoa(i,tmp,10));
+		xr_strconcat(RankStr,"rank_",_itoa(i,tmp,10));
 		if (!pSettings->section_exist(RankStr)) continue;
 		for (u32 it=0; it<PlayerDefItems.size(); it++)
 		{
@@ -988,7 +988,7 @@ void CUIGameCTA::LoadDefItemsForRank()
 			PresetItem *pDefItem = &(PlayerDefItems[it]);
 			const shared_str& ItemName = m_pCurBuyMenu->GetWeaponNameByIndex(pDefItem->SlotID, pDefItem->ItemID);
 			if (!ItemName.size()) continue;
-			strconcat(sizeof(ItemStr),ItemStr, "def_item_repl_", ItemName.c_str() );
+			xr_strconcat(ItemStr, "def_item_repl_", ItemName.c_str() );
 			if (!pSettings->line_exist(RankStr, ItemStr)) continue;
 
 			xr_strcpy(NewItemStr,sizeof(NewItemStr),pSettings->r_string(RankStr, ItemStr));

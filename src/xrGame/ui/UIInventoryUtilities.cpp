@@ -265,7 +265,7 @@ const shared_str InventoryUtilities::GetTimeAndDateAsString(ALife::_TIME_ID time
 	string256 buf;
 	LPCSTR time_str = GetTimeAsString( time, etpTimeToMinutes ).c_str();
 	LPCSTR date_str = GetDateAsString( time, edpDateToDay ).c_str();
-	strconcat( sizeof(buf), buf, time_str, ", ", date_str );
+	xr_strconcat(buf, time_str, ", ", date_str );
 	return buf;
 }
 

@@ -368,7 +368,7 @@ void CHOM::OnRender	()
 
 			DebugRenderImpl.add_lines(
 				m_pModel->get_verts(), m_pModel->get_verts_count(),
-				pairs.data(), pairs.size() / 2, 0xFFFFFFFF
+				pairs.data(), (u32)pairs.size() / 2, 0xFFFFFFFF
 			);
 #if 0 
 			using LVec = xr_vector<FVF::L>;

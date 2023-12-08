@@ -486,7 +486,7 @@ void CWeapon::Load		(LPCSTR section)
 	string256						temp;
 	for (int i=egdNovice; i<egdCount; ++i) 
 	{
-		strconcat					(sizeof(temp),temp,"hit_probability_",get_token_name(difficulty_type_token,i));
+		xr_strconcat(temp,"hit_probability_",get_token_name(difficulty_type_token,i));
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 

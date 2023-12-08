@@ -106,7 +106,7 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 	}
 	string_path fileName;
 	FS.update_path(fileName, "$game_weathers$", name.c_str());
-	strconcat(sizeof(fileName), fileName, fileName, ".ltx");
+	xr_strconcat(fileName, fileName, ".ltx");
 	f.save_as(fileName);
 }
 
@@ -114,7 +114,7 @@ void nextTexture(char* tex, int texSize, int offset)
 {
 	string_path dir, fn;
 	_splitpath(tex, nullptr, dir, fn, nullptr);
-	strconcat(sizeof(fn), fn, fn, ".dds");
+	xr_strconcat(fn, fn, ".dds");
 	xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", dir, FS_ListFiles);
 	if (!files)
 		return;
@@ -132,7 +132,9 @@ void nextTexture(char* tex, int texSize, int offset)
 	}
 	string_path newFn;
 	_splitpath((*files)[newIndex], nullptr, nullptr, newFn, nullptr);
-	strconcat(texSize, tex, dir, newFn);
+	string256 temp;
+	xr_strconcat(temp, dir, newFn);
+	tex = xr_strdup(temp);
 	FS.file_list_close(files);
 }
 
@@ -200,7 +202,7 @@ bool editTexture(const char* label, shared_str& texName)
 	if (ImGui::BeginPopupModal("Choose texture", NULL, 0)) {
 		string_path dir, fn;
 		_splitpath(tex, nullptr, dir, fn, nullptr);
-		strconcat(sizeof(fn), fn, fn, ".dds");
+		xr_strconcat(fn, fn, ".dds");
 		static xr_map<xr_string, xr_vector<xr_string>> dirs;
 		auto filtered = dirs[dir];
 		if (filtered.empty()) {
@@ -231,7 +233,7 @@ bool editTexture(const char* label, shared_str& texName)
 			&filtered, (int)filtered.size(), ImVec2(-1.0f, -20.0f))) {
 			string_path newFn;
 			_splitpath(filtered[cur].c_str(), nullptr, nullptr, newFn, nullptr);
-			strconcat(100, tex, dir, newFn);
+			xr_strconcat(tex, dir, newFn);
 			texName = tex;
 			changed = true;
 		}
@@ -243,7 +245,7 @@ bool editTexture(const char* label, shared_str& texName)
 			ImGui::CloseCurrentPopup();
 			string_path newFn;
 			_splitpath(prevValue.c_str(), nullptr, nullptr, newFn, nullptr);
-			strconcat(100, tex, dir, newFn);
+			xr_strconcat(tex, dir, newFn);
 			texName = tex;
 			changed = true;
 		}
@@ -360,7 +362,7 @@ void RenderUIWeather()
 
 	if (editTexture("sky_texture", cur->sky_texture_name)) 
 	{
-		strconcat(sizeof(buf), buf, cur->sky_texture_name.c_str(), "#small");
+		xr_strconcat(buf, cur->sky_texture_name.c_str(), "#small");
 		cur->sky_texture_env_name = buf;
 		cur->on_device_create();
 		changed = true;

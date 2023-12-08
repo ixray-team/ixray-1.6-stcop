@@ -195,7 +195,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	// codepath is the same, only the shaders differ
 	// ***only pixel shaders differ***
 	string256				mask;
-	strconcat				(sizeof(mask),mask,C.L_textures[0].c_str(),"_mask");
+	xr_strconcat(mask,C.L_textures[0].c_str(),"_mask");
 	switch(C.iElement) 
 	{
 	case SE_R2_NORMAL_HQ: 		// deffer
@@ -217,10 +217,10 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_dx10Texture		("s_dt_b",	oB_Name);
 		C.r_dx10Texture		("s_dt_a",	oA_Name);
 
-		C.r_dx10Texture		("s_dn_r",	strconcat(sizeof(mask),mask,oR_Name,"_bump") );
-		C.r_dx10Texture		("s_dn_g",	strconcat(sizeof(mask),mask,oG_Name,"_bump") );
-		C.r_dx10Texture		("s_dn_b",	strconcat(sizeof(mask),mask,oB_Name,"_bump") );
-		C.r_dx10Texture		("s_dn_a",	strconcat(sizeof(mask),mask,oA_Name,"_bump") );
+		C.r_dx10Texture		("s_dn_r",	xr_strconcat(mask,oR_Name,"_bump") );
+		C.r_dx10Texture		("s_dn_g",	xr_strconcat(mask,oG_Name,"_bump") );
+		C.r_dx10Texture		("s_dn_b",	xr_strconcat(mask,oB_Name,"_bump") );
+		C.r_dx10Texture		("s_dn_a",	xr_strconcat(mask,oA_Name,"_bump") );
 
 		C.r_dx10Sampler		("smp_base");
 		C.r_dx10Sampler		("smp_linear");

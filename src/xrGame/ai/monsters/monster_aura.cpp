@@ -33,16 +33,16 @@ monster_aura::~monster_aura ()
 	remove_pp_effector();
 }
 
-float   monster_aura::override_if_debug (pcstr var_name, float const value) const
+float   monster_aura::override_if_debug(pcstr var_name, float const value) const
 {
 #ifdef DEBUG
-	char*								full_var_name;
-	STRCONCAT							(full_var_name, m_name, var_name);
+	string256 full_var_name;
+	xr_strconcat(full_var_name, m_name, var_name);
 
-	return								m_object->override_if_debug(full_var_name, value);
+	return m_object->override_if_debug(full_var_name, value);
 #else // DEBUG
 	var_name;							// prevent warning
-	return								value;
+	return value;
 #endif // DEBUG
 }
 
@@ -78,32 +78,32 @@ float   monster_aura::calculate () const
 void   monster_aura::load_from_ini (CInifile const* ini, pcstr const section, bool enable_for_dead_default)
 {
 	using namespace						::detail;
-	char* pp_effector_name_string	=	NULL;
-	STRCONCAT							(pp_effector_name_string, m_name, s_pp_effector_name_string);
+	string256 pp_effector_name_string	= {};
+	xr_strconcat(pp_effector_name_string, m_name, s_pp_effector_name_string);
 	
-	char* pp_highest_at_string		=	NULL;
-	STRCONCAT							(pp_highest_at_string, m_name, s_pp_highest_at_string);
+	string256 pp_highest_at_string		= {};
+	xr_strconcat(pp_highest_at_string, m_name, s_pp_highest_at_string);
 
-	char* linear_factor_string		=	NULL;
-	STRCONCAT							(linear_factor_string, m_name, s_linear_factor_string);
+	string256 linear_factor_string = {};
+	xr_strconcat(linear_factor_string, m_name, s_linear_factor_string);
 
-	char* quadratic_factor_string	=	NULL;
-	STRCONCAT							(quadratic_factor_string, m_name, s_quadratic_factor_string);
+	string256 quadratic_factor_string	= {};
+	xr_strconcat(quadratic_factor_string, m_name, s_quadratic_factor_string);
 
-	char* max_power_string			=	NULL;
-	STRCONCAT							(max_power_string, m_name, s_max_power_string);
+	string256 max_power_string			= {};
+	xr_strconcat(max_power_string, m_name, s_max_power_string);
 
-	char* max_distance_string		=	NULL;
-	STRCONCAT							(max_distance_string, m_name, s_max_distance_string);
+	string256 max_distance_string		= {};
+	xr_strconcat(max_distance_string, m_name, s_max_distance_string);
 
-	char* sound_string				=	NULL;
-	STRCONCAT							(sound_string, m_name, s_sound_string);
+	string256 sound_string				= {};
+	xr_strconcat(sound_string, m_name, s_sound_string);
 	
-	char* detect_sound_string		=	NULL;
-	STRCONCAT							(detect_sound_string, m_name, s_detect_sound_string);
+	string256 detect_sound_string		= {};
+	xr_strconcat(detect_sound_string, m_name, s_detect_sound_string);
 
-	char* enable_for_dead_string	=	NULL;
-	STRCONCAT							(enable_for_dead_string, m_name, s_enable_for_dead_string);
+	string256 enable_for_dead_string = {};
+	xr_strconcat(enable_for_dead_string, m_name, s_enable_for_dead_string);
 
 	m_pp_effector_name				=	READ_IF_EXISTS(ini, r_string, section, pp_effector_name_string, NULL);
 	m_pp_highest_at					=	READ_IF_EXISTS(ini, r_float, section, pp_highest_at_string, 1.f);

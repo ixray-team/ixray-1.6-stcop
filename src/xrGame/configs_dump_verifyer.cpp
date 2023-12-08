@@ -72,8 +72,8 @@ bool const configs_verifyer::verify_dsign(u8* data,
 		(data + data_size) - (u8*)dst_buffer);
 	u32			src_data_size = data_size - dst_size;
 
-	LPCSTR		add_str = NULL;
-	STRCONCAT	(add_str,
+	string512		add_str = {};
+	xr_strconcat(add_str,
 		tmp_ini.r_string(cd_info_secion, cd_player_name_key),
 		tmp_ini.r_string(cd_info_secion, cd_player_digest_key),
 		tmp_ini.r_string(cd_info_secion, cd_creation_date));
@@ -97,7 +97,7 @@ bool const configs_verifyer::verify_dsign(u8* data,
 
 LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & active_params, string256 & dst_diff)
 {
-	LPCSTR diff_str = NULL;
+	string256 diff_str = {};
 	bool	tmp_active_param = false;
 	if (!strncmp(sect_ptr->Name.c_str(), "ap_", 3))
 	{
@@ -116,10 +116,10 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 				real_value = active_params.r_string(sect_ptr->Name.c_str(), cit->first.c_str());
 				if (tmp_value != real_value)
 				{
-					LPCSTR	tmp_key_str = NULL;
-					STRCONCAT(tmp_key_str,
+					string256	tmp_key_str = {};
+					xr_strconcat(tmp_key_str,
 						sect_ptr->Name.c_str(), "::", cit->first.c_str());
-					STRCONCAT(diff_str,
+					xr_strconcat(diff_str,
 						tmp_key_str,
 						" = ",
 						tmp_value.c_str(),
@@ -134,7 +134,7 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 		}
 		if (!pSettings->line_exist(sect_ptr->Name, cit->first))
 		{
-			STRCONCAT(diff_str,
+			xr_strconcat(diff_str,
 				"line ",
 				sect_ptr->Name.c_str(),
 				"::",
@@ -147,10 +147,10 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 		real_value = pSettings->r_string(sect_ptr->Name.c_str(), cit->first.c_str());
 		if (tmp_value != real_value)
 		{
-			LPCSTR	tmp_key_str = NULL;
-			STRCONCAT(tmp_key_str,
+			string256 tmp_key_str = {};
+			xr_strconcat(tmp_key_str,
 				sect_ptr->Name.c_str(), "::", cit->first.c_str());
-			STRCONCAT(diff_str,
+			xr_strconcat(diff_str,
 				tmp_key_str,
 				" = ",
 				tmp_value.c_str(),
@@ -230,8 +230,8 @@ bool const configs_verifyer::verify(u8* data, u32 data_size, string256 & diff)
 		return false;
 	}
 
-	LPCSTR		add_str = NULL;
-	STRCONCAT	(add_str,
+	string256 add_str = {};
+	xr_strconcat(add_str,
 		tmp_ini.r_string(cd_info_secion, cd_player_name_key),
 		tmp_ini.r_string(cd_info_secion, cd_player_digest_key),
 		tmp_ini.r_string(cd_info_secion, cd_creation_date));

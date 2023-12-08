@@ -146,8 +146,8 @@ bool CControlAnimationBase::get_animation_info (EMotionAnim anim, u32 index, Mot
 	}
 
 	char  index_string_buffer[128];
-	char* animation_name_buffer;
-	STRCONCAT(animation_name_buffer, anim_it->target_name, _itoa(index, index_string_buffer, 10));
+	string256 animation_name_buffer = {};
+	xr_strconcat(animation_name_buffer, anim_it->target_name.c_str(), _itoa(index, index_string_buffer, 10));
 
 	IKinematicsAnimated*	animated	=	smart_cast<IKinematicsAnimated*>(m_object->Visual());
 	if ( !animated )
@@ -236,7 +236,7 @@ void CControlAnimationBase::select_animation(bool anim_end)
 
 	// установить анимацию	
 	string128	s1,s2;
-	MotionID	cur_anim		= smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(strconcat(sizeof(s2),s2,*anim_it->target_name,_itoa(index,s1,10)));
+	MotionID	cur_anim		= smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,_itoa(index,s1,10)));
 	if ( !cur_anim.valid() )
 		FATAL							(s2);
 
@@ -247,7 +247,7 @@ void CControlAnimationBase::select_animation(bool anim_end)
 
 	// Заполнить текущую анимацию
 	string64	st,tmp;
-	strconcat	(sizeof(st),st,*anim_it->target_name,_itoa(index,tmp,10));
+	xr_strconcat(st,*anim_it->target_name,_itoa(index,tmp,10));
 	//	xr_sprintf		(st, "%s%d", *anim_it->second.target_name, index);
 	m_cur_anim.name				= st; 
 	m_cur_anim.index			= u8(index);
@@ -507,7 +507,7 @@ void CControlAnimationBase::UpdateAnimCount()
 		u8 count = 0;
 
 		for (int i=0; ; ++i) {
-			strconcat	(sizeof(s_temp),s_temp, *((*it)->target_name),_itoa(i,s,10));
+			xr_strconcat(s_temp, *((*it)->target_name),_itoa(i,s,10));
 			LPCSTR		name	= s_temp;
 			MotionID	id		= skel->ID_Cycle_Safe(name);
 
@@ -535,7 +535,7 @@ CMotionDef *CControlAnimationBase::get_motion_def(SAnimItem *it, u32 index)
 {
 	string128			s1,s2;
 	IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
-	const MotionID		&motion_id = skeleton_animated->ID_Cycle_Safe(strconcat(sizeof(s2),s2,*it->target_name,_itoa(index,s1,10)));
+	const MotionID		&motion_id = skeleton_animated->ID_Cycle_Safe(xr_strconcat(s2,*it->target_name,_itoa(index,s1,10)));
 	return				(skeleton_animated->LL_GetMotionDef(motion_id));
 }
 
@@ -569,7 +569,7 @@ MotionID CControlAnimationBase::get_motion_id(EMotionAnim a, u32 index)
 	}
 
 	string128			s1,s2;
-	return				(smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(strconcat(sizeof(s2),s2,*anim_it->target_name,_itoa(index,s1,10))));
+	return				(smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,_itoa(index,s1,10))));
 }
 
 void CControlAnimationBase::stop_now()
