@@ -1083,7 +1083,7 @@ void CActor::set_state_box(u32	mstate)
 		character_physics_support()->movement()->ActivateBox(0, true);
 }
 
-BOOL g_actor_shadow = 0;
+BOOL g_actor_shadow = 1;
 
 void CActor::shedule_Update	(u32 DT)
 {
