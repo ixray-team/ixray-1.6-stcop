@@ -125,6 +125,9 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if(	g_bDisableAllInput )	return;
 
+	if (g_actor)
+		g_actor->callback(GameObject::eKeyPress)(key);
+
 	switch ( _curr ) 
 	{
 	case kSCREENSHOT:
@@ -469,6 +472,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
 #endif //DEBUG
 		)				return;
 
+	if (g_actor)
+		g_actor->callback(GameObject::eKeyRelease)(key);
+
 	if (CURRENT_ENTITY())		
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
@@ -487,6 +493,9 @@ void CLevel::IR_OnKeyboardHold(int key)
 		}
 	}
 	if(g_bDisableAllInput) return;
+
+	if (g_actor)
+		g_actor->callback(GameObject::eKeyHold)(key);
 
 #ifdef DEBUG
 	// Lain: added
