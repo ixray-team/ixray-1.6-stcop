@@ -44,6 +44,8 @@ void CRenderDevice::Destroy	(void) {
 	RenderFactory->DestroyRenderDeviceRender(m_pRender);
 	m_pRender = 0;
 	xr_delete					(Statistic);
+
+	DrawCommands.clear();
 }
 
 #include "IGame_Level.h"

@@ -139,6 +139,15 @@ public:
 // refs
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
+	struct DrawCommand
+	{
+		int Order;
+		xr_string Name;
+		std::function<void()> Function;
+	};
+
+	xr_vector<DrawCommand> DrawCommands;
+
 public:
 	bool CaptureInputs = false;
 	bool DrawUIRender = false;

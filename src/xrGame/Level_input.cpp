@@ -256,7 +256,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 #ifdef DEBUG_DRAW
 	case DIK_RETURN:
 	{
-		bDebug = !bDebug;
+		if (!Console->bVisible)
+		{
+			bDebug = !bDebug;
+		}
+
 		return;
 	}
 #endif

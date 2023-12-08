@@ -44,7 +44,7 @@ ALDeviceList::ALDeviceList()
 #ifdef _EDITOR
 	pLog					= al_log;
 #endif
-
+	
 	snd_device_id			= u32(-1);
 	Enumerate();
 }
@@ -75,6 +75,7 @@ void ALDeviceList::Enumerate()
 
 	xr_vector<xr_string> DeviceNameList;
 	xr_vector<const char*> DeviceOALNameList;
+
 	auto list_audio_devices = [&DeviceNameList, &DeviceOALNameList](const ALCchar* devices)
 	{
 		const ALCchar* device = devices, * next = devices + 1;
