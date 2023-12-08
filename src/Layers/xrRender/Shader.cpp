@@ -12,13 +12,13 @@
 
 
 //
-STextureList::~STextureList				()			{	DEV->_DeleteTextureList	(this);			}
-SMatrixList::~SMatrixList				()			{	DEV->_DeleteMatrixList		(this);			}
-SConstantList::~SConstantList			()			{	DEV->_DeleteConstantList	(this);			}
-SPass::~SPass							()			{	DEV->_DeletePass			(this);			}
-ShaderElement::~ShaderElement			()			{	DEV->_DeleteElement		(this);			}
-SGeometry::~SGeometry					()			{	DEV->DeleteGeom			(this);			}
-Shader::~Shader							()			{	DEV->Delete				(this);			}
+STextureList::~STextureList				()			{	if (DEV) DEV->_DeleteTextureList	(this);			}
+SMatrixList::~SMatrixList				()			{	if (DEV) DEV->_DeleteMatrixList		(this);			}
+SConstantList::~SConstantList			()			{	if (DEV) DEV->_DeleteConstantList	(this);			}
+SPass::~SPass							()			{	if (DEV) DEV->_DeletePass			(this);			}
+ShaderElement::~ShaderElement			()			{	if (DEV) DEV->_DeleteElement		(this);			}
+SGeometry::~SGeometry					()			{	if (DEV) DEV->DeleteGeom			(this);			}
+Shader::~Shader							()			{	if (DEV) DEV->Delete				(this);			}
 																							 
 //////////////////////////////////////////////////////////////////////////					 
 void	resptrcode_shader::create		(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
