@@ -395,7 +395,7 @@ public:
 		string_path		fn;
 		FS.update_path	(fn, "$game_saves$", fn_);
 
-		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord> (fn));
+		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
 	}
 };
 
