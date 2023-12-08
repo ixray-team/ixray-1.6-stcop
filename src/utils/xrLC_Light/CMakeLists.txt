@@ -34,6 +34,7 @@ target_compile_definitions(xrLC_Light PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_link_libraries(xrLC_Light PUBLIC xrCore)
 target_link_libraries(xrLC_Light PUBLIC xrDXT)
 target_link_libraries(xrLC_Light PUBLIC xrCDB)
+target_link_libraries(xrLC_Light PUBLIC imgui)
 
 # Nuget
 add_custom_command(TARGET ${PROJECT_NAME}

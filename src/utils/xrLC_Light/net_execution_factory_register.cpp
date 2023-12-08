@@ -83,7 +83,7 @@ namespace lc_net {
 			for (u32 i = 0; i < size; ++i)
 			{
 				string_path lbuf;
-				strconcat(sizeof(string_path), buf, buf, globals().get(v[i]).files(lbuf));
+				xr_strconcat(buf, buf, globals().get(v[i]).files(lbuf));
 			}
 			return buf;
 		}

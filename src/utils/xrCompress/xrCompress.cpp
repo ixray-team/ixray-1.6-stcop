@@ -186,7 +186,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	}
 
 	string_path		fn;				
-	strconcat		(sizeof(fn), fn, target_name.c_str(), "\\", path);
+	xr_strconcat(fn, target_name.c_str(), "\\", path);
 
 	if (::GetFileAttributesA(fn)==u32(-1))
 	{
@@ -323,7 +323,7 @@ void xrCompressor::OpenPack(LPCSTR tgt_folder, int num)
 #ifdef MOD_COMPRESS
 	strconcat		(sizeof(fname),fname,tgt_folder,".xdb",_itoa(num,s_num,10));
 #else
-	strconcat		(sizeof(fname),fname,tgt_folder,".pack_#",_itoa(num,s_num,10));
+	xr_strconcat(fname,tgt_folder,".pack_#",_itoa(num,s_num,10));
 #endif
 	_unlink			(fname);
 	fs_pack_writer	= FS.w_open	(fname);

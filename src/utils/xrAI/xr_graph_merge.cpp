@@ -200,7 +200,7 @@ public:
 		// fill vertex map
 		{
 			string_path								fName;
-			strconcat								(sizeof(fName),fName,S,"level.spawn");
+			xr_strconcat(fName,S,"level.spawn");
 			IReader									*F = FS.r_open(fName);
 			u32										id;
 			IReader									*O = F->open_chunk_iterator(id);
@@ -479,7 +479,7 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 		}
 		IReader			*reader;
 		// ai
-		strconcat		(sizeof(caFileName),caFileName,S,"\\",LEVEL_GRAPH_NAME);
+		xr_strconcat(caFileName,S,"\\",LEVEL_GRAPH_NAME);
 		FS.update_path	(file_name,"$game_levels$",caFileName);
 		if (!FS.exist(file_name)) {
 			Msg			("! There is no ai-map for the level %s! (level is not included into the game graph)",S);
@@ -511,7 +511,7 @@ LPCSTR generate_temp_file_name	(LPCSTR header0, LPCSTR header1, string_path& buf
 
 	_mkdir				(path);
 	
-	strconcat			(sizeof(buffer),buffer,path,header0,header1);
+	xr_strconcat(buffer,path,header0,header1);
 	return				(buffer);
 }
 
@@ -577,8 +577,8 @@ CGraphMerger::CGraphMerger(
 		tLevel.m_offset				= (*I).m_offset;
 		tLevel.m_name				= (*I).m_name;
 		xr_strcpy					(S1,sizeof(S1),*(*I).m_name);
-		strconcat					(sizeof(S2),S2,name,S1);
-		strconcat					(sizeof(S1),S1,S2,"\\");
+		xr_strconcat(S2, name, S1);
+		xr_strconcat(S1,S2,"\\");
 		tLevel.m_id					= (*I).m_id;
 		tLevel.m_section			= (*I).m_section;
 		Msg							("%9s %2d %s","level",tLevel.id(),*tLevel.m_name);

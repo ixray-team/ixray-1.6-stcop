@@ -65,8 +65,7 @@ IC	shared_str CGameSpawnConstructor::actor_level_name()
 {
 	string256						temp;
 	return							(
-		strconcat(
-			sizeof(temp),
+		xr_strconcat(
 			temp,
 			*game_graph().header().level(
 				game_graph().vertex(
@@ -231,7 +230,7 @@ shared_str CGameSpawnConstructor::spawn_name	(LPCSTR output)
 	else {
 		actor_level_name		();
 		string_path				out;
-		strconcat				(sizeof(out),out,output,".spawn");
+		xr_strconcat(out,output,".spawn");
 		FS.update_path			(file_name,"$game_spawn$",out);
 	}
 	return						(file_name);

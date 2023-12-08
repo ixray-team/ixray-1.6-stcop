@@ -26,7 +26,7 @@ bool	global_data_file_path(LPCSTR name, IAgent* agent, DWORD sessionId, string_p
 		HRESULT rz = agent->GetSessionCacheDirectory( sessionId, path_name );
 		if (rz!=S_OK) 
 			  return false;
-		strconcat(sizeof(path_name),path_name,path_name,name);
+		xr_strconcat(path_name,path_name,name);
 		return true;
 	}
 
@@ -134,9 +134,9 @@ bool	global_data_file_path(LPCSTR name, IAgent* agent, DWORD sessionId, string_p
 			for(u32 i = 0; i< size; ++i )
 			{
 				string_path lbuf;
-				strconcat( sizeof(string256), buf, buf, globals().get(v[i]).files( lbuf ) );
+				xr_strconcat(buf, buf, globals().get(v[i]).files( lbuf ) );
 			}
-			strconcat( sizeof(string256), buf, buf,",", impl::file_name() );
+			xr_strconcat(buf, buf,",", impl::file_name() );
 			return buf;
 		}
 

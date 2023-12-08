@@ -141,7 +141,7 @@ void OGF::Save			(IWriter &fs)
 		Tname			+= t;
 	}
 	string1024			sid;
-	strconcat			(sizeof(sid),sid,
+	xr_strconcat(sid,
 		pBuild->shader_render[pBuild->materials()[material].shader].name,
 		"/",
 		Tname.c_str()
@@ -192,7 +192,7 @@ void OGF_Reference::Save	(IWriter &fs)
 		Tname			+= t;
 	}
 	string1024			sid	;
-	strconcat			(sizeof(sid),sid,
+	xr_strconcat(sid,
 		pBuild->shader_render[pBuild->materials()[material].shader].name,
 		"/",
 		Tname.c_str()

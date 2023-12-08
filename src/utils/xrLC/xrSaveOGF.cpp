@@ -61,7 +61,7 @@ static void	SaveGEOMs		(LPCSTR fn, VBContainer& vb, IBContainer& ib, SWIContaine
 	// geometry
 	string_path					lfn		;
 	IWriter*					file	;
-	file						= FS.w_open		(strconcat(sizeof(lfn),lfn,pBuild->path,fn));
+	file						= FS.w_open		(xr_strconcat(lfn,pBuild->path,fn));
 	hdrLEVEL H;	H.XRLC_version	= XRCL_PRODUCTION_VERSION;
 	file->w_chunk				(fsL_HEADER,&H,sizeof(H));
 

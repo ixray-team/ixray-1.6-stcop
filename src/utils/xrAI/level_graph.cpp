@@ -26,7 +26,7 @@ CLevelGraph::CLevelGraph		()
 	FS.update_path				(file_name,"$level$",LEVEL_GRAPH_NAME);
 #else
 	string256					file_name;
-	strconcat					(sizeof(file_name), file_name, filename, LEVEL_GRAPH_NAME);
+	xr_strconcat(file_name, filename, LEVEL_GRAPH_NAME);
 #endif
 	m_reader					= FS.r_open	(file_name);
 

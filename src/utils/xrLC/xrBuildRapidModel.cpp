@@ -119,7 +119,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	bool					keep_temp_files = !!strstr(Core.Params,"-keep_temp_files");
 	if (g_params().m_quality!=ebqDraft) {
 		if (keep_temp_files)
-			SaveAsSMF		(strconcat(sizeof(fn),fn,pBuild->path,"build_cform_source.smf"),CL);
+			SaveAsSMF		(xr_strconcat(fn,pBuild->path,"build_cform_source.smf"),CL);
 	}
 
 	// Saving for AI/DO usage
@@ -128,7 +128,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		Status					("Saving...");
 		string_path				fn;
 
-		IWriter*		MFS		= FS.w_open	(strconcat(sizeof(fn),fn,pBuild->path,"build.cform"));
+		IWriter*		MFS		= FS.w_open	(xr_strconcat(fn,pBuild->path,"build.cform"));
 		xr_vector<b_rc_face>	rc_faces;
 		rc_faces.resize			(CL.getTS());
 		// Prepare faces
@@ -145,7 +145,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		}
 		if (g_params().m_quality!=ebqDraft) {
 			if (keep_temp_files)
-				SaveUVM			(strconcat(sizeof(fn),fn,pBuild->path,"build_cform_source.uvm"),rc_faces);
+				SaveUVM			(xr_strconcat(fn,pBuild->path,"build_cform_source.uvm"),rc_faces);
 		}
 
 		MFS->open_chunk			(0);
