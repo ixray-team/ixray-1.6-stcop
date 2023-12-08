@@ -356,7 +356,6 @@ void CCustomMonster::shedule_Update	( u32 DT )
 		// here is monster AI call
 		m_fTimeUpdateDelta				= dt;
 		{
-			SCOPE_EVENT_NAME_GROUP("AI Think", "Game");
 			if (GetScriptControl())
 				ProcessScripts();
 			else {

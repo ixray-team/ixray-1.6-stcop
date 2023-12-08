@@ -2,6 +2,13 @@
 #include "../xrEngine/stdafx.h"
 #include <imgui.h>
 
+struct StatisticHashMapEntry
+{
+	int Counter;
+	float Time;
+	const char* Name;
+};
+
 void RenderUI()
 {
 	static bool FirstDraw = true;
@@ -23,44 +30,52 @@ void RenderUI()
 		window_pos_pivot.y = 0.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 1));
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 		ImGui::SetNextWindowViewport(viewport->ID);
-		ImGui::SetNextWindowBgAlpha(0.f);
+		ImGui::SetNextWindowBgAlpha(0.75f);
 		
 		if (!ImGui::Begin("Statistics", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Statistics)], window_flags)) {
 			ImGui::End();
 			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
 			return;
 		}
 
 		auto TextPadding = ImGui::CalcTextSize("TEST");
 
 		auto DrawCategory = [&TextPadding](const char* Name, u32 XOffset, u32 YOffset) {
+			xr_hash_map<u64, StatisticHashMapEntry> Events;
 			int Counter = 0;
 			int PreviousStack = 0;
-			Profile::TraverseGroup(Name, [XOffset, &YOffset, &TextPadding, &Counter, &PreviousStack](const Profile::TraceEvent& Event) {
-				string64 StringPadding = {};
-				char* StringPtr = StringPadding;
+			Profile::TraverseGroup(Name, [&Events, XOffset, &YOffset, &TextPadding, &Counter, &PreviousStack](const Profile::TraceEvent& Event) {
 				if (Event.StackLevel > PreviousStack) {
 					PreviousStack = Event.StackLevel;
 					Counter++;
-				}
-				else if (Event.StackLevel < PreviousStack) {
+				} else if (Event.StackLevel < PreviousStack) {
 					PreviousStack = Event.StackLevel;
 					Counter--;
 				}
 
-				for (int i = 0; i < Counter; i++) {
+				float Time = float(Event.EndTimestamp - Event.BeginTimestamp) / 1000000.0f;
+				Events[HashValue<u64>(Event.Name)].Name = Event.Name;
+				Events[HashValue<u64>(Event.Name)].Counter = Counter;
+				Events[HashValue<u64>(Event.Name)].Time += Time;
+			});
+
+			for (const auto& [Key, Entry] : Events) {
+				string64 StringPadding = {};
+				char* StringPtr = StringPadding;
+				for (int i = 0; i < Entry.Counter; i++) {
 					*StringPtr++ = ' ';
 					*StringPtr++ = ' ';
 				}
 
-				float Time = float(Event.EndTimestamp - Event.BeginTimestamp) / 1000000.0f;
 				ImGui::SetCursorPosX(XOffset);
 				ImGui::SetCursorPosY(YOffset);
 				YOffset += TextPadding.y;
-				ImGui::Text("%s%s: %fms", StringPadding, Event.Name, Time);
-			});
+				ImGui::Text("%s%s: %fms", StringPadding, Entry.Name, Entry.Time);
+			}
 		};
 
 		u32 CursorX = ImGui::GetCursorPosX();
@@ -73,6 +88,7 @@ void RenderUI()
 
 		ImGui::End();
 		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 	});
 };
 

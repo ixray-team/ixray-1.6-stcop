@@ -77,9 +77,6 @@ u32	CLevelGraph::vertex		(const Fvector &position) const
 u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 {
 	START_PROFILE("Level_Graph::find vertex")
-#ifndef AI_COMPILER
-	SCOPE_EVENT_NAME_GROUP("AI graph vertex", "Game");
-#endif
 
 	u32						id;
 

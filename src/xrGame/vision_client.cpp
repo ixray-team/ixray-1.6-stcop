@@ -40,8 +40,6 @@ vision_client::~vision_client					()
 
 void vision_client::eye_pp_s01					()
 {
-	SCOPE_EVENT_NAME_GROUP("AI eye vision query", "Game");
-
 	Fvector						c, k, j;
 	float						field_of_view, aspect_ratio, near_plane, far_plane;
 	camera						(c, k, j, field_of_view, aspect_ratio, near_plane, far_plane);
@@ -57,7 +55,6 @@ void vision_client::eye_pp_s01					()
 
 void vision_client::eye_pp_s2					()
 {
-	SCOPE_EVENT_NAME_GROUP("AI eye vision ray test", "Game");
 	u32							dwTime = Device.dwTimeGlobal;
 	u32							dwDT = dwTime - m_time_stamp;
 	m_time_stamp				= dwTime;
