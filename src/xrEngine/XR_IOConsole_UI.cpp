@@ -20,14 +20,16 @@ void CConsole::DrawUIConsoleVars()
 
 		if (auto Boolean = dynamic_cast<CCC_Boolean*>(Command)) {
 			if (ImGui::Checkbox(Boolean->Name(), Boolean->value)) {
-				Boolean->Execute(Boolean->value ? "1" : "0");
+				Boolean->Execute(*Boolean->value ? "1" : "0");
 			}
 			continue;
 		}
 
 		if (auto Float = dynamic_cast<CCC_Float*>(Command)) {
 			float test = Float->GetValue();
-			if (ImGui::SliderFloat(Float->Name(), &test, Float->min, Float->max)) {
+			float min = std::clamp(Float->min, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+			float max = std::clamp(Float->max, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+			if (ImGui::SliderFloat(Float->Name(), &test, min, max)) {
 				string32 String = {};
 				xr_sprintf(String, "%3.5f", test);
 				Float->Execute(String);
@@ -76,7 +78,9 @@ void CConsole::DrawUIConsoleVars()
 
 		if (auto Vector = dynamic_cast<CCC_Vector3*>(Command)) {
 			auto& Val = *Vector->GetValuePtr();
-			if (ImGui::SliderFloat3(Vector->Name(), &Val.x, Vector->min.x, Vector->max.x)) {
+			float min = std::clamp(Vector->min.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+			float max = std::clamp(Vector->max.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+			if (ImGui::SliderFloat3(Vector->Name(), &Val.x, min, max)) {
 				string64 str = {};
 				xr_sprintf(str, sizeof(str), "(%f, %f, %f)", Val.x, Val.y, Val.z);
 				Vector->Execute(str);
