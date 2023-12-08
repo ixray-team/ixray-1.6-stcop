@@ -51,7 +51,7 @@ public:
 	virtual void			DeactivateItem						();
 	virtual bool			GetBriefInfo						(II_BriefInfo& info);
 
-	virtual void			SendHiddenItem						();	//same as OnHiddenItem but for client... (sends message to a server)...
+	virtual bool			SendDeactivateItem					();
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
 	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
