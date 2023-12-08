@@ -224,15 +224,16 @@ void CInput::KeyboardUpdate( )
 	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++)
 	{
 		bool Pressed = !!KBState[i];
-		if (KBState[i] != old_KBState[i]) 
+		if (KBState[i] != old_KBState[i])
 		{
+			old_KBState[i] = KBState[i];
 			if (Pressed)
 			{
-				cbStack.back()->IR_OnKeyboardPress((int)i);
-			}
+				cbStack.back()->IR_OnKeyboardPress(i);
+			} 
 			else 
 			{
-				cbStack.back()->IR_OnKeyboardRelease((int)i);
+				cbStack.back()->IR_OnKeyboardRelease(i);
 			}
 		}
 	}
@@ -245,7 +246,7 @@ void CInput::KeyboardUpdate( )
 		}
 	}	
 	
-	std::memcpy(old_KBState, KBState, sizeof(KBState));
+	//std::memcpy(old_KBState, KBState, sizeof(KBState));
 }
 
 const xr_map<int, char> russian_lookup_key_table = {
