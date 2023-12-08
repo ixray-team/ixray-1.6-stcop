@@ -19,8 +19,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		OnWM_Activate(false, true);
 		break;
 	case SDL_EVENT_QUIT:
+		Profile::BeginFrame("Destroy");
 		g_pEventManager->Event.Signal("KERNEL:disconnect");
 		g_pEventManager->Event.Signal("KERNEL:quit");
+		Profile::EndFrame();
 		return false;
 	case SDL_EVENT_KEY_DOWN:
 		pInput->KeyPressed(Event.key.keysym.sym);
