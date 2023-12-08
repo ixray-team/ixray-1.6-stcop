@@ -11,7 +11,6 @@
 #include "CustomHUD.h"
 #include "CameraManager.h"
 
-extern BOOL g_bDisableRedText;
 static Flags32	s_hud_flag	= {0};
 static Flags32	s_dev_flags	= {0};
 
@@ -62,8 +61,7 @@ Fbox get_level_screenshot_bound()
 
 CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDemo,life_time/*,FALSE*/)
 {
-	stored_red_text = g_bDisableRedText;
-	g_bDisableRedText = TRUE;
+	stored_red_text = true;
 	m_iLMScreenshotFragment = -1;
 /*
 	stored_weapon = psHUD_Flags.test(HUD_WEAPON);
@@ -123,7 +121,6 @@ CDemoRecord::~CDemoRecord()
 		IR_Release	();	// release input
 		FS.w_close	(file);
 	}
-	g_bDisableRedText	= stored_red_text;
 
 	Device.seqRender.Remove		( this		);
 }

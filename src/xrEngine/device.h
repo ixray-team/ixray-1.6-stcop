@@ -41,8 +41,7 @@ enum D3D_FEATURE_LEVEL;
 
 class IRenderDevice
 {
-public:
-	virtual		CStatsPhysics*	_BCL		StatPhysics		()							= 0;								
+public:								
 	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
 	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
 
@@ -218,9 +217,6 @@ public:
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
 	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
 
-	// Dependent classes
-	CStats*									Statistic;
-
 	// Engine flow-control
 	Fmatrix									mInvFullTransform;
 	
@@ -288,7 +284,6 @@ private:
 			void					message_loop		();
 virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
 virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
-virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 };
 
 extern		ENGINE_API		CRenderDevice		Device;

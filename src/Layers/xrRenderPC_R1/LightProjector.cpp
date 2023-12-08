@@ -154,167 +154,166 @@ void CLightProjector::calculate	()
 	if (taskid.empty())			return;
 
 	// Begin
-	Device.Statistic->RenderDUMP_Pcalc.Begin	();
-	RCache.set_RT				(RT->pRT);
-	RCache.set_ZB				(RImplementation.Target->pTempZB);
-	CHK_DX(RDevice->Clear	(0,0, D3DCLEAR_ZBUFFER | (dxRenderDeviceRender::Instance().Caps.bStencil?D3DCLEAR_STENCIL:0), 0,1,0 ));
-	RCache.set_xform_world		(Fidentity);
-
-	// reallocate/reassociate structures + perform all the work
-	for (u32 c_it=0; c_it<cache.size(); c_it++)
 	{
-		if (taskid.empty())							break;
-		if (Device.dwFrame==cache[c_it].dwFrame)	continue;
+		SCOPE_EVENT_NAME_GROUP("Light projector calculate", "Render");
+		RCache.set_RT(RT->pRT);
+		RCache.set_ZB(RImplementation.Target->pTempZB);
+		CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | (dxRenderDeviceRender::Instance().Caps.bStencil ? D3DCLEAR_STENCIL : 0), 0, 1, 0));
+		RCache.set_xform_world(Fidentity);
 
-		// found not used slot
-		int				tid		= taskid.back();	taskid.pop_back();
-		recv&			R		= cache		[c_it];
-		IRenderable*	O		= receivers	[tid];
-		const vis_data& vis = O->renderable.visual->getVisData();
-		CROS_impl*	LT		= (CROS_impl*)O->renderable_ROS();
-		VERIFY2			(_valid(O->renderable.xform),"Invalid object transformation");
-		VERIFY2			(_valid(vis.sphere.P),"Invalid object's visual sphere");
-
-		Fvector			C;		O->renderable.xform.transform_tiny		(C,vis.sphere.P);
-		R.O						= O;
-		R.C						= C;
-		R.C.y					+= vis.sphere.R*0.1f;		//. YURA: 0.1 can be more
-		R.BB.xform				(vis.box,O->renderable.xform).scale(0.1f);
-		R.dwTimeValid			= Device.dwTimeGlobal + ::Random.randI(time_min,time_max);
-		LT->shadow_recv_slot	= c_it; 
-
-		// Msg					("[%f,%f,%f]-%f",C.C.x,C.C.y,C.C.z,C.O->renderable.visual->vis.sphere.R);
-		// calculate projection-matrix
-		Fmatrix		mProject;
-		float		p_R			=	R.O->renderable.visual->getVisData().sphere.R * 1.1f;
-		//VERIFY2		(p_R>EPS_L,"Object has no physical size");
-		VERIFY3		(p_R>EPS_L,"Object has no physical size", R.O->renderable.visual->getDebugName().c_str());
-		float		p_hat		=	p_R/P_cam_dist;
-		float		p_asp		=	1.f;
-		float		p_near		=	P_cam_dist-EPS_L;									
-		float		p_far		=	P_cam_dist+p_R+P_cam_range;	
-		mProject.build_projection_HAT	(p_hat,p_asp,p_near,p_far);
-		RCache.set_xform_project		(mProject);
-		
-		// calculate view-matrix
-		Fmatrix		mView;
-		Fvector		v_C, v_Cs, v_N;
-		v_C.set					(R.C);
-		v_Cs					= v_C;
-		v_C.y					+=	P_cam_dist;
-		v_N.set					(0,0,1);
-		VERIFY					(_valid(v_C) && _valid(v_Cs) && _valid(v_N));
-
-		// validate
-		Fvector		v;
-		v.sub		(v_Cs,v_C);;
-#ifdef DEBUG
-		if ((v.x*v.x+v.y*v.y+v.z*v.z)<=flt_zero)	{
-			CObject* OO = dynamic_cast<CObject*>(R.O);
-			Msg("Object[%s] Visual[%s] has invalid position. ",*OO->cName(),*OO->cNameVisual());
-			Fvector cc;
-			OO->Center(cc);
-			Log("center=",cc);
-
-			Log("visual_center=",OO->Visual()->getVisData().sphere.P);
-			
-			Log("full_matrix=",OO->XFORM());
-
-			Log	("v_N",v_N);
-			Log	("v_C",v_C);
-			Log	("v_Cs",v_Cs);
-
-			Log("all bones transform:--------");
-			CKinematics* K = dynamic_cast<CKinematics*>(OO->Visual());
-			
-			for(u16 ii=0; ii<K->LL_BoneCount();++ii){
-				Fmatrix tr;
-
-				tr = K->LL_GetTransform(ii);
-				Log("bone ",K->LL_BoneName_dbg(ii));
-				Log("bone_matrix",tr);
-			}
-			Log("end-------");
-		}
-#endif
-		// handle invalid object-bug
-		if ((v.x*v.x+v.y*v.y+v.z*v.z)<=flt_zero)	{
-			// invalidate record, so that object will be unshadowed, but doesn't crash
-			R.dwTimeValid			= Device.dwTimeGlobal;
-			LT->shadow_recv_frame	= Device.dwFrame-1;
-			LT->shadow_recv_slot	= -1; 
-			continue				;
-		}
-
-		mView.build_camera		(v_C,v_Cs,v_N);
-		RCache.set_xform_view	(mView);
-
-		// Select slot, set viewport
-		int		s_x				=	c_it%P_o_line;
-		int		s_y				=	c_it/P_o_line;
-		D3DVIEWPORT9 VP			=	{ (unsigned long) s_x*P_o_size, (unsigned long) s_y*P_o_size,P_o_size,P_o_size,0,1 };
-		CHK_DX					(RDevice->SetViewport(&VP));
-
-		// Clear color to ambience
-		Fvector&	cap			=	LT->get_approximate();
-		CHK_DX					(RDevice->Clear(0,0, D3DCLEAR_TARGET, color_rgba_f(cap.x,cap.y,cap.z, (cap.x+cap.y+cap.z)/4.f), 1, 0 ));
-
-		// calculate uv-gen matrix and clamper
-		Fmatrix					mCombine;		mCombine.mul	(mProject,mView);
-		Fmatrix					mTemp;
-		float					fSlotSize		= float(P_o_size)/float(P_rt_size);
-		float					fSlotX			= float(s_x*P_o_size)/float(P_rt_size);
-		float					fSlotY			= float(s_y*P_o_size)/float(P_rt_size);
-		float					fTexelOffs		= (.5f / P_rt_size);
-		Fmatrix					m_TexelAdjust	= 
+		// reallocate/reassociate structures + perform all the work
+		for (u32 c_it = 0; c_it < cache.size(); c_it++)
 		{
-			0.5f/*x-scale*/,	0.0f,							0.0f,				0.0f,
-			0.0f,				-0.5f/*y-scale*/,				0.0f,				0.0f,
-			0.0f,				0.0f,							1.0f/*z-range*/,	0.0f,
-			0.5f/*x-bias*/,		0.5f + fTexelOffs/*y-bias*/,	0.0f/*z-bias*/,		1.0f
-		};
-		R.UVgen.mul				(m_TexelAdjust,mCombine);
-		mTemp.scale				(fSlotSize,fSlotSize,1);
-		R.UVgen.mulA_44			(mTemp);
-		mTemp.translate			(fSlotX+fTexelOffs,fSlotY+fTexelOffs,0);
-		R.UVgen.mulA_44			(mTemp);
+			if (taskid.empty())							break;
+			if (Device.dwFrame == cache[c_it].dwFrame)	continue;
 
-		// Build bbox and render
-		Fvector					min,max;
-		Fbox					BB;
-		min.set					(R.C.x-p_R,	R.C.y-(p_R+P_cam_range),	R.C.z-p_R);
-		max.set					(R.C.x+p_R,	R.C.y+0,					R.C.z+p_R);
-		BB.set					(min,max);
-		R.UVclamp_min.set		(min).add	(.05f);	// shrink a little
-		R.UVclamp_max.set		(max).sub	(.05f);	// shrink a little
-		ISpatial*	spatial		= dynamic_cast<ISpatial*>	(O);
-		if (spatial)			{
-			spatial->spatial_updatesector			();
-			if (spatial->spatial.sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->spatial.sector,BB,SE_R1_LMODELS);
+			// found not used slot
+			int				tid = taskid.back();	taskid.pop_back();
+			recv& R = cache[c_it];
+			IRenderable* O = receivers[tid];
+			const vis_data& vis = O->renderable.visual->getVisData();
+			CROS_impl* LT = (CROS_impl*)O->renderable_ROS();
+			VERIFY2(_valid(O->renderable.xform), "Invalid object transformation");
+			VERIFY2(_valid(vis.sphere.P), "Invalid object's visual sphere");
+
+			Fvector			C;		O->renderable.xform.transform_tiny(C, vis.sphere.P);
+			R.O = O;
+			R.C = C;
+			R.C.y += vis.sphere.R * 0.1f;		//. YURA: 0.1 can be more
+			R.BB.xform(vis.box, O->renderable.xform).scale(0.1f);
+			R.dwTimeValid = Device.dwTimeGlobal + ::Random.randI(time_min, time_max);
+			LT->shadow_recv_slot = c_it;
+
+			// Msg					("[%f,%f,%f]-%f",C.C.x,C.C.y,C.C.z,C.O->renderable.visual->vis.sphere.R);
+			// calculate projection-matrix
+			Fmatrix		mProject;
+			float		p_R = R.O->renderable.visual->getVisData().sphere.R * 1.1f;
+			//VERIFY2		(p_R>EPS_L,"Object has no physical size");
+			VERIFY3(p_R > EPS_L, "Object has no physical size", R.O->renderable.visual->getDebugName().c_str());
+			float		p_hat = p_R / P_cam_dist;
+			float		p_asp = 1.f;
+			float		p_near = P_cam_dist - EPS_L;
+			float		p_far = P_cam_dist + p_R + P_cam_range;
+			mProject.build_projection_HAT(p_hat, p_asp, p_near, p_far);
+			RCache.set_xform_project(mProject);
+
+			// calculate view-matrix
+			Fmatrix		mView;
+			Fvector		v_C, v_Cs, v_N;
+			v_C.set(R.C);
+			v_Cs = v_C;
+			v_C.y += P_cam_dist;
+			v_N.set(0, 0, 1);
+			VERIFY(_valid(v_C) && _valid(v_Cs) && _valid(v_N));
+
+			// validate
+			Fvector		v;
+			v.sub(v_Cs, v_C);;
+#ifdef DEBUG
+			if ((v.x * v.x + v.y * v.y + v.z * v.z) <= flt_zero) {
+				CObject* OO = dynamic_cast<CObject*>(R.O);
+				Msg("Object[%s] Visual[%s] has invalid position. ", *OO->cName(), *OO->cNameVisual());
+				Fvector cc;
+				OO->Center(cc);
+				Log("center=", cc);
+
+				Log("visual_center=", OO->Visual()->getVisData().sphere.P);
+
+				Log("full_matrix=", OO->XFORM());
+
+				Log("v_N", v_N);
+				Log("v_C", v_C);
+				Log("v_Cs", v_Cs);
+
+				Log("all bones transform:--------");
+				CKinematics* K = dynamic_cast<CKinematics*>(OO->Visual());
+
+				for (u16 ii = 0; ii < K->LL_BoneCount(); ++ii) {
+					Fmatrix tr;
+
+					tr = K->LL_GetTransform(ii);
+					Log("bone ", K->LL_BoneName_dbg(ii));
+					Log("bone_matrix", tr);
+				}
+				Log("end-------");
+			}
+#endif
+			// handle invalid object-bug
+			if ((v.x * v.x + v.y * v.y + v.z * v.z) <= flt_zero) {
+				// invalidate record, so that object will be unshadowed, but doesn't crash
+				R.dwTimeValid = Device.dwTimeGlobal;
+				LT->shadow_recv_frame = Device.dwFrame - 1;
+				LT->shadow_recv_slot = -1;
+				continue;
+			}
+
+			mView.build_camera(v_C, v_Cs, v_N);
+			RCache.set_xform_view(mView);
+
+			// Select slot, set viewport
+			int		s_x = c_it % P_o_line;
+			int		s_y = c_it / P_o_line;
+			D3DVIEWPORT9 VP = { (unsigned long)s_x * P_o_size, (unsigned long)s_y * P_o_size,P_o_size,P_o_size,0,1 };
+			CHK_DX(RDevice->SetViewport(&VP));
+
+			// Clear color to ambience
+			Fvector& cap = LT->get_approximate();
+			CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_rgba_f(cap.x, cap.y, cap.z, (cap.x + cap.y + cap.z) / 4.f), 1, 0));
+
+			// calculate uv-gen matrix and clamper
+			Fmatrix					mCombine;		mCombine.mul(mProject, mView);
+			Fmatrix					mTemp;
+			float					fSlotSize = float(P_o_size) / float(P_rt_size);
+			float					fSlotX = float(s_x * P_o_size) / float(P_rt_size);
+			float					fSlotY = float(s_y * P_o_size) / float(P_rt_size);
+			float					fTexelOffs = (.5f / P_rt_size);
+			Fmatrix					m_TexelAdjust =
+			{
+				0.5f/*x-scale*/,	0.0f,							0.0f,				0.0f,
+				0.0f,				-0.5f/*y-scale*/,				0.0f,				0.0f,
+				0.0f,				0.0f,							1.0f/*z-range*/,	0.0f,
+				0.5f/*x-bias*/,		0.5f + fTexelOffs/*y-bias*/,	0.0f/*z-bias*/,		1.0f
+			};
+			R.UVgen.mul(m_TexelAdjust, mCombine);
+			mTemp.scale(fSlotSize, fSlotSize, 1);
+			R.UVgen.mulA_44(mTemp);
+			mTemp.translate(fSlotX + fTexelOffs, fSlotY + fTexelOffs, 0);
+			R.UVgen.mulA_44(mTemp);
+
+			// Build bbox and render
+			Fvector					min, max;
+			Fbox					BB;
+			min.set(R.C.x - p_R, R.C.y - (p_R + P_cam_range), R.C.z - p_R);
+			max.set(R.C.x + p_R, R.C.y + 0, R.C.z + p_R);
+			BB.set(min, max);
+			R.UVclamp_min.set(min).add(.05f);	// shrink a little
+			R.UVclamp_max.set(max).sub(.05f);	// shrink a little
+			ISpatial* spatial = dynamic_cast<ISpatial*>	(O);
+			if (spatial) {
+				spatial->spatial_updatesector();
+				if (spatial->spatial.sector)			RImplementation.r_dsgraph_render_R1_box(spatial->spatial.sector, BB, SE_R1_LMODELS);
+			}
+			//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,FALSE);
 		}
-		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,FALSE);
+
+		// Blur
+		/*
+		{
+			// Fill vertex buffer
+			u32							Offset;
+			FVF::TL4uv* pv				= (FVF::TL4uv*) RCache.Vertex.Lock	(4,geom_Blur.stride(),Offset);
+			RImplementation.ApplyBlur4	(pv,P_rt_size,P_rt_size,P_blur_kernel);
+			RCache.Vertex.Unlock		(4,geom_Blur.stride());
+
+			// Actual rendering (pass0, temp2real)
+			RCache.set_RT				(RT->pRT);
+			RCache.set_ZB				(NULL);
+			RCache.set_Shader			(sh_BlurTR	);
+			RCache.set_Geometry			(geom_Blur	);
+			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		}
+		*/
 	}
-
-	// Blur
-	/*
-	{
-		// Fill vertex buffer
-		u32							Offset;
-		FVF::TL4uv* pv				= (FVF::TL4uv*) RCache.Vertex.Lock	(4,geom_Blur.stride(),Offset);
-		RImplementation.ApplyBlur4	(pv,P_rt_size,P_rt_size,P_blur_kernel);
-		RCache.Vertex.Unlock		(4,geom_Blur.stride());
-
-		// Actual rendering (pass0, temp2real)
-		RCache.set_RT				(RT->pRT);
-		RCache.set_ZB				(NULL);
-		RCache.set_Shader			(sh_BlurTR	);
-		RCache.set_Geometry			(geom_Blur	);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-	}
-	*/
-
-	// Finita la comedia
-	Device.Statistic->RenderDUMP_Pcalc.End	();
 	
 	RCache.set_xform_project	(Device.mProject);
 	RCache.set_xform_view		(Device.mView);

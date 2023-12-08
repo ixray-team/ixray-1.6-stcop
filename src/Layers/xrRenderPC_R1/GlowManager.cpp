@@ -145,9 +145,8 @@ void CGlowManager::add	(ref_glow G_)
 	CGlow*	G		= (CGlow*)	G_._get		();
 	if (G->dwFrame	==Device.dwFrame)		return;
 	G->dwFrame		= Device.dwFrame;
-#ifdef DEBUG
-	Device.Statistic->RenderDUMP_Glows.Begin();
-#endif
+
+	SCOPE_EVENT_NAME_GROUP("Glow", "Render");
 
 	float	dt		= Device.fTimeDelta;
 	float	dlim2	= MAX_GlowsDist2;
@@ -169,9 +168,6 @@ void CGlowManager::add	(ref_glow G_)
 	}
 	G->fade -= dt*FADE_SCALE_DOWN;
 	if (G->fade<1.) G->fade = 1;
-#ifdef DEBUG
-	Device.Statistic->RenderDUMP_Glows.End();
-#endif
 }
 
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, float r, u32 clr)
@@ -198,9 +194,8 @@ void CGlowManager::Render			()
 	if (Selected.empty())					return		;
 	RCache.set_xform_world					(Fidentity)	;
 
-	Device.Statistic->RenderDUMP_Glows.Begin	();
+	SCOPE_EVENT_NAME_GROUP("Glow render", "Render");
 	render_sw								();
-	Device.Statistic->RenderDUMP_Glows.End	();
 }
 
 void CGlowManager::render_sw		()

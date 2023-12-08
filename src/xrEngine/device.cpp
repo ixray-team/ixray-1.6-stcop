@@ -127,6 +127,7 @@ void mt_Thread(void* ptr)
 	g_AppInfo.SecondaryThread = GetCurrentThread();
 	while (true)
 	{
+		PROFILE_BEGIN_FRAME("SeqParallel");
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter();
 
@@ -134,6 +135,7 @@ void mt_Thread(void* ptr)
 		{
 			Device.mt_bMustExit = FALSE;				// Important!!!
 			Device.mt_csEnter.Leave();					// Important!!!
+			PROFILE_END_FRAME();
 			return;
 		}
 
@@ -154,6 +156,7 @@ void mt_Thread(void* ptr)
 		Device.mt_csLeave.Enter();
 		// returns sync signal to device
 		Device.mt_csLeave.Leave();
+		PROFILE_END_FRAME();
 	}
 }
 
@@ -193,6 +196,7 @@ void CRenderDevice::on_idle		()
 		return;
 	}
 
+	Profile::BeginFrame("Frame");
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !Device.IsCapturingInputs();
@@ -209,6 +213,7 @@ void CRenderDevice::on_idle		()
 			g_loading_events.pop_front();
 
 		pApp->LoadDraw();
+		Profile::EndFrame();
 		return;
 	} else {
 		FrameMove();
@@ -246,21 +251,13 @@ void CRenderDevice::on_idle		()
 	Sleep						(0);
 
 	if (!g_dedicated_server) {
-		Statistic->RenderTOTAL_Real.FrameStart();
-		Statistic->RenderTOTAL_Real.Begin();
+		SCOPE_EVENT_NAME_GROUP("Render", "Render");
 		if (b_is_Active) {
 			if (Begin()) {
 				seqRender.Process(rp_Render);
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-					Statistic->Show();
-
-				//	Present goes here
 				End();
 			}
 		}
-		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
-		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 	}
 
 	// *** Suspend threads
@@ -289,6 +286,7 @@ void CRenderDevice::on_idle		()
 	}
 
 	Device.EndRender();
+	Profile::EndFrame();
 	if (!b_is_Active)
 		Sleep		(1);
 }
@@ -387,13 +385,16 @@ void CRenderDevice::FrameMove()
 		dwTimeDelta		= dwTimeGlobal-_old_global;
 	}
 
-	Statistic->EngineTOTAL.Begin	();
-	ProcessLoading				(rp_Frame);
-	Statistic->EngineTOTAL.End	();
+	{
+		SCOPE_EVENT_NAME_GROUP("Frame", "Engine");
+		ProcessLoading(rp_Frame);
+	}
 }
 
 void ProcessLoading				(RP_FUNC *f)
 {
+	SCOPE_EVENT_NAME_GROUP("Loading", "Engine");
+
 	Device.seqFrame.Process				(rp_Frame);
 	g_bLoaded							= TRUE;
 }

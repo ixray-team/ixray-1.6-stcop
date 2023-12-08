@@ -170,6 +170,7 @@
 #include "rt_compressor.h"
 #include "xr_shared.h"
 #include "string_concatenations.h"
+#include "EngineProfiler.h"
 
 XRCORE_API wchar_t* ANSI_TO_TCHAR(const char* C);
 XRCORE_API wchar_t* ANSI_TO_TCHAR_U8(const char* C);

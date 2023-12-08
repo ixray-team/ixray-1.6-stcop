@@ -272,7 +272,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 	}
 
 	AddUICommand("Main", 0, DrawMainViewport);
-	AddUICommand("Dockspace", 1, []() {
+	AddUICommand("Dockspace", 2, []() {
 		auto& States = Engine.External.EditorStates;
 
 		if (ImGui::BeginMainMenuBar()) {

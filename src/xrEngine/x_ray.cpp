@@ -89,10 +89,8 @@ struct _SoundProcessor	: public pureFrame
 {
 	virtual void	_BCL	OnFrame	( )
 	{
-		//Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(Device.dwFrame),VPUSH(Device.vCameraPosition));
-		Device.Statistic->Sound.Begin();
-		::Sound->update				(Device.vCameraPosition,Device.vCameraDirection,Device.vCameraTop);
-		Device.Statistic->Sound.End	();
+		SCOPE_EVENT_NAME_GROUP("Sound", "Engine");
+		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
 	}
 }	SoundProcessor;
 
@@ -246,6 +244,7 @@ ENGINE_API void EngineLoadStage5()
 	// Main cycle
 	Memory.mem_usage();
 	Device.Run					( );
+
 
 	// Destroy APP
 	xr_delete					( g_SpatialSpacePhysic	);

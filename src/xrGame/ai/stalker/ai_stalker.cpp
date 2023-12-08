@@ -955,16 +955,17 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		// here is monster AI call
 		VERIFY							(_valid(Position()));
 		m_fTimeUpdateDelta				= dt;
-		Device.Statistic->AI_Think.Begin	();
-		if (GetScriptControl())
-			ProcessScripts				();
-		else
+		{
+			SCOPE_EVENT_NAME_GROUP("AI Think", "Game");
+			if (GetScriptControl())
+				ProcessScripts();
+			else
 #ifdef DEBUG
-			if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
+				if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
 #endif
-				Think					();
-		m_dwLastUpdateTime				= Device.dwTimeGlobal;
-		Device.Statistic->AI_Think.End	();
+					Think();
+			m_dwLastUpdateTime = Device.dwTimeGlobal;
+		}
 		VERIFY							(_valid(Position()));
 
 		// Look and action streams

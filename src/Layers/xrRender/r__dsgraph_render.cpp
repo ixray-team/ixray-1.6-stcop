@@ -301,10 +301,6 @@ void		sort_tlist_mat
 
 void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 {
-
-	//PIX_EVENT(r_dsgraph_render_graph);
-	Device.Statistic->RenderDUMP.Begin		();
-
 	// **************************************************** NORMAL
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
@@ -493,8 +489,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 		matVS.clear				();
 		if(_clear) vs.clear		();
 	}
-
-	Device.Statistic->RenderDUMP.End	();
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -9,46 +9,49 @@ void CLevel::ProcessCompressedUpdate(NET_Packet& P, u8 const compress_type)
 	NET_Packet	uncompressed_packet;
 	u16 next_size;
 	P.r_u16(next_size);
-	Device.Statistic->netClientCompressor.Begin();
-	while (next_size)
 	{
-		if (compress_type & eto_ppmd_compression)
+		SCOPE_EVENT_NAME_GROUP("Network compressor", "Game");
+		while (next_size)
 		{
-			R_ASSERT(m_trained_stream);			
-			uncompressed_packet.B.count = ppmd_trained_decompress(
-				uncompressed_packet.B.data,
-				sizeof(uncompressed_packet.B.data),
-				P.B.data + P.r_tell(),
-				next_size,
-				m_trained_stream
-			);
-		} else if (compress_type & eto_lzo_compression)
-		{
-			R_ASSERT(m_lzo_dictionary.data);
-			uncompressed_packet.B.count = sizeof(uncompressed_packet.B.data);
-			lzo_decompress_dict(
-				P.B.data + P.r_tell(),
-				next_size,
-				uncompressed_packet.B.data,
-				(lzo_uint*)&uncompressed_packet.B.count,
-				m_lzo_working_memory,
-				m_lzo_dictionary.data,
-				m_lzo_dictionary.size
-			);
-		} else
-		{
-			NODEFAULT;
-		}
-		
-		VERIFY2(uncompressed_packet.B.count <= sizeof(uncompressed_packet.B.data),
-			"stack owerflow after decompressing");
+			if (compress_type & eto_ppmd_compression)
+			{
+				R_ASSERT(m_trained_stream);
+				uncompressed_packet.B.count = ppmd_trained_decompress(
+					uncompressed_packet.B.data,
+					sizeof(uncompressed_packet.B.data),
+					P.B.data + P.r_tell(),
+					next_size,
+					m_trained_stream
+				);
+			}
+			else if (compress_type & eto_lzo_compression)
+			{
+				R_ASSERT(m_lzo_dictionary.data);
+				uncompressed_packet.B.count = sizeof(uncompressed_packet.B.data);
+				lzo_decompress_dict(
+					P.B.data + P.r_tell(),
+					next_size,
+					uncompressed_packet.B.data,
+					(lzo_uint*)&uncompressed_packet.B.count,
+					m_lzo_working_memory,
+					m_lzo_dictionary.data,
+					m_lzo_dictionary.size
+				);
+			}
+			else
+			{
+				NODEFAULT;
+			}
 
-		P.r_seek(P.r_tell() + next_size);
-		uncompressed_packet.r_seek(0);
-		Objects.net_Import(&uncompressed_packet);
-		P.r_u16(next_size);
+			VERIFY2(uncompressed_packet.B.count <= sizeof(uncompressed_packet.B.data),
+				"stack owerflow after decompressing");
+
+			P.r_seek(P.r_tell() + next_size);
+			uncompressed_packet.r_seek(0);
+			Objects.net_Import(&uncompressed_packet);
+			P.r_u16(next_size);
+		}
 	}
-	Device.Statistic->netClientCompressor.End();
 
 	if (OnClient()) UpdateDeltaUpd(timeServer());
 	IClientStatistic pStat = Level().GetStatistic();

@@ -113,7 +113,6 @@ void	CObjectList::SingleUpdate	(CObject* O)
 	if (O->H_Parent())
 		SingleUpdate			(O->H_Parent());
 
-	Device.Statistic->UpdateClient_updated	++;
 	O->dwFrame_UpdateCL			= Device.dwFrame;
 
 //	Msg							("[%d][0x%08x]IAmNotACrowAnyMore (CObjectList::SingleUpdate)", Device.dwFrame, dynamic_cast<void*>(O));
@@ -192,9 +191,6 @@ void CObjectList::Update		(bool bForce)
 		// Clients
 		if (Device.fTimeDelta>EPS_S || bForce)			
 		{
-			// Select Crow-Mode
-			Device.Statistic->UpdateClient_updated	= 0;
-
 			Objects& crows				= m_crows[0];
 
 			{
@@ -224,7 +220,6 @@ void CObjectList::Update		(bool bForce)
 #	endif // ifdef DEBUG
 #endif
 
-			Device.Statistic->UpdateClient_crows	= (u32)crows.size	();
 			Objects* workload			= 0;
 			if (!psDeviceFlags.test(rsDisableObjectsAsCrows))	
 				workload				= &crows;
@@ -233,27 +228,24 @@ void CObjectList::Update		(bool bForce)
 				clear_crow_vec			(crows);
 			}
 
-			Device.Statistic->UpdateClient.Begin	();
-			Device.Statistic->UpdateClient_active	= (u32)objects_active.size();
-			Device.Statistic->UpdateClient_total	= (u32)(objects_active.size() + objects_sleeping.size());
+			{
+				SCOPE_EVENT_NAME_GROUP("Client", "Engine");
+				size_t const objects_count = workload->size();
+				CObject** objects = (CObject**)_alloca(objects_count * sizeof(CObject*));
+				std::copy(workload->begin(), workload->end(), objects);
 
-			size_t const objects_count = workload->size();
-			CObject** objects			= (CObject**)_alloca(objects_count*sizeof(CObject*));
-			std::copy					( workload->begin(), workload->end(), objects );
+				crows.clear();
 
-			crows.clear();
+				CObject** b = objects;
+				CObject** e = objects + objects_count;
+				for (CObject** i = b; i != e; ++i) {
+					(*i)->IAmNotACrowAnyMore();
+					(*i)->dwFrame_AsCrow = u32(-1);
+				}
 
-			CObject** b					= objects;
-			CObject** e					= objects + objects_count;
-			for (CObject** i = b; i != e; ++i) {
-				(*i)->IAmNotACrowAnyMore();
-				(*i)->dwFrame_AsCrow	= u32(-1);
+				for (CObject** i = b; i != e; ++i)
+					SingleUpdate(*i);
 			}
-
-			for (CObject** i = b; i != e; ++i)
-				SingleUpdate			(*i);
-
-			Device.Statistic->UpdateClient.End		();
 		}
 	}
 

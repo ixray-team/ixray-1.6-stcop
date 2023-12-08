@@ -269,24 +269,8 @@ void CPHWorld::SetGravity(float g)
 
 void CPHWorld::OnFrame()
 {
-	// Msg									("------------- physics: %d / %d",u32(Device.dwFrame),u32(m_steps_num));
-	//просчитать полет пуль
-	/*
-	Device.Statistic->TEST0.Begin		();
-	Level().BulletManager().Update		();
-	Device.Statistic->TEST0.End			();
-	*/
-#ifdef DEBUG 
-	//DBG_DrawFrameStart();
-	//DBG_DrawStatBeforeFrameStep();
-#endif
-	Device().StatPhysics()->Physics.Begin		();
-	FrameStep							(Device().fTimeDelta);
-	Device().StatPhysics()->Physics.End		();
-#ifdef DEBUG
-	//DBG_DrawStatAfterFrameStep();
-
-#endif
+	SCOPE_EVENT_NAME_GROUP("Physics", "Engine");
+	FrameStep(Device().fTimeDelta);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -319,25 +303,23 @@ void CPHWorld::Step()
 
 	++m_steps_num;
 	++m_steps_short_num;
-	Device().StatPhysics()->ph_collision.Begin	();
 
-
-	for(i_object=m_objects.begin();m_objects.end() != i_object;)
 	{
-		CPHObject* obj=(*i_object);
+
+		SCOPE_EVENT_NAME_GROUP("Collision", "Physics");
+		for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+		{
+			CPHObject* obj = (*i_object);
 #ifdef	DEBUG
-		debug_output().DBG_ObjBeforeCollision( obj );
+			debug_output().DBG_ObjBeforeCollision(obj);
 #endif
-		obj->Collide();
+			obj->Collide();
 #ifdef	DEBUG
-		debug_output().DBG_ObjAfterCollision( obj );
+			debug_output().DBG_ObjAfterCollision(obj);
 #endif
-		++i_object;
+			++i_object;
+		}
 	}
-
-
-
-	Device().StatPhysics()->ph_collision.End	();
 
 #ifdef DEBUG
 	for(i_object=m_objects.begin();m_objects.end() != i_object;)
@@ -371,8 +353,6 @@ void CPHWorld::Step()
 		++i_update_object;
 		obj->PhTune(fixed_step);
 	}
-
-	Device().StatPhysics()->ph_core.Begin		();
 
 #ifdef DEBUG
 	debug_output().dbg_bodies_num()=0;
@@ -409,10 +389,6 @@ void CPHWorld::Step()
 		debug_output().DBG_ObjAfterStep( obj );
 #endif
 	}
-
-	Device().StatPhysics()->ph_core.End		();
-
-
 
 	for(i_object=m_objects.begin();m_objects.end() != i_object;)
 	{

@@ -245,8 +245,8 @@ void CRender::Render		()
 	//******* Z-prefill calc - DEFERRER RENDERER
 	if (ps_r2_ls_flags.test(R2FLAG_ZFILL))		
 	{
+		SCOPE_EVENT_NAME_GROUP("Depth prefill", "Render");
 		PIX_EVENT(DEFER_Z_FILL);
-		Device.Statistic->RenderCALC.Begin			();
 		float		z_distance	= ps_r2_zfill		;
 		Fmatrix		m_zfill, m_project				;
 		m_project.build_projection	(
@@ -259,7 +259,6 @@ void CRender::Render		()
 		phase										= PHASE_SMAP;
 		render_main									(m_zfill,false, true)	;
 		r_pmask										(true,false);	// disable priority "1"
-		Device.Statistic->RenderCALC.End				( )			;
 
 		// flush
 		Target->phase_scene_prepare					();
@@ -274,9 +273,8 @@ void CRender::Render		()
 
 	//*******
 	// Sync point
-	Device.Statistic->RenderDUMP_Wait_S.Begin	();
-	if (1)
 	{
+		SCOPE_EVENT_NAME_GROUP("Sync point", "Render");
 		CTimer	T;							T.Start	();
 		BOOL	result						= FALSE;
 		HRESULT	hr							= S_FALSE;
@@ -290,22 +288,22 @@ void CRender::Render		()
 			}
 		}
 	}
-	Device.Statistic->RenderDUMP_Wait_S.End		();
 	q_sync_count								= (q_sync_count+1) % 2;
 	//CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 	CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
 
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
-	Device.Statistic->RenderCALC.Begin			();
-	r_pmask										(true,false,true);	// enable priority "0",+ capture wmarks
-	if (bSUN)									set_Recorder	(&main_coarse_structure);
-	else										set_Recorder	(NULL);
-	phase										= PHASE_NORMAL;
-	render_main									(Device.mFullTransform,true, !ps_r2_ls_flags.test(R2FLAG_ZFILL));
-	set_Recorder								(NULL);
-	r_pmask										(true,false);	// disable priority "1"
-	Device.Statistic->RenderCALC.End			();
+	{
+		SCOPE_EVENT_NAME_GROUP("Deferred render", "Render");
+		r_pmask(true, false, true);	// enable priority "0",+ capture wmarks
+		if (bSUN)									set_Recorder(&main_coarse_structure);
+		else										set_Recorder(NULL);
+		phase = PHASE_NORMAL;
+		render_main(Device.mFullTransform, true, !ps_r2_ls_flags.test(R2FLAG_ZFILL));
+		set_Recorder(NULL);
+		r_pmask(true, false);	// disable priority "1"
+	}
 
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;

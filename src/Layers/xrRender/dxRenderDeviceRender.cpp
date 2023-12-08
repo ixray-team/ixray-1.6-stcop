@@ -155,7 +155,6 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 	m_Gamma.Update				();
 	Resources->OnDeviceCreate	(shName);
 	::Render->create			();
-	Device.Statistic->OnDeviceCreate	();
 
 //#ifndef DEDICATED_SERVER
 	if (!g_dedicated_server)
@@ -183,26 +182,27 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	Resources = xr_new<CResourceManager>();
 
 #ifdef DEBUG_DRAW
-	Device.AddUICommand("dxDebugRenderer", 100, []()
+	Device.AddUICommand("dxDebugRenderer", 1, []()
 	{
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty())
 			return;
 
+		constexpr auto DebugFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 		ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 		ImGui::SetNextWindowBgAlpha(0.0f);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		ImGui::Begin("DebugRender", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-		
-		ImDrawList& CmdList = *ImGui::GetWindowDrawList();
-		for (const auto& Line : DebugRenderImpl.m_lines) {
-			CmdList.AddLine(
-				ImVec2(Line.first.p.x, Line.first.p.y),
-				ImVec2(Line.second.p.x, Line.second.p.y), 
-				Line.first.color
-			);
+		if (ImGui::Begin("DebugRender", nullptr, DebugFlags)) {
+			ImDrawList& CmdList = *ImGui::GetWindowDrawList();
+			for (const auto& Line : DebugRenderImpl.m_lines) {
+				CmdList.AddLine(
+					ImVec2(Line.first.p.x, Line.first.p.y),
+					ImVec2(Line.second.p.x, Line.second.p.y),
+					Line.first.color
+				);
+			}
 		}
 
 		ImGui::End();

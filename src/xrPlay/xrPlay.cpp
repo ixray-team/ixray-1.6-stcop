@@ -75,6 +75,9 @@ int APIENTRY WinMain
 	// Title window
 	RegisterWindowClass(hInstance, nCmdShow);
 
+	Profile::Init();
+	Profile::RegisterThread("Main thread");
+
 	EngineLoadStage1(lpCmdLine);
 
 	g_pGPU = new CNvReader();
@@ -133,6 +136,9 @@ int APIENTRY WinMain
 	// Delete application presence mutex
 	CloseHandle(hCheckPresenceMutex);
 #endif
+
+	Profile::UnregisterThread();
+	Profile::Shutdown();
 
 	return (0);
 }

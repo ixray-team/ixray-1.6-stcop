@@ -535,9 +535,10 @@ void CLevel::OnFrame()
 	else								psDeviceFlags.set(rsDisableObjectsAsCrows, false);
 
 	// commit events from bullet manager from prev-frame
-	Device.Statistic->TEST0.Begin();
-	BulletManager().CommitEvents();
-	Device.Statistic->TEST0.End();
+	{
+		SCOPE_EVENT_NAME_GROUP("Bullet events", "Game");
+		BulletManager().CommitEvents();
+	}
 
 	// Client receive
 	if (net_isDisconnected())
@@ -555,11 +556,8 @@ void CLevel::OnFrame()
 	}
 	else {
 
-		Device.Statistic->netClient1.Begin();
-
+		SCOPE_EVENT_NAME_GROUP("Client receive", "Game");
 		ClientReceive();
-
-		Device.Statistic->netClient1.End();
 	}
 
 	ProcessGameEvents();
@@ -681,9 +679,10 @@ void CLevel::OnFrame()
 	m_ph_commander_scripts->update();
 
 	//  
-	Device.Statistic->TEST0.Begin();
-	BulletManager().CommitRenderSet();
-	Device.Statistic->TEST0.End();
+	{
+		SCOPE_EVENT_NAME_GROUP("Bullet commit render set", "Game");
+		BulletManager().CommitRenderSet();
+	}
 
 	// update static sounds
 	if (g_mt_config.test(mtLevelSounds))
@@ -831,11 +830,11 @@ void CLevel::OnRender()
 	void renderAiMap();
 	renderAiMap();
 #ifdef DEBUG
-	if (bDebug) {
-		DBG().draw_object_info				();
-		DBG().draw_text						();
-		DBG().draw_level_info				();
-	}
+#ifdef _DEBUG
+	DBG().draw_object_info();
+	DBG().draw_text();
+	DBG().draw_level_info();
+#endif
 
 	debug_renderer().render					();
 	

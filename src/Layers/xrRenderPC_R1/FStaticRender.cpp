@@ -351,7 +351,7 @@ ICF bool			pred_sp_sort		(ISpatial* _1, ISpatial* _2)
 
 void CRender::Calculate				()
 {
-	Device.Statistic->RenderCALC.Begin();
+	SCOPE_EVENT_NAME_GROUP("Calculate", "Render");
 
 	// Transfer to global space to avoid deep pointer access
 	IRender_Target* T				=	getTarget	();
@@ -544,9 +544,6 @@ void CRender::Calculate				()
 		L_Projector->calculate								();
 		*/
 	}
-
-	// End calc
-	Device.Statistic->RenderCALC.End	();
 }
 
 void	CRender::rmNear		()
@@ -579,7 +576,7 @@ void	CRender::Render		()
 	}
 
 	g_r											= 1;
-	Device.Statistic->RenderDUMP.Begin();
+	SCOPE_EVENT_NAME_GROUP("Render", "Render");
 	// Begin
 	Target->Begin								();
 	o.vis_intersect								= FALSE			;
@@ -630,8 +627,6 @@ void	CRender::Render		()
 	Target->End									();
 	if (L_Projector) L_Projector->finalize		();
 
-	// HUD
-	Device.Statistic->RenderDUMP.End	();
 }
 
 void	CRender::ApplyBlur4		(FVF::TL4uv* pv, u32 w, u32 h, float k)

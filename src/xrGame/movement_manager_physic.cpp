@@ -274,7 +274,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 //	Msg					("[%6d][%s] curr_tp=%d",Device.dwFrame,*object().cName(),detail().m_current_travel_point);
 
 	// Физика устанавливает новую позицию
-	Device.Statistic->Physics.Begin	();
+
 
 	// получить физ. объекты в радиусе
 	m_nearest_objects.clear();
@@ -349,7 +349,5 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 		}
 	}
 	
-	Device.Statistic->Physics.End	();
-
 	STOP_PROFILE
 }

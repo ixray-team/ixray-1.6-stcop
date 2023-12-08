@@ -185,23 +185,6 @@ void		CDetailManager::cache_Decompress(Slot* S)
 			float		r_u,r_v,r_range;
 			for (u32 tid=0; tid<triCount; tid++)
 			{
-#ifdef _EDITOR
-				Fvector verts[3];
-				SBoxPickInfo& I=pinf[tid];
-				for (int k=0; k<(int)I.inf.size(); k++){
-					VERIFY(I.s_obj);
-RDEVICE.Statistic->TEST0.Begin	();
-					I.e_obj->GetFaceWorld(I.s_obj->_Transform(),I.e_mesh,I.inf[k].id,verts);
-RDEVICE.Statistic->TEST0.End		();
-					if (CDB::TestRayTri(Item_P,dir,verts,r_u,r_v,r_range,TRUE))
-					{
-						if (r_range>=0)	{
-							float y_test	= Item_P.y - r_range;
-							if (y_test>y)	y = y_test;
-						}
-					}
-				}
-#else
 				CDB::TRI&	T		= tris[xrc.r_begin()[tid].id];
 				SGameMtl* mtl		= GMLib.GetMaterialByIdx(T.material);
 				if(mtl->Flags.test(SGameMtl::flPassable))	
@@ -215,7 +198,6 @@ RDEVICE.Statistic->TEST0.End		();
 						if (y_test>y)	y = y_test;
 					}
 				}
-#endif
 			}
 			if (y<D.vis.box.min.y)			continue;
 			Item_P.y	= y;

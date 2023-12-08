@@ -417,56 +417,57 @@ void CSheduler::Switch				()
 */
 void CSheduler::Update				()
 {
-	R_ASSERT						(Device.Statistic);
-	// Initialize
-	Device.Statistic->Sheduler.Begin();
-	cycles_start					= CPU::QPC			();
-	cycles_limit					= CPU::qpc_freq * u64 (iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
-	internal_Registration			();
-	g_bSheduleInProgress			= TRUE;
+	PROFILE_BEGIN_FRAME("Scheduler frame");
+	{
+		SCOPE_EVENT_NAME_GROUP("Scheduler", "Engine");
+
+		cycles_start = CPU::QPC();
+		cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
+		internal_Registration();
+		g_bSheduleInProgress = TRUE;
 
 #ifdef DEBUG_SCHEDULER
-	Msg								("SCHEDULER: PROCESS STEP %d",Device.dwFrame);
+		Msg("SCHEDULER: PROCESS STEP %d", Device.dwFrame);
 #endif // DEBUG_SCHEDULER
-	// Realtime priority
-	m_processing_now				= true;
-	u32	dwTime						= Device.dwTimeGlobal;
-	for (u32 it=0; it<ItemsRT.size(); it++)
-	{
-		Item&	T					= ItemsRT[it];
-		R_ASSERT					(T.Object);
+		// Realtime priority
+		m_processing_now = true;
+		u32	dwTime = Device.dwTimeGlobal;
+		for (u32 it = 0; it < ItemsRT.size(); it++)
+		{
+			Item& T = ItemsRT[it];
+			R_ASSERT(T.Object);
 #ifdef DEBUG_SCHEDULER
-		Msg							("SCHEDULER: process step [%s][%x][true]",*T.Object->shedule_Name(),T.Object);
+			Msg("SCHEDULER: process step [%s][%x][true]", *T.Object->shedule_Name(), T.Object);
 #endif // DEBUG_SCHEDULER
-		if(!T.Object->shedule_Needed()){
+			if (!T.Object->shedule_Needed()) {
 #ifdef DEBUG_SCHEDULER
-			Msg						("SCHEDULER: process unregister [%s][%x][%s]",*T.Object->shedule_Name(),T.Object,"false");
+				Msg("SCHEDULER: process unregister [%s][%x][%s]", *T.Object->shedule_Name(), T.Object, "false");
 #endif // DEBUG_SCHEDULER
-			T.dwTimeOfLastExecute	= dwTime;
-			continue;
+				T.dwTimeOfLastExecute = dwTime;
+				continue;
+			}
+
+			u32	Elapsed = dwTime - T.dwTimeOfLastExecute;
+#ifdef DEBUG
+			VERIFY(T.Object->dbg_startframe != Device.dwFrame);
+			T.Object->dbg_startframe = Device.dwFrame;
+#endif
+			T.Object->shedule_Update(Elapsed);
+			T.dwTimeOfLastExecute = dwTime;
 		}
 
-		u32	Elapsed					= dwTime-T.dwTimeOfLastExecute;
-#ifdef DEBUG
-		VERIFY						(T.Object->dbg_startframe != Device.dwFrame);
-		T.Object->dbg_startframe	= Device.dwFrame;
-#endif
-		T.Object->shedule_Update	(Elapsed);
-		T.dwTimeOfLastExecute		= dwTime;
-	}
-
-	// Normal (sheduled)
-	ProcessStep						();
-	m_processing_now				= false;
+		// Normal (sheduled)
+		ProcessStep();
+		m_processing_now = false;
 #ifdef DEBUG_SCHEDULER
-	Msg								("SCHEDULER: PROCESS STEP FINISHED %d",Device.dwFrame);
+		Msg("SCHEDULER: PROCESS STEP FINISHED %d", Device.dwFrame);
 #endif // DEBUG_SCHEDULER
-	clamp							(psShedulerTarget,3.f,psShedulerMax);
-	psShedulerCurrent				= 0.9f*psShedulerCurrent + 0.1f*psShedulerTarget;
-	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
+		clamp(psShedulerTarget, 3.f, psShedulerMax);
+		psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;
 
-	// Finalize
-	g_bSheduleInProgress			= FALSE;
-	internal_Registration			();
-	Device.Statistic->Sheduler.End	();
+		// Finalize
+		g_bSheduleInProgress = FALSE;
+		internal_Registration();
+	}
+	PROFILE_END_FRAME();
 }

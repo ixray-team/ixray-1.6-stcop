@@ -458,7 +458,8 @@ void CInput::OnAppDeactivate	(void)
 
 void CInput::OnFrame			(void)
 {
-	RDEVICE.Statistic->Input.Begin();
+	SCOPE_EVENT_NAME_GROUP("Input", "Engine");
+
 	dwCurTime = RDEVICE.TimerAsync_MMT();
 	if (KBState[DIK_LALT] || Device.IsCapturingInputs()) {
 		NoInputUpdate();
@@ -466,8 +467,6 @@ void CInput::OnFrame			(void)
 		MouseUpdate();
 		KeyboardUpdate();
 	}
-
-	RDEVICE.Statistic->Input.End();
 }
 
 IInputReceiver*	 CInput::CurrentIR()

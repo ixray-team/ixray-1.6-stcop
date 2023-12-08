@@ -189,9 +189,13 @@ bool g_initialize_cpu_called = false;
 using SetThreadDescriptionDesc = HRESULT(WINAPI*)(HANDLE, PCWSTR);
 static SetThreadDescriptionDesc SetThreadDescriptionProc;
 
+u32 MainThreadId = 0;
+
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
+	MainThreadId = GetThreadId(GetCurrentThread());
+
 	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
 		CPU::ID.modelName, CPU::ID.vendor,
 		CPU::ID.family,CPU::ID.model,CPU::ID.stepping,
@@ -358,15 +362,19 @@ struct	THREAD_STARTUP
 };
 void	__cdecl			thread_entry	(void*	_params )	{
 	// initialize
-	THREAD_STARTUP*		startup	= (THREAD_STARTUP*)_params	;
-	thread_name			(startup->name);
-	thread_t*			entry	= startup->entry;
-	void*				arglist	= startup->args;
-	xr_delete			(startup);
-	_initialize_cpu_thread		();
+	THREAD_STARTUP* startup = (THREAD_STARTUP*)_params;
+	thread_name(startup->name);
+	Profile::RegisterThread(startup->name);
+
+	thread_t* entry = startup->entry;
+	void* arglist = startup->args;
+	xr_delete(startup);
+	_initialize_cpu_thread();
 
 	// call
-	entry				(arglist);
+
+	entry(arglist);
+	Profile::UnregisterThread();
 }
 
 void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
@@ -378,6 +386,11 @@ void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* argl
 	startup->name		= (char*)name;
 	startup->args		= arglist;
 	_beginthread		(thread_entry,stack,startup);
+}
+
+bool XRCORE_API IsMainThread()
+{
+	return MainThreadId == GetThreadId(GetCurrentThread());
 }
 
 void spline1	( float t, Fvector *p, Fvector *ret )

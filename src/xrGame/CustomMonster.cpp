@@ -355,17 +355,16 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	} else {
 		// here is monster AI call
 		m_fTimeUpdateDelta				= dt;
-		Device.Statistic->AI_Think.Begin	();
-		Device.Statistic->TEST1.Begin();
-		if (GetScriptControl())
-			ProcessScripts();
-		else {
-			if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
-				Think					();
+		{
+			SCOPE_EVENT_NAME_GROUP("AI Think", "Game");
+			if (GetScriptControl())
+				ProcessScripts();
+			else {
+				if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
+					Think();
+			}
+			m_dwLastUpdateTime = Device.dwTimeGlobal;
 		}
-		m_dwLastUpdateTime				= Device.dwTimeGlobal;
-		Device.Statistic->TEST1.End();
-		Device.Statistic->AI_Think.End	();
 
 		// Look and action streams
 		float							temp = conditions().health();
@@ -637,25 +636,25 @@ void CCustomMonster::eye_pp_s1			()
 #endif
 	}
 	// Standart visibility
-	Device.Statistic->AI_Vis_Query.Begin		();
-	Fmatrix									mProject,mFull,mView;
-	mView.build_camera_dir					(eye_matrix.c,eye_matrix.k,eye_matrix.j);
-	VERIFY									(_valid(eye_matrix));
-	mProject.build_projection				(deg2rad(new_fov),1,0.1f,new_range);
-	mFull.mul								(mProject,mView);
-	feel_vision_query						(mFull,eye_matrix.c);
-	Device.Statistic->AI_Vis_Query.End		();
+	{
+		SCOPE_EVENT_NAME_GROUP("AI visibility query", "Game");
+		Fmatrix									mProject, mFull, mView;
+		mView.build_camera_dir(eye_matrix.c, eye_matrix.k, eye_matrix.j);
+		VERIFY(_valid(eye_matrix));
+		mProject.build_projection(deg2rad(new_fov), 1, 0.1f, new_range);
+		mFull.mul(mProject, mView);
+		feel_vision_query(mFull, eye_matrix.c);
+	}
 }
 
 void CCustomMonster::eye_pp_s2				( )
 {
 	// Tracing
-	Device.Statistic->AI_Vis_RayTests.Begin	();
+	SCOPE_EVENT_NAME_GROUP("AI visibility ray test", "Game");
 	u32 dwTime			= Level().timeServer();
 	u32 dwDT			= dwTime-eye_pp_timestamp;
 	eye_pp_timestamp	= dwTime;
 	feel_vision_update						(this,eye_matrix.c,float(dwDT)/1000.f,memory().visual().transparency_threshold());
-	Device.Statistic->AI_Vis_RayTests.End	();
 }
 
 void CCustomMonster::Exec_Visibility	( )
@@ -663,7 +662,7 @@ void CCustomMonster::Exec_Visibility	( )
 	//if (0==Sector())				return;
 	if (!g_Alive())					return;
 
-	Device.Statistic->AI_Vis.Begin	();
+	SCOPE_EVENT_NAME_GROUP("AI visibility", "Game");
 	switch (eye_pp_stage%2)	
 	{
 	case 0:	
@@ -672,7 +671,6 @@ void CCustomMonster::Exec_Visibility	( )
 	case 1:	eye_pp_s2();			break;
 	}
 	++eye_pp_stage					;
-	Device.Statistic->AI_Vis.End		();
 }
 
 void CCustomMonster::UpdateCamera()

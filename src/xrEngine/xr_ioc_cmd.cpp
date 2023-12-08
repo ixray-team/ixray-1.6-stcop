@@ -646,6 +646,8 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "ui_dbg_draw", &Engine.External.EditorStates[(int)EditorUI::DebugDraw]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_vars", &Engine.External.EditorStates[(int)EditorUI::CmdVars]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
+	CMD2(CCC_Boolean, "ui_dbg_stats", &Engine.External.EditorStates[(int)EditorUI::Statistics]);
+	CMD2(CCC_Boolean, "ui_dbg_profiler", &Engine.External.EditorStates[(int)EditorUI::Profiler]);
 
 	// General
 	CMD1(CCC_Help,		"help"					);
@@ -737,13 +739,6 @@ void CCC_Register()
 	CMD4(CCC_Integer,	"snd_cache_size",		&psSoundCacheSizeMB,4,32		);
 
 #ifdef DEBUG
-	CMD3(CCC_Mask,		"snd_stats",			&g_stats_flags,		st_sound	);
-	CMD3(CCC_Mask,		"snd_stats_min_dist",	&g_stats_flags,		st_sound_min_dist );
-	CMD3(CCC_Mask,		"snd_stats_max_dist",	&g_stats_flags,		st_sound_max_dist );
-	CMD3(CCC_Mask,		"snd_stats_ai_dist",	&g_stats_flags,		st_sound_ai_dist );
-	CMD3(CCC_Mask,		"snd_stats_info_name",	&g_stats_flags,		st_sound_info_name );
-	CMD3(CCC_Mask,		"snd_stats_info_object",&g_stats_flags,		st_sound_info_object );
-
 	CMD4(CCC_Integer,	"error_line_count",		&g_ErrorLineCount,	6,	1024	);
 #endif // DEBUG
 

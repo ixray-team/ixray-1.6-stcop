@@ -51,4 +51,6 @@ extern XRCORE_API	void	thread_spawn			(
 	void*		arglist 
 	);
 
+extern bool XRCORE_API IsMainThread();
+
 #endif //__XR_MATH_H__
