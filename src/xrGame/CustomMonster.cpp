@@ -636,7 +636,6 @@ void CCustomMonster::eye_pp_s1			()
 	}
 	// Standart visibility
 	{
-		SCOPE_EVENT_NAME_GROUP("AI visibility query", "Game");
 		Fmatrix									mProject, mFull, mView;
 		mView.build_camera_dir(eye_matrix.c, eye_matrix.k, eye_matrix.j);
 		VERIFY(_valid(eye_matrix));
@@ -649,7 +648,6 @@ void CCustomMonster::eye_pp_s1			()
 void CCustomMonster::eye_pp_s2				( )
 {
 	// Tracing
-	SCOPE_EVENT_NAME_GROUP("AI visibility ray test", "Game");
 	u32 dwTime			= Level().timeServer();
 	u32 dwDT			= dwTime-eye_pp_timestamp;
 	eye_pp_timestamp	= dwTime;
@@ -661,7 +659,6 @@ void CCustomMonster::Exec_Visibility	( )
 	//if (0==Sector())				return;
 	if (!g_Alive())					return;
 
-	SCOPE_EVENT_NAME_GROUP("AI visibility", "Game");
 	switch (eye_pp_stage%2)	
 	{
 	case 0:	
