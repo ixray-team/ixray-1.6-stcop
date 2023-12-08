@@ -64,17 +64,10 @@ void RenderUI()
 			});
 
 			for (const auto& [Key, Entry] : Events) {
-				string64 StringPadding = {};
-				char* StringPtr = StringPadding;
-				for (int i = 0; i < Entry.Counter; i++) {
-					*StringPtr++ = ' ';
-					*StringPtr++ = ' ';
-				}
-
 				ImGui::SetCursorPosX(XOffset);
 				ImGui::SetCursorPosY(YOffset);
 				YOffset += TextPadding.y;
-				ImGui::Text("%s%s: %fms", StringPadding, Entry.Name, Entry.Time);
+				ImGui::Text("%s: %fms", Entry.Name, Entry.Time);
 			}
 		};
 
