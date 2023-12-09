@@ -56,7 +56,6 @@ public:
 	u16				raster_minor	;
 	caps_Raster		raster			;
 
-	u32				id_vendor		;
 	u32				id_device		;
 
 	BOOL			bStencil;			// stencil buffer present

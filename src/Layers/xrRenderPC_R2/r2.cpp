@@ -8,6 +8,7 @@
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/environment.h"
+#include "../../xrEngine/ICore_GPU.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -203,7 +204,7 @@ void					CRender::create					()
 	// if hardware support early stencil (>= GF 8xxx) stencil reset trick only
 	// slows down.
 	o.nvstencil			= FALSE;
-	if ((dxRenderDeviceRender::Instance().Caps.id_vendor==0x10DE)&&(dxRenderDeviceRender::Instance().Caps.id_device>=0x40))	
+	if (!g_pGPU->IsAMD)	
 	{
 		//o.nvstencil = HW.support	((D3DFORMAT)MAKEFOURCC('R','A','W','Z'), D3DRTYPE_SURFACE, 0);
 		//o.nvstencil = TRUE;
@@ -240,7 +241,7 @@ void					CRender::create					()
 	o.ssao_half_data	= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
 	o.ssao_hbao			= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
 	
-	if ((dxRenderDeviceRender::Instance().Caps.id_vendor==0x1002)&&(dxRenderDeviceRender::Instance().Caps.id_device<=0x72FF))	
+	if (false /* g_pGPU->IsAMD */)
 	{
 		o.ssao_opt_data = false;
 		o.ssao_hbao = false;

@@ -43,3 +43,16 @@ add_dependencies(xrEngine xrGame xrRender_R4)
 if(IXRAY_MP)
     add_dependencies(xrEngine xrGameSpy)
 endif()
+
+
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}amd_ags_x86.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}amd_ags_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+endif()

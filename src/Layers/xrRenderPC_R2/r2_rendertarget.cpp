@@ -12,6 +12,7 @@
 #include "blender_ssao.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
+#include "../../xrEngine/ICore_GPU.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
@@ -338,7 +339,7 @@ CRenderTarget::CRenderTarget		()
 			w = RCache.get_width();
 			h = RCache.get_height();
 		}
-		D3DFORMAT	fmt = dxRenderDeviceRender::Instance().Caps.id_vendor==0x10DE?D3DFMT_R32F:D3DFMT_R16F;
+		D3DFORMAT	fmt = !g_pGPU->IsAMD ? D3DFMT_R32F : D3DFMT_R16F;
 
 		rt_half_depth.create		(r2_RT_half_depth, w, h, fmt);
 		s_ssao.create				(b_ssao, "r2\\ssao");
