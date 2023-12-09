@@ -24,10 +24,10 @@ void RenderUI()
 			return;
 		}
 
-		static int SelectedThread = 0;
+		static u32 SelectedThread = 0;
 		const auto& Statistics = Profile::GetThreadStatistics(SelectedThread);
 		if (ImGui::BeginCombo("Select thread:", Statistics.Name.c_str())) {
-			for (size_t i = 0; i < Profile::GetThreadCount(); i++) {
+			for (u32 i = 0; i < Profile::GetThreadCount(); i++) {
 				if (ImGui::Selectable(Profile::GetThreadStatistics(i).Name.c_str(), i == SelectedThread)) {
 					SelectedThread = i;
 				}
@@ -120,8 +120,8 @@ void RenderUI()
 			}
 		};
 
-		u32 CursorX = (u32) ImGui::GetCursorPosX();
-		u32 CursorY = (u32) ImGui::GetCursorPosY();
+		float CursorX = ImGui::GetCursorPosX();
+		float CursorY = ImGui::GetCursorPosY();
 		DrawCategory("Engine", CursorX, CursorY);
 		CursorX += 300;
 		DrawCategory("Render", CursorX, CursorY);

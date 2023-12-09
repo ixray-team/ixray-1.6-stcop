@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "EngineProfiler.h"
 
 #define TIME_NOW() std::chrono::high_resolution_clock::now().time_since_epoch().count()
 
@@ -222,8 +223,8 @@ Profile::EndFrame()
 			for (const auto& Event : EngineProfiler->Statistics[i].Events) {
 				const double BeginDelta = ilerp((double)(EngineProfiler->Statistics[i].TimestampFrameBegin) * 0.001, (double)(EngineProfiler->Statistics[i].TimestampFrameEnd) * 0.001, (double)(Event.BeginTimestamp) * 0.001);
 				const double EndDelta = ilerp((double)(EngineProfiler->Statistics[i].TimestampFrameBegin) * 0.001, (double)(EngineProfiler->Statistics[i].TimestampFrameEnd) * 0.001, (double)(Event.EndTimestamp) * 0.001);
-				EngineProfiler->Statistics[i].BeginSmoothTimers[Event.GetHash()].Write(BeginDelta);
-				EngineProfiler->Statistics[i].EndSmoothTimers[Event.GetHash()].Write(EndDelta);
+				EngineProfiler->Statistics[i].BeginSmoothTimers[Event.GetHash()].Write((float)BeginDelta);
+				EngineProfiler->Statistics[i].EndSmoothTimers[Event.GetHash()].Write((float)EndDelta);
 			}
 
 			break;
