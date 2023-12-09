@@ -1,11 +1,7 @@
 #include "stdafx.h"
+#include <magic_enum/magic_enum.hpp>
 
 ENGINE_API CEngineExternal* g_pEngineExternal = nullptr;
-
-const char* getStringEEngineExternalUI(EEngineExternalUI);
-const char* getStringEEngineExternalPhysical(EEngineExternalPhysical);
-const char* getStringEEngineExternalGame(EEngineExternalGame);
-const char* getStringEEngineExternalRender(EEngineExternalRender);
 
 CEngineExternal::CEngineExternal()
 {
@@ -25,22 +21,22 @@ xr_string CEngineExternal::GetTitle() const {
 
 bool CEngineExternal::operator[](const EEngineExternalUI& ID) const
 {
-	return pOptions->r_bool("ui", getStringEEngineExternalUI(ID));
+	return pOptions->r_bool("ui", magic_enum::enum_name(ID).data());
 }
 
 bool CEngineExternal::operator[](const EEngineExternalPhysical& ID) const
 {
-	return pOptions->r_bool("physics", getStringEEngineExternalPhysical(ID));
+	return pOptions->r_bool("physics", magic_enum::enum_name(ID).data());
 }
 
 bool CEngineExternal::operator[](const EEngineExternalGame& ID) const
 {
-	return pOptions->r_bool("gameplay", getStringEEngineExternalGame(ID));
+	return pOptions->r_bool("gameplay", magic_enum::enum_name(ID).data());
 }
 
 bool CEngineExternal::operator[](const EEngineExternalRender& ID) const
 {
-	return pOptions->r_bool("render", getStringEEngineExternalRender(ID));
+	return pOptions->r_bool("render", magic_enum::enum_name(ID).data());
 }
 
 ENGINE_API CEngineExternal& EngineExternal()

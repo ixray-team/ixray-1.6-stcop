@@ -229,11 +229,11 @@ void CInput::KeyboardUpdate( )
 			old_KBState[i] = KBState[i];
 			if (Pressed)
 			{
-				cbStack.back()->IR_OnKeyboardPress(i);
+				cbStack.back()->IR_OnKeyboardPress((int)i);
 			} 
 			else 
 			{
-				cbStack.back()->IR_OnKeyboardRelease(i);
+				cbStack.back()->IR_OnKeyboardRelease((int)i);
 			}
 		}
 	}
@@ -331,7 +331,7 @@ void CInput::NoInputUpdate()
 		bool Pressed = !!KBState[i];
 		if (KBState[i] != old_KBState[i]) {
 			if (!Pressed) {
-				cbStack.back()->IR_OnKeyboardRelease(i);
+				cbStack.back()->IR_OnKeyboardRelease((int)i);
 			}
 
 			old_KBState[i] = KBState[i];
@@ -342,7 +342,7 @@ void CInput::NoInputUpdate()
 		bool Pressed = !!mouseState[i];
 		if (mouseState[i] != old_mouseState[i]) {
 			if (!Pressed) {
-				cbStack.back()->IR_OnMouseRelease(i);
+				cbStack.back()->IR_OnMouseRelease((int)i);
 			}
 
 			old_mouseState[i] = mouseState[i];
