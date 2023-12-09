@@ -298,6 +298,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
 				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
 				ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
+				ImGui::MenuItem("Statistics", nullptr, &States[static_cast<u8>(EditorUI::Statistics)]);
 				ImGui::EndMenu();
 			}
 
