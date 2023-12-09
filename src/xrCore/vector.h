@@ -234,6 +234,17 @@ IC bool			angle_lerp		(float& c, float t, float s, float dt)
 	return false;
 }
 
+inline auto lerp(auto min, auto max, auto t)
+{
+	return min + t * (max - min);
+} 
+
+template<typename T>
+static constexpr inline T ilerp(T a, T b, T value)
+{
+	return (value - a) / (b - a);
+}
+
 // Just lerp :)	expects normalized angles in range [0..2PI)
 ICF float		angle_lerp		(float A, float B, float f)
 {

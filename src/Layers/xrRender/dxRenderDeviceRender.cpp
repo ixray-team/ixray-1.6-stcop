@@ -385,7 +385,10 @@ void dxRenderDeviceRender::End()
 
 	RCache.OnFrameEnd	();
 
-	DoAsyncScreenshot();
+	{
+		SCOPE_EVENT_NAME_GROUP("Async screenshot", "Render");
+		DoAsyncScreenshot();
+	}
 
 #ifdef USE_DX11
 	ImGui_ImplDX11_NewFrame();
@@ -396,26 +399,33 @@ void dxRenderDeviceRender::End()
 	RDevice->SetRenderTarget(0, RSwapchainTarget);
 #endif
 
-	ImGui::NewFrame();
-	Device.DrawUI();
-	ImGui::Render();
+	{
+		SCOPE_EVENT_NAME_GROUP("ImGui draw", "Render");
+		ImGui::NewFrame();
+		Device.DrawUI();
+		ImGui::Render();
 
 #ifdef USE_DX11
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #else
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 #endif
+	}
 
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.m_lines.resize(0);
 #endif
 
+
+	{
+		SCOPE_EVENT_NAME_GROUP("GPU Wait", "Render");
 #ifdef USE_DX11
-	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+		RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
 #else
-	CHK_DX				(RDevice->EndScene());
-	RDevice->Present( NULL, NULL, NULL, NULL );
-#endif
+		CHK_DX(RDevice->EndScene());
+		RDevice->Present(NULL, NULL, NULL, NULL);
+#endif	
+	}
 }
 
 void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()

@@ -299,6 +299,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
 				ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
 				ImGui::MenuItem("Statistics", nullptr, &States[static_cast<u8>(EditorUI::Statistics)]);
+				ImGui::MenuItem("Profiler", nullptr, &States[static_cast<u8>(EditorUI::Profiler)]);
 				ImGui::EndMenu();
 			}
 

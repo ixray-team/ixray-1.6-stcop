@@ -316,6 +316,7 @@ void CRender::Render		()
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred part 0", "Render");
 		PIX_EVENT(DEFER_PART0_NO_SPLIT);
 		// level, DO NOT SPLIT
 		Target->phase_scene_begin				();
@@ -328,6 +329,8 @@ void CRender::Render		()
 	} 
 	else 
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred part 0 split", "Render");
+
 		PIX_EVENT(DEFER_PART0_SPLIT);
 		// level, SPLIT
 		Target->phase_scene_begin				();
@@ -341,6 +344,7 @@ void CRender::Render		()
 	LP_normal.clear								();
 	LP_pending.clear							();
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred test light", "Render");
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
 		// perform tests
 		size_t	count = 0;
@@ -382,6 +386,7 @@ void CRender::Render		()
    //******* Main render :: PART-1 (second)
 	if (split_the_scene_to_minimize_wait)	
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred part 1", "Render");
 		PIX_EVENT(DEFER_PART1_SPLIT);
 		
 		// level
@@ -409,6 +414,7 @@ void CRender::Render		()
 
 	// Update incremental shadowmap-visibility solver
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred flush occlusion", "Render");
 		PIX_EVENT(DEFER_FLUSH_OCCLUSION);
 		u32 it=0;
 		for (it=0; it<Lights_LastFrame.size(); it++)	{
@@ -426,6 +432,7 @@ void CRender::Render		()
 	//	TODO: DX10: Implement DX10 rain.
 	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred rain", "Render");
 		PIX_EVENT(DEFER_RAIN);
 		render_rain();
 	}
@@ -433,12 +440,14 @@ void CRender::Render		()
 	// Directional light - fucking sun
 	if (bSUN)	
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred sun cascades", "Render");
 		PIX_EVENT(DEFER_SUN);
 		RImplementation.stats.l_visible		++;
 		render_sun_cascades();
 	}
 
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred light self illum", "Render");
 		PIX_EVENT(DEFER_SELF_ILLUM);
 		Target->phase_accumulator			();
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
@@ -454,6 +463,7 @@ void CRender::Render		()
 
 	// Lighting, non dependant on OCCQ
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred light no occq", "Render");
 		PIX_EVENT(DEFER_LIGHT_NO_OCCQ);
 		Target->phase_accumulator				();
 		HOM.Disable								();
@@ -462,12 +472,14 @@ void CRender::Render		()
 
 	// Lighting, dependant on OCCQ
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred light occq", "Render");
 		PIX_EVENT(DEFER_LIGHT_OCCQ);
 		render_lights							(LP_pending);
 	}
 
 	// Postprocess
 	{
+		SCOPE_EVENT_NAME_GROUP("Deferred combine", "Render");
 		PIX_EVENT(DEFER_LIGHT_COMBINE);
 		Target->phase_combine					();
 	}
@@ -477,6 +489,7 @@ void CRender::Render		()
 
 void CRender::render_forward				()
 {
+	SCOPE_EVENT_NAME_GROUP("Forward", "Render");
 	VERIFY	(0==mapDistort.size());
 	RImplementation.o.distortion				= RImplementation.o.distortion_enabled;	// enable distorion
 

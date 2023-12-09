@@ -1,6 +1,8 @@
 #pragma once
 #include <bitset>
+#include <array>
 #include "../xrCore/_math.h"
+#include "../xrCore/_stl_extensions.h"
 
 #ifndef FUNCTION_SIGNATURE
 #if defined(__FUNCSIG__)
@@ -26,6 +28,30 @@ constexpr T HashValue(const char* String)
 
 	return Hash;
 }
+
+template<typename T, std::size_t Size>
+class RingBuffer
+{
+private:
+	std::size_t Position = 0;
+	std::array<T, Size> Buffer = {};
+
+public:
+	void Write(T Value)
+	{
+		Buffer[(Position++ % Size)] = Value;
+	}
+
+	T GetRMS() const 
+	{
+		T Value = 0;
+		for (const auto BufValue : Buffer) {
+			Value += BufValue;
+		}
+
+		return Value / Buffer.size();
+	}
+};
 
 namespace Profile
 {
@@ -57,6 +83,25 @@ namespace Profile
 		{
 			return Flags.test(static_cast<u8>(Test));
 		}
+
+		u64 GetHash() const
+		{
+			return HashValue<u64>(Name) ^ HashValue<u64>(Function) ^ Line;
+		}
+	};
+
+	struct ThreadStatistics
+	{
+		u64 Id = 0;
+		u64 StackLevels = 0;
+		u64 TimestampFrameBegin = 0;
+		u64 TimestampFrameEnd = 0;
+		xr_string Name;
+		xr_vector<Profile::TraceEvent> Events;
+
+		RingBuffer<float, 24> TotalTime;
+		xr_hash_map<u64, RingBuffer<float, 24>> BeginSmoothTimers;
+		xr_hash_map<u64, RingBuffer<float, 24>> EndSmoothTimers;
 	};
 
 	void XRCORE_API Init();
@@ -74,6 +119,7 @@ namespace Profile
 
 	u32 XRCORE_API GetThreadCount();
 	u32 XRCORE_API GetThisThreadId();
+	XRCORE_API const ThreadStatistics& GetThreadStatistics(u32 ThreadIndex);
 	XRCORE_API const xr_vector<TraceEvent>& GetEvents(u32 ThreadId);
 	XRCORE_API const xr_vector<TraceEvent>& GetEventsByIndex(u32 ThreadIndex);
 

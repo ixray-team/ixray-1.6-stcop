@@ -2,20 +2,10 @@
 
 #define TIME_NOW() std::chrono::high_resolution_clock::now().time_since_epoch().count()
 
-struct ThreadStatistics
-{
-	u64 Id = 0;
-	u64 StackLevels = 0;
-	u64 TimestampFrameBegin = 0;
-	u64 TimestampFrameEnd = 0;
-	xr_string Name;
-	xr_vector<Profile::TraceEvent> Events;
-};
-
 struct ProfilerState
 {
 	xrCriticalSection WriteMutex;
-	xr_vector<ThreadStatistics> Statistics;
+	xr_vector<Profile::ThreadStatistics> Statistics;
 };
 
 class ProfilerThreadState
@@ -102,7 +92,8 @@ public:
 	{
 		VERIFY2(TimestampFrameBegin != 0, "Call \"Profile::BeginFrame\" before calling this method!");
 		if (Color == 0) {
-			Color = color_rgba(Random.randI(50, 255), Random.randI(50, 255), Random.randI(50, 255), 255);
+			u32 Hash = HashValue<u32>(Name);
+			Color = Hash | 0x000000FF;
 		}
 
 		Profile::TraceEvent Event = {};
@@ -223,10 +214,18 @@ Profile::EndFrame()
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
 		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
 			VERIFY2(ThreadState.GetStackLevel() == 0, "Invalid stack (forgot to call \"Profile::EndEvent()\" somewhere?");
+			EngineProfiler->Statistics[i].TotalTime.Write(float(EngineProfiler->Statistics[i].TimestampFrameEnd - EngineProfiler->Statistics[i].TimestampFrameBegin) / 1000000.0f);
 			EngineProfiler->Statistics[i].Events = ThreadState.GetEvents();
 			EngineProfiler->Statistics[i].StackLevels = ThreadState.GetMaxStackLevel();
 			EngineProfiler->Statistics[i].TimestampFrameBegin = ThreadState.GetBeginFrameTimestamp();
 			EngineProfiler->Statistics[i].TimestampFrameEnd = ThreadState.GetEndFrameTimestamp();
+			for (const auto& Event : EngineProfiler->Statistics[i].Events) {
+				const double BeginDelta = ilerp((double)(EngineProfiler->Statistics[i].TimestampFrameBegin) * 0.001, (double)(EngineProfiler->Statistics[i].TimestampFrameEnd) * 0.001, (double)(Event.BeginTimestamp) * 0.001);
+				const double EndDelta = ilerp((double)(EngineProfiler->Statistics[i].TimestampFrameBegin) * 0.001, (double)(EngineProfiler->Statistics[i].TimestampFrameEnd) * 0.001, (double)(Event.EndTimestamp) * 0.001);
+				EngineProfiler->Statistics[i].BeginSmoothTimers[Event.GetHash()].Write(BeginDelta);
+				EngineProfiler->Statistics[i].EndSmoothTimers[Event.GetHash()].Write(EndDelta);
+			}
+
 			break;
 		}
 	}
@@ -269,4 +268,9 @@ Profile::GetEvents(u32 ThreadId)
 
 	return EngineProfiler->Statistics[0].Events;
 }
-;
+
+XRCORE_API const Profile::ThreadStatistics& 
+Profile::GetThreadStatistics(u32 ThreadIndex)
+{
+	return EngineProfiler->Statistics[ThreadIndex];
+}

@@ -13,7 +13,56 @@ void RenderUI()
 {
 	static bool FirstDraw = true;
 
-	Device.AddUICommand("Editor Weather Draw", 3, RenderUIWeather);
+	Device.AddUICommand("Editor Weather Draw", 2, RenderUIWeather);
+
+	Device.AddUICommand("Profiler", 2, []() {
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Profiler)])
+			return;
+
+		if (!ImGui::Begin("Profiler", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Profiler)])) {
+			ImGui::End();
+			return;
+		}
+
+		static int SelectedThread = 0;
+		const auto& Statistics = Profile::GetThreadStatistics(SelectedThread);
+		if (ImGui::BeginCombo("Select thread:", Statistics.Name.c_str())) {
+			for (size_t i = 0; i < Profile::GetThreadCount(); i++) {
+				if (ImGui::Selectable(Profile::GetThreadStatistics(i).Name.c_str(), i == SelectedThread)) {
+					SelectedThread = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		const ImVec2 LineSize = ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y / (Statistics.StackLevels));
+		const auto& Events = Statistics.Events;
+
+		auto WindowPosition = ImGui::GetWindowPos();
+		auto& DrawList = *ImGui::GetWindowDrawList();
+		WindowPosition.y += 70;
+#if 0
+		for (const auto& Event : Events) {
+			double xBeginT = ilerp((double)(Statistics.TimestampFrameBegin / 1000), (double)(Statistics.TimestampFrameEnd / 1000), (double)(Event.BeginTimestamp / 1000));
+			double xEndT = ilerp((double)(Statistics.TimestampFrameBegin / 1000), (double)(Statistics.TimestampFrameEnd / 1000), (double)(Event.EndTimestamp / 1000));
+			ImVec2 Min = ImVec2(WindowPosition.x + LineSize.x * xBeginT, WindowPosition.y + LineSize.y * Event.StackLevel);
+			ImVec2 Max = ImVec2(WindowPosition.x + LineSize.x * xEndT, WindowPosition.y + LineSize.y * (Event.StackLevel + 1));
+			DrawList.AddRectFilled(Min, Max, Event.Color);
+		}
+#else
+		for (const auto& Event : Events) {
+			float BeginT = Statistics.BeginSmoothTimers.at(Event.GetHash()).GetRMS();
+			float EndT = Statistics.EndSmoothTimers.at(Event.GetHash()).GetRMS();
+			ImVec2 Min = ImVec2(WindowPosition.x + LineSize.x * BeginT, WindowPosition.y + LineSize.y * Event.StackLevel);
+			ImVec2 Max = ImVec2(WindowPosition.x + LineSize.x * EndT, WindowPosition.y + LineSize.y * (Event.StackLevel + 1));
+			DrawList.AddRectFilled(Min, Max, Event.Color);
+			DrawList.AddText(ImVec2(Min.x + ((Max.x - Min.x) * 0.5f), Min.y + (LineSize.y * 0.5f)), 0xFFFFFFFF, Event.Name);
+		}
+#endif
+
+		ImGui::End();
+	});
+
 	Device.AddUICommand("Statistics", 2, []() {
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Statistics)])
 			return;

@@ -393,8 +393,6 @@ void CRenderDevice::FrameMove()
 
 void ProcessLoading				(RP_FUNC *f)
 {
-	SCOPE_EVENT_NAME_GROUP("Loading", "Engine");
-
 	Device.seqFrame.Process				(rp_Frame);
 	g_bLoaded							= TRUE;
 }

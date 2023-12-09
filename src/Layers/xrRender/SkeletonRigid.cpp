@@ -31,7 +31,7 @@ void CKinematics::CalculateBones			(BOOL bForceExact)
 	// Calculate bones
 
 	{
-		SCOPE_EVENT_NAME_GROUP("Calculate bones", "Animation");
+		//SCOPE_EVENT_NAME("Calculate bones");
 		Bone_Calculate(bones->at(iRoot), &Fidentity);
 #ifdef DEBUG
 		check_kinematics(this, dbg_name.c_str());
