@@ -123,7 +123,7 @@ public:
 			xr_strcpy(Event.File, File);
 		}
 
-		int Index = Storage->Events.size();
+		int Index = (int)Storage->Events.size();
 		Storage->Events.emplace_back(std::move(Event));
 		u64 Hash =
 
@@ -237,7 +237,7 @@ Profile::EndFrame()
 u32 
 Profile::GetThreadCount()
 {
-	return EngineProfiler->Statistics.size();
+	return (u32)EngineProfiler->Statistics.size();
 }
 
 u32 
@@ -245,7 +245,7 @@ Profile::GetThisThreadId()
 {
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
 		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
-			return EngineProfiler->Statistics[i].Id;
+			return (u32) EngineProfiler->Statistics[i].Id;
 		}
 	}
 

@@ -94,7 +94,7 @@ namespace Profile
 		int Stack = 0;
 		int TrueStack = 0;
 		u64 GroupHash = HashValue<u64>(Group);
-		for (size_t i = 0; i < GetThreadCount(); i++) {
+		for (u32 i = 0; i < GetThreadCount(); i++) {
 			for (const auto& Event : GetEventsByIndex(i)) {
 				if (Event.GroupHash == GroupHash) {
 					Function(Event);

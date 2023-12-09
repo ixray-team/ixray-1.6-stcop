@@ -376,7 +376,7 @@ gpiSendLogin(
 		passphrase = data->partnerchallenge;
 	else
 		passphrase = iconnection->password;
-	MD5Digest((unsigned char*)passphrase, strlen(passphrase), data->passwordHash);
+	MD5Digest((unsigned char*)passphrase, (unsigned int)strlen(passphrase), data->passwordHash);
 
 	// Construct the user.
 	//////////////////////
@@ -412,7 +412,7 @@ gpiSendLogin(
 		data->userChallenge,
 		data->serverChallenge,
 		data->passwordHash);
-	MD5Digest((unsigned char *)buffer, strlen(buffer), response);
+	MD5Digest((unsigned char *)buffer, (unsigned int)strlen(buffer), response);
 
 	// Check for an existing profile.
 	/////////////////////////////////
@@ -736,7 +736,7 @@ gpiProcessConnect(
 			data->serverChallenge,
 			data->userChallenge,
 			data->passwordHash);
-		MD5Digest((unsigned char *)buffer, strlen(buffer), check);
+		MD5Digest((unsigned char *)buffer, (unsigned int)strlen(buffer), check);
 
 		// Get the proof.
 		/////////////////

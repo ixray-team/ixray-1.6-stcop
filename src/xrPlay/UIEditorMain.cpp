@@ -44,7 +44,7 @@ void RenderUI()
 
 		auto TextPadding = ImGui::CalcTextSize("TEST");
 
-		auto DrawCategory = [&TextPadding](const char* Name, u32 XOffset, u32 YOffset) {
+		auto DrawCategory = [&TextPadding](const char* Name, float XOffset, float YOffset) {
 			xr_hash_map<u64, StatisticHashMapEntry> Events;
 			int Counter = 0;
 			int PreviousStack = 0;
@@ -71,8 +71,8 @@ void RenderUI()
 			}
 		};
 
-		u32 CursorX = ImGui::GetCursorPosX();
-		u32 CursorY = ImGui::GetCursorPosY();
+		u32 CursorX = (u32) ImGui::GetCursorPosX();
+		u32 CursorY = (u32) ImGui::GetCursorPosY();
 		DrawCategory("Engine", CursorX, CursorY);
 		CursorX += 300;
 		DrawCategory("Render", CursorX, CursorY);

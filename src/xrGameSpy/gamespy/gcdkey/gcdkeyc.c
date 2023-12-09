@@ -61,11 +61,11 @@ void gcd_compute_response(char *cdkey, char *challenge, char response[RESPONSE_S
 		sprintf(rawout, "%s%d%s",challenge, anyrandom % 0xFFFF, cdkey);
 
 	/* do the cd key md5 */
-	MD5Digest((unsigned char *)cdkey, strlen(cdkey), response);
+	MD5Digest((unsigned char *)cdkey, (unsigned int)strlen(cdkey), response);
 	/* add the random value */
 	strcpy(&response[32], randstr);
 	/* do the response md5 */
-	MD5Digest((unsigned char *)rawout, strlen(rawout), &response[40]);	
+	MD5Digest((unsigned char *)rawout, (unsigned int)strlen(rawout), &response[40]);
 }
 
 
