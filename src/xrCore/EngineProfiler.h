@@ -139,7 +139,7 @@ public:
 // Use this if you want to profile something
 #ifndef DISABLE_PROFILER
 #define PROFILE_BEGIN_FRAME(Name) if (!IsMainThread()) Profile::BeginFrame(Name)
-#define PROFILE_END_FRAME(Name) if (!IsMainThread()) Profile::EndFrame()
+#define PROFILE_END_FRAME() if (!IsMainThread()) Profile::EndFrame()
 
 #define SCOPE_EVENT() \
 	ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(FUNCTION_SIGNATURE, __FILE__, __LINE__)
@@ -152,7 +152,7 @@ public:
 	ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(Name, FUNCTION_SIGNATURE, __FILE__, __LINE__, Group)
 #else
 #define PROFILE_BEGIN_FRAME(Name)
-#define PROFILE_END_FRAME(Name)
+#define PROFILE_END_FRAME()
 #define SCOPE_EVENT()
 #define SCOPE_EVENT_GROUP(Group) 
 #define SCOPE_EVENT_NAME(Name) 
