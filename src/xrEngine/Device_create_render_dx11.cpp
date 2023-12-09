@@ -141,7 +141,7 @@ bool CreateD3D11()
 	UINT createDeviceFlags = 0;
 	bool bHasDebugRender = strstr(Core.Params, "-dxdebug");
 
-	if (bHasDebugRender || g_pGPU == nullptr || !g_pGPU->IsAMD)
+ 	if (bHasDebugRender || g_pGPU == nullptr || !g_pGPU->IsAMD)
 	{
 		if (bHasDebugRender)
 		{

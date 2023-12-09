@@ -81,12 +81,13 @@ int APIENTRY WinMain
 	EngineLoadStage1(lpCmdLine);
 
 	g_pGPU = new CNvReader();
+	g_pGPU->Initialize();
 	if (!((CNvReader*)(g_pGPU))->bSupport)
 	{
 		xr_delete(g_pGPU);
 		g_pGPU = new CAMDReader;
+		g_pGPU->Initialize();
 	}
-	g_pGPU->Initialize();
 
 	EngineLoadStage2();
 
