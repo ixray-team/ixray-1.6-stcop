@@ -119,6 +119,14 @@ bool IsImportantSave()
 	return !!psActorFlags.test(AF_IMPORTANT_SAVE);
 }
 
+float get_compass_direction()
+{
+	float compass_angle, p;
+	Device.vCameraDirection.getHP(compass_angle, p);
+
+	return compass_angle;
+}
+
 #ifdef DEBUG
 void check_object(CScriptGameObject *object)
 {
@@ -130,13 +138,6 @@ void check_object(CScriptGameObject *object)
 	}
 }
 
-float get_compass_direction()
-{
-	float compass_angle, p;
-	Device.vCameraDirection.getHP(compass_angle, p);
-
-	return compass_angle;
-}
 
 CScriptGameObject *tpfGetActor()
 {
