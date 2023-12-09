@@ -94,10 +94,12 @@ void RenderUI()
 		auto TextPadding = ImGui::CalcTextSize("TEST");
 
 		auto DrawCategory = [&TextPadding](const char* Name, float XOffset, float YOffset) {
-			xr_hash_map<u64, StatisticHashMapEntry> Events;
+			xr_hash_map<u64, int> EventMap;
+			xr_vector<StatisticHashMapEntry> Events;
 			int Counter = 0;
 			int PreviousStack = 0;
-			Profile::TraverseGroup(Name, [&Events, XOffset, &YOffset, &TextPadding, &Counter, &PreviousStack](const Profile::TraceEvent& Event) {
+
+			Profile::TraverseGroup(Name, [&Events, &EventMap, XOffset, &YOffset, &TextPadding, &Counter, &PreviousStack](const Profile::TraceEvent& Event) {
 				if (Event.StackLevel > PreviousStack) {
 					PreviousStack = Event.StackLevel;
 					Counter++;
@@ -107,12 +109,25 @@ void RenderUI()
 				}
 
 				float Time = float(Event.EndTimestamp - Event.BeginTimestamp) / 1000000.0f;
-				Events[HashValue<u64>(Event.Name)].Name = Event.Name;
-				Events[HashValue<u64>(Event.Name)].Counter = Counter;
-				Events[HashValue<u64>(Event.Name)].Time += Time;
+				const auto Hash = HashValue<u64>(Event.Name);
+				int Index = std::max(0, (int)Events.size() - 1);
+				if (!EventMap.contains(Hash)) {
+					Events.emplace_back(StatisticHashMapEntry{});
+					EventMap[Hash] = Index;
+				} else {
+					Index = EventMap[Hash];
+				}
+
+				Events[Index].Name = Event.Name;
+				Events[Index].Counter = Counter;
+				Events[Index].Time += Time;
 			});
 
-			for (const auto& [Key, Entry] : Events) {
+			std::sort(Events.begin(), Events.end(), [](const StatisticHashMapEntry& Left, const StatisticHashMapEntry& Right) {
+				return Left.Time > Right.Time;
+			});
+
+			for (const auto& Entry : Events) {
 				ImGui::SetCursorPosX(XOffset);
 				ImGui::SetCursorPosY(YOffset);
 				YOffset += TextPadding.y;
