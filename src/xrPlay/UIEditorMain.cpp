@@ -93,6 +93,22 @@ void RenderUI()
 
 		auto TextPadding = ImGui::CalcTextSize("TEST");
 
+		float CursorX = ImGui::GetCursorPosX();
+		float CursorY = ImGui::GetCursorPosY();
+		for (u32 i = 0; i < Profile::GetThreadCount(); i++) {
+			const auto& Statistics = Profile::GetThreadStatistics(i);
+			float LocalY = CursorY;
+			for (const auto& Event : Statistics.Events) {
+				ImGui::SetCursorPosX(CursorX);
+				ImGui::SetCursorPosY(LocalY);
+				LocalY += TextPadding.y;
+				double Time = double(Event.EndTimestamp - Event.BeginTimestamp) / 1000000.0;
+				ImGui::Text("%s: %fms", Event.Name, Time);
+			}
+			CursorX += 300;
+		}
+
+		/*
 		auto DrawCategory = [&TextPadding](const char* Name, float XOffset, float YOffset) {
 			xr_hash_map<u64, int> EventMap;
 			xr_vector<StatisticHashMapEntry> Events;
@@ -135,13 +151,11 @@ void RenderUI()
 			}
 		};
 
-		float CursorX = ImGui::GetCursorPosX();
-		float CursorY = ImGui::GetCursorPosY();
 		DrawCategory("Engine", CursorX, CursorY);
-		CursorX += 300;
 		DrawCategory("Render", CursorX, CursorY);
 		CursorX += 300;
 		DrawCategory("Game", CursorX, CursorY);
+		*/
 
 		ImGui::End();
 		ImGui::PopStyleVar();
