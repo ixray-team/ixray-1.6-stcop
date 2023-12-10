@@ -99,6 +99,10 @@ void RenderUI()
 			const auto& Statistics = Profile::GetThreadStatistics(i);
 			float LocalY = CursorY;
 			for (const auto& Event : Statistics.Events) {
+				if (Event.GroupHash == HashValue<u64>("Default")) {
+					continue;
+				}
+
 				ImGui::SetCursorPosX(CursorX);
 				ImGui::SetCursorPosY(LocalY);
 				LocalY += TextPadding.y;
