@@ -256,7 +256,7 @@ public		:
 
 };
 
-class ENGINE_API	CCC_Vector3 : public IConsole_Command
+class ENGINE_API CCC_Vector3 : public IConsole_Command
 {
 protected	:
 	Fvector*		value;
@@ -273,14 +273,33 @@ public:
 	const Fvector	GetValue	() const {return *value;};
 	Fvector*		GetValuePtr	() const {return value;};
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void Execute(pcstr args)
 	{
 		Fvector v;
-		if (3!=sscanf(args,"%f,%f,%f",&v.x,&v.y,&v.z))	{ InvalidSyntax(); return; }
-		if (v.x<min.x || v.y<min.y || v.z<min.z)		{ InvalidSyntax(); return; }
-		if (v.x>max.x || v.y>max.y || v.z>max.z)		{ InvalidSyntax(); return; }
+		if (3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
+		{
+			if (3 != sscanf(args, "(%f,%f,%f)", &v.x, &v.y, &v.z))
+			{
+				InvalidSyntax();
+				return;
+			}
+		}
+
+		if (v.x < min.x || v.y < min.y || v.z < min.z)
+		{
+			InvalidSyntax();
+			return;
+		}
+
+		if (v.x > max.x || v.y > max.y || v.z > max.z)
+		{
+			InvalidSyntax();
+			return;
+		}
+
 		value->set(v);
 	}
+
 	virtual void	Status	(TStatus& S)
 	{	
 		xr_sprintf	(S,sizeof(S),"(%f, %f, %f)",value->x,value->y,value->z);
