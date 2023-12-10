@@ -91,6 +91,9 @@ public:
 
 	int PushEvent(const char* Name, const char* Function, const char* Group, const char* File, int Line, u32 Color)
 	{
+		if (Storage == nullptr)
+			return -1;
+
 		VERIFY2(TimestampFrameBegin != 0, "Call \"Profile::BeginFrame\" before calling this method!");
 		if (Color == 0) {
 			u32 Hash = HashValue<u32>(Name);
@@ -126,6 +129,9 @@ public:
 
 	void PopEvent(int Index)
 	{
+		if (Storage == nullptr)
+			return;
+
 		VERIFY2(TimestampFrameBegin != 0, "Call \"Profile::BeginFrame\" before calling this method!");
 		auto& Event = Storage->Events.at(Index);
 
@@ -169,12 +175,18 @@ Profile::BeginCodeEvent(const char* Name, const char* Function, const char* File
 void 
 Profile::EndEvent(int Index)
 {
+	if (EngineProfiler == nullptr)
+		return;
+
 	ThreadState.PopEvent(Index);
 }
 
 void 
 Profile::RegisterThread(const char* Name)
 {
+	if (EngineProfiler == nullptr)
+		return;
+
 	xrCriticalSection::raii Guard(&EngineProfiler->WriteMutex);
 
 	ThreadState.Register();
@@ -203,12 +215,18 @@ Profile::UnregisterThread()
 void 
 Profile::BeginFrame(const char* Name)
 {
+	if (EngineProfiler == nullptr)
+		return;
+
 	ThreadState.BeginFrame();
 }
 
 void
 Profile::EndFrame()
 {
+	if (EngineProfiler == nullptr)
+		return;
+
 	xrCriticalSection::raii Guard(&EngineProfiler->WriteMutex);
 
 	ThreadState.EndFrame();
