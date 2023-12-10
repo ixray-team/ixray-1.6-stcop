@@ -1473,13 +1473,25 @@ float CWeapon::CurrentZoomFactor()
 {
 	return IsScopeAttached() ? m_zoom_params.m_fScopeZoomFactor : m_zoom_params.m_fIronSightZoomFactor;
 };
+
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
+
+float LastZoomFactor = NULL;
 
 void CWeapon::OnZoomIn()
 {
 	m_zoom_params.m_bIsZoomModeNow		= true;
-	if(m_zoom_params.m_bUseDynamicZoom)
+	if (m_zoom_params.m_bUseDynamicZoom && IsScopeAttached())
+	{
+		if (LastZoomFactor)
+			m_fRTZoomFactor = LastZoomFactor;
+		else
+			m_fRTZoomFactor = CurrentZoomFactor();
+		float delta, min_zoom_factor;
+		GetZoomData(m_zoom_params.m_fScopeZoomFactor, delta, min_zoom_factor);
+		clamp(m_fRTZoomFactor, m_zoom_params.m_fScopeZoomFactor, min_zoom_factor);
 		SetZoomFactor(m_fRTZoomFactor);
+	}
 	else if (CurrentZoomFactor() != 0)
 		m_zoom_params.m_fCurrentZoomFactor = CurrentZoomFactor();
 
@@ -2050,6 +2062,7 @@ void CWeapon::ZoomInc()
 	float f					= GetZoomFactor()-delta;
 	clamp					(f,m_zoom_params.m_fScopeZoomFactor,min_zoom_factor);
 	SetZoomFactor			( f );
+	LastZoomFactor = f;
 }
 
 void CWeapon::ZoomDec()
@@ -2062,7 +2075,7 @@ void CWeapon::ZoomDec()
 	float f					= GetZoomFactor()+delta;
 	clamp					(f,m_zoom_params.m_fScopeZoomFactor,min_zoom_factor);
 	SetZoomFactor			( f );
-
+	LastZoomFactor = f;
 }
 u32 CWeapon::Cost() const
 {
