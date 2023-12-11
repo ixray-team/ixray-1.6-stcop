@@ -14,11 +14,18 @@
 #include "entity_alive.h"
 #include "EntityCondition.h"
 #include "InventoryOwner.h"
+#include "UIGameCustom.h"
+#include "ui/UIActorMenu.h"
 
 CEatableItem::CEatableItem()
 {
-	m_iPortionsNum = -1;
-	m_physic_item	= 0;
+	m_physic_item = nullptr;
+	m_fWeightFull = 0;
+	m_fWeightEmpty = 0;
+
+	m_iMaxUses = 1;
+	m_bRemoveAfterUse = true;
+	m_bConsumeChargeOnUse = true;
 }
 
 CEatableItem::~CEatableItem()
@@ -35,23 +42,51 @@ void CEatableItem::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	m_iPortionsNum				= pSettings->r_s32	(section, "eat_portions_num");
-	VERIFY						(m_iPortionsNum<10000);
+	if (pSettings->line_exist(section, "eat_portions_num"))
+	{
+		m_iMaxUses = pSettings->r_s32(section, "eat_portions_num");
+	}
+	else
+	{
+		m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, section, "max_uses", 1);
+	}
+
+	if (m_iMaxUses < 1)
+		m_iMaxUses = 1;
+
+	m_iPortionsMarker = m_iMaxUses;
+
+	m_bRemoveAfterUse = READ_IF_EXISTS( pSettings, r_bool, section, "remove_after_use", TRUE );
+	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
+	m_fWeightFull = m_weight;
+	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
 }
 
-BOOL CEatableItem::net_Spawn				(CSE_Abstract* DC)
+
+void CEatableItem::load(IReader& packet)
+{
+	inherited::load(packet);
+	m_iPortionsMarker = packet.r_u8();
+}
+
+void CEatableItem::save(NET_Packet& packet)
+{
+	inherited::save(packet);
+	packet.w_u8((u8)m_iPortionsMarker);
+}
+
+BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC)) return FALSE;
-
 	return TRUE;
-};
+}
 
 bool CEatableItem::Useful() const
 {
 	if(!inherited::Useful()) return false;
 
 	//проверить не все ли еще съедено
-	if(m_iPortionsNum == 0) return false;
+	if (GetRemainingUses() == 0 && CanDelete()) return false;
 
 	return true;
 }
@@ -98,18 +133,49 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 		}
 	}
 
-	if (!IsGameTypeSingle() && OnServer())
-	{
-		NET_Packet				tmp_packet;
-		CGameObject::u_EventGen	(tmp_packet, GEG_PLAYER_USE_BOOSTER, entity_alive->ID());
-		tmp_packet.w_u16		(object_id());
-		Level().Send			(tmp_packet);
-	}
-	
-	if(m_iPortionsNum > 0)
-		--m_iPortionsNum;
+	if (m_iPortionsMarker > 0)
+		--m_iPortionsMarker;
 	else
-		m_iPortionsNum = 0;
+		m_iPortionsMarker = 0;
 
 	return true;
+}
+
+float CEatableItem::Weight() const
+{
+	float res = inherited::Weight();
+
+	if (IsUsingCondition())  
+	{
+		float net_weight = m_fWeightFull - m_fWeightEmpty;
+		float use_weight = m_iMaxUses / m_iPortionsMarker;
+
+		res = m_fWeightEmpty + (GetRemainingUses() * use_weight);
+	}
+
+	return res;
+}
+
+
+using namespace luabind;
+
+#pragma optimize("s",on)
+void CEatableItem::script_register(lua_State *L)
+{
+	module(L)
+		[
+			class_<CEatableItem, CInventoryItem>("CEatableItem")
+			.def("Empty", &CEatableItem::Empty)
+			.def("CanDelete", &CEatableItem::CanDelete)
+			.def("GetMaxUses", &CEatableItem::GetMaxUses)
+			.def("GetRemainingUses", &CEatableItem::GetRemainingUses)
+			.def("SetRemainingUses", &CEatableItem::SetRemainingUses)
+
+			.def_readwrite("m_bRemoveAfterUse", &CEatableItem::m_bRemoveAfterUse)
+			.def_readwrite("m_fWeightFull", &CEatableItem::m_fWeightFull)
+			.def_readwrite("m_fWeightEmpty", &CEatableItem::m_fWeightEmpty)
+
+			.def("Weight", &CEatableItem::Weight)
+			.def("Cost", &CEatableItem::Cost)
+		];
 }
