@@ -817,24 +817,27 @@ void CUIActorMenu::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropLi
 }
 
 // -------------------------------------------------------------------
+inline void ClearList(CUIDragDropListEx* pList)
+{
+	if (pList != nullptr)
+		pList->ClearAll(true);
+}
 
 void CUIActorMenu::ClearAllLists()
 {
-	m_pInventoryBagList->ClearAll				(true);
-	
-	m_pInventoryBeltList->ClearAll				(true);
-	m_pInventoryOutfitList->ClearAll			(true);
-	m_pInventoryHelmetList->ClearAll			(true);
-	m_pInventoryDetectorList->ClearAll			(true);
-	m_pInventoryPistolList->ClearAll			(true);
-	m_pInventoryAutomaticList->ClearAll			(true);
-	m_pQuickSlot->ClearAll						(true);
-
-	m_pTradeActorBagList->ClearAll				(true);
-	m_pTradeActorList->ClearAll					(true);
-	m_pTradePartnerBagList->ClearAll			(true);
-	m_pTradePartnerList->ClearAll				(true);
-	m_pDeadBodyBagList->ClearAll				(true);
+	ClearList(m_pInventoryBagList);
+	ClearList(m_pInventoryBeltList);
+	ClearList(m_pInventoryOutfitList);
+	ClearList(m_pInventoryHelmetList);
+	ClearList(m_pInventoryDetectorList);
+	ClearList(m_pInventoryPistolList);
+	ClearList(m_pInventoryAutomaticList);
+	ClearList(m_pQuickSlot);
+	ClearList(m_pTradeActorBagList);
+	ClearList(m_pTradeActorList);
+	ClearList(m_pTradePartnerBagList);
+	ClearList(m_pTradePartnerList);
+	ClearList(m_pDeadBodyBagList);
 }
 
 void CUIActorMenu::CallMessageBoxYesNo( LPCSTR text )
