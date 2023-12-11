@@ -3,6 +3,9 @@
 enum class EEngineExternalUI
 {
 	HQIcons,
+	DiasbleHighlight,
+	DiasbleItemsCondition,
+	DiasbleCharacterInfo,
 	None
 };
 

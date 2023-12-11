@@ -475,11 +475,15 @@ void CUIActorMenu::UpdateItemsPlace()
 
 void CUIActorMenu::clear_highlight_lists()
 {
-	m_InvSlot2Highlight->Show(false);
-	m_InvSlot3Highlight->Show(false);
-	m_HelmetSlotHighlight->Show(false);
-	m_OutfitSlotHighlight->Show(false);
-	m_DetectorSlotHighlight->Show(false);
+	if (!EngineExternal()[EEngineExternalUI::DiasbleHighlight])
+	{
+		m_InvSlot2Highlight->Show(false);
+		m_InvSlot3Highlight->Show(false);
+		m_HelmetSlotHighlight->Show(false);
+		m_OutfitSlotHighlight->Show(false);
+		m_DetectorSlotHighlight->Show(false);
+	}
+
 	for(u8 i=0; i<4; i++)
 		m_QuickSlotsHighlight[i]->Show(false);
 	for(u8 i=0; i<e_af_count; i++)
@@ -516,34 +520,39 @@ void CUIActorMenu::highlight_item_slot(CUICellItem* cell_item)
 	if(CUIDragDropListEx::m_drag_item)
 		return;
 
-	CWeapon* weapon = smart_cast<CWeapon*>(item);
-	CHelmet* helmet = smart_cast<CHelmet*>(item);
-	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(item);
-	CCustomDetector* detector = smart_cast<CCustomDetector*>(item);
 	CEatableItem* eatable = smart_cast<CEatableItem*>(item);
 	CArtefact* artefact = smart_cast<CArtefact*>(item);
 
-	if(weapon)
+	if (!EngineExternal()[EEngineExternalUI::DiasbleHighlight])
 	{
-		m_InvSlot2Highlight->Show(true);
-		m_InvSlot3Highlight->Show(true);
-		return;
+		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CHelmet* helmet = smart_cast<CHelmet*>(item);
+		CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(item);
+		CCustomDetector* detector = smart_cast<CCustomDetector*>(item);
+
+		if (weapon)
+		{
+			m_InvSlot2Highlight->Show(true);
+			m_InvSlot3Highlight->Show(true);
+			return;
+		}
+		if (helmet)
+		{
+			m_HelmetSlotHighlight->Show(true);
+			return;
+		}
+		if (outfit)
+		{
+			m_OutfitSlotHighlight->Show(true);
+			return;
+		}
+		if (detector)
+		{
+			m_DetectorSlotHighlight->Show(true);
+			return;
+		}
 	}
-	if(helmet)
-	{
-		m_HelmetSlotHighlight->Show(true);
-		return;
-	}
-	if(outfit)
-	{
-		m_OutfitSlotHighlight->Show(true);
-		return;
-	}
-	if(detector)
-	{
-		m_DetectorSlotHighlight->Show(true);
-		return;
-	}
+
 	if(eatable)
 	{
 		if(cell_item->OwnerList() && GetListType(cell_item->OwnerList())==iQuickSlot)
