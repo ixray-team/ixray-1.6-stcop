@@ -310,15 +310,79 @@ bool dont_has_info								(const CALifeSimulator *self_, const ALife::_OBJECT_ID
 	return								(!has_info(self_,id,info_id));
 }
 
-//void disable_info_portion						(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
-//{
-//	THROW								(self);
-//}
+void set_objects_per_update(CALifeSimulator* self, u32 count)
+{
+	self->objects_per_update(count);
+}
 
-//void give_info_portion							(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
-//{
-//	THROW								(self);
-//}
+void teleport_object(CALifeSimulator* alife, ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, const Fvector& position)
+{
+	alife->teleport_object(id, game_vertex_id, level_vertex_id, position);
+}
+
+void IterateInfo(const CALifeSimulator* alife, const ALife::_OBJECT_ID& id, const luabind::functor<bool>& functor)
+{
+	const KNOWN_INFO_VECTOR* known_info = registry(alife, id);
+	if (!known_info)
+		return;
+
+	xr_vector<shared_str>::const_iterator	I = known_info->begin();
+	xr_vector<shared_str>::const_iterator	E = known_info->end();
+	for (; I != E; ++I)
+		if (functor(id, (LPCSTR)(*I).c_str()) == true)
+			return;
+}
+
+CSE_Abstract* reprocess_spawn(CALifeSimulator* self, CSE_Abstract* object)
+{
+	NET_Packet	packet;
+	packet.w_begin(M_SPAWN);
+	packet.w_stringZ(object->s_name);
+
+	object->Spawn_Write(packet, FALSE);
+	self->server().FreeID(object->ID, 0);
+	F_entity_Destroy(object);
+
+	ClientID							clientID;
+	clientID.set(0xffff);
+
+	u16									dummy;
+	packet.r_begin(dummy);
+
+	return	(self->server().Process_spawn(packet, clientID));
+}
+
+CSE_Abstract* try_to_clone_object(CALifeSimulator* self, CSE_Abstract* object, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, bool bRegister = true)
+{
+	CSE_ALifeItemWeaponMagazined* wpnmag = smart_cast<CSE_ALifeItemWeaponMagazined*>(object);
+	if (wpnmag)
+	{
+		CSE_Abstract* absClone = self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent, false);
+		if (!absClone)
+			return (0);
+
+		CSE_ALifeItemWeaponMagazined* clone = smart_cast<CSE_ALifeItemWeaponMagazined*>(absClone);
+		if (!clone)
+			return (0);
+
+		clone->wpn_flags = wpnmag->wpn_flags;
+		clone->m_addon_flags = wpnmag->m_addon_flags;
+		clone->m_fCondition = wpnmag->m_fCondition;
+		clone->ammo_type = wpnmag->ammo_type;
+		clone->m_upgrades = wpnmag->m_upgrades;
+		clone->a_elapsed = wpnmag->a_elapsed;
+
+		return	bRegister ? reprocess_spawn(self, absClone) : absClone;
+	}
+
+	return (0);
+}
+
+xr_vector<u16>& get_children(const CALifeSimulator* self, CSE_Abstract* object)
+{
+	VERIFY(self);
+	return object->children;
+}
 
 #pragma optimize("s",on)
 void CALifeSimulator::script_register			(lua_State *L)
@@ -354,6 +418,14 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("dont_has_info",			&dont_has_info)
 			.def("switch_distance",			&CALifeSimulator::switch_distance)
 			.def("switch_distance",			&CALifeSimulator::set_switch_distance)
+
+			.def("teleport_object", &teleport_object)
+			.def("iterate_info", &IterateInfo)
+			.def("clone_weapon", &try_to_clone_object)
+			.def("register", &reprocess_spawn)
+			.def("set_objects_per_update", &set_objects_per_update)
+			.def("set_process_time", &set_process_time)
+			.def("get_children", &get_children, return_stl_iterator())
 
 		,def("alife",						&alife)
 	];
