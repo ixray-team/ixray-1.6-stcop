@@ -31,16 +31,16 @@ namespace upgrade
 
 Manager::Manager()
 {
-	load_all_properties(); //first
+	load_all_properties(); //first 
 	load_all_inventory();
 }
 
 Manager::~Manager()
 {
-	delete_data( m_roots );
-	delete_data( m_groups );
-	delete_data( m_upgrades );
-	delete_data( m_properties );
+	delete_data(m_roots);
+	delete_data(m_groups);
+	delete_data(m_upgrades);
+	delete_data(m_properties);
 	m_roots.clear(); // !!!!!!!!!!!!
 	m_groups.clear();
 	m_upgrades.clear();
@@ -141,56 +141,18 @@ Property* Manager::add_property( shared_str const& property_id )
 }
 
 // -------------------------------------------------------------------------------------------
-
-bool Manager::item_upgrades_exist( shared_str const& item_id )
-{
-	VERIFY2( pSettings->section_exist( item_id ), make_string( "Inventory item [%s] does not exist!", item_id.c_str() ) );
-	if( !pSettings->line_exist( item_id, "upgrades" ) || !pSettings->r_string( item_id, "upgrades" ) )
-	{
-		return false;
-	}
-	if( !pSettings->line_exist( item_id, "upgrade_scheme" ) || !pSettings->r_string( item_id, "upgrade_scheme" ) )
-	{
-		return false;
-	}
-
-	return true;
-}
-
 void Manager::load_all_inventory()
 {
-	LPCSTR items_section = "upgraded_inventory";
-	
-	VERIFY2( pSettings->section_exist( items_section ), make_string( "Section [%s] does not exist !", items_section ) );
-	VERIFY2( pSettings->line_count( items_section ),    make_string( "Section [%s] is empty !",       items_section ) );
-
-	if ( g_upgrades_log == 1 )
+	for (const auto& section : pSettings->sections())
 	{
-		Msg( "# Inventory upgrade manager is loaded." );
-	}
+		if (!pSettings->line_exist(section->Name, "upgrades") || !pSettings->r_string(section->Name, "upgrades"))
+			continue;
 
-	CInifile::Sect&		inv_section = pSettings->r_section( items_section );
-	CInifile::SectIt_	ib = inv_section.Data.begin();
-	CInifile::SectIt_	ie = inv_section.Data.end();
-	for ( ; ib != ie ; ++ib )
-	{
-		shared_str root_id( (*ib).first );
-//		if ( !item_upgrades_exist( root_id ) ) continue;
-		item_upgrades_exist( root_id );
-		add_root( root_id );
-	}
+		if (!pSettings->line_exist(section->Name, "upgrade_scheme") || !pSettings->r_string(section->Name, "upgrade_scheme"))
+			continue;
 
-	if ( g_upgrades_log == 1 )
-	{
-		Msg( "# Upgrades of inventory items loaded." );
+		add_root(section->Name);
 	}
-
-	/*
-	float low, high; ///? <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	LPCSTR param = "cost";
-	compute_range( param, low ,high );
-	Msg( "Parameter <%s> min = %.3f, max = %.3f", param, low, high );
-	*/
 }
 
 void Manager::load_all_properties()
