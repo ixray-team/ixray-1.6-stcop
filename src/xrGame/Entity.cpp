@@ -245,6 +245,11 @@ void CEntity::net_Destroy()
 
 void CEntity::KillEntity(u16 whoID)
 {
+	if (ID() == Actor()->ID())
+	{
+		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
+	}
+
 	if (whoID != ID()) {
 #ifdef DEBUG
 		if (m_killer_id != ALife::_OBJECT_ID(-1)) {

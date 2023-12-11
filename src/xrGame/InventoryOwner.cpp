@@ -494,17 +494,29 @@ void CInventoryOwner::OnItemDropUpdate ()
 {
 }
 
-void CInventoryOwner::OnItemBelt	(CInventoryItem *inventory_item, const SInvItemPlace& previous_place)
+void CInventoryOwner::OnItemBelt(CInventoryItem* inventory_item, const SInvItemPlace& previous_place)
 {
+	CGameObject* object = smart_cast<CGameObject*>(this);
+	VERIFY(object);
+	object->callback(GameObject::eItemToBelt)(inventory_item->object().lua_game_object());
 }
 
-void CInventoryOwner::OnItemRuck	(CInventoryItem *inventory_item, const SInvItemPlace& previous_place)
+void CInventoryOwner::OnItemRuck(CInventoryItem* inventory_item, const SInvItemPlace& previous_place)
 {
-	detach		(inventory_item);
+	CGameObject* object = smart_cast<CGameObject*>(this);
+	VERIFY(object);
+	object->callback(GameObject::eItemToRuck)(inventory_item->object().lua_game_object());
+
+	detach(inventory_item);
 }
-void CInventoryOwner::OnItemSlot	(CInventoryItem *inventory_item, const SInvItemPlace& previous_place)
+
+void CInventoryOwner::OnItemSlot(CInventoryItem* inventory_item, const SInvItemPlace& previous_place)
 {
-	attach		(inventory_item);
+	CGameObject* object = smart_cast<CGameObject*>(this);
+	VERIFY(object);
+	object->callback(GameObject::eItemToSlot)(inventory_item->object().lua_game_object());
+
+	attach(inventory_item);
 }
 
 CCustomOutfit* CInventoryOwner::GetOutfit() const

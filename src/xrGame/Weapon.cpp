@@ -1556,6 +1556,12 @@ void CWeapon::SwitchState(u32 S)
 void CWeapon::OnMagazineEmpty	()
 {
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+
+	if (ParentIsActor())
+	{
+		int	AC = GetSuitableAmmoTotal();
+		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
+	}
 }
 
 
