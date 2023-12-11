@@ -118,6 +118,10 @@ void CUIWindow::script_register(lua_State *L)
 		.def("DetachChild",				&CUIWindow::DetachChild)
 		.def("SetAutoDelete",			&CUIWindow::SetAutoDelete)
 		.def("IsAutoDelete",			&CUIWindow::IsAutoDelete)
+			
+		.def("IsCursorOverWindow",		&CUIWindow::CursorOverWindow)
+		.def("FocusReceiveTime",		&CUIWindow::FocusReceiveTime)
+		.def("GetAbsoluteRect",			&CUIWindow::GetAbsoluteRect)
 
 		.def("SetWndRect",				(void (CUIWindow::*)(Frect))	&CUIWindow::SetWndRect_script)
 		.def("SetWndPos",				(void (CUIWindow::*)(Fvector2)) &CUIWindow::SetWndPos_script)

@@ -175,7 +175,6 @@ bool CreateD3D11()
 	}
 	else
 	{
-		D3D_FEATURE_LEVEL pFeatureLevels;
 		g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
 	}
 
