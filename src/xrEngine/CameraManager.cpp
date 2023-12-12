@@ -194,16 +194,14 @@ CEffectorCam* CCameraManager::AddCamEffector(CEffectorCam* ef)
 
 void CCameraManager::UpdateDeffered()
 {
-	EffectorCamIt it		= m_EffectorsCam_added_deffered.begin();
-	EffectorCamIt it_e		= m_EffectorsCam_added_deffered.end();
-	for (; it!=it_e; ++it)
+	for (CEffectorCam* Effector : m_EffectorsCam_added_deffered)
 	{
-		RemoveCamEffector			( (*it)->eType );
-		
-		if((*it)->AbsolutePositioning())
-			m_EffectorsCam.push_front(*it);
+		RemoveCamEffector(Effector->eType);
+
+		if (Effector->AbsolutePositioning())
+			m_EffectorsCam.push_front(Effector);
 		else
-			m_EffectorsCam.push_back	(*it);
+			m_EffectorsCam.push_back(Effector);
 	}
 
 	m_EffectorsCam_added_deffered.clear	();

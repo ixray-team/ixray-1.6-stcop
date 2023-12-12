@@ -121,7 +121,6 @@ public:
 	void 					ChangePower				(const float value);
 	void 					ChangeRadiation			(const float value);
 	void 					ChangePsyHealth			(const float value);
-	virtual void 			ChangeAlcohol			(const float value){};
 
 	IC void					MaxPower				()					{m_fPower = m_fPowerMax;};
 	IC void					SetMaxPower				(const float val)	{m_fPowerMax = val; clamp(m_fPowerMax,0.1f,1.0f);};
@@ -159,6 +158,7 @@ public:
 	typedef					xr_map<EBoostParams, SBooster> BOOSTER_MAP;
 public:
 	PLAYER_ADDICTION_BASE(Satiety);
+	PLAYER_ADDICTION_BASE(Alcohol);
 
 protected:
 	void					UpdateHealth			();
