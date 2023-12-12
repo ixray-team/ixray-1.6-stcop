@@ -17,7 +17,8 @@ enum class EEngineExternalPhysical
 
 enum class EEngineExternalGame
 {
-	None
+	EnableThirst,
+	EnableSleepiness
 };
 
 enum class EEngineExternalRender
