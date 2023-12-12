@@ -41,8 +41,6 @@ public:
 	virtual void		UpdateCondition				();
 			void		UpdateBoosters				();
 
-	virtual void 		ChangeAlcohol				(const float value);
-
 	float				GetBoosterValueByType		(EBoostParams type) const;
 
 	void 				BoostParameters				(const SBooster& B);
@@ -80,7 +78,6 @@ public:
 			void		ConditionStand				(float weight);
 	IC		float		MaxWalkWeight				() const	{ return m_MaxWalkWeight; }
 			
-			float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
 			float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
 
 			void		AffectDamage_InjuriousMaterialAndMonstersInfluence();
@@ -114,10 +111,11 @@ public:
 	PlayerAddiction Satiety;
 	PLAYER_ADDICTION_IMPL(Satiety);
 
+	PlayerAddiction Alcohol;
+	PLAYER_ADDICTION_IMPL(Alcohol);
+
 protected:
-	SMedicineInfluenceValues						m_curr_medicine_influence;
-	float m_fAlcohol;
-	float m_fV_Alcohol;
+	SMedicineInfluenceValues m_curr_medicine_influence;
 
 	float m_fPowerLeakSpeed;
 

@@ -45,8 +45,8 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fOverweightJumpK			= 0.f;
 	m_fAccelK					= 0.f;
 	m_fSprintK					= 0.f;
-	m_fAlcohol					= 0.f;
 	Satiety.Current				= 1.0f;
+	Alcohol.Current				= 0.0f;
 
 //	m_vecBoosts.clear();
 
@@ -113,7 +113,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 	m_fPowerLeakSpeed			= pSettings->r_float(section,"max_power_leak_speed");
 	
-	m_fV_Alcohol				= pSettings->r_float(section,"alcohol_v");
+	Alcohol.Variability			= pSettings->r_float(section,"alcohol_v");
 
 	Satiety.Critical			= pSettings->r_float(section,"satiety_critical");
 	clamp						(Satiety.Critical, 0.0f, 1.0f);
@@ -179,22 +179,14 @@ float CActorCondition::GetZoneMaxPower( ALife::EHitType hit_type ) const
 
 void CActorCondition::UpdateCondition()
 {
-	if(psActorFlags.test(AF_GODMODE_RT))
-	{
-		UpdateSatiety();
-		UpdateBoosters();
+	if (GodMode()) return;
 
-		m_fAlcohol		+= m_fV_Alcohol*m_fDeltaTime;
-		clamp			(m_fAlcohol,			0.0f,		1.0f);
-		if(IsGameTypeSingle())
-		{
-			CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
-			if(ce)
-				RemoveEffector(m_object,effAlcohol);
-		}
-	}
+	UpdateSatiety();
+	UpdateBoosters();
 
-	if (GodMode())				return;
+	Alcohol.Current += Alcohol.Variability * m_fDeltaTime;
+	clamp(Alcohol.Current, 0.0f, 1.0f);
+
 	if (!object().g_Alive())	return;
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
 	
@@ -212,64 +204,53 @@ void CActorCondition::UpdateCondition()
 		ConditionStand( cur_weight / base_weight );
 	}
 	
-	if ( IsGameTypeSingle() )
+	if (IsGameTypeSingle())
 	{
-		float k_max_power = 1.0f;
-		if( true )
-		{
-			k_max_power = 1.0f + _min(cur_weight, base_weight) / base_weight
-				+ _max(0.0f, (cur_weight - base_weight) / 10.0f);
-		}
-		else
-		{
-			k_max_power = 1.0f;
-		}
-		SetMaxPower		(GetMaxPower() - m_fPowerLeakSpeed * m_fDeltaTime * k_max_power);
+		float k_max_power = 1.0f + _min(cur_weight, base_weight) / base_weight
+			+ _max(0.0f, (cur_weight - base_weight) / 10.0f);
+
+		SetMaxPower(GetMaxPower() - m_fPowerLeakSpeed * m_fDeltaTime * k_max_power);
 	}
 
-
-	m_fAlcohol		+= m_fV_Alcohol*m_fDeltaTime;
-	clamp			(m_fAlcohol,			0.0f,		1.0f);
-
-	if ( IsGameTypeSingle() )
-	{	
-		CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
-		if	((m_fAlcohol>0.0001f) ){
-			if(!ce){
-				AddEffector(m_object,effAlcohol, "effector_alcohol", GET_KOEFF_FUNC(this, &CActorCondition::GetAlcohol));
-			}
-		}else{
-			if(ce)
-				RemoveEffector(m_object,effAlcohol);
-		}
-
-		
-		string512			pp_sect_name;
-		shared_str ln		= Level().name();
-		if(ln.size())
+	if (IsGameTypeSingle())
+	{
+		CEffectorCam* pAlcoholEffector = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
+		if ((Alcohol.Current > 0.0001f))
 		{
-			CEffectorPP* ppe	= object().Cameras().GetPPEffector((EEffectorPPType)effPsyHealth);
-			
-
-			xr_strconcat(pp_sect_name, "effector_psy_health", "_", *ln);
-			if(!pSettings->section_exist(pp_sect_name))
-				xr_strcpy			(pp_sect_name, "effector_psy_health");
-
-			if	( !fsimilar(GetPsyHealth(), 1.0f, 0.05f) )
+			if (pAlcoholEffector == nullptr)
 			{
-				if(!ppe)
-				{
-					AddEffector(m_object,effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
-				}
-			}else
-			{
-				if(ppe)
-					RemoveEffector(m_object,effPsyHealth);
+				AddEffector(m_object, effAlcohol, "effector_alcohol", GET_KOEFF_FUNC(this, &CActorCondition::GetAlcohol));
 			}
 		}
-//-		if(fis_zero(GetPsyHealth()))
-//-			SetHealth( 0.0f );
-	};
+		else if (pAlcoholEffector)
+		{
+			RemoveEffector(m_object, effAlcohol);
+		}
+
+		shared_str ln = Level().name();
+		if (ln.size())
+		{
+			CEffectorPP* ppe = object().Cameras().GetPPEffector((EEffectorPPType)effPsyHealth);
+
+			string512 pp_sect_name;
+			xr_strconcat(pp_sect_name, "effector_psy_health", "_", *ln);
+
+			if (!pSettings->section_exist(pp_sect_name))
+				xr_strcpy(pp_sect_name, "effector_psy_health");
+
+			if (!fsimilar(GetPsyHealth(), 1.0f, 0.05f))
+			{
+				if (!ppe)
+				{
+					AddEffector(m_object, effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
+				}
+			}
+			else if (ppe)
+			{
+				RemoveEffector(m_object, effPsyHealth);
+			}
+		}
+	}
 
 	UpdateSatiety();
 	UpdateBoosters();
@@ -534,7 +515,7 @@ extern bool g_bShowHudInfo;
 void CActorCondition::save(NET_Packet &output_packet)
 {
 	inherited::save		(output_packet);
-	save_data			(m_fAlcohol, output_packet);
+	save_data			(Alcohol.Current, output_packet);
 	save_data			(m_condition_flags, output_packet);
 	save_data			(Satiety.Current, output_packet);
 
@@ -561,7 +542,7 @@ void CActorCondition::save(NET_Packet &output_packet)
 void CActorCondition::load(IReader &input_packet)
 {
 	inherited::load		(input_packet);
-	load_data			(m_fAlcohol, input_packet);
+	load_data			(Alcohol.Current, input_packet);
 	load_data			(m_condition_flags, input_packet);
 	load_data			(Satiety.Current, input_packet);
 
@@ -594,10 +575,11 @@ void CActorCondition::reinit()
 	Satiety.Current = 1.f;
 }
 
-void CActorCondition::ChangeAlcohol	(float value)
+void CActorCondition::ChangeAlcohol(float value)
 {
-	m_fAlcohol += value;
+	Alcohol.Current += value;
 }
+
 void CActorCondition::ChangeSatiety(float value)
 {
 	Satiety.Current += value;
