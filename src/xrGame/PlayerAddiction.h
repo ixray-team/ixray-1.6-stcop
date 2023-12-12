@@ -7,12 +7,12 @@
 	float name##Critical	() const { return name.Critical;	} \
 																  \
 	virtual void Change##name(const float value) override;		  \
-	virtual float Get##name() const override { return name.Current;} \
+	virtual float xr_stdcall Get##name() const override { return name.Current;} \
 	virtual float Get##name##Power() const override {return name.PowerBoost * name.Current;};
 
 #define PLAYER_ADDICTION_BASE(name) \
 	virtual void Change##name(const float value) {};        \
-	virtual float Get##name() const { return 1.f; }		    \
+	virtual float xr_stdcall Get##name() const { return 1.f; }		    \
 	virtual float Get##name##Power() const { return 0.f; }; 
 
 struct PlayerAddiction
