@@ -1,4 +1,5 @@
 #pragma once
+#include "PlayerAddiction.h"
 
 class CWound;
 class NET_Packet;
@@ -109,7 +110,6 @@ public:
 	IC float				GetPower				() const			{return m_fPower;}	
 	IC float				GetRadiation			() const			{return m_fRadiation;}
 	IC float				GetPsyHealth			() const			{return m_fPsyHealth;}
-	IC float				GetSatiety				() const			{return 1.0f;}	
 
 	IC float 				GetEntityMorale			() const			{return m_fEntityMorale;}
 
@@ -117,7 +117,6 @@ public:
 
 	virtual bool 			IsLimping				() const;
 
-	virtual void			ChangeSatiety			(const float value)		{};
 	void 					ChangeHealth			(const float value);
 	void 					ChangePower				(const float value);
 	void 					ChangeRadiation			(const float value);
@@ -158,6 +157,9 @@ public:
 	IC float				GetBoostRadiationImmunity() const {return m_fBoostRadiationImmunity;};
 
 	typedef					xr_map<EBoostParams, SBooster> BOOSTER_MAP;
+public:
+	PLAYER_ADDICTION_BASE(Satiety);
+
 protected:
 	void					UpdateHealth			();
 	void					UpdatePower				();
