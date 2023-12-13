@@ -167,6 +167,7 @@
 
 // Devices
 #define CLSID_DEVICE_TORCH			MK_CLSID('D','_','T','O','R','C','H',' ')
+#define CLSID_DEVICE_COMPASS		MK_CLSID('D','_','C','O','M','P','A','S')
 #define CLSID_DEVICE_AF_MERGER		MK_CLSID('D','_','A','F','M','E','R','G')
 #define CLSID_DEVICE_FLARE			MK_CLSID('D','_','F','L','A','R','E',' ')
 

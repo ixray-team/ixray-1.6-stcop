@@ -146,7 +146,7 @@
 #	include "torch.h"
 #	include "pda.h"
 #	include "flare.h"
-
+#	include "Compass.h"
 #	include "searchlight.h"
 
 #	include "HangingLamp.h"
@@ -392,6 +392,7 @@ void CObjectFactory::register_classes	()
 
 	// Devices
 	ADD(CTorch					,CSE_ALifeItemTorch				,CLSID_DEVICE_TORCH				,"device_torch");
+	ADD(CCompass				,CSE_ALifeItemDetector			,CLSID_DEVICE_COMPASS			,"device_compass");
 	ADD(CPda					,CSE_ALifeItemPDA				,CLSID_DEVICE_PDA				,"device_pda");
 	ADD(CFlare					,CSE_ALifeItem					,CLSID_DEVICE_FLARE				,"device_flare");
 
