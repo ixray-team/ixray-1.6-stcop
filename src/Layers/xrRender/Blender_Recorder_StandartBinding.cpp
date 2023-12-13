@@ -329,6 +329,19 @@ static class cl_rain_params : public R_constant_setup
 	}
 } binder_rain_params;
 
+static class cl_inv_v : public R_constant_setup
+{
+	u32	marker;
+	Fmatrix	result;
+
+	virtual void setup(R_constant* C)
+	{
+		result.invert(Device.mView);
+
+		RCache.set_c(C, result);
+	}
+} binder_inv_v;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
 {
@@ -340,7 +353,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_WV",			&binder_wv);
 	r_Constant				("m_VP",			&binder_vp);
 	r_Constant				("m_WVP",			&binder_wvp);
-
+	r_Constant				("m_inv_V",			&binder_inv_v);
 	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
 	r_Constant				("m_xform",			&tree_binder_m_xform);
 	r_Constant				("consts",			&tree_binder_consts);
