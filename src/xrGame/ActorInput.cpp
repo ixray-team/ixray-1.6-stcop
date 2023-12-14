@@ -80,7 +80,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	}else
 		if(inventory().Action((u16)cmd, CMD_START))					return;
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	if(psActorFlags.test(AF_NO_CLIP))
 	{
 		NoClipFly(cmd);
@@ -258,7 +258,7 @@ void CActor::IR_OnKeyboardHold(int cmd)
 		return;
 	}
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	if(psActorFlags.test(AF_NO_CLIP) && (cmd==kFWD || cmd==kBACK || cmd==kL_STRAFE || cmd==kR_STRAFE 
 		|| cmd==kJUMP || cmd==kCROUCH))
 	{
@@ -647,72 +647,97 @@ void CActor::SwitchTorch()
 	}
 }
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
+#include "../xrPhysics/IPHWorld.h"
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 void CActor::NoClipFly(int cmd)
 {
-	Fvector cur_pos;// = Position();
-	cur_pos.set(0,0,0);
-	float scale = 1.0f;
-	if(pInput->iGetAsyncKeyState(DIK_LSHIFT))
-		scale = 0.25f;
-	else if(pInput->iGetAsyncKeyState(DIK_LMENU))
-		scale = 4.0f;
-
-	switch(cmd)
+    Fvector cur_pos, right, left;
+    cur_pos.set(0, 0, 0);
+    float scale = 5.f;
+    if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+        scale = 2.0f;
+    else if (pInput->iGetAsyncKeyState(DIK_X))
+        scale = 7.0f;
+    else if (pInput->iGetAsyncKeyState(DIK_LMENU))
+        scale = 10.0f;
+    else if (pInput->iGetAsyncKeyState(DIK_CAPSLOCK))
+        scale = 15.0f;
+    else if (pInput->iGetAsyncKeyState(DIK_DELETE))
 	{
-	case kJUMP:		
-		cur_pos.y += 0.1f;
-		break;
-	case kCROUCH:	
-		cur_pos.y -= 0.1f;
-		break;
-	case kFWD:	
-		cur_pos.z += 0.1f;
-		break;
-	case kBACK:
-		cur_pos.z -= 0.1f;
-		break;
-	case kL_STRAFE:
-		cur_pos.x -= 0.1f;
-		break;
-	case kR_STRAFE:
-		cur_pos.x += 0.1f;
-		break;
-	case kCAM_1:	
-		cam_Set(eacFirstEye);				
-		break;
-	case kCAM_2:	
-		cam_Set(eacLookAt);				
-		break;
-	case kCAM_3:	
-		cam_Set(eacFreeLook);
-		break;
-	case kNIGHT_VISION:
-		SwitchNightVision();
-		break;
-	case kTORCH:
-		SwitchTorch();
-		break;
-	case kDETECTOR:
+        collide::rq_result RQ = GetPickResult(cam_Active()->Position(), cam_Active()->Direction(), 1000.0f, this);
+        if (RQ.element>=0)
+            SetPhPosition(XFORM().translate(Fvector(cam_Active()->Position()).mad(Fvector(cam_Active()->Direction()), RQ.range)));
+    }
+
+	switch (cmd)
+	{
+		case kJUMP:
+			cur_pos.mad({ 0,1,0 }, scale / 2.0f);
+			if (m_pPhysicsShell)
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,1,0 }, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			break;
+		case kCROUCH:
+			cur_pos.mad({ 0,-1,0 }, scale / 2.0f);
+			if (m_pPhysicsShell)
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,-1,0 }, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			break;
+		case kFWD:
+			cur_pos.mad(cam_Active()->vDirection, scale / 2.0f);
+			if (m_pPhysicsShell)
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, cam_Active()->vDirection, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			break;
+		case kBACK:
+			cur_pos.mad(Fvector(cam_Active()->vDirection).invert(), scale / 2.0f);
+			if (m_pPhysicsShell)
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, Fvector(cam_Active()->vDirection).invert(), (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			break;
+		case kR_STRAFE:
+			right.set(cam_Active()->Right());
+			cur_pos.mad(right, scale / 2.0f);
+			if (m_pPhysicsShell)
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, right, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			break;
+		case kL_STRAFE:
+			left.set(Fvector(cam_Active()->Right()).invert());
+			cur_pos.mad(left, scale / 2.0f);
+			if (m_pPhysicsShell)
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, left, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			break;
+		case kCAM_1:
+		    cam_Set(eacFirstEye);
+		    break;
+		case kCAM_2:
+		    cam_Set(eacLookAt);
+		    break;
+		case kCAM_3:
+		    cam_Set(eacFreeLook);
+		    break;
+		case kNIGHT_VISION:
+			SwitchNightVision();
+			break;
+		case kTORCH:
+			SwitchTorch();
+			break;
+		case kUSE:
+			ActorUse();
+			break;
+		case kDETECTOR:
 		{
+			if ((mstate_real&mcClimb)) break;
 			PIItem det_active = inventory().ItemFromSlot(DETECTOR_SLOT);
 			if(det_active)
 			{
 				CCustomDetector* det = smart_cast<CCustomDetector*>(det_active);
-				det->ToggleDetector(g_player_hud->attached_item(0)!=NULL);
+				if (det)
+					det->ToggleDetector(g_player_hud->attached_item(0)!=NULL);
 				return;
 			}
-		}
-		break;
-	case kUSE:
-		ActorUse();
-		break;
+		}break;
 	}
-	cur_pos.mul(scale);
-	Fmatrix	mOrient;
-	mOrient.rotateY(-(cam_Active()->GetWorldYaw()));
-	mOrient.transform_dir(cur_pos);
-	Position().add(cur_pos);
-	character_physics_support()->movement()->SetPosition(Position());
+	if(!m_pPhysicsShell)
+		SetPhPosition(XFORM().translate_add(cur_pos.mul(scale * Device.fTimeDelta)));
+
+	if(inventory().Action((u16)cmd, CMD_START))return;
 }
 #endif //DEBUG
