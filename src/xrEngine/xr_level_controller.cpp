@@ -271,7 +271,9 @@ ENGINE_API _keyboard* dik_to_ptr(int _dik, bool bSafe)
 ENGINE_API int	keyname_to_dik (LPCSTR _name)
 {
 	_keyboard* _kb = keyname_to_ptr(_name);
-	return _kb->dik;
+    if (_kb)
+		return _kb->dik;
+    return 0;
 }
 
 ENGINE_API _keyboard*	keyname_to_ptr(LPCSTR _name)
@@ -360,17 +362,14 @@ ENGINE_API void GetActionAllBinding		(LPCSTR _action, char* dst_buff, int dst_bu
 	sec[0]		= 0;
 
 	if(pbinding->m_keyboard[0])
-	{
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
-	}
+
 	if(pbinding->m_keyboard[1])
-	{
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
-	}
-	if(NULL==pbinding->m_keyboard[0] && NULL==pbinding->m_keyboard[1])
-	{
+
+	if(NULL == pbinding->m_keyboard[0] && NULL == pbinding->m_keyboard[1])
 		xr_sprintf		(dst_buff, dst_buff_sz, "%s", CStringTable().translate("st_key_notbinded").c_str());
-	}else
+	else
 		xr_sprintf		(dst_buff, dst_buff_sz, "%s%s%s", prim[0]?prim:"", (sec[0]&&prim[0])?" , ":"", sec[0]?sec:"");
 					
 }
@@ -453,6 +452,23 @@ public:
 			}
 		}
 	}
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        for (int idx = 0; idx < bindings_count; ++idx) {
+            if (idx > bindings_count)
+                continue;
+            _binding* pbinding = &g_key_bindings[idx];
+            if (!pbinding)
+                continue;
+            if (!pbinding->m_action)
+                continue;
+            if (!pbinding->m_action->action_name)
+                continue;
+            tips.push_back(pbinding->m_action->action_name);
+        }
+        IConsole_Command::fill_tips(tips, mode);
+    }
 };
 
 class CCC_UnBind : public IConsole_Command
@@ -469,6 +485,23 @@ public:
 
 		CStringTable::ReparseKeyBindings();
 	}
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        for (int idx = 0; idx < bindings_count; ++idx) {
+            if (idx > bindings_count)
+                continue;
+            _binding* pbinding = &g_key_bindings[idx];
+            if (!pbinding)
+                continue;
+            if (!pbinding->m_action)
+                continue;
+            if (!pbinding->m_action->action_name)
+                continue;
+            tips.push_back(pbinding->m_action->action_name);
+        }
+        IConsole_Command::fill_tips(tips, mode);
+    }
 };
 
 class CCC_ListActions : public IConsole_Command
@@ -558,13 +591,24 @@ public:
 		_GetItem				(args,cnt-1,key,' ');
 
 		int dik					= keyname_to_dik(key);
-		bindConsoleCmds.bind	(dik, console_command);
+        if (dik)
+			bindConsoleCmds.bind	(dik, console_command);
 	}
 
 	virtual void Save(IWriter* F) 
 	{
 		bindConsoleCmds.save(F);
 	}
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        CConsole::vecCMD_IT it;
+        for (it = Console->Commands.begin(); it != Console->Commands.end(); it++) {
+            IConsole_Command& C = *(it->second);
+            tips.push_back(C.Name());
+        }
+        IConsole_Command::fill_tips(tips, mode);
+    }
 
 };
 
@@ -576,9 +620,23 @@ public:
 
 	virtual void Execute(LPCSTR args) 
 	{
+        if (bindConsoleCmds.m_bindConsoleCmds.empty())
+            return;
 		int _dik = keyname_to_dik	(args);
-		bindConsoleCmds.unbind		(_dik);
+		if(_dik)
+			bindConsoleCmds.unbind		(_dik);
 	}
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        xr_map<int, _conCmd>::iterator it = bindConsoleCmds.m_bindConsoleCmds.begin();
+        for (; it != bindConsoleCmds.m_bindConsoleCmds.end(); ++it) 
+		{
+            if (bindConsoleCmds.m_bindConsoleCmds.empty())
+                continue;
+            LPCSTR keyname = dik_to_keyname(it->first);
+            tips.push_back(keyname);
+        }
+    }
 };
 
 void ConsoleBindCmds::bind(int dik, LPCSTR N)
@@ -617,7 +675,7 @@ void ConsoleBindCmds::save(IWriter* F)
 	for(;it!=m_bindConsoleCmds.end();++it)
 	{
 		LPCSTR keyname		= dik_to_keyname(it->first);
-		F->w_printf("bind_console %s %s\n", *it->second.cmd, keyname);
+		F->w_printf("bind_console %s%s\r\n", *it->second.cmd, keyname);
 	}
 }
 

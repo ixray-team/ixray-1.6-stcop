@@ -53,3 +53,4 @@ src/GitParser/git_version.h
 build/
 build_win32/
 build32/
+imgui.ini
