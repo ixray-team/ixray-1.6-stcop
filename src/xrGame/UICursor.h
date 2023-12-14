@@ -24,6 +24,12 @@ public:
 	virtual void	OnScreenResolutionChanged	();
 
 	bool			IsVisible					() {return bVisible;}
-	void			Show						() {bVisible = true;}
+	void			Show						()
+	{
+		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
+		bVisible = true;
+	}
 	void			Hide						() {bVisible = false;}
 };
