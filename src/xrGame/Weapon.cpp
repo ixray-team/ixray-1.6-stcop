@@ -105,11 +105,6 @@ void CWeapon::Hit					(SHit* pHDS)
 
 void CWeapon::UpdateXForm	()
 {
-	if (Device.dwFrame == dwXF_Frame)
-		return;
-
-	dwXF_Frame				= Device.dwFrame;
-
 	if (!H_Parent())
 		return;
 
@@ -188,7 +183,9 @@ void CWeapon::UpdateXForm	()
 	}
 	else {		
 		D.normalize			();
+
 		R.crossproduct		(mR.j,D);
+		R.normalize			();
 
 		N.crossproduct		(D,R);			
 		N.normalize			();
@@ -785,12 +782,15 @@ void CWeapon::OnH_A_Independent	()
 	inherited::OnH_A_Independent();
 	Light_Destroy				();
 	UpdateAddonsVisibility		();
+	Engine.Sheduler.Unregister(this);
 };
 
 void CWeapon::OnH_A_Chield		()
 {
 	inherited::OnH_A_Chield		();
 	UpdateAddonsVisibility		();
+	shedule.t_min = shedule.t_max = 1;
+	Engine.Sheduler.Register(this, TRUE);
 };
 
 void CWeapon::OnActiveItem ()

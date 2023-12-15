@@ -54,7 +54,7 @@ public:
 
 	virtual void			UpdateCL			();
 	virtual void			shedule_Update		(u32 dt);
-
+	virtual bool			register_schedule() const {return false;};
 	virtual void			renderable_Render	();
 	virtual void			render_hud_mode		();
 	virtual bool			need_renderable		();
