@@ -131,7 +131,7 @@ static void mar_encode_value(lua_State* L, mar_Buffer* buf, int val, size_t* idx
         lua_pushvalue(L, -1);
         lua_rawget(L, SEEN_IDX);
         if (!lua_isnil(L, -1)) {
-            ref = lua_tointeger(L, -1);
+            ref = (int)lua_tointeger(L, -1);
             tag = MAR_TREF;
             buf_write(L, (void*)&tag, MAR_CHR, buf);
             buf_write(L, (void*)&ref, MAR_I32, buf);
@@ -189,7 +189,7 @@ static void mar_encode_value(lua_State* L, mar_Buffer* buf, int val, size_t* idx
         lua_pushvalue(L, -1);
         lua_rawget(L, SEEN_IDX);
         if (!lua_isnil(L, -1)) {
-            ref = lua_tointeger(L, -1);
+            ref = (int)lua_tointeger(L, -1);
             tag = MAR_TREF;
             buf_write(L, (void*)&tag, MAR_CHR, buf);
             buf_write(L, (void*)&ref, MAR_I32, buf);
@@ -243,7 +243,7 @@ static void mar_encode_value(lua_State* L, mar_Buffer* buf, int val, size_t* idx
         lua_pushvalue(L, -1);
         lua_rawget(L, SEEN_IDX);
         if (!lua_isnil(L, -1)) {
-            ref = lua_tointeger(L, -1);
+            ref = (int)lua_tointeger(L, -1);
             tag = MAR_TREF;
             buf_write(L, (void*)&tag, MAR_CHR, buf);
             buf_write(L, (void*)&ref, MAR_I32, buf);
@@ -303,10 +303,10 @@ static int mar_encode_table(lua_State* L, mar_Buffer* buf, size_t* idx)
 }
 
 #define mar_incr_ptr(l) \
-    if (((*p)-buf)+(l) > len) luaL_error(L, "bad code"); (*p) += (l);
+    if ((size_t)(((*p)-buf)+(l)) > len) luaL_error(L, "bad code"); (*p) += (l);
 
 #define mar_next_len(l,T) \
-    if (((*p)-buf)+sizeof(T) > len) luaL_error(L, "bad code"); \
+    if ((size_t)((*p)-buf)+sizeof(T) > len) luaL_error(L, "bad code"); \
     l = *(T*)*p; (*p) += sizeof(T);
 
 static void mar_decode_value
@@ -353,7 +353,7 @@ static void mar_decode_value
             lua_call(L, 0, 1);
             lua_remove(L, -2);
             lua_pushvalue(L, -1);
-            lua_rawseti(L, SEEN_IDX, (*idx)++);
+            lua_rawseti(L, SEEN_IDX, (int)((*idx)++));
             mar_incr_ptr(l);
         }
         else {
@@ -382,7 +382,7 @@ static void mar_decode_value
             mar_incr_ptr(l);
 
             lua_pushvalue(L, -1);
-            lua_rawseti(L, SEEN_IDX, (*idx)++);
+            lua_rawseti(L, SEEN_IDX, (int)((*idx)++));
 
             mar_next_len(l, uint32_t);
             lua_newtable(L);
@@ -413,7 +413,7 @@ static void mar_decode_value
             lua_call(L, 0, 1);
             lua_remove(L, -2);
             lua_pushvalue(L, -1);
-            lua_rawseti(L, SEEN_IDX, (*idx)++);
+            lua_rawseti(L, SEEN_IDX, (int)((*idx)++));
             mar_incr_ptr(l);
         }
         else { /* tag == MAR_TVAL */
@@ -434,7 +434,8 @@ static int mar_decode_table(lua_State* L, const char* buf, size_t len, size_t* i
 {
     const char* p;
     p = buf;
-    while (p - buf < len) {
+    while ((size_t)(p - buf) < len) 
+    {
         mar_decode_value(L, buf, len, &p, idx);
         mar_decode_value(L, buf, len, &p, idx);
         lua_settable(L, -3);
@@ -462,7 +463,7 @@ static int mar_encode(lua_State* L)
     len = lua_objlen(L, 2);
     lua_newtable(L);
     for (idx = 1; idx <= len; idx++) {
-        lua_rawgeti(L, 2, idx);
+        lua_rawgeti(L, 2, (int)idx);
         if (lua_isnil(L, -1)) {
             lua_pop(L, 1);
             continue;
@@ -509,8 +510,8 @@ static int mar_decode(lua_State* L)
     len = lua_objlen(L, 2);
     lua_newtable(L);
     for (idx = 1; idx <= len; idx++) {
-        lua_rawgeti(L, 2, idx);
-        lua_rawseti(L, SEEN_IDX, idx);
+        lua_rawgeti(L, 2, (int)idx);
+        lua_rawseti(L, SEEN_IDX, (int)idx);
     }
 
     p = s;
