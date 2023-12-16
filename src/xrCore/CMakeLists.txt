@@ -154,7 +154,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 # Marl
 target_link_libraries(xrCore PUBLIC ${CORE_MARL}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/marl.lib)
-target_include_directories(xrCore PUBLIC "${CORE_MARL}/native/include/marl")
+target_include_directories(xrCore PUBLIC "${CORE_MARL}/native/include/")
 
 # Optick
 target_link_libraries(xrCore PUBLIC ${CORE_OPT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.lib)

@@ -222,7 +222,9 @@ void CScriptStorage::reinit	()
 	else
 		file_header			= file_header_old;
 
+#ifndef NO_XRGAME_SCRIPT_ENGINE
 	lua_init_ext(lua());
+#endif
 }
 
 int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)

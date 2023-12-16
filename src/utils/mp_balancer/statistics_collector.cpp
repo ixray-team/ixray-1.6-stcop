@@ -66,7 +66,7 @@ void statistics_collector::save_file(csv_files::value_type const & val)
 	//LPCSTR new_file_name;
 	//STRCONCAT(new_file_name, val.first.c_str(), ".csv");
 	string_path new_file_name;
-	strconcat(sizeof(new_file_name), new_file_name, val.first.c_str(), ".csv");
+	xr_strconcat(new_file_name, val.first.c_str(), ".csv");
 
 	char temp_string[1024];
 	xr_string dest_string;

@@ -185,10 +185,10 @@ int main(int argc, char ** argv)
 	}
 
 	LPCSTR		file_name = argv[argc - 1];
-	LPCSTR		cmd_params = "";
+	string512 cmd_params = {};
 	for (int i = 1; i < argc; ++i)
 	{
-		STRCONCAT(cmd_params,
+		xr_strconcat(cmd_params,
 			cmd_params, " ",
 			argv[i]);
 	}
