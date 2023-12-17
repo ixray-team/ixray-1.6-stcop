@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 project(IXRay)
 
+# CMake CI options
+option(CI_IXRAY_UTILS "Build only utils" OFF)
+option(CI_IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
+
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
-option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
 option(IXRAY_PLUGIN_MAX "Enable X-Ray Plugins for Autodesk 3ds Max" OFF)
 option(IXRAY_PLUGIN_LW "Enable X-Ray Plugins for Lightwave 2020" OFF)
 option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
@@ -188,6 +191,6 @@ set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set default project
-if(NOT IXRAY_COMPRESSOR_ONLY)
+if (NOT (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY))
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
 endif()

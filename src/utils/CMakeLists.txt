@@ -2,7 +2,7 @@
 set(IXRAY_FOLDER_UTILS FOLDER "Utils")
 
 # Engine Utils
-if(IXRAY_UTILS OR IXRAY_COMPRESSOR_ONLY)
+if(IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("xrCompress")
 endif()
 
@@ -27,7 +27,7 @@ endif()
 
 # Setup properties
 if(IXRAY_UTILS)
-    if(NOT IXRAY_COMPRESSOR_ONLY)
+    if(NOT CI_IXRAY_COMPRESSOR_ONLY)
         set_target_properties(xrCompress PROPERTIES ${IXRAY_FOLDER_UTILS})
     endif()
 
@@ -50,20 +50,17 @@ if(IXRAY_UTILS)
 endif()
 
 # Set default project
-if(IXRAY_COMPRESSOR_ONLY)
+    
+if (CI_IXRAY_UTILS)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrForms)
+endif()
+
+if(CI_IXRAY_COMPRESSOR_ONLY)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrCompress)
     set_target_properties(xrEngine xrAPI xrCDB xrScripts xrSound xrCPU_Pipe xrPhysics xrParticles xrGame xrRender_R4 xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     set_target_properties(ODE luabind crypto CxImage PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 
     set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
-
-    if (IXRAY_USE_R1)
-        set_target_properties(xrRender_R1 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-    endif()
-    
-    if (IXRAY_USE_R2)
-        set_target_properties(xrRender_R2 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-    endif()
 
     if(IXRAY_UTILS)
         set_target_properties(QSlim xrDXT xrForms xrLC_Light xrLC ETools xrSE_Factory xrAI PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
@@ -72,4 +69,16 @@ if(IXRAY_COMPRESSOR_ONLY)
             set_target_properties(mp_configs_verifyer mp_balancer mp_screenshots_info mp_gpprof_server PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
         endif()
     endif()
+endif()
+
+if (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
+    if (IXRAY_USE_R1)
+        set_target_properties(xrRender_R1 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    endif()
+
+    if (IXRAY_USE_R2)
+        set_target_properties(xrRender_R2 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    endif()
+    
+    set_target_properties(xrEngine xrAbstractions xrRender_R4 xrGame xrScripts xrPhysics xrCPU_Pipe xrParticles xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 endif()

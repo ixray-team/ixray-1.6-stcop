@@ -1,4 +1,4 @@
-name: 'Build engine'
+name: 'Build'
 
 on:
   push:
@@ -27,8 +27,87 @@ defaults:
     shell: pwsh
 
 jobs:
+  
+  build-utils:
+    name: 'Utils'
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        config:
+          - Debug
+          - Release
+        platform:
+          - x64
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '>=5'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            ${{ github.workspace }}/build/packages
+          key: |
+            ${{ runner.os }}-nuget-${{ hashFiles('**/*.nupkg') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Check cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+            echo "Cache exists"
+
+      - name: Configure project
+        run: |
+          cmake `
+            -S ${{ github.workspace }} `
+            -B ${{ github.workspace }}/build `
+            -G "Visual Studio 17 2022" `
+            -A ${{ matrix.platform }} `
+            -T host=x64 `
+            -D IXRAY_UTILS=ON `
+            -D CI_IXRAY_UTILS=ON `
+            -D IXRAY_MP=OFF `
+            -D CI_IXRAY_COMPRESSOR_ONLY=OFF
+
+      - name: Build project
+        run: |
+          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          path: |
+            build/bin/${{ matrix.config }}/*.exe
+            build/bin/${{ matrix.config }}/*.dll
+
+      - name: Upload libraries
+        uses: actions/upload-artifact@v3
+        with:
+          name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          path: |
+            build/lib/${{ matrix.config }}/*.lib
+            build/lib/${{ matrix.config }}/*.exp
+
   build-engine:
-    name: 'Build engine'
+    name: 'Engine'
 
     strategy:
       matrix:
@@ -83,7 +162,7 @@ jobs:
             -T host=x64 `
             -D IXRAY_UTILS=OFF `
             -D IXRAY_MP=OFF `
-            -D IXRAY_COMPRESSOR_ONLY=OFF
+            -D CI_IXRAY_COMPRESSOR_ONLY=OFF
 
       - name: Build project
         run: |
@@ -106,7 +185,7 @@ jobs:
             build/lib/${{ matrix.config }}/*.exp
 
   build-compressor:
-    name: 'Build compressor'
+    name: 'Compressor'
 
     strategy:
       matrix:
@@ -138,7 +217,7 @@ jobs:
             -T host=x64 `
             -D IXRAY_UTILS=OFF `
             -D IXRAY_MP=OFF `
-            -D IXRAY_COMPRESSOR_ONLY=ON
+            -D CI_IXRAY_COMPRESSOR_ONLY=ON
 
       - name: Build project
         run: |
