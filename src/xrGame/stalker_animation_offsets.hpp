@@ -8,7 +8,7 @@
 #ifndef STALKER_ANIMATION_OFFSETS_HPP_INCLUDED
 #define STALKER_ANIMATION_OFFSETS_HPP_INCLUDED
 
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 #include "xrServer_Objects.h"
 
 struct SRotation;

@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "sound_player.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
 #include "../xrEngine/xr_object.h"

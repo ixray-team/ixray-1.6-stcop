@@ -13,7 +13,7 @@
 #include "../../script_entity.h"
 #include "../../sound_player.h"
 #include "../../AI_PhraseDialogManager.h"
-#include "../../../xrServerEntities/script_export_space.h"
+#include "../../../xrScripts/script_export_space.h"
 
 class CInventoryItem;
 class CArtefact;

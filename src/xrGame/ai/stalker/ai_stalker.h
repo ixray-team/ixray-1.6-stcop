@@ -12,7 +12,7 @@
 #include "../../object_handler.h"
 #include "../../AI_PhraseDialogManager.h"
 #include "../../step_manager.h"
-#include "../../../xrServerEntities/script_export_space.h"
+#include "../../../xrScripts/script_export_space.h"
 
 #ifdef DEBUG
 	template <typename _object_type>

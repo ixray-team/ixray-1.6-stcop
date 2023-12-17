@@ -5,7 +5,7 @@
 #include "../controlled_entity.h"
 #include "../controlled_actor.h"
 #include "../anim_triple.h"
-#include "../../../../xrServerEntities/script_export_space.h"
+#include "../../../../xrScripts/script_export_space.h"
 #include "bloodsucker_alien.h"
 
 

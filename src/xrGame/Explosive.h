@@ -8,7 +8,7 @@
 #include "../xrEngine/feel_touch.h"
 #include "inventory_item.h"
 #include "ai_sounds.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "../xrphysics/DamageSource.h"
 #include "wallmark_manager.h"
 #include "ParticlesObject.h"

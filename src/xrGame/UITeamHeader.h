@@ -8,7 +8,7 @@
 #include "game_cl_base.h"
 #include "string_table.h"
 #include "level.h"
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 class CUIStatic;
 

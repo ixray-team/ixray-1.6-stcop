@@ -16,7 +16,7 @@
 #include "ui_defs.h"
 
 #include "step_manager.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 using namespace ACTOR_DEFS;
 

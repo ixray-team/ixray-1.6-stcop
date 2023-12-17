@@ -9,7 +9,7 @@
 #include "gameobject.h"
 #include "physicsshellholder.h"
 #include "PHSkeleton.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 // refs
 class CLAItem;
 class CPhysicsElement;

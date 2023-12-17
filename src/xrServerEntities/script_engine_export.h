@@ -12,7 +12,7 @@
 #include "script_fcolor.h"
 #include "script_fmatrix.h"
 #include "script_flags.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "script_token_list.h"
 #include "script_rtoken_list.h"
 #include "script_ini_file.h"

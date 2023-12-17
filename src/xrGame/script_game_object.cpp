@@ -11,7 +11,7 @@
 #include "script_game_object.h"
 #include "script_entity_action.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "script_entity.h"
 #include "physicsshellholder.h"
 #include "helicopter.h"

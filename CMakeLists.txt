@@ -126,6 +126,7 @@ add_subdirectory("src/xrEngine")
 add_subdirectory("src/xrCPU_Pipe")
 add_subdirectory("src/xrPhysics")
 add_subdirectory("src/xrParticles")
+add_subdirectory("src/xrScripts")
 
 add_subdirectory("src/plugins")
 
@@ -159,6 +160,7 @@ set_target_properties(xrCPU_Pipe PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrAbstractions PROPERTIES ${IXRAY_FOLDER_ENGINE})
+set_target_properties(xrScripts PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
 
 if(IXRAY_MP)

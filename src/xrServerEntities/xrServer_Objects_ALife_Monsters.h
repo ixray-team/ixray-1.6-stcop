@@ -12,7 +12,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "character_info_defs.h"
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 #include "alife_movement_manager_holder.h"
 
 class CALifeMonsterBrain;

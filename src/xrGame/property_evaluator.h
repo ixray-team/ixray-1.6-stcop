@@ -9,7 +9,7 @@
 #pragma once
 
 #include "property_storage.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "action_management_config.h"
 
 class CScriptGameObject;

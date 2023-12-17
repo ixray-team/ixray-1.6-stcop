@@ -5,10 +5,6 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Object factory inline functions
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef object_factory_inlineH
-#define object_factory_inlineH
-
 #pragma once
 
 IC	const CObjectFactory &object_factory()
@@ -17,7 +13,7 @@ IC	const CObjectFactory &object_factory()
 		g_object_factory		= xr_new<CObjectFactory>();
 		g_object_factory->init	();
 	}
-	return						(*g_object_factory);
+	return						(*(CObjectFactory*)g_object_factory);
 }
 
 IC	bool CObjectFactory::CObjectItemPredicate::operator()	(const CObjectItemAbstract *item1, const CObjectItemAbstract *item2) const
@@ -138,5 +134,3 @@ IC	void CObjectFactory::actualize										() const
 	m_actual			= true;
 	std::sort			(m_clsids.begin(),m_clsids.end(),CObjectItemPredicate());
 }
-
-#endif

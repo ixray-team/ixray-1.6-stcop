@@ -2,7 +2,7 @@
 
 #include "../xrphysics/iphysics_scripted.h"
 #include "../xrphysics/physicsshell.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CPhysicsShell;
 class cphysics_element_scripted;

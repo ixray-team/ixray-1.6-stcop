@@ -3,7 +3,7 @@
 
 #include "../xrEngine/ISheduled.h"
 #include "profile_data_types.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "queued_async_method.h"
 #include "gsc_dsigned_ltx.h"
 #include "best_scores_store.h"

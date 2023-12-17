@@ -10,7 +10,7 @@
 
 #include "action_base.h"
 #include "action_planner.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CScriptGameObject;
 

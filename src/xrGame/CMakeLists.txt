@@ -144,11 +144,13 @@ target_compile_definitions(xrGame PRIVATE XRGAME_EXPORTS)
 target_compile_definitions(xrGame PRIVATE dSINGLE)
 
 add_compile_options(/fp:fast)
+add_compile_options(/FS)
 target_compile_definitions(xrGame PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrGame PUBLIC xrAbstractions)
 target_link_libraries(xrGame PUBLIC xrPhysics)
+target_link_libraries(xrGame PUBLIC xrScripts)
 target_link_libraries(xrGame PUBLIC crypto)
 target_link_libraries(xrGame PUBLIC CxImage)
 

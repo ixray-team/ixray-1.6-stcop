@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 typedef class_exporter<CRenderDevice> CScriptRenderDevice;
 add_to_type_list(CScriptRenderDevice)

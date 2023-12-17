@@ -7,8 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 typedef class_exporter<Fmatrix> CScriptFmatrix;
 add_to_type_list(CScriptFmatrix)

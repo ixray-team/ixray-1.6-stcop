@@ -11,11 +11,11 @@ const float	RCAST_DepthValid = 0.2f;
 
 IC void BoxQuery(Fbox& BB, bool exact)
 {
-	if (exact) 		XRC.box_options	(CDB::OPT_FULL_TEST);
-	else			XRC.box_options	(0);
+	if (exact) 		IXRC.box_options	(CDB::OPT_FULL_TEST);
+	else			IXRC.box_options	(0);
 	Fvector			C,D;
 	BB.get_CD		(C,D);
-	XRC.box_query	(&Level,C,D);
+	IXRC.box_query	(&Level,C,D);
 }
 
 struct tri {
@@ -32,7 +32,7 @@ BOOL	ValidNode(vertex& N)
 	Fbox	B2;				B2.set	(PointDown,PointDown);	B2.grow(g_params.fPatchSize/2);	// box 2
 	BB.merge(B2			);
 	BoxQuery(BB,false	);
-	u32	dwCount = XRC.r_count();
+	u32	dwCount = IXRC.r_count();
 	if (dwCount==0)	{
 		Log("chasm1");
 		return FALSE;			// chasm?
@@ -44,8 +44,8 @@ BOOL	ValidNode(vertex& N)
 	for (u32 i=0; i<dwCount; i++)
 	{
 		tri&		D = tris.last();
-		CDB::RESULT&rp = XRC.r_begin()[i];
-		*(Level.get_tris()+XRC.r_begin()[i].id);
+		CDB::RESULT&rp = IXRC.r_begin()[i];
+		*(Level.get_tris()+ IXRC.r_begin()[i].id);
 
 		D.v[0].set	(rp.verts[0]);
 		D.v[1].set	(rp.verts[1]);

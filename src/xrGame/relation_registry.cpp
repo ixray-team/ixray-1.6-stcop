@@ -13,7 +13,7 @@
 
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 
 //////////////////////////////////////////////////////////////////////////

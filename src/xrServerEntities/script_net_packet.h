@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 class NET_Packet;
 
 typedef class_exporter<NET_Packet> CScriptNetPacket;

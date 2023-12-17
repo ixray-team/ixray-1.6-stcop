@@ -9,8 +9,8 @@
 #define SMART_COVER_LOOPHOLE_H_INCLUDED
 
 #include "smart_cover_detail.h"
-#include "script_space_forward.h"
-#include "associative_vector.h"
+#include "../xrScripts/script_space_forward.h"
+#include "../xrCore/associative_vector.h"
 #include "graph_abstract.h"
 #include "smart_cover_action.h"
 

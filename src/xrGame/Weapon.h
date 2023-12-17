@@ -14,6 +14,7 @@
 
 #include "CameraRecoil.h"
 #include "Actor.h"
+#include "script_game_object.h"
 
 class CEntity;
 class ENGINE_API CMotionDef;

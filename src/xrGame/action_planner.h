@@ -12,7 +12,7 @@
 #include "action_base.h"
 #include "property_evaluator.h"
 #include "property_storage.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "ai_debug.h"
 
 class CScriptGameObject;

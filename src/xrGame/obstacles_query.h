@@ -10,7 +10,7 @@
 #define OBSTACLES_QUERY_H
 
 #include "object_broker.h"
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 class CGameObject;
 

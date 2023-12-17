@@ -10,7 +10,7 @@
 
 #include "restricted_object.h"
 #include "detail_path_manager_space.h"
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 using namespace DetailPathManager;
 

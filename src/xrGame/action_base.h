@@ -10,7 +10,7 @@
 
 #include "action_management_config.h"
 #include "property_storage.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "operator_abstract.h"
 #include "alife_space.h"
 

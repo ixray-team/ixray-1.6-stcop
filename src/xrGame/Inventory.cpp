@@ -10,7 +10,7 @@
 #include "ui/UIActorMenu.h"
 
 #include "eatable_item.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "xrmessages.h"
 #include "xr_level_controller.h"
 #include "level.h"

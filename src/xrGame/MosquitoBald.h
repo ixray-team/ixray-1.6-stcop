@@ -1,7 +1,7 @@
 #pragma once
 
 #include "customzone.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CMosquitoBald : public CCustomZone
 {

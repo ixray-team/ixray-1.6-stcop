@@ -1,7 +1,7 @@
 #pragma once
 
 #include "grenade.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CF1 :
 	public CGrenade

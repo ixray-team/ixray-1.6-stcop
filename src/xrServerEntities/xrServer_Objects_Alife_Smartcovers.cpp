@@ -16,7 +16,7 @@
 
 #ifdef XRSE_FACTORY_EXPORTS
 #	include "ai_space.h"
-#	include "script_engine.h"
+#	include "../xrScripts/script_engine.h"
 #	pragma warning(push)
 #	pragma warning(disable:4995)
 #		include <luabind/luabind.hpp>

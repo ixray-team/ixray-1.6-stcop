@@ -1,10 +1,6 @@
 #pragma once
-
-
 #include "uiframewindow.h"
 #include "uilistbox.h"
-
-#include "../../xrServerEntities/script_export_space.h"
 
 class CUIPropertiesBox:
 	public CUIFrameWindow,

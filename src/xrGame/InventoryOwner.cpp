@@ -9,7 +9,7 @@
 #include "xrserver_objects_alife_items.h"
 #include "character_info.h"
 #include "script_game_object.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "AI_PhraseDialogManager.h"
 #include "level.h"
 #include "game_base_space.h"

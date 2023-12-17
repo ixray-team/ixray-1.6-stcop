@@ -15,7 +15,7 @@
 #include "date_time.h"
 #include "uigamesp.h"
 #include "restricted_object.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "attachable_item.h"
 #include "script_entity.h"
 #include "string_table.h"

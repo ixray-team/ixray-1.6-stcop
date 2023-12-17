@@ -10,7 +10,7 @@
 
 #include "game_graph_space.h"
 #include "alife_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CMovementManagerHolder;
 class CALifeSmartTerrainTask;

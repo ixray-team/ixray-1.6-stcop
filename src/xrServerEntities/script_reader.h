@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 typedef class_exporter<IReader> CScriptReader;
 add_to_type_list(CScriptReader)

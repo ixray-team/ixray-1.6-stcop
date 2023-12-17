@@ -3,7 +3,7 @@
 
 
 #include "gametype_chooser.h"
-#include "xrServer_Objects_Abstract.h"
+//#include "xrServer_Objects_Abstract.h"
 //old
 enum ERPGameType{		// [0..255]
 	rpgtGameAny							= u8(0),
@@ -73,6 +73,7 @@ void GameTypeChooser::SaveLTX(CInifile& ini, LPCSTR sect_name)
 #endif
 
 #ifndef XRGAME_EXPORTS
+#include "xrServer_Objects_Abstract.h"
 void  GameTypeChooser::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	PHelper().CreateGameType		(items, PrepareKey(pref, "Game Type"), this);

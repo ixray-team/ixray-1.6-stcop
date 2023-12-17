@@ -38,7 +38,6 @@ private:
 	CEF_Storage							*m_ef_storage;
 	CALifeSimulator						*m_alife_simulator;
 	CCoverManager						*m_cover_manager;
-	CScriptEngine						*m_script_engine;
 	CPatrolPathStorage					*m_patrol_path_storage;
 	moving_objects						*m_moving_objects;
 	doors::manager						*m_doors_manager;

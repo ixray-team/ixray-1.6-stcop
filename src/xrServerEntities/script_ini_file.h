@@ -9,7 +9,7 @@
 #pragma once
 
 #include "script_token_list.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CScriptIniFile : public CInifile {
 protected:

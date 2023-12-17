@@ -10,7 +10,7 @@
 
 #include "alife_interaction_manager.h"
 #include "alife_update_manager.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 #pragma warning(push)
 #pragma warning(disable:4005)

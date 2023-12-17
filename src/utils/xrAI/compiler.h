@@ -111,7 +111,7 @@ extern	xr_vector<SCover>	g_covers_palette;
 extern	Lights				g_lights;
 extern	SAIParams			g_params;
 extern	CDB::MODEL			Level;
-extern	CDB::COLLIDER		XRC;
+extern	CDB::COLLIDER		IXRC;
 extern	Fbox				LevelBB;
 //extern	Vectors				Emitters;
 
