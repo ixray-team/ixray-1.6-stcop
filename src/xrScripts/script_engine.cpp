@@ -379,7 +379,7 @@ void CScriptEngine::process_file_if_exists	(LPCSTR file_name, bool warn_if_not_e
 		FS.update_path		(S,"$game_scripts$", xr_strconcat(S1,file_name,".script"));
 		if (!warn_if_not_exist && !FS.exist(S))
 		{
-#ifdef DEBUG
+#ifdef XRSE_FACTORY_EXPORTS
 			print_stack			();
 			Msg					("* trying to access variable %s, which doesn't exist, or to load script %s, which doesn't exist too",file_name,S1);
 #endif
