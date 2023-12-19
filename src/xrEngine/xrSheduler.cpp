@@ -417,7 +417,7 @@ void CSheduler::Switch				()
 */
 void CSheduler::Update				()
 {
-	PROFILE_BEGIN_FRAME("Scheduler frame");
+	PROFILE_BEGIN_THREAD("Scheduler frame");
 	{
 		SCOPE_EVENT_NAME_GROUP("Scheduler", "Engine");
 

@@ -169,3 +169,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 add_dependencies(xrCore GitParser)
+
+if (IXRAY_USE_OPTICK)
+    target_compile_definitions(xrCore PUBLIC "USE_OPTICK")
+endif()

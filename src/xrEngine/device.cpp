@@ -127,7 +127,7 @@ void mt_Thread(void* ptr)
 	g_AppInfo.SecondaryThread = GetCurrentThread();
 	while (true)
 	{
-		PROFILE_BEGIN_FRAME("SeqParallel");
+		PROFILE_BEGIN_THREAD("SeqParallel");
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter();
 
@@ -197,6 +197,7 @@ void CRenderDevice::on_idle		()
 	}
 
 	Profile::BeginFrame("Frame");
+	PROFILE_BEGIN_FRAME("Frame");
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !Device.IsCapturingInputs();

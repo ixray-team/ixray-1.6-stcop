@@ -183,24 +183,39 @@ public:
 };
 
 // Use this if you want to profile something
-#ifndef DISABLE_PROFILER
-#define PROFILE_BEGIN_FRAME(Name) if (!IsMainThread()) Profile::BeginFrame(Name)
-#define PROFILE_END_FRAME() if (!IsMainThread()) Profile::EndFrame()
+#ifdef USE_OPTICK
+#	include <optick.h>
 
-#define SCOPE_EVENT() \
-	ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(FUNCTION_SIGNATURE, __FILE__, __LINE__)
-#define SCOPE_EVENT_GROUP(Group) \
-	ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(FUNCTION_SIGNATURE, __FILE__, __LINE__, Group)
+#	define PROFILE_BEGIN_THREAD(Name) OPTICK_THREAD(Name)
+#	define PROFILE_BEGIN_FRAME(Name) OPTICK_FRAME(Name)
+#	define PROFILE_END_FRAME()
 
-#define SCOPE_EVENT_NAME(Name) \
-	ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(Name, FUNCTION_SIGNATURE, __FILE__, __LINE__)
-#define SCOPE_EVENT_NAME_GROUP(Name, Group) \
+#	define SCOPE_EVENT(...) OPTICK_EVENT(...)
+#	define SCOPE_EVENT_GROUP(Group) OPTICK_EVENT(...)
+
+#	define SCOPE_EVENT_NAME(Name) OPTICK_EVENT(Name)
+#	define SCOPE_EVENT_NAME_GROUP(Name, Group) OPTICK_EVENT(Name)
+
+#elif !defined(DISABLE_PROFILER)
+#	define PROFILE_BEGIN_FRAME(Name) if (!IsMainThread()) Profile::BeginFrame(Name)
+#	define PROFILE_END_FRAME() if (!IsMainThread()) Profile::EndFrame()
+
+#	define PROFILE_BEGIN_THREAD(Name) PROFILE_BEGIN_FRAME(Name)
+#	define SCOPE_EVENT() \
+		ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(FUNCTION_SIGNATURE, __FILE__, __LINE__)
+#	define SCOPE_EVENT_GROUP(Group) \
+		ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(FUNCTION_SIGNATURE, __FILE__, __LINE__, Group)
+
+#	define SCOPE_EVENT_NAME(Name) \
+		ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(Name, FUNCTION_SIGNATURE, __FILE__, __LINE__)
+#	define SCOPE_EVENT_NAME_GROUP(Name, Group) \
 	ScopeProfileEvent EVENT_CONCAT(autogen_name_, __LINE__)(Name, FUNCTION_SIGNATURE, __FILE__, __LINE__, Group)
 #else
-#define PROFILE_BEGIN_FRAME(Name)
-#define PROFILE_END_FRAME()
-#define SCOPE_EVENT()
-#define SCOPE_EVENT_GROUP(Group) 
-#define SCOPE_EVENT_NAME(Name) 
-#define SCOPE_EVENT_NAME_GROUP(Name, Group) 
+#	define PROFILE_BEGIN_FRAME(Name)
+#	define PROFILE_END_FRAME()
+#	define PROFILE_BEGIN_THREAD(Name)
+#	define SCOPE_EVENT()
+#	define SCOPE_EVENT_GROUP(Group) 
+#	define SCOPE_EVENT_NAME(Name) 
+#	define SCOPE_EVENT_NAME_GROUP(Name, Group) 
 #endif
