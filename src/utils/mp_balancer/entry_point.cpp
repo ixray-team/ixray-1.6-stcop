@@ -2,7 +2,7 @@
 #include "wpn_collection.hpp"
 #include "statistics_collector.hpp"
 
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	Core._initialize("mp_ballancer", NULL, TRUE, "fsgame4mpu.ltx");
 	
@@ -27,4 +27,6 @@ void main(int argc, char* argv[])
 	} 
 			
 	Core._destroy	();
+
+	return 0;
 }
