@@ -189,7 +189,7 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
-void CRenderDevice::on_idle		()
+void CRenderDevice::on_idle()
 {
 	if (!b_is_Ready) {
 		Sleep(100);
@@ -216,45 +216,51 @@ void CRenderDevice::on_idle		()
 		pApp->LoadDraw();
 		Profile::EndFrame();
 		return;
-	} else {
+	}
+	else {
 		FrameMove();
 	}
 
 	// Precache
 	if (dwPrecacheFrame)
 	{
-		float factor					= float(dwPrecacheFrame) / float(dwPrecacheTotal);
-		float angle						= PI_MUL_2 * factor;
-		vCameraDirection.set			(_sin(angle),0,_cos(angle));	vCameraDirection.normalize	();
-		vCameraTop.set					(0,1,0);
-		vCameraRight.crossproduct		(vCameraTop,vCameraDirection);
+		float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+		float angle = PI_MUL_2 * factor;
+		vCameraDirection.set(_sin(angle), 0, _cos(angle));	vCameraDirection.normalize();
+		vCameraTop.set(0, 1, 0);
+		vCameraRight.crossproduct(vCameraTop, vCameraDirection);
 
-		mView.build_camera_dir			(vCameraPosition,vCameraDirection,vCameraTop);
+		mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
 	}
 
 	// Matrices
-	mFullTransform.mul			( mProject,mView	);
+	mFullTransform.mul(mProject, mView);
 	m_pRender->SetCacheXform(mView, mProject);
 
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
 
-	vCameraPosition_saved	= vCameraPosition;
-	mFullTransform_saved	= mFullTransform;
-	mView_saved				= mView;
-	mProject_saved			= mProject;
+	vCameraPosition_saved = vCameraPosition;
+	mFullTransform_saved = mFullTransform;
+	mView_saved = mView;
+	mProject_saved = mProject;
 
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
-	mt_csLeave.Enter			();
-	mt_csEnter.Leave			();
-	Sleep						(0);
+	{
+		SCOPE_EVENT_NAME_GROUP("Main", "Thread Sync");
+		mt_csLeave.Enter();
+		mt_csEnter.Leave();
+	}
 
-	if (!g_dedicated_server) {
-		SCOPE_EVENT_NAME_GROUP("Render", "Render");
-		if (b_is_Active) {
-			if (Begin()) {
+	if (!g_dedicated_server)
+	{
+		if (b_is_Active) 
+		{
+			SCOPE_EVENT_NAME_GROUP("Render", "Render");
+			if (Begin()) 
+			{
 				seqRender.Process(rp_Render);
 				End();
 			}
@@ -264,15 +270,16 @@ void CRenderDevice::on_idle		()
 	// *** Suspend threads
 	// Capture startup point
 	// Release end point - allow thread to wait for startup point
-	mt_csEnter.Enter						();
-	mt_csLeave.Leave						();
+	mt_csEnter.Enter();
+	mt_csLeave.Leave();
 
 	// Ensure, that second thread gets chance to execute anyway
-	if (dwFrame!=mt_Thread_marker)			{
-		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]			();
+	if (dwFrame != mt_Thread_marker) {
+		SCOPE_EVENT_NAME_GROUP("Main: SeqParallel", "Main: SeqParallel");
+		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+			Device.seqParallel[pit]();
 		Device.seqParallel.clear();
-		seqFrameMT.Process					(rp_Frame);
+		seqFrameMT.Process(rp_Frame);
 	}
 
 	if (!g_dedicated_server && (!g_pGameLevel || g_pGamePersistent->m_pMainMenu->IsActive()))
@@ -289,7 +296,9 @@ void CRenderDevice::on_idle		()
 	Device.EndRender();
 	Profile::EndFrame();
 	if (!b_is_Active)
-		Sleep		(1);
+	{
+		Sleep(1);
+	}
 }
 
 bool quiting = false;
