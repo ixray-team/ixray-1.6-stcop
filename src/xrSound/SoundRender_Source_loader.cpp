@@ -126,6 +126,7 @@ void CSoundRender_Source::unload()
     dwBytesTotal					= 0;
 
 	if (m_wave) {
+		ov_clear(&m_ovf);
 		FS.r_close(m_wave);
 	}
 }
