@@ -25,12 +25,6 @@ class CLensFlareDescriptor;
 
 #	define	INGAME_EDITOR_VIRTUAL
 
-ENGINE_API extern Flags32 psEnvironmentFlags;
-
-enum {
-	ENABLE_READ_SUN_CONFIG = (1 << 0),
-};
-
 // t-defs
 class ENGINE_API	CEnvModifier
 {
