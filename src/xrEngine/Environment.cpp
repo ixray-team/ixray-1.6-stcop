@@ -43,9 +43,6 @@ static const float			MAX_NOISE_FREQ	= 0.03f;
 
 const float MAX_DIST_FACTOR = 0.95f;
 
-Flags32 psEnvironmentFlags {
-};
-
 //////////////////////////////////////////////////////////////////////////
 // environment
 CEnvironment::CEnvironment	() :
@@ -508,7 +505,7 @@ void CEnvironment::OnFrame()
 	lerp					(current_weight);
 
 	// Igor. Dynamic sun position. 
-	bool isReadSunConfig = psEnvironmentFlags.test(ENABLE_READ_SUN_CONFIG);
+	bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
 	if (!isReadSunConfig && !::Render->is_sun_static()) {
 		calculate_dynamic_sun_dir();
 	}

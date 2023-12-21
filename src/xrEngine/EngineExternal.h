@@ -27,6 +27,13 @@ enum class EEngineExternalRender
 	None
 };
 
+enum class EEngineExternalEnvironment
+{
+	ReadSunConfig,
+	None
+};
+
+
 class ENGINE_API CEngineExternal final
 {
 	CInifile* pOptions = nullptr;
@@ -41,6 +48,7 @@ public:
 	bool operator[](const EEngineExternalPhysical& ID) const;
 	bool operator[](const EEngineExternalGame& ID) const;
 	bool operator[](const EEngineExternalRender& ID) const;
+	bool operator[](const EEngineExternalEnvironment& ID) const;
 };
 
 ENGINE_API CEngineExternal& EngineExternal();
