@@ -326,6 +326,9 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		}
 		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
 	}
+
+	if (GetState() == eIdle)
+		SwitchState(eIdle);
 }
 
 void CWeaponMagazined::ReloadMagazine() 
