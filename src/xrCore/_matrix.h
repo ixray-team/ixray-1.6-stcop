@@ -633,6 +633,42 @@ public:
 	IC	void	getXYZ	(Tvector& xyz) const{getXYZ(xyz.x,xyz.y,xyz.z);}
 	IC	void	getXYZi	(T& x, T& y, T& z) const{getHPB(y,x,z);x*=-1.f;y*=-1.f;z*=-1.f;}
 	IC	void	getXYZi	(Tvector& xyz) const{getXYZ(xyz.x,xyz.y,xyz.z);xyz.mul(-1.f);}
+
+	IC SelfRef OrthographicOffCenterLH
+	(
+	    float ViewLeft,
+	    float ViewRight,
+	    float ViewBottom,
+	    float ViewTop,
+	    float NearZ,
+	    float FarZ
+	)
+	{
+	    float ReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
+	    float ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
+	    float fRange = 1.0f / (FarZ - NearZ);
+
+	    m[0][0] = ReciprocalWidth + ReciprocalWidth;
+	    m[0][1] = 0.0f;
+	    m[0][2] = 0.0f;
+	    m[0][3] = 0.0f;
+	
+	    m[1][0] = 0.0f;
+	    m[1][1] = ReciprocalHeight + ReciprocalHeight;
+	    m[1][2] = 0.0f;
+	    m[1][3] = 0.0f;
+	
+	    m[2][0] = 0.0f;
+	    m[2][1] = 0.0f;
+	    m[2][2] = fRange;
+	    m[2][3] = 0.0f;
+	
+	    m[3][0] = -(ViewLeft + ViewRight) * ReciprocalWidth;
+	    m[3][1] = -(ViewTop + ViewBottom) * ReciprocalHeight;
+	    m[3][2] = -fRange * NearZ;
+	    m[3][3] = 1.0f;
+	    return *this;
+	}
 };
 
 typedef		_matrix<float>	Fmatrix;
