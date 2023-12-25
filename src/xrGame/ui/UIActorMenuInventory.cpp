@@ -41,29 +41,28 @@ void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 void CUIActorMenu::InitInventoryMode()
 {
-	m_pInventoryBagList->Show			(true);
-	m_pInventoryBeltList->Show			(true);
-	m_pInventoryOutfitList->Show		(true);
-	m_pInventoryHelmetList->Show		(true);
-	m_pInventoryDetectorList->Show		(true);
-	m_pInventoryPistolList->Show		(true);
-	m_pInventoryAutomaticList->Show		(true);
-	m_pQuickSlot->Show					(true);
-	m_pTrashList->Show					(true);
-	m_RightDelimiter->Show				(false);
+	m_pInventoryBagList->Show(true);
+	m_pInventoryBeltList->Show(true);
 
-	InitInventoryContents				(m_pInventoryBagList);
+	for (u8 i = 1; i <= m_slot_count; ++i)
+	{
+		if (m_pInvList[i])
+			m_pInvList[i]->Show(true);
+	}
+	m_pQuickSlot->Show(true);
+	m_pTrashList->Show(true);
+	m_RightDelimiter->Show(false);
 
-	VERIFY( CurrentGameUI() );
+	InitInventoryContents(m_pInventoryBagList);
+
+	VERIFY(CurrentGameUI());
 	CurrentGameUI()->UIMainIngameWnd->ShowZoneMap(true);
-//	m_clock_value->Show					(true);
 }
 
 void CUIActorMenu::DeInitInventoryMode()
 {
-	m_pTrashList->Show				(false);
-	clear_highlight_lists			();
-//	m_clock_value->Show				(false);
+	m_pTrashList->Show(false);
+	clear_highlight_lists();
 }
 
 void CUIActorMenu::SendEvent_ActivateSlot(u16 slot, u16 recipient)
@@ -243,11 +242,6 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 	CUIDragDropListEx* all_lists[] =
 	{
 		m_pInventoryBeltList,
-		m_pInventoryPistolList,
-		m_pInventoryAutomaticList,
-		m_pInventoryOutfitList,
-		m_pInventoryHelmetList,
-		m_pInventoryDetectorList,
 		m_pInventoryBagList,
 		m_pTradeActorBagList,
 		m_pTradeActorList,
@@ -269,9 +263,6 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					pl.type		= eItemPlaceRuck;
 					pl.slot_id	= GRENADE_SLOT;
 				}
-#ifdef _DEBUG
-				Msg("item place [%d]", pl);
-#endif // #ifndef MASTER_GOLD
 
 				if(pl.type==eItemPlaceSlot)
 					lst_to_add						= GetSlotList(pl.slot_id);
@@ -305,7 +296,24 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					}
 					++i;
 				}
-				CUICellItem*		ci   = NULL;
+				
+				for (u8 i = 1; i <= m_slot_count; ++i)
+				{
+					CUIDragDropListEx* curr = m_pInvList[i];
+					if (curr)
+					{
+						CUICellItem* ci = NULL;
+						if (FindItemInList(curr, pItem, ci))
+						{
+							if (lst_to_add != curr)
+								RemoveItemFromList(curr, pItem);
+							else
+								b_already = true;
+						}
+					}
+				}
+
+				CUICellItem* ci = nullptr;
 				if(GetMenuMode()==mmDeadBodySearch && FindItemInList(m_pDeadBodyBagList, pItem, ci))
 					break;
 
@@ -340,13 +348,22 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					CUIDragDropListEx* curr = all_lists[i];
 					if(RemoveItemFromList(curr, pItem))
 					{
-#ifndef MASTER_GOLD
-						Msg("all ok. item [%d] removed from list", pItem->object_id());
-#endif // #ifndef MASTER_GOLD
 						break;
 					}
 					++i;
 				}
+				
+				for (u8 i = 1; i <= m_slot_count; ++i)
+				{
+					CUIDragDropListEx* curr = m_pInvList[i];
+					if (curr)
+					{
+						if (RemoveItemFromList(curr, pItem))
+							break;
+					}
+				}
+
+
 				if(m_pActorInvOwner)
 					m_pQuickSlot->ReloadReferences(m_pActorInvOwner);
 			}break;
@@ -423,16 +440,19 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 	m_UIPropertiesBox->Hide		();
 	SetCurrentItem				(NULL);
 
-	CUIDragDropListEx*			curr_list = NULL;
-	//Slots
-	InitCellForSlot				(INV_SLOT_2);
-	InitCellForSlot				(INV_SLOT_3);
-	InitCellForSlot				(OUTFIT_SLOT);
-	InitCellForSlot				(DETECTOR_SLOT);
-	InitCellForSlot				(GRENADE_SLOT);
-	InitCellForSlot				(HELMET_SLOT);
+	for (u8 i = 1; i <= m_slot_count; ++i)
+	{
+		if (m_pInvList[i])
+			InitCellForSlot(i);
+		else
+		{
+			if (i != BOLT_SLOT && i != PDA_SLOT && !m_pActorInvOwner->inventory().SlotIsPersistent(i))
+				InitCellForSlot(i);
+		}
+	}
 
-	curr_list					= m_pInventoryBeltList;
+
+	CUIDragDropListEx* curr_list = m_pInventoryBeltList;
 	TIItemContainer::iterator itb = m_pActorInvOwner->inventory().m_belt.begin();
 	TIItemContainer::iterator ite = m_pActorInvOwner->inventory().m_belt.end();
 	for ( ; itb != ite; ++itb )
@@ -686,43 +706,21 @@ bool CUIActorMenu::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 		return result;
 	}
 }
+
 CUIDragDropListEx* CUIActorMenu::GetSlotList(u16 slot_idx)
 {
-	if ( slot_idx == NO_ACTIVE_SLOT )
+	if (slot_idx == NO_ACTIVE_SLOT)
 	{
 		return NULL;
 	}
-	switch ( slot_idx )
-	{
-		case INV_SLOT_2:
-			return m_pInventoryPistolList;
-			break;
 
-		case INV_SLOT_3:
-			return m_pInventoryAutomaticList;
-			break;
+	if (m_pInvList[slot_idx])
+		return m_pInvList[slot_idx];
 
-		case OUTFIT_SLOT:
-			return m_pInventoryOutfitList;
-			break;
+	if (m_currMenuMode == mmTrade)
+		return m_pTradeActorBagList;
 
-		case HELMET_SLOT:
-			return m_pInventoryHelmetList;
-			break;
-
-		case DETECTOR_SLOT:
-			return m_pInventoryDetectorList;
-			break;
-
-		case GRENADE_SLOT://fake
-			if ( m_currMenuMode == mmTrade )
-			{
-				return m_pTradeActorBagList;
-			}
-			return m_pInventoryBagList;
-			break;
-	};
-	return NULL;
+	return m_pInventoryBagList;
 }
 
 bool CUIActorMenu::TryUseItem( CUICellItem* cell_itm )

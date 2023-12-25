@@ -26,9 +26,9 @@ public:
 	bool			IsVisible					() {return bVisible;}
 	void			Show						()
 	{
-		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-		SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
+		float screenWidth = (float)GetSystemMetrics(SM_CXSCREEN);
+		float screenHeight = (float)GetSystemMetrics(SM_CYSCREEN);
+		SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2.f, screenHeight / 2.f);
 		bVisible = true;
 	}
 	void			Hide						() {bVisible = false;}
