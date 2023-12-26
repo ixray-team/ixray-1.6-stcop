@@ -1,14 +1,6 @@
 #ifndef _STD_EXT_internal
 #define _STD_EXT_internal
 
-#define	BREAK_AT_STRCMP
-#ifndef DEBUG
-#undef  BREAK_AT_STRCMP
-#endif
-#ifdef  _EDITOR
-#undef  BREAK_AT_STRCMP
-#endif
-
 #ifdef abs
 #undef abs
 #endif
@@ -188,12 +180,8 @@ IC u32							xr_strlen				( const char* S )
 IC char*						xr_strlwr				(char* S)
 {	return _strlwr(S);				}
 
-#ifdef BREAK_AT_STRCMP
-XRCORE_API	int					xr_strcmp				( const char* S1, const char* S2 );
-#else
 IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return (int)strcmp(S1,S2);  }
-#endif
 
 #ifndef  _EDITOR
 #ifndef MASTER_GOLD
