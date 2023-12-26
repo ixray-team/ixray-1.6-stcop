@@ -182,7 +182,7 @@ void CAMDReader::InitDeviceInfo()
 {
 	GetAdapter_NumberOfAdapters(&AdapterADLInfo);
 
-	std::shared_ptr< AdapterInfo > AdapterInfos;
+	xr_shared_ptr< AdapterInfo > AdapterInfos;
 	AdapterInfos.reset(new AdapterInfo[AdapterADLInfo]);
 
 	// Get the AdapterInfo structure for all adapters in the system

@@ -4,7 +4,7 @@
 
 class CPhraseDialog;
 
-typedef intrusive_ptr<CPhraseDialog>	DIALOG_SHARED_PTR;
+using DIALOG_SHARED_PTR = xr_shared_ptr<CPhraseDialog>;
 
 #include "PhraseDialog.h"
 
