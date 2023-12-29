@@ -128,7 +128,7 @@ CInifileEx::~CInifileEx( )
 	if (!m_flags.test(eReadOnly) && m_flags.test(eSaveAtEnd)) 
 	{
 		if (!save_as())
-			Log		("!Can't save inifile:",m_file_name);
+			Msg("!Can't save inifile: %s", m_file_name);
 	}
 
 	RootIt			I = DATA.begin();
@@ -671,7 +671,7 @@ void CInifileEx::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
     	if (0==xr_strcmp(*it->first, *I.first)) 
 		{
 			BOOL b = m_flags.test(eOverrideNames);
-			R_ASSERT2(b,make_string("name[%s] already exist in section[%s]",line,sect).c_str());
+			R_ASSERT2(b,make_string("name[%s] already exist in section[%s]",line,sect));
             *it  = I;
 		} else 
 		{

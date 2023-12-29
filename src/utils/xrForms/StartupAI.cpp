@@ -120,7 +120,7 @@ static HMODULE hFactory;
 void InitialFactory()
 {
 	LPCSTR g_name = "xrSE_Factory.dll";
-	Log("Loading DLL:", g_name);
+	Msg("Loading DLL: %s", g_name);
 	hFactory = LoadLibraryA(g_name);
 
 	if (0 == hFactory)		

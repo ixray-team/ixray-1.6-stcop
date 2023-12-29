@@ -171,20 +171,23 @@ void logThread(void* dummy)
 
 		BOOL bWasChanges = FALSE;
 		char tbuf[256];
-		csLog.Enter();
-		if (LogSize != LogFile->size())
 		{
-			bWasChanges = TRUE;
-			for (; LogSize < LogFile->size(); LogSize++)
+			xrCriticalSection::raii LogGuard(&csLog);
+
+			if (LogSize != xrLogger::logData.size())
 			{
-				const char* S = *(*LogFile)[LogSize];
-				if (0 == S)	S = "";
-				SendMessageA(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
+				bWasChanges = TRUE;
+				for (size_t Iter = 0; Iter < xrLogger::logData.size(); Iter++)
+				{
+					const char* S = xrLogger::logData.front().Message.c_str();
+					if (!S)
+						S = "";
+					SendMessage(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
+				}
+				SendMessage(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
+				xrLogger::FlushLog();
 			}
-			SendMessageA(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
-			//FlushLog		( );
 		}
-		csLog.Leave();
 		if (_abs(PrSave - progress) > EPS_L) {
 			bWasChanges = TRUE;
 			PrSave = progress;

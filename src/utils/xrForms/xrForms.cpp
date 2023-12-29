@@ -89,7 +89,7 @@ void Startup(LPSTR lpCmdLine)
 
 	// Close log
 	bClose = TRUE;
-	FlushLog();
+	xrLogger::FlushLog();
 	Sleep(200);
 }
 
