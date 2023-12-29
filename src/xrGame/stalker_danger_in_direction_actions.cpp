@@ -134,6 +134,10 @@ void CStalkerActionDangerInDirectionLookOut::execute							()
 {
 	inherited::execute		();
 
+	// This action should verify the danger object exists; sanity
+	if (!object().memory().danger().selected())
+		return;
+
 //	CMemoryInfo							mem_object = object().memory().memory(object().memory().danger().selected()->object());
 //
 //	if (!mem_object.m_object)

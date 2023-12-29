@@ -193,6 +193,10 @@ void CAI_Stalker::process_enemies		()
 			continue;
 		}
 
+		// Only transfer enemy if I can see member at this very moment!
+		if (!memory().visual().visible_now(member))
+			continue;
+
 		memory().make_object_visible_somewhen	(member->memory().enemy().selected());
 		found					= true;
 		break;

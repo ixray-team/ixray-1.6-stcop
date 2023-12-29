@@ -758,9 +758,9 @@ void CStalkerActionDetourEnemy::initialize		()
 	object().agent_manager().member().member(m_object).cover(0);
 
 //#ifndef SILENT_COMBAT
-	if (object().memory().enemy().selected()->human_being() && object().agent_manager().member().group_behaviour())
-//		object().sound().play			(eStalkerSoundNeedBackup);
-		object().sound().play			(eStalkerSoundDetour);
+	if (object().memory().enemy().selected() && object().memory().enemy().selected()->human_being() && object().agent_manager().member().group_behaviour())
+		//object().sound().play(eStalkerSoundNeedBackup);
+		object().sound().play(eStalkerSoundDetour);
 //#endif
 }
 
@@ -779,6 +779,9 @@ void CStalkerActionDetourEnemy::execute			()
 #endif // TEST_MENTAL_STATE
 
 	inherited::execute					();
+
+	if (!object().memory().enemy().selected())
+		return;
 
 	CMemoryInfo							mem_object = object().memory().memory(object().memory().enemy().selected());
 
@@ -980,8 +983,9 @@ void CStalkerActionSuddenAttack::execute					()
 
 	inherited::execute		();
 
-	if (object().agent_manager().member().combat_members().size() > 1)
-		m_storage->set_property	(eWorldPropertyUseSuddenness,false);
+	// Removed check to allow stalkers to sneak up on enemy even if they are in a squad; most likely removed because of friendly fire but not an issue with rx_ff scheme
+	//if (object().agent_manager().member().combat_members().size() > 1)
+	//	m_storage->set_property	(eWorldPropertyUseSuddenness,false);
 
 	if (!object().memory().enemy().selected())
 		return;
@@ -1090,6 +1094,9 @@ void CStalkerActionKillEnemyIfPlayerOnThePath::execute			()
 
 	inherited::execute					();
 	
+	if (!object().memory().enemy().selected())
+		return;
+
 	object().sight().setup				(CSightAction(object().memory().enemy().selected(),true,true));
 
 	fire								();
