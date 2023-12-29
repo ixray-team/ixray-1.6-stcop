@@ -181,7 +181,7 @@ bool EFS_Utils::GetOpenNameInternal( LPCSTR initial,  LPSTR buffer, int sz_buf, 
 	}
 	if (bRes && bMulti)
 	{
-		Log				("buff=",buffer);
+		Msg("buff=%s", buffer);
 		int cnt			= _GetItemCount(buffer,0x0);
 		if (cnt>1)
 		{

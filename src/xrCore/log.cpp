@@ -1,137 +1,23 @@
 #include "stdafx.h"
-#pragma hdrstop
 
 #include <time.h>
 #include "resource.h"
 #include "log.h"
-#ifdef _EDITOR
-	#include "malloc.h"
-#endif
 
-extern BOOL					LogExecCB		= TRUE;
-static string_path			logFName		= "engine.log";
-static string_path			log_file_name	= "engine.log";
-static BOOL 				no_log			= TRUE;
-#ifdef PROFILE_CRITICAL_SECTIONS
-	static xrCriticalSection	logCS(MUTEX_PROFILE_ID(log));
-#else // PROFILE_CRITICAL_SECTIONS
-	static xrCriticalSection	logCS;
-#endif // PROFILE_CRITICAL_SECTIONS
-xr_vector<shared_str>*		LogFile			= NULL;
-static LogCallback			LogCB			= 0;
+static xrLogger theLogger;
+XRCORE_API xr_queue <xrLogger::LogRecord> xrLogger::logData;
 
-void FlushLog			()
+void Log(const char* s)
 {
-	if (!no_log){
-		logCS.Enter			();
-		IWriter *f			= FS.w_open(logFName);
-        if (f) {
-            for (u32 it=0; it<LogFile->size(); it++)	{
-				LPCSTR		s	= *((*LogFile)[it]);
-				f->w_string	(s?s:"");
-			}
-            FS.w_close		(f);
-        }
-		logCS.Leave			();
-    }
+	theLogger.SimpleMessage(s);
 }
 
-void AddOne				(const char *split) 
-{
-	if(!LogFile)		
-						return;
-
-	logCS.Enter			();
-
-	if (IsDebuggerPresent()) {
-		OutputDebugStringA(split);
-		OutputDebugStringA("\n");
-	}
-
-//	DUMP_PHASE;
-	{
-		shared_str			temp = shared_str(split);
-//		DUMP_PHASE;
-		LogFile->push_back	(temp);
-	}
-
-	//exec CallBack
-	if (LogExecCB&&LogCB)LogCB(split);
-
-	logCS.Leave				();
-}
-
-void Log				(const char *s) 
-{
-	int		i,j;
-
-	u32			length = xr_strlen( s );
-#ifndef _EDITOR    
-	PSTR split  = (PSTR)_alloca( (length + 1) * sizeof(char) );
-#else
-	PSTR split  = (PSTR)alloca( (length + 1) * sizeof(char) );
-#endif
-	for (i=0,j=0; s[i]!=0; i++) {
-		if (s[i]=='\n') {
-			split[j]=0;	// end of line
-			if (split[0]==0) { split[0]=' '; split[1]=0; }
-			AddOne(split);
-			j=0;
-		} else {
-			split[j++]=s[i];
-		}
-	}
-	split[j]=0;
-	AddOne(split);
-}
-
-void __cdecl Msg		( const char *format, ...)
+void Msg(const char *format, ...)
 {
 	va_list		mark;
-	string2048	buf;
 	va_start	(mark, format );
-	int sz		= _vsnprintf(buf, sizeof(buf)-1, format, mark ); buf[sizeof(buf)-1]=0;
+	theLogger.Msg(format, mark);
     va_end		(mark);
-	if (sz)		Log(buf);
-}
-
-void Log(const char* msg, const char* dop)
-{
-	if (!dop) {
-		Log(msg);
-		return;
-	}
-
-	//u32			buffer_size = (xr_strlen(msg) + 1 + xr_strlen(dop) + 1) * sizeof(char);
-	string1024 buf;
-	xr_strconcat(buf, msg, " ", dop);
-	Log(buf);
-}
-
-void Log				(const char *msg, u32 dop) {
-	u32			buffer_size = (xr_strlen(msg) + 1 + 10 + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size, "%s %d", msg, dop);
-	Log			(buf);
-}
-
-void Log				(const char *msg, int dop) {
-	u32			buffer_size = (xr_strlen(msg) + 1 + 11 + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size, "%s %i", msg, dop);
-	Log			(buf);
-}
-
-void Log				(const char *msg, float dop) {
-	// actually, float string representation should be no more, than 40 characters,
-	// but we will count with slight overhead
-	u32			buffer_size = (xr_strlen(msg) + 1 + 64 + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
-
-	xr_sprintf	(buf, buffer_size, "%s %f", msg, dop);
-	Log			(buf);
 }
 
 void Log				(const char *msg, const Fvector &dop) {
@@ -156,48 +42,203 @@ void Log				(const char *msg, const Fmatrix &dop)	{
 	Log			(buf);
 }
 
-void LogWinErr			(const char *msg, long err_code)	{
-	Msg					("%s: %s",msg,Debug.error2string(err_code)	);
+void xrLogger::Msg(LPCSTR Msg, va_list argList)
+{
+	string4096	formattedMessage;
+	int MsgSize = _vsnprintf(formattedMessage, sizeof(formattedMessage) - 1, Msg, argList);
+	formattedMessage[MsgSize] = 0;
+
+	if (IsDebuggerPresent() && bFastDebugLog)
+	{
+		OutputDebugStringA(formattedMessage);
+		OutputDebugStringA("\n");
+	}
+
+	SimpleMessage(formattedMessage, MsgSize);
 }
 
-LogCallback SetLogCB	(LogCallback cb)
+void xrLogger::SimpleMessage(LPCSTR Message, u32 MessageSize /*= 0*/)
 {
-	LogCallback	result	= LogCB;
-	LogCB				= cb;
-	return				(result);
+	switch (MessageSize)
+	{
+	case (u32(-1)): return;
+	case 0:			MessageSize = xr_strlen(Message); break;
+	default:		break;
+	}
+	xrCriticalSection::raii guard(&logDataGuard);
+	logData.emplace(LogRecord(Message, MessageSize));
 }
 
-LPCSTR log_name			()
+void xrLogger::OpenLogFile()
 {
-	return				(log_file_name);
+	theLogger.InternalOpenLogFile();
 }
 
-void InitLog()
+const string_path& xrLogger::GetLogPath()
 {
-	R_ASSERT			(LogFile==NULL);
-	LogFile				= xr_new< xr_vector<shared_str> >();
-	LogFile->reserve	(1000);
+	return theLogger.logFileName;
 }
 
-void CreateLog			(BOOL nl)
+void xrLogger::EnableFastDebugLog()
 {
-    no_log				= nl;
-	xr_strconcat(log_file_name,Core.ApplicationName,"_",Core.UserName,".log");
+	theLogger.bFastDebugLog = true;
+}
+
+void LogThreadEntryStartup(void* nullParam)
+{
+	theLogger.LogThreadEntry();
+}
+
+void xrLogger::InitLog()
+{
+	thread_spawn(LogThreadEntryStartup, "X-Ray Log Thread", 0, nullptr);
+}
+
+void xrLogger::FlushLog()
+{
+	theLogger.bFlushRequested = true;
+}
+
+void xrLogger::CloseLog()
+{
+	FlushLog();
+	theLogger.InternalCloseLog();
+}
+
+void xrLogger::AddLogCallback(LogCallback logCb)
+{
+	if (logCb == nullptr) return;
+	theLogger.logCallbackList.push_back(logCb);
+}
+
+void xrLogger::RemoveLogCallback(LogCallback logCb)
+{
+	theLogger.logCallbackList.remove(logCb);
+}
+
+void xrLogger::InternalCloseLog()
+{
+	if (hLogThread != NULL)
+	{
+		bIsAlive = false;
+		WaitForSingleObject(hLogThread, INFINITE);
+		hLogThread = NULL;
+	}
+
+	IWriter* tempCopy = (IWriter*)logFile;
+	logFile = nullptr;
+	FS.w_close(tempCopy);
+}
+
+xrLogger::xrLogger()
+	: logFile(nullptr), bFastDebugLog(false), 
+	bIsAlive(true), hLogThread(NULL), 
+	bFlushRequested(false)
+{}
+
+xrLogger::~xrLogger()
+{
+	InternalCloseLog();
+}
+
+void xrLogger::InternalOpenLogFile()
+{
+	string256 CurrentDate;
+	string256 CurrentTime;
+	
+	Time time;
+	xr_strconcat(CurrentDate, time.GetDayString().c_str(), "." , time.GetMonthString().c_str(), "." , time.GetDayString().c_str());
+	xr_strconcat(CurrentTime, time.GetHoursString().c_str(), ".", time.GetMinutesString().c_str(), ".", time.GetSecondsString().c_str());
+
+	xr_strconcat(logFileName, "[", CurrentDate, " " , CurrentTime, "] ", Core.ApplicationName, "_", Core.UserName, ".log");
 	if (FS.path_exist("$logs$"))
-		FS.update_path	(logFName,"$logs$",log_file_name);
-	if (!no_log){
-        IWriter *f		= FS.w_open	(logFName);
-        if (f==NULL){
-        	MessageBoxA	(NULL,"Can't create log file.","Error",MB_ICONERROR);
-        	abort();
-        }
-        FS.w_close		(f);
-    }
+	{
+		FS.update_path(logFileName, "$logs$", logFileName);
+	}
+	logFile = FS.w_open(logFileName);
+	CHECK_OR_EXIT(logFile, "Can't create log file");
 }
 
-void CloseLog(void)
+void xrLogger::LogThreadEntry()
 {
-	FlushLog		();
- 	LogFile->clear	();
-	xr_delete		(LogFile);
+	bool isDebug = IsDebuggerPresent();
+
+	auto FlushLogIfRequestedLambda = [this]()
+	{
+		if (bFlushRequested)
+		{
+			if (logFile != nullptr)
+			{
+				IWriter* mutableWritter = (IWriter*)logFile;
+				mutableWritter->flush();
+			}
+		}
+	};
+
+	while (bIsAlive)
+	{
+		bool bHaveMore = true;
+		LogRecord theRecord;
+
+		do
+		{
+			{
+				xrCriticalSection::raii guard(&logDataGuard);
+				if (!logData.empty())
+				{
+					theRecord = logData.front();
+					logData.pop();
+					bHaveMore = !logData.empty();
+				}
+				else break; // we don't have any messages
+			}
+
+			xr_vector<xr_string> LogLines = theRecord.Message.Split('\n');
+
+			string256 TimeOfDay = {};
+			//int TimeOfDaySize = xr_sprintf(TimeOfDay, "[%s.%s.%s] ",
+			//	theRecord.time.GetHoursString().c_str(), theRecord.time.GetMinutesString().c_str(), theRecord.time.GetSecondsString().c_str());
+			
+			int TimeOfDaySize = 0;
+			for (const xr_string& line : LogLines)
+			{
+				string4096 finalLine;
+				xr_strconcat(finalLine, TimeOfDay, line.c_str());
+
+				int FinalSize = TimeOfDaySize + (int)line.size();
+				// line is ready, ready up everything
+
+				// Output to MSVC debug output
+				if (isDebug && !bFastDebugLog)
+				{
+					OutputDebugStringA(finalLine);
+					OutputDebugStringA("\n");
+				}
+
+				if (logFile != nullptr)
+				{
+					IWriter* mutableWritter = (IWriter*)logFile;
+					// write to file
+					mutableWritter->w(finalLine, FinalSize);
+					mutableWritter->w("\r\n", 2);
+				}
+
+				for (const LogCallback& FnCallback : logCallbackList)
+				{
+					FnCallback(finalLine);
+				}
+			}
+
+		} while (bHaveMore);
+
+		FlushLogIfRequestedLambda();
+
+		Sleep(13); // work at 60 FPS roughly
+	}
+
+	FlushLogIfRequestedLambda();
 }
+
+xrLogger::LogRecord::LogRecord(LPCSTR Msg, u32 sizeMsg)
+	: Message(Msg, sizeMsg)
+{}

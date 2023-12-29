@@ -707,7 +707,7 @@ class CCC_FlushLog : public IConsole_Command {
 public:
 	CCC_FlushLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR /**args/**/) {
-		FlushLog();
+		xrLogger::FlushLog();
 		Msg		("* Log file has been saved successfully!");
 	}
 };
@@ -716,8 +716,8 @@ class CCC_ClearLog : public IConsole_Command {
 public:
 	CCC_ClearLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR) {
-		LogFile->clear();
-		FlushLog				();
+		Console->ClearLog();
+		xrLogger::FlushLog				();
 		Msg						("* Log file has been cleaned successfully!");
 	}
 };

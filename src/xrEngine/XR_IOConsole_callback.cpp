@@ -44,9 +44,14 @@ void CConsole::Register_callbacks()
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
 {
 	scroll_delta++;
-	if ( scroll_delta > int(LogFile->size())-1 )
+	scroll_delta = std::min<int>(scroll_delta, (int)m_log_history.GetSize());
+
+	// check for empty line
+	xrCriticalSection::raii guard(&m_log_history_guard);
+	const shared_str& line = m_log_history.GetLooped(m_log_history.GetHead() - u32(scroll_delta) - 5u);
+	if (line.size() == 0)
 	{
-		scroll_delta = (int)LogFile->size()-1;
+		scroll_delta--;
 	}
 }
 
@@ -61,7 +66,7 @@ void CConsole::Next_log() // DIK_NEXT=PAGE_DOWN
 
 void CConsole::Begin_log() // PAGE_UP+Ctrl
 {
-	scroll_delta = (int)LogFile->size()-1;
+	scroll_delta = 0;
 }
 
 void CConsole::End_log() // PAGE_DOWN+Ctrl

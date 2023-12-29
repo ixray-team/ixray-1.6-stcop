@@ -324,7 +324,7 @@ bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_i
 		else
 		{
 			FATAL( make_string( "! Upgrade <%s> of item [%s] (id = %d) is EMPTY or FAILED !",
-				upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id() ).c_str() );
+				upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id() ));
 		}
 	}
 

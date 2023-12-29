@@ -223,8 +223,7 @@ void CTextConsole::OnPaint()
 	EndPaint( m_hLogWnd, &ps );
 }
 
-void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
-{
+void CTextConsole::DrawLog(HDC hDC, RECT* pRect) {
 	TEXTMETRIC tm;
 	GetTextMetrics(hDC, &tm);
 
@@ -241,86 +240,94 @@ void CTextConsole::DrawLog( HDC hDC, RECT* pRect )
 	LPCSTR s_edt = ec().str_edit();
 	LPCSTR s_cur = ec().str_before_cursor();
 
-	u32 cur_len = xr_strlen( s_cur ) + xr_strlen( ch_cursor ) + 1;
-	PSTR buf = (PSTR)_alloca( cur_len * sizeof(char) );
-	xr_strcpy( buf, cur_len, s_cur );
-	xr_strcat( buf, cur_len, ch_cursor );
-	buf[cur_len-1] = 0;
+	u32 cur_len = xr_strlen(s_cur) + xr_strlen(ch_cursor) + 1;
+	PSTR buf = (PSTR)_alloca(cur_len * sizeof(char));
+	xr_strcpy(buf, cur_len, s_cur);
+	xr_strcat(buf, cur_len, ch_cursor);
+	buf[cur_len - 1] = 0;
 
-	u32 cur0_len = xr_strlen( s_cur );
+	u32 cur0_len = xr_strlen(s_cur);
 
 	int xb = 25;
-	
-	SetTextColor( hDC, RGB(255, 255, 255) );
-	TextOutA( hDC, xb, Height-tm.tmHeight-1, buf, cur_len-1 );
-	buf[ cur0_len ] = 0;
-	
+
+	SetTextColor(hDC, RGB(255, 255, 255));
+	TextOutA(hDC, xb, Height - tm.tmHeight - 1, buf, cur_len - 1);
+	buf[cur0_len] = 0;
+
 	SetTextColor(hDC, RGB(0, 0, 0));
-	TextOutA( hDC, xb, Height-tm.tmHeight-1, buf, cur0_len );
+	TextOutA(hDC, xb, Height - tm.tmHeight - 1, buf, cur0_len);
 
 
-	SetTextColor( hDC, RGB(255, 255, 255) );
-	TextOutA( hDC, 0, Height-tm.tmHeight-3, ioc_prompt, xr_strlen(ioc_prompt) ); // ">>> "
+	SetTextColor(hDC, RGB(255, 255, 255));
+	TextOutA(hDC, 0, Height - tm.tmHeight - 3, ioc_prompt, xr_strlen(ioc_prompt)); // ">>> "
 
-	SetTextColor( hDC, (COLORREF)bgr2rgb(get_mark_color( mark11 )) );
-	TextOutA( hDC, xb, Height-tm.tmHeight-3, s_edt, xr_strlen(s_edt) );
+	SetTextColor(hDC, (COLORREF)bgr2rgb(get_mark_color(mark11)));
+	TextOutA(hDC, xb, Height - tm.tmHeight - 3, s_edt, xr_strlen(s_edt));
 
-	SetTextColor( hDC, RGB(205, 205, 225) );
-	u32 log_line = (u32)LogFile->size()-1;
+	SetTextColor(hDC, RGB(205, 205, 225));
+	u32 log_line = (u32)m_log_history.GetSize() - 1;
 	string16 q, q2;
-	_itoa( log_line, q, 10 );
-	xr_strcpy( q2, sizeof(q2), "[" );
-	xr_strcat( q2, sizeof(q2), q );
-	xr_strcat( q2, sizeof(q2), "]" );
-	u32 qn = xr_strlen( q2 );
+	_itoa(log_line, q, 10);
+	xr_strcpy(q2, sizeof(q2), "[");
+	xr_strcat(q2, sizeof(q2), q);
+	xr_strcat(q2, sizeof(q2), "]");
+	u32 qn = xr_strlen(q2);
 
-	TextOutA( hDC, Width - 8 * qn, Height-tm.tmHeight-tm.tmHeight, q2, qn );
-
-	int ypos = Height - tm.tmHeight - tm.tmHeight;
-	for( int i = (int)LogFile->size()-1-scroll_delta; i >= 0; --i )
+	TextOutA(hDC, Width - 8 * qn, Height - tm.tmHeight - tm.tmHeight, q2, qn);
 	{
-		ypos -= tm.tmHeight;
-		if ( ypos < y_top_max )
+		xrCriticalSection::raii guardLog(&m_log_history_guard);
+		u32 log_line = m_log_history.GetSize();
+
+		int ypos = Height - tm.tmHeight - tm.tmHeight;
+		for (u32 i = scroll_delta; i < log_line; ++i)
 		{
-			break;
+			const shared_str& logLine = m_log_history.GetLooped(m_log_history.GetTail() - i);
+
+			if (!logLine.size()) {
+				continue;
+			}
+
+			ypos -= tm.tmHeight;
+			if (ypos < y_top_max)
+			{
+				break;
+			}
+
+			LPCSTR ls = logLine.c_str();
+
+			Console_mark cm = (Console_mark)ls[0];
+			COLORREF     c2 = (COLORREF)bgr2rgb(get_mark_color(cm));
+			SetTextColor(hDC, c2);
+			u8 b = (is_mark(cm)) ? 2 : 0;
+			LPCSTR pOut = ls + b;
+
+			BOOL res = TextOutA(hDC, 10, ypos, pOut, xr_strlen(pOut));
+			if (!res)
+			{
+				R_ASSERT2(0, "TextOut(..) return NULL");
+			}
 		}
-		LPCSTR ls = ((*LogFile)[i]).c_str();
 
-		if ( !ls )
+
+		if (g_pGameLevel && (Device.dwTimeGlobal - m_last_time > 500))
 		{
-			continue;
+			m_last_time = Device.dwTimeGlobal;
+
+			m_server_info.ResetData();
+			g_pGameLevel->GetLevelInfo(&m_server_info);
 		}
-		Console_mark cm = (Console_mark)ls[0];
-		COLORREF     c2 = (COLORREF)bgr2rgb( get_mark_color( cm ) );
-		SetTextColor( hDC, c2 );
-		u8 b = (is_mark( cm ))? 2 : 0;
-		LPCSTR pOut = ls + b;
 
-		BOOL res = TextOutA( hDC, 10, ypos, pOut, xr_strlen(pOut) );
-		if ( !res )
+		ypos = 5;
+		for (u32 i = 0; i < m_server_info.Size(); ++i)
 		{
-			R_ASSERT2( 0, "TextOut(..) return NULL" );
-		}
-	}
+			SetTextColor(hDC, m_server_info[i].color);
+			TextOutA(hDC, 10, ypos, m_server_info[i].name, xr_strlen(m_server_info[i].name));
 
-	if ( g_pGameLevel && ( Device.dwTimeGlobal - m_last_time > 500 ) )
-	{
-		m_last_time = Device.dwTimeGlobal;
-
-		m_server_info.ResetData();
-		g_pGameLevel->GetLevelInfo( &m_server_info );
-	}
-
-	ypos = 5;
-	for ( u32 i = 0; i < m_server_info.Size(); ++i )
-	{
-		SetTextColor( hDC, m_server_info[i].color );
-		TextOutA( hDC, 10, ypos, m_server_info[i].name, xr_strlen(m_server_info[i].name) );
-
-		ypos += tm.tmHeight;
-		if ( ypos > y_top_max )
-		{
-			break;
+			ypos += tm.tmHeight;
+			if (ypos > y_top_max)
+			{
+				break;
+			}
 		}
 	}
 }

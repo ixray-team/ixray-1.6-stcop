@@ -29,30 +29,6 @@ constexpr T HashValue(const char* String)
 	return Hash;
 }
 
-template<typename T, std::size_t Size>
-class RingBuffer
-{
-private:
-	std::size_t Position = 0;
-	std::array<T, Size> Buffer = {};
-
-public:
-	void Write(T Value)
-	{
-		Buffer[(Position++ % Size)] = Value;
-	}
-
-	T GetRMS() const 
-	{
-		T Value = 0;
-		for (const auto BufValue : Buffer) {
-			Value += BufValue;
-		}
-
-		return Value / Buffer.size();
-	}
-};
-
 namespace Profile
 {
 	struct TraceEvent

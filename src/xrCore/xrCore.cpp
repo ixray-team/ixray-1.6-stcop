@@ -30,7 +30,7 @@ char g_application_path[256];
 
 //. extern xr_vector<shared_str>*	LogFile;
 
-void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
+void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
 	xr_strcpy					(ApplicationName,_ApplicationName);
 	if (0==init_counter) {
@@ -83,7 +83,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		
 		Memory._initialize	(strstr(Params,"-mem_debug") ? TRUE : FALSE);
 
-		InitLog				();
+		xrLogger::InitLog();
 		_initialize_cpu		();
 
 //		Debug._initialize	();
@@ -126,7 +126,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
     #endif
 #endif // DEBUG
 	}
-	SetLogCB				(cb);
+	xrLogger::AddLogCallback(cb);
 	init_counter++;
 }
 

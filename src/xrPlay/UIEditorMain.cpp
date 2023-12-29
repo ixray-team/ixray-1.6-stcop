@@ -50,14 +50,14 @@ void RenderUI()
 			DrawList.AddRectFilled(Min, Max, Event.Color);
 		}
 #else
-		for (const auto& Event : Events) {
-			float BeginT = Statistics.BeginSmoothTimers.at(Event.GetHash()).GetRMS();
-			float EndT = Statistics.EndSmoothTimers.at(Event.GetHash()).GetRMS();
-			ImVec2 Min = ImVec2(WindowPosition.x + LineSize.x * BeginT, WindowPosition.y + LineSize.y * Event.StackLevel);
-			ImVec2 Max = ImVec2(WindowPosition.x + LineSize.x * EndT, WindowPosition.y + LineSize.y * (Event.StackLevel + 1));
-			DrawList.AddRectFilled(Min, Max, Event.Color);
-			DrawList.AddText(ImVec2(Min.x + ((Max.x - Min.x) * 0.5f), Min.y + (LineSize.y * 0.5f)), 0xFFFFFFFF, Event.Name);
-		}
+		//for (const auto& Event : Events) {
+		//	float BeginT = Statistics.BeginSmoothTimers.at(Event.GetHash()).GetRMS();
+		//	float EndT = Statistics.EndSmoothTimers.at(Event.GetHash()).GetRMS();
+		//	ImVec2 Min = ImVec2(WindowPosition.x + LineSize.x * BeginT, WindowPosition.y + LineSize.y * Event.StackLevel);
+		//	ImVec2 Max = ImVec2(WindowPosition.x + LineSize.x * EndT, WindowPosition.y + LineSize.y * (Event.StackLevel + 1));
+		//	DrawList.AddRectFilled(Min, Max, Event.Color);
+		//	DrawList.AddText(ImVec2(Min.x + ((Max.x - Min.x) * 0.5f), Min.y + (LineSize.y * 0.5f)), 0xFFFFFFFF, Event.Name);
+		//}
 #endif
 
 		ImGui::End();

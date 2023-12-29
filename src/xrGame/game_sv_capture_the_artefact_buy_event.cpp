@@ -4,10 +4,10 @@
 void game_sv_CaptureTheArtefact::OnPlayerBuyFinished(ClientID id_who, NET_Packet& P)
 {
 	game_PlayerState* ps = get_id(id_who);
-	VERIFY2(ps, make_string("player state not found (ClientID = 0x%08x)", id_who.value()).c_str());
+	VERIFY2(ps, make_string("player state not found (ClientID = 0x%08x)", id_who.value()));
 	CSE_ALifeCreatureActor* e_Actor	= smart_cast<CSE_ALifeCreatureActor*>(get_entity_from_eid(ps->GameID));
 	VERIFY2(e_Actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("server entity of actor not found (GameID = 0x%08x)", ps->GameID).c_str());
+		make_string("server entity of actor not found (GameID = 0x%08x)", ps->GameID));
 	
 	DestroyAllPlayerItems(id_who);
 	ClearPlayerItems(ps);

@@ -50,7 +50,7 @@ void ErrorLog(LPCSTR caMessage)
 void FlushLogs()
 {
 #ifdef DEBUG
-	FlushLog();
+	xrLogger::FlushLog();
 	g_pScriptEngine->flush_log();
 #endif // DEBUG
 }

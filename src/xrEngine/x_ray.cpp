@@ -193,7 +193,7 @@ void destroyEngine	()
 {
 	Device.Destroy				( );
 	try {
-		FlushLog(); // This should prevent empty log file in some cases
+		xrLogger::FlushLog(); // This should prevent empty log file in some cases
 	}
 	catch (...) {
 		MessageBoxA(NULL, "Could not perform log saving after destroying Render Device",

@@ -83,7 +83,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 		if (!i) {
 			if (shared_str_initialized) {
 				Msg		("%s",assertion_info);
-				FlushLog();
+				xrLogger::FlushLog();
 			}
 			buffer		= assertion_info;
 			endline		= "\r\n";
@@ -100,7 +100,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		
 		if (shared_str_initialized)
-			FlushLog	();
+			xrLogger::FlushLog	();
 
 		os_clipboard::copy_to_clipboard	(assertion_info);
 	}
@@ -108,7 +108,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 
 void xrDebug::do_exit	(const std::string &message)
 {
-	FlushLog			();
+	xrLogger::FlushLog			();
 	//SDL_ShowWindow(g_AppInfo.Window);
 	//SDL_MinimizeWindow(g_AppInfo.Window);
 	MessageBoxA			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
@@ -167,7 +167,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 	if (get_on_dialog())
 		get_on_dialog()	(true);
 
-	FlushLog();
+	xrLogger::FlushLog();
 
 	int result = MessageBoxA
 	(
@@ -286,8 +286,6 @@ int out_of_memory_handler	(size_t size)
 	Debug.fatal				(DEBUG_INFO,"Out of memory. Memory request: %d K",size/1024);
 	return					1;
 }
-
-extern LPCSTR log_name();
 
 XRCORE_API string_path g_bug_report_file;
 
@@ -516,7 +514,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	BuildStackTrace(pExceptionInfo);
 
 	if (shared_str_initialized)
-		FlushLog			();
+		xrLogger::FlushLog();
 
 #ifdef USE_OWN_MINI_DUMP
 	save_mini_dump		(pExceptionInfo);

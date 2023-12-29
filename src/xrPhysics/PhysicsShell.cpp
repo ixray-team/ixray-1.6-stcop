@@ -306,7 +306,7 @@ void	phys_shell_verify_object_model( IPhysicsShellHolder& O )
 
 	VERIFY2( _valid( O.ObjectXFORM() ), make_string( "create physics shell: object matrix is not valid" ) /*+ make_string("\n object dump: \n") + dbg_object_full_dump_string( &O )*/ );
 
-	VERIFY2(valid_pos( O.ObjectXFORM().c ),  dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ) );
+	VERIFY2(valid_pos( O.ObjectXFORM().c ),  dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ).c_str());
 }
 
 bool __stdcall	can_create_phys_shell( string1024 &reason, IPhysicsShellHolder& O )
@@ -316,12 +316,12 @@ bool __stdcall	can_create_phys_shell( string1024 &reason, IPhysicsShellHolder& O
 	IKinematics* K		=O.ObjectKinematics();
 	if(!K)
 	{
-		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual() ).c_str() );
+		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual() ));
 		return false;
 	}
 	if(!has_physics_collision_shapes( *K ))
 	{
-		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual() ).c_str() );
+		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual() ));
 		return false;
 	}
 	if(!_valid( O.ObjectXFORM() ))

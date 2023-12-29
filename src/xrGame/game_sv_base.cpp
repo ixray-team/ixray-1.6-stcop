@@ -507,7 +507,7 @@ void	game_sv_GameState::assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who)
 		}
 	}
 	R_ASSERT2(l_uc_team < TEAM_COUNT, make_string("not found rpoint for team [%d]",
-		l_uc_team).c_str());
+		l_uc_team));
 	
 	xr_vector<RPoint>&	rp	= rpoints[l_uc_team];
 #ifdef DEBUG
@@ -762,7 +762,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			R_ASSERT2(CL,
 				make_string("M_CREATE_PLAYER_STATE: client 0x%08x not found", 
 					sender.value()
-				).c_str()
+				)
 			);
 			CL->ps					= createPlayerState(&tNetPacket);
 			CL->ps->m_online_time	= Level().timeServer();

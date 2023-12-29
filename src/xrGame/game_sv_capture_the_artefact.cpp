@@ -450,7 +450,7 @@ void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name,
 
 
 	VERIFY2(actor, 
-		make_string("actor not found (GameID = 0x%08x)", GameID).c_str());
+		make_string("actor not found (GameID = 0x%08x)", GameID));
 	
 	TeamsMap::iterator te = teams.end();
 	TeamsMap::iterator artefactOwnerTeam = std::find_if(teams.begin(), te, 
@@ -918,7 +918,7 @@ void game_sv_CaptureTheArtefact::LoadTeamData(ETeam eteam, const shared_str& caS
 	TeamStruct	NewTeam;
 	
 	VERIFY2(pSettings->section_exist(caSection),
-		make_string("No %s section found", caSection.c_str()).c_str());
+		make_string("No %s section found", caSection.c_str()));
 
 	shared_str m_sBaseWeaponCostSection;
 	m_sBaseWeaponCostSection._set("capturetheartefact_base_cost");
@@ -938,7 +938,7 @@ void game_sv_CaptureTheArtefact::LoadTeamData(ETeam eteam, const shared_str& caS
 	shared_str artefactName;
 	
 	VERIFY2(pSettings->line_exist(caSection, "artefact"),
-			make_string("Not found \"artefact\" in section %s", caSection.c_str()).c_str());
+			make_string("Not found \"artefact\" in section %s", caSection.c_str()));
 	
 	artefactName = pSettings->r_string(caSection, "artefact");
 	
@@ -1217,7 +1217,7 @@ void game_sv_CaptureTheArtefact::LoadArtefactRPoints()
 	{
 		if (!i->second.rPointInitialized)
 		{
-			VERIFY2(false, make_string("Not found RPoint for team %d", i->first).c_str());
+			VERIFY2(false, make_string("Not found RPoint for team %d", i->first));
 		}
 	}
 }
@@ -1227,18 +1227,18 @@ void game_sv_CaptureTheArtefact::LoadSkinsForTeam(const shared_str& caSection, T
 	string256			SkinSingleName;
 	string4096			Skins;
 
-	// Поле strSectionName должно содержать имя секции
+	// РџРѕР»Рµ strSectionName РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РёРјСЏ СЃРµРєС†РёРё
 	VERIFY(xr_strcmp(caSection,""));
 
 	pTeamSkins->clear();
 
-	// Имя поля
+	// РРјСЏ РїРѕР»СЏ
 	if (!pSettings->line_exist(caSection, "skins")) return;
 
-	// Читаем данные этого поля
+	// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ СЌС‚РѕРіРѕ РїРѕР»СЏ
 	xr_strcpy(Skins, pSettings->r_string(caSection, "skins"));
 	u32 count	= _GetItemCount(Skins);
-	// теперь для каждое имя оружия, разделенные запятыми, заносим в массив
+	// С‚РµРїРµСЂСЊ РґР»СЏ РєР°Р¶РґРѕРµ РёРјСЏ РѕСЂСѓР¶РёСЏ, СЂР°Р·РґРµР»РµРЅРЅС‹Рµ Р·Р°РїСЏС‚С‹РјРё, Р·Р°РЅРѕСЃРёРј РІ РјР°СЃСЃРёРІ
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(Skins, i, SkinSingleName);
@@ -1251,18 +1251,18 @@ void game_sv_CaptureTheArtefact::LoadDefItemsForTeam(const shared_str& caSection
 	string256			ItemName;
 	string4096			DefItems;
 
-	// Поле strSectionName должно содержать имя секции
+	// РџРѕР»Рµ strSectionName РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РёРјСЏ СЃРµРєС†РёРё
 	VERIFY(xr_strcmp(caSection,""));
 
 	pDefItems->clear();
 
-	// Имя поля
+	// РРјСЏ РїРѕР»СЏ
 	if (!pSettings->line_exist(caSection, "default_items")) return;
 
-	// Читаем данные этого поля
+	// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ СЌС‚РѕРіРѕ РїРѕР»СЏ
 	xr_strcpy(DefItems, pSettings->r_string(caSection, "default_items"));
 	u32 count	= _GetItemCount(DefItems);
-	// теперь для каждое имя оружия, разделенные запятыми, заносим в массив
+	// С‚РµРїРµСЂСЊ РґР»СЏ РєР°Р¶РґРѕРµ РёРјСЏ РѕСЂСѓР¶РёСЏ, СЂР°Р·РґРµР»РµРЅРЅС‹Рµ Р·Р°РїСЏС‚С‹РјРё, Р·Р°РЅРѕСЃРёРј РІ РјР°СЃСЃРёРІ
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(DefItems, i, ItemName);
@@ -1612,7 +1612,7 @@ void game_sv_CaptureTheArtefact::ReSpawnArtefacts()
 	for (TeamsMap::iterator ti = teams.begin(); ti != te; ti++)
 	{
 		VERIFY2(!!ti->second.artefactName,
-			make_string("not found artefact class name for team %d", ti->first).c_str());
+			make_string("not found artefact class name for team %d", ti->first));
 		CSE_ALifeItemArtefact *tempSvEntity = smart_cast<CSE_ALifeItemArtefact*>(spawn_begin(ti->second.artefactName.c_str()));
 		tempSvEntity->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		//MoveArtefactToPoint(tempSvEntity, ti->second.artefactRPoint);
@@ -1802,7 +1802,7 @@ void game_sv_CaptureTheArtefact::OnDetach(u16 eid_who, u16 eid_target)
 		make_string("failed to get actor entity (id = %d)",eid_who).c_str());*/
 	
 	VERIFY2(e_item,
-		make_string("failed to get item entity (id = %d)", eid_target).c_str());
+		make_string("failed to get item entity (id = %d)", eid_target));
 
 
 	if (artefactOfTeam != te)
@@ -1834,10 +1834,10 @@ BOOL game_sv_CaptureTheArtefact::OnActivate(u16 eid_who, u16 eid_target)
 	CSE_Abstract *e_item = m_server->ID_to_entity(eid_target);
 	
 	VERIFY2(e_who,
-		make_string("failed to get actor entity (id = %d)",eid_who).c_str());
+		make_string("failed to get actor entity (id = %d)",eid_who));
 	
 	VERIFY2(e_item,
-		make_string("failed to get item entity (id = %d)", eid_target).c_str());
+		make_string("failed to get item entity (id = %d)", eid_target));
 
 	xrClientData *xrCData = e_who->owner;
 	VERIFY(xrCData);
@@ -1981,7 +1981,7 @@ void game_sv_CaptureTheArtefact::MoveArtefactToPoint(CSE_ALifeItemArtefact *arte
 
 	CArtefact * OArtefact = smart_cast<CArtefact*>(Level().Objects.net_Find(artefact->ID));
 
-	R_ASSERT2( OArtefact, make_string("artefact not found. artefact_id = [%d]. CTA:MoveArtefactToPoint()", artefact->ID).c_str() );
+	R_ASSERT2( OArtefact, make_string("artefact not found. artefact_id = [%d]. CTA:MoveArtefactToPoint()", artefact->ID));
 
 	OArtefact->StopActivation();
 	OArtefact->MoveTo(toPoint.P);										//to server client object
@@ -2153,7 +2153,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 	TEAM_DATA_LIST::const_iterator teamIter = TeamList.begin() + teams[actorTeam].indexOfTeamInList;
 	
 	R_ASSERT2(teamIter != TeamList.end(),
-		make_string("deliver artefact team (%d) not found in TeamList", actorTeam).c_str());
+		make_string("deliver artefact team (%d) not found in TeamList", actorTeam));
 
 	Player_AddMoney(ps, teamIter->m_iM_TargetSucceed);
 	ps->af_count++;
@@ -2325,7 +2325,7 @@ void game_sv_CaptureTheArtefact::CheckForArtefactDelivering()
 		ETeam artefactOfTeam = static_cast<ETeam>(xrCData->ps->team);
 		myTeamIter = teams.find(artefactOfTeam);
 		VERIFY2(myTeamIter != teams.end(),
-			make_string("artefact team (%d) not found", artefactOfTeam).c_str());
+			make_string("artefact team (%d) not found", artefactOfTeam));
 		// if some one alredy took your artefact or own artefact not on base, continue
 		Fvector3 & myArtPoint = myTeamIter->second.artefactRPoint.P;
 		if ((myTeamIter->second.artefactOwner) ||

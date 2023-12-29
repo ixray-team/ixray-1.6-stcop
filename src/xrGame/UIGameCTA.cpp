@@ -318,7 +318,7 @@ void CUIGameCTA::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID).c_str());
+		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	TIItemContainer const & all_items = actor->inventory().m_all;  
 
@@ -390,7 +390,7 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
 
 	VERIFY2(ammo_section.size(), make_string(
-		"grenade ammo type of [%s] hasn't section name", weapon->cNameSect().c_str()).c_str());
+		"grenade ammo type of [%s] hasn't section name", weapon->cNameSect().c_str()));
 	if (!ammo_section.size())
 		return;
 
@@ -401,7 +401,7 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 
 	R_ASSERT2(ammo_elapsed <= 1, make_string(
 		"weapon [%s] can't have more than one grenade in grenade launcher",
-		weapon->cNameSect().c_str()).c_str());
+		weapon->cNameSect().c_str()));
 
 
 	while (ammo_elapsed >= ammo_box_size)
@@ -458,7 +458,7 @@ void TryToDefuseWeapon(CWeapon const * weapon,
 	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
 
 	VERIFY2(ammo_section.size(), make_string(
-		"ammo type of [%s] hasn't section name", weapon->cName().c_str()).c_str());
+		"ammo type of [%s] hasn't section name", weapon->cName().c_str()));
 	if (!ammo_section.size())
 		return;
 
@@ -563,7 +563,7 @@ void CUIGameCTA::SetPlayerItemsToBuyMenu()
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID).c_str());
+		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	if (actor && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
@@ -620,7 +620,7 @@ void CUIGameCTA::SetPlayerParamsToBuyMenu()
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),  
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID).c_str());
+		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	m_pCurBuyMenu->SetRank(ps->rank);
 	m_pCurBuyMenu->SetMoneyAmount(ps->money_for_round);
@@ -947,10 +947,10 @@ void CUIGameCTA::LoadTeamDefaultPresetItems	(const shared_str& caSection)
 	
 	string256			ItemName;
 	string4096			DefItems;
-	// Читаем данные этого поля
+	// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ СЌС‚РѕРіРѕ РїРѕР»СЏ
 	xr_strcpy(DefItems, pSettings->r_string(caSection, "default_items"));
 	u32 count	= _GetItemCount(DefItems);
-	// теперь для каждое имя оружия, разделенные запятыми, заносим в массив
+	// С‚РµРїРµСЂСЊ РґР»СЏ РєР°Р¶РґРѕРµ РёРјСЏ РѕСЂСѓР¶РёСЏ, СЂР°Р·РґРµР»РµРЅРЅС‹Рµ Р·Р°РїСЏС‚С‹РјРё, Р·Р°РЅРѕСЃРёРј РІ РјР°СЃСЃРёРІ
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(DefItems, i, ItemName);

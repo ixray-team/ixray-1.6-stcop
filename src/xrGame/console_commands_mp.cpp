@@ -521,7 +521,7 @@ public:
 			make_string(
 				"Make screenshot. Format: \"make_screenshot <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers",
 				LAST_PRINTED_PLAYER_STR
-			).c_str()
+			)
 		);
 	}
 
@@ -568,7 +568,7 @@ public:
 			make_string(
 				"Make config dump. Format: \"make_config_dump <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers",
 				LAST_PRINTED_PLAYER_STR
-			).c_str()
+			)
 		);
 	}
 
@@ -941,7 +941,7 @@ public:
 			make_string(
 				"Ban player. Format: \"sv_banplayer <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers",
 				LAST_PRINTED_PLAYER_STR
-			).c_str()
+			)
 		);
 	}
 };
@@ -1017,7 +1017,7 @@ public:
 			make_string(
 				"Unban player. Format: \"sv_unbanplayer <banned player index | \'%s\'>. To receive list of banned players see sv_listplayers_banned",
 				LAST_PRINTED_PLAYER_BANNED_STR
-			).c_str()
+			)
 		);
 	}
 };

@@ -238,7 +238,7 @@ fall_back:
 		}
 		default : {
 #ifdef DEBUG
-			FATAL					(make_string("m_internal_state = %d, object[0x%08x]", m_internal_state, this).c_str());
+			FATAL					(make_string("m_internal_state = %d, object[0x%08x]", m_internal_state, this));
 #else // #ifdef DEBUG
 			m_internal_state		= 0;
 			goto fall_back;

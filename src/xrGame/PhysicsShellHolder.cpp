@@ -71,7 +71,7 @@ void CPhysicsShellHolder::net_Destroy()
 	//remove calls
 	CPHSriptReqGObjComparer cmpr(this);
 	Level().ph_commander_scripts().remove_calls(&cmpr);
-	//удалить партиклы из ParticlePlayer
+	//СѓРґР°Р»РёС‚СЊ РїР°СЂС‚РёРєР»С‹ РёР· ParticlePlayer
 	CParticlesPlayer::net_DestroyParticles		();
 	CCharacterPhysicsSupport	*char_support = character_physics_support();
 	if( char_support )
@@ -357,7 +357,7 @@ void CPhysicsShellHolder::OnChangeVisual()
 void CPhysicsShellHolder::UpdateCL	()
 {
 	inherited::UpdateCL	();
-	//обновить присоединенные партиклы
+	//РѕР±РЅРѕРІРёС‚СЊ РїСЂРёСЃРѕРµРґРёРЅРµРЅРЅС‹Рµ РїР°СЂС‚РёРєР»С‹
 	UpdateParticles		();
 }
 float CPhysicsShellHolder::EffectiveGravity()
@@ -607,7 +607,7 @@ void	CPhysicsShellHolder::BonceDamagerCallback(float &damage_factor)
 }
 
 #ifdef	DEBUG
-std::string	CPhysicsShellHolder::dump(EDumpType type) const
+xr_string	CPhysicsShellHolder::dump(EDumpType type) const
 {
 	switch(type)
 	{
@@ -617,7 +617,7 @@ std::string	CPhysicsShellHolder::dump(EDumpType type) const
 	case	props:				return dbg_object_props_dump_string( this );					break;
 	case	full:				return dbg_object_full_dump_string( this);						break;
 	case	full_capped:		return dbg_object_full_capped_dump_string( this );				break;
-	default: NODEFAULT;			return std::string("fail!");
+	default: NODEFAULT;			return xr_string("fail!");
 	}
 
 }

@@ -125,6 +125,7 @@
 #include <algorithm>
 #include <limits>
 #include <vector>
+#include <queue>
 #include <stack>
 #include <list>
 #include <set>
@@ -160,6 +161,7 @@
 
 #include "clsid.h"
 #include "xrSyncronize.h"
+#include "RingBuffer.h"
 #include "xrMemory.h"
 #include "xrDebug.h"
 
@@ -256,7 +258,7 @@ public:
 	string512	Params;
 
 public:
-	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
+	void		_initialize	(LPCSTR ApplicationName, xrLogger::LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
 	void		_destroy	();
 };
 

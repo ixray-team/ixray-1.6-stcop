@@ -391,7 +391,7 @@ void	game_sv_mp::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 			} else {
 				VERIFY2(pClient, make_string(
 					"unknown client [0x%08x] sended GAME_EVENT_PLAYER_BUYMENU_OPEN message",
-					sender.value()).c_str());
+					sender.value()));
 #ifndef MASTER_GOLD
 				Msg("! ERROR: unknown client [0x%08x] opens buy menu",
 					sender.value());
@@ -407,7 +407,7 @@ void	game_sv_mp::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 			} else {
 				VERIFY2(pClient, make_string(
 					"unknown client [0x%08x] sended GAME_EVENT_PLAYER_BUYMENU_OPEN message",
-					sender.value()).c_str());
+					sender.value()));
 #ifndef MASTER_GOLD
 				Msg("! ERROR: unknown client [0x%08x] opens buy menu",
 					sender.value());
@@ -666,13 +666,13 @@ void	game_sv_mp::SetSkin					(CSE_Abstract* E, u16 Team, u16 ID)
 	//-------------------------------------------
 	string256 SkinName;
 	xr_strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
-	//çàãðóæåíû ëè ñêèíû äëÿ ýòîé êîììàíäû
+	//Ð·Ð°Ð³Ñ€ÑƒÐ¶ÐµÐ½Ñ‹ Ð»Ð¸ ÑÐºÐ¸Ð½Ñ‹ Ð´Ð»Ñ ÑÑ‚Ð¾Ð¹ ÐºÐ¾Ð¼Ð¼Ð°Ð½Ð´Ñ‹
 
 	if (!TeamList.empty()	&&
 		TeamList.size() > Team	&&
 		!TeamList[Team].aSkins.empty())
 	{
-		//çàãðóæåíî ëè äîñòàòî÷íî ñêèíîâ äëÿ ýòîé êîììàíäû
+		//Ð·Ð°Ð³Ñ€ÑƒÐ¶ÐµÐ½Ð¾ Ð»Ð¸ Ð´Ð¾ÑÑ‚Ð°Ñ‚Ð¾Ñ‡Ð½Ð¾ ÑÐºÐ¸Ð½Ð¾Ð² Ð´Ð»Ñ ÑÑ‚Ð¾Ð¹ ÐºÐ¾Ð¼Ð¼Ð°Ð½Ð´Ñ‹
 		if (TeamList[Team].aSkins.size() > ID)
 		{
 			xr_strcat(SkinName, TeamList[Team].aSkins[ID].c_str());
@@ -798,7 +798,7 @@ void game_sv_mp::ChargeGrenades(CSE_ALifeItemWeapon* weapon, LPCSTR grenade_stri
 		make_string("weapon [%s] has greater than 4 types of grenade [%s]",
 			weapon->s_name.c_str(),
 			grenade_string
-		).c_str()
+		)
 	);
 	weapon->a_elapsed_grenades.unpack_from_byte(0);
 	string512	temp_ammo_class;
@@ -830,9 +830,9 @@ void	game_sv_mp::SetAmmoForWeapon(CSE_ALifeItemWeapon* weapon,
 	R_ASSERT(weapon->s_name.c_str());
 	shared_str ammo_classes = pSettings->r_string(weapon->s_name, "ammo_class");
 	R_ASSERT2(ammo_classes.size() < 512, make_string("ammo_class parameter of [%s] is too large", 
-		weapon->s_name.c_str()).c_str());
+		weapon->s_name.c_str()));
 	VERIFY2(ammo_classes.size(), make_string("ammo_class parameter of [%s] not found", 
-		weapon->s_name.c_str()).c_str());
+		weapon->s_name.c_str()));
 	
 	if (!ammo_classes.size())
 	{
@@ -851,7 +851,7 @@ void	game_sv_mp::SetAmmoForWeapon(CSE_ALifeItemWeapon* weapon,
 		shared_str grenade_classes = pSettings->r_string(weapon->s_name, "grenade_class");
 		R_ASSERT2(grenade_classes.size() < 512, make_string(
 			"grenade_class parameter of [%s] is too large", 
-			weapon->s_name.c_str()).c_str()
+			weapon->s_name.c_str())
 		);
 		if (!grenade_classes.size())
 		{
@@ -1780,7 +1780,7 @@ void game_sv_mp::RenewAllActorsHealth	()
 		void operator()(IClient* client)
 		{
 			xrClientData *l_pC = static_cast<xrClientData*>(client);
-			VERIFY2(l_pC->ps, make_string("player state of client, ClientID = 0x%08x", l_pC->ID.value()).c_str());
+			VERIFY2(l_pC->ps, make_string("player state of client, ClientID = 0x%08x", l_pC->ID.value()));
 			if (!l_pC || !l_pC->ps)
 			{
 				return;
@@ -1805,7 +1805,7 @@ void game_sv_mp::RenewAllActorsHealth	()
 				return;
 			}
 
-			VERIFY2(pActor, make_string("client object on server of actor GameID = 0x%08x, not found", l_pC->ps->GameID).c_str());
+			VERIFY2(pActor, make_string("client object on server of actor GameID = 0x%08x, not found", l_pC->ps->GameID));
 			if (pActor)
 			{
 				pActor->SetfHealth(pActor->GetMaxHealth());
@@ -1854,7 +1854,7 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 	CSE_Abstract*	e_parent = get_entity_from_eid(entity->ID_Parent);
 	
 //	R_ASSERT2( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
-	VERIFY2  ( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
+	VERIFY2  ( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ));
 	if ( !e_parent ) {
 		Msg( "! ERROR (RejectGameItem): parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent );
 		return;
@@ -2145,7 +2145,7 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 	
 	VERIFY2(xrCData, 
-		make_string("client (ClientID = 0x%08x) not found", id_who.value()).c_str());
+		make_string("client (ClientID = 0x%08x) not found", id_who.value()));
 	VERIFY(xrCData->ps);
 	game_PlayerState*	ps	=	xrCData->ps;
 #ifndef MASTER_GOLD
@@ -2161,13 +2161,13 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 		ii != iie; ++ii)
 	{
 //		VERIFY(*ii);
-		R_ASSERT2(*ii, make_string("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID).c_str());
+		R_ASSERT2(*ii, make_string("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID));
 
 		u16 object_id = (*ii)->object().ID();
 		CSE_Abstract* tempEntity = m_server->ID_to_entity(object_id);
 
 //		R_ASSERT2( tempEntity, make_string("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID).c_str() );
-		VERIFY2  ( tempEntity, make_string("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID).c_str() );
+		VERIFY2  ( tempEntity, make_string("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID) );
 		if (!tempEntity) {
 			Msg                 ( "! ERROR: entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID );
 			continue;

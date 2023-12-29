@@ -115,7 +115,7 @@ void	dump_URL	(LPCSTR p, IDirectPlay8Address* A)
 	string256	aaaa;
 	DWORD		aaaa_s			= sizeof(aaaa);
 	R_CHK		(A->GetURLA(aaaa,&aaaa_s));
-	Log			(p,aaaa);
+	Msg("%s %s", p, aaaa);
 }
 
 // 

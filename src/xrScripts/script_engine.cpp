@@ -79,7 +79,7 @@ static void initialize_lua_studio	( lua_State* state, cs::lua_studio::world*& wo
 	world							= s_create_world( *InEngine, false, false );
 	VERIFY							(world);
 
-	s_old_log_callback				= SetLogCB(&log_callback);
+	s_old_log_callback				= xrLogger::AddLogCallback(&log_callback);
 
 	jit_command						(state, "debug=2");
 	jit_command						(state, "off");
@@ -101,7 +101,7 @@ static void finalize_lua_studio		( lua_State* state, cs::lua_studio::world*& wor
 	FreeLibrary						(s_script_debugger_handle);
 	s_script_debugger_handle		= 0;
 
-	SetLogCB						(s_old_log_callback);
+	xrLogger::AddLogCallback(s_old_log_callback);
 }
 
 void CScriptEngine::try_connect_to_debugger		()

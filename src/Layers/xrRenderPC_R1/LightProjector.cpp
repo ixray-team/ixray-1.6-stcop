@@ -232,7 +232,7 @@ void CLightProjector::calculate	()
 					Fmatrix tr;
 
 					tr = K->LL_GetTransform(ii);
-					Log("bone ", K->LL_BoneName_dbg(ii));
+					Msg("bone %s", K->LL_BoneName_dbg(ii));
 					Log("bone_matrix", tr);
 				}
 				Log("end-------");

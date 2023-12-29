@@ -407,14 +407,14 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 				string1024			buff;
 				P.r_stringZ			(buff);
 				Msg("* Radmin [%s] is running command: %s", CL->ps->getName(), buff);
-				SetLogCB			(console_log_cb);
+				xrLogger::AddLogCallback(console_log_cb);
 				_tmp_log.clear		();
 				string512		result_command;
 				string64	tmp_number_str;
 				xr_sprintf(tmp_number_str, " raid:%u", CL->ID.value());
 				xr_strconcat(result_command, buff, tmp_number_str);
 				Console->Execute	(result_command);
-				SetLogCB			(NULL);
+				xrLogger::AddLogCallback(NULL);
 
 				NET_Packet			P_answ;			
 				for(u32 i=0; i<_tmp_log.size(); ++i)
@@ -918,7 +918,7 @@ void xrServer::verify_entity				(const CSE_Abstract *entity) const
 		xrS_entities::const_iterator	J = entities.find(entity->ID_Parent);
 		VERIFY2							(J != entities.end(),
 			make_string("SERVER : Cannot find parent in the map [%s][%s]",entity->name_replace(),
-			entity->name()).c_str());
+			entity->name()));
 		VERIFY3							((*J).second,"SERVER : Null entity object in the map",entity->name_replace());
 		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*J).second->name_replace());
 		VERIFY3							(std::find((*J).second->children.begin(),(*J).second->children.end(),entity->ID) != (*J).second->children.end(),"SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children",(*J).second->name_replace());
