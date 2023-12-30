@@ -8,7 +8,7 @@
 
 #ifndef AIMERS_BASE_H_INCLUDED
 #define AIMERS_BASE_H_INCLUDED
-
+#include "../Include/xrRender/Kinematics.h"
 #include "../include/xrrender/animation_motion.h"
 
 class CGameObject;

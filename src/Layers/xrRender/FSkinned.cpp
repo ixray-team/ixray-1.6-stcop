@@ -6,7 +6,6 @@
 #pragma hdrstop
 
 #include "../../xrEngine/fmesh.h"
-#include "../../xrCPU_Pipe/xrCPU_Pipe.h"
 #include "FSkinned.h"
 #include "SkeletonX.h"
 

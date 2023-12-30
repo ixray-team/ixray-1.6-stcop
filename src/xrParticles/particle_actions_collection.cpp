@@ -1659,47 +1659,26 @@ __forceinline void _mm_store_fvector( Fvector& v , const __m128 R1 )
 	_mm_store_ss( (float*) &v.z , R2 );
 }
 
-
-struct TES_PARAMS {
-	u32 p_from;
-	u32 p_to;
-	ParticleEffect* effect;
-	pVector offset;
-	float age;
-	float epsilon;
-	float frequency;
-	int octaves;
-	float magnitude;
-};
-
-
-void PATurbulenceExecuteStream( LPVOID lpvParams )
+void PATurbulence::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 {
-	pVector pV;
+	if ( noise_start ) {
+		noise_start = 0;
+		noise3Init();
+	};
+
+    pVector pV;
     pVector vX;
     pVector vY;
     pVector vZ;
-
-	TES_PARAMS* pParams = (TES_PARAMS *) lpvParams;
-
-	u32 p_from = pParams->p_from;
-	u32 p_to = pParams->p_to;
-	ParticleEffect* effect = pParams->effect;
-	pVector offset = pParams->offset;
-	float age = pParams->age;
-	float epsilon = pParams->epsilon;
-	float frequency = pParams->frequency;
-	int octaves = pParams->octaves;
-	float magnitude = pParams->magnitude;
-
-    for(u32 i = p_from; i < p_to; i++)
+    age		+= dt;
+    for(u32 i = 0; i < effect->p_count; i++)
     {
         Particle &m = effect->particles[i];
 
-        pV.mad(m.pos,offset,age);
-        vX.set(pV.x+epsilon,pV.y,pV.z);
-        vY.set(pV.x,pV.y+epsilon,pV.z);
-        vZ.set(pV.x,pV.y,pV.z+epsilon);
+		pV.mad(m.pos,offset,age);
+		vX.set(pV.x+epsilon,pV.y,pV.z);
+		vY.set(pV.x,pV.y+epsilon,pV.z);
+		vZ.set(pV.x,pV.y,pV.z+epsilon);
 
         float d	=	fractalsum3(pV, frequency, octaves);
 
@@ -1741,42 +1720,6 @@ void PATurbulenceExecuteStream( LPVOID lpvParams )
 
 		_mm_store_fvector( m.vel , _mvel );
 	}
-
-}
-
-
-void PATurbulence::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
-	if (noise_start) {
-		noise_start = 0;
-		noise3Init();
-	};
-
-	age += dt;
-
-	u32 p_cnt = effect->p_count;
-
-	if (!p_cnt) {
-		return;
-	}
-
-	// Give ~1% more for the last worker
-	// to minimize wait in final spin
-	u32 nSlice = p_cnt / 128;
-	u32 nStep = ((p_cnt - nSlice));
-
-	TES_PARAMS tesParams;
-	tesParams.p_from = nStep;
-	tesParams.p_to = p_cnt;
-
-	tesParams.effect = effect;
-	tesParams.offset = offset;
-	tesParams.age = age;
-	tesParams.epsilon = epsilon;
-	tesParams.frequency = frequency;
-	tesParams.octaves = octaves;
-	tesParams.magnitude = magnitude;
-
-	PATurbulenceExecuteStream((LPVOID)&tesParams);
 }
 
 #else
