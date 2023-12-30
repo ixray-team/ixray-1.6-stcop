@@ -35,7 +35,6 @@ void XRNETSERVER_API fill_auth_check_params(xr_auth_strings_t & ignore,
 	check.push_back			(shared_str("ode.dll"));
 	check.push_back			(shared_str("xrcdb.dll"));
 	check.push_back			(shared_str("xrcore.dll"));
-//	check.push_back			(shared_str("xrcpu_pipe.dll"));
 //	check.push_back			(shared_str("xrgame.dll"));
 	check.push_back			(shared_str("xrgamespy.dll"));
 	check.push_back			(shared_str("xrlua.dll"));

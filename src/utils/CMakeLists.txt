@@ -57,7 +57,7 @@ endif()
 
 if(CI_IXRAY_COMPRESSOR_ONLY)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrCompress)
-    set_target_properties(xrEngine xrAPI xrCDB xrScripts xrSound xrCPU_Pipe xrPhysics xrParticles xrGame xrRender_R4 xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    set_target_properties(xrEngine xrAPI xrCDB xrScripts xrSound xrPhysics xrParticles xrGame xrRender_R4 xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     set_target_properties(ODE luabind crypto CxImage PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 
     set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
@@ -80,5 +80,5 @@ if (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
         set_target_properties(xrRender_R2 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     endif()
     
-    set_target_properties(xrEngine xrAbstractions xrRender_R4 xrGame xrScripts xrPhysics xrCPU_Pipe xrParticles xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    set_target_properties(xrEngine xrAbstractions xrRender_R4 xrGame xrScripts xrPhysics xrParticles xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 endif()

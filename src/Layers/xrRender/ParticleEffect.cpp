@@ -368,6 +368,8 @@ void CParticleEffect::Render(float) {
 	{
 		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
+			bool NeedExit = false;
+
 			FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			FVF::LIT* pv = pv_start;
 
@@ -378,8 +380,11 @@ void CParticleEffect::Render(float) {
                 Fvector wp_eff;
                 m_XFORM.transform_tiny(wp_eff,m.pos);
 
-				if (Fvector(Device.vCameraPosition).distance_to_sqr(wp_eff) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
-					return;
+				if (Device.vCameraPosition.distance_to_sqr(wp_eff) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+				{
+					NeedExit = true;
+					break;
+				}
 
 				Fvector2 lt,rb;
 				lt.set			(0.f,0.f);
@@ -460,6 +465,10 @@ void CParticleEffect::Render(float) {
 			dwCount = p_cnt<<2;
 
 			RCache.Vertex.Unlock(dwCount,geom->vb_stride);
+
+			if (NeedExit)
+				return;
+
 			if (dwCount)    
 			{
 #ifndef _EDITOR
