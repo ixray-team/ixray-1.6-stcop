@@ -155,7 +155,7 @@ void xrLogger::InternalOpenLogFile()
 	{
 		FS.update_path(logFileName, "$logs$", logFileName);
 	}
-	logFile = FS.w_open(logFileName);
+	logFile = FS.w_open_ex(logFileName);
 	CHECK_OR_EXIT(logFile, "Can't create log file");
 }
 
