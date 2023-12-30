@@ -105,13 +105,14 @@ public:
 	xr_string(LPCSTR Str);
 	xr_string(LPCSTR Str, u32 Size);
 	xr_string(const xr_string& other);
-	xr_string(const xr_string&& other);
-	xr_string(const Super&& other);
+	xr_string(xr_string&& other) noexcept;
+	xr_string(Super&& other);
 	xr_string();
 
 	xr_string& operator=(LPCSTR Str);
 	xr_string& operator=(const xr_string& other);
 	xr_string& operator=(const Super& other);
+	xr_string& operator=(xr_string&& other) = default;
 
 	template <size_t ArrayLenght>
 	xr_string(char* (&InArray)[ArrayLenght]) {

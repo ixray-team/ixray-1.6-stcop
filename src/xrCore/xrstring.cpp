@@ -291,12 +291,14 @@ xr_string::xr_string(const xr_string& other)
 	: Super(other) {
 }
 
-xr_string::xr_string(const xr_string&& other)
-	: Super(other) {
+xr_string::xr_string(xr_string&& other) noexcept
+	: Super(other)
+{
 }
 
-xr_string::xr_string(const Super&& other)
-	: Super(other) {
+xr_string::xr_string(Super&& other)
+	: Super(other)
+{
 }
 
 xr_string::xr_string(LPCSTR Str)
