@@ -113,8 +113,11 @@ void CAMDReader::Initialize()
 		activity.iSize = sizeof(ADLPMActivity);
 		IsAMD = true;
 	}
-
+#ifdef _M_X64
 	hAMDAGS = LoadLibraryA("amd_ags_x64.dll");
+#else
+	hAMDAGS = LoadLibraryA("amd_ags_x86.dll");
+#endif
 	if (hAMDAGS != NULL)
 	{
 		auto TryInitializeAMDAGSFunctionLambda = [this](void** pFunc, const char* FuncName) -> bool

@@ -1137,7 +1137,17 @@ void CLocatorAPI::file_from_archive	(IReader *&R, LPCSTR fname, const file &desc
 	end							*= dwAllocGranularity;
 	if (end>A.size)				end = A.size;
 	u32 sz						= (end-start);
-	u8* ptr						= (u8*)MapViewOfFile(A.hSrcMap, FILE_MAP_READ, 0, start, sz); VERIFY3(ptr,"cannot create file mapping on file",fname);
+	u8* ptr						= (u8*)MapViewOfFile(A.hSrcMap, FILE_MAP_READ, 0, start, sz); 
+	
+	if (ptr == nullptr)
+	{
+		auto ErrorCode = GetLastError();
+		xr_string ErrorMsg = "cannot create file mapping on file ";
+		ErrorMsg += fname;
+		ErrorMsg += "! Error Code: ";
+		ErrorMsg += std::to_string(ErrorCode);
+		VERIFY2(ptr, ErrorMsg.c_str());
+	}
 
 	string512					temp;
 	xr_sprintf					(temp, sizeof(temp),"%s:%s",*A.path,fname);
