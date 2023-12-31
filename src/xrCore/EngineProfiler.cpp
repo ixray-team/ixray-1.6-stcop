@@ -187,7 +187,7 @@ Profile::RegisterThread(const char* Name)
 	if (EngineProfiler == nullptr)
 		return;
 
-	xrCriticalSection::raii Guard(&EngineProfiler->WriteMutex);
+	xrCriticalSectionGuard Guard(&EngineProfiler->WriteMutex);
 
 	ThreadState.Register();
 
@@ -200,7 +200,7 @@ Profile::RegisterThread(const char* Name)
 void 
 Profile::UnregisterThread()
 {
-	xrCriticalSection::raii Guard(&EngineProfiler->WriteMutex);
+	xrCriticalSectionGuard Guard(&EngineProfiler->WriteMutex);
 
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
 		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
@@ -227,7 +227,7 @@ Profile::EndFrame()
 	if (EngineProfiler == nullptr)
 		return;
 
-	xrCriticalSection::raii Guard(&EngineProfiler->WriteMutex);
+	xrCriticalSectionGuard Guard(&EngineProfiler->WriteMutex);
 
 	ThreadState.EndFrame();
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
