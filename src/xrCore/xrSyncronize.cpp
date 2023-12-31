@@ -25,14 +25,21 @@ BOOL xrCriticalSection::TryEnter()
 	return TryEnterCriticalSection((CRITICAL_SECTION*)&pmutex);
 }
 
-xrCriticalSection::raii::raii(xrCriticalSection* critical_section)
-	: critical_section(critical_section)
+xrCriticalSectionGuard::xrCriticalSectionGuard(xrCriticalSection* in_critical_section)
+	: critical_section(in_critical_section)
 {
 	VERIFY(critical_section);
 	critical_section->Enter();
 }
 
-xrCriticalSection::raii::~raii()
+xrCriticalSectionGuard::xrCriticalSectionGuard(xrCriticalSection& in_critical_section)
+	: critical_section(&in_critical_section)
+{
+	VERIFY(critical_section);
+	critical_section->Enter();
+}
+
+xrCriticalSectionGuard::~xrCriticalSectionGuard()
 {
 	critical_section->Leave();
 }

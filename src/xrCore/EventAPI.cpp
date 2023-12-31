@@ -50,7 +50,9 @@ CEvent::~CEvent()
 
 //-----------------------------------------
 IC bool ev_sort(CEvent*E1, CEvent*E2)
-{	return E1->GetFull() < E2->GetFull(); }
+{	
+	return E1->GetFull() < E2->GetFull();
+}
 
 void CEventAPI::Dump()
 {
@@ -59,28 +61,28 @@ void CEventAPI::Dump()
 		Msg("* [%d] %s",Events[i]->RefCount(),Events[i]->GetFull());
 }
 
-EVENT	CEventAPI::Create(const char* N)
+EVENT CEventAPI::Create(const char* N)
 {
-	CS.Enter	();
-	CEvent	E	(N);
-	for (xr_vector<CEvent*>::iterator I=Events.begin(); I!=Events.end(); I++)
+	xrCriticalSectionGuard guard(CS);
+	CEvent E(N);
+
+	for (CEvent* Event : Events)
 	{
-		if ((*I)->Equal(E)) {
-			EVENT F		= *I;
-			F->dwRefCount++;
-			CS.Leave	();
-			return		F;
+		if (Event->Equal(E))
+		{
+			Event->dwRefCount++;
+			return Event;
 		}
 	}
 
-	EVENT X = xr_new<CEvent>	(N);
-	Events.push_back			(X);
-	CS.Leave					( );
+	EVENT X = xr_new<CEvent>(N);
+	Events.push_back(X);
 	return X;
 }
+
 void	CEventAPI::Destroy(EVENT& E)
 {
-	CS.Enter	();
+	xrCriticalSectionGuard guard(CS);
 	E->dwRefCount--;
 	if (E->dwRefCount == 0) 
 	{
@@ -89,87 +91,90 @@ void	CEventAPI::Destroy(EVENT& E)
 		Events.erase(I);
 		xr_delete	(E);
 	}
-	CS.Leave	();
 }
 
 EVENT	CEventAPI::Handler_Attach(const char* N, IEventReceiver* H)
 {
-	CS.Enter	();
+	xrCriticalSectionGuard guard(CS);
 	EVENT	E = Create(N);
 	E->Attach(H);
-	CS.Leave	();
+
 	return E;
 }
 
 void	CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
 {
-	if (0==E)	return;
-	CS.Enter	();
+	if (0==E)	
+		return;
+
+	xrCriticalSectionGuard guard(CS);
 	E->Detach	(H);
 	Destroy		(E);
-	CS.Leave	();
 }
 void	CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
 {
-	CS.Enter	();
-	E->Signal	(P1,P2);	
-	CS.Leave	();
+	xrCriticalSectionGuard guard(CS);
+	E->Signal(P1, P2);
 }
-void	CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
+
+void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
 {
-	CS.Enter	();
-	EVENT		E = Create(N);
-	Signal		(E,P1,P2);
-	Destroy		(E);
-	CS.Leave	();
+	xrCriticalSectionGuard guard(CS);
+	EVENT E = Create(N);
+	Signal(E, P1, P2);
+	Destroy(E);
 }
-void	CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
+
+void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
 {
-	CS.Enter	();
+	xrCriticalSectionGuard guard(CS);
 	E->dwRefCount++;
 	Events_Deferred.push_back	(Deferred());
 	Events_Deferred.back().E	= E;
 	Events_Deferred.back().P1	= P1;
 	Events_Deferred.back().P2	= P2;
-	CS.Leave	();
-}
-void	CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
-{
-	CS.Enter	();
-	EVENT	E	= Create(N);
-	Defer		(E,P1,P2);
-	Destroy		(E);
-	CS.Leave	();
 }
 
-void	CEventAPI::OnFrame	()
+void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
 {
-	CS.Enter	();
-	if (Events_Deferred.empty())	{ CS.Leave(); return; }
-	for (u32 I=0; I<Events_Deferred.size(); I++)
+	xrCriticalSectionGuard guard(CS);
+	EVENT	E = Create(N);
+	Defer(E, P1, P2);
+	Destroy(E);
+}
+
+void CEventAPI::OnFrame()
+{
+	xrCriticalSectionGuard guard(CS);
+
+	if (Events_Deferred.empty())
+		return;
+
+	for (u32 I = 0; I < Events_Deferred.size(); I++)
 	{
-		Deferred&	DEF = Events_Deferred[I];
-		Signal		(DEF.E,DEF.P1,DEF.P2);
-		Destroy		(Events_Deferred[I].E);
+		Deferred& DEF = Events_Deferred[I];
+		Signal(DEF.E, DEF.P1, DEF.P2);
+		Destroy(Events_Deferred[I].E);
 	}
+
 	Events_Deferred.clear();
-	CS.Leave	();
 }
 
 BOOL CEventAPI::Peek(LPCSTR EName)
 {
-	CS.Enter	();
-	if (Events_Deferred.empty())	{ CS.Leave(); return FALSE; }
-	for (u32 I=0; I<Events_Deferred.size(); I++)
+	xrCriticalSectionGuard guard(CS);
+	if (Events_Deferred.empty())
+		return FALSE;
+
+	for (u32 I = 0; I < Events_Deferred.size(); I++)
 	{
-		Deferred&	DEF = Events_Deferred[I];
-		if(_stricmp(DEF.E->GetFull(),EName)==0){
-			CS.Leave(); 
+		Deferred& DEF = Events_Deferred[I];
+		if (_stricmp(DEF.E->GetFull(), EName) == 0)
+		{
 			return TRUE;
 		}
-
 	}
-	CS.Leave	();
+
 	return FALSE;
 }
 
