@@ -47,7 +47,7 @@ void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
 	scroll_delta = std::min<int>(scroll_delta, (int)m_log_history.GetSize());
 
 	// check for empty line
-	xrCriticalSection::raii guard(&m_log_history_guard);
+	xrCriticalSectionGuard guard(&m_log_history_guard);
 	const shared_str& line = m_log_history.GetLooped(m_log_history.GetHead() - u32(scroll_delta) - 5u);
 	if (line.size() == 0)
 	{

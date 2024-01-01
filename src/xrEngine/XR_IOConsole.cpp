@@ -155,14 +155,14 @@ void CConsole::Destroy()
 }
 
 void CConsole::AddLogEntry(LPCSTR line) {
-	xrCriticalSection::raii guard(&m_log_history_guard);
+	xrCriticalSectionGuard guard(&m_log_history_guard);
 
 	m_log_history.Get(m_log_history.GetHead())._set(line);
 	m_log_history.MoveHead(1);
 }
 
 void CConsole::ClearLog() {
-	xrCriticalSection::raii guard(&m_log_history_guard);
+	xrCriticalSectionGuard guard(&m_log_history_guard);
 
 	for (u32 i = 0; i < m_log_history.GetSize(); ++i)
 	{

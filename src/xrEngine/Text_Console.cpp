@@ -275,7 +275,7 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect) {
 
 	TextOutA(hDC, Width - 8 * qn, Height - tm.tmHeight - tm.tmHeight, q2, qn);
 	{
-		xrCriticalSection::raii guardLog(&m_log_history_guard);
+		xrCriticalSectionGuard guardLog(&m_log_history_guard);
 		u32 log_line = m_log_history.GetSize();
 
 		int ypos = Height - tm.tmHeight - tm.tmHeight;

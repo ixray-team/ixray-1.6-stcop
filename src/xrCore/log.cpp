@@ -65,7 +65,7 @@ void xrLogger::SimpleMessage(LPCSTR Message, u32 MessageSize /*= 0*/)
 	case 0:			MessageSize = xr_strlen(Message); break;
 	default:		break;
 	}
-	xrCriticalSection::raii guard(&logDataGuard);
+	xrCriticalSectionGuard guard(&logDataGuard);
 	logData.emplace(LogRecord(Message, MessageSize));
 }
 
@@ -183,7 +183,7 @@ void xrLogger::LogThreadEntry()
 		do
 		{
 			{
-				xrCriticalSection::raii guard(&logDataGuard);
+				xrCriticalSectionGuard guard(&logDataGuard);
 				if (!logData.empty())
 				{
 					theRecord = logData.front();

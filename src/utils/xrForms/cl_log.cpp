@@ -172,7 +172,7 @@ void logThread(void* dummy)
 		BOOL bWasChanges = FALSE;
 		char tbuf[256];
 		{
-			xrCriticalSection::raii LogGuard(&csLog);
+			xrCriticalSectionGuard LogGuard(&csLog);
 
 			if (LogSize != xrLogger::logData.size())
 			{

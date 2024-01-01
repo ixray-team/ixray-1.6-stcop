@@ -107,7 +107,7 @@ void CConsole::DrawUIConsole()
 		return;
 	}
 
-	xrCriticalSection::raii guardLog(&m_log_history_guard);
+	xrCriticalSectionGuard guardLog(&m_log_history_guard);
 	if (ImGui::BeginChild("DebugConsoleScrollingRegion", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollbar)) {
 		if (m_log_history.GetSize() != 0) {
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
