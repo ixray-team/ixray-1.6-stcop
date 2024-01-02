@@ -28,10 +28,13 @@ INT_PTR CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 void CreateGameWindow()
 {
 	if (g_AppInfo.Window == NULL) {
+		DEVMODE dmi;
+		EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmi);
+		psCurrentVidMode[0] = dmi.dmPelsWidth;
+		psCurrentVidMode[1] = dmi.dmPelsHeight;
+
 		SDL_WindowFlags window_flags = SDL_WINDOW_HIDDEN;
-		u32 screen_width = GetSystemMetrics(SM_CXSCREEN);
-		u32 screen_height = GetSystemMetrics(SM_CYSCREEN);
-		g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", screen_width, screen_height, window_flags);
+		g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], window_flags);
 	}
 }
 
