@@ -581,7 +581,10 @@ IC float GetDistFromCamera(const Fvector& from_position)
 }
 
 IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm,
-	Fmatrix& transform_matrix) {
+	Fmatrix& transform_matrix, bool ignore_optimize = false) {
+	if (ignore_optimize)
+		return true;
+
 	if ((isStatic && opt_static >= 1) || (!isStatic && opt_dynamic >= 1)) {
 		float sphere_volume = pVisual->getVisData().sphere.volume();
 
@@ -878,7 +881,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual, bool ignore)
 {
 	if (0==pVisual)				return;
 
-	if (!ignore && !IsValuableToRender(pVisual, false, phase == 1, *val_pTransform))
+	if (!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform, ignore))
 		return;
 
 	// Visual is 100% visible - simply add it
