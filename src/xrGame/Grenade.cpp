@@ -8,7 +8,7 @@
 #include "inventory.h"
 #include "level.h"
 #include "xrmessages.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
 #include "xrserver_objects_alife.h"
 

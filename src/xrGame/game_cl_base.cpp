@@ -5,12 +5,12 @@
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
 #include "../xrScripts/script_engine.h"
-#include "xr_Level_controller.h"
+#include "../xrEngine/xr_Level_controller.h"
 #include "ui/UIMainIngameWnd.h"
 #include "UI/UIGameTutorial.h"
 #include "UI/UIMessagesWindow.h"
 #include "UI/UIDialogWnd.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_sv_mp_vote_flags.h"
 
@@ -224,8 +224,6 @@ void	game_cl_GameState::net_signal		(NET_Packet& P)
 
 void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 {
-	CStringTable st;
-
 	string512 Text;
 	char	Color_Main[]	= "%c[255,192,192,192]";
 	const char*	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
@@ -251,7 +249,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 				players.insert(std::make_pair(newClientId, PS));
 				OnNewPlayerConnected(newClientId);
 			}
-			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PS->getName(),Color_Main,*st.translate("mp_connected"));
+			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PS->getName(),Color_Main,*g_pStringTable->translate("mp_connected"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//---------------------------------------
 			Msg("%s connected", PS->getName());
@@ -261,7 +259,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			string64 PlayerName;
 			P.r_stringZ(PlayerName);
 
-			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_disconnected"));
+			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*g_pStringTable->translate("mp_disconnected"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//---------------------------------------
 			Msg("%s disconnected", PlayerName);
@@ -271,7 +269,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			string64 PlayerName;
 			P.r_stringZ(PlayerName);
 
-			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_entered_game"));
+			xr_sprintf(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*g_pStringTable->translate("mp_entered_game"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 		}break;
 	default:

@@ -3,7 +3,7 @@
 #include "xrMessages.h"
 #include "level.h"
 #include "UIGameTDM.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "map_manager.h"
 #include "map_location.h"
 #include "actor.h"
@@ -13,7 +13,7 @@
 #include "ui/UIMapDesc.h"
 #include "game_base_menu_events.h"
 #include "ui/TeamInfo.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "clsid_game.h"
 #include "ui/UIActorMenu.h"
 
@@ -395,7 +395,7 @@ char*	game_cl_TeamDeathmatch::getTeamSection(int Team)
 	};
 };
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "ui/teaminfo.h"
 
 void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)

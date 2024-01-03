@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../Include/xrRender/FactoryPtr.h"
+#include "../../Include/xrRender/FactoryPtr.h"
 
 #define FACTORY_PTR_INSTANCIATE(Class) \
 	template<> void FactoryPtr<I##Class>::CreateObject() \

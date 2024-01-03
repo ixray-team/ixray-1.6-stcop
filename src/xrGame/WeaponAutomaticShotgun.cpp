@@ -3,7 +3,7 @@
 #include "WeaponAutomaticShotgun.h"
 #include "entity.h"
 #include "ParticlesObject.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "inventory.h"
 #include "level.h"
 #include "actor.h"

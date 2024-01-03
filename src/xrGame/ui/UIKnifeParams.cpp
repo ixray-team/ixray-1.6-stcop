@@ -9,7 +9,7 @@
 #include "inventory_item_object.h"
 #include "UIInventoryUtilities.h"
 #include "WeaponKnife.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 u32 const red_clr = color_argb(255, 210, 50, 50);
 u32 const green_clr = color_argb(255, 50, 255, 50);

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "../xrCore/stdafx.h"
 #include "NvGPUTransferee.h"
 
 extern "C"

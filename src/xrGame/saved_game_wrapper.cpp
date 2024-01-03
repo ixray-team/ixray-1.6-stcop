@@ -16,7 +16,7 @@
 #include "alife_simulator_header.h"
 #include "alife_simulator.h"
 #include "alife_spawn_registry.h"
-#include <string_table.h>
+#include "../xrEngine/string_table.h"
 
 extern LPCSTR alife_section;
 

@@ -4,7 +4,7 @@
 #include "xrserver.h"
 #include "Level.h"
 #include "game_cl_mp.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "clsid_game.h"
 #include <functional>
 

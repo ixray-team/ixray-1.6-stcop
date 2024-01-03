@@ -95,101 +95,25 @@ else()
     message("NuGet found: ${NUGET_COMMAND}")
 endif()
 
-# Configure dependencies
-set(RENDERDOC_API "${CMAKE_CURRENT_SOURCE_DIR}/src/Dependencies/renderdoc")
-
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 
-# Solution folders
-set(IXRAY_FOLDER_PREBUILD FOLDER "Pre Build")
-set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
-set(IXRAY_FOLDER_RENDER FOLDER "Renders")
-set(IXRAY_FOLDER_GAME FOLDER "Game")
-set(IXRAY_FOLDER_3RD FOLDER "3rd Party")
-
-# 3rd libraries
-add_subdirectory("src/3rd party/luabind")
-add_subdirectory("src/3rd party/ode")
-add_subdirectory("src/3rd party/crypto")
-add_subdirectory("src/3rd party/cximage")
-add_subdirectory("src/3rd party/imgui")
-
-# Prebuild Tools
-add_subdirectory("src/GitParser")
-
-# Engine libraries
-add_subdirectory("src/xrCore")
-add_subdirectory("src/Layers/xrAPI")
-add_subdirectory("src/xrCDB")
-add_subdirectory("src/xrSound")
-add_subdirectory("src/xrNetServer")
-add_subdirectory("src/xrEngine")
-add_subdirectory("src/xrPhysics")
-add_subdirectory("src/xrParticles")
-add_subdirectory("src/xrScripts")
-
-add_subdirectory("src/plugins")
-
-if (IXRAY_USE_R1)
-    add_subdirectory("src/Layers/xrRenderPC_R1")
-endif()
-
-if (IXRAY_USE_R2)
-    add_subdirectory("src/Layers/xrRenderPC_R2")
-endif()
-
-add_subdirectory("src/Layers/xrRenderPC_R4")
-add_subdirectory("src/xrGame")
-
-if(IXRAY_MP)
-    add_subdirectory("src/xrServer")
-    add_subdirectory("src/xrGameSpy")
-endif()
-
-add_subdirectory("src/xrPlay")
-add_subdirectory("src/utils")
-
-# Move libraries
-set_target_properties(GitParser PROPERTIES ${IXRAY_FOLDER_PREBUILD})
-set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrAPI PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrCDB PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrSound PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrNetServer PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrAbstractions PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrScripts PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
-
-if(IXRAY_MP)
-    set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
-endif()
-
-if (IXRAY_USE_R1)
-    set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
-endif()
-
-if (IXRAY_USE_R2)
-    set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
-endif()
-
-set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
-
-# Move 3rd
-set_target_properties(luabind PROPERTIES ${IXRAY_FOLDER_3RD})
-set_target_properties(ODE PROPERTIES ${IXRAY_FOLDER_3RD})
-set_target_properties(crypto PROPERTIES ${IXRAY_FOLDER_3RD})
-set_target_properties(CxImage PROPERTIES ${IXRAY_FOLDER_3RD})
-set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
+# Configure dependencies
+set(RENDERDOC_API "${CMAKE_CURRENT_SOURCE_DIR}/src/3rd Party/renderdoc")
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Set default project
-if (NOT (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY))
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
-endif()
+# 3rd libraries
+add_subdirectory("src/3rd party")
+
+# Engine libraries
+add_subdirectory("src")
+
+# Plugins 
+add_subdirectory("src/plugins")
+
+# Utils
+add_subdirectory("src/utils")

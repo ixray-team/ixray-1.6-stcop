@@ -10,7 +10,7 @@
 #include "Actor.h"
 #include "Artefact.h"
 #include "game_cl_base.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "hudItem.h"
 #include "weapon.h"
 #include "eatable_item_object.h" 
@@ -20,7 +20,7 @@
 #include "clsid_game.h"
 #include "ui\UIBuyWndShared.h"
 #include "UIGameCTA.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../xrEngine/xr_ioconsole.h"
 #include <functional>
 

@@ -22,7 +22,7 @@ add_library(xrParticles SHARED ${XRP_SRC_FILES})
 target_precompile_headers(xrParticles PUBLIC "stdafx.h")
 
 # Include directories
-target_include_directories(xrParticles PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrParticles PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrParticles PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

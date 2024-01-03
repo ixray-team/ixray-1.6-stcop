@@ -17,7 +17,7 @@
 #include "weapon.h"
 #include "WeaponMagazinedWGrenade.h"
 #include "WeaponKnife.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 #include "object_broker.h"
 //#include "clsid_game.h"

@@ -16,7 +16,7 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "inventory.h"
 #include "weapon.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "clsid_game.h"
 #include "characterphysicssupport.h"
 #include "weaponmagazined.h"

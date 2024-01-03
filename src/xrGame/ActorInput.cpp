@@ -16,11 +16,11 @@
 #include "inventory.h"
 #include "level.h"
 #include "game_cl_base.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "UsableScriptObject.h"
 #include "actorcondition.h"
 #include "actor_input_handler.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "UI/UIStatic.h"
 #include "UI/UIActorMenu.h"
 #include "UI/UIDragDropReferenceList.h"
@@ -188,7 +188,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 					
 					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
 					string1024					str;
-					xr_strconcat(str,*CStringTable().translate("st_item_used"),": ", itm->NameItem());
+					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", itm->NameItem());
 					_s->wnd()->TextItemControl()->SetText(str);
 					
 					CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);

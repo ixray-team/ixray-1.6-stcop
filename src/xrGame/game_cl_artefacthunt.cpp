@@ -14,13 +14,13 @@
 #include "ui/UIMapDesc.h"
 #include "ui/UIMessageBoxEx.h"
 #include "ui/UIStatic.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "Artefact.h"
 #include "map_location.h"
 #include "Inventory.h"
 #include "ActorCondition.h"
 #include "ui/TeamInfo.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "CustomOutfit.h"
 #include "clsid_game.h"
 #include "ui/UIActorMenu.h"
@@ -159,7 +159,7 @@ void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
 		dReinforcementTime = 0;
 }
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 {

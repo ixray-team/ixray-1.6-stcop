@@ -1,12 +1,10 @@
-#ifndef UIPLAYERITEM
-#define UIPLAYERITEM
+#pragma once
 
 #include "ui/UIWindow.h"
 #include "ui/xrUIXmlParser.h"
 #include "ui/UIXmlInit.h"
 
 #include "game_cl_base.h"
-#include "string_table.h"
 #include "level.h"
 #include "../xrCore/associative_vector.h"
 
@@ -55,5 +53,3 @@ public:
 	s32 GetPlayerCheckPoints() const;
 	virtual void Update();
 };
-
-#endif

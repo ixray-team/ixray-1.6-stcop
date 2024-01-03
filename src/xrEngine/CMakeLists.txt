@@ -83,7 +83,7 @@ add_library(xrAbstractions SHARED ${ENGINE_SRC_FILES})
 set_property(TARGET xrAbstractions PROPERTY ENABLE_EXPORTS ON)
 
 # Include directories
-target_include_directories(xrAbstractions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrAbstractions PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}SDL3")
 target_include_directories(xrAbstractions PRIVATE "${IXRAY_SDK_INC}/freetype")

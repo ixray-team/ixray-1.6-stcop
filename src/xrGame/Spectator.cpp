@@ -11,7 +11,7 @@
 #include "xrServer_Objects.h"
 #include "game_cl_base.h"
 #include "level.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "seniority_hierarchy_holder.h"
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
@@ -20,7 +20,7 @@
 #include "Inventory.h"
 #include "huditem.h"
 #include "game_cl_mp.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "map_manager.h"
 
 

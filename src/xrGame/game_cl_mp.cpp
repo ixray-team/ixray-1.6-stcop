@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "game_cl_mp.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "xrMessages.h"
 #include "Actor.h"
 #include "ExplosiveItem.h"
@@ -25,7 +25,7 @@
 #include "ui/UISpeechMenu.h"
 #include "UIGameMP.h"
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "clsid_game.h"
 #include "mainmenu.h"
 #include "WeaponKnife.h"

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "map_manager.h"
 #include "map_location.h"
 #include "actor.h"
@@ -12,7 +12,7 @@
 #include "ui/UIVote.h"
 #include "ui/TeamInfo.h"
 #include "game_base_menu_events.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "game_cl_capture_the_artefact.h"
 #include "clsid_game.h"
 #include "actor.h"
@@ -250,7 +250,6 @@ void game_cl_CaptureTheArtefact::UpdateMoneyIndicator()
 
 void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 {
-	CStringTable st;
 	string1024 Text;
 	//string512 tmp;
 //	LPSTR	Color_Teams[3]		= {"%c[255,255,255,255]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
@@ -284,7 +283,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 					CTeamInfo::GetTeam_color_tag(ModifyTeam(artefactOwnerTeam) + 1),
 					ps->getName(), 
 					Color_Main,
-					st.translate("mp_returned_artefact").c_str());
+					g_pStringTable->translate("mp_returned_artefact").c_str());
 				PlayReturnedTheArtefact(ps);
 			} else if (ps != local_player)
 			{
@@ -293,7 +292,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 					CTeamInfo::GetTeam_color_tag(ModifyTeam(ps->team) + 1),
 					ps->getName(), 
 					Color_Main,
-					st.translate("mp_captured_artefact").c_str());
+					g_pStringTable->translate("mp_captured_artefact").c_str());
 				
 				PlayCapturedTheArtefact(ps);
 				if (m_reward_generator)
@@ -309,7 +308,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 			} else
 			{
 				xr_sprintf(Text, "%s%s", 
-					Color_Main, *st.translate("mp_you_captured_artefact"));
+					Color_Main, *g_pStringTable->translate("mp_you_captured_artefact"));
 				
 				PlayCapturedTheArtefact(ps);
 				if (m_reward_generator)
@@ -359,7 +358,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 						CTeamInfo::GetTeam_color_tag(ModifyTeam(ps->team) + 1),
 						ps->getName(), 
 						Color_Main,
-						st.translate("mp_has_dropped_artefact").c_str()); //need translate
+						g_pStringTable->translate("mp_has_dropped_artefact").c_str()); //need translate
 				
 				if (m_reward_generator)
 					m_reward_generator->OnPlayerDropArtefact(ps);
@@ -367,7 +366,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 			{
 				xr_sprintf(Text, "%s%s",
 						Color_Main,
-						st.translate("mp_artefact_dropped").c_str());
+						g_pStringTable->translate("mp_artefact_dropped").c_str());
 			}
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//PlaySndMessage(ID_AF_LOST);
@@ -391,13 +390,13 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 				//artefact on base !
 				xr_sprintf(Text, "%s%s",
 					Color_Artefact,
-					st.translate("mp_artefact_on_base").c_str());
+					g_pStringTable->translate("mp_artefact_on_base").c_str());
 			} else
 			{
 				//artefact on enemy base !
 				xr_sprintf(Text, "%s%s",
 					Color_Artefact,
-					st.translate("mp_artefact_on_enemy_base").c_str());
+					g_pStringTable->translate("mp_artefact_on_enemy_base").c_str());
 			}
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			PlayDeliveredTheArtefact(ps);
@@ -1082,7 +1081,6 @@ bool game_cl_CaptureTheArtefact::NeedToSendReady_Actor(int key, game_PlayerState
 
 bool game_cl_CaptureTheArtefact::NeedToSendReady_Spectator(int key, game_PlayerState* ps)
 {
-	CStringTable	st;
 	bool			res = inherited::NeedToSendReady_Spectator(key, ps);
 	u32				gphase = Phase();
 	if ((gphase == GAME_PHASE_INPROGRESS) &&
@@ -1240,8 +1238,6 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	
 	if (!m_game_ui)
 		return;
-
-	CStringTable		st;
 	
 	u32					psize	=	P.B.count + 1;
 	char*				command = static_cast<char*>(_alloca(psize));
@@ -1298,7 +1294,7 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	{
 		if (!xr_strcmp(cmd_name, ttable[i][0]))
 		{
-			str_c		ted_str = st.translate(ttable[i][1]).c_str();
+			str_c		ted_str = g_pStringTable->translate(ttable[i][1]).c_str();
 			VERIFY		(ted_str);
 			tcmd_len	= xr_strlen(ted_str) + 1;
 			tcmd_name		= static_cast<char*>(_alloca(tcmd_len));
@@ -1319,9 +1315,9 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 		Msg("---Next cat iteration state: %s", vstr);
 #endif
 		xr_strcat(vstr, vstr_size, " ");
-		xr_strcat(vstr, vstr_size, st.translate(args[i]).c_str());
+		xr_strcat(vstr, vstr_size, g_pStringTable->translate(args[i]).c_str());
 	}
-	str_c				t_vote_str = st.translate("mp_voting_started").c_str();
+	str_c				t_vote_str = g_pStringTable->translate("mp_voting_started").c_str();
 	VERIFY				(t_vote_str);
 	u32					fin_str_size = xr_strlen(t_vote_str) + vstr_size + xr_strlen(player) + 1;
 	char*				fin_str = static_cast<char*>(_alloca(fin_str_size));
@@ -1369,7 +1365,6 @@ void game_cl_CaptureTheArtefact::UpdateVotingTime(u32 current_time)
 {
 	if (IsVotingEnabled() && IsVotingActive() && (m_dwVoteEndTime >= current_time))
 	{
-		CStringTable	st;
 		u32 TimeLeft = m_dwVoteEndTime - current_time;
 		string1024 VoteTimeResStr;
 		u32 SecsLeft = (TimeLeft % 60000) / 1000;
@@ -1384,7 +1379,7 @@ void game_cl_CaptureTheArtefact::UpdateVotingTime(u32 current_time)
 			if (ps->m_bCurrentVoteAgreed == 1) NumAgreed++;
 		}
 		
-		xr_sprintf(VoteTimeResStr, st.translate("mp_timeleft").c_str(), MinitsLeft, SecsLeft, float(NumAgreed)/players.size());
+		xr_sprintf(VoteTimeResStr, g_pStringTable->translate("mp_timeleft").c_str(), MinitsLeft, SecsLeft, float(NumAgreed)/players.size());
 		if (m_game_ui)
 			m_game_ui->SetVoteTimeResultMsg(VoteTimeResStr);
 	};

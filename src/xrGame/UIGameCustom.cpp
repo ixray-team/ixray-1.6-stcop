@@ -5,7 +5,7 @@
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
 #include "object_broker.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 #include "InventoryOwner.h"
 #include "ui/UIActorMenu.h"
@@ -150,9 +150,9 @@ SDrawStaticStruct * CUIGameCustom::AddHudMessage(LPCSTR text, LPCSTR text2, LPCS
 	string1024 str;
 
 	if (text2) {
-		xr_sprintf(str, "%s : %s", *CStringTable().translate(text), trnslate_second_text ? *CStringTable().translate(text2) : text2);
+		xr_sprintf(str, "%s : %s", *g_pStringTable->translate(text), trnslate_second_text ? *g_pStringTable->translate(text2) : text2);
 	} else {
-		xr_sprintf(str, "%s", *CStringTable().translate(text));
+		xr_sprintf(str, "%s", *g_pStringTable->translate(text));
 	}
 
 	HudMessage->wnd()->TextItemControl()->SetText(str);

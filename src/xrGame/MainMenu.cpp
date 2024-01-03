@@ -5,7 +5,7 @@
 #include "../xrEngine/xr_IOConsole.h"
 #include "../xrEngine/IGame_Level.h"
 #include "../xrEngine/CameraManager.h"
-#include "xr_Level_controller.h"
+#include "../xrEngine/xr_Level_controller.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UIXmlInit.h"
 #include <dinput.h>
@@ -15,7 +15,7 @@
 #include "gamespy/GameSpy_HTTP.h"
 #include "gamespy/GameSpy_Available.h"
 #include "gamespy/CdkeyDecode/cdkeydecode.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../xrCore/os_clipboard.h"
 
 #include "DemoInfo.h"
