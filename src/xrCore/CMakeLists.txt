@@ -9,63 +9,65 @@ file(GLOB CORE_SOURCE_STL_FILES
     "intrusive_ptr*.*"
     "Fixed*.*"
 )
+
 file(GLOB CORE_SOURCE_MATH_FILES
     "vector.h"
     "_*.cpp"
     "_*.h"
 )
+
 file(GLOB CORE_SOURCE_LZO_FILES
     "lzo_*.*"
     "rt_lzo*.*"
 )
-file(GLOB CORE_SOURCE_RT_FILES
-    "rt_c*.*"
-)
-file(GLOB CORE_SOURCE_PPMD_FILES
-    "ppmd_*.*"
-)
+
 file(GLOB CORE_SOURCE_LZ_FILES
     "LzHuf*.cpp"
     "lzhuf.h"
 )
+
 file(GLOB CORE_SOURCE_XML_FILES
     "XmlParser/*.cpp"
     "XmlParser/*.h"
 )
-file(GLOB CORE_SOURCE_DISCORD_FILES
-    "discord/*.*"
-)
-file(GLOB CORE_SOURCE_DISCORD_API_FILES
-    "discord/api/*.*"
-)
+
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"
     "memory_*.*"
     "*malloc*.*"
     "doug_lea_allocator.*"
 )
-file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES
-    "ptmalloc3/*.*"
-)
+
 file(GLOB CORE_SOURCE_DEBUG_FILES
     "xrDebug*.*"
     "log.*"
 )
+
 file(GLOB CORE_SOURCE_FS_FILES
     "FS*.*"
     "File*.*"
     "file*.*"
     "Locator*.*"
 )
+
 file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.c"
     "*.h"
 )
+
+file(GLOB CORE_SOURCE_RT_FILES "rt_c*.*")
+file(GLOB CORE_SOURCE_PPMD_FILES "ppmd_*.*")
+file(GLOB CORE_SOURCE_DISCORD_FILES "discord/*.*")
+file(GLOB CORE_SOURCE_XR_API_FILES "API/*.*")
+file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES "ptmalloc3/*.*")
+
+# NatVis config
 file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
 
-source_group("core" FILES ${CORE_SOURCE_ALL_FILES})
-source_group("math" FILES ${CORE_SOURCE_MATH_FILES})
+source_group("ungrouped" FILES ${CORE_SOURCE_ALL_FILES})
+source_group("core/api" FILES ${CORE_SOURCE_XR_API_FILES})
+source_group("core/math" FILES ${CORE_SOURCE_MATH_FILES})
 source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
 source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
@@ -73,9 +75,9 @@ source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
 source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
 source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
 source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
-source_group("fs" FILES ${CORE_SOURCE_FS_FILES})
-source_group("stl" FILES ${CORE_SOURCE_STL_FILES})
-source_group("XML" FILES ${CORE_SOURCE_XML_FILES})
+source_group("core/fs" FILES ${CORE_SOURCE_FS_FILES})
+source_group("core/stl" FILES ${CORE_SOURCE_STL_FILES})
+source_group("core/XML" FILES ${CORE_SOURCE_XML_FILES})
 source_group("discord" FILES ${CORE_SOURCE_DISCORD_FILES})
 source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 

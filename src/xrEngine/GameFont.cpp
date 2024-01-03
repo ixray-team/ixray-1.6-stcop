@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #include "GameFont.h"
-#include "../Include/xrAPI/xrAPI.h"
+#include "../xrCore/API/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
 #include <freetype/freetype.h>

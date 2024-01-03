@@ -5,7 +5,7 @@
 #ifndef _EDITOR
 #include	"../../xrEngine/Render.h"
 #else
-	#include "../../Include/xrAPI/xrAPI.h"
+	#include "../../xrCore/API/xrAPI.h"
 #endif
 
 void	CResourceManager::reset_begin			()

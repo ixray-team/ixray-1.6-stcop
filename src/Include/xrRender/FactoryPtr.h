@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderFactory.h"
-#include "../../Include/xrAPI/xrAPI.h"
+#include "../../xrCore/API/xrAPI.h"
 
 template<class T> 
 class FactoryPtr

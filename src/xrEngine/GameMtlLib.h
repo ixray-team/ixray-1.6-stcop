@@ -369,7 +369,7 @@ extern MTL_EXPORT_API CGameMtlLibrary		GMLib;
 //#ifdef	_EDITOR
 //extern MTL_EXPORT_API CGameMtlLibrary*		PGMLib;
 //#else
-#include "../include/xrapi/xrapi.h"
+#include "../xrCore/API/xrapi.h"
 //#endif
 
 #endif
