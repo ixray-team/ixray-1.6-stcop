@@ -852,10 +852,6 @@ void CWeapon::OnH_B_Chield		()
 }
 
 extern u32 hud_adj_mode;
-bool CWeapon::AllowBore()
-{
-	return true;
-}
 
 void CWeapon::UpdateCL		()
 {
@@ -893,21 +889,18 @@ void CWeapon::UpdateCL		()
 		}
 	}
 
-	if( (GetNextState()==GetState()) && IsGameTypeSingle() && H_Parent()==Level().CurrentEntity())
+	if (AllowBore())
 	{
-		CActor* pActor	= smart_cast<CActor*>(H_Parent());
-		if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
+		if (GetNextState() == GetState() && IsGameTypeSingle() && H_Parent() == Level().CurrentEntity())
 		{
-			if (hud_adj_mode==0 && 
-				GetState()==eIdle && 
-				(Device.dwTimeGlobal-m_dw_curr_substate_time>20000) && 
-				!IsZoomed()&&
-				g_player_hud->attached_item(1)==NULL)
+			CActor* pActor	= smart_cast<CActor*>(H_Parent());
+			if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
 			{
-				if(AllowBore())
-					SwitchState		(eBore);
-
-				ResetSubStateTime	();
+				if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000) && !IsZoomed() && g_player_hud->attached_item(1) == NULL)
+				{
+					SwitchState(eBore);
+					ResetSubStateTime();
+				}
 			}
 		}
 	}

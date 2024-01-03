@@ -143,6 +143,7 @@ public:
 	bool						isHUDAnimationExist		(LPCSTR anim_name);
 
 	virtual float GetHudFov();
+	virtual bool AllowBore() { return !m_bDisableBore; }
 
 protected:
 
@@ -158,6 +159,7 @@ protected:
 	HUD_SOUND_COLLECTION		m_sounds;
 	InertionData				m_current_inertion;
 	float						m_fHudFov;
+	bool						m_bDisableBore;
 
 private:
 	CPhysicItem					*m_object;

@@ -18,7 +18,6 @@
 #	include "phdebug.h"
 #endif
 
-
 #define PLAYING_ANIM_TIME 10000
 
 #include "ui/UIProgressShape.h"
@@ -224,13 +223,16 @@ void CMissile::UpdateCL()
 
 	inherited::UpdateCL();
 
-	CActor* pActor	= smart_cast<CActor*>(H_Parent());
-	if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
+	if (AllowBore())
 	{
-		if (hud_adj_mode==0 && GetState()==eIdle && (Device.dwTimeGlobal-m_dw_curr_substate_time>20000) )
+		CActor* pActor = smart_cast<CActor*>(H_Parent());
+		if (pActor && !pActor->AnyMove() && this == pActor->inventory().ActiveItem())
 		{
-			SwitchState			(eBore);
-			ResetSubStateTime	();
+			if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000))
+			{
+				SwitchState(eBore);
+				ResetSubStateTime();
+			}
 		}
 	}
 

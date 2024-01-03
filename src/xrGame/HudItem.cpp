@@ -51,13 +51,16 @@ void CHudItem::Load(LPCSTR section)
 	m_current_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
 	m_current_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
 
-	m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
+	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
+
+	if (!m_bDisableBore)
+		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
 }
 
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position)
 {
-	m_sounds.PlaySound	(alias, position, object().H_Root(), !!GetHUDmode());
+	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode());
 }
 
 void CHudItem::renderable_Render()
