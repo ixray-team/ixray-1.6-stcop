@@ -1,5 +1,5 @@
 #pragma once
-#ifdef	DEBUG
+#ifdef DEBUG_DRAW
 
 	enum
 {

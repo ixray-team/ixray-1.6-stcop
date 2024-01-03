@@ -3,18 +3,12 @@
 #include "PHWorld.h"
 #include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
-//#include "Level.h"
 #include "ExtendedGeom.h"
 #include "draymotions.h"
 #include "PHCollideValidator.h"
 #include "../xrEngine/gamemtllib.h"
-//#include "PhysicsGamePars.h"
+
 #include "params.h"
-#ifdef    DEBUG
-#	include "debug_output.h"
-#endif
-//#include "PHCommander.h"
-//#include "PHSimpleCalls.h"
 #include "../xrserverentities/PHSynchronize.h"
 #include "../xrserverentities/phnetstate.h"
 #include "geometrybits.h"
@@ -23,54 +17,44 @@
 #include "../xrengine/defines.h"
 #include "../xrcdb/xr_area.h"
 #include "../xrcore/fs_internal.h"
-#ifdef	DEBUG
-//				void DBG_ObjAfterPhDataUpdate	( CPHObject *obj );
-//				void DBG_ObjBeforePhDataUpdate	( CPHObject *obj );
-//				void DBG_ObjAfterStep			( CPHObject *obj );
-//				void DBG_ObjBeforeStep			( CPHObject *obj );
-//				void DBG_ObjeAfterPhTune		( CPHObject *obj );
-//				void DBG_ObjBeforePhTune		( CPHObject *obj );
-//				void DBG_ObjAfterCollision		( CPHObject *obj );
-//				void DBG_ObjBeforeCollision		( CPHObject *obj );
-#endif
-//////////////////////////////////////////////////////////////
-//////////////CPHMesh///////////////////////////////////////////
-///////////////////////////////////////////////////////////
-//BOOL		g_bDebugDumpPhysicsStep				= 0;
-CPHWorld	*ph_world							= 0;
 
-IPHWorld * __stdcall physics_world()
+#ifdef DEBUG_DRAW
+#	include "debug_output.h"
+#endif
+
+//////////////CPHMesh///////////////////////////////////////////
+CPHWorld *ph_world = nullptr;
+
+IPHWorld * xr_stdcall physics_world()
 {
 	return ph_world;
 }
 
-void	__stdcall create_physics_world( bool mt, CObjectSpace *os, CObjectList *lo, CRenderDeviceBase *dv ) //IPHWorldUpdateCallbck &commander, 
+void xr_stdcall create_physics_world(bool mt, CObjectSpace* os, CObjectList* lo)
 {
-		ph_world							= xr_new<CPHWorld>(); //&commander
-		VERIFY( os );
-//		VERIFY( lo );
-		VERIFY( dv );
-		ph_world->Create					(mt, os, lo, dv);
+	ph_world = xr_new<CPHWorld>(); //&commander
+	VERIFY(os);
+	ph_world->Create(mt, os, lo);
 }
 
-void	__stdcall	destroy_physics_world()
+void xr_stdcall destroy_physics_world()
 {
-		ph_world->Destroy		();
-		xr_delete				(ph_world);
+	ph_world->Destroy();
+	xr_delete(ph_world);
 }
 
-CObjectSpace* __stdcall create_object_space()
+CObjectSpace* xr_stdcall create_object_space()
 {
-	//CFileReader* fr =	xr_new<CFileReader>("D:/STALKER/resources/gamedata/levels/stohe_selo/level.cform");
-	CFileReader* fr =	xr_new<CFileReader>("ActorEditorLevel.cform");
+	CFileReader* fr = xr_new<CFileReader>("ActorEditorLevel.cform");
 	CObjectSpace* os = xr_new<CObjectSpace>();
-	g_SpatialSpace				= xr_new<ISpatial_DB>	();
-	g_SpatialSpacePhysic		= xr_new<ISpatial_DB>	();
-	os->Load( fr, 0 );
-	//xr_delete(fr);
+	g_SpatialSpace = xr_new<ISpatial_DB>();
+	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+	os->Load(fr, 0);
+
 	return os;
 }
-CObjectSpace*	__stdcall	mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback)
+
+CObjectSpace* xr_stdcall mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback)
 {
 	CObjectSpace* os = xr_new<CObjectSpace>();
 	g_SpatialSpace				= xr_new<ISpatial_DB>	();
@@ -78,45 +62,38 @@ CObjectSpace*	__stdcall	mesh_create_object_space(Fvector* verts, CDB::TRI* tris,
 	os->Create( verts, tris, H, build_callback );
 	return os;
 }
-void			__stdcall	set_mtl_lib(CGameMtlLibrary * l)
+
+void xr_stdcall set_mtl_lib(CGameMtlLibrary * l)
 {
 	PGMLib = l;
 }
-void __stdcall destroy_object_space(CObjectSpace* &os)
+
+void xr_stdcall destroy_object_space(CObjectSpace* &os)
 {
 	xr_delete(os);
 }
 
-void CPHMesh ::Create(dSpaceID space, dWorldID world){
+void CPHMesh ::Create(dSpaceID space, dWorldID world)
+{
 	Geom = dCreateTriList(space, 0, 0);
 	CPHGeometryBits::init_geom( *this );
 }
-/////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////
-
-void CPHMesh ::Destroy(){
-	
+void CPHMesh::Destroy()
+{
 	dGeomDestroy(Geom);
-	dTriListClass=-1;
-
+	dTriListClass = -1;
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////
 ///////////CPHWorld/////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
 //#define PH_PLAIN
 #ifdef PH_PLAIN
 dGeomID plane;
 #endif
 
-#ifdef DEBUG 
-
+#ifdef DEBUG_DRAW
 void CPHWorld::OnRender()
 {
-
 	debug_output().PH_DBG_Render();
 }
 #endif
@@ -128,34 +105,31 @@ public IPHWorldUpdateCallbck
 	void		phys_shell_relcase	(CPhysicsShell* sh){};
 } empty_update_callback;
 
-
-
-CPHWorld::CPHWorld( ): // IPHWorldUpdateCallbck		*_update_callback
-	m_update_callback( &empty_update_callback ),
+CPHWorld::CPHWorld() :
+	m_update_callback(&empty_update_callback),
 	m_default_contact_shotmark(0),
 	m_default_character_contact_shotmark(0),
 	physics_step_time_callback(0),
-	m_object_space( 0 ),
-	m_level_objects( 0 ),
-	m_device( 0 )
+	m_object_space(0),
+	m_level_objects(0)
 {
-	
-	disable_count=0;
-	m_frame_time=0.f;
-	m_previous_frame_time=0.f;
-	b_frame_mark=false;
-	m_steps_num=0;
+	disable_count = 0;
+	m_frame_time = 0.f;
+	m_previous_frame_time = 0.f;
+	b_frame_mark = false;
+	m_steps_num = 0;
 	m_steps_short_num = 0;
-	m_frame_sum=0.f;
-	m_delay=0; 
-	m_previous_delay=0;
-	m_reduce_delay=0;
-	m_update_delay_count=0;
-	b_world_freezed=false;
-	b_processing=false;
-	m_gravity	=default_world_gravity;
-	b_exist=false;
+	m_frame_sum = 0.f;
+	m_delay = 0;
+	m_previous_delay = 0;
+	m_reduce_delay = 0;
+	m_update_delay_count = 0;
+	b_world_freezed = false;
+	b_processing = false;
+	m_gravity = default_world_gravity;
+	b_exist = false;
 }
+
 void CPHWorld::SetStep(float s)
 {
 	fixed_step		= s;
@@ -166,22 +140,21 @@ void CPHWorld::SetStep(float s)
 
 	if(ph_world&&ph_world->Exist())
 	{
-		float	frame_time					=	Device().fTimeDelta;
+		float	frame_time					=	Device.fTimeDelta;
 		u32		it_number					=	iFloor	(frame_time /fixed_step);
 		frame_time							-=	it_number*fixed_step;
 		ph_world->m_previous_frame_time		=	frame_time;
 		ph_world->m_frame_time				=	frame_time;
 	}
 }
-void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo, CRenderDeviceBase* dv)
+void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 {
 	LoadParams();
 	dWorldID phWorld = 0;
 	m_object_space = os;
 	m_level_objects = lo;
-	m_device = dv;
 
-	Device().AddSeqFrame(this, mt);
+	Device.AddSeqFrame(this, mt);
 
 #ifndef ODE_SLOW_SOLVER
 	dWorldSetAutoEnableDepthSF1(phWorld, 100000000);
@@ -233,7 +206,7 @@ void CPHWorld::Destroy()
 	dCylinderClassUser=-1;
 	dRayMotionsClassUser=-1;
 
-	Device().RemoveSeqFrame( this );
+	Device.RemoveSeqFrame( this );
 	b_exist=false;
 }
 
@@ -247,7 +220,7 @@ void CPHWorld::SetGravity(float g)
 void CPHWorld::OnFrame()
 {
 	SCOPE_EVENT_NAME_GROUP("Physics", "Engine");
-	FrameStep(Device().fTimeDelta);
+	FrameStep(Device.fTimeDelta);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -493,11 +466,13 @@ void CPHWorld::FrameStep(dReal step)
 
 	b_processing = true;
 
-	start_time = Device().dwTimeGlobal;// - u32(m_frame_time*1000);
+	start_time = Device.dwTimeGlobal;
 	if (ph_console::g_bDebugDumpPhysicsStep && it_number > 20)
 		Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %d !!!", it_number);
+
 	for (UINT i = 0; i < it_number; ++i)
 		Step();
+
 	b_processing = false;
 #ifdef DEBUG
 	debug_output().DBG_DrawStatAfterFrameStep();

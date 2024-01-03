@@ -16,7 +16,7 @@ public:
 		virtual			~iphysics_scripted								()								{};
 };
 
-class iphysics_scripted_class
+class XRPHYSICS_API iphysics_scripted_class
 {
 public:
 	virtual	iphysics_scripted& get_scripted() = 0;

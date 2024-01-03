@@ -15,19 +15,18 @@ class ICollisionHitCallback;
 
 class CPHSimpleCharacter : 
 	public CPHCharacter,
-	ICollisionDamageInfo
+	private ICollisionDamageInfo
 {
 	typedef CPHCharacter	inherited;
 private:
 	
-	collide::rq_results			RQR;
+	collide::rq_results RQR;
 
 protected:
-	CElevatorState			m_elevator_state;
+	CElevatorState m_elevator_state;
+
+public:
 	////////////////////////////damage////////////////////////////////////////
-#ifdef DEBUG
-	public:
-#endif
 	struct SCollisionDamageInfo
 	{
 										SCollisionDamageInfo		()										;
@@ -48,9 +47,9 @@ protected:
 #ifdef	DEBUG
 	SCollisionDamageInfo& dbg_get_collision_dmg_info(){ return m_collision_damage_info ;}
 #endif
+
 protected:
 	SCollisionDamageInfo		m_collision_damage_info;
-	/////////////////////////// callback
 	ObjectContactCallbackFun*	m_object_contact_callback;
 	////////////////////////// geometry
 	Fvector m_last_move;
@@ -68,9 +67,7 @@ protected:
 	
 	dReal m_radius;
 	dReal m_cyl_hight;
-	///////////////////////////////////
-	//dJointID m_capture_joint;
-	//dJointFeedback m_capture_joint_feedback;
+
 	////////////////////////// movement
 	dVector3 m_control_force;
 	Fvector	 m_acceleration;	
@@ -81,7 +78,7 @@ protected:
 	dVector3 m_depart_position;
 	dVector3 m_wall_contact_position;
 	dVector3 m_ground_contact_position;
-	dReal	 jump_up_velocity;//=6.0f;//5.6f;
+	dReal	 jump_up_velocity;
 	dReal	 m_collision_damage_factor;
 	dReal	 m_max_velocity;
 
@@ -93,41 +90,42 @@ protected:
 
 	Fvector  m_last_environment_update;
 	u16		 m_last_picked_material;
+
 	//movement state
-	bool is_contact					;
-	bool was_contact				;
-	bool b_depart					;
-	bool b_meet						;
-	bool b_side_contact				;
-	bool b_was_side_contact			;
-	bool b_any_contacts				;
-	bool b_air_contact_state		;
+	bool is_contact;
+	bool was_contact;
+	bool b_depart;
+	bool b_meet;
+	bool b_side_contact;
+	bool b_was_side_contact;
+	bool b_any_contacts;
+	bool b_air_contact_state;
 
-	bool b_valide_ground_contact	;
-	bool b_valide_wall_contact		;
-	bool b_on_object				;
-	bool b_was_on_object			;
-	bool b_on_ground				;
-	bool b_lose_ground				;
+	bool b_valide_ground_contact;
+	bool b_valide_wall_contact;
+	bool b_on_object;
+	bool b_was_on_object;
+	bool b_on_ground;
+	bool b_lose_ground;
 	bool b_collision_restrictor_touch;
-	u32  m_contact_count			;
+	u32  m_contact_count;
 
-	bool	is_control					;
-	bool	b_meet_control				;
-	bool	b_lose_control				;
-	bool	was_control				;
-	bool	b_stop_control				;
-	bool	b_depart_control			;
-	bool	b_jump						;
-	bool	b_jumping					;
-	bool	b_clamb_jump				;
-	bool	b_external_impulse			;
-	u64		m_ext_impuls_stop_step		;
-	Fvector m_ext_imulse				;
-	bool	b_death_pos					;
-	bool	b_foot_mtl_check			;
-	dReal	m_friction_factor			;
-	bool	b_non_interactive			;
+	bool	is_control;
+	bool	b_meet_control;
+	bool	b_lose_control;
+	bool	was_control;
+	bool	b_stop_control;
+	bool	b_depart_control;
+	bool	b_jump;
+	bool	b_jumping;
+	bool	b_clamb_jump;
+	bool	b_external_impulse;
+	u64		m_ext_impuls_stop_step;
+	Fvector m_ext_imulse;
+	bool	b_death_pos;
+	bool	b_foot_mtl_check;
+	dReal	m_friction_factor;
+	bool	b_non_interactive;
 public:
 							CPHSimpleCharacter					()									;
 	virtual					~CPHSimpleCharacter					()						{Destroy();}
@@ -141,9 +139,6 @@ public:
 	virtual		void		get_spatial_params					()									;
 	/////////////////CPHCharacter////////////////////////////////////////////
 public:
-	//update
-
-
 	//Check state
 	virtual		bool			 		ContactWas						()					{if(b_meet_control) {b_meet_control=false;return true;} else return false;}
 	virtual		EEnvironment	 		CheckInvironment				()			;
@@ -225,9 +220,6 @@ public:
 	virtual		bool		IsEnabled							()					{ if(!b_exist)return false; return !!dBodyIsEnabled(m_body);}
 	virtual		void		GetBodyPosition						(Fvector& vpos)		{ VERIFY(b_exist); vpos = cast_fv(dBodyGetPosition(m_body));  }
 		const Fvector		&BodyPosition						()const				{VERIFY(b_exist && m_body); return cast_fv(dBodyGetPosition(m_body)); } 
-	//virtual		void		CaptureObject						(dBodyID body,const dReal* anchor);
-	//virtual		void		CapturedSetPosition					(const dReal* position);
-	//virtual		void		doCaptureExist						(bool&	do_exist);
 
 	virtual		void		get_State							(		SPHNetState&	state)								;
 	virtual		void		set_State							(const	SPHNetState&	state)								;
@@ -235,7 +227,6 @@ public:
 	bool		ValidateWalkOnMesh					()			;
 	bool		ValidateWalkOnObject				()			;
 private:
-			void		CheckCaptureJoint					();
 			void		ApplyAcceleration					();
 
 			u16			RetriveContactBone					();
@@ -259,16 +250,16 @@ virtual	void	get_Box								( Fvector&	sz, Fvector& c )const;
 	protected:
 virtual	void	update_last_material						();
 public:	
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual		void		OnRender						();
 #endif
 };
 
-const dReal def_spring_rate=0.5f;
-const dReal def_dumping_rate=20.1f;
+constexpr dReal def_spring_rate = 0.5f;
+constexpr dReal def_dumping_rate = 20.1f;
 
-IC bool ignore_material( u16 material_idx )
+IC bool ignore_material(u16 material_idx)
 {
-		SGameMtl* material=GMLibrary().GetMaterialByIdx( material_idx );
-		return !!material->Flags.test( SGameMtl::flActorObstacle );
+	SGameMtl* material = GMLibrary().GetMaterialByIdx(material_idx);
+	return !!material->Flags.test(SGameMtl::flActorObstacle);
 }

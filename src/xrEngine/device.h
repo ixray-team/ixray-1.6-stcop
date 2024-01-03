@@ -139,6 +139,7 @@ public:
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
 	friend void CreateRDoc();
+	friend class CPHWorld;
 
 	struct DrawCommand
 	{

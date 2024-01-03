@@ -18,29 +18,19 @@
 //#include "characterphysicssupport.h"
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/ )
+IPHCapture* phcapture_create(CPHCharacter* ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/)
 {
-//m_capture=xr_new<CPHCapture>(m_character,
-//							 object,
-//							 cb
-//							 );
-	VERIFY( ch );
-	//VERIFY( object );
-	//VERIFY( cb );
-	return xr_new<CPHCapture>(ch,
-		   				 object,
-		   				 cb
-		   				 );
+	VERIFY(ch);
+	return xr_new<CPHCapture>(ch, object, cb);
 }
-IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element)
+
+IPHCapture *phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element)
 {
 	VERIFY( ch );
-	return xr_new<CPHCapture>(ch,
-		object,
-		element
-		);
+	return xr_new<CPHCapture>(ch, object, element);
 }
-void	phcapture_destroy(IPHCapture* &c)
+
+void phcapture_destroy(IPHCapture*& c)
 {
 	CPHCapture* capture = smart_cast<CPHCapture*>(c);
 	xr_delete(capture);
@@ -65,15 +55,13 @@ CPHCapture::~CPHCapture()
 
 bool CPHCapture::Invalid()
 {
-	return 
-		!m_taget_object->ObjectPPhysicsShell()||
-		!m_taget_object->ObjectPPhysicsShell()->isActive()||
-		!m_character->b_exist;
+	return  !m_taget_object->ObjectPPhysicsShell()||
+			!m_taget_object->ObjectPPhysicsShell()->isActive()||
+			!m_character->b_exist;
 }
 
 void CPHCapture::PhDataUpdate(dReal /**step/**/)
 {
-
 	switch(e_state) 
 	{
 	case cstFree:  
@@ -93,10 +81,6 @@ void CPHCapture::PhTune(dReal /**step/**/)
 	if(e_state == cstFree)
 		return;
 
-	//if(!m_taget_object->PPhysicsShell())	{
-	//	b_failed=true;
-	//	return;			//. hack
-	//}
 	VERIFY(m_character && m_character->b_exist);
 	VERIFY(m_taget_object);
 	VERIFY(m_taget_object->ObjectPPhysicsShell());
@@ -142,7 +126,7 @@ void CPHCapture::PhTune(dReal /**step/**/)
 
 void CPHCapture::PullingUpdate()
 {
-	if (!m_taget_element->isActive() || inl_ph_world().Device().dwTimeGlobal - m_time_start > m_capture_time)
+	if (!m_taget_element->isActive() || Device.dwTimeGlobal - m_time_start > m_capture_time)
 	{
 		Release();
 		return;
@@ -209,7 +193,6 @@ void CPHCapture::PullingUpdate()
 		{
 			if (dir.y > EPS)
 			{
-
 				if (dir.z > EPS)
 				{
 					float mag = dir.y * dir.y + dir.z * dir.z;
@@ -307,6 +290,7 @@ void CPHCapture::ReleasedUpdate()
 		e_state=cstFree;
 		m_taget_element->Enable();
 	}
+
 	b_collide=false;
 }
 

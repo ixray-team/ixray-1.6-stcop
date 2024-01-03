@@ -1,5 +1,4 @@
-#ifndef PH_WORLD_H
-#define PH_WORLD_H
+#pragma once
 #include "Physics.h"
 #include "phupdateobject.h"
 #include "IPHWorld.h"
@@ -7,9 +6,6 @@
 #include "../xrEngine/pure.h"
 // refs
 struct	SGameMtlPair;
-//class	CPHCommander;
-//class	CPHCondition;
-//class	CPHAction;
 struct	SPHNetState;
 class	CPHSynchronize;
 typedef  xr_vector<std::pair<CPHSynchronize*,SPHNetState> > V_PH_WORLD_STATE;
@@ -24,66 +20,67 @@ public:
 #define PHWORLD_SOUND_CACHE_SIZE 8
 
 ////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
 class	CObjectSpace;
 class	CObjectList;
+
 class CPHWorld	:	public	pureFrame,
 					public	IPHWorld,
 					public	cphysics_scripted
-					#ifdef DEBUG
+#ifdef DEBUG_DRAW
 					, public pureRender
-					#endif
+#endif
 {
-	double						m_start_time												;
-	u32							m_delay														;
-	u32							m_previous_delay											;
-	u32							m_reduce_delay												;
-	u32							m_update_delay_count										;
-	bool						b_world_freezed												;
+	double						m_start_time;
+	u32							m_delay;
+	u32							m_previous_delay;
+	u32							m_reduce_delay;
+	u32							m_update_delay_count;
+	bool						b_world_freezed;
 	bool						b_processing;
 	bool						b_exist;
-	static const u32			update_delay=1												;
-///	dSpaceID					Space														;
+	static const u32			update_delay = 1;
 
-	CPHMesh						Mesh														;
-	PH_OBJECT_STORAGE			m_objects													;
-	PH_OBJECT_STORAGE			m_freezed_objects											;
-	PH_OBJECT_STORAGE			m_recently_disabled_objects									;
-	PH_UPDATE_OBJECT_STORAGE	m_update_objects											;
-	PH_UPDATE_OBJECT_STORAGE	m_freezed_update_objects									;
+	CPHMesh						Mesh;
+	PH_OBJECT_STORAGE			m_objects;
+	PH_OBJECT_STORAGE			m_freezed_objects;
+	PH_OBJECT_STORAGE			m_recently_disabled_objects;
+	PH_UPDATE_OBJECT_STORAGE	m_update_objects;
+	PH_UPDATE_OBJECT_STORAGE	m_freezed_update_objects;
 	dGeomID						m_motion_ray;
-	//CPHCommander				*m_commander;
-	IPHWorldUpdateCallbck		*m_update_callback											;
-	CObjectSpace				*m_object_space												;
-	CObjectList					*m_level_objects											;
-	CRenderDeviceBase			*m_device;													;
+
+	IPHWorldUpdateCallbck*	m_update_callback;
+	CObjectSpace*			m_object_space;
+	CObjectList*			m_level_objects;
+
 public:
 	xr_vector<ISpatial*>		r_spatial;
-public:
-	u64							m_steps_num													;
+	u64							m_steps_num;
+
 private:
-	u16							m_steps_short_num											;
+	u16							m_steps_short_num;
+
 public:
-	double						m_frame_sum													;
-	dReal						m_previous_frame_time										;
-	bool						b_frame_mark												;
-	dReal						m_frame_time												;
-	float						m_update_time												;
-	u16							disable_count												;
-	float						m_gravity													;
+	double						m_frame_sum;
+	dReal						m_previous_frame_time;
+	bool						b_frame_mark;
+	dReal						m_frame_time;
+	float						m_update_time;
+	u16							disable_count;
+	float						m_gravity;
+
 private:
-	ContactCallbackFun			*m_default_contact_shotmark									;
-	ContactCallbackFun			*m_default_character_contact_shotmark						;
-	PhysicsStepTimeCallback		*physics_step_time_callback									;
+	ContactCallbackFun*			m_default_contact_shotmark;
+	ContactCallbackFun*			m_default_character_contact_shotmark;
+	PhysicsStepTimeCallback*	physics_step_time_callback;
+
 public:
 	CPHWorld(const CPHWorld& other) = delete;
 	CPHWorld& operator =(const CPHWorld& other) = delete;
 								CPHWorld						( )							;
 	virtual						~CPHWorld						(){}						;
 
-//IC	dSpaceID					GetSpace						()			{return Space;}	;
 IC	bool						Exist							()			{return b_exist ;}
-	void						Create							(bool mt, CObjectSpace * os, CObjectList *lo, CRenderDeviceBase* dv );
+	void						Create							(bool mt, CObjectSpace * os, CObjectList *lo);
 	void						SetGravity						(float	g)					;
 IC  float						Gravity							()							{return m_gravity;}
 	void						AddObject						(CPHObject* object)			;
@@ -122,10 +119,8 @@ ContactCallbackFun				*default_character_contact_shotmark()						{ return m_defa
 	void						NetRelcase						(CPhysicsShell* s)			;
 	CObjectSpace				&ObjectSpace					()							{ VERIFY( m_object_space ); return *m_object_space; }
 	CObjectList					&LevelObjects					()							{ VERIFY( m_level_objects ); return *m_level_objects; }
-	CRenderDeviceBase			&Device							()							{ VERIFY( m_device ); return *m_device;	}
 	
-//	void						AddCall							(CPHCondition*c,CPHAction*a);
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void 				OnRender						()							;
 #endif
 	virtual void	_BCL		OnFrame							()							;
@@ -134,14 +129,10 @@ private:
 	iphysics_scripted			&get_scripted					()							{ return *this; }
 	void						set_step_time_callback			(PhysicsStepTimeCallback* cb ){ physics_step_time_callback = cb; }
 	void						set_update_callback				( IPHWorldUpdateCallbck* cb ){ VERIFY( cb ); m_update_callback	= cb; }
-//	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-//add_to_type_list(CPHWorld)
-//#undef script_type_list
-//#define script_type_list save_type_list(CPHWorld)
+
 extern CPHWorld	*ph_world					;
 IC CPHWorld&	inl_ph_world		()
 {
 	return *ph_world;
 }
-#endif
