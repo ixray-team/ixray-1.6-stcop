@@ -99,7 +99,7 @@ bool	global_data_file_path(LPCSTR name, IAgent* agent, DWORD sessionId, string_p
 		{
 			//
 			const xr_vector<e_net_globals>& v = gl_gl_reg().get_globals(gl_type);
-			u32 size = v.size();
+			u32 size = (u32)v.size();
 			for(u32 i = 0; i< size; ++i )
 				globals().get(v[i]).on_task_receive(agent,sessionId,inStream);
 			//
