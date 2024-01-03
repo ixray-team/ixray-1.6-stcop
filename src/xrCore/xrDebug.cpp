@@ -217,39 +217,55 @@ LPCSTR xrDebug::error2string(long code) {
 	return desc_storage;
 }
 
-void xrDebug::error		(long hr, const char* expr, const char *file, int line, const char *function, bool &ignore_always)
+#include <dxerr.h>
+LPCSTR xrDebug::dxerror2string(long code)
 {
-	backend		(error2string(hr),expr,0,0,file,line,function,ignore_always);
+	static string512 Err = {};
+	memset(Err, 0, sizeof(Err));
+
+	DXGetErrorDescriptionA(code, Err, sizeof(Err));
+
+	return Err;
 }
 
-void xrDebug::error		(long hr, const char* expr, const char* e2, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::error(long hr, const char* expr, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend		(error2string(hr),expr,e2,0,file,line,function,ignore_always);
+	backend(error2string(hr), expr, 0, 0, file, line, function, ignore_always);
 }
 
-void xrDebug::fail		(const char *e1, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::error(long hr, const char* expr, const char* e2, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend		("assertion failed",e1,0,0,file,line,function,ignore_always);
+	backend(error2string(hr), expr, e2, 0, file, line, function, ignore_always);
 }
 
-void xrDebug::fail		(const char *e1, const std::string &e2, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::fail(const char* e1, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend		(e1,e2.c_str(),0,0,file,line,function,ignore_always);
+	backend("assertion failed", e1, 0, 0, file, line, function, ignore_always);
 }
 
-void xrDebug::fail		(const char *e1, const char *e2, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend		(e1,e2,0,0,file,line,function,ignore_always);
+	backend(e1, e2.c_str(), 0, 0, file, line, function, ignore_always);
 }
 
-void xrDebug::fail		(const char *e1, const char *e2, const char *e3, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend		(e1,e2,e3,0,file,line,function,ignore_always);
+	backend(e1, e2, 0, 0, file, line, function, ignore_always);
 }
 
-void xrDebug::fail		(const char *e1, const char *e2, const char *e3, const char *e4, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend		(e1,e2,e3,e4,file,line,function,ignore_always);
+	backend(e1, e2, e3, 0, file, line, function, ignore_always);
+}
+
+void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function, bool& ignore_always)
+{
+	backend(e1, e2, e3, e4, file, line, function, ignore_always);
+}
+
+void xrDebug::error_dx(long hr, const char* expr, const char* file, int line, const char* function, bool& ignore_always)
+{
+	backend(dxerror2string(hr), expr, 0, 0, file, line, function, ignore_always);
 }
 
 void __cdecl xrDebug::fatal(const char *file, int line, const char *function, const char* F,...)
