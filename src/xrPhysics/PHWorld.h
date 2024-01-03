@@ -110,8 +110,7 @@ IC	float						FrameTime						(bool frame_mark){return b_frame_mark==frame_mark ?
 	bool 						IsFreezed						()							;
 IC	bool						Processing						()							{return b_processing;}
 	u32							CalcNumSteps					(u32 dTime)					;
-	u16							ObjectsNumber					()							;
-	u16							UpdateObjectsNumber				()							;
+	u16							ObjectsNumber					(bool UpdateOnly = false)	;
 IC	u16							StepsShortCnt					()							{return m_steps_short_num;}
 	u64							&StepsNum						()							{return m_steps_num;}
 	float						FrameTime						()							{return	m_frame_time;}
