@@ -78,6 +78,8 @@ private:
 	map_Matrix											m_matrices;
 	map_Constant										m_constants;
 	map_RT												m_rtargets;
+
+	xr_vector<CRT*>										m_rt_sorter;
 	//	DX10 cut map_RTC												m_rtargets_c;
 	map_VS												m_vs;
 	map_PS												m_ps;

@@ -203,9 +203,6 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	bone_instances	= NULL;
 
 	// Load bones
-#pragma todo("container is created in stack!")
-	xr_vector<shared_str>	L_parents;
-
 	bool FoundedChunk = !!data->find_chunk(OGF_S_BONE_NAMES);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_S_BONE_NAMES");
 
@@ -239,7 +236,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 
 	// Attach bones to their parents
 	iRoot = BI_NONE;
-	for (u32 i=0; i<bones->size(); i++) {
+	for (u32 i=0; i<bones->size(); i++)
+	{
 		shared_str	P 		= L_parents[i];
 		CBoneData* B	= (*bones)[i];
 		if (!P||!P[0]) {
@@ -333,29 +331,40 @@ void CKinematics::LL_Validate()
     if (bCheckBreakable){
         BOOL bValidBreakable		= TRUE;
 
-#pragma todo("container is created in stack!")
-        xr_vector<xr_vector<u16> > 	groups;
-        LL_GetBoneGroups			(groups);
+		GroupIDs.clear();
+        LL_GetBoneGroups			(GroupIDs);
 
-#pragma todo("container is created in stack!")
-        xr_vector<u16>   			b_parts(LL_BoneCount(),BI_NONE);
-        CBoneData* root 			= &LL_GetData(LL_GetBoneRoot());
-        u16 last_id					= 0;
-        iBuildGroups    			(root,b_parts,0,last_id);
+		xr_vector<u16> b_parts(LL_BoneCount(), BI_NONE);
+        CBoneData* root = &LL_GetData(LL_GetBoneRoot());
 
-        for (u16 g=0; g<(u16)groups.size(); ++g){
-            xr_vector<u16>&	group	= groups[g];
-            u16 bp_id				= b_parts[group[0]];
-            for (u32 b=1; b<groups[g].size(); b++)
-                if (bp_id!=b_parts[groups[g][b]]){ bValidBreakable = FALSE; break; }
-        }
+        u16 last_id = 0;
+        iBuildGroups(root,b_parts,0,last_id);
+
+		for (u16 g = 0; g < (u16)GroupIDs.size(); ++g)
+		{
+			xr_vector<u16>& group = GroupIDs[g];
+			u16 bp_id = b_parts[group[0]];
+
+			for (u32 b = 1; b < GroupIDs[g].size(); b++)
+			{
+				if (bp_id != b_parts[GroupIDs[g][b]]) 
+				{ 
+					bValidBreakable = FALSE; break;
+				}
+			}
+		}
     
-        if (bValidBreakable==FALSE){
-            for (u16 k=0; k<LL_BoneCount(); k++){
-                CBoneData& BD		= LL_GetData(k);
-                if (BD.IK_data.ik_flags.is(SJointIKData::flBreakable))
-                    BD.IK_data.ik_flags.set(SJointIKData::flBreakable,FALSE);
-            }
+        if (bValidBreakable==FALSE)
+		{
+            for (u16 k=0; k<LL_BoneCount(); k++)
+			{
+                CBoneData& BD = LL_GetData(k);
+
+				if (BD.IK_data.ik_flags.is(SJointIKData::flBreakable))
+				{
+					BD.IK_data.ik_flags.set(SJointIKData::flBreakable, FALSE);
+				}
+			}
 #ifdef DEBUG            
             Msg						("! ERROR: Invalid breakable object: '%s'",*dbg_name);
 #endif
