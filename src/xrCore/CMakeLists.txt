@@ -173,3 +173,7 @@ add_dependencies(xrCore GitParser)
 if (IXRAY_USE_OPTICK)
     target_compile_definitions(xrCore PUBLIC "USE_OPTICK")
 endif()
+
+if (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
+    target_compile_definitions(xrCore PUBLIC "IXR_CI_BUILD")
+endif()

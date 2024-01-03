@@ -155,7 +155,13 @@ void xrLogger::InternalOpenLogFile()
 	{
 		FS.update_path(logFileName, "$logs$", logFileName);
 	}
+
+	// FX: GA не любит Exclusive открытие :)
+#ifdef IXR_CI_BUILD
+	logFile = FS.w_open(logFileName);
+#else
 	logFile = FS.w_open_ex(logFileName);
+#endif
 	CHECK_OR_EXIT(logFile, "Can't create log file");
 }
 
