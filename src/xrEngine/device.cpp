@@ -23,7 +23,7 @@ using namespace DirectX;
 #include "../xrCore/FS_impl.h"
 #include "igame_persistent.h"
 
-ENGINE_API CRenderDevice Device;
+ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
@@ -32,9 +32,10 @@ ENGINE_API BOOL g_bRendering = FALSE;
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
 
-BOOL CRenderDevice::Begin	()
+BOOL CRenderDevice::Begin()
 {
-	if (g_dedicated_server) {
+	if (g_dedicated_server)
+	{
 		return TRUE;
 	}
 

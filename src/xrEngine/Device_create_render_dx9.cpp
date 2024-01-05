@@ -30,16 +30,21 @@ static u32 selectPresentInterval()
 }
 static u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 {
-	if (psDeviceFlags.is(rsRefresh60hz)) {
+	if (psDeviceFlags.is(rsRefresh60hz)) 
+	{
 		return D3DPRESENT_RATE_DEFAULT;
 	}
-	else {
+	else 
+	{
 		u32 selected = D3DPRESENT_RATE_DEFAULT;
 		u32 count = D3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, fmt);
-		for (u32 I = 0; I < count; I++) {
+		for (u32 I = 0; I < count; I++) 
+		{
 			D3DDISPLAYMODE	Mode;
 			D3D->EnumAdapterModes(D3DADAPTER_DEFAULT, fmt, I, &Mode);
-			if (Mode.Width == dwWidth && Mode.Height == dwHeight) {
+
+			if (Mode.Width == dwWidth && Mode.Height == dwHeight) 
+			{
 				if (Mode.RefreshRate > selected) selected = Mode.RefreshRate;
 			}
 		}
@@ -122,11 +127,11 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 		DebugSB = nullptr;
 	}
 
-	IDirect3DDevice9*& Device = *((IDirect3DDevice9**)&HWRenderDevice);
+	IDirect3DDevice9*& DxDevice = *((IDirect3DDevice9**)&HWRenderDevice);
 	auto P = GetPresentParameter(Width, Height);
 	if (HWRenderDevice != nullptr) {
 		while (TRUE) {
-			HRESULT _hr = Device->Reset(&P);
+			HRESULT _hr = DxDevice->Reset(&P);
 			if (SUCCEEDED(_hr))					break;
 			Msg("! ERROR: [%dx%d]: %s", P.BackBufferWidth, P.BackBufferHeight, Debug.error2string(_hr));
 			Sleep(100);
@@ -136,13 +141,13 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 		HRESULT hr = D3D->CreateDevice(
 			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
 			D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED, &P,
-			&Device
+			&DxDevice
 		);
 		R_CHK(hr);
 	}
 
 #ifdef DEBUG
-	R_CHK(Device->CreateStateBlock(D3DSBT_ALL, &DebugSB));
+	R_CHK(DxDevice->CreateStateBlock(D3DSBT_ALL, &DebugSB));
 #endif
 
 	UpdateBuffersD3D9();
