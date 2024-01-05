@@ -2,6 +2,7 @@
 #include "../xrCore/_std_extensions.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_internal.h"
+#include "IGame_Persistent.h"
 
 #include <d3d11.h>
 #include <d3d9.h>
@@ -34,6 +35,7 @@ void* RenderRTV = nullptr;
 void* RenderDSV = nullptr;
 void* SwapChainRTV = nullptr;
 
+extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -42,7 +44,11 @@ void DrawMainViewport()
 
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowViewport(Viewport->ID);
-	ImGui::SetNextWindowBgAlpha(0.f);
+
+	if (g_appLoaded)
+	{
+		ImGui::SetNextWindowBgAlpha(0.f);
+	}
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
