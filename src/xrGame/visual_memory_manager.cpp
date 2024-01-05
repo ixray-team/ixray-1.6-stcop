@@ -621,8 +621,9 @@ squad_mask_type CVisualMemoryManager::mask			() const
 	return						(m_stalker->agent_manager().member().mask(m_stalker));
 }
 
-void CVisualMemoryManager::update				(float time_delta)
+void CVisualMemoryManager::update(float time_delta)
 {
+	SCOPE_EVENT_NAME("CVisualMemoryManager update");
 	START_PROFILE("Memory Manager/visuals/update")
 
 	clear_delayed_objects				();
@@ -700,23 +701,17 @@ void CVisualMemoryManager::update				(float time_delta)
 	}
 	STOP_PROFILE
 
-#if 0//def DEBUG
-	if (m_stalker) {
-		CAgentMemberManager::MEMBER_STORAGE::const_iterator	I = m_stalker->agent_manager().member().members().begin();
-		CAgentMemberManager::MEMBER_STORAGE::const_iterator	E = m_stalker->agent_manager().member().members().end();
-		for ( ; I != E; ++I)
-			(*I)->object().memory().visual().check_visibles();
-	}
-#endif
-
-	if (m_object && g_actor && m_object->is_relation_enemy(Actor())) {
+	if (m_object && g_actor && m_object->is_relation_enemy(Actor())) 
+	{
 		xr_vector<CNotYetVisibleObject>::iterator	I = std::find_if(
 			m_not_yet_visible_objects.begin(),
 			m_not_yet_visible_objects.end(),
 			CNotYetVisibleObjectPredicate(Actor())
 		);
-		if (I != m_not_yet_visible_objects.end()) {
-			SetActorVisibility				(
+
+		if (I != m_not_yet_visible_objects.end())
+		{
+			SetActorVisibility(
 				m_object->ID(),
 				clampr(
 					(*I).m_value/visibility_threshold(),
@@ -878,6 +873,7 @@ void CVisualMemoryManager::load	(IReader &packet)
 
 void CVisualMemoryManager::clear_delayed_objects()
 {
+	SCOPE_EVENT_NAME("CVisualMemoryManager clear_delayed_objects");
 	if (m_client)
 		return;
 

@@ -625,6 +625,7 @@ void game_sv_GameState::Update()
 
 	if (Level().game)
 	{
+		SCOPE_EVENT_NAME("game_sv_GameState eScriptProcessorGame");
 		CScriptProcess* script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
 		if (script_process)
 			script_process->update();

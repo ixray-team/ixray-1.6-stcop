@@ -163,6 +163,8 @@ void CAI_Stalker::react_on_member_death	()
 
 void CAI_Stalker::process_enemies		()
 {
+	SCOPE_EVENT_NAME("process_enemies");
+
 	if (memory().enemy().selected())
 		return;
 

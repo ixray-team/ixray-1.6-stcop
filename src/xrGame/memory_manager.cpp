@@ -123,6 +123,7 @@ void CMemoryManager::update_enemies	(const bool &registered_in_combat)
 
 void CMemoryManager::update			(float time_delta)
 {
+	SCOPE_EVENT_NAME("Memory Manager");
 	START_PROFILE("Memory Manager")
 
 	visual().update		(time_delta);

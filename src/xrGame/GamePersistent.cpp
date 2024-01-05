@@ -263,6 +263,7 @@ void CGamePersistent::OnGameEnd	()
 
 void CGamePersistent::WeathersUpdate()
 {
+	SCOPE_EVENT_NAME("WeathersUpdate");
 	if (g_pGameLevel && !g_dedicated_server)
 	{
 		CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
@@ -535,6 +536,7 @@ extern CUISequencer * g_tutorial2;
 
 void CGamePersistent::OnFrame	()
 {
+	SCOPE_EVENT_NAME("CGamePersistent OnFrame");
 	if(Device.dwPrecacheFrame==5 && m_intro_event.empty())
 	{
 		m_intro_event.bind			(this,&CGamePersistent::game_loaded);

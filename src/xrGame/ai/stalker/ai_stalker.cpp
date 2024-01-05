@@ -892,11 +892,15 @@ CPHDestroyable*		CAI_Stalker::		ph_destroyable	()
 
 void CAI_Stalker::shedule_Update		( u32 DT )
 {
+	SCOPE_EVENT_NAME("Stalker Shedule Update");
+
 	START_PROFILE("stalker")
 	START_PROFILE("stalker/schedule_update")
 	VERIFY2				(getEnabled()||PPhysicsShell(), *cName());
 
-	if (!CObjectHandler::planner().initialized()) {
+	if (!CObjectHandler::planner().initialized()) 
+	{
+		SCOPE_EVENT_NAME("object_handler");
 		START_PROFILE("stalker/client_update/object_handler")
 		update_object_handler			();
 		STOP_PROFILE
@@ -914,7 +918,8 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	// *** general stuff
 	float dt			= float(DT)/1000.f;
 
-	if (g_Alive()) {
+	if (g_Alive()) 
+	{
 		animation().play_delayed_callbacks	();
 
 #ifndef USE_SCHEDULER_IN_AGENT_MANAGER
@@ -950,12 +955,13 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	inherited::inherited::shedule_Update(DT);
 	STOP_PROFILE
 	
-	if (Remote())		{
-	} else {
+	if (!Remote())
+	{
 		// here is monster AI call
 		VERIFY							(_valid(Position()));
 		m_fTimeUpdateDelta				= dt;
 		{
+			SCOPE_EVENT_NAME("ProcessScripts");
 			if (GetScriptControl())
 				ProcessScripts();
 			else
@@ -1006,12 +1012,8 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	UpdateInventoryOwner(DT);
 	STOP_PROFILE
 
-//#ifdef DEBUG
-//	if (psAI_Flags.test(aiALife)) {
-//		smart_cast<CSE_ALifeHumanStalker*>(ai().alife().objects().object(ID()))->check_inventory_consistency();
-//	}
-//#endif
 	
+	SCOPE_EVENT_NAME("physics");
 	START_PROFILE("stalker/schedule_update/physics")
 	VERIFY				(_valid(Position()));
 	m_pPhysics_support->in_shedule_Update(DT);
@@ -1035,68 +1037,21 @@ void CAI_Stalker::spawn_supplies	()
 	CObjectHandler::spawn_supplies	();
 }
 
-void CAI_Stalker::Think			()
+void CAI_Stalker::Think()
 {
+	SCOPE_EVENT_NAME("Think");
 	START_PROFILE("stalker/schedule_update/think")
-	u32							update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
+	u32 update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
 	
 	START_PROFILE("stalker/schedule_update/think/brain")
-//	try {
-//		try {
-			brain().update			(update_delta);
-//		}
-#ifdef DEBUG
-//		catch (luabind::cast_failed &message) {
-//			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-			//throw;
-//		}
-#endif
-//		catch (std::exception &message) {
-//			Msg						("! Expression \"%s\"",message.what());
-//			throw;
-//		}
-//		catch (...) {
-//			Msg						("! unknown exception occured");
-//			throw;
-//		}
-//	}
-//	catch(...) {
-#ifdef DEBUG
-//		Msg						("! Last action being executed : %s",brain().current_action().m_action_name);
-#endif
-//		brain().setup			(this);
-//		brain().update			(update_delta);
-//	}
+	brain().update(update_delta);
 	STOP_PROFILE
 
 	START_PROFILE("stalker/schedule_update/think/movement")
 	if (!g_Alive())
 		return;
 
-//	try {
-		movement().update		(update_delta);
-//	}
-#if 0//def DEBUG
-	catch (luabind::cast_failed &message) {
-		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (std::exception &message) {
-		Msg						("! Expression \"%s\"",message.what());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (...) {
-		Msg						("! unknown exception occured");
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-#endif // DEBUG
-
+	movement().update(update_delta);
 	STOP_PROFILE
 	STOP_PROFILE
 }

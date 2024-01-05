@@ -373,6 +373,7 @@ void CBaseMonster::shedule_Update(u32 dt)
 	}
 #endif
 
+	SCOPE_EVENT_NAME("BaseMonster Shedule Update");
 	inherited::shedule_Update	(dt);
 
 	update_eyes_visibility		();

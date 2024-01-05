@@ -68,6 +68,7 @@ void stalker_movement_manager_smart_cover::reinit	()
 
 void stalker_movement_manager_smart_cover::update	(u32 time_delta)
 {
+	SCOPE_EVENT_NAME("stalker_movement_manager_smart_cover update");
 	if (object().getDestroy())
 		return;
 

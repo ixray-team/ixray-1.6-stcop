@@ -933,6 +933,7 @@ static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
 void CActor::UpdateCL	()
 {
+	SCOPE_EVENT_NAME("CActor UpdateCL");
 	if(g_Alive() && Level().CurrentViewEntity() == this)
 	{
 		if(CurrentGameUI() && NULL==CurrentGameUI()->TopInputReceiver())
@@ -1097,6 +1098,7 @@ BOOL g_actor_shadow = 1;
 
 void CActor::shedule_Update	(u32 DT)
 {
+	SCOPE_EVENT_NAME("Actor Shedule Update");
 	setSVU							(OnServer());
 //.	UpdateInventoryOwner			(DT);
 
@@ -1401,6 +1403,7 @@ void CActor::shedule_Update	(u32 DT)
 #include "debug_renderer.h"
 void CActor::renderable_Render	()
 {
+	SCOPE_EVENT_NAME("CActor renderable_Render");
 	VERIFY(_valid(XFORM()));
 	inherited::renderable_Render			();
 	if(1/*!HUDview()*/)

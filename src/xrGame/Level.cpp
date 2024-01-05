@@ -524,6 +524,7 @@ void CLevel::MakeReconnect()
 
 void CLevel::OnFrame()
 {
+	SCOPE_EVENT_NAME("Level OnFrame");
 #ifdef DEBUG
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG

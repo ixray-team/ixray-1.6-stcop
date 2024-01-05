@@ -205,6 +205,7 @@ void CEntityAlive::reload		(LPCSTR section)
 
 void CEntityAlive::shedule_Update(u32 dt)
 {
+	SCOPE_EVENT_NAME("CEntityAlive shedule_Update");
 	inherited::shedule_Update	(dt);
 
 	//condition update with the game time pass
