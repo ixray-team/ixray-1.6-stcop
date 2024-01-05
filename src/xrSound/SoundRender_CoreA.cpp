@@ -12,6 +12,10 @@ CSoundRender_CoreA::CSoundRender_CoreA	():CSoundRender_Core()
 	pDevice = nullptr;
 	pDeviceList = nullptr;
 	pContext = nullptr;
+
+    Listener.position.set(0, 0, 0);
+    Listener.orientation[0].set(0, 0, 0);
+    Listener.orientation[1].set(0, 0, 0);
 }
 
 CSoundRender_CoreA::~CSoundRender_CoreA	()
