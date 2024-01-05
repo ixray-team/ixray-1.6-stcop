@@ -32,6 +32,16 @@ void CUICursor::OnScreenResolutionChanged()
 	InitInternal				();
 }
 
+void CUICursor::Show()
+{
+	if (bVisible)
+		return;
+
+	SetUICursorPosition(Fvector2().set(512.0f, 384.0f));
+
+	bVisible = true;
+}
+
 void CUICursor::InitInternal()
 {
 	CUIXml xml_doc;
@@ -100,8 +110,11 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
-	if (!Device.IsCapturingInputs()) {
+	if (!Device.IsCapturingInputs()) 
+	{
 		vPrevPos = vPos;
+		POINT TestPos2;
+		GetCursorPos(&TestPos2);
 		SDL_GetMouseState(&vPos.x, &vPos.y);
 		vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
 		vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
@@ -112,7 +125,17 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	if (!Device.IsCapturingInputs()) {
+	if (!Device.IsCapturingInputs()) 
+	{
 		vPos = pos;
+		RECT ClientRect;
+		HWND Handle = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+		GetWindowRect(Handle, &ClientRect);
+
+		Ivector2 p;
+		p.x = iFloor(vPos.x / (UI_BASE_WIDTH / (float)Device.TargetWidth));
+		p.y = iFloor(vPos.y / (UI_BASE_HEIGHT / (float)Device.TargetHeight));
+
+		SetCursorPos(ClientRect.left + p.x, ClientRect.top + p.y);
 	}
 }

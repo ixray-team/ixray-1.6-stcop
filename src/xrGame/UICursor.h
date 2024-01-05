@@ -23,13 +23,7 @@ public:
 	void			UpdateCursorPosition		(int _dx, int _dy);
 	virtual void	OnScreenResolutionChanged	();
 
-	bool			IsVisible					() {return bVisible;}
-	void			Show						()
-	{
-		float screenWidth = (float)GetSystemMetrics(SM_CXSCREEN);
-		float screenHeight = (float)GetSystemMetrics(SM_CYSCREEN);
-		SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2.f, screenHeight / 2.f);
-		bVisible = true;
-	}
-	void			Hide						() {bVisible = false;}
+	IC bool			IsVisible					() {return bVisible;}
+	void			Show						();
+	IC void			Hide						() {bVisible = false;}
 };
