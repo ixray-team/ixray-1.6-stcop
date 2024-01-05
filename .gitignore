@@ -1,12 +1,10 @@
 # Global ignoring of different binaries and another temporary files
 
-# Visual Studio user settings
-*.suo
-*.user
-
-# Visual C++ cache files
+# Visual Studio cache and settings
 .vs/
 ipch/
+*.suo
+*.user
 *.ncb
 *.opendb
 *.sdf
@@ -19,6 +17,12 @@ ipch/
 obj/
 lib/
 bin/
+build/
+build_win32/
+build32/
+
+# Common logs
+*.log
 
 # Migrating report files
 _UpgradeReport_Files/
@@ -46,11 +50,7 @@ _appdata_/
 temp/
 gamedata_origin/
 patch/
-*.log
-src/GitParser/git_version.h
 
-# CMake
-build/
-build_win32/
-build32/
+# Generated files
 imgui.ini
+git_version.h

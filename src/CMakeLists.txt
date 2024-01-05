@@ -1,11 +1,7 @@
 # Solution folders
 set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
-set(IXRAY_FOLDER_PREBUILD FOLDER "Engine/Pre Build")
 set(IXRAY_FOLDER_RENDER FOLDER "Engine/Renders")
 set(IXRAY_FOLDER_GAME FOLDER "Engine/Game")
-
-# Prebuild Tools
-add_subdirectory("GitParser")
 
 # Engine libraries
 add_subdirectory("xrCore")
@@ -36,7 +32,6 @@ endif()
 add_subdirectory("xrPlay")
 
 # Move libraries
-set_target_properties(GitParser PROPERTIES ${IXRAY_FOLDER_PREBUILD})
 set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCDB PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrSound PROPERTIES ${IXRAY_FOLDER_ENGINE})

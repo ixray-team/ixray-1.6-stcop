@@ -163,15 +163,34 @@ target_include_directories(xrCore PUBLIC "${CORE_MARL}/native/include/")
 target_link_libraries(xrCore PUBLIC ${CORE_OPT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.lib)
 target_include_directories(xrCore PUBLIC "${CORE_OPT}/native/include/")
 
-# GitParser settings
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_LINK
-    COMMAND echo Parsing git...
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/../GitParser
-    COMMAND start ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/GitParser.exe
+# Get author name
+execute_process(
+    COMMAND git log -1 --pretty=format:%an
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE AUTHOR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
-add_dependencies(xrCore GitParser)
+# Get current branch
+execute_process(
+    COMMAND git branch --show-current
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Get hash of the latest commit
+execute_process(
+    COMMAND git log --pretty=format:%h -n 1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Define a variable for CI_BUILD
+set(CI_BUILD 0)
+# Create git_version.h file
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h
+)
 
 if (IXRAY_USE_OPTICK)
     target_compile_definitions(xrCore PUBLIC "USE_OPTICK")

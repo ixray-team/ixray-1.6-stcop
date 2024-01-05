@@ -11,7 +11,7 @@
 #include <SDL3/SDL.h>
 #include "DynamicSplashScreen.h"
 
-#include "../GitParser/git_version.h"
+#include "../xrCore/git_version.h"
 #include "UIEditorMain.h"
 
 #include "AMDGPUTransferee.h"
