@@ -23,9 +23,16 @@ file(GLOB_RECURSE ENGINE_SOURCE_ENV_FILES
     "thunderbolt.*"
 )
 
-file(GLOB_RECURSE ENGINE_SOURCE_WEDIT_FILES
-    "editor*.*"
-    "engine_impl*.*"
+file(GLOB_RECURSE ENGINE_SOURCE_FEEL_FILES
+    "Feel_*.*"
+)
+
+file(GLOB_RECURSE ENGINE_SOURCE_RENDER_FILES
+    "Bone.*"
+    "fmesh.*"
+    "Render.*"
+    "SkeletonMotions*.*"
+    "motion.*"
 )
 
 file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
@@ -34,11 +41,14 @@ file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
     "EngineAPI.*"
     "EngineFactory.*"
     "EngineExternal*.*"
+    "Application*.*"
     "defines.*"
+    "pure*.*"
 )
 
 file(GLOB_RECURSE ENGINE_SOURCE_INPUT_FILES
     "xr_input.*"
+    "xr_input_xinput.*"
     "xr_level_controller.*"
 )
 
@@ -66,11 +76,12 @@ source_group("core/fonts" FILES ${ENGINE_SOURCE_FONTS_FILES})
 source_group("core/device" FILES ${ENGINE_SOURCE_DEVICE_FILES})
 source_group("core/input" FILES ${ENGINE_SOURCE_INPUT_FILES})
 source_group("core/console" FILES ${ENGINE_SOURCE_CONSOLE_FILES})
+source_group("core/feel" FILES ${ENGINE_SOURCE_FEEL_FILES})
 source_group("kernel" FILES ${ENGINE_SOURCE_KERNEL_FILES})
 source_group("interfaces" FILES ${ENGINE_SOURCE_INTERFACE_FILES})
-source_group("lua" FILES ${ENGINE_SOURCE_LUA_FILES})
+source_group("subsystem/lua" FILES ${ENGINE_SOURCE_LUA_FILES})
+source_group("subsystem/render" FILES ${ENGINE_SOURCE_RENDER_FILES})
 source_group("environment" FILES ${ENGINE_SOURCE_ENV_FILES})
-source_group("environment/weather_editor_old" FILES ${ENGINE_SOURCE_WEDIT_FILES})
 
 # Apply list
 list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
