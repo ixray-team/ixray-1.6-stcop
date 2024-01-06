@@ -126,9 +126,11 @@ target_compile_definitions(xrCore PRIVATE _USRDLL)
 ## Disable user-cheats for Shipping build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
-target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
-target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:MASTER_GOLD>")
-target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD> $<$<CONFIG:Release>:DISABLE_PROFILER>")
+if (DEVIXRAY_ENABLE_SHIPPING)
+    target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:MASTER_GOLD> $<$<CONFIG:Shipping>:DISABLE_PROFILER>")
+    target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
+endif()
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
