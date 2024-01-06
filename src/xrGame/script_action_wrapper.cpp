@@ -35,6 +35,11 @@ void CScriptActionWrapper::initialize_static	(CScriptActionBase *action)
 
 void CScriptActionWrapper::execute				()
 {
+	xr_string ExecName = "CScriptActionWrapper execute: ";
+	if (m_action_name != nullptr)
+		ExecName += m_action_name;
+
+	SCOPE_EVENT_NAME(ExecName.c_str());
 	luabind::call_member<void>			(this,"execute");
 }
 

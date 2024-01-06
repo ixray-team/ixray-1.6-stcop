@@ -747,6 +747,7 @@ void CAI_Stalker::net_Import		(NET_Packet& P)
 
 void CAI_Stalker::update_object_handler	()
 {
+	SCOPE_EVENT_NAME("CAI_Stalker update_object_handler");
 	if (!g_Alive())
 		return;
 

@@ -504,6 +504,7 @@ void CObjectActionStrappingToIdle::initialize		()
 
 void CObjectActionStrappingToIdle::execute			()
 {
+	SCOPE_EVENT_NAME("CObjectActionStrappingToIdle execute");
 	inherited::execute();
 
 	VERIFY						(m_item);
@@ -718,6 +719,7 @@ void CObjectActionUnstrappingToIdle::initialize		()
 
 void CObjectActionUnstrappingToIdle::execute			()
 {
+	SCOPE_EVENT_NAME("CObjectActionUnstrappingToIdle execute");
 	inherited::execute();
 
 	VERIFY						(m_item);

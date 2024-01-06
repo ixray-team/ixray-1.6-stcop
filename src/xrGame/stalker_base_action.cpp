@@ -30,6 +30,7 @@ void CStalkerActionBase::initialize			()
 
 void CStalkerActionBase::execute			()
 {
+	SCOPE_EVENT_NAME("CStalkerActionBase execute");
 	inherited::execute								();
 }
 

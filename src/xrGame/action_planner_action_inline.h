@@ -61,6 +61,7 @@ IC	void CPlanner::set_use_log		(bool value)
 TEMPLATE_SPECIALIZATION
 void CPlanner::execute				()
 {
+	SCOPE_EVENT_NAME("CPlanner execute");
 	inherited_action::execute		();
 	this->update					();
 }

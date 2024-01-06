@@ -45,9 +45,9 @@ protected:
 	mutable _edge_value_type	m_weight;
 	bool						m_first_time;
 
-#ifdef LOG_ACTION
 public:
 	LPCSTR						m_action_name;
+#ifdef LOG_ACTION
 	bool						m_use_log;
 	bool						m_switched;
 
