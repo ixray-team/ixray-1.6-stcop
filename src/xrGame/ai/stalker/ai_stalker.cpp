@@ -1169,22 +1169,22 @@ void CAI_Stalker::load_critical_wound_bones()
 	fill_bones_body_parts			("leg_right",	critical_wound_type_leg_right);
 }
 
-void CAI_Stalker::fill_bones_body_parts	(LPCSTR bone_id, const ECriticalWoundType &wound_type)
+void CAI_Stalker::fill_bones_body_parts(LPCSTR bone_id, const ECriticalWoundType& wound_type)
 {
-	LPCSTR					body_parts_section_id = pSettings->r_string(cNameSect(),"body_parts_section_id");
-	VERIFY					(body_parts_section_id);
+	LPCSTR					body_parts_section_id = pSettings->r_string(cNameSect(), "body_parts_section_id");
+	VERIFY(body_parts_section_id);
 
-	LPCSTR					body_part_section_id = pSettings->r_string(body_parts_section_id,bone_id);
-	VERIFY					(body_part_section_id);
+	LPCSTR					body_part_section_id = pSettings->r_string(body_parts_section_id, bone_id);
+	VERIFY(body_part_section_id);
 
-	IKinematics				*kinematics	= smart_cast<IKinematics*>(Visual());
-	VERIFY					(kinematics);
+	IKinematics* kinematics = smart_cast<IKinematics*>(Visual());
+	VERIFY(kinematics);
 
-	CInifile::Sect			&body_part_section = pSettings->r_section(body_part_section_id);
-	CInifile::SectCIt		I = body_part_section.Data.begin();
-	CInifile::SectCIt		E = body_part_section.Data.end();
-	for ( ; I != E; ++I)
-		m_bones_body_parts.insert	(
+	CInifile::Sect& body_part_section = pSettings->r_section(body_part_section_id);
+	auto		I = body_part_section.Data.begin();
+	const auto& E = body_part_section.Data.end();
+	for (; I != E; ++I)
+		m_bones_body_parts.insert(
 			std::make_pair(
 				kinematics->LL_BoneID((*I).first),
 				u32(wound_type)

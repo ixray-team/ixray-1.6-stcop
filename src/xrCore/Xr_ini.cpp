@@ -16,12 +16,6 @@ bool sect_pred(const CInifile::Sect *x, LPCSTR val)
 	return xr_strcmp(*x->Name,val)<0;
 };
 
-bool item_pred(const CInifile::Item& x, LPCSTR val)
-{
-    if ((!x.first) || (!val))	return x.first<val;
-    else				   		return xr_strcmp(*x.first,val)<0;
-}
-
 //------------------------------------------------------------------------------
 //Тело функций Inifile
 //------------------------------------------------------------------------------
@@ -78,13 +72,19 @@ XRCORE_API void _decorate(LPSTR dest, LPCSTR src)
 }
 //------------------------------------------------------------------------------
 
-BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
+BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR* val)
 {
-	SectCIt A = std::lower_bound(Data.begin(),Data.end(),L,item_pred);
-    if (A!=Data.end() && xr_strcmp(*A->first,L)==0){
-    	if (val) *val = *A->second;
-    	return TRUE;
-    }
+	shared_str s = L;
+
+	const auto A = Data.find(s);
+	if (A != Data.end())
+	{
+		if (val)
+			*val = *A->second;
+
+		return TRUE;
+	}
+
 	return FALSE;
 }
 //------------------------------------------------------------------------------
@@ -156,23 +156,19 @@ CInifile::~CInifile( )
 			Msg("!Can't save inifile: %s", m_file_name);
 	}
 
-	RootIt			I = DATA.begin();
-	RootIt			E = DATA.end();
-	for ( ; I != E; ++I)
-		xr_delete	(*I);
+	for (auto& [Name, Section]: DATA)
+		xr_delete(Section);
 }
 
 static void	insert_item(CInifile::Sect *tgt, const CInifile::Item& I)
 {
-	CInifile::SectIt_	sect_it		= std::lower_bound(tgt->Data.begin(),tgt->Data.end(),*I.first,item_pred);
+	auto sect_it = tgt->Data.find(I.first);
 	if (sect_it!=tgt->Data.end() && sect_it->first.equal(I.first))
 	{ 
 		sect_it->second	= I.second;
-//#ifdef DEBUG
-//		sect_it->comment= I.comment;
-//#endif
 	}else{
-		tgt->Data.insert	(sect_it,I);
+		tgt->Data.insert({ I.first, I.second });    
+		tgt->Ordered.push_back(I);
 	}
 }
 
@@ -262,50 +258,54 @@ void	CInifile::Load(IReader* F, LPCSTR path
 				}
             }
         } 
-		else if (str[0] && (str[0]=='[')) //new section ?
+		else if (str[0] && (str[0] == '[')) //new section ?
 		{
 			// insert previous filled section
 			if (Current)
 			{
 				//store previous section
-				RootIt I		= std::lower_bound(DATA.begin(),DATA.end(),*Current->Name,sect_pred);
-				if ((I!=DATA.end())&&((*I)->Name==Current->Name))
-					Debug.fatal(DEBUG_INFO,"Duplicate section '%s' found.",*Current->Name);
-				DATA.insert		(I,Current);
+				const auto& I = DATA.find(Current->Name);
+				if (I != DATA.end())
+					Debug.fatal(DEBUG_INFO, "Duplicate section '%s' found.", *Current->Name);
+
+				DATA.insert({ Current->Name, Current });
 			}
-			Current				= xr_new<Sect>();
-			Current->Name		= 0;
+			Current = xr_new<Sect>();
+			Current->Name = 0;
 			// start new section
-			R_ASSERT3(strchr(str,']'),"Bad ini section found: ",str);
-			LPCSTR inherited_names = strstr(str,"]:");
-			if (0!=inherited_names)
+			R_ASSERT3(strchr(str, ']'), "Bad ini section found: ", str);
+			LPCSTR inherited_names = strstr(str, "]:");
+
+			if (0 != inherited_names)
 			{
-				VERIFY2				(m_flags.test(eReadOnly),"Allow for readonly mode only.");
-				inherited_names		+= 2;
-				u32 cnt				= _GetItemCount(inherited_names);
-				size_t total_count	= 0;
-                u32 k               = 0;
-				for (k=0; k<cnt; ++k) {
-					string512	tmp;
-					_GetItem	(inherited_names,k,tmp);
-					Sect& inherited_section = r_section(tmp);
-					total_count		+= inherited_section.Data.size();
-				}
+				VERIFY2(m_flags.test(eReadOnly), "Allow for readonly mode only.");
+				inherited_names += 2;
+				u32 cnt = _GetItemCount(inherited_names);
+				size_t total_count = 0;
+				u32 k = 0;
 
-				Current->Data.reserve( Current->Data.size() + total_count );
-
-				for (k=0; k<cnt; ++k)
+				for (k = 0; k < cnt; ++k)
 				{
 					string512	tmp;
-					_GetItem	(inherited_names,k,tmp);
+					_GetItem(inherited_names, k, tmp);
 					Sect& inherited_section = r_section(tmp);
-					for (SectIt_ it =inherited_section.Data.begin(); it!=inherited_section.Data.end(); it++)
-						insert_item	(Current,*it);
+					total_count += inherited_section.Data.size();
+				}
+
+				Current->Data.reserve(Current->Data.size() + total_count);
+
+				for (k = 0; k < cnt; ++k)
+				{
+					string512	tmp;
+					_GetItem(inherited_names, k, tmp);
+					Sect& inherited_section = r_section(tmp);
+					for (auto& it : inherited_section.Data)
+						insert_item(Current, it);
 				}
 			}
-			*strchr(str,']') 	= 0;
-			Current->Name 		= _strlwr(str+1);
-		} 
+			*strchr(str, ']') = 0;
+			Current->Name = _strlwr(str + 1);
+		}
 		else // name = value
 		{
 			if (Current)
@@ -344,85 +344,85 @@ void	CInifile::Load(IReader* F, LPCSTR path
                             }
 						}
 					}
-				} else 
+				}
+				else 
 				{
 					_Trim	(name);
 					str2[0]	= 0;
 				}
 
-				Item		I;
-				I.first		= (name[0]?name:NULL);
-				I.second	= (str2[0]?str2:NULL);
-//#ifdef DEBUG
-//				I.comment	= m_flags.test(eReadOnly)?0:comment;
-//#endif
+				Item I;
+				I.first = (name[0] ? name : NULL);
+				I.second = (str2[0] ? str2 : NULL);
 
-				if (m_flags.test(eReadOnly)) 
+				if (m_flags.test(eReadOnly))
 				{
-					if (*I.first)							insert_item	(Current,I);
-				} else 
+					if (*I.first) 
+						insert_item(Current, I);
+				}
+				else if (*I.first || *I.second)
 				{
-					if	(
-							*I.first
-							|| *I.second 
-//#ifdef DEBUG
-//							|| *I.comment
-//#endif
-						)
-						insert_item	(Current,I);
+					insert_item(Current, I);
 				}
 			}
 		}
 	}
+
 	if (Current)
 	{
-		RootIt I		= std::lower_bound(DATA.begin(),DATA.end(),*Current->Name,sect_pred);
-		if ((I!=DATA.end())&&((*I)->Name==Current->Name))
-			Debug.fatal(DEBUG_INFO,"Duplicate section '%s' found.",*Current->Name);
-		DATA.insert		(I,Current);
+		auto I = DATA.find(Current->Name);
+		if (I != DATA.end())
+			Debug.fatal(DEBUG_INFO, "Duplicate section '%s' found.", *Current->Name);
+
+		DATA.insert({ Current->Name, Current });
 	}
 }
 
-void CInifile::save_as	(IWriter& writer, bool bcheck) const
+void CInifile::save_as(IWriter& writer, bool bcheck) const
 {
-    string4096		temp,val;
-    for (RootCIt r_it=DATA.begin(); r_it!=DATA.end(); ++r_it)
+    string4096 temp,val;
+
+	for (const auto& r_it : DATA)
 	{
-        xr_sprintf		(temp, sizeof(temp), "[%s]", (*r_it)->Name.c_str());
-        writer.w_string	(temp);
-		if(bcheck)
+		xr_sprintf(temp, sizeof(temp), "[%s]", (r_it).first.c_str());
+		writer.w_string(temp);
+
+		if (bcheck)
 		{
-			xr_sprintf		(temp, sizeof(temp), "; %d %d %d", (*r_it)->Name._get()->dwCRC, 
-																(*r_it)->Name._get()->dwReference, 
-																(*r_it)->Name._get()->dwLength);
-			writer.w_string	(temp);
+			xr_sprintf(temp, sizeof(temp), "; %d %d %d", (r_it).first._get()->dwCRC,
+				(r_it).first._get()->dwReference,
+				(r_it).first._get()->dwLength);
+			writer.w_string(temp);
 		}
 
-        for (SectCIt s_it=(*r_it)->Data.begin(); s_it!=(*r_it)->Data.end(); ++s_it)
-        {
-            const Item&	I = *s_it;
-            if (*I.first) 
+		for (const auto& I : r_it.second->Ordered)
+		{
+			if (*I.first)
 			{
-                if (*I.second) 
+				if (*I.second)
 				{
-                    _decorate	(val, *I.second);
-                    // only name and value
-                    xr_sprintf	(temp, sizeof(temp), "%8s%-32s = %-32s"," ",I.first.c_str(),val);
-                }else 
+					_decorate(val, *I.second);
+					// only name and value
+					xr_sprintf(temp, sizeof(temp), "%8s%-32s = %-32s", " ", I.first.c_str(), val);
+				}
+				else
 				{
-                    // only name
-                    xr_sprintf(temp, sizeof(temp), "%8s%-32s = "," ",I.first.c_str());
-                }
-            }else 
+					// only name
+					xr_sprintf(temp, sizeof(temp), "%8s%-32s = ", " ", I.first.c_str());
+				}
+			}
+			else
 			{
-                // no name, so no value
-				temp[0]		= 0;
-            }
-            _TrimRight			(temp);
-            if (temp[0])		writer.w_string	(temp);
-        }
-        writer.w_string			(" ");
-    }
+				// no name, so no value
+				temp[0] = 0;
+			}
+
+			_TrimRight(temp);
+			if (temp[0])
+				writer.w_string(temp);
+		}
+		writer.w_string(" ");
+	}
 }
 
 bool CInifile::save_as	(LPCSTR new_fname)
@@ -441,27 +441,25 @@ bool CInifile::save_as	(LPCSTR new_fname)
     return				(true);
 }
 
-BOOL	CInifile::section_exist( LPCSTR S )const
+BOOL CInifile::section_exist(LPCSTR S) const
 {
-	RootCIt I = std::lower_bound(DATA.begin(), DATA.end(), S, sect_pred);
-	return (I!=DATA.end() && xr_strcmp(*(*I)->Name,S)==0);
+	const auto& I = DATA.find(S);  
+	return I != DATA.end();
 }
 
-BOOL	CInifile::line_exist( LPCSTR S, LPCSTR L )const
+BOOL CInifile::line_exist(LPCSTR S, LPCSTR L)const
 {
 	if (!section_exist(S)) return FALSE;
-	Sect&	I = r_section(S);
-	SectCIt A = std::lower_bound(I.Data.begin(),I.Data.end(),L,item_pred);
-	return (A!=I.Data.end() && xr_strcmp(*A->first,L)==0);
+	Sect& I = r_section(S);
+
+	const auto& A = I.Data.find(L);
+	return A != I.Data.end();
 }
 
-u32		CInifile::line_count(LPCSTR Sname)const
+u32 CInifile::line_count(LPCSTR Sname)const
 {
-	Sect&	S = r_section(Sname);
-	SectCIt	I = S.Data.begin();
-	u32	C = 0;
-	for (; I!=S.Data.end(); I++)	if (*I->first) C++;
-	return  C;
+	const Sect& S = r_section(Sname);
+	return (u32)S.Data.size();
 }
 
 u32	CInifile::section_count	( )const
@@ -479,33 +477,45 @@ BOOL			CInifile::section_exist	( const shared_str& S	)const					{ return	section
 //--------------------------------------------------------------------------------------
 // Read functions
 //--------------------------------------------------------------------------------------
-CInifile::Sect& CInifile::r_section( LPCSTR S )const
+CInifile::Sect& CInifile::r_section(LPCSTR S) const
 {
 	R_ASSERT2(S && strlen(S),
 		"Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check "
 		"your configs and 'call stack'."); //--#SM+#--
-	char	section[256]; xr_strcpy(section,sizeof(section),S); _strlwr(section);
-	RootCIt I = std::lower_bound(DATA.begin(),DATA.end(),section,sect_pred);
-	if (!(I!=DATA.end() && xr_strcmp(*(*I)->Name,section)==0))
+
+	string256 section;
+	xr_strcpy(section, sizeof(section), S); _strlwr(section);
+
+	const auto I = DATA.find(S);
+	if (I == DATA.end())
 	{
-		Debug.fatal			(DEBUG_INFO,"Can't open section '%s'. Please attach [*.ini_log] file to your bug report",S);
+		Debug.fatal(DEBUG_INFO, "Can't open section '%s'. Please attach [*.ini_log] file to your bug report", S);
 	}
-	return	**I;
+
+	return *I->second;
 }
 
-LPCSTR	CInifile::r_string(LPCSTR S, LPCSTR L)const
+LPCSTR CInifile::r_string(LPCSTR S, LPCSTR L)const
 {
-	if (!S || !L || !strlen(S) ||
-		!strlen(L)) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+	//--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+	if (!S || !L || !strlen(S) || !strlen(L))
 	{
 		Msg("! [ERROR] CInifile::r_string: S = [%s], L = [%s]", S, L);
 	}
+
 	Sect const&	I = r_section(S);
-	SectCIt	A = std::lower_bound(I.Data.begin(),I.Data.end(),L,item_pred);
-	if (A!=I.Data.end() && xr_strcmp(*A->first,L)==0)	return *A->second;
+	const auto& A = I.Data.find(L);
+
+	if (A != I.Data.end())
+	{
+		return *A->second;
+	}
 	else
-		Debug.fatal(DEBUG_INFO,"Can't find variable %s in [%s]",L,S);
-	return 0;
+	{
+		Debug.fatal(DEBUG_INFO, "Can't find variable %s in [%s]", L, S);
+	}
+
+	return nullptr;
 }
 
 shared_str		CInifile::r_string_wb(LPCSTR S, LPCSTR L)const
@@ -679,17 +689,17 @@ int CInifile::r_token( LPCSTR S, LPCSTR L, const xr_token *token_list)const
 	return 0;
 }
 
-BOOL	CInifile::r_line( LPCSTR S, int L, const char** N, const char** V )const
+BOOL CInifile::r_line(LPCSTR S, int L, const char** N, const char** V) const
 {
-	Sect&	SS = r_section(S);
-	if (L>=(int)SS.Data.size() || L<0 ) return FALSE;
-	for (SectCIt I=SS.Data.begin(); I!=SS.Data.end(); I++)
-		if (!(L--)){
-			*N = *I->first;
-			*V = *I->second;
-			return TRUE;
-		}
-	return FALSE;
+	Sect& SS = r_section(S);
+	if (L >= (int)SS.Ordered.size() || L < 0)
+		return FALSE;
+
+	const auto& I = SS.Ordered.at(L);
+	*N = I.first.c_str();
+	*V = I.second.c_str();
+
+	return TRUE;
 }
 
 BOOL CInifile::r_line( const shared_str& S, int L, const char** N, const char** V )const
@@ -713,9 +723,8 @@ void CInifile::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 	{
 		// create _new_ section
 		Sect			*NEW = xr_new<Sect>();
-		NEW->Name		= sect;
-		RootIt I		= std::lower_bound(DATA.begin(),DATA.end(),sect,sect_pred);
-		DATA.insert		(I,NEW);
+		NEW->Name		= sect;    
+		DATA.insert({ NEW->Name, NEW });
 	}
 
 	// parse line/value
@@ -725,15 +734,12 @@ void CInifile::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 	_parse				(value,V);
 
 	// duplicate & insert
-	Item	I;
+	Item I;
 	Sect&	data	= r_section	(sect);
 	I.first			= (line[0]?line:0);
 	I.second		= (value[0]?value:0);
 
-//#ifdef DEBUG
-//	I.comment		= (comment?comment:0);
-//#endif
-	SectIt_	it		= std::lower_bound(data.Data.begin(),data.Data.end(),*I.first,item_pred);
+	const auto& it = data.Data.find(I.first);
 
     if (it != data.Data.end()) 
 	{
@@ -742,13 +748,15 @@ void CInifile::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 		{
 			BOOL b = m_flags.test(eOverrideNames);
 			R_ASSERT2(b,make_string("name[%s] already exist in section[%s]",line,sect));
-            *it  = I;
-		} else 
+            //*it  = I;
+		} 
+		else 
 		{
-			data.Data.insert(it,I);
+			data.Data.insert(I);
         }
-    } else {
-		data.Data.insert(it,I);
+    } else 
+	{
+		data.Data.insert(I);
     }
 }
 void	CInifile::w_u8			( LPCSTR S, LPCSTR L, u8				V, LPCSTR comment )
@@ -861,15 +869,16 @@ void	CInifile::w_bool		( LPCSTR S, LPCSTR L, BOOL				V, LPCSTR comment )
 	w_string	(S,L,V?"on":"off",comment);
 }
 
-void	CInifile::remove_line	( LPCSTR S, LPCSTR L )
+void CInifile::remove_line(LPCSTR S, LPCSTR L)
 {
-	R_ASSERT	(!m_flags.test(eReadOnly));
+	R_ASSERT(!m_flags.test(eReadOnly));
 
-    if (line_exist(S,L)){
-		Sect&	data	= r_section	(S);
-		SectIt_ A = std::lower_bound(data.Data.begin(),data.Data.end(),L,item_pred);
-    	R_ASSERT(A!=data.Data.end() && xr_strcmp(*A->first,L)==0);
-        data.Data.erase(A);
-    }
+	if (line_exist(S, L)) 
+	{
+		Sect& data = r_section(S);
+		const auto& A = data.Data.find(L);
+		R_ASSERT(A != data.Data.end());
+		data.Data.erase(A);
+	}
 }
 

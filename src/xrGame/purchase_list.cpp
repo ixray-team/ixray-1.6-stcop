@@ -15,26 +15,27 @@
 
 static float min_deficit_factor = .3f;
 
-void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner &owner)
+void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner& owner)
 {
 	owner.sell_useless_items();
 
-	m_deficits.clear		();
+	m_deficits.clear();
 
-	const CGameObject		&game_object = smart_cast<const CGameObject &>(owner);
-	CInifile::Sect			&S = ini_file.r_section(section);
-	CInifile::SectCIt		I = S.Data.begin();
-	CInifile::SectCIt		E = S.Data.end();
-	for ( ; I != E; ++I) {
-		VERIFY3				((*I).second.size(),"PurchaseList : cannot handle lines in section without values",section);
+	const CGameObject& game_object = smart_cast<const CGameObject&>(owner);
+	CInifile::Sect& S = ini_file.r_section(section);
 
-		string256			temp0, temp1;
-		THROW3				(_GetItemCount(*(*I).second) == 2,"Invalid parameters in section",section);
-		process				(
+	for (const auto& I : S.Data)
+	{
+		VERIFY3((I).second.size(), "PurchaseList : cannot handle lines in section without values", section);
+
+		string256 temp0, temp1;
+		THROW3(_GetItemCount(*(I).second) == 2, "Invalid parameters in section", section);
+		
+		process(
 			game_object,
-			(*I).first,
-			atoi(_GetItem(*(*I).second,0,temp0)),
-			(float)atof(_GetItem(*(*I).second,1,temp1))
+			(I).first,
+			atoi(_GetItem(*(I).second, 0, temp0)),
+			(float)atof(_GetItem(*(I).second, 1, temp1))
 		);
 	}
 }

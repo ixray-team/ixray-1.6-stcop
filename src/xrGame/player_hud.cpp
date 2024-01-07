@@ -36,60 +36,57 @@ player_hud_motion* player_hud_motion_container::find_motion(const shared_str& na
 
 void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_str& sect)
 {
-	CInifile::Sect& _sect		= pSettings->r_section(sect);
-	CInifile::SectCIt _b		= _sect.Data.begin();
-	CInifile::SectCIt _e		= _sect.Data.end();
-	player_hud_motion* pm		= NULL;
-	
-	string512					buff;
-	MotionID					motion_ID;
+	CInifile::Sect& _sect = pSettings->r_section(sect);
+	player_hud_motion* pm = nullptr;
 
-	for(;_b!=_e;++_b)
+	string512 buff;
+	MotionID motion_ID;
+
+	for (const auto& _b : _sect.Data)
 	{
-		if(strstr(_b->first.c_str(), "anm_")==_b->first.c_str())
+		if (strstr(_b.first.c_str(), "anm_") == _b.first.c_str())
 		{
-			const shared_str& anm	= _b->second;
-			m_anims.resize			(m_anims.size()+1);
-			pm						= &m_anims.back();
+			const shared_str& anm = _b.second;
+			m_anims.resize(m_anims.size() + 1);
+			pm = &m_anims.back();
 			//base and alias name
-			pm->m_alias_name		= _b->first;
-			
-			if(_GetItemCount(anm.c_str())==1)
-			{
-				pm->m_base_name			= anm;
-				pm->m_additional_name	= anm;
-			}else
-			{
-				R_ASSERT2(_GetItemCount(anm.c_str())==2, anm.c_str());
-				string512				str_item;
-				_GetItem(anm.c_str(),0,str_item);
-				pm->m_base_name			= str_item;
+			pm->m_alias_name = _b.first;
 
-				_GetItem(anm.c_str(),1,str_item);
-				pm->m_additional_name	= str_item;
+			if (_GetItemCount(anm.c_str()) == 1)
+			{
+				pm->m_base_name = anm;
+				pm->m_additional_name = anm;
+			}
+			else
+			{
+				R_ASSERT2(_GetItemCount(anm.c_str()) == 2, anm.c_str());
+
+				string512 str_item;
+				_GetItem(anm.c_str(), 0, str_item);
+				pm->m_base_name = str_item;
+
+				_GetItem(anm.c_str(), 1, str_item);
+				pm->m_additional_name = str_item;
 			}
 
 			//and load all motions for it
 
-			for(u32 i=0; i<=8; ++i)
+			for (u32 i = 0; i <= 8; ++i)
 			{
-				if(i==0)
-					xr_strcpy				(buff,pm->m_base_name.c_str());		
+				if (i == 0)
+					xr_strcpy(buff, pm->m_base_name.c_str());
 				else
-					xr_sprintf				(buff,"%s%d",pm->m_base_name.c_str(),i);		
+					xr_sprintf(buff, "%s%d", pm->m_base_name.c_str(), i);
 
-				motion_ID				= model->ID_Cycle_Safe(buff);
-				if(motion_ID.valid())
+				motion_ID = model->ID_Cycle_Safe(buff);
+				if (motion_ID.valid())
 				{
-					pm->m_animations.resize			(pm->m_animations.size()+1);
-					pm->m_animations.back().mid		= motion_ID;
-					pm->m_animations.back().name	= buff;
-#ifdef DEBUG
-//					Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
-#endif // #ifdef DEBUG
+					pm->m_animations.resize(pm->m_animations.size() + 1);
+					pm->m_animations.back().mid = motion_ID;
+					pm->m_animations.back().name = buff;
 				}
 			}
-			R_ASSERT2(pm->m_animations.size(),make_string("motion not found [%s]", pm->m_base_name.c_str()));
+			R_ASSERT2(pm->m_animations.size(), make_string("motion not found [%s]", pm->m_base_name.c_str()));
 		}
 	}
 }
@@ -436,19 +433,15 @@ void player_hud::load(const shared_str& player_hud_sect)
 	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
 	m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, LeftArmCallback, this);
 
-	CInifile::Sect& _sect		= pSettings->r_section(player_hud_sect);
-	CInifile::SectCIt _b		= _sect.Data.begin();
-	CInifile::SectCIt _e		= _sect.Data.end();
-	for(;_b!=_e;++_b)
+	CInifile::Sect& _sect = pSettings->r_section(player_hud_sect);
+	for (const auto& _b : _sect.Data)
 	{
-		if(strstr(_b->first.c_str(), "ancor_")==_b->first.c_str())
+		if (strstr(_b.first.c_str(), "ancor_") == _b.first.c_str())
 		{
-			const shared_str& _bone	= _b->second;
-			m_ancors.push_back		(m_model->dcast_PKinematics()->LL_BoneID(_bone));
+			const shared_str& _bone = _b.second;
+			m_ancors.push_back(m_model->dcast_PKinematics()->LL_BoneID(_bone));
 		}
 	}
-	
-//	Msg("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
 
 	if(!b_reload)
 	{

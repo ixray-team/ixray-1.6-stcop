@@ -104,21 +104,20 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 		tmp_active_param = true;
 	}
 
-	for (CInifile::SectCIt cit = sect_ptr->Data.begin(),
-			ciet = sect_ptr->Data.end(); cit != ciet; ++cit)
+	for (const auto& cit : sect_ptr->Data)
 	{
-		shared_str const &	tmp_value = cit->second;
-		shared_str			real_value;
+		shared_str const &	tmp_value = cit.second;
+		shared_str real_value;
 		if (tmp_active_param)
 		{
-			if (active_params.line_exist(sect_ptr->Name.c_str(), cit->first))
+			if (active_params.line_exist(sect_ptr->Name.c_str(), cit.first))
 			{
-				real_value = active_params.r_string(sect_ptr->Name.c_str(), cit->first.c_str());
+				real_value = active_params.r_string(sect_ptr->Name.c_str(), cit.first.c_str());
 				if (tmp_value != real_value)
 				{
 					string256	tmp_key_str = {};
 					xr_strconcat(tmp_key_str,
-						sect_ptr->Name.c_str(), "::", cit->first.c_str());
+						sect_ptr->Name.c_str(), "::", cit.first.c_str());
 					xr_strconcat(diff_str,
 						tmp_key_str,
 						" = ",
@@ -132,24 +131,24 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 				continue;
 			}
 		}
-		if (!pSettings->line_exist(sect_ptr->Name, cit->first))
+		if (!pSettings->line_exist(sect_ptr->Name, cit.first))
 		{
 			xr_strconcat(diff_str,
 				"line ",
 				sect_ptr->Name.c_str(),
 				"::",
-				cit->first.c_str(),
+				cit.first.c_str(),
 				" not found");
 			strncpy_s(dst_diff, diff_str, sizeof(dst_diff) - 1);
 			dst_diff[sizeof(dst_diff) - 1] = 0;
 			return dst_diff;
 		}
-		real_value = pSettings->r_string(sect_ptr->Name.c_str(), cit->first.c_str());
+		real_value = pSettings->r_string(sect_ptr->Name.c_str(), cit.first.c_str());
 		if (tmp_value != real_value)
 		{
 			string256 tmp_key_str = {};
 			xr_strconcat(tmp_key_str,
-				sect_ptr->Name.c_str(), "::", cit->first.c_str());
+				sect_ptr->Name.c_str(), "::", cit.first.c_str());
 			xr_strconcat(diff_str,
 				tmp_key_str,
 				" = ",
@@ -169,10 +168,8 @@ LPCSTR configs_verifyer::get_diff(CInifile & received,
 								  string256 & dst_diff)
 {
 	LPCSTR diff_str = NULL;
-	for (CInifile::RootIt sit = received.sections().begin(),
-		siet = received.sections().end(); sit != siet; ++sit)
+	for (auto&[DUMMY, tmp_sect] : received.sections())
 	{
-		CInifile::Sect*	tmp_sect = *sit;
 		if (tmp_sect->Name == cd_info_secion)
 			continue;
 		if (tmp_sect->Name == active_params_section)

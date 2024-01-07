@@ -145,13 +145,13 @@ void Manager::load_all_inventory()
 {
 	for (const auto& section : pSettings->sections())
 	{
-		if (!pSettings->line_exist(section->Name, "upgrades") || !pSettings->r_string(section->Name, "upgrades"))
+		if (!pSettings->line_exist(section.first, "upgrades") || !pSettings->r_string(section.first, "upgrades"))
 			continue;
 
-		if (!pSettings->line_exist(section->Name, "upgrade_scheme") || !pSettings->r_string(section->Name, "upgrade_scheme"))
+		if (!pSettings->line_exist(section.first, "upgrade_scheme") || !pSettings->r_string(section.first, "upgrade_scheme"))
 			continue;
 
-		add_root(section->Name);
+		add_root(section.first);
 	}
 }
 
@@ -159,21 +159,20 @@ void Manager::load_all_properties()
 {
 	LPCSTR properties_section = "upgrades_properties";
 
-	VERIFY2( pSettings->section_exist( properties_section ), make_string( "Section [%s] does not exist !", properties_section ) );
-	VERIFY2( pSettings->line_count( properties_section ),    make_string( "Section [%s] is empty !",       properties_section ) );
+	VERIFY2(pSettings->section_exist(properties_section), make_string("Section [%s] does not exist !", properties_section));
+	VERIFY2(pSettings->line_count(properties_section), make_string("Section [%s] is empty !", properties_section));
 
-	CInifile::Sect&		inv_section = pSettings->r_section( properties_section );
-	CInifile::SectIt_	ib = inv_section.Data.begin();
-	CInifile::SectIt_	ie = inv_section.Data.end();
-	for ( ; ib != ie ; ++ib )
+	CInifile::Sect& inv_section = pSettings->r_section(properties_section);
+
+	for (const auto& ib : inv_section.Data)
 	{
-		shared_str property_id( (*ib).first );
-		add_property( property_id );
+		shared_str property_id(ib.first);
+		add_property(property_id);
 	}
 
-	if ( g_upgrades_log == 1 )
+	if (g_upgrades_log == 1)
 	{
-		Msg( "# Upgrades properties of inventory itmes loaded." );
+		Msg("# Upgrades properties of inventory itmes loaded.");
 	}
 }
 

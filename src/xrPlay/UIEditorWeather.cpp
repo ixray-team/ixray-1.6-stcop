@@ -42,9 +42,14 @@ bool enumIniWithEmpty(void* data, int idx, const char** item)
 {
 	if (idx == 0)
 		*item = empty;
-	else {
+	else 
+	{
 		CInifile* ini = (CInifile*)data;
-		*item = ini->sections()[idx - 1]->Name.c_str();
+
+		auto sect = ini->sections().begin();
+		std::advance(sect, idx - 1);
+
+		*item = sect->first.c_str();
 	}
 	return true;
 }
@@ -52,7 +57,10 @@ bool enumIniWithEmpty(void* data, int idx, const char** item)
 bool enumIni(void* data, int idx, const char** item)
 {
 	CInifile* ini = (CInifile*)data;
-	*item = ini->sections()[idx]->Name.c_str();
+	auto sect = ini->sections().begin();
+	std::advance(sect, idx);
+
+	*item = sect->first.c_str();
 	return true;
 }
 
@@ -319,12 +327,19 @@ void RenderUIWeather()
 	sel = -1;
 	for (int i = 0; i != env.m_ambients_config->sections().size(); i++)
 	{
-		if (cur->env_ambient->name() == env.m_ambients_config->sections()[i]->Name)
+		auto sect = env.m_ambients_config->sections().begin();
+		std::advance(sect, i);
+
+		if (cur->env_ambient->name() == sect->first)
 			sel = i;
 	}
 
-	if (ImGui::Combo("ambient", &sel, enumIni, env.m_ambients_config, (int)env.m_ambients_config->sections().size())) {
-		cur->env_ambient = env.AppendEnvAmb(env.m_ambients_config->sections()[sel]->Name);
+	if (ImGui::Combo("ambient", &sel, enumIni, env.m_ambients_config, (int)env.m_ambients_config->sections().size())) 
+	{
+		auto sect = env.m_ambients_config->sections().begin();
+		std::advance(sect, sel);
+
+		cur->env_ambient = env.AppendEnvAmb(sect->first);
 		changed = true;
 	}
 
@@ -377,13 +392,20 @@ void RenderUIWeather()
 	sel = -1;
 
 	for (int i = 0; i != env.m_suns_config->sections().size(); i++)
-		if (cur->lens_flare_id == env.m_suns_config->sections()[i]->Name)
+	{
+		auto sect = env.m_suns_config->sections().begin();
+		std::advance(sect, i);
+
+		if (cur->lens_flare_id == sect->first)
 			sel = i;
+	}
 
 	if (ImGui::Combo("sun", &sel, enumIni, env.m_suns_config, (int)env.m_suns_config->sections().size()))
 	{
-		cur->lens_flare_id
-			= env.eff_LensFlare->AppendDef(env, env.m_suns_config, env.m_suns_config->sections()[sel]->Name.c_str());
+		auto sect = env.m_suns_config->sections().begin();
+		std::advance(sect, sel);
+
+		cur->lens_flare_id = env.eff_LensFlare->AppendDef(env, env.m_suns_config, sect->first.c_str());
 		env.eff_LensFlare->Invalidate();
 		changed = true;
 	}
@@ -399,27 +421,35 @@ void RenderUIWeather()
 		else
 			editor_altitude = cur->sun_dir.getH();
 	}
+
 	if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f))
 	{
 		changed = true;
 		if (changed)
 			cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
 	}
+
 	if (ImGui::SliderFloat("sun_shafts_intensity", &cur->m_fSunShaftsIntensity, 0.0f, 2.0f))
 		changed = true;
+
 	sel = 0;
 
 	for (int i = 0; i != env.m_thunderbolt_collections_config->sections().size(); i++)
-		if (cur->tb_id == env.m_thunderbolt_collections_config->sections()[i]->Name)
-			sel = i + 1;
-
-	if (ImGui::Combo("thunderbolt_collection", &sel, enumIniWithEmpty, env.m_thunderbolt_collections_config,
-		(int)env.m_thunderbolt_collections_config->sections().size() + 1))
 	{
-		cur->tb_id = (sel == 0)
-			? env.eff_Thunderbolt->AppendDef(env, env.m_thunderbolt_collections_config, env.m_thunderbolts_config, "")
-			: env.eff_Thunderbolt->AppendDef(env, env.m_thunderbolt_collections_config, env.m_thunderbolts_config,
-				env.m_thunderbolt_collections_config->sections()[sel - 1]->Name.c_str());
+		auto sect = env.m_thunderbolt_collections_config->sections().begin();
+		std::advance(sect, i);
+
+		if (cur->tb_id == sect->first)
+			sel = i + 1;
+	}
+
+	if (ImGui::Combo("thunderbolt_collection", &sel, enumIniWithEmpty, env.m_thunderbolt_collections_config, (int)env.m_thunderbolt_collections_config->sections().size() + 1))
+	{
+		auto sect = env.m_thunderbolt_collections_config->sections().begin();
+		std::advance(sect, sel - 1);
+
+		cur->tb_id = env.eff_Thunderbolt->AppendDef(env, env.m_thunderbolt_collections_config, env.m_thunderbolts_config, (sel == 0) ? "" : sect->first.c_str());
+
 		changed = true;
 	}
 

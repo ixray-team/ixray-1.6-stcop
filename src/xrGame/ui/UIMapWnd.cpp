@@ -145,7 +145,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	if (pGameIni->section_exist(sect_name.c_str()))
 	{
 		CInifile::Sect& S		= pGameIni->r_section(sect_name.c_str());
-		CInifile::SectCIt	it	= S.Data.begin(), end = S.Data.end();
+		auto	it	= S.Data.begin(), end = S.Data.end();
 		for (;it!=end; it++)
 		{
 			shared_str map_name		= it->first;

@@ -323,67 +323,74 @@ void	CModelPool::DeleteQueue		()
 	ModelsToDelete.clear			();
 }
 
-void	CModelPool::Discard	(dxRender_Visual* &V, BOOL b_complete)
+void	CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
 {
 	//
-	REGISTRY_IT	it		= Registry.find	(V);
-	if (it!=Registry.end())
+	REGISTRY_IT	it = Registry.find(V);
+	if (it != Registry.end())
 	{
 		// Pool - OK
+		// Base
+		const shared_str& name = it->second;
+		xr_vector<ModelDef>::iterator I = Models.begin();
+		xr_vector<ModelDef>::iterator I_e = Models.end();
 
-			// Base
-			const shared_str&	name	= it->second;
-			xr_vector<ModelDef>::iterator I = Models.begin();
-			xr_vector<ModelDef>::iterator I_e = Models.end();
-			
-			for (; I!=I_e; ++I)
+		for (; I != I_e; ++I)
+		{
+			if (I->name == name)
 			{
-				if (I->name==name)
+				if (b_complete || strchr(*name, '#'))
 				{
-					if(b_complete || strchr(*name,'#'))
+					VERIFY(I->refs > 0);
+					I->refs--;
+					if (0 == I->refs)
 					{
-						VERIFY(I->refs>0);
-            			I->refs--; 
-						if (0==I->refs)
-						{
-                			bForceDiscard		= TRUE;
-	            			I->model->Release	();
-							xr_delete			(I->model);	
-							Models.erase		(I);
-							bForceDiscard		= FALSE;
-						}
-						break;
-					}else{
-					if(I->refs>0)
-						I->refs--;
-					break;
+						bForceDiscard = TRUE;
+						I->model->Release();
+						xr_delete(I->model);
+						Models.erase(I);
+						bForceDiscard = FALSE;
 					}
+					break;
+				}
+				else 
+				{
+					if (I->refs > 0)
+						I->refs--;
+
+					break;
 				}
 			}
+		}
+
 		// Registry
-		xr_delete		(V);	
-//.		xr_free			(name);
-		Registry.erase	(it);
-	} else {
-		// Registry entry not-found - just special type of visual / particles / etc.
-		xr_delete		(V);
+		xr_delete(V);
+		Registry.erase(it);
+
 	}
-	V	=	NULL;
+	else
+	{
+		// Registry entry not-found - just special type of visual / particles / etc.
+		xr_delete(V);
+	}
+	V = nullptr;
 }
 
 void CModelPool::Prefetch()
 {
-	Logging					(FALSE);
+	Logging(FALSE);
+
 	// prefetch visuals
 	string256 section;
-	xr_strconcat(section,"prefetch_visuals_",g_pGamePersistent->m_game_params.m_game_type);
-	CInifile::Sect& sect	= pSettings->r_section(section);
-	for (CInifile::SectCIt I=sect.Data.begin(); I!=sect.Data.end(); I++)	{
-		const CInifile::Item& item= *I;
-		dxRender_Visual* V	= Create(item.first.c_str());
-		Delete				(V,FALSE);
+	xr_strconcat(section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
+	CInifile::Sect& sect = pSettings->r_section(section);
+	for (const auto& item : sect.Data)
+	{
+		dxRender_Visual* V = Create(item.first.c_str());
+		Delete(V, FALSE);
 	}
-	Logging					(TRUE);
+
+	Logging(TRUE);
 }
 
 void CModelPool::ClearPool( BOOL b_complete)
