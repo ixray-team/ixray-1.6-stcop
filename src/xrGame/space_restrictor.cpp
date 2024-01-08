@@ -19,6 +19,7 @@
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
+#include "RadioactiveZone.h"
 
 CSpaceRestrictor::~CSpaceRestrictor	()
 {
@@ -68,7 +69,9 @@ BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
 	if (!result)
 		return						(FALSE);
 
-	spatial.type					&= ~STYPE_VISIBLEFORAI;
+	CCustomZone* zone = smart_cast<CCustomZone*>(this);
+	if (!EngineExternal()[EEngineExternalGame::EnableAiDieInAnomaly] || !zone || smart_cast<CRadioactiveZone*>(zone))
+		spatial.type &= ~STYPE_VISIBLEFORAI;
 
 	setEnabled						(FALSE);
 	setVisible						(FALSE);
