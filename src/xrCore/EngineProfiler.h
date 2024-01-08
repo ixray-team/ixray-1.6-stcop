@@ -45,8 +45,8 @@ namespace Profile
 		u64 EndTimestamp = 0;
 		u64 GroupHash = 0;
 		std::bitset<64> Flags;
-		string32 Name = {};
-		string32 Group = {};
+		string64 Name = {};
+		string64 Group = {};
 		string256 Function = {};
 		string256 File = {};
 

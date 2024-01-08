@@ -348,8 +348,8 @@ void xrCompressor::OpenPack(LPCSTR tgt_folder, int num)
 	{
 		CMemoryWriter			W;
 		CInifile::Sect&	S		= config_ltx->r_section("header");
-		CInifile::SectCIt it	= S.Data.begin();
-		CInifile::SectCIt it_e	= S.Data.end();
+		auto it	= S.Data.begin();
+		auto it_e	= S.Data.end();
 		string4096				buff;
 		xr_sprintf					(buff,"[%s]",S.Name.c_str());
 		W.w_string				(buff);
@@ -500,7 +500,7 @@ bool xrCompressor::IsFolderAccepted(CInifile& ltx, LPCSTR path, BOOL& recurse)
 	if( ltx.section_exist("exclude_folders") )
 	{
 		CInifile::Sect& ef_sect	= ltx.r_section("exclude_folders");
-		for (CInifile::SectCIt ef_it=ef_sect.Data.begin(); ef_it!=ef_sect.Data.end(); ef_it++)
+		for (auto ef_it=ef_sect.Data.begin(); ef_it!=ef_sect.Data.end(); ef_it++)
 		{
 			recurse	= CInifile::IsBOOL(ef_it->second.c_str());
 			if (recurse)	
@@ -531,7 +531,7 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 	{
 		CInifile::Sect& if_sect	= ltx.r_section("include_folders");
 
-		for (CInifile::SectCIt if_it=if_sect.Data.begin(); if_it!=if_sect.Data.end(); ++if_it)
+		for (auto if_it=if_sect.Data.begin(); if_it!=if_sect.Data.end(); ++if_it)
 		{
 			BOOL ifRecurse		= CInifile::IsBOOL(if_it->second.c_str());
 			u32 folder_mask		= FS_ListFolders | (ifRecurse?0:FS_RootOnly);
@@ -587,7 +587,7 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 	if(ltx.section_exist("include_files"))
 	{
 		CInifile::Sect& if_sect	= ltx.r_section("include_files");
-		for (CInifile::SectCIt if_it=if_sect.Data.begin(); if_it!=if_sect.Data.end(); ++if_it)
+		for (auto if_it=if_sect.Data.begin(); if_it!=if_sect.Data.end(); ++if_it)
 		{
 		  files_list->push_back	(xr_strdup(if_it->first.c_str()));
 		}	
