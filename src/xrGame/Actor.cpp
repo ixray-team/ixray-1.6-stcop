@@ -75,6 +75,7 @@
 #include "ActorHelmet.h"
 #include "UI/UIDragDropReferenceList.h"
 #include "UIFontDefines.h"
+#include "PickupManager.h"
 
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
@@ -160,7 +161,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_pPersonWeLookingAt	= NULL;
 	m_pVehicleWeLookingAt	= NULL;
 	m_pObjectWeLookingAt	= NULL;
-	m_bPickupMode			= false;
+	pPickup = new CPickUpManager(this);
 
 	pStatGraph				= NULL;
 
@@ -222,6 +223,7 @@ CActor::~CActor()
 	xr_delete				(m_pPhysics_support);
 
 	xr_delete				(m_anims);
+	xr_delete				(pPickup);
 //.	xr_delete				(m_vehicle_anims);
 }
 
@@ -357,7 +359,7 @@ void CActor::Load	(LPCSTR section )
 	float AirControlParam		= pSettings->r_float(section,"air_control_param"	);
 	character_physics_support()->movement()->SetAirControlParam(AirControlParam);
 
-	m_fPickupInfoRadius			= pSettings->r_float(section,"pickup_info_radius");
+	pPickup->SetPickupRadius(pSettings->r_float(section,"pickup_info_radius"));
 
 	m_fFeelGrenadeRadius		= pSettings->r_float(section,"feel_grenade_radius");
 	m_fFeelGrenadeTime			= pSettings->r_float(section,"feel_grenade_time");
@@ -940,11 +942,11 @@ void CActor::UpdateCL	()
 		{
 			int dik = get_action_dik(kUSE, 0);
 			if(dik && pInput->iGetAsyncKeyState(dik))
-				m_bPickupMode=true;
+				pPickup->SetPickupMode(true);
 			
 			dik = get_action_dik(kUSE, 1);
 			if(dik && pInput->iGetAsyncKeyState(dik))
-				m_bPickupMode=true;
+				pPickup->SetPickupMode(true);
 		}
 	}
 
@@ -1077,7 +1079,7 @@ void CActor::UpdateCL	()
 	if(IsFocused())
 		g_player_hud->update			(trans);
 
-	m_bPickupMode=false;
+	pPickup->SetPickupMode(false);
 }
 
 float	NET_Jump = 0;
