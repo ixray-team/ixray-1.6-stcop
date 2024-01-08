@@ -433,15 +433,25 @@ void player_hud::load(const shared_str& player_hud_sect)
 	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
 	m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, LeftArmCallback, this);
 
+	// Loading hands 
 	CInifile::Sect& _sect = pSettings->r_section(player_hud_sect);
-	for (const auto& _b : _sect.Data)
+	u32 AncorCount = 0;
+	m_ancors.resize(4);
+	
+	const char* WeaponHandName = "ancor_";
+	size_t StrLen = strlen(WeaponHandName);
+
+	for (auto& [CurrentSect, BoneName] : _sect.Data)
 	{
-		if (strstr(_b.first.c_str(), "ancor_") == _b.first.c_str())
+		xr_string CurrentSectString = CurrentSect.c_str();
+		if (CurrentSectString.StartWith(WeaponHandName))
 		{
-			const shared_str& _bone = _b.second;
-			m_ancors.push_back(m_model->dcast_PKinematics()->LL_BoneID(_bone));
+			u32 AncorID = atoi(CurrentSectString.substr(StrLen).c_str());
+			m_ancors[AncorID] = m_model->dcast_PKinematics()->LL_BoneID(BoneName);
+			AncorCount++;
 		}
 	}
+	m_ancors.resize(AncorCount);
 
 	if(!b_reload)
 	{
