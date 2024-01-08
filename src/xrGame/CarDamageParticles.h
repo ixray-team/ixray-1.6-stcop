@@ -21,4 +21,6 @@ void			Play1			(CCar* car);
 void			Play2			(CCar* car);
 void			PlayWheel1		(CCar*car,u16 bone_id);
 void			PlayWheel2		(CCar*car,u16 bone_id);
+void			Stop1(CCar* car);
+void			Stop2(CCar* car);
 };
