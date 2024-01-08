@@ -192,19 +192,20 @@ void initialize_bindings()
 
 void remap_keys()
 {
-	int idx				= 0;
-	string128			buff;
-	while(keyboards[idx].key_name)
+	int idx = 0;
+	string128 buff;
+	while (keyboards[idx].key_name)
 	{
-		buff[0]				= 0;
-		_keyboard&	kb		= keyboards[idx];
-		bool res			= pInput->get_dik_name(kb.dik, buff, sizeof(buff) );
-		if(res)
-			kb.key_local_name	= buff;
-		else
-			kb.key_local_name	= kb.key_name;
+		buff[0] = 0;
+		_keyboard& kb = keyboards[idx];
+		bool res = pInput->get_dik_name(kb.dik, buff, sizeof(buff));
+		kb.key_local_name = res ? buff : kb.key_name;
 
-//.		Msg("[%s]-[%s]",kb.key_name, kb.key_local_name.c_str());
+		if (kb.key_local_name.starts_with('k'))
+		{
+			kb.key_local_name = kb.key_local_name.substr(1);
+		}
+
 		++idx;
 	}
 }
@@ -351,27 +352,26 @@ ENGINE_API EGameActions get_binded_action(int _dik)
 	return kNOTBINDED;
 }
 
-ENGINE_API void GetActionAllBinding		(LPCSTR _action, char* dst_buff, int dst_buff_sz)
+ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 {
-	int			action_id	= action_name_to_id(_action);
-	_binding*	pbinding	= &g_key_bindings[action_id];
+	int action_id = action_name_to_id(_action);
+	_binding* pbinding = &g_key_bindings[action_id];
 
-	string128	prim;
-	string128	sec;
-	prim[0]		= 0;
-	sec[0]		= 0;
+	string128 prim;
+	string128 sec;
+	prim[0] = 0;
+	sec[0] = 0;
 
-	if(pbinding->m_keyboard[0])
+	if (pbinding->m_keyboard[0])
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
 
-	if(pbinding->m_keyboard[1])
+	if (pbinding->m_keyboard[1])
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
 
-	if(NULL == pbinding->m_keyboard[0] && NULL == pbinding->m_keyboard[1])
-		xr_sprintf		(dst_buff, dst_buff_sz, "%s", CStringTable().translate("st_key_notbinded").c_str());
+	if (NULL == pbinding->m_keyboard[0] && NULL == pbinding->m_keyboard[1])
+		xr_sprintf(dst_buff, dst_buff_sz, "%s", CStringTable().translate("st_key_notbinded").c_str());
 	else
-		xr_sprintf		(dst_buff, dst_buff_sz, "%s%s%s", prim[0]?prim:"", (sec[0]&&prim[0])?" , ":"", sec[0]?sec:"");
-					
+		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
 }
 
 ENGINE_API ConsoleBindCmds bindConsoleCmds;
