@@ -463,8 +463,8 @@ void RenderUIWeather()
 		changed = true;
 	if (ImGui::SliderFloat("wind_direction", &cur->wind_direction, 0.0f, 360.0f))
 		changed = true;
-	//if (ImGui::SliderFloat("trees_amplitude", &cur->m_fTreeAmplitude, 0.01f, 0.250f))
-	//	changed = true;
+	if (ImGui::SliderFloat("trees_amplitude", &cur->trees_amplitude, 0.01f, 0.250f))
+		changed = true;
 
 	if (changed)
 		modifiedWeathers.insert(env.CurrentWeatherName);
