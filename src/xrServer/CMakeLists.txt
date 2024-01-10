@@ -31,3 +31,4 @@ target_compile_definitions(xrServer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrServer PUBLIC xrAbstractions)
+add_dependencies(xrServer xrRender_R1)
