@@ -7,10 +7,6 @@
 #include "NET_Common.h"
 #include "NET_Compressor.h"
 
-
-
-
-
 #if NET_USE_COMPRESSION
 
 #	ifdef DEBUG
@@ -31,14 +27,8 @@
 
 #endif // NET_USE_COMPRESSION
 
-
-
-#if 1//def DEBUG
-//static FILE*    OriginalTrafficDump     = NULL;
-//static FILE*    CompressedTrafficDump   = NULL;
 static FILE*    RawTrafficDump          = NULL;
 static FILE*    CompressionDump         = NULL;
-#endif // DEBUG
 
 #define NOWARN
 
@@ -51,209 +41,6 @@ static FILE*    CompressionDump         = NULL;
 #define SHIFT_BITS		    (PPM_CODE_BITS - 9)
 #define EXTRA_BITS		    ((PPM_CODE_BITS-2) % 8 + 1)
 #define PPM_BOTTOM_VALUE    (PPM_TOP_VALUE >> 8)
-
-
-/*
-// c is written as first byte in the datastream                
-// one could do without c, but then you have an additional if  
-// per outputbyte.                                             
-void NET_Compressor::start_encoding		( BYTE* dest, u32 header_size )
-{
-	dest			+=	header_size-1;
-	RNGC.low		=	0;				// Full code range
-    RNGC.range		=	PPM_TOP_VALUE;
-    RNGC.buffer		=	0;
-    RNGC.help		=	0;				// No bytes to follow
-    RNGC.bytecount	=	0;
-	RNGC.ptr		=	dest;
-}
-
-// I do the normalization before I need a defined state instead of 
-// after messing it up. This simplifies starting and ending.       
-void NET_Compressor::encode_normalize	( )
-{
-	while( RNGC.range <= PPM_BOTTOM_VALUE )     // do we need renormalisation?
-    {
-		if( RNGC.low < code_value(0xff) << SHIFT_BITS )  // no carry possible --> output
-        {
-			RNGC.byte_out( RNGC.buffer );
-            for( ; RNGC.help; RNGC.help--)	
-                RNGC.byte_out(0xff);
-            RNGC.buffer	= (BYTE)(RNGC.low >> SHIFT_BITS);
-        }
-		else if( RNGC.low & PPM_TOP_VALUE ) // carry now, no future carry
-        {
-			RNGC.byte_out( RNGC.buffer+1 );
-            for(; RNGC.help; RNGC.help--)	
-                RNGC.byte_out(0);
-            RNGC.buffer	= (BYTE)(RNGC.low >> SHIFT_BITS);
-        } 
-        else                           // passes on a potential carry
-        {
-            RNGC.help++;
-        }
-        
-        RNGC.range		<<= 8;
-        RNGC.low		=	(RNGC.low<<8) & (PPM_TOP_VALUE-1);
-        RNGC.bytecount	++;
-    }
-}
-
-// Encode a symbol using frequencies                         
-// sy_f is the interval length (frequency of the symbol)     
-// lt_f is the lower end (frequency sum of < symbols)        
-// tot_f is the total interval length (total frequency sum)  
-// or (faster): tot_f = (code_value)1<<shift                             
-void NET_Compressor::encode_freq( freq sy_f, freq lt_f, freq tot_f )
-{
-	encode_normalize();
-	
-	code_value	r   =	RNGC.range / tot_f;
-	code_value  tmp	=	r * lt_f;
-	
-	RNGC.low += tmp;
-
-    if (lt_f+sy_f < tot_f)		RNGC.range  =	r * sy_f;
-    else						RNGC.range  -=	tmp;
-}
-
-void NET_Compressor::encode_shift	( freq sy_f, freq lt_f, freq shift )
-{
-	encode_normalize();
-
-	code_value  r	= RNGC.range >> shift;
-	code_value  tmp	= r * lt_f;
-	
-	RNGC.low += tmp;
-	
-	if ((lt_f+sy_f) >> shift)	RNGC.range -= tmp;
-	else						RNGC.range = r * sy_f;
-}
-
-// Finish encoding                                           
-// actually not that many bytes need to be output, but who   
-// cares. I output them because decode will read them :)     
-// the return value is the number of bytes written           
-u32 NET_Compressor::done_encoding	( )
-{
-    encode_normalize();     // now we have a normalized state 
-
-    RNGC.bytecount		+= 3;
-    
-	u32 tmp = ((RNGC.low & (PPM_BOTTOM_VALUE-1)) < ((RNGC.bytecount&0xffffffL)>>1))
-	          ? (RNGC.low >> SHIFT_BITS)
-	          : (RNGC.low >> SHIFT_BITS) + 1;
-
-    if( tmp > 0xff ) // we have a carry
-    {
-		RNGC.byte_out( RNGC.buffer+1 );
-		
-        for( ; RNGC.help; RNGC.help-- )	
-            RNGC.byte_out(0);
-    } 
-    else  // no carry
-    {
-		RNGC.byte_out( RNGC.buffer );
-		
-        for( ; RNGC.help; RNGC.help-- )	
-            RNGC.byte_out(0xff);
-    }
-    
-    RNGC.byte_out( (BYTE)(tmp & 0xff) );
-    RNGC.byte_out( 0 );
-    
-    return RNGC.bytecount;
-}
-
-// Start the decoder                                         
-int NET_Compressor::start_decoding	( BYTE* src, u32 header_size )
-{
-	src			+= header_size;
-	RNGC.ptr	= src;
-    RNGC.buffer = RNGC.byte_in();
-    RNGC.low	= RNGC.buffer >> (8-EXTRA_BITS);
-    RNGC.range	= (code_value)1 << EXTRA_BITS;
-    return 0;
-}
-
-void NET_Compressor::decode_normalize	( )
-{
-	while( RNGC.range <= PPM_BOTTOM_VALUE )
-    {
-		RNGC.low    =   (RNGC.low<<8) | ((RNGC.buffer<<EXTRA_BITS)&0xff);
-        RNGC.buffer =   RNGC.byte_in();
-        RNGC.low    |=  RNGC.buffer >> (8-EXTRA_BITS);
-        RNGC.range	<<= 8;
-    }
-}
-
-
-// Calculate culmulative frequency for next symbol. Does NO update!	
-// tot_f is the total frequency										
-// or: totf is (code_value)1<<shift                                 
-// returns the culmulative frequency								
-NET_Compressor::freq NET_Compressor::decode_culfreq		( freq tot_f )
-{
-    decode_normalize();
-    RNGC.help = RNGC.range/tot_f;
-    
-    freq tmp = RNGC.low/RNGC.help;
-    
-    return (tmp>=tot_f) ? (tot_f-1) : (tmp);
-}
-
-NET_Compressor::freq NET_Compressor::decode_culshift	( freq shift )
-{
-    decode_normalize();
-    RNGC.help = RNGC.range>>shift;
-
-    freq tmp = RNGC.low/RNGC.help;
-
-    return (tmp>>shift)  ? ((code_value(1)<<shift)-1)  : (tmp);
-}
-
-
-// Update decoding state                                     
-// sy_f is the interval length (frequency of the symbol)     
-// lt_f is the lower end (frequency sum of < symbols)        
-// tot_f is the total interval length (total frequency sum)  
-void NET_Compressor::decode_update		( freq sy_f, freq lt_f, freq tot_f )
-{
-	code_value tmp = RNGC.help * lt_f;
-
-    RNGC.low -=	tmp;
-    
-    if( lt_f + sy_f < tot_f)    RNGC.range = RNGC.help * sy_f;
-    else                        RNGC.range -= tmp;
-}
-
-
-// Decode a byte/short without modelling                     
-BYTE NET_Compressor::decode_byte		( )
-{
-	u32 tmp	=decode_culshift( 8 );
-	
-    decode_update( 1, tmp, (freq)1<<8 );
-
-    return BYTE(tmp);
-}
-
-u16 NET_Compressor::decode_short		( )
-{
-	u32 tmp	= decode_culshift( 16 );
-	
-    decode_update( 1, tmp, (freq)1<<16 );
-    return u16(tmp);
-}
-
-
-// Finish decoding                                           
-// rc is the range coder to be used                          
-void NET_Compressor::done_decoding		( )
-{
-	decode_normalize();      // normalize to use up all bytes 
-}
-*/
 
 
 //////////////////////////////////////////////////////////////////////
@@ -269,12 +56,6 @@ NET_Compressor::NET_Compressor()
 
 NET_Compressor::~NET_Compressor()
 {
-#if 1//def DEBUG
-//	if( strstr(Core.Params,"-dump_traffic") ) 
-//	{
-//		fclose( OriginalTrafficDump );
-//		fclose( CompressedTrafficDump );
-//	}
 	if( CompressionDump )
 	{
 	    fclose( CompressionDump );
@@ -285,24 +66,7 @@ NET_Compressor::~NET_Compressor()
         fclose( RawTrafficDump );
         RawTrafficDump = NULL;
     }
-#endif // DEBUG
 }
-
-/*
-void NET_Compressor::Initialize	()
-{
-	CS.Enter		();
-
-#if 1//def DEBUG
-	if( strstr(Core.Params,"-dump_traffic") ) 
-	{
-		OriginalTrafficDump     = fopen( "x:/network_out_original.dat", "wb" );
-		CompressedTrafficDump   = fopen( "x:/network_out_compressed.dat", "wb" );
-	}
-#endif // DEBUG
-
-	CS.Leave		();
-}*/
 
 u16 NET_Compressor::compressed_size	(const u32 &count)
 {
@@ -343,14 +107,6 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
 	VERIFY(src);
 	VERIFY(count);
 
-#if 1//def DEBUG
-	if( strstr(Core.Params,"-dump_traffic") ) 
-	{
-//		fwrite( src,count,1,OriginalTrafficDump );
-//		fflush( OriginalTrafficDump );
-	}
-#endif // DEBUG
-
 #if !NET_USE_COMPRESSION
 
 	CopyMemory(dest,src,count);
@@ -383,6 +139,7 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
 		*dest = NET_TAG_COMPRESSED;
 		
         #if NET_USE_COMPRESSION_CRC
+
 		u32 crc = crc32(dest + offset, compressed_size);
 
 		*((u32*)(dest + 1))	= crc;
@@ -399,7 +156,7 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
         #endif
 
 		if( !CompressionDump )
-		    fopen_s(&CompressionDump, "net-compression.log", "w+b" );
+		    CompressionDump = fopen( "net-compression.log", "w+b" );
         
         fprintf( CompressionDump, "%s compress %2.0f%% %u->%u\r\n",
                  compressor_name,
@@ -467,7 +224,7 @@ u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, con
     if( src[0] != NET_TAG_COMPRESSED  &&  src[0] != NET_TAG_NONCOMPRESSED )
     {
         Msg( "! invalid compression-tag %02X", src[0] );
-		__debugbreak();
+        __asm { int 3 }
     }
     #endif NET_USE_COMPRESSSION
 

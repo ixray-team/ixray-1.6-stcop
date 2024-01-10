@@ -214,6 +214,8 @@ void xrServer::Update	()
 	if (Level().IsDemoPlayStarted() || Level().IsDemoPlayFinished())
 		return;								//diabling server when demo is playing
 
+	ProcessMessagesQueue();
+
 	NET_Packet		Packet;
 
 	VERIFY						(verify_entities());

@@ -103,7 +103,7 @@ typedef short           int16;
 
 typedef unsigned short  uint16;
 
-typedef char            int8;
+#define int8 char
 
 typedef unsigned char   uint8;
 

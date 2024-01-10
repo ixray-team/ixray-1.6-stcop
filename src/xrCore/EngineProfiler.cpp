@@ -200,6 +200,9 @@ Profile::RegisterThread(const char* Name)
 void 
 Profile::UnregisterThread()
 {
+	if (EngineProfiler == nullptr)
+		return;
+
 	xrCriticalSectionGuard Guard(&EngineProfiler->WriteMutex);
 
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
