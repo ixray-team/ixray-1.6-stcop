@@ -474,7 +474,7 @@ void CRenderDevice::BeginRender()
 		}
 	}
 
-	if (CaptureInputs) {
+	if (CaptureInputs || g_dedicated_server) {
 		SDL_ShowCursor();
 	} else {
 		SDL_HideCursor();

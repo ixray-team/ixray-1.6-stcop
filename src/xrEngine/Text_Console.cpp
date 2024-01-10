@@ -341,11 +341,5 @@ void CTextConsole::IR_OnKeyboardPress( int dik ) !!!!!!!!!!!!!!!!!!!!!
 void CTextConsole::OnFrame()
 {
 	inherited::OnFrame();
-/*	if ( !m_bNeedUpdate && m_dwLastUpdateTime + 1000/g_svTextConsoleUpdateRate > Device.dwTimeGlobal )
-	{
-		return;
-	}
-*/	InvalidateRect( m_hConsoleWnd, NULL, FALSE );
-	SetCursor( LoadCursor( NULL, IDC_ARROW ) );	
-//	m_bNeedUpdate = true;
+	InvalidateRect(m_hConsoleWnd, NULL, FALSE);
 }

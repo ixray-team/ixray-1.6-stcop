@@ -420,7 +420,7 @@ void CObjectFactory::register_classes	()
 	// because we do not have scripts
 	// and script functionality is not
 	// needed here
-	if (!g_dedicated_server)
+	//if (!g_dedicated_server)
 		return;
 
 	ADD(CElectricBall			,CSE_ALifeItemArtefact			,TEXT2CLSID("SCRPTART")			,"artefact_s");
