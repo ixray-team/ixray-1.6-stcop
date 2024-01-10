@@ -143,6 +143,7 @@ endif()
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
 target_link_libraries(xrCore PRIVATE "discord_game_sdk.dll.lib")
 target_link_libraries(xrCore PRIVATE dxerr)
+target_link_libraries(xrCore PRIVATE "SDL3.lib" imm32)
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
