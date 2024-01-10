@@ -38,7 +38,13 @@ BOOL CLevel::Load_GameSpecific_Before()
 	}
 
 	if (FS.exist(fn_game, "$level$", "level.ai") && !HasSessionName())
-		ai().load						(net_SessionName());
+	{
+#ifdef XR_MP_BUILD
+		ai().load(net_SessionName());
+#else
+		ai().load(name().c_str());
+#endif
+	}
 
 	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game")) {
 		IReader							*stream = FS.r_open		(fn_game);

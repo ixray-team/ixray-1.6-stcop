@@ -117,6 +117,14 @@ void BaseServer::ParseConnectionOptions(LPCSTR options, ServerConnectionOptions&
 	}
 }
 
+bool BaseServer::CreateConnection(GameDescriptionData& game_descr, ServerConnectionOptions& opt)
+{
+	// set m_game_description
+	CopyMemory(&m_game_description, &game_descr, sizeof(game_descr));
+
+	return true;
+}
+
 
 BaseServer::EConnect BaseServer::Connect(LPCSTR options, GameDescriptionData & game_descr)
 {
@@ -141,6 +149,12 @@ BaseServer::EConnect BaseServer::Connect(LPCSTR options, GameDescriptionData & g
 		BannedList_Load();
 		IpList_Load();
 	}
+#ifndef XR_MP_BUILD
+	else
+	{
+		CopyMemory(&m_game_description, &game_descr, sizeof(game_descr));
+	}
+#endif
 
 	return EConnect::ErrNoError;
 }

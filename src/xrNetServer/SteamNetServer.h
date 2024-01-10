@@ -26,16 +26,14 @@ private:
 	HSteamListenSocket            m_hListenSock = k_HSteamListenSocket_Invalid;
 	HSteamNetPollGroup            m_hPollGroup = k_HSteamListenSocket_Invalid;
 
-	GameDescriptionData           m_game_description;
-
 	xrCriticalSection             csConnection;
 	xr_string                     m_server_password;
 	u32														m_max_players = 0;
 	bool													m_bServerClientConnected = false;
 
 	// Using in update thread!
-	xr_vector<HSteamNetConnection> m_players;
-	xr_vector<SClientConnectData> m_pending_clients;
+	xr_vector<HSteamNetConnection>	m_players;
+	xr_vector<SClientConnectData>	m_pending_clients;
 
 public:
 	SteamNetServer(CTimer* timer, BOOL	dedicated);
