@@ -80,10 +80,14 @@
 //  - original script behaviour when you didn't pass some parametres
 //  - turn off "LUA error: cannot cast lua value to ..." 
 
+#ifdef WIN32
 #ifdef LUABIND_BUILDING
 #	define LUABIND_API __declspec(dllexport)
 #else
 #	define LUABIND_API __declspec(dllimport)
+#endif
+#else
+#	define LUABIND_API
 #endif
 
 namespace luabind 

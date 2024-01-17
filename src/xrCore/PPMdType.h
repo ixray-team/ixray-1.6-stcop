@@ -10,25 +10,19 @@
 
 #include <stdio.h>
 
-#define _WIN32_ENVIRONMENT_
-//#define _DOS32_ENVIRONMENT_
-//#define _POSIX_ENVIRONMENT_
-//#define _UNKNOWN_ENVIRONMENT_
-#if defined(_WIN32_ENVIRONMENT_)+defined(_DOS32_ENVIRONMENT_)+defined(_POSIX_ENVIRONMENT_)+defined(_UNKNOWN_ENVIRONMENT_) != 1
-#error Only one environment must be defined
-#endif /* defined(_WIN32_ENVIRONMENT_)+defined(_DOS32_ENVIRONMENT_)+defined(_POSIX_ENVIRONMENT_)+defined(_UNKNOWN_ENVIRONMENT_) != 1 */
+#if defined(IXR_WIN32) || defined(IXR_WIN64)
+#   define _WIN32_ENVIRONMENT_
+#endif
 
 #if defined(_WIN32_ENVIRONMENT_)
 #include <windows.h>
-#else /* _DOS32_ENVIRONMENT_ || _POSIX_ENVIRONMENT_ || _UNKNOWN_ENVIRONMENT_ */
+#else
 typedef int   BOOL;
-#define FALSE 0
-#define TRUE  1
 typedef unsigned char  BYTE;
 typedef unsigned short WORD;
 typedef unsigned long  DWORD;
 typedef unsigned int   UINT;
-#endif /* defined(_WIN32_ENVIRONMENT_)  */
+#endif
 
 const DWORD PPMdSignature=0x84ACAF8F, Variant='I';
 const int MAX_O=16;                         /* maximum allowed model order  */

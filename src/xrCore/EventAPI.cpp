@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "eventapi.h"
+#include "EventAPI.h"
 
 //---------------------------------------------------------------------
 class XRCORE_API CEvent

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../xrCore/xrCore.h"
-
+#ifdef XRSOUND_EXPORTS
 // mmsystem.h
 #define MMNOSOUND
 #define MMNOMIDI
@@ -27,6 +27,7 @@
 #include "Sound.h"
 
 #define ENGINE_API
+#endif
 
 #include "../xrCore/xr_resource.h"
 

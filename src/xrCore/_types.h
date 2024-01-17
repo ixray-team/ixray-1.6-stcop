@@ -1,30 +1,29 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
+#include <cstdint>
+#include <limits>
 
 // Type defs
-typedef	signed		char	s8;
-typedef	unsigned	char	u8;
+using s8 = std::int8_t;
+using u8 = std::uint8_t;
 
-typedef	signed		short	s16;
-typedef	unsigned	short	u16;
+using s16 = std::int16_t;
+using u16 = std::uint16_t;
 
-typedef	signed		int		s32;
-typedef	unsigned	int		u32;
-                                         
-typedef	signed		__int64	s64;
-typedef	unsigned	__int64	u64;
+using s32 = std::int32_t;
+using u32 = std::uint32_t;
 
-typedef float				f32;
-typedef double				f64;
+using s64 = std::int64_t;
+using u64 = std::uint64_t;
 
-typedef char*				pstr;
-typedef const char*			pcstr;
+using f32 = float;
+using f64 = double;
+
+using pstr = char*;
+using pcstr = const char*;
 
 // windoze stuff
 #ifndef _WINDOWS_
 	typedef	int				BOOL;
-	typedef pstr			LPSTR;
-	typedef pcstr			LPCSTR;
 	#define TRUE			true
 	#define FALSE			false
 #endif
@@ -65,5 +64,3 @@ typedef	char	string2048	[2048];
 typedef	char	string4096	[4096];
 
 typedef	char	string_path	[2*_MAX_PATH];
-
-#endif

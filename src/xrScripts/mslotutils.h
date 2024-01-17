@@ -75,7 +75,7 @@ public:
 
 inline HANDLE CreateMailSlotByName(LPSTR slotName)
 {
-  HANDLE  hSlot = CreateMailslot(ANSI_TO_TCHAR(slotName),
+  HANDLE  hSlot = CreateMailslot(Platform::ANSI_TO_TCHAR(slotName),
         0,                             // no maximum message size 
         MAILSLOT_WAIT_FOREVER,         // no time-out for operations 
         (LPSECURITY_ATTRIBUTES) NULL); // no security attributes 
@@ -86,7 +86,7 @@ inline BOOL CheckExisting(LPSTR slotName)
 {
 	HANDLE hFile; 
 	BOOL res;
-hFile = CreateFile(ANSI_TO_TCHAR(slotName),
+hFile = CreateFile(Platform::ANSI_TO_TCHAR(slotName),
     GENERIC_WRITE, 
     FILE_SHARE_READ,  // required to write to a mailslot 
     (LPSECURITY_ATTRIBUTES) NULL, 
@@ -106,7 +106,7 @@ inline BOOL SendMailslotMessage(LPSTR slotName, CMailSlotMsg& msg){
 	HANDLE hFile; 
 	DWORD cbWritten; 
  
-hFile = CreateFile(ANSI_TO_TCHAR(slotName),
+hFile = CreateFile(Platform::ANSI_TO_TCHAR(slotName),
     GENERIC_WRITE, 
     FILE_SHARE_READ,  // required to write to a mailslot 
     (LPSECURITY_ATTRIBUTES) NULL, 

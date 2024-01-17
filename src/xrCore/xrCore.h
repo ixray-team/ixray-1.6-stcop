@@ -1,20 +1,21 @@
 #pragma once
+#include "Platform/Platform.h"
 
-#include "xrCore_platform.h"
-
-// *** try to minimize code bloat of STLport
-#ifdef __BORLANDC__
+// Our headers
+#ifdef XRCORE_STATIC
+#	define XRCORE_API
 #else
-	#ifdef XRCORE_EXPORTS				// no exceptions, export allocator and common stuff
-	#define _STLP_DESIGNATED_DLL	1
-	#define _STLP_USE_DECLSPEC		1
-	#else
-	#define _STLP_USE_DECLSPEC		1	// no exceptions, import allocator and common stuff
-	#endif
+#	ifdef XRCORE_EXPORTS
+#		define XRCORE_API __declspec(dllexport)
+#	else
+#		define XRCORE_API __declspec(dllimport)
+#	endif
 #endif
 
-// #include <exception>
-// using std::exception;
+#define IC inline
+#define xr_stdcall __stdcall
+
+#include "Platform/PlatformAPI.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,18 +23,7 @@
 #include <math.h>
 #include <string.h>
 #include <typeinfo>
-#include <DirectXMath.h>
-#include <SDL3/SDL.h>
-//#include <process.h>
 
-#ifndef DEBUG
-	#ifdef _DEBUG
-    	#define DEBUG
-    #endif
-	#ifdef MIXED
-    	#define DEBUG
-    #endif
-#endif
 
 #ifdef XRCORE_STATIC
 #	define NO_FS_SCAN
@@ -51,7 +41,6 @@
 #endif
 #define _inline			inline
 #define __inline		inline
-#define IC				inline
 #define ICF				__forceinline			// !!! this should be used only in critical places found by PROFILER
 #ifdef _EDITOR
 #	define ICN
@@ -99,7 +88,6 @@
     #define _MCW_EM MCW_EM
 #else
 	#define ALIGN(a)		__declspec(align(a))
-	#include <sys\utime.h>
 	#define MODULE_NAME 	"xrCore.dll"
 #endif
 
@@ -115,7 +103,6 @@
 #ifndef DEBUG
 #pragma warning (disable : 4189 )		//  local variable is initialized but not refenced
 #endif									//	frequently in release code due to large amount of VERIFY
-
 
 #ifdef _M_AMD64
 #pragma warning (disable : 4512 )
@@ -134,29 +121,13 @@
 #include <map>
 
 #ifndef _EDITOR
-#	if _MSC_VER <= 1500
-#		include <hash_map>
-#		include <hash_set>
-#	else
-#		include <unordered_map>
-#		include <unordered_set>
-#	endif
+#include <unordered_map>
+#include <unordered_set>
 #endif
 
 #include <string>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
-
-// Our headers
-#ifdef XRCORE_STATIC
-#	define XRCORE_API
-#else
-#	ifdef XRCORE_EXPORTS
-#		define XRCORE_API __declspec(dllexport)
-#	else
-#		define XRCORE_API __declspec(dllimport)
-#	endif
-#endif
 
 #include "xrDebug.h"
 #include "vector.h"
@@ -176,12 +147,9 @@
 #include "xr_shared.h"
 #include "string_concatenations.h"
 
-XRCORE_API wchar_t* ANSI_TO_TCHAR(const char* C);
-XRCORE_API wchar_t* ANSI_TO_TCHAR_U8(const char* C);
-XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& C);
-
 // stl ext
-struct XRCORE_API xr_rtoken{
+struct XRCORE_API xr_rtoken
+{
     shared_str	name;
     int	   	id;
            	xr_rtoken	(LPCSTR _nm, int _id){name=_nm;id=_id;}
@@ -270,5 +238,7 @@ public:
 //Borland global function dll interface
 #define	_BGCL			__stdcall	
 
+#include <DirectXMath.h>
+XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi);
 
 extern XRCORE_API xrCore Core;

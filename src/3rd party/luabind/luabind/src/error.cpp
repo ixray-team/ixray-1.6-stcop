@@ -94,7 +94,11 @@ namespace luabind {
 	}
     
     unresolved_name::unresolved_name(const char* desc, const char* name) :
+#ifdef __GNUC__
+		std::exception()
+#else
 		std::exception((luabind::string(desc) + ": " + name).c_str())
+#endif
     {
 	}
 }
