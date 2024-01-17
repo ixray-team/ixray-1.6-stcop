@@ -102,42 +102,45 @@ IC float	_abs	(float x)		{ return fabsf(x); }
 IC float	_sqrt	(float x)		{ return sqrtf(x); }
 IC float	_sin	(float x)		{ return sinf(x); }
 IC float	_cos	(float x)		{ return cosf(x); }
-IC BOOL		_valid	(const float x)
+
+// check for: Signaling NaN, Quiet NaN, Negative infinity ( ï¿½INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
+IC BOOL _valid(const float x)
 {
-	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-	int			cls			= _fpclass		(double(x));
-	if (cls&(_FPCLASS_SNAN+_FPCLASS_QNAN+_FPCLASS_NINF+_FPCLASS_PINF+_FPCLASS_ND+_FPCLASS_PD))	
-		return	false;	
+	const int cls = std::fpclassify(x);
+	switch (cls)
+	{
+	case FP_NAN:
+	case FP_INFINITE:
+	case FP_SUBNORMAL:
+		return false;
+	default:
+		break;
+	}
 
-	/*	*****other cases are*****
-	_FPCLASS_NN Negative normalized non-zero 
-	_FPCLASS_NZ Negative zero ( – 0) 
-	_FPCLASS_PZ Positive 0 (+0) 
-	_FPCLASS_PN Positive normalized non-zero 
-	*/
-	return		true;
+	return true;
 }
-
 
 // double
 IC double	_abs	(double x)		{ return fabs(x); }
 IC double	_sqrt	(double x)		{ return sqrt(x); }
 IC double	_sin	(double x)		{ return sin(x); }
 IC double	_cos	(double x)		{ return cos(x); }
-IC BOOL		_valid	(const double x)
-{
-	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-	int			cls			= _fpclass		(x);
-	if (cls&(_FPCLASS_SNAN+_FPCLASS_QNAN+_FPCLASS_NINF+_FPCLASS_PINF+_FPCLASS_ND+_FPCLASS_PD))	
-		return false;	
 
-	/*	*****other cases are*****
-	_FPCLASS_NN Negative normalized non-zero 
-	_FPCLASS_NZ Negative zero ( – 0) 
-	_FPCLASS_PZ Positive 0 (+0) 
-	_FPCLASS_PN Positive normalized non-zero 
-	*/
-	return		true;
+// check for: Signaling NaN, Quiet NaN, Negative infinity ( ï¿½INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
+IC BOOL _valid(const double x)
+{
+	const int cls = std::fpclassify(x);
+	switch (cls)
+	{
+	case FP_NAN:
+	case FP_INFINITE:
+	case FP_SUBNORMAL:
+		return false;
+	default:
+		break;
+	}
+
+	return true;
 }
 
 // int8

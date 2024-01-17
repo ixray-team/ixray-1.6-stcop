@@ -7,8 +7,8 @@ class XRCORE_API CAppInfo
 public:
 	SDL_Window* Window = nullptr;
 
-	HANDLE MainThread = nullptr;
-	HANDLE SecondaryThread = nullptr;
+	ThreadID MainThread = nullptr;
+	ThreadID SecondaryThread = nullptr;
 
 public:
 	bool IsSecondaryThread() const noexcept;

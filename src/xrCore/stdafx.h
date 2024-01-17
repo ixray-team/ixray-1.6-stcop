@@ -10,7 +10,6 @@
 
 #include "xrCore.h"
 #include <SDL3/SDL.h>
-#include "xrCore_platform.h"
 #endif
 
 #pragma hdrstop

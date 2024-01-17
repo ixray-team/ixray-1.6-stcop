@@ -6,9 +6,7 @@
 #pragma hdrstop
 
 #pragma warning(disable:4995)
-#include <direct.h>
 #include <fcntl.h>
-#include <sys\stat.h>
 #pragma warning(default:4995)
 
 #include "FS_internal.h"
@@ -17,13 +15,10 @@
 
 const u32 BIG_FILE_READER_WINDOW_SIZE	= 1024*1024;
 
-//typedef void DUMMY_STUFF (const void*,const u32&,void*);
-//XRCORE_API DUMMY_STUFF	*g_temporary_stuff = 0;
-
-#	pragma warning(push)
-#	pragma warning(disable:4995)
-#	include <malloc.h>
-#	pragma warning(pop)
+#pragma warning(push)
+#pragma warning(disable:4995)
+#include <malloc.h>
+#pragma warning(pop)
 
 CLocatorAPI*		xr_FS = NULL;
 
@@ -390,7 +385,7 @@ void CLocatorAPI::archive::open()
 	if(hSrcFile && hSrcMap)
 		return;
 
-	hSrcFile		= CreateFile(ANSI_TO_TCHAR(*path), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	hSrcFile		= CreateFile(Platform::ANSI_TO_TCHAR(*path), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 	R_ASSERT		(hSrcFile!=INVALID_HANDLE_VALUE);
 	hSrcMap			= CreateFileMapping	(hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT		(hSrcMap!=INVALID_HANDLE_VALUE);
@@ -531,7 +526,7 @@ bool ignore_name(const char* _name)
 
 bool ignore_path(const char* _path)
 {
-	HANDLE h = CreateFile(ANSI_TO_TCHAR_U8(_path), 0, 0, NULL, OPEN_EXISTING,
+	HANDLE h = CreateFile(Platform::ANSI_TO_TCHAR_U8(_path), 0, 0, NULL, OPEN_EXISTING,
 		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, NULL);
 
 	if (h!=INVALID_HANDLE_VALUE)

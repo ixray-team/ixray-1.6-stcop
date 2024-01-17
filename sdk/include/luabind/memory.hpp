@@ -18,7 +18,7 @@ static_assert(false, "Do not define NDEBUG macros in DEBUG configuration since l
 
 namespace luabind
 {
-    using allocator_func = void* (__cdecl*)(void* context, void const* ptr, size_t);
+    using allocator_func = void* (*)(void* context, void const* ptr, size_t);
     extern LUABIND_API allocator_func allocator;
     extern LUABIND_API void* allocator_context;
 

@@ -1,17 +1,11 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "fs_internal.h"
+#include "FS_internal.h"
 
 #pragma warning(disable:4995)
-#include <io.h>
-#include <direct.h>
 #include <fcntl.h>
-#include <sys\stat.h>
 #pragma warning(default:4995)
-
-//typedef void DUMMY_STUFF (const void*,const u32&,void*);
-//XRCORE_API DUMMY_STUFF	*g_dummy_stuff = 0;
 
 #ifdef M_BORLAND
 #	define O_SEQUENTIAL 0
@@ -24,7 +18,8 @@ size_t g_file_mapped_count = 0;
 using FILE_MAPPINGS = xr_hash_map<size_t, std::pair<size_t, shared_str>>;
 FILE_MAPPINGS g_file_mappings;
 
-void register_file_mapping(void* address, const size_t& size, LPCSTR file_name) {
+void register_file_mapping(void* address, const size_t& size, LPCSTR file_name) 
+{
 	size_t CastedAddress = *(size_t*)&address;
 
 	FILE_MAPPINGS::const_iterator I = g_file_mappings.find(CastedAddress);
@@ -485,7 +480,7 @@ CCompressedReader::~CCompressedReader()
 CVirtualFileRW::CVirtualFileRW(const char *cFileName) 
 {
 	// Open the file
-	hSrcFile		= CreateFile(ANSI_TO_TCHAR_U8(cFileName), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+	hSrcFile		= CreateFile(Platform::ANSI_TO_TCHAR_U8(cFileName), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
 	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 	Size			= (int)GetFileSize(hSrcFile, NULL);
 	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));
@@ -515,7 +510,7 @@ CVirtualFileRW::~CVirtualFileRW()
 CVirtualFileReader::CVirtualFileReader(const char *cFileName) 
 {
 	// Open the file
-	hSrcFile		= CreateFile(ANSI_TO_TCHAR_U8(cFileName), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	hSrcFile		= CreateFile(Platform::ANSI_TO_TCHAR_U8(cFileName), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 	Size			= (int)GetFileSize(hSrcFile, NULL);
 	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));

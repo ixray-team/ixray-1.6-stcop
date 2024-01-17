@@ -3,10 +3,7 @@
 #pragma once
 
 #include "lzhuf.h"
-#include <io.h>
 #include <fcntl.h>
-#include <sys\stat.h>
-#include <share.h>
 
 void*			FileDownload	(LPCSTR fn, u32* pdwSize=NULL);
 void			FileCompress	(const char *fn, const char* sign, void* data, u32 size);
@@ -21,7 +18,7 @@ public:
 	{
 		R_ASSERT	(name && name[0]);
 		fName		= name;
-		wchar_t* wName = ANSI_TO_TCHAR_U8(name);
+		xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(name);
 		VerifyPath	(*fName);
         if (exclusive){
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
@@ -41,7 +38,7 @@ public:
 	{
 		if (0 != hf)
 		{
-			wchar_t* wName = ANSI_TO_TCHAR_U8(*fName);
+			xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(*fName);
 			fclose(hf);
 			// release RO attrib
 			DWORD dwAttr = GetFileAttributes(wName);
