@@ -117,7 +117,7 @@ SXmlExpressionDelegate* CExpressionManager::GetVariableDescById(int Id)
 u32 SXmlExpressionDelegate::IdGenerator = 0;
 
 CExpression::CExpression()
-    : m_dbgCompileError(nullptr), m_expression(nullptr)
+    : m_expression(nullptr), m_dbgCompileError(nullptr)
 {
 
 }

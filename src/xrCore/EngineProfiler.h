@@ -101,8 +101,6 @@ namespace Profile
 
 	void TraverseGroup(u32 ThreadId, const char* Group, auto&& Function)
 	{
-		int Stack = 0;
-		int TrueStack = 0;
 		u64 GroupHash = HashValue<u64>(Group);
 		for (const auto& Event : GetEvents(ThreadId)) {
 			if (Event.GroupHash == GroupHash) {
@@ -113,8 +111,6 @@ namespace Profile
 
 	void TraverseGroup(const char* Group, auto&& Function)
 	{
-		int Stack = 0;
-		int TrueStack = 0;
 		u64 GroupHash = HashValue<u64>(Group);
 		for (u32 i = 0; i < GetThreadCount(); i++) {
 			for (const auto& Event : GetEventsByIndex(i)) {

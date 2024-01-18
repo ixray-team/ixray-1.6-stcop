@@ -120,7 +120,6 @@ public:
 
 		int Index = (int)Storage->Events.size();
 		Storage->Events.emplace_back(std::move(Event));
-		u64 Hash =
 
 		StackLevel++;
 		MaxStackLevel = std::max(StackLevel, MaxStackLevel);

@@ -70,6 +70,12 @@ if (MSVC)
     add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" "$<$<CONFIG:DEBUG>:/wd4251>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>" /wd4595 /wd4996)
 endif()
 
+# Set LLVM config
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-Wno-reorder-ctor -Wno-switch -Wno-macro-redefined -Wno-implicit-exception-spec-mismatch -Wno-deprecated-volatile 
+                        -Wno-inline-new-delete -Wno-c++11-narrowing --Wno-microsoft-template-shadow -Wno-unused-local-typedef)
+endif()
+
 # Shipping config
 if (DEVIXRAY_ENABLE_SHIPPING)
     add_compile_options("$<$<CONFIG:Shipping>:/wd4530>" "$<$<CONFIG:Shipping>:/wd4251>" "$<$<CONFIG:Shipping>:/wd4275>" "$<$<CONFIG:Shipping>:/wd4577>" "$<$<CONFIG:Shipping>:/Ob2>" )

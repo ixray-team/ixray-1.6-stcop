@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "fs_internal.h"
+#include "fs_Internal.h"
 
 XRCORE_API CInifile* pSettings = NULL;
 
@@ -447,7 +447,6 @@ bool CInifile::save_as	(LPCSTR new_fname)
     if (new_fname && new_fname[0])
 		xr_strcpy		(m_file_name, sizeof(m_file_name), new_fname);
 
-    R_ASSERT			(m_file_name&&m_file_name[0]);
     IWriter* F			= FS.w_open_ex(m_file_name);
     if (!F)
 		return			(false);

@@ -31,6 +31,11 @@ void CFileStreamReader::construct	(LPCSTR file_name, const u32 &window_size)
 	inherited::construct	(file_mapping_handle,0,file_size,file_size,window_size);
 }
 
+void CFileStreamReader::construct(const HANDLE& file_mapping_handle, const u32& start_offset, const u32& file_size, const u32& archive_size, const u32& window_size)
+{
+	// XXX: Clang be like
+}
+
 void CFileStreamReader::destroy		()
 {
 	HANDLE					file_mapping_handle = this->file_mapping_handle();

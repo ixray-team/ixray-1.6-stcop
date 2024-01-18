@@ -1,7 +1,7 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
-#include "../xrCDB/frustum.h"
+#include "../xrCDB/Frustum.h"
 #include "vis_common.h"
 //#include "IRenderDetailModel.h"
 
@@ -9,25 +9,15 @@
 #include "../Include/xrRender/FactoryPtr.h"
 class IUIShader;
 typedef FactoryPtr<IUIShader> wm_shader;
-//#include "../Include/xrRender/WallMarkArray.h"
 
-#ifdef _EDITOR
-//.    #error you cant include this file in borland
-#endif
 // refs
 class ENGINE_API	IRenderable;
-//class ENGINE_API	IRenderVisual;
-
-//class ENGINE_API	IBlender;
-//class ENGINE_API	CSkeletonWallmark;
-//class ENGINE_API	CKinematics;
 struct ENGINE_API	FSlideWindowItem;
 
 //	Igor
 class IRenderVisual;
 class IKinematics;
 class CGameFont;
-//class IRenderDetailModel;
 
 #ifndef _EDITOR
 extern const	float		fLightSmoothFactor;
