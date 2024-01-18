@@ -32,8 +32,8 @@ bool parse_bool		(luabind::object const &table, LPCSTR identifier)
 {
 	VERIFY2						(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object				result = table[identifier];
-	VERIFY2						(luabind::type(result) != LUA_TNIL, make_string("cannot read boolean value %s", identifier));
-	VERIFY2						(luabind::type(result) == LUA_TBOOLEAN, make_string("cannot read boolean value %s", identifier));
+	VERIFY2						(luabind::type(result) != LUA_TNIL, make_string<const char*>("cannot read boolean value %s", identifier));
+	VERIFY2						(luabind::type(result) == LUA_TBOOLEAN, make_string<const char*>("cannot read boolean value %s", identifier));
 	return						(luabind::object_cast<bool>(result));
 }
 
@@ -54,7 +54,7 @@ BOOL is_combat_cover			(shared_str const &table_id)
 		LUA_TTABLE
 		);
 
-	VERIFY2						(result, make_string("bad or missing description in smart_cover [%s]", table_id.c_str()));
+	VERIFY2						(result, make_string<const char*>("bad or missing description in smart_cover [%s]", table_id.c_str()));
 	if (luabind::type(table) != LUA_TTABLE) {
 		VERIFY					(luabind::type(table) != LUA_TNIL);
 		return					(TRUE);
@@ -214,8 +214,8 @@ LPCSTR parse_string(luabind::object const &table, LPCSTR identifier)
 {
 	VERIFY2			(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	result = table[identifier];
-	VERIFY2			(luabind::type(result) != LUA_TNIL, make_string("cannot read string value %s", identifier));
-	VERIFY2			(luabind::type(result) == LUA_TSTRING, make_string("cannot read string value %s", identifier));
+	VERIFY2			(luabind::type(result) != LUA_TNIL, make_string<const char*>("cannot read string value %s", identifier));
+	VERIFY2			(luabind::type(result) == LUA_TSTRING, make_string<const char*>("cannot read string value %s", identifier));
 	return			(luabind::object_cast<LPCSTR>(result));
 }
 
@@ -223,7 +223,7 @@ Fvector parse_fvector (luabind::object const &table, LPCSTR identifier)
 {
 	VERIFY2			(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	result = table[identifier];
-	VERIFY2			(luabind::type(result) != LUA_TNIL, make_string("cannot read vector value %s", identifier));
+	VERIFY2			(luabind::type(result) != LUA_TNIL, make_string<const char*>("cannot read vector value %s", identifier));
 	return			(luabind::object_cast<Fvector>(result));
 }
 
@@ -236,11 +236,11 @@ float parse_float	(
 {
 	VERIFY2			(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	lua_result = table[identifier];
-	VERIFY2			(luabind::type(lua_result) != LUA_TNIL, make_string("cannot read number value %s", identifier));
-	VERIFY2			(luabind::type(lua_result) == LUA_TNUMBER, make_string("cannot read number value %s", identifier));
+	VERIFY2			(luabind::type(lua_result) != LUA_TNIL, make_string<const char*>("cannot read number value %s", identifier));
+	VERIFY2			(luabind::type(lua_result) == LUA_TNUMBER, make_string<const char*>("cannot read number value %s", identifier));
 	float			result = luabind::object_cast<float>(lua_result);
-	VERIFY2			(result >= min_threshold, make_string("invalid read number value %s", identifier));
-	VERIFY2			(result <= max_threshold, make_string("invalid number value %s", identifier));
+	VERIFY2			(result >= min_threshold, make_string<const char*>("invalid read number value %s", identifier));
+	VERIFY2			(result <= max_threshold, make_string<const char*>("invalid number value %s", identifier));
 	return			(result);
 }
 
@@ -248,8 +248,8 @@ void parse_table	(luabind::object const &table, LPCSTR identifier, luabind::obje
 {
 	VERIFY2			(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	result			= table[identifier];
-	VERIFY2			(luabind::type(result) != LUA_TNIL, make_string("cannot read table value %s", identifier));
-	VERIFY2			(luabind::type(result) == LUA_TTABLE, make_string("cannot read table value %s", identifier));
+	VERIFY2			(luabind::type(result) != LUA_TNIL, make_string<const char*>("cannot read table value %s", identifier));
+	VERIFY2			(luabind::type(result) == LUA_TTABLE, make_string<const char*>("cannot read table value %s", identifier));
 }
 
 namespace smart_cover {
@@ -324,7 +324,7 @@ void CSE_SmartCover::check_enterable_loopholes(shared_str const &description)
 		transitions,
 		LUA_TTABLE
 		);
-	VERIFY2						(result, make_string("bad or missing transitions table in smart_cover [%s]", temp));
+	VERIFY2						(result, make_string<const char*>("bad or missing transitions table in smart_cover [%s]", temp));
 
 	luabind::iterator I(transitions), E;
 	for ( ; I != E; ++I) {
@@ -469,7 +469,7 @@ void CSE_SmartCover::load_draw_data () {
 	if (!result) {
 		Msg						("no or invalid smart cover description (bad or missing loopholes table in smart_cover [%s])", temp);
 		return;
-		//		VERIFY2					(result, make_string("bad or missing loopholes table in smart_cover [%s]", temp));
+		//		VERIFY2					(result, make_string<const char*>("bad or missing loopholes table in smart_cover [%s]", temp));
 	}
 	
 	luabind::iterator I(loopholes), E;
@@ -546,7 +546,7 @@ void CSE_SmartCover::load_draw_data () {
 		}
 */
 
-	H.animation_id	= make_string("loophole_%s_visual", H.string_identifier.c_str());
+	H.animation_id	= make_string<const char*>("loophole_%s_visual", H.string_identifier.c_str());
 	}
 
 	check_enterable_loopholes	(m_description);

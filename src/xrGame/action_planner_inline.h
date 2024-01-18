@@ -152,7 +152,7 @@ IC	typename CPlanner::CConditionEvaluator &CPlanner::evaluator		(const _conditio
 TEMPLATE_SPECIALIZATION
 IC	typename CPlanner::_action_id_type CPlanner::current_action_id	() const
 {
-    VERIFY2(initialized(), make_string("! ERROR: action by id [%d] not initialized!", m_current_action_id));
+    VERIFY2(initialized(), make_string<const char*>("! ERROR: action by id [%d] not initialized!", m_current_action_id));
 	return					(m_current_action_id);
 }
 
@@ -173,7 +173,7 @@ IC	void CPlanner::add_condition	(_world_operator *action, _condition_type condit
 {
 	VERIFY2					(
 		!m_solving,
-		make_string(
+		make_string<const char*>(
 			"do not change preconditions during planner update, object %s, id[%d]",
 			object_name(),
 			condition_id
@@ -187,7 +187,7 @@ IC	void CPlanner::add_effect		(_world_operator *action, _condition_type conditio
 {
 	VERIFY2					(
 		!m_solving,
-		make_string(
+		make_string<const char*>(
 			"do not change effects during planner update, object %s, id[%d]",
 			object_name(),
 			condition_id
@@ -221,7 +221,7 @@ IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _o
 {
 	VERIFY2					(
 		!m_solving,
-		make_string(
+		make_string<const char*>(
 			"do not add operators during planner update, object %s, id[%d]",
 			object_name(),
 			operator_id
@@ -239,7 +239,7 @@ IC	void CPlanner::remove_operator	(const _edge_type	&operator_id)
 {
 	VERIFY2					(
 		!m_solving,
-		make_string(
+		make_string<const char*>(
 			"do not remove operators during planner update, object %s, id[%d]",
 			object_name(),
 			operator_id
@@ -253,7 +253,7 @@ IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition
 {
 	VERIFY2						(
 		!m_solving,
-		make_string(
+		make_string<const char*>(
 			"do not add evaluators during planner update, object %s, id[%d]",
 			object_name(),
 			condition_id
@@ -268,7 +268,7 @@ IC	void CPlanner::remove_evaluator	(const _condition_type &condition_id)
 {
 	VERIFY2						(
 		!m_solving,
-		make_string(
+		make_string<const char*>(
 			"do not remove evaluators during planner update, object %s, id[%d]",
 			object_name(),
 			condition_id

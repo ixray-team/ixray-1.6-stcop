@@ -4,7 +4,7 @@
 class XRCORE_API xrCriticalSection
 {
 private:
-	xrCriticalSection(xrCriticalSection const & copy) {}; //noncopyable
+	xrCriticalSection(xrCriticalSection const & copy) {};
 	CRITICAL_SECTION pmutex;
 
 public:

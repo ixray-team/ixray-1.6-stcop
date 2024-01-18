@@ -443,7 +443,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 
 	float rain_fi = 1.f - rain_f;
 
-	R_ASSERT2(rain_f >= 0.f && rain_f <= 1.f, make_string("rain_f = %f", rain_f));
+	R_ASSERT2(rain_f >= 0.f && rain_f <= 1.f, make_string<const char*>("rain_f = %f", rain_f));
 
 	clouds_color.lerp		(A.clouds_color,B.clouds_color,f);
 

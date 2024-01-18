@@ -188,7 +188,7 @@ u32	CLevelGraph::vertex_id				(const Fvector &position) const
 {
 	VERIFY2				(
 		valid_vertex_position(position),
-		make_string(
+		make_string<const char*>(
 			"invalid position for CLevelGraph::vertex_id specified: [%f][%f][%f]",
 			VPUSH(position)
 		)

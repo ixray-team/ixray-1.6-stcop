@@ -206,7 +206,7 @@ void door::change_state			( actor* const initiator, door_state const start_state
 
 	VERIFY						( m_target_state == stop_state );
 	actors_type::iterator const found = std::find(m_initiators.begin(), m_initiators.end(), initiator );
-	VERIFY2						( found != m_initiators.end(), make_string( "cannot find initiator %s", initiator->get_name()) );
+	VERIFY2						( found != m_initiators.end(), make_string<const char*>( "cannot find initiator %s", initiator->get_name()) );
 	if ( found != m_initiators.end() ) {
 #ifdef DEBUG
 		if ( g_debug_doors)

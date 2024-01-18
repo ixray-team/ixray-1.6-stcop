@@ -32,7 +32,7 @@ void moving_objects::register_object		(moving_object *moving_object)
 {
 	VERIFY2					(
 		m_objects.find(moving_object) == m_objects.end(),
-		make_string("moving object %s is registers twice",*moving_object->id())
+		make_string<const char*>("moving object %s is registers twice",*moving_object->id())
 	);
 
 #ifdef DEBUG
@@ -47,7 +47,7 @@ void moving_objects::unregister_object		(moving_object *moving_object)
 {
 	VERIFY2					(
 		m_objects.find(moving_object) != m_objects.end(),
-		make_string("moving object %s is not yet registered or unregisters twice",*moving_object->id())
+		make_string<const char*>("moving object %s is not yet registered or unregisters twice",*moving_object->id())
 	);
 
 #ifdef DEBUG
@@ -62,7 +62,7 @@ void moving_objects::on_object_move			(moving_object *moving_object)
 {
 	VERIFY2					(
 		m_objects.find(moving_object) != m_objects.end(),
-		make_string("moving object %s is not yet registered",*moving_object->id())
+		make_string<const char*>("moving object %s is not yet registered",*moving_object->id())
 	);
 
 #pragma todo("this place can be optimized in case of slowdowns")

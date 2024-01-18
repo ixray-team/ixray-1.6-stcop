@@ -23,7 +23,7 @@ void UITeamHeader::Update()
 	{
 		s32 temp_value = m_parent->GetFieldValue(i->first);
 		CUIStatic* fieldStatic = i->second;
-		VERIFY2(fieldStatic, make_string("field %s not initialized", i->first.c_str()));
+		VERIFY2(fieldStatic, make_string<const char*>("field %s not initialized", i->first.c_str()));
 		STRING_VALUE temp_text = m_translated_strings[i->first];
 		buffer_vector<char>::size_type new_size = temp_text.size() + 16;	//i hope STRING_VALUE has size() method :)
 		buffer_vector<char> new_string(_alloca(new_size), new_size);

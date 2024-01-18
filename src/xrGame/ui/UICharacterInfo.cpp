@@ -374,7 +374,7 @@ bool CUICharacterInfo::get_actor_community( shared_str* our, shared_str* enemy )
 bool CUICharacterInfo::ignore_community(shared_str const& check_community)
 {
 	LPCSTR comm_section_str = "ignore_icons_communities";
-	VERIFY2(pSettings->section_exist(comm_section_str), make_string("Section [%s] does not exist !", comm_section_str));
+	VERIFY2(pSettings->section_exist(comm_section_str), make_string<const char*>("Section [%s] does not exist !", comm_section_str));
 
 	CInifile::Sect& faction_section = pSettings->r_section(comm_section_str);
 

@@ -80,7 +80,7 @@ public:
 	u32					size		() const { if (0 == p_) return 0; else return p_->dwLength; }
 	void				swap		(shared_str& rhs) { str_value* tmp = p_; p_ = rhs.p_; rhs.p_ = tmp; }
 	bool				equal		(const shared_str& rhs) const { return (p_ == rhs.p_); }
-	shared_str& __cdecl	printf		(const char* format, ...);
+	shared_str& 		printf		(const char* format, ...);
 };
 
 
@@ -107,20 +107,8 @@ IC int	xr_strcmp	(const shared_str& a, const shared_str& b)
 	if (a.equal(b))		return 0;
 	else				return xr_strcmp(*a, *b);
 }
+
 IC void	xr_strlwr(shared_str& src) { if (*src) { LPSTR lp = xr_strdup(*src); xr_strlwr(lp); src = lp; xr_free(lp); } }
-
-
-// warning
-// this function can be used for debug purposes only
-template <typename... Args>
-const char* make_string(const char* format, const Args&... args)
-{
-	static constexpr size_t bufferSize = 4096;
-	static char temp[bufferSize];
-	snprintf(temp, bufferSize, format, args...);
-	return temp;
-}
-
 
 namespace std
 {

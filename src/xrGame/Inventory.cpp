@@ -375,7 +375,7 @@ bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict
 		{
 			u16 real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1);
 			R_ASSERT2(GetOwner()->object_id() == real_parent,
-				make_string("! ERROR: CL: actor [%d] doesn't contain [%d], real parent is [%d]", 
+				make_string<const char*>("! ERROR: CL: actor [%d] doesn't contain [%d], real parent is [%d]", 
 					GetOwner()->object_id(), pIItem->object_id(), real_parent)
 			);
 		}
@@ -491,7 +491,7 @@ bool CInventory::Ruck(PIItem pIItem, bool strict_placement)
 			u16 item_parent_id = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1) ;
 			u16 inventory_owner_id = GetOwner()->object_id();
 			R_ASSERT2(item_parent_id == inventory_owner_id,
-				make_string("! ERROR: CL: Actor[%d] tries to place to ruck not own item [%d], real item owner is [%d]",
+				make_string<const char*>("! ERROR: CL: Actor[%d] tries to place to ruck not own item [%d], real item owner is [%d]",
 				inventory_owner_id, pIItem->object_id(), item_parent_id)
 			);
 #ifdef MP_LOGGING
@@ -1387,14 +1387,14 @@ void CInventory::BlockSlot(u16 slot_id)
 	++m_blocked_slots[slot_id];
 	
 	VERIFY2(m_blocked_slots[slot_id] < 5,
-		make_string("blocked slot [%d] overflow").c_str());	
+		make_string<const char*>("blocked slot [%d] overflow"));	
 }
 
 void CInventory::UnblockSlot(u16 slot_id)
 {
 	VERIFY(slot_id <= LAST_SLOT);
 	VERIFY2(m_blocked_slots[slot_id] > 0,
-		make_string("blocked slot [%d] underflow").c_str());	
+		make_string<const char*>("blocked slot [%d] underflow"));	
 	
 	--m_blocked_slots[slot_id];	
 }

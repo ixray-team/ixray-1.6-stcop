@@ -495,7 +495,7 @@ void game_cl_Deathmatch::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
+		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	TIItemContainer const & all_items = actor->inventory().m_all;  
 

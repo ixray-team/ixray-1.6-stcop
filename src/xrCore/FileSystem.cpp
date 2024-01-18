@@ -7,14 +7,6 @@
 
 EFS_Utils*	xr_EFS	= NULL;
 //----------------------------------------------------
-EFS_Utils::EFS_Utils( )
-{
-}
-
-EFS_Utils::~EFS_Utils()
-{
-}
-
 xr_string	EFS_Utils::ExtractFileName(LPCSTR src)
 {
 	string_path name;
@@ -128,63 +120,57 @@ bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bo
 	return Platform::OpenFileWnd(buffer, sz_buf, &P, start_flt_ext, flt, offset, bMulti);
 }
 
-bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset, int start_flt_ext )
+bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, int start_flt_ext)
 {
-//	unsigned int	dwVersion = GetVersion();
-//	unsigned int	dwWindowsMajorVersion =  (DWORD)(LOBYTE(LOWORD(dwVersion)));
+#ifdef IXR_WINDOWS
+	FS_Path& P = *FS.get_path(initial);
+	string1024 flt;
 
-	FS_Path& P			= *FS.get_path(initial);
-	string1024 			flt;
+	LPCSTR def_ext = P.m_DefExt;
 
-	LPCSTR def_ext 		= P.m_DefExt;
-	if ( false )//&& dwWindowsMajorVersion == 6 )
-	{
-		if(strstr(P.m_DefExt, "*."))
-			def_ext = strstr(P.m_DefExt, "*.")+2;
-	}
-
-	
-	MakeFilter(flt,P.m_FilterCaption?P.m_FilterCaption:"",def_ext);
+	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", def_ext);
 	OPENFILENAME ofn;
-	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
-	if (xr_strlen(buffer)){ 
-		string_path		dr;
-		if (!(buffer[0]=='\\' && buffer[1]=='\\')){ // if !network
-			_splitpath		(buffer,dr,0,0,0);
-			if (0==dr[0])	P._update(buffer,buffer); 
+	Memory.mem_fill(&ofn, 0, sizeof(ofn));
+	if (xr_strlen(buffer)) 
+	{
+		string_path dr;
+
+		// if !network
+		if (!(buffer[0] == '\\' && buffer[1] == '\\')) 
+		{ 
+			_splitpath(buffer, dr, 0, 0, 0);
+			if (0 == dr[0])	P._update(buffer, buffer);
 		}
 	}
-	ofn.hwndOwner 		= GetForegroundWindow();
-	ofn.lpstrDefExt 	= xr_strdup(Platform::ANSI_TO_TCHAR(def_ext));
-	ofn.lpstrFile 		= xr_strdup(Platform::ANSI_TO_TCHAR(buffer));
-	ofn.lpstrFilter 	= xr_strdup(Platform::ANSI_TO_TCHAR(flt));
-	ofn.lStructSize 	= sizeof(ofn);
-	ofn.nMaxFile 		= sizeof(buffer);
-	ofn.nFilterIndex 	= start_flt_ext+2;
-	ofn.lpstrTitle      = L"Save a File";
-	string512 path; xr_strcpy(path,(offset&&offset[0])?offset:P.m_Path);
+	ofn.hwndOwner = GetForegroundWindow();
+	ofn.lpstrDefExt = xr_strdup(Platform::ANSI_TO_TCHAR(def_ext));
+	ofn.lpstrFile = xr_strdup(Platform::ANSI_TO_TCHAR(buffer));
+	ofn.lpstrFilter = xr_strdup(Platform::ANSI_TO_TCHAR(flt));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.nMaxFile = sizeof(buffer);
+	ofn.nFilterIndex = start_flt_ext + 2;
+	ofn.lpstrTitle = L"Save a File";
+	string512 path; xr_strcpy(path, (offset && offset[0]) ? offset : P.m_Path);
 	ofn.lpstrInitialDir = xr_strdup(Platform::ANSI_TO_TCHAR(path));
-	ofn.Flags 			= OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_NOCHANGEDIR;
-		ofn.FlagsEx			= OFN_EX_NOPLACESBAR;
+	ofn.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+	ofn.FlagsEx = OFN_EX_NOPLACESBAR;
 
-/*
-	if ( dwWindowsMajorVersion == 6 )
+	bool bRes = !!GetSaveFileName(&ofn);
+	if (!bRes) 
 	{
-		ofn.Flags |= OFN_ENABLEHOOK;
-		ofn.lpfnHook = OFNHookProcOldStyle;
-	}
-*/
-
-	bool bRes = !!GetSaveFileName( &ofn );
-	if (!bRes){
 		u32 err = CommDlgExtendedError();
-		switch(err){
+		switch (err) {
 		case FNERR_BUFFERTOOSMALL: 	Log("Too many file selected."); break;
 		}
 	}
+
 	_strlwr(buffer);
 	return bRes;
+#else
+	return false;
+#endif
 }
+
 //----------------------------------------------------
 LPCSTR EFS_Utils::AppendFolderToName(LPSTR tex_name, u32 const tex_name_size, int depth, BOOL full_name)
 {

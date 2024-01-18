@@ -41,9 +41,10 @@ bool smart_cover::transitions::action::applicable			() const
 {
 	luabind::functor<bool>		functor;
 
-	R_ASSERT2					(
+	R_ASSERT2
+	(
 		ai().script_engine().functor(m_precondition_functor.c_str(),functor), 
-		make_string("failed to get [%s]", m_precondition_functor.c_str())
+		make_string<const char*>("failed to get [%s]", m_precondition_functor.c_str())
 	);
 
 	return						(functor(m_precondition_params.c_str()));

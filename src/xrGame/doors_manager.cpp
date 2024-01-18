@@ -21,56 +21,19 @@ manager::manager					( Fbox const& bounding_box ) :
 
 manager::~manager					( )
 {
-	VERIFY2					( m_doors.empty(), make_string("there are %d still registered doors", m_doors.size()) );
+	VERIFY2					( m_doors.empty(), make_string<const char*>("there are %d still registered doors", m_doors.size()) );
 }
 
-//#include "level.h"
-//#include "script_game_object.h"
-//
-//void manager::check_bug_door		( ) const
-//{
-//	CObject const* const object = Level().Objects.FindObjectByName("shkaf_work_01_door_0000");
-//	if ( !object ) {
-//		Msg					( "there is now object[\"shkaf_work_01_door_0000\"] found" );
-//		return;
-//	}
-//
-//	CGameObject const* const game_object = smart_cast<CGameObject const*>(object);
-//	VERIFY					( game_object );
-//	if ( !game_object->lua_game_object()->m_door ) {
-//		Msg					( "object[\"shkaf_work_01_door_0000\"] has not been registered as a door yet" );
-//		return;
-//	}
-//
-//	door const* const found	= m_doors.find( game_object->lua_game_object()->m_door->position() );
-//	if ( !found ) {
-//		Msg					( "object[\"shkaf_work_01_door_0000\"] has been unregistered already[0x%08x]?", game_object->lua_game_object()->m_door );
-//		return;
-//	}
-//
-//	Msg						( "object[\"shkaf_work_01_door_0000\"] has been registered as a door" );
-//}
-//
 door* manager::register_door		( CPhysicObject& object )
 {
 	door* const result		= xr_new<door>( &object );
-	//if ( !xr_strcmp(result->get_name(),"shkaf_work_01_door_0000") ) {
-	//	Msg					( "registering door[\"shkaf_work_01_door_0000\"][%f][%f][%f]", VPUSH(result->position()) );
-	//}
-	//check_bug_door			( );
 	m_doors.insert			( result );
-	//check_bug_door			( );
 	return					result;
 }
 
 void manager::unregister_door		( door*& door )
 {
-	//if ( !xr_strcmp(door->get_name(),"shkaf_work_01_door_0000") ) {
-	//	Msg					( "UNregistering door[\"shkaf_work_01_door_0000\"][%f][%f][%f]", VPUSH(door->position()) );
-	//}
-	//check_bug_door			( );
 	m_doors.remove			( door );
-	//check_bug_door			( );
 	xr_delete				( door );
 }
 

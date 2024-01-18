@@ -268,12 +268,12 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 
 			PLAYERS_MAP_CIT playerIt = players.find(clientId);
 			VERIFY2(playerIt != players.end(), 
-				make_string("player (ClientID = 0x%08x) that took the artefact not found on client site",
+				make_string<const char*>("player (ClientID = 0x%08x) that took the artefact not found on client site",
 				clientId.value()));
 			
 			game_PlayerState const *ps = playerIt->second;
 			VERIFY2(ps,
-				make_string("player state (ClientID = 0x%08x) not initialized",
+				make_string<const char*>("player state (ClientID = 0x%08x) not initialized",
 				clientId.value()));
 
 			if (ps->team == artefactOwnerTeam)
@@ -667,7 +667,7 @@ CUIGameCustom* game_cl_CaptureTheArtefact::createGameUI()
 const shared_str & game_cl_CaptureTheArtefact::GetLocalPlayerTeamSection() const
 {
 	VERIFY2(TeamList.size() > local_player->team, 
-		make_string("local_player has not valid team number: %d", local_player->team));
+		make_string<const char*>("local_player has not valid team number: %d", local_player->team));
 	cl_TeamStruct const *pTeamSect = &(TeamList[local_player->team]);
 	return pTeamSect->caSection;
 }

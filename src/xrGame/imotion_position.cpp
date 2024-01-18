@@ -91,9 +91,9 @@ static std::string collide_diag()
 {
 #ifdef	DEBUG
 	if( collide_obj )
-		return make_string("collide obj: %s", collide_obj->cName().c_str() );
+		return make_string<const char*>("collide obj: %s", collide_obj->cName().c_str() );
 	else
-		return make_string("collide static");
+		return make_string<const char*>("collide static");
 #else
 	return std::string("");
 #endif
@@ -158,7 +158,7 @@ void imotion_position::state_start( )
 	blend = get_blend.blend;
 
 	VERIFY2( B.stop_at_end, 
-		make_string( "can not use cyclic anim in death animth motion: %s", 
+		make_string<const char*>( "can not use cyclic anim in death animth motion: %s", 
 		KA->LL_MotionDefName_dbg( B.motionID ).first ) 
 	);
 	time_to_end = B.timeTotal - (SAMPLE_SPF+EPS) - B.timeCurrent;
@@ -421,7 +421,7 @@ float imotion_position::collide_animation	( float dt, IKinematicsAnimated& k )
 #endif
 #ifdef DEBUG
 	if( dbg_imotion_collide_debug )
-		interactive_motion_diagnostic( make_string( " collide_animation: deppth= %f", depth ));
+		interactive_motion_diagnostic( make_string<const char*>( " collide_animation: deppth= %f", depth ));
 #endif
 	return dt;
 }
@@ -545,7 +545,7 @@ float imotion_position::move( float dt, IKinematicsAnimated& KA )
 		{
 			depth = 0;
 			shell->CollideAll();
-			interactive_motion_diagnostic( make_string( " move (to ragdoll): deppth= %f", depth ) );
+			interactive_motion_diagnostic( make_string<const char*>( " move (to ragdoll): deppth= %f", depth ) );
 			DBG_OpenCashedDraw();
 			shell->dbg_draw_geometry(0.02f, color_argb(255, 255, 0, 255));
 			DBG_ClosedCashedDraw( 50000 );
@@ -567,7 +567,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 
 	if( time_to_end <  ( max_collide_timedelta + end_delta ) )
 	{
-		interactive_motion_diagnostic( make_string( "motion_collide 0: stoped: time out, time delta %f", dt ) );
+		interactive_motion_diagnostic( make_string<const char*>( "motion_collide 0: stoped: time out, time delta %f", dt ) );
 		flags.set( fl_switch_dm_toragdoll, TRUE );			
 		return advance_time;
 	}
@@ -577,8 +577,8 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 #ifdef DEBUG
 		if( dbg_imotion_collide_debug )
 		{
-			//interactive_motion_diagnostic( make_string( " motion_collide collided0: deppth= %f", depth ).c_str() );
-			interactive_motion_diagnostic( make_string( "motion_collide 1: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ) );
+			//interactive_motion_diagnostic( make_string<const char*>( " motion_collide collided0: deppth= %f", depth ).c_str() );
+			interactive_motion_diagnostic( make_string<const char*>( "motion_collide 1: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ) );
 			DBG_OpenCashedDraw();
 			shell->dbg_draw_geometry(0.02f, color_argb(255, 0, 255, 0));
 			DBG_ClosedCashedDraw( 50000 );
@@ -593,7 +593,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 #ifdef DEBUG
 		if( dbg_imotion_collide_debug )
 		{
-			interactive_motion_diagnostic( make_string( " motion_collide collided1: deppth= %f", depth ));
+			interactive_motion_diagnostic( make_string<const char*>( " motion_collide collided1: deppth= %f", depth ));
 			DBG_OpenCashedDraw();
 			shell->dbg_draw_geometry(0.02f, color_argb(255, 0, 255, 255));
 			DBG_ClosedCashedDraw( 50000 );
@@ -602,7 +602,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 
 		if( depth > depth0  )
 		{
-			interactive_motion_diagnostic( make_string( "motion_collide 1: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ));
+			interactive_motion_diagnostic( make_string<const char*>( "motion_collide 1: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ));
 			flags.set( fl_switch_dm_toragdoll, TRUE );
 		} 
 		else
@@ -613,7 +613,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 #ifdef DEBUG
 		if( dbg_imotion_collide_debug )
 		{
-			interactive_motion_diagnostic( make_string( " motion_collide collided2: deppth= %f", depth ) );
+			interactive_motion_diagnostic( make_string<const char*>( " motion_collide collided2: deppth= %f", depth ) );
 			DBG_OpenCashedDraw();
 			shell->dbg_draw_geometry(0.02f, color_argb(255, 0, 255, 0));
 			DBG_ClosedCashedDraw( 50000 );
@@ -621,7 +621,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 #endif
 			if( depth > depth_resolve  )
 			{
-				interactive_motion_diagnostic( make_string( "motion_collide 2: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ));
+				interactive_motion_diagnostic( make_string<const char*>( "motion_collide 2: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ));
 				flags.set( fl_switch_dm_toragdoll, TRUE );
 			}
 		}
@@ -637,7 +637,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 		{
 			depth = 0;
 			shell->CollideAll();
-			interactive_motion_diagnostic( make_string(  " motion_collide restore: %f ", depth  ) );
+			interactive_motion_diagnostic( make_string<const char*>(  " motion_collide restore: %f ", depth  ) );
 			DBG_OpenCashedDraw();
 			shell->dbg_draw_geometry(0.02f, color_argb(255, 255, 0, 0));
 			DBG_ClosedCashedDraw( 50000 );

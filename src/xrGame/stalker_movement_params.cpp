@@ -186,7 +186,7 @@ void stalker_movement_params::cover_loophole_id					(shared_str const& loophole_
 
 	VERIFY2								(
 		i != loopholes.end(),
-		make_string			(
+		make_string<const char*>(
 			"loophole [%s] not present in smart_cover [%s]",
 			loophole_id.c_str(),
 			m_cover_id.c_str()

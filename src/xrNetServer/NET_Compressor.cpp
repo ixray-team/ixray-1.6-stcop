@@ -259,7 +259,7 @@ u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, con
     if( crc != *((u32*)(src + 1)) )
         Msg( "!CRC mismatch" );
         
-	R_ASSERT2(crc == *((u32*)(src + 1)),make_string("crc is different! (0x%08x != 0x%08x)",crc,*((u32*)(src + 1))));
+	R_ASSERT2(crc == *((u32*)(src + 1)), make_string<const char*>("crc is different! (0x%08x != 0x%08x)",crc,*((u32*)(src + 1))));
     #endif // NET_USE_COMPRESSION_CRC
 
 	CS.Enter();

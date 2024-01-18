@@ -34,7 +34,7 @@ void UpgradeBase::construct( const shared_str& upgrade_id, Manager& manager_r )
 	m_id._set( upgrade_id );
 	m_known = false;
 	
-	VERIFY2( pSettings->section_exist( m_id ), make_string( "Section of upgrade [%s] not exist!", m_id.c_str() ) );
+	VERIFY2( pSettings->section_exist( m_id ), make_string<const char*>( "Section of upgrade [%s] not exist!", m_id.c_str() ) );
 }
 
 void UpgradeBase::add_dependent_groups( LPCSTR groups_str, Manager& manager_r )
@@ -64,17 +64,6 @@ void UpgradeBase::log_hierarchy( LPCSTR nest )
 		(*ib)->log_hierarchy( nest );
 	}
 }
-/*
-void UpgradeBase::test_all_upgrades( CInventoryItem& item )
-{
-	Groups_type::iterator ib = m_depended_groups.begin();
-	Groups_type::iterator ie = m_depended_groups.end();
-	for ( ; ib != ie ; ++ib )
-	{
-		(*ib)->test_all_upgrades( item );
-	}
-}
-*/
 #endif // DEBUG
 
 bool UpgradeBase::is_root()

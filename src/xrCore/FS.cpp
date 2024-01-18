@@ -283,11 +283,7 @@ void	IWriter::w_printf(const char* format, ...)
 	char buf[1024];
 
 	va_start( mark , format );
-#ifndef	_EDITOR
-	vsprintf_s( buf , format , mark );
-#else
 	vsprintf( buf , format , mark );
-#endif
 	va_end( mark );
 
 	w		( buf, xr_strlen(buf) );

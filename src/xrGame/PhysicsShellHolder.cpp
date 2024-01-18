@@ -176,28 +176,15 @@ void CPhysicsShellHolder::correct_spawn_pos()
 	Fvector								c;
 	get_box								(PPhysicsShell(),XFORM(),size,c);
 
-	R_ASSERT2( _valid( c ), make_string( "object: %s model: %s ", cName().c_str(), cNameVisual().c_str() ) );
-	R_ASSERT2( _valid( size ), make_string( "object: %s model: %s ", cName().c_str(), cNameVisual().c_str() ) );
-	R_ASSERT2( _valid( XFORM() ), make_string( "object: %s model: %s ", cName().c_str(), cNameVisual().c_str() ) );
+	R_ASSERT2( _valid( c ), make_string<const char*>( "object: %s model: %s ", cName().c_str(), cNameVisual().c_str() ) );
+	R_ASSERT2( _valid( size ), make_string<const char*>( "object: %s model: %s ", cName().c_str(), cNameVisual().c_str() ) );
+	R_ASSERT2( _valid( XFORM() ), make_string<const char*>( "object: %s model: %s ", cName().c_str(), cNameVisual().c_str() ) );
 	PPhysicsShell()->DisableCollision	();
 
 	Fvector								ap = Fvector().set(0,0,0);
 	ActivateShapePhysShellHolder		( this, XFORM(), size, c, ap );
 
-////	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
-//	if (!valid_pos(activation_shape.Position(),phBoundaries)) {
-//		CPHActivationShape				activation_shape;
-//		activation_shape.Create			(c,size,this);
-//		activation_shape.set_rotation	(XFORM());
-//		activation_shape.Activate		(size,1,1.f,M_PI/8.f);
-////		VERIFY							(valid_pos(activation_shape.Position(),phBoundaries));
-//	}
-	
 	PPhysicsShell()->EnableCollision	();
-
-	
-
-
 	
 	Fmatrix								trans;
 	trans.identity						();

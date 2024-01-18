@@ -91,7 +91,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	if(/* bCheckExisting &&*/ HasGameTask(t->m_ID, true) ) 
 	{
  		Msg("! task [%s] already inprocess",t->m_ID.c_str());
-		VERIFY2( 0, make_string( "give_task : Task [%s] already inprocess!", t->m_ID.c_str()) );
+		VERIFY2( 0, make_string<const char*>( "give_task : Task [%s] already inprocess!", t->m_ID.c_str()) );
 		return NULL;
 	}
 

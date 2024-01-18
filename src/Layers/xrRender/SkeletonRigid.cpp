@@ -140,7 +140,7 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 			{
 				bi.callback()(&bi);
 #ifndef MASTER_GOLD
-				R_ASSERT2( _valid( bi.mTransform ), make_string( "callback kils bone matrix bone: %s " , bd->name.c_str() ) ); 
+				R_ASSERT2( _valid( bi.mTransform ), make_string<const char*>( "callback kils bone matrix bone: %s " , bd->name.c_str() ) );
 #endif // #ifndef MASTER_GOLD
 			}
 		}

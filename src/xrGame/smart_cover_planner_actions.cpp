@@ -114,7 +114,7 @@ void change_loophole::select_animation	(shared_str &result)
 
 	VERIFY2							(
 		cover.description()->transitions().edge(cover_loophole_id, smart_cover::transform_vertex("", false)),
-		make_string(
+		make_string<const char*>(
 			"current loophole_id[%s], next_loophole_id[%s]",
 			cover_loophole_id.c_str(),
 			smart_cover::transform_vertex("", false).c_str()
@@ -122,7 +122,7 @@ void change_loophole::select_animation	(shared_str &result)
 	);
 	VERIFY2							(
 		animation.has_animation(),
-		make_string(
+		make_string<const char*>(
 			"cover[%s], transition[%s][%s] has no animation",
 			cover.id().c_str(),
 			cover_loophole_id.c_str(),

@@ -1216,7 +1216,7 @@ float CAI_Stalker::shedule_Scale				()
 void CAI_Stalker::aim_bone_id					(shared_str const &bone_id)
 {
 //	IKinematics				*kinematics = smart_cast<IKinematics*>(Visual());
-//	VERIFY2					(kinematics->LL_BoneID(bone_id) != BI_NONE, make_string("Cannot find bone %s",bone_id));
+//	VERIFY2					(kinematics->LL_BoneID(bone_id) != BI_NONE, make_string<const char*>("Cannot find bone %s",bone_id));
 	m_aim_bone_id			= bone_id;
 }
 
@@ -1231,7 +1231,7 @@ void aim_target							(shared_str const& aim_bone_id, Fvector &result, const CGa
 	VERIFY					(kinematics);
 
 	u16						bone_id = kinematics->LL_BoneID(aim_bone_id);
-	VERIFY2					(bone_id != BI_NONE, make_string("Cannot find bone %s",bone_id));
+	VERIFY2					(bone_id != BI_NONE, make_string<const char*>("Cannot find bone %s",bone_id));
 
 	Fmatrix const			&bone_matrix = kinematics->LL_GetTransform(bone_id);
 	Fmatrix					final;

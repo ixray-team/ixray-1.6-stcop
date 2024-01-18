@@ -3,11 +3,23 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <linux/limits.h>
 
 #define _wopen open
 #define _wfdopen _fdopen
 
 using errno_t = int;
+
+#define _MAX_PATH PATH_MAX + 1
+#define MAX_PATH PATH_MAX + 1
+
+#define _lseek64 lseek64
+#define _O_RDONLY O_RDONLY
+#define _open open
+#define _close close
+#define _read read
+#define _lseeki64 lseek64
+#define _lseek lseek
 
 using __int64 = int64_t;
 using __time64_t = __int64;
@@ -55,6 +67,6 @@ namespace Platform
 {
     IC bool OS_OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, char flt[1024], LPCSTR offset, bool bMulti)
     {
-        return true
+        return true;
     }
 }

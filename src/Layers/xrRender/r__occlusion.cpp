@@ -96,7 +96,7 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 	{
 		SCOPE_EVENT_NAME_GROUP("Occlusion request", "Render");
 		//while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
-		VERIFY2(ID < used.size(), make_string("_Pos = %d, size() = %d ", ID, used.size()));
+		VERIFY2(ID < used.size(), make_string<const char*>("_Pos = %d, size() = %d ", ID, used.size()));
 		while ((hr = GetData(used[ID].Q, &fragments, sizeof(fragments))) == S_FALSE)
 		{
 			if (!SwitchToThread())

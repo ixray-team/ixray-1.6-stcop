@@ -347,7 +347,7 @@ void stalker_movement_manager_smart_cover::loophole_path					(smart_cover::cover
 			&path,
 			parameters
 		),
-		make_string(
+		make_string<const char*>(
 			"cannot build path via loopholes [%s] -> [%s] (cover %s)",
 			source_raw.c_str(),
 			target_raw.c_str(),
@@ -423,7 +423,7 @@ stalker_movement_manager_smart_cover::transition_action const &stalker_movement_
 
 	VERIFY2					(
 		m_current_transition,
-		make_string(
+		make_string<const char*>(
 			"[%s][%s] -> [%s][%s], [%d]",
 			m_current.cover() ? m_current.cover()->id().c_str() :			"<world>",
 			m_current.cover() ? m_current.cover_loophole()->id().c_str() :	"<no loophole>",

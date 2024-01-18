@@ -345,7 +345,7 @@ void	CInifile::Load(IReader* F, LPCSTR path
 							F->r_string		(str_add_raw, sizeof(str_add_raw));
 							R_ASSERT2		(
 								xr_strlen(value_raw) + xr_strlen(str_add_raw) < sizeof(value_raw),
-								make_string(
+								make_string<const char*>(
 									"Incorrect inifile format: section[%s], variable[%s]. Odd number of quotes (\") found, but should be even.",
 									Current->Name.c_str(),
 									name
@@ -676,7 +676,7 @@ BOOL	CInifile::r_bool( LPCSTR S, LPCSTR L )const
 	LPCSTR		C = r_string(S,L);
 	VERIFY2		(
 		xr_strlen(C) <= 5,
-		make_string(
+		make_string<const char*>(
 			"\"%s\" is not a valid bool value, section[%s], line[%s]",
 			C,
 			S,
@@ -763,7 +763,7 @@ void CInifile::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
     	if (0==xr_strcmp(*it->first, *I.first)) 
 		{
 			BOOL b = m_flags.test(eOverrideNames);
-			R_ASSERT2(b,make_string("name[%s] already exist in section[%s]",line,sect));
+			R_ASSERT2(b, make_string<const char*>("name[%s] already exist in section[%s]",line,sect));
             //*it  = I;
 		} 
 		else 

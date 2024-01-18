@@ -151,7 +151,7 @@ void loophole::fill_transitions(luabind::object const & transitions_table)
 
 			shared_str animation = luabind::object_cast<LPCSTR>(string);
 			VERIFY2(std::find(tmp.begin(), tmp.end(), animation) == tmp.end(),
-				make_string("duplicated_animation found: %s", animation.c_str()));
+				make_string<const char*>("duplicated_animation found: %s", animation.c_str()));
 			tmp.push_back(animation);
 		}
 		float weight = parse_float(table, "weight");
@@ -173,7 +173,7 @@ smart_cover::action::Animations const &loophole::action_animations(shared_str co
 {
 	typedef loophole::ActionList::const_iterator const_iterator;
 	const_iterator			found = m_actions.find(action_id);
-	VERIFY2					(found != m_actions.end(), make_string("action [%s] not present in loophole [%s]", action_id.c_str(), m_id.c_str()));
+	VERIFY2					(found != m_actions.end(), make_string<const char*>("action [%s] not present in loophole [%s]", action_id.c_str(), m_id.c_str()));
 	
 	return					found->second->animations(m_id, animation_id);
 }
@@ -181,7 +181,7 @@ smart_cover::action::Animations const &loophole::action_animations(shared_str co
 loophole::TransitionData const &loophole::transition_animations	(shared_str const &action_from, shared_str const &action_to) const
 {
 	TransitionGraph::CEdge const *edge = m_transitions.edge(transform_vertex(action_from, true), transform_vertex(action_to, false));
-	VERIFY2					(edge, make_string("transition [%s]->[%s] absent", action_from.c_str(), action_to.c_str()));
+	VERIFY2					(edge, make_string<const char*>("transition [%s]->[%s] absent", action_from.c_str(), action_to.c_str()));
 	return					(edge->data());
 }
 

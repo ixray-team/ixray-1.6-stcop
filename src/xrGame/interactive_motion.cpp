@@ -65,7 +65,7 @@ void interactive_motion::setup( const MotionID &m, CPhysicsShell *s, float _angl
 	IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>( s->PKinematics() );
 	CMotionDef* MD = KA->LL_GetMotionDef(m);
 	VERIFY2( MD->StopAtEnd(), 
-		make_string( "can not use cyclic anim in death animth motion: %s", 
+		make_string<const char*>( "can not use cyclic anim in death animth motion: %s",
 		KA->LL_MotionDefName_dbg( m ).first ) 
 	);
 
