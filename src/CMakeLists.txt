@@ -46,17 +46,19 @@ if(IXRAY_MP)
     set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
 endif()
 
-if (IXRAY_USE_R1)
-    set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
-endif()
+if(WIN32)
+    if (IXRAY_USE_R1)
+        set_target_properties(xrRender_R1 PROPERTIES ${IXRAY_FOLDER_RENDER})
+    endif()
 
-if (IXRAY_USE_R2)
-    set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
-endif()
+    if (IXRAY_USE_R2)
+        set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
+    endif()
 
-set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
+    set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
 
-# Set default project
-if (NOT (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY))
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
+    # Set default project
+    if (NOT (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY))
+        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
+    endif()
 endif()

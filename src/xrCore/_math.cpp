@@ -199,7 +199,7 @@ u32 MainThreadId = 0;
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
-	MainThreadId = GetThreadId(GetCurrentThread());
+	MainThreadId = Platform::GetThreadId(GetCurrentThread());
 
 	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
 		CPU::ID.modelName, CPU::ID.vendor,
@@ -359,7 +359,7 @@ void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* argl
 
 bool XRCORE_API IsMainThread()
 {
-	return MainThreadId == GetThreadId(GetCurrentThread());
+	return MainThreadId == Platform::GetThreadId(GetCurrentThread());
 }
 
 void spline1	( float t, Fvector *p, Fvector *ret )

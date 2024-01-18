@@ -153,20 +153,23 @@ endif()
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
-target_compile_definitions(xrCore PRIVATE _WINDOWS)
-target_compile_definitions(xrCore PRIVATE _USRDLL)
+if (WIN32)
+	target_compile_definitions(xrCore PRIVATE _WINDOWS)
+	target_compile_definitions(xrCore PRIVATE _USRDLL)
+
+	target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
+endif()
 
 ## Disable user-cheats for Shipping build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
-target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD> $<$<CONFIG:Release>:DISABLE_PROFILER>")
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>$<$<CONFIG:Release>:DISABLE_PROFILER>")
 if (DEVIXRAY_ENABLE_SHIPPING)
     target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:MASTER_GOLD> $<$<CONFIG:Shipping>:DISABLE_PROFILER>")
     target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 endif()
 
 # Linker list
-
 if (MSVC)
     target_link_libraries(xrCore PRIVATE dxerr)
     target_link_libraries(xrCore PRIVATE "dbghelp")
@@ -174,9 +177,6 @@ if (MSVC)
 endif()
 
 target_link_libraries(xrCore PRIVATE "SDL3" imm32)
-target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
-
-#add_compile_options(/fp:fast)
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Nuget
@@ -189,18 +189,18 @@ if (MSVC)
     	PRE_BUILD
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 	)
+
+	add_custom_command(TARGET ${PROJECT_NAME}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_MARL}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/marl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+	)
 else()
 	execute_process(
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 	)
 endif()
-
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_MARL}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/marl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
 
 # Marl
 target_link_libraries(xrCore PUBLIC ${CORE_MARL}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/marl.lib)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 project(IXRay)
 
 # CMake CI options
@@ -23,6 +23,7 @@ option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "/MD")
@@ -73,7 +74,12 @@ endif()
 # Set LLVM config
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-Wno-reorder-ctor -Wno-switch -Wno-macro-redefined -Wno-implicit-exception-spec-mismatch -Wno-deprecated-volatile 
-                        -Wno-inline-new-delete -Wno-c++11-narrowing --Wno-microsoft-template-shadow -Wno-unused-local-typedef)
+                        -Wno-inline-new-delete -Wno-c++11-narrowing -Wno-unused-local-typedef -Wno-defaulted-function-deleted -Wno-undefined-inline)
+    if (WIN32)
+        add_compile_options(--Wno-microsoft-template-shadow)
+    else()
+        add_compile_options(-fms-extensions)
+    endif()
 endif()
 
 # Shipping config
@@ -87,10 +93,12 @@ if (IXRAY_ASAN)
 endif()
 
 ## Edit and Continue mode
-if (IXRAY_ASAN)
-    add_compile_options("$<$<CONFIG:DEBUG>:/Zi>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
-else()
-    add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+if (WIN32)
+    if (IXRAY_ASAN)
+        add_compile_options("$<$<CONFIG:DEBUG>:/Zi>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+    else()
+        add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+    endif()
 endif()
 
 # Configure NuGet

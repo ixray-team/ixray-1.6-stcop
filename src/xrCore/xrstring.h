@@ -2,15 +2,6 @@
 
 class xr_string;
 
-namespace detail
-{
-	template<typename StringType>
-	static void FixSlashes(StringType& str);
-
-	template<>
-	static void FixSlashes<xr_string>(xr_string& InStr);
-}
-
 class XRCORE_API xr_string : public std::basic_string<char, std::char_traits<char>, xalloc<char>>
 {
 public:
@@ -85,7 +76,6 @@ inline xr_string::xr_string(char* (&InArray)[ArrayLenght])
 	assign(InArray, ArrayLenght);
 }
 
-
 // warning
 // this function can be used for debug purposes only
 template<typename String, typename... Args>
@@ -95,36 +85,6 @@ IC String make_string(const char* format, Args... args)
 	static char temp[bufferSize];
 	snprintf(temp, bufferSize, format, args...);
 	return temp;
-}
-
-
-template<typename StringType>
-inline void detail::FixSlashes(StringType& str)
-{
-	// Should be array of chars
-	static_assert(std::is_same<std::remove_extent<StringType>::type, char>::value);
-
-	constexpr size_t sizeArray = sizeof(str);
-
-	for (int i = 0; i < sizeArray; ++i)
-	{
-		if (str[i] == '/')
-		{
-			str[i] = '\\';
-		}
-	}
-}
-
-template<>
-inline void detail::FixSlashes(xr_string& InStr)
-{
-	for (size_t i = 0; i < InStr.size(); ++i)
-	{
-		if (InStr[i] == '/')
-		{
-			InStr[i] = '\\';
-		}
-	}
 }
 
 // FX: Hash str container

@@ -191,7 +191,7 @@ Profile::RegisterThread(const char* Name)
 	ThreadState.Register();
 
 	ThreadStatistics Thread = {};
-	Thread.Id = GetThreadId(GetCurrentThread());
+	Thread.Id = Platform::GetThreadId(Platform::GetCurrentThread());
 	Thread.Name = Name;
 	EngineProfiler->Statistics.emplace_back(std::move(Thread));
 }
@@ -205,7 +205,7 @@ Profile::UnregisterThread()
 	xrCriticalSectionGuard Guard(&EngineProfiler->WriteMutex);
 
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
-		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
+		if (EngineProfiler->Statistics[i].Id == Platform::GetThreadId(Platform::GetCurrentThread())) {
 			EngineProfiler->Statistics.erase(EngineProfiler->Statistics.begin() + i);
 			return;
 		}
@@ -233,7 +233,7 @@ Profile::EndFrame()
 
 	ThreadState.EndFrame();
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
-		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
+		if (EngineProfiler->Statistics[i].Id == Platform::GetThreadId(Platform::GetCurrentThread())) {
 			VERIFY2(ThreadState.GetStackLevel() == 0, "Invalid stack (forgot to call \"Profile::EndEvent()\" somewhere?");
 			EngineProfiler->Statistics[i].TotalTime.Write(float(EngineProfiler->Statistics[i].TimestampFrameEnd - EngineProfiler->Statistics[i].TimestampFrameBegin) / 1000000.0f);
 			EngineProfiler->Statistics[i].Events = ThreadState.GetEvents();
@@ -268,7 +268,7 @@ u32
 Profile::GetThisThreadId()
 {
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
-		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
+		if (EngineProfiler->Statistics[i].Id == Platform::GetThreadId(Platform::GetCurrentThread())) {
 			return (u32) EngineProfiler->Statistics[i].Id;
 		}
 	}
@@ -286,7 +286,7 @@ const xr_vector<Profile::TraceEvent>&
 Profile::GetEvents(u32 ThreadId)
 {
 	for (size_t i = 0; i < EngineProfiler->Statistics.size(); i++) {
-		if (EngineProfiler->Statistics[i].Id == GetThreadId(GetCurrentThread())) {
+		if (EngineProfiler->Statistics[i].Id == Platform::GetThreadId(Platform::GetCurrentThread())) {
 			return EngineProfiler->Statistics[i].Events;
 		}
 	}
