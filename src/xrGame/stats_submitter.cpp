@@ -106,7 +106,7 @@ void stats_submitter::shedule_Update(u32 dt)
 }
 
 
-void __stdcall stats_submitter::onlylog_operation(bool const result, char const * err_descr)
+void  stats_submitter::onlylog_operation(bool const result, char const * err_descr)
 {
 	if (!result)
 	{

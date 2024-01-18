@@ -10,37 +10,37 @@ const	u32			NET_PacketSizeLimit	= 16*1024;
 
 struct XRCORE_API IIniFileStream
 {
-	virtual void	 __stdcall 	move_begin		()							= 0;
+	virtual void	  	move_begin		()							= 0;
 
-	virtual void	 __stdcall 	w_float			( float a)					= 0;
-	virtual void 	 __stdcall 	w_vec3			( const Fvector& a)			= 0;
-	virtual void 	 __stdcall 	w_vec4			( const Fvector4& a)		= 0;
-	virtual void 	 __stdcall 	w_u64			( u64 a)					= 0;
-	virtual void 	 __stdcall 	w_s64			( s64 a)					= 0;
-	virtual void 	 __stdcall 	w_u32			( u32 a)					= 0;
-	virtual void 	 __stdcall 	w_s32			( s32 a)					= 0;
-	virtual void 	 __stdcall 	w_u16			( u16 a)					= 0;
-	virtual void 	__stdcall	w_s16			( s16 a)					= 0;
-	virtual void	__stdcall	w_u8			( u8 a)						= 0;
-	virtual void	__stdcall	w_s8			( s8 a)						= 0;
-	virtual void	__stdcall	w_stringZ		( LPCSTR S)					= 0;
+	virtual void	  	w_float			( float a)					= 0;
+	virtual void 	  	w_vec3			( const Fvector& a)			= 0;
+	virtual void 	  	w_vec4			( const Fvector4& a)		= 0;
+	virtual void 	  	w_u64			( u64 a)					= 0;
+	virtual void 	  	w_s64			( s64 a)					= 0;
+	virtual void 	  	w_u32			( u32 a)					= 0;
+	virtual void 	  	w_s32			( s32 a)					= 0;
+	virtual void 	  	w_u16			( u16 a)					= 0;
+	virtual void 		w_s16			( s16 a)					= 0;
+	virtual void		w_u8			( u8 a)						= 0;
+	virtual void		w_s8			( s8 a)						= 0;
+	virtual void		w_stringZ		( LPCSTR S)					= 0;
 					
-	virtual void	__stdcall	r_vec3			(Fvector&)					= 0;
-	virtual void	__stdcall	r_vec4			(Fvector4&)					= 0;
-	virtual void	__stdcall	r_float			(float&)					= 0;
-	virtual void	__stdcall	r_u8			(u8&)						= 0;
-	virtual void	__stdcall	r_u16			(u16&)						= 0;
-	virtual void	__stdcall	r_u32			(u32&)						= 0;
-	virtual void	__stdcall	r_u64			(u64&)						= 0;
-	virtual void	__stdcall	r_s8			(s8&)						= 0;
-	virtual void	__stdcall	r_s16			(s16&)						= 0;
-	virtual void	__stdcall	r_s32			(s32&)						= 0;
-	virtual void	__stdcall	r_s64			(s64&)						= 0;
+	virtual void		r_vec3			(Fvector&)					= 0;
+	virtual void		r_vec4			(Fvector4&)					= 0;
+	virtual void		r_float			(float&)					= 0;
+	virtual void		r_u8			(u8&)						= 0;
+	virtual void		r_u16			(u16&)						= 0;
+	virtual void		r_u32			(u32&)						= 0;
+	virtual void		r_u64			(u64&)						= 0;
+	virtual void		r_s8			(s8&)						= 0;
+	virtual void		r_s16			(s16&)						= 0;
+	virtual void		r_s32			(s32&)						= 0;
+	virtual void		r_s64			(s64&)						= 0;
 
-	virtual void	__stdcall	r_string		(LPSTR dest, u32 dest_size)	= 0;
-//	virtual void	__stdcall	r_tell			()							= 0;
-//	virtual void	__stdcall	r_seek			(u32 pos)					= 0;
-	virtual void	__stdcall	skip_stringZ	()							= 0;
+	virtual void		r_string		(LPSTR dest, u32 dest_size)	= 0;
+//	virtual void		r_tell			()							= 0;
+//	virtual void		r_seek			(u32 pos)					= 0;
+	virtual void		skip_stringZ	()							= 0;
 };
 
 

@@ -171,12 +171,12 @@ void demoplay_control::process_action()
 	m_current_mode = not_active;
 }
 
-void __stdcall	demoplay_control::on_round_start_impl(u32 message, u32 subtype, NET_Packet & packet)
+void 	demoplay_control::on_round_start_impl(u32 message, u32 subtype, NET_Packet & packet)
 {
 	process_action();
 }
 
-void __stdcall	demoplay_control::on_kill_impl(u32 message, u32 subtype, NET_Packet & packet)
+void 	demoplay_control::on_kill_impl(u32 message, u32 subtype, NET_Packet & packet)
 {
 	u16 msg_type;
 	packet.r_begin(msg_type);	
@@ -203,7 +203,7 @@ void __stdcall	demoplay_control::on_kill_impl(u32 message, u32 subtype, NET_Pack
 		return;
 	}
 }
-void __stdcall	demoplay_control::on_die_impl(u32 message, u32 subtype, NET_Packet & packet)
+void 	demoplay_control::on_die_impl(u32 message, u32 subtype, NET_Packet & packet)
 {
 	u16 msg_type;
 	packet.r_begin(msg_type);	
@@ -229,7 +229,7 @@ void __stdcall	demoplay_control::on_die_impl(u32 message, u32 subtype, NET_Packe
 		return;
 	}
 }
-void __stdcall	demoplay_control::on_artefactdelivering_impl(u32 message, u32 subtype, NET_Packet & packet)
+void 	demoplay_control::on_artefactdelivering_impl(u32 message, u32 subtype, NET_Packet & packet)
 {
 	u16 msg_type;
 	packet.r_begin(msg_type);	
@@ -269,7 +269,7 @@ void __stdcall	demoplay_control::on_artefactdelivering_impl(u32 message, u32 sub
 	}
 }
 
-void __stdcall	demoplay_control::on_artefactcapturing_impl(u32 message, u32 subtype, NET_Packet & packet)
+void 	demoplay_control::on_artefactcapturing_impl(u32 message, u32 subtype, NET_Packet & packet)
 {
 	u16 msg_type;
 	packet.r_begin(msg_type);	
@@ -315,7 +315,7 @@ void __stdcall	demoplay_control::on_artefactcapturing_impl(u32 message, u32 subt
 		return;
 	}
 }
-void __stdcall	demoplay_control::on_artefactloosing_impl(u32 message, u32 subtype, NET_Packet & packet)
+void 	demoplay_control::on_artefactloosing_impl(u32 message, u32 subtype, NET_Packet & packet)
 {
 	u16 msg_type;
 	packet.r_begin(msg_type);	

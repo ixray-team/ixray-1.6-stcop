@@ -270,8 +270,8 @@ public:
 	}
 
 public:
-			void xr_stdcall		on_idle				();
-			bool xr_stdcall		on_event			(SDL_Event& Event);
+			void 		on_idle				();
+			bool 		on_event			(SDL_Event& Event);
 
 private:
 			void					message_loop		();

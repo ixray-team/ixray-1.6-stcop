@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 struct _SoundProcessor : public pureFrame
 {
-	virtual void xr_stdcall OnFrame()
+	virtual void  OnFrame()
 	{
 		SCOPE_EVENT_NAME_GROUP("Sound", "Engine");
 		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);

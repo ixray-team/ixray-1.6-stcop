@@ -348,7 +348,7 @@ void CDetailManager::Render	()
 	m_frame_rendered		= RDEVICE.dwFrame;
 }
 
-void __stdcall	CDetailManager::MT_CALC		()
+void	CDetailManager::MT_CALC		()
 {
 #ifndef _EDITOR
 	if (0==RImplementation.Details)		return;	// possibly deleted

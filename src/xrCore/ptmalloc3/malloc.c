@@ -1124,7 +1124,7 @@ typedef void* mspace;
 */
 #ifdef USE_OUT_OF_MEMORY_HANDLER
 typedef void const* out_of_memory_handler_parameter_type;
-typedef void (__stdcall *out_of_memory_handler_type)	(mspace, out_of_memory_handler_parameter_type, int);
+typedef void ( *out_of_memory_handler_type)	(mspace, out_of_memory_handler_parameter_type, int);
 mspace create_mspace(size_t capacity, int locked, out_of_memory_handler_type handler, out_of_memory_handler_parameter_type parameter);
 #else // #ifdef USE_OUT_OF_MEMORY_HANDLER
 mspace create_mspace(size_t capacity, int locked);

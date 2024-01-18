@@ -307,8 +307,8 @@ XRCORE_API string_path g_bug_report_file;
 
 #if 1
 typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
-typedef LONG ( __stdcall *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
-extern "C" BOOL __stdcall SetCrashHandlerFilter ( PFNCHFILTFN pFn );
+typedef LONG (  *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
+extern "C" BOOL  SetCrashHandlerFilter ( PFNCHFILTFN pFn );
 
 static UnhandledExceptionFilterType	*previous_filter = 0;
 

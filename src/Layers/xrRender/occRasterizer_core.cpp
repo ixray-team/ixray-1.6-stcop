@@ -298,13 +298,13 @@ IC void i_section	(int Sect, BOOL bMiddle)
 	}
 }
 
-void __stdcall i_section_b0	()
+void  i_section_b0	()
 {	i_section	(BOTTOM,0);	}
-void __stdcall i_section_b1	()
+void  i_section_b1	()
 {	i_section	(BOTTOM,1);	}
-void __stdcall i_section_t0	()
+void  i_section_t0	()
 {	i_section	(TOP,0);	}
-void __stdcall i_section_t1	()
+void  i_section_t1	()
 {	i_section	(TOP,1);	}
 
 u32 occRasterizer::rasterize	(occTri* T)

@@ -57,7 +57,7 @@
 *       Faliure: Null
 *******************************************************************************/
 
-void * __stdcall xr_aligned_malloc(
+void *  xr_aligned_malloc(
 									size_t size,
 									size_t alignment
 									)
@@ -85,7 +85,7 @@ void * __stdcall xr_aligned_malloc(
 *******************************************************************************/
 
 
-void * __stdcall xr_aligned_offset_malloc(
+void *  xr_aligned_offset_malloc(
 	size_t size,
 	size_t align,
 	size_t offset
@@ -140,7 +140,7 @@ void * __stdcall xr_aligned_offset_malloc(
 *
 *******************************************************************************/
 
-void * __stdcall xr_aligned_realloc(
+void *  xr_aligned_realloc(
 									 void *memblock,
 									 size_t size,
 									 size_t alignment
@@ -176,7 +176,7 @@ void * __stdcall xr_aligned_realloc(
 *
 *******************************************************************************/
 
-void * __stdcall xr_aligned_offset_realloc(
+void *  xr_aligned_offset_realloc(
 	void *memblock,
 	size_t size,
 	size_t align,
@@ -286,7 +286,7 @@ void * __stdcall xr_aligned_offset_realloc(
 *
 *******************************************************************************/
 
-void __stdcall xr_aligned_free(void *memblock)
+void  xr_aligned_free(void *memblock)
 {
 	uintptr_t ptr;
 
@@ -303,7 +303,7 @@ void __stdcall xr_aligned_free(void *memblock)
 	free((void *)ptr);
 }
 
-u32 __stdcall xr_aligned_msize(void *memblock)
+u32  xr_aligned_msize(void *memblock)
 {
 	uintptr_t ptr;
 

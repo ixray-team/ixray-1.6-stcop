@@ -43,8 +43,8 @@ private:
 	void					compress_configs	();
 
 	static void				dumper_thread		(void* my_ptr);
-	void __stdcall			yield_cb			(long progress);
-	void __stdcall			switch_thread		();
+	void 			yield_cb			(long progress);
+	void 			switch_thread		();
 
 	bool const				is_active			() const { return m_state == ds_active; };
 
