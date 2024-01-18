@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include "FS_internal.h"
+#include "lzhuf.h"
 
 #pragma warning(disable:4995)
 #include <fcntl.h>
@@ -104,8 +105,9 @@ static errno_t open_internal(LPCSTR fn, int &handle)
 
 bool file_handle_internal	(LPCSTR file_name, u32 &size, int &file_handle)
 {
-	if (open_internal(file_name, file_handle)) {
-		Sleep			(1);
+	if (open_internal(file_name, file_handle))
+    {
+		Sleep(1);
 		if (open_internal(file_name, file_handle))
 			return		(false);
 	}
@@ -200,8 +202,8 @@ void CMemoryWriter::w	(const void* ptr, u32 count)
 		// reallocate
 		if (mem_size==0)	mem_size=128;
 		while (mem_size <= (position+count)) mem_size*=2;
-		if (0==data)		data = (BYTE*)	Memory.mem_alloc	(mem_size);
-		else				data = (BYTE*)	Memory.mem_realloc	(data,mem_size);
+		if (0==data)		data = (u8*)	Memory.mem_alloc	(mem_size);
+		else				data = (u8*)	Memory.mem_realloc	(data,mem_size);
 	}
 	CopyMemory	(data+position,ptr,count);
 	position		+=count;
@@ -245,7 +247,7 @@ u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 othe
 
 void	IWriter::w_compressed(void* ptr, u32 count)
 {
-	BYTE*		dest	= 0;
+	u8*		dest	= 0;
 	unsigned	dest_sz	= 0;
 	_compressLZ	(&dest,&dest_sz,ptr,count);
 	
@@ -298,7 +300,7 @@ IReader*	IReader::open_chunk(u32 ID)
 	u32	dwSize = find_chunk(ID,&bCompressed);
 	if (dwSize!=0) {
 		if (bCompressed) {
-			BYTE*		dest;
+			u8*		dest;
 			unsigned	dest_sz;
 			_decompressLZ(&dest,&dest_sz,pointer(),dwSize);
 			return xr_new<CTempReader>	(dest,		dest_sz,		tell()+dwSize);
@@ -344,7 +346,9 @@ IReader*	IReader::open_chunk_iterator	(u32& ID, IReader* _prev)
 	}
 
 	//	open
-	if			(elapsed()<8)	return		NULL;
+	if (elapsed()<8)
+        return nullptr;
+
 	ID			= r_u32	()		;
 	u32 _size	= r_u32	()		;
 	if ( ID & CFS_CompressMark )
@@ -397,7 +401,7 @@ void	IReader::r_string	(char *dest, u32 tgt_sz)
 	char *src 	= (char *) data+Pos;
 	u32 sz 		= advance_term_string();
     R_ASSERT2(sz<(tgt_sz-1),"Dest string less than needed.");
-	R_ASSERT	(!IsBadReadPtr((void*)src,sz));
+	//R_ASSERT	(!IsBadReadPtr((void*)src,sz));
 
 #ifdef _EDITOR
 	CopyMemory	 (dest,src,sz);
@@ -451,7 +455,7 @@ CPackReader::~CPackReader()
 	unregister_file_mapping	(base_address,Size);
 #endif // DEBUG
 
-	UnmapViewOfFile	(base_address);
+	Platform::UnmapFile(base_address, Size);
 };
 //---------------------------------------------------
 // file stream
@@ -476,16 +480,16 @@ CCompressedReader::~CCompressedReader()
 CVirtualFileRW::CVirtualFileRW(const char *cFileName) 
 {
 	// Open the file
-	hSrcFile		= CreateFile(Platform::ANSI_TO_TCHAR_U8(cFileName), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
-	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
-	Size			= (int)GetFileSize(hSrcFile, NULL);
-	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));
+	hSrcFile		= Platform::CreateFile(cFileName, true);
+	Size			= (int)Platform::GetFileSize(hSrcFile);
 
+#ifdef IXR_WINDOWS
 	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READWRITE, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
+#endif
 
-	data			= (char*)MapViewOfFile (hSrcMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-	R_ASSERT3		(data,cFileName,Debug.error2string(GetLastError()));
+	data = (char*)Platform::MapFile(hSrcMap, Size);
+	R_ASSERT3(data, cFileName, Debug.error2string(GetLastError()));
 
 #ifdef DEBUG
 	register_file_mapping	(data,Size,cFileName);
@@ -498,24 +502,27 @@ CVirtualFileRW::~CVirtualFileRW()
 	unregister_file_mapping	(data,Size);
 #endif // DEBUG
 
-	UnmapViewOfFile ((void*)data);
-	CloseHandle		(hSrcMap);
-	CloseHandle		(hSrcFile);
+    Platform::UnmapFile((void*)data, Size);
+
+#ifdef IXR_WINDOWS
+	CloseHandle(hSrcMap);
+#endif
+	Platform::CloseFile(hSrcFile);
 }
 
 CVirtualFileReader::CVirtualFileReader(const char *cFileName) 
 {
 	// Open the file
-	hSrcFile		= CreateFile(Platform::ANSI_TO_TCHAR_U8(cFileName), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
-	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
-	Size			= (int)GetFileSize(hSrcFile, NULL);
-	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));
+    hSrcFile		= Platform::CreateFile(cFileName, false);
+    Size			= (int)Platform::GetFileSize(hSrcFile);
 
+#ifdef IXR_WINDOWS
 	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
+#endif
 
-	data			= (char*)MapViewOfFile (hSrcMap, FILE_MAP_READ, 0, 0, 0);
-	R_ASSERT3		(data,cFileName,Debug.error2string(GetLastError()));
+    data = (char*)Platform::MapFile(hSrcMap, Size, true);
+    R_ASSERT3(data, cFileName, Debug.error2string(GetLastError()));
 
 #ifdef DEBUG
 	register_file_mapping	(data,Size,cFileName);
@@ -528,7 +535,9 @@ CVirtualFileReader::~CVirtualFileReader()
 	unregister_file_mapping	(data,Size);
 #endif // DEBUG
 
-	UnmapViewOfFile ((void*)data);
+    Platform::UnmapFile((void*)data, Size);
+#ifdef IXR_WINDOWS
 	CloseHandle		(hSrcMap);
-	CloseHandle		(hSrcFile);
+#endif
+    Platform::CloseFile(hSrcFile);
 }

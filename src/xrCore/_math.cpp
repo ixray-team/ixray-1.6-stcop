@@ -199,7 +199,7 @@ u32 MainThreadId = 0;
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
-	MainThreadId = Platform::GetThreadId(GetCurrentThread());
+	MainThreadId = (u32)Platform::GetThreadId(GetCurrentThread());
 
 	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
 		CPU::ID.modelName, CPU::ID.vendor,

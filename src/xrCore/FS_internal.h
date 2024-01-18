@@ -1,13 +1,11 @@
-#ifndef FS_internalH
-#define FS_internalH
 #pragma once
 
 #include "lzhuf.h"
 #include <fcntl.h>
 
-void*			FileDownload	(LPCSTR fn, u32* pdwSize=NULL);
+void*			FileDownload	(LPCSTR fn, u32* pdwSize=nullptr);
 void			FileCompress	(const char *fn, const char* sign, void* data, u32 size);
-void * 			FileDecompress	(const char *fn, const char* sign, u32* size=NULL);
+void * 			FileDecompress	(const char *fn, const char* sign, u32* size=nullptr);
 
 class CFileWriter : public IWriter
 {
@@ -26,11 +24,15 @@ public:
     		if (handle==-1)
     			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
 #endif
-    		hf		= _wfdopen(handle,L"wb");
+    		hf		= _wfdopen(handle,TEXT("wb"));
         }else{
-			_wfopen_s(&hf, wName, L"wb");
+			_wfopen_s(&hf, wName, TEXT("wb"));
 			if (hf==0)
-				Msg		("!Can't write file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
+            {
+                string1024 error;
+                xr_strerror(errno, error, sizeof(error));
+                Msg("!Can't write file: '%s'. Error: '%s'.", *fName, error);
+            }
 		}
 	}
 
@@ -38,9 +40,10 @@ public:
 	{
 		if (0 != hf)
 		{
-			xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(*fName);
 			fclose(hf);
+#ifdef IXR_WINDOWS
 			// release RO attrib
+            xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(*fName);
 			DWORD dwAttr = GetFileAttributes(wName);
 
 			if ((dwAttr != u32(-1)) && (dwAttr & FILE_ATTRIBUTE_READONLY)) 
@@ -48,6 +51,7 @@ public:
 				dwAttr &= ~FILE_ATTRIBUTE_READONLY;
 				SetFileAttributes(wName, dwAttr);
 			}
+#endif
 		}
 	}
 	// kernel
@@ -57,13 +61,20 @@ public:
 			const u32 mb_sz = 0x1000000;
 			u8* ptr 		= (u8*)_ptr;
 			int req_size;
-			for (req_size = count; req_size>mb_sz; req_size-=mb_sz, ptr+=mb_sz){
+            string1024 error;
+
+			for (req_size = count; req_size>mb_sz; req_size-=mb_sz, ptr+=mb_sz)
+            {
 				size_t W = fwrite(ptr,mb_sz,1,hf);
-				R_ASSERT3(W==1,"Can't write mem block to file. Disk maybe full.",_sys_errlist[errno]);
+                xr_strerror(errno, error, sizeof(error));
+				R_ASSERT3(W==1,"Can't write mem block to file. Disk maybe full.", error);
 			}
-			if (req_size)	{
-				size_t W = fwrite(ptr,req_size,1,hf); 
-				R_ASSERT3(W==1,"Can't write mem block to file. Disk maybe full.",_sys_errlist[errno]);
+
+			if (req_size)
+            {
+				size_t W = fwrite(ptr,req_size,1,hf);
+                xr_strerror(errno, error, sizeof(error));
+				R_ASSERT3(W==1,"Can't write mem block to file. Disk maybe full.", error);
 			}
 		}
     };
@@ -102,10 +113,9 @@ public:
 class CVirtualFileReader : public IReader
 {
 private:
-   void			*hSrcFile, *hSrcMap;
+    FileHandle hSrcFile;
+    FileHandle hSrcMap;
 public:
 				CVirtualFileReader(const char *cFileName);
 	virtual		~CVirtualFileReader();
 };
-
-#endif

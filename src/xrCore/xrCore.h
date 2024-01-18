@@ -14,38 +14,14 @@
 
 #define IC inline
 
-#include "Platform/PlatformAPI.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <math.h>
-#include <string.h>
-#include <typeinfo>
-
-
-#ifdef XRCORE_STATIC
+#if defined(XRCORE_STATIC) || defined(_EDITOR)
 #	define NO_FS_SCAN
 #endif
 
-#ifdef _EDITOR
-#	define NO_FS_SCAN
-#endif
-
-// inline control - redefine to use compiler's heuristics ONLY
-// it seems "IC" is misused in many places which cause code-bloat
-// ...and VC7.1 really don't miss opportunities for inline :)
-#ifdef _EDITOR
-#	define __forceinline	inline
-#endif
 #define _inline			inline
 #define __inline		inline
 #define ICF				__forceinline			// !!! this should be used only in critical places found by PROFILER
-#ifdef _EDITOR
-#	define ICN
-#else
-#	define ICN			__declspec (noinline)	
-#endif
+#define ICN		    	__declspec (noinline)
 
 #ifndef DEBUG
 	#pragma inline_depth	( 254 )
@@ -57,39 +33,6 @@
 
 #include <time.h>
 // work-around dumb borland compiler
-#ifdef __BORLANDC__
-	#define ALIGN(a)
-
-	#include <assert.h>
-	#include <utime.h>
-	#define _utimbuf utimbuf
-	#define MODULE_NAME 		"xrCoreB.dll"
-
-	// function redefinition
-    #define fabsf(a) fabs(a)
-    #define sinf(a) sin(a)
-    #define asinf(a) asin(a)
-    #define cosf(a) cos(a)
-    #define acosf(a) acos(a)
-    #define tanf(a) tan(a)
-    #define atanf(a) atan(a)
-    #define sqrtf(a) sqrt(a)
-    #define expf(a) ::exp(a)
-    #define floorf floor
-    #define atan2f atan2
-    #define logf log
-	// float redefine
-	#define _PC_24 PC_24
-	#define _PC_53 PC_53
-	#define _PC_64 PC_64
-	#define _RC_CHOP RC_CHOP
-	#define _RC_NEAR RC_NEAR
-    #define _MCW_EM MCW_EM
-#else
-	#define ALIGN(a)		__declspec(align(a))
-	#define MODULE_NAME 	"xrCore.dll"
-#endif
-
 
 // Warnings
 #pragma warning (disable : 4251 )		// object needs DLL interface
@@ -103,13 +46,21 @@
 #pragma warning (disable : 4189 )		//  local variable is initialized but not refenced
 #endif									//	frequently in release code due to large amount of VERIFY
 
-#ifdef _M_AMD64
+#ifdef IXR_X64
 #pragma warning (disable : 4512 )
 #endif
-       
+
+// posix
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <math.h>
+
 // stl
 #pragma warning (push)
 #pragma warning (disable:4702)
+#include <typeinfo>
 #include <algorithm>
 #include <limits>
 #include <vector>
@@ -118,15 +69,16 @@
 #include <list>
 #include <set>
 #include <map>
-
-#ifndef _EDITOR
 #include <unordered_map>
 #include <unordered_set>
-#endif
 
 #include <string>
+
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
+
+// Engine
+#include "Platform/PlatformAPI.h"
 
 #include "xrDebug.h"
 #include "vector.h"
@@ -159,14 +111,18 @@ public:
 };
 
 #pragma pack (push,1)
-struct XRCORE_API xr_shortcut{
-    enum{
+struct XRCORE_API xr_shortcut
+{
+    enum
+    {
         flShift	= 0x20,
         flCtrl	= 0x40,
         flAlt	= 0x80,
     };
-    union{
-    	struct{
+    union
+    {
+    	struct
+        {
             u8	 	key;
             Flags8	ext;
         };
@@ -228,8 +184,8 @@ public:
 	string512	Params;
 
 public:
-	void		_initialize	(LPCSTR ApplicationName, xrLogger::LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
-	void		_destroy	();
+	void _initialize	(LPCSTR ApplicationName, xrLogger::LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
+	void _destroy	    ();
 };
 
 //Borland class dll interface
