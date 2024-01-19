@@ -24,8 +24,8 @@ public:
 	template <size_t ArrayLenght>
 	xr_string(char* (&InArray)[ArrayLenght]);
 
-	xr_vector<xr_string> Split(char splitCh);
-	xr_vector<xr_string> Split(u32 NumberOfSplits, ...);
+	xr_vector<xr_string> Split(char splitCh) const;
+	xr_vector<xr_string> Split(u32 NumberOfSplits, ...) const;
 
 	bool StartWith(const xr_string& Other) const;
 	bool StartWith(LPCSTR Str) const;

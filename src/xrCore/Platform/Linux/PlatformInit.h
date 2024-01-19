@@ -4,9 +4,13 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdint.h>
+#include <utime.h>
+#include <pthread.h>
 
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
 
 #include <linux/limits.h>
 
@@ -14,6 +18,7 @@
 #define __forceinline __attribute__((always_inline))
 #define _cdecl /* __attribute__((__cdecl__)) */
 #define __stdcall /* __attribute__((__stdcall__)) */
+
 #define CALLBACK
 #define HWND void*
 #define LPARAM void*
@@ -27,6 +32,9 @@ using UINT = unsigned int;
 
 #define __int64 int64_t
 #define _copysign copysign
+
+#define _utimbuf utimbuf
+#define _utime utime
 
 #define TEXT(a) a
 

@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-#if defined(IXR_WIN32) || defined(IXR_WIN64)
+#ifdef IXR_WINDOWS
 #   define _WIN32_ENVIRONMENT_
 #endif
 
@@ -18,7 +18,7 @@
 #include <windows.h>
 #else
 typedef int   BOOL;
-typedef unsigned char  BYTE;
+typedef char  BYTE;
 typedef unsigned short WORD;
 typedef unsigned long  DWORD;
 typedef unsigned int   UINT;

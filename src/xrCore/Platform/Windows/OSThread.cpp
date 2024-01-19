@@ -59,3 +59,41 @@ size_t Platform::GetThreadId(ThreadID ID)
 {
     return ::GetThreadId(ID);
 }
+
+#pragma pack(push, 8)
+struct THREAD_NAME
+{
+	u32	dwType;
+	LPCSTR	szName;
+	u32	dwThreadID;
+	u32	dwFlags;
+};
+#pragma pack(pop)
+
+void Platform::SetThreadName(const char* name)
+{
+    using SetThreadDescriptionDesc = HRESULT(WINAPI*)(HANDLE, PCWSTR);
+    auto Kernellib = GetModuleHandle(L"kernel32.dll");
+    static SetThreadDescriptionDesc SetThreadDescriptionProc = (SetThreadDescriptionDesc)GetProcAddress(Kernellib, "SetThreadDescription");
+
+    if (SetThreadDescriptionProc != nullptr)
+    {
+        SetThreadDescriptionProc(GetCurrentThread(), Platform::ANSI_TO_TCHAR(name));
+    }
+    else
+    {
+        THREAD_NAME tn;
+        tn.dwType = 0x1000;
+        tn.szName = name;
+        tn.dwThreadID = DWORD(-1);
+        tn.dwFlags = 0;
+
+        __try
+        {
+            RaiseException(0x406D1388, 0, sizeof(tn) / sizeof(DWORD), (ULONG_PTR*)&tn);
+        }
+        __except (EXCEPTION_CONTINUE_EXECUTION)
+        {
+        }
+    }
+}

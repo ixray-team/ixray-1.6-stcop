@@ -35,7 +35,7 @@ public:
 		u32						size;
 		u32						vfs_idx;
 
-		archive():hSrcFile(nullptr),header(nullptr),size(0),vfs_idx(u32(-1)){}
+		archive():hSrcFile(0),header(nullptr),size(0),vfs_idx(u32(-1)){}
 		void					open();
 		void					close();
 	};

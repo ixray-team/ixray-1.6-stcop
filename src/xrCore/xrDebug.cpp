@@ -387,7 +387,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 
 				ExInfo.ThreadId				= ::GetCurrentThreadId();
 				ExInfo.ExceptionPointers	= pExceptionInfo;
-				ExInfo.ClientPointers		= nullptr;
+				ExInfo.ClientPointers		= false;
 
 				// write the dump
 				MINIDUMP_TYPE	dump_flags	= MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory );
@@ -454,7 +454,6 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     #pragma comment( lib, "faultrep.lib" )
 #endif
 
-#ifdef IXR_WINDOWS
 #include "StackTrace/StackTrace.h"
 static bool EnabledStackTrace = true;
 

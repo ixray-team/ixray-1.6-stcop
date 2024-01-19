@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#ifdef IXR_WINDOWS
 #include <process.h>
 #include <winver.h>
 #include <VersionHelpers.h>
@@ -12,13 +13,14 @@
 #define MMNOMIXER
 #define MMNOJOY
 #include <mmsystem.h>
+#endif
 
 // Initialized on startup
 XRCORE_API	Fmatrix			Fidentity;
 XRCORE_API	Dmatrix			Didentity;
 XRCORE_API	CRandom			Random;
 
-#ifdef _M_AMD64
+#ifdef IXR_WIN64
 u16			getFPUsw()		{ return 0;	}
 
 namespace	FPU 
@@ -50,7 +52,7 @@ namespace	FPU
 
 	void		initialize		()				{}
 };
-#else
+#elif defined(IXR_WIN32)
 u16 getFPUsw() 
 {
 	u16		SW;
@@ -123,6 +125,33 @@ namespace FPU
 		::Random.seed	( u32(CPU::GetCLK()%(1i64<<32i64)) );
 	}
 };
+#else
+
+u16 getFPUsw() { return 0;	}
+
+namespace	FPU
+{
+    XRCORE_API void 	m24		(void)
+    {
+    }
+    XRCORE_API void 	m24r	(void)
+    {
+    }
+    XRCORE_API void 	m53		(void)
+    {
+    }
+    XRCORE_API void 	m53r	(void)
+    {
+    }
+    XRCORE_API void 	m64		(void)
+    {
+    }
+    XRCORE_API void 	m64r	(void)
+    {
+    }
+
+    void initialize	(){}
+};
 #endif
 
 namespace CPU 
@@ -138,9 +167,9 @@ namespace CPU
 	
 	XRCORE_API processor_info	ID;
 
-	XRCORE_API u64				QPC	()			{
-		u64		_dest	;
-		QueryPerformanceCounter			((PLARGE_INTEGER)&_dest);
+	XRCORE_API u64				QPC	()
+    {
+		u64 _dest =  SDL_GetPerformanceCounter();
 		qpc_counter	++	;
 		return	_dest	;
 	}
@@ -160,55 +189,27 @@ namespace CPU
 
 	void Detect	()
 	{
-		// Timers & frequency
-		SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
-
-		u64 start = GetCLK();
-		Sleep(1000);
-
-		clk_per_second = GetCLK() - start;
-
-		// Detect RDTSC Overhead
-		clk_overhead = 0;
-		for (u32 i = 0; i < 256; i++) {
-			start = GetCLK();
-			clk_overhead += GetCLK() - start;
-		}
-
-		clk_overhead /= 256;
-		clk_per_second -= clk_overhead;
-
 		// Detect QPC
-		LARGE_INTEGER Freq;
-		QueryPerformanceFrequency(&Freq);
-		qpc_freq = Freq.QuadPart;
-
-		// Restore normal priority
-		SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+		qpc_freq = SDL_GetPerformanceFrequency();
 	}
 };
 
 bool g_initialize_cpu_called = false;
-
-
-using SetThreadDescriptionDesc = HRESULT(WINAPI*)(HANDLE, PCWSTR);
-static SetThreadDescriptionDesc SetThreadDescriptionProc;
 
 u32 MainThreadId = 0;
 
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
-	MainThreadId = (u32)Platform::GetThreadId(GetCurrentThread());
+	MainThreadId = (u32)Platform::GetThreadId(Platform::GetCurrentThread());
 
-	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
+	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d",
 		CPU::ID.modelName, CPU::ID.vendor,
-		CPU::ID.family,CPU::ID.model,CPU::ID.stepping,
-		float(CPU::clk_per_second/u64(1000000)),
-		u32(CPU::clk_overhead)
-		);
+		CPU::ID.family,CPU::ID.model,CPU::ID.stepping
+    );
 
-	string256	features;	xr_strcpy(features,sizeof(features),"RDTSC");
+	string256 features;
+	xr_strcpy(features, sizeof(features), "RDTSC");
 
     if (CPU::ID.hasFeature(CPUFeature::MMX))			
 		xr_strcat(features, ", MMX");
@@ -248,8 +249,6 @@ void _initialize_cpu	(void)
 
 	g_initialize_cpu_called = true;
 
-	auto Kernellib = GetModuleHandle(L"kernel32.dll");
-	SetThreadDescriptionProc = (SetThreadDescriptionDesc)GetProcAddress(Kernellib, "SetThreadDescription");
 }
 
 #ifdef M_BORLAND
@@ -279,6 +278,7 @@ void _initialize_cpu_thread	()
 	if (CPU::ID.hasFeature(CPUFeature::SSE2)) {
 		//_mm_setcsr ( _mm_getcsr() | (_MM_FLUSH_ZERO_ON+_MM_DENORMALS_ZERO_ON) );
 		_MM_SET_FLUSH_ZERO_MODE			(_MM_FLUSH_ZERO_ON);
+#ifdef IXR_WINDOWS
 		if (_denormals_are_zero_supported)	{
 			__try	{
 				_MM_SET_DENORMALS_ZERO_MODE	(_MM_DENORMALS_ZERO_ON);
@@ -286,42 +286,16 @@ void _initialize_cpu_thread	()
 				_denormals_are_zero_supported	= FALSE;
 			}
 		}
+#endif
 	}
 }
 #endif
-// threading API 
-#pragma pack(push,8)
-struct THREAD_NAME	{
-	DWORD	dwType;
-	LPCSTR	szName;
-	DWORD	dwThreadID;
-	DWORD	dwFlags;
-};
 
+// threading API 
 void thread_name(const char* name)
 {
-	THREAD_NAME		tn;
-	tn.dwType = 0x1000;
-	tn.szName = name;
-	tn.dwThreadID = DWORD(-1);
-	tn.dwFlags = 0;
-
-	if (SetThreadDescriptionProc != nullptr)
-	{
-		SetThreadDescriptionProc(GetCurrentThread(), Platform::ANSI_TO_TCHAR(name));
-	}
-	else
-	{
-		__try
-		{
-			RaiseException(0x406D1388, 0, sizeof(tn) / sizeof(DWORD), (ULONG_PTR*)&tn);
-		}
-		__except (EXCEPTION_CONTINUE_EXECUTION)
-		{
-		}
-	}
+    Platform::SetThreadName(name);
 }
-#pragma pack(pop)
 
 struct	THREAD_STARTUP
 {
@@ -329,7 +303,8 @@ struct	THREAD_STARTUP
 	char*		name	;
 	void*		args	;
 };
-void	__cdecl			thread_entry	(void*	_params )	{
+
+void	__cdecl thread_entry	(void*	_params )	{
 	// initialize
 	THREAD_STARTUP* startup = (THREAD_STARTUP*)_params;
 	thread_name(startup->name);
@@ -354,12 +329,21 @@ void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* argl
 	startup->entry		= entry;
 	startup->name		= (char*)name;
 	startup->args		= arglist;
+
+#ifdef IXR_WINDOWS
 	_beginthread		(thread_entry,stack,startup);
+#else
+    pthread_t handle;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_create(&handle, &attr, 0, arglist);
+    pthread_attr_destroy(&attr);
+#endif
 }
 
 bool XRCORE_API IsMainThread()
 {
-	return MainThreadId == Platform::GetThreadId(GetCurrentThread());
+	return MainThreadId == Platform::GetThreadId(Platform::GetCurrentThread());
 }
 
 void spline1	( float t, Fvector *p, Fvector *ret )

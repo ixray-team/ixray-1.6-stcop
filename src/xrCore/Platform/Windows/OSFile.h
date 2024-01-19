@@ -73,4 +73,9 @@ namespace Platform
         GetSystemInfo(&sys_inf);
         return sys_inf.dwAllocationGranularity;
     }
+
+    inline int Unlink(const char *path)
+    {
+        return _unlink(path);
+    }
 }

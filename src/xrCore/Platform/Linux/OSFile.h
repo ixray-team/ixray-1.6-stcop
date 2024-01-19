@@ -67,6 +67,8 @@ struct _finddata_t
     char name[FILENAME_MAX];
 };
 
+using _finddata64i32_t = _finddata_t;
+
 inline int _filelength(int fd)
 {
     struct stat file_info;
@@ -212,4 +214,18 @@ namespace Platform
     {
         return sysconf(_SC_PAGE_SIZE);
     }
+
+    inline int Unlink(const char *path)
+    {
+        const char* conv_fn = ValidPath(path);
+        int result = unlink(conv_fn);
+        return result;
+    }
+}
+
+inline int _rmdir(const char *path)
+{
+    const char* conv_fn = Platform::ValidPath(path);
+    int result = rmdir(conv_fn);
+    return result;
 }

@@ -5,7 +5,7 @@
 
 #include "FS_impl.h"
 
-xr_vector<xr_string> xr_string::Split(char splitCh) 
+xr_vector<xr_string> xr_string::Split(char splitCh) const
 {
 	xr_vector<xr_string> Result;
 
@@ -66,7 +66,7 @@ xr_string& xr_string::operator=(const Super& other)
 	return *this;
 }
 
-xr_vector<xr_string> xr_string::Split(u32 NumberOfSplits, ...) 
+xr_vector<xr_string> xr_string::Split(u32 NumberOfSplits, ...) const
 {
 	xr_vector<xr_string> intermediateTokens;
 	xr_vector<xr_string> Result;
