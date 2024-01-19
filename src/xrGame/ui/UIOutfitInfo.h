@@ -36,8 +36,8 @@ public:
 	virtual			~CUIOutfitInfo		();
 
 			void 	InitFromXml			( CUIXml& xml_doc );
-			void 	UpdateInfo			( CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit = NULL );	
-			void 	UpdateInfo			( CHelmet* cur_helmet, CHelmet* slot_helmet = NULL );	
+			void 	UpdateInfo			( CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit = nullptr );	
+			void 	UpdateInfo			( CHelmet* cur_helmet, CHelmet* slot_helmet = nullptr );	
 protected:
 	enum				{ max_count = ALife::eHitTypeMax-4 };
 	

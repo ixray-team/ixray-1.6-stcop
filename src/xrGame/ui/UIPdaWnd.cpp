@@ -35,11 +35,11 @@ void RearrangeTabButtons(CUITabControl* pTab);
 
 CUIPdaWnd::CUIPdaWnd()
 {
-	pUITaskWnd       = NULL;
-//-	pUIFactionWarWnd = NULL;
-	pUIRankingWnd    = NULL;
-	pUILogsWnd       = NULL;
-	m_hint_wnd       = NULL;
+	pUITaskWnd       = nullptr;
+//-	pUIFactionWarWnd = nullptr;
+	pUIRankingWnd    = nullptr;
+	pUILogsWnd       = nullptr;
+	m_hint_wnd       = nullptr;
 	Init();
 }
 
@@ -58,7 +58,7 @@ void CUIPdaWnd::Init()
 	CUIXml					uiXml;
 	uiXml.Load				(CONFIG_PATH, UI_PATH, PDA_XML);
 
-	m_pActiveDialog			= NULL;
+	m_pActiveDialog			= nullptr;
 	m_sActiveSection		= "";
 
 	CUIXmlInit::InitWindow	(uiXml, "main", 0, this);

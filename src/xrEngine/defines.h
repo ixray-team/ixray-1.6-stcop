@@ -6,7 +6,7 @@
 	#define bDebug 0
 #endif
 
-#define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }
+#define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=nullptr; } }
 #define _SHOW_REF(msg, x)   { if(x) { x->AddRef(); Msg("%s %d", msg,u32(x->Release()));}}
 
 // textures

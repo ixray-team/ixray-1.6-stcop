@@ -57,7 +57,7 @@ public:
 		case 1:		return &(bufDepth_1[0][0]);	
 		case 2:		return &(bufDepth_2[0][0]);	
 		case 3:		return &(bufDepth_3[0][0]);	
-		default:	return NULL;
+		default:	return nullptr;
 		}
 	}
 

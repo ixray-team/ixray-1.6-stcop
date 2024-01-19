@@ -78,7 +78,7 @@ void faster_than_bullets_time::OnPlayerKilled(u16 killer_id, u16 target_id, u16 
 		return;
 
 	last_hits_fetcher tmp_predicate			(victim_obj->cName(), tmp_local_player->getName());
-	buffer_vector<hits_store::bullet_hit>	tmp_hits_result(NULL, 0);
+	buffer_vector<hits_store::bullet_hit>	tmp_hits_result(nullptr, 0);
 	
 	if (m_owner->get_hits_store().fetch_hits(tmp_predicate, tmp_hits_result))
 	{

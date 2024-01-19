@@ -45,15 +45,15 @@
 
 
 CUIGameCTA::CUIGameCTA()
-:teamPanels(NULL),
-m_pFragLimitIndicator(NULL),
-m_team1_score(NULL),
-m_team2_score(NULL),
-m_pCurBuyMenu(NULL),
-m_pCurSkinMenu(NULL),
-m_pBuySpawnMsgBox(NULL),
-m_game(NULL),
-m_voteStatusWnd(NULL),
+:teamPanels(nullptr),
+m_pFragLimitIndicator(nullptr),
+m_team1_score(nullptr),
+m_team2_score(nullptr),
+m_pCurBuyMenu(nullptr),
+m_pCurSkinMenu(nullptr),
+m_pBuySpawnMsgBox(nullptr),
+m_game(nullptr),
+m_voteStatusWnd(nullptr),
 m_team_panels_shown(false)
 {
 	m_pUITeamSelectWnd	= xr_new<CUISpawnWnd>();
@@ -264,7 +264,7 @@ void CUIGameCTA::UpdateSkinMenu(shared_str const & teamSection)
 			return;
 		}
 		xr_delete(m_pCurSkinMenu);
-		m_pCurSkinMenu = NULL;
+		m_pCurSkinMenu = nullptr;
 	}
 	m_teamSectionForSkinMenu = teamSection;
 	m_pCurSkinMenu = xr_new<CUISkinSelectorWnd>(m_teamSectionForSkinMenu.c_str(), static_cast<s16>(tempPlayerState->team));
@@ -368,8 +368,8 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 	if (!weapon)
 		return;
 
-	xr_vector<shared_str> const *	tmp_ammo_types = NULL;
-	u8 const *						tmp_ammo_type = NULL;
+	xr_vector<shared_str> const *	tmp_ammo_types = nullptr;
+	u8 const *						tmp_ammo_type = nullptr;
 	u16								ammo_elapsed = 0;
 	if (weapon->m_bGrenadeMode)
 	{
@@ -436,8 +436,8 @@ void TryToDefuseWeapon(CWeapon const * weapon,
 	if (weapon->IsGrenadeLauncherAttached())
 		TryToDefuseGrenadeLauncher(tmp_gl_weapon, all_items, dest_ammo);
 
-	xr_vector<shared_str> const *	tmp_ammo_types = NULL;
-	u8 const *						tmp_ammo_type = NULL;
+	xr_vector<shared_str> const *	tmp_ammo_types = nullptr;
+	u8 const *						tmp_ammo_type = nullptr;
 	u16								ammo_elapsed = 0;
 	if (tmp_gl_weapon && tmp_gl_weapon->m_bGrenadeMode)
 	{
@@ -799,12 +799,12 @@ void CUIGameCTA::SetDemoPlayCaption(LPCSTR str)
 void CUIGameCTA::ResetCaptions()
 {
 	//bad ...
-	SetRoundResultCaption	(NULL);
-	SetPressBuyMsgCaption	(NULL);
-	SetPressJumpMsgCaption	(NULL);
-	SetSpectatorMsgCaption	(NULL);
-	SetWarmUpCaption		(NULL);
-	SetTimeMsgCaption		(NULL);
+	SetRoundResultCaption	(nullptr);
+	SetPressBuyMsgCaption	(nullptr);
+	SetPressJumpMsgCaption	(nullptr);
+	SetSpectatorMsgCaption	(nullptr);
+	SetWarmUpCaption		(nullptr);
+	SetTimeMsgCaption		(nullptr);
 }
 
 bool CUIGameCTA::IsBuySpawnShown()

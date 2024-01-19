@@ -4,7 +4,7 @@
 #include "mslotutils.h"
 // #include "../xrEngine/XR_IOConsole.h"
 
-//CScriptDebugger* CScriptDebugger::m_pDebugger = NULL;
+//CScriptDebugger* CScriptDebugger::m_pDebugger = nullptr;
 
 
 void CScriptDebugger::SendMessageToIde	(CMailSlotMsg& msg)

@@ -751,7 +751,7 @@ void game_sv_ArtefactHunt::SpawnArtefact()
 {
 //	if (OnClient()) return;
 
-	CSE_Abstract			*E = NULL;
+	CSE_Abstract			*E = nullptr;
 	if (pSettings->line_exist("artefacthunt_gamedata", "artefact"))
 		E	=	spawn_begin	(pSettings->r_string("artefacthunt_gamedata", "artefact"));
 	else

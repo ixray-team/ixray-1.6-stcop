@@ -104,13 +104,13 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	m_btn_reset				= UIHelper::Create3tButton( xml_doc, "btn_reset",				this );
 	m_btn_sell				= UIHelper::Create3tButton( xml_doc, "btn_sell",				this );
 
-	m_btn_pistol_ammo		= NULL;//UIHelper::Create3tButton( xml_doc, "btn_pistol_ammo",		this );
+	m_btn_pistol_ammo		= nullptr;//UIHelper::Create3tButton( xml_doc, "btn_pistol_ammo",		this );
 	m_btn_pistol_silencer	= UIHelper::Create3tButton( xml_doc, "btn_pistol_silencer",	this );
-	m_btn_rifle_ammo		= NULL;//UIHelper::Create3tButton( xml_doc, "btn_rifle_ammo",		this );
+	m_btn_rifle_ammo		= nullptr;//UIHelper::Create3tButton( xml_doc, "btn_rifle_ammo",		this );
 	m_btn_rifle_silencer	= UIHelper::Create3tButton( xml_doc, "btn_rifle_silencer",	this );
 	m_btn_rifle_scope		= UIHelper::Create3tButton( xml_doc, "btn_rifle_scope",		this );
 	m_btn_rifle_glauncher	= UIHelper::Create3tButton( xml_doc, "btn_rifle_glauncher",	this );
-	m_btn_rifle_ammo2		= NULL;//UIHelper::Create3tButton( xml_doc, "btn_rifle_ammo2",		this );
+	m_btn_rifle_ammo2		= nullptr;//UIHelper::Create3tButton( xml_doc, "btn_rifle_ammo2",		this );
 	
 
 	Register							(m_btn_ok				);
@@ -197,5 +197,5 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 #endif // #ifndef MASTER_GOLD
 	SetRank								(0);
 	UpdateShop							();
-	SetCurrentItem						(NULL);
+	SetCurrentItem						(nullptr);
 }

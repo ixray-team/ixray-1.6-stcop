@@ -34,7 +34,7 @@
 	#define INV9				0.11111111111111111111f									//!<	1/9
 	#define INV255				0.00392156862745098039f									//!<	1/255
 
-	#define null				0														//!<	our own NULL pointer
+	#define null				0														//!<	our own nullptr pointer
 
 	// New types
 	typedef signed char			sbyte;		//!<	sizeof(sbyte)	must be 1

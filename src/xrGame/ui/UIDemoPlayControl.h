@@ -21,7 +21,7 @@ public:
 	~CUIDemoPlayControl	();
 
 	virtual void	Init			();
-	virtual void	SendMessage		(CUIWindow *pWnd, s16 msg, void *pData = NULL);
+	virtual void	SendMessage		(CUIWindow *pWnd, s16 msg, void *pData = nullptr);
 	//virtual bool	OnMouse			(float x, float y, EUIMessages mouse_action);
 	//virtual bool	OnKeyboard		(int dik, EUIMessages keyboard_action);
 	virtual bool OnKeyboardAction	(int dik, EUIMessages keyboard_action);

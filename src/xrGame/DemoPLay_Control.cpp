@@ -284,7 +284,7 @@ void 	demoplay_control::on_artefactcapturing_impl(u32 message, u32 subtype, NET_
 		return;
 	}
 	EGameIDs current_game_type		= static_cast<EGameIDs>(GameID());
-	game_PlayerState* capturerps	= NULL;
+	game_PlayerState* capturerps	= nullptr;
 	if (current_game_type == eGameIDCaptureTheArtefact)
 	{
 		u8 capturer_team;
@@ -330,7 +330,7 @@ void 	demoplay_control::on_artefactloosing_impl(u32 message, u32 subtype, NET_Pa
 		return;
 	}
 	EGameIDs current_game_type		= static_cast<EGameIDs>(GameID());
-	game_PlayerState* looserps	= NULL;
+	game_PlayerState* looserps	= nullptr;
 	if (current_game_type == eGameIDCaptureTheArtefact)
 	{
 		u8 capturer_team;

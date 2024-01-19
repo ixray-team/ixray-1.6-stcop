@@ -278,7 +278,7 @@ void CPHShell::Deactivate(){
 
 	if(m_space) {
 		dSpaceDestroy(m_space);
-		m_space=NULL;
+		m_space=nullptr;
 	}
 	//bActive=false;
 	//bActivating=false;

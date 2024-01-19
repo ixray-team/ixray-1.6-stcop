@@ -47,7 +47,7 @@ void CAMDReader::Initialize()
 	if (bInitialized) return;
 	hAMDMain = LoadLibraryA("atiadlxx.dll");
 
-	if (hAMDMain != NULL)
+	if (hAMDMain != nullptr)
 	{
 		auto TryInitializeAMDFunctionLambda = [this](void** pFunc, const char* FuncName) -> bool
 		{
@@ -55,7 +55,7 @@ void CAMDReader::Initialize()
 			if (*pFunc == nullptr)
 			{
 				FreeModule(hAMDMain);
-				hAMDMain = NULL;
+				hAMDMain = nullptr;
 				Msg("! atiadlxx.dll doesn't have function \"%s\"", FuncName);
 				return false;
 			}
@@ -118,7 +118,7 @@ void CAMDReader::Initialize()
 #else
 	hAMDAGS = LoadLibraryA("amd_ags_x86.dll");
 #endif
-	if (hAMDAGS != NULL)
+	if (hAMDAGS != nullptr)
 	{
 		auto TryInitializeAMDAGSFunctionLambda = [this](void** pFunc, const char* FuncName) -> bool
 		{
@@ -126,7 +126,7 @@ void CAMDReader::Initialize()
 			if (*pFunc == nullptr)
 			{
 				FreeModule(hAMDAGS);
-				hAMDAGS = NULL;
+				hAMDAGS = nullptr;
 				Msg("! amd_ags_x64.dll doesn't have function \"%s\"", FuncName);
 				return false;
 			}
@@ -214,7 +214,7 @@ void CAMDReader::InitDeviceInfo()
 
 void CAMDReader::MakeGPUCount()
 {
-	if (hAMDAGS == NULL)
+	if (hAMDAGS == nullptr)
 	{
 		return;
 	}

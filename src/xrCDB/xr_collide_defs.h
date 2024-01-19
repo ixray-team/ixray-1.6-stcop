@@ -79,7 +79,7 @@ namespace collide
 	};
 	struct			rq_result 
 	{
-		CObject*	O;				// if NULL - static
+		CObject*	O;				// if nullptr - static
 		float		range;			// range to intersection
 		int			element;		// номер кости/номер треугольника
 		IC rq_result& set		(CObject* _O, float _range, int _element)

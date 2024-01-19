@@ -52,7 +52,7 @@ public:
 private:
 	void						_clear	()
 	{
-		pIB			= NULL;
+		pIB			= nullptr;
 		mSize		= 0;
 		mPosition	= 0;
 		mDiscardID	= 0;

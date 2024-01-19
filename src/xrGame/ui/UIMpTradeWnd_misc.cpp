@@ -42,15 +42,15 @@ bool CUIMpTradeWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		if ( dik == DIK_Q )
 		{
-			OnBtnPistolAmmoClicked(NULL, NULL);
+			OnBtnPistolAmmoClicked(nullptr, nullptr);
 		}
 		else if ( dik == DIK_W )
 		{
-			OnBtnRifleAmmoClicked(NULL, NULL);
+			OnBtnRifleAmmoClicked(nullptr, nullptr);
 		}
 		else if ( dik == DIK_E )
 		{
-			OnBtnRifleAmmo2Clicked(NULL, NULL);
+			OnBtnRifleAmmo2Clicked(nullptr, nullptr);
 		}
 	}
 
@@ -140,7 +140,7 @@ CUICellItem* CUIMpTradeWnd::CurrentItem()
 
 CInventoryItem* CUIMpTradeWnd::CurrentIItem()
 {
-	return	(m_pCurrentCellItem)?(CInventoryItem*)m_pCurrentCellItem->m_pData : NULL;
+	return	(m_pCurrentCellItem)?(CInventoryItem*)m_pCurrentCellItem->m_pData : nullptr;
 }
 LPCSTR _team_names[]=
 {
@@ -227,7 +227,7 @@ bool CUIMpTradeWnd::OnItemDrop(CUICellItem* itm)
 
 	if(_new_owner_type==dd_shop)
 	{
-		SBuyItemInfo*	tmp_iinfo = NULL;
+		SBuyItemInfo*	tmp_iinfo = nullptr;
 		bool res		= TryToSellItem			(iinfo, true, tmp_iinfo);
 		VERIFY			(res);
 		return			true;
@@ -277,7 +277,7 @@ bool CUIMpTradeWnd::OnItemDbClick(CUICellItem* itm)
 		{
 			if ( !CanBuyOrSellInList(owner_list) )
 			{
-				SBuyItemInfo* tmp_iinfo =	NULL;
+				SBuyItemInfo* tmp_iinfo =	nullptr;
 				TryToSellItem				(iinfo, true, tmp_iinfo);
 			}
 			else
@@ -312,7 +312,7 @@ bool CUIMpTradeWnd::OnItemLButtonClick(CUICellItem* itm)
 	const shared_str&	buy_item_name	=	 iinfo->m_name_sect;
 
 	SBuyItemInfo* pitem					=	CreateItem(buy_item_name, SBuyItemInfo::e_undefined, false);
-	bool b_res							=	TryToBuyItem(pitem, bf_normal, NULL );
+	bool b_res							=	TryToBuyItem(pitem, bf_normal, nullptr );
 	if( !b_res )
 	{
 		DestroyItem							(pitem);
@@ -336,7 +336,7 @@ bool CUIMpTradeWnd::OnItemRButtonClick(CUICellItem* itm)
 	SetCurrentItem							(itm);
 
  	SBuyItemInfo*		iinfo			=	FindItem(itm);
-	SBuyItemInfo*		tmp_iinfo		=	NULL;
+	SBuyItemInfo*		tmp_iinfo		=	nullptr;
 
 	if ( !CanBuyOrSellInList				(owner_list) )
 	{
@@ -379,7 +379,7 @@ CUIMpTradeWnd::dd_list_type CUIMpTradeWnd::GetListType(CUIDragDropListEx* l)
 
 CUIDragDropListEx*	CUIMpTradeWnd::GetMatchedListForItem(const shared_str& sect_name)
 {
-	CUIDragDropListEx*	res		= NULL;
+	CUIDragDropListEx*	res		= nullptr;
 	u8 list_idx					= m_item_mngr->GetItemSlotIdx(sect_name);
 	VERIFY						(list_idx<e_total_lists && list_idx!=e_shop);
 	res							= m_list[list_idx];
@@ -387,7 +387,7 @@ CUIDragDropListEx*	CUIMpTradeWnd::GetMatchedListForItem(const shared_str& sect_n
 	//special case
 	if(list_idx==e_pistol_ammo || list_idx==e_rifle_ammo)
 	{
-		CUICellItem* ci = (m_list[list_idx-1]->ItemsCount())?m_list[list_idx-1]->GetItemIdx(0):NULL;
+		CUICellItem* ci = (m_list[list_idx-1]->ItemsCount())?m_list[list_idx-1]->GetItemIdx(0):nullptr;
 		if(!ci)
 			return				m_list[e_player_bag];
 
@@ -519,7 +519,7 @@ void CUIMpTradeWnd::ResetItems()
 	CleanUserItems						();
 	m_store_hierarchy->Reset			();
 	UpdateShop							();
-	SetCurrentItem						(NULL);
+	SetCurrentItem						(nullptr);
 }
 
 bool CUIMpTradeWnd::CanBuyAllItems()

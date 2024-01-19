@@ -175,7 +175,7 @@ public:
 	IC		IClient*		  GetServerClient() { return SV_Client; };
 	IC		IClient*		  GetClientByID(ClientID clientId) { return net_players.GetFoundClient(ClientIdSearchPredicate(clientId)); };
 
-	virtual bool			  GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) { return true; }
+	virtual bool			  GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = nullptr) { return true; }
 
 	// extended functionality
 	virtual bool			  OnCL_QueryHost() { return true; };

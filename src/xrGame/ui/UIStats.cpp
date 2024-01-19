@@ -20,8 +20,8 @@ CUIWindow* CUIStats::InitStats(CUIXml& xml_doc, LPCSTR path,  int team)
 	string256						_path;
 	CUIXmlInit::InitScrollView		(xml_doc, path, 0, this);
 	this->SetFixedScrollBar			(false);
-	CUIWindow* pWnd					= NULL;
-	CUIWindow* pTinfo				= NULL;
+	CUIWindow* pWnd					= nullptr;
+	CUIWindow* pTinfo				= nullptr;
 
     // players
 	CUIStatsPlayerList* pPList		= xr_new<CUIStatsPlayerList>();

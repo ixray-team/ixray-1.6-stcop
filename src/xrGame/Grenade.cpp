@@ -93,7 +93,7 @@ void CGrenade::net_Destroy()
 	if(m_destroy_callback)
 	{
 		m_destroy_callback				(this);
-		m_destroy_callback				= destroy_callback(NULL);
+		m_destroy_callback				= destroy_callback(nullptr);
 	}
 
 	inherited::net_Destroy				();
@@ -213,7 +213,7 @@ void CGrenade::Destroy()
 	if(m_destroy_callback)
 	{
 		m_destroy_callback		(this);
-		m_destroy_callback	=	destroy_callback(NULL);
+		m_destroy_callback	=	destroy_callback(nullptr);
 	}
 
 	FindNormal					(normal);
@@ -252,7 +252,7 @@ void CGrenade::PutNextToSlot()
 		this->u_EventSend				(P);
 	}
 	else
-		Msg ("! PutNextToSlot : m_pInventory = NULL [%d][%d]", ID(), Device.dwFrame);	
+		Msg ("! PutNextToSlot : m_pInventory = nullptr [%d][%d]", ID(), Device.dwFrame);	
 
 	if (smart_cast<CInventoryOwner*>(H_Parent()) && m_pInventory)
 	{

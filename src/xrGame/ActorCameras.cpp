@@ -422,7 +422,7 @@ void CActor::update_camera (CCameraShotEffector* effector)
 	if (!effector) return;
 	//	if (Level().CurrentViewEntity() != this) return;
 
-	CCameraBase* pACam = NULL;
+	CCameraBase* pACam = nullptr;
 	if (eacLookAt == cam_active)
 		pACam = cam_Active();
 	else

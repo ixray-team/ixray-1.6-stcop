@@ -27,7 +27,7 @@ CUIMMShniaga::CUIMMShniaga()
 	m_magnifier		= xr_new<CUIStatic>();	m_shniaga->AttachChild(m_magnifier);	m_magnifier->SetPPMode();
 	m_mag_pos		= 0;
 
-	m_selected		= NULL;
+	m_selected		= nullptr;
 
 	m_start_time	= 0;
 	m_origin		= 0;
@@ -149,7 +149,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCS
 void CUIMMShniaga::SetPage		(enum_page_id page_id, LPCSTR xml_file, LPCSTR xml_path)
 {
 	VERIFY(m_page != page_id);
-	xr_vector<CUITextWnd*>*		lst = NULL;
+	xr_vector<CUITextWnd*>*		lst = nullptr;
 	switch (page_id)
 	{
 	case epi_main:

@@ -663,7 +663,7 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 		collide::rq_results RQR;
 		collide::ray_defs RD(C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth);
 		ray_query_param params(m_object, enemy);
-		Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, NULL, m_object);
+		Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
 		should_hit = params.m_can_hit_enemy;
 	}
 

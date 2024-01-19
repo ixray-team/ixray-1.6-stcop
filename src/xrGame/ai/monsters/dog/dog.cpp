@@ -312,7 +312,7 @@ void CAI_Dog::start_animation()
 {
 	// Lain: check if animation is captured
 	CControl_Com* capturer = control().get_capturer(ControlCom::eControlAnimation);
-	if ( capturer && capturer->ced() != NULL )
+	if ( capturer && capturer->ced() != nullptr )
 	{
 		return;
 	}

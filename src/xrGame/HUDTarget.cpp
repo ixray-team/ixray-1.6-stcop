@@ -55,7 +55,7 @@ CHUDTarget::CHUDTarget	()
 	PP.RQ.range			= 0.f;
 	hShader->create		("hud\\cursor","ui\\cursor");
 
-	PP.RQ.set				(NULL, 0.f, -1);
+	PP.RQ.set				(nullptr, 0.f, -1);
 
 	Load				();
 	m_bShowCrosshair	= false;
@@ -126,7 +126,7 @@ void CHUDTarget::CursorOnFrame ()
 		PP.power			= 1.0f;
 		PP.pass				= 0;
 
-		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &PP, NULL, Level().CurrentEntity()))
+		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &PP, nullptr, Level().CurrentEntity()))
 			clamp			(PP.RQ.range, NEAR_LIM, PP.RQ.range);
 	}
 
@@ -331,7 +331,7 @@ void CHUDTarget::Render()
 void CHUDTarget::net_Relcase(CObject* O)
 {
 	if(PP.RQ.O == O)
-		PP.RQ.O = NULL;
+		PP.RQ.O = nullptr;
 
 	RQR.r_clear	();
 }

@@ -3,7 +3,7 @@
 
 #include "fs_Internal.h"
 
-XRCORE_API CInifile* pSettings = NULL;
+XRCORE_API CInifile* pSettings = nullptr;
 
 CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly)
 {	return xr_new<CInifile>(szFileName,ReadOnly); }
@@ -368,8 +368,8 @@ void	CInifile::Load(IReader* F, LPCSTR path
 				}
 
 				Item I;
-				I.first = (name[0] ? name : NULL);
-				I.second = (str2[0] ? str2 : NULL);
+				I.first = (name[0] ? name : nullptr);
+				I.second = (str2[0] ? str2 : nullptr);
 
 				if (m_flags.test(eReadOnly))
 				{
@@ -570,7 +570,7 @@ u64 CInifile::r_u64(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 #ifndef _EDITOR
-	return		_strtoui64(C,NULL,10);
+	return		_strtoui64(C,nullptr,10);
 #else
 	return		(u64)_atoi64(C);
 #endif

@@ -68,7 +68,7 @@ INetLog::INetLog(LPCSTR sFileName, u32 dwStartTime)
 {
 	xr_strcpy(m_cFileName, sFileName);
 
-	m_pLogFile = NULL;
+	m_pLogFile = nullptr;
 	m_pLogFile = fopen(sFileName, "wb");
 	m_dwStartTime = 0;//dwStartTime;
 
@@ -78,7 +78,7 @@ INetLog::~INetLog()
 {
 	FlushLog();
 	if (m_pLogFile) fclose(m_pLogFile);
-	m_pLogFile = NULL;
+	m_pLogFile = nullptr;
 }
 
 void	INetLog::FlushLog()

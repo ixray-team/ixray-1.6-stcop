@@ -265,9 +265,9 @@ static void DVAL_ASSERT(lzo_xint dv, const lzo_bytep p)
 
 #if defined(LZO_DICT_USE_PTR)
 
-/* m_pos is either NULL or a valid pointer */
+/* m_pos is either nullptr or a valid pointer */
 #define LZO_CHECK_MPOS_DET(m_pos,m_off,in,ip,max_offset) \
-        (m_pos == NULL || (m_off = pd(ip, m_pos)) > max_offset)
+        (m_pos == nullptr || (m_off = pd(ip, m_pos)) > max_offset)
 
 /* m_pos may point anywhere... */
 #define LZO_CHECK_MPOS_NON_DET(m_pos,m_off,in,ip,max_offset) \

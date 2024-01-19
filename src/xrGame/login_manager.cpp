@@ -27,7 +27,7 @@ login_manager::login_manager(CGameSpy_Full* fullgs_obj)
 	VERIFY(Engine.External.hGameSpy == 0 || m_gamespy_atlas);
 	m_gamespy_patching		= fullgs_obj->GetGameSpyPatching();
 	VERIFY(Engine.External.hGameSpy == 0 || m_gamespy_patching);
-	m_current_profile		= NULL;
+	m_current_profile		= nullptr;
 }
 
 login_manager::~login_manager()
@@ -62,7 +62,7 @@ void login_manager::login_raw		(login_params_t const & login_args,
 	if (m_current_profile)
 	{
 		Msg("! WARNING: first you need to log out...");
-		m_login_operation_cb(NULL, "mp_first_need_to_logout");
+		m_login_operation_cb(nullptr, "mp_first_need_to_logout");
 		m_login_operation_cb.clear();
 		return;
 	}
@@ -83,7 +83,7 @@ void login_manager::login_raw		(login_params_t const & login_args,
 	if (tmp_res != GP_NO_ERROR)
 	{
 		m_login_operation_cb.clear();
-		logincb(NULL, CGameSpy_GP::TryToTranslate(tmp_res).c_str());
+		logincb(nullptr, CGameSpy_GP::TryToTranslate(tmp_res).c_str());
 		return;
 	}
 }
@@ -119,7 +119,7 @@ void login_manager::login_offline(char const * nick, login_operation_cb logincb)
 	if (m_current_profile)
 	{
 		Msg("! WARNING: first you need to log out...");
-		m_login_operation_cb(NULL, "mp_first_need_to_logout");
+		m_login_operation_cb(nullptr, "mp_first_need_to_logout");
 		m_login_operation_cb.clear();
 		return;
 	}
@@ -144,7 +144,7 @@ void login_manager::login_offline(char const * nick, login_operation_cb logincb)
 	if (!has_non_white_chars)
 	{
 		Msg("! ERROR: nick name is empty");
-		m_login_operation_cb(NULL, "mp_nick_name_not_valid");
+		m_login_operation_cb(nullptr, "mp_nick_name_not_valid");
 		m_login_operation_cb.clear();
 		return;
 	}
@@ -181,14 +181,14 @@ void login_manager::set_unique_nick_raw(set_unick_params_t const & new_unick,
 	if (!m_current_profile)
 	{
 		Msg("! WARNING: first you need to log in...");
-		logincb(NULL, "mp_first_need_to_login");
+		logincb(nullptr, "mp_first_need_to_login");
 		return;
 	}
 
 	if (!new_unick.m_t1.size())
 	{
 		Msg("! ERROR: nick name is empty");
-		logincb(NULL, "mp_unique_nick_not_valid");
+		logincb(nullptr, "mp_unique_nick_not_valid");
 		return;
 	}
 
@@ -214,7 +214,7 @@ void login_manager::set_unique_nick_raw(set_unick_params_t const & new_unick,
 	if (tmp_res != GP_NO_ERROR)
 	{
 		m_login_operation_cb.clear();
-		logincb(NULL, CGameSpy_GP::TryToTranslate(tmp_res).c_str());
+		logincb(nullptr, CGameSpy_GP::TryToTranslate(tmp_res).c_str());
 		return;
 	}
 }
@@ -284,7 +284,7 @@ void __cdecl login_manager::setunick_cb(GPConnection * connection,
 
 	if (tmp_res->result != GP_NO_ERROR)
 	{
-		tmp_cb(NULL, CGameSpy_GP::TryToTranslate(tmp_res->result).c_str());
+		tmp_cb(nullptr, CGameSpy_GP::TryToTranslate(tmp_res->result).c_str());
 		return;
 	}
 
@@ -307,7 +307,7 @@ void __cdecl login_manager::login_cb(GPConnection * connection,
 	if (tmp_res->result != GP_NO_ERROR)
 	{
 		my_inst->m_login_operation_cb.clear();
-		tmp_cb(NULL, CGameSpy_GP::TryToTranslate(tmp_res->result).c_str());
+		tmp_cb(nullptr, CGameSpy_GP::TryToTranslate(tmp_res->result).c_str());
 		return;
 	}
 
@@ -350,7 +350,7 @@ void __cdecl login_manager::wslogin_cb(GHTTPResult httpResult,
 
 	if (httpResult != GHTTPSuccess)
 	{
-		tmp_cb(NULL, CGameSpy_ATLAS::TryToTranslate(httpResult).c_str());
+		tmp_cb(nullptr, CGameSpy_ATLAS::TryToTranslate(httpResult).c_str());
 		my_inst->delete_profile_obj();
 		return;
 	}
@@ -358,7 +358,7 @@ void __cdecl login_manager::wslogin_cb(GHTTPResult httpResult,
 	
 	if (response->mLoginResult != WSLogin_Success)
 	{
-		tmp_cb(NULL, CGameSpy_ATLAS::TryToTranslate(response->mLoginResult).c_str());
+		tmp_cb(nullptr, CGameSpy_ATLAS::TryToTranslate(response->mLoginResult).c_str());
 		my_inst->delete_profile_obj();
 		return;
 	}
@@ -462,7 +462,7 @@ void login_manager::forgot_password(char const * url)
 {
 	string256 params = {};
 	xr_strconcat(params, "/C start ", url);
-	ShellExecuteA(0, "open", "cmd.exe", params, NULL, SW_SHOW);
+	ShellExecuteA(0, "open", "cmd.exe", params, nullptr, SW_SHOW);
 }
 
 } //namespace gamespy_gp

@@ -41,7 +41,7 @@ CObject*	CObjectList::FindObjectByName	( shared_str name )
 		if ((*I)->cName().equal(name))	return (*I);
 	for (Objects::iterator I=objects_sleeping.begin(); I!=objects_sleeping.end(); I++)
 		if ((*I)->cName().equal(name))	return (*I);
-	return	NULL;
+	return	nullptr;
 }
 CObject*	CObjectList::FindObjectByName	( LPCSTR name )
 {
@@ -59,7 +59,7 @@ CObject*	CObjectList::FindObjectByCLS_ID	( CLASS_ID cls )
 		if (O!=objects_sleeping.end())	return *O;
 	}
 
-	return	NULL;
+	return	nullptr;
 }
 
 
@@ -307,7 +307,7 @@ void CObjectList::net_Unregister	(CObject* O)
 {
 	//R_ASSERT		(O->ID() < 0xffff);
 	if (O->ID() < 0xffff)				//demo_spectator can have 0xffff
-		map_NETID[O->ID()] = NULL;
+		map_NETID[O->ID()] = nullptr;
 /*
 	xr_map<u32,CObject*>::iterator	it = map_NETID.find(O->ID());
 	if ((it!=map_NETID.end()) && (it->second == O))	{

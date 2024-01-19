@@ -246,7 +246,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 
 IReader* open_chunk(FileHandle ptr, u32 ID)
 {
-#ifdef IXR_WINDWOS
+#ifdef IXR_WINDOWS
 	BOOL res;
 	u32 dwType, dwSize;
 	DWORD read_byte;
@@ -255,11 +255,11 @@ IReader* open_chunk(FileHandle ptr, u32 ID)
 	{
 		res = ReadFile(ptr, &dwType, 4, &read_byte, 0);
 		if (read_byte == 0)
-			return NULL;
+			return nullptr;
 
 		res = ReadFile(ptr, &dwSize, 4, &read_byte, 0);
 		if (read_byte == 0)
-			return NULL;
+			return nullptr;
 
 		if ((dwType & (~CFS_CompressMark)) == ID)
 		{
@@ -432,8 +432,8 @@ void CLocatorAPI::archive::open()
 		return;
 
 #ifdef IXR_WINDOWS
-    if (hSrcMap != nullptr)
-        return
+	if (hSrcMap != nullptr)
+		return;
 #endif
 
 	hSrcFile = Platform::CreateFile(*path, false);
@@ -443,7 +443,7 @@ void CLocatorAPI::archive::open()
 	R_ASSERT		(hSrcMap!=INVALID_HANDLE_VALUE);
 #endif
 
-	size			= Platform::GetFileSize(hSrcFile);
+	size			= (u32)Platform::GetFileSize(hSrcFile);
 	R_ASSERT		(size>0);
 }
 
@@ -453,6 +453,7 @@ void CLocatorAPI::archive::close()
 	CloseHandle		(hSrcMap);
 	hSrcMap			= nullptr;
 #endif
+
     Platform::CloseFile(hSrcFile);
 	hSrcFile = 0;
 }
@@ -580,8 +581,8 @@ bool ignore_name(const char* _name)
 bool ignore_path(const char* _path)
 {
 #ifdef IXR_WINDOWS
-	HANDLE h = CreateFile(Platform::ANSI_TO_TCHAR_U8(_path), 0, 0, NULL, OPEN_EXISTING,
-		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, NULL);
+	HANDLE h = CreateFile(Platform::ANSI_TO_TCHAR_U8(_path), 0, 0, nullptr, OPEN_EXISTING,
+		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, nullptr);
 
 	if (h!=INVALID_HANDLE_VALUE)
 	{
@@ -604,7 +605,7 @@ bool CLocatorAPI::Recurse(const char* path)
 
     xr_strcpy(N, Platform::ValidPath(N));
 
-#ifdef IXR_WINDWOS
+#ifdef IXR_WINDOWS
     intptr_t hFile = _findfirst(N, &sFile);
 	if (-1 == hFile)
 		return false;
@@ -672,7 +673,7 @@ bool CLocatorAPI::Recurse(const char* path)
             rec_files.push_back(sFile);
 
 #ifdef IXR_WINDOWS
-        done = _findnext(handle, &sFile);
+        done = _findnext(hFile, &sFile);
 #else
         done--;
 #endif

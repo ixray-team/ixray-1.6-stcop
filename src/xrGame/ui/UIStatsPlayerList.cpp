@@ -18,10 +18,10 @@ CUIStatsPlayerList::CUIStatsPlayerList()
 	m_bStatus_mode		= false;
 
 	m_header			= xr_new<CUIStatic>();
-	m_header_team		= NULL;
-	m_header_text		= NULL;
+	m_header_team		= nullptr;
+	m_header_text		= nullptr;
 	m_i.c				= 0xff000000;	
-	m_i.f				= NULL;	
+	m_i.f				= nullptr;	
 	m_i.h				= 16;
 	m_h					= m_i;
 	m_t					= m_i;
@@ -114,7 +114,7 @@ LPCSTR CUIStatsPlayerList::GetST_entry(LPCSTR itm)
 		NODEFAULT;
 
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif // DEBUG
 }
 
@@ -336,7 +336,7 @@ void CUIStatsPlayerList::RecalcSize(){
     if(GetHeight()<m_pad->GetHeight())
 	{
 		SetHeight(m_pad->GetHeight());
-		GetMessageTarget()->SendMessage(this, CHILD_CHANGED_SIZE, NULL);
+		GetMessageTarget()->SendMessage(this, CHILD_CHANGED_SIZE, nullptr);
 	}
 }
 

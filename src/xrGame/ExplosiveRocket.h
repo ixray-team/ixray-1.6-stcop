@@ -25,7 +25,7 @@ public:
 	virtual CExplosive					*cast_explosive			()						{return this;}
 	virtual CInventoryItem				*cast_inventory_item	()						{return this;}
 	virtual CAttachableItem				*cast_attachable_item	()						{return this;}
-	virtual CWeapon						*cast_weapon			()						{return NULL;}
+	virtual CWeapon						*cast_weapon			()						{return nullptr;}
 	virtual CGameObject					*cast_game_object		()						{return this;}
 	virtual IDamageSource*				cast_IDamageSource()							{return CExplosive::cast_IDamageSource();}
 	virtual void						on_activate_physic_shell();

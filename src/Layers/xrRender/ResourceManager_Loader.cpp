@@ -84,10 +84,10 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 	// Load blenders
     fs						= F->open_chunk	(2);
 	if (fs){
-		IReader*	chunk	= NULL;
+		IReader*	chunk	= nullptr;
 		int			chunk_id= 0;
 
-		while ((chunk=fs->open_chunk(chunk_id))!=NULL){
+		while ((chunk=fs->open_chunk(chunk_id))!=nullptr){
 			CBlender_DESC	desc;
 			chunk->r		(&desc,sizeof(desc));
 			IBlender*		B = IBlender::Create(desc.CLS);

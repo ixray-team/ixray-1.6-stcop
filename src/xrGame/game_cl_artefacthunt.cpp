@@ -38,7 +38,7 @@
 
 game_cl_ArtefactHunt::game_cl_ArtefactHunt()
 {
-	m_game_ui = NULL;
+	m_game_ui = nullptr;
 		
 	m_bBuyEnabled	= FALSE;
 	//---------------------------------
@@ -225,7 +225,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 				Color_Artefact);
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 
-//			pMessageSounds[0].play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
+//			pMessageSounds[0].play_at_pos(nullptr, Fvector().set(0,0,0), sm_2D, 0);
 			PlaySndMessage(ID_AF_LOST);
 		}break;
 	case GAME_EVENT_ARTEFACT_ONBASE: //ahunt
@@ -294,7 +294,7 @@ void game_cl_ArtefactHunt::SetGameUI(CUIGameCustom* uigame)
 CUIGameCustom* game_cl_ArtefactHunt::createGameUI()
 {
 	if (g_dedicated_server)
-		return NULL;
+		return nullptr;
 
 	CLASS_ID clsid			= CLSID_GAME_UI_ARTEFACTHUNT;
 	m_game_ui				= smart_cast<CUIGameAHunt*> ( NEW_INSTANCE ( clsid ) );
@@ -362,8 +362,8 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 		return;
 
 	//out game information
-	m_game_ui->SetBuyMsgCaption			(NULL);
-	m_game_ui->SetPressBuyMsgCaption	(NULL);	
+	m_game_ui->SetBuyMsgCaption			(nullptr);
+	m_game_ui->SetPressBuyMsgCaption	(nullptr);	
 
 	switch (m_phase)
 	{
@@ -402,12 +402,12 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 						if (local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 							m_game_ui->SetPressJumpMsgCaption("mp_press_fire2spectator");
 						else
-							m_game_ui->SetPressJumpMsgCaption(NULL);
+							m_game_ui->SetPressJumpMsgCaption(nullptr);
 					};
 				}
 				else
 				{					
-					if(m_game_ui) m_game_ui->SetBuyMsgCaption(NULL);
+					if(m_game_ui) m_game_ui->SetBuyMsgCaption(nullptr);
 					if (m_bTeamSelected && m_bSkinSelected)
 					{
 						if (iReinforcementTime != 0)
@@ -419,7 +419,7 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 							}
 							else
 							{
-								if (m_game_ui) m_game_ui->SetPressJumpMsgCaption(NULL);
+								if (m_game_ui) m_game_ui->SetPressJumpMsgCaption(nullptr);
 							}
 						}
 						else
@@ -581,7 +581,7 @@ char*	game_cl_ArtefactHunt::getTeamSection(int Team)
 		NODEFAULT;
 	};
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif
 };
 

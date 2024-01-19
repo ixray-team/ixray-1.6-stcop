@@ -82,8 +82,8 @@ bool					b_in_touch_resrtrictor		;
 float					m_current_object_radius		;
 public:
 	virtual ECastType	CastType							(){return CPHObject::tpCharacter;}
-	virtual CPHActorCharacter	*CastActorCharacter			(){return NULL;}
-	virtual CPHAICharacter		*CastAICharacter			(){return NULL;}
+	virtual CPHActorCharacter	*CastActorCharacter			(){return nullptr;}
+	virtual CPHAICharacter		*CastAICharacter			(){return nullptr;}
 	ERestrictionType	RestrictionType						(){return m_restriction_type;}
 	void				SetNewRestrictionType				(ERestrictionType rt){m_new_restriction_type=rt;}
 	void				SetRestrictionType					(ERestrictionType rt){m_new_restriction_type=m_restriction_type=rt;}
@@ -146,7 +146,7 @@ virtual		void		SetObjectContactCallbackData		( void* callback )											=0 ;
 virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback)						=0 ;
 virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback)						=0 ;
 virtual		void		SetStaticContactCallBack			(ContactCallbackFun* calback)								=0 ;
-virtual		ObjectContactCallbackFun* ObjectContactCallBack	()															{return NULL;}
+virtual		ObjectContactCallbackFun* ObjectContactCallBack	()															{return nullptr;}
 virtual		void		GetVelocity							(Fvector& vvel)const										=0 ;
 virtual		void		GetSavedVelocity					(Fvector& vvel)												;
 virtual		void		GetSmothedVelocity					(Fvector& vvel)												=0 ;

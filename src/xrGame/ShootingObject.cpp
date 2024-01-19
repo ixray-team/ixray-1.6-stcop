@@ -38,9 +38,9 @@ CShootingObject::CShootingObject(void)
 	m_fTimeToAim					= 0.0f;
 
 	//particles
-	m_sFlameParticlesCurrent		= m_sFlameParticles = NULL;
-	m_sSmokeParticlesCurrent		= m_sSmokeParticles = NULL;
-	m_sShellParticles				= NULL;
+	m_sFlameParticlesCurrent		= m_sFlameParticles = nullptr;
+	m_sSmokeParticlesCurrent		= m_sSmokeParticles = nullptr;
+	m_sShellParticles				= nullptr;
 	
 	bWorking						= false;
 
@@ -55,7 +55,7 @@ CShootingObject::~CShootingObject(void)
 
 void CShootingObject::reinit()
 {
-	m_pFlameParticles	= NULL;
+	m_pFlameParticles	= nullptr;
 }
 
 void CShootingObject::Load	(LPCSTR section)
@@ -205,7 +205,7 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 {
 	if(!particles_name) return;
 
-	if(pParticles != NULL) 
+	if(pParticles != nullptr) 
 	{
 		UpdateParticles(pParticles, pos, vel);
 		return;
@@ -225,7 +225,7 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 }
 void CShootingObject::StopParticles (CParticlesObject*&	pParticles)
 {
-	if(pParticles == NULL) return;
+	if(pParticles == nullptr) return;
 
 	pParticles->Stop		();
 	CParticlesObject::Destroy(pParticles);
@@ -315,7 +315,7 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 void CShootingObject::StartSmokeParticles	(const Fvector& play_pos,
 											const Fvector& parent_vel)
 {
-	CParticlesObject* pSmokeParticles = NULL;
+	CParticlesObject* pSmokeParticles = nullptr;
 	StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, parent_vel, true);
 }
 
@@ -351,11 +351,11 @@ void CShootingObject::StartFlameParticles	()
 void CShootingObject::StopFlameParticles	()
 {
 	if(0==m_sFlameParticlesCurrent.size()) return;
-	if(m_pFlameParticles == NULL) return;
+	if(m_pFlameParticles == nullptr) return;
 
 	m_pFlameParticles->SetAutoRemove(true);
 	m_pFlameParticles->Stop();
-	m_pFlameParticles = NULL;
+	m_pFlameParticles = nullptr;
 }
 
 void CShootingObject::UpdateFlameParticles	()
@@ -525,7 +525,7 @@ void CShootingObject::FireEnd	()
 
 void CShootingObject::StartShotParticles	()
 {
-	CParticlesObject* pSmokeParticles = NULL;
+	CParticlesObject* pSmokeParticles = nullptr;
 	StartParticles(pSmokeParticles, *m_sShotParticles, 
 					m_vCurrentShootPos, m_vCurrentShootDir, true);
 }

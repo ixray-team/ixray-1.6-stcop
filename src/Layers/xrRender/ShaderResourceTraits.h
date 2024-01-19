@@ -18,7 +18,7 @@
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
-			R_CHK(RDevice->CreateHullShader(buffer, size, NULL, &hs));
+			R_CHK(RDevice->CreateHullShader(buffer, size, nullptr, &hs));
 			return hs;
 		}
 
@@ -36,7 +36,7 @@
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
-			R_CHK(RDevice->CreateDomainShader(buffer, size, NULL, &hs));
+			R_CHK(RDevice->CreateDomainShader(buffer, size, nullptr, &hs));
 			return hs;
 		}
 
@@ -54,7 +54,7 @@
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* cs = 0;
-			R_CHK(RDevice->CreateComputeShader(buffer, size, NULL, &cs));
+			R_CHK(RDevice->CreateComputeShader(buffer, size, nullptr, &cs));
 			return cs;
 		}
 
@@ -87,7 +87,7 @@
 			sh_map.insert(std::make_pair(sh->set_name(name),sh));
 			if (0==_stricmp(name,"null"))
 			{
-				sh->sh				= NULL;
+				sh->sh				= nullptr;
 				return sh;
 			}
 

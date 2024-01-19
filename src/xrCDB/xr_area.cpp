@@ -39,8 +39,8 @@ CObjectSpace::CObjectSpace	( ):
 CObjectSpace::~CObjectSpace	( )
 {
 	//moved to ~IGameLevel
-//	Sound->set_geometry_occ		(NULL);
-//	Sound->set_handler			(NULL);
+//	Sound->set_geometry_occ		(nullptr);
+//	Sound->set_handler			(nullptr);
 	//
 #ifdef DEBUG
 	//sh_debug.destroy			();

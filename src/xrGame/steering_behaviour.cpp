@@ -72,7 +72,7 @@ vec   evade::calc_acceleration ()
 		return detail::zero_vec;
 	}
 
-	STEER_ASSERT(m_p_params->pf_random_dir != NULL);
+	STEER_ASSERT(m_p_params->pf_random_dir != nullptr);
 
 	const vec pos2dest_norm = (dest2pos_mag > detail::near_zero) ? 
 		                      (dest2pos * (1.f/dest2pos_mag)) : normalize( (*m_p_params->pf_random_dir)() );
@@ -291,7 +291,7 @@ vec   manager::calc_acceleration ()
 	{
 		base* p_base = (*i);
 		base::params* p_params = p_base->get_supplier();
-		STEER_ASSERT(p_params != NULL);
+		STEER_ASSERT(p_params != nullptr);
 
 		if ( !p_params->update() )
 		{

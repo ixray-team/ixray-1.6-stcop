@@ -35,7 +35,7 @@ public:
 		u32						size;
 		u32						vfs_idx;
 
-		archive():hSrcFile(NULL),header(NULL),size(0),vfs_idx(u32(-1)){}
+		archive():hSrcFile(nullptr),header(nullptr),size(0),vfs_idx(u32(-1)){}
 		void					open();
 		void					close();
 	};
@@ -44,7 +44,7 @@ public:
 	using archives_it = archives_vec::iterator;
 
     archives_vec				m_archives;
-	void						LoadArchive		(archive& A, LPCSTR entrypoint=NULL);
+	void						LoadArchive		(archive& A, LPCSTR entrypoint=nullptr);
 
 private:
 	struct file_pred {

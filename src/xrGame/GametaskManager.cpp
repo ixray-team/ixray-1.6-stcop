@@ -44,7 +44,7 @@ CGameTaskManager::CGameTaskManager()
 	m_gametasks_wrapper->registry().init(0);// actor's id
 	m_flags.zero				();
 	m_flags.set					(eChanged, TRUE);
-	m_gametasks					= NULL;
+	m_gametasks					= nullptr;
 
 	if( g_active_task_id.size() )
 	{
@@ -59,7 +59,7 @@ CGameTaskManager::CGameTaskManager()
 CGameTaskManager::~CGameTaskManager()
 {
 	delete_data					(m_gametasks_wrapper);
-	g_active_task_id			= NULL;
+	g_active_task_id			= nullptr;
 }
 
 vGameTasks&	CGameTaskManager::GetGameTasks	() 
@@ -92,7 +92,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	{
  		Msg("! task [%s] already inprocess",t->m_ID.c_str());
 		VERIFY2( 0, make_string<const char*>( "give_task : Task [%s] already inprocess!", t->m_ID.c_str()) );
-		return NULL;
+		return nullptr;
 	}
 
 	m_flags.set						(eChanged, TRUE);
@@ -109,7 +109,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 	//CGameTask* active_task			= ActiveTask();
 
-	//if ( (active_task == NULL) || (active_task->m_priority < t->m_priority) )
+	//if ( (active_task == nullptr) || (active_task->m_priority < t->m_priority) )
 	//{
 	//	SetActiveTask( t );
 	//}
@@ -144,7 +144,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state)
 void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state)
 {
 	CGameTask* t				= HasGameTask(id, true);
-	if (NULL==t)				{Msg("actor does not has task [%s] or it is completed", *id);	return;}
+	if (nullptr==t)				{Msg("actor does not has task [%s] or it is completed", *id);	return;}
 	SetTaskState				(t, state);
 }
 
@@ -203,7 +203,7 @@ void CGameTaskManager::UpdateActiveTask()
 	CGameTask*	t			= ActiveTask();
 	if ( !t )
 	{
-		CGameTask* front	= IterateGet(NULL, eTaskStateInProgress, true);
+		CGameTask* front	= IterateGet(nullptr, eTaskStateInProgress, true);
 		if ( front )
 		{
 			SetActiveTask	(front);
@@ -217,7 +217,7 @@ void CGameTaskManager::UpdateActiveTask()
 CGameTask* CGameTaskManager::ActiveTask()
 {
 	const shared_str&	t_id	= g_active_task_id;
-	if(!t_id.size())			return NULL;
+	if(!t_id.size())			return nullptr;
 	return						HasGameTask( t_id, true );
 }
 /*
@@ -268,7 +268,7 @@ CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inpro
 			return gt;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 CGameTask* CGameTaskManager::IterateGet(CGameTask* t, ETaskState state, bool bForward)
@@ -278,7 +278,7 @@ CGameTask* CGameTaskManager::IterateGet(CGameTask* t, ETaskState state, bool bFo
 	for(u32 i=0; i<cnt; ++i)
 	{
 		CGameTask* gt	= v[i].game_task;
-		if(gt==t || NULL==t)
+		if(gt==t || nullptr==t)
 		{
 			bool			allow;
 			if(bForward)	
@@ -297,10 +297,10 @@ CGameTask* CGameTaskManager::IterateGet(CGameTask* t, ETaskState state, bool bFo
 				else
 					return IterateGet(found, state, bForward);
 			}else
-				return NULL;
+				return nullptr;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 u32 CGameTaskManager::GetTaskIndex( CGameTask* t, ETaskState state )

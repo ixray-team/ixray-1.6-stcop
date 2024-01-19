@@ -29,7 +29,7 @@
 
 dxRender_Visual*	CModelPool::Instance_Create(u32 type)
 {
-	dxRender_Visual *V = NULL;
+	dxRender_Visual *V = nullptr;
 
 	// Check types
 	switch (type) {
@@ -301,19 +301,19 @@ void	CModelPool::DeleteInternal	(dxRender_Visual* &V, BOOL bDiscard)
 			xr_delete			(V);
 		}
 	}
-	V	=	NULL;
+	V	=	nullptr;
 }
 
 void	CModelPool::Delete		(dxRender_Visual* &V, BOOL bDiscard)
 {
-	if (NULL==V)				return;
+	if (nullptr==V)				return;
 	if (g_bRendering){
 		VERIFY					(!bDiscard);
 		ModelsToDelete.push_back(V);
 	} else {
 		DeleteInternal			(V,bDiscard);
 	}	
-	V							=	NULL;
+	V							=	nullptr;
 }
 
 void	CModelPool::DeleteQueue		()
@@ -465,7 +465,7 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 		dxRender_Visual* ptr = it->model;
 		Fvisual* vis_ptr = dynamic_cast<Fvisual*> (ptr);
 
-		if( vis_ptr == NULL )
+		if( vis_ptr == nullptr )
 			continue;
 #ifndef USE_DX11
 		D3DINDEXBUFFER_DESC IB_desc;

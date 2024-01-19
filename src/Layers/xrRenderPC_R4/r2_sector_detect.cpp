@@ -22,13 +22,13 @@ int CRender::translateSector(IRender_Sector* pSector)
 
 IRender_Sector* CRender::detectSector(const Fvector& P)
 {
-	IRender_Sector*	S	= NULL;	
+	IRender_Sector*	S	= nullptr;	
 	Fvector			dir; 
 	Sectors_xrc.ray_options		(CDB::OPT_ONLYNEAREST);
 
 	dir.set				(0,-1,0);
 	S					= detectSector(P,dir);
-	if (NULL==S)		
+	if (nullptr==S)		
 	{
 		dir.set				(0,1,0);
 		S					= detectSector(P,dir);

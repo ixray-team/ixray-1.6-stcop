@@ -65,7 +65,7 @@ void CLevel::StartPlayDemo()
 {
 	R_ASSERT(IsDemoPlay() && !m_DemoPlayStarted);
 
-	m_current_spectator	= NULL;
+	m_current_spectator	= nullptr;
 	m_DemoPlayStarted	= TRUE;
 	m_StartGlobalTime	= Device.dwTimeGlobal;
 	SetDemoPlaySpeed	(1.0f);
@@ -123,7 +123,7 @@ void CLevel::StopPlayDemo()
 	if (m_reader)
 	{
 		//FS.r_close			(m_reader);
-		//m_reader			= NULL;
+		//m_reader			= nullptr;
 		m_DemoPlayStarted	= FALSE;
 		m_DemoPlayStoped	= TRUE;
 	}
@@ -184,7 +184,7 @@ bool CLevel::LoadDemoHeader	()
 	m_reader->r_stringZ		(m_demo_server_options);
 	u32 demo_info_start_pos	= m_reader->tell();
 	
-	R_ASSERT(m_demo_info == NULL);
+	R_ASSERT(m_demo_info == nullptr);
 	m_demo_info = xr_new<demo_info>();
 	m_demo_info->read_from_file(m_reader);
 
@@ -236,7 +236,7 @@ void CLevel::SimulateServerUpdate()
 void CLevel::SpawnDemoSpectator()
 {
 	R_ASSERT(Server && Server->game);
-	m_current_spectator = NULL;
+	m_current_spectator = nullptr;
 	game_sv_mp*	tmp_sv_game		= smart_cast<game_sv_mp*>(Server->game);
 	game_cl_mp*	mp_cl_game		= smart_cast<game_cl_mp*>(Level().game);
 

@@ -39,7 +39,7 @@ private:
 		(
 		const char * URL,       // The URL for the file ("http://host.domain[:port]/path/filename").
 		const char * filename,  // The path and name to store the file as locally.
-		const char * headers,   // Optional headers to pass with the request.  Can be NULL or "".
+		const char * headers,   // Optional headers to pass with the request.  Can be nullptr or "".
 		void* post,             // Optional data to be posted.
 		GHTTPBool throttle,         // If true, throttle this connection's download speed.
 		GHTTPBool blocking,         // If true, this call doesn't return until the file has been recevied.

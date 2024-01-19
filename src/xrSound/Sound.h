@@ -117,7 +117,7 @@ public:
 							ref_sound				(){ }
 							~ref_sound				(){ }
 
-	IC CSound_source*		_handle					()		const			{return _p?_p->handle:NULL;}
+	IC CSound_source*		_handle					()		const			{return _p?_p->handle:nullptr;}
 	IC CSound_emitter*		_feedback				()						{return _p?_p->feedback:0;}
 	IC CObject*				_g_object				()						{VERIFY(_p); return _p->g_object;}
 	IC int					_g_type					()						{VERIFY(_p); return _p->g_type;}
@@ -316,7 +316,7 @@ IC void	ref_sound::set_volume					( float vol )											{	VERIFY(!::Sound->i_l
 IC void	ref_sound::set_priority					( float p )												{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_priority(p);								}
 IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(FALSE);									}
 IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(TRUE);									}
-IC const CSound_params*	ref_sound::get_params	( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	return _feedback()->get_params(); else return NULL;			}
+IC const CSound_params*	ref_sound::get_params	( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	return _feedback()->get_params(); else return nullptr;			}
 IC void	ref_sound::set_params					( CSound_params* p )									
 {	
 	VERIFY(!::Sound->i_locked()); 	

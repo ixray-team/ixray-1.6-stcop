@@ -15,8 +15,8 @@
 
 CUIMpAdminMenu::CUIMpAdminMenu()
 {
-	xml_doc	= NULL;
-	m_pActiveDialog = NULL;
+	xml_doc	= nullptr;
+	m_pActiveDialog = nullptr;
 	m_sActiveSection = "";
 
 	m_pBack = xr_new<CUIStatic>();

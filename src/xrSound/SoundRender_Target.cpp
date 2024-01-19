@@ -45,7 +45,7 @@ void	CSoundRender_Target::render			()
 void	CSoundRender_Target::stop			()
 {
 	dettach			();
-	m_pEmitter		= NULL;
+	m_pEmitter		= nullptr;
 	rendering		= FALSE;
 }
 
@@ -75,7 +75,7 @@ void	CSoundRender_Target::attach()
 	ovc.seek_func		= ov_seek_func;
 	ovc.close_func		= ov_close_func;
 	ovc.tell_func		= ov_tell_func;
-	ov_open_callbacks	(m_wave, &m_ovf, NULL, 0, ovc);
+	ov_open_callbacks	(m_wave, &m_ovf, nullptr, 0, ovc);
 }
 
 void	CSoundRender_Target::dettach()

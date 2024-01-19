@@ -37,7 +37,7 @@ struct predicate_find_stat
 };
 
 CUIGameCustom::CUIGameCustom()
-:m_msgs_xml(NULL),m_ActorMenu(NULL),m_PdaMenu(NULL),m_window(NULL),UIMainIngameWnd(NULL),m_pMessagesWnd(NULL)
+:m_msgs_xml(nullptr),m_ActorMenu(nullptr),m_PdaMenu(nullptr),m_window(nullptr),UIMainIngameWnd(nullptr),m_pMessagesWnd(nullptr)
 {
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
@@ -165,7 +165,7 @@ SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 	if(it!=m_custom_statics.end())
 		return (*it);
 
-	return NULL;
+	return nullptr;
 }
 
 void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
@@ -260,24 +260,24 @@ void CUIGameCustom::Load()
 {
 	if(g_pGameLevel)
 	{
-		R_ASSERT				(NULL==m_msgs_xml);
+		R_ASSERT				(nullptr==m_msgs_xml);
 		m_msgs_xml				= xr_new<CUIXml>();
 		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
 
-		R_ASSERT				(NULL==m_ActorMenu);
+		R_ASSERT				(nullptr==m_ActorMenu);
 		m_ActorMenu				= xr_new<CUIActorMenu>		();
 
-		R_ASSERT				(NULL==m_PdaMenu);
+		R_ASSERT				(nullptr==m_PdaMenu);
 		m_PdaMenu				= xr_new<CUIPdaWnd>			();
 		
-		R_ASSERT				(NULL==m_window);
+		R_ASSERT				(nullptr==m_window);
 		m_window				= xr_new<CUIWindow>			();
 
-		R_ASSERT				(NULL==UIMainIngameWnd);
+		R_ASSERT				(nullptr==UIMainIngameWnd);
 		UIMainIngameWnd			= xr_new<CUIMainIngameWnd>	();
 		UIMainIngameWnd->Init	();
 
-		R_ASSERT				(NULL==m_pMessagesWnd);
+		R_ASSERT				(nullptr==m_pMessagesWnd);
 		m_pMessagesWnd			= xr_new<CUIMessagesWindow>();
 		
 		Init					(0);
@@ -318,7 +318,7 @@ void CUIGameCustom::enable_fake_indicators(bool enable)
 
 SDrawStaticStruct::SDrawStaticStruct	()
 {
-	m_static	= NULL;
+	m_static	= nullptr;
 	m_endTime	= -1.0f;	
 }
 
@@ -335,7 +335,7 @@ bool SDrawStaticStruct::IsActual() const
 
 void SDrawStaticStruct::SetText(LPCSTR text)
 {
-	m_static->Show(text!=NULL);
+	m_static->Show(text!=nullptr);
 	if(text)
 	{
 		m_static->TextItemControl()->SetTextST(text);
@@ -492,7 +492,7 @@ SGameTypeMaps* CMapListHelper::GetMapListInt(const shared_str& game_type)
 		if(game_type==(*it).m_game_type_name )
 			return &(*it);
 	}
-	return NULL;
+	return nullptr;
 }
 
 const SGameTypeMaps& CMapListHelper::GetMapListFor(const EGameIDs game_id)

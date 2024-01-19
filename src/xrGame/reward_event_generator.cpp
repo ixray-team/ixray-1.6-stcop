@@ -19,7 +19,7 @@ namespace award_system
 reward_event_generator::reward_event_generator(u32 const max_rewards_per_game) :
 	m_max_rewards(max_rewards_per_game)
 {
-	m_local_player				= NULL;
+	m_local_player				= nullptr;
 	m_rewarded					= 0;
 	m_state_accum				= xr_new<game_state_accumulator>();
 	event_action_delegate_t		tmp_delegate(this, &reward_event_generator::AddRewardTask);

@@ -58,7 +58,7 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name, Gam
 	EConnect res = inherited::Connect(session_name, game_descr);
 	if (res!=ErrNoError) return res;
 
-	if ( 0 == *(game->get_option_s		(*session_name,"hname",NULL)))
+	if ( 0 == *(game->get_option_s		(*session_name,"hname",nullptr)))
 	{
 		string1024	CompName;
 		DWORD		CompNameSize = 1024;
@@ -66,10 +66,10 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name, Gam
 			HostName	= CompName;
 	}
 	else
-		HostName	= game->get_option_s		(*session_name,"hname",NULL);
+		HostName	= game->get_option_s		(*session_name,"hname",nullptr);
 	
-	if (0 != *(game->get_option_s		(*session_name,"psw",NULL)))
-		Password._set(game->get_option_s		(*session_name,"psw",NULL));
+	if (0 != *(game->get_option_s		(*session_name,"psw",nullptr)))
+		Password._set(game->get_option_s		(*session_name,"psw",nullptr));
 
 	string4096	tMapName = "";
 	const char* SName = *session_name;
@@ -117,7 +117,7 @@ void			xrGameSpyServer::Update				()
 
 	if (m_bQR2_Initialized)
 	{
-		m_QR2.Think(NULL);
+		m_QR2.Think(nullptr);
 	};
 
 	if (m_bCDKey_Initialized)

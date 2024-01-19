@@ -307,7 +307,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 
 	if(IsGameTypeSingle() && cam_eff_factor>EPS)
 	{
-	LPCSTR state_anm				= NULL;
+	LPCSTR state_anm				= nullptr;
 
 	if(mstate_real&mcSprint && !(mstate_old&mcSprint) )
 		state_anm					= "sprint";
@@ -327,9 +327,9 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		if(state_anm)
 		{ //play moving cam effect
 			CActor*	control_entity		= static_cast<CActor*>(Level().CurrentControlEntity());
-			R_ASSERT2					(control_entity, "current control entity is NULL");
+			R_ASSERT2					(control_entity, "current control entity is nullptr");
 			CEffectorCam* ec			= control_entity->Cameras().GetCamEffector(eCEActorMoving);
-			if(NULL==ec)
+			if(nullptr==ec)
 			{
 				string_path			eff_name;
 				xr_sprintf			(eff_name, sizeof(eff_name), "%s.anm", state_anm);
@@ -489,7 +489,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 	unaffected_r_torso.roll		= r_torso.roll;
 
 	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? 
-		inventory().ItemFromSlot(inventory().GetActiveSlot()) : NULL);
+		inventory().ItemFromSlot(inventory().GetActiveSlot()) : nullptr);
 	if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
 	{
 		Fvector dangle = weapon_recoil_last_delta();
@@ -530,7 +530,7 @@ void CActor::g_sv_Orientate(u32 /**mstate_rl/**/, float /**dt/**/)
 	r_torso.roll	=	unaffected_r_torso.roll;
 
 	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? 
-		inventory().ItemFromSlot(inventory().GetActiveSlot()) : NULL);
+		inventory().ItemFromSlot(inventory().GetActiveSlot()) : nullptr);
 	if (pWM && pWM->GetCurrentFireMode() == 1/* && eacFirstEye != cam_active*/)
 	{
 		Fvector dangle = weapon_recoil_last_delta();

@@ -464,7 +464,7 @@ void __cdecl	account_manager::new_user_cb(GPConnection * connection,
 											 void * param)
 {
 	GPNewUserResponseArg* creation_resp = static_cast<GPNewUserResponseArg*>(arg);
-	VERIFY(creation_resp != NULL);
+	VERIFY(creation_resp != nullptr);
 	account_manager* tmp_inst = static_cast<account_manager*>(param);
 	VERIFY(tmp_inst);
 	VERIFY(tmp_inst->m_account_creation_cb);

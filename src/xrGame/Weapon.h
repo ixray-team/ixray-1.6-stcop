@@ -427,7 +427,7 @@ public:
 
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
-													LPCSTR ammoSect = NULL, 
+													LPCSTR ammoSect = nullptr, 
 													u32 ParentID = 0xffffffff);
 	virtual bool			SwitchAmmoType		(u32 flags);
 

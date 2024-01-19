@@ -6,20 +6,20 @@
 
 CUIMessageBox::CUIMessageBox()
 {
-	m_UIButtonYesOk		= NULL;
-	m_UIButtonNo		= NULL;
-	m_UIButtonCancel	= NULL;
-	m_UIButtonCopy		= NULL;
-	m_UIStaticPicture	= NULL;
-	m_UIStaticText		= NULL;
+	m_UIButtonYesOk		= nullptr;
+	m_UIButtonNo		= nullptr;
+	m_UIButtonCancel	= nullptr;
+	m_UIButtonCopy		= nullptr;
+	m_UIStaticPicture	= nullptr;
+	m_UIStaticText		= nullptr;
 
-	m_UIEditPass		= NULL;
-	m_UIEditUserPass	= NULL;
-	m_UIEditURL			= NULL;
-	m_UIEditHost		= NULL;
-	m_UIStaticPass		= NULL;
-	m_UIStaticUserPass	= NULL;
-	m_UIStaticHost		= NULL;
+	m_UIEditPass		= nullptr;
+	m_UIEditUserPass	= nullptr;
+	m_UIEditURL			= nullptr;
+	m_UIEditHost		= nullptr;
+	m_UIStaticPass		= nullptr;
+	m_UIStaticUserPass	= nullptr;
+	m_UIStaticHost		= nullptr;
 }
 
 CUIMessageBox::~CUIMessageBox()
@@ -401,7 +401,7 @@ LPCSTR CUIMessageBox::GetHost()
 		return m_ret_val.c_str();
 	}
 	else 
-		return NULL;
+		return nullptr;
 }
 
 LPCSTR CUIMessageBox::GetPassword()
@@ -409,7 +409,7 @@ LPCSTR CUIMessageBox::GetPassword()
 	if (m_UIEditPass)
 		return m_UIEditPass->GetText();
 	else 
-		return NULL;
+		return nullptr;
 }
 
 LPCSTR CUIMessageBox::GetUserPassword()
@@ -417,7 +417,7 @@ LPCSTR CUIMessageBox::GetUserPassword()
 	if (m_UIEditUserPass)
 		return m_UIEditUserPass->GetText();
 	else 
-		return NULL;
+		return nullptr;
 }
 
 void CUIMessageBox::SetTextEditURL(LPCSTR text)
@@ -434,7 +434,7 @@ LPCSTR CUIMessageBox::GetTextEditURL()
 	{
 		return m_UIEditURL->GetText();
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CUIMessageBox::SetUserPasswordMode(bool b)

@@ -42,7 +42,7 @@ shared_str CGameSpy_GP::TryToTranslate(GPResult const & res)
 
 CGameSpy_GP::CGameSpy_GP()
 {
-	m_GPConnection	= NULL;	//GPConnection type is: void*
+	m_GPConnection	= nullptr;	//GPConnection type is: void*
 	LoadGameSpyGP	();
 	Init			();
 }
@@ -98,7 +98,7 @@ GPResult CGameSpy_GP::NewUser(shared_str const & nick,
 		unique_nick.c_str(),
 		email.c_str(),
 		password.c_str(),
-		NULL,
+		nullptr,
 		GP_NON_BLOCKING,
 		callback,
 		param
@@ -116,8 +116,8 @@ GPResult CGameSpy_GP::ProfileSearch(shared_str const & nick,
 		nick.c_str(),
 		unique_nick.c_str(),
 		email.c_str(),
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		0,
 		GP_NON_BLOCKING,
 		callback,
@@ -196,7 +196,7 @@ GPResult CGameSpy_GP::SetUniqueNick(shared_str const & unique_nick,
 	return xrGS_gpRegisterUniqueNickA(
 		&m_GPConnection,
 		unique_nick.c_str(),
-		NULL,
+		nullptr,
 		GP_NON_BLOCKING,
 		callback,
 		param

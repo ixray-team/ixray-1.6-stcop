@@ -65,7 +65,7 @@ void CStateGroupEatAbstract::finalize()
 	}
 	if (this->object->character_physics_support()->movement()->PHCapture())
 		this->object->character_physics_support()->movement()->PHReleaseObject();
-	this->object->EatedCorpse = NULL;
+	this->object->EatedCorpse = nullptr;
 	this->object->b_end_state_eat = true;
 }
 
@@ -79,13 +79,13 @@ void CStateGroupEatAbstract::critical_finalize()
 			this->object->character_physics_support()->movement()->PHReleaseObject();
 		const_cast<CEntityAlive *>(this->object->EatedCorpse)->m_use_timeout = this->object->m_corpse_use_timeout;
 		const_cast<CEntityAlive *>(this->object->EatedCorpse)->set_lock_corpse(false);
-		this->object->EatedCorpse = NULL;
+		this->object->EatedCorpse = nullptr;
 		this->object->b_end_state_eat = true;
 	}
 	if (this->object->EnemyMan.get_enemy())
 		if (this->object->character_physics_support()->movement()->PHCapture())
 			this->object->character_physics_support()->movement()->PHReleaseObject();
-	this->object->EatedCorpse = NULL;
+	this->object->EatedCorpse = nullptr;
 	this->object->b_end_state_eat = true;
 }
 
@@ -210,7 +210,7 @@ void CStateGroupEatAbstract::setup_substates()
 		// Определить позицию ближайшей боны у трупа
 		Fvector nearest_bone_pos;
 		const CEntityAlive *corpse_ = this->object->EatedCorpse;
-		if ((corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive())) {
+		if ((corpse_->m_pPhysicsShell == nullptr) || (!corpse_->m_pPhysicsShell->isActive())) {
 			nearest_bone_pos	= corpse_->Position(); 
 		} else nearest_bone_pos = this->object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse_);
 
@@ -291,7 +291,7 @@ void CStateGroupEatAbstract::setup_substates()
 			}
 		#endif //#ifdef DEBUG
 
-		if ( (corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive()) ) {
+		if ( (corpse_->m_pPhysicsShell == nullptr) || (!corpse_->m_pPhysicsShell->isActive()) ) {
 			nearest_bone_pos	= corpse_->Position();
 		} else nearest_bone_pos = this->object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse_);
 

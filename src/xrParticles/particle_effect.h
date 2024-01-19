@@ -52,7 +52,7 @@ namespace PAPI{
 			// Allocate particles.
 			void* new_real_ptr = xr_malloc( sizeof( Particle ) * ( max_count + 1 ) );
 
-			if( new_real_ptr == NULL ){
+			if( new_real_ptr == nullptr ){
 				// ERROR - Not enough memory. Just give all we've got.
 				max_particles		= particles_allocated;
 				return max_particles;

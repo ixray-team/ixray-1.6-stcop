@@ -36,7 +36,7 @@ public:
 							CUIMpAdminMenu();
 		virtual				~CUIMpAdminMenu();
 				void		Init();
-		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 		virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
 				void		SetActiveSubdialog	(const shared_str& section);
 		void		RemoteAdminLogin(CUIWindow*, void*);

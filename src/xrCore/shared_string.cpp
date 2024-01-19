@@ -41,7 +41,7 @@ struct str_container_impl
 			candidate = candidate->next;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	void insert(str_value* value)
@@ -57,7 +57,7 @@ struct str_container_impl
 		{
 			str_value** current = &buffer[i];
 
-			while (*current != NULL)
+			while (*current != nullptr)
 			{
 				str_value* value = *current;
 				if (!value->dwReference)

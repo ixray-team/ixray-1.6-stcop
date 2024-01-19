@@ -24,7 +24,7 @@
 #include "IGame_Persistent.h"
 
 //---------------------------------------------------------------------
-ENGINE_API CInifile* pGameIni		= NULL;
+ENGINE_API CInifile* pGameIni		= nullptr;
 BOOL	g_bIntroFinished			= FALSE;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
@@ -89,7 +89,7 @@ void compute_build_id()
 
 //////////////////////////////////////////////////////////////////////////
 // global variables
-ENGINE_API	CApplication*	pApp			= NULL;
+ENGINE_API	CApplication*	pApp			= nullptr;
 
 ENGINE_API	string512		g_sLaunchOnExit_params;
 ENGINE_API	string512		g_sLaunchOnExit_app;
@@ -290,7 +290,7 @@ struct damn_keys_filter {
 
 		if ( bScreenSaverState )
 			// Disable screensaver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , FALSE , NULL , 0 );
+			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , FALSE , nullptr , 0 );
 
 		dwStickyKeysFlags = 0;
 		dwFilterKeysFlags = 0;
@@ -336,7 +336,7 @@ struct damn_keys_filter {
 	{
 		if ( bScreenSaverState )
 			// Restoring screen saver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , TRUE , NULL , 0 );
+			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , TRUE , nullptr , 0 );
 
 		if ( dwStickyKeysFlags) {
 			// Restore StickyKeys feature
@@ -386,8 +386,8 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	// AVI
 	g_bIntroFinished = TRUE;
 
-	g_sLaunchOnExit_app[0] = NULL;
-	g_sLaunchOnExit_params[0] = NULL;
+	g_sLaunchOnExit_app[0] = 0;
+	g_sLaunchOnExit_params[0] = 0;
 
 	LPCSTR fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
@@ -398,7 +398,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	compute_build_id			();
-	Core._initialize			("xray",NULL, TRUE, fsgame[0] ? fsgame : NULL);
+	Core._initialize			("xray",nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
 
 	InitSettings				();
 

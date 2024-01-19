@@ -19,8 +19,8 @@ void CLight_DB::Load			(IReader *fs)
 	IReader* F	= 0;
 
 	// Lights itself
-	sun_original		= NULL;
-	sun_adapted			= NULL;
+	sun_original		= nullptr;
+	sun_adapted			= nullptr;
 	{
 		F				= fs->open_chunk		(fsL_LIGHT_DYNAMIC);
 

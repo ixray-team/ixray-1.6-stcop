@@ -4,13 +4,13 @@
 void	CRenderTarget::phase_scene_prepare	()
 {
 	// Clear depth & stencil
-	//u_setrt	( Device.TargetWidth,Device.TargetHeight,RTarget,NULL,NULL,RDepth );
-	//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+	//u_setrt	( Device.TargetWidth,Device.TargetHeight,RTarget,nullptr,nullptr,RDepth );
+	//CHK_DX	( RDevice->Clear	( 0L, nullptr, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	//	Igor: soft particles
 
 	// we need to clean up G-buffer every frame to avoid some glithces
 	u_setrt(rt_Position, rt_Normal, rt_Color, 0);
-	CHK_DX(RDevice->Clear(0L, NULL, D3DCLEAR_TARGET, 0x0, 1.0f, 0L));
+	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET, 0x0, 1.0f, 0L));
 
 	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 	float fValue = E.m_fSunShaftsIntensity;
@@ -21,13 +21,13 @@ void	CRenderTarget::phase_scene_prepare	()
 		((ps_r_sun_shafts > 0) && (fValue >= 0.0001)) ||
 		(ps_r_ssao > 0))
 	{
-		u_setrt	( RCache.get_width(),RCache.get_height(),rt_Position->pRT,NULL,NULL,RDepth );
-		CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		u_setrt	( RCache.get_width(),RCache.get_height(),rt_Position->pRT,nullptr,nullptr,RDepth );
+		CHK_DX	( RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	}
 	else
 	{
-		u_setrt	( RCache.get_width(),RCache.get_height(),RTarget,NULL,NULL,RDepth );
-		CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		u_setrt	( RCache.get_width(),RCache.get_height(),RTarget,nullptr,nullptr,RDepth );
+		CHK_DX	( RDevice->Clear	( 0L, nullptr, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	}
 
 	//	Igor: for volumetric lights

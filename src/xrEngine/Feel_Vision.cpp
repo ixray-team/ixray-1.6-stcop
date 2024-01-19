@@ -31,7 +31,7 @@ namespace Feel {
 		SFeelParam* fp	= (SFeelParam*)params;
 		float vis		= fp->parent->feel_vision_mtl_transp(result.O, result.element);
 		fp->vis			*= vis;
-		if (NULL==result.O && fis_zero(vis)){
+		if (nullptr==result.O && fis_zero(vis)){
 			CDB::TRI* T	= g_pGameLevel->ObjectSpace.GetStaticTris()+result.element;
 			Fvector* V	= g_pGameLevel->ObjectSpace.GetStaticVerts();
 			fp->item->Cache.verts[0].set	(V[T->verts[0]]);
@@ -194,7 +194,7 @@ namespace Feel {
 						// cache outdated. real query.
 						VERIFY(!fis_zero(RD.dir.magnitude()));
 
-						if (g_pGameLevel->ObjectSpace.RayQuery	(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))	{
+						if (g_pGameLevel->ObjectSpace.RayQuery	(RQR, RD, feel_vision_callback, &feel_params, nullptr, nullptr))	{
 							I->Cache_vis	= feel_params.vis	;
 							I->Cache.set	(P,D,f,TRUE	)		;
 						}

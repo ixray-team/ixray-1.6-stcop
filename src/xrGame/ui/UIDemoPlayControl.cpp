@@ -34,9 +34,9 @@ CUIDemoPlayControl::CUIDemoPlayControl()
 	AttachChild					(m_rewind_type);
 	m_rewind_type->SetWindowName("rewind_types_pbox");
 
-	m_players_store		= NULL;
-	m_players			= NULL;
-	m_demo_play_control	= NULL;
+	m_players_store		= nullptr;
+	m_players			= nullptr;
+	m_demo_play_control	= nullptr;
 }
 
 CUIDemoPlayControl::~CUIDemoPlayControl()
@@ -120,12 +120,12 @@ void CUIDemoPlayControl::InitRewindTypeList	()
 {
 	CStringTable st;
 	m_rewind_type->InitPropertiesBox(Fvector2().set(0,0), Fvector2().set(100,200));
-	m_rewind_type->AddItem(st.translate("mpd_rewind_until_start").c_str(),		NULL, eRewindUntilStart);
-	m_rewind_type->AddItem(st.translate("mpd_rewind_until_kill").c_str(),		NULL, eRewindUntilKill);
-	m_rewind_type->AddItem(st.translate("mpd_rewind_until_die").c_str(),		NULL, eRewindUntilDie);
-	m_rewind_type->AddItem(st.translate("mpd_rewind_until_arttake").c_str(),	NULL, eRewindUntilArtTake);
-	m_rewind_type->AddItem(st.translate("mpd_rewind_until_artdrop").c_str(),	NULL, eRewindUntilArtDrop);
-	m_rewind_type->AddItem(st.translate("mpd_rewind_until_artdeliver").c_str(),	NULL, eRewindUntilArtDeliver);
+	m_rewind_type->AddItem(st.translate("mpd_rewind_until_start").c_str(),		nullptr, eRewindUntilStart);
+	m_rewind_type->AddItem(st.translate("mpd_rewind_until_kill").c_str(),		nullptr, eRewindUntilKill);
+	m_rewind_type->AddItem(st.translate("mpd_rewind_until_die").c_str(),		nullptr, eRewindUntilDie);
+	m_rewind_type->AddItem(st.translate("mpd_rewind_until_arttake").c_str(),	nullptr, eRewindUntilArtTake);
+	m_rewind_type->AddItem(st.translate("mpd_rewind_until_artdrop").c_str(),	nullptr, eRewindUntilArtDrop);
+	m_rewind_type->AddItem(st.translate("mpd_rewind_until_artdeliver").c_str(),	nullptr, eRewindUntilArtDeliver);
 	m_rewind_type->AutoUpdateSize();
 	m_rewind_type->Hide();
 }
@@ -142,7 +142,7 @@ void CUIDemoPlayControl::InitAllPlayers		()
 
 	CStringTable st;
 	m_all_players->InitPropertiesBox(Fvector2().set(0,0), Fvector2().set(100,200));
-	m_all_players->AddItem(st.translate("mpd_any_player").c_str(), NULL, 0);	//warning ! zero tag means Any player !
+	m_all_players->AddItem(st.translate("mpd_any_player").c_str(), nullptr, 0);	//warning ! zero tag means Any player !
 
 	m_players->clear();
 	for (u32 i = 0; i != players_count; ++i)
@@ -152,7 +152,7 @@ void CUIDemoPlayControl::InitAllPlayers		()
 		LPCSTR tmp_player_name = tmp_player->get_name();
 		R_ASSERT(tmp_player_name);
 		m_players->push_back(shared_str(tmp_player_name));
-		m_all_players->AddItem(tmp_player_name, NULL, i + 1);	//warning ! player_index = tag - 1 !!!
+		m_all_players->AddItem(tmp_player_name, nullptr, i + 1);	//warning ! player_index = tag - 1 !!!
 	}
 	m_all_players->AutoUpdateSize();
 	m_all_players->Hide();
@@ -222,7 +222,7 @@ void CUIDemoPlayControl::OnRewindTypeSelected(CUIWindow* w, void* d)
 
 	if (tmp_item_tag == eRewindUntilStart)
 	{
-		OnRepeatRewind(NULL, NULL);
+		OnRepeatRewind(nullptr, nullptr);
 		m_rewind_type->Hide();
 		return;
 	}
@@ -240,14 +240,14 @@ void CUIDemoPlayControl::OnRewindPlayerSelected(CUIWindow* w, void* d)
 	if (tmp_item_tag == 0)
 	{
 		m_last_rewind_target = "";
-		OnRepeatRewind(NULL, NULL);
+		OnRepeatRewind(nullptr, nullptr);
 		return;
 	}
 	u32					player_index = tmp_item_tag - 1;
 	R_ASSERT			(player_index < m_players->size());
 	
 	m_last_rewind_target = m_players->at(player_index);
-	OnRepeatRewind		(NULL, NULL);
+	OnRepeatRewind		(nullptr, nullptr);
 }
 
 void CUIDemoPlayControl::OnRepeatRewind(CUIWindow* w, void* d)

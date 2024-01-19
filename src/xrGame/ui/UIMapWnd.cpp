@@ -22,7 +22,7 @@
 
 #include "../../xrEngine/xr_input.h"		//remove me !!!
 
-CUIMapWnd* g_map_wnd = NULL; // quick temporary solution -(
+CUIMapWnd* g_map_wnd = nullptr; // quick temporary solution -(
 CUIMapWnd* GetMapWnd()
 {
 	return g_map_wnd;
@@ -30,23 +30,23 @@ CUIMapWnd* GetMapWnd()
 
 CUIMapWnd::CUIMapWnd()
 {
-	m_tgtMap				= NULL;
-	m_GlobalMap				= NULL;
+	m_tgtMap				= nullptr;
+	m_GlobalMap				= nullptr;
 	m_view_actor			= false;
 	m_prev_actor_pos.set	(0,0);
 	m_currentZoom			= 1.0f;
-	m_map_location_hint		= NULL;
+	m_map_location_hint		= nullptr;
 	m_map_move_step			= 10.0f;
 /*
 #ifdef DEBUG
-//	m_dbg_text_hint			= NULL;
-//	m_dbg_info				= NULL;
+//	m_dbg_text_hint			= nullptr;
+//	m_dbg_info				= nullptr;
 #endif // DEBUG /**/
 
-//	UIMainMapHeader			= NULL;
+//	UIMainMapHeader			= nullptr;
 	m_scroll_mode			= false;
 	m_nav_timing			= Device.dwTimeGlobal;
-	hint_wnd				= NULL;
+	hint_wnd				= nullptr;
 	g_map_wnd				= this;
 }
 
@@ -60,7 +60,7 @@ CUIMapWnd::~CUIMapWnd()
 	delete_data( m_dbg_text_hint );
 	delete_data( m_dbg_info );
 #endif // DEBUG/**/
-	g_map_wnd				= NULL;
+	g_map_wnd				= nullptr;
 }
 
 
@@ -332,7 +332,7 @@ void CUIMapWnd::MapLocationRelcase(CMapLocation* ml)
 	{
 		CMapSpot* ms = smart_cast<CMapSpot*>(owner);
 		if(ms && ms->MapLocation()==ml) //CUITaskItem also can be a HintOwner
-			m_map_location_hint->SetOwner(NULL);
+			m_map_location_hint->SetOwner(nullptr);
 	}
 }
 
@@ -587,7 +587,7 @@ void CUIMapWnd::ViewActor()
 	Fvector v					= Level().CurrentEntity()->Position();
 	m_prev_actor_pos.set		(v.x,v.z);
 
-	CUICustomMap* lm			= NULL;
+	CUICustomMap* lm			= nullptr;
 	u16	idx						= GetIdxByName( Level().name() );
 	if ( idx != u16(-1) )
 	{
@@ -673,7 +673,7 @@ void CUIMapWnd::HideHint(CUIWindow* parent)
 
 void CUIMapWnd::HideCurHint()
 {
-	m_map_location_hint->SetOwner( NULL );
+	m_map_location_hint->SetOwner( nullptr );
 }
 
 void CUIMapWnd::Hint(const shared_str& text)

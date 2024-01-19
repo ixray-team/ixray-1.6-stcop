@@ -96,7 +96,7 @@ void player_state_cherub::OnPlayerKilled		(u16 killer_id, u16 target_id, u16 wea
 	tmp_fetcher.m_hitter_name				= tmp_victim_player->getName();
 	tmp_fetcher.m_art_take_time				= m_art_take_time;
 
-	buffer_vector<hits_store::bullet_hit>	tmp_fake_buffer(NULL, 0);
+	buffer_vector<hits_store::bullet_hit>	tmp_fake_buffer(nullptr, 0);
 	
 	if (m_owner->get_hits_store().fetch_hits(tmp_fetcher, tmp_fake_buffer) > 0)
 	{

@@ -437,7 +437,7 @@ void assert_match( const lzo_swd_p swd, lzo_uint m_len, lzo_uint m_off )
     }
     else
     {
-        assert(swd->dict != NULL);
+        assert(swd->dict != nullptr);
         d_off = m_off - (lzo_uint) (c->bp - c->in);
         assert(d_off <= swd->dict_len);
         if (m_len > d_off)
@@ -870,7 +870,7 @@ lzo1x_999_compress  ( const lzo_bytep in , lzo_uint  in_len,
                             lzo_voidp wrkmem )
 {
     return lzo1x_999_compress_level(in, in_len, out, out_len, wrkmem,
-                                    NULL, 0, (lzo_callback_p) 0, 8);
+                                    nullptr, 0, (lzo_callback_p) 0, 8);
 }
 
 

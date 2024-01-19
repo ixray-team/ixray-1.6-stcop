@@ -53,7 +53,7 @@ void CGameSpy_SAKE::Init()
 
 CGameSpy_SAKE::CGameSpy_SAKE()
 {
-	m_sake_inst		= NULL;
+	m_sake_inst		= nullptr;
 	LoadGameSpySAKE	();
 	Init			();
 }

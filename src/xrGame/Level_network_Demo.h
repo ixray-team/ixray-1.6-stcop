@@ -63,7 +63,7 @@ private:
 
 	//saving
 	void						SaveDemoHeader	(shared_str const & server_options);
-	inline	bool				IsDemoInfoSaved	() { return m_demo_info != NULL; }
+	inline	bool				IsDemoInfoSaved	() { return m_demo_info != nullptr; }
 
 	bool						LoadDemoHeader		();
 	bool						LoadPacket			(NET_Packet & dest_packet, u32 global_time_delta);

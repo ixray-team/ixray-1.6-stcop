@@ -40,7 +40,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 	ovc.seek_func			= ov_seek_func;
 	ovc.close_func			= ov_close_func;
 	ovc.tell_func			= ov_tell_func;
-	ov_open_callbacks		(m_wave, &m_ovf, NULL, 0, ovc);
+	ov_open_callbacks		(m_wave, &m_ovf, nullptr, 0, ovc);
 
 	vorbis_info* ovi		= ov_info(&m_ovf, -1);
 	// verify

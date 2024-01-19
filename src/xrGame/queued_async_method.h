@@ -57,7 +57,7 @@ public:
 			VERIFY(current_delegate);
 			if (current_delegate)
 			{
-				pending_obj			= NULL;
+				pending_obj			= nullptr;
 				pending_active		= true;
 			}
 		}

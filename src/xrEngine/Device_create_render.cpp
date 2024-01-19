@@ -72,7 +72,7 @@ void free_vid_mode_list()
 	}
 
 	xr_free(vid_mode_token);
-	vid_mode_token = NULL;
+	vid_mode_token = nullptr;
 }
 
 struct _uniq_mode
@@ -84,7 +84,7 @@ struct _uniq_mode
 
 void fill_vid_mode_list()
 {
-	if (vid_mode_token != NULL)		return;
+	if (vid_mode_token != nullptr)		return;
 	xr_vector<LPCSTR>	_tmp;
 	xr_vector<DXGI_MODE_DESC>	modes;
 
@@ -124,7 +124,7 @@ void fill_vid_mode_list()
 		if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
 			continue;
 
-		_tmp.push_back(NULL);
+		_tmp.push_back(nullptr);
 		_tmp.back() = xr_strdup(str);
 	}
 
@@ -133,7 +133,7 @@ void fill_vid_mode_list()
 	vid_mode_token = xr_alloc<xr_token>(_cnt);
 
 	vid_mode_token[_cnt - 1].id = -1;
-	vid_mode_token[_cnt - 1].name = NULL;
+	vid_mode_token[_cnt - 1].name = nullptr;
 
 #ifdef DEBUG
 	Msg("Available video modes[%d]:", _tmp.size());
@@ -328,7 +328,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		if (ImGui::Begin("DockSpaceViewport_Main", NULL, dockspace_window_flags)) {
+		if (ImGui::Begin("DockSpaceViewport_Main", nullptr, dockspace_window_flags)) {
 			ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 		}
 		ImGui::End();

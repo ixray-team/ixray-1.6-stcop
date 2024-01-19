@@ -138,7 +138,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 			m_ini_string		= temp;
 
 #ifdef XRGAME_EXPORTS
-		if ( NULL==ai().get_alife() )
+		if ( nullptr==ai().get_alife() )
 #endif // #ifdef XRGAME_EXPORTS
 		{
 			IReader* _r	= (IReader*)config;
@@ -357,7 +357,7 @@ BOOL CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	u16							size;
 	tNetPacket.r_u16			(size);	// size
 	bool b1						= (m_tClassID == CLSID_SPECTATOR);
-	bool b2						= (size > sizeof(size)) || (tNetPacket.inistream!=NULL);
+	bool b2						= (size > sizeof(size)) || (tNetPacket.inistream!=nullptr);
 	R_ASSERT3					( (b1 || b2),"cannot read object, which is not successfully saved :(",name_replace());
 	STATE_Read					(tNetPacket,size);
 	return						TRUE;

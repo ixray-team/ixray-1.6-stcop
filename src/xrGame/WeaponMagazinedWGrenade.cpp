@@ -103,7 +103,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 		}
 	}else
 	{
-		xr_vector<CCartridge>* pM = NULL;
+		xr_vector<CCartridge>* pM = nullptr;
 		bool b_if_grenade_mode	= (m_bGrenadeMode && iAmmoElapsed && !getRocketCount());
 		if(b_if_grenade_mode)
 			pM = &m_magazine;
@@ -313,7 +313,7 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 
 		if (E){
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-			if(NULL == io->inventory().ActiveItem())
+			if(nullptr == io->inventory().ActiveItem())
 			{
 				Msg("current_state %d", GetState() );
 				Msg("next_state %d", GetNextState());
@@ -646,9 +646,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 		else
 		{
 			if(m_bGrenadeMode)
-				PlayHUDMotion("anm_idle_g", TRUE, NULL, eIdle);
+				PlayHUDMotion("anm_idle_g", TRUE, nullptr, eIdle);
 			else
-				PlayHUDMotion("anm_idle_w_gl", TRUE, NULL, eIdle);
+				PlayHUDMotion("anm_idle_w_gl", TRUE, nullptr, eIdle);
 		}
 	}
 	else
@@ -660,9 +660,9 @@ void CWeaponMagazinedWGrenade::PlayAnimAim()
 	if (IsGrenadeLauncherAttached())
 	{
 		if (m_bGrenadeMode)
-			PlayHUDMotion("anm_idle_g_aim", TRUE, NULL, eIdle);
+			PlayHUDMotion("anm_idle_g_aim", TRUE, nullptr, eIdle);
 		else
-			PlayHUDMotion("anm_idle_w_gl_aim", TRUE, NULL, eIdle);
+			PlayHUDMotion("anm_idle_w_gl_aim", TRUE, nullptr, eIdle);
 	}
 	else
 		inherited::PlayAnimAim();
@@ -673,9 +673,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdleMoving()
 	if (IsGrenadeLauncherAttached())
 	{
 		if (m_bGrenadeMode)
-			PlayHUDMotion("anm_idle_moving_g", TRUE, NULL, eIdle);
+			PlayHUDMotion("anm_idle_moving_g", TRUE, nullptr, eIdle);
 		else
-			PlayHUDMotion("anm_idle_moving_w_gl", TRUE, NULL, eIdle);
+			PlayHUDMotion("anm_idle_moving_w_gl", TRUE, nullptr, eIdle);
 	}
 	else
 		inherited::PlayAnimIdleMoving();
@@ -686,9 +686,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdleSprint()
 	if (IsGrenadeLauncherAttached())
 	{
 		if (m_bGrenadeMode)
-			PlayHUDMotion("anm_idle_sprint_g", TRUE, NULL, eIdle);
+			PlayHUDMotion("anm_idle_sprint_g", TRUE, nullptr, eIdle);
 		else
-			PlayHUDMotion("anm_idle_sprint_w_gl", TRUE, NULL, eIdle);
+			PlayHUDMotion("anm_idle_sprint_w_gl", TRUE, nullptr, eIdle);
 	}
 	else
 		inherited::PlayAnimIdleSprint();

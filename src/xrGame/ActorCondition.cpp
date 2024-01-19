@@ -55,7 +55,7 @@ CActorCondition::CActorCondition(CActor *object) :
 	VERIFY						(object);
 	m_object					= object;
 	m_condition_flags.zero		();
-	m_death_effector			= NULL;
+	m_death_effector			= nullptr;
 
 	m_zone_max_power[ALife::infl_rad]	= 1.0f;
 	m_zone_max_power[ALife::infl_fire]	= 1.0f;
@@ -292,7 +292,7 @@ void CActorCondition::UpdateCondition()
 	if( IsGameTypeSingle() )
 		UpdateTutorialThresholds();
 
-	if(GetHealth()<0.05f && m_death_effector==NULL && IsGameTypeSingle())
+	if(GetHealth()<0.05f && m_death_effector==nullptr && IsGameTypeSingle())
 	{
 		if(pSettings->section_exist("actor_death_effector"))
 			m_death_effector = xr_new<CActorDeathEffector>(this, "actor_death_effector");
@@ -388,7 +388,7 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
 				SHit HDS = SHit(damage, 
 //.								0.0f, 
 								Fvector().set(0,1,0), 
-								NULL, 
+								nullptr, 
 								BI_NONE, 
 								Fvector().set(0,0,0), 
 								0.0f, 
@@ -505,7 +505,7 @@ void CActorCondition::UpdateSleepiness()
 
 CWound* CActorCondition::ConditionHit(SHit* pHDS)
 {
-	if (GodMode()) return NULL;
+	if (GodMode()) return nullptr;
 	return inherited::ConditionHit(pHDS);
 }
 
@@ -939,7 +939,7 @@ bool CActorCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const sh
 
 			shared_str snd_name			= pSettings->r_string(sect, "use_sound");
 			m_use_sound.create			(snd_name.c_str(), st_Effect, sg_SourceType);
-			m_use_sound.play			(NULL, sm_2D);
+			m_use_sound.play			(nullptr, sm_2D);
 		}
 	}
 
@@ -963,7 +963,7 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect)
 
 				shared_str snd_name			= pSettings->r_string(sect, "use_sound");
 				m_use_sound.create			(snd_name.c_str(), st_Effect, sg_SourceType);
-				m_use_sound.play			(NULL, sm_2D);
+				m_use_sound.play			(nullptr, sm_2D);
 			}
 		}
 

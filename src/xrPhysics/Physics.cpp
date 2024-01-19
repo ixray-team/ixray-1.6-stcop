@@ -101,8 +101,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		dGeomID					g2		=cgeom.g2;
 		bool pushing_neg=	false;
 		bool do_collide	=	true;
-		dxGeomUserData* usr_data_1		=NULL;
-		dxGeomUserData* usr_data_2		=NULL;
+		dxGeomUserData* usr_data_1		=nullptr;
+		dxGeomUserData* usr_data_2		=nullptr;
 		u16				material_idx_1	=0;
 		u16				material_idx_2	=0;
 

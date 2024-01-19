@@ -21,8 +21,8 @@
 CPsyDog::CPsyDog()
 {
 	m_aura						=	xr_new<CPsyDogAura>(this);
-	m_max_phantoms_count		=	NULL;
-	m_phantoms_die_time			=	NULL;
+	m_max_phantoms_count		=	0;
+	m_phantoms_die_time			=	nullptr;
 }
 CPsyDog::~CPsyDog()
 {

@@ -68,7 +68,7 @@ struct 	ECORE_API	resptrcode_geom	: public resptr_base<SGeometry>
 {
 	void 				create			(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
 	void				create			(u32 FVF				, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-	void				destroy			()			{ _set(NULL);		}
+	void				destroy			()			{ _set(nullptr);		}
 	u32					stride			()	const	{ return _get()->vb_stride;	}
 };
 
@@ -77,15 +77,15 @@ typedef	resptr_core<SGeometry,resptrcode_geom>												ref_geom;
 //////////////////////////////////////////////////////////////////////////
 struct	  ECORE_API		SPass			: public xr_resource_flagged									{
 	ref_state							state;		// Generic state, like Z-Buffering, samplers, etc
-	ref_ps								ps;			// may be NULL = FFP, in that case "state" must contain TSS setup
-	ref_vs								vs;			// may be NULL = FFP, in that case "state" must contain RS setup, *and* FVF-compatible declaration must be used
+	ref_ps								ps;			// may be nullptr = FFP, in that case "state" must contain TSS setup
+	ref_vs								vs;			// may be nullptr = FFP, in that case "state" must contain RS setup, *and* FVF-compatible declaration must be used
 #ifdef USE_DX11
-	ref_gs								gs;			// may be NULL = don't use geometry shader at all
-	ref_hs								hs;			// may be NULL = don't use hull shader at all
-	ref_ds								ds;			// may be NULL = don't use domain shader at all
-	ref_cs								cs;			// may be NULL = don't use compute shader at all
+	ref_gs								gs;			// may be nullptr = don't use geometry shader at all
+	ref_hs								hs;			// may be nullptr = don't use hull shader at all
+	ref_ds								ds;			// may be nullptr = don't use domain shader at all
+	ref_cs								cs;			// may be nullptr = don't use compute shader at all
 #endif //USE_DX11
-	ref_ctable							constants;	// may be NULL
+	ref_ctable							constants;	// may be nullptr
 
 	ref_texture_list					T;
 	ref_constant_list					C;
@@ -135,7 +135,7 @@ struct 	 ECORE_API	resptrcode_shader	: public resptr_base<Shader>
 {
 	void				create			(LPCSTR s_shader=0, LPCSTR s_textures=0, LPCSTR s_constants=0, LPCSTR s_matrices=0);
 	void				create			(IBlender*	B,	LPCSTR s_shader=0, LPCSTR s_textures=0, LPCSTR s_constants=0, LPCSTR s_matrices=0);
-	void				destroy			()	{ _set(NULL);		}
+	void				destroy			()	{ _set(nullptr);		}
 };
 typedef	resptr_core<Shader,resptrcode_shader>												ref_shader;
 

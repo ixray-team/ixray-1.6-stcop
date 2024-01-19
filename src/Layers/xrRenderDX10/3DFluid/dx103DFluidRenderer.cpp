@@ -299,8 +299,8 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	dataDesc.pSysMem = data;
 	dataDesc.SysMemPitch = 256;
 
-	ID3DTexture2D* NoiseTexture = NULL;
-	//ID3DxxShaderResourceView* JitterTextureSRV = NULL;
+	ID3DTexture2D* NoiseTexture = nullptr;
+	//ID3DxxShaderResourceView* JitterTextureSRV = nullptr;
 
 	CHK_DX( RDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
 
@@ -425,7 +425,7 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 	dataDesc.pSysMem = converted;
 	dataDesc.SysMemPitch = sizeof(converted);
 
-	ID3DTexture1D* HHGGTexture = NULL;
+	ID3DTexture1D* HHGGTexture = nullptr;
 
 	CHK_DX( RDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
 
@@ -501,15 +501,15 @@ void dx103DFluidRenderer::CreateRayDataResources( int width, int height )
 	desc.Width = width;
 	desc.Height = height;
 	desc.Format = volumeDataFmt;
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pRayDataTex2D));
+	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,nullptr,&pRayDataTex2D));
 
 	desc.Width = m_iRenderTextureWidth;
 	desc.Height = m_iRenderTextureHeight;
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pRayDataSmallTex2D));
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pRayCastTex2D));
+	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,nullptr,&pRayDataSmallTex2D));
+	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,nullptr,&pRayCastTex2D));
 
 	desc.Format = DXGI_FORMAT_R32_FLOAT;
-	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,NULL,&pEdgeTex2D));
+	V_RETURN(m_pD3DDevice->CreateTexture2D(&desc,nullptr,&pEdgeTex2D));
 
 	D3Dxx_RENDER_TARGET_VIEW_DESC DescRT;
 	DescRT.Format = volumeDataFmt;
@@ -666,7 +666,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//  raycasting is done at the smaller resolution, using a fullscreen quad
 	//m_pD3DDevice->ClearRenderTargetView( pRayCastRTV, color );
 	RContext->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
-	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayCastRTV , NULL ); 
+	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayCastRTV , nullptr ); 
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayCastTex],0,0,0);		// LDR RT
 
@@ -728,7 +728,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	float blackColor[4] = {0, 0, 0, 0 };
 	//m_pD3DDevice->ClearRenderTargetView(pRayDataRTV, blackColor);
 	RContext->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
-	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, NULL);
+	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, nullptr);
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
 	//pEffect->GetVariableByName("sceneDepthTex")->AsShaderResource()->SetResource(g_pSceneDepthSRV);
@@ -755,7 +755,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	// Render volume front faces using subtractive blending
 	// We output xyz="position in grid space" and w=boxDepth,
 	//  unless the pixel is occluded by the scene, in which case we output xyzw=(1,0,0,0)
-	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, NULL);
+	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, nullptr);
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
 	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
 	//pTechnique->GetPassByName("CompRayData_Front")->Apply(0);
@@ -785,7 +785,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture()
 	RCache.set_c(strRTHeight, (float)m_iRenderTextureHeight);
 
 	// Downsample the rayDataTexture to a new small texture, simply using point sample (no filtering)
-	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayDataSmallRTV , NULL ); 
+	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayDataSmallRTV , nullptr ); 
 	//pRayDataVar->SetResource(pRayDataSRV);
 	//pTechnique->GetPassByName("QuadDownSampleRayDataTexture")->Apply(0);
 	DrawScreenQuad();
@@ -793,7 +793,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture()
 	// Create an edge texture, performing edge detection on 'rayDataTexSmall'
 	pTarget->u_setrt(RT[RRT_EdgeTex],0,0,0);		// LDR RT
 	RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
-	//m_pD3DDevice->OMSetRenderTargets( 1, &pEdgeRTV , NULL ); 
+	//m_pD3DDevice->OMSetRenderTargets( 1, &pEdgeRTV , nullptr ); 
 	//pRayDataSmallVar->SetResource(pRayDataSmallSRV);
 	//pTechnique->GetPassByName("QuadEdgeDetect")->Apply(0);
 	DrawScreenQuad();

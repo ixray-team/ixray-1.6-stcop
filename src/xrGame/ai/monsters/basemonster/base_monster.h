@@ -285,7 +285,7 @@ public:
 	const CEntityAlive		*EatedCorpse;
 	// Lain: added
 	bool                    check_eated_corpse_draggable();
-	virtual bool			is_base_monster_with_enemy	() { return EnemyMan.get_enemy() != NULL; }
+	virtual bool			is_base_monster_with_enemy	() { return EnemyMan.get_enemy() != nullptr; }
 
 
 

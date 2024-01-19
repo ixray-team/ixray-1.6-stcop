@@ -48,7 +48,7 @@
 game_cl_CaptureTheArtefact::game_cl_CaptureTheArtefact()
 {
 	
-	m_game_ui = NULL;
+	m_game_ui = nullptr;
 	spawn_cost = -10000;
 
 	m_bTeamSelected = FALSE;
@@ -333,7 +333,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 			P.r_clientID(clientId);
 
 			PLAYERS_MAP_CIT playerIt = players.find(clientId);
-			game_PlayerState const * ps = NULL;
+			game_PlayerState const * ps = nullptr;
 
 			// if client present (not disconnected)
 			if (playerIt != players.end())
@@ -379,7 +379,7 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 			P.r_u16(deliverer_id);
 			game_PlayerState const * ps = GetPlayerByGameID(deliverer_id);
 
-			if (!local_player) //can be NULL, because not actor or spectator spawned yet...
+			if (!local_player) //can be nullptr, because not actor or spectator spawned yet...
 				return;
 
 			if (m_reward_generator)
@@ -652,7 +652,7 @@ bool game_cl_CaptureTheArtefact::InWarmUp() const
 CUIGameCustom* game_cl_CaptureTheArtefact::createGameUI()
 {
 	if (g_dedicated_server)
-		return NULL;
+		return nullptr;
 
 	m_game_ui				= smart_cast<CUIGameCTA*> (NEW_INSTANCE(CLSID_GAME_UI_CAPTURETHEARTEFACT));
 	VERIFY2					(m_game_ui, "failed to create Capture The Artefact game UI");
@@ -1393,8 +1393,8 @@ void game_cl_CaptureTheArtefact::OnVoteStop(NET_Packet& P)
 #endif
 	if (m_game_ui)
 	{
-		m_game_ui->SetVoteMessage(NULL);
-		m_game_ui->SetVoteTimeResultMsg(NULL);
+		m_game_ui->SetVoteMessage(nullptr);
+		m_game_ui->SetVoteTimeResultMsg(nullptr);
 	}
 }
 void game_cl_CaptureTheArtefact::OnVoteEnd(NET_Packet& P)
@@ -1402,8 +1402,8 @@ void game_cl_CaptureTheArtefact::OnVoteEnd(NET_Packet& P)
 	inherited::OnVoteEnd(P);
 	if (m_game_ui)
 	{
-		m_game_ui->SetVoteMessage(NULL);
-		m_game_ui->SetVoteTimeResultMsg(NULL);
+		m_game_ui->SetVoteMessage(nullptr);
+		m_game_ui->SetVoteTimeResultMsg(nullptr);
 	}
 }
 
@@ -1647,7 +1647,7 @@ char* game_cl_CaptureTheArtefact::getTeamSection(int Team)
 		NODEFAULT;
 	};
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif
 }
 

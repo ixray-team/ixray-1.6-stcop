@@ -161,9 +161,9 @@ void _cdecl DBG_OutText(LPCSTR s, ...)
 Flags32		ph_dbg_draw_mask						;
 Flags32		ph_dbg_draw_mask1						;
 
-//LPCSTR	dbg_trace_object_name					=NULL;
+//LPCSTR	dbg_trace_object_name					=nullptr;
 string64 s_dbg_trace_obj_name					="none";
-CObject	 *trace_object							= NULL;
+CObject	 *trace_object							= nullptr;
 u32	 	dbg_bodies_num							=0;
 u32	 	dbg_joints_num							=0;
 u32	 	dbg_islands_num							=0;
@@ -953,7 +953,7 @@ public:
 void DBG_PH_NetRelcase( CObject* obj )
 {
 	if( trace_object == obj )
-		trace_object = NULL;
+		trace_object = nullptr;
 }
 
 bool is_trace_obj( CPHObject *obj )

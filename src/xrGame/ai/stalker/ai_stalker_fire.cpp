@@ -610,7 +610,7 @@ void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &dire
 	
 	ray_query_param_stalker params(this,memory().visual().transparency_threshold(),distance);
 
-	Level().ObjectSpace.RayQuery	(rq_storage_,ray_defs,ray_query_callback,&params,NULL,this);
+	Level().ObjectSpace.RayQuery	(rq_storage_,ray_defs,ray_query_callback,&params,nullptr,this);
 	m_can_kill_enemy				= m_can_kill_enemy  || params.m_can_kill_enemy;
 	m_can_kill_member				= m_can_kill_member || params.m_can_kill_member;
 	m_pick_distance					= _max(m_pick_distance,params.m_pick_distance);
@@ -961,8 +961,8 @@ void CAI_Stalker::check_throw_trajectory	(const float &throw_time)
 {
 	m_throw_enabled			= false;
 
-	xr_vector<trajectory_pick> * trajectory_picks	=	NULL;
-	xr_vector<Fvector> *		collide_tris		=	NULL;
+	xr_vector<trajectory_pick> * trajectory_picks	=	nullptr;
+	xr_vector<Fvector> *		collide_tris		=	nullptr;
 #ifdef DEBUG
 	trajectory_picks				=	& m_throw_picks;
 	collide_tris					=	& m_throw_collide_tris;

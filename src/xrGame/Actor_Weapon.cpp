@@ -143,7 +143,7 @@ void CActor::SelectBestWeapon	(CObject* O)
 			if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == INV_SLOT_3)
 			{
 				CInventoryItem* pIItemInSlot = inventory().ItemFromSlot(pIItem->BaseSlot());
-				if (pIItemInSlot != NULL && pIItemInSlot != pIItem)				
+				if (pIItemInSlot != nullptr && pIItemInSlot != pIItem)				
 					NeedToSelectBestWeapon = false;
 			}
 		}
@@ -295,7 +295,7 @@ void	CActor::SpawnAmmoForWeapon	(CInventoryItem *pIItem)
 
 	///	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny( (pWM->m_ammoTypes[0].c_str()) ));
 	//	if (!pAmmo) 
-	pWM->SpawnAmmo(0xffffffff, NULL, ID());
+	pWM->SpawnAmmo(0xffffffff, nullptr, ID());
 };
 
 void	CActor::RemoveAmmoForWeapon	(CInventoryItem *pIItem)

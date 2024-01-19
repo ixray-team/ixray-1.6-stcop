@@ -28,7 +28,7 @@ void CCompass::UpdateAf()
 
 void CCompass::CreateUI()
 {
-	R_ASSERT(NULL == m_ui);
+	R_ASSERT(nullptr == m_ui);
 	m_ui = xr_new<CUICompass>();
 	ui().construct(this);
 }
@@ -69,7 +69,7 @@ void CUICompass::SetValue(const float val1, const Fvector& val2)
 
 void CUICompass::update()
 {
-	if (NULL == m_parent->HudItemData())	return;
+	if (nullptr == m_parent->HudItemData())	return;
 	CUIArtefactDetectorBase::update();
 	attachable_hud_item* itm = m_parent->HudItemData();
 	R_ASSERT(itm);

@@ -207,7 +207,7 @@ bool editTexture(const char* label, shared_str& texName)
 	ImGui::SameLine();
 	ImGui::Text(label);
 	ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_FirstUseEver);
-	if (ImGui::BeginPopupModal("Choose texture", NULL, 0)) {
+	if (ImGui::BeginPopupModal("Choose texture", nullptr, 0)) {
 		string_path dir, fn;
 		_splitpath(tex, nullptr, dir, fn, nullptr);
 		xr_strconcat(fn, fn, ".dds");

@@ -36,14 +36,14 @@ CScriptParticlesCustom::~CScriptParticlesCustom()
 void CScriptParticlesCustom::PSI_internal_delete()
 {
 	if ( m_owner )
-		m_owner->m_particles				= NULL;
+		m_owner->m_particles				= nullptr;
 	CParticlesObject::PSI_internal_delete	();
 }
 
 void CScriptParticlesCustom::PSI_destroy()
 {
 	if ( m_owner )
-		m_owner->m_particles				= NULL;
+		m_owner->m_particles				= nullptr;
 	CParticlesObject::PSI_destroy	();
 }
 

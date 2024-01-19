@@ -51,7 +51,7 @@ public:
 		for (players_collection_t::iterator i = net_Players.begin(),
 			ie = net_Players.end(); i != ie; ++i)
 		{
-			VERIFY2(*i != NULL, "IClient ptr is NULL");
+			VERIFY2(*i != nullptr, "IClient ptr is nullptr");
 			functor(*i);
 		}
 		now_iterating_in_net_players = false;
@@ -68,7 +68,7 @@ public:
 		for (players_collection_t::iterator i = net_Players.begin(),
 			ie = net_Players.end(); i != ie; ++i)
 		{
-			VERIFY2(*i != NULL, "IClient ptr is NULL");
+			VERIFY2(*i != nullptr, "IClient ptr is nullptr");
 			fast_delegate(*i);
 		}
 		now_iterating_in_net_players = false;
@@ -93,7 +93,7 @@ public:
 
 		while (temp_iter != players_endi)
 		{
-			VERIFY2(*temp_iter != NULL, "IClient ptr is NULL");
+			VERIFY2(*temp_iter != nullptr, "IClient ptr is nullptr");
 			functor(*temp_iter);
 			temp_iter = std::find_if(++temp_iter, players_endi, predicate);
 		}
@@ -116,7 +116,7 @@ public:
 			net_Players.begin(),
 			net_Players.end(),
 			predicate);
-		IClient* ret_client = NULL;
+		IClient* ret_client = nullptr;
 		if (client_iter != net_Players.end())
 		{
 			ret_client = *client_iter;
@@ -137,7 +137,7 @@ public:
 			net_Players.end(),
 			predicate);
 
-		IClient* ret_client = NULL;
+		IClient* ret_client = nullptr;
 		if (client_iter != net_Players.end())
 		{
 			ret_client = *client_iter;

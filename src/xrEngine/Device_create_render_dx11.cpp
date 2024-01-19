@@ -28,7 +28,7 @@ bool UpdateBuffersD3D11()
 		return false;
 	}
 
-	R = ((ID3D11Device*)HWRenderDevice)->CreateRenderTargetView(pBuffer, NULL, (ID3D11RenderTargetView**)&SwapChainRTV);
+	R = ((ID3D11Device*)HWRenderDevice)->CreateRenderTargetView(pBuffer, nullptr, (ID3D11RenderTargetView**)&SwapChainRTV);
 	pBuffer->Release();
 	R_CHK(R);
 
@@ -70,10 +70,10 @@ bool UpdateBuffersD3D11()
 		return false;
 	}
 
-	R = ((ID3D11Device*)HWRenderDevice)->CreateRenderTargetView((ID3D11Resource*)RenderTexture, NULL, (ID3D11RenderTargetView**)&RenderRTV);
+	R = ((ID3D11Device*)HWRenderDevice)->CreateRenderTargetView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11RenderTargetView**)&RenderRTV);
 	R_CHK(R);
 
-	R = ((ID3D11Device*)HWRenderDevice)->CreateShaderResourceView((ID3D11Resource*)RenderTexture, NULL, (ID3D11ShaderResourceView**)&RenderSRV);
+	R = ((ID3D11Device*)HWRenderDevice)->CreateShaderResourceView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11ShaderResourceView**)&RenderSRV);
 	R_CHK(R);
 
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;

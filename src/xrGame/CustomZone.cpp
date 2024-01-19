@@ -30,10 +30,10 @@ CCustomZone::CCustomZone(void)
 	m_fEffectiveRadius			= 1.0f;
 	m_zone_flags.set			(eZoneIsActive, FALSE);
 	m_eHitTypeBlowout			= ALife::eHitTypeWound;
-	m_pIdleParticles			= NULL;
-	m_pLight					= NULL;
-	m_pIdleLight				= NULL;
-	m_pIdleLAnim				= NULL;
+	m_pIdleParticles			= nullptr;
+	m_pLight					= nullptr;
+	m_pIdleLight				= nullptr;
+	m_pIdleLAnim				= nullptr;
 	
 
 	m_StateTime.resize(eZoneStateMax);
@@ -47,7 +47,7 @@ CCustomZone::CCustomZone(void)
 	m_ef_weapon_type			= u32(-1);
 	m_owner_id					= u32(-1);
 
-	m_actor_effector			= NULL;
+	m_actor_effector			= nullptr;
 	m_zone_flags.set			(eIdleObjectParticlesDontStop, FALSE);
 	m_zone_flags.set			(eBlowoutWindActive, FALSE);
 	m_zone_flags.set			(eFastMode, TRUE);
@@ -92,7 +92,7 @@ void CCustomZone::Load(LPCSTR section)
 	if (self)		self->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
 //////////////////////////////////////////////////////////////////////////
 
-	LPCSTR sound_str = NULL;
+	LPCSTR sound_str = nullptr;
 	
 	if(pSettings->line_exist(section,"idle_sound")) 
 	{
@@ -325,14 +325,14 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 		}
 	}
 	else
-		m_pIdleLight = NULL;
+		m_pIdleLight = nullptr;
 
 	if ( m_zone_flags.test(eBlowoutLight) ) 
 	{
 		m_pLight = ::Render->light_create();
 		m_pLight->set_shadow(true);
 	}else
-		m_pLight = NULL;
+		m_pLight = nullptr;
 
 	setEnabled					(TRUE);
 
@@ -745,7 +745,7 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 {
 	m_hit_sound.play_at_pos(0, pObject->Position());
 
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
@@ -773,7 +773,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 {
 	m_entrance_sound.play_at_pos		(0, pObject->Position());
 
-	LPCSTR particle_str				= NULL;
+	LPCSTR particle_str				= nullptr;
 
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
@@ -834,7 +834,7 @@ void CCustomZone::PlayBoltEntranceParticles()
 	xr_vector<CCF_Shape::shape_def>& Shapes = Sh->Shapes();
 	Fvector				sP0, sP1, vel;
 
-	CParticlesObject* pParticles = NULL;
+	CParticlesObject* pParticles = nullptr;
 
 	xr_vector<CCF_Shape::shape_def>::iterator it = Shapes.begin();
 	xr_vector<CCF_Shape::shape_def>::iterator it_e = Shapes.end();
@@ -907,7 +907,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 	if(!PP) return;
 
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	//разные партиклы для объектов разного размера
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
@@ -944,7 +944,7 @@ void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
 	if(m_ObjectInfoMap.end() == it) return;
 	
 	
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 	//разные партиклы для объектов разного размера
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
@@ -1436,7 +1436,7 @@ void CCustomZone::CalcDistanceTo(const Fvector& P, float& dist, float& radius)
 	//full test
 	const Fmatrix& XF	= XFORM();
 	xr_vector<CCF_Shape::shape_def>& Shapes = Sh->Shapes();
-	CCF_Shape::shape_def* nearest_s = NULL;
+	CCF_Shape::shape_def* nearest_s = nullptr;
 	float nearest = flt_max;
 
 

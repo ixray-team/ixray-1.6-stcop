@@ -8,7 +8,7 @@
 #ifndef _EDITOR
 #	include "xr_input_xinput.h"
 #endif
-CInput *	pInput	= NULL;
+CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
 
 ENGINE_API float	psMouseSens			= 1.f;
@@ -474,7 +474,7 @@ IInputReceiver*	 CInput::CurrentIR()
 	if(cbStack.size())
 		return cbStack.back();
 	else
-		return NULL;
+		return nullptr;
 }
 
 void CInput::unacquire()

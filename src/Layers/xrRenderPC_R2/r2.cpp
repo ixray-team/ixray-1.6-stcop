@@ -105,7 +105,7 @@ void					CRender::create					()
 	o.mrt				= (dxRenderDeviceRender::Instance().Caps.raster.dwMRT_count >= 3);
 	o.mrtmixdepth		= (dxRenderDeviceRender::Instance().Caps.raster.b_MRT_mixdepth);
 
-	// Check for NULL render target support
+	// Check for nullptr render target support
 	D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
 	o.nullrt			=false;
 	/*
@@ -383,7 +383,7 @@ void					CRender::model_Delete			(IRender_DetailModel* & F)
 		CDetail*	D	= (CDetail*)F;
 		D->Unload		();
 		xr_delete		(D);
-		F				= NULL;
+		F				= nullptr;
 	}
 }
 IRenderVisual*			CRender::model_CreatePE			(LPCSTR name)	
@@ -560,8 +560,8 @@ static HRESULT create_shader				(
 			return		E_FAIL;
 		}
 
-		LPCVOID			data		= NULL;
-		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,NULL);
+		LPCVOID			data		= nullptr;
+		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,nullptr);
 		if (SUCCEEDED(_result) && data)
 		{
 			LPD3DXSHADER_CONSTANTTABLE	pConstants	= LPD3DXSHADER_CONSTANTTABLE(data);
@@ -582,8 +582,8 @@ static HRESULT create_shader				(
 			return		E_FAIL;
 		}
 
-		LPCVOID			data		= NULL;
-		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,NULL);
+		LPCVOID			data		= nullptr;
+		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,nullptr);
 		if (SUCCEEDED(_result) && data)
 		{
 			LPD3DXSHADER_CONSTANTTABLE	pConstants	= LPD3DXSHADER_CONSTANTTABLE(data);
@@ -964,13 +964,13 @@ HRESULT	CRender::shader_compile			(
 	if (FAILED(_result))
 	{
 		includer					Includer;
-		LPD3DBLOB pShaderBuf = NULL;
-		LPD3DBLOB pErrorBuf = NULL;
+		LPD3DBLOB pShaderBuf = nullptr;
+		LPD3DBLOB pErrorBuf = nullptr;
 		_result =
 			D3DCompile(
 				pSrcData,
 				SrcDataLen,
-				"",//NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
+				"",//nullptr, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
 				defines, &Includer, pFunctionName,
 				pTarget,
 				Flags, 0,

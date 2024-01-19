@@ -2094,9 +2094,9 @@ extern "C" void dJointSetUniversalAxis1 (dxJointUniversal *joint,
   dUASSERT(joint,"bad joint argument");
   dUASSERT(joint->vtable == &__duniversal_vtable,"joint is not a universal");
   if (joint->flags & dJOINT_REVERSE)
-    setAxes (joint,x,y,z,NULL,joint->axis2);
+    setAxes (joint,x,y,z,nullptr,joint->axis2);
   else
-    setAxes (joint,x,y,z,joint->axis1,NULL);
+    setAxes (joint,x,y,z,joint->axis1,nullptr);
   universalComputeInitialRelativeRotations(joint);
 }
 
@@ -2107,9 +2107,9 @@ extern "C" void dJointSetUniversalAxis2 (dxJointUniversal *joint,
   dUASSERT(joint,"bad joint argument");
   dUASSERT(joint->vtable == &__duniversal_vtable,"joint is not a universal");
   if (joint->flags & dJOINT_REVERSE)
-    setAxes (joint,x,y,z,joint->axis1,NULL);
+    setAxes (joint,x,y,z,joint->axis1,nullptr);
   else
-    setAxes (joint,x,y,z,NULL,joint->axis2);
+    setAxes (joint,x,y,z,nullptr,joint->axis2);
   universalComputeInitialRelativeRotations(joint);
 }
 

@@ -6,9 +6,9 @@
 //#include "../xrCore/API/xrapi.h"
 
 CGameMtlLibrary GMLib;
-//CSound_manager_interface*	Sound = NULL;
+//CSound_manager_interface*	Sound = nullptr;
 #ifdef	_EDITOR
-CGameMtlLibrary*			PGMLib = NULL;
+CGameMtlLibrary*			PGMLib = nullptr;
 #endif
 CGameMtlLibrary::	CGameMtlLibrary		()
 	{

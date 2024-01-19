@@ -67,7 +67,7 @@ public:
 							CUIMpServerAdm();
 							~CUIMpServerAdm();
 				void		Init(CUIXml& xml_doc);
-		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 				void		ShowChangeWeatherBtns();
 				void		ShowChangeGameTypeBtns();
 				void		ShowChangeGameLimitsBtns();

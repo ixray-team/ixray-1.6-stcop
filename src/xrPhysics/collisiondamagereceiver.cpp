@@ -22,7 +22,7 @@ void DamageReceiverCollisionCallback(bool& do_colide,bool bo1,dContact& c,SGameM
 	SGameMtl					*material_damager	=	bo1 ? material_2:material_1;
 	VERIFY						(ud_self);
 	IPhysicsShellHolder			*o_self			=	ud_self->ph_ref_object;
-	IPhysicsShellHolder			*o_damager		=	NULL;if(ud_damager)o_damager=ud_damager->ph_ref_object;
+	IPhysicsShellHolder			*o_damager		=	nullptr;if(ud_damager)o_damager=ud_damager->ph_ref_object;
 	u16							source_id		=	o_damager ? o_damager->ObjectID():u16(-1);
 
 	//CPHCollisionDamageReceiver	*dr	= static_cast<CPhysicsShellHolder*>( o_self )->PHCollisionDamageReceiver();

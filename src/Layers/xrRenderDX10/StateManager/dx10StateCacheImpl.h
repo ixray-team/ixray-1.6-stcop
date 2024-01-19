@@ -90,12 +90,12 @@ dx10StateCache<IDeviceState, StateDecs>
 	if (res!=0xffffffff)
 		return m_StateArray[res].m_pState;
 	else
-		return NULL;
+		return nullptr;
     /*
 	if (i!=m_StateArray.size())
 		return m_StateArray[i].m_pState;
 	else
-		return NULL;
+		return nullptr;
         */
 }
 

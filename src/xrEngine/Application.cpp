@@ -87,7 +87,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 
 #ifdef NO_SINGLE
 		Console->Execute("main_menu on");
-		if ((op_server == NULL) ||
+		if ((op_server == nullptr) ||
 			(!xr_strlen(op_server)) ||
 			(
 				(strstr(op_server, "/dm") || strstr(op_server, "/deathmatch") ||
@@ -359,7 +359,7 @@ int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 
 	for (CLocatorAPI::archive& Arch : FS.m_archives)
 	{
-		if (Arch.hSrcFile == NULL)
+		if (Arch.hSrcFile == nullptr)
 		{
 			LPCSTR ln = Arch.header->r_string("header", "level_name");
 			LPCSTR lv = Arch.header->r_string("header", "level_ver");

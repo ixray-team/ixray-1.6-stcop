@@ -84,9 +84,9 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 {
 	g_bDebugEvents				= strstr(Core.Params,"-debug_ge")?TRUE:FALSE;
 
-	Server						= NULL;
+	Server						= nullptr;
 
-	game						= NULL;
+	game						= nullptr;
 	game_events					= xr_new<NET_Queue_Event>();
 
 	game_configured				= FALSE;
@@ -143,13 +143,13 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_bSynchronization			= false;
 #endif	
 	//---------------------------------------------------------
-	pStatGraphR = NULL;
-	pStatGraphS = NULL;
+	pStatGraphR = nullptr;
+	pStatGraphS = nullptr;
 	//---------------------------------------------------------
 	pObjects4CrPr.clear();
 	pActors4CrPr.clear();
 	//---------------------------------------------------------
-	pCurrentControlEntity = NULL;
+	pCurrentControlEntity = nullptr;
 
 	//---------------------------------------------------------
 	m_dwCL_PingLastSendTime = 0;
@@ -157,30 +157,30 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_dwRealPing = 0;
 
 	//---------------------------------------------------------	
-	m_writer = NULL;
-	m_reader = NULL;
+	m_writer = nullptr;
+	m_reader = nullptr;
 	m_DemoPlay = FALSE;
 	m_DemoPlayStarted	= FALSE;
 	m_DemoPlayStoped	= FALSE;
 	m_DemoSave = FALSE;
 	m_DemoSaveStarted = FALSE;
-	m_current_spectator = NULL;
-	m_msg_filter = NULL;
-	m_demoplay_control = NULL;
-	m_demo_info	= NULL;
+	m_current_spectator = nullptr;
+	m_msg_filter = nullptr;
+	m_demoplay_control = nullptr;
+	m_demo_info	= nullptr;
 
-	R_ASSERT				(NULL==g_player_hud);
+	R_ASSERT				(nullptr==g_player_hud);
 	g_player_hud			= xr_new<player_hud>();
 	g_player_hud->load_default();
 	
-	hud_zones_list = NULL;
+	hud_zones_list = nullptr;
 
 	Msg("%s", Core.Params);
 	//---------------------------------------------------------	
-	m_file_transfer					= NULL;
-	m_trained_stream				= NULL;
-	m_lzo_working_memory			= NULL;
-	m_lzo_working_buffer			= NULL;
+	m_file_transfer					= nullptr;
+	m_trained_stream				= nullptr;
+	m_lzo_working_memory			= nullptr;
+	m_lzo_working_buffer			= nullptr;
 
 	m_game_graph = 0;
 	m_chunk = 0;
@@ -193,7 +193,7 @@ CLevel::~CLevel()
 {
 	xr_delete					(g_player_hud);
 	delete_data					(hud_zones_list);
-	hud_zones_list				= NULL;
+	hud_zones_list				= nullptr;
 
 	Msg							("- Destroying level");
 
@@ -278,10 +278,10 @@ CLevel::~CLevel()
 	CTradeParameters::clean		();
 
 	if(g_tutorial && g_tutorial->m_pStoredInputReceiver==this)
-		g_tutorial->m_pStoredInputReceiver = NULL;
+		g_tutorial->m_pStoredInputReceiver = nullptr;
 
 	if(g_tutorial2 && g_tutorial2->m_pStoredInputReceiver==this)
-		g_tutorial2->m_pStoredInputReceiver = NULL;
+		g_tutorial2->m_pStoredInputReceiver = nullptr;
 
 	
 	if (IsDemoPlay())
@@ -290,7 +290,7 @@ CLevel::~CLevel()
 		if (m_reader)
 		{
 			FS.r_close			(m_reader);
-			m_reader			= NULL;
+			m_reader			= nullptr;
 		}
 	}
 	xr_delete(m_msg_filter);
@@ -502,8 +502,8 @@ void CLevel::MakeReconnect()
 	if (!g_pEventManager->Event.Peek("KERNEL:disconnect"))
 	{
 		g_pEventManager->Event.Defer	("KERNEL:disconnect");
-		char const * server_options = NULL;
-		char const * client_options = NULL;
+		char const * server_options = nullptr;
+		char const * client_options = nullptr;
 		if (m_caServerOptions.c_str())
 		{
 			server_options = xr_strdup(*m_caServerOptions);

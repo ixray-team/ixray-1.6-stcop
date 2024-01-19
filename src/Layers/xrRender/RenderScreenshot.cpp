@@ -5,7 +5,7 @@ int SM_FOR_SEND_WIDTH = 640;
 int SM_FOR_SEND_HEIGHT = 480;
 
 void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) {
-    ScreenshotImpl(mode, name, NULL);
+    ScreenshotImpl(mode, name, nullptr);
 }
 
 void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer) {
@@ -14,7 +14,7 @@ void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer) {
         Log("~ Not implemented screenshot mode...");
         return;
     }
-    ScreenshotImpl(mode, NULL, &memory_writer);
+    ScreenshotImpl(mode, nullptr, &memory_writer);
 }
 
 void CRender::ScreenshotAsyncBegin() {

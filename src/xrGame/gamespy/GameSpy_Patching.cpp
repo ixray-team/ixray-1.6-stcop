@@ -34,8 +34,8 @@ static char const * QueryPatchVersionString(char* dest, u32 dest_size)
 	DWORD KeyValueSize = sizeof(LangID);
 	DWORD KeyValueType = REG_SZ;
 
-	//RegQueryValueEx(KeyCDKey, REGISTRY_VALUE_LANGUAGE, NULL, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
-	RegQueryValueExA(KeyCDKey, REGISTRY_VALUE_SKU, NULL, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
+	//RegQueryValueEx(KeyCDKey, REGISTRY_VALUE_LANGUAGE, nullptr, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
+	RegQueryValueExA(KeyCDKey, REGISTRY_VALUE_SKU, nullptr, &KeyValueType, (LPBYTE)LangID, &KeyValueSize);
 
 	xr_sprintf(dest, dest_size, "-%s", LangID);
 		
@@ -57,7 +57,7 @@ static char const * ModifyDownloadUrl(char* dest, u32 dest_size, char const * or
 		return dest;
 
 	char* search_ptr = (dest + url_size) - PATCH_SUFFIX_SIZE;
-	char* suffix_ptr = NULL;
+	char* suffix_ptr = nullptr;
 	while (search_ptr > dest)
 	{
 		suffix_ptr = strstr(search_ptr, PATCH_SUFFIX);

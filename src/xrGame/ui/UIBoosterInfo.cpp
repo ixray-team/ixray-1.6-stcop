@@ -13,11 +13,11 @@ CUIBoosterInfo::CUIBoosterInfo()
 {
 	for(u32 i = 0; i < eBoostExplImmunity; ++i)
 	{
-		m_booster_items[i] = NULL;
+		m_booster_items[i] = nullptr;
 	}
-	m_booster_satiety = NULL;
-	m_booster_anabiotic = NULL;
-	m_booster_time = NULL;
+	m_booster_satiety = nullptr;
+	m_booster_anabiotic = nullptr;
+	m_booster_time = nullptr;
 }
 
 CUIBoosterInfo::~CUIBoosterInfo()
@@ -211,8 +211,8 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 
 UIBoosterInfoItem::UIBoosterInfoItem()
 {
-	m_caption				= NULL;
-	m_value					= NULL;
+	m_caption				= nullptr;
+	m_value					= nullptr;
 	m_magnitude				= 1.0f;
 	m_show_sign				= false;
 	

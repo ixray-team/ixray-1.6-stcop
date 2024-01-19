@@ -68,7 +68,7 @@
 
 /* Define 'getcwd' for systems that do not implement it */
 #ifdef NO_GETCWD
-#define getcwd(p,s)	NULL
+#define getcwd(p,s)	0
 #define getcwd_error	"Function 'getcwd' not provided by system"
 #else
 #define getcwd_error	strerror(errno)
@@ -131,7 +131,7 @@ static int change_dir(lua_State* L) {
 */
 static int get_dir(lua_State* L) {
 	char* path;
-	if ((path = getcwd(NULL, 0)) == NULL) {
+	if ((path = getcwd(0, 0)) == 0) {
 		lua_pushnil(L);
 		lua_pushstring(L, getcwd_error);
 		return 2;
@@ -148,11 +148,11 @@ static int get_dir(lua_State* L) {
 */
 static FILE* check_file(lua_State* L, int idx, const char* funcname) {
 	FILE** fh = (FILE**)luaL_checkudata(L, idx, "FILE*");
-	if (fh == NULL) {
+	if (fh == 0) {
 		luaL_error(L, "%s: not a file", funcname);
 		return 0;
 	}
-	else if (*fh == NULL) {
+	else if (*fh == 0) {
 		luaL_error(L, "%s: closed file", funcname);
 		return 0;
 	}
@@ -226,8 +226,8 @@ static int lfs_lock_dir(lua_State* L) {
 		lua_pushnil(L); lua_pushstring(L, strerror(errno)); return 2;
 	}
 	strcpy(ln, path); strcat(ln, lockfile);
-	if ((fd = CreateFileA(ln, GENERIC_WRITE, 0, NULL, CREATE_NEW,
-		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, NULL)) == INVALID_HANDLE_VALUE) {
+	if ((fd = CreateFileA(ln, GENERIC_WRITE, 0, 0, CREATE_NEW,
+		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, 0)) == INVALID_HANDLE_VALUE) {
 		int en = GetLastError();
 		free(ln); lua_pushnil(L);
 		if (en == ERROR_FILE_EXISTS || en == ERROR_SHARING_VIOLATION)
@@ -278,7 +278,7 @@ static int lfs_unlock_dir(lua_State* L) {
 	if (lock->ln) {
 		unlink(lock->ln);
 		free(lock->ln);
-		lock->ln = NULL;
+		lock->ln = 0;
 	}
 	return 0;
 }
@@ -287,13 +287,13 @@ static int lfs_unlock_dir(lua_State* L) {
 #ifdef _WIN32
 static int lfs_g_setmode(lua_State* L, FILE* f, int arg) {
 	static const int mode[] = { _O_TEXT, _O_BINARY };
-	static const char* const modenames[] = { "text", "binary", NULL };
-	int op = luaL_checkoption(L, arg, NULL, modenames);
+	static const char* const modenames[] = { "text", "binary", 0 };
+	int op = luaL_checkoption(L, arg, 0, modenames);
 	int res = lfs_setmode(L, f, mode[op]);
 	if (res != -1) {
 		int i;
 		lua_pushboolean(L, 1);
-		for (i = 0; modenames[i] != NULL; i++) {
+		for (i = 0; modenames[i] != 0; i++) {
 			if (mode[i] == res) {
 				lua_pushstring(L, modenames[i]);
 				goto exit;
@@ -445,7 +445,7 @@ static int dir_iter(lua_State* L) {
 		}
 	}
 #else
-	if ((entry = readdir(d->dir)) != NULL) {
+	if ((entry = readdir(d->dir)) != 0) {
 		lua_pushstring(L, entry->d_name);
 		return 1;
 	}
@@ -500,7 +500,7 @@ static int dir_iter_factory(lua_State* L) {
 	luaL_getmetatable(L, DIR_METATABLE);
 	lua_setmetatable(L, -2);
 	d->dir = opendir(path);
-	if (d->dir == NULL)
+	if (d->dir == 0)
 		luaL_error(L, "cannot open %s: %s", path, strerror(errno));
 #endif
 	return 2;
@@ -602,7 +602,7 @@ static int file_utime(lua_State * L) {
 	struct utimbuf utb, * buf;
 
 	if (lua_gettop(L) == 1) /* set to current date/time */
-		buf = NULL;
+		buf = 0;
 	else {
 		utb.actime = (time_t)luaL_optnumber(L, 2, 0);
 		utb.modtime = (time_t)luaL_optnumber(L, 3, (lua_Number)utb.actime);
@@ -702,7 +702,7 @@ struct _stat_members members[] = {
 	{ "blocks",       push_st_blocks },
 	{ "blksize",      push_st_blksize },
 #endif
-	{ NULL, push_invalid }
+	{ 0, push_invalid }
 };
 
 /*
@@ -800,7 +800,7 @@ static const struct luaL_reg fslib[] = {
 	{"touch", file_utime},
 	{"unlock", file_unlock},
 	{"lock_dir", lfs_lock_dir},
-	{NULL, NULL},
+	{0, 0},
 };
 
 int luaopen_lfs(lua_State * L) {

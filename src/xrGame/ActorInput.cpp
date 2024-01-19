@@ -127,7 +127,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			if(det_active)
 			{
 				CCustomDetector* det			= smart_cast<CCustomDetector*>(det_active);
-				det->ToggleDetector				(g_player_hud->attached_item(0)!=NULL);
+				det->ToggleDetector				(g_player_hud->attached_item(0)!=nullptr);
 				return;
 			}
 		}break;
@@ -403,7 +403,7 @@ void CActor::ActorUse()
 
 	
 
-	if(m_pUsableObject && NULL==m_pObjectWeLookingAt->cast_inventory_item())
+	if(m_pUsableObject && nullptr==m_pObjectWeLookingAt->cast_inventory_item())
 	{
 		m_pUsableObject->use(this);
 	}
@@ -603,8 +603,8 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 
 void CActor::SwitchNightVision()
 {
-	CWeapon* wpn1 = NULL;
-	CWeapon* wpn2 = NULL;
+	CWeapon* wpn1 = nullptr;
+	CWeapon* wpn2 = nullptr;
 	if(inventory().ItemFromSlot(INV_SLOT_2))
 		wpn1 = smart_cast<CWeapon*>(inventory().ItemFromSlot(INV_SLOT_2));
 
@@ -730,7 +730,7 @@ void CActor::NoClipFly(int cmd)
 			{
 				CCustomDetector* det = smart_cast<CCustomDetector*>(det_active);
 				if (det)
-					det->ToggleDetector(g_player_hud->attached_item(0)!=NULL);
+					det->ToggleDetector(g_player_hud->attached_item(0)!=nullptr);
 				return;
 			}
 		}break;

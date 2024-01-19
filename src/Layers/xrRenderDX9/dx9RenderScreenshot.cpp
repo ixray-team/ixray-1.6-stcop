@@ -22,7 +22,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     // Create temp-surface
     IDirect3DSurface9* pFB;
     D3DLOCKED_RECT D;
-    HRESULT hr = RDevice->CreateOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &pFB, NULL);
+    HRESULT hr = RDevice->CreateOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &pFB, nullptr);
     if (hr != D3D_OK) {
         return;
     }
@@ -66,7 +66,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (hr != D3D_OK) {
             goto _end_;
         }
-        if (NULL == texture) {
+        if (nullptr == texture) {
             goto _end_;
         }
 
@@ -109,7 +109,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (hr != D3D_OK) {
             goto _end_;
         }
-        if (NULL == texture) {
+        if (nullptr == texture) {
             goto _end_;
         }
 

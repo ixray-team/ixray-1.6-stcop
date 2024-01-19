@@ -113,7 +113,7 @@ void __cdecl callback_playerkey(int keyid, int index, qr2_buffer_t outbuf, void 
 	CGameSpy_QR2* pQR2 = pServer->QR2();
 	if (!pQR2) return;
 
-	xrGameSpyClientData* pCD = NULL;
+	xrGameSpyClientData* pCD = nullptr;
 
 	struct index_searcher
 	{
@@ -337,7 +337,7 @@ void __cdecl callback_public(unsigned int ip, unsigned short port, void* userdat
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
 	if (!pServer)
 	{
-		VERIFY2(pServer, "xrGameSpyServer is NULL");
+		VERIFY2(pServer, "xrGameSpyServer is nullptr");
 		return;
 	}
 	//authenticating the server

@@ -39,7 +39,7 @@ void Touch::feel_touch_update	(Fvector& C, float R)
 	// Find nearest objects
 	q_nearest.clear();
 	q_nearest.reserve						(feel_touch.size());
-	g_pGameLevel->ObjectSpace.GetNearest	(q_nearest,C,R, NULL);
+	g_pGameLevel->ObjectSpace.GetNearest	(q_nearest,C,R, nullptr);
 	xr_vector<CObject*>::iterator	n_begin	= q_nearest.begin	();
 	xr_vector<CObject*>::iterator	n_end	= q_nearest.end		();
 	if (n_end!=n_begin)						{

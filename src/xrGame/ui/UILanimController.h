@@ -46,13 +46,13 @@ public:
 			m_lanim_clr.m_lanim	= LALib.FindItem(lanim);
 		else
 		{
-			m_lanim_clr.m_lanim	= NULL;
+			m_lanim_clr.m_lanim	= nullptr;
 			return;
 		}
 		
 		m_lanim_clr.m_lanim_delay_time		= delay;
 		m_lanim_clr.m_lanimFlags.assign		(flags);
-		R_ASSERT( (m_lanim_clr.m_lanim==NULL) || m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR|LA_TEXTURECOLOR) );
+		R_ASSERT( (m_lanim_clr.m_lanim==nullptr) || m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR|LA_TEXTURECOLOR) );
 	}
 	virtual void	ResetColorAnimation	()
 	{
@@ -60,7 +60,7 @@ public:
 	}
 	virtual bool IsColorAnimationPresent()
 	{
-		if(m_lanim_clr.m_lanim==NULL)	return false;
+		if(m_lanim_clr.m_lanim==nullptr)	return false;
 
 		if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || m_lanim_clr.m_lanim_start_time<0.0f)
 			return true;
@@ -74,7 +74,7 @@ public:
 
 	void	UpdateColorAnimation	()
 	{
-		if (m_lanim_clr.m_lanim==NULL)	return;
+		if (m_lanim_clr.m_lanim==nullptr)	return;
 		if(m_lanim_clr.m_lanim_start_time<0.0f)		
 			ResetColorAnimation	();
 

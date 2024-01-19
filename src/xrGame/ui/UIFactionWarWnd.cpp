@@ -42,7 +42,7 @@ void CUIFactionWarWnd::Reset()
 	m_max_resource     = 100;
 	m_max_power        = 100;
 	m_war_states_dx    = 0.0f;
-	hint_wnd           = NULL;
+	hint_wnd           = nullptr;
 	m_tc_pos.set       ( 0.0f, 0.0f );
 	m_td_pos.set       ( 0.0f, 0.0f );
 }

@@ -414,7 +414,7 @@ float CGameFont::SizeOf_(const char* s)
 	//if (IsMultibyte())
 	//{
 	//	wide_char wsStr[MAX_MB_CHARS];
-	//	mbhMulti2Wide(wsStr, NULL, MAX_MB_CHARS, s);
+	//	mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, s);
 	//	return SizeOf_(wsStr);
 	//}
 

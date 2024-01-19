@@ -144,14 +144,14 @@ void SPHCharacterRestrictor::Destroy()
 	if(m_restrictor) {
 		dGeomDestroyUserData(m_restrictor);
 		dGeomDestroy(m_restrictor);
-		m_restrictor=NULL;
+		m_restrictor=nullptr;
 	}
 
 	if(m_restrictor_transform){
 		dGeomDestroyUserData(m_restrictor_transform);
-		m_restrictor_transform=NULL;
+		m_restrictor_transform=nullptr;
 	}
-	m_character=NULL;
+	m_character=nullptr;
 }
 void CPHActorCharacter::SetPhysicsRefObject(IPhysicsShellHolder* ref_object)
 {

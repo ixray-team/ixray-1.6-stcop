@@ -199,7 +199,7 @@ void CBlackGraviArtefact::GraviStrike()
 		{
 //?			BOOL		enabled = getEnabled();
 //?			setEnabled	(FALSE);
-			impulse		*= CExplosive::ExplosionEffect	(rq_storage,NULL,pGameObject, Position(),m_fRadius);
+			impulse		*= CExplosive::ExplosionEffect	(rq_storage,nullptr,pGameObject, Position(),m_fRadius);
 //?			setEnabled	(enabled);
 		}
 

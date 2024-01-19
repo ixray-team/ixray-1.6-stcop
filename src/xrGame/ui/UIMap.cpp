@@ -22,7 +22,7 @@ CUICustomMap::CUICustomMap ()
 
 void CUICustomMap::Initialize(shared_str name, LPCSTR sh_name)
 {
-	CInifile* levelIni	= NULL;
+	CInifile* levelIni	= nullptr;
 	if(name==g_pGameLevel->name())
 		levelIni = g_pGameLevel->pLevel;
 	else

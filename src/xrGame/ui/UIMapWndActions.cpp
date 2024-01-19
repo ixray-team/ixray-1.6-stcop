@@ -13,7 +13,7 @@ class CSomeMapAction : public WORLD_OPERATOR {
 private:
 	typedef WORLD_OPERATOR	inherited;
 public:
-					CSomeMapAction		(LPCSTR action_name):inherited((CUIMapWnd*)NULL,action_name){}
+					CSomeMapAction		(LPCSTR action_name):inherited((CUIMapWnd*)nullptr,action_name){}
 	virtual	void	initialize			()		{inherited::initialize	();};
 	virtual	void	execute				()		{inherited::execute		();};
 	virtual	void	finalize			()		{inherited::finalize	();};
@@ -71,7 +71,7 @@ class CSomeMapEvaluator : public CPropertyEvaluator<CUIMapWnd>
 private:
 	typedef CPropertyEvaluator<CUIMapWnd>	inherited;
 public:
-					CSomeMapEvaluator	(LPCSTR evaluator_name):inherited((CUIMapWnd*)NULL,evaluator_name){}
+					CSomeMapEvaluator	(LPCSTR evaluator_name):inherited((CUIMapWnd*)nullptr,evaluator_name){}
 	virtual 		~CSomeMapEvaluator	()										{};
 };
 

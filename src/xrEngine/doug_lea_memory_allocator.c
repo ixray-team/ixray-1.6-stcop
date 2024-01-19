@@ -1394,7 +1394,7 @@ static int win32munmap(void* ptr, size_t size) {
 /* By default use posix locks */
 #include <pthread.h>
 #define MLOCK_T pthread_mutex_t
-#define INITIAL_LOCK(l)      pthread_mutex_init(l, NULL)
+#define INITIAL_LOCK(l)      pthread_mutex_init(l, nullptr)
 #define ACQUIRE_LOCK(l)      pthread_mutex_lock(l)
 #define RELEASE_LOCK(l)      pthread_mutex_unlock(l)
 

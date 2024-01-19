@@ -130,7 +130,7 @@ void profile_store::load_profile(store_operation_cb progress_indicator_cb)
 	
 	string_path		tmp_path;
 	FS.update_path	(tmp_path, "$app_data_root$", profile_store_file_name);
-	IReader*		tmp_reader = NULL;
+	IReader*		tmp_reader = nullptr;
 	m_valid_ltx		= false;
 	
 	if (FS.exist(tmp_path))

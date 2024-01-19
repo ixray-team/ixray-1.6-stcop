@@ -292,13 +292,13 @@ void CTheoraSurface::open_sdl_video()
 	}
 
 	sdl_screen				= SDL_SetVideoMode(t_info.frame_width, t_info.frame_height, 0, SDL_SWSURFACE);
-	if ( sdl_screen == NULL ) {
+	if ( sdl_screen == nullptr ) {
 		msg					("Unable to set %dx%d video: %s", t_info.frame_width,t_info.frame_height,SDL_GetError());
 		return;
 	}
 
 	sdl_yuv_overlay			= SDL_CreateYUVOverlay(t_info.frame_width, t_info.frame_height, SDL_YV12_OVERLAY, sdl_screen);
-	if ( sdl_yuv_overlay == NULL ) {
+	if ( sdl_yuv_overlay == nullptr ) {
 		msg					("SDL: Couldn't create SDL_yuv_overlay: %s", SDL_GetError());
 		return;
 	}

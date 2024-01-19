@@ -54,7 +54,7 @@ namespace Platform
 
     IC size_t GetFileSize(FileHandle Src)
     {
-        return ::GetFileSize(Src, NULL);
+        return ::GetFileSize(Src, nullptr);
     }
 
     IC void* MapFile(FileHandle hSrcFile, [[maybe_unused]] size_t Size, bool bRead = false, size_t Offset = 0)

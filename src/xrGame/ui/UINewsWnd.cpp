@@ -78,7 +78,7 @@ void CUINewsWnd::AddNews()
 
 void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data)
 {
-	CUIWindow*				itm = NULL;
+	CUIWindow*				itm = nullptr;
 	switch(news_data.m_type){
 		case GAME_NEWS_DATA::eNews:{
 			CUINewsItemWnd* _itm		= xr_new<CUINewsItemWnd>();

@@ -99,7 +99,8 @@ static const char* buf_read(lua_State* L, mar_Buffer* buf, size_t* len)
         return buf->data;
     }
     *len = 0;
-    return NULL;
+
+    return 0;
 }
 
 static void mar_encode_value(lua_State* L, mar_Buffer* buf, int val, size_t* idx)
@@ -536,13 +537,11 @@ static const struct luaL_reg R[] =
     {"encode",      mar_encode},
     {"decode",      mar_decode},
     {"clone",       mar_clone},
-    {NULL,	    NULL},
+    {0,	               0},
 };
 
 int luaopen_marshal(lua_State* L)
 {
-    //lua_newtable(L);
-    //luaL_register(L, NULL, R);
     luaL_register(L, "marshal", R);
     return 1;
 }

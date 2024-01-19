@@ -42,7 +42,7 @@ void SHit::invalidate()
 
 	power					=-phInfinity								;
 	dir						.set(-phInfinity,-phInfinity,-phInfinity)	;
-	who						=NULL									;
+	who						=nullptr									;
 	whoID					= 0;
 	weaponID				= 0;
 

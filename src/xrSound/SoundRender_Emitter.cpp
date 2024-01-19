@@ -26,9 +26,9 @@ CSoundRender_Emitter::CSoundRender_Emitter(void)
 	static	u32			incrementalID = 0;
 	dbg_ID				= ++incrementalID;
 #endif
-	target						= NULL;
-//.	source						= NULL;
-	owner_data					= NULL;
+	target						= nullptr;
+//.	source						= nullptr;
+	owner_data					= nullptr;
 	smooth_volume				= 1.f;
 	occluder_volume				= 1.f;
 	fade_volume					= 1.f;

@@ -78,9 +78,9 @@ bool	CLevel::net_start_client3				()
 {
 	if(connected_to_server)
 	{
-		LPCSTR					level_name = NULL;
-		LPCSTR					level_ver = NULL;
-		LPCSTR					download_url = NULL;
+		LPCSTR					level_name = nullptr;
+		LPCSTR					level_ver = nullptr;
+		LPCSTR					download_url = nullptr;
 
 		if (psNET_direct_connect)	//single
 		{
@@ -175,7 +175,7 @@ void CLevel::ClientSendProfileData	()
 #endif
 	NET_Packet								NP;
 	NP.w_begin								(M_CREATE_PLAYER_STATE);
-	game_PlayerState	tmp_player_state	(NULL);
+	game_PlayerState	tmp_player_state	(nullptr);
 	tmp_player_state.net_Export				(NP, TRUE);
 	SecureSend								(NP,net_flags(TRUE, TRUE, TRUE, TRUE));
 }

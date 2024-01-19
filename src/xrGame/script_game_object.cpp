@@ -167,9 +167,9 @@ cphysics_shell_scripted* CScriptGameObject::get_physics_shell() const
 {
 	CPhysicsShellHolder* ph_shell_holder =smart_cast<CPhysicsShellHolder*>(&object());
 	if(! ph_shell_holder) 
-		return NULL;
+		return nullptr;
 	if(! ph_shell_holder->PPhysicsShell() ) 
-		return NULL;
+		return nullptr;
 	return get_script_wrapper<cphysics_shell_scripted>(*ph_shell_holder->PPhysicsShell());
 }
 
@@ -216,11 +216,11 @@ LPCSTR CScriptGameObject::WhoHitName()
 {
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(&object());
 	if (entity_alive)
-		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cName()):NULL;
+		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cName()):nullptr;
 	else 
 	{
 		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member  WhoHitName()");
-		return			NULL;
+		return			nullptr;
 	}
 }
 
@@ -228,11 +228,11 @@ LPCSTR CScriptGameObject::WhoHitSectionName()
 {
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(&object());
 	if (entity_alive)
-		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cNameSect()):NULL;
+		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cNameSect()):nullptr;
 	else 
 	{
 		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member  WhoHitName()");
-		return			NULL;
+		return			nullptr;
 	}
 }
 

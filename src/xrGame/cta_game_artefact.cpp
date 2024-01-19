@@ -17,7 +17,7 @@ CtaGameArtefact::CtaGameArtefact()
 {
 	// game object must present...
 	m_game				= smart_cast<game_cl_CaptureTheArtefact*>(&Game());
-	m_artefact_rpoint	= NULL;
+	m_artefact_rpoint	= nullptr;
 	m_my_team			= etSpectatorsTeam;
 }
 
@@ -30,7 +30,7 @@ bool CtaGameArtefact::IsMyTeamArtefact()
 
 	R_ASSERT			(H_Parent());
 	game_PlayerState*	ps = m_game->GetPlayerByGameID(H_Parent()->ID());
-	R_ASSERT			(ps != NULL);
+	R_ASSERT			(ps != nullptr);
 	if (ps->team == etGreenTeam)
 	{
 		if (m_game->GetGreenArtefactID() == this->ID())
@@ -77,7 +77,7 @@ void CtaGameArtefact::OnAnimationEnd(u32 state)
 	if (!H_Parent())
 	{
 #ifndef MASTER_GOLD
-		Msg("! ERROR: enemy artefact activation, H_Parent is NULL.");
+		Msg("! ERROR: enemy artefact activation, H_Parent is nullptr.");
 #endif // #ifndef MASTER_GOLD
 		return;
 	}
@@ -193,7 +193,7 @@ void CtaGameArtefact::net_Export(NET_Packet& P)
 		P.w_u8				(0);
 		return;
 	}
-	CPHSynchronize* pSyncObj		= NULL;
+	CPHSynchronize* pSyncObj		= nullptr;
 	SPHNetState						State;
 	pSyncObj = PHGetSyncItem		(0);
 

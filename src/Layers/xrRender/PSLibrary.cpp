@@ -130,7 +130,7 @@ bool CPSLibrary::Load2()
 	FS.file_list				(files, _path, FS_ListFiles, "*.pe,*.pg");
 
 #ifdef _EDITOR
-	SPBItem* pb = NULL;
+	SPBItem* pb = nullptr;
 	if(UI->m_bReady)
     pb 							= UI->ProgressStart(files.size(),"Loading particles...");
 #endif

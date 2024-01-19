@@ -110,7 +110,7 @@ ID3DTexture2D*	TW_LoadTextureFromTexture
 )
 {
 	// Calculate levels & dimensions
-	ID3DTexture2D*		t_dest			= NULL;
+	ID3DTexture2D*		t_dest			= nullptr;
 	D3DSURFACE_DESC			t_from_desc0{};
 	R_CHK					(t_from->GetLevelDesc	(0,&t_from_desc0));
 	int levels_exist		= t_from->GetLevelCount();
@@ -142,7 +142,7 @@ ID3DTexture2D*	TW_LoadTextureFromTexture
 		R_CHK	(T_dst->GetSurfaceLevel	(L_dst,&S_dst));
 
 		// Copy
-		R_CHK	(D3DXLoadSurfaceFromSurface(S_dst,NULL,NULL,S_src,NULL,NULL,D3DX_FILTER_NONE,0));
+		R_CHK	(D3DXLoadSurfaceFromSurface(S_dst,nullptr,nullptr,S_src,nullptr,nullptr,D3DX_FILTER_NONE,0));
 
 		// Release surfaces
 		_RELEASE				(S_src);
@@ -263,8 +263,8 @@ IC u32 it_height_rev_base(u32 d, u32 s)	{	return	color_rgba	(
 
 ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
-	ID3DTexture2D*		pTexture2D		= NULL;
-	IDirect3DCubeTexture9*	pTextureCUBE	= NULL;
+	ID3DTexture2D*		pTexture2D		= nullptr;
+	IDirect3DCubeTexture9*	pTextureCUBE	= nullptr;
 	string_path				fn;
 	u32						dwWidth,dwHeight;
 	u32						img_size		= 0;
@@ -280,7 +280,7 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	string_path				fname;
 	xr_strcpy(fname,fRName); //. andy if (strext(fname)) *strext(fname)=0;
 	fix_texture_name		(fname);
-	IReader* S				= NULL;
+	IReader* S				= nullptr;
 	//if (FS.exist(fn,"$game_textures$",fname,	".dds")	&& strstr(fname,"_bump"))	goto _BUMP;
 	if (!FS.exist(fn,"$game_textures$",	fname,	".dds")	&& strstr(fname,"_bump"))	goto _BUMP_from_base;
 	if (FS.exist(fn,"$level$",			fname,	".dds"))							goto _DDS;

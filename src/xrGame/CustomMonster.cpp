@@ -1222,7 +1222,7 @@ void CCustomMonster::OnRender()
 																 velocity,
 																 collide_position,
 																 this,
-																 NULL,
+																 nullptr,
 																 temp_rq_results,
 																 & m_jump_picks,
 																 & m_jump_collide_tris,

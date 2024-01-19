@@ -1,31 +1,31 @@
 #include "resource.h"
 constexpr const wchar_t* c_szSplashClass = _T("SplashWindow");
-HWND logoWindow = NULL;
+HWND logoWindow = nullptr;
 
 IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType) 
 {
-    IStream* ipStream = NULL;
+    IStream* ipStream = nullptr;
 
-    HRSRC hrsrc = FindResource(NULL, lpName, lpType);
-    if (hrsrc == NULL)
+    HRSRC hrsrc = FindResource(nullptr, lpName, lpType);
+    if (hrsrc == nullptr)
         return ipStream;
 
-    DWORD dwResourceSize = SizeofResource(NULL, hrsrc);
-    HGLOBAL hglbImage = LoadResource(NULL, hrsrc);
-    if (hglbImage == NULL)
+    DWORD dwResourceSize = SizeofResource(nullptr, hrsrc);
+    HGLOBAL hglbImage = LoadResource(nullptr, hrsrc);
+    if (hglbImage == nullptr)
         return ipStream;
 
     LPVOID pvSourceResourceData = LockResource(hglbImage);
-    if (pvSourceResourceData == NULL)
+    if (pvSourceResourceData == nullptr)
         return ipStream;
 
     HGLOBAL hgblResourceData = GlobalAlloc(GMEM_MOVEABLE, dwResourceSize);
-    if (hgblResourceData == NULL)
+    if (hgblResourceData == nullptr)
         return ipStream;
 
     LPVOID pvResourceData = GlobalLock(hgblResourceData);
 
-    if (pvResourceData == NULL)
+    if (pvResourceData == nullptr)
         GlobalFree(hgblResourceData);
 
     CopyMemory(pvResourceData, pvSourceResourceData, dwResourceSize);
@@ -40,9 +40,9 @@ IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
 
 HWND CreateSplashWindow(HINSTANCE hInst) 
 {
-    HWND hwndOwner = CreateWindow(c_szSplashClass, NULL, WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInst, NULL);
-    return CreateWindowEx(WS_EX_LAYERED, c_szSplashClass, NULL, WS_POPUP | WS_VISIBLE, 0, 0, 0, 0,
-        hwndOwner, NULL, hInst, NULL);
+    HWND hwndOwner = CreateWindow(c_szSplashClass, nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInst, nullptr);
+    return CreateWindowEx(WS_EX_LAYERED, c_szSplashClass, nullptr, WS_POPUP | WS_VISIBLE, 0, 0, 0, 0,
+        hwndOwner, nullptr, hInst, nullptr);
 }
 
 HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow) 
@@ -71,7 +71,7 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
     if (!hWnd)
         return FALSE;
 
-    HDC hdcScreen = GetDC(NULL);
+    HDC hdcScreen = GetDC(nullptr);
     HDC hDC = CreateCompatibleDC(hdcScreen);
 
     HBITMAP hBmp = CreateCompatibleBitmap(hdcScreen, splashWidth, splashHeight);
@@ -119,7 +119,7 @@ void RegisterWindowClass(HINSTANCE hInst, bool nCmdShow)
     WNDCLASS wc = { 0 };
     wc.lpfnWndProc = DefWindowProc;
     wc.hInstance = hInst;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.lpszClassName = c_szSplashClass;
     RegisterClass(&wc);
 

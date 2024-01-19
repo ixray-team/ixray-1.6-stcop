@@ -18,7 +18,7 @@
 #ifdef DEBUG
 #	include	"debug_output.h"
 #endif
-CPhysicsShell*	actor_camera_shell = NULL;
+CPhysicsShell*	actor_camera_shell = nullptr;
 #ifdef	DEBUG
 BOOL dbg_draw_camera_collision = FALSE;
 #endif

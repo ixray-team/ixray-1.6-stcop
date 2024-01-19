@@ -56,7 +56,7 @@ public:
 	void					Load	(LPCSTR name)
 	{
 		IReader* fs			= FS.r_open(name);
-		if(NULL==fs){
+		if(nullptr==fs){
 			string256		inf;
 			extern HWND		logWindow;
 			xr_sprintf			(inf,sizeof(inf),"Build failed!\nCan't load shaders library: '%s'",name);
@@ -97,7 +97,7 @@ public:
 	{
 		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
 			if (0==_stricmp(name,it->Name)) return &(*it);
-		return NULL;
+		return nullptr;
 	}
 	Shader_xrLC*			Get		(int id)
 	{

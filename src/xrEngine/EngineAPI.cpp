@@ -35,7 +35,7 @@ CEngineAPI::~CEngineAPI()
 			xr_free					(vid_quality_token[i].name);
 		}
 		xr_free						(vid_quality_token);
-		vid_quality_token			= NULL;
+		vid_quality_token			= nullptr;
 	}
 }
 
@@ -161,12 +161,12 @@ void CEngineAPI::CreateRendererList()
 		vid_quality_token[0].name = xr_strdup("renderer_r1");
 
 		vid_quality_token[1].id = -1;
-		vid_quality_token[1].name = NULL;
+		vid_quality_token[1].name = nullptr;
 	} 
 	else
 	{
 		//	TODO: ask renderers if they are supported!
-		if(vid_quality_token != NULL) 
+		if(vid_quality_token != nullptr) 
 			return;
 		
 		bool bSupports_r1 = false;
@@ -186,7 +186,7 @@ void CEngineAPI::CreateRendererList()
 		else
 		{
 			char fullPath[MAX_PATH]{};
-			GetModuleFileNameA(NULL, fullPath, MAX_PATH);
+			GetModuleFileNameA(nullptr, fullPath, MAX_PATH);
 			auto dir = std::filesystem::weakly_canonical(fullPath).parent_path();
 			bSupports_r1 = std::filesystem::exists(dir / r1_name);
 			bSupports_r2 = std::filesystem::exists(dir / r2_name);
@@ -213,7 +213,7 @@ void CEngineAPI::CreateRendererList()
 		vid_quality_token = xr_alloc<xr_token>(_cnt);
 
 		vid_quality_token[_cnt - 1].id = -1;
-		vid_quality_token[_cnt - 1].name = NULL;
+		vid_quality_token[_cnt - 1].name = nullptr;
 
 #ifdef DEBUG
 		Msg("Available render modes[%d]:",_tmp.size());

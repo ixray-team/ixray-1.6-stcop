@@ -90,7 +90,7 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
 	// Execute the specified action list.
 	ParticleActions* pa	= GetActionListPtr(alist_id);
 	VERIFY				(pa);
-	if(pa == NULL)		return; // ERROR
+	if(pa == nullptr)		return; // ERROR
 	pa->lock();
 	// Step through all the actions in the action list.
 	for(PAVecIt it=pa->begin(); it!=pa->end(); ++it)
@@ -110,7 +110,7 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
     // Execute the specified action list.
     ParticleActions* pa	= GetActionListPtr(alist_id);
 	VERIFY				(pa);
-    if(pa == NULL)		return; // ERROR
+    if(pa == nullptr)		return; // ERROR
 	pa->lock();
 
     // Step through all the actions in the action list.
@@ -157,7 +157,7 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
 	ParticleActions* pa	= GetActionListPtr(alist_id);
 	VERIFY(pa);
 
-	if(pa == NULL)		return; // ERROR
+	if(pa == nullptr)		return; // ERROR
 	pa->lock();
 
 	Fmatrix mT;			mT.translate(full.c);

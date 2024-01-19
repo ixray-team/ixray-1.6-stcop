@@ -10,7 +10,7 @@ rewarding_event_handlers::rewarding_event_handlers(game_state_accumulator* pstat
 												   event_action_delegate_t ea_delegate) :
 	m_player_state_accum(pstate_accum),
 	m_reward_action(ea_delegate),
-	m_null_hanlder(NULL)
+	m_null_hanlder(nullptr)
 {
 }
 

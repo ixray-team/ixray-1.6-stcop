@@ -83,7 +83,7 @@ CAI_Stalker::CAI_Stalker			() :
 	m_sound_user_data_visitor		= 0;
 	m_movement_manager				= 0;
 	m_group_behaviour				= true;
-	m_boneHitProtection				= NULL;
+	m_boneHitProtection				= nullptr;
 	m_power_fx_factor				= flt_max;
 	m_wounded						= false;
 #ifdef DEBUG
@@ -652,7 +652,7 @@ void CAI_Stalker::net_Save			(NET_Packet& P)
 
 BOOL CAI_Stalker::net_SaveRelevant	()
 {
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
+	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=nullptr));
 }
 
 void CAI_Stalker::net_Export		(NET_Packet& P)

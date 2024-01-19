@@ -34,7 +34,7 @@ SLuaKnifeParams::~SLuaKnifeParams()
 {
 }
 
-SLuaKnifeParams* g_lua_knife_params = NULL;
+SLuaKnifeParams* g_lua_knife_params = nullptr;
 
 void destroy_lua_knife_params()
 {

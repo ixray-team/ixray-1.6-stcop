@@ -95,8 +95,8 @@ bool	CGameSpy_QR2::Init		(int PortID, int Public, void* instance)
 	//call qr_init with the query port number and gamename, default IP address, and no user data
 	
 	qr2_error_t err = xrGS_qr2_initA(
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		PortID,
 		Public,
 		0,
@@ -122,14 +122,14 @@ bool	CGameSpy_QR2::Init		(int PortID, int Public, void* instance)
 	RegisterAdditionalKeys();
 
 	// Set a function to be called when we receive a game specific message
-	xrGS_qr2_register_clientmessage_callback(NULL, callback_cm);
+	xrGS_qr2_register_clientmessage_callback(nullptr, callback_cm);
 
 	// Set a function to be called when we receive a nat negotiation request
-	xrGS_qr2_register_natneg_callback(NULL, callback_nn);
+	xrGS_qr2_register_natneg_callback(nullptr, callback_nn);
 
 	//Set a function to be called when gamespy responds my IP and port number
-	//xrGS_qr2_register_publicaddress_callback(NULL, callback_public);
-	xrGS_qr2_register_denyresponsetoip_callback(NULL, callback_deny_ip);
+	//xrGS_qr2_register_publicaddress_callback(nullptr, callback_public);
+	xrGS_qr2_register_denyresponsetoip_callback(nullptr, callback_deny_ip);
 
 #ifndef MASTER_GOLD
 	Msg("xrGS::QR2 : Initialized");

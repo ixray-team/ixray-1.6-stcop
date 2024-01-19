@@ -65,7 +65,7 @@ static void l_message (lua_State* state, const char *msg) {
 static int report (lua_State *L, int status) {
 	if (status && !lua_isnil(L, -1)) {
 		const char *msg = lua_tostring(L, -1);
-		if (msg == NULL) msg = "(error object is not a string)";
+		if (msg == nullptr) msg = "(error object is not a string)";
 		l_message(L, msg);
 		lua_pop(L, 1);
 	}
@@ -380,7 +380,7 @@ void CScriptStorage::print_stack() {
 
 		bool bPringName = true;
 		int Iter = 1;
-		while ((LocalVarName = lua_getlocal(L, &LuaDebugInfo, Iter++)) != NULL) {
+		while ((LocalVarName = lua_getlocal(L, &LuaDebugInfo, Iter++)) != nullptr) {
 			if (bPringName) {
 				Log("Local variables:");
 				bPringName = false;

@@ -1,8 +1,8 @@
 #ifndef NVTRISTRIP_H
 #define NVTRISTRIP_H
 
-#ifndef NULL
-#define NULL 0
+#ifndef nullptr
+#define nullptr 0
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ struct PrimitiveGroup
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-	PrimitiveGroup() : type(PT_STRIP), numIndices(0), indices(NULL) {}
+	PrimitiveGroup() : type(PT_STRIP), numIndices(0), indices(nullptr) {}
 	~PrimitiveGroup()
 	{
 		if(indices)	xr_free(indices);

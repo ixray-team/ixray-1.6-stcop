@@ -599,14 +599,14 @@ dInternalStepIslandFast (dxWorld * world, dxBody * const *bodies, int nb, dxJoin
 		ofs[i] = m;
 		m += info[i].m;
 	}
-	dReal *c = NULL;
-	dReal *cfm = NULL;
-	dReal *lo = NULL;
-	dReal *hi = NULL;
-	int *findex = NULL;
+	dReal *c = nullptr;
+	dReal *cfm = nullptr;
+	dReal *lo = nullptr;
+	dReal *hi = nullptr;
+	int *findex = nullptr;
 
-	dReal *J = NULL;
-	dxJoint::Info2 * Jinfo = NULL;
+	dReal *J = nullptr;
+	dxJoint::Info2 * Jinfo = nullptr;
 
 	if (m)
 	{

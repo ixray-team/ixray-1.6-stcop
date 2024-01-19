@@ -126,7 +126,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 				}
 			} else
 			{
-				if (CurrentEntity() != NULL) 
+				if (CurrentEntity() != nullptr) 
 				{
 					CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity());
 					if (pGO) pGO->On_B_NotCurrentEntity();

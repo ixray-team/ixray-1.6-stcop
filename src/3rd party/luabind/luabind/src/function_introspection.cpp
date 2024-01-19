@@ -56,7 +56,7 @@
 
 // Standard includes
 #include <string>                       // for string
-#include <cstddef>                      // for NULL
+#include <cstddef>                      // for nullptr
 
 namespace luabind {
 
@@ -67,7 +67,7 @@ namespace luabind {
 				fn.push(L);
 				detail::stack_pop pop(L, 1);
 				if(!detail::is_luabind_function(L, -1)) {
-					return NULL;
+					return nullptr;
 				}
 			}
 			return *touserdata<detail::function_object*>(std::get<1>(getupvalue(fn, 1)));

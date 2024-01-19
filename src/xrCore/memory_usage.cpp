@@ -41,7 +41,7 @@ u32	mem_usage_impl	(u32* pBlocksUsed, u32* pBlocksFree)
 
 	_HEAPINFO		hinfo;
 	int				heapstatus;
-	hinfo._pentry	= NULL;
+	hinfo._pentry	= nullptr;
 	size_t	total	= 0;
 	u32	blocks_free	= 0;
 	u32	blocks_used	= 0;

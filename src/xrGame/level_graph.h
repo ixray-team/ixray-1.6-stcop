@@ -195,7 +195,7 @@ public:
 	IC		float	vertex_high_cover_angle		(u32 vertex_id, float inc_angle, _predicate compare_predicate) const;
 	template <class _predicate>
 	IC		float	vertex_low_cover_angle		(u32 vertex_id, float inc_angle, _predicate compare_predicate) const;
-	IC		void	set_invalid_vertex			(u32 &vertex_id, CVertex **vertex = NULL) const;
+	IC		void	set_invalid_vertex			(u32 &vertex_id, CVertex **vertex = nullptr) const;
 	IC		const u32 vertex_id					(const CLevelGraph::CVertex *vertex) const;
 			u32		vertex_id					(const Fvector &position) const;
 			u32		vertex						(u32 current_vertex_id, const Fvector &position) const;

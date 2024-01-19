@@ -83,7 +83,7 @@ struct game_PlayerState
 	shared_str	m_player_ip;
 	shared_str	m_player_digest;
 
-	//if account_info == NULL then constructor call load_account method.
+	//if account_info == nullptr then constructor call load_account method.
 	//so it MUST be use ONLY for local_player !
 	explicit		game_PlayerState		(NET_Packet* account_info);
 					~game_PlayerState		();

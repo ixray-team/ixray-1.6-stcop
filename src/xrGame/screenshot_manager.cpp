@@ -44,14 +44,14 @@ screenshot_manager::screenshot_manager()
 {
 	m_state = 0;
 	
-	m_jpeg_buffer					= NULL;
+	m_jpeg_buffer					= nullptr;
 	m_jpeg_buffer_capacity			= 0;
 
-	m_buffer_for_compress			= NULL;
+	m_buffer_for_compress			= nullptr;
 	m_buffer_for_compress_capacity	= 0;
 
-	m_make_start_event	= NULL;
-	m_make_done_event	= NULL;
+	m_make_start_event	= nullptr;
+	m_make_done_event	= nullptr;
 }
 screenshot_manager::~screenshot_manager()
 {
@@ -273,7 +273,7 @@ void screenshot_manager::process_screenshot(bool singlecore)
 			&screenshot_manager::jpeg_compress_cb);
 	} else
 	{
-		//g_jpeg_encode_cb = NULL;
+		//g_jpeg_encode_cb = nullptr;
 		g_jpeg_encode_delegate.clear();
 	}
 		
@@ -282,8 +282,8 @@ void screenshot_manager::process_screenshot(bool singlecore)
 		SetEvent(m_make_start_event);
 		return;
 	}
-	m_make_start_event	= CreateEvent(NULL, FALSE, TRUE, NULL);
-	m_make_done_event	= CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_make_start_event	= CreateEvent(nullptr, FALSE, TRUE, nullptr);
+	m_make_done_event	= CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	thread_spawn	(&screenshot_manager::screenshot_maker_thread, "screenshot_maker", 0, this);
 }
 void		screenshot_manager::jpeg_compress_cb(long progress)

@@ -67,4 +67,4 @@ public:
 };
 
 #define NEW_INSTANCE(a)		Engine.External.pCreate(a)
-#define DEL_INSTANCE(a)		{ Engine.External.pDestroy(a); a=NULL; }
+#define DEL_INSTANCE(a)		{ Engine.External.pDestroy(a); a=nullptr; }

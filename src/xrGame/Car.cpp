@@ -37,7 +37,7 @@ BONE_P_MAP CCar::bone_map=BONE_P_MAP();
 
 CCar::CCar()
 {
-	m_memory		= NULL;
+	m_memory		= nullptr;
 	m_driver_anim_type = 0;
 	m_bone_steer	= BI_NONE;
 	active_camera	= 0;
@@ -85,7 +85,7 @@ CCar::CCar()
 	m_breaks_to_back_rate=1.f;
 
 	b_exploded=false;
-	m_car_weapon=NULL;
+	m_car_weapon=nullptr;
 	m_power_neutral_factor=0.25f;
 	m_steer_angle=0.f;
 #ifdef DEBUG
@@ -614,7 +614,7 @@ void CCar::detach_Actor()
 	m_current_rpm=m_min_rpm;
 //	CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
 	///Break();
-	//H_SetParent(NULL);
+	//H_SetParent(nullptr);
 	HandBreak();
 	processing_deactivate();
 #ifdef DEBUG
@@ -1809,8 +1809,8 @@ void CCar::CarExplode()
 //void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * ,SGameMtl * )
 //{
 //
-//	dxGeomUserData *l_pUD1 = NULL;
-//	dxGeomUserData *l_pUD2 = NULL;
+//	dxGeomUserData *l_pUD1 = nullptr;
+//	dxGeomUserData *l_pUD2 = nullptr;
 //	l_pUD1 = PHRetrieveGeomUserData(c.geom.g1);
 //	l_pUD2 = PHRetrieveGeomUserData(c.geom.g2);
 //

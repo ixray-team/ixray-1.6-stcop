@@ -9,7 +9,7 @@ struct SCallbackInfo{
 	CUIWindow* 				m_control_ptr;
 	shared_str 				m_control_name;
 	s16						m_event;
-	SCallbackInfo():m_control_ptr(NULL),m_event(-1){};
+	SCallbackInfo():m_control_ptr(nullptr),m_event(-1){};
 };
 
 struct event_comparer{

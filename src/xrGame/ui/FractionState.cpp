@@ -26,13 +26,13 @@ FractionState::FractionState():
 	state_vs(0),
 	m_actor_goodwill(0)
 {
-	m_id._set         ( NULL );
-	m_name._set       ( NULL );
-	m_icon._set       ( NULL );
-	m_icon_big._set   ( NULL );
-	m_target._set     ( NULL );
-	m_target_desc._set( NULL );
-	m_location._set   ( NULL );
+	m_id._set         ( nullptr );
+	m_name._set       ( nullptr );
+	m_icon._set       ( nullptr );
+	m_icon_big._set   ( nullptr );
+	m_target._set     ( nullptr );
+	m_target_desc._set( nullptr );
+	m_location._set   ( nullptr );
 }
 
 FractionState::FractionState( shared_str const& id )

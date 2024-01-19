@@ -43,7 +43,7 @@ public:
 	static bool _on_self_delete;
 public:
 	CSingleton			()	{}
-	virtual			~CSingleton			()	{_self=NULL;}
+	virtual			~CSingleton			()	{_self=nullptr;}
 
 	static			void DestroySingleton	()	{
 		if(!_self) return;
@@ -68,7 +68,7 @@ public:
 	}
 };
 
-template <class T> T*	CSingleton<T>::_self			= NULL;
+template <class T> T*	CSingleton<T>::_self			= nullptr;
 template <class T> int	CSingleton<T>::_refcount		= 0;
 template <class T> bool CSingleton<T>::_on_self_delete	= true;
 */

@@ -68,7 +68,7 @@ public:
 							}
 	IC			dGeomID		geometry()
 							{
-								return m_geom_transform ? (geom() ? geom() : m_geom_transform) : NULL;
+								return m_geom_transform ? (geom() ? geom() : m_geom_transform) : nullptr;
 							}
 	IC			dGeomID		geometry_bt()
 							{
@@ -86,7 +86,7 @@ public:
 							}
 	IC	const	dGeomID		geometry()const
 							{
-								return m_geom_transform ? (geom() ? geom() : m_geom_transform) : NULL;
+								return m_geom_transform ? (geom() ? geom() : m_geom_transform) : nullptr;
 							}
 	IC	const	dGeomID		geometry_bt()const
 							{

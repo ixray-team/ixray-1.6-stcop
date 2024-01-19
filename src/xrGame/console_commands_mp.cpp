@@ -454,13 +454,13 @@ static xrClientData* exclude_command_initiator(LPCSTR args)
 	if (clientidstr)
 	{
 		clientidstr += sizeof(RAPREFIX) - 1;
-		u32 client_id = static_cast<u32>(strtoul(clientidstr, NULL, 10));
+		u32 client_id = static_cast<u32>(strtoul(clientidstr, nullptr, 10));
 		ClientID tmp_id;
 		tmp_id.set(client_id);
 		if (g_pGameLevel && Level().Server)
 			return Level().Server->ID_to_client(tmp_id);
 	}
-	return NULL;
+	return nullptr;
 };
 static char const * exclude_raid_from_args(LPCSTR args, LPSTR dest, size_t dest_size)
 {
@@ -1174,7 +1174,7 @@ public:
 			LPCSTR filter_string;
 			PlayersEnumerator()
 			{
-				filter_string = NULL;
+				filter_string = nullptr;
 			}
 			void operator()(IClient* client)
 			{

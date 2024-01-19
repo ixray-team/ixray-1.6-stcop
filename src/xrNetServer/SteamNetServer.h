@@ -72,6 +72,6 @@ protected:
 public:
 	virtual void			UpdateClientStatistic(IClient* C) override;
 
-	virtual bool			GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) override;
+	virtual bool			GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = nullptr) override;
 	virtual bool			DisconnectClient(IClient* C, LPCSTR Reason) override;
 };

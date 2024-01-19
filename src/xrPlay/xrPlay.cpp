@@ -24,9 +24,9 @@ INT_PTR CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 
 void CreateGameWindow()
 {
-	if (g_AppInfo.Window == NULL) {
+	if (g_AppInfo.Window == nullptr) {
 		DEVMODE dmi;
-		EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmi);
+		EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &dmi);
 		psCurrentVidMode[0] = dmi.dmPelsWidth;
 		psCurrentVidMode[1] = dmi.dmPelsHeight;
 
@@ -55,10 +55,10 @@ int APIENTRY WinMain
 
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
 	hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
-	if (hCheckPresenceMutex == NULL) {
+	if (hCheckPresenceMutex == nullptr) {
 		// New mutex
-		hCheckPresenceMutex = CreateMutex(NULL, FALSE, STALKER_PRESENCE_MUTEX);
-		if (hCheckPresenceMutex == NULL)
+		hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
+		if (hCheckPresenceMutex == nullptr)
 			// Shit happens
 			return 2;
 	}
@@ -117,7 +117,7 @@ int APIENTRY WinMain
 
 	// Destroy LOGO
 	DestroyWindow(logoWindow);
-	logoWindow = NULL;
+	logoWindow = nullptr;
 	
 	SDL_ShowWindow(g_AppInfo.Window);
 

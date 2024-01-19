@@ -7,7 +7,7 @@
 ENGINE_API xr_string dbg_object_base_dump_string( const CObject *obj )
 {
 	if( !obj )
-		return xr_string("object: NULL ptr");
+		return xr_string("object: nullptr ptr");
 
 	return make_string<xr_string>( "object name: %s, section name: %s, visual name: %s \n",
 		                 obj->cName().c_str(), 

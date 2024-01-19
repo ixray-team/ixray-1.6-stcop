@@ -88,8 +88,8 @@ void SHeliMovementState::Update()
 void SHeliMovementState::reinit()
 {
 	type						= eMovNone;
-	currPatrolPath				= NULL;
-	currPatrolVertex			= NULL;
+	currPatrolPath				= nullptr;
+	currPatrolVertex			= nullptr;
 	patrol_begin_idx			= 0;
 	patrol_path_name			= "";
 	need_to_del_path			= false;
@@ -178,7 +178,7 @@ void SHeliMovementState::getPathAltitude (Fvector& point, float base_altitude)
 	point.y = boundingVolume.max.y+EPS_L;
 	VERIFY( _valid(point) );
 
-	Level().ObjectSpace.RayPick(point, down_dir, boundSize.y+1.0f, collide::rqtStatic, cR, NULL);
+	Level().ObjectSpace.RayPick(point, down_dir, boundSize.y+1.0f, collide::rqtStatic, cR, nullptr);
 	
 	point.y = point.y-cR.range;
 

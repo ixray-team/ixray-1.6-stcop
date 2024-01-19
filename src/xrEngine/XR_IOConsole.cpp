@@ -42,7 +42,7 @@ static const char* m_fontConsoleName = "ui_font_console";
 static const char* m_fontConsole2Name = "ui_font_console_2";
 
 
-ENGINE_API CConsole*		Console		=	NULL;
+ENGINE_API CConsole*		Console		=	nullptr;
 
 extern char const * const	ioc_prompt;
        char const * const	ioc_prompt	=	">>> ";
@@ -96,7 +96,7 @@ void ConsoleLogCallback(LPCSTR line) {
 	Console->AddLogEntry(line);
 }
 
-CConsole::CConsole() : m_hShader_back(NULL) {
+CConsole::CConsole() : m_hShader_back(nullptr) {
 	m_editor          = xr_new<text_editor::line_editor>( (u32)CONSOLE_BUF_SIZE );
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips    = false;
@@ -113,7 +113,7 @@ void CConsole::Initialize()
 
 	m_mouse_pos.x	= 0;
 	m_mouse_pos.y	= 0;
-	m_last_cmd		= NULL;
+	m_last_cmd		= nullptr;
 	
 	m_cmd_history.reserve( m_cmd_history_max + 2 );
 	m_cmd_history.clear();
@@ -126,7 +126,7 @@ void CConsole::Initialize()
 
 	m_tips_mode		= 0;
 	m_prev_length_str = 0;
-	m_cur_cmd		= NULL;
+	m_cur_cmd		= nullptr;
 	reset_selected_tip();
 
 	// Commands
@@ -702,7 +702,7 @@ IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 		out_str._set( (LPCSTR)new_str );
 		return cc;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v) {
@@ -806,7 +806,7 @@ void CConsole::update_tips() {
 	m_temp_tips.clear();
 	m_tips.clear();
 
-	m_cur_cmd  = NULL;
+	m_cur_cmd  = nullptr;
 	if (!bVisible) {
 		return;
 	}

@@ -9,7 +9,7 @@ class CUIPropertiesBox:
 private:
 	typedef CUIFrameWindow inherited; 
 public:
-						CUIPropertiesBox					(CUIPropertiesBox* sub_property_box = NULL);
+						CUIPropertiesBox					(CUIPropertiesBox* sub_property_box = nullptr);
 	virtual				~CUIPropertiesBox					();
 
 			void		InitPropertiesBox					(Fvector2 pos, Fvector2 size);
@@ -18,7 +18,7 @@ public:
 	virtual bool		OnMouseAction								(float x, float y, EUIMessages mouse_action);
 	virtual bool		OnKeyboardAction							(int dik, EUIMessages keyboard_action);
 
-	bool				AddItem								(LPCSTR  str, void* pData = NULL, u32 tag_value = 0);
+	bool				AddItem								(LPCSTR  str, void* pData = nullptr, u32 tag_value = 0);
 	bool				AddItem_script						(LPCSTR  str){return AddItem(str);};
 	u32					GetItemsCount						() {return m_UIListWnd.GetSize();};
 	void				RemoveItemByTAG						(u32 tag_value);

@@ -44,7 +44,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		// Init COM so we can use CoCreateInstance
 //		HRESULT co_res = 
 		if (!strstr(GetCommandLineA(),"-editor"))
-			CoInitializeEx	(NULL, COINIT_MULTITHREADED);
+			CoInitializeEx	(nullptr, COINIT_MULTITHREADED);
 
 		xr_strcpy			(Params,sizeof(Params),GetCommandLineA());
 		_strlwr_s			(Params,sizeof(Params));
@@ -178,7 +178,7 @@ void xrCore::_destroy		()
 		break;
 	case DLL_THREAD_ATTACH:
 		if (!strstr(GetCommandLineA(),"-editor"))
-			CoInitializeEx	(NULL, COINIT_MULTITHREADED);
+			CoInitializeEx	(nullptr, COINIT_MULTITHREADED);
 		timeBeginPeriod	(1);
 		break;
 	case DLL_THREAD_DETACH:

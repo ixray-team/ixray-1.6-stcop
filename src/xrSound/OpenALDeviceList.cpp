@@ -31,7 +31,7 @@
 #pragma warning(pop)
 
 #ifdef _EDITOR
-	log_fn_ptr_type*	pLog = NULL;
+	log_fn_ptr_type*	pLog = nullptr;
 
 void __cdecl al_log(char* msg)
 {
@@ -59,7 +59,7 @@ ALDeviceList::~ALDeviceList()
 		xr_free					(snd_devices_token[i].name);
 	}
 	xr_free						(snd_devices_token);
-	snd_devices_token			= NULL;
+	snd_devices_token			= nullptr;
 }
 
 void ALDeviceList::Enumerate()
@@ -91,7 +91,7 @@ void ALDeviceList::Enumerate()
 
 
 			MultiByteToWideChar(CP_UTF8, 0, device, (int)len, wDevice, (int)len);
-			WideCharToMultiByte(CP_ACP, 0, wDevice, (int)len, AnsiDevice, (int)len, NULL, NULL);
+			WideCharToMultiByte(CP_ACP, 0, wDevice, (int)len, AnsiDevice, (int)len, nullptr, nullptr);
 
 			xr_string cDevice = AnsiDevice;
 			delete[] AnsiDevice;
@@ -115,18 +115,18 @@ void ALDeviceList::Enumerate()
 	// Open default device
 	
 	DeviceNameList.push_back("Default Device");
-	DeviceOALNameList.push_back(alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER));
+	DeviceOALNameList.push_back(alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER));
 	
 	// grab function pointers for 1.0-API functions, and if successful proceed to enumerate all devices
 	if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATE_ALL_EXT"))
 	{
-		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER));
+		list_audio_devices(alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER));
 		
 		xr_strcpy(m_defaultDeviceName, DeviceNameList[0].c_str());
 		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName);
 
 		index				= 0;
-		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
+		// go through device list (each device terminated with a single nullptr, list terminated with double nullptr)
 		for (size_t Iter = 0; Iter < DeviceOALNameList.size(); Iter++)
 		{
 			const char* Device = DeviceOALNameList[Iter];

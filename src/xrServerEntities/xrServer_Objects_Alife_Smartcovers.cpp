@@ -561,7 +561,7 @@ void CSE_SmartCover::on_render	(CDUInterface* du, ISE_AbstractLEOwner* owner_, b
 
 	if( m_need_to_reparse_loopholes&&m_description.size() )
 	{
-		OnChangeDescription		(NULL);
+		OnChangeDescription		(nullptr);
 		m_need_to_reparse_loopholes = false;
 	}
 

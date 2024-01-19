@@ -46,7 +46,7 @@ CTorch::CTorch(void)
 
 	m_prev_hp.set				(0,0);
 	m_delta_h					= 0;
-	m_night_vision				= NULL;
+	m_night_vision				= nullptr;
 
 	// Disabling shift by x and z axes for 1st render, 
 	// because we don't have dynamic lighting in it. 
@@ -493,7 +493,7 @@ void CTorch::enable(bool value)
 }
 
 CNightVisionEffector::CNightVisionEffector(const shared_str& section)
-:m_pActor(NULL)
+:m_pActor(nullptr)
 {
 	m_sounds.LoadSound(section.c_str(),"snd_night_vision_on", "NightVisionOnSnd", false, SOUND_TYPE_ITEM_USING);
 	m_sounds.LoadSound(section.c_str(),"snd_night_vision_off", "NightVisionOffSnd", false, SOUND_TYPE_ITEM_USING);
@@ -530,7 +530,7 @@ bool CNightVisionEffector::IsActive()
 {
 	if(!m_pActor)	return false;
 	CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
-	return (pp!=NULL);
+	return (pp!=nullptr);
 }
 
 void CNightVisionEffector::OnDisabled(CActor* pA, bool play_sound)
@@ -550,19 +550,19 @@ void CNightVisionEffector::PlaySounds(EPlaySounds which)
 	{
 	case eStartSound:
 		{
-			m_sounds.PlaySound("NightVisionOnSnd", m_pActor->Position(), NULL, bPlaySoundFirstPerson);
+			m_sounds.PlaySound("NightVisionOnSnd", m_pActor->Position(), nullptr, bPlaySoundFirstPerson);
 		}break;
 	case eStopSound:
 		{
-			m_sounds.PlaySound("NightVisionOffSnd", m_pActor->Position(), NULL, bPlaySoundFirstPerson);
+			m_sounds.PlaySound("NightVisionOffSnd", m_pActor->Position(), nullptr, bPlaySoundFirstPerson);
 		}break;
 	case eIdleSound:
 		{
-			m_sounds.PlaySound("NightVisionIdleSnd", m_pActor->Position(), NULL, bPlaySoundFirstPerson, true);
+			m_sounds.PlaySound("NightVisionIdleSnd", m_pActor->Position(), nullptr, bPlaySoundFirstPerson, true);
 		}break;
 	case eBrokeSound:
 		{
-			m_sounds.PlaySound("NightVisionBrokenSnd", m_pActor->Position(), NULL, bPlaySoundFirstPerson);
+			m_sounds.PlaySound("NightVisionBrokenSnd", m_pActor->Position(), nullptr, bPlaySoundFirstPerson);
 		}break;
 	default: NODEFAULT;
 	}

@@ -17,7 +17,7 @@
 CPda::CPda(void)						
 {										
 	m_idOriginalOwner		= u16(-1);
-	m_SpecificChracterOwner = NULL;
+	m_SpecificChracterOwner = nullptr;
 	TurnOff					();
 }
 

@@ -12,7 +12,7 @@ public:
 	static bool _on_self_delete;
 public:
 					CSingleton			()	{}
-	virtual			~CSingleton			()	{_self=NULL;}
+	virtual			~CSingleton			()	{_self=nullptr;}
 	
 	static			void DestroySingleton	()	{
 		if(!_self) return;
@@ -37,7 +37,7 @@ public:
 	}
 };
 
-template <class T> T*	CSingleton<T>::_self			= NULL;
+template <class T> T*	CSingleton<T>::_self			= nullptr;
 template <class T> int	CSingleton<T>::_refcount		= 0;
 template <class T> bool CSingleton<T>::_on_self_delete	= true;
 
@@ -85,7 +85,7 @@ template<class SHARED_TYPE, class KEY_TYPE, bool auto_delete = true> class CShar
 	SHARED_TYPE							*_sd;
 	CSharedObj<SHARED_TYPE, KEY_TYPE>	*pSharedObj;
 public:
-					CSharedClass	():_sd(NULL) {pSharedObj	= CSharedObj<SHARED_TYPE,KEY_TYPE>::Instance(); pSharedObj->_on_self_delete = auto_delete;}
+					CSharedClass	():_sd(nullptr) {pSharedObj	= CSharedObj<SHARED_TYPE,KEY_TYPE>::Instance(); pSharedObj->_on_self_delete = auto_delete;}
 	virtual			~CSharedClass	() {pSharedObj->FreeInst();}
 
 	

@@ -142,8 +142,8 @@ void CLevel::net_Stop		()
 	if (IsDemoPlay() && m_current_spectator)	//destroying demo spectator ...
 	{
 		m_current_spectator->setDestroy	(TRUE);
-		SetControlEntity(NULL); //m_current_spectator == CurrentControlEntity()
-		m_current_spectator = NULL;
+		SetControlEntity(nullptr); //m_current_spectator == CurrentControlEntity()
+		m_current_spectator = nullptr;
 		
 	}else 
 	if(IsDemoSave() && !IsDemoInfoSaved())
@@ -560,14 +560,14 @@ void			CLevel::ClearAllObjects				()
 	for (u32 i=0; i<CLObjNum; i++)
 	{
 		CObject* pObj = Level().Objects.o_get_by_iterator(i);
-		if (pObj->H_Parent() != NULL)
+		if (pObj->H_Parent() != nullptr)
 		{
 			if (IsGameTypeSingle())
 			{
-				FATAL("pObj->H_Parent()==NULL");
+				FATAL("pObj->H_Parent()==nullptr");
 			} else
 			{
-				Msg("! ERROR: object's parent is not NULL");
+				Msg("! ERROR: object's parent is not nullptr");
 			}
 		}
 		

@@ -45,7 +45,7 @@ CInfoPortion::~CInfoPortion ()
 void CInfoPortion::Load	(shared_str info_id)
 {
 	m_InfoId = info_id;
-	inherited_shared::load_shared(m_InfoId, NULL);
+	inherited_shared::load_shared(m_InfoId, nullptr);
 }
 
 
@@ -53,7 +53,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 {
 	const ITEM_DATA* item_data = id_to_index::GetById(m_InfoId, true);
 
-	if(item_data==NULL)
+	if(item_data==nullptr)
 	{
 		Msg("! attempt to use non-existent INFOPORTION [%s]", m_InfoId.c_str());
 		return;
@@ -95,7 +95,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 	int articles_num	= pXML->GetNodesNum(pNode, "article");
 	for(i=0; i<articles_num; ++i)
 	{
-		LPCSTR article_str_id = pXML->Read(pNode, "article", i, NULL);
+		LPCSTR article_str_id = pXML->Read(pNode, "article", i, nullptr);
 		THROW(article_str_id);
 		info_data()->m_Articles.push_back(article_str_id);
 	}
@@ -104,7 +104,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 	articles_num = pXML->GetNodesNum(pNode, "article_disable");
 	for(i=0; i<articles_num; ++i)
 	{
-		LPCSTR article_str_id = pXML->Read(pNode, "article_disable", i, NULL);
+		LPCSTR article_str_id = pXML->Read(pNode, "article_disable", i, nullptr);
 		THROW(article_str_id);
 		info_data()->m_ArticlesDisable.push_back(article_str_id);
 	}

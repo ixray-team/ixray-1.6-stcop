@@ -27,8 +27,8 @@
 
 #endif // NET_USE_COMPRESSION
 
-static FILE*    RawTrafficDump          = NULL;
-static FILE*    CompressionDump         = NULL;
+static FILE*    RawTrafficDump          = nullptr;
+static FILE*    CompressionDump         = nullptr;
 
 #define NOWARN
 
@@ -59,12 +59,12 @@ NET_Compressor::~NET_Compressor()
 	if( CompressionDump )
 	{
 	    fclose( CompressionDump );
-	    CompressionDump = NULL;
+	    CompressionDump = nullptr;
     }
     if( RawTrafficDump )
     {
         fclose( RawTrafficDump );
-        RawTrafficDump = NULL;
+        RawTrafficDump = nullptr;
     }
 }
 
@@ -94,7 +94,7 @@ XRNETSERVER_API BOOL g_net_compressor_gather_stats	= FALSE;
 
 u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const u32 &count)
 {
-	SCompressorStats::SStatPacket* _p = NULL;
+	SCompressorStats::SStatPacket* _p = nullptr;
 	bool b_compress_packet = (count>36);
 	if(g_net_compressor_gather_stats && b_compress_packet)
 	{

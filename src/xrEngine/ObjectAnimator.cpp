@@ -96,7 +96,7 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
             return 		*it;
         }else{
             Debug.fatal	(DEBUG_INFO,"OBJ ANIM::Cycle '%s' not found.",name);
-            return NULL;
+            return nullptr;
         }
     }else{
         if (!m_Motions.empty()){
@@ -106,7 +106,7 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
             return 		m_Motions.front();
         }else{
             Debug.fatal	(DEBUG_INFO,"OBJ ANIM::Cycle '%s' not found.",name);
-            return NULL;
+            return nullptr;
         }
     }
 }

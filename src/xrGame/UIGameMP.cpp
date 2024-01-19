@@ -8,10 +8,10 @@
 #include "game_cl_mp.h"
 
 UIGameMP::UIGameMP() :
-	m_pDemoPlayControl(NULL),
-	m_pServerInfo(NULL),
-	m_pAchivementIdicator(NULL),
-	m_game(NULL)
+	m_pDemoPlayControl(nullptr),
+	m_pServerInfo(nullptr),
+	m_pAchivementIdicator(nullptr),
+	m_game(nullptr)
 {
 }
 
