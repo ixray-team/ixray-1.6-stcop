@@ -31,6 +31,10 @@ file(GLOB CORE_SOURCE_XML_FILES
     "XmlParser/*.h"
 )
 
+file(GLOB CORE_SOURCE_STACK_FILES
+    "StackTrace/*.h"
+)
+
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"
     "memory_*.*"
@@ -85,6 +89,7 @@ source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
 source_group("core/fs" FILES ${CORE_SOURCE_FS_FILES})
 source_group("core/stl" FILES ${CORE_SOURCE_STL_FILES})
 source_group("core/XML" FILES ${CORE_SOURCE_XML_FILES})
+source_group("core/StackTrace" FILES ${CORE_SOURCE_STACK_FILES})
 source_group("discord" FILES ${CORE_SOURCE_DISCORD_FILES})
 source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
