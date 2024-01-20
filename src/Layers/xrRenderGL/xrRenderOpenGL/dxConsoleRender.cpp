@@ -19,7 +19,7 @@ void dxConsoleRender::OnRender(bool bGame)
 	VERIFY	(HW.pDevice);
 
 
-	D3DRECT R = { 0,0,Device.dwWidth,Device.dwHeight};
+	D3DRECT R = { 0,0,Device.TargetWidth,Device.TargetHeight};
 	if		(bGame) R.y2 /= 2;
 	
 #if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)

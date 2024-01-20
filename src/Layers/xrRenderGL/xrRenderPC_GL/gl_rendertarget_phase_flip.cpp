@@ -10,8 +10,8 @@ void	CRenderTarget::phase_flip	()
 	// common calc for quad-rendering
 	u32		Offset;
 	u32		C					= color_rgba	(255,255,255,255);
-	float	_w					= float			(Device.dwWidth);
-	float	_h					= float			(Device.dwHeight);
+	float	_w					= float			(Device.TargetWidth);
+	float	_h					= float			(Device.TargetHeight);
 	Fvector2					p0,p1;
 	p0.set						(.5f/_w, .5f/_h);
 	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );

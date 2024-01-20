@@ -14,7 +14,7 @@ void CRenderTarget::DoAsyncScreenshot()
 		HRESULT hr;
 
 		glBindTexture(GL_TEXTURE_2D, t_ss_async);
-		CHK_GL(glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, Device.dwWidth, Device.dwHeight, 0));
+		CHK_GL(glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, Device.TargetWidth, Device.TargetHeight, 0));
 		
 
 		RImplementation.m_bMakeAsyncSS = false;
@@ -168,8 +168,8 @@ void	CRenderTarget::phase_combine	()
 
 		/*
 		// Fill VB
-		//float	_w					= float(Device.dwWidth);
-		//float	_h					= float(Device.dwHeight);
+		//float	_w					= float(Device.TargetWidth);
+		//float	_h					= float(Device.TargetHeight);
 		//p0.set						(.5f/_w, .5f/_h);
 		//p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 		//p0.set						(.5f/_w, .5f/_h);
@@ -189,8 +189,8 @@ void	CRenderTarget::phase_combine	()
 		*/
 
 		// Fill VB
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
+		float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
@@ -276,11 +276,11 @@ void	CRenderTarget::phase_combine	()
 
 		// we need to resolve rt_Generic_1_r into rt_Generic_1
 		u_setrt(rt_Generic_1_r, rt_Generic_1, 0, RImplementation.Target->rt_MSAADepth->pZRT);
-		CHK_GL(glBlitFramebuffer(0, 0, Device.dwWidth, Device.dwHeight, 0, 0, Device.dwWidth, Device.dwHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+		CHK_GL(glBlitFramebuffer(0, 0, Device.TargetWidth, Device.TargetHeight, 0, 0, Device.TargetWidth, Device.TargetHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
 
 		// we need to resolve rt_Generic_0_r into rt_Generic_0
 		u_setrt(rt_Generic_0_r, rt_Generic_0, 0, RImplementation.Target->rt_MSAADepth->pZRT);
-		CHK_GL(glBlitFramebuffer(0, 0, Device.dwWidth, Device.dwHeight, 0, 0, Device.dwWidth, Device.dwHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+		CHK_GL(glBlitFramebuffer(0, 0, Device.TargetWidth, Device.TargetHeight, 0, 0, Device.TargetWidth, Device.TargetHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
 	}
 
    // for msaa we need a resolved color buffer - Holger
@@ -338,14 +338,14 @@ void	CRenderTarget::phase_combine	()
    if( RImplementation.o.dx10_msaa )
    {
 	   if		(PP_Complex)	u_setrt		( rt_Generic,0,0,HW.pBaseZB );			// LDR RT
-	   else					   u_setrt		( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	   else					   u_setrt		( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
    }
    else
    {
       if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT
-      else					   u_setrt		( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+      else					   u_setrt		( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
    }
-	//. u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
@@ -365,8 +365,8 @@ void	CRenderTarget::phase_combine	()
 			Fvector4	uv6;
 		};
 
-		float	_w					= float(Device.dwWidth);
-		float	_h					= float(Device.dwHeight);
+		float	_w					= float(Device.TargetWidth);
+		float	_h					= float(Device.TargetHeight);
 		float	ddw					= 1.f/_w;
 		float	ddh					= 1.f/_h;
 		p0.set						(.5f/_w, .5f/_h);
@@ -397,7 +397,7 @@ void	CRenderTarget::phase_combine	()
 
 		//	Set up variable
 		Fvector2	vDofKernel;
-		vDofKernel.set(0.5f/Device.dwWidth, 0.5f/Device.dwHeight);
+		vDofKernel.set(0.5f/Device.TargetWidth, 0.5f/Device.TargetHeight);
 		vDofKernel.mul(kernel_size);
 
 		// Draw COLOR
@@ -522,8 +522,8 @@ void CRenderTarget::phase_combine_volumetric()
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{
 		// Fill VB
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
+		float	scale_X				= float(Device.TargetWidth)	/ float(TEX_jitter);
+		float	scale_Y				= float(Device.TargetHeight)/ float(TEX_jitter);
 
 		// Fill vertex buffer
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);

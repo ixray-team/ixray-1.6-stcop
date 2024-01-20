@@ -77,8 +77,8 @@ class cl_texgen : public R_constant_setup
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
 #else	//	USE_DX10
-		float	_w						= float(Device.dwWidth);
-		float	_h						= float(Device.dwHeight);
+		float	_w						= float(Device.TargetWidth);
+		float	_h						= float(Device.TargetHeight);
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			mTexelAdjust		= 
@@ -112,8 +112,8 @@ class cl_VPtexgen : public R_constant_setup
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
 #else	//	USE_DX10
-		float	_w						= float(Device.dwWidth);
-		float	_h						= float(Device.dwHeight);
+		float	_w						= float(Device.TargetWidth);
+		float	_h						= float(Device.TargetHeight);
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			mTexelAdjust		= 
@@ -301,7 +301,7 @@ static class cl_screen_res : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		RCache.set_c	(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f/(float)Device.dwWidth, 1.0f/(float)Device.dwHeight);
+		RCache.set_c	(C, (float)Device.TargetWidth, (float)Device.TargetHeight, 1.0f/(float)Device.TargetWidth, 1.0f/(float)Device.TargetHeight);
 	}
 }	binder_screen_res;
 
