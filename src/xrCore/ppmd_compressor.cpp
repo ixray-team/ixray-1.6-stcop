@@ -14,21 +14,18 @@ void _STDCALL PrintInfo		(_PPMD_FILE* DecodedFile,_PPMD_FILE* EncodedFile)
 {
 }
 
-
-
-static LONG PPMd_Locked = 0;
+static xrCriticalSection PPMdLock;
 
 static inline void
 PPMd_Lock()
 {
-    while( ::InterlockedExchange( &PPMd_Locked, 1 ) )
-        ::Sleep( 0 );
+    PPMdLock.Enter();
 }
 
 static inline void
 PPMd_Unlock()
 {
-    ::InterlockedExchange( &PPMd_Locked, 0 );
+    PPMdLock.Leave();
 }
 
 

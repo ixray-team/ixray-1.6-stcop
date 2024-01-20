@@ -4,7 +4,7 @@ using ThreadID = HANDLE;
 namespace Platform
 {
 	unsigned int GetCoresCount();
-	ThreadID GetCurrentThread();
+	XRCORE_API ThreadID GetCurrentThread();
     size_t GetThreadId(ThreadID ID);
     void SetThreadName(const char* Name);
 }

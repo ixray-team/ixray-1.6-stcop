@@ -1,14 +1,27 @@
 #pragma once
 #include <ctype.h>
+#include <cstdlib>
 
 #define _stricmp stricmp
 #define strcmpi stricmp
 #define lstrcpy strcpy
 #define stricmp strcasecmp
-
 #define _vsnprintf vsnprintf
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
 
+inline const char* itoa(float val)
+{
+    static std::string temp;
+    temp = std::to_string(val).c_str();
+    return temp.c_str();
+}
+
+inline void itoa(float val, char* str, [[maybe_unused]]size_t size)
+{
+    strcpy(str, itoa(val));
+}
+
+#define _itoa itoa
 inline char* _strlwr(char *str)
 {
   unsigned char *p = (unsigned char *)str;

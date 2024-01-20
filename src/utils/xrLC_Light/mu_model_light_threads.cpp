@@ -80,7 +80,7 @@ public:
 
 
 		// Priority
-		SetThreadPriority	(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+		SetThreadPriority	(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 		Sleep				(0);
 
 		// Light models

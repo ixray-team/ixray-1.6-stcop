@@ -198,30 +198,6 @@ find_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
     }
     c->bp = c->ip - c->look;
 
-#if 0
-    /* brute force match search */
-    if (c->m_len > THRESHOLD && c->m_len + 1 <= c->look)
-    {
-        const lzo_bytep ip = c->bp;
-        const lzo_bytep m  = c->bp - c->m_off;
-        const lzo_bytep in = c->in;
-
-        if (ip - in > N)
-            in = ip - N;
-        for (;;)
-        {
-            while (*in != *ip)
-                in++;
-            if (in == ip)
-                break;
-            if (in != m)
-                if (lzo_memcmp(in,ip,c->m_len+1) == 0)
-                    printf("%p %p %p %5d\n",in,ip,m,c->m_len);
-            in++;
-        }
-    }
-#endif
-
     if (c->cb && c->cb->nprogress && c->textsize > c->printcount)
     {
         (*c->cb->nprogress)(c->cb, c->textsize, c->codesize, 0);

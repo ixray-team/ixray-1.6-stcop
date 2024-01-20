@@ -6,7 +6,7 @@
 #include	"xrsharedmem.h"
 #include	"xrMemory_pure.h"
 
-// FX: Хак для установки уровня инициализации переменной в глобальном пространстве
+// FX: пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #pragma section(".Hook",read)
 
 BOOL		mem_initialized	= FALSE;
@@ -77,6 +77,7 @@ void xrMemory::_destroy()
 
 void xrMemory::mem_compact()
 {
+#ifdef IXR_WINDOWS
 	RegFlushKey(HKEY_CLASSES_ROOT);
 	RegFlushKey(HKEY_CURRENT_USER);
 
@@ -88,6 +89,7 @@ void xrMemory::mem_compact()
 	if (g_pSharedMemoryContainer)	g_pSharedMemoryContainer->clean();
 	if (strstr(Core.Params, "-swap_on_compact"))
 		SetProcessWorkingSetSize(GetCurrentProcess(), size_t(-1), size_t(-1));
+#endif
 }
 
 // xr_strdup

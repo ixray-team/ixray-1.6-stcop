@@ -174,6 +174,7 @@ if (MSVC)
     target_link_libraries(xrCore PRIVATE dxerr)
     target_link_libraries(xrCore PRIVATE "dbghelp")
     target_link_libraries(xrCore PRIVATE "discord_game_sdk.dll.lib")
+    target_link_libraries(xrCore PRIVATE "winmm")
 endif()
 
 target_link_libraries(xrCore PRIVATE "SDL3" imm32)

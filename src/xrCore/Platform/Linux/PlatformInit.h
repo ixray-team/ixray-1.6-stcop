@@ -23,6 +23,7 @@
 #define HWND void*
 #define LPARAM void*
 #define WPARAM void*
+#define LPVOID void*
 
 using UINT = unsigned int;
 

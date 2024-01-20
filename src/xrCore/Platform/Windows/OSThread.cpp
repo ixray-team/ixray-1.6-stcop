@@ -50,7 +50,7 @@ u32 Platform::GetCoresCount()
 	return processorCoreCount;
 }
 
-ThreadID Platform::GetCurrentThread()
+XRCORE_API ThreadID Platform::GetCurrentThread()
 {
 	return ::GetCurrentThread();
 }
