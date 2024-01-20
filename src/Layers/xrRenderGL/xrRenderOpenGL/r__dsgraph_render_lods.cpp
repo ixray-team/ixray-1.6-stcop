@@ -30,9 +30,9 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 	const u32	uiImpostersFit		= RCache.Vertex.GetSize()
 		/ (firstV->geom->vb_stride*uiVertexPerImposter);
 
-	//log_cryray_engine::Msg						("dbg_lods: shid[%d],firstV[%X]",shid,u32((void*)firstV));
-	//log_cryray_engine::Msg						("dbg_lods: shader[%X]",u32((void*)firstV->shader._get()));
-	//log_cryray_engine::Msg						("dbg_lods: shader_E[%X]",u32((void*)cur_S._get()));
+	//Msg						("dbg_lods: shid[%d],firstV[%X]",shid,u32((void*)firstV));
+	//Msg						("dbg_lods: shader[%X]",u32((void*)firstV->shader._get()));
+	//Msg						("dbg_lods: shader_E[%X]",u32((void*)cur_S._get()));
 
 	for (u32 i=0; i<lstLODs.size(); i++)
 	{
@@ -67,7 +67,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 			// gen geometry
 			FLOD::_face*					facets		= lodV->facets;
 			svector<std::pair<float,u32>,8>	selector	;
-			for (u32 s=0; s<8; s++)			selector.push_back	(mk_pair(Ldir.dotproduct(facets[s].N),s));
+			for (u32 s=0; s<8; s++)			selector.push_back	(std::make_pair(Ldir.dotproduct(facets[s].N),s));
 			std::sort						(selector.begin(),selector.end(),pred_dot);
 
 			float							dot_best	= selector	[selector.size()-1].first	;

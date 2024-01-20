@@ -263,7 +263,7 @@ void	CROS_impl::update	(IRenderable* O)
 //		lacc.x		*= desc.lmap_color.x;
 //		lacc.y		*= desc.lmap_color.y;
 //		lacc.z		*= desc.lmap_color.z;
-//		log_cryray_engine::Msg				("- rgb[%f,%f,%f]",lacc.x,lacc.y,lacc.z);
+//		Msg				("- rgb[%f,%f,%f]",lacc.x,lacc.y,lacc.z);
 		accum.add		(lacc);
 	} else 			accum.set	( .1f, .1f, .1f );
 
@@ -397,7 +397,7 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 			Fvector	direction;	direction.set	(hdir[sample][0],hdir[sample][1],hdir[sample][2]).normalize	();
 			//.			result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtBoth,&cache[sample],_object);
 			result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtStatic,&cache[sample],_object);
-			//	log_cryray_engine::Msg				("%d:-- %s",sample,result[sample]?"true":"false");
+			//	Msg				("%d:-- %s",sample,result[sample]?"true":"false");
 		}
 	}
 	// hemi & sun: update and smooth

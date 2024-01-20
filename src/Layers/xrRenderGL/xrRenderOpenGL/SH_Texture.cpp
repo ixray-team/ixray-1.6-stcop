@@ -293,7 +293,7 @@ void CTexture::Unload	()
 	xr_sprintf				(msg_buff,sizeof(msg_buff),"* Unloading texture [%s] pSurface RefCount=",cName.c_str());
 #endif // DEBUG
 
-//.	if (flags.bLoaded)		log_cryray_engine::Msg		("* Unloaded: %s",cName.c_str());
+//.	if (flags.bLoaded)		Msg		("* Unloaded: %s",cName.c_str());
 	
 	flags.bLoaded			= FALSE;
 	if (!seqDATA.empty())	{

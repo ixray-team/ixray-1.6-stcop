@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "rgl.h"
 #include "xrRenderOpenGL/ResourceManager.h"
-#include "xrRenderAPI/FBasicVisual.h"
+#include "../xrRender/FBasicVisual.h"
 #include "xrCore/FMesh.hpp"
-#include "xrEngine/xrLevel.h"
-#include "xrEngine/x_ray.h"
-#include "xrEngine/IGame_Persistent.h"
+#include "../xrEngine/xrLevel.h"
+#include "../xrEngine/x_ray.h"
+#include "../xrEngine/IGame_Persistent.h"
 #include "xrCore/stream_reader.h"
 #include "xrRenderGL/xrRenderGL/glBufferUtils.h"
 #include "xrRenderOpenGL/FHierrarhyVisual.h"
@@ -202,7 +202,7 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 			// count, size
 			u32 vCount			= fs->r_u32	();
 			u32 vSize			= glBufferUtils::GetDeclVertexSize(dcl);
-			log_cryray_engine::Msg	("* [Loading VB] %d verts, %d Kb",vCount,(vCount*vSize)/1024);
+			Msg	("* [Loading VB] %d verts, %d Kb",vCount,(vCount*vSize)/1024);
 
 			// Create and fill
 			//BYTE*	pData		= 0;
@@ -231,7 +231,7 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 		for (u32 i=0; i<count; i++)
 		{
 			u32 iCount			= fs->r_u32	();
-			log_cryray_engine::Msg("* [Loading IB] %d indices, %d Kb",iCount,(iCount*2)/1024);
+			Msg("* [Loading IB] %d indices, %d Kb",iCount,(iCount*2)/1024);
 
 			// Create and fill
 			//BYTE*	pData		= 0;

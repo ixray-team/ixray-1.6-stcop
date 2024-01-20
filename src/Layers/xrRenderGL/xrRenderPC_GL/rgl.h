@@ -10,11 +10,11 @@
 #include "xrRenderOpenGL/WallmarksEngine.h"
 #include "smap_allocator.h"
 #include "xrRenderOpenGL/light_db.h"
-#include "xrRenderAPI/light_render_direct.h"
+#include "Light_Render_Direct.h"
 #include "xrRenderOpenGL/LightTrack.h"
 #include "xrRenderOpenGL/r_sun_cascades.h"
-#include "xrEngine/IRenderable.h"
-#include "xrCore/FMesh.hpp"
+#include "../xrEngine/IRenderable.h"
+#include "../xrEngine/Fmesh.h"
 
 class dxRender_Visual;
 
@@ -256,8 +256,9 @@ public:
 	virtual	void					level_Load					(IReader*);
 	virtual void					level_Unload				();
 
+	virtual	GenerationLevel			get_generation() { return IRender_interface::GENERATION_R2; }
 	GLuint							texture_load				(LPCSTR	fname, u32& msize, GLenum& ret_desc);
-	virtual HRESULT					shader_compile_OpenGL				(
+	virtual HRESULT					shader_compile(
 		LPCSTR							name,
 		DWORD const*					pSrcData,
 		UINT                            SrcDataLen,
@@ -284,7 +285,7 @@ public:
 	virtual void					flush						();
 	virtual void					set_Object					(IRenderable*		O	);
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual					(IRenderVisual*	V	);			// add visual leaf	(no culling performed at all)
+	virtual void					add_Visual					(IRenderVisual*	V, bool);			// add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry				(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks

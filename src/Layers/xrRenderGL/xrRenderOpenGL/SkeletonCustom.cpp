@@ -151,7 +151,7 @@ CSkeletonX* CKinematics::LL_GetChild	(u32 idx)
 
 void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 {
-	//log_cryray_engine::Msg				("skeleton: %s",N);
+	//Msg				("skeleton: %s",N);
 	inherited::Load	(N, data, dwFlags);
 
     pUserData		= NULL;
@@ -209,8 +209,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 
     visimask.zero	();
 	int dwCount 	= data->r_u32();
-	// log_cryray_engine::Msg				("!!! %d bones",dwCount);
-	// if (dwCount >= 64)	log_cryray_engine::Msg			("!!! More than 64 bones is a crazy thing! (%d), %s",dwCount,N);
+	// Msg				("!!! %d bones",dwCount);
+	// if (dwCount >= 64)	Msg			("!!! More than 64 bones is a crazy thing! (%d), %s",dwCount,N);
 	VERIFY3			(dwCount <= 64, "More than 64 bones is a crazy thing!",N);
 	for (; dwCount; dwCount--)		{
 		string256	buf;
@@ -222,8 +222,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		pBone->name					= shared_str(buf);
 		pBone->child_faces.resize	(children.size());
 		bones->push_back			(pBone);
-		bone_map_N->push_back		(mk_pair(pBone->name,ID));
-		bone_map_P->push_back		(mk_pair(pBone->name,ID));
+		bone_map_N->push_back		(std::make_pair(pBone->name,ID));
+		bone_map_P->push_back		(std::make_pair(pBone->name,ID));
 
 		// It's parent
 		data->r_stringZ				(buf,sizeof(buf));	strlwr(buf);
@@ -355,7 +355,7 @@ void CKinematics::LL_Validate()
                     BD.IK_data.ik_flags.set(SJointIKData::flBreakable,FALSE);
             }
 #ifdef DEBUG            
-            log_cryray_engine::Msg						("! ERROR: Invalid breakable object: '%s'",*dbg_name);
+            Msg						("! ERROR: Invalid breakable object: '%s'",*dbg_name);
 #endif
         }
     }
@@ -417,7 +417,7 @@ void CKinematics::Depart		()
 		u32 count = bones->size();
 #ifdef DEBUG
     	if (count > 64)
-        	log_cryray_engine::Msg("ahtung !!! %d", count);
+        	Msg("ahtung !!! %d", count);
 #endif // #ifdef DEBUG
 		for (u32 b=0; b<count; b++) visimask.set((u64(1)<<b),TRUE);
 	}
@@ -749,7 +749,7 @@ CSkeletonWallmark::~CSkeletonWallmark()
 {
 		if(used_in_render!=u32(-1))
 		{
-			log_cryray_engine::Msg		("used_in_render=%d",used_in_render);
+			Msg		("used_in_render=%d",used_in_render);
 			VERIFY	(used_in_render==u32(-1));
 		}
 }

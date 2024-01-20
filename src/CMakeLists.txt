@@ -13,22 +13,30 @@ add_subdirectory("xrPhysics")
 add_subdirectory("xrParticles")
 add_subdirectory("xrScripts")
 
-if (IXRAY_USE_R1)
-    add_subdirectory("Layers/xrRenderPC_R1")
+# Rendes
+if (WIN32)
+    if (IXRAY_USE_R1)
+        add_subdirectory("Layers/xrRenderPC_R1")
+    endif()
+
+    if (IXRAY_USE_R2)
+        add_subdirectory("Layers/xrRenderPC_R2")
+    endif()
+
+    add_subdirectory("Layers/xrRenderPC_R4")
 endif()
 
-if (IXRAY_USE_R2)
-    add_subdirectory("Layers/xrRenderPC_R2")
-endif()
+add_subdirectory("Layers/xrRenderGL")
 
-add_subdirectory("Layers/xrRenderPC_R4")
 add_subdirectory("xrGame")
 
+# MP 
 if(IXRAY_MP)
     add_subdirectory("xrServer")
     add_subdirectory("xrGameSpy")
 endif()
 
+# Launcher
 add_subdirectory("xrPlay")
 
 # Move libraries

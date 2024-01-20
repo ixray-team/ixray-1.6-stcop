@@ -9,7 +9,7 @@
 #	include "../../xrEngine/render.h"
 #endif // #ifndef _EDITOR
 
-#include "xrRenderAPI/fbasicvisual.h"
+#include "../xrRender/fbasicvisual.h"
 #include "xrCore/Fmesh.hpp"
 
 //////////////////////////////////////////////////////////////////////

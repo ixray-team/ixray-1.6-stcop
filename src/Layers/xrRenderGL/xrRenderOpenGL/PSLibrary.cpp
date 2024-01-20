@@ -182,7 +182,7 @@ bool CPSLibrary::Load2()
 #ifdef _EDITOR
     if(pb) UI->ProgressEnd		(pb);
 #endif
-	log_cryray_engine::Msg				("Loaded particles :%d", files.size());
+	Msg				("Loaded particles :%d", files.size());
 	return true;
 }
 
@@ -191,7 +191,7 @@ bool CPSLibrary::Load(const char* nm)
 {
     if (!FS.exist(nm))
     {
-        log_cryray_engine::Msg("Can't find file: '%s'",nm);
+        Msg("Can't find file: '%s'",nm);
         return 				false;
     }
     
@@ -246,7 +246,7 @@ void CPSLibrary::Reload()
 {
 	OnDestroy();
     OnCreate();
-	log_cryray_engine::Msg( "PS Library was succesfully reloaded." );
+	Msg( "PS Library was succesfully reloaded." );
 }
 //----------------------------------------------------
 

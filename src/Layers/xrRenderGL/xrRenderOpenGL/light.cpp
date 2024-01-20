@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "xrRenderAPI/light.h"
+#include "../xrRender/light.h"
 
 static const float	SQRT2		=	1.4142135623730950488016887242097f;
 static const float	RSQRTDIV2	=	0.70710678118654752440084436210485f;
@@ -108,12 +108,12 @@ void light::set_active		(bool a)
 		flags.bActive						= true;
 		spatial_register					();
 		spatial_move						();
-		//log_cryray_engine::Msg								("!!! L-register: %X",u32(this));
+		//Msg								("!!! L-register: %X",u32(this));
 
 #ifdef DEBUG
 		Fvector	zero = {0,-1000,0}			;
 		if (position.similar(zero))			{
-			log_cryray_engine::Msg	("- Uninitialized light position.");
+			Msg	("- Uninitialized light position.");
 		}
 #endif // DEBUG
 	}
@@ -123,7 +123,7 @@ void light::set_active		(bool a)
 		flags.bActive						= false;
 		spatial_move						();
 		spatial_unregister					();
-		//log_cryray_engine::Msg								("!!! L-unregister: %X",u32(this));
+		//Msg								("!!! L-unregister: %X",u32(this));
 	}
 }
 

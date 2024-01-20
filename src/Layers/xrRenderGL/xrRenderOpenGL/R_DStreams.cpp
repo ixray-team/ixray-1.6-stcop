@@ -44,7 +44,7 @@ void _VertexStream::Create	()
 	mPosition				= 0;
 	mDiscardID				= 0;
 
-	log_cryray_engine::Msg("* DVB created: %dK", mSize/1024);
+	Msg("* DVB created: %dK", mSize/1024);
 }
 
 void _VertexStream::Destroy	()
@@ -66,7 +66,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 #endif
 
 #ifdef DEBUG
-	PGO					(log_cryray_engine::Msg("PGO:VB_LOCK:%d",vl_Count));
+	PGO					(Msg("PGO:VB_LOCK:%d",vl_Count));
 	VERIFY				(0==dbg_lock);
 	dbg_lock			++;
 #endif
@@ -104,7 +104,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		HRESULT res = pVB->Lock( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
 
 		if( res != D3D_OK )
-			log_cryray_engine::Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData );
+			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData );
 
 #endif	//	USE_DX10
 	} else {
@@ -125,7 +125,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		HRESULT res = pVB->Lock			( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
 		
 		if( res != D3D_OK )
-			log_cryray_engine::Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData );
+			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData );
 
 #endif	//	USE_DX10
 	}
@@ -137,7 +137,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 void	_VertexStream::Unlock		( u32 Count, u32 Stride)
 {
 #ifdef DEBUG
-	PGO					(log_cryray_engine::Msg("PGO:VB_UNLOCK:%d",Count));
+	PGO					(Msg("PGO:VB_UNLOCK:%d",Count));
 	VERIFY				(1==dbg_lock);
 	dbg_lock			--;
 #endif
@@ -217,7 +217,7 @@ void	_IndexStream::Create	()
 	mPosition				= 0;
 	mDiscardID				= 0;
 
-	log_cryray_engine::Msg("* DIB created: %dK", mSize/1024);
+	Msg("* DIB created: %dK", mSize/1024);
 }
 
 void	_IndexStream::Destroy()
@@ -237,7 +237,7 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 #ifdef USE_DX11
 	D3D11_MAPPED_SUBRESOURCE MappedSubRes;
 #endif
-	PGO						(log_cryray_engine::Msg("PGO:IB_LOCK:%d",Count));
+	PGO						(Msg("PGO:IB_LOCK:%d",Count));
 	vOffset					= 0;
 	BYTE* pLockedData		= 0;
 
@@ -281,7 +281,7 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 
 void	_IndexStream::Unlock(u32 RealCount)
 {
-	PGO						(log_cryray_engine::Msg("PGO:IB_UNLOCK:%d",RealCount));
+	PGO						(Msg("PGO:IB_UNLOCK:%d",RealCount));
 	mPosition				+=	RealCount;
 	VERIFY					(pIB);
 #if defined(USE_OGL)

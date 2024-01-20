@@ -33,7 +33,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 	FS_FileSet				flist;
 	FS.file_list			(flist, initial, FS_ListFiles, "*.thm");
 #ifdef DEBUG
-	log_cryray_engine::Msg						("count of .thm files=%d", flist.size());
+	Msg						("count of .thm files=%d", flist.size());
 #endif // #ifdef DEBUG
 	FS_FileSetIt It			= flist.begin();
 	FS_FileSetIt It_e		= flist.end();
@@ -43,7 +43,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 	{
 //Alundaio: Print list of *.thm to find bad .thms!
 #ifdef DEBUG
-		log_cryray_engine::Msg("%s", (*It).name.c_str());
+		Msg("%s", (*It).name.c_str());
 #endif
 //Alundaio: END
 		
@@ -118,7 +118,7 @@ void CTextureDescrMngr::Load()
 	LoadTHM					("$level$");
 
 #ifdef DEBUG
-	log_cryray_engine::Msg("load time=%d ms",TT.GetElapsed_ms());
+	Msg("load time=%d ms",TT.GetElapsed_ms());
 #endif // #ifdef DEBUG
 }
 

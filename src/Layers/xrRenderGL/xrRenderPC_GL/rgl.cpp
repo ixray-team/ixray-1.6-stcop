@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "rgl.h"
-#include "xrRenderAPI/FBasicVisual.h"
-#include "xrEngine/xr_object.h"
-#include "xrEngine/CustomHUD.h"
-#include "xrEngine/IGame_Persistent.h"
-#include "xrEngine/Environment.h"
-#include "xrEngine/GameFont.h"
+#include "../xrRender/FBasicVisual.h"
+#include "../xrEngine/xr_object.h"
+#include "../xrEngine/CustomHUD.h"
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/Environment.h"
+#include "../xrEngine/GameFont.h"
 #include "xrRenderOpenGL/SkeletonCustom.h"
 #include "xrRenderOpenGL/LightTrack.h"
 #include "xrRenderOpenGL/dxWallMarkArray.h"
@@ -128,7 +128,7 @@ void					CRender::create					()
 	};
 	*/
 	if (o.nullrt)		{
-		log_cryray_engine::Msg				("* NULLRT supported");
+		Msg				("* NULLRT supported");
 
 		//.	    _tzset			();
 		//.		??? _strdate	( date, 128 );	???
@@ -175,7 +175,7 @@ void					CRender::create					()
 			}
 			if (disable_nullrt)	o.nullrt=false;
 		};
-		if (o.nullrt)	log_cryray_engine::Msg				("* ...and used");
+		if (o.nullrt)	Msg				("* ...and used");
 	};
 
 
@@ -202,7 +202,7 @@ void					CRender::create					()
 	//	DX10 disabled
 	//o.nvdbt				= HW.support	((D3DFORMAT)MAKEFOURCC('N','V','D','B'), D3DRTYPE_SURFACE, 0);
 	o.nvdbt				= false;
-	if (o.nvdbt)		log_cryray_engine::Msg	("* NV-DBT supported and used");
+	if (o.nvdbt)		Msg	("* NV-DBT supported and used");
 
 	// options (smap-pool-size)
 	if (strstr(Core.Params,"-smap1536"))	o.smapsize	= 1536;
@@ -388,7 +388,7 @@ void CRender::reset_begin()
 				Lights_LastFrame[it]->svis.resetoccq ()	;
 			} catch (...)
 			{
-				log_cryray_engine::Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
+				Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
 			}
 		}
 		Lights_LastFrame.clear	();
@@ -517,7 +517,7 @@ BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 
-void					CRender::add_Visual				(IRenderVisual*		V )	{ add_leafs_Dynamic((dxRender_Visual*)V);								}
+void					CRender::add_Visual				(IRenderVisual*		V, bool ignor)	{ add_leafs_Dynamic((dxRender_Visual*)V, ignor);								}
 void					CRender::add_Geometry			(IRenderVisual*		V )	{ add_Static((dxRender_Visual*)V,View->getMask());					}
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
@@ -1170,10 +1170,10 @@ HRESULT	CRender::shader_compile_OpenGL(
 	}
 
 	if ((GLboolean)status == GL_FALSE) {
-		log_cryray_engine::Msg("! shader compilation failed");
-		log_cryray_engine::Log("! ", name);
+		Msg("! shader compilation failed");
+		Log("! ", name);
 		if (_pErrorMsgs)
-			log_cryray_engine::Log("! error: ", _pErrorMsgs);
+			Log("! error: ", _pErrorMsgs);
 
 		return E_FAIL;
 	}

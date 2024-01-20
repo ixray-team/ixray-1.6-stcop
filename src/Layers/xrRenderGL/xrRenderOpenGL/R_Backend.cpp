@@ -133,7 +133,7 @@ void CBackend::CreateQuadIB		()
 	if (HW.Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
 	R_CHK(HW.pDevice->CreateIndexBuffer	(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&QuadIB,NULL));
 	HW.stats_manager.increment_stats_ib	(QuadIB);
-//	log_cryray_engine::Msg("CBackend::CreateQuadIB(). Created buffer size = %d ", dwIdxCount*2 );
+//	Msg("CBackend::CreateQuadIB(). Created buffer size = %d ", dwIdxCount*2 );
 	R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
 	{
 		int		Cnt = 0;

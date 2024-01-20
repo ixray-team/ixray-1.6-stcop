@@ -64,7 +64,7 @@ void		CResourceManager::_DeleteState		(const SState* state)
 {
 	if (0==(state->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_states,state))						return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled stateblock");
+	Msg	("! ERROR: Failed to find compiled stateblock");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ void		CResourceManager::_DeletePass			(const SPass* P)
 {
 	if (0==(P->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_passes,P))						return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled pass");
+	Msg	("! ERROR: Failed to find compiled pass");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 {
 	if (0==(dcl->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_declarations,dcl))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled vertex-declarator");
+	Msg	("! ERROR: Failed to find compiled vertex-declarator");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	{
 		SVS*	_vs					= xr_new<SVS>	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert					(mk_pair(_vs->set_name(name),_vs));
+		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
 		if (0==stricmp(_name,"null"))	{
 			_vs->vs				= NULL;
 			return _vs;
@@ -183,11 +183,11 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
 
-		log_cryray_engine::Msg						( "compiling shader %s", name );
+		Msg						( "compiling shader %s", name );
 		HRESULT const _hr		= xrAPI.Render->shader_compile_OpenGL( name, (DWORD const*)data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_vs);
 
 		if ( FAILED(_hr) ) {
-			log_cryray_engine::FlushLog();
+			FlushLog();
 		}
 
 		CHECK_OR_EXIT			(
@@ -209,7 +209,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 		m_vs.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
+	Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
 }
 
 #ifndef _EDITOR
@@ -223,7 +223,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 	{
 		SPS*	_ps					=	xr_new<SPS>	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_ps.insert					(mk_pair(_ps->set_name(name),_ps));
+		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		if (0==stricmp(name,"null"))	{
 			_ps->ps				= NULL;
 			return _ps;
@@ -253,11 +253,11 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 
-		log_cryray_engine::Msg						( "compiling shader %s", name );
+		Msg						( "compiling shader %s", name );
 		HRESULT const _hr		= xrAPI.Render->shader_compile_OpenGL( name, (DWORD const*)data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
 
 		if ( FAILED(_hr) ) {
-			log_cryray_engine::FlushLog();
+			FlushLog();
 		}
 
 		CHECK_OR_EXIT		(
@@ -279,7 +279,7 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 		m_ps.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
+	Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
 }
 
 R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
@@ -295,7 +295,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 {
 	if (0==(C->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_constant_tables,C))				return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled constant-table");
+	Msg	("! ERROR: Failed to find compiled constant-table");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 S
 	{
 		CRT *RT					=	xr_new<CRT>();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_rtargets.insert		(mk_pair(RT->set_name(Name),RT));
+		m_rtargets.insert		(std::make_pair(RT->set_name(Name),RT));
 		if (Device.b_is_Ready)	RT->create	(Name,w,h,f);
 		return					RT;
 	}
@@ -325,7 +325,7 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 		m_rtargets.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
+	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
 
 //	DX10 cut 
@@ -343,7 +343,7 @@ CRTC*	CResourceManager::_CreateRTC		(LPCSTR Name, u32 size,	D3DFORMAT f)
 	{
 		CRTC *RT				=	xr_new<CRTC>();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_rtargets_c.insert		(mk_pair(RT->set_name(Name),RT));
+		m_rtargets_c.insert		(std::make_pair(RT->set_name(Name),RT));
 		if (Device.b_is_Ready)	RT->create	(Name,size,f);
 		return					RT;
 	}
@@ -357,7 +357,7 @@ void	CResourceManager::_DeleteRTC		(const CRTC* RT)
 		m_rtargets_c.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
+	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
 */
 //--------------------------------------------------------------------------------------------------------------
@@ -413,7 +413,7 @@ void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 {
 	if (0==(Geom->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_geoms,Geom))							return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled geometry-declaration");
+	Msg	("! ERROR: Failed to find compiled geometry-declaration");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -438,7 +438,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	{
 		CTexture *	T		=	xr_new<CTexture>();
 		T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
-		m_textures.insert	(mk_pair(T->set_name(Name),T));
+		m_textures.insert	(std::make_pair(T->set_name(Name),T));
 		T->Preload			();
 		if (Device.b_is_Ready && !bDeferredLoad) T->Load();
 		return		T;
@@ -455,7 +455,7 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 		m_textures.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
+	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
 }
 
 #ifdef DEBUG
@@ -487,7 +487,7 @@ CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
 		CMatrix* M			=	xr_new<CMatrix>();
 		M->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		M->dwReference		=	1;
-		m_matrices.insert	(mk_pair(M->set_name(Name),M));
+		m_matrices.insert	(std::make_pair(M->set_name(Name),M));
 		return			M;
 	}
 }
@@ -500,7 +500,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 		m_matrices.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
+	Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
 }
 void	CResourceManager::ED_UpdateMatrix		(LPCSTR Name, CMatrix* data)
 {
@@ -521,7 +521,7 @@ CConstant*	CResourceManager::_CreateConstant	(LPCSTR Name)
 		CConstant* C		=	xr_new<CConstant>();
 		C->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		C->dwReference		=	1;
-		m_constants.insert	(mk_pair(C->set_name(Name),C));
+		m_constants.insert	(std::make_pair(C->set_name(Name),C));
 		return	C;
 	}
 }
@@ -534,7 +534,7 @@ void	CResourceManager::_DeleteConstant		(const CConstant* C)
 		m_constants.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find R1-constant-def '%s'",*C->cName);
+	Msg	("! ERROR: Failed to find R1-constant-def '%s'",*C->cName);
 }
 
 void	CResourceManager::ED_UpdateConstant	(LPCSTR Name, CConstant* data)
@@ -564,7 +564,7 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_textures,L))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled list of textures");
+	Msg	("! ERROR: Failed to find compiled list of textures");
 }
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
@@ -587,7 +587,7 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_matrices,L))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled list of xform-defs");
+	Msg	("! ERROR: Failed to find compiled list of xform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
@@ -610,7 +610,7 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_constants,L))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
+	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 
 #ifdef _EDITOR
@@ -663,7 +663,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	{
 		SVS*	_vs					= xr_new<SVS>	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert					(mk_pair(_vs->set_name(name),_vs));
+		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
 		if (0==stricmp(_name,"null"))	{
 			_vs->vs				= NULL;
 			return _vs;
@@ -722,14 +722,14 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 					else
 					{
 						Log	("! VS: ", _name);
-						log_cryray_engine::Msg	("! D3DXFindShaderComment hr == 0x%08x", _hr);
+						Msg	("! D3DXFindShaderComment hr == 0x%08x", _hr);
 						_hr = E_FAIL;
 					}
 				}
 				else
 				{
 					Log	("! VS: ", _name);
-					log_cryray_engine::Msg	("! CreateVertexShader hr == 0x%08x", _hr);
+					Msg	("! CreateVertexShader hr == 0x%08x", _hr);
 				}
 			}
 			else
@@ -745,7 +745,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 			if(pErrorBuf)
 				Log("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
 			else
-				log_cryray_engine::Msg("Can't compile shader hr=0x%08x", _hr);
+				Msg("Can't compile shader hr=0x%08x", _hr);
 		}
 
 		_RELEASE	(pShaderBuf);
@@ -771,7 +771,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 	{
 		SPS*	_ps					=	xr_new<SPS>	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_ps.insert					(mk_pair(_ps->set_name(name),_ps));
+		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		if (0==stricmp(name,"null"))	{
 			_ps->ps				= NULL;
 			return _ps;
@@ -827,14 +827,14 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 					else
 					{
 						Log	("! PS: ", name);
-						log_cryray_engine::Msg	("! D3DXFindShaderComment hr == 0x%08x", _hr);
+						Msg	("! D3DXFindShaderComment hr == 0x%08x", _hr);
 						_hr = E_FAIL;
 					}
 				}
 				else
 				{
 					Log	("! PS: ", name);
-					log_cryray_engine::Msg	("! CreatePixelShader hr == 0x%08x", _hr);
+					Msg	("! CreatePixelShader hr == 0x%08x", _hr);
 				}
 			}
 			else
@@ -850,7 +850,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 			if(pErrorBuf)
 				Log("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
 			else
-				log_cryray_engine::Msg("Can't compile shader hr=0x%08x", _hr);
+				Msg("Can't compile shader hr=0x%08x", _hr);
 		}
 
 		_RELEASE		(pShaderBuf);

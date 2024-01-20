@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "xrRenderAPI/fbasicvisual.h"
+#include "../xrRender/fbasicvisual.h"
 
 class  FHierrarhyVisual : public dxRender_Visual
 {

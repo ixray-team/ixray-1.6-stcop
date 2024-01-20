@@ -92,27 +92,27 @@ static LPCSTR name_blend_type( CBlend::ECurvature blend )
 static void dump_blend( CKinematicsAnimated* K, CBlend &B, u32 index )
 {
 	VERIFY( K );
-	log_cryray_engine::Msg( "----------------------------------------------------------" );
-	log_cryray_engine::Msg( "blend index: %d, poiter: %p ", index, &B );
-	log_cryray_engine::Msg( "time total: %f, speed: %f , power: %f ", B.timeTotal, B.speed, B.blendPower   );
-	log_cryray_engine::Msg( "ammount: %f, time current: %f, frame %d ", B.blendAmount, B.timeCurrent,B.dwFrame );
-	log_cryray_engine::Msg( "accrue: %f, fallof: %f ", B.blendAccrue, B.blendFalloff ); 
+	Msg( "----------------------------------------------------------" );
+	Msg( "blend index: %d, poiter: %p ", index, &B );
+	Msg( "time total: %f, speed: %f , power: %f ", B.timeTotal, B.speed, B.blendPower   );
+	Msg( "ammount: %f, time current: %f, frame %d ", B.blendAmount, B.timeCurrent,B.dwFrame );
+	Msg( "accrue: %f, fallof: %f ", B.blendAccrue, B.blendFalloff ); 
 
-	log_cryray_engine::Msg( "bonepart: %d, channel: %d, stop_at_end: %s, fall_at_end: %s "
+	Msg( "bonepart: %d, channel: %d, stop_at_end: %s, fall_at_end: %s "
 		, B.bone_or_part, B.channel, name_bool( B.stop_at_end ), name_bool( B.fall_at_end ) );
-	log_cryray_engine::Msg( "state: %s, playing: %s, stop_at_end_callback: %s ", name_blend_type( B.blend_state() ), name_bool( B.playing ), name_bool( B.stop_at_end_callback ));
-	log_cryray_engine::Msg( "callback: %p callback param: %p", B.Callback, B.CallbackParam );
+	Msg( "state: %s, playing: %s, stop_at_end_callback: %s ", name_blend_type( B.blend_state() ), name_bool( B.playing ), name_bool( B.stop_at_end_callback ));
+	Msg( "callback: %p callback param: %p", B.Callback, B.CallbackParam );
 	
 	if( B.blend_state() != CBlend::eFREE_SLOT )
 	{
-		log_cryray_engine::Msg( "motion : name %s, set: %s ", K->LL_MotionDefName_dbg( B.motionID ).first, K->LL_MotionDefName_dbg( B.motionID ).second );
+		Msg( "motion : name %s, set: %s ", K->LL_MotionDefName_dbg( B.motionID ).first, K->LL_MotionDefName_dbg( B.motionID ).second );
 	}
-	log_cryray_engine::Msg( "----------------------------------------------------------" );
+	Msg( "----------------------------------------------------------" );
 }
 
 void	CKinematicsAnimated::LL_DumpBlends_dbg	( )
 {
-	log_cryray_engine::Msg( "==================dump blends=================================================" );
+	Msg( "==================dump blends=================================================" );
 	CBlend *I=blend_pool.begin(), *E=blend_pool.end();
 	for (; I!=E; I++)
 		dump_blend( this, *I, u32(I - blend_pool.begin()) );
@@ -699,7 +699,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
                 if (!FS.exist(fn, "$game_meshes$", nm))
                 {
 #ifdef _EDITOR
-                    log_cryray_engine::Msg			("!Can't find motion file '%s'.",nm);
+                    Msg			("!Can't find motion file '%s'.",nm);
                     return;
 #else
                     Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
@@ -719,7 +719,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 				m_Motions.back().motions.create	(nm,NULL,bones);
             else{
             	m_Motions.pop_back	();
-                log_cryray_engine::Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
                 }
     	}
     }else
@@ -738,7 +738,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
                 if (!FS.exist(fn, "$game_meshes$", nm))
                 {
 #ifdef _EDITOR
-                    log_cryray_engine::Msg			("!Can't find motion file '%s'.",nm);
+                    Msg			("!Can't find motion file '%s'.",nm);
                     return;
 #else
                     Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
@@ -758,7 +758,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 				m_Motions.back().motions.create	(nm,NULL,bones);
             else{
             	m_Motions.pop_back	();
-                log_cryray_engine::Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
                 }
     	}
     }else    
@@ -788,7 +788,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	IBlend_Startup	();
 
 //.	if (motions.cycle()->size()<2)			
-//.		log_cryray_engine::Msg("* WARNING: model '%s' has only one motion. Candidate for SkeletonRigid???",N);
+//.		Msg("* WARNING: model '%s' has only one motion. Candidate for SkeletonRigid???",N);
 }
 
 
@@ -866,7 +866,7 @@ void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix 
 
 		//if(!is_similar(PrevTransform,RES,0.3f))
 		//{
-		//	log_cryray_engine::Msg("bone %s",*bd->name)	;
+		//	Msg("bone %s",*bd->name)	;
 		//}
 		//BONE_INST.mPrevTransform.set(RES);
 #endif
@@ -889,7 +889,7 @@ void	CKinematicsAnimated::BuildBoneMatrix			( const CBoneData* bd, CBoneInstance
 			{
 			Log("BLEND_INST",BLEND_INST.Blend.size());
 			Log("Bone",LL_BoneName_dbg(SelfID));
-			log_cryray_engine::Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
+			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
 			Log("Result.T",Result.T);
 			Log("lp parent",(u32)parent);
 			Log("parent",*parent);
@@ -923,8 +923,8 @@ void	CKinematicsAnimated::BuildBoneMatrix			( const CBoneData* bd, CBoneInstance
 
 			Dt.lerp	(T1,T2,delta);
 
-			log_cryray_engine::Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-			log_cryray_engine::Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
+			Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
+			Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
 
 			Log("count",count);
 			Log("frame",frame);

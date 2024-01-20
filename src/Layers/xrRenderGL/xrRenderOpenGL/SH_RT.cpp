@@ -78,7 +78,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 
 	// OK
 #ifdef DEBUG
-	log_cryray_engine::Msg			("* created RT(%s), %dx%d",Name,w,h);
+	Msg			("* created RT(%s), %dx%d",Name,w,h);
 #endif // DEBUG
 	R_CHK		(pSurface->GetSurfaceLevel	(0,&pRT));
 	pTexture	= DEV->_CreateTexture	(Name);
@@ -166,7 +166,7 @@ void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 	if (FAILED(_hr) || (0==pSurface))	return;
 
 	// OK
-	log_cryray_engine::Msg			("* created RTc(%s), 6(%d)",Name,size);
+	Msg			("* created RTc(%s), 6(%d)",Name,size);
 	for (u32 face=0; face<6; face++)
 		R_CHK	(pSurface->GetCubeMapSurface	((D3DCUBEMAP_FACES)face, 0, pRT+face));
 	pTexture	= DEV->_CreateTexture	(Name);

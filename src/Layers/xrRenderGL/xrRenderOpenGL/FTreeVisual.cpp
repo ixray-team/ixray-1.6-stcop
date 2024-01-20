@@ -71,7 +71,7 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		data->r			(&xform,	sizeof(xform));
 		data->r			(&c_scale,	sizeof(c_scale));	c_scale.rgb.mul	(.5f);	c_scale.hemi*=.5f;	c_scale.sun	*=.5f;
 		data->r			(&c_bias,	sizeof(c_bias));	c_bias.rgb.mul	(.5f);	c_bias.hemi	*=.5f;	c_bias.sun	*=.5f;
-		//log_cryray_engine::Msg				("hemi[%f / %f], sun[%f / %f]",c_scale.hemi,c_bias.hemi,c_scale.sun,c_bias.sun);
+		//Msg				("hemi[%f / %f], sun[%f / %f]",c_scale.hemi,c_bias.hemi,c_scale.sun,c_bias.sun);
 	}
 
 	// Geom

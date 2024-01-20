@@ -183,7 +183,7 @@ void stats_manager::decrement_stats( u32 size, enum_stats_buffer_type type, _D3D
 stats_manager::~stats_manager ()
 {
 #ifdef DEBUG
-	log_cryray_engine::Msg		( "m_buffers_list.size() = %d", m_buffers_list.size() );
+	Msg		( "m_buffers_list.size() = %d", m_buffers_list.size() );
 //	R_ASSERT( m_buffers_list.size() == 0);	//  Some buffers stats are not removed from the list.
 #endif 
 }

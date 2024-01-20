@@ -1,7 +1,7 @@
 #pragma once
 
-#include "xrRenderAPI/light.h"
-#include "xrRenderAPI/light_package.h"
+#include "../xrRender/light.h"
+#include "../xrRender/light_package.h"
 
 class	CLight_DB
 {

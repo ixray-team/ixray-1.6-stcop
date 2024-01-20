@@ -3,7 +3,7 @@
 #include "xr_effgamma.h"
 #include "dxRenderDeviceRender.h"
 #include "xrRenderOpenGL/tga.h"
-#include "xrEngine/xrImage_Resampler.h"
+#include "../xrEngine/xrImage_Resampler.h"
 
 #if defined(USE_DX10) || defined(USE_DX11)
 #include "d3dx10tex.h"
@@ -388,7 +388,7 @@ void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer)
 {
 	if (mode != SM_FOR_MPSENDING)
 	{
-		log_cryray_engine::Log("~ Not implemented screenshot mode...");
+		Log("~ Not implemented screenshot mode...");
 		return;
 	} 
 	ScreenshotImpl(mode, NULL, &memory_writer);

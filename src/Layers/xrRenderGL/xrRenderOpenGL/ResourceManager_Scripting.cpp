@@ -172,7 +172,7 @@ void	CResourceManager::LS_Load			()
 #endif //-USE_GSC_MEM_ALLOC
 
 	if (!LSVM)		{
-		log_cryray_engine::Msg			("! ERROR : Cannot initialize LUA VM!");
+		Msg			("! ERROR : Cannot initialize LUA VM!");
 		return;
 	}
 
@@ -262,7 +262,7 @@ void	CResourceManager::LS_Load			()
 			Script::bfLoadFileIntoNamespace	(LSVM,fn,namesp,true);
 		} catch (...)
 		{
-			log_cryray_engine::Log(lua_tostring(LSVM,-1));
+			Log(lua_tostring(LSVM,-1));
 		}
 	}
 	FS.file_list_close			(folder);

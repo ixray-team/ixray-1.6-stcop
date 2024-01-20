@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "xrEngine/IGame_Persistent.h"
-#include "xrEngine/Environment.h"
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/Environment.h"
 #include "xrRenderOpenGL/dxEnvironmentRender.h"
 
 #define STENCIL_CULL 0

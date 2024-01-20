@@ -17,7 +17,7 @@
 	#include "dxObjectSpaceRender.h"
 #endif // _EDITOR
 
-#include "xrRenderAPI/dxFontRender.h"
+#include "../xrRender/dxFontRender.h"
 #include "dxApplicationRender.h"
 #include "dxWallMarkArray.h"
 #include "dxStatsRender.h"

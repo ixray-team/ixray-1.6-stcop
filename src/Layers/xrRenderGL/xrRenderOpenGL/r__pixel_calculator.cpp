@@ -65,7 +65,7 @@ r_aabb_ssa		r_pixel_calculator::calculate	(dxRender_Visual* V)	{
 	for (u32 it=0; it<6; it++)	{
 		float	pixels	= (float)RImplementation.HWOCC.occq_get	(id[it]);
 		float	coeff	= clampr(pixels/area,float(0),float(1));
-		log_cryray_engine::Msg		("[%d]ssa_c: %1.3f,%f/%f",it,coeff,pixels,area);
+		Msg		("[%d]ssa_c: %1.3f,%f/%f",it,coeff,pixels,area);
 		result.ssa	[it]= (u8)clampr(iFloor(coeff*255.f+0.5f),int(0),int(255));
 	}
 
@@ -78,7 +78,7 @@ void	r_pixel_calculator	::run	()
 	for (u32 it=0; it<RImplementation.Visuals.size(); it++)
 	{
 		if (0==dynamic_cast<IRender_Mesh*>(RImplementation.Visuals[it]))		continue;
-		log_cryray_engine::Msg	("*%d*",it);
+		Msg	("*%d*",it);
 		calculate	((dxRender_Visual*)RImplementation.Visuals[it]);
 	}
 	end		();

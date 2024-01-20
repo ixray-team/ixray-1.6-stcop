@@ -54,7 +54,7 @@ BOOL CPGDef::Load(IReader& F)
 	u16 version		= F.r_u16();
 
     if (version!=PGD_VERSION){
-        log_cryray_engine::Log			("!Unsupported PG version. Load failed.");
+        Log			("!Unsupported PG version. Load failed.");
     	return FALSE;
     }
 
@@ -246,7 +246,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
         _children_free.push_back(C);
     }else{
 #ifdef _EDITOR        
-        log_cryray_engine::Msg			("!Can't use looped effect '%s' as 'On Birth' child for group.",nm);
+        Msg			("!Can't use looped effect '%s' as 'On Birth' child for group.",nm);
 #else
         Debug.fatal	(DEBUG_INFO,"Can't use looped effect '%s' as 'On Birth' child for group.",nm);
 #endif
@@ -396,7 +396,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
             _children_free.erase(new_end,_children_free.end());
         }
     }
-//	log_cryray_engine::Msg("C: %d CS: %d",_children.size(),_children_stopped.size());
+//	Msg("C: %d CS: %d",_children.size(),_children_stopped.size());
 }
 void CParticleGroup::SItem::OnDeviceCreate()
 {
@@ -434,7 +434,7 @@ CParticleGroup::CParticleGroup()
 
 CParticleGroup::~CParticleGroup()
 {
-	// log_cryray_engine::Msg ("!!! destoy PG");
+	// Msg ("!!! destoy PG");
 	for (u32 i=0; i<items.size(); i++) items[i].Clear();
 	items.clear();
 }

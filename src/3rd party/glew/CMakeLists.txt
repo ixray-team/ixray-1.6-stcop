@@ -7,5 +7,7 @@ file(GLOB GLEW_SRC CONFIGURE_DEPENDS
 )
 
 add_library(glew STATIC ${GLEW_SRC})
+target_include_directories(glew PUBLIC "glew/include/")
+target_include_directories(glew PUBLIC "gl/include/")
 target_compile_options(glew PRIVATE "/wd4005")
 target_include_directories(glew PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

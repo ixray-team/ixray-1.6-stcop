@@ -53,7 +53,7 @@ IBlender* CResourceManager::_GetBlender		(LPCSTR Name)
 #if defined(USE_DX10) || defined(USE_DX11)
 	if (I==m_blenders.end())	
 	{
-		log_cryray_engine::Msg("DX10: Shader '%s' not found in library.",Name); 
+		Msg("DX10: Shader '%s' not found in library.",Name); 
 		return 0;
 	}
 #endif
@@ -81,7 +81,7 @@ void	CResourceManager::ED_UpdateBlender	(LPCSTR Name, IBlender* data)
 		xr_delete	(I->second);
 		I->second	= data;
 	} else {
-		m_blenders.insert	(mk_pair(xr_strdup(Name),data));
+		m_blenders.insert	(std::make_pair(xr_strdup(Name),data));
 	}
 }
 
@@ -144,7 +144,7 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
 {
 	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_elements,S))						return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled 'shader-element'");
+	Msg	("! ERROR: Failed to find compiled 'shader-element'");
 }
 
 Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
@@ -160,7 +160,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	C.bEditor			= FALSE;
 	C.bDetail			= FALSE;
 #ifdef _EDITOR
-	if (!C.BT)			{ ELog.log_cryray_engine::Msg(mtError,"Can't find shader '%s'",s_shader); return 0; }
+	if (!C.BT)			{ ELog.Msg(mtError,"Can't find shader '%s'",s_shader); return 0; }
 	C.bEditor			= TRUE;
 #endif
 
@@ -289,7 +289,7 @@ void CResourceManager::Delete(const Shader* S)
 {
 	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_shaders,S))						return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find complete shader");
+	Msg	("! ERROR: Failed to find complete shader");
 }
 
 void CResourceManager::DeferredUpload()
@@ -357,7 +357,7 @@ void	CResourceManager::_DumpMemoryUsage		()
 		{
 			u32			m = I->second->flags.MemoryUsage;
 			shared_str	n = I->second->cName;
-			mtex.insert (mk_pair(m,mk_pair(I->second->dwReference,n) ));
+			mtex.insert (std::make_pair(m,std::make_pair(I->second->dwReference,n) ));
 		}
 	}
 
@@ -366,7 +366,7 @@ void	CResourceManager::_DumpMemoryUsage		()
 		xr_multimap<u32,std::pair<u32,shared_str> >::iterator I = mtex.begin	();
 		xr_multimap<u32,std::pair<u32,shared_str> >::iterator E = mtex.end		();
 		for (; I!=E; I++)
-			log_cryray_engine::Msg			("* %4.1f : [%4d] %s",float(I->first)/1024.f, I->second.first, I->second.second.c_str());
+			Msg			("* %4.1f : [%4d] %s",float(I->first)/1024.f, I->second.first, I->second.second.c_str());
 	}
 }
 

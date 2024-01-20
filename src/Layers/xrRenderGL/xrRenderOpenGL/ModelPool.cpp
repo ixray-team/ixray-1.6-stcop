@@ -111,7 +111,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 		if (!FS.exist(fn, "$level$", name))
 			if (!FS.exist(fn, "$game_meshes$", name)){
 #ifdef _EDITOR
-				log_cryray_engine::Msg("!Can't find model file '%s'.",name);
+				Msg("!Can't find model file '%s'.",name);
                 return 0;
 #else            
 				Debug.fatal(DEBUG_INFO,"Can't find model file '%s'.",name);
@@ -123,7 +123,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	
 	// Actual loading
 #ifdef DEBUG
-	if (bLogging)		log_cryray_engine::Msg		("- Uncached model loading: %s",fn);
+	if (bLogging)		Msg		("- Uncached model loading: %s",fn);
 #endif // DEBUG
 
 	IReader*			data	= FS.r_open(fn);
@@ -174,7 +174,7 @@ void CModelPool::Destroy()
 		REGISTRY_IT it	= Registry.begin();
 		dxRender_Visual* V=(dxRender_Visual*)it->first;
 #ifdef _DEBUG
-		log_cryray_engine::Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
+		Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
 #endif
 		DeleteInternal	(V,TRUE);
 	}
@@ -230,7 +230,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 	string_path low_name;	VERIFY	(xr_strlen(name)<sizeof(low_name));
 	xr_strcpy(low_name,name);	strlwr	(low_name);
 	if (strext(low_name))	*strext	(low_name)=0;
-//	log_cryray_engine::Msg						("-CREATE %s",low_name);
+//	Msg						("-CREATE %s",low_name);
 
 	// 0. Search POOL
 	POOL_IT	it			=	Pool.find	(low_name);
@@ -257,7 +257,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 		}
         // 3. If found - return (cloned) reference
         dxRender_Visual*		Model	= Instance_Duplicate(Base);
-        Registry.insert		( mk_pair(Model,low_name) );
+        Registry.insert		( std::make_pair(Model,low_name) );
         return				Model;
 	}
 }
@@ -295,7 +295,7 @@ void	CModelPool::DeleteInternal	(dxRender_Visual* &V, BOOL bDiscard)
 		if (it!=Registry.end())
 		{
 			// Registry entry found - move it to pool
-			Pool.insert			(mk_pair(it->second,V));
+			Pool.insert			(std::make_pair(it->second,V));
 		} else {
 			// Registry entry not-found - just special type of visual / particles / etc.
 			xr_delete			(V);
@@ -412,7 +412,7 @@ dxRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
 
 void CModelPool::dump()
 {
-	log_cryray_engine::Log	("--- model pool --- begin:");
+	Log	("--- model pool --- begin:");
 	u32 sz					= 0;
 	u32 k					= 0;
 	for (xr_vector<ModelDef>::iterator I=Models.begin(); I!=Models.end(); I++) {
@@ -420,10 +420,10 @@ void CModelPool::dump()
 		if (K){
 			u32 cur			= K->mem_usage	(false);
 			sz				+= cur;
-			log_cryray_engine::Msg("#%3d: [%3d/%5d Kb] - %s",k++,I->refs,cur/1024,I->name.c_str());
+			Msg("#%3d: [%3d/%5d Kb] - %s",k++,I->refs,cur/1024,I->name.c_str());
 		}
 	}
-	log_cryray_engine::Msg ("--- models: %d, mem usage: %d Kb ",k,sz/1024);
+	Msg ("--- models: %d, mem usage: %d Kb ",k,sz/1024);
 	sz						= 0;
 	k						= 0;
 	int free_cnt			= 0;
@@ -436,11 +436,11 @@ void CModelPool::dump()
 			sz				+= cur;
 			bool b_free		= (Pool.find(it->second)!=Pool.end() );
 			if(b_free)		++free_cnt;
-			log_cryray_engine::Msg("#%3d: [%s] [%5d Kb] - %s",k++, (b_free)?"free":"used", cur/1024,it->second.c_str());
+			Msg("#%3d: [%s] [%5d Kb] - %s",k++, (b_free)?"free":"used", cur/1024,it->second.c_str());
 		}
 	}
-	log_cryray_engine::Msg ("--- instances: %d, free %d, mem usage: %d Kb ",k, free_cnt, sz/1024);
-	log_cryray_engine::Log	("--- model pool --- end.");
+	Msg ("--- instances: %d, free %d, mem usage: %d Kb ",k, free_cnt, sz/1024);
+	Log	("--- model pool --- end.");
 }
 
 void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system )

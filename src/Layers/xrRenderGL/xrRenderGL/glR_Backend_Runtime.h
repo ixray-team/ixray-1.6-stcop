@@ -228,7 +228,7 @@ IC void	CBackend::set_Scissor(Irect*	R)
 
 		// The window space is inverted compared to DX,
 		// so we have to invert our vertical coordinates
-		u32 bottom = Device.dwHeight - R->bottom;
+		u32 bottom = Device.TargetHeight - R->bottom;
 
 		// The origin of the scissor box is lower-left
 		CHK_GL(glScissor(R->left, bottom, R->width(), R->height()));

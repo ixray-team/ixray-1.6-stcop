@@ -262,8 +262,8 @@ xr_token							ext_quality_token[] = {
 float		ps_r2_gloss_factor			= 4.0f;
 //- Mad Max
 #ifndef _EDITOR
-#include "xrEngine/Console/Console.h"
-#include "xrEngine/Console/Commands/ConsoleCommands.h"
+#include "../xrEngine/Console/Console.h"
+#include "../xrEngine/Console/Commands/ConsoleCommands.h"
 
 #if defined(USE_DX10) || defined(USE_DX11)
 #include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
@@ -368,7 +368,7 @@ public:
 				int		m0		= iFloor(mid)	% 4;
 				int		m1		= (m0+1)		% 4;
 				float	frc		= mid - float(iFloor(mid));
-				log_cryray_engine::Msg		("* material set to [%s]-[%s], with lerp of [%f]",name[m0],name[m1],frc);
+				Msg		("* material set to [%s]-[%s], with lerp of [%f]",name[m0],name[m1],frc);
 			}
 		}
 	}
@@ -502,27 +502,27 @@ public		:
 
 		dxRenderDeviceRender::Instance().ResourcesGetMemoryUsage( m_base, c_base, m_lmaps, c_lmaps );
 
-		log_cryray_engine::Msg		("memory usage  mb \t \t video    \t managed      \t system \n" );
+		Msg		("memory usage  mb \t \t video    \t managed      \t system \n" );
 
 		float vb_video		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_DEFAULT]/1024/1024;
 		float vb_managed	= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_MANAGED]/1024/1024;
 		float vb_system		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_vertex][D3DPOOL_SYSTEMMEM]/1024/1024;
-		log_cryray_engine::Msg		("vertex buffer      \t \t %f \t %f \t %f ",	vb_video, vb_managed, vb_system);
+		Msg		("vertex buffer      \t \t %f \t %f \t %f ",	vb_video, vb_managed, vb_system);
 
 		float ib_video		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_DEFAULT]/1024/1024; 
 		float ib_managed	= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_MANAGED]/1024/1024; 
 		float ib_system		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_index][D3DPOOL_SYSTEMMEM]/1024/1024; 
-		log_cryray_engine::Msg		("index buffer      \t \t %f \t %f \t %f ",	ib_video, ib_managed, ib_system);
+		Msg		("index buffer      \t \t %f \t %f \t %f ",	ib_video, ib_managed, ib_system);
 		
 		float textures_managed = (float)(m_base+m_lmaps)/1024/1024;
-		log_cryray_engine::Msg		("textures          \t \t %f \t %f \t %f ",	0.f, textures_managed, 0.f);
+		Msg		("textures          \t \t %f \t %f \t %f ",	0.f, textures_managed, 0.f);
 
 		float rt_video		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_DEFAULT]/1024/1024;
 		float rt_managed	= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_MANAGED]/1024/1024;
 		float rt_system		= (float)HW.stats_manager.memory_usage_summary[enum_stats_buffer_type_rtarget][D3DPOOL_SYSTEMMEM]/1024/1024;
-		log_cryray_engine::Msg		("R-Targets         \t \t %f \t %f \t %f ",	rt_video, rt_managed, rt_system);									
+		Msg		("R-Targets         \t \t %f \t %f \t %f ",	rt_video, rt_managed, rt_system);									
 
-		log_cryray_engine::Msg		("\nTotal             \t \t %f \t %f \t %f ",	vb_video+ib_video+rt_video,
+		Msg		("\nTotal             \t \t %f \t %f \t %f ",	vb_video+ib_video+rt_video,
 																textures_managed + vb_managed+ib_managed+rt_managed,
 																vb_system+ib_system+rt_system);
 #endif // USE_OGL
@@ -562,8 +562,8 @@ public:
 		{
 			char	pBuf[256];
 			_snprintf( pBuf, sizeof(pBuf)/sizeof(pBuf[0]), "float value greater or equal to r2_dof_focus+0.1");
-			log_cryray_engine::Msg("~ Invalid syntax in call to '%s'",cName);
-			log_cryray_engine::Msg("~ Valid arguments: %s", pBuf);
+			Msg("~ Invalid syntax in call to '%s'",cName);
+			Msg("~ Valid arguments: %s", pBuf);
 			Console->Execute("r2_dof_focus");
 		}
 		else
@@ -592,8 +592,8 @@ public:
 		{
 			char	pBuf[256];
 			_snprintf( pBuf, sizeof(pBuf)/sizeof(pBuf[0]), "float value less or equal to r2_dof_focus-0.1");
-			log_cryray_engine::Msg("~ Invalid syntax in call to '%s'",cName);
-			log_cryray_engine::Msg("~ Valid arguments: %s", pBuf);
+			Msg("~ Invalid syntax in call to '%s'",cName);
+			Msg("~ Valid arguments: %s", pBuf);
 			Console->Execute("r2_dof_focus");
 		}
 		else
@@ -622,16 +622,16 @@ public:
 		{
 			char	pBuf[256];
 			_snprintf( pBuf, sizeof(pBuf)/sizeof(pBuf[0]), "float value less or equal to r2_dof_far-0.1");
-			log_cryray_engine::Msg("~ Invalid syntax in call to '%s'",cName);
-			log_cryray_engine::Msg("~ Valid arguments: %s", pBuf);
+			Msg("~ Invalid syntax in call to '%s'",cName);
+			Msg("~ Valid arguments: %s", pBuf);
 			Console->Execute("r2_dof_far");
 		}
 		else if (v<ps_r2_dof.x+0.1f)
 		{
 			char	pBuf[256];
 			_snprintf( pBuf, sizeof(pBuf)/sizeof(pBuf[0]), "float value greater or equal to r2_dof_far-0.1");
-			log_cryray_engine::Msg("~ Invalid syntax in call to '%s'",cName);
-			log_cryray_engine::Msg("~ Valid arguments: %s", pBuf);
+			Msg("~ Invalid syntax in call to '%s'",cName);
+			Msg("~ Valid arguments: %s", pBuf);
 			Console->Execute("r2_dof_near");
 		}
 		else{
@@ -659,8 +659,8 @@ public:
 		else if ( (v.x > v.y-0.1f) || (v.z < v.y+0.1f))
 		{
 			InvalidSyntax();
-			log_cryray_engine::Msg("x <= y - 0.1");
-			log_cryray_engine::Msg("y <= z - 0.1");
+			Msg("x <= y - 0.1");
+			Msg("y <= z - 0.1");
 		}
 		else
 		{

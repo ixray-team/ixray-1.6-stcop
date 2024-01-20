@@ -12,7 +12,7 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 {
 	if (RT!=pRT[ID])
 	{
-		PGO				(log_cryray_engine::Msg("PGO:setRT"));
+		PGO				(Msg("PGO:setRT"));
 		stat.target_rt	++;
 		pRT[ID]			= RT;
 		CHK_DX			(HW.pDevice->SetRenderTarget(ID,RT));
@@ -23,7 +23,7 @@ IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
 {
 	if (ZB!=pZB)
 	{
-		PGO				(log_cryray_engine::Msg("PGO:setZB"));
+		PGO				(Msg("PGO:setZB"));
 		stat.target_zb	++;
 		pZB				= ZB;
 		CHK_DX			(HW.pDevice->SetDepthStencilSurface(ZB));
@@ -34,7 +34,7 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 {
 	if (decl!=_decl)
 	{
-		PGO				(log_cryray_engine::Msg("PGO:v_format:%x",_decl));
+		PGO				(Msg("PGO:v_format:%x",_decl));
 #ifdef DEBUG
 		stat.decl		++;
 #endif
@@ -47,7 +47,7 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
 {
 	if (ps!=_ps)
 	{
-		PGO				(log_cryray_engine::Msg("PGO:Pshader:%x",_ps));
+		PGO				(Msg("PGO:Pshader:%x",_ps));
 		stat.ps			++;
 		ps				= _ps;
 		CHK_DX			(HW.pDevice->SetPixelShader(ps));
@@ -61,7 +61,7 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 {
 	if (vs!=_vs)
 	{
-		PGO				(log_cryray_engine::Msg("PGO:Vshader:%x",_vs));
+		PGO				(Msg("PGO:Vshader:%x",_vs));
 		stat.vs			++;
 		vs				= _vs;
 		CHK_DX			(HW.pDevice->SetVertexShader(vs));
@@ -75,7 +75,7 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 {
 	if ((vb!=_vb) || (vb_stride!=_vb_stride))
 	{
-		PGO				(log_cryray_engine::Msg("PGO:VB:%x,%d",_vb,_vb_stride));
+		PGO				(Msg("PGO:VB:%x,%d",_vb,_vb_stride));
 #ifdef DEBUG
 		stat.vb			++;
 #endif
@@ -89,7 +89,7 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 {
 	if (ib!=_ib)
 	{
-		PGO				(log_cryray_engine::Msg("PGO:IB:%x",_ib));
+		PGO				(Msg("PGO:IB:%x",_ib));
 #ifdef DEBUG
 		stat.ib			++;
 #endif
@@ -109,7 +109,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV,
 	stat.polys			+= PC;
 	constants.flush		();
 	CHK_DX				(HW.pDevice->DrawIndexedPrimitive(T,baseV, startV, countV,startI,PC));
-	PGO					(log_cryray_engine::Msg("PGO:DIP:%dv/%df",countV,PC));
+	PGO					(Msg("PGO:DIP:%dv/%df",countV,PC));
 }
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
@@ -123,7 +123,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 	stat.polys			+= PC;
 	constants.flush		();
 	CHK_DX				(HW.pDevice->DrawPrimitive(T, startV, PC));
-	PGO					(log_cryray_engine::Msg("PGO:DIP:%dv/%df",3*PC,PC));
+	PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
@@ -219,7 +219,7 @@ IC void CBackend::set_Constants			(R_constant_table* C)
 	tree.unmap		();
 	if (0==C)		return;
 
-	PGO				(log_cryray_engine::Msg("PGO:c-table"));
+	PGO				(Msg("PGO:c-table"));
 
 	// process constant-loaders
 	R_constant_table::c_table::iterator	it	= C->table.begin();

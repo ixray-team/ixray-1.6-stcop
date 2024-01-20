@@ -176,10 +176,6 @@ public:
 public:
 	virtual		u32						memory_usage			()
 	{
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return	(g_render_lua_allocator.get_allocated_size());
-#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 		return	(0);
-#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 	}
 };

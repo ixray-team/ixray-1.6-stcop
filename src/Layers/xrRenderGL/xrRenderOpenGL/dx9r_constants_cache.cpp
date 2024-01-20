@@ -15,7 +15,7 @@ void R_constants::flush_cache()
 				u32		count		= F.r_hi()-F.r_lo();
 				if (count)			{
 					count = (count>31)?31:count;
-					PGO		(log_cryray_engine::Msg("PGO:P_CONST:%d",count));
+					PGO		(Msg("PGO:P_CONST:%d",count));
 					CHK_DX	(HW.pDevice->SetPixelShaderConstantF	(F.r_lo(), (float*)F.access(F.r_lo()),count));
 					F.flush	();
 				}
@@ -37,7 +37,7 @@ void R_constants::flush_cache()
 						HW.Caps.geometry.dwRegisters,F.r_hi()
 						);
 				}
-				PGO		(log_cryray_engine::Msg("PGO:V_CONST:%d",count));
+				PGO		(Msg("PGO:V_CONST:%d",count));
 #endif				&
 				CHK_DX	(HW.pDevice->SetVertexShaderConstantF	(F.r_lo(), (float*)F.access(F.r_lo()),count));
 				F.flush	();

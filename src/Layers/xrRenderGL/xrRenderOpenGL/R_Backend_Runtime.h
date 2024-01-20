@@ -68,7 +68,7 @@ ICF void	CBackend::set_States(SState* _state)
 	if (state != _state->state)
 #endif	//	USE_DX10
 	{
-		PGO				(log_cryray_engine::Msg("PGO:state_block"));
+		PGO				(Msg("PGO:state_block"));
 #ifdef DEBUG
 		stat.states		++;
 #endif

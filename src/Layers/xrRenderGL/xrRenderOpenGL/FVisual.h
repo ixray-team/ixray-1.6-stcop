@@ -5,7 +5,7 @@
 #define FVisualH
 #pragma once
 
-#include "xrRenderAPI/fbasicvisual.h"
+#include "../xrRender/fbasicvisual.h"
 
 class	Fvisual					: public		dxRender_Visual, public IRender_Mesh
 {

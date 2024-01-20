@@ -38,7 +38,7 @@ void CBackend::OnFrameBegin	()
 {
 //#ifndef DEDICATED_SERVER
 	{
-		PGO					(log_cryray_engine::Msg("PGO:*****frame[%d]*****",Device.dwFrame));
+		PGO					(Msg("PGO:*****frame[%d]*****",Device.dwFrame));
 #if defined(USE_DX10) || defined(USE_DX11)
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default
@@ -231,7 +231,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif
 				if (load_surf)			
 				{
-					PGO					(log_cryray_engine::Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
+					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
 //					load_surf->Apply	(load_id);
 				}
@@ -255,7 +255,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					PGO					(log_cryray_engine::Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
+					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
 //					load_surf->Apply	(load_id);
 				}
@@ -278,7 +278,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					PGO					(log_cryray_engine::Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
+					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
 					//					load_surf->Apply	(load_id);
 				}
@@ -301,7 +301,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					PGO					(log_cryray_engine::Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
+					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
 					//					load_surf->Apply	(load_id);
 				}
@@ -323,7 +323,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					PGO					(log_cryray_engine::Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
+					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
 					//					load_surf->Apply	(load_id);
 				}
@@ -345,7 +345,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif
 				if (load_surf)
 				{
-					PGO					(log_cryray_engine::Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
+					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
 					//					load_surf->Apply	(load_id);
 				}

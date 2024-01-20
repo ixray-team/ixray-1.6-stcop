@@ -102,7 +102,7 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 	Fmatrix&	MrootBone		= K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
 	if(MrootBone.c.y >10000)
 	{	
-		log_cryray_engine::Msg("all bones transform:--------[%s]",s);
+		Msg("all bones transform:--------[%s]",s);
 		
 		for(u16 ii=0; ii<K->LL_BoneCount();++ii){
 			Fmatrix tr;
