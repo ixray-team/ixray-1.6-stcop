@@ -177,7 +177,13 @@ if (MSVC)
     target_link_libraries(xrCore PRIVATE "winmm")
 endif()
 
-target_link_libraries(xrCore PRIVATE "SDL3" imm32)
+if(WIN32)
+    target_link_libraries(xrCore PRIVATE "SDL3" imm32)
+endif()
+if(UNIX)
+    target_link_libraries(xrCore PRIVATE "${CMAKE_BINARY_DIR}/lib/libSDL3.so")
+endif()
+
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Nuget
@@ -204,12 +210,12 @@ else()
 endif()
 
 # Marl
-target_link_libraries(xrCore PUBLIC ${CORE_MARL}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/marl.lib)
-target_include_directories(xrCore PUBLIC "${CORE_MARL}/native/include/")
+# target_link_libraries(xrCore PUBLIC ${CORE_MARL}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/marl.lib)
+# target_include_directories(xrCore PUBLIC "${CORE_MARL}/native/include/")
 
 # Optick
-target_link_libraries(xrCore PUBLIC ${CORE_OPT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.lib)
-target_include_directories(xrCore PUBLIC "${CORE_OPT}/native/include/")
+# target_link_libraries(xrCore PUBLIC ${CORE_OPT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.lib)
+# target_include_directories(xrCore PUBLIC "${CORE_OPT}/native/include/")
 
 # DxMath
 target_include_directories(xrCore PUBLIC "${CORE_DXMATH}/include/")
