@@ -7,19 +7,12 @@ file(GLOB_RECURSE COMPR_SOURCE_ALL_FILES
     "*.c"
     "*.h"
 )
-file(GLOB_RECURSE COMPR_SOURCE_LZO_FILES
-    "lzo/*.*"
-)
 
 # Source groups
 source_group("kernel" FILES ${COMPR_SOURCE_ALL_FILES})
-source_group("lzo" FILES ${COMPR_SOURCE_LZO_FILES})
 
 # Apply list
 list(APPEND COMPR_SRC_FILES ${COMPR_SOURCE_ALL_FILES})
-
-# Remove unused files
-list(FILTER COMPR_SRC_FILES EXCLUDE REGEX "lzo/*.ch")
 
 # xrCompress project
 add_executable(xrCompress ${COMPR_SRC_FILES})
@@ -41,9 +34,12 @@ source_group("pch" FILES ${COMPRESSOR_PCH_FILES})
 target_compile_definitions(xrCompress PRIVATE _WINDOWS)
 target_compile_definitions(xrCompress PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
 target_compile_definitions(xrCompress PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+
+# includes 
+target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../3rd party/lzo/include")
 
 # Linker list
 target_link_libraries(xrCompress PUBLIC xrCore)
+target_link_libraries(xrCompress PRIVATE lzo_static_lib)
 target_link_libraries(xrCompress PRIVATE "winmm.lib")
