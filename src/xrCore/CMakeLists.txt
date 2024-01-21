@@ -185,8 +185,9 @@ target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 set(CORE_MARL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Marl.2023.11.29-open/)
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
 set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
+set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.linux-x64.2023.12.9.1-open/)
 
-if (MSVC)
+if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME}
     	PRE_BUILD
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
@@ -202,6 +203,9 @@ else()
 	execute_process(
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 	)
+
+	#target_link_libraries(xrCore PUBLIC ${CORE_SDL3}native/lib/${CMAKE_VS_PLATFORM_NAME}linux-x64/native/Release/libSDL3.so)
+	target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
 endif()
 
 # Marl

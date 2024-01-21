@@ -28,8 +28,6 @@
 	IC void set_positive(float &f)		{ (*(unsigned*)(&f)) &= ~fdSGN;			}
 #endif
 
-#define ICF inline
-
 /*
  * Here are a few nice tricks for 2's complement based machines
  * that I discovered a few months ago.

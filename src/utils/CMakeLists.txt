@@ -57,8 +57,12 @@ endif()
 
 if(CI_IXRAY_COMPRESSOR_ONLY)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrCompress)
-    set_target_properties(xrEngine xrCDB xrScripts xrSound xrPhysics xrParticles xrGame xrRender_R4 xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    set_target_properties(xrEngine xrCDB xrScripts xrSound xrPhysics xrParticles xrGame xrRender_OGL xrAbstractions xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     set_target_properties(ODE luabind crypto CxImage PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+
+    if (WIN32)
+        set_target_properties(xrRender_R4 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    endif()
 
     #set_target_properties(xrEngine PROPERTIES ${IXRAY_FOLDER_ENGINE})
 
@@ -72,13 +76,22 @@ if(CI_IXRAY_COMPRESSOR_ONLY)
 endif()
 
 if (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
-    if (IXRAY_USE_R1)
-        set_target_properties(xrRender_R1 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    if (WIN32)
+        if (IXRAY_USE_R1)
+            set_target_properties(xrRender_R1 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+        endif()
+
+        if (IXRAY_USE_R2)
+            set_target_properties(xrRender_R2 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+        endif()
+        
+        set_target_properties(xrRender_R4 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+        set_target_properties(xrRender_OGL PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     endif()
 
-    if (IXRAY_USE_R2)
-        set_target_properties(xrRender_R2 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+    if (WIN32)
+        set_target_properties(xrRender_R4 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     endif()
-    
-    set_target_properties(xrEngine xrAbstractions xrRender_R4 xrGame xrScripts xrPhysics xrParticles xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+
+    set_target_properties(xrEngine xrAbstractions  xrGame xrScripts xrPhysics xrParticles xrNetServer PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 endif()
