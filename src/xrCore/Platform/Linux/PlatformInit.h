@@ -10,13 +10,14 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/syscall.h>
-#include <sys/types.h>
+#include <sys/types.h> 
 
 #include <linux/limits.h>
 
 #define __declspec(t)
 #define __forceinline __attribute__((always_inline))
 #define _cdecl /* __attribute__((__cdecl__)) */
+#define __cdecl /* __attribute__((__cdecl__)) */
 #define __stdcall /* __attribute__((__stdcall__)) */
 
 #define CALLBACK
