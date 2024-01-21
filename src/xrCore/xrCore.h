@@ -31,6 +31,7 @@
 	#endif
 #endif
 
+#include <filesystem>
 #include <time.h>
 // work-around dumb borland compiler
 

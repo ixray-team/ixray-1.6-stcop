@@ -174,12 +174,12 @@ void logThread(void* dummy)
 		{
 			xrCriticalSectionGuard LogGuard(&csLog);
 
-			if (LogSize != xrLogger::logData.size())
+			if (LogSize != xrLogger::logData->size())
 			{
 				bWasChanges = TRUE;
-				for (size_t Iter = 0; Iter < xrLogger::logData.size(); Iter++)
+				for (size_t Iter = 0; Iter < xrLogger::logData->size(); Iter++)
 				{
-					const char* S = xrLogger::logData.front().Message.c_str();
+					const char* S = xrLogger::logData->front().Message.c_str();
 					if (!S)
 						S = "";
 					SendMessage(hwLog, LB_ADDSTRING, 0, (LPARAM)S);

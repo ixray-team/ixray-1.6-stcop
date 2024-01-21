@@ -207,7 +207,7 @@ void _initialize_cpu	(void)
 		CPU::ID.modelName, CPU::ID.vendor,
 		CPU::ID.family,CPU::ID.model,CPU::ID.stepping
     );
-
+#ifdef IXR_WINDOWS
 	string256 features;
 	xr_strcpy(features, sizeof(features), "RDTSC");
 
@@ -239,6 +239,7 @@ void _initialize_cpu	(void)
 		xr_strcat(features, ", HT");
 
 	Msg("* CPU features: %s" , features );
+#endif
 	Msg("* CPU cores/threads: %d/%d\n" , CPU::ID.n_cores , CPU::ID.n_threads );
 
 	Fidentity.identity		();	// Identity matrix

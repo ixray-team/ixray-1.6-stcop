@@ -6,8 +6,10 @@
 #include	"xrsharedmem.h"
 #include	"xrMemory_pure.h"
 
+#ifdef IXR_WINDOWS
 // FX: ��� ��� ��������� ������ ������������� ���������� � ���������� ������������
 #pragma section(".Hook",read)
+#endif
 
 BOOL		mem_initialized	= FALSE;
 bool		shared_str_initialized	= false;
@@ -28,7 +30,7 @@ xrMemory::xrMemory()
 	mem_fill	= xrMemFill_x86;
 	mem_fill32	= xrMemFill32_x86;
 
-#ifndef PURE_ONLY
+#if !defined(PURE_ONLY) && !defined(IXR_LINUX)
 	if (!!strstr(GetCommandLineA(), "-pure_alloc"))
 	{
 		pAlloc = CMemAllocPure::Create();
@@ -119,6 +121,8 @@ XRCORE_API		BOOL			is_stack_ptr		( void* _ptr)
 	return		(difference < (512*1024));
 }
 
+#ifdef IXR_WINDOWS
 #pragma init_seg(lib)
 __declspec(allocate(".Hook"))
+#endif
 xrMemory Memory;

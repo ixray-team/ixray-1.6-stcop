@@ -76,6 +76,7 @@ file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES "ptmalloc3/*.*")
 
 # NatVis config
 file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
+file(GLOB_RECURSE CORE_NUGET_FILES "Packages.config")
 
 source_group("ungrouped" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("core/api" FILES ${CORE_SOURCE_XR_API_FILES})
@@ -99,6 +100,7 @@ source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
+list(APPEND CORE_SRC_FILES ${CORE_NUGET_FILES})
 
 if (MSVC)
 	list(APPEND CORE_SRC_FILES ${CORE_NATVIS_FILES})
@@ -123,7 +125,7 @@ endif()
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
+target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
 target_link_directories(xrCore PUBLIC "${IXRAY_SDK_LIB}")
 
@@ -178,14 +180,13 @@ if(UNIX)
     target_link_libraries(xrCore PRIVATE "${CMAKE_BINARY_DIR}/lib/libSDL3.so")
 endif()
 
-target_link_libraries(xrCore PRIVATE lzo_static_lib)
+target_link_libraries(xrCore PUBLIC lzo_static_lib)
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Nuget
 set(CORE_MARL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Marl.2023.11.29-open/)
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
 set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
-set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.linux-x64.2023.12.9.1-open/)
 
 if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME}
@@ -199,22 +200,26 @@ if (WIN32)
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 	)
+
+    set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x64.2023.12.9.1-open/)
 else()
 	execute_process(
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 	)
-
-	#target_link_libraries(xrCore PUBLIC ${CORE_SDL3}native/lib/${CMAKE_VS_PLATFORM_NAME}linux-x64/native/Release/libSDL3.so)
-	target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
+    
+    set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.linux-x64.2023.12.9.1-open/)
+	#target_link_libraries(xrCore PUBLIC ${CORE_SDL3}linux-x64/native/Release/libSDL3.so)
 endif()
 
-# Marl
-# target_link_libraries(xrCore PUBLIC ${CORE_MARL}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/marl.lib)
-# target_include_directories(xrCore PUBLIC "${CORE_MARL}/native/include/")
+target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
+target_link_directories(xrCore PUBLIC "${CORE_SDL3}win-x64/native/Release/")
 
 # Optick
-# target_link_libraries(xrCore PUBLIC ${CORE_OPT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.lib)
-# target_include_directories(xrCore PUBLIC "${CORE_OPT}/native/include/")
+if (IXRAY_USE_OPTICK)
+    target_compile_definitions(xrCore PUBLIC "USE_OPTICK")
+    target_link_libraries(xrCore PUBLIC ${CORE_OPT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.lib)
+    target_include_directories(xrCore PUBLIC "${CORE_OPT}/native/include/")
+endif()
 
 # DxMath
 target_include_directories(xrCore PUBLIC "${CORE_DXMATH}/include/")
@@ -226,6 +231,7 @@ execute_process(
     OUTPUT_VARIABLE AUTHOR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Get current branch
 execute_process(
     COMMAND git branch --show-current
@@ -233,6 +239,7 @@ execute_process(
     OUTPUT_VARIABLE BRANCH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Get hash of the latest commit
 execute_process(
     COMMAND git log --pretty=format:%h -n 1
@@ -240,17 +247,15 @@ execute_process(
     OUTPUT_VARIABLE HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Define a variable for CI_BUILD
 set(CI_BUILD 0)
+
 # Create git_version.h file
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h.in
     ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h
 )
-
-if (IXRAY_USE_OPTICK)
-    target_compile_definitions(xrCore PUBLIC "USE_OPTICK")
-endif()
 
 if (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
     target_compile_definitions(xrCore PUBLIC "IXR_CI_BUILD")

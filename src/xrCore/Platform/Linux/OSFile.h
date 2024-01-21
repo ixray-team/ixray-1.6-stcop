@@ -1,8 +1,5 @@
 #pragma once
 
-#define _wopen open
-#define _wfdopen _fdopen
-
 using errno_t = int;
 
 #define _MAX_PATH PATH_MAX + 1
@@ -11,9 +8,9 @@ using errno_t = int;
 #define _lseek64 lseek64
 #define _O_RDONLY O_RDONLY
 #define _open open
-#define _sopen_s(handle, filename, ...) open(filename, O_RDONLY)
 #define _fdopen fdopen
 #define _wfdopen fdopen
+#define _wopen open
 #define _close close
 #define _write write
 #define _read read
@@ -30,11 +27,19 @@ using errno_t = int;
 #define O_BINARY 0
 #define O_SEQUENTIAL 0
 #define SH_DENYWR 0
+#define _SH_DENYNO 0
 
 using __int64 = int64_t;
 using __time64_t = __int64;
 using __time32_t = long;
 using _fsize_t =  unsigned long;
+
+inline bool _sopen_s(int* handle, const char* FileName, ...)
+{
+    auto NewHandle = open(FileName, O_RDONLY);
+    *handle = NewHandle;
+    return NewHandle == -1;
+}
 
 inline errno_t fopen_s(FILE **f, const char *name, const char *mode) 
 {

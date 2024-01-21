@@ -529,10 +529,16 @@ void CLocatorAPI::ProcessOne(LPCSTR path, void* _F)
 {
 	_finddata_t& F	= *((_finddata_t*)_F);
 
-	string_path		N;
-	xr_strcpy		(N,sizeof(N),path);
-	xr_strcat		(N,F.name);
-	xr_strlwr		(N);
+	xr_string NormalPath = F.name;
+
+	if (!NormalPath.StartWith(path))
+	{
+		NormalPath = path + NormalPath;
+	}
+
+	string_path N = {};
+	xr_strcpy(N, NormalPath.data());
+	xr_strlwr(N);
 	
 	if (F.attrib&_A_HIDDEN)			return;
 
@@ -596,70 +602,40 @@ bool ignore_path(const char* _path)
 
 bool CLocatorAPI::Recurse(const char* path)
 {
-	string_path N;
+	string_path N = {};
 	xr_strcpy(N, sizeof(N), path);
-	xr_strcat(N, "*.*");
 
 	// find all files
     _finddata_t sFile;
 
     xr_strcpy(N, Platform::ValidPath(N));
 
-#ifdef IXR_WINDOWS
-    intptr_t hFile = _findfirst(N, &sFile);
-	if (-1 == hFile)
-		return false;
-#else
-    glob_t globbuf;
-    globbuf.gl_offs = 256;
+	bool bWrapPath = strlen(N) == 0;
+	if (bWrapPath)
+	{
+    	xr_strcpy(N, Platform::ValidPath("./"));
+	}
 
-    if(0 != glob(N, GLOB_NOSORT, 0, &globbuf))
+    if(!std::filesystem::exists(N))
         return false;
 
-    intptr_t hFile = globbuf.gl_pathc - 1;
-#endif
+    rec_files.reserve(1024);
 
-    rec_files.reserve(256);
-	string1024 full_path;
-
-    size_t oldSize = rec_files.size();
-    intptr_t done = hFile;
-
-    while (done != -1)
+	for (const std::filesystem::directory_entry& CurrentFile : std::filesystem::recursive_directory_iterator{ N })
     {
-#ifdef IXR_LINUX
-        xr_strcpy(sFile.name, globbuf.gl_pathv[hFile - done]);
-        struct stat fi;
+		xr_string ValidFileName = CurrentFile.path().generic_string().c_str();
 
-        stat(sFile.name, &fi);
+		if (bWrapPath)
+			ValidFileName = ValidFileName.substr(2);
 
-        sFile.size = fi.st_size;
-        sFile.time_access = fi.st_atim.tv_sec;
-        sFile.time_create = fi.st_ctim.tv_sec;
-        sFile.time_write = fi.st_mtim.tv_sec;
+        xr_strcpy(sFile.name, Platform::RestorePath(ValidFileName.c_str()));
 
-        switch (fi.st_mode & S_IFMT)
-        {
-            case S_IFDIR: sFile.attrib = _A_SUBDIR; break;
-            case S_IFREG: sFile.attrib = 0;         break; // File
-            default:      sFile.attrib = _A_HIDDEN; break; // Skip
-        }
+		sFile.attrib = CurrentFile.is_directory() ? _A_SUBDIR : 0;
 
-        xr_strcpy(sFile.name, Platform::RestorePath(sFile.name));
-#endif
         bool NeedSkip = false;
         if (m_Flags.test(flNeedCheck))
         {
-#ifdef IXR_WINDOWS
-            xr_strcpy(full_path, sizeof(full_path), path);
-            xr_strcat(full_path, sFile.name);
-
-            NeedSkip = ignore_name(sFile.name) || ignore_path(full_path);
-#else
-            xr_strcpy(full_path, sizeof(full_path), sFile.name);
-            NeedSkip = ignore_name(sFile.name);
-#endif
-
+            NeedSkip = ignore_name(sFile.name) || ignore_path(sFile.name);
             // загоняем в вектор для того *.db* приходили в сортированном порядке
             if (NeedSkip)
                 rec_files.push_back(sFile);
@@ -671,19 +647,7 @@ bool CLocatorAPI::Recurse(const char* path)
 
         if (!NeedSkip)
             rec_files.push_back(sFile);
-
-#ifdef IXR_WINDOWS
-        done = _findnext(hFile, &sFile);
-#else
-        done--;
-#endif
     }
-
-#ifdef IXR_WINDOWS
-	_findclose(hFile);
-#else
-    globfree(&globbuf);
-#endif
 
 	FFVec buffer(rec_files);
 	rec_files.clear();
@@ -954,7 +918,7 @@ const CLocatorAPI::file* CLocatorAPI::exist			(string_path& fn, LPCSTR path, LPC
 
 xr_vector<char*>* CLocatorAPI::file_list_open			(const char* initial, const char* folder, u32 flags)
 {
-	string_path		N;
+	string_path		N = {};
 	R_ASSERT		(initial&&initial[0]);
 	update_path		(N,initial,folder);
 	return			file_list_open(N,flags);
@@ -1396,8 +1360,13 @@ T *CLocatorAPI::r_open_impl	(LPCSTR path, LPCSTR _fname)
 	const file				*desc = 0;
 	LPCSTR					source_name = &fname[0];
 
+#ifdef IXR_WINDOWS
 	if (!check_for_file(path,_fname,fname,desc))
 		return				(0);
+#else
+	if (!check_for_file(path,Platform::RestorePath(_fname),fname,desc))
+		return				(0);
+#endif
 
 	// OK, analyse
 	if (0xffffffff == desc->vfs)

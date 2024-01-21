@@ -1,15 +1,5 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "xrCompress.h"
-
-//typedef void DUMMY_STUFF (const void*,const u32&,void*);
-//XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
-//XRCORE_API DUMMY_STUFF	*g_dummy_stuff;
-
-//#	define TRIVIAL_ENCRYPTOR_ENCODER
-//#	define TRIVIAL_ENCRYPTOR_DECODER
-//#	include "../../xrEngine/trivial_encryptor.h"
-//#	undef TRIVIAL_ENCRYPTOR_ENCODER
-//#	undef TRIVIAL_ENCRYPTOR_DECODER
 
 xrCompressor::xrCompressor()
 :fs_pack_writer(NULL),bFast(false),files_list(NULL),folders_list(NULL),bStoreFiles(false),pPackHeader(NULL),config_ltx(NULL)
@@ -20,13 +10,10 @@ xrCompressor::xrCompressor()
 	filesSKIP		= 0;
 	filesVFS		= 0;
 	filesALIAS		= 0;
-	c_heap			= NULL;
+	c_heap			= 0;
 	dwTimeStart		= 0;
 
 	XRP_MAX_SIZE	= 1024*1024*640; // bytes (640Mb)
-
-//	g_temporary_stuff	= &trivial_encryptor::decode;
-//	g_dummy_stuff		= &trivial_encryptor::encode;
 }
 
 xrCompressor::~xrCompressor()
@@ -142,10 +129,10 @@ xrCompressor::ALIAS* xrCompressor::testALIAS(IReader* base, u32 crc, u32& a_test
 		}
 		I++;
 	}
-	return NULL;
+	return nullptr;
 }
 
-void xrCompressor::write_file_header(LPCSTR file_name, const u32 &crc, const u32 &ptr, const u32 &size_real, const size_t &size_compressed)
+void xrCompressor::write_file_header(LPCSTR file_name, const u32 &crc, const u32 &ptr, const u32 &size_real, const lzo_uint& size_compressed)
 {
 	u32					file_name_size = (xr_strlen(file_name) + 0)*sizeof(char);
 	u32					buffer_size = file_name_size + 4*sizeof(u32);
@@ -188,7 +175,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	string_path		fn;				
 	xr_strconcat(fn, target_name.c_str(), "\\", path);
 
-	if (::GetFileAttributesA(fn)==u32(-1))
+	if (!std::filesystem::exists(fn))
 	{
 		filesSKIP	++;
 		printf		(" - CAN'T OPEN");
@@ -209,7 +196,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	u32			c_crc32				=	crc32		(src->pointer(),src->length());
 	u32			c_ptr				=	0;
 	u32			c_size_real			=	0;
-	size_t		c_size_compressed	=	0;
+	lzo_uint	c_size_compressed	=	0;
 	u32			a_tests				=	0;
 
 	ALIAS*		A					=	testALIAS	(src,c_crc32,a_tests);
@@ -274,8 +261,8 @@ void xrCompressor::CompressOne(LPCSTR path)
 					if (!bFast)
 					{
 						u8*		c_out	= xr_alloc<u8>	(c_size_real);
-						size_t c_orig	= c_size_real;
-						R_ASSERT		(LZO_E_OK	== lzo1x_optimize	(c_data,c_size_compressed,c_out,&c_orig, NULL));
+						lzo_uint c_orig	= c_size_real;
+						R_ASSERT		(LZO_E_OK	== lzo1x_optimize	(c_data,c_size_compressed,c_out,&c_orig, 0));
 						R_ASSERT		(c_orig		== c_size_real		);
 						xr_free			(c_out);
 					}//bFast
@@ -323,9 +310,10 @@ void xrCompressor::OpenPack(LPCSTR tgt_folder, int num)
 #ifdef MOD_COMPRESS
 	strconcat		(sizeof(fname),fname,tgt_folder,".xdb",_itoa(num,s_num,10));
 #else
-	xr_strconcat(fname,tgt_folder,".pack_#",_itoa(num,s_num,10));
+    _itoa(num,s_num,10);
+	xr_strconcat(fname,tgt_folder,".pack_#", s_num);
 #endif
-	_unlink			(fname);
+	Platform::Unlink			(fname);
 	fs_pack_writer	= FS.w_open	(fname);
 	fs_desc.clear	();
 	aliases.clear	();
@@ -337,12 +325,9 @@ void xrCompressor::OpenPack(LPCSTR tgt_folder, int num)
 	filesVFS		= 0;
 	filesALIAS		= 0;
 
-	dwTimeStart		= timeGetTime();
+	dwTimeStart		= CPU::GetTickCount();
 
 	//write pack header without compression
-//	DUMMY_STUFF* _dummy_stuff_subst		= NULL;
-//	_dummy_stuff_subst					= g_dummy_stuff;
-//	g_dummy_stuff						= NULL;
 
 	if(config_ltx && config_ltx->section_exist("header"))
 	{
@@ -400,7 +385,7 @@ void xrCompressor::ClosePack()
 	Msg				("Data size: %d. Desc size: %d.",bytesDST,fs_desc.size());
 	FS.w_close		(fs_pack_writer);
 	Msg				("Pack saved.");
-	u32	dwTimeEnd	= timeGetTime();
+	size_t dwTimeEnd = CPU::GetTickCount();
 	printf			("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %dK/%dK, %3.1f%%\nElapsed time: %d:%d\nCompression speed: %3.1f Mb/s",
 		filesTOTAL,filesSKIP,filesVFS,filesALIAS,
 		bytesDST/1024,bytesSRC/1024,
@@ -437,7 +422,7 @@ void xrCompressor::PerformWork()
 		for (u32 it=0; it<files_list->size(); it++)
 		{
 			xr_sprintf				(caption,"Compress files: %d/%d - %d%%",it,files_list->size(),(it*100)/files_list->size());
-			SetWindowTextA		(GetConsoleWindow(),caption);
+			//SetWindowTextA		(GetConsoleWindow(),caption);
 			printf				("\n%-80s   ",(*files_list)[it]);
 
 			if (fs_pack_writer->tell()>XRP_MAX_SIZE)

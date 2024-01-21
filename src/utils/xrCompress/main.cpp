@@ -1,9 +1,10 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "xrCompress.h"
 
 #ifndef MOD_COMPRESS
 	extern int				ProcessDifference();
 #endif
+
 
 int __cdecl main	(int argc, char* argv[])
 {
@@ -11,10 +12,21 @@ int __cdecl main	(int argc, char* argv[])
 	Core._initialize	("xrCompress",0,FALSE);
 	printf				("\n\n");
 
-	LPCSTR params = GetCommandLineA();
+#ifdef IXR_WINDOWS
+    const char*  params = GetCommandLineA();
+#else
+    xr_string TempBuffer = "";
+    for (size_t Iter = 0; Iter < argc; Iter++)
+    {
+        TempBuffer += argv[Iter];
+        TempBuffer += " ";
+    }
+
+    const char* params = TempBuffer.data();
+#endif
 	xrCompressor		C;
 
-	C.SetStoreFiles(NULL!=strstr(params,"-store"));
+	C.SetStoreFiles(0!=strstr(params,"-store"));
 
 #ifndef MOD_COMPRESS
 	if(strstr(params,"-diff"))
@@ -51,10 +63,10 @@ int __cdecl main	(int argc, char* argv[])
 		FS._initialize	(CLocatorAPI::flTargetFolderOnly, folder);
 		FS.append_path	("$working_folder$","",0,false);
 
-		C.SetFastMode	(NULL!=strstr(params,"-fast"));
+		C.SetFastMode	(0!=strstr(params,"-fast"));
 		C.SetTargetName	(argv[1]);
 
-		LPCSTR p		= strstr(params,"-ltx");
+		LPCSTR p = strstr(params,"-ltx");
 
 		if(0!=p)
 		{

@@ -86,8 +86,8 @@ if (CI_IXRAY_UTILS OR CI_IXRAY_COMPRESSOR_ONLY)
         endif()
         
         set_target_properties(xrRender_R4 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-        set_target_properties(xrRender_OGL PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     endif()
+    set_target_properties(imgui glew xrRender_OGL PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 
     if (WIN32)
         set_target_properties(xrRender_R4 PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
