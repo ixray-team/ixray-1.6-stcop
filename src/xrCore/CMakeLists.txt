@@ -175,9 +175,8 @@ endif()
 
 if(WIN32)
     target_link_libraries(xrCore PRIVATE "SDL3" imm32)
-endif()
-if(UNIX)
-    target_link_libraries(xrCore PRIVATE "${CMAKE_BINARY_DIR}/lib/libSDL3.so")
+else()
+    target_link_libraries(xrCore PRIVATE "${CMAKE_BINARY_DIR}/lib/libSDL3.so.0")
 endif()
 
 target_link_libraries(xrCore PUBLIC lzo_static_lib)
@@ -202,17 +201,18 @@ if (WIN32)
 	)
 
     set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x64.2023.12.9.1-open/)
+    target_link_directories(xrCore PUBLIC "${CORE_SDL3}win-x64/native/Release/")
 else()
-	execute_process(
-    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-	)
-    
     set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.linux-x64.2023.12.9.1-open/)
-	#target_link_libraries(xrCore PUBLIC ${CORE_SDL3}linux-x64/native/Release/libSDL3.so)
+	execute_process(
+        COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/linux-x64/native/Release/libSDL3.so.0.0.0 ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libSDL3.so.0
+        )
+        
+        target_link_directories(xrCore PUBLIC "${CORE_SDL3}linux-x64/native/Release/")
 endif()
 
 target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
-target_link_directories(xrCore PUBLIC "${CORE_SDL3}win-x64/native/Release/")
 
 # Optick
 if (IXRAY_USE_OPTICK)

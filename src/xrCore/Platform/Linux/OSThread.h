@@ -4,6 +4,8 @@
 #include <thread>
 
 using ThreadID = pthread_t;
+using thread_type = void*;
+#define THREADEXIT return nullptr
 
 inline void Sleep(size_t Time)
 {

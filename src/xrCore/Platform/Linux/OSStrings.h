@@ -9,14 +9,16 @@
 #define _vsnprintf vsnprintf
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
 
-inline const char* itoa(float val)
+template<typename ValType>
+inline const char* itoa(ValType val)
 {
     static std::string temp;
     temp = std::to_string(val).c_str();
     return temp.c_str();
 }
 
-inline void itoa(float val, char* str, [[maybe_unused]]size_t size)
+template<typename ValType>
+inline void itoa(ValType val, char* str, [[maybe_unused]]size_t size)
 {
     strcpy(str, itoa(val));
 }

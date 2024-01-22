@@ -337,7 +337,8 @@ void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* argl
     pthread_t handle;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    pthread_create(&handle, &attr, 0, arglist);
+    pthread_create(&handle, &attr, entry, arglist);
+    pthread_setname_np(handle, name);
     pthread_attr_destroy(&attr);
 #endif
 }

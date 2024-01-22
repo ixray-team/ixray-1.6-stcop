@@ -9,10 +9,6 @@ XRCORE_API xr_queue <xrLogger::LogRecord>* xrLogger::logData;
 
 void Log(const char* s)
 {
-#ifdef IXR_LINUX
-	std::cout << s;
-	return;
-#endif
 	theLogger->SimpleMessage(s);
 }
 
@@ -52,11 +48,6 @@ void xrLogger::Msg(LPCSTR Msg, va_list argList)
 	int MsgSize = _vsnprintf(formattedMessage, sizeof(formattedMessage) - 1, Msg, argList);
 	formattedMessage[MsgSize] = 0;
 
-#ifdef IXR_LINUX
-	std::cout << formattedMessage;
-	return;
-#endif
-
 	if (IsDebuggerPresent() && bFastDebugLog)
 	{
 		OutputDebugStringA(formattedMessage);
@@ -93,9 +84,10 @@ void xrLogger::EnableFastDebugLog()
 	theLogger->bFastDebugLog = true;
 }
 
-void LogThreadEntryStartup(void* nullParam)
+thread_type LogThreadEntryStartup(void* nullParam)
 {
 	theLogger->LogThreadEntry();
+	THREADEXIT;
 }
 
 void xrLogger::InitLog()
@@ -105,9 +97,8 @@ void xrLogger::InitLog()
 		theLogger = new xrLogger;
 		xrLogger::logData = new xr_queue <xrLogger::LogRecord>;
 	}
-#ifdef IXR_WINDOWS
+	//LogThreadEntryStartup(nullptr);
 	thread_spawn(LogThreadEntryStartup, "X-Ray Log Thread", 0, nullptr);
-#endif
 }
 
 void xrLogger::FlushLog()

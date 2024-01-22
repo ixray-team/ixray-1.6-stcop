@@ -175,7 +175,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	string_path		fn;				
 	xr_strconcat(fn, target_name.c_str(), "\\", path);
 
-	if (!std::filesystem::exists(fn))
+	if (!std::filesystem::exists(Platform::ValidPath(fn)))
 	{
 		filesSKIP	++;
 		printf		(" - CAN'T OPEN");
