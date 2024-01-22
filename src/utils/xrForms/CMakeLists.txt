@@ -34,7 +34,6 @@ target_include_directories(xrForms PRIVATE "../../xrServerEntities/")
 
 # Project defines
 target_compile_definitions(xrForms PRIVATE UTILS_FORMS_EXPORTS)
-target_compile_definitions(xrForms PRIVATE _WINDOWS)
 target_compile_definitions(xrForms PRIVATE _USRDLL)
 target_compile_definitions(xrForms PRIVATE ECORE_API=)
 target_compile_definitions(xrForms PRIVATE ENGINE_API=)

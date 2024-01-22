@@ -34,7 +34,6 @@ source_group("pch" FILES ${COMPRESSOR_PCH_FILES})
 
 # Project defines
 if (WIN32)
-    target_compile_definitions(xrCompress PRIVATE _WINDOWS)
     target_compile_definitions(xrCompress PRIVATE _USRDLL)
 endif()
 

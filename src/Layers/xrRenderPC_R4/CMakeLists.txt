@@ -58,7 +58,6 @@ target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
-target_compile_definitions(xrRender_R4 PRIVATE _WINDOWS)
 target_compile_definitions(xrRender_R4 PRIVATE XRRENDER_R4_EXPORTS)
 target_compile_definitions(xrRender_R4 PRIVATE USE_DX11)
 target_compile_definitions(xrRender_R4 PRIVATE _USRDLL)

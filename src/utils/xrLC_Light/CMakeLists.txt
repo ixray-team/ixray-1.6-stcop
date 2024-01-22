@@ -24,7 +24,6 @@ target_link_directories(xrLC_Light PUBLIC "${IXRAY_SDK_LIB}")
 target_precompile_headers(xrLC_Light PRIVATE "stdafx.h")
 
 # Project defines
-target_compile_definitions(xrLC_Light PRIVATE _WINDOWS)
 target_compile_definitions(xrLC_Light PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

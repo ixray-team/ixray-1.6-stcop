@@ -25,7 +25,6 @@ target_include_directories(xrNetServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Project defines
 target_compile_definitions(xrNetServer PRIVATE XR_NETSERVER_EXPORTS)
-target_compile_definitions(xrNetServer PRIVATE _WINDOWS)
 target_compile_definitions(xrNetServer PRIVATE _USRDLL)
 
 if (IXRAY_MP)

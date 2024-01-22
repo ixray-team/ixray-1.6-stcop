@@ -50,7 +50,6 @@ target_precompile_headers(xrSound PUBLIC "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrSound PRIVATE XRSOUND_EXPORTS)
-target_compile_definitions(xrSound PRIVATE _WINDOWS)
 target_compile_definitions(xrSound PRIVATE LUABIND_NO_EXCEPTIONS)
 target_compile_definitions(xrSound PRIVATE _USRDLL)
 

@@ -25,7 +25,6 @@ target_precompile_headers(xrDXT PUBLIC "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrDXT PRIVATE DXT_EXPORTS)
-target_compile_definitions(xrDXT PRIVATE _WINDOWS)
 target_compile_definitions(xrDXT PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

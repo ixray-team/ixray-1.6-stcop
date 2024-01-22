@@ -59,7 +59,6 @@ set_target_properties(
 )
 
 # Project defines
-target_compile_definitions(xrLW_Export PRIVATE _WINDOWS)
 target_compile_definitions(xrLW_Export PRIVATE _USRDLL)
 target_compile_definitions(xrLW_Export PRIVATE _LW_EXPORT)
 target_compile_definitions(xrLW_Export PRIVATE _LW_PLUGIN)

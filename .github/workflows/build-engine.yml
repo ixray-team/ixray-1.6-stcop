@@ -82,13 +82,11 @@ jobs:
             -A ${{ matrix.platform }} `
             -T host=x64 `
             -D IXRAY_UTILS=ON `
-            -D CI_IXRAY_UTILS=ON `
             -D IXRAY_MP=OFF `
-            -D CI_IXRAY_COMPRESSOR_ONLY=OFF
 
       - name: Build project
         run: |
-          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
+          cmake --build ${{ github.workspace }}/build --target xrForms --config ${{ matrix.config }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v3
@@ -162,7 +160,6 @@ jobs:
             -T host=x64 `
             -D IXRAY_UTILS=OFF `
             -D IXRAY_MP=OFF `
-            -D CI_IXRAY_COMPRESSOR_ONLY=OFF
 
       - name: Build project
         run: |
@@ -215,13 +212,12 @@ jobs:
             -G "Visual Studio 17 2022" `
             -A ${{ matrix.platform }} `
             -T host=x64 `
-            -D IXRAY_UTILS=OFF `
+            -D IXRAY_UTILS=ON `
             -D IXRAY_MP=OFF `
-            -D CI_IXRAY_COMPRESSOR_ONLY=ON
 
       - name: Build project
         run: |
-          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
+          cmake --build ${{ github.workspace }}/build --target xrCompress --config ${{ matrix.config }}
 
       - name: Upload compressor
         uses: actions/upload-artifact@v3

@@ -108,7 +108,6 @@ target_include_directories(xrGameSpy PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrGameSpy PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
-target_compile_definitions(xrGameSpy PRIVATE _WINDOWS)
 target_compile_definitions(xrGameSpy PRIVATE XRGAMESPY_EXPORTS)
 target_compile_definitions(xrGameSpy PRIVATE _USRDLL)
 
