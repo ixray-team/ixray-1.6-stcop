@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include <fstream>
 #pragma hdrstop
 
 #pragma warning(disable:4995)
@@ -163,6 +164,38 @@ XRCORE_API void _dump_open_files(int mode)
 
 	if (bShow)
 		Msg("----total count=%d", (int)g_open_files.size());
+}
+
+void CLocatorAPI::ParseIgnoreList()
+{
+	std::fstream IgnoreFile(".xrignore");
+
+	xr_string Data = "";
+
+	while (std::getline(IgnoreFile, Data))
+	{
+		if (Data.starts_with('#'))
+			continue;
+		
+		if (Data.size() < 3)
+			continue;
+
+		IgnoreData.push_back(Data);
+	}
+}
+
+bool CLocatorAPI::CheckSkip(const xr_string& Path) const
+{
+	xr_string UnixPath = Path.data();
+	std::replace(UnixPath.begin(), UnixPath.end(), '\\', '/');
+
+	for (const xr_string& SkipPath : IgnoreData)
+	{
+		if (UnixPath.Contains(SkipPath))
+			return true;
+	}
+
+	return false;
 }
 
 CLocatorAPI::CLocatorAPI()
@@ -562,24 +595,6 @@ IC bool pred_str_ff(const _finddata_t& x, const _finddata_t& y)
 	return xr_strcmp(x.name,y.name)<0;	
 }
 
-
-bool ignore_name(const char* _name)
-{
-	// ignore windows hidden Thumbs.db
-	if (!strcmp(_name, "Thumbs.db"))
-		return true;
-
-	// ignore processing ".svn" folders
-	if (!strcmp(_name, ".svn"))
-		return true;
-
-	// ignore processing ".svn" folders
-	if (!strcmp(_name, ".git"))
-		return true;
-
-	return false;
-}
-
 // we need to check for file existance
 // because Unicode file names can 
 // be interpolated by FindNextFile()
@@ -632,17 +647,20 @@ bool CLocatorAPI::Recurse(const char* path)
 
 		sFile.attrib = CurrentFile.is_directory() ? _A_SUBDIR : 0;
 
+#ifdef IXR_WINDOWS
+		sFile.attrib = GetFileAttributesA(sFile.name) & FILE_ATTRIBUTE_HIDDEN ? _A_HIDDEN: 0;
+#endif
         bool NeedSkip = false;
         if (m_Flags.test(flNeedCheck))
         {
-            NeedSkip = ignore_name(sFile.name) || ignore_path(sFile.name);
+            NeedSkip = CheckSkip(sFile.name) || ignore_path(sFile.name);
             // загоняем в вектор для того *.db* приходили в сортированном порядке
             if (NeedSkip)
                 rec_files.push_back(sFile);
         }
         else
         {
-            NeedSkip = ignore_name(sFile.name);
+            NeedSkip = CheckSkip(sFile.name);
         }
 
         if (!NeedSkip)
@@ -753,6 +771,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	// scan root directory
 	bNoRecurse = TRUE;
 	string4096		buf;
+
+	// Load ignore list
+	ParseIgnoreList();
 
 	// append application path
 	if (m_Flags.is(flScanAppRoot))

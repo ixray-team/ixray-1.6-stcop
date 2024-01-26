@@ -30,6 +30,9 @@ public:
 	bool StartWith(const xr_string& Other) const;
 	bool StartWith(LPCSTR Str) const;
 	bool StartWith(LPCSTR Str, size_t Size) const;
+
+	bool Contains(const xr_string& SubStr) const;
+
 	xr_string RemoveWhitespaces() const;
 
 	static xr_string ToString(int Value);
