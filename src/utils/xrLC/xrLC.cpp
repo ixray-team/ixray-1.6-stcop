@@ -11,7 +11,6 @@
 #pragma comment(lib,"comctl32.lib")
 #pragma comment(lib,"IMAGEHLP.LIB")
 #pragma comment(lib,"winmm.LIB")
-#pragma comment(lib,"FreeImage.lib")
 
 #define PROTECTED_BUILD
 

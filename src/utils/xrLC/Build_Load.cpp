@@ -286,20 +286,32 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	{
 		Surface_Init		();
 		F = fs.open_chunk	(EB_Textures);
-
+#ifdef _M_X64
+		u32 tex_count = F->length() / sizeof(b_texture64);
+#else
+		u32 tex_count = F->length() / sizeof(b_texture);
+#endif
 		bool is_thm_missing = false;
 		bool is_tga_missing = false;
 
 		for (u32 t=0; t<tex_count; t++)
 		{
 			Progress		(float(t)/float(tex_count));
-
-			b_texture		TEX;
-			F->r			(&TEX,sizeof(TEX));
-
+#ifdef _M_X64
+			b_texture64	TEX;
+			F->r(&TEX, sizeof(TEX));
 			b_BuildTexture	BT;
-			CopyMemory		(&BT,&TEX,sizeof(TEX));
 
+			// ptr should be copied separately
+			CopyMemory(&BT, &TEX, sizeof(TEX) - 4);	
+			BT.pSurface = (u32*)TEX.pSurface;
+#else
+			b_texture TEX;
+			F->r(&TEX, sizeof(TEX));
+
+			b_BuildTexture BT;
+			CopyMemory(&BT, &TEX, sizeof(TEX));
+#endif
 			// load thumbnail
 			LPSTR N			= BT.name;
 			if (strchr(N,'.')) *(strchr(N,'.')) = 0;

@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma comment(lib,"FreeImage.lib")
-
 #include "../../xrcdb/xrCDB.h"
 #include "../../xrEngine/xrLevel.h"
 #include "AIMapExport.h"

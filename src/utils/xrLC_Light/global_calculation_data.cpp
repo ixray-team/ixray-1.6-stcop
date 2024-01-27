@@ -107,14 +107,17 @@ void global_claculation_data::xrLoad()
 		transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
 		post_process_materials( *g_shaders_xrlc, g_shader_compile, g_materials );
 		// process textures
-#ifdef	DEBUG
-		xr_vector<b_texture> dbg_textures;
-#endif
+
 		Status			("Processing textures...");
 		{
 			Surface_Init		();
 			F = fs->open_chunk	(EB_Textures);
-			u32 tex_count	= F->length()/sizeof(b_texture);
+
+#ifdef _M_X64
+			u32 tex_count = F->length() / sizeof(b_texture64);
+#else
+			u32 tex_count = F->length() / sizeof(b_texture);
+#endif			
 
 			bool is_thm_missing = false;
 			bool is_tga_missing = false;
@@ -123,14 +126,22 @@ void global_claculation_data::xrLoad()
 			{
 				Progress		(float(t)/float(tex_count));
 
-				b_texture		TEX;
-				F->r			(&TEX,sizeof(TEX));
-#ifdef	DEBUG
-				dbg_textures.push_back( TEX );
-#endif
+#ifdef _M_X64
+				b_texture64	TEX;
+				F->r(&TEX, sizeof(TEX));
 
 				b_BuildTexture	BT;
-				CopyMemory		(&BT,&TEX,sizeof(TEX));
+
+				// ptr should be copied separately
+				CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+				BT.pSurface = nullptr;
+#else
+				b_texture TEX;
+				F->r(&TEX, sizeof(TEX));
+
+				b_BuildTexture BT;
+				CopyMemory(&BT, &TEX, sizeof(TEX));
+#endif
 
 				// load thumbnail
 				LPSTR N			= BT.name;

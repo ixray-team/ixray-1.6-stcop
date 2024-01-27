@@ -44,10 +44,4 @@ target_link_libraries(xrLC PUBLIC xrCDB)
 target_link_libraries(xrLC PUBLIC xrLC_Light)
 target_link_libraries(xrLC PUBLIC QSlim)
 target_link_libraries(xrLC PUBLIC ETools)
-
-# SDK binaries
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}MagicFM.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+target_link_libraries(xrLC PUBLIC MagicFM)

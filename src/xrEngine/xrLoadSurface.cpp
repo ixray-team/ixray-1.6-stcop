@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include <freeimage/freeimage.h>
+#include <FreeImage.h>
 #include <fcntl.h>
 
 struct SExts{

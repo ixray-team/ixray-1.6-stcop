@@ -113,16 +113,30 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			{
 				Surface_Init		();
 				F = fs->open_chunk	(EB_Textures);
-				u32 tex_count		= F->length()/sizeof(b_texture);
+#ifdef _M_X64
+				u32 tex_count = F->length() / sizeof(b_texture64);
+#else
+				u32 tex_count = F->length() / sizeof(b_texture);
+#endif
 				for (u32 t=0; t<tex_count; t++)
 				{
 					Progress		(float(t)/float(tex_count));
 
-					b_texture		TEX;
-					F->r			(&TEX,sizeof(TEX));
-
+#ifdef _M_X64
+					b_texture64	TEX;
+					F->r(&TEX, sizeof(TEX));
 					b_BuildTexture	BT;
-					CopyMemory		(&BT,&TEX,sizeof(TEX));
+
+					// ptr should be copied separately
+					CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+					BT.pSurface = (u32*)TEX.pSurface;
+#else
+					b_texture TEX;
+					F->r(&TEX, sizeof(TEX));
+
+					b_BuildTexture BT;
+					CopyMemory(&BT, &TEX, sizeof(TEX));
+#endif
 
 					// load thumbnail
 					string128		&N_ = BT.name;
@@ -311,7 +325,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		H.size_y			= 1.f;
 		H.aabb				= LevelBB;
 		
-		typedef BYTE NodeLink[3];
+		typedef u32 NodeLink;
 		for (u32 i=0; i<N_; i++) {
 			NodeLink			id;
 			u16 				pl;
@@ -319,8 +333,11 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			NodePosition 		np;
 			
 			for (int j=0; j<4; ++j) {
-				F->r			(&id,3);
-				g_nodes[i].n[j]	= (*LPDWORD(&id)) & 0x00ffffff;
+				F->r(&id, 3);
+				id = id & 0x00ffffff;
+				if (id == InvalidNode)
+					id = InvalidNode;
+				g_nodes[i].n[j] = id;
 			}
 
 			pl				= F->r_u16();
