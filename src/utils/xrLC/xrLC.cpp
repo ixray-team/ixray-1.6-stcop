@@ -40,7 +40,7 @@ static const char* h_str =
 
 void Help()
 {
-	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION);
+	MessageBoxA(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION);
 }
 
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
@@ -88,7 +88,7 @@ void Startup(LPSTR     lpCmdLine)
 	extern  HWND logWindow;
 	string256				temp;
 	xr_sprintf				(temp, "%s - Levels Compiler", name);
-	SetWindowText			(logWindow, temp);
+	SetWindowTextA			(logWindow, temp);
 
 	string_path				prjName;
 	FS.update_path			(prjName,"$game_levels$",strconcat(sizeof(prjName),prjName,name,"\\build.prj"));
@@ -100,7 +100,7 @@ void Startup(LPSTR     lpCmdLine)
 	if (NULL==F){
 		xr_sprintf				(inf,"Build failed!\nCan't find level: '%s'",name);
 		clMsg				(inf);
-		MessageBox			(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
+		MessageBoxA			(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
 		return;
 	}
 
@@ -117,7 +117,7 @@ void Startup(LPSTR     lpCmdLine)
 	if (bModifyOptions)		
 	{
 		Phase		("Project options...");
-		HMODULE		L = LoadLibrary		("xrLC_Options.dll");
+		HMODULE		L = LoadLibraryA		("xrLC_Options.dll");
 		void*		P = GetProcAddress	(L,"_frmScenePropertiesRun");
 		R_ASSERT	(P);
 		xrOptions*	O = (xrOptions*)P;
@@ -148,7 +148,7 @@ void Startup(LPSTR     lpCmdLine)
 	clMsg					("Build succesful!\n%s",inf);
 
 	if (!strstr(cmd,"-silent"))
-		MessageBox			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+		MessageBoxA			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
 
 	// Close log
 	bClose					= TRUE;

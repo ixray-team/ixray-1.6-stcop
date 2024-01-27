@@ -9,12 +9,19 @@ file(GLOB_RECURSE XLC_SOURCE_ALL_FILES
     "../../xrEngine/xrLoadSurface.cpp"
     "../../common/NvMender2003/NVMeshMender.cpp"
 )
+file(GLOB_RECURSE XLC_SOURCE_RES_FILES
+    "*.ico"
+    "*.rc"
+    "*.bmp"
+)
 
 # Source groups
 source_group("kernel" FILES ${XLC_SOURCE_ALL_FILES})
+source_group("res" FILES ${XLC_SOURCE_RES_FILES})
 
 # Apply list
 list(APPEND XLC_SRC_FILES ${XLC_SOURCE_ALL_FILES})
+list(APPEND XLC_SRC_FILES ${XLC_SOURCE_RES_FILES})
 
 # Remove unused files
 #list(FILTER XLC_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
@@ -37,3 +44,10 @@ target_link_libraries(xrLC PUBLIC xrCDB)
 target_link_libraries(xrLC PUBLIC xrLC_Light)
 target_link_libraries(xrLC PUBLIC QSlim)
 target_link_libraries(xrLC PUBLIC ETools)
+
+# SDK binaries
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}MagicFM.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
