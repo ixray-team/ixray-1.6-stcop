@@ -25,7 +25,7 @@
 #include "resample.h"
 
 #define _(a) a
-#define N_(a) a
+#define N_(a) (char*)a
 
 #ifdef HAVE_LIBFLAC
 #include "flac.h"
@@ -52,8 +52,8 @@
 
 /* Define the supported formats here */
 input_format formats[] = {
-	{wav_id, 12, wav_open, wav_close, "wav", N_("WAV file reader")},
-	{aiff_id, 12, aiff_open, wav_close, "aiff", N_("AIFF/AIFC file reader")},
+	{wav_id, 12, wav_open, wav_close, (char*)"wav", N_("WAV file reader")},
+	{aiff_id, 12, aiff_open, wav_close, (char*)"aiff", N_("AIFF/AIFC file reader")},
 #ifdef HAVE_LIBFLAC
 	{flac_id,     4, flac_open, flac_close, "flac", N_("FLAC file reader")},
 	{oggflac_id, 32, flac_open, flac_close, "ogg", N_("Ogg FLAC file reader")},
@@ -245,7 +245,7 @@ int aiff_open(FILE *in, oe_enc_opt *opt, unsigned char *buf, int buflen)
 	else
 		aifc=0;
 
-	if(!find_aiff_chunk(in, "COMM", &len))
+	if(!find_aiff_chunk(in, (char*)"COMM", &len))
 	{
 		fprintf(stderr, _("Warning: No common chunk found in AIFF file\n"));
 		return 0; /* EOF before COMM chunk */
@@ -295,7 +295,7 @@ int aiff_open(FILE *in, oe_enc_opt *opt, unsigned char *buf, int buflen)
 		}
 	}
 
-	if(!find_aiff_chunk(in, "SSND", &len))
+	if(!find_aiff_chunk(in, (char*)"SSND", &len))
 	{
 		fprintf(stderr, _("Warning: No SSND chunk found in AIFF file\n"));
 		return 0; /* No SSND chunk -> no actual audio */
@@ -378,7 +378,7 @@ int wav_open(FILE *in, oe_enc_opt *opt, unsigned char *oldbuf, int buflen)
 	 * as a wav file (oldbuf)
 	 */
 
-	if(!find_wav_chunk(in, "fmt ", &len))
+	if(!find_wav_chunk(in, (char*)"fmt ", &len))
 		return 0; /* EOF */
 
 	if(len < 16) 
@@ -416,7 +416,7 @@ int wav_open(FILE *in, oe_enc_opt *opt, unsigned char *oldbuf, int buflen)
 	format.align =       READ_U16_LE(buf+12);
 	format.samplesize =  READ_U16_LE(buf+14);
 
-	if(!find_wav_chunk(in, "data", &len))
+	if(!find_wav_chunk(in, (char*)"data", &len))
 		return 0; /* EOF */
 
 	if(format.format == 1)

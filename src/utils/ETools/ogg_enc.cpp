@@ -13,7 +13,7 @@ namespace ETOOLS{
 		/* Default values */
 		oe_options opt = {NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 
 			0, NULL, 0, NULL, 0, NULL, 0, 1, 0, 0,16,44100,2, 0, NULL,
-			DEFAULT_NAMEFMT_REMOVE, DEFAULT_NAMEFMT_REPLACE, 
+			(char*)DEFAULT_NAMEFMT_REMOVE, DEFAULT_NAMEFMT_REPLACE,
 			NULL, 0, -1,-1,-1,-.3f,-1,0, 0,0.f, 0}; 
 
 		oe_enc_opt      enc_opts;

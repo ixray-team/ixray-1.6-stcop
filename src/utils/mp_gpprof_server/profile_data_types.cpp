@@ -5,7 +5,7 @@
 namespace gamespy_profile
 {
 
-char * profile_table_name = "PlayerStats_v1";
+const char* profile_table_name = "PlayerStats_v1";
 
 static char const * awards_names[at_awards_count] = 
 {
