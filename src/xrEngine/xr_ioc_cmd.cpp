@@ -59,8 +59,8 @@ public:
 	CCC_Quit(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		Console->Hide();
-		Engine.Event.Defer("KERNEL:disconnect");
-		Engine.Event.Defer("KERNEL:quit");
+		g_pEventManager->Event.Defer("KERNEL:disconnect");
+		g_pEventManager->Event.Defer("KERNEL:quit");
 	}
 };
 //-----------------------------------------------------------------------
@@ -106,7 +106,7 @@ class CCC_E_Dump : public IConsole_Command
 public:
 	CCC_E_Dump(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-		Engine.Event.Dump();
+		g_pEventManager->Event.Dump();
 	}
 };
 class CCC_E_Signal : public IConsole_Command
@@ -117,7 +117,7 @@ public:
 		char	Event[128],Param[128];
 		Event[0]=0; Param[0]=0;
 		sscanf	(args,"%[^,],%s",Event,Param);
-		Engine.Event.Signal	(Event,(u64)Param);
+		g_pEventManager->Event.Signal	(Event,(u64)Param);
 	}
 };
 
@@ -323,14 +323,14 @@ public:
 			return;
 		}
 		if (g_pGameLevel)
-			Engine.Event.Defer("KERNEL:disconnect");
+			g_pEventManager->Event.Defer("KERNEL:disconnect");
 		
 		if (xr_strlen(op_demo))
 		{
-			Engine.Event.Defer	("KERNEL:start_mp_demo",u64(xr_strdup(op_demo)),0);
+			g_pEventManager->Event.Defer	("KERNEL:start_mp_demo",u64(xr_strdup(op_demo)),0);
 		} else
 		{
-			Engine.Event.Defer	("KERNEL:start",u64(xr_strlen(op_server)?xr_strdup(op_server):0),u64(xr_strdup(op_client)));
+			g_pEventManager->Event.Defer	("KERNEL:start",u64(xr_strlen(op_server)?xr_strdup(op_server):0),u64(xr_strdup(op_client)));
 		}
 	}
 };
@@ -340,7 +340,7 @@ class CCC_Disconnect : public IConsole_Command
 public:
 	CCC_Disconnect(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-		Engine.Event.Defer("KERNEL:disconnect");
+		g_pEventManager->Event.Defer("KERNEL:disconnect");
 	}
 };
 //-----------------------------------------------------------------------

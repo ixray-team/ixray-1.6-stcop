@@ -238,7 +238,7 @@ ENGINE_API void EngineLoadStage5()
 	xr_delete					( g_SpatialSpace		);
 	DEL_INSTANCE				( g_pGamePersistent		);
 	xr_delete					( pApp					);
-	Engine.Event.Dump			( );
+	g_pEventManager->Event.Dump			( );
 
 	// Destroying
 //.	destroySound();
@@ -498,12 +498,7 @@ CApplication::CApplication()
 	max_load_stage = 0;
 
 	// events
-	eQuit						= Engine.Event.Handler_Attach("KERNEL:quit",this);
-	eStart						= Engine.Event.Handler_Attach("KERNEL:start",this);
-	eStartLoad					= Engine.Event.Handler_Attach("KERNEL:load",this);
-	eDisconnect					= Engine.Event.Handler_Attach("KERNEL:disconnect",this);
-	eConsole					= Engine.Event.Handler_Attach("KERNEL:console",this);
-	eStartMPDemo				= Engine.Event.Handler_Attach("KERNEL:start_mp_demo",this);
+	g_pEventManager->Attach(this);
 
 	// levels
 	Level_Current				= u32(-1);
@@ -540,30 +535,24 @@ CApplication::~CApplication()
 
 
 	// events
-	Engine.Event.Handler_Detach	(eConsole,this);
-	Engine.Event.Handler_Detach	(eDisconnect,this);
-	Engine.Event.Handler_Detach	(eStartLoad,this);
-	Engine.Event.Handler_Detach	(eStart,this);
-	Engine.Event.Handler_Detach	(eQuit,this);
-	Engine.Event.Handler_Detach	(eStartMPDemo,this);
-	
+	g_pEventManager->Detach(this);
 }
 
 extern CRenderDevice Device;
 
 void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
-	if (E==eQuit)
-	{
-		PostQuitMessage	(0);
-		
-		for (u32 i=0; i<Levels.size(); i++)
-		{
+	g_pEventManager->OnEvent(E, P1, P2);
+
+	if (E == g_pEventManager->eQuit) {
+		PostQuitMessage(0);
+
+		for (u32 i = 0; i < Levels.size(); i++) {
 			xr_free(Levels[i].folder);
 			xr_free(Levels[i].name);
 		}
 	}
-	else if(E==eStart) 
+	else if(E== g_pEventManager->eStart)
 	{
 		LPSTR		op_server		= LPSTR	(P1);
 		LPSTR		op_client		= LPSTR	(P2);
@@ -600,7 +589,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		xr_free							(op_server);
 		xr_free							(op_client);
 	} 
-	else if (E==eDisconnect) 
+	else if (E== g_pEventManager->eDisconnect)
 	{
 		ls_header[0] = '\0';
 		ls_tip_number[0] = '\0';
@@ -613,7 +602,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 			DEL_INSTANCE			(g_pGameLevel);
 			Console->Show			();
 			
-			if( (FALSE == Engine.Event.Peek("KERNEL:quit")) &&(FALSE == Engine.Event.Peek("KERNEL:start")) )
+			if( (FALSE == g_pEventManager->Event.Peek("KERNEL:quit")) &&(FALSE == g_pEventManager->Event.Peek("KERNEL:start")) )
 			{
 				Console->Execute("main_menu off");
 				Console->Execute("main_menu on");
@@ -622,13 +611,13 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		R_ASSERT			(0!=g_pGamePersistent);
 		g_pGamePersistent->Disconnect();
 	}
-	else if (E == eConsole)
+	else if (E == g_pEventManager->eConsole)
 	{
 		LPSTR command				= (LPSTR)P1;
 		Console->ExecuteCommand		( command, false );
 		xr_free						(command);
 	}
-	else if (E == eStartMPDemo)
+	else if (E == g_pEventManager->eStartMPDemo)
 	{
 		LPSTR demo_file				= LPSTR	(P1);
 
@@ -741,7 +730,7 @@ void CApplication::LoadSwitch	()
 // Sequential
 void CApplication::OnFrame	( )
 {
-	Engine.Event.OnFrame			();
+	g_pEventManager->Event.OnFrame			();
 	g_SpatialSpace->update			();
 	g_SpatialSpacePhysic->update	();
 	if (g_pGameLevel) {				

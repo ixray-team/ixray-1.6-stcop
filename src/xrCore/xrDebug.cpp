@@ -1,5 +1,8 @@
 #include "stdafx.h"
+
 #pragma hdrstop
+
+#include "EventManager.h"
 
 #include "xrdebug.h"
 #include "os_clipboard.h"
@@ -145,54 +148,71 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press CONTINUE to continue execution and ignore all the errors of this type%s%s",endline,endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
+	if (g_pEventManager == nullptr || g_pEventManager->IsEventThread())
+	{
+		show_dialog(buffer, ignore_always);
+	}
+	else
+	{
+		static std::string LastError = "";
+		LastError = assertion_info;
+#ifdef DEBUG
+		g_pEventManager->Event.Defer("KERNEL:assert", (size_t)&LastError, (size_t)&ignore_always);
+#else
+		g_pEventManager->Event.Signal("KERNEL:assert", (size_t)&LastError, (size_t)&ignore_always);
+#endif
+	}
+
+	CS.Leave();
+}
+
+void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
+{
 	if (handler)
-		handler			();
+		handler();
 
 	if (get_on_dialog())
 		get_on_dialog()	(true);
 
-	FlushLog			();
+	FlushLog();
 
 #ifdef XRCORE_STATIC
-	MessageBoxA			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBoxA(NULL, assertion_info, "X-Ray error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 #else
 
-	ShowWindow(get_current_wnd(), SW_MINIMIZE);
+	//ShowWindow(get_current_wnd(), SW_MINIMIZE);
 
 	int result = MessageBoxA(
-		NULL, assertion_info, "Fatal Error",
+		NULL, message.c_str(), "Fatal Error",
 		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY);
 
-		switch (result) {
-			case IDCANCEL : {
-				if (IsDebuggerPresent()) {
-					DEBUG_INVOKE;
-				}
-				// TODO: Maybe not correct
-				exit(-1);
-				break;
-			}
-			case IDTRYAGAIN : {
-				error_after_dialog	= false;
-				break;
-			}
-			case IDCONTINUE : {
-				error_after_dialog	= false;
-				ignore_always	= true;
-				ShowWindow(get_current_wnd(), SW_SHOWNORMAL);
-				break;
-			}
-			default: {
-				Msg("! xrDebug::backend default reached");
-				break;
-			}
+	switch (result) {
+	case IDCANCEL: {
+		if (IsDebuggerPresent()) {
+			DEBUG_INVOKE;
 		}
+		// TODO: Maybe not correct
+		exit(-1);
+		break;
+	}
+	case IDTRYAGAIN: {
+		error_after_dialog = false;
+		break;
+	}
+	case IDCONTINUE: {
+		error_after_dialog = false;
+		ignore_always = true;
+		break;
+	}
+	default: {
+		Msg("! xrDebug::backend default reached");
+		break;
+	}
+	}
 #endif
 
 	if (get_on_dialog())
 		get_on_dialog()	(false);
-
-	CS.Leave			();
 }
 
 LPCSTR xrDebug::error2string(long code) {

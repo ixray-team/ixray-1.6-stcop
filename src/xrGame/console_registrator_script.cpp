@@ -31,7 +31,7 @@ bool get_console_bool( CConsole* c, LPCSTR cmd )
 
 void execute_console_command_deferred	(CConsole* c, LPCSTR string_to_execute)
 {
-	Engine.Event.Defer	("KERNEL:console", size_t(xr_strdup(string_to_execute)) );
+	g_pEventManager->Event.Defer	("KERNEL:console", size_t(xr_strdup(string_to_execute)) );
 }
 
 #pragma optimize("s",on)
