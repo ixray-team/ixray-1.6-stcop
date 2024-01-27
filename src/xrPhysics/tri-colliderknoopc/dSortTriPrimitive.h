@@ -216,8 +216,13 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 			if (debug_output().ph_dbg_draw_mask().test(phDBgDrawNegativeTries))
 				debug_output().DBG_DrawTri(T, V_array, color_xrgb(0, 0, 255));
 #endif
-			float last_pos_dist=dDOT(last_pos,tri.norm)- tri.pos ;
-			if((!(last_pos_dist<0.f))||b_pushing)
+			float last_pos_dist=dDOT(last_pos,tri.norm)- tri.pos;
+#ifdef _M_X64
+			bool test_nan = isnan(last_pos_dist);
+#else 
+			const bool test_nan = false;
+#endif
+			if((!(last_pos_dist<0.f))||b_pushing||test_nan)
 				if(__aabb_tri(Point(p),Point((float*)&AABB),vertices))
 				{
 #ifdef DEBUG
