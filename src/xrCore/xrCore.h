@@ -72,7 +72,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
-
+#include <chrono>
 #include <string>
 
 #pragma warning (pop)
@@ -99,6 +99,7 @@
 #include "xr_shared.h"
 #include "string_concatenations.h"
 #include "EngineProfiler.h"
+
 
 // stl ext
 struct XRCORE_API xr_rtoken
@@ -144,6 +145,7 @@ using RStringSetIt = RStringSet::iterator;
 using RTokenVec = xr_vector<xr_rtoken>;
 using RTokenVecIt = RStringVec::iterator;
 
+#include "TimeUtils.h"
 #include "FS.h"
 #include "log.h"
 #include "xr_trims.h"
