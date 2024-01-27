@@ -56,7 +56,6 @@ function actor_binder:net_spawn(data)
 	self.task_manager = task_manager.get_task_manager()
 	self.spawn_frame = device().frame
 	self.already_jumped = false
-	self.loaded = false
 	benchmark.main()							          --' Distemper 06.2008 --
 	return true
 end
@@ -353,10 +352,6 @@ function actor_binder:update(delta)
 	-- Апдейт доступности для симуляции.
 	simulation_objects.get_sim_obj_registry():update_avaliability(alife():actor())
 
-	if not self.loaded then
-		get_console():execute("dump_infos")
-		self.loaded = true
-	end
 	treasure_manager.get_treasure_manager():update()
 
 	if not(primary_objects_filled) then
