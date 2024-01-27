@@ -64,7 +64,7 @@ void compress( LPCSTR f_in_out )
  	strconcat( sizeof(tmp),tmp, f_in_out, "___ctmp" );
 	compress( f_in_out, tmp );
 
-	if ( GetFileAttributes(f_in_out) != u32(-1) ) 
+	if ( GetFileAttributesA(f_in_out) != u32(-1) ) 
 			_unlink(f_in_out);
     // physically rename file
     VerifyPath			(f_in_out);
@@ -78,7 +78,7 @@ void decompress( LPCSTR f_in_out )
  	string_path	tmp;
  	strconcat( sizeof(tmp),tmp, f_in_out, "___dtmp" );
 	decompress( f_in_out, tmp );
-	if ( GetFileAttributes(f_in_out) != u32(-1) ) 
+	if ( GetFileAttributesA(f_in_out) != u32(-1) ) 
 			_unlink(f_in_out);
     // physically rename file
     VerifyPath			(f_in_out);

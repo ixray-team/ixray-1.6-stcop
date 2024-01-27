@@ -64,7 +64,7 @@ class TRefCountHolder
 
 } //namespace
 
-#ifndef _XBOX
+#ifndef _M_X64
  
 //for instantiated classes - tracks refcount
 #define IUNKNOWN_METHODS_IMPLEMENTATION_INSTANCE()    \

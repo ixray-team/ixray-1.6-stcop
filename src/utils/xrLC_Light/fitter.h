@@ -8,7 +8,7 @@ extern void vfOptimizeParameters(xr_vector<xr_vector<REAL> > &A, xr_vector<xr_ve
 
 template<typename T, typename T2> void vfComputeLinearRegression(xr_vector<T> &A, xr_vector<T> &B, T2 &C, T2 &D)
 {
-	u32				N = A.size();
+	u32				N = (u32)A.size();
 	T				sx = T(0), sy = T(0), sxy = T(0), sx2 = T(0), l_tDenominator;
 	sx				= std::accumulate		(A.begin(),A.end(),sx);
 	sy				= std::accumulate		(B.begin(),B.end(),sy);
