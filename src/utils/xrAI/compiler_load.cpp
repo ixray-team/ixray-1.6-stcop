@@ -316,6 +316,6 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		F->close			();
 
 		if (!strstr(Core.Params,"-keep_temp_files"))
-			DeleteFile		(file_name);
+			DeleteFileA		(file_name);
 	}
 }

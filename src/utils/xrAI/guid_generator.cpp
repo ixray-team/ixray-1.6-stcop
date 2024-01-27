@@ -45,7 +45,7 @@ LPCSTR generate_guid(const xrGUID &guid, LPSTR buffer, const u32 &buffer_size)
 	GUID			temp;
 	Memory.mem_copy	(&temp,&guid,sizeof(guid));
 	RPC_CSTR		temp2;
-	RPC_STATUS		status = UuidToString(&temp,&temp2);
+	RPC_STATUS		status = UuidToStringA(&temp,&temp2);
 	switch (status) {
 		case RPC_S_OK				: break;
 		case RPC_S_OUT_OF_MEMORY	: NODEFAULT;
@@ -53,7 +53,7 @@ LPCSTR generate_guid(const xrGUID &guid, LPSTR buffer, const u32 &buffer_size)
 	}
 	VERIFY			(buffer_size > xr_strlen((LPCSTR)temp2));
 	xr_strcpy		(buffer, buffer_size, (LPCSTR)temp2);
-	RpcStringFree	(&temp2);
+	RpcStringFreeA	(&temp2);
 	return			(buffer);
 #else
 	NODEFAULT;
