@@ -134,11 +134,17 @@ private:
 	Fmatrix								m_attach_offset;
 
 	Fmatrix								m_transform;
+	Fmatrix								m_transformL;
+
+	Fmatrix								m_transform_fake = Fidentity;
+	Fmatrix								m_transformL_fake = Fidentity;
+
 	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
 	xr_vector<attachable_hud_item*>		m_pool;
 
+	static void xr_stdcall LeftArmCallback(CBoneInstance* B);
 };
 
 extern player_hud* g_player_hud;
