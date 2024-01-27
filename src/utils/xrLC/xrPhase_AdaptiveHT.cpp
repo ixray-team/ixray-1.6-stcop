@@ -203,7 +203,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		
 		u32 threads			= u32(-1);
 		u32 rest			= u32(-1);
-		get_intervals( 8, lc_global_data()->g_vertices().size(), threads, stride, rest );
+		get_intervals( CPU::ID.n_threads - 2, lc_global_data()->g_vertices().size(), threads, stride, rest );
 		for (u32 thID=0; thID<threads; thID++)
 			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (thID,thID*stride,thID*stride + stride ) );
 		if(rest > 0)
