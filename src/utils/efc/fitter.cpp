@@ -65,22 +65,22 @@ SEFHeader	tEFHeader;
 
 __forceinline uint uifRandom(uint uiRange)
 {
-    uint uiResult;
-    __asm {
-            MOV     EAX,uiRange
-            IMUL    EDX,uiRandSeed,08088405H
-            INC     EDX
-            MOV     uiRandSeed,EDX
-            MUL     EDX
-            MOV     uiResult,EDX
-    }
-    return(uiResult);
+	unsigned int ui_result = 0;
+	for (unsigned int i = 0; i < uiRange; ++i) {
+		unsigned int temp = 1;
+		temp *= 0x8088405;
+		ui_result += temp;
+	}
+
+	return ui_result;
 }
 
 __forceinline uint uifGetPatternIndex(uint *uipTest, int iPatternIndex)
 {
 	SPattern &tPattern = tpPatterns[iPatternIndex];
-	for (uint i=1, uiIndex = uipTest[tPattern.uiaVariableIndexes[0]]; i<(int)tPattern.uiCardinality; i++)
+	uint uiIndex = uipTest[tPattern.uiaVariableIndexes[0]];
+
+	for (uint i=1; i<(int)tPattern.uiCardinality; i++)
 		uiIndex = uiIndex*uiaAtomicFeatureRange[tPattern.uiaVariableIndexes[i]] + uipTest[tPattern.uiaVariableIndexes[i]];
 	return(uiIndex + uiaPatternIndexes[iPatternIndex]);
 }
@@ -150,7 +150,7 @@ void vfLoadTestData(char *caFileName, bool bLoadTestExamples = true)
 	tpPatterns = (SPattern *)malloc(uiPatternCount*sizeof(SPattern));
 	uiaPatternIndexes = (uint *)calloc(uiPatternCount,sizeof(uint));
 	uiParameterCount = 0;
-	for ( i=0; i<uiPatternCount; i++) {
+	for (uint i=0; i<uiPatternCount; i++) {
 		if (i)
 			uiaPatternIndexes[i] = uiParameterCount;
 		fread(&(tpPatterns[i].uiCardinality),1,sizeof(tpPatterns[i].uiCardinality),fTestParameters);
@@ -185,7 +185,7 @@ void vfLoadTestData(char *caFileName, bool bLoadTestExamples = true)
 		uiMemoryAllocated += uiTestCount*sizeof(double);
 		uiMemoryAllocated += uiParameterCount*sizeof(char);
 
-		for ( i=0; i<(int)uiTestCount; i++) {
+		for (uint i=0; i<(int)uiTestCount; i++) {
 			uiaTestParameters[i] = (uint *)malloc(uiVariableCount*sizeof(uint));
 			fread(uiaTestParameters[i],uiVariableCount,sizeof(uint),fTestParameters);
 			fread(daTestResults + i,1,sizeof(double),fTestParameters);
@@ -195,13 +195,13 @@ void vfLoadTestData(char *caFileName, bool bLoadTestExamples = true)
 
 		fclose(fTestParameters);
 
-		for ( i=0; i<uiParameterCount; i++) {
+		for (uint i=0; i<uiParameterCount; i++) {
 			uiaPatternConfigUsage[i] = (uint *)calloc(uiaPatternConfigUsageCount[i],sizeof(uint));
 			uiMemoryAllocated += uiaPatternConfigUsageCount[i]*sizeof(uint);
 		}
 
 		memset(uiaPatternConfigUsageCount,0,uiParameterCount*sizeof(uint));
-		for ( i=0; i<uiTestCount; i++)
+		for (uint i=0; i<uiTestCount; i++)
 			for (uint j=0; j<uiPatternCount; j++) {
 				uint uiDummy = uifGetPatternIndex(uiaTestParameters[i],j);
 				uiaPatternConfigUsage[uiDummy][uiaPatternConfigUsageCount[uiDummy]++] = i;
@@ -234,7 +234,7 @@ void vfFreeTestData(bool bUnloadTesExamples = true)
 			free(uiaPatternConfigUsage[i]);
 		free(uiaPatternConfigUsage);
 
-		for ( i=0; i<uiTestCount; i++)
+		for (uint i=0; i<uiTestCount; i++)
 			free(uiaTestParameters[i]);
 		free(uiaTestParameters);
 	}
@@ -275,7 +275,7 @@ double *dafGradient(double *daParameters, double *daResult, bool bUseRandom)
 			for (uint j=0; j<uiaPatternConfigUsageCount[i]; j++)
 				daResult[i] -= (daTestResults[uiaPatternConfigUsage[i][j]]-daEvalResults[uiaPatternConfigUsage[i][j]]);
 
-	for ( i=0; i<uiParameterCount; i++)
+	for (uint i=0; i<uiParameterCount; i++)
 		if ((!bUseRandom) || (!caRandom[i]))
 			if (uiaPatternConfigUsageCount[i])
 				daResult[i] *= (uiaPatternConfigUsageCount[i]<3 ? 0.01 : (uiaPatternConfigUsageCount[i]<20 ? 0.1 : 2.0/uiaPatternConfigUsageCount[i]))/uiPatternCount;
@@ -367,8 +367,9 @@ void vfShowTestData(char *caTestDataFileName, char *caPatternDataFileName, bool 
 	fclose(fData);
 
 	// printing results
+	int i = 0;
 	if (bShowPatternStats) {
-		for (int i=0; i<(int)uiPatternCount - 1; i++) {
+		for (; i<(int)uiPatternCount - 1; i++) {
 			uint uiCount = uiaPatternIndexes[i + 1];
 			vfDualPrintF("Pattern #%d:\n",i + 1);
 			for (int j=uiaPatternIndexes[i]; j<(int)uiCount; j++)
@@ -382,7 +383,7 @@ void vfShowTestData(char *caTestDataFileName, char *caPatternDataFileName, bool 
 
 	if (bShowSimpleStats) {
 		vfDualPrintF("\nTest examples evaluation:\n");
-		for (int i=0; i<(int)uiTestCount; i++) {
+		for (i=0; i<(int)uiTestCount; i++) {
 			vfDualPrintF("%5d : ",i + 1);
 			for (int j=0; j<(int)uiVariableCount; j++)
 				vfDualPrintF("%6d",uiaTestParameters[i][j] + 1);
@@ -438,8 +439,9 @@ void vfConvertTestData(char *caRawDataFileName, char *caTestDataFileName, char *
 	CHECK_FILE_IF_OPENED(fData,caRawDataFileName);
 	
 	// determinining variable count and for each variable its range
+	int i = 0;
 	char *caTextLine = (char *)malloc(MIN_LINE_LENGTH*sizeof(char));
-	for (int i=2; fgets(caTextLine,16*1024,fData) == NULL; i++)
+	for (i=2; fgets(caTextLine,16*1024,fData) == NULL; i++)
 		caTextLine = (char *)realloc(caTextLine,MIN_LINE_LENGTH*i*sizeof(char));
 	for (i = strlen(caTextLine) - 1; i>=0; i--)
 		if ((caTextLine[i] != ' ') && (caTextLine[i] != 9) && (caTextLine[i] != 10))
@@ -531,6 +533,7 @@ void vfConvertTestData(char *caRawDataFileName, char *caTestDataFileName, char *
 	uint uiDuplicateCount = 0;
 	uint uiDuplicates = 0;
 	for ( i=0; i<(int)uiTestCount - 1; i++) {
+		int j = 0;
 		for (int j = i + 1; (j<(int)uiTestCount) && (ucfCompareTestExamples(uippTestData[uipSortOrder[i]],uippTestData[uipSortOrder[j]],uiVariableCount,0) == 2); j++) ;
 		if (j > i + 1) {
 			uiDuplicates++;
@@ -540,7 +543,7 @@ void vfConvertTestData(char *caRawDataFileName, char *caTestDataFileName, char *
 				for (int k=0; k<(int)uiVariableCount - 1; k++)
 					vfDualPrintF("%6d",uippTestData[uipSortOrder[i]][k]);
 				vfDualPrintF(" : %8.2f\n",dpTestResults[uipSortOrder[i]]);
-				for ( k = i + 1; k<j; k++) {
+				for (int k = i + 1; k<j; k++) {
 					vfDualPrintF("%5d : ",uipSortOrder[k]);
 					for (int m=0; m<(int)uiVariableCount - 1; m++)
 						vfDualPrintF("%6d",uippTestData[uipSortOrder[k]][m]);
@@ -672,7 +675,7 @@ void vfLoadRawData(char *caFileName)
 	tpPatterns = (SPattern *)malloc(uiPatternCount*sizeof(SPattern));
 	uiaPatternIndexes = (uint *)calloc(uiPatternCount,sizeof(uint));
 	uiParameterCount = 0;
-	for ( i=0; i<uiPatternCount; i++) {
+	for (int i=0; i<uiPatternCount; i++) {
 		if (i)
 			uiaPatternIndexes[i] = uiParameterCount;
 		fread(&(tpPatterns[i].uiCardinality),1,sizeof(tpPatterns[i].uiCardinality),fTestParameters);
@@ -688,7 +691,7 @@ void vfLoadRawData(char *caFileName)
 	
 	uiaTestParameters = (uint **)malloc(uiTestCount*sizeof(uint *));
 
-	for ( i=0; i<uiTestCount; i++) {
+	for (int i=0; i<uiTestCount; i++) {
 		uiaTestParameters[i] = (uint *)malloc(uiVariableCount*sizeof(uint));
 		fread(uiaTestParameters[i],uiVariableCount,sizeof(uint),fTestParameters);
 		double dTemp;
@@ -727,7 +730,8 @@ void vfSaveCurrentIterationConfigurations(FILE *fFile, uint **uiaPreviousIterati
 
 bool bfMatchCount(uchar ucCardinality, uint *uiaPreviousConfiguration, uint uiAtomicFeature)
 {
-	for (uint i=0, uiMatchCount = 0, uiCount = ((uiTestCount - 1) >> 5) + 1; (i < uiCount) && (uiMatchCount < uiMatchThreshold); i++) {
+	uint uiMatchCount = 0;
+	for (uint i=0, uiCount = ((uiTestCount - 1) >> 5) + 1; (i < uiCount) && (uiMatchCount < uiMatchThreshold); i++) {
 		uint uiTemp = uiaAtomicFeatureMasks[uiAtomicFeature][i];
 		if (uiTemp) {
 			for (uint j=0; (j<ucCardinality) && (uiTemp); j++)
@@ -765,7 +769,7 @@ void vfGenerateComplexConfigurations(char *caTestFileName, char *caConfigDataFil
 		uiaAtomicFeatureMasks[i] = (uint *)calloc((((uiTestCount - 1) >> 5) + 1),sizeof(uint));
 
 	// initializing atomic feature bit mask arrays
-	for ( i=0; i<uiTestCount; i++)
+	for (uint i=0; i<uiTestCount; i++)
 		for (uint j=0; j<uiVariableCount; j++)
 			uiaAtomicFeatureMasks[uiaTestParameters[i][j]][i >> 5] |= (uint)1 << (i & 31);
 
@@ -777,7 +781,7 @@ void vfGenerateComplexConfigurations(char *caTestFileName, char *caConfigDataFil
 	// generating active atomic feature set
 	vfDualPrintF("Generating atomic feature set...");
 	uint uiAtomicFeatureCount = 0;
-	for ( i=0; i<uiParameterCount; i++) {
+	for (uint i=0; i<uiParameterCount; i++) {
 		uint uiMatchCount = 0;
 		for (uint j=0, uiCount = ((uiTestCount - 1) >> 5) + 1; (j < uiCount) && (uiMatchCount < uiMatchThreshold); j++) {
 			uint uiTemp = uiaAtomicFeatureMasks[i][j];
@@ -805,15 +809,16 @@ void vfGenerateComplexConfigurations(char *caTestFileName, char *caConfigDataFil
 		vfDualPrintF("Cardinality : %2d ...\n",ucCardinality + 1);
 		uint uiCurrentIterationConfigurationCount = 0;
 		uiaCurrentIterationConfigurationSet = (uint **)realloc(uiaCurrentIterationConfigurationSet,0*sizeof(uint *));
-		for ( i=0; i<uiPreviousIterationConfigurationCount; i++) {
+		for (uint i=0; i<uiPreviousIterationConfigurationCount; i++) {
 			if (i % 10 == 0)
 				vfDualPrintF("%5d : %5d\n",i,uiCurrentIterationConfigurationCount);
 			
-			for (uint j=0, uiMaxAtomicFeatureIndex = 0; j<ucCardinality; j++)
+			uint uiMaxAtomicFeatureIndex = 0;
+			for (uint j=0; j<ucCardinality; j++)
 				if (uiaPreviousIterationConfigurationSet[i][j] > uiMaxAtomicFeatureIndex)
 					uiMaxAtomicFeatureIndex = uiaPreviousIterationConfigurationSet[i][j];
 
-			for ( j=uiMaxAtomicFeatureIndex + 1; j<uiAtomicFeatureCount; j++)
+			for (uint j=uiMaxAtomicFeatureIndex + 1; j<uiAtomicFeatureCount; j++)
 				if (bfMatchCount(ucCardinality,uiaPreviousIterationConfigurationSet[i],uiaAtomicFeatureSet[j])) {
 					uiCurrentIterationConfigurationCount++;
 					uiaCurrentIterationConfigurationSet = (uint **)realloc(uiaCurrentIterationConfigurationSet,uiCurrentIterationConfigurationCount*sizeof(uint *));
@@ -826,7 +831,7 @@ void vfGenerateComplexConfigurations(char *caTestFileName, char *caConfigDataFil
 		vfDualPrintF("completed -> %8d\n",uiCurrentIterationConfigurationCount);
 		// freeing previous iteration results
 		vfDualPrintF("Updating global sets...");
-		for ( i=0; i<uiPreviousIterationConfigurationCount; i++)
+		for (uint i=0; i<uiPreviousIterationConfigurationCount; i++)
 			free(uiaPreviousIterationConfigurationSet[i]);
 		uiaPreviousIterationConfigurationSet = (uint **)realloc(uiaPreviousIterationConfigurationSet,uiCurrentIterationConfigurationCount*sizeof(uint *));
 		
@@ -845,13 +850,13 @@ void vfGenerateComplexConfigurations(char *caTestFileName, char *caConfigDataFil
 	
 	free(uiaAtomicFeatureSet);
 
-	for ( i=0; i<uiParameterCount; i++)
+	for (uint i=0; i<uiParameterCount; i++)
 		free(uiaAtomicFeatureMasks[i]);
 	free(uiaAtomicFeatureMasks);
 	
 	free(uiaCurrentIterationConfigurationSet);
 	
-	for ( i=0; i<uiPreviousIterationConfigurationCount; i++)
+	for (uint i=0; i<uiPreviousIterationConfigurationCount; i++)
 		free(uiaPreviousIterationConfigurationSet[i]);
 	free(uiaPreviousIterationConfigurationSet);
 
@@ -937,7 +942,7 @@ void vfGeneratePatterns(char *caTestDataFileName, char *caCCFileName, char *caPa
 				uipCurrentPattern[k] = uifGetIndexByValue(uiaConfigurations[i][j*(i + 1) + k]);
 			
 			bool bOk = false;
-			for ( k=0; k<uipPatternCounts[i]; k++) {
+			for (uint k=0; k<uipPatternCounts[i]; k++) {
 				bOk = true;
 				for (int m=0; m<i + 1; m++)
 					if (tppPatterns[i][k].uiaAtomicFeatures[m] != uipCurrentPattern[m]) {
@@ -1047,7 +1052,7 @@ void vfGeneratePatternBasis(char *caBinaryDataFileName, char *caPatternDataFileN
 		fwrite(&uiDummy,1,sizeof(uint),fCore);
 	}
 	
-	for ( i=0; i<uiVariableCount; i++) {
+	for (uint i=0; i<uiVariableCount; i++) {
 		fread (&uiDummy,1,sizeof(uint),fBinary);
 		fwrite(&uiDummy,1,sizeof(uint),fCore);
 	}
@@ -1063,7 +1068,7 @@ void vfGeneratePatternBasis(char *caBinaryDataFileName, char *caPatternDataFileN
 
 	fread (&uiPatternCount,1,sizeof(uiPatternCount),fPatterns);
 	fwrite(&uiPatternCount,1,sizeof(uiPatternCount),fCore);
-	for ( i=0; i<uiPatternCount; i++) {
+	for (uint i=0; i<uiPatternCount; i++) {
 		fread (&uiDummy,1,sizeof(uint),fPatterns);
 		if (feof(fPatterns))
 			break;
@@ -1076,7 +1081,7 @@ void vfGeneratePatternBasis(char *caBinaryDataFileName, char *caPatternDataFileN
 	fclose(fPatterns);
 
 	fread (&uiPatternCount,1,sizeof(uiPatternCount),fBinary);
-	for ( i=0; i<uiPatternCount; i++) {
+	for (uint i=0; i<uiPatternCount; i++) {
 		fread (&uiDummy,1,sizeof(uint),fBinary);
 		if (feof(fPatterns))
 			break;
@@ -1087,7 +1092,7 @@ void vfGeneratePatternBasis(char *caBinaryDataFileName, char *caPatternDataFileN
 	fread (&uiTestCount,1,sizeof(uiTestCount),fBinary);
 	fwrite(&uiTestCount,1,sizeof(uiTestCount),fCore);
 
-	for ( i=0; i<uiTestCount; i++) {
+	for (uint i=0; i<uiTestCount; i++) {
 		for (int j=0; j<(int)uiVariableCount; j++) {
 			fread (&uiDummy,1,sizeof(uint),fBinary);
 			fwrite(&uiDummy,1,sizeof(uint),fCore);
@@ -1129,7 +1134,7 @@ void vfBuildEvaluationFunction(char *caCoreDataFileName, char *caParametersDataF
 		fwrite(&uiDummy,1,sizeof(uint),fEF);
 	}
 	
-	for ( i=0; i<uiVariableCount; i++) {
+	for (uint i=0; i<uiVariableCount; i++) {
 		fread (&uiDummy,1,sizeof(uint),fCore);
 		fwrite(&uiDummy,1,sizeof(uint),fEF);
 	}
@@ -1158,7 +1163,7 @@ void vfBuildEvaluationFunction(char *caCoreDataFileName, char *caParametersDataF
 	
 	fread (&uiPatternCount,1,sizeof(uiPatternCount),fCore);
 	fwrite(&uiPatternCount,1,sizeof(uiPatternCount),fEF);
-	for ( i=0; i<uiPatternCount; i++) {
+	for (uint i=0; i<uiPatternCount; i++) {
 		fread (&uiDummy,1,sizeof(uint),fCore);
 		if (feof(fCore))
 			break;
@@ -1173,7 +1178,7 @@ void vfBuildEvaluationFunction(char *caCoreDataFileName, char *caParametersDataF
 	fseek(fParams,0,SEEK_END);
 	uint uiParameterCount = ftell(fParams)/sizeof(double);
 	fseek(fParams,0,SEEK_SET);
-	for ( i=0; i<uiParameterCount; i++) {
+	for (uint i=0; i<uiParameterCount; i++) {
 		fread (&dDummy,1,sizeof(double),fParams);
 		if (!bConvertToFloat)
 			fwrite(&dDummy,1,sizeof(double),fEF);
@@ -1243,7 +1248,7 @@ void vfValidateTestData(char *caEFDataFileName)
 		}
 		if (bStop)
 			break;
-		for ( i=0; i<(int)uiVariableCount; i++)
+		for (uint i=0; i<(int)uiVariableCount; i++)
 			if (i)
 				fprintf(fOutput,"%6d",uiaTestParameters[0][i] + 1);
 			else

@@ -85,6 +85,7 @@ void vfSimpleInsertionSortTestExamples(uint **uipArray, uint *uipSortArray, int 
 {
 	for (int k = i + 1; k<=j; k++) {
 		bool bOk = true;
+		int m = 0;
 		for (int m = k - 1; m>=i; m--)
 			if (ucfCompareTestExamples(uipArray[uipSortArray[m]],uipArray[uipSortArray[k]],uiBlockSize,uiStartDepth)) {
 				uint uiTemp = uipSortArray[k];
@@ -179,6 +180,7 @@ void vfInsertionSortDifferencies(double *daDiffs, uint *uipSortArray, int i, int
 {
 	for (int k = i + 1; k<=j; k++) {
 		bool bOk = true;
+		int m = 0;
 		for (int m = k - 1; m>=i; m--)
 			if (fabs(daDiffs[uipSortArray[m]]) > fabs(daDiffs[uipSortArray[k]])) {
 				uint uiTemp = uipSortArray[k];
@@ -232,7 +234,7 @@ void vfQuickSortDifferencies(double *daDiffs, uint *uipSortArray, int i, int j)
 	}
 }
 
-bool bfReadString(FILE *fIniFile, char *caConstName, char *caResult)
+bool bfReadString(FILE *fIniFile, const char *caConstName, const char *caResult)
 {
 	char caString[256];
 	char caReadName[256];
@@ -252,7 +254,7 @@ bool bfReadString(FILE *fIniFile, char *caConstName, char *caResult)
 	return(false);
 }
 
-bool bfReadDouble(FILE *fIniFile, char *caName, double &dResult)
+bool bfReadDouble(FILE *fIniFile, const char *caName, double &dResult)
 {
 	char caResult[256];
 	if (bfReadString(fIniFile,caName,caResult))
@@ -264,7 +266,7 @@ bool bfReadDouble(FILE *fIniFile, char *caName, double &dResult)
 	return(false);
 }
 
-bool bfReadInteger(FILE *fIniFile, char *caName, int &iResult)
+bool bfReadInteger(FILE *fIniFile, const char *caName, int &iResult)
 {
 	char caResult[256];
 	if (bfReadString(fIniFile,caName,caResult))
@@ -275,7 +277,7 @@ bool bfReadInteger(FILE *fIniFile, char *caName, int &iResult)
 	return(false);
 }
 
-bool bfReadI64(FILE *fIniFile, char *caName, __int64 &i64Result)
+bool bfReadI64(FILE *fIniFile, const char *caName, __int64 &i64Result)
 {
 	char caResult[256];
 	if (bfReadString(fIniFile,caName,caResult))
@@ -286,7 +288,7 @@ bool bfReadI64(FILE *fIniFile, char *caName, __int64 &i64Result)
 	return(false);
 }
 
-bool bfReadUInt(FILE *fIniFile, char *caName, uint &uiResult)
+bool bfReadUInt(FILE *fIniFile, const char *caName, uint &uiResult)
 {
 	char caResult[256];
 	if (bfReadString(fIniFile,caName,caResult))
@@ -298,7 +300,7 @@ bool bfReadUInt(FILE *fIniFile, char *caName, uint &uiResult)
 	return(false);
 }
 
-bool bfReadUInt(char *caIniFileName, char *caName, uint &uiResult)
+bool bfReadUInt(const char *caIniFileName, char *caName, uint &uiResult)
 {
 	FILE *fIniFile = fopen(caIniFileName,"rb");
 	if (!fIniFile) {
@@ -315,7 +317,7 @@ bool bfReadUInt(char *caIniFileName, char *caName, uint &uiResult)
 	return(false);
 }
 
-bool bfLoadIniFile(char *caIniFileName)
+bool bfLoadIniFile(const char *caIniFileName)
 {
 	FILE *fIniFile = fopen(caIniFileName,"rb");
 	if (!fIniFile) {
