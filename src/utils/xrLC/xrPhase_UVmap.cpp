@@ -45,12 +45,10 @@ void CBuild::xrPhase_UVmap()
 	// Main loop
 	Status					("Processing...");
 	lc_global_data()->g_deflectors().reserve	(64*1024);
-	float		p_cost	= 1.f / float(g_XSplit.size());
-	float		p_total	= 0.f;
 	vecFace		faces_affected;
 	for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
 	{
-		Progress			(p_total+=p_cost);
+		Progress(1.f * SP / g_XSplit.size());
 		
 		// ManOwaR, unsure:
 		// Call to IsolateVertices() looks useless here
