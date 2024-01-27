@@ -12,6 +12,7 @@
 #include "ai_space.h"
 #include "script_engine.h"
 #include "script_token_list.h"
+#include <luabind/out_value_policy.hpp>
 
 using namespace luabind;
 
@@ -26,14 +27,14 @@ CScriptPropertiesListHelper	*g_property_list_helper = 0;
 
 void load_prop_helper			()
 {
-	prop_helper_module		= LoadLibrary(prop_helper_library);
+	prop_helper_module		= LoadLibraryA(prop_helper_library);
 	if (!prop_helper_module) {
-		Msg					("! Cannot find library %s",prop_helper_library);
+		Msg("! Cannot find library %s",prop_helper_library);
 		return;
 	}
 	_PHelper				= (TPHelper)GetProcAddress(prop_helper_module,prop_helper_func);
 	if (!_PHelper) {
-		Msg					("! Cannot find entry point of the function %s in the library %s",prop_helper_func,prop_helper_func);
+		Msg("! Cannot find entry point of the function %s in the library %s",prop_helper_func,prop_helper_func);
 		return;
 	}
 
@@ -117,11 +118,11 @@ void CScriptPropertiesListHelper::script_register(lua_State *L)
 			.def("vector_on_after_edit",	&CScriptPropertiesListHelper::FvectorRDOnAfterEdit)
 			.def("vector_on_before_edit",	&CScriptPropertiesListHelper::FvectorRDOnBeforeEdit)
 //			.def("vector_on_draw",			&CScriptPropertiesListHelper::FvectorRDOnDraw)
-			.def("float_on_after_edit",		&CScriptPropertiesListHelper::floatRDOnAfterEdit)
-			.def("float_on_before_edit",	&CScriptPropertiesListHelper::floatRDOnBeforeEdit)
+			.def("float_on_after_edit",		&CScriptPropertiesListHelper::floatRDOnAfterEdit, luabind::policy::out_value<3>())
+			.def("float_on_before_edit",	&CScriptPropertiesListHelper::floatRDOnBeforeEdit, luabind::policy::out_value<3>())
 //			.def("float_on_draw",			&CScriptPropertiesListHelper::floatRDOnDraw)
-			.def("name_after_edit",			&CScriptPropertiesListHelper::NameAfterEdit)
-			.def("name_before_edit",		&CScriptPropertiesListHelper::NameBeforeEdit)
+			.def("name_after_edit",			&CScriptPropertiesListHelper::NameAfterEdit, luabind::policy::pure_out_value<3>())
+			.def("name_before_edit",		&CScriptPropertiesListHelper::NameBeforeEdit, luabind::policy::pure_out_value<3>())
 //			.def("name_on_draw",			&CScriptPropertiesListHelper::NameDraw)
 
 			.def("create_caption",&CScriptPropertiesListHelper::CreateCaption)

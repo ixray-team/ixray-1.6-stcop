@@ -69,7 +69,7 @@ public:
 #ifdef XRSE_FACTORY_EXPORTS
 	virtual void 		__stdcall	on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 	virtual	visual_data*__stdcall	visual_collection		() const { return &*m_visuals.begin(); }
-	virtual	u32			__stdcall	visual_collection_size	() const { return m_visuals.size(); }
+	virtual	u32			__stdcall	visual_collection_size	() const { return (u32)m_visuals.size(); }
 #endif // #ifdef XRSE_FACTORY_EXPORTS
 
 private:
