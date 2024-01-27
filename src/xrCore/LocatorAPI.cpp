@@ -216,7 +216,7 @@ CLocatorAPI::~CLocatorAPI()
 	_dump_open_files	(1);
 }
 
-void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, u32 modif)
+void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
 {
 	string256 temp_file_name;
 	xr_strcpy(temp_file_name, sizeof(temp_file_name), name);
@@ -230,7 +230,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 	desc.ptr			= ptr;
 	desc.size_real		= size_real;
 	desc.size_compressed= size_compressed;
-    desc.modif			= modif & (~u32(0x3));
+	desc.modif			= modif;// &(~u32(0x3));
 
 	files_it			I = m_files.find(desc);
 
@@ -579,13 +579,13 @@ void CLocatorAPI::ProcessOne(LPCSTR path, void* _F)
 		if (0==xr_strcmp(F.name,"."))	return;
 		if (0==xr_strcmp(F.name,".."))	return;
 		xr_strcat		(N,"\\");
-		Register	(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
+		Register	(N,0xffffffff,0,0,F.size,F.size, F.time_write);
 		Recurse		(N);
 	} else {
 		if (strext(N) && (0==strncmp(strext(N),".db",3) || 0==strncmp(strext(N),".xdb",4))  )
 			ProcessArchive	(N);
 		else												
-			Register		(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
+			Register		(N,0xffffffff,0,0,F.size,F.size, F.time_write);
 	}
 }
 
@@ -649,10 +649,15 @@ bool CLocatorAPI::Recurse(const char* path)
 #ifdef IXR_WINDOWS
 		sFile.attrib = GetFileAttributesA(sFile.name) & FILE_ATTRIBUTE_HIDDEN ? _A_HIDDEN: 0;
 #endif
+
+		sFile.time_write = xr_chrono_to_time_t(CurrentFile.last_write_time());
+		sFile.time_create = xr_chrono_to_time_t(CurrentFile.last_write_time());
+
         bool NeedSkip = false;
         if (m_Flags.test(flNeedCheck))
         {
             NeedSkip = CheckSkip(sFile.name) || ignore_path(sFile.name);
+
             // загоняем в вектор для того *.db* приходили в сортированном порядке
             if (NeedSkip)
                 rec_files.push_back(sFile);
