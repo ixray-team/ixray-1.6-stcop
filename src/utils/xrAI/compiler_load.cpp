@@ -222,20 +222,6 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		}
 	}
 	
-//	// Load emitters
-//	{
-//		strconcat			(N,name,"level.game");
-//		IReader				*F = FS.r_open(N);
-//		IReader				*O = 0;
-//		if (0!=(O = F->open_chunk	(AIPOINT_CHUNK))) {
-//			for (int id=0; O->find_chunk(id); id++) {
-//				Emitters.push_back(Fvector());
-//				O->r_fvector3	(Emitters.back());
-//			}
-//			O->close();
-//		}
-//	}
-//
 	// Load lights
 	{
 		strconcat				(sizeof(N),N,name,"build.prj");
@@ -294,9 +280,6 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		}
 	}
 
-	// Init params
-//	g_params.Init		();
-	
 	// Load initial map from the Level Editor
 	{
 		string_path			file_name;
