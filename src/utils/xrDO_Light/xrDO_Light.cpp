@@ -24,7 +24,7 @@ static const char* h_str =
 	"NOTE: The last key is required for any functionality\n";
 
 void Help()
-{	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
+{	MessageBoxA(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
 
 void Startup(LPSTR     lpCmdLine)
 {
@@ -49,7 +49,7 @@ void Startup(LPSTR     lpCmdLine)
 	extern  HWND logWindow;
 	string256			temp;
 	xr_sprintf			(temp, "%s - Detail Compiler", name);
-	SetWindowText		(logWindow, temp);
+	SetWindowTextA		(logWindow, temp);
 
 	//FS.update_path	(name,"$game_levels$",name);
 	FS.get_path			("$level$")->_set	(name);
@@ -64,7 +64,7 @@ void Startup(LPSTR     lpCmdLine)
 	xr_sprintf				(stats,"Time elapsed: %s",make_time((dwStartupTime.GetElapsed_ms())/1000).c_str());
 
 	if (!strstr(cmd,"-silent"))
-		MessageBox		(logWindow,stats,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+		MessageBoxA		(logWindow,stats,"Congratulation!",MB_OK|MB_ICONINFORMATION);
 
 	bClose				= TRUE;
 	Sleep				(500);
