@@ -1,14 +1,10 @@
 #include "stdafx.h"
-
 #include "global_calculation_data.h"
 
 #include "../shader_xrlc.h"
 #include "serialize.h"
 
 global_claculation_data	gl_data;
-
-
-
 
 template <class T>
 void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
@@ -119,6 +115,10 @@ void global_claculation_data::xrLoad()
 			Surface_Init		();
 			F = fs->open_chunk	(EB_Textures);
 			u32 tex_count	= F->length()/sizeof(b_texture);
+
+			bool is_thm_missing = false;
+			bool is_tga_missing = false;
+
 			for (u32 t=0; t<tex_count; t++)
 			{
 				Progress		(float(t)/float(tex_count));
@@ -147,7 +147,12 @@ void global_claculation_data::xrLoad()
 				} else {
 					xr_strcat				(N,sizeof(BT.name),".thm");
 					IReader* THM			= FS.r_open("$game_textures$",N);
-					R_ASSERT2				(THM,	N);
+
+					if (!THM) {
+						clMsg("cannot find thm: %s", N);
+						is_thm_missing = true;
+						continue;
+					}
 
 					// version
 					u32 version				= 0;
@@ -181,9 +186,15 @@ void global_claculation_data::xrLoad()
 							u32			w=0, h=0;
 							BT.pSurface		= Surface_Load(N,w,h);
 							BT.THM.SetHasSurface(TRUE);
-							R_ASSERT2	(BT.pSurface,"Can't load surface");
+
+							if (!BT.pSurface) {
+								clMsg("cannot find tga texture: %s", N);
+								is_tga_missing = true;
+								continue;
+							}
+
 							if ((w != BT.dwWidth) || (h != BT.dwHeight))
-								Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
 							BT.Vflip	();
 						} else {
 							// Free surface memory
@@ -194,6 +205,9 @@ void global_claculation_data::xrLoad()
 				// save all the stuff we've created
 				g_textures.push_back	(BT);
 			}
+
+			R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+			R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
 		}
 	}
 }

@@ -286,7 +286,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	{
 		Surface_Init		();
 		F = fs.open_chunk	(EB_Textures);
-		u32 tex_count	= F->length()/sizeof(b_texture);
+
+		bool is_thm_missing = false;
+		bool is_tga_missing = false;
+
 		for (u32 t=0; t<tex_count; t++)
 		{
 			Progress		(float(t)/float(tex_count));
@@ -301,7 +304,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			LPSTR N			= BT.name;
 			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
 			_strlwr			(N);
-			if (0==xr_strcmp(N,"level_lods"))	{
+
+			if (0==xr_strcmp(N,"level_lods")) {
 				// HACK for merged lod textures
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
@@ -314,7 +318,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				FS.update_path	(th_name,"$game_textures$",strconcat(sizeof(th_name),th_name,N,".thm"));
 				clMsg			("processing: %s",th_name);
 				IReader* THM	= FS.r_open(th_name);
-				R_ASSERT2		(THM,th_name);
+
+				if (!THM) {
+					clMsg("cannot find thm: %s", th_name);
+					is_thm_missing = true;
+					continue;
+				}
 
 				// version
 				u32 version = 0;
@@ -346,10 +355,16 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						u32			w=0, h=0;
 						BT.pSurface		=	Surface_Load(N,w,h);
 						BT.THM.SetHasSurface(TRUE);
-						R_ASSERT2	(BT.pSurface,"Can't load surface");
+
+						if (!BT.pSurface) {
+							clMsg("cannot find tga texture: %s", N);
+							is_tga_missing = true;
+							continue;
+						}
+
 						if ((w != BT.dwWidth) || (h != BT.dwHeight))
 						{
-							Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+							Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
 							BT.dwWidth	= BT.THM.width = w;
 							BT.dwHeight	= BT.THM.height = h;
 						}
@@ -363,6 +378,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			// save all the stuff we've created
 			textures().push_back	(BT);
 		}
+
+		R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+		R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
 	}
 
 	// post-process materials

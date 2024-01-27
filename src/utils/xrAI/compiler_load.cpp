@@ -106,6 +106,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
 
 			// process textures
+			bool is_thm_missing = false;
+			bool is_tga_missing = false;
+
 			Status			("Processing textures...");
 			{
 				Surface_Init		();
@@ -129,7 +132,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 					xr_strlwr		(N_);
 
-					if (0==xr_strcmp(N_,"level_lods"))	{
+					if (0==xr_strcmp(N_,"level_lods")) {
 						// HACK for merged lod textures
 						BT.dwWidth	= 1024;
 						BT.dwHeight	= 1024;
@@ -138,9 +141,12 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					} else {
 						xr_strcat		(N_,".thm");
 						IReader* THM	= FS.r_open("$game_textures$",N_);
-//						if (!THM)		continue;
-						
-						R_ASSERT2		(THM,	N_);
+
+						if (!THM) {
+							clMsg("cannot find thm: %s", N);
+							is_thm_missing = true;
+							continue;
+						}
 
 						// version
 						u32 version_				= 0;
@@ -172,9 +178,19 @@ void xrLoad(LPCSTR name, bool draft_mode)
 								clMsg		("- loading: %s",N_);
 								u32			w=0, h=0;
 								BT.pSurface = Surface_Load(N_,w,h); 
-								R_ASSERT2	(BT.pSurface,"Can't load surface");
-								if ((w != BT.dwWidth) || (h != BT.dwHeight))
-									Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+
+								if (!BT.pSurface) {
+									clMsg("cannot find tga texture: %s", N);
+									is_tga_missing = true;
+									continue;
+								}
+
+								if ((w != BT.dwWidth) || (h != BT.dwHeight)) {
+									Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+
+									BT.dwWidth = BT.THM.width = w;
+									BT.dwHeight = BT.THM.height = h;
+								}
 								BT.Vflip	();
 							} else {
 								// Free surface memory
@@ -185,6 +201,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					// save all the stuff we've created
 					g_textures.push_back	(BT);
 				}
+
+				R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+				R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
 			}
 		}
 	}
