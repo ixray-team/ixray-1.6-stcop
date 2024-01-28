@@ -27,7 +27,7 @@
 	IC void set_negative(float &f)		{ (*(unsigned*)(&f)) |= fdSGN;			}
 	IC void set_positive(float &f)		{ (*(unsigned*)(&f)) &= ~fdSGN;			}
 #endif
-
+#undef ICF
 #define ICF inline
 
 /*
