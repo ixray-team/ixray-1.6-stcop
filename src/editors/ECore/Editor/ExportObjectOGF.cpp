@@ -4,7 +4,7 @@
 #include "ExportObjectOGF.h"
 #include "EditObject.h"
 #include "EditMesh.h"
-#ifdef _MAX_EXPORT
+#if defined(_MAX_EXPORT) || defined(_LW_EXPORT) 
 #include "../../xrEngine/Fmesh.h"
 #else
 #include "fmesh.h"

@@ -49,6 +49,13 @@ target_include_directories(xrMax_Materials PUBLIC "${IXR_3DS_MAX_SDK}/include")
 target_link_directories(xrMax_Materials PUBLIC "${IXR_3DS_MAX_SDK}/lib/x64/Release")
 target_precompile_headers(xrMax_Materials PRIVATE "stdafx.h")
 
+set_target_properties(
+    xrMax_Materials
+    PROPERTIES
+        OUTPUT_NAME "ixray_material"
+        SUFFIX ".dlu"
+)
+
 # Project defines
 target_compile_definitions(xrMax_Materials PRIVATE _MAX_MATERIAL)
 target_compile_definitions(xrMax_Materials PRIVATE _MAX_PLUGIN)

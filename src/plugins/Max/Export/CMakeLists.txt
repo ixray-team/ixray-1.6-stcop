@@ -42,6 +42,13 @@ target_include_directories(xrMax_Export PUBLIC "${IXR_3DS_MAX_SDK}/include/cs")
 target_link_directories(xrMax_Export PUBLIC "${IXR_3DS_MAX_SDK}/lib/x64/Release")
 target_precompile_headers(xrMax_Export PRIVATE "stdafx.h")
 
+set_target_properties(
+    xrMax_Export
+    PROPERTIES
+        OUTPUT_NAME "ixray_export"
+        SUFFIX ".dlu"
+)
+
 # Project defines
 target_compile_definitions(xrMax_Export PRIVATE _MAX_EXPORT)
 target_compile_definitions(xrMax_Export PRIVATE _MAX_PLUGIN)
