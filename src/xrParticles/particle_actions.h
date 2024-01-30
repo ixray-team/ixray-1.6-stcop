@@ -1,14 +1,13 @@
 //---------------------------------------------------------------------------
-#ifndef particle_actionsH
-#define particle_actionsH
-
-
-namespace PAPI{
-// refs
+#pragma once
+namespace PAPI
+{
+	// refs
 	struct ParticleEffect;
-	struct PARTICLES_API			ParticleAction
+	struct PARTICLES_API ParticleAction
 	{
-		enum{
+		enum
+		{
 			ALLOW_ROTATE	= (1<<1)
 		};
 		Flags32			m_Flags;
@@ -25,29 +24,45 @@ namespace PAPI{
 	using PAVec = xr_vector<ParticleAction*>;
 	using PAVecIt = PAVec::iterator;
 
-	class ParticleActions{
-		PAVec			actions;
-		bool			m_bLocked;
+	class ParticleActions
+	{
+		PAVec actions;
+		bool m_bLocked;
 	public:
-						ParticleActions()						{actions.reserve(4);m_bLocked=false;	}
-						~ParticleActions()						{clear();				}
-		IC void			clear			()
-        {
-			R_ASSERT(!m_bLocked);
-			for (PAVecIt it=actions.begin(); it!=actions.end(); it++) 
-				xr_delete(*it);
-			actions.clear();
-		}
-		IC void			append			(ParticleAction* pa)	{R_ASSERT(!m_bLocked);actions.push_back(pa);	}
-		IC bool			empty			()						{return	actions.empty();}
-		IC PAVecIt		begin			()						{return	actions.begin();}
-		IC PAVecIt		end				()						{return actions.end();	}
-        IC int			size			()						{return (int)actions.size();	}
-        IC void			resize			(int cnt)        		{R_ASSERT(!m_bLocked);actions.resize(cnt);	}
-        void			copy			(ParticleActions* src);
-		void			lock			()						{R_ASSERT(!m_bLocked);m_bLocked=true;}
-		void			unlock			()						{R_ASSERT(m_bLocked);m_bLocked=false;}
+		IC ParticleActions();
+		IC ~ParticleActions();
+
+		IC void			clear	();
+
+		IC void			append	(ParticleAction* pa)	{R_ASSERT(!m_bLocked);actions.push_back(pa);	}
+		IC bool			empty	()						{return	actions.empty();}
+		IC PAVecIt		begin	()						{return	actions.begin();}
+		IC PAVecIt		end		()						{return actions.end();	}
+        IC int			size	()						{return (int)actions.size();	}
+        IC void			resize	(int cnt)        		{R_ASSERT(!m_bLocked);actions.resize(cnt);	}
+        void			copy	(ParticleActions* src);
+		void			lock	()						{R_ASSERT(!m_bLocked);m_bLocked=true;}
+		void			unlock	()						{R_ASSERT(m_bLocked);m_bLocked=false;}
 	};
 };
-//---------------------------------------------------------------------------
-#endif
+
+IC PAPI::ParticleActions::ParticleActions()
+{
+	actions.reserve(4); 
+	m_bLocked = false;
+}
+
+IC PAPI::ParticleActions::~ParticleActions()
+{
+	clear();
+}
+
+IC void PAPI::ParticleActions::clear()
+{
+	R_ASSERT(!m_bLocked);
+
+	for (ParticleAction* pPAction: actions)
+		xr_delete(pPAction);
+
+	actions.clear();
+}
