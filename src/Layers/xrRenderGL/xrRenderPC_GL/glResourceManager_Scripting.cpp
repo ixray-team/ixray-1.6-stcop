@@ -14,20 +14,14 @@
 #include "luabind/return_reference_to_policy.hpp"
 
 #include "xrRenderOpenGL/dxRenderDeviceRender.h"
-#include "xrCore/xr_resource.h"
 
 using namespace				luabind;
 
-#ifdef	DEBUG
-#define MDB	Memory.dbg_check()
-#else
-#define MDB
-#endif
 
 class	adopt_dx10options
 {
 public:
-	bool	_dx10_msaa_alphatest_atoc()			{	return (RImplementation.o.dx10_msaa_alphatest==CRender::MSAA_ATEST_DX10_0_ATOC); }
+
 };
 
 // wrapper
@@ -118,7 +112,6 @@ public:
 
 void LuaLog(LPCSTR caMessage)
 {
-	MDB;
 	Lua::LuaOut(Lua::eLuaMessageTypeMessage, "%s", caMessage);
 }
 
@@ -180,63 +173,61 @@ void	CResourceManager::LS_Load			()
 	luaopen_jit(LSVM);
 
 	luabind::open(LSVM);
-#if !XRAY_EXCEPTIONS
-	if (0 == luabind::get_error_callback())
-		luabind::set_error_callback(LuaError);
-#endif
-
-	function(LSVM, "log", LuaLog);
+//#if !XRAY_EXCEPTIONS
+//	if (0 == luabind::get_error_callback())
+//		luabind::set_error_callback(LuaError);
+//#endif
 
 	module(LSVM)
 	    [
 		    class_<adopt_dx10options>("_dx10options")
-		    .def("dx10_msaa_alphatest_atoc",	&adopt_dx10options::_dx10_msaa_alphatest_atoc		)
+		    //.def("dx10_msaa_alphatest_atoc",	&adopt_dx10options::_dx10_msaa_alphatest_atoc		)
 		    //.def("",					&adopt_dx10options::_dx10Options		),	// returns options-object
 		    ,
 
 			class_<adopt_sampler>("_sampler")
 				.def(								constructor<const adopt_sampler&>())
-				.def("texture",						&adopt_sampler::_texture		, return_reference_to(_1xxx))
-				.def("project",						&adopt_sampler::_projective		, return_reference_to(_1xxx))
-				.def("clamp",						&adopt_sampler::_clamp			, return_reference_to(_1xxx))
-				.def("wrap",						&adopt_sampler::_wrap			, return_reference_to(_1xxx))
-				.def("mirror",						&adopt_sampler::_mirror			, return_reference_to(_1xxx))
-				.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	, return_reference_to(_1xxx))
-				.def("f_trilinear",					&adopt_sampler::_f_trilinear	, return_reference_to(_1xxx))
-				.def("f_bilinear",					&adopt_sampler::_f_bilinear		, return_reference_to(_1xxx))
-				.def("f_linear",					&adopt_sampler::_f_linear		, return_reference_to(_1xxx))
-				.def("f_none",						&adopt_sampler::_f_none			, return_reference_to(_1xxx))
-				.def("fmin_none",					&adopt_sampler::_fmin_none		, return_reference_to(_1xxx))
-				.def("fmin_point",					&adopt_sampler::_fmin_point		, return_reference_to(_1xxx))
-				.def("fmin_linear",					&adopt_sampler::_fmin_linear	, return_reference_to(_1xxx))
-				.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		, return_reference_to(_1xxx))
-				.def("fmip_none",					&adopt_sampler::_fmip_none		, return_reference_to(_1xxx))
-				.def("fmip_point",					&adopt_sampler::_fmip_point		, return_reference_to(_1xxx))
-				.def("fmip_linear",					&adopt_sampler::_fmip_linear	, return_reference_to(_1xxx))
-				.def("fmag_none",					&adopt_sampler::_fmag_none		, return_reference_to(_1xxx))
-				.def("fmag_point",					&adopt_sampler::_fmag_point		, return_reference_to(_1xxx))
-				.def("fmag_linear",					&adopt_sampler::_fmag_linear	, return_reference_to(_1xxx))
-				.def("comp_less",					&adopt_sampler::_comp_less		, return_reference_to(_1xxx)),
+				.def("texture",						&adopt_sampler::_texture		, return_reference_to<1>())
+				.def("project",						&adopt_sampler::_projective		, return_reference_to<1>())
+				.def("clamp",						&adopt_sampler::_clamp			, return_reference_to<1>())
+				.def("wrap",						&adopt_sampler::_wrap			, return_reference_to<1>())
+				.def("mirror",						&adopt_sampler::_mirror			, return_reference_to<1>())
+				.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	, return_reference_to<1>())
+				.def("f_trilinear",					&adopt_sampler::_f_trilinear	, return_reference_to<1>())
+				.def("f_bilinear",					&adopt_sampler::_f_bilinear		, return_reference_to<1>())
+				.def("f_linear",					&adopt_sampler::_f_linear		, return_reference_to<1>())
+				.def("f_none",						&adopt_sampler::_f_none			, return_reference_to<1>())
+				.def("fmin_none",					&adopt_sampler::_fmin_none		, return_reference_to<1>())
+				.def("fmin_point",					&adopt_sampler::_fmin_point		, return_reference_to<1>())
+				.def("fmin_linear",					&adopt_sampler::_fmin_linear	, return_reference_to<1>())
+				.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		, return_reference_to<1>())
+				.def("fmip_none",					&adopt_sampler::_fmip_none		, return_reference_to<1>())
+				.def("fmip_point",					&adopt_sampler::_fmip_point		, return_reference_to<1>())
+				.def("fmip_linear",					&adopt_sampler::_fmip_linear	, return_reference_to<1>())
+				.def("fmag_none",					&adopt_sampler::_fmag_none		, return_reference_to<1>())
+				.def("fmag_point",					&adopt_sampler::_fmag_point		, return_reference_to<1>())
+				.def("fmag_linear",					&adopt_sampler::_fmag_linear	, return_reference_to<1>())
+				.def("comp_less",					&adopt_sampler::_comp_less		, return_reference_to<1>()),
 
 		    class_<adopt_compiler>("_compiler")
 			    .def(								constructor<const adopt_compiler&>())
-			    .def("begin",						&adopt_compiler::_pass			, return_reference_to(_1xxx))
-			    .def("begin",						&adopt_compiler::_passgs		, return_reference_to(_1xxx))
-			    .def("sorting",						&adopt_compiler::_options		, return_reference_to(_1xxx))
-			    .def("emissive",					&adopt_compiler::_o_emissive	, return_reference_to(_1xxx))
-			    .def("distort",						&adopt_compiler::_o_distort		, return_reference_to(_1xxx))
-			    .def("wmark",						&adopt_compiler::_o_wmark		, return_reference_to(_1xxx))
-			    .def("fog",							&adopt_compiler::_fog			, return_reference_to(_1xxx))
-			    .def("zb",							&adopt_compiler::_ZB			, return_reference_to(_1xxx))
-			    .def("blend",						&adopt_compiler::_blend			, return_reference_to(_1xxx))
-			    .def("aref",						&adopt_compiler::_aref			, return_reference_to(_1xxx))
+			    .def("begin",						&adopt_compiler::_pass			, return_reference_to<1>())
+			    .def("begin",						&adopt_compiler::_passgs		, return_reference_to<1>())
+			    .def("sorting",						&adopt_compiler::_options		, return_reference_to<1>())
+			    .def("emissive",					&adopt_compiler::_o_emissive	, return_reference_to<1>())
+			    .def("distort",						&adopt_compiler::_o_distort		, return_reference_to<1>())
+			    .def("wmark",						&adopt_compiler::_o_wmark		, return_reference_to<1>())
+			    .def("fog",							&adopt_compiler::_fog			, return_reference_to<1>())
+			    .def("zb",							&adopt_compiler::_ZB			, return_reference_to<1>())
+			    .def("blend",						&adopt_compiler::_blend			, return_reference_to<1>())
+			    .def("aref",						&adopt_compiler::_aref			, return_reference_to<1>())
 			    //	For compatibility only
-			    .def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable, return_reference_to(_1xxx))
-			    .def("color_write_enable",			&adopt_compiler::_dx10color_write_enable, return_reference_to(_1xxx))
-			    .def("dx10stencil",					&adopt_compiler::_dx10Stencil	, return_reference_to(_1xxx))
-			    .def("dx10stencil_ref",				&adopt_compiler::_dx10StencilRef, return_reference_to(_1xxx))
-			    .def("dx10atoc",					&adopt_compiler::_dx10ATOC		, return_reference_to(_1xxx))
-			    .def("dx10zfunc",					&adopt_compiler::_dx10ZFunc		, return_reference_to(_1xxx))
+			    .def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
+			    .def("color_write_enable",			&adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
+			    .def("dx10stencil",					&adopt_compiler::_dx10Stencil	, return_reference_to<1>())
+			    .def("dx10stencil_ref",				&adopt_compiler::_dx10StencilRef, return_reference_to<1>())
+			    .def("dx10atoc",					&adopt_compiler::_dx10ATOC		, return_reference_to<1>())
+			    .def("dx10zfunc",					&adopt_compiler::_dx10ZFunc		, return_reference_to<1>())
 			
 				.def("sampler",						&adopt_compiler::_sampler			)	// returns sampler-object
 			    .def("dx10Options",					&adopt_compiler::_dx10Options		),	// returns options-object
@@ -286,7 +277,7 @@ void	CResourceManager::LS_Load			()
 	    ];
 
 	// load shaders
-	xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", xrAPI.Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
+	xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
 	VERIFY(folder);
 	for (u32 it = 0; it < folder->size(); it++) {
 		string_path						namesp, fn;
@@ -294,7 +285,7 @@ void	CResourceManager::LS_Load			()
 		if (0 == strext(namesp) || 0 != xr_strcmp(strext(namesp), ".s"))	continue;
 		*strext(namesp) = 0;
 		if (0 == namesp[0])			xr_strcpy(namesp, "_G");
-		strconcat(sizeof(fn), fn, xrAPI.Render->getShaderPath(), (*folder)[it]);
+		xr_strconcat(fn, fn, ::Render->getShaderPath(), (*folder)[it]);
 		FS.update_path(fn, "$game_shaders$", fn);
 		try {
 			Script::bfLoadFileIntoNamespace(LSVM, fn, namesp, true);

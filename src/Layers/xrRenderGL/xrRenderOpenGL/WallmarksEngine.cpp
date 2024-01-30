@@ -335,7 +335,7 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 		if (bSuppressCull)		RCache.set_CullMode (CULL_NONE);
 		RCache.Render			(D3DPT_TRIANGLELIST,w_offset,w_count/3);
 		if (bSuppressCull)		RCache.set_CullMode	(CULL_CCW);
-		Device.Statistic->RenderDUMP_WMT_Count += w_count/3;
+		//Device.Statistic->RenderDUMP_WMT_Count += w_count/3;
 	}
 }
 
@@ -354,10 +354,10 @@ void CWallmarksEngine::Render()
 	Device.mView.build_camera_dir	(mViewPos,Device.vCameraDirection,Device.vCameraTop);
 	RCache.set_xform_view		(Device.mView);
 
-	Device.Statistic->RenderDUMP_WM.Begin	();
-	Device.Statistic->RenderDUMP_WMS_Count	= 0;
-	Device.Statistic->RenderDUMP_WMD_Count	= 0;
-	Device.Statistic->RenderDUMP_WMT_Count	= 0;
+	//Device.Statistic->RenderDUMP_WM.Begin	();
+	//Device.Statistic->RenderDUMP_WMS_Count	= 0;
+	//Device.Statistic->RenderDUMP_WMD_Count	= 0;
+	//Device.Statistic->RenderDUMP_WMT_Count	= 0;
 
 	float	ssaCLIP				= r_ssaDISCARD/4;
 
@@ -372,7 +372,7 @@ void CWallmarksEngine::Render()
 		for (StaticWMVecIt w_it=slot->static_items.begin(); w_it!=slot->static_items.end(); ){
 			static_wallmark* W	= *w_it;
 			if (RImplementation.ViewBase.testSphere_dirty(W->bounds.P,W->bounds.R)){
-				Device.Statistic->RenderDUMP_WMS_Count++;
+				//Device.Statistic->RenderDUMP_WMS_Count++;
 				float dst	= Device.vCameraPosition.distance_to_sqr(W->bounds.P);
 				float ssa	= W->bounds.R * W->bounds.R / dst;
 				if (ssa>=ssaCLIP)	{
@@ -409,8 +409,8 @@ void CWallmarksEngine::Render()
 #ifdef DEBUG
 			if(W->used_in_render != Device.dwFrame)			
 			{
-				Log("W->used_in_render",W->used_in_render);
-				Log("Device.dwFrame",Device.dwFrame);
+				Msg("W->used_in_render",W->used_in_render);
+				Msg("Device.dwFrame",Device.dwFrame);
 				VERIFY(W->used_in_render == Device.dwFrame);
 			}
 #endif
@@ -418,7 +418,7 @@ void CWallmarksEngine::Render()
 			float dst	= Device.vCameraPosition.distance_to_sqr(W->m_Bounds.P);
 			float ssa	= W->m_Bounds.R * W->m_Bounds.R / dst;
 			if (ssa>=ssaCLIP){
-				Device.Statistic->RenderDUMP_WMD_Count++;
+				//Device.Statistic->RenderDUMP_WMD_Count++;
 				u32 w_count		= u32(w_verts-w_start);
 				if ((w_count+W->VCount())>=(MAX_TRIS*3)){
 					FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,TRUE);
@@ -447,7 +447,7 @@ void CWallmarksEngine::Render()
 
 	// Level-wmarks
 	RImplementation.r_dsgraph_render_wmarks	();
-	Device.Statistic->RenderDUMP_WM.End		();
+	//Device.Statistic->RenderDUMP_WM.End		();
 
 	// Projection
 	Device.mView				= mSavedView;

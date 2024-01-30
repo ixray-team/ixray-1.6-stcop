@@ -3,11 +3,11 @@
 #define SkeletonCustomH
 
 #include		"fhierrarhyvisual.h"
-#include		"xrCore/Animation/Bone.hpp"
+#include		"../../xrEngine/bone.h"
 #include		"../../Include/xrRender/Kinematics.h"
 
 // consts
-extern	Lock	UCalc_Mutex			;
+extern	xrCriticalSection	UCalc_Mutex			;
 
 // refs
 class	 CKinematics;

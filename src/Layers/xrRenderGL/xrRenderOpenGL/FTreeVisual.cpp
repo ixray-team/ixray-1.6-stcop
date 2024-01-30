@@ -4,7 +4,7 @@
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/igame_level.h"
 #include "../../xrEngine/environment.h"
-#include "xrCore/Fmesh.hpp"
+#include "../../xrEngine/fmesh.h"
 
 #include "ftreevisual.h"
 

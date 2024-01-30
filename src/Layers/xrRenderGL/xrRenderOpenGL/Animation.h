@@ -1,6 +1,6 @@
 #pragma once
 
-#include	"../xrRender/KinematicAnimatedDefs.h"
+#include	"../xrRenderGL/xrRenderOpenGL/KinematicAnimatedDefs.h"
 
 namespace	animation
 {

@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "rgl.h"
 #include "xrRenderOpenGL/ResourceManager.h"
-#include "../xrRender/FBasicVisual.h"
-#include "xrCore/FMesh.hpp"
+#include "../xrRenderGL/xrRenderOpenGL/FBasicVisual.h"
+#include "../../xrEngine/fmesh.h"
 #include "../xrEngine/xrLevel.h"
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "xrCore/stream_reader.h"
+#include "../../xrCore/stream_reader.h"
 #include "xrRenderGL/xrRenderGL/glBufferUtils.h"
 #include "xrRenderOpenGL/FHierrarhyVisual.h"
 
@@ -164,7 +164,7 @@ void CRender::level_Unload()
 	xr_delete					(Wallmarks);
 
 	//*** Shaders
-	Shaders.clear_and_free		();
+	Shaders.clear		();
 	b_loaded					= FALSE;
 }
 
@@ -367,7 +367,7 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 		for(;it!=it_e;++it)
 			xr_free( (*it).sw );
 
-		SWIs.xr_clear();
+		SWIs.clear();
 
 		SWIs.resize			(item_count);
 		for (u32 c=0; c<item_count; c++){

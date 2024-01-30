@@ -99,7 +99,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 	static shared_str strArray("array");
 	static shared_str strXForm("xform");
 
-	Device.Statistic->RenderDUMP_DT_Count = 0;
+	//Device.Statistic->RenderDUMP_DT_Count = 0;
 
 	// Matrices and offsets
 	u32		vOffset	=	0;

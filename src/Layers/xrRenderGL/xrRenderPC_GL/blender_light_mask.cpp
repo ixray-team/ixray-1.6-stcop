@@ -67,11 +67,6 @@ void	CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
 
-   if( Name )
-      xrAPI.Render->m_MSAASample = atoi( Definition );
-   else
-      xrAPI.Render->m_MSAASample = -1;
-
 	switch (C.iElement) 
 	{
 	case SE_MASK_SPOT:		// spot or omni-part
@@ -118,5 +113,4 @@ void	CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
 		C.r_End				();
 		break;
 	}
-   xrAPI.Render->m_MSAASample = -1;
 }

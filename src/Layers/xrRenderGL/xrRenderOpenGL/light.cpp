@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "../xrRender/light.h"
+#include "../xrRenderOpenGL/light.h"
 
 static const float	SQRT2		=	1.4142135623730950488016887242097f;
 static const float	RSQRTDIV2	=	0.70710678118654752440084436210485f;
@@ -69,7 +69,7 @@ void light::set_texture		(LPCSTR name)
 #pragma todo				("Only shadowed spot implements projective texture")
 	string256				temp;
 	
-	strconcat(sizeof(temp),temp,"r2\\accum_spot_",name);
+	xr_strconcat(temp,temp,"r2\\accum_spot_",name);
 	//strconcat(sizeof(temp),temp,"_nomsaa",name);
 	s_spot.create			(RImplementation.Target->b_accum_spot,temp,name);
 
