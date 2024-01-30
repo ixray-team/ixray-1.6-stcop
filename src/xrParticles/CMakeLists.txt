@@ -2,7 +2,7 @@ project(xrParticles)
 set(XRP_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XRP_SOURCE_ALL_FILES
+file(GLOB_RECURSE XRP_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
     "*.c"
