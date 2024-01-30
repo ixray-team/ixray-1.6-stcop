@@ -266,10 +266,7 @@ public:
 		LPCSTR                          pTarget,
 		DWORD                           Flags,
 		void*&							result);
-	
-	virtual HRESULT shader_compile_DirectX(LPCSTR name, char* shader, size_t shaderSize, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags,
-                void*& result);
-				
+
 	// Information
 	virtual void					Statistics					(CGameFont* F);
 	virtual LPCSTR					getShaderPath				()									{ return "gl\\";	}

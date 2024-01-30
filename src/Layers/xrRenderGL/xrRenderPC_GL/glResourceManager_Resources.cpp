@@ -162,11 +162,11 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 {
 	string_path			name;
 	xr_strcpy				(name,_name);
-	if (0 == xrAPI.Render->m_skinning)	xr_strcat(name,"_0");
-	if (1 == xrAPI.Render->m_skinning)	xr_strcat(name,"_1");
-	if (2 == xrAPI.Render->m_skinning)	xr_strcat(name,"_2");
-	if (3 == xrAPI.Render->m_skinning)	xr_strcat(name,"_3");
-	if (4 == xrAPI.Render->m_skinning)	xr_strcat(name,"_4");
+	if (0 == ::Render->m_skinning)	xr_strcat(name,"_0");
+	if (1 == ::Render->m_skinning)	xr_strcat(name,"_1");
+	if (2 == ::Render->m_skinning)	xr_strcat(name,"_2");
+	if (3 == ::Render->m_skinning)	xr_strcat(name,"_3");
+	if (4 == ::Render->m_skinning)	xr_strcat(name,"_4");
 	LPSTR N				= LPSTR		(name);
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	return I->second;
@@ -188,7 +188,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		}
 
 		string_path					cname;
-		strconcat					(sizeof(cname),cname,xrAPI.Render->getShaderPath(),/*_name*/shName,".vs");
+		xr_strconcat					(cname,cname,::Render->getShaderPath(),/*_name*/shName,".vs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 		//		LPCSTR						target		= NULL;
 		
@@ -200,7 +200,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 			string1024			tmp;
 			xr_sprintf			(tmp, "OGL: %s is missing. Replace with stub_default.vs", cname);
 			Msg					(tmp);
-			strconcat			(sizeof(cname), cname,xrAPI.Render->getShaderPath(),"stub_default",".vs");
+			xr_strconcat			(cname, cname,::Render->getShaderPath(),"stub_default",".vs");
 			FS.update_path		(cname,	"$game_shaders$", cname);
 			file				= FS.r_open(cname);
 		}
@@ -213,7 +213,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		// Select target
 		_vs->vs = glCreateShader(GL_VERTEX_SHADER);
 		void* _result = &_vs->vs;
-		HRESULT	const _hr		= xrAPI.Render->shader_compile_OpenGL(name,(DWORD const*)data,size, NULL, NULL, NULL, _result );
+		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, NULL, NULL, NULL, _result );
 
 		VERIFY(SUCCEEDED(_hr));
 
@@ -250,14 +250,6 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 {
 	string_path			name;
 	strcpy_s(name, _name);
-	if (0 == xrAPI.Render->m_MSAASample)	strcat(name, "_0");
-	if (1 == xrAPI.Render->m_MSAASample)	strcat(name, "_1");
-	if (2 == xrAPI.Render->m_MSAASample)	strcat(name, "_2");
-	if (3 == xrAPI.Render->m_MSAASample)	strcat(name, "_3");
-	if (4 == xrAPI.Render->m_MSAASample)	strcat(name, "_4");
-	if (5 == xrAPI.Render->m_MSAASample)	strcat(name, "_5");
-	if (6 == xrAPI.Render->m_MSAASample)	strcat(name, "_6");
-	if (7 == xrAPI.Render->m_MSAASample)	strcat(name, "_7");
 	LPSTR N				= LPSTR(name);
 	map_PS::iterator I	= m_ps.find	(N);
 	if (I != m_ps.end())	return		I->second;
@@ -276,7 +268,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		
 		// Open file
 		string_path					cname;
-		strconcat					(sizeof(cname), cname,xrAPI.Render->getShaderPath(),/*_name*/shName,".ps");
+		xr_strconcat					(cname, cname,::Render->getShaderPath(),/*_name*/shName,".ps");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate
@@ -289,7 +281,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "OGL: %s is missing. Replace with stub_default.ps", cname);
 			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,xrAPI.Render->getShaderPath(),"stub_default",".ps");
+			xr_strconcat					(cname, cname,::Render->getShaderPath(),"stub_default",".ps");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			file = FS.r_open(cname);
 		}
@@ -303,7 +295,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		// Select target
 		_ps->ps = glCreateShader(GL_FRAGMENT_SHADER);
 		void* _result = &_ps->ps;
-		HRESULT	const _hr		= xrAPI.Render->shader_compile_OpenGL(name,(DWORD const*)data,size, NULL, NULL, NULL, _result);
+		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, NULL, NULL, NULL, _result);
 
 		VERIFY(SUCCEEDED(_hr));
 
@@ -352,7 +344,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 
 		// Open file
 		string_path					cname;
-		strconcat					(sizeof(cname), cname,xrAPI.Render->getShaderPath(),name,".gs");
+		xr_strconcat					(cname, cname,::Render->getShaderPath(),name,".gs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate
@@ -365,7 +357,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "OGL: %s is missing. Replace with stub_default.gs", cname);
 			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,xrAPI.Render->getShaderPath(),"stub_default",".gs");
+			xr_strconcat(cname, cname,::Render->getShaderPath(),"stub_default",".gs");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			file = FS.r_open(cname);
 		}
@@ -374,7 +366,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 		// Select target
 		_gs->gs = glCreateShader(GL_GEOMETRY_SHADER);
 		void* _result = &_gs->gs;
-		HRESULT	const _hr		= xrAPI.Render->shader_compile_OpenGL(name,(DWORD const*)file->pointer(),file->length(), NULL, NULL, NULL, _result );
+		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)file->pointer(),file->length(), NULL, NULL, NULL, _result );
 
 		VERIFY(SUCCEEDED(_hr));
 

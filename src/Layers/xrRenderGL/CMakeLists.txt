@@ -31,6 +31,7 @@ target_include_directories(xrRender_OGL PUBLIC "../")
 target_compile_definitions(xrRender_OGL PRIVATE XRRENDER_OGL_EXPORTS)
 target_compile_definitions(xrRender_OGL PRIVATE USE_OGL)
 target_compile_definitions(xrRender_OGL PRIVATE _USRDLL)
+target_compile_definitions(xrRender_OGL PRIVATE NO_XR_VDECLARATOR)
 
 add_compile_options(/fp:fast)
 target_compile_definitions(xrRender_OGL PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
@@ -47,3 +48,7 @@ target_compile_options(xrRender_OGL PRIVATE "/wd4838")
 
 # NuGet
 target_include_directories(xrRender_OGL PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+
+## DirectX SDK
+target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")

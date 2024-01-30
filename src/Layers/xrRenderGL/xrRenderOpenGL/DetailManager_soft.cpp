@@ -125,7 +125,7 @@ void CDetailManager::soft_Render	()
 			}
 		}
 		// Clean up
-		_vis.xr_clear	();
+		_vis.clear	();
 	}
 }
 

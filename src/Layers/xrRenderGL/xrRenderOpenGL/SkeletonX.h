@@ -7,7 +7,7 @@
 #pragma once
 
 #include "SkeletonCustom.h"
-#include "../xrRender/SkeletonXVertRender.h"
+#include "../xrRenderOpenGl/SkeletonXVertRender.h"
 
 // refs
 class 	CKinematics;

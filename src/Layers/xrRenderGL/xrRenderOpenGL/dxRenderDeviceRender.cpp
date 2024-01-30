@@ -148,8 +148,8 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
     m_Gamma.Update				();
 #endif 
     Resources->OnDeviceCreate	(shName);
-    xrAPI.Render->create			();
-    Device.Statistic->OnDeviceCreate	();
+    ::Render->create			();
+    //Device.Statistic->OnDeviceCreate	();
 
 //#ifndef DEDICATED_SERVER
     {
@@ -355,9 +355,7 @@ void dxRenderDeviceRender::End()
     if (HW.Caps.SceneMode)	overdrawEnd();
 
     RCache.OnFrameEnd	();
-    Memory.dbg_check		();
 
-    if (RImplementation.currentViewPort == MAIN_VIEWPORT)
         DoAsyncScreenshot();
 
 #if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)

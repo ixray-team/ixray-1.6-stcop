@@ -4,9 +4,9 @@
 
 #include		"skeletoncustom.h"
 #include		"animation.h"
-#include		"xrCore/Animation/SkeletonMotions.hpp"
+#include		"../../xrEngine/SkeletonMotions.h"
 
-#include		"Include/xrRender/KinematicsAnimated.h"
+#include		"../../Include/xrRender/KinematicsAnimated.h"
 
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)

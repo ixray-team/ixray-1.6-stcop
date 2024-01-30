@@ -199,23 +199,8 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 		draw_face					(hLevelLogo_Add, back_coords, back_tex_coords, tsz);
 	}
 
-
-	// Draw title
-	VERIFY							(owner.pFontSystem);
-	owner.pFontSystem->Clear		();
-	owner.pFontSystem->SetColor		(color_rgba(170, 170, 170, 255));
-	owner.pFontSystem->SetAligment	(CGameFont::alCenter);
-	back_size.set					(_w/2,622.0f*k.y);
-	owner.pFontSystem->OutSet		(back_size.x, back_size.y);
-	owner.pFontSystem->OutNext		(owner.ls_header);
-	owner.pFontSystem->OutNext		("");
-	owner.pFontSystem->OutNext		(owner.ls_tip_number);
-
-	float fTargetWidth				= 600.0f*k.x*(b_ws?0.8f:1.0f);
-	draw_multiline_text				(owner.pFontSystem, fTargetWidth, owner.ls_tip);
-
 	//draw level-specific screenshot
-	if (hLevelLogo && !CryRayAPI.bBttRModeAPI)
+	if (hLevelLogo)
 	{
 		Frect						r;
 		r.lt.set					(0,173);
@@ -240,9 +225,6 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 
 		draw_face					(hLevelLogo, r, logo_tex_coords, Fvector2().set(1,1));
 	}
-
-	owner.pFontSystem->OutI(0.f, CryRayAPI.bBttRModeAPI ? 0.485f : 0.385f, owner.ls_title);
-	owner.pFontSystem->OnRender();
 }
 
 void dxApplicationRender::draw_face(ref_shader& sh, Frect& coords, Frect& tex_coords, const Fvector2& tsz)

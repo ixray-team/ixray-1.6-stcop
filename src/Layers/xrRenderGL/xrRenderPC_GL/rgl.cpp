@@ -110,7 +110,6 @@ void					CRender::create					()
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 
 	m_skinning			= -1;
-	m_MSAASample		= -1;
 
 	// hardware
 	o.smapsize			= 2048;
@@ -254,37 +253,12 @@ void					CRender::create					()
 
 	o.dx10_sm4_1		= true;
 
-	//	MSAA option dependencies
-	o.dx10_msaa			= !!ps_r3_msaa;
-	o.dx10_msaa_samples = (1 << ps_r3_msaa);
-
-	o.dx10_msaa_opt		= o.dx10_msaa;
-
-	o.dx10_msaa_hybrid	= false;
-
 	//	Allow alpha test MSAA for DX10.0
 
 	//o.dx10_msaa_alphatest= ps_r2_ls_flags.test((u32)R3FLAG_MSAA_ALPHATEST);
 	//o.dx10_msaa_alphatest= o.dx10_msaa_alphatest && o.dx10_msaa;
 
 	//o.dx10_msaa_alphatest_atoc= (o.dx10_msaa_alphatest && !o.dx10_msaa_opt && !o.dx10_msaa_hybrid);
-
-	o.dx10_msaa_alphatest = 0;
-	if (o.dx10_msaa)
-	{
-		if ( o.dx10_msaa_opt || o.dx10_msaa_hybrid )
-		{
-			if (ps_r3_msaa_atest==1)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_1_ATOC;
-			else if (ps_r3_msaa_atest==2)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_1_NATIVE;
-		}
-		else
-		{
-			if (ps_r3_msaa_atest)
-				o.dx10_msaa_alphatest = MSAA_ATEST_DX10_0_ATOC;
-		}
-	}
 
 	o.dx10_gbuffer_opt	= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
 
@@ -656,7 +630,7 @@ static IC void load_includes(LPCSTR pSrcData, UINT SrcDataLen, xr_vector<char*>&
 		*str = '\0';						// Terminate filename path
 
 											// Create path to included shader
-		strconcat(sizeof(path), path, xrAPI.Render->getShaderPath(), fn);
+		xr_strconcat(path, path, ::Render->getShaderPath(), fn);
 		FS.update_path(path, "$game_shaders$", path);
 		while (char* sep = strchr(path, '/')) *sep = '\\';
 
@@ -676,16 +650,7 @@ struct SHADER_MACRO {
 	char *Define = "#define ", *Name = "\n", *Sep = "\t", *Definition = "\n", *EOL = "\n";
 };
 
-HRESULT CRender::shader_compile_DirectX(LPCSTR name, char* shader, size_t shaderSize, LPCSTR pFunctionName,
-	LPCSTR pTarget, DWORD Flags, void*& result)
-{
-	/* OldSerpskiStalker */
-	HRESULT	_result = TRUE;
-
-	return _result;
-}
-
-HRESULT	CRender::shader_compile_OpenGL(
+HRESULT	CRender::shader_compile(
 	LPCSTR							name,
 	DWORD const*					pSrcData,
 	UINT                            SrcDataLen,
@@ -1171,9 +1136,9 @@ HRESULT	CRender::shader_compile_OpenGL(
 
 	if ((GLboolean)status == GL_FALSE) {
 		Msg("! shader compilation failed");
-		Log("! ", name);
+		Msg("! %s", name);
 		if (_pErrorMsgs)
-			Log("! error: ", _pErrorMsgs);
+			Msg("! error: ", _pErrorMsgs);
 
 		return E_FAIL;
 	}

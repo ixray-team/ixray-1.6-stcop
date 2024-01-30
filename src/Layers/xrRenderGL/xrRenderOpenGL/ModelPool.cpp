@@ -5,7 +5,7 @@
 
 #ifndef _EDITOR
 	#include "../../xrEngine/IGame_Persistent.h"
-	#include "xrCore/Fmesh.hpp"
+	#include "../../xrEngine/fmesh.h"
     #include "fhierrarhyvisual.h"
     #include "SkeletonAnimated.h"
 	#include "fvisual.h"

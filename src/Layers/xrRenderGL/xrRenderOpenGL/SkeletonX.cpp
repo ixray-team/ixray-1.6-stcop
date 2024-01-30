@@ -5,15 +5,11 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(disable:4995)
-#include <d3dx9.h>
-#pragma warning(default:4995)
-
 #include	"../../xrEngine/Render.h"
 
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
-#include "xrCore/Fmesh.hpp"
+#include "../../xrEngine/fmesh.h"
 
 #include "xrCore/Math/MathUtil.hpp"
 
@@ -117,7 +113,7 @@ void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCo
 		cache_vCount		= vCount;
 		cache_vOffset		= vOffset;
 		
-		Device.Statistic->RenderDUMP_SKIN.Begin	();
+		//Device.Statistic->RenderDUMP_SKIN.Begin	();
 		if (*Vertices1W)
 		{
 			Skin1W(
@@ -156,7 +152,7 @@ void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCo
 		}else
 			R_ASSERT2(0,"unsupported soft rendering");
 
-		Device.Statistic->RenderDUMP_SKIN.End	();
+		//Device.Statistic->RenderDUMP_SKIN.End	();
 		_VS.Unlock			(vCount,hGeom->vb_stride);
 	}
 
@@ -191,7 +187,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 	dwVertCount						= data->r_u32();
 
 	RenderMode						= RM_SKINNING_SOFT;
-	xrAPI.Render->shader_option_skinning	(-1);
+	::Render->shader_option_skinning	(-1);
 	
 	switch(dwVertType)
 	{

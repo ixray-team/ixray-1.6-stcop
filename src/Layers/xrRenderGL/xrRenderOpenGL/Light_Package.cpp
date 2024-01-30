@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrRender/Light_Package.h"
+#include "../xrRenderOpenGL/Light_Package.h"
 
 void	light_Package::clear	()
 {

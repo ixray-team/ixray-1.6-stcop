@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "xrCore/Fmesh.hpp"
+#include "../../xrEngine/fmesh.h"
 #include "fvisual.h"
 
 #if	RENDER!=R_R1
