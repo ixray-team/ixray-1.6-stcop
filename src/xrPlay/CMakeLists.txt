@@ -5,19 +5,27 @@ set(XPLAY_SRC_FILES)
 file(GLOB_RECURSE XPLAY_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
 )
+
 file(GLOB_RECURSE XPLAY_SOURCE_CPP_FILES
     "*.cpp"
     "*.h"
 )
+
 file(GLOB_RECURSE XPLAY_SOURCE_RES_FILES
     "*.ico"
     "*.rc"
     "*.bmp"
 )
 
+file(GLOB_RECURSE XPLAY_SOURCE_UI_FILES
+    "UI*.cpp"
+    "UI*.h"
+)
+
 # File groups
 source_group("Source Files" FILES ${XPLAY_SOURCE_CPP_FILES})
 source_group("Resources" FILES ${XPLAY_SOURCE_RES_FILES})
+source_group("UI" FILES ${XPLAY_SOURCE_UI_FILES})
 
 # Apply list
 list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})

@@ -750,30 +750,14 @@ void CInifile::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 
 	// duplicate & insert
 	Item I;
-	Sect&	data	= r_section	(sect);
-	I.first			= (line[0]?line:0);
-	I.second		= (value[0]?value:0);
+	Sect* data = &r_section(sect);
 
-	const auto& it = data.Data.find(I.first);
-
-    if (it != data.Data.end()) 
-	{
-	    // Check for "first" matching
-    	if (0==xr_strcmp(*it->first, *I.first)) 
-		{
-			BOOL b = m_flags.test(eOverrideNames);
-			R_ASSERT2(b, make_string<const char*>("name[%s] already exist in section[%s]",line,sect));
-            //*it  = I;
-		} 
-		else 
-		{
-			data.Data.insert(I);
-        }
-    } else 
-	{
-		data.Data.insert(I);
-    }
+	I.first = line;
+	I.second = value[0] ? value : nullptr;
+	
+	insert_item(data, I);
 }
+
 void	CInifile::w_u8			( LPCSTR S, LPCSTR L, u8				V, LPCSTR comment )
 {
 	string128 temp; xr_sprintf		(temp,sizeof(temp),"%d",V);
