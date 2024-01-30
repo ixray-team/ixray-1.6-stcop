@@ -1,4 +1,4 @@
-name: 'Build'
+name: 'Build engine'
 
 on:
   push:
@@ -27,9 +27,8 @@ defaults:
     shell: pwsh
 
 jobs:
-  
   build-utils:
-    name: 'Utils'
+    name: 'Build utilities'
 
     strategy:
       matrix:
@@ -105,7 +104,7 @@ jobs:
             build/lib/${{ matrix.config }}/*.exp
 
   build-engine:
-    name: 'Engine'
+    name: 'Build engine'
 
     strategy:
       matrix:
@@ -182,7 +181,7 @@ jobs:
             build/lib/${{ matrix.config }}/*.exp
 
   build-compressor:
-    name: 'Compressor'
+    name: 'Build compressor'
 
     strategy:
       matrix:
