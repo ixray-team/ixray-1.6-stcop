@@ -1,5 +1,4 @@
-#ifndef XRCDB_H
-#define XRCDB_H
+#pragma once
 
 //#pragma once
 // The following ifdef block is the standard way of creating macros which make exporting
@@ -21,8 +20,9 @@
 
 // forward declarations
 class CFrustum;
-namespace Opcode {
-	class OPCODE_Model;
+namespace Opcode 
+{
+	class Model;
 	class AABBNoLeafNode;
 };
 
@@ -34,9 +34,11 @@ namespace CDB
 	{
 	public:
 		u32				verts	[3];		// 3*4 = 12b
-		union	{
+		union	
+		{
 			u32			dummy;				// 4b
-			struct {
+			struct 
+			{
 				u32		material:14;		// 
 				u32		suppress_shadows:1;	// 
 				u32		suppress_wm:1;		// 
@@ -63,7 +65,7 @@ namespace CDB
 		};
 	private:
 		xrCriticalSection		cs;
-		Opcode::OPCODE_Model*	tree;
+		Opcode::Model*	tree;
 		u32						status;		// 0=ready, 1=init, 2=building
 
 		// tris
@@ -188,7 +190,10 @@ namespace CDB
 #pragma warning(push)
 #pragma warning(disable:4275)
 	const u32 clpMX = 24, clpMY=16, clpMZ=24;
-	class XRCDB_API CollectorPacked : public non_copyable {
+
+	class XRCDB_API CollectorPacked :
+		public non_copyable
+	{
 		typedef xr_vector<u32>		DWORDList;
 		typedef DWORDList::iterator	DWORDIt;
 	
@@ -225,4 +230,3 @@ IC		TRI&				getT(u32 index)		{ return faces[index];		}
 };
 
 #pragma pack(pop)
-#endif
