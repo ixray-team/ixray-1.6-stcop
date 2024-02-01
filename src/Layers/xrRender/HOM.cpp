@@ -64,62 +64,86 @@ IC float	Area		(Fvector& v0, Fvector& v1, Fvector& v2)
 	return	_sqrt( p*(p-e1)*(p-e2)*(p-e3) );
 }
 
-void CHOM::Load			()
+void CHOM::Load()
 {
 	// Find and open file
 	string_path		fName;
-	FS.update_path	(fName,"$level$","level.hom");
+	FS.update_path(fName, "$level$", "level.hom");
 	if (!FS.exist(fName))
 	{
-		Msg		(" WARNING: Occlusion map '%s' not found.",fName);
+		Msg(" WARNING: Occlusion map '%s' not found.", fName);
 		return;
 	}
-	Msg	("* Loading HOM: %s",fName);
-	
-	IReader* fs				= FS.r_open(fName);
-	IReader* S				= fs->open_chunk(1);
+	Msg("* Loading HOM: %s", fName);
+
+	IReader* fs = FS.r_open(fName);
+	IReader* S = fs->open_chunk(1);
+
+	u32 crc = crc32(fs->pointer(), fs->length());
 
 	// Load tris and merge them
-	CDB::Collector		CL;
+	CDB::Collector CL;
 	while (!S->eof())
 	{
-		HOM_poly				P;
-		S->r					(&P,sizeof(P));
-		CL.add_face_packed_D	(P.v1,P.v2,P.v3,P.flags,0.01f);
+		HOM_poly P;
+		S->r(&P, sizeof(P));
+		CL.add_face_packed_D(P.v1, P.v2, P.v3, P.flags, 0.01f);
 	}
-	
+
 	// Determine adjacency
-	xr_vector<u32>		adjacency;
-	CL.calc_adjacency	(adjacency);
+	xr_vector<u32> adjacency;
+	CL.calc_adjacency(adjacency);
 
 	// Create RASTER-triangles
-	m_pTris				= xr_alloc<occTri>	(u32(CL.getTS()));
-	for (u32 it=0; it<CL.getTS(); it++)
+	m_pTris = xr_alloc<occTri>(u32(CL.getTS()));
+	for (u32 it = 0; it < CL.getTS(); it++)
 	{
-		CDB::TRI&	clT = CL.getT()[it];
-		occTri&		rT	= m_pTris[it];
-		Fvector&	v0	= CL.getV()[clT.verts[0]];
-		Fvector&	v1	= CL.getV()[clT.verts[1]];
-		Fvector&	v2	= CL.getV()[clT.verts[2]];
-		rT.adjacent[0]	= (0xffffffff==adjacency[3*it+0])?((occTri*) (-1)):(m_pTris+adjacency[3*it+0]);
-		rT.adjacent[1]	= (0xffffffff==adjacency[3*it+1])?((occTri*) (-1)):(m_pTris+adjacency[3*it+1]);
-		rT.adjacent[2]	= (0xffffffff==adjacency[3*it+2])?((occTri*) (-1)):(m_pTris+adjacency[3*it+2]);
-		rT.flags		= clT.dummy;
-		rT.area			= Area	(v0,v1,v2);
-		if (rT.area<EPS_L)	{
-			Msg	("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)",VPUSH(v0),VPUSH(v1),VPUSH(v2));
+		CDB::TRI& clT = CL.getT()[it];
+		occTri& rT = m_pTris[it];
+
+		Fvector& v0 = CL.getV()[clT.verts[0]];
+		Fvector& v1 = CL.getV()[clT.verts[1]];
+		Fvector& v2 = CL.getV()[clT.verts[2]];
+
+		rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
+		rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
+		rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
+		rT.flags = clT.dummy;
+		rT.area = Area(v0, v1, v2);
+
+		if (rT.area < EPS_L) 
+		{
+			Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
 		}
-		rT.plane.build	(v0,v1,v2);
-		rT.skip			= 0;
-		rT.center.add(v0,v1).add(v2).div(3.f);
+
+		rT.plane.build(v0, v1, v2);
+		rT.skip = 0;
+		rT.center.add(v0, v1).add(v2).div(3.f);
 	}
 
+	// Make cache
+	string_path LevelName;
+	xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "HOM.cache");
+	IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
+
 	// Create AABB-tree
-	m_pModel			= xr_new<CDB::MODEL> ();
-	m_pModel->build		(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()));
-	bEnabled			= TRUE;
-	S->close			();
-	FS.r_close			(fs);
+	m_pModel = new CDB::MODEL();
+
+	if (pReaderCache != nullptr)
+	{
+		m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, pReaderCache, true);
+	}
+	else
+	{
+		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
+		pWriterCache->w_u32(crc);
+		m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, pWriterCache, false);
+	}
+
+	bEnabled = TRUE;
+
+	S->close();
+	FS.r_close(fs);
 }
 
 void CHOM::Unload		()

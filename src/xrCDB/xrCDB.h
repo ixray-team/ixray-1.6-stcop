@@ -22,9 +22,10 @@
 class CFrustum;
 namespace Opcode 
 {
-	class Model;
 	class AABBNoLeafNode;
 };
+
+class CDB_Model;
 
 #pragma pack(push,8)
 namespace CDB
@@ -50,10 +51,12 @@ namespace CDB
 	};
 
 	// Build callback
-	typedef		void	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
+	typedef void build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
 	// Model definition
-	class		XRCDB_API		MODEL
+	XRCDB_API IReader* GetModelCache(string_path Name, u32 crc);
+	
+	class XRCDB_API MODEL
 	{
 		friend class COLLIDER;
 		enum
@@ -65,7 +68,7 @@ namespace CDB
 		};
 	private:
 		xrCriticalSection		cs;
-		Opcode::Model*	tree;
+		CDB_Model*	tree;
 		u32						status;		// 0=ready, 1=init, 2=building
 
 		// tris
@@ -94,9 +97,9 @@ namespace CDB
 			}
 		}
 
-		static	void			build_thread	(void*);
-		void					build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=nullptr, void* bcp=nullptr);
-		void					build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=nullptr, void* bcp=nullptr);
+		void					CreateNewTree	(IWriter* CacheWriter);
+		void					build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
+		void					build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
 		u32						memory			();
 	};
 
