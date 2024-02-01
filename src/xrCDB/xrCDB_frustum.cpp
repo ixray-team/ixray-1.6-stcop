@@ -2,6 +2,8 @@
 #pragma hdrstop
 
 #include "xrCDB.h"
+#include "override/Model.h"
+
 #include "frustum.h"
 
 using namespace CDB;

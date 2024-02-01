@@ -2,8 +2,8 @@ project(xrCDB)
 
 # Files import
 file(GLOB_RECURSE CDB_SOURCE_OPC_FILES
-    "OPC_*.cpp"
-    "OPC_*.h"
+    "override/*.cpp"
+    "override/*.h"
 )
 file(GLOB_RECURSE CDB_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
@@ -13,7 +13,7 @@ file(GLOB_RECURSE CDB_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 set(CDB_SRC_FILES)
 
 source_group("cdb" FILES ${CDB_SOURCE_ALL_FILES})
-source_group("opcode" FILES ${CDB_SOURCE_OPC_FILES})
+source_group("opcode override" FILES ${CDB_SOURCE_OPC_FILES})
 
 # Apply list
 list(APPEND CDB_SRC_FILES ${CDB_SOURCE_ALL_FILES})

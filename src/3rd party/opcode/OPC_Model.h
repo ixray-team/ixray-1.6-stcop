@@ -63,7 +63,7 @@
 							CollisionHull*		mHull;			//!< Possible convex hull
 #endif // __MESHMERIZER_H__
 		// Internal methods
-							void				Release();
+		virtual void				Release();
 	};
 
 #endif //__OPC_MODEL_H__

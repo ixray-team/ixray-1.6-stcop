@@ -5,6 +5,7 @@
 #pragma hdrstop
 
 #include "xrCDB.h"
+#include "override/Model.h"
 
 namespace Opcode 
 {
@@ -31,6 +32,23 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     return TRUE;
 }
 
+XRCDB_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
+{
+	IReader* pReaderCache = nullptr;
+
+	if (FS.exist("$app_data_root$", LevelName))
+	{
+		pReaderCache = FS.r_open("$app_data_root$", LevelName);
+
+		if (pReaderCache->length() <= 4 || pReaderCache->r_u32() != crc)
+		{
+			FS.r_close(pReaderCache);
+		}
+	}
+
+	return pReaderCache;
+}
+
 // Model building
 MODEL::MODEL	()
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -53,86 +71,74 @@ MODEL::~MODEL()
 	CFREE		(verts);	verts_count= 0;
 }
 
-struct	BTHREAD_params
+void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
 {
-	MODEL*				M;
-	Fvector*			V;
-	TRI*				T;
-	int					Vcnt;
-	int					Tcnt;
-	build_callback*		BC;
-	void*				BCP;
-};
+	R_ASSERT(S_INIT == status);
+	R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
 
-void	MODEL::build_thread		(void *params)
-{
-	_initialize_cpu_thread		();
-	FPU::m64r					();
-	BTHREAD_params	P			= *( (BTHREAD_params*)params );
-	P.M->cs.Enter				();
-	P.M->build_internal			(P.V,P.Vcnt,P.T,P.Tcnt,P.BC,P.BCP);
-	P.M->status					= S_READY;
-	P.M->cs.Leave				();
-	//Msg						("* xrCDB: cform build completed, memory usage: %d K",P.M->memory()/1024);
+	build_internal(V, Vcnt, T, Tcnt, bc, bcp, pRW, RWMode);
+	status = S_READY;
 }
 
-void	MODEL::build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
-{
-	R_ASSERT					(S_INIT == status);
-    R_ASSERT					((Vcnt>=4)&&(Tcnt>=2));
-
-	_initialize_cpu_thread		();
-#ifdef _EDITOR    
-	build_internal				(V,Vcnt,T,Tcnt,bc,bcp);
-#else
-	if(!strstr(Core.Params, "-mt_cdb"))
-	{
-		build_internal				(V,Vcnt,T,Tcnt,bc,bcp);
-		status						= S_READY;
-	}else
-	{
-		BTHREAD_params				P = { this, V, T, Vcnt, Tcnt, bc, bcp };
-		thread_spawn				(build_thread,"CDB-construction",0,&P);
-		while						(S_INIT	== status)	Sleep	(5);
-	}
-#endif
-}
-
-void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
+void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
 {
 	// verts
-	verts_count	= Vcnt;
-	verts		= CALLOC(Fvector,verts_count);
-	CopyMemory	(verts,V,verts_count*sizeof(Fvector));
-	
+	verts_count = Vcnt;
+	verts = CALLOC(Fvector, verts_count);
+	CopyMemory(verts, V, verts_count * sizeof(Fvector));
+
 	// tris
-	tris_count	= Tcnt;
-	tris		= CALLOC(TRI,tris_count);
-	CopyMemory	(tris,T,tris_count*sizeof(TRI));
+	tris_count = Tcnt;
+	tris = CALLOC(TRI, tris_count);
+	CopyMemory(tris, T, tris_count * sizeof(TRI));
 
 	// callback
-	if (bc)		bc	(verts,Vcnt,tris,Tcnt,bcp);
+	if (bc)		
+		bc(verts, Vcnt, tris, Tcnt, bcp);
 
+	if (pRW != nullptr && RWMode)
+	{
+		IReader* pReader = (IReader*)(pRW);
+		tree = new CDB_Model();
+
+		if (tree->Restore(pReader))
+		{
+			Msg("* Level collision DB cache found...");
+			return;
+		}
+		else
+		{
+			xr_delete(tree);
+			Msg("* Level collision DB cache missing, rebuilding...");
+		}
+	}
+
+	CreateNewTree(RWMode ? nullptr : (IWriter*)pRW);
+}
+
+
+void CDB::MODEL::CreateNewTree(IWriter* pCache)
+{
 	// Release data pointers
-	status		= S_BUILD;
-	
+	status = S_BUILD;
+
 	// Allocate temporary "OPCODE" tris + convert tris to 'pointer' form
-	u32*		temp_tris	= CALLOC(u32,tris_count*3);
-	if (0==temp_tris)	{
-		CFREE		(verts);
-		CFREE		(tris);
+	u32* temp_tris = CALLOC(u32, tris_count * 3);
+	if (0 == temp_tris) {
+		CFREE(verts);
+		CFREE(tris);
 		return;
 	}
-	u32*		temp_ptr	= temp_tris;
-	for (int i=0; i<tris_count; i++)
+	u32* temp_ptr = temp_tris;
+	for (int i = 0; i < tris_count; i++)
 	{
-		*temp_ptr++	= tris[i].verts[0];
-		*temp_ptr++	= tris[i].verts[1];
-		*temp_ptr++	= tris[i].verts[2];
+		*temp_ptr++ = tris[i].verts[0];
+		*temp_ptr++ = tris[i].verts[1];
+		*temp_ptr++ = tris[i].verts[2];
 	}
-	
+
 	// Build a non quantized no-leaf tree
-	OPCODECREATE	OPCC;
+	OPCODECREATE OPCC;
 
 	OPCC.mIMesh = new MeshInterface();
 	OPCC.mIMesh->SetNbTriangles(tris_count);
@@ -142,18 +148,25 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	OPCC.mNoLeaf = true;
 	OPCC.mQuantized = false;
 
-	tree = CNEW(Model) ();
-	if (!tree->Build(OPCC)) 
+	tree = CNEW(CDB_Model) ();
+	if (!tree->Build(OPCC))
 	{
-		CFREE		(verts);
-		CFREE		(tris);
-		CFREE		(temp_tris);
+		CFREE(verts);
+		CFREE(tris);
+		CFREE(temp_tris);
 		return;
 	};
 
+	// Write cache
+	if (pCache)
+	{
+		IWriter* pWritter = (IWriter*)(pCache);
+		tree->Store(pWritter);
+		FS.w_close(pWritter);
+	}
+
 	// Free temporary tris
-	CFREE			(temp_tris);
-	return;
+	CFREE(temp_tris);
 }
 
 u32 MODEL::memory	()

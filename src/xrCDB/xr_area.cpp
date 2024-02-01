@@ -74,60 +74,83 @@ int CObjectSpace::GetNearest		( xr_vector<ISpatial*>& q_spatial, xr_vector<CObje
 }
 
 //----------------------------------------------------------------------
-IC int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
+IC int	CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
 {
-	return							(
-		GetNearest(
-			r_spatial,
-			q_nearest,
-			point,
-			range,
-			ignore_object
-		)
-	);
+	return GetNearest
+		   (
+				r_spatial,
+				q_nearest,
+				point,
+				range,
+				ignore_object
+		   );
 }
 
 //----------------------------------------------------------------------
-IC int   CObjectSpace::GetNearest( xr_vector<CObject*>&	q_nearest, ICollisionForm* obj, float range)
+IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range)
 {
-	CObject*	O		= obj->Owner	();
-	return				GetNearest( q_nearest, O->spatial.sphere.P, range + O->spatial.sphere.R, O );
+	CObject* O = obj->Owner();
+	return GetNearest(q_nearest, O->spatial.sphere.P, range + O->spatial.sphere.R, O);
 }
 
 //----------------------------------------------------------------------
-
-
-void CObjectSpace::Load	( CDB::build_callback build_callback )
+void CObjectSpace::Load(CDB::build_callback build_callback)
 {
-	Load("$level$","level.cform", build_callback);
-}
-void	CObjectSpace::		Load				(  LPCSTR path, LPCSTR fname, CDB::build_callback build_callback  )
-{
-	IReader *F					= FS.r_open	(path, fname);
-	R_ASSERT					(F);
-	Load( F, build_callback );
-}
-void	CObjectSpace::	Load				(  IReader* F, CDB::build_callback build_callback  )
-
-
-{
-	hdrCFORM					H;
-	F->r						(&H,sizeof(hdrCFORM));
-	Fvector*	verts			= (Fvector*)F->pointer();
-	CDB::TRI*	tris			= (CDB::TRI*)(verts+H.vertcount);
-	Create						( verts, tris, H, build_callback );
-	FS.r_close					(F);
+	Load("$level$", "level.cform", build_callback);
 }
 
-void			CObjectSpace::Create				(  Fvector*	verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback  )
+void CObjectSpace::Load(LPCSTR path, LPCSTR fname, CDB::build_callback build_callback)
 {
-	R_ASSERT							(CFORM_CURRENT_VERSION==H.version);
-	Static.build						( verts, H.vertcount, tris, H.facecount, build_callback );
-	m_BoundingVolume.set				(H.aabb);
-	g_SpatialSpace->initialize			(m_BoundingVolume);
-	g_SpatialSpacePhysic->initialize	(m_BoundingVolume);
-	//Sound->set_geometry_occ				( &Static );
-	//Sound->set_handler					( _sound_event );
+	IReader* F = FS.r_open(path, fname);
+	R_ASSERT(F);
+	Load(F, build_callback);
+}
+
+void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
+{
+	hdrCFORM H;
+
+	// Cache for cform
+	u32 crc = crc32(F->pointer(), F->length());
+
+	string_path LevelName;
+	xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "cform.cache");
+
+	IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
+
+	F->r(&H, sizeof(hdrCFORM));
+	Fvector* verts = (Fvector*)F->pointer();
+	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+	
+	if (pReaderCache != nullptr)
+	{
+		// Just restore
+		Create(verts, tris, H, build_callback, pReaderCache, true);
+	}
+	else
+	{
+		if (pReaderCache != nullptr)
+		{
+			FS.r_close(pReaderCache);
+		}
+
+		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
+		pWriterCache->w_u32(crc);
+		Create(verts, tris, H, build_callback, pWriterCache, false);
+	}
+	
+	FS.r_close(F);
+}
+
+void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback, void* pRW, bool RWMode)
+{
+	R_ASSERT(CFORM_CURRENT_VERSION == H.version);
+	Static.build(verts, H.vertcount, tris, H.facecount, build_callback, nullptr, pRW, RWMode);
+
+	m_BoundingVolume.set(H.aabb);
+
+	g_SpatialSpace->initialize(m_BoundingVolume);
+	g_SpatialSpacePhysic->initialize(m_BoundingVolume);
 }
 
 //----------------------------------------------------------------------

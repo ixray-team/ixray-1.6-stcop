@@ -59,7 +59,7 @@ CObjectSpace*  mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hd
 	CObjectSpace* os = xr_new<CObjectSpace>();
 	g_SpatialSpace				= xr_new<ISpatial_DB>	();
 	g_SpatialSpacePhysic		= xr_new<ISpatial_DB>	();
-	os->Create( verts, tris, H, build_callback );
+	os->Create( verts, tris, H, build_callback, nullptr, false);
 	return os;
 }
 

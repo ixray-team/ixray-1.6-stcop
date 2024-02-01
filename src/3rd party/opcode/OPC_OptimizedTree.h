@@ -125,7 +125,7 @@
 		inline_						const node*		GetNodes()		const	{ return mNodes;					}	\
 		/* Stats */																									\
 		virtual	udword			GetUsedBytes()	const	{ return mNbNodes*sizeof(node);		}	\
-		private:																									\
+		protected:																									\
 									node*			mNodes;
 
 	typedef		bool				(*GenericWalkingCallback)	(const void* current, void* user_data);
