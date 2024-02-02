@@ -52,4 +52,4 @@ All significant changes to this repository are documented in [this](CHANGELOG.md
 
 ## License
 
-See [this](LICENSE.md) file for details
+Contents of this repository licensed under terms of the custom MIT-like non-commercial license unless otherwise specified. See [this](./LICENSE.md) file for details
