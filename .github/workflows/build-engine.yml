@@ -172,7 +172,7 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          name: bin-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             build/bin/${{ matrix.config }}/*.exe
             build/bin/${{ matrix.config }}/*.dll
@@ -180,7 +180,7 @@ jobs:
       - name: Upload libraries
         uses: actions/upload-artifact@v4
         with:
-          name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          name: lib-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
             build/lib/${{ matrix.config }}/*.lib
             build/lib/${{ matrix.config }}/*.exp
