@@ -5,43 +5,396 @@
             "generator": "Visual Studio 17 2022",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}"
+            "buildRoot": "${projectDir}\\build\\Win32\\Engine",
+            "installRoot": "${projectDir}\\install\\Win32\\Engine",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x86-Mixed",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Engine",
+            "installRoot": "${projectDir}\\install\\Win32\\Engine",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
         },
         {
             "name": "Engine-x86-Release",
             "generator": "Visual Studio 17 2022",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}"
+            "buildRoot": "${projectDir}\\build\\Win32\\Engine",
+            "installRoot": "${projectDir}\\install\\Win32\\Engine",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
         },
         {
             "name": "Engine-x64-Debug",
             "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}"
+            "buildRoot": "${projectDir}\\build\\x64\\Engine",
+            "installRoot": "${projectDir}\\install\\x64\\Engine",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x64-Mixed",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Engine",
+            "installRoot": "${projectDir}\\install\\x64\\Engine",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
         },
         {
             "name": "Engine-x64-Release",
             "generator": "Visual Studio 17 2022 Win64",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}"
+            "buildRoot": "${projectDir}\\build\\x64\\Engine",
+            "installRoot": "${projectDir}\\install\\x64\\Engine",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
         },
         {
             "name": "Server-x86-Debug",
             "generator": "Visual Studio 17 2022",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\Win32\\Server",
+            "installRoot": "${projectDir}\\install\\Win32\\Server",
             "variables": [
                 {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
                     "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Server-x86-Mixed",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Server",
+            "installRoot": "${projectDir}\\install\\Win32\\Server",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -50,13 +403,48 @@
         {
             "name": "Server-x86-Release",
             "generator": "Visual Studio 17 2022",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\Win32\\Server",
+            "installRoot": "${projectDir}\\install\\Win32\\Server",
             "variables": [
                 {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
                     "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -67,11 +455,96 @@
             "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\x64\\Server",
+            "installRoot": "${projectDir}\\install\\x64\\Server",
             "variables": [
                 {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
                     "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Server-x64-Mixed",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Server",
+            "installRoot": "${projectDir}\\install\\x64\\Server",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -80,13 +553,48 @@
         {
             "name": "Server-x64-Release",
             "generator": "Visual Studio 17 2022 Win64",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\x64\\Server",
+            "installRoot": "${projectDir}\\install\\x64\\Server",
             "variables": [
                 {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
                     "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -97,12 +605,97 @@
             "generator": "Visual Studio 17 2022",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\Win32\\Utilities",
+            "installRoot": "${projectDir}\\install\\Win32\\Utilities",
             "variables": [
                 {
                     "name": "IXRAY_UTILS",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Utilities-x86-Mixed",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Utilities",
+            "installRoot": "${projectDir}\\install\\Win32\\Utilities",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -110,14 +703,49 @@
         {
             "name": "Utilities-x86-Release",
             "generator": "Visual Studio 17 2022",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\Win32\\Utilities",
+            "installRoot": "${projectDir}\\install\\Win32\\Utilities",
             "variables": [
                 {
                     "name": "IXRAY_UTILS",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -127,12 +755,97 @@
             "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\x64\\Utilities",
+            "installRoot": "${projectDir}\\install\\x64\\Utilities",
             "variables": [
                 {
                     "name": "IXRAY_UTILS",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Utilities-x64-Mixed",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Utilities",
+            "installRoot": "${projectDir}\\install\\x64\\Utilities",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -140,14 +853,199 @@
         {
             "name": "Utilities-x64-Release",
             "generator": "Visual Studio 17 2022 Win64",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\x64\\Utilities",
+            "installRoot": "${projectDir}\\install\\x64\\Utilities",
             "variables": [
                 {
                     "name": "IXRAY_UTILS",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Plugins-x64-Debug",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Plugins",
+            "installRoot": "${projectDir}\\install\\x64\\Plugins",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Plugins-x64-Mixed",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Plugins",
+            "installRoot": "${projectDir}\\install\\x64\\Plugins",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Plugins-x64-Release",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Plugins",
+            "installRoot": "${projectDir}\\install\\x64\\Plugins",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -157,12 +1055,97 @@
             "generator": "Visual Studio 17 2022",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\Win32\\Compressor",
+            "installRoot": "${projectDir}\\install\\Win32\\Compressor",
             "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
                 {
                     "name": "IXRAY_COMPRESSOR_ONLY",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Compressor-x86-Mixed",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Compressor",
+            "installRoot": "${projectDir}\\install\\Win32\\Compressor",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -170,14 +1153,49 @@
         {
             "name": "Compressor-x86-Release",
             "generator": "Visual Studio 17 2022",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x86_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\Win32\\Compressor",
+            "installRoot": "${projectDir}\\install\\Win32\\Compressor",
             "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
                 {
                     "name": "IXRAY_COMPRESSOR_ONLY",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -187,12 +1205,97 @@
             "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\x64\\Compressor",
+            "installRoot": "${projectDir}\\install\\x64\\Compressor",
             "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
                 {
                     "name": "IXRAY_COMPRESSOR_ONLY",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Compressor-x64-Mixed",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Compressor",
+            "installRoot": "${projectDir}\\install\\x64\\Compressor",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
@@ -200,14 +1303,49 @@
         {
             "name": "Compressor-x64-Release",
             "generator": "Visual Studio 17 2022 Win64",
-            "configurationType": "RelWithDebInfo",
+            "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
-            "buildRoot": "${projectDir}\\build\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${projectDir}\\build\\x64\\Compressor",
+            "installRoot": "${projectDir}\\install\\x64\\Compressor",
             "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
                 {
                     "name": "IXRAY_COMPRESSOR_ONLY",
                     "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "False",
                     "type": "BOOL"
                 }
             ]
