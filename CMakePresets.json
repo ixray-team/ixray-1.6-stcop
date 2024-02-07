@@ -1,0 +1,408 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 19,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "Engine-Base",
+            "displayName": "Engine-Base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "ON",
+                "IXRAY_USE_R2": "ON"
+            }
+        },
+        {
+            "name": "Engine-x86",
+            "displayName": "Engine-x86",
+            "inherits": "Engine-Base",
+            "binaryDir": "build/x86/Engine",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x86"
+                }
+            }
+        },
+        {
+            "name": "Engine-x64",
+            "displayName": "Engine-x64",
+            "inherits": "Engine-Base",
+            "binaryDir": "build/x64/Engine",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
+
+        {
+            "name": "Server-Base",
+            "displayName": "Server-Base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "ON",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "ON",
+                "IXRAY_USE_R2": "ON"
+            }
+        },
+        {
+            "name": "Server-x86",
+            "displayName": "Server-x86",
+            "inherits": "Server-Base",
+            "binaryDir": "build/x86/Server",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x86"
+                }
+            }
+        },
+        {
+            "name": "Server-x64",
+            "displayName": "Server-x64",
+            "inherits": "Server-Base",
+            "binaryDir": "build/x64/Server",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
+
+        {
+            "name": "Utilities-Base",
+            "displayName": "Utilities-Base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "ON",
+                "IXRAY_MP": "ON",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF"
+            }
+        },
+        {
+            "name": "Utilities-x86",
+            "displayName": "Utilities-x86",
+            "inherits": "Utilities-Base",
+            "binaryDir": "build/x86/Utilities",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x86"
+                }
+            }
+        },
+        {
+            "name": "Utilities-x64",
+            "displayName": "Utilities-x64",
+            "inherits": "Utilities-Base",
+            "binaryDir": "build/x64/Utilities",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
+
+        {
+            "name": "Plugins-3ds-Max-Base",
+            "displayName": "Plugins-3ds-Max-Base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "ON",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF"
+            }
+        },
+        {
+            "name": "Plugins-3ds-Max-x64",
+            "displayName": "Plugins-3ds-Max-x64",
+            "inherits": "Plugins-3ds-Max-Base",
+            "binaryDir": "build/x64/Plugins-3ds-Max",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
+
+        {
+            "name": "Plugins-Lightwave-Base",
+            "displayName": "Plugins-Lightwave-Base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "ON",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF"
+            }
+        },
+        {
+            "name": "Plugins-Lightwave-x64",
+            "displayName": "Plugins-Lightwave-x64",
+            "inherits": "Plugins-Lightwave-Base",
+            "binaryDir": "build/x64/Plugins-Lightwave",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
+
+        {
+            "name": "Compressor-Base",
+            "displayName": "Compressor-Base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "ON",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF"
+            }
+        },
+        {
+            "name": "Compressor-x86",
+            "displayName": "Compressor-x86",
+            "inherits": "Compressor-Base",
+            "binaryDir": "build/x86/Compressor",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x86"
+                }
+            }
+        },
+        {
+            "name": "Compressor-x64",
+            "displayName": "Compressor-x64",
+            "inherits": "Compressor-Base",
+            "binaryDir": "build/x64/Compressor",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Engine-x86-Debug",
+            "displayName": "Engine-x86-Debug",
+            "configurePreset": "Engine-x86",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Engine-x86-RelWithDebInfo",
+            "displayName": "Engine-x86-RelWithDebInfo",
+            "configurePreset": "Engine-x86",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Engine-x86-Release",
+            "displayName": "Engine-x86-Release",
+            "configurePreset": "Engine-x86",
+            "configuration": "Release"
+        },
+        {
+            "name": "Engine-x64-Debug",
+            "displayName": "Engine-x64-Debug",
+            "configurePreset": "Engine-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Engine-x64-RelWithDebInfo",
+            "displayName": "Engine-x64-RelWithDebInfo",
+            "configurePreset": "Engine-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Engine-x64-Release",
+            "displayName": "Engine-x64-Release",
+            "configurePreset": "Engine-x64",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Server-x86-Debug",
+            "displayName": "Server-x86-Debug",
+            "configurePreset": "Server-x86",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Server-x86-RelWithDebInfo",
+            "displayName": "Server-x86-RelWithDebInfo",
+            "configurePreset": "Server-x86",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Server-x86-Release",
+            "displayName": "Server-x86-Release",
+            "configurePreset": "Server-x86",
+            "configuration": "Release"
+        },
+        {
+            "name": "Server-x64-Debug",
+            "displayName": "Server-x64-Debug",
+            "configurePreset": "Server-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Server-x64-RelWithDebInfo",
+            "displayName": "Server-x64-RelWithDebInfo",
+            "configurePreset": "Server-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Server-x64-Release",
+            "displayName": "Server-x64-Release",
+            "configurePreset": "Server-x64",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Utilities-x86-Debug",
+            "displayName": "Utilities-x86-Debug",
+            "configurePreset": "Utilities-x86",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Utilities-x86-RelWithDebInfo",
+            "displayName": "Utilities-x86-RelWithDebInfo",
+            "configurePreset": "Utilities-x86",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Utilities-x86-Release",
+            "displayName": "Utilities-x86-Release",
+            "configurePreset": "Utilities-x86",
+            "configuration": "Release"
+        },
+        {
+            "name": "Utilities-x64-Debug",
+            "displayName": "Utilities-x64-Debug",
+            "configurePreset": "Utilities-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Utilities-x64-RelWithDebInfo",
+            "displayName": "Utilities-x64-RelWithDebInfo",
+            "configurePreset": "Utilities-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Utilities-x64-Release",
+            "displayName": "Utilities-x64-Release",
+            "configurePreset": "Utilities-x64",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Plugins-3ds-Max-x64-Debug",
+            "displayName": "Plugins-3ds-Max-x64-Debug",
+            "configurePreset": "Plugins-3ds-Max-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Plugins-3ds-Max-x64-RelWithDebInfo",
+            "displayName": "Plugins-3ds-Max-x64-RelWithDebInfo",
+            "configurePreset": "Plugins-3ds-Max-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Plugins-3ds-Max-x64-Release",
+            "displayName": "Plugins-3ds-Max-x64-Release",
+            "configurePreset": "Plugins-3ds-Max-x64",
+            "configuration": "Release"
+        },
+        
+        {
+            "name": "Plugins-Lightwave-x64-Debug",
+            "displayName": "Plugins-Lightwave-x64-Debug",
+            "configurePreset": "Plugins-Lightwave-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Plugins-Lightwave-x64-RelWithDebInfo",
+            "displayName": "Plugins-Lightwave-x64-RelWithDebInfo",
+            "configurePreset": "Plugins-Lightwave-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Plugins-Lightwave-x64-Release",
+            "displayName": "Plugins-Lightwave-x64-Release",
+            "configurePreset": "Plugins-Lightwave-x64",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Compressor-x86-Debug",
+            "displayName": "Compressor-x86-Debug",
+            "configurePreset": "Compressor-x86",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Compressor-x86-RelWithDebInfo",
+            "displayName": "Compressor-x86-RelWithDebInfo",
+            "configurePreset": "Compressor-x86",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Compressor-x86-Release",
+            "displayName": "Compressor-x86-Release",
+            "configurePreset": "Compressor-x86",
+            "configuration": "Release"
+        },
+        {
+            "name": "Compressor-x64-Debug",
+            "displayName": "Compressor-x64-Debug",
+            "configurePreset": "Compressor-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Compressor-x64-RelWithDebInfo",
+            "displayName": "Compressor-x64-RelWithDebInfo",
+            "configurePreset": "Compressor-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Compressor-x64-Release",
+            "displayName": "Compressor-x64-Release",
+            "configurePreset": "Compressor-x64",
+            "configuration": "Release"
+        }
+    ]
+}
