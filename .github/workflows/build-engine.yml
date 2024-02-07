@@ -11,6 +11,7 @@ on:
       - 'src/**'
       - '**/CMakeLists.txt'
       - '**/*.ltx'
+      - '**/*.json'
   pull_request:
     branches:
       - '**'
@@ -21,6 +22,7 @@ on:
       - 'src/**'
       - '**/CMakeLists.txt'
       - '**/*.ltx'
+      - '**/*.json'
 
 defaults:
   run:
@@ -45,20 +47,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
+        uses: nuget/setup-nuget@v2
         with:
           nuget-version: '>=5'
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Cache packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache
         with:
           path: |
@@ -90,7 +92,7 @@ jobs:
           cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
@@ -98,7 +100,7 @@ jobs:
             build/bin/${{ matrix.config }}/*.dll
 
       - name: Upload libraries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
@@ -123,20 +125,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
+        uses: nuget/setup-nuget@v2
         with:
           nuget-version: '>=5'
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Cache packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache
         with:
           path: |
@@ -168,7 +170,7 @@ jobs:
           cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
@@ -176,7 +178,7 @@ jobs:
             build/bin/${{ matrix.config }}/*.dll
 
       - name: Upload libraries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
@@ -199,12 +201,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Configure project
         run: |
@@ -223,7 +225,7 @@ jobs:
           cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
 
       - name: Upload compressor
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: |
@@ -247,12 +249,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Get binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
           path: build/bin/${{ matrix.config }}/
@@ -264,13 +266,13 @@ jobs:
             ${{ github.workspace }}/temp/gamedata
 
       - name: Upload gamedata
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gamedata-(${{ github.sha }})
           path: temp/gamedata/
 
       - name: Upload patch
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: patch-(${{ github.sha }})
           path: patches/xpatch_03.db
