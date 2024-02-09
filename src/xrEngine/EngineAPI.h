@@ -35,6 +35,7 @@ enum class EditorUI : std::uint8_t
 	CmdConsole,
 	Statistics,
 	Profiler,
+	LuaDebug,
 
 	Count
 };

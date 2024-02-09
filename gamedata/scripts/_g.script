@@ -5,7 +5,9 @@ end
 string.gfind = string.gmatch
 math.mod = math.fmod
 math.randomseed(time_global())
-debug_log = false
+
+DebuggerMode = string.find(command_line(), "-debugger_lua") ~= nil
+DebugLog = false
 
 function empty	(container)
 	if (type(container) == "function") then
@@ -28,10 +30,13 @@ end
 schemes = {} -- соответствие схем модулям
 stypes = {} -- типы схем
 
-function log(...) 
-    if debug_log then
-        SemiLog(...)
+function log(str) 
+    if DebugLog then
+        SemiLog(str)
     end
+	if DebuggerMode then
+		LuaPanda.printToVSCode(str,1,2)
+	end
 end
 
 -- Загружает схему из файла на диске и активирует в мотиваторе.
@@ -876,4 +881,30 @@ function show_all_ui(show)
 --	    db.actor:hide_weapon()
 			db.actor:disable_hit_marks(true)
 	end
+end
+
+function debugger_attach() 
+	if DebuggerMode then
+		if jit then jit.off() end
+		LuaPanda.reConnect()
+		if jit then jit.on() end
+	end
+end
+function debug_jit_off()
+	if DebuggerMode then
+		if jit then jit.off() end
+	end
+end
+function debug_jit_on()
+	if DebuggerMode then
+		if jit then jit.on() end
+	end
+end
+
+if DebuggerMode then
+	SemiLog('debuggee starting...')
+	if jit then jit.off() end
+	LuaPanda.start("127.0.0.1", 8818)
+	if jit then jit.on() end
+	SemiLog('debuggee started')
 end
