@@ -40,12 +40,9 @@ setfenv(1, this) \
 #	define NO_XRGAME_SCRIPT_ENGINE
 #endif
 
-#ifdef USE_DEBUGGER
-#	include "script_debugger.h"
-#endif
-
 /* ---- start of LuaJIT extensions */
-static void l_message (lua_State* state, const char *msg) {
+static void l_message (lua_State* state, const char *msg)
+{
 	Msg	("! [LUA_JIT] %s", msg);
 }
 
@@ -59,7 +56,8 @@ static int report (lua_State *L, int status) {
 	return status;
 }
 
-static int loadjitmodule (lua_State *L, const char *notfound) {
+static int loadjitmodule (lua_State *L, const char *notfound)
+{
 	lua_getglobal(L, "require");
 	lua_pushliteral(L, "jit.");
 	lua_pushvalue(L, -3);
@@ -121,12 +119,6 @@ CScriptStorage::CScriptStorage		()
 	m_current_thread		= 0;
 	
 	m_virtual_machine		= 0;
-
-#ifdef USE_LUA_STUDIO
-#	ifndef USE_DEBUGGER
-	static_assert(false, "Do not define USE_LUA_STUDIO macro without USE_DEBUGGER macro");
-#	endif // #ifndef USE_DEBUGGER
-#endif // #ifdef USE_LUA_STUDIO
 }
 
 CScriptStorage::~CScriptStorage		()
@@ -491,22 +483,9 @@ bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 	FS.r_close(l_tpFileReader);
 
 	int errFuncId = -1;
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-	if (g_pScriptEngine->debugger())
-		errFuncId = g_pScriptEngine->debugger()->PrepareLua(lua());
-#	endif // #ifndef USE_LUA_STUDIO
-#endif // #ifdef USE_DEBUGGER
 
 	// because that's the first and the only call of the main chunk - there is no point to compile it
 	int	l_iErrorCode = lua_pcall(lua(), 0, 0, (-1 == errFuncId) ? 0 : errFuncId);
-
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-	if (g_pScriptEngine->debugger())
-		g_pScriptEngine->debugger()->UnPrepareLua(lua(), errFuncId);
-#	endif // #ifndef USE_LUA_STUDIO
-#endif // #ifdef USE_DEBUGGER
 
 	if (l_iErrorCode) 
 	{
@@ -643,10 +622,6 @@ struct raii_guard {
 	raii_guard	(int error_code, LPCSTR const& m_description) : m_error_code(error_code), m_error_description(m_description) {}
 	~raii_guard	()
 	{
-#ifdef USE_DEBUGGER
-		bool lua_studio_connected = !!g_pScriptEngine->debugger();
-		if (!lua_studio_connected)
-#endif //#ifdef DEBUG
 		{
 #ifdef DEBUG
 			static bool const break_on_assert	= !!strstr(Core.Params,"-break_on_assert");

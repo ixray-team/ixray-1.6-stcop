@@ -9,7 +9,6 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "script_engine.h"
-#include "script_debugger.h"
 
 using namespace luabind;
 
@@ -18,13 +17,6 @@ void LuaLog(LPCSTR caMessage)
 #ifndef MASTER_GOLD
 	g_pScriptEngine->script_log	(ScriptStorage::eLuaMessageTypeMessage,"%s",caMessage);
 #endif // #ifndef MASTER_GOLD
-
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-		if( g_pScriptEngine->debugger() )
-			g_pScriptEngine->debugger()->Write(caMessage);
-#	endif // #ifndef USE_LUA_STUDIO
-#endif // #ifdef USE_DEBUGGER
 }
 
 void ErrorLog(LPCSTR caMessage)
@@ -34,16 +26,6 @@ void ErrorLog(LPCSTR caMessage)
 	g_pScriptEngine->print_stack();
 #endif // #ifdef PRINT_CALL_STACK
 	
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-		if( g_pScriptEngine->debugger() ){
-			g_pScriptEngine->debugger()->Write(caMessage);
-		}
-#	endif // #ifndef USE_LUA_STUDIO
-
-		bool lua_studio_connected = !!g_pScriptEngine->debugger();
-		if (!lua_studio_connected)
-#endif //#ifdef DEBUG
 	R_ASSERT2(0, caMessage);
 }
 
