@@ -46,6 +46,7 @@ target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrEngine PUBLIC xrAbstractions)
+target_link_libraries(xrEngine PUBLIC xrScripts)
 
 if (WIN32)
     add_dependencies(xrEngine xrGame xrRender_R4)

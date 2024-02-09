@@ -8,14 +8,30 @@ file(GLOB_RECURSE XRPS_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.h"
 )
 
+file(GLOB_RECURSE XRPS_PLUG_PLUG CONFIGURE_DEPENDS "lua_ext.*")
+file(GLOB_RECURSE XRPS_PLUG_SOCKET CONFIGURE_DEPENDS "luasocket/*.*")
+file(GLOB_RECURSE XRPS_PLUG_PANDA CONFIGURE_DEPENDS "luapanda.*")
+file(GLOB_RECURSE XRPS_PLUG_LFS CONFIGURE_DEPENDS "lfs.*")
+file(GLOB_RECURSE XRPS_PLUG_MARSHAL CONFIGURE_DEPENDS "lmarshal.*")
+
 # Source groups
 source_group("core" FILES ${XRPS_SOURCE_ALL_FILES})
+source_group("plugins" FILES ${XRPS_PLUG_PLUG})
+source_group("plugins/socket" FILES ${XRPS_PLUG_SOCKET})
+source_group("plugins/panda" FILES ${XRPS_PLUG_PANDA})
+source_group("plugins/marshal" FILES ${XRPS_PLUG_LFS})
+source_group("plugins/lfs" FILES ${XRPS_PLUG_MARSHAL})
 
 # Apply list
 list(APPEND XRPS_SRC_FILES ${XRPS_SOURCE_ALL_FILES})
 
 # Remove unused files
-#list(FILTER XRPS_SRC_FILES EXCLUDE REGEX ".*")
+if (WIN32)
+    list(FILTER XRPS_SRC_FILES EXCLUDE REGEX "luasocket/unix*.*")
+    list(FILTER XRPS_SRC_FILES EXCLUDE REGEX "luasocket/usocket*.*")
+else()
+    list(FILTER XRPS_SRC_FILES EXCLUDE REGEX "luasocket/wsocket*.*")
+endif()
 
 # xrScripts project
 add_library(xrScripts SHARED ${XRPS_SRC_FILES})

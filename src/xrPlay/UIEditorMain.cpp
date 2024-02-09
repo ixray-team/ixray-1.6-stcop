@@ -1,5 +1,7 @@
 #include "UIEditorMain.h"
-#include "../xrEngine/stdafx.h"
+#include "../xrScripts/stdafx.h"
+#include "../xrScripts/lua_ext.h"
+
 #include <imgui.h>
 
 void RenderUI()
@@ -7,6 +9,19 @@ void RenderUI()
 	static bool FirstDraw = true;
 
 	Device.AddUICommand("Editor Weather Draw", 2, RenderUIWeather);
+	Device.AddUICommand("LuaDebug", 2, []() 
+	{
+		static bool Attach = false;
+
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::LuaDebug)])
+			return;
+
+		if (!Attach)
+		{
+			DebbugerAttach();
+			Attach = true;
+		}
+	});
 };
 
 bool ImGui_ListBox(const char* label, int* current_item, bool(*items_getter)(void*, int, const char**), void* data,
