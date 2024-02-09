@@ -13,6 +13,7 @@ file(GLOB_RECURSE XRPS_PLUG_SOCKET CONFIGURE_DEPENDS "luasocket/*.*")
 file(GLOB_RECURSE XRPS_PLUG_PANDA CONFIGURE_DEPENDS "luapanda.*")
 file(GLOB_RECURSE XRPS_PLUG_LFS CONFIGURE_DEPENDS "lfs.*")
 file(GLOB_RECURSE XRPS_PLUG_MARSHAL CONFIGURE_DEPENDS "lmarshal.*")
+file(GLOB_RECURSE XRPS_PLUG_XML CONFIGURE_DEPENDS "luaxml.*")
 
 # Source groups
 source_group("core" FILES ${XRPS_SOURCE_ALL_FILES})
@@ -21,6 +22,7 @@ source_group("plugins/socket" FILES ${XRPS_PLUG_SOCKET})
 source_group("plugins/panda" FILES ${XRPS_PLUG_PANDA})
 source_group("plugins/marshal" FILES ${XRPS_PLUG_LFS})
 source_group("plugins/lfs" FILES ${XRPS_PLUG_MARSHAL})
+source_group("plugins/xml" FILES ${XRPS_PLUG_XML})
 
 # Apply list
 list(APPEND XRPS_SRC_FILES ${XRPS_SOURCE_ALL_FILES})
