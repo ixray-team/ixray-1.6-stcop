@@ -198,6 +198,11 @@ void CInput::KeyReleased(int SDLCode)
 	KBState[Key] = 0;
 }
 
+void CInput::GamepadButtonUpdate(int SDLCode)
+{
+	GPState[SDLCode] = true;
+}
+
 void CInput::LeftAxisUpdate(bool IsX, float value)
 {
 	if (IsX)
@@ -219,6 +224,18 @@ void CInput::RightAxisUpdate(bool IsX, float value)
 	else
 	{
 		RightAxis.y = value;
+	}
+}
+
+void CInput::AdaptiveTriggerUpdate(bool IsX, float value)
+{
+	if (IsX)
+	{
+		AdaptiveTrigger.x = value;
+	}
+	else
+	{
+		AdaptiveTrigger.y = value;
 	}
 }
 
@@ -257,8 +274,20 @@ void CInput::GamepadUpdate()
 		return;
 
 	auto KeyHolder = cbStack.back();
+
 	KeyHolder->IR_GamepadUpdateStick(0, LeftAxis);
 	KeyHolder->IR_GamepadUpdateStick(1, RightAxis);
+
+	KeyHolder->IR_GamepadUpdateStick(2, AdaptiveTrigger);
+
+	for (size_t Iter = 0; Iter < COUNT_GP_BUTTONS; Iter++)
+	{
+		if (GPState[Iter])
+		{
+			KeyHolder->IR_GamepadUpdateKeyState(Iter);
+			GPState[Iter] = false;
+		}
+	}
 }
 
 const xr_map<int, char> russian_lookup_key_table = {

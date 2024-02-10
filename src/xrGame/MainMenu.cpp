@@ -376,6 +376,21 @@ void	CMainMenu::IR_OnKeyboardHold(int dik)
 	CDialogHolder::IR_UIOnKeyboardHold(dik);
 };
 
+void CMainMenu::IR_GamepadUpdateKeyState(int id)
+{
+	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN)
+		IR_UIOnKeyboardPress(DIK_DOWN);
+
+	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP)
+		IR_UIOnKeyboardPress(DIK_UP);
+
+	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH)
+		IR_UIOnKeyboardPress(DIK_RETURN);
+
+	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST)
+		IR_UIOnKeyboardPress(DIK_ESCAPE);
+}
+
 void CMainMenu::IR_OnMouseWheel(int direction)
 {
 	if(!IsActive()) return;

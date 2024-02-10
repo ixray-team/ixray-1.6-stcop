@@ -4,6 +4,9 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
+#define DIK_L2_TRIGGER (SDL_GamepadButton::SDL_GAMEPAD_BUTTON_MAX + 0)
+#define DIK_R2_TRIGGER (SDL_GamepadButton::SDL_GAMEPAD_BUTTON_MAX + 1)
+
 class	ENGINE_API				IInputReceiver;
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -25,7 +28,8 @@ public:
 	enum {
 		COUNT_MOUSE_BUTTONS			= 8,
 		COUNT_MOUSE_AXIS			= 3,
-		COUNT_KB_BUTTONS			= 256
+		COUNT_KB_BUTTONS			= 256,
+		COUNT_GP_BUTTONS			= SDL_GamepadButton::SDL_GAMEPAD_BUTTON_MAX + 2,
 	};
 
 	SDL_Gamepad* pGamePad = nullptr;
@@ -35,12 +39,15 @@ private:
 	bool						mouseScrolled = false;
 	char						mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						KBState[COUNT_KB_BUTTONS] = {};
+	char						GPState[COUNT_GP_BUTTONS] = {};
 	int 						offs[COUNT_MOUSE_AXIS] = {};
 	char						old_mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 
 	Fvector2 LeftAxis = { 0, 0 };
 	Fvector2 RightAxis = { 0, 0 };
+
+	Fvector2 AdaptiveTrigger = { 0, 0 };
 
 	xr_vector<IInputReceiver*>	cbStack;
 
@@ -60,8 +67,10 @@ public:
 	void						KeyPressed					(int SDLCode);	
 	void						KeyReleased					(int SDLCode);	
 	
+	void						GamepadButtonUpdate			(int SDLCode);
 	void						LeftAxisUpdate				(bool IsX, float value);
 	void						RightAxisUpdate				(bool IsX, float value);
+	void						AdaptiveTriggerUpdate		(bool IsX, float value);
 
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );

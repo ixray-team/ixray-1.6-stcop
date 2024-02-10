@@ -590,6 +590,23 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 	}
 }
 
+void CLevel::IR_GamepadUpdateKeyState(int id)
+{
+	if (g_bDisableAllInput)
+		return;
+
+	if (Device.Paused())
+		return;
+
+	// TODO
+	//if (CurrentGameUI() && CurrentGameUI()->IR_GamepadUpdateKeyState(key)) return;
+
+	if (g_actor != nullptr && g_actor->g_Alive())
+	{
+		g_actor->IR_GamepadUpdateKeyState(id);
+	}
+}
+
 void CLevel::block_action(int cmd) {
 	++blocked_bings[cmd];
 }

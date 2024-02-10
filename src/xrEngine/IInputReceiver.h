@@ -398,6 +398,7 @@ public:
 	virtual void	IR_OnKeyboardRelease			(int dik)		{};
 	virtual void	IR_OnKeyboardHold				(int dik)		{};
     virtual void	IR_GamepadUpdateStick           (int id, Fvector2 value) {};
+    virtual void	IR_GamepadUpdateKeyState        (int id) {};
 };
 
 ENGINE_API extern float			psMouseSens;
