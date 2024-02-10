@@ -149,70 +149,71 @@ void	CCar::Load					( LPCSTR section )
 	if (self)		self->spatial.type	|=	STYPE_VISIBLEFORAI;	
 }
 
-BOOL	CCar::net_Spawn				(CSE_Abstract* DC)
+BOOL	CCar::net_Spawn(CSE_Abstract* DC)
 {
 #ifdef DEBUG
 	InitDebug();
 #endif
-	CSE_Abstract					*e = (CSE_Abstract*)(DC);
-	CSE_ALifeCar					*co=smart_cast<CSE_ALifeCar*>(e);
+	CSE_Abstract* e = (CSE_Abstract*)(DC);
+	CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(e);
 	BOOL							R = inherited::net_Spawn(DC);
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
 
 	CPHSkeleton::Spawn(e);
-	setEnabled						(TRUE);
-	setVisible						(TRUE);
+	setEnabled(TRUE);
+	setVisible(TRUE);
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
-	m_fSaveMaxRPM					= m_max_rpm;
-	SetfHealth						(co->health);
+	m_fSaveMaxRPM = m_max_rpm;
+	SetfHealth(co->health);
 
-	if(!g_Alive())					b_exploded=true;
-	else							b_exploded=false;
-									
+	if (!g_Alive())					b_exploded = true;
+	else							b_exploded = false;
+
 	CDamagableItem::RestoreEffect();
-	
-	
-	CInifile* pUserData		= PKinematics(Visual())->LL_UserData(); 
-	if(pUserData->section_exist("destroyed"))
-		CPHDestroyable::Load(pUserData,"destroyed");
-	if(pUserData->section_exist("mounted_weapon_definition"))
+
+
+	CInifile* pUserData = PKinematics(Visual())->LL_UserData();
+	if (pUserData->section_exist("destroyed"))
+		CPHDestroyable::Load(pUserData, "destroyed");
+	if (pUserData->section_exist("mounted_weapon_definition"))
 		m_car_weapon = xr_new<CCarWeapon>(this);
 
-	if(pUserData->section_exist("visual_memory_definition"))
+	if (pUserData->section_exist("visual_memory_definition"))
 	{
-		m_memory			= xr_new<car_memory>(this);
-		m_memory->reload	(pUserData->r_string("visual_memory_definition", "section"));
+		m_memory = xr_new<car_memory>(this);
+		m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
 	}
 
-	return							(CScriptEntity::net_Spawn(DC) && R);
-	
+	return (CScriptEntity::net_Spawn(DC) && R);
 }
 
-void CCar::ActorObstacleCallback					(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)	
+void CCar::ActorObstacleCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
-	if(!do_colide)
+	if (!do_colide)
 	{
-		if(material_1&&material_1->Flags.test(SGameMtl::flActorObstacle))do_colide=true;
-		if(material_2&&material_2->Flags.test(SGameMtl::flActorObstacle))do_colide=true;
+		if (material_1 && material_1->Flags.test(SGameMtl::flActorObstacle))do_colide = true;
+		if (material_2 && material_2->Flags.test(SGameMtl::flActorObstacle))do_colide = true;
 	}
 }
 
-void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
+void CCar::SpawnInitPhysics(CSE_Abstract* D)
 {
-	CSE_PHSkeleton		*so = smart_cast<CSE_PHSkeleton*>(D);
-	R_ASSERT						(so);
-	ParseDefinitions				();//parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
-	CreateSkeleton					(D);//creates m_pPhysicsShell & fill in bone_map
-	IKinematics *K					=smart_cast<IKinematics*>(Visual());
+	CSE_PHSkeleton* so = smart_cast<CSE_PHSkeleton*>(D);
+	R_ASSERT(so);
+	ParseDefinitions();//parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
+	CreateSkeleton(D);//creates m_pPhysicsShell & fill in bone_map
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
 	K->CalculateBones_Invalidate();//this need to call callbacks
-	K->CalculateBones	(TRUE);
-	Init							();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
+	K->CalculateBones(TRUE);
+	Init();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
 	//PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
-	SetDefaultNetState				(so);
-	CPHUpdateObject::Activate       ();
+	SetDefaultNetState(so);
+	CPHUpdateObject::Activate();
+
+	m_pPhysicsShell->applyImpulse(Fvector().set(0, -1.f, 0), 0.1);
 }
 
 void	CCar::net_Destroy()
@@ -838,14 +839,7 @@ void CCar::CreateSkeleton(CSE_Abstract	*po)
 		pK->CalculateBones	(TRUE);
 	}
 	phys_shell_verify_object_model ( *this );
-#pragma todo(" replace below by P_build_Shell or call inherited")
-	m_pPhysicsShell		= P_create_Shell();
-	m_pPhysicsShell->build_FromKinematics(pK,&bone_map);
-	m_pPhysicsShell->set_PhysicsRefObject(this);
-	m_pPhysicsShell->mXFORM.set(XFORM());
-	m_pPhysicsShell->Activate(true);
-	m_pPhysicsShell->SetAirResistance(0.f,0.f);
-	m_pPhysicsShell->SetPrefereExactIntegration();
+	m_pPhysicsShell = P_build_Shell(this, true, &bone_map);
 
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
 	ApplySpawnIniToPhysicShell(pK->LL_UserData(),m_pPhysicsShell,false);

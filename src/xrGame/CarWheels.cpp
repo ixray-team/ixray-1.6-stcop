@@ -202,20 +202,12 @@ void CCar::SWheel::RestoreNetState(const CSE_ALifeCar::SWheelState& a_state)
 void CCar::SWheelDrive::Init()
 {
 	pwheel->Init();
-	gear_factor=pwheel->radius/pwheel->car->m_ref_radius;
-	CBoneData& bone_data= smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetData(u16(pwheel->bone_id));
-	switch(bone_data.IK_data.type)
-	{
-	case jtWheel:
-		pos_fvd=bone_map.find(pwheel->bone_id)->second.element->mXFORM.k.x;
-		break;
+	gear_factor = pwheel->radius / pwheel->car->m_ref_radius;
 
-	default: NODEFAULT;
-	}
-
-	pos_fvd=pos_fvd>0.f ? -1.f : 1.f;
-
+	const Fmatrix& bone_data = smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
+	pos_fvd = bone_data.k.x > 0.f ? -1.f : 1.f;
 }
+
 void CCar::SWheelDrive::Drive()
 {
 	float cur_speed=pwheel->car->RefWheelMaxSpeed()/gear_factor;
@@ -243,17 +235,10 @@ void CCar::SWheelSteer::Init()
 	IKinematics* pKinematics=smart_cast<IKinematics*>(pwheel->car->Visual());
 	pwheel->Init();
 	(bone_map.find(pwheel->bone_id))->second.joint->GetLimits(lo_limit,hi_limit,0);
-	CBoneData& bone_data= pKinematics->LL_GetData(u16(pwheel->bone_id));
-	switch(bone_data.IK_data.type)
-	{
-	case jtWheel:	
-		pos_right=bone_map.find(pwheel->bone_id)->second.element->mXFORM.i.y;//.dotproduct(pwheel->car->m_root_transform.j);
-		break;
-
-	default: NODEFAULT;
-	}
 	
-	pos_right=pos_right>0.f ? -1.f : 1.f;
+	auto bone_data = smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
+	pos_right = bone_data.i.y > 0.f ? -1.f : 1.f;
+
 	float steering_torque_=pKinematics->LL_UserData()->r_float("car_definition","steering_torque");
 	VERIFY( pwheel );
 	pwheel->ApplySteerAxisTorque(steering_torque_);
