@@ -29,4 +29,7 @@ struct lua_State;
 template <typename T> struct enum_exporter{DECLARE_SCRIPT_REGISTER_FUNCTION};
 template <typename T> struct class_exporter{DECLARE_SCRIPT_REGISTER_FUNCTION};
 
+template <typename T> struct SCRIPTS_API enum_exporter_lib { DECLARE_SCRIPT_REGISTER_FUNCTION };
+template <typename T> struct SCRIPTS_API class_exporter_lib { DECLARE_SCRIPT_REGISTER_FUNCTION };
+
 #endif

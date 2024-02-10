@@ -4,6 +4,7 @@
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
+#include "..\xrSound\ai_sounds.h"
 
 XRSOUND_API extern float psSoundCull;
 
@@ -137,13 +138,6 @@ void CSoundRender_Emitter::update(float dt)
 			{
 				// switch to: PLAY
 				m_current_state				= stPlaying;
-/*
-				u32 ptr						= calc_cursor(	fTimeStarted, 
-															fTime, 
-															get_length_sec(), 
-															source()->m_wformat); 
-				set_cursor					(ptr);
-*/
 				SoundRender->i_start		(this);
 			}
 		}
@@ -224,7 +218,7 @@ IC void	volume_lerp(float& c, float t, float s, float dt)
 	if (mot>diff_a) mot=diff_a;
 	c				+= (diff/diff_a)*mot;
 }
-#include "..\xrServerEntities\ai_sounds.h"
+
 BOOL CSoundRender_Emitter::update_culling(float dt)
 {
 	float fAttFactor = 1.0f; //--#SM+#--

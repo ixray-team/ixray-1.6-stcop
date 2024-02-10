@@ -34,7 +34,7 @@
 #include "level_debug.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
 #include "trade_parameters.h"
-#include "script_ini_file.h"
+#include "../xrScripts/exports/script_ini_file.h"
 #include "sound_player.h"
 #include "stalker_decision_space.h"
 #include "space_restriction_manager.h"

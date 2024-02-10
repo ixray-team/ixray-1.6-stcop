@@ -3,7 +3,7 @@
 #include "hudsound.h"
 #include "customzone.h"
 #include "artefact.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 
 #include "CustomDetectorZones.h"
 

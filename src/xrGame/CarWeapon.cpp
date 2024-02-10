@@ -4,7 +4,7 @@
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "object_broker.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "weaponAmmo.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/bone.h"

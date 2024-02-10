@@ -11,7 +11,7 @@
 #include "script_properties_list_helper.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
-#include "script_token_list.h"
+#include "../xrScripts/exports/script_token_list.h"
 #include <luabind/out_value_policy.hpp>
 
 using namespace luabind;

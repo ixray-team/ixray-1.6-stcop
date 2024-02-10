@@ -6,7 +6,7 @@
 #endif
 
 #include "../xrCore/net_utils.h"
-#include "net_messages.h"
+#include "NET_Messages.h"
 #include "net_compressor.h"
 
 XRNETSERVER_API extern ClientID BroadcastCID;
