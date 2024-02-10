@@ -6,6 +6,7 @@
 #	include "../../xrEngine/xr_ioc_cmd.h"
 #endif //#ifdef DEBUG
 #include "../../xrEngine/string_table.h"
+#include "../Level.h"
 CRestrictions g_mp_restrictions;
 
 shared_str	g_ranks[_RANK_COUNT];
@@ -29,6 +30,10 @@ u32 get_rank(const shared_str &section)
 			res = i;
 			break;
 		}
+	}
+
+	if (IsGameTypeSingle() && res < 0) {
+		return 0;
 	}
 
 	R_ASSERT3	(res!=-1,"cannot find rank for", section.c_str());
