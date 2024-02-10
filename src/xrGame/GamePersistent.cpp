@@ -30,6 +30,9 @@
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "UI/UIGameTutorial.h"
 
+#include "../xrEngine/Application.h"
+#include "ui/UILoadingScreen.h"
+
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
 #endif // MASTER_GOLD
@@ -105,6 +108,11 @@ CGamePersistent::~CGamePersistent(void)
 	Device.seqFrame.Remove		(this);
 	g_pEventManager->Event.Handler_Detach	(eDemoStart,this);
 	g_pEventManager->Event.Handler_Detach	(eQuickLoad,this);
+}
+
+void CGamePersistent::PreStart(LPCSTR op) {
+	pApp->SetLoadingScreen(new UILoadingScreen());
+	__super::PreStart(op);
 }
 
 void CGamePersistent::RegisterModel(IRenderVisual* V)

@@ -1,23 +1,20 @@
 #pragma once
 
+class ILoadingScreen;
+
 class ENGINE_API CApplication :
 	public pureFrame,
 	public IEventReceiver
 {
-	friend class dxApplicationRender;
-
 	// levels
 	struct					sLevelInfo
 	{
 		char* folder;
 		char* name;
 	};
-public:
-	string2048				ls_header;
-	string2048				ls_tip_number;
-	string2048				ls_tip;
+
 private:
-	FactoryPtr<IApplicationRender>	m_pRender;
+	ILoadingScreen* loadingScreen;
 
 	int		max_load_stage;
 
@@ -44,6 +41,7 @@ public:
 	void					LoadStage();
 	void					LoadSwitch();
 	void					LoadDraw();
+	void LoadForceFinish();
 
 	virtual	void			OnEvent(EVENT E, u64 P1, u64 P2);
 
@@ -53,7 +51,8 @@ public:
 
 	virtual void	_BCL	OnFrame();
 	void			load_draw_internal();
-	void			destroy_loading_shaders();
+	void SetLoadingScreen(ILoadingScreen* newScreen);
+	void DestroyLoadingScreen();
 };
 
 extern ENGINE_API CApplication* pApp;
