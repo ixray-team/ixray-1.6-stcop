@@ -134,16 +134,19 @@ void CSpaceRestrictionHolder::register_restrictor				(CSpaceRestrictor *space_re
 		if (xr_strcmp(*temp,temp1))
 			on_default_restrictions_changed	();
 	}
-	
+
 	CSpaceRestrictionShape	*shape = xr_new<CSpaceRestrictionShape>(space_restrictor,restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
+	m_lock.Enter();
+
 	RESTRICTIONS::iterator	I = m_restrictions.find(space_restrictors);
 	if (I == m_restrictions.end()) {
 		CSpaceRestrictionBridge	*bridge = xr_new<CSpaceRestrictionBridge>(shape);
 		m_restrictions.insert	(std::make_pair(space_restrictors,bridge));
+		m_lock.Leave();
 		return;
 	}
-
 	(*I).second->change_implementation(shape);
+	m_lock.Leave();
 }
 
 bool try_remove_string				(shared_str &search_string, const shared_str &string_to_search)

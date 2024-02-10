@@ -19,14 +19,15 @@ namespace RestrictionSpace {
 };
 
 namespace SpaceRestrictionHolder {
-	typedef intrusive_ptr<CSpaceRestrictionBridge,RestrictionSpace::CTimeIntrusiveBase> CBaseRestrictionPtr;
+	using CBaseRestrictionPtr = intrusive_ptr<CSpaceRestrictionBridge,RestrictionSpace::CTimeIntrusiveBase>;
 };
 
 class CSpaceRestrictionHolder {
 public:
-	typedef xr_map<shared_str,CSpaceRestrictionBridge*>	RESTRICTIONS;
+	using RESTRICTIONS = xr_map<shared_str,CSpaceRestrictionBridge*>;
 
 private:
+	xrCriticalSection m_lock;
 	enum {
 		MAX_RESTRICTION_PER_TYPE_COUNT	= u32(128),
 		dummy							= u32(-1),

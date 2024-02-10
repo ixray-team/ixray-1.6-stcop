@@ -16,6 +16,7 @@
 #include "ai_space.h"
 #include "CustomZone.h"
 #include "../xrengine/xr_collide_form.h"
+#include "mt_config.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -33,6 +34,12 @@ void CSpaceRestrictor::Center		(Fvector& C) const
 float CSpaceRestrictor::Radius		() const
 {
 	return							(CFORM()->getRadius());
+}
+
+static void RegisterRestrictorMT(void* data)
+{
+	const auto p = static_cast<CSpaceRestrictor*>(data);
+	Level().space_restriction_manager().register_restrictor(p, RestrictionSpace::ERestrictorTypes(p->restrictor_type()));
 }
 
 BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
@@ -79,8 +86,14 @@ BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
 	if (!ai().get_level_graph() || (RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone))
 		return						(TRUE);
 
-	Level().space_restriction_manager().register_restrictor(this,RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
-
+	if (!g_mt_config.test(mtRestrictors))
+		Level().space_restriction_manager().register_restrictor(this,RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
+	else
+	{
+		string256 name{};
+		xr_sprintf(name, "Space restrictor %s registrator thread", cName().c_str());
+		thread_spawn(&RegisterRestrictorMT, name, 0, this);
+	}
 	return							(TRUE);
 }
 
