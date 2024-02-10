@@ -36,7 +36,7 @@ enum class EditorUI : std::uint8_t
 	Statistics,
 	Profiler,
 	LuaDebug,
-
+	ActorInfos,
 	Count
 };
 

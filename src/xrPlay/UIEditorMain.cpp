@@ -3,6 +3,7 @@
 #include "../xrScripts/lua_ext.h"
 
 #include <imgui.h>
+#include "../xrEngine/IGame_Actor.h"
 
 struct StatisticHashMapEntry
 {
@@ -11,11 +12,32 @@ struct StatisticHashMapEntry
 	const char* Name;
 };
 
+void RenderActorInfos()
+{
+	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::ActorInfos)] || g_pIGameActor == nullptr)
+		return;
+
+	if (!ImGui::Begin("Actor InfoPortions", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::ActorInfos)])) {
+		ImGui::End();
+		return;
+	}
+
+	auto Data = g_pIGameActor->GetKnowedPortions();
+
+	for (auto Str : Data)
+	{
+		ImGui::Button(Str.c_str(), { 200, 30 });
+	}
+
+	ImGui::End();
+}
+
 void RenderUI()
 {
 	static bool FirstDraw = true;
 
 	Device.AddUICommand("Editor Weather Draw", 2, RenderUIWeather);
+	Device.AddUICommand("Actor InfoPortions", 2, RenderActorInfos);
 
 	Device.AddUICommand("LuaDebug", 2, []() 
 	{
@@ -79,7 +101,8 @@ void RenderUI()
 		ImGui::End();
 	});
 
-	Device.AddUICommand("Statistics", 2, []() {
+	Device.AddUICommand("Statistics", 2, []() 
+	{
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Statistics)])
 			return;
 
