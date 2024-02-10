@@ -27,6 +27,9 @@ public:
 		COUNT_MOUSE_AXIS			= 3,
 		COUNT_KB_BUTTONS			= 256
 	};
+
+	SDL_Gamepad* pGamePad = nullptr;
+
 private:
 	bool						mouseMoved = false;
 	bool						mouseScrolled = false;
@@ -36,13 +39,15 @@ private:
 	char						old_mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 
+	Fvector2 LeftAxis = { 0, 0 };
+	Fvector2 RightAxis = { 0, 0 };
 
-//	xr_stack<IInputReceiver*>	cbStack;
 	xr_vector<IInputReceiver*>	cbStack;
 
-	void						NoInputUpdate				( );
-	void						MouseUpdate					( );
-	void						KeyboardUpdate				( );
+	void						NoInputUpdate				();
+	void						MouseUpdate					();
+	void						KeyboardUpdate				();
+	void						GamepadUpdate				();
 
 public:
 	u32							dwCurTime;
@@ -51,8 +56,12 @@ public:
 	void						MouseScroll					(float d);
 	void						MousePressed				(int button);
 	void						MouseReleased				(int button);
+	
 	void						KeyPressed					(int SDLCode);	
 	void						KeyReleased					(int SDLCode);	
+	
+	void						LeftAxisUpdate				(bool IsX, float value);
+	void						RightAxisUpdate				(bool IsX, float value);
 
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );

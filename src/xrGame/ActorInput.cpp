@@ -339,6 +339,55 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 		cam_Active()->Move((d>0)?kUP:kDOWN, _abs(d));
 	}
 }
+
+void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
+{
+	// Left stick
+	if (id == 0)
+	{
+		if (!fis_zero(value.x))
+		{
+			mstate_wishful |= (value.x > 0.f) ? mcRStrafe : mcLStrafe;
+		}
+
+		if (!fis_zero(value.y))
+		{
+			mstate_wishful |= (value.y > 0.f) ? mcFwd : mcBack;
+
+			if (value.y > 0.7)
+			{
+				mstate_wishful |= mcSprint;
+			}
+			else
+			{
+				mstate_wishful &= ~mcSprint;
+			}
+		}
+	}
+	// Right stick
+	else if (id == 1)
+	{
+		float LookFactor = GetLookFactor();
+
+		CCameraBase* C = cameras[cam_active];
+		float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.f / LookFactor;
+
+		if (!fis_zero(value.x))
+		{
+			float d = value.x * scale * 5;
+			cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
+		}
+
+		if (!fis_zero(value.y))
+		{
+			float d = ((psMouseInvert.test(1)) ? -1 : 1) * value.y * scale * 3.f / 4.f;
+			d *= 5;
+
+			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
+		}
+	}
+}
+
 #include "HudItem.h"
 bool CActor::use_Holder				(CHolderCustom* holder)
 {

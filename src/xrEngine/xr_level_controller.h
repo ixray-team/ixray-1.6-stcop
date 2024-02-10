@@ -1,6 +1,6 @@
 #pragma once
 
-enum	EGameActions
+enum EGameActions
 {
 	kLEFT,
 	kRIGHT,
