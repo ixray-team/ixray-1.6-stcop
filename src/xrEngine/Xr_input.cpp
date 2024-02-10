@@ -151,8 +151,11 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 #endif
 }
 
-CInput::~CInput(void)
+CInput::~CInput()
 {
+	if (pGamePad != nullptr)
+		SDL_CloseGamepad(pGamePad);
+
 #ifdef ENGINE_BUILD
 	Device.seqFrame.Remove			(this);
 	Device.seqAppDeactivate.Remove	(this);
@@ -191,6 +194,11 @@ void CInput::KeyboardButtonUpdate(SDL_Scancode scancode, bool IsPressed)
 	KBState[scancode] = IsPressed;
 }
 
+void CInput::GamepadButtonUpdate(int SDLCode, bool IsPressed)
+{
+	GPState[SDLCode] = IsPressed;
+}
+
 void CInput::LeftAxisUpdate(bool IsX, float value)
 {
 	if (IsX)
@@ -212,6 +220,18 @@ void CInput::RightAxisUpdate(bool IsX, float value)
 	else
 	{
 		RightAxis.y = value;
+	}
+}
+
+void CInput::AdaptiveTriggerUpdate(bool IsX, float value)
+{
+	if (IsX)
+	{
+		AdaptiveTrigger.x = value;
+	}
+	else
+	{
+		AdaptiveTrigger.y = value;
 	}
 }
 
@@ -243,15 +263,38 @@ void CInput::KeyboardUpdate()
 	}
 }
 
-#include "xr_level_controller.h"
 void CInput::GamepadUpdate()
 {
+	if (pGamePad == nullptr)
+		return;
+
 	if (cbStack.empty())
 		return;
 
 	auto KeyHolder = cbStack.back();
+
 	KeyHolder->IR_GamepadUpdateStick(0, LeftAxis);
 	KeyHolder->IR_GamepadUpdateStick(1, RightAxis);
+
+	KeyHolder->IR_GamepadUpdateStick(2, AdaptiveTrigger);
+
+	for (size_t i = 0; i < COUNT_GP_BUTTONS; i++)
+	{
+		bool Pressed = !!GPState[i];
+		if (GPState[i] != old_GPState[i])
+		{
+			old_GPState[i] = GPState[i];
+
+			if (Pressed)
+			{
+				cbStack.back()->IR_GamepadKeyPress((int)i);
+			}
+			else
+			{
+				cbStack.back()->IR_GamepadKeyRelease((int)i);
+			}
+		}
+	}
 }
 
 const xr_map<int, char> russian_lookup_key_table = {

@@ -285,6 +285,7 @@ public:
 	virtual void				IR_OnActivate			(void);
 
 	virtual void				IR_GamepadUpdateStick(int id, Fvector2 value);
+	virtual void				IR_GamepadKeyPress(int id);
 
 			int					get_RPID				(LPCSTR name);
 
