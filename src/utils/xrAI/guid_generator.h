@@ -5,14 +5,15 @@
 //	Author		: Dmitriy Iassenev
 //	Description : GUID generator
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef guid_generatorH
-#define guid_generatorH
 #pragma once
 
 #include "../../xrEngine/xrLevel.h"
 
-ENGINE_API extern xrGUID generate_guid();
-ENGINE_API extern LPCSTR generate_guid(const xrGUID &guid, LPSTR buffer, const u32 &buffer_size);
+#ifdef AI_COMPILER
+#define GUID_API_INTERNAL
+#else
+#define GUID_API_INTERNAL ENGINE_API
+#endif
 
-#endif //guid_generatorH
+GUID_API_INTERNAL extern xrGUID generate_guid();
+GUID_API_INTERNAL extern LPCSTR generate_guid(const xrGUID &guid, LPSTR buffer, const u32 &buffer_size);
