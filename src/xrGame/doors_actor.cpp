@@ -219,6 +219,8 @@ bool actor::add_new_door			(
 	float distance_to_diagonal	= movement.is_going_through(matrix, diagonal, danger_distance);
 	distance_to_diagonal		= distance_to_diagonal == -1.f ? flt_max : distance_to_diagonal;
 
+#undef min
+#undef max
 	float const min_distance	= std::min( distance_to_diagonal, std::min(distance_to_open_state, distance_to_closed_state) );
 	if ( min_distance > danger_distance )
 		return					true;
@@ -229,10 +231,6 @@ bool actor::add_new_door			(
 
 bool actor::update_doors			( doors_type const& detected_doors, float const average_speed )
 {
-//	if ( !xr_strcmp( "sim_default_duty_28212", get_name()) ) {
-//		int i=0; (void)i;
-//	}
-
 #ifdef DEBUG
 	m_detected_doors			= detected_doors;
 #endif // #ifdef DEBUG

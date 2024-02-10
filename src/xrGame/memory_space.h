@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "xrserver_space.h"
 #include "alife_space.h"
 #include "../xrScripts/script_export_space.h"

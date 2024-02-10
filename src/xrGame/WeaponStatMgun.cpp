@@ -4,7 +4,7 @@
 #include "../xrphysics/PhysicsShell.h"
 #include "weaponAmmo.h"
 #include "object_broker.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "actor.h"
 #include "actorEffector.h"
 #include "camerafirsteye.h"

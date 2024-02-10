@@ -5,7 +5,7 @@
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 
 #include "level.h"
 #include "../Include/xrRender/Kinematics.h"

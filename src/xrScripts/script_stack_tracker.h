@@ -11,7 +11,7 @@
 struct lua_Debug;
 struct lua_State;
 
-class CScriptStackTracker
+class SCRIPTS_API CScriptStackTracker
 {
 protected:
 	enum consts {

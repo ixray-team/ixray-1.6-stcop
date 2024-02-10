@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "script_properties_list_helper.h"
-#include "script_token_list.h"
+#include "../xrScripts/exports/script_token_list.h"
 #include "xrServer_Object_Base.h"
 #include "script_value_container_impl.h"
 #include "script_value_wrapper.h"

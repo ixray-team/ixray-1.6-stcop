@@ -11,7 +11,7 @@
 #include "ai_rat.h"
 #include "../../../memory_manager.h"
 #include "../../../enemy_manager.h"
-#include "../../../../xrServerEntities/ai_sounds.h"
+#include "../../../../xrSound/ai_sounds.h"
 
 BOOL CAI_Rat::feel_vision_isRelevant(CObject* O)
 {

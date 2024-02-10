@@ -53,3 +53,4 @@ add_compile_options(/fp:fast)
 # Linker list
 target_link_libraries(xrSE_Factory PUBLIC xrCore)
 target_link_libraries(xrSE_Factory PUBLIC luabind)
+target_link_libraries(xrSE_Factory PUBLIC xrScripts)

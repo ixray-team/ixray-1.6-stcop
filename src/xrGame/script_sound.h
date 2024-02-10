@@ -9,7 +9,7 @@
 #pragma once
 
 #include "../xrScripts/script_export_space.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 
 class CScriptGameObject;
 

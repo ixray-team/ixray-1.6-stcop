@@ -4,7 +4,6 @@
 #include "xrserver_objects_alife.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "level.h"
-#include "ai_sounds.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "script_callback_ex.h"

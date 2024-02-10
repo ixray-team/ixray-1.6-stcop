@@ -13,7 +13,7 @@
 #include "../../../team_hierarchy_holder.h"
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
-#include "../../../../xrServerEntities/ai_sounds.h"
+#include "../../../../xrSound/ai_sounds.h"
 
 IC void CAI_Rat::add_active_member	(bool bForceActive)
 {
