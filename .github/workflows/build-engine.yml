@@ -158,7 +158,7 @@ jobs:
             -A ${{ matrix.platform }} `
             -T host=x64 `
             -D IXRAY_UTILS=OFF `
-            -D IXRAY_MP=OFF `
+            -D IXRAY_MP=OFF
 
       - name: Build project
         run: |
@@ -212,7 +212,7 @@ jobs:
             -A ${{ matrix.platform }} `
             -T host=x64 `
             -D IXRAY_UTILS=ON `
-            -D IXRAY_MP=OFF `
+            -D IXRAY_MP=OFF
 
       - name: Build project
         run: |
@@ -255,9 +255,17 @@ jobs:
 
       - name: Generate patch
         run: |
-          ${{ github.workspace }}/generate-patch.bat
-          move ${{ github.workspace }}/patch `
-            ${{ github.workspace }}/temp/gamedata
+          git clone ./.git ./temp
+          cd temp
+          git checkout 2045fd565ee903b1ea1a386afd8da73466e65d1d
+          cd ..
+          move temp/gamedata gamedata_origin
+          build\bin\Release\xrCompress.exe -diff gamedata gamedata_origin -out patch
+          build\bin\Release\xrCompress.exe patch -ltx datapack.ltx
+          type engine.log
+          mkdir patches
+          move patch.pack_#0 patches\xpatch_03.db
+          move patch temp\gamedata
 
       - name: Upload gamedata
         uses: actions/upload-artifact@v3
