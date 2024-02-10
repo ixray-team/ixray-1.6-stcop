@@ -425,6 +425,12 @@ u32	CRenderDevice::GetSwapchainHeight()
 
 void CRenderDevice::ResizeBuffers(u16 Width, u16 Height)
 {
+	if (!psDeviceFlags.is(rsFullscreen)) {
+		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
+	} else {
+		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
+	}
+
 	switch (CurrentAPILevel) {
 
 	case APILevel::DX9:
