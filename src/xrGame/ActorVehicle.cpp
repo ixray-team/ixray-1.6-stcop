@@ -21,13 +21,16 @@
 #include "characterphysicssupport.h"
 #include "inventory.h"
 
+#include "pch_script.h"
+#include "game_object_space.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+
 void CActor::attach_Vehicle(CHolderCustom* vehicle)
 {
-/*
 	if(!vehicle) return;
 	if(m_holder) return;
 
-	PickupModeOff		();
 	m_holder=vehicle;
 
 	IRenderVisual *pVis = Visual();
@@ -54,8 +57,9 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
 	SetWeaponHideState				(INV_STATE_CAR, true);
 
-	CStepManager::on_animation_start(MotionID(), 0);
-*/
+	CStepManager::on_animation_start(MotionID(), 0);	
+	
+	this->callback(GameObject::eAttachVehicle)(car->lua_game_object());
 }
 
 void CActor::detach_Vehicle()
@@ -95,6 +99,7 @@ void CActor::detach_Vehicle()
 
 //.	SetWeaponHideState(whs_CAR, FALSE);
 	SetWeaponHideState(INV_STATE_CAR, false);
+	this->callback(GameObject::eDetachVehicle)(car->lua_game_object());
 }
 
 bool CActor::use_Vehicle(CHolderCustom* object)
@@ -124,6 +129,9 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 
 				attach_Vehicle(vehicle);
 			}
+			else if (auto car = smart_cast<CCar*>(vehicle))
+				this->callback(GameObject::eUseVehicle)(car->lua_game_object());
+
 			return true;
 		}
 		return false;
