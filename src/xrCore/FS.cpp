@@ -503,6 +503,9 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 	// Open the file
     hSrcFile		= Platform::CreateFile(cFileName, false);
     Size			= (int)Platform::GetFileSize(hSrcFile);
+	if (Size == 0) {
+		return;
+	}
 
 #ifdef IXR_WINDOWS
 	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
@@ -519,6 +522,9 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 
 CVirtualFileReader::~CVirtualFileReader() 
 {
+	if (Size == 0) {
+		return;
+	}
 #ifdef DEBUG
 	unregister_file_mapping	(data,Size);
 #endif // DEBUG
