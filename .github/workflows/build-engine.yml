@@ -36,12 +36,15 @@ jobs:
       matrix:
         system:
           - windows-2022
+        preset:
+          - Engine
+        platform:
+          - x86
+          - x64
         config:
           - Debug
+          - RelWithDebInfo
           - Release
-        platform:
-          - Win32
-          - x64
 
     runs-on: ${{ matrix.system }}
 
@@ -51,228 +54,41 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v2
-        with:
-          nuget-version: '>=5'
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Cache packages
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: |
-            ${{ github.workspace }}/build/packages
-          key: |
-            ${{ runner.os }}-nuget-${{ hashFiles('**/*.nupkg') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Check cache
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Configure engine
         run: |
-            echo "Cache exists"
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}
 
-      - name: Configure project
+      - name: Build engine
         run: |
-          cmake `
-            -S ${{ github.workspace }} `
-            -B ${{ github.workspace }}/build `
-            -G "Visual Studio 17 2022" `
-            -A ${{ matrix.platform }} `
-            -T host=x64 `
-            -D IXRAY_UTILS=OFF `
-            -D IXRAY_MP=OFF `
-            -D IXRAY_COMPRESSOR_ONLY=OFF
-
-      - name: Build project
-        run: |
-          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
+          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ matrix.config }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: bin-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          name: engine-binaries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/bin/${{ matrix.config }}/*.exe
-            build/bin/${{ matrix.config }}/*.dll
+            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.exe
+            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.dll
+
+      - name: Upload symbols
+        uses: actions/upload-artifact@v4
+        if: matrix.config != 'Release'
+        with:
+          name: engine-symbols-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.pdb
 
       - name: Upload libraries
         uses: actions/upload-artifact@v4
         with:
-          name: lib-engine-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
+          name: engine-libraries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/lib/${{ matrix.config }}/*.lib
-            build/lib/${{ matrix.config }}/*.exp
+            build/${{ matrix.platform }}/${{ matrix.preset }}/lib/${{ matrix.config }}/
 
-  build-utils:
-    name: 'Build utilities'
-
-    strategy:
-      matrix:
-        system:
-          - windows-2022
-        config:
-          - Debug
-          - Release
-        platform:
-          - Win32
-          - x64
-
-    runs-on: ${{ matrix.system }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        if: matrix.config == 'Debug' && matrix.platform == 'x64'
         with:
-          fetch-depth: 0
-
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v2
-        with:
-          nuget-version: '>=5'
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Cache packages
-        uses: actions/cache@v4
-        id: cache
-        with:
+          name: engine-packages-${{ github.sha }}
           path: |
-            ${{ github.workspace }}/build/packages
-          key: |
-            ${{ runner.os }}-nuget-${{ hashFiles('**/*.nupkg') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Check cache
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-            echo "Cache exists"
-
-      - name: Configure project
-        run: |
-          cmake `
-            -S ${{ github.workspace }} `
-            -B ${{ github.workspace }}/build `
-            -G "Visual Studio 17 2022" `
-            -A ${{ matrix.platform }} `
-            -T host=x64 `
-            -D IXRAY_UTILS=ON `
-            -D IXRAY_MP=ON `
-            -D IXRAY_COMPRESSOR_ONLY=OFF
-
-      - name: Build project
-        run: |
-          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
-
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: bin-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            build/bin/${{ matrix.config }}/*.exe
-            build/bin/${{ matrix.config }}/*.dll
-
-      - name: Upload libraries
-        uses: actions/upload-artifact@v4
-        with:
-          name: lib-utils-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            build/lib/${{ matrix.config }}/*.lib
-            build/lib/${{ matrix.config }}/*.exp
-
-  build-compressor:
-    name: 'Build compressor'
-
-    strategy:
-      matrix:
-        system:
-          - windows-2022
-        config:
-          - Release
-        platform:
-          - Win32
-
-    runs-on: ${{ matrix.system }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Configure project
-        run: |
-          cmake `
-            -S ${{ github.workspace }} `
-            -B ${{ github.workspace }}/build `
-            -G "Visual Studio 17 2022" `
-            -A ${{ matrix.platform }} `
-            -T host=x64 `
-            -D IXRAY_UTILS=OFF `
-            -D IXRAY_MP=OFF `
-            -D IXRAY_COMPRESSOR_ONLY=ON
-
-      - name: Build project
-        run: |
-          cmake --build ${{ github.workspace }}/build --config ${{ matrix.config }}
-
-      - name: Upload compressor
-        uses: actions/upload-artifact@v4
-        with:
-          name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: |
-            build/bin/${{ matrix.config }}/
-
-  pack-assets:
-    name: 'Pack assets'
-
-    needs: build-compressor
-
-    strategy:
-      matrix:
-        system:
-          - windows-2022
-        config:
-          - Release
-        platform:
-          - Win32
-
-    runs-on: ${{ matrix.system }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: bin-compressor-(${{ matrix.platform }}-${{ matrix.config }})-(${{ github.sha }})
-          path: build/bin/${{ matrix.config }}/
-
-      - name: Generate patch
-        run: |
-          ${{ github.workspace }}/generate-patch.bat
-          move ${{ github.workspace }}/patch `
-            ${{ github.workspace }}/temp/gamedata
-
-      - name: Upload gamedata
-        uses: actions/upload-artifact@v4
-        with:
-          name: gamedata-(${{ github.sha }})
-          path: temp/gamedata/
-
-      - name: Upload patch
-        uses: actions/upload-artifact@v4
-        with:
-          name: patch-(${{ github.sha }})
-          path: patches/xpatch_03.db
+            build/${{ matrix.platform }}/${{ matrix.preset }}/packages/

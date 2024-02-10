@@ -1,0 +1,94 @@
+name: 'Build server'
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
+      - '**/*.json'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
+      - '**/*.json'
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build-server:
+    name: 'Build server'
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        preset:
+          - Server
+        platform:
+          - x86
+          - x64
+        config:
+          - Debug
+          - RelWithDebInfo
+          - Release
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure server
+        run: |
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}
+
+      - name: Build server
+        run: |
+          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ matrix.config }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-binaries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.exe
+            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.dll
+
+      - name: Upload symbols
+        uses: actions/upload-artifact@v4
+        if: matrix.config != 'Release'
+        with:
+          name: server-symbols-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.pdb
+
+      - name: Upload libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-libraries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}/lib/${{ matrix.config }}/
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        if: matrix.config == 'Debug' && matrix.platform == 'x64'
+        with:
+          name: server-packages-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}/packages/
