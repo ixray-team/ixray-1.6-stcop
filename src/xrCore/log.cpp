@@ -172,8 +172,8 @@ void xrLogger::InternalOpenLogFile()
 	}
 
 	// FX: GA не любит Exclusive открытие :)
-#ifdef IXR_CI_BUILD
-	logFile = FS.w_open(logFileName);
+#ifdef CI_BUILD
+	logFile = FS.w_open("engine.log");
 #else
 	logFile = FS.w_open_ex(logFileName);
 #endif
