@@ -267,6 +267,22 @@ void set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
 	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
 	mc.SetBox		(box_num,bb);
 }
+
+xr_vector<xr_string> CActor::GetKnowedPortions() const
+{
+	static xr_vector<xr_string> SafeVector;
+	SafeVector.clear();
+
+	auto KnownInfos = m_known_info_registry->registry().objects_ptr();
+
+	for (auto Info : *KnownInfos)
+	{
+		SafeVector.push_back(Info.c_str());
+	}
+
+	return SafeVector;
+}
+
 void CActor::Load	(LPCSTR section )
 {
 	// Msg						("Loading actor: %s",section);

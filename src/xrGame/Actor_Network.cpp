@@ -524,6 +524,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 				Msg("single_actor_spawn");
 				g_actor = this;
+				g_pIGameActor = this;
 			}
 		}
 
@@ -537,6 +538,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 					{
 						Msg("mp_actor_spawn");
 						g_actor = this;
+						g_pIGameActor = this;
 					}
 				}
 			}
@@ -550,7 +552,10 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		}
 
 		if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+		{
+			g_pIGameActor = this;
 			g_actor = this;
+		}
 	}
 
 	VERIFY(m_pActorEffector == NULL);
@@ -771,7 +776,11 @@ void CActor::net_Destroy	()
 	SetDefaultVisualOutfit(NULL);
 
 
-	if(g_actor == this) g_actor= NULL;
+	if (g_actor == this)
+	{
+		g_actor = nullptr;
+		g_pIGameActor = nullptr;
+	}
 
 	Engine.Sheduler.Unregister	(this);
 
