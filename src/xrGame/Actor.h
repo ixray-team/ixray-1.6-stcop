@@ -2,7 +2,8 @@
 
 #include "../xrEngine/feel_touch.h"
 #include "../xrEngine/feel_sound.h"
-#include "../xrEngine/iinputreceiver.h"
+#include "../xrEngine/IInputReceiver.h"
+#include "../xrEngine/IGame_Actor.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
@@ -62,6 +63,7 @@ class CLocationManager;
 class CPickUpManager;
 
 class	CActor: 
+	public IGame_Actor, 
 	public CEntityAlive, 
 	public IInputReceiver,
 	public Feel::Touch,
@@ -94,7 +96,7 @@ public:
 	virtual CPHDestroyable*				ph_destroyable				()						;
 			CHolderCustom*				Holder						()						{return m_holder;}
 public:
-
+	virtual xr_vector<xr_string>		GetKnowedPortions() const ;
 	virtual void						Load				( LPCSTR section );
 
 	virtual void						shedule_Update		( u32 T ); 

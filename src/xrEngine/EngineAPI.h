@@ -34,6 +34,7 @@ enum class EditorUI : std::uint8_t
 	CmdVars,
 	CmdConsole,
 	LuaDebug,
+	ActorInfos,
 	Count
 };
 
