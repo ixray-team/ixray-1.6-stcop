@@ -283,7 +283,8 @@ void CRenderDevice::on_idle()
 		seqFrameMT.Process(rp_Frame);
 	}
 
-	if (!g_dedicated_server && (!g_pGameLevel || g_pGamePersistent->m_pMainMenu->IsActive()))
+	bool isFpsLimitNeeded = !g_pGameLevel || load_screen_renderer.b_need_user_input || g_pGamePersistent->m_pMainMenu->IsActive();
+	if (!g_dedicated_server && isFpsLimitNeeded)
 	{
 		u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
 		u32 FrameTime = (FrameEndTime - FrameStartTime);
