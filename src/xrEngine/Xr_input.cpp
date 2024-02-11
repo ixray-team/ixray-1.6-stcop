@@ -270,6 +270,9 @@ void CInput::KeyboardUpdate()
 #include "xr_level_controller.h"
 void CInput::GamepadUpdate()
 {
+	if (pGamePad == nullptr)
+		return;
+
 	if (cbStack.empty())
 		return;
 
