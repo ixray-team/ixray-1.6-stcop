@@ -590,7 +590,7 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 	}
 }
 
-void CLevel::IR_GamepadUpdateKeyState(int id)
+void CLevel::IR_GamepadKeyPress(int id)
 {
 	if (g_bDisableAllInput)
 		return;
@@ -599,11 +599,11 @@ void CLevel::IR_GamepadUpdateKeyState(int id)
 		return;
 
 	// TODO
-	//if (CurrentGameUI() && CurrentGameUI()->IR_GamepadUpdateKeyState(key)) return;
+	//if (CurrentGameUI() && CurrentGameUI()->IR_GamepadKeyPress(key)) return;
 
 	if (g_actor != nullptr && g_actor->g_Alive())
 	{
-		g_actor->IR_GamepadUpdateKeyState(id);
+		g_actor->IR_GamepadKeyPress(id);
 	}
 }
 

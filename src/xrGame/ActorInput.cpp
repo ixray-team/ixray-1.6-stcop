@@ -417,7 +417,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	}
 }
 
-void CActor::IR_GamepadUpdateKeyState(int id)
+void CActor::IR_GamepadKeyPress(int id)
 {
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)
 	{

@@ -376,7 +376,7 @@ void	CMainMenu::IR_OnKeyboardHold(int dik)
 	CDialogHolder::IR_UIOnKeyboardHold(dik);
 };
 
-void CMainMenu::IR_GamepadUpdateKeyState(int id)
+void CMainMenu::IR_GamepadKeyPress(int id)
 {
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN)
 		IR_UIOnKeyboardPress(DIK_DOWN);

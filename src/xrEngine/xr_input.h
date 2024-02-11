@@ -43,6 +43,7 @@ private:
 	int 						offs[COUNT_MOUSE_AXIS] = {};
 	char						old_mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
+	char						old_GPState[COUNT_GP_BUTTONS] = {};
 
 	Fvector2 LeftAxis = { 0, 0 };
 	Fvector2 RightAxis = { 0, 0 };
@@ -67,7 +68,7 @@ public:
 	void						KeyPressed					(int SDLCode);	
 	void						KeyReleased					(int SDLCode);	
 	
-	void						GamepadButtonUpdate			(int SDLCode);
+	void						GamepadButtonUpdate			(int SDLCode, bool IsPressed);
 	void						LeftAxisUpdate				(bool IsX, float value);
 	void						RightAxisUpdate				(bool IsX, float value);
 	void						AdaptiveTriggerUpdate		(bool IsX, float value);

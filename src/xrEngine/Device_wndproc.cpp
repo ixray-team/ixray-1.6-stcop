@@ -25,13 +25,20 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		g_pEventManager->Event.Signal("KERNEL:quit");
 		Profile::EndFrame();
 		return false;
+	case SDL_EVENT_GAMEPAD_REMOVED:
+		SDL_CloseGamepad(pInput->pGamePad);
+		pInput->pGamePad = nullptr;
+		break;
 	case SDL_EVENT_GAMEPAD_ADDED:
 		if (SDL_IsGamepad(Event.jdevice.which))
 			pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
 		break;
+	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+		pInput->GamepadButtonUpdate(Event.gbutton.button, true);
+		break;
 	case SDL_EVENT_GAMEPAD_BUTTON_UP:
 	{
-		pInput->GamepadButtonUpdate(Event.gbutton.button);
+		pInput->GamepadButtonUpdate(Event.gbutton.button, false);
 		break;
 	}
 	case SDL_EVENT_GAMEPAD_AXIS_MOTION:

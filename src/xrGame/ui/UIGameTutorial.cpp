@@ -380,7 +380,7 @@ void CUISequencer::IR_OnKeyboardHold		(int dik)
 		m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
 }
 
-void CUISequencer::IR_GamepadUpdateKeyState(int id)
+void CUISequencer::IR_GamepadKeyPress(int id)
 {
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN)
 		IR_OnKeyboardPress(DIK_DOWN);
