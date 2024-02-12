@@ -1,42 +1,42 @@
 local function get_sound_type(sound_type)
 	local s_type = "NIL"
-	if bit_and(sound_type, snd_type.weapon) == snd_type.weapon then
+	if bit.band(sound_type, snd_type.weapon) == snd_type.weapon then
 		s_type = "WPN"
-		if bit_and(sound_type, snd_type.weapon_shoot) == snd_type.weapon_shoot then
+		if bit.band(sound_type, snd_type.weapon_shoot) == snd_type.weapon_shoot then
 			s_type = "WPN_shoot"
-		elseif bit_and(sound_type, snd_type.weapon_empty) == snd_type.weapon_empty then
+		elseif bit.band(sound_type, snd_type.weapon_empty) == snd_type.weapon_empty then
 			s_type = "WPN_empty"
-		elseif bit_and(sound_type, snd_type.weapon_bullet_hit) == snd_type.weapon_bullet_hit then
+		elseif bit.band(sound_type, snd_type.weapon_bullet_hit) == snd_type.weapon_bullet_hit then
 			s_type = "WPN_hit"
-		elseif bit_and(sound_type, snd_type.weapon_reload) == snd_type.weapon_reload then
+		elseif bit.band(sound_type, snd_type.weapon_reload) == snd_type.weapon_reload then
 			s_type = "WPN_reload"
 		end
-	elseif bit_and(sound_type, snd_type.item) == snd_type.item then
+	elseif bit.band(sound_type, snd_type.item) == snd_type.item then
 		s_type = "ITM"
-		if bit_and(sound_type, snd_type.item_pick_up) == snd_type.item_pick_up then
+		if bit.band(sound_type, snd_type.item_pick_up) == snd_type.item_pick_up then
 			s_type = "ITM_pckup"
-		elseif bit_and(sound_type, snd_type.item_drop) == snd_type.item_drop then
+		elseif bit.band(sound_type, snd_type.item_drop) == snd_type.item_drop then
 			s_type = "ITM_drop"
-		elseif bit_and(sound_type, snd_type.item_hide) == snd_type.item_hide then
+		elseif bit.band(sound_type, snd_type.item_hide) == snd_type.item_hide then
 			s_type = "ITM_hide"
-		elseif bit_and(sound_type, snd_type.item_take) == snd_type.item_take then
+		elseif bit.band(sound_type, snd_type.item_take) == snd_type.item_take then
 			s_type = "ITM_take"
-		elseif bit_and(sound_type, snd_type.item_use) == snd_type.item_use then
+		elseif bit.band(sound_type, snd_type.item_use) == snd_type.item_use then
 			s_type = "ITM_use"
 		end
-	elseif bit_and(sound_type, snd_type.monster) == snd_type.monster then
+	elseif bit.band(sound_type, snd_type.monster) == snd_type.monster then
 		s_type = "MST"
-		if bit_and(sound_type, snd_type.monster_die) == snd_type.monster_die then
+		if bit.band(sound_type, snd_type.monster_die) == snd_type.monster_die then
 			s_type = "MST_die"
-		elseif bit_and(sound_type, snd_type.monster_injure) == snd_type.monster_injure then
+		elseif bit.band(sound_type, snd_type.monster_injure) == snd_type.monster_injure then
 			s_type = "MST_damage"
-		elseif bit_and(sound_type, snd_type.monster_step) == snd_type.monster_step then
+		elseif bit.band(sound_type, snd_type.monster_step) == snd_type.monster_step then
 			s_type = "MST_step"
-		elseif bit_and(sound_type, snd_type.monster_talk) == snd_type.monster_talk then
+		elseif bit.band(sound_type, snd_type.monster_talk) == snd_type.monster_talk then
 			s_type = "MST_talk"
-		elseif bit_and(sound_type, snd_type.monster_attack) == snd_type.monster_attack then
+		elseif bit.band(sound_type, snd_type.monster_attack) == snd_type.monster_attack then
 			s_type = "MST_attack"
-		elseif bit_and(sound_type, snd_type.monster_eat) == snd_type.monster_eat then
+		elseif bit.band(sound_type, snd_type.monster_eat) == snd_type.monster_eat then
 			s_type = "MST_eat"
 		end
 	end
