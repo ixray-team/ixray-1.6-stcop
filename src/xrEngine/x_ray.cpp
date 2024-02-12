@@ -22,6 +22,7 @@
 #include "../xrCore/discord/discord.h"
 #include "std_classes.h"
 #include "IGame_Persistent.h"
+#include "FPSCounter.h"
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
@@ -224,6 +225,7 @@ ENGINE_API void EngineLoadStage4()
 
 	Device.Create();
 	g_FontManager->InitializeFonts();
+	pFPSCounter = new FPS::FPSCounter();
 }
 
 ENGINE_API void EngineLoadStage5()
@@ -237,14 +239,15 @@ ENGINE_API void EngineLoadStage5()
 	// Main cycle
 	Memory.mem_usage();
 	Device.Run					( );
-
-
+	
 	// Destroy APP
 	xr_delete					( g_SpatialSpacePhysic	);
 	xr_delete					( g_SpatialSpace		);
 	DEL_INSTANCE				( g_pGamePersistent		);
 	xr_delete					( pApp					);
 	g_pEventManager->Event.Dump			( );
+
+	xr_delete(pFPSCounter);
 
 	// Destroying
 //.	destroySound();

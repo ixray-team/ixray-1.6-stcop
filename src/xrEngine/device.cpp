@@ -22,6 +22,7 @@ using namespace DirectX;
 #define INCLUDE_FROM_ENGINE
 #include "../xrCore/FS_impl.h"
 #include "igame_persistent.h"
+#include "FPSCounter.h"
 
 ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -263,6 +264,10 @@ void CRenderDevice::on_idle()
 			if (Begin()) 
 			{
 				seqRender.Process(rp_Render);
+
+				extern bool IsMainMenuActive();
+				pFPSCounter->ShowEngineVersion(IsMainMenuActive());
+
 				End();
 			}
 		}
