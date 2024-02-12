@@ -12,7 +12,7 @@
 #include "actor.h"
 
 
-//загрузка из XML файла
+//Р·Р°РіСЂСѓР·РєР° РёР· XML С„Р°Р№Р»Р°
 void CDialogScriptHelper::Load		(CUIXml* uiXml, XML_NODE* phrase_node)
 {
 	LoadSequence(uiXml,phrase_node, "precondition",		m_Preconditions);
@@ -183,10 +183,11 @@ void CDialogScriptHelper::Action			(const CGameObject* pSpeakerGO1, const CGameO
 		luabind::functor<void>	lua_function;
 		THROW(*Actions()[i]);
 		bool functor_exists = ai().script_engine().functor(*Actions()[i] ,lua_function);
-		THROW3(functor_exists, "Cannot find phrase dialog script function", *Actions()[i]);
-		try {
-			lua_function		(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
-		} catch (...) {
+		if (!functor_exists) {
+			Msg("[ERROR] Cannot find phrase dialog script function %s", *Actions()[i]);
+			return;
 		}
+
+		lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
 	}
 }
