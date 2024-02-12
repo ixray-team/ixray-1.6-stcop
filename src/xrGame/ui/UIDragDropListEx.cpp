@@ -355,9 +355,8 @@ void CUIDragDropListEx::ReinitScroll()
 		}
 		m_vScrollBar->SetScrollPos	(0);
 		m_vScrollBar->SetStepSize	(CellSize().y/3);
-//		m_vScrollBar->SetPageSize	(iFloor(GetWndSize().y/float(CellSize().y)));
 		m_vScrollBar->SetPageSize	( 1/*CellSize().y*/ );
-
+		m_vScrollBar->SetWndSize({ m_vScrollBar->GetWndSize().x, h2 });
 		m_container->SetWndPos		(Fvector2().set(0,0));
 }
 
