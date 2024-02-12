@@ -29,7 +29,7 @@ end
 function load_dialog:FillList()
 	self.list_box:RemoveAll()
 	local f		= getFS()
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*"..saved_game_extension)
+	local flist = f:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly),"*"..saved_game_extension)
 	local f_cnt = flist:Size()
 
 	flist:Sort(FS.FS_sort_by_modif_down)
@@ -109,7 +109,7 @@ end
 
 function file_exist(fname)
 	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname)
+	local flist = f:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly) , fname)
 	local f_cnt = flist:Size()
 
 	if f_cnt > 0 then
@@ -147,7 +147,7 @@ end
 
 function file_data(fname)
 	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. saved_game_extension)
+	local flist = f:file_list_open_ex("$game_saves$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. saved_game_extension)
 	local f_cnt = flist:Size()
 
 	if f_cnt > 0 then

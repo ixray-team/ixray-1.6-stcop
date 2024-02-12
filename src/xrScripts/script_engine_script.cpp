@@ -58,29 +58,9 @@ CRenderDevice *get_device()
 }
 #endif
 
-int bit_and(int i, int j)
-{
-	return			(i & j);
-}
-
-int bit_or(int i, int j)
-{
-	return			(i | j);
-}
-
-int bit_xor(int i, int j)
-{
-	return			(i ^ j);
-}
-
-int bit_not(int i)
-{
-	return			(~i);
-}
-
 LPCSTR user_name()
 {
-	return			(Core.UserName);
+	return (Core.UserName);
 }
 
 void prefetch_module(LPCSTR file_name)
@@ -198,10 +178,6 @@ void CScriptEngine::script_register(lua_State *L)
 		def("prefetch",							&prefetch_module),
 		def("verify_if_thread_is_running",		&verify_if_thread_is_running),
 		def("editor",							&is_editor),
-		def("bit_and",							&bit_and),
-		def("bit_or",							&bit_or),
-		def("bit_xor",							&bit_xor),
-		def("bit_not",							&bit_not),
 		def("user_name",						&user_name),
 		def("time_global",						&script_time_global),
 		def("SemiLog",							&SemiLog),
