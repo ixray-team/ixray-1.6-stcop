@@ -57,9 +57,8 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          key: ${{ matrix.preset }}-NuGet-${{ hashFiles('**/*.nupkg') }}
+          key: ${{ matrix.preset }}-NuGet-
           restore-keys: |
-            ${{ matrix.preset }}-NuGet-${{ hashFiles('**/*.nupkg') }}
             ${{ matrix.preset }}-NuGet-
           path: |
             ~/.nuget/packages
