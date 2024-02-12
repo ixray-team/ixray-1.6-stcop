@@ -54,6 +54,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          key: ${{ matrix.preset }}-NuGet-${{ hashFiles('**/*.nupkg') }}
+          restore-keys: |
+            ${{ matrix.preset }}-NuGet-${{ hashFiles('**/*.nupkg') }}
+            ${{ matrix.preset }}-NuGet-
+          path: |
+            ~/.nuget/packages
+
       - name: Configure engine
         run: |
           cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}
@@ -72,7 +82,7 @@ jobs:
 
       - name: Upload symbols
         uses: actions/upload-artifact@v4
-        if: matrix.config != 'Release'
+        if: ${{ matrix.config != 'Release' }}
         with:
           name: engine-symbols-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
@@ -87,7 +97,7 @@ jobs:
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
-        if: matrix.config == 'Debug' && matrix.platform == 'x64'
+        if: ${{ (matrix.config == 'Debug' && matrix.platform == 'x64') }}
         with:
           name: engine-packages-${{ github.sha }}
           path: |
