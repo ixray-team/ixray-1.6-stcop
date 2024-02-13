@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "../xrEngine/XR_IOConsole.h"
-#include "../xrEngine/Text_Console.h"
+#include "Text_Console.h"
 
 ENGINE_API void EngineLoadStage1(char* lpCmdLine);
 ENGINE_API void EngineLoadStage2();

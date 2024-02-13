@@ -31,19 +31,6 @@ setfenv(1, this) \
 #	define NO_XRGAME_SCRIPT_ENGINE
 #endif
 
-#ifndef DEBUG
-/* start optimizer */
-static int dojitopt (lua_State *L, const char *opt) {
-	lua_pushliteral(L, "opt");
-	if (loadjitmodule(L, "LuaJIT optimizer module not installed"))
-		return 1;
-	lua_remove(L, -2);  /* drop module name */
-	if (*opt) lua_pushstring(L, opt);
-	return report(L, lua_pcall(L, *opt ? 1 : 0, 0, 0));
-}
-/* ---- end of LuaJIT extensions */
-#endif // #ifndef DEBUG
-
 CScriptStorage::CScriptStorage() : 
 	m_jit(false)
 {
@@ -85,7 +72,9 @@ void CScriptStorage::reinit	()
 	luajit::open_lib(lua(), LUA_FFILIBNAME, luaopen_ffi);
 
 	// Lua Plugins
+#ifdef XRGAME_EXPORTS
 	lua_init_ext(lua());
+#endif
 }
 
 int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
