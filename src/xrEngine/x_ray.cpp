@@ -15,8 +15,6 @@
 #include "GameFont.h"
 #include "LightAnimLibrary.h"
 #include "../xrCDB/ispatial.h"
-#include "Text_Console.h"
-
 #include <luabind/luabind.hpp>
 #include <luabind/memory_allocator.hpp>
 #include "string_table.h"

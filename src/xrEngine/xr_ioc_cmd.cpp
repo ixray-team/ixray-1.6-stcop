@@ -626,7 +626,6 @@ ENGINE_API float psHUD_FOV = psHUD_FOV_def;
 
 ENGINE_API int m_look_cam_fp_zoom = 0; // first-person aiming
 
-//extern int			psSkeletonUpdate;
 extern int			rsDVB_Size;
 extern int			rsDIB_Size;
 extern int			psNET_ClientUpdate;
@@ -636,15 +635,13 @@ extern int			psNET_ServerPending;
 extern int			psNET_DedicatedSleep;
 extern char			psNET_Name[32];
 extern Flags32		psEnvFlags;
-//extern float		r__dtex_range;
-
 extern int			g_ErrorLineCount;
 
 void CCC_Register()
 {
-	CMD2(CCC_Boolean, "ui_dbg_weather", &Engine.External.EditorStates[(int)EditorUI::Weather]);
-	CMD2(CCC_Boolean, "ui_dbg_draw", &Engine.External.EditorStates[(int)EditorUI::DebugDraw]);
-	CMD2(CCC_Boolean, "ui_dbg_cmd_vars", &Engine.External.EditorStates[(int)EditorUI::CmdVars]);
+	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
+	CMD2(CCC_Boolean, "ui_dbg_draw",		&Engine.External.EditorStates[(int)EditorUI::DebugDraw]);
+	CMD2(CCC_Boolean, "ui_dbg_cmd_vars",	&Engine.External.EditorStates[(int)EditorUI::CmdVars]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
 
 	// General
@@ -679,18 +676,14 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_occlusion",			&psDeviceFlags,		rsOcclusion);
 
 	CMD3(CCC_Mask,		"rs_detail",			&psDeviceFlags,		rsDetails	);
-	//CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
-
-//	CMD3(CCC_Mask,		"rs_constant_fps",		&psDeviceFlags,		rsConstantFPS			);
-	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic			);
-	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic			);
+	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic);
+	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic);
 #endif
 
 	// Render device states
 	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
-//	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
 	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
 	CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
@@ -700,14 +693,11 @@ void CCC_Register()
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"rs_occ_draw",			&psDeviceFlags,		rsOcclusionDraw			);
 	CMD3(CCC_Mask,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
-	//CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
 	CMD2(CCC_Gamma,		"rs_c_gamma"			,&ps_gamma			);
 	CMD2(CCC_Gamma,		"rs_c_brightness"		,&ps_brightness		);
 	CMD2(CCC_Gamma,		"rs_c_contrast"			,&ps_contrast		);
-//	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
-//	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
 
 	// Texture manager	
 	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
@@ -754,7 +744,7 @@ void CCC_Register()
 	CMD4(CCC_Float,		"developer_float_4",	&devfloat4, -100000.0f, 100000.0f);
 
 	// Camera
-	CMD4(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.9f);
+	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 0.9f);
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
 	CMD1(CCC_r2,		"renderer"				);
@@ -773,9 +763,6 @@ void CCC_Register()
 #endif
 
 	CMD1(CCC_ExclusiveMode,		"input_exclusive_mode");
-
-	extern int g_svTextConsoleUpdateRate;
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
