@@ -10,7 +10,6 @@
 #include "level.h"
 #include "actor.h"
 #include "../xrScripts/script_engine.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"

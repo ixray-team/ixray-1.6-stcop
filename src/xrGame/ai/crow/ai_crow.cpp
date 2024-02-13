@@ -16,7 +16,6 @@
 #include "../../../Include/xrRender/Kinematics.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../actor.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 #include "hit.h"

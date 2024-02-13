@@ -15,10 +15,12 @@ file(GLOB_RECURSE XRPS_PLUG_PANDA CONFIGURE_DEPENDS "luapanda.*")
 file(GLOB_RECURSE XRPS_PLUG_LFS CONFIGURE_DEPENDS "lfs.*")
 file(GLOB_RECURSE XRPS_PLUG_MARSHAL CONFIGURE_DEPENDS "lmarshal.*")
 file(GLOB_RECURSE XRPS_PLUG_XML CONFIGURE_DEPENDS "luaxml.*")
+file(GLOB_RECURSE XRPS_CALLBACK CONFIGURE_DEPENDS "script_callback_ex.*" "callback_info.*")
 
 # Source groups
 source_group("core" FILES ${XRPS_SOURCE_ALL_FILES})
 source_group("exports" FILES ${XRPS_SOURCE_EXP_FILES})
+source_group("callback" FILES ${XRPS_CALLBACK})
 source_group("plugins" FILES ${XRPS_PLUG_PLUG})
 source_group("plugins/socket" FILES ${XRPS_PLUG_SOCKET})
 source_group("plugins/panda" FILES ${XRPS_PLUG_PANDA})
