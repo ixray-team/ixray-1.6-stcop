@@ -12,14 +12,18 @@ CFontManager::CFontManager()
 	Device.seqDeviceReset.Add(this, REG_PRIORITY_HIGH);
 	pFontDI = nullptr;
 	pFontMedium = nullptr;
+	pFontSystem = nullptr;
+	pFontSystem16 = nullptr;
+	pFontStat = nullptr;
 }
 
 CFontManager::~CFontManager()
 {
 	Device.seqDeviceReset.Remove(this);
 
-	for (auto FontPair : Fonts)
-		xr_delete(FontPair.second);
+	for (auto& fontPair : Fonts) {
+		xr_delete(fontPair.second);
+	}
 	Fonts.clear();
 }
 
