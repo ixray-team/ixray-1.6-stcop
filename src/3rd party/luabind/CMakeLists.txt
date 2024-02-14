@@ -28,8 +28,6 @@ target_include_directories(luabind PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/luabind/
 target_include_directories(luabind PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
-target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:LUABIND_NO_EXCEPTIONS>")
-target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPTIONS>")
 
 # NuGet
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.2023.8.23-open/)
