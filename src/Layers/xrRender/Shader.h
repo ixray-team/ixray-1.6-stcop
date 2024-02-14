@@ -19,6 +19,7 @@ typedef xr_vector<shared_str>	sh_list;
 class					CBlender_Compile;
 class					IBlender;
 #define	SHADER_PASSES_MAX		2
+#define SHADER_ELEMENTS_MAX	6
 
 #pragma pack(push,4)
 
@@ -42,17 +43,34 @@ struct	 ECORE_API		STextureList	: public xr_resource_flagged, public xr_vector<s
 	//	Avoid using this function.
 	//	If possible use precompiled texture list.
 	u32		find_texture_stage(const shared_str &TexName) const;
+
+	STextureList();
+	STextureList& operator=(const STextureList& Other) = delete;
+
+	void _copy(const STextureList& Other);
 };
 typedef	resptr_core<STextureList,resptr_base<STextureList> >								ref_texture_list;
 //////////////////////////////////////////////////////////////////////////
-struct	 ECORE_API		SMatrixList		: public xr_resource_flagged, public svector<ref_matrix,4>		{
-						~SMatrixList	();
+struct ECORE_API SMatrixList : public xr_resource_flagged, public svector<ref_matrix, 4>
+{
+	SMatrixList();
+	SMatrixList& operator=(const SMatrixList& Other) = delete;
+	~SMatrixList();	
+	
+	void _copy(const SMatrixList& Other);
 };
+
 typedef	resptr_core<SMatrixList,resptr_base<SMatrixList> >									ref_matrix_list;
 //////////////////////////////////////////////////////////////////////////
-struct	 ECORE_API		SConstantList	: public xr_resource_flagged, public svector<ref_constant_obsolette,4>	{
-						~SConstantList	();
+struct  ECORE_API SConstantList : public xr_resource_flagged, public svector<ref_constant_obsolette, 4>
+{
+	~SConstantList();
+	SConstantList();
+
+	SConstantList& operator=(const SConstantList& Other) = delete;
+	void _copy(const SConstantList& Other);
 };
+
 typedef	resptr_core<SConstantList,resptr_base<SConstantList> >								ref_constant_list;
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,6 +80,7 @@ struct	 ECORE_API		SGeometry		: public xr_resource_flagged									{
 	ID3DIndexBuffer*	ib;
 	u32					vb_stride;
 						~SGeometry		();
+						SGeometry& operator=(const SGeometry& Other) = delete;
 };
 
 struct 	ECORE_API	resptrcode_geom	: public resptr_base<SGeometry>
@@ -117,19 +136,29 @@ public:
 
 						ShaderElement	();
 						~ShaderElement	();
+
+						ShaderElement& operator=(const ShaderElement& Other) = delete;
+
 	BOOL				equal			(ShaderElement& S);
 	BOOL				equal			(ShaderElement* S);
+	void _copy(const ShaderElement& Other);
 };
 typedef	resptr_core<ShaderElement,resptr_base<ShaderElement> >								ref_selement;
 
 //////////////////////////////////////////////////////////////////////////
 struct 	 ECORE_API	Shader			: public xr_resource_flagged									{
 public:
-	ref_selement		E		[6];	// R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,	
+	ref_selement		E		[SHADER_ELEMENTS_MAX];	// R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,	
 										// R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+
+	Shader();
+	Shader& operator=(const Shader& Other) = delete;
+
 						~Shader			();
 	BOOL				equal			(Shader& S);
 	BOOL				equal			(Shader* S);
+
+	void _copy(Shader& Other);
 };
 struct 	 ECORE_API	resptrcode_shader	: public resptr_base<Shader>
 {

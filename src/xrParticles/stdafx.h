@@ -9,12 +9,7 @@
 
 #pragma once
 
-#include "../xrCore/xrCore.h"
-
+#include "../xrEngine/stdafx.h"
 #include "psystem.h"
-
-#ifdef __BORLANDC__
-#pragma comment( lib, "x:\\xrCoreB.lib"	)
-#endif
 
 #endif //stdafxH

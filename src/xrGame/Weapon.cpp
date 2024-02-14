@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Weapon.h"
-#include "ParticlesObject.h"
 #include "entity_alive.h"
 #include "inventory_item_impl.h"
 #include "inventory.h"

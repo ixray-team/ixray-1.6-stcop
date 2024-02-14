@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "Weapon.h"
-#include "ParticlesObject.h"
 #include "entity.h"
 #include "actor.h"
 

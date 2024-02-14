@@ -1,7 +1,8 @@
 #pragma once
 #include "../xrEngine/feel_touch.h"
 #include "HudSound.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "../xrSound/ai_sounds.h"
 #include "Artefact.h"
 #include "CustomZone.h"

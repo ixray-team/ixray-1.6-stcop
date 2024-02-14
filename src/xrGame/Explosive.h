@@ -11,7 +11,10 @@
 #include "../xrScripts/script_export_space.h"
 #include "../xrphysics/DamageSource.h"
 #include "wallmark_manager.h"
-#include "ParticlesObject.h"
+
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
+
 class IRender_Light;
 
 using BLASTED_OBJECTS_V = xr_vector<CPhysicsShellHolder*>;

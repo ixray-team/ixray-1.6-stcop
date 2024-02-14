@@ -219,7 +219,12 @@ void CRenderDevice::on_idle()
 		Profile::EndFrame();
 		return;
 	}
-	else {
+	else 
+	{
+		if (g_pGamePersistent != nullptr)
+		{
+			g_pGamePersistent->UpdateParticles();
+		}
 		FrameMove();
 	}
 

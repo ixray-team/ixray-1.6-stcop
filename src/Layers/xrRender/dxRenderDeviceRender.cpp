@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
+#include "../../xrParticles/ParticlesObject.h"
 
 #ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
@@ -348,6 +349,9 @@ void dxRenderDeviceRender::Begin()
 #ifndef USE_DX11
 	CHK_DX					(RDevice->BeginScene());
 #endif //USE_DX11
+	
+	CParticlesObject::WaitForParticles();
+
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);

@@ -21,10 +21,16 @@ public:
 	WaveForm		_B;
 	WaveForm		_A;
 
-	CConstant		()
+	// Non-Copyable (mt-safe)
+	CConstant& operator=(const CConstant& Other) = delete;
+	CConstant& operator=(CConstant&& Other) = delete;
+	CConstant(const CConstant& Other) = delete;
+
+	CConstant()
 	{
-		Memory.mem_fill	(this,0,sizeof(CConstant));
+		Memory.mem_fill(this, 0, sizeof(CConstant));
 	}
+
 	IC void			set_float	(float r, float g, float b, float a)
 	{
 		const_float.set	(r,g,b,a);

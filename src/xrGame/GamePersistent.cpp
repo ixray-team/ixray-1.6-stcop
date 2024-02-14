@@ -10,7 +10,6 @@
 #include "UICursor.h"
 #include "game_base_space.h"
 #include "level.h"
-#include "ParticlesObject.h"
 #include "game_base_space.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"

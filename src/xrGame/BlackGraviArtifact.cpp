@@ -8,7 +8,6 @@
 #include "BlackGraviArtifact.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "entity_alive.h"
-#include "ParticlesObject.h"
 #include "phmovementcontrol.h"
 #include "xrmessages.h"
 #include "physicsshellholder.h"

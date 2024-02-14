@@ -2,7 +2,6 @@
 #include "script_game_object.h"
 #include "weaponshotgun.h"
 #include "entity.h"
-#include "ParticlesObject.h"
 #include "inventory.h"
 #include "level.h"
 #include "actor.h"

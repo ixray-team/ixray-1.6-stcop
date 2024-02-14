@@ -3,7 +3,6 @@
 
 #include "WeaponMagazined.h"
 #include "actor.h"
-#include "ParticlesObject.h"
 #include "scope.h"
 #include "silencer.h"
 #include "GrenadeLauncher.h"

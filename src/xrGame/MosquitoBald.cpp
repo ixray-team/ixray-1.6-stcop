@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "mosquitobald.h"
-#include "ParticlesObject.h"
 #include "level.h"
 #include "physicsshellholder.h"
 #include "../xrengine/xr_collide_form.h"

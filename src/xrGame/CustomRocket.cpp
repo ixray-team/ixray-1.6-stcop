@@ -5,7 +5,8 @@
 
 #include "stdafx.h"
 #include "customrocket.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "../xrphysics/extendedgeom.h"
 #include "../xrphysics/calculatetriangle.h"

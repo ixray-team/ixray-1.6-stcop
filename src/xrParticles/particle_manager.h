@@ -3,26 +3,36 @@
 #define particle_managerH
 //---------------------------------------------------------------------------
 #include "particle_actions.h"
+#include <atomic>
 
-namespace PAPI{
-    class CParticleManager: public IParticleManager
+namespace PAPI
+{
+    class CParticleManager: 
+        public IParticleManager, 
+        public pureFrame
     {
 		// These are static because all threads access the same effects.
 		// All accesses to these should be locked.
-        using ParticleEffectVec = xr_vector<ParticleEffect*>;
-        using ParticleEffectVecIt = ParticleEffectVec::iterator;
 
-        using ParticleActionsVec = xr_vector<ParticleActions*>;
-        using ParticleActionsVecIt = ParticleActionsVec::iterator;
+        using SharedParticleEffect = xr_shared_ptr<ParticleEffect>;
+        using SharedParticleActions = xr_shared_ptr<ParticleActions>;
 
-		ParticleEffectVec			effect_vec;
-		ParticleActionsVec			m_alist_vec;
+        using ParticleEffectVec = xr_hash_map<int, SharedParticleEffect>;
+        using ParticleActionsVec = xr_hash_map<int, SharedParticleActions>;
+        ParticleEffectVec m_effect_map;
+        ParticleActionsVec m_alist_map;
+        std::atomic_int m_effect_counter;
+        std::atomic_int m_action_counter;
+
+        xrCriticalSection m_effect_guard;
+        xrCriticalSection m_action_guard;
+
     public:
 		    						CParticleManager	();
         virtual						~CParticleManager	();
 		// Return an index into the list of particle effects where
-		ParticleEffect*				GetEffectPtr		(int effect_id);
-		ParticleActions*			GetActionListPtr	(int alist_id);
+        SharedParticleEffect		GetEffectPtr		(int effect_id);
+        SharedParticleActions		GetActionListPtr	(int alist_id);
 
 		// create&destroy
 		virtual int					CreateEffect		(u32 max_particles);
@@ -36,9 +46,7 @@ namespace PAPI{
 
         // update&render
         virtual void				Update				(int effect_id, int alist_id, float dt);
-        virtual void				Render				(int effect_id);
         virtual void				Transform			(int alist_id, const Fmatrix& m, const Fvector& velocity);
-
         // effect
         virtual void				RemoveParticle		(int effect_id, u32 p_id);
         virtual void				SetMaxParticles		(int effect_id, u32 max_particles);
@@ -50,6 +58,7 @@ namespace PAPI{
         virtual ParticleAction*		CreateAction		(PActionEnum action_id);
         virtual u32					LoadActions			(int alist_id, IReader& R);
         virtual void				SaveActions			(int alist_id, IWriter& W);
+        virtual void                OnFrame             () override;
     };
 };
 //---------------------------------------------------------------------------
