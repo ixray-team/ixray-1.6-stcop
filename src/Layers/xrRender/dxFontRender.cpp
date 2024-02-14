@@ -160,4 +160,6 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 
 	pTexture.create(name);
 	pTexture->surface_set(Texture);
+
+	_RELEASE(Texture);
 }
