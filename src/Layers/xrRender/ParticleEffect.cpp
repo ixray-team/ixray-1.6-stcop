@@ -215,36 +215,22 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				vis.box.getsphere(vis.sphere.P, vis.sphere.R);
 			}
 
-
-			m_MemDT += frame_dt;
-			int	StepCount = 0;
-			if (m_MemDT >= uDT_STEP)
+			bool deffered_stop = true;
+			if (m_Def->m_Flags.is(CPEDef::dfTimeLimit))
 			{
-				StepCount = m_MemDT / uDT_STEP;
-				m_MemDT = m_MemDT % uDT_STEP;
-				clamp(StepCount, 0, 3);
-			}
-			for (; StepCount; StepCount--)
-			{
-				if (m_Def->m_Flags.is(CPEDef::dfTimeLimit))
+				if (!m_RT_Flags.is(flRT_DefferedStop))
 				{
-					if (!m_RT_Flags.is(flRT_DefferedStop))
+					m_fElapsedLimit -= Device.fTimeDelta;
+					if (m_fElapsedLimit < 0.f)
 					{
-						m_fElapsedLimit -= fDT_STEP;
-						if (m_fElapsedLimit < 0.f)
-						{
-							m_fElapsedLimit = m_Def->m_fTimeLimit;
-							Stop(true);
-							break;
-						}
+						m_fElapsedLimit = m_Def->m_fTimeLimit;
+						Stop(true);
+						deffered_stop = false;
 					}
 				}
-				if (m_RT_Flags.is(flRT_DefferedStop) && (0 == p_cnt))
-				{
-					m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, FALSE);
-					break;
-				}
 			}
+			if (deffered_stop && m_RT_Flags.is(flRT_DefferedStop) && (0 == p_cnt))
+				m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, FALSE);
 		}
 		else
 		{
@@ -470,8 +456,6 @@ void CParticleEffect::Render(float) {
 				lt.set			(0.f,0.f);
 				rb.set			(1.f,1.f);
 
-				_mm_prefetch( (char*) &particles[i + 1] , _MM_HINT_NTA );
-
 				float sina = 0.0f , cosa = 0.0f;
 
 				sina = _sin(m.rot.x);
@@ -479,8 +463,6 @@ void CParticleEffect::Render(float) {
 
 				//_mm_store_ss(&sina, _mm_sin_ps(_mm_set1_ps(m.rot.x)));
 				//_mm_store_ss(&cosa, _mm_cos_ps(_mm_set1_ps(m.rot.x)));
-
-				_mm_prefetch( 64 + (char*) &particles[i + 1] , _MM_HINT_NTA );
 
 				if (m_Def->m_Flags.is(CPEDef::dfFramed))
 					m_Def->m_Frame.CalculateTC(iFloor(float(m.frame)/255.f),lt,rb);
