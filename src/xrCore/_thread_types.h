@@ -3,6 +3,7 @@
 #include <tbb/task_group.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
+#include <tbb/parallel_for_each.h>
 
 #include <atomic>
 
@@ -16,6 +17,12 @@ template<typename BlockRange, typename Body>
 inline void xr_parallel_for(BlockRange Range, Body Functor)
 {
 	tbb::parallel_for(Range, Functor);
+}
+
+template<typename Index, typename Body>
+inline void xr_parallel_for(Index Begin, Index End, Body Functor)
+{
+	tbb::parallel_for_each(Begin, End, Functor);
 }
 
 // Atomic types
