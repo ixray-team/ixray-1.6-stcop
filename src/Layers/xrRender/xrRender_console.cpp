@@ -227,6 +227,8 @@ float		ps_r__test_exp_to_shaders_4	= 1.0f;
 
 //- Mad Max
 float		ps_r2_gloss_factor			= 4.0f;
+
+BOOL		ps_r2_particle_dt			= FALSE;
 //- Mad Max
 #ifndef _EDITOR
 #include	"../../xrEngine/xr_ioconsole.h"
@@ -728,6 +730,8 @@ void		xrRender_initconsole	()
 	// R2
 	CMD4(CCC_Float,		"r2_ssa_lod_a",			&ps_r2_ssaLOD_A,			16,		96		);
 	CMD4(CCC_Float,		"r2_ssa_lod_b",			&ps_r2_ssaLOD_B,			32,		64		);
+
+	CMD4(CCC_Integer,	"r_particles_real_dt",	&ps_r2_particle_dt,			0,		1		);
 
 	// R2-specific
 	CMD2(CCC_R2GM,		"r2em",					&ps_r2_gmaterial							);
