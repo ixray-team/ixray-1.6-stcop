@@ -34,7 +34,7 @@ bool CDB_OptimizeTree::Restore(IReader* pReader)
 	}
 
 	// Get nodes count and set default size
-	mNbNodes = pReader->r_s64();
+	mNbNodes = (udword)pReader->r_s64();
 	const size_t mNodesSize = mNbNodes * sizeof(Opcode::AABBNoLeafNode);
 
 	if (pReader->elapsed() < mNodesSize)
@@ -82,8 +82,8 @@ bool CDB_OptimizeTree::Build(Opcode::AABBTree* tree)
 	// Checkings
 	if (!tree)	return false;
 	// Check the input tree is complete
-	uqword NbTriangles = tree->GetNbPrimitives();
-	uqword NbNodes = tree->GetNbNodes();
+	udword NbTriangles = tree->GetNbPrimitives();
+	udword NbNodes = tree->GetNbNodes();
 	if (NbNodes != NbTriangles * 2 - 1)	return false;
 
 	// Get nodes

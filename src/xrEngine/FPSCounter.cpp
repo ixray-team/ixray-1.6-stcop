@@ -61,7 +61,7 @@ void FPS::FPSCounter::ShowEngineVersion(bool IsMainMenu)
         static float prevFps = 0.f;
 
         if ((Device.dwFrame % l_MonitorHZ()) == 0)
-            fps = 1.f / frameDuration.count();
+            fps = 1.f / (float)frameDuration.count();
 
         fps = (fps == 0.0f) ? prevFps : fps;
 
