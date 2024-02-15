@@ -163,6 +163,8 @@ using RTokenVecIt = RStringVec::iterator;
 
 #include "net_utils.h"
 
+#include "_thread_types.h"
+
 // destructor
 template <class T>
 class destructor

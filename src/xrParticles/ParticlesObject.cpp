@@ -12,9 +12,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/environment.h"
 
-#include <tbb/task_group.h>
-
-tbb::task_group ParticleObjectTasks;
+xr_task_group ParticleObjectTasks;
 
 PARTICLES_API const Fvector zero_vel = {0.f,0.f,0.f};
 xr_list<CParticlesObject*> CParticlesObject::AllParticleObjects;
