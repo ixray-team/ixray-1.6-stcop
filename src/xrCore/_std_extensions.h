@@ -98,6 +98,11 @@ template <class T>	IC T		_sqr	(T a)		{ return a*a;		}
 
 // float
 IC float	_abs	(float x)		{ return fabsf(x); }
+#include <xmmintrin.h>
+IC float	_sqrt_sse	(float x)
+{
+    return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ps1(x)));
+}
 IC float	_sqrt	(float x)		{ return sqrtf(x); }
 IC float	_sin	(float x)		{ return sinf(x); }
 IC float	_cos	(float x)		{ return cosf(x); }
