@@ -1,7 +1,4 @@
-#ifndef __XR_AREA_H__
-#define __XR_AREA_H__
-
-//#include "xr_collide_form.h"
+#pragma once
 #include "xr_collide_defs.h"
 
 // refs
@@ -23,19 +20,12 @@ class	XRCDB_API						CObjectSpace
 {
 private:
 	// Debug
-	xrCriticalSection					Lock;
 	CDB::MODEL							Static;
 	Fbox								m_BoundingVolume;
-	xrXRC								xrc;				// MT: dangerous
-	collide::rq_results					r_temp;				// MT: dangerous
-	xr_vector<ISpatial*>				r_spatial;			// MT: dangerous
 public:
 
 #ifdef DEBUG
 	FactoryPtr<IObjectSpaceRender>		*m_pRender;
-	//ref_shader							sh_debug;
-	//clQueryCollision					q_debug;			// MT: dangerous
-	//xr_vector<std::pair<Fsphere,u32> >	dbg_S;				// MT: dangerous
 #endif
 
 private:
@@ -81,11 +71,5 @@ public:
 	// Debugging
 #ifdef DEBUG
 	void								dbgRender			();
-	//ref_shader							dbgGetShader		()	{ return sh_debug;	}
 #endif
 };
-
-
-
-
-#endif //__XR_AREA_H__
