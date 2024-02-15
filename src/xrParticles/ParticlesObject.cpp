@@ -84,44 +84,28 @@ CParticlesObject::~CParticlesObject()
 
 void CParticlesObject::UpdateAllAsync()
 {
-	if(psDeviceFlags.test(mtParticles))
+	for (CParticlesObject* particle : AllParticleObjects)
 	{
-		for (CParticlesObject* particle : AllParticleObjects)
+		auto UpdateParticle = [particle]()
 		{
-			if (particle->m_bDead)
-			{
-				continue;
-			}
+			u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
+			IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual);
+			VERIFY(V);
+			V->OnFrame(dt);
 
-			ParticleObjectTasks.run([particle]()
-			{
-				u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
-				IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual); 
-				VERIFY(V);
-				V->OnFrame(dt);
+			particle->dwLastTime = Device.dwTimeGlobal;
+		};
 
-				particle->dwLastTime = Device.dwTimeGlobal;
-			});
+		if (particle->m_bDead)
+			continue;
+
+		if (psDeviceFlags.test(mtParticles))
+		{
+			ParticleObjectTasks.run(UpdateParticle);
 		}
-	}
-	else
-	{
-		for (CParticlesObject* particle : AllParticleObjects)
+		else
 		{
-			if (particle->m_bDead)
-			{
-				continue;
-			}
-
-
-			{
-				u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
-				IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual); 
-				VERIFY(V);
-				V->OnFrame(dt);
-
-				particle->dwLastTime = Device.dwTimeGlobal;
-			}
+			UpdateParticle();
 		}
 	}
 }
