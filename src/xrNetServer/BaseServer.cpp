@@ -283,13 +283,12 @@ void BaseServer::BannedList_Load()
 
 	for (; it != it_e; ++it)
 	{
-		const shared_str& sect_name = (it)->first;
+		const shared_str& sect_name = (*it)->Name;
 		IBannedClient* Cl = xr_new<IBannedClient>();
 		Cl->Load(ini, sect_name);
 		BannedAddresses.push_back(Cl);
 	}
 }
-
 
 bool banned_client_comparer(IBannedClient* C1, IBannedClient* C2)
 {

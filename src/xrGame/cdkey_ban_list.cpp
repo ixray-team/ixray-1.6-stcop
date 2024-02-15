@@ -22,12 +22,12 @@ void cdkey_ban_list::load()
 		ie = banlist.end(); i != ie; ++i)
 	{
 		banned_client* tmp_client = xr_new<banned_client>();
-		if (tmp_client->load(&bl_ini, (i)->first))
+		if (tmp_client->load(&bl_ini, (*i)->Name))
 		{
 			m_ban_list.push_back(tmp_client);
 		} else
 		{
-			Msg("! ERROR: load [%s] ban item section", (i)->first.size() > 0 ? (i)->first.c_str() : "");
+			Msg("! ERROR: load [%s] ban item section", (*i)->Name.size() > 0 ? (*i)->Name.c_str() : "");
 			xr_delete(tmp_client);
 		}
 	}

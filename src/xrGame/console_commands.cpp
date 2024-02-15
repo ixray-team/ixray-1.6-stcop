@@ -1815,11 +1815,9 @@ public:
 			return;
 		}
 
-		for (const auto& section : pSettings->sections()) 
-		{
-			if (section.second->line_exist("class"))
-			{
-				tips.push_back(section.first.c_str());
+		for (const auto& section : pSettings->sections()) {
+			if (section->line_exist("class")) {
+				tips.push_back(section->Name.c_str());
 			}
 		}
 		std::sort(tips.begin(), tips.end());
@@ -1856,19 +1854,15 @@ public:
 		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) override 
-	{
-		if (!ai().get_alife())
-		{
+	virtual void fill_tips(vecTips& tips, u32 mode) override {
+		if (!ai().get_alife()) {
 			Msg("! ALife simulator is needed to perform specified command!");
 			return;
 		}
 
-		for (const auto& section : pSettings->sections())
-		{
-			if (section.second->line_exist("cost") && section.second->line_exist("inv_weight"))
-			{
-				tips.push_back(section.first.c_str());
+		for (const auto& section : pSettings->sections()) {
+			if (section->line_exist("cost") && section->line_exist("inv_weight")) {
+				tips.push_back(section->Name.c_str());
 			}
 		}
 
