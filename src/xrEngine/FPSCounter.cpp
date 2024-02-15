@@ -14,7 +14,7 @@ using xr_clock = std::chrono::high_resolution_clock;
 enum DebugTextColor : u64
 {
     DTC_GAME_VERSION = 0xFFF5F5DC,
-    DTC_FPS_INFO = 0xFF808080,
+    DTC_FPS_INFO = 0xFFFF8080,
 };
 
 FPS::FPSCounter::FPSCounter()
@@ -60,15 +60,15 @@ void FPS::FPSCounter::ShowEngineVersion(bool IsMainMenu)
         float fps = 0.f;
         static float prevFps = 0.f;
 
-        if ((Device.dwFrame % 10) == 0)
+        if ((Device.dwFrame % 30) == 0)
             fps = 1.f / frameDuration.count();
 
         fps = (fps == 0.0f) ? prevFps : fps;
 
-        clamp(fps, 0.f, static_cast<float>(l_MonitorHZ()));
+        //clamp(fps, 0.f, static_cast<float>(l_MonitorHZ()));
 
         pCGameFont->SetColor(DebugTextColor::DTC_FPS_INFO);
-        pCGameFont->Out(5, (psCurrentVidMode[1] - pCGameFont->GetHeight()), "FPS: %i", static_cast<int>(fps));
+        pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight() * 5, 35, "FPS: %i", static_cast<int>(fps));
         pCGameFont->OnRender();
 
         prevFps = fps;
