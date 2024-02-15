@@ -604,8 +604,6 @@ void ConvexHull2D::MergePlanar (const SortedVertex& rkP)
     }
     if( kTmpHull.size() > 2 )
         m_kHull = kTmpHull;
-    else
-        Msg("error in ConvexHull2D::MergePlanar");
 }
 //----------------------------------------------------------------------------
 
