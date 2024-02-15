@@ -303,6 +303,7 @@ static int ToDIK(int sdlkey)
     case SDLK_KP_8: return DIK_NUMPAD8;
     case SDLK_KP_9: return DIK_NUMPAD9;
     case SDLK_BACKQUOTE: return DIK_GRAVE;
+    case 1105: return DIK_GRAVE; // Non - latin backquote keycode
     case SDLK_KP_DIVIDE: return DIK_DIVIDE;
     case SDLK_KP_MULTIPLY: return DIK_MULTIPLY;
     case SDLK_KP_MINUS: return DIK_SUBTRACT;
