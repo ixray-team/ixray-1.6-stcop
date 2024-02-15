@@ -20,8 +20,8 @@ TImage3D<T>::TImage3D (int iXBound, int iYBound, int iZBound, T* atData)
     aiBound[0] = iXBound;
     aiBound[1] = iYBound;
     aiBound[2] = iZBound;
-    SetBounds(aiBound);
-    SetData(atData);
+    this->SetBounds(aiBound);
+    this->SetData(atData);
 }
 //----------------------------------------------------------------------------
 template <class T>
@@ -42,14 +42,14 @@ template <class T>
 T& TImage3D<T>::operator() (int iX, int iY, int iZ) const
 {
     // assert:  x < bound[0] && y < bound[1] && z < bound[2]
-    return m_atData[iX + m_aiBound[0]*(iY + m_aiBound[1]*iZ)];
+    return this->m_atData[iX + this->m_aiBound[0]*(iY + this->m_aiBound[1]*iZ)];
 }
 //----------------------------------------------------------------------------
 template <class T>
 int TImage3D<T>::GetIndex (int iX, int iY, int iZ) const
 {
     // assert:  x < bound[0] && y < bound[1] && z < bound[2]
-    return iX + m_aiBound[0]*(iY + m_aiBound[1]*iZ);
+    return iX + this->m_aiBound[0]*(iY + this->m_aiBound[1]*iZ);
 }
 //----------------------------------------------------------------------------
 template <class T>
@@ -57,10 +57,10 @@ void TImage3D<T>::GetCoordinates (int iIndex, int& riX, int& riY, int& riZ)
     const
 {
     // assert:  iIndex < m_iQuantity
-    riX = iIndex % m_aiBound[0];
-    iIndex /= m_aiBound[0];
-    riY = iIndex % m_aiBound[1];
-    riZ = iIndex / m_aiBound[1];
+    riX = iIndex % this->m_aiBound[0];
+    iIndex /= this->m_aiBound[0];
+    riY = iIndex % this->m_aiBound[1];
+    riZ = iIndex / this->m_aiBound[1];
 }
 //----------------------------------------------------------------------------
 template <class T>

@@ -19,8 +19,8 @@ TImage2D<T>::TImage2D (int iXBound, int iYBound, T* atData)
     int* aiBound = new int[2];
     aiBound[0] = iXBound;
     aiBound[1] = iYBound;
-    SetBounds(aiBound);
-    SetData(atData);
+    this->SetBounds(aiBound);
+    this->SetData(atData);
 }
 //----------------------------------------------------------------------------
 template <class T>
@@ -41,22 +41,22 @@ template <class T>
 T& TImage2D<T>::operator() (int iX, int iY) const
 {
     // assert:  x < bound[0] && y < bound[1]
-    return m_atData[iX + m_aiBound[0]*iY];
+    return this->m_atData[iX + this->m_aiBound[0]*iY];
 }
 //----------------------------------------------------------------------------
 template <class T>
 int TImage2D<T>::GetIndex (int iX, int iY) const
 {
     // assert:  x < bound[0] && y < bound[1]
-    return iX + m_aiBound[0]*iY;
+    return iX + this->m_aiBound[0]*iY;
 }
 //----------------------------------------------------------------------------
 template <class T>
 void TImage2D<T>::GetCoordinates (int iIndex, int& riX, int& riY) const
 {
     // assert:  iIndex < m_iQuantity
-    riX = iIndex % m_aiBound[0];
-    riY = iIndex / m_aiBound[0];
+    riX = iIndex % this->m_aiBound[0];
+    riY = iIndex / this->m_aiBound[0];
 }
 //----------------------------------------------------------------------------
 template <class T>
