@@ -138,15 +138,15 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 					}
 				}
 			}
-            ParticleManager()->Update(m_HandleEffect,m_HandleActionList, Device.fTimeDelta);
+            ParticleManager()->Update(m_HandleEffect,m_HandleActionList, fDT_STEP);
 
 			PAPI::Particle* particles = nullptr;
 			u32 p_cnt = 0;
             ParticleManager()->GetParticles(m_HandleEffect,particles,p_cnt);
             
 			// our actions
-			if (m_Def->m_Flags.is(CPEDef::dfFramed|CPEDef::dfAnimated))	m_Def->ExecuteAnimate	(particles,p_cnt, Device.fTimeDelta);
-			if (m_Def->m_Flags.is(CPEDef::dfCollision)) 				m_Def->ExecuteCollision	(particles,p_cnt, Device.fTimeDelta,this,m_CollisionCallback);
+			if (m_Def->m_Flags.is(CPEDef::dfFramed|CPEDef::dfAnimated))	m_Def->ExecuteAnimate	(particles,p_cnt, fDT_STEP);
+			if (m_Def->m_Flags.is(CPEDef::dfCollision)) 				m_Def->ExecuteCollision	(particles,p_cnt, fDT_STEP,this,m_CollisionCallback);
 
 			//-move action
 			if (p_cnt)	
