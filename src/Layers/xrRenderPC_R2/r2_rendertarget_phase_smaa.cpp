@@ -86,5 +86,5 @@ void CRenderTarget::phase_smaa() {
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    D3DXLoadSurfaceFromSurface(rt_Generic_0->pRT, 0, 0, rt_Color->pRT, 0, 0, D3DX_DEFAULT, 0);
+    RDevice->StretchRect(rt_Color->pRT, 0, rt_Generic_0->pRT, 0, D3DTEXF_NONE);
 }

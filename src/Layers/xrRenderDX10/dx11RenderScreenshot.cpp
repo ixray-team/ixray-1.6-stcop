@@ -28,7 +28,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         CHK_DX(CaptureTexture(RDevice, RContext, pSrcTexture, *pScratchImage));
 
         // Create a smaller texture
-        Resize(*pScratchImage->GetImage(0, 0, 0), GAMESAVE_SIZE, GAMESAVE_SIZE, TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, *pSmallScratchImage);
+        Resize(*pScratchImage->GetImage(0, 0, 0), GAMESAVE_SIZE, GAMESAVE_SIZE, 
+            TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, *pSmallScratchImage);
 
         // Save to memory
         auto saved = std::make_unique<Blob>();
