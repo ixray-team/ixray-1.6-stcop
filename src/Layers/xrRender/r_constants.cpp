@@ -8,6 +8,11 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
+#ifndef USE_DX11
+#include "../xrRenderDX9/dx9ShaderUtils.h"
+#endif // USE_DX11
+
+
 // pool
 //.static	poolSS<R_constant,512>			g_constant_allocator;
 
