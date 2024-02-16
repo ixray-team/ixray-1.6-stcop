@@ -502,6 +502,56 @@ void CAI_Stalker::Load				(LPCSTR section)
 	m_can_select_items				= !!pSettings->r_bool(section,"can_select_items");
 }
 
+void CAI_Stalker::BoneCallback(CBoneInstance* B) {
+	CAI_Stalker* this_class = static_cast<CAI_Stalker*>(B->callback_param());
+
+	this_class->LookAtActor(B);
+	R_ASSERT2(_valid(B->mTransform), "CAI_Stalker::BoneCallback");
+}
+
+void CAI_Stalker::LookAtActor(CBoneInstance* B) {
+	// Get the current position of the NPC
+	Fvector npcPos = Position();
+
+	// Get the position of the actor
+	Fvector actorPos = Level().CurrentEntity()->Position();
+
+	// Calculate the distance between the NPC and the actor
+	float distanceToActor = npcPos.distance_to(actorPos);
+
+	if (distanceToActor <= 3.0f) {
+		Fvector dir;
+		dir.sub(Level().CurrentEntity()->Position(), Position());
+
+		float yaw, pitch;
+		dir.getHP(yaw, pitch);
+
+		// Get the current orientation of the NPC
+		float curYaw = -angle_normalize_signed(movement().m_body.current.yaw);
+		float curPitch = 0; // Assuming the pitch is zero based on your example
+
+		// Calculate the desired head turn angle
+		float deltaYaw = _abs(angle_normalize_signed(yaw - curYaw));
+
+		// Set a threshold for head turn (adjust this value as needed)
+		float maxHeadTurnThreshold = PI / 4.0f; // Example threshold: 45 degrees
+
+		// Limit the head turn angle based on the threshold
+		if (deltaYaw > maxHeadTurnThreshold) {
+			deltaYaw = maxHeadTurnThreshold;
+		}
+
+		// Determine the sign of the head turn based on the yaw difference
+		if (angle_normalize_signed(yaw - curYaw) > 0)
+			deltaYaw *= -1.f;
+
+		// Apply the head turn to the bone transform
+		Fmatrix M;
+		M.setHPB(0.f, -deltaYaw, 0.f);
+		B->mTransform.mulB_43(M);
+	}
+}
+
 BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 {
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
@@ -609,7 +659,13 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 
 	sight().update					();
 	Exec_Look						(.001f);
-	
+
+	if (EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor]) {
+		CBoneInstance* bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(
+			smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
+		bone_head->set_callback(bctCustom, BoneCallback, this);
+	}
+
 	m_pPhysics_support->in_NetSpawn	(e);
 
 	return							(TRUE);

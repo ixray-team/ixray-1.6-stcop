@@ -17,7 +17,8 @@ enum class EEngineExternalGame
 {
 	EnableThirst,
 	EnableSleepiness,
-	EnableAiDieInAnomaly
+	EnableAiDieInAnomaly,
+	EnableNPCLookAtActor
 };
 
 enum class EEngineExternalRender

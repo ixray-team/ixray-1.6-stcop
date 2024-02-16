@@ -180,6 +180,9 @@ public:
 	virtual void						reload								(LPCSTR	section );				
 	virtual void						LoadSounds							(LPCSTR section );
 	
+	static void BoneCallback(CBoneInstance* B);
+	void LookAtActor(CBoneInstance* B);
+
 	virtual BOOL						net_Spawn							(CSE_Abstract* DC);
 	virtual void						net_Export							(NET_Packet& P);
 	virtual void						net_Import							(NET_Packet& P);
