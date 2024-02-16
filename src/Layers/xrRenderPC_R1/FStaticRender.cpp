@@ -87,10 +87,6 @@ void					CRender::create					()
 	o.no_detail_textures		= !ps_r2_ls_flags.test(R1FLAG_DETAIL_TEXTURES);
 	c_ldynamic_props			= "L_dynamic_props";
 
-	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
-	if (o.no_ram_textures)
-		Msg("* Managed textures disabled");
-
 	m_bMakeAsyncSS				= false;
 
 //---------

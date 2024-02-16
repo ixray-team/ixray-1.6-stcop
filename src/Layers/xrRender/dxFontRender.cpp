@@ -123,6 +123,8 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
 {
+	ID3DTexture2D* pSurface = nullptr;
+
 #ifdef USE_DX11
 	D3D_TEXTURE2D_DESC descFontAtlas;
 	ZeroMemory(&descFontAtlas, sizeof(D3D_TEXTURE2D_DESC));
@@ -143,23 +145,19 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	FontData.SysMemSlicePitch = 0;
 	FontData.SysMemPitch = width * 4;
 
-	ID3DTexture2D* Texture = nullptr;
-	R_CHK(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &Texture));
+	R_CHK(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface));
 #else
 	D3DLOCKED_RECT LockedRect = {};
-	ID3DTexture2D* Texture = nullptr;
-	R_CHK(D3DXCreateTexture(RDevice, width, height, 1, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &Texture));
-	R_CHK(Texture->LockRect(0, &LockedRect, nullptr, 0));
+	R_CHK(RDevice->CreateTexture(width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pSurface, NULL));
+	R_CHK(pSurface->LockRect(0, &LockedRect, nullptr, 0));
 
-	for (int y = 0; y < height; y++) {
-		memcpy((u8*)LockedRect.pBits + (size_t)LockedRect.Pitch * y, (u8*)bitmap + (size_t)width * 4 * y, (size_t)width * 4);
-	}
+	memcpy(LockedRect.pBits, bitmap, width * height * 4);
 
-	R_CHK(Texture->UnlockRect(0));
+	R_CHK(pSurface->UnlockRect(0));
 #endif
 
 	pTexture.create(name);
-	pTexture->surface_set(Texture);
+	pTexture->surface_set(pSurface);
 
-	_RELEASE(Texture);
+	_RELEASE(pSurface);
 }
