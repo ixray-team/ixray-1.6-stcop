@@ -360,18 +360,18 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 {
 	switch(dik)
 	{
-		case DIK_UP:
-		case DIK_DOWN:
-		case DIK_LEFT:
-		case DIK_RIGHT:
+		case SDL_SCANCODE_UP:
+		case SDL_SCANCODE_DOWN:
+		case SDL_SCANCODE_LEFT:
+		case SDL_SCANCODE_RIGHT:
 			{
 				Fvector2 pos_delta;
 				pos_delta.set(0.0f, 0.0f);
 
-				if(dik==DIK_UP)					pos_delta.y	+= m_map_move_step;
-				if(dik==DIK_DOWN)				pos_delta.y	-= m_map_move_step;
-				if(dik==DIK_LEFT)				pos_delta.x	+= m_map_move_step;
-				if(dik==DIK_RIGHT)				pos_delta.x	-= m_map_move_step;
+				if(dik== SDL_SCANCODE_UP)				pos_delta.y	+= m_map_move_step;
+				if(dik== SDL_SCANCODE_DOWN)				pos_delta.y	-= m_map_move_step;
+				if(dik== SDL_SCANCODE_LEFT)				pos_delta.x	+= m_map_move_step;
+				if(dik== SDL_SCANCODE_RIGHT)			pos_delta.x	-= m_map_move_step;
 				MoveMap							(pos_delta);
 				return true;
 			}break;
@@ -382,14 +382,14 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 bool CUIMapWnd::OnKeyboardAction				(int dik, EUIMessages keyboard_action)
 {
 	switch(dik){
-		case DIK_NUMPADMINUS:
+		case SDL_SCANCODE_KP_MINUS:
 			{
 				//SetZoom(GetZoom()/1.5f);
 				UpdateZoom( false );
 				//ResetActionPlanner();
 				return true;
 			}break;
-		case DIK_NUMPADPLUS:
+		case SDL_SCANCODE_KP_PLUS:
 			{
 				//SetZoom(GetZoom()*1.5f);
 				UpdateZoom( true );

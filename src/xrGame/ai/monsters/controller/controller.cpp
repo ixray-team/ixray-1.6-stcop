@@ -41,10 +41,6 @@
 #include "../monster_cover_manager.h"
 #include "controller_psy_aura.h"
 
-#ifdef _DEBUG
-#	include <dinput.h>
-#endif
-
 const u32	_pmt_psy_attack_delay		= 2000;
 const float	_pmt_psy_attack_min_angle	= deg(5);
 
@@ -769,7 +765,7 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 void CController::debug_on_key(int key)
 {
 	switch (key){
-	case DIK_MINUS:
+	case SDL_SCANCODE_MINUS:
 		//m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
 		//m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
 		
@@ -793,7 +789,7 @@ void CController::debug_on_key(int key)
 
 
 		break;
-	case DIK_EQUALS:
+	case SDL_SCANCODE_EQUALS:
 		P2.set		(Actor()->Position());
 		DBG().level_info(this).remove_item	(1);
 		DBG().level_info(this).add_item(P2,0.5f,COLOR_GREEN,1);

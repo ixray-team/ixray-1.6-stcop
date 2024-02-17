@@ -13,7 +13,6 @@
 #include "../level.h"
 #include "../actor.h"
 #include "../alife_registry_wrappers.h"
-#include "dinput.h"
 
 #define				TALK_XML				"talk.xml"
 
@@ -188,7 +187,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, bool b_
 	}
 	if (number < 10)
 	{
-		itm->m_text->SetAccelerator(DIK_ESCAPE + number, 0);
+		itm->m_text->SetAccelerator(SDL_SCANCODE_Z + number, 0);
 	}
 	if(b_finalizer)
 	{

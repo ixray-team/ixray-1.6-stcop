@@ -8,7 +8,6 @@
 #include "../xrEngine/xr_Level_controller.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UIXmlInit.h"
-#include <dinput.h>
 #include "ui\UIBtnHint.h"
 #include "UICursor.h"
 #include "gamespy/GameSpy_Full.h"
@@ -354,7 +353,7 @@ void	CMainMenu::IR_OnKeyboardPress(int dik)
 		Console->Show();
 		return;
 	}
-	if (DIK_F12 == dik){
+	if (SDL_SCANCODE_F12 == dik){
 		Render->Screenshot();
 		return;
 	}
@@ -379,16 +378,16 @@ void	CMainMenu::IR_OnKeyboardHold(int dik)
 void CMainMenu::IR_GamepadKeyPress(int id)
 {
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN)
-		IR_UIOnKeyboardPress(DIK_DOWN);
+		IR_UIOnKeyboardPress(SDL_SCANCODE_DOWN);
 
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP)
-		IR_UIOnKeyboardPress(DIK_UP);
+		IR_UIOnKeyboardPress(SDL_SCANCODE_UP);
 
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH)
-		IR_UIOnKeyboardPress(DIK_RETURN);
+		IR_UIOnKeyboardPress(SDL_SCANCODE_RETURN);
 
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST)
-		IR_UIOnKeyboardPress(DIK_ESCAPE);
+		IR_UIOnKeyboardPress(SDL_SCANCODE_ESCAPE);
 }
 
 void CMainMenu::IR_OnMouseWheel(int direction)

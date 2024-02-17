@@ -5,7 +5,6 @@
 #include "../UIZoneMap.h"
 
 
-#include <dinput.h>
 #include "../actor.h"
 #include "../ActorCondition.h"
 #include "../EntityCondition.h"

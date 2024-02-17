@@ -886,8 +886,6 @@ void CUIMpTradeWnd::DumpPreset(ETradePreset idx)
 #endif // #ifndef MASTER_GOLD
 }
 
-#include <dinput.h>
-
 void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 {
 	Fvector2							pos;
@@ -901,7 +899,7 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 			acc = 1;
 		string64							buff;
 
-		xr_sprintf							(buff," %d", acc - DIK_ESCAPE);
+		xr_sprintf							(buff," %d", acc - SDL_SCANCODE_ESCAPE);
 		CGameFont* pFont					= UI().Font().GetFont(LETTERICA16_FONT_NAME);
 		pFont->SetAligment					(CGameFont::alCenter);
 		pFont->SetColor						(color_rgba(135,123,116,255));

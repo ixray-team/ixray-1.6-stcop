@@ -33,8 +33,6 @@ void IInputReceiver::IR_OnDeactivate					(void)
 		if (IR_GetBtnState(i)) {
 			IR_OnMouseRelease(i);
 		}
-	IR_OnMouseStop	( DIMOFS_X, 0 );
-	IR_OnMouseStop	( DIMOFS_Y, 0 );
 }
 
 void IInputReceiver::IR_OnActivate(void)

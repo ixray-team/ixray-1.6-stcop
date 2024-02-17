@@ -245,29 +245,10 @@ BOOL CRenderTarget::Perform		()
 		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (frame_distort==(Device.dwFrame-1)));
 }
 
-#include <dinput.h>
 #define SHOW(a)		Log			(#a,a);
 #define SHOWX(a)	Msg			("%s %x",#a,a);
 void CRenderTarget::Begin		()
 {
-	/*
-	if (g_pGameLevel->IR_GetKeyState(DIK_LSHIFT))	
-	{
-		Msg					("[%5d]------------------------",Device.dwFrame);
-		SHOW				(param_blur)
-		SHOW				(param_gray)
-		SHOW				(param_duality_h)
-		SHOW				(param_duality_v)
-		SHOW				(param_noise)
-		SHOW				(param_noise_scale)
-		SHOW				(param_noise_fps)
-
-		SHOWX				(param_color_base)
-		SHOWX				(param_color_gray)
-		SHOWX				(param_color_add)
-	}
-	*/
-
 	if (!Perform())	
 	{
 		// Base RT

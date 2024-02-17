@@ -353,8 +353,6 @@ void CUIMMShniaga::OnBtnClick(){
 		GetMessageTarget()->SendMessage(m_selected, BUTTON_CLICKED);
 }
 
-#include <dinput.h>
-
 bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 
@@ -362,18 +360,18 @@ bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		switch (dik)
 		{
-			case DIK_UP:
+			case SDL_SCANCODE_UP:
 				if (m_selected_btn > 0)
 					SelectBtn(m_selected_btn - 1);
 				return true;
-			case DIK_DOWN:
+			case SDL_SCANCODE_DOWN:
 				if (m_selected_btn < BtnCount() - 1)
 					SelectBtn(m_selected_btn + 1);
 				return true;
-			case DIK_RETURN:
+			case SDL_SCANCODE_RETURN:
 				OnBtnClick();
 				return true;
-			case DIK_ESCAPE:
+			case SDL_SCANCODE_ESCAPE:
 				if (m_page != epi_main)
 					ShowMain();
 				return true;
