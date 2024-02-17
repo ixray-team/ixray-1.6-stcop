@@ -281,14 +281,19 @@ static int ToDIK(int sdlkey)
     case SDLK_RETURN: return DIK_RETURN;
     case SDLK_ESCAPE: return DIK_ESCAPE;
     case SDLK_COMMA: return DIK_COMMA;
+    case 1073: return DIK_COMMA;
     case SDLK_MINUS: return DIK_MINUS;
     case SDLK_PERIOD: return DIK_PERIOD;
+    case 1102: return DIK_PERIOD;
     case SDLK_SLASH: return DIK_SLASH;
     case SDLK_SEMICOLON: return DIK_SEMICOLON;
+    case 1078: return DIK_SEMICOLON;
     case SDLK_EQUALS: return DIK_EQUALS;
     case SDLK_LEFTBRACKET: return DIK_LBRACKET;
+    case 1093: return DIK_LBRACKET;
     case SDLK_BACKSLASH: return DIK_BACKSLASH;
     case SDLK_RIGHTBRACKET: return DIK_RBRACKET;
+    case 1098: return DIK_RBRACKET;
     case SDLK_CAPSLOCK: return DIK_CAPITAL;
     case SDLK_SCROLLLOCK: return DIK_SCROLL;
     case SDLK_PAUSE: return DIK_PAUSE;
@@ -303,7 +308,7 @@ static int ToDIK(int sdlkey)
     case SDLK_KP_8: return DIK_NUMPAD8;
     case SDLK_KP_9: return DIK_NUMPAD9;
     case SDLK_BACKQUOTE: return DIK_GRAVE;
-    case 1105: return DIK_GRAVE; // Non - latin backquote keycode
+    case 1105: return DIK_GRAVE;
     case SDLK_KP_DIVIDE: return DIK_DIVIDE;
     case SDLK_KP_MULTIPLY: return DIK_MULTIPLY;
     case SDLK_KP_MINUS: return DIK_SUBTRACT;
