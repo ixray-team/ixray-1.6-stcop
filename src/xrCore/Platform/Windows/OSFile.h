@@ -82,8 +82,8 @@ namespace Platform
         return sys_inf.dwAllocationGranularity;
     }
 
-    inline int Unlink(const char *path)
+    inline int Unlink(const char* path)
     {
-        return _unlink(path);
+        return _wunlink(Platform::ANSI_TO_TCHAR_U8(path));
     }
 }
