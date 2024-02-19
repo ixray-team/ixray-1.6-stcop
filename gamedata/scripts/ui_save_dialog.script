@@ -206,7 +206,7 @@ function save_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
 		self:OnButton_cancel_clicked()
 	else
 
-	   DIK_RETURN			= 28
+	    DIK_RETURN = 40
 
 		if dik == DIK_RETURN and keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 			self:OnButton_ok_clicked()
