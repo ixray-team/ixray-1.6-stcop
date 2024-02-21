@@ -53,3 +53,17 @@ All significant changes to this repository are documented in [this](CHANGELOG.md
 ## License
 
 Contents of this repository licensed under terms of the custom MIT-like non-commercial license unless otherwise specified. See [this](./LICENSE.md) file for details
+
+## Support
+
+Project is being developed with the support of these tools
+
+<div>
+  <a href="https://pvs-studio.ru/ru/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source" align="right">
+    <img src="https://cdn.pvs-studio.com/static/images/logo/pvs_logo.png" alt="PVS-Studio" class="logo-footer" width="72" align="left" />
+  </a>
+
+  <br/>
+
+  [__PVS-Studio__](https://pvs-studio.ru/ru/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code
+</div>
