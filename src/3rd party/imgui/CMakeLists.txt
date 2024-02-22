@@ -5,7 +5,6 @@ file(GLOB IMGUI_SRC CONFIGURE_DEPENDS
 
 add_library(imgui SHARED ${IMGUI_SRC})
 add_library(ImGui::imgui ALIAS imgui)
-target_link_libraries(imgui PUBLIC "${IXRAY_SDK_LIB}/SDL3.lib")
 
 if (WIN32)
 	target_compile_definitions(imgui PUBLIC IMGUI_DLL)

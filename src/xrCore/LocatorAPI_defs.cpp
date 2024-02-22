@@ -2,17 +2,14 @@
 #pragma hdrstop
 
 #include "LocatorAPI_defs.h"
-#pragma warning(disable:4995)
-#include <fcntl.h>
-#pragma warning(default:4995)
 
 //////////////////////////////////////////////////////////////////////
 // FS_File
 //////////////////////////////////////////////////////////////////////
 FS_File::FS_File(xr_string nm, long sz, time_t modif,unsigned attr)	{set(nm,sz,modif,attr);}
 FS_File::FS_File(xr_string nm)										{set(nm,0,0,0);}
-FS_File::FS_File(const _FINDDATA_T& f)								{set(f.name,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
-FS_File::FS_File(xr_string nm, const _FINDDATA_T& f)				{set(nm,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
+FS_File::FS_File(const system_file& f)								{set(f.name,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
+FS_File::FS_File(xr_string nm, const system_file& f)				{set(nm,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
 
 void FS_File::set(xr_string nm, long sz, time_t modif,unsigned attr)
 {
@@ -92,13 +89,7 @@ LPCSTR FS_Path::_update(string_path& dest, LPCSTR src)const
 	xr_strconcat(dest, m_Path, temp);
 	return xr_strlwr	(dest);
 }
-/*
-void FS_Path::_update(xr_string& dest, LPCSTR src)const
-{
-    R_ASSERT(src);
-    dest			= xr_string(m_Path)+src;
-    xr_strlwr		(dest);
-}*/
+
 void FS_Path::rescan_path_cb	()
 {
 	m_Flags.set(flNeedRescan,TRUE);

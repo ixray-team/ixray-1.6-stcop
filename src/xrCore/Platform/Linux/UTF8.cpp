@@ -14,3 +14,11 @@ XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi)
 {
 	return ansi;
 }
+
+namespace Platform
+{
+	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const char* C)
+	{
+		return C;
+	}
+}
