@@ -204,7 +204,7 @@ else()
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/linux-x64/native/Release/libSDL3.so.0.0.0 ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libSDL3.so.0
         )
         
-        target_link_directories(xrCore PUBLIC "${CORE_SDL3}linux-x64/native/Release/")
+        target_link_directories(xrCore PUBLIC "${CORE_SDL3}runtimes/linux-x64/native/Release/")
 endif()
 
 target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
