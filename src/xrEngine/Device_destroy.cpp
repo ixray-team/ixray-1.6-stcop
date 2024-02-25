@@ -17,8 +17,10 @@ void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 	Memory.mem_compact			();
 }
 
-void CRenderDevice::Destroy	(void) {
-	if (!b_is_Ready)			return;
+void CRenderDevice::Destroy()
+{
+	if (!b_is_Ready)			
+		return;
 
 	Log("Destroying Direct3D...");
 
@@ -43,7 +45,7 @@ void CRenderDevice::Destroy	(void) {
 	RenderFactory->DestroyRenderDeviceRender(m_pRender);
 	m_pRender = 0;
 
-	DrawCommands.clear();
+	DestroyRenderDevice();
 }
 
 #include "IGame_Level.h"
