@@ -151,7 +151,7 @@ endif()
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
-## Disable user-cheats for Shipping build
+## Disable user-cheats for (Release & Shipping) build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>$<$<CONFIG:Release>:DISABLE_PROFILER>")
@@ -185,29 +185,24 @@ if (WIN32)
     	PRE_BUILD
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 	)
-    
-    set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x64.2023.12.9.1-open/)
 
 	add_custom_command(TARGET ${PROJECT_NAME}
 			POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OptickCore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/win-x64/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 	)
 
-    target_link_directories(xrCore PUBLIC "${CORE_SDL3}runtimes/win-x64/native/Release/")
 else()
-    set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.linux-x64.2023.12.9.1-open/)
 	execute_process(
         COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/linux-x64/native/Release/libSDL3.so.0.0.0 ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libSDL3.so.0
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0 ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libSDL3.so.0
     )
-        
-    target_link_directories(xrCore PUBLIC "${CORE_SDL3}runtimes/linux-x64/native/Release/")
 endif()
 
 target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
+target_link_directories(xrCore PUBLIC "${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/")
 
 # Optick
 if (IXRAY_USE_OPTICK)

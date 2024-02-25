@@ -12,3 +12,16 @@ if(NOT NUGET_COMMAND)
 else()
     message("NuGet found: ${NUGET_COMMAND}")
 endif()
+
+
+if (WIN32)
+    if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+        set(CORE_SDL3_PLATFORM win-x86)
+    else()
+        set(CORE_SDL3_PLATFORM win-x64)
+    endif()
+else()
+    set(CORE_SDL3_PLATFORM linux-x64)
+endif()
+
+set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2023.12.9.1-open/)
