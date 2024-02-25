@@ -190,7 +190,7 @@ jobs:
         config:
           - Release
         platform:
-          - Win32
+          - x64
 
     runs-on: ${{ matrix.system }}
 
@@ -237,7 +237,7 @@ jobs:
         config:
           - Release
         platform:
-          - Win32
+          - x64
 
     runs-on: ${{ matrix.system }}
 
@@ -262,7 +262,7 @@ jobs:
           move temp/gamedata gamedata_origin
           build\bin\Release\xrCompress.exe -diff gamedata gamedata_origin -out patch
           build\bin\Release\xrCompress.exe patch -ltx datapack.ltx
-          type engine.log
+          type *.log
           mkdir patches
           move patch.pack_#0 patches\xpatch_03.db
           move patch temp\gamedata
