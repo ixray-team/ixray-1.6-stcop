@@ -18,12 +18,13 @@ ENGINE_API	bool g_dedicated_server;
 BOOL CLevel::Load_GameSpecific_Before()
 {
 	// AI space
+	g_pGamePersistent->LoadTitle();
+	string_path fn_game;
 
-	g_pGamePersistent->LoadTitle		();
-	string_path							fn_game;
-	if (GamePersistent().GameType() != eGameIDSingle && OnClient() && FS.exist(fn_game, "$level$", "alife.spawn")) {
+	if (GamePersistent().GameType() != eGameIDSingle && OnClient() && FS.exist(fn_game, "$level$", "alife.spawn")) 
+	{
 		spawn = FS.r_open(fn_game);
-
+		
 		IReader* chunk;
 
 		chunk = spawn->open_chunk(3);
@@ -36,22 +37,22 @@ BOOL CLevel::Load_GameSpecific_Before()
 		ai().game_graph(xr_new<CGameGraph>(*m_chunk));
 	}
 
-	if (FS.exist(fn_game, "$level$", "level.ai") && !HasSessionName())
+	if (!ai().get_alife())
 	{
-#ifdef XR_MP_BUILD
-		ai().load(net_SessionName());
-#else
-		ai().load(name().c_str());
-#endif
+		if (FS.exist(fn_game, "$level$", "level.ai") && HasSessionName())
+		{
+			ai().load(net_SessionName());
+		}
+
+		if (!g_dedicated_server && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+		{
+			IReader* stream = FS.r_open(fn_game);
+			ai().patrol_path_storage_raw(*stream);
+			FS.r_close(stream);
+		}
 	}
 
-	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game")) {
-		IReader							*stream = FS.r_open		(fn_game);
-		ai().patrol_path_storage_raw	(*stream);
-		FS.r_close						(stream);
-	}
-
-	return								(TRUE);
+	return (TRUE);
 }
 
 BOOL CLevel::Load_GameSpecific_After()
