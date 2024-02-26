@@ -31,7 +31,6 @@ if (IXRAY_MP)
 	target_compile_definitions(xrNetServer PUBLIC XR_MP_BUILD)
 endif()
 
-add_compile_options(/fp:fast)
 target_compile_definitions(xrNetServer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list

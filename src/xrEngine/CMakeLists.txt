@@ -113,8 +113,6 @@ source_group("pch" FILES ${ENGINE_SOURCE_PCH_FILES})
 
 # Project defines
 target_compile_definitions(xrAbstractions PRIVATE ENGINE_BUILD)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(xrAbstractions PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
@@ -129,8 +127,6 @@ target_link_libraries(xrAbstractions PUBLIC imgui)
 target_link_libraries(xrAbstractions PRIVATE "freetype.lib")
 
 # Nuget
-set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
-
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
     COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
@@ -143,11 +139,11 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 ## Theora
-target_link_libraries(xrAbstractions PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
-target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/native/include/")
+target_link_libraries(xrAbstractions PUBLIC ${ENGINE_THRA}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
+target_include_directories(xrAbstractions PUBLIC "${ENGINE_THRA}/native/include/")
 
 ## OGG
-target_link_libraries(xrAbstractions PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
-target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")
+target_link_libraries(xrAbstractions PUBLIC ${SND_OGG}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
+target_include_directories(xrAbstractions PUBLIC "${SND_OGG}/native/include/")
 
 target_include_directories(xrAbstractions PUBLIC "${RENDERDOC_API}")

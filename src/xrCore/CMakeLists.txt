@@ -177,9 +177,6 @@ target_link_libraries(xrCore PUBLIC lzo_static_lib)
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Nuget
-set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
-set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
-
 if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME}
     	PRE_BUILD
