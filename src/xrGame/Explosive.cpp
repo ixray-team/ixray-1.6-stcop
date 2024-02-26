@@ -127,11 +127,12 @@ void CExplosive::Load(CInifile const *ini,LPCSTR section)
 	m_fExplodeDurationMax	= ini->r_float(section, "explode_duration");
 
 	effector.effect_sect_name= ini->r_string("explode_effector","effect_sect_name");
-//	if( ini->line_exist(section,"wallmark_section") )
-//	{
-		m_wallmark_manager.m_owner = cast_game_object();
-//		m_wallmark_manager.Load(pSettings,ini->r_string(section,"wallmark_section"));
-//	}
+	m_wallmark_manager.m_owner = cast_game_object();
+
+	if (ini->line_exist(section, "wallmark_section"))
+	{
+		m_wallmark_manager.Load(ini->r_string(section, "wallmark_section"));
+	}
 
 	m_bHideInExplosion = TRUE;
 	if (ini->line_exist(section, "hide_in_explosion"))
