@@ -55,7 +55,9 @@ public:
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
 	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
-	ALife::EHitType m_hit_type;
+	bool					m_bExplosionOnHit;
+	bool					m_bExplosionWhileNotActivated;
+	U32Vec					m_eExplosionHitTypes;
 protected:
 	ESoundTypes				m_eSoundCheckout;
 private:
