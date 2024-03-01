@@ -19,8 +19,8 @@ void CBlender_SMAA::Compile(CBlender_Compile& C) {
         C.r_Pass("null", "smaa_bweight_calc", FALSE, FALSE, FALSE);
 
         C.r_Sampler("s_edgetex", r2_RT_smaa_edgetex, false, D3DTADDRESS_CLAMP);
-        C.r_Sampler("s_areatex", "smaa\\smaa_area_tex_dx9", false, D3DTADDRESS_CLAMP);
-        C.r_Sampler("s_searchtex", "smaa\\smaa_search_tex", false, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
+        C.r_Sampler("s_areatex", "shaders\\smaa\\smaa_area_tex_dx9", false, D3DTADDRESS_CLAMP);
+        C.r_Sampler("s_searchtex", "shaders\\smaa\\smaa_search_tex", false, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
 
         C.r_End();
 

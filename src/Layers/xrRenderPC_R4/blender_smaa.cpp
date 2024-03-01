@@ -25,8 +25,8 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
         C.r_Pass("smaa_bweight_calc", "smaa_bweight_calc", FALSE, FALSE, FALSE);
 
         C.r_dx10Texture("s_edgetex", r2_RT_smaa_edgetex);
-        C.r_dx10Texture("s_areatex", "smaa\\smaa_area_tex_dx10");
-        C.r_dx10Texture("s_searchtex", "smaa\\smaa_search_tex");
+        C.r_dx10Texture("s_areatex", "shaders\\smaa\\smaa_area_tex_dx10");
+        C.r_dx10Texture("s_searchtex", "shaders\\smaa\\smaa_search_tex");
 
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");
