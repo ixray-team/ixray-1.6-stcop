@@ -107,6 +107,8 @@ void CAI_Crow::init		()
 	fIdleSoundDelta		= 10.f;
 	fIdleSoundTime		= fIdleSoundDelta;
 	bPlayDeathIdle		= false;
+	o_workload_frame = 0;
+	o_workload_rframe = 0;
 }
 
 void CAI_Crow::Load( LPCSTR section )
@@ -149,8 +151,23 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 	m_Anims.m_fly.Load			(M,"fly_fwd");
 	m_Anims.m_idle.Load			(M,"fly_idle");
 
-	// disable UpdateCL, enable only on HIT
-	processing_deactivate		();
+	o_workload_frame = 0;
+	o_workload_rframe = 0;
+
+	if (GetfHealth() > 0) {
+		st_current = ECrowStates::eFlyIdle;
+		st_target = ECrowStates::eFlyIdle;
+		// disable UpdateCL, enable only on HIT
+		processing_deactivate();
+	}
+	else {
+		st_current = ECrowStates::eDeathFall;
+		st_target = ECrowStates::eDeathDead;
+		// Crow is already dead, need to enable physics
+		processing_activate();
+		CreateSkeleton();
+	}
+
 	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::net_Spawn") );
 	return		R;
 }
@@ -294,7 +311,7 @@ void CAI_Crow::UpdateCL		()
 }
 void CAI_Crow::renderable_Render	()
 {
-	UpdateWorkload					(Device.fTimeDelta);
+	UpdateWorkload(Device.fTimeDelta * (Device.dwFrame - o_workload_frame));
 	inherited::renderable_Render	();
 	o_workload_rframe				= Device.dwFrame	;
 }
@@ -342,7 +359,7 @@ void CAI_Crow::shedule_Update		(u32 DT)
 	m_Sounds.m_idle.SetPosition		(Position());
 
 	// work
-	if (o_workload_rframe	== (Device.dwFrame-1))	;
+	if (o_workload_rframe >= (Device.dwFrame - 2)) ;
 	else					UpdateWorkload			(fDT);
 	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this," CAI_Crow::shedule_Update		(u32 DT)") );
 }
