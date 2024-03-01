@@ -48,3 +48,10 @@ temp/
 gamedata_origin/
 patch/
 *.log
+
+# Generated files
+imgui.ini
+git_version.h
+
+# MasOS Cache
+.DS_Store
