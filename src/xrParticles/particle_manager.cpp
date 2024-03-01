@@ -79,6 +79,11 @@ int	CParticleManager::CreateActionList()
 	xrCriticalSectionGuard guard(m_action_guard);
 	int actionId = m_action_counter++;
 
+	while (ActionIter != 0)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(0));
+	}
+
 	auto ActionResultPair = m_alist_map.emplace(std::make_pair(actionId, xr_make_shared<ParticleActions>()));
 	R_ASSERT2(ActionResultPair.second, "Can't create particle action with global counter");
 
@@ -88,6 +93,12 @@ int	CParticleManager::CreateActionList()
 void CParticleManager::DestroyActionList(int alist_id)
 {
 	xrCriticalSectionGuard guard(m_action_guard);
+
+	while (ActionIter != 0)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(0));
+	}
+
 	m_alist_map.erase(alist_id);
 }
 
@@ -99,6 +110,8 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
 
 	if (!particleAction)
 		return; // ERROR
+
+	ActionIter++;
 
 	// Step through all the actions in the action list.
 	for (PAVecIt it = particleAction->begin(); it != particleAction->end(); ++it)
@@ -117,6 +130,8 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
 			break;
 		}
 	}
+
+	ActionIter--;
 }
 
 void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
@@ -128,6 +143,7 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 		return; // ERROR
 
 	// Step through all the actions in the action list.
+	ActionIter++;
 	for (PAVecIt it = particleAction->begin(); it != particleAction->end(); ++it)
 	{
 		switch ((*it)->type)
@@ -137,16 +153,16 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 			break;
 		}
 	}
+	ActionIter--;
 
 	if (!deffered)
 	{
 		// effect
 		SharedParticleEffect particleEffect = GetEffectPtr(effect_id);
-		if (!particleEffect)
+		if (particleEffect != nullptr)
 		{
-			return;
+			particleEffect->p_count = 0;
 		}
-		particleEffect->p_count = 0;
 	}
 }
 
