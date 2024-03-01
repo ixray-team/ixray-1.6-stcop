@@ -318,11 +318,11 @@ u32 Player_Statistic::create_victims_table(victims_table & victims_table)
 {
 	u32 result_size = victims_table::header_count_size;
 	victims_table.m_data.clear();
-	for (u32 wi=0, weapons_size = aWeaponStats.size();
+	for (u32 wi=0, weapons_size = (u32)aWeaponStats.size();
 		wi < weapons_size; ++wi)
 	{
 		Weapon_Statistic& WS = aWeaponStats[wi];
-		for (u32 hi = 0, hits_count = WS.m_Hits.size(); hi < hits_count; ++hi)
+		for (u32 hi = 0, hits_count = (u32)WS.m_Hits.size(); hi < hits_count; ++hi)
 		{
 			HitData& Hit = WS.m_Hits[hi];
 			if (victims_table.add_name(Hit.TargetName))
@@ -336,11 +336,11 @@ u32 Player_Statistic::create_bone_table(bone_table & bone_table)
 {
 	u32 result_size = bone_table::header_count_size;
 	bone_table.m_data.clear();
-	for (u32 wi=0, weapons_size = aWeaponStats.size();
+	for (u32 wi=0, weapons_size = (u32)aWeaponStats.size();
 		wi < weapons_size; ++wi)
 	{
 		Weapon_Statistic& WS = aWeaponStats[wi];
-		for (u32 hi = 0, hits_count = WS.m_Hits.size(); hi < hits_count; ++hi)
+		for (u32 hi = 0, hits_count = (u32)WS.m_Hits.size(); hi < hits_count; ++hi)
 		{
 			HitData& Hit = WS.m_Hits[hi];
 			if (bone_table.add_bone(Hit.BoneName, Hit.BoneID))
@@ -353,7 +353,7 @@ u32 Player_Statistic::create_bone_table(bone_table & bone_table)
 void Player_Statistic::net_save(NET_Packet* P)
 {
 	P->w_u32(m_dwTotalShots_d); m_dwTotalShots_d = 0;
-	P->w_u32(aWeaponStats.size());
+	P->w_u32((u32)aWeaponStats.size());
 	
 	victims_table::victims_table_t	vt_storage(
 		_alloca(sizeof(victims_table::victims_table_t::value_type)*255), 255);
@@ -371,7 +371,7 @@ void Player_Statistic::net_save(NET_Packet* P)
 	vict_table.net_save(P);
 	bone_table.net_save(P);
 
-	for (u32 i=0; i<aWeaponStats.size(); i++)
+	for (u32 i=0; i< (u32)aWeaponStats.size(); i++)
 	{
 		Weapon_Statistic& WS = aWeaponStats[i];
 		P->w_stringZ(WS.WName);
@@ -962,7 +962,7 @@ void WeaponUsageStatistic::SVUpdateAliveTimes()
 	m_dwTotalPlayersAliveTime[0] = 0;
 	m_dwTotalPlayersAliveTime[1] = 0;
 	m_dwTotalPlayersAliveTime[2] = 0;
-	for (u32 player_index = 0, max_players = aPlayersStatistic.size();
+	for (u32 player_index = 0, max_players = (u32)aPlayersStatistic.size();
 		player_index < max_players; ++player_index)
 	{
 		Player_Statistic& pstat = aPlayersStatistic[player_index];

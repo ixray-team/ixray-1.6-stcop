@@ -12,24 +12,24 @@
 
 using namespace luabind;
 
-bool r_eof(IReader *self_)
+static bool r_eof_semi(IReader *self_)
 {
 	return			(!!self_->eof());
 }
 
-LPCSTR r_stringZ(IReader *self_)
+static LPCSTR r_stringZ_semi(IReader *self_)
 {
 	shared_str		temp;
 	self_->r_stringZ	(temp);
 	return			(*temp);
 }
 
-bool r_bool(IReader *self_)
+static bool r_bool_semi(IReader *self_)
 {
 	return			(!!self_->r_u8());
 }
 
-void r_fvector3(IReader *self_, Fvector *arg0)
+static void r_fvector3_semi(IReader *self_, Fvector *arg0)
 {
 	self_->r_fvector3(*arg0);
 }
@@ -42,8 +42,8 @@ void CScriptReader::script_register(lua_State *L)
 		class_<IReader>("reader")
 			.def("r_seek",			&IReader::seek			)
 			.def("r_tell",			&IReader::tell			)
-			.def("r_vec3",			&::r_fvector3			)
-			.def("r_bool",			&r_bool					)
+			.def("r_vec3",			&::r_fvector3_semi		)
+			.def("r_bool",			&r_bool_semi			)
 			.def("r_float",			&IReader::r_float		)
 			.def("r_u64",			&IReader::r_u64			)
 			.def("r_s64",			&IReader::r_s64			)
@@ -59,9 +59,9 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_angle8",		&IReader::r_angle8		)
 			.def("r_dir",			&IReader::r_dir			)
 			.def("r_sdir",			&IReader::r_sdir		)
-			.def("r_stringZ",		&r_stringZ				)
+			.def("r_stringZ",		&r_stringZ_semi			)
 			.def("r_elapsed",		&IReader::elapsed		)
 			.def("r_advance",		&IReader::advance		)
-			.def("r_eof",			&r_eof					)
+			.def("r_eof",			&r_eof_semi				)
 	];
 }

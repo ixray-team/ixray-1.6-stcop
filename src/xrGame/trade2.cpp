@@ -23,7 +23,7 @@ bool CTrade::CanTrade()
 	Level().ObjectSpace.GetNearest	(m_nearest,pThis.base->Position(),2.f, NULL);
 	if (!m_nearest.empty()) 
 	{
-		for (u32 i=0, n = m_nearest.size(); i<n; ++i) 
+		for (u32 i=0, n = (u32)m_nearest.size(); i<n; ++i)
 		{
 			// Может ли объект торговать
 			pEntity = smart_cast<CEntity *>(m_nearest[i]);

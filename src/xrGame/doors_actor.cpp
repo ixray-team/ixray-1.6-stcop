@@ -148,7 +148,7 @@ void actor::process_doors			(
 	for ( ; i != e; ++i )
 		(*i)->change_state		( this, start_state );
 
-	u32 const processed_count	= processed_doors.size( );
+	size_t const processed_count	= processed_doors.size( );
 	processed_doors.insert		( processed_doors.end(), new_doors.begin(), new_doors.end() );
 	std::inplace_merge			( processed_doors.begin(), processed_doors.begin() + processed_count, processed_doors.end() );
 }
@@ -239,7 +239,7 @@ bool actor::update_doors			( doors_type const& detected_doors, float const avera
 
 	stalker_movement_manager_smart_cover const& movement = m_object.movement();
 
-	u32 const detected_doors_count	= detected_doors.size();
+	u32 const detected_doors_count	= (u32)detected_doors.size();
 	temp_doors_type				new_doors_to_open( _alloca(detected_doors_count*sizeof(doors_type::value_type)), detected_doors_count );
 	temp_doors_type				new_doors_to_close( _alloca(detected_doors_count*sizeof(doors_type::value_type)), detected_doors_count );
 

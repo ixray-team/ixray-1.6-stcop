@@ -43,9 +43,9 @@
 #include <luabind/detail/policy.hpp>
 
 namespace luabind {
-	namespace detail {
-
-		template<class W, class T> struct unwrap_parameter_type;
+	namespace detail 
+	{
+		template<class Wrap, class Type> struct unwrap_parameter_type;
 		template<class Derived> struct operator_ {};
 
 		struct operator_void_return {};
@@ -80,13 +80,13 @@ namespace luabind {
 		{
 			call_operator(int) {}
 
-			template<class T, class Policies>
+			template<typename Type, class Policies>
 			struct apply
 			{
 				static void execute(
 					lua_State* L
-					, typename detail::unwrap_parameter_type<T, Self>::type self
-					, typename detail::unwrap_parameter_type<T, Args>::type... args
+					, typename detail::unwrap_parameter_type<Type, Self>::type self
+					, typename detail::unwrap_parameter_type<Type, Args>::type... args
 				)
 				{
 					using namespace detail;
@@ -126,13 +126,13 @@ namespace luabind {
 
 	namespace detail {
 
-		template<class W, class T>
+		template<class Wrap, class Type>
 		struct unwrap_parameter_type
 		{
 			using type = typename meta::select_ <
-				meta::case_< std::is_same<T, self_type>, W& >,
-				meta::case_< std::is_same<T, const_self_type >, W const& >,
-				meta::default_< typename unwrap_other<T>::type >
+				meta::case_< std::is_same<Type, self_type>, Wrap& >,
+				meta::case_< std::is_same<Type, const_self_type >, Wrap const& >,
+				meta::default_< typename unwrap_other<Type>::type >
 			> ::type;
 		};
 

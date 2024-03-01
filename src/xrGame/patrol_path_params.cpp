@@ -35,7 +35,7 @@ u32	CPatrolPathParams::count			() const
 	VERIFY(m_path);
 	if (!m_path)
 		return 0;
-	return (m_path->vertices().size());
+	return (u32)(m_path->vertices().size());
 }
 
 const Fvector &CPatrolPathParams::point	(u32 index) const

@@ -194,7 +194,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	cartridge.bullet_material_idx	= knife_material_idx;
 
 	while(m_magazine.size() < 2)	m_magazine.push_back(cartridge);
-	iAmmoElapsed					= m_magazine.size();
+	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
 	PlaySound						("sndShot",pos);
@@ -557,7 +557,7 @@ u32 CWeaponKnife::get_entity_bones_count(CEntityAlive const * entity)
 	if (!tmp_accel)
 		return 0;
 
-	return tmp_accel->size();
+	return (u32)tmp_accel->size();
 };
 
 void CWeaponKnife::fill_shapes_list(CEntityAlive const * entity,
@@ -689,12 +689,12 @@ void CWeaponKnife::make_hit_sort_vectors(Fvector & basis_hit_specific, float & m
 	{
 		//basis_hit_specific1.set(-1.f, 0.f, 0.f);
 		basis_hit_specific.set(0.f, 1.f, 0.f);
-		max_dist = 0.2;
+		max_dist = 0.2f;
 	} else // if (m_eHitType == m_eHitType_2)
 	{
 		//basis_hit_specific1.set(0.f, -1.f, 0.f);
 		basis_hit_specific.set(1.f, 0.f, 0.f);
-		max_dist = 0.1;
+		max_dist = 0.1f;
 	}
 }
 

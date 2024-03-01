@@ -208,7 +208,10 @@ public		:
 
 };
 
-class ENGINE_API	CCC_Float : public IConsole_Command
+#undef min
+#undef max
+
+class ENGINE_API CCC_Float : public IConsole_Command
 {
 protected	:
 	float*			value;

@@ -36,7 +36,6 @@ using smart_cover::change_loophole;
 using smart_cover::animation_planner;
 using smart_cover::non_animated_change_loophole;
 using smart_cover::exit;
-using smart_cover::transitions::action;
 using smart_cover::transitions::animation_action;
 using namespace MonsterSpace;
 using namespace StalkerDecisionSpace;

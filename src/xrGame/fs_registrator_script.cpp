@@ -25,7 +25,7 @@ class FS_file_list{
 	xr_vector<LPSTR>*	m_p;
 public :
 				FS_file_list	(xr_vector<LPSTR>* p):m_p(p)	{ }
-	u32			Size			()								{ return m_p->size();}
+	u32			Size			()								{ return (u32)m_p->size();}
 	LPCSTR		GetAt			(u32 idx)						{ return m_p->at(idx);}
 	void		Free			()								{ FS.file_list_close(m_p);};
 };
@@ -93,7 +93,7 @@ public:
 	};
 	FS_file_list_ex		(LPCSTR path, u32 flags, LPCSTR mask);
 
-	u32			Size()						{return m_file_items.size();}
+	u32			Size()						{return (u32)m_file_items.size();}
 	FS_item		GetAt(u32 idx)				{return m_file_items[idx];}
 	void		Sort(u32 flags);
 };

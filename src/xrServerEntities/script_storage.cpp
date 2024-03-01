@@ -472,7 +472,7 @@ bool CScriptStorage::load_buffer	(lua_State *L, LPCSTR caBuffer, size_t tSize, L
 
 		xr_sprintf		(insert,header,caNameSpaceName,a,b);
 		u32				str_len = xr_strlen(insert);
-		u32 const total_size = str_len + tSize;
+		size_t const total_size = str_len + tSize;
 		LPSTR			script = 0;
 		bool dynamic_allocation	= false;
 

@@ -1084,7 +1084,7 @@ void game_sv_CaptureTheArtefact::ReStartRandomAnomaly()
 
 	TSAnomsSet::iterator	started_ie = started_set.end();
 	do {
-		to_start = ::Random.randI(m_AnomalySet.size());
+		to_start = ::Random.randI((u32)m_AnomalySet.size());
 	} while (started_set.find(to_start) != started_ie);
 	VERIFY(m_AnomalySet.size() > to_start);
 

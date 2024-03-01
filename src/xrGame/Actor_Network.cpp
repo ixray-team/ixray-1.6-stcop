@@ -1627,7 +1627,7 @@ void	CActor::OnRender_Network()
 
 		if (!m_States.empty())
 		{
-			u32 NumBones = m_States.size();
+			u32 NumBones = (u32)m_States.size();
 			for (u32 i=0; i<NumBones; i++)
 			{
 				SPHNetState state = m_States[i];			

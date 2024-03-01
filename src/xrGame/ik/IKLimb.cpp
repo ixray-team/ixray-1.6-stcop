@@ -1154,7 +1154,7 @@ Matrix &CIKLimb::Goal			( Matrix &gl, const Fmatrix &xm, const SCalculateData& c
 			ik_goal_matrix m;
 			DBG_DrawLine(sv_state.goal(m).get().c, DBGG.c, color_xrgb(255, 0, 255));
 
-			DBG_DrawPoint(sv_state.goal(m).get().c, 0.05, color_xrgb(255, 255, 255));
+			DBG_DrawPoint(sv_state.goal(m).get().c, 0.05f, color_xrgb(255, 255, 255));
 			DBG_DrawPoint(DBGG.c, 0.04f, color_xrgb(0, 255, 0));
 			Fvector ch; ch.sub( DBGG.c, sv_state.goal( m ).get().c );
 			if( ch.magnitude( ) > 0.5f )

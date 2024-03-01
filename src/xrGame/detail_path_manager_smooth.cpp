@@ -333,7 +333,7 @@ bool CDetailPathManager::build_trajectory(
 	std::sort		(dist,dist + tangent_count);
 
 	{
-		for (u32 i=0, j = path ? path->size() : 0; i<tangent_count; ++i) {
+		for (u32 i=0, j = path ? (u32)path->size() : 0; i<tangent_count; ++i) {
 			(SCirclePoint&)(start) = tangents[dist[i].index][0];
 			(SCirclePoint&)(dest)	= tangents[dist[i].index][1];
 			if (build_trajectory(start,dest,path,velocity1,velocity2,velocity3)) {
@@ -405,7 +405,7 @@ bool CDetailPathManager::compute_path(
 	STrajectoryPoint			start = _start;
 	STrajectoryPoint			dest = _dest;
 	float						min_time = flt_max, time;
-	u32							size = m_tpTravelLine ? m_tpTravelLine->size() : 0;
+	u32							size = m_tpTravelLine ? (u32)m_tpTravelLine->size() : 0;
 	u32							real_straight_line_index;
 	xr_vector<STravelParamsIndex>::const_iterator I = start_params.begin();
 	xr_vector<STravelParamsIndex>::const_iterator E = start_params.end();
@@ -807,7 +807,7 @@ void CDetailPathManager::postprocess_key_points(
 
 void CDetailPathManager::add_patrol_point()
 {
-	m_last_patrol_point					= m_path.size() - 1;
+	m_last_patrol_point					= (u32)m_path.size() - 1;
 	if ((m_path.size() > 1) && m_state_patrol_path && !fis_zero(extrapolate_length())) {
 		STravelPathPoint				t;
 		Fvector							v;

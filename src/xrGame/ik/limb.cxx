@@ -135,11 +135,6 @@ void select_best_family(const AngleInt jt_limits[],
     }
 }
 
-inline float min(float x, float y)
-{
-    return x < y ? x : y;
-}
-
 //
 // If possible put v (0 < v < 2*M_PI) in the range low < v < high
 //
@@ -151,14 +146,14 @@ inline float put_angle_in_range(float low, float high, float v)
     if (low <= v && v <= high)
 		return v;
     else
-		d1 = min(_abs(v-low),_abs(v-high));
+		d1 = std::min(_abs(v-low),_abs(v-high));
 
     v2 = v - 2*M_PI;
 
     if (low <= v2 && v2 <= high)
 		return v2;
     else
-		d2 = min(_abs(v2-low),_abs(v2-high));
+		d2 = std::min(_abs(v2-low),_abs(v2-high));
     
     return (_abs(d1) < _abs(d2)) ? v : v2;
 }

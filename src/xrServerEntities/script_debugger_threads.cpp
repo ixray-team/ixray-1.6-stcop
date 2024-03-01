@@ -43,7 +43,7 @@ u32 CDbgScriptThreads::FillFrom(CScriptProcess* sp)
 		xr_strcat			(th.process, *sp->name());
 		m_threads.push_back(th);
 	}
-	return m_threads.size();
+	return (u32)m_threads.size();
 }
 
 lua_State* CDbgScriptThreads::FindScript(int nThreadID)

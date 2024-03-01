@@ -777,3 +777,8 @@ void game_cl_ArtefactHunt::OnConnected()
 	inherited::OnConnected();
 	m_game_ui = smart_cast<CUIGameAHunt*>( CurrentGameUI() );
 }
+
+#undef TEAM0_MENU	
+#undef TEAM1_MENU	
+#undef TEAM2_MENU	
+#undef MESSAGE_MENUS

@@ -1274,3 +1274,5 @@ LPCSTR game_cl_Deathmatch::GetGameScore(string32&	score_dest)
 	xr_sprintf(score_dest, "[%d/%d]", frags, m_s32FragLimit);
 	return score_dest;
 }
+
+#undef TEAM0_MENU

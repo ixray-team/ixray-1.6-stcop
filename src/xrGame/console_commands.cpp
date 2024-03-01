@@ -657,8 +657,8 @@ public:
 		{
 			xr_strcpy(g_last_saved_game, saved_game);
 			wchar_t WName[256];
-			MultiByteToWideChar(CP_ACP, 0, g_last_saved_game, strlen(g_last_saved_game), WName, strlen(g_last_saved_game));
-			WideCharToMultiByte(CP_UTF8, 0, WName, strlen(g_last_saved_game), g_last_saved_game, strlen(g_last_saved_game), 0, 0);
+			MultiByteToWideChar(CP_ACP, 0, g_last_saved_game, (int)strlen(g_last_saved_game), WName, (int)strlen(g_last_saved_game));
+			WideCharToMultiByte(CP_UTF8, 0, WName, (int)strlen(g_last_saved_game), g_last_saved_game, (int)strlen(g_last_saved_game), 0, 0);
 
 			return;
 		}

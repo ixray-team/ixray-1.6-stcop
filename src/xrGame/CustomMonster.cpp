@@ -1263,7 +1263,7 @@ void CCustomMonster::OnRender()
 										  (  pick.x_axis * pick.sizes.x * 0.5f) - (pick.y_axis * pick.sizes.y * 0.5f), 
 										  (- pick.x_axis * pick.sizes.x * 0.5f) - (pick.y_axis * pick.sizes.y * 0.5f), };
 
-		Fvector const z_normal		=	- pick.z_axis * 0.1 * inv_nz;
+		Fvector const z_normal		=	- pick.z_axis * 0.1f * inv_nz;
 		Level().debug_renderer().draw_line(Fidentity, traj_start, traj_start + z_normal, color_xrgb(128, 255, 128));
 		Level().debug_renderer().draw_line(Fidentity, traj_end, traj_end - z_normal, color_xrgb(128, 255, 128));
 
@@ -1278,7 +1278,7 @@ void CCustomMonster::OnRender()
 										  (  pick.y_axis * pick.sizes.y * 0.5f) - (pick.z_axis * pick.sizes.z * 0.5f), 
 										  (- pick.y_axis * pick.sizes.y * 0.5f) - (pick.z_axis * pick.sizes.z * 0.5f), };
 
-		Fvector const x_normal		=	- pick.x_axis * 0.1 * inv_nx;
+		Fvector const x_normal		=	- pick.x_axis * 0.1f * inv_nx;
 		Level().debug_renderer().draw_line(Fidentity, hor_start, hor_start + x_normal, color_xrgb(128, 255, 128));
 		Level().debug_renderer().draw_line(Fidentity, hor_end, hor_end - x_normal, color_xrgb(128, 255, 128));
 
@@ -1293,7 +1293,7 @@ void CCustomMonster::OnRender()
 										  (  pick.x_axis * pick.sizes.x * 0.5f) - (pick.z_axis * pick.sizes.z * 0.5f), 
 										  (- pick.x_axis * pick.sizes.x * 0.5f) - (pick.z_axis * pick.sizes.z * 0.5f), };
 
-		Fvector const y_normal		=	- pick.y_axis * 0.1 * inv_ny;
+		Fvector const y_normal		=	- pick.y_axis * 0.1f * inv_ny;
 		Level().debug_renderer().draw_line(Fidentity, ver_start, ver_start + y_normal, color_xrgb(128, 255, 128));
 		Level().debug_renderer().draw_line(Fidentity, ver_end, ver_end - y_normal, color_xrgb(128, 255, 128));
 

@@ -265,3 +265,12 @@ void CBloodsuckerAlien::deactivate()
 	m_object->state_invisible	= false;
 	m_object->setVisible		(true);
 }
+
+#undef DELTA_ANGLE_X	
+#undef DELTA_ANGLE_Y	
+#undef DELTA_ANGLE_Z	
+#undef ANGLE_SPEED		
+#undef MIN_FOV			
+#undef MAX_FOV			
+#undef FOV_SPEED		
+#undef MAX_CAMERA_DIST	

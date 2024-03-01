@@ -46,7 +46,7 @@ void player_state_mad::clear_old_kills()
 
 u32 const player_state_mad::get_u32_param()
 {
-	return m_kill_times.size();
+	return (u32)m_kill_times.size();
 }
 
 } //namespace award_system

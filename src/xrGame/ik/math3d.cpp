@@ -989,3 +989,7 @@ float vecdist(const float t[], const float t2[])
     return _sqrt(DOT(t3,t3));
 }
 
+#undef W
+#undef X
+#undef Y
+#undef Z

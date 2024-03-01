@@ -95,32 +95,10 @@ static int solve_trig1_aux(float c,
  *  Also sort the answers in increasing order.
  */
 
-static int solve_trig1(float a, float b, float c, float theta[2])
+static int local_solve_trig1(float a, float b, float c, float theta[2])
 {
     return solve_trig1_aux(c, a*a+b*b, atan2(b,a), theta);
 }
-
-#if 0
-int consistency_check(double a, double b, double c, 
-		      double a2b2, double atan2ba)
-{
-    float t[2], t2[2];
-
-    int n  = solve_trig1(a, b, c, t);
-    int n2 = solve_trig1_aux(a2b2, atan2ba, c, t2);
-
-    if (n != n2)
-    {
-	printf("error\n");
-	n  = solve_trig1(a, b, c, t);
-	n2 = solve_trig1_aux(a2b2, atan2ba, c, t2);
-    }
-
-    for (int i = 0; i < n; i++)
-	if (fabs(t[i] - t2[i]) < 1e-5)
-	    printf("error2\n");
-}
-#endif
 
 #define GOT_ROOTS (1)
 #define GOT_CRITS (2)
@@ -133,7 +111,7 @@ int PsiEquation::crit_points(float *t) const
     if (!(*status_ptr & GOT_CRITS))
     {
 	// CANNOT use solve_trig1_aux here 
-	*num_crits_ptr = (u8)solve_trig1(beta, -alpha, 0, (float *) crit_pts);
+	*num_crits_ptr = (u8)local_solve_trig1(beta, -alpha, 0, (float *) crit_pts);
 	*status_ptr |= GOT_CRITS;
     }
 
@@ -196,161 +174,3 @@ int PsiEquation::solve(float v, float *t) const
  * from 0 to 3 possible regions
  *
  */
-
-#if 0
-int PsiEquation::clip(float low, 
-		      float high, 
-		      AngleIntList &a) const
-{
-    float s[2], t[2], psi[6];
-
-    int  m, n;
-
-    m = solve_trig1_aux(low-xi,  a2b2, atan2ba,s);
-    n = solve_trig1_aux(high-xi, a2b2, atan2ba,t);
-    // m = solve_trig1(alpha,beta,low-xi,s);
-    // n = solve_trig1(alpha,beta,high-xi,t);
-
-
-    /* If no intersections curve is either entirely in or out */
-    if (n == 0 && m == 0)
-    {
-	/* Evaluate one point and see if it within range */
-	float t = eval(0.0);
-
-	if (t > low && t < high)
-	{
-	    psi[0] = LowBound;
-	    psi[1] = HighBound;
-	    n = 1;
-	}
-	else
-	    n = 0;
-    }
-
-    else 
-    {
-	int j, k, l;
-
-	k = l = 0;
-	j = 1;
-
-	/* If curve intersects the low boundary first */ 
-	if (m && (s[0] < t[0] || n == 0))
-	{
-	    /* Check deriv to see if curve going out of or into boundary */
-	    if (deriv(s[0]) < 0)
-		psi[0] = LowBound;
-	    else
-	    {
-		psi[0] = s[0];
-		k = 1;
-	    }
-	}
-
-	/* Curve intersets high boundary first */
-	else
-	{
-	    /* Check deriv to see if curve going out of or into boundary */
-	    if (deriv(t[0]) > 0)
-		psi[0] = LowBound;
-	    else
-	    {
-		psi[0] = t[0];
-		l = 1; 
-	    }
-	}
-
-	/* Sort the intersections */
-
-	while (k < m && l < n)
-	    if (s[k] < t[l]) 
-		psi[j++] = s[k++];
-	    else
-		psi[j++] = t[l++];
-
-	while (k < m)
-	    psi[j++] = s[k++]; 
-
-	while (l < n)
-	    psi[j++] = t[l++];
-	
-	/* If odd number of boundary pts need to add right bounds */
-
-	if (j & 0x1)
-	    psi[j++] = HighBound;
-
-	n = j/2;
-    }
-
-    // Only add intervals larger than epsilon
-    for (m = 0; m < n; m++)
-	if (fabs(psi[2*m] - psi[2*m+1]) > 1e-5)
-	    a.Add(psi[2*m],psi[2*m+1]);
-
-    return n;
-}
-#endif
-
-#if 0
-//
-// Calculates the range of psi above and below the specified value y
-//
-// ie: above contains all ranges of psi such that
-//   1 <= y <=  alpha*cos(psi) + beta*sin(psi) + xi 
-// and below contains all the range of psi such that   
-//   0 >= y >=  alpha*cos(psi) + beta*sin(psi) + xi 
-//
-
-int PsiEquation::partition(float y,
-			   AngleIntList &above,
-			   AngleIntList &below) const
-{
-    float s[2];
-    int n = solve_trig1(alpha, beta, y - xi, s); 
-
-    // Curve is entirely above or below y
-    switch(n)
-    {
-    case 0:
-	/* Evaluate one point and see if it within range */
-	float t = eval(0.0);
-	if (t > y)
-	    above.Add(LowBound, HighBound);
-	else
-	    below.Add(LowBound, HighBound);
-	break;
-    case 1:
-	/* Check if curve is going out of or into line */
-	if (deriv(s[0]) < 0)
-	{
-	    above.Add(LowBound, s[0]);
-	    below.Add(s[0], HighBound);
-	}
-	else
-	{
-	    below.Add(LowBound, s[0]);
-	    above.Add(s[0], HighBound);
-	}
-	break;
-
-    case 2:
-	if (deriv(s[0]) < 0)
-	{
-	    above.Add(LowBound, s[0]);
-	    below.Add(s[0], s[1]);
-	    above.Add(s[1], HighBound);
-	}
-	else
-	{
-	    below.Add(LowBound, s[0]);
-	    above.Add(s[0], s[1]);
-	    below.Add(s[1], HighBound);
-	}
-	break;
-    }
-
-    return n;
-}
-
-#endif

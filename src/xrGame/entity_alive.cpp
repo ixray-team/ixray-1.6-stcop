@@ -458,7 +458,7 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 		VERIFY(particle_bone  < 64 || BI_NONE == particle_bone);
 
 		pWound->SetParticleBoneNum(particle_bone);
-		pWound->SetParticleName((*m_pFireParticlesVector)[::Random.randI(0,m_pFireParticlesVector->size())]);
+		pWound->SetParticleName((*m_pFireParticlesVector)[::Random.randI(0, (u32)m_pFireParticlesVector->size())]);
 
 		if(BI_NONE != particle_bone)
 		{

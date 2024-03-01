@@ -116,5 +116,5 @@ void CRocketLauncher::dropCurrentRocket()
 
 u32 CRocketLauncher::getRocketCount()
 {
-	return m_rockets.size();
+	return (u32)m_rockets.size();
 }

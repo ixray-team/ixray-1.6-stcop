@@ -36,7 +36,7 @@ anti_aim_ability::~anti_aim_ability ()
 
 void   anti_aim_ability::load_from_ini (CInifile const* ini, pcstr const section)
 {
-	using namespace						detail;
+	using namespace						::detail;
 
 	m_timeout						=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_timeout_string, 5.f);
 	m_freeze_time					=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_freeze_time_string, 1.f);

@@ -18,11 +18,11 @@ public:
 		Close();
 	}
 //////////////////////////////////////////////////////////
-	bool Open(LPCTSTR filename, LPCTSTR mode)
+	bool Open(LPCSTR filename, LPCSTR mode)
 	{
 		if (m_fp) return false;	// Can't re-open without closing first
 
-		m_fp = _tfopen(filename, mode);
+		m_fp = fopen(filename, mode);
 		if (!m_fp) return false;
 
 		m_bCloseFile = true;

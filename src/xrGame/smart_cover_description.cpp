@@ -52,23 +52,7 @@ namespace smart_cover {
 			)
 		);
 	}
-} // namespace smart_cover
-
-class id_predicate {
-	loophole const				*m_loophole;
-
-public:
-	IC			id_predicate(loophole const &loophole) :
-		m_loophole				(&loophole)
-	{
-	}
-
-	IC	bool	operator()	(loophole * const &loophole) const
-	{
-		VERIFY					(loophole);
-		return					(m_loophole->id()._get() == loophole->id()._get());
-	}
-};
+}
 
 class enterable_predicate {
 public:

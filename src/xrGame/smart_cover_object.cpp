@@ -19,9 +19,8 @@
 #include "smart_cover_description.h"
 #include "smart_cover_loophole.h"
 #include "../xrengine/xr_collide_form.h"
-using smart_cover::object;
 
-void object::Load			(LPCSTR section)
+void smart_cover::object::Load			(LPCSTR section)
 {
 	inherited::Load					(section);
 
@@ -29,7 +28,7 @@ void object::Load			(LPCSTR section)
 	m_exit_min_enemy_distance		= pSettings->r_float(section, "exit_min_enemy_distance");
 }
 
-BOOL object::net_Spawn		(CSE_Abstract *server_entity)
+BOOL smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 {
 	CSE_SmartCover					*smart_cover = smart_cast<CSE_SmartCover*>(server_entity);
 	VERIFY							(smart_cover);
@@ -76,22 +75,22 @@ BOOL object::net_Spawn		(CSE_Abstract *server_entity)
 	return							(TRUE);
 }
 
-void object::Center			(Fvector &result) const
+void smart_cover::object::Center			(Fvector &result) const
 {
 	XFORM().transform_tiny			(result,CFORM()->getSphere().P);
 }
 
-float object::Radius		() const
+float smart_cover::object::Radius		() const
 {
 	return							(CFORM()->getRadius());
 }
 
-void object::UpdateCL		()
+void smart_cover::object::UpdateCL		()
 {
 	NODEFAULT;
 }
 
-void object::shedule_Update	(u32 dt)
+void smart_cover::object::shedule_Update	(u32 dt)
 {
 	NODEFAULT;
 }
@@ -99,7 +98,7 @@ void object::shedule_Update	(u32 dt)
 #ifdef DEBUG
 void dbg_draw_frustum		(float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 
-void object::OnRender		()
+void smart_cover::object::OnRender		()
 {
 	DRender->OnFrameEnd				();
 	Fvector							l_half; l_half.set(.5f, .5f, .5f);
@@ -151,7 +150,7 @@ void object::OnRender		()
 }
 #endif // DEBUG
 
-bool object::inside			(Fvector const &position) const
+bool smart_cover::object::inside			(Fvector const &position) const
 {
 	CCF_Shape						*shape = static_cast<CCF_Shape*>(collidable.model);
 	VERIFY							(shape);

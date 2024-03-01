@@ -20,20 +20,24 @@ LPCSTR get_section_name(const CSE_Abstract *abstract)
 	return	(abstract->name());
 }
 
-LPCSTR get_name(const CSE_Abstract *abstract)
-{
-	return	(abstract->name_replace());
-}
-
 CScriptIniFile *get_spawn_ini(CSE_Abstract *abstract)
 {
 	return	((CScriptIniFile*)&abstract->spawn_ini());
 }
 
-template <typename T>
-struct CWrapperBase : public T, public luabind::wrap_base {
-	typedef T inherited;
-	typedef CWrapperBase<T>	self_type;
+namespace xrServerObjectsScript
+{
+	LPCSTR get_name(const CSE_Abstract* abstract)
+	{
+		return	(abstract->name_replace());
+	}
+
+
+	template <typename T>
+	struct CWrapperBase : public T, public luabind::wrap_base
+	{
+		typedef T inherited;
+		typedef CWrapperBase<T>	self_type;
 
 		IC			CWrapperBase(LPCSTR section) : T(section)
 		{
@@ -41,7 +45,7 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 
 		virtual void STATE_Read(NET_Packet& p1)
 		{
-			call<void>("STATE_Read",&p1);
+			call<void>("STATE_Read", &p1);
 		}
 		static  void STATE_Read_static(inherited* ptr, NET_Packet* p1)
 		{
@@ -50,7 +54,7 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 		}
 		virtual void STATE_Write(NET_Packet& p1)
 		{
-			call<void>("STATE_Write",&p1);
+			call<void>("STATE_Write", &p1);
 		}
 		static  void STATE_Write_static(inherited* ptr, NET_Packet* p1)
 		{
@@ -60,7 +64,7 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 
 		virtual void UPDATE_Read(NET_Packet& p1)
 		{
-			call<void>("UPDATE_Read",&p1);
+			call<void>("UPDATE_Read", &p1);
 		}
 		static  void UPDATE_Read_static(inherited* ptr, NET_Packet* p1)
 		{
@@ -69,7 +73,7 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 		}
 		virtual void UPDATE_Write(NET_Packet& p1)
 		{
-			call<void>("UPDATE_Write",&p1);
+			call<void>("UPDATE_Write", &p1);
 		}
 		static  void UPDATE_Write_static(inherited* ptr, NET_Packet* p1)
 		{
@@ -77,7 +81,8 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 			//ptr->self_type::inherited::UPDATE_Write(*p1);
 		}
 
-};
+	};
+}
 
 #pragma optimize("s",on)
 void CPureServerObject::script_register(lua_State *L)
@@ -99,7 +104,7 @@ void CPureServerObject::script_register(lua_State *L)
 
 void CSE_Abstract::script_register(lua_State *L)
 {
-	typedef CWrapperBase<CSE_Abstract> WrapType;
+	typedef xrServerObjectsScript::CWrapperBase<CSE_Abstract> WrapType;
 	typedef CSE_Abstract BaseType;
 	module(L)[
 		class_<CSE_Abstract, CPureServerObject, WrapType, default_holder>	("cse_abstract")
@@ -109,7 +114,7 @@ void CSE_Abstract::script_register(lua_State *L)
 			.def_readwrite	("position",		&BaseType::o_Position)
 			.def_readwrite	("angle",			&BaseType::o_Angle)
 			.def			("section_name",	&get_section_name)
-			.def			("name",			&get_name)
+			.def			("name",			&xrServerObjectsScript::get_name)
 			.def			("clsid",			&BaseType::script_clsid)
 			.def			("spawn_ini",		&get_spawn_ini)
 			.def			("STATE_Read",		&BaseType::STATE_Read, &WrapType::STATE_Read_static)
