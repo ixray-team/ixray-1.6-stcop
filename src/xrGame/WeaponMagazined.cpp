@@ -147,6 +147,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		m_bHasDifferentFireModes = false;
 	}
 	LoadSilencerKoeffs();
+
+	if (WeaponSoundExist(section, "snd_changefiremode") && m_bUseChangeFireModeAnim)
+		m_sounds.LoadSound(section, "snd_changefiremode", "sndFireMode", true, m_eSoundShow);
 }
 
 void CWeaponMagazined::FireStart()
@@ -454,6 +457,9 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eHidden:
 		switch2_Hidden	();
 		break;
+	case eSwitchMode:
+		switch2_FireMode();
+		break;
 	}
 }
 
@@ -513,6 +519,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eShowing:
 		case eHiding:
 		case eReload:
+		case eSwitchMode:
 		case eIdle:
 			{
 				fShotTimeCounter	-=	dt;
@@ -725,10 +732,17 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			else
 				ReloadMagazine();
 			SwitchState(eIdle);
-		} break;	// End of reload animation
-		case eHiding:	SwitchState(eHidden);   break;	// End of Hide
-		case eShowing:	SwitchState(eIdle);		break;	// End of Show
-		case eIdle:		switch2_Idle();			break;  // Keep showing idle
+		} break;
+		case eHiding:
+			SwitchState(eHidden); 
+		break;
+		case eIdle:
+			switch2_Idle();
+		break;
+		case eSwitchMode:
+		case eShowing:
+			SwitchState(eIdle);
+		break;
 	}
 	inherited::OnAnimationEnd(state);
 }
@@ -856,6 +870,15 @@ void CWeaponMagazined::switch2_Showing()
 
 	SetPending			(TRUE);
 	PlayAnimShow		();
+}
+
+void CWeaponMagazined::switch2_FireMode()
+{
+	if (m_sounds_enabled && m_sounds.FindSoundItem("sndFireMode", false))
+		PlaySound("sndFireMode", get_LastFP());
+
+	SetPending(TRUE);
+	PlayAnimFireMode();
 }
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
@@ -1202,6 +1225,28 @@ void CWeaponMagazined::ResetSilencerKoeffs()
 	cur_silencer_koef.Reset();
 }
 
+void CWeaponMagazined::PlayAnimFireMode()
+{
+	VERIFY(GetState() == eSwitchMode);
+
+	std::string anm_name = "anm_changefiremode_from_";
+	auto cur_mode = GetQueueSize();
+	auto old_mode = m_iOldFireMode;
+	if (old_mode < 0)
+		anm_name += "a";
+	else
+		anm_name += std::to_string(old_mode);
+
+	anm_name += "_to_";
+
+	if (cur_mode < 0)
+		anm_name += "a";
+	else
+		anm_name += std::to_string(cur_mode);
+
+	PlayHUDMotion(anm_name, TRUE, this, eSwitchMode);
+}
+
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
@@ -1336,26 +1381,64 @@ bool CWeaponMagazined::SwitchMode			()
 		m_iQueueSize = WEAPON_ININITE_QUEUE;
 	else
 		m_iQueueSize = 1;
-	
-	PlaySound	("sndEmptyClick", get_LastFP());
 
 	return true;
 }
  
-void	CWeaponMagazined::OnNextFireMode		()
+void CWeaponMagazined::OnNextFireMode()
 {
-	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
+	if (!m_bHasDifferentFireModes)
+		return;
+
+	if (GetState() != eIdle)
+		return;
+
+	if (IsPending())
+		return;
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
+	{
+		if (IsZoomed())
+			return;
+	}
+
+	m_iOldFireMode = m_iQueueSize;
+
 	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % (int)m_aFireModes.size();
+
 	SetQueueSize(GetCurrentFireMode());
+
+	if (m_bUseChangeFireModeAnim)
+		SwitchState(eSwitchMode);
 };
 
-void	CWeaponMagazined::OnPrevFireMode		()
+void CWeaponMagazined::OnPrevFireMode()
 {
-	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
+	if (!m_bHasDifferentFireModes)
+		return;
+
+	if (GetState() != eIdle)
+		return;
+
+	if (IsPending())
+		return;
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
+	{
+		if (IsZoomed())
+			return;
+	}
+
+	m_iOldFireMode = m_iQueueSize;
+
 	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % (int)m_aFireModes.size();
-	SetQueueSize(GetCurrentFireMode());	
+
+	SetQueueSize(GetCurrentFireMode());
+
+	if (m_bUseChangeFireModeAnim)
+		SwitchState(eSwitchMode);
 };
 
 void	CWeaponMagazined::OnH_A_Chield		()

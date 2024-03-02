@@ -107,6 +107,7 @@ public:
 		eReload,
 		eMisfire,
 		eSwitch,
+		eSwitchMode,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
@@ -189,6 +190,8 @@ public:
 	bool m_bUseSilHud;
 	bool m_bUseScopeHud;
 	bool m_bUseGLHud;
+
+	bool m_bUseChangeFireModeAnim;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
