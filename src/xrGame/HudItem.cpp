@@ -40,6 +40,8 @@ CHudItem::~CHudItem()
 void CHudItem::Load(LPCSTR section)
 {
 	hud_sect				= pSettings->r_string		(section,"hud");
+	hud_sect_cache = hud_sect;
+
 	m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
 
 	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
