@@ -79,7 +79,8 @@ bool CWeaponAutomaticShotgun::Action(u16 cmd, u32 flags)
 
 void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 {
-	if (!m_bTriStateReload || state != eReload || IsMisfire())
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!m_bTriStateReload || state != eReload || (IsMisfire() && isGuns || IsMisfire() && isHUDAnimationExist("anm_reload_misfire")))
 	{
 		bStopReloadSignal = false;
 		bPreloadAnimAdapter = false;
@@ -145,7 +146,8 @@ void CWeaponAutomaticShotgun::TriStateReload()
 
 void CWeaponAutomaticShotgun::OnStateSwitch(u32 S)
 {
-	if (!m_bTriStateReload || S != eReload || IsMisfire())
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!m_bTriStateReload || S != eReload || (IsMisfire() && isGuns || IsMisfire() && isHUDAnimationExist("anm_reload_misfire")))
 	{
 		bStopReloadSignal = false;
 		bPreloadAnimAdapter = false;
@@ -303,7 +305,9 @@ bool CWeaponAutomaticShotgun::HaveCartridgeInInventory(u8 cnt)
 
 u8 CWeaponAutomaticShotgun::AddCartridge		(u8 cnt)
 {
-	if(IsMisfire())	bMisfire = false;
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (IsMisfire() && !isGuns)
+		bMisfire = false;
 
 	if ( m_set_next_ammoType_on_reload != undefined_ammo_type )
 	{
