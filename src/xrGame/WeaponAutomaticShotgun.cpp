@@ -227,7 +227,7 @@ void CWeaponAutomaticShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState() == eReload);
 
-	std::string anm_name = "anm_open";
+	xr_string anm_name = "anm_open";
 
 	if (m_bEmptyPreloadMode && iAmmoElapsed == 0)
 	{
@@ -242,7 +242,7 @@ void CWeaponAutomaticShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState() == eReload);
 
-	std::string anm_name = "anm_add_cartridge";
+	xr_string anm_name = "anm_add_cartridge";
 
 	if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 	{
@@ -263,7 +263,7 @@ void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState() == eReload);
 
-	std::string anm_name = "anm_close";
+	xr_string anm_name = "anm_close";
 
 	if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 	{
