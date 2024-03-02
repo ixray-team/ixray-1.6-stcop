@@ -192,6 +192,8 @@ public:
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
 	bool bUnjamKeyPressed;
+	bool bNextModeKeyPressed;
+	bool bPrevModeKeyPressed;
 	bool m_bUseSilHud;
 	bool m_bUseScopeHud;
 	bool m_bUseGLHud;

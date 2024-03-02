@@ -90,6 +90,8 @@ CWeapon::CWeapon() : m_fLR_MovingFactor(0.f), m_strafe_offset{}
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
 	bUnjamKeyPressed		= false;
+	bNextModeKeyPressed		= false;
+	bPrevModeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
 
 	hud_silencer = nullptr;
@@ -965,6 +967,16 @@ void CWeapon::UpdateCL		()
 		{
 			bReloadKeyPressed = false;
 			Action(kWPN_RELOAD, CMD_START);
+		}
+		else if (bNextModeKeyPressed)
+		{
+			bNextModeKeyPressed = false;
+			Action(kWPN_FIREMODE_NEXT, CMD_START);
+		}
+		else if (bPrevModeKeyPressed)
+		{
+			bPrevModeKeyPressed = false;
+			Action(kWPN_FIREMODE_PREV, CMD_START);
 		}
 	}
 
