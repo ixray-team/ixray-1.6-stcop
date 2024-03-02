@@ -37,6 +37,11 @@ enum class EEngineExternalEnvironment
 	None
 };
 
+enum class EEngineExternalGunslinger
+{
+	EnableGunslingerMode,
+	None
+};
 
 class ENGINE_API CEngineExternal final
 {
@@ -53,6 +58,7 @@ public:
 	bool operator[](const EEngineExternalGame& ID) const;
 	bool operator[](const EEngineExternalRender& ID) const;
 	bool operator[](const EEngineExternalEnvironment& ID) const;
+	bool operator[](const EEngineExternalGunslinger& ID) const;
 };
 
 ENGINE_API CEngineExternal& EngineExternal();
