@@ -1233,14 +1233,14 @@ void CWeaponMagazined::PlayAnimAim()
 		u32 state = actor->MovingState();
 
 		if (state & mcFwd)
-			anm_name = AddSuffixName(anm_name, "_forward");
+			anm_name += "_forward";
 		else if (state & mcBack)
-			anm_name = AddSuffixName(anm_name, "_back");
+			anm_name += "_back";
 
 		if (state & mcLStrafe)
-			anm_name = AddSuffixName(anm_name, "_left");
+			anm_name += "_left";
 		else if (state & mcRStrafe)
-			anm_name = AddSuffixName(anm_name, "_right");
+			anm_name += "_right";
 
 		PlayHUDMotion(anm_name, TRUE, nullptr, GetState());
 	}
