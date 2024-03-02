@@ -101,7 +101,6 @@ public:
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
 
 	bool			bMisfireReload;
-	virtual bool	IsGrenadeMode() { return false; }
 
 	virtual std::string	NeedAddSuffix(std::string M);
 
