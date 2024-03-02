@@ -908,6 +908,18 @@ void CWeapon::OnHiddenItem ()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 }
 
+bool CWeapon::SendDeactivateItem()
+{
+	if (ParentIsActor() && (Actor()->MovingState() & mcSprint || IsZoomed() || (GetState() != eIdle && GetState() != eShowing)))
+	{
+		if (Actor()->MovingState() & mcSprint)
+			Actor()->BreakSprint();
+		return false;
+	}
+
+	return inherited::SendDeactivateItem();
+}
+
 void CWeapon::SendHiddenItem()
 {
 	if (!CHudItem::object().getDestroy() && m_pInventory)

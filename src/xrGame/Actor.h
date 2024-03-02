@@ -401,6 +401,7 @@ public:
 
 	bool					is_jump					();
 	u32						MovingState				() const {return mstate_real;}
+	void					BreakSprint				() { mstate_wishful &= ~mcSprint; }
 protected:
 	u32						mstate_wishful;
 	u32						mstate_old;

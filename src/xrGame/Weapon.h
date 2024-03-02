@@ -231,6 +231,7 @@ public:
 	bool NoRunStates();
 	virtual bool IsGrenadeMode() { return false; }
 	virtual bool TryReload() { return false; }
+	virtual bool SendDeactivateItem();
 
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
