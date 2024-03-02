@@ -110,6 +110,7 @@ public:
 		eSwitchMode,
 		eEmptyClick,
 		eUnjam,
+		eCheckMisfire,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,

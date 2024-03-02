@@ -45,6 +45,7 @@ protected:
 	virtual void	switch2_Hidden	();
 	virtual void	switch2_Showing	();
 	virtual void	switch2_FireMode();
+	virtual void	switch2_CheckMisfire();
 	
 	virtual void	OnShot			();	
 	virtual void	OnShotJammed	();
