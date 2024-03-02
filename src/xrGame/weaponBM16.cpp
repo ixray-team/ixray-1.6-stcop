@@ -12,6 +12,11 @@ void CWeaponBM16::Load	(LPCSTR section)
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (!isGuns)
 		m_sounds.LoadSound	(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
+	else
+	{
+		m_sounds.LoadSound(section, "snd_changecartridgetype_only", "sndChangeCartridgeFull", true, m_eSoundReload);
+		m_sounds.LoadSound(section, "snd_changecartridgetype_one", "sndChangeCartridgeOne", true, m_eSoundReload);
+	}
 }
 
 void CWeaponBM16::PlayReloadSound()
@@ -28,8 +33,8 @@ void CWeaponBM16::PlayReloadSound()
 		{
 			if (IsMisfire())
 				PlaySound("sndReloadJammed", get_LastFP());
-			/*else if (IsChangeAmmoType())
-				PlaySound("sndChangeCartridgeOne", get_LastFP());*/
+			else if (IsChangeAmmoType())
+				PlaySound("sndChangeCartridgeOne", get_LastFP());
 			else
 				PlaySound("sndReload", get_LastFP());
 		}break;
@@ -37,8 +42,8 @@ void CWeaponBM16::PlayReloadSound()
 		{
 			if (IsMisfire())
 				PlaySound("sndReloadJammed", get_LastFP());
-			/*else
-				PlaySound("sndChangeCartridgeFull", get_LastFP());*/
+			else
+				PlaySound("sndChangeCartridgeFull", get_LastFP());
 		}break;
 		}
 	}
