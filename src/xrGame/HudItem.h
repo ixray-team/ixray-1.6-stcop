@@ -113,6 +113,9 @@ public:
 	virtual bool				MovingAnimAllowedNow ()				{return true;}
 
 	virtual void				PlayAnimIdleMoving	();
+	virtual void				PlayAnimIdleMovingSlow();
+	virtual void				PlayAnimIdleMovingCrouchSlow();
+	virtual void				PlayAnimIdleMovingCrouch();
 	virtual void				PlayAnimIdleSprint	();
 
 	virtual void				UpdateCL			();
