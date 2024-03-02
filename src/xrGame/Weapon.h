@@ -189,7 +189,7 @@ public:
 
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
-
+	bool bUnjamKeyPressed;
 	bool m_bUseSilHud;
 	bool m_bUseScopeHud;
 	bool m_bUseGLHud;
@@ -212,6 +212,8 @@ public:
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool NoRunStates();
 	virtual bool IsGrenadeMode() { return false; }
+	virtual bool TryReload() { return false; }
+
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
 
@@ -369,7 +371,6 @@ protected:
 	virtual void			FireStart			() {CShootingObject::FireStart();}
 	virtual void			FireEnd				();
 
-	virtual void			Reload				();
 			void			StopShooting		();
     
 

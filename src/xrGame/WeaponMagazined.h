@@ -57,7 +57,7 @@ protected:
 
 	virtual void	UpdateSounds	();
 
-	bool			TryReload		();
+	virtual bool	TryReload		();
 
 protected:
 	virtual void	ReloadMagazine();
@@ -77,7 +77,6 @@ public:
 	virtual void	SetDefaults		();
 	virtual void	FireStart		();
 	virtual void	FireEnd			();
-	virtual void	Reload			();
 	
 
 	virtual	void	UpdateCL		();

@@ -211,7 +211,7 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 				if (!isGuns)
 				{
 					if (psActorFlags.test(AF_AUTORELOAD))
-						Reload();
+						TryReload();
 					else
 						OnEmptyClick();
 				}
