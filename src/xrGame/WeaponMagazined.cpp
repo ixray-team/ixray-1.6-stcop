@@ -1225,7 +1225,27 @@ void CWeaponMagazined::PlayAnimReload()
 
 void CWeaponMagazined::PlayAnimAim()
 {
-	PlayHUDMotion("anm_idle_aim", TRUE, nullptr, GetState());
+	CActor* actor = smart_cast<CActor*>(H_Parent());
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns && actor && actor->AnyMove())
+	{
+		std::string anm_name = IsScopeAttached() ? "anm_idle_aim_scope_moving" : "anm_idle_aim_moving";
+		u32 state = actor->MovingState();
+
+		if (state & mcFwd)
+			anm_name = AddSuffixName(anm_name, "_forward");
+		else if (state & mcBack)
+			anm_name = AddSuffixName(anm_name, "_back");
+
+		if (state & mcLStrafe)
+			anm_name = AddSuffixName(anm_name, "_left");
+		else if (state & mcRStrafe)
+			anm_name = AddSuffixName(anm_name, "_right");
+
+		PlayHUDMotion(anm_name, TRUE, nullptr, GetState());
+	}
+	else
+		PlayHUDMotion("anm_idle_aim", TRUE, nullptr, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)
