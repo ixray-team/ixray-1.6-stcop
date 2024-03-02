@@ -1008,6 +1008,8 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		{
 			if(flags&CMD_START)
 			{
+				if (IsZoomed())
+					return false;
 
 				if (iAmmoElapsed < iMagazineSize || IsMisfire())
 				{
