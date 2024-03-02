@@ -48,6 +48,7 @@ public:
 	virtual void 			State						(u32 state);
 	virtual void 			OnStateSwitch				(u32 S);
 	virtual bool			GetBriefInfo				(II_BriefInfo& info);
+	virtual bool			SendDeactivateItem			();
 
 protected:
 	virtual void			UpdateFireDependencies_internal	();
