@@ -57,10 +57,10 @@ std::string CWeaponBM16::NeedAddSuffix(std::string M)
 		switch (m_magazine.size())
 		{
 			case 1:
-				new_name = AddSuffixName(new_name, "_ammochange_1");
+				new_name = AddSuffixName(new_name, "_ammochange", "_1");
 			break;
 			case 2:
-				new_name = AddSuffixName(new_name, "_ammochange_2");
+				new_name = AddSuffixName(new_name, "_ammochange", "_2");
 			break;
 		}
 	}
@@ -70,13 +70,13 @@ std::string CWeaponBM16::NeedAddSuffix(std::string M)
 		switch (m_magazine.size())
 		{
 		case 0:
-			new_name = AddSuffixName(new_name, "_aim_0");
+			new_name = AddSuffixName(new_name, "_aim", "_0");
 			break;
 		case 1:
-			new_name = AddSuffixName(new_name, "_aim_1");
+			new_name = AddSuffixName(new_name, "_aim", "_1");
 			break;
 		case 2:
-			new_name = AddSuffixName(new_name, "_aim_2");
+			new_name = AddSuffixName(new_name, "_aim", "_2");
 			break;
 		}
 	}
@@ -88,13 +88,13 @@ std::string CWeaponBM16::NeedAddSuffix(std::string M)
 			switch (m_magazine.size())
 			{
 				case 0:
-					new_name = AddSuffixName(new_name, "_jammed_0");
+					new_name = AddSuffixName(new_name, "_jammed", "_0");
 				break;
 				case 1:
-					new_name = AddSuffixName(new_name, "_jammed_1");
+					new_name = AddSuffixName(new_name, "_jammed", "_1");
 				break;
 				case 2:
-					new_name = AddSuffixName(new_name, "_jammed_2");
+					new_name = AddSuffixName(new_name, "_jammed", "_2");
 				break;
 			}
 		}
@@ -103,13 +103,13 @@ std::string CWeaponBM16::NeedAddSuffix(std::string M)
 			switch (m_magazine.size())
 			{
 				case 0:
-					new_name = AddSuffixName(new_name, "_misfire_0");
+					new_name = AddSuffixName(new_name, "_misfire", "_0");
 				break;
 				case 1:
-					new_name = AddSuffixName(new_name, "_misfire_1");
+					new_name = AddSuffixName(new_name, "_misfire", "_1");
 				break;
 				case 2:
-					new_name = AddSuffixName(new_name, "_misfire_2");
+					new_name = AddSuffixName(new_name, "_misfire", "_2");
 				break;
 			}
 		}
