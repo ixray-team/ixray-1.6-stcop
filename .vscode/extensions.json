@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "EditorConfig.EditorConfig",
+        "DavidAnson.vscode-markdownlint",
+        "vscode-icons-team.vscode-icons",
+        "fernandoescolar.vscode-solution-explorer"
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "files.associations": {
+        // Configs
+        "*.ltx": "ini",
+        "**/gamedata/configs/**/*.ltx": "ini",
+        // Scripts
+        "**/gamedata/scripts/*.script": "lua",
+        "**/gamedata/shaders/**/*.s": "lua",
+        "**/gamedata/shaders/**/*.s_": "lua",
+        // Shaders
+        "**/gamedata/shaders/**/*.h": "hlsl",
+        "**/gamedata/shaders/**/*.ps": "hlsl",
+        "**/gamedata/shaders/**/*.vs": "hlsl",
+        "**/gamedata/shaders/**/*.ds": "hlsl",
+        "**/gamedata/shaders/**/*.hs": "hlsl",
+        "**/gamedata/shaders/**/*.gs": "hlsl",
+        "**/gamedata/shaders/**/*.cs": "hlsl",
+        // Scenes
+        "**/rawdata/levels/**/fog_volume.part": "ini",
+        "**/rawdata/levels/**/glow.part": "ini",
+        "**/rawdata/levels/**/group.part": "ini",
+        "**/rawdata/levels/**/group.part1": "ini",
+        "**/rawdata/levels/**/light.part": "ini",
+        "**/rawdata/levels/**/portal.part": "ini",
+        "**/rawdata/levels/**/ps.part": "ini",
+        "**/rawdata/levels/**/scene_object.part": "ini",
+        "**/rawdata/levels/**/sector.part": "ini",
+        "**/rawdata/levels/**/shape.part": "ini",
+        "**/rawdata/levels/**/sound_env.part": "ini",
+        "**/rawdata/levels/**/sound_src.part": "ini",
+        "**/rawdata/levels/**/spawn.part": "ini",
+        "**/rawdata/levels/**/way.part": "ini",
+    },
+    "dotnet.defaultSolution": "disable",
+    "cmake.configureOnOpen": false,
+    "cmake.options.statusBarVisibility": "compact",
+    "cmake.showOptionsMovedNotification": false,
+    "markdownlint.ignore": [
+        ".github/**.md"
+    ],
+    "vsicons.dontShowNewVersionMessage": true,
+    "vssolution.lineEndings": "crlf"
+}

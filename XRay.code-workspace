@@ -37,6 +37,15 @@
             "**/rawdata/levels/**/sound_src.part": "ini",
             "**/rawdata/levels/**/spawn.part": "ini",
             "**/rawdata/levels/**/way.part": "ini",
-        }
+        },
+        "dotnet.defaultSolution": "disable",
+        "cmake.configureOnOpen": false,
+        "cmake.options.statusBarVisibility": "compact",
+        "cmake.showOptionsMovedNotification": false,
+        "markdownlint.ignore": [
+            ".github/**.md"
+        ],
+        "vsicons.dontShowNewVersionMessage": true,
+        "vssolution.lineEndings": "crlf"
     }
 }
