@@ -20,6 +20,7 @@ CHudItem::CHudItem()
 	m_bStopAtEndAnimIsRunning	= false;
 	m_current_motion_def		= nullptr;
 	m_started_rnd_anim_idx		= u8(-1);
+	SwitchSprint				= false;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -58,6 +59,13 @@ void CHudItem::Load(LPCSTR section)
 
 	if (!m_bDisableBore)
 		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
+
+	if (pSettings->line_exist(section, "snd_sprint_start"))
+		m_sounds.LoadSound(section, "snd_sprint_start", "sndSprintStart", true);
+
+
+	if (pSettings->line_exist(section, "snd_sprint_end"))
+		m_sounds.LoadSound(section, "snd_sprint_end", "sndSprintEnd", true);
 }
 
 
@@ -134,17 +142,37 @@ void CHudItem::OnStateSwitch(u32 S)
 	switch (S)
 	{
 	case eBore:
-		SetPending		(FALSE);
+	{
+		SetPending(FALSE);
 
-		PlayAnimBore	();
-		if(HudItemData())
+		PlayAnimBore();
+		if (HudItemData())
 		{
-			Fvector P		= HudItemData()->m_item_transform.c;
+			Fvector P = HudItemData()->m_item_transform.c;
 			m_sounds.PlaySound("sndBore", P, object().H_Root(), !!GetHUDmode(), false, m_started_rnd_anim_idx);
 		}
 
-		break;
+	}break;
+	case eSprintStart:
+	{
+		SetPending(FALSE);
+		SwitchSprint = true;
+		PlayHUDMotion("anm_idle_sprint_start", true, this, GetState());
+		if (m_sounds.FindSoundItem("sndSprintStart", false));
+			PlaySound("sndSprintStart", object().XFORM().c);
+	}break;
+	case eSprintEnd:
+	{
+		SetPending(FALSE);
+		SwitchSprint = false;
+		PlayHUDMotion("anm_idle_sprint_end", true, this, GetState());
+		if (m_sounds.FindSoundItem("sndSprintEnd", false));
+			PlaySound("sndSprintEnd", object().XFORM().c);
+	}break;
 	}
+
+	if (S != eIdle && S != eSprintStart && S != eSprintEnd)
+		SwitchSprint = false;
 }
 
 void CHudItem::OnAnimationEnd(u32 state)
@@ -156,6 +184,8 @@ void CHudItem::OnAnimationEnd(u32 state)
 
 	switch(state)
 	{
+	case eSprintStart:
+	case eSprintEnd:
 	case eBore:
 		{
 			SwitchState	(eIdle);
@@ -403,7 +433,19 @@ bool CHudItem::TryPlayAnimIdle()
 			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 			if(state & mcSprint)
 			{
+				if (!SwitchSprint && isGuns)
+				{
+					SwitchState(eSprintStart);
+					return true;
+				}
+
 				PlayAnimIdleSprint();
+
+				return true;
+			}
+			else if (SwitchSprint && isGuns)
+			{
+				SwitchState(eSprintEnd);
 				return true;
 			}
 			else if (pActor->AnyMove())

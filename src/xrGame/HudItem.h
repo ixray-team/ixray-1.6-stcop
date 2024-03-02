@@ -23,7 +23,9 @@ enum EHudStates {
 		eHiding,
 		eHidden,
 		eBore,
-		eLastBaseState = eBore,
+		eSprintStart,
+		eSprintEnd,
+		eLastBaseState = eSprintEnd,
 };
 
 private:
@@ -166,6 +168,7 @@ protected:
 	InertionData				m_current_inertion;
 	float						m_fHudFov;
 	bool						m_bDisableBore;
+	bool						SwitchSprint;
 
 private:
 	CPhysicItem					*m_object;

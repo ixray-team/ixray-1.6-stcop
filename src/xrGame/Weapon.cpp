@@ -2343,7 +2343,7 @@ bool CWeapon::NoRunStates()
 	if (!isGuns)
 		return (GetState() == eFire || GetState() == eFire2);
 	else
-		return GetState() != eIdle;
+		return GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
 }
 
 void CWeapon::debug_draw_firedeps()
