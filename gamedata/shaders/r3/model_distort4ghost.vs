@@ -10,6 +10,7 @@ struct vf
 	float4 tctexgen	: TEXCOORD1;
 #endif	//	USE_SOFT_PARTICLES
 	float4	hpos: SV_Position;
+    float fog : FOG;
 };
 
 vf   _main (v_model v)
@@ -18,7 +19,7 @@ vf   _main (v_model v)
 
   o.hpos  = mul      (m_WVP, v.P);    // xform, input in world coords
   o.tc0      = v.tc.xy;          // copy tc
-
+  o.fog = saturate(calc_fogging(float4(mul(m_W, v.P), 1))); // fog, input in world coords
   // calculate fade
   float3  dir_v     = normalize    (mul(m_WV,v.P));
   float3  norm_v    = normalize    (mul(m_WV,v.N));
