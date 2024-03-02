@@ -420,13 +420,11 @@ void CWeaponMagazinedWGrenade::FireEnd()
 
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
-	auto last_bMisfire = bMisfire;
 	inherited::ReloadMagazine();
 	
 	//перезарядка подствольного гранатомета
 	if(m_bGrenadeMode)
 	{
-		bMisfire = last_bMisfire;
 		if(iAmmoElapsed && !getRocketCount()) 
 		{
 			shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
