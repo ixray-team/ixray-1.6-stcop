@@ -1,18 +1,34 @@
 # IX-Ray
 
-<div align="center">
+<div>
   <p>
     <a href="https://github.com/ixray-team">
-      <img src="https://github.com/ixray-team/ixray/raw/default/logo.png" alt="IX-Ray Team" width="150" height="150" />
+      <img src="./src/Assets/Splash_0.5.png" alt="IX-Ray 1.6" width="600" />
     </a>
   </p>
 
   <p>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.6">
+    <a href="./LICENSE.md">
+      <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
+    </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.6.1">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases">
+      <img src="https://img.shields.io/github/downloads/ixray-team/ixray-1.6-stcop/total?label=Downloads" alt="All downloads" />
+    </a>
+    <br />
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml">
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml/badge.svg" alt="Build engine" />
+    </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-server.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-server.yml/badge.svg" alt="Build server" />
+    </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml/badge.svg" alt="Build utilities" />
+    </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-compressor.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-compressor.yml/badge.svg" alt="Build compressor" />
     </a>
   </p>
 </div>
@@ -25,26 +41,45 @@ Stable repository of the modernized _X-Ray_ 1.6 game engine
   - MFC
   - C++/CLI
   - Windows SDK 10.0.19041.0+
+- Git
+- CMake
 
 ## Building
 
-Download the repository:
+- Download the repository:
 
-```console
-git clone https://github.com/ixray-team/ixray-1.6-stcop.git
-```
+  ```console
+  git clone https://github.com/ixray-team/ixray-1.6-stcop.git
+  ```
 
-### Engine
+- Select one of preset from the list and configure project:
 
-- Build `XRay.Engine.slnf` on `Win32`
+  - `Engine-x86`
+  - `Engine-x64`
+  - `Server-x86`
+  - `Server-x64`
+  - `Utilities-x86`
+  - `Utilities-x64`
+  - `Plugins-3ds-Max-x64`
+  - `Plugins-Lightwave-x64`
+  - `Compressor-x86`
+  - `Compressor-x64`
 
-### Compressor
+  ```console
+  cmake --preset <preset-name>
+  ```
 
-- Build `XRay.Compressor.slnf` on `Win32`
+- Select build configuration from the list and build project:
 
-### Assets
+  - `Debug`
+  - `RelWithDebInfo`
+  - `Release`
 
-- Run `generate-patch.bat` to get packed assets
+  ```console
+  cmake --build --preset <preset-name>-<configuration>
+  ```
+
+- Run `generate-patch.bat` to get modified files and packed assets
 
 ## Changelog
 
