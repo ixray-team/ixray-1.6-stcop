@@ -12,6 +12,8 @@
 #include "game_object_space.h"
 #include "sight_manager_space.h"
 
+#include "../xrScripts/exports/script_ini_file.h"
+
 using namespace luabind;
 
 extern class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &);

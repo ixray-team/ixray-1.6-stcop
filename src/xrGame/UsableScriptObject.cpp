@@ -7,6 +7,8 @@
 #include "doors_door.h"
 #include "doors.h"
 
+#include "../xrScripts/script_callback_ex.h"
+
 using namespace luabind;
 
 CUsableScriptObject::CUsableScriptObject()
