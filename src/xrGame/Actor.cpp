@@ -198,6 +198,12 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	CurrentHeight = -1.f;
 
 	bTrySprint = true;
+
+	_last_camera_height = 0.f;
+	_last_cam_update_time = 0;
+	_landing_effect_time_remains = 0;
+	_landing2_effect_time_remains = 0;
+	_landing_effect_finish_time_remains = 0;
 }
 
 
@@ -885,8 +891,9 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 
 	if (Local() && g_Alive()) 
 	{
-		if(character_physics_support()->movement()->gcontact_Was)
-			Cameras().AddCamEffector		(xr_new<CEffectorFall> (character_physics_support()->movement()->gcontact_Power));
+		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		if (!isGuns && character_physics_support()->movement()->gcontact_Was)
+			Cameras().AddCamEffector(xr_new<CEffectorFall> (character_physics_support()->movement()->gcontact_Power));
 
 		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	
 		{
