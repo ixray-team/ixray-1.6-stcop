@@ -10,6 +10,7 @@
 #include "ui/UIWindow.h"
 #include "player_hud.h"
 #include "weapon.h"
+#include "WeaponKnife.h"
 
 ITEM_INFO::ITEM_INFO()
 {
@@ -120,14 +121,30 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 			{
 				m_pInventory->Activate(slot_to_activate);
 				m_bNeedActivation		= true;
-			}else
+			}
+			else
 			{
-				SwitchState				(eShowing);
-				TurnDetectorInternal	(true);
 				CWeapon* wpn = smart_cast<CWeapon*>(itm);
-
+				CWeaponKnife* knf = smart_cast<CWeaponKnife*>(wpn);
 				if (wpn)
-					wpn->bIsNeedCallDet = false;
+				{
+					if (knf || wpn->bIsNeedCallDet)
+					{
+						SwitchState(eShowing);
+						TurnDetectorInternal(true);
+						wpn->bIsNeedCallDet = false;
+					}
+					else
+					{
+						if (wpn->GetState() == CWeapon::eIdle || wpn->GetState() == CWeapon::eEmptyClick)
+							wpn->SwitchState(CWeapon::eShowingDet);
+					}
+				}
+				else
+				{
+					SwitchState(eShowing);
+					TurnDetectorInternal(true);
+				}
 			}
 		}
 	}else
@@ -154,13 +171,30 @@ void CCustomDetector::OnStateSwitch(u32 S)
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
 			PlayHUDMotion				(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, this, GetState(), false);
 			SetPending					(TRUE);
+			SetHideDetStateInWeapon();
 		}break;
 	case eIdle:
 		{
 			PlayAnimIdle				();
 			SetPending					(FALSE);
 		}break;
+	}
 }
+
+void CCustomDetector::SetHideDetStateInWeapon()
+{
+	CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
+
+	if (!wpn)
+		return;
+
+	CWeaponKnife* knf = smart_cast<CWeaponKnife*>(wpn);
+
+	if (knf)
+		return;
+
+	if (wpn->GetState() == eIdle || wpn->GetState() == CWeapon::eEmptyClick)
+		wpn->SwitchState(CWeapon::eHideDet);
 }
 
 void CCustomDetector::OnAnimationEnd(u32 state)
