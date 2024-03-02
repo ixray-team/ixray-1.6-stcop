@@ -65,6 +65,8 @@ protected:
 
 	bool			m_bWorking;
 	float			m_fAfVisRadius;
+	bool			isTryToToggle;
+	bool			bNeedHideDet;
 
 	CAfList			m_artefacts;
 };
