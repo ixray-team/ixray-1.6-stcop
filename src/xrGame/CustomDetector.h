@@ -52,7 +52,8 @@ public:
 
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
 
-	void 	TurnDetectorInternal(bool b);
+	void 	TurnDetectorInternal		(bool b);
+	void	ForceHide					() { SwitchState(eHiding); }
 
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
