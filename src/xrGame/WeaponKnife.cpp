@@ -318,7 +318,8 @@ void CWeaponKnife::switch2_Hiding	()
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
 	PlayHUDMotion("anm_hide", TRUE, this, GetState());
-	PlaySound("SndHide", get_LastFP());
+	if (m_sounds.FindSoundItem("SndHide", false))
+		PlaySound("SndHide", get_LastFP());
 }
 
 void CWeaponKnife::switch2_Hidden()
@@ -331,7 +332,8 @@ void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
 	PlayHUDMotion("anm_show", FALSE, this, GetState());
-	PlaySound("SndShow", get_LastFP());
+	if (m_sounds.FindSoundItem("SndShow", false))
+		PlaySound("SndShow", get_LastFP());
 }
 
 void CWeaponKnife::UpdateCL()
@@ -345,8 +347,11 @@ void CWeaponKnife::UpdateCL()
 
 	Fvector P = get_LastFP();
 
-	m_sounds.SetPosition("SndShow", P);
-	m_sounds.SetPosition("SndHide", P);
+	if (m_sounds.FindSoundItem("SndShow", false))
+		m_sounds.SetPosition("SndShow", P);
+
+	if (m_sounds.FindSoundItem("SndHide", false))
+		m_sounds.SetPosition("SndHide", P);
 }
 
 void CWeaponKnife::FireStart()
