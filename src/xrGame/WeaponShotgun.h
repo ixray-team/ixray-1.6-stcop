@@ -30,6 +30,9 @@ public:
 
 	virtual bool	SwitchAmmoType(u32 flags);
 	bool			bStopReloadSignal;
+	bool			m_bAddCartridgeOpen;
+	bool			m_bEmptyPreloadMode;
+	bool			bPreloadAnimAdapter;
 
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
