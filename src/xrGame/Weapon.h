@@ -108,6 +108,7 @@ public:
 		eMisfire,
 		eSwitch,
 		eSwitchMode,
+		eEmptyClick,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,

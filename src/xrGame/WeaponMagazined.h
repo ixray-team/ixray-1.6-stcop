@@ -182,6 +182,7 @@ protected:
 	virtual void	PlayAnimAim			();
 	virtual void	PlayAnimFireMode	();
 	virtual void    PlaySoundAim		(bool in = true);
+	virtual void	PlayAnimFakeshoot	();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();

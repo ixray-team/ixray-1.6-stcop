@@ -197,10 +197,16 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 				LaunchGrenade();
 			else
 			{
-				if (psActorFlags.test(AF_AUTORELOAD))
-					Reload();
+				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+				if (!isGuns)
+				{
+					if (psActorFlags.test(AF_AUTORELOAD))
+						Reload();
+					else
+						OnEmptyClick();
+				}
 				else
-					OnEmptyClick();
+					SwitchState(eEmptyClick);
 			}
 		}
 		return true;

@@ -228,19 +228,14 @@ void CWeaponMagazined::FireStart()
 
 				inherited::FireStart();
 				
-				if (iAmmoElapsed == 0) 
-					switch2_Empty();
-				else
-				{
-					R_ASSERT(H_Parent());
-					SwitchState(eFire);
-				}
+				R_ASSERT(H_Parent());
+				SwitchState(eFire);
 			}
 		}
 		else 
 		{
 			if (GetState() == eIdle) 
-				switch2_Empty();
+				SwitchState(eEmptyClick);
 		}
 	}
 	else
@@ -521,6 +516,9 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eSwitchMode:
 		switch2_FireMode();
 		break;
+	case eEmptyClick:
+		switch2_Empty();
+		break;
 	}
 }
 
@@ -590,6 +588,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eHiding:
 		case eReload:
 		case eSwitchMode:
+		case eEmptyClick:
 		case eIdle:
 			{
 				fShotTimeCounter	-=	dt;
@@ -810,6 +809,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			switch2_Idle();
 		break;
 		case eSwitchMode:
+		case eEmptyClick:
 		case eShowing:
 			SwitchState(eIdle);
 		break;
@@ -878,17 +878,44 @@ void CWeaponMagazined::switch2_Fire	()
 
 void CWeaponMagazined::switch2_Empty()
 {
-	OnZoomOut();
-	
-	if (psActorFlags.test(AF_AUTORELOAD))
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!isGuns)
 	{
-		if(!TryReload())
-			OnEmptyClick();
+		OnZoomOut();
+
+		if (psActorFlags.test(AF_AUTORELOAD))
+		{
+			if (!TryReload())
+				OnEmptyClick();
+			else
+				inherited::FireEnd();
+		}
 		else
-			inherited::FireEnd();
+			OnEmptyClick();
 	}
 	else
+	{
 		OnEmptyClick();
+		PlayAnimFakeshoot();
+	}
+}
+
+void CWeaponMagazined::PlayAnimFakeshoot()
+{
+	std::string anm_name = "anm_fakeshoot";
+	int firemode = GetQueueSize();
+
+	if (IsZoomed())
+		anm_name += "_aim";
+
+	if (firemode == -1 && m_sFireModeMask_a != nullptr)
+		anm_name += m_sFireModeMask_a.c_str();
+	else if (firemode == 1 && m_sFireModeMask_1 != nullptr)
+		anm_name += m_sFireModeMask_1.c_str();
+	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
+		anm_name += m_sFireModeMask_3.c_str();
+
+	PlayHUDMotion(anm_name, TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayReloadSound()
