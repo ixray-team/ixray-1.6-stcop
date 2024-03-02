@@ -124,6 +124,10 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 			{
 				SwitchState				(eShowing);
 				TurnDetectorInternal	(true);
+				CWeapon* wpn = smart_cast<CWeapon*>(itm);
+
+				if (wpn)
+					wpn->bIsNeedCallDet = false;
 			}
 		}
 	}else
@@ -265,8 +269,10 @@ void CCustomDetector::UpdateVisibility()
 			CWeapon* wpn			= smart_cast<CWeapon*>(i0->m_parent_hud_item);
 			if(wpn)
 			{
-				u32 state			= wpn->GetState();
-				if(wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state==CWeapon::eSwitch)
+				u32 state = wpn->GetState();
+				bool TempTest = wpn->m_bAmmoInChamber ? wpn->iAmmoInChamberElapsed == 0 && wpn->GetAmmoElapsed() == 0 : wpn->GetAmmoElapsed() == 0;
+				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+				if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state==CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && TempTest))
 				{
 					HideDetector		(true);
 					m_bNeedActivation	= true;
