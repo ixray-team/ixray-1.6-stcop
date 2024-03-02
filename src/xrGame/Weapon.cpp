@@ -2278,6 +2278,15 @@ BOOL CWeapon::ParentIsActor	()
 	return EA->cast_actor()!=0;
 }
 
+bool CWeapon::NoRunStates()
+{
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!isGuns)
+		return (GetState() == eFire || GetState() == eFire2);
+	else
+		return GetState() != eIdle;
+}
+
 void CWeapon::debug_draw_firedeps()
 {
 #ifdef DEBUG

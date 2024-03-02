@@ -224,6 +224,8 @@ protected:
 	float					m_fFallTime;
 	float					m_fCamHeightFactor;
 
+	bool					bTrySprint;
+
 	// Dropping
 	BOOL					b_DropActivated;
 	float					f_DropPower;

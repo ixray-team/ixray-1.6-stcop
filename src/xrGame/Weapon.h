@@ -207,6 +207,7 @@ public:
 	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
 
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+	bool NoRunStates();
 	virtual bool IsGrenadeMode() { return false; }
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
