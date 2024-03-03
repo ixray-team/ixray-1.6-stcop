@@ -2149,7 +2149,7 @@ void CWeapon::OnAnimationEnd(u32 state)
 
 bool CWeapon::NeedBlockSprint() const
 {
-	return GetState() == eFire;
+	return GetState() == eFire || EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload] && GetState() == eReload;
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx()

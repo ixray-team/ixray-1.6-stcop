@@ -18,7 +18,8 @@ enum class EEngineExternalGame
 	EnableThirst,
 	EnableSleepiness,
 	EnableAiDieInAnomaly,
-	EnableNPCLookAtActor
+	EnableNPCLookAtActor,
+	EnableBlockSprintInReload
 };
 
 enum class EEngineExternalRender
