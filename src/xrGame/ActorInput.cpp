@@ -51,10 +51,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kWPN_FIRE:
 		{
 			if( (mstate_wishful & mcLookout) && !IsGameTypeSingle() ) return;
-
-			u16 slot = inventory().GetActiveSlot();
-			if(inventory().ActiveItem() && (slot==INV_SLOT_3 || slot==INV_SLOT_2) )
-				mstate_wishful &=~mcSprint;
 			//-----------------------------
 			if (OnServer())
 			{
