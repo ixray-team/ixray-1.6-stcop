@@ -148,7 +148,7 @@ bool CRestrictedObject::accessible			(u32 level_vertex_id) const
 	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
 	{
 #ifndef MASTER_GOLD
-		Msg("~[WARNING] Invalid level vertex: ID[%s]", level_vertex_id);
+		Msg("~[WARNING] Invalid level vertex: ID[%u]", level_vertex_id);
 #endif
 		return false;
 	}
@@ -164,7 +164,7 @@ bool CRestrictedObject::accessible			(u32 level_vertex_id, float radius) const
 	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
 	{
 #ifndef MASTER_GOLD
-		Msg("~[WARNING] Invalid level vertex: ID[%s]", level_vertex_id);
+		Msg("~[WARNING] Invalid level vertex: ID[%u]", level_vertex_id);
 #endif
 		return false;
 	}
