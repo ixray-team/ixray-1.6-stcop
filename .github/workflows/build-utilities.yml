@@ -39,7 +39,6 @@ jobs:
         preset:
           - Utilities
         platform:
-          - x86
           - x64
         config:
           - Debug
