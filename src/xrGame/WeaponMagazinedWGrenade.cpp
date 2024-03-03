@@ -198,7 +198,7 @@ bool CWeaponMagazinedWGrenade::Action(u16 cmd, u32 flags)
 				LaunchGrenade();
 			else
 			{
-				if (psActorFlags.test(AF_AUTORELOAD))
+				if (EngineExternal()[EEngineExternalGame::EnableAutoreload])
 					Reload();
 				else
 					OnEmptyClick();

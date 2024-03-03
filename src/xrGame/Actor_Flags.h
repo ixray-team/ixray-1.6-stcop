@@ -10,8 +10,7 @@ enum{
 		AF_GODMODE_RT		=(1<<8),
 		AF_IMPORTANT_SAVE	=(1<<9),
 		AF_CROUCH_TOGGLE	=(1<<10),
-		AF_AUTORELOAD		=(1<<11),
-		AF_RIGHT_SHOULDER = (1 << 12),
+		AF_RIGHT_SHOULDER = (1 << 11),
 };
 
 extern Flags32	psActorFlags;
