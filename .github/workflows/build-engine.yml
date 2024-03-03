@@ -203,3 +203,53 @@ jobs:
             gamedata/
             patches/xpatch_03.db
             fsgame.ltx
+
+  publish-engine:
+    name: 'Publish engine'
+
+    needs:
+      - build-engine
+      - pack-assets
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        platform:
+          - x64
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get engine (x86)
+        uses: actions/download-artifact@v4
+        with:
+          name: engine-binaries-x86-Release-${{ github.sha }}
+          path: build/x86/Engine/bin/Release/
+
+      - name: Get engine (x64)
+        uses: actions/download-artifact@v4
+        with:
+          name: engine-binaries-x64-Release-${{ github.sha }}
+          path: build/x64/Engine/bin/Release/
+
+      - name: Get assets
+        uses: actions/download-artifact@v4
+        with:
+          name: compressor-assets-${{ github.sha }}
+          path: ./
+
+      - name: Upload engine
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-publish-${{ github.sha }}
+          path: |
+            build/
+            gamedata/
+            patches/xpatch_03.db
+            fsgame.ltx
