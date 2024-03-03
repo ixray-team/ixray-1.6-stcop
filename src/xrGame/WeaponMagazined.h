@@ -58,6 +58,8 @@ protected:
 
 protected:
 	virtual void	ReloadMagazine();
+	bool			HaveCartridgeInInventory(u8 cnt);
+	virtual u8		AddCartridge(u8 cnt);
 			void	ApplySilencerKoeffs();
 			void	ResetSilencerKoeffs();
 
