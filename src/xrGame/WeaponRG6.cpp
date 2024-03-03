@@ -136,6 +136,14 @@ void CWeaponRG6::FireStart ()
 	}
 }
 
+void CWeaponRG6::UnloadMagazine(bool spawn_ammo)
+{
+	inheritedSG::UnloadMagazine(spawn_ammo);
+
+	while (getRocketCount())
+		dropCurrentRocket();
+}
+
 u8 CWeaponRG6::AddCartridge		(u8 cnt)
 {
 	u8 t = inheritedSG::AddCartridge(cnt);
