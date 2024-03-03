@@ -127,9 +127,9 @@ public:
 	BOOL					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
 	EWeaponSubStates		GetReloadState		() const		{ return (EWeaponSubStates)m_sub_state;}
+	u8						m_sub_state;
 protected:
 	bool					m_bTriStateReload;
-	u8						m_sub_state;
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
 
@@ -422,8 +422,10 @@ protected:
 	//объект партиклов для стрельбы из 2-го ствола
 	CParticlesObject*		m_pFlameParticles2;
 
-protected:
+public:
 	int						GetAmmoCount_forType(shared_str const& ammo_type) const;
+
+protected:
 	int						GetAmmoCount		(u8 ammo_type) const;
 
 public:
