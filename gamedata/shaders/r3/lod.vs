@@ -17,6 +17,8 @@ struct vf
 	float3	Pe	: TEXCOORD0	;
  	float2 	tc0	: TEXCOORD1	;	// base0
  	float2 	tc1	: TEXCOORD2	;	// base1
+	float4 hpos_curr	: TEXCOORD3;	// rgb.h
+	float4 hpos_old	: TEXCOORD4;	// rgb.h
 	float4 	af	: COLOR1	;	// alpha&factor
 	float4 	hpos: SV_Position;
 };
@@ -38,6 +40,9 @@ vf 	main	( vv I )
 
 	o.hpos 		= mul		(m_VP, 	pos);				// xform, input in world coords
 	o.Pe		= mul		(m_V,	pos);
+	
+	o.hpos_curr = mul (m_VP, pos);
+	o.hpos_old = mul (m_VP_old, pos);
 
 	// replicate TCs
 	o.tc0		= I.tc0;						
