@@ -38,4 +38,6 @@ void main(in v_in I, out p_bumped_new O)
 	
 	O.hpos_curr = mul(m_WVP, I.P);
 	O.hpos_old = mul(m_WVP_old, I.P);
+	
+	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }

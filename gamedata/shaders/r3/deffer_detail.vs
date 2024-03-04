@@ -33,15 +33,13 @@ void main(in v_detail I, out p_bumped_new O)
 	
 	float dp = calc_cyclic(dot(pos, wave));
 	float inten = H * dp;
-	float2 result = calc_xz_wave(dir2D.xz * inten, frac);
 	
-	pos.xz += result;
+	pos.xz += calc_xz_wave(dir2D.xz * inten, frac);
 	
-	float dp_old = calc_cyclic(dot(pos, wave_old));
+	float dp_old = calc_cyclic(dot(pos_old, wave_old));
 	float inten_old = H * dp_old;
-	float2 result_old = calc_xz_wave(dir2D_old.xz * inten_old, frac);
 	
-	pos_old.xz += result;
+	pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, frac);
 
 	float3 Pe = mul(m_WV, pos);
 	float2 tc = I.misc.xy * consts.xy;
@@ -68,5 +66,7 @@ void main(in v_detail I, out p_bumped_new O)
 	
 	O.hpos_curr = mul(m_VP, pos);
 	O.hpos_old = mul(m_VP_old, pos_old);
+	
+	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
 
