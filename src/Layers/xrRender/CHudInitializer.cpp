@@ -1,5 +1,7 @@
+#include "stdafx.h"
+
 #include "CHudInitializer.h"
-#include "device.h"
+//#include "device.h"
 
 CHudInitializer::CHudInitializer(bool setup)
 {
