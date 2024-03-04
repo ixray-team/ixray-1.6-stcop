@@ -18,10 +18,7 @@ v2p main ( _in I )
 {
 	v2p 		O;
 	O.hpos 		= float4	(I.P.x, -I.P.y, 0, 1);
-	float  	scale 	= s_tonemap.Load(int3(0,0,0)).x;
-	O.tc0		= float4	(I.P.zw, scale, scale);
+	O.tc0		= float4	(I.P.zw, 1, 1);
 	O.tcJ		= I.tcJ;
  	return	O;
 }
-
-FXVS;
