@@ -42,14 +42,14 @@ void	CBlender_deffer_flat::Compile(CBlender_Compile& C)
 	switch(C.iElement) 
 	{
 	case SE_R2_NORMAL_HQ: 		// deffer
-		uber_deffer		(C,true,"base","base",false,0,true);
+		uber_deffer		(C,true,"deffer_base","deffer_base",false,0,true);
 
 		C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		C.r_StencilRef	(0x01);
 		C.r_End			();
 		break;
 	case SE_R2_NORMAL_LQ: 		// deffer
-		uber_deffer		(C,false,"base","base",false,0,true);
+		uber_deffer		(C,false,"deffer_base","deffer_base",false,0,true);
 
 		C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		C.r_StencilRef	(0x01);
