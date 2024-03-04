@@ -75,7 +75,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 #ifdef USE_DX11
 	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != 0) {
-		string256 hs = "DX11\\tess", ds = "DX11\\tess";
+		string256 hs = "tess", ds = "tess";
 
 		if (C.TessMethod == CBlender_Compile::TESS_PN || C.TessMethod == CBlender_Compile::TESS_PN_HM) {
 			RImplementation.addShaderOption("TESS_PN", "1");
@@ -158,98 +158,3 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		C.r_End();
 	}
 }
-
-#ifdef USE_DX11
-void uber_shadow(CBlender_Compile& C, LPCSTR vspec, bool aref)
-{
-	string256 fname, fnameA, fnameB;
-	xr_strcpy(fname, *C.L_textures[0]);
-
-	fix_texture_name(fname);
-	ref_texture _t; _t.create(fname);
-
-	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && _t.bump_exist();
-
-	bool lmap = false;
-	if (C.L_textures.size() >= 3) {
-		auto tex = C.L_textures[2].c_str();
-		if (tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p') {
-			lmap = true;
-		}
-	}
-
-	string256 vs, dt;
-	strconcat(sizeof(vs), vs, "deffer_", vspec);
-
-	xr_strcpy(dt, sizeof(dt), C.detail_texture ? C.detail_texture : "");
-
-	string256 texDetailBump = { '\0' };
-	string256 texDetailBumpX = { '\0' };
-	bool bHasDetailBump = false;
-
-	if (C.bDetail_Bump) {
-		LPCSTR detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
-		if (detail_bump_texture) {
-			bHasDetailBump = true;
-			xr_strcpy(texDetailBump, sizeof(texDetailBump), detail_bump_texture);
-			xr_strcpy(texDetailBumpX, sizeof(texDetailBumpX), detail_bump_texture);
-			xr_strcat(texDetailBumpX, "#");
-		}
-	}
-
-	if (aref) {
-		RImplementation.addShaderOption("USE_AREF", "1");
-	}
-
-	if (bump) {
-		RImplementation.addShaderOption("USE_BUMP", "1");
-
-		xr_strcpy(fnameA, _t.bump_get().c_str());
-		strconcat(sizeof(fnameB), fnameB, fnameA, "#");
-	}
-	else {
-		fnameA[0] = fnameB[0] = 0;
-	}
-
-	if (C.bDetail_Diffuse) {
-		RImplementation.addShaderOption("USE_TDETAIL", "1");
-	}
-
-	if (C.bDetail_Bump) {
-		RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
-	}
-
-	if (bump && RImplementation.o.dx11_enable_tessellation && C.TessMethod!=0)
-	{
-		string256 hs = "DX11\\tess", ds = "DX11\\tess_shadow";
-
-		if (C.TessMethod == CBlender_Compile::TESS_PN || C.TessMethod == CBlender_Compile::TESS_PN_HM) {
-			RImplementation.addShaderOption("TESS_PN", "1");
-		}
-
-		if (C.TessMethod == CBlender_Compile::TESS_HM || C.TessMethod == CBlender_Compile::TESS_PN_HM) {
-			RImplementation.addShaderOption("TESS_HM", "1");
-		}
-
-		C.r_TessPass(vs, hs, ds, "null", "dumb", FALSE, TRUE, TRUE, FALSE);
-
-		C.r_dx10Texture("s_base", C.L_textures[0]);
-		C.r_dx10Texture("s_bumpX", fnameB);
-		C.r_dx10Texture("s_bump", fnameA);
-
-		if (bHasDetailBump) {
-			C.r_dx10Texture("s_detailBump", texDetailBump);
-			C.r_dx10Texture("s_detailBumpX", texDetailBumpX);
-		}
-
-		u32 stage = C.r_dx10Sampler("smp_bump_ds");
-		if (stage != u32(-1)) {
-			C.i_dx10Address(stage, D3DTADDRESS_WRAP);
-			C.i_dx10FilterAnizo(stage, TRUE);
-		}
-	}
-	else {
-		C.r_Pass("shadow_direct_base", "dumb", FALSE, TRUE, TRUE, FALSE);
-	}
-}
-#endif
