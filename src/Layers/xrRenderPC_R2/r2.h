@@ -21,6 +21,7 @@
 
 #include "../../xrEngine/irenderable.h"
 #include "../../xrEngine/fmesh.h"
+#include <d3dcommon.h>
 
 
 class dxRender_Visual;
@@ -301,6 +302,14 @@ public:
 	// Constructor/destructor/loader
 	CRender							();
 	virtual ~CRender				();
+
+	xr_string getShaderParams();
+	void addShaderOption(const char* name, const char* value);
+	void clearAllShaderOptions() { m_ShaderOptions.clear(); }
+
+private:
+	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
+
 protected:
 	virtual	void					ScreenshotImpl				(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
