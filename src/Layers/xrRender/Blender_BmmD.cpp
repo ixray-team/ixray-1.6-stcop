@@ -232,7 +232,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_End ();
 		break;
 	case SE_R2_SHADOW:
-		C.r_Pass("shadow_direct_base", "dumb", FALSE, TRUE, TRUE, FALSE);
+		C.r_Pass("shadow_base", "shadow_base", FALSE);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
 		C.r_dx10Sampler("smp_base");
 		C.r_dx10Sampler("smp_linear");
