@@ -9,9 +9,15 @@ i_lc_log* lc_log = 0;
 //************************* Log-thread data
 static xrCriticalSection	csLog
 #ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(csLog))
+(MUTEX_PROFILE_ID(csLog))
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
+
+xr_queue<xr_string> myLogQueue;
+void MyLogCallback(const char* string) {
+	xrCriticalSectionGuard LogGuard(&csLog);
+	myLogQueue.push(string);
+}
 
 volatile BOOL				bClose				= FALSE;
 
@@ -56,10 +62,10 @@ static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 static void _process_messages(void)
 {
 	MSG msg;
-	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
+	if (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) 
 	{
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		DispatchMessageA(&msg);
 	}
 }
 
@@ -157,6 +163,8 @@ void logThread(void* dummy)
 	// Main cycle
 	u32		LogSize = 0;
 	float	PrSave = 0;
+	xrLogger::AddLogCallback(MyLogCallback);
+
 	while (TRUE)
 	{
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);	// bHighPriority?NORMAL_PRIORITY_CLASS:IDLE_PRIORITY_CLASS
@@ -174,18 +182,19 @@ void logThread(void* dummy)
 		{
 			xrCriticalSectionGuard LogGuard(&csLog);
 
-			if (LogSize != xrLogger::logData->size())
+			if (LogSize != myLogQueue.size())
 			{
 				bWasChanges = TRUE;
-				for (size_t Iter = 0; Iter < xrLogger::logData->size(); Iter++)
+				for (size_t Iter = 0; Iter < myLogQueue.size(); Iter++)
 				{
-					const char* S = xrLogger::logData->front().Message.c_str();
-					if (!S)
-						S = "";
-					SendMessage(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
+					string256 S = {};
+					xr_strcpy(S, myLogQueue.front().c_str());
+					
+					if (S[0])
+						SendMessageA(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
+					myLogQueue.pop();
 				}
-				SendMessage(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
-				xrLogger::FlushLog();
+				SendMessageA(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
 			}
 		}
 		if (_abs(PrSave - progress) > EPS_L) {
