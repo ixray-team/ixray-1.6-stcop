@@ -20,7 +20,9 @@ void CAI_Space::init				()
 {
 	VERIFY(!g_pScriptEngine);
 	g_pScriptEngine = xr_new<CScriptEngine>();
+	m_script_engine = g_pScriptEngine;
 	g_pScriptEngine->init	();
+	
 }
 
 CAI_Space::~CAI_Space				()
