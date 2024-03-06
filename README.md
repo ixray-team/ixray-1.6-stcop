@@ -27,15 +27,14 @@
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml">
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml/badge.svg" alt="Build utilities" />
     </a>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-compressor.yml">
-      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-compressor.yml/badge.svg" alt="Build compressor" />
-    </a>
   </p>
 </div>
 
 Stable repository of the modernized _X-Ray_ 1.6 game engine
 
 ## Requirements
+
+For building:
 
 - Visual Studio 2022 Community Edition
   - MFC
@@ -44,13 +43,40 @@ Stable repository of the modernized _X-Ray_ 1.6 game engine
 - Git
 - CMake
 
+For development:
+
+- Visual Studio 2022 Community Edition
+- Git
+- CMake with CMake GUI
+
 ## Building
 
-- Download the repository:
+The project can be built in various ways. Choose the most convenient one and follow the steps
 
-  ```console
-  git clone https://github.com/ixray-team/ixray-1.6-stcop.git
-  ```
+Download the repository firstly:
+
+```sh
+git clone https://github.com/ixray-team/ixray-1.6-stcop.git
+```
+
+### CMake GUI with Visual Studio
+
+To generate `build` folder and solution:
+
+- Open CMake GUI
+- Press `Browse Source...` button and open folder with the project
+- Select necessary preset from drop-down list
+- Press `Configure` button and then `Generate` button
+
+To build the project after generating solution:
+
+- Open generated solution in Visual Sudio
+- Select necessary build config
+- Build solution
+
+### CMake with console
+
+To build from the console follow steps below
 
 - Select one of preset from the list and configure project:
 
@@ -65,8 +91,10 @@ Stable repository of the modernized _X-Ray_ 1.6 game engine
   - `Compressor-x86`
   - `Compressor-x64`
 
-  ```console
-  cmake --preset <preset-name>
+  ```sh
+  cmake --preset preset-name
+  # For example:
+  # cmake --preset Engine-x64
   ```
 
 - Select build configuration from the list and build project:
@@ -75,8 +103,10 @@ Stable repository of the modernized _X-Ray_ 1.6 game engine
   - `RelWithDebInfo`
   - `Release`
 
-  ```console
-  cmake --build --preset <preset-name>-<configuration>
+  ```sh
+  cmake --build --preset preset-name-configuration
+  # For example:
+  # cmake --build --preset Engine-x64-Debug
   ```
 
 - Run `generate-patch.bat` to get modified files and packed assets
