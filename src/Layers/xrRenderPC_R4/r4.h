@@ -78,8 +78,6 @@ public:
 		u32		disasm				: 1;
 		u32		volumetricfog		: 1;
 
-      u32		dx10_gbuffer_opt	: 1;
-
 	  u32		dx10_minmax_sm		: 2;
 	  u32		dx10_minmax_sm_screenarea_threshold;
 		
