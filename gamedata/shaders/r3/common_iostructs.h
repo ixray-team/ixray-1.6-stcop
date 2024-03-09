@@ -439,6 +439,7 @@ struct	v_model
 	float3	T		: TANGENT;		// (nx,ny,nz)
 	float3	B		: BINORMAL;		// (nx,ny,nz)
 	float2	tc		: TEXCOORD0;	// (u,v)
+    float4	P_old   : TEXCOORD1;	// (float,float,float,1)
 };
 
 ////////////////////////////////////////////////////////////////
