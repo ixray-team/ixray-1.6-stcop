@@ -37,7 +37,7 @@ void main(in v_tree I, out p_bumped_new O)
 	
 	pos.xz += calc_xz_wave(wind.xz * inten, frac);
 	
-	float dp_old = calc_cyclic(wave_old.w + dot(pos, wave_old.xyz));
+	float dp_old = calc_cyclic(wave_old.w + dot(pos_old, wave_old.xyz));
 	float frac_old = I.tc.z * consts_old.x;
 	float inten_old = H * dp_old;
 	
@@ -67,4 +67,6 @@ void main(in v_tree I, out p_bumped_new O)
 	
 	O.hpos_curr = mul(m_VP, pos);
 	O.hpos_old = mul(m_VP_old, pos_old);
+	
+	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }

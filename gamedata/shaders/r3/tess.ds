@@ -62,4 +62,6 @@ in float3 uvw : SV_DomainLocation, in const OutputPatch<p_bumped_new, 3> bp, out
 	output.hpos_curr = mul(m_P, float4(output.position.xyz, 1.0));
 	output.hpos_old = mul(m_VP_old, float4(mul(m_invV, float4(output.position.xyz, 1.0)).xyz, 1.0));
 	#endif
+	
+	output.hpos.xy += m_taa_jitter.xy * output.hpos.w;
 }

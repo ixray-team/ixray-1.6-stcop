@@ -30,8 +30,7 @@ void main (p_bumped_new I, out f_deffer O) {
 	float3 Normal = Normal_R.wzy + Normal_G.wzy + Normal_B.wzy + Normal_A.wzy - 0.5;
 	Normal.z *= 0.5f;
 	
-	M.Roughness = 1.0f - Normal_R.x + Normal_G.x + Normal_B.x + Normal_A.x;
-	
+	M.Roughness = saturate(1.0f - Normal_R.x + Normal_G.x + Normal_B.x + Normal_A.x);
 	M.Color.xyz *= Detail * 2.0f;
 
 	M.Metalness = 0.0f;
