@@ -28,6 +28,9 @@ v2p_flat _main( v_model I )
 	O.tcdh.w	= L_material.y;							// (,,,dir-occlusion)
 #endif
 
+	O.hpos_curr = mul (m_WVP, I.P);
+	O.hpos_old = mul (m_WVP_old, I.P_old);
+	
 #ifdef USE_TDETAIL
 	O.tcdbump	= O.tcdh*dt_params;					// dt tc
 #endif

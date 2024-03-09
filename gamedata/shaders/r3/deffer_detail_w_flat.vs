@@ -52,6 +52,9 @@ v2p_flat 	main (v_detail v)
 # if defined(USE_R2_STATIC_SUN)
 	O.tcdh.w	= c0.x;								// (,,,dir-occlusion)
 # endif
+	O.hpos_curr = mul (m_WVP, pos);
+	O.hpos_old = mul (m_VP_old, pos);
+	
 	O.position	= float4	(Pe, 		c0.w		);
 
 	return O;
