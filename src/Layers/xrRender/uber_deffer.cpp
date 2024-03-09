@@ -51,7 +51,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		RImplementation.addShaderOption("USE_BUMP", "1");
 
 		xr_strcpy(fnameA, _t.bump_get().c_str());
-		strconcat(sizeof(fnameB), fnameB, fnameA, "#");
+		xr_strconcat(fnameB, fnameA, "#");
 	}
 	else {
 		fnameA[0] = fnameB[0] = 0;
