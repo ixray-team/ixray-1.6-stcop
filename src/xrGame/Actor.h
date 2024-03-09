@@ -385,6 +385,7 @@ public:
 	bool					g_LadderOrient			() ;
 //	void					UpdateMotionIcon		(u32 mstate_rl);
 
+	void					SetMovementState		(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, bool status);
 	u32						GetMovementState		(const ACTOR_DEFS::EMovementStates& state) const;
 
 	bool					CanAccelerate			();

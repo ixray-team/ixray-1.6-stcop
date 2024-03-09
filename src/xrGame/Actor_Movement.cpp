@@ -666,6 +666,34 @@ float CActor::get_additional_weight() const
 	return res;
 }
 
+void CActor::SetMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, bool status)
+{
+	switch (state)
+	{
+        case ACTOR_DEFS::EMovementStates::eReal:
+		{
+			if (status)
+				mstate_real |= mask;
+			else
+				mstate_real &= ~mask;
+		}break;
+        case ACTOR_DEFS::EMovementStates::eWishful:
+		{
+			if (status)
+				mstate_wishful |= mask;
+			else
+				mstate_wishful &= ~mask;
+		}break;
+        case ACTOR_DEFS::EMovementStates::eOld:
+		{
+			if (status)
+				mstate_old |= mask;
+			else
+				mstate_old &= ~mask;
+		}break;
+	}
+}
+
 u32 CActor::GetMovementState(const ACTOR_DEFS::EMovementStates& state) const
 {
 	u32 result = 0;
