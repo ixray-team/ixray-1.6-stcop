@@ -179,23 +179,23 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 
 	if (oBlend.value)	
 	{
-		// forward
-		LPCSTR	vsname			= 0;
-		LPCSTR	psname			= 0;
 		switch(C.iElement) 
 		{
-		case 0:
-		case 1:
-			vsname = psname =	"model_env_lq"; 
-			C.r_Pass			(vsname,psname,TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
-			//C.r_Sampler			("s_base",	C.L_textures[0]);
-			//C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
-			C.r_dx10Texture		("s_base",	C.L_textures[0]);
-			C.r_dx10Texture		("s_env",	oT2_Name);
+		case SE_R2_NORMAL_HQ:
+		case SE_R2_NORMAL_LQ:
+			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, 0, true);
 
-			C.r_dx10Sampler			("smp_base");
-			C.r_dx10Sampler			("smp_rtlinear");
-			C.r_End				();
+			C.PassSET_ZB(TRUE, FALSE);
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+
+			C.r_dx10Texture("s_material", r2_material);
+			C.r_dx10Texture("env_s0", r2_T_envs0);
+			C.r_dx10Texture("env_s1", r2_T_envs1);
+			C.r_dx10Texture("sky_s0", r2_T_sky0);
+			C.r_dx10Texture("sky_s1", r2_T_sky1);
+
+			C.r_dx10Sampler("smp_material");
+			C.r_End();
 			break;
 		}
 	} 
@@ -205,13 +205,13 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 		switch(C.iElement) 
 		{
 		case SE_R2_NORMAL_HQ: 	// deffer
-			uber_deffer		(C,true,	"model","base",false,0,true);
+			uber_deffer		(C,true,	"deffer_model","deffer_base",false,0,true);
 			C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 			C.r_StencilRef	(0x01);
 			C.r_End			();
 			break;
 		case SE_R2_NORMAL_LQ: 	// deffer
-			uber_deffer		(C,false,	"model","base",false,0,true);
+			uber_deffer		(C,false,	"deffer_model","deffer_base",false,0,true);
 			C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 			C.r_StencilRef	(0x01);
 			C.r_End			();
