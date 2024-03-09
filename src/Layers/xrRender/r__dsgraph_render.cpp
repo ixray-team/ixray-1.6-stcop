@@ -8,6 +8,7 @@
 #include "../../xrEngine/xr_object.h"
 
 #include "FBasicVisual.h"
+#include "CHudInitializer.h"
 
 using namespace		R_dsgraph;
 
@@ -495,20 +496,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud	()
 {
-	extern ENGINE_API float		psHUD_FOV;
-	
-	//PIX_EVENT(r_dsgraph_render_hud);
-
-	// Change projection
-	Fmatrix Pold				= Device.mProject;
-	Fmatrix FTold				= Device.mFullTransform;
-	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV),
-		Device.fASPECT, HUD_VIEWPORT_NEAR, 
-		g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-	Device.mFullTransform.mul	(Device.mProject, Device.mView);
-	RCache.set_xform_project	(Device.mProject);
+	CHudInitializer initalizer(true);
 
 	// Rendering
 	rmNear						();
@@ -521,29 +509,13 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 #endif
 
 	rmNormal					();
-
-	// Restore projection
-	Device.mProject				= Pold;
-	Device.mFullTransform		= FTold;
-	RCache.set_xform_project	(Device.mProject);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 {
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
-	extern ENGINE_API float		psHUD_FOV;
-
-	// Change projection
-	Fmatrix Pold				= Device.mProject;
-	Fmatrix FTold				= Device.mFullTransform;
-	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV),
-		Device.fASPECT, HUD_VIEWPORT_NEAR, 
-		g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-	Device.mFullTransform.mul	(Device.mProject, Device.mView);
-	RCache.set_xform_project	(Device.mProject);
+	CHudInitializer initalizer(true);
 
 #if	RENDER!=R_R1
 	// Targets, use accumulator for temporary storage
@@ -556,43 +528,24 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	rmNear						();
 	g_hud->RenderActiveItemUI	();
 	rmNormal					();
-
-	// Restore projection
-	Device.mProject				= Pold;
-	Device.mFullTransform		= FTold;
-	RCache.set_xform_project	(Device.mProject);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
 void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 {
+	// Rendering
 	// Sorted (back to front)
+
 	mapSorted.traverseRL	(sorted_L1);
 	mapSorted.clear			();
 
-	ENGINE_API extern float psHUD_FOV;
+	CHudInitializer initalizer(true);
 
-	// Change projection
-	Fmatrix Pold = Device.mProject;
-	Fmatrix FTold = Device.mFullTransform;
-	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV),
-		Device.fASPECT, HUD_VIEWPORT_NEAR,
-		g_pGamePersistent->Environment().CurrentEnv->far_plane);
-	Device.mFullTransform.mul(Device.mProject, Device.mView);
-	RCache.set_xform_project(Device.mProject);
-
-	// Rendering
 	rmNear();
 	mapHUDSorted.traverseRL(sorted_L1);
 	mapHUDSorted.clear();
 	rmNormal();
-
-	// Restore projection
-	Device.mProject = Pold;
-	Device.mFullTransform = FTold;
-	RCache.set_xform_project(Device.mProject);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -600,37 +553,19 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 {
 #if	RENDER!=R_R1
+	// Rendering
 	// Sorted (back to front)
+
 	mapEmissive.traverseLR	(sorted_L1);
 	mapEmissive.clear		();
 
 	//	HACK: Calculate this only once
+	CHudInitializer initalizer(true);
 
-	extern ENGINE_API float		psHUD_FOV;
-
-	// Change projection
-	Fmatrix Pold				= Device.mProject;
-	Fmatrix FTold				= Device.mFullTransform;
-	Device.mProject.build_projection(
-		deg2rad(psHUD_FOV),
-		Device.fASPECT, HUD_VIEWPORT_NEAR, 
-		g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-	Device.mFullTransform.mul	(Device.mProject, Device.mView);
-	RCache.set_xform_project	(Device.mProject);
-
-	// Rendering
-	rmNear						();
-	// Sorted (back to front)
-	mapHUDEmissive.traverseLR	(sorted_L1);
-	mapHUDEmissive.clear		();
-
-	rmNormal					();
-
-	// Restore projection
-	Device.mProject				= Pold;
-	Device.mFullTransform		= FTold;
-	RCache.set_xform_project	(Device.mProject);
+	rmNear();
+	mapHUDEmissive.traverseLR(sorted_L1);
+	mapHUDEmissive.clear();
+	rmNormal();
 #endif
 }
 
