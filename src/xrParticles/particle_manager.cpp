@@ -161,6 +161,7 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 		SharedParticleEffect particleEffect = GetEffectPtr(effect_id);
 		if (particleEffect != nullptr)
 		{
+			xrCriticalSectionGuard cs(ParticleEffect::mParticleRemoveCS);
 			particleEffect->p_count = 0;
 		}
 	}
