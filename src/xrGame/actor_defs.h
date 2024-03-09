@@ -24,6 +24,12 @@ enum EActorCameras {
 };
 enum EDamages {DAMAGE_FX_COUNT = 12};
 
+enum EMovementStates
+{
+	eOld = 0,
+	eWishful,
+	eReal,
+};
 
 enum EMoveCommand
 {

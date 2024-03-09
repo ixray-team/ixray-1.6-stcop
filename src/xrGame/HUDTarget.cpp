@@ -147,8 +147,7 @@ void CHUDTarget::Render()
 	if (!Actor)
 		return;
 
-	bool get_motions = Actor->active_cam() == eacLookAt &&
-		((Actor->MovingState() & mcSprint) || (Actor->MovingState() & mcJumpSeq));
+	bool get_motions = Actor->active_cam() == eacLookAt && ((Actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) || (Actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJumpSeq));
 
 	if (get_motions)
 		return;

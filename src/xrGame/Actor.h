@@ -385,6 +385,8 @@ public:
 	bool					g_LadderOrient			() ;
 //	void					UpdateMotionIcon		(u32 mstate_rl);
 
+	u32						GetMovementState		(const ACTOR_DEFS::EMovementStates& state) const;
+
 	bool					CanAccelerate			();
 	bool					CanJump					();
 	bool					CanMove					();
@@ -398,7 +400,6 @@ public:
 	bool					AnyMove					()	{return (mstate_real & mcAnyMove) != 0;};
 
 	bool					is_jump					();
-	u32						MovingState				() const {return mstate_real;}
 protected:
 	u32						mstate_wishful;
 	u32						mstate_old;
