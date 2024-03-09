@@ -54,7 +54,14 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_End				();
 		break;
 	case 3:	// post-processing
+		C.r_Pass("stub_notransform_aa_AA", "combine_taa", FALSE, FALSE, FALSE);
+		C.r_dx10Texture("s_image", r2_RT_generic2);
+		C.r_dx10Texture("s_image_old", r2_RT_generic0_old);
+		C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_dx10Sampler("smp_rtlinear");
+		C.r_End();
 		break;
 	}
 	RImplementation.clearAllShaderOptions();
