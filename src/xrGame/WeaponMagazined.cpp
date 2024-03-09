@@ -750,10 +750,18 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			else
 				ReloadMagazine();
 			SwitchState(eIdle);
-		} break;	// End of reload animation
-		case eHiding:	SwitchState(eHidden);   break;	// End of Hide
-		case eShowing:	SwitchState(eIdle);		break;	// End of Show
-		case eIdle:		switch2_Idle();			break;  // Keep showing idle
+		} break;
+		case eHiding:
+			SwitchState(eHidden);  
+		break;
+		case eIdle:
+			switch2_Idle();
+		break;
+		case eFire:
+		case eFire2:
+		case eShowing:
+			SwitchState(eIdle);
+		break;
 	}
 	inherited::OnAnimationEnd(state);
 }
