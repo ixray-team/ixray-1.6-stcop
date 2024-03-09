@@ -57,31 +57,15 @@ void	CRenderTarget::phase_combine	()
     }
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	// low/hi RTs
-	RContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
-	RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
-	u_setrt(rt_Generic_0, rt_Generic_1, 0, RDepth);
-	RCache.set_CullMode	( CULL_NONE );
-	RCache.set_Stencil	( FALSE		);
-
-	BOOL	split_the_scene_to_minimize_wait			= FALSE;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
+	u_setrt(rt_Generic_0, 0, 0, RDepth);
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(FALSE);
 
 	// draw skybox
 	if (1)
 	{
-		//	Moved to shader!
-		//RCache.set_ColorWriteEnable					();
-		//	Moved to shader!
-		//RCache.set_Z(FALSE);
-		g_pGamePersistent->Environment().RenderSky	();
-
-		//	Igor: Render clouds before compine without Z-test
-		//	to avoid siluets. HOwever, it's a bit slower process.
+	//	g_pGamePersistent->Environment().RenderSky	();
 		g_pGamePersistent->Environment().RenderClouds	();
-
-		//	Moved to shader!
-		//RCache.set_Z(TRUE);
 	}
 
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
@@ -175,14 +159,15 @@ void	CRenderTarget::phase_combine	()
 	// Forward rendering
 	{
 		PIX_EVENT(Forward_rendering);
-		u_setrt(rt_Generic_0, 0, 0, RDepth);		// LDR RT
-		RCache.set_CullMode				(CULL_CCW);
-		RCache.set_Stencil				(FALSE);
-		RCache.set_ColorWriteEnable		();
-		//	TODO: DX10: CHeck this!
-		//g_pGamePersistent->Environment().RenderClouds	();
+		u_setrt(rt_Generic_0, 0, 0, RDepth); // LDR RT
+		RCache.set_CullMode (CULL_CCW);
+		RCache.set_Stencil (FALSE);
+		RCache.set_ColorWriteEnable ();
+
 		RImplementation.render_forward	();
-		if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
+		if (g_pGamePersistent) {
+			g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
+		}
 	}
 
 	//	Igor: for volumetric lights
@@ -190,15 +175,8 @@ void	CRenderTarget::phase_combine	()
 	if (m_bHasActiveVolumetric)
 		phase_combine_volumetric();
 
-	// Perform blooming filter and distortion if needed
-	RCache.set_Stencil	(FALSE);
-	phase_bloom			( );												// HDR RT invalidated here
-
-	//RImplementation.rmNormal();
-	//u_setrt(rt_Generic_1,0,0,RDepth);
-
 	// Distortion filter
-	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
+	BOOL bDistort = RImplementation.o.distortion_enabled; // This can be modified
 	{
 		if ((0==RImplementation.mapDistort.size()) && !_menu_pp)		
 			bDistort= FALSE;
@@ -207,20 +185,24 @@ void	CRenderTarget::phase_combine	()
 			PIX_EVENT(render_distort_objects);
 			FLOAT ColorRGBA_[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
 			u_setrt(rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
+
 			RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
-			//CHK_DX(RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
 			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
 	}
+	// HDR RT invalidated here
+	// Perform blooming filter and distortion if needed
+	RCache.set_Stencil(FALSE);
+	phase_bloom();
 
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
-	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
-	if (_menu_pp)			PP_Complex	= FALSE;
+	BOOL	PP_Complex = u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
+	if (_menu_pp) PP_Complex	= FALSE;
 
    // HOLGER - HACK
    PP_Complex = TRUE;
@@ -230,7 +212,7 @@ void	CRenderTarget::phase_combine	()
 		u_setrt(rt_Color, 0, 0, RDepth);			// LDR RT
 	else
 		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, nullptr, nullptr, RDepth);
-	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,RTarget,nullptr,nullptr,RDepth);
+
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
@@ -270,10 +252,7 @@ void	CRenderTarget::phase_combine	()
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
 		// Draw COLOR
-		if (ps_r2_ls_flags.test(R2FLAG_AA))
-			RCache.set_Element(s_combine->E[bDistort ? 3 : 1]);	// look at blender_combine.cpp
-		else
-			RCache.set_Element(s_combine->E[bDistort ? 4 : 2]);	// look at blender_combine.cpp
+		RCache.set_Element(s_combine->E[bDistort ? 1 : 2]);	// look at blender_combine.cpp
 		RCache.set_c				("e_barrier",	ps_r2_aa_barier.x,	ps_r2_aa_barier.y,	ps_r2_aa_barier.z,	0);
 		RCache.set_c				("e_weights",	ps_r2_aa_weight.x,	ps_r2_aa_weight.y,	ps_r2_aa_weight.z,	0);
 		RCache.set_c				("e_kernel",	ps_r2_aa_kernel,	ps_r2_aa_kernel,	ps_r2_aa_kernel,	0);
@@ -447,7 +426,7 @@ void CRenderTarget::phase_combine_volumetric()
 	//	TODO: DX10: Remove half pixel offset here
 
 	//u_setrt(rt_Generic_0,0,0,RDepth );			// LDR RT
-	u_setrt(rt_Generic_0, rt_Generic_1, 0, RDepth);
+	u_setrt(rt_Generic_0, 0, 0, RDepth);
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{
