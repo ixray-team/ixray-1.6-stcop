@@ -720,6 +720,8 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_ammoType,					output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
 	save_data		(m_bRememberActorNVisnStatus,	output_packet);
+	save_data		(m_fRTZoomFactor,				output_packet);
+	save_data		(bMisfire,						output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -731,6 +733,8 @@ void CWeapon::load(IReader &input_packet)
 	UpdateAddonsVisibility			();
 	load_data		(m_ammoType,					input_packet);
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
+	load_data		(m_fRTZoomFactor,				input_packet);
+	load_data		(bMisfire,						input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 			OnZoomIn();

@@ -45,6 +45,57 @@ namespace MemorySpace {
 	struct CHitObject;
 };
 
+void CScriptGameObject::IterateFeelTouch(const luabind::functor<bool>& functor)
+{
+	Feel::Touch* touch = smart_cast<Feel::Touch*>(&object());
+	if (touch)
+	{
+		xr_vector<CObject*>::const_iterator	I = touch->feel_touch.begin();
+		xr_vector<CObject*>::const_iterator	E = touch->feel_touch.end();
+		for (; I != E; ++I) {
+			CObject* o = smart_cast<CObject*>(*I);
+			if (o)
+				if (functor(o->ID()) == true)
+					return;
+		}
+	}
+}
+
+int CScriptGameObject::GetAmmoCount(u8 type)
+{
+	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	if (!weapon) return 0;
+
+	if (type < weapon->m_ammoTypes.size())
+		return weapon->GetAmmoCount_forType(weapon->m_ammoTypes[type]);
+
+	return 0;
+}
+
+u8 CScriptGameObject::GetWeaponSubstate()
+{
+	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	if (!weapon) return 255;
+
+	return weapon->m_sub_state;
+}
+
+u32 CScriptGameObject::GetMainWeaponType()
+{
+	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	if (!weapon) return 255;
+
+	return weapon->ef_main_weapon_type();
+}
+
+u32 CScriptGameObject::GetWeaponType()
+{
+	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	if (!weapon) return 255;
+
+	return weapon->ef_weapon_type();
+}
+
 bool CScriptGameObject::RayPick(const Fvector3& Pos, const Fvector3& Dir, float Range)
 {
 	collide::rq_result R;

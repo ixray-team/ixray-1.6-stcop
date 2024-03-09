@@ -341,6 +341,12 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("stop_particles",				&CScriptGameObject::stop_particles)
 		.def("ray",							&CScriptGameObject::RayPick)
 
+		//
+		.def("iterate_feel_touch",			&CScriptGameObject::IterateFeelTouch)
+		.def("get_weapon_substate",			&CScriptGameObject::GetWeaponSubstate)
+		.def("get_ammo_count_for_type",     &CScriptGameObject::GetAmmoCount)
+		.def("get_main_weapon_type",		&CScriptGameObject::GetMainWeaponType)
+		.def("get_weapon_type",				&CScriptGameObject::GetWeaponType)
 
 	;return	(instance);
 }
