@@ -95,32 +95,21 @@ float4 GatherZSamples( float2 f2TexCoord )
 	float2 f2InvRTSize = (1.0f).xx / pos_decompression_params2.xy;
 	
 #ifndef SM_5
-	f4Ret.x = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,0 ) ).z;
-	f4Ret.y = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,1 ) ).z;
-	f4Ret.z = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 0,1 ) ).z;
-	f4Ret.w = g_txDepth.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 0,0 ) ).z;
+	f4Ret.x = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 0)).z;
+	f4Ret.y = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 1)).z;
+	f4Ret.z = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 1)).z;
+	f4Ret.w = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 0)).z;
 #else // !SM_5
-	f4Ret = g_txDepth.GatherBlue( smp_nofilter, f2TexCoord );
+	f4Ret = g_txDepth.GatherBlue(smp_nofilter, f2TexCoord);
 #endif // SM_5
 
 #ifndef SM_5
-    #ifdef GBUFFER_OPTIMIZATION
-	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,0 ) ).x;
-	f4Ret.y += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,1 ) ).x;
-	f4Ret.z += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 0,1 ) ).x;
-	f4Ret.w += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 0,0 ) ).x;
-	#else
-	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,0 ) ).z;
-	f4Ret.y += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 1,1 ) ).z;
-	f4Ret.z += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 0,1 ) ).z;
-	f4Ret.w += g_fHDAOZDispScale * g_txNormal.Load( int3( f2TexCoord * g_f2RTSize, 0 ), int2( 0,0 ) ).z;
-	#endif
+	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(1, 0)).z;
+	f4Ret.y += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(1, 1)).z;
+	f4Ret.z += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(0, 1)).z;
+	f4Ret.w += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(0, 0)).z;
 #else // !SM_5
-    #ifdef GBUFFER_OPTIMIZATION
-	f4Ret += g_fHDAOZDispScale * g_txNormal.GatherRed( smp_nofilter, f2TexCoord );
-	#else
-	f4Ret += g_fHDAOZDispScale * g_txNormal.GatherBlue( smp_nofilter, f2TexCoord );
-	#endif
+	f4Ret += g_fHDAOZDispScale * g_txNormal.GatherBlue(smp_nofilter, f2TexCoord);
 #endif // SM_5
       
 	return f4Ret;
@@ -150,11 +139,7 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 	int2 i2OffsetScreenCoord;
 	int2 i2MirrorOffsetScreenCoord;
 	
-#ifdef GBUFFER_OPTIMIZATION
-	float3 N = gbuf_unpack_normal( g_txNormal.Load( int3( u2ScreenCoord, 0), 0 ).xy );
-#else
-	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), 0 ).xyz;
-#endif
+	float3 N = gbuf_unpack_normal(g_txNormal.Load(int3( u2ScreenCoord, 0), 0).xy);
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
 	{
@@ -168,23 +153,14 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 		i2OffsetScreenCoord = ( i2OffsetScreenCoord < 0 ) ? ( 0 ) : ( i2OffsetScreenCoord );
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
-#ifdef GBUFFER_OPTIMIZATION
-		f3N1.xy  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xy;
-		f3N1.xyz = gbuf_unpack_normal( f3N1.xy );
-		f3N2.xy  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xy;				
-		f3N2.xyz = gbuf_unpack_normal( f3N2.xy );
-#else
-		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xyz;
-		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xyz;				
-#endif
+		f3N1.xyz = g_txNormal.Load(int3( i2OffsetScreenCoord, 0), 0).xyz;
+		f3N2.xyz = g_txNormal.Load(int3( i2MirrorOffsetScreenCoord, 0), 0).xyz;			
 		
-		fDot = dot( f3N1, N );
+		fDot = dot(f3N1, N);
 		
-		fSummedDot += ( fDot > g_fSSAOAcceptAngle ) ? ( 0.0f ) : ( 1.0f - ( abs( fDot ) * 0.25f ) );
-
-		fDot = dot( f3N2, N );
-		
-		fSummedDot += ( fDot > g_fSSAOAcceptAngle ) ? ( 0.0f ) : ( 1.0f - ( abs( fDot ) * 0.25f ) );
+		fSummedDot += (fDot > g_fSSAOAcceptAngle ) ? (0.0f) : (1.0f - ( abs( fDot ) * 0.25f));
+		fDot = dot(f3N2, N);
+		fSummedDot += (fDot > g_fSSAOAcceptAngle ) ? (0.0f) : (1.0f - ( abs( fDot ) * 0.25f));
 	}
 
 	fSummedDot /= 8.0f;
@@ -195,11 +171,7 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 }
 #endif
 
-#ifdef GBUFFER_OPTIMIZATION
-float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
-#else
-float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ )
-#endif
+float calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d)
 #ifndef	SSAO_QUALITY
 {
 	return 1.0f;
