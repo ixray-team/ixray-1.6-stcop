@@ -14,14 +14,10 @@
 uniform float4 m_lmap [2];
 float4 main( p_volume I, float4 pos2d : SV_Position ) : SV_Target
 {
-	float2	tcProj			= I.tc.xy / I.tc.w;
+	float2	tcProj = I.tc.xy / I.tc.w;
 
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(tcProj, pos2d, ISAMPLE) );
-
-#ifdef	GBUFFER_OPTIMIZATION
-	//	Emulate virtual offset
-	gbd.P += gbd.N*0.015f;
-#endif	//	GBUFFER_OPTIMIZATION
+	gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, pos2d, ISAMPLE));
+	gbd.P += gbd.N * 0.015f;
 
 	float4 _P				= float4( gbd.P, gbd.mtl );
 	float4 _N				= float4( gbd.N, gbd.hemi );
