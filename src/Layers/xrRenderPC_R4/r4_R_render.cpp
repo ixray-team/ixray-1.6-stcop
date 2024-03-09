@@ -225,6 +225,12 @@ void CRender::Render		()
 		return;
 	}
 
+	ps_r_taa_jitter.x = Random.randF(-1.0f, 1.0f) / float(Device.TargetWidth);
+	ps_r_taa_jitter.y = Random.randF(-1.0f, 1.0f) / float(Device.TargetHeight);
+	ps_r_taa_jitter.z = 0.0f;
+
+	ps_r_taa_jitter = ps_r_taa_jitter.mul(ps_r_taa_jitter_scale);
+
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
