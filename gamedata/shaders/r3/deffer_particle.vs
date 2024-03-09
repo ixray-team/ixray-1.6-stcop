@@ -1,16 +1,16 @@
 #include 	"common.h"
 
-struct 		vv
+struct vv
 {
-	float4	P		: POSITION;
-	float2	tc		: TEXCOORD0;
-	float4	c		: COLOR0;
+	float4 P : POSITION;
+	float2 tc : TEXCOORD0;
+	float4 c : COLOR0;
 };
 
-struct 		v2p_particle
+struct v2p_particle
 {
-	float4 		color	: COLOR0;
-	v2p_flat	base;
+	float4 color : COLOR0;
+	v2p_flat base;
 };
 
 v2p_particle main( vv I )
@@ -32,10 +32,9 @@ v2p_particle main( vv I )
 	O.hpos_curr = mul (m_WVP, I.P);
 	O.hpos_old = mul (m_VP_old, I.P);
 
-	v2p_particle	pp;
+	v2p_particle pp;
 	pp.color = I.c;
 	pp.base = O;
 
-	return		pp;
+	return pp;
 }
-FXVS;
