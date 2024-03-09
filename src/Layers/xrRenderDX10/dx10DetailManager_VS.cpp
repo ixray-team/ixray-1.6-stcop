@@ -52,61 +52,70 @@ void CDetailManager::hw_Render()
 	//	Update timer
 	//	Can't use Device.fTimeDelta since it is smoothed! Don't know why, but smoothed value looks more choppy!
 	float fDelta = Device.fTimeGlobal-m_global_time_old;
-	if ( (fDelta<0) || (fDelta>1))	fDelta = 0.03;
+
+	if (fDelta < 0.0f || fDelta > 1.0f) {
+		fDelta = Device.fTimeDelta;
+	}
+
+	static auto m_frame_render = u32(-1);
+	static auto m_time_pos_old = 0.0f;
+
+	static Fvector4	dir1_old = { 0,0,0 }, dir2_old = { 0,0,0 };
+
+	Fvector4 dir1, dir2;
+	dir1.set(_sin(m_time_rot_1), 0, _cos(m_time_rot_1), 0).normalize().mul(swing_current.amp1);
+	dir2.set(_sin(m_time_rot_2), 0, _cos(m_time_rot_2), 0).normalize().mul(swing_current.amp2);
+
 	m_global_time_old = Device.fTimeGlobal;
 
-	m_time_rot_1	+= (PI_MUL_2*fDelta/swing_current.rot1);
-	m_time_rot_2	+= (PI_MUL_2*fDelta/swing_current.rot2);
-	m_time_pos		+= fDelta*swing_current.speed;
-
-	//float		tm_rot1		= (PI_MUL_2*Device.fTimeGlobal/swing_current.rot1);
-	//float		tm_rot2		= (PI_MUL_2*Device.fTimeGlobal/swing_current.rot2);
-	float		tm_rot1		= m_time_rot_1;
-	float		tm_rot2		= m_time_rot_2;
-
-	Fvector4	dir1,dir2;
-	dir1.set				(_sin(tm_rot1),0,_cos(tm_rot1),0).normalize().mul(swing_current.amp1);
-	dir2.set				(_sin(tm_rot2),0,_cos(tm_rot2),0).normalize().mul(swing_current.amp2);
+	m_time_rot_1 += (PI_MUL_2 * fDelta / swing_current.rot1);
+	m_time_rot_2 += (PI_MUL_2 * fDelta / swing_current.rot2);
+	m_time_pos += fDelta * swing_current.speed;
 
 	// Setup geometry and DMA
-	RCache.set_Geometry		(hw_Geom);
+	RCache.set_Geometry(hw_Geom);
+
+	float scale = 1.f / float(quant);
+	Fvector4 wave, wave_old, consts;
 
 	// Wave0
-	float		scale			=	1.f/float(quant);
-	Fvector4	wave;
-	Fvector4	consts;
-	consts.set				(scale,		scale,		ps_r__Detail_l_aniso,	ps_r__Detail_l_ambient);
-	//wave.set				(1.f/5.f,		1.f/7.f,	1.f/3.f,	Device.fTimeGlobal*swing_current.speed);
-	wave.set				(1.f/5.f,		1.f/7.f,	1.f/3.f,	m_time_pos);
-	//RCache.set_c			(&*hwc_consts,	scale,		scale,		ps_r__Detail_l_aniso,	ps_r__Detail_l_ambient);				// consts
-	//RCache.set_c			(&*hwc_wave,	wave.div(PI_MUL_2));	// wave
-	//RCache.set_c			(&*hwc_wind,	dir1);																					// wind-dir
-	//hw_Render_dump			(&*hwc_array,	1, 0, c_hdr );
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, 1, 0);
+	wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
+	wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
+
+	consts.set(scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, wave_old.div(PI_MUL_2), dir1_old, 1, 0);
 
 	// Wave1
-	//wave.set				(1.f/3.f,		1.f/7.f,	1.f/5.f,	Device.fTimeGlobal*swing_current.speed);
-	wave.set				(1.f/3.f,		1.f/7.f,	1.f/5.f,	m_time_pos);
-	//RCache.set_c			(&*hwc_wave,	wave.div(PI_MUL_2));	// wave
-	//RCache.set_c			(&*hwc_wind,	dir2);																					// wind-dir
-	//hw_Render_dump			(&*hwc_array,	2, 0, c_hdr );
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 2, 0);
+	wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
+	wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
+
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 2, 0);
 
 	// Still
-	consts.set				(scale,		scale,		scale,				1.f);
-	//RCache.set_c			(&*hwc_s_consts,scale,		scale,		scale,				1.f);
-	//RCache.set_c			(&*hwc_s_xform,	Device.mFullTransform);
-	//hw_Render_dump			(&*hwc_s_array,	0, 1, c_hdr );
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1);
+	consts.set(scale, scale, scale, 1.f);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 0, 1);
+
+	if (m_frame_render != Device.dwFrame) {
+		m_time_pos_old = m_time_pos;
+
+		dir1_old.set(dir1);
+		dir2_old.set(dir2);
+
+		m_frame_render = Device.dwFrame;
+	}
 }
 
-void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, u32 var_id, u32 lod_id)
+void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id)
 {
 	static shared_str strConsts("consts");
 	static shared_str strWave("wave");
 	static shared_str strDir2D("dir2D");
-	static shared_str strArray("array");
+
+	static shared_str strWaveOld("wave_old");
+	static shared_str strDir2DOld("dir2D_old");
+
 	static shared_str strXForm("xform");
+	static shared_str strArray("array");
 
 	// Matrices and offsets
 	u32		vOffset	=	0;
@@ -137,8 +146,13 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 				//	This could be cached in the corresponding consatant buffer
 				//	as it is done for DX9
 				RCache.set_c(strConsts, consts);
+
 				RCache.set_c(strWave, wave);
 				RCache.set_c(strDir2D, wind);
+
+				RCache.set_c(strWaveOld, wave_old);
+				RCache.set_c(strDir2DOld, wind_old);
+
 				RCache.set_c(strXForm, Device.mFullTransform);
 
 				//ref_constant constArray = RCache.get_c(strArray);
