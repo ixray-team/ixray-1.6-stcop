@@ -6,170 +6,172 @@ Full changelog of _IX-Ray_ 1.6 project
 
 ### Common
 
-- Improved projects structure
-- Enabled C++20 for all projects
-- Replace 3D SDK with actual version
-- Enabled Unicode globally
-- Fixed x64 runtime issues
-- Fixed utilities building issues
-- Restructured render folders with refactoring
-- Restructured building workflows and pipelines
-- Enabled printing compressor log on pipeline
-- Replaced Luabind with non-Boost version
-- Deleted Boost files
-- Reworked memory allocator and memory modules
+- Improved projects structure (@ForserX, @Drombeys, @acidicMercury8)
+- Enabled C++20 for all projects (@ForserX)
+- Enabled Unicode globally (@ForserX)
+- Fixed x64 runtime issues (@ForserX, @Drombeys)
+- Fixed utilities building issues (@ForserX, @Drombeys, @acidicMercury8, @vadvalskiy)
+- Restructured render folders with refactoring (@Drombeys)
+- Restructured building workflows and pipelines (@acidicMercury8, @Drombeys)
+- Enabled printing compressor log on pipeline (@Drombeys)
+- Replaced Luabind with non-Boost version (@ForserX)
+- Deleted Boost files (@ForserX)
+- Reworked memory allocator and memory modules (@ForserX)
 
 ### Packages
 
-- Replaced LuaJIT with NuGet package
-- Replaced DirectXTex with nvtt in xrDXT project
-- Replaced FreeImage with NuGet package
+- Replaced LuaJIT with NuGet package (@ForserX, @acidicMercury8)
+- Replaced DirectXTex with nvtt in xrDXT project (@ForserX)
+- Replaced FreeImage with NuGet package (@ForserX, @acidicMercury8)
 
 ### Engine
 
-- Disable reading `user.ltx` config in root folder
-- Moved xrXMLParser to xrCore
-- Rewritten CPUID module
-- Rewritten CRC32 without Boost
-- Implemented new stack walker
-- Deleted `ttapi` module
-- Rewritten renders iterator
-- Optimized weapon sounds update
-- Added invalidate state for rain
-- Fixed using temp sound buffer
-- Fixed rain sound after loading or changing level
-- Enabled window minimization on `do_exit` and `terminate` calls
-- Set special function for terminate
-- Fixed window minimization unhandled error
-- Fixed infinite unhandled crash handler execution
-- Fixed game closing after error on not connected debugger
-- Fixed weather cycles loading
-- Enabled weather logging macros on non `MASTER_GOLD` configurations
-- Fixed sound buffer size
-- Fixed wrong variable name assignment in sound environment
-- Rewritten timers
-- Added defferred `R_ASSERT` event
-- Fixed drop FPS for not valid spawn position of object
-- Enabled printing Lua stack information and variables to log
-- Enabled printing class ID error to log on release configuration
-- Fixed to use normal system devices by OpenAL Soft
-- Deleted hardcode for level box
+- Disabled reading `user.ltx` config in root folder (@Drombeys)
+- Moved xrXMLParser to xrCore (@ForserX)
+- Rewritten CPUID module (@ForserX)
+- Rewritten CRC32 without Boost (@ForserX)
+- Implemented new stack walker (@ForserX)
+- Deleted `ttapi` module (@Drombeys)
+- Rewritten renders iterator (@Drombeys, @Hozar2002)
+- Optimized weapon sounds update (@VaIeroK)
+- Added invalidate state for rain (@MAYLAYSHEZ)
+- Fixed rain sound after loading or changing level (@MAYLAYSHEZ)
+- Enabled window minimization on `do_exit` and `terminate` calls (@MAYLAYSHEZ)
+- Set special function for terminate (@MAYLAYSHEZ)
+- Fixed window minimization unhandled error (@MAYLAYSHEZ)
+- Fixed infinite unhandled crash handler execution (@MAYLAYSHEZ)
+- Fixed game closing after error on not connected debugger (@MAYLAYSHEZ)
+- Fixed weather cycles loading (@MAYLAYSHEZ)
+- Enabled weather logging macros on non `MASTER_GOLD` configurations (@MAYLAYSHEZ)
+- Fixed sound buffer size (@ForserX)
+- Fixed wrong variable name assignment in sound environment (@johncurley)
+- Rewritten timers (@mortany, @ForserX)
+- Added defferred `R_ASSERT` event (@ForserX)
+- Fixed drop FPS for not valid spawn position of object (@OldSerpskiStalker)
+- Enabled printing Lua stack information and variables to log (@ForserX)
+- Enabled printing class ID error to log on release configuration (@ForserX)
+- Fixed to use normal system devices by OpenAL Soft (@ForserX)
+- Deleted hardcode for level box (@ForserX)
+- Implemented rain and thunderbolt starting delay (@MAYLAYSHEZ)
 
 ### Render
 
-- Implemented FXAA on static lightning
-- Fixed crash on bones synchronization
-- Implemented SMAA in xrRender_R2
-- Implemented disabling of shader cache reading
-- Fixed mipmap loading
-- Fixed distorted glass displaying on static lighting
-- Deleted unused `ConsoleRender` module
-- Deleted `xrSkin2W_SSE` module
-- Deleted `advancedpp` option
-- Deleted `*_nomsaa` related shaders
-- Implemented rendertarget resolution acquisition
-- Deleted `albedo_wo` option
-- Deleted `blur` option
-- Implemented `r2_cloud_shadows` command
-- Fixed sun shadows on xrRender_R2
-- Implemented `r2_def_aref_quality` command
-- Implemented displaying window node name by cursor focus
-- Implemented `D3D_FEATURE_LEVEL_11_1` support
-- Deleted MSAA in resources
-- Deleted MSAA in render
-- Deleted `r3_msaa_alphatest` command
-- Deleted `r__supersample` command
-- Implemented RenderDoc support
-- Implemented optional parallel textures loading
-- Added support volumemap to D3D11 render
-- Implemented texture stagging control for all renders
-- Added `-dxdebug` key instead DirectX debug flag
-- Increased value of `rsDVB_Size` variable
-- Fixed wallmarks on dynamic objects
-- Fixed memory leak in `CDetailManager` class
-- Set maximum textures quality by default
-- Fixed double `ShaderResourceView` creation
-- Set initial values of `CROS_impl` class variables
+- Implemented FXAA on static lightning (@Hozar2002)
+- Implemented SMAA in xrRender_R2 (@Hozar2002)
+- Fixed crash on bones synchronization (@xrLil-Batya)
+- Implemented disabling of shader cache reading (@Hozar2002)
+- Fixed mipmap loading (@Drombeys)
+- Fixed distorted glass displaying on static lighting (@Hozar2002)
+- Deleted unused `ConsoleRender` module (@Drombeys)
+- Deleted `xrSkin2W_SSE` module (@Drombeys)
+- Deleted `advancedpp` option (@Drombeys)
+- Deleted `*_nomsaa` related shaders (@Drombeys)
+- Implemented rendertarget resolution acquisition (@Vertver, @Drombeys)
+- Deleted `albedo_wo` option (@Drombeys)
+- Deleted `blur` option (@Drombeys)
+- Implemented `r2_cloud_shadows` command  (@Drombeys, @Hozar2002)
+- Fixed sun shadows on xrRender_R2 (@Drombeys)
+- Implemented `r2_def_aref_quality` command (@Drombeys, @Hozar2002)
+- Implemented displaying window node name by cursor focus (@Hrusteckiy)
+- Implemented `D3D_FEATURE_LEVEL_11_1` support (@Vertver)
+- Deleted MSAA in resources (@Drombeys)
+- Deleted MSAA in render (@Drombeys)
+- Deleted `r3_msaa_alphatest` command (@Drombeys)
+- Deleted `r__supersample` command (@Drombeys)
+- Implemented RenderDoc support (@ForserX)
+- Implemented optional parallel textures loading (@MAYLAYSHEZ)
+- Added support volumemap to D3D11 render (@Vertver)
+- Implemented texture stagging control for all renders (@MAYLAYSHEZ)
+- Added `-dxdebug` key instead DirectX debug flag (@Drombeys)
+- Increased value of `rsDVB_Size` variable (@Drombeys)
+- Fixed wallmarks on dynamic objects (@OldSerpskiStalker)
+- Fixed memory leak in `CDetailManager` class (@Drombeys)
+- Set maximum textures quality by default (@MAYLAYSHEZ)
+- Fixed double `ShaderResourceView` creation (@Vertver)
+- Set initial values of `CROS_impl` class variables (@Drombeys)
 
 ### Gameplay
 
-- Implemented crosshair control in adjust interface
-- Fixed spawn grenade after grenade change
-- Fixed `hud_fov` command
-- Added `checkout_bones` parameter for `CMissile` class
-- Fixed opening doors by NPC
-- Implemented custom mark feature
-- Implemented custom text feature
-- Fixed incorrect head rotation of trader
-- Fixed load last save button behavior after loading level
-- Added developer float commands
-- Implemented customization of `UICursor` control
-- Implemented customization of `UITrackBar` control
-- Fixed crashes on `UIItemInfo` non-existent node
-- Added method for quick adding any custom static
-- Fixed NPC dispersion by rank
-- Deleted R_ASSERT2 in `CUIDialogWnd::HideDialog` method
-- Deleted duplicated `Fvector2` in `CUICellContainer::PlaceItemAtPos` method
-- Fixed moving items to fast slot if grid larger than grid of slot
-- Fixed weapon highlights
-- Added left hand transform matrix
-- Fixed displaying addons on weapons
-- Implemented rain and thunderbolt starting delay
-- Made IK stop further than 100m from actor position
-- Fixed `get_wnd_pos` function export
-- Added exception message to `SetCharacterCommunity` method
-- Fixed incorrect type passed `GameObject::eDeath` callback
-- Added object existence check
-- Fixed spawn paths related errors
-- Fixed message output in `show_dialog` function
-- Deleted `dump_infos` command from `actor_binder:update` function
-- Fixed mutants logic in restrictors broke down
-- Fixed triggering of adding monsters contacts
-- Enabled ragdoll for deadbody
-- Implemented new external features system
-- Fixed level graph invalid vertex ID error
-- Implemented `hud_fov_zoom` weapon parameter
-- Added underrun buffer checking to fix playback bug
-- Fixed walking in `mcLookout` states
-- Set initial values of `CStreamReader` class variables
-- Fixed HUD models clipping
-- Implemented grenade explosion on hit
-- Implemented stopping animation of getting detector
-- Replaced missing sound with stub on using scripts
-- Moved actor to beginning of spawn
-- Fixed calculating position of items in inventory grid
-- Implemented timer for new game and save loading
+- Implemented crosshair control in adjust interface (@Shtrecker)
+- Fixed spawn grenade after grenade change (@Shtrecker)
+- Fixed `hud_fov` command (@Shtrecker)
+- Added `checkout_bones` parameter for `CMissile` class (@Shtrecker)
+- Fixed opening doors by NPC (@ForserX)
+- Implemented custom mark feature (@Hrusteckiy)
+- Implemented custom text feature (@Hrusteckiy)
+- Fixed incorrect head rotation of trader (@Hrusteckiy)
+- Fixed load last save button behavior after loading level (@Hrusteckiy)
+- Added developer float commands (@Hrusteckiy)
+- Implemented customization of `UICursor` control (@Hrusteckiy)
+- Implemented customization of `UITrackBar` control (@Hrusteckiy)
+- Fixed crashes on `UIItemInfo` non-existent node (@Hrusteckiy)
+- Added method for quick adding any custom static (@Hrusteckiy)
+- Fixed NPC dispersion by rank (@Hrusteckiy, @SurDno)
+- Deleted R_ASSERT2 in `CUIDialogWnd::HideDialog` method (@ForserX)
+- Deleted duplicated `Fvector2` in `CUICellContainer::PlaceItemAtPos` method (@ForserX)
+- Fixed moving items to fast slot if grid larger than grid of slot (@ForserX)
+- Fixed weapon highlights (@ForserX)
+- Added left hand transform matrix (@Hozar2002, @ForserX)
+- Fixed displaying addons on weapons (@OldSerpskiStalker)
+- Made IK stop further than 100m from actor position (@MAYLAYSHEZ)
+- Fixed `get_wnd_pos` function export (@Drombeys)
+- Added exception message to `SetCharacterCommunity` method (@Drombeys)
+- Fixed incorrect type passed `GameObject::eDeath` callback (@Drombeys)
+- Added object existence check (@Drombeys)
+- Fixed spawn paths related errors (@Drombeys)
+- Fixed message output in `show_dialog` function (@Drombeys)
+- Deleted `dump_infos` command from `actor_binder:update` function (@ForserX)
+- Fixed mutants logic in restrictors broke down (@ForserX)
+- Fixed triggering of adding monsters contacts (@ForserX)
+- Enabled ragdoll for deadbody (@ForserX)
+- Implemented new external features system (@ForserX)
+- Fixed level graph invalid vertex ID error (@ForserX)
+- Implemented `hud_fov_zoom` weapon parameter (@Drombeys, @Hozar2002)
+- Added underrun buffer checking to fix playback bug (@johncurley)
+- Fixed walking in `mcLookout` states (@Shtrecker)
+- Set initial values of `CStreamReader` class variables (@OldSerpskiStalker)
+- Fixed HUD models clipping (@Shtrecker)
+- Implemented grenade explosion on hit (@Shtrecker)
+- Implemented stopping animation of getting detector (@ForserX)
+- Replaced missing sound with stub on using scripts (@Drombeys)
+- Moved actor to beginning of spawn (@ForserX)
+- Fixed calculating position of items in inventory grid (@ForserX)
+- Implemented timer for new game and save loading (@MAYLAYSHEZ)
 
 ### Utilities
 
-- Fixed EFC building issues
-- Added EFC utility source code
-- Implemented new lightmap saving algorithm
-- Deleted threads limit in utilities
-- Added MagicFM CMake project
-- Ported MagicFM to C++20
-- Replaceed `-keep_temp_files` with `-clear_temp_files` key
-- Implemented show of all missing TGA textures and THM files
-- Replaced MMX with SSE in `Place_Perpixel` function
-- Fixed loop in `CGraphMerger` method
-- Deleted duplicated and dead files from xrAI
-- Added `-all` key to compilers and enable `-do -ai -lc` modes
-- Merged compilers into one project
-- Fixed saving `build.cform` file in xrLC
-- Implemented skip invalid faces in xrLC
-- Fixed xrCompress to support multibyte WinAPI functions
+- Fixed EFC building issues (@ForserX)
+- Added EFC utility source code (@acidicMercury8, @ForserX)
+- Implemented new lightmap saving algorithm (@DimaKuzmin)
+- Deleted threads limit in utilities (@ForserX)
+- Added MagicFM CMake project (@acidicMercury8)
+- Ported MagicFM to C++20 (@ForserX)
+- Replaceed `-keep_temp_files` with `-clear_temp_files` key (@ForserX)
+- Implemented show of all missing TGA textures and THM files (@ForserX)
+- Replaced MMX with SSE in `Place_Perpixel` function (@ForserX)
+- Fixed loop in `CGraphMerger` method (@Drombeys)
+- Deleted duplicated and dead files from xrAI (@ForserX)
+- Added `-all` key to compilers and enable `-do -ai -lc` modes  (@ForserX)
+- Merged compilers into one project (@ForserX)
+- Fixed saving `build.cform` file in xrLC (@ForserX)
+- Implemented skipping invalid faces in xrLC (@Drombeys)
+- Fixed xrCompress to support multibyte WinAPI functions (@ForserX)
+- Enabled reserving memory for compressed nodes in `xrSaveNodes` (@abramcumner)
+- Enabled using static buffer in `setup_recalculationflags_file` (@abramcumner)
+- Fixed progress set in `xrPhase_UVmap` (@abramcumner)
+- Changed algorithm for calculating the area of a triangle (@abramcumner)
 
 ### Plugins
 
-- Updated 3D SDK
-- Ported plugins to х64
-- Ported plugins to C++20
-- Updated LW Server project
-- Created plugin folder in CMake
-- Applied minor fixes for Max Export plugin
-- Ported Max Material plugin to C++20
-- Added Max Material CMake project
-- Applied patches to plugins
+- Updated 3D SDK (@DJYar, @ForserX)
+- Ported plugins to х64 (@DJYar, @ForserX)
+- Ported plugins to C++20 (@ForserX)
+- Updated LW Server project (@ForserX)
+- Created plugin folder in CMake (@ForserX)
+- Applied minor fixes for Max Export plugin (@DJYar, @ForserX)
+- Ported Max Material plugin to C++20 (@ForserX)
+- Added Max Material CMake project (@ForserX)
+- Applied patches to plugins (@DJYar, @ForserX)
 
 ## Release 0.6.1 (September 2023)
 
