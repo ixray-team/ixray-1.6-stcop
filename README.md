@@ -11,7 +11,7 @@
     <a href="./LICENSE.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.6.1">
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.7">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases">
