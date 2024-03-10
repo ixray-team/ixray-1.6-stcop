@@ -1,108 +1,331 @@
-:: Deleting unnecessary files
-del "bin\*.ilk" /s
-del "bin\*.lib" /s
-del "bin\*.exp" /s
-del "lib\*.idb" /s
-del "lib\*.pdb" /s
-
 :: Packing packages
-"%ProgramFiles%"\7-Zip\7z.exe a "packages.zip" "packages"
+pushd build\x64\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-packages.zip" ^
+    "packages"
+popd
+move build\x64\Utilities\ixray-1.6-r0.7-packages.zip ixray-1.6-r0.7-packages.zip
 
-:: Packing engine binaries
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-engine-debug.zip" "bin\Win32\Debug" ^
-    -ir!"bin\Win32\Debug\*" ^
-    -xr!"*.pdb" -xr!"bin\utils\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-engine-mixed.zip" "bin\Win32\Mixed" ^
-    -ir!"bin\Win32\Mixed\*" ^
-    -xr!"*.pdb" -xr!"bin\utils\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-engine-release.zip" "bin\Win32\Release" ^
-    -ir!"bin\Win32\Release\*" ^
-    -xr!"*.pdb" -xr!"bin\utils\Win32\*" -xr!"bin\dedicated\Win32\*"
+:: Packing assets
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-assets.zip" ^
+    "gamedata" ^
+    -ir!"fsgame.ltx" ^
+    -ir!"patches\xpatch_03.db" ^
+    -xr!"temp\fsgame.ltx"
 
-:: Packing server binaries
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-server-debug.zip" "bin\dedicated\Win32\Debug" ^
-    -ir!"bin\dedicated\Win32\Debug\*" ^
-    -xr!"*.pdb" -xr!"bin\Win32\*" -xr!"bin\utils\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-server-mixed.zip" "bin\dedicated\Win32\Mixed" ^
-    -ir!"bin\dedicated\Win32\Mixed\*" ^
-    -xr!"*.pdb" -xr!"bin\Win32\*" -xr!"bin\utils\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-server-release.zip" "bin\dedicated\Win32\Release" ^
-    -ir!"bin\dedicated\Win32\Release\*" ^
-    -xr!"*.pdb" -xr!"bin\Win32\*" -xr!"bin\utils\Win32\*"
+:: Packing x86 engine binaries
+pushd build\x86\Engine
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-debug-bin.zip" ^
+    "bin\Debug" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-release-bin.zip" ^
+    "bin\Release" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-mixed-bin.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.pdb"
+popd
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-debug-bin.zip ixray-1.6-r0.7-engine-x86-debug-bin.zip
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-mixed-bin.zip ixray-1.6-r0.7-engine-x86-mixed-bin.zip
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-release-bin.zip ixray-1.6-r0.7-engine-x86-release-bin.zip
+:: Packing x86 engine libraries
+pushd build\x86\Engine
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-debug-lib.zip" ^
+    "lib\Debug" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-release-lib.zip" ^
+    "lib\Release" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-mixed-lib.zip" ^
+    "lib\RelWithDebInfo" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+popd
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-debug-lib.zip ixray-1.6-r0.7-engine-x86-debug-lib.zip
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-release-lib.zip ixray-1.6-r0.7-engine-x86-release-lib.zip
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-mixed-lib.zip ixray-1.6-r0.7-engine-x86-mixed-lib.zip
+:: Packing x86 engine symbols
+pushd build\x86\Engine
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-debug-pdb.zip" ^
+    "bin\Debug" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\Debug" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x86-mixed-pdb.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\RelWithDebInfo" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+popd
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-debug-pdb.zip ixray-1.6-r0.7-engine-x86-debug-pdb.zip
+move build\x86\Engine\ixray-1.6-r0.7-engine-x86-mixed-pdb.zip ixray-1.6-r0.7-engine-x86-mixed-pdb.zip
 
-:: Packing utility binaries
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-utils-debug.zip" "bin\utils\Win32\Debug" ^
-    -ir!"bin\utils\Win32\Debug\*" ^
-    -xr!"*.pdb" -xr!"bin\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-utils-mixed.zip" "bin\utils\Win32\Mixed" ^
-    -ir!"bin\utils\Win32\Mixed\*" ^
-    -xr!"*.pdb" -xr!"bin\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "bin-utils-release.zip" "bin\utils\Win32\Release" ^
-    -ir!"bin\utils\Win32\Release\*" ^
-    -xr!"*.pdb" -xr!"bin\Win32\*" -xr!"bin\dedicated\Win32\*"
+:: Packing x64 engine binaries
+pushd build\x64\Engine
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-debug-bin.zip" ^
+    "bin\Debug" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-release-bin.zip" ^
+    "bin\Release" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-mixed-bin.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.pdb"
+popd
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-debug-bin.zip ixray-1.6-r0.7-engine-x64-debug-bin.zip
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-mixed-bin.zip ixray-1.6-r0.7-engine-x64-mixed-bin.zip
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-release-bin.zip ixray-1.6-r0.7-engine-x64-release-bin.zip
+:: Packing x64 engine libraries
+pushd build\x64\Engine
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-debug-lib.zip" ^
+    "lib\Debug" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-release-lib.zip" ^
+    "lib\Release" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-mixed-lib.zip" ^
+    "lib\RelWithDebInfo" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+popd
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-debug-lib.zip ixray-1.6-r0.7-engine-x64-debug-lib.zip
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-release-lib.zip ixray-1.6-r0.7-engine-x64-release-lib.zip
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-mixed-lib.zip ixray-1.6-r0.7-engine-x64-mixed-lib.zip
+:: Packing x64 engine symbols
+pushd build\x64\Engine
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-debug-pdb.zip" ^
+    "bin\Debug" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\Debug" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-engine-x64-mixed-pdb.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\RelWithDebInfo" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+popd
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-debug-pdb.zip ixray-1.6-r0.7-engine-x64-debug-pdb.zip
+move build\x64\Engine\ixray-1.6-r0.7-engine-x64-mixed-pdb.zip ixray-1.6-r0.7-engine-x64-mixed-pdb.zip
 
-:: Packing engine libraries
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-engine-debug.zip" "lib\Win32\Debug" ^
-    -ir!"lib\Win32\Debug\*" ^
-    -xr!"lib\utils\Win32\*" -xr!"lib\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-engine-mixed.zip" "lib\Win32\Mixed" ^
-    -ir!"lib\Win32\Mixed\*" ^
-    -xr!"lib\utils\Win32\*" -xr!"lib\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-engine-release.zip" "lib\Win32\Release" ^
-    -ir!"lib\Win32\Release\*" ^
-    -xr!"lib\utils\Win32\*" -xr!"lib\dedicated\Win32\*"
+:: Packing x86 server binaries
+pushd build\x86\Server
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-debug-bin.zip" ^
+    "bin\Debug" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-release-bin.zip" ^
+    "bin\Release" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-mixed-bin.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.pdb"
+popd
+move build\x86\Server\ixray-1.6-r0.7-server-x86-debug-bin.zip ixray-1.6-r0.7-server-x86-debug-bin.zip
+move build\x86\Server\ixray-1.6-r0.7-server-x86-mixed-bin.zip ixray-1.6-r0.7-server-x86-mixed-bin.zip
+move build\x86\Server\ixray-1.6-r0.7-server-x86-release-bin.zip ixray-1.6-r0.7-server-x86-release-bin.zip
+:: Packing x86 server libraries
+pushd build\x86\Server
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-debug-lib.zip" ^
+    "lib\Debug" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-release-lib.zip" ^
+    "lib\Release" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-mixed-lib.zip" ^
+    "lib\RelWithDebInfo" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+popd
+move build\x86\Server\ixray-1.6-r0.7-server-x86-debug-lib.zip ixray-1.6-r0.7-server-x86-debug-lib.zip
+move build\x86\Server\ixray-1.6-r0.7-server-x86-mixed-lib.zip ixray-1.6-r0.7-server-x86-mixed-lib.zip
+move build\x86\Server\ixray-1.6-r0.7-server-x86-release-lib.zip ixray-1.6-r0.7-server-x86-release-lib.zip
+:: Packing x86 server symbols
+pushd build\x86\Server
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-debug-pdb.zip" ^
+    "bin\Debug" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\Debug" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x86-mixed-pdb.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\RelWithDebInfo" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+popd
+move build\x86\Server\ixray-1.6-r0.7-server-x86-debug-pdb.zip ixray-1.6-r0.7-server-x86-debug-pdb.zip
+move build\x86\Server\ixray-1.6-r0.7-server-x86-mixed-pdb.zip ixray-1.6-r0.7-server-x86-mixed-pdb.zip
 
-:: Packing server libraries
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-server-debug.zip" "lib\dedicated\Win32\Debug" ^
-    -ir!"lib\dedicated\Win32\Debug\*" ^
-    -xr!"lib\Win32\*" -xr!"lib\utils\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-server-mixed.zip" "lib\dedicated\Win32\Mixed" ^
-    -ir!"lib\dedicated\Win32\Mixed\*" ^
-    -xr!"lib\Win32\*" -xr!"lib\utils\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-server-release.zip" "lib\dedicated\Win32\Release" ^
-    -ir!"lib\dedicated\Win32\Release\*" ^
-    -xr!"lib\Win32\*" -xr!"lib\utils\Win32\*"
+:: Packing x64 server binaries
+pushd build\x64\Server
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-debug-bin.zip" ^
+    "bin\Debug" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-release-bin.zip" ^
+    "bin\Release" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-mixed-bin.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.pdb"
+popd
+move build\x64\Server\ixray-1.6-r0.7-server-x64-debug-bin.zip ixray-1.6-r0.7-server-x64-debug-bin.zip
+move build\x64\Server\ixray-1.6-r0.7-server-x64-mixed-bin.zip ixray-1.6-r0.7-server-x64-mixed-bin.zip
+move build\x64\Server\ixray-1.6-r0.7-server-x64-release-bin.zip ixray-1.6-r0.7-server-x64-release-bin.zip
+:: Packing x64 server libraries
+pushd build\x64\Server
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-debug-lib.zip" ^
+    "lib\Debug" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-release-lib.zip" ^
+    "lib\Release" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-mixed-lib.zip" ^
+    "lib\RelWithDebInfo" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+popd
+move build\x64\Server\ixray-1.6-r0.7-server-x64-debug-lib.zip ixray-1.6-r0.7-server-x64-debug-lib.zip
+move build\x64\Server\ixray-1.6-r0.7-server-x64-mixed-lib.zip ixray-1.6-r0.7-server-x64-mixed-lib.zip
+move build\x64\Server\ixray-1.6-r0.7-server-x64-release-lib.zip ixray-1.6-r0.7-server-x64-release-lib.zip
+:: Packing x64 server symbols
+pushd build\x64\Server
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-debug-pdb.zip" ^
+    "bin\Debug" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\Debug" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-server-x64-mixed-pdb.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\RelWithDebInfo" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+popd
+move build\x64\Server\ixray-1.6-r0.7-server-x64-debug-pdb.zip ixray-1.6-r0.7-server-x64-debug-pdb.zip
+move build\x64\Server\ixray-1.6-r0.7-server-x64-mixed-pdb.zip ixray-1.6-r0.7-server-x64-mixed-pdb.zip
 
-:: Packing utility libraries
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-utils-debug.zip" "lib\utils\Win32\Debug" ^
-    -ir!"lib\utils\Win32\Debug\*" ^
-    -xr!"lib\Win32\*" -xr!"lib\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-utils-mixed.zip" "lib\utils\Win32\Mixed" ^
-    -ir!"lib\utils\Win32\Mixed\*" ^
-    -xr!"lib\Win32\*" -xr!"lib\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "lib-utils-release.zip" "lib\utils\Win32\Release" ^
-    -ir!"lib\utils\Win32\Release\*" ^
-    -xr!"lib\Win32\*" -xr!"lib\dedicated\Win32\*"
+:: Packing x86 utilities binaries
+pushd build\x86\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-debug-bin.zip" ^
+    "bin\Debug" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-release-bin.zip" ^
+    "bin\Release" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-mixed-bin.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.pdb"
+popd
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-debug-bin.zip ixray-1.6-r0.7-utilities-x86-debug-bin.zip
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-mixed-bin.zip ixray-1.6-r0.7-utilities-x86-mixed-bin.zip
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-release-bin.zip ixray-1.6-r0.7-utilities-x86-release-bin.zip
+:: Packing x86 utilities libraries
+pushd build\x86\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-debug-lib.zip" ^
+    "lib\Debug" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-release-lib.zip" ^
+    "lib\Release" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-mixed-lib.zip" ^
+    "lib\RelWithDebInfo" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+popd
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-debug-lib.zip ixray-1.6-r0.7-utilities-x86-debug-lib.zip
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-mixed-lib.zip ixray-1.6-r0.7-utilities-x86-mixed-lib.zip
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-release-lib.zip ixray-1.6-r0.7-utilities-x86-release-lib.zip
+:: Packing x86 utilities symbols
+pushd build\x86\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-debug-pdb.zip" ^
+    "bin\Debug" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\Debug" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x86-mixed-pdb.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\RelWithDebInfo" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+popd
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-debug-pdb.zip ixray-1.6-r0.7-utilities-x86-debug-pdb.zip
+move build\x86\Utilities\ixray-1.6-r0.7-utilities-x86-mixed-pdb.zip ixray-1.6-r0.7-utilities-x86-mixed-pdb.zip
 
-:: Packing engine symbols
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-engine-debug.zip" "bin\Win32\Debug" ^
-    -ir!"bin\Win32\Debug\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\utils\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-engine-mixed.zip" "bin\Win32\Mixed" ^
-    -ir!"bin\Win32\Mixed\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\utils\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-engine-release.zip" "bin\Win32\Release" ^
-    -ir!"bin\Win32\Release\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\utils\Win32\*" -xr!"bin\dedicated\Win32\*"
-
-:: Packing server symbols
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-server-debug.zip" "bin\dedicated\Win32\Debug" ^
-    -ir!"bin\dedicated\Win32\Debug\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\Win32\*" -xr!"bin\utils\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-server-mixed.zip" "bin\dedicated\Win32\Mixed" ^
-    -ir!"bin\dedicated\Win32\Mixed\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\Win32\*" -xr!"bin\utils\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-server-release.zip" "bin\dedicated\Win32\Release" ^
-    -ir!"bin\dedicated\Win32\Release\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\Win32\*" -xr!"bin\utils\Win32\*"
-
-:: Packing utility symbols
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-utils-debug.zip" "bin\utils\Win32\Debug" ^
-    -ir!"bin\utils\Win32\Debug\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-utils-mixed.zip" "bin\utils\Win32\Mixed" ^
-    -ir!"bin\utils\Win32\Mixed\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\Win32\*" -xr!"bin\dedicated\Win32\*"
-"%ProgramFiles%"\7-Zip\7z.exe a "pdb-utils-release.zip" "bin\utils\Win32\Release" ^
-    -ir!"bin\utils\Win32\Release\*" ^
-    -xr!"*.exe" -xr!"*.dll" -xr!"bin\Win32\*" -xr!"bin\dedicated\Win32\*"
+:: Packing x64 utilities binaries
+pushd build\x64\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-debug-bin.zip" ^
+    "bin\Debug" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-release-bin.zip" ^
+    "bin\Release" ^
+    -xr!"*.pdb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-mixed-bin.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.pdb"
+popd
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-debug-bin.zip ixray-1.6-r0.7-utilities-x64-debug-bin.zip
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-mixed-bin.zip ixray-1.6-r0.7-utilities-x64-mixed-bin.zip
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-release-bin.zip ixray-1.6-r0.7-utilities-x64-release-bin.zip
+:: Packing x64 utilities libraries
+pushd build\x64\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-debug-lib.zip" ^
+    "lib\Debug" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-release-lib.zip" ^
+    "lib\Release" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-mixed-lib.zip" ^
+    "lib\RelWithDebInfo" ^
+    -xr!"*.pdb" ^
+    -xr!"*.idb"
+popd
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-debug-lib.zip ixray-1.6-r0.7-utilities-x64-debug-lib.zip
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-mixed-lib.zip ixray-1.6-r0.7-utilities-x64-mixed-lib.zip
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-release-lib.zip ixray-1.6-r0.7-utilities-x64-release-lib.zip
+:: Packing x64 utilities symbols
+pushd build\x64\Utilities
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-debug-pdb.zip" ^
+    "bin\Debug" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\Debug" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r0.7-utilities-x64-mixed-pdb.zip" ^
+    "bin\RelWithDebInfo" ^
+    -xr!"*.exe" ^
+    -xr!"*.dll" ^
+    -ir!"lib\RelWithDebInfo" ^
+    -xr!"*.lib" ^
+    -xr!"*.exp"
+popd
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-debug-pdb.zip ixray-1.6-r0.7-utilities-x64-debug-pdb.zip
+move build\x64\Utilities\ixray-1.6-r0.7-utilities-x64-mixed-pdb.zip ixray-1.6-r0.7-utilities-x64-mixed-pdb.zip
