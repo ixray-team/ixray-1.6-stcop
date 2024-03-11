@@ -30,7 +30,7 @@
 
 u32 g_sv_traffic_optimization_level = eto_none;
 
-xrClientData::xrClientData	() :
+xrClientData::xrClientData() :
 	IClient(Device.GetTimerGlobal())
 {
 	ps = nullptr;
@@ -416,7 +416,7 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 				xr_sprintf(tmp_number_str, " raid:%u", CL->ID.value());
 				xr_strconcat(result_command, buff, tmp_number_str);
 				Console->Execute	(result_command);
-				xrLogger::AddLogCallback(nullptr);
+				xrLogger::RemoveLogCallback(console_log_cb);
 
 				NET_Packet			P_answ;			
 				for(u32 i=0; i<_tmp_log.size(); ++i)
