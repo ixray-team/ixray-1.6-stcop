@@ -254,11 +254,15 @@ void line_edit_control::assign_char_pairs(init_mode mode) {
 	create_char_pair(SDL_SCANCODE_SPACE, ' ', ' ');
 	create_char_pair(SDL_SCANCODE_GRAVE, '`', '~', true);
 
-	for (int i = 0; i < 7; ++i) {
-		create_char_pair(SDL_SCANCODE_1 + i, '1' + i, '1' + i);
-	}
-	create_char_pair(SDL_SCANCODE_9, '9', '9');
-	create_char_pair(SDL_SCANCODE_0, '0', '0');
+	create_char_pair(SDL_SCANCODE_0, '0', ')');
+	create_char_pair(SDL_SCANCODE_1, '1', '!');
+	create_char_pair(SDL_SCANCODE_2, '2', '@');
+	create_char_pair(SDL_SCANCODE_3, '3', '#');
+	create_char_pair(SDL_SCANCODE_4, '4', '$');
+	create_char_pair(SDL_SCANCODE_5, '5', '%');
+	create_char_pair(SDL_SCANCODE_6, '6', '^');
+	create_char_pair(SDL_SCANCODE_7, '7', '&');
+	create_char_pair(SDL_SCANCODE_9, '9', '(');
 
 	for (int i = 0; i < 26; ++i) {
 		create_char_pair(SDL_SCANCODE_A + i, 'a' + i, 'A' + i, true);
