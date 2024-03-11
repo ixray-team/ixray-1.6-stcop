@@ -361,11 +361,13 @@ void CShootingObject::UpdateFlameParticles	()
 	if(0==m_sFlameParticlesCurrent.size())		return;
 	if(!m_pFlameParticles)				return;
 
-	Fmatrix		pos; 
-	pos.set		(get_ParticlesXFORM()	); 
-	pos.c.set	(get_CurrentFirePoint()	);
+	Fmatrix pos;
+	pos.set(get_ParticlesXFORM()); 
+	pos.c.set(get_CurrentFirePoint());
 
-	VERIFY(_valid(pos));
+	if (!_valid(pos)) {
+		return;
+	}
 
 	m_pFlameParticles->SetXFORM			(pos);
 
