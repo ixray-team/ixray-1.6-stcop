@@ -32,7 +32,7 @@ IGame_Persistent::IGame_Persistent	()
 	m_pMainMenu						= nullptr;
 
 	#ifndef _EDITOR
-	pEnvironment					= xr_new<CEnvironment>();
+	pEnvironment					= new CEnvironment();
 	#endif
 }
 

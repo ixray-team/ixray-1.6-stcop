@@ -137,7 +137,7 @@ void target_selector::add_actions		()
 {
 	CActionBase<animation_planner> *action;
 
-	action					= xr_new<target_idle>(&object(), "idle", eWorldPropertyLoopholeIdle, 0);
+	action					= new target_idle(&object(), "idle", eWorldPropertyLoopholeIdle, 0);
 //	add_condition			(action, eWorldPropertyLoopholeCanFireAtEnemy,		true);
 //	add_condition			(action, eWorldPropertyLoopholeCanFire,				true);
 //	add_condition			(action, eWorldPropertyLookedOut,					true);
@@ -147,7 +147,7 @@ void target_selector::add_actions		()
 	add_operator			(eWorldOperatorLoopholeTargetIdle,					action);
 	action->set_inertia_time(1000);
 
-	action					= xr_new<target_provider>(&object(), "lookout", eWorldPropertyLookedOut, 0);
+	action					= new target_provider(&object(), "lookout", eWorldPropertyLookedOut, 0);
 	add_condition			(action, eWorldPropertyLoopholeCanLookout,			true);
 	add_condition			(action, eWorldPropertyLoopholeUseDefaultBehaviour,	false);
 	add_condition			(action, eWorldPropertyLookedOut,					false);
@@ -156,7 +156,7 @@ void target_selector::add_actions		()
 	add_effect				(action, eWorldPropertyPlannerHasTarget,			true);
 	add_operator			(eWorldOperatorLoopholeTargetLookout,				action);
 
-	action					= xr_new<target_fire>(&object(), "fire", eWorldPropertyLoopholeFire, 0);
+	action					= new target_fire(&object(), "fire", eWorldPropertyLoopholeFire, 0);
 	add_condition			(action, eWorldPropertyLoopholeCanFireAtEnemy,		true);
 	add_condition			(action, eWorldPropertyLoopholeCanFire,				true);
 	add_condition			(action, eWorldPropertyLookedOut,					true);
@@ -166,7 +166,7 @@ void target_selector::add_actions		()
 	add_effect				(action, eWorldPropertyPlannerHasTarget,			true);
 	add_operator			(eWorldOperatorLoopholeTargetFire,					action);
 
-	action					= xr_new<target_fire_no_lookout>(&object(), "fire_no_lookout", eWorldPropertyLoopholeFireNoLookout, 0);
+	action					= new target_fire_no_lookout(&object(), "fire_no_lookout", eWorldPropertyLoopholeFireNoLookout, 0);
 	add_condition			(action, eWorldPropertyLoopholeCanFireAtEnemy,		true);
 	add_condition			(action, eWorldPropertyLoopholeCanFireNoLookout,	true);
 	add_condition			(action, eWorldPropertyLoopholeLastHitWasLongAgo,	false);
@@ -174,7 +174,7 @@ void target_selector::add_actions		()
 	add_effect				(action, eWorldPropertyPlannerHasTarget,			true);
 	add_operator			(eWorldOperatorLoopholeTargetFireNoLookout,			action);
 
-	action					= xr_new<default_behaviour_planner>(&object(), "default_behaviour");
+	action					= new default_behaviour_planner(&object(), "default_behaviour");
 	add_condition			(action, eWorldPropertyLoopholeUseDefaultBehaviour,	true);
 	add_condition			(action, eWorldPropertyLoopholeTooMuchTimeFiring,	false);
 	add_condition			(action, eWorldPropertyPlannerHasTarget,			false);

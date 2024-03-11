@@ -105,7 +105,7 @@ void CPHCommander::	add_call_threadsafety		(CPHCondition* condition,CPHAction* a
 }
 void CPHCommander::add_call(CPHCondition* condition,CPHAction* action,PHCALL_STORAGE& cs)
 {
-	cs.push_back(xr_new<CPHCall>(condition,action));
+	cs.push_back(new CPHCall(condition,action));
 }
 void CPHCommander::add_call(CPHCondition* condition,CPHAction* action)
 {

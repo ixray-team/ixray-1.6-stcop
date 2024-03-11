@@ -192,7 +192,7 @@ IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)
 	
 	if ( !m_test )
 	{
-		m_test	= xr_new<IReaderBase_Test>();
+		m_test	= new IReaderBase_Test();
 
 		rewind();
 		int num_chunks = 0;
@@ -263,7 +263,7 @@ IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)
 
 	if ( !m_test )
 	{
-		m_test			 = xr_new<IReaderBase_Test>();
+		m_test			 = new IReaderBase_Test();
 		m_test->last_pos = 0;
 	}
 

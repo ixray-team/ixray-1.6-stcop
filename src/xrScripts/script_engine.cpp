@@ -187,7 +187,7 @@ void CScriptEngine::load_common_scripts()
 #endif
 	string_path		S;
 	FS.update_path	(S,"$game_config$","script.ltx");
-	CInifile		*l_tpIniFile = xr_new<CInifile>(S);
+	CInifile		*l_tpIniFile = new CInifile(S);
 	R_ASSERT		(l_tpIniFile);
 	if (!l_tpIniFile->section_exist("common")) {
 		xr_delete			(l_tpIniFile);
@@ -260,7 +260,7 @@ void CScriptEngine::register_script_classes		()
 #endif
 	string_path					S;
 	FS.update_path				(S,"$game_config$","script.ltx");
-	CInifile					*l_tpIniFile = xr_new<CInifile>(S);
+	CInifile					*l_tpIniFile = new CInifile(S);
 	R_ASSERT					(l_tpIniFile);
 
 	if (!l_tpIniFile->section_exist("common")) {

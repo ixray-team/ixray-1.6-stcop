@@ -106,7 +106,7 @@ void CLevel::remove_objects	()
 	::Sound->stop_emitters();
 
 //.	xr_delete									(m_seniority_hierarchy_holder);
-//.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
+//.	m_seniority_hierarchy_holder				= new CSeniorityHierarchyHolder();
 	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - End");
 }
 

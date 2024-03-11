@@ -98,7 +98,7 @@ void CControllerAura::update_schedule()
 			} else {
 				// check to start
 				if (m_time_fake_aura < time())  {
-					m_effector = xr_new<CPPEffectorControllerAura>	(m_state, 5000, aura_sound.left, aura_sound.right);
+					m_effector = new CPPEffectorControllerAura	(m_state, 5000, aura_sound.left, aura_sound.right);
 					Actor()->Cameras().AddPPEffector				(m_effector);
 
 					m_time_fake_aura		= time() + 5000 + Random.randI(FAKE_AURA_DURATION);
@@ -123,7 +123,7 @@ void CControllerAura::update_schedule()
 			if ( need_be_active )
 			{
 				// create effector
-				m_effector = xr_new<CPPEffectorControllerAura>	(m_state, 5000, aura_sound.left, aura_sound.right);
+				m_effector = new CPPEffectorControllerAura	(m_state, 5000, aura_sound.left, aura_sound.right);
 				Actor()->Cameras().AddPPEffector				(m_effector);
 				m_time_started		=	time();
 			}

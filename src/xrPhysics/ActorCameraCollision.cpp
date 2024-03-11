@@ -130,7 +130,7 @@ CPhysicsShell* create_camera_shell( IPhysicsShellHolder *actor )
 	CPhysicsElement* roote = shell->get_ElementByStoreOrder( 0 );
 
 	Fcylinder cyl;cyl.m_center.set(0,-0.8f,0);cyl.m_direction.set(0,1,0);cyl.m_height = 1.8f; cyl.m_radius = 0.5f;
-	CODEGeom* character_test_geom = smart_cast<CODEGeom*>(xr_new<CCylinderGeom>(cyl));
+	CODEGeom* character_test_geom = smart_cast<CODEGeom*>(new CCylinderGeom(cyl));
 	character_test_geom->build( Fvector().set( 0, 0, 0 ) );
 	VERIFY(smart_cast<CPHElement*>(roote));
 	CPHElement *eeroot = static_cast<CPHElement *>( roote );

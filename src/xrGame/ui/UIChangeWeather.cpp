@@ -8,25 +8,25 @@
 //#include "UIMapList.h"
 
 CUIChangeWeather::CUIChangeWeather(){
-	bkgrnd = xr_new<CUIStatic>(); 
+	bkgrnd = new CUIStatic(); 
 	bkgrnd->SetAutoDelete(true);
 	AttachChild(bkgrnd);
 
-	header = xr_new<CUITextWnd>();
+	header = new CUITextWnd();
 	header->SetAutoDelete(true);
 	AttachChild(header);
 
-	btn_cancel = xr_new<CUI3tButton>();
+	btn_cancel = new CUI3tButton();
 	btn_cancel->SetAutoDelete(true);
 	AttachChild(btn_cancel);
 
 	for (int i = 0; i<4; i++)
 	{
-		btn[i] = xr_new<CUI3tButton>();
+		btn[i] = new CUI3tButton();
 		btn[i]->SetAutoDelete(true);
 		AttachChild(btn[i]);
 
-		m_data[i].m_text = xr_new<CUITextWnd>();
+		m_data[i].m_text = new CUITextWnd();
 		m_data[i].m_text->SetAutoDelete(true);
 		AttachChild(m_data[i].m_text);
 	}

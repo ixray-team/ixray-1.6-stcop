@@ -44,7 +44,7 @@ void CScriptProcess::run_scripts()
 		S						= xr_strdup(I);
 		m_scripts_to_run.pop_back();
 
-		CScriptThread			*script = xr_new<CScriptThread>(S,do_string,reload);
+		CScriptThread			*script = new CScriptThread(S,do_string,reload);
 		xr_free					(S);
 
 		if (script->active())

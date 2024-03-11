@@ -34,7 +34,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 
 		m_chunk = spawn->open_chunk(4);
 		R_ASSERT2(m_chunk, "Spawn version mismatch - REBUILD SPAWN!");
-		ai().game_graph(xr_new<CGameGraph>(*m_chunk));
+		ai().game_graph(new CGameGraph(*m_chunk));
 	}
 
 	if (!ai().get_alife())
@@ -168,9 +168,9 @@ BOOL CLevel::Load_GameSpecific_After()
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
 	if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))
-		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, xr_new<CScriptProcess>("level", pLevel->r_string("level_scripts", "script")));
+		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, new CScriptProcess("level", pLevel->r_string("level_scripts", "script")));
 	else
-		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, xr_new<CScriptProcess>("level", ""));
+		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, new CScriptProcess("level", ""));
 		
 	BlockCheatLoad();
 

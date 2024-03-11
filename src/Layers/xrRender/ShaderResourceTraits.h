@@ -82,7 +82,7 @@
 			return		I->second;
 		else
 		{
-			T*		sh = xr_new<T>();
+			T*		sh = new T();
 
 			sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			sh_map.insert(std::make_pair(sh->set_name(name),sh));

@@ -98,9 +98,9 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 
 		rtc_initialize		();
 
-		xr_FS				= xr_new<CLocatorAPI>	();
+		xr_FS				= new CLocatorAPI	();
 
-		xr_EFS				= xr_new<EFS_Utils>		();
+		xr_EFS				= new EFS_Utils		();
 		g_uiExpressionMgr = new CExpressionManager();
 
 		g_Discord.Init();

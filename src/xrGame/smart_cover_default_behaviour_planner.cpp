@@ -99,7 +99,7 @@ void default_behaviour_planner::add_evaluators			()
 void default_behaviour_planner::add_actions				()
 {
 	CActionBase<animation_planner> *action;
-	action					= xr_new<target_provider>(&object(), "idle", eWorldPropertyLoopholeIdle, 0);
+	action					= new target_provider(&object(), "idle", eWorldPropertyLoopholeIdle, 0);
 	add_condition			(action, eWorldPropertyLoopholeCanStayIdle,			true);
 	add_condition			(action, eWorldPropertyReadyToIdle,					true);
 	add_condition			(action, eWorldPropertyPlannerHasTarget,			false);
@@ -107,7 +107,7 @@ void default_behaviour_planner::add_actions				()
 	add_operator			(eWorldOperatorLoopholeTargetIdle,					action);
 	action->setup			(&object(), inherited_action::m_storage);
 
-	action					= xr_new<target_provider>(&object(), "lookout", eWorldPropertyLookedOut, 0);
+	action					= new target_provider(&object(), "lookout", eWorldPropertyLookedOut, 0);
 	add_condition			(action, eWorldPropertyLoopholeCanLookout,			true);
 	add_condition			(action, eWorldPropertyReadyToLookout,				true);
 	add_condition			(action, eWorldPropertyPlannerHasTarget,			false);

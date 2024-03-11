@@ -32,7 +32,7 @@ IPHWorld* physics_world()
 
 void  create_physics_world(bool mt, CObjectSpace* os, CObjectList* lo)
 {
-	ph_world = xr_new<CPHWorld>(); //&commander
+	ph_world = new CPHWorld(); //&commander
 	VERIFY(os);
 	ph_world->Create(mt, os, lo);
 }
@@ -45,10 +45,10 @@ void  destroy_physics_world()
 
 CObjectSpace*  create_object_space()
 {
-	CFileReader* fr = xr_new<CFileReader>("ActorEditorLevel.cform");
-	CObjectSpace* os = xr_new<CObjectSpace>();
-	g_SpatialSpace = xr_new<ISpatial_DB>();
-	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+	CFileReader* fr = new CFileReader("ActorEditorLevel.cform");
+	CObjectSpace* os = new CObjectSpace();
+	g_SpatialSpace = new ISpatial_DB();
+	g_SpatialSpacePhysic = new ISpatial_DB();
 	os->Load(fr, 0);
 
 	return os;
@@ -56,9 +56,9 @@ CObjectSpace*  create_object_space()
 
 CObjectSpace*  mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback)
 {
-	CObjectSpace* os = xr_new<CObjectSpace>();
-	g_SpatialSpace				= xr_new<ISpatial_DB>	();
-	g_SpatialSpacePhysic		= xr_new<ISpatial_DB>	();
+	CObjectSpace* os = new CObjectSpace();
+	g_SpatialSpace				= new ISpatial_DB	();
+	g_SpatialSpacePhysic		= new ISpatial_DB	();
 	os->Create( verts, tris, H, build_callback, nullptr, false);
 	return os;
 }

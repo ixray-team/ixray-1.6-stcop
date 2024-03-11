@@ -29,7 +29,7 @@ void CCompass::UpdateAf()
 void CCompass::CreateUI()
 {
 	R_ASSERT(nullptr == m_ui);
-	m_ui = xr_new<CUICompass>();
+	m_ui = new CUICompass();
 	ui().construct(this);
 }
 

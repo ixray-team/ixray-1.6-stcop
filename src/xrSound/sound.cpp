@@ -9,7 +9,7 @@ void CSound_manager_interface::_create(int stage)
 {
 	if(stage==0)
 	{
-		SoundRenderA	= xr_new<CSoundRender_CoreA>();
+		SoundRenderA	= new CSoundRender_CoreA();
 		SoundRender		= SoundRenderA;
 		Sound			= SoundRender;
 

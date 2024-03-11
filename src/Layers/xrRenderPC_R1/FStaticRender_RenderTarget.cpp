@@ -42,7 +42,7 @@ CRenderTarget::CRenderTarget()
 
 BOOL CRenderTarget::Create()
 {
-	b_fxaa = xr_new<CBlender_FXAA>();
+	b_fxaa = new CBlender_FXAA();
 	curWidth			=  RCache.get_width();
 	curHeight			= RCache.get_height();
 

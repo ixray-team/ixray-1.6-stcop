@@ -128,7 +128,7 @@ void InitSettings	()
 #ifdef DEBUG
 	Msg							("Updated path to system.ltx is %s", fname);
 #endif // #ifdef DEBUG
-	pSettings					= xr_new<CInifile>	(fname,TRUE);
+	pSettings					= new CInifile	(fname,TRUE);
 	CHECK_OR_EXIT				(0!=pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 
 	xr_auth_strings_t			tmp_ignore_pathes;
@@ -140,7 +140,7 @@ void InitSettings	()
 	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
 
 	FS.update_path				(fname,"$game_config$","game.ltx");
-	pGameIni					= xr_new<CInifile>	(fname,TRUE);
+	pGameIni					= new CInifile	(fname,TRUE);
 	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 }
 
@@ -148,7 +148,7 @@ void InitInput		()
 {
 	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
 
-	pInput						= xr_new<CInput>		();
+	pInput						= new CInput		();
 }
 void destroyInput	()
 {
@@ -230,10 +230,10 @@ ENGINE_API void EngineLoadStage4()
 ENGINE_API void EngineLoadStage5()
 {
 	LALib.OnCreate();
-	pApp = xr_new<CApplication>();
+	pApp = new CApplication();
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-	g_SpatialSpace = xr_new<ISpatial_DB>();
-	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+	g_SpatialSpace = new ISpatial_DB();
+	g_SpatialSpacePhysic = new ISpatial_DB();
 
 	// Main cycle
 	Memory.mem_usage();

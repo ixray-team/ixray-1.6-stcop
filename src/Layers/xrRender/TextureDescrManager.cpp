@@ -70,12 +70,12 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 				if(desc.m_assoc)
 					xr_delete				(desc.m_assoc);
 
-				desc.m_assoc				= xr_new<texture_assoc>();
+				desc.m_assoc				= new texture_assoc();
 				desc.m_assoc->detail_name	= tp.detail_name;
 				if (dts)
 					dts->scale = tp.detail_scale;
 				else
-					/*desc.m_assoc->cs*/dts	= xr_new<cl_dt_scaler>(tp.detail_scale);
+					/*desc.m_assoc->cs*/dts	= new cl_dt_scaler(tp.detail_scale);
 
 				desc.m_assoc->usage			= 0;
 				
@@ -89,7 +89,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 			if(desc.m_spec)
 				xr_delete				(desc.m_spec);
 
-			desc.m_spec					= xr_new<texture_spec>();
+			desc.m_spec					= new texture_spec();
 			desc.m_spec->m_material		= (float)tp.material+tp.material_weight;
 			desc.m_spec->m_use_steep_parallax = false;
 			

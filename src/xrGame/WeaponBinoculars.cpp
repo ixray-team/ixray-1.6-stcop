@@ -64,7 +64,7 @@ void CWeaponBinoculars::OnZoomIn		()
 		m_sounds.PlaySound("sndZoomIn", H_Parent()->Position(), H_Parent(), b_hud_mode);
 		if(m_bVision && !m_binoc_vision) 
 		{
-			m_binoc_vision	= xr_new<CBinocularsVision>(cNameSect());
+			m_binoc_vision	= new CBinocularsVision(cNameSect());
 		}
 	}
 	inherited::OnZoomIn();

@@ -101,7 +101,7 @@ struct SPHDBGTextSetColor : public SPHDBGDrawAbsract
 
 void DBG_TextSetColor(u32 color)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGTextSetColor>(color));
+	DBG_DrawPHAbstruct(new SPHDBGTextSetColor(color));
 }
 
 struct SPHDBGTextOutSet : public SPHDBGDrawAbsract
@@ -119,7 +119,7 @@ struct SPHDBGTextOutSet : public SPHDBGDrawAbsract
 };
 void DBG_TextOutSet(float x, float y)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGTextOutSet>(x, y));
+	DBG_DrawPHAbstruct(new SPHDBGTextOutSet(x, y));
 }
 
 void _cdecl DBG_OutText(LPCSTR s, ...)
@@ -129,7 +129,7 @@ void _cdecl DBG_OutText(LPCSTR s, ...)
 	va_start(marker, s);
 	vsprintf(t, s, marker);
 	va_end(marker);
-	DBG_DrawPHAbstruct(xr_new<SPHDBGOutText>(t));
+	DBG_DrawPHAbstruct(new SPHDBGOutText(t));
 }
 
 
@@ -195,7 +195,7 @@ struct SPHObjDBGDraw:public SPHDBGDrawAbsract
 };
 void DBG_DrawPHObject(const CPHObject* obj)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHObjDBGDraw>( obj ));
+	DBG_DrawPHAbstruct(new SPHObjDBGDraw( obj ));
 }
 struct SPHContactDBGDraw :public SPHDBGDrawAbsract
 {
@@ -236,7 +236,7 @@ struct SPHContactDBGDraw :public SPHDBGDrawAbsract
 
 void DBG_DrawContact(const dContact& c)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHContactDBGDraw>( c ));
+	DBG_DrawPHAbstruct(new SPHContactDBGDraw( c ));
 }
 
 struct SPHDBGDrawTri :public SPHDBGDrawAbsract
@@ -293,16 +293,16 @@ static void clear_vector(PHABS_DBG_V& v)
 
 void DBG_DrawTri(CDB::RESULT* T,u32 c)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T,c));
+	DBG_DrawPHAbstruct(new SPHDBGDrawTri(T,c));
 }
 void DBG_DrawTri(CDB::TRI* T,const Fvector* V_verts,u32 c)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T,V_verts,c));
+	DBG_DrawPHAbstruct(new SPHDBGDrawTri(T,V_verts,c));
 }
 
 void DBG_DrawTri( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid )
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>( v0, v1, v2, ac, solid ));
+	DBG_DrawPHAbstruct(new SPHDBGDrawTri( v0, v1, v2, ac, solid ));
 }
 
 struct SPHDBGDrawLine : public SPHDBGDrawAbsract
@@ -320,16 +320,16 @@ struct SPHDBGDrawLine : public SPHDBGDrawAbsract
 
 void DBG_DrawLine ( const Fvector& p0, const Fvector& p1, u32 c )
 {
-	DBG_DrawPHAbstruct( xr_new<SPHDBGDrawLine>( p0, p1, c ) );
+	DBG_DrawPHAbstruct( new SPHDBGDrawLine( p0, p1, c ) );
 }
 void DBG_DrawMatrix( const Fmatrix &m, float size, u8 a/* = 255*/ )
 {
 	Fvector to;to.add( m.c,Fvector( ).mul( m.i, size ) );
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, color_xrgb(a, 0, 0)));
+	DBG_DrawPHAbstruct(new SPHDBGDrawLine(m.c, to, color_xrgb(a, 0, 0)));
 	to.add(m.c,Fvector( ).mul( m.j, size ) );
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, color_xrgb(0, a, 0)));
+	DBG_DrawPHAbstruct(new SPHDBGDrawLine(m.c, to, color_xrgb(0, a, 0)));
 	to.add(m.c,Fvector( ).mul( m.k, size ) );
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, color_xrgb(0, 0, a)));
+	DBG_DrawPHAbstruct(new SPHDBGDrawLine(m.c, to, color_xrgb(0, 0, a)));
 }
 
 template<int>
@@ -372,7 +372,7 @@ void DBG_DrawRotation( float ang0, float ang1, const Fmatrix& m, const Fvector &
 		mm.mulB_43( r );
 		mm.transform_dir( tmp, ln );
 		Fvector to1; to1.add( from, tmp );
-		DBG_DrawPHAbstruct( xr_new<SPHDBGDrawTri>( from, to0, to1, ac, solid ) );
+		DBG_DrawPHAbstruct( new SPHDBGDrawTri( from, to0, to1, ac, solid ) );
 	}
 }
 
@@ -407,7 +407,7 @@ struct SPHDBGDrawAABB :public SPHDBGDrawAbsract
 
 void DBG_DrawAABB(const Fvector& center,const Fvector& AABB,u32 c)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawAABB>(center,AABB,c));
+	DBG_DrawPHAbstruct(new SPHDBGDrawAABB(center,AABB,c));
 }
 
 struct SPHDBGDrawOBB: public SPHDBGDrawAbsract
@@ -425,7 +425,7 @@ struct SPHDBGDrawOBB: public SPHDBGDrawAbsract
 
 void DBG_DrawOBB(const Fmatrix& m,const Fvector h,u32 c)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawOBB>(m,h,c));
+	DBG_DrawPHAbstruct(new SPHDBGDrawOBB(m,h,c));
 };
 void DBG_DrawOBB( const Fobb &b,u32 c)
 {
@@ -449,7 +449,7 @@ struct SPHDBGDrawPoint :public SPHDBGDrawAbsract
 };
 void DBG_DrawPoint(const Fvector& p,float size,u32 c)
 {
-	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawPoint>(p,size,c));
+	DBG_DrawPHAbstruct(new SPHDBGDrawPoint(p,size,c));
 }
 
 void DBG_OpenCashedDraw()
@@ -663,7 +663,7 @@ CFunctionGraph::~CFunctionGraph()
 void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, int w, int h, int points_num/*=500*/, u32 color/*=*/, u32 bk_color)
 {
 	x_min = x0; x_max = x1;
-	m_stat_graph = xr_new<CStatGraph>();
+	m_stat_graph = new CStatGraph();
 	m_function = fun;
 
 	R_ASSERT(!m_function.empty() && m_stat_graph);
@@ -1115,7 +1115,7 @@ class CPHDebugOutput :
 		va_start(marker, s);
 		vsprintf(t, s, marker);
 		va_end(marker);
-		DBG_DrawPHAbstruct(xr_new<SPHDBGOutText>(t));
+		DBG_DrawPHAbstruct(new SPHDBGOutText(t));
 	}
 
 	virtual	void DBG_DrawFrameStart()

@@ -36,7 +36,7 @@ BOOL CAviPlayerCustom::Load (char* fname)
 	xr_strconcat(aname,fname,"_alpha");
 	if (FS.exist(aname))	
 	{
-		alpha		= xr_new<CAviPlayerCustom>	();
+		alpha		= new CAviPlayerCustom	();
 		alpha->Load	(aname);
 	}
 

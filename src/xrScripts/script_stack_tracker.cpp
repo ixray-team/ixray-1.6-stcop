@@ -16,7 +16,7 @@ CScriptStackTracker::CScriptStackTracker	()
 {
 	m_current_stack_level	= 0;
 	for (int i=0; i<max_stack_size; ++i)
-		m_stack[i]			= xr_new<lua_Debug>();
+		m_stack[i]			= new lua_Debug();
 }
 
 CScriptStackTracker::~CScriptStackTracker	()

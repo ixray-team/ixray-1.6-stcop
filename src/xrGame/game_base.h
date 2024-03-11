@@ -166,7 +166,7 @@ public:
 	virtual		LPCSTR				type_name				() const						{return "base game";};
 //for scripting enhancement
 	static		CLASS_ID			getCLASS_ID				(LPCSTR game_type_name, bool bServer);
-	virtual		game_PlayerState*	createPlayerState		(NET_Packet* account_info)		{return xr_new<game_PlayerState>(account_info); };
+	virtual		game_PlayerState*	createPlayerState		(NET_Packet* account_info)		{return new game_PlayerState(account_info); };
 
 //moved from game_sv_base (time routines)
 private:

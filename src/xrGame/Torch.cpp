@@ -107,7 +107,7 @@ void CTorch::SwitchNightVision(bool vision_on, bool use_sounds)
 		return;
 	}
 	if(!m_night_vision)
-		m_night_vision			= xr_new<CNightVisionEffector>(cNameSect());
+		m_night_vision			= new CNightVisionEffector(cNameSect());
 
 
 	LPCSTR disabled_names	= pSettings->r_string(cNameSect(),"disabled_maps");
@@ -216,7 +216,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 
 	R_ASSERT				(!CFORM());
 	R_ASSERT				(smart_cast<IKinematics*>(Visual()));
-	collidable.model		= xr_new<CCF_Skeleton>	(this);
+	collidable.model		= new CCF_Skeleton	(this);
 
 	if (!inherited::net_Spawn(DC))
 		return				(FALSE);

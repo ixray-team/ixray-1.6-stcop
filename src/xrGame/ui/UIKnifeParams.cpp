@@ -95,7 +95,7 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 {
 	if (!g_lua_knife_params)
 	{
-		g_lua_knife_params = xr_new<SLuaKnifeParams>();
+		g_lua_knife_params = new SLuaKnifeParams();
 	}
 
 	LPCSTR cur_section = cur_wpn.object().cNameSect().c_str();

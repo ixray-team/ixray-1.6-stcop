@@ -54,7 +54,7 @@ extern xr_token	round_end_result_str[];
 game_sv_mp::game_sv_mp() :inherited()
 {
 	m_alife_simulator = nullptr;
-	m_strWeaponsData = xr_new<CItemMgr>();
+	m_strWeaponsData = new CItemMgr();
 	m_bVotingActive = false;	
 	//------------------------------------------------------
 //	g_pGamePersistent->Environment().SetWeather("mp_weather");
@@ -456,7 +456,7 @@ void game_sv_mp::Create (shared_str &options)
 {
 	SetVotingActive(false);
 	inherited::Create(options);	
-	m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
+	m_alife_simulator = new CALifeSimulator(&server(), &options);
 	//-------------------------------------------------------------------	
 	if (!g_bConsoleCommandsCreated)
 	{

@@ -10,7 +10,7 @@ INetQueue::INetQueue()
 {
 	unused.reserve(128);
 	for (int i = 0; i < 16; i++)
-		unused.push_back(xr_new<NET_Packet>());
+		unused.push_back(new NET_Packet());
 }
 
 INetQueue::~INetQueue()
@@ -27,7 +27,7 @@ NET_Packet* INetQueue::Create()
 	NET_Packet* P = 0;
 	if (unused.empty())
 	{
-		ready.push_back(xr_new<NET_Packet>());
+		ready.push_back(new NET_Packet());
 		P = ready.back();
 		LastTimeCreate = CPU::GetTickCount();
 	}
@@ -46,7 +46,7 @@ NET_Packet* INetQueue::Create(const NET_Packet& _other)
 	cs.Enter();
 	if (unused.empty())
 	{
-		ready.push_back(xr_new<NET_Packet>());
+		ready.push_back(new NET_Packet());
 		P = ready.back();
 		//---------------------------------------------
 		LastTimeCreate = CPU::GetTickCount();

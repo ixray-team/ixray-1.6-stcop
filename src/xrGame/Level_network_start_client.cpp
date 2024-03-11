@@ -139,7 +139,7 @@ bool CLevel::net_start_client4()
 		create_physics_world(!!psDeviceFlags.test(mtPhysics), &ObjectSpace, &Objects);
 		R_ASSERT(physics_world());
 
-		m_ph_commander_physics_worldstep = xr_new<CPHCommander>();
+		m_ph_commander_physics_worldstep = new CPHCommander();
 		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
 
 		physics_world()->set_default_contact_shotmark(ContactShotMark);
