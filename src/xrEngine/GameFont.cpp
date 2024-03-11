@@ -315,9 +315,9 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	pFontRender->CreateFontAtlas(TextureDimension, TextureDimension, textureName, FontBitmap);
 	Memory.mem_free(FontBitmap);
+	FS.r_close(FontFile);
 
 	pFontRender->Initialize(shader, textureName);
-	FS.r_close(FontFile);
 }
 
 void CGameFont::OutSet(float x, float y)

@@ -21,8 +21,9 @@ CFontManager::~CFontManager()
 {
 	Device.seqDeviceReset.Remove(this);
 
-	for (auto& fontPair : Fonts)
+	for (auto& fontPair : Fonts) {
 		xr_delete(fontPair.second);
+	}
 	Fonts.clear();
 }
 
