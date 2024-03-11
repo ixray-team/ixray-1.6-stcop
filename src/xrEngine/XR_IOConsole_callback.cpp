@@ -15,9 +15,9 @@
 
 void CConsole::Register_callbacks()
 {
-	ec().assign_callback(SDL_SCANCODE_PRIOR, text_editor::ks_free,  Callback( this, &CConsole::Prev_log      ) );
+	ec().assign_callback(SDL_SCANCODE_PAGEUP, text_editor::ks_free,  Callback( this, &CConsole::Prev_log      ) );
 	ec().assign_callback(SDL_SCANCODE_PAGEDOWN,  text_editor::ks_free,  Callback( this, &CConsole::Next_log      ) );
-	ec().assign_callback(SDL_SCANCODE_PRIOR, text_editor::ks_Ctrl,  Callback( this, &CConsole::Begin_log     ) );
+	ec().assign_callback(SDL_SCANCODE_PAGEUP, text_editor::ks_Ctrl,  Callback( this, &CConsole::Begin_log     ) );
 	ec().assign_callback(SDL_SCANCODE_PAGEDOWN,  text_editor::ks_Ctrl,  Callback( this, &CConsole::End_log       ) );
 
 	ec().assign_callback(SDL_SCANCODE_TAB,   text_editor::ks_free,  Callback( this, &CConsole::Find_cmd      ) );
@@ -31,7 +31,7 @@ void CConsole::Register_callbacks()
 
 	ec().assign_callback(SDL_SCANCODE_HOME,  text_editor::ks_Alt,   Callback( this, &CConsole::Begin_tips    ) );
 	ec().assign_callback(SDL_SCANCODE_END,   text_editor::ks_Alt,   Callback( this, &CConsole::End_tips      ) );
-	ec().assign_callback(SDL_SCANCODE_PRIOR, text_editor::ks_Alt,   Callback( this, &CConsole::PageUp_tips   ) );
+	ec().assign_callback(SDL_SCANCODE_PAGEUP, text_editor::ks_Alt,   Callback( this, &CConsole::PageUp_tips   ) );
 	ec().assign_callback(SDL_SCANCODE_PAGEDOWN,  text_editor::ks_Alt,   Callback( this, &CConsole::PageDown_tips ) );
 	
 	ec().assign_callback(SDL_SCANCODE_RETURN,      text_editor::ks_free, Callback( this, &CConsole::Execute_cmd ) );

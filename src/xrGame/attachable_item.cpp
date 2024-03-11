@@ -171,7 +171,7 @@ void attach_adjust_mode_keyb(int dik)
 			else
 				CAttachableItem::rot(axis, -ATT_ITEM_ROT_CURR);
 		}break;
-	case SDL_SCANCODE_PRIOR:
+	case SDL_SCANCODE_PAGEUP:
 		{
 			if(b_move)
 				ATT_ITEM_MOVE_CURR +=ATT_ITEM_MOVE_STEP;

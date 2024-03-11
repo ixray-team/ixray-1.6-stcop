@@ -318,7 +318,7 @@ bool CUILogsWnd::OnKeyboardAction( int dik, EUIMessages keyboard_action )
 		{
 		case SDL_SCANCODE_UP:
 		case SDL_SCANCODE_DOWN:
-		case SDL_SCANCODE_PRIOR:
+		case SDL_SCANCODE_PAGEUP:
 		case SDL_SCANCODE_PAGEDOWN:
 			{
 				on_scroll_keys( dik );
@@ -342,7 +342,7 @@ bool CUILogsWnd::OnKeyboardHold( int dik )
 	{
 	case SDL_SCANCODE_UP:
 	case SDL_SCANCODE_DOWN:
-	case SDL_SCANCODE_PRIOR:
+	case SDL_SCANCODE_PAGEUP:
 	case SDL_SCANCODE_PAGEDOWN:
 		{
 			on_scroll_keys( dik );
@@ -374,7 +374,7 @@ void CUILogsWnd::on_scroll_keys( int dik )
 			m_list->ScrollBar()->SetStepSize( orig );
 			break;
 		}
-	case SDL_SCANCODE_PRIOR:
+	case SDL_SCANCODE_PAGEUP:
 		{
 			if ( m_ctrl_press )
 			{

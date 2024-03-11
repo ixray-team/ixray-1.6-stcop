@@ -29,7 +29,7 @@ const xr_hash_map<u8, xr_string> KeyNamesTable =
 	{(u8)SDL_SCANCODE_CAPSLOCK,	"Caps Lock"},
 	{(u8)SDL_SCANCODE_PAUSE,		"Pause"},
 	{(u8)SDL_SCANCODE_BACKSPACE,		"Backspace"},
-	{(u8)SDL_SCANCODE_PRIOR,		"Pg Up"},
+	{(u8)SDL_SCANCODE_PAGEUP,		"Pg Up"},
 	{(u8)SDL_SCANCODE_PAGEDOWN,		"Pg Down"},
 	{(u8)SDL_SCANCODE_HOME,		"Home"},
 	{(u8)SDL_SCANCODE_LEFT,		"Left"},
