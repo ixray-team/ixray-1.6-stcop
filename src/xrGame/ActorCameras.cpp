@@ -399,6 +399,20 @@ void CActor::cam_Update(float dt, float fFOV)
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
 	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
 
+	// Высчитываем разницу между предыдущим и текущим Yaw \ Pitch от 1-го лица //--#SM+ Begin#--
+	float& cam_yaw_cur = cameras[eacFirstEye]->yaw;
+	static float cam_yaw_prev = cam_yaw_cur;
+
+	float& cam_pitch_cur = cameras[eacFirstEye]->pitch;
+	static float cam_pitch_prev = cam_pitch_cur;
+
+	fFPCamYawMagnitude = angle_difference_signed(cam_yaw_prev, cam_yaw_cur) / Device.fTimeDelta; // L+ / R-
+	fFPCamPitchMagnitude = angle_difference_signed(cam_pitch_prev, cam_pitch_cur) / Device.fTimeDelta; //U+ / D-
+
+	cam_yaw_prev = cam_yaw_cur;
+	cam_pitch_prev = cam_pitch_cur;
+	//--#SM+ End#--
+
 #ifdef DEBUG
 	if( dbg_draw_camera_collision )
 	{

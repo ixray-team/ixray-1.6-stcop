@@ -38,6 +38,23 @@ struct hud_item_measures
 	Fvector							m_item_attach[2];//pos,rot
 
 	Fvector							m_hands_offset[2][3];//pos,rot/ normal,aim,GL
+	Fvector							m_strafe_offset[4][2]; // pos,rot,data1,data2/ normal,aim-GL	 --#SM+#--
+
+	struct inertion_params
+	{
+		float m_tendto_speed;
+		float m_tendto_speed_aim;
+		float m_tendto_ret_speed;
+		float m_tendto_ret_speed_aim;
+
+		float m_min_angle;
+		float m_min_angle_aim;
+
+		Fvector4 m_offset_LRUD;
+		Fvector4 m_offset_LRUD_aim;
+	};
+
+	inertion_params m_inertion_params; //--#SM+#--
 
 	u16								m_fire_bone;
 	Fvector							m_fire_point_offset;

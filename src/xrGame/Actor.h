@@ -340,6 +340,10 @@ protected:
 	CActorCameraManager*	m_pActorEffector;
 	static float			f_Ladder_cam_limit;
 public:
+	//--#SM+#--
+	float fFPCamYawMagnitude;
+	float fFPCamPitchMagnitude;
+
 	virtual void			feel_touch_new				(CObject* O);
 	virtual void			feel_touch_delete			(CObject* O);
 	virtual BOOL			feel_touch_contact			(CObject* O);

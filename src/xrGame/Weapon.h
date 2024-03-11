@@ -309,8 +309,6 @@ protected:
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
 
-	float m_fLR_MovingFactor;
-	Fvector m_strafe_offset[3][2]; // pos,rot,data/ normal,aim-GL
 	u8 GetCurrentHudOffsetIdx() const;
 
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
