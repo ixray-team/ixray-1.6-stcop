@@ -61,7 +61,7 @@ static void retrive_data_from_mender_otput( xr_vector<type_vertex>					&vertices
           );
      }
     {
-      const u32 vertex_count		= theVerts.size();
+      const u32 vertex_count = (u32)theVerts.size();
       vertices.clear	(); vertices.resize( vertex_count );
       for (u32 i=0; i < vertex_count; i++)
           set_vertex( vertices[i], old_vertices[ mappingNewToOldVert[i] ], theVerts[i] );

@@ -218,9 +218,9 @@ void OGF::Optimize	()
 		// 0. Search for the group
 		xr_vector<u32>	selection		;
 		for (;;)	{
-			u32		_old	= selection.size();
+			u32		_old	= (u32)selection.size();
 			adjacent_select	(selection,vmarker,fmarker);
-			u32		_new	= selection.size();
+			u32		_new	= (u32)selection.size();
 			if (_old==_new)	break;		// group selected !
 		}
 		if (selection.empty())		break;
@@ -305,7 +305,7 @@ void OGF::MakeProgressive	(float metric_limit)
 		}
 		while (VR && VR->swr_records.size()>0)	{
 			// test metric
-			u32		_full	=	data.vertices.size	()		;
+			u32		_full	= (u32)data.vertices.size	()		;
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
@@ -378,7 +378,7 @@ void OGF::MakeProgressive	(float metric_limit)
 			*/
 
 			// test metric
-			u32		_full	=	data.vertices.size	()		;
+			u32		_full	= (u32)data.vertices.size	()		;
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);

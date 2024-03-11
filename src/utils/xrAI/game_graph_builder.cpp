@@ -291,7 +291,7 @@ void CGameGraphBuilder::recursive_update	(const u32 &game_vertex_id, const float
 		for ( ; I != E; ++I)
 			m_marks[*I]		= false;
 
-		total_count			+= m_current_fringe.size();
+		total_count += (u32)m_current_fringe.size();
 		m_current_fringe	= m_next_fringe;
 		m_next_fringe.clear	();
 		++curr_dist;
@@ -652,7 +652,7 @@ void CGameGraphBuilder::save_graph			(const float &start, const float &amount)
 	header.save					(&writer);
 
 	{
-		u32								edge_offset = graph().vertices().size()*sizeof(CGameGraph::CVertex);
+		u32 edge_offset = (u32)graph().vertices().size() * sizeof(CGameGraph::CVertex);
 
 		graph_type::const_vertex_iterator	I = graph().vertices().begin();
 		graph_type::const_vertex_iterator	E = graph().vertices().end();

@@ -201,13 +201,13 @@ void	CBuild::xrPhase_Radiosity	()
 		if (task->at(l).type == LT_POINT)	_energy_before	+= task->at(l).energy;
 
 	// perform all the work
-	u32	setup_old			= task->size	();
+	u32	setup_old = (u32)task->size();
 	for (int t=0; t<GI_THREADS; t++)	{
 		gi.start(xr_new<CGI>(t));
 		Sleep	(10);
 	}
 	gi.wait					();
-	u32 setup_new			= task->size	();
+	u32 setup_new			= (u32)task->size	();
 
 	// renormalize
 	float	_energy_after	= 0;

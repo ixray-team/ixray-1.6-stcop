@@ -19,7 +19,7 @@ static void	add_face(	const	type_face					&F,
 		if ( new_id == u32(-1) )
 		{
 			new_vertices	.push_back( vertices[old_id] );
-			new_id			=new_vertices.size()-1;
+			new_id			= (u32)new_vertices.size()-1;
 			remap[old_id]	=new_id;
 		}
 		face_vertex( new_face, v ) = new_id;
