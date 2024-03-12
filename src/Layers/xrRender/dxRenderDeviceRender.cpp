@@ -186,13 +186,20 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty())
 			return;
 
-		constexpr auto DebugFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
-		ImGui::SetNextWindowBgAlpha(0.0f);
+		int PosX = 0;
+		int PosY = 0;
+		SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
+
+		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(ImVec2(PosX, PosY + 26));
+		ImGui::SetNextWindowSize(Viewport->WorkSize);
+		ImGui::SetNextWindowViewport(Viewport->ID);
+		ImGui::SetNextWindowBgAlpha(0);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		
+		constexpr auto DebugFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
 		if (ImGui::Begin("DebugRender", nullptr, DebugFlags)) {
 			ImDrawList& CmdList = *ImGui::GetWindowDrawList();
 			for (const auto& Line : DebugRenderImpl.m_lines) {
