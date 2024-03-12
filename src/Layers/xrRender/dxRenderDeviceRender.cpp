@@ -414,6 +414,15 @@ void dxRenderDeviceRender::End()
 #else
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 #endif
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		// Update and Render additional Platform Windows
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 	}
 
 #ifdef DEBUG_DRAW

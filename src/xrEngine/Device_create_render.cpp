@@ -50,7 +50,10 @@ void DrawMainViewport()
 		ImGui::SetNextWindowBgAlpha(0.f);
 	}
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	int posX = 0, posY = 0;
+	SDL_GetWindowPosition(g_AppInfo.Window, &posX, &posY);
+
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) {
 		ImGui::SetCursorPos(ImVec2(0, 0));
@@ -185,10 +188,17 @@ static void InitImGui()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-	//io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
-	//io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	//io.ConfigViewportsNoAutoMerge = true;
+	//io.ConfigViewportsNoTaskBarIcon = true;
+	//io.ConfigViewportsNoDefaultParent = true;
+	//io.ConfigDockingAlwaysTabBar = true;
+	//io.ConfigDockingTransparentPayload = true;
+	//io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;     // FIXME-DPI: Experimental. THIS CURRENTLY DOESN'T WORK AS EXPECTED. DON'T USE IN USER APP!
+	//io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports; // FIXME-DPI: Experimental.
 
 	ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 
@@ -210,6 +220,11 @@ static void InitImGui()
 	Style.ScrollbarRounding = 2;
 	Style.GrabRounding = 2;
 	Style.TabRounding = 2;
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		Style.WindowRounding = 0.0f;
+		Style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 
 	ImVec4* colors = Style.Colors;
 	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
