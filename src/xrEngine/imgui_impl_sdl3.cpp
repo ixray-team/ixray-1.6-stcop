@@ -734,7 +734,8 @@ void ImGui_ImplSDL3_NewFrame()
     else
         io.BackendFlags &= ~ImGuiBackendFlags_HasMouseHoveredViewport;
 
-    if (Device.IsCapturingInputs()) {
+    if (CImGuiManager::Instance().IsCapturingInputs()) 
+    {
         ImGui_ImplSDL3_UpdateMouseData();
         ImGui_ImplSDL3_UpdateMouseCursor();
 

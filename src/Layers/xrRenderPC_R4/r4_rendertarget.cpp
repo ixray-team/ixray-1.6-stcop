@@ -311,7 +311,7 @@ CRenderTarget::CRenderTarget		()
 		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
 	}
 
-	Device.AddUICommand("GraphicDebug", 2, [this]() {
+	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]() {
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)]) {
 			return;
 		}
@@ -982,8 +982,10 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_occq					);
 	xr_delete					(b_hdao_cs				);
 
-	Device.RemoveUICommand("GraphicDebug");
-	if (g_debug_blend_state != nullptr) {
+	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
+
+	if (g_debug_blend_state != nullptr) 
+	{
 		g_debug_blend_state->Release();
 		g_debug_blend_state = nullptr;
 	}

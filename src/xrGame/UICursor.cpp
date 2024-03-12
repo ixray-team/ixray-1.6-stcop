@@ -114,7 +114,7 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
-	if (!Device.IsCapturingInputs()) 
+	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
 		vPrevPos = vPos;
 		POINT TestPos2;
@@ -129,7 +129,7 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	if (!Device.IsCapturingInputs()) 
+	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
 		vPos = pos;
 		RECT ClientRect;

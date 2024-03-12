@@ -18,7 +18,20 @@
 dxRenderDeviceRender::dxRenderDeviceRender()
 	:	Resources(0)
 {
-	;
+	CImGuiManager& ImUI = CImGuiManager::Instance();
+
+#ifdef USE_DX11
+	ImUI.HardwareInitCallback		= []() { ImGui_ImplDX11_Init(RDevice, RContext); };
+	ImUI.HardwareDrawDataCallback	= []() { ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); };
+	ImUI.HardwareDestroyCallback	= ImGui_ImplDX11_Shutdown;
+	ImUI.HardwareNewFrameCallback	= ImGui_ImplDX11_NewFrame;
+#else
+	ImUI.HardwareInitCallback		= []() { ImGui_ImplDX9_Init(RDevice); };
+	ImUI.HardwareDrawDataCallback	= []() { ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); };
+	ImUI.HardwareDestroyCallback	= ImGui_ImplDX9_Shutdown;
+	ImUI.HardwareNewFrameCallback	= ImGui_ImplDX9_NewFrame;
+	ImUI.HardwareResetCallback		= ImGui_ImplDX9_InvalidateDeviceObjects;
+#endif
 }
 
 void dxRenderDeviceRender::Copy(IRenderDeviceRender &_in)
@@ -61,12 +74,8 @@ void dxRenderDeviceRender::ValidateHW()
 
 void dxRenderDeviceRender::DestroyHW()
 {
-	xr_delete					(Resources);
-#ifdef USE_DX11
-	ImGui_ImplDX11_Shutdown();
-#else
-	ImGui_ImplDX9_Shutdown();
-#endif
+	xr_delete(Resources);
+	CImGuiManager::Instance().Destroy(true);
 }
 
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2)
@@ -78,9 +87,7 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	Resources->reset_begin	();
 	Memory.mem_compact		();
 	ResourcesDeferredUnload();
-#ifndef USE_DX11
-	ImGui_ImplDX9_Shutdown();
-#endif
+	
 	Device.ResizeBuffers(psCurrentVidMode[0], psCurrentVidMode[1]);
 	ResourcesDeferredUpload();
 
@@ -90,9 +97,7 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	fHeight_2 = float(dwHeight / 2);
 	Resources->reset_end();
 
-#ifndef USE_DX11
-	ImGui_ImplDX9_Init(RDevice);
-#endif
+	CImGuiManager::Instance().Reset();
 
 #ifdef DEBUG
 	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:",RDevice);
@@ -170,11 +175,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
 void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool move_window)
 {
-#ifdef USE_DX11
-	ImGui_ImplDX11_Init(RDevice, RContext);
-#else
-	ImGui_ImplDX9_Init(RDevice);
-#endif
+	CImGuiManager::Instance().InitHardware();
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
@@ -183,7 +184,8 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	Resources = new CResourceManager();
 
 #ifdef DEBUG_DRAW
-	Device.AddUICommand("dxDebugRenderer", 1, []()
+	CImGuiManager::Instance().Subscribe("dxDebugRenderer", CImGuiManager::ERenderPriority::eHight + 1,
+	[]()
 	{
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty())
 			return;
@@ -195,15 +197,18 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		if (ImGui::Begin("DebugRender", nullptr, DebugFlags)) {
+		if (ImGui::Begin("DebugRender", nullptr, DebugFlags))
+		{
 			ImDrawList& CmdList = *ImGui::GetWindowDrawList();
-			for (const auto& Line : DebugRenderImpl.m_lines) {
+			for (const auto& Line : DebugRenderImpl.m_lines) 
+			{
 				CmdList.AddLine(
-					ImVec2(Line.first.p.x, Line.first.p.y),
+					ImVec2(Line.first.p.x , Line.first.p.y ),
 					ImVec2(Line.second.p.x, Line.second.p.y),
 					Line.first.color
 				);
 			}
+			DebugRenderImpl.m_lines.clear(); 
 		}
 
 		ImGui::End();
@@ -385,41 +390,29 @@ void dxRenderDeviceRender::End()
 {
 	VERIFY	(RDevice);
 
-	//if (dxRenderDeviceRender::Instance().Caps.SceneMode)	overdrawEnd();
-
-	RCache.OnFrameEnd	();
+	RCache.OnFrameEnd();
 
 	{
 		SCOPE_EVENT_NAME_GROUP("Async screenshot", "Render");
 		DoAsyncScreenshot();
 	}
 
+	CImGuiManager& MyImGui = CImGuiManager::Instance();
+	MyImGui.BeginRender();
+
 #ifdef USE_DX11
-	ImGui_ImplDX11_NewFrame();
 	ID3D11RenderTargetView* RTV = RSwapchainTarget;
 	RContext->OMSetRenderTargets(1, &RTV, nullptr);
 #else
-	ImGui_ImplDX9_NewFrame();
 	RDevice->SetRenderTarget(0, RSwapchainTarget);
 #endif
 
-	{
-		SCOPE_EVENT_NAME_GROUP("ImGui draw", "Render");
-		ImGui::NewFrame();
-		Device.DrawUI();
-		ImGui::Render();
-
-#ifdef USE_DX11
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#else
-		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-#endif
-	}
+	MyImGui.Render();
+	MyImGui.AfterRender();
 
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.m_lines.resize(0);
 #endif
-
 
 	{
 		SCOPE_EVENT_NAME_GROUP("GPU Wait", "Render");
