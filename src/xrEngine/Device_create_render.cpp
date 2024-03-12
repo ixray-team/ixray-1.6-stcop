@@ -337,7 +337,13 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		}
 
 		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(ImVec2(0, 26));
+
+		int PosX = 0;
+		int PosY = 0;
+
+		SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
+
+		ImGui::SetNextWindowPos(ImVec2(PosX, PosY + 26));
 		ImGui::SetNextWindowSize(Viewport->WorkSize);
 		ImGui::SetNextWindowViewport(Viewport->ID);
 		ImGui::SetNextWindowBgAlpha(0);
