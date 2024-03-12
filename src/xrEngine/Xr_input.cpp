@@ -451,7 +451,7 @@ void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
 
-	if (KBState[SDL_SCANCODE_LALT] || Device.IsCapturingInputs()) 
+	if (KBState[SDL_SCANCODE_LALT] || CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 
@@ -522,7 +522,7 @@ void CInput::OnFrame()
 	SCOPE_EVENT_NAME_GROUP("Input", "Engine");
 
 	dwCurTime = RDEVICE.TimerAsync_MMT();
-	if (KBState[SDL_SCANCODE_LALT] || Device.IsCapturingInputs())
+	if (KBState[SDL_SCANCODE_LALT] || CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 

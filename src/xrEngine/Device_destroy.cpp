@@ -56,7 +56,6 @@ void CRenderDevice::Reset		(bool precache)
 	u32 dwWidth_before		= TargetWidth;
 	u32 dwHeight_before		= TargetHeight;
 
-	SDL_ShowCursor();
 	u32 tm_start			= TimerAsync();
 
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
@@ -73,10 +72,6 @@ void CRenderDevice::Reset		(bool precache)
 
 	//	TODO: Remove this! It may hide crash
 	Memory.mem_compact();
-
-	if (!g_dedicated_server) {
-		SDL_HideCursor();
-	}
 
 	seqDeviceReset.Process(rp_DeviceReset);
 
