@@ -2,6 +2,8 @@
 #include "dxRenderDeviceRender.h"
 #include "../../xrParticles/ParticlesObject.h"
 
+#include "../../xrEngine/XR_IOConsole.h"
+
 #ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
 #endif
@@ -420,6 +422,14 @@ void dxRenderDeviceRender::End()
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.m_lines.resize(0);
 #endif
+
+	ENGINE_API BOOL g_bRendering;
+	g_bRendering = TRUE;
+
+	// Render console after all
+	Console->OnRender();
+
+	g_bRendering = FALSE;
 
 	{
 		SCOPE_EVENT_NAME_GROUP("GPU Wait", "Render");

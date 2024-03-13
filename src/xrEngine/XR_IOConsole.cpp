@@ -625,7 +625,7 @@ void CConsole::Show()
 	update_tips();
 
 	m_editor->IR_Capture();
-	Device.seqRender.Add( this, 1 );
+	//Device.seqRender.Add( this, 1 );
 	Device.seqFrame.Add( this );
 }
 
@@ -647,7 +647,7 @@ void CConsole::Hide()
 	update_tips();
 
 	Device.seqFrame.Remove( this );
-	Device.seqRender.Remove( this );
+	//Device.seqRender.Remove( this );
 	m_editor->IR_Release();
 }
 
