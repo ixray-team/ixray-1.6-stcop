@@ -10,6 +10,8 @@ public:
 	ThreadID MainThread = 0;
 	ThreadID SecondaryThread = 0;
 
+	Ivector2 WindowPosition = { 0, 0 };
+
 public:
 	bool IsSecondaryThread() const noexcept;
 	bool IsPrimaryThread() const noexcept;

@@ -40,9 +40,7 @@ void DrawMainViewport()
 		ImGui::SetNextWindowBgAlpha(0.f);
 	}
 
-	int posX = 0, posY = 0;
-	SDL_GetWindowPosition(g_AppInfo.Window, &posX, &posY);
-	ImVec2 VecPos = ImVec2(posX, posY);
+	ImVec2 VecPos = ImVec2(g_AppInfo.WindowPosition.x, g_AppInfo.WindowPosition.y);
 
 	ImGui::SetNextWindowPos(VecPos);
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
@@ -206,12 +204,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 
 		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 
-		int PosX = 0;
-		int PosY = 0;
-		
-		SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
-
-		ImGui::SetNextWindowPos(ImVec2(PosX, PosY + CImGuiManager::Instance().GetTooltipHeight()));
+		ImGui::SetNextWindowPos(ImVec2(g_AppInfo.WindowPosition.x, g_AppInfo.WindowPosition.y + CImGuiManager::Instance().GetTooltipHeight()));
 		ImGui::SetNextWindowSize(Viewport->WorkSize);
 		ImGui::SetNextWindowViewport(Viewport->ID);
 		ImGui::SetNextWindowBgAlpha(0);
