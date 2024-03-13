@@ -315,6 +315,11 @@ void CImGuiManager::NewHardwareFrame() const
 	HardwareNewFrameCallback();
 }
 
+int CImGuiManager::GetTooltipHeight() const
+{
+	return 26;
+}
+
 CImGuiManager& CImGuiManager::Instance()
 {
 	static CImGuiManager Object;

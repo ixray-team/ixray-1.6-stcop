@@ -51,6 +51,8 @@ public:
 	void NewPlatformFrame() const;
 	void NewHardwareFrame() const;
 
+	int GetTooltipHeight() const;
+
 public:
 	static CImGuiManager& Instance();
 

@@ -42,12 +42,15 @@ void DrawMainViewport()
 
 	int posX = 0, posY = 0;
 	SDL_GetWindowPosition(g_AppInfo.Window, &posX, &posY);
+	ImVec2 VecPos = ImVec2(posX, posY);
 
-	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowPos(VecPos);
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
-	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) {
+
+	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) 
+	{
 		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::GetWindowDrawList()->AddRect(ImVec2(0, 0), ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight), 0xFFFFFFFF);
+		ImGui::GetWindowDrawList()->AddRect(VecPos, ImVec2((float)Device.TargetWidth + VecPos.x, (float)Device.TargetHeight + VecPos.y), 0xFFFFFFFF);
 		ImGui::SetCursorPos(ImVec2(0, 0));
 		ImGui::Image(RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	}
@@ -205,10 +208,10 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 
 		int PosX = 0;
 		int PosY = 0;
-
+		
 		SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
 
-		ImGui::SetNextWindowPos(ImVec2(PosX, PosY + 26));
+		ImGui::SetNextWindowPos(ImVec2(PosX, PosY + CImGuiManager::Instance().GetTooltipHeight()));
 		ImGui::SetNextWindowSize(Viewport->WorkSize);
 		ImGui::SetNextWindowViewport(Viewport->ID);
 		ImGui::SetNextWindowBgAlpha(0);

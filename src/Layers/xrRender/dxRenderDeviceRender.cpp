@@ -195,7 +195,7 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 
 		ImVec2 ValidViewportPos = Viewport->Pos;
-		ValidViewportPos.y += 26;
+		ValidViewportPos.y += CImGuiManager::Instance().GetTooltipHeight();
 
 		ImGui::SetNextWindowPos(ValidViewportPos);
 		ImGui::SetNextWindowSize(Viewport->WorkSize);
