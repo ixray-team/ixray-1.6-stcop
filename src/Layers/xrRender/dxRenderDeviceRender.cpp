@@ -17,6 +17,8 @@
 #include "../xrRenderDX9/imgui_impl_dx9.h"
 #endif
 
+#include "dxUIRender.h"
+
 dxRenderDeviceRender::dxRenderDeviceRender()
 	:	Resources(0)
 {
@@ -399,7 +401,7 @@ void dxRenderDeviceRender::End()
 
 	//if (dxRenderDeviceRender::Instance().Caps.SceneMode)	overdrawEnd();
 
-	RCache.OnFrameEnd	();
+
 
 	{
 		SCOPE_EVENT_NAME_GROUP("Async screenshot", "Render");
@@ -427,7 +429,9 @@ void dxRenderDeviceRender::End()
 	g_bRendering = TRUE;
 
 	// Render console after all
-	Console->OnRender();
+	::Console->OnRender();
+
+	RCache.OnFrameEnd();
 
 	g_bRendering = FALSE;
 
