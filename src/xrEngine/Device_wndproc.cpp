@@ -12,10 +12,14 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	switch (Event.type) 
 	{
 	case SDL_EVENT_WINDOW_MOVED:
-		g_AppInfo.WindowPosition.x += Event.window.data1;
-		g_AppInfo.WindowPosition.y += Event.window.data2;
+	{
+		int posX = 0;
+		int posY = 0;
+		SDL_GetWindowPosition(g_AppInfo.Window, &posX, &posY);
+		g_AppInfo.WindowPosition.x = posX;
+		g_AppInfo.WindowPosition.y = posY;
 		break;
-
+	}
 	case SDL_EVENT_WINDOW_MOUSE_ENTER:
 		OnWM_Activate(true, false);
 		break;

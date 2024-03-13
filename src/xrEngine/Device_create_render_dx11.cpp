@@ -122,13 +122,14 @@ bool CreateD3D11()
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
 	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
-	sd.BufferDesc.Width = psCurrentVidMode[0];
-	sd.BufferDesc.Height = psCurrentVidMode[1];
+	sd.BufferDesc.Width = 0;
+	sd.BufferDesc.Height = 0;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferCount = 1;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.OutputWindow = hwnd;
 	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
 
