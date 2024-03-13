@@ -6,6 +6,9 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	ImGui_ImplSDL3_ProcessEvent(&Event);
 
+	if (Event.window.windowID != SDL_GetWindowID(g_AppInfo.Window))
+		return true;
+
 	switch (Event.type) 
 	{
 	case SDL_EVENT_WINDOW_MOVED:
