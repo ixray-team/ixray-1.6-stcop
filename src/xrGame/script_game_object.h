@@ -792,6 +792,20 @@ public:
 			int GetAmmoCount(u8 type);
 			u8 GetWeaponSubstate();
 			u32 GetMainWeaponType();
+			bool IsOnBelt(CScriptGameObject* obj) const;
+			u32 PlayHudMotion(LPCSTR M, bool bMixIn, u32 state);
+			void AmmoSetCount(u16 count);
+			u16 AmmoBoxSize();
+			bool InstallUpgrade(LPCSTR upgrade);
+			bool HasUpgrade(LPCSTR upgrade);
+			void IterateInstalledUpgrades(const luabind::functor<bool>& functor);
+			void Weapon_AddonAttach(CScriptGameObject* item);
+			void Weapon_AddonDetach(LPCSTR item_section, bool b_spawn_item);
+			LPCSTR Weapon_GetAmmoSection(u8 ammo_type);
+			u16 AmmoGetCount();
+			void SwitchState(u32 state);
+			u32 GetState();
+			CScriptGameObject* ItemOnBelt(u32 item_id) const;
 			u32 GetWeaponType();
 
 	doors::door*				m_door;

@@ -63,6 +63,7 @@ class CInventoryItem :
 {
 private:
 	typedef CAttachableItem inherited;
+	friend class CScriptGameObject;
 protected:
 	enum EIIFlags{				FdropManual			=(1<<0),
 								FCanTake			=(1<<1),
