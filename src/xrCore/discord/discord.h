@@ -1,5 +1,5 @@
 #pragma once
-#include <discord_game_sdk/discord.h>
+#include <discord_gamesdk/cpp/discord.h>
 
 class XRCORE_API DiscordShared
 {

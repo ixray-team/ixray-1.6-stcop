@@ -18,7 +18,6 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
                 COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/max_2024.zip
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/max_sdk/
             )
-
         endif()
 
         set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_sdk/)
@@ -45,7 +44,6 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
                 COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/
             )
-
         endif()
 
         set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020/)

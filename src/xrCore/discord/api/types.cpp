@@ -4,7 +4,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <discord_game_sdk/types.h>
+#include <discord_gamesdk/cpp/types.h>
 
 #include <cstring>
 #include <memory>

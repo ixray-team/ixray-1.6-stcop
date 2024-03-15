@@ -124,13 +124,46 @@ target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
-target_link_libraries(xrCore PRIVATE "discord_game_sdk.dll.lib")
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
 target_compile_definitions(xrCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+# Discord GameSDK
+set(DISCORD_GAME_SDK_FILE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip)
+if(NOT EXISTS ${DISCORD_GAME_SDK_FILE})
+    file(
+        DOWNLOAD
+        https://github.com/ixray-team/ixray-packages/releases/download/d2023.12.8/Discord.GameSdk.3.2.1.zip
+        ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip
+        SHOW_PROGRESS
+    )
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/
+    )
+endif()
+set(DISCORD_GAME_SDK ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/)
+
+target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
+
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86/discord_game_sdk.dll.lib)
+else()
+    target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll.lib)
+endif()
+
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+endif()
