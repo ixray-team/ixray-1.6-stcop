@@ -45,6 +45,15 @@ public:
 		return GetHead() - 1;
 	}
 
+	StoredType GetRMS() const {
+		StoredType Value = 0;
+		for (const auto BufValue : Buffer) {
+			Value += BufValue;
+		}
+
+		return Value / BufferSize;
+	}
+
 	unsigned int GetSize() const
 	{
 		return BufferSize;
