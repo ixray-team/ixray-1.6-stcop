@@ -191,6 +191,9 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 			return;
 
 		constexpr auto DebugFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
+		
+		ImGuiViewport* ViewPort = ImGui::GetMainViewport();
+
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 		ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 		ImGui::SetNextWindowBgAlpha(0.0f);
@@ -203,8 +206,8 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 			for (const auto& Line : DebugRenderImpl.m_lines) 
 			{
 				CmdList.AddLine(
-					ImVec2(Line.first.p.x , Line.first.p.y ),
-					ImVec2(Line.second.p.x, Line.second.p.y),
+					ImVec2(Line.first.p.x  + ViewPort->WorkPos.x, Line.first.p.y  + ViewPort->WorkPos.y),
+					ImVec2(Line.second.p.x + ViewPort->WorkPos.x, Line.second.p.y + ViewPort->WorkPos.y),
 					Line.first.color
 				);
 			}
