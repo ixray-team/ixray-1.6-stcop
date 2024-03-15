@@ -247,9 +247,9 @@ Profile::EndFrame()
 				EngineProfiler->Statistics[i].EndSmoothTimers[Event.GetHash()].Write((float)EndDelta);
 			}
 
-			std::sort(EngineProfiler->Statistics[i].Events.begin(), EngineProfiler->Statistics[i].Events.end(), [](const TraceEvent& Left, const TraceEvent& Right) {
-				return (Left.EndTimestamp - Left.BeginTimestamp) > (Right.EndTimestamp - Right.BeginTimestamp);
-			});
+			//std::sort(EngineProfiler->Statistics[i].Events.begin(), EngineProfiler->Statistics[i].Events.end(), [](const TraceEvent& Left, const TraceEvent& Right) {
+			//	return (Left.EndTimestamp - Left.BeginTimestamp) > (Right.EndTimestamp - Right.BeginTimestamp);
+			//});
 
 			break;
 		}

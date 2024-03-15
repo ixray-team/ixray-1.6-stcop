@@ -253,7 +253,7 @@ void CHOM::Render_DB			(CFrustum& base)
 void CHOM::Render		(CFrustum& base)
 {
 	if (!bEnabled)		return;
-	SCOPE_EVENT_NAME_GROUP("Details", "Render");
+	SCOPE_EVENT_NAME_GROUP("HOM", "Render");
 	
 	Raster.clear		();
 	Render_DB			(base);
