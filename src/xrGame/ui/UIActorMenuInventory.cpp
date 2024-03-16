@@ -25,6 +25,7 @@
 #include "../BottleItem.h"
 #include "../WeaponMagazined.h"
 #include "../Medkit.h"
+#include "../bandage.h"
 #include "../Antirad.h"
 #include "../CustomOutfit.h"
 #include "../ActorHelmet.h"
@@ -35,7 +36,7 @@
 #include "../PDA.h"
 
 #include "../actor_defs.h"
-
+#include "../ActorCondition.h"
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
@@ -745,7 +746,14 @@ bool CUIActorMenu::TryUseItem( CUICellItem* cell_itm )
 	CMedkit*		pMedkit			= smart_cast<CMedkit*>		(item);
 	CAntirad*		pAntirad		= smart_cast<CAntirad*>		(item);
 	CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);
+	CBandage*		pBandage		= smart_cast<CBandage*>		(item);
 
+	auto TryBandageUse = Actor()->conditions().BleedingSpeed();
+	
+	if (pBandage && TryBandageUse < fis_zero(TryBandageUse, EPS))
+	{
+		return false;
+	}
 	if ( !(pMedkit || pAntirad || pEatableItem || pBottleItem) )
 	{
 		return false;
@@ -1065,9 +1073,22 @@ void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 	CAntirad*		pAntirad		= smart_cast<CAntirad*>		(item);
 	CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);
 	CBottleItem*	pBottleItem		= smart_cast<CBottleItem*>	(item);
+	CBandage*		pBandage		= smart_cast<CBandage*>		(item);
 
 	LPCSTR act_str = nullptr;
-	if ( pMedkit || pAntirad )
+
+	auto TryBandageUse = Actor()->conditions().BleedingSpeed();
+
+	if (pBandage)
+	{
+		if (TryBandageUse < fis_zero(TryBandageUse, EPS))
+		{
+			/*Not using*/
+		}
+		else
+			act_str = "st_bandage_use";
+	}
+	else if (pMedkit || pAntirad)
 	{
 		act_str = "st_use";
 	}

@@ -3,6 +3,7 @@
 #include "f1.h"
 #include "WeaponAmmo.h"
 #include "Medkit.h"
+#include "bandage.h"
 #include "Antirad.h"
 #include "FoodItem.h"
 #include "BottleItem.h"
@@ -28,6 +29,8 @@ void CF1::script_register	(lua_State *L)
 		class_<CWeaponAmmo,CGameObject>("CWeaponAmmo")
 			.def(constructor<>()),
 		class_<CMedkit,CGameObject>("CMedkit")
+			.def(constructor<>()),
+		class_<CBandage, CGameObject>("CBandage")
 			.def(constructor<>()),
 		class_<CAntirad,CGameObject>("CAntirad")
 			.def(constructor<>()),

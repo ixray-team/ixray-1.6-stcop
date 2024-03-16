@@ -32,6 +32,7 @@
 #include "clsid_game.h"
 #include "hudmanager.h"
 #include "Weapon.h"
+#include "bandage.h"
 
 extern u32 hud_adj_mode;
 
@@ -170,23 +171,47 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			if(item_name.size())
 			{
 				PIItem itm = inventory().GetAny(item_name.c_str());
+				CBandage* pBandage = smart_cast<CBandage*>(itm);
+				auto TryBandageUse = Actor()->conditions().BleedingSpeed();
 
-				if(itm)
+				if (itm)
 				{
-					if (IsGameTypeSingle())
+					const auto l_InfoUseItem = [&](bool isBleeding, bool isDebug) -> void
 					{
-						inventory().Eat				(itm);
-					} else
+						if (isDebug)
+						{
+							Msg("~ [%s] -> Use item: %s", __FUNCTION__, item_name.c_str());
+						}
+
+						if (IsGameTypeSingle())
+						{
+							if (!isBleeding)
+							{
+								inventory().Eat(itm);
+							}
+						}
+						else
+						{
+							inventory().ClientEat(itm);
+						}
+
+						string1024 str;
+						SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
+						xr_strconcat(str, *g_pStringTable->translate(isBleeding ? "st_bandage_not_used" : "st_item_used"), ": ", itm->NameItem());
+
+						_s->wnd()->TextItemControl()->SetText(str);
+
+						CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
+					};
+
+					if (itm && TryBandageUse < fis_zero(TryBandageUse, EPS))
 					{
-						inventory().ClientEat		(itm);
+						l_InfoUseItem(true, IsDebuggerPresent());
 					}
-					
-					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
-					string1024					str;
-					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", itm->NameItem());
-					_s->wnd()->TextItemControl()->SetText(str);
-					
-					CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
+					else
+					{
+						l_InfoUseItem(false, IsDebuggerPresent());
+					}
 				}
 			}
 		}break;
