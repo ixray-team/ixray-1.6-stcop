@@ -176,7 +176,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 				if (itm)
 				{
-					const auto l_InfoUseItem = [&](bool isBleeding, bool isDebug) -> void
+					const auto l_InfoUseItem = [&](bool isBandage, bool isDebug) -> void
 					{
 						if (isDebug)
 						{
@@ -185,7 +185,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 						if (IsGameTypeSingle())
 						{
-							if (!isBleeding)
+							if (!isBandage)
 							{
 								inventory().Eat(itm);
 							}
@@ -197,7 +197,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 						string1024 str;
 						SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
-						xr_strconcat(str, *g_pStringTable->translate(isBleeding ? "st_bandage_not_used" : "st_item_used"), ": ", itm->NameItem());
+						xr_strconcat(str, *g_pStringTable->translate(isBandage ? "st_bandage_not_used" : "st_item_used"), ": ", itm->NameItem());
 
 						_s->wnd()->TextItemControl()->SetText(str);
 
