@@ -7,7 +7,7 @@
 #include "xrdeflectordefs.h"
 #include "b_build_texture.h"
 #include "base_lighting.h"
-#include "../../editors/LevelEditor/Engine/communicate.h"
+#include "../../Include/Editors/communicate.h"
 //#include "mu_model_face.h"
 //#include "mu_model_face_defs.h"
 //struct _face;
