@@ -141,8 +141,6 @@ public:
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
-	bool						isHUDAnimationExist		(LPCSTR anim_name);
-
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
 
