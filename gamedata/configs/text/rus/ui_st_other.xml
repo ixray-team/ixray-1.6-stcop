@@ -57,6 +57,9 @@
 	<string id="st_item_used">
 		<text>Использовано</text>
 	</string>
+	<string id="st_bandage_not_used">
+		<text>Перевязка не требуется</text>
+	</string>
 	<string id="st_level">
 		<text>Уровень</text>
 	</string>

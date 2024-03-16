@@ -99,6 +99,9 @@
 	<string id="st_use">
 		<text>использовать</text>
 	</string>
+	<string id="st_bandage_use">
+		<text>перевязаться</text>
+	</string>
 	<string id="st_weight">
 		<text>Вес</text>
 	</string>

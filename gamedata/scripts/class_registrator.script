@@ -116,7 +116,7 @@ function register(object_factory)
 
 	-- EATABLE ---------------------------------------------------------------------------------------------------------------------------
 	cs_register (object_factory, "CMedkit",						"se_item.se_eatable",					"S_MEDKI",			"obj_medkit_s")
-	cs_register (object_factory, "CMedkit",						"se_item.se_eatable",					"S_BANDG",			"obj_bandage_s")
+	cs_register (object_factory, "CBandage",					"se_item.se_eatable",					"S_BANDG",			"obj_bandage_s")
 	cs_register (object_factory, "CAntirad",					"se_item.se_eatable",					"S_ANTIR",			"obj_antirad_s")
 	cs_register (object_factory, "CFoodItem",					"se_item.se_eatable",					"S_FOOD",			"obj_food_s")
 	cs_register (object_factory, "CBottleItem",					"se_item.se_eatable",					"S_BOTTL",			"obj_bottle_s")
