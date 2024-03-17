@@ -52,6 +52,7 @@ public:
 	void Clear() override;
 	void End() override;
 	void ClearTarget() override;
+	void SetupDefaultTarget() override;
 	void SetCacheXform(Fmatrix &mView, Fmatrix &mProject) override;
 	void OnAssetsChanged() override;
 

@@ -170,7 +170,7 @@ void CScriptEngine::init()
 #endif
 	m_stack_level = lua_gettop(lua());
 
-	g_pScriptEngine->add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));
+	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));
 }
 
 void CScriptEngine::remove_script_process	(const EScriptProcessors &process_id)

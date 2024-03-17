@@ -58,6 +58,7 @@ public:
 	virtual void	Clear() = 0;
 	virtual void	End() = 0;
 	virtual void	ClearTarget() = 0;
+	virtual void	SetupDefaultTarget() = 0;
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
 };

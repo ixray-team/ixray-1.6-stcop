@@ -14,6 +14,7 @@
 #include "../xrCore/doug_lea_allocator.h"
 #include <sstream>
 #include "lua_ext.h"
+#include "script_process.h"
 
 LPCSTR	file_header = "\
 local function script_name() \
@@ -47,7 +48,9 @@ CScriptStorage::~CScriptStorage()
 void CScriptStorage::reinit	()
 {
 	if (m_virtual_machine)
-		lua_close			(m_virtual_machine);
+	{
+		lua_close(m_virtual_machine);
+	}
 
 	m_virtual_machine		= luaL_newstate();
 

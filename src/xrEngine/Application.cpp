@@ -418,6 +418,8 @@ void CApplication::LoadAllArchives()
 
 void CApplication::load_draw_internal()
 {
+	Device.m_pRender->SetupDefaultTarget();
+
 	if (loadingScreen)
 		loadingScreen->Update(load_stage, max_load_stage);
 }
