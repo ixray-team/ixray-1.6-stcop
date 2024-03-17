@@ -1,8 +1,5 @@
 #include "UIEditorMain.h"
 #include "../xrScripts/stdafx.h"
-#include "../xrScripts/lua_ext.h"
-
-#include <imgui.h>
 #include "../xrEngine/IGame_Actor.h"
 
 struct StatisticHashMapEntry
@@ -38,20 +35,6 @@ void RenderUI()
 
 	CImGuiManager::Instance().Subscribe("Editor Weather Draw", CImGuiManager::ERenderPriority::eMedium, RenderUIWeather);
 	CImGuiManager::Instance().Subscribe("Actor InfoPortions", CImGuiManager::ERenderPriority::eMedium, RenderActorInfos);
-
-	CImGuiManager::Instance().Subscribe("LuaDebug", CImGuiManager::ERenderPriority::eLow, []()
-	{
-		static bool Attach = false;
-
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::LuaDebug)])
-			return;
-
-		if (!Attach)
-		{
-			DebbugerAttach();
-			Attach = true;
-		}
-	});
 
 	CImGuiManager::Instance().Subscribe("Profiler", CImGuiManager::ERenderPriority::eMedium, []() {
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Profiler)])
