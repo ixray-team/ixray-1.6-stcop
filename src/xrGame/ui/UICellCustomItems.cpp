@@ -37,6 +37,8 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.x,
 														rect.lt.y+INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.y);
 
+	SetVisual(itm->object().Visual());
+	
 	inherited::SetTextureRect						(rect);
 	inherited::SetStretchTexture					(true);
 }

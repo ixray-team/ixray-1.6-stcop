@@ -185,6 +185,10 @@ void CRender::render_menu	()
 }
 
 extern u32 g_r;
+void CRender::RenderUI() {
+
+}
+
 void CRender::Render		()
 {
 	g_r						= 1;

@@ -564,6 +564,9 @@ void	CRender::rmNormal	()
 }
 
 extern u32 g_r;
+void CRender::RenderUI() {
+}
+
 void	CRender::Render		()
 {
 	RDevice->SetRenderTarget(0, RTarget);

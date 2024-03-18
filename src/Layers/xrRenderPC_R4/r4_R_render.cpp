@@ -194,6 +194,19 @@ void CRender::render_menu	()
 }
 
 extern u32 g_r;
+void CRender::RenderUI()
+{
+	RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+	//rmNormal();
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, RTarget, NULL, RDepth);
+	r_dsgraph_render_ui();
+
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, 0, 0, RDepth);
+	r_dsgraph_render_sorted_ui();
+
+	marker++;
+}
+
 void CRender::Render		()
 {
 	PIX_EVENT(CRender_Render);

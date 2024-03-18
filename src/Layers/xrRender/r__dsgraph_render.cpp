@@ -493,6 +493,23 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 
 //////////////////////////////////////////////////////////////////////////
 // HUD render
+void R_dsgraph_structure::r_dsgraph_render_ui()
+{
+	mapUI.traverseLR(sorted_L1);
+	mapUI.clear();
+}
+
+void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
+{
+#if	RENDER!=R_R1
+	mapUIEmissive.traverseLR(sorted_L1);
+	mapUIEmissive.clear();
+#endif
+
+	mapUISorted.traverseLR(sorted_L1);
+	mapUISorted.clear();
+}
+
 void R_dsgraph_structure::r_dsgraph_render_hud	()
 {
 	extern ENGINE_API float		psHUD_FOV;
