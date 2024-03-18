@@ -422,4 +422,6 @@ void CApplication::load_draw_internal()
 
 	if (loadingScreen)
 		loadingScreen->Update(load_stage, max_load_stage);
+	else
+		Device.m_pRender->ClearTarget();
 }
