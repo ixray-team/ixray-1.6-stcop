@@ -1,0 +1,72 @@
+name: 'Non-Unity build'
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
+      - '**/*.json'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
+      - '**/*.json'
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build-engine:
+    name: 'Build engine'
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        preset:
+          - Engine
+        platform:
+          - x86
+          - x64
+        config:
+          - Debug
+          - RelWithDebInfo
+          - Release
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          key: ${{ matrix.preset }}-NuGet-
+          restore-keys: |
+            ${{ matrix.preset }}-NuGet-
+          path: |
+            ~/.nuget/packages
+
+      - name: Configure engine
+        run: |
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-NonUnity
+
+      - name: Build engine
+        run: |
+          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-NonUnity-${{ matrix.config }}

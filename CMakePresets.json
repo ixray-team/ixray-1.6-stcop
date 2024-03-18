@@ -19,7 +19,8 @@
                 "IXRAY_PLUGIN_LW": "OFF",
                 "IXRAY_ASAN": "OFF",
                 "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "ON"
+                "IXRAY_USE_R2": "ON",
+                "IXRAY_UNITYBUILD": "ON"
             }
         },
         {
@@ -46,6 +47,46 @@
         },
 
         {
+            "name": "Engine-Base-NonUnity",
+            "displayName": "Engine-Base-NonUnity",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "ON",
+                "IXRAY_USE_R2": "ON",
+                "IXRAY_UNITYBUILD": "OFF"
+            }
+        },
+        {
+            "name": "Engine-x86-NonUnity",
+            "displayName": "Engine-x86-NonUnity",
+            "inherits": "Engine-Base-NonUnity",
+            "binaryDir": "build/x86/Engine-NonUnity",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x86"
+                }
+            }
+        },
+        {
+            "name": "Engine-x64-NonUnity",
+            "displayName": "Engine-x64-NonUnity",
+            "inherits": "Engine-Base-NonUnity",
+            "binaryDir": "build/x64/Engine-NonUnity",
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
+        },
+
+        {
             "name": "Server-Base",
             "displayName": "Server-Base",
             "hidden": true,
@@ -58,7 +99,8 @@
                 "IXRAY_PLUGIN_LW": "OFF",
                 "IXRAY_ASAN": "OFF",
                 "IXRAY_USE_R1": "ON",
-                "IXRAY_USE_R2": "ON"
+                "IXRAY_USE_R2": "ON",
+                "IXRAY_UNITYBUILD": "ON"
             }
         },
         {
@@ -253,6 +295,43 @@
             "name": "Engine-x64-Release",
             "displayName": "Engine-x64-Release",
             "configurePreset": "Engine-x64",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Engine-x86-NonUnity-Debug",
+            "displayName": "Engine-x86-NonUnity-Debug",
+            "configurePreset": "Engine-x86-NonUnity",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Engine-x86-NonUnity-RelWithDebInfo",
+            "displayName": "Engine-x86-NonUnity-RelWithDebInfo",
+            "configurePreset": "Engine-x86-NonUnity",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Engine-x86-NonUnity-Release",
+            "displayName": "Engine-x86-NonUnity-Release",
+            "configurePreset": "Engine-x86-NonUnity",
+            "configuration": "Release"
+        },
+        {
+            "name": "Engine-x64-NonUnity-Debug",
+            "displayName": "Engine-x64-NonUnity-Debug",
+            "configurePreset": "Engine-x64-NonUnity",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Engine-x64-NonUnity-RelWithDebInfo",
+            "displayName": "Engine-x64-NonUnity-RelWithDebInfo",
+            "configurePreset": "Engine-x64-NonUnity",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Engine-x64-NonUnity-Release",
+            "displayName": "Engine-x64-NonUnity-Release",
+            "configurePreset": "Engine-x64-NonUnity",
             "configuration": "Release"
         },
 

@@ -47,6 +47,11 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -95,6 +100,11 @@
                 },
                 {
                     "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -147,6 +157,11 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -195,6 +210,11 @@
                 },
                 {
                     "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -247,6 +267,11 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -297,6 +322,341 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x86-NonUnity-Debug",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Engine-NonUnity",
+            "installRoot": "${projectDir}\\install\\Win32\\Engine-NonUnity",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x86-NonUnity-Mixed",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Engine-NonUnity",
+            "installRoot": "${projectDir}\\install\\Win32\\Engine-NonUnity",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x86-NonUnity-Release",
+            "generator": "Visual Studio 17 2022",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x86_x64" ],
+            "buildRoot": "${projectDir}\\build\\Win32\\Engine-NonUnity",
+            "installRoot": "${projectDir}\\install\\Win32\\Engine-NonUnity",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x64-NonUnity-Debug",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Engine-NonUnity",
+            "installRoot": "${projectDir}\\install\\x64\\Engine-NonUnity",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x64-NonUnity-Mixed",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Engine-NonUnity",
+            "installRoot": "${projectDir}\\install\\x64\\Engine-NonUnity",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "Engine-x64-NonUnity-Release",
+            "generator": "Visual Studio 17 2022 Win64",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\build\\x64\\Engine-NonUnity",
+            "installRoot": "${projectDir}\\install\\x64\\Engine-NonUnity",
+            "variables": [
+                {
+                    "name": "IXRAY_UTILS",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_MP",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_COMPRESSOR_ONLY",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_MAX",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_PLUGIN_LW",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_ASAN",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R1",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "False",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -345,6 +705,11 @@
                 },
                 {
                     "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -397,6 +762,11 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -445,6 +815,11 @@
                 },
                 {
                     "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
                     "value": "True",
                     "type": "BOOL"
                 }
@@ -497,6 +872,11 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -547,6 +927,11 @@
                     "name": "IXRAY_USE_R2",
                     "value": "True",
                     "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
+                    "value": "True",
+                    "type": "BOOL"
                 }
             ]
         },
@@ -595,6 +980,11 @@
                 },
                 {
                     "name": "IXRAY_USE_R2",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "IXRAY_UNITYBUILD",
                     "value": "True",
                     "type": "BOOL"
                 }
