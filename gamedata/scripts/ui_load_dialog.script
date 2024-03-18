@@ -126,8 +126,11 @@ function delete_save_game(filename)
 
 	local f = getFS()
 
-	f:file_delete("$game_saves$",save_file)
-
+    f:file_delete("$game_saves$", save_file)
+    if save_manager then
+        save_manager.deleteObsoleteData(filename)
+    end
+	
 	if file_exist(dds_file) then
 		f:file_delete("$game_saves$", dds_file)
 	end
