@@ -1,0 +1,77 @@
+--[[
+    Lua Marshal Save/Load Utility
+
+    This script provides utility functions for saving and loading game state using the marshal library. It abstracts the serialization and deserialization processes, allowing easy persistence of game state across sessions.
+
+    Dependencies:
+    - Requires the 'marshal' library to be installed and available globally as 'marshal'.
+
+    Functions:
+    - saveToMarshalFile(stateTable, filePath): Serializes a given Lua table (stateTable) and saves it to a file specified by filePath. Useful for saving game states, configurations, or any other table-based data.
+
+    - loadFromMarshalFile(filePath): Reads a serialized Lua table from a file specified by filePath, deserializes it, and returns the Lua table. Useful for loading saved game states, configurations, or any other table-based data previously saved.
+
+    Usage:
+    Ensure that the 'marshal' library is available and that 'isMarshal' is set to true if the library is loaded successfully. These functions can be called from anywhere in your Lua project to save or load game states or other table-based data.
+	
+    Example:
+    -- Saving a game state
+    local gameState = {
+        score = 1000,
+        level = 5,
+        player = {
+            name = "Player",
+            items = {"x", "y", "z"}
+        }
+    }
+    saveToMarshalFile(gameState, "gameState.dat")
+
+    -- Loading a game state
+    local loadedGameState = loadFromMarshalFile("gameState.dat")
+    print(loadedGameState.level) -- Output: 5
+
+    Note:
+    - These functions use binary mode for file operations to ensure the integrity of serialized data across different platforms.
+
+    Author:
+    - IX-Ray Team
+--]]
+
+function saveToMarshalFile(stateTable, filePath)
+    if not isMarshal then
+        error("Marshal library is not available.")
+        return
+    end
+
+    -- Serialize the state table
+    local serializedState = marshal.encode(stateTable)
+
+    -- Write the serialized state to the specified file
+    local file = io.open(filePath, "wb")
+    if file then
+        file:write(serializedState)
+        file:close()
+    else
+        error("Failed to open file for saving: " .. filePath)
+    end
+end
+
+function loadFromMarshalFile(filePath)
+    if not isMarshal then
+        error("Marshal library is not available.")
+        return nil
+    end
+
+    -- Read the serialized state from the specified file
+    local file = io.open(filePath, "rb")
+    if not file then
+        error("Failed to open file for loading: " .. filePath)
+        return nil
+    end
+    local serializedState = file:read("*a")
+    file:close()
+
+    -- Deserialize the state back into a Lua table
+    local stateTable = marshal.decode(serializedState)
+    return stateTable
+end
