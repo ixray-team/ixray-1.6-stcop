@@ -34,6 +34,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
 --	printf("actor net spawn")
+
 	level.show_indicators()
 	self.bCheckStart = true
 	self.weapon_hide = false -- спрятано или нет оружие при разговоре.
@@ -62,6 +63,9 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
 	xr_sound.stop_sounds_by_id(self.object:id())
+	
+    UnregisterScriptCallback("save_state", self)
+
 	local board_factions = sim_board.get_sim_board().players
 	if(board_factions) then
 			for k,v in pairs (board_factions) do
@@ -117,6 +121,8 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.task_state, self.task_callback, self)
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
+	
+    RegisterScriptCallback("save_state", self)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
@@ -361,6 +367,9 @@ function actor_binder:update(delta)
 	pda.fill_sleep_zones()
 end
 ----------------------------------------------------------------------------------------------------------------------
+function actor_binder:save_state()
+end
+
 function actor_binder:save(packet)
 	set_save_marker(packet, "save", false, "actor_binder")
 	object_binder.save(self, packet)
@@ -428,9 +437,18 @@ function actor_binder:save(packet)
 	set_save_marker(packet, "save", true, "actor_binder")
 end
 ----------------------------------------------------------------------------------------------------------------------
+function actor_binder:load_state()
+end
+
 function actor_binder:load(reader)
 	set_save_marker(reader, "load", false, "actor_binder")
 	object_binder.load(self, reader)
+	set_save_marker(reader, "load", true, "actor_binder")
+
+	if isMarshal then
+		self:load_state() -- fake because binder not ready when load_state callback is really made
+		return
+	end
 	--' Загружаем уровень сложности
 	local game_difficulty = reader:r_u8()
 	printf("load game_difficulty %s", tostring(game_difficulty))
@@ -481,7 +499,6 @@ function actor_binder:load(reader)
 	if stored_achievement_time == true then
 		self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
 	end
-	set_save_marker(reader, "load", true, "actor_binder")
 end
 
 --*************************************************************
