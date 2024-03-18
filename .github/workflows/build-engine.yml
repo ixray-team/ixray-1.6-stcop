@@ -216,27 +216,17 @@ jobs:
         system:
           - windows-2022
         platform:
+          - x86
           - x64
 
     runs-on: ${{ matrix.system }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get engine (x86)
+      - name: Get engine
         uses: actions/download-artifact@v4
         with:
-          name: engine-binaries-x86-Release-${{ github.sha }}
-          path: build/x86/Engine/bin/Release/
-
-      - name: Get engine (x64)
-        uses: actions/download-artifact@v4
-        with:
-          name: engine-binaries-x64-Release-${{ github.sha }}
-          path: build/x64/Engine/bin/Release/
+          name: engine-binaries-${{ matrix.platform }}-Release-${{ github.sha }}
+          path: build/${{ matrix.platform }}/Engine/bin/Release/
 
       - name: Get assets
         uses: actions/download-artifact@v4
@@ -244,12 +234,17 @@ jobs:
           name: compressor-assets-${{ github.sha }}
           path: ./
 
+      - name: Move files
+        run: |
+          mkdir ${{ github.workspace }}/bin
+          move ${{ github.workspace }}/build/${{ matrix.platform }}/Engine/bin/Release/*.* ${{ github.workspace }}/bin
+
       - name: Upload engine
         uses: actions/upload-artifact@v4
         with:
-          name: engine-publish-${{ github.sha }}
+          name: engine-publish-${{ matrix.platform }}-${{ github.sha }}
           path: |
-            build/
+            bin/
             gamedata/
             patches/xpatch_03.db
             fsgame.ltx
