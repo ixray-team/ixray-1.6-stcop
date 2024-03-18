@@ -7,9 +7,9 @@
     - Requires the 'marshal' library to be installed and available globally as 'marshal'.
 
     Functions:
-    - saveToMarshalFile(stateTable, filePath): Serializes a given Lua table (stateTable) and saves it to a file specified by filePath. Useful for saving game states, configurations, or any other table-based data.
+    - saveToMarshalFile(stateTable): Serializes a given Lua table (stateTable) and saves it to a file. Useful for saving game states, configurations, or any other table-based data.
 
-    - loadFromMarshalFile(filePath): Reads a serialized Lua table from a file specified by filePath, deserializes it, and returns the Lua table. Useful for loading saved game states, configurations, or any other table-based data previously saved.
+    - loadFromMarshalFile(filePath): Reads a serialized Lua table from a file, deserializes it, and returns the Lua table. Useful for loading saved game states, configurations, or any other table-based data previously saved.
 
     Usage:
     Ensure that the 'marshal' library is available and that 'isMarshal' is set to true if the library is loaded successfully. These functions can be called from anywhere in your Lua project to save or load game states or other table-based data.
@@ -24,10 +24,10 @@
             items = {"x", "y", "z"}
         }
     }
-    saveToMarshalFile(gameState, "gameState.dat")
+    saveToMarshalFile(gameState)
 
     -- Loading a game state
-    local loadedGameState = loadFromMarshalFile("gameState.dat")
+    local loadedGameState = loadFromMarshalFile()
     print(loadedGameState.level) -- Output: 5
 
     Note:
@@ -37,7 +37,10 @@
     - IX-Ray Team
 --]]
 
-function saveToMarshalFile(stateTable, filePath)
+local SAVE_FILE_PATH = "$game_saves$"
+local SAVE_FILE_NAME = "gamestate.dat"
+
+function saveToMarshalFile(stateTable)
     if not isMarshal then
         error("Marshal library is not available.")
         return
@@ -46,29 +49,37 @@ function saveToMarshalFile(stateTable, filePath)
     -- Serialize the state table
     local serializedState = marshal.encode(stateTable)
 
-    -- Write the serialized state to the specified file
-    local file = io.open(filePath, "wb")
-    if file then
-        file:write(serializedState)
-        file:close()
+    -- Resolve the full path using the game's FS API
+    local fullPath = getFS():update_path(SAVE_FILE_PATH, SAVE_FILE_NAME)
+    if fullPath then
+        -- Write the serialized state using Lua's io library
+        local file, err = io.open(fullPath, "wb")
+        if file then
+            file:write(serializedState)
+            file:close()
+        else
+            error("Failed to open file for saving with Lua io: " .. (err or "unknown error"))
+        end
     else
-        error("Failed to open file for saving: " .. filePath)
+        error("Failed to resolve path for saving: " .. SAVE_FILE_PATH .. "/" .. SAVE_FILE_NAME)
     end
 end
 
-function loadFromMarshalFile(filePath)
+function loadFromMarshalFile()
     if not isMarshal then
         error("Marshal library is not available.")
         return nil
     end
 
-    -- Read the serialized state from the specified file
-    local file = io.open(filePath, "rb")
+    -- Resolve the full path using the game's FS API
+    local fullPath = getFS():update_path(SAVE_FILE_PATH, SAVE_FILE_NAME)
+    local file, err = io.open(fullPath, "rb")
     if not file then
-        error("Failed to open file for loading: " .. filePath)
+        error("Failed to open file for loading with Lua io: " .. (err or "unknown error"))
         return nil
     end
-    local serializedState = file:read("*a")
+
+    local serializedState = file:read("*a") -- Read the entire file content
     file:close()
 
     -- Deserialize the state back into a Lua table
