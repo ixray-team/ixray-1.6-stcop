@@ -12,6 +12,9 @@ math.randomseed(time_global())
 marshal = require "marshal"
 isMarshal = marshal ~= nil
 
+lfs = require("lfs")
+isLfs = lfs ~= nil
+
 --// Some X-Ray block
 DebugLog = false
 
