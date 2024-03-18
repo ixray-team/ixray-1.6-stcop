@@ -102,7 +102,9 @@ void CPlanner::update				()
 	if (this->solution().empty())
 	{
 		if (initialized()) {
+#ifdef DEBUG
 			Msg("! [CPlanner::update]: %s has solution().empty()", m_object->cName().c_str());
+#endif
 			current_action().finalize();	
 			m_current_action_id = _action_id_type(-1);
 			m_initialized = false;

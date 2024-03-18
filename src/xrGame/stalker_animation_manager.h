@@ -122,7 +122,7 @@ private:
 	IC		bool					strapped				() const;
 
 public:
-	IC		bool					standing				() const;
+			bool					standing				() const;
 
 private:
 	IC		void					fill_object_info		();
