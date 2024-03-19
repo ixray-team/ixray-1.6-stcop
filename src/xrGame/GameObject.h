@@ -16,6 +16,7 @@ class CPhysicsShell;
 class CSE_Abstract;
 class CPHSynchronize;
 class CScriptGameObject;
+class CCar;
 class CInventoryItem;
 class CEntity;
 class CEntityAlive;
@@ -86,6 +87,7 @@ public:
 	virtual CAttachableItem*			cast_attachable_item		()						{return nullptr;}
 	virtual CHolderCustom*				cast_holder_custom			()						{return nullptr;}
 	virtual CBaseMonster*				cast_base_monster			()						{return nullptr;}
+	virtual CCar*						cast_car					()						{return nullptr;}
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}

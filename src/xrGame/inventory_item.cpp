@@ -211,27 +211,7 @@ LPCSTR CInventoryItem::NameShort()
 {
 	return m_nameShort.c_str();
 }
-/*
-LPCSTR CInventoryItem::NameComplex() 
-{
-	const char *l_name = Name();
-	if(l_name) 	m_nameComplex = l_name; 
-	else 		m_nameComplex = 0;
 
-	if( m_flags.test(FUsingCondition) ){
-		string32		cond;
-		if(GetCondition()<0.33)		xr_strcpy		(cond,	"[poor]");
-		else if(GetCondition()<0.66)xr_strcpy		(cond,	"[bad]"	);
-		else						xr_strcpy		(cond,	"[good]");
-		string256		temp;
-		strconcat		(temp,*m_nameComplex," ",cond)	;
-		// xr_sprintf			(temp,"%s %s",*m_nameComplex,cond);
-		m_nameComplex	= temp;
-	}
-
-	return *m_nameComplex;
-}
-*/
 bool CInventoryItem::Useful() const
 {
 	return CanTake();

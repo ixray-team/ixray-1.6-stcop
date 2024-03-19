@@ -612,7 +612,7 @@ bool CCar::SDoor::TestPass(const Fvector& pos,const Fvector& dir)
 bool CCar::SDoor::CanEnter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 {
 	//if(!joint) return true;//temp for fake doors
-	return (state==opened || state == broken || !joint) && TestPass(foot_pos,dir)&& IsInArea(pos,dir);//
+	return (state==opened || state == broken || !joint) && TestPass(foot_pos,dir)&& IsInArea(pos,dir) && (pcar->GetTrunkBone() != bone_id);
 }
 
 void CCar::SDoor::SaveNetState(NET_Packet& P)

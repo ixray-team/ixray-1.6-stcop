@@ -362,6 +362,7 @@ protected:
 
 	// Tip for action for object we're looking at
 	shared_str				m_sDefaultObjAction;
+	shared_str				m_sCarTrunk;
 	shared_str				m_sCharacterUseAction;
 	shared_str				m_sDeadCharacterUseAction;
 	shared_str				m_sDeadCharacterUseOrDragAction;
