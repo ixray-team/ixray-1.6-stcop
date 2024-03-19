@@ -4,7 +4,7 @@
 
 void CConsole::DrawUIConsoleVars()
 {
-	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdVars)]) {
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::CmdVars)]) {
 		return;
 	}
 

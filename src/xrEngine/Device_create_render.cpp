@@ -173,15 +173,18 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 			}
 
 			if (ImGui::BeginMenu("Edit")) {
+				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
+				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("View")) {
 				ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
-				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
 				ImGui::MenuItem("Statistics", nullptr, &States[static_cast<u8>(EditorUI::Statistics)]);
 				ImGui::MenuItem("Profiler", nullptr, &States[static_cast<u8>(EditorUI::Profiler)]);
 				ImGui::MenuItem("Actor Info Portions", nullptr, &States[static_cast<u8>(EditorUI::ActorInfos)]);
+				ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
 				ImGui::EndMenu();
 			}
 
@@ -190,8 +193,6 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
 				ImGui::MenuItem("Lua: Attach to VSCode", nullptr, &States[static_cast<u8>(EditorUI::LuaDebug)]);
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
-				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
-				ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
 				ImGui::EndMenu();
 			}
 
