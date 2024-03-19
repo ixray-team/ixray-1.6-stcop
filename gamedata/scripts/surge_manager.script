@@ -6,7 +6,7 @@
 local surge_manager 		= nil
 
 local surge_shock_pp_eff 	= 1
-local earthquake_cam_eff 	= 2
+local earthquake_cam_eff 	= 20
 local sleep_cam_eff 		= 3
 local sleep_fade_pp_eff		= 4
 
@@ -35,8 +35,17 @@ end
 function CSurgeManager:initialize()
 	self.ini = ini_file("misc\\surge_manager.ltx")
 
-	self.levels_respawn = {zaton = false, jupiter = false, pripyat = false}
-
+	self.levels_respawn = {}
+	local level_name
+	local gg, sim = game_graph(), alife()
+	for lvl in gg:levels() do
+		level_name = sim:level_name(lvl.id)
+		weather = utils.cfg_get_string(ini_file("game.ltx"), level_name, "weathers", db.actor, false, "", "")
+		if not (weather == "..indoor..") then -- skipping underground levels
+			self.levels_respawn[level_name] = false
+		end
+	end
+	
 	self.started = false
 	self.finished = true
 	self.time_forwarded = false
@@ -177,12 +186,11 @@ function CSurgeManager:update()
 	if(prev_sec~=diff_sec) then
 		prev_sec = diff_sec
 		log("------>diff_sec="..tostring(diff_sec))
-		local level_name = level.name()
-		if(level_name=="labx8" or level_name=="jupiter_underground") then
-			printf("Surge stopped because of level!")
-			self:end_surge()
-			return
+		
+		if self:block_surge() then
+			return 
 		end
+		
 		local cover = self:get_nearest_cover()
 		if(cover==nil and self.count==0) then
 			self:init_surge_covers()
@@ -215,7 +223,14 @@ function CSurgeManager:update()
 			end
 			self:launch_rockets()
 			if(self.effector_set) then
-				level.set_pp_effector_factor(surge_shock_pp_eff, diff_sec/90, 0.1)
+				local cover = self:get_nearest_cover()
+				if(db.actor and db.actor:alive()) then
+					if (cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
+						level.set_pp_effector_factor(surge_shock_pp_eff, 0.001, 1);
+					else
+						level.set_pp_effector_factor(surge_shock_pp_eff, diff_sec/90, 1)
+					end
+				end
 			end
 			if(self.blowout_sound) then
 				xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", diff_sec/180)
@@ -293,13 +308,11 @@ function CSurgeManager:start(manual)
 
 	diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
 	log("--->start diff_sec="..tostring(diff_sec))
-	local level_name = level.name()
-	if(level_name=="labx8" or level_name=="jupiter_underground") then
-		printf("Surge skipped because of level!")
-		self.skip_message = true
-		self:skip_surge()
-		return
+	
+	if self:block_surge() then
+		return 
 	end
+	
 	if(diff_sec+6>self.surge_time)then
 		printf("Surge skipped while time forwarding!")
 		self:skip_surge()
@@ -320,7 +333,14 @@ function CSurgeManager:skip_surge()
 
 	self.started 			= false
 	self.finished 			= true
-	self.levels_respawn 	= {zaton = true, jupiter = true, pripyat = true}
+	
+	self.levels_respawn = {}
+	for lvl, v in pairs(self.levels_respawn) do
+		if not (weather == "..indoor..") then -- skipping underground levels
+			self.levels_respawn[lvl] = true
+		end
+	end
+	
 	self._delta 			= math.random(MIN_SURGE_TIME, MAX_SURGE_TIME)
 	self.surge_message 		= ""
 	self.surge_task_sect 	= ""
@@ -343,7 +363,14 @@ end
 function CSurgeManager:end_surge(manual)
 	self.started 			= false
 	self.finished 			= true
-	self.levels_respawn 	= {zaton = true, jupiter = true, pripyat = true}
+	
+	self.levels_respawn = {}
+	for lvl, v in pairs(self.levels_respawn) do
+		if not (weather == "..indoor..") then -- skipping underground levels
+			self.levels_respawn[lvl] = true
+		end
+	end
+	
 	self.last_surge_time 	= game.get_game_time()
 	self._delta 			= math.random(MIN_SURGE_TIME, MAX_SURGE_TIME)
 	self.surge_message 		= ""
@@ -361,7 +388,6 @@ function CSurgeManager:end_surge(manual)
 
 	if(manual or (self.time_forwarded and level_weathers.get_weather_manager().weather_fx)) then
 		level.stop_weather_fx()
---		level_weathers.get_weather_manager():select_weather(true)
 		level_weathers.get_weather_manager():forced_weather_change()
 	end
 
@@ -385,16 +411,16 @@ function CSurgeManager:end_surge(manual)
 end
 
 function CSurgeManager:respawn_artefacts_and_replace_anomaly_zone()
-	local lvl_nm = level.name()
-	if(self.levels_respawn[lvl_nm]) then
-		self.levels_respawn[lvl_nm] = false
+	local level_name = level.name()
+	for lvl, v in pairs(self.levels_respawn) do
+		if level_name ~= lvl then
+			self.levels_respawn[lvl] = false
+		end
 	end
 	local anomalies = db.anomaly_by_name
-	for k,v in pairs(anomalies) do
+	for k, v in pairs(anomalies) do
 		v:respawn_artefacts_and_replace_anomaly_zone()
-		--printf("respawn artefacts in anomal zone [%s]", tostring(k))
 	end
-	pda.change_anomalies_names()
 end
 
 function CSurgeManager:give_surge_hide_task()
@@ -427,37 +453,16 @@ function get_squad_members(squad_id)
 	return npcs_tbl
 end
 
-function check_squad_level(squad_id)
-	local squad = alife():object(squad_id)
-	if(squad) then
-		local squad_level = alife():level_name(game_graph():vertex(squad.m_game_vertex_id):level_id())
-		if(squad_level==level.name()) then
-			return true
+function check_squad_community_and_story_id(squad,immuned_to_surge_squads)
+		if not (squad.online) then 
+			return false
 		end
-	end
-	return false	-- can't delete squad on other level
-end
-
-function check_squad_community_and_story_id(squad_id)
-	local squad = alife():object(squad_id)
-	if(squad) then
 		if(immuned_to_surge_squads[squad.player_id]) then
 			return false	-- can't delete squad immune to surge
 		end
 		if(get_object_story_id(squad.id)) then
 			return false	-- can't delete squad with story id
 		end
-	end
-	return true
-end
-
-function check_squad_community(squad_id)
-	local squad = alife():object(squad_id)
-	if(squad) then
-		if(immuned_to_surge_squads[squad.player_id]) then
-			return false	-- can't delete squad immune to surge
-		end
-	end
 	return true
 end
 
@@ -476,55 +481,37 @@ function check_squad_smart_props(squad_id)
 end
 
 function CSurgeManager:kill_all_unhided()
-	local h = hit()
-	h.type = hit.fire_wound
-	h.power = 0.9
-	h.impulse = 0.0
-	h.direction = vector():set(0,0,1)
-	h.draftsman = db.actor
-	for k,v in pairs(bind_crow.crow_storage) do
-		local obj = alife():object(v)
-		if obj then
-			local crow = level.object_by_id(obj.id)
-			if(crow and crow:alive()) then
-				crow:hit(h)
-			end
-		end
-	end
-
 	local board = sim_board.get_sim_board()
 	for k,v in pairs(board.squads) do
 		local squad = v
-		if(check_squad_level(squad.id)) then
-			if(check_squad_community_and_story_id(squad.id)) then
-				local squad_npcs = get_squad_members(squad.id)
-				for kk,vv in pairs(squad_npcs) do
-					local obj = alife():object(kk)
-					if(obj and not(get_object_story_id(obj.id))) then
-						if(check_squad_smart_props(squad.id)) then
+		if (squad and squad:clsid() == clsid.online_offline_group_s and check_squad_community_and_story_id(squad,immuned_to_surge_squads)) then
+			local squad_npcs = get_squad_members(squad.id)
+			for kk,vv in pairs(squad_npcs) do
+				local obj = alife():object(kk)
+				if(obj and not(get_object_story_id(obj.id))) then
+					if(check_squad_smart_props(squad.id)) then
+						printf("Releasing npc [%s] from squad [%s] because of surge!",obj:name(), squad:name())
+						local cl_obj = level.object_by_id(obj.id)
+						if cl_obj ~= nil then
+							cl_obj:kill(cl_obj)
+						else
+							obj:kill()
+						end
+					else
+						local release = true
+						for i = 1,#self.covers do
+							local sr = self.covers[i]
+							if(sr and sr:inside(obj.position)) then
+								release = false
+							end
+						end
+						if(release) then
 							printf("Releasing npc [%s] from squad [%s] because of surge!",obj:name(), squad:name())
 							local cl_obj = level.object_by_id(obj.id)
 							if cl_obj ~= nil then
 								cl_obj:kill(cl_obj)
 							else
 								obj:kill()
-							end
-						else
-							local release = true
-							for i = 1,#self.covers do
-								local sr = self.covers[i]
-								if(sr and sr:inside(obj.position)) then
-									release = false
-								end
-							end
-							if(release) then
-								printf("Releasing npc [%s] from squad [%s] because of surge!",obj:name(), squad:name())
-								local cl_obj = level.object_by_id(obj.id)
-								if cl_obj ~= nil then
-									cl_obj:kill(cl_obj)
-								else
-									obj:kill()
-								end
 							end
 						end
 					end
@@ -540,22 +527,12 @@ function CSurgeManager:kill_all_unhided()
 				local counter_name = "actor_marked_by_zone_cnt"
 				local cnt_value = xr_logic.pstor_retrieve(db.actor, counter_name, 0)
 				xr_logic.pstor_store(db.actor, counter_name, cnt_value + 1)
-			end
---[[
-			local hud = get_hud()
-			hud:HideActorMenu()
-			hud:HidePdaMenu()
-			db.actor:stop_talk()
-			level.disable_input()
-			level.hide_indicators_safe()
-			db.actor:hide_weapon()
-]]--
-			xr_effects.disable_ui_only(db.actor, nil)
-			if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)~="true") then
+			elseif(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)~="true") then
 				self:kill_all_unhided_after_actor_death()
 				db.actor:kill(db.actor)
 				return
 			else
+			    xr_effects.disable_ui_only(db.actor, nil)
 				level.add_cam_effector("camera_effects\\surge_02.anm", sleep_cam_eff, false, "surge_manager.surge_callback")
 				level.add_pp_effector("surge_fade.ppe", sleep_fade_pp_eff, false)
 				db.actor.health = db.actor.health-0.05
@@ -568,27 +545,25 @@ function CSurgeManager:kill_all_unhided_after_actor_death()
 	local board = sim_board.get_sim_board()
 	for k,v in pairs(board.squads) do
 		local squad = v
-		if(check_squad_level(squad.id)) then
-			if(check_squad_community(squad.id)) then
-				local squad_npcs = get_squad_members(squad.id)
-				for kk,vv in pairs(squad_npcs) do
-					local obj = alife():object(kk)
-					if obj then
-						local release = true
-						for i = 1,#self.covers do
-							local sr = self.covers[i]
-							if(sr and sr:inside(obj.position)) then
-								release = false
-							end
+		if (squad and squad:clsid() == clsid.online_offline_group_s and check_squad_community_and_story_id(squad,immuned_to_surge_squads)) then
+			local squad_npcs = get_squad_members(squad.id)
+			for kk,vv in pairs(squad_npcs) do
+				local obj = alife():object(kk)
+				if obj then
+					local release = true
+					for i = 1,#self.covers do
+						local sr = self.covers[i]
+						if(sr and sr:inside(obj.position)) then
+							release = false
 						end
-						if(release) then
-							printf("Releasing npc [%s] from squad [%s] after actors death because of surge!",obj:name(), squad:name())
-							local cl_obj = level.object_by_id(obj.id)
-							if cl_obj ~= nil then
-								cl_obj:kill(cl_obj)
-							else
-								obj:kill()
-							end
+					end
+					if(release) then
+						printf("Releasing npc [%s] from squad [%s] after actors death because of surge!",obj:name(), squad:name())
+						local cl_obj = level.object_by_id(obj.id)
+						if cl_obj ~= nil then
+							cl_obj:kill(cl_obj)
+						else
+							obj:kill()
 						end
 					end
 				end
@@ -597,20 +572,24 @@ function CSurgeManager:kill_all_unhided_after_actor_death()
 	end
 end
 
+function CSurgeManager:block_surge()
+    local checkIfIndoors = utils.cfg_get_string(ini_file("game.ltx"), level.name(), "weathers", db.actor, false, "", "")
+    local checkIfOutdoors = utils.cfg_get_string(ini_file("environment\\dynamic_weather_graphs.ltx"), level.name() .. "_surge_settings", "surge_state", db.actor, false, "", "")
+    if checkIfIndoors == "..indoor.." or (checkIfOutdoors and checkIfOutdoors == "0") then
+        printf("Surge stopped by SWE!")
+        self.skip_message = true
+        self:skip_surge()
+        return true 
+    end
+    return false
+end
+
 function surge_callback()
 	level.add_cam_effector("camera_effects\\surge_01.anm", sleep_cam_eff, false, "surge_manager.surge_callback2")
---	level.stop_weather_fx()
---	level.change_game_time(0,0,15)
---	level_weathers.get_weather_manager():forced_weather_change()
 end
 
 function surge_callback2()
 	xr_effects.enable_ui(db.actor, nil)
---[[
-	level.enable_input()
-	level.show_indicators()
-	db.actor:restore_weapon()
-]]--
 end
 
 function CSurgeManager:launch_rockets()
@@ -629,9 +608,9 @@ function CSurgeManager:save(packet)
 	if(self.started) then
 		utils.w_CTime(packet, self.inited_time)
 
-		packet:w_bool(self.levels_respawn.zaton)
-		packet:w_bool(self.levels_respawn.jupiter)
-		packet:w_bool(self.levels_respawn.pripyat)
+		for lvl, value in pairs(self.levels_respawn) do
+			packet:w_bool(value or false, "CSurgeManager:levels_respawn." .. lvl)
+		end
 
 		packet:w_bool(self.task_given)
 		packet:w_bool(self.effector_set)
@@ -655,9 +634,9 @@ function CSurgeManager:load(packet)
 	if(self.started) then
 		self.inited_time = utils.r_CTime(packet)
 
-		self.levels_respawn.zaton = packet:r_bool()
-		self.levels_respawn.jupiter = packet:r_bool()
-		self.levels_respawn.pripyat = packet:r_bool()
+		for lvl, value in pairs(self.levels_respawn) do
+			self.levels_respawn[lvl] = packet:r_bool()
+		end
 
 		self.task_given = packet:r_bool()
 		self.effector_set = packet:r_bool()

@@ -269,6 +269,8 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	self.artefact_points_by_id[artefact_obj.id] = rnd_path_point
 	parent_zones_by_artefact_id[artefact_obj.id] = self
 	self.spawned_count = self.spawned_count + 1
+	
+	pda.change_anomalies_names()
 
 end
 
