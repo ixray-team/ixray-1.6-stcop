@@ -87,6 +87,8 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	Resources->reset_begin	();
 	Memory.mem_compact		();
 	ResourcesDeferredUnload();
+
+	CImGuiManager::Instance().Reset();
 	
 	Device.ResizeBuffers(psCurrentVidMode[0], psCurrentVidMode[1]);
 	ResourcesDeferredUpload();
@@ -96,8 +98,6 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
 	Resources->reset_end();
-
-	CImGuiManager::Instance().Reset();
 
 #ifdef DEBUG
 	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:",RDevice);
