@@ -272,7 +272,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 
-		//ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow();
 	});
 
 	switch (API) {
@@ -404,6 +404,19 @@ bool CRenderDevice::IsCapturingInputs()
 void CRenderDevice::BeginRender()
 {
 	ImGui_ImplSDL3_NewFrame();
+	if (ImGui::IsKeyPressed(ImGuiKey_I) && ImGui::IsKeyDown(ImGuiKey_LeftAlt)) {
+		if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
+			DrawUIRender = !DrawUIRender;
+		} else {
+			CaptureInputs = !CaptureInputs;
+		}
+	}
+
+	if (CaptureInputs) {
+		SDL_ShowCursor();
+	} else {
+		SDL_HideCursor();
+	}
 }
 
 void CRenderDevice::EndRender()

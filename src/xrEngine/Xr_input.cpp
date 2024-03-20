@@ -398,7 +398,7 @@ void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
 
-	if (Device.IsCapturingInputs()) {
+	if (KBState[DIK_LALT] || Device.IsCapturingInputs()) {
 		NoInputUpdate();
 	} else {
 		MouseUpdate();
@@ -463,7 +463,7 @@ void CInput::OnFrame			(void)
 {
 	RDEVICE.Statistic->Input.Begin();
 	dwCurTime = RDEVICE.TimerAsync_MMT();
-	if (Device.IsCapturingInputs()) {
+	if (KBState[DIK_LALT] || Device.IsCapturingInputs()) {
 		NoInputUpdate();
 	} else {
 		MouseUpdate();
