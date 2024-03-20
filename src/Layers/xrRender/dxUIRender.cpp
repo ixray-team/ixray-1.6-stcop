@@ -27,7 +27,7 @@ void dxUIRender::SetShader(IUIShader &shader)
 
 void dxUIRender::SetAlphaRef(int aref)
 {
-	//CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,aref));
+	//CHK_DX(RDevice->SetRenderState(D3DRS_ALPHAREF,aref));
 	RCache.set_AlphaRef(aref);
 }
 /*
@@ -156,10 +156,8 @@ void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
 {
 	string_path buff;
-	u32		v_dev	= CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-	u32		v_need	= CAP_VERSION(2,0);
 	//strstr(Core.Params,"-ps_movie") &&
-	if ( (v_dev >= v_need) && FS.exist(buff,"$game_textures$", tex_name, ".ogm") )
+	if ( FS.exist(buff,"$game_textures$", tex_name, ".ogm") )
 		return "hud\\movie";
 	else
 		return sh_name;

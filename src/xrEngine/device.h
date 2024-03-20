@@ -29,9 +29,18 @@
 #endif // #ifdef INGAME_EDITOR
 
 class engine_impl;
+struct RENDERDOC_API_1_6_0;
 union SDL_Event;
 
 #pragma pack(push,4)
+
+enum class APILevel
+{
+	DX9,
+	DX11
+};
+
+enum D3D_FEATURE_LEVEL;
 
 class IRenderDevice
 {
@@ -39,6 +48,24 @@ public:
 	virtual		CStatsPhysics*	_BCL		StatPhysics		()							= 0;								
 	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
 	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
+
+	virtual				bool				InitRenderDevice(APILevel API) = 0;
+	virtual				void				DestroyRenderDevice() = 0;
+
+	virtual				void*               GetRenderDevice() = 0;
+	virtual				void*               GetRenderContext() = 0;
+	virtual				void*               GetRenderTexture() = 0;
+	virtual				void*               GetDepthTexture() = 0;
+	virtual				void*               GetSwapchainTexture() = 0;
+
+	virtual				void*				GetSwapchain() = 0;
+	virtual				u32					GetSwapchainWidth() = 0;
+	virtual				u32					GetSwapchainHeight() = 0;
+
+	virtual				void				ResizeBuffers(u16 Width, u16 Height) = 0;
+
+	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
+	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 };
 
 class ENGINE_API CRenderDeviceData
@@ -53,7 +80,7 @@ public:
 	BOOL									b_is_Active;
 public:
 
-		// Engine flow-control
+	// Engine flow-control
 	u32										dwFrame;
 
 	float									fTimeDelta;
@@ -116,6 +143,25 @@ public:
 	void									_Create		(LPCSTR shName);
 	void									_Destroy	(BOOL	bKeepTextures);
 	void									_SetupStates();
+
+	bool InitRenderDevice(APILevel API) override;
+	void DestroyRenderDevice() override;
+
+	void* GetRenderDevice() override;
+	void* GetRenderContext() override;
+	void* GetRenderTexture() override;
+	void* GetDepthTexture() override;
+	void* GetSwapchainTexture() override;
+
+	void* GetSwapchain() override;
+	u32	GetSwapchainWidth() override;
+	u32	GetSwapchainHeight() override;
+
+	void ResizeBuffers(u16 Width, u16 Height) override;
+
+	D3D_FEATURE_LEVEL GetFeatureLevel() override;
+	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
+
 public:
 	LRESULT									MsgProc		(HWND,UINT,WPARAM,LPARAM);
 

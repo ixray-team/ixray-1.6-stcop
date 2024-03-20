@@ -1,9 +1,6 @@
 // HW.h: interface for the CHW class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 #pragma once
 
 #include "hwcaps.h"
@@ -16,100 +13,20 @@
 
 struct SDL_Window;
 
-class  CHW
 #ifdef USE_DX11
-	:	public pureAppActivate, 
-		public pureAppDeactivate
-#endif //USE_DX11
-{
-//	Functions section
-public:
-	CHW();
-	~CHW();
-
-	void					CreateD3D				();
-	void					DestroyD3D				();
-	void					CreateDevice			(SDL_Window* window, bool move_window);
-
-#ifdef USE_DX11
-	void					CreateRDoc				();
-#endif
-
-	void					DestroyDevice			();
-
-	void					Reset					(SDL_Window* window);
-
-	void					selectResolution		(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed);
-	D3DFORMAT				selectDepthStencil		(D3DFORMAT);
-	u32						selectPresentInterval	();
-	u32						selectGPU				();
-	u32						selectRefresh			(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
-	void					updateWindowProps		(SDL_Window* window);
-	BOOL					support					(D3DFORMAT fmt, DWORD type, DWORD usage);
-
-#ifdef DEBUG
-#ifdef USE_DX11
-	void	Validate(void)	{};
-#else //USE_DX11
-	void	Validate(void)	{	VERIFY(pDevice); VERIFY(pD3D); };
-#endif
+#define RContext ((ID3D11DeviceContext*)Device.GetRenderContext())
+#define RDevice ((ID3D11Device*)Device.GetRenderDevice())
+#define RSwapchain ((ID3D11RenderTargetView*)Device.GetSwapchainTexture())
+#define RTarget ((ID3D11RenderTargetView*)Device.GetRenderTexture())
+#define RDepth ((ID3D11DepthStencilView*)Device.GetDepthTexture())
+#define RSwapchain ((IDXGISwapChain*)Device.GetSwapchain())
 #else
-	void	Validate(void)	{};
+#define RContext (IDirect3DDevice9*)Device.GetRenderContext()
+#define RDevice (IDirect3DDevice9*)Device.GetRenderDevice()
+#define RSwapchain ((IDirect3DSurface9*)Device.GetSwapchainTexture())
+#define RTarget ((IDirect3DSurface9*)Device.GetRenderTexture())
+#define RDepth ((IDirect3DSurface9*)Device.GetDepthTexture())
+#define RSwapchain ((IDirect3DDevice9*)Device.GetSwapchain())
 #endif
 
-//	Variables section
-#ifdef USE_DX11
-public:
-	IDXGIAdapter*			m_pAdapter;	//	pD3D equivalent
-	ID3D11Device*			pDevice;	//	combine with DX9 pDevice via typedef
-	ID3D11DeviceContext*    pContext;	//	combine with DX9 pDevice via typedef
-	IDXGISwapChain*         m_pSwapChain;
-	ID3D11RenderTargetView*	pBaseRT;	//	combine with DX9 pBaseRT via typedef
-	ID3D11DepthStencilView*	pBaseZB;
-
-	CHWCaps					Caps;
-
-	D3D_DRIVER_TYPE		m_DriverType;
-	DXGI_SWAP_CHAIN_DESC	m_ChainDesc;	//	DevPP equivalent
-	bool					m_bUsePerfhud;
-	D3D_FEATURE_LEVEL		FeatureLevel;
-#else //USE_DX11
-
-public:
-
-	IDirect3D9* 			pD3D;		// D3D
-	IDirect3DDevice9*		pDevice;	// render device
-
-	IDirect3DSurface9*		pBaseRT;
-	IDirect3DSurface9*		pBaseZB;
-
-	CHWCaps					Caps;
-
-	UINT					DevAdapter;
-	D3DDEVTYPE				m_DriverType;
-	D3DPRESENT_PARAMETERS	DevPP;
-#endif
-
-#ifndef _MAYA_EXPORT
-	stats_manager			stats_manager;
-#endif
-#ifdef USE_DX11
-	void			UpdateViews();
-	DXGI_RATIONAL	selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);
-
-	virtual	void	OnAppActivate();
-	virtual void	OnAppDeactivate();
-#endif //USE_DX11
-
-#ifdef USE_DX11
-public:
-	RENDERDOC_API_1_6_0* rdoc_api;
-#endif
-
-private:
-	bool					m_move_window;
-};
-
-extern ECORE_API CHW		HW;
-
-#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
+#define RFeatureLevel Device.GetFeatureLevel()

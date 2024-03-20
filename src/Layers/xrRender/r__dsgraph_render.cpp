@@ -556,7 +556,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	const ref_rt	rt_null;
 	RCache.set_RT(0,	1);
 	RCache.set_RT(0,	2);
-	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, HW.pBaseZB);
+	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RDepth);
 #endif
 
 	rmNear						();

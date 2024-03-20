@@ -87,14 +87,14 @@ void dx10ConstantBuffer::Flush()
 		void	*pData;
 
 		D3D11_MAPPED_SUBRESOURCE	pSubRes;
-		CHK_DX(HW.pContext->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
+		CHK_DX(RContext->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
 		pData = pSubRes.pData;
 
 		VERIFY(pData);
 		VERIFY(m_pBufferData);
 		CopyMemory(pData, m_pBufferData, m_uiBufferSize);
 
-		HW.pContext->Unmap(m_pBuffer, 0);
+		RContext->Unmap(m_pBuffer, 0);
 
 		m_bChanged = false;
 	}

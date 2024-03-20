@@ -120,7 +120,7 @@ void CDetail::Load		(IReader* S)
 void CDetail::Optimize	()
 {
 	xr_vector<u16>		vec_indices,	vec_permute;
-	const int			cache			= HW.Caps.geometry.dwVertexCache;
+	const int			cache			= 24;
 
 	// Stripify
 	vec_indices.assign	(indices,indices+number_indices);

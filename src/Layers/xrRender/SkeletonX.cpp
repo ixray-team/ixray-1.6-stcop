@@ -172,7 +172,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 			
 	//u16			hw_bones_cnt		= u16((HW.Caps.geometry.dwRegisters-22)/3);
 	//	Igor: some shaders in r1 need more free constant registers
-	u16			hw_bones_cnt		= u16((HW.Caps.geometry.dwRegisters-22-3)/3);
+	u16			hw_bones_cnt		= u16((256-22-3)/3);
 	u16			sw_bones_cnt		= 0;
 #ifdef _EDITOR
 	hw_bones_cnt					= 0;

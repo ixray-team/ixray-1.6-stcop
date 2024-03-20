@@ -2,13 +2,14 @@
 #include "../xrRender/xr_effgamma.h"
 
 void CGammaControl::Update() {
-	if (HW.pDevice)
+#if 0
+	if (RDevice)
 	{
 		DXGI_GAMMA_CONTROL_CAPABILITIES GC;
 		DXGI_GAMMA_CONTROL				G;
 		IDXGIOutput* pOutput;
 
-		CHK_DX(HW.m_pSwapChain->GetContainingOutput(&pOutput));
+		CHK_DX(RSwapchain->GetContainingOutput(&pOutput));
 		HRESULT hr = pOutput->GetGammaControlCapabilities(&GC);
 		if (SUCCEEDED(hr))
 		{
@@ -16,9 +17,11 @@ void CGammaControl::Update() {
 			pOutput->SetGammaControl(&G);
 		}
 	}
+#endif
 }
 
 void CGammaControl::GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G) {
+#if 0
 	DXGI_RGB Offset = { 0,0,0 };
 	DXGI_RGB Scale = { 1,1,1 };
 	G.Offset = Offset;
@@ -47,4 +50,5 @@ void CGammaControl::GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA
 		clamp(G.GammaCurve[i].Green, GC.MinConvertedValue, GC.MaxConvertedValue);
 		clamp(G.GammaCurve[i].Blue, GC.MinConvertedValue, GC.MaxConvertedValue);
 	}
+#endif
 }

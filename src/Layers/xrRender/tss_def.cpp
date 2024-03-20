@@ -10,24 +10,24 @@ IDirect3DStateBlock9* SimulatorStates::record	()
 	//VERIFY(!"SimulatorStates::record not implemented!");
 	return 0;
 #else //USE_DX11
-	CHK_DX(HW.pDevice->BeginStateBlock());
+	CHK_DX(RDevice->BeginStateBlock());
 	for (u32 it=0; it<States.size(); it++)
 	{
 		State& S	= States[it];
 		switch (S.type)
 		{
-		case 0:	CHK_DX(HW.pDevice->SetRenderState		((D3DRENDERSTATETYPE)S.v1,S.v2));				break;
-		case 1: CHK_DX(HW.pDevice->SetTextureStageState	(S.v1,(D3DTEXTURESTAGESTATETYPE)S.v2,S.v3));	break;
+		case 0:	CHK_DX(RDevice->SetRenderState		((D3DRENDERSTATETYPE)S.v1,S.v2));				break;
+		case 1: CHK_DX(RDevice->SetTextureStageState	(S.v1,(D3DTEXTURESTAGESTATETYPE)S.v2,S.v3));	break;
 		case 2: 
 			{
-				CHK_DX(HW.pDevice->SetSamplerState		(S.v1,
+				CHK_DX(RDevice->SetSamplerState		(S.v1,
 														(D3DSAMPLERSTATETYPE)S.v2,
 														((D3DSAMPLERSTATETYPE)S.v2==D3DSAMP_MAGFILTER&&S.v3==D3DTEXF_ANISOTROPIC)?D3DTEXF_LINEAR:S.v3));
 			}break;
 		}
 	}
 	IDirect3DStateBlock9*	SB = 0;
-	CHK_DX	(HW.pDevice->EndStateBlock(&SB));
+	CHK_DX	(RDevice->EndStateBlock(&SB));
 	return	SB;
 #endif
 }
@@ -129,7 +129,7 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 		const State& S	= States[it];
 		if (S.type==0)
 		{
-			//CHK_DX(HW.pDevice->SetRenderState		((D3DRENDERSTATETYPE)S.v1,S.v2));
+			//CHK_DX(RDevice->SetRenderState		((D3DRENDERSTATETYPE)S.v1,S.v2));
 			switch (S.v1)
 			{
 			case D3DRS_FILLMODE:
@@ -191,7 +191,7 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 
 		//case 1: 
 		//	
-		//CHK_DX(HW.pDevice->SetTextureStageState	(S.v1,(D3DTEXTURESTAGESTATETYPE)S.v2,S.v3));
+		//CHK_DX(RDevice->SetTextureStageState	(S.v1,(D3DTEXTURESTAGESTATETYPE)S.v2,S.v3));
 		//	TODO: DX10: Enable
 		//	VERIFY(!"DirectX 10 doesn't support texture stage states. Implement shader instead!");
 		//	break;

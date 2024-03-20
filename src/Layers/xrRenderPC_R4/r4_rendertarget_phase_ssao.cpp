@@ -14,10 +14,10 @@ void CRenderTarget::phase_ssao	()
 	u32	Offset	= 0;
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	HW.pContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
+	RContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
 	
 	// low/hi RTs
-	u_setrt(rt_ssao_temp, 0, 0, 0/*HW.pBaseZB*/);
+	u_setrt(rt_ssao_temp, 0, 0, 0/*RDepth*/);
 
 	RCache.set_Stencil	(FALSE);
 
@@ -45,7 +45,7 @@ void CRenderTarget::phase_ssao	()
 	float _w = RCache.get_width() * 0.5f;
 	float _h = RCache.get_height() * 0.5f;
 
-	set_viewport(HW.pContext, _w, _h);
+	set_viewport(RContext, _w, _h);
 
 	// Fill vertex buffer
 	FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
@@ -66,7 +66,7 @@ void CRenderTarget::phase_ssao	()
 
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-	set_viewport(HW.pContext, RCache.get_width(), RCache.get_height());
+	set_viewport(RContext, RCache.get_width(), RCache.get_height());
 
 	RCache.set_Stencil	(FALSE);
 }
@@ -78,20 +78,20 @@ void CRenderTarget::phase_downsamp	()
 	//IDirect3DSurface9 *source, *dest;
 	//rt_Position->pSurface->GetSurfaceLevel(0, &source);
 	//rt_half_depth->pSurface->GetSurfaceLevel(0, &dest);
-	//HW.pDevice->StretchRect(source, NULL, dest, NULL, D3DTEXF_POINT);
+	//RDevice->StretchRect(source, NULL, dest, NULL, D3DTEXF_POINT);
 
 	//Fvector2	p0,p1;
 	u32			Offset = 0;
 
-    u_setrt( rt_half_depth,0,0,0/*HW.pBaseZB*/ );
+    u_setrt( rt_half_depth,0,0,0/*RDepth*/ );
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    HW.pContext->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
+    RContext->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
 	u32 w = (u32)RCache.get_width();
 	u32 h = (u32)RCache.get_height();
 
 	if (RImplementation.o.ssao_half_data)
 	{
-		set_viewport(HW.pContext, RCache.get_width() * 0.5f, RCache.get_height() * 0.5f);
+		set_viewport(RContext, RCache.get_width() * 0.5f, RCache.get_height() * 0.5f);
 		w /= 2;
 		h /= 2;
 	}
@@ -122,5 +122,5 @@ void CRenderTarget::phase_downsamp	()
 	}
 
 	if (RImplementation.o.ssao_half_data)
-		set_viewport(HW.pContext, RCache.get_width(), RCache.get_height());
+		set_viewport(RContext, RCache.get_width(), RCache.get_height());
 }

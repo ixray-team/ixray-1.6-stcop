@@ -495,16 +495,16 @@ CRenderTarget::CRenderTarget		()
 		t_LUM_dest.create			(r2_RT_luminance_cur);
 
 		// create pool
-		for (u32 it=0; it<HW.Caps.iGPUNum*2; it++)	{
+		for (u32 it=0; it < 2; it++)	{
 			string256					name;
 			xr_sprintf						(name,"%s_%d",	r2_RT_luminance_pool,it	);
 			rt_LUM_pool[it].create		(name,	1,	1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
 			//u_setrt						(rt_LUM_pool[it],	0,	0,	0			);
-			//CHK_DX						(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0x7f7f7f7f,	1.0f, 0L));
+			//CHK_DX						(RDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0x7f7f7f7f,	1.0f, 0L));
 			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f};
-			HW.pContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
+			RContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
-		u_setrt(s_dwWidth, s_dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+		u_setrt(s_dwWidth, s_dwHeight, RTarget, NULL, NULL, RDepth);
 	}
 
 	// HBAO
@@ -523,7 +523,7 @@ CRenderTarget::CRenderTarget		()
 			h = s_dwHeight;
 		}
 
-		DxgiFormat fmt = HW.Caps.id_vendor == 0x10DE ? DxgiFormat::DXGI_FORMAT_R32_FLOAT : DxgiFormat::DXGI_FORMAT_R16_FLOAT;
+		DxgiFormat fmt = DxgiFormat::DXGI_FORMAT_R32_FLOAT;
 		rt_half_depth.create(r2_RT_half_depth, w, h, fmt);
 
 		s_ssao.create(b_ssao, "r2\\ssao");
@@ -588,14 +588,14 @@ CRenderTarget::CRenderTarget		()
 			desc.CPUAccessFlags = D3D_CPU_ACCESS_READ;
 			desc.MiscFlags = 0;
 
-			R_CHK( HW.pDevice->CreateTexture2D(&desc, 0, &t_ss_async) );
+			R_CHK( RDevice->CreateTexture2D(&desc, 0, &t_ss_async) );
 		}
 		// Build material(s)
 		{
 			//	Create immutable texture. 
 			//	So we need to init data _before_ the creation.
 			// Surface
-			//R_CHK						(D3DXCreateVolumeTexture(HW.pDevice,TEX_material_LdotN,TEX_material_LdotH,4,1,0,D3DFMT_A8L8,D3DPOOL_MANAGED,&t_material_surf));
+			//R_CHK						(D3DXCreateVolumeTexture(RDevice,TEX_material_LdotN,TEX_material_LdotH,4,1,0,D3DFMT_A8L8,D3DPOOL_MANAGED,&t_material_surf));
 			//t_material					= dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			//t_material->surface_set		(t_material_surf);
 			//	Use DXGI_FORMAT_R8G8_UNORM
@@ -671,10 +671,10 @@ CRenderTarget::CRenderTarget		()
 			}
 			//R_CHK		(t_material_surf->UnlockBox	(0));
 
-			R_CHK(HW.pDevice->CreateTexture3D(&desc, &subData, &t_material_surf));
+			R_CHK(RDevice->CreateTexture3D(&desc, &subData, &t_material_surf));
 			t_material					= dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			t_material->surface_set		(t_material_surf);
-			//R_CHK						(D3DXCreateVolumeTexture(HW.pDevice,TEX_material_LdotN,TEX_material_LdotH,4,1,0,D3DFMT_A8L8,D3DPOOL_MANAGED,&t_material_surf));
+			//R_CHK						(D3DXCreateVolumeTexture(RDevice,TEX_material_LdotN,TEX_material_LdotH,4,1,0,D3DFMT_A8L8,D3DPOOL_MANAGED,&t_material_surf));
 			//t_material					= dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			//t_material->surface_set		(t_material_surf);
 
@@ -693,7 +693,7 @@ CRenderTarget::CRenderTarget		()
 			//{
 			//	string_path					name;
 			//	xr_sprintf						(name,"%s%d",r2_jitter,it);
-			//	R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
+			//	R_CHK	(D3DXCreateTexture	(RDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
 			//	t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 			//	t_noise[it]->surface_set	(t_noise_surf[it]);
 			//	R_CHK						(t_noise_surf[it]->LockRect	(0,&R[it],0,0));
@@ -754,8 +754,8 @@ CRenderTarget::CRenderTarget		()
 			{
 				string_path					name;
 				xr_sprintf						(name,"%s%d",r2_jitter,it);
-				//R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
-				R_CHK( HW.pDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]) );
+				//R_CHK	(D3DXCreateTexture	(RDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
+				R_CHK(RDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]) );
 				t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 				t_noise[it]->surface_set	(t_noise_surf[it]);
 				//R_CHK						(t_noise_surf[it]->LockRect	(0,&R[it],0,0));
@@ -811,7 +811,7 @@ CRenderTarget::CRenderTarget		()
 
 			string_path					name;
 			xr_sprintf						(name,"%s%d",r2_jitter,it);
-			R_CHK( HW.pDevice->CreateTexture2D(&descHBAO, &subData[it], &t_noise_surf[it]) );
+			R_CHK( RDevice->CreateTexture2D(&descHBAO, &subData[it], &t_noise_surf[it]) );
 			t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 			t_noise[it]->surface_set	(t_noise_surf[it]);
 		}
@@ -958,8 +958,8 @@ bool CRenderTarget::use_minmax_sm_this_frame()
 	case CRender::MMSM_AUTODETECT:
 		{
 			u32 dwScreenArea = 
-				HW.m_ChainDesc.BufferDesc.Width*
-				HW.m_ChainDesc.BufferDesc.Height;
+				Device.GetSwapchainWidth()*
+				Device.GetSwapchainHeight();
 
 			if ( ( dwScreenArea >=RImplementation.o.dx10_minmax_sm_screenarea_threshold))
 				return need_to_render_sunshafts();

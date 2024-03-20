@@ -44,9 +44,9 @@ BOOL	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
 
 	//	TODO: DX10: Check if DX10 supports this feature
 	// enable cheat
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,MAKEFOURCC('N','V','D','B'));
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z,*(DWORD*)&zMin);
-	//HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_W,*(DWORD*)&zMax); 
+	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,MAKEFOURCC('N','V','D','B'));
+	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z,*(DWORD*)&zMin);
+	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_W,*(DWORD*)&zMax); 
 
 	//return TRUE;
 }
@@ -55,7 +55,7 @@ void	CRenderTarget::u_DBT_disable	()
 {
 	//	TODO: DX10: Check if DX10 supports this feature
 	//if (RImplementation.o.nvdbt && ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))	
-	//	HW.pDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,0);
+	//	RDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,0);
 }
 
 BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
@@ -139,8 +139,8 @@ BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
 		if (!bIntersect)	{
 			// volume doesn't touch scissor - enable mask
 			RCache.set_Scissor(&R);
-			//CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,TRUE));
-			//CHK_DX		(HW.pDevice->SetScissorRect(&R));
+			//CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,TRUE));
+			//CHK_DX		(RDevice->SetScissorRect(&R));
 		} else {
 			RCache.set_Scissor(NULL);
 		}

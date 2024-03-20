@@ -19,7 +19,7 @@ void CRenderTarget::phase_smaa()
     u_setrt(rt_smaa_edgetex, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-    HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -43,7 +43,7 @@ void CRenderTarget::phase_smaa()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
-    HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -87,5 +87,5 @@ void CRenderTarget::phase_smaa()
 
     // Resolve RT
     ref_rt& dest_rt = rt_Color;
-    HW.pContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
+    RContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
 }

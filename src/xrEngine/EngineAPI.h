@@ -5,6 +5,8 @@
 //****************************************************************************
 #pragma once
 
+enum class APILevel;
+
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure {
 public:
@@ -40,6 +42,8 @@ public:
 	void				Destroy		();
 
 	void				CreateRendererList();
+
+	APILevel			GetAPI();
 
 	CEngineAPI	();
 	~CEngineAPI	();

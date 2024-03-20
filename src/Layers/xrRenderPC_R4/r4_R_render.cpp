@@ -157,20 +157,20 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		Target->u_setrt(Target->rt_Generic_0,0,0,RDepth);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 
 	// Distort
 	{
 		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-		HW.pContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
+		Target->u_setrt(Target->rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
+		RContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget,NULL,NULL,RDepth);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
@@ -215,7 +215,7 @@ void CRender::Render		()
 	if( !(g_pGameLevel && g_hud)
 		|| bMenu)	
 	{
-		Target->u_setrt				((u32)RCache.get_target_width(), (u32)RCache.get_target_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		Target->u_setrt				((u32)RCache.get_target_width(), (u32)RCache.get_target_height(),RTarget,NULL,NULL,RDepth);
 		return;
 	}
 
@@ -291,7 +291,7 @@ void CRender::Render		()
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait_S.End		();
-	q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
+	q_sync_count								= (q_sync_count+1) % 2;
 	//CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 	CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
 
@@ -312,7 +312,7 @@ void CRender::Render		()
 
 
 	// Landshaft phase 
-	Target->u_setrt(Device.TargetWidth, Device.TargetHeight, NULL, NULL, NULL, HW.pBaseZB);
+	Target->u_setrt(Device.TargetWidth, Device.TargetHeight, NULL, NULL, NULL, RDepth);
 	r_dsgraph_render_landscape(0, false);
 
 	//******* Main render :: PART-0	-- first

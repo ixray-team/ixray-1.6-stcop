@@ -12,8 +12,8 @@ void CRenderTarget::DoAsyncScreenshot()
 	{
 		HRESULT hr;
 		ID3DTexture2D* pBuffer = nullptr;
-		hr = HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-		HW.pContext->CopyResource( t_ss_async, pBuffer );
+		hr = RSwapchain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
+		RContext->CopyResource( t_ss_async, pBuffer );
 		
 
 		RImplementation.m_bMakeAsyncSS = false;
@@ -32,7 +32,7 @@ void	CRenderTarget::phase_combine	()
 	Fvector2	p0,p1;
 
 	//*** exposure-pipeline
-	u32			gpu_id	= Device.dwFrame%HW.Caps.iGPUNum;
+	u32			gpu_id	= Device.dwFrame % 1;
 	{
 		t_LUM_src->surface_set		(rt_LUM_pool[gpu_id*2+0]->pSurface);
 		t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
@@ -58,9 +58,9 @@ void	CRenderTarget::phase_combine	()
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	// low/hi RTs
-	HW.pContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
-	HW.pContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
-	u_setrt(rt_Generic_0, rt_Generic_1, 0, HW.pBaseZB);
+	RContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
+	RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
+	u_setrt(rt_Generic_0, rt_Generic_1, 0, RDepth);
 	RCache.set_CullMode	( CULL_NONE );
 	RCache.set_Stencil	( FALSE		);
 
@@ -175,7 +175,7 @@ void	CRenderTarget::phase_combine	()
 	// Forward rendering
 	{
 		PIX_EVENT(Forward_rendering);
-		u_setrt(rt_Generic_0, 0, 0, HW.pBaseZB);		// LDR RT
+		u_setrt(rt_Generic_0, 0, 0, RDepth);		// LDR RT
 		RCache.set_CullMode				(CULL_CCW);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
@@ -195,7 +195,7 @@ void	CRenderTarget::phase_combine	()
 	phase_bloom			( );												// HDR RT invalidated here
 
 	//RImplementation.rmNormal();
-	//u_setrt(rt_Generic_1,0,0,HW.pBaseZB);
+	//u_setrt(rt_Generic_1,0,0,RDepth);
 
 	// Distortion filter
 	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
@@ -206,12 +206,12 @@ void	CRenderTarget::phase_combine	()
 		{
 			PIX_EVENT(render_distort_objects);
 			FLOAT ColorRGBA_[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-			u_setrt(rt_Generic_1, 0, 0, HW.pBaseZB);		// Now RT is a distortion mask
-			HW.pContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
+			u_setrt(rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
+			RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
-			//CHK_DX(HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
+			//CHK_DX(RDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
 			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
@@ -227,10 +227,10 @@ void	CRenderTarget::phase_combine	()
 
 	// Combine everything + perform AA
 	if (PP_Complex)
-		u_setrt(rt_Color, 0, 0, HW.pBaseZB);			// LDR RT
+		u_setrt(rt_Color, 0, 0, RDepth);			// LDR RT
 	else
-		u_setrt(Device.TargetWidth, Device.TargetHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
-	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, NULL, NULL, RDepth);
+	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,RTarget,NULL,NULL,RDepth);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
@@ -431,7 +431,7 @@ void CRenderTarget::phase_wallmarks		()
 	// Targets
 	RCache.set_RT(NULL,2);
 	RCache.set_RT(NULL,1);
-	u_setrt(rt_Color, NULL, NULL, HW.pBaseZB);
+	u_setrt(rt_Color, NULL, NULL, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RCache.set_CullMode					(CULL_CCW);
@@ -446,8 +446,8 @@ void CRenderTarget::phase_combine_volumetric()
 
 	//	TODO: DX10: Remove half pixel offset here
 
-	//u_setrt(rt_Generic_0,0,0,HW.pBaseZB );			// LDR RT
-	u_setrt(rt_Generic_0, rt_Generic_1, 0, HW.pBaseZB);
+	//u_setrt(rt_Generic_0,0,0,RDepth );			// LDR RT
+	u_setrt(rt_Generic_0, rt_Generic_1, 0, RDepth);
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{

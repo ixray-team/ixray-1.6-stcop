@@ -175,7 +175,7 @@ void CRenderTarget::draw_rain( light &RainSetup )
 
 		// setup
 		//RCache.set_Element			(s_accum_direct->E[sub_phase]);
-		//u_setrt	(rt_Normal,NULL,NULL,HW.pBaseZB);
+		//u_setrt	(rt_Normal,NULL,NULL,RDepth);
 		//RCache.set_Element			(s_rain->E[0]);
 		//RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0		);
 //		RCache.set_c				("Ldynamic_color",		L_clr.x,L_clr.y,L_clr.z,L_spec	);
@@ -203,15 +203,15 @@ void CRenderTarget::draw_rain( light &RainSetup )
 		//	TODO: DX10: Check if DX10 has analog for NV DBT
 		//		if (u_DBT_enable(zMin,zMax))	{
 		// z-test always
-		//			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-		//			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		//			RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+		//			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 		//		}
 
 		// Fetch4 : enable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
 		//. we hacked the shader to force smap on S0
 		//#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-		//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
+		//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
 		//		}
 
 		// setup stencil
@@ -222,14 +222,14 @@ void CRenderTarget::draw_rain( light &RainSetup )
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
 		//. we hacked the shader to force smap on S0
 		//#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-		//			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
+		//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		//		}
 
 		//	Use for intermediate results
 		//	Patch normal
-		u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
+		u_setrt(rt_Accumulator, NULL, NULL, RDepth);
 
-      //u_setrt	(rt_Normal,NULL,NULL,HW.pBaseZB);
+      //u_setrt	(rt_Normal,NULL,NULL,RDepth);
 		RCache.set_Element		(s_rain->E[1]);
 		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0		);
 		RCache.set_c				("WorldX",				W_dirX.x,W_dirX.y,W_dirX.z,0		);
@@ -251,12 +251,12 @@ void CRenderTarget::draw_rain( light &RainSetup )
 		{
 			//	Do this in blender!
 			//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_RED | D3Dxx_COLOR_WRITE_ENABLE_GREEN | D3Dxx_COLOR_WRITE_ENABLE_BLUE );
-			u_setrt(rt_Normal, NULL, NULL, HW.pBaseZB);
+			u_setrt(rt_Normal, NULL, NULL, RDepth);
 		}
 		else
 		{
 			//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_RED | D3Dxx_COLOR_WRITE_ENABLE_GREEN );
-			u_setrt(rt_Position, NULL, NULL, HW.pBaseZB);
+			u_setrt(rt_Position, NULL, NULL, RDepth);
 		}
 
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
@@ -270,7 +270,7 @@ void CRenderTarget::draw_rain( light &RainSetup )
 
 		//	It is restored automatically by a set_Element call
 		//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_ALL );
-		u_setrt	(rt_Color,NULL,NULL,HW.pBaseZB);
+		u_setrt	(rt_Color,NULL,NULL,RDepth);
 
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

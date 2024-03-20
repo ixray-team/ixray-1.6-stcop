@@ -180,8 +180,6 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		// Select target
 		LPCSTR						c_target	= "vs_2_0";
 		LPCSTR						c_entry		= "main";
-		if (HW.Caps.geometry_major>=2)	c_target="vs_2_0";
-		else 							c_target="vs_1_1";
 
 		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
@@ -413,7 +411,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	SDeclaration* D			= xr_new<SDeclaration>();
 	u32 dcl_size = (u32)GetDeclLength(dcl) + 1;
 	//	Don't need it for DirectX 10 here
-	//CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
+	//CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);
 	dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
 	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;

@@ -29,25 +29,12 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 {
 	if (pSurface)	return;
 
-	R_ASSERT	(HW.pDevice && Name && Name[0] && w && h);
-	_order		= CPU::GetCLK()	;	//Device.GetTimerGlobal()->GetElapsed_clk();
-
-	//HRESULT		_hr;
+	R_ASSERT	(RDevice && Name && Name[0] && w && h);
+	_order		= CPU::GetCLK();
 
 	dwWidth		= w;
 	dwHeight	= h;
 	fmt			= f;
-
-	// Get caps
-	//D3DCAPS9	caps;
-	//R_CHK		(HW.pDevice->GetDeviceCaps(&caps));
-
-	//	DirectX 10 supports non-power of two textures
-	// Pow2
-	//if (!btwIsPow2(w) || !btwIsPow2(h))
-	//{
-	//	if (!HW.Caps.raster.bNonPow2)	return;
-	//}
 
 	// Check width-and-height of render target surface
 	if (w > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION)		return;
@@ -71,29 +58,8 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 	DXGI_FORMAT dx10FMT = (DXGI_FORMAT)fmt;
 	bool bUseAsDepth = (usage == D3DUSAGE_RENDERTARGET) ? false : true;
 
-   // Validate render-target usage
-	//_hr = HW.pD3D->CheckDeviceFormat(
-		//HW.DevAdapter,
-		//HW.m_DriverType,
-		//HW.Caps.fTarget,
-		//usage,
-		//D3DRTYPE_TEXTURE,
-		//f
-		//);
-	//	TODO: DX10: implement format support check
-	//UINT	FormatSupport;
-	//_hr = HW.pDevice->CheckFormatSupport( dx10FMT, &FormatSupport);
-	//if (FAILED(_hr)) return;
-	//if (!(
-			//(FormatSupport&D3Dxx_FORMAT_SUPPORT_TEXTURE2D) 
-			//&&	(FormatSupport&(bUseAsDepth?D3Dxx_FORMAT_SUPPORT_DEPTH_STENCIL:D3Dxx_FORMAT_SUPPORT_RENDER_TARGET))
-		//))
-		//return;
-
 	// Try to create texture/surface
 	DEV->Evict				();
-	//_hr = HW.pDevice->CreateTexture		(w, h, 1, usage, f, D3DPOOL_DEFAULT, &pSurface,NULL);
-	//if (FAILED(_hr) || (0==pSurface))	return;
 	// Create the render target texture
 	D3D_TEXTURE2D_DESC desc;
 	ZeroMemory( &desc, sizeof(desc) );
@@ -111,11 +77,11 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
       desc.BindFlags = (bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : (D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET));
    }
 
-	if (HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth && SampleCount == 1 && useUAV )
+	if (!bUseAsDepth && SampleCount == 1 && useUAV )
 		desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
-	CHK_DX( HW.pDevice->CreateTexture2D( &desc, NULL, &pSurface ) );
-	HW.stats_manager.increment_stats_rtarget( pSurface );
+	CHK_DX( RDevice->CreateTexture2D( &desc, NULL, &pSurface ) );
+
 	// OK
 #ifdef DEBUG
 	Msg			("* created RT(%s), %dx%d, format = %d samples = %d",Name,w,h, dx10FMT, SampleCount );
@@ -148,12 +114,12 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 			break;
 		}
 
-		CHK_DX( HW.pDevice->CreateDepthStencilView( pSurface, &ViewDesc, &pZRT) );
+		CHK_DX( RDevice->CreateDepthStencilView( pSurface, &ViewDesc, &pZRT) );
 	}
 	else
-		CHK_DX( HW.pDevice->CreateRenderTargetView( pSurface, 0, &pRT ) );
+		CHK_DX( RDevice->CreateRenderTargetView( pSurface, 0, &pRT ) );
 
-	if (HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth &&  SampleCount == 1 && useUAV)
+	if (!bUseAsDepth &&  SampleCount == 1 && useUAV)
     {
 	    D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
 		ZeroMemory( &UAVDesc, sizeof( D3D11_UNORDERED_ACCESS_VIEW_DESC ) );
@@ -161,7 +127,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 		UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 		UAVDesc.Buffer.FirstElement = 0;
 		UAVDesc.Buffer.NumElements = dwWidth * dwHeight;
-		CHK_DX( HW.pDevice->CreateUnorderedAccessView( pSurface, &UAVDesc, &pUAView ) );
+		CHK_DX( RDevice->CreateUnorderedAccessView( pSurface, &UAVDesc, &pUAView ) );
     }
 
 	pTexture	= DEV->_CreateTexture	(Name);
@@ -177,7 +143,6 @@ void CRT::destroy		()
 	_RELEASE	(pRT		);
 	_RELEASE	(pZRT		);
 	
-	HW.stats_manager.decrement_stats_rtarget( pSurface );
 	_RELEASE	(pSurface	);
 	_RELEASE	(pUAView);
 }
@@ -216,7 +181,7 @@ CRTC::~CRTC			()
 
 void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 {
-	R_ASSERT	(HW.pDevice && Name && Name[0] && size && btwIsPow2(size));
+	R_ASSERT	(RDevice && Name && Name[0] && size && btwIsPow2(size));
 	_order		= CPU::GetCLK();	//Device.GetTimerGlobal()->GetElapsed_clk();
 
 	HRESULT		_hr;
@@ -226,7 +191,7 @@ void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 
 	// Get caps
 	//D3DCAPS9	caps;
-	//R_CHK		(HW.pDevice->GetDeviceCaps(&caps));
+	//R_CHK		(RDevice->GetDeviceCaps(&caps));
 
 	//	DirectX 10 supports non-power of two textures
 	// Pow2
@@ -252,7 +217,7 @@ void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 
 	// Try to create texture/surface
 	DEV->Evict					();
-	_hr = HW.pDevice->CreateCubeTexture	(size, 1, D3DUSAGE_RENDERTARGET, f, D3DPOOL_DEFAULT, &pSurface,NULL);
+	_hr = RDevice->CreateCubeTexture	(size, 1, D3DUSAGE_RENDERTARGET, f, D3DPOOL_DEFAULT, &pSurface,NULL);
 	if (FAILED(_hr) || (0==pSurface))	return;
 
 	// OK

@@ -18,16 +18,16 @@ void CBackend::OnFrameEnd	()
 #endif    
 	{
 #ifdef USE_DX11
-		HW.pContext->ClearState();
+		RContext->ClearState();
 		Invalidate			();
 #else //USE_DX11
 
 		for (u32 stage=0; stage<HW.Caps.raster.dwStages; stage++)
-			CHK_DX(HW.pDevice->SetTexture(0,0));
-		CHK_DX				(HW.pDevice->SetStreamSource	(0,0,0,0));
-		CHK_DX				(HW.pDevice->SetIndices			(0));
-		CHK_DX				(HW.pDevice->SetVertexShader	(0));
-		CHK_DX				(HW.pDevice->SetPixelShader		(0));
+			CHK_DX(RDevice->SetTexture(0,0));
+		CHK_DX				(RDevice->SetStreamSource	(0,0,0,0));
+		CHK_DX				(RDevice->SetIndices			(0));
+		CHK_DX				(RDevice->SetVertexShader	(0));
+		CHK_DX				(RDevice->SetPixelShader		(0));
 		Invalidate			();
 #endif
 	}
@@ -46,8 +46,8 @@ void CBackend::OnFrameBegin	()
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
-		set_RT				(HW.pBaseRT);
-		set_ZB				(HW.pBaseZB);
+		set_RT				(RTarget);
+		set_ZB				(RDepth);
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));
 		Vertex.Flush		();
@@ -147,7 +147,7 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 coun
 #else //USE_DX11
 	if (0==HW.Caps.geometry.dwClipPlanes)	return;
 	if (!_enable)	{
-		CHK_DX	(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
+		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
 		return;
 	}
 
@@ -164,26 +164,25 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 coun
 		Fplane& P = _planes[it];
 		planeWorld = XMPlaneNormalize(XMVectorSet(-P.n.x, -P.n.y, -P.n.z, -P.d));
 		XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
-		CHK_DX(HW.pDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
+		CHK_DX(RDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
 	}
 
 	// Enable them
 	u32		e_mask	= (1<<count)-1;
-	CHK_DX	(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,e_mask));
+	CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,e_mask));
 #endif
 }
 
 #ifndef DEDICATED_SREVER
 void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=NULL */, u32 fmask/* =0xff */)
 {
-	if (0==HW.Caps.geometry.dwClipPlanes)	return;
 	if (!_enable)	{
 #ifdef USE_DX11
 		//	TODO: DX10: Implement in the corresponding vertex shaders
 		//	Use this to set up location, were shader setup code will get data
 		//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
 #else //USE_DX11
-		CHK_DX	(HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
+		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
 #endif
 		return;
 	}
@@ -366,10 +365,10 @@ void CBackend::set_Textures			(STextureList* _T)
 #ifdef USE_DX11
 		//	TODO: DX10: Optimise: set all resources at once
 		ID3DShaderResourceView	*pRes = 0;
-		//HW.pDevice->PSSetShaderResources(_last_ps, 1, &pRes);
+		//RDevice->PSSetShaderResources(_last_ps, 1, &pRes);
 		SRVSManager.SetPSResource(_last_ps, pRes);
 #else //USE_DX11
-		CHK_DX							(HW.pDevice->SetTexture(_last_ps,NULL));
+		CHK_DX							(RDevice->SetTexture(_last_ps,NULL));
 #endif
 	}
 	// clear remaining stages (VS)
@@ -382,10 +381,10 @@ void CBackend::set_Textures			(STextureList* _T)
 #ifdef USE_DX11
 		//	TODO: DX10: Optimise: set all resources at once
 		ID3DShaderResourceView	*pRes = 0;
-		//HW.pDevice->VSSetShaderResources(_last_vs, 1, &pRes);
+		//RDevice->VSSetShaderResources(_last_vs, 1, &pRes);
 		SRVSManager.SetVSResource(_last_vs, pRes);
 #else //USE_DX11
-		CHK_DX							(HW.pDevice->SetTexture(_last_vs+CTexture::rstVertex,NULL));
+		CHK_DX							(RDevice->SetTexture(_last_vs+CTexture::rstVertex,NULL));
 #endif
 	}
 
@@ -400,7 +399,7 @@ void CBackend::set_Textures			(STextureList* _T)
 
 		//	TODO: DX10: Optimise: set all resources at once
 		ID3DShaderResourceView	*pRes = 0;
-		//HW.pDevice->GSSetShaderResources(_last_gs, 1, &pRes);
+		//RDevice->GSSetShaderResources(_last_gs, 1, &pRes);
 		SRVSManager.SetGSResource(_last_gs, pRes);
 	}
 

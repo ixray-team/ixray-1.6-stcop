@@ -79,7 +79,7 @@ void dxDebugRender::NextSceneMode()
 
 void dxDebugRender::ZEnable(bool bEnable)
 {
-	//CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
+	//CHK_DX(RDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
 	RCache.set_Z(bEnable);
 }
 
@@ -109,7 +109,7 @@ void dxDebugRender::SetAmbient(u32 colour)
 	//	TODO: DX10: Check if need this for DX10
 	VERIFY(!"Not implemented for DX10");
 #else //USE_DX11
-	CHK_DX(HW.pDevice->SetRenderState (D3DRS_AMBIENT, colour));
+	CHK_DX(RDevice->SetRenderState (D3DRS_AMBIENT, colour));
 #endif
 }
 

@@ -135,3 +135,5 @@ target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/I
 ## OGG
 target_link_libraries(xrAbstractions PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
 target_include_directories(xrAbstractions PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/native/include/")
+
+target_include_directories(xrAbstractions PUBLIC "${RENDERDOC_API}")
