@@ -56,7 +56,7 @@ void	CBlender_LaEmB::Compile(CBlender_Compile& C)
 			if (bConstant)	compile_Lc	(C);
 			else			compile_L	(C);
 		} else {
-			switch (HW.Caps.raster.dwStages)
+			switch (dxRenderDeviceRender::Instance().Caps.raster.dwStages)
 			{
 			case 2:		// Geforce1/2/MX
 				if (bConstant)	compile_2c	(C);

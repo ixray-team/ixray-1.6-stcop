@@ -72,7 +72,7 @@ public:
 	virtual				void				BeginRender() = 0;
 	virtual				void				EndRender() = 0;
 	virtual				void				DrawUI() = 0;
-	virtual				void				AddUICommand(const char* Name, std::function<void()>&& Function) = 0;
+	virtual				void				AddUICommand(const char* Name, int Order, std::function<void()>&& Function) = 0;
 	virtual				void				RemoveUICommand(const char* Name) = 0;
 };
 
@@ -176,7 +176,7 @@ public:
 	void BeginRender() override;
 	void EndRender() override;
 	void DrawUI() override;
-	void AddUICommand(const char* Name, std::function<void()>&& Function) override;
+	void AddUICommand(const char* Name, int Order, std::function<void()>&& Function) override;
 	void RemoveUICommand(const char* Name) override;
 
 public:

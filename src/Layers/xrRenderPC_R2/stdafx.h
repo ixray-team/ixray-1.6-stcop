@@ -37,6 +37,7 @@
 #include "../../xrParticles/psystem.h"
 #include "../xrRender/xrRender_console.h"
 #include "r2.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 IC	void	jitter(CBlender_Compile& C)
 {

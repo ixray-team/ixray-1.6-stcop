@@ -22,12 +22,12 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     // Create temp-surface
     IDirect3DSurface9* pFB;
     D3DLOCKED_RECT D;
-    HRESULT hr = HW.pDevice->CreateOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), HW.DevPP.BackBufferFormat, D3DPOOL_SYSTEMMEM, &pFB, NULL);
+    HRESULT hr = RDevice->CreateOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &pFB, NULL);
     if (hr != D3D_OK) {
         return;
     }
 
-    hr = HW.pDevice->GetRenderTargetData(HW.pBaseRT, pFB);
+    hr = RDevice->GetRenderTargetData(RTarget, pFB);
     if (hr != D3D_OK) {
         goto _end_;
     }
@@ -40,24 +40,6 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     // Image processing (gamma-correct)
     pPixel = (u32*)D.pBits;
     pEnd = pPixel + u32(RCache.get_width() * RCache.get_height());
-    //	IGOR: Remove inverse color correction and kill alpha
-    /*
-    D3DGAMMARAMP	G;
-    dxRenderDeviceRender::Instance().gammaGenLUT(G);
-    for (int i=0; i<256; i++) {
-        G.red	[i]	/= 256;
-        G.green	[i]	/= 256;
-        G.blue	[i]	/= 256;
-    }
-    for (;pPixel!=pEnd; pPixel++)	{
-        u32 p = *pPixel;
-        *pPixel = color_xrgb	(
-            G.red	[color_get_R(p)],
-            G.green	[color_get_G(p)],
-            G.blue	[color_get_B(p)]
-            );
-    }
-    */
 
     //	Kill alpha
     for (; pPixel != pEnd; pPixel++) {
@@ -80,7 +62,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     {
         // texture
         ID3DTexture2D* texture = nullptr;
-        hr = D3DXCreateTexture(HW.pDevice, GAMESAVE_SIZE, GAMESAVE_SIZE, 1, 0, D3DFMT_DXT1, D3DPOOL_SCRATCH, &texture);
+        hr = D3DXCreateTexture(RDevice, GAMESAVE_SIZE, GAMESAVE_SIZE, 1, 0, D3DFMT_DXT1, D3DPOOL_SCRATCH, &texture);
         if (hr != D3D_OK) {
             goto _end_;
         }
@@ -123,7 +105,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     {
         // texture
         ID3DTexture2D* texture = nullptr;
-        hr = D3DXCreateTexture(HW.pDevice, SM_FOR_SEND_WIDTH, SM_FOR_SEND_HEIGHT, 1, 0, D3DFMT_R8G8B8, D3DPOOL_SCRATCH, &texture);
+        hr = D3DXCreateTexture(RDevice, SM_FOR_SEND_WIDTH, SM_FOR_SEND_HEIGHT, 1, 0, D3DFMT_R8G8B8, D3DPOOL_SCRATCH, &texture);
         if (hr != D3D_OK) {
             goto _end_;
         }

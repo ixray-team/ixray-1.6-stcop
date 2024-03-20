@@ -22,7 +22,7 @@ void CBackend::OnFrameEnd	()
 		Invalidate			();
 #else //USE_DX11
 
-		for (u32 stage=0; stage<HW.Caps.raster.dwStages; stage++)
+		for (u32 stage=0; stage<dxRenderDeviceRender::Instance().Caps.raster.dwStages; stage++)
 			CHK_DX(RDevice->SetTexture(0,0));
 		CHK_DX				(RDevice->SetStreamSource	(0,0,0,0));
 		CHK_DX				(RDevice->SetIndices			(0));
@@ -145,7 +145,7 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 coun
 	//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
 	return;
 #else //USE_DX11
-	if (0==HW.Caps.geometry.dwClipPlanes)	return;
+	if (0==dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes)	return;
 	if (!_enable)	{
 		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
 		return;
@@ -153,7 +153,7 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 coun
 
 	// Enable and setup planes
 	VERIFY	(_planes && count);
-	if		(count>HW.Caps.geometry.dwClipPlanes)	count=HW.Caps.geometry.dwClipPlanes;
+	if		(count>dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes)	count=dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes;
 
 	auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
 	worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);

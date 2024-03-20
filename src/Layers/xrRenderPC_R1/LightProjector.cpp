@@ -157,7 +157,7 @@ void CLightProjector::calculate	()
 	Device.Statistic->RenderDUMP_Pcalc.Begin	();
 	RCache.set_RT				(RT->pRT);
 	RCache.set_ZB				(RImplementation.Target->pTempZB);
-	CHK_DX(HW.pDevice->Clear	(0,0, D3DCLEAR_ZBUFFER | (HW.Caps.bStencil?D3DCLEAR_STENCIL:0), 0,1,0 ));
+	CHK_DX(RDevice->Clear	(0,0, D3DCLEAR_ZBUFFER | (dxRenderDeviceRender::Instance().Caps.bStencil?D3DCLEAR_STENCIL:0), 0,1,0 ));
 	RCache.set_xform_world		(Fidentity);
 
 	// reallocate/reassociate structures + perform all the work
@@ -253,11 +253,11 @@ void CLightProjector::calculate	()
 		int		s_x				=	c_it%P_o_line;
 		int		s_y				=	c_it/P_o_line;
 		D3DVIEWPORT9 VP			=	{ (unsigned long) s_x*P_o_size, (unsigned long) s_y*P_o_size,P_o_size,P_o_size,0,1 };
-		CHK_DX					(HW.pDevice->SetViewport(&VP));
+		CHK_DX					(RDevice->SetViewport(&VP));
 
 		// Clear color to ambience
 		Fvector&	cap			=	LT->get_approximate();
-		CHK_DX					(HW.pDevice->Clear(0,0, D3DCLEAR_TARGET, color_rgba_f(cap.x,cap.y,cap.z, (cap.x+cap.y+cap.z)/4.f), 1, 0 ));
+		CHK_DX					(RDevice->Clear(0,0, D3DCLEAR_TARGET, color_rgba_f(cap.x,cap.y,cap.z, (cap.x+cap.y+cap.z)/4.f), 1, 0 ));
 
 		// calculate uv-gen matrix and clamper
 		Fmatrix					mCombine;		mCombine.mul	(mProject,mView);

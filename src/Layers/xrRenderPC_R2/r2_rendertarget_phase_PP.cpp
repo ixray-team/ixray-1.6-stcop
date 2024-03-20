@@ -106,7 +106,7 @@ struct TL_2c3uv		{
 void CRenderTarget::phase_pp		()
 {
 	// combination/postprocess
-	u_setrt				( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	u_setrt				( RCache.get_width(),RCache.get_height(),RTarget,NULL,NULL,RDepth);
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();

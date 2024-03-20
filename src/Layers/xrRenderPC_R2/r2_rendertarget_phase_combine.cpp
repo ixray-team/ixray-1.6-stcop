@@ -12,7 +12,7 @@ void CRenderTarget::DoAsyncScreenshot()
 	{
 		HRESULT hr;
 
-		IDirect3DSurface9*	pFBSrc = HW.pBaseRT;
+		IDirect3DSurface9*	pFBSrc = RTarget;
 
 		//	Don't addref, no need to release.
 	//	ID3DTexture2D *pTex = rt_Color->pSurface;
@@ -20,7 +20,7 @@ void CRenderTarget::DoAsyncScreenshot()
 	//	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
 
 		//	SHould be async function
-		hr = HW.pDevice->GetRenderTargetData( pFBSrc, pFB );
+		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
 
 	//	pFBSrc->Release();
 
@@ -38,7 +38,7 @@ void	CRenderTarget::phase_combine	()
 	Fvector2	p0,p1;
 
 	//*** exposure-pipeline
-	u32			gpu_id	= Device.dwFrame%HW.Caps.iGPUNum;
+	u32			gpu_id	= Device.dwFrame%dxRenderDeviceRender::Instance().Caps.iGPUNum;
 	{
 		t_LUM_src->surface_set		(rt_LUM_pool[gpu_id*2+0]->pSurface);
 		t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
@@ -55,7 +55,7 @@ void	CRenderTarget::phase_combine	()
 		phase_ssao();
 
 	// low/hi RTs
-	u_setrt				( rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );
+	u_setrt				( rt_Generic_0,rt_Generic_1,0,RDepth );
 	RCache.set_Stencil	( FALSE		);
 
 	BOOL	split_the_scene_to_minimize_wait			= FALSE;
@@ -65,12 +65,12 @@ void	CRenderTarget::phase_combine	()
 	if (1)
 	{
 		RCache.set_ColorWriteEnable					();
-		CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
+		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
 		g_pGamePersistent->Environment().RenderSky	();
 		//	Igor: Render clouds before compine without Z-test
 		//	to avoid siluets. HOwever, it's a bit slower process.
 		g_pGamePersistent->Environment().RenderClouds	();
-		CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
+		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
 	}
 
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
@@ -171,7 +171,7 @@ void	CRenderTarget::phase_combine	()
 
 	// Forward rendering
 	{
-		u_setrt							(rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		u_setrt							(rt_Generic_0,0,0,RDepth);		// LDR RT
 		RCache.set_CullMode				(CULL_CCW);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
@@ -207,11 +207,11 @@ void	CRenderTarget::phase_combine	()
 	{
 		if		((0==RImplementation.mapDistort.size()) && !_menu_pp)		bDistort= FALSE;
 		if (bDistort)		{
-			u_setrt						(rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
+			u_setrt						(rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
-			CHK_DX(HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
+			CHK_DX(RDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
 			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
@@ -223,8 +223,8 @@ void	CRenderTarget::phase_combine	()
 	if (_menu_pp)			PP_Complex	= FALSE;
 
 	// Combine everything + perform AA
-	if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT
-	else					u_setrt		( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	if		(PP_Complex)	u_setrt		( rt_Color,0,0,RDepth );			// LDR RT
+	else					u_setrt		( RCache.get_width(),RCache.get_height(),RTarget,NULL,NULL,RDepth);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 	if (1)	
@@ -334,9 +334,9 @@ void	CRenderTarget::phase_combine	()
 	else
 		dbg_lines		= saved_dbg_lines;
 
-	HW.pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-	HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	RDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+	RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	if (1) for (u32 it=0; it<dbg_lines.size(); it++)
 	{
 		RCache.dbg_DrawLINE		(Fidentity,dbg_lines[it].P0,dbg_lines[it].P1,dbg_lines[it].color);
@@ -418,7 +418,7 @@ void CRenderTarget::phase_wallmarks		()
 	// Targets
 	RCache.set_RT(NULL,2);
 	RCache.set_RT(NULL,1);
-	u_setrt								(rt_Color,NULL,NULL,HW.pBaseZB);
+	u_setrt								(rt_Color,NULL,NULL,RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RCache.set_CullMode					(CULL_CCW);
@@ -430,8 +430,8 @@ void CRenderTarget::phase_combine_volumetric()
 	u32			Offset					= 0;
 	Fvector2	p0,p1;
 
-	//u_setrt(rt_Generic_0,0,0,HW.pBaseZB );			// LDR RT
-	u_setrt(rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );
+	//u_setrt(rt_Generic_0,0,0,RDepth );			// LDR RT
+	u_setrt(rt_Generic_0,rt_Generic_1,0,RDepth );
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{

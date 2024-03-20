@@ -60,8 +60,11 @@ public:
 	ref_shader			m_WireShader;
 	ref_shader			m_SelectionShader;
 
-private:
+#ifndef USE_DX11
+	CHWCaps						Caps;
+#endif
 
+private:
 	CGammaControl		m_Gamma;
 };
 

@@ -68,7 +68,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 			Device.vCameraPosition,
 			m_ViewProjection,
 			CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE
-			//. disabled scissoring (HW.Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
+			//. disabled scissoring (dxRenderDeviceRender::Instance().Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
 			);
 
 		// Determine visibility for static geometry hierrarhy
@@ -150,18 +150,18 @@ void CRender::render_menu	()
 
 	// Main Render
 	{
-		Target->u_setrt						(Target->rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
+		Target->u_setrt						(Target->rt_Generic_0,0,0,RDepth);		// LDR RT
 		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 	// Distort
 	{
-		Target->u_setrt						(Target->rt_Generic_1,0,0,HW.pBaseZB);		// Now RT is a distortion mask
-		CHK_DX(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
+		Target->u_setrt						(Target->rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
+		CHK_DX(RDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					( RCache.get_width(),RCache.get_height(),HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	Target->u_setrt					( RCache.get_width(),RCache.get_height(),RTarget,NULL,NULL,RDepth);
 	RCache.set_Shader				( Target->s_menu	);
 	RCache.set_Geometry				( Target->g_menu	);
 
@@ -266,7 +266,7 @@ void CRender::Render		()
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait_S.End		();
-	q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
+	q_sync_count								= (q_sync_count+1)%dxRenderDeviceRender::Instance().Caps.iGPUNum;
 	CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 
 	//******* Main calc - DEFERRER RENDERER
@@ -351,15 +351,15 @@ void CRender::Render		()
 		// skybox can be drawn here
 		if (0)
 		{
-			Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,HW.pBaseZB );
+			Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,RDepth );
 			RCache.set_CullMode	( CULL_NONE );
 			RCache.set_Stencil	( FALSE		);
 
 			// draw skybox
 			RCache.set_ColorWriteEnable					();
-			CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
+			CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
 			g_pGamePersistent->Environment().RenderSky	();
-			CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
+			CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
 		}
 
 		// level

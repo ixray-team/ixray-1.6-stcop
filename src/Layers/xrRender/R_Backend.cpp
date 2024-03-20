@@ -24,7 +24,7 @@ void CBackend::CreateQuadIB		()
 	u16		IndexBuffer[dwIdxCount];
 	u16		*Indices		= IndexBuffer;
 	//u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	//if (HW.Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
+	//if (dxRenderDeviceRender::Instance().Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
 	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,NULL));
 
 	D3D_BUFFER_DESC desc;
@@ -95,9 +95,8 @@ void CBackend::CreateQuadIB		()
 	const u32 dwIdxCount	= dwTriCount*2*3;
 	u16		*Indices		= 0;
 	u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	if (HW.Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
+	if (dxRenderDeviceRender::Instance().Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
 	R_CHK(RDevice->CreateIndexBuffer	(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&QuadIB,NULL));
-	HW.stats_manager.increment_stats_ib	(QuadIB);
 //	Msg("CBackend::CreateQuadIB(). Created buffer size = %d ", dwIdxCount*2 );
 	R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
 	{

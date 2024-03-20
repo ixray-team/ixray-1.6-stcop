@@ -10,11 +10,11 @@ IC u16 clr2gamma(float c)
 
 void CGammaControl::Update() 
 {
-	if (HW.pDevice) 
+	if (RDevice) 
 	{
 		D3DGAMMARAMP G;
 		GenLUT(G);
-		HW.pDevice->SetGammaRamp(0,D3DSGR_NO_CALIBRATION,&G);
+		RDevice->SetGammaRamp(0,D3DSGR_NO_CALIBRATION,&G);
 	}
 }
 void CGammaControl::GenLUT(D3DGAMMARAMP &G)

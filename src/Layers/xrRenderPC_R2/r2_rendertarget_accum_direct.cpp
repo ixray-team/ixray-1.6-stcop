@@ -235,25 +235,25 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 		if (u_DBT_enable(zMin,zMax))	{
 			// z-test always
-			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+			RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 		}
 
 		// Enable Z function only for near and middle cascades, the far one is restricted by only stencil.
 		if( (SE_SUN_NEAR==sub_phase || SE_SUN_MIDDLE==sub_phase) )
-			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
+			RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
  		else
 			if( !ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_ZCULLING))
-				HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+				RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 			else
-				HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+				RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
 
 
 		// Fetch4 : enable
 		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 #			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
+			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
 		}
 
 		// setup stencil
@@ -268,7 +268,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 #			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
+			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		}
 
 		// disable depth bounds
@@ -394,22 +394,22 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 
 		if (u_DBT_enable(zMin,zMax))	{
 			// z-test always
-			HW.pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			HW.pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+			RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 		}
 		else
 		{
 			if (SE_SUN_NEAR==sub_phase)
-				HW.pDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_GREATER);
+				RDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_GREATER);
 			else
-				HW.pDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_ALWAYS);
+				RDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_ALWAYS);
 		}
 
 		// Fetch4 : enable
 		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 #			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
+			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
 		}
 
 		// setup stencil: we have to draw to both lit and unlit pixels
@@ -421,7 +421,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		if (RImplementation.o.HW_smap_FETCH4)	{
 			//. we hacked the shader to force smap on S0
 #			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-			HW.pDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
+			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
 		}
 
 		// disable depth bounds

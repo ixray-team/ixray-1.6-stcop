@@ -5,7 +5,7 @@
 IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M_)
 {
 	stat.xforms			++;
-	CHK_DX				(HW.pDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID,(D3DMATRIX*)&M_));
+	CHK_DX				(RDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID,(D3DMATRIX*)&M_));
 }
 
 IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
@@ -15,7 +15,7 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 		PGO				(Msg("PGO:setRT"));
 		stat.target_rt	++;
 		pRT[ID]			= RT;
-		CHK_DX			(HW.pDevice->SetRenderTarget(ID,RT));
+		CHK_DX			(RDevice->SetRenderTarget(ID,RT));
 	}
 }
 
@@ -26,7 +26,7 @@ IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
 		PGO				(Msg("PGO:setZB"));
 		stat.target_zb	++;
 		pZB				= ZB;
-		CHK_DX			(HW.pDevice->SetDepthStencilSurface(ZB));
+		CHK_DX			(RDevice->SetDepthStencilSurface(ZB));
 	}
 }
 
@@ -39,7 +39,7 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 		stat.decl		++;
 #endif
 		decl			= _decl;
-		CHK_DX			(HW.pDevice->SetVertexDeclaration(decl));
+		CHK_DX			(RDevice->SetVertexDeclaration(decl));
 	}
 }
 
@@ -50,7 +50,7 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
 		PGO				(Msg("PGO:Pshader:%x",_ps));
 		stat.ps			++;
 		ps				= _ps;
-		CHK_DX			(HW.pDevice->SetPixelShader(ps));
+		CHK_DX			(RDevice->SetPixelShader(ps));
 #ifdef DEBUG
 		ps_name			= _n;
 #endif
@@ -64,7 +64,7 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 		PGO				(Msg("PGO:Vshader:%x",_vs));
 		stat.vs			++;
 		vs				= _vs;
-		CHK_DX			(HW.pDevice->SetVertexShader(vs));
+		CHK_DX			(RDevice->SetVertexShader(vs));
 #ifdef DEBUG
 		vs_name			= _n;
 #endif
@@ -81,7 +81,7 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 #endif
 		vb				= _vb;
 		vb_stride		= _vb_stride;
-		CHK_DX			(HW.pDevice->SetStreamSource(0,vb,0,vb_stride));
+		CHK_DX			(RDevice->SetStreamSource(0,vb,0,vb_stride));
 	}
 }
 
@@ -94,7 +94,7 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 		stat.ib			++;
 #endif
 		ib				= _ib;
-		CHK_DX			(HW.pDevice->SetIndices(ib));
+		CHK_DX			(RDevice->SetIndices(ib));
 	}
 }
 
@@ -108,7 +108,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV
 	stat.verts			+= countV;
 	stat.polys			+= PC;
 	constants.flush		();
-	CHK_DX				(HW.pDevice->DrawIndexedPrimitive(T_,baseV, startV, countV,startI,PC));
+	CHK_DX				(RDevice->DrawIndexedPrimitive(T_,baseV, startV, countV,startI,PC));
 	PGO					(Msg("PGO:DIP:%dv/%df",countV,PC));
 }
 
@@ -122,7 +122,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 	stat.verts			+= 3*PC;
 	stat.polys			+= PC;
 	constants.flush		();
-	CHK_DX				(HW.pDevice->DrawPrimitive(T_, startV, PC));
+	CHK_DX				(RDevice->DrawPrimitive(T_, startV, PC));
 	PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
 }
 
@@ -137,28 +137,28 @@ IC void	CBackend::set_Scissor(Irect*	R)
 {
 	if (R)			
 	{
-		CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,TRUE));
+		CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,TRUE));
 		RECT	*	clip	= (RECT	*)R;
-		CHK_DX		(HW.pDevice->SetScissorRect(clip));
+		CHK_DX		(RDevice->SetScissorRect(clip));
 	} 
 	else
 	{
-		CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
+		CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 	}
 }
 
 IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
 {
 	// Simple filter
-	if (stencil_enable		!= _enable)		{ stencil_enable=_enable;		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILENABLE,		_enable				)); }
+	if (stencil_enable		!= _enable)		{ stencil_enable=_enable;		CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILENABLE,		_enable				)); }
 	if (!stencil_enable)					return;
-	if (stencil_func		!= _func)		{ stencil_func=_func;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILFUNC,		_func				)); }
-	if (stencil_ref			!= _ref)		{ stencil_ref=_ref;				CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILREF,			_ref				)); }
-	if (stencil_mask		!= _mask)		{ stencil_mask=_mask;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILMASK,		_mask				)); }
-	if (stencil_writemask	!= _writemask)	{ stencil_writemask=_writemask;	CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILWRITEMASK,	_writemask			)); }
-	if (stencil_fail		!= _fail)		{ stencil_fail=_fail;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILFAIL,		_fail				)); }
-	if (stencil_pass		!= _pass)		{ stencil_pass=_pass;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILPASS,		_pass				)); }
-	if (stencil_zfail		!= _zfail)		{ stencil_zfail=_zfail;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_STENCILZFAIL,		_zfail				)); }
+	if (stencil_func		!= _func)		{ stencil_func=_func;			CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILFUNC,		_func				)); }
+	if (stencil_ref			!= _ref)		{ stencil_ref=_ref;				CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILREF,			_ref				)); }
+	if (stencil_mask		!= _mask)		{ stencil_mask=_mask;			CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILMASK,		_mask				)); }
+	if (stencil_writemask	!= _writemask)	{ stencil_writemask=_writemask;	CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILWRITEMASK,	_writemask			)); }
+	if (stencil_fail		!= _fail)		{ stencil_fail=_fail;			CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILFAIL,		_fail				)); }
+	if (stencil_pass		!= _pass)		{ stencil_pass=_pass;			CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILPASS,		_pass				)); }
+	if (stencil_zfail		!= _zfail)		{ stencil_zfail=_zfail;			CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILZFAIL,		_zfail				)); }
 }
 
 IC  void CBackend::set_Z(u32 _enable)
@@ -166,7 +166,7 @@ IC  void CBackend::set_Z(u32 _enable)
 	if (z_enable != _enable)
 	{ 
 		z_enable=_enable;
-		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_ZENABLE, _enable )); 
+		CHK_DX(RDevice->SetRenderState	( D3DRS_ZENABLE, _enable )); 
 	}
 }
 
@@ -175,7 +175,7 @@ IC  void CBackend::set_ZFunc(u32 _func)
 	if (z_func!=_func)
 	{
 		z_func = _func;
-		CHK_DX(HW.pDevice->SetRenderState( D3DRS_ZFUNC, _func));
+		CHK_DX(RDevice->SetRenderState( D3DRS_ZFUNC, _func));
 	}
 }
 
@@ -184,7 +184,7 @@ IC  void CBackend::set_AlphaRef (u32 _value)
 	if (alpha_ref != _value)
 	{ 
 		alpha_ref = _value;
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,_value));
+		CHK_DX(RDevice->SetRenderState(D3DRS_ALPHAREF,_value));
 	}
 }
 
@@ -192,16 +192,16 @@ IC void	CBackend::set_ColorWriteEnable	(u32 _mask )
 {
 	if (colorwrite_mask		!= _mask)		{ 
 		colorwrite_mask=_mask;		
-		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE,	_mask	));	
-		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE1,	_mask	));	
-		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE2,	_mask	));	
-		CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE3,	_mask	));	
+		CHK_DX(RDevice->SetRenderState	( D3DRS_COLORWRITEENABLE,	_mask	));	
+		CHK_DX(RDevice->SetRenderState	( D3DRS_COLORWRITEENABLE1,	_mask	));	
+		CHK_DX(RDevice->SetRenderState	( D3DRS_COLORWRITEENABLE2,	_mask	));	
+		CHK_DX(RDevice->SetRenderState	( D3DRS_COLORWRITEENABLE3,	_mask	));	
 	}
 }
 
 ICF void	CBackend::set_CullMode		(u32 _mode)
 {
-	if (cull_mode		!= _mode)		{ cull_mode = _mode;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_CULLMODE,			_mode				)); }
+	if (cull_mode		!= _mode)		{ cull_mode = _mode;			CHK_DX(RDevice->SetRenderState	( D3DRS_CULLMODE,			_mode				)); }
 }
 
 ICF void CBackend::set_VS(ref_vs& _vs)

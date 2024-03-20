@@ -40,6 +40,7 @@
 #include "../xrRender/xrRender_console.h"
 #include "FStaticRender.h"
 #endif
+#include "../xrRender/dxRenderDeviceRender.h"
 
 #define		TEX_POINT_ATT	"internal\\internal_light_attpoint"
 #define		TEX_SPOT_ATT	"internal\\internal_light_attclip"

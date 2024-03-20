@@ -18,6 +18,7 @@ private:
 	u32							dwHeight;
 	u32							dwAccumulatorClearMark;
 public:
+
 	u32							dwLightMarkerID;
 	// 
 	IBlender*					b_occq;

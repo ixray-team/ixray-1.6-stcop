@@ -170,7 +170,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 	bool FoundedChunk = !!data->find_chunk(OGF_VERTICES);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");
 			
-	//u16			hw_bones_cnt		= u16((HW.Caps.geometry.dwRegisters-22)/3);
+	//u16			hw_bones_cnt		= u16((dxRenderDeviceRender::Instance().Caps.geometry.dwRegisters-22)/3);
 	//	Igor: some shaders in r1 need more free constant registers
 	u16			hw_bones_cnt		= u16((256-22-3)/3);
 	u16			sw_bones_cnt		= 0;
