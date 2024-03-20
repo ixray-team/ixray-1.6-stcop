@@ -101,7 +101,9 @@ protected:
 	u32							m_dwRPC;	//ReceivedPacketsCount
 	u32							m_dwRPS;	//ReceivedPacketsSize
 	//---------------------------------------------
-	
+	IReader						*m_chunk;
+	IReader						*spawn;
+	CGameGraph					*m_game_graph;
 public:
 #ifdef DEBUG
 	// level debugger

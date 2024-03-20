@@ -23,6 +23,11 @@
 #include "game_sv_mp_vote_flags.h"
 #include "player_name_modifyer.h"
 
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
+#include "alife_graph_registry.h"
+#include "alife_time_manager.h"
+
 u32		g_dwMaxCorpses = 10;
 //-----------------------------------------------------------------
 BOOL		g_sv_mp_bSpectator_FreeFly		= FALSE;
@@ -48,7 +53,8 @@ extern xr_token	round_end_result_str[];
 
 game_sv_mp::game_sv_mp() :inherited()
 {
-	m_strWeaponsData		= xr_new<CItemMgr>();
+	m_alife_simulator = nullptr;
+	m_strWeaponsData = xr_new<CItemMgr>();
 	m_bVotingActive = false;	
 	//------------------------------------------------------
 //	g_pGamePersistent->Environment().SetWeather("mp_weather");
@@ -61,6 +67,7 @@ game_sv_mp::game_sv_mp() :inherited()
 
 game_sv_mp::~game_sv_mp()
 {
+	xr_delete(m_alife_simulator);
 	xr_delete(m_strWeaponsData);
 }
 
@@ -448,7 +455,8 @@ extern	float	g_fTimeFactor;
 void game_sv_mp::Create (shared_str &options)
 {
 	SetVotingActive(false);
-	inherited::Create(options);
+	inherited::Create(options);	
+	m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
 	//-------------------------------------------------------------------	
 	if (!g_bConsoleCommandsCreated)
 	{
