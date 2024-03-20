@@ -73,9 +73,6 @@ public:
 protected:
 	int				scroll_delta;
 
-	CGameFont*		pFont;
-	CGameFont*		pFont2;
-	
 	FactoryPtr<IUIShader>*		m_hShader_back;
 
 	POINT			m_mouse_pos;
@@ -95,6 +92,9 @@ private:
 	int				m_start_tip;
 	u32				m_prev_length_str;
 
+	int				m_prompt_width;
+	int				m_cursor_width;
+	float			m_line_height;
 public:
 					CConsole			();
 	virtual			~CConsole			();

@@ -1855,7 +1855,7 @@ void game_cl_mp::draw_all_active_binder_states()
 {
 	//drawing download states ..
 	CGameFont* F = UI().Font().pFontDI;
-	F->SetHeightI	(0.015f);
+	F->SetHeight	(0.015f);
 	F->OutSetI		(0.1f,0.2f);
 	F->SetColor(color_xrgb(0, 255, 0));
 	

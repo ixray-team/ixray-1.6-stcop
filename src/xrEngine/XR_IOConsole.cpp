@@ -35,6 +35,10 @@ static u32 const tips_scroll_back_color  = color_rgba( 15, 15, 15, 230 );
 static u32 const tips_scroll_pos_color   = color_rgba( 70, 70, 70, 240 );
 
 
+static const char* m_fontConsoleName = "ui_font_console";
+static const char* m_fontConsole2Name = "ui_font_console_2";
+
+
 ENGINE_API CConsole*		Console		=	NULL;
 
 extern char const * const	ioc_prompt;
@@ -97,8 +101,6 @@ void CConsole::Initialize()
 {
 	scroll_delta	= 0;
 	bVisible		= false;
-	pFont			= NULL;
-	pFont2			= NULL;
 
 	m_mouse_pos.x	= 0;
 	m_mouse_pos.y	= 0;
@@ -133,8 +135,6 @@ CConsole::~CConsole()
 
 void CConsole::Destroy()
 {
-	xr_delete( pFont );
-	xr_delete( pFont2 );
 	Commands.clear();
 }
 
@@ -163,6 +163,7 @@ void CConsole::OnFrame()
 
 void CConsole::OutFont( LPCSTR text, float& pos_y )
 {
+	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
 	float str_length = pFont->SizeOf_( text );
 	float scr_width  = 1.98f * Device.HalfTargetWidth;
 	if( str_length > scr_width ) //1024.0f
@@ -181,7 +182,7 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 			if ( t > scr_width )
 			{
 				OutFont		( text + sz + 1, pos_y );
-				pos_y		-= LDIST;
+				pos_y		-= m_line_height;
 				pFont->OutI	( -1.0f, pos_y, "%s", one_line + ln );
 				ln			= sz + 1;
 				f			= 0.0f;
@@ -202,8 +203,6 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 
 void CConsole::OnScreenResolutionChanged()
 {
-	xr_delete( pFont );
-	xr_delete( pFont2 );
 }
 
 void CConsole::OnRender()
@@ -213,21 +212,19 @@ void CConsole::OnRender()
 		return;
 	}
 
-	if (!m_hShader_back) {
+	if (!m_hShader_back)
+	{
 		m_hShader_back = xr_new< FactoryPtr<IUIShader> >();
 		(*m_hShader_back)->create( "hud\\default", "ui\\ui_console" ); // "ui\\ui_empty"
 	}
-	
-	if ( !pFont )
-	{
-		pFont = xr_new<CGameFont>( "hud_font_di", CGameFont::fsDeviceIndependent );
-		pFont->SetHeightI(  0.025f );
-	}
-	if( !pFont2 )
-	{
-		pFont2 = xr_new<CGameFont>( "hud_font_di2", CGameFont::fsDeviceIndependent );
-		pFont2->SetHeightI( 0.025f );
-	}
+
+	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
+	CGameFont* pFont2 = g_FontManager->GetFont(m_fontConsole2Name);
+
+	m_prompt_width = pFont->WidthOf(ioc_prompt);
+	m_cursor_width = pFont->WidthOf(ch_cursor);
+
+	m_line_height = pFont->CurrentHeight_() / Device.HalfTargetHeight;
 
 	bool bGame = false;	
 	if ( ( g_pGameLevel && g_pGameLevel->bReady ) ||
@@ -241,65 +238,48 @@ void CConsole::OnRender()
 	}
 	
 	DrawBackgrounds( bGame );
+	
+	float fMaxY = bGame ? 0.0f : 1.0f;
+	float dwMaxY = (float)Device.TargetHeight;	
+	float maxStrWidth = Device.TargetWidth * 0.9f; // max cmd str width
 
-	float fMaxY;
-	float dwMaxY = (float)Device.TargetHeight;
-	// float dwMaxX=float(Device.TargetWidth/2);
-	if ( bGame )
+	float outY = fMaxY - m_line_height * 1.1f;
+	float relativeX = 1.0f / Device.HalfTargetWidth;
+
+	const char* strBeforeCursor = ec().str_before_cursor();
+	const char* strBeforeSelected = ec().str_before_mark();
+	const char* strSelected = ec().str_mark();
+	const char* strAfterSelected = ec().str_after_mark();
+
+	float strWidth = m_prompt_width + pFont->WidthOf(strBeforeCursor);
+
+	float outX = 0.0f;
+	if (strWidth > maxStrWidth)
 	{
-		fMaxY  = 0.0f;
-		dwMaxY /= 2;
-	}
-	else
-	{
-		fMaxY = 1.0f;
-	}
-
-	float ypos  = fMaxY - LDIST * 1.1f;
-	float scr_x = 1.0f / Device.HalfTargetWidth;
-
-	//---------------------------------------------------------------------------------
-	float scr_width  = 1.9f * Device.HalfTargetWidth;
-	float ioc_d      = pFont->SizeOf_(ioc_prompt);
-	float d1         = pFont->SizeOf_( "_" );
-
-	LPCSTR s_cursor = ec().str_before_cursor();
-	LPCSTR s_b_mark = ec().str_before_mark();
-	LPCSTR s_mark   = ec().str_mark();
-	LPCSTR s_mark_a = ec().str_after_mark();
-
-	//	strncpy_s( buf1, cur_pos, editor, MAX_LEN );
-	float str_length = ioc_d + pFont->SizeOf_( s_cursor );
-	float out_pos    = 0.0f;
-	if( str_length > scr_width )
-	{
-		out_pos -= (str_length - scr_width);
-		str_length = scr_width;
+		outX -= (strWidth - maxStrWidth);
 	}
 
-	pFont->SetColor( prompt_font_color );
-	pFont->OutI( -1.0f + out_pos * scr_x, ypos, "%s", ioc_prompt );
-	out_pos += ioc_d;
+	pFont->SetColor(prompt_font_color);
+	pFont->OutI(-1.0f + outX * relativeX, outY, "%s", ioc_prompt);
+	outX += m_prompt_width;
 
-	if (!m_disable_tips && m_tips.size()) {
+	if (!m_disable_tips && m_tips.size())
+	{
 		pFont->SetColor( tips_font_color );
 
 		float shift_x = 0.0f;
-		switch (m_tips_mode) {
-			case 0: shift_x = scr_x * 1.0f;
-			break;
-			case 1: shift_x = scr_x * out_pos;
-			break;
-			case 2: shift_x = scr_x * (ioc_d + pFont->SizeOf_(m_cur_cmd.c_str()) + d1);
-			break;
-			case 3: shift_x = scr_x * str_length;
-			break;
+		switch (m_tips_mode) 
+		{
+		case 0: shift_x = relativeX;			break;
+		case 1: shift_x = relativeX * outX;		break;
+		case 2: shift_x = relativeX * (m_prompt_width + pFont->SizeOf_(m_cur_cmd.c_str()) + m_cursor_width);	break;
+		case 3: shift_x = relativeX * strWidth;	break;
 		}
 
 		vecTipsEx::iterator itb = m_tips.begin() + m_start_tip;
 		vecTipsEx::iterator ite = m_tips.end();
 		for (u32 i = 0; itb != ite ; ++itb, ++i) { // tips
-			pFont->OutI( -1.0f + shift_x, fMaxY + i*LDIST, "%s", (*itb).text.c_str() );
+			pFont->OutI( -1.0f + shift_x, fMaxY + i* m_line_height, "%s", (*itb).text.c_str() );
 			if (i >= VIEW_TIPS_COUNT - 1) {
 				break; //for
 			}
@@ -310,24 +290,27 @@ void CConsole::OnRender()
 	pFont->SetColor ( cmd_font_color );
 	pFont2->SetColor( cmd_font_color );
 
-	pFont->OutI(  -1.0f + out_pos * scr_x, ypos, "%s", s_b_mark );		out_pos += pFont->SizeOf_(s_b_mark);
-	pFont2->OutI( -1.0f + out_pos * scr_x, ypos, "%s", s_mark );		out_pos += pFont2->SizeOf_(s_mark);
-	pFont->OutI(  -1.0f + out_pos * scr_x, ypos, "%s", s_mark_a );
+	pFont->OutI(-1.0f + outX * relativeX, outY, "%s", strBeforeSelected);
+	outX += pFont->SizeOf_(strBeforeSelected);
+	pFont2->OutI(-1.0f + outX * relativeX, outY, "%s", strSelected);
+	outX += pFont2->SizeOf_(strSelected);
+	pFont->OutI(-1.0f + outX * relativeX, outY, "%s", strAfterSelected);
 
 	//pFont2->OutI( -1.0f + ioc_d * scr_x, ypos, "%s", editor=all );
 	
 	if( ec().cursor_view() )
 	{
-		pFont->SetColor( cursor_font_color );
-		pFont->OutI( -1.0f + str_length * scr_x, ypos, "%s", ch_cursor );
+		pFont->SetColor( cursor_font_color );		
+		pFont->OutI(-1.0f + strWidth * relativeX, outY, "%s", ch_cursor);
 	}
 	
 	// ---------------------
 	u32 log_line = (u32)LogFile->size()-1;
-	ypos -= LDIST;
-	for(int i = log_line - scroll_delta; i >= 0; --i) {
-		ypos -= LDIST;
-		if ( ypos < -1.0f )
+	outY -= m_line_height;
+	for(int i = log_line - scroll_delta; i >= 0; --i)
+	{
+		outY -= m_line_height;
+		if (outY < -1.0f)
 		{
 			break;
 		}
@@ -339,14 +322,14 @@ void CConsole::OnRender()
 		}
 		Console_mark cm = (Console_mark)ls[0];
 		pFont->SetColor( get_mark_color( cm ) );
-		OutFont( ls, ypos );
+		OutFont( ls, outY);
 	}
 	
 	string16 q;
 	_itoa( log_line, q, 10 );
 	u32 qn = xr_strlen( q );
 	pFont->SetColor( total_font_color );
-	pFont->OutI( 0.95f - 0.03f * qn, fMaxY - 2.0f * LDIST, "[%d]", log_line );
+	pFont->OutI( 0.95f - 0.03f * qn, fMaxY - 2.0f * m_line_height, "[%d]", log_line );
 		
 	pFont->OnRender();
 	pFont2->OnRender();
@@ -369,43 +352,45 @@ void CConsole::DrawBackgrounds(bool bGame) {
 		return;
 	}
 
-	LPCSTR max_str = "xxxxx";
-	vecTipsEx::iterator itb = m_tips.begin();
-	vecTipsEx::iterator ite = m_tips.end();
-	for (; itb != ite; ++itb) {
-		if (pFont->SizeOf_((*itb).text.c_str()) > pFont->SizeOf_(max_str)) {
-			max_str = (*itb).text.c_str();
+	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
+
+	int maxStrWidth = pFont->WidthOf("xxxxx");
+	for (TipString itb : m_tips)
+	{
+		int strWidth = pFont->WidthOf(itb.text.c_str());
+		if (strWidth > maxStrWidth)
+		{
+			maxStrWidth = strWidth;
 		}
 	}
 
-	float w1        = pFont->SizeOf_( "_" );
-	float ioc_w     = pFont->SizeOf_( ioc_prompt ) - w1;
-	float cur_cmd_w = pFont->SizeOf_( m_cur_cmd.c_str() );
-	cur_cmd_w		+= (cur_cmd_w > 0.01f) ? w1 : 0.0f;
+	float cmdWidth = 0;
+	if (m_cur_cmd.size() > 0) 
+	{
+		cmdWidth = m_cursor_width + pFont->SizeOf_(m_cur_cmd.c_str());
+	}
 
-	float list_w    = pFont->SizeOf_( max_str ) + 2.0f * w1;
+	float fontHeight = pFont->CurrentHeight_();
+	float tipsHeight = std::min(m_tips.size(), (size_t)VIEW_TIPS_COUNT) * fontHeight + 5;
 
-	float font_h    = pFont->CurrentHeight_();
-	float tips_h    = std::min( m_tips.size(), (size_t)VIEW_TIPS_COUNT ) * font_h;
-	tips_h			+= ( m_tips.size() > 0 )? 5.0f : 0.0f;
-
-	Frect pr, sr;
-	pr.x1 = ioc_w + cur_cmd_w;
-	pr.x2 = pr.x1 + list_w;
+	Frect pr, sr; //background rect, selection rect
+	pr.x1 = m_prompt_width - m_cursor_width + cmdWidth;
+	pr.x2 = pr.x1 + maxStrWidth + 2 * m_cursor_width;
 
 	pr.y1 = UI_BASE_HEIGHT * 0.5f;
 	pr.y1 *= float(Device.TargetHeight)/UI_BASE_HEIGHT;
 
-	pr.y2 = pr.y1 + tips_h;
+	pr.y2 = pr.y1 + tipsHeight;
 
 	float select_y = 0.0f;
 	float select_h = 0.0f;
 	
-	if (m_select_tip >= 0 && m_select_tip < (int)m_tips.size()) {
+	if (m_select_tip >= 0 && m_select_tip < (int)m_tips.size())
+	{
 		int sel_pos = m_select_tip - m_start_tip;
 
-		select_y = sel_pos * font_h;
-		select_h = font_h; //1 string
+		select_y = sel_pos * fontHeight;
+		select_h = fontHeight; //1 string
 	}
 	
 	sr.x1 = pr.x1;
@@ -419,7 +404,8 @@ void CConsole::DrawBackgrounds(bool bGame) {
 
 	// --------------------------- highlight words --------------------
 
-	if (m_select_tip < (int)m_tips.size()) {
+	if (m_select_tip < (int)m_tips.size())
+	{
 		Frect r_{};
 
 		xr_string tmp;
@@ -437,12 +423,12 @@ void CConsole::DrawBackgrounds(bool bGame) {
 
 			r_.null();
 			tmp.assign(ts.text.c_str(), ts.HL_start);
-			r.x1 = pr.x1 + w1 + pFont->SizeOf_(tmp.c_str());
-			r_.y1 = pr.y1 + i * font_h;
+			r.x1 = pr.x1 + m_cursor_width + pFont->SizeOf_(tmp.c_str());
+			r_.y1 = pr.y1 + i * fontHeight;
 
 			tmp.assign(ts.text.c_str(), ts.HL_finish);
-			r.x2 = pr.x1 + w1 + pFont->SizeOf_(tmp.c_str());
-			r_.y2 = r_.y1 + font_h;
+			r.x2 = pr.x1 + m_cursor_width + pFont->SizeOf_(tmp.c_str());
+			r_.y2 = r_.y1 + fontHeight;
 
 			DrawRect( r_, tips_word_color );
 
@@ -455,20 +441,22 @@ void CConsole::DrawBackgrounds(bool bGame) {
 	// --------------------------- scroll bar --------------------
 
 	u32 tips_sz = (u32)m_tips.size();
-	if (tips_sz > VIEW_TIPS_COUNT) {
+	if (tips_sz > VIEW_TIPS_COUNT)
+	{
 		Frect rb, rs;
 		
 		rb.x1 = pr.x2;
 		rb.y1 = pr.y1;
-		rb.x2 = rb.x1 + 2 * w1;
+		rb.x2 = rb.x1 + 2 * m_cursor_width;
 		rb.y2 = pr.y2;
 		DrawRect( rb, tips_scroll_back_color );
 
 		VERIFY( rb.y2 - rb.y1 >= 1.0f );
 		float back_height = rb.y2 - rb.y1;
 		float u_height = (back_height * (float)VIEW_TIPS_COUNT)/ float(tips_sz);
-		if (u_height < 0.5f * font_h) {
-			u_height = 0.5f * font_h;
+		if (u_height < 0.5f * fontHeight) 
+		{
+			u_height = 0.5f * fontHeight;
 		}
 
 		//float u_pos = (back_height - u_height) * float(m_start_tip) / float(tips_sz);

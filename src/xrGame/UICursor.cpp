@@ -75,7 +75,7 @@ void CUICursor::OnRender	()
 	{
 		CGameFont* F		= UI().Font().pFontDI;
 		F->SetAligment		(CGameFont::alCenter);
-		F->SetHeightI		(0.02f);
+		F->SetHeight		(0.02f);
 		F->OutSetI			(0.f,-0.9f);
 		F->SetColor			(0xffffffff);
 		Fvector2			pt = GetCursorPosition();

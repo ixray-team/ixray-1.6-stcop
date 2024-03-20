@@ -35,7 +35,6 @@ private:
 
 	void					Level_Append		(LPCSTR lname);
 public:
-	CGameFont*				pFontSystem;
 
 	// Levels
 	xr_vector<sLevelInfo>	Levels;

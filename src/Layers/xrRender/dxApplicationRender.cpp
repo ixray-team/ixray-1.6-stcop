@@ -192,20 +192,20 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	if (EngineExternal()[EEngineExternalRender::LoadScreenTips])
 	{
 		// Draw title
-		VERIFY							(owner.pFontSystem);
-		owner.pFontSystem->Clear		();
-		owner.pFontSystem->SetColor		(color_rgba(103,103,103,255));
-		owner.pFontSystem->SetAligment	(CGameFont::alCenter);
+		CGameFont* SystemFont = g_FontManager->pFontSystem;
+		SystemFont->Clear		();
+		SystemFont->SetColor		(color_rgba(103,103,103,255));
+		SystemFont->SetAligment	(CGameFont::alCenter);
 		back_size.set					(_w/2,622.0f*k.y);
-		owner.pFontSystem->OutSet		(back_size.x, back_size.y);
-		owner.pFontSystem->OutNext		(owner.ls_header);
-		owner.pFontSystem->OutNext		("");
-		owner.pFontSystem->OutNext		(owner.ls_tip_number);
+		SystemFont->OutSet		(back_size.x, back_size.y);
+		SystemFont->OutNext		(owner.ls_header);
+		SystemFont->OutNext		("");
+		SystemFont->OutNext		(owner.ls_tip_number);
 
 		float fTargetWidth				= 600.0f*k.x*(b_ws?0.8f:1.0f);
-		draw_multiline_text				(owner.pFontSystem, fTargetWidth, owner.ls_tip);
+		draw_multiline_text				(SystemFont, fTargetWidth, owner.ls_tip);
 
-		owner.pFontSystem->OnRender		();
+		SystemFont->OnRender		();
 	}
 
 	//draw level-specific screenshot
