@@ -188,14 +188,40 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h
 )
 
+add_custom_command(TARGET ${PROJECT_NAME}
+    PRE_BUILD
+    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+)
+
+if (WIN32)
+    if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+        set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x86.2024.3.16-open/)
+    else()
+        set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x64.2024.3.16-open/)
+    endif()
+endif()
+
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/win-x86/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 else()
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/win-x64/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 endif()
+
+## Sdl3
+if (WIN32)
+    if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+        target_link_libraries(xrCore PRIVATE ${CORE_SDL3}runtimes/win-x86/native/Release/SDL3.lib)
+    else()
+        target_link_libraries(xrCore PRIVATE ${CORE_SDL3}runtimes/win-x64/native/Release/SDL3.lib)
+    endif()
+endif()
+target_include_directories(xrCore PRIVATE "${CORE_SDL3}/build/native/include/")
+
