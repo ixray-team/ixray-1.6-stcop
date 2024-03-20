@@ -13,7 +13,18 @@ ipch/
 *.VC.VC.opendb
 *.aps
 
-# Visual Studio migrating reports
+# Build results
+obj/
+lib/
+bin/
+build/
+build_win32/
+build32/
+
+# Common logs
+*.log
+
+# Migrating report files
 _UpgradeReport_Files/
 UpgradeLog*.XML
 UpgradeLog*.htm
@@ -48,7 +59,6 @@ packages/
 temp/
 gamedata_origin/
 patch/
-*.log
 
 # Generated files
 imgui.ini

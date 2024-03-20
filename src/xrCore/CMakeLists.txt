@@ -159,6 +159,35 @@ else()
     target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll.lib)
 endif()
 
+# Get author name
+execute_process(
+    COMMAND git log -1 --pretty=format:%an
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE AUTHOR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Get current branch
+execute_process(
+    COMMAND git branch --show-current
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Get hash of the latest commit
+execute_process(
+    COMMAND git log --pretty=format:%h -n 1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Define a variable for CI_BUILD
+set(CI_BUILD 0)
+# Create git_version.h file
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h
+)
+
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
