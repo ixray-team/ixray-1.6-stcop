@@ -21,12 +21,6 @@ using namespace DirectX;
 // must be defined before include of FS_impl.h
 #define INCLUDE_FROM_ENGINE
 #include "../xrCore/FS_impl.h"
-
-#ifdef INGAME_EDITOR
-#	include "../include/editor/ide.hpp"
-#	include "engine_impl.hpp"
-#endif // #ifdef INGAME_EDITOR
-
 #include "igame_persistent.h"
 
 ENGINE_API CRenderDevice Device;
@@ -83,9 +77,6 @@ void CRenderDevice::End		(void)
 		return;
 	}
 
-#ifdef INGAME_EDITOR
-	bool							load_finished = false;
-#endif
 	if (dwPrecacheFrame)
 	{
 		::Sound->set_master_volume	(0.f);
@@ -93,10 +84,6 @@ void CRenderDevice::End		(void)
 
 		if (0==dwPrecacheFrame)
 		{
-
-#ifdef INGAME_EDITOR
-			load_finished			= true;
-#endif
 			m_pRender->updateGamma();
 
 			if(precache_light) precache_light->set_active	(false);
@@ -132,11 +119,6 @@ void CRenderDevice::End		(void)
 	// end scene
 
 	m_pRender->End();
-
-#	ifdef INGAME_EDITOR
-	if (load_finished && m_editor)
-		m_editor->on_load_finished();
-#	endif
 }
 
 volatile u32 mt_Thread_marker = 0x12345678;
@@ -311,26 +293,10 @@ void CRenderDevice::on_idle		()
 		Sleep		(1);
 }
 
-#ifdef INGAME_EDITOR
-void CRenderDevice::message_loop_editor	()
-{
-	m_editor->run			();
-	m_editor_finalize		(m_editor);
-	xr_delete				(m_engine);
-}
-#endif // #ifdef INGAME_EDITOR
-
 bool quiting = false;
 
 void CRenderDevice::message_loop()
 {
-#ifdef INGAME_EDITOR
-	if (editor()) {
-		message_loop_editor	();
-		return;
-	}
-#endif // #ifdef INGAME_EDITOR
-
 	while (!quiting) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -437,13 +403,6 @@ ENGINE_API BOOL bShowPauseString = TRUE;
 
 CRenderDevice::CRenderDevice() :
 	m_pRender(0)
-#ifdef INGAME_EDITOR
-	, m_editor_module(0),
-	m_editor_initialize(0),
-	m_editor_finalize(0),
-	m_editor(0),
-	m_engine(0)
-#endif // #ifdef INGAME_EDITOR
 #ifdef PROFILE_CRITICAL_SECTIONS
 	, mt_csEnter(MUTEX_PROFILE_ID(CRenderDevice::mt_csEnter))
 	, mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
@@ -469,9 +428,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 	{
 		if(!Paused())						
 			bShowPauseString				= 
-#ifdef INGAME_EDITOR
-				editor() ? FALSE : 
-#endif // #ifdef INGAME_EDITOR
 #ifdef DEBUG
 				!xr_strcmp(reason, "li_pause_key_no_clip")?	FALSE:
 #endif // DEBUG
@@ -533,9 +489,6 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 
 		if (!g_dedicated_server) 
 		{
-#	ifdef INGAME_EDITOR
-			//if (!editor())
-#	endif
 			//SDL_HideCursor();
 		}
 	}

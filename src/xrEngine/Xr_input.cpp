@@ -137,10 +137,6 @@ const xr_map<u8, xr_string> KeyNamesTable =
 static bool g_exclusive	= true;
 static void on_error_dialog			(bool before)
 {
-#ifdef INGAME_EDITOR
-	if (Device.editor())
-		return;
-#endif
 	if (!pInput || !g_exclusive)
 		return;
 

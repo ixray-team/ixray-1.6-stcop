@@ -23,11 +23,7 @@ class CLensFlareDescriptor;
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/EnvironmentRender.h"
 
-#ifdef INGAME_EDITOR
-#	define	INGAME_EDITOR_VIRTUAL	virtual
-#else // #ifdef INGAME_EDITOR
 #	define	INGAME_EDITOR_VIRTUAL
-#endif // #ifdef INGAME_EDITOR
 
 ENGINE_API extern Flags32 psEnvironmentFlags;
 
@@ -345,9 +341,6 @@ public:
     void					ED_Reload			();
     float					GetGameTime			(){return fGameTime;}
 #else // #ifdef _EDITOR
-#	ifdef INGAME_EDITOR
-		float				GetGameTime			(){return fGameTime;}
-#	endif // #ifdef INGAME_EDITOR
 
 	bool					m_paused;
 #endif // #ifdef _EDITOR

@@ -25,10 +25,6 @@
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 
-#ifdef INGAME_EDITOR
-#	include "../Include/editor/interfaces.hpp"
-#endif // #ifdef INGAME_EDITOR
-
 class engine_impl;
 struct RENDERDOC_API_1_6_0;
 union SDL_Event;
@@ -281,25 +277,6 @@ private:
 virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
 virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
 virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
-#ifdef INGAME_EDITOR
-public:
-	IC		editor::ide			*editor				() const { return m_editor; }
-
-private:
-			void				initialize_editor	();
-			void				message_loop_editor	();
-
-private:
-	using initialize_function_ptr = editor::initialize_function_ptr;
-	using finalize_function_ptr = editor::finalize_function_ptr;
-
-private:
-	HMODULE						m_editor_module;
-	initialize_function_ptr		m_editor_initialize;
-	finalize_function_ptr		m_editor_finalize;
-	editor::ide					*m_editor;
-	engine_impl					*m_engine;
-#endif // #ifdef INGAME_EDITOR
 };
 
 extern		ENGINE_API		CRenderDevice		Device;

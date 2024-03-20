@@ -15,11 +15,7 @@ class ENGINE_API CLAItem;
 #include "../Include/xrRender/ThunderboltDescRender.h"
 #include "../Include/xrRender/ThunderboltRender.h"
 
-#ifdef INGAME_EDITOR
-#	define	INGAME_EDITOR_VIRTUAL	virtual
-#else // #ifdef INGAME_EDITOR
 #	define	INGAME_EDITOR_VIRTUAL
-#endif // #ifdef INGAME_EDITOR
 
 class CEnvironment;
 
