@@ -1092,6 +1092,27 @@ u32 CLevel::GetGameDayTimeMS()
 	return	(u32(s64(GetGameTime() % (24*60*60*1000))));
 }
 
+float CLevel::GetEnvironmentTimeFactor() const
+{
+	if (!game)
+		return 0.0f;
+	return game->GetEnvironmentGameTimeFactor();
+}
+
+u64 CLevel::GetEnvironmentGameTime() const
+{
+	if (!game)
+		return 0;
+	return game->GetEnvironmentGameTime();
+}
+
+void CLevel::SetEnvironmentTimeFactor(const float fTimeFactor)
+{
+	if (!game)
+		return;
+	game->SetEnvironmentGameTimeFactor(fTimeFactor);
+}
+
 float CLevel::GetEnvironmentGameDayTimeSec()
 {
 	return	(float(s64(GetEnvironmentGameTime() % (24*60*60*1000)))/1000.f);

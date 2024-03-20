@@ -8,6 +8,7 @@
 #include "DynamicSplashScreen.h"
 
 #include "../xrCore/git_version.h"
+#include "UIEditorMain.h"
 
 #ifndef DEBUG
 #define NO_MULTI_INSTANCES
@@ -106,7 +107,8 @@ int APIENTRY WinMain
 
 	// Show main wnd
 	Console->Execute("vid_restart");
-	
+	RenderUI();
+
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);

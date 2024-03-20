@@ -120,6 +120,11 @@ void CEngineAPI::Initialize(void)
 			Msg("Found %s DLL! Enable MP subsystem!", g_name);
 		}
 	}
+
+	for (size_t Iter = 0; Iter < (size_t)EditorUI::Force; Iter++)
+	{
+		EditorStates[(EditorUI)Iter] = false;
+	}
 }
 
 void CEngineAPI::Destroy	(void)
