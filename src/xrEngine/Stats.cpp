@@ -144,7 +144,8 @@ void CStats::Show()
 	}
 
 	CGameFont& F = *pFont;
-	float		f_base_size	= 0.01f;
+	float f_base_size = 15.0f;
+	F.SetHeight(f_base_size);
 
 	// Show them
 	if (psDeviceFlags.test(rsStatistic))

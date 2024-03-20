@@ -187,14 +187,14 @@ void
 CInput::MouseMotion(float dx, float dy)
 {
 	mouseMoved = true;
-	offs[0] += dx;
-	offs[1] += dy;
+	offs[0] += (int)dx;
+	offs[1] += (int)dy;
 }
 
 void CInput::MouseScroll(float d)
 {
 	mouseScrolled = true;
-	offs[2] += d;
+	offs[2] += (int)d;
 }
 
 void					
@@ -225,20 +225,27 @@ CInput::KeyReleased(int SDLCode)
 
 void CInput::KeyboardUpdate( )
 {
-	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++) {
+	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++)
+	{
 		bool Pressed = !!KBState[i];
-		if (KBState[i] != old_KBState[i]) {
-			if (Pressed) {
-				cbStack.back()->IR_OnKeyboardPress(i);
-			} else {
-				cbStack.back()->IR_OnKeyboardRelease(i);
+		if (KBState[i] != old_KBState[i]) 
+		{
+			if (Pressed)
+			{
+				cbStack.back()->IR_OnKeyboardPress((int)i);
+			}
+			else 
+			{
+				cbStack.back()->IR_OnKeyboardRelease((int)i);
 			}
 		}
 	}
 
-	for (int i = 0; i < COUNT_KB_BUTTONS; i++) {
-		if (KBState[i]) {
-			cbStack.back()->IR_OnKeyboardHold(i);
+	for (int i = 0; i < COUNT_KB_BUTTONS; i++)
+	{
+		if (KBState[i]) 
+		{
+			cbStack.back()->IR_OnKeyboardHold((int)i);
 		}
 	}	
 	
@@ -330,9 +337,9 @@ void CInput::MouseUpdate( )
 		bool Pressed = !!mouseState[i];
 		if (mouseState[i] != old_mouseState[i]) {
 			if (Pressed) {
-				cbStack.back()->IR_OnMousePress(i);
+				cbStack.back()->IR_OnMousePress((int)i);
 			} else {
-				cbStack.back()->IR_OnMouseRelease(i);
+				cbStack.back()->IR_OnMouseRelease((int)i);
 			}
 		}
 	}
