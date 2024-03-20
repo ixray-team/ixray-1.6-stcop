@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "xr_input.h"
+#include "imgui_impl_sdl3.h"
 
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
+	ImGui_ImplSDL3_ProcessEvent(&Event);
 	switch (Event.type) {
 	case SDL_EVENT_WINDOW_MOUSE_ENTER:
 		OnWM_Activate(true, false);

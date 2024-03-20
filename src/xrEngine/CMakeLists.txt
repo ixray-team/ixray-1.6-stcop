@@ -108,6 +108,7 @@ target_link_libraries(xrAbstractions PUBLIC luabind)
 target_link_libraries(xrAbstractions PUBLIC xrNetServer)
 target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
 target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
+target_link_libraries(xrAbstractions PUBLIC imgui)
 
 # Nuget
 set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)

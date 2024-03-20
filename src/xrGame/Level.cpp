@@ -831,7 +831,6 @@ void CLevel::OnRender()
 	
 	DBG().draw_debug_text();
 
-
 	if (psAI_Flags.is(aiVision)) {
 		for (u32 I=0; I < Level().Objects.o_count(); I++) {
 			CObject						*object = Objects.o_get_by_iterator(I);

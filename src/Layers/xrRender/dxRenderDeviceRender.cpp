@@ -2,6 +2,8 @@
 #include "dxRenderDeviceRender.h"
 
 #include "ResourceManager.h"
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
 
 dxRenderDeviceRender::dxRenderDeviceRender()
 	:	Resources(0)
@@ -50,6 +52,7 @@ void dxRenderDeviceRender::ValidateHW()
 void dxRenderDeviceRender::DestroyHW()
 {
 	xr_delete					(Resources);
+	ImGui_ImplDX11_Shutdown();
 }
 
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2)
@@ -149,6 +152,12 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
 void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool move_window)
 {
+#ifdef USE_DX11
+	ImGui_ImplDX11_Init(RDevice, RContext);
+#else
+#error HUY
+#endif
+
 #ifdef USE_DX11
 	dwWidth					= Device.GetSwapchainWidth();
 	dwHeight				= Device.GetSwapchainHeight();
@@ -335,6 +344,14 @@ void dxRenderDeviceRender::End()
 	RCache.OnFrameEnd	();
 
 	DoAsyncScreenshot();
+
+	ID3D11RenderTargetView* RTV = RSwapchainTarget;
+	RContext->OMSetRenderTargets(1, &RTV, nullptr);
+	ImGui_ImplDX11_NewFrame();
+	ImGui::NewFrame();
+	Device.DrawUI();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 #ifdef USE_DX11
 	if (psDeviceFlags.test(rsVSync)) {
