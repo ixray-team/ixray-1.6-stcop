@@ -328,6 +328,33 @@ BOOL CInput::iGetAsyncBtnState( int btn )
 
 #pragma warning(push)
 #pragma warning(disable: 4644)
+void CInput::NoInputUpdate()
+{
+	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++) {
+		bool Pressed = !!KBState[i];
+		if (KBState[i] != old_KBState[i]) {
+			if (!Pressed) {
+				cbStack.back()->IR_OnKeyboardRelease(i);
+			}
+
+			old_KBState[i] = KBState[i];
+		}
+	}
+
+	for (size_t i = 0; i < COUNT_MOUSE_BUTTONS; i++) {
+		bool Pressed = !!mouseState[i];
+		if (mouseState[i] != old_mouseState[i]) {
+			if (!Pressed) {
+				cbStack.back()->IR_OnMouseRelease(i);
+			}
+
+			old_mouseState[i] = mouseState[i];
+		}
+	}
+
+	offs[0] = offs[1] = offs[2] = 0;
+}
+
 void CInput::MouseUpdate( )
 {
 	if (Device.dwPrecacheFrame)
@@ -370,8 +397,13 @@ void CInput::MouseUpdate( )
 void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
-	MouseUpdate();
-	KeyboardUpdate();
+
+	if (Device.IsCapturingInputs()) {
+		NoInputUpdate();
+	} else {
+		MouseUpdate();
+		KeyboardUpdate();
+	}
 
     // change focus
 	if (!cbStack.empty())
@@ -431,8 +463,13 @@ void CInput::OnFrame			(void)
 {
 	RDEVICE.Statistic->Input.Begin();
 	dwCurTime = RDEVICE.TimerAsync_MMT();
-	KeyboardUpdate();
-	MouseUpdate();
+	if (Device.IsCapturingInputs()) {
+		NoInputUpdate();
+	} else {
+		MouseUpdate();
+		KeyboardUpdate();
+	}
+
 	RDEVICE.Statistic->Input.End();
 }
 

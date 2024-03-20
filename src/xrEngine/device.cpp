@@ -435,6 +435,28 @@ void ProcessLoading				(RP_FUNC *f)
 ENGINE_API BOOL bShowPauseString = TRUE;
 #include "IGame_Persistent.h"
 
+CRenderDevice::CRenderDevice() :
+	m_pRender(0)
+#ifdef INGAME_EDITOR
+	, m_editor_module(0),
+	m_editor_initialize(0),
+	m_editor_finalize(0),
+	m_editor(0),
+	m_engine(0)
+#endif // #ifdef INGAME_EDITOR
+#ifdef PROFILE_CRITICAL_SECTIONS
+	, mt_csEnter(MUTEX_PROFILE_ID(CRenderDevice::mt_csEnter))
+	, mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
+#endif // #ifdef PROFILE_CRITICAL_SECTIONS
+{
+	CaptureInputs = false;
+	DrawUIRender = true;
+	b_is_Active = true;
+	b_is_Ready = FALSE;
+	Timer.Start();
+	m_bNearer = FALSE;
+};
+
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
 	static int snd_emitters_ = -1;
