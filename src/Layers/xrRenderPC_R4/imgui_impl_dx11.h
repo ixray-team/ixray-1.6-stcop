@@ -30,4 +30,28 @@ IMGUI_IMPL_API void     ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data);
 IMGUI_IMPL_API void     ImGui_ImplDX11_InvalidateDeviceObjects();
 IMGUI_IMPL_API bool     ImGui_ImplDX11_CreateDeviceObjects();
 
+
+// DirectX11 data
+struct ImGui_ImplDX11_Data
+{
+    ID3D11Device* pd3dDevice;
+    ID3D11DeviceContext* pd3dDeviceContext;
+    IDXGIFactory* pFactory;
+    ID3D11Buffer* pVB;
+    ID3D11Buffer* pIB;
+    ID3D11VertexShader* pVertexShader;
+    ID3D11InputLayout* pInputLayout;
+    ID3D11Buffer* pVertexConstantBuffer;
+    ID3D11PixelShader* pPixelShader;
+    ID3D11SamplerState* pFontSampler;
+    ID3D11ShaderResourceView* pFontTextureView;
+    ID3D11RasterizerState* pRasterizerState;
+    ID3D11BlendState* pBlendState;
+    ID3D11DepthStencilState* pDepthStencilState;
+    int                         VertexBufferSize;
+    int                         IndexBufferSize;
+
+    ImGui_ImplDX11_Data() { memset((void*)this, 0, sizeof(*this)); VertexBufferSize = 5000; IndexBufferSize = 10000; }
+};
+
 #endif // #ifndef IMGUI_DISABLE

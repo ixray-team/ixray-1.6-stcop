@@ -148,6 +148,8 @@ private:
 	ID3DVertexBuffer*		g_accum_volumetric_vb;
 	ID3DIndexBuffer*		g_accum_volumetric_ib;
 
+	ID3DBlendState*			g_debug_blend_state = nullptr;
+
 	// Bloom
 	ref_geom					g_bloom_build;
 	ref_geom					g_bloom_filter;

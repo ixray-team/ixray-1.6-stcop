@@ -25,6 +25,7 @@ extern ECORE_API	u32			ps_r2_aa_type;//	=	0;
 extern ECORE_API	xr_token	aa_type_token[];
 
 extern ECORE_API	int			ps_r__LightSleepFrames;
+extern ECORE_API	int			ps_r__GraphicDebug;
 extern ECORE_API float ps_r__tf_Mipbias;
 extern ECORE_API	float		ps_r__Detail_l_ambient;
 extern ECORE_API	float		ps_r__Detail_l_aniso;

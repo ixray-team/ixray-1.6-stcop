@@ -449,7 +449,7 @@ CRenderDevice::CRenderDevice() :
 	, mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
 #endif // #ifdef PROFILE_CRITICAL_SECTIONS
 {
-	CaptureInputs = true;
+	CaptureInputs = false;
 	DrawUIRender = true;
 	b_is_Active = true;
 	b_is_Ready = FALSE;
