@@ -133,7 +133,7 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 		while (TRUE) {
 			HRESULT _hr = DxDevice->Reset(&P);
 			if (SUCCEEDED(_hr))					break;
-			Msg("! ERROR: [%dx%d]: %s", P.BackBufferWidth, P.BackBufferHeight, Debug.error2string(_hr));
+			Msg("! ERROR: [%dx%d]: %s", P.BackBufferWidth, P.BackBufferHeight, Debug.dxerror2string(_hr));
 			Sleep(100);
 		}
 	} else {
