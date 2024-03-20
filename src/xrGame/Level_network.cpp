@@ -77,14 +77,12 @@ void CLevel::remove_objects	()
 	ph_commander().clear		();
 	ph_commander_scripts().clear();
 
-	if(!g_dedicated_server)
-		space_restriction_manager().clear	();
+	space_restriction_manager().clear	();
 
 	psDeviceFlags.set			(rsDisableObjectsAsCrows, b_stored);
 	g_b_ClearGameCaptions		= true;
 
-	if (!g_dedicated_server)
-		ai().script_engine().collect_all_garbage	();
+	ai().script_engine().collect_all_garbage	();
 
 	stalker_animation_data_storage().clear		();
 	
@@ -165,8 +163,7 @@ void CLevel::net_Stop		()
 		xr_delete				(Server);
 	}
 
-	if (!g_dedicated_server)
-		ai().script_engine().collect_all_garbage	();
+	ai().script_engine().collect_all_garbage();
 
 #ifdef DEBUG
 	show_animation_stats		();

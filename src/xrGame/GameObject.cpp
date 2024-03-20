@@ -56,7 +56,7 @@ CGameObject::CGameObject		()
 	m_bCrPr_Activated			= false;
 	m_dwCrPr_ActivationStep		= 0;
 	m_spawn_time				= 0;
-	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
+	m_ai_location				= xr_new<CAI_ObjectLocation>();
 	m_server_flags.one			();
 
 	m_callbacks					= xr_new<CALLBACK_MAP>();
@@ -93,14 +93,14 @@ void CGameObject::Load(LPCSTR section)
 	}
 }
 
-void CGameObject::reinit	()
+void CGameObject::reinit()
 {
-	m_visual_callback.clear	();
-	if (!g_dedicated_server)
-        ai_location().reinit	();
+	m_visual_callback.clear();
+	ai_location().reinit();
 
 	// clear callbacks	
-	for (CALLBACK_MAP_IT it = m_callbacks->begin(); it != m_callbacks->end(); ++it) it->second.clear();
+	for (auto& [Type, Callback] : *m_callbacks)
+		Callback.clear();
 }
 
 void CGameObject::reload	(LPCSTR section)
@@ -337,13 +337,12 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 			spatial.type				= (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
 	}
 
-	reload						(*cNameSect());
-	if(!g_dedicated_server)
-		CScriptBinder::reload	(*cNameSect());
+	reload(*cNameSect());
+	CScriptBinder::reload(*cNameSect());
 	
-	reinit						();
-	if(!g_dedicated_server)
-		CScriptBinder::reinit	();
+	reinit();
+	CScriptBinder::reinit();
+
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&_stricmp(PH_DBG_ObjectTrackName(),*cName())==0)
 	{
@@ -830,8 +829,7 @@ void CGameObject::shedule_Update	(u32 dt)
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
 	
-	if(!g_dedicated_server)
-		CScriptBinder::shedule_Update(dt);
+	CScriptBinder::shedule_Update(dt);
 }
 
 BOOL CGameObject::net_SaveRelevant	()
@@ -890,11 +888,10 @@ u32	CGameObject::ef_detector_type		() const
 	return		(u32(-1));
 }
 
-void CGameObject::net_Relcase			(CObject* O)
+void CGameObject::net_Relcase(CObject* O)
 {
-	inherited::net_Relcase		(O);
-	if(!g_dedicated_server)
-		CScriptBinder::net_Relcase	(O);
+	inherited::net_Relcase(O);
+	CScriptBinder::net_Relcase(O);
 }
 
 CGameObject::CScriptCallbackExVoid &CGameObject::callback(GameObject::ECallbackType type) const

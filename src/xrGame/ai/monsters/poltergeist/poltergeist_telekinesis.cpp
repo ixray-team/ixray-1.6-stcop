@@ -47,6 +47,10 @@ void CPolterTele::update_schedule()
 {
 	inherited::update_schedule();
 
+	if (!IsGameTypeSingle())
+		if (!Actor())
+			return;
+
 	Fvector const actor_pos				=	Actor()->Position();
 	float const dist2actor				=	actor_pos.distance_to(m_object->Position());
 

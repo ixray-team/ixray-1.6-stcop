@@ -47,6 +47,7 @@
 #include "characterphysicssupport.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "../xrengine/xr_collide_form.h"
+#include "actor_mp_client.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #	include "../xrPhysics/phvalide.h"
@@ -58,13 +59,10 @@ int			g_dwInputUpdateDelta		= 20;
 BOOL		net_cl_inputguaranteed		= FALSE;
 CActor*		g_actor						= NULL;
 
-CActor*			Actor()	
-{	
-	R_ASSERT2	(IsGameTypeSingle(), "Actor() method invokation must be only in Single Player game!");
-	VERIFY		(g_actor);
-	/*if (!IsGameTypeSingle()) 
-		VERIFY	(g_actor == Level().CurrentControlEntity());*/
-	return		(g_actor); 
+CActor* Actor()
+{
+	VERIFY(g_actor);
+	return g_actor;
 };
 
 //--------------------------------------------------------------------
@@ -516,14 +514,45 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	};
 	//force actor to be local on server client
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeCreatureActor	*E	= smart_cast<CSE_ALifeCreatureActor*>(e);	
-	if (OnServer())
+	CSE_ALifeCreatureActor	*E	= smart_cast<CSE_ALifeCreatureActor*>(e);
+
+	if (!IsGameTypeSingle()) 
 	{
-		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+		if (OnServer())
+		{
+			if (!smart_cast<CActorMP*>(this))
+			{
+				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+				Msg("single_actor_spawn");
+				g_actor = this;
+			}
+		}
+
+		if (OnClient())
+		{
+			if (smart_cast<CActorMP*>(this)) 
+			{
+				if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL))
+				{
+					if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_ASPLAYER))
+					{
+						Msg("mp_actor_spawn");
+						g_actor = this;
+					}
+				}
+			}
+		}
 	}
-	
-	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
-		g_actor = this;
+	else
+	{
+		if (OnServer())
+		{
+			E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+		}
+
+		if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+			g_actor = this;
+	}
 
 	VERIFY(m_pActorEffector == NULL);
 
