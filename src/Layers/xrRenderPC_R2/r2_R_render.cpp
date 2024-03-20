@@ -199,7 +199,10 @@ void CRender::Render		()
 	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
-	if( !(g_pGameLevel && g_hud) || bMenu)	return;
+	if (!(g_pGameLevel && g_hud) || bMenu) {
+		Target->u_setrt(RCache.get_width(), RCache.get_height(), RTarget, NULL, NULL, RDepth);
+		return;
+	}
 
 	if( m_bFirstFrameAfterReset )
 	{

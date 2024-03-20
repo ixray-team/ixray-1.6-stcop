@@ -571,6 +571,7 @@ void	CRender::rmNormal	()
 extern u32 g_r;
 void	CRender::Render		()
 {
+	RDevice->SetRenderTarget(0, RTarget);
 	if( m_bFirstFrameAfterReset )
 	{
 		m_bFirstFrameAfterReset = false;
