@@ -1,4 +1,139 @@
 #include "stdafx.h"
+
+#ifdef DEBUG_DRAW
+#include "PHDebug.h"
+#include "PHWorld.h"
+
+#include "ui_base.h"
+float	dbg_text_height_scale = 1.f;
+float	dbg_text_current_height_scale = 1.f;
+
+bool draw_frame = 0;
+
+enum EDBGPHDrawMode
+{
+	dmSecondaryThread,
+	dmCashed,
+	dmCashedSecondary,
+	dmSimple
+};
+
+EDBGPHDrawMode dbg_ph_draw_mode = dmSecondaryThread;
+
+
+PHABS_DBG_V	dbg_draw_abstruct0;
+PHABS_DBG_V	dbg_draw_abstruct1;
+
+PHABS_DBG_V	dbg_draw_cashed;
+PHABS_DBG_V	dbg_draw_cashed_secondary;
+PHABS_DBG_V	dbg_draw_simple;
+
+
+void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a)
+{
+	auto push = [](PHABS_DBG_V & v, SPHDBGDrawAbsract * a)
+	{
+		v.push_back(a);
+	};
+
+	if (dbg_ph_draw_mode != dmCashed && dbg_ph_draw_mode != dmCashedSecondary)
+	{
+		if (physics_world()->Processing()) dbg_ph_draw_mode = dmSecondaryThread;
+		else					   dbg_ph_draw_mode = dmSimple;
+	}
+	else
+	{
+		if (physics_world()->Processing()) dbg_ph_draw_mode = dmCashedSecondary;
+		else					   dbg_ph_draw_mode = dmCashed;
+	}
+	switch (dbg_ph_draw_mode)
+	{
+	case dmSecondaryThread:
+		if (draw_frame)
+		{
+			push(dbg_draw_abstruct0, a);
+		}
+		else
+		{
+			push(dbg_draw_abstruct1, a);
+		};											break;
+	case dmCashed:			push(dbg_draw_cashed, a);				break;
+	case dmCashedSecondary: push(dbg_draw_cashed_secondary, a);	break;
+	case dmSimple:			push(dbg_draw_simple, a);				break;
+	}
+
+}
+struct SPHDBGOutText : public SPHDBGDrawAbsract
+{
+	string1024 s;
+	bool	 rendered;
+	SPHDBGOutText(LPCSTR t)
+	{
+		xr_strcpy(s, t);
+		rendered = false;
+	}
+	virtual void render()
+	{
+		//if(rendered) return;
+		if (!fsimilar(dbg_text_current_height_scale, dbg_text_height_scale))
+		{
+			UI().Font().pFontStat->SetHeight(UI().Font().pFontStat->GetHeight() * dbg_text_height_scale / dbg_text_current_height_scale);
+			dbg_text_current_height_scale = dbg_text_height_scale;
+		}
+		UI().Font().pFontStat->OutNext("%s", s);
+		rendered = true;
+	}
+};
+
+struct SPHDBGTextSetColor : public SPHDBGDrawAbsract
+{
+	u32 color;
+
+	SPHDBGTextSetColor(u32 c) : color(c)
+	{
+
+	}
+	virtual void render()
+	{
+		UI().Font().pFontStat->SetColor(color);
+	}
+};
+
+void DBG_TextSetColor(u32 color)
+{
+	DBG_DrawPHAbstruct(xr_new<SPHDBGTextSetColor>(color));
+}
+
+struct SPHDBGTextOutSet : public SPHDBGDrawAbsract
+{
+	float x, y;
+
+	SPHDBGTextOutSet(float _x, float _y) : x(_x), y(_y)
+	{
+
+	}
+	virtual void render()
+	{
+		UI().Font().pFontStat->OutSet(x, y);
+	}
+};
+void DBG_TextOutSet(float x, float y)
+{
+	DBG_DrawPHAbstruct(xr_new<SPHDBGTextOutSet>(x, y));
+}
+
+void _cdecl DBG_OutText(LPCSTR s, ...)
+{
+	string1024 t;
+	va_list   marker;
+	va_start(marker, s);
+	vsprintf(t, s, marker);
+	va_end(marker);
+	DBG_DrawPHAbstruct(xr_new<SPHDBGOutText>(t));
+}
+
+
+#endif
 #ifdef DEBUG
 //#include "physics.h"
 //#include "MathUtils.h"
@@ -22,11 +157,9 @@
 #include "../xrEngine/bone.h"
 #include "../xrEngine/iphdebug.h"
 //#include "phelement.h"
-#include "ui_base.h"
 
 Flags32		ph_dbg_draw_mask						;
 Flags32		ph_dbg_draw_mask1						;
-bool		draw_frame=0;
 
 //LPCSTR	dbg_trace_object_name					=NULL;
 string64 s_dbg_trace_obj_name					="none";
@@ -42,24 +175,7 @@ u32	 	dbg_reused_queries_per_step				=0;
 u32	 	dbg_new_queries_per_step				=0;
 float	dbg_vel_collid_damage_to_display		=7.f;
 
-float	dbg_text_height_scale					=1.f;
-float	dbg_text_current_height_scale			=1.f;
 
-
-PHABS_DBG_V	dbg_draw_abstruct0;
-PHABS_DBG_V	dbg_draw_abstruct1;
-
-PHABS_DBG_V	dbg_draw_cashed;
-PHABS_DBG_V	dbg_draw_cashed_secondary;
-PHABS_DBG_V	dbg_draw_simple;
-
-enum		EDBGPHDrawMode
-{
-	dmSecondaryThread,
-	dmCashed,
-	dmCashedSecondary,
-	dmSimple
-} dbg_ph_draw_mode=dmSecondaryThread;
 u32			cash_draw_remove_time=u32(-1);
 
 struct SPHObjDBGDraw:public SPHDBGDrawAbsract
@@ -336,75 +452,6 @@ void DBG_DrawPoint(const Fvector& p,float size,u32 c)
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawPoint>(p,size,c));
 }
 
-struct SPHDBGOutText : public SPHDBGDrawAbsract
-{
-string1024 s;
-bool	 rendered;
-	SPHDBGOutText(LPCSTR t)
-	{
-		xr_strcpy(s,t);
-		rendered=false;
-	}
-	virtual void render()
-	{
-		//if(rendered) return;
-		if(!fsimilar (dbg_text_current_height_scale,dbg_text_height_scale ) )
-		{
-			UI().Font().pFontStat->SetHeight(UI().Font().pFontStat->GetHeight() * dbg_text_height_scale/dbg_text_current_height_scale );
-			dbg_text_current_height_scale = dbg_text_height_scale;
-		}
-		UI().Font().pFontStat->OutNext("%s",s);
-		rendered=true;
-	}
-};
-
-void _cdecl DBG_OutText(LPCSTR s,...)
-{
-	string1024 t;
-	va_list   marker;
-	va_start  (marker,s);
-	vsprintf(t,s,marker);
-	va_end    (marker);
-	DBG_DrawPHAbstruct(xr_new<SPHDBGOutText>(t));
-}
-struct SPHDBGTextSetColor : public SPHDBGDrawAbsract
-{
-u32 color;
-
-	SPHDBGTextSetColor(u32 c): color( c )
-	{
-		
-	}
-	virtual void render()
-	{
-		UI().Font().pFontStat->SetColor( color );
-	}
-};
-
-void DBG_TextSetColor( u32 color )
-{
-	DBG_DrawPHAbstruct( xr_new<SPHDBGTextSetColor>( color ) );
-}
-
-struct SPHDBGTextOutSet : public SPHDBGDrawAbsract
-{
-	float x,y;
-
-	SPHDBGTextOutSet( float _x, float _y ): x( _x ), y(_y)
-	{
-		
-	}
-	virtual void render()
-	{
-		UI().Font().pFontStat->OutSet( x, y );
-	}
-};
-
-void DBG_TextOutSet( float x, float y )
-{
-	DBG_DrawPHAbstruct( xr_new<SPHDBGTextOutSet>( x, y ) );
-}
-
 void DBG_OpenCashedDraw()
 {
 	dbg_ph_draw_mode=dmCashed;
@@ -413,39 +460,6 @@ void DBG_ClosedCashedDraw(u32 remove_time)
 {
 	dbg_ph_draw_mode			=dmSecondaryThread			;
 	cash_draw_remove_time	=remove_time+Device.dwTimeGlobal;
-}
-
-IC void push( PHABS_DBG_V &v, SPHDBGDrawAbsract* a )
-{
-	//if( v.size() < 1500 )
-				v.push_back(a);
-}
-void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a)
-{
-	if( dbg_ph_draw_mode!=dmCashed && dbg_ph_draw_mode!=dmCashedSecondary )
-	{
-		if(physics_world()->Processing()) dbg_ph_draw_mode = dmSecondaryThread;
-		else					   dbg_ph_draw_mode = dmSimple;
-	} else
-	{
-		if(physics_world()->Processing()) dbg_ph_draw_mode = dmCashedSecondary;
-		else					   dbg_ph_draw_mode = dmCashed;
-	}
-	switch (dbg_ph_draw_mode)
-	{
-		case dmSecondaryThread:
-			if(draw_frame)
-			{
-				push( dbg_draw_abstruct0, a );
-			}else
-			{
-				push( dbg_draw_abstruct1, a );
-			};											break;	
-		case dmCashed:			push( dbg_draw_cashed, a );				break;
-		case dmCashedSecondary: push( dbg_draw_cashed_secondary, a );	break;
-		case dmSimple:			push( dbg_draw_simple, a );				break;
-	}
-
 }
 
 void DBG_PHAbstruactStartFrame(bool dr_frame)

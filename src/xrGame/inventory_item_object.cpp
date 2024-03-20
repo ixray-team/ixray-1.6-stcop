@@ -183,7 +183,7 @@ void CInventoryItemObject::PH_A_CrPr		()
 	CInventoryItem::PH_A_CrPr			();
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CInventoryItemObject::OnRender			()
 {
 	CInventoryItem::OnRender			();

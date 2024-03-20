@@ -16,6 +16,8 @@ add_library(xrAPI SHARED ${API_SRC_FILES})
 
 target_include_directories(xrAPI PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_definitions(xrAPI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+target_compile_definitions(xrAPI PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
+target_compile_definitions(xrAPI PUBLIC "$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
 target_compile_definitions(xrAPI PRIVATE XRAPI_EXPORTS)
 
 # Move precompiled header

@@ -1711,8 +1711,9 @@ void		CPHMovementControl::		GetCharacterVelocity		(Fvector& velocity )
 		m_character->SetPLastMaterialIDX(p);
 	}
 
-#ifdef DEBUG
-	void		CPHMovementControl::		dbg_Draw(){
+#ifdef DEBUG_DRAW
+	void CPHMovementControl::dbg_Draw()
+	{
 #if 0
 		if(m_character)
 			m_character->OnRender();

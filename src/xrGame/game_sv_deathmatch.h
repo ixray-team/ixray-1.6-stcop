@@ -164,7 +164,7 @@ public:
 	virtual		void				assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who);
 	virtual		u32					RP_2_Use				(CSE_Abstract* E);
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual		void				OnRender				();
 #endif
 

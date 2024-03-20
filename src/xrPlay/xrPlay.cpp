@@ -107,8 +107,9 @@ int APIENTRY WinMain
 
 	// Show main wnd
 	Console->Execute("vid_restart");
+#ifdef DEBUG_DRAW
 	RenderUI();
-
+#endif
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);

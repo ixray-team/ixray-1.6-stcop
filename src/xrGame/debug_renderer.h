@@ -8,7 +8,7 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 #include "../Include/xrRender/DebugRender.h"
 

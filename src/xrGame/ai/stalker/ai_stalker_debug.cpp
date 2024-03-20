@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #include "ai_stalker.h"
 #include "../../memory_manager.h"
 #include "../../visual_memory_manager.h"
@@ -142,6 +142,7 @@ void restore_actor()
 template <typename planner_type>
 void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR indent, LPCSTR planner_id)
 {
+#ifdef DEBUG
 	planner_type						&_brain = const_cast<planner_type&>(brain);
 	if (brain.solution().empty())
 		return;
@@ -182,24 +183,31 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 			DBG_OutText	("%s%s%s    %5c : [%d][%s]",start_indent,indent,indent,temp,(*I).first,_brain.property2string((*I).first));
 		}
 	}
+#endif
 }
 
 LPCSTR animation_name(CAI_Stalker *self, const MotionID &animation)
 {
 	if (!animation)
 		return			("");
+#ifdef DEBUG
 	IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(self->Visual());
 	VERIFY				(skeleton_animated);
 	LPCSTR				name = skeleton_animated->LL_MotionDefName_dbg(animation).first;
 	return				(name);
+#else
+	return "";
+#endif
 }
 
 void draw_restrictions(const shared_str &restrictions, LPCSTR start_indent, LPCSTR indent, LPCSTR header)
 {
+#ifdef DEBUG
 	DBG_OutText	("%s%s%s",start_indent,indent,header);
 	string256	temp;
 	for (u32 i=0, n=_GetItemCount(*restrictions); i<n; ++i)
 		DBG_OutText("%s%s%s%s",start_indent,indent,indent,_GetItem(*restrictions,i,temp));
+#endif
 }
 
 LPCSTR movement_type(const MonsterSpace::EMovementType &movement_type)
@@ -231,12 +239,12 @@ LPCSTR danger_type(const CDangerObject::EDangerType &danger_type)
 	};
 	return				("");
 }
-
+#ifdef DEBUG
 void CAI_Stalker::debug_planner			(const script_planner *planner)
 {
 	m_debug_planner						= planner;
 }
-
+#endif
 void CAI_Stalker::debug_text			()
 {
 	if( !m_dbg_hud_draw )
@@ -517,9 +525,10 @@ void CAI_Stalker::debug_text			()
 	draw_planner						(movement().animation_selector().planner(), indent, indent, "smart cover planner");
 
 	// debug planner
+#ifdef DEBUG
 	if (m_debug_planner)
 		draw_planner					(*m_debug_planner,indent,indent,"debug_planner");
-	
+#endif
 	DBG_TextOutSet	(640,up_indent);
 	// brain
 	DBG_OutText	("controls");
@@ -936,7 +945,7 @@ void CAI_Stalker::OnHUDDraw				(CCustomHUD *hud)
 	m_dbg_hud_draw = true;
 
 }
-
+#ifdef DEBUG
 void CAI_Stalker::dbg_draw_vision	()
 {
 	VERIFY						(!!psAI_Flags.is(aiVision));
@@ -971,7 +980,7 @@ void CAI_Stalker::dbg_draw_vision	()
 	UI().Font().pFontMedium->OutSet	(x,y);
 	UI().Font().pFontMedium->OutNext	(out_text);
 }
-
+#endif
 typedef xr_vector<Fvector>	COLLIDE_POINTS;
 
 class ray_query_param	{
@@ -1089,7 +1098,7 @@ void draw_visiblity_rays	(CCustomMonster *self, const CObject *object, collide::
 
 	Level().debug_renderer().draw_aabb(points.back(), size.x, size.y, size.z, color_xrgb(255, 0, 0));
 }
-
+#ifdef DEBUG
 void CAI_Stalker::dbg_draw_visibility_rays	()
 {
 	if (!g_Alive())
@@ -1103,7 +1112,7 @@ void CAI_Stalker::dbg_draw_visibility_rays	()
 		}
 	}
 }
-
+#endif
 #define DEBUG_RENDER
 
 xr_vector<Fmatrix>						g_stalker_skeleton;

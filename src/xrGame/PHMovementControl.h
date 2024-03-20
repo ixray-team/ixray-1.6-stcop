@@ -158,7 +158,7 @@ public:
 	void				CreateCharacter					()														;		
 	void				DestroyCharacter				()														;
 	void				Load							(LPCSTR section)										;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	void				dbg_Draw						();
 #endif
 

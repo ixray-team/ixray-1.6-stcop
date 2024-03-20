@@ -1,7 +1,6 @@
-#ifndef DefinesH
-#define DefinesH
+#pragma once
 
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 	ENGINE_API	extern BOOL			bDebug;
 #else
 	#define bDebug 0
@@ -74,5 +73,3 @@ ENGINE_API extern	Flags32		psDeviceFlags		;
 #define _omotions_			    "$omotions$"
 #define _smotion_			    "$smotion$"
 #define _detail_objects_	    "$detail_objects$"
-
-#endif

@@ -282,9 +282,10 @@ bool actor::update_doors			( doors_type const& detected_doors, float const avera
 	return						true;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void actor::render					( ) const
 {
+#ifdef DEBUG
 	CDebugRenderer& renderer	= Level().debug_renderer();
 	doors_type::const_iterator	i = m_detected_doors.begin();
 	doors_type::const_iterator	e = m_detected_doors.end();
@@ -297,5 +298,6 @@ void actor::render					( ) const
 		matrix.transform_tiny	( temp, (*i)->get_vector(door_state_closed) );
 		renderer.draw_line(Fidentity, matrix.c, temp, color_xrgb(255, 0, 0));
 	}
+#endif
 }
 #endif // #ifdef DEBUG

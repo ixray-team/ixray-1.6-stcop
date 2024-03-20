@@ -1,5 +1,3 @@
-#if !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)
-#define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
 #include "../xrEngine/igame_level.h"
@@ -38,7 +36,7 @@ class	message_filter;
 class	demoplay_control;
 class	demo_info;
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	class	CDebugRenderer;
 #endif
 
@@ -79,7 +77,7 @@ protected:
 	CClientSpawnManager			*m_client_spawn_manager;
 	// autosave manager
 	CAutosaveManager			*m_autosave_manager;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	// debug renderer
 	CDebugRenderer				*m_debug_renderer;
 #endif
@@ -309,7 +307,7 @@ public:
 	IC CSeniorityHierarchyHolder	&seniority_holder			();
 	IC CClientSpawnManager			&client_spawn_manager		();
 	IC CAutosaveManager				&autosave_manager			();
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	IC CDebugRenderer				&debug_renderer				();
 #endif
 	void	__stdcall				script_gc					();			// GC-cycle
@@ -446,7 +444,7 @@ IC CAutosaveManager &CLevel::autosave_manager()
 	return				(*m_autosave_manager);
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 IC CDebugRenderer &CLevel::debug_renderer()
 {
 	VERIFY				(m_debug_renderer);
@@ -479,5 +477,3 @@ IC bool		IsGameTypeSingle()	{ return (g_pGamePersistent->GameType() == eGameIDSi
 extern BOOL						g_bDebugEvents;
 
 // -------------------------------------------------------------------------------------------------
-
-#endif // !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)

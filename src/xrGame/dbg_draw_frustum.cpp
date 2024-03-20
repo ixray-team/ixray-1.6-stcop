@@ -2,7 +2,7 @@
 #include "level.h"
 #include "../xrCDB/frustum.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #endif
 
@@ -53,11 +53,12 @@ void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector &P, Fvector
 
 	F.CreateFromPoints(_F,4,COP);
 }
+#endif
 
+#ifdef DEBUG_DRAW
 void dbg_draw_frustum	(float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U)
 {
-	//if (!bDebug)		return;
- 
+#ifdef DEBUG
 	float YFov	= deg2rad(FOV*A);
 	float XFov	= deg2rad(FOV);
 
@@ -130,5 +131,6 @@ void dbg_draw_frustum	(float FOV, float _FAR, float A, Fvector &P, Fvector &D, F
 	DRender->CacheSetCullMode(IDebugRender::cmCCW);
 	//CHK_DX(HW.pDevice->SetRenderState	(D3DRS_AMBIENT,	0						));
 	DRender->SetAmbient(0);
+#endif
 }
 #endif

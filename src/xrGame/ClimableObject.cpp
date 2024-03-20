@@ -6,14 +6,11 @@
 #include "../xrphysics/MathUtils.h"
 #include "../xrphysics/extendedgeom.h"
 #include "../xrEngine/gamemtllib.h"
-#ifdef DEBUG
+
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #	include "level.h"
 #	include "PHDebug.h"
-#endif
-
-#ifdef DEBUG
-#	include "debug_renderer.h"
 #endif
 
 static const float down_leader_extension_tolerance=0.2f;
@@ -341,11 +338,15 @@ void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c
 	if(!this_object->BeforeLadder(ch,-0.1f)) do_colide=false;
 	
 }
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 extern	Flags32	dbg_net_Draw_Flags;
 void CClimableObject ::OnRender()
 {
-	if (!dbg_net_Draw_Flags.test(dbg_draw_climbable)&&!ph_dbg_draw_mask.test(phDbgLadder)) return;
+	if (!dbg_net_Draw_Flags.test(dbg_draw_climbable)
+#ifdef DEBUG
+		&&!ph_dbg_draw_mask.test(phDbgLadder)
+#endif
+		) return;
 
 	Fmatrix form;m_box.xform_get(form);
 	//form.mulA(XFORM());

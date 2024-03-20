@@ -1,8 +1,6 @@
-#ifndef	DebugRender_included
-#define	DebugRender_included
 #pragma once
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 #include "DebugShader.h"
 
@@ -46,5 +44,3 @@ public:
 };
 
 #endif // DEBUG
-
-#endif	//	DebugRender_included

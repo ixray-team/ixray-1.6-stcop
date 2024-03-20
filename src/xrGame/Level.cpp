@@ -53,7 +53,7 @@
 
 #include "../xrphysics/iphworld.h"
 #include "../xrphysics/console_vars.h"
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
 #	include "debug_renderer.h"
@@ -114,26 +114,28 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
-		m_level_sound_manager		= xr_new<CLevelSoundManager>();
-		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
-		m_client_spawn_manager		= xr_new<CClientSpawnManager>();
-		m_autosave_manager			= xr_new<CAutosaveManager>();
+	m_level_sound_manager		= xr_new<CLevelSoundManager>();
+	m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
+	m_client_spawn_manager		= xr_new<CClientSpawnManager>();
+	m_autosave_manager			= xr_new<CAutosaveManager>();
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	if (!g_dedicated_server)
 	{
 		m_debug_renderer = xr_new<CDebugRenderer>();
+#ifdef DEBUG
 		m_level_debug = xr_new<CLevelDebug>();
 		m_bEnvPaused = false;
+#endif
 	}
 	else
 	{
 		m_debug_renderer = nullptr;
+#ifdef DEBUG
 		m_level_debug = nullptr;
+#endif
 	}
 #endif
-
-
 	m_ph_commander						= xr_new<CPHCommander>();
 	m_ph_commander_scripts				= xr_new<CPHCommander>();
 		
@@ -234,7 +236,7 @@ CLevel::~CLevel()
 
 	xr_delete					(m_autosave_manager);
 	
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	xr_delete					(m_debug_renderer);
 #endif
 
@@ -739,12 +741,13 @@ void CLevel::OnRender()
 #ifdef DEBUG
 	draw_wnds_rects();
 	physics_world()->OnRender	();
-#endif // DEBUG
 
-#ifdef DEBUG
 	if (ai().get_level_graph())
 		ai().level_graph().render();
 
+#endif // DEBUG
+
+#ifdef DEBUG_DRAW
 #ifdef DEBUG_PRECISE_PATH
 	test_precise_path		();
 #endif
@@ -785,7 +788,7 @@ void CLevel::OnRender()
 				if (pIItem) pIItem->OnRender();
 			}
 
-			
+#ifdef DEBUG
 			if (dbg_net_Draw_Flags.test(dbg_draw_skeleton)) //draw skeleton
 			{
 				CGameObject* pGO = smart_cast<CGameObject*>	(_O);
@@ -797,11 +800,16 @@ void CLevel::OnRender()
 					}
 				}
 			};
+#endif
 		}
 		//  [7/5/2005]
-		if (Server && Server->game) Server->game->OnRender();
+		if (Server && Server->game) 
+			Server->game->OnRender();
+
 		//  [7/5/2005]
+#ifdef DEBUG
 		ObjectSpace.dbgRender	();
+#endif
 
 		//---------------------------------------------------------------------
 		UI().Font().pFontStat->OutSet		(170,630);
@@ -852,6 +860,8 @@ void CLevel::OnRender()
 			stalker_->dbg_draw_visibility_rays	();
 		}
 	}
+#elif defined(DEBUG_DRAW)
+	debug_renderer().render					();
 #endif
 }
 

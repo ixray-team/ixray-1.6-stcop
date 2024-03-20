@@ -1,5 +1,20 @@
-#ifndef PH_DEBUG_H
-#define PH_DEBUG_H
+#pragma once
+
+#ifdef DEBUG_DRAW
+
+struct SPHDBGDrawAbsract
+{
+	virtual void				render() = 0;
+	virtual						~SPHDBGDrawAbsract() { };
+};
+
+using PHABS_DBG_V = xr_vector<SPHDBGDrawAbsract*>;
+using PHABS_DBG_I = PHABS_DBG_V::iterator;
+
+void _cdecl DBG_OutText(LPCSTR s, ...);
+void DBG_TextOutSet(float x, float y);
+void DBG_TextSetColor(u32 color);
+#endif
 #ifdef DEBUG
 struct dContact;
 #include "../xrEngine/StatGraph.h"
@@ -43,15 +58,6 @@ extern	CObject			*trace_object							;
 class CPHObject;
 
 
-struct SPHDBGDrawAbsract
-{
-	virtual void				render				( )						=0;
-	virtual						~SPHDBGDrawAbsract	( )						{ };
-};
-
-using PHABS_DBG_V = xr_vector<SPHDBGDrawAbsract*>;
-using PHABS_DBG_I = PHABS_DBG_V::iterator;
-
 extern PHABS_DBG_V	dbg_draw_abstruct0;
 extern PHABS_DBG_V	dbg_draw_abstruct1;
 
@@ -73,9 +79,6 @@ void DBG_DrawMatrix( const Fmatrix &m, float size, u8 a=255 );
 void DBG_DrawRotationX( const Fmatrix &m, float ang0, float ang1, float size, u32 ac, bool solid = false, u32 tessel = 7 );
 void DBG_DrawRotationY( const Fmatrix &m, float ang0, float ang1, float size, u32 ac, bool solid = false, u32 tessel = 7 );
 void DBG_DrawRotationZ( const Fmatrix &m, float ang0, float ang1, float size, u32 ac, bool solid = false, u32 tessel = 7 );
-void _cdecl DBG_OutText( LPCSTR s,... );
-void DBG_TextOutSet( float x, float y );
-void DBG_TextSetColor( u32 color );
 void DBG_DrawBind( CObject &O );
 void DBG_PhysBones( CObject &O );
 void DBG_DrawBones( CObject &O );
@@ -115,5 +118,4 @@ IC	float	ScaleX						( float x )																												{ VERIFY( IsActive( 
 	void	ScaleMarkerPos				( CStatGraph::EStyle Style, float &p )																															;
 IC	float	ResolutionX					( ){ VERIFY( IsActive( ) ); return s; } 
 };
-#endif
 #endif

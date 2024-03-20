@@ -26,8 +26,7 @@
 #include "object_broker.h"
 #include "../xrEngine/igame_persistent.h"
 
-
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #endif
 
@@ -1352,8 +1351,7 @@ void CInventoryItem::UpdateXForm	()
 
 
 
-#ifdef DEBUG
-
+#ifdef DEBUG_DRAW
 void CInventoryItem::OnRender()
 {
 	if (bDebug && object().Visual())

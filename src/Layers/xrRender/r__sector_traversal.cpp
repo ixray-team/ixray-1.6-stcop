@@ -133,25 +133,6 @@ void CPortalTraverser::fade_render	()
 #ifdef DEBUG
 void CPortalTraverser::dbg_draw		()
 {
-	RCache.OnFrameEnd		();
-	RCache.set_xform_world	(Fidentity);
-	RCache.set_xform_view	(Fidentity);
-	RCache.set_xform_project(Fidentity);
-	for (u32 s=0; s<dbg_sectors.size(); s++)	{
-		CSector*	S		= (CSector*)dbg_sectors[s];
-		FVF::L		verts	[5];
-		Fbox2		bb		= S->r_scissor_merged;
-		bb.min.x			= bb.min.x * 2 - 1;
-		bb.max.x			= bb.max.x * 2 - 1;
-		bb.min.y			= (1-bb.min.y) * 2 - 1;
-		bb.max.y			= (1-bb.max.y) * 2 - 1;
 
-		verts[0].set(bb.min.x,bb.min.y,EPS,0xffffffff);
-		verts[1].set(bb.max.x,bb.min.y,EPS,0xffffffff);
-		verts[2].set(bb.max.x,bb.max.y,EPS,0xffffffff);
-		verts[3].set(bb.min.x,bb.max.y,EPS,0xffffffff);
-		verts[4].set(bb.min.x,bb.min.y,EPS,0xffffffff);
-		RCache.dbg_Draw		(D3DPT_LINESTRIP,verts,4);
-	}
 }
 #endif

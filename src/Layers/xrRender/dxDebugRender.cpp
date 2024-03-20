@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 #include "dxDebugRender.h"
 #include "dxUIShader.h"

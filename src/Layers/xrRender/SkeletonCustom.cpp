@@ -51,11 +51,11 @@ LPCSTR CKinematics::LL_BoneName_dbg	(u16 ID)
 	return 0;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CKinematics::DebugRender(Fmatrix& XFORM)
 {
 	CalculateBones	();
-
+#ifdef DEBUG
 	CBoneData::BoneDebug	dbgLines;
 	(*bones)[iRoot]->DebugQuery	(dbgLines);
 
@@ -76,6 +76,7 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 		RCache.dbg_DrawOBB(M, H1, color_xrgb(255, 255, 255));
 		RCache.dbg_DrawOBB(M, H2, color_xrgb(255, 255, 255));
 	}
+#endif
 
 	for (u32 b=0; b<bones->size(); b++)
 	{

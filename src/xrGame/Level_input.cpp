@@ -262,6 +262,14 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		break;
 
+#ifdef DEBUG_DRAW
+	case DIK_RETURN:
+	{
+		bDebug = !bDebug;
+		return;
+	}
+#endif
+
 #ifdef DEBUG
 
 	// Lain: added TEMP!!!
@@ -292,11 +300,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	{
 		g_separate_radius /= 0.9f;
 		break;
-	}
-
-	case DIK_RETURN: {
-		bDebug	= !bDebug;
-		return;
 	}
 	case DIK_BACK:
 		if (IsGameTypeSingle())

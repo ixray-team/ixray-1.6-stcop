@@ -399,7 +399,7 @@ public:
 	virtual void				PHUnFreeze				()			{return inherited ::PHUnFreeze();}
 	virtual void				PHFreeze				()			{return inherited ::PHFreeze();}
 	///////////////////////////////////////////////////////////////////////
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void				OnRender				();
 #endif
 	virtual bool				useful					(const CItemManager *manager, const CGameObject *object) const;

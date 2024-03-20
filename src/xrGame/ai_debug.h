@@ -8,7 +8,7 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	define aiDebug						(1<<0)
 #	define aiBrain						(1<<1)
 #	define aiMotion						(1<<2)
