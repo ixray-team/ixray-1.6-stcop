@@ -266,7 +266,7 @@ bool cover::loophole_path					(shared_str const &source_raw, shared_str const &t
 	shared_str					target = transform_vertex(target_raw, false);
 
 	typedef GraphEngineSpace::CBaseParameters	CBaseParameters;
-	CBaseParameters				parameters(u32(-1),u32(-1),u32(-1));
+	CBaseParameters				parameters(float(u32(-1)), u32(-1), u32(-1));
 	bool						result = 
 		ai().graph_engine().search(
 			m_description->transitions(),

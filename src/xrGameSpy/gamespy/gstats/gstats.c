@@ -204,7 +204,7 @@ char *GenerateAuthA(const char *challenge, const char *password, char response[3
 	sprintf(rawout, "%s%s",password, challenge );
 
 	/* do the response md5 */
-	MD5Digest((unsigned char *)rawout, strlen(rawout), response);
+	MD5Digest((unsigned char *)rawout, (unsigned int)strlen(rawout), response);
 	return response;
 }
 #ifdef GSI_UNICODE

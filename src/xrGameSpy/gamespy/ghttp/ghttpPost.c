@@ -1331,7 +1331,7 @@ static GHIPostingResult ghiPostStateDoPosting
 
 					// id
 					strcpy(&buffer[writePos], GHI_DIME_SOAPID);
-					writePos += strlen(GHI_DIME_SOAPID);
+					writePos += (int)strlen(GHI_DIME_SOAPID);
 					padBytes = (int)(4-strlen(GHI_DIME_SOAPID)%4);
 					if (padBytes != 4)
 					{

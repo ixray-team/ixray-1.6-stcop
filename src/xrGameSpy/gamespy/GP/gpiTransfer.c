@@ -1360,7 +1360,7 @@ static GPResult gpiSendFileData
 	gpiSendOrBufferStringLenToPeer(connection, transfer->peer, "\\file\\", 6);
 	gpiSendOrBufferInt(connection, transfer->peer, transfer->currentFile);
 
-	gpiFinishTransferMessage(connection, transfer, (char *)data, len);
+	gpiFinishTransferMessage(connection, transfer, (char *)data, (int)len);
 
 	return GP_NO_ERROR;
 }
@@ -1517,7 +1517,7 @@ GPResult gpiProcessCurrentFile
 				{
 					// Update the md5.
 					//////////////////
-					MD5Update(&file->md5, (unsigned char*)buffer, num);
+					MD5Update(&file->md5, (unsigned char*)buffer, (unsigned int)num);
 
 					// Send the data.
 					/////////////////
