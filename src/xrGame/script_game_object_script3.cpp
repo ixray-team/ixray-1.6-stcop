@@ -330,6 +330,7 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("set_level_changer_invitation",&CScriptGameObject::set_level_changer_invitation)
 		.def("start_particles",				&CScriptGameObject::start_particles)
 		.def("stop_particles",				&CScriptGameObject::stop_particles)
+		.def("ray",							&CScriptGameObject::RayPick)
 
 
 	;return	(instance);

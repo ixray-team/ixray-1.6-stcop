@@ -45,6 +45,12 @@ namespace MemorySpace {
 	struct CHitObject;
 };
 
+bool CScriptGameObject::RayPick(const Fvector3& Pos, const Fvector3& Dir, float Range)
+{
+	collide::rq_result R;
+	return Level().ObjectSpace.RayPick(Pos, Dir, Range, collide::rq_target::rqtNone, R, nullptr);
+}
+
 const CCoverPoint *CScriptGameObject::best_cover	(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance)
 {
 	CAI_Stalker		*stalker = smart_cast<CAI_Stalker*>(&object());
