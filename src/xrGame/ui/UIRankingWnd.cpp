@@ -85,22 +85,24 @@ void CUIRankingWnd::Init()
 	m_background				= UIHelper::CreateFrameWindow(xml, "background", this);
 	m_down_background			= UIHelper::CreateFrameWindow(xml, "down_background", this);
 
-	m_actor_ch_info = xr_new<CUICharacterInfo>();
-	m_actor_ch_info->SetAutoDelete( true );
-	AttachChild( m_actor_ch_info );
-	m_actor_ch_info->InitCharacterInfo( &xml, "actor_ch_info" );
+	if (!EngineExternal()[EEngineExternalUI::DiasbleCharacterInfo])
+	{
+		m_actor_ch_info = xr_new<CUICharacterInfo>();
+		m_actor_ch_info->SetAutoDelete(true);
+		AttachChild(m_actor_ch_info);
+		m_actor_ch_info->InitCharacterInfo(&xml, "actor_ch_info");
 
-	m_icon_overlay = UIHelper::CreateFrameWindow( xml, "actor_icon_over", this );
-	m_money_caption		= UIHelper::CreateTextWnd( xml, "money_caption", this );
-	m_money_value		= UIHelper::CreateTextWnd( xml, "money_value", this );
+		m_icon_overlay = UIHelper::CreateFrameWindow(xml, "actor_icon_over", this);
+		m_money_caption = UIHelper::CreateTextWnd(xml, "money_caption", this);
+		m_money_value = UIHelper::CreateTextWnd(xml, "money_value", this);
 
-	m_money_caption->AdjustWidthToText();
-	pos = m_money_caption->GetWndPos();
-	pos.x += m_money_caption->GetWndSize().x + 10.0f;
-	m_money_value->SetWndPos( pos );
+		m_money_caption->AdjustWidthToText();
+		pos = m_money_caption->GetWndPos();
+		pos.x += m_money_caption->GetWndSize().x + 10.0f;
+		m_money_value->SetWndPos(pos);
 
-
-	m_center_caption		= UIHelper::CreateTextWnd( xml, "center_caption", this );
+		m_center_caption = UIHelper::CreateTextWnd(xml, "center_caption", this);
+	}
 	
 	XML_NODE* stored_root = xml.GetLocalRoot();
 	XML_NODE* node = xml.NavigateToNode( "stat_info", 0 );
@@ -114,19 +116,22 @@ void CUIRankingWnd::Init()
 		m_stat_caption[i]		= xr_new<CUITextWnd>();
 		AttachChild				( m_stat_caption[i] );
 		m_stat_caption[i]->SetAutoDelete( true );
-		CUIXmlInit::InitTextWnd	( xml, "stat", i, m_stat_caption[i] );
-		m_stat_caption[i]->AdjustWidthToText();
 
-		m_stat_info[i]			= xr_new<CUITextWnd>();
-		AttachChild				( m_stat_info[i] );
-		m_stat_info[i]->SetAutoDelete( true );
-		CUIXmlInit::InitTextWnd	( xml, "stat", i, m_stat_info[i] );
-		
-		m_stat_info[i]->SetTextColor( value_color );
-		
-		pos.y = m_stat_caption[i]->GetWndPos().y;
-		pos.x = m_stat_caption[i]->GetWndPos().x + m_stat_caption[i]->GetWndSize().x + 5.0f;
-		m_stat_info[i]->SetWndPos( pos );
+		if (CUIXmlInit::InitTextWnd(xml, "stat", i, m_stat_caption[i]))
+		{
+			m_stat_caption[i]->AdjustWidthToText();
+
+			m_stat_info[i] = xr_new<CUITextWnd>();
+			AttachChild(m_stat_info[i]);
+			m_stat_info[i]->SetAutoDelete(true);
+			CUIXmlInit::InitTextWnd(xml, "stat", i, m_stat_info[i]);
+
+			m_stat_info[i]->SetTextColor(value_color);
+
+			pos.y = m_stat_caption[i]->GetWndPos().y;
+			pos.x = m_stat_caption[i]->GetWndPos().x + m_stat_caption[i]->GetWndSize().x + 5.0f;
+			m_stat_info[i]->SetWndPos(pos);
+		}
 	}
 	xml.SetLocalRoot( stored_root );
 

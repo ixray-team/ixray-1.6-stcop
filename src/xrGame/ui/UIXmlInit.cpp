@@ -215,6 +215,9 @@ bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd
 	bool ValidNode = xml_doc.NavigateToNode(path, index);
 	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
+	if (!ValidNode)
+		return false;
+
 	InitWindow			(xml_doc, path, index, pWnd);
 
 	string256			buf;
