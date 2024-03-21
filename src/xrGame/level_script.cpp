@@ -801,6 +801,118 @@ void enable_vertex(u32 vertex_id) {
 	ai().level_graph().clear_mask(vertex_id);
 }
 
+
+//ability to update level netpacket
+void g_send(NET_Packet& P, bool bReliable = 0, bool bSequential = 1, bool bHighPriority = 0, bool bSendImmediately = 0)
+{
+	Level().Send(P, net_flags(bReliable, bSequential, bHighPriority, bSendImmediately));
+}
+
+void u_event_gen(NET_Packet& P, u32 _event, u32 _dest)
+{
+	CGameObject::u_EventGen(P, _event, _dest);
+}
+
+void u_event_send(NET_Packet& P)
+{
+	CGameObject::u_EventSend(P);
+}
+
+//can spawn entities like bolts, phantoms, ammo, etc. which normally crash when using alife():create()
+void spawn_section(LPCSTR sSection, Fvector3 vPosition, u32 LevelVertexID, u16 ParentID, bool bReturnItem = false)
+{
+	Level().spawn_item(sSection, vPosition, LevelVertexID, ParentID, bReturnItem);
+}
+
+#include "HUDManager.h"
+//ability to get the target game_object at crosshair
+CScriptGameObject* g_get_target_obj()
+{
+	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+	if (RQ.O)
+	{
+		CGameObject* game_object = static_cast<CGameObject*>(RQ.O);
+		if (game_object)
+			return game_object->lua_game_object();
+	}
+	return (0);
+}
+
+float g_get_target_dist()
+{
+	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+	if (RQ.range)
+		return RQ.range;
+	return (0);
+}
+
+u32 g_get_target_element()
+{
+	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+	if (RQ.element)
+	{
+		return RQ.element;
+	}
+	return (0);
+}
+
+u8 get_active_cam()
+{
+	CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	if (actor)
+		return (u8)actor->active_cam();
+
+	return 255;
+}
+
+void LevelPressAction(EGameActions cmd)
+{
+	Level().IR_OnKeyboardPress(cmd);
+}
+
+void LevelReleaseAction(EGameActions cmd)
+{
+	Level().IR_OnKeyboardRelease(cmd);
+}
+
+void LevelHoldAction(EGameActions cmd)
+{
+	Level().IR_OnKeyboardHold(cmd);
+}
+
+bool valid_vertex(u32 level_vertex_id)
+{
+	return ai().level_graph().valid_vertex_id(level_vertex_id);
+}
+
+xrTime get_start_time()
+{
+	return (xrTime(Level().GetStartGameTime()));
+}
+
+CScriptGameObject* get_view_entity_script()
+{
+	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().CurrentViewEntity());
+	if (!pGameObject)
+		return (0);
+
+	return pGameObject->lua_game_object();
+}
+
+void set_view_entity_script(CScriptGameObject* go)
+{
+	CObject* o = smart_cast<CObject*>(&go->object());
+	if (o)
+		Level().SetViewEntity(o);
+}
+
+void set_active_cam(u8 mode)
+{
+	CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	if (actor && mode <= ACTOR_DEFS::EActorCameras::eacMaxCam)
+		actor->cam_Set((ACTOR_DEFS::EActorCameras)mode);
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -916,7 +1028,24 @@ void CLevel::script_register(lua_State *L)
 		def("hold_action", &hold_action_script),
 		def("release_action", &release_action_script),
 		def("lock_actor", &LockActorWithCameraRotation_script),
-		def("unlock_actor", &UnLockActor_script)
+		def("unlock_actor", &UnLockActor_script),
+		
+		def("u_event_gen", &u_event_gen), //Send events via packet
+		def("u_event_send", &u_event_send),
+		def("send", &g_send), //allow the ability to send netpacket to level
+		def("get_target_obj", &g_get_target_obj), //intentionally named to what is in xray extensions
+		def("get_target_dist", &g_get_target_dist),
+		def("press_action", &LevelPressAction),
+		def("release_action", &LevelReleaseAction),
+		def("hold_action", &LevelHoldAction),
+		def("get_target_element", &g_get_target_element), //Can get bone cursor is targetting
+		def("get_view_entity", &get_view_entity_script),
+		def("set_view_entity", &set_view_entity_script),
+		def("spawn_item", &spawn_section),
+		def("get_active_cam", &get_active_cam),
+		def("set_active_cam", &set_active_cam),
+		def("get_start_time", &get_start_time),
+		def("valid_vertex", &valid_vertex)
 	],
 	
 	module(L,"actor_stats")
