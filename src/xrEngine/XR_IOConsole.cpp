@@ -120,63 +120,19 @@ void CConsole::Initialize()
 	m_cur_cmd		= NULL;
 	reset_selected_tip();
 
-	Device.AddUICommand("DebugConsoleVars", 3, [this]() {
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdVars)]) {
-			return;
-		}
-
-		if (!ImGui::Begin("DebugConsoleVars", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdVars)])) {
-			ImGui::End();
-			return;
-		}
-
-		for (const auto& [Name, Command] : Commands) {
-			if (auto Mask = dynamic_cast<CCC_Mask*>(Command)) {
-				continue;
-			}
-
-			if (auto Float = dynamic_cast<CCC_Float*>(Command)) {
-				float test = Float->GetValue();
-				float steps = (fabs(Float->min) + fabs(Float->max)) * 0.01f;
-				if (ImGui::DragFloat(Float->Name(), &test, steps, Float->min, Float->max)) {
-					string32 String = {};
-					xr_sprintf(String, "%3.5f", test);
-					Float->Execute(String);
-				}
-
-				continue;
-			}
-
-			if (auto Integer = dynamic_cast<CCC_Integer*>(Command)) {
-				int test = Integer->GetValue();
-				float steps = (fabs(Integer->min) + fabs(Integer->max)) * 0.01f;
-				if (ImGui::DragInt(Integer->Name(), &test, steps, Integer->min, Integer->max)) {
-					string32 String = {};
-					xr_sprintf(String, "%i", test);
-					Integer->Execute(String);
-				}
-
-				continue;
-			}
-
-			if (auto Token = dynamic_cast<CCC_Token*>(Command)) {
-				continue;
-			}
-
-			if (auto Vector = dynamic_cast<CCC_Vector3*>(Command)) {
-				continue;
-			}
-		}
-		ImGui::End();
-	});
-
 	// Commands
 	extern void CCC_Register();
 	CCC_Register();
+
+	Device.AddUICommand("DebugConsole", 3, std::bind(&CConsole::DrawUIConsole, this));
+	Device.AddUICommand("DebugConsoleVars", 3, std::bind(&CConsole::DrawUIConsoleVars, this));
 }
 
 CConsole::~CConsole()
 {
+	Device.RemoveUICommand("DebugConsole");
+	Device.RemoveUICommand("DebugConsoleVars");
+
 	xr_delete( m_hShader_back );
 	xr_delete( m_editor );
 	Destroy();

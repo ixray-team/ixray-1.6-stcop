@@ -32,6 +32,7 @@ enum class EditorUI : std::uint8_t
 	Weather,
 	DebugDraw,
 	CmdVars,
+	CmdConsole,
 
 	Count
 };
@@ -45,7 +46,7 @@ private:
 public:
 	HMODULE				hGameSpy;
 
-	std::array<bool, static_cast<std::uint8_t>(EditorUI::Count)> EditorStates;
+	std::array<bool, static_cast<std::uint8_t>(EditorUI::Count)> EditorStates = {};
 
 public:
 	Factory_Create*		pCreate;
