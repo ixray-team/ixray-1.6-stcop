@@ -46,7 +46,7 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fAccelK					= 0.f;
 	m_fSprintK					= 0.f;
 	m_fAlcohol					= 0.f;
-	m_fSatiety					= 1.0f;
+	Satiety.Current				= 1.0f;
 
 //	m_vecBoosts.clear();
 
@@ -115,11 +115,11 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	
 	m_fV_Alcohol				= pSettings->r_float(section,"alcohol_v");
 
-	m_fSatietyCritical			= pSettings->r_float(section,"satiety_critical");
-	clamp						(m_fSatietyCritical, 0.0f, 1.0f);
-	m_fV_Satiety				= pSettings->r_float(section,"satiety_v");		
-	m_fV_SatietyPower			= pSettings->r_float(section,"satiety_power_v");
-	m_fV_SatietyHealth			= pSettings->r_float(section,"satiety_health_v");
+	Satiety.Critical			= pSettings->r_float(section,"satiety_critical");
+	clamp						(Satiety.Critical, 0.0f, 1.0f);
+	Satiety.Variability			= pSettings->r_float(section,"satiety_v");
+	Satiety.PowerBoost			= pSettings->r_float(section,"satiety_power_v");
+	Satiety.HealthBoost			= pSettings->r_float(section,"satiety_health_v");
 	
 	m_MaxWalkWeight				= pSettings->r_float(section,"max_walk_weight");
 
@@ -432,23 +432,23 @@ void CActorCondition::UpdateRadiation()
 
 void CActorCondition::UpdateSatiety()
 {
- 	if (!IsGameTypeSingle()) 
+	if (!IsGameTypeSingle())
 	{
-		m_fDeltaPower += m_fV_SatietyPower * m_fDeltaTime;
- 		return;
+		m_fDeltaPower += Satiety.PowerBoost * m_fDeltaTime;
+		return;
 	}
 
-	if(m_fSatiety>0)
+	if (Satiety.Current > 0)
 	{
-		m_fSatiety -= m_fV_Satiety*m_fDeltaTime;
-		clamp(m_fSatiety, 0.0f, 1.0f);
+		Satiety.Current -= Satiety.Variability * m_fDeltaTime;
+		clamp(Satiety.Current, 0.0f, 1.0f);
 	}
-		
-	float satiety_health_koef = (m_fSatiety-m_fSatietyCritical)/(m_fSatiety>=m_fSatietyCritical?1-m_fSatietyCritical:m_fSatietyCritical);
-	if(CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT) )
+
+	float satiety_health_koef = (Satiety.Current - Satiety.Critical) / (Satiety.Current >= Satiety.Critical ? 1 - Satiety.Critical : Satiety.Critical);
+	if (CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT))
 	{
-		m_fDeltaHealth += m_fV_SatietyHealth*satiety_health_koef*m_fDeltaTime;
-		m_fDeltaPower += m_fV_SatietyPower*m_fSatiety*m_fDeltaTime;
+		m_fDeltaHealth += Satiety.HealthBoost * satiety_health_koef * m_fDeltaTime;
+		m_fDeltaPower += Satiety.PowerBoost * Satiety.Current * m_fDeltaTime;
 	}
 }
 
@@ -536,7 +536,7 @@ void CActorCondition::save(NET_Packet &output_packet)
 	inherited::save		(output_packet);
 	save_data			(m_fAlcohol, output_packet);
 	save_data			(m_condition_flags, output_packet);
-	save_data			(m_fSatiety, output_packet);
+	save_data			(Satiety.Current, output_packet);
 
 	save_data			(m_curr_medicine_influence.fHealth, output_packet);
 	save_data			(m_curr_medicine_influence.fPower, output_packet);
@@ -563,7 +563,7 @@ void CActorCondition::load(IReader &input_packet)
 	inherited::load		(input_packet);
 	load_data			(m_fAlcohol, input_packet);
 	load_data			(m_condition_flags, input_packet);
-	load_data			(m_fSatiety, input_packet);
+	load_data			(Satiety.Current, input_packet);
 
 	load_data			(m_curr_medicine_influence.fHealth, input_packet);
 	load_data			(m_curr_medicine_influence.fPower, input_packet);
@@ -587,11 +587,11 @@ void CActorCondition::load(IReader &input_packet)
 	}
 }
 
-void CActorCondition::reinit	()
+void CActorCondition::reinit()
 {
-	inherited::reinit	();
-	m_bLimping					= false;
-	m_fSatiety					= 1.f;
+	inherited::reinit();
+	m_bLimping = false;
+	Satiety.Current = 1.f;
 }
 
 void CActorCondition::ChangeAlcohol	(float value)
@@ -600,8 +600,8 @@ void CActorCondition::ChangeAlcohol	(float value)
 }
 void CActorCondition::ChangeSatiety(float value)
 {
-	m_fSatiety += value;
-	clamp		(m_fSatiety, 0.0f, 1.0f);
+	Satiety.Current += value;
+	clamp(Satiety.Current, 0.0f, 1.0f);
 }
 
 float CActorCondition::GetBoosterValueByType(EBoostParams type) const
@@ -675,7 +675,7 @@ void CActorCondition::BoostHpRestore(const float value)
 }
 void CActorCondition::BoostPowerRestore(const float value)
 {
-	m_fV_SatietyPower += value;
+	Satiety.PowerBoost += value;
 }
 void CActorCondition::BoostRadiationRestore(const float value)
 {

@@ -1,8 +1,5 @@
 // ActorCondition.h: класс состояния игрока
-//
-
 #pragma once
-
 #include "EntityCondition.h"
 #include "actor_defs.h"
 
@@ -11,7 +8,9 @@ class CScriptCallbackEx;
 class CActor;
 class CActorDeathEffector;
 
-class CActorCondition: public CEntityCondition {
+class CActorCondition : 
+	public CEntityCondition
+{
 private:
 	typedef CEntityCondition inherited;
 	enum {	eCriticalPowerReached			=(1<<0),
@@ -43,7 +42,6 @@ public:
 			void		UpdateBoosters				();
 
 	virtual void 		ChangeAlcohol				(const float value);
-	virtual void 		ChangeSatiety				(const float value);
 
 	float				GetBoosterValueByType		(EBoostParams type) const;
 
@@ -84,8 +82,6 @@ public:
 			
 			float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
 			float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
-			float				GetSatiety			()  {return m_fSatiety;}
-	IC		float				GetSatietyPower		() const {return m_fV_SatietyPower*m_fSatiety;};
 
 			void		AffectDamage_InjuriousMaterialAndMonstersInfluence();
 			float		GetInjuriousMaterialDamage	();
@@ -101,11 +97,6 @@ public:
 	}
 	virtual void			save					(NET_Packet &output_packet);
 	virtual void			load					(IReader &input_packet);
-//	IC		float const&	Satiety					()	{ return m_fSatiety; }
-	IC		float const&	V_Satiety				()	{ return m_fV_Satiety; }
-	IC		float const&	V_SatietyPower			()	{ return m_fV_SatietyPower; }
-	IC		float const&	V_SatietyHealth			()	{ return m_fV_SatietyHealth; }
-	IC		float const&	SatietyCritical			()	{ return m_fSatietyCritical; }
 	
 	float	GetZoneMaxPower							(ALife::EInfluenceType type) const;
 	float	GetZoneMaxPower							(ALife::EHitType hit_type) const;
@@ -119,17 +110,15 @@ public:
 	float	GetMaxWoundProtection					() {return m_max_wound_protection;};
 	float	GetMaxFireWoundProtection				() {return m_max_fire_wound_protection;};
 
+public:
+	PlayerAddiction Satiety;
+	PLAYER_ADDICTION_IMPL(Satiety);
+
 protected:
 	SMedicineInfluenceValues						m_curr_medicine_influence;
 	float m_fAlcohol;
 	float m_fV_Alcohol;
-//--
-	float m_fSatiety;
-	float m_fV_Satiety;
-	float m_fV_SatietyPower;
-	float m_fV_SatietyHealth;
-	float m_fSatietyCritical;
-//--
+
 	float m_fPowerLeakSpeed;
 
 	float m_fJumpPower;
