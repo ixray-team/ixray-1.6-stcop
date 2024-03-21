@@ -734,26 +734,38 @@ void line_edit_control::SwitchKL() {
 
 void remove_spaces(char* str) // in & out
 {
-	if (strlen(str) < 1)
-		return;
+    if (strlen(str) < 1)
+    {
+        return;
+    }
+    xr_string Input = str;
 
-	xr_string Input = str;
+    int writeIndex = 0;
+    bool space = false;
 
-	for (s64 Idx = (s64)Input.size() - 1; Idx >= 0; Idx--)
-	{
-		if (Idx - 1 == 0)
-			continue;
+    for (int i = 0; i < Input.size(); i++)
+    {
+        if (Input[i] != ' ')
+        {
+            Input[writeIndex++] = Input[i];
+            space = false;
+        }
+        else if (space == false)
+        {
+            Input[writeIndex++] = Input[i];
+            space = true;
+        }
+    }
 
-		if (Input[Idx] == ' ' && Input[Idx - 1] == ' ')
-		{
-			Input.erase(Input.begin() + Idx, Input.begin() + Idx + 1);
-		}
-	}
+    if (writeIndex > 0 && Input[writeIndex - 1] == ' ')
+    {
+        writeIndex--;
+    }
 
-	std::memcpy(str, Input.data(), Input.size());
+    Input.resize(writeIndex);
 
-	if (strlen(str) > Input.size())
-		str[Input.size()] = 0;
+    memcpy(str, Input.c_str(), writeIndex + 1);
+    str[writeIndex] = 0;
 }
 
 void split_cmd( PSTR first, PSTR second, LPCSTR str )
