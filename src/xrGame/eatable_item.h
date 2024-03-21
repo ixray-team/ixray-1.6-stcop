@@ -1,6 +1,6 @@
 #pragma once
-
 #include "inventory_item.h"
+#include "script_export_space.h"
 
 class CPhysicItem;
 class CEntityAlive;
@@ -10,25 +10,44 @@ private:
 	typedef CInventoryItem	inherited;
 
 protected:
-	CPhysicItem		*m_physic_item;
+	CPhysicItem* m_physic_item;
+
+	u8 m_iMaxUses;
+	int m_iPortionsMarker;
+	BOOL m_bRemoveAfterUse;
+	BOOL m_bConsumeChargeOnUse;
+	float m_fWeightFull;
+	float m_fWeightEmpty;
 
 public:
-							CEatableItem				();
-	virtual					~CEatableItem				();
-	virtual	DLL_Pure*		_construct					();
-	virtual CEatableItem	*cast_eatable_item			()	{return this;}
+	CEatableItem();
+	virtual ~CEatableItem();
+	virtual	DLL_Pure* _construct();
 
-	virtual void			Load						(LPCSTR section);
-	virtual bool			Useful						() const;
+	virtual CEatableItem* cast_eatable_item() { return this; }
 
-	virtual BOOL			net_Spawn					(CSE_Abstract* DC);
+	virtual void			Load(LPCSTR section);
+	virtual void			load(IReader& packet);
+	virtual void			save(NET_Packet& packet);
+	virtual bool			Useful() const;
 
-	virtual void			OnH_B_Independent			(bool just_before_destroy);
-	virtual void			OnH_A_Independent			();
-	virtual	bool			UseBy						(CEntityAlive* npc);
-	virtual	bool			Empty						()						{return PortionsNum()==0;};
-			int				PortionsNum					()	const				{return m_iPortionsNum;}
-protected:	
-	int						m_iPortionsNum;
+	virtual BOOL			net_Spawn(CSE_Abstract* DC);
+
+	virtual void			OnH_B_Independent(bool just_before_destroy);
+	virtual void			OnH_A_Independent();
+	virtual	bool			UseBy(CEntityAlive* npc);
+	virtual float			Weight() const;
+
+	IC bool Empty() const { return GetRemainingUses() == 0; };
+	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
+	IC bool CanConsumeCharge() const { return m_bConsumeChargeOnUse == 1; };
+	IC u8 GetMaxUses() { return m_iMaxUses; };
+	IC u8 GetRemainingUses() const { return m_iPortionsMarker; };
+	IC void SetRemainingUses(u8 value) { m_fCondition = ((float)value / (float)m_iMaxUses); clamp(m_fCondition, 0.f, 1.f); };
+
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
+add_to_type_list(CEatableItem)
+#undef script_type_list
+#define script_type_list save_type_list(CEatableItem)
