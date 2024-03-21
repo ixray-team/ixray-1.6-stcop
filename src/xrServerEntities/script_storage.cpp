@@ -65,6 +65,8 @@ u32 game_lua_memory_usage	()
 	return (0);
 }
 
+void lua_init_ext(lua_State* L);
+
 void setup_luabind_allocator		()
 {
 	//luabind::allocator				= &luabind_allocator;
@@ -219,6 +221,10 @@ void CScriptStorage::reinit	()
 		file_header			= file_header_new;
 	else
 		file_header			= file_header_old;
+
+#ifndef NO_XRGAME_SCRIPT_ENGINE
+	lua_init_ext(lua());
+#endif
 }
 
 int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
