@@ -34,15 +34,6 @@ void* RenderRTV = nullptr;
 void* RenderDSV = nullptr;
 void* SwapChainRTV = nullptr;
 
-struct DrawCommand
-{
-	int Order;
-	xr_string Name;
-	std::function<void()> Function;
-};
-
-static xr_vector<DrawCommand> DrawCommands;
-
 void DrawMainViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
