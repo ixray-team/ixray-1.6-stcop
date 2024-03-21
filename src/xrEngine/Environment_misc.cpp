@@ -253,7 +253,7 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	exec_time_loaded		= exec_time;
 	string_path				st,st_env;
 	xr_strcpy				(st,config.r_string	(m_identifier.c_str(),"sky_texture"));
-	strconcat				(sizeof(st_env),st_env,st,"#small"		);
+	xr_strconcat(st_env,st,"#small"		);
 	sky_texture_name		= st;
 	sky_texture_env_name	= st_env;
 	clouds_texture_name		= config.r_string	(m_identifier.c_str(),"clouds_texture");
@@ -583,7 +583,7 @@ void    CEnvironment::load_level_specific_ambients ()
 	const shared_str level_name = g_pGameLevel->name();
 
 	string_path path;
-	strconcat(sizeof(path), path, "environment\\ambients\\", level_name.c_str(), ".ltx");
+	xr_strconcat(path, "environment\\ambients\\", level_name.c_str(), ".ltx");
 
 	string_path full_path;
 	CInifile* level_ambients = xr_new<CInifile>(

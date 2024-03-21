@@ -44,7 +44,7 @@ int __cdecl main	(int argc, char* argv[])
 #endif
 
 		string_path		folder;		
-		strconcat		(sizeof(folder),folder,argv[1],"\\");
+		xr_strconcat(folder,argv[1],"\\");
 		_strlwr_s		(folder,sizeof(folder));
 		printf			("\nCompressing files (%s)...\n\n",folder);
 

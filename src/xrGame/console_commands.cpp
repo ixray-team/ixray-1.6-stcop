@@ -390,8 +390,8 @@ public:
 		if (MainMenu()->IsActive())
 			MainMenu()->Activate(false);
 
-		LPSTR			fn_; 
-		STRCONCAT		(fn_, args, ".xrdemo");
+		string256			fn_; 
+		xr_strconcat(fn_, args, ".xrdemo");
 		string_path		fn;
 		FS.update_path	(fn, "$game_saves$", fn_);
 
@@ -434,7 +434,7 @@ public:
 				  loops			=	atoi	(comma+1);
 				  *comma		=	0;	//. :)
 			  }
-			  strconcat			(sizeof(fn),fn, args, ".xrdemo");
+			  xr_strconcat(fn, args, ".xrdemo");
 			  FS.update_path	(fn, "$game_saves$", fn);
 			  g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay> (fn, 1.0f, loops));
 		  }
@@ -467,8 +467,8 @@ void get_files_list( xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext )
 	FS.m_Flags.set( CLocatorAPI::flNeedCheck, TRUE );
 	FS.rescan_pathes();
 
-	LPCSTR fext;
-	STRCONCAT( fext, "*", file_ext );
+	string256 fext;
+	xr_strconcat(fext, "*", file_ext );
 
 	FS_FileSet  files_set;
 	FS.file_list( files_set, dir, FS_ListFiles, fext );
@@ -522,7 +522,7 @@ public:
 		timer.Start				();
 #endif
 		if (!xr_strlen(S)){
-			strconcat			(sizeof(S), S,Core.UserName," - ","quicksave");
+			xr_strconcat(S,Core.UserName," - ","quicksave");
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
@@ -544,8 +544,8 @@ public:
 		Msg						("Game save overhead  : %f milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
 		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
-		LPSTR						save_name;
-		STRCONCAT					(save_name, CStringTable().translate("st_game_saved").c_str(), ": ", S);
+		string256 save_name;
+		xr_strconcat(save_name, CStringTable().translate("st_game_saved").c_str(), ": ", S);
 		_s->wnd()->TextItemControl()->SetText(save_name);
 
 		xr_strcat				(S,".dds");
@@ -686,14 +686,14 @@ public:
 			return;
 		}
 
-		LPSTR					command;
+		string256 command;
 		if (ai().get_alife()) {
-			STRCONCAT			(command, "load ", g_last_saved_game);
+			xr_strconcat(command, "load ", g_last_saved_game);
 			Console->Execute	(command);
 			return;
 		}
 
-		STRCONCAT				(command, "start server(", g_last_saved_game, "/single/alife/load)");
+		xr_strconcat(command, "start server(", g_last_saved_game, "/single/alife/load)");
 		Console->Execute		(command);
 	}
 	
@@ -1546,12 +1546,12 @@ public:
 			return;
 		}
 
-		LPCSTR					name;
+		string256 name;
 
 		if (0==strext(arguments))
-			STRCONCAT			(name, arguments, ".ogf");
+			xr_strconcat(name, arguments, ".ogf");
 		else
-			STRCONCAT			(name, arguments);
+			xr_strconcat(name, arguments);
 
 		string_path				fn;
 

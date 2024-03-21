@@ -418,7 +418,7 @@ public:
 			case 4:		xr_strcpy(_cfg, "rspec_extreme.ltx");	break;
 		}
 		FS.update_path			(_cfg,"$game_config$",_cfg);
-		strconcat				(sizeof(cmd),cmd,"cfg_load", " ", _cfg);
+		xr_strconcat(cmd,"cfg_load", " ", _cfg);
 		Console->Execute		(cmd);
 	}
 };

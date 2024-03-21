@@ -63,7 +63,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 		// Load CFORM
 		{
-			strconcat			(sizeof(N__),N__,name,"build.cform");
+			xr_strconcat(N__,name,"build.cform");
 			IReader*			fs = FS.r_open(N__);
 			R_ASSERT			(fs->find_chunk(0));
 
@@ -87,7 +87,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 		// Load level data
 		{
-			strconcat			(sizeof(N__),N__,name,"build.prj");
+			xr_strconcat(N__,name,"build.prj");
 			IReader*	fs		= FS.r_open (N__);
 			IReader*	F;
 
@@ -224,7 +224,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 	
 	// Load lights
 	{
-		strconcat				(sizeof(N),N,name,"build.prj");
+		xr_strconcat(N,name,"build.prj");
 
 		IReader*	F			= FS.r_open(N);
 		R_ASSERT2				(F,"There is no file 'build.prj'!");
@@ -283,7 +283,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 	// Load initial map from the Level Editor
 	{
 		string_path			file_name;
-		strconcat			(sizeof(file_name),file_name,name,"build.aimap");
+		xr_strconcat(file_name,name,"build.aimap");
 		IReader				*F = FS.r_open(file_name);
 		R_ASSERT2			(F, file_name);
 

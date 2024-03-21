@@ -239,7 +239,7 @@ void __cdecl clMsg(const char* format, ...) {
 
 
 	string1024		_out_;
-	strconcat(sizeof(_out_), _out_, "    |    | ", buf);
+	xr_strconcat(_out_, "    |    | ", buf);
 	clLog(_out_);
 }
 

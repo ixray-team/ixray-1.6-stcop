@@ -140,8 +140,8 @@ void clientdata_proxy::save_proxy_screenshot()
 	string_path	screenshot_fn;
 	string_path str_digest;
 
-	LPCSTR dest_file_name = NULL;
-	STRCONCAT(dest_file_name,
+	string256 dest_file_name = {};
+	xr_strconcat(dest_file_name,
 		clgame->make_file_name(m_cheater_name.c_str(), screenshot_fn),
 		"_",
 		(m_cheater_digest.size() ? 
@@ -168,10 +168,10 @@ void clientdata_proxy::save_proxy_config()
 		return;
 
 	string_path	config_fn;
-	LPCSTR		fn_suffix = NULL;
+	string256 fn_suffix = {};
 	string_path dest_file_name;
 
-	STRCONCAT(fn_suffix,
+	xr_strconcat(fn_suffix,
 		clgame->make_file_name(m_cheater_name.c_str(), config_fn),
 		".cltx");
 		
@@ -221,9 +221,9 @@ void clientdata_proxy::download_screenshot_callback(file_transfer::receiving_sta
 	case file_transfer::receiving_aborted_by_peer:
 		{
 			Msg("* download screenshot aborted by peer [%u]", m_chearer_id);
-			LPCSTR error_msg;
+			string256 error_msg = {};
 			char bufforint[16];
-			STRCONCAT(error_msg, "download screenshot terminated by peer [",
+			xr_strconcat(error_msg, "download screenshot terminated by peer [",
 				_ultoa(m_chearer_id.value(), bufforint, 10), "]");
 			notify_admin(e_screenshot_error_notif, error_msg);
 		}break;
@@ -292,9 +292,9 @@ void clientdata_proxy::download_config_callback(file_transfer::receiving_status_
 	case file_transfer::receiving_aborted_by_peer:
 		{
 			Msg("* download config aborted by peer [%u]", m_chearer_id);
-			LPCSTR error_msg;
+			string256 error_msg = {};
 			char bufforint[16];
-			STRCONCAT(error_msg, "download config terminated by peer [",
+			xr_strconcat(error_msg, "download config terminated by peer [",
 				_ultoa(m_chearer_id.value(), bufforint, 10), "]");
 			notify_admin(e_configs_error_notif, error_msg);
 		}break;

@@ -155,7 +155,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		}
 
 		string_path					cname;
-		strconcat					(sizeof(cname),cname,::Render->getShaderPath(),/*_name*/shName,".vs");
+		xr_strconcat(cname,::Render->getShaderPath(),/*_name*/shName,".vs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 		//		LPCSTR						target		= NULL;
 
@@ -167,7 +167,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 			string1024			tmp;
 			xr_sprintf			(tmp, "DX10: %s is missing. Replace with stub_default.vs", cname);
 			Msg					(tmp);
-			strconcat			(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".vs");
+			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".vs");
 			FS.update_path		(cname,	"$game_shaders$", cname);
 			file				= FS.r_open(cname);
 		}
@@ -252,7 +252,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 		// Open file
 		string_path					cname;
-		strconcat					(sizeof(cname), cname,::Render->getShaderPath(),/*_name*/shName,".ps");
+		xr_strconcat(cname,::Render->getShaderPath(),/*_name*/shName,".ps");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate
@@ -265,7 +265,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.ps", cname);
 			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".ps");
+			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".ps");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			R		= FS.r_open(cname);
 		}
@@ -334,7 +334,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 
 		// Open file
 		string_path					cname;
-		strconcat					(sizeof(cname), cname,::Render->getShaderPath(),name,".gs");
+		xr_strconcat(cname,::Render->getShaderPath(),name,".gs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate
@@ -347,7 +347,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.gs", cname);
 			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".gs");
+			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".gs");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			R		= FS.r_open(cname);
 		}

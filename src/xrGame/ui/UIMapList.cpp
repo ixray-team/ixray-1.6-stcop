@@ -322,16 +322,16 @@ void CUIMapList::AddWeather(const shared_str& WeatherType, const shared_str& Wea
 void CUIMapList::InitFromXml(CUIXml& xml_doc, const char* path){
 	CUIXmlInit::InitWindow(xml_doc, path, 0, this);
 	string256 buf;
-	CUIXmlInit::InitFrameLine	(xml_doc, strconcat(sizeof(buf),buf, path, ":header_1"),	0, m_pLbl1);
-	CUIXmlInit::InitFrameLine	(xml_doc, strconcat(sizeof(buf),buf, path, ":header_2"),	0, m_pLbl2);
-	CUIXmlInit::InitFrameWindow	(xml_doc, strconcat(sizeof(buf),buf, path, ":frame_1"),		0, m_pFrame1);
-	CUIXmlInit::InitFrameWindow	(xml_doc, strconcat(sizeof(buf),buf, path, ":frame_2"),		0, m_pFrame2);
-	CUIXmlInit::InitListBox		(xml_doc, strconcat(sizeof(buf),buf, path, ":list_1"),		0, m_pList1);
-	CUIXmlInit::InitListBox		(xml_doc, strconcat(sizeof(buf),buf, path, ":list_2"),		0, m_pList2);
-	CUIXmlInit::Init3tButton	(xml_doc, strconcat(sizeof(buf),buf, path, ":btn_left"),	0, m_pBtnLeft);
-	CUIXmlInit::Init3tButton	(xml_doc, strconcat(sizeof(buf),buf, path, ":btn_right"),	0, m_pBtnRight);
-	CUIXmlInit::Init3tButton	(xml_doc, strconcat(sizeof(buf),buf, path, ":btn_up"),		0, m_pBtnUp);
-	CUIXmlInit::Init3tButton	(xml_doc, strconcat(sizeof(buf),buf, path, ":btn_down"),	0, m_pBtnDown);
+	CUIXmlInit::InitFrameLine	(xml_doc,xr_strconcat(buf, path, ":header_1"),	0, m_pLbl1);
+	CUIXmlInit::InitFrameLine	(xml_doc,xr_strconcat(buf, path, ":header_2"),	0, m_pLbl2);
+	CUIXmlInit::InitFrameWindow	(xml_doc,xr_strconcat(buf, path, ":frame_1"),		0, m_pFrame1);
+	CUIXmlInit::InitFrameWindow	(xml_doc,xr_strconcat(buf, path, ":frame_2"),		0, m_pFrame2);
+	CUIXmlInit::InitListBox		(xml_doc,xr_strconcat(buf, path, ":list_1"),		0, m_pList1);
+	CUIXmlInit::InitListBox		(xml_doc,xr_strconcat(buf, path, ":list_2"),		0, m_pList2);
+	CUIXmlInit::Init3tButton	(xml_doc,xr_strconcat(buf, path, ":btn_left"),	0, m_pBtnLeft);
+	CUIXmlInit::Init3tButton	(xml_doc,xr_strconcat(buf, path, ":btn_right"),	0, m_pBtnRight);
+	CUIXmlInit::Init3tButton	(xml_doc,xr_strconcat(buf, path, ":btn_up"),		0, m_pBtnUp);
+	CUIXmlInit::Init3tButton	(xml_doc,xr_strconcat(buf, path, ":btn_down"),	0, m_pBtnDown);
 }
 
 void CUIMapList::UpdateMapList(EGameIDs GameType)

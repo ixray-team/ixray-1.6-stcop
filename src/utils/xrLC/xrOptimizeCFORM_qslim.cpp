@@ -74,7 +74,7 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 	bool					keep_temp_files = !!strstr(Core.Params,"-keep_temp_files");
 	if (keep_temp_files) {
 		string_path			fn;
-		SaveAsSMF			(strconcat(sizeof(fn),fn,pBuild->path,"cform_source.smf"),CL);
+		SaveAsSMF			(xr_strconcat(fn,pBuild->path,"cform_source.smf"),CL);
 	}
 
 	// prepare model
@@ -168,7 +168,7 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 	// save source CDB
 	if (keep_temp_files) {
 		string_path			fn;
-		SaveAsSMF			(strconcat(sizeof(fn),fn,pBuild->path,"cform_optimized.smf"),CL);
+		SaveAsSMF			(xr_strconcat(fn,pBuild->path,"cform_optimized.smf"),CL);
 	}
 
  	xr_delete				(slim);

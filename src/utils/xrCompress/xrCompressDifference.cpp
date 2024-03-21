@@ -154,7 +154,7 @@ int ProcessDifference()
 		xr_sprintf(stats,"%d of %d (%3.1f%%)", i, total, 100.0f*((float)i/(float)total));
 		SetConsoleTitleA(stats);
 
-		strconcat(sizeof(out_path),out_path,target_folder,"\\",fn);
+		xr_strconcat(out_path,target_folder,"\\",fn);
 		VerifyPath(out_path);
 		IReader* r = FS_new->r_open("$target_folder$",fn);
 		IWriter* w = FS_old->w_open(out_path);

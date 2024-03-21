@@ -62,7 +62,7 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 {
 	CXml						uiXml;
 	string_path					_s;
-	strconcat					(sizeof(_s),_s, "text\\", pData->m_sLanguage.c_str() );
+	xr_strconcat(_s, "text\\", pData->m_sLanguage.c_str() );
 
 	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
 

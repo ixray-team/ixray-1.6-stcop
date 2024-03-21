@@ -236,9 +236,9 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	xr_sprintf	(_prefix,"%s",is_16x9?"_16x9":"");
 	string128	val_name;
 
-	strconcat					(sizeof(val_name),val_name,"hands_position",_prefix);
+	xr_strconcat(val_name,"hands_position",_prefix);
 	m_hands_attach[0]			= pSettings->r_fvector3(sect_name, val_name);
-	strconcat					(sizeof(val_name),val_name,"hands_orientation",_prefix);
+	xr_strconcat(val_name,"hands_orientation",_prefix);
 	m_hands_attach[1]			= pSettings->r_fvector3(sect_name, val_name);
 
 	m_item_attach[0]			= pSettings->r_fvector3(sect_name, "item_position");
@@ -275,14 +275,14 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_hands_offset[0][0].set	(0,0,0);
 	m_hands_offset[1][0].set	(0,0,0);
 
-	strconcat					(sizeof(val_name),val_name,"aim_hud_offset_pos",_prefix);
+	xr_strconcat(val_name,"aim_hud_offset_pos",_prefix);
 	m_hands_offset[0][1]		= pSettings->r_fvector3(sect_name, val_name);
-	strconcat					(sizeof(val_name),val_name,"aim_hud_offset_rot",_prefix);
+	xr_strconcat(val_name,"aim_hud_offset_rot",_prefix);
 	m_hands_offset[1][1]		= pSettings->r_fvector3(sect_name, val_name);
 
-	strconcat					(sizeof(val_name),val_name,"gl_hud_offset_pos",_prefix);
+	xr_strconcat(val_name,"gl_hud_offset_pos",_prefix);
 	m_hands_offset[0][2]		= pSettings->r_fvector3(sect_name, val_name);
-	strconcat					(sizeof(val_name),val_name,"gl_hud_offset_rot",_prefix);
+	xr_strconcat(val_name,"gl_hud_offset_rot",_prefix);
 	m_hands_offset[1][2]		= pSettings->r_fvector3(sect_name, val_name);
 
 
@@ -376,7 +376,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		VERIFY					(current_actor);
 		string_path ce_path;
 		string_path anm_name;
-		strconcat(sizeof(anm_name), anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
+		xr_strconcat(anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
 		if (FS.exist(ce_path, "$game_anims$", anm_name)) {
 			CEffectorCam* ec = current_actor->Cameras().GetCamEffector(eCEWeaponAction);
 			if (ec)

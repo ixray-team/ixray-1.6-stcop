@@ -523,11 +523,11 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					ConvertTime2String(&S, TimeRemains);
 					string1024 tmpStr = "";
 					if (TimeRemains > 10000)
-						strconcat(sizeof(tmpStr),tmpStr, *st.translate("mp_time2start"), " ", S);
+						xr_strconcat(tmpStr, *st.translate("mp_time2start"), " ", S);
 					else
 					{
 						if (TimeRemains < 1000)
-							strconcat(sizeof(tmpStr),tmpStr, *st.translate("mp_go"), "");
+							xr_strconcat(tmpStr, *st.translate("mp_go"), "");
 						else
 						{
 							static u32 dwLastTimeRemains = 10;
@@ -539,7 +539,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 							}
 							dwLastTimeRemains = dwCurTimeRemains;
 							_itoa(dwCurTimeRemains, S, 10);								
-							strconcat(sizeof(tmpStr),tmpStr, *st.translate("mp_ready"), "...", S);
+							xr_strconcat(tmpStr, *st.translate("mp_ready"), "...", S);
 						}
 					};
 					

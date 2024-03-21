@@ -99,7 +99,7 @@
 
 			// Open file
 			string_path					cname;
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),/*name*/shName, ShaderTypeTraits<T>::GetShaderExt());
+			xr_strconcat(cname,::Render->getShaderPath(),/*name*/shName, ShaderTypeTraits<T>::GetShaderExt());
 			FS.update_path				(cname,	"$game_shaders$", cname);
 
 			// duplicate and zero-terminate

@@ -69,10 +69,10 @@ extern int g_AI_inactive_time;
 void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 {
 	char	buf[128];
-	fwd		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_fwd"));
-	back	= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_back"));
-	ls		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_ls"));
-	rs		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_rs"));
+	fwd		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_fwd"));
+	back	= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_back"));
+	ls		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_ls"));
+	rs		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_rs"));
 }
 
 //void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)

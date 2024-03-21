@@ -177,7 +177,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     {
         string_path buf;
         VERIFY(name);
-        strconcat(sizeof(buf), buf, name, ".tga");
+        xr_strconcat(buf, name, ".tga");
         IWriter* fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
         TGAdesc p;
         p.format = IMG_24B;

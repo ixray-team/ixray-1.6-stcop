@@ -217,7 +217,7 @@ void CUIPdaWnd::SetActiveCaption()
 		{
 			LPCSTR cur = (*it_b)->TextItemControl()->GetText();
 			string256 buf;
-			strconcat( sizeof(buf), buf, m_caption_const.c_str(), cur );
+			xr_strconcat(buf, m_caption_const.c_str(), cur );
 			SetCaption( buf );
 			return;
 		}

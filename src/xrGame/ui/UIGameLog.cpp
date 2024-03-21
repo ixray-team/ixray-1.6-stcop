@@ -52,8 +52,8 @@ CUIPdaKillMessage* CUIGameLog::AddLogMessage(KillMessageStruct& msg)
 
 void CUIGameLog::AddChatMessage(LPCSTR msg, LPCSTR author)
 {
-	LPSTR fullLine;
-	STRCONCAT(fullLine, author, " ", msg);
+	string256 fullLine;
+	xr_strconcat(fullLine, author, " ", msg);
 
 	_TrimRight(fullLine);
     

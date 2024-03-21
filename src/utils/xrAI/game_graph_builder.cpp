@@ -138,7 +138,7 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 	Msg						("Loading graph points");
 
 	string_path				spawn_file_name;
-	strconcat				(sizeof(spawn_file_name),spawn_file_name,*m_level_name,"level.spawn");
+	xr_strconcat(spawn_file_name,*m_level_name,"level.spawn");
 	IReader					*reader = FS.r_open(spawn_file_name);
 	u32						id;
 	NET_Packet				net_packet;

@@ -517,7 +517,7 @@ public:
 		string_path				_cfg;
 		string_path				cmd;
 		FS.update_path			(_cfg,"$game_config$","default_controls.ltx");
-		strconcat				(sizeof(cmd),cmd,"cfg_load", " ", _cfg);
+		xr_strconcat(cmd,"cfg_load", " ", _cfg);
 		Console->Execute		(cmd);
 	}
 };

@@ -331,7 +331,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 			} else {
 				string_path			th_name;
-				FS.update_path	(th_name,"$game_textures$",strconcat(sizeof(th_name),th_name,N,".thm"));
+				FS.update_path	(th_name,"$game_textures$", xr_strconcat(th_name,N,".thm"));
 				clMsg			("processing: %s",th_name);
 				IReader* THM	= FS.r_open(th_name);
 

@@ -26,14 +26,14 @@ CUIWindow* CUIStats::InitStats(CUIXml& xml_doc, LPCSTR path,  int team)
     // players
 	CUIStatsPlayerList* pPList		= xr_new<CUIStatsPlayerList>();
 	pPList->SetTeam					(team);
-	pPList->Init					(xml_doc, strconcat(sizeof(_path),_path, path, ":player_list"));
+	pPList->Init					(xml_doc, xr_strconcat(_path, path, ":player_list"));
 	pPList->SetMessageTarget		(this);
 	pWnd							= pPList->GetHeader();
 	pTinfo							= pPList->GetTeamHeader();
 	AddWindow						(pWnd, true);
 	AddWindow						(pPList, true);
 
-	if (xml_doc.NavigateToNode(strconcat(sizeof(_path),_path, path, ":spectator_list"),0))
+	if (xml_doc.NavigateToNode(xr_strconcat(_path, path, ":spectator_list"),0))
 	{
 		// spectators
 		pPList						= xr_new<CUIStatsPlayerList>();

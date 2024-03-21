@@ -292,16 +292,16 @@ void HitData::WriteLtx(CInifile& ini, LPCSTR sect, LPCSTR prefix)
 {
 	string512		buff;
 	
-	ini.w_fvector3(sect,strconcat(sizeof(buff), buff, prefix ,"pos_0"),Pos0);
-	ini.w_fvector3(sect,strconcat(sizeof(buff), buff, prefix ,"pos_1"),Pos1);
+	ini.w_fvector3(sect,xr_strconcat(buff, prefix ,"pos_0"),Pos0);
+	ini.w_fvector3(sect,xr_strconcat(buff, prefix ,"pos_1"),Pos1);
 	
-	ini.w_u16(sect,strconcat(sizeof(buff), buff, prefix ,"BoneID"),BoneID);
+	ini.w_u16(sect, xr_strconcat(buff, prefix ,"BoneID"),BoneID);
 
-	ini.w_bool(sect,strconcat(sizeof(buff), buff, prefix ,"Deadly"),Deadly);
+	ini.w_bool(sect, xr_strconcat(buff, prefix ,"Deadly"),Deadly);
 
-	ini.w_string(sect,strconcat(sizeof(buff), buff, prefix ,"TargetName"),TargetName.c_str());
+	ini.w_string(sect, xr_strconcat(buff, prefix ,"TargetName"),TargetName.c_str());
 
-	ini.w_string(sect,strconcat(sizeof(buff), buff, prefix ,"BoneName"),BoneName.c_str());
+	ini.w_string(sect, xr_strconcat(buff, prefix ,"BoneName"),BoneName.c_str());
 };
 
 

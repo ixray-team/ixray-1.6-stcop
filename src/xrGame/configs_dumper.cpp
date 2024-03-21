@@ -154,19 +154,19 @@ char const * cd_creation_date		= "creation_date";
 void configs_dumper::sign_configs		()
 {
 	string64	creation_date;
-	LPSTR		tmp_player_name		= NULL;
+	string64		tmp_player_name = {};
 	CInifile	tmp_ini				(NULL, FALSE, FALSE, FALSE);
 	game_cl_mp*	tmp_cl_game			= smart_cast<game_cl_mp*>(&Game());
 	R_ASSERT						(tmp_cl_game);
-	STRCONCAT						(tmp_player_name, "\"", 
+	xr_strconcat(tmp_player_name, "\"",
 		tmp_cl_game->local_player ? tmp_cl_game->local_player->getName() : "unknown_just_connected",
 		"\"");
 	LPCSTR		tmp_cdkey_digest	= Level().get_cdkey_digest().c_str();
 	if (!tmp_cdkey_digest)
 		tmp_cdkey_digest = "null";
 
-	LPCSTR		add_str = NULL;
-	STRCONCAT(add_str,
+	string128		add_str = {};
+	xr_strconcat(add_str,
 		tmp_player_name,
 		tmp_cdkey_digest,
 		current_time(creation_date));

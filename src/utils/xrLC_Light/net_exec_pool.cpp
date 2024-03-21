@@ -178,7 +178,7 @@ namespace lc_net
 		DWORD t_id = id;
 		string_path data;
 		string_path files;
-		strconcat( sizeof(data),data,libraries,e->data_files(files));
+		xr_strconcat(data,libraries,e->data_files(files));
 		run_task_lock.Enter();
 		bool ok = false;
 		run_task: ;

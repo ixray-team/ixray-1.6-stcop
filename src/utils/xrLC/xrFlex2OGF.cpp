@@ -100,7 +100,7 @@ void CBuild::Flex2OGF()
 				{
 					// specific lmap
 					string_path		tn;
-					strconcat		(sizeof(tn),tn,*T.name,"_lm.dds");
+					xr_strconcat(tn,*T.name,"_lm.dds");
 					T.name			= tn;
 					T.pBuildSurface		= T.pBuildSurface;	// Leave surface intact
 					R_ASSERT		(pOGF);

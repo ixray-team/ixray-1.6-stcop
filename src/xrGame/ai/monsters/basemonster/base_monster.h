@@ -638,8 +638,8 @@ public:
 template <class Type>
 bool   CBaseMonster::get_debug_var (pcstr var_name, OUT Type& result)
 {
-	char*					full_var_name;
-	STRCONCAT				(full_var_name, get_monster_class_name(), "_", var_name);
+	string256 full_var_name;
+	xr_strconcat(full_var_name, get_monster_class_name(), "_", var_name);
 	return ai_dbg::get_var	(full_var_name, result);
 }
 #endif // DEBUG

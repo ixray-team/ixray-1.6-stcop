@@ -56,10 +56,10 @@ void StartupLC(LPSTR lpCmdLine) {
 	SetWindowTextA(logWindow, temp);
 
 	string_path prjName;
-	FS.update_path(prjName, "$game_levels$", strconcat(sizeof(prjName), prjName, name, "\\build.prj"));
+	FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, name, "\\build.prj"));
 
 	string256 phaseName;
-	Phase(strconcat(sizeof(phaseName), phaseName, "Reading project [", name, "]..."));
+	Phase(xr_strconcat(phaseName, "Reading project [", name, "]..."));
 
 	string256 inf;
 	IReader* F = FS.r_open(prjName);

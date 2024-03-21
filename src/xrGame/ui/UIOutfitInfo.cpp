@@ -55,15 +55,15 @@ void CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_t
 
 	string256 buf;
 	
-	strconcat( sizeof(buf), buf, base_str, ":", immunity_names[hit_type] );
+	xr_strconcat(buf, base_str, ":", immunity_names[hit_type] );
 	CUIXmlInit::InitWindow( xml_doc, buf, 0, this );
 	CUIXmlInit::InitStatic( xml_doc, buf, 0, &m_name );
 	m_name.TextItemControl()->SetTextST( immunity_st_names[hit_type] );
 
-	strconcat( sizeof(buf), buf, base_str, ":", immunity_names[hit_type], ":progress_immunity" );
+	xr_strconcat(buf, base_str, ":", immunity_names[hit_type], ":progress_immunity" );
 	m_progress.InitFromXml( xml_doc, buf );
 	
-	strconcat( sizeof(buf), buf, base_str, ":", immunity_names[hit_type], ":static_value" );
+	xr_strconcat(buf, base_str, ":", immunity_names[hit_type], ":static_value" );
 	m_value.SetVisible( false );
 
 	m_magnitude = xml_doc.ReadAttribFlt( buf, 0, "magnitude", 1.0f );
@@ -115,7 +115,7 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	m_Prop_line = xr_new<CUIStatic>();
 	AttachChild( m_Prop_line );
 	m_Prop_line->SetAutoDelete( true );	
-	strconcat( sizeof(buf), buf, base_str, ":", "prop_line" );
+	xr_strconcat(buf, base_str, ":", "prop_line" );
 	CUIXmlInit::InitStatic( xml_doc, buf, 0, m_Prop_line );
 
 

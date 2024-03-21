@@ -171,7 +171,7 @@ xr_vector<u16>*		game_sv_GameState::get_children				(ClientID id)
 s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
 {
 	string64		op;
-	strconcat		(sizeof(op),op,"/",name,"=");
+	xr_strconcat(op,"/",name,"=");
 	if (strstr(lst,op))	return atoi	(strstr(lst,op)+xr_strlen(op));
 	else				return def;
 }
@@ -179,7 +179,7 @@ s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
 float					game_sv_GameState::get_option_f				(LPCSTR lst, LPCSTR name, float def)
 {
 	string64		op;
-	strconcat		(sizeof(op),op,"/",name,"=");
+	xr_strconcat(op,"/",name,"=");
 	LPCSTR			found =	strstr(lst,op);
 
 	if (found)
@@ -197,7 +197,7 @@ string64&			game_sv_GameState::get_option_s				(LPCSTR lst, LPCSTR name, LPCSTR 
 	static string64	ret;
 
 	string64		op;
-	strconcat		(sizeof(op),op,"/",name,"=");
+	xr_strconcat(op,"/",name,"=");
 	LPCSTR			start	= strstr(lst,op);
 	if (start)		
 	{

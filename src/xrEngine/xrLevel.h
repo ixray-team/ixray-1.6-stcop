@@ -19,16 +19,16 @@ struct xrGUID {
     {
         string128				buff;
 
-		g[0]                    = ini.r_u64(section,strconcat(sizeof(buff),buff,name,"_g0"));
-		g[1]                    = ini.r_u64(section,strconcat(sizeof(buff),buff,name,"_g1"));
+		g[0]                    = ini.r_u64(section,xr_strconcat(buff,name,"_g0"));
+		g[1]                    = ini.r_u64(section,xr_strconcat(buff,name,"_g1"));
     }
 
     ICF void SaveLTX(CInifile& ini, LPCSTR section, LPCSTR name)
     {
         string128				buff;
 
-        ini.w_u64				(section,strconcat(sizeof(buff),buff,name,"_g0"),g[0]);
-        ini.w_u64				(section,strconcat(sizeof(buff),buff,name,"_g1"),g[1]);
+        ini.w_u64				(section,xr_strconcat(buff,name,"_g0"),g[0]);
+        ini.w_u64				(section,xr_strconcat(buff,name,"_g1"),g[1]);
     }
 };
 

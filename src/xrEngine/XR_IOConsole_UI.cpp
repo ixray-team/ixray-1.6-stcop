@@ -112,7 +112,7 @@ void CConsole::DrawUIConsole()
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
 			
 			const float TextYSize = ImGui::CalcTextSize(((*LogFile)[0]).c_str()).y;
-			const int MaxTextCount = (ImGui::GetContentRegionAvail().y / TextYSize) + 1;
+			const int MaxTextCount = int(ImGui::GetContentRegionAvail().y / TextYSize) + 1;
 
 			int CursorPos = std::max((int)(LogFile->size() - MaxTextCount - scroll_delta), 0);
 			for (int i = CursorPos; i < LogFile->size(); i++) {

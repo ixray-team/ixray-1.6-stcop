@@ -245,7 +245,7 @@ void	CInifile::Load(IReader* F, LPCSTR path
         	if (_GetItem	(str,1,inc_name,'"'))
 			{
             	string_path	fn,inc_path,folder;
-                strconcat	(sizeof(fn),fn,path,inc_name);
+				xr_strconcat(fn,path,inc_name);
 				_splitpath	(fn,inc_path,folder, 0, 0 );
 				xr_strcat		(inc_path,sizeof(inc_path),folder);
 #ifndef _EDITOR

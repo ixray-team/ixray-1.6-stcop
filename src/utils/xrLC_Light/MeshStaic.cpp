@@ -63,7 +63,7 @@ void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 	u32 not_empty_verts = 0;
 
 	string_path path_name;
-	strconcat(sizeof(path_name), path_name, pBuild->path, "build.vertices");
+	xr_strconcat(path_name, pBuild->path, "build.vertices");
 	{
 		IWriter* file = FS.w_open(path_name);
 		R_ASSERT(file);

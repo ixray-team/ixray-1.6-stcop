@@ -8,9 +8,9 @@
 shared_str const CGameSpy_SAKE::TryToTranslate(SAKERequestResult const & request_result)
 {
 	string16 digit_dest;
-	LPCSTR tmp_string = NULL;
+	string256 tmp_string = {};
 	_itoa_s(request_result, digit_dest, 10);
-	STRCONCAT(
+	xr_strconcat(
 		tmp_string,
 		"mp_sake_database_request_error_",
 		digit_dest
@@ -20,9 +20,9 @@ shared_str const CGameSpy_SAKE::TryToTranslate(SAKERequestResult const & request
 shared_str const CGameSpy_SAKE::TryToTranslate(SAKEStartRequestResult const & request_result)
 {
 	string16 digit_dest;
-	LPCSTR tmp_string = NULL;
+	string256 tmp_string = {};
 	_itoa_s(request_result, digit_dest, 10);
-	STRCONCAT(
+	xr_strconcat(
 		tmp_string,
 		"mp_sake_database_start_request_error_",
 		digit_dest

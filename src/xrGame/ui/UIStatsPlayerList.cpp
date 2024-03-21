@@ -71,8 +71,8 @@ void CUIStatsPlayerList::Init(CUIXml& xml_doc, LPCSTR path)
 	xml_doc.SetLocalRoot		(xml_doc.GetRoot());
 	string256					 _path;
 	// init item text params
-	CUIXmlInit::InitFont		(xml_doc, strconcat(sizeof(_path),_path, path, ":text_format"), 0, m_i.c, m_i.f);
-	m_i.h						= xml_doc.ReadAttribFlt(strconcat(sizeof(_path),_path, path, ":text_format"), 0, "height", 25);
+	CUIXmlInit::InitFont		(xml_doc, xr_strconcat(_path, path, ":text_format"), 0, m_i.c, m_i.f);
+	m_i.h						= xml_doc.ReadAttribFlt(xr_strconcat(_path, path, ":text_format"), 0, "height", 25);
 
 	// init list header
 	switch (GameID())
@@ -121,11 +121,11 @@ LPCSTR CUIStatsPlayerList::GetST_entry(LPCSTR itm)
 void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 {
 	string256 _path;
-	CUIXmlInit::InitStatic(xml_doc, strconcat(sizeof(_path),_path, path, ":list_header"), 0, m_header);
+	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":list_header"), 0, m_header);
 	m_header->SetWidth(this->GetDesiredChildWidth());
 	m_h.h = m_header->GetHeight();
 
-	CUIXmlInit::InitFont(xml_doc, strconcat(sizeof(_path),_path, path, ":list_header:text_format"), 0, m_h.c, m_h.f);
+	CUIXmlInit::InitFont(xml_doc, xr_strconcat(_path, path, ":list_header:text_format"), 0, m_h.c, m_h.f);
 	float indent = 5;
 	if (!m_bSpectator || m_bStatus_mode)
 	{
@@ -177,12 +177,12 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path){
 	string256 _path;
 	m_header_team = xr_new<CUIWindow>();
 	m_header_team->SetAutoDelete(true);
-	CUIXmlInit::InitWindow(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header"), 0, m_header_team);
+	CUIXmlInit::InitWindow(xml_doc, xr_strconcat(_path, path, ":team_header"), 0, m_header_team);
 	m_header_team->SetWidth(this->GetDesiredChildWidth());
 
 	CUIStatic* logo = xr_new<CUIStatic>();
 	logo->SetAutoDelete(true);
-	CUIXmlInit::InitStatic(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header:logo"), 0, logo);
+	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":team_header:logo"), 0, logo);
 	m_header_team->AttachChild(logo);
 
 	if (1 == m_CurTeam)
@@ -193,12 +193,12 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path){
 		R_ASSERT2(false, "invalid team");
 	
 	S_ELEMENT t;
-	CUIXmlInit::InitFont(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header:text_format"), 0, t.c, t.f);
+	CUIXmlInit::InitFont(xml_doc, xr_strconcat(_path, path, ":team_header:text_format"), 0, t.c, t.f);
 	t.h = m_header_team->GetHeight();
 
 	m_header_text = xr_new<CUITextWnd>();
 	m_header_text->SetAutoDelete(true);
-	CUIXmlInit::InitTextWnd(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header:header"), 0, m_header_text);
+	CUIXmlInit::InitTextWnd(xml_doc, xr_strconcat(_path, path, ":team_header:header"), 0, m_header_text);
 	m_header_text->SetWidth(GetDesiredChildWidth());
 	m_header_text->SetVTextAlignment(valCenter);
 	m_header_team->AttachChild(m_header_text);

@@ -512,7 +512,7 @@ void CAI_Stalker::debug_text			()
 	string256							temp;
 
 	const CObjectHandlerPlanner			&objects = planner();
-	strconcat							(sizeof(temp),temp,indent,indent);
+	xr_strconcat(temp,indent,indent);
 	draw_planner						(objects,temp,indent,"root");
 
 	DBG_TextOutSet		(330,up_indent);
@@ -778,7 +778,7 @@ void CAI_Stalker::debug_text			()
 		DBG_OutText	("%s%s%sfire object target    : %s",indent,indent,indent,movement().target_params().cover_fire_object()->cName().c_str());
 
 	DBG_OutText	("%s%s%sdefault behaviour   : %c",indent,indent,indent, movement().current_params().cover() && movement().default_behaviour() ? '+' : '-');
-	strconcat								(sizeof(temp),temp,indent,indent,indent);
+	xr_strconcat(temp,indent,indent,indent);
 	draw_planner							(movement().target_selector(),temp,indent,"target selector");
 
 	if	(
@@ -788,7 +788,7 @@ void CAI_Stalker::debug_text			()
 			movement().restrictions().base_in_restrictions().size()
 		) {
 		DBG_OutText	("%s%srestrictions",indent,indent);
-		strconcat							(sizeof(temp),temp,indent,indent,indent);
+		xr_strconcat(temp,indent,indent,indent);
 		draw_restrictions					(movement().restrictions().out_restrictions(),temp,indent,"out");
 		draw_restrictions					(movement().restrictions().in_restrictions(),temp,indent,"in");
 		draw_restrictions					(movement().restrictions().base_out_restrictions(),temp,indent,"base out");

@@ -356,7 +356,7 @@ void CIKLimb::Create( u16 id, IKinematicsAnimated* K, bool collide_ )
 	{
 		string32 section;
 		string32 buff;
-		strconcat( sizeof( section ), section, "ik_limb", _itoa( id, buff, 10 ) );
+		xr_strconcat(section, "ik_limb", _itoa( id, buff, 10 ) );
 		parse_bones_string(CK, CK->LL_UserData()->r_string( section, "bones" ), m_bones );
 		m_foot.Create( CK, section, m_bones );
 	} else

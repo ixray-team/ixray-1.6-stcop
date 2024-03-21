@@ -93,13 +93,13 @@ char const * active_params_section	= "active_params_section";
 
 void mp_active_params::dump	(IAnticheatDumpable const * dumpable_obj, LPCSTR sect_name_key, CInifile & dest_dumper)
 {
-	LPCSTR		obj_sect_name = "";
+	string256 obj_sect_name = "";
 	if (dumpable_obj)
 	{
 		shared_str const tmp_obj_section = dumpable_obj->GetAnticheatSectionName();
 		if (tmp_obj_section.size())
 		{
-			STRCONCAT(obj_sect_name,
+			xr_strconcat(obj_sect_name,
 				"ap_",
 				tmp_obj_section.c_str());
 		}

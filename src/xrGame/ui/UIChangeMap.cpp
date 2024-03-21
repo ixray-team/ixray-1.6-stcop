@@ -105,8 +105,8 @@ void CUIChangeMap::OnItemSelect()
 
 	const SGameTypeMaps& M	= gMapListHelper.GetMapListFor( (EGameIDs)GameID() );
 	const shared_str& name	= M.m_map_names[idx].map_name;
-	LPSTR map_ver = NULL;
-	STRCONCAT(map_ver, 
+	string128 map_ver = {};
+	xr_strconcat(map_ver,
 		"[",
 		M.m_map_names[idx].map_ver.c_str() ? M.m_map_names[idx].map_ver.c_str() : "unknown",
 		"]"
