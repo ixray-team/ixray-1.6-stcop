@@ -121,9 +121,9 @@ void CEngineAPI::Initialize(void)
 		}
 	}
 
-	for (size_t Iter = 0; Iter < (size_t)EditorUI::Force; Iter++)
+	for (size_t Iter = 0; Iter < (size_t)EditorUI::Count; Iter++)
 	{
-		EditorStates[(EditorUI)Iter] = false;
+		EditorStates[Iter] = false;
 	}
 }
 

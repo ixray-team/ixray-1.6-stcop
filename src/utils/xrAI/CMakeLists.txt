@@ -57,6 +57,7 @@ add_compile_options(/fp:fast)
 target_link_libraries(xrAI PUBLIC xrCDB)
 target_link_libraries(xrAI PUBLIC luabind)
 target_link_libraries(xrAI PUBLIC xrSE_Factory)
+target_link_libraries(xrAI PUBLIC imgui)
 
 # Nuget
 add_custom_command(TARGET ${PROJECT_NAME}

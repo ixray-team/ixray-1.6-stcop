@@ -312,10 +312,9 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	Device.AddUICommand("GraphicDebug", 2, [this]() {
-		if (!Engine.External.EditorStates[EditorUI::Shaders]) {
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)]) {
 			return;
 		}
-
 
 		auto State = g_debug_blend_state;
 		auto DisplayTarget = [State](const ref_rt& rt) {
@@ -359,7 +358,11 @@ CRenderTarget::CRenderTarget		()
 		};
 
 		ID3D11BlendState* BlendState = nullptr;
-		ImGui::Begin("GraphicDebug");
+		if (!ImGui::Begin("GraphicDebug", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)], ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)) {
+			Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)] = false;
+			ImGui::End();
+		}
+
 		DisplayTarget(rt_Generic_0);
 		DisplayTarget(rt_Generic_1);
 		DisplayTarget(rt_Generic_2);

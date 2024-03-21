@@ -657,7 +657,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
-	CMD2(CCC_Boolean,	"ps_r__graphic_debug",	&Engine.External.EditorStates[EditorUI::Shaders]);
+	CMD2(CCC_Boolean,	"ps_r__graphic_debug",	&Engine.External.EditorStates[(int)EditorUI::Shaders]);
 #ifdef	DEBUG
 	CMD1(CCC_DumpResources,		"dump_resources");
 #endif	//	 DEBUG

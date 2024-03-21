@@ -215,8 +215,9 @@ class ENGINE_API CCC_Float : public IConsole_Command
 {
 protected	:
 	float*			value;
-	float			min,max;
 public		:
+	float			min, max;
+
 	CCC_Float(LPCSTR N, float* V, float _min=0, float _max=1) :
 	  IConsole_Command(N),
 	  value(V),
@@ -299,8 +300,9 @@ class ENGINE_API	CCC_Integer : public IConsole_Command
 {
 protected	:
 	int*			value;
-	int				min,max;
 public		:
+	int				min, max;
+
 	  const int GetValue	() const {return *value;};
 	void GetBounds(int& imin, int& imax) const {
 		imin = min;

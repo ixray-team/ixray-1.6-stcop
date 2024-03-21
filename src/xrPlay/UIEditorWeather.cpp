@@ -255,10 +255,10 @@ bool editTexture(const char* label, shared_str& texName)
 
 void RenderUIWeather()
 {
-	if (!Engine.External.EditorStates[EditorUI::Weather] || g_pGameLevel == nullptr)
+	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Weather)] || g_pGameLevel == nullptr)
 		return;
 
-	if (!ImGui::Begin(modifiedWeathers.empty() ? "Weather###Weather" : "Weather*###Weather", &Engine.External.EditorStates[EditorUI::Weather]))
+	if (!ImGui::Begin(modifiedWeathers.empty() ? "Weather###Weather" : "Weather*###Weather", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Weather)]))
 	{
 		ImGui::End();
 		return;

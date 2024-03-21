@@ -4,6 +4,7 @@
 // Support for extension DLLs
 //****************************************************************************
 #pragma once
+#include <array>
 
 enum class APILevel;
 
@@ -25,13 +26,14 @@ typedef DLL_API  DLL_Pure*	  __cdecl Factory_Create	(CLASS_ID	CLS_ID);
 typedef DLL_API  void		  __cdecl Factory_Destroy	(DLL_Pure*	O);
 };
 
-enum class EditorUI
+enum class EditorUI : std::uint8_t
 {
 	Shaders,
 	Weather,
 	DebugDraw,
+	CmdVars,
 
-	Force
+	Count
 };
 
 class ENGINE_API		CEngineAPI
@@ -43,7 +45,7 @@ private:
 public:
 	HMODULE				hGameSpy;
 
-	xr_hash_map<EditorUI, bool> EditorStates;
+	std::array<bool, static_cast<std::uint8_t>(EditorUI::Count)> EditorStates;
 
 public:
 	Factory_Create*		pCreate;

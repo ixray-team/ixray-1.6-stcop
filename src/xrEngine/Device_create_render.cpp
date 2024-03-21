@@ -41,7 +41,28 @@ struct DrawCommand
 	std::function<void()> Function;
 };
 
-static xr_vector<DrawCommand>* DrawCommands = nullptr;
+static xr_vector<DrawCommand> DrawCommands;
+
+void DrawMainViewport()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowViewport(Viewport->ID);
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImVec2(Device.TargetWidth, Device.TargetHeight));
+	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) {
+		ImGui::Image(RenderSRV, ImVec2(Device.TargetWidth, Device.TargetHeight));
+	}
+	ImGui::End();
+
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+}
 
 void free_vid_mode_list()
 {
@@ -197,7 +218,7 @@ static void InitImGui()
 	colors[ImGuiCol_TitleBg] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
 	colors[ImGuiCol_TitleBgActive] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_MenuBarBg] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
 	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
@@ -253,25 +274,35 @@ static void InitImGui()
 
 bool CRenderDevice::InitRenderDevice(APILevel API)
 {
-	if (DrawCommands == nullptr) {
-		DrawCommands = xr_new<xr_vector<DrawCommand>>();
-	}
-
 	fill_vid_mode_list();
 	InitImGui();
 	if (!ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window)) {
 		return false;
 	}
 
-	AddUICommand("default", 0, [this]() {
+	AddUICommand("Main", 0, DrawMainViewport);
+	AddUICommand("Dockspace", 1, []() {
+		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(TargetWidth, TargetHeight));
+		ImGui::SetNextWindowSize(Viewport->WorkSize);
+		ImGui::SetNextWindowViewport(Viewport->ID);
+		ImGui::SetNextWindowBgAlpha(0);
 
+		constexpr ImGuiWindowFlags dockspace_window_flags = 0
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoNavFocus;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-		ImGui::Image(RenderSRV, ImVec2(TargetWidth, TargetHeight));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		if (ImGui::Begin("DockSpaceViewport_Main", NULL, dockspace_window_flags)) {
+			ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+		}
 		ImGui::End();
+		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	});
@@ -321,7 +352,7 @@ void CRenderDevice::DestroyRenderDevice()
 	}
 
 	free_vid_mode_list();
-	xr_delete(DrawCommands);
+	DrawCommands.clear();
 }
 
 void* CRenderDevice::GetRenderDevice()
@@ -427,7 +458,7 @@ void CRenderDevice::EndRender()
 void CRenderDevice::DrawUI()
 {
 	if (DrawUIRender) {
-		for (const auto& Command : *DrawCommands) {
+		for (const auto& Command : DrawCommands) {
 			Command.Function();
 		}
 
@@ -437,39 +468,30 @@ void CRenderDevice::DrawUI()
 			}
 		}
 	} else {
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(TargetWidth, TargetHeight));
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-		ImGui::Image(RenderSRV, ImVec2(TargetWidth, TargetHeight));
-		ImGui::End();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
+		DrawMainViewport();
 	}
 }
 
 void CRenderDevice::AddUICommand(const char* Name, int Order, std::function<void()>&& Function)
 {
-	auto It = std::find_if(DrawCommands->begin(), DrawCommands->end(), [Name](const DrawCommand& a) { return !a.Name.compare(Name); });
-	VERIFY(It == DrawCommands->end());
-	if (It != DrawCommands->end()) {
+	auto It = std::find_if(DrawCommands.begin(), DrawCommands.end(), [Name](const DrawCommand& a) { return !a.Name.compare(Name); });
+	VERIFY(It == DrawCommands.end());
+	if (It != DrawCommands.end()) {
 		return;
 	}
 
-	DrawCommands->emplace_back(DrawCommand(Order, Name, Function));
-	std::sort(DrawCommands->begin(), DrawCommands->end(), [](const auto& a, const auto& b) { return a.Order < b.Order; });
+	DrawCommands.emplace_back(DrawCommand(Order, Name, Function));
+	std::sort(DrawCommands.begin(), DrawCommands.end(), [](const auto& a, const auto& b) { return a.Order < b.Order; });
 }
 
 void CRenderDevice::RemoveUICommand(const char* Name)
 {
-	auto It = std::find_if(DrawCommands->begin(), DrawCommands->end(), [Name](const DrawCommand& a) { return !a.Name.compare(Name); });
-	VERIFY(It != DrawCommands->end());
-	if (It == DrawCommands->end()) {
+	auto It = std::find_if(DrawCommands.begin(), DrawCommands.end(), [Name](const DrawCommand& a) { return !a.Name.compare(Name); });
+	VERIFY(It != DrawCommands.end());
+	if (It == DrawCommands.end()) {
 		return;
 	}
 
-	DrawCommands->erase(It);
-	std::sort(DrawCommands->begin(), DrawCommands->end(), [](const auto& a, const auto& b) { return a.Order < b.Order; });
+	DrawCommands.erase(It);
+	std::sort(DrawCommands.begin(), DrawCommands.end(), [](const auto& a, const auto& b) { return a.Order < b.Order; });
 }
