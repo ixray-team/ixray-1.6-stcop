@@ -748,12 +748,14 @@ bool CUIActorMenu::TryUseItem( CUICellItem* cell_itm )
 	CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);
 	CBandage*		pBandage		= smart_cast<CBandage*>		(item);
 
-	auto TryBandageUse = Actor()->conditions().BleedingSpeed();
-	
-	if (pBandage && TryBandageUse < fis_zero(TryBandageUse, EPS))
+	if (EngineExternal()[EEngineExternalGame::EnableUseBandage7DaysToDie])
 	{
-		return false;
+		if (pBandage && !pBandage->CanUseItem())
+		{
+			return false;
+		}
 	}
+
 	if ( !(pMedkit || pAntirad || pEatableItem || pBottleItem) )
 	{
 		return false;
@@ -1077,18 +1079,22 @@ void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 
 	LPCSTR act_str = nullptr;
 
-	auto TryBandageUse = Actor()->conditions().BleedingSpeed();
-
-	if (pBandage)
+	if (EngineExternal()[EEngineExternalGame::EnableUseBandage7DaysToDie])
 	{
-		if (TryBandageUse < fis_zero(TryBandageUse, EPS))
+		if (pBandage)
 		{
-			/*Not using*/
+			if (!pBandage->CanUseItem())
+			{
+				return;
+			}
+			else
+			{
+				act_str = "st_bandage_use";
+			}
 		}
-		else
-			act_str = "st_bandage_use";
 	}
-	else if (pMedkit || pAntirad)
+
+	if (pMedkit || pAntirad)
 	{
 		act_str = "st_use";
 	}

@@ -20,7 +20,8 @@ enum class EEngineExternalGame
 	EnableAiDieInAnomaly,
 	EnableNPCLookAtActor,
 	EnableBlockSprintInReload,
-	EnableAutoreload
+	EnableAutoreload,
+	EnableUseBandage7DaysToDie
 };
 
 enum class EEngineExternalRender

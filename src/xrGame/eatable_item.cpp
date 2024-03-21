@@ -85,7 +85,7 @@ bool CEatableItem::Useful() const
 {
 	if(!inherited::Useful()) return false;
 
-	//проверить не все ли еще съедено
+	//РїСЂРѕРІРµСЂРёС‚СЊ РЅРµ РІСЃРµ Р»Рё РµС‰Рµ СЃСЉРµРґРµРЅРѕ
 	if (GetRemainingUses() == 0 && CanDelete()) return false;
 
 	return true;
@@ -160,7 +160,6 @@ float CEatableItem::Weight() const
 
 	return res;
 }
-
 
 using namespace luabind;
 
