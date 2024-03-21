@@ -46,9 +46,13 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	RImplementation.rmNormal();
 	RCache.set_RT(RTarget);
 	RCache.set_ZB(RDepth);
+
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	RContext->ClearRenderTargetView( RCache.get_RT(), ColorRGBA);
 #else //USE_DX11
+	RCache.set_RT(RTarget);
+	RCache.set_ZB(RDepth);
+
 	CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_argb(0, 0, 0, 0), 1, 0));
 #endif
 
