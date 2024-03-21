@@ -43,6 +43,7 @@ public:
 	bool	findLight			(u16 bone_id,SCarLight* &light);
 			CCarLights			()								;
 			~CCarLights			()								;
+	bool	IsOn() const;
 protected:
 	struct SFindLightPredicate {
 		const SCarLight *m_light;

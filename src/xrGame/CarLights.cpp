@@ -198,3 +198,11 @@ CCarLights::~CCarLights()
 	for(;i!=e;++i) xr_delete(*i);
 	m_lights.clear();
 }
+
+bool CCarLights::IsOn() const
+{
+	if (m_lights.empty())
+		return false;
+
+	return m_lights[0]->isOn();
+}
