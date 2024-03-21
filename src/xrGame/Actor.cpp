@@ -851,8 +851,15 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 		{
 			SwitchOutBorder(new_border_state);
 		}
-#ifdef DEBUG
-		if(!psActorFlags.test(AF_NO_CLIP))
+#ifndef MASTER_GOLD
+		if (psActorFlags.test(AF_NO_CLIP))
+		{
+			character_physics_support()->movement()->SetNonInteractive(true);
+			character_physics_support()->movement()->SetVelocity(Fvector().set(0.f,0.f,0.f));
+		}
+		else if(character_physics_support()->movement()->bNonInteractiveMode)
+				character_physics_support()->movement()->SetNonInteractive(false);
+		else
 			character_physics_support()->movement()->GetPosition		(Position());
 #else //DEBUG
 		character_physics_support()->movement()->GetPosition		(Position());
