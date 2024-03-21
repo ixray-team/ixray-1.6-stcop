@@ -913,6 +913,30 @@ void set_active_cam(u8 mode)
 		actor->cam_Set((ACTOR_DEFS::EActorCameras)mode);
 }
 
+namespace level_nearest
+{
+	xr_vector<CObject*> ObjectList;
+	void Set(float Radius, const Fvector& Pos)
+	{
+		ObjectList.clear();
+		g_pGameLevel->ObjectSpace.GetNearest(ObjectList, Pos, Radius, nullptr);
+	}
+
+	u32 Size()
+	{
+		return (u32)ObjectList.size();
+	}
+
+	CScriptGameObject* Get(int Idx)
+	{
+		if (Idx > (int)ObjectList.size())
+			return nullptr;
+
+		CGameObject* pObj = smart_cast<CGameObject*>(ObjectList[Idx]);
+		return pObj->lua_game_object();
+	}
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1047,6 +1071,13 @@ void CLevel::script_register(lua_State *L)
 		def("get_start_time", &get_start_time),
 		def("valid_vertex", &valid_vertex)
 	],
+	
+	module(L,"nearest")
+	[
+		def("set",						&level_nearest::Set),
+		def("size",						&level_nearest::Size),
+		def("get",						&level_nearest::Get)
+	];
 	
 	module(L,"actor_stats")
 	[
