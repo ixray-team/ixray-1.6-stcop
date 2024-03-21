@@ -117,7 +117,20 @@ void CConsole::DrawUIConsole()
 					continue;
 				}
 
+				bool has_color = false;
+				switch (*ls) {
+				case '!': ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.1f, 0.1f, 1.0f)); has_color = true; break;
+				case '*': ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); has_color = true; break;
+				case '~': ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.2f, 1.0f)); has_color = true; break;
+				case '-': ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.1f, 1.0f)); has_color = true; break;
+				default:
+					break;
+				}
+
 				ImGui::TextUnformatted(ls);
+				if (has_color) {
+					ImGui::PopStyleColor();
+				}
 			}
 
 			if (scroll_delta == 0) {
