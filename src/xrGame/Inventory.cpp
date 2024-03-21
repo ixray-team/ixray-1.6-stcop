@@ -52,22 +52,37 @@ CInventory::CInventory()
 {
 	m_fMaxWeight								= pSettings->r_float	("inventory","max_weight");
 	
-	u32 sz										= pSettings->r_s32		("inventory","slots_count");
-	m_slots.resize								(sz+1); //first is [1]
-	
 	m_iActiveSlot								= NO_ACTIVE_SLOT;
 	m_iNextActiveSlot							= NO_ACTIVE_SLOT;
 	m_iPrevActiveSlot							= NO_ACTIVE_SLOT;
 
-	string256 temp;
-	for(u16 i=FirstSlot(); i<=LastSlot(); ++i ) 
-	{
-		xr_sprintf(temp, "slot_persistent_%d", i);
-		m_slots[i].m_bPersistent = !!pSettings->r_bool("inventory",temp);
+	string256	slot_persistent;
+	string256	slot_active;
+	xr_strcpy(slot_persistent, "slot_persistent_1");
+	xr_strcpy(slot_active, "slot_active_1");
 
-		xr_sprintf			(temp, "slot_active_%d", i);
-		m_slots[i].m_bAct	= !!pSettings->r_bool("inventory",temp);
-	};
+	u16 k = 1;
+	while (pSettings->line_exist("inventory", slot_persistent) && pSettings->line_exist("inventory", slot_active)) 
+	{
+		m_last_slot = k;
+
+		m_slots.resize(k + 1); //slot+1 because [0] is the inactive slot
+
+		m_slots[k].m_bPersistent = !!pSettings->r_bool("inventory", slot_persistent);
+		m_slots[k].m_bAct = !!pSettings->r_bool("inventory", slot_active);
+
+		k++;
+
+		xr_sprintf(slot_persistent, "%s%d", "slot_persistent_", k);
+		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
+	}
+
+	m_blocked_slots.resize(k + 1);
+
+	for (u16 i = 0; i <= k; ++i)
+	{
+		m_blocked_slots[i] = 0;
+	}
 
 	m_bSlotsUseful								= true;
 	m_bBeltUseful								= false;
@@ -78,11 +93,6 @@ CInventory::CInventory()
 	
 	InitPriorityGroupsForQSwitch				();
 	m_next_item_iteration_time					= 0;
-
-	for (u16 i = 0; i < LAST_SLOT+1; ++i)
-	{
-		m_blocked_slots[i] = 0;
-	}
 }
 
 
