@@ -47,6 +47,8 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fSprintK					= 0.f;
 	Satiety.Current				= 1.0f;
 	Alcohol.Current				= 0.0f;
+	Thirst.Current				= 0.0f;
+	Sleepiness.Current			= 0.0f;
 
 //	m_vecBoosts.clear();
 
@@ -112,16 +114,44 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	R_ASSERT					(m_fCantSprintPowerBegin<=m_fCantSprintPowerEnd);
 
 	m_fPowerLeakSpeed			= pSettings->r_float(section,"max_power_leak_speed");
+	m_MaxWalkWeight				= pSettings->r_float(section,"max_walk_weight");
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// Alcohol
 	Alcohol.Variability			= pSettings->r_float(section,"alcohol_v");
 
-	Satiety.Critical			= pSettings->r_float(section,"satiety_critical");
-	clamp						(Satiety.Critical, 0.0f, 1.0f);
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// Satiety
+	Satiety.Critical = pSettings->r_float(section,"satiety_critical");
+	clamp(Satiety.Critical, 0.0f, 1.0f);
+
 	Satiety.Variability			= pSettings->r_float(section,"satiety_v");
 	Satiety.PowerBoost			= pSettings->r_float(section,"satiety_power_v");
 	Satiety.HealthBoost			= pSettings->r_float(section,"satiety_health_v");
 	
-	m_MaxWalkWeight				= pSettings->r_float(section,"max_walk_weight");
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// Thirst
+	if (EngineExternal()[EEngineExternalGame::EnableThirst])
+	{
+		Thirst.Critical = pSettings->r_float(section,"thirst_critical");
+		clamp(Thirst.Critical, 0.0f, 1.0f);
+
+		Thirst.Variability			= pSettings->r_float(section,"thirst_v");
+		Thirst.PowerBoost			= pSettings->r_float(section,"thirst_power_v");
+		Thirst.HealthBoost			= pSettings->r_float(section,"thirst_health_v");
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// Sleepiness
+	if (EngineExternal()[EEngineExternalGame::EnableSleepiness])
+	{
+		Sleepiness.Critical = pSettings->r_float(section,"sleepiness_critical");
+		clamp(Sleepiness.Critical, 0.0f, 1.0f);
+
+		Sleepiness.Variability		= pSettings->r_float(section,"sleepiness_v");
+		Sleepiness.PowerBoost		= pSettings->r_float(section,"sleepiness_power_v");
+		Sleepiness.HealthBoost		= pSettings->r_float(section,"sleepiness_health_v");
+	}
 
 	m_zone_max_power[ALife::infl_rad]	= pSettings->r_float(section, "radio_zone_max_power" );
 	m_zone_max_power[ALife::infl_fire]	= pSettings->r_float(section, "fire_zone_max_power" );
@@ -253,6 +283,8 @@ void CActorCondition::UpdateCondition()
 	}
 
 	UpdateSatiety();
+	UpdateThirst();
+	UpdateSleepiness();
 	UpdateBoosters();
 
 	inherited::UpdateCondition();
@@ -433,6 +465,44 @@ void CActorCondition::UpdateSatiety()
 	}
 }
 
+void CActorCondition::UpdateThirst()
+{
+	if (!EngineExternal()[EEngineExternalGame::EnableThirst])
+		return;
+
+	if (Thirst.Current > 0)
+	{
+		Thirst.Current += Thirst.Variability * m_fDeltaTime;
+		clamp(Thirst.Current, 0.0f, 1.0f);
+	}
+
+	float ThirstHealthKoef = ((1.f - Thirst.Current) - Thirst.Critical) / (Thirst.Current < Thirst.Critical ? 1 - Thirst.Critical : Thirst.Critical);
+	if (CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT))
+	{
+		m_fDeltaHealth += Thirst.HealthBoost * ThirstHealthKoef * m_fDeltaTime;
+		m_fDeltaPower += Thirst.PowerBoost * (1.f - Thirst.Current) * m_fDeltaTime;
+	}
+}
+
+void CActorCondition::UpdateSleepiness()
+{
+	if (!EngineExternal()[EEngineExternalGame::EnableSleepiness])
+		return;
+
+	if (Sleepiness.Current > 0)
+	{
+		Sleepiness.Current += Sleepiness.Variability * m_fDeltaTime;
+		clamp(Sleepiness.Current, 0.0f, 1.0f);
+	}
+
+	float SleepinessHealthKoef = ((1.f - Sleepiness.Current) - Sleepiness.Critical) / (Sleepiness.Current < Sleepiness.Critical ? 1 - Sleepiness.Critical : Sleepiness.Critical);
+	if (CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT))
+	{
+		m_fDeltaHealth += Sleepiness.HealthBoost * SleepinessHealthKoef * m_fDeltaTime;
+		m_fDeltaPower += Sleepiness.PowerBoost * (1.f - Sleepiness.Current) * m_fDeltaTime;
+	}
+}
+
 CWound* CActorCondition::ConditionHit(SHit* pHDS)
 {
 	if (GodMode()) return NULL;
@@ -584,6 +654,18 @@ void CActorCondition::ChangeSatiety(float value)
 {
 	Satiety.Current += value;
 	clamp(Satiety.Current, 0.0f, 1.0f);
+}
+
+void CActorCondition::ChangeThirst(float value)
+{
+	Thirst.Current += value;
+	clamp(Thirst.Current, 0.0f, 1.0f);
+}
+
+void CActorCondition::ChangeSleepiness(float value)
+{
+	Sleepiness.Current += value;
+	clamp(Sleepiness.Current, 0.0f, 1.0f);
 }
 
 float CActorCondition::GetBoosterValueByType(EBoostParams type) const

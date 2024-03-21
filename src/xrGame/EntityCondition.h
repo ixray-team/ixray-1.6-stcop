@@ -63,6 +63,7 @@ struct SMedicineInfluenceValues{
 	float fHealth;
 	float fPower;
 	float fSatiety;
+	float fThirst;
 	float fRadiation;
 	float fWoundsHeal;
 	float fMaxPowerUp;
@@ -159,6 +160,8 @@ public:
 public:
 	PLAYER_ADDICTION_BASE(Satiety);
 	PLAYER_ADDICTION_BASE(Alcohol);
+	PLAYER_ADDICTION_BASE(Thirst);
+	PLAYER_ADDICTION_BASE(Sleepiness);
 
 protected:
 	void					UpdateHealth			();

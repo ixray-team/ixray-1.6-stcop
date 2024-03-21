@@ -29,6 +29,8 @@ private:
 	CActorDeathEffector*							m_death_effector;
 	void				UpdateTutorialThresholds	();
 			void 		UpdateSatiety				();
+			void 		UpdateThirst				();
+			void 		UpdateSleepiness			();
 	virtual void		UpdateRadiation				();
 public:
 						CActorCondition				(CActor *object);
@@ -113,6 +115,12 @@ public:
 
 	PlayerAddiction Alcohol;
 	PLAYER_ADDICTION_IMPL(Alcohol);
+
+	PlayerAddiction Thirst;
+	PLAYER_ADDICTION_IMPL(Thirst);
+
+	PlayerAddiction Sleepiness;
+	PLAYER_ADDICTION_IMPL(Sleepiness);
 
 protected:
 	SMedicineInfluenceValues m_curr_medicine_influence;
