@@ -1,0 +1,7 @@
+<w>
+    <file name="ui\car_panel">
+    <texture id="ui_car_panel_back" x="0" y="0" width="220" height="120" />
+    <texture id="ui_car_panel_lamp" x="0" y="140" width="22" height="22" />
+    <texture id="ui_car_panel_lamp_off" x="35" y="140" width="22" height="22" />
+   </file>
+</w>

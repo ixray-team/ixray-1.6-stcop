@@ -4,6 +4,7 @@
 #include "../hudsound.h"
 #include "../../xrServerEntities/alife_space.h"
 #include "../EntityCondition.h"
+#include "UICarPanel.h"
 
 class	CUIPdaMsgListItem;
 class	CLAItem;
@@ -94,6 +95,8 @@ protected:
 	CUIWindow*			m_pMPChatWnd;
 	CUIWindow*			m_pMPLogWnd;
 
+	// Car
+	CUICarPanel UICarPanel;
 public:
 	
 	// ≈нумы соответсвующие предупреждающим иконкам 
@@ -160,7 +163,8 @@ protected:
 	void				RenderQuickInfos();
 
 public:
-	CUIMotionIcon*		MotionIcon							(){return UIMotionIcon;}
+	CUICarPanel&		CarPanel							() { return UICarPanel; };
+	CUIMotionIcon*		MotionIcon							() {return UIMotionIcon;}
 	void				OnConnected							();
 	void				reset_ui							();
 
