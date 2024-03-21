@@ -222,12 +222,13 @@ void CCar::SWheelDrive::Neutral()
 	pwheel->ApplyDriveAxisVelTorque(0.f,pwheel->car->m_axle_friction);
 }
 
-float CCar::SWheelDrive::ASpeed()
+float CCar::SWheelDrive::ASpeed() const
 {
-	CPhysicsJoint* J=pwheel->joint;
-	if(!J) return 0.f;
-	//return (dJointGetHinge2Angle2Rate(J->GetDJoint()))*pos_fvd;//dFabs
-	return (J->GetAxisAngleRate(1))*pos_fvd;//dFabs
+	CPhysicsJoint* J = pwheel->joint;
+	if (!J)
+		return 0.f;
+
+	return (J->GetAxisAngleRate(1)) * pos_fvd;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CCar::SWheelSteer::Init()

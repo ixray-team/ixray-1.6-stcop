@@ -41,6 +41,10 @@ file(GLOB_RECURSE XGM_SOURCE_INV_FILES
 	"inventory*.*"
 	"Inventory*.*"
 )
+file(GLOB_RECURSE XGM_SOURCE_CAR_FILES
+	"Car*.*"
+	"car*.*"
+)
 file(GLOB XGM_SOURCE_ALIFE_FILES
 	"../xrServerEntities/alife_*.*"
 	"alife_*.*"
@@ -79,6 +83,7 @@ file(GLOB_RECURSE XGM_SOURCE_AI_ZOMB_FILES "ai/monsters/zombie/*.*")
 source_group("core" FILES ${XGM_SOURCE_ALL_FILES})
 source_group("ui" FILES ${XGM_SOURCE_UI_FILES})
 #source_group("ai" FILES ${XGM_SOURCE_AI_FILES})
+source_group("ai/car" FILES ${XGM_SOURCE_CAR_FILES})
 source_group("ai/smart_cover" FILES ${XGM_SOURCE_SC_FILES})
 source_group("ai/space_restictor" FILES ${XGM_SOURCE_SR_FILES})
 source_group("ai/monsters/base" FILES ${XGM_SOURCE_AI_BASE_FILES})
