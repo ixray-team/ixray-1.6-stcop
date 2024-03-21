@@ -119,6 +119,14 @@ bool IsImportantSave()
 	return !!psActorFlags.test(AF_IMPORTANT_SAVE);
 }
 
+float get_compass_direction()
+{
+	float compass_angle, p;
+	Device.vCameraDirection.getHP(compass_angle, p);
+
+	return compass_angle;
+}
+
 #ifdef DEBUG
 void check_object(CScriptGameObject *object)
 {
@@ -129,6 +137,7 @@ void check_object(CScriptGameObject *object)
 		object = object;
 	}
 }
+
 
 CScriptGameObject *tpfGetActor()
 {
@@ -887,6 +896,7 @@ void CLevel::script_register(lua_State *L)
 		def("set_pp_effector_factor",			&set_pp_effector_factor),
 		def("set_pp_effector_factor",			&set_pp_effector_factor2),
 		def("remove_pp_effector",				&remove_pp_effector),
+		def("get_compass_direction",			&get_compass_direction),
 
 		def("add_complex_effector",				&add_complex_effector),
 		def("remove_complex_effector",			&remove_complex_effector),
