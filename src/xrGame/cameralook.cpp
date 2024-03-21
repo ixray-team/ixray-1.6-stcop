@@ -6,6 +6,11 @@
 #include "xr_level_controller.h"
 #include "actor.h"
 
+#include "../xrEngine/GameMtlLib.h"
+#include "CustomRocket.h"
+#include "Missile.h"
+#include "Car.h"
+
 CCameraLook::CCameraLook(CObject* p, u32 flags ) 
 :CCameraBase(p, flags)
 {
@@ -17,7 +22,7 @@ void CCameraLook::Load(LPCSTR section)
 	style				= csLookAt;
 	lim_zoom			= pSettings->r_fvector2	(section,"lim_zoom");
 	dist				= (lim_zoom[0]+lim_zoom[1])*0.5f;
-	prev_d				= 0;
+	prev_d				= 0.0f;
 }
 
 CCameraLook::~CCameraLook()
@@ -40,20 +45,72 @@ void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 	UpdateDistance		(point);
 }
 
-void CCameraLook::UpdateDistance( Fvector& point )
+ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 {
-	Fvector				vDir;
-	collide::rq_result	R;
+	collide::rq_result* RQ = (collide::rq_result*)params;
 
-	float				covariance = VIEWPORT_NEAR*6.f;
-	vDir.invert			(vDirection);
-	g_pGameLevel->ObjectSpace.RayPick( point, vDir, dist+covariance, collide::rqtBoth, R, parent);
+	if (result.O)
+	{
+		if (CCustomRocket* pRocket = smart_cast<CCustomRocket*>(result.O))
+		{
+			if (!pRocket->Useful())
+				return TRUE;
+		}
 
-	float d				= psCamSlideInert*prev_d+(1.f-psCamSlideInert)*(R.range-covariance);
+		if (CMissile* pMissile = smart_cast<CMissile*>(result.O))
+		{
+			if (!pMissile->Useful())
+				return TRUE;
+		}
+
+		if (CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity()))
+		{
+			if (result.O == pActor)
+				return TRUE;
+			if (pActor->Holder())
+			{
+				CCar* car = smart_cast<CCar*>(pActor->Holder());
+				if (car && result.O == car)
+					return TRUE;
+			}
+		}
+	}
+	else
+	{
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T->material);
+		if (pMtl && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+			return TRUE;
+	}
+
+	*RQ = result;
+	return FALSE;
+}
+
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
+{
+	collide::rq_result RQ;
+	RQ.set(NULL, range, -1);
+	collide::rq_results RQR;
+	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
+	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, NULL, ignore);
+	return RQ;
+}
+
+void CCameraLook::UpdateDistance(Fvector& point) 
+{
+	Fvector vDir;
+	vDir.invert(vDirection);
+
+	collide::rq_result R;
+	float covariance = VIEWPORT_NEAR * 6.0f;
+	R = GetPickResult(point, vDir, dist + covariance, parent);
+
+	float d = psCamSlideInert * prev_d + (1.0f - psCamSlideInert) * (R.range - covariance);
 	prev_d = d;
-	
-	vPosition.mul		(vDirection,-d-VIEWPORT_NEAR);
-	vPosition.add		(point);
+
+	vPosition.mul(vDirection, -d - VIEWPORT_NEAR);
+	vPosition.add(point);
 }
 
 void CCameraLook::Move( int cmd, float val, float factor)
@@ -96,6 +153,8 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 
 void CCameraLook2::Update(Fvector& point, Fvector&)
 {
+	m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
+
 	if(!m_locked_enemy)
 	{//autoaim
 		if( pInput->iGetAsyncKeyState(cam_dik) )
@@ -148,6 +207,8 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
 	Fvector _off					= m_cam_offset;
 	a_xform.transform_tiny			(_off);
 	vPosition.set					(_off);
+
+	UpdateDistance(_off);
 }
 
 void CCameraLook2::UpdateAutoAim()
@@ -183,7 +244,10 @@ void CCameraLook2::UpdateAutoAim()
 void CCameraLook2::Load(LPCSTR section)
 {
 	CCameraLook::Load		(section);
-	m_cam_offset			= pSettings->r_fvector3	(section,"offset");
+	m_cam_offset = Fvector().set(0.314f, 0.2f, 0.0f);
+	dist = 1.4f;
+	prev_d = 0.0f;
+
 	m_autoaim_inertion_yaw	= pSettings->r_fvector2	(section,"autoaim_speed_y");
 	m_autoaim_inertion_pitch= pSettings->r_fvector2	(section,"autoaim_speed_x");
 }
