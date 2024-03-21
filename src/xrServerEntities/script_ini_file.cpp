@@ -12,13 +12,13 @@
 #include "ai_space.h"
 #include "object_factory.h"
 
-CScriptIniFile::CScriptIniFile		(IReader *F, LPCSTR path) :
+CScriptIniFile::CScriptIniFile(IReader *F, LPCSTR path) :
 	inherited	(F,path)
 {
 }
 
-CScriptIniFile::CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoadAtStart, BOOL SaveAtEnd) :
-	inherited	(update(szFileName), ReadOnly, bLoadAtStart, SaveAtEnd)
+CScriptIniFile::CScriptIniFile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoadAtStart, BOOL SaveAtEnd, LPCSTR path) :
+	inherited(path ? path : update(szFileName), ReadOnly, bLoadAtStart, SaveAtEnd)
 {
 }
 
@@ -102,4 +102,20 @@ Fvector CScriptIniFile::r_fvector3		(LPCSTR S, LPCSTR L)
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
 	THROW3		(inherited::line_exist(S,L),"Cannot find line",L);
 	return		(inherited::r_fvector3(S,L));
+}
+
+void CScriptIniFile::set_override_names(bool b)
+{
+	inherited::set_override_names(b);
+}
+
+bool CScriptIniFile::save_as(LPCSTR new_fname)
+{
+	THROW2(new_fname, "File name is null");
+	return(inherited::save_as(new_fname));
+}
+
+void CScriptIniFile::set_readonly(bool b)
+{
+	inherited::m_flags.set(eReadOnly, b);
 }

@@ -17,7 +17,8 @@ protected:
 
 public:
 						CScriptIniFile		(IReader *F, LPCSTR path=0);
-						CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly=TRUE, BOOL bLoadAtStart=TRUE, BOOL SaveAtEnd=TRUE);
+						CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly=TRUE, BOOL bLoadAtStart=TRUE, BOOL SaveAtEnd=TRUE, LPCSTR path=NULL);
+
 	virtual 			~CScriptIniFile		();
 			bool		line_exist			(LPCSTR S, LPCSTR L);
 			bool		section_exist		(LPCSTR S);
@@ -32,6 +33,9 @@ public:
 			int			r_s32				(LPCSTR S, LPCSTR L);
 			float		r_float				(LPCSTR S, LPCSTR L);
 			Fvector		r_fvector3			(LPCSTR S, LPCSTR L);
+			void		set_override_names	(bool b);
+			bool		save_as(LPCSTR new_fname);
+			void		set_readonly(bool b);
 			DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptIniFile)
