@@ -40,6 +40,7 @@
 #include "UIMainIngameWnd.h"
 #include "../Trade.h"
 #include "Car.h"
+#include "../xrEngine/string_table.h"
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
 {
@@ -80,7 +81,26 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 					pSettings->r_string(pMonster->cNameSect(), "icon"));
 			}
 		}
-		else if (pCar == nullptr)
+		else if (pCar != nullptr)
+		{
+			if (pSettings->line_exist(pCar->cNameSect(), "icon"))
+			{
+				shared_str Name = "";
+
+				if (pSettings->line_exist(pCar->cNameSect(), "icon"))
+				{
+					Name = pSettings->r_string(pCar->cNameSect(), "name");
+					Name = g_pStringTable->translate(Name);
+				}
+
+				m_PartnerCharacterInfo->InitCharacterMP
+				(
+					Name.c_str(),
+					pSettings->r_string(pCar->cNameSect(), "icon")
+				);
+			}
+		}
+		else
 		{
 			m_PartnerCharacterInfo->InitCharacter(m_pPartnerInvOwner->object_id());
 		}
