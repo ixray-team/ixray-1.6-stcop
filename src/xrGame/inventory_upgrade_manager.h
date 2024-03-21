@@ -86,7 +86,6 @@ private:
 			void		load_all_properties();
 
 			Upgrade*	upgrade_verify		( shared_str const& item_section, shared_str const& upgrade_id );
-	static	bool		item_upgrades_exist	( shared_str const& item_id );
 
 			void		compute_range_section( LPCSTR section, LPCSTR parameter, float& low, float& high );
 
