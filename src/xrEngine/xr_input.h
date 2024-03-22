@@ -27,56 +27,37 @@ public:
 		COUNT_MOUSE_AXIS			= 3,
 		COUNT_KB_BUTTONS			= 256
 	};
-	struct sxr_mouse
-	{
-		DIDEVCAPS					capabilities;
-		DIDEVICEINSTANCE			deviceInfo;
-		DIDEVICEOBJECTINSTANCE		objectInfo;
-		u32							mouse_dt;
-	};
-	struct sxr_key
-	{
-		DIDEVCAPS					capabilities;
-		DIDEVICEINSTANCE			deviceInfo;
-		DIDEVICEOBJECTINSTANCE		objectInfo;
-	};
 private:
-	LPDIRECTINPUT8				pDI;			// The DInput object
-	LPDIRECTINPUTDEVICE8		pMouse;			// The DIDevice7 interface
-	LPDIRECTINPUTDEVICE8		pKeyboard;		// The DIDevice7 interface
-	//----------------------
-	u32							timeStamp	[COUNT_MOUSE_AXIS];
-	u32							timeSave	[COUNT_MOUSE_AXIS];
-	int 						offs		[COUNT_MOUSE_AXIS];
-	BOOL						mouseState	[COUNT_MOUSE_BUTTONS];
+	bool						mouseMoved = false;
+	bool						mouseScrolled = false;
+	char						mouseState[COUNT_MOUSE_BUTTONS] = {};
+	char						KBState[COUNT_KB_BUTTONS] = {};
+	int 						offs[COUNT_MOUSE_AXIS] = {};
+	char						old_mouseState[COUNT_MOUSE_BUTTONS] = {};
+	char						old_KBState[COUNT_KB_BUTTONS] = {};
 
-	//----------------------
-	BOOL						KBState		[COUNT_KB_BUTTONS];
-
-	HRESULT						CreateInputDevice(	LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
-													const DIDATAFORMAT* pdidDataFormat, u32 dwFlags,
-													u32 buf_size );
 
 //	xr_stack<IInputReceiver*>	cbStack;
 	xr_vector<IInputReceiver*>	cbStack;
 
 	void						MouseUpdate					( );
-	void						KeyUpdate					( );
+	void						KeyboardUpdate					( );
 
 public:
-	sxr_mouse					mouse_property;
-	sxr_key						key_property;
 	u32							dwCurTime;
 	
-	void						SetAllAcquire				( BOOL bAcquire = TRUE );
-	void						SetMouseAcquire				( BOOL bAcquire );
-	void						SetKBDAcquire				( BOOL bAcquire );
+	void						MouseMotion					(float dx, float dy);
+	void						MouseScroll					(float d);
+	void						MousePressed				(int button);
+	void						MouseReleased				(int button);
+	void						KeyPressed					(int SDLCode);	
+	void						KeyReleased					(int SDLCode);	
 
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );
 	BOOL						iGetAsyncKeyState			( int dik );
 	BOOL						iGetAsyncBtnState			( int btn );
-	void						iGetLastMouseDelta			( Ivector2& p )	{ p.set(offs[0],offs[1]); }
+	void						iGetLastMouseDelta			( Ivector2& p );
 
 	CInput						( BOOL bExclusive = true, int deviceForInit = default_key);
 	~CInput						( );
@@ -88,10 +69,8 @@ public:
 	IInputReceiver*				CurrentIR					();
 
 public:
-			void				exclusive_mode				(const bool &exclusive);
-	IC		bool				get_exclusive_mode			();
 			void				unacquire					();
-			void				acquire						(const bool &exclusive);
+			void				acquire						();
 			bool				get_dik_name				(int dik, LPSTR dest, int dest_sz);
 
 			void				feedback					(u16 s1, u16 s2, float time);

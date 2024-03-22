@@ -46,7 +46,7 @@ list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 # xrSound project
 add_library(xrSound SHARED ${SND_SRC_FILES})
 target_include_directories(xrSound PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_precompile_headers(xrSound PUBLIC "stdafx.h")
+target_precompile_headers(xrSound PRIVATE "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrSound PRIVATE XRSOUND_EXPORTS)

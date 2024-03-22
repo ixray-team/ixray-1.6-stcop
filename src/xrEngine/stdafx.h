@@ -4,18 +4,9 @@
 	#include "..\editors\ECore\stdafx.h"
 #else
 
-#ifndef NDEBUG
-#	ifndef INGAME_EDITOR
-#		define	INGAME_EDITOR
-#	endif // #ifndef INGAME_EDITOR
-#endif // #ifndef NDEBUG
-
-#ifdef INGAME_EDITOR
-#	define _WIN32_WINNT 0x0601
-#endif // #ifdef INGAME_EDITOR
-
 #include "../xrCore/xrCore.h"
 #include "../Include/xrAPI/xrAPI.h"
+#include <SDL3/SDL.h>
 
 #ifdef _DEBUG
 #	define D3D_DEBUG_INFO
@@ -63,7 +54,6 @@ extern ENGINE_API CInifile *pGameIni;
 #pragma comment( lib, "winmm.lib"		)
 
 #pragma comment( lib, "d3d9.lib"		)
-#pragma comment( lib, "dinput8.lib"		)
 #pragma comment( lib, "dxguid.lib"		)
 
 #ifndef DEBUG

@@ -1,66 +1,52 @@
 #include "stdafx.h"
+#include "xr_input.h"
 
-bool CRenderDevice::on_message	(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT &result)
+bool CRenderDevice::on_event	(SDL_Event& Event)
 {
-	switch (uMsg) {
-		case WM_SYSKEYDOWN : {
-			return true;
-						   }
-		case WM_ACTIVATE : 
-		{
-#ifdef INGAME_EDITOR
-			if (editor()) {
-				Device.b_is_Active	= TRUE;
-				break;
-			}
-#endif // #ifdef INGAME_EDITOR
-			ShowCursor(wParam == WA_INACTIVE);
-			OnWM_Activate	(wParam, lParam);
-			return			(false);
+	switch (Event.type) {
+	case SDL_EVENT_WINDOW_MOUSE_ENTER:
+		OnWM_Activate(true, false);
+		break;
+	case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+		OnWM_Activate(false, false);
+		break;
+	case SDL_EVENT_WINDOW_SHOWN:
+		OnWM_Activate(true, false);
+		break;
+	case SDL_EVENT_WINDOW_HIDDEN:
+		OnWM_Activate(false, true);
+		break;
+	case SDL_EVENT_QUIT:
+		g_pEventManager->Event.Signal("KERNEL:disconnect");
+		g_pEventManager->Event.Signal("KERNEL:quit");
+		return false;
+	case SDL_EVENT_KEY_DOWN:
+		pInput->KeyPressed(Event.key.keysym.sym);
+		break;
+	case SDL_EVENT_KEY_UP:
+		pInput->KeyReleased(Event.key.keysym.sym);
+		break;
+	case SDL_EVENT_MOUSE_MOTION:
+		pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+		break;
+	case SDL_EVENT_MOUSE_WHEEL:
+		pInput->MouseScroll(Event.wheel.y);
+		break;
+	case SDL_EVENT_MOUSE_BUTTON_DOWN:	
+	case SDL_EVENT_MOUSE_BUTTON_UP:
+	{
+		int mouse_button = 0;
+		if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
+		if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
+		if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
+		if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+			pInput->MousePressed(mouse_button);
+		} else {
+			pInput->MouseReleased(mouse_button);
 		}
-		case WM_SETCURSOR : 
-		{
-#ifdef INGAME_EDITOR
-			if (editor())
-				break;
-#endif // #ifdef INGAME_EDITOR
-
-			result			= 1;
-			return			(true);
-		}
-		case WM_SYSCOMMAND : {
-#ifdef INGAME_EDITOR
-			if (editor())
-				break;
-#endif // #ifdef INGAME_EDITOR
-
-			// Prevent moving/sizing and power loss in fullscreen mode
-			switch (wParam) {
-				case SC_MOVE:
-				case SC_SIZE:
-				case SC_MAXIMIZE:
-				case SC_MONITORPOWER:
-					result	= 1;
-					return	(true);
-			}
-			return			(false);
-		}
-		case WM_CLOSE : {
-			g_pEventManager->Event.Defer("KERNEL:disconnect"); 
-			g_pEventManager->Event.Defer("KERNEL:quit");
-#ifdef INGAME_EDITOR
-			if (editor())
-				break;
-#endif // #ifdef INGAME_EDITOR
-
-			result			= 0;
-			return			(true);
-		}
-		case WM_HOTKEY: // prevent 'ding' sounds caused by Alt+key combinations
-		case WM_SYSCHAR:
-			result = 0;
-			return true;
+	}
+		break;
 	}
 
-	return					(false);
+	return true;
 }

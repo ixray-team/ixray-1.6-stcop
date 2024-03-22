@@ -23,6 +23,7 @@
 #include <string.h>
 #include <typeinfo>
 #include <DirectXMath.h>
+#include <SDL3/SDL.h>
 //#include <process.h>
 
 #ifndef DEBUG

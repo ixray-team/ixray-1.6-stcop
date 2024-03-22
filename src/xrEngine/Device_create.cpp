@@ -66,10 +66,10 @@ void CRenderDevice::Create	()
 	Statistic			= xr_new<CStats>();
 
 #ifdef	DEBUG
-cdb_clRAY		= &Statistic->clRAY;				// total: ray-testing
-cdb_clBOX		= &Statistic->clBOX;				// total: box query
-cdb_clFRUSTUM	= &Statistic->clFRUSTUM;			// total: frustum query
-cdb_bDebug		= &bDebug;
+	cdb_clRAY		= &Statistic->clRAY;				// total: ray-testing
+	cdb_clBOX		= &Statistic->clBOX;				// total: box query
+	cdb_clFRUSTUM	= &Statistic->clFRUSTUM;			// total: frustum query
+	cdb_bDebug		= &bDebug;
 #endif
 
 	if (!m_pRender)
@@ -85,7 +85,7 @@ cdb_bDebug		= &bDebug;
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
 	m_pRender->Create	(
-		g_AppInfo.WindowHandle,
+		g_AppInfo.Window,
 		TargetWidth,
 		TargetHeight,
 		HalfTargetWidth,

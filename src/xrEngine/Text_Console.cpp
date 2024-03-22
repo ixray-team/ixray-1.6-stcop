@@ -31,9 +31,11 @@ LRESULT CALLBACK TextConsole_WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 void	CTextConsole::CreateConsoleWnd()
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
+	auto Window = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+
 	//----------------------------------
 	RECT cRc;
-	GetClientRect(*m_pMainWnd, &cRc);
+	GetClientRect(Window, &cRc);
 	INT lX = cRc.left;
 	INT lY = cRc.top;
 	INT lWidth = cRc.right - cRc.left;
@@ -60,7 +62,7 @@ void	CTextConsole::CreateConsoleWnd()
 	// Create the render window
 	m_hConsoleWnd = CreateWindowA( wndclass, "XRAY Text Console", dwWindowStyle,
 		lX, lY,
-		lWidth, lHeight, *m_pMainWnd,
+		lWidth, lHeight, Window,
 		0, hInstance, 0L );
 	//---------------------------------------------------------------------------
 	R_ASSERT2(m_hConsoleWnd, "Unable to Create TextConsole Window!");
@@ -154,7 +156,7 @@ void CTextConsole::Initialize()
 {
 	inherited::Initialize();
 	
-	m_pMainWnd         = &g_AppInfo.WindowHandle;
+	m_pMainWnd         = &g_AppInfo.Window;
 	m_dwLastUpdateTime = Device.dwTimeGlobal;
 	m_last_time        = Device.dwTimeGlobal;
 

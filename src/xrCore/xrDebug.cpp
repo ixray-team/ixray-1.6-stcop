@@ -111,7 +111,8 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
-	ShowWindow(g_AppInfo.WindowHandle, SW_MINIMIZE);
+	//SDL_ShowWindow(g_AppInfo.Window);
+	//SDL_MinimizeWindow(g_AppInfo.Window);
 	MessageBoxA			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
@@ -527,7 +528,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(true);
 
-		ShowWindow(g_AppInfo.WindowHandle, SW_MINIMIZE);
+		//SDL_ShowWindow(g_AppInfo.Window);
+		//SDL_MinimizeWindow(g_AppInfo.Window);
 		MessageBoxA			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
@@ -597,7 +599,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		LPSTR buffer = assertion_info + xr_strlen(assertion_info);
 		buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
-		ShowWindow(g_AppInfo.WindowHandle, SW_MINIMIZE);
+		//SDL_ShowWindow(g_AppInfo.Window);
+		//SDL_MinimizeWindow(g_AppInfo.Window);
 
 		MessageBoxA				(
 			/*GetTopWindow(NULL)*/ nullptr,

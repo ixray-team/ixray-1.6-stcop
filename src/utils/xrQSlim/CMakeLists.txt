@@ -25,3 +25,5 @@ target_compile_definitions(QSlim PRIVATE _WINDOWS)
 
 add_compile_options(/fp:fast)
 target_compile_definitions(QSlim PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+
+target_link_libraries(QSlim PUBLIC xrCore)

@@ -23,7 +23,7 @@ void CRenderDevice::Destroy	(void) {
 
 	Log("Destroying Direct3D...");
 
-	ShowCursor	(TRUE);
+	SDL_ShowCursor();
 	m_pRender->ValidateHW();
 
 	_Destroy					(FALSE);
@@ -54,10 +54,10 @@ void CRenderDevice::Reset		(bool precache)
 	u32 dwWidth_before		= TargetWidth;
 	u32 dwHeight_before		= TargetHeight;
 
-	ShowCursor				(TRUE);
+	SDL_ShowCursor();
 	u32 tm_start			= TimerAsync();
 
-	m_pRender->Reset(g_AppInfo.WindowHandle, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
+	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
 
 	if (g_pGamePersistent)
 	{
@@ -73,7 +73,7 @@ void CRenderDevice::Reset		(bool precache)
 	Memory.mem_compact();
 
 	if (!g_dedicated_server) {
-		ShowCursor(FALSE);
+		SDL_HideCursor();
 	}
 
 	seqDeviceReset.Process(rp_DeviceReset);

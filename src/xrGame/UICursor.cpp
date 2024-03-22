@@ -9,7 +9,7 @@
 constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 
 CUICursor::CUICursor()
-:m_static(NULL),m_b_use_win_cursor(false)
+:m_static(NULL)
 {    
 	bVisible				= false;
 	vPrevPos.set			(0.0f, 0.0f);
@@ -17,7 +17,7 @@ CUICursor::CUICursor()
 	InitInternal			();
 	Device.seqRender.Add	(this,-3/*2*/);
 	Device.seqResolutionChanged.Add(this);
-}
+}	
 //--------------------------------------------------------------------
 CUICursor::~CUICursor	()
 {
@@ -57,10 +57,6 @@ void CUICursor::InitInternal()
 
 	m_static->SetWndSize		(Fvector2().set(width, height));
 	m_static->SetStretchTexture	(!!stretch);
-
-	u32 screen_size_x	= GetSystemMetrics( SM_CXSCREEN );
-	u32 screen_size_y	= GetSystemMetrics( SM_CYSCREEN );
-	m_b_use_win_cursor	= (screen_size_y >=Device.TargetHeight && screen_size_x>=Device.TargetWidth);
 }
 
 //--------------------------------------------------------------------
@@ -77,13 +73,13 @@ void CUICursor::OnRender	()
 
 	if(bDebug)
 	{
-	CGameFont* F		= UI().Font().pFontDI;
-	F->SetAligment		(CGameFont::alCenter);
-	F->SetHeightI		(0.02f);
-	F->OutSetI			(0.f,-0.9f);
-	F->SetColor			(0xffffffff);
-	Fvector2			pt = GetCursorPosition();
-	F->OutNext			("%f-%f",pt.x, pt.y);
+		CGameFont* F		= UI().Font().pFontDI;
+		F->SetAligment		(CGameFont::alCenter);
+		F->SetHeightI		(0.02f);
+		F->OutSetI			(0.f,-0.9f);
+		F->SetColor			(0xffffffff);
+		Fvector2			pt = GetCursorPosition();
+		F->OutNext			("%f-%f",pt.x, pt.y);
 	}
 #endif
 
@@ -94,47 +90,26 @@ void CUICursor::OnRender	()
 
 Fvector2 CUICursor::GetCursorPosition()
 {
-	return  vPos;
+	return vPos;
 }
 
 Fvector2 CUICursor::GetCursorPositionDelta()
 {
-	Fvector2 res_delta;
-
-	res_delta.x = vPos.x - vPrevPos.x;
-	res_delta.y = vPos.y - vPrevPos.y;
-	return res_delta;
+	return { vPos.x - vPrevPos.x, vPos.y - vPrevPos.y };
 }
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
-	Fvector2	p;
-	vPrevPos	= vPos;
-	if(m_b_use_win_cursor)
-	{
-		POINT		pti;
-		BOOL r		= GetCursorPos(&pti);
-		if(!r)		return;
-		p.x			= (float)pti.x;
-		p.y			= (float)pti.y;
-		vPos.x		= p.x * (UI_BASE_WIDTH/(float)Device.TargetWidth);
-		vPos.y		= p.y * (UI_BASE_HEIGHT/(float)Device.TargetHeight);
-	}else
-	{
-		float sens = 1.0f;
-		vPos.x		+= _dx*sens;
-		vPos.y		+= _dy*sens;
-	}
-	clamp		(vPos.x, 0.f, UI_BASE_WIDTH);
-	clamp		(vPos.y, 0.f, UI_BASE_HEIGHT);
+	vPrevPos = vPos;
+
+	SDL_GetMouseState(&vPos.x, &vPos.y);
+	vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
+	vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+	clamp(vPos.x, 0.f, UI_BASE_WIDTH);
+	clamp(vPos.y, 0.f, UI_BASE_HEIGHT);
 }
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	vPos		= pos;
-	POINT		p;
-	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.TargetWidth));
-	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.TargetHeight));
-
-	SetCursorPos(p.x, p.y);
+	vPos = pos;
 }

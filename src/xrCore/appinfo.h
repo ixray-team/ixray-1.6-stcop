@@ -3,7 +3,7 @@
 class XRCORE_API CAppInfo
 {
 public:
-	HWND WindowHandle = nullptr;
+	SDL_Window* Window = nullptr;
 
 	HANDLE MainThread = nullptr;
 	HANDLE SecondaryThread = nullptr;

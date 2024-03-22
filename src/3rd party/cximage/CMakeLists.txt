@@ -21,3 +21,5 @@ target_include_directories(CxImage PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 add_compile_options(/fp:fast)
 target_compile_definitions(CxImage PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 #target_compile_definitions(CxImage PRIVATE _CRT_NO_POSIX_ERROR_CODES)
+
+target_link_libraries(CxImage PUBLIC xrCore)
