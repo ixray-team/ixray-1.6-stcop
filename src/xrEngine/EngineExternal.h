@@ -21,7 +21,8 @@ enum class EEngineExternalGame
 	EnableNPCLookAtActor,
 	EnableBlockSprintInReload,
 	EnableAutoreload,
-	EnableUseBandage7DaysToDie
+	EnableUseBandage7DaysToDie,
+	EnableMonstersInventory
 };
 
 enum class EEngineExternalRender
