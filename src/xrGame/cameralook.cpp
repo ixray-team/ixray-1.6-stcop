@@ -156,7 +156,7 @@ void CCameraLook::OnActivate( CCameraBase* old_cam )
 #include "visual_memory_manager.h"
 #include "actor_memory.h"
 
-int cam_dik = DIK_LSHIFT;
+int cam_dik = SDL_SCANCODE_LSHIFT;
 
 Fvector CCameraLook2::m_cam_offset_r;
 Fvector CCameraLook2::m_cam_offset_l;

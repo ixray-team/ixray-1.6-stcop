@@ -6,7 +6,6 @@
 #include "game_cl_TeamDeathmatch.h"
 
 #include "ui/TeamInfo.h"
-#include <dinput.h>
 
 #include "object_broker.h"
 
@@ -88,7 +87,7 @@ CUIGameTDM::~CUIGameTDM()
 bool CUIGameTDM::IR_UIOnKeyboardPress(int dik)
 {
 	switch (dik) {
-		case DIK_CAPSLOCK :
+		case SDL_SCANCODE_CAPSLOCK:
 		{
 			if (m_game)
 			{
@@ -106,7 +105,7 @@ bool CUIGameTDM::IR_UIOnKeyboardPress(int dik)
 bool CUIGameTDM::IR_UIOnKeyboardRelease(int dik)
 {
 	switch (dik) {
-		case DIK_CAPSLOCK :
+		case SDL_SCANCODE_CAPSLOCK:
 			{
 				if (m_game)
 				{

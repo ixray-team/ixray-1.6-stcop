@@ -25,10 +25,6 @@
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 
-#ifdef DEBUG
-#	include <dinput.h>
-#endif // DEBUG
-
 
 namespace detail
 {
@@ -852,11 +848,11 @@ void   CAI_Bloodsucker::add_debug_info (debug::text_tree& root_s)
 void CAI_Bloodsucker::debug_on_key(int key)
 {
 	switch (key){
-	case DIK_MINUS:
+	case SDL_SCANCODE_MINUS:
 		Actor()->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, PI_DIV_2);
 		//set_alien_control(true);
 		break;
-	case DIK_EQUALS:
+	case SDL_SCANCODE_EQUALS:
 		Actor()->cam_Active()->Move(Random.randI(2) ? kUP	 : kDOWN, PI_DIV_2);
 		//set_alien_control(false);
 		break;

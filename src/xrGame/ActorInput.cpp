@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "Actor.h"
 #include "Torch.h"
 #include "trade.h"
@@ -38,7 +37,7 @@ extern u32 hud_adj_mode;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if(hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
 
 	if (Remote())		return;
 	if (IsTalking())	return;
@@ -217,7 +216,7 @@ void CActor::IR_OnMouseWheel(int direction)
 
 void CActor::IR_OnKeyboardRelease(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if(hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
 
 	if (Remote())	return;
 
@@ -246,7 +245,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 void CActor::IR_OnKeyboardHold(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if(hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
 
 	if (Remote() || !g_Alive())					return;
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
@@ -460,7 +459,7 @@ void CActor::ActorUse()
 		if(object) 
 			element = (u16)RQ.element;
 
-		if(object && Level().IR_GetKeyState(DIK_LSHIFT))
+		if(object && Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
 		{
 			bool b_allow = !!pSettings->line_exist("ph_capture_visuals",object->cNameVisual());
 			if(b_allow && !character_physics_support()->movement()->PHCapture())
@@ -655,15 +654,15 @@ void CActor::NoClipFly(int cmd)
     Fvector cur_pos, right, left;
     cur_pos.set(0, 0, 0);
     float scale = 5.f;
-    if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+    if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
         scale = 2.0f;
-    else if (pInput->iGetAsyncKeyState(DIK_X))
+    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_X))
         scale = 7.0f;
-    else if (pInput->iGetAsyncKeyState(DIK_LMENU))
+    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT))
         scale = 10.0f;
-    else if (pInput->iGetAsyncKeyState(DIK_CAPSLOCK))
+    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_CAPSLOCK))
         scale = 15.0f;
-    else if (pInput->iGetAsyncKeyState(DIK_DELETE))
+    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DELETE))
 	{
         collide::rq_result RQ = GetPickResult(cam_Active()->Position(), cam_Active()->Direction(), 1000.0f, this);
         if (RQ.element>=0)

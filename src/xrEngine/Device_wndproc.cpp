@@ -23,10 +23,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		g_pEventManager->Event.Signal("KERNEL:quit");
 		return false;
 	case SDL_EVENT_KEY_DOWN:
-		pInput->KeyPressed(Event.key.keysym.sym);
+		pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
 		break;
 	case SDL_EVENT_KEY_UP:
-		pInput->KeyReleased(Event.key.keysym.sym);
+		pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, false);
 		break;
 	case SDL_EVENT_MOUSE_MOTION:
 		pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);

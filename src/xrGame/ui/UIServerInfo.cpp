@@ -9,7 +9,6 @@
 #include "UIGameCustom.h"
 #include "../level.h"
 #include "../game_cl_mp.h"
-#include <dinput.h>
 #include "../3rd party/cximage/cximage/ximage.h"
 #include "../3rd party/cximage/cximage/xmemfile.h"
 
@@ -170,8 +169,8 @@ bool CUIServerInfo::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	switch (dik)
 	{
-		case DIK_SPACE:
-		case DIK_RETURN:
+		case SDL_SCANCODE_SPACE:
+		case SDL_SCANCODE_RETURN:
 			{
 				OnNextBtnClick(NULL, 0);
 				return true;

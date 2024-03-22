@@ -386,7 +386,7 @@ function spawn_item_dialog:OnKeyboard(dik, keyboard_action)
 	if bind == key_bindings.kQUIT then
 		self:OnButton_close_clicked()
 	else
-	if dik==28 then
+	if dik==40 then
 		self:OnButton_create_clicked()
 	end
 	end

@@ -1014,7 +1014,7 @@ C++ class DIK_keys {
     const DIK_R = 19;
     const DIK_RBRACKET = 27;
     const DIK_RCONTROL = 157;
-    const DIK_RETURN = 28;
+    const DIK_RETURN = 40;
     const DIK_RIGHT = 205;
     const DIK_RMENU = 184;
     const DIK_RSHIFT = 54;

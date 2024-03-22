@@ -112,9 +112,9 @@ private:
 	void xr_stdcall	delete_word_forward	();
 	void xr_stdcall SwitchKL			();
 			
-			void	assign_char_pairs	( init_mode mode );
+			void	assign_char_pairs(init_mode mode);
 			void	create_key_state	( u32 const dik, key_state state );
-			void	create_char_pair	( u32 const dik, char c, char c_shift, bool translate = false );
+			void	create_char_pair(u32 const dik, char c, char c_shift, bool translate = false);
 
 			void	clear_inserted		();
 			bool	empty_inserted		();

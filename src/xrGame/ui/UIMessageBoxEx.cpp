@@ -3,7 +3,6 @@
 #include "UIMessageBox.h"
 #include "UIMessageBoxEx.h"
 #include "../UIDialogHolder.h"
-#include <dinput.h>
 
 CUIMessageBoxEx::CUIMessageBoxEx(){
 	m_pMessageBox = xr_new<CUIMessageBox>();
@@ -94,19 +93,10 @@ bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
-		if ( dik == DIK_NUMPADENTER || dik == DIK_RETURN || dik == DIK_SPACE)
+		if ( dik == SDL_SCANCODE_KP_ENTER || dik == SDL_SCANCODE_RETURN || dik == SDL_SCANCODE_SPACE)
 		{
 			m_pMessageBox->OnYesOk();
 			return true;
-/*
-		}else
-			if ( dik == DIK_ESCAPE )
-		{
-			CUIMessageBox::E_MESSAGEBOX_STYLE style = m_pMessageBox->GetBoxStyle();
-			if(style != CUIMessageBox::MESSAGEBOX_INFO)
-				HideDialog();
-			return true;
-*/
 		}else
 			return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	}

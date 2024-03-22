@@ -26,112 +26,100 @@ float stop_vibration_time				= flt_max;
 
 const xr_map<u8, xr_string> KeyNamesTable =
 {
-	{(u8)DIK_TAB,	  "Tab"},
-	{(u8)DIK_RETURN,   "Enter"},
-	{(u8)DIK_LSHIFT,    "Shift"},
-	{(u8)DIK_LCONTROL,  "Ctrl"},
-	{(u8)DIK_CAPITAL,  "Caps Lock"},
-	{(u8)DIK_PAUSE,  "Pause"},
-{
-(u8)DIK_BACK,   "Backspace"
-},
-{
-(u8)DIK_PRIOR,   "Pg Up"
-},
-{(u8)DIK_NEXT,   "Pg Down"},
-{
-(u8)DIK_HOME,   "Home"
-},
-{(u8)DIK_LEFT,	"Left"},
-{(u8)DIK_UP,		"Up"},
-{(u8)DIK_RIGHT,	"Right"},
-{(u8)DIK_DOWN,	"Down"},
-{(u8)DIK_SPACE, "Space"},
-{(u8)DIK_ESCAPE, "Esc"},
-{
-(u8)DIK_INSERT,   "Insert"
-},
-{(u8)DIK_DELETE,   "Del"},
-{
-(u8)DIK_0, "0"
-},
-{(u8)DIK_1, "1"},
-{(u8)DIK_2, "2"},
-{(u8)DIK_3, "3"},
-{(u8)DIK_4, "4"},
-{(u8)DIK_5, "5"},
-{(u8)DIK_6, "6"},
-{(u8)DIK_7, "7"},
-{(u8)DIK_8, "8"},
-{(u8)DIK_9, "9"},
-{(u8)DIK_A, "A"},
-{(u8)DIK_B, "B"},
-{(u8)DIK_C, "C"},
-{(u8)DIK_D, "D"},
-{(u8)DIK_E, "E"},
-{(u8)DIK_F, "F"},
-{(u8)DIK_G, "G"},
-{(u8)DIK_H, "H"},
-{(u8)DIK_I, "I"},
-{(u8)DIK_J, "J"},
-{(u8)DIK_K, "K"},
-{(u8)DIK_L, "L"},
-{(u8)DIK_M, "M"},
-{(u8)DIK_N, "N"},
-{(u8)DIK_O, "O"},
-{(u8)DIK_P, "P"},
-{(u8)DIK_Q, "Q"},
-{(u8)DIK_R, "R"},
-{(u8)DIK_S, "S"},
-{(u8)DIK_T, "T"},
-{(u8)DIK_U, "U"},
-{(u8)DIK_V, "V"},
-{(u8)DIK_W, "W"},
-{(u8)DIK_X, "X"},
-{(u8)DIK_Y, "Y"},
-{(u8)DIK_Z, "Z"},
-{(u8)DIK_LWIN, "lWin"},
-{(u8)DIK_RWIN, "rWin"},
-{(u8)DIK_SLEEP, "Sleep"},
-{(u8)DIK_APPS, "Apps"},
-{(u8)DIK_NUMPAD0,  "NumPad0"},
-{(u8)DIK_NUMPAD1,  "NumPad1"},
-{(u8)DIK_NUMPAD2,  "NumPad2"},
-{(u8)DIK_NUMPAD3,  "NumPad3"},
-{(u8)DIK_NUMPAD4,  "NumPad4"},
-{(u8)DIK_NUMPAD5,  "NumPad5"},
-{(u8)DIK_NUMPAD6,  "NumPad6"},
-{(u8)DIK_NUMPAD7,  "NumPad7"},
-{(u8)DIK_NUMPAD8,  "NumPad8"},
-{(u8)DIK_NUMPAD9,  "NumPad9"},
-{(u8)DIK_MULTIPLY,  "*"},
-{(u8)DIK_ADD,  "+"},
-{(u8)DIK_SUBTRACT,  "-"},
-{(u8)DIK_DIVIDE,  "/"},
-{
-(u8)DIK_DECIMAL,   "."
-},
-{(u8)DIK_F1,  "F1"},
-{(u8)DIK_F2,  "F2"},
-{(u8)DIK_F3,  "F3"},
-{(u8)DIK_F4,  "F4"},
-{(u8)DIK_F5,  "F5"},
-{(u8)DIK_F6,  "F6"},
-{(u8)DIK_F7,  "F7"},
-{(u8)DIK_F8,  "F8"},
-{(u8)DIK_F9,  "F9"},
-{(u8)DIK_F10, "F10"},
-{(u8)DIK_F11, "F11"},
-{(u8)DIK_F12, "F12"},
-{(u8)DIK_F13, "F13"},
-{(u8)DIK_F14, "F14"},
-{(u8)DIK_F15, "F15"},
-{(u8)DIK_NUMLOCK, "NumLock"},
-{(u8)DIK_SCROLL, "ScrollLock"},
-{(u8)DIK_LSHIFT,   "Left Shift"},
-{(u8)DIK_RSHIFT,   "Right Shift"},
-{(u8)DIK_LCONTROL, "Left Ctrl"},
-{(u8)DIK_RCONTROL, "Right Ctrl"},
+	{(u8)SDL_SCANCODE_TAB,		"Tab"},
+	{(u8)SDL_SCANCODE_RETURN,	"Enter"},
+	{(u8)SDL_SCANCODE_LSHIFT,    "Shift"},
+	{(u8)SDL_SCANCODE_LCTRL,  "Ctrl"},
+	{(u8)SDL_SCANCODE_CAPSLOCK,	"Caps Lock"},
+	{(u8)SDL_SCANCODE_PAUSE,		"Pause"},
+	{(u8)SDL_SCANCODE_BACKSPACE,		"Backspace"},
+	{(u8)SDL_SCANCODE_PAGEUP,		"Pg Up"},
+	{(u8)SDL_SCANCODE_PAGEDOWN,		"Pg Down"},
+	{(u8)SDL_SCANCODE_HOME,		"Home"},
+	{(u8)SDL_SCANCODE_LEFT,		"Left"},
+	{(u8)SDL_SCANCODE_UP,		"Up"},
+	{(u8)SDL_SCANCODE_RIGHT,		"Right"},
+	{(u8)SDL_SCANCODE_DOWN,		"Down"},
+	{(u8)SDL_SCANCODE_SPACE,		"Space"},
+	{(u8)SDL_SCANCODE_ESCAPE,	"Esc"},
+	{(u8)SDL_SCANCODE_INSERT,	"Insert"},
+	{(u8)SDL_SCANCODE_DELETE,	"Del"},
+	{(u8)SDL_SCANCODE_0,			"0"},
+	{(u8)SDL_SCANCODE_1,			"1"},
+	{(u8)SDL_SCANCODE_2,			"2"},
+	{(u8)SDL_SCANCODE_3,			"3"},
+	{(u8)SDL_SCANCODE_4,			"4"},
+	{(u8)SDL_SCANCODE_5,			"5"},
+	{(u8)SDL_SCANCODE_6,			"6"},
+	{(u8)SDL_SCANCODE_7,			"7"},
+	{(u8)SDL_SCANCODE_8,			"8"},
+	{(u8)SDL_SCANCODE_9,			"9"},
+	{(u8)SDL_SCANCODE_A,			"A"},
+	{(u8)SDL_SCANCODE_B,			"B"},
+	{(u8)SDL_SCANCODE_C,			"C"},
+	{(u8)SDL_SCANCODE_D,			"D"},
+	{(u8)SDL_SCANCODE_E,			"E"},
+	{(u8)SDL_SCANCODE_F,			"F"},
+	{(u8)SDL_SCANCODE_G,			"G"},
+	{(u8)SDL_SCANCODE_H,			"H"},
+	{(u8)SDL_SCANCODE_I,			"I"},
+	{(u8)SDL_SCANCODE_J,			"J"},
+	{(u8)SDL_SCANCODE_K,			"K"},
+	{(u8)SDL_SCANCODE_L,			"L"},
+	{(u8)SDL_SCANCODE_M,			"M"},
+	{(u8)SDL_SCANCODE_N,			"N"},
+	{(u8)SDL_SCANCODE_O,			"O"},
+	{(u8)SDL_SCANCODE_P,			"P"},
+	{(u8)SDL_SCANCODE_Q,			"Q"},
+	{(u8)SDL_SCANCODE_R,			"R"},
+	{(u8)SDL_SCANCODE_S,			"S"},
+	{(u8)SDL_SCANCODE_T,			"T"},
+	{(u8)SDL_SCANCODE_U,			"U"},
+	{(u8)SDL_SCANCODE_V,			"V"},
+	{(u8)SDL_SCANCODE_W,			"W"},
+	{(u8)SDL_SCANCODE_X,			"X"},
+	{(u8)SDL_SCANCODE_Y,			"Y"},
+	{(u8)SDL_SCANCODE_Z,			"Z"},
+	{(u8)SDL_SCANCODE_LGUI,       "lWin"},
+	{(u8)SDL_SCANCODE_RGUI,       "lWin"},
+	{(u8)SDL_SCANCODE_SLEEP,      "Sleep"},
+	{(u8)SDL_SCANCODE_APPLICATION,"Apps"},
+	{(u8)SDL_SCANCODE_KP_0,       "NumPad0"},
+	{(u8)SDL_SCANCODE_KP_1,       "NumPad1"},
+	{(u8)SDL_SCANCODE_KP_2,       "NumPad2"},
+	{(u8)SDL_SCANCODE_KP_3,       "NumPad3"},
+	{(u8)SDL_SCANCODE_KP_4,       "NumPad4"},
+	{(u8)SDL_SCANCODE_KP_5,       "NumPad5"},
+	{(u8)SDL_SCANCODE_KP_6,       "NumPad6"},
+	{(u8)SDL_SCANCODE_KP_7,       "NumPad7"},
+	{(u8)SDL_SCANCODE_KP_8,       "NumPad8"},
+	{(u8)SDL_SCANCODE_KP_9,       "NumPad9"},
+	{(u8)SDL_SCANCODE_KP_MULTIPLY,"*"},
+	{(u8)SDL_SCANCODE_KP_PLUS,    "+"},
+	{(u8)SDL_SCANCODE_KP_MINUS,   "-"},
+	{(u8)SDL_SCANCODE_KP_DIVIDE,  "/"},
+	{(u8)SDL_SCANCODE_KP_DECIMAL, "."},
+	{(u8)SDL_SCANCODE_F1,		"F1"},
+	{(u8)SDL_SCANCODE_F2,		"F2"},
+	{(u8)SDL_SCANCODE_F3,		"F3"},
+	{(u8)SDL_SCANCODE_F4,		"F4"},
+	{(u8)SDL_SCANCODE_F5,		"F5"},
+	{(u8)SDL_SCANCODE_F6,		"F6"},
+	{(u8)SDL_SCANCODE_F7,		"F7"},
+	{(u8)SDL_SCANCODE_F8,		"F8"},
+	{(u8)SDL_SCANCODE_F9,		"F9"},
+	{(u8)SDL_SCANCODE_F10,		"F10"},
+	{(u8)SDL_SCANCODE_F11,		"F11"},
+	{(u8)SDL_SCANCODE_F12,		"F12"},
+	{(u8)SDL_SCANCODE_F13,		"F13"},
+	{(u8)SDL_SCANCODE_F14,		"F14"},
+	{(u8)SDL_SCANCODE_F15,		"F15"},
+	{(u8)SDL_SCANCODE_NUMLOCKCLEAR,	"NumLock"},
+	{(u8)SDL_SCANCODE_SCROLLLOCK,	"ScrollLock"},
+	{(u8)SDL_SCANCODE_LSHIFT,	"Left Shift"},
+	{(u8)SDL_SCANCODE_RSHIFT,	"Right Shift"},
+	{(u8)SDL_SCANCODE_LCTRL,	"Left Ctrl"},
+	{(u8)SDL_SCANCODE_RCTRL,	"Right Ctrl"},
 };
 
 static bool g_exclusive	= true;
@@ -205,18 +193,9 @@ CInput::MouseReleased(int button)
 	mouseState[button] = 0;
 }
 
-void
-CInput::KeyPressed(int SDLCode)
+void CInput::KeyboardButtonUpdate(SDL_Scancode scancode, bool IsPressed)
 {
-	auto Key = ToDIK(SDLCode);
-	KBState[Key] = 1;
-}
-
-void
-CInput::KeyReleased(int SDLCode)
-{
-	auto Key = ToDIK(SDLCode);
-	KBState[Key] = 0;
+	KBState[scancode] = IsPressed;
 }
 
 void CInput::KeyboardUpdate( )
@@ -250,39 +229,39 @@ void CInput::KeyboardUpdate( )
 }
 
 const xr_map<int, char> russian_lookup_key_table = {
-	{ DIK_F, 0xE0 },
-	{ DIK_COMMA, 0xE1 },
-	{ DIK_D, 0xE2 },
-	{ DIK_U, 0xE3 },
-	{ DIK_L, 0xE4 },
-	{ DIK_T, 0xE5 },
-	{ DIK_SEMICOLON, 0xE6 },
-	{ DIK_P, 0xE7 },
-	{ DIK_B, 0xE8 },
-	{ DIK_Q, 0xE9 },
-	{ DIK_R, 0xEA },
-	{ DIK_K, 0xEB },
-	{ DIK_V, 0xEC },
-	{ DIK_Y, 0xED }, 
-	{ DIK_J, 0xEE }, 
-	{ DIK_G, 0xEF }, 	
+	{ SDL_SCANCODE_F, 0xE0 },
+	{ SDL_SCANCODE_COMMA, 0xE1 },
+	{ SDL_SCANCODE_D, 0xE2 },
+	{ SDL_SCANCODE_U, 0xE3 },
+	{ SDL_SCANCODE_L, 0xE4 },
+	{ SDL_SCANCODE_T, 0xE5 },
+	{ SDL_SCANCODE_SEMICOLON, 0xE6 },
+	{ SDL_SCANCODE_P, 0xE7 },
+	{ SDL_SCANCODE_B, 0xE8 },
+	{ SDL_SCANCODE_Q, 0xE9 },
+	{ SDL_SCANCODE_R, 0xEA },
+	{ SDL_SCANCODE_K, 0xEB },
+	{ SDL_SCANCODE_V, 0xEC },
+	{ SDL_SCANCODE_Y, 0xED }, 
+	{ SDL_SCANCODE_J, 0xEE }, 
+	{ SDL_SCANCODE_G, 0xEF }, 	
 	
-	{ DIK_H, 0xF0 },
-	{ DIK_C, 0xF1 },
-	{ DIK_N, 0xF2 },
-	{ DIK_E, 0xF3 },
-	{ DIK_A, 0xF4 },
-	{ DIK_LBRACKET, 0xF5 },
-	{ DIK_W, 0xF6 },
-	{ DIK_X, 0xF7 },
-	{ DIK_I, 0xF8 },
-	{ DIK_O, 0xF9 },
-	{ DIK_RBRACKET, 0xFA },
-	{ DIK_S, 0xFB },
-	{ DIK_M, 0xFC },
-	{ DIK_APOSTROPHE, 0xFD },
-	{ DIK_PERIOD, 0xFE },
-	{ DIK_Z, 0xFF }, 
+	{ SDL_SCANCODE_H, 0xF0 },
+	{ SDL_SCANCODE_C, 0xF1 },
+	{ SDL_SCANCODE_N, 0xF2 },
+	{ SDL_SCANCODE_E, 0xF3 },
+	{ SDL_SCANCODE_A, 0xF4 },
+	{ SDL_SCANCODE_LEFTBRACKET, 0xF5 },
+	{ SDL_SCANCODE_W, 0xF6 },
+	{ SDL_SCANCODE_X, 0xF7 },
+	{ SDL_SCANCODE_I, 0xF8 },
+	{ SDL_SCANCODE_O, 0xF9 },
+	{ SDL_SCANCODE_RIGHTBRACKET, 0xFA },
+	{ SDL_SCANCODE_S, 0xFB },
+	{ SDL_SCANCODE_M, 0xFC },
+	{ SDL_SCANCODE_APOSTROPHE, 0xFD },
+	{ SDL_SCANCODE_PERIOD, 0xFE },
+	{ SDL_SCANCODE_Z, 0xFF }, 
 };
 
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
@@ -395,7 +374,8 @@ void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
 
-	if (KBState[DIK_LALT] || Device.IsCapturingInputs()) {
+	if (KBState[SDL_SCANCODE_LALT] || Device.IsCapturingInputs()) 
+	{
 		NoInputUpdate();
 	} else {
 		MouseUpdate();
@@ -460,7 +440,8 @@ void CInput::OnFrame			(void)
 {
 	RDEVICE.Statistic->Input.Begin();
 	dwCurTime = RDEVICE.TimerAsync_MMT();
-	if (KBState[DIK_LALT] || Device.IsCapturingInputs()) {
+	if (KBState[SDL_SCANCODE_LALT] || Device.IsCapturingInputs())
+	{
 		NoInputUpdate();
 	} else {
 		MouseUpdate();

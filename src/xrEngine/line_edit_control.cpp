@@ -88,15 +88,15 @@ line_edit_control::~line_edit_control()
 }
 
 void line_edit_control::update_key_states() {
-	m_key_state.zero( );
+	m_key_state.zero();
 
-	set_key_state	( ks_LShift,	!!pInput->iGetAsyncKeyState(DIK_LSHIFT)		);
-	set_key_state	( ks_RShift,	!!pInput->iGetAsyncKeyState(DIK_RSHIFT)		);
-	set_key_state	( ks_LCtrl,		!!pInput->iGetAsyncKeyState(DIK_LCONTROL)	);
-	set_key_state	( ks_RCtrl,		!!pInput->iGetAsyncKeyState(DIK_RCONTROL)	);
-	set_key_state	( ks_LAlt,		!!pInput->iGetAsyncKeyState(DIK_LALT)		);
-	set_key_state	( ks_RAlt,		!!pInput->iGetAsyncKeyState(DIK_RALT)		);
-	set_key_state(ks_CapsLock, false);
+	set_key_state(ks_LShift, pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT));
+	set_key_state(ks_RShift, pInput->iGetAsyncKeyState(SDL_SCANCODE_RSHIFT));
+	set_key_state(ks_LCtrl, pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL));
+	set_key_state(ks_RCtrl, pInput->iGetAsyncKeyState(SDL_SCANCODE_RCTRL));
+	set_key_state(ks_LAlt, pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT));
+	set_key_state(ks_RAlt, pInput->iGetAsyncKeyState(SDL_SCANCODE_RALT));
+	set_key_state(ks_CapsLock, SDL_GetModState() & SDL_KMOD_CAPS);
 }
 
 void line_edit_control::clear_states()
@@ -157,164 +157,116 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 
 	if ( mode == im_read_only )
 	{
-		assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
-		assign_callback( DIK_C     , ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
-		assign_callback( DIK_INSERT, ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
+		assign_callback(SDL_SCANCODE_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
+		assign_callback(SDL_SCANCODE_C, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
+		assign_callback(SDL_SCANCODE_INSERT, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
 
-		assign_callback( DIK_HOME  , ks_free, Callback( this, &line_edit_control::move_pos_home        ) );
-		assign_callback( DIK_END   , ks_free, Callback( this, &line_edit_control::move_pos_end         ) );
-		assign_callback( DIK_LEFT  , ks_free, Callback( this, &line_edit_control::move_pos_left        ) );
-		assign_callback( DIK_RIGHT , ks_free, Callback( this, &line_edit_control::move_pos_right       ) );
-		assign_callback( DIK_LEFT  , ks_Ctrl, Callback( this, &line_edit_control::move_pos_left_word   ) );
-		assign_callback( DIK_RIGHT , ks_Ctrl, Callback( this, &line_edit_control::move_pos_right_word  ) );
+		assign_callback(SDL_SCANCODE_HOME, ks_free, Callback(this, &line_edit_control::move_pos_home));
+		assign_callback(SDL_SCANCODE_END, ks_free, Callback(this, &line_edit_control::move_pos_end));
+		assign_callback(SDL_SCANCODE_LEFT, ks_free, Callback(this, &line_edit_control::move_pos_left));
+		assign_callback(SDL_SCANCODE_RIGHT, ks_free, Callback(this, &line_edit_control::move_pos_right));
+		assign_callback(SDL_SCANCODE_LEFT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_left_word));
+		assign_callback(SDL_SCANCODE_RIGHT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_right_word));
 	}
 	else
 	{
-		assign_char_pairs( mode );
+		assign_char_pairs(mode);
 
-		assign_callback( DIK_INSERT, ks_free, Callback( this, &line_edit_control::flip_insert_mode     ) );
-		assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
-		assign_callback( DIK_Z     , ks_Ctrl, Callback( this, &line_edit_control::undo_buf             ) );
+		assign_callback(SDL_SCANCODE_INSERT, ks_free, Callback(this, &line_edit_control::flip_insert_mode));
+		assign_callback(SDL_SCANCODE_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
+		assign_callback(SDL_SCANCODE_Z, ks_Ctrl, Callback(this, &line_edit_control::undo_buf));
 
-		assign_callback( DIK_C     , ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
-		assign_callback( DIK_V     , ks_Ctrl, Callback( this, &line_edit_control::paste_from_clipboard ) );
-		assign_callback( DIK_X     , ks_Ctrl, Callback( this, &line_edit_control::cut_to_clipboard     ) );
+		assign_callback(SDL_SCANCODE_C, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
+		assign_callback(SDL_SCANCODE_V, ks_Ctrl, Callback(this, &line_edit_control::paste_from_clipboard));
+		assign_callback(SDL_SCANCODE_X, ks_Ctrl, Callback(this, &line_edit_control::cut_to_clipboard));
 
-		assign_callback( DIK_INSERT, ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
-		assign_callback( DIK_INSERT, ks_Shift,Callback( this, &line_edit_control::paste_from_clipboard ) );
-		assign_callback( DIK_DELETE, ks_Shift,Callback( this, &line_edit_control::cut_to_clipboard     ) );
+		assign_callback(SDL_SCANCODE_INSERT, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
+		assign_callback(SDL_SCANCODE_INSERT, ks_Shift, Callback(this, &line_edit_control::paste_from_clipboard));
+		assign_callback(SDL_SCANCODE_DELETE, ks_Shift, Callback(this, &line_edit_control::cut_to_clipboard));
 
-		assign_callback( DIK_HOME  , ks_free, Callback( this, &line_edit_control::move_pos_home        ) );
-		assign_callback( DIK_END   , ks_free, Callback( this, &line_edit_control::move_pos_end         ) );
-		assign_callback( DIK_LEFT  , ks_free, Callback( this, &line_edit_control::move_pos_left        ) );
-		assign_callback( DIK_RIGHT , ks_free, Callback( this, &line_edit_control::move_pos_right       ) );
-		assign_callback( DIK_LEFT  , ks_Ctrl, Callback( this, &line_edit_control::move_pos_left_word   ) );
-		assign_callback( DIK_RIGHT , ks_Ctrl, Callback( this, &line_edit_control::move_pos_right_word  ) );
+		assign_callback(SDL_SCANCODE_HOME, ks_free, Callback(this, &line_edit_control::move_pos_home));
+		assign_callback(SDL_SCANCODE_END, ks_free, Callback(this, &line_edit_control::move_pos_end));
+		assign_callback(SDL_SCANCODE_LEFT, ks_free, Callback(this, &line_edit_control::move_pos_left));
+		assign_callback(SDL_SCANCODE_RIGHT, ks_free, Callback(this, &line_edit_control::move_pos_right));
+		assign_callback(SDL_SCANCODE_LEFT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_left_word));
+		assign_callback(SDL_SCANCODE_RIGHT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_right_word));
 
-		assign_callback( DIK_BACK  , ks_free, Callback( this, &line_edit_control::delete_selected_back ) );
-		assign_callback( DIK_DELETE, ks_free, Callback( this, &line_edit_control::delete_selected_forward ) );
-		assign_callback( DIK_BACK  , ks_Ctrl, Callback( this, &line_edit_control::delete_word_back     ) );
-		assign_callback( DIK_DELETE, ks_Ctrl, Callback( this, &line_edit_control::delete_word_forward  ) );
+		assign_callback(SDL_SCANCODE_BACKSPACE, ks_free, Callback(this, &line_edit_control::delete_selected_back));
+		assign_callback(SDL_SCANCODE_DELETE, ks_free, Callback(this, &line_edit_control::delete_selected_forward));
+		assign_callback(SDL_SCANCODE_BACKSPACE, ks_Ctrl, Callback(this, &line_edit_control::delete_word_back));
+		assign_callback(SDL_SCANCODE_DELETE, ks_Ctrl, Callback(this, &line_edit_control::delete_word_forward));
 
-		assign_callback( DIK_LSHIFT, ks_Ctrl, Callback( this, &line_edit_control::SwitchKL ) );
-		assign_callback( DIK_LSHIFT, ks_Alt, Callback( this, &line_edit_control::SwitchKL  ) );
-
+		assign_callback(SDL_SCANCODE_LSHIFT, ks_Ctrl, Callback(this, &line_edit_control::SwitchKL));
+		assign_callback(SDL_SCANCODE_LSHIFT, ks_Alt, Callback(this, &line_edit_control::SwitchKL));
 	} // if mode
 
-	create_key_state( DIK_LSHIFT  , ks_LShift );
-	create_key_state( DIK_RSHIFT  , ks_RShift );
-	create_key_state( DIK_LCONTROL, ks_LCtrl  );
-	create_key_state( DIK_RCONTROL, ks_RCtrl  );
-	create_key_state( DIK_LALT    , ks_LAlt   );
-	create_key_state( DIK_RALT    , ks_RAlt   );
+	create_key_state(SDL_SCANCODE_LSHIFT, ks_LShift);
+	create_key_state(SDL_SCANCODE_RSHIFT, ks_RShift);
+	create_key_state(SDL_SCANCODE_LCTRL, ks_LCtrl);
+	create_key_state(SDL_SCANCODE_RCTRL, ks_RCtrl);
+	create_key_state(SDL_SCANCODE_LALT, ks_LAlt);
+	create_key_state(SDL_SCANCODE_RALT, ks_RAlt);
 }
 
-void line_edit_control::assign_char_pairs( init_mode mode )
-{
-	create_char_pair( DIK_NUMPAD0, '0', '0' );
-	create_char_pair( DIK_NUMPAD1, '1', '1' );
-	create_char_pair( DIK_NUMPAD2, '2', '2' );
-	create_char_pair( DIK_NUMPAD3, '3', '3' );
-	create_char_pair( DIK_NUMPAD4, '4', '4' );
-	create_char_pair( DIK_NUMPAD5, '5', '5' );
-	create_char_pair( DIK_NUMPAD6, '6', '6' );
-	create_char_pair( DIK_NUMPAD7, '7', '7' );
-	create_char_pair( DIK_NUMPAD8, '8', '8' );
-	create_char_pair( DIK_NUMPAD9, '9', '9' );
+void line_edit_control::assign_char_pairs(init_mode mode) {
+	for (int i = 0; i < 9; ++i) {
+		create_char_pair(SDL_SCANCODE_KP_1 + i, '1' + i, '1' + i);
+	}
+	create_char_pair(SDL_SCANCODE_KP_0, '0', '0');
 
-	if ( mode == im_number_only )
-	{
-		create_char_pair( DIK_0, '0', '0' );
-		create_char_pair( DIK_1, '1', '1' );
-		create_char_pair( DIK_2, '2', '2' );
-		create_char_pair( DIK_3, '3', '3' );
-		create_char_pair( DIK_4, '4', '4' );
-		create_char_pair( DIK_5, '5', '5' );
-		create_char_pair( DIK_6, '6', '6' );
-		create_char_pair( DIK_7, '7', '7' );
-		create_char_pair( DIK_8, '8', '8' );
-		create_char_pair( DIK_9, '9', '9' );
-		create_char_pair( DIK_NUMPADMINUS , '-', '-' );
-		create_char_pair( DIK_MINUS       , '-', '-' );
-		create_char_pair( DIK_NUMPADPLUS  , '+', '+' );
-		create_char_pair( DIK_EQUALS	  , '+', '+' );
+	// Number only mode:
+	if (mode == im_number_only) {
+		for (int i = 0; i < 9; ++i) {
+			create_char_pair(SDL_SCANCODE_1 + i, '1' + i, '1' + i);
+		}
+		create_char_pair(SDL_SCANCODE_0, '0', '0');
+
+		create_char_pair(SDL_SCANCODE_KP_MINUS, '-', '-');
+		create_char_pair(SDL_SCANCODE_MINUS, '-', '-');
+		create_char_pair(SDL_SCANCODE_KP_PLUS, '+', '+');
+		create_char_pair(SDL_SCANCODE_EQUALS, '+', '+');
+
 		return;
 	}
 
-	if ( mode != im_file_name_mode )
-	{
-		create_char_pair( DIK_0, '0', ')', true );
-		create_char_pair( DIK_1, '1', '!', true );
-		create_char_pair( DIK_2, '2', '@', true );
-		create_char_pair( DIK_3, '3', '#', true );
-		create_char_pair( DIK_4, '4', '$', true );
-		create_char_pair( DIK_5, '5', '%', true );
-		create_char_pair( DIK_6, '6', '^', true );
-		create_char_pair( DIK_7, '7', '&', true );
-		create_char_pair( DIK_8, '8', '*', true );
-		create_char_pair( DIK_9, '9', '(', true );
-
-		create_char_pair( DIK_BACKSLASH , '\\', '|', true );
-		create_char_pair( DIK_LBRACKET  , '[' , '{', true );
-		create_char_pair( DIK_RBRACKET  , ']' , '}', true );
-		create_char_pair( DIK_APOSTROPHE, '\'', '\"',true );
-		create_char_pair( DIK_COMMA     , ',' , '<', true );
-		create_char_pair( DIK_PERIOD    , '.' , '>', true );
-		create_char_pair( DIK_EQUALS    , '=' , '+', true );
-		create_char_pair( DIK_SEMICOLON , ';' , ':', true );
-		create_char_pair( DIK_SLASH     , '/' , '?', true );
-
-		create_char_pair( DIK_NUMPADSTAR , '*', '*' );
-		create_char_pair( DIK_NUMPADSLASH, '/', '/' );
-	}
-	else
-	{
-		create_char_pair( DIK_0, '0', '0' );
-		create_char_pair( DIK_1, '1', '1' );
-		create_char_pair( DIK_2, '2', '2' );
-		create_char_pair( DIK_3, '3', '3' );
-		create_char_pair( DIK_4, '4', '4' );
-		create_char_pair( DIK_5, '5', '5' );
-		create_char_pair( DIK_6, '6', '6' );
-		create_char_pair( DIK_7, '7', '7' );
-		create_char_pair( DIK_8, '8', '8' );
-		create_char_pair( DIK_9, '9', '9' );
+	if (mode != im_file_name_mode) {
+		// Character pairs for symbols not allowed in Windows file naming
+		create_char_pair(SDL_SCANCODE_BACKSLASH, '\\', '|', true);
+		create_char_pair(SDL_SCANCODE_8, '8', '*', true);
+		create_char_pair(SDL_SCANCODE_COMMA, ',', '<', true);
+		create_char_pair(SDL_SCANCODE_PERIOD, '.', '>', true);
+		create_char_pair(SDL_SCANCODE_SEMICOLON, ';', ':', true);
+		create_char_pair(SDL_SCANCODE_APOSTROPHE, '\'', '\"', true);
+		create_char_pair(SDL_SCANCODE_SLASH, '/', '?', true);
 	}
 
-	create_char_pair( DIK_NUMPADMINUS , '-', '-' );
-	create_char_pair( DIK_NUMPADPLUS  , '+', '+' );
-	create_char_pair( DIK_NUMPADPERIOD, '.', '.' );
+	// Common characters for all modes
+	create_char_pair(SDL_SCANCODE_KP_MINUS, '-', '-');
+	create_char_pair(SDL_SCANCODE_KP_PLUS, '+', '+');
+	create_char_pair(SDL_SCANCODE_KP_MULTIPLY, '*', '*');
+	create_char_pair(SDL_SCANCODE_KP_DIVIDE, '/', '/');
+	create_char_pair(SDL_SCANCODE_KP_PERIOD, '.', '.');
+	create_char_pair(SDL_SCANCODE_MINUS, '-', '_', true);
+	create_char_pair(SDL_SCANCODE_EQUALS, '=', '+', true);
 
-	create_char_pair( DIK_MINUS       , '-', '_', true );
-	create_char_pair( DIK_SPACE       , ' ', ' ' );
-	create_char_pair( DIK_GRAVE       , '`', '~', true );
+	create_char_pair(SDL_SCANCODE_LEFTBRACKET, '[', '{', true);
+	create_char_pair(SDL_SCANCODE_RIGHTBRACKET, ']', '}', true);
+	create_char_pair(SDL_SCANCODE_SPACE, ' ', ' ');
+	create_char_pair(SDL_SCANCODE_GRAVE, '`', '~', true);
 
-	create_char_pair( DIK_A, 'a', 'A', true );
-	create_char_pair( DIK_B, 'b', 'B', true );
-	create_char_pair( DIK_C, 'c', 'C', true );
-	create_char_pair( DIK_D, 'd', 'D', true );
-	create_char_pair( DIK_E, 'e', 'E', true );
-	create_char_pair( DIK_F, 'f', 'F', true );
-	create_char_pair( DIK_G, 'g', 'G', true );
-	create_char_pair( DIK_H, 'h', 'H', true );
-	create_char_pair( DIK_I, 'i', 'I', true );
-	create_char_pair( DIK_J, 'j', 'J', true );
-	create_char_pair( DIK_K, 'k', 'K', true );
-	create_char_pair( DIK_L, 'l', 'L', true );
-	create_char_pair( DIK_M, 'm', 'M', true );
-	create_char_pair( DIK_N, 'n', 'N', true );
-	create_char_pair( DIK_O, 'o', 'O', true );
-	create_char_pair( DIK_P, 'p', 'P', true );
-	create_char_pair( DIK_Q, 'q', 'Q', true );
-	create_char_pair( DIK_R, 'r', 'R', true );
-	create_char_pair( DIK_S, 's', 'S', true );
-	create_char_pair( DIK_T, 't', 'T', true );
-	create_char_pair( DIK_U, 'u', 'U', true );
-	create_char_pair( DIK_V, 'v', 'V', true );
-	create_char_pair( DIK_W, 'w', 'W', true );
-	create_char_pair( DIK_X, 'x', 'X', true );
-	create_char_pair( DIK_Y, 'y', 'Y', true );
-	create_char_pair( DIK_Z, 'z', 'Z', true );
+	create_char_pair(SDL_SCANCODE_0, '0', ')');
+	create_char_pair(SDL_SCANCODE_1, '1', '!');
+	create_char_pair(SDL_SCANCODE_2, '2', '@');
+	create_char_pair(SDL_SCANCODE_3, '3', '#');
+	create_char_pair(SDL_SCANCODE_4, '4', '$');
+	create_char_pair(SDL_SCANCODE_5, '5', '%');
+	create_char_pair(SDL_SCANCODE_6, '6', '^');
+	create_char_pair(SDL_SCANCODE_7, '7', '&');
+	create_char_pair(SDL_SCANCODE_9, '9', '(');
+
+	for (int i = 0; i < 26; ++i) {
+		create_char_pair(SDL_SCANCODE_A + i, 'a' + i, 'A' + i, true);
+	}
 }
 
 void line_edit_control::create_key_state( u32 const dik, key_state state )
@@ -323,14 +275,14 @@ void line_edit_control::create_key_state( u32 const dik, key_state state )
 	m_actions[dik] = xr_new<text_editor::key_state_base>( state, prev );
 }
 
-void line_edit_control::create_char_pair( u32 const dik, char c, char c_shift, bool translate )
+void line_edit_control::create_char_pair(u32 const dik, char c, char c_shift, bool translate)
 {
-	if ( m_actions[dik] )
+	if (m_actions[dik])
 	{
-		xr_delete( m_actions[dik] );
+		xr_delete(m_actions[dik]);
 	}
 
-	m_actions[dik] = xr_new<text_editor::type_pair>( dik, c, c_shift, translate );
+	m_actions[dik] = xr_new<text_editor::type_pair>(dik, c, c_shift, translate);
 }
 
 void line_edit_control::assign_callback(u32 const dik, key_state state, Callback const& callback) {
@@ -392,7 +344,7 @@ void line_edit_control::on_key_press( int dik )
 		m_actions[dik]->on_key_press( this );
 	}
 	// ===========
-	if ( dik == DIK_LCONTROL || dik == DIK_RCONTROL )
+	if ( dik == SDL_SCANCODE_LCTRL || dik == SDL_SCANCODE_RCTRL)
 	{
 		m_mark = false;	
 	}
@@ -418,14 +370,14 @@ void line_edit_control::on_key_press( int dik )
 
 void line_edit_control::on_key_hold( int dik )
 {
-	update_key_states( );
+	update_key_states();
 	update_bufs();
-	switch ( dik )
+	switch (dik)
 	{
-	case DIK_TAB:
-	case DIK_LSHIFT:   case DIK_RSHIFT:
-	case DIK_LCONTROL: case DIK_RCONTROL:
-	case DIK_LALT:     case DIK_RALT:
+	case SDL_SCANCODE_TAB:
+	case SDL_SCANCODE_LSHIFT:   case SDL_SCANCODE_RSHIFT:
+	case SDL_SCANCODE_LCTRL: case SDL_SCANCODE_RCTRL:
+	case SDL_SCANCODE_LALT:     case SDL_SCANCODE_RALT:
 		return;
 		break;
 	}

@@ -2,7 +2,6 @@
 #define __XR_INPUT__
 
 #define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
 
 class	ENGINE_API				IInputReceiver;
 
@@ -51,8 +50,13 @@ public:
 	void						MouseScroll					(float d);
 	void						MousePressed				(int button);
 	void						MouseReleased				(int button);
-	void						KeyPressed					(int SDLCode);	
-	void						KeyReleased					(int SDLCode);	
+		
+	void                        KeyboardButtonUpdate        (SDL_Scancode scancode, bool IsPressed);
+	
+	void						GamepadButtonUpdate			(int SDLCode, bool IsPressed);
+	void						LeftAxisUpdate				(bool IsX, float value);
+	void						RightAxisUpdate				(bool IsX, float value);
+	void						AdaptiveTriggerUpdate		(bool IsX, float value);
 
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );
