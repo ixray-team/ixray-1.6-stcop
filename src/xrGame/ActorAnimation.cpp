@@ -444,6 +444,8 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 			M_torso = AS->legs_ls;
 		else if (mstate_rl & mcRStrafe)
 			M_torso = AS->legs_rs;
+		else
+			M_torso = ST->m_torso_idle;
 	}
 
 	CHudItem* H = smart_cast<CHudItem*>(_i);
