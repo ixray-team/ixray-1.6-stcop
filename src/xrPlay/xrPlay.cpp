@@ -69,7 +69,7 @@ int APIENTRY WinMain
 	}
 #endif
 
-	SetThreadAffinityMask(GetCurrentThread(), 1);
+	//SetThreadAffinityMask(GetCurrentThread(), 1);
 	CreateGameWindow();
 
 	// Title window
