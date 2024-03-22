@@ -208,7 +208,7 @@ using U8Vec = xr_vector<u8>;
 using U8It = U8Vec::iterator;
 
 using LPU32Vec = xr_vector<u32*>;
-using LPU32It = PlaneVec::iterator;
+using LPU32It = LPU32Vec::iterator;
 
 using AStringVec = xr_vector<AnsiString>;
 using AStringIt = AStringVec::iterator;
