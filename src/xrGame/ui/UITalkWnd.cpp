@@ -261,7 +261,7 @@ bool  CUITalkWnd::TopicMode			()
 
 void  CUITalkWnd::ToTopicMode		() 
 {
-	m_pCurrentDialog = DIALOG_SHARED_PTR((CPhraseDialog*)NULL);
+	m_pCurrentDialog.reset();// = DIALOG_SHARED_PTR((CPhraseDialog*)NULL);
 }
 
 void CUITalkWnd::AskQuestion()
