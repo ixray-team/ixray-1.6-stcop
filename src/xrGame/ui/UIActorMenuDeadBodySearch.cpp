@@ -102,13 +102,13 @@ void CUIActorMenu::InitDeadBodySearchMode()
 		known_info_registry.registry().init		(m_pPartnerInvOwner->object_id());
 		KNOWN_INFO_VECTOR& known_infos			= known_info_registry.registry().objects();
 
-		KNOWN_INFO_VECTOR_IT it_					= known_infos.begin();
+		auto it_ = known_infos.begin();
 		for(int i=0;it_!=known_infos.end();++it_,++i)
 		{
 			NET_Packet					P;
 			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, m_pActorInvOwner->object_id());
 			P.w_u16						(0);
-			P.w_stringZ					(*it_);
+			P.w_stringZ(it_->info_id.c_str());
 			P.w_u8						(1);
 			CGameObject::u_EventSend	(P);
 		}

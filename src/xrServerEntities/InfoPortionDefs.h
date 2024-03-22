@@ -1,15 +1,28 @@
 #pragma once
 
-using INFO_DATA = shared_str;
+#include "alife_space.h"
 
-using KNOWN_INFO_VECTOR = xr_vector<INFO_DATA>;
-using KNOWN_INFO_VECTOR_IT = KNOWN_INFO_VECTOR::iterator;
+struct INFO_DATA
+{
+    INFO_DATA() :info_id(nullptr), receive_time(0) {};
+    INFO_DATA(shared_str id, ALife::_TIME_ID time) : info_id(id), receive_time(time) {};
+
+    void load(IReader& stream);
+    void save(IWriter&);
+
+    shared_str info_id;
+    //????? ????????? ????? ?????? ??????????
+    ALife::_TIME_ID receive_time;
+};
 
 class CFindByIDPred
 {
 public:
 	CFindByIDPred(shared_str element_to_find) {element = element_to_find;}
-	IC bool operator () (const INFO_DATA& data) const {return data == element;}
+	bool operator () (const INFO_DATA& data) const {return data.info_id == element;}
 private:
 	shared_str element;
 };
+
+using KNOWN_INFO_VECTOR = xr_vector<INFO_DATA>;
+

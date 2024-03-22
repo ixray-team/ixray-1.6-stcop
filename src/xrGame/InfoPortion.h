@@ -1,5 +1,5 @@
 #pragma once
-/*
+
 #include "shared_data.h"
 #include "PhraseScript.h"
 
@@ -36,21 +36,18 @@ struct SInfoPortionData : CSharedResource
 	INFO_ID_VECTOR		m_DisableInfo;
 };
 
-
-class CInfoPortion;
-
 //квант  - порция информации
 class CInfoPortion : public CSharedClass<SInfoPortionData, shared_str, false>,
 					 public CXML_IdToIndex<CInfoPortion>
 {
 private:
-	typedef CSharedClass<SInfoPortionData, shared_str, false>	inherited_shared;
-	typedef CXML_IdToIndex<CInfoPortion>						id_to_index;
+	using inherited_shared = CSharedClass<SInfoPortionData, shared_str, false>;
+	using id_to_index = CXML_IdToIndex<CInfoPortion>;
 
 	friend id_to_index;
 public:
-				CInfoPortion	(void);
-	virtual		~CInfoPortion	(void);
+	CInfoPortion(void);
+	~CInfoPortion(void) override;
 
 	//инициализация info данными
 	//если info с таким id раньше не использовался
@@ -69,17 +66,19 @@ public:
 protected:
     shared_str		m_InfoId;
 
-	void			load_shared						(LPCSTR);
-	SInfoPortionData* info_data						() { VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
-	const SInfoPortionData* info_data				() const { VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
+	void load_shared(LPCSTR) override;
+
+	SInfoPortionData* info_data()
+	{
+		VERIFY(inherited_shared::get_sd());
+		return inherited_shared::get_sd();
+	}
+
+	const SInfoPortionData* info_data() const
+	{
+		VERIFY(inherited_shared::get_sd());
+		return inherited_shared::get_sd();
+	}
 
 	static void InitXmlIdToIndex();
-};
-*/
-class CInfoPortion
-{
-	shared_str			m_InfoId;
-public:
-	void				Load	(const shared_str& info_id) {m_InfoId = info_id;}
-	const shared_str&	InfoId	() const					{return m_InfoId;}
 };
