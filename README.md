@@ -38,7 +38,6 @@ For building:
 
 - Visual Studio 2022 Community Edition
   - MFC
-  - C++/CLI
   - Windows SDK 10.0.19041.0+
 - Git
 - CMake
@@ -56,7 +55,10 @@ The project can be built in various ways. Choose the most convenient one and fol
 Download the repository firstly:
 
 ```sh
+# From GitHub
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git
+# Or from GitLab
+git clone https://gitlab.com/ixray-team/ixray/ixray-1.6-stcop.git
 ```
 
 ### CMake GUI with Visual Studio
