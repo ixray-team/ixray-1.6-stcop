@@ -1,0 +1,18 @@
+#include "common.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+uniform	float4 screen_res;
+
+struct	v2p_TL
+{
+	float2 	Tex0	: TEXCOORD0;
+	float4	Color	: COLOR;
+};
+
+float4 main ( v2p_TL I ) : COLOR
+{
+	float4 r = tex2D(s_base, I.Tex0 + screen_res.zw * 0.5f);
+	r.w = 1 - r.w;
+	return r;
+}

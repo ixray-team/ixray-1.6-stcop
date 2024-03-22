@@ -13,7 +13,6 @@ public:
 	virtual void OnRender(CGameFont &owner) = 0;
 
 	virtual void CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) = 0;
-	virtual void UpdatePartOfFontAtlas(u32 yOffset, u32 height, const char* name, void* bitmap) = 0;
 };
 
 #endif	//	FontRender_included

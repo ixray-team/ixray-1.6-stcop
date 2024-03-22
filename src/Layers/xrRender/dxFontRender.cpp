@@ -114,7 +114,6 @@ void dxFontRender::OnRender(CGameFont& owner)
 			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
 			if (vertexesCount)
 			{
-				PIX_EVENT(render_font);
 				RCache.set_Geometry(pGeom);
 				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 			}
@@ -124,6 +123,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
 {
+#ifdef USE_DX11
 	D3D_TEXTURE2D_DESC descFontAtlas;
 	ZeroMemory(&descFontAtlas, sizeof(D3D_TEXTURE2D_DESC));
 	descFontAtlas.Width = width;
@@ -143,30 +143,21 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	FontData.SysMemSlicePitch = 0;
 	FontData.SysMemPitch = width * 4;
 
-	ID3DTexture2D* Result = nullptr;
-	R_CHK(HW.pDevice->CreateTexture2D(&descFontAtlas, &FontData, &Result));
+	ID3DTexture2D* Texture = nullptr;
+	R_CHK(HW.pDevice->CreateTexture2D(&descFontAtlas, &FontData, &Texture));
+#else
+	D3DLOCKED_RECT LockedRect = {};
+	ID3DTexture2D* Texture = nullptr;
+	R_CHK(D3DXCreateTexture(HW.pDevice, width, height, 1, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &Texture));
+	R_CHK(Texture->LockRect(0, &LockedRect, nullptr, 0));
+
+	for (int y = 0; y < height; y++) {
+		memcpy((unsigned char*)LockedRect.pBits + (size_t)LockedRect.Pitch * y, (u8*)bitmap + (size_t)width * 4 * y, (size_t)width * 4);
+	}
+
+	R_CHK(Texture->UnlockRect(0));
+#endif
 
 	pTexture.create(name);
-	pTexture->surface_set(Result);
-}
-
-void dxFontRender::UpdatePartOfFontAtlas(u32 yOffset, u32 height, const char* name, void* bitmap)
-{
-	if (pTexture._get()->surface_get() == nullptr)
-		return;
-
-	u32 EndY = yOffset + height;
-	VERIFY(EndY <= pTexture->get_Height());
-
-	u32 RowPitch = pTexture->get_Width();
-
-	D3D11_BOX Box;
-	Box.left = 0;
-	Box.right = RowPitch;
-	Box.top = yOffset;
-	Box.bottom = EndY;
-	Box.front = 0;
-	Box.back = 1;
-
-	HW.pContext->UpdateSubresource(pTexture._get()->surface_get(), 0, &Box, bitmap, RowPitch, 0);
+	pTexture->surface_set(Texture);
 }
