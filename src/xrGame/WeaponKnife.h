@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WeaponCustomPistol.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "../xrEngine/xr_collide_form.h"
 
 class CWeaponKnife: public CWeapon {

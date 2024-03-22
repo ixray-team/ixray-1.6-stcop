@@ -9,7 +9,7 @@
 #include "pch_script.h"
 #include "xrSE_Factory.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "object_factory.h"
 #include "xrEProps.h"
 #include "xrSE_Factory_import_export.h"
@@ -41,14 +41,6 @@ extern "C" {
 	}
 };
 
-//typedef void DUMMY_STUFF (const void*,const u32&,void*);
-//XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
-
-void setup_luabind_allocator		();
-
-//#define TRIVIAL_ENCRYPTOR_DECODER
-//#include UP(xrEngine/trivial_encryptor.h)
-
 BOOL APIENTRY DllMain		(HANDLE module_handle, DWORD call_reason, LPVOID reserved)
 {
 	switch (call_reason) {
@@ -60,8 +52,6 @@ BOOL APIENTRY DllMain		(HANDLE module_handle, DWORD call_reason, LPVOID reserved
 			string_path					SYSTEM_LTX;
 			FS.update_path				(SYSTEM_LTX,"$game_config$","system.ltx");
 			pSettings					= xr_new<CInifile>(SYSTEM_LTX);
-
-			setup_luabind_allocator		();
 
 			CCharacterInfo::InitInternal					();
 			CSpecificCharacter::InitInternal				();

@@ -10,8 +10,6 @@
 #include "object_factory.h"
 #include "object_broker.h"
 
-CObjectFactory *g_object_factory = 0;
-
 CObjectFactory::CObjectFactory	()
 {
 	m_actual					= false;

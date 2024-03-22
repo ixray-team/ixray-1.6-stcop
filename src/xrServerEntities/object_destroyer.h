@@ -10,7 +10,7 @@
 
 #include "object_interfaces.h"
 #include <queue>
-#include "object_type_traits.h"
+#include "../xrCore/object_type_traits.h"
 
 struct CDestroyer {
 	IC	static void delete_data(LPCSTR data)

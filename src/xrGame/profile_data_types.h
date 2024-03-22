@@ -1,10 +1,9 @@
-#ifndef PLAYER_AWARDS
-#define PLAYER_AWARDS
+#pragma once
 
-#include "../xrServerEntities/associative_vector.h"
+#include "../xrCore/associative_vector.h"
 #include "mixed_delegate.h"
 #include "atlas_stalkercoppc_v1.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 namespace gamespy_profile
 {
@@ -124,6 +123,3 @@ struct profile_data_script_registrator
 add_to_type_list(profile_data_script_registrator)
 #undef script_type_list
 #define script_type_list save_type_list(profile_data_script_registrator)
-
-
-#endif //#ifndef PLAYER_AWARDS

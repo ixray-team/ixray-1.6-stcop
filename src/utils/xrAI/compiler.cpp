@@ -4,7 +4,7 @@
 #include "cl_intersect.h"
 
 CDB::MODEL			Level;
-CDB::COLLIDER		XRC;
+CDB::COLLIDER		IXRC;
 
 Nodes				g_nodes;
 xr_vector<SCover>	g_covers_palette;

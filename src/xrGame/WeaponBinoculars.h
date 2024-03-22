@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WeaponCustomPistol.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CUIFrameWindow;
 class CUIStatic;

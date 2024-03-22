@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 #ifdef XRGAME_EXPORTS
 #	include "../xrEngine/xrLevel.h"

@@ -1,7 +1,7 @@
 #ifndef DEMOINFO_H
 #define DEMOINFO_H
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CStreamReader;
 class IWriter;

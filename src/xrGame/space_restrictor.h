@@ -10,7 +10,7 @@
 
 #include "gameobject.h"
 #include "restriction_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CSpaceRestrictor : public CGameObject {
 private:

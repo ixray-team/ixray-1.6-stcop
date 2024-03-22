@@ -9,7 +9,7 @@
 #ifndef xrServer_SpaceH
 #define xrServer_SpaceH
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 #ifndef XRGAME_EXPORTS
 #	define SERVER_ENTITY_EDITOR_METHODS					virtual void FillProps(LPCSTR pref, PropItemVec& values);

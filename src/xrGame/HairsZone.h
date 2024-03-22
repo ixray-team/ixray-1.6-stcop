@@ -5,7 +5,7 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "ZoneVisual.h"
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CHairsZone : public CVisualZone {
 typedef				CVisualZone		inherited;		

@@ -1,6 +1,6 @@
 #pragma once
 #include "game_cl_base.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class game_cl_Single :public game_cl_GameState
 {

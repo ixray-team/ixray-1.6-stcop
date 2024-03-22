@@ -22,7 +22,7 @@
 #include "UI/UItextureMaster.h"
 
 #include "ai_space.h"
-#include "../xrServerEntities/script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 #include "holder_custom.h"
 #include "game_cl_base.h"

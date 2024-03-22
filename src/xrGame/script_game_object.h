@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "script_space_forward.h"
+#include "../xrScripts/script_space_forward.h"
 #include "script_bind_macroses.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "game_graph_space.h"

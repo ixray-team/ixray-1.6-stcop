@@ -12,7 +12,7 @@ class	CScriptEngine;
 
 class CAI_Space {
 private:
-	CScriptEngine			*m_script_engine;
+	CScriptEngine* m_script_engine = nullptr;
 
 public:
 							CAI_Space		();

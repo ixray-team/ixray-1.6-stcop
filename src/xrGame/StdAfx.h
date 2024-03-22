@@ -2,6 +2,7 @@
 
 #pragma warning(disable:4995)
 #include "../xrEngine/stdafx.h"
+#include "../xrScripts/stdafx.h"
 #include "DPlay/dplay8.h"
 #pragma warning(default:4995)
 #pragma warning( 4 : 4018 )

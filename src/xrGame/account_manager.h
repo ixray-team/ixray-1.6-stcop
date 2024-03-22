@@ -3,7 +3,7 @@
 
 #include "mixed_delegate.h"
 #include "GameSpy/GameSpy_FuncDefs.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "queued_async_method.h"
 
 class CGameSpy_GP;

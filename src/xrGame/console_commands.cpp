@@ -8,7 +8,7 @@
 #include "xrMessages.h"
 #include "xrserver.h"
 #include "level.h"
-#include "script_debugger.h"
+#include "../xrScripts/script_debugger.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
 #include "game_cl_base.h"
@@ -19,9 +19,9 @@
 #include "actor.h"
 #include "Actor_Flags.h"
 #include "customzone.h"
-#include "script_engine.h"
-#include "script_engine_space.h"
-#include "script_process.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_engine_space.h"
+#include "../xrScripts/script_process.h"
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
 //#include "../xrphysics/PhysicsGamePars.h"
@@ -147,10 +147,6 @@ CUIOptConCom g_OptConCom;
 #		define SEVERAL_ALLOCATORS
 #endif // PURE_ALLOC
 
-#ifdef SEVERAL_ALLOCATORS
-	extern		u32 game_lua_memory_usage	();
-#endif // SEVERAL_ALLOCATORS
-
 typedef void (*full_memory_stats_callback_type) ( );
 XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback;
 
@@ -159,7 +155,6 @@ static void full_memory_stats	( )
 	Memory.mem_compact		();
 	u32		_process_heap	= mem_usage_impl(nullptr, nullptr);
 #ifdef SEVERAL_ALLOCATORS
-	u32		_game_lua		= game_lua_memory_usage();
 	u32		_render			= ::Render->memory_usage();
 #endif // SEVERAL_ALLOCATORS
 	int		_eco_strings	= (int)g_pStringContainer->stat_economy			();
@@ -178,7 +173,7 @@ static void full_memory_stats	( )
 #ifndef SEVERAL_ALLOCATORS
 	Msg		("* [x-ray]: process heap[%d K]",_process_heap/1024);
 #else // SEVERAL_ALLOCATORS
-	Msg		("* [x-ray]: process heap[%d K], game lua[%d K], render[%d K]",_process_heap/1024,_game_lua/1024,_render/1024);
+	Msg		("* [x-ray]: process heap[%d K], render[%d K]",_process_heap/1024,_render/1024);
 #endif // SEVERAL_ALLOCATORS
 
 	Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);

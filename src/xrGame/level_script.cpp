@@ -23,7 +23,7 @@
 #include "level_graph.h"
 #include "PHCommander.h"
 #include "PHScriptCall.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "game_cl_single.h"
 #include "game_sv_single.h"
 #include "map_manager.h"

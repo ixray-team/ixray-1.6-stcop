@@ -9,7 +9,7 @@
 #include "PhraseDialog.h"
 
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "gameobject.h"
 #include "script_game_object.h"
 

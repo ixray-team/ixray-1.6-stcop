@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "script_movement_action.h"
 #include "script_watch_action.h"
 #include "script_animation_action.h"

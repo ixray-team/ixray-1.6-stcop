@@ -9,7 +9,7 @@ class CUIWindow;
 //////////////////////////////////////////////////////////////////////////
 
 #include "UIMessages.h"
-#include "../../xrServerEntities/script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 #include "uiabstract.h"
 
 

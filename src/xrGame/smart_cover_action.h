@@ -9,9 +9,9 @@
 #define SMART_COVER_ACTION_H_INCLUDED
 
 #include "smart_cover_detail.h"
-#include "script_space_forward.h"
+#include "../xrScripts/script_space_forward.h"
 #include "ai_monster_space.h"
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 namespace smart_cover{
 

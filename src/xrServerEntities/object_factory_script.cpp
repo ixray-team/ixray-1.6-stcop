@@ -11,7 +11,7 @@
 
 #include "object_factory.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "object_item_script.h"
 
 void CObjectFactory::register_script_class	(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid)
@@ -63,6 +63,25 @@ void CObjectFactory::register_script_class			(LPCSTR unknown_class, LPCSTR clsid
 void CObjectFactory::register_script_classes()
 {
 	ai();
+}
+
+void CObjectFactory::init_script(const char* str)
+{
+	luabind::functor<void>	result;
+
+	if (!ai().script_engine().functor(str, result)) 
+	{
+		ai().script_engine().script_log(eLuaMessageTypeError, "Cannot load class registrator %s!", str);
+		return;
+	}
+
+	result(const_cast<CObjectFactory*>(&object_factory()));
+}
+
+void CObjectFactory::export_classes(lua_State* L)
+{
+	extern void export_classes(lua_State * L);
+	export_classes(L);
 }
 
 using namespace luabind;

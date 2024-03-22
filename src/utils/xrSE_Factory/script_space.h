@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_space_forward.h"
+#include "../xrScripts/script_space_forward.h"
 
 #pragma warning(push)
 

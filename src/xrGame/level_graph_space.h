@@ -8,8 +8,10 @@
 
 #pragma once
 
-namespace LevelGraph {
-	class CHeader : private hdrNODES {
+namespace LevelGraph
+{
+	class CHeader : private hdrNODES 
+	{
 	private:
 		friend class CRenumbererConverter;
 

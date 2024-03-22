@@ -2,7 +2,7 @@
 
 #include "rocketlauncher.h"
 #include "weaponShotgun.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CWeaponRG6 :  public CRocketLauncher,
 					public CWeaponShotgun

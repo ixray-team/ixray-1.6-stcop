@@ -9,7 +9,7 @@
 #include "pch_script.h"
 #include "smart_cover_description.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "object_broker.h"
 #include "smart_cover_loophole.h"
 #include "smart_cover_object.h"

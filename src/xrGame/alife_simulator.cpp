@@ -12,7 +12,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "mainmenu.h"
 #include "object_factory.h"
 #include "alife_object_registry.h"
@@ -35,7 +35,10 @@ void restart_all				()
 	destroy_lua_wpn_params		();
 	destroy_lua_knife_params	();
 	MainMenu()->DestroyInternal	(true);
-	xr_delete					(g_object_factory);
+
+	xr_delete(g_object_factory);
+	object_factory();
+
 	ai().script_engine().init	();
 
 #ifdef DEBUG
@@ -48,7 +51,7 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	CALifeInteractionManager	(server,alife_section),
 	CALifeSimulatorBase			(server,alife_section)
 {
-	restart_all					();
+	restart_all();
 
 	ai().set_alife				(this);
 

@@ -15,7 +15,7 @@
 #include "ai_space.h"
 #include "cover_manager.h"
 #include "cover_point.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "patrol_path_storage.h"
 #include "alife_simulator.h"
 #include "moving_objects.h"
@@ -34,7 +34,7 @@ CAI_Space::CAI_Space				()
 	m_level_graph			= 0;
 	m_alife_simulator		= 0;
 	m_patrol_path_storage	= 0;
-	m_script_engine			= 0;
+	g_pScriptEngine			= 0;
 	m_moving_objects		= 0;
 	m_doors_manager			= 0;
 }
@@ -59,12 +59,12 @@ void CAI_Space::init				()
 
 #endif //#ifndef NO_SINGLE
 
-	VERIFY					(!m_script_engine);
-	m_script_engine			= xr_new<CScriptEngine>();
+	VERIFY					(!g_pScriptEngine);
+	g_pScriptEngine = xr_new<CScriptEngine>();
 	script_engine().init	();
 
 #ifndef NO_SINGLE
-	extern string4096		g_ca_stdout;
+	extern SCRIPTS_API string4096 g_ca_stdout;
 	setvbuf					(stderr,g_ca_stdout,_IOFBF,sizeof(g_ca_stdout));
 #endif //#ifndef NO_SINGLE
 }
@@ -74,7 +74,7 @@ CAI_Space::~CAI_Space				()
 	unload					();
 	
 	try {
-		xr_delete			(m_script_engine);
+		xr_delete			(g_pScriptEngine);
 	}
 	catch(...) {
 	}

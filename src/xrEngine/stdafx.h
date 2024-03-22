@@ -6,8 +6,11 @@
 
 #include "../xrCore/xrCore.h"
 #include "../Include/xrAPI/xrAPI.h"
-#include "imgui.h"
 #include <SDL3/SDL.h>
+
+#ifndef XRSE_FACTORY_EXPORTS
+#include "imgui.h"
+#endif
 
 #ifdef _DEBUG
 #	define D3D_DEBUG_INFO

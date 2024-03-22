@@ -2,7 +2,7 @@
 
 #include "inventory_item_object.h"
 #include "hudsound.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CLAItem;
 class CNightVisionEffector;

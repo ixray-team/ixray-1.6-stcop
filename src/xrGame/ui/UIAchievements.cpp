@@ -8,7 +8,6 @@
 #include "UIStatic.h"
 #include "UICursor.h"
 #include "../ai_space.h"
-#include "../../xrServerEntities/script_engine.h"
 #include "../../xrEngine/string_table.h"
 
 CUIAchievements::CUIAchievements(CUIScrollView* parent):m_parent(parent)

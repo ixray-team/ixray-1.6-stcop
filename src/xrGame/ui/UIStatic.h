@@ -2,7 +2,7 @@
 
 #include "UILanimController.h"
 #include "../uistaticitem.h"
-#include "../../xrServerEntities/script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 #include "uilines.h"
 
 class CUIFrameWindow;

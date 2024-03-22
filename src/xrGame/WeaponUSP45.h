@@ -1,7 +1,7 @@
 #pragma once
 
 #include "weaponpistol.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CWeaponUSP45 :
 	public CWeaponPistol

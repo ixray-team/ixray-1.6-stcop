@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "../xrScripts/script_engine.h"
 
 IC	CGameGraph					&CAI_Space::game_graph				() const
 {
@@ -61,8 +62,8 @@ IC	const CCoverManager			&CAI_Space::cover_manager			() const
 
 IC	CScriptEngine				&CAI_Space::script_engine			() const
 {
-	VERIFY					(m_script_engine);
-	return					(*m_script_engine);
+	VERIFY					(g_pScriptEngine);
+	return					(*g_pScriptEngine);
 }
 
 IC	const CPatrolPathStorage &CAI_Space::patrol_paths				() const

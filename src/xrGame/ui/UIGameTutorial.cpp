@@ -6,7 +6,7 @@
 #include "UIXmlInit.h"
 #include "object_broker.h"
 #include "../../xrEngine/xr_input.h"
-#include "../../xrServerEntities/script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
 #include "../../xrEngine/xr_ioconsole.h"
 #include "../UIGameCustom.h"

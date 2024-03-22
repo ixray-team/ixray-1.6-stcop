@@ -13,6 +13,7 @@
 #include "string_table.h"
 #include "UIGameCustom.h"
 #include "ui/UICDkey.h"
+#include "object_factory.h"
 
 int		g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
@@ -29,6 +30,8 @@ void CLevel::net_StartPlayDemo()
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {
+	object_factory();
+
 	net_start_result_total				= TRUE;
 
 	pApp->LoadBegin				();

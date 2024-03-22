@@ -7,8 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 class CStalkerVelocityCollection;
 

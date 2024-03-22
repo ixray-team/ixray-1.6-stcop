@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 #define AI_MAX_EVALUATION_FUNCTION_COUNT	128
 

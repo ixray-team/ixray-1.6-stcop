@@ -20,7 +20,7 @@
 
 #ifndef XRGAME_EXPORTS
 #	include "bone.h"
-#	include "defines.h"
+#	include "../xrEngine/defines.h"
 	LPCSTR GAME_CONFIG = "game.ltx";
 #else // XRGAME_EXPORTS
 #	include "../xrEngine/bone.h"
@@ -29,7 +29,7 @@
 
 #ifdef XRSE_FACTORY_EXPORTS
 #	include "ai_space.h"
-#	include "script_engine.h"
+#	include "../xrScripts/script_engine.h"
 #	pragma warning(push)
 #	pragma warning(disable:4995)
 #		include <luabind/luabind.hpp>

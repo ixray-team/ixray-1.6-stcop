@@ -1,6 +1,6 @@
 #pragma once
 #include "inventory_item.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CPhysicItem;
 class CEntityAlive;

@@ -10,15 +10,26 @@ file(GLOB_RECURSE SEF_SOURCE_ALL_FILES
 file(GLOB_RECURSE SEF_SOURCE_ENTT_FILES
     "../../xrServerEntities/*.cpp"
     "../../xrServerEntities/*.h"
+    "../../xrEngine/IGame_ObjectFactory.*"
+)
+file(GLOB_RECURSE SEF_SOURCE_SCR_FILES
+    "../../xrScripts/script_debugger*.*"
+    "../../xrScripts/script_engine*.*"
+    "../../xrScripts/script_storage.*"
+    "../../xrScripts/script_callStack.*"
+    "../../xrScripts/script_stack_tracker.*"
+    "../../xrScripts/script_lua_helper.*"
 )
 
 # Source groups
 source_group("kernel" FILES ${SEF_SOURCE_ALL_FILES})
 source_group("entt" FILES ${SEF_SOURCE_ENTT_FILES})
+source_group("script" FILES ${SEF_SOURCE_SCR_FILES})
 
 # Apply list
 list(APPEND SEF_SRC_FILES ${SEF_SOURCE_ALL_FILES})
 list(APPEND SEF_SRC_FILES ${SEF_SOURCE_ENTT_FILES})
+list(APPEND SEF_SRC_FILES ${SEF_SOURCE_SCR_FILES})
 
 # Remove unused files
 #list(FILTER SEF_SRC_FILES EXCLUDE REGEX "lzo/*.ch")
