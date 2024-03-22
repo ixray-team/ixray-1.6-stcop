@@ -10,6 +10,7 @@
 #include "../xrEngine/CameraBase.h"
 #include "player_hud.h"
 #include "../xrEngine/SkeletonMotions.h"
+#include "script_game_object.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -142,6 +143,11 @@ void CHudItem::OnStateSwitch(u32 S)
 
 void CHudItem::OnAnimationEnd(u32 state)
 {
+	if (CActor* pActor = smart_cast<CActor*>(object().H_Parent()))
+	{
+		pActor->callback(GameObject::eActorHudAnimationEnd)(smart_cast<CGameObject*>(this)->lua_game_object(), hud_sect.c_str(), m_current_motion.c_str(), state, animation_slot());
+	}
+
 	switch(state)
 	{
 	case eBore:

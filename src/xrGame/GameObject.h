@@ -1,9 +1,6 @@
 // GameObject.h: interface for the CGameObject class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_)
-#define AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_
 #pragma once
 
 #include "../xrEngine/xr_object.h"
@@ -260,6 +257,8 @@ public:
 		return				(m_story_id);
 	}
 	
+	void FootStepCallback(float power, bool b_play, bool b_on_ground, bool b_hud_view);
+
 public:
 	virtual u32				ef_creature_type	() const;
 	virtual u32				ef_equipment_type	() const;
@@ -310,5 +309,3 @@ public:
 
 	virtual void			on_matrix_change	(const Fmatrix &previous);
 };
-
-#endif // !defined(AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_)

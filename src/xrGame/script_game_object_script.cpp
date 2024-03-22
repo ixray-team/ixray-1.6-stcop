@@ -84,6 +84,8 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("action_particle",			int(GameObject::eActionTypeParticle)),
 				value("action_object",				int(GameObject::eActionTypeObject)),
 				value("actor_sleep",				int(GameObject::eActorSleep)),
+                value("actor_before_death", 		int(GameObject::eActorBeforeDeath)),
+				value("hud_animation_end",			int(GameObject::eActorHudAnimationEnd)),
 				value("helicopter_on_point",		int(GameObject::eHelicopterOnPoint)),
 				value("helicopter_on_hit",			int(GameObject::eHelicopterOnHit)),
 				value("on_item_take",				int(GameObject::eOnItemTake)),
@@ -93,9 +95,28 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("take_item_from_box",			int(GameObject::eInvBoxItemTake)),
 				value("weapon_no_ammo",				int(GameObject::eWeaponNoAmmoAvailable)),
 		
+				//weapon
+				value("weapon_fired",				int(GameObject::eOnWeaponFired)),
+				value("weapon_jammed",				int(GameObject::eOnWeaponJammed)),
+				value("weapon_zoom_in",				int(GameObject::eOnWeaponZoomIn)),
+				value("weapon_zoom_out",			int(GameObject::eOnWeaponZoomOut)),
+				value("weapon_magazine_empty",		int(GameObject::eOnWeaponMagazineEmpty)),
+					
+				// inventory
+				value("item_to_belt",				int(GameObject::eItemToBelt)),
+				value("item_to_slot",				int(GameObject::eItemToSlot)),
+				value("item_to_ruck",				int(GameObject::eItemToRuck)),
+				value("on_foot_step",				int(GameObject::eOnFootStep)),
+				
+				// car
+				value("on_attach_vehicle", 			int(GameObject::eAttachVehicle)),
+				value("on_detach_vehicle", 			int(GameObject::eDetachVehicle)),
+				value("on_use_vehicle", 			int(GameObject::eUseVehicle)),
+
 				value("key_press", int(GameObject::eKeyPress)),
 				value("key_release", int(GameObject::eKeyRelease)),
 				value("key_hold", int(GameObject::eKeyHold)),
+					
 
 				value("map_location_added",			int(GameObject::eMapLocationAdded))
 			],

@@ -56,6 +56,24 @@ namespace GameObject {
 		eKeyRelease,
 		eKeyHold,
 
+		eOnWeaponFired,
+		eOnWeaponJammed,
+		eOnWeaponZoomIn,
+		eOnWeaponZoomOut,
+		eOnWeaponMagazineEmpty,
+
+		eItemToBelt,
+		eItemToSlot,
+		eItemToRuck,
+		eOnFootStep,
+
+		eAttachVehicle,
+		eDetachVehicle,
+		eUseVehicle,
+
+		eActorBeforeDeath,
+		eActorHudAnimationEnd,
+
 		eDummy = u32(-1),
 	};
 };

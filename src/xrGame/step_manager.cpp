@@ -195,6 +195,10 @@ void CStepManager::update(bool b_hud_view)
 			if(b_play && is_on_ground() )
 				m_step_sound.play_next(mtl_pair, m_object, m_step_info.params.step[i].power, b_hud_view);
 
+			CGameObject* object = smart_cast<CGameObject*>(m_object);
+			if (object)
+				object->FootStepCallback(m_step_info.params.step[i].power, b_play, is_on_ground(), b_hud_view);
+
 			// Играть партиклы
 			if(b_play && !mtl_pair->CollideParticles.empty())	
 			{

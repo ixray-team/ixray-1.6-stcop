@@ -180,8 +180,15 @@ void CWeaponMagazined::FireStart()
 			if (GetState() == eIdle) 
 				switch2_Empty();
 		}
-	}else
-	{//misfire
+	}
+	else
+	{
+		//misfire
+
+		CGameObject* object = smart_cast<CGameObject*>(H_Parent());
+		if (object)
+			object->callback(GameObject::eOnWeaponJammed)(object->lua_game_object(), this->lua_game_object());
+
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			CurrentGameUI()->AddCustomStatic("gun_jammed",true);
 
@@ -294,7 +301,13 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
-	
+
+	if (ParentIsActor())
+	{
+		int	AC = GetSuitableAmmoTotal();
+		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
+	}
+
 	if (!spawn_ammo)
 		return;
 
@@ -636,6 +649,11 @@ void CWeaponMagazined::OnShot()
 	//дым из ствола
 	ForceUpdateFireParticles	();
 	StartSmokeParticles			(get_LastFP(), vel);
+
+	
+	CGameObject* object = smart_cast<CGameObject*>(H_Parent());
+	if (object)
+		object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), iAmmoElapsed, m_ammoType);
 }
 
 
@@ -1195,6 +1213,10 @@ void CWeaponMagazined::OnZoomIn			()
 	if(GetState() == eIdle)
 		PlayAnimIdle();
 
+	CGameObject* object = smart_cast<CGameObject*>(H_Parent());
+	if (object)
+		object->callback(GameObject::eOnWeaponZoomIn)(object->lua_game_object(), this->lua_game_object());
+
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	if (actor)
 	{
@@ -1221,6 +1243,10 @@ void CWeaponMagazined::OnZoomOut()
 
 	if(GetState()==eIdle)
 		PlayAnimIdle		();
+
+	CGameObject* object = smart_cast<CGameObject*>(H_Parent());
+	if (object)
+		object->callback(GameObject::eOnWeaponZoomOut)(object->lua_game_object(), this->lua_game_object());
 
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	if (actor)

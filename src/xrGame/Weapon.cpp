@@ -24,6 +24,7 @@
 #include "ui/UIXmlInit.h"
 #include "Torch.h"
 #include "CustomDetector.h"
+#include "script_game_object.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1556,6 +1557,12 @@ void CWeapon::SwitchState(u32 S)
 void CWeapon::OnMagazineEmpty	()
 {
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+
+	if (ParentIsActor())
+	{
+		int	AC = GetSuitableAmmoTotal();
+		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
+	}
 }
 
 

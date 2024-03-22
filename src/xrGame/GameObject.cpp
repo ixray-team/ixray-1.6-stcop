@@ -1138,3 +1138,8 @@ void CGameObject::OnRender			()
 	}
 }
 #endif // DEBUG
+
+void CGameObject::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b_hud_view)
+{
+	callback(GameObject::eOnFootStep)(this->lua_game_object(), power, b_play, b_on_ground, b_hud_view);
+}
