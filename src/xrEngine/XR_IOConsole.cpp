@@ -125,7 +125,11 @@ void CConsole::Initialize()
 			return;
 		}
 
-		ImGui::Begin("DebugConsoleVars");
+		if (!ImGui::Begin("DebugConsoleVars", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdVars)])) {
+			ImGui::End();
+			return;
+		}
+
 		for (const auto& [Name, Command] : Commands) {
 			if (auto Mask = dynamic_cast<CCC_Mask*>(Command)) {
 				continue;
