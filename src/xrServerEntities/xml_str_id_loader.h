@@ -159,7 +159,11 @@ typename void	CSXML_IdToIndex::InitInternal ()
 		xr_string				xml_file_full;
 		xml_file_full			= xml_file;
 		xml_file_full			+= ".xml";
-		uiXml->Load				(CONFIG_PATH, "gameplay", xml_file_full.c_str());
+
+		if (!uiXml->Load(CONFIG_PATH, "gameplay", xml_file_full.c_str())) {
+			delete_data(uiXml);
+			continue;
+		}
 
 		//общий список
 		int items_num			= uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
