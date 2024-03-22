@@ -52,6 +52,7 @@
 #include "../xrcdb/xrXRC.h"
 
 #include "../xrSound/sound.h"
+#include "bone.h"
 
 extern ENGINE_API CInifile *pGameIni;
 

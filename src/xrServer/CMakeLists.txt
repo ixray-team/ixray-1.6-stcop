@@ -15,7 +15,7 @@ list(APPEND XRDS_SRC_FILES ${XRDS_SOURCE_ALL_FILES})
 # Remove files
 #list(FILTER CPIPE_SRC_FILES EXCLUDE REGEX "")
 
-# xrCPU_Pipe project
+# xrServer project
 add_executable(xrServer WIN32 ${XRDS_SOURCE_ALL_FILES})
 target_include_directories(xrServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrServer PRIVATE "${IXRAY_SDK_INC}")
