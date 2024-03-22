@@ -343,6 +343,12 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		{
 			game->remove_all_restrictions(P,destination);
 		}break;
+	case GE_SYNC_ALIFEITEM:
+	{
+		CSE_ALifeItem* item = smart_cast<CSE_ALifeItem*>(receiver);
+		if (item)
+			item->m_fCondition = P.r_float();
+	}break;
 	case GE_MONEY:
 		{
 			CSE_Abstract				*e_dest = receiver;
