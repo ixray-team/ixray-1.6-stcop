@@ -472,7 +472,7 @@ public:
 	virtual void			renderable_Render			( ); 
 	virtual	bool			bfAssignMovement			(CScriptEntityAction *tpEntityAction);
 	virtual	bool			bfAssignObject				(CScriptEntityAction *tpEntityAction);
-
+    virtual bool			is_ai_obstacle() const		{return true;};
 	// Network
 	virtual void			net_Export					(NET_Packet& P);				// export to server
 	virtual void			net_Import					(NET_Packet& P);				// import from server
