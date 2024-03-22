@@ -51,6 +51,10 @@ CUIGameCustom::~CUIGameCustom()
 	g_b_ClearGameCaptions	= false;
 }
 
+bool CUIGameCustom::HasShownDialogs() const
+{
+	return ActorMenu().IsShown() || PdaMenu().IsShown();
+}
 
 void CUIGameCustom::OnFrame() 
 {

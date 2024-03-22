@@ -58,6 +58,8 @@ ENGINE_API _action  actions[]		= {
 	{ "use",				kUSE					,_both},	
 	{ "scores",				kSCORES					,_both},	
 	{ "chat",				kCHAT					,_mp},		
+	{ "voice_chat",         kVOICE_CHAT             ,_mp},
+	{ "voice_distance",     kVOICE_DISTANCE         ,_mp},
 	{ "chat_team",			kCHAT_TEAM				,_mp},		
 	{ "screenshot",			kSCREENSHOT				,_both},	
 	{ "quit",				kQUIT					,_both},	

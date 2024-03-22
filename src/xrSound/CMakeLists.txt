@@ -22,6 +22,9 @@ file(GLOB_RECURSE SND_SOURCE_EMIT_FILES
     "SoundRender_Emitter*.cpp"
     "SoundRender_Emitter*.h"
 )
+file(GLOB_RECURSE SND_SOURCE_REC_FILES
+    "Recorder/*.*"
+)
 file(GLOB_RECURSE SND_SOURCE_3RDI_FILES
     "ogg_utils.*"
     "OpenALDeviceList.*"
@@ -35,6 +38,7 @@ source_group("render" FILES ${SND_SOURCE_RENDER_FILES})
 source_group("core" FILES ${SND_SOURCE_CORE_FILES})
 source_group("target" FILES ${SND_SOURCE_TRG_FILES})
 source_group("emitter" FILES ${SND_SOURCE_EMIT_FILES})
+source_group("recorder" FILES ${SND_SOURCE_REC_FILES})
 source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 
 # Apply list
@@ -56,6 +60,8 @@ target_compile_definitions(xrSound PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrSound PUBLIC xrCore)
 target_link_libraries(xrSound PUBLIC xrCDB)
+target_link_libraries(xrSound PUBLIC opus)
+target_link_libraries(xrSound PUBLIC libspeexdsp)
 
 # Nuget
 set(SND_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)

@@ -27,14 +27,19 @@ class	XRSOUND_API					CSound_source;
 class	XRSOUND_API					CSound_emitter;
 class	XRSOUND_API					CSound_stream_interface;
 class	XRSOUND_API					CSound_environment;
+class	XRSOUND_API					ISoundVoiceChat;
 
 XRSOUND_API extern u32				psSoundModel			;
 XRSOUND_API extern float			psSoundVEffects			;
 XRSOUND_API extern float			psSoundVFactor			;
 XRSOUND_API extern float			psSoundVMusic			;
+XRSOUND_API extern float			psSoundVRecorder		;
+XRSOUND_API extern int				psSoundRecorderMode		;
+XRSOUND_API extern int				psSoundRecorderDenoise	;
 XRSOUND_API extern float			psSoundRolloff			;
 XRSOUND_API extern float			psSoundOcclusionScale	;
 XRSOUND_API extern Flags32			psSoundFlags			;
+XRSOUND_API extern float			psSoundVPlayers			;
 XRSOUND_API extern int				psSoundTargets			;
 XRSOUND_API extern int				psSoundCacheSizeMB		;
 XRSOUND_API extern xr_token*		snd_devices_token		;
@@ -284,6 +289,7 @@ public:
 
 	virtual void					object_relcase			( CObject* obj )																		= 0;
 	virtual const Fvector&			listener_position		()																						= 0;
+	virtual ISoundVoiceChat*		GetSoundVoiceChat		()																						= 0;
 #ifdef __BORLANDC__
 	virtual SoundEnvironment_LIB*	get_env_library			()																						= 0;
 	virtual void					refresh_env_library		()																						= 0;

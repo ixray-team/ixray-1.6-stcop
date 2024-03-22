@@ -22,6 +22,12 @@ float psSoundLinearFadeFactor = 0.4f; //--#SM+#--
 float	psSoundVMusic			= 1.0f;
 int		psSoundCacheSizeMB		= 32;
 
+// Voice Chat
+float	psSoundVRecorder = 1.f;
+int		psSoundRecorderMode = 1;
+int		psSoundRecorderDenoise = 1;
+float	psSoundVPlayers = 1.f;
+
 CSoundRender_Core*				SoundRender = nullptr;
 CSound_manager_interface*		Sound		= nullptr;
 

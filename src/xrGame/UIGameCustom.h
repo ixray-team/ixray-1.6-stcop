@@ -100,6 +100,8 @@ public:
 						CUIGameCustom			();
 	virtual				~CUIGameCustom			();
 
+	bool				HasShownDialogs			() const;
+
 	virtual	void		Init					(int stage)	{};
 	
 	virtual void		Render					();
