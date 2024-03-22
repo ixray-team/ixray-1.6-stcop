@@ -443,7 +443,7 @@ D3D_FEATURE_LEVEL CRenderDevice::GetFeatureLevel()
 
 RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 {
-	return nullptr;
+	return pRDocAPI;
 }
 
 bool CRenderDevice::IsCapturingInputs()

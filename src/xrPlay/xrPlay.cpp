@@ -10,6 +10,9 @@
 #include "../xrCore/git_version.h"
 #include "UIEditorMain.h"
 
+#include "AMDGPUTransferee.h"
+#include "NvGPUTransferee.h"
+
 #ifndef DEBUG
 #define NO_MULTI_INSTANCES
 #endif
@@ -74,6 +77,15 @@ int APIENTRY WinMain
 
 	EngineLoadStage1(lpCmdLine);
 
+	g_pGPU = new CNvReader();
+	g_pGPU->Initialize();
+	if (!((CNvReader*)(g_pGPU))->bSupport)
+	{
+		xr_delete(g_pGPU);
+		g_pGPU = new CAMDReader;
+		g_pGPU->Initialize();
+	}
+
 	EngineLoadStage2();
 
 	Engine.External.CreateRendererList();
@@ -113,6 +125,8 @@ int APIENTRY WinMain
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);
+	xr_delete(g_pGPU);
+
 	Core._destroy();
 
 #ifdef NO_MULTI_INSTANCES		

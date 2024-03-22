@@ -2,6 +2,9 @@
 // modify 15.05.2008 sea
 
 #include "stdafx.h"
+
+#include <charconv>
+
 #include "XR_IOConsole.h"
 #include "line_editor.h"
 

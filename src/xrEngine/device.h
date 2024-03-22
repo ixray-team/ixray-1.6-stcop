@@ -139,6 +139,8 @@ public:
 // refs
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
+	friend void CreateRDoc();
+
 	struct DrawCommand
 	{
 		int Order;
@@ -147,6 +149,7 @@ class ENGINE_API CRenderDevice: public CRenderDeviceBase
 	};
 
 	xr_vector<DrawCommand> DrawCommands;
+	RENDERDOC_API_1_6_0* pRDocAPI = nullptr;
 
 public:
 	bool CaptureInputs = false;

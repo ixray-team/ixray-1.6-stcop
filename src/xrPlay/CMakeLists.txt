@@ -53,3 +53,36 @@ endif()
 if(IXRAY_MP)
     add_dependencies(xrEngine xrGameSpy)
 endif()
+
+# AMD AGS SDK
+set(AMD_AGS_SDK_FILE ${CMAKE_BINARY_DIR}/dep/Amd.Ags.Sdk.5.4.2.zip)
+if(NOT EXISTS ${AMD_AGS_SDK_FILE})
+    file(
+        DOWNLOAD
+        https://github.com/ixray-team/ixray-packages/releases/download/d2023.12.8/Amd.Ags.Sdk.5.4.2.zip
+        ${CMAKE_BINARY_DIR}/dep/Amd.Ags.Sdk.5.4.2.zip
+        SHOW_PROGRESS
+    )
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/Amd.Ags.Sdk.5.4.2.zip
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/
+    )
+endif()
+set(AMD_AGS_SDK ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/)
+
+target_include_directories(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/inc/)
+
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/lib/amd_ags_x86.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/lib/amd_ags_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+endif()

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include <d3d11.h>
+#include "ICore_GPU.h"
+#include <renderdoc/api/app/renderdoc_app.h>
 
 extern D3D_FEATURE_LEVEL FeatureLevel;
 extern void* HWSwapchain;
@@ -94,8 +96,28 @@ bool UpdateBuffersD3D11()
 	return true;
 }
 
+void CreateRDoc() 
+{
+	if (strstr(Core.Params, "-renderdoc")) 
+	{
+		if (HMODULE mod = LoadLibraryA("renderdoc.dll")) 
+		{
+			pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+
+			int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_5_0, (void**)&Device.pRDocAPI);
+			assert(ret == 1);
+
+			int Major, Minor, Path;
+			Device.pRDocAPI->GetAPIVersion(&Major, &Minor, &Path);
+			Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
+		}
+	}
+}
+
 bool CreateD3D11()
 {
+	CreateRDoc();
+
 	// Set up the presentation parameters
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
@@ -117,35 +139,47 @@ bool CreateD3D11()
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	UINT createDeviceFlags = 0;
-	if (strstr(Core.Params, "-dxdebug")) {
-		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-	}
+	bool bHasDebugRender = strstr(Core.Params, "-dxdebug");
 
-	const D3D_FEATURE_LEVEL pFeatureLevels[] = {
-		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
-		D3D_FEATURE_LEVEL_10_0,
-	};
+ 	if (bHasDebugRender || g_pGPU == nullptr || !g_pGPU->IsAMD)
+	{
+		if (bHasDebugRender)
+		{
+			createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+		}
 
-	HRESULT R = D3D11CreateDeviceAndSwapChain(
-		0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
-		sizeof(pFeatureLevels) / sizeof(pFeatureLevels[0]),
-		D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
-		(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
-	);
+		const D3D_FEATURE_LEVEL pFeatureLevels[] = {
+			D3D_FEATURE_LEVEL_11_1,
+			D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_10_0,
+		};
 
-	if (FAILED(R)) {
-		Msg("Failed to initialize graphics hardware.\n"
-			"Please try to restart the game.\n"
-			"CreateDevice returned 0x%08x", R
+		HRESULT R = D3D11CreateDeviceAndSwapChain(
+			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
+			sizeof(pFeatureLevels) / sizeof(pFeatureLevels[0]),
+			D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
+			(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
 		);
 
-		FlushLog();
-		return false;
-	};
+		if (FAILED(R))
+		{
+			Msg("Failed to initialize graphics hardware.\n"
+				"Please try to restart the game.\n"
+				"CreateDevice returned 0x%08x", R
+			);
 
-	if (!UpdateBuffersD3D11()) {
+			FlushLog();
+			return false;
+		};
+	}
+	else
+	{
+		g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
+	}
+
+	if (!UpdateBuffersD3D11())
+	{
 		return false;
 	}
 
@@ -222,18 +256,27 @@ void DestroyD3D11()
 		RenderTexture = nullptr;
 	}
 
-	if (HWRenderContext != nullptr) {
-		((ID3D11DeviceContext*)HWRenderContext)->Release();
-		HWRenderContext = nullptr;
+	bool bHasDebugRender = strstr(Core.Params, "-dxdebug");
+	if (!bHasDebugRender && g_pGPU != nullptr && !g_pGPU->IsAMD)
+	{
+		g_pGPU->Destroy();
+	}
+	else
+	{
+		if (HWRenderContext != nullptr) {
+			((ID3D11DeviceContext*)HWRenderContext)->Release();
+			HWRenderContext = nullptr;
+		}
+
+		if (HWRenderDevice != nullptr) {
+			((ID3D11Device*)HWRenderDevice)->Release();
+			HWRenderDevice = nullptr;
+		}
+
+		if (HWSwapchain != nullptr) {
+			((IDXGISwapChain*)HWSwapchain)->Release();
+			HWSwapchain = nullptr;
+		}
 	}
 
-	if (HWRenderDevice != nullptr) {
-		((ID3D11Device*)HWRenderDevice)->Release();
-		HWRenderDevice = nullptr;
-	}
-
-	if (HWSwapchain != nullptr) {
-		((IDXGISwapChain*)HWSwapchain)->Release();
-		HWSwapchain = nullptr;
-	}
 }
