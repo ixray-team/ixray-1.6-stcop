@@ -58,15 +58,23 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 			{
 				pm->m_base_name			= anm;
 				pm->m_additional_name	= anm;
+				pm->m_anim_speed = 1.f;
 			}else
 			{
-				R_ASSERT2(_GetItemCount(anm.c_str())==2, anm.c_str());
+				R_ASSERT2(_GetItemCount(anm.c_str()) <= 3, anm.c_str());
 				string512				str_item;
 				_GetItem(anm.c_str(),0,str_item);
 				pm->m_base_name			= str_item;
 
 				_GetItem(anm.c_str(),1,str_item);
-				pm->m_additional_name	= str_item;
+				pm->m_additional_name = (strlen(str_item) > 0)
+					? pm->m_additional_name = str_item
+					: pm->m_base_name;
+
+				_GetItem(anm.c_str(), 2, str_item);
+				pm->m_anim_speed = strlen(str_item) > 0
+					? atof(str_item)
+					: 1.f;
 			}
 
 			//and load all motions for it
@@ -430,8 +438,6 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx)
 {
-	float speed				= CalcMotionSpeed(anm_name_b);
-
 	R_ASSERT				(strstr(anm_name_b.c_str(),"anm_")==anm_name_b.c_str());
 	string256				anim_name_r;
 	bool is_16x9			= UI().is_widescreen();
@@ -443,6 +449,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	
 	rnd_idx					= (u8)Random.randI(anm->m_animations.size()) ;
 	const motion_descr& M	= anm->m_animations[ rnd_idx ];
+	float speed = anm->m_anim_speed;
 
 	u32 ret					= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed);
 	
