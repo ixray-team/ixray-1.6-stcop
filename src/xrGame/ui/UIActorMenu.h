@@ -88,11 +88,6 @@ protected:
 	CUICharacterInfo*			m_PartnerCharacterInfo;
 
 	CUIDragDropListEx*			m_pInventoryBeltList;
-	CUIDragDropListEx*			m_pInventoryPistolList;
-	CUIDragDropListEx*			m_pInventoryAutomaticList;
-	CUIDragDropListEx*			m_pInventoryOutfitList;
-	CUIDragDropListEx*			m_pInventoryHelmetList;
-	CUIDragDropListEx*			m_pInventoryDetectorList;
 	CUIDragDropListEx*			m_pInventoryBagList;
 
 	CUIDragDropListEx*			m_pTradeActorBagList;
@@ -105,6 +100,11 @@ protected:
 	enum						{e_af_count = 5};
 	CUIStatic*					m_belt_list_over[e_af_count];
 	CUIStatic*					m_HelmetOver;
+
+	u8							m_slot_count;
+	CUIStatic*					m_pInvSlotHighlight[LAST_SLOT + 1];
+	CUIProgressBar*				m_pInvSlotProgress[LAST_SLOT + 1];
+	CUIDragDropListEx*			m_pInvList[LAST_SLOT + 1];
 
 	CUIStatic*					m_InvSlot2Highlight;
 	CUIStatic*					m_InvSlot3Highlight;

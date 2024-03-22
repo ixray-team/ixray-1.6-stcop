@@ -94,42 +94,55 @@ void CUIActorMenu::Construct()
 	m_PartnerBottomInfo->AdjustWidthToText();
 	m_PartnerWeight_end_x		= m_PartnerWeight->GetWndPos().x;
 
-	if (!EngineExternal()[EEngineExternalUI::DiasbleHighlight])
-	{
-		m_InvSlot2Highlight = UIHelper::CreateStatic(uiXml, "inv_slot2_highlight", this);
-		m_InvSlot2Highlight->Show(false);
-		m_InvSlot3Highlight = UIHelper::CreateStatic(uiXml, "inv_slot3_highlight", this);
-		m_InvSlot3Highlight->Show(false);
-		m_HelmetSlotHighlight = UIHelper::CreateStatic(uiXml, "helmet_slot_highlight", this);
-		m_HelmetSlotHighlight->Show(false);
-		m_OutfitSlotHighlight = UIHelper::CreateStatic(uiXml, "outfit_slot_highlight", this);
-		m_OutfitSlotHighlight->Show(false);
-		m_DetectorSlotHighlight = UIHelper::CreateStatic(uiXml, "detector_slot_highlight", this);
-		m_DetectorSlotHighlight->Show(false);
-	}
-
 	m_QuickSlotsHighlight[0]	= UIHelper::CreateStatic(uiXml, "quick_slot_highlight", this);
 	m_QuickSlotsHighlight[0]	->Show(false);
 
+	for (u8 i = 0; i <= LAST_SLOT; ++i)
+	{
+		m_pInvList[i] = nullptr;
+		m_pInvSlotHighlight[i] = nullptr;
+		m_pInvSlotProgress[i] = nullptr;
+	}
+
+	XML_NODE* stored_root = uiXml.GetLocalRoot();
+	XML_NODE* node = uiXml.NavigateToNode("inventory_slot_wnd", 0);
+	uiXml.SetLocalRoot(node);
+
+	m_slot_count = (u8)uiXml.GetNodesNum(node, "slot");
+	for (u8 i = 1; i <= m_slot_count; ++i)
+	{
+		uiXml.SetLocalRoot(node);
+		XML_NODE* slot_node = uiXml.NavigateToNode("slot", i - 1);
+		uiXml.SetLocalRoot(slot_node);
+
+		if (uiXml.GetNodesNum(slot_node, "slot_dragdrop") == 0)
+			continue;
+
+		m_pInvList[i] = xr_new<CUIDragDropListEx>();
+		AttachChild(m_pInvList[i]);
+		CUIXmlInit::InitDragDropListEx(uiXml, "slot_dragdrop", 0, m_pInvList[i]);
+		m_pInvList[i]->SetAutoDelete(true);
+
+		BindDragDropListEvents(m_pInvList[i]);
+
+		m_pInvSlotHighlight[i] = xr_new<CUIStatic>();
+		AttachChild(m_pInvSlotHighlight[i]);
+		CUIXmlInit::InitStatic(uiXml, "slot_highlight", 0, m_pInvSlotHighlight[i]);
+		m_pInvSlotHighlight[i]->SetAutoDelete(true);
+		m_pInvSlotHighlight[i]->Show(false);
+
+		if (uiXml.GetNodesNum(slot_node, "slot_progress") == 0)
+			continue;
+
+		m_pInvSlotProgress[i] = xr_new<CUIProgressBar>();
+		AttachChild(m_pInvSlotProgress[i]);
+		CUIXmlInit::InitProgressBar(uiXml, "slot_progress", 0, m_pInvSlotProgress[i]);
+		m_pInvSlotProgress[i]->SetAutoDelete(true);
+	}
+	uiXml.SetLocalRoot(stored_root);
+
 	m_pInventoryBagList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
 	m_pInventoryBeltList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
-
-	if (!EngineExternal()[EEngineExternalUI::DiasbleHighlight])
-	{
-		m_pInventoryOutfitList = UIHelper::CreateDragDropListEx(uiXml, "dragdrop_outfit", this);
-		m_pInventoryHelmetList = UIHelper::CreateDragDropListEx(uiXml, "dragdrop_helmet", this);
-		m_pInventoryDetectorList = UIHelper::CreateDragDropListEx(uiXml, "dragdrop_detector", this);
-		m_pInventoryPistolList = UIHelper::CreateDragDropListEx(uiXml, "dragdrop_pistol", this);
-		m_pInventoryAutomaticList = UIHelper::CreateDragDropListEx(uiXml, "dragdrop_automatic", this);
-	}
-	else
-	{
-		m_pInventoryOutfitList		= nullptr;
-		m_pInventoryHelmetList		= nullptr;
-		m_pInventoryDetectorList	= nullptr;
-		m_pInventoryPistolList		= nullptr;
-		m_pInventoryAutomaticList	= nullptr;
-	}
 
 	m_pTradeActorBagList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
 	m_pTradeActorList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
@@ -226,14 +239,6 @@ void CUIActorMenu::Construct()
 	m_QuickSlot3	= UIHelper::CreateTextWnd(uiXml, "quick_slot3_text", this);
 	m_QuickSlot4	= UIHelper::CreateTextWnd(uiXml, "quick_slot4_text", this);
 
-	if (!EngineExternal()[EEngineExternalUI::DiasbleHighlight])
-	{
-		m_WeaponSlot1_progress = UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon1", this);
-		m_WeaponSlot2_progress = UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon2", this);
-		m_Helmet_progress = UIHelper::CreateProgressBar(uiXml, "progess_bar_helmet", this);
-		m_Outfit_progress = UIHelper::CreateProgressBar(uiXml, "progess_bar_outfit", this);
-	}
-
 	m_trade_buy_button	= UIHelper::Create3tButton(uiXml, "trade_buy_button", this);
 	m_trade_sell_button	= UIHelper::Create3tButton(uiXml, "trade_sell_button", this);
 	m_takeall_button	= UIHelper::Create3tButton(uiXml, "takeall_button", this);
@@ -252,7 +257,7 @@ void CUIActorMenu::Construct()
 	m_ActorStateInfo->SetAutoDelete		(true);
 	AttachChild							(m_ActorStateInfo); 
 
-	XML_NODE* stored_root				= uiXml.GetLocalRoot	();
+	stored_root							= uiXml.GetLocalRoot	();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode	("action_sounds",0));
 	::Sound->create						(sounds[eSndOpen],		uiXml.Read("snd_open",			0,	NULL),st_Effect,sg_SourceType);
 	::Sound->create						(sounds[eSndClose],		uiXml.Read("snd_close",			0,	NULL),st_Effect,sg_SourceType);
@@ -298,19 +303,14 @@ void CUIActorMenu::Construct()
 
 	InitCallbacks						();
 
-	BindDragDropListEvents				(m_pInventoryBeltList);		
-	BindDragDropListEvents				(m_pInventoryPistolList);		
-	BindDragDropListEvents				(m_pInventoryAutomaticList);	
-	BindDragDropListEvents				(m_pInventoryOutfitList);	
-	BindDragDropListEvents				(m_pInventoryHelmetList);	
-	BindDragDropListEvents				(m_pInventoryDetectorList);	
-	BindDragDropListEvents				(m_pInventoryBagList);
-	BindDragDropListEvents				(m_pTradeActorBagList);
-	BindDragDropListEvents				(m_pTradeActorList);
-	BindDragDropListEvents				(m_pTradePartnerBagList);
-	BindDragDropListEvents				(m_pTradePartnerList);
-	BindDragDropListEvents				(m_pDeadBodyBagList);
-	BindDragDropListEvents				(m_pQuickSlot);
+	BindDragDropListEvents(m_pInventoryBeltList);
+	BindDragDropListEvents(m_pInventoryBagList);
+	BindDragDropListEvents(m_pTradeActorBagList);
+	BindDragDropListEvents(m_pTradeActorList);
+	BindDragDropListEvents(m_pTradePartnerBagList);
+	BindDragDropListEvents(m_pTradePartnerList);
+	BindDragDropListEvents(m_pDeadBodyBagList);
+	BindDragDropListEvents(m_pQuickSlot);
 
 	m_allowed_drops[iTrashSlot].push_back(iActorBag);
 	m_allowed_drops[iTrashSlot].push_back(iActorSlot);
