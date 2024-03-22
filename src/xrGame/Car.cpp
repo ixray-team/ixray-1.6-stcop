@@ -1396,11 +1396,6 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 {
 	xr_map<u16, CCarDoor>::iterator i;
 
-	if (!Owner())
-	{
-		if (Enter(pos, dir, foot_pos)) return true;
-	}
-
 	RQR.r_clear();
 	collide::ray_defs	Q(pos, dir, 2.0f, CDB::OPT_CULL, collide::rqtObject);
 
@@ -1414,9 +1409,24 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 
 			if (IsGameTypeSingle() && m_bone_trunk == (u16)I->element)
 			{
-				CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-				pGameSP->StartCarBody(Actor(), this);
-				if (is_Door((u16)I->element, i)) i->second.Open();
+				bool IsDoorBone = is_Door((u16)I->element, i);
+				if (I->range < 1.f)
+				{
+					if (IsDoorBone)
+					{
+						CCarDoor& TrunkDoor = m_doors.at(m_bone_trunk);
+						if (TrunkDoor.state != CCarDoor::eState::opened)
+							continue;
+					}
+
+					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+					pGameSP->StartCarBody(Actor(), this);
+				}
+				else if (IsDoorBone)
+				{
+					i->second.Use();
+				}
+
 				return false;
 			}
 
@@ -1431,9 +1441,11 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 	}
 
 	if (Owner())
+	{
 		return Exit(pos, dir);
+	}
 
-	return false;
+	return Enter(pos, dir, foot_pos);
 }
 
 bool CCar::DoorUse(u16 id)
