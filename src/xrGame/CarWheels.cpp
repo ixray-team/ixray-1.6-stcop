@@ -50,7 +50,7 @@ bool CCar::WheelHit(float P,s16 element,ALife::EHitType hit_type)
 void CCar::SWheel::Init()
 {
 	if(inited) return;
-	BONE_P_PAIR_CIT bone=bone_map.find(bone_id);
+	BONE_P_PAIR_CIT bone= car->bone_map.find(bone_id);
 	R_ASSERT2(bone->second.element,"No Element was created for wheel. Check collision is set");
 	bone->second.element->set_DynamicLimits(default_l_limit,default_w_limit*100.f);
 	CPhysicsElement	*e=bone->second.element	;
@@ -235,7 +235,7 @@ void CCar::SWheelSteer::Init()
 {
 	IKinematics* pKinematics=smart_cast<IKinematics*>(pwheel->car->Visual());
 	pwheel->Init();
-	(bone_map.find(pwheel->bone_id))->second.joint->GetLimits(lo_limit,hi_limit,0);
+	(pwheel->car->bone_map.find(pwheel->bone_id))->second.joint->GetLimits(lo_limit,hi_limit,0);
 	
 	auto bone_data = smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
 	pos_right = bone_data.i.y > 0.f ? -1.f : 1.f;
