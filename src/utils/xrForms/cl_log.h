@@ -19,7 +19,6 @@ public:
     void deleteString(wxWindowID id, int index);
     void setIndex(wxWindowID id, int index);
 
-private:
 	wxListBox* idcLog;
 	wxListBox* idcPhaseTime;
 	wxStaticBox* idcStageBox;

@@ -34,7 +34,8 @@ static float progress = 0.0f;
 static u32 phase_start_time	= 0;
 static BOOL	bStatusChange = FALSE;
 static BOOL	bPhaseChange = FALSE;
-static u32 phase_total_time	= 0;
+//static u32 phase_total_time	= 0;
+// phase_total_time;
 
 static HWND hwLog = 0;
 static HWND hwProgress = 0;
@@ -82,7 +83,7 @@ static void _process_messages(void)
 }
 */
 
-std::string make_time(double sec)
+static std::string make_time(double sec)
 {
 	char buf[64];
 	xr_sprintf(buf,"%2.0d:%2.0d:%2.0d", sec / 3600, (sec / 3600) / 60, sec / 60);
@@ -116,15 +117,25 @@ void Phase(const char* phase_name)
 	// Replace phase name with TIME:Name 
 	char tbuf[512];
 	bPhaseChange = TRUE;
-	phase_total_time = timeGetTime() - phase_start_time;
-	xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / static_cast<double>(1000)).c_str(), phase);
 
+	auto phase_start_time = std::chrono::high_resolution_clock::now();
+	auto finish = std::chrono::high_resolution_clock::now();
+
+	auto phase_total_time = std::chrono::high_resolution_clock::now() - phase_start_time;
+	xr_sprintf(tbuf, "%s : %s", make_time(std::chrono::duration<double>(phase_total_time).count() / static_cast<double>(1000)).c_str(), phase);
+
+	LogWindow::deleteString(IDC_PHASE_TIME, idcLog.GetCount() - 1);
+	LogWindow::addString(IDC_PHASE_TIME, );
+
+
+	/*
 	SendMessageA(hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
 	SendMessageA(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
-
+	*/
 ;
 	// Start _new phase
-	phase_start_time = timeGetTime();
+	//phase_start_time = timeGetTime();
+	auto phase_start_time = std::chrono::high_resolution_clock::now();
 	xr_strcpy(phase, phase_name);
 	SetWindowTextA(hwStage, phase_name);
 	xr_sprintf(tbuf, "--:--:-- * %s", phase);
