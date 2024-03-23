@@ -85,7 +85,8 @@ void CTorch::Load(LPCSTR section)
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section,"night_vision");
 
-	m_switch_sound.create("device\\torch_click", st_Effect, sg_SourceType);
+	const char* SoundName = pSettings->r_string(section, "snd_click");
+	m_switch_sound.create(SoundName, st_Effect, sg_SourceType);
 }
 
 void CTorch::SwitchNightVision()
