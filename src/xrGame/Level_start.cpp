@@ -142,7 +142,7 @@ bool CLevel::net_start1				()
 			int							id = pApp->Level_ID(map_data.m_name.c_str(), l_ver.c_str(), true);
 
 			if (id<0) {
-				Log						("Can't find level: ",map_data.m_name.c_str());
+				Msg("Can't find level: %s", map_data.m_name.c_str());
 				net_start_result_total	= FALSE;
 				return true;
 			}

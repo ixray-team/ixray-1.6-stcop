@@ -83,7 +83,7 @@ CUISubLine::~CUISubLine(){
 
 const CUISubLine* CUISubLine::Cut2Pos(int i)
 {
-	R_ASSERT2(i < (int)m_text.size(), make_string("CUISubLine::Cut2Pos - invalid parameter [%d][%d]",i,m_text.size()).c_str());
+	R_ASSERT2(i < (int)m_text.size(), make_string("CUISubLine::Cut2Pos - invalid parameter [%d][%d]",i,m_text.size()));
 
 	if (!m_pTempLine) m_pTempLine = xr_new<CUISubLine>();
 	m_pTempLine->m_color = m_color;

@@ -420,7 +420,7 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 					lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
 
 			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create,lc_global_data()->g_vertices().size(),cnt_verts);
-			FlushLog			();
+			xrLogger::FlushLog			();
 		}
 
 		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );

@@ -885,7 +885,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 			else {
 				VERIFY2	(
 					((ps->team-1) < 2) && ((ps->team-1) >= 0),
-					make_string("ps->team = %d",ps->team).c_str()
+					make_string("ps->team = %d",ps->team)
 				);
 				TeamAlived[ps->team-1]++;
 			}

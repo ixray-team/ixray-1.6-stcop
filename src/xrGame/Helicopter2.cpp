@@ -90,7 +90,7 @@ void CHelicopter::UpdateHeliParticles	()
 		if (m_lanim)
 		{
 			int frame;
-			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // òþ÷ò¨ð•ðõª ò ¯þ¨üðªõ BGR
+			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // Ñ‚ÑŽÑ‡Ñ‚ÐÑ€â€¢Ñ€Ñ…Ð„ Ñ‚ Ð‡ÑŽÐÑŒÑ€Ð„Ñ… BGR
 			Fcolor					fclr;
 			fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
 			fclr.mul_rgb			(m_light_brightness/255.f);
@@ -165,8 +165,8 @@ float CHelicopter::GetMaxVelocity()
 //////////////////////Start By JoHnY///////////////////////
 void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
 {
-	m_movement.LinearAcc_fw = LAcc_fw;	//óñêîðåíèå ðàçãîíà
-	m_movement.LinearAcc_bk = LAcc_bw;	//óñêîðåíèå òîðìîæåíèÿ
+	m_movement.LinearAcc_fw = LAcc_fw;	//ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð³Ð¾Ð½Ð°
+	m_movement.LinearAcc_bk = LAcc_bw;	//ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ðµ Ñ‚Ð¾Ñ€Ð¼Ð¾Ð¶ÐµÐ½Ð¸Ñ
 
 }
 //////////////////////End By JoHnY/////////////////////////
@@ -229,7 +229,7 @@ void	CHelicopter::Hit							(SHit* pHDS)
 		curHealth -= pHDS->damage()*It->second*1000.0f;
 		SetfHealth(curHealth);
 #ifdef DEBUG
-		if (bDebug)	Log("----Helicopter::PilotHit(). health=",curHealth);
+		if (bDebug)	Msg("----Helicopter::PilotHit(). health=%f",curHealth);
 #endif
 	}else {
 		float hit_power		= pHDS->damage();
@@ -238,7 +238,7 @@ void	CHelicopter::Hit							(SHit* pHDS)
 		SetfHealth(GetfHealth()-hit_power);
 #ifdef DEBUG
 		if (bDebug)
-			Log("----Helicopter::Hit(). health=",GetfHealth());
+			Msg("----Helicopter::Hit(). health=%f",GetfHealth());
 #endif
 	};
 	if (pHDS->who&&

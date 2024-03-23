@@ -83,7 +83,7 @@ void _check_open_file(const shared_str& _fname)
 {
 	xr_vector<_open_file>::iterator it	= std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_check(_fname) );
 	if(it!=g_open_files.end())
-		Log("file opened at least twice", _fname.c_str());
+		Msg("file opened at least twice %s", _fname.c_str());
 }
 
 _open_file& find_free_item(const shared_str& _fname)
@@ -659,7 +659,7 @@ IReader *CLocatorAPI::setup_fs_ltx	(LPCSTR fs_name)
 	if (fs_name && *fs_name)
 		fs_file_name= fs_name;
 				
-	Log				("using fs-ltx",fs_file_name);
+	Msg("using fs-ltx %s", fs_file_name);
 
 	int				file_handle;
 	u32				file_size;
@@ -825,13 +825,15 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	rec_files.clear	();
 	//-----------------------------------------------------------
 
-	CreateLog		(0!=strstr(Core.Params,"-nolog"));
-
+	if (strstr(Core.Params, "-nolog") == nullptr)
+	{
+		xrLogger::OpenLogFile();
+	}
 }
 
 void CLocatorAPI::_destroy		()
 {
-	CloseLog		();
+	xrLogger::CloseLog		();
 
 	for				(files_it I=m_files.begin(); I!=m_files.end(); I++)
 	{
@@ -1228,7 +1230,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
 
 	IWriter* W = w_open		(cpy_name);
     if (!W) {
-        Log					("!Can't build:",source_name);
+		Msg("!Can't build: %s", source_name);
 		return;
 	}
 

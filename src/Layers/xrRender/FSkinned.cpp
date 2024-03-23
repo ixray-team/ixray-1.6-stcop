@@ -706,7 +706,7 @@ static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinema
 			Msg( " iBase: %d, iCount: %d, V->iBase %d, V->iCount %d, V->vBase: %d,  V->vCount  %d, vertex_idx: %d, idx: %d", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount, vertex_idx, idx  );
 			Msg( " v.P: %s , v.N: %s, v.T: %s, v.B: %s", get_string( v.P ).c_str(),get_string(  v.N ).c_str(),get_string(  v.T ).c_str(),get_string(  v.B  ).c_str());
 			Msg( "Parent->dbg_name: %s ", Parent->dbg_name.c_str() );
-			FlushLog();
+			xrLogger::FlushLog();
 			FATAL( "v.get_bone_id(i) >= Parent->LL_BoneCount()" );
 		}
 #endif        

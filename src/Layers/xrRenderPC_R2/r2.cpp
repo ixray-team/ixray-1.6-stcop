@@ -555,7 +555,7 @@ static HRESULT create_shader				(
 		SPS* sps_result = (SPS*)result;
 		_result			= RDevice->CreatePixelShader(buffer, &sps_result->ps);
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! PS: ", file_name);
+			Msg			("! PS: %s", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
 			return		E_FAIL;
 		}
@@ -569,7 +569,7 @@ static HRESULT create_shader				(
 		} 
 		else
 		{
-			Log			("! PS: ", file_name);
+			Msg("! PS: %s", file_name);
 			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
 		}
 	}
@@ -577,7 +577,7 @@ static HRESULT create_shader				(
 		SVS* svs_result = (SVS*)result;
 		_result			= RDevice->CreateVertexShader(buffer, &svs_result->vs);
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! VS: ", file_name);
+			Msg("! VS: %s", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
 			return		E_FAIL;
 		}
@@ -591,7 +591,7 @@ static HRESULT create_shader				(
 		} 
 		else
 		{
-			Log			("! VS: ", file_name);
+			Msg("! VS: %s", file_name);
 			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
 		}
 	}
@@ -992,9 +992,9 @@ HRESULT	CRender::shader_compile			(
 		}
 		else {
 //			Msg						( "! shader compilation failed" );
-			Log						("! ", file_name);
+			Msg("! %s", file_name);
 			if ( pErrorBuf )
-				Log					("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
+				Msg("! error: %s",(LPCSTR)pErrorBuf->GetBufferPointer());
 			else
 				Msg					("Can't compile shader hr=0x%08x", _result);
 		}

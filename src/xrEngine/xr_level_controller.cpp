@@ -740,7 +740,7 @@ public:
 		for(int idx=0; idx<bindings_count;++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
-			Log("-", pbinding->m_action->action_name);
+			Msg("-%s", pbinding->m_action->action_name);
 		}
 		Log("- --- Action list end   ---");
 	}

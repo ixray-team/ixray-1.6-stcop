@@ -263,7 +263,7 @@ void CSoundRender_CoreA::_initialize(int stage)
         }
         else
         {
-            Log("SOUND: OpenAL: Failed to init EFX:", alGetString(err));
+            Msg("SOUND: OpenAL: Failed to init EFX: %s", alGetString(err));
             if (alIsEffect(effect))
                 alDeleteEffects(1, &effect);
         }
@@ -287,7 +287,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 				s_targets.push_back	(T);
 			}else
 			{
-        		Log					("! SOUND: OpenAL: Max targets - ",tit);
+                Msg("! SOUND: OpenAL: Max targets - %u",tit);
 				T->_destroy			();
         		xr_delete			(T);
         		break;

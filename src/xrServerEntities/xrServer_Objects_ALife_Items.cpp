@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeInventoryItem::CSE_ALifeInventoryItem(LPCSTR caSection)
 {
-	//òåêóùåå ñîñòîÿíèå âåùè
+	//Ñ‚ÐµÐºÑƒÑ‰ÐµÐµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð²ÐµÑ‰Ð¸
 	m_fCondition				= 1.0f;
 
 	m_fMass						= pSettings->r_float(caSection, "inv_weight");
@@ -307,7 +307,7 @@ void CSE_ALifeInventoryItem::add_upgrade( const shared_str& upgrade_id )
 		m_upgrades.push_back( upgrade_id );
 		return;
 	}
-	FATAL( make_string( "Can`t add existent upgrade (%s)!", upgrade_id.c_str() ).c_str() );
+	FATAL( make_string( "Can`t add existent upgrade (%s)!", upgrade_id.c_str() ));
 }
 
 

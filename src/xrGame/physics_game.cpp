@@ -146,7 +146,7 @@ public:
 	}
 	virtual void 			run								()
 	{
-		//äîáàâèòü îòìåòêó íà ìàòåðèàëå
+		//Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð¼ÐµÑ‚ÐºÑƒ Ð½Ð° Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ðµ
 		::Render->add_StaticWallmark(pWallmarkShader,pos, 
 			0.09f, T,
 			Level().ObjectSpace.GetStaticVerts());
@@ -169,7 +169,7 @@ static void play_object( dxGeomUserData* data, SGameMtlPair* mtl_pair, const dCo
 							Msg( "data->ph_ref_object: %p ", data->ph_ref_object );
 							Msg( "data: %p ", data );
 							Msg( "materials: %s ", mtl_pair->dbg_Name() );
-							FlushLog();
+							xrLogger::FlushLog();
 							FATAL( "bad data->ph_ref_object" );
 						}
 #else

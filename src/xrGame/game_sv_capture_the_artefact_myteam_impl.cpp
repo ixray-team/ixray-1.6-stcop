@@ -75,7 +75,7 @@ void game_sv_CaptureTheArtefact::MyTeam::OnPlayerDetachArtefact(
 	VERIFY(oldArtefactOwner && artefactOwner);
 	VERIFY2(oldArtefactOwner == artefactOwner,
 		make_string("artefacts owners not equal: firstOwnerId = %d, secondOwnerId = %d",
-		oldArtefactOwner->ID, artefactOwner->ID).c_str());
+		oldArtefactOwner->ID, artefactOwner->ID));
 	artefactOwner = NULL;
 	freeArtefactTimeStart = Level().timeServer();
 }

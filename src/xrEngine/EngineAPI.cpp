@@ -49,7 +49,7 @@ void CEngineAPI::InitializeNotDedicated()
 
 	if (psDeviceFlags.test(rsR4)) {
 		// try to initialize R4
-		Log				("Loading DLL:",	r4_name);
+		Msg("Loading DLL: %s",	r4_name);
 		hRender			= LoadLibraryA		(r4_name);
 		if (0==hRender) {
 			// try to load R1
@@ -61,7 +61,7 @@ void CEngineAPI::InitializeNotDedicated()
 	if (psDeviceFlags.test(rsR2)) {
 		// try to initialize R2
 		psDeviceFlags.set	(rsR4,FALSE);
-		Log				("Loading DLL:",	r2_name);
+		Msg("Loading DLL: %s",	r2_name);
 		hRender			= LoadLibraryA		(r2_name);
 		if (0==hRender) {
 			// try to load R1
@@ -90,7 +90,7 @@ void CEngineAPI::Initialize(void)
 		psDeviceFlags.set	(rsR2,FALSE);
 		renderer_value		= 0; //con cmd
 
-		Log				("Loading DLL:",	r1_name);
+		Msg("Loading DLL: %s",	r1_name);
 		hRender			= LoadLibraryA		(r1_name);
 		if (0==hRender)	R_CHK				(GetLastError());
 		//R_ASSERT		(hRender);
@@ -102,7 +102,7 @@ void CEngineAPI::Initialize(void)
 	// game	
 	{
 		LPCSTR			g_name	= "xrGame.dll";
-		Log				("Loading DLL:",g_name);
+		Msg("Loading DLL: %s",g_name);
 		hGame			= LoadLibraryA	(g_name);
 		if (0==hGame)	R_CHK			(GetLastError());
 		R_ASSERT2		(hGame,"Game DLL raised exception during loading or there is no game DLL at all");

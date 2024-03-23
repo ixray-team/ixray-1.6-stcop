@@ -169,7 +169,7 @@ bool CreateD3D11()
 				"CreateDevice returned 0x%08x", R
 			);
 
-			FlushLog();
+			xrLogger::FlushLog();
 			return false;
 		};
 	}

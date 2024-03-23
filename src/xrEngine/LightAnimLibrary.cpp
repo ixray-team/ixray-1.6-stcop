@@ -105,20 +105,20 @@ u32 CLAItem::InterpolateRGB(int frame)
 
     KeyPairIt A=Keys.find(frame);
     KeyPairIt B;
-    if (A!=Keys.end()){  			// êëþ÷ - âîçâðàùàåì öâåò êëþ÷à
+    if (A!=Keys.end()){  			// ÐºÐ»ÑŽÑ‡ - Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÐ¼ Ñ†Ð²ÐµÑ‚ ÐºÐ»ÑŽÑ‡Ð°
     	return A->second;
-    }else{							// íå êëþ÷
-    	B=Keys.upper_bound(frame);  // èùåì ñëåäóþùèé êëþ÷
-        if (B==Keys.end()){			// åñëè åãî íåò âåðíåì öâåò ïîñëåäíåãî êëþ÷à
+    }else{							// Ð½Ðµ ÐºÐ»ÑŽÑ‡
+    	B=Keys.upper_bound(frame);  // Ð¸Ñ‰ÐµÐ¼ ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ð¹ ÐºÐ»ÑŽÑ‡
+        if (B==Keys.end()){			// ÐµÑÐ»Ð¸ ÐµÐ³Ð¾ Ð½ÐµÑ‚ Ð²ÐµÑ€Ð½ÐµÐ¼ Ñ†Ð²ÐµÑ‚ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ ÐºÐ»ÑŽÑ‡Ð°
 	    	B--;
         	return B->second;
         }
-    	A=B;        				// èíà÷å â A çàíåñåì ïðåäûäóùèé êëþ÷
+    	A=B;        				// Ð¸Ð½Ð°Ñ‡Ðµ Ð² A Ð·Ð°Ð½ÐµÑÐµÐ¼ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰Ð¸Ð¹ ÐºÐ»ÑŽÑ‡
         A--;
     }
 
     R_ASSERT(Keys.size()>1);
-    // èíòåðïîëèðóåì öâåò
+    // Ð¸Ð½Ñ‚ÐµÑ€Ð¿Ð¾Ð»Ð¸Ñ€ÑƒÐµÐ¼ Ñ†Ð²ÐµÑ‚
     Fcolor c, c0, c1;
     float a0=(float)A->first;
     float a1=(float)B->first;
@@ -247,7 +247,7 @@ void ELightAnimLibrary::Save()
     FS.update_path	(fn,_game_data_,"lanims.xr");
 
     if (!F.save_to(fn))
-        Log			("!Can't save color animations:",fn);
+        Msg("!Can't save color animations: %s",fn);
 }
 
 void ELightAnimLibrary::Reload()

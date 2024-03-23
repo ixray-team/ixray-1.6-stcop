@@ -77,6 +77,9 @@ protected:
 
 	POINT			m_mouse_pos;
 	bool			m_disable_tips;
+	
+	RingBuffer<shared_str, 512> m_log_history;
+	xrCriticalSection m_log_history_guard;
 
 private:
 	vecHistory		m_cmd_history;
@@ -105,6 +108,9 @@ public:
 	virtual			~CConsole			();
 	virtual	void	Initialize			();
 	virtual void	Destroy				();
+
+	void			AddLogEntry(LPCSTR line);
+	void			ClearLog();
 
 	virtual void		OnRender			();
 	virtual void _BCL	OnFrame				();

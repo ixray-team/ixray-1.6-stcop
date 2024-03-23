@@ -316,7 +316,7 @@ public:
 
 		if ((0==xr_strlen(op_client)) && (0 == xr_strlen(op_demo)))
 		{
-			Log("! Can't start game without client. Arguments: '%s'.",args);
+			Msg("! Can't start game without client. Arguments: '%s'.",args);
 			return;
 		}
 		if (g_pGameLevel)

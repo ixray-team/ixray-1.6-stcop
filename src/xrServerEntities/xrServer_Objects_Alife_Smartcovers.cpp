@@ -546,7 +546,7 @@ void CSE_SmartCover::load_draw_data () {
 		}
 */
 
-	H.animation_id	= make_string("loophole_%s_visual", H.string_identifier.c_str()).c_str();
+	H.animation_id	= make_string("loophole_%s_visual", H.string_identifier.c_str());
 	}
 
 	check_enterable_loopholes	(m_description);

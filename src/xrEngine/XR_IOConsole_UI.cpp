@@ -107,17 +107,21 @@ void CConsole::DrawUIConsole()
 		return;
 	}
 
+	xrCriticalSectionGuard guardLog(&m_log_history_guard);
 	if (ImGui::BeginChild("DebugConsoleScrollingRegion", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollbar)) {
-		if (!LogFile->empty()) {
+		if (m_log_history.GetSize() != 0) {
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
-			
-			const float TextYSize = ImGui::CalcTextSize(((*LogFile)[0]).c_str()).y;
+			shared_str logLine = m_log_history.GetLooped(m_log_history.GetTail());
+
+			const float TextYSize = ImGui::CalcTextSize(logLine.c_str()).y;
 			const int MaxTextCount = int(ImGui::GetContentRegionAvail().y / TextYSize) + 1;
 
-			int CursorPos = std::max((int)(LogFile->size() - MaxTextCount - scroll_delta), 0);
-			for (int i = CursorPos; i < LogFile->size(); i++) {
-				LPCSTR ls = ((*LogFile)[i]).c_str();
-				if (!ls) {
+			int CursorPos = std::max((int)(m_log_history.GetSize() - MaxTextCount - scroll_delta), 0);
+			for (int i = CursorPos; i < (int)m_log_history.GetSize(); i++) {
+				logLine = m_log_history.GetLooped(m_log_history.GetTail() - i);
+
+				LPCSTR ls = logLine.c_str();
+				if (ls == nullptr) {
 					continue;
 				}
 

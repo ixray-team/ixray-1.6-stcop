@@ -63,7 +63,7 @@ class IPhysicsShellHolder
 	virtual	ICollisionDamageReceiver*	_BCL	ObjectPhCollisionDamageReceiver	()						=0;
 	virtual	void						_BCL BonceDamagerCallback				( float &damage_factor )=0;
 #ifdef	DEBUG
-	virtual	std::string					_BCL	dump(EDumpType type) const =0;
+	virtual	xr_string				_BCL	dump(EDumpType type) const =0;
 #endif
 };
 

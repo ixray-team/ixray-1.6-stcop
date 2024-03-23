@@ -413,13 +413,14 @@ void CStats::OnDeviceCreate			()
 
 	// 
 #ifdef DEBUG
-	if (!g_bDisableRedText)			SetLogCB	(_LogCallback);
+	if (!g_bDisableRedText)
+		xrLogger::AddLogCallback(_LogCallback);
 #endif
 }
 
 void CStats::OnDeviceDestroy		()
 {
-	SetLogCB(0);
+	xrLogger::RemoveLogCallback(_LogCallback);
 	xr_delete	(pFont);
 }
 

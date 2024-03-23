@@ -4,7 +4,7 @@
 
 #pragma pack(push,4)
 //////////////////////////////////////////////////////////////////////////
-typedef const char*		str_c;
+using str_c = const char*;
 
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
@@ -96,6 +96,98 @@ public:
 		return 		(shared_str&)*this;
 	}
 };
+
+class XRCORE_API xr_string : public std::basic_string<char, std::char_traits<char>, xalloc<char>>
+{
+public:
+	typedef std::basic_string<char, std::char_traits<char>, xalloc<char>> Super;
+
+	xr_string(LPCSTR Str);
+	xr_string(LPCSTR Str, u32 Size);
+	xr_string(const xr_string& other);
+	xr_string(xr_string&& other) noexcept;
+	xr_string(Super&& other);
+	xr_string();
+
+	xr_string& operator=(LPCSTR Str);
+	xr_string& operator=(const xr_string& other);
+	xr_string& operator=(const Super& other);
+	xr_string& operator=(xr_string&& other) = default;
+
+	template <size_t ArrayLenght>
+	xr_string(char* (&InArray)[ArrayLenght]) {
+		assign(InArray, ArrayLenght);
+	}
+
+	xr_vector<xr_string> Split(char splitCh);
+	xr_vector<xr_string> Split(u32 NumberOfSplits, ...);
+
+	bool StartWith(const xr_string& Other) const;
+	bool StartWith(LPCSTR Str) const;
+	bool StartWith(LPCSTR Str, size_t Size) const;
+	xr_string RemoveWhitespaces() const;
+
+	static xr_string ToString(int Value);
+	static xr_string ToString(unsigned int Value);
+	static xr_string ToString(float Value);
+	static xr_string ToString(double Value);
+	static xr_string ToString(const Fvector& Value);
+	static xr_string ToString(const Dvector& Value);
+
+	using xrStringVector = xr_vector<xr_string>;
+	static xr_string Join(xrStringVector::iterator beginIter, xrStringVector::iterator endIter, const char delimeter = '\0');
+
+	template<typename StringType>
+	static void FixSlashes(StringType& str) {
+		// Should be array of chars
+		static_assert(std::is_same<std::remove_extent<StringType>::type, char>::value);
+
+		constexpr size_t sizeArray = sizeof(str);
+
+		for (int i = 0; i < sizeArray; ++i)
+		{
+			if (str[i] == '/')
+			{
+				str[i] = '\\';
+			}
+		}
+	}
+
+	template<>
+	static void FixSlashes<xr_string>(xr_string& InStr) {
+		for (int i = 0; i < InStr.size(); ++i)
+		{
+			if (InStr[i] == '/')
+			{
+				InStr[i] = '\\';
+			}
+		}
+	}
+};
+
+using SStringVec = xr_vector<xr_string>;
+using SStringVecIt = SStringVec::iterator;
+
+// warning
+// this function can be used for debug purposes only
+template <typename... Args>
+const char* make_string(const char* format, const Args&... args) {
+	static constexpr size_t bufferSize = 4096;
+	static char temp[bufferSize];
+	snprintf(temp, bufferSize, format, args...);
+	return temp;
+}
+
+namespace std {
+	template<>
+	class hash<xr_string> {
+	public:
+		size_t operator()(const xr_string& s) const {
+			std::hash<xr_string::Super> hashFn;
+			return hashFn(s);
+		}
+	};
+}
 
 // res_ptr == res_ptr
 // res_ptr != res_ptr

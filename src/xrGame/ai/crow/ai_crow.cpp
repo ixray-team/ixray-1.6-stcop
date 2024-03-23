@@ -133,7 +133,7 @@ void CAI_Crow::Load( LPCSTR section )
 	vVarGoal					= pSettings->r_fvector3	(section,"goal_variability");
 	fIdleSoundDelta				= pSettings->r_float	(section,"idle_sound_delta");
 	fIdleSoundTime				= fIdleSoundDelta+fIdleSoundDelta*Random.randF(-.5f,.5f);
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::Load( LPCSTR section )") );
+	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::Load( LPCSTR section )").c_str());
 
 }
 
@@ -168,7 +168,7 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 		CreateSkeleton();
 	}
 
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::net_Spawn") );
+	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::net_Spawn").c_str());
 	return		R;
 }
 
@@ -251,7 +251,7 @@ void CAI_Crow::state_Flying		(float fdt)
 	vOldPosition.set(Position());
 	XFORM().setHPB	(vHPB.x,vHPB.y,vHPB.z);
 	Position().mad	(vOldPosition,vDirection,fSpeed*fdt);
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"state_Flying		(float fdt)") );
+	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"state_Flying		(float fdt)").c_str());
 }
 
 static Fvector vV={0,0,0};
@@ -272,7 +272,7 @@ void CAI_Crow::state_DeathFall()
 		smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle	(m_Anims.m_death_idle.GetRandom());
 		bPlayDeathIdle		= false;
 	}
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::state_DeathFall()") );
+	VERIFY2(valid_pos(Position()), dbg_valide_pos_string(Position(), this, "CAI_Crow::state_DeathFall()").c_str());
 }
 
 void CAI_Crow::Die				(CObject* who)
@@ -303,7 +303,7 @@ void CAI_Crow::UpdateWorkload	(float fdt)
 void CAI_Crow::UpdateCL		()
 {
 	inherited::UpdateCL		();
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this," CAI_Crow::UpdateCL		()") );
+	VERIFY2(valid_pos(Position()), dbg_valide_pos_string(Position(), this, " CAI_Crow::UpdateCL		()").c_str());
 	if (m_pPhysicsShell)	{
 		m_pPhysicsShell->Update		();
 		XFORM().set					(m_pPhysicsShell->mXFORM);
@@ -361,7 +361,7 @@ void CAI_Crow::shedule_Update		(u32 DT)
 	// work
 	if (o_workload_rframe >= (Device.dwFrame - 2)) ;
 	else					UpdateWorkload			(fDT);
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this," CAI_Crow::shedule_Update		(u32 DT)") );
+	VERIFY2(valid_pos(Position()), dbg_valide_pos_string(Position(), this, " CAI_Crow::shedule_Update		(u32 DT)").c_str());
 }
 
 // Core events
@@ -416,7 +416,7 @@ void CAI_Crow::net_Import	(NET_Packet& P)
 	id_Group			= P.r_u8();
 
 	XFORM().setHPB		(yaw,pitch,bank);
-	VERIFY2				( valid_pos( Position() ), dbg_valide_pos_string(Position(),this," CAI_Crow::net_Import	(NET_Packet& P)") );
+	VERIFY2				( valid_pos( Position() ), dbg_valide_pos_string(Position(),this," CAI_Crow::net_Import	(NET_Packet& P)").c_str());
 }
 //---------------------------------------------------------------------
 void CAI_Crow::HitSignal	(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* who, s16 /**element/**/)

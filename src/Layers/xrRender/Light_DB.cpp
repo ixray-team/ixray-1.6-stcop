@@ -206,16 +206,16 @@ void			CLight_DB::Update			()
 		{
 //			Log("sect_name", E.sect_name.c_str());
 			Log("E.sun_dir", E.sun_dir);
-			Log("E.wind_direction",E.wind_direction);
-			Log("E.wind_velocity",E.wind_velocity);
+			Msg("E.wind_direction %f",E.wind_direction);
+			Msg("E.wind_velocity %f",E.wind_velocity);
 			Log("E.sun_color",E.sun_color);
 			Log("E.rain_color",E.rain_color);
-			Log("E.rain_density",E.rain_density);
-			Log("E.fog_distance",E.fog_distance);
-			Log("E.fog_density",E.fog_density);
+			Msg("E.rain_density %f",E.rain_density);
+			Msg("E.fog_distance %f",E.fog_distance);
+			Msg("E.fog_density %f",E.fog_density);
 			Log("E.fog_color",E.fog_color);
-			Log("E.far_plane",E.far_plane);
-			Log("E.sky_rotation",E.sky_rotation);
+			Msg("E.far_plane %f",E.far_plane);
+			Msg("E.sky_rotation %f",E.sky_rotation);
 			Log("E.sky_color",E.sky_color);
 		}
 #endif

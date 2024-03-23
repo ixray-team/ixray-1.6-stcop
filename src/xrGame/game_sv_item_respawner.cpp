@@ -108,7 +108,7 @@ CSE_Abstract* item_respawn_manager::make_respawn_entity(shared_str const & secti
 	R_ASSERT(m_server->game);
 	CSE_Abstract*			temp_entity = F_entity_Create(section_name.c_str());
 	R_ASSERT2(temp_entity, make_string("failed to create entity [%s]",
-		section_name.c_str()).c_str());
+		section_name.c_str()));
 
 	temp_entity->ID					=	0xffff;								// server must generate ID
 	temp_entity->ID_Parent			=	0xffff;								// no-parent
@@ -258,7 +258,7 @@ void item_respawn_manager::add_new_rpoint(shared_str profile_sect, RPoint const 
 	}
 	R_ASSERT2(tmp_resp_sect->second, 
 		make_string("collection of respawn items section (%s) is NULL",
-		profile_sect.c_str()).c_str());
+		profile_sect.c_str()));
 	
 	section_items_iter		iter_ie = tmp_resp_sect->second->end();
 	for (section_items_iter	iter_rsect = tmp_resp_sect->second->begin();

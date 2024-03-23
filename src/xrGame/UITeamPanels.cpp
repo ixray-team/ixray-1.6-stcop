@@ -69,7 +69,7 @@ void UITeamPanels::InitAllTeams(shared_str const & team_node)
 			break;
 		LPCSTR tempTeamName = uiXml.ReadAttrib(tempTeamNode, "tname", "team_not_set_in_tname_xml_attribute");
 		UITeamState* tempTeamPanel = panelsFactory.CreateTeamPanel(tempTeamName, this);
-		VERIFY2(tempTeamPanel, make_string("failed to create team panel \"%s\"", tempTeamName).c_str());
+		VERIFY2(tempTeamPanel, make_string("failed to create team panel \"%s\"", tempTeamName));
 		tempTeamPanel->Init(uiXml, team_node.c_str(), i);
 		tempTeamPanel->SetAutoDelete(true);
 		AttachChild(tempTeamPanel);

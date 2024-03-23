@@ -78,7 +78,7 @@ u32 ip_filter::load()
 			(parse_data[3] > 255) ||
 			(parse_data[4] == 0))
 		{
-			VERIFY2(0, make_string("! ERROR: bad subnet: %s", address).c_str());
+			VERIFY2(0, make_string("! ERROR: bad subnet: %s", address));
 			xr_delete(tmp_item);
 			continue;
 		}

@@ -13,7 +13,7 @@ protected:
     discord::Core* Core = nullptr;
 
 public:
-    constexpr DiscordShared() : Activity({}) {}
+    DiscordShared() : Activity({}) {}
     virtual ~DiscordShared();
 
     virtual void Init() noexcept;

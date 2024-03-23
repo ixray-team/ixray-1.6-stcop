@@ -60,9 +60,6 @@ namespace std
 	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>	__stl_alloc_create(xalloc<_Tp1>&, const _Tp2*)		{	return xalloc<_Tp2>();			}
 };
 
-// string(char)
-using xr_string = std::basic_string<char, std::char_traits<char>, xalloc<char>>;
-
 // vector
 template <typename T, typename allocator = xalloc<T> >
 using xr_vector = std::vector<T, allocator>;
@@ -81,6 +78,10 @@ void clear_and_reserve(xr_vector<T> &vector_object) {
 // deque
 template <typename T, typename allocator = xalloc<T>>
 using xr_deque = std::deque<T, allocator>;
+
+// queue
+template <typename T, typename container = xr_deque<T>>
+using xr_queue = std::queue<T, container>;
 
 // stack
 template <typename T, class C = xr_deque<T> >
@@ -124,9 +125,6 @@ using LPSTRIt = LPSTRVec::iterator;
 
 using LPCSTRVec = xr_vector<LPCSTR>;	 
 using LPCSTRIt = LPCSTRVec::iterator;
-
-using SStringVec = xr_vector<xr_string>; 
-using SStringVecIt = SStringVec::iterator;
 
 using U16Vec = xr_vector<u16>;			 
 using U16It = U16Vec::iterator;
