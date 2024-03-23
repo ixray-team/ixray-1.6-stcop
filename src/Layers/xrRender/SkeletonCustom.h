@@ -91,9 +91,15 @@ using SkeletonWMVecIt = SkeletonWMVec::iterator;
 
 class 	CKinematics: public FHierrarhyVisual, public IKinematics
 {
+private:
 	typedef FHierrarhyVisual	inherited;
 	friend class				CBoneData;
 	friend class				CSkeletonX;
+
+
+	xr_vector<shared_str>		L_parents;
+	xr_vector<xr_vector<u16> > 	GroupIDs;
+
 public: 
 #ifdef DEBUG
 	BOOL						dbg_single_use_marker;
