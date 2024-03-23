@@ -351,35 +351,56 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 
 	if (!Connect(options))		return	FALSE;
 	//---------------------------------------------------------------------------
-	if(psNET_direct_connect) m_bConnectResultReceived = true;
-	auto EndTime = GetTickCount64() + ConnectionTimeOut;
-	while	(!m_bConnectResultReceived)		{ 
-		ClientReceive	();
-		Sleep			(5); 
-		if(Server)
-			Server->Update()	;
-		//-----------------------------------------
-		auto CurTime = GetTickCount64();
-		if (CurTime > EndTime)
-		{
-			NET_Packet	P_;
-			P_.B.count = 0;
-			P_.r_pos = 0;
-
-			P_.w_u8(0);
-			P_.w_u8(0);
-			P_.w_stringZ("Data verification failed. Cheater?");
-
-			OnConnectResult(&P_);			
-		}
-		if (net_isFails_Connect())
-		{
-			OnConnectRejected	();	
-			Disconnect		()	;
-			return	FALSE;
-		}
-		//-----------------------------------------
+	if (psNET_direct_connect)
+	{
+		m_bConnectResultReceived = true;
 	}
+	else
+	{
+		u32 EndTime = GetTickCount() + ConnectionTimeOut;
+		while (!HasSessionName())
+		{
+			Sleep(5);
+			u32 CurTime = GetTickCount();
+			if (CurTime > EndTime || net_isFails_Connect())
+			{
+				OnConnectRejected();
+				Disconnect();
+				return	FALSE;
+			}
+		}
+
+		EndTime = GetTickCount() + ConnectionTimeOut;
+		while (!m_bConnectResultReceived)
+		{
+			ClientReceive();
+			Sleep(5);
+			if (Server)
+				Server->Update();
+
+			u32 CurTime = GetTickCount();
+			if (CurTime > EndTime)
+			{
+				NET_Packet	P;
+				P.B.count = 0;
+				P.r_pos = 0;
+
+				P.w_u8(0);
+				P.w_u8(0);
+				P.w_stringZ("Data verification failed. Cheater?");
+
+				OnConnectResult(&P);
+			}
+
+			if (net_isFails_Connect())
+			{
+				OnConnectRejected();
+				Disconnect();
+				return	FALSE;
+			}
+		}
+	}
+
 	Msg							("%c client : connection %s - <%s>", m_bConnectResult ?'*':'!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
 	if		(!m_bConnectResult) 
 	{

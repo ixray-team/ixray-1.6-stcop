@@ -69,7 +69,7 @@ INetLog::INetLog(LPCSTR sFileName, u32 dwStartTime)
 	xr_strcpy(m_cFileName, sFileName);
 
 	m_pLogFile = NULL;
-	fopen_s(&m_pLogFile, sFileName, "wb");
+	m_pLogFile = fopen(sFileName, "wb");
 	m_dwStartTime = 0;//dwStartTime;
 
 }

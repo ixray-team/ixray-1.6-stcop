@@ -14,14 +14,16 @@ ip_filter::~ip_filter()
 	}
 }
 
-struct subnet_comparator {
+struct subnet_comparator
+{
 	bool operator()(subnet_item const * left, subnet_item const * right) const
 	{
 		return ((left->subnet_ip.data & left->subnet_mask) < (right->subnet_ip.data & right->subnet_mask));
 	}
 };
 
-struct ip_searcher {
+struct ip_searcher
+{
 	bool operator()(subnet_item const * left, subnet_item const * right) const
 	{
 		if (left->subnet_mask)
@@ -78,7 +80,7 @@ u32 ip_filter::load()
 			(parse_data[3] > 255) ||
 			(parse_data[4] == 0))
 		{
-			VERIFY2(0, make_string("! ERROR: bad subnet: %s", address));
+			VERIFY2(0, make_string("! ERROR: bad subnet: %s", address).c_str());
 			xr_delete(tmp_item);
 			continue;
 		}
@@ -88,7 +90,9 @@ u32 ip_filter::load()
 		tmp_item->subnet_mask = (u32(-1) >> zero_count) << zero_count;
 		m_all_subnets.push_back(tmp_item);
 	};
+
 	std::sort(m_all_subnets.begin(), m_all_subnets.end(), subnet_comparator());
+
 	return (u32)m_all_subnets.size();
 }
 
