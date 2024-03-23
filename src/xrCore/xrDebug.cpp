@@ -631,25 +631,12 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		SetUnhandledExceptionFilter(UnhandledFilter);
 	}
 
-    void	xrDebug::_initialize		(const bool &dedicated)
-    {
-		static bool is_dedicated		= dedicated;
+	void xrDebug::_initialize(const bool& dedicated)
+	{
+		static bool is_dedicated = dedicated;
 
-		*g_bug_report_file				= 0;
+		*g_bug_report_file = 0;
 
-		previous_filter					= ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-
-#if 0
-		struct foo {static void	recurs	(const u32 &count)
-		{
-			if (!count)
-				return;
-
-			_alloca			(4096);
-			recurs			(count - 1);
-		}};
-		foo::recurs			(u32(-1));
-		std::terminate		();
-#endif // 0
+		previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
 	}
 #endif
