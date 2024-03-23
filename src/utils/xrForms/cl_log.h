@@ -2,7 +2,6 @@
 
 #include <wx/wx.h>
 #include <wx/frame.h>
-#include <wx/listbox.h>
 
 #ifdef _WINDOWS_
 #include <wx/msw/listbox.h>
@@ -15,8 +14,21 @@ class LogWindow : public wxFrame
 {
 public:
 	LogWindow(const wxString& title);
-	void OnClick(wxCommandEvent &event);
-    void OnText(wxCommandEvent &event);
+	//void OnClick(wxCommandEvent& event);
+    void addString(wxWindowID id, int position, wxString message);
+    void deleteString(wxWindowID id, int index);
+    void setIndex(wxWindowID id, int index);
+
+private:
+	wxListBox* idcLog;
+	wxListBox* idcPhaseTime;
+	wxStaticBox* idcStageBox;
+	wxStaticText* idcInfo;
+	wxStaticText* idcTiming;
+	wxStaticBox* idcPhaseBox;
+	wxStaticText* idcStage;
+	wxStaticText* idcPText;
+	wxGauge* idcProgress;
 };
 
 extern class i_lc_log

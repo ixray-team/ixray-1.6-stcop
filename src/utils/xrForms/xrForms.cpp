@@ -8,17 +8,11 @@
 //#include <timeapi.h>
 //#include <commctrl.h>
 
-#include <chrono>
 
-#ifdef _WINDOWS_
-#include <wx/msw/msgdlg.h>
-#else
-#include <wx/gtk2/msgdlg.h>
-#endif
 
 #pragma warning(default:4995)
 
-//extern HWND logWindow;
+extern HWND logWindow;
 
 void StartupAI(LPSTR lpCmdLine);
 void StartupLC(LPSTR lpCmdLine);

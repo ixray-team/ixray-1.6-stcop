@@ -4,9 +4,9 @@
 #include <mmsystem.h>
 #include <CommCtrl.h>
 
+#include <chrono>
+
 #include <wx/wx.h>
-#include <wx/gauge.h>
-#include <wx/listbox.h>
 #include <wx/textctrl.h>
 
 #include "cl_log.h"
@@ -70,6 +70,7 @@ static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 }
 */
 
+/*
 static void _process_messages(void)
 {
 	MSG msg;
@@ -79,6 +80,7 @@ static void _process_messages(void)
 		DispatchMessageA(&msg);
 	}
 }
+*/
 
 std::string make_time(double sec)
 {
@@ -112,16 +114,17 @@ void Phase(const char* phase_name)
 
 	csLog.Enter();
 	// Replace phase name with TIME:Name 
-	char	tbuf[512];
+	char tbuf[512];
 	bPhaseChange = TRUE;
-	//phase_total_time = timeGetTime() - phase_start_time;
+	phase_total_time = timeGetTime() - phase_start_time;
 	xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / static_cast<double>(1000)).c_str(), phase);
+
 	SendMessageA(hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
 	SendMessageA(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
 
 ;
 	// Start _new phase
-	//phase_start_time = timeGetTime();
+	phase_start_time = timeGetTime();
 	xr_strcpy(phase, phase_name);
 	SetWindowTextA(hwStage, phase_name);
 	xr_sprintf(tbuf, "--:--:-- * %s", phase);
@@ -134,7 +137,7 @@ void Phase(const char* phase_name)
 	csLog.Leave();
 }
 
-//HWND logWindow=0;
+HWND logWindow=0;
 void logThread(void* dummy)
 {
 	SetProcessPriorityBoost(GetCurrentProcess(), TRUE);
@@ -261,7 +264,7 @@ void logThread(void* dummy)
 		}
 		csLog.Leave();
 
-		_process_messages();
+		//_process_messages();
 		if (bClose)			break;
 		Sleep(200);
 	}
@@ -310,32 +313,80 @@ public:
 LogWindow::LogWindow(const wxString& title)
        : wxFrame(NULL,IDD_LOG, title, wxDefaultPosition, wxSize(504, 324))
 {
-  Centre();
-	wxListBox* idcLog = new wxListBox(this, wxID_ANY, wxPoint(0, 0), wxSize(347, 243));
-	wxListBox* idcPhaseTime = new wxListBox(this, wxID_ANY, wxPoint(346, 0), wxSize(159, 324));
-	wxStaticBox* idcStageBox = new wxStaticBox(this, wxID, wxT("Stage Information"), wxPoint(2, 259), wxSize(216, 50));
+	Centre();
+	idcLog = new wxListBox(this, IDC_LOG, wxPoint(0, 0), wxSize(347, 243));
+	idcPhaseTime = new wxListBox(this, IDC_PHASE_TIME, wxPoint(346, 0), wxSize(159, 324));
+	idcStageBox = new wxStaticBox(this, IDC_STATIC, wxT("Stage Information"), wxPoint(2, 259), wxSize(216, 50));
 
-	wxStaticText* idcInfo = new wxStaticText(this, wxID_ANY, wxT("Test text"), wxPoint(5, 281), wxSize(207, 22));
-	wxStaticText* idcTiming = new wxStaticText(this, wxID_ANY, wxT("Second test text"), wxPoint(225, 281), wxSize(115, 22));
+	idcInfo = new wxStaticText(this, IDC_INFO, wxT(""), wxPoint(5, 281), wxSize(207, 22));
+	idcTiming = new wxStaticText(this, IDC_TIMING, wxT(""), wxPoint(225, 281), wxSize(115, 22));
 
-	wxStaticBox* idcPhaseBox = new wxStaticBox(this, wxID_ANY, wxT("Phase Timing"), wxPoint(220, 259), wxSize(125, 50));
+	idcPhaseBox = new wxStaticBox(this, IDC_STATIC, wxT("Phase Timing"), wxPoint(220, 259), wxSize(125, 50));
 
-	wxStaticText* idcStage = new wxStaticText(this, wxID_ANY, wxT("Starting..."), wxPoint(0, 245), wxSize(346, 17),
+	idcStage = new wxStaticText(this, IDC_STAGE, wxT("Starting..."), wxPoint(0, 245), wxSize(346, 17),
 	  wxALIGN_CENTRE_HORIZONTAL);
 
-	wxStaticText* idcPText = new wxStaticText(this, wxID_ANY, wxT("TT33"), wxPoint(307, 308), wxSize(36, 17),
+	idcPText = new wxStaticText(this, IDC_P_TEXT, wxT(""), wxPoint(307, 308), wxSize(36, 17),
 	  wxALIGN_CENTRE_HORIZONTAL);
 
-	wxGauge* idcProgress = new wxGauge(this, IDD_Progress, 1000, wxPoint(2, 309), wxSize(310, 13));
+	idcProgress = new wxGauge(this, IDC_PROGRESS, 1000, wxPoint(2, 309), wxSize(310, 13));
 
-	idcPText->Bind(wxEVT_TEXT, &LogWindow::, IDD_Progress);
+	//idcPhaseTime->Bind(wxEVT_TEXT, &LogWindow::OnText, IDC_PHASE_TIME);
+
 
 }
 
-void LogWindow::OnClick(wxCommandEvent& event)
+void LogWindow::addString(wxWindowID id, int index, wxString message)
 {
+	wxCommandEvent* evt = new wxCommandEvent();
+
+	// NOT evt->SetString(str) as this would be a shallow copy
+	evt->SetId(id);
+
+	wxWindow* window = FindWindowById(id);
+	wxListBox* lb = wxDynamicCast(window, wxListBox);
+
+	if (lb)
+	{
+		lb->SetString(index, message.c_str()); // make a deep copy
+	}
+	else
+	{
+		// handle error code if not a listbox
+	}
+
+
+	wxTheApp->QueueEvent(evt); 
 }
 
-void LogWindow::OnText(wxCommandEvent& event)
+void LogWindow::deleteString(wxWindowID id, int index)
 {
+	wxCommandEvent* evt = new wxCommandEvent();
+
+	wxWindow* window = FindWindowById(id);
+	wxListBox* lb = wxDynamicCast(window, wxListBox);
+
+	if (lb)
+	{
+		lb->Delete(index);
+	}
+	else
+	{
+		// handle error code if not a listbox
+	}
+
+	wxTheApp->QueueEvent(evt); 
 }
+
+/*
+void LogWindow::setIndex(wxWindowID id, int index)
+{
+
+}
+*/
+
+
+/*
+SendMessageA(hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
+SendMessageA(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
+*/
