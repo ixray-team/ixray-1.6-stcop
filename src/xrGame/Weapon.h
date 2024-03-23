@@ -134,7 +134,6 @@ protected:
 	bool					bMisfire;				
 
 	BOOL					m_bAutoSpawnAmmo;
-	virtual bool			AllowBore		();
 public:
 			bool IsGrenadeLauncherAttached	() const;
 			bool IsScopeAttached			() const;
