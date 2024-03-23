@@ -245,7 +245,6 @@ void CController::Load(LPCSTR section)
 
 	particles_fire		= pSettings->r_string(section,"Control_Hit");
 	
-	m_psy_hit_damage	= pSettings->r_float(section,"psy_hit_damage");
 	m_tube_damage		= pSettings->r_float(section,"tube_damage");
 	m_tube_at_once		= !!pSettings->r_bool(section,"tube_at_once");
 
@@ -266,7 +265,12 @@ void CController::Load(LPCSTR section)
 	                             	pSettings->r_float(section, tube_condition_min_distance_line) :
 									default_tube_condition_min_distance;
 
-	m_aura->load(section);
+	UseOldPsyAura = pSettings->r_bool(section, "PsyAura_Enabled");
+
+	if (UseOldPsyAura)
+		m_aura->load(section);
+
+	PostLoad(section);
 }
 
 void CController::load_friend_community_overrides(LPCSTR section)
@@ -311,15 +315,20 @@ BOOL CController::net_Spawn(CSE_Abstract *DC)
 
 void CController::UpdateControlled()
 {
-	// если есть враг, проверить может ли быть враг взят под контроль
-	if (EnemyMan.get_enemy()) {
-		CControlledEntityBase *entity = smart_cast<CControlledEntityBase *>(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
-		if (entity) {
-			if (!entity->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number)) {
-				// взять под контроль
-				entity->set_under_control	(this);
-				entity->set_task_follow		(this);
-				m_controlled_objects.push_back(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
+	if (EnemyMan.get_enemy())
+	{
+		CBaseMonster* Monster = smart_cast<CBaseMonster*>((const_cast<CEntityAlive*>(EnemyMan.get_enemy())));
+		if (Monster)
+		{
+			CControlledEntityBase* ControlLogic = Monster->m_controlled;
+			if (ControlLogic)
+			{
+				if (!ControlLogic->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number))
+				{
+					ControlLogic->set_under_control(this);
+					ControlLogic->set_task_follow(this);
+					m_controlled_objects.push_back(const_cast<CEntityAlive*>(EnemyMan.get_enemy()));
+				}
 			}
 		}
 	}
@@ -466,8 +475,8 @@ void CController::UpdateCL()
 		}
 	}
 
-	m_aura->update_frame();
-
+	if (UseOldPsyAura)
+		m_aura->update_frame();
 }
 
 void CController::shedule_Update(u32 dt)
@@ -482,15 +491,18 @@ void CController::shedule_Update(u32 dt)
 	// DEBUG
 	test_covers();
 
-	m_aura->update_schedule();
+	if (UseOldPsyAura)
+		m_aura->update_schedule();
 }
 
 void CController::Die(CObject* who)
 {
 	inherited::Die(who);
 	FreeFromControl();
-	
-	m_aura->on_death	();
+
+	if (UseOldPsyAura)
+		m_aura->on_death	();
+
 	m_psy_hit->on_death	();
 }
 
@@ -498,7 +510,9 @@ void CController::net_Destroy()
 {
 	inherited::net_Destroy();
 
-	m_aura->on_destroy	();
+	if (UseOldPsyAura)
+		m_aura->on_destroy	();
+
 	FreeFromControl		();
 }
 
@@ -547,10 +561,7 @@ void CController::draw_fire_particles()
 
 	// check probability
 	/*if (Random.randI(100) > 30)*/
-	{
-		Hit_Psy						(enemy, m_psy_hit_damage);
-		play_control_sound_hit		();
-	}
+	play_control_sound_hit();
 
 	//m_sound_hit_fx.set_volume(10.0f);
 	//if(!m_sndShockEffector)

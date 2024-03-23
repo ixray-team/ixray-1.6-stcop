@@ -14,6 +14,7 @@ private:
 	float				m_max_power;
 	float				m_max_distance;
 	bool				m_enable_for_dead;
+	bool				m_enable_aura_effector;
 	
 	float				m_pp_highest_at;
 	pcstr				m_pp_effector_name;

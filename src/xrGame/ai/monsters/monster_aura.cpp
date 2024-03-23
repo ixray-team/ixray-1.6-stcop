@@ -16,7 +16,7 @@ namespace detail
 	static pcstr const	s_sound_string				=	"_sound";
 	static pcstr const	s_detect_sound_string		=	"_detect_sound";
 	static pcstr const	s_enable_for_dead_string	=	"_enable_for_dead";
-
+	static pcstr const	s_enable_aura_effector      =   "_enable_aura_effector";
 } // namespace detail
 
 monster_aura::monster_aura (CBaseMonster* const object, pcstr const name) 
@@ -26,6 +26,12 @@ monster_aura::monster_aura (CBaseMonster* const object, pcstr const name)
 	m_detect_snd_time	=	0.0f;
 	m_enabled			=	false;
 	m_enable_for_dead	=	false;
+	m_enable_aura_effector = true;
+	m_linear_factor = 0.f;
+	m_max_distance = 0.f;
+	m_max_power = 0.f;
+	m_pp_highest_at = 0.f;
+	m_quadratic_factor = 0.f;
 }
 
 monster_aura::~monster_aura ()
@@ -105,6 +111,9 @@ void   monster_aura::load_from_ini (CInifile const* ini, pcstr const section, bo
 	string256 enable_for_dead_string = {};
 	xr_strconcat(enable_for_dead_string, m_name, s_enable_for_dead_string);
 
+	string256 enable_aura_effector = {};
+	xr_strconcat(enable_aura_effector, m_name, s_enable_aura_effector);
+
 	m_pp_effector_name				=	READ_IF_EXISTS(ini, r_string, section, pp_effector_name_string, nullptr);
 	m_pp_highest_at					=	READ_IF_EXISTS(ini, r_float, section, pp_highest_at_string, 1.f);
 	m_linear_factor					=	READ_IF_EXISTS(ini, r_float, section, linear_factor_string, 0.f);
@@ -112,6 +121,8 @@ void   monster_aura::load_from_ini (CInifile const* ini, pcstr const section, bo
 	m_max_power						=	READ_IF_EXISTS(ini, r_float, section, max_power_string, 0.f);
 	m_max_distance					=	READ_IF_EXISTS(ini, r_float, section, max_distance_string, 0.f);
 	m_enable_for_dead				=	!!READ_IF_EXISTS(ini, r_bool, section, enable_for_dead_string, enable_for_dead_default);
+	m_enable_aura_effector			=	!!READ_IF_EXISTS(ini, r_bool, section, enable_aura_effector, true);
+
 	pcstr const sound_name			=	READ_IF_EXISTS(ini, r_string, section, sound_string, nullptr);
 	pcstr const detect_sound_name	=	READ_IF_EXISTS(ini, r_string, section, detect_sound_string, nullptr);
 
@@ -127,12 +138,12 @@ void   monster_aura::load_from_ini (CInifile const* ini, pcstr const section, bo
 
 bool   monster_aura::check_work_condition () const
 {
-	if ( !m_enable_for_dead && !m_object->g_Alive() )
+	if ( !m_enable_for_dead && !m_object->g_Alive())
 		return							false;
 	
-	return								m_enabled			&&
+	return								m_enable_aura_effector ? (m_enabled			&&
 										Actor()				&&
-										Actor()->g_Alive();
+										Actor()->g_Alive()) : false;
 }
 
 void   monster_aura::remove_pp_effector ()

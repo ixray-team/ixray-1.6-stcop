@@ -37,6 +37,7 @@ class CController : public CBaseMonster {
 	
 	//////////////////////////////////////////////////////////////////////////
 	// PsyAura
+	bool				UseOldPsyAura;
 	CControllerAura		*m_aura;
 	
 	struct SAuraSound {
@@ -120,7 +121,7 @@ public:
 
 			void	set_controlled_task (u32 task);
 
-
+			bool    get_value_psy_aura() { return this->UseOldPsyAura; }
 
 			void	play_control_sound_start	();
 			void	play_control_sound_hit		();
@@ -133,8 +134,8 @@ public:
 			void	tube_fire					();
 			bool	can_tube_fire				();
 			
-			float	m_psy_hit_damage;
 			float	m_tube_damage;
+
 			float   m_tube_condition_see_duration ;
 			float   m_tube_condition_min_delay    ;
 			float   m_tube_condition_min_distance ;
