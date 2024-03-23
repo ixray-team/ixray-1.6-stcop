@@ -108,6 +108,8 @@ ENGINE_API	string_path		g_sLaunchWorkingFolder;
 // startup point
 void InitEngine		()
 {
+	DevicePtr = xr_make_unique<CRenderDevice>();
+
 	Engine.Initialize			( );
 	while (!g_bIntroFinished)	Sleep	(100);
 	Device.Initialize			( );
@@ -180,35 +182,33 @@ void destroySound	()
 
 void destroySettings()
 {
-	CInifile** s				= (CInifile**)(&pSettings);
-	xr_delete					( *s		);
-	xr_delete					( pGameIni		);
+	CInifile** s = (CInifile**)(&pSettings);
+	xr_delete(*s);
+	xr_delete(pGameIni);
 }
 
-void destroyConsole	()
+void destroyConsole()
 {
-	Console->Execute			("cfg_save");
-	Console->Destroy			();
-	xr_delete					(Console);
+	Console->Execute("cfg_save");
+	Console->Destroy();
+	xr_delete(Console);
 }
 
-void destroyEngine	()
+void destroyEngine()
 {
-	Device.Destroy				( );
-	try {
-		xrLogger::FlushLog(); // This should prevent empty log file in some cases
-	}
-	catch (...) {
-		MessageBoxA(NULL, "Could not perform log saving after destroying Render Device",
-			"Cant flush log", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
-	}
-	Engine.Destroy				( );
+	Device.Destroy();
+
+	// This should prevent empty log file in some cases
+	xrLogger::FlushLog();
+
+	Engine.Destroy();
+	DevicePtr.release();
 }
 
-void execUserScript				( )
+void execUserScript()
 {
-	Console->Execute			("default_controls");
-	Console->ExecuteScript		(Console->ConfigFile);
+	Console->Execute("default_controls");
+	Console->ExecuteScript(Console->ConfigFile);
 }
 
 ENGINE_API void EngineLoadStage4()
@@ -421,7 +421,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 
 ENGINE_API void EngineLoadStage2()
 {
-	damn_keys_filter		filter;
+	damn_keys_filter filter;
 	(void)filter;
 
 	luabind::allocator = &luabind_allocator;
@@ -528,7 +528,6 @@ CApplication::~CApplication()
 	g_pEventManager->Detach(this);
 }
 
-extern CRenderDevice Device;
 extern bool quiting;
 
 void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)

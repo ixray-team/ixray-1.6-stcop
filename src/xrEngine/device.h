@@ -292,9 +292,11 @@ virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
 virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 };
 
-extern		ENGINE_API		CRenderDevice		Device;
+extern ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
+
+#define Device (*DevicePtr)
 
 #ifndef	_EDITOR
 #define	RDEVICE	Device
