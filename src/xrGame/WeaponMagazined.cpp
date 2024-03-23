@@ -623,6 +623,14 @@ void CWeaponMagazined::state_Fire(float dt)
 		
 		VERIFY(!m_magazine.empty());
 
+		//Use fModeShotTime instead of fOneShotTime if current fire mode is 2-shot burst
+		float rpm = fOneShotTime;
+		if (GetCurrentFireMode() == 2)
+		{
+			rpm = fModeShotTime;
+		}
+		//END
+
 		while (	!m_magazine.empty() && 
 				fShotTimeCounter<0 && 
 				(IsWorking() || m_bFireSingleShot) && 
@@ -637,7 +645,19 @@ void CWeaponMagazined::state_Fire(float dt)
 
 			m_bFireSingleShot		= false;
 
-			fShotTimeCounter		+=	fOneShotTime;
+			//Cycle down RPM after two shots; used for Abakan/AN-94
+			if (bCycleDown == true)
+			{
+				if (m_iShotNum <= 2) {
+					rpm = fModeShotTime;
+				}
+				else {
+					rpm = fOneShotTime;
+				}
+			}
+
+			fShotTimeCounter += rpm;
+			//END
 			
 			++m_iShotNum;
 			

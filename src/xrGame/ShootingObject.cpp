@@ -61,13 +61,26 @@ void CShootingObject::Load	(LPCSTR section)
 	if(pSettings->line_exist(section,"light_disabled"))
 	{
 		m_bLightShotEnabled		= !pSettings->r_bool(section,"light_disabled");
-	}else
-		m_bLightShotEnabled		= true;
+	}
+	else
+	{
+		m_bLightShotEnabled = true;
+	}
 
 	//время затрачиваемое на выстрел
 	fOneShotTime			= pSettings->r_float		(section,"rpm");
+
+	//Two-shot burst rpm; used for Abakan/AN-94
+	fModeShotTime = READ_IF_EXISTS(pSettings, r_float, section, "rpm_mode_2", fOneShotTime);
+
 	VERIFY(fOneShotTime>0.f);
-	fOneShotTime			= 60.f / fOneShotTime;
+
+	fOneShotTime = 60.f / fOneShotTime;
+	fModeShotTime = 60.f / fModeShotTime;
+
+	//Cycle down RPM after first 2 shots; used for Abakan/AN-94
+	bCycleDown = READ_IF_EXISTS(pSettings, r_bool, section, "cycle_down", false);
+	//Alundaio: END
 
 	LoadFireParams		(section);
 	LoadLights			(section, "");
