@@ -138,7 +138,7 @@
                 "IXRAY_PLUGIN_MAX": "OFF",
                 "IXRAY_PLUGIN_LW": "OFF",
                 "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R1": "ON",
                 "IXRAY_USE_R2": "OFF"
             }
         },

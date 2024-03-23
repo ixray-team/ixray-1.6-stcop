@@ -1030,7 +1030,7 @@
                 },
                 {
                     "name": "IXRAY_USE_R1",
-                    "value": "False",
+                    "value": "True",
                     "type": "BOOL"
                 },
                 {
@@ -1080,7 +1080,7 @@
                 },
                 {
                     "name": "IXRAY_USE_R1",
-                    "value": "False",
+                    "value": "True",
                     "type": "BOOL"
                 },
                 {
@@ -1130,7 +1130,7 @@
                 },
                 {
                     "name": "IXRAY_USE_R1",
-                    "value": "False",
+                    "value": "True",
                     "type": "BOOL"
                 },
                 {
@@ -1180,7 +1180,7 @@
                 },
                 {
                     "name": "IXRAY_USE_R1",
-                    "value": "False",
+                    "value": "True",
                     "type": "BOOL"
                 },
                 {
@@ -1230,7 +1230,7 @@
                 },
                 {
                     "name": "IXRAY_USE_R1",
-                    "value": "False",
+                    "value": "True",
                     "type": "BOOL"
                 },
                 {
@@ -1280,7 +1280,7 @@
                 },
                 {
                     "name": "IXRAY_USE_R1",
-                    "value": "False",
+                    "value": "True",
                     "type": "BOOL"
                 },
                 {
