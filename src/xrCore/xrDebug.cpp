@@ -456,80 +456,43 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     #pragma comment( lib, "faultrep.lib" )
 #endif
 
-LONG WINAPI BuildStackTrace(PEXCEPTION_POINTERS pExceptionInfo)
-{
-	HANDLE process = GetCurrentProcess();
-	SymInitialize(process, NULL, TRUE);
-
-	// StackWalk64() may modify context record passed to it, so we will
-	// use a copy.
-	CONTEXT context_record = *pExceptionInfo->ContextRecord;
-	// Initialize stack walking.
-	STACKFRAME64 stack_frame;
-	memset(&stack_frame, 0, sizeof(stack_frame));
-
-#if defined(_WIN64)
-	int machine_type = IMAGE_FILE_MACHINE_AMD64;
-	stack_frame.AddrPC.Offset = context_record.Rip;
-	stack_frame.AddrFrame.Offset = context_record.Rbp;
-	stack_frame.AddrStack.Offset = context_record.Rsp;
-#else
-	int machine_type = IMAGE_FILE_MACHINE_I386;
-	stack_frame.AddrPC.Offset = context_record.Eip;
-	stack_frame.AddrFrame.Offset = context_record.Ebp;
-	stack_frame.AddrStack.Offset = context_record.Esp;
-#endif
-	stack_frame.AddrPC.Mode = AddrModeFlat;
-	stack_frame.AddrFrame.Mode = AddrModeFlat;
-	stack_frame.AddrStack.Mode = AddrModeFlat;
-
-	char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
-	const auto pSymbol = reinterpret_cast<PSYMBOL_INFO>(buffer);
-
-	pSymbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-	pSymbol->MaxNameLen = MAX_SYM_NAME;
-
-	Msg("%s", "Stack Trace : \n");
-
-	while (StackWalk64(machine_type, GetCurrentProcess(), GetCurrentThread(), &stack_frame, &context_record, NULL, &SymFunctionTableAccess64, &SymGetModuleBase64, NULL))
-	{
-		DWORD64 displacement = 0;
-
-		std::string Buffer = "";
-
-		if (SymFromAddr(process, (DWORD64)stack_frame.AddrPC.Offset, &displacement, pSymbol))
-		{
-			IMAGEHLP_MODULE64 moduleInfo;
-			FillMemory(&moduleInfo, sizeof(moduleInfo), 0);
-
-			moduleInfo.SizeOfStruct = sizeof(moduleInfo);
-
-			if (::SymGetModuleInfo64(process, pSymbol->ModBase, &moduleInfo))
-				Buffer += moduleInfo.ModuleName;
-
-			char buf[_MAX_U64TOSTR_BASE2_COUNT];
-			_itoa_s((int)displacement, buf, _countof(buf), 16);
-
-			Buffer += moduleInfo.ModuleName;
-			Buffer += "!";
-			Buffer += pSymbol->Name;
-			Buffer += ":";
-			Buffer += std::to_string(displacement);
-			Buffer += "\r\n";
-		}
-
-		Msg("%s", Buffer.c_str());
-	}
-
-	return EXCEPTION_CONTINUE_SEARCH;
-}
+#include "StackTrace/StackTrace.h"
+static bool EnabledStackTrace = true;
 
 LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
 
-	BuildStackTrace(pExceptionInfo);
+	if (EnabledStackTrace)
+	{
+		CONTEXT save = *pExceptionInfo->ContextRecord;
+
+		using namespace StackTrace;
+		std::vector<std::string> stackTrace = BuildStackTrace(pExceptionInfo->ContextRecord, 1024);
+		*pExceptionInfo->ContextRecord = save;
+		Msg("\n----------------------------------------------");
+		Msg("stack trace:\n");
+
+		string4096			buffer;
+
+		for (size_t i = 0; i < stackTrace.size(); i++)
+		{
+			Log(stackTrace[i].c_str());
+			xr_sprintf(buffer, sizeof(buffer), "%s\r\n", stackTrace[i].c_str());
+		}
+
+		Msg("----------------------------------------------\n\n");
+
+		if (*error_message)
+		{
+			if (shared_str_initialized)
+				Msg("\n%s", error_message);
+
+			xr_strcat(error_message, sizeof(error_message), "\r\n");
+			os_clipboard::update_clipboard(buffer);
+		}
+	}
 
 	if (shared_str_initialized)
 		xrLogger::FlushLog();
