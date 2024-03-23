@@ -71,7 +71,7 @@ void section_for_each(CScriptIniFile* self, luabind::functor<bool> functor)
 	sections_type::const_iterator e = sections.end();
 	for (; i != e; ++i)
 	{
-		if (functor((LPCSTR)(*i)->Name.c_str()) == true)
+		if (functor((LPCSTR)i->first.c_str()))
 			return;
 	}
 }

@@ -10,32 +10,18 @@ struct	xr_token;
 
 class XRCORE_API CInifile
 {
-public:
-	struct XRCORE_API	Item
-	{
-		shared_str	first;
-		shared_str	second;
-//#ifdef DEBUG
-//		shared_str	comment;
-//#endif
-		Item() : first(0), second(0)
-//#ifdef DEBUG
-//			, comment(0)
-//#endif
-		{};
-	};
-	typedef xr_vector<Item>				Items;
-	typedef Items::const_iterator		SectCIt;
-	typedef Items::iterator				SectIt_;
-    struct XRCORE_API	Sect {
-		shared_str		Name;
-		Items			Data;
+public:  
+	using Item = std::pair<shared_str, shared_str>;
 
-		BOOL			line_exist	(LPCSTR L, LPCSTR* val=0);
+	struct XRCORE_API Sect
+	{
+		shared_str Name;
+		xr_string_map<shared_str, shared_str> Data;
+
+		xr_vector<Item> Ordered;
+		BOOL line_exist(LPCSTR, LPCSTR* = 0);
 	};
-	typedef	xr_vector<Sect*>		Root;
-	typedef Root::iterator			RootIt;
-	typedef Root::const_iterator	RootCIt;
+	using Root = xr_string_map<shared_str, Sect*>;
 	
 #ifndef _EDITOR
 	typedef fastdelegate::FastDelegate1<LPCSTR, bool>	allow_include_func_t;

@@ -5,41 +5,37 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrphysics/geometry.h"
 #include "../xrphysics/PhysicsShell.h"
-//#include "../xrEngine/gamemtllib.h"
-//#include "Physics.h"
 #include "xrMessages.h"
 #include "CharacterPhysicsSupport.h"
+
 void CPHCollisionDamageReceiver::BoneInsert(u16 id,float k)
 {
 	R_ASSERT2(FindBone(id)==m_controled_bones.end(),"duplicate bone!");
 	m_controled_bones.push_back(SControledBone(id,k));
 }
+
 void CPHCollisionDamageReceiver::Init()
 {
-	CPhysicsShellHolder *sh	=PPhysicsShellHolder	();
-	IKinematics			*K	=smart_cast<IKinematics*>(sh->Visual());
-	CInifile			*ini=K->LL_UserData();
-	if(ini->section_exist("collision_damage"))
+	CPhysicsShellHolder* sh = PPhysicsShellHolder();
+	IKinematics* K = smart_cast<IKinematics*>(sh->Visual());
+	CInifile* ini = K->LL_UserData();
+
+	if (ini->section_exist("collision_damage"))
 	{
-		
-		CInifile::Sect& data		= ini->r_section("collision_damage");
-		for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++){
-			const CInifile::Item& item	= *I;
-			u16 index				= K->LL_BoneID(*item.first); 
-			R_ASSERT3(index != BI_NONE, "Wrong bone name", *item.first);
-			BoneInsert(index,float(atof(*item.second)));
-			CODEGeom* og= sh->PPhysicsShell()->get_GeomByID(index);
-			//R_ASSERT3(og, "collision damage bone has no physics collision", *item.first);
-			if(og)
+		CInifile::Sect& data = ini->r_section("collision_damage");
+		for (const auto& item : data.Data)
+		{
+			u16 index = K->LL_BoneID(*item.first);
+			R_ASSERT3(index != BI_NONE, "Wrong bone name", item.first.c_str());
+			BoneInsert(index, float(atof(*item.second)));
+			CODEGeom* og = sh->PPhysicsShell()->get_GeomByID(index);
+
+			if (og)
 				og->add_obj_contact_cb(DamageReceiverCollisionCallback);
 		}
-		
+
 	}
 }
-
-
-
-
 
 const static float hit_threthhold=5.f;
 void CPHCollisionDamageReceiver::CollisionHit(u16 source_id,u16 bone_id,float power,const Fvector& dir,Fvector &pos )
@@ -70,12 +66,5 @@ void CPHCollisionDamageReceiver::CollisionHit(u16 source_id,u16 bone_id,float po
 
 void CPHCollisionDamageReceiver::Clear()
 {
-	//IPhysicsShellHolder *sh	=PPhysicsShellHolder	();
-	//xr_map<u16,float>::iterator i=m_controled_bones.begin(),e=m_controled_bones.end();
-	//for(;e!=i;++i)
-	//{
-	//	CODEGeom* og= sh->PPhysicsShell()->get_GeomByID(i->first);
-	//	if(og)og->set_obj_contact_cb(NULL);
-	//}
-		m_controled_bones.clear();
+	m_controled_bones.clear();
 }

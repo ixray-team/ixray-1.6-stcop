@@ -106,29 +106,29 @@ IC	const CTradeFactors &CTradeParameters::factors			(_action_type type, const sh
 }
 
 template <typename _action_type>
-IC	void CTradeParameters::process							(_action_type type, CInifile &ini_file, const shared_str &section)
+IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const shared_str& section)
 {
-	R_ASSERT2				(ini_file.section_exist(section),make_string("cannot find section %s",*section));
+	R_ASSERT2(ini_file.section_exist(section), make_string("cannot find section %s", *section));
 
-	CTradeActionParameters	&_action = action(type);
-	_action.clear			();
+	CTradeActionParameters& _action = action(type);
+	_action.clear();
 
-	CInifile::Sect			&S = ini_file.r_section(section);
-	CInifile::SectCIt		I = S.Data.begin();
-	CInifile::SectCIt		E = S.Data.end();
-	for ( ; I != E; ++I) {
-		if (!(*I).second.size()) {
-			_action.disable	((*I).first);
+	CInifile::Sect& S = ini_file.r_section(section);
+
+	for (const auto& I : S.Data)
+	{
+		if (!I.second.size())
+		{
+			_action.disable(I.first);
 			continue;
 		}
 
-		string256			temp0, temp1;
-		THROW3				(_GetItemCount(*(*I).second) == 2,"Invalid parameters in section",*section);
-		_action.enable		(
-			(*I).first,
-			CTradeFactors	(
-				(float)atof(_GetItem(*(*I).second,0,temp0)),
-				(float)atof(_GetItem(*(*I).second,1,temp1))
+		string256 temp0, temp1;
+		THROW3(_GetItemCount(I.second.c_str()) == 2, "Invalid parameters in section", *section);
+		_action.enable(I.first,
+			CTradeFactors(
+				(float)atof(_GetItem(I.second.c_str(), 0, temp0)),
+				(float)atof(_GetItem(I.second.c_str(), 1, temp1))
 			)
 		);
 	}

@@ -110,7 +110,7 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 		tmp_active_param = true;
 	}
 
-	for (CInifile::SectCIt cit = sect_ptr->Data.begin(),
+	for (auto cit = sect_ptr->Data.begin(),
 			ciet = sect_ptr->Data.end(); cit != ciet; ++cit)
 	{
 		shared_str const &	tmp_value = cit->second;
@@ -175,16 +175,14 @@ LPCSTR configs_verifyer::get_diff(CInifile & received,
 								  string256 & dst_diff)
 {
 	LPCSTR diff_str = NULL;
-	for (CInifile::RootIt sit = received.sections().begin(),
-		siet = received.sections().end(); sit != siet; ++sit)
+	for (auto [name, sect] : received.sections())
 	{
-		CInifile::Sect*	tmp_sect = *sit;
-		if (tmp_sect->Name == cd_info_secion)
+		if (name == cd_info_secion)
 			continue;
-		if (tmp_sect->Name == active_params_section)
+		if (name == active_params_section)
 			continue;
 
-		diff_str = get_section_diff(tmp_sect, active_params, dst_diff);
+		diff_str = get_section_diff(sect, active_params, dst_diff);
 		if (diff_str)
 		{
 			return diff_str;

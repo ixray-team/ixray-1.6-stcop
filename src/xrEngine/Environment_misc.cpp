@@ -657,7 +657,7 @@ void CEnvironment::load_weathers		()
 		sections_type::const_iterator	i_ = sections.begin();
 		sections_type::const_iterator	e_ = sections.end();
 		for ( ; i_ != e_; ++i_) {
-			CEnvDescriptor*			object = create_descriptor((*i_)->Name, config);
+			CEnvDescriptor*			object = create_descriptor((i_)->first, config);
 			env.push_back			(object);
 		}
 
@@ -713,7 +713,7 @@ void CEnvironment::load_weather_effects	()
 		sections_type::const_iterator	i_ = sections.begin();
 		sections_type::const_iterator	e_ = sections.end();
 		for ( ; i_ != e_; ++i_) {
-			CEnvDescriptor*			object = create_descriptor((*i_)->Name, config);
+			CEnvDescriptor*			object = create_descriptor(i_->first, config);
 			env.push_back			(object);
 		}
 
@@ -725,26 +725,6 @@ void CEnvironment::load_weather_effects	()
 	}
 
 	FS.file_list_close				(file_list);
-
-#if 0
-	int line_count	= pSettings->line_count("weather_effects");
-	for (int w_idx=0; w_idx<line_count; w_idx++){
-		LPCSTR weather, sect_w;
-		if (pSettings->r_line("weather_effects",w_idx,&weather,&sect_w)){
-			EnvVec& env		= WeatherFXs[weather];
-			env.push_back	(xr_new<CEnvDescriptor>("00:00:00")); env.back()->exec_time_loaded = 0;
-//. why?	env.push_back	(xr_new<CEnvDescriptor>("00:00:00")); env.back()->exec_time_loaded = 0;
-			int env_count	= pSettings->line_count(sect_w);
-			LPCSTR exec_tm, sect_e;
-			for (int env_idx=0; env_idx<env_count; env_idx++){
-				if (pSettings->r_line(sect_w,env_idx,&exec_tm,&sect_e))
-					env.push_back	(create_descriptor(sect_e));
-			}
-			env.push_back	(create_descriptor("23:59:59"));
-			env.back()->exec_time_loaded = DAY_LENGTH;
-		}
-	}
-#endif // #if 0
 
 	// sorting weather envs
 	EnvsMapIt _I=WeatherFXs.begin();

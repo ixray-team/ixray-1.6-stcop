@@ -267,7 +267,8 @@ Fvector	CStepManager::get_foot_position(ELegType leg_type)
 
 void CStepManager::load_foot_bones	(CInifile::Sect &data)
 {
-	for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); ++I){
+	for (auto I=data.Data.begin(); I!=data.Data.end(); ++I)
+	{
 		const CInifile::Item& item	= *I;
 
 		u16 index = smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(*item.second);

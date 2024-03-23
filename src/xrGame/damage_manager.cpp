@@ -79,7 +79,8 @@ void CDamageManager::load_section(LPCSTR section, CInifile const * ini)
 	string32				buffer;
 	IKinematics				*kinematics = smart_cast<IKinematics*>(m_object->Visual());
 	CInifile::Sect			&damages = ini->r_section(section);
-	for (CInifile::SectCIt i=damages.Data.begin(); damages.Data.end() != i; ++i) {
+	for (auto i=damages.Data.begin(); damages.Data.end() != i; ++i)
+	{
 		if (xr_strcmp(*(*i).first,"default")) { // read all except default line
 			VERIFY					(m_object);
 			int						bone = kinematics->LL_BoneID(i->first);

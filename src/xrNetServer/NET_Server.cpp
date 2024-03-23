@@ -962,15 +962,11 @@ void IPureServer::BannedList_Load()
 	
 	CInifile					ini(temp);
 
-	CInifile::RootIt it			= ini.sections().begin();
-	CInifile::RootIt it_e		= ini.sections().end();
-	
-	for( ;it!=it_e; ++it)
+	for (auto& [sect_name, DUMMY] : ini.sections())
 	{
-		const shared_str& sect_name	= (*it)->Name;
-		IBannedClient* Cl			= xr_new<IBannedClient>();
-		Cl->Load					(ini, sect_name);
-		BannedAddresses.push_back	(Cl);
+		IBannedClient* Cl = xr_new<IBannedClient>();
+		Cl->Load(ini, sect_name);
+		BannedAddresses.push_back(Cl);
 	}
 }
 

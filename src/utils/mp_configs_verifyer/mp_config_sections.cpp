@@ -72,9 +72,10 @@ bool mp_config_sections::dump_one	(CMemoryWriter & dest)
 	R_ASSERT(pSettings->section_exist(m_current_dump_sect->c_str()));
 	CInifile::Sect & tmp_sect = pSettings->r_section(m_current_dump_sect->c_str());
 	
-	m_tmp_dumper.sections().push_back	(&tmp_sect);
-	m_tmp_dumper.save_as				(dest);
-	m_tmp_dumper.sections().pop_back	();
+	m_tmp_dumper.sections()[tmp_sect.Name] = &tmp_sect;
+	m_tmp_dumper.save_as(dest);
+	m_tmp_dumper.sections().erase(tmp_sect.Name);
+
 	++m_current_dump_sect;
 	return (m_current_dump_sect != m_mp_sections.end());
 }
