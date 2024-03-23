@@ -461,17 +461,27 @@ bool CRenderDevice::IsCapturingInputs()
 void CRenderDevice::BeginRender()
 {
 	ImGui_ImplSDL3_NewFrame();
-	if (ImGui::IsKeyPressed(ImGuiKey_I) && ImGui::IsKeyDown(ImGuiKey_LeftAlt)) {
-		if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
+	if (ImGui::IsKeyPressed(ImGuiKey_I) && ImGui::IsKeyDown(ImGuiKey_LeftAlt)) 
+	{
+		if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) 
+		{
 			DrawUIRender = !DrawUIRender;
-		} else {
+
+			if (!DrawUIRender)
+				CaptureInputs = false;
+		} 
+		else if (DrawUIRender)
+		{
 			CaptureInputs = !CaptureInputs;
 		}
 	}
 
-	if (CaptureInputs || g_dedicated_server) {
+	if (CaptureInputs || g_dedicated_server) 
+	{
 		SDL_ShowCursor();
-	} else {
+	}
+	else 
+	{
 		SDL_HideCursor();
 	}
 }
