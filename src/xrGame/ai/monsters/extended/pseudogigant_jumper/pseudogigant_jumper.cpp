@@ -1,40 +1,36 @@
 #include "stdafx.h"
-#include "pseudogigant.h"
-#include "pseudogigant_step_effector.h"
-#include "../../../actor.h"
-#include "../../../ActorEffector.h"
-#include "../../../level.h"
-#include "pseudogigant_state_manager.h"
-#include "../monster_velocity_space.h"
-#include "../control_animation_base.h"
-#include "../control_movement_base.h"
-#include "../ai_monster_effector.h"
-#include "../../../../xrEngine/CameraBase.h"
-#include "../../../detail_path_manager_space.h"
-#include "../../../detail_path_manager.h"
-#include "../../../CharacterPhysicsSupport.h"
-#include "../control_path_builder_base.h"
+#include "pseudogigant_jumper.h"
+#include "../../../monsters/pseudogigant/pseudogigant_step_effector.h"
+#include "../../../../actor.h"
+#include "../../../../ActorEffector.h"
+#include "../../../../level.h"
+#include "pseudogigant_jumper_state_manager.h"
+#include "../../monster_velocity_space.h"
+#include "../../control_animation_base.h"
+#include "../../control_movement_base.h"
+#include "../../ai_monster_effector.h"
+#include "../../../../../xrEngine/CameraBase.h"
+#include "../../../../detail_path_manager_space.h"
+#include "../../../../detail_path_manager.h"
+#include "../../../../CharacterPhysicsSupport.h"
+#include "../../control_path_builder_base.h"
 
-
-CPseudogigant::CPseudogigant()
-{
+CPseudogigantJumper::CPseudogigantJumper() {
 	CControlled::init_external(this);
 
-	StateMan = xr_new<CStateManagerPseudogigant>(this);
+	StateMan = xr_new<CStateManagerPseudogigantJumper>(this);
 	
 	com_man().add_ability(ControlCom::eControlRunAttack);
 	com_man().add_ability(ControlCom::eControlThreaten);
+	com_man().add_ability(ControlCom::eControlJump);
 	com_man().add_ability(ControlCom::eControlRotationJump);
 }
 
-CPseudogigant::~CPseudogigant()
-{
+CPseudogigantJumper::~CPseudogigantJumper() {
 	xr_delete(StateMan);
 }
 
-
-void CPseudogigant::Load(LPCSTR section)
-{
+void CPseudogigantJumper::Load(LPCSTR section) {
 	inherited::Load	(section);
 
 	anim().AddReplacedAnim(&m_bDamaged,			eAnimRun,		eAnimRunDamaged);
@@ -83,7 +79,8 @@ void CPseudogigant::Load(LPCSTR section)
 	anim().LinkAction(ACT_ATTACK,		eAnimAttack);
 	anim().LinkAction(ACT_STEAL,		eAnimSteal);
 	anim().LinkAction(ACT_LOOK_AROUND,	eAnimStandIdle);
-																										
+
+	// define transitions																											
 	anim().AddTransition(eAnimStandLieDown,	eAnimSleep,		eAnimLieToSleep,		false);										
 	anim().AddTransition(PS_STAND,			eAnimSleep,		eAnimStandLieDown,		true);
 	anim().AddTransition(PS_STAND,			PS_LIE,			eAnimStandLieDown,		false);
@@ -128,8 +125,7 @@ void CPseudogigant::Load(LPCSTR section)
 	PostLoad				(section);
 }
 
-void CPseudogigant::reinit()
-{
+void CPseudogigantJumper::reinit() {
 	inherited::reinit();
 
 	m_time_next_threaten = 0;
@@ -139,6 +135,9 @@ void CPseudogigant::reinit()
 	move().load_velocity(*cNameSect(), "Velocity_JumpPrepare",MonsterMovement::eGiantVelocityParameterJumpPrepare);
 	move().load_velocity(*cNameSect(), "Velocity_JumpGround",MonsterMovement::eGiantVelocityParameterJumpGround);
 	
+	com_man().load_jump_data(0, "jump_attack_0", "jump_attack_1", "jump_attack_2",
+		MonsterMovement::eGiantVelocityParameterJumpPrepare, MonsterMovement::eGiantVelocityParameterJumpGround, 0);
+
 	com_man().add_rotation_jump_data("1","2","3","4", PI_DIV_2);
 
 	com_man().set_threaten_data	("stand_kick_0", 0.43f);
@@ -146,8 +145,7 @@ void CPseudogigant::reinit()
 
 #define MAX_STEP_RADIUS 60.f
 
-void CPseudogigant::event_on_step()
-{
+void CPseudogigantJumper::event_on_step() {
 	CActor* pActor =  smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor)
 	{
@@ -163,15 +161,14 @@ void CPseudogigant::event_on_step()
 	}
 }
 
-bool CPseudogigant::check_start_conditions(ControlCom::EControlType type)
-{
-	if (!inherited::check_start_conditions(type))	return false;
+bool CPseudogigantJumper::check_start_conditions(ControlCom::EControlType type) {
+	if (!inherited::check_start_conditions(type))	
+		return false;
 
 	if (type == ControlCom::eControlRunAttack)		
 		return true;
 
-	if (type == ControlCom::eControlThreaten) 
-	{
+	if (type == ControlCom::eControlThreaten) {
 		if (m_time_next_threaten > time()) 
 			return false;
 
@@ -188,16 +185,14 @@ bool CPseudogigant::check_start_conditions(ControlCom::EControlType type)
 	return true;
 }
 
-void CPseudogigant::on_activate_control(ControlCom::EControlType type)
-{
+void CPseudogigantJumper::on_activate_control(ControlCom::EControlType type) {
 	if (type == ControlCom::eControlThreaten) {
 		m_sound_start_threaten.play_at_pos(this,get_head_position(this));
 		m_time_next_threaten = time() + Random.randI(m_threaten_delay_min,m_threaten_delay_max);
 	}
 }
 
-void CPseudogigant::on_threaten_execute()
-{
+void CPseudogigantJumper::on_threaten_execute() {
 	// разбросить объекты
 	m_nearest.clear();
 	Level().ObjectSpace.GetNearest	(m_nearest,Position(), 15.f, NULL); 
@@ -263,8 +258,12 @@ void CPseudogigant::on_threaten_execute()
 	u_EventSend			(l_P);	
 }
 
-void CPseudogigant::TranslateActionToPathParams()
-{
+void CPseudogigantJumper::HitEntityInJump		(const CEntity *pEntity) {
+	SAAParam &params	= anim().AA_GetParams("jump_attack_1");
+	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);
+}
+
+void CPseudogigantJumper::TranslateActionToPathParams() {
 	if ((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD)) {
 		inherited::TranslateActionToPathParams();
 		return;

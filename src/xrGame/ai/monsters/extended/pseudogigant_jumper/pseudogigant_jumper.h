@@ -1,14 +1,14 @@
 #pragma once
-#include "../BaseMonster/base_monster.h"
-#include "../controlled_entity.h"
-#include "../../../../xrScripts/script_export_space.h"
+#include "../../BaseMonster/base_monster.h"
+#include "../../controlled_entity.h"
+#include "../../../../../xrServerEntities/script_export_space.h"
 
 
-class CPseudogigant : public CBaseMonster,
-					  public CControlledEntity<CPseudogigant> {
+class CPseudogigantJumper : public CBaseMonster,
+					  public CControlledEntity<CPseudogigantJumper> {
 	
 	typedef		CBaseMonster						inherited;
-	typedef		CControlledEntity<CPseudogigant>	CControlled;
+	typedef		CControlledEntity<CPseudogigantJumper>	CControlled;
 
 private:
 	xr_vector<CObject*>		m_nearest;
@@ -40,10 +40,9 @@ private:
 
 	LPCSTR			m_kick_particles;
 
-
 public:
-	CPseudogigant();
-	virtual			~CPseudogigant();
+	CPseudogigantJumper();
+	virtual			~CPseudogigantJumper();
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reinit				();
@@ -56,12 +55,13 @@ public:
 
 	virtual	void	on_threaten_execute	();
 
+	virtual void	HitEntityInJump		(const CEntity *pEntity);
 	virtual void	TranslateActionToPathParams	();
-	virtual	char*	get_monster_class_name () { return (char*)"pseudogigant"; }
+	virtual	char*	get_monster_class_name () { return (char*)"pseudogigant_jumper"; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-add_to_type_list(CPseudogigant)
+add_to_type_list(CPseudogigantJumper)
 #undef script_type_list
-#define script_type_list save_type_list(CPseudogigant)
+#define script_type_list save_type_list(CPseudogigantJumper)
