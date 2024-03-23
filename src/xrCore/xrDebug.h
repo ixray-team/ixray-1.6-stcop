@@ -23,6 +23,7 @@ public:
 	void			set_on_dialog		(on_dialog* on_dialog)		{ m_on_dialog = on_dialog;	}
 
 	LPCSTR			error2string		(long  code	);
+	LPCSTR			dxerror2string		(long  code	);
 
 	void			gather_info			(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, unsigned int assertion_info_size);
 	template <int count>
@@ -36,6 +37,7 @@ public:
 	void			fail				(const char *e1, const char *e2, const char *file, int line, const char *function, bool &ignore_always);
 	void			fail				(const char *e1, const char *e2, const char *e3, const char *file, int line, const char *function, bool &ignore_always);
 	void			fail				(const char *e1, const char *e2, const char *e3, const char *e4, const char *file, int line, const char *function, bool &ignore_always);
+	void			error_dx			(long  code, const char* e1, const char *file, int line, const char *function, bool &ignore_always);
 	void			error				(long  code, const char* e1, const char *file, int line, const char *function, bool &ignore_always);
 	void			error				(long  code, const char* e1, const char* e2, const char *file, int line, const char *function, bool &ignore_always);
 	void _cdecl		fatal				(const char *file, int line, const char *function, const char* F,...);

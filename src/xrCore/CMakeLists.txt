@@ -132,6 +132,7 @@ target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 
 # Linker list
 target_link_libraries(xrCore PRIVATE "dbghelp.lib")
+target_link_libraries(xrCore PRIVATE dxerr)
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
