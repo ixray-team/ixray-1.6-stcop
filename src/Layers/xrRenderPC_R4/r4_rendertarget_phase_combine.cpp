@@ -21,6 +21,7 @@ void CRenderTarget::DoAsyncScreenshot()
 }
 
 float	hclip(float v, float dim)		{ return 2.f*v/dim - 1.f; }
+extern std::uint32_t dofAdjustMode_;
 void	CRenderTarget::phase_combine	()
 {
 	PIX_EVENT(phase_combine);
@@ -264,10 +265,42 @@ void	CRenderTarget::phase_combine	()
 		pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->uv0.set(p1.x, p0.y);pv->uv1.set(p1.x-ddw,p0.y-ddh);pv->uv2.set(p1.x+ddw,p0.y+ddh);pv->uv3.set(p1.x+ddw,p0.y-ddh);pv->uv4.set(p1.x-ddw,p0.y+ddh);pv->uv5.set(p1.x-ddw,p0.y,p0.y,p1.x+ddw);pv->uv6.set(p1.x,p0.y-ddh,p0.y+ddh,p1.x);pv++;
 		RCache.Vertex.Unlock		(4,g_aa_AA->vb_stride);
 
+		// Sync dof values with fog_distance
+		float kernel_size = ps_r2_dof_kernel_size;
+		float dof_sky = ps_r2_dof_sky;
+		Fvector3 dof_value = ps_r2_dof;
+		dof_value.z = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
+		if (dofAdjustMode_ == 1) {
+			ps_r2_dof = dof_value; // Sync values with console
+			if (dof_value.z >= 900.0f) {
+				kernel_size = 3.0f;
+				dof_sky = 10.0f;
+			}
+			else if (900.0f > dof_value.z >= 600.0f) {
+				kernel_size = 3.5f;
+				dof_sky = 30.0f;
+			}
+			else if (600.0f > dof_value.z >= 300.0f) {
+				kernel_size = 4.0f;
+				dof_sky = 100.0f;
+			}
+			else if (300.0f > dof_value.z >= 100.0f) {
+				kernel_size = 4.5f;
+				dof_sky = 200.0f;
+			}
+			else if (dof_value.z < 100.0f) {
+				kernel_size = 5.0f;
+				dof_sky = 300.0f;
+			}
+			ps_r2_dof_kernel_size = kernel_size; // Sync values with console
+			ps_r2_dof_sky = dof_sky;
+			g_pGamePersistent->SetBaseDof(dof_value);
+		}
+
 		//	Set up variable
 		Fvector2	vDofKernel;
 		vDofKernel.set(0.5f/Device.TargetWidth, 0.5f/Device.TargetHeight);
-		vDofKernel.mul(ps_r2_dof_kernel_size);
+		vDofKernel.mul(kernel_size);
 
 		// Draw COLOR
 		if (ps_r2_ls_flags.test(R2FLAG_AA))
@@ -280,9 +313,9 @@ void	CRenderTarget::phase_combine	()
 
 		Fvector3					dof;
 		g_pGamePersistent->GetCurrentDof(dof);
-		RCache.set_c				("dof_params",	dof.x, dof.y, dof.z, ps_r2_dof_sky);
+		RCache.set_c				("dof_params",	dof.x, dof.y, dof.z, dof_sky);
 //.		RCache.set_c				("dof_params",	ps_r2_dof.x, ps_r2_dof.y, ps_r2_dof.z, ps_r2_dof_sky);
-		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
+		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, kernel_size, 0);
 		
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);

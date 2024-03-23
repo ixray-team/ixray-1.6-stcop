@@ -83,6 +83,10 @@ xr_token							aa_type_token[] = {
 #endif // DEBUG
 	{ 0,							0												}
 };
+
+std::uint32_t dofAdjustMode_ = 1;
+xr_token dof_adjust_token[] = { { "manual", 0 }, { "auto", 1 }, { 0, 0 } };
+
 // Common
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
@@ -833,7 +837,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
-	
+	CMD3(CCC_Token, "r2_dof_adjust_mode", &dofAdjustMode_, dof_adjust_token);
+
 //	float		ps_r2_dof_near			= 0.f;					// 0.f
 //	float		ps_r2_dof_focus			= 1.4f;					// 1.4f
 	
