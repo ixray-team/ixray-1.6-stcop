@@ -76,27 +76,29 @@ private:
 #ifdef DEBUG
 	bool					sender_functor_invoked;
 #endif
+public:
+	GameDescriptionData				m_game_description;
 
 protected:
 	xr_vector<IBannedClient*>		BannedAddresses;
 	ip_filter						m_ip_filter;
 
 	IClient*						SV_Client;
-	PlayersMonitor			net_players;
+	PlayersMonitor					net_players;
 
-	xrCriticalSection		csMessage;
+	xrCriticalSection				csMessage;
 	xrCriticalSection				csMessagesQueue;
 
 	xr_deque<ServerMessage>			m_messagesQueue;
 
-	int								  psNET_Port;
-	bool							  m_bDedicated;
+	int								psNET_Port;
+	bool							m_bDedicated;
 
-	shared_str					connect_options;
+	shared_str						connect_options;
 
 	// statistic
 	IServerStatistic		stats;
-	CTimer*							device_timer;
+	CTimer*					device_timer;
 
 public:
 	BaseServer(CTimer* timer, BOOL	Dedicated);
@@ -104,67 +106,67 @@ public:
 
 protected:
 	IBannedClient*			GetBannedClient(const ip_address& Address);
-	void					      BannedList_Save();
-	void					      BannedList_Load();
-	void					      IpList_Load();
-	void					      IpList_Unload();
-	LPCSTR					    GetBannedListName();
+	void					BannedList_Save();
+	void					BannedList_Load();
+	void					IpList_Load();
+	void					IpList_Unload();
+	LPCSTR					GetBannedListName();
 
-	void					      UpdateBannedList();
+	void					UpdateBannedList();
 
-	void					      ParseConnectionOptions(LPCSTR options, ServerConnectionOptions& out);
+	void					ParseConnectionOptions(LPCSTR options, ServerConnectionOptions& out);
 
-	virtual bool			  CreateConnection(GameDescriptionData& game_descr, ServerConnectionOptions& opt) = 0;
-	virtual void			  DestroyConnection() = 0;
+	virtual bool			CreateConnection(GameDescriptionData& game_descr, ServerConnectionOptions& opt);
+	virtual void			DestroyConnection() {}
 
-	virtual bool        GetClientPendingMessagesCount(ClientID ID, DWORD& dwPending) = 0;
+	virtual bool			GetClientPendingMessagesCount(ClientID ID, DWORD& dwPending) { return true; }
 
-	virtual void			  _Recieve(const void* data, u32 data_size, u32 param) override;
-	virtual void			  _SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) = 0;
+	virtual void			_Recieve(const void* data, u32 data_size, u32 param) override;
+	virtual void			_SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) {}
 
 	// Pavel: Calls from xrServer (from game thread)
-	virtual void              ProcessMessagesQueue();
+	virtual void			ProcessMessagesQueue();
 
 
-	virtual IClient*		new_client(SClientConnectData* cl_data) = 0;
+	virtual IClient*		new_client(SClientConnectData* cl_data) { return nullptr; }
 
 public:
-	IC int					    GetPort() const { return psNET_Port; };
-	IC u32							GetMaxPlayers() const { return 32; }
+	IC int					GetPort() const { return psNET_Port; };
+	IC u32					GetMaxPlayers() const { return 32; }
 
-	EConnect				    Connect(LPCSTR options, GameDescriptionData & game_descr);
-	void					      Disconnect();
+	EConnect				Connect(LPCSTR options, GameDescriptionData & game_descr);
+	void					Disconnect();
 
 	IClient*            ID_to_client(ClientID ID, bool ScanAll = false);
 
-	bool					      IsPlayerIPDenied(u32 ip_address);
-	void					      Print_Banned_Addreses();
-	virtual void			  BanClient(IClient* C, u32 BanTime);
-	virtual void			  BanAddress(const ip_address& Address, u32 BanTime);
-	virtual void			  UnBanAddress(const ip_address& Address);
+	bool					IsPlayerIPDenied(u32 ip_address);
+	void					Print_Banned_Addreses();
+	virtual void			BanClient(IClient* C, u32 BanTime);
+	virtual void			BanAddress(const ip_address& Address, u32 BanTime);
+	virtual void			UnBanAddress(const ip_address& Address);
 
-	virtual void			  OnCL_Connected(IClient* C) = 0;
-	virtual void			  OnCL_Disconnected(IClient* C) = 0;
+	virtual void			OnCL_Connected(IClient* C) {}
+	virtual void			OnCL_Disconnected(IClient* C) {}
 
-	bool                HasBandwidth(IClient* C);
+	bool					HasBandwidth(IClient* C);
 
 	// statistic
 	const IServerStatistic*	GetStatistic() { return &stats; }
-	void					      ClearStatistic();
-	virtual void			  UpdateClientStatistic(IClient* C) = 0;
+	void					ClearStatistic();
+	virtual void			UpdateClientStatistic(IClient* C) {}
 
 	// disconnect
-	virtual bool			  DisconnectClient(IClient* C, LPCSTR Reason) = 0;
-	virtual bool			  DisconnectAddress(const ip_address& Address, LPCSTR reason);
+	virtual bool			DisconnectClient(IClient* C, LPCSTR Reason) { return false; }
+	virtual bool			DisconnectAddress(const ip_address& Address, LPCSTR reason);
 
 	// send
-	virtual void			  SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
-	virtual void			  SendTo_Buf(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
-	virtual void			  Flush_Clients_Buffers();
+	virtual void			SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+	virtual void			SendTo_Buf(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+	virtual void			Flush_Clients_Buffers();
 
-	void					      SendTo(ClientID ID, NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
-	void					      SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
-	virtual void			  SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED);
+	void					SendTo(ClientID ID, NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+	void					SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
+	virtual void			SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED);
 
 
 	IC const shared_str&	GetConnectOptions() const { return connect_options; }
@@ -173,15 +175,15 @@ public:
 	IC		IClient*		  GetServerClient() { return SV_Client; };
 	IC		IClient*		  GetClientByID(ClientID clientId) { return net_players.GetFoundClient(ClientIdSearchPredicate(clientId)); };
 
-	virtual bool			  GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) = 0;
+	virtual bool			  GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) { return true; }
 
 	// extended functionality
 	virtual bool			  OnCL_QueryHost() { return true; };
 	virtual u32				  OnMessage(NET_Packet& P, ClientID sender) { return 0; };	// Non-Zero means broadcasting with "flags" as returned
 
-	virtual IClient*	  client_Create() = 0; // create client info
-	virtual void			  client_Replicate() = 0; // replicate current state to client
-	virtual void			  client_Destroy(IClient* C) = 0; // destroy client info
+	virtual IClient*		  client_Create() { return nullptr; } // create client info
+	virtual void			  client_Replicate() {} // replicate current state to client
+	virtual void			  client_Destroy(IClient* C) {} // destroy client info
 
 
 	virtual bool			  Check_ServerAccess(IClient* CL, string512& reason) { return true; }

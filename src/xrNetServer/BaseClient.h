@@ -76,26 +76,26 @@ private:
 	virtual void        _SendTo_LL(const void* data, u32 size, u32 flags, u32 timeout);
 
 protected:
-	virtual bool        IsConnectionInit() = 0;
+	virtual bool        IsConnectionInit() { return true; }
 
 	void                SetClientID(ClientID const & local_client) { net_ClientID = local_client; };
 
 	void                ParseConnectionOptions(LPCSTR options, ClientConnectionOptions& out);
-	virtual bool        CreateConnection(ClientConnectionOptions& opt) = 0;
-	virtual void        DestroyConnection() = 0;
+	virtual bool        CreateConnection(ClientConnectionOptions& opt) { return true; };
+	virtual void        DestroyConnection() {};
 
 	bool                Sync_Thread();
 	void                Sync_Average();
-	virtual bool        GetPendingMessagesCount(DWORD& dwPending) = 0;
-	virtual bool        SendPingMessage(MSYS_PING& clPing) = 0;
+	virtual bool        GetPendingMessagesCount(DWORD& dwPending) { return true; };
+	virtual bool        SendPingMessage(MSYS_PING& clPing) { return true; };
 
-	virtual	void        SendTo_LL(void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) = 0;
+	virtual	void        SendTo_LL(void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) {}
 
 public:
 	bool                Connect(LPCSTR options);
 	void                Disconnect();
 
-	ClientID const &		GetClientID() { return net_ClientID; };
+	ClientID const &	GetClientID() { return net_ClientID; };
 
 	bool                net_isCompleted_Connect() const { return net_Connected == EnmConnectionCompleted; }
 	bool                net_isFails_Connect() const { return net_Connected == EnmConnectionFails; }
@@ -104,7 +104,7 @@ public:
 	IC GameDescriptionData const & get_net_DescriptionData() const { return m_game_description; }
 
 	virtual bool        HasSessionName() { return false; }
-	virtual LPCSTR      net_SessionName() const = 0;
+	virtual LPCSTR      net_SessionName() const { return m_game_description.map_name; }
 
 	bool                net_HasBandwidth();
 
@@ -131,7 +131,7 @@ public:
 	virtual	LPCSTR      GetMsgId2Name(u16 ID) { return ""; }
 	virtual void        OnSessionTerminate(LPCSTR reason) {};
 
-	virtual	bool        GetServerAddress(ip_address& pAddress, DWORD* pPort) = 0;
+	virtual	bool        GetServerAddress(ip_address& pAddress, DWORD* pPort) { return false; }
 
 	// time management
 	IC u32              timeServer() { return TimeGlobal(device_timer) + net_TimeDelta + net_TimeDelta_User; }
@@ -145,6 +145,6 @@ public:
 	// statistic
 	void					      ClearStatistic() { net_Statistic.Clear(); };
 	IClientStatistic&		GetStatistic() { return  net_Statistic; }
-	virtual	void			  UpdateStatistic() = 0;
+	virtual	void			  UpdateStatistic() {}
 };
 
