@@ -199,6 +199,7 @@ enum
 	RFLAG_CLOUD_SHADOWS = (1 << 11),
 	RFLAG_NO_RAM_TEXTURES = (1 << 12),
 	RFLAG_MT_TEX_LOAD     = (1 << 13),
+	RFLAG_SSS_SSS = (1 << 14),
 	RFLAG_OPT_SHAD_GEOM = (1 << 15),
 };
 
