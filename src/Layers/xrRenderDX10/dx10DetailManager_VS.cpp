@@ -78,22 +78,25 @@ void CDetailManager::hw_Render()
 	float scale = 1.f / float(quant);
 	Fvector4 wave, wave_old, consts;
 
+	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_HQ : SE_R2_DETAIL_SHADOW_HQ;
+	auto LodLQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_LQ : SE_R2_DETAIL_SHADOW_LQ;
+
 	// Wave0
 	wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 	wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
 	consts.set(scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, wave_old.div(PI_MUL_2), dir1_old, 1, 0);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, wave_old.div(PI_MUL_2), dir1_old, 1, LodHQ);
 
 	// Wave1
 	wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 	wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
 
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 2, 0);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 2, LodHQ);
 
 	// Still
 	consts.set(scale, scale, scale, 1.f);
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 0, 1);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 0, LodLQ);
 
 	if (m_frame_render != Device.dwFrame) {
 		m_time_pos_old = m_time_pos;
