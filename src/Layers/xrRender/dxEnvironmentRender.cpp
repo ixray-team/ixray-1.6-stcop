@@ -11,7 +11,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // half box def
-static	Fvector3	hbox_verts[24]	=
+static	Fvector3	hbox_verts_box[24]	=
 {
 	{-1.f,	-1.f,	-1.f}, {-1.f,	-1.01f,	-1.f},	// down
 	{ 1.f,	-1.f,	-1.f}, { 1.f,	-1.01f,	-1.f},	// down
@@ -26,6 +26,26 @@ static	Fvector3	hbox_verts[24]	=
 	{ 1.f,	 0.f,	 1.f}, { 1.f,	-1.f,	 1.f},	// half
 	{-1.f,	 0.f,	 1.f}, {-1.f,	-1.f,	 1.f}	// half
 };
+
+//////////////////////////////////////////////////////////////////////////
+// Sky area for shaders
+/* Not using */
+static	Fvector3	hbox_verts_area[24] =
+{
+	 {-1.f, -1.f, -1.f}, {-1.f, -1.f, -1.f},     // down
+	 { 1.f, -1.f, -1.f}, { 1.f, -1.f, -1.f},     // down
+	 {-1.f, -1.f,  1.f}, {-1.f, -1.f,  1.f},     // down
+	 { 1.f, -1.f,  1.f}, { 1.f, -1.f,  1.f},     // down
+	 {-1.f,  1.f, -1.f}, {-1.f,  1.f, -1.f},
+	 { 1.f,  1.f, -1.f}, { 1.f,  1.f, -1.f},
+	 {-1.f,  1.f,  1.f}, {-1.f,  1.f,  1.f},
+	 { 1.f,  1.f,  1.f}, { 1.f,  1.f,  1.f},
+	 {-1.f,  1.f, -1.f}, {-1.f,  1.f, -1.f},     // full
+	 { 1.f,  1.f, -1.f}, { 1.f,  1.f, -1.f},     // full
+	 { 1.f,  1.f,  1.f}, { 1.f,  1.f,  1.f},     // full
+	 {-1.f,  1.f,  1.f}, {-1.f,  1.f,  1.f}      // full
+};
+
 static	u16			hbox_faces[20*3]	=
 {
 	0,	 2,	 3,
@@ -258,7 +278,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 
 	// Fill vertex buffer
 	v_skybox* pv				= (v_skybox*)	RCache.Vertex.Lock	(12,sh_2geom.stride(),v_offset);
-	for (u32 v=0; v<12; v++)	pv[v].set		(hbox_verts[v*2],C,hbox_verts[v*2+1]);
+	for (u32 v=0; v<12; v++)	pv[v].set		(hbox_verts_box[v*2],C, hbox_verts_box[v*2+1]);
 	RCache.Vertex.Unlock		(12,sh_2geom.stride());
 
 	// Render
