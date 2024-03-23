@@ -2,7 +2,7 @@
 #include "cl_log.h"
 #include "xrThread.h"
 
-void	CThread::startup(void* P)
+void CThread::startup(void* P)
 {
 	CThread* T = (CThread*)P;
 
@@ -13,7 +13,7 @@ void	CThread::startup(void* P)
 	if (T->thMessages)	clMsg("* THREAD #%d: Task Completed.", T->thID);
 }
 
-void	CThreadManager::start(CThread* T)
+void CThreadManager::start(CThread* T)
 {
 	R_ASSERT(T);
 	threads.push_back(T);
@@ -22,7 +22,7 @@ void	CThreadManager::start(CThread* T)
 
 void CThreadManager::wait(u32 sleep_time)
 {
-	// Wait for completition
+	// Wait for completion
 	char perf[1024];
 	if (threads.empty())
 		return;

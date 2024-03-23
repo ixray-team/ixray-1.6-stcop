@@ -1,5 +1,24 @@
 #pragma	once
 
+#include <wx/wx.h>
+#include <wx/frame.h>
+#include <wx/listbox.h>
+
+#ifdef _WINDOWS_
+#include <wx/msw/listbox.h>
+#else
+#include <wx/gtk2/listbox.h>
+#endif
+
+
+class LogWindow : public wxFrame
+{
+public:
+	LogWindow(const wxString& title);
+	void OnClick(wxCommandEvent &event);
+    void OnText(wxCommandEvent &event);
+};
+
 extern class i_lc_log
 {
 public:
@@ -14,5 +33,5 @@ void clMsg(const char* format, ...);
 void Status(const char* format, ...);
 void Progress(const float F);
 void Phase(const char* phase_name);
-void logThread	    (void *dummy);
-void logCallback	(LPCSTR c);
+void logThread(void *dummy);
+void logCallback(LPCSTR c);

@@ -30,7 +30,7 @@ add_executable(xrForms WIN32 ${UTILS_FORMS_SRC_FILES})
 target_include_directories(xrForms PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_directories(xrForms PUBLIC "${IXRAY_SDK_LIB}/")
 set_target_properties(xrForms PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-target_include_directories(xrForms PRIVATE "../../xrServerEntities/")
+target_include_directories(xrForms PRIVATE "../../xrServerEntities/" "../packages/wxWidgets.3.2.2.1/include/")
 
 # Project defines
 target_compile_definitions(xrForms PRIVATE UTILS_FORMS_EXPORTS)

@@ -3,11 +3,18 @@
 #include <time.h>
 #include <mmsystem.h>
 #include <CommCtrl.h>
+
+#include <wx/wx.h>
+#include <wx/gauge.h>
+#include <wx/listbox.h>
+#include <wx/textctrl.h>
+
 #include "cl_log.h"
 
 i_lc_log* lc_log = 0;
+
 //************************* Log-thread data
-static xrCriticalSection	csLog
+static xrCriticalSection csLog
 #ifdef PROFILE_CRITICAL_SECTIONS
 (MUTEX_PROFILE_ID(csLog))
 #endif // PROFILE_CRITICAL_SECTIONS
@@ -19,28 +26,30 @@ void MyLogCallback(const char* string) {
 	myLogQueue.push(string);
 }
 
-volatile BOOL				bClose				= FALSE;
+volatile BOOL bClose = FALSE;
 
-static char					status	[1024	]	="";
-static char					phase	[1024	]	="";
-static float				progress			= 0.0f;
-static u32					phase_start_time	= 0;
-static BOOL					bStatusChange		= FALSE;
-static BOOL					bPhaseChange		= FALSE;
-static u32					phase_total_time	= 0;
+static char	status[1024] = "";
+static char	phase[1024]	= "";
+static float progress = 0.0f;
+static u32 phase_start_time	= 0;
+static BOOL	bStatusChange = FALSE;
+static BOOL	bPhaseChange = FALSE;
+static u32 phase_total_time	= 0;
 
-static HWND hwLog		= 0;
-static HWND hwProgress	= 0;
-static HWND hwInfo		= 0;
-static HWND hwStage		= 0;
-static HWND hwTime		= 0;
-static HWND hwPText		= 0;
+static HWND hwLog = 0;
+static HWND hwProgress = 0;
+static HWND hwInfo = 0;
+static HWND hwStage	= 0;
+static HWND hwTime = 0;
+static HWND hwPText = 0;
 static HWND hwPhaseTime	= 0;
 
-//************************* Log-thread data
+/*
+//************************* Log-thread data	
 static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 {
-	switch( msg ){
+	switch( msg )
+	{
 		case WM_DESTROY:
 			break;
 		case WM_CLOSE:
@@ -59,6 +68,8 @@ static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 	}
 	return TRUE;
 }
+*/
+
 static void _process_messages(void)
 {
 	MSG msg;
@@ -69,11 +80,11 @@ static void _process_messages(void)
 	}
 }
 
-std::string make_time	(u32 sec)
+std::string make_time(double sec)
 {
-	char		buf[64];
-	xr_sprintf		(buf,"%2.0d:%2.0d:%2.0d",sec/3600,(sec%3600)/60,sec%60);
-	int len		= int(xr_strlen(buf));
+	char buf[64];
+	xr_sprintf(buf,"%2.0d:%2.0d:%2.0d", sec / 3600, (sec / 3600) / 60, sec / 60);
+	int len	= int(xr_strlen(buf));
 	for (int i=0; i<len; i++) if (buf[i]==' ') buf[i]='0';
 	return std::string(buf);
 }
@@ -81,15 +92,14 @@ std::string make_time	(u32 sec)
 void __cdecl Status(const char* format, ...)
 {
 	csLog.Enter();
-	va_list				mark;
+	va_list	mark;
+;
 	va_start(mark, format);
 	vsprintf(status, format, mark);
 	bStatusChange = TRUE;
 	Msg("    | %s", status);
 	csLog.Leave();
 }
-
-
 
 void Progress(const float F)
 {
@@ -104,13 +114,14 @@ void Phase(const char* phase_name)
 	// Replace phase name with TIME:Name 
 	char	tbuf[512];
 	bPhaseChange = TRUE;
-	phase_total_time = timeGetTime() - phase_start_time;
-	xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / 1000).c_str(), phase);
+	//phase_total_time = timeGetTime() - phase_start_time;
+	xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / static_cast<double>(1000)).c_str(), phase);
 	SendMessageA(hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
 	SendMessageA(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
 
+;
 	// Start _new phase
-	phase_start_time = timeGetTime();
+	//phase_start_time = timeGetTime();
 	xr_strcpy(phase, phase_name);
 	SetWindowTextA(hwStage, phase_name);
 	xr_sprintf(tbuf, "--:--:-- * %s", phase);
@@ -123,17 +134,18 @@ void Phase(const char* phase_name)
 	csLog.Leave();
 }
 
-HWND logWindow=0;
+//HWND logWindow=0;
 void logThread(void* dummy)
 {
 	SetProcessPriorityBoost(GetCurrentProcess(), TRUE);
 
+	/*
 	logWindow = CreateDialog(
 		HINSTANCE(GetModuleHandle(0)),
 		MAKEINTRESOURCE(IDD_LOG),
 		0, logDlgProc);
 	if (!logWindow) {
-		R_CHK(GetLastError());
+		R_CHK(GetLastError());	
 	};
 	SetWindowPos(logWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 	hwLog = GetDlgItem(logWindow, IDC_LOG);
@@ -143,9 +155,15 @@ void logThread(void* dummy)
 	hwTime = GetDlgItem(logWindow, IDC_TIMING);
 	hwPText = GetDlgItem(logWindow, IDC_P_TEXT);
 	hwPhaseTime = GetDlgItem(logWindow, IDC_PHASE_TIME);
+	*/
 
+	LogWindow* logWindow = new LogWindow(wxT("XRay Engine Components Compiler"));
+	logWindow->Show(true);
+
+	/*
 	SendMessageA(hwProgress, PBM_SETRANGE, 0, MAKELPARAM(0, 1000));
 	SendMessageA(hwProgress, PBM_SETPOS, 0, 0);
+	*/
 
 	Msg("\"LevelBuilder v4.1\" beta build\nCompilation date: %s\n", __DATE__);
 	{
@@ -153,12 +171,15 @@ void logThread(void* dummy)
 		Msg("Startup time: %s", _strtime(tmpbuf));
 	}
 
-	BOOL		bHighPriority = FALSE;
-	string256	u_name;
-	unsigned long		u_size = sizeof(u_name) - 1;
+	/*
+	BOOL bHighPriority = FALSE;
+	string256 u_name;
+	unsigned long u_size = sizeof(u_name) - 1;
+;
 	GetUserNameA(u_name, &u_size);
 	_strlwr(u_name);
 	if ((0 == xr_strcmp(u_name, "oles")) || (0 == xr_strcmp(u_name, "alexmx")))	bHighPriority = TRUE;
+	*/
 
 	// Main cycle
 	u32		LogSize = 0;
@@ -170,8 +191,10 @@ void logThread(void* dummy)
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);	// bHighPriority?NORMAL_PRIORITY_CLASS:IDLE_PRIORITY_CLASS
 
 		// transfer data
-		while (!csLog.TryEnter()) {
-			_process_messages();
+		while (!csLog.TryEnter()) 
+		{
+			//_process_messages();
+			wxTheApp->ProcessPendingEvents();
 			Sleep(1);
 		}
 		if (progress > 1.f)		progress = 1.f;
@@ -184,6 +207,7 @@ void logThread(void* dummy)
 
 			if (LogSize != myLogQueue.size())
 			{
+;
 				bWasChanges = TRUE;
 				for (size_t Iter = 0; Iter < myLogQueue.size(); Iter++)
 				{
@@ -214,6 +238,7 @@ void logThread(void* dummy)
 					make_time(secElapsed).c_str(),
 					make_time(secRemain).c_str()
 				);
+;
 				SetWindowTextA(hwTime, tbuf);
 			}
 			else {
@@ -231,7 +256,7 @@ void logThread(void* dummy)
 			SetWindowTextA(hwInfo, status);
 		}
 		if (bWasChanges) {
-			UpdateWindow(logWindow);
+			//UpdateWindow(logWindow);
 			bWasChanges = FALSE;
 		}
 		csLog.Leave();
@@ -242,13 +267,18 @@ void logThread(void* dummy)
 	}
 
 	// Cleanup
-	DestroyWindow(logWindow);
+	//DestroyWindow(logWindow);
+}
+
+void logCallback(LPCSTR c)
+{
 }
 
 void clLog(LPCSTR msg)
 {
 	csLog.Enter();
 	Log(msg);
+
 	csLog.Leave();
 }
 
@@ -257,15 +287,14 @@ void __cdecl clMsg(const char* format, ...)
 	va_list		mark;
 	char buf[4 * 256];
 	va_start(mark, format);
+;
 	vsprintf(buf, format, mark);
-
 
 	string1024		_out_;
 	xr_strconcat(_out_, "    |    | ", buf);
 	clLog(_out_);
 
 }
-
 
 class client_log_impl : public i_lc_log
 {
@@ -277,3 +306,36 @@ class client_log_impl : public i_lc_log
 public:
 	client_log_impl() { lc_log = this; }
 } client_log_impl;
+
+LogWindow::LogWindow(const wxString& title)
+       : wxFrame(NULL,IDD_LOG, title, wxDefaultPosition, wxSize(504, 324))
+{
+  Centre();
+	wxListBox* idcLog = new wxListBox(this, wxID_ANY, wxPoint(0, 0), wxSize(347, 243));
+	wxListBox* idcPhaseTime = new wxListBox(this, wxID_ANY, wxPoint(346, 0), wxSize(159, 324));
+	wxStaticBox* idcStageBox = new wxStaticBox(this, wxID, wxT("Stage Information"), wxPoint(2, 259), wxSize(216, 50));
+
+	wxStaticText* idcInfo = new wxStaticText(this, wxID_ANY, wxT("Test text"), wxPoint(5, 281), wxSize(207, 22));
+	wxStaticText* idcTiming = new wxStaticText(this, wxID_ANY, wxT("Second test text"), wxPoint(225, 281), wxSize(115, 22));
+
+	wxStaticBox* idcPhaseBox = new wxStaticBox(this, wxID_ANY, wxT("Phase Timing"), wxPoint(220, 259), wxSize(125, 50));
+
+	wxStaticText* idcStage = new wxStaticText(this, wxID_ANY, wxT("Starting..."), wxPoint(0, 245), wxSize(346, 17),
+	  wxALIGN_CENTRE_HORIZONTAL);
+
+	wxStaticText* idcPText = new wxStaticText(this, wxID_ANY, wxT("TT33"), wxPoint(307, 308), wxSize(36, 17),
+	  wxALIGN_CENTRE_HORIZONTAL);
+
+	wxGauge* idcProgress = new wxGauge(this, IDD_Progress, 1000, wxPoint(2, 309), wxSize(310, 13));
+
+	idcPText->Bind(wxEVT_TEXT, &LogWindow::, IDD_Progress);
+
+}
+
+void LogWindow::OnClick(wxCommandEvent& event)
+{
+}
+
+void LogWindow::OnText(wxCommandEvent& event)
+{
+}
