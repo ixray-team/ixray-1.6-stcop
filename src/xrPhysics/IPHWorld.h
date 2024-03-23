@@ -33,8 +33,7 @@ class IPHWorld:
 	virtual  void						set_step_time_callback			(PhysicsStepTimeCallback* cb)		= 0;
 	virtual  void						set_update_callback				( IPHWorldUpdateCallbck* cb)		= 0;
 #ifdef DEBUG
-	virtual  u16						ObjectsNumber					()									= 0;
-	virtual  u16						UpdateObjectsNumber				()									= 0;
+	virtual  u16						ObjectsNumber					(bool UpdateOnly = false)			= 0;
 	virtual  void 						OnRender						()									= 0;
 #endif
 
@@ -44,7 +43,7 @@ extern "C" XRPHYSICS_API	IPHWorld *		__stdcall	physics_world();
 class CObjectSpace;
 class CObjectList;
 class CRenderDeviceBase;
-extern "C" XRPHYSICS_API	void			__stdcall	create_physics_world( bool mt, CObjectSpace* os, CObjectList *lo, CRenderDeviceBase *dv  );
+extern "C" XRPHYSICS_API	void			__stdcall	create_physics_world( bool mt, CObjectSpace* os, CObjectList *lo);
 extern "C" XRPHYSICS_API	void			__stdcall	destroy_physics_world();
 class CGameMtlLibrary;
 extern "C" XRPHYSICS_API	void			__stdcall	set_mtl_lib(CGameMtlLibrary * l);

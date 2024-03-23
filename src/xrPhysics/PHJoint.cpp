@@ -1174,15 +1174,16 @@ void CPHJoint::SetJointSDfactors(float spring_factor,float damping_factor)
 {
 	switch(eType){
 		case hinge2:		
-			m_cfm=CFM(hinge2_spring*spring_factor,hinge2_damping*damping_factor);
-			m_erp=ERP(hinge2_spring*spring_factor,hinge2_damping*damping_factor);
+			m_cfm=Cfm(hinge2_spring*spring_factor,hinge2_damping*damping_factor);
+			m_erp=Erp(hinge2_spring*spring_factor,hinge2_damping*damping_factor);
 			break;
 		case ball:					;
 		case hinge:					;								
 		case full_control:			;
 		case slider:				;
-			m_erp=ERP(world_spring*spring_factor,world_damping*damping_factor);
-			m_cfm=CFM(world_spring*spring_factor,world_damping*damping_factor);
+			// Sample: Door
+			m_erp= Erp(world_spring*spring_factor,world_damping*damping_factor);
+			m_cfm= Cfm(world_spring*spring_factor,world_damping*damping_factor);
 			break;
 	}
 	if(bActive) SetJointSDfactorsActive();
@@ -1296,31 +1297,35 @@ void CPHJoint::SetJointFudgefactorActive(float factor)
 }
 
 
-void CPHJoint::GetJointSDfactors(float& spring_factor,float& damping_factor)
+void CPHJoint::GetJointSDfactors(float& spring_factor, float& damping_factor)
 {
-spring_factor =SPRING(m_cfm,m_erp);
-damping_factor=DAMPING(m_cfm,m_erp);
-if(eType==hinge2)
+	spring_factor = Spring(m_cfm, m_erp);
+	damping_factor = Damping(m_cfm, m_erp);
+
+	if (eType == hinge2)
 	{
-		spring_factor/=hinge2_spring;
-		damping_factor/=hinge2_damping;
+		spring_factor /= hinge2_spring;
+		damping_factor /= hinge2_damping;
 	}
-else
+	else
 	{
-		spring_factor/=world_spring;
-		damping_factor/=world_damping;
+		spring_factor /= world_spring;
+		damping_factor /= world_damping;
 	}
 }
-void CPHJoint::GetAxisSDfactors(float& spring_factor,float& damping_factor,int axis_num)
+
+void CPHJoint::GetAxisSDfactors(float& spring_factor, float& damping_factor, int axis_num)
 {
 	LimitAxisNum(axis_num);
-	spring_factor=SPRING(axes[axis_num].cfm,axes[axis_num].erp)/world_spring;
-	damping_factor=DAMPING(axes[axis_num].cfm,axes[axis_num].erp)/world_damping;
+	spring_factor = Spring(axes[axis_num].cfm, axes[axis_num].erp) / world_spring;
+	damping_factor = Damping(axes[axis_num].cfm, axes[axis_num].erp) / world_damping;
 }
+
 u16 CPHJoint::GetAxesNumber()
 {
 	return u16(axes.size());
 }
+
 void CPHJoint::CalcAxis(int ax_num,Fvector& axis, float& lo,float& hi,const Fmatrix& first_matrix,const Fmatrix& second_matrix,const Fmatrix& rotate)
 {
 	switch(axes[ax_num].vs)
@@ -1400,7 +1405,7 @@ void CPHJoint::CalcAxis(int ax_num,Fvector& axis,float& lo,float& hi,const Fmatr
 
 }
 
-void CPHJoint::GetLimits					(float& lo_limit,float& hi_limit,int axis_num)
+void CPHJoint::GetLimits(float& lo_limit,float& hi_limit,int axis_num)
 {
 	LimitAxisNum(axis_num);
 	if( body_for_joint(pFirst_element))
@@ -1418,9 +1423,9 @@ void CPHJoint::GetLimits					(float& lo_limit,float& hi_limit,int axis_num)
 
 void CPHJoint::GetAxisDir(int num, Fvector& axis, eVs& vs)
 {
-LimitAxisNum(num);
-vs=axes[num].vs;
-axis.set(axes[num].direction);
+	LimitAxisNum(num);
+	vs = axes[num].vs;
+	axis.set(axes[num].direction);
 }
 
 void CPHJoint::GetAxisDirDynamic(int num,Fvector& axis)
@@ -1456,34 +1461,34 @@ void CPHJoint::GetAnchorDynamic(Fvector& anchor_)
 		break;
 	case hinge2:				dJointGetHingeAnchor (m_joint,result);
 		break;
-	case ball:					;
+	case ball: ;
 	case full_control:			dJointGetBallAnchor (m_joint,result);
 		break;
 	case slider:				R_ASSERT2(false,"position of slider joint is undefinite");
 		break;
-	default:				R_ASSERT2(false,"type not supported");
+	default:					R_ASSERT2(false,"type not supported");
 		break;
 	}
 	anchor_.set(result[0],result[1],result[2]);
 }
 
-CPHJoint::SPHAxis::SPHAxis(){
-	high=dInfinity;
-	low=-dInfinity;
-	zero=0.f;
-	//erp=ERP(world_spring/5.f,world_damping*5.f);
-	//cfm=CFM(world_spring/5.f,world_damping*5.f);
+CPHJoint::SPHAxis::SPHAxis()
+{
+	high = dInfinity;
+	low = -dInfinity;
+	zero = 0.f;
+
 #ifndef ODE_SLOW_SOLVER
-	erp=world_erp;
-	cfm=world_cfm;
+	erp = world_erp;
+	cfm = world_cfm;
 #else
-	erp=0.3f;
-	cfm=0.000001f;
+	erp = 0.3f;
+	cfm = 0.000001f;
 #endif
-	direction.set(0,0,1);
-	vs=vs_first;
-	force=0.f;
-	velocity=0.f;
+	direction.set(0, 0, 1);
+	vs = vs_first;
+	force = 0.f;
+	velocity = 0.f;
 }
 
 void CPHJoint::SPHAxis::set_sd_factors(float sf,float df,enumType jt)
@@ -1500,19 +1505,22 @@ void CPHJoint::SPHAxis::set_sd_factors(float sf,float df,enumType jt)
 		case hinge:					;								
 		case full_control:			;	
 		case slider:				;
-			erp=ERP(world_spring*sf,world_damping*df);
-			cfm=CFM(world_spring*sf,world_damping*df);
+			erp=Erp(world_spring*sf,world_damping*df);
+			cfm=Cfm(world_spring*sf,world_damping*df);
 			break;
 	}
 }
+
 CPhysicsElement* CPHJoint::PFirst_element()
 {
 	return cast_PhysicsElement(pFirst_element);
 }
+
 CPhysicsElement* CPHJoint::PSecond_element()
 {
 	return cast_PhysicsElement(pSecond_element);
 }
+
 void CPHJoint::SetBreakable(float force,float torque)
 {
 	if(!m_destroy_info)	m_destroy_info=xr_new<CPHJointDestroyInfo>(force,torque);
@@ -1537,16 +1545,18 @@ void CPHJoint::SetShell(CPHShell* p)
 		pShell=p;
 	}
 }
+
 void CPHJoint::ClearDestroyInfo()
 {
 	xr_delete(m_destroy_info);
 }
 
-bool CPHJoint::IsWheelJoint				()
+bool CPHJoint::IsWheelJoint()
 {
-	return dJointGetType(GetDJoint())==dJointTypeHinge2;
+	return dJointGetType(GetDJoint()) == dJointTypeHinge2;
 }
-bool CPHJoint::IsHingeJoint				()
+
+bool CPHJoint::IsHingeJoint()
 {
-	return dJointGetType(GetDJoint())==dJointTypeHinge;
+	return dJointGetType(GetDJoint()) == dJointTypeHinge;
 }

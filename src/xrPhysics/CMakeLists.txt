@@ -62,6 +62,7 @@ target_compile_definitions(xrPhysics PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_link_libraries(xrPhysics PUBLIC xrCore)
 target_link_libraries(xrPhysics PUBLIC xrCDB)
 target_link_libraries(xrPhysics PUBLIC ODE)
+target_link_libraries(xrPhysics PUBLIC xrAbstractions)
 
 # Move precompiled header
 set_target_properties(xrPhysics PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

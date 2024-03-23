@@ -127,64 +127,44 @@ bool	CLevel::net_start_client3				()
 	return true;
 }
 
-bool	CLevel::net_start_client4				()
+bool CLevel::net_start_client4()
 {
-	if(connected_to_server){
+	if (connected_to_server)
+	{
 		// Begin spawn
-//		g_pGamePersistent->LoadTitle		("st_client_spawning");
-		g_pGamePersistent->LoadTitle		();
+		g_pGamePersistent->LoadTitle();
 
 		// Send physics to single or multithreaded mode
-		
-		create_physics_world				(!!psDeviceFlags.test(mtPhysics),&ObjectSpace,&Objects,&Device);
 
+		create_physics_world(!!psDeviceFlags.test(mtPhysics), &ObjectSpace, &Objects);
+		R_ASSERT(physics_world());
 
+		m_ph_commander_physics_worldstep = xr_new<CPHCommander>();
+		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
 
-		R_ASSERT							(physics_world());
+		physics_world()->set_default_contact_shotmark(ContactShotMark);
+		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
 
-		m_ph_commander_physics_worldstep	= xr_new<CPHCommander>();
-		physics_world()->set_update_callback( m_ph_commander_physics_worldstep );
-
-		physics_world()->set_default_contact_shotmark( ContactShotMark );
-		physics_world()->set_default_character_contact_shotmark( CharacterContactShotMark );
-
-		VERIFY						( physics_world() );
-		physics_world()->set_step_time_callback( (PhysicsStepTimeCallback*) &PhisStepsCallback );
+		VERIFY(physics_world());
+		physics_world()->set_step_time_callback((PhysicsStepTimeCallback*)&PhisStepsCallback);
 
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled
-		Device.seqFrameMT.Remove			(g_pNetProcessor);
-		Device.seqFrame.Remove				(g_pNetProcessor);
-		if (psDeviceFlags.test(mtNetwork))	Device.seqFrameMT.Add	(g_pNetProcessor,REG_PRIORITY_HIGH	+ 2);
-		else								Device.seqFrame.Add		(g_pNetProcessor,REG_PRIORITY_LOW	- 2);
+		Device.seqFrameMT.Remove(g_pNetProcessor);
+		Device.seqFrame.Remove(g_pNetProcessor);
+		if (psDeviceFlags.test(mtNetwork))	Device.seqFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH + 2);
+		else								Device.seqFrame.Add(g_pNetProcessor, REG_PRIORITY_LOW - 2);
 
-		if(!psNET_direct_connect)
+		if (!psNET_direct_connect)
 		{
 			// Waiting for connection/configuration completition
-			CTimer	timer_sync	;	timer_sync.Start	();
-			while	(!net_isCompleted_Connect())	Sleep	(5);
-			Msg		("* connection sync: %d ms", timer_sync.GetElapsed_ms());
-			while	(!net_isCompleted_Sync())	{ ClientReceive(); Sleep(5); }
+			CTimer	timer_sync;	timer_sync.Start();
+			while (!net_isCompleted_Connect())	Sleep(5);
+			Msg("* connection sync: %d ms", timer_sync.GetElapsed_ms());
+			while (!net_isCompleted_Sync()) { ClientReceive(); Sleep(5); }
 		}
-/*
-		if(psNET_direct_connect)
-		{
-			ClientReceive(); 
-			if(Server)
-					Server->Update()	;
-			Sleep(5);
-		}else
-
-			while(!game_configured)			
-			{ 
-				ClientReceive(); 
-				if(Server)
-					Server->Update()	;
-				Sleep(5); 
-			}
-*/
-		}
+	}
 	return true;
 }
 
