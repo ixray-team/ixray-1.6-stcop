@@ -43,6 +43,12 @@ file(GLOB CORE_SOURCE_DEBUG_FILES
     "log.*"
 )
 
+file(GLOB CORE_SOURCE_STR_FILES
+    "xrstring*.*"
+    "shared_string.*"
+    "xr_trims.*"
+)
+
 file(GLOB CORE_SOURCE_FS_FILES
     "FS*.*"
     "File*.*"
@@ -68,6 +74,7 @@ file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
 source_group("ungrouped" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("core/api" FILES ${CORE_SOURCE_XR_API_FILES})
 source_group("core/math" FILES ${CORE_SOURCE_MATH_FILES})
+source_group("core/string" FILES ${CORE_SOURCE_STR_FILES})
 source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
 source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})

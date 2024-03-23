@@ -657,16 +657,16 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
 
 ExpressionVarVariadic CExpression::ExecuteExpression()
 {
-    xr_hash_map<xr_string, xr_string> DummyVariables;
+    xr_string_map<xr_string, xr_string> DummyVariables;
     return ExecuteExpression(DummyVariables);
 }
 
-ExpressionVarVariadic CExpression::ExecuteExpression(const xr_hash_map<xr_string, xr_string>& Variables)
+ExpressionVarVariadic CExpression::ExecuteExpression(const xr_string_map<xr_string, xr_string>& Variables)
 {
     bool bWithoutVariables = Variables.empty();
 	ExpressionVarVariadic stack[32];
 
-    xr_hash_map<xr_string, ExpressionVarVariadic> ParsedVariables;
+    xr_string_map<xr_string, ExpressionVarVariadic> ParsedVariables;
     if (!bWithoutVariables)
     {
         ParseVariablesForExecution(Variables, ParsedVariables);
@@ -789,7 +789,7 @@ std::vector<std::string> split(const xr_string& input, const xr_string& regex)
     return { first, last };
 }
 
-void CExpression::ParseVariablesForExecution(const xr_hash_map<xr_string, xr_string>& Variables, xr_hash_map<xr_string, ExpressionVarVariadic>& OutVariables)
+void CExpression::ParseVariablesForExecution(const xr_string_map<xr_string, xr_string>& Variables, xr_string_map<xr_string, ExpressionVarVariadic>& OutVariables)
 {
     for (const auto& [Name, Value] : Variables)
     {

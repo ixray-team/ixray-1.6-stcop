@@ -145,13 +145,13 @@ public:
     void CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowVariables = false);
 
     ExpressionVarVariadic ExecuteExpression();
-    ExpressionVarVariadic ExecuteExpression(const xr_hash_map<xr_string, xr_string>& Variables);
+    ExpressionVarVariadic ExecuteExpression(const xr_string_map<xr_string, xr_string>& Variables);
 
     bool IsCompiled() const;
 
 private:
 
-    void ParseVariablesForExecution(const xr_hash_map<xr_string, xr_string>& Variables, xr_hash_map<xr_string, ExpressionVarVariadic>& OutVariables);
+    void ParseVariablesForExecution(const xr_string_map<xr_string, xr_string>& Variables, xr_string_map<xr_string, ExpressionVarVariadic>& OutVariables);
 
     ExpressionByteCode GetBytecodeByFunctionName(xr_string& FunctionName);
 
