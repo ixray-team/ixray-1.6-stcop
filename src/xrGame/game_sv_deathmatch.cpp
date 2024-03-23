@@ -104,7 +104,7 @@ void	game_sv_Deathmatch::Create					(shared_str& options)
 	
 	switch_Phase(GAME_PHASE_PENDING);
 
-	::Random.seed(GetTickCount64());
+	::Random.seed((int)CPU::GetTickCount());
 	m_CorpseList.clear();
 
 	m_AnomaliesPermanent.clear();

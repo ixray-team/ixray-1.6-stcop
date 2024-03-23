@@ -335,7 +335,7 @@ pureFrame*	g_pNetProcessor	= &NET_processor;
 
 const int ConnectionTimeOut = 60000; //1 min
 
-BOOL			CLevel::Connect2Server				(LPCSTR options)
+BOOL CLevel::Connect2Server(LPCSTR options)
 {
 	NET_Packet					P;
 	m_bConnectResultReceived	= false	;
@@ -357,11 +357,11 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 	}
 	else
 	{
-		u32 EndTime = GetTickCount() + ConnectionTimeOut;
+		size_t EndTime = CPU::GetTickCount() + ConnectionTimeOut;
 		while (!HasSessionName())
 		{
 			Sleep(5);
-			u32 CurTime = GetTickCount();
+			u32 CurTime = CPU::GetTickCount();
 			if (CurTime > EndTime || net_isFails_Connect())
 			{
 				OnConnectRejected();
@@ -370,7 +370,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 			}
 		}
 
-		EndTime = GetTickCount() + ConnectionTimeOut;
+		EndTime = CPU::GetTickCount() + ConnectionTimeOut;
 		while (!m_bConnectResultReceived)
 		{
 			ClientReceive();
@@ -378,7 +378,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 			if (Server)
 				Server->Update();
 
-			u32 CurTime = GetTickCount();
+			u32 CurTime = CPU::GetTickCount();
 			if (CurTime > EndTime)
 			{
 				NET_Packet	P;
@@ -437,7 +437,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 	return TRUE;
 };
 
-void			CLevel::OnBuildVersionChallenge		()
+void CLevel::OnBuildVersionChallenge()
 {
 	NET_Packet P;
 	P.w_begin				(M_CL_AUTH);

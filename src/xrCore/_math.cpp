@@ -145,6 +145,11 @@ namespace CPU
 		return	_dest	;
 	}
 
+	XRCORE_API size_t GetTickCount()
+	{
+		return SDL_GetTicks();
+	}
+
 #ifdef M_BORLAND
 	u64	__fastcall GetCLK		(void)
 	{
