@@ -71,7 +71,11 @@ void xrLogger::SimpleMessage(LPCSTR Message, u32 MessageSize /*= 0*/)
 
 void xrLogger::OpenLogFile()
 {
-	theLogger.InternalOpenLogFile();
+	static bool isLogOpened = false;
+	if (!isLogOpened) {
+		theLogger.InternalOpenLogFile();
+		isLogOpened = true;
+	}
 }
 
 const string_path& xrLogger::GetLogPath()

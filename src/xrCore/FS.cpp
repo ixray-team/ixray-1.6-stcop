@@ -519,7 +519,9 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 	Size			= (int)GetFileSize(hSrcFile, NULL);
 	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));
-
+	if (Size == 0) {
+		return;
+	}
 	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 
@@ -533,6 +535,9 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 
 CVirtualFileReader::~CVirtualFileReader() 
 {
+	if (Size == 0) {
+		return;
+	}
 #ifdef DEBUG
 	unregister_file_mapping	(data,Size);
 #endif // DEBUG
