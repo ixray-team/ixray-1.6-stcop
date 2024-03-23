@@ -35,7 +35,7 @@ void CPolterSpecialAbility::load(LPCSTR section)
 
 void CPolterSpecialAbility::update_schedule()
 {
-	if (m_object->g_Alive()) {
+	if (m_object->g_Alive() && m_object->is_hidden()) {
 		if (!m_sound_base._feedback()) m_sound_base.play_at_pos(m_object, m_object->Position());
 		else m_sound_base.set_position(m_object->Position());
 	}
@@ -55,6 +55,8 @@ void CPolterSpecialAbility::on_show()
 {
 	if (m_particles_object)			CParticlesObject::Destroy(m_particles_object);
 	if (m_particles_object_electro) CParticlesObject::Destroy(m_particles_object_electro);
+
+	m_sound_base.stop();
 }
 
 void CPolterSpecialAbility::update_frame()
@@ -72,6 +74,8 @@ void CPolterSpecialAbility::on_die()
 
 	CParticlesObject::Destroy		(m_particles_object_electro);
 	CParticlesObject::Destroy		(m_particles_object);
+
+	m_sound_base.stop();
 }
 
 void CPolterSpecialAbility::on_hit(SHit* pHDS)
@@ -79,7 +83,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 	if (m_object->g_Alive() && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != m_last_hit_frame)) {
 		if(BI_NONE != pHDS->bone()) {
 
-			//вычислить координаты попадания
+			//РІС‹С‡РёСЃР»РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕРїР°РґР°РЅРёСЏ
 			IKinematics* V = smart_cast<IKinematics*>(m_object->Visual());
 
 			Fvector start_pos = pHDS->bone_space_position();
@@ -138,12 +142,12 @@ void CPoltergeist::StrangeSounds(const Fvector &position)
 		if (Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, nullptr)) {
 			if (l_rq.range < TRACE_DISTANCE) {
 
-				// Получить пару материалов
+				// РџРѕР»СѓС‡РёС‚СЊ РїР°СЂСѓ РјР°С‚РµСЂРёР°Р»РѕРІ
 				CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris() + l_rq.element;
 				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(material().self_material_idx(),pTri->material);
 				if (!mtl_pair) continue;
 
-				// Играть звук
+				// РРіСЂР°С‚СЊ Р·РІСѓРє
 				if (!mtl_pair->CollideSounds.empty()) {
 					CLONE_MTL_SOUND(m_strange_sound, mtl_pair, CollideSounds);
 					Fvector pos;
