@@ -23,41 +23,53 @@ CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo &ppi, u32 tim
 
 void CPPEffectorControllerAura::switch_off()
 {
-	m_effector_state		= eStateFadeOut;		
-	m_time_state_started	= Device.dwTimeGlobal;
+	m_effector_state = eStateFadeOut;
+	m_time_state_started = Device.dwTimeGlobal;
 }
 
 
-BOOL CPPEffectorControllerAura::update()
+void CPPEffectorControllerAura::stop_snds()
 {
-	// update factor
-	if (m_effector_state == eStatePermanent) {
-		m_factor = 1.f;
-	} else {
-		m_factor = float(Device.dwTimeGlobal - m_time_state_started) / float(m_time_to_fade);
-		if (m_effector_state == eStateFadeOut) m_factor = 1 - m_factor;
+	m_time_to_fade = 0;
+	if (m_snd_left._feedback())	m_snd_left.stop();
+	if (m_snd_right._feedback())	m_snd_right.stop();
+}
 
-		if (m_factor > 1) {
-			m_effector_state	= eStatePermanent;
-			m_factor			= 1.f;
-		} else if (m_factor < 0) {
-			if (m_snd_left._feedback())		m_snd_left.stop();
-			if (m_snd_right._feedback())	m_snd_right.stop();
-		
-			return FALSE;
+BOOL CPPEffectorControllerAura::update()
+{	// update factor
+	if (m_time_to_fade != 0.0f)
+	{
+		if (m_effector_state == eStatePermanent) {
+			m_factor = 1.f;
 		}
+		else {
+			m_factor = float(Device.dwTimeGlobal - m_time_state_started) / float(m_time_to_fade);
+			if (m_effector_state == eStateFadeOut) m_factor = 1 - m_factor;
+
+			if (m_factor > 1) {
+				m_effector_state = eStatePermanent;
+				m_factor = 1.f;
+			}
+			else if (m_factor < 0) {
+				if (m_snd_left._feedback())		m_snd_left.stop();
+				if (m_snd_right._feedback())	m_snd_right.stop();
+
+				return FALSE;
+			}
+		}
+
+		// start new or play again?
+		if (!m_snd_left._feedback() && !m_snd_right._feedback()) {
+			m_snd_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
+			m_snd_right.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
+		}
+
+		if (m_snd_left._feedback())		m_snd_left.set_volume(m_factor);
+		if (m_snd_right._feedback())	m_snd_right.set_volume(m_factor);
+
+		return TRUE;
 	}
-
-	// start new or play again?
-	if (!m_snd_left._feedback() && !m_snd_right._feedback()) {
-		m_snd_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
-		m_snd_right.play_at_pos(Actor(), Fvector().set(0.f, -1.f, 1.f), sm_Looped | sm_2D);
-	} 
-
-	if (m_snd_left._feedback())		m_snd_left.set_volume	(m_factor);
-	if (m_snd_right._feedback())	m_snd_right.set_volume	(m_factor);
-
-	return TRUE;
+	else	return FALSE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -171,6 +183,15 @@ void CControllerAura::on_death()
 		m_effector->switch_off	();
 		m_effector				= 0;
 		m_hit_state				= eNone;
+	}
+}
+
+void CControllerAura::on_destroy()
+{
+	if (active()) {
+		m_effector->stop_snds();
+		m_effector = 0;
+		m_hit_state = eNone;
 	}
 }
 
