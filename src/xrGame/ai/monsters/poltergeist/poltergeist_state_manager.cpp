@@ -138,7 +138,7 @@ void CStateManagerPoltergeist::execute()
             {
                 object->SetValueDisableHide(false);
 
-                object->on_activate();
+                object->on_deactivate();
                 state_id = eStateRest;
             }
         }
