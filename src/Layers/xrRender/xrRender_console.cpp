@@ -154,7 +154,7 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 
 Flags32 ps_r2_ls_flags_ext = { R2FLAGEXT_ENABLE_TESSELLATION };
 
-Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_NO_RAM_TEXTURES | RFLAG_OPT_SHAD_GEOM | RFLAG_SSS_SSS /*| RFLAG_MT_TEX_LOAD*/ };
+Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_NO_RAM_TEXTURES | RFLAG_OPT_SHAD_GEOM | RFLAG_SSS_SSS | RFLAG_SSS_SSR /*| RFLAG_MT_TEX_LOAD*/ };
 
 int opt_static = 1;
 int opt_dynamic = 1;
@@ -217,7 +217,7 @@ float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
 float		ps_r2_def_aref_quality = 100.0f;
 
 float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
-float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
+float		ps_r3_dyn_wet_surf_far		= 100.f;			// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 
 // Test float exported to shaders for development
@@ -899,6 +899,9 @@ void		xrRender_initconsole	()
 
 	// Screen Space Shadows
 	CMD3(CCC_Mask, "r_screen_space_shadows", &ps_r__common_flags, RFLAG_SSS_SSS);
+
+	// Screen Space Reflections
+	CMD3(CCC_Mask, "r_screen_space_reflections", &ps_r__common_flags, RFLAG_SSS_SSR);
 
 //	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
 	// Geometry optimization

@@ -836,6 +836,13 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len] = '0' + char(ps_r__common_flags.test(RFLAG_SSS_SSS)); ++len;
 
+	if (ps_r__common_flags.test(RFLAG_SSS_SSR)) {
+		defines[def_it].Name = "USE_SSS_SSR";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(ps_r__common_flags.test(RFLAG_SSS_SSR)); ++len;
+
 	defines[def_it].Name = "USE_VTF";
 	defines[def_it].Definition = "1";
 	def_it++;
