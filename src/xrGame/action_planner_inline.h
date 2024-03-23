@@ -114,8 +114,8 @@ void CPlanner::update				()
 	else
 	{
 		//Attempt to workaround strange line 114 crash when loading generators
-#pragma TODO("OldSerpskiStalker. Hack for l13_Generators")
-		if (!solution().empty())
+//#pragma TODO("OldSerpskiStalker. Hack for l13_Generators")
+		if (!this->solution().empty())
 		{
 			if (initialized()) 
 			{
