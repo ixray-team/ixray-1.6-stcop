@@ -38,11 +38,13 @@ extern ECORE_API	float		ps_r__WallmarkSHIFT_V	;
 
 extern ECORE_API	float		ps_r__GLOD_ssa_start;
 extern ECORE_API	float		ps_r__GLOD_ssa_end	;
-extern ECORE_API	float		ps_r__LOD			;
-//.extern ECORE_API	float		ps_r__LOD_Power		;
 extern ECORE_API	float		ps_r__ssaDISCARD	;
-extern ECORE_API	float		ps_r__ssaDONTSORT	;
 extern ECORE_API	float		ps_r__ssaHZBvsTEX	;
+extern ECORE_API	float		ps_r__geomLodSpriteDistF_;
+extern ECORE_API	float		ps_r__geomDiscardDistF_;
+extern ECORE_API	float		ps_r__geomLodDistF_;
+extern ECORE_API	float		ps_r__geomNTextureDistF_;
+extern ECORE_API	float		ps_r__geomDTextureDistF_;
 extern ECORE_API	int			ps_r__tf_Anisotropic;
 
 // R1

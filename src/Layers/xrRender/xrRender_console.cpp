@@ -100,13 +100,18 @@ float		ps_r__WallmarkTTL			= 50.f	;
 float		ps_r__WallmarkSHIFT			= 0.0001f;
 float		ps_r__WallmarkSHIFT_V		= 0.0001f;
 
-float		ps_r__GLOD_ssa_start		= 256.f	;
-float		ps_r__GLOD_ssa_end			=  64.f	;
-float		ps_r__LOD					=  0.75f	;
-//. float		ps_r__LOD_Power				=  1.5f	;
-float		ps_r__ssaDISCARD			=  3.5f	;					//RO
-float		ps_r__ssaDONTSORT			=  32.f	;					//RO
-float		ps_r__ssaHZBvsTEX			=  96.f	;					//RO
+// Base factor values
+float		ps_r__GLOD_ssa_start = 256.f;
+float		ps_r__GLOD_ssa_end = 64.f;
+float		ps_r__ssaDISCARD = 3.5f;
+float		ps_r__ssaHZBvsTEX = 96.f;
+
+// Distance factor values
+float		ps_r__geomLodSpriteDistF_ = 0.75f;
+float		ps_r__geomDiscardDistF_ = 0.75f;
+float		ps_r__geomLodDistF_ = 0.75f;
+float		ps_r__geomNTextureDistF_ = 0.75f;
+float		ps_r__geomDTextureDistF_ = 0.75f;
 
 int			ps_r__tf_Anisotropic		= 8		;
 
@@ -679,8 +684,6 @@ void		xrRender_initconsole	()
 	CMD1(CCC_BuildSSA,	"build_ssa"				);
 #endif
 	CMD4(CCC_Integer,	"r__lsleep_frames",		&ps_r__LightSleepFrames,	4,		30		);
-	CMD4(CCC_Float,		"r__ssa_glod_start",	&ps_r__GLOD_ssa_start,		128,	512		);
-	CMD4(CCC_Float,		"r__ssa_glod_end",		&ps_r__GLOD_ssa_end,		16,		96		);
 	CMD4(CCC_Float,		"r__wallmark_shift_pp",	&ps_r__WallmarkSHIFT,		0.0f,	1.f		);
 	CMD4(CCC_Float,		"r__wallmark_shift_v",	&ps_r__WallmarkSHIFT_V,		0.0f,	1.f		);
 	CMD1(CCC_ModelPoolStat,"stat_models"		);
@@ -691,8 +694,14 @@ void		xrRender_initconsole	()
 
 	Fvector	tw_min,tw_max;
 	
-	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
-//.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
+	// Geometry Lod control
+	CMD4(CCC_Float, "r__ssa_glod_start", &ps_r__GLOD_ssa_start, 128, 512);
+	CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);
+	CMD4(CCC_Float, "r__lod_sprite_dist_f", &ps_r__geomLodSpriteDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__geom_quality_dist_f", &ps_r__geomLodDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__geom_discard_dist_f", &ps_r__geomDiscardDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__dtexture_dist_f", &ps_r__geomDTextureDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__ntexture_dist_f", &ps_r__geomNTextureDistF_, 0.1f, 3.0f);
 
 	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		0.2f,	0.8f	);
 
