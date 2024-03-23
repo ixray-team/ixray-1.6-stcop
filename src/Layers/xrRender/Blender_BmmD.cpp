@@ -91,6 +91,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:
+#ifndef _EDITOR
 			if (ps_r1_flags.test(R1FLAG_TERRAIN_MASK)) {
 				string256 mask;
 				xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
@@ -101,7 +102,10 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 				C.r_Sampler("s_dt_g", oG_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 				C.r_Sampler("s_dt_b", oB_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 				C.r_Sampler("s_dt_a", oA_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
-			} else {
+			} 
+			else
+#endif 
+			{
 				C.r_Pass("impl_dt", "impl_dt", TRUE);
 			}
 			C.r_Sampler		("s_base",	C.L_textures[0]);

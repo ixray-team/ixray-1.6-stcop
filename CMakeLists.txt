@@ -74,3 +74,6 @@ add_subdirectory("src/plugins")
 
 # Utils
 add_subdirectory("src/utils")
+
+# Editors
+add_subdirectory("src/Editors")

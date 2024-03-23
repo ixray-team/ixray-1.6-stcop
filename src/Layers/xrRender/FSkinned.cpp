@@ -408,7 +408,7 @@ void CSkeletonX_ST::Load(const char* N, IReader *data, u32 dwFlags)
 void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 {
 	// Create HW VB in case this is possible
-//	BOOL	bSoft				= dxRenderDeviceRender::Instance().Caps.geometry.bSoftware;
+//	BOOL	bSoft				= Caps.geometry.bSoftware;
 //	u32		dwUsage				= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// VB may be read by wallmarks code
 	switch	(RenderMode)
 	{
@@ -592,7 +592,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 {
 	// Create HW VB in case this is possible
-	BOOL	bSoft				= dxRenderDeviceRender::Instance().Caps.geometry.bSoftware;
+	BOOL	bSoft				= Caps.geometry.bSoftware;
 	u32		dwUsage				= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// VB may be read by wallmarks code
 	switch	(RenderMode)
 	{

@@ -114,10 +114,10 @@ namespace PS
 #ifdef _EDITOR         
 // change Copy&Equal if variables changed
 	public:
-		using EPAVec = xr_vector<EParticleAction*>;
-		using EPAVecIt = EPAVec::iterator;
-
-		EPAVec 				m_EActionList;
+		//using EPAVec = xr_vector<EParticleAction*>;
+		//using EPAVecIt = EPAVec::iterator;
+		//
+		//EPAVec 				m_EActionList;
 	public:             
 		void   	FindActionByName	(LPCSTR new_name, bool& res);
 		bool   	NameOnAfterEdit					(PropValue* sender, shared_str& edit_val);
@@ -134,14 +134,14 @@ namespace PS
 		void   	OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnActionsClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
         bool   	OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val);
-		void				FillProp		   	(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner);
+		void				FillProp		   	(LPCSTR pref, ::PropItemVec& items, void* owner);
 		void				Copy				(const CPEDef& src);
 		BOOL				Equal				(const CPEDef* pe);
 		void 				Render				(const Fmatrix& parent);
 		static PFunction*	FindCommandPrototype(LPCSTR src, LPCSTR& dest);
 		void   	FillActionList		(ChooseItemVec& items, void* param);
         bool 				Validate 			(bool bMsg);
-		void 				Compile				(EPAVec& v);
+		//void 				Compile				(EPAVec& v);
 #endif
 	};
 };

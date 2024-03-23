@@ -98,7 +98,7 @@ ENGINE_API	string_path		g_sLaunchWorkingFolder;
 // startup point
 void InitEngine		()
 {
-	DevicePtr = xr_make_unique<CRenderDevice>();
+	DevicePtr = new CRenderDevice();
 
 	Engine.Initialize			( );
 	while (!g_bIntroFinished)	Sleep	(100);
@@ -192,7 +192,7 @@ void destroyEngine()
 	xrLogger::FlushLog();
 
 	Engine.Destroy();
-	xr_delete(DevicePtr.release());
+	xr_delete(DevicePtr);
 }
 
 void execUserScript()

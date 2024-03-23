@@ -47,7 +47,7 @@ namespace PS
 		void   	OnEffectEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnControlClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnParamsChange	(PropValue* sender);
-		void				FillProp	   	(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner);
+		void				FillProp	   	(LPCSTR pref, ::PropItemVec& items, void* owner);
 		BOOL				Equal			(const CPGDef* pe);
 		bool				Validate 			(bool bMsg);
 #endif

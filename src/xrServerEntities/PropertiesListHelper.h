@@ -1,10 +1,43 @@
 //---------------------------------------------------------------------------
 #ifndef PropertiesListHelperH
 #define PropertiesListHelperH
-                                                               
+
+enum EPropType 
+{
+    PROP_UNDEF = -1,
+    PROP_CAPTION = 0x1000,
+    PROP_SHORTCUT,
+    PROP_BUTTON,
+    PROP_CHOOSE,
+    PROP_NUMERIC,	// {u8,u16,u32,s8,s16,s32,f32}
+    PROP_BOOLEAN,
+    PROP_FLAG,
+    PROP_VECTOR,
+    PROP_TOKEN,
+    PROP_RTOKEN,
+    PROP_RLIST,
+    PROP_COLOR,
+    PROP_FCOLOR,
+    PROP_VCOLOR,
+    PROP_RTEXT,
+    PROP_STEXT,
+    PROP_WAVE,
+    PROP_CANVAS,
+    PROP_TIME,
+
+    PROP_CTEXT,
+    PROP_CLIST,
+    PROP_SH_TOKEN,
+    PROP_TEXTURE2,
+    PROP_GAMETYPE,
+};
+
 // refs
 class ListItem;
+class IPropHelper
+{
 
+};
 //---------------------------------------------------------------------------
 class CPropHelper:public IPropHelper{
 	PropItem*								CreateItem			(PropItemVec& items, const shared_str& key, EPropType type, u32 item_flags=0);
@@ -29,6 +62,7 @@ public:
     virtual bool 				  	CNameAfterEdit		(PropValue* sender, xr_string& edit_val);
     virtual void 				  	CNameDraw			(PropValue* sender, xr_string& draw_val);
 public:
+#if 0
     virtual CaptionValue*  			CreateCaption	    (PropItemVec& items, shared_str key, shared_str val);
     virtual CanvasValue*			CreateCanvas	    (PropItemVec& items, shared_str key, shared_str val, int height);
     virtual ButtonValue*			CreateButton	    (PropItemVec& items, shared_str key, shared_str val, u32 flags, ButtonValue::TOnBtnClick onclick=0);
@@ -74,6 +108,7 @@ public:
     virtual CTextValue* 			CreateCName		    (PropItemVec& items, shared_str key, LPSTR val, u32 sz, ListItem* owner);
 	virtual TokenValueSH*   		CreateTokenSH	    (PropItemVec& items, shared_str key, u32* val, const TokenValueSH::Item* lst, u32 cnt);
     virtual CTextValue* 			CreateTexture		(PropItemVec& items, shared_str key, LPSTR val, u32 sz);
+#endif
 };
 //---------------------------------------------------------------------------
 #endif

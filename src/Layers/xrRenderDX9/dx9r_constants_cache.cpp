@@ -31,10 +31,10 @@ void R_constants::flush_cache()
 			u32		count		= F.r_hi()-F.r_lo();
 			if (count)			{
 #ifdef DEBUG
-				if (F.r_hi() > dxRenderDeviceRender::Instance().Caps.geometry.dwRegisters)
+				if (F.r_hi() > Caps.geometry.dwRegisters)
 				{
 					Debug.fatal(DEBUG_INFO,"Internal error setting VS-constants: overflow\nregs[%d],hi[%d]",
-						dxRenderDeviceRender::Instance().Caps.geometry.dwRegisters,F.r_hi()
+						Caps.geometry.dwRegisters,F.r_hi()
 						);
 				}
 				PGO		(Msg("PGO:V_CONST:%d",count));

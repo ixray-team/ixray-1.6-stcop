@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrCore/EventAPI.h"
 
 class ILoadingScreen;
 

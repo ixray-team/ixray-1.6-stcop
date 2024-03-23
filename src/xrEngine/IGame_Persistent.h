@@ -3,6 +3,7 @@
 #pragma once
 
 #include "..\xrServerEntities\gametype_chooser.h"
+#include "GameFont.h"
 #ifndef _EDITOR
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
