@@ -361,7 +361,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 		while (!HasSessionName())
 		{
 			Sleep(5);
-			u32 CurTime = CPU::GetTickCount();
+			size_t CurTime = CPU::GetTickCount();
 			if (CurTime > EndTime || net_isFails_Connect())
 			{
 				OnConnectRejected();
@@ -378,7 +378,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 			if (Server)
 				Server->Update();
 
-			u32 CurTime = CPU::GetTickCount();
+			size_t CurTime = CPU::GetTickCount();
 			if (CurTime > EndTime)
 			{
 				NET_Packet	P;

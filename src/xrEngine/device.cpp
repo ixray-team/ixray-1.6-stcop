@@ -487,11 +487,6 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 	{
 		Device.seqAppActivate.Process(rp_AppActivate);
 		app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
-
-		if (!g_dedicated_server) 
-		{
-			//SDL_HideCursor();
-		}
 	}
 	else if (!psDeviceFlags.test(rsDeviceActive))
 	{
@@ -501,9 +496,12 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 	}
 	else
 	{
-		if (NewState) {
+		if (NewState && !g_dedicated_server) 
+		{
 			SDL_HideCursor();
-		} else {
+		} 
+		else 
+		{
 			SDL_ShowCursor();
 		}
 	}
