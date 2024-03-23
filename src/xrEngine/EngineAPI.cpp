@@ -74,6 +74,15 @@ void CEngineAPI::InitializeNotDedicated()
 
 extern ENGINE_API bool g_dedicated_server;
 
+void __cdecl Null_Factory_Destroy(DLL_Pure* O)
+{
+}
+
+DLL_Pure* __cdecl Null_Factory_Create(CLASS_ID CLS_ID)
+{
+	return nullptr;
+}
+
 void CEngineAPI::Initialize(void)
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -99,15 +108,24 @@ void CEngineAPI::Initialize(void)
 
 	Device.ConnectToRender();
 
-	// game	
+	// game
 	{
 		LPCSTR			g_name	= "xrGame.dll";
 		Msg("Loading DLL: %s",g_name);
 		hGame			= LoadLibraryA	(g_name);
 		if (0==hGame)	R_CHK			(GetLastError());
 		R_ASSERT2		(hGame,"Game DLL raised exception during loading or there is no game DLL at all");
-		pCreate			= (Factory_Create*)		GetProcAddress(hGame,"xrFactory_Create"		);	R_ASSERT(pCreate);
-		pDestroy		= (Factory_Destroy*)	GetProcAddress(hGame,"xrFactory_Destroy"	);	R_ASSERT(pDestroy);
+
+		if (hGame == nullptr)
+		{
+			pCreate = Null_Factory_Create;
+			pDestroy = Null_Factory_Destroy;
+		}
+		else
+		{
+			pCreate = (Factory_Create*)GetProcAddress(hGame, "xrFactory_Create");		R_ASSERT(pCreate);
+			pDestroy = (Factory_Destroy*)GetProcAddress(hGame, "xrFactory_Destroy");	R_ASSERT(pDestroy);
+		}
 	}
 
 	// GameSpy
@@ -122,10 +140,11 @@ void CEngineAPI::Initialize(void)
 	}
 }
 
-void CEngineAPI::Destroy	(void)
+void CEngineAPI::Destroy(void)
 {
 	if (hGame)				{ FreeLibrary(hGame);	hGame	= 0; }
 	if (hRender)			{ FreeLibrary(hRender); hRender = 0; }
+
 	pCreate					= 0;
 	pDestroy				= 0;
 	g_pEventManager->Event._destroy	();
@@ -143,7 +162,9 @@ void CEngineAPI::CreateRendererList()
 
 		vid_quality_token[1].id = -1;
 		vid_quality_token[1].name = NULL;
-	} else {
+	} 
+	else
+	{
 		//	TODO: ask renderers if they are supported!
 		if(vid_quality_token != NULL) 
 			return;
@@ -210,7 +231,8 @@ void CEngineAPI::CreateRendererList()
 
 APILevel CEngineAPI::GetAPI()
 {
-	if (psDeviceFlags.test(rsR4)) {
+	if (psDeviceFlags.test(rsR4))
+	{
 		return APILevel::DX11;
 	}
 
