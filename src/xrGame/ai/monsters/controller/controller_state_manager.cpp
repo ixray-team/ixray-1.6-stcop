@@ -68,10 +68,8 @@ void CStateManagerController::execute()
 {
 	u32 state_id = u32(-1);
 		
-	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
-
 	// Lain: changed logic
-	if (enemy) {
+	if (object->EnemyMan.get_enemy()) {
 
 		if ( object->EnemyMan.get_danger_type() == eStrong )
 		{
@@ -114,12 +112,12 @@ void CStateManagerController::execute()
 		else			state_id = eStateRest;
 	}
 
-	if (enemy) object->set_controlled_task(eTaskAttack);
+	if (object->EnemyMan.get_enemy()) object->set_controlled_task(eTaskAttack);
 	else object->set_controlled_task(eTaskFollow);
 
 	select_state(state_id); 
 
-	// âûïîëíèòü òåêóùåå ñîñòîÿíèå
+	// Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

@@ -96,9 +96,7 @@ void CStateManagerBloodsucker::execute ()
 {
 	u32 state_id = u32(-1);
 
-	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
-	
-	if ( enemy ) 
+	if (const CEntityAlive* enemy = object->EnemyMan.get_enemy())
 	{
 		 if ( check_vampire() ) 
 		 {
@@ -132,17 +130,6 @@ void CStateManagerBloodsucker::execute ()
 	}
 
 	// check if start interesting sound state
-// 	if ( (prev_substate != eStateHearInterestingSound) && (state_id == eStateHearInterestingSound) )
-// 	{
-// 		object->start_invisible_predator();
-// 	} 
-// 	else
-// 	// check if stop interesting sound state
-// 	if ( (prev_substate == eStateHearInterestingSound) && (state_id != eStateHearInterestingSound) ) 
-// 	{
-// 		object->stop_invisible_predator();
-// 	}
-
 	select_state(state_id); 
 
 	// выполнить текущее состояние

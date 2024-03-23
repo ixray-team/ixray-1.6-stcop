@@ -45,9 +45,7 @@ void CStateManagerSnork::execute()
 {
 	u32 state_id = u32(-1);
 
-	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
-
-	if (enemy) {
+	if (object->EnemyMan.get_enemy()) {
 		switch (object->EnemyMan.get_danger_type()) {
 				case eStrong:	state_id = eStatePanic; break;
 				case eWeak:		state_id = eStateAttack; break;
@@ -74,7 +72,7 @@ void CStateManagerSnork::execute()
 		object->start_threaten = true;
 	}
 
-	// âûïîëíèòü òåêóùåå ñîñòîÿíèå
+	// Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;
