@@ -46,13 +46,16 @@ function register(object_factory)
 	cs_register	(object_factory, "CController",     			"se_monster.se_monster",				"SM_CONTR",			"controller_s")
 	cs_register	(object_factory, "CFracture",       			"se_monster.se_monster",				"SM_IZLOM",			"fracture_s")
 	cs_register	(object_factory, "CPoltergeist",    			"se_monster.se_monster",				"SM_POLTR",			"poltergeist_s")
-	cs_register	(object_factory, "CPseudoGigant",   			"se_monster.se_monster",				"SM_GIANT",			"gigant_s")
+	cs_register	(object_factory, "CPseudogigant",   			"se_monster.se_monster",				"SM_GIANT",			"gigant_s")
 	cs_register	(object_factory, "CZombie",         			"se_monster.se_monster",				"SM_ZOMBI",			"zombie_s")
 	cs_register	(object_factory, "CSnork",          			"se_monster.se_monster",				"SM_SNORK",			"snork_s")
 	cs_register	(object_factory, "CTushkano",       			"se_monster.se_monster",				"SM_TUSHK",			"tushkano_s")
 	cs_register	(object_factory, "CPsyDog",         			"se_monster.se_monster",				"SM_DOG_P",			"psy_dog_s")
 	cs_register	(object_factory, "CPsyDogPhantom",  			"se_monster.se_monster",				"SM_DOG_F",			"psy_dog_phantom_s")
-
+	
+	cs_register	(object_factory, "CBeetle",       				"se_monster.se_monster",				"SM_BEETL",			"beetle_s")
+	cs_register	(object_factory, "CPseudogigantJumper",   		"se_monster.se_monster",				"SM_GANTJ",			"gigant_jumper_s")
+	
 	-- DEVICES ----------------------------------------------------------------------------------------------------------------------------
 
 	cs_register	(object_factory, "CTorch",          			"se_item.se_item_torch",				"TORCH_S",			"device_torch_s")
