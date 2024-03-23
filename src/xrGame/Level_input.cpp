@@ -43,7 +43,7 @@ extern	float	g_fTimeFactor;
 void CLevel::IR_OnMouseWheel( int direction )
 {
 	if(	g_bDisableAllInput	) return;
-
+	if (g_actor) g_actor->callback(GameObject::eMouseWheel)(direction);
 	if (CurrentGameUI()->IR_UIOnMouseWheel(direction)) return;
 	if( Device.Paused()
 #ifdef DEBUG
@@ -70,6 +70,7 @@ void CLevel::IR_OnMouseHold(int btn)
 void CLevel::IR_OnMouseMove( int dx, int dy )
 {
 	if(g_bDisableAllInput)							return;
+	if (g_actor) g_actor->callback(GameObject::eMouseMove)(dx, dy);
 	if (CurrentGameUI()->IR_UIOnMouseMove(dx,dy))		return;
 	if (Device.Paused() && !IsDemoPlay() 
 #ifdef DEBUG

@@ -56,6 +56,9 @@ namespace GameObject {
 		eKeyRelease,
 		eKeyHold,
 
+		eMouseMove,
+		eMouseWheel,
+
 		eOnWeaponFired,
 		eOnWeaponJammed,
 		eOnWeaponZoomIn,
@@ -65,6 +68,7 @@ namespace GameObject {
 		eItemToBelt,
 		eItemToSlot,
 		eItemToRuck,
+
 		eOnFootStep,
 
 		eAttachVehicle,
