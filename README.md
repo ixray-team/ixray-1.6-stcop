@@ -1,6 +1,6 @@
-# IX-Ray
+<div align="center">
+  <h1>IX-Ray Engine 1.6</h1>
 
-<div>
   <p>
     <a href="https://github.com/ixray-team">
       <img src="./src/Assets/Splash_0.5.png" alt="IX-Ray 1.6" width="600" />
