@@ -213,10 +213,10 @@ BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 ENGINE_API	extern BOOL g_bRendering;
-void					CRender::add_Visual				(IRenderVisual* V )
+void					CRender::add_Visual				(IRenderVisual* V, bool ignore_opt)
 {
 	VERIFY				(g_bRendering);
-	add_leafs_Dynamic	((dxRender_Visual*)V);									
+	add_leafs_Dynamic	((dxRender_Visual*)V, ignore_opt);
 }
 void					CRender::add_Geometry			(IRenderVisual* V ){ add_Static((dxRender_Visual*)V,View->getMask());						}
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)

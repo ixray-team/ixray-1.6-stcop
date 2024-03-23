@@ -138,6 +138,9 @@ extern  float					ps_r__test_exp_to_shaders_2;
 extern  float					ps_r__test_exp_to_shaders_3;
 extern  float					ps_r__test_exp_to_shaders_4;
 
+extern ECORE_API int opt_static;
+extern ECORE_API int opt_dynamic;
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),
@@ -196,6 +199,7 @@ enum
 	RFLAG_CLOUD_SHADOWS = (1 << 11),
 	RFLAG_NO_RAM_TEXTURES = (1 << 12),
 	RFLAG_MT_TEX_LOAD     = (1 << 13),
+	RFLAG_OPT_SHAD_GEOM = (1 << 15),
 };
 
 extern void						xrRender_initconsole	();

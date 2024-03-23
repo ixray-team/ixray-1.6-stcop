@@ -155,6 +155,9 @@ Flags32		ps_r2_ls_flags_ext			= {
 
 Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES /*| RFLAG_MT_TEX_LOAD*/ };
 
+int opt_static = 1;
+int opt_dynamic = 1;
+
 float		ps_r2_df_parallax_h			= 0.013f;
 float		ps_r2_df_parallax_range		= 60.f;
 float		ps_r2_tonemap_middlegray	= 1.f;			// r2-only
@@ -887,6 +890,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r_developer_float_4",				&ps_r__test_exp_to_shaders_4, -10000000.0f, 10000000.0f);
 
 //	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
+	// Geometry optimization
+	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
+	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
+	CMD3(CCC_Mask, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
 }
 
 void xrRender_apply_tf() {
