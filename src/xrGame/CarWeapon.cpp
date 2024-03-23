@@ -223,21 +223,23 @@ void CCarWeapon::FireEnd()
 	StopFlameParticles	();
 }
 
+#include "holder_custom.h"
 void CCarWeapon::OnShot()
 {
-	FireBullet				(	m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, 
-								m_object->ID(), m_object->ID(), SendHitAllowed(m_object));
+	CHolderCustom* holder = smart_cast<CHolderCustom*>(m_object);
 
-	StartShotParticles		();
-	
-	if(m_bLightShotEnabled) 
-		Light_Start			();
+	FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, holder->Engaged() ? 0 : m_object->ID(),
+		m_object->ID(), SendHitAllowed(m_object));
 
-	StartFlameParticles		();
-	StartSmokeParticles		(m_fire_pos, zero_vel);
-//	OnShellDrop				(m_fire_pos, zero_vel);
+	StartShotParticles();
 
-	HUD_SOUND_ITEM::PlaySound	(m_sndShot, m_fire_pos, m_object, false);
+	if (m_bLightShotEnabled)
+		Light_Start();
+
+	StartFlameParticles();
+	StartSmokeParticles(m_fire_pos, zero_vel);
+
+	HUD_SOUND_ITEM::PlaySound(m_sndShot, m_fire_pos, m_object, false);
 }
 
 void CCarWeapon::Action				(u16 id, u32 flags)
