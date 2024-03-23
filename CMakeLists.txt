@@ -12,6 +12,9 @@ option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 
+# CMake Dev options
+option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
+
 # VS options
 set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -20,30 +23,21 @@ set(CMAKE_CXX_FLAGS_DEBUG "/MD")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
 
 # Add new build types
-SET(CMAKE_CXX_FLAGS_SHIPPING
-    "${CMAKE_CXX_FLAGS}"
-    CACHE STRING "Flags used by the C++ compiler during coverage builds."
-    FORCE )
-SET(CMAKE_C_FLAGS_SHIPPING
-    "${CMAKE_C_FLAGS}"
-    CACHE STRING "Flags used by the C compiler during coverage builds."
-    FORCE )
-SET(CMAKE_EXE_LINKER_FLAGS_SHIPPING
-    ""
-    CACHE STRING "Flags used for linking binaries during coverage builds."
-    FORCE )
-SET(CMAKE_SHARED_LINKER_FLAGS_SHIPPING
-    ""
-    CACHE STRING "Flags used by the shared libraries linker during coverage builds."
-    FORCE )
-MARK_AS_ADVANCED(
-    CMAKE_CXX_FLAGS_SHIPPING
-    CMAKE_C_FLAGS_SHIPPING
-    CMAKE_EXE_LINKER_FLAGS_SHIPPING
-    CMAKE_SHARED_LINKER_FLAGS_SHIPPING )
+## Shipping
+if (DEVIXRAY_ENABLE_SHIPPING)
+    SET(CMAKE_CXX_FLAGS_SHIPPING "${CMAKE_CXX_FLAGS}" CACHE STRING "Flags used by the C++ compiler during coverage builds." FORCE )
+    SET(CMAKE_C_FLAGS_SHIPPING "${CMAKE_C_FLAGS}" CACHE STRING "Flags used by the C compiler during coverage builds." FORCE )
+    SET(CMAKE_EXE_LINKER_FLAGS_SHIPPING "" CACHE STRING "Flags used for linking binaries during coverage builds." FORCE )
+    SET(CMAKE_SHARED_LINKER_FLAGS_SHIPPING "" CACHE STRING "Flags used by the shared libraries linker during coverage builds." FORCE )
+    MARK_AS_ADVANCED(CMAKE_CXX_FLAGS_SHIPPING CMAKE_C_FLAGS_SHIPPING CMAKE_EXE_LINKER_FLAGS_SHIPPING CMAKE_SHARED_LINKER_FLAGS_SHIPPING )
+    
+    SET(IXR_CONFIGURATIONS_STR "Debug;RelWithDebInfo;Release;Shipping" CACHE STRING "" FORCE)
+else()
+    SET(IXR_CONFIGURATIONS_STR "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
+endif()
 
 # Wrap CMake general configs 
-set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release;Shipping" CACHE STRING "" FORCE)
+set(CMAKE_CONFIGURATION_TYPES ${IXR_CONFIGURATIONS_STR} CACHE STRING "" FORCE)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # Output target
@@ -61,8 +55,10 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" "$<$<CONFIG:DEBUG>:/wd4251>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>" /wd4595 /wd4996)
 
 # Shipping config
-add_compile_options("$<$<CONFIG:Shipping>:/wd4530>" "$<$<CONFIG:Shipping>:/wd4251>" "$<$<CONFIG:Shipping>:/wd4275>" "$<$<CONFIG:Shipping>:/wd4577>" "$<$<CONFIG:Shipping>:/Ob2>" )
-add_compile_options("$<$<CONFIG:Shipping>:/WX>")
+if (DEVIXRAY_ENABLE_SHIPPING)
+    add_compile_options("$<$<CONFIG:Shipping>:/wd4530>" "$<$<CONFIG:Shipping>:/wd4251>" "$<$<CONFIG:Shipping>:/wd4275>" "$<$<CONFIG:Shipping>:/wd4577>" "$<$<CONFIG:Shipping>:/Ob2>" )
+    add_compile_options("$<$<CONFIG:Shipping>:/WX>")
+endif()
 
 if (IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
