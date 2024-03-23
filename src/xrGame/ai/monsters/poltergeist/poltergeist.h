@@ -35,6 +35,7 @@ class CPoltergeist :	public CBaseMonster ,
 	bool					m_actor_ignore;
 	bool					UseOldLogicPoltergeist;
 	bool					UseLossPoltergeistEnergy;
+	bool					DeadAlwaysVisible;
 
 	TTime					m_last_detection_time;
 	Fvector					m_last_actor_pos;
