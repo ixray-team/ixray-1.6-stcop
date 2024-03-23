@@ -1,9 +1,13 @@
 #include "resource.h"
+
 #include "../xrEngine/stdafx.h"
+#include "../xrEngine/x_ray.h"
+
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
 #include "../xrCore/xrCore_platform.h"
+
 #include <SDL3/SDL.h>
 #include "DynamicSplashScreen.h"
 
@@ -16,12 +20,6 @@
 #ifndef DEBUG
 #define NO_MULTI_INSTANCES
 #endif
-
-ENGINE_API void EngineLoadStage1(char* Cmd);
-ENGINE_API void EngineLoadStage2();
-ENGINE_API void EngineLoadStage3();
-ENGINE_API void EngineLoadStage4();
-ENGINE_API void EngineLoadStage5();
 
 INT_PTR CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 
