@@ -17,7 +17,7 @@ struct 	v2p
 
 float	luminance	(float2	tc)	{
 	float3	source 	= tex2D(s_image,tc);
-	return 	dot		(source, LUMINANCE_VECTOR*def_hdr );
+	return 	dot		(source, LUMINANCE_VECTOR * def_hdr);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 // 	perform 2x2=4s convolution, working on 4x4=16p area

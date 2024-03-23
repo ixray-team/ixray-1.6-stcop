@@ -1,24 +1,24 @@
 #include 	"common.h"
 
-struct 		vv
+struct vv
 {
-	float4	P		: POSITION;
-	float2	tc		: TEXCOORD0;
-	float4	c		: COLOR0;
+	float4 P : POSITION;
+	float2 tc : TEXCOORD0;
+	float4 c : COLOR0;
 };
 
-struct 		p_particle
+struct v2p_particle
 {
-	p_flat	base	;
-	float4 	color	: COLOR0;
+	float4 color : COLOR0;
+	p_flat base;
 };
 
-p_particle 	main	( vv I )
+v2p_particle main( vv I )
 {
 	float4 	w_pos 	= I.P;
 
 	// Eye-space pos/normal
-	p_flat 		O;
+	p_flat O;
 	O.hpos 		= mul		(m_WVP,		w_pos	);
 	O.N 		= normalize (eye_position-w_pos	);
 	float3	Pe	= mul		(m_WV, 		I.P		);
@@ -29,7 +29,9 @@ p_particle 	main	( vv I )
 	O.tcdbump	= O.tcdh * dt_params;			// dt tc
 #endif
 
-	p_particle	pp;	pp.base=O; pp.color = I.c;
-	return		pp;
+	v2p_particle pp;
+	pp.color = I.c;
+	pp.base = O;
+
+	return pp;
 }
-FXVS;
