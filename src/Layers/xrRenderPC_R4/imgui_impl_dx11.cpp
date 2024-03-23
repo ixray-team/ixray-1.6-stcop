@@ -548,6 +548,8 @@ bool    ImGui_ImplDX11_Init(ID3D11Device* device, ID3D11DeviceContext* device_co
         if (pDXGIDevice->GetParent(IID_PPV_ARGS(&pDXGIAdapter)) == S_OK)
             if (pDXGIAdapter->GetParent(IID_PPV_ARGS(&pFactory)) == S_OK)
             {
+                DXGI_ADAPTER_DESC Desc; pDXGIAdapter->GetDesc(&Desc);
+                Msg("* GPU %S: %d MB", Desc.Description, Desc.DedicatedVideoMemory/(1024*1024));
                 bd->pd3dDevice = device;
                 bd->pd3dDeviceContext = device_context;
                 bd->pFactory = pFactory;
@@ -610,6 +612,7 @@ static void ImGui_ImplDX11_CreateWindow(ImGuiViewport* viewport)
     ImGui_ImplDX11_Data* bd = ImGui_ImplDX11_GetBackendData();
     ImGui_ImplDX11_ViewportData* vd = IM_NEW(ImGui_ImplDX11_ViewportData)();
     viewport->RendererUserData = vd;
+
 
     // PlatformHandleRaw should always be a HWND, whereas PlatformHandle might be a higher-level handle (e.g. GLFWWindow*, SDL_Window*).
     // Some backends will leave PlatformHandleRaw == 0, in which case we assume PlatformHandle will contain the HWND.
