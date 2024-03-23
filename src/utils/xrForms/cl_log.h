@@ -15,9 +15,7 @@ class LogWindow : public wxFrame
 public:
 	LogWindow(const wxString& title);
 	//void OnClick(wxCommandEvent& event);
-    void addString(wxWindowID id, int position, wxString message);
-    void deleteString(wxWindowID id, int index);
-    void setIndex(wxWindowID id, int index);
+  
 
 	wxListBox* idcLog;
 	wxListBox* idcPhaseTime;
@@ -46,3 +44,6 @@ void Progress(const float F);
 void Phase(const char* phase_name);
 void logThread(void *dummy);
 void logCallback(LPCSTR c);
+
+void addString(wxWindowID id, int position, wxString message);
+void deleteString(wxWindowID id);

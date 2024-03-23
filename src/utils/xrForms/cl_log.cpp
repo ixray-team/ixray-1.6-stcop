@@ -31,7 +31,8 @@ volatile BOOL bClose = FALSE;
 static char	status[1024] = "";
 static char	phase[1024]	= "";
 static float progress = 0.0f;
-static u32 phase_start_time	= 0;
+//static u32 phase_start_time	= 0;
+auto phase_start_time = std::chrono::high_resolution_clock::now();
 static BOOL	bStatusChange = FALSE;
 static BOOL	bPhaseChange = FALSE;
 //static u32 phase_total_time	= 0;
@@ -83,6 +84,48 @@ static void _process_messages(void)
 }
 */
 
+
+void addString(wxWindowID id, int index, wxString message)
+{
+	wxEvent* evt = nullptr;
+
+	// NOT evt->SetString(str) as this would be a shallow copy
+	evt->SetId(id);
+
+	wxWindow* window = FindWindowById(id);
+	wxListBox* lb = wxDynamicCast(window, wxListBox);
+
+	if (lb)
+	{
+		lb->SetString(index, message.c_str()); // make a deep copy
+	}
+	else
+	{
+		// handle error code if not a listbox
+	}
+	wxTheApp->QueueEvent(evt); 
+}
+
+void deleteString(wxWindowID id)
+{
+	wxEvent* evt = nullptr;
+
+	wxWindow* window = FindWindowById(id);
+	wxListBox* lb = wxDynamicCast(window, wxListBox);
+
+	if (lb)
+	{
+		index = lb->GetCount() - 1;
+		lb->Delete(index);
+	}
+	else
+	{
+		// handle error code if not a listbox
+	}
+
+	wxTheApp->QueueEvent(evt); 
+}
+
 static std::string make_time(double sec)
 {
 	char buf[64];
@@ -118,15 +161,14 @@ void Phase(const char* phase_name)
 	char tbuf[512];
 	bPhaseChange = TRUE;
 
-	auto phase_start_time = std::chrono::high_resolution_clock::now();
+	phase_start_time = std::chrono::high_resolution_clock::now();
 	auto finish = std::chrono::high_resolution_clock::now();
 
 	auto phase_total_time = std::chrono::high_resolution_clock::now() - phase_start_time;
 	xr_sprintf(tbuf, "%s : %s", make_time(std::chrono::duration<double>(phase_total_time).count() / static_cast<double>(1000)).c_str(), phase);
 
-	LogWindow::deleteString(IDC_PHASE_TIME, idcLog.GetCount() - 1);
-	LogWindow::addString(IDC_PHASE_TIME, );
-
+	deleteString(IDC_PHASE_TIME);
+	addString(IDC_PHASE_TIME, 0, tbuf);
 
 	/*
 	SendMessageA(hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
@@ -135,12 +177,18 @@ void Phase(const char* phase_name)
 ;
 	// Start _new phase
 	//phase_start_time = timeGetTime();
-	auto phase_start_time = std::chrono::high_resolution_clock::now();
+	phase_start_time = std::chrono::high_resolution_clock::now();
 	xr_strcpy(phase, phase_name);
 	SetWindowTextA(hwStage, phase_name);
 	xr_sprintf(tbuf, "--:--:-- * %s", phase);
+
+	/*
 	SendMessageA(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
 	SendMessageA(hwPhaseTime, LB_SETTOPINDEX, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
+	*/
+
+	addString(IDC_PHASE_TIME, 0, tbuf);
+
 	Progress(0);
 
 	// Release focus
@@ -228,46 +276,51 @@ void logThread(void* dummy)
 					string256 S = {};
 					xr_strcpy(S, myLogQueue.front().c_str());
 					
-					if (S[0])
-						SendMessageA(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
+					//if (S[0])
+					//	SendMessageA(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
 					myLogQueue.pop();
 				}
-				SendMessageA(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
+				//SendMessageA(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
 			}
 		}
 		if (_abs(PrSave - progress) > EPS_L) {
 			bWasChanges = TRUE;
 			PrSave = progress;
-			SendMessageA(hwProgress, PBM_SETPOS, u32(progress * 1000.f), 0);
+			//SendMessageA(hwProgress, PBM_SETPOS, u32(progress * 1000.f), 0);
 
 			// timing
 			if (progress > 0.005f) {
-				u32 dwCurrentTime = timeGetTime();
-				u32 dwTimeDiff = dwCurrentTime - phase_start_time;
-				u32 secElapsed = dwTimeDiff / 1000;
-				u32 secRemain = u32(float(secElapsed) / progress) - secElapsed;
+				//u32 dwCurrentTime = timeGetTime();
+				//auto phase_start_time = std::chrono::high_resolution_clock::now();
+				auto dwCurrentTime = std::chrono::high_resolution_clock::now();
+				auto dwTimeDiff = dwCurrentTime - phase_start_time;
+
+				//u32 dwTimeDiff = dwCurrentTime - phase_start_time;
+				auto secElapsed = dwTimeDiff / 1000;
+				//u32 secRemain = u32(float(secElapsed) / progress) - secElapsed;
+				auto secRemain = (secElapsed / progress) - secElapsed;
 				xr_sprintf(tbuf,
 					"Elapsed: %s\n"
 					"Remain:  %s",
-					make_time(secElapsed).c_str(),
-					make_time(secRemain).c_str()
+					make_time(secElapsed.count()).c_str(),
+					make_time(secRemain.count()).c_str()
 				);
 ;
-				SetWindowTextA(hwTime, tbuf);
+				//SetWindowTextA(hwTime, tbuf);
 			}
 			else {
-				SetWindowTextA(hwTime, "");
+				//SetWindowTextA(hwTime, "");
 			}
 
 			// percentage text
 			xr_sprintf(tbuf, "%3.2f%%", progress * 100.f);
-			SetWindowTextA(hwPText, tbuf);
+			//SetWindowTextA(hwPText, tbuf);
 		}
 
 		if (bStatusChange) {
 			bWasChanges = TRUE;
 			bStatusChange = FALSE;
-			SetWindowTextA(hwInfo, status);
+			//SetWindowTextA(hwInfo, status);
 		}
 		if (bWasChanges) {
 			//UpdateWindow(logWindow);
@@ -276,7 +329,8 @@ void logThread(void* dummy)
 		csLog.Leave();
 
 		//_process_messages();
-		if (bClose)			break;
+		if (bClose)	
+			break;
 		Sleep(200);
 	}
 
@@ -347,57 +401,3 @@ LogWindow::LogWindow(const wxString& title)
 
 }
 
-void LogWindow::addString(wxWindowID id, int index, wxString message)
-{
-	wxCommandEvent* evt = new wxCommandEvent();
-
-	// NOT evt->SetString(str) as this would be a shallow copy
-	evt->SetId(id);
-
-	wxWindow* window = FindWindowById(id);
-	wxListBox* lb = wxDynamicCast(window, wxListBox);
-
-	if (lb)
-	{
-		lb->SetString(index, message.c_str()); // make a deep copy
-	}
-	else
-	{
-		// handle error code if not a listbox
-	}
-
-
-	wxTheApp->QueueEvent(evt); 
-}
-
-void LogWindow::deleteString(wxWindowID id, int index)
-{
-	wxCommandEvent* evt = new wxCommandEvent();
-
-	wxWindow* window = FindWindowById(id);
-	wxListBox* lb = wxDynamicCast(window, wxListBox);
-
-	if (lb)
-	{
-		lb->Delete(index);
-	}
-	else
-	{
-		// handle error code if not a listbox
-	}
-
-	wxTheApp->QueueEvent(evt); 
-}
-
-/*
-void LogWindow::setIndex(wxWindowID id, int index)
-{
-
-}
-*/
-
-
-/*
-SendMessageA(hwPhaseTime, LB_DELETESTRING, SendMessageA(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
-SendMessageA(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
-*/
