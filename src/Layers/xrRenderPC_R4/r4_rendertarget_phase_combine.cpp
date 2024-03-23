@@ -173,6 +173,10 @@ void	CRenderTarget::phase_combine	()
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
 
+	// Copy previous rt
+	RContext->CopyResource(rt_Generic_temp->pTexture->surface_get(),
+		rt_Generic_0->pTexture->surface_get());
+
 	// Forward rendering
 	{
 		PIX_EVENT(Forward_rendering);
