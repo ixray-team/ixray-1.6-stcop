@@ -3,6 +3,8 @@ if (jit == nil) then
 end
 
 string.gfind = string.gmatch
+math.mod = math.fmod
+math.randomseed(time_global())
 debug_log = false
 
 function empty	(container)
