@@ -13,16 +13,19 @@ shared_str	g_ranks[_RANK_COUNT];
 
 u32 get_rank(const shared_str &section)
 {
-	int res = -1;
-	if( g_ranks[0].size()==0 )
-	{ //load
-		string32			buff;
+	int res = 0;
+
+	if (g_ranks[0].size()==0)
+	{
+		string32 buff;
+
 		for (int i = 0; i<_RANK_COUNT; i++)
 		{
 			xr_sprintf(buff, "rank_%d", i);
 			g_ranks[i] = pSettings->r_string(buff, "available_items");
 		}
 	}
+
 	for (u32 i = 0; i<_RANK_COUNT; i++)
 	{
 		if (strstr(g_ranks[i].c_str(), section.c_str()))
@@ -32,11 +35,13 @@ u32 get_rank(const shared_str &section)
 		}
 	}
 
-	if (IsGameTypeSingle() && res < 0) {
+	if (IsGameTypeSingle() && res < 0)
+	{
 		return 0;
 	}
 
-	R_ASSERT3	(res!=-1,"cannot find rank for", section.c_str());
+	Msg("! Cannot find rank for section [%s]", section.c_str());
+
 	return		res;
 }
 
