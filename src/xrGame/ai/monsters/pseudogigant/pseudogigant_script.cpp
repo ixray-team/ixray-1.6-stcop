@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "pch_script.h"
-#include "pseudo_gigant.h"
+#include "pseudogigant.h"
 
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CPseudoGigant::script_register(lua_State *L)
+void CPseudogigant::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CPseudoGigant,CGameObject>("CPseudoGigant")
+		class_<CPseudogigant,CGameObject>("CPseudogigant")
 			.def(constructor<>())
 	];
 }

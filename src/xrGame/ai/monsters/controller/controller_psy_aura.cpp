@@ -251,7 +251,7 @@ void CControllerAura::update_frame()
 	}
 }
 
-float xr_stdcall CControllerAura::get_effector_strength()
+float CControllerAura::get_effector_strength()
 {
 	// make smooth transition out of the effect
 	u32 effectorFadeTime = m_time_fake_aura_duration.x / 2;

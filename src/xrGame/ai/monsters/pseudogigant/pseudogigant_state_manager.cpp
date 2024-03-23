@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "pseudo_gigant.h"
+#include "pseudogigant.h"
 #include "pseudogigant_state_manager.h" 
 
 #include "../control_animation_base.h"
@@ -18,25 +18,25 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
-CStateManagerGigant::CStateManagerGigant(CPseudoGigant *monster) : inherited(monster)
+CStateManagerPseudogigant::CStateManagerPseudogigant(CPseudogigant *monster) : inherited(monster)
 {
-	add_state(eStateRest,					xr_new<CStateMonsterRest<CPseudoGigant> >				(monster));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CPseudoGigant> >				(monster));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CPseudoGigant> >				(monster));
-	add_state(eStateEat,					xr_new<CStateMonsterEat<CPseudoGigant> >				(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CPseudoGigant> >(monster));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CPseudoGigant> >	(monster));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CPseudoGigant> >				(monster));
-	add_state(eStateControlled,				xr_new<CStateMonsterControlled<CPseudoGigant> >			(monster));
-	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound<CPseudoGigant> >		(monster));
+	add_state(eStateRest,					xr_new<CStateMonsterRest<CPseudogigant> >				(monster));
+	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CPseudogigant> >				(monster));
+	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CPseudogigant> >				(monster));
+	add_state(eStateEat,					xr_new<CStateMonsterEat<CPseudogigant> >				(monster));
+	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CPseudogigant> >(monster));
+	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CPseudogigant> >	(monster));
+	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CPseudogigant> >				(monster));
+	add_state(eStateControlled,				xr_new<CStateMonsterControlled<CPseudogigant> >			(monster));
+	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound<CPseudogigant> >		(monster));
 }
 
-CStateManagerGigant::~CStateManagerGigant()
+CStateManagerPseudogigant::~CStateManagerPseudogigant()
 {
 
 }
 
-void CStateManagerGigant::execute()
+void CStateManagerPseudogigant::execute()
 {
 	u32 state_id = u32(-1);
 
