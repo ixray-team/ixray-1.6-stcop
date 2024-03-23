@@ -137,7 +137,7 @@ public:
 
 private:
     PropValueVec		values;
-    TProperties* 		m_Owner;
+    void* 		    m_Owner;
 // events
 public:
 	typedef fastdelegate::FastDelegate1<PropItem*> 	TOnPropItemFocused;
@@ -165,7 +165,7 @@ public:
     	for (PropValueIt it=values.begin(); values.end() != it; ++it)
         	xr_delete	(*it);
     };
-    IC TProperties*		Owner			(){return m_Owner;}
+    IC void*	    	Owner			(){return m_Owner;}
     void				SetName			(const shared_str& name)
     {
     	key=name;

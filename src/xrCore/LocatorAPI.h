@@ -3,15 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
-struct system_file
-{
-	u8			attrib;
-	xr_time_t	time_create;
-	xr_time_t	time_write;
-	size_t		size;
-	string256	name;
-};
-
 #include "LocatorAPI_defs.h"
 
 class XRCORE_API CStreamReader;

@@ -4,6 +4,10 @@
 #include "../xrRender/hwcaps.h"
 #include "../xrRender/hw.h"
 
+#ifndef USE_DX11
+CHWCaps Caps;
+#endif
+
 extern u32 GetGpuNum();
 
 void CHWCaps::Update() {

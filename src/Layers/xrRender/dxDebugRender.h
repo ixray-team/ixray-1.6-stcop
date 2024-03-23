@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef DEBUG_DRAW
-
+#include "FVF.h"
 #include "../../Include/xrRender/DebugRender.h"
 
 class dxDebugRender : public IDebugRender

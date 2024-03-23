@@ -25,7 +25,9 @@ using namespace DirectX;
 #include "FPSCounter.h"
 
 ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
+#ifndef _EDITOR
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
+#endif
 ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API BOOL g_bRendering = FALSE; 
@@ -35,6 +37,7 @@ ref_light	precache_light = 0;
 
 BOOL CRenderDevice::Begin()
 {
+#ifndef _EDITOR
 	if (g_dedicated_server)
 	{
 		return TRUE;
@@ -64,17 +67,21 @@ BOOL CRenderDevice::Begin()
 
 	FPU::m24r();
 	g_bRendering = TRUE;
+#endif
 
 	return TRUE;
 }
 
 void CRenderDevice::Clear	()
 {
+#ifndef _EDITOR
 	m_pRender->Clear();
+#endif
 }
 
 void CRenderDevice::End		(void)
 {
+#ifndef _EDITOR
 	if (g_dedicated_server) {
 		return;
 	}
@@ -104,16 +111,6 @@ void CRenderDevice::End		(void)
 #ifdef FIND_CHUNK_BENCHMARK_ENABLE
 			g_find_chunk_counter.flush();
 #endif
-
-#if 0
-			if(g_pGamePersistent->GameType()==1)//haCk
-			{
-				WINDOWINFO	wi;
-				GetWindowInfo(g_AppInfo.WindowHandle,&wi);
-				if(wi.dwWindowStatus!=WS_ACTIVECAPTION)
-					Pause(TRUE,TRUE,TRUE,"application start");
-			}
-#endif
 		}
 	}
 
@@ -121,8 +118,10 @@ void CRenderDevice::End		(void)
 	// end scene
 
 	m_pRender->End();
+#endif
 }
 
+#ifndef _EDITOR
 volatile u32 mt_Thread_marker = 0x12345678;
 void mt_Thread(void* ptr)
 {
@@ -163,8 +162,10 @@ void mt_Thread(void* ptr)
 }
 
 #include "igame_level.h"
+#endif
 void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
+#ifndef _EDITOR
 	if (m_pRender->GetForceGPU_REF() || g_dedicated_server) {
 		amount = 0;
 	}
@@ -184,6 +185,7 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 	{
 		load_screen_renderer.start	(b_wait_user_input);
 	}
+#endif
 }
 
 
@@ -193,6 +195,7 @@ ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
 void CRenderDevice::on_idle()
 {
+#ifndef _EDITOR
 	if (!b_is_Ready) {
 		Sleep(100);
 		return;
@@ -311,12 +314,14 @@ void CRenderDevice::on_idle()
 	{
 		Sleep(1);
 	}
+#endif
 }
 
 bool quiting = false;
 
 void CRenderDevice::message_loop()
 {
+#ifndef _EDITOR
 	while (!quiting) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -332,10 +337,12 @@ void CRenderDevice::message_loop()
 
 		on_idle();
 	}
+#endif
 }
 
 void CRenderDevice::Run()
 {
+#ifndef _EDITOR
 	//	DUMP_PHASE;
 	g_bLoaded = FALSE;
 	Log("Starting engine...");
@@ -371,6 +378,7 @@ void CRenderDevice::Run()
 	mt_bMustExit = TRUE;
 	mt_csEnter.Leave();
 	while (mt_bMustExit)	Sleep(0);
+#endif
 }
 
 u32 app_inactive_time		= 0;
@@ -379,6 +387,7 @@ u32 app_inactive_time_start = 0;
 void ProcessLoading(RP_FUNC *f);
 void CRenderDevice::FrameMove()
 {
+#ifndef _EDITOR
 	dwFrame			++;
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
 
@@ -411,6 +420,7 @@ void CRenderDevice::FrameMove()
 		SCOPE_EVENT_NAME_GROUP("Frame", "Engine");
 		ProcessLoading(rp_Frame);
 	}
+#endif
 }
 
 void ProcessLoading				(RP_FUNC *f)
@@ -424,19 +434,18 @@ ENGINE_API BOOL bShowPauseString = TRUE;
 
 CRenderDevice::CRenderDevice() :
 	m_pRender(0)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	, mt_csEnter(MUTEX_PROFILE_ID(CRenderDevice::mt_csEnter))
-	, mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
-#endif // #ifdef PROFILE_CRITICAL_SECTIONS
 {
+#ifndef _EDITOR
 	b_is_Active = true;
 	b_is_Ready = FALSE;
 	Timer.Start();
 	m_bNearer = FALSE;
+#endif
 };
 
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
+#ifndef _EDITOR
 	static int snd_emitters_ = -1;
 
 	if (g_dedicated_server) {
@@ -487,6 +496,7 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 			}
 		}
 	}
+#endif
 }
 
 BOOL CRenderDevice::Paused()
@@ -496,6 +506,7 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 {
+#ifndef _EDITOR
 	BOOL NewState = (active && (!minimized)) ? TRUE : FALSE;
 	bool OldState = Device.b_is_Active;
 
@@ -523,6 +534,7 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 			SDL_ShowCursor();
 		}
 	}
+#endif
 }
 
 void CRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
@@ -540,6 +552,7 @@ void	CRenderDevice::RemoveSeqFrame	( pureFrame* f )
 	seqFrame.Remove		( f );
 }
 
+#ifndef _EDITOR
 CLoadScreenRenderer::CLoadScreenRenderer()
 :b_registered(false)
 {}
@@ -567,3 +580,4 @@ void CRenderDevice::time_factor(const float& time_factor) {
 	TimerGlobal.time_factor(time_factor);
 	psSoundTimeFactor = time_factor; //--#SM+#--
 }
+#endif

@@ -116,12 +116,11 @@ void IGame_Persistent::Disconnect	()
 
 	if(g_hud)
 			DEL_INSTANCE			(g_hud);
-//.		g_hud->OnDisconnected			();
-#endif
 
 	// Kill object - save memory
 	ObjectPool.clear();
 	Render->models_Clear(TRUE);
+#endif
 }
 
 void IGame_Persistent::OnGameStart()
@@ -179,6 +178,7 @@ void IGame_Persistent::OnFrame		()
 
 void IGame_Persistent::UpdateParticles()
 {
+#ifndef _EDITOR
 	// Play req particle systems
 	while (!ps_needtoplay.empty())
 	{
@@ -193,6 +193,7 @@ void IGame_Persistent::UpdateParticles()
 		ps_destroy.pop_back();
 		pInstance->PSI_internal_delete();
 	}
+#endif
 }
 
 void IGame_Persistent::destroy_particles		(const bool &all_particles)

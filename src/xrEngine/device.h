@@ -267,12 +267,7 @@ extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
 
 #define Device (*DevicePtr)
-
-#ifndef	_EDITOR
 #define	RDEVICE	Device
-#else
-#define RDEVICE	EDevice
-#endif
 
 typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;

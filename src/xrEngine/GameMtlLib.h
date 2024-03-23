@@ -51,7 +51,6 @@
 
 #ifndef	MTL_EXPORT_API
 #ifdef _EDITOR
-	#include "ElTree.hpp"
 	#define MTL_EXPORT_API ECORE_API
 #else
 	#define MTL_EXPORT_API ENGINE_API
@@ -153,7 +152,7 @@ public:
     void 				Save			(IWriter& fs);
     IC int				GetID			(){return ID;}
 #ifdef _EDITOR
-    void 				FillProp		(PropItemVec& values, ListItem* owner);
+    void 				FillProp		(PropItemVec& values, void* owner);
 #endif
 };
 

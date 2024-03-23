@@ -3,9 +3,9 @@
 
 #include "ModelPool.h"
 
+#include "../../xrEngine/fmesh.h"
+#include "../../xrEngine/IGame_Persistent.h"
 #ifndef _EDITOR
-	#include "../../xrEngine/IGame_Persistent.h"
-    #include "../../xrEngine/fmesh.h"
     #include "fhierrarhyvisual.h"
     #include "SkeletonAnimated.h"
 	#include "fvisual.h"
@@ -16,7 +16,6 @@
     #include "ParticleGroup.h"
     #include "ParticleEffect.h"
 #else
-    #include "fmesh.h"
     #include "fvisual.h"
     #include "fprogressive.h"
     #include "ParticleEffect.h"
@@ -24,7 +23,6 @@
 	#include "fskinned.h"
     #include "fhierrarhyvisual.h"
     #include "SkeletonAnimated.h"
-	#include "IGame_Persistent.h"
 #endif
 
 dxRender_Visual*	CModelPool::Instance_Create(u32 type)
@@ -533,7 +531,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             CKinematics* pV		= dynamic_cast<CKinematics*>(m_pVisual); VERIFY(pV);
             if (fis_zero(m_fLOD,EPS)&&pV->m_lod){
 		        if (_IsValidShader(pV->m_lod,priority,strictB2F)){
-	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader:EDevice.m_WireShader);
+	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader: *(ref_shader*)EDevice.m_WireShader);
     	            RCache.set_xform_world	(mTransform);
         	        pV->m_lod->Render		(1.f);
                 }
@@ -542,7 +540,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
                 E = pV->children.end		();
                 for (; I!=E; I++){
                     if (_IsValidShader(*I,priority,strictB2F)){
-                        RCache.set_Shader		((*I)->shader?(*I)->shader:EDevice.m_WireShader);
+                        RCache.set_Shader		((*I)->shader?(*I)->shader: *(ref_shader*)EDevice.m_WireShader);
                         RCache.set_xform_world	(mTransform);
                         (*I)->Render		 	(m_fLOD);
                     }
@@ -557,7 +555,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             E = pV->children.end		();
             for (; I!=E; I++){
 		        if (_IsValidShader(*I,priority,strictB2F)){
-	                RCache.set_Shader		((*I)->shader?(*I)->shader:EDevice.m_WireShader);
+	                RCache.set_Shader		((*I)->shader?(*I)->shader: *(ref_shader*)EDevice.m_WireShader);
     	            RCache.set_xform_world	(mTransform);
         	        (*I)->Render		 	(m_fLOD);
                 }
@@ -581,7 +579,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
 //		if (_IsBoxVisible(m_pVisual,mTransform))
         {
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:EDevice.m_WireShader);
+                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: *(ref_shader*)EDevice.m_WireShader);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }
@@ -590,7 +588,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
     default:
         if (_IsBoxVisible(m_pVisual,mTransform)){
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:EDevice.m_WireShader);
+                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: *(ref_shader*)EDevice.m_WireShader);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }
