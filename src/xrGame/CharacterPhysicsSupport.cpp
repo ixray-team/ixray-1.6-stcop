@@ -542,7 +542,19 @@ void CCharacterPhysicsSupport::in_Hit( SHit &H, bool is_killing )
 	if(!m_pPhysicsShell&&is_killing)
 		KillHit( H );
 
-	if( m_flags.test(fl_use_hit_anims) && Type() != etBitting && !m_flags.test(fl_death_anim_on) ) //&& Type() == etStalker
+	if (!m_pPhysicsShell && is_killing)
+	{
+		bool is_actor_holder = false;
+		if (m_eType == etActor)
+		{
+			CActor* A = smart_cast<CActor*>(&m_EntityAlife);
+			if (A->Holder()) is_actor_holder = true;
+		};
+		if (!is_actor_holder)
+			KillHit(H);
+	};
+
+	if (m_flags.test(fl_use_hit_anims) && Type() != etBitting && !m_flags.test(fl_death_anim_on)) //&& Type() == etStalker
 	{
 		m_hit_animations.PlayHitMotion( H.direction( ), H.bone_space_position(), H.bone( ), m_EntityAlife );
 	}
@@ -1416,17 +1428,25 @@ bool	CCharacterPhysicsSupport::	can_drop_active_weapon	( )
 	return !interactive_motion() && m_flags.test(fl_death_anim_on);
 };
 
-void		CCharacterPhysicsSupport::in_Die( )
+void CCharacterPhysicsSupport::in_Die()
 {
-	if( m_hit_valide_time < Device.dwTimeGlobal || !m_sv_hit.is_valide() )
+	if (m_hit_valide_time < Device.dwTimeGlobal || !m_sv_hit.is_valide())
 	{
-		if( m_EntityAlife.use_simplified_visual( ) )
+		if (m_EntityAlife.use_simplified_visual())
 			return;
-		ActivateShell( NULL );
-		m_PhysicMovementControl->DestroyCharacter( );
+
+		bool is_actor_holder = false;
+		if (m_eType == etActor)
+		{
+			CActor* A = smart_cast<CActor*>(&m_EntityAlife);
+			if (A->Holder()) is_actor_holder = true;
+		};
+		if (!is_actor_holder)
+			ActivateShell(NULL);
+		m_PhysicMovementControl->DestroyCharacter();
 		return;
 	}
-	in_Hit( m_sv_hit, true );
+	in_Hit(m_sv_hit, true);
 }
 
 u16	CCharacterPhysicsSupport::PHGetSyncItemsNumber( )
