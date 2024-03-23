@@ -116,8 +116,8 @@ Height_Max				=	2.0
 ; Attack parameters
 ;--------------------------------------------------------------------------
 ;attack parameters
-MinAttackDist		= 0.5	;2.1
-MaxAttackDist		= 2.0
+MinAttackDist			= 1.5	
+MaxAttackDist			= 2.4
 
 as_min_dist				= 0.1
 as_step					= 0.3
@@ -230,8 +230,11 @@ damage					= m_poltergeist_damage
 
 ;---------------------------
 
+use_old_logic 			= true; //-' Старая логика полтергейства
+use_fly_energy 			= true; //-' Полтергейст может терять свою энергию при полете и спускаться со сферы. Параметр Invisible_Energy_Decline_Velocity не должен быть ноль
+
 Invisible_Energy_Restore_Velocity				= 0.1
-Invisible_Energy_Decline_Velocity				= 0.0
+Invisible_Energy_Decline_Velocity				= 0.05
 Invisible_Energy_Critical_Value					= 0.01
 Invisible_Energy_Activate_Value					= 0.99
 Invisible_Energy_Aggressive_Restore_Velocity	= 0.1

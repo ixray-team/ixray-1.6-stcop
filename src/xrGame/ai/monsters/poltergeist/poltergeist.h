@@ -33,6 +33,8 @@ class CPoltergeist :	public CBaseMonster ,
 	CPolterSpecialAbility	*m_tele;
 
 	bool					m_actor_ignore;
+	bool					UseOldLogicPoltergeist;
+	bool					UseLossPoltergeistEnergy;
 
 	TTime					m_last_detection_time;
 	Fvector					m_last_actor_pos;
@@ -54,6 +56,9 @@ public:
 					CPoltergeist		();
 	virtual			~CPoltergeist		();	
 
+			bool	GetValueDisableHide () { return this->m_disable_hide; };
+			void	SetValueDisableHide(bool _m_disable_hide) { this->m_disable_hide = _m_disable_hide; }
+
 	virtual void	Load				(LPCSTR section);
 	virtual void	reload				(LPCSTR section);
 	virtual void	reinit				();
@@ -67,6 +72,9 @@ public:
 
 			void	set_actor_ignore	(bool const actor_ignore) { m_actor_ignore = actor_ignore; }
 			bool	get_actor_ignore	() const { return m_actor_ignore; }
+
+			bool	get_value_old_logic() { return UseOldLogicPoltergeist; }
+			bool	get_value_use_energy() { return UseLossPoltergeistEnergy; }
 
 	virtual void	Die					(CObject* who);
 
@@ -87,7 +95,7 @@ public:
 
 	IC		CPolterSpecialAbility		*ability() {return (m_flame ? m_flame : m_tele);}
 	
-	
+	IC		CPolterSpecialAbility		*ability_tele() { return (m_tele); }
 
 	IC		bool	is_hidden			() {return state_invisible;}
 
@@ -99,7 +107,7 @@ public:
 			ref_sound m_strange_sound;
 	
 	// Movement
-			Fvector m_current_position;		// Позиция на ноде
+			Fvector m_current_position;		// РџРѕР·РёС†РёСЏ РЅР° РЅРѕРґРµ
 
 	// Dynamic Height
 			u32		time_height_updated;

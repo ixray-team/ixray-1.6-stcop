@@ -48,6 +48,9 @@ void CPoltergeist::Load(LPCSTR section)
 
 	anim().accel_load			(section);
 	anim().accel_chain_add		(eAnimWalkFwd,		eAnimRun);
+	
+	UseOldLogicPoltergeist = pSettings->r_bool(section, "use_old_logic");
+	UseLossPoltergeistEnergy = pSettings->r_bool(section, "use_fly_energy");
 
 	invisible_vel.set(pSettings->r_float(section,"Velocity_Invisible_Linear"),pSettings->r_float(section,"Velocity_Invisible_Angular"));
 	movement().detail().add_velocity(MonsterMovement::eVelocityParameterInvisible,CDetailPathManager::STravelParams(invisible_vel.linear, invisible_vel.angular));
@@ -263,7 +266,16 @@ void CPoltergeist::reinit()
 	time_height_updated					= 0;
 	m_actor_ignore						= false;
 
-	DisableHide								();
+	if (this->get_value_use_energy())
+	{
+		EnableHide();
+		Msg("- %s: %i", __FUNCTION__, __LINE__);
+	}
+	else
+	{
+		DisableHide();
+		Msg("- %s: %i", __FUNCTION__, __LINE__);
+	}
 }
 
 void CPoltergeist::Hide()
