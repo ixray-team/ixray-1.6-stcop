@@ -582,8 +582,6 @@ void	CActor::Hit(SHit* pHDS)
 
 	if(IsGameTypeSingle())	
 	{
-		float hit_power				= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
 		if(GodMode())
 		{
 			HDS.power				= 0.0f;
@@ -591,8 +589,17 @@ void	CActor::Hit(SHit* pHDS)
 			return;
 		}else 
 		{
+			float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+
 			HDS.power				= hit_power;
 			HDS.add_wound			= true;
+
+			if (g_Alive())
+			{
+				callback(GameObject::eHit)
+				(this->lua_game_object(), HDS.damage(), HDS.direction(), smart_cast<const CGameObject*>(HDS.who)->lua_game_object(), HDS.boneID);
+			}
+
 			inherited::Hit			(&HDS);
 		}
 	}else
@@ -710,7 +717,12 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 {
 	if (g_Alive()) 
 	{
-
+#ifdef DEBUG
+		Msg("- [%s] hit info", __FUNCTION__);
+		Msg("- [%s] bone ID = %s", __FUNCTION__, element);
+		Msg("- [%s] bone Name = %s", __FUNCTION__, smart_cast<IKinematics*>(this->Visual())->LL_BoneName_dbg(element));
+		Msg("- [%s] hit info END", __FUNCTION__);
+#endif
 		// check damage bone
 		Fvector D;
 		XFORM().transform_dir(D,vLocalDir);
