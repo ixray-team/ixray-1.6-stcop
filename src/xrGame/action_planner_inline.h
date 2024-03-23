@@ -113,20 +113,29 @@ void CPlanner::update				()
 	}
 	else
 	{
-		if (initialized()) {
-			if (current_action_id() != this->solution().front()) {
-				current_action().finalize();
+		//Attempt to workaround strange line 114 crash when loading generators
+#pragma TODO("OldSerpskiStalker. Hack for l13_Generators")
+		if (!solution().empty())
+		{
+			if (initialized()) 
+			{
+				if (current_action_id() != this->solution().front()) 
+				{
+					current_action().finalize();
+					m_current_action_id = this->solution().front();
+					current_action().initialize();
+				}
+			}
+			else 
+			{
+				m_initialized = true;
 				m_current_action_id = this->solution().front();
 				current_action().initialize();
 			}
-		}
-		else {
-			m_initialized = true;
-			m_current_action_id = this->solution().front();
-			current_action().initialize();
-		}
 
-		current_action().execute();
+			current_action().execute();
+		}
+		//END
 	}
 }
 
