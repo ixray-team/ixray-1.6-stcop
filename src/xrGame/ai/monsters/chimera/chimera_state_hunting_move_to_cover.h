@@ -8,6 +8,7 @@ protected:
 
 public:
 						CStateChimeraHuntingMoveToCover	(_Object *obj);
+						virtual ~CStateChimeraHuntingMoveToCover();
 
 	virtual void		initialize						();
 	virtual	void		execute							();

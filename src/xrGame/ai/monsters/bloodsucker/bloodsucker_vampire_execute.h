@@ -19,6 +19,7 @@ class	CStateBloodsuckerVampireExecute : public CState<_Object> {
 
 public:
 						CStateBloodsuckerVampireExecute	(_Object *obj) : inherited(obj) {}
+	virtual				~CStateBloodsuckerVampireExecute() {}
 
 	virtual void		initialize						();
 	virtual	void		execute							();

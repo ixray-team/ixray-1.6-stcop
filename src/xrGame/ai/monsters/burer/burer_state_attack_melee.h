@@ -9,6 +9,8 @@ class	CStateBurerAttackMelee : public CStateMonsterAttack<_Object> {
 
 public:
 						CStateBurerAttackMelee			(_Object *obj);
+						virtual ~CStateBurerAttackMelee();
+
 	virtual	bool		check_start_conditions			();
 	virtual	bool		check_completion				();
 };

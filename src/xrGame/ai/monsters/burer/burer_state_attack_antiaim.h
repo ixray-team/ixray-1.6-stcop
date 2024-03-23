@@ -9,6 +9,7 @@ private:
 
 public:
 						CStateBurerAntiAim		(Object *obj);
+	virtual				~CStateBurerAntiAim();
 
 	virtual	void		initialize				();
 	virtual	void		execute					();

@@ -18,6 +18,12 @@ ChimeraAttackState<Object>::ChimeraAttackState (Object *obj) : inherited(obj)
 }
 
 template <class Object>
+ChimeraAttackState<Object>::~ChimeraAttackState()
+{
+
+}
+
+template <class Object>
 float   ChimeraAttackState<Object>::calculate_min_run_distance () const
 {
 	float	const	cos_half_scan_angle		=	_cos(scan_angle);
@@ -117,7 +123,7 @@ bool   ChimeraAttackState<Object>::check_if_jump_possible (Fvector const& target
 template <class Object>
 bool   ChimeraAttackState<Object>::jump (Fvector const& target, bool attack_jump)
 {
-	// получить вектор направления и его мир угол
+	// РїРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ Рё РµРіРѕ РјРёСЂ СѓРіРѕР»
 	float dir_yaw							=	(target - this->object->Position()).getH();
 	dir_yaw									=	angle_normalize(-dir_yaw);
 	float yaw_current, yaw_target;

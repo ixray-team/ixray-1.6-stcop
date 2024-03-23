@@ -40,6 +40,10 @@ CStateManagerDog::CStateManagerDog(CAI_Dog *monster) : inherited(monster)
 	object->EatedCorpse	= nullptr;
 }
 
+CStateManagerDog::~CStateManagerDog()
+{
+}
+
 void CStateManagerDog::execute()
 {
 	u32   state_id = u32(-1);
@@ -161,7 +165,7 @@ void CStateManagerDog::execute()
 		}
 	}
 
-	// âûïîëíèòü òåêóùåå ñîñòîÿíèå
+	// Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

@@ -15,6 +15,12 @@ CStateBurerAttackRunAroundAbstract::CStateBurerAttackRunAround(_Object *obj) : i
 }
 
 TEMPLATE_SPECIALIZATION
+CStateBurerAttackRunAroundAbstract::~CStateBurerAttackRunAround()
+{
+
+}
+
+TEMPLATE_SPECIALIZATION
 void CStateBurerAttackRunAroundAbstract::initialize()
 {
 	inherited::initialize		();
@@ -32,13 +38,13 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
 
-	if (dist > 30.f) {							// бежать к врагу
+	if (dist > 30.f) {							// Р±РµР¶Р°С‚СЊ Рє РІСЂР°РіСѓ
 		selected_point.mad(this->object->Position(),dir_to_enemy,DIST_QUANT);
-	} else if ((dist < 20.f) && (dist > 4.f)) {	// убегать от врага
+	} else if ((dist < 20.f) && (dist > 4.f)) {	// СѓР±РµРіР°С‚СЊ РѕС‚ РІСЂР°РіР°
 		selected_point.mad(this->object->Position(),dir_from_enemy,DIST_QUANT);
 		dest_direction.sub			(this->object->EnemyMan.get_enemy()->Position(),selected_point);
 		dest_direction.normalize	();
-	} else {											// выбрать случайную позицию
+	} else {											// РІС‹Р±СЂР°С‚СЊ СЃР»СѓС‡Р°Р№РЅСѓСЋ РїРѕР·РёС†РёСЋ
 		selected_point = random_position(this->object->Position(), DIST_QUANT);
 		dest_direction.sub			(this->object->EnemyMan.get_enemy()->Position(),selected_point);
 		dest_direction.normalize	();

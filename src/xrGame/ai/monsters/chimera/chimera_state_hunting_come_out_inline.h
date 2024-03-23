@@ -11,6 +11,11 @@ CStateChimeraHuntingMoveToCoverAbstract::CStateChimeraHuntingMoveToCover(_Object
 {
 }
 
+TEMPLATE_SPECIALIZATION
+CStateChimeraHuntingMoveToCoverAbstract::~CStateChimeraHuntingMoveToCover()
+{
+
+}
 
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraHuntingMoveToCoverAbstract::check_start_conditions()

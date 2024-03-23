@@ -27,6 +27,12 @@ CStateBloodsuckerPredatorAbstract::CStateBloodsuckerPredator(_Object *obj) : inh
 }
 
 TEMPLATE_SPECIALIZATION
+CStateBloodsuckerPredatorAbstract::~CStateBloodsuckerPredator()
+{
+
+}
+
+TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerPredatorAbstract::reinit()
 {
 	inherited::reinit	();

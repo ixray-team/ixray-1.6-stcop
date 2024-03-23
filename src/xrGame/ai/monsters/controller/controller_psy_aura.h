@@ -72,7 +72,8 @@ class CControllerAura : public CPPEffectorCustomController<CPPEffectorController
 
 public:
 	CControllerAura(CController* monster) : m_object(monster) {}
-	~CControllerAura();
+	virtual ~CControllerAura();
+
 	virtual void	load(LPCSTR section);
 
 	void	on_destroy();

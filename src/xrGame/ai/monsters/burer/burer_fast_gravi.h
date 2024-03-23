@@ -5,7 +5,9 @@ class CBurerFastGravi : public CControl_ComCustom<> {
 	typedef CControl_ComCustom<> inherited;
 
 public:
-	
+	CBurerFastGravi();
+	virtual ~CBurerFastGravi();
+
 	virtual bool	check_start_conditions	();
 	virtual void	activate				();
 	virtual void	deactivate				();

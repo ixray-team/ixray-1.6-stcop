@@ -12,6 +12,8 @@ class CVampirePPEffector : public CEffectorPP {
 
 public:
 					CVampirePPEffector		(const SPPInfo &ppi, float life_time);
+	virtual			~CVampirePPEffector		();
+
 	virtual	BOOL	Process					(SPPInfo& pp);
 };
 
@@ -30,6 +32,8 @@ class CVampireCameraEffector : public CEffectorCam {
 
 public:
 					CVampireCameraEffector	(float time, const Fvector &src, const Fvector &tgt);
+	virtual			~CVampireCameraEffector ();
+
 	virtual BOOL	ProcessCam				(SCamEffectorInfo& info);
 };
 

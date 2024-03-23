@@ -6,6 +6,7 @@ class CStateBurerAttackGravi : public CState<_Object> {
 	typedef CState<_Object> inherited;	
 public:
 							CStateBurerAttackGravi	(_Object *obj);
+							virtual				~CStateBurerAttackGravi();
 
 		virtual	void		initialize				();
 		virtual	void		execute					();
@@ -17,7 +18,7 @@ public:
 		virtual bool		check_completion		();
 
 private:
-				// выполнять состояние
+				// РІС‹РїРѕР»РЅСЏС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
 				void		ExecuteGraviStart		();
 				void		ExecuteGraviContinue	();
 				void		ExecuteGraviFire		();

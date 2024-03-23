@@ -21,6 +21,9 @@ class CControllerDirection : public CControlDirectionBase {
 	Fvector							m_head_look_point;
 
 public:	
+	CControllerDirection();
+	virtual ~CControllerDirection();
+
 	virtual void		reinit				();
 	virtual	void		update_schedule		();	
 

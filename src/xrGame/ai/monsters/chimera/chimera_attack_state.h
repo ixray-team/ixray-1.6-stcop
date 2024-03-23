@@ -6,6 +6,8 @@ class ChimeraAttackState : public CState<Object>
 {
 public:
 							ChimeraAttackState				(Object* obj);
+							virtual ~ChimeraAttackState();
+
 	virtual void			initialize						();
 	virtual	void			execute							();
 	virtual void 			finalize						();

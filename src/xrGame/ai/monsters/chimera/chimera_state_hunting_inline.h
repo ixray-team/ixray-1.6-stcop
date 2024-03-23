@@ -16,6 +16,11 @@ CStateChimeraHuntingAbstract::CStateChimeraHunting(_Object *obj) : inherited(obj
 	add_state(eStateComeOut,		xr_new<CStateChimeraHuntingComeOut<_Object> >		(obj));
 }
 
+TEMPLATE_SPECIALIZATION
+CStateChimeraHuntingAbstract::~CStateChimeraHunting()
+{
+
+}
 
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraHuntingAbstract::check_start_conditions()

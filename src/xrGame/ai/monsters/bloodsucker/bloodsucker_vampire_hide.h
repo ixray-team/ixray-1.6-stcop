@@ -8,6 +8,7 @@ class CStateBloodsuckerVampireHide : public CState<_Object> {
 
 public:
 						CStateBloodsuckerVampireHide	(_Object *obj);
+	virtual				~CStateBloodsuckerVampireHide	();
 
 	virtual	void		reselect_state					();
 	virtual void		setup_substates					();

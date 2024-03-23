@@ -7,6 +7,8 @@ class CStateControllerTube : public CState<_Object> {
 
 public:
 						CStateControllerTube	(_Object *obj) : inherited(obj){}
+						virtual ~CStateControllerTube() {}
+
 	virtual void		execute					();
 	virtual bool		check_start_conditions	();
 	virtual bool		check_completion		();

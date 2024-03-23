@@ -15,6 +15,11 @@ CStateBurerAttackMeleeAbstract::CStateBurerAttackMelee(_Object *obj) : inherited
 }
 
 TEMPLATE_SPECIALIZATION
+CStateBurerAttackMeleeAbstract::~CStateBurerAttackMelee()
+{
+}
+
+TEMPLATE_SPECIALIZATION
 bool CStateBurerAttackMeleeAbstract::check_start_conditions()
 {
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());

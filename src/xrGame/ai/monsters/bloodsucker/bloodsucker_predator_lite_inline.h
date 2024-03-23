@@ -27,6 +27,11 @@ CStateBloodsuckerPredatorLiteAbstract::CStateBloodsuckerPredatorLite(_Object *ob
 }
 
 TEMPLATE_SPECIALIZATION
+CStateBloodsuckerPredatorLiteAbstract::~CStateBloodsuckerPredatorLite()
+{
+}
+
+TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerPredatorLiteAbstract::reinit()
 {
 	inherited::reinit	();

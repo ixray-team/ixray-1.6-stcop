@@ -9,6 +9,7 @@ private:
 
 public:
 						CStateBurerShield		(Object *obj);
+						virtual ~CStateBurerShield();
 
 	virtual	void		initialize				();
 	virtual	void		execute					();

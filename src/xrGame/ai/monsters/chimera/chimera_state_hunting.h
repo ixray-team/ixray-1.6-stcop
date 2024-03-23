@@ -14,6 +14,7 @@ protected:
 
 public:
 						CStateChimeraHunting	(_Object *obj);
+						virtual ~CStateChimeraHunting();
 
 	virtual	void		reselect_state			();
 	virtual bool 		check_start_conditions	();	

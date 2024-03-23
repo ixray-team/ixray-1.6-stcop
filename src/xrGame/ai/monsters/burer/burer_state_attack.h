@@ -9,6 +9,7 @@ class	CStateBurerAttack : public CState<Object>
 
 public:
 						CStateBurerAttack			(Object *obj);
+						virtual ~CStateBurerAttack();
 
 	virtual	void		initialize					();
 	virtual	void		execute						();

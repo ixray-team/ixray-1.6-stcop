@@ -13,6 +13,12 @@ CStateBurerAttackTele<Object>::CStateBurerAttackTele(Object *obj) : inherited(ob
 }
 
 template <typename Object>
+CStateBurerAttackTele<Object>::~CStateBurerAttackTele()
+{
+
+}
+
+template <typename Object>
 void CStateBurerAttackTele<Object>::initialize()
 {
 	inherited::initialize			();

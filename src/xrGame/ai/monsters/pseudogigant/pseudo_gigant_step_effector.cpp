@@ -11,16 +11,21 @@ CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, floa
 	this->power		= power;
 }
 
+CPseudogigantStepEffector::~CPseudogigantStepEffector()
+{
+
+}
+
 BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	fLifeTime -= Device.fTimeDelta; 
 	if(fLifeTime<0) 
 		return FALSE;
 
-	// ïðîöåíò îñòàâøåãîñÿ âðåìåíè
+	// Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚ Ð¾ÑÑ‚Ð°Ð²ÑˆÐµÐ³Ð¾ÑÑ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸
 	float time_left_perc = fLifeTime / total;
 
-	// Èíèöèàëèçàöèÿ
+	// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 	Fmatrix	Mdef;
 	Mdef.identity		();
 	Mdef.j.set			(info.n);
@@ -28,7 +33,7 @@ BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 	Mdef.i.crossproduct	(info.n, info.d);
 	Mdef.c.set			(info.p);
 
-	float period_all	= period_number * PI_MUL_2;		// ìàêñ. çíà÷åíèå öèêëà
+	float period_all	= period_number * PI_MUL_2;		// Ð¼Ð°ÐºÑ. Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ñ†Ð¸ÐºÐ»Ð°
 	float k				= 1 - time_left_perc + EPS_L + (1 - power);
 	float cur_amp		= max_amp * (PI / 180) / (10 * k * k);
 
@@ -37,7 +42,7 @@ BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 	dangle.y = cur_amp		* _cos(period_all/2 * (1.0f - time_left_perc));
 	dangle.z = cur_amp/4	* _sin(period_all/4	* (1.0f - time_left_perc));
 
-	// Óñòàíîâèòü óãëû ñìåùåíèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑƒÐ³Ð»Ñ‹ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ
 	Fmatrix		R;
 	R.setHPB	(dangle.x,dangle.y,dangle.z);
 

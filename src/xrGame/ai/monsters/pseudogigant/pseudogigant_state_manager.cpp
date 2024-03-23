@@ -31,6 +31,11 @@ CStateManagerGigant::CStateManagerGigant(CPseudoGigant *monster) : inherited(mon
 	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound<CPseudoGigant> >		(monster));
 }
 
+CStateManagerGigant::~CStateManagerGigant()
+{
+
+}
+
 void CStateManagerGigant::execute()
 {
 	u32 state_id = u32(-1);
@@ -60,7 +65,7 @@ void CStateManagerGigant::execute()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

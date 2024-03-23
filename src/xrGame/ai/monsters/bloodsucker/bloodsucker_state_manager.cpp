@@ -36,6 +36,11 @@ CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker *monster) : i
 	add_state(eStateVampire_Execute,	xr_new<CStateBloodsuckerVampireExecute<CAI_Bloodsucker> >	(monster));
 }
 
+CStateManagerBloodsucker::~CStateManagerBloodsucker()
+{
+
+}
+
 void CStateManagerBloodsucker::drag_object()
 {
 	CEntityAlive* const ph_obj = object->m_cob;
@@ -140,7 +145,7 @@ void CStateManagerBloodsucker::execute ()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

@@ -34,6 +34,12 @@ CStateBurerAttack<Object>::CStateBurerAttack(Object *obj) : inherited(obj)
 }
 
 template <typename Object>
+CStateBurerAttack<Object>::~CStateBurerAttack()
+{
+
+}
+
+template <typename Object>
 void CStateBurerAttack<Object>::initialize()
 {
 	inherited::initialize						();
