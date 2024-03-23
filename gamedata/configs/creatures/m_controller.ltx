@@ -37,7 +37,6 @@ bone_head			 = bip01_head				; bone name
 bone_fire			 = bip01_head				; bone name
 weapon_usage		 = 0						; boolean
 
-
 stamina_hit		=	0.2;
 
 ;------------------------------------------------------------------------
@@ -87,6 +86,27 @@ ph_after_death_velocity_factor= 0.75
 ph_skel_shot_up_factor        = 0.25
 ;---------------------------------------------------------------------
 
+;------------------------------------------------------------------------- 
+; Psy Aura
+;-------------------------------------------------------------------------
+PsyAura_HeadSound			= monsters\controller\controller_control1
+PsyAura_SoundLeftPath		= monsters\controller\controller_presence_l
+PsyAura_SoundRightPath		= monsters\controller\controller_presence_r
+PsyAura_Radius				= 20
+PsyAura_Damage				= 0.1
+
+m_psy_aura		     		= true
+psy_hit_damage				= 0.35
+
+aura_effector				= controller_aura_pp_effector_section
+aura_effector_hit			= controller_aura_pp_hit_effector_section
+
+PsyAura_Fake_Duration		= 3000
+PsyAura_Fake_Delay			= 8000
+PsyAura_Fake_MaxAddDist		= 90
+PsyAura_Fake_MinAddDist		= 20
+PsyAura_HitDelay			= 1500
+PsyAura_PPHitDelay			= 300
 
 
 ;----------------------------------------------------------------------------
@@ -410,34 +430,16 @@ ce_power			= 1.5 ;0.7 ; power
 ; Aura PP Effector
 ;=========================================================================================
 [controller_aura_pp_effector_section]
-;duality_h		= 0.001
-;duality_v		= 0.001
-;blur			= 10
-;gray			= 0.5
-;noise_intensity = 1.0 ;0.5
-;noise_grain		= 1
-;noise_fps		= 5
-;color_base		= 0.999,0.433,0.0999
-;color_gray		= 0.333,0.3330,0.3330
-;color_add		= 0.999,0.433,0.0999 ;0.00,0.01,0.00
-
 duality_h		= 0.00
 duality_v		= 0.00
 blur			= 10
 gray			= 0.0
 noise_intensity = 10.0
 noise_grain		= 1
-noise_fps		= 25
-;color_base		= 0.5,0.5,0.5;0.2,0.2,0.2
-;color_gray		= 0.33,0.33,0.33
-;color_add		= 0.30,0.30,0.30
+noise_fps		= 30
 color_base		= 0.9,0.9,1.0
 color_gray		= 0.33,0.330,0.33
 color_add		= 0.00,0.00,0.015
-
-
-
-
 
 ;===========================================================================
 ; Attack Animation Parameters
