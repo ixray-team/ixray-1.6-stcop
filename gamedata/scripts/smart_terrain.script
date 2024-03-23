@@ -1,6 +1,4 @@
 local DEATH_IDLE_TIME = 10*60 -- секунд
-local RESPAWN_IDLE = 1000   -- секунд игрового времени
-local RESPAWN_RADIUS = 150 -- радиус респауна(если актер ближе, то не спаунить)
 SMART_TERRAIN_SECT = "smart_terrain"
 smart_terrains_by_name = {}
 local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
@@ -208,8 +206,8 @@ function se_smart_terrain:read_params()
 
 	self.squad_id		= utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "squad_id", 		self, false, 0)
 	self.respawn_sector = utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "respawn_sector", 	self, false, "")
-	self.respawn_radius  = utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "respawn_radius", 	self, false, 150)
-	self.respawn_time   = utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "respawn_time", 	self, false, 1000)																											   
+	self.respawn_radius  = utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "respawn_radius", 	self, false, 150) -- радиус респауна (если актер ближе, то не спаунить)
+	self.respawn_time   = utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "respawn_time", 	self, false, 1000) -- в секундах игрового времени																										   
 	if self.respawn_sector ~= nil then
 		if self.respawn_sector == "default" then
 			self.respawn_sector = "all"
