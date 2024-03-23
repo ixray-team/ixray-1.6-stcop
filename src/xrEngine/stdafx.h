@@ -5,7 +5,7 @@
 #else
 
 #include "../xrCore/xrCore.h"
-#include "../Include/xrAPI/xrAPI.h"
+#include "../xrCore/API/xrAPI.h"
 #include <SDL3/SDL.h>
 
 #ifndef XRSE_FACTORY_EXPORTS

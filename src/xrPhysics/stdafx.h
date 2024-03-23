@@ -23,7 +23,7 @@
 
 #include "xrPhysics.h"
 
-#include "../include/xrapi/xrapi.h"
+#include "../xrCore/API/xrapi.h"
 //IC IGame_Level &GLevel()
 //{
 //	VERIFY( g_pGameLevel );

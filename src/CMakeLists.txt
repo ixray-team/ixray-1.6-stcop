@@ -1,12 +1,11 @@
 # Solution folders
-set(IXRAY_FOLDER_PREBUILD FOLDER "Pre Build")
 set(IXRAY_FOLDER_ENGINE FOLDER "Engine")
-set(IXRAY_FOLDER_RENDER FOLDER "Renders")
-set(IXRAY_FOLDER_GAME FOLDER "Game")
+set(IXRAY_FOLDER_PREBUILD FOLDER "Engine/Pre Build")
+set(IXRAY_FOLDER_RENDER FOLDER "Engine/Renders")
+set(IXRAY_FOLDER_GAME FOLDER "Engine/Game")
 
 # Engine libraries
 add_subdirectory("xrCore")
-add_subdirectory("Layers/xrAPI")
 add_subdirectory("xrCDB")
 add_subdirectory("xrSound")
 add_subdirectory("xrNetServer")
@@ -35,7 +34,6 @@ add_subdirectory("xrPlay")
 
 # Move libraries
 set_target_properties(xrCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
-set_target_properties(xrAPI PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrCDB PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrSound PROPERTIES ${IXRAY_FOLDER_ENGINE})
 set_target_properties(xrNetServer PROPERTIES ${IXRAY_FOLDER_ENGINE})

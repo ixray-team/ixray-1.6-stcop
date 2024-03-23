@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "GameMtlLib.h"
-//#include "../include/xrapi/xrapi.h"
+//#include "../xrCore/API/xrapi.h"
 
 CGameMtlLibrary GMLib;
 //CSound_manager_interface*	Sound = NULL;
