@@ -163,10 +163,26 @@ CInifile::~CInifile( )
 static void	insert_item(CInifile::Sect *tgt, const CInifile::Item& I)
 {
 	auto sect_it = tgt->Data.find(I.first);
+
 	if (sect_it!=tgt->Data.end() && sect_it->first.equal(I.first))
-	{ 
-		sect_it->second	= I.second;
-	}else{
+	{
+		sect_it->second = I.second;
+		auto found = std::find_if
+		(
+			tgt->Ordered.begin(), tgt->Ordered.end(),
+			[&](const auto& it) 
+			{
+				return xr_strcmp(*it.first, *I.first) == 0;
+			}
+		);
+
+		if (found != tgt->Ordered.end()) 
+		{
+			found->second = I.second;
+		}
+	}
+	else
+	{
 		tgt->Data.insert({ I.first, I.second });    
 		tgt->Ordered.push_back(I);
 	}
@@ -876,9 +892,19 @@ void CInifile::remove_line(LPCSTR S, LPCSTR L)
 	if (line_exist(S, L)) 
 	{
 		Sect& data = r_section(S);
-		const auto& A = data.Data.find(L);
+		auto A = data.Data.find(L);
 		R_ASSERT(A != data.Data.end());
+
 		data.Data.erase(A);
+
+		auto found = std::find_if
+		(
+			data.Ordered.begin(), data.Ordered.end(),
+			[&](const auto& it) {
+				return xr_strcmp(*it.first, L) == 0;
+			}
+		);
+		R_ASSERT(found != data.Ordered.end());
+		data.Ordered.erase(found);
 	}
 }
-
