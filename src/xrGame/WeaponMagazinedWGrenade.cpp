@@ -6,7 +6,7 @@
 #include "xrserver_objects_alife_items.h"
 #include "ExplosiveRocket.h"
 #include "Actor.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "level.h"
 #include "object_broker.h"
 #include "game_base_space.h"
@@ -898,7 +898,7 @@ void CWeaponMagazinedWGrenade::net_Spawn_install_upgrades	( Upgrades_type saved_
 }
 
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 {
 	VERIFY(m_pInventory);
@@ -953,13 +953,13 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 	if(ae != 0 && m_magazine.size() != 0)
 	{
 		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
-		info.name._set(CStringTable().translate(pSettings->r_string(ammo_type, "inv_name_short")));
+		info.name._set(g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")));
 		info.icon._set(ammo_type);
 	}
 	else
 	{
 		LPCSTR ammo_type = m_ammoTypes[m_ammoType].c_str();
-		info.name._set(CStringTable().translate(pSettings->r_string(ammo_type, "inv_name_short")));
+		info.name._set(g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")));
 		info.icon._set(ammo_type);
 	}
 

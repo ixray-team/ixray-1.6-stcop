@@ -14,7 +14,7 @@
 #include "Level_network_map_sync.h"
 #include "secure_messaging.h"
 #include "traffic_optimization.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 class	CHUDManager;
 class	CParticlesObject;

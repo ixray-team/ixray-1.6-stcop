@@ -12,7 +12,7 @@
 #include "eatable_item.h"
 #include "../xrScripts/script_engine.h"
 #include "xrmessages.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "level.h"
 #include "ai_space.h"
 #include "entitycondition.h"

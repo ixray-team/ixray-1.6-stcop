@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "spectator_camera_first_eye.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/xr_object.h"
 
 CSpectrCameraFirstEye::CSpectrCameraFirstEye(float const & fTimeDelta,

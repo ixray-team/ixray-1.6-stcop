@@ -23,8 +23,8 @@ add_library(luabind SHARED ${LUABIND_SRC_FILES})
 target_include_directories(luabind PUBLIC "${IXRAY_SDK_INC}/")
 target_include_directories(luabind PUBLIC "${IXRAY_SDK_INC}/lua/")
 target_include_directories(luabind PUBLIC "${IXRAY_SDK_INC}/luabind/")
-target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/luabind/src")
-target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
+target_include_directories(luabind PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/luabind/src")
+target_include_directories(luabind PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 target_link_directories(luabind PUBLIC "${IXRAY_SDK_LIB}/")
 

@@ -1,12 +1,11 @@
-#ifndef UI_TEAM_HEADER
-#define UI_TEAM_HEADER
+#pragma once
 
 #include "ui/UIWindow.h"
 #include "ui/xrUIXmlParser.h"
 #include "ui/UIXmlInit.h"
 
 #include "game_cl_base.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "level.h"
 #include "../xrCore/associative_vector.h"
 
@@ -37,10 +36,4 @@ public:
 	virtual			~UITeamHeader	();
 			void	Init			(CUIXml& uiXml, LPCSTR path);
 	virtual	void	Update			();
-
-protected:
-private:
-}; //UITeamHeader
-
-
-#endif //UI_TEAM_HEADER
+};

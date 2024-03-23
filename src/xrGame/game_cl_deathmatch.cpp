@@ -4,7 +4,7 @@
 #include "UIGameDM.h"
 #include "Spectator.h"
 #include "level.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "actor.h"
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UISkinSelector.h"
@@ -13,12 +13,12 @@
 #include "ui/UIMessageBoxEx.h"
 #include "ui/UIVote.h"
 #include "gamepersistent.h"
-#include "string_table.h"
 #include "map_manager.h"
 #include "map_location.h"
 #include "clsid_game.h"
 #include "ui/UIActorMenu.h"
 #include "weapon.h"
+#include "../xrEngine/string_table.h"
 
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "reward_event_generator.h"
@@ -444,8 +444,6 @@ void game_cl_Deathmatch::OnConnected()
 
 void game_cl_Deathmatch::shedule_Update			(u32 dt)
 {
-	CStringTable st;
-
 	inherited::shedule_Update(dt);
 
 	if(g_dedicated_server)	return;
@@ -522,11 +520,11 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					ConvertTime2String(&S, TimeRemains);
 					string1024 tmpStr = "";
 					if (TimeRemains > 10000)
-						xr_strconcat(tmpStr, *st.translate("mp_time2start"), " ", S);
+						xr_strconcat(tmpStr, *g_pStringTable->translate("mp_time2start"), " ", S);
 					else
 					{
 						if (TimeRemains < 1000)
-							xr_strconcat(tmpStr, *st.translate("mp_go"), "");
+							xr_strconcat(tmpStr, *g_pStringTable->translate("mp_go"), "");
 						else
 						{
 							static u32 dwLastTimeRemains = 10;
@@ -538,7 +536,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 							}
 							dwLastTimeRemains = dwCurTimeRemains;
 							_itoa(dwCurTimeRemains, S, 10);								
-							xr_strconcat(tmpStr, *st.translate("mp_ready"), "...", S);
+							xr_strconcat(tmpStr, *g_pStringTable->translate("mp_ready"), "...", S);
 						}
 					};
 					
@@ -595,7 +593,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 						if (ps->m_bCurrentVoteAgreed == 1) NumAgreed++;
 					}
 					
-					xr_sprintf	(VoteTimeResStr, st.translate("mp_timeleft").c_str(), MinitsLeft, SecsLeft, float(NumAgreed)/players.size());
+					xr_sprintf	(VoteTimeResStr, g_pStringTable->translate("mp_timeleft").c_str(), MinitsLeft, SecsLeft, float(NumAgreed)/players.size());
 					m_game_ui->SetVoteTimeResultMsg(VoteTimeResStr);
 				};
 
@@ -607,7 +605,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					string64			S;
 					ConvertTime2String	(&S, Rest);
 					string128			FullS;
-					xr_sprintf				(FullS, "%s : %s", *st.translate("mp_time2respawn"), S);
+					xr_sprintf				(FullS, "%s : %s", *g_pStringTable->translate("mp_time2respawn"), S);
 
 					m_game_ui->SetForceRespawnTimeCaption(FullS);
 				};
@@ -639,7 +637,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 				break;
 
 			string128 resstring;
-			xr_sprintf(resstring, st.translate("mp_player_wins").c_str(), WinnerName);
+			xr_sprintf(resstring, g_pStringTable->translate("mp_player_wins").c_str(), WinnerName);
 			m_game_ui->SetRoundResultCaption(resstring);
 
 			SetScore();
@@ -822,19 +820,19 @@ void game_cl_Deathmatch::OnVoteStart(NET_Packet& P)
 		if (!xr_strcmp(CmdName, "restart"))
 		{
 			xr_sprintf(NewCmd, "%s", 
-				*st.translate("mp_restart")
+				*g_pStringTable->translate("mp_restart")
 				);
 		}
 		else if (!xr_strcmp(CmdName, "restart_fast"))
 		{
 			xr_sprintf(NewCmd, "%s", 
-				*st.translate("mp_restart_fast")
+				*g_pStringTable->translate("mp_restart_fast")
 				);
 		}
 		else if (!xr_strcmp(CmdName, "kick"))
 		{
 			xr_sprintf(NewCmd, "%s %s", 
-				*st.translate("mp_kick"), 
+				*g_pStringTable->translate("mp_kick"), 
 				CmdParams[0]
 				);
 			for (int i=1; i<MAX_VOTE_PARAMS; i++)
@@ -849,7 +847,7 @@ void game_cl_Deathmatch::OnVoteStart(NET_Packet& P)
 		else if (!xr_strcmp(CmdName, "ban"))
 		{
 			xr_sprintf(NewCmd, "%s %s", 
-				*st.translate("mp_ban"), 
+				*g_pStringTable->translate("mp_ban"), 
 				CmdParams[0]
 				);
 			for (int i=1; i<MAX_VOTE_PARAMS; i++)
@@ -864,21 +862,21 @@ void game_cl_Deathmatch::OnVoteStart(NET_Packet& P)
 		else if (!xr_strcmp(CmdName, "changemap"))
 		{
 			xr_sprintf(NewCmd, "%s %s", 
-				*st.translate("mp_change_map"), 
-				*st.translate(CmdParams[0])
+				*g_pStringTable->translate("mp_change_map"), 
+				*g_pStringTable->translate(CmdParams[0])
 				);
 		}
 		else if (!xr_strcmp(CmdName, "changeweather"))
 		{
 			xr_sprintf(NewCmd, "%s %s", 
-				*st.translate("mp_change_weather"), 
-				*st.translate(CmdParams[0])
+				*g_pStringTable->translate("mp_change_weather"), 
+				*g_pStringTable->translate(CmdParams[0])
 				);
 		}
 
 		
 		string1024 VoteStr;
-		xr_sprintf(VoteStr, *st.translate("mp_voting_started"), NewCmd, Player);		
+		xr_sprintf(VoteStr, *g_pStringTable->translate("mp_voting_started"), NewCmd, Player);		
 		
 
 
@@ -929,7 +927,7 @@ void game_cl_Deathmatch::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
 
 		VERIFY(pObject);
 		D.pos = pObject->Position();
-		dst.push_back(D);
+		dg_pStringTable->push_back(D);
 	}
 	*/
 }

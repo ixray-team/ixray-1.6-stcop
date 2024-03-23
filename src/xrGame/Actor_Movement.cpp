@@ -8,7 +8,6 @@
 
 #include "level.h"
 #include "UIGameCustom.h"
-#include "string_table.h"
 #include "actorcondition.h"
 #include "game_cl_base.h"
 #include "WeaponMagazined.h"

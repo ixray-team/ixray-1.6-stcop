@@ -8,7 +8,7 @@
 #include "UIDemoPlayControl.h"
 #include "UICursor.h"
 #include "../xrEngine/XR_IOConsole.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "level.h"
 #include "demoinfo.h"
 #include "demoplay_control.h"

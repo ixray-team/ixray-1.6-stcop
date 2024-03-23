@@ -21,7 +21,7 @@ list(APPEND XRPS_SRC_FILES ${XRPS_SOURCE_ALL_FILES})
 add_library(xrScripts SHARED ${XRPS_SRC_FILES})
 
 # Include directories
-target_include_directories(xrScripts PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrScripts PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrScripts PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

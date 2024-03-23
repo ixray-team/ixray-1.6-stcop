@@ -46,7 +46,7 @@ list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*"
 add_library(xrPhysics SHARED ${XPH_SRC_FILES})
 
 # Include directories
-target_include_directories(xrPhysics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrPhysics PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

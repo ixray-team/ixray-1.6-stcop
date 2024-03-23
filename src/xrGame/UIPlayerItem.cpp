@@ -8,7 +8,7 @@
 
 #include "game_cl_capture_the_artefact.h"
 #include "game_cl_artefacthunt.h"
-
+#include "../xrEngine/string_table.h"
 
 UIPlayerItem::UIPlayerItem()
 {
@@ -145,9 +145,8 @@ void UIPlayerItem::GetTextParamValue(game_PlayerState const * ps,
 		xr_sprintf(dest.begin(), dest.size(), "%d", m_checkPoints);
 	}else if (param_name.equal("mp_status"))
 	{
-		CStringTable st;
 		if (ps->testFlag(GAME_PLAYER_FLAG_READY))
-			xr_strcpy(dest.begin(), dest.size(), st.translate("st_mp_ready").c_str());
+			xr_strcpy(dest.begin(), dest.size(), g_pStringTable->translate("st_mp_ready").c_str());
 	} else if (param_name.equal("mp_ping"))
 	{
 		xr_sprintf(dest.begin(), dest.size(), "%d", ps->ping);

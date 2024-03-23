@@ -12,10 +12,10 @@
 #include "xrserver_objects_alife_items.h"
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "UIGameCustom.h"
 #include "object_broker.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "MPPlayersBag.h"
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
@@ -1347,7 +1347,6 @@ void CWeaponMagazined::net_Import	(NET_Packet& P)
 	SetQueueSize(GetCurrentFireMode());
 }
 
-#include "string_table.h"
 bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 {
 	VERIFY( m_pInventory );

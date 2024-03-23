@@ -10,7 +10,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/xr_ioconsole.h"
 #include "MainMenu.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "UIGameCustom.h"
 #include "ui/UICDkey.h"
 #include "object_factory.h"

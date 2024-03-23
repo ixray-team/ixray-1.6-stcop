@@ -18,7 +18,7 @@
 #include "../xrScripts/script_engine.h"
 #include "attachable_item.h"
 #include "script_entity.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "alife_registry_wrappers.h"
 #include "relation_registry.h"
 #include "custommonster.h"

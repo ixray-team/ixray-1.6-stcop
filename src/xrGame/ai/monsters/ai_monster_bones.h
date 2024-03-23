@@ -1,5 +1,5 @@
-
 #pragma once
+#include "../xrEngine/bone.h"
 
 #define AXIS_X	(1 << 0)
 #define AXIS_Y	(1 << 1)
