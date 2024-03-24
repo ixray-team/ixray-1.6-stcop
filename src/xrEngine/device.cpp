@@ -24,7 +24,7 @@ using namespace DirectX;
 #include "igame_persistent.h"
 #include "FPSCounter.h"
 
-ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
+ENGINE_API CRenderDevice* DevicePtr = nullptr;
 #ifndef _EDITOR
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 #endif

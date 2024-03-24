@@ -204,7 +204,7 @@ public:
 	// Scene control
 	void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 	BOOL Begin								();
-	void Clear								();
+	virtual void Clear						();
 	void End								();
 	void FrameMove							();
 	
@@ -262,7 +262,7 @@ virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
 virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
 };
 
-extern ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
+extern ENGINE_API CRenderDevice* DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
 
