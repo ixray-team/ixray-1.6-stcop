@@ -2,11 +2,6 @@
 #include "dx11Backend.h"
 #include "dx10BufferUtils.h"
 
-struct Buffer_DX11
-{
-	ID3D11Buffer* pBuffer;
-};
-
 CBackend_DX11 backend_dx11_impl;
 
 CBackend_DX11::CBackend_DX11()
@@ -39,6 +34,51 @@ IIndexBuffer* CBackend_DX11::CreateIndexBuffer(byte* data, u32 length, ResourceU
 	IIndexBuffer* pBuffer = xr_new<IIndexBuffer>();
 	pBuffer->m_InternalResource = buffer;
 	return pBuffer;
+}
+
+ITexture2D* CBackend_DX11::CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length)
+{
+	auto texture = std::make_shared<Texture_DX11>();
+	texture->pTex1D = nullptr;
+	texture->pTex2D = nullptr;
+	texture->pTex3D = nullptr;
+	texture->pSRV = nullptr;
+
+	D3D11_TEXTURE2D_DESC d3dTextureDesc;
+	memset(&d3dTextureDesc, 0, sizeof(d3dTextureDesc));
+	d3dTextureDesc.Width = pDesc->width;
+	d3dTextureDesc.Height = pDesc->height;
+	d3dTextureDesc.MipLevels = (pDesc->mipmapLevel < 1 ? 1 : pDesc->mipmapLevel);
+	d3dTextureDesc.ArraySize = 1;
+	d3dTextureDesc.Format = GetDXGIFormat(pDesc->format);
+	d3dTextureDesc.SampleDesc.Count = 1;
+	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	// #TODO: HACK
+	if (pDesc->format == FMT_DEPTH32F ||
+		pDesc->format == FMT_DEPTH24_STENCIL_8)
+		d3dTextureDesc.BindFlags = 0;
+	else
+		d3dTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	if (pDesc->renderTargetUsage)
+		d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+
+	d3dTextureDesc.CPUAccessFlags = 0;
+	d3dTextureDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA subresourceData = {};
+	subresourceData.pSysMem = data;
+	subresourceData.SysMemPitch = length;
+
+	R_CHK(RDevice->CreateTexture2D(&d3dTextureDesc, data ? &subresourceData : NULL, &texture->pTex2D));
+
+	if (d3dTextureDesc.BindFlags == D3D11_BIND_SHADER_RESOURCE)
+		R_CHK(RDevice->CreateShaderResourceView(texture->pTex2D, NULL, &texture->pSRV));
+
+	ITexture2D* pTexture = xr_new<ITexture2D>();
+	pTexture->m_InternalResource = texture;
+	return pTexture;
 }
 
 void CBackend_DX11::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)

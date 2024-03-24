@@ -2,6 +2,20 @@
 #define DX11BACKEND_H
 
 #include "../xrRender/xrBackend/R_IBackend.h"
+#include "dx10r_constants_cache.h"
+
+struct Buffer_DX11
+{
+	ID3D11Buffer* pBuffer;
+};
+
+struct Texture_DX11
+{
+	ID3D11Texture1D* pTex1D;
+	ID3D11Texture2D* pTex2D;
+	ID3D11Texture3D* pTex3D;
+	ID3D11ShaderResourceView* pSRV;
+};
 
 class CBackend_DX11 : public CBackendBase
 {
@@ -27,6 +41,7 @@ public:
 
 	IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) override;
 	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
+	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
 	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;
 	void				set_Indices(IIndexBuffer* _ib) override;
@@ -40,6 +55,10 @@ public:
 	void				ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
 
 private:
+	// Pixel/Vertex constants
+	ALIGN(16)	R_constants			constants;
+	R_constant_table*				ctable;
+
 	// Lists-expanded
 	CTexture* textures_ps[mtMaxPixelShaderTextures];	// stages
 	CTexture* textures_vs[mtMaxVertexShaderTextures];	// 4 vs
@@ -54,6 +73,27 @@ private:
 
 extern CBackend_DX11 backend_dx11_impl;
 
+inline DXGI_FORMAT GetDXGIFormat(PixelFormat format)
+{
+	switch (format)
+	{
+	case FMT_R8G8B8:
+	case FMT_R8G8B8A8:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
+	case FMT_R32G32B32F:
+		return DXGI_FORMAT_R32G32B32_FLOAT;
+	case FMT_R32G32B32A32F:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case FMT_DEPTH32F:
+		return DXGI_FORMAT_D32_FLOAT;
+	case FMT_DEPTH24_STENCIL_8:
+		return DXGI_FORMAT_D24_UNORM_S8_UINT;
+	default:
+		break;
+	}
 
+	FATAL("Unkonwed PixelFormat");
+	return DXGI_FORMAT_UNKNOWN;
+}
 
 #endif // !DX11BACKEND_H

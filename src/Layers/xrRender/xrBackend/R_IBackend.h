@@ -82,6 +82,7 @@ public:
 
 	virtual IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) = 0;
 	virtual IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
+	virtual ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) = 0;
 
 	virtual	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
 	virtual	void				set_Indices(IIndexBuffer* _ib) = 0;

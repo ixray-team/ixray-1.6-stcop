@@ -73,6 +73,20 @@ IIndexBuffer* CBackend_DX9::CreateIndexBuffer(byte* data, u32 length, ResourceUs
 	return pBuffer;
 }
 
+ITexture2D* CBackend_DX9::CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length)
+{
+	auto texture = std::make_shared<Texture_DX9>();
+	texture->pTex = nullptr;
+
+	R_CHK(RDevice->CreateTexture(pDesc->width, pDesc->height, 
+		pDesc->mipmapLevel, 0, GetD3DFormat(pDesc->format), 
+		D3DPOOL_DEFAULT, &texture->pTex, NULL));
+
+	ITexture2D* pTexture = xr_new<ITexture2D>();
+	pTexture->m_InternalResource = texture;
+	return pTexture;
+}
+
 void CBackend_DX9::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 {
 	if ((vb != _vb) || (vb_stride != _vb_stride))

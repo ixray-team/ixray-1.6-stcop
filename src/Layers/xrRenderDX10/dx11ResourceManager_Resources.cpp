@@ -430,7 +430,8 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	return D;
 }
 
-DXGI_FORMAT GetDXGIFormat(PixelFormat format)
+// #TODO: delete
+inline DXGI_FORMAT GetDXGIFormat(PixelFormat format)
 {
 	switch (format)
 	{
