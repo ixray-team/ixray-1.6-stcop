@@ -1,6 +1,10 @@
 #ifndef R_IBACKEND_H
 #define R_IBACKEND_H
 
+#pragma once
+
+#include "../R_Backend_xform.h"
+
 // https://wickedengine.net/2021/05/06/graphics-api-abstraction/
 
 // Primitives supported by draw-primitive API
@@ -128,6 +132,15 @@ public:
 	virtual IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
 	virtual ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) = 0;
 
+	// API
+	IC	void					set_xform(u32 ID, const Fmatrix& M);
+	IC	void					set_xform_world(const Fmatrix& M);
+	IC	void					set_xform_view(const Fmatrix& M);
+	IC	void					set_xform_project(const Fmatrix& M);
+	IC	const Fmatrix&			get_xform_world();
+	IC	const Fmatrix&			get_xform_view();
+	IC	const Fmatrix&			get_xform_project();
+
 	virtual CTexture*			get_ActiveTexture(u32 stage) = 0;
 
 	virtual	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
@@ -153,7 +166,10 @@ public:
 protected:
 	backend_stats					stats;
 
+	R_xforms						xforms;
+
 private:
+
 	u32								stencil_enable;
 	u32								stencil_func;
 	u32								stencil_ref;
@@ -519,6 +535,27 @@ private:
 
 };
 #pragma warning(pop)
+
+IC void	CBackendBase::set_xform(u32 ID, const Fmatrix& M_)
+{
+	stats.xforms++;
+	//CHK_DX(RDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID, (D3DMATRIX*)&M_));
+}
+IC void CBackendBase::set_xform_world(const Fmatrix& M_)
+{
+	xforms.set_W(M_);
+}
+IC void CBackendBase::set_xform_view(const Fmatrix& M_)
+{
+	xforms.set_V(M_);
+}
+IC void CBackendBase::set_xform_project(const Fmatrix& M_)
+{
+	xforms.set_P(M_);
+}
+IC	const Fmatrix& CBackendBase::get_xform_world() { return xforms.get_W(); }
+IC	const Fmatrix& CBackendBase::get_xform_view() { return xforms.get_V(); }
+IC	const Fmatrix& CBackendBase::get_xform_project() { return xforms.get_P(); }
 
 inline void CBackendBase::set_Geometry(SGeometry* _geom)
 {
