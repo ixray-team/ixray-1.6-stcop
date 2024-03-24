@@ -36,6 +36,11 @@ namespace FVF {
 		IC void		set(const Fvector& _p, u32 C, float u, float v) { p.set(_p); color=C; t.set(u,v);}
 	};
 	const u32 F_LIT	= D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+	const XR_INPUT_ELEMENT_DESC IL_LIT[] = {
+		{"POSITION", 0, FMT_R32G32B32A32F, 0, 0, XR_INPUT_PER_VERTEX_DATA, 0 }, // position
+		{"COLOR", 0,  FMT_R8G8B8A8, 0, 12, XR_INPUT_PER_VERTEX_DATA, 0  },		// color
+		{"TEXCOORD", 0, FMT_R32G32F, 0, 16, XR_INPUT_PER_VERTEX_DATA, 0 }		// texcoord 
+	};
 
 	struct TL0uv {
 		Fvector4	p;
@@ -89,6 +94,11 @@ namespace FVF {
 		};
 	};
 	const u32 F_TL	= D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+	const XR_INPUT_ELEMENT_DESC IL_TL[] = {
+	{"POSITION", 0, FMT_R32G32B32A32F, 0, 0, XR_INPUT_PER_VERTEX_DATA, 0 }, // position
+	{"COLOR", 0,  FMT_R8G8B8A8, 0, 12, XR_INPUT_PER_VERTEX_DATA, 0  },		// color
+	{"TEXCOORD", 0, FMT_R32G32F, 0, 16, XR_INPUT_PER_VERTEX_DATA, 0 }		// texcoord 
+	};
 
 	struct TL2uv {
 		Fvector4	p;
@@ -119,6 +129,12 @@ namespace FVF {
 		};
 	};
 	const u32 F_TL2uv	= D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
+	const XR_INPUT_ELEMENT_DESC IL_TL2uv[] = {
+		{"POSITION", 0, FMT_R32G32B32A32F, 0, 0, XR_INPUT_PER_VERTEX_DATA, 0 }, // position
+		{"COLOR", 0,  FMT_R8G8B8A8, 0, 12, XR_INPUT_PER_VERTEX_DATA, 0  },		// color
+		{"TEXCOORD0", 0, FMT_R32G32F, 0, 16, XR_INPUT_PER_VERTEX_DATA, 0 },		// texcoord 0
+		{"TEXCOORD1", 0, FMT_R32G32F, 0, 24, XR_INPUT_PER_VERTEX_DATA, 0 },		// texcoord 1
+	};
 
 	struct TL4uv {
 		Fvector4	p;

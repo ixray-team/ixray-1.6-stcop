@@ -5,10 +5,16 @@
 
 dxUIRender	UIRenderImpl;
 
+#define XRAY_ARRAYSIZE(A) (sizeof(A)/sizeof((A)[0]))
+
 void dxUIRender::CreateUIGeom()
 {
 	hGeom_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
 	hGeom_LIT.create(FVF::F_LIT, RCache.Vertex.Buffer(), 0);
+
+	// чето с шейдерами и аттрибутами, 5 утра, думать лень
+	//hGeom_TL.create(FVF::IL_TL, XRAY_ARRAYSIZE(FVF::IL_TL), RCache.Vertex.Buffer(), 0, sizeof(FVF::TL));
+	//hGeom_LIT.create(FVF::IL_LIT, XRAY_ARRAYSIZE(FVF::IL_LIT), RCache.Vertex.Buffer(), 0, sizeof(FVF::LIT));
 }
 
 void dxUIRender::DestroyUIGeom()

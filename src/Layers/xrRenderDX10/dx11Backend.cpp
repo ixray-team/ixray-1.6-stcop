@@ -702,8 +702,8 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u
 	//UINT StartIndexLocation,
 	//INT BaseVertexLocation
 	SRVSManager.Apply();
-	//ApplyRTandZB();
-	//ApplyVertexLayout();
+	ApplyRTandZB();
+	ApplyVertexLayout();
 	StateManager.Apply();
 
 	//	State manager may alter constants
@@ -735,8 +735,8 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 
 	ApplyPrimitieTopology(Topology);
 	SRVSManager.Apply();
-	//ApplyRTandZB();
-	//ApplyVertexLayout();
+	RCache.ApplyRTandZB();
+	ApplyVertexLayout();
 	StateManager.Apply();
 	//	State manager may alter constants
 	constants.flush();
@@ -754,6 +754,56 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 
 void CBackend_DX11::ApplyVertexLayout()
 {
+	VERIFY(vs);
+	VERIFY(decl);
+	VERIFY(m_pInputSignature);
+
+	if (!decl->layout && decl->neends_single_layout)
+	{
+		ID3DInputLayout* pLayout = nullptr;
+
+		CHK_DX(RDevice->CreateInputLayout(
+			&decl->dx10_dcl_code[0],
+			decl->dx10_dcl_code.size() - 1,
+			m_pInputSignature->GetBufferPointer(),
+			m_pInputSignature->GetBufferSize(),
+			&pLayout
+		));
+
+		decl->layout = pLayout;
+	}
+
+	if (decl->layout && m_pInputLayout != decl->layout)
+	{
+		m_pInputLayout = decl->layout;
+		RContext->IASetInputLayout(m_pInputLayout);
+	}
+
+	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator	it;
+
+	it = decl->vs_to_layout.find(m_pInputSignature);
+
+	if (it == decl->vs_to_layout.end())
+	{
+		ID3DInputLayout* pLayout;
+
+		CHK_DX(RDevice->CreateInputLayout(
+			&decl->dx10_dcl_code[0],
+			(u32)decl->dx10_dcl_code.size() - 1,
+			m_pInputSignature->GetBufferPointer(),
+			m_pInputSignature->GetBufferSize(),
+			&pLayout
+		));
+
+		it = decl->vs_to_layout.insert(
+			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;
+	}
+
+	if (m_pInputLayout != it->second)
+	{
+		m_pInputLayout = it->second;
+		RContext->IASetInputLayout(m_pInputLayout);
+	}
 }
 
 void CBackend_DX11::ApplyRTandZB()

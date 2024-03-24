@@ -454,7 +454,7 @@ inline DXGI_FORMAT GetDXGIFormat(PixelFormat format)
 	return DXGI_FORMAT_UNKNOWN;
 }
 
-SDeclaration* CResourceManager::_CreateDecl(XR_INPUT_ELEMENT_DESC* dcl, size_t size)
+SDeclaration* CResourceManager::_CreateDecl(const XR_INPUT_ELEMENT_DESC* dcl, size_t size)
 {
 	// Create _new
 	SDeclaration* D = xr_new<SDeclaration>();
@@ -462,7 +462,7 @@ SDeclaration* CResourceManager::_CreateDecl(XR_INPUT_ELEMENT_DESC* dcl, size_t s
 
 	for (int i = 0; i < size; i++)
 	{
-		XR_INPUT_ELEMENT_DESC elementDesc = dcl[i];
+		const XR_INPUT_ELEMENT_DESC elementDesc = dcl[i];
 
 		D3D_INPUT_ELEMENT_DESC d3delementDesc = {};
 		d3delementDesc.SemanticName				= elementDesc.SemanticName;
@@ -597,7 +597,7 @@ SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IVertexBuffer* vb, IIndexBuff
 	return	g;
 }
 
-SGeometry* CResourceManager::CreateGeom(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, IVertexBuffer* vb, IIndexBuffer* ib, size_t stride)
+SGeometry* CResourceManager::CreateGeom(const XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, IVertexBuffer* vb, IIndexBuffer* ib, size_t stride)
 {
 	R_ASSERT(inputLayout && vb);
 

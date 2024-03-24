@@ -52,9 +52,7 @@ void _VertexStream::Destroy	()
 
 void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 {
-#ifdef USE_DX11
-	D3D11_MAPPED_SUBRESOURCE MappedSubRes;
-#endif
+	MAPPED_SUBRESOURCE MappedSubRes;
 
 #ifdef DEBUG
 	PGO					(Msg("PGO:VB_LOCK:%d",vl_Count));
@@ -80,16 +78,9 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		mDiscardID			++;
 
 #ifdef USE_DX11
-		// #TODO: TEMP
-		HRESULT res = pVB->Lock(mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
-
-		if (res != D3D_OK)
-			Msg(" pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData);
-
-
-		//RContext->Map(pVB, 0, D3D_MAP_WRITE_DISCARD, 0, &MappedSubRes);
-		//pData=(BYTE*)MappedSubRes.pData;
-		//pData += vOffset;
+		g_rbackend->MapBuffer(pVB, 0, Mapping::MAP_WRITE_DISCARD, 0, &MappedSubRes);
+		pData=(BYTE*)MappedSubRes.pData;
+		pData += vOffset;
 #else //USE_DX11
 		HRESULT res = pVB->Lock( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
 
@@ -103,16 +94,9 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		vOffset				= vl_mPosition;
 
 #ifdef USE_DX11
-		// #TODO: TEMP
-		HRESULT res = pVB->Lock(mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
-
-		if (res != D3D_OK)
-			Msg(" pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData);
-
-
-		//RContext->Map(pVB, 0, D3D_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
-		//pData=(BYTE*)MappedSubRes.pData;
-		//pData += vOffset*Stride;
+		g_rbackend->MapBuffer(pVB, 0, Mapping::MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
+		pData=(BYTE*)MappedSubRes.pData;
+		pData += vOffset*Stride;
 #else //USE_DX11
 		HRESULT res = pVB->Lock			( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
 		
@@ -138,10 +122,7 @@ void	_VertexStream::Unlock		( u32 Count, u32 Stride)
 	VERIFY				(pVB);
 
 #ifdef USE_DX11
-	// #TODO: TEMP
-	pVB->Unlock();
-
-	//RContext->Unmap(pVB, 0);
+	g_rbackend->UnmapBuffer(pVB, 0);
 #else //USE_DX11
 	pVB->Unlock();
 #endif
@@ -214,9 +195,8 @@ void	_IndexStream::Destroy()
 
 u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 {
-#ifdef USE_DX11
-	D3D11_MAPPED_SUBRESOURCE MappedSubRes;
-#endif
+	MAPPED_SUBRESOURCE MappedSubRes;
+
 	PGO						(Msg("PGO:IB_LOCK:%d",Count));
 	vOffset					= 0;
 	BYTE* pLockedData		= 0;
@@ -236,14 +216,10 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 	}
 
 #ifdef USE_DX11
-	// #TODO: TEMP
-	pIB->Lock(mPosition * 2, Count * 2, (void**)&pLockedData, dwFlags);
-
-	//D3D_MAP MapMode = (dwFlags==LOCKFLAGS_APPEND) ? 
-	//	D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;
-	//RContext->Map(pIB, 0, MapMode, 0, &MappedSubRes);
-	//pLockedData = (BYTE*)MappedSubRes.pData;
-	//pLockedData += mPosition * 2;
+	Mapping MapMode = (dwFlags == LOCKFLAGS_APPEND) ? Mapping::MAP_WRITE_NO_OVERWRITE : Mapping::MAP_WRITE_DISCARD;
+	g_rbackend->MapBuffer(pIB, 0, MapMode, 0, &MappedSubRes);
+	pLockedData = (BYTE*)MappedSubRes.pData;
+	pLockedData += mPosition * 2;
 #else //USE_DX11
 	pIB->Lock				( mPosition * 2, Count * 2, (void**) &pLockedData, dwFlags);
 #endif
@@ -260,9 +236,7 @@ void	_IndexStream::Unlock(u32 RealCount)
 	mPosition				+=	RealCount;
 	VERIFY					(pIB);
 #ifdef USE_DX11
-	// #TODO: TEMP
-	pIB->Unlock();
-	//RContext->Unmap(pIB, 0);
+	g_rbackend->UnmapBuffer(pIB, 0);
 #else //USE_DX11
 	pIB->Unlock();
 #endif

@@ -41,7 +41,7 @@ void	resptrcode_geom::create			(D3DVERTEXELEMENT9* decl, IVertexBuffer* vb, IInd
 	_set(DEV->CreateGeom		(decl,vb,ib));
 }
 
-void	resptrcode_geom::create			(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, IVertexBuffer* vb, IIndexBuffer* ib, size_t stride)
+void	resptrcode_geom::create			(const XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, IVertexBuffer* vb, IIndexBuffer* ib, size_t stride)
 {
 #ifdef USE_DX11
 	_set(DEV->CreateGeom(inputLayout, size, vb, ib, stride));

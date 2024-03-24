@@ -350,8 +350,13 @@ IC void CBackend::set_Geometry(SGeometry* _geom)
 	//set_Vertices		(_geom->vb, _geom->vb_stride);
 	//set_Indices		(_geom->ib);
 
+	//set_Format(&*_geom->dcl);
+	//g_rbackend->set_Geometry(_geom);
+
 	set_Format(&*_geom->dcl);
-	g_rbackend->set_Geometry(_geom);
+	g_rbackend->set_Vertices(_geom->vb, _geom->vb_stride);
+	g_rbackend->set_Indices(_geom->ib);
+
 }
 
 IC void	CBackend::set_Scissor(Irect*	R)

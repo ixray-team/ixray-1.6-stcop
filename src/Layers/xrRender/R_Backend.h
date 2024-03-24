@@ -389,7 +389,7 @@ public:
 	CBackend()						{	Invalidate(); };
 
 #ifdef USE_DX11
-private:
+public:
 	//	DirectX 10 internal functionality
 	//void CreateConstantBuffers();
 	//void DestroyConstantBuffers();

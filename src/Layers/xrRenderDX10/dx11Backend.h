@@ -60,13 +60,6 @@ public:
 	void				Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC) override;
 	void				Render(PRIMITIVETYPE T, u32 startV, u32 PC) override;
 
-
-	// CBackend DX11
-	void			ApplyVertexLayout();
-	void			ApplyRTandZB();
-	void			ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
-	bool			CBuffersNeedUpdate(ref_cbuffer	buf1[MaxCBuffers], ref_cbuffer	buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
-
 private:
 	// Pixel/Vertex constants
 	ALIGN(16)	R_constants			constants;
@@ -94,6 +87,27 @@ private:
 	CTexture* textures_ds[mtMaxDomainShaderTextures];	// 4 vs
 	CTexture* textures_cs[mtMaxComputeShaderTextures];	// 4 vs
 
+	// Old DX11 Backend stuff
+	// Needs to be rewriten
+private:
+
+	void			ApplyVertexLayout();
+	void			ApplyRTandZB();
+	void			ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
+	bool			CBuffersNeedUpdate(ref_cbuffer	buf1[MaxCBuffers], ref_cbuffer	buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
+
+	// Shaders/State
+	ID3DState*				state;
+	ID3DPixelShader*		ps;
+	ID3DVertexShader*		vs;
+	ID3DGeometryShader*		gs;
+	ID3D11HullShader*		hs;
+	ID3D11DomainShader*		ds;
+	ID3D11ComputeShader*	cs;
+
+	SDeclaration*			decl;
+	ID3DBlob*				m_pInputSignature;
+	bool					m_bChangedRTorZB;
 };
 
 extern CBackend_DX11 backend_dx11_impl;
@@ -105,6 +119,8 @@ inline DXGI_FORMAT GetDXGIFormat(PixelFormat format)
 	case FMT_R8G8B8:
 	case FMT_R8G8B8A8:
 		return DXGI_FORMAT_R8G8B8A8_UNORM;
+	case FMT_R32G32F:
+		return DXGI_FORMAT_R32G32_FLOAT;
 	case FMT_R32G32B32F:
 		return DXGI_FORMAT_R32G32B32_FLOAT;
 	case FMT_R32G32B32A32F:
