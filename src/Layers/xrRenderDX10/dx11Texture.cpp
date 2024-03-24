@@ -73,7 +73,7 @@ IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip) {
     }
 }
 
-ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging) {
+ID3DBaseTexture* CRender::texture_load_old(LPCSTR fRName, u32& ret_msize, bool bStaging) {
     // Moved here just to avoid warning
     TexMetadata imageInfo{};
 

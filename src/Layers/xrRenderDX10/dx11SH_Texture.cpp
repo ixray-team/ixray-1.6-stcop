@@ -476,7 +476,7 @@ void CTexture::Load		()
 					{
 						// Load another texture
 						u32	mem  = 0;
-						pSurface = ::RImplementation.texture_load	(buffer,mem);
+						pSurface = ::RImplementation.texture_load_old	(buffer,mem);
 						if (pSurface)	
 						{
 							// pSurface->SetPriority	(PRIORITY_LOW);
@@ -495,7 +495,7 @@ void CTexture::Load		()
 				// Normal texture
 				u32	mem  = 0;
 				//pSurface = ::RImplementation.texture_load	(*cName,mem);
-				pSurface = ::RImplementation.texture_load	(*cName,mem, true);
+				pSurface = ::RImplementation.texture_load_old	(*cName,mem, true);
 
 				if (GetUsage() == D3D_USAGE_STAGING)
 				{
