@@ -32,6 +32,8 @@ public:
 	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
+	void				set_Element(ShaderElement* S, u32	pass = 0) override;
+
 	CTexture*			get_ActiveTexture(u32 stage) override;
 
 	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;

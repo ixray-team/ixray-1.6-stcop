@@ -141,6 +141,10 @@ public:
 	IC	const Fmatrix&			get_xform_view();
 	IC	const Fmatrix&			get_xform_project();
 
+
+	virtual	void				set_Element(ShaderElement* S, u32	pass = 0) = 0;
+	IC		void				set_Element(ref_selement& S, u32	pass = 0) { set_Element(&*S, pass); }
+
 	virtual CTexture*			get_ActiveTexture(u32 stage) = 0;
 
 	virtual	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
@@ -539,7 +543,7 @@ private:
 IC void	CBackendBase::set_xform(u32 ID, const Fmatrix& M_)
 {
 	stats.xforms++;
-	//CHK_DX(RDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID, (D3DMATRIX*)&M_));
+	//	TODO: DX10: Implement CBackend::set_xform
 }
 IC void CBackendBase::set_xform_world(const Fmatrix& M_)
 {

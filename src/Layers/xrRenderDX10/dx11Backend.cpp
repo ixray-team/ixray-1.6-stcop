@@ -81,6 +81,20 @@ ITexture2D* CBackend_DX11::CreateTexture2D(const TextureDesc* pDesc, byte* data,
 	return pTexture;
 }
 
+void CBackend_DX11::set_Element(ShaderElement* S, u32 pass)
+{
+	//SPass& P = *(S->passes[pass]);
+	//set_States(P.state);
+	//set_PS(P.ps);
+	//set_VS(P.vs);
+	//set_GS(P.gs);
+	//set_HS(P.hs);
+	//set_DS(P.ds);
+	//set_CS(P.cs);
+	//set_Constants(P.constants);
+	//set_Textures(P.T);
+}
+
 CTexture* CBackend_DX11::get_ActiveTexture(u32 stage)
 {
 	if		(stage < CTexture::rstVertex)		return textures_ps[stage];
