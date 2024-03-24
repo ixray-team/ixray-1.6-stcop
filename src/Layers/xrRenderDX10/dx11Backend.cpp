@@ -81,6 +81,227 @@ ITexture2D* CBackend_DX11::CreateTexture2D(const TextureDesc* pDesc, byte* data,
 	return pTexture;
 }
 
+void CBackend_DX11::set_Constants(R_constant_table* C)
+{
+	// caching
+	if (ctable == C)	return;
+	ctable = C;
+	xforms.unmap();
+	hemi.unmap();
+	tree.unmap();
+	LOD.unmap();
+	StateManager.UnmapConstants();
+	if (0 == C)		return;
+
+	PGO(Msg("PGO:c-table"));
+
+
+	//	Setup constant tables
+	{
+		ref_cbuffer	aPixelConstants[MaxCBuffers];
+		ref_cbuffer	aVertexConstants[MaxCBuffers];
+		ref_cbuffer	aGeometryConstants[MaxCBuffers];
+		ref_cbuffer	aHullConstants[MaxCBuffers];
+		ref_cbuffer	aDomainConstants[MaxCBuffers];
+		ref_cbuffer	aComputeConstants[MaxCBuffers];
+
+		for (int i = 0; i < MaxCBuffers; ++i)
+		{
+			aPixelConstants[i] = m_aPixelConstants[i];
+			aVertexConstants[i] = m_aVertexConstants[i];
+			aGeometryConstants[i] = m_aGeometryConstants[i];
+
+			aHullConstants[i] = m_aHullConstants[i];
+			aDomainConstants[i] = m_aDomainConstants[i];
+			aComputeConstants[i] = m_aComputeConstants[i];
+
+			m_aPixelConstants[i] = 0;
+			m_aVertexConstants[i] = 0;
+			m_aGeometryConstants[i] = 0;
+
+			m_aHullConstants[i] = 0;
+			m_aDomainConstants[i] = 0;
+			m_aComputeConstants[i] = 0;
+		}
+		R_constant_table::cb_table::iterator	it = C->m_CBTable.begin();
+		R_constant_table::cb_table::iterator	end = C->m_CBTable.end();
+		for (; it != end; ++it)
+		{
+			//ID3DxxBuffer*	pBuffer = (it->second)->GetBuffer();
+			u32				uiBufferIndex = it->first;
+
+			if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferPixelShader)
+			{
+				VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+				m_aPixelConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+			}
+			else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferVertexShader)
+			{
+				VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+				m_aVertexConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+			}
+			else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferGeometryShader)
+			{
+				VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+				m_aGeometryConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+			}
+			else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferHullShader)
+			{
+				VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+				m_aHullConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+			}
+			else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferDomainShader)
+			{
+				VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+				m_aDomainConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+			}
+			else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferComputeShader)
+			{
+				VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
+				m_aComputeConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+			}
+			else
+				VERIFY("Invalid enumeration");
+		}
+
+		ID3DBuffer* tempBuffer[MaxCBuffers];
+
+		u32 uiMin;
+		u32 uiMax;
+
+		if (CBuffersNeedUpdate(m_aPixelConstants, aPixelConstants, uiMin, uiMax))
+		{
+			++uiMax;
+
+			for (u32 i = uiMin; i < uiMax; ++i)
+			{
+				if (m_aPixelConstants[i])
+					tempBuffer[i] = m_aPixelConstants[i]->GetBuffer();
+				else
+					tempBuffer[i] = 0;
+			}
+
+			RContext->PSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
+		}
+
+
+		if (CBuffersNeedUpdate(m_aVertexConstants, aVertexConstants, uiMin, uiMax))
+		{
+			++uiMax;
+
+			for (u32 i = uiMin; i < uiMax; ++i)
+			{
+				if (m_aVertexConstants[i])
+					tempBuffer[i] = m_aVertexConstants[i]->GetBuffer();
+				else
+					tempBuffer[i] = 0;
+			}
+			RContext->VSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
+		}
+
+
+		if (CBuffersNeedUpdate(m_aGeometryConstants, aGeometryConstants, uiMin, uiMax))
+		{
+			++uiMax;
+
+			for (u32 i = uiMin; i < uiMax; ++i)
+			{
+				if (m_aGeometryConstants[i])
+					tempBuffer[i] = m_aGeometryConstants[i]->GetBuffer();
+				else
+					tempBuffer[i] = 0;
+			}
+			RContext->GSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
+		}
+
+		if (CBuffersNeedUpdate(m_aHullConstants, aHullConstants, uiMin, uiMax))
+		{
+			++uiMax;
+
+			for (u32 i = uiMin; i < uiMax; ++i)
+			{
+				if (m_aHullConstants[i])
+					tempBuffer[i] = m_aHullConstants[i]->GetBuffer();
+				else
+					tempBuffer[i] = 0;
+			}
+			RContext->HSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
+		}
+
+		if (CBuffersNeedUpdate(m_aDomainConstants, aDomainConstants, uiMin, uiMax))
+		{
+			++uiMax;
+
+			for (u32 i = uiMin; i < uiMax; ++i)
+			{
+				if (m_aDomainConstants[i])
+					tempBuffer[i] = m_aDomainConstants[i]->GetBuffer();
+				else
+					tempBuffer[i] = 0;
+			}
+			RContext->DSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
+		}
+
+		if (CBuffersNeedUpdate(m_aComputeConstants, aComputeConstants, uiMin, uiMax))
+		{
+			++uiMax;
+
+			for (u32 i = uiMin; i < uiMax; ++i)
+			{
+				if (m_aComputeConstants[i])
+					tempBuffer[i] = m_aComputeConstants[i]->GetBuffer();
+				else
+					tempBuffer[i] = 0;
+			}
+			RContext->CSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
+		}
+
+		/*
+		for (int i=0; i<MaxCBuffers; ++i)
+		{
+			if (m_aPixelConstants[i])
+				tempBuffer[i] = m_aPixelConstants[i]->GetBuffer();
+			else
+				tempBuffer[i] = 0;
+		}
+		RDevice->PSSetConstantBuffers(0, MaxCBuffers, tempBuffer);
+
+		for (int i=0; i<MaxCBuffers; ++i)
+		{
+			if (m_aVertexConstants[i])
+				tempBuffer[i] = m_aVertexConstants[i]->GetBuffer();
+			else
+				tempBuffer[i] = 0;
+		}
+		RDevice->VSSetConstantBuffers(0, MaxCBuffers, tempBuffer);
+
+		for (int i=0; i<MaxCBuffers; ++i)
+		{
+			if (m_aGeometryConstants[i])
+				tempBuffer[i] = m_aGeometryConstants[i]->GetBuffer();
+			else
+				tempBuffer[i] = 0;
+		}
+		RDevice->GSSetConstantBuffers(0, MaxCBuffers, tempBuffer);
+		*/
+	}
+
+	// process constant-loaders
+	R_constant_table::c_table::iterator	it = C->table.begin();
+	R_constant_table::c_table::iterator	end = C->table.end();
+	for (; it != end; it++)
+	{
+		R_constant* Cs = &**it;
+		VERIFY(Cs);
+		if (Cs && Cs->handler)
+			Cs->handler->setup(Cs);
+	}
+}
+
+void CBackend_DX11::set_Textures(STextureList* T)
+{
+}
+
 void CBackend_DX11::set_Element(ShaderElement* S, u32 pass)
 {
 	//SPass& P = *(S->passes[pass]);
@@ -236,6 +457,14 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }
 
+void CBackend_DX11::ApplyVertexLayout()
+{
+}
+
+void CBackend_DX11::ApplyRTandZB()
+{
+}
+
 void CBackend_DX11::ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology)
 {
 	if (m_PrimitiveTopology != Topology)
@@ -243,4 +472,25 @@ void CBackend_DX11::ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology)
 		m_PrimitiveTopology = Topology;
 		RContext->IASetPrimitiveTopology(m_PrimitiveTopology);
 	}
+}
+
+bool CBackend_DX11::CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32& uiMin, u32& uiMax)
+{
+	bool	bRes = false;
+	int i = 0;
+	while ((i < MaxCBuffers) && (buf1[i] == buf2[i]))
+		++i;
+
+	uiMin = i;
+
+	for (; i < MaxCBuffers; ++i)
+	{
+		if (buf1[i] != buf2[i])
+		{
+			bRes = true;
+			uiMax = i;
+		}
+	}
+
+	return bRes;
 }

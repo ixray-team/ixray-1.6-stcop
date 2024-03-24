@@ -115,9 +115,17 @@ public:
 
 };
 
+class IVertexShader : public IGraphicsResource
+{
+};
+
+class IPixelShader : public IGraphicsResource
+{
+};
+
 #pragma warning(push)
 #pragma warning(disable:4324)
-class CBackendBase
+class ECORE_API CBackendBase
 {
 public:
 	IVertexBuffer*					vb;
@@ -141,6 +149,11 @@ public:
 	IC	const Fmatrix&			get_xform_view();
 	IC	const Fmatrix&			get_xform_project();
 
+	virtual	void				set_Constants(R_constant_table* C) = 0;
+	IC		void				set_Constants(ref_ctable& C_) { set_Constants(&*C_); }
+
+	virtual void				set_Textures(STextureList* T) = 0;
+	IC		void				set_Textures(ref_texture_list& T_) { set_Textures(&*T_); }
 
 	virtual	void				set_Element(ShaderElement* S, u32	pass = 0) = 0;
 	IC		void				set_Element(ref_selement& S, u32	pass = 0) { set_Element(&*S, pass); }
@@ -171,7 +184,8 @@ protected:
 	backend_stats					stats;
 
 	R_xforms						xforms;
-
+	R_hemi							hemi;
+	R_tree							tree;
 private:
 
 	u32								stencil_enable;
@@ -187,6 +201,12 @@ private:
 	u32								z_enable;
 	u32								z_func;
 	u32								alpha_ref;
+
+protected:
+	// Lists
+	STextureList*					TextureList;
+	SMatrixList*					MatrixList;
+	SConstantList*					ConstantList;
 
 #if 0
 public:            
@@ -539,6 +559,12 @@ private:
 
 };
 #pragma warning(pop)
+
+extern ECORE_API CBackendBase* g_rbackend;
+
+#ifdef RCACHE_REMAPPING
+#define RCache (*g_rbackend)
+#endif
 
 IC void	CBackendBase::set_xform(u32 ID, const Fmatrix& M_)
 {

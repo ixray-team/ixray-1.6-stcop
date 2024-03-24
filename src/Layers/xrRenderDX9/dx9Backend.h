@@ -32,6 +32,8 @@ public:
 	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
+	void				set_Constants(R_constant_table* C) override;
+	void				set_Textures(STextureList* T) override;
 	void				set_Element(ShaderElement* S, u32	pass = 0) override;
 
 	CTexture*			get_ActiveTexture(u32 stage) override;
