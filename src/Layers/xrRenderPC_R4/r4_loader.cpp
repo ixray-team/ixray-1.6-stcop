@@ -187,8 +187,8 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 //	u32	dwUsage					= D3DUSAGE_WRITEONLY;
 
 	xr_vector<VertexDeclarator>				&_DC	= _alternative?xDC:nDC;
-	xr_vector<ID3DVertexBuffer*>		&_VB	= _alternative?xVB:nVB;
-	xr_vector<ID3DIndexBuffer*>		&_IB	= _alternative?xIB:nIB;
+	xr_vector<IVertexBuffer*>				&_VB	= _alternative?xVB:nVB;
+	xr_vector<IIndexBuffer*>				&_IB	= _alternative?xIB:nIB;
 
 	// Vertex buffers
 	{
@@ -227,7 +227,8 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 			//	Check if buffer is less then 2048 kb
 			BYTE*	pData		= xr_alloc<BYTE>(vCount*vSize);
 			fs->r				(pData,vCount*vSize);
-			dx10BufferUtils::CreateVertexBuffer(&_VB[i], pData, vCount*vSize);
+			_VB[i] = g_rbackend->CreateVertexBuffer(pData, vCount * vSize, vSize, ResourceUsage::IMMUTABLE);
+			//dx10BufferUtils::CreateVertexBuffer(&_VB[i], pData, vCount*vSize);
 			xr_free(pData);
 
 //			fs->advance			(vCount*vSize);
@@ -259,7 +260,8 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 			//	Check if buffer is less then 2048 kb
 			BYTE*	pData		= xr_alloc<BYTE>(iCount*2);
 			fs->r				(pData,iCount*2);
-			dx10BufferUtils::CreateIndexBuffer(&_IB[i], pData, iCount*2);
+			//dx10BufferUtils::CreateIndexBuffer(&_IB[i], pData, iCount*2);
+			_IB[i] = g_rbackend->CreateIndexBuffer(pData, iCount * 2, ResourceUsage::IMMUTABLE);
 			xr_free(pData);
 
 //			fs().advance		(iCount*2);

@@ -485,6 +485,9 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 			vb_mem_system += IB_desc.Size;
 
 #else
+		Msg(" CModelPool::memory_stats UNIMPLEMENTED !!!");
+
+#if 0
 		D3D_BUFFER_DESC IB_desc;
 		D3D_BUFFER_DESC VB_desc;
 
@@ -497,7 +500,7 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 
 		vb_mem_video += IB_desc.ByteWidth;
 		vb_mem_system += IB_desc.ByteWidth;
-
+#endif
 #endif
 
 

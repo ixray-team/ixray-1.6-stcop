@@ -3,6 +3,7 @@
 #include "../xrRender/dxRenderFactory.h"
 #include "../xrRender/dxUIRender.h"
 #include "../xrRender/dxDebugRender.h"
+#include "../xrRenderDX10/dx11Backend.h"
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
@@ -21,6 +22,9 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #ifdef DEBUG_DRAW
 		DRender						= &DebugRenderImpl;
 #endif	//	DEBUG
+
+		::g_rbackend				= &backend_dx11_impl;
+
 		xrRender_initconsole		();
 		break	;
 	case DLL_THREAD_ATTACH	:

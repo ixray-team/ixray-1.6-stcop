@@ -12,7 +12,7 @@ CBackend_DX9::~CBackend_DX9()
 {
 }
 
-IVertexBuffer* CBackend_DX9::CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage)
+IVertexBuffer* CBackend_DX9::CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage)
 {
 	auto buffer = std::make_shared<Buffer_DX9>();
 	buffer->pVB = nullptr;
@@ -43,7 +43,7 @@ IVertexBuffer* CBackend_DX9::CreateVertexBuffer(byte* data, u32 length, u32 stri
 	return pBuffer;
 }
 
-IIndexBuffer* CBackend_DX9::CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage)
+IIndexBuffer* CBackend_DX9::CreateIndexBuffer(void* data, u32 length, ResourceUsage usage)
 {
 	auto buffer = std::make_shared<Buffer_DX9>();
 	buffer->pVB = nullptr;

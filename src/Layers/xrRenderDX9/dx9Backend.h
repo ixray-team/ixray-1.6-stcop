@@ -28,8 +28,8 @@ public:
 	CBackend_DX9();
 	~CBackend_DX9();
 
-	IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) override;
-	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
+	IVertexBuffer*		CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage) override;
+	IIndexBuffer*		CreateIndexBuffer(void* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
 	bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) override;

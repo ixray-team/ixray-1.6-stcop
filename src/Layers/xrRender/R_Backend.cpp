@@ -58,7 +58,8 @@ void CBackend::CreateQuadIB		()
 	//R_CHK(QuadIB->Unlock());
 
 	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
-	R_CHK(RDevice->CreateBuffer		( &desc, &subData, &QuadIB));
+	//R_CHK(RDevice->CreateBuffer		( &desc, &subData, &QuadIB));
+	QuadIB = g_rbackend->CreateIndexBuffer((byte*)IndexBuffer, dwIdxCount * 2, ResourceUsage::IMMUTABLE);
 }
 
 #else //USE_DX11

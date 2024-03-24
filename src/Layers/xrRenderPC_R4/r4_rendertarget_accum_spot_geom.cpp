@@ -82,7 +82,8 @@ void CRenderTarget::accum_spot_geom_create	()
 		//CopyMemory				(pData,du_cone_vertices,vCount*vSize);
 		//g_accum_spot_vb->Unlock	();
 
-		R_CHK(dx10BufferUtils::CreateVertexBuffer( &g_accum_spot_vb, du_cone_vertices,vCount*vSize));
+		g_accum_spot_vb = g_rbackend->CreateVertexBuffer(du_cone_vertices, vCount * vSize, vSize, ResourceUsage::IMMUTABLE);
+		//R_CHK(dx10BufferUtils::CreateVertexBuffer( &g_accum_spot_vb, du_cone_vertices,vCount*vSize));
 	}
 
 	// Indices
@@ -95,7 +96,8 @@ void CRenderTarget::accum_spot_geom_create	()
 		//CopyMemory		(pData,du_cone_faces,iCount*2);
 		//g_accum_spot_ib->Unlock	();
 
-		R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_spot_ib, du_cone_faces, iCount*2 ) );
+		g_accum_spot_ib = g_rbackend->CreateIndexBuffer(du_cone_faces, iCount * 2, ResourceUsage::IMMUTABLE);
+		//R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_spot_ib, du_cone_faces, iCount*2 ) );
 	}
 }
 
@@ -159,7 +161,8 @@ void CRenderTarget::accum_volumetric_geom_create()
 			t += dt;
 		}
 
-		R_CHK( dx10BufferUtils::CreateVertexBuffer( &g_accum_volumetric_vb, &pSlice, vCount*vSize) );
+		//R_CHK( dx10BufferUtils::CreateVertexBuffer( &g_accum_volumetric_vb, &pSlice, vCount*vSize) );
+		g_accum_volumetric_vb = g_rbackend->CreateVertexBuffer(&pSlice, vCount * vSize, vSize, ResourceUsage::IMMUTABLE);
 	}
 
 	// Indices
@@ -196,7 +199,8 @@ void CRenderTarget::accum_volumetric_geom_create()
 			pInd[5] = basevert+3;
 		}
 
-		R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_volumetric_ib, &Datap, iCount*2 ) );
+		g_accum_volumetric_ib = g_rbackend->CreateIndexBuffer(&Datap, iCount * 2, ResourceUsage::IMMUTABLE);
+		//R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_volumetric_ib, &Datap, iCount*2 ) );
 
 //		R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_volumetric_ib,0));
 	}

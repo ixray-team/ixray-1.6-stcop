@@ -39,8 +39,8 @@ public:
 	CBackend_DX11();
 	~CBackend_DX11();
 
-	IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) override;
-	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
+	IVertexBuffer*		CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage) override;
+	IIndexBuffer*		CreateIndexBuffer(void* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
 	// Buffer Mapping

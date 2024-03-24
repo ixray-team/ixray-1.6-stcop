@@ -23,7 +23,8 @@ void CRenderTarget::accum_omnip_geom_create		()
 //		CopyMemory				(pData,du_sphere_part_vertices,vCount*vSize);
 //		g_accum_omnip_vb->Unlock	();
 
-		R_CHK(dx10BufferUtils::CreateVertexBuffer( &g_accum_omnip_vb, du_sphere_part_vertices, vCount*vSize ));
+		//R_CHK(dx10BufferUtils::CreateVertexBuffer( &g_accum_omnip_vb, du_sphere_part_vertices, vCount*vSize ));
+		g_accum_omnip_vb = g_rbackend->CreateVertexBuffer(du_sphere_part_vertices, vCount * vSize, vSize, ResourceUsage::IMMUTABLE);
 	}
 
 	// Indices
@@ -36,7 +37,8 @@ void CRenderTarget::accum_omnip_geom_create		()
 //		CopyMemory		(pData,du_sphere_part_faces,iCount*2);
 //		g_accum_omnip_ib->Unlock	();
 
-		R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_omnip_ib, du_sphere_part_faces, iCount*2 ));
+		//R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_omnip_ib, du_sphere_part_faces, iCount*2 ));
+		g_accum_omnip_ib = g_rbackend->CreateIndexBuffer(du_sphere_part_faces, iCount * 2, ResourceUsage::IMMUTABLE);
 	}
 }
 

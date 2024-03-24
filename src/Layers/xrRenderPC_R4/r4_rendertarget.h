@@ -136,17 +136,17 @@ private:
 	ref_geom						g_accum_omnipart;
 	ref_geom						g_accum_volumetric;
 
-	ID3DVertexBuffer*		g_accum_point_vb;
-	ID3DIndexBuffer*		g_accum_point_ib;
+	IVertexBuffer*			g_accum_point_vb;
+	IIndexBuffer*			g_accum_point_ib;
 
-	ID3DVertexBuffer*		g_accum_omnip_vb;
-	ID3DIndexBuffer*		g_accum_omnip_ib;
+	IVertexBuffer*			g_accum_omnip_vb;
+	IIndexBuffer*			g_accum_omnip_ib;
 
-	ID3DVertexBuffer*		g_accum_spot_vb	;
-	ID3DIndexBuffer*		g_accum_spot_ib	;
+	IVertexBuffer*			g_accum_spot_vb	;
+	IIndexBuffer*			g_accum_spot_ib	;
 
-	ID3DVertexBuffer*		g_accum_volumetric_vb;
-	ID3DIndexBuffer*		g_accum_volumetric_ib;
+	IVertexBuffer*			g_accum_volumetric_vb;
+	IIndexBuffer*			g_accum_volumetric_ib;
 
 	ID3DBlendState*			g_debug_blend_state = nullptr;
 

@@ -26,6 +26,10 @@ enum PRIMITIVETYPE {
 #define COLORWRITEENABLE_BLUE    (1L<<2)
 #define COLORWRITEENABLE_ALPHA   (1L<<3)
 
+// ResourceUsage mapping and usage:
+//	D3DPOOL_MANAGED - ResourceUsage::IMMUTABLE
+//	D3DPOOL_DEFAULT - ResourceUsage::DYNAMIC
+
 enum class ResourceUsage
 {
 	UNKNOWN,
@@ -261,8 +265,8 @@ public:
 	CBackendBase();
 	virtual ~CBackendBase();
 
-	virtual IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) = 0;
-	virtual IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
+	virtual IVertexBuffer*		CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage) = 0;
+	virtual IIndexBuffer*		CreateIndexBuffer(void* data, u32 length, ResourceUsage usage) = 0;
 	virtual ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) = 0;
 
 	// Buffer Mapping

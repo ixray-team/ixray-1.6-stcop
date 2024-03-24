@@ -178,8 +178,8 @@ void dx103DFluidRenderer::CreateGridBox ()
 	//InitData.pSysMem = vertices;
 	//V_RETURN( m_pD3DDevice->CreateBuffer( &bd, &InitData, &pGridBoxVertexBuffer ) );
 
-	CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
-
+	//CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
+	m_pGridBoxVertexBuffer = g_rbackend->CreateVertexBuffer(vertices, sizeof(vertices), sizeof(XMFLOAT3), ResourceUsage::IMMUTABLE);
 
 	// Create index buffer
 	//DWORD indices[] =
@@ -203,7 +203,8 @@ void dx103DFluidRenderer::CreateGridBox ()
 	//InitData.pSysMem = indices;
 	//V_RETURN( m_pD3DDevice->CreateBuffer( &bd, &InitData, &pGridBoxIndexBuffer ) );
 
-	CHK_DX(dx10BufferUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
+	//CHK_DX(dx10BufferUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
+	m_pGridBoxIndexBuffer = g_rbackend->CreateIndexBuffer(indices, sizeof(indices), ResourceUsage::IMMUTABLE);
 
 	// Define the input layout
 	//D3Dxx_INPUT_ELEMENT_DESC layout[] =
@@ -267,7 +268,9 @@ void dx103DFluidRenderer::CreateScreenQuad()
 	//InitData.SysMemSlicePitch = 0;
 	//V_RETURN( m_pD3DDevice->CreateBuffer( &vbdesc, &InitData, &pQuadVertexBuffer ) );
 
-	CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
+	//CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
+	m_pQuadVertexBuffer = g_rbackend->CreateVertexBuffer(svQuad, sizeof(svQuad), sizeof(VsInput), ResourceUsage::IMMUTABLE);
+
 	m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, 0);
 }
 

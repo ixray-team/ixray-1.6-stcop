@@ -12,7 +12,7 @@ CBackend_DX11::~CBackend_DX11()
 {
 }
 
-IVertexBuffer* CBackend_DX11::CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage)
+IVertexBuffer* CBackend_DX11::CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage)
 {
 	auto buffer = std::make_shared<Buffer_DX11>();
 	buffer->pBuffer = nullptr;
@@ -24,7 +24,7 @@ IVertexBuffer* CBackend_DX11::CreateVertexBuffer(byte* data, u32 length, u32 str
 	return pBuffer;
 }
 
-IIndexBuffer* CBackend_DX11::CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage)
+IIndexBuffer* CBackend_DX11::CreateIndexBuffer(void* data, u32 length, ResourceUsage usage)
 {
 	auto buffer = std::make_shared<Buffer_DX11>();
 	buffer->pBuffer = nullptr;

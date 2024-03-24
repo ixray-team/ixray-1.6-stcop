@@ -40,10 +40,10 @@ private:
 	ref_geom		m_GeomBoundarySlices;
 	ref_geom		m_GeomBoundaryLines;
 
-	ID3DBuffer*	m_pRenderQuadBuffer;
-	ID3DBuffer*	m_pSlicesBuffer;
-	ID3DBuffer*	m_pBoundarySlicesBuffer;
-	ID3DBuffer*	m_pBoundaryLinesBuffer;
+	IVertexBuffer*	m_pRenderQuadBuffer;
+	IVertexBuffer*	m_pSlicesBuffer;
+	IVertexBuffer*	m_pBoundarySlicesBuffer;
+	IVertexBuffer*	m_pBoundaryLinesBuffer;
 
 	int			m_iNumVerticesRenderQuad;
 	int			m_iNumVerticesSlices;
