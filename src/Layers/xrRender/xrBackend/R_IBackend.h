@@ -104,13 +104,20 @@ public:
 
 	virtual IVertexBuffer*		CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage) = 0;
 	virtual IIndexBuffer*		CreateIndexBuffer(void* data, u32 length, ResourceUsage usage) = 0;
-	virtual ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) = 0;
+
+	// Unified texture creation
+	virtual IBaseTexture*		CreateTexture(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource) = 0;
+
+	// creation helpers
+	IC ITexture1D*				CreateTexture1D(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource);
+	IC ITexture2D*				CreateTexture2D(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource);
+	IC ITexture3D*				CreateTexture3D(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource);
 
 	// Buffer Mapping
 	virtual bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) = 0;
 	virtual void				UnmapBuffer(IGraphicsResource* pResource, u32 Subresource) = 0;
 
-	virtual CTexture* get_ActiveTexture(u32 stage) = 0;
+	virtual CTexture*			get_ActiveTexture(u32 stage) = 0;
 
 	IC  float					get_width();
 	IC  float					get_height();
@@ -316,6 +323,21 @@ void SRVSManager_Apply();
 #ifdef RCACHE_REMAPPING
 #define RCache (*g_rbackend)
 #endif
+
+IC ITexture1D* CBackendBase::CreateTexture1D(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource)
+{
+	return (ITexture1D*)CreateTexture(pDesc, pSubresource);
+}
+
+IC ITexture2D* CBackendBase::CreateTexture2D(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource)
+{
+	return (ITexture2D*)CreateTexture(pDesc, pSubresource);
+}
+
+IC ITexture3D* CBackendBase::CreateTexture3D(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource)
+{
+	return (ITexture3D*)CreateTexture(pDesc, pSubresource);
+}
 
 IC float CBackendBase::get_width()
 {

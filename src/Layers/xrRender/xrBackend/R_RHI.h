@@ -53,10 +53,21 @@ struct TextureDesc
 	u32 width = 1;
 	u32 height = 1;
 	u32 mipmapLevel = 0;
+	u32 arraySize = 0;
+	u32 depth = 0;
 	PixelFormat format;
 	bool renderTargetUsage;
+	bool dynamic; // CPU Write
 };
 
+enum RESOURCE_DIMENSION
+{
+	RESOURCE_DIMENSION_UNKNOWN = 0,
+	RESOURCE_DIMENSION_BUFFER = 1,
+	RESOURCE_DIMENSION_TEXTURE1D = 2,
+	RESOURCE_DIMENSION_TEXTURE2D = 3,
+	RESOURCE_DIMENSION_TEXTURE3D = 4
+};
 
 //////////////////
 // D3D9 Copy-paste
@@ -84,6 +95,13 @@ struct INDEXBUFFER_DESC
 	UINT                Size;
 };
 
+struct SUBRESOURCE_DATA
+{
+	const void* pSysMem;
+	u32 SysMemPitch;
+	u32 SysMemSlicePitch;
+};
+
 struct MAPPED_SUBRESOURCE {
 	void* pData;
 	u32 RowPitch;
@@ -100,10 +118,15 @@ public:
 	inline bool IsValid() const { return m_InternalResource != nullptr; }
 
 	std::shared_ptr<void> m_InternalResource;
+	RESOURCE_DIMENSION m_RESOURCE_DIMENSION;
 
 	// IUnknown interface
 	u64 AddRef();
 	u64 Release();
+
+	// ID3D11Resource-like methods
+
+	void GetType(RESOURCE_DIMENSION* pResourceDimension);
 };
 
 inline u64 IGraphicsResource::AddRef()
@@ -151,11 +174,17 @@ inline void IIndexBuffer::GetDesc(INDEXBUFFER_DESC* pDesc)
 ///////////////////////////////////////////////////////////
 // Texture stuff
 
-class ITexture2D : public IGraphicsResource
-{
-public:
+class IBaseTexture : public IGraphicsResource
+{};
 
-};
+class ITexture1D : public IBaseTexture
+{};
+
+class ITexture2D : public IBaseTexture
+{};
+
+class ITexture3D : public IBaseTexture
+{};
 
 ///////////////////////////////////////////////////////////
 // Shader stuff

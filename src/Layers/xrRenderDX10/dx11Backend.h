@@ -41,7 +41,9 @@ public:
 
 	IVertexBuffer*		CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage) override;
 	IIndexBuffer*		CreateIndexBuffer(void* data, u32 length, ResourceUsage usage) override;
-	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
+
+	// Unified texture creation
+	IBaseTexture*		CreateTexture(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource) override;
 
 	// Buffer Mapping
 	bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) override;
