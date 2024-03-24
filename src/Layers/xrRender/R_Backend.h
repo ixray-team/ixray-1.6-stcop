@@ -185,6 +185,8 @@ public:
 public:
 	IC	CTexture*					get_ActiveTexture			(u32 stage)
 	{
+		return g_rbackend->get_ActiveTexture(stage);
+
 		if (stage<CTexture::rstVertex)			return textures_ps[stage];
 		else if (stage<CTexture::rstGeometry)	return textures_vs[stage-CTexture::rstVertex];
 #ifdef USE_DX11

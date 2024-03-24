@@ -99,14 +99,15 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 //	TODO: DX10: Implement SPrimitiveBuffer::CreateFromData for DX10
 //	VERIFY(!"SPrimitiveBuffer::CreateFromData not implemented for dx10");
 #else //USE_DX11
-	ID3DVertexBuffer*	pVB=0;
-	ID3DIndexBuffer*	pIB=0;
+	IVertexBuffer*	    pVB=0;
+	IIndexBuffer*	    pIB=0;
 	p_cnt				= _p_cnt;
 	p_type				= _pt;
 	v_cnt				= _v_cnt;
 	i_cnt				= _i_cnt;
 	u32 stride = (u32)FVF::ComputeVertexSize(FVF);
-	R_CHK(RDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
+    pVB = g_rbackend->CreateVertexBuffer(nullptr, v_cnt * stride, stride, ResourceUsage::IMMUTABLE);
+	//R_CHK(RDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
     u8* bytes{};
 	R_CHK				(pVB->Lock(0,0,(LPVOID*)&bytes,0));
 	FLvertexVec	verts	(v_cnt);
@@ -115,7 +116,8 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 	Memory.mem_copy		(bytes,&*verts.begin(),v_cnt*stride);
 	R_CHK				(pVB->Unlock());
 	if (i_cnt){ 
-		R_CHK(RDevice->CreateIndexBuffer	(i_cnt*sizeof(u16),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&pIB,nullptr));
+        pIB = g_rbackend->CreateIndexBuffer(nullptr, i_cnt * sizeof(u16), ResourceUsage::IMMUTABLE);
+		//R_CHK(RDevice->CreateIndexBuffer	(i_cnt*sizeof(u16),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&pIB,nullptr));
 		R_CHK			(pIB->Lock(0,0,(LPVOID*)&bytes,0));
 		Memory.mem_copy	(bytes,indices,i_cnt*sizeof(u16));
 		R_CHK			(pIB->Unlock());

@@ -72,8 +72,14 @@ void CDetailManager::hw_Load_Geom()
 	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
 
 	// Create VB/IB
-	R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
-	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
+	
+	hw_VB			= g_rbackend->CreateVertexBuffer(nullptr, dwVerts * vSize, vSize, ResourceUsage::IMMUTABLE);
+	hw_IB			= g_rbackend->CreateIndexBuffer(nullptr, dwIndices * 2, ResourceUsage::IMMUTABLE);
+
+	//R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
+	//R_CHK			(RDevice->CreateIndexBuffer		(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
+
+
 
 #endif	//	USE_DX11
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);

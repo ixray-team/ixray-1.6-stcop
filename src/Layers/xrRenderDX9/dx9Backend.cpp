@@ -404,13 +404,13 @@ void CBackend_DX9::set_Textures(STextureList* _T)
 
 void CBackend_DX9::set_Element(ShaderElement* S, u32 pass)
 {
-	//SPass& P = *(S->passes[pass]);
-	//set_States(P.state);
-	//set_PS(P.ps);
-	//set_VS(P.vs);
+	SPass& P = *(S->passes[pass]);
+	RCache.set_States(P.state);
+	RCache.set_PS(P.ps);
+	RCache.set_VS(P.vs);
 
-	//set_Constants(P.constants);
-	//set_Textures(P.T);
+	set_Constants(P.constants._get());
+	set_Textures(P.T._get());
 }
 
 CTexture* CBackend_DX9::get_ActiveTexture(u32 stage)
@@ -439,7 +439,9 @@ void CBackend_DX9::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 
 void CBackend_DX9::set_Indices(IIndexBuffer* _ib)
 {
-	if (ib != _ib)
+	//R_ASSERT(_ib->IsValid());
+
+	if (_ib && ib != _ib)
 	{
 		PGO(Msg("PGO:IB:%x", _ib));
 #ifdef DEBUG

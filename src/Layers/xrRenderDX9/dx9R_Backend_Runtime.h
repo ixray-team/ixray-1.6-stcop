@@ -104,12 +104,14 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV
 	if (PC==0)
 		return;
 
-	stat.calls			++;
+	return g_rbackend->Render((PRIMITIVETYPE)T_, baseV, startV, countV, startI, PC);
+
+	/*stat.calls			++;
 	stat.verts			+= countV;
 	stat.polys			+= PC;
 	constants.flush		();
 	CHK_DX				(RDevice->DrawIndexedPrimitive(T_,baseV, startV, countV,startI,PC));
-	PGO					(Msg("PGO:DIP:%dv/%df",countV,PC));
+	PGO					(Msg("PGO:DIP:%dv/%df",countV,PC));*/
 }
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
@@ -118,17 +120,24 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 	if (PC==0)
 		return;
 
-	stat.calls			++;
-	stat.verts			+= 3*PC;
-	stat.polys			+= PC;
-	constants.flush		();
-	CHK_DX				(RDevice->DrawPrimitive(T_, startV, PC));
-	PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
+	return g_rbackend->Render((PRIMITIVETYPE)T_, startV, PC);
+
+	//stat.calls			++;
+	//stat.verts			+= 3*PC;
+	//stat.polys			+= PC;
+	//constants.flush		();
+	//CHK_DX				(RDevice->DrawPrimitive(T_, startV, PC));
+	//PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
 {
-	set_Format			(_geom->dcl._get()->dcl);
+	set_Format					(_geom->dcl._get()->dcl);
+	g_rbackend->set_Vertices	(_geom->vb, _geom->vb_stride);
+	g_rbackend->set_Indices		(_geom->ib);
+	
+	//g_rbackend->set_Geometry(_geom);
+	
 	//set_Vertices		(_geom->vb, _geom->vb_stride);
 	//set_Indices		(_geom->ib);
 }
@@ -211,26 +220,28 @@ ICF void CBackend::set_VS(ref_vs& _vs)
 
 IC void CBackend::set_Constants			(R_constant_table* C_)
 {
+	return g_rbackend->set_Constants(C_);
+
 	// caching
-	if (ctable==C_)	return;
-	ctable			= C_;
-	xforms.unmap	();
-	hemi.unmap		();
-	tree.unmap		();
-	if (0==C_)		return;
+	//if (ctable==C_)	return;
+	//ctable			= C_;
+	//xforms.unmap	();
+	//hemi.unmap		();
+	//tree.unmap		();
+	//if (0==C_)		return;
 
-	PGO				(Msg("PGO:c-table"));
+	//PGO				(Msg("PGO:c-table"));
 
-	// process constant-loaders
-	R_constant_table::c_table::iterator	it	= C_->table.begin();
-	R_constant_table::c_table::iterator	end	= C_->table.end	();
-	for (; it!=end; it++)	{
-		R_constant*		Cs	= &**it;
-		VERIFY(Cs);
-		if (Cs && Cs->handler) {
-			Cs->handler->setup(Cs);
-		}
-	}
+	//// process constant-loaders
+	//R_constant_table::c_table::iterator	it	= C_->table.begin();
+	//R_constant_table::c_table::iterator	end	= C_->table.end	();
+	//for (; it!=end; it++)	{
+	//	R_constant*		Cs	= &**it;
+	//	VERIFY(Cs);
+	//	if (Cs && Cs->handler) {
+	//		Cs->handler->setup(Cs);
+	//	}
+	//}
 }
 
 IC float CBackend::get_width()
