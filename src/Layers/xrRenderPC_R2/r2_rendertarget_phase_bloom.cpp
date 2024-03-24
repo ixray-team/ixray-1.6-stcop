@@ -115,7 +115,7 @@ void CRenderTarget::phase_bloom	()
 		RCache.set_Element			(s_bloom->E[0]);
 		RCache.set_c				("b_params", s,s,s,	f_bloom_factor);
 		RCache.set_Geometry			(g_bloom_build		);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// Capture luminance values
@@ -142,12 +142,12 @@ void CRenderTarget::phase_bloom	()
 		// P0
 		u_setrt						(rt_Bloom_2,nullptr,nullptr,nullptr);			// No need for ZBuffer at all
 		RCache.set_Element			(s_bloom->E[3]);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 
 		// P1
 		u_setrt						(rt_Bloom_1,nullptr,nullptr,nullptr);			// No need for ZBuffer at all
 		RCache.set_Element			(s_bloom->E[4]);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	} else {
 		// SLOW FILTER
 		// Transfer into Bloom2, horizontal filter
@@ -227,7 +227,7 @@ void CRenderTarget::phase_bloom	()
 			RCache.set_ca				("weight", 0,			w0);
 			RCache.set_ca				("weight", 1,			w1);
 			RCache.set_Geometry			(g_bloom_filter);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+			RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 		}
 
 		// Transfer into Bloom1, vertical filter
@@ -307,7 +307,7 @@ void CRenderTarget::phase_bloom	()
 			RCache.set_ca				("weight", 0,			w0);
 			RCache.set_ca				("weight", 1,			w1);
 			RCache.set_Geometry			(g_bloom_filter);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+			RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 		}
 	}
 

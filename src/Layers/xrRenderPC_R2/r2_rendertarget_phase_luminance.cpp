@@ -52,7 +52,7 @@ void	CRenderTarget::phase_luminance()
 		RCache.Vertex.Unlock		(4,g_bloom_build->vb_stride);
 		RCache.set_Element			(s_luminance->E[0]);
 		RCache.set_Geometry			(g_bloom_build		);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// 111: Perform LUM-SAT, pass 1, 64x64 => 8x8
@@ -82,7 +82,7 @@ void	CRenderTarget::phase_luminance()
 		RCache.Vertex.Unlock		(4,g_bloom_filter->vb_stride);
 		RCache.set_Element			(s_luminance->E[1]	);
 		RCache.set_Geometry			(g_bloom_filter		);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
@@ -122,7 +122,7 @@ void	CRenderTarget::phase_luminance()
 		RCache.set_Element			(s_luminance->E[2]		);
 		RCache.set_Geometry			(g_bloom_filter			);
 		RCache.set_c("MiddleGray",	_result.x,_result.y,_result.z,f_luminance_adapt	);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// Cleanup states

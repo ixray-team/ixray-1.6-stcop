@@ -234,15 +234,10 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 #endif // DEBUG
 
 			// Create and fill
-			BYTE*	pData		= 0;
-			_VB[i] = g_rbackend->CreateVertexBuffer(nullptr, vCount * vSize, vSize, ResourceUsage::IMMUTABLE);
-			//R_CHK				(RDevice->CreateVertexBuffer		( vCount*vSize, dwUsage, 0, D3DPOOL_MANAGED, &_VB[i], 0 ));
-			R_CHK				(_VB[i]->Lock(0,0,(void**)&pData,0));
-//			CopyMemory			(pData,fs().pointer(),vCount*vSize);
-			fs->r				(pData,vCount*vSize);
-			_VB[i]->Unlock		();
-
-//			fs->advance			(vCount*vSize);
+			BYTE* pData = xr_alloc<BYTE>(vCount * vSize);
+			fs->r(pData, vCount * vSize);
+			_VB[i] = g_rbackend->CreateVertexBuffer(pData, vCount * vSize, vSize, ResourceUsage::IMMUTABLE);
+			xr_free(pData);
 		}
 		fs->close				();
 	}
@@ -260,15 +255,9 @@ void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
 #endif // DEBUG
 
 			// Create and fill
-			BYTE*	pData		= 0;
-			_IB[i] = g_rbackend->CreateIndexBuffer(nullptr, iCount * 2, ResourceUsage::IMMUTABLE);
-			//R_CHK				(RDevice->CreateIndexBuffer	(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&_IB[i],0));
-			R_CHK				(_IB[i]->Lock(0,0,(void**)&pData,0));
-//			CopyMemory			(pData,fs().pointer(),iCount*2);
-			fs->r				(pData,iCount*2);
-			_IB[i]->Unlock		();
-
-//			fs().advance		(iCount*2);
+			BYTE* pData = xr_alloc<BYTE>(iCount * 2);
+			fs->r(pData, iCount * 2);
+			_IB[i] = g_rbackend->CreateIndexBuffer(pData, iCount * 2, ResourceUsage::IMMUTABLE);
 		}
 		fs->close				();
 	}

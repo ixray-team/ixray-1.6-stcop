@@ -292,7 +292,7 @@ void CRenderTarget::accum_point_geom_create()
 		u32		vCount		= DU_SPHERE_NUMVERTEX;
 		u32		vSize		= 3*4;
 
-		g_accum_point_vb = g_rbackend->CreateVertexBuffer(nullptr,
+		g_accum_point_vb = g_rbackend->CreateVertexBuffer(du_sphere_vertices,
 			vCount * vSize,
 			vSize,
 			ResourceUsage::IMMUTABLE);
@@ -304,11 +304,6 @@ void CRenderTarget::accum_point_geom_create()
 			D3DPOOL_MANAGED,
 			&g_accum_point_vb,
 			0));*/
-
-		BYTE*	pData				= 0;
-		R_CHK						(g_accum_point_vb->Lock(0,0,(void**)&pData,0));
-		CopyMemory				(pData,du_sphere_vertices,vCount*vSize);
-		g_accum_point_vb->Unlock	();
 	}
 
 	// Indices
@@ -317,12 +312,9 @@ void CRenderTarget::accum_point_geom_create()
 
 		BYTE*	pData		= 0;
 		
-		g_accum_point_ib	= g_rbackend->CreateIndexBuffer(nullptr, iCount * 2, ResourceUsage::IMMUTABLE);
+	
 		//R_CHK				(RDevice->CreateIndexBuffer	(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_point_ib,0));
-		
-		R_CHK				(g_accum_point_ib->Lock(0,0,(void**)&pData,0));
-		CopyMemory		(pData,du_sphere_faces,iCount*2);
-		g_accum_point_ib->Unlock	();
+		g_accum_point_ib = g_rbackend->CreateIndexBuffer(du_sphere_faces, iCount * 2, ResourceUsage::IMMUTABLE);
 	}
 }
 

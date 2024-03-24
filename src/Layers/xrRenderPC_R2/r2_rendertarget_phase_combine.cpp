@@ -166,7 +166,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("env_color",		envclr	);
 		RCache.set_c				("fog_color",		fogclr	);
 		RCache.set_c				("ssao_params",		fSSAONoise, fSSAOKernelSize, 0.0f, 0.0f);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// Forward rendering
@@ -274,7 +274,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
 		
 		RCache.set_Geometry			(g_aa_AA);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 	RCache.set_Stencil		(FALSE);
 
@@ -324,8 +324,8 @@ void	CRenderTarget::phase_combine	()
 		p1_.mad				(zero,L_right,sz).mad	(L_dir,-sz);
 		p2.mad				(zero,L_right,-sz).mad	(L_dir,-sz);
 		p3.mad				(zero,L_right,-sz).mad	(L_dir,+sz);
-		RCache.dbg_DrawTRI	(Fidentity,p0_,p1_,p2,0xffffffff);
-		RCache.dbg_DrawTRI	(Fidentity,p2,p3,p0_,0xffffffff);
+		DebugRenderHelper.dbg_DrawTRI	(Fidentity,p0_,p1_,p2,0xffffffff);
+		DebugRenderHelper.dbg_DrawTRI	(Fidentity,p2,p3,p0_,0xffffffff);
 	}
 
 	static	xr_vector<dbg_line_t>	saved_dbg_lines;
@@ -339,7 +339,7 @@ void	CRenderTarget::phase_combine	()
 	RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	if (1) for (u32 it=0; it<dbg_lines.size(); it++)
 	{
-		RCache.dbg_DrawLINE		(Fidentity,dbg_lines[it].P0,dbg_lines[it].P1,dbg_lines[it].color);
+		DebugRenderHelper.dbg_DrawLINE		(Fidentity,dbg_lines[it].P0,dbg_lines[it].P1,dbg_lines[it].color);
 	}
 #endif
 
@@ -504,7 +504,7 @@ void CRenderTarget::phase_combine_volumetric()
 
 		RCache.set_c				("env_color",		envclr	);
 		RCache.set_c				("fog_color",		fogclr	);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 	RCache.set_ColorWriteEnable();
 }

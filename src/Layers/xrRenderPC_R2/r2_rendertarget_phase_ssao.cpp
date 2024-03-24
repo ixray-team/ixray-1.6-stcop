@@ -71,7 +71,7 @@ void CRenderTarget::phase_ssao	()
 		//RCache.set_c				("c3", 8.f,               8.f,              1.5f,               0.0f);
 		RCache.set_c				("c4", 0.400009334f,      0.160007462f,       2.49994159f,             _h / _w);
 		
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// re-enable z-buffer
@@ -120,7 +120,7 @@ void CRenderTarget::phase_downsamp	()
 		RCache.set_Geometry			(g_combine_VP		);
 		RCache.set_c				("m_v2w",			m_v2w);
 
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	// re-enable z-buffer
