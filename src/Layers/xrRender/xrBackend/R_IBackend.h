@@ -643,7 +643,18 @@ IC void CBackendBase::set_Shader(Shader* S, u32 pass)
 
 ICF void CBackendBase::set_States(ID3DState* _state)
 {
-	
+	//	DX10 Manages states using it's own algorithm. Don't mess with it.
+#ifndef USE_DX11
+	if (state != _state)
+#endif //USE_DX11
+	{
+		PGO(Msg("PGO:state_block"));
+#ifdef DEBUG
+		stat.states++;
+#endif
+		state = _state;
+		state->Apply();
+	}
 }
 
 ICF void CBackendBase::set_Format(SDeclaration* _decl)

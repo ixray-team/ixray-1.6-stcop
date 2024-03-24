@@ -1080,6 +1080,11 @@ void CBackend_DX11::ApplyVertexLayout()
 
 void CBackend_DX11::ApplyRTandZB()
 {
+	if (m_bChangedRTorZB)
+	{
+		m_bChangedRTorZB = false;
+		RContext->OMSetRenderTargets(sizeof(pRT) / sizeof(pRT[0]), pRT, pZB);
+	}
 }
 
 void CBackend_DX11::ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology)
