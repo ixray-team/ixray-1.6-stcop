@@ -21,7 +21,7 @@ public:
 
 	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;
 	void set_Indices(IIndexBuffer* _ib) override;
-
+	void set_Scissor(Irect* rect = NULL) override;
 
 public:
 	// Lists-expanded

@@ -10,6 +10,23 @@ enum class ResourceUsage
 	DYNAMIC
 };
 
+enum class TextureType
+{
+	TEXTURE_1D,
+	TEXTURE_2D,
+	TEXTURE_3D
+};
+
+struct TextureDesc
+{
+	TextureType textureType;
+	u32 width = 1;
+	u32 height = 1;
+	u32 mipmapLevel = 0;
+	PixelFormat format;
+	bool renderTargetUsage;
+};
+
 class IGraphicsResource
 {
 public:
@@ -25,6 +42,12 @@ class IVertexBuffer : public IGraphicsResource
 
 class IIndexBuffer : public IGraphicsResource
 {
+};
+
+class ITexture2D : public IGraphicsResource
+{
+public:
+
 };
 
 #pragma warning(push)
@@ -45,6 +68,7 @@ public:
 
 	virtual	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
 	virtual	void set_Indices(IIndexBuffer* _ib) = 0;
+	virtual void set_Scissor(Irect* rect = NULL) = 0;
 
 #if 0
 public:            

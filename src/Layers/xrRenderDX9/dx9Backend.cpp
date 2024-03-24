@@ -34,7 +34,7 @@ IVertexBuffer* CBackend_DX9::CreateVertexBuffer(byte* data, u32 length, u32 stri
 	else
 		FATAL("!!!");
 
-	R_CHK(HW.pDevice->CreateVertexBuffer(length, dwUsage | D3DUSAGE_WRITEONLY, 0, dwPool, &buffer->pVB, NULL));
+	R_CHK(RDevice->CreateVertexBuffer(length, dwUsage | D3DUSAGE_WRITEONLY, 0, dwPool, &buffer->pVB, NULL));
 
 	if (data)
 	{
@@ -65,7 +65,7 @@ IIndexBuffer* CBackend_DX9::CreateIndexBuffer(byte* data, u32 length, ResourceUs
 	else
 		FATAL("!!!");
 
-	R_CHK(HW.pDevice->CreateIndexBuffer(length, dwUsage | D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, dwPool, &buffer->pIB, NULL));
+	R_CHK(RDevice->CreateIndexBuffer(length, dwUsage | D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, dwPool, &buffer->pIB, NULL));
 	if (data)
 	{
 		BYTE* bytes = 0;
@@ -91,7 +91,7 @@ void CBackend_DX9::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 		vb_stride = _vb_stride;
 
 		Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(_vb->m_InternalResource.get());
-		R_CHK(HW.pDevice->SetStreamSource(0, pBuffer->pVB, 0, _vb_stride));
+		R_CHK(RDevice->SetStreamSource(0, pBuffer->pVB, 0, _vb_stride));
 	}
 }
 
@@ -106,6 +106,20 @@ void CBackend_DX9::set_Indices(IIndexBuffer* _ib)
 		ib = _ib;
 
 		Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(_ib->m_InternalResource.get());
-		R_CHK(HW.pDevice->SetIndices(pBuffer->pIB));
+		R_CHK(RDevice->SetIndices(pBuffer->pIB));
+	}
+}
+
+void CBackend_DX9::set_Scissor(Irect* rect)
+{
+	if (rect)
+	{
+		CHK_DX(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE));
+		RECT* clip = (RECT*)rect;
+		CHK_DX(RDevice->SetScissorRect(clip));
+	}
+	else
+	{
+		CHK_DX(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
 	}
 }

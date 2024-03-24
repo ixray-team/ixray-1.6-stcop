@@ -51,7 +51,7 @@ void CBackend_DX11::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 		Buffer_DX11* pBuffer = static_cast<Buffer_DX11*>(_vb->m_InternalResource.get());
 
 		u32	iOffset = 0;
-		HW.pContext->IASetVertexBuffers(0, 1, &pBuffer->pBuffer, &_vb_stride, &iOffset);
+		RContext->IASetVertexBuffers(0, 1, &pBuffer->pBuffer, &_vb_stride, &iOffset);
 	}
 }
 
@@ -62,6 +62,21 @@ void CBackend_DX11::set_Indices(IIndexBuffer* _ib)
 		ib = _ib;
 
 		Buffer_DX11* pBuffer = static_cast<Buffer_DX11*>(_ib->m_InternalResource.get());
-		HW.pContext->IASetIndexBuffer(pBuffer->pBuffer, DXGI_FORMAT_R16_UINT, 0);
+		RContext->IASetIndexBuffer(pBuffer->pBuffer, DXGI_FORMAT_R16_UINT, 0);
+	}
+}
+
+void CBackend_DX11::set_Scissor(Irect* rect)
+{
+	if (rect)
+	{
+		StateManager.EnableScissoring();
+		RECT* clip = (RECT*)rect;
+		RContext->RSSetScissorRects(1, clip);
+	}
+	else
+	{
+		StateManager.EnableScissoring(FALSE);
+		RContext->RSSetScissorRects(0, 0);
 	}
 }
