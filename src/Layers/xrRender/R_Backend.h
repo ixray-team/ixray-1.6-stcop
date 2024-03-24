@@ -10,6 +10,8 @@
 #define PGO(a)
 #endif
 
+#include "xrBackend/R_IBackend.h"
+
 #include "r_DStreams.h"
 #include "r_constants_cache.h"
 #include "r_backend_xform.h"
