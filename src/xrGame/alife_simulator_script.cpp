@@ -429,7 +429,6 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("objects",					&alife_objects, return_stl_pair_iterator())
 
 			.def("teleport_object", &teleport_object)
-			.def("jump_to_level", (void (CALifeSimulator::*) (LPCSTR))(&CALifeSimulator::jump_to_level))
 			.def("iterate_info", &IterateInfo)
 			.def("clone_weapon", &try_to_clone_object)
 			.def("register", &reprocess_spawn)
