@@ -128,6 +128,8 @@ public:
 	virtual IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
 	virtual ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) = 0;
 
+	virtual CTexture*			get_ActiveTexture(u32 stage) = 0;
+
 	virtual	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
 	virtual	void				set_Indices(IIndexBuffer* _ib) = 0;
 	inline void					set_Geometry(SGeometry* _geom);

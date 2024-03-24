@@ -81,6 +81,23 @@ ITexture2D* CBackend_DX11::CreateTexture2D(const TextureDesc* pDesc, byte* data,
 	return pTexture;
 }
 
+CTexture* CBackend_DX11::get_ActiveTexture(u32 stage)
+{
+	if		(stage < CTexture::rstVertex)		return textures_ps[stage];
+	else if (stage < CTexture::rstGeometry)		return textures_vs[stage - CTexture::rstVertex];
+	else if (stage < CTexture::rstHull)			return textures_gs[stage - CTexture::rstGeometry];
+	else if (stage < CTexture::rstDomain)		return textures_hs[stage - CTexture::rstHull];
+	else if (stage < CTexture::rstCompute)		return textures_ds[stage - CTexture::rstDomain];
+	else if (stage < CTexture::rstInvalid)		return textures_cs[stage - CTexture::rstCompute];
+	else
+	{
+		VERIFY(!"Invalid texture stage");
+		return 0;
+	}
+
+	return 0;
+}
+
 void CBackend_DX11::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 {
 	if ((vb != _vb) || (vb_stride != _vb_stride))

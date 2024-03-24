@@ -43,6 +43,8 @@ public:
 	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
+	CTexture*			get_ActiveTexture(u32 stage) override;
+
 	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;
 	void				set_Indices(IIndexBuffer* _ib) override;
 	void				set_Scissor(Irect* rect = NULL) override;
