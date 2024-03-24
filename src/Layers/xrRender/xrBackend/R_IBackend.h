@@ -4,6 +4,8 @@
 #pragma once
 
 #include "../R_Backend_xform.h"
+#include "../R_Backend_hemi.h"
+#include "../R_Backend_tree.h"
 
 // https://wickedengine.net/2021/05/06/graphics-api-abstraction/
 

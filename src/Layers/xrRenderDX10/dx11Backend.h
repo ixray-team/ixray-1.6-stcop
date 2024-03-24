@@ -90,8 +90,6 @@ private:
 	CTexture* textures_ds[mtMaxDomainShaderTextures];	// 4 vs
 	CTexture* textures_cs[mtMaxComputeShaderTextures];	// 4 vs
 
-	// DX11 State
-	D3D_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
 };
 
 extern CBackend_DX11 backend_dx11_impl;
