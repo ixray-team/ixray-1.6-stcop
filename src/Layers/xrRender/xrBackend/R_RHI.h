@@ -26,9 +26,10 @@ enum PRIMITIVETYPE {
 
 enum class ResourceUsage
 {
-	UNKNOWN,
+	DEFAULT,
 	IMMUTABLE,	// Static resource, will never change
-	DYNAMIC		// Dynamic resource, CPU Write, update on any Unmap
+	DYNAMIC,	// Dynamic resource, CPU Write, update on any Unmap
+	STAGING
 };
 
 enum class Mapping
@@ -56,7 +57,9 @@ struct TextureDesc
 	u32 arraySize = 0;
 	u32 depth = 0;
 	PixelFormat format;
+	ResourceUsage usage;
 	bool renderTargetUsage;
+	bool cubemap;
 	bool dynamic; // CPU Write
 };
 

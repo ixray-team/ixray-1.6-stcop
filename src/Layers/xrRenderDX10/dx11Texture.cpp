@@ -5,7 +5,7 @@
 
 using namespace DirectX;
 
-void fix_texture_name(LPSTR fn) {
+inline void fix_texture_name(LPSTR fn) {
     auto _ext = strext(fn);
     if (_ext &&
         (0 == _stricmp(_ext, ".tga") ||
@@ -15,7 +15,7 @@ void fix_texture_name(LPSTR fn) {
         *_ext = 0;
 }
 
-int get_texture_load_lod(LPCSTR fn) {
+inline int get_texture_load_lod(LPCSTR fn) {
     auto& sect = pSettings->r_section("reduce_lod_texture_list");
 
     for (const auto& data : sect.Data) {
@@ -43,7 +43,7 @@ int get_texture_load_lod(LPCSTR fn) {
     }
 }
 
-u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size) {
+inline u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size) {
     if (1 == mip_cnt) {
         return orig_size;
     }
