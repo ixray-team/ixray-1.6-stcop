@@ -4,7 +4,7 @@
 
 CBackend_DX11 backend_dx11_impl;
 
-CBackend_DX11::CBackend_DX11()
+CBackend_DX11::CBackend_DX11() : CBackendBase()
 {
 }
 
@@ -644,9 +644,12 @@ void CBackend_DX11::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 
 void CBackend_DX11::set_Indices(IIndexBuffer* _ib)
 {
-	if (_ib&&ib != _ib)
+	if (ib != _ib)
 	{
 		ib = _ib;
+
+		// попадаем сюда каким-то хреном, в пизду
+		if (!_ib || !_ib->IsValid()) return;
 
 		Buffer_DX11* pBuffer = static_cast<Buffer_DX11*>(_ib->m_InternalResource.get());
 		RContext->IASetIndexBuffer(pBuffer->pBuffer, DXGI_FORMAT_R16_UINT, 0);
