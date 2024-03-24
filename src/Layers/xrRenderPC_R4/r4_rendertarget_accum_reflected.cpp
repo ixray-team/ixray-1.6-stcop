@@ -10,24 +10,24 @@ void CRenderTarget::accum_reflected		(light* L)
 	ref_shader		shader				= s_accum_reflected;
 
 	BOOL	bIntersect			= FALSE; //enable_scissor(L);
-	L->xform_calc				();
-	RCache.set_xform_world		(L->m_xform			);
-	RCache.set_xform_view		(Device.mView		);
-	RCache.set_xform_project	(Device.mProject	);
+	L->xform_calc					();
+	g_rbackend->set_xform_world		(L->m_xform			);
+	g_rbackend->set_xform_view		(Device.mView		);
+	g_rbackend->set_xform_project	(Device.mProject	);
 	bIntersect					= enable_scissor	(L);
 	enable_dbt_bounds			(L);
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RCache.set_ColorWriteEnable				();
-	if (bIntersect)	RCache.set_CullMode		(CULL_CW);		// back
-	else			RCache.set_CullMode		(CULL_CCW);		// front
+	g_rbackend->set_ColorWriteEnable				();
+	if (bIntersect)	g_rbackend->set_CullMode		(CULL_CW);		// back
+	else			g_rbackend->set_CullMode		(CULL_CCW);		// front
 
 	// 2D texgen (texture adjustment matrix)
 	Fmatrix			m_Texgen;
 	{
-		float	_w						= RCache.get_width();
-		float	_h						= RCache.get_height();
+		float	_w						= g_rbackend->get_width();
+		float	_h						= g_rbackend->get_height();
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			m_TexelAdjust		= 
@@ -37,7 +37,7 @@ void CRenderTarget::accum_reflected		(light* L)
 			0.0f,				0.0f,				1.0f,			0.0f,
 			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
 		};
-		m_Texgen.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
+		m_Texgen.mul	(m_TexelAdjust, g_rbackend->xforms.m_wvp);
 	}
 
 	// Common constants
@@ -50,24 +50,24 @@ void CRenderTarget::accum_reflected		(light* L)
 
 	{
 		// Lighting
-		RCache.set_Shader			(shader);
+		g_rbackend->set_Shader			(shader);
 
 		// Constants
-		RCache.set_c				("Ldynamic_pos",	L_pos.x,L_pos.y,L_pos.z,1/(L->range*L->range));
-		RCache.set_c				("Ldynamic_color",	L_clr.x,L_clr.y,L_clr.z,L_spec);
-		RCache.set_c				("direction",		L_dir.x,L_dir.y,L_dir.z,0);
-		RCache.set_c				("m_texgen",		m_Texgen);
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		g_rbackend->set_c				("Ldynamic_pos",	L_pos.x,L_pos.y,L_pos.z,1/(L->range*L->range));
+		g_rbackend->set_c				("Ldynamic_color",	L_clr.x,L_clr.y,L_clr.z,L_spec);
+		g_rbackend->set_c				("direction",		L_dir.x,L_dir.y,L_dir.z,0);
+		g_rbackend->set_c				("m_texgen",		m_Texgen);
+		g_rbackend->set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 		draw_volume(L);
 	}
 
 	// blend-copy
 	if (!RImplementation.o.fp16_blend)	{
 		u_setrt(rt_Accumulator, nullptr, nullptr, RDepth);
-		RCache.set_Element	(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
-		RCache.set_c				("m_texgen",		m_Texgen);
+		g_rbackend->set_Element	(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
+		g_rbackend->set_c				("m_texgen",		m_Texgen);
 		// per pixel
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		g_rbackend->set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 		draw_volume(L);
 	}
 

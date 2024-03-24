@@ -118,7 +118,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 			if (vertexesCount > 0)
 			{
 				RCache.set_Geometry(pGeom);
-				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
+				RCache.Render(PT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 			}
 		}
 	}

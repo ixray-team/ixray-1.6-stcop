@@ -2,62 +2,63 @@
 #pragma hdrstop
 
 #include "../xrRender/r_constants_cache.h"
+#include "dx11Backend.h"
 
-dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
+dx10ConstantBuffer& R_constants_DX11::GetCBuffer(R_constant* C, BufferType BType)
 {
 	if (BType==BT_PixelBuffer)
 	{
 		//	Decode index
 		int iBufferIndex = (C->destination&RC_dest_pixel_cb_index_mask)>>RC_dest_pixel_cb_index_shift;
 
-		VERIFY(iBufferIndex<CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aPixelConstants[iBufferIndex]);
-		return *RCache.m_aPixelConstants[iBufferIndex];
+		VERIFY(iBufferIndex< CBackend_DX11::MaxCBuffers);
+		VERIFY(backend_dx11_impl.m_aPixelConstants[iBufferIndex]);
+		return *backend_dx11_impl.m_aPixelConstants[iBufferIndex];
 	}
 	else if (BType==BT_VertexBuffer)
 	{
 		//	Decode index
 		int iBufferIndex = (C->destination&RC_dest_vertex_cb_index_mask)>>RC_dest_vertex_cb_index_shift;
 
-		VERIFY(iBufferIndex<CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aVertexConstants[iBufferIndex]);
-		return *RCache.m_aVertexConstants[iBufferIndex];
+		VERIFY(iBufferIndex< CBackend_DX11::MaxCBuffers);
+		VERIFY(backend_dx11_impl.m_aVertexConstants[iBufferIndex]);
+		return *backend_dx11_impl.m_aVertexConstants[iBufferIndex];
 	}
 	else if (BType==BT_GeometryBuffer)
 	{
 		//	Decode index
 		int iBufferIndex = (C->destination&RC_dest_geometry_cb_index_mask)>>RC_dest_geometry_cb_index_shift;
 
-		VERIFY(iBufferIndex<CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
-		return *RCache.m_aGeometryConstants[iBufferIndex];
+		VERIFY(iBufferIndex< CBackend_DX11::MaxCBuffers);
+		VERIFY(backend_dx11_impl.m_aGeometryConstants[iBufferIndex]);
+		return *backend_dx11_impl.m_aGeometryConstants[iBufferIndex];
 	}
 	else if (BType==BT_HullBuffer)
 	{
 		//	Decode index
 		int iBufferIndex = (C->destination&RC_dest_hull_cb_index_mask)>>RC_dest_hull_cb_index_shift;
 
-		VERIFY(iBufferIndex<CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aHullConstants[iBufferIndex]);
-		return *RCache.m_aHullConstants[iBufferIndex];
+		VERIFY(iBufferIndex< CBackend_DX11::MaxCBuffers);
+		VERIFY(backend_dx11_impl.m_aHullConstants[iBufferIndex]);
+		return *backend_dx11_impl.m_aHullConstants[iBufferIndex];
 	}
 	else if (BType==BT_DomainBuffer)
 	{
 		//	Decode index
 		int iBufferIndex = (C->destination&RC_dest_domain_cb_index_mask)>>RC_dest_domain_cb_index_shift;
 
-		VERIFY(iBufferIndex<CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aDomainConstants[iBufferIndex]);
-		return *RCache.m_aDomainConstants[iBufferIndex];
+		VERIFY(iBufferIndex< CBackend_DX11::MaxCBuffers);
+		VERIFY(backend_dx11_impl.m_aDomainConstants[iBufferIndex]);
+		return *backend_dx11_impl.m_aDomainConstants[iBufferIndex];
 	}
 	else if (BType==BT_Compute)
 	{
 		//	Decode index
 		int iBufferIndex = (C->destination&RC_dest_compute_cb_index_mask)>>RC_dest_compute_cb_index_shift;
 
-		VERIFY(iBufferIndex<CBackend::MaxCBuffers);
-		VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
-		return *RCache.m_aComputeConstants[iBufferIndex];
+		VERIFY(iBufferIndex<CBackend_DX11::MaxCBuffers);
+		VERIFY(backend_dx11_impl.m_aComputeConstants[iBufferIndex]);
+		return *backend_dx11_impl.m_aComputeConstants[iBufferIndex];
 	}
 
 
@@ -67,27 +68,27 @@ dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
 	return *ptr;
 }
 
-void R_constants::flush_cache()
+void R_constants_DX11::flush_cache()
 {
-	for (int i=0; i < CBackend::MaxCBuffers; ++i)
+	for (int i=0; i < CBackend_DX11::MaxCBuffers; ++i)
 	{
-		if (RCache.m_aVertexConstants[i])
-			RCache.m_aVertexConstants[i]->Flush();
+		if (backend_dx11_impl.m_aVertexConstants[i])
+			backend_dx11_impl.m_aVertexConstants[i]->Flush();
 
-		if (RCache.m_aPixelConstants[i])
-			RCache.m_aPixelConstants[i]->Flush();
+		if (backend_dx11_impl.m_aPixelConstants[i])
+			backend_dx11_impl.m_aPixelConstants[i]->Flush();
 
-		if (RCache.m_aGeometryConstants[i])
-			RCache.m_aGeometryConstants[i]->Flush();
+		if (backend_dx11_impl.m_aGeometryConstants[i])
+			backend_dx11_impl.m_aGeometryConstants[i]->Flush();
 
-		if (RCache.m_aHullConstants[i])
-			RCache.m_aHullConstants[i]->Flush();
+		if (backend_dx11_impl.m_aHullConstants[i])
+			backend_dx11_impl.m_aHullConstants[i]->Flush();
 
-		if (RCache.m_aDomainConstants[i])
-			RCache.m_aDomainConstants[i]->Flush();
+		if (backend_dx11_impl.m_aDomainConstants[i])
+			backend_dx11_impl.m_aDomainConstants[i]->Flush();
 
-        if (RCache.m_aComputeConstants[i])
-			RCache.m_aComputeConstants[i]->Flush();
+        if (backend_dx11_impl.m_aComputeConstants[i])
+			backend_dx11_impl.m_aComputeConstants[i]->Flush();
 	}
 }
 

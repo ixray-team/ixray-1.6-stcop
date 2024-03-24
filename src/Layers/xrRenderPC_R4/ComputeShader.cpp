@@ -63,7 +63,7 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 		m_ctable->m_CBTable[i].second->Flush();
 	}
 
-	ID3DBuffer*	tempBuffer[CBackend::MaxCBuffers];
+	ID3DBuffer*	tempBuffer[CBackend_DX11::MaxCBuffers];
 
 	for (u32 i=0; i<count; ++i)
 	{

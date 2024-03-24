@@ -64,7 +64,7 @@ void CRenderTarget::phase_ssao	()
 	RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
 	RCache.set_c				("resolution", _w, _h, 1.0f / _w, 1.0f / _h	);
 
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(PT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 	set_viewport(RContext, RCache.get_width(), RCache.get_height());
 
@@ -118,7 +118,7 @@ void CRenderTarget::phase_downsamp	()
 		RCache.set_Geometry			(g_combine		);
 		RCache.set_c				("m_v2w",			m_v2w	);
 
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
 	if (RImplementation.o.ssao_half_data)

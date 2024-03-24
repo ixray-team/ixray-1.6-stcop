@@ -380,7 +380,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 			{
 				textures_ps[load_id] = load_surf;
 #ifdef DEBUG
-				stats.textures++;
+				stat.textures++;
 #endif
 				if (load_surf)
 				{
@@ -405,7 +405,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_vs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stats.textures++;
+					stat.textures++;
 #endif
 					if (load_surf)
 					{
@@ -428,7 +428,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_gs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stats.textures++;
+					stat.textures++;
 #endif
 					if (load_surf)
 					{
@@ -451,7 +451,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_hs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stats.textures++;
+					stat.textures++;
 #endif
 					if (load_surf)
 					{
@@ -473,7 +473,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_ds[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stats.textures++;
+					stat.textures++;
 #endif
 					if (load_surf)
 					{
@@ -495,7 +495,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_cs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stats.textures++;
+					stat.textures++;
 #endif
 					if (load_surf)
 					{
@@ -656,6 +656,90 @@ void CBackend_DX11::set_Indices(IIndexBuffer* _ib)
 	}
 }
 
+void CBackend_DX11::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
+{
+	StateManager.SetStencil(_enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
+}
+
+void CBackend_DX11::set_Z(u32 _enable)
+{
+	StateManager.SetDepthEnable(_enable);
+}
+
+void CBackend_DX11::set_ZFunc(u32 _func)
+{
+	StateManager.SetDepthFunc(_func);
+}
+
+void CBackend_DX11::set_AlphaRef(u32 _value)
+{
+	VERIFY(!"Not implemented.");
+}
+
+void CBackend_DX11::set_ColorWriteEnable(u32 _mask)
+{
+	StateManager.SetColorWriteEnable(_mask);
+}
+
+void CBackend_DX11::set_CullMode(u32 _mode)
+{
+	StateManager.SetCullMode(_mode);
+}
+
+void CBackend_DX11::set_ClipPlanes(u32 _enable, Fplane* _planes, u32 count)
+{
+#ifdef USE_DX11
+	//	TODO: DX10: Implement in the corresponding vertex shaders
+	//	Use this to set up location, were shader setup code will get data
+	//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
+	return;
+#else //USE_DX11
+	if (0 == dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes)	return;
+	if (!_enable) {
+		CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
+		return;
+	}
+
+	// Enable and setup planes
+	VERIFY(_planes && count);
+	if (count > dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes)	count = dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes;
+
+	auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
+	worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);
+	XMFLOAT4 planeClip{};
+	XMVECTOR planeWorld{};
+
+	for (u32 it = 0; it < count; it++) {
+		Fplane& P = _planes[it];
+		planeWorld = XMPlaneNormalize(XMVectorSet(-P.n.x, -P.n.y, -P.n.z, -P.d));
+		XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
+		CHK_DX(RDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
+	}
+
+	// Enable them
+	u32		e_mask = (1 << count) - 1;
+	CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask));
+#endif
+}
+
+void CBackend_DX11::set_ClipPlanes(u32 _enable, Fmatrix* _xform, u32 fmask)
+{
+	if (!_enable) {
+#ifdef USE_DX11
+		//	TODO: DX10: Implement in the corresponding vertex shaders
+		//	Use this to set up location, were shader setup code will get data
+		//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
+#else //USE_DX11
+		CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
+#endif
+		return;
+	}
+	VERIFY(_xform && fmask);
+	CFrustum	F;
+	F.CreateFromMatrix(*_xform, fmask);
+	set_ClipPlanes(_enable, F.planes, F.p_count);
+}
+
 void CBackend_DX11::set_Scissor(Irect* rect)
 {
 	if (rect)
@@ -687,9 +771,9 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u
 	//	Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
 	//}
 
-	stats.calls++;
-	stats.verts += countV;
-	stats.polys += PC;
+	stat.calls++;
+	stat.verts += countV;
+	stat.polys += PC;
 	
 	ApplyPrimitieTopology(Topology);
 
@@ -710,7 +794,7 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u
 	StateManager.Apply();
 
 	//	State manager may alter constants
-	constants.flush();
+	constants->flush();
 
 	//	Msg("DrawIndexed: Start");
 	//	Msg("iIndexCount=%d, startI=%d, baseV=%d", iIndexCount, startI, baseV);
@@ -732,17 +816,17 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology((D3DPRIMITIVETYPE)T);
 	u32	iVertexCount = GetIndexCount((D3DPRIMITIVETYPE)T, PC);
 
-	stats.calls++;
-	stats.verts += 3 * PC;
-	stats.polys += PC;
+	stat.calls++;
+	stat.verts += 3 * PC;
+	stat.polys += PC;
 
 	ApplyPrimitieTopology(Topology);
 	SRVSManager.Apply();
-	RCache.ApplyRTandZB();
+	ApplyRTandZB();
 	ApplyVertexLayout();
 	StateManager.Apply();
 	//	State manager may alter constants
-	constants.flush();
+	constants->flush();
 	
 	//	Msg("Draw: Start");
 	//	Msg("iVertexCount=%d, startV=%d", iVertexCount, startV);
@@ -753,6 +837,187 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	//	Msg("Draw: End\n");
 	
 	PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
+}
+
+void CBackend_DX11::RestoreQuadIBData()
+{
+	// Igor: never seen this corruption for DX10
+}
+
+void CBackend_DX11::CreateQuadIB()
+{
+	static const u32 dwTriCount = 4 * 1024;
+	static const u32 dwIdxCount = dwTriCount * 2 * 3;
+	u16		IndexBuffer[dwIdxCount];
+	u16* Indices = IndexBuffer;
+
+	D3D_BUFFER_DESC desc;
+	desc.Usage = D3D_USAGE_DEFAULT;
+	desc.BindFlags = D3D_BIND_INDEX_BUFFER;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	D3D_SUBRESOURCE_DATA subData;
+	subData.pSysMem = IndexBuffer;
+
+	{
+		int		Cnt = 0;
+		int		ICnt = 0;
+		for (int i = 0; i < dwTriCount; i++)
+		{
+			Indices[ICnt++] = u16(Cnt + 0);
+			Indices[ICnt++] = u16(Cnt + 1);
+			Indices[ICnt++] = u16(Cnt + 2);
+
+			Indices[ICnt++] = u16(Cnt + 3);
+			Indices[ICnt++] = u16(Cnt + 2);
+			Indices[ICnt++] = u16(Cnt + 1);
+
+			Cnt += 4;
+		}
+	}
+
+	QuadIB = g_rbackend->CreateIndexBuffer((byte*)IndexBuffer, dwIdxCount * 2, ResourceUsage::IMMUTABLE);
+}
+
+void CBackend_DX11::OnFrameBegin()
+{
+#ifndef _EDITOR
+	if (!g_dedicated_server)
+#endif    
+	{
+		PGO(Msg("PGO:*****frame[%d]*****", RDEVICE.dwFrame));
+		Invalidate();
+		//	DX9 sets base rt nd base zb by default
+		RImplementation.rmNormal();
+		set_RT(RTarget);
+		set_ZB(RDepth);
+		Memory.mem_fill(&stat, 0, sizeof(stat));
+		Vertex.Flush();
+		Index.Flush();
+		set_Stencil(FALSE);
+	}
+}
+
+void CBackend_DX11::OnFrameEnd()
+{
+#ifndef _EDITOR
+	if (!g_dedicated_server)
+#endif    
+	{
+		RContext->ClearState();
+		Invalidate();
+	}
+}
+
+void CBackend_DX11::OnDeviceCreate()
+{
+#ifdef USE_DX11
+	//CreateConstantBuffers();
+#endif //USE_DX11
+
+	CreateQuadIB();
+
+	// streams
+	Vertex.Create();
+	Index.Create();
+
+	// invalidate caching
+	Invalidate();
+}
+
+void CBackend_DX11::OnDeviceDestroy()
+{
+	// streams
+	Index.Destroy();
+	Vertex.Destroy();
+
+	// Quad
+	_RELEASE(QuadIB);
+
+#ifdef USE_DX11
+	//DestroyConstantBuffers();
+#endif //USE_DX11
+}
+
+void CBackend_DX11::Invalidate()
+{
+	pRT[0] = nullptr;
+	pRT[1] = nullptr;
+	pRT[2] = nullptr;
+	pRT[3] = nullptr;
+	pZB = nullptr;
+
+	decl = nullptr;
+	vb = nullptr;
+	ib = nullptr;
+	vb_stride = 0;
+
+	state = nullptr;
+	ps = nullptr;
+	vs = nullptr;
+	DX10_ONLY(gs = nullptr);
+#ifdef USE_DX11
+	hs = 0;
+	ds = 0;
+	cs = 0;
+#endif //USE_DX11
+	ctable = nullptr;
+
+	TextureList = nullptr;
+	MatrixList = nullptr;
+	ConstantList = nullptr;
+
+	stencil_enable = u32(-1);
+	stencil_func = u32(-1);
+	stencil_ref = u32(-1);
+	stencil_mask = u32(-1);
+	stencil_writemask = u32(-1);
+	stencil_fail = u32(-1);
+	stencil_pass = u32(-1);
+	stencil_zfail = u32(-1);
+	cull_mode = u32(-1);
+	z_enable = u32(-1);
+	z_func = u32(-1);
+	alpha_ref = u32(-1);
+	colorwrite_mask = u32(-1);
+
+	//	Since constant buffers are unmapped (for DirecX 10)
+	//	transform setting handlers should be unmapped too.
+	xforms.unmap();
+
+#ifdef USE_DX11
+	m_pInputLayout = nullptr;
+	m_PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	m_bChangedRTorZB = false;
+	m_pInputSignature = nullptr;
+	for (int i = 0; i < MaxCBuffers; ++i)
+	{
+		m_aPixelConstants[i] = 0;
+		m_aVertexConstants[i] = 0;
+		m_aGeometryConstants[i] = 0;
+		m_aHullConstants[i] = 0;
+		m_aDomainConstants[i] = 0;
+		m_aComputeConstants[i] = 0;
+	}
+	StateManager.Reset();
+	//	Redundant call. Just no note that we need to unmap const
+	//	if we create dedicated class.
+	StateManager.UnmapConstants();
+	SSManager.ResetDeviceState();
+	SRVSManager.ResetDeviceState();
+
+	for (u32 gs_it = 0; gs_it < mtMaxGeometryShaderTextures;)	textures_gs[gs_it++] = 0;
+	for (u32 hs_it = 0; hs_it < mtMaxHullShaderTextures;)	textures_hs[hs_it++] = 0;
+	for (u32 ds_it = 0; ds_it < mtMaxDomainShaderTextures;)	textures_ds[ds_it++] = 0;
+	for (u32 cs_it = 0; cs_it < mtMaxComputeShaderTextures;)	textures_cs[cs_it++] = 0;
+#endif //USE_DX11
+
+	for (u32 ps_it = 0; ps_it < mtMaxPixelShaderTextures;)	textures_ps[ps_it++] = 0;
+	for (u32 vs_it = 0; vs_it < mtMaxVertexShaderTextures;)	textures_vs[vs_it++] = 0;
+#ifdef _EDITOR
+	for (u32 m_it = 0; m_it < 8;)		matrices[m_it++] = 0;
+#endif
 }
 
 void CBackend_DX11::ApplyVertexLayout()

@@ -280,7 +280,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			Fmatrix	W;	W.mul_43	(RCache.xforms.m_w,Parent->LL_GetTransform_R	(u16(RMS_boneid)));
 			RCache.set_xform_world	(W);
 			RCache.set_Geometry		(hGeom);
-			RCache.Render			(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
+			RCache.Render			(PT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
 			RCache.stat.r.s_dynamic_inst.add	(vCount);
 		}
 		break;
@@ -303,7 +303,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 
 			// render
 			RCache.set_Geometry				(hGeom);
-			RCache.Render					(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
+			RCache.Render					(PT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
 			if (RM_SKINNING_1B==RenderMode)	
 				RCache.stat.r.s_dynamic_1B.add	(vCount);
 			else
@@ -374,7 +374,7 @@ void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCo
 	}
 
 	RCache.set_Geometry		(hGeom);
-	RCache.Render			(D3DPT_TRIANGLELIST,vOffset,0,vCount,iOffset,pCount);
+	RCache.Render			(PT_TRIANGLELIST,vOffset,0,vCount,iOffset,pCount);
 }
 
 void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount) 

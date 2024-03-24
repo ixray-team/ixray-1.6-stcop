@@ -76,7 +76,7 @@ void FProgressive::Render	(float LOD)
 		VERIFY				(lod_id>=0 && lod_id<int(xSWI->count));
 		FSlideWindow& SW	= xSWI->sw[lod_id];
 		RCache.set_Geometry	(m_fast->rm_geom);
-		RCache.Render		(D3DPT_TRIANGLELIST,m_fast->vBase,0,SW.num_verts,m_fast->iBase+SW.offset,SW.num_tris);
+		RCache.Render		(PT_TRIANGLELIST,m_fast->vBase,0,SW.num_verts,m_fast->iBase+SW.offset,SW.num_tris);
 		RCache.stat.r.s_static.add	(SW.num_verts);
 	} else {
 		int lod_id		= last_lod;
@@ -88,7 +88,7 @@ void FProgressive::Render	(float LOD)
 		VERIFY				(lod_id>=0 && lod_id<int(nSWI.count));
 		FSlideWindow& SW	= nSWI.sw[lod_id];
 		RCache.set_Geometry	(rm_geom);
-		RCache.Render		(D3DPT_TRIANGLELIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
+		RCache.Render		(PT_TRIANGLELIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
 		RCache.stat.r.s_static.add	(SW.num_verts);
 	}
 #else

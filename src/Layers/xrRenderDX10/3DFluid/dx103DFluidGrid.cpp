@@ -279,7 +279,7 @@ void dx103DFluidGrid::DrawSlices( void )
 	//	stride, offset, 0, numVerticesSlices );
 
 	RCache.set_Geometry(m_GeomSlices);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesSlices/3);
+	RCache.Render( PT_TRIANGLELIST, 0, m_iNumVerticesSlices/3);
 }
 
 void dx103DFluidGrid::DrawSlicesToScreen( void )
@@ -290,7 +290,7 @@ void dx103DFluidGrid::DrawSlicesToScreen( void )
 	//	stride, offset, 0, numVerticesRenderQuad );
 
 	RCache.set_Geometry(m_GeomRenderQuad);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesRenderQuad/3);
+	RCache.Render( PT_TRIANGLELIST, 0, m_iNumVerticesRenderQuad/3);
 }
 
 void dx103DFluidGrid::DrawBoundaryQuads( void )
@@ -301,7 +301,7 @@ void dx103DFluidGrid::DrawBoundaryQuads( void )
 	//	stride, offset, 0, numVerticesBoundarySlices );
 
 	RCache.set_Geometry(m_GeomBoundarySlices);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundarySlices/3);
+	RCache.Render( PT_TRIANGLELIST, 0, m_iNumVerticesBoundarySlices/3);
 }
 
 void dx103DFluidGrid::DrawBoundaryLines( void )
@@ -312,5 +312,5 @@ void dx103DFluidGrid::DrawBoundaryLines( void )
 //		stride, offset, 0, numVerticesBoundaryLines  );
 
 	RCache.set_Geometry(m_GeomBoundaryLines);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines/3);
+	RCache.Render( PT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines/3);
 }

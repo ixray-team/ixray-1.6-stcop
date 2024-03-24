@@ -36,7 +36,7 @@ void CRenderTarget::phase_smaa()
     // Draw COLOR
     RCache.set_Element(s_smaa->E[0]);
     RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    RCache.Render(PT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Phase 1: blend weights calculation ////////////////////////////////////
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
@@ -60,7 +60,7 @@ void CRenderTarget::phase_smaa()
     // Draw COLOR
     RCache.set_Element(s_smaa->E[1]);
     RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    RCache.Render(PT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Phase 2: neighbour blend //////////////////////////////////////////////
     u_setrt(rt_Back_Buffer, nullptr, nullptr, nullptr);
@@ -83,7 +83,7 @@ void CRenderTarget::phase_smaa()
     // Draw COLOR
     RCache.set_Element(s_smaa->E[2]);
     RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    RCache.Render(PT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
     ref_rt& dest_rt = rt_Color;

@@ -137,7 +137,7 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	}	
 
 	RCache.set_Geometry			(g_combine		);
-	RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+	RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	
 }
 
@@ -157,7 +157,7 @@ void	CRenderTarget::u_compute_texgen_screen	(Fmatrix& m_Texgen)
 		//0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
 		0.5f,				0.5f ,				0.0f,			1.0f
 	};
-	m_Texgen.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
+	m_Texgen.mul	(m_TexelAdjust, g_rbackend->xforms.m_wvp);
 }
 
 // 2D texgen for jitter (texture adjustment matrix)
@@ -171,11 +171,11 @@ void	CRenderTarget::u_compute_texgen_jitter	(Fmatrix&		m_Texgen_J)
 		0.0f,				0.0f,				1.0f,			0.0f,
 		0.5f,				0.5f,				0.0f,			1.0f
 	};
-	m_Texgen_J.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
+	m_Texgen_J.mul	(m_TexelAdjust, g_rbackend->xforms.m_wvp);
 
 	// rescale - tile it
-	float	scale_X			= RCache.get_width() / float(TEX_jitter);
-	float	scale_Y			= RCache.get_height() / float(TEX_jitter);
+	float	scale_X			= g_rbackend->get_width() / float(TEX_jitter);
+	float	scale_Y			= g_rbackend->get_height() / float(TEX_jitter);
 	//float	offset			= (.5f / float(TEX_jitter));
 	m_TexelAdjust.scale			(scale_X,	scale_Y,1.f	);
 	//m_TexelAdjust.translate_over(offset,	offset,	0	);
@@ -1011,7 +1011,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
 		RCache.set_Element			(s_occq->E[2]	);
 		RCache.set_Geometry			(g_combine		);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(PT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 }
 

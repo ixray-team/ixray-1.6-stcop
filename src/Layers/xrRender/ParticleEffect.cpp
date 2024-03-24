@@ -554,7 +554,7 @@ void CParticleEffect::Render(float) {
 				RCache.set_Geometry		(geom);
 
                 RCache.set_CullMode		(m_Def->m_Flags.is(CPEDef::dfCulling)?(m_Def->m_Flags.is(CPEDef::dfCullCCW)?CULL_CCW:CULL_CW):CULL_NONE);
-				RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
+				RCache.Render	   		(PT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
                 RCache.set_CullMode		(CULL_CCW	); 
 #ifndef _EDITOR
 				if(GetHudMode())

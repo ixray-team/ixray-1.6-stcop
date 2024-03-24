@@ -5,7 +5,11 @@
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #endif // USE_DX11
 
+#if 0
+
+#ifndef USE_DX11
 CBackend			RCache;
+#endif
 
 // Create Quad-IB
 #ifdef USE_DX11
@@ -171,4 +175,6 @@ void CBackend::DestroyConstantBuffers()
 	_RELEASE(m_pPixelConstants);
 }
 */
+#endif
+
 #endif

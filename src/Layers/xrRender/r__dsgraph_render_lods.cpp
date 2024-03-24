@@ -27,7 +27,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 	if (ssaRange<EPS_S)	ssaRange	= EPS_S;
 
 	const u32	uiVertexPerImposter	= 4;
-	const u32	uiImpostersFit		= RCache.Vertex.GetSize()
+	const u32	uiImpostersFit		= g_rbackend->Vertex.GetSize()
 		/ (firstV->geom->vb_stride*uiVertexPerImposter);
 
 	//Msg						("dbg_lods: shid[%d],firstV[%X]",shid,u32((void*)firstV));
@@ -118,7 +118,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 				{
 					RCache.set_Element		(lstLODs[current].pVisual->shader->E[shid], uiPass);
 					RCache.set_Geometry		(firstV->geom);
-					RCache.Render			(D3DPT_TRIANGLELIST,vCurOffset,0,4*p_count,0,2*p_count);
+					RCache.Render			(PT_TRIANGLELIST,vCurOffset,0,4*p_count,0,2*p_count);
 				}
 				RCache.stat.r.s_flora_lods.add	(4*p_count);
 				current	+=	p_count		;

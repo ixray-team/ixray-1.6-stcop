@@ -159,7 +159,7 @@ void dxDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle)
 
 void dxDebugRender::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C)
 {
-	RCache.dbg_DrawTRI(T, p1, p2, p3, C);
+	DebugRenderHelper.dbg_DrawTRI(T, p1, p2, p3, C);
 }
 
 

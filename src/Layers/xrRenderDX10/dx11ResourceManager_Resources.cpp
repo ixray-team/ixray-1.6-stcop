@@ -430,30 +430,6 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	return D;
 }
 
-// #TODO: delete
-inline DXGI_FORMAT GetDXGIFormat(PixelFormat format)
-{
-	switch (format)
-	{
-	case FMT_R8G8B8:
-	case FMT_R8G8B8A8:
-		return DXGI_FORMAT_R8G8B8A8_UNORM;
-	case FMT_R32G32B32F:
-		return DXGI_FORMAT_R32G32B32_FLOAT;
-	case FMT_R32G32B32A32F:
-		return DXGI_FORMAT_R32G32B32A32_FLOAT;
-	case FMT_DEPTH32F:
-		return DXGI_FORMAT_D32_FLOAT;
-	case FMT_DEPTH24_STENCIL_8:
-		return DXGI_FORMAT_D24_UNORM_S8_UINT;
-	default:
-		break;
-	}
-	
-	FATAL("Unkonwed PixelFormat");
-	return DXGI_FORMAT_UNKNOWN;
-}
-
 SDeclaration* CResourceManager::_CreateDecl(const XR_INPUT_ELEMENT_DESC* dcl, size_t size)
 {
 	// Create _new

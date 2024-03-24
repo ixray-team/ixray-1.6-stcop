@@ -211,11 +211,11 @@ void Fvisual::Render		(float )
 	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP && !RCache.is_TessEnabled())
 	{
 		RCache.set_Geometry		(m_fast->rm_geom);
-		RCache.Render			(D3DPT_TRIANGLELIST,m_fast->vBase,0,m_fast->vCount,m_fast->iBase,m_fast->dwPrimitives);
+		RCache.Render			(PT_TRIANGLELIST,m_fast->vBase,0,m_fast->vCount,m_fast->iBase,m_fast->dwPrimitives);
 		RCache.stat.r.s_static.add	(m_fast->vCount);
 	} else {
 		RCache.set_Geometry		(rm_geom);
-		RCache.Render			(D3DPT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
+		RCache.Render			(PT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
 		RCache.stat.r.s_static.add	(vCount);
 	}
 #else // (RENDER==R_R2) || (RENDER==R_R4)

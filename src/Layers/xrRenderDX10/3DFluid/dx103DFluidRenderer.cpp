@@ -812,7 +812,7 @@ void dx103DFluidRenderer::DrawScreenQuad()
 	//m_pD3DDevice->Draw( 4, 0 );
 
 	RCache.set_Geometry(m_GeomQuadVertex);
-	RCache.Render( D3DPT_TRIANGLESTRIP, 0, 2);
+	RCache.Render( PT_TRIANGLESTRIP, 0, 2);
 }
 
 void dx103DFluidRenderer::DrawBox()
@@ -826,7 +826,7 @@ void dx103DFluidRenderer::DrawBox()
 //	m_pD3DDevice->DrawIndexed(36, 0, 0);
 
 	RCache.set_Geometry(m_GeomGridBox);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, 0, m_iGridBoxVertNum ,0, m_iGridBoxFaceNum);
+	RCache.Render( PT_TRIANGLELIST, 0, 0, m_iGridBoxVertNum ,0, m_iGridBoxFaceNum);
 }
 
 void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData)

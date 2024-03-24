@@ -205,21 +205,21 @@ public:
 	}
 	IC void							apply_lmaterial				()
 	{
-		R_constant*		C	= &*RCache.get_c	(c_sbase);		// get sampler
+		R_constant*		C	= &*g_rbackend->get_c	(c_sbase);		// get sampler
 		if (0==C)			return;
 		VERIFY				(RC_dest_sampler	== C->destination);
 		VERIFY				(RC_dx10texture		== C->type);
-		CTexture*		T	= RCache.get_ActiveTexture	(u32(C->samp.index));
+		CTexture*		T	= g_rbackend->get_ActiveTexture	(u32(C->samp.index));
 		VERIFY				(T);
 		float	mtl			= T->m_material;
 #ifdef	DEBUG
 		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl=ps_r2_gmaterial;
 #endif
-		RCache.hemi.set_material (o_hemi,o_sun,0,(mtl+.5f)/4.f);
-		RCache.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
+		g_rbackend->hemi.set_material (o_hemi,o_sun,0,(mtl+.5f)/4.f);
+		g_rbackend->hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
-		RCache.hemi.set_neg_faces	(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
+		g_rbackend->hemi.set_neg_faces	(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y],
 			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
 	}

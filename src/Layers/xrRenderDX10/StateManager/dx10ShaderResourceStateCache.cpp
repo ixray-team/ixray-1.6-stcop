@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "dx10ShaderResourceStateCache.h"
+#include "../xrRenderDX10/dx11Backend.h"
 
 dx10ShaderResourceStateCache	SRVSManager;
 
@@ -91,7 +92,7 @@ void dx10ShaderResourceStateCache::Apply()
 
 void dx10ShaderResourceStateCache::SetPSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
-	VERIFY(uiSlot<CBackend::mtMaxPixelShaderTextures);
+	VERIFY(uiSlot<CBackend_DX11::mtMaxPixelShaderTextures);
 
 	if ( m_PSViews[uiSlot] != pRes)
 	{
@@ -112,7 +113,7 @@ void dx10ShaderResourceStateCache::SetPSResource( u32 uiSlot, ID3DShaderResource
 
 void dx10ShaderResourceStateCache::SetGSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
-	VERIFY(uiSlot<CBackend::mtMaxGeometryShaderTextures);
+	VERIFY(uiSlot< CBackend_DX11::mtMaxGeometryShaderTextures);
 
 	if ( m_GSViews[uiSlot] != pRes)
 	{
@@ -133,7 +134,7 @@ void dx10ShaderResourceStateCache::SetGSResource( u32 uiSlot, ID3DShaderResource
 
 void dx10ShaderResourceStateCache::SetVSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
-	VERIFY(uiSlot<CBackend::mtMaxVertexShaderTextures);
+	VERIFY(uiSlot< CBackend_DX11::mtMaxVertexShaderTextures);
 
 	if ( m_VSViews[uiSlot] != pRes)
 	{
@@ -154,7 +155,7 @@ void dx10ShaderResourceStateCache::SetVSResource( u32 uiSlot, ID3DShaderResource
 
 void dx10ShaderResourceStateCache::SetHSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
-	VERIFY(uiSlot<CBackend::mtMaxHullShaderTextures);
+	VERIFY(uiSlot< CBackend_DX11::mtMaxHullShaderTextures);
 
 	if ( m_HSViews[uiSlot] != pRes)
 	{
@@ -175,7 +176,7 @@ void dx10ShaderResourceStateCache::SetHSResource( u32 uiSlot, ID3DShaderResource
 
 void dx10ShaderResourceStateCache::SetDSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
-	VERIFY(uiSlot<CBackend::mtMaxHullShaderTextures);
+	VERIFY(uiSlot< CBackend_DX11::mtMaxHullShaderTextures);
 
 	if ( m_DSViews[uiSlot] != pRes)
 	{
@@ -196,7 +197,7 @@ void dx10ShaderResourceStateCache::SetDSResource( u32 uiSlot, ID3DShaderResource
 
 void dx10ShaderResourceStateCache::SetCSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
-	VERIFY(uiSlot<CBackend::mtMaxComputeShaderTextures);
+	VERIFY(uiSlot< CBackend_DX11::mtMaxComputeShaderTextures);
 
 	if ( m_CSViews[uiSlot] != pRes)
 	{
@@ -213,4 +214,9 @@ void dx10ShaderResourceStateCache::SetCSResource( u32 uiSlot, ID3DShaderResource
 			m_uiMaxCSView = uiSlot;
 		}
 	}
+}
+
+void SRVSManager_Apply()
+{
+	SRVSManager.Apply();
 }

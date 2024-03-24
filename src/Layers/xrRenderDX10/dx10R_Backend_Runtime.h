@@ -5,6 +5,8 @@
 #include "StateManager/dx10StateManager.h"
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
+#if 0
+
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
 	stat.xforms			++;
@@ -785,5 +787,7 @@ IC float CBackend::get_target_height()
 {
 	return (float)RDEVICE.TargetHeight;
 }
+
+#endif
 
 #endif	//	dx10R_Backend_Runtime_included

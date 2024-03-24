@@ -2,7 +2,9 @@
 #define dx10r_constants_cacheH
 #pragma once
 
-class	ECORE_API  R_constants
+#include "../xrRender/xrBackend/R_IConstants_cache.h"
+
+class	ECORE_API  R_constants_DX11 : public R_IConstants
 {
 	enum	BufferType
 	{

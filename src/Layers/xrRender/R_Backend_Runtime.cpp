@@ -10,6 +10,8 @@ using namespace DirectX;
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 #endif //USE_DX11
 
+#if 0
+
 void CBackend::OnFrameEnd	()
 {
 //#ifndef DEDICATED_SERVER
@@ -445,5 +447,7 @@ void CBackend::set_Textures			(STextureList* _T)
 
 void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=nullptr */, u32 fmask/* =0xff */) {}
 void CBackend::set_Textures			(STextureList* _T) {}
+
+#endif
 
 #endif

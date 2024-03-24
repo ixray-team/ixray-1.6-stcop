@@ -14,14 +14,15 @@
 #include "../xrRenderDX9/dx9R_Backend_Runtime.h"
 #endif
 
-IC void		R_xforms::set_c_w			(R_constant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
-IC void		R_xforms::set_c_invw		(R_constant* C)		{	c_invw	= C;	apply_invw();			};
-IC void		R_xforms::set_c_v			(R_constant* C)		{	c_v		= C;	RCache.set_c(C,m_v);	};
-IC void		R_xforms::set_c_p			(R_constant* C)		{	c_p		= C;	RCache.set_c(C,m_p);	};
-IC void		R_xforms::set_c_wv			(R_constant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);	};
-IC void		R_xforms::set_c_vp			(R_constant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
-IC void		R_xforms::set_c_wvp			(R_constant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	};
+IC void		R_xforms::set_c_w(R_constant* C)			{ c_w = C;	g_rbackend->set_c(C, m_w); };
+IC void		R_xforms::set_c_invw(R_constant* C)			{ c_invw = C;	apply_invw(); };
+IC void		R_xforms::set_c_v(R_constant* C)			{ c_v = C;	g_rbackend->set_c(C, m_v); };
+IC void		R_xforms::set_c_p(R_constant* C)			{ c_p = C;	g_rbackend->set_c(C, m_p); };
+IC void		R_xforms::set_c_wv(R_constant* C)			{ c_wv = C;	g_rbackend->set_c(C, m_wv); };
+IC void		R_xforms::set_c_vp(R_constant* C)			{ c_vp = C;	g_rbackend->set_c(C, m_vp); };
+IC void		R_xforms::set_c_wvp(R_constant* C)			{ c_wvp = C;	g_rbackend->set_c(C, m_wvp); };
 
+#if 0
 IC	void	CBackend::set_xform_world	(const Fmatrix& M_)
 { 
 	xforms.set_W(M_);	
@@ -112,5 +113,7 @@ ICF void CBackend::set_Shader			(Shader* S, u32 pass)
 {
 	set_Element			(S->E[0],pass);
 }
+
+#endif
 
 #endif

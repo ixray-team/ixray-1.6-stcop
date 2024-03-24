@@ -2,6 +2,9 @@
 #define r_DStreamsH
 #pragma once
 
+class IVertexBuffer;
+class IIndexBuffer;
+
 enum
 {
 	LOCKFLAGS_FLUSH		= D3DLOCK_DISCARD,

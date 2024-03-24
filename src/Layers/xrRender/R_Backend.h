@@ -28,6 +28,9 @@ const	u32		CULL_CCW			= D3DCULL_CCW;
 const	u32		CULL_CW				= D3DCULL_CW;
 const	u32		CULL_NONE			= D3DCULL_NONE;
 
+// #TODO: REMOVE
+#if 0
+
 #pragma warning(push)
 #pragma warning(disable:4324)
 class  ECORE_API CBackend
@@ -101,7 +104,7 @@ private:
 	u32								vb_stride;
 
 	// Pixel/Vertex constants
-	ALIGN(16)	R_constants			constants;
+	ALIGN(16)	R_constants_Old			constants;
 	R_constant_table*				ctable;
 
 	// Shaders/State
@@ -313,7 +316,7 @@ public:
 	// constants - direct (fast)
 	ICF	void						set_c				(R_constant* C_, const Fmatrix& A)									{ if (C_)		constants.set(C_,A);					}
 	ICF	void						set_c				(R_constant* C_, const Fvector4& A)									{ if (C_)		constants.set(C_,A);					}
-	ICF	void						set_c				(R_constant* C_, float x, float y, float z, float w)					{ if (C_)		constants.set(C_,x,y,z,w);			}
+	ICF	void						set_c				(R_constant* C_, float x, float y, float z, float w)					{ if (C_)	constants.set(C_,x,y,z,w);			}
 	ICF	void						set_ca				(R_constant* C_, u32 e, const Fmatrix& A)							{ if (C_)		constants.seta(C_,e,A);				}
 	ICF	void						set_ca				(R_constant* C_, u32 e, const Fvector4& A)							{ if (C_)		constants.seta(C_,e,A);				}
 	ICF	void						set_ca				(R_constant* C_, u32 e, float x, float y, float z, float w)			{ if (C_)		constants.seta(C_,e,x,y,z,w);		}
@@ -406,7 +409,11 @@ private:
 };
 #pragma warning(pop)
 
+#ifndef USE_DX11
 extern  ECORE_API CBackend			RCache;
+#endif // !USE_DX11
+
+#endif
 
 #ifndef _EDITOR
 #	include "D3DUtils.h"

@@ -192,7 +192,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 							u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
 							//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
 							//RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-							RCache.Render			(D3DPT_TRIANGLELIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
+							RCache.Render			(PT_TRIANGLELIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
 							RCache.stat.r.s_details.add	(dwCNT_verts);
 
 							// restart
@@ -217,7 +217,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 					u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
 					//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
 					//RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-					RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
+					RCache.Render				(PT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
 					RCache.stat.r.s_details.add	(dwCNT_verts);
 				}
 
