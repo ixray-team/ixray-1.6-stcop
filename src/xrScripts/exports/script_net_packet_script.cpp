@@ -41,6 +41,11 @@ ClientID r_clientID(NET_Packet *self_)
 	return clientID;
 }
 
+u32 r_begin(NET_Packet* self)
+{
+	u16 dummy_u16;
+	return (self->r_begin(dummy_u16));
+}
 
 LPCSTR script_section = "script";
 LPCSTR current_version = "current_server_entity_version";
@@ -101,6 +106,7 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("w_chunk_close8",	&NET_Packet::w_chunk_close8	)
 			.def("w_chunk_open16",	&NET_Packet::w_chunk_open16, policy::out_value<2>())
 			.def("w_chunk_close16",	&NET_Packet::w_chunk_close16)
+			.def("r_begin",			&r_begin)
 			.def("r_begin",			&NET_Packet::r_begin, policy::out_value<2>())
 //			.def("r",				&NET_Packet::r				)
 			.def("r_seek",			&NET_Packet::r_seek			)
