@@ -349,7 +349,7 @@ BOOL dxRenderDeviceRender::GetForceGPU_REF()
 
 u32 dxRenderDeviceRender::GetCacheStatPolys()
 {
-	return RCache.stat.polys;
+	return RCache.stats.polys;
 }
 
 void dxRenderDeviceRender::Begin()

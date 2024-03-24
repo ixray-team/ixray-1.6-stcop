@@ -128,7 +128,7 @@ public:
 	}
 };
 
-class	ECORE_API  R_constants
+class ECORE_API  R_constants_DX9 : public R_IConstants
 {
 public:
 	ALIGN(16)	R_constant_array	a_pixel;
@@ -169,5 +169,12 @@ public:
 	{
 		if (a_pixel.b_dirty || a_vertex.b_dirty)	flush_cache();
 	}
+
+	// Inherited via R_IConstants
+	void set(R_constant* C_, float A) override;
+	void set(R_constant* C_, int A) override;
+	R_constant_array* get_ConstantCache_Vertex() override;
+	R_constant_array* get_ConstantCache_Pixel() override;
+	void access_direct(R_constant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData) override;
 };
 #endif	//	dx9r_constants_cacheH

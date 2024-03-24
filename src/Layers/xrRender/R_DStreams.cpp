@@ -77,33 +77,18 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		vOffset				= 0;
 		mDiscardID			++;
 
-#ifdef USE_DX11
 		g_rbackend->MapBuffer(pVB, 0, Mapping::MAP_WRITE_DISCARD, 0, &MappedSubRes);
 		pData=(BYTE*)MappedSubRes.pData;
 		pData += vOffset;
-#else //USE_DX11
-		HRESULT res = pVB->Lock( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
 
-		if( res != D3D_OK )
-			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData );
-
-#endif
 	} else {
 		// APPEND-LOCK
 		mPosition			= vl_mPosition*Stride;
 		vOffset				= vl_mPosition;
 
-#ifdef USE_DX11
 		g_rbackend->MapBuffer(pVB, 0, Mapping::MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
 		pData=(BYTE*)MappedSubRes.pData;
 		pData += vOffset*Stride;
-#else //USE_DX11
-		HRESULT res = pVB->Lock			( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
-		
-		if( res != D3D_OK )
-			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData );
-
-#endif
 	}
 	VERIFY				( pData );
 
@@ -121,11 +106,7 @@ void	_VertexStream::Unlock		( u32 Count, u32 Stride)
 
 	VERIFY				(pVB);
 
-#ifdef USE_DX11
 	g_rbackend->UnmapBuffer(pVB, 0);
-#else //USE_DX11
-	pVB->Unlock();
-#endif
 }
 
 void	_VertexStream::reset_begin	()
@@ -215,14 +196,11 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 		mDiscardID	++;
 	}
 
-#ifdef USE_DX11
 	Mapping MapMode = (dwFlags == LOCKFLAGS_APPEND) ? Mapping::MAP_WRITE_NO_OVERWRITE : Mapping::MAP_WRITE_DISCARD;
 	g_rbackend->MapBuffer(pIB, 0, MapMode, 0, &MappedSubRes);
 	pLockedData = (BYTE*)MappedSubRes.pData;
 	pLockedData += mPosition * 2;
-#else //USE_DX11
-	pIB->Lock				( mPosition * 2, Count * 2, (void**) &pLockedData, dwFlags);
-#endif
+
 	VERIFY					(pLockedData);
 
 	vOffset					=	mPosition;
@@ -235,11 +213,7 @@ void	_IndexStream::Unlock(u32 RealCount)
 	PGO						(Msg("PGO:IB_UNLOCK:%d",RealCount));
 	mPosition				+=	RealCount;
 	VERIFY					(pIB);
-#ifdef USE_DX11
 	g_rbackend->UnmapBuffer(pIB, 0);
-#else //USE_DX11
-	pIB->Unlock();
-#endif
 }
 
 void	_IndexStream::reset_begin	()

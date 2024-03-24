@@ -464,7 +464,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 			{
 				textures_ps[load_id] = load_surf;
 #ifdef DEBUG
-				stat.textures++;
+				stats.textures++;
 #endif
 				if (load_surf)
 				{
@@ -489,7 +489,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_vs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stat.textures++;
+					stats.textures++;
 #endif
 					if (load_surf)
 					{
@@ -512,7 +512,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_gs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stat.textures++;
+					stats.textures++;
 #endif
 					if (load_surf)
 					{
@@ -535,7 +535,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_hs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stat.textures++;
+					stats.textures++;
 #endif
 					if (load_surf)
 					{
@@ -557,7 +557,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_ds[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stat.textures++;
+					stats.textures++;
 #endif
 					if (load_surf)
 					{
@@ -579,7 +579,7 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 				{
 					textures_cs[load_id_remapped] = load_surf;
 #ifdef DEBUG
-					stat.textures++;
+					stats.textures++;
 #endif
 					if (load_surf)
 					{
@@ -855,9 +855,9 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u
 	//	Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
 	//}
 
-	stat.calls++;
-	stat.verts += countV;
-	stat.polys += PC;
+	stats.calls++;
+	stats.verts += countV;
+	stats.polys += PC;
 	
 	ApplyPrimitieTopology(Topology);
 
@@ -900,9 +900,9 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology((D3DPRIMITIVETYPE)T);
 	u32	iVertexCount = GetIndexCount((D3DPRIMITIVETYPE)T, PC);
 
-	stat.calls++;
-	stat.verts += 3 * PC;
-	stat.polys += PC;
+	stats.calls++;
+	stats.verts += 3 * PC;
+	stats.polys += PC;
 
 	ApplyPrimitieTopology(Topology);
 	SRVSManager.Apply();
@@ -976,7 +976,7 @@ void CBackend_DX11::OnFrameBegin()
 		RImplementation.rmNormal();
 		set_RT(RTarget);
 		set_ZB(RDepth);
-		Memory.mem_fill(&stat, 0, sizeof(stat));
+		Memory.mem_fill(&stats, 0, sizeof(stats));
 		Vertex.Flush();
 		Index.Flush();
 		set_Stencil(FALSE);

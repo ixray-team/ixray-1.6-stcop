@@ -206,3 +206,13 @@ void R_constants_DX11::flush_cache()
 {
 	return m_impl.flush_cache();
 }
+
+R_constant_array* R_constants_DX11::get_ConstantCache_Vertex()
+{
+	return nullptr;
+}
+
+R_constant_array* R_constants_DX11::get_ConstantCache_Pixel()
+{
+	return nullptr;
+}

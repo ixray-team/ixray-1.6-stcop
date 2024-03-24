@@ -55,7 +55,7 @@ void dxUIRender::FlushTriList()
 	std::ptrdiff_t p_cnt		= (pv-start_pv)/3;							
 	RCache.Vertex.Unlock		(u32(pv-start_pv),hGeom_fan.stride());
 	RCache.set_Geometry			(hGeom_fan);
-	if (p_cnt!=0)RCache.Render	(D3DPT_TRIANGLELIST,vOffset,u32(p_cnt));
+	if (p_cnt!=0)RCache.Render	(PT_TRIANGLELIST,vOffset,u32(p_cnt));
 
 	PrimitiveType = ptNone;
 }

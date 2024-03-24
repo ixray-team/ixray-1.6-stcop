@@ -120,7 +120,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 					RCache.set_Geometry		(firstV->geom);
 					RCache.Render			(PT_TRIANGLELIST,vCurOffset,0,4*p_count,0,2*p_count);
 				}
-				RCache.stat.r.s_flora_lods.add	(4*p_count);
+				RCache.stats.r.s_flora_lods.add	(4*p_count);
 				current	+=	p_count		;
 				vCurOffset	+=	4*p_count	;
 			}

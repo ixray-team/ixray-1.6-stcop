@@ -192,7 +192,7 @@ void FTreeVisual_ST::Render		(float LOD)
 	inherited::Render			(LOD);
 	RCache.set_Geometry			(rm_geom);
 	RCache.Render				(PT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
-	RCache.stat.r.s_flora.add	(vCount);
+	RCache.stats.r.s_flora.add	(vCount);
 }
 void FTreeVisual_ST::Copy		(dxRender_Visual *pSrc)
 {
@@ -238,7 +238,7 @@ void FTreeVisual_PM::Render		(float LOD)
 	FSlideWindow& SW			= pSWI->sw[lod_id];
 	RCache.set_Geometry			(rm_geom);
 	RCache.Render				(PT_TRIANGLELIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
-	RCache.stat.r.s_flora.add	(SW.num_verts);
+	RCache.stats.r.s_flora.add	(SW.num_verts);
 }
 void FTreeVisual_PM::Copy		(dxRender_Visual *pSrc)
 {

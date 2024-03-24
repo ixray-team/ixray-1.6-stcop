@@ -15,8 +15,6 @@
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #endif // USE_DX11
 
-
-
 const int			quant	= 16384;
 const int			c_hdr	= 10;
 const int			c_size	= 4;
@@ -66,34 +64,15 @@ void CDetailManager::hw_Load_Geom()
 	}
 	u32			vSize		= sizeof(vertHW);
 	Msg("* [DETAILS] %d v(%d), %d p",dwVerts,vSize,dwIndices/3);
-
-#ifndef USE_DX11
-	// Determine POOL & USAGE
-	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
-
-	// Create VB/IB
-	
-	hw_VB			= g_rbackend->CreateVertexBuffer(nullptr, dwVerts * vSize, vSize, ResourceUsage::IMMUTABLE);
-	hw_IB			= g_rbackend->CreateIndexBuffer(nullptr, dwIndices * 2, ResourceUsage::IMMUTABLE);
-
-	//R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
-	//R_CHK			(RDevice->CreateIndexBuffer		(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
-
-
-
-#endif	//	USE_DX11
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);
 
 	// Fill VB
 	{
 		vertHW* pV{};
-#ifdef USE_DX11
 		vertHW*			pVOriginal;
 		pVOriginal	=	xr_alloc<vertHW>(dwVerts);
 		pV = pVOriginal;		
-#else //USE_DX11
-		R_CHK			(hw_VB->Lock(0,0,(void**)&pV,0));
-#endif
+
 		for (u32 o=0; o<objects.size(); o++)
 		{
 			const CDetail& D		=	*objects[o];
@@ -114,25 +93,19 @@ void CDetailManager::hw_Load_Geom()
 				}
 			}
 		}
-#ifdef USE_DX11
+
 		//R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
 		hw_VB = g_rbackend->CreateVertexBuffer(pVOriginal, dwVerts * vSize, vSize, ResourceUsage::IMMUTABLE);
 		xr_free(pVOriginal);
-#else //USE_DX11
-		R_CHK			(hw_VB->Unlock());
-#endif
 	}
 
 	// Fill IB
 	{
 		u16* pI{};
-#ifdef USE_DX11
 		u16*			pIOriginal;
 		pIOriginal = xr_alloc<u16>(dwIndices);
 		pI	= pIOriginal;
-#else //USE_DX11
-		R_CHK			(hw_IB->Lock(0,0,(void**)(&pI),0));
-#endif
+
 		for (u32 o=0; o<objects.size(); o++)
 		{
 			const CDetail& D		=	*objects[o];
@@ -144,13 +117,10 @@ void CDetailManager::hw_Load_Geom()
 				offset		=	u16(offset+u16(D.number_vertices));
 			}
 		}
-#ifdef USE_DX11
+
 		//R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
 		hw_IB = g_rbackend->CreateIndexBuffer(pIOriginal, dwIndices * 2, ResourceUsage::IMMUTABLE);
 		xr_free(pIOriginal);
-#else //USE_DX11
-		R_CHK			(hw_IB->Unlock());
-#endif
 	}
 
 	// Declare geometry
@@ -302,8 +272,8 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 						u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
 						RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
 						RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-						RCache.Render			(D3DPT_TRIANGLELIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
-						RCache.stat.r.s_details.add	(dwCNT_verts);
+						RCache.Render			(PT_TRIANGLELIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
+						RCache.stats.r.s_details.add	(dwCNT_verts);
 
 						// restart
 						dwBatch					= 0;
@@ -317,8 +287,8 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 				u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
 				RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
 				RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-				RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
-				RCache.stat.r.s_details.add	(dwCNT_verts);
+				RCache.Render				(PT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
+				RCache.stats.r.s_details.add	(dwCNT_verts);
 			}
 		}
 		vOffset		+=	hw_BatchSize * Object.number_vertices;

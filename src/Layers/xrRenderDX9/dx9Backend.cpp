@@ -6,6 +6,7 @@ CBackend_DX9 backend_dx9_impl;
 CBackend_DX9::CBackend_DX9() :
 	CBackendBase()
 {
+	constants = xr_new<R_constants_DX9>();
 }
 
 CBackend_DX9::~CBackend_DX9()
@@ -73,18 +74,10 @@ IIndexBuffer* CBackend_DX9::CreateIndexBuffer(void* data, u32 length, ResourceUs
 	return pBuffer;
 }
 
-ITexture2D* CBackend_DX9::CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length)
+IBaseTexture* CBackend_DX9::CreateTexture(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource)
 {
-	auto texture = std::make_shared<Texture_DX9>();
-	texture->pTex = nullptr;
-
-	R_CHK(RDevice->CreateTexture(pDesc->width, pDesc->height, 
-		pDesc->mipmapLevel, 0, GetD3DFormat(pDesc->format), 
-		D3DPOOL_DEFAULT, &texture->pTex, NULL));
-
-	ITexture2D* pTexture = xr_new<ITexture2D>();
-	pTexture->m_InternalResource = texture;
-	return pTexture;
+	Msg("! CBackend_DX9::CreateTexture: Not implemented !");
+	return nullptr;
 }
 
 bool CBackend_DX9::MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource)
@@ -454,6 +447,110 @@ void CBackend_DX9::set_Indices(IIndexBuffer* _ib)
 	}
 }
 
+void CBackend_DX9::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
+{
+	// Simple filter
+	if (stencil_enable != _enable) { stencil_enable = _enable;		CHK_DX(RDevice->SetRenderState(D3DRS_STENCILENABLE, _enable)); }
+	if (!stencil_enable)					return;
+	if (stencil_func != _func) { stencil_func = _func;			CHK_DX(RDevice->SetRenderState(D3DRS_STENCILFUNC, _func)); }
+	if (stencil_ref != _ref) { stencil_ref = _ref;				CHK_DX(RDevice->SetRenderState(D3DRS_STENCILREF, _ref)); }
+	if (stencil_mask != _mask) { stencil_mask = _mask;			CHK_DX(RDevice->SetRenderState(D3DRS_STENCILMASK, _mask)); }
+	if (stencil_writemask != _writemask) { stencil_writemask = _writemask;	CHK_DX(RDevice->SetRenderState(D3DRS_STENCILWRITEMASK, _writemask)); }
+	if (stencil_fail != _fail) { stencil_fail = _fail;			CHK_DX(RDevice->SetRenderState(D3DRS_STENCILFAIL, _fail)); }
+	if (stencil_pass != _pass) { stencil_pass = _pass;			CHK_DX(RDevice->SetRenderState(D3DRS_STENCILPASS, _pass)); }
+	if (stencil_zfail != _zfail) { stencil_zfail = _zfail;			CHK_DX(RDevice->SetRenderState(D3DRS_STENCILZFAIL, _zfail)); }
+}
+
+void CBackend_DX9::set_Z(u32 _enable)
+{
+	if (z_enable != _enable)
+	{
+		z_enable = _enable;
+		CHK_DX(RDevice->SetRenderState(D3DRS_ZENABLE, _enable));
+	}
+}
+
+void CBackend_DX9::set_ZFunc(u32 _func)
+{
+	if (z_func != _func)
+	{
+		z_func = _func;
+		CHK_DX(RDevice->SetRenderState(D3DRS_ZFUNC, _func));
+	}
+}
+
+void CBackend_DX9::set_AlphaRef(u32 _value)
+{
+	if (alpha_ref != _value)
+	{
+		alpha_ref = _value;
+		CHK_DX(RDevice->SetRenderState(D3DRS_ALPHAREF, _value));
+	}
+}
+
+void CBackend_DX9::set_ColorWriteEnable(u32 _mask)
+{
+	if (colorwrite_mask != _mask) {
+		colorwrite_mask = _mask;
+		CHK_DX(RDevice->SetRenderState(D3DRS_COLORWRITEENABLE, _mask));
+		CHK_DX(RDevice->SetRenderState(D3DRS_COLORWRITEENABLE1, _mask));
+		CHK_DX(RDevice->SetRenderState(D3DRS_COLORWRITEENABLE2, _mask));
+		CHK_DX(RDevice->SetRenderState(D3DRS_COLORWRITEENABLE3, _mask));
+	}
+}
+
+void CBackend_DX9::set_CullMode(u32 _mode)
+{
+	if (cull_mode != _mode) { 
+		cull_mode = _mode;
+		CHK_DX(RDevice->SetRenderState(D3DRS_CULLMODE, _mode)); 
+	}
+}
+
+void CBackend_DX9::set_ClipPlanes(u32 _enable, Fplane* _planes, u32 count)
+{
+	using namespace DirectX;
+
+	if (0 == dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes)	return;
+	if (!_enable) {
+		CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
+		return;
+	}
+
+	// Enable and setup planes
+	VERIFY(_planes && count);
+	if (count > dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes)	count = dxRenderDeviceRender::Instance().Caps.geometry.dwClipPlanes;
+
+	auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
+	worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);
+	XMFLOAT4 planeClip{};
+	XMVECTOR planeWorld{};
+
+	for (u32 it = 0; it < count; it++) {
+		Fplane& P = _planes[it];
+		planeWorld = XMPlaneNormalize(XMVectorSet(-P.n.x, -P.n.y, -P.n.z, -P.d));
+		XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
+		CHK_DX(RDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
+	}
+
+	// Enable them
+	u32		e_mask = (1 << count) - 1;
+	CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask));
+}
+
+void CBackend_DX9::set_ClipPlanes(u32 _enable, Fmatrix* _xform, u32 fmask)
+{
+	if (!_enable) {
+		CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
+		return;
+	}
+
+	VERIFY(_xform && fmask);
+	CFrustum	F;
+	F.CreateFromMatrix(*_xform, fmask);
+	set_ClipPlanes(_enable, F.planes, F.p_count);
+}
+
 void CBackend_DX9::set_Scissor(Irect* rect)
 {
 	if (rect)
@@ -477,7 +574,7 @@ void CBackend_DX9::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u3
 	stats.calls++;
 	stats.verts += countV;
 	stats.polys += PC;
-	constants.flush();
+	constants->flush();
 	CHK_DX(RDevice->DrawIndexedPrimitive(GetD3DPrimitiveType(T), baseV, startV, countV, startI, PC));
 	PGO(Msg("PGO:DIP:%dv/%df", countV, PC));
 }
@@ -491,10 +588,124 @@ void CBackend_DX9::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	stats.calls++;
 	stats.verts += 3 * PC;
 	stats.polys += PC;
-	constants.flush();
+	constants->flush();
 	CHK_DX(RDevice->DrawPrimitive(GetD3DPrimitiveType(T), startV, PC));
 	PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }
+
+void CBackend_DX9::RestoreQuadIBData()
+{
+	Msg("! CBackend_DX9::RestoreQuadIBData: Not Implemented !");
+}
+
+void CBackend_DX9::CreateQuadIB()
+{
+}
+
+void CBackend_DX9::OnFrameBegin()
+{
+#ifndef _EDITOR
+	if (!g_dedicated_server)
+#endif    
+	{
+		PGO(Msg("PGO:*****frame[%d]*****", RDEVICE.dwFrame));
+		Memory.mem_fill(&stats, 0, sizeof(stats));
+		Vertex.Flush();
+		Index.Flush();
+		set_Stencil(FALSE);
+	}
+}
+
+void CBackend_DX9::OnFrameEnd()
+{
+#ifndef _EDITOR
+	if (!g_dedicated_server)
+#endif    
+	{
+		for (u32 stage = 0; stage < dxRenderDeviceRender::Instance().Caps.raster.dwStages; stage++)
+			CHK_DX(RDevice->SetTexture(0, 0));
+		CHK_DX(RDevice->SetStreamSource(0, 0, 0, 0));
+		CHK_DX(RDevice->SetIndices(0));
+		CHK_DX(RDevice->SetVertexShader(0));
+		CHK_DX(RDevice->SetPixelShader(0));
+		Invalidate();
+	}
+}
+
+void CBackend_DX9::OnDeviceCreate()
+{
+#ifdef USE_DX11
+	//CreateConstantBuffers();
+#endif //USE_DX11
+
+	CreateQuadIB();
+
+	// streams
+	Vertex.Create();
+	Index.Create();
+
+	// invalidate caching
+	Invalidate();
+}
+
+void CBackend_DX9::OnDeviceDestroy()
+{
+	// streams
+	Index.Destroy();
+	Vertex.Destroy();
+
+	// Quad
+	_RELEASE(QuadIB);
+}
+
+void CBackend_DX9::Invalidate()
+{
+	pRT[0] = nullptr;
+	pRT[1] = nullptr;
+	pRT[2] = nullptr;
+	pRT[3] = nullptr;
+	pZB = nullptr;
+
+	decl = nullptr;
+	vb = nullptr;
+	ib = nullptr;
+	vb_stride = 0;
+
+	state = nullptr;
+	ps = nullptr;
+	vs = nullptr;
+	DX10_ONLY(gs = nullptr);
+	ctable = nullptr;
+
+	TextureList = nullptr;
+	MatrixList = nullptr;
+	ConstantList = nullptr;
+
+	stencil_enable = u32(-1);
+	stencil_func = u32(-1);
+	stencil_ref = u32(-1);
+	stencil_mask = u32(-1);
+	stencil_writemask = u32(-1);
+	stencil_fail = u32(-1);
+	stencil_pass = u32(-1);
+	stencil_zfail = u32(-1);
+	cull_mode = u32(-1);
+	z_enable = u32(-1);
+	z_func = u32(-1);
+	alpha_ref = u32(-1);
+	colorwrite_mask = u32(-1);
+
+	//	Since constant buffers are unmapped (for DirecX 10)
+	//	transform setting handlers should be unmapped too.
+	xforms.unmap();
+
+	for (u32 ps_it = 0; ps_it < mtMaxPixelShaderTextures;)	textures_ps[ps_it++] = 0;
+	for (u32 vs_it = 0; vs_it < mtMaxVertexShaderTextures;)	textures_vs[vs_it++] = 0;
+#ifdef _EDITOR
+	for (u32 m_it = 0; m_it < 8;)		matrices[m_it++] = 0;
+#endif
+}
+
 
 ///////////////////////////////////////////////////////////
 // #TODO: REFACTOR PLEASE !!!

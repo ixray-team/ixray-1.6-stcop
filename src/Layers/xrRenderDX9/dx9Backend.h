@@ -3,6 +3,7 @@
 
 #include "../xrRender/xrBackend/R_IBackend.h"
 #include "dx9r_constants_cache.h"
+#include <d3d9types.h>
 
 struct Buffer_DX9
 {
@@ -30,7 +31,9 @@ public:
 
 	IVertexBuffer*		CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage) override;
 	IIndexBuffer*		CreateIndexBuffer(void* data, u32 length, ResourceUsage usage) override;
-	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
+	
+	// Unified texture creation
+	IBaseTexture*		CreateTexture(const TextureDesc* pDesc, const SUBRESOURCE_DATA* pSubresource) override;
 
 	bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) override;
 	void				UnmapBuffer(IGraphicsResource* pResource, u32 Subresource) override;
@@ -41,16 +44,34 @@ public:
 
 	CTexture*			get_ActiveTexture(u32 stage) override;
 
-	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;
+	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)  override;
 	void				set_Indices(IIndexBuffer* _ib) override;
-	void				set_Scissor(Irect* rect = NULL) override;
+	void				set_Stencil(u32 _enable, u32 _func = D3DCMP_ALWAYS, u32 _ref = 0x00, u32 _mask = 0x00, u32 _writemask = 0x00, u32 _fail = D3DSTENCILOP_KEEP, u32 _pass = D3DSTENCILOP_KEEP, u32 _zfail = D3DSTENCILOP_KEEP)  override;
+	void				set_Z(u32 _enable) override;
+	void				set_ZFunc(u32 _func)  override;
+	void				set_AlphaRef(u32 _value) override;
+	void				set_ColorWriteEnable(u32 _mask = COLORWRITEENABLE_RED | COLORWRITEENABLE_GREEN | COLORWRITEENABLE_BLUE | COLORWRITEENABLE_ALPHA) override;
+	void				set_CullMode(u32 _mode)  override;
+	void				set_ClipPlanes(u32 _enable, Fplane* _planes = NULL, u32 count = 0) override;
+	void				set_ClipPlanes(u32 _enable, Fmatrix* _xform = NULL, u32 fmask = 0xff)  override;
+	void				set_Scissor(Irect* rect = NULL)  override;
 
 	void				Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC) override;
 	void				Render(PRIMITIVETYPE T, u32 startV, u32 PC) override;
 
+	// Device create / destroy / frame signaling
+	void				RestoreQuadIBData() override;	// Igor: is used to test bug with rain, particles corruption
+	void				CreateQuadIB() override;
+	void				OnFrameBegin() override;
+	void				OnFrameEnd() override;
+	void				OnDeviceCreate() override;
+	void				OnDeviceDestroy() override;
+
+	void				Invalidate();
+
 public:
 	// Pixel/Vertex constants
-	ALIGN(16)	R_constants			constants;
+	//ALIGN(16)	R_constants_DX9			constants;
 	R_constant_table*				ctable;
 
 	// Lists-expanded

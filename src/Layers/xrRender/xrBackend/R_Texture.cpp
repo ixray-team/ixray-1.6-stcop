@@ -4,6 +4,7 @@
 
 using namespace DirectX;
 
+#if 0
 
 inline void fix_texture_name(LPSTR fn) {
     auto _ext = strext(fn);
@@ -419,3 +420,5 @@ IBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging
 
     return nullptr;
 }
+
+#endif

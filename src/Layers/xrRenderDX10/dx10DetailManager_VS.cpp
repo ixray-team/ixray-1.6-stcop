@@ -193,7 +193,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 							//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
 							//RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
 							RCache.Render			(PT_TRIANGLELIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
-							RCache.stat.r.s_details.add	(dwCNT_verts);
+							RCache.stats.r.s_details.add	(dwCNT_verts);
 
 							// restart
 							dwBatch					= 0;
@@ -218,7 +218,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 					//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
 					//RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
 					RCache.Render				(PT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
-					RCache.stat.r.s_details.add	(dwCNT_verts);
+					RCache.stats.r.s_details.add	(dwCNT_verts);
 				}
 
 			}

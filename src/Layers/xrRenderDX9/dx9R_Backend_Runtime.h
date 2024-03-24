@@ -2,6 +2,8 @@
 #define	dx9R_Backend_Runtime_included
 #pragma once
 
+#if 0
+
 IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M_)
 {
 	stat.xforms			++;
@@ -264,5 +266,6 @@ IC float CBackend::get_target_height()
 	return RDEVICE.TargetHeight;
 }
 
+#endif
 
 #endif	//	dx9R_Backend_Runtime_included

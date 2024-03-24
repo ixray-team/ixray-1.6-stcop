@@ -302,7 +302,7 @@ void CGlowManager::render_selected()
 		if (vCount) {
 			RCache.set_Shader		(T);
 			RCache.set_Geometry		(hGeom);
-			RCache.Render			(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
+			RCache.Render			(PT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
 		}
 	}
 	Selected.clear();

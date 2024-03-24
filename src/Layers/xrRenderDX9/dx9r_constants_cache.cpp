@@ -3,7 +3,7 @@
 
 #include "../xrRender/r_constants_cache.h"
 
-void R_constants::flush_cache()
+void R_constants_DX9::flush_cache()
 {
 	if (a_pixel.b_dirty)
 	{
@@ -45,4 +45,26 @@ void R_constants::flush_cache()
 		}
 		a_vertex.b_dirty	= false;
 	}
+}
+
+void R_constants_DX9::set(R_constant* C_, float A)
+{
+}
+
+void R_constants_DX9::set(R_constant* C_, int A)
+{
+}
+
+R_constant_array* R_constants_DX9::get_ConstantCache_Vertex()
+{
+	return &a_vertex;
+}
+
+R_constant_array* R_constants_DX9::get_ConstantCache_Pixel()
+{
+	return &a_pixel;
+}
+
+void R_constants_DX9::access_direct(R_constant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData)
+{
 }

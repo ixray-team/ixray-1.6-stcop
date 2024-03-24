@@ -268,12 +268,12 @@ void CSkeletonX::_Copy		(CSkeletonX *B)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
-	RCache.stat.r.s_dynamic.add		(vCount);
+	RCache.stats.r.s_dynamic.add		(vCount);
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
 		_Render_soft		(hGeom,vCount,iOffset,pCount);
-		RCache.stat.r.s_dynamic_sw.add	(vCount);
+		RCache.stats.r.s_dynamic_sw.add	(vCount);
 		break;
 	case RM_SINGLE:	
 		{
@@ -281,7 +281,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			RCache.set_xform_world	(W);
 			RCache.set_Geometry		(hGeom);
 			RCache.Render			(PT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
-			RCache.stat.r.s_dynamic_inst.add	(vCount);
+			RCache.stats.r.s_dynamic_inst.add	(vCount);
 		}
 		break;
 	case RM_SKINNING_1B:
@@ -305,16 +305,16 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			RCache.set_Geometry				(hGeom);
 			RCache.Render					(PT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
 			if (RM_SKINNING_1B==RenderMode)	
-				RCache.stat.r.s_dynamic_1B.add	(vCount);
+				RCache.stats.r.s_dynamic_1B.add	(vCount);
 			else
 			if (RM_SKINNING_2B==RenderMode)	
-				RCache.stat.r.s_dynamic_2B.add	(vCount);
+				RCache.stats.r.s_dynamic_2B.add	(vCount);
 			else
 			if (RM_SKINNING_3B==RenderMode)	
-				RCache.stat.r.s_dynamic_3B.add	(vCount);
+				RCache.stats.r.s_dynamic_3B.add	(vCount);
 			else
 			if (RM_SKINNING_4B==RenderMode)	
-				RCache.stat.r.s_dynamic_4B.add	(vCount);
+				RCache.stats.r.s_dynamic_4B.add	(vCount);
 		}
 		break;
 	}
@@ -761,7 +761,6 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
 	}
 }
 
-#ifdef USE_DX11
 void CSkeletonX::_DuplicateIndices(const char* N, IReader *data)
 {
 	//	We will have trouble with container since don't know were to take readable indices
@@ -777,4 +776,3 @@ void CSkeletonX::_DuplicateIndices(const char* N, IReader *data)
 	u32 crc					= crc32( data->pointer(), size);
 	m_Indices.create		( crc, iCount, (u16*)data->pointer());
 }
-#endif //USE_DX11

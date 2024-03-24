@@ -410,7 +410,7 @@ void CHOM::OnRender	()
 			// draw solid
 			Device.SetNearer(TRUE);
 			RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
-			RCache.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), (int)poly.size() / 3);
+			RCache.dbg_Draw(PT_TRIANGLELIST, &*poly.begin(), (int)poly.size() / 3);
 			Device.SetNearer(FALSE);
 			// draw wire
 			if (bDebug) {

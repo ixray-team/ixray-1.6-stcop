@@ -131,24 +131,9 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			vCount				= data->r_u32				();
 			u32 vStride = (u32)ComputeVertexSize(fvf);
 
-#ifdef USE_DX11
 			VERIFY				(nullptr==p_rm_Vertices);
 			//R_CHK				(dx10BufferUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
 			p_rm_Vertices = g_rbackend->CreateVertexBuffer(data->pointer(), vCount * vStride, vStride, ResourceUsage::IMMUTABLE);
-#else //USE_DX11
-			BOOL	bSoft		= dxRenderDeviceRender::Instance().Caps.geometry.bSoftware;
-			u32		dwUsage		= D3DUSAGE_WRITEONLY | (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);
-			BYTE*	bytes		= 0;
-			VERIFY				(nullptr==p_rm_Vertices);
-			
-			p_rm_Vertices = g_rbackend->CreateVertexBuffer(nullptr, vCount * vStride, vStride, ResourceUsage::IMMUTABLE);
-			//R_CHK				(RDevice->CreateVertexBuffer	(vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&p_rm_Vertices,0));
-			
-			
-			R_CHK				(p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			CopyMemory			(bytes, data->pointer(), vCount*vStride);
-			p_rm_Vertices->Unlock	();
-#endif
 		}
 	}
 
@@ -178,24 +163,9 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			iCount				= data->r_u32();
 			dwPrimitives		= iCount/3;
 
-#ifdef USE_DX11
 			VERIFY				(nullptr==p_rm_Indices);
 			//R_CHK				(dx10BufferUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
 			p_rm_Indices = g_rbackend->CreateIndexBuffer(data->pointer(), iCount * 2, ResourceUsage::IMMUTABLE);
-#else //USE_DX11
-			BOOL	bSoft		= dxRenderDeviceRender::Instance().Caps.geometry.bSoftware;
-			u32		dwUsage		= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// indices are read in model-wallmarks code
-			BYTE*	bytes		= 0;
-
-			VERIFY				(nullptr==p_rm_Indices);
-			
-			p_rm_Indices = g_rbackend->CreateIndexBuffer(nullptr, iCount * 2, ResourceUsage::IMMUTABLE);
-			//R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&p_rm_Indices,0));
-			
-			R_CHK				(p_rm_Indices->Lock(0,0,(void**)&bytes,0));
-			CopyMemory		(bytes, data->pointer(), iCount*2);
-			p_rm_Indices->Unlock	();
-#endif
 		}
 	}
 
@@ -212,16 +182,16 @@ void Fvisual::Render		(float )
 	{
 		RCache.set_Geometry		(m_fast->rm_geom);
 		RCache.Render			(PT_TRIANGLELIST,m_fast->vBase,0,m_fast->vCount,m_fast->iBase,m_fast->dwPrimitives);
-		RCache.stat.r.s_static.add	(m_fast->vCount);
+		RCache.stats.r.s_static.add	(m_fast->vCount);
 	} else {
 		RCache.set_Geometry		(rm_geom);
 		RCache.Render			(PT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
-		RCache.stat.r.s_static.add	(vCount);
+		RCache.stats.r.s_static.add	(vCount);
 	}
 #else // (RENDER==R_R2) || (RENDER==R_R4)
 	RCache.set_Geometry			(rm_geom);
-	RCache.Render				(D3DPT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
-	RCache.stat.r.s_static.add	(vCount);
+	RCache.Render				(PT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
+	RCache.stats.r.s_static.add	(vCount);
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 }
 

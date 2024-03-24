@@ -190,6 +190,11 @@ public:
 	void flush() override;
 	void flush_cache() override;
 
+	// DirectX 9 Support
+	R_constant_array* get_ConstantCache_Vertex() override;
+	R_constant_array* get_ConstantCache_Pixel() override;
+
+
 private:
 	R_constants_DX11_IMPL m_impl;
 };
