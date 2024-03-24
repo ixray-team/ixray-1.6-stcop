@@ -5,7 +5,7 @@
 
 using namespace DirectX;
 
-inline void fix_texture_name(LPSTR fn) {
+void fix_texture_name(LPSTR fn) {
     auto _ext = strext(fn);
     if (_ext &&
         (0 == _stricmp(_ext, ".tga") ||
