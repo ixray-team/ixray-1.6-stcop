@@ -438,6 +438,27 @@ IC void CBackend::ApplyVertexLayout()
 	VERIFY(decl);
 	VERIFY(m_pInputSignature);
 
+	if (!decl->layout && decl->neends_single_layout)
+	{
+		ID3DInputLayout* pLayout = nullptr;
+
+		CHK_DX(HW.pDevice->CreateInputLayout(
+			&decl->dx10_dcl_code[0],
+			decl->dx10_dcl_code.size() - 1,
+			m_pInputSignature->GetBufferPointer(),
+			m_pInputSignature->GetBufferSize(),
+			&pLayout
+		));
+
+		decl->layout = pLayout;
+	}
+
+	if (decl->layout && m_pInputLayout!= decl->layout)
+	{
+		m_pInputLayout = decl->layout;
+		HW.pContext->IASetInputLayout(m_pInputLayout);
+	}
+
 	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator	it;
 
 	it = decl->vs_to_layout.find(m_pInputSignature);

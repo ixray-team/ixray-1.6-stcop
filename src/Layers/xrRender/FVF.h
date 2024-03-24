@@ -1,6 +1,7 @@
 #ifndef _FVF_H_
 #define _FVF_H_
 #pragma once
+
 //-----------------------------------------------------------------------------
 #pragma pack(push,4)
 namespace FVF {
@@ -12,6 +13,10 @@ namespace FVF {
 		IC void		set(const Fvector& _p, u32 C) { p.set(_p); color=C; }
 	};
 	const u32 F_L		= D3DFVF_XYZ | D3DFVF_DIFFUSE;
+	const XR_INPUT_ELEMENT_DESC IL_L[] = { 
+		{"POSITION", 0, FMT_R32G32B32A32F, 0, 0, XR_INPUT_PER_VERTEX_DATA, 0 }, // position
+		{"COLOR", 0,  FMT_R8G8B8A8, 0, 12, XR_INPUT_PER_VERTEX_DATA, 0  }		// color
+	};
 
 	struct V {
 		Fvector		p;

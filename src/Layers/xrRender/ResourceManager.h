@@ -201,6 +201,7 @@ public:
 	void							_DeleteState		(const SState* SB);
 
 	SDeclaration*					_CreateDecl			(D3DVERTEXELEMENT9* dcl);
+	SDeclaration*					_CreateDecl			(XR_INPUT_ELEMENT_DESC* dcl, size_t size);
 	void							_DeleteDecl			(const SDeclaration* dcl);
 
 	STextureList*					_CreateTextureList	(STextureList& L);
@@ -236,8 +237,9 @@ public:
 	void			Delete					(const Shader*		S	);
 	void			RegisterConstantSetup	(LPCSTR name,		R_constant_setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
-	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-	SGeometry*		CreateGeom				(u32 FVF				, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl			,				ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+	SGeometry*		CreateGeom				(u32 FVF							,				ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+	SGeometry*		CreateGeom				(XR_INPUT_ELEMENT_DESC* inputLayout	, size_t size,	ID3DVertexBuffer* vb, ID3DIndexBuffer* ib, size_t stride);
 	void			DeleteGeom				(const SGeometry* VS		);
 	void			DeferredLoad			(BOOL E)					{ bDeferredLoad=E;	}
 	void			DeferredUpload			();

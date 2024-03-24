@@ -430,6 +430,56 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	return D;
 }
 
+DXGI_FORMAT GetDXGIFormat(PixelFormat format)
+{
+	switch (format)
+	{
+	case FMT_R8G8B8:
+	case FMT_R8G8B8A8:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
+	case FMT_R32G32B32F:
+		return DXGI_FORMAT_R32G32B32_FLOAT;
+	case FMT_R32G32B32A32F:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case FMT_DEPTH32F:
+		return DXGI_FORMAT_D32_FLOAT;
+	case FMT_DEPTH24_STENCIL_8:
+		return DXGI_FORMAT_D24_UNORM_S8_UINT;
+	default:
+		break;
+	}
+	
+	FATAL("Unkonwed PixelFormat");
+	return DXGI_FORMAT_UNKNOWN;
+}
+
+SDeclaration* CResourceManager::_CreateDecl(XR_INPUT_ELEMENT_DESC* dcl, size_t size)
+{
+	// Create _new
+	SDeclaration* D = xr_new<SDeclaration>();
+	D->dx10_dcl_code.clear();
+
+	for (int i = 0; i < size; i++)
+	{
+		XR_INPUT_ELEMENT_DESC elementDesc = dcl[i];
+
+		D3D_INPUT_ELEMENT_DESC d3delementDesc = {};
+		d3delementDesc.SemanticName				= elementDesc.SemanticName;
+		d3delementDesc.SemanticIndex			= elementDesc.SemanticIndex;
+		d3delementDesc.Format					= GetDXGIFormat(elementDesc.Format);
+		d3delementDesc.InputSlot				= elementDesc.InputSlot;
+		d3delementDesc.AlignedByteOffset		= elementDesc.AlignedByteOffset;
+		d3delementDesc.InputSlotClass			= (D3D11_INPUT_CLASSIFICATION)elementDesc.InputSlotClass;
+		d3delementDesc.InstanceDataStepRate		= elementDesc.InstanceDataStepRate;
+		D->dx10_dcl_code.push_back(d3delementDesc);
+	}
+
+	D->neends_single_layout = true;
+	D->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	v_declarations.push_back(D);
+	return D;
+}
+
 void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 {
 	if (0==(dcl->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
@@ -546,7 +596,31 @@ SGeometry*	CResourceManager::CreateGeom		(u32 FVF, ID3DVertexBuffer* vb, ID3DInd
 	return	g;
 }
 
-void CResourceManager::DeleteGeom(const SGeometry* Geom)
+SGeometry* CResourceManager::CreateGeom(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib, size_t stride)
+{
+	R_ASSERT(inputLayout && vb);
+
+	SDeclaration* dcl = _CreateDecl(inputLayout, size);
+	u32 vb_stride = stride;
+
+	// ***** first pass - search already loaded shader
+	for (u32 it = 0; it < v_geoms.size(); it++)
+	{
+		SGeometry& G = *(v_geoms[it]);
+		if ((G.dcl == dcl) && (G.vb == vb) && (G.ib == ib) && (G.vb_stride == vb_stride))	return v_geoms[it];
+	}
+
+	SGeometry* Geom = xr_new<SGeometry>();
+	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	Geom->dcl = dcl;
+	Geom->vb = vb;
+	Geom->vb_stride = vb_stride;
+	Geom->ib = ib;
+	v_geoms.push_back(Geom);
+	return	Geom;
+}
+
+void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 {
 	if (0==(Geom->dwFlags&xr_resource_flagged::RF_REGISTERED))	
 		return;	

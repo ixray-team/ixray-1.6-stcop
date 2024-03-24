@@ -87,7 +87,9 @@ struct 	ECORE_API	resptrcode_geom	: public resptr_base<SGeometry>
 {
 	void 				create			(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
 	void				create			(u32 FVF				, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+	void				create			(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib, size_t stride);
 	void				destroy			()			{ _set(nullptr);		}
+
 	u32					stride			()	const	{ return _get()->vb_stride;	}
 };
 

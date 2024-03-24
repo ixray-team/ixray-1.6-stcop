@@ -35,9 +35,15 @@ void	resptrcode_geom::create			(u32 FVF , ID3DVertexBuffer* vb, ID3DIndexBuffer*
 {
 	_set(DEV->CreateGeom		(FVF,vb,ib));
 }
+
 void	resptrcode_geom::create			(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
 	_set(DEV->CreateGeom		(decl,vb,ib));
+}
+
+void	resptrcode_geom::create			(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib, size_t stride)
+{
+	_set(DEV->CreateGeom		(inputLayout, size, vb, ib, stride));
 }
 
 //////////////////////////////////////////////////////////////////////

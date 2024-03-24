@@ -70,6 +70,8 @@ SDeclaration::~SDeclaration()
 		//	Release vertex layout
 		_RELEASE(iLayout->second);
 	}
+
+	_RELEASE(layout);
 #else //USE_DX11
 	//	Release vertex layout
 	_RELEASE(dcl);
