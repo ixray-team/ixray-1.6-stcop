@@ -6,7 +6,7 @@
 enum class ResourceUsage
 {
 	UNKNOWN,
-	STATIC,
+	IMMUTABLE,
 	DYNAMIC
 };
 
@@ -32,14 +32,19 @@ class IIndexBuffer : public IGraphicsResource
 class CBackendBase
 {
 public:
+	IVertexBuffer*					vb;
+	IIndexBuffer*					ib;
+	u32								vb_stride;
+
+public:
 	CBackendBase();
 	virtual ~CBackendBase();
 
 	virtual IVertexBuffer* CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage);
 	virtual IIndexBuffer* CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage);
 
-	virtual	void set_VB(IVertexBuffer* _vb, u32 _vb_stride);
-	virtual	void set_IB(IIndexBuffer* _ib);
+	virtual	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride);
+	virtual	void set_Indices(IIndexBuffer* _ib);
 
 #if 0
 public:            
