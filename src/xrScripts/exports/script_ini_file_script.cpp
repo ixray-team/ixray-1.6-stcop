@@ -17,6 +17,18 @@ CScriptIniFile *get_system_ini()
 	return	((CScriptIniFile*)pSettings);
 }
 
+CScriptIniFile* reload_system_ini()
+{
+	string_path fname;
+
+	pSettings->Destroy(const_cast<CInifile*>(pSettings));
+
+	FS.update_path(fname, "$game_config$", "system.ltx");
+	pSettings = xr_new<CInifile>(fname);
+
+	return	((CScriptIniFile*)pSettings);
+}
+
 #ifdef XRGAME_EXPORTS
 CScriptIniFile *get_game_ini()
 {
@@ -124,6 +136,8 @@ void CScriptIniFile::script_register(lua_State *L)
             .def("r_line", &::r_line, policy_list<policy::out_value<4>, policy::out_value<5>>()),
 
 		def("system_ini",			&get_system_ini),
+		def("reload_system_ini",	&reload_system_ini),
+
 #ifdef XRGAME_EXPORTS
 		def("game_ini",				&get_game_ini),
 #endif // XRGAME_EXPORTS
