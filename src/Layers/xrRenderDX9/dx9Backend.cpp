@@ -41,6 +41,7 @@ IVertexBuffer* CBackend_DX9::CreateVertexBuffer(void* data, u32 length, u32 stri
 
 	IVertexBuffer* pBuffer = xr_new<IVertexBuffer>();
 	pBuffer->m_InternalResource = buffer;
+	pBuffer->m_DestructorFunc = fastdelegate::FastDelegate1<IGraphicsResource*>(&Buffer_DX9::Destroy);
 	return pBuffer;
 }
 
@@ -71,6 +72,7 @@ IIndexBuffer* CBackend_DX9::CreateIndexBuffer(void* data, u32 length, ResourceUs
 
 	IIndexBuffer* pBuffer = xr_new<IIndexBuffer>();
 	pBuffer->m_InternalResource = buffer;
+	pBuffer->m_DestructorFunc = fastdelegate::FastDelegate1<IGraphicsResource*>(&Buffer_DX9::Destroy);
 	return pBuffer;
 }
 
@@ -742,3 +744,30 @@ HRESULT IndexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
 #endif // !USE_DX11
 
 ///////////////////////////////////////////////////////////
+
+void Buffer_DX9::Destroy(IGraphicsResource* pGraphicsResource)
+{
+	R_ASSERT2(pGraphicsResource, "pGraphicsResource is NULL ptr. Serious problem!");
+
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pGraphicsResource->m_InternalResource.get());
+	R_ASSERT2(pBuffer, "pBuffer is NULL ptr. Serious problem!");
+
+	if (pBuffer->pVB)
+	{
+		pBuffer->pVB->Release();
+		pBuffer->pVB = nullptr;
+	}
+	else if (pBuffer->pIB)
+	{
+		pBuffer->pIB->Release();
+		pBuffer->pIB = nullptr;
+	}
+}
+
+void Texture_DX9::Destroy(IGraphicsResource* pGraphicsResource)
+{
+	R_ASSERT2(pGraphicsResource, "pGraphicsResource is NULL ptr. Serious problem!");
+
+	Texture_DX9* pTexture = static_cast<Texture_DX9*>(pGraphicsResource->m_InternalResource.get());
+	R_ASSERT2(pTexture, "pTexture is NULL ptr. Serious problem!");
+}

@@ -9,11 +9,15 @@ struct Buffer_DX9
 {
 	IDirect3DVertexBuffer9* pVB;
 	IDirect3DIndexBuffer9* pIB;
+
+	static void Destroy(IGraphicsResource* pGraphicsResource);
 };
 
 struct Texture_DX9
 {
 	IDirect3DTexture9* pTex;
+
+	static void Destroy(IGraphicsResource* pGraphicsResource);
 };
 
 class CBackend_DX9 : public CBackendBase

@@ -3,6 +3,12 @@
 
 // https://wickedengine.net/2021/05/06/graphics-api-abstraction/
 
+/////////////////////////////////////////////////////////////////////////////////////////
+// Problems:
+//	- DX9 required to release most of buffers at device reset
+//  - API is not so good
+/////////////////////////////////////////////////////////////////////////////////////////
+
 // Primitives supported by draw-primitive API
 enum PRIMITIVETYPE {
 	PT_POINTLIST = 1,
@@ -117,7 +123,7 @@ struct MAPPED_SUBRESOURCE {
 class IGraphicsResource
 {
 public:
-	virtual ~IGraphicsResource() = default;
+	//virtual ~IGraphicsResource() = default;
 	inline bool IsValid() const { return m_InternalResource != nullptr; }
 
 	std::shared_ptr<void> m_InternalResource;
@@ -130,16 +136,41 @@ public:
 	// ID3D11Resource-like methods
 
 	void GetType(RESOURCE_DIMENSION* pResourceDimension);
+
+	// Ref counting
+	u64 m_RefCount = 0;
+
+	// Destroy resource 
+	fastdelegate::FastDelegate1<IGraphicsResource*> m_DestructorFunc = nullptr;
+	IGraphicsResource();
+	virtual ~IGraphicsResource();
 };
+
+inline IGraphicsResource::IGraphicsResource()
+{
+	m_RefCount++;
+}
+
+inline IGraphicsResource::~IGraphicsResource()
+{
+	// Release our shit
+	if (m_DestructorFunc)
+		m_DestructorFunc(this);
+}
 
 inline u64 IGraphicsResource::AddRef()
 {
-	return 0;
+	++m_RefCount;
+	return m_RefCount;
 }
 
 inline u64 IGraphicsResource::Release()
 {
-	return 0;
+	R_ASSERT(m_RefCount > 0);
+	--m_RefCount;
+
+	if (m_RefCount == 0) { delete (IGraphicsResource*)this; return 0; }
+	return m_RefCount;
 }
 
 ///////////////////////////////////////////////////////////
