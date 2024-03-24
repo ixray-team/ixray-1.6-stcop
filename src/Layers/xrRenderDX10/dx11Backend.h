@@ -116,8 +116,6 @@ private:
 	void			ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
 	bool			CBuffersNeedUpdate(ref_cbuffer	buf1[MaxCBuffers], ref_cbuffer	buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
 
-
-	SDeclaration*			decl;
 //	bool					m_bChangedRTorZB;
 };
 

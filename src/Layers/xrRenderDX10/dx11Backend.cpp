@@ -6,10 +6,14 @@ CBackend_DX11 backend_dx11_impl;
 
 CBackend_DX11::CBackend_DX11() : CBackendBase()
 {
+	// #TODO: MAKE ME NOT AWFUL
+	constants = xr_new<R_constants_DX11>();
 }
 
 CBackend_DX11::~CBackend_DX11()
 {
+	xr_delete(constants);
+	constants = nullptr;
 }
 
 IVertexBuffer* CBackend_DX11::CreateVertexBuffer(void* data, u32 length, u32 stride, ResourceUsage usage)
@@ -599,16 +603,16 @@ void CBackend_DX11::set_Textures(STextureList* _T)
 
 void CBackend_DX11::set_Element(ShaderElement* S, u32 pass)
 {
-	//SPass& P = *(S->passes[pass]);
-	//set_States(P.state);
-	//set_PS(P.ps);
-	//set_VS(P.vs);
-	//set_GS(P.gs);
-	//set_HS(P.hs);
-	//set_DS(P.ds);
-	//set_CS(P.cs);
-	//set_Constants(P.constants);
-	//set_Textures(P.T);
+	SPass& P = *(S->passes[pass]);
+	set_States(P.state);
+	set_PS(P.ps);
+	set_VS(P.vs);
+	set_GS(P.gs);
+	set_HS(P.hs);
+	set_DS(P.ds);
+	set_CS(P.cs);
+	set_Constants(P.constants._get());
+	set_Textures(P.T._get());
 }
 
 CTexture* CBackend_DX11::get_ActiveTexture(u32 stage)

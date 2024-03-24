@@ -4,7 +4,7 @@
 #include "../xrRender/r_constants_cache.h"
 #include "dx11Backend.h"
 
-dx10ConstantBuffer& R_constants_DX11::GetCBuffer(R_constant* C, BufferType BType)
+dx10ConstantBuffer& R_constants_DX11_IMPL::GetCBuffer(R_constant* C, BufferType BType)
 {
 	if (BType==BT_PixelBuffer)
 	{
@@ -68,7 +68,7 @@ dx10ConstantBuffer& R_constants_DX11::GetCBuffer(R_constant* C, BufferType BType
 	return *ptr;
 }
 
-void R_constants_DX11::flush_cache()
+void R_constants_DX11_IMPL::flush_cache()
 {
 	for (int i=0; i < CBackend_DX11::MaxCBuffers; ++i)
 	{
@@ -143,3 +143,66 @@ void R_constants::flush_cache()
 	}
 }
 */
+
+R_constants_DX11::R_constants_DX11()
+{
+}
+
+R_constants_DX11::~R_constants_DX11()
+{
+}
+
+void R_constants_DX11::set(R_constant* C, const Fmatrix& A)
+{
+	return m_impl.set(C, A);
+}
+
+void R_constants_DX11::set(R_constant* C, const Fvector4& A)
+{
+	return m_impl.set(C, A);
+}
+
+void R_constants_DX11::set(R_constant* C, float x, float y, float z, float w)
+{
+	return m_impl.set(C, x, y, z, w);
+}
+
+void R_constants_DX11::set(R_constant* C_, float A)
+{
+	return m_impl.set(C_, A);
+}
+
+void R_constants_DX11::set(R_constant* C_, int A)
+{
+	return m_impl.set(C_, A);
+}
+
+void R_constants_DX11::seta(R_constant* C, u32 e, const Fmatrix& A)
+{
+	return m_impl.seta(C, e, A);
+}
+
+void R_constants_DX11::seta(R_constant* C, u32 e, const Fvector4& A)
+{
+	return m_impl.seta(C, e, A);
+}
+
+void R_constants_DX11::seta(R_constant* C, u32 e, float x, float y, float z, float w)
+{
+	return m_impl.seta(C, e, x, y, z, w);
+}
+
+void R_constants_DX11::access_direct(R_constant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData)
+{
+	return m_impl.access_direct(C, DataSize, ppVData, ppGData, ppPData);
+}
+
+void R_constants_DX11::flush()
+{
+	return m_impl.flush();
+}
+
+void R_constants_DX11::flush_cache()
+{
+	return m_impl.flush_cache();
+}

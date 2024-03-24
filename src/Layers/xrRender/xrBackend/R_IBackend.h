@@ -350,6 +350,13 @@ public:
 	ICF	void					set_States(ID3DState* _state);
 	ICF	void					set_States(ref_state& _state) { set_States(_state->state); }
 
+#ifdef USE_DX11
+	ICF  void					set_Format(SDeclaration* _decl);
+#else //USE_DX11
+	//ICF  void					set_Format(IDirect3DVertexDeclaration9* _decl);
+#endif
+
+
 	ICF void					set_VS(ref_vs& _vs);
 #ifdef USE_DX11
 	ICF void					set_VS(SVS* _vs);
@@ -469,6 +476,9 @@ public:
 #ifdef USE_DX11
 	R_LOD							LOD;
 #endif
+
+	SDeclaration*					decl;
+
 protected:
 
 	u32								stencil_enable;
@@ -615,8 +625,7 @@ IC void CBackendBase::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVD
 
 IC void CBackendBase::set_Geometry(SGeometry* _geom)
 {
-	//set_Format(&*_geom->dcl);
-
+	set_Format(&*_geom->dcl);
 	set_Vertices(_geom->vb, _geom->vb_stride);
 	set_Indices(_geom->ib);
 }
@@ -635,6 +644,18 @@ IC void CBackendBase::set_Shader(Shader* S, u32 pass)
 ICF void CBackendBase::set_States(ID3DState* _state)
 {
 	
+}
+
+ICF void CBackendBase::set_Format(SDeclaration* _decl)
+{
+	if (decl != _decl)
+	{
+		PGO(Msg("PGO:v_format:%x", _decl));
+#ifdef DEBUG
+		stat.decl++;
+#endif
+		decl = _decl;
+	}
 }
 
 ICF void CBackendBase::set_VS(ref_vs& _vs)

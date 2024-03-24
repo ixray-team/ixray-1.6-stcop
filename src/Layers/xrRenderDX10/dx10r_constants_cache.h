@@ -4,7 +4,7 @@
 
 #include "../xrRender/xrBackend/R_IConstants_cache.h"
 
-class	ECORE_API  R_constants_DX11 : public R_IConstants
+class R_constants_DX11_IMPL
 {
 	enum	BufferType
 	{
@@ -169,4 +169,29 @@ private:
 
 	dx10ConstantBuffer&		GetCBuffer(R_constant* C, BufferType BType);
 };
+
+// DX11 interface to constant manager
+class R_constants_DX11 : public R_IConstants
+{
+public:
+	R_constants_DX11();
+	~R_constants_DX11();
+
+	// Унаследовано через R_IConstants
+	void set(R_constant* C, const Fmatrix& A) override;
+	void set(R_constant* C, const Fvector4& A) override;
+	void set(R_constant* C, float x, float y, float z, float w) override;
+	void set(R_constant* C_, float A) override;
+	void set(R_constant* C_, int A) override;
+	void seta(R_constant* C, u32 e, const Fmatrix& A) override;
+	void seta(R_constant* C, u32 e, const Fvector4& A) override;
+	void seta(R_constant* C, u32 e, float x, float y, float z, float w) override;
+	void access_direct(R_constant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData) override;
+	void flush() override;
+	void flush_cache() override;
+
+private:
+	R_constants_DX11_IMPL m_impl;
+};
+
 #endif	//	dx10r_constants_cacheH
