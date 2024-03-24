@@ -520,12 +520,12 @@ void SRVSManager_Apply();
 
 IC float CBackendBase::get_width()
 {
-	return (float)RDEVICE.Width;
+	return (float)RDEVICE.TargetWidth;
 }
 
 IC float CBackendBase::get_height()
 {
-	return (float)RDEVICE.Height;
+	return (float)RDEVICE.TargetHeight;
 }
 
 IC float CBackendBase::get_target_width()
