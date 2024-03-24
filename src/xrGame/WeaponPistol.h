@@ -1,10 +1,10 @@
 #pragma once
-#include "weaponcustompistol.h"
+#include "weaponcustomauto.h"
 
 class CWeaponPistol :
-	public CWeaponCustomPistol
+	public CWeaponAutoPistol
 {
-	typedef CWeaponCustomPistol inherited;
+	typedef CWeaponAutoPistol inherited;
 public:
 					CWeaponPistol	();
 	virtual			~CWeaponPistol	();
@@ -18,7 +18,7 @@ public:
 	virtual void	net_Destroy		();
 	virtual void	OnH_B_Chield	();
 
-	//анимации
+	//Р°РЅРёРјР°С†РёРё
 	virtual void	PlayAnimShow	();
 	virtual void	PlayAnimIdle	();
 	virtual void	PlayAnimIdleMoving	();

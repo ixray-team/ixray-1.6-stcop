@@ -1565,6 +1565,10 @@ bool CWeaponMagazined::install_upgrade_impl( LPCSTR section, bool test )
 	if ( result2 && !test ) { m_sounds.LoadSound( section, "snd_reload"	, "sndReload"		, true, m_eSoundReload	);	}
 	result |= result2;
 
+	result2 = process_if_exists_set(section, "snd_reload_empty", &CInifile::r_string, str, test);
+	if (result2 && !test) { m_sounds.LoadSound(section, "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReloadEmpty); }
+	result |= result2;
+
 	//snd_shoot1     = weapons\ak74u_shot_1 ??
 	//snd_shoot2     = weapons\ak74u_shot_2 ??
 	//snd_shoot3     = weapons\ak74u_shot_3 ??
