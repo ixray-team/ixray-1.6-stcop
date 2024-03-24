@@ -137,9 +137,9 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u
 	//	Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
 	//}
 
-	//stat.calls++;
-	//stat.verts += countV;
-	//stat.polys += PC;
+	stats.calls++;
+	stats.verts += countV;
+	stats.polys += PC;
 	
 	ApplyPrimitieTopology(Topology);
 
@@ -158,8 +158,10 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u
 	//ApplyRTandZB();
 	//ApplyVertexLayout();
 	StateManager.Apply();
+
 	//	State manager may alter constants
-//	constants.flush();
+	constants.flush();
+
 	//	Msg("DrawIndexed: Start");
 	//	Msg("iIndexCount=%d, startI=%d, baseV=%d", iIndexCount, startI, baseV);
 	RContext->DrawIndexed(iIndexCount, startI, baseV);
@@ -180,9 +182,9 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology((D3DPRIMITIVETYPE)T);
 	u32	iVertexCount = GetIndexCount((D3DPRIMITIVETYPE)T, PC);
 
-	//stat.calls++;
-	//stat.verts += 3 * PC;
-	//stat.polys += PC;
+	stats.calls++;
+	stats.verts += 3 * PC;
+	stats.polys += PC;
 
 	ApplyPrimitieTopology(Topology);
 	SRVSManager.Apply();
@@ -190,12 +192,16 @@ void CBackend_DX11::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	//ApplyVertexLayout();
 	StateManager.Apply();
 	//	State manager may alter constants
-	//constants.flush();
+	constants.flush();
+	
 	//	Msg("Draw: Start");
 	//	Msg("iVertexCount=%d, startV=%d", iVertexCount, startV);
 		//CHK_DX				(RDevice->DrawPrimitive(T, startV, PC));
+	
 	RContext->Draw(iVertexCount, startV);
+	
 	//	Msg("Draw: End\n");
+	
 	PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }
 

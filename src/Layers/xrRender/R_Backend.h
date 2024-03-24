@@ -28,26 +28,6 @@ const	u32		CULL_CCW			= D3DCULL_CCW;
 const	u32		CULL_CW				= D3DCULL_CW;
 const	u32		CULL_NONE			= D3DCULL_NONE;
 
-///		detailed statistic
-struct	R_statistics_element	{
-	u32		verts,dips;
-	ICF		void	add			(u32 _verts)	{ verts+=_verts; dips++; }
-};
-struct	R_statistics			{
-	R_statistics_element		s_static		;
-	R_statistics_element		s_flora			;
-	R_statistics_element		s_flora_lods	;
-	R_statistics_element		s_details		;
-	R_statistics_element		s_ui			;
-	R_statistics_element		s_dynamic		;
-	R_statistics_element		s_dynamic_sw	;
-	R_statistics_element		s_dynamic_inst	;
-	R_statistics_element		s_dynamic_1B	;
-	R_statistics_element		s_dynamic_2B	;
-	R_statistics_element		s_dynamic_3B	;
-	R_statistics_element		s_dynamic_4B	;
-};
-
 #pragma warning(push)
 #pragma warning(disable:4324)
 class  ECORE_API CBackend

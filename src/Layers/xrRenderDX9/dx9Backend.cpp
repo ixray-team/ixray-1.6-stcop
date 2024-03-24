@@ -93,7 +93,7 @@ void CBackend_DX9::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 	{
 		PGO(Msg("PGO:VB:%x,%d", _vb, _vb_stride));
 #ifdef DEBUG
-		//stat.vb++;
+		stats.vb++;
 #endif
 		vb = _vb;
 		vb_stride = _vb_stride;
@@ -109,7 +109,7 @@ void CBackend_DX9::set_Indices(IIndexBuffer* _ib)
 	{
 		PGO(Msg("PGO:IB:%x", _ib));
 #ifdef DEBUG
-		//stat.ib++;
+		stats.ib++;
 #endif
 		ib = _ib;
 
@@ -138,10 +138,10 @@ void CBackend_DX9::Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u3
 	if (PC == 0)
 		return;
 
-	//stat.calls++;
-	//stat.verts += countV;
-	//stat.polys += PC;
-	//constants.flush();
+	stats.calls++;
+	stats.verts += countV;
+	stats.polys += PC;
+	constants.flush();
 	CHK_DX(RDevice->DrawIndexedPrimitive(GetD3DPrimitiveType(T), baseV, startV, countV, startI, PC));
 	PGO(Msg("PGO:DIP:%dv/%df", countV, PC));
 }
@@ -152,10 +152,10 @@ void CBackend_DX9::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	if (PC == 0)
 		return;
 
-	//stat.calls++;
-	//stat.verts += 3 * PC;
-	//stat.polys += PC;
-	//constants.flush();
+	stats.calls++;
+	stats.verts += 3 * PC;
+	stats.polys += PC;
+	constants.flush();
 	CHK_DX(RDevice->DrawPrimitive(GetD3DPrimitiveType(T), startV, PC));
 	PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }

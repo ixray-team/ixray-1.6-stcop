@@ -44,6 +44,50 @@ struct TextureDesc
 	bool renderTargetUsage;
 };
 
+///		detailed statistic
+struct	R_statistics_element {
+	u32		verts, dips;
+	ICF		void	add(u32 _verts) { verts += _verts; dips++; }
+};
+
+struct	R_statistics {
+	R_statistics_element		s_static;
+	R_statistics_element		s_flora;
+	R_statistics_element		s_flora_lods;
+	R_statistics_element		s_details;
+	R_statistics_element		s_ui;
+	R_statistics_element		s_dynamic;
+	R_statistics_element		s_dynamic_sw;
+	R_statistics_element		s_dynamic_inst;
+	R_statistics_element		s_dynamic_1B;
+	R_statistics_element		s_dynamic_2B;
+	R_statistics_element		s_dynamic_3B;
+	R_statistics_element		s_dynamic_4B;
+};
+
+struct backend_stats
+{
+	u32								polys;
+	u32								verts;
+	u32								calls;
+	u32								vs;
+	u32								ps;
+#ifdef	DEBUG
+	u32								decl;
+	u32								vb;
+	u32								ib;
+	u32								states;			// Number of times the shader-state changes
+	u32								textures;		// Number of times the shader-tex changes
+	u32								matrices;		// Number of times the shader-xform changes
+	u32								constants;		// Number of times the shader-consts changes
+#endif
+	u32								xforms;
+	u32								target_rt;
+	u32								target_zb;
+
+	R_statistics					r;
+};
+
 class IGraphicsResource
 {
 public:
@@ -101,6 +145,11 @@ public:
 	
 	virtual	void				Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC) = 0;
 	virtual	void				Render(PRIMITIVETYPE T, u32 startV, u32 PC) = 0;
+
+	inline void					get_Stats(backend_stats* pStats);
+
+protected:
+	backend_stats					stats;
 
 private:
 	u32								stencil_enable;
@@ -475,6 +524,12 @@ inline void CBackendBase::set_Geometry(SGeometry* _geom)
 	
 	//set_Vertices(_geom->vb, _geom->vb_stride);
 	//set_Indices(_geom->ib);
+}
+
+inline void CBackendBase::get_Stats(backend_stats* pStats)
+{
+	R_ASSERT(pStats);
+	*pStats = stats;
 }
 
 #endif
