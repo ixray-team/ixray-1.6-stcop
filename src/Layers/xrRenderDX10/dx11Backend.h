@@ -25,12 +25,19 @@ public:
 	CBackend_DX11();
 	~CBackend_DX11();
 
-	IVertexBuffer* CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) override;
-	IIndexBuffer* CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
+	IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) override;
+	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
 
-	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;
-	void set_Indices(IIndexBuffer* _ib) override;
-	void set_Scissor(Irect* rect = NULL) override;
+	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) override;
+	void				set_Indices(IIndexBuffer* _ib) override;
+	void				set_Scissor(Irect* rect = NULL) override;
+
+	void				Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC) override;
+	void				Render(PRIMITIVETYPE T, u32 startV, u32 PC) override;
+
+
+	// CBackend DX11
+	void				ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
 
 private:
 	// Lists-expanded
@@ -40,8 +47,13 @@ private:
 	CTexture* textures_hs[mtMaxHullShaderTextures];		// 4 vs
 	CTexture* textures_ds[mtMaxDomainShaderTextures];	// 4 vs
 	CTexture* textures_cs[mtMaxComputeShaderTextures];	// 4 vs
+
+	// DX11 State
+	D3D_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
 };
 
 extern CBackend_DX11 backend_dx11_impl;
+
+
 
 #endif // !DX11BACKEND_H

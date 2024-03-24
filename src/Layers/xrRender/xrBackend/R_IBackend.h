@@ -3,6 +3,23 @@
 
 // https://wickedengine.net/2021/05/06/graphics-api-abstraction/
 
+// Primitives supported by draw-primitive API
+enum PRIMITIVETYPE {
+	PT_POINTLIST = 1,
+	PT_LINELIST = 2,
+	PT_LINESTRIP = 3,
+	PT_TRIANGLELIST = 4,
+	PT_TRIANGLESTRIP = 5,
+	PT_TRIANGLEFAN = 6,
+	PT_FORCE_DWORD = 0x7fffffff, /* force 32-bit size enum */
+};
+
+/* Flags to construct RS_COLORWRITEENABLE */
+#define COLORWRITEENABLE_RED     (1L<<0)
+#define COLORWRITEENABLE_GREEN   (1L<<1)
+#define COLORWRITEENABLE_BLUE    (1L<<2)
+#define COLORWRITEENABLE_ALPHA   (1L<<3)
+
 enum class ResourceUsage
 {
 	UNKNOWN,
@@ -63,12 +80,41 @@ public:
 	CBackendBase();
 	virtual ~CBackendBase();
 
-	virtual IVertexBuffer* CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) = 0;
-	virtual IIndexBuffer* CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
+	virtual IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) = 0;
+	virtual IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
 
-	virtual	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
-	virtual	void set_Indices(IIndexBuffer* _ib) = 0;
-	virtual void set_Scissor(Irect* rect = NULL) = 0;
+	virtual	void				set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
+	virtual	void				set_Indices(IIndexBuffer* _ib) = 0;
+	inline void					set_Geometry(SGeometry* _geom);
+	inline void					set_Geometry(ref_geom& _geom) { set_Geometry(&*_geom); }
+	//void						set_Stencil(u32 _enable, u32 _func = D3DCMP_ALWAYS, u32 _ref = 0x00, u32 _mask = 0x00, u32 _writemask = 0x00, u32 _fail = D3DSTENCILOP_KEEP, u32 _pass = D3DSTENCILOP_KEEP, u32 _zfail = D3DSTENCILOP_KEEP);
+	//void						set_Z(u32 _enable);
+	//void						set_ZFunc(u32 _func);
+	//void						set_AlphaRef(u32 _value);
+	//void						set_ColorWriteEnable(u32 _mask = COLORWRITEENABLE_RED | COLORWRITEENABLE_GREEN | COLORWRITEENABLE_BLUE | COLORWRITEENABLE_ALPHA);
+	//void						set_CullMode(u32 _mode);
+	u32							get_CullMode() { return cull_mode; }
+	//void						set_ClipPlanes(u32 _enable, Fplane* _planes = NULL, u32 count = 0);
+	//void						set_ClipPlanes(u32 _enable, Fmatrix* _xform = NULL, u32 fmask = 0xff);
+	virtual void				set_Scissor(Irect* rect = NULL) = 0;
+	
+	virtual	void				Render(PRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC) = 0;
+	virtual	void				Render(PRIMITIVETYPE T, u32 startV, u32 PC) = 0;
+
+private:
+	u32								stencil_enable;
+	u32								stencil_func;
+	u32								stencil_ref;
+	u32								stencil_mask;
+	u32								stencil_writemask;
+	u32								stencil_fail;
+	u32								stencil_pass;
+	u32								stencil_zfail;
+	u32								colorwrite_mask;
+	u32								cull_mode;
+	u32								z_enable;
+	u32								z_func;
+	u32								alpha_ref;
 
 #if 0
 public:            
@@ -422,5 +468,12 @@ private:
 };
 #pragma warning(pop)
 
+inline void CBackendBase::set_Geometry(SGeometry* _geom)
+{
+	// #TODO: SGeometry -> Replace ID3DVertex\IndexBuffer with our interfaces.
+	
+	//set_Vertices(_geom->vb, _geom->vb_stride);
+	//set_Indices(_geom->ib);
+}
 
 #endif

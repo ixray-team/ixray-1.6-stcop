@@ -442,7 +442,7 @@ IC void CBackend::ApplyVertexLayout()
 	{
 		ID3DInputLayout* pLayout = nullptr;
 
-		CHK_DX(HW.pDevice->CreateInputLayout(
+		CHK_DX(RDevice->CreateInputLayout(
 			&decl->dx10_dcl_code[0],
 			decl->dx10_dcl_code.size() - 1,
 			m_pInputSignature->GetBufferPointer(),
@@ -456,7 +456,7 @@ IC void CBackend::ApplyVertexLayout()
 	if (decl->layout && m_pInputLayout!= decl->layout)
 	{
 		m_pInputLayout = decl->layout;
-		HW.pContext->IASetInputLayout(m_pInputLayout);
+		RContext->IASetInputLayout(m_pInputLayout);
 	}
 
 	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator	it;
