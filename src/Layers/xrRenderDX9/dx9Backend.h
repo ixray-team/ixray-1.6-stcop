@@ -32,6 +32,9 @@ public:
 	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
+	bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) override;
+	void				UnmapBuffer(IGraphicsResource* pResource, u32 Subresource) override;
+
 	void				set_Constants(R_constant_table* C) override;
 	void				set_Textures(STextureList* T) override;
 	void				set_Element(ShaderElement* S, u32	pass = 0) override;

@@ -81,6 +81,33 @@ ITexture2D* CBackend_DX11::CreateTexture2D(const TextureDesc* pDesc, byte* data,
 	return pTexture;
 }
 
+bool CBackend_DX11::MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource)
+{
+	R_ASSERT(pResource);
+	R_ASSERT(pResource->IsValid());
+	R_ASSERT(pMappedResource);
+
+	Buffer_DX11* pBuffer = static_cast<Buffer_DX11*>(pResource->m_InternalResource.get());
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+	R_CHK(RContext->Map(pBuffer->pBuffer, Subresource, GetD3DMap(MapType), MapFlags, &mappedResource));
+
+	pMappedResource->pData = mappedResource.pData;
+	pMappedResource->DepthPitch = mappedResource.DepthPitch;
+	pMappedResource->RowPitch = mappedResource.RowPitch;
+
+	return true;
+}
+
+void CBackend_DX11::UnmapBuffer(IGraphicsResource* pResource, u32 Subresource)
+{
+	R_ASSERT(pResource);
+	R_ASSERT(pResource->IsValid());
+
+	Buffer_DX11* pBuffer = static_cast<Buffer_DX11*>(pResource->m_InternalResource.get());
+	RContext->Unmap(pBuffer->pBuffer, Subresource);
+}
+
 void CBackend_DX11::set_Constants(R_constant_table* C)
 {
 	// caching
@@ -746,22 +773,50 @@ bool CBackend_DX11::CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffe
 #ifdef USE_DX11
 HRESULT VertexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
 {
-	return E_NOTIMPL;
+	Mapping map;
+
+	if (Flags == 0)
+		map = Mapping::MAP_WRITE_DISCARD;
+
+	MAPPED_SUBRESOURCE mapSubresource = {};
+	if (backend_dx11_impl.MapBuffer(pGraphicsResource, 0, map, 0, &mapSubresource))
+	{
+		*ppbData = mapSubresource.pData;
+
+		return S_OK;
+	}
+	
+	return E_FAIL;
 }
 
 HRESULT VertexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
 {
-	return E_NOTIMPL;
+	backend_dx11_impl.UnmapBuffer(pGraphicsResource, 0);
+	return S_OK;
 }
 
 HRESULT IndexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
 {
-	return E_NOTIMPL;
+	Mapping map;
+
+	if (Flags == 0)
+		map = Mapping::MAP_WRITE_DISCARD;
+
+	MAPPED_SUBRESOURCE mapSubresource = {};
+	if (backend_dx11_impl.MapBuffer(pGraphicsResource, 0, map, 0, &mapSubresource))
+	{
+		*ppbData = mapSubresource.pData;
+
+		return S_OK;
+	}
+
+	return E_FAIL;
 }
 
 HRESULT IndexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
 {
-	return E_NOTIMPL;
+	backend_dx11_impl.UnmapBuffer(pGraphicsResource, 0);
+	return S_OK;
 }
 #endif // !USE_DX11
 

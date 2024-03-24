@@ -87,6 +87,48 @@ ITexture2D* CBackend_DX9::CreateTexture2D(const TextureDesc* pDesc, byte* data, 
 	return pTexture;
 }
 
+bool CBackend_DX9::MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource)
+{
+	R_ASSERT(pResource);
+	R_ASSERT(pResource->IsValid());
+
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pResource->m_InternalResource.get());
+	if (pBuffer->pVB) // Vertex buffer
+	{
+		R_CHK(pBuffer->pVB->Lock(0, 0, &pMappedResource->pData, 0));
+	}
+	else if (pBuffer->pIB) // Index Buffer
+	{
+		R_CHK(pBuffer->pIB->Lock(0, 0, &pMappedResource->pData, 0));
+	}
+	else
+	{
+		FATAL("No buffer allocated in Buffer_DX9");
+	}
+
+	return true;
+}
+
+void CBackend_DX9::UnmapBuffer(IGraphicsResource* pResource, u32 Subresource)
+{
+	R_ASSERT(pResource);
+	R_ASSERT(pResource->IsValid());
+
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pResource->m_InternalResource.get());
+	if (pBuffer->pVB) // Vertex buffer
+	{
+		R_CHK(pBuffer->pVB->Unlock());
+	}
+	else if (pBuffer->pIB) // Index Buffer
+	{
+		R_CHK(pBuffer->pIB->Unlock());
+	}
+	else
+	{
+		FATAL("No buffer allocated in Buffer_DX9");
+	}
+}
+
 void CBackend_DX9::set_Constants(R_constant_table* C_)
 {
 	// caching

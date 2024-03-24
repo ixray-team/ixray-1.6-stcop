@@ -43,6 +43,10 @@ public:
 	IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) override;
 	ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) override;
 
+	// Buffer Mapping
+	bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) override;
+	void				UnmapBuffer(IGraphicsResource* pResource, u32 Subresource) override;
+
 	void				set_Constants(R_constant_table* C) override;
 	void				set_Textures(STextureList* T) override;
 	void				set_Element(ShaderElement* S, u32	pass = 0) override;
@@ -115,6 +119,26 @@ inline DXGI_FORMAT GetDXGIFormat(PixelFormat format)
 
 	FATAL("Unkonwed PixelFormat");
 	return DXGI_FORMAT_UNKNOWN;
+}
+
+inline D3D11_MAP GetD3DMap(Mapping map)
+{
+	switch (map)
+	{
+	case Mapping::MAP_READ:
+		return D3D11_MAP_READ;
+	case Mapping::MAP_WRITE:
+		return D3D11_MAP_WRITE;
+	case Mapping::MAP_READ_WRITE:
+		return D3D11_MAP_READ_WRITE;
+	case Mapping::MAP_WRITE_DISCARD:
+		return D3D11_MAP_WRITE_DISCARD;
+	case Mapping::MAP_WRITE_NO_OVERWRITE:
+		return D3D11_MAP_WRITE_NO_OVERWRITE;
+	}
+
+	FATAL("Unkonwed Mapping");
+	return (D3D11_MAP)0;
 }
 
 #endif // !DX11BACKEND_H

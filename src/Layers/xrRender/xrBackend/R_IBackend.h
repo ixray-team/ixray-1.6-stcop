@@ -33,6 +33,15 @@ enum class ResourceUsage
 	DYNAMIC
 };
 
+enum class Mapping
+{
+	MAP_READ,
+	MAP_WRITE,
+	MAP_READ_WRITE,
+	MAP_WRITE_DISCARD,
+	MAP_WRITE_NO_OVERWRITE
+};
+
 enum class TextureType
 {
 	TEXTURE_1D,
@@ -74,6 +83,12 @@ struct INDEXBUFFER_DESC
 	DWORD               Usage;
 	D3DPOOL             Pool;
 	UINT                Size;
+};
+
+struct MAPPED_SUBRESOURCE {
+	void* pData;
+	u32 RowPitch;
+	u32 DepthPitch;
 };
 
 ///		detailed statistic
@@ -155,7 +170,12 @@ HRESULT IndexBuffer_Unlock(IGraphicsResource* pGraphicsResource);
 
 ///////////////////////////////////////////////////////////
 
-class IVertexBuffer : public IGraphicsResource
+class IBufferBase : public IGraphicsResource
+{
+
+};
+
+class IVertexBuffer : public IBufferBase
 {
 public:
 	// nasral, ydalit'
@@ -244,6 +264,10 @@ public:
 	virtual IVertexBuffer*		CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) = 0;
 	virtual IIndexBuffer*		CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
 	virtual ITexture2D*			CreateTexture2D(const TextureDesc* pDesc, byte* data, u32 length) = 0;
+
+	// Buffer Mapping
+	virtual bool				MapBuffer(IGraphicsResource* pResource, u32 Subresource, Mapping MapType, u32 MapFlags, MAPPED_SUBRESOURCE* pMappedResource) = 0;
+	virtual void				UnmapBuffer(IGraphicsResource* pResource, u32 Subresource) = 0;
 
 	// API
 	IC	void					set_xform(u32 ID, const Fmatrix& M);
