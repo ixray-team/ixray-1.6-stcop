@@ -17,7 +17,18 @@ IVertexBuffer* CBackend_DX11::CreateVertexBuffer(void* data, u32 length, u32 str
 	auto buffer = std::make_shared<Buffer_DX11>();
 	buffer->pBuffer = nullptr;
 
-	R_CHK(dx10BufferUtils::CreateVertexBuffer(&buffer->pBuffer, data, length, usage == ResourceUsage::IMMUTABLE));
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = length;
+	desc.Usage = (usage == ResourceUsage::IMMUTABLE) ? D3D_USAGE_IMMUTABLE : D3D_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.CPUAccessFlags = (usage == ResourceUsage::DYNAMIC) ? D3D11_CPU_ACCESS_WRITE : 0;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = data;
+
+	HRESULT res = RDevice->CreateBuffer(&desc, data ? &subData : NULL, &buffer->pBuffer);
+	R_CHK(res);
 
 	IVertexBuffer* pBuffer = xr_new<IVertexBuffer>();
 	pBuffer->m_InternalResource = buffer;
@@ -29,7 +40,19 @@ IIndexBuffer* CBackend_DX11::CreateIndexBuffer(void* data, u32 length, ResourceU
 	auto buffer = std::make_shared<Buffer_DX11>();
 	buffer->pBuffer = nullptr;
 
-	R_CHK(dx10BufferUtils::CreateIndexBuffer(&buffer->pBuffer, data, length, usage == ResourceUsage::IMMUTABLE));
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = length;
+	desc.Usage = (usage == ResourceUsage::IMMUTABLE) ? D3D_USAGE_IMMUTABLE : D3D_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	desc.CPUAccessFlags = (usage == ResourceUsage::DYNAMIC) ? D3D11_CPU_ACCESS_WRITE : 0;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = data;
+
+	HRESULT res = RDevice->CreateBuffer(&desc, data ? &subData : NULL, &buffer->pBuffer);
+	R_CHK(res);
+
 
 	IIndexBuffer* pBuffer = xr_new<IIndexBuffer>();
 	pBuffer->m_InternalResource = buffer;
@@ -621,7 +644,7 @@ void CBackend_DX11::set_Vertices(IVertexBuffer* _vb, u32 _vb_stride)
 
 void CBackend_DX11::set_Indices(IIndexBuffer* _ib)
 {
-	if (ib != _ib)
+	if (_ib&&ib != _ib)
 	{
 		ib = _ib;
 
@@ -773,11 +796,12 @@ bool CBackend_DX11::CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffe
 #ifdef USE_DX11
 HRESULT VertexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
 {
-	Mapping map;
+	// #TODO: TODO!!!
+	//Mapping map;
+	//if (Flags == 0)
+	//	map = Mapping::MAP_WRITE_DISCARD;
 
-	if (Flags == 0)
-		map = Mapping::MAP_WRITE_DISCARD;
-
+	Mapping map = Mapping::MAP_WRITE_DISCARD;
 	MAPPED_SUBRESOURCE mapSubresource = {};
 	if (backend_dx11_impl.MapBuffer(pGraphicsResource, 0, map, 0, &mapSubresource))
 	{
