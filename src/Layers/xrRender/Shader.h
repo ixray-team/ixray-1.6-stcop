@@ -18,6 +18,8 @@
 typedef xr_vector<shared_str>	sh_list;
 class					CBlender_Compile;
 class					IBlender;
+class					IVertexBuffer;
+class					IIndexBuffer;
 #define	SHADER_PASSES_MAX		2
 #define SHADER_ELEMENTS_MAX	6
 
@@ -76,8 +78,8 @@ typedef	resptr_core<SConstantList,resptr_base<SConstantList> >								ref_consta
 //////////////////////////////////////////////////////////////////////////
 struct	 ECORE_API		SGeometry		: public xr_resource_flagged									{
 	ref_declaration		dcl;
-	ID3DVertexBuffer*	vb;
-	ID3DIndexBuffer*	ib;
+	IVertexBuffer*		vb;
+	IIndexBuffer*		ib;
 	u32					vb_stride;
 						~SGeometry		();
 						SGeometry& operator=(const SGeometry& Other) = delete;
@@ -85,9 +87,9 @@ struct	 ECORE_API		SGeometry		: public xr_resource_flagged									{
 
 struct 	ECORE_API	resptrcode_geom	: public resptr_base<SGeometry>
 {
-	void 				create			(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-	void				create			(u32 FVF				, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-	void				create			(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib, size_t stride);
+	void 				create			(D3DVERTEXELEMENT9* decl, IVertexBuffer* vb, IIndexBuffer* ib);
+	void				create			(u32 FVF				, IVertexBuffer* vb, IIndexBuffer* ib);
+	void				create			(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, IVertexBuffer* vb, IIndexBuffer* ib, size_t stride);
 	void				destroy			()			{ _set(nullptr);		}
 
 	u32					stride			()	const	{ return _get()->vb_stride;	}

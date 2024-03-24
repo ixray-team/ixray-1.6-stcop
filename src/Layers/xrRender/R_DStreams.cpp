@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 int rsDVB_Size = 4096;
-int		rsDIB_Size			= 512;
+int	rsDIB_Size = 512;
 
 void _VertexStream::Create	()
 {
@@ -18,6 +18,8 @@ void _VertexStream::Create	()
 	DEV->Evict();
 
 	mSize					= rsDVB_Size*1024;
+
+#if 0
 #ifdef USE_DX11
 	D3D_BUFFER_DESC bufferDesc;
 	bufferDesc.ByteWidth        = mSize;
@@ -29,6 +31,9 @@ void _VertexStream::Create	()
 	R_CHK					(RDevice->CreateBuffer	( &bufferDesc, 0, &pVB ));
 #else //USE_DX11
 	R_CHK					(RDevice->CreateVertexBuffer	( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &pVB, nullptr));
+#endif
+#else
+	pVB = g_rbackend->CreateVertexBuffer(nullptr, mSize, 0, ResourceUsage::DYNAMIC);
 #endif
 
 	R_ASSERT				(pVB);
@@ -160,6 +165,7 @@ void	_IndexStream::Create	()
 
 	mSize					= rsDIB_Size*1024;
 
+#if 0
 #ifdef USE_DX11
 	D3D_BUFFER_DESC bufferDesc;
 	bufferDesc.ByteWidth        = mSize;
@@ -171,6 +177,9 @@ void	_IndexStream::Create	()
 	R_CHK					(RDevice->CreateBuffer( &bufferDesc, 0, &pIB ));
 #else //USE_DX11
 	R_CHK					(RDevice->CreateIndexBuffer( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &pIB, nullptr));
+#endif
+#else
+	pIB						= g_rbackend->CreateIndexBuffer(0, mSize, ResourceUsage::DYNAMIC);
 #endif
 	R_ASSERT				(pIB);
 
@@ -208,6 +217,7 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 		dwFlags		= LOCKFLAGS_FLUSH;			// discard it's contens
 		mDiscardID	++;
 	}
+
 #ifdef USE_DX11
 	D3D_MAP MapMode = (dwFlags==LOCKFLAGS_APPEND) ? 
 		D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;

@@ -564,7 +564,7 @@ void	CResourceManager::DBG_VerifyGeoms	()
 	*/
 }
 
-SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
+SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IVertexBuffer* vb, IIndexBuffer* ib)
 {
 	R_ASSERT			(decl && vb);
 
@@ -587,7 +587,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, ID3DVertexBuff
 	v_geoms.push_back	(Geom);
 	return	Geom;
 }
-SGeometry*	CResourceManager::CreateGeom		(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
+SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IVertexBuffer* vb, IIndexBuffer* ib)
 {
 	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
 	xrCriticalSectionGuard guard(creationGuard);
@@ -597,7 +597,7 @@ SGeometry*	CResourceManager::CreateGeom		(u32 FVF, ID3DVertexBuffer* vb, ID3DInd
 	return	g;
 }
 
-SGeometry* CResourceManager::CreateGeom(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib, size_t stride)
+SGeometry* CResourceManager::CreateGeom(XR_INPUT_ELEMENT_DESC* inputLayout, size_t size, IVertexBuffer* vb, IIndexBuffer* ib, size_t stride)
 {
 	R_ASSERT(inputLayout && vb);
 

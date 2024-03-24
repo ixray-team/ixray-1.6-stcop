@@ -739,3 +739,30 @@ bool CBackend_DX11::CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffe
 
 	return bRes;
 }
+
+///////////////////////////////////////////////////////////
+// #TODO: REFACTOR PLEASE !!!
+
+#ifdef USE_DX11
+HRESULT VertexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
+{
+	return E_NOTIMPL;
+}
+
+HRESULT VertexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
+{
+	return E_NOTIMPL;
+}
+
+HRESULT IndexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
+{
+	return E_NOTIMPL;
+}
+
+HRESULT IndexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
+{
+	return E_NOTIMPL;
+}
+#endif // !USE_DX11
+
+///////////////////////////////////////////////////////////

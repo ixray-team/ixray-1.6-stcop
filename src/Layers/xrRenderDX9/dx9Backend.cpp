@@ -451,3 +451,39 @@ void CBackend_DX9::Render(PRIMITIVETYPE T, u32 startV, u32 PC)
 	CHK_DX(RDevice->DrawPrimitive(GetD3DPrimitiveType(T), startV, PC));
 	PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }
+
+///////////////////////////////////////////////////////////
+// #TODO: REFACTOR PLEASE !!!
+
+#ifndef USE_DX11
+HRESULT VertexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
+{
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pGraphicsResource->m_InternalResource.get());
+	HRESULT hr = pBuffer->pVB->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+	return hr;
+}
+
+HRESULT VertexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
+{
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pGraphicsResource->m_InternalResource.get());
+	HRESULT hr = pBuffer->pVB->Unlock();
+	return hr;
+}
+
+HRESULT IndexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
+{
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pGraphicsResource->m_InternalResource.get());
+	HRESULT hr = pBuffer->pIB->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+	return hr;
+}
+
+HRESULT IndexBuffer_Unlock(IGraphicsResource* pGraphicsResource)
+{
+	Buffer_DX9* pBuffer = static_cast<Buffer_DX9*>(pGraphicsResource->m_InternalResource.get());
+	HRESULT hr = pBuffer->pIB->Unlock();
+	return hr;
+}
+
+#endif // !USE_DX11
+
+///////////////////////////////////////////////////////////

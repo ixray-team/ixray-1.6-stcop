@@ -339,7 +339,7 @@ void	CResourceManager::DBG_VerifyGeoms	()
 	*/
 }
 
-SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
+SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IVertexBuffer* vb, IIndexBuffer* ib)
 {
 	R_ASSERT			(decl && vb);
 
@@ -362,7 +362,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IDirect3DVerte
 	v_geoms.push_back	(Geom);
 	return	Geom;
 }
-SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
+SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IVertexBuffer* vb, IIndexBuffer* ib)
 {
 	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
 	xrCriticalSectionGuard guard(creationGuard);

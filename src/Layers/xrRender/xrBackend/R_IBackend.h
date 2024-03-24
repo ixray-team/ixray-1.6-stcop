@@ -50,6 +50,32 @@ struct TextureDesc
 	bool renderTargetUsage;
 };
 
+//////////////////
+// D3D9 Copy-paste
+
+/* Vertex Buffer Description */
+struct VERTEXBUFFER_DESC
+{
+	D3DFORMAT           Format;
+	D3DRESOURCETYPE     Type;
+	DWORD               Usage;
+	D3DPOOL             Pool;
+	UINT                Size;
+
+	DWORD               FVF;
+
+};
+
+/* Index Buffer Description */
+struct INDEXBUFFER_DESC
+{
+	D3DFORMAT           Format;
+	D3DRESOURCETYPE     Type;
+	DWORD               Usage;
+	D3DPOOL             Pool;
+	UINT                Size;
+};
+
 ///		detailed statistic
 struct	R_statistics_element {
 	u32		verts, dips;
@@ -101,15 +127,92 @@ public:
 	inline bool IsValid() const { return m_InternalResource != nullptr; }
 	
 	std::shared_ptr<void> m_InternalResource;
+	
+	// IUnknown interface
+	u64 AddRef();
+	u64 Release();
 };
+
+inline u64 IGraphicsResource::AddRef()
+{
+	return 0;
+}
+
+inline u64 IGraphicsResource::Release()
+{
+	return 0;
+}
+
+///////////////////////////////////////////////////////////
+
+// nasral, ydalit'
+
+HRESULT VertexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags);
+HRESULT VertexBuffer_Unlock(IGraphicsResource* pGraphicsResource);
+
+HRESULT IndexBuffer_Lock(IGraphicsResource* pGraphicsResource, UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags);
+HRESULT IndexBuffer_Unlock(IGraphicsResource* pGraphicsResource);
+
+///////////////////////////////////////////////////////////
 
 class IVertexBuffer : public IGraphicsResource
 {
+public:
+	// nasral, ydalit'
+
+	HRESULT Lock(UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags);
+	HRESULT Unlock();
+
+	void GetDesc(VERTEXBUFFER_DESC* pDesc);
+	VERTEXBUFFER_DESC m_Desc;
 };
+
+inline HRESULT IVertexBuffer::Lock(UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
+{
+	return VertexBuffer_Lock(this, OffsetToLock, SizeToLock, ppbData, Flags);
+}
+
+inline HRESULT IVertexBuffer::Unlock()
+{
+	return VertexBuffer_Unlock(this);
+}
+
+inline void IVertexBuffer::GetDesc(VERTEXBUFFER_DESC* pDesc)
+{
+	R_ASSERT(pDesc);
+	*pDesc = m_Desc;
+}
 
 class IIndexBuffer : public IGraphicsResource
 {
+public:
+	// nasral, ydalit'
+
+	HRESULT Lock(UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags);
+	HRESULT Unlock();
+
+	void GetDesc(INDEXBUFFER_DESC* pDesc);
+	INDEXBUFFER_DESC m_Desc;
 };
+
+inline HRESULT IIndexBuffer::Lock(UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags)
+{
+	return IndexBuffer_Lock(this, OffsetToLock, SizeToLock, ppbData, Flags);
+}
+
+inline HRESULT IIndexBuffer::Unlock()
+{
+	return IndexBuffer_Unlock(this);
+}
+
+inline void IIndexBuffer::GetDesc(INDEXBUFFER_DESC* pDesc)
+{
+	R_ASSERT(pDesc);
+	*pDesc = m_Desc;
+}
+
+///////////////////////////////////////////////////////////
+// Texture stuff
 
 class ITexture2D : public IGraphicsResource
 {
@@ -585,19 +688,19 @@ IC void CBackendBase::set_xform_project(const Fmatrix& M_)
 {
 	xforms.set_P(M_);
 }
-IC	const Fmatrix& CBackendBase::get_xform_world() { return xforms.get_W(); }
-IC	const Fmatrix& CBackendBase::get_xform_view() { return xforms.get_V(); }
-IC	const Fmatrix& CBackendBase::get_xform_project() { return xforms.get_P(); }
+IC const Fmatrix& CBackendBase::get_xform_world() { return xforms.get_W(); }
+IC const Fmatrix& CBackendBase::get_xform_view() { return xforms.get_V(); }
+IC const Fmatrix& CBackendBase::get_xform_project() { return xforms.get_P(); }
 
-inline void CBackendBase::set_Geometry(SGeometry* _geom)
+IC void CBackendBase::set_Geometry(SGeometry* _geom)
 {
-	// #TODO: SGeometry -> Replace ID3DVertex\IndexBuffer with our interfaces.
-	
-	//set_Vertices(_geom->vb, _geom->vb_stride);
-	//set_Indices(_geom->ib);
+	//set_Format(&*_geom->dcl);
+
+	set_Vertices(_geom->vb, _geom->vb_stride);
+	set_Indices(_geom->ib);
 }
 
-inline void CBackendBase::get_Stats(backend_stats* pStats)
+IC void CBackendBase::get_Stats(backend_stats* pStats)
 {
 	R_ASSERT(pStats);
 	*pStats = stats;

@@ -62,9 +62,9 @@ public:
 	// Dynamic geometry streams
 	_VertexStream					Vertex;
 	_IndexStream					Index;
-	ID3DIndexBuffer*				QuadIB;
-	ID3DIndexBuffer*				old_QuadIB;
-	ID3DIndexBuffer*				CuboidIB;
+	IIndexBuffer*					QuadIB;
+	IIndexBuffer*					old_QuadIB;
+	IIndexBuffer*					CuboidIB;
 	R_xforms						xforms;
 	R_hemi							hemi;
 	R_tree							tree;

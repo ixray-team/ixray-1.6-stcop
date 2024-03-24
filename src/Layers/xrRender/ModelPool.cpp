@@ -461,8 +461,8 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 		if( vis_ptr == nullptr )
 			continue;
 #ifndef USE_DX11
-		D3DINDEXBUFFER_DESC IB_desc;
-		D3DVERTEXBUFFER_DESC VB_desc;
+		INDEXBUFFER_DESC IB_desc;
+		VERTEXBUFFER_DESC VB_desc;
 
 		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
 
