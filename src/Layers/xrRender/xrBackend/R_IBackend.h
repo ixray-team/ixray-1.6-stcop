@@ -40,11 +40,11 @@ public:
 	CBackendBase();
 	virtual ~CBackendBase();
 
-	virtual IVertexBuffer* CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage);
-	virtual IIndexBuffer* CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage);
+	virtual IVertexBuffer* CreateVertexBuffer(byte* data, u32 length, u32 stride, ResourceUsage usage) = 0;
+	virtual IIndexBuffer* CreateIndexBuffer(byte* data, u32 length, ResourceUsage usage) = 0;
 
-	virtual	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride);
-	virtual	void set_Indices(IIndexBuffer* _ib);
+	virtual	void set_Vertices(IVertexBuffer* _vb, u32 _vb_stride) = 0;
+	virtual	void set_Indices(IIndexBuffer* _ib) = 0;
 
 #if 0
 public:            
