@@ -68,6 +68,22 @@ void CMainPPE::AddKey(float Value, bool OnlyValue)
 	}
 }
 
+CPostProcessParam* CMainPPE::GetCurrentParam()
+{
+	switch (ModeIter)
+	{
+		case 0: return mAnimator.GetParam(pp_params::pp_base_color);
+		case 1: return mAnimator.GetParam(pp_params::pp_add_color);
+		case 2: return mAnimator.GetParam(pp_params::pp_gray_color);
+		case 3: return mAnimator.GetParam(pp_params::pp_dual_h);
+		case 4: return mAnimator.GetParam(pp_params::pp_noise_i);
+		case 5: return mAnimator.GetParam(pp_params::pp_blur);
+		case 6: return mAnimator.GetParam(pp_params::pp_cm_influence);
+	}
+
+	return nullptr;
+}
+
 size_t CMainPPE::GetSelectedItemID() const
 {
 	size_t Iter = 0;
@@ -90,31 +106,6 @@ size_t CMainPPE::GetSelectedItemID() const
 
 void CMainPPE::Apply()
 {
-	if (LoadClick)
-	{
-		IGFD::FileDialogConfig config;
-		string_path AnimDir = {};
-		FS.update_path(AnimDir, "$game_anims$", "");
-
-		config.path = AnimDir;
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
-		LoadClick = false;
-
-		DrawDialogType = DialogType::Load;
-	}
-	else if (SaveClick)
-	{
-		IGFD::FileDialogConfig config;
-		string_path AnimDir = {};
-		FS.update_path(AnimDir, "$game_anims$", "");
-
-		config.path = AnimDir;
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
-		SaveClick = false;
-
-		DrawDialogType = DialogType::Save;
-	}
-
 	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
 	{
 		if (ImGuiFileDialog::Instance()->IsOk())
@@ -147,6 +138,41 @@ void CMainPPE::Apply()
 
 	// Update props 
 	ApplyData();
+}
+
+void CMainPPE::ClickHandle()
+{
+	if (LoadClick)
+	{
+		IGFD::FileDialogConfig config;
+		string_path AnimDir = {};
+		FS.update_path(AnimDir, "$game_anims$", "");
+
+		config.path = AnimDir;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
+		LoadClick = false;
+
+		DrawDialogType = DialogType::Load;
+	}
+	else if (SaveClick)
+	{
+		IGFD::FileDialogConfig config;
+		string_path AnimDir = {};
+		FS.update_path(AnimDir, "$game_anims$", "");
+
+		config.path = AnimDir;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
+		SaveClick = false;
+
+		DrawDialogType = DialogType::Save;
+	}
+	else if (NewClick)
+	{
+		ListData.clear();
+		mAnimator.Clear();
+		NewClick = false;
+	}
+
 }
 
 void CMainPPE::ApplyData()
@@ -313,7 +339,7 @@ void CMainPPE::DrawChart()
 	{
 		if (ModeIter < 3 || ModeIter == 5)
 		{
-			float LineStepWidth = WndSize.x / (ListData.size() - 1);
+			float LineStepWidth = WndSize.x / (ListData.size() - 1) - 1;
 			size_t Iter = 0;
 
 			pp_params CurParam = (pp_params)ModeIter;
@@ -429,7 +455,7 @@ void CMainPPE::DrawTool()
 			if (ImGui::Button("Del", { 33, 19 }))
 			{
 				size_t Iter = 0;
-				for (auto& Item : ListData)
+				for (const PointItem& Item : ListData)
 				{
 					if (Item.IsActive)
 						break;
@@ -437,15 +463,25 @@ void CMainPPE::DrawTool()
 					Iter++;
 				}
 
+				auto PP = GetCurrentParam();
+				PP->delete_value(ListData[Iter].Value);
+
 				if (Iter < ListData.size())
 				{
 					ListData.erase(ListData.begin() + Iter);
 				}
+
 			}
 
 			ImGui::SetCursorPos({ 71, 0 });
 			if (ImGui::Button("Clear", { 40, 19 }))
 			{
+				auto PP = GetCurrentParam();
+
+				for (const PointItem& Item : ListData)
+				{
+					PP->delete_value(Item.Value);
+				}
 				ListData.clear();
 			}
 		}
@@ -533,5 +569,6 @@ void CMainPPE::DrawUI()
 	DrawChart();
 	DrawTool();
 
+	ClickHandle();
 	Apply();
 }

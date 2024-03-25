@@ -44,9 +44,11 @@ protected:
 
 private:
     void AddKey(float Value, bool OnlyValue = false);
-
+    CPostProcessParam* GetCurrentParam();
     size_t GetSelectedItemID() const;
+    
     void Apply();
+    void ClickHandle();
 
     void ApplyData();
     void LoadData();
