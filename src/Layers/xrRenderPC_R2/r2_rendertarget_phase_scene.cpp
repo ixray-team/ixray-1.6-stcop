@@ -39,7 +39,7 @@ void	CRenderTarget::phase_scene_prepare	()
 void	CRenderTarget::phase_scene_begin	()
 {
 	// Enable ANISO
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.raster.dwStages; i++)
+	for (u32 i=0; i<Caps.raster.dwStages; i++)
 		CHK_DX(RDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic	));
 
 	// Targets, use accumulator for temporary storage
@@ -57,7 +57,7 @@ void	CRenderTarget::phase_scene_begin	()
 void	CRenderTarget::disable_aniso		()
 {
 	// Disable ANISO
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.raster.dwStages; i++)
+	for (u32 i=0; i<Caps.raster.dwStages; i++)
 		CHK_DX(RDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, 1	));
 }
 

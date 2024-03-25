@@ -158,7 +158,7 @@ void CLightProjector::calculate	()
 		SCOPE_EVENT_NAME_GROUP("Light projector calculate", "Render");
 		RCache.set_RT(RT->pRT);
 		RCache.set_ZB(RImplementation.Target->pTempZB);
-		CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | (dxRenderDeviceRender::Instance().Caps.bStencil ? D3DCLEAR_STENCIL : 0), 0, 1, 0));
+		CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | (Caps.bStencil ? D3DCLEAR_STENCIL : 0), 0, 1, 0));
 		RCache.set_xform_world(Fidentity);
 
 		// reallocate/reassociate structures + perform all the work
