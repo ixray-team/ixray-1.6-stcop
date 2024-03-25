@@ -1,0 +1,34 @@
+#include "common.h"
+#include "mblur.h"
+#include "dof.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+Texture2D s_image_old;
+Texture2D s_velocity;
+
+float4 main(v2p_aa_AA I) : SV_Target {
+	float2 vel = s_velocity.Sample(smp_nofilter, I.Tex0).xy * float2(-0.5f, 0.5f);
+	
+	float4 image = s_image.Sample(smp_nofilter, I.Tex0);
+	float4 image_old = s_image_old.Sample(smp_rtlinear, I.Tex0 + vel);
+	
+	float4 image0 = s_image.Sample(smp_nofilter, I.Tex0, int2(+1, +0));
+	float4 image1 = s_image.Sample(smp_nofilter, I.Tex0, int2(-0, +1));
+	float4 image2 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, -0));
+	float4 image3 = s_image.Sample(smp_nofilter, I.Tex0, int2(-0, -1));
+	
+	float4 image4 = s_image.Sample(smp_nofilter, I.Tex0, int2(+1, +1));
+	float4 image5 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, +1));
+	float4 image6 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, -1));
+	float4 image7 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, -1));
+	
+	float4 BoxMin = min(image, min(image0, min(image1, min(image2, image3))));
+	BoxMin = min(BoxMin, min(image4, min(image5, min(image6, image7))));
+	
+    float4 BoxMax = max(image, max(image0, max(image1, max(image2, image3))));
+    BoxMax = max(BoxMax, max(image4, max(image5, max(image6, image7))));
+	
+	image_old = clamp(image_old, BoxMin, BoxMax);
+	
+	return lerp(image, image_old, parallax.x * 2.0f);
+}
