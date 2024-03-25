@@ -15,7 +15,7 @@ void	CBlender_bloom_build::Compile			(CBlender_Compile& C)
 	case 0:		// transfer into bloom-target
 		C.r_Pass			("stub_notransform_build","bloom_build",	FALSE,	FALSE,	FALSE, FALSE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 		//C.r_Sampler_clf		("s_image",			r2_RT_generic1);
-		C.r_dx10Texture		("s_image",			r2_RT_generic1);
+		C.r_dx10Texture		("s_image",			r2_RT_generic0);
 		C.r_dx10Sampler		("smp_rtlinear");
 		C.r_End				();
 		break;
