@@ -44,6 +44,8 @@ f_deffer 	main	( p_bumped I )
   						float4 	(I.position.xyz + Ne*S.height*def_virtualh, ms),
   						float4	(S.base.x,S.base.y,S.base.z,				S.gloss) );
 
+	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+
 	return 	O	;
 }
 

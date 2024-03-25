@@ -35,5 +35,6 @@ f_deffer main ( p_bumped I )
 //								float4 	(I.position.xyz, ms),
 								float4	(S.base.xyz, 								S.gloss	) );
 
+	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
   return O;
 }
