@@ -1,9 +1,8 @@
 #include "common.h"
-#define	LUMINANCE_BASE 0.0001f
 
 float luminance(float2 tc) {
 	float3 source = s_image.Sample( smp_rtlinear, tc);
-	return dot(source, LUMINANCE_VECTOR) + LUMINANCE_BASE;
+	return dot(source, LUMINANCE_VECTOR) * def_hdr;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 // 	perform 2x2=4s convolution, working on 4x4=16p area
