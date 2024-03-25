@@ -225,7 +225,7 @@ float ValleyAngle( uint2 u2ScreenCoord )
 	int2 i2OffsetScreenCoord;
 	int2 i2MirrorOffsetScreenCoord;
 	
-	float3 N = g_txNormal.Load( int3( u2ScreenCoord, 0), 0).xyz;
+	float3 N = 1.0f - 2.0f * g_txNormal.Load( int3( u2ScreenCoord, 0), 0).xyz;
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
 	{
@@ -239,16 +239,16 @@ float ValleyAngle( uint2 u2ScreenCoord )
 		i2OffsetScreenCoord = ( i2OffsetScreenCoord < 0 ) ? ( 0 ) : ( i2OffsetScreenCoord );
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
-		f3N1.xyz  = g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xyz;
-		f3N2.xyz  = g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xyz;			
+		f3N1.xyz = 1.0f - 2.0f * g_txNormal.Load( int3( i2OffsetScreenCoord, 0), 0 ).xyz;
+		f3N2.xyz = 1.0f - 2.0f * g_txNormal.Load( int3( i2MirrorOffsetScreenCoord, 0), 0 ).xyz;			
 		
 		fDot = dot( f3N1, N );
 		
-		fSummedDot += ( fDot > g_fAcceptAngle ) ? ( 0.0f ) : ( 1.0f - ( abs( fDot ) * 0.25f ) );
+		fSummedDot += ( fDot > g_fAcceptAngle ) ? ( 0.0f ) : ( 1.0f - ( abs( fDot ) * 0.25f ));
 
 		fDot = dot( f3N2, N );
 		
-		fSummedDot += ( fDot > g_fAcceptAngle ) ? ( 0.0f ) : ( 1.0f - ( abs( fDot ) * 0.25f ) );
+		fSummedDot += ( fDot > g_fAcceptAngle ) ? ( 0.0f ) : ( 1.0f - ( abs( fDot ) * 0.25f ));
 	}
 
 	fSummedDot /= 8.0f;
@@ -362,16 +362,16 @@ float ValleyAngle( uint2 u2ScreenCoord )
 		    [unroll] 
             for( uint uGather=0; uGather<GATHER_PER_THREAD; uGather++ )
 		    {
-                    f2Coord  = float2( f2ScreenCoord.x + float( uGather * 2 ), f2ScreenCoord.y ) * f2InvTextureSize;
-                    f4Depth  = g_txDepth.GatherBlue( g_SamplePoint, f2Coord );
-					f4Normal = g_txNormal.GatherBlue( g_SamplePoint, f2Coord );
+				f2Coord  = float2(f2ScreenCoord.x + float(uGather * 2), f2ScreenCoord.y) * f2InvTextureSize;
+				f4Depth  = m_P._34 / (g_txDepth.GatherRed(g_SamplePoint, f2Coord) - m_P._33);
+				f4Normal = 1.0f - 2.0f * g_txNormal.GatherBlue(g_SamplePoint, f2Coord);
             
                 f4LDSValue = f4Depth + ( f4Normal * g_fHDAONormalScale.xxxx );
     		
-                StoreToLDS( f4LDSValue.x, uint2( uColumn + ( uGather * 2 ) + 0, uRow + 1 ) );
-                StoreToLDS( f4LDSValue.y, uint2( uColumn + ( uGather * 2 ) + 1, uRow + 1 ) );
-                StoreToLDS( f4LDSValue.z, uint2( uColumn + ( uGather * 2 ) + 1, uRow + 0 ) );
-                StoreToLDS( f4LDSValue.w, uint2( uColumn + ( uGather * 2 ) + 0, uRow + 0 ) );
+                StoreToLDS(f4LDSValue.x, uint2( uColumn + ( uGather * 2 ) + 0, uRow + 1));
+                StoreToLDS(f4LDSValue.y, uint2( uColumn + ( uGather * 2 ) + 1, uRow + 1));
+                StoreToLDS(f4LDSValue.z, uint2( uColumn + ( uGather * 2 ) + 1, uRow + 0));
+                StoreToLDS(f4LDSValue.w, uint2( uColumn + ( uGather * 2 ) + 0, uRow + 0));
        	    }
 	    }
     	    
@@ -423,19 +423,19 @@ float	calc_new_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
 	fDot = ValleyAngle( u2CenterScreenCoord );
 
 	// Sample center texel, convert to camera space and add normal
-	float fDepth = g_txDepth.Load( int3( u2CenterScreenCoord, 0 ), 0 ).z;
-	fCenterZ = fDepth + (g_txNormal.Load( int3( u2CenterScreenCoord, 0 ), 0 ).z * g_fHDAONormalScale);
+	float fDepth = m_P._34 / (g_txDepth.Load(int3( u2CenterScreenCoord, 0), 0).x - m_P._33);
+	fCenterZ = fDepth + (1.0f - 2.0f * g_txNormal.Load(int3(u2CenterScreenCoord, 0), 0).z) * g_fHDAONormalScale;
 	
 	// Loop through each valley
 	for( iValley = 0; iValley < NUM_VALLEYS; iValley ++ )
 	{
 		// Sample depth & convert to camera space
-        f2SampledZ.x = g_txDepth.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z;
-		f2SampledZ.y = g_txDepth.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z;
+        f2SampledZ.x = m_P._34 / (g_txDepth.Load(int3((u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley]), 0), 0).x - m_P._33);
+		f2SampledZ.y = m_P._34 / (g_txDepth.Load(int3((u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley]), 0), 0).x - m_P._33);
 
         // Sample normal and do a scaled add
-		f2SampledZ.x += (g_txNormal.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z * g_fHDAONormalScale); 
-		f2SampledZ.y += (g_txNormal.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley] ), 0 ), 0 ).z * g_fHDAONormalScale);
+		f2SampledZ.x += (1.0f - 2.0f * g_txNormal.Load( int3( ( u2CenterScreenCoord + g_i2HDAOSamplePattern[iValley]), 0), 0).z) * g_fHDAONormalScale; 
+		f2SampledZ.y += (1.0f - 2.0f * g_txNormal.Load( int3( ( u2CenterScreenCoord - g_i2HDAOSamplePattern[iValley]), 0), 0).z) * g_fHDAONormalScale;
 
 		// Detect valleys 
 		f2Diff     = fCenterZ.xx - f2SampledZ;
