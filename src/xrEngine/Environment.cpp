@@ -397,6 +397,20 @@ void CEnvironment::StopWFX	()
 #endif
 }
 
+void CEnvironment::SetEnvDesc(LPCSTR weather_section, CEnvDescriptor*& e)
+{
+	for (const auto& [key, descriptors] : WeatherCycles) {
+		for (CEnvDescriptor* descriptor : descriptors) {
+			if (descriptor->m_identifier == weather_section) {
+				e = descriptor;
+				return;
+			}
+		}
+	}
+
+	Msg("!Could not set env descriptor from section %s", weather_section);
+}
+
 IC bool lb_env_pred(const CEnvDescriptor* x, float val)
 {	return x->exec_time < val;	}
 
