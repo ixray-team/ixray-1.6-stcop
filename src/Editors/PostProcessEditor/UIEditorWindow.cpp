@@ -21,6 +21,7 @@ void CMainPPE::AddKey(float Value, bool OnlyValue)
 	{
 		PointItem Data;
 		Data.Name = xr_string::ToString(Value);
+		Data.Name = Data.Name.substr(0, Data.Name.find('.') + 3);
 		Data.Value = Value;
 		Data.IsActive = ListData.empty();
 
@@ -342,17 +343,23 @@ void CMainPPE::DrawChart()
 
 				if (Iter != 0)
 				{
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.x }, { LineStepWidth * Iter, Pos.x }, ImColor(255, 0, 0));
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.y }, { LineStepWidth * Iter, Pos.y }, ImColor(0, 255, 0));
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.z }, { LineStepWidth * Iter, Pos.z }, ImColor(0, 0, 255));
+					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.x }, { LineStepWidth * Iter, Pos.x }, ImColor(255, 0, 0), 2.f);
+					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.y }, { LineStepWidth * Iter, Pos.y }, ImColor(0, 255, 0), 2.f);
+					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.z }, { LineStepWidth * Iter, Pos.z }, ImColor(0, 0, 255), 2.f);
 				}
 
 				PrevPos.set(Pos);
+
+				if (Item.IsActive)
+				{
+					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * Iter, HeaderSize }, { LineStepWidth * Iter, WndSize.y + HeaderSize }, ImColor(127, 127, 127));
+					ImGui::GetWindowDrawList()->AddText({ (LineStepWidth * Iter) - 15 - (Item.Name.length() * 4), HeaderSize + WndSize.y - 15}, ImColor(255, 255, 255), Item.Name.c_str());
+				}
 				Iter++;
 			}
 		}
 	}
-
+	
 	ImGui::End();
 }
 
