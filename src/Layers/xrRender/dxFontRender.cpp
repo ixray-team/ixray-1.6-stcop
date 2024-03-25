@@ -80,6 +80,12 @@ void dxFontRender::OnRender(CGameFont& owner)
 				clr2 = color_rgba(_R, _G, _B, _A);
 			}
 
+#ifndef USE_DX11
+			X -= 0.5f;
+			Y -= 0.5f;
+			Y2 -= 0.5f;
+#endif
+
 			for (int i = 0; i < length; i++)
 			{
 				const CGameFont::Glyph* glyphInfo = owner.GetGlyphInfo(str.string[i]);
