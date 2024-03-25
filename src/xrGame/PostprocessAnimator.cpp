@@ -461,6 +461,13 @@ void CPostProcessValue::update_value(float time, float value, int index)
 void CPostProcessValue::get_value(float time, float &value, int index)
 {
     KeyIt i = m_Value.FindKey (time, 0.01f);
+
+    if (i == m_Value.keys.end())
+    {
+        add_value(time, value, index);
+        i = m_Value.FindKey(time, 0.01f);
+    }
+
     value = (*i)->value;
 }
 #endif /*_PP_EDITOR_*/
