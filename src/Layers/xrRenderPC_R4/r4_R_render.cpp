@@ -229,6 +229,16 @@ void CRender::Render		()
 
 	ps_r_taa_jitter = ps_r_taa_jitter.mul(ps_r_taa_jitter_scale);
 
+	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
+
+	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	RContext->ClearRenderTargetView(Target->rt_Generic_0->pRT, ColorRGBA);
+	RContext->ClearRenderTargetView(Target->rt_Velocity->pRT, ColorRGBA);
+
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(FALSE);
+
+	g_pGamePersistent->Environment().RenderSky();
 
 	// Configure
 	RImplementation.o.distortion				= FALSE;		// disable distorion

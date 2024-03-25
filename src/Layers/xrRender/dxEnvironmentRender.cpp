@@ -181,11 +181,13 @@ void dxEnvironmentRender::OnFrame(CEnvironment &env)
 {
 	dxEnvDescriptorMixerRender &mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
+#ifndef USE_DX11
 	if (::Render->get_generation()==IRender_interface::GENERATION_R2){
 		mixRen.sky_r_textures.push_back(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap));	//. hack
 		mixRen.sky_r_textures_env.push_back(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap));	//. hack
 		mixRen.clouds_r_textures.push_back(std::make_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap));	//. hack
 	}
+#endif
 
 	//. Setup skybox textures, somewhat ugly
 	ID3DBaseTexture*	e0	= mixRen.sky_r_textures[0].second->surface_get();
@@ -214,7 +216,9 @@ void dxEnvironmentRender::OnFrame(CEnvironment &env)
 
 void dxEnvironmentRender::OnLoad()
 {
+#ifndef USE_DX11
 	tonemap	= DEV->_CreateTexture("$user$tonemap");	//. hack
+#endif
 }
 
 void dxEnvironmentRender::OnUnload()
@@ -224,70 +228,65 @@ void dxEnvironmentRender::OnUnload()
 
 void dxEnvironmentRender::RenderSky(CEnvironment &env)
 {
-	// clouds_sh.create		("clouds","null");
-	//. this is the bug-fix for the case when the sky is broken
-	//. for some unknown reason the geoms happen to be invalid sometimes
-	//. if vTune show this in profile, please add simple cache (move-to-forward last found) 
-	//. to the following functions:
-	//.		CResourceManager::_CreateDecl
-	//.		CResourceManager::CreateGeom
-	if(env.bNeed_re_create_env)
-	{
-		sh_2sky.create			(&m_b_skybox,"skybox_2t");
-		sh_2geom.create			(v_skybox_fvf,RCache.Vertex.Buffer(), RCache.Index.Buffer());
-		clouds_sh.create		("clouds","null");
-		clouds_geom.create		(v_clouds_fvf,RCache.Vertex.Buffer(), RCache.Index.Buffer());
-		env.bNeed_re_create_env		= FALSE;
-	}
-	::Render->rmFar				();
+	if (env.bNeed_re_create_env) {
+		OnDeviceDestroy();
+		OnDeviceCreate();
 
-	dxEnvDescriptorMixerRender &mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
+		OnFrame(env);
+
+		env.bNeed_re_create_env = FALSE;
+	}
+
+ 	dxEnvDescriptorMixerRender &mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
 	// draw sky box
-	Fmatrix						mSky;
-	mSky.rotateY				(env.CurrentEnv->sky_rotation);
-	mSky.translate_over			(Device.vCameraPosition);
+	static Fmatrix mSky = Fidentity;
+	Fmatrix mSkyOld = mSky;
 
-	u32		i_offset,v_offset;
-	u32		C					= color_rgba(iFloor(env.CurrentEnv->sky_color.x*255.f), iFloor(env.CurrentEnv->sky_color.y*255.f), iFloor(env.CurrentEnv->sky_color.z*255.f), iFloor(env.CurrentEnv->weight*255.f));
+	mSky.rotateY(env.CurrentEnv->sky_rotation);
+	mSky.translate_over(Device.vCameraPosition);
+
+	u32 i_offset, v_offset;
+	u32 C = color_rgba(iFloor(env.CurrentEnv->sky_color.x*255.f), iFloor(env.CurrentEnv->sky_color.y*255.f), iFloor(env.CurrentEnv->sky_color.z*255.f), iFloor(env.CurrentEnv->weight*255.f));
 
 	// Fill index buffer
-	u16*	pib					= RCache.Index.Lock	(20*3,i_offset);
-	CopyMemory					(pib,hbox_faces,20*3*2);
-	RCache.Index.Unlock			(20*3);
+	u16* pib = RCache.Index.Lock(20 * 3, i_offset);
+	CopyMemory(pib, hbox_faces, 20 * 3 * 2);
+	RCache.Index.Unlock(20 * 3);
 
 	// Fill vertex buffer
-	v_skybox* pv				= (v_skybox*)	RCache.Vertex.Lock	(12,sh_2geom.stride(),v_offset);
-	for (u32 v=0; v<12; v++)	pv[v].set		(hbox_verts[v*2],C,hbox_verts[v*2+1]);
-	RCache.Vertex.Unlock		(12,sh_2geom.stride());
+	v_skybox* pv = (v_skybox*)RCache.Vertex.Lock(12, sh_2geom->vb_stride, v_offset);
+
+	for (u32 v = 0; v < 12; v++) {
+		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
+	}
+
+	RCache.Vertex.Unlock(12, sh_2geom->vb_stride);
 
 	// Render
-	RCache.set_xform_world		(mSky);
-	RCache.set_Geometry			(sh_2geom);
-	RCache.set_Shader			(sh_2sky);
-//	RCache.set_Textures			(&env.CurrentEnv->sky_r_textures);
-	RCache.set_Textures			(&mixRen.sky_r_textures);
-	RCache.Render				(D3DPT_TRIANGLELIST,v_offset,0,12,i_offset,20);
+	RCache.set_xform_world(mSky);
+	RCache.set_xform_world_old(mSkyOld);
+
+	RCache.set_Geometry(sh_2geom);
+	RCache.set_Shader(sh_2sky);
+
+ 	RCache.set_Textures(&mixRen.sky_r_textures);
+	RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
 
 	// Sun
- 	::Render->rmNormal			();
-#if		RENDER!=R_R1
-	//
-	// This hack is done to make sure that the state is set for sure:
-	// The state may be not set by RCache if the state is changed using API SetRenderState() function before 
-	// and the RCache flag will remain unchanged to it's old value. 
-	// 
-	RCache.set_Z(FALSE);
-	RCache.set_Z(TRUE);
- 	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
-	RCache.set_Z(FALSE);
-#else
+  	::Render->rmNormal			();
+#if RENDER==R_R1
 	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
 #endif
 }
 
 void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 {
+	RCache.set_Z(FALSE);
+	RCache.set_Z(TRUE);
+	env.eff_LensFlare->Render (TRUE,FALSE,FALSE);
+	RCache.set_Z(FALSE);
+
 	::Render->rmFar				();
 
 	Fmatrix						mXFORM, mScale;
@@ -318,6 +317,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 
 	// Render
 	RCache.set_xform_world		(mXFORM);
+
 	RCache.set_Geometry			(clouds_geom);
 	RCache.set_Shader			(clouds_sh);
 	dxEnvDescriptorMixerRender	&mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
@@ -327,12 +327,12 @@ void dxEnvironmentRender::RenderClouds(CEnvironment &env)
 	::Render->rmNormal			();
 }
 
-void dxEnvironmentRender::OnDeviceCreate()
-{
-	sh_2sky.create			(&m_b_skybox,"skybox_2t");
-	sh_2geom.create			(v_skybox_fvf,RCache.Vertex.Buffer(), RCache.Index.Buffer());
-	clouds_sh.create		("clouds","null");
-	clouds_geom.create		(v_clouds_fvf,RCache.Vertex.Buffer(), RCache.Index.Buffer());
+void dxEnvironmentRender::OnDeviceCreate() {
+	sh_2sky.create(&m_b_skybox, "skybox_2t");
+	sh_2geom.create(v_skybox_fvf, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+
+	clouds_sh.create("clouds", "null");
+	clouds_geom.create(v_clouds_fvf, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 }
 
 void dxEnvironmentRender::OnDeviceDestroy()
