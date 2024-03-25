@@ -292,30 +292,11 @@ struct	v_static_color
 #endif
 };
 
-////////////////////////////////////////////////////////////////
-//	defer
-#ifndef GBUFFER_OPTIMIZATION
-struct                  f_deffer        		
-{
-	float4	position: SV_Target0;        // px,py,pz, m-id
-	float4	Ne		  : SV_Target1;        // nx,ny,nz, hemi
-	float4	C		  : SV_Target2;        // r, g, b,  gloss
-	float2	V		  : SV_Target3;
-#ifdef EXTEND_F_DEFFER
-   uint     mask    : SV_COVERAGE;
-#endif
+struct f_deffer {
+	float4 Ne : SV_Target0;
+	float4 C : SV_Target1;
+	float2 V : SV_Target2;
 };
-#else
-struct                  f_deffer        		
-{
-	float4	position: SV_Target0;        // xy=encoded normal, z = pz, w = encoded(m-id,hemi)
-	float4	C		  : SV_Target1;        // r, g, b,  gloss
-	float2	V		  : SV_Target2;
-#ifdef EXTEND_F_DEFFER
-   uint     mask    : SV_COVERAGE;
-#endif
-};
-#endif
 
 struct f_forward {
 	float4 Color : SV_Target0;
@@ -323,7 +304,7 @@ struct f_forward {
 	float2 Velocity : SV_Target2;
 };
 
-struct					gbuffer_data
+struct gbuffer_data
 {
 	float3  P; // position.( mtl or sun )
 	float   mtl; // material id
