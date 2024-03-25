@@ -47,7 +47,7 @@ float4 main( p_volume I, float4 pos2d : SV_Position ) : SV_Target
                 #endif
                 //lightmap= tex2Dproj         (s_lmap,        PS);        //
 				//	Can use linear with mip point
-				lightmap 			= s_lmap.Sample( smp_rtlinear, PS.xy / PS.w );        //
+				lightmap = s_lmap.SampleLevel( smp_rtlinear, PS.xy / PS.w, 0);        //
         #endif
 
         return blendp ( Ldynamic_color * light * s * lightmap, I.tc );
