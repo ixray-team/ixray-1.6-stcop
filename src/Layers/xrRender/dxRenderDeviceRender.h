@@ -54,6 +54,7 @@ public:
 	void ClearTarget() override;
 	void SetupDefaultTarget() override;
 	void SetCacheXform(Fmatrix &mView, Fmatrix &mProject) override;
+	virtual void SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject);
 	void OnAssetsChanged() override;
 
 public:
