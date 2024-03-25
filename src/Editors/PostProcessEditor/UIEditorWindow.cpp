@@ -124,6 +124,13 @@ void CMainPPE::Apply()
 			}
 			else if (DrawDialogType == DialogType::Load)
 			{
+				if (!FS.exist(filePathName.c_str()))
+				{
+					string_path Root;
+					FS.update_path(Root, "$fs_root$", "");
+					filePathName = filePathName.substr(strlen(Root));
+				}
+
 				mAnimator.Load(filePathName.c_str());
 				LoadData();
 			}
