@@ -273,21 +273,23 @@ struct         v_static
 #ifdef	USE_LM_HEMI
 	int2	lmh		:TEXCOORD1;	// (lmu,lmv)
 #endif
-//	float4	color	:COLOR0;	// (r,g,b,dir-occlusion)	//	Swizzle before use!!!
 	float4	P		:POSITION;	// (float,float,float,1)
 };
 
 struct	v_static_color
 {
+	float4	P		:POSITION;	// (float,float,float,1)
+	
 	float4	Nh		:NORMAL;	// (nx,ny,nz,hemi occlusion)
 	float4	T		:TANGENT;	// tangent
 	float4	B		:BINORMAL;	// binormal
+	
+	float4	color	:COLOR0;	// (r,g,b,dir-occlusion)	//	Swizzle before use!!!
 	int2	tc		:TEXCOORD0;	// (u,v)
+	
 #ifdef	USE_LM_HEMI
 	int2	lmh		:TEXCOORD1;	// (lmu,lmv)
 #endif
-	float4	color	:COLOR0;	// (r,g,b,dir-occlusion)	//	Swizzle before use!!!
-	float4	P		:POSITION;	// (float,float,float,1)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -315,6 +317,12 @@ struct                  f_deffer
 };
 #endif
 
+struct f_forward {
+	float4 Color : SV_Target0;
+	float Reactive : SV_Target1;
+	float2 Velocity : SV_Target2;
+};
+
 struct					gbuffer_data
 {
 	float3  P; // position.( mtl or sun )
@@ -327,6 +335,31 @@ struct					gbuffer_data
 
 ////////////////////////////////////////////////////////////////
 //	Defer bumped
+struct p_bumped_new {
+	float4	hpos        : SV_Position;
+	
+	float4	tcdh        : TEXCOORD0;        // Texture coordinates, sun_occlusion || lm-hemi
+	float4	position	: TEXCOORD1;        // position + hemi
+	float3	M1			: TEXCOORD2;        // nmap 2 eye - 1
+	float3	M2			: TEXCOORD3;        // nmap 2 eye - 2
+	float3	M3			: TEXCOORD4;        // nmap 2 eye - 3
+	
+	float4	hpos_curr	: TEXCOORD5;
+	float4	hpos_old	: TEXCOORD6;
+};
+
+struct p_bilbord {
+	float4 hpos: SV_Position;
+	float4 af : COLOR1;
+	
+	float3 position : TEXCOORD0;
+	float2 tc0 : TEXCOORD1;
+	float2 tc1 : TEXCOORD2;
+	
+	float4 hpos_curr : TEXCOORD3;
+	float4 hpos_old : TEXCOORD4;
+};
+
 struct v2p_bumped
 {
 #if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
@@ -440,6 +473,11 @@ struct	p_shadow_direct_aref
 	float2	tc0		: TEXCOORD1;	// Diffuse map for aref
 };
 
+struct p_shadow {
+	float2	tc0 : TEXCOORD1;	
+	float4	hpos : SV_Position;
+};
+
 ////////////////////////////////////////////////////////////////
 //	Model
 struct	v_model
@@ -467,8 +505,8 @@ struct	v_tree
 //	Details
 struct        v_detail                    
 {
-        float4      pos                : POSITION;                // (float,float,float,1)
-        int4        misc        : TEXCOORD0;        // (u(Q),v(Q),frac,matrix-id)
+	float4 pos : POSITION; // (float,float,float,1)
+	int4 misc : TEXCOORD0; // (u(Q),v(Q),frac,matrix-id)
 };
 
 #endif	//	common_iostructs_h_included
