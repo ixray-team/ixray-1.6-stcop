@@ -109,7 +109,7 @@ void CMainPPE::Apply()
 
 		config.path = AnimDir;
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
-		LoadClick = false;
+		SaveClick = false;
 
 		DrawDialogType = DialogType::Save;
 	}
@@ -137,6 +137,10 @@ void CMainPPE::Apply()
 			}
 
 			DrawDialogType = DialogType::None;
+		}
+		else
+		{
+			ImGuiFileDialog::Instance()->Close();
 		}
 	}
 
@@ -308,7 +312,7 @@ void CMainPPE::DrawChart()
 	{
 		if (ModeIter < 3 || ModeIter == 5)
 		{
-			float LineStepWidth = WndSize.x / ListData.size();
+			float LineStepWidth = WndSize.x / (ListData.size() - 1);
 			size_t Iter = 0;
 
 			pp_params CurParam = (pp_params)ModeIter;
@@ -324,11 +328,16 @@ void CMainPPE::DrawChart()
 				mAnimator.GetParam(CurParam)->get_value(Item.Value, RGB.y, 1);
 				mAnimator.GetParam(CurParam)->get_value(Item.Value, RGB.z, 2);
 
+				RGB.mul(127.5f);
+				RGB.add(127.5f);
+
+				float HeightOnePercent = WndSize.y / 100.f;
+
 				Fvector Pos =
 				{
-					HeaderSize + std::min((WndSize.y / 2) - (WndSize.y * RGB.x), WndSize.y) ,
-					HeaderSize + std::min((WndSize.y / 2) - (WndSize.y * RGB.y), WndSize.y) ,
-					HeaderSize + std::min((WndSize.y / 2) - (WndSize.y * RGB.z), WndSize.y)
+					HeaderSize + std::min(WndSize.y - (HeightOnePercent * (RGB.x / 255.f * 100)), WndSize.y),
+					HeaderSize + std::min(WndSize.y - (HeightOnePercent * (RGB.y / 255.f * 100)), WndSize.y),
+					HeaderSize + std::min(WndSize.y - (HeightOnePercent * (RGB.z / 255.f * 100)), WndSize.y)
 				};
 
 				if (Iter != 0)
