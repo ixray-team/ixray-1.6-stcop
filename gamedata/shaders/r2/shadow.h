@@ -217,9 +217,9 @@ float shadow_high(float4 tc) {
 //////////////////////////////////////////////////////////////////////////////////////////
 #ifdef  USE_SUNMASK	
 uniform float3x4	m_sunmask	;				// ortho-projection
-float 	sunmask		(float4 P)	{				// 
-	float2 		tc	= mul	(m_sunmask, P);		//
-	return 		tex2D 		(s_lmap,tc).w;		// A8 
+float 	sunmask (float4 P)	{				// 
+	float2 tc = mul(m_sunmask, P);
+	return tex2Dlod(s_lmap,float4(tc.xy, 0.0f, 0.0f)).w; // A8 
 	
 }
 #else
