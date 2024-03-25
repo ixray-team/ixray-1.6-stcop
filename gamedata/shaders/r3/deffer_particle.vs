@@ -31,6 +31,8 @@ v2p_particle main( vv I )
 
 	O.hpos_curr = mul (m_WVP, I.P);
 	O.hpos_old = mul (m_VP_old, I.P);
+	
+	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 
 	v2p_particle pp;
 	pp.color = I.c;

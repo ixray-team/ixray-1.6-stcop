@@ -89,6 +89,7 @@ vf main (v_vert v)
 		//o.fog		*= o.fog;
 
 		o.c0		= float4		(L_final,1);
+		o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
 //	Igor: for additional depth dest
 #ifdef	USE_SOFT_WATER
