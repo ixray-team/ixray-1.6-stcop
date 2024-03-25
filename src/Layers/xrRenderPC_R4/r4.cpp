@@ -543,10 +543,24 @@ void	CRender::Statistics	(CGameFont* _F)
 #endif
 }
 
+xr_string CRender::getShaderParams()
+{
+	xr_string params = "";
+	if (!m_ShaderOptions.empty()) {
+		params.append("(").append(m_ShaderOptions[0].Name);
+
+		for (auto i = 1u; i < m_ShaderOptions.size(); ++i) {
+			params.append(",").append(m_ShaderOptions[i].Name);
+		}
+
+		params.append(")");
+	}
+	return params;
+}
+
 void CRender::addShaderOption(const char* name, const char* value)
 {
-	D3D_SHADER_MACRO macro = {name, value};
-	m_ShaderOptions.push_back(macro);
+	m_ShaderOptions.emplace_back(name, value);
 }
 
 template <typename T>
