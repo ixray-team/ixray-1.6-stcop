@@ -6,14 +6,14 @@ void	CRenderTarget::phase_scene_prepare	()
 	PIX_EVENT(phase_scene_prepare);
 
 	//	TODO: DX10: Check if we need to set RT here.
-	u_setrt(RCache.get_width(), RCache.get_height(), rt_Position->pRT, rt_Velocity->pRT, NULL, HW.pBaseZB);
+	u_setrt(RCache.get_width(), RCache.get_height(), rt_Position->pRT, rt_Velocity->pRT, NULL, RDepth);
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-	HW.pContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
-	HW.pContext->ClearRenderTargetView(rt_Velocity->pRT, ColorRGBA);
+	RContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
+	RContext->ClearRenderTargetView(rt_Velocity->pRT, ColorRGBA);
 
-	HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+	RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 
 	//	Igor: for volumetric lights
 	m_bHasActiveVolumetric				= false;
