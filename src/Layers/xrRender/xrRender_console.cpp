@@ -128,6 +128,9 @@ int			ps_r1_use_terrain_mask		= 0;
 float		ps_r2_ssaLOD_A				= 64.f	;
 float		ps_r2_ssaLOD_B				= 48.f	;
 
+Fvector3	ps_r_taa_jitter = { 0,0,0 };
+Fvector3	ps_r_taa_jitter_scale = { 1,1,0 };
+
 // R2-specific
 Flags32		ps_r2_ls_flags				= { R2FLAG_SUN 
 	//| R2FLAG_SUN_IGNORE_PORTALS
@@ -732,6 +735,9 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_ssa_lod_b",			&ps_r2_ssaLOD_B,			32,		64		);
 
 	CMD4(CCC_Integer,	"r_particles_real_dt",	&ps_r2_particle_dt,			0,		1		);
+	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
+
+	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
 
 	// R2-specific
 	CMD2(CCC_R2GM,		"r2em",					&ps_r2_gmaterial							);
