@@ -144,14 +144,16 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 
 SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 {
-	string_path			name;
-	xr_strcpy				(name,_name);
-	if (0 == ::Render->m_skinning)	xr_strcat(name,"_0");
-	if (1 == ::Render->m_skinning)	xr_strcat(name,"_1");
-	if (2 == ::Render->m_skinning)	xr_strcat(name,"_2");
-	if (3 == ::Render->m_skinning)	xr_strcat(name,"_3");
-	if (4 == ::Render->m_skinning)	xr_strcat(name,"_4");
-	LPSTR N				= LPSTR		(name);
+	xr_string res_name = _name;
+
+	if(Render->m_skinning > 0) {
+		res_name += "_" + std::to_string(Render->m_skinning);
+	}
+
+	res_name += RImplementation.getShaderParams();
+	LPCSTR name = res_name.c_str();
+
+	LPSTR N = LPSTR (name);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	return I->second;
@@ -207,9 +209,15 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 	Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
 }
 
-SPS*	CResourceManager::_CreatePS			(LPCSTR name)
+//--------------------------------------------------------------------------------------------------------------
+SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 {
-	LPSTR N				= LPSTR(name);
+	xr_string res_name = _name;
+
+	res_name += RImplementation.getShaderParams();
+	LPCSTR name = res_name.c_str();
+
+	LPSTR N = LPSTR(name);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_PS::iterator I	= m_ps.find	(N);
 	if (I!=m_ps.end())	return		I->second;
@@ -218,7 +226,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		SPS*	_ps					=	new SPS	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
-		if (0==_stricmp(name,"null"))	{
+		if (0==_stricmp(_name,"null"))	{
 			_ps->ps				= nullptr;
 			return _ps;
 		}
@@ -226,7 +234,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		// Open file
 		string_path					cname;
         LPCSTR						shader_path = ::Render->getShaderPath();
-		xr_strconcat(cname,shader_path,name,".ps");
+		xr_strconcat(cname,shader_path, _name,".ps");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate

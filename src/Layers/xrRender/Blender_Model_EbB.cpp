@@ -137,36 +137,41 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
 
-	if (oBlend.value)	{
-		// forward
-		LPCSTR	vsname			= 0;
-		LPCSTR	psname			= 0;
-		switch(C.iElement) 
-		{
-		case 0:
-		case 1:
-			vsname = psname =	"model_env_lq"; 
-			C.r_Pass			(vsname,psname,TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
-			C.r_Sampler			("s_base",	C.L_textures[0]);
-			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
-			C.r_End				();
+	if(oBlend.value) {
+		switch(C.iElement) {
+			case SE_R2_NORMAL_HQ:
+			case SE_R2_NORMAL_LQ:
+			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, 0, true);
+
+			C.PassSET_ZB(TRUE, FALSE);
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+
+			C.r_Sampler("s_material", r2_material);
+			C.r_Sampler("env_s0", r2_T_envs0);
+			C.r_Sampler("env_s1", r2_T_envs1);
+			C.r_Sampler("sky_s0", r2_T_sky0);
+			C.r_Sampler("sky_s1", r2_T_sky1);
+
+			C.r_End();
 			break;
 		}
-	} else {
+	}
+	else {
 		// deferred
-		switch(C.iElement) 
-		{
-		case SE_R2_NORMAL_HQ: 	// deffer
-			uber_deffer		(C,true,	"model","base",false);
+		switch(C.iElement) {
+			case SE_R2_NORMAL_HQ: 	// deffer
+			uber_deffer(C, true, "deffer_model", "deffer_base", false, 0, true);
+			C.r_End();
 			break;
-		case SE_R2_NORMAL_LQ: 	// deffer
-			uber_deffer		(C,false,	"model","base",false);
+			case SE_R2_NORMAL_LQ: 	// deffer
+			uber_deffer(C, false, "deffer_model", "deffer_base", false, 0, true);
+			C.r_End();
 			break;
-		case SE_R2_SHADOW:		// smap
-			if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model","dumb",					FALSE,TRUE,TRUE,FALSE);
-			else							C.r_Pass	("shadow_direct_model","shadow_direct_base",	FALSE);
-			C.r_Sampler		("s_base",		C.L_textures[0]);
-			C.r_End			();
+			case SE_R2_SHADOW:		// smap
+			C.r_Pass("shadow_model", "shadow_base", FALSE);
+			C.r_Sampler("s_base", C.L_textures[0]);
+			C.r_ColorWriteEnable(false, false, false, false);
+			C.r_End();
 			break;
 		}
 	}
