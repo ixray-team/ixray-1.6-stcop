@@ -440,7 +440,7 @@ struct	v_shadow_direct
 
 struct	v2p_shadow_direct_aref
 {
-	float2	tc0		: TEXCOORD1;	// Diffuse map for aref
+	float2	tc0		: TEXCOORD0;	// Diffuse map for aref
 	float4	hpos	: SV_Position;	// Clip-space position         (for rasterization)
 };
 
@@ -451,11 +451,11 @@ struct	v2p_shadow_direct
 
 struct	p_shadow_direct_aref
 {
-	float2	tc0		: TEXCOORD1;	// Diffuse map for aref
+	float2	tc0		: TEXCOORD0;	// Diffuse map for aref
 };
 
 struct p_shadow {
-	float2	tc0 : TEXCOORD1;	
+	float2	tc0 : TEXCOORD0;	
 	float4	hpos : SV_Position;
 };
 
