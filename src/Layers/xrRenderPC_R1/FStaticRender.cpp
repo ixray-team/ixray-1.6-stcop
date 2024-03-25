@@ -68,7 +68,7 @@ void					CRender::create					()
 
 
 	// distortion
-	u32		v_dev	= CAP_VERSION(dxRenderDeviceRender::Instance().Caps.raster_major, dxRenderDeviceRender::Instance().Caps.raster_minor);
+	u32		v_dev	= CAP_VERSION(Caps.raster_major, Caps.raster_minor);
 	u32		v_need	= CAP_VERSION(1,4);
 	if ( v_dev >= v_need )						o.distortion = TRUE;
 	else										o.distortion = FALSE;

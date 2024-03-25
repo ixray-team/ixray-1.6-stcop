@@ -175,7 +175,7 @@ void CRender::level_Unload		()
 void CRender::LoadBuffers	(CStreamReader *base_fs)
 {
 	dxRenderDeviceRender::Instance().Resources->Evict	();
-	u32	dwUsage				= D3DUSAGE_WRITEONLY | (dxRenderDeviceRender::Instance().Caps.geometry.bSoftware?D3DUSAGE_SOFTWAREPROCESSING:0);
+	u32	dwUsage				= D3DUSAGE_WRITEONLY | (Caps.geometry.bSoftware?D3DUSAGE_SOFTWAREPROCESSING:0);
 
 	// Vertex buffers
 	if (base_fs->find_chunk(fsL_VB))
