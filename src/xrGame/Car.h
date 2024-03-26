@@ -109,6 +109,7 @@ protected:
 public:
 
 	bool TryTrunk();
+	bool TryUsableBones();
 
 	bool rsp,lsp,fwp,bkp,brp;
 	Fmatrix m_root_transform;
@@ -152,6 +153,7 @@ public:
 	float m_fuel;
 	float m_fuel_tank;
 	float m_fuel_consumption;
+
 	u16	  m_driver_anim_type;
 
 	float   m_break_start;
@@ -566,6 +568,10 @@ public:
 	virtual CCar* cast_car() override { return this; }
 	// Inventory for the car	
 	CInventory* GetInventory() { return &CInventoryOwner::inventory(); }
+
+private:
+	xr_hash_map<u16, shared_str> UsableBones;
+	u16 UsableBonesActive = BI_NONE;
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
