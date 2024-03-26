@@ -123,6 +123,12 @@ private:
 private:
 	float							m_power_fx_factor;
 
+	Fvector savedOrientation;
+	u32 dTimeFSeen;
+	u32 dTimeNfSeen;
+	float targetPitch, targetRoll;
+	Fvector targetNormal;
+
 private:
 	float							m_fRankDisperison;
 	float							m_fRankVisibility;
@@ -181,7 +187,7 @@ public:
 	virtual void						LoadSounds							(LPCSTR section );
 	
 	static void BoneCallback(CBoneInstance* B);
-	void LookAtActor(CBoneInstance* B);
+	void LookAtActor(CBoneInstance* headBone);
 
 	virtual BOOL						net_Spawn							(CSE_Abstract* DC);
 	virtual void						net_Export							(NET_Packet& P);

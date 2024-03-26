@@ -455,6 +455,8 @@ public:
 			float						MaxWalkWeight		() const;
 			float						get_additional_weight() const;
 
+			int	m_head;
+
 protected:
 	CFireDispertionController			m_fdisp_controller;
 	//если актер целится в прицел
@@ -480,7 +482,6 @@ protected:
 	int									m_r_hand;
 	int									m_l_finger1;
     int									m_r_finger2;
-	int									m_head;
 	int									m_eye_left;
 	int									m_eye_right;
 
