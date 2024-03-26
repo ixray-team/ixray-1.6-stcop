@@ -51,7 +51,7 @@ class CCar :
 	public CInventoryOwner
 {
 	friend struct SWheel;
-	friend struct CCarDoor;
+	friend class CCarDoor;
 private:
 	collide::rq_results		RQR;	
 	u16						m_bone_trunk;
@@ -145,7 +145,6 @@ public:
 	bool b_engine_on;
 	bool b_clutch;
 	bool b_starting;
-	bool b_stalling;
 	bool b_breaks;
 	bool b_transmission_switching;
 
@@ -354,7 +353,6 @@ private:
 
 	float					m_axle_friction;
 
-	float					m_fSaveMaxRPM;
 	float					m_max_rpm;
 	float					m_min_rpm;
 	float					m_power_rpm;//max power

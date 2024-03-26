@@ -163,7 +163,7 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
 	setVisible(TRUE);
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
-	m_fSaveMaxRPM = m_max_rpm;
+
 	SetfHealth(co->health);
 
 	if (!g_Alive())					b_exploded = true;
@@ -964,7 +964,6 @@ void CCar::Init()
 	b_engine_on = false;
 	b_clutch = false;
 	b_starting = false;
-	b_stalling = false;
 	b_transmission_switching = false;
 	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
 	m_current_transmission_num = 0;
