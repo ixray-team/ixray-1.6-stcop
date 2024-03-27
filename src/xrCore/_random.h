@@ -1,5 +1,4 @@
-#ifndef _LOCAL_RAND
-#define _LOCAL_RAND
+#pragma once
 
 class CRandom
 {
@@ -27,5 +26,3 @@ public:
 };
 
 XRCORE_API extern CRandom	Random;
-
-#endif

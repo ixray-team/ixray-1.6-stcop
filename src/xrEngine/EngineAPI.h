@@ -22,8 +22,8 @@ public:
 // Class creation/destroying interface
 extern "C" 
 {
-typedef DLL_API  DLL_Pure*	  __cdecl Factory_Create	(CLASS_ID	CLS_ID);
-typedef DLL_API  void		  __cdecl Factory_Destroy	(DLL_Pure*	O);
+typedef  DLL_Pure*	  __cdecl Factory_Create	(CLASS_ID	CLS_ID);
+typedef  void		  __cdecl Factory_Destroy	(DLL_Pure*	O);
 };
 
 enum class EditorUI : std::uint8_t

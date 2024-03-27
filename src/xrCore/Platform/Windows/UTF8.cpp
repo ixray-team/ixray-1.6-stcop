@@ -8,7 +8,7 @@ XRCORE_API wchar_t* Platform::ANSI_TO_TCHAR(const char* C)
 	RtlZeroMemory(&WName, sizeof(WName));
 
 	// Converts the path to wide characters
-	int needed = MultiByteToWideChar(CP_UTF8, 0, C, len + 1, WName, len + 1);
+	[[maybe_unused]]int needed = MultiByteToWideChar(CP_UTF8, 0, C, len + 1, WName, len + 1);
 	return WName;
 }
 

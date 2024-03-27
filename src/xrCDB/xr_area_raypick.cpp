@@ -1,15 +1,13 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "xr_area.h"
-#include "ispatial.h"
-#include "../xrengine/xr_collide_form.h"
-#include "../xrengine/xr_object.h"
-#include "../xrengine/cl_intersect.h"
-//#include "igame_level.h"
-//#include "x_ray.h"
-//#include "GameFont.h"
+#include "ISpatial.h"
+#include "../xrEngine/xr_collide_form.h"
+#include "../xrEngine/xr_object.h"
+#include "../xrEngine/cl_intersect.h"
+
 #ifdef	DEBUG
 static BOOL _cdb_bDebug = false;
-extern XRCDB_API BOOL *cdb_bDebug = &_cdb_bDebug;
+XRCDB_API BOOL *cdb_bDebug = &_cdb_bDebug;
 bool bDebug()
 {
 	return !!(*cdb_bDebug);

@@ -1,12 +1,12 @@
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
-#include "ispatial.h"
-#include "../xrengine/render.h"
+#include "ISpatial.h"
+#include "../xrEngine/Render.h"
 
 #ifdef DEBUG
-#include "../xrengine/xr_object.h"
-#include "../xrengine/PS_Instance.h"
+#include "../xrEngine/xr_object.h"
+#include "../xrEngine/PS_instance.h"
 #endif
 
 

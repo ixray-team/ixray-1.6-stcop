@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ppmd_compressor.h"
-#include "ppmd.h"
+#include "PPMd.h"
 
 const u32		suballocator_size			= 32;
 const u32		order_model					= 8;

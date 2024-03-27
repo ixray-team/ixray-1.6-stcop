@@ -21,7 +21,6 @@ u32 Platform::GetCoresCount()
 
 	u32 byteOffset = 0;
 	u32 processorCoreCount = 0;
-	u32 processorPackageCount = 0;
 
 	const s64 origPtr = reinterpret_cast<s64>(ptr);
 	while (byteOffset + sizeofStruct <= addr)
@@ -34,7 +33,6 @@ u32 Platform::GetCoresCount()
 			break;
 		case RelationProcessorPackage:
 			// Logical processors share a physical package.
-			processorPackageCount++;
 			break;
 
 		default:

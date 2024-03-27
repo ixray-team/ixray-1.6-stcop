@@ -1,5 +1,3 @@
-#ifndef xr_device
-#define xr_device
 #pragma once
 #include <functional>
 
@@ -7,15 +5,9 @@
 // ZNear - always 0.0f
 // ZFar  - always 1.0f
 
-//class	ENGINE_API	CResourceManager;
-//class	ENGINE_API	CGammaControl;
-
 #include "pure.h"
-//#include "hw.h"
-#include "../xrcore/ftimer.h"
-#include "stats.h"
-//#include "shader.h"
-//#include "R_Backend.h"
+#include "../xrCore/FTimer.h"
+#include "Stats.h"
 
 #define VIEWPORT_NEAR  0.2f
 #define HUD_VIEWPORT_NEAR  0.05f
@@ -323,5 +315,3 @@ public:
 	bool			b_need_user_input;
 };
 extern ENGINE_API CLoadScreenRenderer load_screen_renderer;
-
-#endif

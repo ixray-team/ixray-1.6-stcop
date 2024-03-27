@@ -1,8 +1,6 @@
-#ifndef xr_collide_defsH
-#define xr_collide_defsH
-//#pragma once
+#pragma once
 
-#include "xrcdb.h"
+#include "xrCDB.h"
 
 class CObject;
 namespace collide 
@@ -141,4 +139,3 @@ namespace collide
 	typedef  BOOL		rq_callback 	(rq_result& result, LPVOID user_data);
 	typedef  BOOL		test_callback 	(const ray_defs& rd, CObject* object, LPVOID user_data);
 };
-#endif
