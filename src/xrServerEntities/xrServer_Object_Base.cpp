@@ -22,22 +22,10 @@
 #	include "object_factory.h"
 #endif
 
-#ifndef XRSE_FACTORY_EXPORTS
-#	include "xrEProps.h"
-	
-	IPropHelper &PHelper()
-	{
-		NODEFAULT;
-#	ifdef DEBUG
-		return(*(IPropHelper*)0);
-#	endif
-	}
-
-#	ifdef XRGAME_EXPORTS
-#		include "ai_space.h"
-#		include "alife_simulator.h"
-#	endif // #ifdef XRGAME_EXPORTS
-#endif
+#ifdef XRGAME_EXPORTS
+#	include "ai_space.h"
+#	include "alife_simulator.h"
+#endif 
 
 LPCSTR script_section = "script";
 LPCSTR current_version = "current_server_entity_version";

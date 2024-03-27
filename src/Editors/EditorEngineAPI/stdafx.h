@@ -2,13 +2,14 @@
 #include "../../xrCore/stdafx.h"
 #include "../../xrCDB/stdafx.h"
 
+#include <imgui.h>
+#include <imgui_internal.h>
+
 class PropValue;
 class PropItem;
 
 using PropItemVec = xr_vector<PropItem*>;
 using PropItemIt = PropItemVec::iterator;
-
-using ButtonValue = void*;
 
 #include "../../xrCore/ChooseTypes.H"
 

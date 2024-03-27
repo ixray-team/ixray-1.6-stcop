@@ -1,6 +1,3 @@
-#ifndef GAMETYPE_CHOOSER_INCLUDED
-#define GAMETYPE_CHOOSER_INCLUDED
-
 #pragma once
 
 //new
@@ -37,5 +34,3 @@ struct GameTypeChooser
 	void	SetDefaults		()				{m_GameType.one();}
 	bool	MatchType		(const u16 t) const		{return (t==eGameIDNoGame) || !!m_GameType.test(t);};
 };
-
-#endif
