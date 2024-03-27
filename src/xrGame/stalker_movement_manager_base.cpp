@@ -283,7 +283,7 @@ void stalker_movement_manager_base::setup_movement_params	(stalker_movement_para
 				Fvector							vertex_position = ai().level_graph().vertex_position(level_path().dest_vertex_id());
 				VERIFY2							(
 					restrictions().accessible(vertex_position) || show_restrictions(&restrictions()),
-					make_string(
+					make_string<const char*>(
 						"vertex_id[%d],position[%f][%f][%f],object[%s]",
 						vertex_id,
 						VPUSH(vertex_position),

@@ -36,8 +36,8 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16					(id);
 			CObject* Obj			= Level().Objects.net_Find	(id);
 
-//			R_ASSERT2( Obj, make_string("GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id).c_str() );
-			VERIFY2  ( Obj, make_string("GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id) );
+//			R_ASSERT2( Obj, make_string<const char*>("GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id).c_str() );
+			VERIFY2  ( Obj, make_string<const char*>("GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id) );
 			if ( !Obj ) {
 				Msg                 ( "! GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id );
 				break;
@@ -86,8 +86,8 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16							(id);
 			CObject* Obj					= Level().Objects.net_Find	(id);
 
-//			R_ASSERT2( Obj, make_string("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str() );
-			VERIFY2  ( Obj, make_string("GE_OWNERSHIP_REJECT: Object not found, id = %d", id) );
+//			R_ASSERT2( Obj, make_string<const char*>("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str() );
+			VERIFY2  ( Obj, make_string<const char*>("GE_OWNERSHIP_REJECT: Object not found, id = %d", id) );
 			if ( !Obj ) {
 				Msg                 ( "! GE_OWNERSHIP_REJECT: Object not found, id = %d", id );
 				break;
@@ -114,7 +114,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			}
 			
 			VERIFY2( GO->H_Parent()->ID() == ID(), 
-				make_string("actor [%d][%s] tries to drop not own object [%d][%s]",
+				make_string<const char*>("actor [%d][%s] tries to drop not own object [%d][%s]",
 					ID(), Name(), GO->ID(), GO->cNameSect().c_str() ) );
 
 			if ( GO->H_Parent()->ID() != ID() )
@@ -187,15 +187,15 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16		(id);
 			CObject* Obj	= Level().Objects.net_Find	(id);
 
-//			R_ASSERT2( Obj, make_string("GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id).c_str() );
-			VERIFY2  ( Obj, make_string("GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id) );
+//			R_ASSERT2( Obj, make_string<const char*>("GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id).c_str() );
+			VERIFY2  ( Obj, make_string<const char*>("GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id) );
 			if ( !Obj ) {
 //				Msg                 ( "! GEG_PLAYER_ITEM_EAT(use): Object not found. object_id = [%d]", id );
 				break;
 			}
 
-//			R_ASSERT2( !Obj->getDestroy(), make_string("GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id).c_str() );
-			VERIFY2  ( !Obj->getDestroy(), make_string("GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id) );
+//			R_ASSERT2( !Obj->getDestroy(), make_string<const char*>("GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id).c_str() );
+			VERIFY2  ( !Obj->getDestroy(), make_string<const char*>("GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id) );
 			if ( Obj->getDestroy() ) {
 //				Msg                                ( "! GEG_PLAYER_ITEM_EAT(use): Object is destroying. object_id = [%d]", id );
 				break;
@@ -211,8 +211,8 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			if ( type == GEG_PLAYER_ACTIVATEARTEFACT )
 			{
 				CArtefact* pArtefact = smart_cast<CArtefact*>(Obj);
-	//			R_ASSERT2( pArtefact, make_string("GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id).c_str() );
-				VERIFY2  ( pArtefact, make_string("GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id) );
+	//			R_ASSERT2( pArtefact, make_string<const char*>("GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id).c_str() );
+				VERIFY2  ( pArtefact, make_string<const char*>("GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id) );
 				if ( !pArtefact ) {
 					Msg                       ( "! GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d]", id );
 					break;//1

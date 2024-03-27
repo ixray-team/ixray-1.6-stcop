@@ -30,10 +30,10 @@ void Group::construct( const shared_str& group_id, UpgradeBase& parent_upgrade, 
 	add_parent_upgrade( parent_upgrade );
 
 	VERIFY2( pSettings->section_exist( m_id ),
-		make_string( "Upgrade <%s> : group section [%s] does not exist!" , parent_upgrade.id_str(), m_id.c_str() ) );
+		make_string<const char*>( "Upgrade <%s> : group section [%s] does not exist!" , parent_upgrade.id_str(), m_id.c_str() ) );
 	
 	LPCSTR	upgrades_str = pSettings->r_string(m_id, "elements");
-	VERIFY2( upgrades_str, make_string( "in upgrade group <%s> elements are empty!", m_id.c_str() ) );
+	VERIFY2( upgrades_str, make_string<const char*>( "in upgrade group <%s> elements are empty!", m_id.c_str() ) );
 
 	u32 const buffer_size	= (xr_strlen(upgrades_str) + 1) * sizeof(char);
 	PSTR	temp  = (PSTR)_alloca( buffer_size );
@@ -98,7 +98,7 @@ UpgradeStateResult Group::can_install( CInventoryItem& item, UpgradeBase& test_u
 		{
 			if ( loading )
 			{
-				FATAL( make_string( "Loading item: Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed! Error = result_e_parents",
+				FATAL(make_string<const char*>( "Loading item: Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed! Error = result_e_parents",
 					test_upgrade.id_str(), item.m_section_id.c_str(), item.object_id() ));
 			}
 			return result_e_parents;
@@ -117,7 +117,7 @@ UpgradeStateResult Group::can_install( CInventoryItem& item, UpgradeBase& test_u
 		{
 			if ( loading )
 			{
-				FATAL( make_string( "Loading item: Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed! Error = result_e_group",
+				FATAL(make_string<const char*>( "Loading item: Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed! Error = result_e_group",
 					test_upgrade.id_str(), item.m_section_id.c_str(), item.object_id() ) );
 			}
 			return result_e_group;

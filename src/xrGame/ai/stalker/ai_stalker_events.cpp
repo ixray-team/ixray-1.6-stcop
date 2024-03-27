@@ -156,7 +156,7 @@ void CAI_Stalker::feel_touch_new				(CObject* O)
 
 	VERIFY2				(
 		std::find(m_ignored_touched_objects.begin(), m_ignored_touched_objects.end(), O) == m_ignored_touched_objects.end(),
-		make_string("object %s is already in ignroed touched objects list", O->cName().c_str())
+		make_string<const char*>("object %s is already in ignroed touched objects list", O->cName().c_str())
 	);
 	m_ignored_touched_objects.push_back	( O );
 }

@@ -113,7 +113,7 @@ u32	CRestrictedObject::accessible_nearest	(const Fvector &position, Fvector &res
 	START_PROFILE("Restricted Object/Accessible Nearest");
 	VERIFY2						(
 		!accessible(position),
-		make_string(
+		make_string<const char*>(
 			"[%s] [%f][%f][%f]",
 			object().cName().c_str(),
 			VPUSH(position)

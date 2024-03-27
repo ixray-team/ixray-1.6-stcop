@@ -149,7 +149,7 @@ void CSE_ALifeInventoryItem::UPDATE_Write	(NET_Packet &tNetPacket)
 
 	R_ASSERT2						(
 		num_items.num_items < (u8(1) << 5),
-		make_string("%d",num_items.num_items)
+		make_string<const char*>("%d",num_items.num_items)
 		);
 
 	if (State.enabled)									num_items.mask |= inventory_item_state_enabled;
@@ -205,7 +205,7 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 
 	R_ASSERT2						(
 		m_u8NumItems < (u8(1) << 5),
-		make_string("%d",m_u8NumItems)
+		make_string<const char*>("%d",m_u8NumItems)
 		);
 	
 	/*if (check(num_items.mask,animated))
@@ -307,7 +307,7 @@ void CSE_ALifeInventoryItem::add_upgrade( const shared_str& upgrade_id )
 		m_upgrades.push_back( upgrade_id );
 		return;
 	}
-	FATAL( make_string( "Can`t add existent upgrade (%s)!", upgrade_id.c_str() ));
+	FATAL(make_string<const char*>( "Can`t add existent upgrade (%s)!", upgrade_id.c_str() ));
 }
 
 

@@ -31,7 +31,7 @@ unsigned short int mbhMulti2WideDumb
 		return 0;
 
 	if ( WideStr || WidePos )
-		VERIFY2( ( ( WideStrSize > 0 ) && ( WideStrSize < 0xFFFF ) ) , make_string( "'WideStrSize'=%hu" , WideStrSize ) );
+		VERIFY2( ( ( WideStrSize > 0 ) && ( WideStrSize < 0xFFFF ) ) , make_string<const char*>( "'WideStrSize'=%hu" , WideStrSize ) );
 
 	while ( ( b1	= MultiStr[ spos++ ] ) != 0x00 ) {
 
@@ -43,7 +43,7 @@ unsigned short int mbhMulti2WideDumb
 		wc = b1;
 
 		if ( WideStr ) {
-			VERIFY2( ( dpos < WideStrSize ) , make_string( "S1: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
+			VERIFY2( ( dpos < WideStrSize ) , make_string<const char*>( "S1: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
 			WideStr[ dpos ] = wc;
 		}
 	}
@@ -52,7 +52,7 @@ unsigned short int mbhMulti2WideDumb
 		WidePos[ dpos ] = spos;
 
 	if ( WideStr ) {
-		VERIFY2( ( dpos < WideStrSize ) , make_string( "S2: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
+		VERIFY2( ( dpos < WideStrSize ) , make_string<const char*>( "S2: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
 		WideStr[ dpos + 1 ] = 0x0000;
 	}
 
@@ -78,7 +78,7 @@ ENGINE_API unsigned short int mbhMulti2Wide
 		return 0;
 
 	if ( WideStr || WidePos )
-		VERIFY2( ( ( WideStrSize > 0 ) && ( WideStrSize < 0xFFFF ) ) , make_string( "'WideStrSize'=%hu" , WideStrSize ) );
+		VERIFY2( ( ( WideStrSize > 0 ) && ( WideStrSize < 0xFFFF ) ) , make_string<const char*>( "'WideStrSize'=%hu" , WideStrSize ) );
 
 	while ( ( b1 = MultiStr[ spos ] ) != 0x00 ) {
 
@@ -130,7 +130,7 @@ ENGINE_API unsigned short int mbhMulti2Wide
 		dpos++;
 
 		if ( WideStr ) {
-			VERIFY2( ( dpos < WideStrSize ) , make_string( "S1: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
+			VERIFY2( ( dpos < WideStrSize ) , make_string<const char*>( "S1: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
 			WideStr[ dpos ] = wc;
 		}
 	}
@@ -139,7 +139,7 @@ ENGINE_API unsigned short int mbhMulti2Wide
 		WidePos[ dpos ] = spos;
 
 	if ( WideStr ) {
-		VERIFY2( ( dpos < WideStrSize ) , make_string( "S2: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
+		VERIFY2( ( dpos < WideStrSize ) , make_string<const char*>( "S2: '%s',%hu<%hu" , MultiStr , dpos , WideStrSize ) );
 		WideStr[ dpos + 1 ] = 0x0000;
 	}
 

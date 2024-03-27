@@ -46,7 +46,7 @@ void CAgentMemberManager::add					(CEntity *member)
 
 	VERIFY2						(
 		sizeof(squad_mask_type)*8 > members().size(),
-		make_string(
+		make_string<const char*>(
 			"too many stalkers in group ([team:%d][squad:%d][group:%d]!",
 			m_members.front()->object().g_Team(),
 			m_members.front()->object().g_Squad(),

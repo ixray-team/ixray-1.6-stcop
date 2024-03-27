@@ -518,7 +518,7 @@ public:
 	virtual void	Info		(TInfo& I)
 	{
 		xr_strcpy(I, 
-			make_string(
+			make_string<const char*>(
 				"Make screenshot. Format: \"make_screenshot <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers",
 				LAST_PRINTED_PLAYER_STR
 			)
@@ -565,7 +565,7 @@ public:
 	virtual void	Info		(TInfo& I)
 	{
 		xr_strcpy(I, 
-			make_string(
+			make_string<const char*>(
 				"Make config dump. Format: \"make_config_dump <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers",
 				LAST_PRINTED_PLAYER_STR
 			)
@@ -938,7 +938,7 @@ public:
 	virtual void	Info		(TInfo& I)
 	{
 		xr_strcpy(I, 
-			make_string(
+			make_string<const char*>(
 				"Ban player. Format: \"sv_banplayer <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers",
 				LAST_PRINTED_PLAYER_STR
 			)
@@ -1014,7 +1014,7 @@ public:
 	virtual void	Info		(TInfo& I)
 	{
 		xr_strcpy(I,
-			make_string(
+			make_string<const char*>(
 				"Unban player. Format: \"sv_unbanplayer <banned player index | \'%s\'>. To receive list of banned players see sv_listplayers_banned",
 				LAST_PRINTED_PLAYER_BANNED_STR
 			)

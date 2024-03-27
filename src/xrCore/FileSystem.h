@@ -1,18 +1,17 @@
 //----------------------------------------------------
 // file: FileSystem.h
 //----------------------------------------------------
-
-#ifndef FileSystemH
-#define FileSystemH
-
+#pragma once
 #define BACKUP_FILE_LEVEL 5
 
-class XRCORE_API EFS_Utils {
+class XRCORE_API EFS_Utils 
+{
 protected:
-	bool 		GetOpenNameInternal		(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+	bool 		GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti = false, LPCSTR offset = 0, int start_flt_ext = -1);
+
 public:
-				EFS_Utils		();
-	virtual 	~EFS_Utils		();
+				EFS_Utils		() = default;
+	virtual 	~EFS_Utils		() = default;
 	void 		_initialize		(){}
     void 		_destroy		(){}
 
@@ -39,8 +38,6 @@ public:
     xr_string	ExtractFileExt		(LPCSTR src);
     xr_string	ExcludeBasePath		(LPCSTR full_path, LPCSTR excl_path);
 };
-extern XRCORE_API	EFS_Utils*	xr_EFS;
+
+extern XRCORE_API EFS_Utils* xr_EFS;
 #define EFS (*xr_EFS)
-
-#endif /*_INCDEF_FileSystem_H_*/
-

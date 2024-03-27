@@ -88,7 +88,7 @@ IC	void CObjectFactory::add	(CObjectItemAbstract *item)
 	{
 		string16			temp;
 		CLSID2TEXT			(item->clsid(),temp);
-		VERIFY2				(0, make_string("clsid is duplicated : %s",temp));
+		VERIFY2				(0, make_string<const char*>("clsid is duplicated : %s",temp));
 	}
 	
 #ifndef NO_XR_GAME

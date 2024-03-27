@@ -314,9 +314,9 @@ Fvector	CSightManager::aiming_position				() const
 
 	switch (current_action().sight_type()) {
 		case eSightTypeCurrentDirection : {
-			VERIFY2			( _valid(object().Position()), make_string("[%f][%f][%f]", VPUSH(object().Position())) );
-			VERIFY2			( _valid(-object().movement().m_head.current.yaw), make_string("%f", -object().movement().m_head.current.yaw) );
-			VERIFY2			( _valid(-object().movement().m_head.current.yaw), make_string("%f", -object().movement().m_head.current.pitch) );
+			VERIFY2			( _valid(object().Position()), make_string<const char*>("[%f][%f][%f]", VPUSH(object().Position())) );
+			VERIFY2			( _valid(-object().movement().m_head.current.yaw), make_string<const char*>("%f", -object().movement().m_head.current.yaw) );
+			VERIFY2			( _valid(-object().movement().m_head.current.yaw), make_string<const char*>("%f", -object().movement().m_head.current.pitch) );
 			VERIFY			(
 				_valid(
 					Fvector().setHP(
@@ -336,7 +336,7 @@ Fvector	CSightManager::aiming_position				() const
 
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.current.yaw,
@@ -358,7 +358,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.target.yaw,
@@ -378,7 +378,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f][%f] [%f]",
 					VPUSH(object().Position()),
 					VPUSH(current_action().vector3d()),
@@ -393,7 +393,7 @@ Fvector	CSightManager::aiming_position				() const
 			result				= current_action().vector3d();
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f]",
 					VPUSH(current_action().vector3d())
 				)
@@ -405,7 +405,7 @@ Fvector	CSightManager::aiming_position				() const
 			result				= object_position();
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f]",
 					VPUSH(result)
 				)
@@ -419,7 +419,7 @@ Fvector	CSightManager::aiming_position				() const
 					result		= current_action().vector3d();//object_position();
 					VERIFY2	(
 						result.magnitude() < 100000.f,
-						make_string(
+						make_string<const char*>(
 							"[%f][%f][%f]",
 							VPUSH(result)
 						)
@@ -431,7 +431,7 @@ Fvector	CSightManager::aiming_position				() const
 					result		= current_action().vector3d();
 					VERIFY2			(
 						result.magnitude() < 100000.f,
-						make_string(
+						make_string<const char*>(
 							"[%f][%f][%f]",
 							VPUSH(result)
 						)
@@ -454,7 +454,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.current.yaw,
@@ -476,7 +476,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.current.yaw,
@@ -498,7 +498,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.current.yaw,
@@ -520,7 +520,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.current.yaw,
@@ -542,7 +542,7 @@ Fvector	CSightManager::aiming_position				() const
 			);
 			VERIFY2			(
 				result.magnitude() < 100000.f,
-				make_string(
+				make_string<const char*>(
 					"[%f][%f][%f] [%f][%f] [%f]",
 					VPUSH(object().Position()),
 					-object().movement().m_head.current.yaw,
@@ -558,7 +558,7 @@ Fvector	CSightManager::aiming_position				() const
 
 	VERIFY2					(
 		result.magnitude() < 100000.f,
-		make_string(
+		make_string<const char*>(
 			"[%f][%f][%f] [%f][%f] [%f]",
 			VPUSH(result)
 		)

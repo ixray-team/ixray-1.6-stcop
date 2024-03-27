@@ -817,7 +817,7 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	
 	R_ASSERT2(
 		*std::max_element(m_vFreeRPoints[Team].begin(), m_vFreeRPoints[Team].end()) < rp.size(),
-		make_string("free rpoints of team [%d] has hell rpoint", Team)
+		make_string<const char*>("free rpoints of team [%d] has hell rpoint", Team)
 	);
 
 	xr_vector<RPointData>	tmpPoints;
@@ -917,10 +917,10 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector
 void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 {
 	game_PlayerState* ps = get_id(id_who);
-	VERIFY2(ps, make_string("player state not found (ClientID = 0x%08x)", id_who.value()));
+	VERIFY2(ps, make_string<const char*>("player state not found (ClientID = 0x%08x)", id_who.value()));
 	CSE_ALifeCreatureActor* e_Actor	= smart_cast<CSE_ALifeCreatureActor*>(get_entity_from_eid(ps->GameID));
 	VERIFY2(e_Actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("server entity of actor not found (GameID = 0x%08x)", ps->GameID));
+		make_string<const char*>("server entity of actor not found (GameID = 0x%08x)", ps->GameID));
 	
 	DestroyAllPlayerItems(id_who);
 	ClearPlayerItems(ps);
@@ -2243,7 +2243,7 @@ void game_sv_Deathmatch::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector
 	CActor*		pActor = smart_cast<CActor*>(Level().Objects.net_Find(actor->ID));
 	
 //	R_ASSERT2( pActor, make_string("Actor not found. actor_id = [%d]", actor->ID).c_str() );
-	VERIFY2  ( pActor, make_string("Actor not found. actor_id = [%d]", actor->ID));
+	VERIFY2  ( pActor, make_string<const char*>("Actor not found. actor_id = [%d]", actor->ID));
 	if ( !pActor ) {
 		Msg             ( "! ERROR: Actor not found. actor_id = [%d]", actor->ID );
 		return;

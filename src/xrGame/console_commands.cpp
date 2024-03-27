@@ -1054,7 +1054,7 @@ struct CCC_ReloadSystemLtx : public IConsole_Command {
 		pSettings = new CInifile(fname, TRUE);
 		CHECK_OR_EXIT(
 			0 != pSettings->section_count(),
-			make_string("Cannot find file %s.\nReinstalling application may fix this problem.",
+			make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",
 				fname));
 		Msg("system.ltx was reloaded.");
 	}

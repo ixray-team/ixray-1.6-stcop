@@ -103,7 +103,7 @@ void description::load_loopholes	(shared_str const &table_id)
 			loopholes,
 			LUA_TTABLE
 		);
-	VERIFY2						(result, make_string("bad or missing loopholes table in smart_cover [%s]", table_id.c_str()));
+	VERIFY2						(result, make_string<const char*>("bad or missing loopholes table in smart_cover [%s]", table_id.c_str()));
 
 	luabind::iterator it(loopholes), end;
 	const size_t count = luabind::distance(it, end);
@@ -123,13 +123,13 @@ void description::load_loopholes	(shared_str const &table_id)
 		++it;
 	}
 
-	VERIFY2						(!m_loopholes.empty(), make_string("smart_cover [%s] doesn't have loopholes", m_table_id.c_str()));
+	VERIFY2						(!m_loopholes.empty(), make_string<const char*>("smart_cover [%s] doesn't have loopholes", m_table_id.c_str()));
 	VERIFY2						(
 		std::find_if(
 			m_loopholes.begin(),
 			m_loopholes.end(), 
 			usable_predicate()
-		) != m_loopholes.end(),  make_string("smart_cover [%s] doesn't have usable loopholes", m_table_id.c_str())
+		) != m_loopholes.end(), make_string<const char*>("smart_cover [%s] doesn't have usable loopholes", m_table_id.c_str())
 	);
 }
 
@@ -150,7 +150,7 @@ void description::process_loopholes()
 			m_loopholes.end(), 
 			enterable_predicate()
 		) != m_loopholes.end(),
-		make_string(
+		make_string<const char*>(
 			"smart_cover [%s] doesn't have enterable loopholes",
 			m_table_id.c_str()
 		)
@@ -162,7 +162,7 @@ void description::process_loopholes()
 			m_loopholes.end(), 
 			exitable_predicate()
 		) != m_loopholes.end(), 
-		make_string(
+		make_string<const char*>(
 			"smart_cover [%s] doesn't have exitable loopholes",
 			m_table_id.c_str()
 		)

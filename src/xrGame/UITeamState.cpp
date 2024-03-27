@@ -69,7 +69,7 @@ void UITeamState::Init(CUIXml& uiXml, LPCSTR teamNodeName, int index)
 	mainUiXml = &uiXml;	//warning !
 	teamXmlNode = uiXml.NavigateToNode(teamNodeName, index);
 	VERIFY2(teamXmlNode, 
-		make_string("team xml node (%s) not found", teamNodeName));
+		make_string<const char*>("team xml node (%s) not found", teamNodeName));
 
 	CUIXmlInit::InitWindow(uiXml, teamNodeName, index, this);
 	XML_NODE* tempRoot = uiXml.GetLocalRoot();
@@ -188,7 +188,7 @@ void UITeamState::AddPlayer(ClientID const & clientId)
 		this, 
 			m_teamPanels);
 
-	VERIFY2(tempPlayerItem, make_string("failed to create player with ClientID = 0x%08x", clientId.value()));
+	VERIFY2(tempPlayerItem, make_string<const char*>("failed to create player with ClientID = 0x%08x", clientId.value()));
 	
 	TScrollPanels::size_type panel_index = GetNeedScrollPanelIndex();
 

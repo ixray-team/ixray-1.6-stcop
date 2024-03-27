@@ -245,7 +245,7 @@ bool CSE_ALifeMonsterAbstract::redundant				() const
 	ALife::_TIME_ID				current_time = alife().time_manager().game_time();
 	VERIFY2						(
 		m_game_death_time <= current_time,
-		make_string(
+		make_string<const char*>(
 			"incorrect death time for monster %s[death time = %I64d][current time = %I64d]",
 			name_replace(),
 			m_game_death_time,

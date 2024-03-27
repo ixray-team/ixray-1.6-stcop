@@ -39,7 +39,7 @@ inline u8 *stream::buffer		() const
 inline u32 stream::tell			() const
 {
 	VERIFY			(m_pointer >= m_buffer);
-	VERIFY2			(m_pointer <= (m_buffer + m_buffer_size),make_string("0x%08x <= 0x%08x + %d",m_pointer,m_buffer,m_buffer_size));
+	VERIFY2			(m_pointer <= (m_buffer + m_buffer_size),make_string<const char*>("0x%08x <= 0x%08x + %d",m_pointer,m_buffer,m_buffer_size));
 	return			(u32(m_pointer - m_buffer));
 }
 

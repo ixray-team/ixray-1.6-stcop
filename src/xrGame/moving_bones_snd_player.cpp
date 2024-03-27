@@ -146,10 +146,10 @@ void moving_bones_snd_player::load( IKinematics &K, CInifile& ini, LPCSTR sectio
 	max_factor		= ini.r_float(section, "max_factor" );
 	base_velocity	= ini.r_float(section, "base_velocity" );
 
-	VERIFY2( min_factor > 0.f, make_string( "moving_bones_snd_player: bad params: min_factor: %f < 0 ", min_factor ) );
-	VERIFY2( max_factor > 0.f, make_string( "moving_bones_snd_player: bad params: max_factor: %f < 0 ", max_factor ) );
-	VERIFY2( max_factor > 0.f, make_string( "moving_bones_snd_player: bad params: base_velocity: %f < 0 ", base_velocity ) );
-	VERIFY2( min_factor <= max_factor, make_string( "moving_bones_snd_player: bad params: min_factor %f > max_factor %f, ", min_factor, max_factor ) );
+	VERIFY2( min_factor > 0.f, make_string<const char*>( "moving_bones_snd_player: bad params: min_factor: %f < 0 ", min_factor ) );
+	VERIFY2( max_factor > 0.f, make_string<const char*>( "moving_bones_snd_player: bad params: max_factor: %f < 0 ", max_factor ) );
+	VERIFY2( max_factor > 0.f, make_string<const char*>( "moving_bones_snd_player: bad params: base_velocity: %f < 0 ", base_velocity ) );
+	VERIFY2( min_factor <= max_factor, make_string<const char*>( "moving_bones_snd_player: bad params: min_factor %f > max_factor %f, ", min_factor, max_factor ) );
 
 	smothed_velocity = base_velocity;
 	previous_position.set( object );

@@ -25,7 +25,7 @@ BOOL CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 	m_attack_animation			= SA->ID_Cycle_Safe(Z->attack_animation);
 	R_ASSERT2				(
 		m_attack_animation.valid(),
-		make_string(
+		make_string<const char*>(
 			"object[%s]: cannot find attack animation[%s] in model[%s]",
 			cName().c_str(),
 			Z->attack_animation.c_str(),
@@ -36,7 +36,7 @@ BOOL CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 	m_idle_animation			= SA->ID_Cycle_Safe(Z->startup_animation);
 	R_ASSERT2				(
 		m_idle_animation.valid(),
-		make_string(
+		make_string<const char*>(
 			"object[%s]: cannot find startup animation[%s] in model[%s]",
 			cName().c_str(),
 			Z->startup_animation.c_str(),

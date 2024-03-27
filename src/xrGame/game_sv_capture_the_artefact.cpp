@@ -450,7 +450,7 @@ void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name,
 
 
 	VERIFY2(actor, 
-		make_string("actor not found (GameID = 0x%08x)", GameID));
+		make_string<const char*>("actor not found (GameID = 0x%08x)", GameID));
 	
 	TeamsMap::iterator te = teams.end();
 	TeamsMap::iterator artefactOwnerTeam = std::find_if(teams.begin(), te, 
@@ -827,7 +827,7 @@ void game_sv_CaptureTheArtefact::OnRoundEnd()
 void game_sv_CaptureTheArtefact::OnPlayerSelectSkin(NET_Packet& P, ClientID sender)
 {
 	xrClientData * l_pC = m_server->ID_to_client(sender);
-	R_ASSERT2(l_pC, make_string("Client data not found, id = <%d>", sender.value()));
+	R_ASSERT2(l_pC, make_string<const char*>("Client data not found, id = <%d>", sender.value()));
 	s8 l_skin;
 	P.r_s8(l_skin);
 	OnPlayerChangeSkin(l_pC->ID, l_skin);
@@ -842,7 +842,7 @@ void game_sv_CaptureTheArtefact::OnPlayerSelectSkin(NET_Packet& P, ClientID send
 void game_sv_CaptureTheArtefact::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 {
 	xrClientData * l_pC = m_server->ID_to_client(sender);
-	R_ASSERT2(l_pC, make_string("Client data not found, id = <%d>", sender.value()));
+	R_ASSERT2(l_pC, make_string<const char*>("Client data not found, id = <%d>", sender.value()));
 	s8 prev_team = l_pC->ps->team;
 	s8 selectedTeam;
 	P.r_s8(selectedTeam);
@@ -887,10 +887,10 @@ void game_sv_CaptureTheArtefact::OnPlayerChangeSkin(ClientID id_who, s8 skin)
 	{
 		TeamsMap::iterator tempPlayerTeam = teams.find(static_cast<ETeam>(ps_who->team));
 		VERIFY2(tempPlayerTeam != teams.end(), 
-			make_string("Player team (%d) not found", ps_who->team));
+			make_string<const char*>("Player team (%d) not found", ps_who->team));
 		TEAM_DATA_LIST::size_type teamIndex = tempPlayerTeam->second.indexOfTeamInList;
 		VERIFY2(TeamList.size() > teamIndex, 
-			make_string("team index not valid: (%d)", teamIndex));
+			make_string<const char*>("team index not valid: (%d)", teamIndex));
 		s32 maxSkinIndex = static_cast<s32>(TeamList[teamIndex].aSkins.size());
 		ps_who->skin = static_cast<u8>(::Random.randI(maxSkinIndex));
 	}
@@ -918,7 +918,7 @@ void game_sv_CaptureTheArtefact::LoadTeamData(ETeam eteam, const shared_str& caS
 	TeamStruct	NewTeam;
 	
 	VERIFY2(pSettings->section_exist(caSection),
-		make_string("No %s section found", caSection.c_str()));
+		make_string<const char*>("No %s section found", caSection.c_str()));
 
 	shared_str m_sBaseWeaponCostSection;
 	m_sBaseWeaponCostSection._set("capturetheartefact_base_cost");
@@ -938,7 +938,7 @@ void game_sv_CaptureTheArtefact::LoadTeamData(ETeam eteam, const shared_str& caS
 	shared_str artefactName;
 	
 	VERIFY2(pSettings->line_exist(caSection, "artefact"),
-			make_string("Not found \"artefact\" in section %s", caSection.c_str()));
+			make_string<const char*>("Not found \"artefact\" in section %s", caSection.c_str()));
 	
 	artefactName = pSettings->r_string(caSection, "artefact");
 	
@@ -1217,7 +1217,7 @@ void game_sv_CaptureTheArtefact::LoadArtefactRPoints()
 	{
 		if (!i->second.rPointInitialized)
 		{
-			VERIFY2(false, make_string("Not found RPoint for team %d", i->first));
+			VERIFY2(false, make_string<const char*>("Not found RPoint for team %d", i->first));
 		}
 	}
 }
@@ -1612,7 +1612,7 @@ void game_sv_CaptureTheArtefact::ReSpawnArtefacts()
 	for (TeamsMap::iterator ti = teams.begin(); ti != te; ti++)
 	{
 		VERIFY2(!!ti->second.artefactName,
-			make_string("not found artefact class name for team %d", ti->first));
+			make_string<const char*>("not found artefact class name for team %d", ti->first));
 		CSE_ALifeItemArtefact *tempSvEntity = smart_cast<CSE_ALifeItemArtefact*>(spawn_begin(ti->second.artefactName.c_str()));
 		tempSvEntity->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		//MoveArtefactToPoint(tempSvEntity, ti->second.artefactRPoint);
@@ -1635,7 +1635,7 @@ BOOL game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, BOOL bForc
 	}
 
 	/*VERIFY2(e_who, 
-		make_string("no actor (id = %id) touches the target (id = %d)").c_str());*/
+		make_string<const char*>("no actor (id = %id) touches the target (id = %d)").c_str());*/
 
 	xrClientData *xrCData = e_who->owner;
 	VERIFY(xrCData);
@@ -1799,10 +1799,10 @@ void game_sv_CaptureTheArtefact::OnDetach(u16 eid_who, u16 eid_target)
 		return;
 	}
 	/*VERIFY2(e_who,
-		make_string("failed to get actor entity (id = %d)",eid_who).c_str());*/
+		make_string<const char*>("failed to get actor entity (id = %d)",eid_who).c_str());*/
 	
 	VERIFY2(e_item,
-		make_string("failed to get item entity (id = %d)", eid_target));
+		make_string<const char*>("failed to get item entity (id = %d)", eid_target));
 
 
 	if (artefactOfTeam != te)
@@ -1834,10 +1834,10 @@ BOOL game_sv_CaptureTheArtefact::OnActivate(u16 eid_who, u16 eid_target)
 	CSE_Abstract *e_item = m_server->ID_to_entity(eid_target);
 	
 	VERIFY2(e_who,
-		make_string("failed to get actor entity (id = %d)",eid_who));
+		make_string<const char*>("failed to get actor entity (id = %d)",eid_who));
 	
 	VERIFY2(e_item,
-		make_string("failed to get item entity (id = %d)", eid_target));
+		make_string<const char*>("failed to get item entity (id = %d)", eid_target));
 
 	xrClientData *xrCData = e_who->owner;
 	VERIFY(xrCData);
@@ -1981,7 +1981,7 @@ void game_sv_CaptureTheArtefact::MoveArtefactToPoint(CSE_ALifeItemArtefact *arte
 
 	CArtefact * OArtefact = smart_cast<CArtefact*>(Level().Objects.net_Find(artefact->ID));
 
-	R_ASSERT2( OArtefact, make_string("artefact not found. artefact_id = [%d]. CTA:MoveArtefactToPoint()", artefact->ID));
+	R_ASSERT2( OArtefact, make_string<const char*>("artefact not found. artefact_id = [%d]. CTA:MoveArtefactToPoint()", artefact->ID));
 
 	OArtefact->StopActivation();
 	OArtefact->MoveTo(toPoint.P);										//to server client object
@@ -2075,7 +2075,7 @@ void game_sv_CaptureTheArtefact::RespawnDeadPlayers()
 		void operator()(IClient* client)
 		{
 			xrClientData *l_pC = static_cast<xrClientData*>(client);
-			//R_VERIFY2(l_pC && l_pC->ps && l_pC->owner, make_string("client #%d has problem with states", i).c_str());
+			//R_VERIFY2(l_pC && l_pC->ps && l_pC->owner, make_string<const char*>("client #%d has problem with states", i).c_str());
 			if (!l_pC || !l_pC->ps || !l_pC->owner)
 				return;
 
@@ -2134,7 +2134,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 	TeamsMap::iterator te = teams.end();
 	TeamsMap::iterator artefactOfTeam = teams.find(teamOfArtefact);
 	VERIFY2(artefactOfTeam != te,
-		make_string("artefact owner team (%d) not found", teamOfArtefact));
+		make_string<const char*>("artefact owner team (%d) not found", teamOfArtefact));
 	VERIFY(artefactOfTeam->second.artefact);
 
 		
@@ -2153,7 +2153,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 	TEAM_DATA_LIST::const_iterator teamIter = TeamList.begin() + teams[actorTeam].indexOfTeamInList;
 	
 	R_ASSERT2(teamIter != TeamList.end(),
-		make_string("deliver artefact team (%d) not found in TeamList", actorTeam));
+		make_string<const char*>("deliver artefact team (%d) not found in TeamList", actorTeam));
 
 	Player_AddMoney(ps, teamIter->m_iM_TargetSucceed);
 	ps->af_count++;
@@ -2325,7 +2325,7 @@ void game_sv_CaptureTheArtefact::CheckForArtefactDelivering()
 		ETeam artefactOfTeam = static_cast<ETeam>(xrCData->ps->team);
 		myTeamIter = teams.find(artefactOfTeam);
 		VERIFY2(myTeamIter != teams.end(),
-			make_string("artefact team (%d) not found", artefactOfTeam));
+			make_string<const char*>("artefact team (%d) not found", artefactOfTeam));
 		// if some one alredy took your artefact or own artefact not on base, continue
 		Fvector3 & myArtPoint = myTeamIter->second.artefactRPoint.P;
 		if ((myTeamIter->second.artefactOwner) ||

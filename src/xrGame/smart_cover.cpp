@@ -69,7 +69,7 @@ cover::cover					(
 		u32						level_vertex_id = graph.vertex_id(position);
 		VERIFY2					(
 			graph.valid_vertex_id(level_vertex_id),
-			make_string(
+			make_string<const char*>(
 				"invalid vertex id: smart cover[%s], loophole [%s]",
 				m_object.cName().c_str(),
 				(*J)->id().c_str()
@@ -97,7 +97,7 @@ void cover::vertex				(smart_cover::loophole const &loophole, smart_cover::looph
 	loophole_data.m_level_vertex_id	= graph.vertex_id(pos);
 	VERIFY2						(
 		graph.valid_vertex_id(loophole_data.m_level_vertex_id),
-		make_string(
+		make_string<const char*>(
 			"invalid vertex id: smart cover[%s], loophole [%s]",
 			m_object.cName().c_str(),
 			loophole.id().c_str()
@@ -114,7 +114,7 @@ void cover::vertex				(smart_cover::loophole const &loophole, smart_cover::looph
 			u32					level_vertex_id = graph.vertex_id(pos_);
 			VERIFY2				(
 				graph.valid_vertex_id(level_vertex_id),
-				make_string(
+				make_string<const char*>(
 					"invalid vertex id: loophole [%s]",
 					loophole.id().c_str()
 				)
@@ -185,13 +185,13 @@ smart_cover::loophole *cover::best_loophole	(Fvector const &position, float &val
 void cover::evaluate_loophole				(Fvector const &position, smart_cover::loophole * &source, smart_cover::loophole * &result, float &value, bool const is_smart_cover_entered ) const
 {
 	VERIFY						( source );
-	VERIFY2						( _valid(position), make_string("[%f][%f][%f]", VPUSH(position)) );
+	VERIFY2						( _valid(position), make_string<const char*>("[%f][%f][%f]", VPUSH(position)) );
 
 	if (!source->usable())
 		return;
 
 	Fvector						fov_position = this->fov_position(*source);
-	VERIFY2						( _valid(fov_position), make_string("[%f][%f][%f]", VPUSH(fov_position)) );
+	VERIFY2						( _valid(fov_position), make_string<const char*>("[%f][%f][%f]", VPUSH(fov_position)) );
 	float const distance_to_target	= fov_position.distance_to(position);
 	if ( distance_to_target > source->range() )
 		return;
@@ -201,7 +201,7 @@ void cover::evaluate_loophole				(Fvector const &position, smart_cover::loophole
 		return;
 
 	Fvector						direction = Fvector().sub(position, fov_position);
-	VERIFY2						( _valid(direction), make_string("[%f][%f][%f]", VPUSH(direction)) );
+	VERIFY2						( _valid(direction), make_string<const char*>("[%f][%f][%f]", VPUSH(direction)) );
 	if (direction.magnitude() < 1.f)
 		return;
 
@@ -278,7 +278,7 @@ bool cover::loophole_path					(shared_str const &source_raw, shared_str const &t
 
 	VERIFY2						(
 		result,
-		make_string				(
+		make_string<const char*>				(
 			"failde to find loophole path [%s]->[%s] in cover [%s]",
 			source.c_str(),
 			target.c_str(),
@@ -304,7 +304,7 @@ void cover::check_loopholes_connectivity	() const
 			shared_str const	&rhs = (*J)->id();
 			VERIFY2				(
 				loophole_path(lhs, rhs),
-				make_string(
+				make_string<const char*>(
 					"failed to find path [%s -> %s] in smart_cover [%s]",
 					lhs.c_str(),
 					rhs.c_str(),
@@ -313,7 +313,7 @@ void cover::check_loopholes_connectivity	() const
 			);
 			VERIFY2				(
 				loophole_path(rhs, lhs),
-				make_string(
+				make_string<const char*>(
 					"failed to find path [%s -> %s] in smart_cover [%s]",
 					rhs.c_str(),
 					lhs.c_str(),
@@ -324,7 +324,7 @@ void cover::check_loopholes_connectivity	() const
 
 		VERIFY2				(
 			loophole_path(lhs, exit),
-			make_string(
+			make_string<const char*>(
 				"failed to find path [%s -> %s] in smart_cover [%s]",
 				lhs.c_str(),
 				exit.c_str(),
@@ -333,7 +333,7 @@ void cover::check_loopholes_connectivity	() const
 		);
 		VERIFY2				(
 			loophole_path(enter, lhs),
-			make_string(
+			make_string<const char*>(
 				"failed to find path [%s -> %s] in smart_cover [%s]",
 				enter.c_str(),
 				lhs.c_str(),

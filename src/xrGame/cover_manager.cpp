@@ -253,7 +253,7 @@ CCoverManager::Cover *CCoverManager::smart_cover			(shared_str const &cover_id) 
 
 	VERIFY2					(
 		((found != m_smart_covers.end()) && ((*found)->id()._get() == cover_id._get())),
-		make_string			(
+		make_string<const char*>(
 			"smart_cover [%s] not found",
 			cover_id.c_str()
 		)

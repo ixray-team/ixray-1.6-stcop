@@ -2,7 +2,7 @@
 #pragma once
 
 #ifdef WIN32
-#   ifdef M_X64
+#   ifdef _M_X64
 #       define IXR_WIN64
 #   else
 #       define IXR_WIN32

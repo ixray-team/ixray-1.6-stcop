@@ -103,6 +103,6 @@ IC		bool CCustomMonster::invulnerable			() const
 
 IC	moving_object *CCustomMonster::get_moving_object() const
 {
-	VERIFY2			(m_moving_object,make_string("object [%d][%s]",ID(),*cName()));
+	VERIFY2			(m_moving_object, make_string<const char*>("object [%d][%s]",ID(),*cName()));
 	return			(m_moving_object);
 }
