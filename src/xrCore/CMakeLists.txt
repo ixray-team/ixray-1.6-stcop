@@ -153,8 +153,12 @@ endif()
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
-target_compile_definitions(xrCore PRIVATE _WINDOWS)
-target_compile_definitions(xrCore PRIVATE _USRDLL)
+if (WIN32)
+	target_compile_definitions(xrCore PRIVATE _WINDOWS)
+	target_compile_definitions(xrCore PRIVATE _USRDLL)
+
+	target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
+endif()
 
 ## Disable user-cheats for Shipping build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
@@ -166,7 +170,6 @@ if (DEVIXRAY_ENABLE_SHIPPING)
 endif()
 
 # Linker list
-
 if (MSVC)
     target_link_libraries(xrCore PRIVATE dxerr)
     target_link_libraries(xrCore PRIVATE "dbghelp")
@@ -210,6 +213,11 @@ if (MSVC)
 	add_custom_command(TARGET ${PROJECT_NAME}
     	PRE_BUILD
     	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+	)
+
+	add_custom_command(TARGET ${PROJECT_NAME}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 	)
 else()
 	execute_process(

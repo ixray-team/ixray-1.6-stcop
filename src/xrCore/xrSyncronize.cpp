@@ -2,27 +2,43 @@
 
 xrCriticalSection::xrCriticalSection()
 {
+#ifdef IXR_WINDOWS
 	InitializeCriticalSection((CRITICAL_SECTION*)&pmutex);
+#endif
 }
 
 xrCriticalSection::~xrCriticalSection()
 {
+#ifdef IXR_WINDOWS
 	DeleteCriticalSection((CRITICAL_SECTION*)&pmutex);
+#endif
 }
 
 void xrCriticalSection::Enter()
 {
+#ifdef IXR_WINDOWS
 	EnterCriticalSection((CRITICAL_SECTION*)&pmutex);
+#else
+    pmutex.lock();
+#endif
 }
 
 void xrCriticalSection::Leave()
 {
+#ifdef IXR_WINDOWS
 	LeaveCriticalSection((CRITICAL_SECTION*)&pmutex);
+#else
+    pmutex.unlock();
+#endif
 }
 
 BOOL xrCriticalSection::TryEnter()
 {
+#ifdef IXR_WINDOWS
 	return TryEnterCriticalSection((CRITICAL_SECTION*)&pmutex);
+#else
+    pmutex.try_lock();
+#endif
 }
 
 xrCriticalSectionGuard::xrCriticalSectionGuard(xrCriticalSection* in_critical_section)

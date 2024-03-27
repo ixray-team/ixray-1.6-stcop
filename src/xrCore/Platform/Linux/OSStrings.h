@@ -19,6 +19,18 @@ inline char* _strlwr(char *str)
   return str;
 }
 
+inline char* _strupr(char *string)
+{
+    char* hold = string;
+    while (*string)
+    {
+        *string = (char)toupper(*string);
+        string++;
+    }
+
+    return hold;
+}
+
 inline int strcpy_s(char *dest, size_t num, const char *source)
 {
     if(!dest)

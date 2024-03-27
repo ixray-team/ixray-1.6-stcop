@@ -1,7 +1,7 @@
 #ifndef __XR_MATH_H__
 #define __XR_MATH_H__
 
-#include "cpuid.h"
+#include "xr_cpuid.h"
 
 namespace FPU {
 	XRCORE_API void	 m24	(void);

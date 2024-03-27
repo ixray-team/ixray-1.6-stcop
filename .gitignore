@@ -2,6 +2,7 @@
 
 # Visual Studio cache and settings
 .vs/
+.idea/
 ipch/
 *.suo
 *.user

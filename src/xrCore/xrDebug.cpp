@@ -456,6 +456,7 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     #pragma comment( lib, "faultrep.lib" )
 #endif
 
+#ifdef IXR_WINDOWS
 #include "StackTrace/StackTrace.h"
 static bool EnabledStackTrace = true;
 
@@ -591,7 +592,9 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	
 	void __cdecl debug_on_thread_spawn(void)
 	{
+#ifdef IXR_WINDOWS
 		SetUnhandledExceptionFilter(UnhandledFilter);
+#endif
 	}
 
 	void xrDebug::_initialize(const bool& dedicated)
@@ -599,7 +602,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		static bool is_dedicated = dedicated;
 
 		*g_bug_report_file = 0;
-
+#ifdef IXR_WINDOWS
 		previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
+#endif
 	}
 #endif

@@ -12,6 +12,8 @@
 #define __int64 int64_t
 #define _copysign copysign
 
+#define NULL 0
+
 using xr_special_char = char;
 using LPSTR = char*;
 using LPCSTR = const char*;

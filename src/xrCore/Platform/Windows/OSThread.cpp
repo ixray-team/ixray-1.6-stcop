@@ -54,3 +54,8 @@ ThreadID Platform::GetCurrentThread()
 {
 	return ::GetCurrentThread();
 }
+
+size_t Platform::GetThreadId(ThreadID ID)
+{
+    return ::GetThreadId(ID);
+}

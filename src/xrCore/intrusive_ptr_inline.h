@@ -64,14 +64,14 @@ IC	typename _intrusive_ptr::self_type &_intrusive_ptr::operator=	(self_type cons
 }
 
 TEMPLATE_SPECIALIZATION
-IC	typename _intrusive_ptr::object_type &_intrusive_ptr::operator*	() const
+IC	typename _intrusive_ptr::object_type_v &_intrusive_ptr::operator*	() const
 {
 	VERIFY			(m_object);
 	return			(*m_object);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	typename _intrusive_ptr::object_type *_intrusive_ptr::operator->() const
+IC	typename _intrusive_ptr::object_type_v *_intrusive_ptr::operator->() const
 {
 	VERIFY			(m_object);
 	return			(m_object);
@@ -122,7 +122,7 @@ IC	void _intrusive_ptr::set		(self_type const &rhs)
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename _intrusive_ptr::object_type* _intrusive_ptr::get	()	const
+IC	const typename _intrusive_ptr::object_type_v* _intrusive_ptr::get	()	const
 {
 	return			(m_object);
 }
