@@ -121,10 +121,11 @@ namespace PAPI{
 	};
     struct ParticleAction;
 
-    class IParticleManager{
+    class IParticleManager
+	{
     public:
-		    						IParticleManager	(){}
-        virtual						~IParticleManager	(){}
+									IParticleManager()  = default;
+		virtual						~IParticleManager() = default;
 
 		// create&destroy
 		virtual int					CreateEffect		(u32 max_particles)=0;

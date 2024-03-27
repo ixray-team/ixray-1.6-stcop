@@ -19,9 +19,8 @@ using PropItemIt = PropItemVec::iterator;
 #include "../../xrEngine/defines.h"
 #include "../../xrEngine/pure.h"
 
-#include "EditorDevice.h"
-
 #include <d3d9.h>
+#include "EditorDevice.h"
 
 enum EItemType 
 {

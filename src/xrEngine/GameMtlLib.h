@@ -3,6 +3,7 @@
 #define GameMtlLibH
 //---------------------------------------------------------------------------
 #pragma once
+class ButtonValue;
 
 #define GAMEMTL_CURRENT_VERSION			0x0001
 //----------------------------------------------------

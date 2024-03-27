@@ -5,8 +5,10 @@
 #include "tss_def.h"
 
 #ifdef USE_DX11
-#include "../xrRenderDX10/StateManager/dx10State.h"
-#endif //USE_DX11
+#	include "../xrRenderDX10/StateManager/dx10State.h"
+#else
+#	include "../xrRenderDX9/xrD3DDefs.h"
+#endif
 
 #pragma pack(push,4)
 

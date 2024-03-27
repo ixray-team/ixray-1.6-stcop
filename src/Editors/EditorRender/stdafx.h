@@ -1,4 +1,6 @@
 #pragma once
+#include <d3d9.h>
+
 #include "../EditorEngineAPI/stdafx.h"
 #include "../../xrParticles/psystem.h"
 
@@ -30,5 +32,6 @@
 
 #include "Resource.h"
 #include "render.h"
+#include "../../Layers/xrRender/Shader.h"
 
 using ref_sound = shared_str;
