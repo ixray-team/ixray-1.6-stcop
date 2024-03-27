@@ -270,8 +270,8 @@ void SVehicleAnimCollection::Create(IKinematicsAnimated* V,u16 num)
 {
 	string128 buf,buff1,buff2;
 	xr_strconcat(buff1,_itoa(num,buf,10),"_");
-	steer_left=	V->ID_Cycle(xr_strconcat(buf,"steering_idle_",buff1,"ls"));
-	steer_right=V->ID_Cycle(xr_strconcat(buf,"steering_idle_",buff1,"rs"));
+	steer_left=	V->ID_Cycle(xr_strconcat(buf,"steering_torso_ls"));
+	steer_right=V->ID_Cycle(xr_strconcat(buf,"steering_torso_rs"));
 
 	for(int i=0;MAX_IDLES>i;++i){
 		idles[i]=V->ID_Cycle_Safe(xr_strconcat(buf,"steering_idle_",buff1,_itoa(i,buff2,10)));
@@ -287,7 +287,7 @@ void CActor::steer_Vehicle(float angle)
 	CCar*	car			= smart_cast<CCar*>(m_holder);
 	u16 anim_type       = car->DriverAnimationType();
 	SVehicleAnimCollection& anims=m_vehicle_anims->m_vehicles_type_collections[anim_type];
-	if(angle==0.f) 		smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.idles[0]);
+	if(angle==0.f) 		smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.idles[1]);
 	else if(angle>0.f)	smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.steer_right);
 	else				smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.steer_left);
 }

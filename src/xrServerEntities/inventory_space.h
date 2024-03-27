@@ -62,7 +62,6 @@ struct SInvItemPlace
 };
 
 extern u16	INV_STATE_LADDER;
-extern u16	INV_STATE_CAR;
 extern u16	INV_STATE_BLOCK_ALL;
 extern u16	INV_STATE_INV_WND;
 extern u16	INV_STATE_BUY_MENU;
