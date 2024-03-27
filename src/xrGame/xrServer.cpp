@@ -262,7 +262,7 @@ void xrServer::Update	()
 	}
 }
 
-void _stdcall xrServer::SendGameUpdateTo(IClient* client)
+void xrServer::SendGameUpdateTo(IClient* client)
 {
 	xrClientData*	xr_client = static_cast<xrClientData*>(client);
 	VERIFY			(xr_client);

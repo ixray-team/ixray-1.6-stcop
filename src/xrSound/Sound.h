@@ -239,7 +239,7 @@ void						append							(const SItem& itm)	{items.push_back(itm);}
 };
 
 /// definition (Sound Callback)
-typedef		void __stdcall sound_event						(ref_sound_data_ptr S, float range);
+typedef void sound_event (ref_sound_data_ptr S, float range);
 
 /// definition (Sound Manager Interface)
 class XRSOUND_API	CSound_manager_interface

@@ -78,7 +78,7 @@ public:
 	virtual CSE_Abstract			*cast_abstract				() {return 0;};
 	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract		() {return this;};
 	// end of the virtual inheritance dependant code
-			void __stdcall			OnChangeProfile				(PropValue* sender);
+			void 			OnChangeProfile				(PropValue* sender);
 
 #ifdef XRGAME_EXPORTS
 	virtual	void					add_online					(const bool &update_registries);
@@ -165,7 +165,7 @@ add_to_type_list(CSE_ALifeAnomalousZone)
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone,CSE_ALifeCustomZone,CSE_Motion)
 									CSE_ALifeTorridZone		(LPCSTR caSection);
 	virtual							~CSE_ALifeTorridZone	();
-	virtual CSE_Motion*	__stdcall	motion					();
+	virtual CSE_Motion*		motion					();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeTorridZone)
 #define script_type_list save_type_list(CSE_ALifeTorridZone)
@@ -174,7 +174,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual,CSE_ALifeAnomalousZone,CSE_Visu
 shared_str attack_animation;
 CSE_ALifeZoneVisual	(LPCSTR caSection);
 virtual							~CSE_ALifeZoneVisual	();
-virtual CSE_Visual* __stdcall	visual					();
+virtual CSE_Visual* 	visual					();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeZoneVisual)
 #define script_type_list save_type_list(CSE_ALifeZoneVisual)

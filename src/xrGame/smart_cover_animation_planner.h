@@ -46,7 +46,7 @@ private:
 private:
 			void		add_evaluators				();
 			void		add_actions					();
-			bool xr_stdcall hit_callback			(SHit const *hit);
+			bool  hit_callback			(SHit const *hit);
 
 public:
 	animation_planner(const animation_planner& other) = delete;

@@ -456,7 +456,7 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 }
 
 template <typename Object>
-void xr_stdcall CStateBurerAttackTele<Object>::OnGrenadeDestroyed (CGrenade* const grenade)
+void  CStateBurerAttackTele<Object>::OnGrenadeDestroyed (CGrenade* const grenade)
 {
 	this->object->CTelekinesis::remove_links	(grenade);
 }

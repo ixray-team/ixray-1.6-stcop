@@ -28,7 +28,7 @@ public:
 	void construct(CCompass* p);
 	void SetValue(const float v1, const Fvector& v2);
 	float CurrentYRotation()	const;
-	static void xr_stdcall BoneCallback(CBoneInstance* B);
+	static void  BoneCallback(CBoneInstance* B);
 	void ResetBoneCallbacks();
 	void SetBoneCallbacks();
 

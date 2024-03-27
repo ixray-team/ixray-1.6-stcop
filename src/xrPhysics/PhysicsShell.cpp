@@ -51,7 +51,7 @@ CPhysicsJoint*				P_create_Joint			( CPhysicsJoint::enumType type, CPhysicsEleme
 }
 
 
-CPhysicsShell*	__stdcall P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_state, BONE_P_MAP* bone_map, bool not_set_bone_callbacks )
+CPhysicsShell*	 P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_state, BONE_P_MAP* bone_map, bool not_set_bone_callbacks )
 {
 	VERIFY( obj );
 	phys_shell_verify_object_model( *obj );
@@ -254,7 +254,7 @@ void	get_box( const CPhysicsBase*	shell, const	Fmatrix& form,	Fvector&	sz, Fvect
 
 
 
-void __stdcall	destroy_physics_shell( CPhysicsShell* &p )
+void 	destroy_physics_shell( CPhysicsShell* &p )
 {
 	if (p)
 		p->Deactivate();
@@ -293,7 +293,7 @@ void	phys_shell_verify_object_model( IPhysicsShellHolder& O )
 	VERIFY2(valid_pos( O.ObjectXFORM().c ),  dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ).c_str());
 }
 
-bool __stdcall	can_create_phys_shell( string1024 &reason, IPhysicsShellHolder& O )
+bool 	can_create_phys_shell( string1024 &reason, IPhysicsShellHolder& O )
 {
 	xr_strcpy(reason, "ok" );
 	bool result = true;

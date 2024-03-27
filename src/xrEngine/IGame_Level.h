@@ -122,7 +122,7 @@ public:
 extern ENGINE_API	IGame_Level*	g_pGameLevel;
 
 template <typename _class_type>
-	void relcase_register	(_class_type *self, void (xr_stdcall _class_type::* function_to_bind)(CObject*))
+	void relcase_register	(_class_type *self, void ( _class_type::* function_to_bind)(CObject*))
 	{
 		g_pGameLevel->Objects.relcase_register	(
 			CObjectList::RELCASE_CALLBACK (
@@ -132,7 +132,7 @@ template <typename _class_type>
 	}
 
 template <typename _class_type>
-	void relcase_unregister	(_class_type *self, void (xr_stdcall _class_type::* function_to_bind)(CObject*))
+	void relcase_unregister	(_class_type *self, void ( _class_type::* function_to_bind)(CObject*))
 	{
 		g_pGameLevel->Objects.relcase_unregister	(
 			CObjectList::RELCASE_CALLBACK (

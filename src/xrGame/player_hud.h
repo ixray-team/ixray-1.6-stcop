@@ -144,7 +144,7 @@ private:
 	attachable_hud_item*				m_attached_items[2];
 	xr_vector<attachable_hud_item*>		m_pool;
 
-	static void xr_stdcall LeftArmCallback(CBoneInstance* B);
+	static void  LeftArmCallback(CBoneInstance* B);
 };
 
 extern player_hud* g_player_hud;

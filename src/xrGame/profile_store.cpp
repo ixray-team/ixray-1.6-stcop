@@ -266,7 +266,7 @@ void profile_store::loaded_fields(bool const result, char const * err_descr)
 }
 
 
-void __stdcall	profile_store::onlylog_operation(bool const result, char const * descr)
+void 	profile_store::onlylog_operation(bool const result, char const * descr)
 {
 	if (!result)
 	{
@@ -276,7 +276,7 @@ void __stdcall	profile_store::onlylog_operation(bool const result, char const * 
 	Msg("* Profile store: %s", descr ? descr : "");
 }
 
-void __stdcall profile_store::onlylog_completion(bool const result, char const * err_descr)
+void  profile_store::onlylog_completion(bool const result, char const * err_descr)
 {
 	if (!result)
 	{

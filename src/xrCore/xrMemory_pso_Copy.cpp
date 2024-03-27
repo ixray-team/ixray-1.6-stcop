@@ -2,13 +2,13 @@
 #pragma hdrstop
 
 #pragma warning(disable:4995)
-void xr_stdcall xrMemCopy_x86(LPVOID dest, const void* src, size_t n)
+void xrMemCopy_x86(LPVOID dest, const void* src, size_t n)
 {
 	memcpy(dest, src, n);
 }
 
-#if defined(M_BORLAND) || defined(_M_AMD64)
-void xr_stdcall xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
+#if defined(M_BORLAND) || defined(IXR_WIN64)
+void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	xrMemCopy_x86(dest, src, n);
 }
@@ -34,7 +34,7 @@ void xr_stdcall xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 //one address per cache line,for a series of cache lines,in a short loop.
 //This is faster than using software prefetch.The technique is great for
 //getting maximum read bandwidth,especially in DDR memory systems.
-void	__stdcall xrMemCopy_MMX					(LPVOID dest, const void* src, size_t n)
+void xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	__asm {
 		mov ecx,[n ];							// number of bytes to copy

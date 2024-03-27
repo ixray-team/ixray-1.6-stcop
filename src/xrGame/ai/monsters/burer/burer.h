@@ -168,7 +168,7 @@ public:
 private:
 			bool			m_force_gravi_attack;
 
-	void xr_stdcall			StaminaHit			();
+	void 			StaminaHit			();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 

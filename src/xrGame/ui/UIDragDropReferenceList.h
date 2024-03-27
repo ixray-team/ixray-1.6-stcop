@@ -23,6 +23,6 @@ public:
 	void LoadItemTexture(LPCSTR section, Ivector2 cell_pos);
 	void ReloadReferences(CInventoryOwner* pActor);
 
-	virtual void __stdcall	OnItemDBClick		(CUIWindow* w, void* pData);
-	virtual void __stdcall	OnItemDrop			(CUIWindow* w, void* pData);
+	virtual void 	OnItemDBClick		(CUIWindow* w, void* pData);
+	virtual void 	OnItemDrop			(CUIWindow* w, void* pData);
 };

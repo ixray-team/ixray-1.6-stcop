@@ -48,7 +48,7 @@ namespace CDB
 	};
 
 	// Build callback
-	typedef		void __stdcall	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
+	typedef		void	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
 	// Model definition
 	class		XRCDB_API		MODEL

@@ -716,7 +716,7 @@ static HRESULT create_shader				(
 //--------------------------------------------------------------------------------------------------------------
 class includer : public ID3DInclude {
 public:
-	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open("$game_shaders$", pname);

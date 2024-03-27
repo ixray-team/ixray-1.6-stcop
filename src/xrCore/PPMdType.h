@@ -31,7 +31,7 @@ const int MAX_O=16;                         /* maximum allowed model order  */
 
 #if !defined(_UNKNOWN_ENVIRONMENT_) && !defined(__GNUC__)
 #define _FASTCALL __fastcall
-#define _STDCALL  __stdcall
+#define _STDCALL  
 #else
 #define _FASTCALL
 #define _STDCALL

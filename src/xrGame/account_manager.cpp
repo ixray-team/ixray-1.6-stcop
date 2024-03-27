@@ -20,7 +20,7 @@ account_manager::account_manager(CGameSpy_GP* gsgp_inst)
 account_manager::~account_manager()
 {
 }
-void __stdcall account_manager::only_log_creation_cb(bool success, char const * descr)
+void  account_manager::only_log_creation_cb(bool success, char const * descr)
 {
 	if (success)
 	{
@@ -30,7 +30,7 @@ void __stdcall account_manager::only_log_creation_cb(bool success, char const * 
 	Msg("! GameSpy account creation ERROR: %s", descr ? descr : "unknown");
 }
 
-void	__stdcall account_manager::only_log_profdel_cb(bool success, char const * descr)
+void	 account_manager::only_log_profdel_cb(bool success, char const * descr)
 {
 	if (success)
 	{
@@ -41,7 +41,7 @@ void	__stdcall account_manager::only_log_profdel_cb(bool success, char const * d
 }
 
 
-void __stdcall account_manager::only_log_profiles(u32 const profiles_count,
+void  account_manager::only_log_profiles(u32 const profiles_count,
 												char const * description)
 {
 	if (profiles_count)
@@ -56,7 +56,7 @@ void __stdcall account_manager::only_log_profiles(u32 const profiles_count,
 	}
 	Msg("- No GameSpy account profiles found: %s", description ? description : "unknown error");
 }
-void __stdcall account_manager::only_log_suggestions(u32 const profiles_count,
+void  account_manager::only_log_suggestions(u32 const profiles_count,
 													 char const * description)
 {
 	if (description)
@@ -69,7 +69,7 @@ void __stdcall account_manager::only_log_suggestions(u32 const profiles_count,
 	}
 }
 
-void __stdcall account_manager::only_log_found_email(bool found,
+void  account_manager::only_log_found_email(bool found,
 													 char const * user_name)
 {
 	if (!found)

@@ -20,5 +20,5 @@ public:
 		void	AddWallmark			(const Fvector& dir, const Fvector& start_pos, float range, float wallmark_size,IWallMarkArray &wallmarks_vector,int t);
 		void	PlaceWallmarks		( const Fvector& start_pos);
 		
-		void	__stdcall StartWorkflow	();
+		void	 StartWorkflow	();
 };

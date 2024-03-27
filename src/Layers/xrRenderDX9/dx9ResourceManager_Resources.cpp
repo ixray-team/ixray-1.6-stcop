@@ -596,7 +596,7 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 class	includer				: public ID3DXInclude
 {
 public:
-	HRESULT __stdcall	Open	(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+	HRESULT 	Open	(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
 	{
 		string_path				pname;
 		strconcat				(sizeof(pname),pname,::Render->getShaderPath(),pFileName);
@@ -618,7 +618,7 @@ public:
 		*pBytes					= size;
 		return	D3D_OK;
 	}
-	HRESULT __stdcall	Close	(LPCVOID	pData)
+	HRESULT 	Close	(LPCVOID	pData)
 	{
 		xr_free	(pData);
 		return	D3D_OK;

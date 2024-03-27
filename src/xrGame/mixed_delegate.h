@@ -31,7 +31,7 @@ public:
 	}
 	
 	template<class ThisRef, class ClassType>
-	mixed_delegate(ThisRef* ptr_this, R (xr_stdcall ClassType::*func_ptr)(Param1, Param2)) :
+	mixed_delegate(ThisRef* ptr_this, R ( ClassType::*func_ptr)(Param1, Param2)) :
 		m_cpp_delegate(ptr_this, func_ptr)
 	{
 	};
@@ -60,7 +60,8 @@ public:
 	}
 
 	template <class ThisRef, class ClassType>
-	void bind_cpp(ThisRef* ptr_this, R(xr_stdcall ClassType::* func_ptr) (Param1, Param2)) {
+	void bind_cpp(ThisRef* ptr_this, R( ClassType::* func_ptr)(Param1, Param2))
+	{
 		m_cpp_delegate.bind(ptr_this, func_ptr);
 	}
 	

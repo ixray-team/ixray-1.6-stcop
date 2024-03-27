@@ -25,25 +25,25 @@
 //////////////CPHMesh///////////////////////////////////////////
 CPHWorld *ph_world = nullptr;
 
-IPHWorld * xr_stdcall physics_world()
+IPHWorld* physics_world()
 {
 	return ph_world;
 }
 
-void xr_stdcall create_physics_world(bool mt, CObjectSpace* os, CObjectList* lo)
+void  create_physics_world(bool mt, CObjectSpace* os, CObjectList* lo)
 {
 	ph_world = xr_new<CPHWorld>(); //&commander
 	VERIFY(os);
 	ph_world->Create(mt, os, lo);
 }
 
-void xr_stdcall destroy_physics_world()
+void  destroy_physics_world()
 {
 	ph_world->Destroy();
 	xr_delete(ph_world);
 }
 
-CObjectSpace* xr_stdcall create_object_space()
+CObjectSpace*  create_object_space()
 {
 	CFileReader* fr = xr_new<CFileReader>("ActorEditorLevel.cform");
 	CObjectSpace* os = xr_new<CObjectSpace>();
@@ -54,7 +54,7 @@ CObjectSpace* xr_stdcall create_object_space()
 	return os;
 }
 
-CObjectSpace* xr_stdcall mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback)
+CObjectSpace*  mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback)
 {
 	CObjectSpace* os = xr_new<CObjectSpace>();
 	g_SpatialSpace				= xr_new<ISpatial_DB>	();
@@ -63,12 +63,12 @@ CObjectSpace* xr_stdcall mesh_create_object_space(Fvector* verts, CDB::TRI* tris
 	return os;
 }
 
-void xr_stdcall set_mtl_lib(CGameMtlLibrary * l)
+void  set_mtl_lib(CGameMtlLibrary * l)
 {
 	PGMLib = l;
 }
 
-void xr_stdcall destroy_object_space(CObjectSpace* &os)
+void  destroy_object_space(CObjectSpace* &os)
 {
 	xr_delete(os);
 }
