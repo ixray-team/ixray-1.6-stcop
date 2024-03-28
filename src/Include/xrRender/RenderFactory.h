@@ -9,7 +9,6 @@ class IWallMarkArray;
 #endif // DEBUG
 
 class IFontRender;
-class IApplicationRender;
 class IEnvDescriptorRender;
 class IEnvDescriptorMixerRender;
 class IFlareRender;
@@ -51,7 +50,6 @@ public:
 #	ifdef DEBUG
 		RENDER_FACTORY_INTERFACE(ObjectSpaceRender)
 #	endif // DEBUG
-	RENDER_FACTORY_INTERFACE(ApplicationRender)
 	RENDER_FACTORY_INTERFACE(WallMarkArray)
 	RENDER_FACTORY_INTERFACE(StatsRender)
 #endif // _EDITOR
