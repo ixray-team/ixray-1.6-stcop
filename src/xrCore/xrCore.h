@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL3/SDL.h>
 #include "Platform/Platform.h"
 
 // Our headers
@@ -118,6 +119,7 @@
 #include <list>
 #include <set>
 #include <map>
+#include <bitset>
 
 #ifndef _EDITOR
 #include <unordered_map>

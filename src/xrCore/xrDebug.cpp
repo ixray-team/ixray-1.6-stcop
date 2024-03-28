@@ -307,7 +307,6 @@ int out_of_memory_handler	(size_t size)
 
 XRCORE_API string_path g_bug_report_file;
 
-#if 1
 typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef LONG (  *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
 extern "C" BOOL  SetCrashHandlerFilter ( PFNCHFILTFN pFn );

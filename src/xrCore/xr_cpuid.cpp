@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xr_cpuid.h"
 #include <thread>
+#include <array>
 
 static void CleanDups(char* s, char c = ' ')
 {
