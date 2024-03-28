@@ -4,7 +4,6 @@
 class ENGINE_API CGameFont;
 
 #include "../Include/xrRender/FactoryPtr.h"
-#include "../Include/xrRender/ApplicationRender.h"
 #include "Application.h"
 
 ENGINE_API void EngineLoadStage1(char* Cmd);
