@@ -60,7 +60,6 @@ target_precompile_headers(xrRender_R1 PRIVATE "stdafx.h")
 target_include_directories(xrRender_R1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Project defines
-target_compile_definitions(xrRender_R1 PRIVATE _WINDOWS)
 target_compile_definitions(xrRender_R1 PRIVATE XRRENDER_R1_EXPORTS)
 target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
 

@@ -21,7 +21,6 @@ target_include_directories(lwo PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(lwo PUBLIC "${IXR_LW_SDK}/include")
 
 # Project defines
-target_compile_definitions(lwo PRIVATE _WINDOWS)
 target_compile_definitions(lwo PUBLIC _MSWIN)
 target_compile_definitions(lwo PRIVATE _USRDLL)
 

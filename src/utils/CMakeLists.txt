@@ -7,6 +7,7 @@ if(IXRAY_UTILS OR IXRAY_COMPRESSOR_ONLY)
 endif()
 
 if(IXRAY_UTILS)
+    add_subdirectory("xrCompress")
     add_subdirectory("xrDXT")
     add_subdirectory("xrQSlim")
     add_subdirectory("xrLC_Light")

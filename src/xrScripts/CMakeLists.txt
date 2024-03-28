@@ -27,7 +27,6 @@ target_include_directories(xrScripts PUBLIC "${IXRAY_SDK_INC}")
 # Project defines
 target_compile_definitions(xrScripts PRIVATE XR_SCRIPTS_EXPORTS)
 target_compile_definitions(xrScripts PRIVATE XRGAME_EXPORTS)
-target_compile_definitions(xrScripts PRIVATE _WINDOWS)
 target_compile_definitions(xrScripts PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

@@ -51,7 +51,6 @@ target_include_directories(xrPhysics PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
 target_compile_definitions(xrPhysics PRIVATE XRPHYSICS_EXPORTS)
-target_compile_definitions(xrPhysics PRIVATE _WINDOWS)
 target_compile_definitions(xrPhysics PRIVATE dSINGLE)
 target_compile_definitions(xrPhysics PRIVATE _USRDLL)
 

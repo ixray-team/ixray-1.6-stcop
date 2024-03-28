@@ -43,7 +43,6 @@ target_precompile_headers(xrSE_Factory PRIVATE "stdafx.h")
 # Project defines
 target_compile_definitions(xrSE_Factory PRIVATE XRSE_FACTORY_EXPORTS)
 target_compile_definitions(xrSE_Factory PRIVATE dSINGLE)
-target_compile_definitions(xrSE_Factory PRIVATE _WINDOWS)
 target_compile_definitions(xrSE_Factory PRIVATE _USRDLL)
 
 target_compile_definitions(xrSE_Factory PRIVATE "$<$<CONFIG:Debug>:DEBUG>")

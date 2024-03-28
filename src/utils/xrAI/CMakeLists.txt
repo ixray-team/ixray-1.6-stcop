@@ -46,7 +46,6 @@ target_precompile_headers(xrAI PRIVATE "stdafx.h")
 # project defines 
 target_compile_definitions(xrAI PRIVATE AI_COMPILER)
 target_compile_definitions(xrAI PRIVATE dSINGLE)
-target_compile_definitions(xrAI PRIVATE _WINDOWS)
 
 target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CHECKING>")

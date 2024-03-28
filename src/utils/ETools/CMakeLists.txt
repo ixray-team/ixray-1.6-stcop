@@ -23,7 +23,6 @@ target_precompile_headers(ETools PRIVATE "stdafx.h")
 
 # Project defines
 target_compile_definitions(ETools PRIVATE ETOOLS_EXPORTS)
-target_compile_definitions(ETools PRIVATE _WINDOWS)
 target_compile_definitions(ETools PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

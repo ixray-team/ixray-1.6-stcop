@@ -19,7 +19,6 @@ target_include_directories(mp_configs_verifyer PUBLIC "${CMAKE_CURRENT_SOURCE_DI
 
 # Project defines
 target_compile_definitions(mp_configs_verifyer PRIVATE MPCF_EXPORTS)
-target_compile_definitions(mp_configs_verifyer PRIVATE _WINDOWS)
 
 add_compile_options(/fp:fast)
 target_compile_definitions(mp_configs_verifyer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")

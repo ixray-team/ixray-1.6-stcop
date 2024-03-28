@@ -28,7 +28,6 @@ target_include_directories(xrRender_OGL PUBLIC "${IXRAY_SDK_INC}")
 target_include_directories(xrRender_OGL PUBLIC "../")
 
 # Project defines
-target_compile_definitions(xrRender_OGL PRIVATE _WINDOWS)
 target_compile_definitions(xrRender_OGL PRIVATE XRRENDER_OGL_EXPORTS)
 target_compile_definitions(xrRender_OGL PRIVATE USE_OGL)
 target_compile_definitions(xrRender_OGL PRIVATE _USRDLL)

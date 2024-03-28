@@ -149,12 +149,7 @@ endif()
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
-if (WIN32)
-	target_compile_definitions(xrCore PRIVATE _WINDOWS)
-	target_compile_definitions(xrCore PRIVATE _USRDLL)
-
-	target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
-endif()
+target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 ## Disable user-cheats for Shipping build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
@@ -219,38 +214,8 @@ endif()
 # DxMath
 target_include_directories(xrCore PUBLIC "${CORE_DXMATH}/include/")
 
-# Get author name
-execute_process(
-    COMMAND git log -1 --pretty=format:%an
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT_VARIABLE AUTHOR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-# Get current branch
-execute_process(
-    COMMAND git branch --show-current
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT_VARIABLE BRANCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-# Get hash of the latest commit
-execute_process(
-    COMMAND git log --pretty=format:%h -n 1
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT_VARIABLE HASH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-# Define a variable for CI_BUILD
-set(CI_BUILD 0)
-
-# Create git_version.h file
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h
-)
+# Git Info
+include(gitver.cmake)
 
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
@@ -288,4 +253,3 @@ if (WIN32)
     endif()
 endif()
 target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
-

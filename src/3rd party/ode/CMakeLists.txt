@@ -26,7 +26,6 @@ target_include_directories(ODE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 target_include_directories(ODE PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
-target_compile_definitions(ODE PRIVATE _WINDOWS)
 target_compile_definitions(ODE PRIVATE dSINGLE)
 target_compile_definitions(ODE PRIVATE _USRDLL)
 target_compile_definitions(ODE PRIVATE dNODEBUG)

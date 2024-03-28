@@ -31,8 +31,9 @@ set_source_files_properties(${COMPRESSOR_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRE
 source_group("pch" FILES ${COMPRESSOR_PCH_FILES})
 
 # Project defines
-target_compile_definitions(xrCompress PRIVATE _WINDOWS)
-target_compile_definitions(xrCompress PRIVATE _USRDLL)
+if (WIN32)
+    target_compile_definitions(xrCompress PRIVATE _USRDLL)
+endif()
 
 target_compile_definitions(xrCompress PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 

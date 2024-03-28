@@ -36,7 +36,6 @@ set_target_properties(
 )
 
 # Project defines
-target_compile_definitions(xrLW_Shader PRIVATE _WINDOWS)
 target_compile_definitions(xrLW_Shader PRIVATE _USRDLL)
 target_compile_definitions(xrLW_Shader PRIVATE _EXPORT)
 target_compile_definitions(xrLW_Shader PRIVATE _LW_SHADER)

@@ -59,7 +59,6 @@ set_target_properties(
 # Project defines
 target_compile_definitions(xrMax_Materials PRIVATE _MAX_MATERIAL)
 target_compile_definitions(xrMax_Materials PRIVATE _MAX_PLUGIN)
-target_compile_definitions(xrMax_Materials PRIVATE _WINDOWS)
 target_compile_definitions(xrMax_Materials PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)
