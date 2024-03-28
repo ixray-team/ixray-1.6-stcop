@@ -8,7 +8,7 @@ IC	CStreamReader::CStreamReader						()
 	m_current_offset_from_start = 0;
 	m_current_pointer = nullptr;
 	m_current_window_size = 0;
-	m_file_mapping_handle = nullptr;
+	m_file_mapping_handle = 0;
 	m_file_size = 0;
 	m_start_offset = 0;
 	m_start_pointer = nullptr;
@@ -30,17 +30,17 @@ IC	CStreamReader &CStreamReader::operator=				(const CStreamReader &)
 	return			(*this);
 }
 
-IC	const HANDLE &CStreamReader::file_mapping_handle	() const
+IC	const FileHandle &CStreamReader::file_mapping_handle	() const
 {
-	return			(m_file_mapping_handle);
+	return (m_file_mapping_handle);
 }
 
-IC	void CStreamReader::unmap							()
+IC	void CStreamReader::unmap()
 {
-	UnmapViewOfFile	(m_current_map_view_of_file);
+	Platform::UnmapFile(m_current_map_view_of_file, m_current_window_size);
 }
 
-IC	void CStreamReader::remap							(const u32 &new_offset)
+IC	void CStreamReader::remap(const u32 &new_offset)
 {
 	unmap			();
 	map				(new_offset);

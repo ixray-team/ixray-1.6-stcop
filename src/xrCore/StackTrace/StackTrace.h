@@ -10,7 +10,7 @@ namespace StackTrace
 	using DialogHandler = void(*)(bool);
 	using OutOfMemoryCallbackFunc = void(*)();
 
-#ifndef _WIN32
+#ifdef IXR_WIN64
 #	define MACHINE_TYPE IMAGE_FILE_MACHINE_AMD64
 #else
 #	define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
@@ -131,7 +131,7 @@ namespace StackTrace
 
 		traceResult.reserve(maxFramesCount);
 
-#if defined _WIN64
+#ifdef IXR_WIN64
 		stackFrame.AddrPC.Mode = AddrModeFlat;
 		stackFrame.AddrPC.Offset = threadCtx->Rip;
 		stackFrame.AddrStack.Mode = AddrModeFlat;

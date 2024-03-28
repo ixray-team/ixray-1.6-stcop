@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-EFS_Utils*	xr_EFS	= NULL;
+EFS_Utils* xr_EFS = nullptr;
 //----------------------------------------------------
 xr_string	EFS_Utils::ExtractFileName(LPCSTR src)
 {
