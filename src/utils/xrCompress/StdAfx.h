@@ -6,7 +6,7 @@
 
 #include "../../xrcore/xrCore.h"
 
-#include "lzo\lzo1x.h"
+#include "lzo/lzo1x.h"
 #include <mmsystem.h>
 
 #pragma warning	(disable:4995)
