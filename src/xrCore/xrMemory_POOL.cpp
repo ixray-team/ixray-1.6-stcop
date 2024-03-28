@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "xrMemory_POOL.h"
+#include "xrMEMORY_POOL.h"
 #include "xrMemory_align.h"
 
 void	MEMPOOL::block_create	()

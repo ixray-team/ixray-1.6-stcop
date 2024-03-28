@@ -173,6 +173,7 @@ endif()
 if (MSVC)
     target_link_libraries(xrCore PRIVATE dxerr)
     target_link_libraries(xrCore PRIVATE "dbghelp")
+    target_link_libraries(xrCore PRIVATE "winmm")
 endif()
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 

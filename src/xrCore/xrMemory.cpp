@@ -75,6 +75,7 @@ void xrMemory::_destroy()
 
 void xrMemory::mem_compact()
 {
+#ifdef IXR_WINDOWS
 	RegFlushKey(HKEY_CLASSES_ROOT);
 	RegFlushKey(HKEY_CURRENT_USER);
 
@@ -88,6 +89,7 @@ void xrMemory::mem_compact()
 	if (strstr(Core.Params, "-swap_on_compact")) {
 		SetProcessWorkingSetSize(GetCurrentProcess(), size_t(-1), size_t(-1));
 	}
+#endif
 }
 
 // xr_strdup

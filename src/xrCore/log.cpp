@@ -122,11 +122,13 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 
 void xrLogger::InternalCloseLog()
 {
-	if (hLogThread != NULL)
+	if (hLogThread != 0)
 	{
 		bIsAlive = false;
+#ifdef IXR_WINDOWS
 		WaitForSingleObject(hLogThread, INFINITE);
-		hLogThread = NULL;
+#endif
+		hLogThread = 0;
 	}
 
 	IWriter* tempCopy = (IWriter*)logFile;
@@ -136,7 +138,7 @@ void xrLogger::InternalCloseLog()
 
 xrLogger::xrLogger()
 	: logFile(nullptr), bFastDebugLog(false), 
-	bIsAlive(true), hLogThread(NULL), 
+	bIsAlive(true), hLogThread(0),
 	bFlushRequested(false)
 {}
 

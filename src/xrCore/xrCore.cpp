@@ -4,12 +4,12 @@
 #include "XmlParser/Expression.h"
 #pragma hdrstop
 
+#ifdef IXR_WINDOWS
 #include <mmsystem.h>
 #include <objbase.h>
+#endif
 #include "xrCore.h"
 #include "discord/discord.h"
- 
-#pragma comment(lib,"winmm.lib")
 
 #ifdef DEBUG
 #	include	<malloc.h>
@@ -42,19 +42,26 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		_control87	( _MCW_EM,  MCW_EM );
 #endif
 		// Init COM so we can use CoCreateInstance
-//		HRESULT co_res = 
-		if (!strstr(GetCommandLineA(),"-editor"))
-			CoInitializeEx	(NULL, COINIT_MULTITHREADED);
+#ifdef IXR_WINDOWS
+        CoInitializeEx	(nullptr, COINIT_MULTITHREADED);
 
 		xr_strcpy			(Params,sizeof(Params),GetCommandLineA());
 		_strlwr_s			(Params,sizeof(Params));
+#endif
 
 		string_path		fn,dr,di;
 
 		// application path
+#ifdef IXR_WINDOWS
         GetModuleFileNameA(GetModuleHandleA(MODULE_NAME),fn,sizeof(fn));
         _splitpath		(fn,dr,di,0,0);
 		xr_strconcat(ApplicationPath,dr,di);
+
+		GetCurrentDirectoryA(sizeof(WorkingPath),WorkingPath);
+#else
+        xr_strcpy(ApplicationPath, SDL_GetBasePath());
+        xr_strcpy(WorkingPath, SDL_GetBasePath());
+#endif
 #ifndef _EDITOR
 		xr_strcpy		(g_application_path,sizeof(g_application_path),ApplicationPath);
 #endif
@@ -69,14 +76,15 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
         }
 #endif
 
-		GetCurrentDirectoryA(sizeof(WorkingPath),WorkingPath);
 
 		// User/Comp Name
-		DWORD	sz_user		= sizeof(UserName);
-		GetUserNameA		(UserName,&sz_user);
+#ifdef IXR_WINDOWS
+        DWORD sz_user = sizeof(UserName);
+		GetUserNameA(UserName,&sz_user);
 
-		DWORD	sz_comp		= sizeof(CompName);
-		GetComputerNameA	(CompName,&sz_comp);
+		DWORD sz_comp = sizeof(CompName);
+		GetComputerNameA(CompName,&sz_comp);
+#endif
 
 		// Mathematics & PSI detection
 		CPU::Detect			();
@@ -158,11 +166,8 @@ void xrCore::_destroy		()
 #ifndef XRCORE_STATIC
 
 //. why ??? 
-#ifdef _EDITOR
-	BOOL WINAPI DllEntryPoint(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-#else
+#ifdef IXR_WINDOWS
 	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-#endif
 {
 	switch (ul_reason_for_call)
 	{
@@ -177,8 +182,6 @@ void xrCore::_destroy		()
 //.		LogFile.reserve		(256);
 		break;
 	case DLL_THREAD_ATTACH:
-		if (!strstr(GetCommandLineA(),"-editor"))
-			CoInitializeEx	(NULL, COINIT_MULTITHREADED);
 		timeBeginPeriod	(1);
 		break;
 	case DLL_THREAD_DETACH:
@@ -188,4 +191,5 @@ void xrCore::_destroy		()
 	}
     return TRUE;
 }
-#endif // XRCORE_STATIC
+#endif
+#endif

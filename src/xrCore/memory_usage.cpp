@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <malloc.h>
 
+#ifdef IXR_WINDOWS
 XRCORE_API void vminfo (size_t *_free, size_t *reserved, size_t *committed) {
 	MEMORY_BASIC_INFORMATION memory_info;
 	memory_info.BaseAddress = nullptr;
@@ -87,8 +88,13 @@ u32	mem_usage_impl	(u32* pBlocksUsed, u32* pBlocksFree)
 	}
 	return (u32) total;
 }
+#endif
 
 u32		xrMemory::mem_usage		(u32* pBlocksUsed, u32* pBlocksFree)
 {
+#ifdef IXR_WINDOWS
 	return				(mem_usage_impl(pBlocksUsed,pBlocksFree));
+#else
+    return 0;
+#endif
 }

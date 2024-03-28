@@ -2,7 +2,7 @@
 #include "compiler.h"
 #include "cl_intersect.h"
 #include "../xrForms/xrThread.h"
-#include <mmsystem.h>
+//#include <mmsystem.h>
 
 const int	LIGHT_Count			=2;
 const int	LIGHT_Total			=(2*LIGHT_Count+1)*(2*LIGHT_Count+1);
