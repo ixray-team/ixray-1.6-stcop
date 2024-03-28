@@ -203,6 +203,7 @@ jobs:
             gamedata/
             patches/xpatch_03.db
             fsgame.ltx
+            .xrignore
 
   publish-engine:
     name: 'Publish engine'
@@ -248,3 +249,4 @@ jobs:
             gamedata/
             patches/xpatch_03.db
             fsgame.ltx
+            .xrignore
