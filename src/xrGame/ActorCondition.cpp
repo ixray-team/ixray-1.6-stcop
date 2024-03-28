@@ -10,10 +10,8 @@
 #include "autosave_manager.h"
 #include "xrserver.h"
 #include "ai_space.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "object_broker.h"
 #include "weapon.h"
 

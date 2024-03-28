@@ -1,18 +1,14 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "helicopter.h"
-//#include "level.h"
 #include "script_game_object.h"
-//#include "game_object_space.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/LightAnimLibrary.h"
-//#include "../xrphysics/PhysicsShell.h"
-#include "script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
 #include "../xrphysics/MathUtils.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "physics_game.h"
 
 bool CHelicopter::isObjectVisible			(CObject* O)
