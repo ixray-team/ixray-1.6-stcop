@@ -19,11 +19,6 @@ file(GLOB CORE_SOURCE_MATH_FILES
     "_*.h"
 )
 
-file(GLOB CORE_SOURCE_LZO_FILES
-    "lzo_*.*"
-    "rt_lzo*.*"
-)
-
 file(GLOB CORE_SOURCE_LZ_FILES
     "LzHuf*.cpp"
     "lzhuf.h"
@@ -94,7 +89,6 @@ source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
 source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
 source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
-source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
 source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
 source_group("core/fs" FILES ${CORE_SOURCE_FS_FILES})
 source_group("core/stl" FILES ${CORE_SOURCE_STL_FILES})
@@ -119,7 +113,6 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "blackbox/*")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/t-test*.*")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/ptmalloc3.c")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/tst-independent-alloc.c")
-list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 
 if (MSVC)
     list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
@@ -130,6 +123,7 @@ endif()
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
 target_link_directories(xrCore PUBLIC "${IXRAY_SDK_LIB}")
 
@@ -177,7 +171,7 @@ if (MSVC)
 endif()
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
-#add_compile_options(/fp:fast)
+target_link_libraries(xrCore PUBLIC lzo_static_lib)
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Discord GameSDK

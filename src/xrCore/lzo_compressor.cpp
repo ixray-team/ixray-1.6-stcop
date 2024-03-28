@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "lzo_compressor.h"
 
+#include "lzo/lzo1x.h"
+
 int lzo_compress_dict(const lzo_bytep in , lzo_uint  in_len,
 					  lzo_bytep out, lzo_uintp out_len,
 					  lzo_voidp wrkmem,

@@ -1,7 +1,7 @@
 #ifndef LZO_COMPRESSOR_INCLUDED
 #define LZO_COMPRESSOR_INCLUDED
 
-#include "rt_lzo1x.h"
+#include "lzo/lzo1.h"
 
 XRCORE_API int lzo_compress_dict(
 	const lzo_bytep in , lzo_uint  in_len,

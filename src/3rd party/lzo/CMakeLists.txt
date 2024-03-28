@@ -248,12 +248,12 @@ endforeach()
 # // "make test"
 # ************************************************************************/
 
-include(CTest)
-add_test(NAME simple     COMMAND simple)
-add_test(NAME testmini   COMMAND testmini)
-add_test(NAME lzotest-01 COMMAND lzotest -mlzo   -n2  -q "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-add_test(NAME lzotest-02 COMMAND lzotest -mavail -n10 -q "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-add_test(NAME lzotest-03 COMMAND lzotest -mall   -n10 -q "${CMAKE_CURRENT_SOURCE_DIR}/include/lzo/lzodefs.h")
+#include(CTest)
+#add_test(NAME simple     COMMAND simple)
+#add_test(NAME testmini   COMMAND testmini)
+#add_test(NAME lzotest-01 COMMAND lzotest -mlzo   -n2  -q "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+#add_test(NAME lzotest-02 COMMAND lzotest -mavail -n10 -q "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+#add_test(NAME lzotest-03 COMMAND lzotest -mall   -n10 -q "${CMAKE_CURRENT_SOURCE_DIR}/include/lzo/lzodefs.h")
 
 # /***********************************************************************
 # // "make install"

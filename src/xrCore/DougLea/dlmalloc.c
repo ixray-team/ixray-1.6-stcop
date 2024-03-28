@@ -230,7 +230,8 @@
 */
 
 /* #define WIN32 */
-
+#pragma warning(push)
+#pragma warning(disable:4267 4308 4311 4312 4244)
 #ifdef WIN32
 
 #define WIN32_LEAN_AND_MEAN
@@ -5564,3 +5565,4 @@ History:
          structure of old version,  but most details differ.)
 
 */
+#pragma warning(pop)
