@@ -46,7 +46,7 @@ void CSE_ALifeObject::script_register(lua_State *L)
 			"cse_alife_object",
 			CSE_Abstract
 		)
-		.def_readonly	("online",				&CSE_ALifeObject::m_bOnline)
+		.def_readwrite	("online",				&CSE_ALifeObject::m_bOnline)
 		.def			("move_offline",		(bool (CSE_ALifeObject::*)() const)(&CSE_ALifeObject::move_offline))
 		.def			("move_offline",		(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::move_offline))
 		.def			("visible_for_map",		(bool (CSE_ALifeObject::*)() const)(&CSE_ALifeObject::visible_for_map))
@@ -54,9 +54,9 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.def			("can_switch_online",	(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::can_switch_online))
 		.def			("can_switch_offline",	(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::can_switch_offline))
 		.def			("use_ai_locations",	(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::use_ai_locations))
-		.def_readonly	("m_level_vertex_id",	&CSE_ALifeObject::m_tNodeID)
-		.def_readonly	("m_game_vertex_id",	&CSE_ALifeObject::m_tGraphID)
-		.def_readonly	("m_story_id",			&CSE_ALifeObject::m_story_id)
+		.def_readwrite	("m_level_vertex_id",	&CSE_ALifeObject::m_tNodeID)
+		.def_readwrite	("m_game_vertex_id",	&CSE_ALifeObject::m_tGraphID)
+		.def_readwrite	("m_story_id",			&CSE_ALifeObject::m_story_id)
 	];
 }
 
