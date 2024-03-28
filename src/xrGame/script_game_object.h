@@ -376,6 +376,7 @@ public:
 			void				AllowBreakTalkDialog(bool disable_break);
 
 			void				HideWeapon			();
+			void				HideDetector		();
 			void				RestoreWeapon		();
 			void				AllowSprint			(bool b);
 

@@ -990,6 +990,20 @@ void  CScriptGameObject::HideWeapon			()
 	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
 }
 
+#include "player_hud.h"
+void CScriptGameObject::HideDetector()
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+
+	if (pActor == nullptr)
+		return;
+
+	if (g_player_hud->attached_item(1) == NULL)
+		return;
+
+	g_player_hud->detach_item(g_player_hud->attached_item(1)->m_parent_hud_item);
+}
+
 int CScriptGameObject::Weapon_GrenadeLauncher_Status()
 {
 	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
