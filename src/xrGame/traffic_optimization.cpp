@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "traffic_optimization.h"
 
+#include "lzo/lzo1x.h"
+
 namespace compression
 {
 

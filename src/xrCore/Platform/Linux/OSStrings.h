@@ -371,7 +371,12 @@ IC uint64_t _cdecl _strtoui64_l(const char *nptr, char **endptr, int base, local
     return negative ? -ret : ret;
 }
 
-IC uint64_t _cdecl _strtoui64(const char *nptr, char **endptr, int base)
+IC uint64_t _strtoui64(const char *nptr, char **endptr, int base)
 {
     return _strtoui64_l(nptr, endptr, base, NULL);
+}
+
+IC char* _strlwr_s(char* strDestination, size_t sizeInBytes)
+{
+    return _strlwr(strDestination);
 }

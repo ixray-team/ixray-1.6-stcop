@@ -1,19 +1,8 @@
 #pragma once
 
-#ifdef __cplusplus
-
 //. #define MOD_COMPRESS
+#include <filesystem>
 
-#include "../../xrcore/xrCore.h"
+#include "../../xrCore/xrCore.h"
 
 #include "lzo/lzo1x.h"
-#include <mmsystem.h>
-
-#pragma warning	(disable:4995)
-#include <io.h>
-#include <direct.h>
-#include <fcntl.h>
-#include <sys\stat.h>
-#include <malloc.h>
-#pragma warning	(default:4995)
-#endif

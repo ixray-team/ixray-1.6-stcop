@@ -5,10 +5,18 @@ class FS_Path;
 
 namespace Platform
 {
-
     IC const char* ValidPath(const char* In)
     {
         return In;
+    }
+
+    IC const char* RestorePath(const char* In)
+    {
+        static std::string NewPath;
+        NewPath = In;
+
+        std::replace(NewPath.begin(), NewPath.end(), '/', '\\');
+        return NewPath.c_str();
     }
 
     IC const xr_special_char* ValidPath(const xr_special_char* In)

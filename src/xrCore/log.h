@@ -58,5 +58,5 @@ private:
 	//LogCallback onLogMsg;
 	xr_list<LogCallback> logCallbackList;
 public:
-	static xr_queue <LogRecord> logData;
+	static xr_queue <LogRecord>* logData;
 };

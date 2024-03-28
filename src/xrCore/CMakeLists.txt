@@ -76,6 +76,7 @@ file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES "ptmalloc3/*.*")
 
 # NatVis config
 file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
+file(GLOB_RECURSE CORE_NUGET_FILES "Packages.config")
 
 source_group("ungrouped" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("core/api" FILES ${CORE_SOURCE_XR_API_FILES})
@@ -99,6 +100,7 @@ source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
+list(APPEND CORE_SRC_FILES ${CORE_NUGET_FILES})
 
 if (MSVC)
 	list(APPEND CORE_SRC_FILES ${CORE_NATVIS_FILES})
@@ -123,7 +125,7 @@ endif()
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
+target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
 target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
 target_link_directories(xrCore PUBLIC "${IXRAY_SDK_LIB}")
 
@@ -171,7 +173,7 @@ if (MSVC)
 endif()
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
-target_link_libraries(xrCore PRIVATE lzo_static_lib)
+target_link_libraries(xrCore PUBLIC lzo_static_lib)
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Discord GameSDK
@@ -224,6 +226,7 @@ execute_process(
     OUTPUT_VARIABLE AUTHOR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Get current branch
 execute_process(
     COMMAND git branch --show-current
@@ -231,6 +234,7 @@ execute_process(
     OUTPUT_VARIABLE BRANCH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Get hash of the latest commit
 execute_process(
     COMMAND git log --pretty=format:%h -n 1
@@ -238,8 +242,10 @@ execute_process(
     OUTPUT_VARIABLE HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Define a variable for CI_BUILD
 set(CI_BUILD 0)
+
 # Create git_version.h file
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h.in

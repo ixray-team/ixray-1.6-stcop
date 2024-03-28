@@ -92,10 +92,11 @@ bool file_handle_internal	(LPCSTR file_name, u32 &size, int &hFile)
 #else // EDITOR
 static errno_t open_internal(LPCSTR fn, int &handle)
 {
-	return				(
+	const char* FileName = Platform::ValidPath(fn);
+	return (
 		_sopen_s(
 			&handle,
-			fn,
+			FileName,
 			_O_RDONLY | _O_BINARY,
 			_SH_DENYNO, 
             _S_IREAD
@@ -119,26 +120,13 @@ bool file_handle_internal	(LPCSTR file_name, u32 &size, int &file_handle)
 
 void *FileDownload		(LPCSTR file_name, const int &file_handle, u32 &file_size)
 {
-	void				*buffer = Memory.mem_alloc(file_size);
+	void *buffer = Memory.mem_alloc(file_size);
 
-	int					r_bytes	= _read(file_handle,buffer,file_size);
-	R_ASSERT3			(
-//		!file_size ||
-//		(r_bytes && (file_size >= (u32)r_bytes)),
-		file_size == (u32)r_bytes,
-		"can't read from file : ",
-		file_name
-	);
+	int r_bytes	= _read(file_handle,buffer,file_size);
+    R_ASSERT3(static_cast<size_t>(r_bytes) == file_size, "Can't read from file : ", file_name);
+    R_ASSERT3(!_close(file_handle), "can't close file : ", file_name);
 
-//	file_size			= r_bytes;
-	bool CloseComplete = !_close(file_handle);
-	R_ASSERT3			(
-		CloseComplete,
-		"can't close file : ",
-		file_name
-	);
-
-	return				(buffer);
+	return (buffer);
 }
 
 void *FileDownload		(LPCSTR file_name, u32 *buffer_size)

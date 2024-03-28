@@ -33,7 +33,7 @@ class xrCompressor
 	
 	void	GatherFiles			(LPCSTR folder);
 	
-	void	write_file_header	(LPCSTR file_name, const u32 &crc, const u32 &ptr, const u32 &size_real, const size_t &size_compressed);
+	void	write_file_header	(LPCSTR file_name, const u32 &crc, const u32 &ptr, const u32 &size_real, const lzo_uint &size_compressed);
 	void	ClosePack			();
 	void	OpenPack			(LPCSTR tgt_folder, int num);
 	
@@ -51,7 +51,7 @@ class xrCompressor
 	u32						filesALIAS;
 	CStatTimer				t_compress;
 	u8*						c_heap;
-	u32						dwTimeStart;
+	size_t					dwTimeStart;
 
 	u32						XRP_MAX_SIZE;
 

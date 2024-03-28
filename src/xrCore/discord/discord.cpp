@@ -12,6 +12,9 @@ DiscordShared::~DiscordShared()
 // Called when the game starts or when spawned
 void DiscordShared::Init() noexcept 
 {
+#ifndef IXR_WINDOWS
+	return;
+#endif
 	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_Default, &Core);
 
 	if (Core == nullptr)

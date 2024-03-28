@@ -4,19 +4,23 @@
 #include "resource.h"
 #include "log.h"
 
-static xrLogger theLogger;
-XRCORE_API xr_queue <xrLogger::LogRecord> xrLogger::logData;
+static xrLogger* theLogger = nullptr;
+XRCORE_API xr_queue <xrLogger::LogRecord>* xrLogger::logData;
 
 void Log(const char* s)
 {
-	theLogger.SimpleMessage(s);
+#ifdef IXR_LINUX
+	std::cout << s;
+	return;
+#endif
+	theLogger->SimpleMessage(s);
 }
 
 void Msg(const char *format, ...)
 {
 	va_list		mark;
 	va_start	(mark, format );
-	theLogger.Msg(format, mark);
+	theLogger->Msg(format, mark);
     va_end		(mark);
 }
 
@@ -48,6 +52,11 @@ void xrLogger::Msg(LPCSTR Msg, va_list argList)
 	int MsgSize = _vsnprintf(formattedMessage, sizeof(formattedMessage) - 1, Msg, argList);
 	formattedMessage[MsgSize] = 0;
 
+#ifdef IXR_LINUX
+	std::cout << formattedMessage;
+	return;
+#endif
+
 	if (IsDebuggerPresent() && bFastDebugLog)
 	{
 		OutputDebugStringA(formattedMessage);
@@ -66,58 +75,65 @@ void xrLogger::SimpleMessage(LPCSTR Message, u32 MessageSize /*= 0*/)
 	default:		break;
 	}
 	xrCriticalSectionGuard guard(&logDataGuard);
-	logData.emplace(LogRecord(Message, MessageSize));
+	logData->emplace(LogRecord(Message, MessageSize));
 }
 
 void xrLogger::OpenLogFile()
 {
 	static bool isLogOpened = false;
 	if (!isLogOpened) {
-		theLogger.InternalOpenLogFile();
+		theLogger->InternalOpenLogFile();
 		isLogOpened = true;
 	}
 }
 
 const string_path& xrLogger::GetLogPath()
 {
-	return theLogger.logFileName;
+	return theLogger->logFileName;
 }
 
 void xrLogger::EnableFastDebugLog()
 {
-	theLogger.bFastDebugLog = true;
+	theLogger->bFastDebugLog = true;
 }
 
 void LogThreadEntryStartup(void* nullParam)
 {
-	theLogger.LogThreadEntry();
+	theLogger->LogThreadEntry();
 }
 
 void xrLogger::InitLog()
 {
+	if (theLogger == nullptr)
+	{
+		theLogger = new xrLogger;
+		xrLogger::logData = new xr_queue <xrLogger::LogRecord>;
+	}
+#ifdef IXR_WINDOWS
 	thread_spawn(LogThreadEntryStartup, "X-Ray Log Thread", 0, nullptr);
+#endif
 }
 
 void xrLogger::FlushLog()
 {
-	theLogger.bFlushRequested = true;
+	theLogger->bFlushRequested = true;
 }
 
 void xrLogger::CloseLog()
 {
 	FlushLog();
-	theLogger.InternalCloseLog();
+	theLogger->InternalCloseLog();
 }
 
 void xrLogger::AddLogCallback(LogCallback logCb)
 {
 	if (logCb == nullptr) return;
-	theLogger.logCallbackList.push_back(logCb);
+	theLogger->logCallbackList.push_back(logCb);
 }
 
 void xrLogger::RemoveLogCallback(LogCallback logCb)
 {
-	theLogger.logCallbackList.remove(logCb);
+	theLogger->logCallbackList.remove(logCb);
 }
 
 void xrLogger::InternalCloseLog()
@@ -133,7 +149,9 @@ void xrLogger::InternalCloseLog()
 
 	IWriter* tempCopy = (IWriter*)logFile;
 	logFile = nullptr;
-	FS.w_close(tempCopy);
+
+	if (tempCopy != nullptr)
+		FS.w_close(tempCopy);
 }
 
 xrLogger::xrLogger()
@@ -190,11 +208,11 @@ void xrLogger::LogThreadEntry()
 		{
 			{
 				xrCriticalSectionGuard guard(&logDataGuard);
-				if (!logData.empty())
+				if (!logData->empty())
 				{
-					theRecord = logData.front();
-					logData.pop();
-					bHaveMore = !logData.empty();
+					theRecord = logData->front();
+					logData->pop();
+					bHaveMore = !logData->empty();
 				}
 				else break; // we don't have any messages
 			}
