@@ -16,7 +16,6 @@
 #include "../xrScripts/script_engine.h"
 #include "ai_object_location.h"
 #include "script_entity_space.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "level_graph.h"
 

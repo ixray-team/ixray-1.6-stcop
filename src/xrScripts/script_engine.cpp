@@ -9,9 +9,10 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "script_engine.h"
-//#include "ai_space.h"
 #include "../xrEngine/IGame_ObjectFactory.h"
 #include "script_process.h"
+
+#include "script_callback_ex.h"
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
 

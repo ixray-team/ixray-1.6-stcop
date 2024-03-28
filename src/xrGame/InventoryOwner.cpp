@@ -19,7 +19,6 @@
 #include "alife_registry_wrappers.h"
 #include "relation_registry.h"
 #include "ai_object_location.h"
-#include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "AI/Monsters/BaseMonster/base_monster.h"
 #include "trade_parameters.h"

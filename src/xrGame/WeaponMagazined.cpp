@@ -20,7 +20,6 @@
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "Actor_Flags.h"
 #include "player_hud.h"

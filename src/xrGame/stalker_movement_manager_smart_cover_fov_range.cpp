@@ -15,6 +15,7 @@
 #include "memory_space.h"
 #include "cover_manager.h"
 #include "smart_cover.h"
+#include "ai_space.h"
 
 bool stalker_movement_manager_smart_cover::fill_enemy_position		(Fvector &position) const
 {

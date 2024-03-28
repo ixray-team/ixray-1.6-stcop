@@ -10,7 +10,7 @@
 
 #include "alife_space.h"
 #include "../xrScripts/script_export_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 
 class CGameObject;
 

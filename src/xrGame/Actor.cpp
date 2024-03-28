@@ -60,7 +60,6 @@
 #include "actor_memory.h"
 #include "Script_Game_Object.h"
 #include "Game_Object_Space.h"
-#include "script_callback_ex.h"
 #include "InventoryBox.h"
 #include "location_manager.h"
 #include "player_hud.h"

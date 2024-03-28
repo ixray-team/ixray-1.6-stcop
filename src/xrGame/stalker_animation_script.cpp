@@ -12,7 +12,6 @@
 #include "ai/stalker/ai_stalker.h"
 #include "../xrScripts/script_engine.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "ai_space.h"
 
 void CStalkerAnimationManager::script_play_callback(CBlend *blend)
@@ -23,18 +22,6 @@ void CStalkerAnimationManager::script_play_callback(CBlend *blend)
 	CStalkerAnimationManager	&animation_manager = object->animation();
 	CStalkerAnimationPair		&pair = animation_manager.script();
 	const SCRIPT_ANIMATIONS		&animations = animation_manager.script_animations();
-
-#if 0
-	Msg							(
-		"%6d Script callback [%s]",
-		Device.dwTimeGlobal,
-		animations.empty()
-		?
-		"unknown"
-		:
-		animation_manager.m_skeleton_animated->LL_MotionDefName_dbg(animations.front().animation())
-	);
-#endif
 
 	if	(
 			pair.animation() && 
@@ -56,13 +43,6 @@ void CStalkerAnimationManager::add_script_animation	(LPCSTR animation, bool hand
 		ai().script_engine().script_log(eLuaMessageTypeError,"There is no animation %s (object %s)!",animation,*object().cName());
 		return;
 	}
-
-//	Msg("add_script_animation %f,%f,%f %f,%f,%f local=%s [%s]",
-//		position.x,position.y,position.z, 
-//		rotation.x,rotation.y,rotation.z,
-//		local_animation ? "true" : "false",
-//		m_object->animation_movement() ? "true" : "false"
-//	);
 
 	Fmatrix							transform;
 	rotation.mul					(PI/180.f);

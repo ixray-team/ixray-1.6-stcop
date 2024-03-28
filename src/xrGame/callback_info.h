@@ -1,9 +1,11 @@
 #pragma once
 
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 
 class CUIWindow;
-struct SCallbackInfo{
+
+struct SCallbackInfo
+{
 	CScriptCallbackEx<void>	m_callback;
 	fastdelegate::FastDelegate2<CUIWindow*,void*,void>				m_cpp_callback;
 	CUIWindow* 				m_control_ptr;
@@ -12,7 +14,8 @@ struct SCallbackInfo{
 	SCallbackInfo():m_control_ptr(NULL),m_event(-1){};
 };
 
-struct event_comparer{
+struct event_comparer
+{
 	CUIWindow*			pWnd;
 	s16					evt;
 

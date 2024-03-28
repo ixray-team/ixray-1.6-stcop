@@ -11,7 +11,6 @@
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "profiler.h"
 #include "stalker_movement_manager_smart_cover.h"
 

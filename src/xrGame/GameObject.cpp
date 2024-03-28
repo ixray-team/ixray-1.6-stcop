@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "GameObject.h"
-//#include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "ai_space.h"
 #include "CustomMonster.h" 
 #include "physicobject.h"
 #include "HangingLamp.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "game_sv_single.h"
 #include "level_graph.h"
 #include "ph_shell_interface.h"
@@ -21,10 +20,9 @@
 #include "ai_object_location_impl.h"
 #include "game_graph.h"
 #include "ai_debug.h"
-#include "../xrEngine/igame_level.h"
+#include "../xrEngine/IGame_Level.h"
 #include "level.h"
-#include "script_callback_ex.h"
-#include "../xrphysics/MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_cl_mp.h"
 #include "reward_event_generator.h"
@@ -32,13 +30,9 @@
 #include "ai_obstacle.h"
 #include "magic_box3.h"
 #include "animation_movement_controller.h"
-#include "../xrengine/xr_collide_form.h"
-extern MagicBox3 MagicMinBox (int iQuantity, const Fvector* akPoint);
+#include "../xrEngine/xr_collide_form.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
+extern MagicBox3 MagicMinBox (int iQuantity, const Fvector* akPoint);
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"

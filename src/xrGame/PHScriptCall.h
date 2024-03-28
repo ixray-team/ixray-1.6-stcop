@@ -3,7 +3,7 @@
 #include "phcommander.h"
 #include "../xrScripts/script_engine.h"
 #include "../xrScripts/script_space_forward.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 //template<>
 //IC bool compare_safe(const functor<>& f1,const functor<>& f2)
 //{

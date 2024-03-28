@@ -20,7 +20,6 @@
 #include "../../../xrServerEntities/object_broker.h"
 #include "../../sound_player.h"
 #include "../../level.h"
-#include "../../script_callback_ex.h"
 #include "../../game_object_space.h"
 #include "trader_animation.h"
 #include "../../../xrServerEntities/clsid_game.h"
