@@ -20,7 +20,7 @@ add_compile_options("$<$<CONFIG:RELEASE>:/Ot>"  "$<$<CONFIG:RELEASE>:/Ob2>" "$<$
 
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 add_compile_options(/wd4595 /wd4996)
-add_compile_options("$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
+add_link_options("$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" "$<$<CONFIG:DEBUG>:/wd4251>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>")
 
 ## Edit and Continue mode

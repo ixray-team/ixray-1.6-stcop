@@ -1,9 +1,6 @@
 // LocatorAPI.h: interface for the CLocatorAPI class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef LocatorAPIH
-#define LocatorAPIH
 #pragma once
 
 #include "LocatorAPI_defs.h"
@@ -47,7 +44,9 @@ public:
 	void						LoadArchive		(archive& A, LPCSTR entrypoint=NULL);
 
 private:
-	struct file_pred {
+
+	struct file_pred 
+	{
 		IC bool operator()	(const file& x, const file& y) const
 		{	return xr_strcmp(x.name,y.name)<0;	}
 	};
@@ -123,6 +122,12 @@ private:
 			void				setup_fs_path		(LPCSTR fs_name);
 			IReader				*setup_fs_ltx		(LPCSTR fs_name);
 
+private:
+	// IXR: .xrignore
+	xr_vector<xr_string> IgnoreData;
+			void				ParseIgnoreList		();
+			bool				CheckSkip			(const xr_string& Path) const;
+
 public:
 								CLocatorAPI			();
 								~CLocatorAPI		();
@@ -189,6 +194,3 @@ public:
 
 extern XRCORE_API	CLocatorAPI*					xr_FS;
 #define FS (*xr_FS)
-
-#endif // LocatorAPIH
-
