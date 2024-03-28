@@ -549,6 +549,20 @@ void CLevel::IR_OnActivate()
 	}
 }
 
+void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
+{
+	if (g_bDisableAllInput)
+		return;
+
+	if (Device.Paused())
+		return;
+
+	if (g_actor != nullptr && g_actor->g_Alive())
+	{
+		g_actor->IR_GamepadUpdateStick(id, value);
+	}
+}
+
 void CLevel::block_action(int cmd) {
 	++blocked_bings[cmd];
 }

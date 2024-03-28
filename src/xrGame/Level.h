@@ -283,7 +283,9 @@ public:
 	virtual void				IR_OnMouseStop			( int, int);
 	virtual void				IR_OnMouseWheel			( int direction);
 	virtual void				IR_OnActivate			(void);
-	
+
+	virtual void				IR_GamepadUpdateStick(int id, Fvector2 value);
+
 			int					get_RPID				(LPCSTR name);
 
 
