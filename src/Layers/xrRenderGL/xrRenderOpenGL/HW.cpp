@@ -8,7 +8,7 @@
 #include <d3dx9.h>
 #pragma warning(default:4995)
 #include "HW.h"
-#include "xrEngine/Console/Console.h"
+#include "../xrEngine/Console/Console.h"
 
 #ifndef _EDITOR
     void	fill_vid_mode_list			(CHW* _hw);
@@ -89,7 +89,7 @@ void CHW::Reset		(HWND hwnd)
     while	(TRUE)	{
         HRESULT _hr							= HW.pDevice->Reset	(&DevPP);
         if (SUCCEEDED(_hr))					break;
-        log_cryray_engine::Msg		("! ERROR: [%dx%d]: %s",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.error2string(_hr));
+        Msg		("! ERROR: [%dx%d]: %s",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.error2string(_hr));
         Sleep	(100);
     }
     R_CHK				(pDevice->GetRenderTarget			(0,&pBaseRT));
@@ -259,13 +259,13 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     // Display the name of video board
     D3DADAPTER_IDENTIFIER9	adapterID;
     R_CHK	(pD3D->GetAdapterIdentifier(DevAdapter,0,&adapterID));
-    log_cryray_engine::Msg		("* GPU [vendor:%X]-[device:%X]: %s",adapterID.VendorId,adapterID.DeviceId,adapterID.Description);
+    Msg		("* GPU [vendor:%X]-[device:%X]: %s",adapterID.VendorId,adapterID.DeviceId,adapterID.Description);
 
     u16	drv_Product		= HIWORD(adapterID.DriverVersion.HighPart);
     u16	drv_Version		= LOWORD(adapterID.DriverVersion.HighPart);
     u16	drv_SubVersion	= HIWORD(adapterID.DriverVersion.LowPart);
     u16	drv_Build		= LOWORD(adapterID.DriverVersion.LowPart);
-    log_cryray_engine::Msg		("* GPU driver: %d.%d.%d.%d",u32(drv_Product),u32(drv_Version),u32(drv_SubVersion), u32(drv_Build));
+    Msg		("* GPU driver: %d.%d.%d.%d",u32(drv_Product),u32(drv_Version),u32(drv_SubVersion), u32(drv_Build));
 
     Caps.id_vendor	= adapterID.VendorId;
     Caps.id_device	= adapterID.DeviceId;
@@ -314,11 +314,11 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     }
 
     if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
-        log_cryray_engine::Msg					("Failed to initialize graphics hardware.\n"
+        Msg					("Failed to initialize graphics hardware.\n"
                              "Please try to restart the game.\n"
                              "Can not find matching format for back buffer."
                              );
-        log_cryray_engine::FlushLog			();
+        FlushLog			();
         MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
         TerminateProcess	(GetCurrentProcess(),0);
     }
@@ -383,10 +383,10 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     }
     if (D3DERR_DEVICELOST==R)	{
         // Fatal error! Cannot create rendering device AT STARTUP !!!
-        log_cryray_engine::Msg					("Failed to initialize graphics hardware.\n"
+        Msg					("Failed to initialize graphics hardware.\n"
                              "Please try to restart the game.\n"
                              "CreateDevice returned 0x%08x(D3DERR_DEVICELOST)", R);
-        log_cryray_engine::FlushLog			();
+        FlushLog			();
         MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
         TerminateProcess	(GetCurrentProcess(),0);
     };
@@ -396,16 +396,16 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     switch (GPU)
     {
     case D3DCREATE_SOFTWARE_VERTEXPROCESSING:
-        log_cryray_engine::Log("* Vertex Processor: SOFTWARE");
+        Log("* Vertex Processor: SOFTWARE");
         break;
     case D3DCREATE_MIXED_VERTEXPROCESSING:
-        log_cryray_engine::Log	("* Vertex Processor: MIXED");
+        Log	("* Vertex Processor: MIXED");
         break;
     case D3DCREATE_HARDWARE_VERTEXPROCESSING:
-        log_cryray_engine::Log	("* Vertex Processor: HARDWARE");
+        Log	("* Vertex Processor: HARDWARE");
         break;
     case D3DCREATE_HARDWARE_VERTEXPROCESSING|D3DCREATE_PUREDEVICE:
-        log_cryray_engine::Log	("* Vertex Processor: PURE HARDWARE");
+        Log	("* Vertex Processor: PURE HARDWARE");
         break;
     }
 
@@ -416,8 +416,8 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
     R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
     u32	memory									= pDevice->GetAvailableTextureMem	();
-    log_cryray_engine::Msg		("*     Texture memory: %d M",		memory/(1024*1024));
-    log_cryray_engine::Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
+    Msg		("*     Texture memory: %d M",		memory/(1024*1024));
+    Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
 #ifndef _EDITOR
     updateWindowProps							(m_hWnd);
     fill_vid_mode_list							(this);
@@ -467,20 +467,20 @@ u32 CHW::selectGPU ()
     if ( isIntelGMA )
         switch ( ps_r1_SoftwareSkinning ) {
             case 0 : 
-                log_cryray_engine::Msg( "* Enabling software skinning" );
+                Msg( "* Enabling software skinning" );
                 ps_r1_SoftwareSkinning = 1;
                 break;
             case 1 : 
-                log_cryray_engine::Msg( "* Using software skinning" );
+                Msg( "* Using software skinning" );
                 break;
             case 2 : 
-                log_cryray_engine::Msg( "* WARNING: Using hardware skinning" );
-                log_cryray_engine::Msg( "*   setting 'r1_software_skinning' to '1' may improve performance" );
+                Msg( "* WARNING: Using hardware skinning" );
+                Msg( "*   setting 'r1_software_skinning' to '1' may improve performance" );
                 break;
     } else
         if ( ps_r1_SoftwareSkinning == 1 ) {
-                log_cryray_engine::Msg( "* WARNING: Using software skinning" );
-                log_cryray_engine::Msg( "*   setting 'r1_software_skinning' to '0' should improve performance" );
+                Msg( "* WARNING: Using software skinning" );
+                Msg( "*   setting 'r1_software_skinning' to '0' should improve performance" );
         }
 
 #endif // RENDER == R_R1
@@ -639,14 +639,14 @@ void fill_vid_mode_list(CHW* _hw)
     xrAPI.vid_mode_token[_cnt-1].name		= NULL;
 
 #ifdef DEBUG
-    log_cryray_engine::Msg("Available video modes[%d]:",_tmp.size());
+    Msg("Available video modes[%d]:",_tmp.size());
 #endif // DEBUG
     for(i=0; i<_tmp.size();++i)
     {
         xrAPI.vid_mode_token[i].id		= i;
         xrAPI.vid_mode_token[i].name		= _tmp[i];
 #ifdef DEBUG
-        log_cryray_engine::Msg							("[%s]",_tmp[i]);
+        Msg							("[%s]",_tmp[i]);
 #endif // DEBUG
     }
 }

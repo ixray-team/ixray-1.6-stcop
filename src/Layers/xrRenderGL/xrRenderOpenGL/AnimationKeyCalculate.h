@@ -149,8 +149,8 @@ IC void Dequantize(CKey& K,const CBlend& BD,const CMotion& M)
 
 		Log("Bone",LL_BoneName_dbg(SelfID));
 		Log("parent",*parent);
-		log_cryray_engine::Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-		log_cryray_engine::Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
+		Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
+		Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
 
 		Log("count",count);
 		Log("time",time);
@@ -190,7 +190,7 @@ IC void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_BL
 		Log("1");
 		Log("BLEND_INST",BLEND_INST.Blend.size());
 		Log("Bone",LL_BoneName_dbg(SelfID));
-		log_cryray_engine::Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
+		Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
 		Log("Result.T",Result.T);
 		VERIFY(0);
 		}
@@ -215,7 +215,7 @@ IC void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_BL
 			Log("2");
 			Log("BLEND_INST",BLEND_INST.Blend.size());
 			Log("Bone",LL_BoneName_dbg(SelfID));
-			log_cryray_engine::Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
+			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
 			Log("Result.T",Result.T);
 			Log("parent",*parent);
 			VERIFY(0);

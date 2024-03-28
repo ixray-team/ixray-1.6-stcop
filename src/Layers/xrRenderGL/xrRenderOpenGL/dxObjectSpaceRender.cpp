@@ -21,7 +21,7 @@ void dxObjectSpaceRender::Copy (IObjectSpaceRender &_in)
 
 void dxObjectSpaceRender::dbgAddSphere(const Fsphere &sphere, u32 colour)
 {
-	dbg_S.push_back	(mk_pair(sphere,colour));
+	dbg_S.push_back	(std::make_pair(sphere,colour));
 }
 
 void dxObjectSpaceRender::dbgRender()

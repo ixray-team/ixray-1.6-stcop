@@ -386,7 +386,7 @@ BOOL STextureParams::similar(STextureParams& tp1, xr_vector<AnsiString>& sel_par
         {
         	res = ( fsimilar(bump_virtual_height,tp1.bump_virtual_height));
         }else
-        	log_cryray_engine::Msg("! unknown filter [%s]", par_name.c_str());
+        	Msg("! unknown filter [%s]", par_name.c_str());
        if(!res)
        	break;
     }

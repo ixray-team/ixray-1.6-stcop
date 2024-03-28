@@ -5,8 +5,8 @@
 #pragma hdrstop
 
 #include "xrRenderOpenGL/HW.h"
-#include "xrEngine/Console/Console.h"
-#include "xrAPI/xrAPI.h"
+#include "../xrEngine/XR_IOConsole.h"
+#include "../xrCore/API/xrAPI.h"
 
 #ifndef _EDITOR
 void	fill_vid_mode_list			(CHW* _hw);
@@ -30,7 +30,7 @@ void CALLBACK OnDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 	GLsizei length, const GLchar* message, const void* userParam)
 {
 	if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
-		log_cryray_engine::Log(message, id);
+		Log(message, id);
 }
 
 CHW::CHW() : 
@@ -87,7 +87,7 @@ void CHW::CreateDevice( HWND hWnd, bool move_window )
 	m_hDC = GetDC(m_hWnd);
 	if (m_hDC == NULL)
 	{
-		log_cryray_engine::Msg("Could not get device context.");
+		Msg("Could not get device context.");
 		return;
 	}
 
@@ -95,14 +95,14 @@ void CHW::CreateDevice( HWND hWnd, bool move_window )
 	int iPixelFormat = ChoosePixelFormat(m_hDC, &pfd);
 	if (iPixelFormat == 0)
 	{
-		log_cryray_engine::Msg("No pixel format found.");
+		Msg("No pixel format found.");
 		return;
 	}
 
 	// Apply the pixel format to the device context
 	if (!SetPixelFormat(m_hDC, iPixelFormat, &pfd))
 	{
-		log_cryray_engine::Msg("Could not set pixel format.");
+		Msg("Could not set pixel format.");
 		return;
 	}
 
@@ -110,7 +110,7 @@ void CHW::CreateDevice( HWND hWnd, bool move_window )
 	m_hRC = wglCreateContext(m_hDC);
 	if (m_hRC == NULL)
 	{
-		log_cryray_engine::Msg("Could not create drawing context.");
+		Msg("Could not create drawing context.");
 		return;
 	}
 
@@ -119,14 +119,14 @@ void CHW::CreateDevice( HWND hWnd, bool move_window )
 	// thread that will use the context.
 	if (!wglMakeCurrent(m_hDC, m_hRC))
 	{
-		log_cryray_engine::Msg("Could not make context current.");
+		Msg("Could not make context current.");
 		return;
 	}
 
 	// Initialize OpenGL Extension Wrangler
 	if (glewInit() != GLEW_OK)
 	{
-		log_cryray_engine::Msg("Could not initialize glew.");
+		Msg("Could not initialize glew.");
 		return;
 	}
 
@@ -156,10 +156,10 @@ void CHW::DestroyDevice()
 	if (m_hRC)
 	{
 		if (!wglMakeCurrent(NULL, NULL))
-			log_cryray_engine::Msg("Could not release drawing context.");
+			Msg("Could not release drawing context.");
 
 		if (!wglDeleteContext(m_hRC))
-			log_cryray_engine::Msg("Could not delete context.");
+			Msg("Could not delete context.");
 
 		m_hRC = NULL;
 	}
@@ -167,7 +167,7 @@ void CHW::DestroyDevice()
 	if (m_hDC)
 	{
 		if (!ReleaseDC(m_hWnd, m_hDC))
-			log_cryray_engine::Msg("Could not release device context.");
+			Msg("Could not release device context.");
 
 		m_hDC = NULL;
 	}
@@ -285,17 +285,17 @@ struct _uniq_mode
 
 void free_vid_mode_list()
 {
-	for (int i = 0; xrAPI.vid_mode_token[i].name; i++)
+	for (int i = 0; vid_mode_token[i].name; i++)
 	{
-		xr_free(xrAPI.vid_mode_token[i].name);
+		xr_free(vid_mode_token[i].name);
 	}
-	xr_free(xrAPI.vid_mode_token);
-	xrAPI.vid_mode_token = NULL;
+	xr_free(vid_mode_token);
+	vid_mode_token = NULL;
 }
 
 void fill_vid_mode_list(CHW* _hw)
 {
-	if (xrAPI.vid_mode_token != NULL)		return;
+	if (vid_mode_token != NULL)		return;
 	xr_vector<LPCSTR>	_tmp;
 
 	DWORD iModeNum = 0;
@@ -321,18 +321,18 @@ void fill_vid_mode_list(CHW* _hw)
 
 	u32 _cnt = _tmp.size() + 1;
 
-	xrAPI.vid_mode_token = xr_alloc<xr_token>(_cnt);
+	vid_mode_token = xr_alloc<xr_token>(_cnt);
 
-	xrAPI.vid_mode_token[_cnt - 1].id = -1;
-	xrAPI.vid_mode_token[_cnt - 1].name = NULL;
+	vid_mode_token[_cnt - 1].id = -1;
+	vid_mode_token[_cnt - 1].name = NULL;
 
 #ifdef DEBUG
 	Msg("Available video modes[%d]:", _tmp.size());
 #endif // DEBUG
 	for (u32 i = 0; i<_tmp.size(); ++i)
 	{
-		xrAPI.vid_mode_token[i].id = i;
-		xrAPI.vid_mode_token[i].name = _tmp[i];
+		vid_mode_token[i].id = i;
+		vid_mode_token[i].name = _tmp[i];
 #ifdef DEBUG
 		Msg("[%s]", _tmp[i]);
 #endif // DEBUG

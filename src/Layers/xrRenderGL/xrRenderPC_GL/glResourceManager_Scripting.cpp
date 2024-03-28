@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "xrEngine/Render.h"
+#include "../xrEngine/Render.h"
 #include "xrRenderOpenGL/ResourceManager.h"
 #include "xrRenderOpenGL/tss.h"
 #include "xrRenderOpenGL/blenders/blender.h"
@@ -8,9 +8,9 @@
 //	adopt_compiler don't have = operator And it can't have = operator
 #pragma warning( push )
 #pragma warning( disable : 4512)
-#include "xrEngine/ai_script_space.h"
+#include "../xrEngine/ai_script_space.h"
 #pragma warning( pop )
-#include "xrEngine/ai_script_lua_extension.h"
+#include "../xrEngine/ai_script_lua_extension.h"
 #include "luabind/return_reference_to_policy.hpp"
 
 #include "xrRenderOpenGL/dxRenderDeviceRender.h"
@@ -168,7 +168,7 @@ void	CResourceManager::LS_Load			()
 
 	if (!LSVM)
 	{
-		log_cryray_engine::Msg("! ERROR : Cannot initialize LUA VM!");
+		Msg("! ERROR : Cannot initialize LUA VM!");
 		return;
 	}
 
@@ -301,7 +301,7 @@ void	CResourceManager::LS_Load			()
 		}
 		catch (...)
 		{
-			log_cryray_engine::Log(lua_tostring(LSVM, -1));
+			Log(lua_tostring(LSVM, -1));
 		}
 	}
 	FS.file_list_close(folder);

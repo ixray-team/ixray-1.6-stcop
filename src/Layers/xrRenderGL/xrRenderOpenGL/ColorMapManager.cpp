@@ -42,7 +42,7 @@ void ColorMapManager::UpdateTexture(const shared_str &strTexName, int iTex)
 			ref_texture	tmp;
 			tmp.create(strTexName.c_str());
 
-			m_TexCache.insert	(mk_pair(strTexName,tmp));
+			m_TexCache.insert	(std::make_pair(strTexName,tmp));
 #ifdef USE_OGL
 			GLuint	e0 = tmp->surface_get();
 			m_CMap[iTex]->surface_set(GL_TEXTURE_2D, e0);

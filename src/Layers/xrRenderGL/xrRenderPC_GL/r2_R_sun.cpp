@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "xrEngine/IGame_Persistent.h"
-#include "xrEngine/IRenderable.h"
-#include "xrRenderAPI/FBasicVisual.h"
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/IRenderable.h"
+#include "../xrRender/FBasicVisual.h"
 #include "r3_R_sun_support.h"
 
 #include <d3dx9math.h>

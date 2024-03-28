@@ -45,7 +45,7 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 	if (pool.empty())
 	{
 //		if ((Device.dwFrame % 40) == 0)
-//			log_cryray_engine::Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
+//			Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
 		ID = iInvalidHandle;
 		return 0;
 	}
@@ -65,7 +65,7 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 	//CHK_DX					(used[ID].Q->Issue	(D3DISSUE_BEGIN));
 	CHK_DX					(BeginQuery(used[ID].Q));
 	
-	// log_cryray_engine::Msg				("begin: [%2d] - %d", used[ID].order, ID);
+	// Msg				("begin: [%2d] - %d", used[ID].order, ID);
 
 	return			used[ID].order;
 }
@@ -76,7 +76,7 @@ void	R_occlusion::occq_end		(u32&	ID		)
 	//	Igor: prevent release crash if we issue too many queries
 	if (ID == iInvalidHandle) return;
 
-	// log_cryray_engine::Msg				("end  : [%2d] - %d", used[ID].order, ID);
+	// Msg				("end  : [%2d] - %d", used[ID].order, ID);
 	//CHK_DX			(used[ID].Q->Issue	(D3DISSUE_END));
 	CHK_DX			(EndQuery(used[ID].Q));
 }
@@ -90,7 +90,7 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 	occq_result	fragments	= 0;
 	HRESULT hr;
 	// CHK_DX		(used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH));
-	// log_cryray_engine::Msg			("get  : [%2d] - %d => %d", used[ID].order, ID, fragments);
+	// Msg			("get  : [%2d] - %d => %d", used[ID].order, ID, fragments);
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();

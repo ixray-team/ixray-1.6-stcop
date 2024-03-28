@@ -100,11 +100,11 @@ GLuint	CRender::texture_load(LPCSTR fRName, u32& ret_msize, GLenum& ret_desc)
 	return 0;
 #else
 
-	log_cryray_engine::Msg("! Can't find texture '%s'", fname);
+	Msg("! Can't find texture '%s'", fname);
 	R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
 	goto _DDS;
 
-	//	xrDebug::Fatal(DEBUG_INFO,"Can't find texture '%s'",fname);
+	//	Debug.fatal(DEBUG_INFO,"Can't find texture '%s'",fname);
 
 #endif
 
@@ -237,7 +237,7 @@ _DDS:
 _BUMP_from_base:
 	{
 		//Msg			("! auto-generated bump map: %s",fname);
-		log_cryray_engine::Msg("! Fallback to default bump map: %s",fname);
+		Msg("! Fallback to default bump map: %s",fname);
 		//////////////////
 		if (strstr(fname,"_bump#"))			
 		{

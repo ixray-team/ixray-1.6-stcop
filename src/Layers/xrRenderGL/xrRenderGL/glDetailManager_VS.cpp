@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "xrRenderOpenGL/DetailManager.h"
-#include "xrEngine/IGame_Persistent.h"
-#include "xrEngine/Environment.h"
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/Environment.h"
 #include "xrRenderGL/xrRenderGL/glBufferUtils.h"
 
 const int			quant = 16384;
@@ -178,7 +178,6 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 						dwBatch	++;
 						if (dwBatch == hw_BatchSize)	{
 							// flush
-							Device.Statistic->RenderDUMP_DT_Count += dwBatch;
 							u32 dwCNT_verts			= dwBatch * Object.number_vertices;
 							u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
 							//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
@@ -204,7 +203,6 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 				// flush if nessecary
 				if (dwBatch)
 				{
-					Device.Statistic->RenderDUMP_DT_Count += dwBatch;
 					u32 dwCNT_verts			= dwBatch * Object.number_vertices;
 					u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
 					//RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
@@ -215,7 +213,7 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 
 			}
 			// Clean up
-			vis.xr_clear			();
+			vis.clear();
 		}
 		vOffset		+=	hw_BatchSize * Object.number_vertices;
 		iOffset		+=	hw_BatchSize * Object.number_indices;

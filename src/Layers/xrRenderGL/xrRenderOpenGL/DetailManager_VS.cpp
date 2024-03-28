@@ -54,7 +54,7 @@ void CDetailManager::hw_Load_Geom()
 	// Analyze batch-size
 	hw_BatchSize	= (u32(HW.Caps.geometry.dwRegisters)-c_hdr)/c_size;
 	clamp			(hw_BatchSize,(u32)0,(u32)64);
-	log_cryray_engine::Msg				("* [DETAILS] VertexConsts(%d), Batch(%d)",u32(HW.Caps.geometry.dwRegisters),hw_BatchSize);
+	Msg				("* [DETAILS] VertexConsts(%d), Batch(%d)",u32(HW.Caps.geometry.dwRegisters),hw_BatchSize);
 
 	// Pre-process objects
 	u32			dwVerts		= 0;
@@ -66,7 +66,7 @@ void CDetailManager::hw_Load_Geom()
 		dwIndices	+=	D.number_indices*hw_BatchSize;
 	}
 	u32			vSize		= sizeof(vertHW);
-	log_cryray_engine::Msg("* [DETAILS] %d v(%d), %d p",dwVerts,vSize,dwIndices/3);
+	Msg("* [DETAILS] %d v(%d), %d p",dwVerts,vSize,dwIndices/3);
 
 #if !defined(USE_DX10) && !defined(USE_DX11) && !defined(USE_OGL)
 	// Determine POOL & USAGE
@@ -79,7 +79,7 @@ void CDetailManager::hw_Load_Geom()
 	HW.stats_manager.increment_stats_ib				(hw_IB);
 
 #endif	//	USE_DX10
-	log_cryray_engine::Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);
+	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);
 
 	// Fill VB
 	{

@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "xrEngine/IGame_Persistent.h"
-#include "xrRenderAPI/FBasicVisual.h"
-#include "xrEngine/CustomHUD.h"
-#include "xrEngine/xr_object.h"
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrRender/FBasicVisual.h"
+#include "../xrEngine/CustomHUD.h"
+#include "../xrEngine/xr_object.h"
 #include "xrRenderOpenGL/QueryHelper.h"
 
 IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
@@ -431,7 +431,7 @@ void CRender::Render		()
 				Lights_LastFrame[it]->svis.flushoccq()	;
 			} catch (...)
 			{
-				log_cryray_engine::Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
+				Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
 			}
 		}
 		Lights_LastFrame.clear	();

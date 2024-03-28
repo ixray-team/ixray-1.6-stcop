@@ -90,7 +90,7 @@ u32		CBlender_Compile::i_Sampler		(LPCSTR _name)
 }
 void	CBlender_Compile::i_Texture		(u32 s, LPCSTR name)
 {
-	if (name)	passTextures.push_back	(mk_pair(s, ref_texture(DEV->_CreateTexture(name))));
+	if (name)	passTextures.push_back	(std::make_pair(s, ref_texture(DEV->_CreateTexture(name))));
 }
 void	CBlender_Compile::i_Projective	(u32 s, bool b)
 {

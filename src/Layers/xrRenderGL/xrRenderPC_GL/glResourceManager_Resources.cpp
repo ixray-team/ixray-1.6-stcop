@@ -64,7 +64,7 @@ void		CResourceManager::_DeleteState		(const SState* state)
 {
 	if (0==(state->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_states,state))						return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled stateblock");
+	Msg	("! ERROR: Failed to find compiled stateblock");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ void		CResourceManager::_DeletePass			(const SPass* P)
 {
 	if (0==(P->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_passes,P))						return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled pass");
+	Msg	("! ERROR: Failed to find compiled pass");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 {
 	if (0==(dcl->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_declarations,dcl))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled vertex-declarator");
+	Msg	("! ERROR: Failed to find compiled vertex-declarator");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	{
 		SVS*	_vs					= xr_new<SVS>	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert					(mk_pair(_vs->set_name(name),_vs));
+		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
 		//_vs->vs				= NULL;
 		//_vs->signature		= NULL;
 		VERIFY(strcmpi(name, "null") != 0);
@@ -199,7 +199,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		{
 			string1024			tmp;
 			xr_sprintf			(tmp, "OGL: %s is missing. Replace with stub_default.vs", cname);
-			log_cryray_engine::Msg					(tmp);
+			Msg					(tmp);
 			strconcat			(sizeof(cname), cname,xrAPI.Render->getShaderPath(),"stub_default",".vs");
 			FS.update_path		(cname,	"$game_shaders$", cname);
 			file				= FS.r_open(cname);
@@ -242,7 +242,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 		m_vs.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
+	Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -265,7 +265,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 	{
 		SPS*	_ps					=	xr_new<SPS>	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_ps.insert					(mk_pair(_ps->set_name(name),_ps));
+		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		VERIFY(strcmpi(name, "null") != 0);
 
 		string_path					shName;
@@ -288,7 +288,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 			//	TODO: HACK: Test failure
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "OGL: %s is missing. Replace with stub_default.ps", cname);
-			log_cryray_engine::Msg					(tmp);
+			Msg					(tmp);
 			strconcat					(sizeof(cname), cname,xrAPI.Render->getShaderPath(),"stub_default",".ps");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			file = FS.r_open(cname);
@@ -331,7 +331,7 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 		m_ps.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
+	Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -344,7 +344,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 	{
 		SGS*	_gs					=	xr_new<SGS>	();
 		_gs->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_gs.insert					(mk_pair(_gs->set_name(name),_gs));
+		m_gs.insert					(std::make_pair(_gs->set_name(name),_gs));
 		if (0==stricmp(name,"null"))	{
 			_gs->gs				= NULL;
 			return _gs;
@@ -364,7 +364,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 			//	TODO: HACK: Test failure
 			//Memory.mem_compact();
 			xr_sprintf				(tmp, "OGL: %s is missing. Replace with stub_default.gs", cname);
-			log_cryray_engine::Msg					(tmp);
+			Msg					(tmp);
 			strconcat					(sizeof(cname), cname,xrAPI.Render->getShaderPath(),"stub_default",".gs");
 			FS.update_path				(cname,	"$game_shaders$", cname);
 			file = FS.r_open(cname);
@@ -404,7 +404,7 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 		m_gs.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
+	Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
 }
 
 R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
@@ -420,7 +420,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 {
 	if (0==(C->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_constant_tables,C))				return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled constant-table");
+	Msg	("! ERROR: Failed to find compiled constant-table");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 S
 	{
 		CRT *RT					= xr_new<CRT>();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_rtargets.insert		(mk_pair(RT->set_name(Name),RT));
+		m_rtargets.insert		(std::make_pair(RT->set_name(Name),RT));
 		if (Device.b_is_Ready)	RT->create	(Name,w,h,f);
 		return					RT;
 	}
@@ -450,7 +450,7 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 		m_rtargets.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
+	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 {
 	if (0==(Geom->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_geoms,Geom))							return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled geometry-declaration");
+	Msg	("! ERROR: Failed to find compiled geometry-declaration");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -535,7 +535,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	{
 		CTexture *	T		= xr_new<CTexture>();
 		T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
-		m_textures.insert	(mk_pair(T->set_name(Name),T));
+		m_textures.insert	(std::make_pair(T->set_name(Name),T));
 		T->Preload			();
 		if (Device.b_is_Ready && !bDeferredLoad) T->Load();
 		return		T;
@@ -552,7 +552,7 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 		m_textures.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
+	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
 }
 
 #ifdef DEBUG
@@ -584,7 +584,7 @@ CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
 		CMatrix* M			= xr_new<CMatrix>();
 		M->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		M->dwReference		=	1;
-		m_matrices.insert	(mk_pair(M->set_name(Name),M));
+		m_matrices.insert	(std::make_pair(M->set_name(Name),M));
 		return			M;
 	}
 }
@@ -597,7 +597,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 		m_matrices.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
+	Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
 }
 void	CResourceManager::ED_UpdateMatrix		(LPCSTR Name, CMatrix* data)
 {
@@ -618,7 +618,7 @@ CConstant*	CResourceManager::_CreateConstant	(LPCSTR Name)
 		CConstant* C		= xr_new<CConstant>();
 		C->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		C->dwReference		=	1;
-		m_constants.insert	(mk_pair(C->set_name(Name),C));
+		m_constants.insert	(std::make_pair(C->set_name(Name),C));
 		return	C;
 	}
 }
@@ -631,7 +631,7 @@ void	CResourceManager::_DeleteConstant		(const CConstant* C)
 		m_constants.erase(I);
 		return;
 	}
-	log_cryray_engine::Msg	("! ERROR: Failed to find R1-constant-def '%s'",*C->cName);
+	Msg	("! ERROR: Failed to find R1-constant-def '%s'",*C->cName);
 }
 
 void	CResourceManager::ED_UpdateConstant	(LPCSTR Name, CConstant* data)
@@ -661,7 +661,7 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_textures,L))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled list of textures");
+	Msg	("! ERROR: Failed to find compiled list of textures");
 }
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
@@ -684,7 +684,7 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_matrices,L))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled list of xform-defs");
+	Msg	("! ERROR: Failed to find compiled list of xform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
@@ -707,5 +707,5 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 {
 	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(lst_constants,L))					return;
-	log_cryray_engine::Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
+	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
 }

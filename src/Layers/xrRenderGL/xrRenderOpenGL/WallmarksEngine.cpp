@@ -430,7 +430,7 @@ void CWallmarksEngine::Render()
 					W->Parent()->RenderWallmark	(W,w_verts);
 				} catch (...)
 				{
-					log_cryray_engine::Msg		("! Failed to render dynamic wallmark");
+					Msg		("! Failed to render dynamic wallmark");
 					w_verts = w_save;
 				}
 			}

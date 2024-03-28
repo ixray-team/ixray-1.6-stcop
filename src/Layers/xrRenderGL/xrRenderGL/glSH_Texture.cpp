@@ -4,11 +4,11 @@
 #include "xrRenderOpenGL/ResourceManager.h"
 
 #ifndef _EDITOR
-#include "xrEngine/render.h"
+#include "../xrEngine/render.h"
 #endif
 
-#include "xrEngine/tntQAVI.h"
-#include "xrEngine/xrTheora_Surface.h"
+#include "../xrEngine/tntQAVI.h"
+#include "../xrEngine/xrTheora_Surface.h"
 
 #define		PRIORITY_HIGH	12
 #define		PRIORITY_NORMAL	8
@@ -189,7 +189,7 @@ void CTexture::Load		()
 			if (glGetError() != GL_NO_ERROR)
 			{
 				//FATAL("Invalid video stream");
-				log_cryray_engine::Msg("!!!!!! Invalid video stream");
+				Msg("!!!!!! Invalid video stream");
 				xr_delete(pTheora);
 				pSurface = 0;
 			}
@@ -222,7 +222,7 @@ void CTexture::Load		()
 			if (glGetError() != GL_NO_ERROR)
 			{
 				//FATAL("Invalid video stream");
-				log_cryray_engine::Msg("!!!!!! Invalid video stream");
+				Msg("!!!!!! Invalid video stream");
 				xr_delete(pAVI);
 				pSurface = 0;
 			}

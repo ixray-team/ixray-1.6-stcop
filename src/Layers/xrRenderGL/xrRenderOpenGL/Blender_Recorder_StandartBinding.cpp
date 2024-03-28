@@ -10,9 +10,9 @@
 #include "blenders\Blender_Recorder.h"
 #include "blenders\Blender.h"
 
-#include "xrEngine/igame_persistent.h"
-#include "xrEngine/environment.h"
-#include "xrEngine/Rain.h"
+#include "../xrEngine/igame_persistent.h"
+#include "../xrEngine/environment.h"
+#include "../xrEngine/Rain.h"
 
 #include "dxRenderDeviceRender.h"
 

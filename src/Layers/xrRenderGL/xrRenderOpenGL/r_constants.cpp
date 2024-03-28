@@ -95,7 +95,7 @@ BOOL	R_constant_table::parse	(void* _desc, u32 destination)
 						case 2:	r_type	=	RC_2x4;	break;
 						case 3: r_type	=	RC_3x4;	break;
 						default:
-							log_cryray_engine::Msg("Invalid matrix dimension:%dx%d in constant %s", it->RegisterCount, T->Columns, name);
+							Msg("Invalid matrix dimension:%dx%d in constant %s", it->RegisterCount, T->Columns, name);
 							fatal		("MATRIX_ROWS: unsupported number of RegisterCount");
 							break;
 						}

@@ -410,7 +410,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 	switch	(RenderMode)
 	{
 	case RM_SKINNING_SOFT:
-		//log_cryray_engine::Msg					("skinning: software");
+		//Msg					("skinning: software");
 		V.rm_geom.create		(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
@@ -572,7 +572,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 	switch	(RenderMode)
 	{
 	case RM_SKINNING_SOFT:
-		//log_cryray_engine::Msg					("skinning: software");
+		//Msg					("skinning: software");
 		V.rm_geom.create		(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
@@ -680,11 +680,11 @@ static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinema
 	for( u8 i =0; i<vertex_type::bones_count; ++i )
 		if( v.get_bone_id(i) >= Parent->LL_BoneCount() )
 		{
-			log_cryray_engine::Msg( "v.get_bone_id(i): %d, Parent->LL_BoneCount() %d ", v.get_bone_id(i), Parent->LL_BoneCount() );
-			log_cryray_engine::Msg( "&v: %p, &V: %p, indices: %p", &v, V, indices );
-			log_cryray_engine::Msg( " iBase: %d, iCount: %d, V->iBase %d, V->iCount %d, V->vBase: %d,  V->vCount  %d, vertex_idx: %d, idx: %d", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount, vertex_idx, idx  );
-			log_cryray_engine::Msg( " v.P: %s , v.N: %s, v.T: %s, v.B: %s", get_string( v.P ).c_str(),get_string(  v.N ).c_str(),get_string(  v.T ).c_str(),get_string(  v.B  ).c_str());
-			log_cryray_engine::Msg( "Parent->dbg_name: %s ", Parent->dbg_name.c_str() );
+			Msg( "v.get_bone_id(i): %d, Parent->LL_BoneCount() %d ", v.get_bone_id(i), Parent->LL_BoneCount() );
+			Msg( "&v: %p, &V: %p, indices: %p", &v, V, indices );
+			Msg( " iBase: %d, iCount: %d, V->iBase %d, V->iCount %d, V->vBase: %d,  V->vCount  %d, vertex_idx: %d, idx: %d", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount, vertex_idx, idx  );
+			Msg( " v.P: %s , v.N: %s, v.T: %s, v.B: %s", get_string( v.P ).c_str(),get_string(  v.N ).c_str(),get_string(  v.T ).c_str(),get_string(  v.B  ).c_str());
+			Msg( "Parent->dbg_name: %s ", Parent->dbg_name.c_str() );
 			FlushLog();
 			FATAL( "v.get_bone_id(i) >= Parent->LL_BoneCount()" );
 		}

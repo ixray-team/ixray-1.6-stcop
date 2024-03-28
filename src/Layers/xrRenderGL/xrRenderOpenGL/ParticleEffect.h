@@ -5,7 +5,7 @@
 
 #include "ParticleEffectDef.h"
 
-#include "xrRenderAPI/FBasicVisual.h"
+#include "../xrRender/FBasicVisual.h"
 #include "xrRenderOpenGL/dxParticleCustom.h"
 
 namespace PS

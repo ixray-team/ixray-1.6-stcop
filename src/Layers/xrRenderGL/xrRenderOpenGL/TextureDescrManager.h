@@ -1,6 +1,3 @@
-#ifndef _TextureDescrManager_included_
-#define _TextureDescrManager_included_
-
 #pragma once
 #include "ETextureParams.h"
 
@@ -28,11 +25,14 @@ class CTextureDescrMngr
 		texture_spec*		m_spec;
         texture_desc            ():m_assoc(NULL),m_spec(NULL){}
 	};
-	DEFINE_MAP(shared_str, texture_desc,	map_TD,	map_TDIt);
-	DEFINE_MAP(shared_str, cl_dt_scaler*,	map_CS,	map_CSIt);
+	using map_TD = xr_map<shared_str, texture_desc>;
+	using map_TDIt = map_TD::iterator;
 
-	map_TD									m_texture_details;
-	map_CS									m_detail_scalers;
+	using map_CS = xr_map<shared_str, cl_dt_scaler*>;
+	using map_CSIt = map_CS::iterator;
+
+	map_TD m_texture_details;
+	map_CS m_detail_scalers;
 
 	void		LoadTHM		(LPCSTR initial);
 
@@ -47,4 +47,3 @@ public:
 	BOOL		GetDetailTexture(const shared_str& tex_name, LPCSTR& res, R_constant_setup* &CS) const;
 	BOOL		UseSteepParallax(const shared_str& tex_name) const;
 };
-#endif

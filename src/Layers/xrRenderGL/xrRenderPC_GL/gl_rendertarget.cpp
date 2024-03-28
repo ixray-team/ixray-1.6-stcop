@@ -10,9 +10,9 @@
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"
-#include "xrRenderAPI/DX_MinMaxSMBlender.h"
-#include "xrRenderAPI/DX_MSAABlender.h"
-#include "xrRenderAPI/DX_RainBlender.h"
+#include "../xrRender/DX_MinMaxSMBlender.h"
+#include "../xrRender/DX_MSAABlender.h"
+#include "../xrRender/DX_RainBlender.h"
 
 void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, GLuint zb)
 {
