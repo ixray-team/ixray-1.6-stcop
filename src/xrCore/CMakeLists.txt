@@ -138,7 +138,7 @@ if (MSVC)
 	set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 	set_target_properties(xrCore PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-	target_precompile_headers(xrCore PUBLIC "stdafx.h")
+	target_precompile_headers(xrCore PRIVATE "stdafx.h")
 
 	file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "stdafx.*")
 	file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "*.c")
