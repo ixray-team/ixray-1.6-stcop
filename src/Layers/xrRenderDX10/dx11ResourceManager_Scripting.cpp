@@ -119,13 +119,7 @@ void LuaError(lua_State* L)
 	Debug.fatal(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
 }
 
-#ifdef USE_ARENA_ALLOCATOR
-	static const u32	s_arena_size = 8*1024*1024;
-	static char			s_fake_array[s_arena_size];
-	doug_lea_allocator	g_render_lua_allocator( s_fake_array, s_arena_size, "render:lua" );
-#else // #ifdef USE_ARENA_ALLOCATOR
-	doug_lea_allocator	g_render_lua_allocator( 0, 0, "render:lua" );
-#endif // #ifdef USE_ARENA_ALLOCATOR
+doug_lea_allocator g_render_lua_allocator("render:lua");
 
 static void* lua_alloc(void* ud, void* ptr, size_t osize, size_t nsize) {
 	(void) ud;
