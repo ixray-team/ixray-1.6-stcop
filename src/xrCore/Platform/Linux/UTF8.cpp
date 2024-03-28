@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-XRCORE_API char* Platform::ANSI_TO_TCHAR(const char* C)
+XRCORE_API const char* Platform::ANSI_TO_TCHAR(const char* C)
 {
 	return C;
 }
 
-XRCORE_API char* Platform::ANSI_TO_TCHAR_U8(const char* C)
+XRCORE_API const char* Platform::ANSI_TO_TCHAR_U8(const char* C)
 {
 	return C;
 }

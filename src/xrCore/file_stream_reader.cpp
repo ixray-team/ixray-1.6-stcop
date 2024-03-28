@@ -17,9 +17,12 @@ void CFileStreamReader::construct	(LPCSTR file_name, const u32 &window_size)
 			0
 		);
 	VERIFY					(file_mapping_handle != INVALID_HANDLE_VALUE);
-#endif
 
 	inherited::construct	(file_mapping_handle,0,file_size,file_size,window_size);
+#else
+    inherited::construct	(m_file_handle,0,file_size,file_size,window_size);
+#endif
+
 }
 
 void CFileStreamReader::construct(const FileHandle& file_mapping_handle, const u32& start_offset, const u32& file_size, const u32& archive_size, const u32& window_size)
@@ -36,5 +39,6 @@ void CFileStreamReader::destroy		()
 #else
     inherited::destroy();
 #endif
+
     Platform::CloseFile(m_file_handle);
 }

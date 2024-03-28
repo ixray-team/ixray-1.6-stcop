@@ -74,7 +74,7 @@ IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light& L)
 	// 2. Polygon doesn't pick - real database query
 	t_start			= CPU::GetCLK();
 	DB.ray_query	( &gl_data.RCAST_Model, P, D,r );
-	t_time			+=	CPU::GetCLK()-t_start-CPU::clk_overhead;
+	t_time			+=	CPU::GetCLK()-t_start-CPU::GetTickCount();
 	t_count			+=	1;
 	
 	// 3. Analyze

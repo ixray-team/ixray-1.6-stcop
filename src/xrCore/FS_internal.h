@@ -16,7 +16,7 @@ public:
 	{
 		R_ASSERT	(name && name[0]);
 		fName		= name;
-		xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(name);
+		const xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(name);
 		VerifyPath	(*fName);
         if (exclusive){
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);

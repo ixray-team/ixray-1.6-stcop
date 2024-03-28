@@ -12,8 +12,10 @@ ThreadID Platform::GetCurrentThread()
 
 size_t Platform::GetThreadId(ThreadID ID)
 {
-    pthread_id_np_t tid;
-    pthread_getunique_np(&ID, &tid);
+    return (size_t)ID;
+}
 
-    return (size_t)tid;
+void Platform::SetThreadName(const char* name)
+{
+    pthread_setname_np(pthread_self(), name);
 }

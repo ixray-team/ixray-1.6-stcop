@@ -43,7 +43,6 @@ public:
 	};
 #	define _FINDDATA_T	std::_finddata_t
 #else
-	struct 				_finddata64i32_t;
 #	define _FINDDATA_T	_finddata64i32_t
 #endif
 
