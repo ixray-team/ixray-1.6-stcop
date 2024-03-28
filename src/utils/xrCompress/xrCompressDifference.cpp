@@ -36,7 +36,12 @@ struct file_comparer{
 		if(0!=eq)
 			return false;
 		
+		string_path testFolder = "";
+		m_fs_new->update_path(testFolder, "$target_folder$", m_full_name);
 
+		if (std::filesystem::is_directory(testFolder)) {
+			return true;
+		}
 		
 		if( !m_flags.test(eDontCheckFileSize) ){
 			//compare file size
@@ -156,6 +161,13 @@ int ProcessDifference()
 
 		xr_strconcat(out_path,target_folder,"\\",fn);
 		VerifyPath(out_path);
+		string_path testFolder = "";
+		FS_new->update_path(testFolder, "$target_folder$", fn);
+
+		if (std::filesystem::is_directory(testFolder)) {
+			continue;
+		}
+
 		IReader* r = FS_new->r_open("$target_folder$",fn);
 		IWriter* w = FS_old->w_open(out_path);
 		w->w(r->pointer(),r->length());
