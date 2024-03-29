@@ -189,8 +189,8 @@
 		protected:
 				const	MeshInterface*		mIMesh;			//!< User-defined mesh interface
 						udword				mModelCode;		//!< Model code = combination of ModelFlag(s)
-						AABBTree*			mSource;		//!< Original source tree
-						AABBOptimizedTree*	mTree;			//!< Optimized tree owned by the model
+						AABBTree*			mSource = nullptr;		//!< Original source tree
+						AABBOptimizedTree*	mTree = nullptr;			//!< Optimized tree owned by the model
 		// Internal methods
 						void				ReleaseBase();
 						bool				CreateTree(bool no_leaf, bool quantized);

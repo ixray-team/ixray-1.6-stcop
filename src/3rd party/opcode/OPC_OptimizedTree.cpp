@@ -147,7 +147,7 @@ static void _BuildCollisionTree(AABBCollisionNode* linear, const udword box_id, 
  *	\param		current_node	[in] current node from input tree
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void _BuildNoLeafTree(AABBNoLeafNode* linear, const udword box_id, udword& current_id, const AABBTreeNode* current_node)
+void _BuildNoLeafTree(AABBNoLeafNode* linear, const udword box_id, udword& current_id, const AABBTreeNode* current_node)
 {
 	const AABBTreeNode* P = current_node->GetPos();
 	const AABBTreeNode* N = current_node->GetNeg();
