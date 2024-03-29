@@ -141,7 +141,7 @@ end
 function mp_demo:FillList()
 	self.demo_list:RemoveAll()
 	local f = getFS()
-	local flist = f:file_list_open_ex("$logs$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*.demo")
+	local flist = f:file_list_open_ex("$logs$",bit.bor(FS.FS_ListFiles,FS.FS_RootOnly),"*.demo")
 	local f_cnt = flist:Size()
 
 	flist:Sort(FS.FS_sort_by_modif_down)

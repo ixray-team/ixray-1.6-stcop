@@ -1,12 +1,15 @@
+--// JIT init
 if (jit == nil) then
 	profiler.setup_hook	()
 end
+
+jit.opt.start(2)
 
 string.gfind = string.gmatch
 math.mod = math.fmod
 math.randomseed(time_global())
 
-DebuggerMode = string.find(command_line(), "-debugger_lua") ~= nil
+--// Some X-Ray block
 DebugLog = false
 
 function empty	(container)
@@ -501,16 +504,6 @@ function set_inactivate_input_time(delta)
 	level.disable_input()
 end
 
--- Принимает: позицию положения, позицию куда смотреть, время сна в минутах.
---[[
-function set_sleep_relocate(point, look, timeout)
-	db.storage[db.actor:id()].sleep_relocate_time = game.get_game_time()
-	db.storage[db.actor:id()].sleep_relocate_idle = timeout*60
-	db.storage[db.actor:id()].sleep_relocate_point = point
-	db.storage[db.actor:id()].sleep_relocate_look = look
-end
-]]--
-
 -- проверяет целую часть числа на нечетность
 function odd( x )
 	return math.floor( x * 0.5 ) * 2 == math.floor( x )
@@ -625,9 +618,6 @@ function start_game_callback()
 	sim_board.clear()
 	sr_light.clean_up ()
 	pda.add_quick_slot_items_on_game_start()
-	-- Tестирование оптимизации
-	--local test_object = test_object.test_object_class()
-	--test_object:test()
 end
 
 --' Усталость
@@ -883,28 +873,31 @@ function show_all_ui(show)
 	end
 end
 
-function debugger_attach() 
-	if DebuggerMode then
-		if jit then jit.off() end
-		LuaPanda.reConnect()
-		if jit then jit.on() end
-	end
-end
+--// LuaPandas
+DebuggerMode = false
+
 function debug_jit_off()
 	if DebuggerMode then
 		if jit then jit.off() end
 	end
 end
+
 function debug_jit_on()
 	if DebuggerMode then
 		if jit then jit.on() end
 	end
 end
 
-if DebuggerMode then
-	SemiLog('debuggee starting...')
-	if jit then jit.off() end
-	LuaPanda.start("127.0.0.1", 8818)
-	if jit then jit.on() end
-	SemiLog('debuggee started')
+function debugger_attach() 
+	if DebuggerMode then
+		debug_jit_off()
+		LuaPanda.reConnect()
+		debug_jit_on()
+	else
+		debug_jit_off()
+		SemiLog('LuaPanda starting...')
+		LuaPanda.start("127.0.0.1", 8818)
+		DebuggerMode = true
+		debug_jit_on()
+	end
 end
