@@ -58,29 +58,38 @@ public:
 		}
 	}
 
-	void Stab(const AABBNoLeafNode* node, u32 mask) {
+	void Stab(const AABBNoLeafNode* node, u32 mask)
+	{
 		// Actual frustum/aabb test
 		EFC_Visible	result = Box((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, mask);
 		if (fcvNone == result)	return;
 
 		// 1st chield
-		if (node->HasLeaf()) {
-			Prim((DWORD)node->GetPrimitive());
-		} else {
+		if (node->HasPosLeaf())
+		{
+			Prim((DWORD)node->GetPosPrimitive());
+		}
+		else 
+		{
 			Stab(node->GetPos(), mask);
 		}
 
 		// Early exit for "only first"
-		if (bFirst) {
-			if (dest->r_count()) {
+		if (bFirst) 
+		{
+			if (dest->r_count()) 
+			{
 				return;
 			}
 		}
 
 		// 2nd chield
-		if (node->HasLeaf2()) {
-			Prim((DWORD)node->GetPrimitive2());
-		} else {
+		if (node->HasNegLeaf())
+		{
+			Prim((DWORD)node->GetNegPrimitive());
+		} 
+		else 
+		{
 			Stab(node->GetNeg(), mask);
 		}
 	}

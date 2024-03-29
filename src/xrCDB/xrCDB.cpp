@@ -6,9 +6,11 @@
 
 #include "xrCDB.h"
 
-namespace Opcode {
-#	include "OPC_TreeBuilders.h"
-} // namespace Opcode
+namespace Opcode 
+{
+#	include <OPC_TreeBuilders.h>
+#	include <OPC_Model.h>
+}
 
 using namespace CDB;
 using namespace Opcode;
@@ -131,17 +133,18 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	
 	// Build a non quantized no-leaf tree
 	OPCODECREATE	OPCC;
-	OPCC.NbTris		= tris_count;
-	OPCC.NbVerts	= verts_count;
-	OPCC.Tris		= (unsigned*)temp_tris;
-	OPCC.Verts		= (Point*)verts;
-	OPCC.Rules		= SPLIT_COMPLETE | SPLIT_SPLATTERPOINTS | SPLIT_GEOMCENTER;
-	OPCC.NoLeaf		= true;
-	OPCC.Quantized	= false;
-	// if (Memory.debug_mode) OPCC.KeepOriginal = true;
 
-	tree			= CNEW(OPCODE_Model) ();
-	if (!tree->Build(OPCC)) {
+	OPCC.mIMesh = new MeshInterface();
+	OPCC.mIMesh->SetNbTriangles(tris_count);
+	OPCC.mIMesh->SetNbVertices(verts_count);
+	OPCC.mIMesh->SetPointers((IceMaths::IndexedTriangle*)temp_tris, (IceMaths::Point*)verts);
+	OPCC.mSettings.mRules = SplittingRules::SPLIT_SPLATTER_POINTS | SplittingRules::SPLIT_GEOM_CENTER;
+	OPCC.mNoLeaf = true;
+	OPCC.mQuantized = false;
+
+	tree = CNEW(Model) ();
+	if (!tree->Build(OPCC)) 
+	{
 		CFREE		(verts);
 		CFREE		(tris);
 		CFREE		(temp_tris);
