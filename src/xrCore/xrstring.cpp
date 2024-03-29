@@ -157,6 +157,11 @@ bool xr_string::StartWith(LPCSTR Str, size_t Size) const
 	return true;
 }
 
+bool xr_string::Contains(const xr_string& SubStr) const
+{
+	return find(SubStr) != npos;
+}
+
 xr_string xr_string::ToString(int Value) 
 {
 	string64 buf = { 0 };
