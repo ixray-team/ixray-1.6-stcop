@@ -27,18 +27,6 @@ class CScriptThread;
 struct lua_State;
 struct lua_Debug;
 
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-		class CScriptDebugger;
-#	else
-		namespace cs::lua_studio
-		{
-			struct world;
-		}
-		class lua_studio_engine;
-#	endif 
-#endif
-
 class SCRIPTS_API CScriptEngine :
 	public CScriptStorage 
 {
@@ -54,16 +42,6 @@ protected:
 	CScriptProcessStorage		m_script_processes;
 	int							m_stack_level;
 	shared_str					m_class_registrators;
-
-protected:
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-		CScriptDebugger			*m_scriptDebugger;
-#	else // #ifndef USE_LUA_STUDIO
-		cs::lua_studio::world*	m_lua_studio_world;
-		lua_studio_engine*		m_lua_studio_engine;
-#	endif // #ifndef USE_LUA_STUDIO
-#endif // #ifdef USE_DEBUGGER
 
 private:
 	string128					m_last_no_file;
@@ -100,17 +78,6 @@ public:
 	template <typename _result_type>
 	IC		bool				functor						(LPCSTR function_to_call, luabind::functor<_result_type> &lua_function);
 
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-			void				stopDebugger				();
-			void				restartDebugger				();
-			CScriptDebugger		*debugger					();
-#	else // ifndef USE_LUA_STUDIO
-			void				try_connect_to_debugger		();
-			void				disconnect_from_debugger	();
-	inline cs::lua_studio::world* debugger					() const { return m_lua_studio_world; }
-#	endif // ifndef USE_LUA_STUDIO
-#endif
 	virtual	void				on_error					(lua_State* state);
 			void				collect_all_garbage			();
 

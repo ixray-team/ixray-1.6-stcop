@@ -16,78 +16,66 @@ extern "C" {
 
 #define LUABIND_HAS_BUGS_WITH_LUA_THREADS
 
-#ifdef USE_DEBUGGER
-#	ifndef USE_LUA_STUDIO
-#		include "script_debugger.h"
-#	else // #ifndef USE_LUA_STUDIO
-#		include "lua_studio.h"
-#	endif // #ifndef USE_LUA_STUDIO
-#endif
-
 const LPCSTR main_function = "console_command_run_string_main_thread_function";
 
 CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload)
 {
-	m_virtual_machine		= 0;
-	m_active				= false;
+	m_virtual_machine = 0;
+	m_active = false;
 
-	try {
-		string256			S;
+	try
+	{
+		string256 S;
 		if (!do_string) {
-			m_script_name	= caNamespaceName;
-			g_pScriptEngine->process_file(caNamespaceName,reload);
+			m_script_name = caNamespaceName;
+			g_pScriptEngine->process_file(caNamespaceName, reload);
 		}
-		else {
-			m_script_name	= "console command";
-			xr_sprintf			(S,"function %s()\n%s\nend\n",main_function,caNamespaceName);
-			int				l_iErrorCode = luaL_loadbuffer(g_pScriptEngine->lua(),S,xr_strlen(S),"@console_command");
-			if (!l_iErrorCode) {
-				l_iErrorCode = lua_pcall(g_pScriptEngine->lua(),0,0,0);
-				if (l_iErrorCode) {
-					g_pScriptEngine->print_output	(g_pScriptEngine->lua(),*m_script_name,l_iErrorCode);
-					g_pScriptEngine->on_error		(g_pScriptEngine->lua());
+		else
+		{
+			m_script_name = "console command";
+			xr_sprintf(S, "function %s()\n%s\nend\n", main_function, caNamespaceName);
+			int l_iErrorCode = luaL_loadbuffer(g_pScriptEngine->lua(), S, xr_strlen(S), "@console_command");
+
+			if (!l_iErrorCode)
+			{
+				l_iErrorCode = lua_pcall(g_pScriptEngine->lua(), 0, 0, 0);
+
+				if (l_iErrorCode) 
+				{
+					g_pScriptEngine->print_output(g_pScriptEngine->lua(), *m_script_name, l_iErrorCode);
+					g_pScriptEngine->on_error(g_pScriptEngine->lua());
 					return;
 				}
 			}
-			else {
-				g_pScriptEngine->print_output		(g_pScriptEngine->lua(),*m_script_name,l_iErrorCode);
-				g_pScriptEngine->on_error			(g_pScriptEngine->lua());
+			else
+			{
+				g_pScriptEngine->print_output(g_pScriptEngine->lua(), *m_script_name, l_iErrorCode);
+				g_pScriptEngine->on_error(g_pScriptEngine->lua());
 				return;
 			}
 		}
 
-		m_virtual_machine	= lua_newthread(g_pScriptEngine->lua());
+		m_virtual_machine = lua_newthread(g_pScriptEngine->lua());
 
-		VERIFY2(lua(),"Cannot create new Lua thread");
+		VERIFY2(lua(), "Cannot create new Lua thread");
 
-#if defined(USE_DEBUGGER) && defined(USE_LUA_STUDIO)
-		if ( g_pScriptEngine->debugger() )
-			g_pScriptEngine->debugger()->add	( m_virtual_machine );
-#endif 
-		
-#ifndef USE_LUA_STUDIO
-#	ifdef DEBUG
-#		ifdef USE_DEBUGGER
-			if (g_pScriptEngine->debugger() && g_pScriptEngine->debugger()->Active())
-				lua_sethook		(lua(), CDbgLuaHelper::hookLua,			LUA_MASKLINE|LUA_MASKCALL|LUA_MASKRET, 0);
-			else
-#		endif
-				lua_sethook		(lua(),CScriptEngine::lua_hook_call,	LUA_MASKLINE|LUA_MASKCALL|LUA_MASKRET,	0);
-#	endif 
+#ifdef DEBUG
+		lua_sethook(lua(), CScriptEngine::lua_hook_call, LUA_MASKLINE | LUA_MASKCALL | LUA_MASKRET, 0);
 #endif
 
 		if (!do_string)
-			xr_sprintf			(S,"%s.main()",caNamespaceName);
+			xr_sprintf(S, "%s.main()", caNamespaceName);
 		else
-			xr_sprintf			(S,"%s()",main_function);
+			xr_sprintf(S, "%s()", main_function);
 
-		if (!g_pScriptEngine->load_buffer(lua(),S,xr_strlen(S),"@_thread_main"))
+		if (!g_pScriptEngine->load_buffer(lua(), S, xr_strlen(S), "@_thread_main"))
 			return;
 
-		m_active			= true;
+		m_active = true;
 	}
-	catch(...) {
-		m_active			= false;
+	catch (...)
+	{
+		m_active = false;
 	}
 }
 
@@ -96,11 +84,8 @@ CScriptThread::~CScriptThread()
 #ifdef DEBUG
 	Msg						("* Destroying script thread %s",*m_script_name);
 #endif
-	try {
-#if defined(USE_DEBUGGER) && defined(USE_LUA_STUDIO)
-		if (g_pScriptEngine->debugger())
-			g_pScriptEngine->debugger()->remove	( m_virtual_machine );
-#endif // #if defined(USE_DEBUGGER) && defined(USE_LUA_STUDIO)
+	try 
+	{
 #ifndef LUABIND_HAS_BUGS_WITH_LUA_THREADS
 		luaL_unref			(g_pScriptEngine->lua(),LUA_REGISTRYINDEX,m_thread_reference);
 #endif
