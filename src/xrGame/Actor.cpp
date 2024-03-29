@@ -178,8 +178,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 
 	m_anims					= xr_new<SActorMotions>();
-//.	m_vehicle_anims			= xr_new<SActorVehicleAnims>();
-	m_entity_condition		= NULL;
+	m_vehicle_anims			= xr_new<SActorVehicleAnims>();
+	m_entity_condition		= nullptr;
 	m_iLastHitterID			= u16(-1);
 	m_iLastHittingWeaponID	= u16(-1);
 	m_statistic_manager		= NULL;
@@ -223,7 +223,7 @@ CActor::~CActor()
 
 	xr_delete				(m_anims);
 	xr_delete				(pPickup);
-//.	xr_delete				(m_vehicle_anims);
+	xr_delete				(m_vehicle_anims);
 }
 
 void CActor::reinit	()
