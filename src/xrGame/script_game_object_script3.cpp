@@ -178,6 +178,7 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("allow_break_talk_dialog",		&CScriptGameObject::AllowBreakTalkDialog)
 		
 		.def("hide_weapon",					&CScriptGameObject::HideWeapon)
+		.def("hide_detector",				&CScriptGameObject::HideDetector)
 		.def("restore_weapon",				&CScriptGameObject::RestoreWeapon)
 		
 		.def("weapon_is_grenadelauncher",	&CScriptGameObject::Weapon_IsGrenadeLauncherAttached)
