@@ -212,23 +212,42 @@ void	Face::Verify		()
 	if (!_valid(N))			{ Failure(); return; }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int			affected	= 0;
-void		start_unwarp_recursion()
+int affected = 0;
+void start_unwarp_recursion()
 {
 	affected				= 1;
 }
+
 void Face::OA_Unwarp( CDeflector *D )
-{
-	if (pDeflector)					return;
-	if (!D->OA_Place(this))	return;
-	
-	// now iterate on all our neigbours
-	for (int i=0; i<3; ++i) 
-		for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
+{ 
+	// range: no recursive method realisation
+	xr_stack<Face*> st;
+
+	Face* f = this;
+	while (true)
+	{
+		for (int i = 0; i < 3; ++i)
 		{
-			affected		+= 1;
-			(*it)->OA_Unwarp(D);
+			for (auto it : f->v[i]->m_adjacents)
+			{
+				if (it->pDeflector)
+					continue;
+				
+				if (!D->OA_Place(it))
+					continue;
+
+				affected++;
+				st.push(it);
+			}
 		}
+
+		if (!st.empty())
+		{
+			f = st.top();
+			st.pop();
+		}
+		else break;
+	}
 }
 
 
