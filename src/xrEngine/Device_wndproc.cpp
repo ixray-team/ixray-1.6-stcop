@@ -22,6 +22,29 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		g_pEventManager->Event.Signal("KERNEL:disconnect");
 		g_pEventManager->Event.Signal("KERNEL:quit");
 		return false;
+	case SDL_EVENT_GAMEPAD_ADDED:
+		if (SDL_IsGamepad(Event.jdevice.which))
+			pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
+		break;
+	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+	{
+		float Value = std::clamp((float)Event.gaxis.value / 32767.0f, -1.0f, 1.0f);
+
+		if ((Value > 0 && Value < 0.15f) || (Value < 0 && Value > -0.15f))
+			Value = 0;
+
+		if (Event.gaxis.axis < 2)
+		{
+			pInput->LeftAxisUpdate(Event.gaxis.axis == 0, Value);
+		}
+		else
+		{
+			pInput->RightAxisUpdate(Event.gaxis.axis == 2, Value);
+		}
+		break;
+	}
+	case SDL_GAMEPAD_AXIS_LEFTY:
+		break;
 	case SDL_EVENT_KEY_DOWN:
 		pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
 		break;

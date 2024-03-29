@@ -4,10 +4,7 @@
 #include "xr_input.h"
 #include "IInputReceiver.h"
 
-#ifndef _EDITOR
-#	include "xr_input_xinput.h"
-#endif
-CInput *	pInput	= NULL;
+CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
 
 ENGINE_API float	psMouseSens			= 1.f;
@@ -23,7 +20,7 @@ float stop_vibration_time				= flt_max;
 
 #define DECLARE_KEY_ENTRY(keyName) { (u8)keyName, xstring(#keyName)},
 
-const xr_map<u8, xr_string> KeyNamesTable =
+const xr_hash_map<u8, xr_string> KeyNamesTable =
 {
 	{(u8)SDL_SCANCODE_TAB,		"Tab"},
 	{(u8)SDL_SCANCODE_RETURN,	"Enter"},
@@ -166,8 +163,7 @@ CInput::~CInput(void)
 
 //-----------------------------------------------------------------------
 
-void						
-CInput::MouseMotion(float dx, float dy)
+void CInput::MouseMotion(float dx, float dy)
 {
 	mouseMoved = true;
 	offs[0] += (int)dx;
@@ -180,14 +176,12 @@ void CInput::MouseScroll(float d)
 	offs[2] += (int)d;
 }
 
-void					
-CInput::MousePressed(int button)
+void CInput::MousePressed(int button)
 {
 	mouseState[button] = 1;
 }
 
-void				
-CInput::MouseReleased(int button)
+void CInput::MouseReleased(int button)
 {
 	mouseState[button] = 0;
 }
@@ -197,7 +191,31 @@ void CInput::KeyboardButtonUpdate(SDL_Scancode scancode, bool IsPressed)
 	KBState[scancode] = IsPressed;
 }
 
-void CInput::KeyboardUpdate( )
+void CInput::LeftAxisUpdate(bool IsX, float value)
+{
+	if (IsX)
+	{
+		LeftAxis.x = value;
+	}
+	else
+	{
+		LeftAxis.y = value * -1;
+	}
+}
+
+void CInput::RightAxisUpdate(bool IsX, float value)
+{
+	if (IsX)
+	{
+		RightAxis.x = value;
+	}
+	else
+	{
+		RightAxis.y = value;
+	}
+}
+
+void CInput::KeyboardUpdate()
 {
 	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++)
 	{
@@ -208,8 +226,8 @@ void CInput::KeyboardUpdate( )
 			if (Pressed)
 			{
 				cbStack.back()->IR_OnKeyboardPress((int)i);
-			} 
-			else 
+			}
+			else
 			{
 				cbStack.back()->IR_OnKeyboardRelease((int)i);
 			}
@@ -218,13 +236,22 @@ void CInput::KeyboardUpdate( )
 
 	for (int i = 0; i < COUNT_KB_BUTTONS; i++)
 	{
-		if (KBState[i]) 
+		if (KBState[i])
 		{
 			cbStack.back()->IR_OnKeyboardHold((int)i);
 		}
-	}	
-	
-	//std::memcpy(old_KBState, KBState, sizeof(KBState));
+	}
+}
+
+#include "xr_level_controller.h"
+void CInput::GamepadUpdate()
+{
+	if (cbStack.empty())
+		return;
+
+	auto KeyHolder = cbStack.back();
+	KeyHolder->IR_GamepadUpdateStick(0, LeftAxis);
+	KeyHolder->IR_GamepadUpdateStick(1, RightAxis);
 }
 
 const xr_map<int, char> russian_lookup_key_table = {
@@ -277,6 +304,7 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	char sym = russian_lookup_key_table.at(dik);
 	dest_str[0] = sym;
 	dest_str[1] = 0;
+
 	return true;
 }
 
@@ -305,10 +333,13 @@ BOOL CInput::iGetAsyncBtnState( int btn )
 #pragma warning(disable: 4644)
 void CInput::NoInputUpdate()
 {
-	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++) {
+	for (size_t i = 0; i < COUNT_KB_BUTTONS; i++) 
+	{
 		bool Pressed = !!KBState[i];
-		if (KBState[i] != old_KBState[i]) {
-			if (!Pressed) {
+		if (KBState[i] != old_KBState[i])
+		{
+			if (!Pressed) 
+			{
 				cbStack.back()->IR_OnKeyboardRelease((int)i);
 			}
 
@@ -316,10 +347,13 @@ void CInput::NoInputUpdate()
 		}
 	}
 
-	for (size_t i = 0; i < COUNT_MOUSE_BUTTONS; i++) {
+	for (size_t i = 0; i < COUNT_MOUSE_BUTTONS; i++) 
+	{
 		bool Pressed = !!mouseState[i];
-		if (mouseState[i] != old_mouseState[i]) {
-			if (!Pressed) {
+		if (mouseState[i] != old_mouseState[i]) 
+		{
+			if (!Pressed) 
+			{
 				cbStack.back()->IR_OnMouseRelease((int)i);
 			}
 
@@ -376,19 +410,23 @@ void CInput::iCapture(IInputReceiver *p)
 	if (KBState[SDL_SCANCODE_LALT] || Device.IsCapturingInputs()) 
 	{
 		NoInputUpdate();
-	} else {
+	} 
+	else 
+	{
 		MouseUpdate();
+		GamepadUpdate();
 		KeyboardUpdate();
 	}
 
     // change focus
 	if (!cbStack.empty())
 		cbStack.back()->IR_OnDeactivate();
+
 	cbStack.push_back(p);
 	cbStack.back()->IR_OnActivate();
 }
-void						 
-CInput::iGetLastMouseDelta(Ivector2& p)
+
+void CInput::iGetLastMouseDelta(Ivector2& p)
 {
 	R_ASSERT(false);
 }
@@ -435,22 +473,25 @@ void CInput::OnAppDeactivate	(void)
 	ZeroMemory		( KBState,		sizeof(KBState) );
 }
 
-void CInput::OnFrame			(void)
+void CInput::OnFrame()
 {
 	RDEVICE.Statistic->Input.Begin();
 	dwCurTime = RDEVICE.TimerAsync_MMT();
 	if (KBState[SDL_SCANCODE_LALT] || Device.IsCapturingInputs())
 	{
 		NoInputUpdate();
-	} else {
+	} 
+	else 
+	{
 		MouseUpdate();
+		GamepadUpdate();
 		KeyboardUpdate();
 	}
 
 	RDEVICE.Statistic->Input.End();
 }
 
-IInputReceiver*	 CInput::CurrentIR()
+IInputReceiver* CInput::CurrentIR()
 {
 	if(cbStack.size())
 		return cbStack.back();
