@@ -222,6 +222,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("bit_not",							&bit_not),
 		def("user_name",						&user_name),
 		def("time_global",						&script_time_global),
+		def("SemiLog",							&SemiLog),
 		def("time_global_async",				&script_time_global_async)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
