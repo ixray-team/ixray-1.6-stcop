@@ -165,6 +165,21 @@ int dBodyIsEnabled (dBodyID);
 void dBodySetGravityMode (dBodyID b, int mode);
 int dBodyGetGravityMode (dBodyID b);
 
+/**
+ * @brief Set whether the body will change its location after contact with something or not.
+ * @ingroup bodies
+ * @param mode when nonzero the body does not change its location after contact with something.
+ * @remarks
+ * Newly created bodies change their location after contact with something.
+ */
+void dBodySetNoUpdatePosMode(dBodyID b, int mode);
+
+/**
+ * @brief Get if the body changes its location after contact with something.
+ * @ingroup bodies
+ * @return nonzero value means that the body does not change its position after contact with something.
+ */
+int dBodyGetNoUpdatePosMode(dBodyID b);
 
 /* joints */
 

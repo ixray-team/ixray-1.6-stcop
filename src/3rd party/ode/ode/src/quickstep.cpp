@@ -1064,14 +1064,18 @@ void dxQuickStepper (dxWorld *world, dxBody * const *body, int nb,
 	// update the position and orientation from the new linear/angular velocity
 	// (over the given timestep)
 	IFTIMING (dTimerNow ("update position");)
-		for (i=0; i<nb; i++) dxStepBody (body[i],stepsize);
+	for (i = 0; i < nb; i++)
+	{
+		if ((body[i]->flags & dxBodyNoUpdatePos) == 0)
+			dxStepBody(body[i], stepsize);
+	}
 
 	IFTIMING (dTimerNow ("tidy up");)
 
 		// zero all force accumulators
-		for (i=0; i<nb; i++) {
-			dSetZero (body[i]->facc,3);
-			dSetZero (body[i]->tacc,3);
+		for (i = 0; i < nb; i++) {
+			dSetZero(body[i]->facc, 3);
+			dSetZero(body[i]->tacc, 3);
 		}
 
 		IFTIMING (dTimerEnd();)
