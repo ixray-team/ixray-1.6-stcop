@@ -426,26 +426,10 @@ local stalker_classes = {}
 local weapon_classes = {}
 local artefact_classes = {}
 
-function IsMonster (object, class_id)
-		local id = class_id or get_clsid(object)
-		return monster_classes[id] == true
-end
-function IsStalker (object, class_id)
-		local id = class_id or get_clsid(object)
-		return stalker_classes[id] == true
-end
-
-function isWeapon(object, class_id)
-	local id = class_id or get_clsid(object)
-	return weapon_classes[id] == true
-end
-
-function isArtefact(object, class_id)
-		local id = class_id or get_clsid(object)
-	return artefact_classes[id] == true
-end
-
-
+IsMonster   = function(object, class_id)    return monster_classes [class_id or get_clsid(object) or -1] ~= nil end
+IsStalker   = function(object, class_id)    return stalker_classes [class_id or get_clsid(object) or -1] ~= nil end
+isWeapon    = function(object, class_id)    return weapon_classes  [class_id or get_clsid(object) or -1] ~= nil end
+isArtefact  = function(object, class_id)    return artefact_classes[class_id or get_clsid(object) or -1] ~= nil end
 -------------------------------------------------------------------------------------------
 function get_object_community(obj)
 	if type(obj.id) == "function" then
