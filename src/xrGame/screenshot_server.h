@@ -41,11 +41,11 @@ public:
 
 	bool is_active();
 
-	void __stdcall download_screenshot_callback(file_transfer::receiving_status_t status,
+	void  download_screenshot_callback(file_transfer::receiving_status_t status,
 										u32 downloaded, u32 total);
-	void __stdcall download_config_callback(file_transfer::receiving_status_t status,
+	void  download_config_callback(file_transfer::receiving_status_t status,
 										u32 downloaded, u32 total);
-	void __stdcall upload_file_callback(file_transfer::sending_status_t status,
+	void  upload_file_callback(file_transfer::sending_status_t status,
 										u32 uploaded, u32 total);
 }; //class clientdata_proxy
 

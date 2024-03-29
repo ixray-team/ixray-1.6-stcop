@@ -12,7 +12,9 @@
 #include "level_path_manager.h"
 #include "detail_path_builder.h"
 
-class CLevelPathBuilder : public CDetailPathBuilder {
+class CLevelPathBuilder : 
+	public CDetailPathBuilder
+{
 private:
 	typedef CDetailPathBuilder	inherited;
 
@@ -31,24 +33,24 @@ private:
 	};
 
 public:
-	IC						CLevelPathBuilder	(CMovementManager *object) :
+	IC CLevelPathBuilder	(CMovementManager *object) :
 		inherited				( object ),
 		m_last_fail_time		( 0 ),
 		m_use_delay_after_fail	( true )
 	{
 	}
 
-	IC		const u32		&dest_vertex_id		() const
+	IC const u32& dest_vertex_id() const
 	{
-		return					(m_dest_vertex_id);
+		return (m_dest_vertex_id);
 	}
 
-	IC		void			use_delay_after_fail( bool const value )
+	IC void use_delay_after_fail(bool const value)
 	{
 		m_use_delay_after_fail	= value;
 	}
 
-	IC		void			setup				(const u32 &start_vertex_id, const u32 &dest_vertex_id, bool extrapolate_path, const Fvector *precise_position)
+	IC void setup(const u32& start_vertex_id, const u32& dest_vertex_id, bool extrapolate_path, const Fvector* precise_position)
 	{
 		VERIFY				(ai().level_graph().valid_vertex_id(start_vertex_id));
 		m_start_vertex_id	= start_vertex_id;
@@ -65,7 +67,7 @@ public:
 		}
 	}
 
-			void			register_to_process	()
+	void register_to_process()
 	{
 		if ( Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail )
 			return;
@@ -74,7 +76,7 @@ public:
 		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevelPathBuilder::process));
 	}
 
-			void			process_impl		()
+	void process_impl()
 	{
 		m_object->m_wait_for_distributed_computation	= false;
 		m_object->level_path().build_path	(m_start_vertex_id,m_dest_vertex_id);
@@ -102,7 +104,7 @@ public:
 		inherited::process_impl				(false);
 	}
 
-			void __stdcall	process				()
+	void process()
 	{
 		if ( Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail )
 			return;
@@ -110,10 +112,10 @@ public:
 		m_object->build_level_path			();
 	}
 
-	IC		void			remove			()
+	IC void remove()
 	{
 		if (m_object->m_wait_for_distributed_computation)
-			m_object->m_wait_for_distributed_computation	= false;
+			m_object->m_wait_for_distributed_computation = false;
 
 		Device.remove_from_seq_parallel	(
 			fastdelegate::FastDelegate0<>(

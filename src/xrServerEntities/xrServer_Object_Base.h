@@ -109,30 +109,30 @@ public:
 	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
 #ifndef XRGAME_EXPORTS
 	virtual void					FillProps				(LPCSTR pref, PropItemVec &items);
-	virtual void		__stdcall	FillProp				(LPCSTR pref, PropItemVec &items);
-	virtual void 		__stdcall	on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F){} 
-	virtual	visual_data*__stdcall	visual_collection		() const { return 0; }
-	virtual	u32			__stdcall	visual_collection_size	() const { return 0; }
-	virtual	void		__stdcall	set_additional_info		(void* info) {};
+	virtual void			FillProp				(LPCSTR pref, PropItemVec &items);
+	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F){} 
+	virtual	visual_data*	visual_collection		() const { return 0; }
+	virtual	u32				visual_collection_size	() const { return 0; }
+	virtual	void			set_additional_info		(void* info) {};
 #endif // #ifndef XRGAME_EXPORTS
 	virtual BOOL					Net_Relevant			(){return FALSE;}; // !!!! WARNING!!!
 	//
-	virtual void		__stdcall	Spawn_Write				(NET_Packet &tNetPacket, BOOL bLocal);
-	virtual BOOL		__stdcall	Spawn_Read				(NET_Packet &tNetPacket);
-	virtual LPCSTR		__stdcall	name					() const;
-	virtual LPCSTR		__stdcall	name_replace			() const;
-	virtual void		__stdcall	set_name				(LPCSTR s)
+	virtual void			Spawn_Write				(NET_Packet &tNetPacket, BOOL bLocal);
+	virtual BOOL			Spawn_Read				(NET_Packet &tNetPacket);
+	virtual LPCSTR			name					() const;
+	virtual LPCSTR			name_replace			() const;
+	virtual void			set_name				(LPCSTR s)
 	{
 		s_name		= s;
 	};
-	virtual void		__stdcall	set_name_replace		(LPCSTR s) {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
-	virtual Fvector&	__stdcall	position				();
-	virtual Fvector&	__stdcall	angle					();
-	virtual Flags16&	__stdcall	flags					();
-	virtual CSE_Visual* __stdcall	visual					();
-	virtual ISE_Shape*  __stdcall	shape					();
-	virtual CSE_Motion* __stdcall	motion					();
-	virtual bool		__stdcall	validate				();
+	virtual void			set_name_replace		(LPCSTR s) {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
+	virtual Fvector&		position				();
+	virtual Fvector&		angle					();
+	virtual Flags16&		flags					();
+	virtual CSE_Visual* 	visual					();
+	virtual ISE_Shape*  	shape					();
+	virtual CSE_Motion* 	motion					();
+	virtual bool			validate				();
 	//
 
 	IC		const Fvector			&Position				() const					{return o_Position;};

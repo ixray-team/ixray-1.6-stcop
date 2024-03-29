@@ -171,8 +171,8 @@ public:
 	void							cform_write		(NET_Packet& P);
 									CSE_Shape		();
 	virtual							~CSE_Shape		();
-	virtual ISE_Shape*  __stdcall	shape			() = 0;
-	virtual void __stdcall			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt);
+	virtual ISE_Shape*  	shape			() = 0;
+	virtual void 			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt);
 };
 add_to_type_list(CSE_Shape)
 #define script_type_list save_type_list(CSE_Shape)
@@ -225,7 +225,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual,CSE_Abstract,CSE_Visual)
 
 	CSE_AbstractVisual										(LPCSTR caSection);
 	virtual	~CSE_AbstractVisual								();
-	virtual CSE_Visual* __stdcall	visual					();
+	virtual CSE_Visual* 	visual					();
 	LPCSTR							getStartupAnimation		();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_AbstractVisual)

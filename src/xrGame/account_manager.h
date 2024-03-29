@@ -88,11 +88,11 @@ public:
 private:
 	CGameSpy_GP*				m_gamespy_gp;
 	account_operation_cb		m_account_creation_cb;
-	void	__stdcall			only_log_creation_cb(bool success,
+	void				only_log_creation_cb(bool success,
 													 char const * descr);
 
 	account_operation_cb		m_profile_deleting_cb;
-	void	__stdcall			only_log_profdel_cb	(bool success,
+	void				only_log_profdel_cb	(bool success,
 													 char const * descr);
 
 	//fetching account profiles
@@ -111,7 +111,7 @@ private:
 	account_profiles_cb			m_account_profiles_cb;
 	profiles_store_t			m_result_profiles;
 	profiles_nicks_ptrs_t		m_result_profiles_ptrs;
-	void	__stdcall			only_log_profiles	(u32 const profiles_count,
+	void				only_log_profiles	(u32 const profiles_count,
 													 char const * description);
 	//end of fetching account profiles
 
@@ -128,7 +128,7 @@ private:
 		&account_manager::release_found_email>	m_search_for_email_qam;
 	void		stop_search_for_email	();
 	found_email_cb				m_found_email_cb;
-	void	__stdcall			only_log_found_email(bool found,
+	void				only_log_found_email(bool found,
 													 char const * user_name);
 	//end of searching for emails
 
@@ -148,7 +148,7 @@ private:
 	suggest_nicks_cb			m_suggest_nicks_cb;
 	suggested_nicks_t			m_suggested_nicks;
 	suggested_nicks_ptrs_t		m_suggested_nicks_ptrs;
-	void	__stdcall			only_log_suggestions(u32 const profiles_count,
+	void				only_log_suggestions(u32 const profiles_count,
 													 char const * description);
 
 

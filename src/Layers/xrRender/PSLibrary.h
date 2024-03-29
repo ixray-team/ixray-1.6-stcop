@@ -25,7 +25,7 @@ class ECORE_API CPSLibrary : public particles_systems::library_interface {
 #ifdef _EDITOR    
     AnsiString			m_CurrentParticles;
 public:
-	void __stdcall	 	FindByName		(LPCSTR new_name, bool& res);
+	void 	 	FindByName		(LPCSTR new_name, bool& res);
 #endif
 
 public:

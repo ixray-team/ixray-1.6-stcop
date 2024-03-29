@@ -286,7 +286,7 @@ void screenshot_manager::process_screenshot(bool singlecore)
 	m_make_done_event	= CreateEvent(NULL, FALSE, FALSE, NULL);
 	thread_spawn	(&screenshot_manager::screenshot_maker_thread, "screenshot_maker", 0, this);
 }
-void	__stdcall	screenshot_manager::jpeg_compress_cb(long progress)
+void		screenshot_manager::jpeg_compress_cb(long progress)
 {
 /*#ifdef DEBUG
 	Msg("* JPEG encoding progress : %d%%", progress);

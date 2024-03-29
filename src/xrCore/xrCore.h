@@ -14,7 +14,6 @@
 #endif
 
 #define IC inline
-#define xr_stdcall __stdcall
 
 #if defined(XRCORE_STATIC) || defined(_EDITOR)
 #	define NO_FS_SCAN
@@ -190,10 +189,10 @@ public:
 };
 
 //Borland class dll interface
-#define	_BCL			__stdcall	
+#define	_BCL
 
 //Borland global function dll interface
-#define	_BGCL			__stdcall	
+#define	_BGCL	
 
 #include <DirectXMath.h>
 XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi);

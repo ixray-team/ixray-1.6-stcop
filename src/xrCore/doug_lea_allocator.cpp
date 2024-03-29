@@ -13,7 +13,7 @@
 #define USE_LOCKS 0
 #include "ptmalloc3/malloc-2.8.3.h"
 
-static void xr_stdcall out_of_memory(mspace const space, void const* const parameter, int const first_time)
+static void  out_of_memory(mspace const space, void const* const parameter, int const first_time)
 {
 	if (first_time)
 		return;

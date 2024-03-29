@@ -224,7 +224,7 @@ protected:
 								SBullet& bullet,
 								u32 delta_time
 							);
-	void 		__stdcall	UpdateWorkload		();
+	void 			UpdateWorkload		();
 public:
 							CBulletManager		();
 	virtual					~CBulletManager		();

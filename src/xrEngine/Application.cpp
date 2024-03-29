@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 struct _SoundProcessor : public pureFrame
 {
-	virtual void xr_stdcall OnFrame()
+	virtual void  OnFrame()
 	{
 		Device.Statistic->Sound.Begin();
 		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);

@@ -393,7 +393,7 @@ __forceinline int iCeil_SSE( float const x )
 }
 
 
-void __stdcall PLC_calc3_SSE(int& c0, int& c1, int& c2, CRenderDevice& Device_, Fvector* P, Fvector& N, light* L, float energy, Fvector& O)
+void  PLC_calc3_SSE(int& c0, int& c1, int& c2, CRenderDevice& Device_, Fvector* P, Fvector& N, light* L, float energy, Fvector& O)
 {
 	float	E		= PLC_energy_SSE(P[0],N,L,energy);
 	float	C1		= clampr(Device_.vCameraPosition.distance_to_sqr(P[0])/S_distance2,	0.f,1.f);

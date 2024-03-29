@@ -278,7 +278,7 @@ void configs_dumper::dumper_thread(void* my_ptr)
 	SetEvent(this_ptr->m_make_done_event);
 }
 
-void __stdcall	configs_dumper::yield_cb(long progress)
+void 	configs_dumper::yield_cb(long progress)
 {
 	if (progress % 5 == 0)
 	{
@@ -286,7 +286,7 @@ void __stdcall	configs_dumper::yield_cb(long progress)
 	}
 }
 
-void __stdcall configs_dumper::switch_thread()
+void  configs_dumper::switch_thread()
 {
 	if (!SwitchToThread())
 			Sleep(10);
