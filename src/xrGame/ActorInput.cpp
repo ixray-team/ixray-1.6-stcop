@@ -353,13 +353,22 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		{
 			mstate_wishful |= (value.y > 0.f) ? mcFwd : mcBack;
 
-			if (value.y > 0.7)
+			if (value.y < 0.22f)
 			{
-				mstate_wishful |= mcSprint;
+				mstate_wishful |= mcAccel;
 			}
 			else
 			{
-				mstate_wishful &= ~mcSprint;
+				mstate_wishful &= ~mcAccel;
+
+				if (value.y > 0.75f)
+				{
+					mstate_wishful |= mcSprint;
+				}
+				else
+				{
+					mstate_wishful &= ~mcSprint;
+				}
 			}
 		}
 	}
@@ -373,17 +382,67 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 		if (!fis_zero(value.x))
 		{
-			float d = value.x * scale * 5;
+			float d = value.x * scale * 8;
 			cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 		}
 
 		if (!fis_zero(value.y))
 		{
 			float d = ((psMouseInvert.test(1)) ? -1 : 1) * value.y * scale * 3.f / 4.f;
-			d *= 5;
+			d *= 8;
 
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 		}
+	}
+	else if (id == 2)
+	{
+		if (!fis_zero(value.x))
+		{
+			IR_OnKeyboardPress(kWPN_ZOOM);
+		}
+		else
+		{
+			IR_OnKeyboardRelease(kWPN_ZOOM);
+		}
+
+		if (!fis_zero(value.y))
+		{
+			IR_OnKeyboardPress(kWPN_FIRE);
+		}
+		else
+		{
+			IR_OnKeyboardRelease(kWPN_FIRE);
+		}
+	}
+}
+
+void CActor::IR_GamepadKeyPress(int id)
+{
+	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)
+	{
+		IR_OnKeyboardPress(kPREV_SLOT);
+	}
+	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)
+	{
+		IR_OnKeyboardPress(kNEXT_SLOT);
+	}
+	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH)
+	{
+		IR_OnKeyboardPress(kUSE);
+	}
+	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_WEST)
+	{
+		IR_OnKeyboardPress(kWPN_RELOAD);
+	}
+	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_NORTH)
+	{
+		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+	}
+	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_STICK)
+	{
+	}
+	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK)
+	{
 	}
 }
 

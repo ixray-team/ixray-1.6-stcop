@@ -5,6 +5,7 @@
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	ImGui_ImplSDL3_ProcessEvent(&Event);
+
 	switch (Event.type) {
 	case SDL_EVENT_WINDOW_MOUSE_ENTER:
 		OnWM_Activate(true, false);
@@ -22,25 +23,43 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		g_pEventManager->Event.Signal("KERNEL:disconnect");
 		g_pEventManager->Event.Signal("KERNEL:quit");
 		return false;
+	case SDL_EVENT_GAMEPAD_REMOVED:
+		SDL_CloseGamepad(pInput->pGamePad);
+		pInput->pGamePad = nullptr;
+		break;
 	case SDL_EVENT_GAMEPAD_ADDED:
 		if (SDL_IsGamepad(Event.jdevice.which))
 			pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
 		break;
+	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+		pInput->GamepadButtonUpdate(Event.gbutton.button, true);
+		break;
+	case SDL_EVENT_GAMEPAD_BUTTON_UP:
+	{
+		pInput->GamepadButtonUpdate(Event.gbutton.button, false);
+		break;
+	}
 	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 	{
 		float Value = std::clamp((float)Event.gaxis.value / 32767.0f, -1.0f, 1.0f);
 
-		if ((Value > 0 && Value < 0.15f) || (Value < 0 && Value > -0.15f))
+		if ((Value > 0 && Value < 0.1f) || (Value < 0 && Value > -0.1f))
 			Value = 0;
 
 		if (Event.gaxis.axis < 2)
 		{
 			pInput->LeftAxisUpdate(Event.gaxis.axis == 0, Value);
 		}
-		else
+		else if (Event.gaxis.axis < 4)
 		{
 			pInput->RightAxisUpdate(Event.gaxis.axis == 2, Value);
 		}
+		else
+		{
+			// L2 & R2 Triggers
+			pInput->AdaptiveTriggerUpdate(Event.gaxis.axis == 4, Value);
+		}
+		
 		break;
 	}
 	case SDL_GAMEPAD_AXIS_LEFTY:
