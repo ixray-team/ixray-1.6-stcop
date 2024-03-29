@@ -125,6 +125,9 @@ void CUIComboBox::SetCurrentOptValue()
 	m_list_box.Clear		();
 	xr_token* tok			= GetOptToken();
 
+	if (tok == nullptr)
+		return;
+
 	while (tok->name)
 	{		
 		if(m_disabled.end()==std::find(m_disabled.begin(),m_disabled.end(),tok->id))

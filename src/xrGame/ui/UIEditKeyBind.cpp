@@ -166,6 +166,9 @@ void CUIEditKeyBind::SetCurrentOptValue()
 	string64				buff;
 	ZeroMemory				(buff, sizeof(buff));
 
+	if (m_action == nullptr)
+		return;
+
 	_binding*	pbinding	= &g_key_bindings[m_action->id];
 
 
