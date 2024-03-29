@@ -731,9 +731,12 @@ void CPHSimpleCharacter::PhTune(dReal step)
 			{
 				dReal vmag = chVel[0] * chVel[0] + chVel[2] * chVel[2];
 
-				Fvector jump_fv = cast_fv(chVel);
-				jump_fv.mul(3000.f * air_factor / vmag / amag * proj);
-				dBodyAddForce(m_body, jump_fv.x, 0, jump_fv.z);
+				if (vmag > 0.f)
+				{
+					Fvector jump_fv = cast_fv(chVel);
+					jump_fv.mul(3000.f * air_factor / vmag / amag * proj);
+					dBodyAddForce(m_body, jump_fv.x, 0, jump_fv.z);
+				}
 			}
 		}
 	}
