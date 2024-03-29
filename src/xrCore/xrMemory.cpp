@@ -9,7 +9,7 @@
 #include	"xrMemory_pure.h"
 
 // HACK: ForserX: Хак для установки уровня инициализации переменной в глобальном пространстве
-#pragma section(".Hook", read)
+#pragma section(".Hook",read)
 
 BOOL		mem_initialized	= FALSE;
 bool		shared_str_initialized	= false;
@@ -30,8 +30,9 @@ xrMemory::xrMemory()
 	mem_fill	= xrMemFill_x86;
 	mem_fill32	= xrMemFill32_x86;
 
-#ifndef PURE_ONLY
-	if (!!strstr(GetCommandLineA(), "-pure_alloc")) {
+#if !defined(PURE_ONLY) && !defined(IXR_LINUX)
+	if (!!strstr(GetCommandLineA(), "-pure_alloc"))
+	{
 		pAlloc = CMemAllocPure::Create();
 	} else {
 		pAlloc = CMemAllocXRay::Create();
@@ -118,6 +119,8 @@ XRCORE_API		BOOL			is_stack_ptr		( void* _ptr)
 	return		(difference < (512*1024));
 }
 
+#ifdef IXR_WINDOWS
 #pragma init_seg(lib)
 __declspec(allocate(".Hook"))
+#endif
 xrMemory Memory;

@@ -76,6 +76,7 @@ file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES "ptmalloc3/*.*")
 
 # NatVis config
 file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
+file(GLOB_RECURSE CORE_NUGET_FILES "Packages.config")
 
 source_group("ungrouped" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("core/api" FILES ${CORE_SOURCE_XR_API_FILES})
@@ -99,6 +100,7 @@ source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
+list(APPEND CORE_SRC_FILES ${CORE_NUGET_FILES})
 
 if (MSVC)
 	list(APPEND CORE_SRC_FILES ${CORE_NATVIS_FILES})
@@ -224,6 +226,7 @@ execute_process(
     OUTPUT_VARIABLE AUTHOR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Get current branch
 execute_process(
     COMMAND git branch --show-current
@@ -231,6 +234,7 @@ execute_process(
     OUTPUT_VARIABLE BRANCH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Get hash of the latest commit
 execute_process(
     COMMAND git log --pretty=format:%h -n 1
@@ -238,8 +242,10 @@ execute_process(
     OUTPUT_VARIABLE HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 # Define a variable for CI_BUILD
 set(CI_BUILD 0)
+
 # Create git_version.h file
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/git_version.h.in

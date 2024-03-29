@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #ifndef MOD_COMPRESS
 
@@ -36,7 +36,12 @@ struct file_comparer{
 		if(0!=eq)
 			return false;
 		
+		string_path testFolder = "";
+		m_fs_new->update_path(testFolder, "$target_folder$", m_full_name);
 
+		if (std::filesystem::is_directory(testFolder)) {
+			return true;
+		}
 		
 		if( !m_flags.test(eDontCheckFileSize) ){
 			//compare file size
@@ -96,20 +101,20 @@ int ProcessDifference()
 		return 3;
 	}
 
-	CLocatorAPI* FS_new = NULL;
-	CLocatorAPI* FS_old = NULL;
-	
+	CLocatorAPI* FS_new = nullptr;
+	CLocatorAPI* FS_old = nullptr;
 
-	xr_vector<char*>*	file_list_old		= NULL;
-	xr_vector<char*>*	folder_list_old		= NULL;
 
-	xr_vector<char*>*	file_list_new		= NULL;
-	xr_vector<char*>*	folder_list_new		= NULL;
+	xr_vector<char*>*	file_list_old		= nullptr;
+	xr_vector<char*>*	folder_list_old		= nullptr;
+
+	xr_vector<char*>*	file_list_new		= nullptr;
+	xr_vector<char*>*	folder_list_new		= nullptr;
 
 	sscanf					(strstr(params,"-diff ")+6,"%[^ ] ",new_folder);
 	sscanf					(strstr(params,"-diff ")+6+xr_strlen(new_folder)+1,"%[^ ] ",old_folder);
 	sscanf					(strstr(params,"-out ")+5,"%[^ ] ",target_folder);
-	
+
 	if(strstr(params,"-nofileage")){
 		_flags.set(file_comparer::eDontCheckFileAge, TRUE);
 	};
@@ -152,10 +157,17 @@ int ProcessDifference()
 	{
 		LPCSTR fn = target_file_list[i];
 		xr_sprintf(stats,"%d of %d (%3.1f%%)", i, total, 100.0f*((float)i/(float)total));
-		SetConsoleTitleA(stats);
+		//SetConsoleTitleA(stats);
 
 		xr_strconcat(out_path,target_folder,"\\",fn);
 		VerifyPath(out_path);
+		string_path testFolder = "";
+		FS_new->update_path(testFolder, "$target_folder$", fn);
+
+		if (std::filesystem::is_directory(testFolder)) {
+			continue;
+		}
+
 		IReader* r = FS_new->r_open("$target_folder$",fn);
 		IWriter* w = FS_old->w_open(out_path);
 		w->w(r->pointer(),r->length());

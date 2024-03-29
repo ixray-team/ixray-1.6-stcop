@@ -16,11 +16,14 @@ public:
 			pauseMngr			();
 	BOOL	Paused				(){return m_paused;};
 	void	Pause				(BOOL b);
+	static pauseMngr& Instance	();
 	void	Register			(CTimer_paused* t);
 	void	UnRegister			(CTimer_paused* t);
 };
 
-extern XRCORE_API pauseMngr		g_pauseMngr;
+extern XRCORE_API pauseMngr* g_pauseMngrPtr;
+
+#define g_pauseMngr pauseMngr::Instance()
 
 // Fast getting of time, but doesn't have time factor
 class XRCORE_API CTimer {

@@ -1,13 +1,22 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-XRCORE_API BOOL			g_bEnableStatGather	= FALSE;
+XRCORE_API BOOL g_bEnableStatGather	= FALSE;
+XRCORE_API pauseMngr* g_pauseMngrPtr = nullptr;
 
 CStatTimer::CStatTimer()
 {
 	accum	= 0;
 	result	= 0.f;
 	count	= 0;
+}
+
+pauseMngr& pauseMngr::Instance()
+{
+	if (g_pauseMngrPtr == nullptr)
+		g_pauseMngrPtr = new pauseMngr;
+
+	return *g_pauseMngrPtr;
 }
 
 void	CStatTimer::FrameStart	()
@@ -19,9 +28,6 @@ void	CStatTimer::FrameEnd	()
 {
 	result = GetElapsed_ms_f();
 }
-
-XRCORE_API pauseMngr	g_pauseMngr;
-
 
 pauseMngr::pauseMngr	():m_paused(FALSE)
 {

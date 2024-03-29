@@ -1,5 +1,4 @@
-#ifndef LZO_COMPRESSOR_INCLUDED
-#define LZO_COMPRESSOR_INCLUDED
+#pragma once
 
 #include "lzo/lzo1.h"
 
@@ -18,8 +17,3 @@ XRCORE_API int lzo_decompress_dict(
 );
 
 XRCORE_API int lzo_initialize();
-
-
-
-
-#endif //#ifndef LZO_COMPRESSOR_INCLUDED
