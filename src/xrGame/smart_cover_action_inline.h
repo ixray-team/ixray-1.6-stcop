@@ -23,7 +23,7 @@ IC	Fvector		const	&action::target_position	() const
 IC	action::Animations const &action::animations	(shared_str const& cover_id, shared_str const &id) const
 {
 	AnimationList::const_iterator found = m_animations.find(id);
-	VERIFY2			(found != m_animations.end(), make_string("can't find animation %s in smart cover %s", id.c_str(), cover_id.c_str()));
+	VERIFY2			(found != m_animations.end(), make_string<const char*>("can't find animation %s in smart cover %s", id.c_str(), cover_id.c_str()));
 	return			(*found->second);
 }
 

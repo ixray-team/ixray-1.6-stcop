@@ -228,7 +228,7 @@ stalker_movement_manager_smart_cover::transition_action const &stalker_movement_
 
 	VERIFY2					(
 		result,
-		make_string(
+		make_string<const char*>(
 			"cover[%s][%s], loophole[%s -> %s], body_state[%s] [%f][%f][%f]",
 			cover.id().c_str(),
 			cover.description()->table_id().c_str(),
@@ -505,7 +505,7 @@ shared_str const &stalker_movement_manager_smart_cover::next_loophole_id			()
 {
 	VERIFY2					(
 		m_current.cover(),
-		make_string(
+		make_string<const char*>(
 			"[%s][%s] -> [%s][%s], [%d]",
 			m_current.cover() ? m_current.cover()->id().c_str() : "<world>",
 			m_current.cover() ? m_current.cover_loophole()->id().c_str() : "<no loophole>",
@@ -670,7 +670,7 @@ loophole const &stalker_movement_manager_smart_cover::loophole		(smart_cover::co
 
 	VERIFY2					(
 		i != loopholes.end(),
-		make_string			(
+		make_string<const char*>(
 			"loophole [%s] not present in smart_cover [%s]",
 			loophole_id.c_str(),
 			cover.id().c_str()

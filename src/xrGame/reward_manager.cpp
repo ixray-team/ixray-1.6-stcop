@@ -86,7 +86,7 @@ void reward_manager::load_reward_item	(CInifile & reward_config,
 	};//struct award_name_searcher
 #endif
 	VERIFY2(m_rewards_map.find(index) == m_rewards_map.end(),
-		make_string("reward with id=%d already loaded", index));
+		make_string<const char*>("reward with id=%d already loaded", index));
 
 	reward_descriptor*	tmp_descriptor	= xr_new<reward_descriptor>();
 	tmp_descriptor->m_award_name		= reward_config.r_string(section, "name");
@@ -107,7 +107,7 @@ void reward_manager::load_reward_item	(CInifile & reward_config,
 			m_rewards_map.begin(),
 			m_rewards_map.end(),
 			tmp_award_searcher) == m_rewards_map.end(),
-		make_string("reward with award %s already loaded",
+		make_string<const char*>("reward with award %s already loaded",
 			tmp_award_searcher.m_award_name.c_str()));
 #endif
 	m_rewards_map.insert				(std::make_pair(index, tmp_descriptor));

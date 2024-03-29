@@ -25,19 +25,19 @@ struct ExpressionOpcode
 
 void CExpressionManager::RegisterVariable(shared_str Name, GetFloatFunc delegate)
 {
-    SXmlExpressionDelegate NewDelegate (Name, delegate, eDT_FLOAT);
+    SXmlExpressionDelegate NewDelegate (Name, (void*)delegate, eDT_FLOAT);
     m_delegates.emplace(std::pair<int, SXmlExpressionDelegate>(NewDelegate.Id, NewDelegate));
 }
 
 void CExpressionManager::RegisterVariable(shared_str Name, GetIntFunc delegate)
 {
-    SXmlExpressionDelegate NewDelegate(Name, delegate, eDT_INT);
+    SXmlExpressionDelegate NewDelegate(Name, (void*)delegate, eDT_INT);
     m_delegates.emplace(std::pair<int, SXmlExpressionDelegate>(NewDelegate.Id, NewDelegate));
 }
 
 void CExpressionManager::RegisterVariable(shared_str Name, GetStringFunc delegate)
 {
-    SXmlExpressionDelegate NewDelegate(Name, delegate, eDT_STRING);
+    SXmlExpressionDelegate NewDelegate(Name, (void*)delegate, eDT_STRING);
     m_delegates.emplace(std::pair<int, SXmlExpressionDelegate>(NewDelegate.Id, NewDelegate));
 }
 
@@ -117,7 +117,7 @@ SXmlExpressionDelegate* CExpressionManager::GetVariableDescById(int Id)
 u32 SXmlExpressionDelegate::IdGenerator = 0;
 
 CExpression::CExpression()
-    : m_dbgCompileError(nullptr), m_expression(nullptr)
+    : m_expression(nullptr), m_dbgCompileError(nullptr)
 {
 
 }
@@ -776,24 +776,11 @@ bool CExpression::IsCompiled() const
     return m_expression != nullptr;
 }
 
-#include <regex>
-
-std::vector<std::string> split(const xr_string& input, const xr_string& regex) 
-{
-    // passing -1 as the submatch index parameter performs splitting
-    std::regex re(regex.c_str());
-    std::sregex_token_iterator
-        first{ input.begin(), input.end(), re, -1 },
-        last;
-
-    return { first, last };
-}
-
 void CExpression::ParseVariablesForExecution(const xr_string_map<xr_string, xr_string>& Variables, xr_string_map<xr_string, ExpressionVarVariadic>& OutVariables)
 {
     for (const auto& [Name, Value] : Variables)
     {
-        auto VariableDecl = split(Name, " ");
+        auto VariableDecl = Name.Split(' ');
         auto Type = VariableDecl[0];
         ExpressionVarVariadic Variable;
         if (Type.starts_with("int"))

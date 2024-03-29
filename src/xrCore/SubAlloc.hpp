@@ -12,7 +12,7 @@ enum { UNIT_SIZE=12, N1=4, N2=4, N3=4, N4=(128+3-1*N1-2*N2-3*N3)/4,
 struct BLK_NODE {
     DWORD Stamp;
     BLK_NODE* next;
-    BOOL   avail()      const { return (next != NULL); }
+    BOOL   avail()      const { return (next != 0); }
     void    link(BLK_NODE* p) { p->next=next; next=p; }
     void  unlink()            { next=next->next; }
     void* remove()            {
@@ -67,7 +67,7 @@ BOOL _STDCALL StartSubAllocator(UINT SASize)
     DWORD t=SASize << 20U;
     if (SubAllocatorSize == t)              return TRUE;
     StopSubAllocator();
-    if ((HeapStart=new BYTE[t]) == NULL)    return FALSE;
+    if ((HeapStart=new BYTE[t]) == 0)    return FALSE;
     SubAllocatorSize=t;                     return TRUE;
 }
 static inline void InitSubAllocator()
@@ -82,7 +82,7 @@ static void GlueFreeBlocks()
     UINT i, k, sz;
     MEM_BLK s0, * p, * p0, * p1;
     if (LoUnit != HiUnit)                   *LoUnit=0;
-    for (i=0, (p0=&s0)->next=NULL;i < N_INDEXES;i++)
+    for (i=0, (p0=&s0)->next=0;i < N_INDEXES;i++)
             while ( BList[i].avail() ) {
                 p=(MEM_BLK*) BList[i].remove();
                 if ( !p->NU )               continue;
@@ -113,7 +113,7 @@ static void* _STDCALL AllocUnitsRare(UINT indx)
     do {
         if (++i == N_INDEXES) {
             GlueCount--;                    i=U2B(Indx2Units[indx]);
-            return (UnitsStart-pText > i)?(UnitsStart -= i):(NULL);
+            return (UnitsStart-pText > i)?(UnitsStart -= i):(0);
         }
     } while ( !BList[i].avail() );
     void* RetVal=BList[i].remove();         SplitBlock(RetVal,i,indx);

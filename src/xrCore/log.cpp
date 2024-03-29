@@ -22,7 +22,7 @@ void Msg(const char *format, ...)
 
 void Log				(const char *msg, const Fvector &dop) {
 	u32			buffer_size = (xr_strlen(msg) + 2 + 3*(64 + 1) + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
+    char* buf	= (char*)_alloca( buffer_size );
 
 	xr_sprintf	(buf, buffer_size,"%s (%f,%f,%f)",msg, VPUSH(dop) );
 	Log			(buf);
@@ -30,7 +30,7 @@ void Log				(const char *msg, const Fvector &dop) {
 
 void Log				(const char *msg, const Fmatrix &dop)	{
 	u32			buffer_size = (xr_strlen(msg) + 2 + 4*( 4*(64 + 1) + 1 ) + 1) * sizeof(char);
-	PSTR buf	= (PSTR)_alloca( buffer_size );
+	char* buf	= (char*)_alloca( buffer_size );
 
 	xr_sprintf	(buf, buffer_size,"%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",
 		msg,
@@ -122,11 +122,13 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 
 void xrLogger::InternalCloseLog()
 {
-	if (hLogThread != NULL)
+	if (hLogThread != 0)
 	{
 		bIsAlive = false;
+#ifdef IXR_WINDOWS
 		WaitForSingleObject(hLogThread, INFINITE);
-		hLogThread = NULL;
+#endif
+		hLogThread = 0;
 	}
 
 	IWriter* tempCopy = (IWriter*)logFile;
@@ -136,7 +138,7 @@ void xrLogger::InternalCloseLog()
 
 xrLogger::xrLogger()
 	: logFile(nullptr), bFastDebugLog(false), 
-	bIsAlive(true), hLogThread(NULL), 
+	bIsAlive(true), hLogThread(0),
 	bFlushRequested(false)
 {}
 
@@ -200,8 +202,6 @@ void xrLogger::LogThreadEntry()
 			xr_vector<xr_string> LogLines = theRecord.Message.Split('\n');
 
 			string256 TimeOfDay = {};
-			//int TimeOfDaySize = xr_sprintf(TimeOfDay, "[%s.%s.%s] ",
-			//	theRecord.time.GetHoursString().c_str(), theRecord.time.GetMinutesString().c_str(), theRecord.time.GetSecondsString().c_str());
 			
 			int TimeOfDaySize = 0;
 			for (const xr_string& line : LogLines)

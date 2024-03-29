@@ -57,50 +57,6 @@ void base::aim_at_position		(
 		Fmatrix& result
 	)
 {
-#if 0
-	Msg									(
-		"[%d][%s] bone_position[%f][%f][%f] object_position[%f][%f][%f] object_direction[%f][%f][%f]",
-		Device.dwFrame,
-		m_animated.LL_MotionDefName_dbg(m_animation_id).first,
-		VPUSH(bone_position),
-		VPUSH(object_position),
-		VPUSH(object_direction)
-	);
-#endif // #if 0
-
-	VERIFY2							(
-		_valid(bone_position),
-		make_string(
-			"[%f][%f][%f]",
-			VPUSH(bone_position)
-		)
-	);
-	VERIFY2							(
-		_valid(object_position),
-		make_string(
-			"[%f][%f][%f]",
-			VPUSH(object_position)
-		)
-	);
-	VERIFY2							(
-		_valid(object_direction),
-		make_string(
-			"[%f][%f][%f]",
-			VPUSH(object_direction)
-		)
-	);
-	VERIFY2							(
-		_valid(m_target),
-		make_string(
-			"[%f][%f][%f]",
-			VPUSH(m_target)
-		)
-	);
-	VERIFY2							(
-		object_direction.square_magnitude() > EPS_L,
-		make_string("[%f]", object_direction.square_magnitude())
-	);
-
 	object_direction.normalize			();
 
 	Fvector	const object2bone			= Fvector().sub(bone_position, object_position);
@@ -129,7 +85,7 @@ void base::aim_at_position		(
 	direction_target.mul				(invert_magnitude);
 	VERIFY2							(
 		fsimilar(direction_target.magnitude(), 1.f),
-		make_string(
+		make_string<const char*>(
 			"[%f][%f] [%f][%f][%f] [%f][%f][%f]",
 			direction_target.magnitude(),
 			invert_magnitude,
@@ -144,7 +100,7 @@ void base::aim_at_position		(
 	VERIFY								( _valid(circle_center) );
 
 	Fplane const plane					= Fplane().build(circle_center, direction_target);
-	VERIFY2								( _valid(plane), make_string("[%f][%f][%f] [%f][%f][%f] [%f][%f][%f] %f", VPUSH(circle_center), VPUSH(direction_target), VPUSH(plane.n), plane.d) );
+	VERIFY2								( _valid(plane), make_string<const char*>("[%f][%f][%f] [%f][%f][%f] [%f][%f][%f] %f", VPUSH(circle_center), VPUSH(direction_target), VPUSH(plane.n), plane.d) );
 	Fvector								projection;
 	plane.project						(projection, current_point);
 	VERIFY								( _valid(projection) );

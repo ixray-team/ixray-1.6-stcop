@@ -6,7 +6,6 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
-#include "../xrCore/xrCore_platform.h"
 
 #include <SDL3/SDL.h>
 #include "DynamicSplashScreen.h"

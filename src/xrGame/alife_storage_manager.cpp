@@ -160,7 +160,7 @@ bool CALifeStorageManager::load	(LPCSTR save_name_no_check)
 		return					(false);
 	}
 
-	CHECK_OR_EXIT				(CSavedGameWrapper::valid_saved_game(*stream),make_string("%s\nSaved game version mismatch or saved game is corrupted",file_name));
+	CHECK_OR_EXIT				(CSavedGameWrapper::valid_saved_game(*stream), make_string<const char*>("%s\nSaved game version mismatch or saved game is corrupted",file_name));
 
 	g_pGamePersistent->LoadTitle();
 

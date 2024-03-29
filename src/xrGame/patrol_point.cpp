@@ -129,7 +129,7 @@ const GameGraph::_GRAPH_ID &CPatrolPoint::game_vertex_id	() const
 	CGameGraph::CVertex const*	vertex = ai().game_graph().vertex(m_game_vertex_id);
 	VERIFY2				(
 		vertex,
-		make_string(
+		make_string<const char*>(
 			"invalid game vertex id[%d] (level_vertex_id[%d]) for patrol point[%s] in path[%s] in position[%f][%f][%f]",
 			m_game_vertex_id,
 			m_level_vertex_id,

@@ -34,14 +34,14 @@ void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
 	luabind::functor<bool> funct;
 	R_ASSERT2(
 		ai().script_engine().functor( "inventory_upgrades.can_repair_item", funct ),
-		make_string( "Failed to get functor <inventory_upgrades.can_repair_item>, item = %s", item_name )
+		make_string<const char*>( "Failed to get functor <inventory_upgrades.can_repair_item>, item = %s", item_name )
 		);
 	bool can_repair = funct( item_name, item->GetCondition(), partner );
 
 	luabind::functor<LPCSTR> funct2;
 	R_ASSERT2(
 		ai().script_engine().functor( "inventory_upgrades.question_repair_item", funct2 ),
-		make_string( "Failed to get functor <inventory_upgrades.question_repair_item>, item = %s", item_name )
+		make_string<const char*>( "Failed to get functor <inventory_upgrades.question_repair_item>, item = %s", item_name )
 		);
 	LPCSTR question = funct2( item_name, item->GetCondition(), can_repair, partner );
 
@@ -85,7 +85,7 @@ bool CUIActorMenu::CanUpgradeItem( PIItem item )
 	luabind::functor<bool> funct;
 	R_ASSERT2(
 		ai().script_engine().functor( "inventory_upgrades.can_upgrade_item", funct ),
-		make_string( "Failed to get functor <inventory_upgrades.can_upgrade_item>, item = %s, mechanic = %s", item_name, partner )
+		make_string<const char*>( "Failed to get functor <inventory_upgrades.can_upgrade_item>, item = %s, mechanic = %s", item_name, partner )
 		);
 
 	return funct( item_name, partner );

@@ -315,7 +315,7 @@ void CUIGameCTA::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
+		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	TIItemContainer const & all_items = actor->inventory().m_all;  
 
@@ -386,7 +386,7 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 
 	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
 
-	VERIFY2(ammo_section.size(), make_string(
+	VERIFY2(ammo_section.size(), make_string<const char*>(
 		"grenade ammo type of [%s] hasn't section name", weapon->cNameSect().c_str()));
 	if (!ammo_section.size())
 		return;
@@ -396,7 +396,7 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 	u16 ammo_box_size	= pSettings->r_u16(ammo_section.c_str(), "box_size");
 	
 
-	R_ASSERT2(ammo_elapsed <= 1, make_string(
+	R_ASSERT2(ammo_elapsed <= 1, make_string<const char*>(
 		"weapon [%s] can't have more than one grenade in grenade launcher",
 		weapon->cNameSect().c_str()));
 
@@ -454,7 +454,7 @@ void TryToDefuseWeapon(CWeapon const * weapon,
 
 	shared_str ammo_section = (*tmp_ammo_types)[*tmp_ammo_type];
 
-	VERIFY2(ammo_section.size(), make_string(
+	VERIFY2(ammo_section.size(), make_string<const char*>(
 		"ammo type of [%s] hasn't section name", weapon->cName().c_str()));
 	if (!ammo_section.size())
 		return;
@@ -560,7 +560,7 @@ void CUIGameCTA::SetPlayerItemsToBuyMenu()
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
+		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	if (actor && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
@@ -617,7 +617,7 @@ void CUIGameCTA::SetPlayerParamsToBuyMenu()
 	VERIFY2(ps, "local player not initialized");
 	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),  
-		make_string("bad actor: not found in game (GameID = %d)", ps->GameID));
+		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
 	m_pCurBuyMenu->SetRank(ps->rank);
 	m_pCurBuyMenu->SetMoneyAmount(ps->money_for_round);

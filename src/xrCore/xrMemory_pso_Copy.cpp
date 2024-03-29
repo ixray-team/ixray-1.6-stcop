@@ -7,8 +7,8 @@ void xr_stdcall xrMemCopy_x86(LPVOID dest, const void* src, size_t n)
 	memcpy(dest, src, n);
 }
 
-#if defined(M_BORLAND) || defined(_M_AMD64)
-void xr_stdcall xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
+#if defined(M_BORLAND) || defined(IXR_X64)
+void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	xrMemCopy_x86(dest, src, n);
 }
@@ -22,11 +22,11 @@ void xr_stdcall xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 //also using the "unrolled loop"optimization.This code uses
 //the software prefetch instruction to get the data into the cache.
 #define UNCACHED_COPY 197 *1024			//upper limit for movq/movntq w/SW prefetch
-//For larger blocks,which will spill beyond the cache,it ’s faster to
+//For larger blocks,which will spill beyond the cache,it ï¿½s faster to
 //use the Streaming Store instruction MOVNTQ.This write instruction
 //bypasses the cache and writes straight to main memory.This code also
 //uses the software prefetch instruction to pre-read the data.
-//USE 64 *1024 FOR THIS VALUE IF YOU ’RE ALWAYS FILLING A "CLEAN CACHE"
+//USE 64 *1024 FOR THIS VALUE IF YOU ï¿½RE ALWAYS FILLING A "CLEAN CACHE"
 #define BLOCK_PREFETCH_COPY infinity	//no limit for movq/movntq w/block prefetch
 #define CACHEBLOCK 80h					//#of 64-byte blocks (cache lines)for block prefetch
 //For the largest size blocks,a special technique called Block Prefetch
@@ -44,19 +44,19 @@ void	__stdcall xrMemCopy_MMX					(LPVOID dest, const void* src, size_t n)
 		cld;
 		cmp ecx,TINY_BLOCK_COPY;
 		jb  $memcpy_ic_3;						// tiny?skip mmx copy
-		cmp ecx,32*1024;						// don ’t align between 32k-64k because
+		cmp ecx,32*1024;						// don ï¿½t align between 32k-64k because
 		jbe $memcpy_do_align;					// it appears to be slower
 		cmp ecx,64*1024;
 		jbe $memcpy_align_done;				
 
 $memcpy_do_align:
-		mov ecx,8;								// a trick that ’s faster than rep movsb...
+		mov ecx,8;								// a trick that ï¿½s faster than rep movsb...
 		sub ecx,edi;							// align destination to qword
 		and ecx,111b;							// get the low bits
 		sub ebx,ecx;							// update copy count
 		neg ecx;								// set up to jump into the array
 		add ecx,offset $memcpy_align_done;
-		jmp ecx;								// jump to array of movsb ’s
+		jmp ecx;								// jump to array of movsb ï¿½s
 		align 4;
 		movsb;
 		movsb;
@@ -108,7 +108,7 @@ $memcpy_ic_3:
 		and ecx,1111b ;							// only look at the "remainder"bits
 		neg ecx ;								// set up to jump into the array
 		add ecx,offset $memcpy_last_few;
-		jmp ecx ;								// jump to array of movsd ’s
+		jmp ecx ;								// jump to array of movsd ï¿½s
 $memcpy_uc_test:
 		cmp ecx,UNCACHED_COPY/64;				// big enough?use block prefetch copy
 		jae $memcpy_bp_1;
@@ -116,7 +116,7 @@ $memcpy_64_test:
 		or ecx,ecx;								// tail end of block prefetch will jump here
 		jz $memcpy_ic_2;						// no more 64-byte blocks left
 
-		//For larger blocks,which will spill beyond the cache,it ’s faster to
+		//For larger blocks,which will spill beyond the cache,it ï¿½s faster to
 		//use the Streaming Store instruction MOVNTQ.This write instruction
 		//bypasses the cache and writes straight to main memory.This code also
 		//uses the software prefetch instruction to pre-read the data.
@@ -164,7 +164,7 @@ $memcpy_bp_2:
 		sub esi,128 ;							// go reverse order to suppress HW prefetcher
 		dec eax ;								// count down the cache lines
 		jnz $memcpy_bp_2;						// keep grabbing more lines into cache
-		mov eax,CACHEBLOCK;						// now that it ’s in cache,do the copy
+		mov eax,CACHEBLOCK;						// now that it ï¿½s in cache,do the copy
 		align 16;
 $memcpy_bp_3:
 		movq mm0,[esi ];						// read 64 bits
@@ -210,10 +210,10 @@ $memcpy_bp_3:
 		movsd;
 		movsd;
 
-$memcpy_last_few:								// dword aligned from before movsd ’s
+$memcpy_last_few:								// dword aligned from before movsd ï¿½s
 		mov ecx,ebx;							// has valid low 2 bits of the byte count
 		and ecx,11b;							// the last few cows must come home
-		jz $memcpy_final;						// no more,let ’s leave
+		jz $memcpy_final;						// no more,let ï¿½s leave
 		rep movsb;								// the last 1,2,or 3 bytes
 $memcpy_final:
 		emms;									// clean up the MMX state

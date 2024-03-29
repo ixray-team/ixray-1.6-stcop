@@ -6,7 +6,10 @@ file(GLOB CORE_SOURCE_STL_FILES
     "*_std*.*"
     "*_stl*.*"
     "buffer_vector*.*"
+    "RingBuffer.*"
+    "fastdelegate.*"
     "intrusive_ptr*.*"
+    "associative_vector*.*"
     "Fixed*.*"
 )
 
@@ -38,6 +41,7 @@ file(GLOB CORE_SOURCE_STACK_FILES
 file(GLOB CORE_SOURCE_MEMORY_FILES
     "xrMemory*.*"
     "memory_*.*"
+    "xrPool.*"
     "*malloc*.*"
     "doug_lea_allocator.*"
 )
@@ -68,8 +72,11 @@ file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 
 file(GLOB CORE_SOURCE_RT_FILES "rt_c*.*")
 file(GLOB CORE_SOURCE_PPMD_FILES "ppmd_*.*")
-file(GLOB CORE_SOURCE_DISCORD_FILES "discord/*.*")
+file(GLOB_RECURSE CORE_SOURCE_DISCORD_FILES "discord/*.*")
 file(GLOB CORE_SOURCE_XR_API_FILES "API/*.*")
+file(GLOB CORE_SOURCE_XR_API_PLATF_FILES "Platform/*.*")
+file(GLOB CORE_SOURCE_XR_API_WIN_FILES "Platform/Windows/*.*")
+file(GLOB CORE_SOURCE_XR_API_LIN_FILES "Platform/Linux/*.*")
 file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES "ptmalloc3/*.*")
 
 # NatVis config
@@ -79,6 +86,9 @@ source_group("ungrouped" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("core/api" FILES ${CORE_SOURCE_XR_API_FILES})
 source_group("core/math" FILES ${CORE_SOURCE_MATH_FILES})
 source_group("core/string" FILES ${CORE_SOURCE_STR_FILES})
+source_group("platform" FILES ${CORE_SOURCE_XR_API_PLATF_FILES})
+source_group("platform/windows" FILES ${CORE_SOURCE_XR_API_WIN_FILES})
+source_group("platform/linux" FILES ${CORE_SOURCE_XR_API_LIN_FILES})
 source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
 source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
@@ -95,7 +105,10 @@ source_group("discord/api" FILES ${CORE_SOURCE_DISCORD_API_FILES})
 
 # Apply list
 list(APPEND CORE_SRC_FILES ${CORE_SOURCE_ALL_FILES})
-list(APPEND CORE_SRC_FILES ${CORE_NATVIS_FILES})
+
+if (MSVC)
+	list(APPEND CORE_SRC_FILES ${CORE_NATVIS_FILES})
+endif()
 
 # Remove borlands files
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX  "ELocatorAPI.*")
@@ -108,6 +121,12 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/ptmalloc3.c")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/tst-independent-alloc.c")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 
+if (MSVC)
+    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
+else()
+    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
+endif()
+
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -119,21 +138,27 @@ if(IXRAY_ASAN)
 endif()
 
 # Move precompiled header
-set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-set_target_properties(xrCore PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-target_precompile_headers(xrCore PRIVATE "stdafx.h")
+if (MSVC)
+	set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+	set_target_properties(xrCore PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+	target_precompile_headers(xrCore PRIVATE "stdafx.h")
 
-file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "stdafx.*")
-file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "*.c")
+	file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "stdafx.*")
+	file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "*.c")
 
-set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
+	set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+	source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
+endif()
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
-target_compile_definitions(xrCore PRIVATE _WINDOWS)
-target_compile_definitions(xrCore PRIVATE _USRDLL)
+if (WIN32)
+	target_compile_definitions(xrCore PRIVATE _WINDOWS)
+	target_compile_definitions(xrCore PRIVATE _USRDLL)
+
+	target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
+endif()
 
 ## Disable user-cheats for Shipping build
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
@@ -145,11 +170,14 @@ if (DEVIXRAY_ENABLE_SHIPPING)
 endif()
 
 # Linker list
-target_link_libraries(xrCore PRIVATE "dbghelp.lib")
-target_link_libraries(xrCore PRIVATE dxerr)
+if (MSVC)
+    target_link_libraries(xrCore PRIVATE dxerr)
+    target_link_libraries(xrCore PRIVATE "dbghelp")
+    target_link_libraries(xrCore PRIVATE "winmm")
+endif()
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
-add_compile_options(/fp:fast)
+#add_compile_options(/fp:fast)
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 
 # Discord GameSDK
@@ -178,6 +206,22 @@ if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
 else()
     target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll.lib)
 endif()
+
+set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
+
+if (MSVC)
+	add_custom_command(TARGET ${PROJECT_NAME}
+    	PRE_BUILD
+    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+	)
+else()
+	execute_process(
+    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+	)
+endif()
+
+# DxMath
+target_include_directories(xrCore PUBLIC "${CORE_DXMATH}/include/")
 
 # Get author name
 execute_process(

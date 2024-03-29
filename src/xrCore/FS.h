@@ -310,7 +310,8 @@ private:
 class XRCORE_API CVirtualFileRW : public IReader
 {
 private:
-	void	*hSrcFile, *hSrcMap;
+    FileHandle hSrcFile;
+    FileHandle hSrcMap;
 public:
 			CVirtualFileRW		(const char *cFileName);
 	virtual ~CVirtualFileRW		();

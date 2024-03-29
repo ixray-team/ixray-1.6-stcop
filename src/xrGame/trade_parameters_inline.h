@@ -108,7 +108,7 @@ IC	const CTradeFactors &CTradeParameters::factors			(_action_type type, const sh
 template <typename _action_type>
 IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const shared_str& section)
 {
-	R_ASSERT2(ini_file.section_exist(section), make_string("cannot find section %s", *section));
+	R_ASSERT2(ini_file.section_exist(section), make_string<const char*>("cannot find section %s", *section));
 
 	CTradeActionParameters& _action = action(type);
 	_action.clear();

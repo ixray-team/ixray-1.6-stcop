@@ -1,10 +1,7 @@
 #include "stdafx.h"
-#include "cpuid.h"
+#include "xr_cpuid.h"
+#include <thread>
 #include <array>
-#include <bitset>
-#include <vector>
-#include <string>
-#include <intrin.h>
 
 static void CleanDups(char* s, char c = ' ')
 {
@@ -39,8 +36,8 @@ unsigned long countSetBits(ulong_t bitMask)
 
 unsigned int query_processor_info(processor_info* pinfo)
 {
-	std::memset(pinfo, 0, sizeof(processor_info));
-
+	memset(pinfo, 0, sizeof(processor_info));
+#ifdef IXR_WINDOWS
 	std::bitset<32> f_1_ECX;
 	std::bitset<32> f_1_EDX;
 	std::bitset<32> f_1_EBX;
@@ -178,63 +175,11 @@ unsigned int query_processor_info(processor_info* pinfo)
 	pinfo->family = (cpui[0] >> 8) & 0xf;
 	pinfo->model = (cpui[0] >> 4) & 0xf;
 	pinfo->stepping = cpui[0] & 0xf;
-
-	// Calculate available processors
-	DWORD_PTR pa_mask_save, sa_mask_stub = 0;
-	GetProcessAffinityMask(GetCurrentProcess(), &pa_mask_save, &sa_mask_stub);
-
-	SYSTEM_INFO sysInfo;
-	GetSystemInfo(&sysInfo);
+#endif
 
 	// All logical processors
-	pinfo->n_threads = sysInfo.dwNumberOfProcessors;
-	pinfo->affinity_mask = static_cast<unsigned>(pa_mask_save);
-
-	bool allocatedBuffer = false;
-	SYSTEM_LOGICAL_PROCESSOR_INFORMATION SLPI = {};
-	SYSTEM_LOGICAL_PROCESSOR_INFORMATION* ptr = &SLPI;
-	DWORD addr = sizeof(SLPI);
-	DWORD sizeofStruct = sizeof(SLPI);
-	BOOL result = GetLogicalProcessorInformation(&SLPI, &addr);
-	if (!result)
-	{
-		DWORD errCode = GetLastError();
-		if (errCode == ERROR_INSUFFICIENT_BUFFER)
-		{
-			ptr = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)new BYTE[addr];
-			allocatedBuffer = true;
-			result = GetLogicalProcessorInformation(ptr, &addr);
-		}
-	}
-
-	DWORD byteOffset = 0;
-	DWORD processorCoreCount = 0;
-	DWORD processorPackageCount = 0;
-
-	const s64 origPtr = reinterpret_cast<s64>(ptr);
-	while (byteOffset + sizeofStruct <= addr)
-	{
-		switch (ptr->Relationship)
-		{
-		case RelationProcessorCore:
-			processorCoreCount++;
-
-			break;
-		case RelationProcessorPackage:
-			// Logical processors share a physical package.
-			processorPackageCount++;
-			break;
-
-		default:
-			break;
-		}
-		byteOffset += sizeofStruct;
-		ptr++;
-	}
-
-	ptr = reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION*>(origPtr);
-	if (allocatedBuffer) xr_delete(ptr);
-	pinfo->n_cores = processorCoreCount;
+	pinfo->n_threads = std::thread::hardware_concurrency();
+	pinfo->n_cores = Platform::GetCoresCount();
 
 	return pinfo->features;
 }
@@ -242,17 +187,8 @@ unsigned int query_processor_info(processor_info* pinfo)
 processor_info::processor_info()
 {
 	features = query_processor_info(&*this);
-	GetSystemInfo(&sysInfo);
-	m_dwNumberOfProcessors = sysInfo.dwNumberOfProcessors;
-	const size_t PerformanceInfoSize = sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * m_dwNumberOfProcessors;
-
-	fUsage = new float[sizeof(float) * m_dwNumberOfProcessors];
-	m_pNtQuerySystemInformation = (NTQUERYSYSTEMINFORMATION)(GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtQuerySystemInformation"));
-	perfomanceInfo = (SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION*)(new char[PerformanceInfoSize]);
 }
 
 processor_info::~processor_info()
 {
-	Memory.mem_free(perfomanceInfo);
-	Memory.mem_free(fUsage);
 }

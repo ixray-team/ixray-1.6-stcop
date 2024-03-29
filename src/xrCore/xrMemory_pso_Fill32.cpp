@@ -8,8 +8,8 @@ void xr_stdcall xrMemFill32_x86(LPVOID dest, size_t value, size_t count)
 	for (; ptr != end; ) *ptr++ = (u32)value;
 }
 
-#if defined(M_BORLAND) || defined(_M_AMD64)
-void xr_stdcall	xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
+#if defined(M_BORLAND) || defined(IXR_X64)
+void 	xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
 {
 	xrMemFill32_x86(dest, value, count);
 }
@@ -61,7 +61,7 @@ $qloop2_fc:
 		JNZ $qloop2_fc;								// until no more QWORDs left to copy
 $filldword2_fc:
 		TEST ECX,1;									// DWORD left to fill ?
-		JZ $filldone2_fc;							// nope,we ’re done
+		JZ $filldone2_fc;							// nope,we ï¿½re done
 		MOVD [EDI ],MM0;							// store last DWORD to dst
 $filldone2_fc:
 		EMMS;										// clear MMX state

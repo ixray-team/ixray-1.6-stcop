@@ -40,7 +40,7 @@ IC	const xr_vector<u32> &CSpaceRestrictionAbstract::accessible_neighbour_border(
 
 	VERIFY2											(
 		!m_accessible_neighbour_border.empty(),
-		make_string(
+		make_string<const char*>(
 			"space restrictor %s has no accessible neighbours (border size[%d])",
 			*name(),
 			border().size()

@@ -389,7 +389,7 @@ void	game_sv_mp::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 			{
 				OnPlayerOpenBuyMenu(pClient);
 			} else {
-				VERIFY2(pClient, make_string(
+				VERIFY2(pClient, make_string<const char*>(
 					"unknown client [0x%08x] sended GAME_EVENT_PLAYER_BUYMENU_OPEN message",
 					sender.value()));
 #ifndef MASTER_GOLD
@@ -405,7 +405,7 @@ void	game_sv_mp::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 			{
 				OnPlayerCloseBuyMenu(pClient);
 			} else {
-				VERIFY2(pClient, make_string(
+				VERIFY2(pClient, make_string<const char*>(
 					"unknown client [0x%08x] sended GAME_EVENT_PLAYER_BUYMENU_OPEN message",
 					sender.value()));
 #ifndef MASTER_GOLD
@@ -795,7 +795,7 @@ void game_sv_mp::ChargeGrenades(CSE_ALifeItemWeapon* weapon, LPCSTR grenade_stri
 {
 	int grenades_count		= _GetItemCount(grenade_string);
 	R_ASSERT2(grenades_count <= 4,
-		make_string("weapon [%s] has greater than 4 types of grenade [%s]",
+		make_string<const char*>("weapon [%s] has greater than 4 types of grenade [%s]",
 			weapon->s_name.c_str(),
 			grenade_string
 		)
@@ -829,9 +829,9 @@ void	game_sv_mp::SetAmmoForWeapon(CSE_ALifeItemWeapon* weapon,
 	R_ASSERT(weapon);
 	R_ASSERT(weapon->s_name.c_str());
 	shared_str ammo_classes = pSettings->r_string(weapon->s_name, "ammo_class");
-	R_ASSERT2(ammo_classes.size() < 512, make_string("ammo_class parameter of [%s] is too large", 
+	R_ASSERT2(ammo_classes.size() < 512, make_string<const char*>("ammo_class parameter of [%s] is too large", 
 		weapon->s_name.c_str()));
-	VERIFY2(ammo_classes.size(), make_string("ammo_class parameter of [%s] not found", 
+	VERIFY2(ammo_classes.size(), make_string<const char*>("ammo_class parameter of [%s] not found", 
 		weapon->s_name.c_str()));
 	
 	if (!ammo_classes.size())
@@ -849,7 +849,7 @@ void	game_sv_mp::SetAmmoForWeapon(CSE_ALifeItemWeapon* weapon,
 		(weapon->m_grenade_launcher_status == ALife::eAddonPermanent))
 	{
 		shared_str grenade_classes = pSettings->r_string(weapon->s_name, "grenade_class");
-		R_ASSERT2(grenade_classes.size() < 512, make_string(
+		R_ASSERT2(grenade_classes.size() < 512, make_string<const char*>(
 			"grenade_class parameter of [%s] is too large", 
 			weapon->s_name.c_str())
 		);
@@ -1780,7 +1780,7 @@ void game_sv_mp::RenewAllActorsHealth	()
 		void operator()(IClient* client)
 		{
 			xrClientData *l_pC = static_cast<xrClientData*>(client);
-			VERIFY2(l_pC->ps, make_string("player state of client, ClientID = 0x%08x", l_pC->ID.value()));
+			VERIFY2(l_pC->ps, make_string<const char*>("player state of client, ClientID = 0x%08x", l_pC->ID.value()));
 			if (!l_pC || !l_pC->ps)
 			{
 				return;
@@ -1805,7 +1805,7 @@ void game_sv_mp::RenewAllActorsHealth	()
 				return;
 			}
 
-			VERIFY2(pActor, make_string("client object on server of actor GameID = 0x%08x, not found", l_pC->ps->GameID));
+			VERIFY2(pActor, make_string<const char*>("client object on server of actor GameID = 0x%08x, not found", l_pC->ps->GameID));
 			if (pActor)
 			{
 				pActor->SetfHealth(pActor->GetMaxHealth());
@@ -1853,8 +1853,8 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 
 	CSE_Abstract*	e_parent = get_entity_from_eid(entity->ID_Parent);
 	
-//	R_ASSERT2( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
-	VERIFY2  ( e_parent, make_string( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ));
+//	R_ASSERT2( e_parent, make_string<const char*>( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
+	VERIFY2  ( e_parent, make_string<const char*>( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ));
 	if ( !e_parent ) {
 		Msg( "! ERROR (RejectGameItem): parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent );
 		return;
@@ -2145,7 +2145,7 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 	
 	VERIFY2(xrCData, 
-		make_string("client (ClientID = 0x%08x) not found", id_who.value()));
+		make_string<const char*>("client (ClientID = 0x%08x) not found", id_who.value()));
 	VERIFY(xrCData->ps);
 	game_PlayerState*	ps	=	xrCData->ps;
 #ifndef MASTER_GOLD
@@ -2161,13 +2161,13 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 		ii != iie; ++ii)
 	{
 //		VERIFY(*ii);
-		R_ASSERT2(*ii, make_string("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID));
+		R_ASSERT2(*ii, make_string<const char*>("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID));
 
 		u16 object_id = (*ii)->object().ID();
 		CSE_Abstract* tempEntity = m_server->ID_to_entity(object_id);
 
-//		R_ASSERT2( tempEntity, make_string("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID).c_str() );
-		VERIFY2  ( tempEntity, make_string("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID) );
+//		R_ASSERT2( tempEntity, make_string<const char*>("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID).c_str() );
+		VERIFY2  ( tempEntity, make_string<const char*>("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID) );
 		if (!tempEntity) {
 			Msg                 ( "! ERROR: entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID );
 			continue;

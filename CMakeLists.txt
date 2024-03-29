@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 project(IXRay)
 
 # CMake options
@@ -19,8 +19,12 @@ option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_DEBUG "/MD")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if (MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "/MD")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
+endif()
 
 # Add new build types
 ## Shipping
@@ -52,14 +56,35 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Enable gcc/clang style 
-add_compile_options(/permissive- /fp:fast /wd4073 /wd4390 /wd4273)
+# Enable gcc/clang style for MSVC
+if (MSVC)
+    add_compile_options(/permissive- /fp:fast /wd4073 /wd4390 /wd4273)
 
-string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-add_compile_options("$<$<CONFIG:DEBUG>:/Od>" "/Ob1" "$<$<CONFIG:DEBUG>:/EHsc>"
-                    "$<$<CONFIG:RELEASE>:/Ot>" "$<$<CONFIG:RELEASE>:/Ob2>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
-add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" "$<$<CONFIG:DEBUG>:/wd4251>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>" /wd4595 /wd4996)
+    string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    add_compile_options("$<$<CONFIG:DEBUG>:/Od>""$<$<CONFIG:DEBUG>:/MD>" "/Ob1" "$<$<CONFIG:DEBUG>:/EHsc>"
+                    "$<$<CONFIG:RELEASE>:/Ot>"  "$<$<CONFIG:RELEASE>:/Ob2>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4577>")
+    add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+    add_compile_options("$<$<CONFIG:RELEASE>:/wd4530>" "$<$<CONFIG:DEBUG>:/wd4275>" "$<$<CONFIG:DEBUG>:/wd4251>" "$<$<CONFIG:RELWITHDEBINFO>:/wd4530>" /wd4595 /wd4996)
+endif()
+
+# Set LLVM config
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-Wno-reorder-ctor -Wno-switch -Wno-macro-redefined -Wno-implicit-exception-spec-mismatch -Wno-deprecated-volatile 
+                        -Wno-inline-new-delete -Wno-c++11-narrowing -Wno-unused-local-typedef -Wno-defaulted-function-deleted -Wno-undefined-inline)
+    if (WIN32)
+        add_compile_options(--Wno-microsoft-template-shadow)
+    else()
+        add_compile_options(-fms-extensions -Wno-null-conversion -Wno-null-dereference)
+    endif()
+endif()
+
+if (NOT WIN32)
+    find_program(LLD_PROGRAM lld)
+    if(LLD_PROGRAM)
+        add_link_options("-fuse-ld=lld")
+        link_directories(/usr/lib64 /usr/local/lib64)
+    endif(LLD_PROGRAM)
+endif()
 
 # Shipping config
 if (DEVIXRAY_ENABLE_SHIPPING)
@@ -72,10 +97,12 @@ if (IXRAY_ASAN)
 endif()
 
 ## Edit and Continue mode
-if (IXRAY_ASAN)
-    add_compile_options("$<$<CONFIG:DEBUG>:/Zi>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
-else()
-    add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+if (WIN32)
+    if (IXRAY_ASAN)
+        add_compile_options("$<$<CONFIG:DEBUG>:/Zi>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+    else()
+        add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+    endif()
 endif()
 
 # Configure NuGet

@@ -40,12 +40,12 @@ namespace luabind
 				return !upcast().equal(rhs);
 			}
 
-			typename reference operator*()
+			reference operator*()
 			{
 				return upcast().dereference();
 			}
 
-			typename reference operator->()
+			reference operator->()
 			{
 				return upcast().dereference();
 			}

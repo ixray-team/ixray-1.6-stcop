@@ -31,7 +31,7 @@ Property::~Property()
 void Property::construct( shared_str const& property_id, Manager& manager_r )
 {
 	m_id._set( property_id );
-	VERIFY2( pSettings->section_exist( m_id ), make_string( "Section of upgrade property [%s] does not exist!", m_id.c_str() ) );
+	VERIFY2( pSettings->section_exist( m_id ), make_string<const char*>( "Section of upgrade property [%s] does not exist!", m_id.c_str() ) );
 
 	m_name = g_pStringTable->translate( pSettings->r_string( id(), "name" ) );
 	m_icon._set( pSettings->r_string(id(), "icon") );
@@ -44,7 +44,7 @@ void Property::construct( shared_str const& property_id, Manager& manager_r )
 	m_desc.parameter2 = id_str();
 	R_ASSERT2(
 		ai().script_engine().functor( functor_str, m_desc.functr ),
-		make_string( "Failed to get upgrade property functor in section[%s], functor[%s]",
+		make_string<const char*>( "Failed to get upgrade property functor in section[%s], functor[%s]",
 		id_str(), functor_str
 		)
 	);

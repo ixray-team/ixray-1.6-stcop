@@ -194,11 +194,11 @@ void moving_objects::resolve_collision			(boxes &current, moving_object *object0
 		Msg						("%6d Eng of \"Oooooooops\"",Device.dwFrame);
 	}
 #endif // 0
-	VERIFY2						(object0->action_frame() != Device.dwFrame, make_string("%d %s",Device.dwFrame,*object0->object().cName()));
-	VERIFY2						(object0->action_frame() < Device.dwFrame, make_string("%d %s",Device.dwFrame,*object0->object().cName()));
+	VERIFY2						(object0->action_frame() != Device.dwFrame, make_string<const char*>("%d %s",Device.dwFrame,*object0->object().cName()));
+	VERIFY2						(object0->action_frame() < Device.dwFrame, make_string<const char*>("%d %s",Device.dwFrame,*object0->object().cName()));
 
-	VERIFY2						(object1->action_frame() != Device.dwFrame, make_string("%d %s",Device.dwFrame,*object0->object().cName()));
-	VERIFY2						(object1->action_frame() < Device.dwFrame, make_string("%d %s",Device.dwFrame,*object0->object().cName()));
+	VERIFY2						(object1->action_frame() != Device.dwFrame, make_string<const char*>("%d %s",Device.dwFrame,*object0->object().cName()));
+	VERIFY2						(object1->action_frame() < Device.dwFrame, make_string<const char*>("%d %s",Device.dwFrame,*object0->object().cName()));
 
 	bool						first_time = (
 		std::find_if(
@@ -229,7 +229,7 @@ void moving_objects::resolve_collision			(boxes &current, moving_object *object0
 		return;
 	}
 
-	VERIFY2						(false,make_string("NODEFAULT: [%s][%s]",*object0->object().cName(),*object1->object().cName()));
+	VERIFY2						(false,make_string<const char*>("NODEFAULT: [%s][%s]",*object0->object().cName(),*object1->object().cName()));
 }
 
 bool moving_objects::collided_dynamic			(moving_object *object0, const Fvector &position0, moving_object *object1, const Fvector &position1, boxes &result) const

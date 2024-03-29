@@ -390,7 +390,7 @@ bool game_state_accumulator::check_accumulative_value(enum_accumulative_player_v
 	accumulative_values_collection_t::iterator	tmp_iter = m_accumulative_values.find(
 		param_id);
 	VERIFY2(tmp_iter != m_accumulative_values.end(),
-		make_string("accumulative parameter %d not found", param_id));
+		make_string<const char*>("accumulative parameter %d not found", param_id));
 
 	return func->exec(tmp_iter->second->get_float_param(), right_arg);
 }
@@ -402,7 +402,7 @@ bool game_state_accumulator::check_accumulative_value(enum_accumulative_player_v
 	accumulative_values_collection_t::iterator	tmp_iter = m_accumulative_values.find(
 		param_id);
 	VERIFY2(tmp_iter != m_accumulative_values.end(),
-		make_string("accumulative parameter %d not found", param_id));
+		make_string<const char*>("accumulative parameter %d not found", param_id));
 	bool ret_value = func->exec(tmp_iter->second->get_u32_param(), right_arg);
 #ifdef DEBUG
 	Msg("* checking accumulative value: %s, result = %s",

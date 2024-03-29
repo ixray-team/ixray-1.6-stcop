@@ -1,4 +1,7 @@
 #pragma once
+
+class xr_string;
+
 class XRCORE_API xr_string : public std::basic_string<char, std::char_traits<char>, xalloc<char>>
 {
 public:
@@ -21,8 +24,8 @@ public:
 	template <size_t ArrayLenght>
 	xr_string(char* (&InArray)[ArrayLenght]);
 
-	xr_vector<xr_string> Split(char splitCh);
-	xr_vector<xr_string> Split(u32 NumberOfSplits, ...);
+	xr_vector<xr_string> Split(char splitCh) const;
+	xr_vector<xr_string> Split(u32 NumberOfSplits, ...) const;
 
 	bool StartWith(const xr_string& Other) const;
 	bool StartWith(LPCSTR Str) const;
@@ -38,12 +41,6 @@ public:
 
 	using xrStringVector = xr_vector<xr_string>;
 	static xr_string Join(xrStringVector::iterator beginIter, xrStringVector::iterator endIter, const char delimeter = '\0');
-
-	template<typename StringType>
-	static void FixSlashes(StringType& str);
-
-	template<>
-	static void FixSlashes<xr_string>(xr_string& InStr);
 };
 
 using SStringVec = xr_vector<xr_string>;
@@ -79,33 +76,15 @@ inline xr_string::xr_string(char* (&InArray)[ArrayLenght])
 	assign(InArray, ArrayLenght);
 }
 
-template<typename StringType>
-inline void xr_string::FixSlashes(StringType& str)
+// warning
+// this function can be used for debug purposes only
+template<typename String, typename... Args>
+IC String make_string(const char* format, Args... args)
 {
-	// Should be array of chars
-	static_assert(std::is_same<std::remove_extent<StringType>::type, char>::value);
-
-	constexpr size_t sizeArray = sizeof(str);
-
-	for (int i = 0; i < sizeArray; ++i)
-	{
-		if (str[i] == '/')
-		{
-			str[i] = '\\';
-		}
-	}
-}
-
-template<>
-inline void xr_string::FixSlashes(xr_string& InStr)
-{
-	for (size_t i = 0; i < InStr.size(); ++i)
-	{
-		if (InStr[i] == '/')
-		{
-			InStr[i] = '\\';
-		}
-	}
+	static constexpr size_t bufferSize = 4096;
+	static char temp[bufferSize];
+	snprintf(temp, bufferSize, format, args...);
+	return temp;
 }
 
 // FX: Hash str container

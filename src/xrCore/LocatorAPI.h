@@ -6,11 +6,6 @@
 #define LocatorAPIH
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <io.h>
-#pragma warning(pop)
-
 #include "LocatorAPI_defs.h"
 
 class XRCORE_API CStreamReader;
@@ -32,13 +27,15 @@ public:
 	struct	archive
 	{
 		shared_str				path;
-		void					*hSrcFile;
-		void					*hSrcMap;
+        FileHandle              hSrcFile;
+#ifdef IXR_WINDOWS
+		void					*hSrcMap = nullptr;
+#endif
 		CInifile*				header;
 		u32						size;
 		u32						vfs_idx;
 
-		archive():hSrcFile(NULL),hSrcMap(NULL),header(NULL),size(0),vfs_idx(u32(-1)){}
+		archive():hSrcFile(0),header(nullptr),size(0),vfs_idx(u32(-1)){}
 		void					open();
 		void					close();
 	};

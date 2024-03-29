@@ -163,7 +163,7 @@ IC bool GameGraph::CHeader::level_exist(pcstr level_name) const
 IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const _LEVEL_ID &id) const
 {
 	LEVEL_MAP::const_iterator	I = levels().find(id);
-	R_ASSERT2					(I != levels().end(),make_string("there is no specified level in the game graph : %d",id));
+	R_ASSERT2					(I != levels().end(), make_string<const char*>("there is no specified level in the game graph : %d",id));
 	return						((*I).second);
 }
 

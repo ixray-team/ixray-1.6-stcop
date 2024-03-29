@@ -153,7 +153,7 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 			// ugly HACK, just because Plecha asked...
 			VERIFY2					(
 				vertex || show_restrictions(m_object),
-				make_string(
+				make_string<const char*>(
 					"any vertex in patrol path [%s] is inaccessible for object [%s]",
 					*m_path_name,
 					*m_game_object->cName()
@@ -165,7 +165,7 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 
 		R_ASSERT2			(
 			ai().level_graph().valid_vertex_id(vertex->data().level_vertex_id()),
-			make_string(
+			make_string<const char*>(
 				"patrol path[%s], point on path [%s],object [%s]",
 				*m_path_name,
 				*vertex->data().name(),

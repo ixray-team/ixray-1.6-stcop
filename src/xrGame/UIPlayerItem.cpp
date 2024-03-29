@@ -196,7 +196,7 @@ void UIPlayerItem::GetIconParamValue(game_PlayerState const * ps,
 		}
 	} else
 	{
-		VERIFY2(false, make_string("unknown icon parameter: %s", param_name.c_str()));
+		VERIFY2(false, make_string<const char*>("unknown icon parameter: %s", param_name.c_str()));
 	}
 
 }

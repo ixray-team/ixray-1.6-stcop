@@ -4,13 +4,16 @@
 
 #include "EventManager.h"
 
-#include "xrdebug.h"
+#include "xrDebug.h"
 #include "os_clipboard.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
+#ifdef IXR_WINDOWS
 #include <direct.h>
+#include <dxerr.h>
+#endif
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
@@ -29,10 +32,12 @@ extern bool shared_str_initialized;
 	#	define USE_OWN_ERROR_MESSAGE_WINDOW
 #endif
 
+#ifdef IXR_WINDOWS
 #include <dbghelp.h>						// MiniDump flags
-
 #include <new.h>							// for _set_new_mode
 #include <signal.h>							// for signals
+#endif
+
 
 #ifndef DEBUG
 #	define USE_OWN_MINI_DUMP
@@ -111,10 +116,12 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 void xrDebug::do_exit	(const std::string &message)
 {
 	xrLogger::FlushLog			();
-	//SDL_ShowWindow(g_AppInfo.Window);
-	//SDL_MinimizeWindow(g_AppInfo.Window);
-	MessageBoxA			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+#ifdef IXR_WINDOWS
+	MessageBoxA			(nullptr,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
+#else
+    kill(getpid(), SIGKILL);
+#endif
 }
 
 void xrDebug::backend	(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
@@ -170,7 +177,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		get_on_dialog()	(true);
 
 	xrLogger::FlushLog();
-
+#ifdef IXR_WINDOWS
 	int result = MessageBoxA
 	(
 		NULL, 
@@ -208,25 +215,27 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		break;
 	}
 	}
-
+#endif
 	if (get_on_dialog())
 		get_on_dialog()	(false);
 }
 
-LPCSTR xrDebug::error2string(long code) {
+LPCSTR xrDebug::error2string(long code)
+{
 	static char desc_storage[1024] = {};
+#ifdef IXR_WINDOWS
 	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), desc_storage, 0, nullptr);
+#endif
 	return desc_storage;
 }
 
-#include <dxerr.h>
 LPCSTR xrDebug::dxerror2string(long code)
 {
 	static string512 Err = {};
 	memset(Err, 0, sizeof(Err));
-
+#ifdef IXR_WINDOWS
 	DXGetErrorDescriptionA(code, Err, sizeof(Err));
-
+#endif
 	return Err;
 }
 
@@ -307,10 +316,10 @@ int out_of_memory_handler	(size_t size)
 
 XRCORE_API string_path g_bug_report_file;
 
-#if 1
-typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
-typedef LONG ( __stdcall *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
-extern "C" BOOL __stdcall SetCrashHandlerFilter ( PFNCHFILTFN pFn );
+#if defined(IXR_WINDOWS)
+typedef long WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
+typedef long (  *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
+extern "C" BOOL  SetCrashHandlerFilter ( PFNCHFILTFN pFn );
 
 static UnhandledExceptionFilterType	*previous_filter = 0;
 
@@ -389,7 +398,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 
 				ExInfo.ThreadId				= ::GetCurrentThreadId();
 				ExInfo.ExceptionPointers	= pExceptionInfo;
-				ExInfo.ClientPointers		= NULL;
+				ExInfo.ClientPointers		= false;
 
 				// write the dump
 				MINIDUMP_TYPE	dump_flags	= MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory );
@@ -576,22 +585,22 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		LPSTR buffer = assertion_info + xr_strlen(assertion_info);
 		buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
-		//SDL_ShowWindow(g_AppInfo.Window);
-		//SDL_MinimizeWindow(g_AppInfo.Window);
-
+#ifdef IXR_WINDOWS
 		MessageBoxA				(
 			/*GetTopWindow(NULL)*/ nullptr,
 			assertion_info,
 			"Fatal Error",
 			MB_OK|MB_ICONERROR|MB_SYSTEMMODAL
 		);
-		
+#endif
 		exit(-1);
 	}
 	
 	void __cdecl debug_on_thread_spawn(void)
 	{
+#ifdef IXR_WINDOWS
 		SetUnhandledExceptionFilter(UnhandledFilter);
+#endif
 	}
 
 	void xrDebug::_initialize(const bool& dedicated)
@@ -599,7 +608,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		static bool is_dedicated = dedicated;
 
 		*g_bug_report_file = 0;
-
+#ifdef IXR_WINDOWS
 		previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
+#endif
 	}
 #endif

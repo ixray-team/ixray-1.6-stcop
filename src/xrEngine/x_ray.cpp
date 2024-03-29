@@ -130,7 +130,7 @@ void InitSettings	()
 	Msg							("Updated path to system.ltx is %s", fname);
 #endif // #ifdef DEBUG
 	pSettings					= xr_new<CInifile>	(fname,TRUE);
-	CHECK_OR_EXIT				(0!=pSettings->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+	CHECK_OR_EXIT				(0!=pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 
 	xr_auth_strings_t			tmp_ignore_pathes;
 	xr_auth_strings_t			tmp_check_pathes;
@@ -142,7 +142,7 @@ void InitSettings	()
 
 	FS.update_path				(fname,"$game_config$","game.ltx");
 	pGameIni					= xr_new<CInifile>	(fname,TRUE);
-	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 }
 
 void InitInput		()
