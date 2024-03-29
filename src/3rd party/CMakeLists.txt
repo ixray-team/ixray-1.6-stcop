@@ -10,6 +10,10 @@ add_subdirectory("imgui")
 add_subdirectory("dxerr")
 add_subdirectory("lzo")
 
+if (DEVIXRAY_ENABLE_OGL_RENDER)
+    add_subdirectory("glew")
+endif()
+
 # Move 3rd
 set_target_properties(luabind PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(ODE PROPERTIES ${IXRAY_FOLDER_3RD})

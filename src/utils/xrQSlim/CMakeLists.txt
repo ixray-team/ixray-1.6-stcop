@@ -21,9 +21,6 @@ add_library(QSlim STATIC ${QSL_SRC_FILES})
 target_include_directories(QSlim PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Project defines
-target_compile_definitions(QSlim PRIVATE _WINDOWS)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(QSlim PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 target_link_libraries(QSlim PUBLIC xrCore)

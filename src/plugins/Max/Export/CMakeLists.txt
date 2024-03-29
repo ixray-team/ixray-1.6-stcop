@@ -52,7 +52,6 @@ set_target_properties(
 # Project defines
 target_compile_definitions(xrMax_Export PRIVATE _MAX_EXPORT)
 target_compile_definitions(xrMax_Export PRIVATE _MAX_PLUGIN)
-target_compile_definitions(xrMax_Export PRIVATE _WINDOWS)
 target_compile_definitions(xrMax_Export PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

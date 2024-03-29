@@ -27,7 +27,6 @@ target_include_directories(xrParticles PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
 target_compile_definitions(xrParticles PRIVATE XR_PARTICLES_EXPORTS)
-target_compile_definitions(xrParticles PRIVATE _WINDOWS)
 target_compile_definitions(xrParticles PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

@@ -32,7 +32,6 @@ target_include_directories(xrLC PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_precompile_headers(xrLC PRIVATE "stdafx.h")
 
 # Project defines
-target_compile_definitions(xrLC PRIVATE _WINDOWS)
 target_compile_definitions(xrLC PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

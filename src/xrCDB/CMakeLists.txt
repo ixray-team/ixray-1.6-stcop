@@ -28,7 +28,6 @@ target_precompile_headers(xrCDB PRIVATE "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrCDB PRIVATE XRCDB_EXPORTS)
-target_compile_definitions(xrCDB PRIVATE _WINDOWS)
 target_compile_definitions(xrCDB PRIVATE _USRDLL)
 
 add_compile_options(/fp:fast)

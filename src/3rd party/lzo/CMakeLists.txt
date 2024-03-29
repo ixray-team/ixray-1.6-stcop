@@ -247,7 +247,6 @@ endforeach()
 # /***********************************************************************
 # // "make test"
 # ************************************************************************/
-
 #include(CTest)
 #add_test(NAME simple     COMMAND simple)
 #add_test(NAME testmini   COMMAND testmini)

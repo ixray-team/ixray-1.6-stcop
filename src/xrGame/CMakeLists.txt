@@ -138,7 +138,6 @@ target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ui/")
 target_include_directories(xrGame PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
-target_compile_definitions(xrGame PRIVATE _WINDOWS)
 target_compile_definitions(xrGame PRIVATE _USRDLL)
 target_compile_definitions(xrGame PRIVATE XRGAME_EXPORTS)
 target_compile_definitions(xrGame PRIVATE dSINGLE)

@@ -22,7 +22,6 @@ target_include_directories(mp_screenshots_info PUBLIC "${CMAKE_CURRENT_SOURCE_DI
 
 # Project defines
 target_compile_definitions(mp_screenshots_info PRIVATE MPSI_EXPORTS)
-target_compile_definitions(mp_screenshots_info PRIVATE _WINDOWS)
 
 add_compile_options(/fp:fast)
 target_compile_definitions(mp_screenshots_info PRIVATE "$<$<CONFIG:Debug>:DEBUG>")

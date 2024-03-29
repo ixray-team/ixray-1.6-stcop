@@ -98,7 +98,6 @@ set_source_files_properties(${MPGF_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPIL
 # Project defines
 target_compile_definitions(mp_gpprof_server PRIVATE XRAY_DISABLE_GAMESPY_WARNINGS)
 target_compile_definitions(mp_gpprof_server PRIVATE PTW32_STATIC_LIB)
-target_compile_definitions(mp_gpprof_server PRIVATE _WINDOWS)
 
 add_compile_options(/fp:fast)
 target_compile_definitions(mp_gpprof_server PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
