@@ -22,6 +22,7 @@ using namespace DirectX;
 #define INCLUDE_FROM_ENGINE
 #include "../xrCore/FS_impl.h"
 #include "igame_persistent.h"
+#include "FPSCounter.h"
 
 ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -255,7 +256,9 @@ void CRenderDevice::on_idle		()
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 					Statistic->Show();
 
-				//	Present goes here
+				extern bool IsMainMenuActive();
+				pFPSCounter->ShowEngineVersion(IsMainMenuActive());
+
 				End();
 			}
 		}
