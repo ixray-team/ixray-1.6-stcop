@@ -10,8 +10,8 @@
 #include "pch_script.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "script_ini_file.h"
 #include "sight_manager_space.h"
+#include "../xrScripts/exports/script_ini_file.h"
 
 using namespace luabind;
 

@@ -9,7 +9,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/gamemtllib.h"
 #include "level_bullet_manager.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "game_cl_single.h"
 #include "../xrEngine/SkeletonMotions.h"
 #include "player_hud.h"

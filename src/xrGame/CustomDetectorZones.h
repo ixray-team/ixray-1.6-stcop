@@ -2,7 +2,7 @@
 #include "../xrEngine/feel_touch.h"
 #include "HudSound.h"
 #include "ParticlesObject.h"
-#include "../xrServerEntities/ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "Artefact.h"
 #include "CustomZone.h"
 

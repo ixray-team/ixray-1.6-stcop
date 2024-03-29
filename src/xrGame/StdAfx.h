@@ -3,7 +3,7 @@
 #pragma warning(disable:4995)
 #include "../xrEngine/stdafx.h"
 #include "../xrScripts/stdafx.h"
-#include "DPlay/dplay8.h"
+
 #pragma warning(default:4995)
 #pragma warning( 4 : 4018 )
 #pragma warning( 4 : 4244 )
@@ -24,3 +24,6 @@
 #include "../xrEngine/igame_level.h"
 #include "../xrphysics/xrphysics.h"
 #include "smart_cast.h"
+
+#undef min
+#undef max

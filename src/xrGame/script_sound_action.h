@@ -10,7 +10,7 @@
 
 #include "script_abstract_action.h"
 #include "../xrScripts/script_export_space.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "ai_monster_space.h"
 #include "script_sound.h"
 #include "AI/monsters/monster_sound_defs.h"

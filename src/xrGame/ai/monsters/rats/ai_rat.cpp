@@ -20,7 +20,6 @@
 #include "../../../ai_object_location.h"
 #include "../../../movement_manager.h"
 #include "../../../location_manager.h"
-#include "../../../../xrServerEntities/ai_sounds.h"
 #include "../../../sound_player.h"
 #include "ai_rat_impl.h"
 #include "../../../ai_space.h"

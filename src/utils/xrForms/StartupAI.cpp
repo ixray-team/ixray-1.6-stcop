@@ -1,5 +1,6 @@
 #include "../../xrCore/xrCore.h"
 #define smart_cast dynamic_cast
+#define SCRIPTS_API
 #include "../xrAI/xrAI.h"
 
 #include "../xrAI/xr_graph_merge.h"
@@ -108,8 +109,8 @@ void execute(LPSTR cmd) {
 	}
 }
 
-Factory_Create* create_entity = 0;
-Factory_Destroy* destroy_entity = 0;
+SEFactory_Create* create_entity = 0;
+SEFactory_Destroy* destroy_entity = 0;
 
 static HMODULE hFactory;
 
@@ -124,8 +125,8 @@ void InitialFactory() {
 	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
 
 #ifdef _M_X64
-	create_entity = (Factory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
-	destroy_entity = (Factory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
+	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
+	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
 #else
 	create_entity = (Factory_Create*)GetProcAddress(hFactory, "_create_entity@4");	R_ASSERT(create_entity);
 	destroy_entity = (Factory_Destroy*)GetProcAddress(hFactory, "_destroy_entity@4");	R_ASSERT(destroy_entity);

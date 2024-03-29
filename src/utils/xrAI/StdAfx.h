@@ -15,6 +15,7 @@
 #pragma warning(default:4995)
 
 #define ENGINE_API
+#define SCRIPTS_API
 #define ECORE_API
 #define XR_EPROPS_API
 #include "../../xrcore/clsid.h"
