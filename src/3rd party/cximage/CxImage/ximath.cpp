@@ -66,10 +66,10 @@ CxRect2 CxRect2::CrossSection(CxRect2 const &r2) const
  */
 {
   CxRect2 cs;
-  cs.botLeft.x=max(botLeft.x, r2.botLeft.x);
-  cs.botLeft.y=max(botLeft.y, r2.botLeft.y);
-  cs.topRight.x=min(topRight.x, r2.topRight.x);
-  cs.topRight.y=min(topRight.y, r2.topRight.y);
+  cs.botLeft.x=std::max(botLeft.x, r2.botLeft.x);
+  cs.botLeft.y=std::max(botLeft.y, r2.botLeft.y);
+  cs.topRight.x= std::min(topRight.x, r2.topRight.x);
+  cs.topRight.y= std::min(topRight.y, r2.topRight.y);
   if (cs.botLeft.x<=cs.topRight.x && cs.botLeft.y<=cs.topRight.y) {
     return cs;
   } else {
