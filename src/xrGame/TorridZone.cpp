@@ -25,7 +25,16 @@ BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
 	m_animator->Load	(zone->get_motion());
 	m_animator->Play	(true);
 
+	shedule.t_min = shedule.t_max = 1;
+	Engine.Sheduler.Register(this, TRUE);
+
 	return				(TRUE);
+}
+
+void CTorridZone::net_Destroy	()
+{
+	inherited::net_Destroy	();
+	Engine.Sheduler.Unregister(this);
 }
 
 void CTorridZone::UpdateWorkload(u32 dt)
@@ -69,7 +78,7 @@ bool CTorridZone::Disable()
 // Lain: added
 bool   CTorridZone::light_in_slow_mode ()
 {
-	return false;
+	return true;
 }
 
 BOOL   CTorridZone::AlwaysTheCrow ()
