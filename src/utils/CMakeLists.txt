@@ -1,11 +1,13 @@
 # Solution folders
 set(IXRAY_FOLDER_UTILS FOLDER "Utils")
 
-# Engine Utils
-if(IXRAY_UTILS OR IXRAY_COMPRESSOR_ONLY)
+# Compressor
+if (IXRAY_USE_COMPRESSOR OR IXRAY_UTILS)
     add_subdirectory("xrCompress")
+    set_target_properties(xrCompress PROPERTIES ${IXRAY_FOLDER_UTILS})
 endif()
 
+# Engine Utils
 if(IXRAY_UTILS)
     add_subdirectory("xrDXT")
     add_subdirectory("xrQSlim")
@@ -27,10 +29,6 @@ endif()
 
 # Setup properties
 if(IXRAY_UTILS)
-    if(NOT IXRAY_COMPRESSOR_ONLY)
-        set_target_properties(xrCompress PROPERTIES ${IXRAY_FOLDER_UTILS})
-    endif()
-
     set_target_properties(xrDXT PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(QSlim PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrLC_Light PROPERTIES ${IXRAY_FOLDER_UTILS})
