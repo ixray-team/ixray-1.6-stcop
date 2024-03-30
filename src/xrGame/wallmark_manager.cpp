@@ -84,19 +84,25 @@ void CWalmarkManager::PlaceWallmark(const Fvector& dir, const Fvector& start_pos
 void CWalmarkManager::PlaceWallmarks( const Fvector& start_pos)
 {
 	m_pos				= start_pos;
-//.	LPCSTR				sect				= pSettings->r_string(m_owner->cNameSect(), "wallmark_section");
-	Load				("explosion_marks");
+
+    shared_str sect = "explosion_marks";
+
+    if (pSettings->line_exist(m_owner->cNameSect(), "wallmark_section"))
+    {
+        sect = pSettings->r_string(m_owner->cNameSect(), "wallmark_section");
+    }
+
+	Load				(sect.c_str());
 
 //.	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CWalmarkManager::StartWorkflow));
 
-	StartWorkflow		();
+	StartWorkflow		(sect);
 }
 
 float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, float& pfTParam, Fvector& closest, Fvector& dir);
 
-void CWalmarkManager::StartWorkflow()
+void CWalmarkManager::StartWorkflow(const shared_str& sect)
 {
-	LPCSTR				sect				= "explosion_marks";
 	float				m_trace_dist		= pSettings->r_float(sect,"dist");
 	float				m_wallmark_size		= pSettings->r_float(sect,"size");
 	u32					max_wallmarks_count = pSettings->r_u32(sect,"max_count");
@@ -109,39 +115,24 @@ void CWalmarkManager::StartWorkflow()
 	Fvector*		V_array					= Level().ObjectSpace.GetStaticVerts();
 	CDB::RESULT*	R_begin                 = XRC.r_begin();
 	CDB::RESULT*    R_end                   = XRC.r_end();
-//.	Triangle		ntri;
-//.	float			ndist					= phInfinity;
-//.	Fvector			npoint;
+
 	u32				wm_count	= 0;
 
 
 	u32 _ray_test		= 0;
-//	u32 _tri_behind		= 0;
 	u32 _tri_not_plane	= 0;
 	u32 _not_dist		= 0;
-/*
-	DBG_OpenCashedDraw		();
-	DBG_DrawAABB			(m_pos,Fvector().set(m_trace_dist,m_trace_dist,m_trace_dist),color_xrgb(255,0,0));
-	DBG_DrawAABB			(m_pos,Fvector().set(0.05f,0.05f,0.05f),color_xrgb(0,255,0));
-	
-	CTimer T; T.Start();
-*/
+
 	for (CDB::RESULT* Res=R_begin; Res!=R_end; ++Res)
 	{
-//.		DBG_DrawTri(Res, color_xrgb(0,255,0) );
-
-		if(wm_count >= max_wallmarks_count) break;
+		if(wm_count >= max_wallmarks_count)
+            break;
 		
-//.		Triangle					tri;
 		Fvector						end_point;
-//.		ETriDist					c;
 		Fvector						pdir;
 		float						pfSParam;
 		float						pfTParam;
 
-//.		CalculateTriangle			(T_array+Res->id,cast_fp(m_pos),tri);
-		
-//.		float dist					= DistToTri(&tri,cast_fp(m_pos),cast_fp(pdir),cast_fp(end_point),c,V_array);
 		Fvector						_tri[3];
 
 		CDB::TRI*		_t			= T_array + Res->id;
@@ -152,13 +143,6 @@ void CWalmarkManager::StartWorkflow()
 
 		float dist					= Distance (m_pos, _tri, pfSParam, pfTParam, end_point, pdir);
 
-
-/*		
-		if (c==tdBehind){
-			++_tri_behind;
-			continue;
-		}
-*/
 		float test					= dist-EPS_L;
 		
 		if(test>0.f)
@@ -181,20 +165,7 @@ void CWalmarkManager::StartWorkflow()
 			++wm_count;
 		}else
 			++_not_dist;
-
 	}
-/*
-	Msg("----------------------------------");
-	Msg("tri count=%d",						XRC.r_count());
-	Msg("far_dist=%d",						_not_dist);
-	Msg("RayTest = %d",						_ray_test);
-	Msg("c==tdBehind = %d",					_tri_behind);
-	Msg	("c!=tdPlane && dist>ndist = %d",	_tri_not_plane);
-	Msg("Wallmarks added = %d",				wm_count);
-	Msg("Time: %d",							T.GetElapsed_ms());
-
-	DBG_ClosedCashedDraw	(10000);
-*/
 }
 
 void CWalmarkManager::Load (LPCSTR section)
