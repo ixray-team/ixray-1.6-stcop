@@ -2,6 +2,7 @@
 
 #include <d3dcompiler.h>
 
+#include "../xrRenderDX9/dx9ShaderUtils.h"
 #include "r2.h"
 #include "../xrRender/fbasicvisual.h"
 #include "../../xrEngine/xr_object.h"
@@ -556,8 +557,8 @@ static HRESULT create_shader				(
 			return		E_FAIL;
 		}
 
-		LPCVOID			data		= NULL;
-		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,NULL);
+		LPCVOID			data		= nullptr;
+		_result			= D3D9FindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,nullptr);
 		if (SUCCEEDED(_result) && data)
 		{
 			LPD3DXSHADER_CONSTANTTABLE	pConstants	= LPD3DXSHADER_CONSTANTTABLE(data);
@@ -578,8 +579,8 @@ static HRESULT create_shader				(
 			return		E_FAIL;
 		}
 
-		LPCVOID			data		= NULL;
-		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,NULL);
+		LPCVOID			data		= nullptr;
+		_result			= D3D9FindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,nullptr);
 		if (SUCCEEDED(_result) && data)
 		{
 			LPD3DXSHADER_CONSTANTTABLE	pConstants	= LPD3DXSHADER_CONSTANTTABLE(data);

@@ -6,6 +6,8 @@
 
 #include <d3dcompiler.h>
 
+#include "../xrRenderDX9/dx9ShaderUtils.h"
+
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/environment.h"
 #include "../xrRender/fbasicvisual.h"
@@ -713,8 +715,8 @@ static HRESULT create_shader				(
 			return		E_FAIL;
 		}
 
-		LPCVOID			data		= NULL;
-		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,NULL);
+		LPCVOID			data		= nullptr;
+		_result			= D3D9FindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,nullptr);
 		if (SUCCEEDED(_result) && data)
 		{
 			LPD3DXSHADER_CONSTANTTABLE	pConstants	= LPD3DXSHADER_CONSTANTTABLE(data);
@@ -735,8 +737,8 @@ static HRESULT create_shader				(
 			return		E_FAIL;
 		}
 
-		LPCVOID			data		= NULL;
-		_result			= D3DXFindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,NULL);
+		LPCVOID			data		= nullptr;
+		_result			= D3D9FindShaderComment	(buffer,MAKEFOURCC('C','T','A','B'),&data,nullptr);
 		if (SUCCEEDED(_result) && data)
 		{
 			LPD3DXSHADER_CONSTANTTABLE	pConstants	= LPD3DXSHADER_CONSTANTTABLE(data);
