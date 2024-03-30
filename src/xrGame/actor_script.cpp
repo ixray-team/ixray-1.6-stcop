@@ -28,6 +28,27 @@ void CActor::script_register(lua_State* L)
 				.def(constructor<>()),
 				def("is_first_person", isFirstPerson),
 				def("set_first_person", setFirstPerson),
-				def("set_third_person", setThirdPerson)
+				def("set_third_person", setThirdPerson),
+				
+				class_<enum_exporter<EBoostParams>>("EBoostParams").enum_("eboostparams")[
+					value("eBoostHpRestore", eBoostHpRestore),
+					value("eBoostPowerRestore", eBoostPowerRestore),
+					value("eBoostRadiationRestore", eBoostRadiationRestore),
+					value("eBoostBleedingRestore", eBoostBleedingRestore),
+					value("eBoostMaxWeight", eBoostMaxWeight),
+					value("eBoostRadiationProtection", eBoostRadiationProtection),
+					value("eBoostTelepaticProtection", eBoostTelepaticProtection),
+					value("eBoostChemicalBurnProtection", eBoostChemicalBurnProtection),
+					value("eBoostBurnImmunity", eBoostBurnImmunity),
+					value("eBoostShockImmunity", eBoostShockImmunity),
+					value("eBoostRadiationImmunity", eBoostRadiationImmunity),
+					value("eBoostTelepaticImmunity", eBoostTelepaticImmunity),
+					value("eBoostChemicalBurnImmunity", eBoostChemicalBurnImmunity),
+					value("eBoostExplImmunity", eBoostExplImmunity),
+					value("eBoostStrikeImmunity", eBoostStrikeImmunity),
+					value("eBoostFireWoundImmunity", eBoostFireWoundImmunity),
+					value("eBoostWoundImmunity", eBoostWoundImmunity),
+					value("eBoostMaxCount", eBoostMaxCount)
+			]
 		];
 }

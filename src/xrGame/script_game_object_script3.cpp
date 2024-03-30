@@ -237,6 +237,13 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 			value("no_pda_msg",				int(ePdaMsgMax))
 		]
 
+		//Boosters
+		.def("is_booster_influence", &CScriptGameObject::IsBoosterInfluence)
+		.def("get_booster_influence_time", &CScriptGameObject::GetBoosterInfluenceTime)
+		.def("apply_booster", &CScriptGameObject::ApplyBooster)
+		.def("set_booster_time", &CScriptGameObject::SetBoosterTime)
+
+
 		//CustomZone
 		.def("enable_anomaly",              &CScriptGameObject::EnableAnomaly)
 		.def("disable_anomaly",             &CScriptGameObject::DisableAnomaly)

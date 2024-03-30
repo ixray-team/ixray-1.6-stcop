@@ -87,6 +87,7 @@ class CScriptGameObject;
 class CZoneCampfire;
 class CPhysicObject;
 class CArtefact;
+enum EBoostParams;
 
 #ifdef DEBUG
 	template <typename _object_type>
@@ -636,6 +637,15 @@ public:
 			void				enable_level_changer				(bool b);
 			bool				is_level_changer_enabled			();
 			void				set_level_changer_invitation		(LPCSTR str);
+
+			//Boosters
+			bool				IsBoosterInfluence					(const EBoostParams& param);
+
+			float				GetBoosterInfluenceTime				(const EBoostParams& param);
+
+			void				ApplyBooster						(LPCSTR sect);
+			void				SetBoosterTime						(float time, const EBoostParams& param);
+
 #ifdef DEBUG
 			void				debug_planner						(const script_planner *planner);
 #endif

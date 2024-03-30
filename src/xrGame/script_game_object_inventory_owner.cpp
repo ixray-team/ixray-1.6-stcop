@@ -1157,6 +1157,83 @@ void CScriptGameObject::activate_slot	(u32 slot_id)
 	inventory_owner->inventory().Activate((u16)slot_id);
 }
 
+bool CScriptGameObject::IsBoosterInfluence(const EBoostParams& param)
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member IsBoosterInfluence!");
+		return false;
+	}
+
+	for (auto& booster : pActor->conditions().GetCurBoosterInfluences())
+	{
+		if (booster.second.m_type == param)
+			return booster.second.fBoostTime > 0.0f;
+	}
+
+	return false;
+}
+
+float CScriptGameObject::GetBoosterInfluenceTime(const EBoostParams& param)
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetBoosterInfluenceTime!");
+		return 0.0f;
+	}
+
+	for (auto& booster : pActor->conditions().GetCurBoosterInfluences())
+	{
+		if (booster.second.m_type == param)
+			return booster.second.fBoostTime;
+	}
+
+	return 0.0f;
+}
+
+void CScriptGameObject::ApplyBooster(LPCSTR sect)
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member ApplyBooster!");
+		return;
+	}
+
+	for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
+	{
+		if (pSettings->line_exist(sect, ef_boosters_section_names[i]))
+		{
+			SBooster B;
+			B.Load(sect, (EBoostParams)i);
+			pActor->conditions().ApplyBooster(B, sect);
+		}
+	}
+}
+
+void CScriptGameObject::SetBoosterTime(float time, const EBoostParams& param)
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member SetBoosterTime!");
+		return;
+	}
+
+	auto cur_boost = pActor->conditions().GetCurBoosterInfluences().find(param);
+	if (cur_boost != pActor->conditions().GetCurBoosterInfluences().end())
+	{
+		if (cur_boost->second.fBoostTime > 0.0f)
+			cur_boost->second.fBoostTime = time;
+	}
+}
+
 void CScriptGameObject::enable_movement	(bool enable)
 {
 	CCustomMonster						*monster = smart_cast<CCustomMonster*>(&object());
