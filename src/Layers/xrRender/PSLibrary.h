@@ -21,7 +21,7 @@ namespace PS {
 class ECORE_API CPSLibrary : public particles_systems::library_interface {
 	PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
-
+    xr_vector<shared_str> m_all_ps;
 #ifdef _EDITOR    
     AnsiString			m_CurrentParticles;
 public:
@@ -65,6 +65,7 @@ public:
 	virtual	PS::CPGDef const* const*	particles_group_end		() const;
 	virtual	void						particles_group_next	(PS::CPGDef const* const*& iterator) const;
 	virtual	shared_str const&			particles_group_id		(PS::CPGDef const& particles_group) const;
+    virtual xr_vector<shared_str> const& vec_all_particles() const {return m_all_ps;};
 };
 
 #define PS_LIB_SIGN 			"PS_LIB"

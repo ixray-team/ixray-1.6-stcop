@@ -1876,6 +1876,52 @@ public:
 	}
 };
 
+#include "../include/xrrender/particles_systems_library_interface.hpp"
+#include "../Layers/xrRender/PSLibrary.h"
+#include "GamePersistent.h"
+class CCC_Particle_TEST : public IConsole_Command
+{
+public:
+    CCC_Particle_TEST(LPCSTR N)
+        : IConsole_Command(N) {bEmptyArgsHandled = TRUE;};
+    virtual void Execute(LPCSTR args)
+    {
+        if (!g_pGameLevel)
+            return;
+        if (!Level().CurrentControlEntity())
+            return;
+
+		collide::rq_result	l_rq;
+		if (Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.f, collide::rqtBoth, l_rq, Level().CurrentControlEntity()))
+		{
+			int count = 1;
+			string256 string;
+			string[0] = 0;
+			sscanf(args, "%s %d", &string, &count);
+			for (int i = 0; i < count; ++i)
+			{
+				CParticlesObject *pParticle = CParticlesObject::Create(string, FALSE);
+
+				// вычислить позицию и направленность партикла
+				Fmatrix pos; 
+				pos.identity();
+				pos.k.set(Level().CurrentControlEntity()->XFORM().k);
+				Fvector::generate_orthonormal_basis_normalized(pos.k,pos.j,pos.i);
+				// установить позицию
+				pos.c.set(Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(l_rq.range)));
+				pParticle->UpdateParent(pos, zero_vel);
+				GamePersistent().ps_needtoplay.push_back(pParticle);
+			}
+		}
+    }
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+		particles_systems::library_interface const&	library = GamePersistent().Environment().m_pRender->particles_systems_library();
+		for (auto pi = library.vec_all_particles().begin(); pi != library.vec_all_particles().end(); ++pi)
+			tips.push_back(pi->c_str());
+    }
+};
+
 void CCC_RegisterCommands()
 {
 	// options
@@ -1888,6 +1934,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GiveMoney, "g_money");
 	CMD1(CCC_GSpawn, "g_spawn");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
+	CMD1(CCC_Particle_TEST,     "g_ps_test");
 #endif
 
 	CMD1(CCC_MemStats,			"stat_memory"			);

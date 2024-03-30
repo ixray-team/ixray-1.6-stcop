@@ -48,6 +48,7 @@ void CPSLibrary::OnDestroy()
 	for (PS::PGDIt g_it = m_PGDs.begin(); g_it!=m_PGDs.end(); g_it++)
 		xr_delete	(*g_it);
 	m_PGDs.clear	();
+    m_all_ps.clear();
 }
 //----------------------------------------------------
 PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
@@ -210,7 +211,11 @@ bool CPSLibrary::Load(const char* nm)
         IReader* O   		= OBJ->open_chunk(0);
         for (int count=1; O; count++) {
             PS::CPEDef*	def	= xr_new<PS::CPEDef>();
-            if (def->Load(*O)) m_PEDs.push_back(def);
+            if (def->Load(*O))
+            {
+                m_all_ps.push_back(def->m_Name);
+                m_PEDs.push_back(def);
+            }
             else{ bRes = false; xr_delete(def); }
             O->close();
             if (!bRes)	break;
@@ -224,7 +229,11 @@ bool CPSLibrary::Load(const char* nm)
         IReader* O   		= OBJ->open_chunk(0);
         for (int count=1; O; count++) {
             PS::CPGDef*	def	= xr_new<PS::CPGDef>();
-            if (def->Load(*O)) m_PGDs.push_back(def);
+            if (def->Load(*O))
+            {
+                m_all_ps.push_back(def->m_Name);
+                m_PGDs.push_back(def);
+            }
             else{ bRes = false; xr_delete(def); }
             O->close();
             if (!bRes) break;
