@@ -6,9 +6,6 @@
 #include <imgui.h>
 #include <luabind/luabind.hpp>
 
-float editor_longitude = 0.0;
-float editor_altitude = 0.0;
-
 Fvector convert(const Fvector& v)
 {
 	Fvector result;
@@ -385,19 +382,18 @@ void RenderUIWeather()
 	if (ImGui::ColorEdit3("sun_color", (float*)&cur->sun_color))
 		changed = true;
 
+	static float editor_altitude = 0.f;
+	static float editor_longitude = 0.f;
+
 	if (ImGui::SliderFloat("sun_altitude", &editor_altitude, -360.0f, 360.0f))
 	{
 		changed = true;
-		if (changed)
-			cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
-		else
-			editor_altitude = cur->sun_dir.getH();
+		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
 	}
 	if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f))
 	{
 		changed = true;
-		if (changed)
-			cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
+		cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
 	}
 	if (ImGui::SliderFloat("sun_shafts_intensity", &cur->m_fSunShaftsIntensity, 0.0f, 2.0f))
 		changed = true;
