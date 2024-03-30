@@ -157,6 +157,8 @@ void ResizeBuffersD3D9(u16 Width, u16 Height);
 void DestroyD3D9();
 void DestroyD3D11();
 
+static xr_vector<IReader*> ImGuiFontsPtr;
+
 static void LoadImGuiFont(ImFont*& FontHandle, const char* Font)
 {
 	string_path FullPath;
@@ -166,8 +168,12 @@ static void LoadImGuiFont(ImFont*& FontHandle, const char* Font)
 
 	if (FS.exist(FullPath))
 	{
-		FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(ANSI_TO_UTF8(FullPath).c_str(), 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		IReader* FontReader = FS.r_open(FullPath);
+
+		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		R_ASSERT(FontHandle);
+
+		ImGuiFontsPtr.push_back(FontReader);
 	}
 }
 
@@ -377,6 +383,11 @@ void CRenderDevice::DestroyRenderDevice()
 
 	default:
 		break;
+	}
+
+	for (IReader* FontPtr : ImGuiFontsPtr)
+	{
+		FS.r_close(FontPtr);
 	}
 
 	free_vid_mode_list();

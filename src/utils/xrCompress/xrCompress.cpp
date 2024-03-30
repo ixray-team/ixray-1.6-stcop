@@ -93,6 +93,9 @@ bool xrCompressor::testVFS(LPCSTR path)
 	if (!_stricmp(p_ext,".ltx"))
 		return			(FALSE);
 
+	if (!_stricmp(p_ext,".ttf"))
+		return			(FALSE);
+
 	if (!_stricmp(p_ext,".script"))
 		return			(FALSE);
 
