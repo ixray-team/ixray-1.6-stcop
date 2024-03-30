@@ -144,7 +144,7 @@ using RStringSet = xr_set<shared_str>;
 using RStringSetIt = RStringSet::iterator;
 
 using RTokenVec = xr_vector<xr_rtoken>;
-using RTokenVecIt = RStringVec::iterator;
+using RTokenVecIt = RTokenVec::iterator;
 
 #include "TimeUtils.h"
 #include "FS.h"
