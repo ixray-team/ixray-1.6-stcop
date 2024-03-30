@@ -216,10 +216,6 @@ void					CRender::create					()
 	// nv-dbt
 	o.nvdbt = false;
 
-	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
-	if (o.no_ram_textures)
-		Msg("* Managed textures disabled");
-
 	// gloss
 	char*	g			= strstr(Core.Params,"-gloss ");
 	o.forcegloss		= g?	TRUE	:FALSE	;
