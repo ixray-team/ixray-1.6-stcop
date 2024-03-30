@@ -614,6 +614,11 @@ bool ignore_path(const char* _path)
     return true;
 }
 
+namespace Platform
+{
+	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const xr_special_char* C);
+}
+
 bool CLocatorAPI::Recurse(const char* path)
 {
 	string_path N = {};
@@ -637,7 +642,9 @@ bool CLocatorAPI::Recurse(const char* path)
 
 	for (const std::filesystem::directory_entry& CurrentFile : std::filesystem::recursive_directory_iterator{ N })
     {
-		xr_string ValidFileName = CurrentFile.path().generic_string().c_str();
+		std::filesystem::path currentPath = CurrentFile.path();
+
+		xr_string ValidFileName = Platform::TCHAR_TO_ANSI_U8(currentPath.generic_wstring().c_str());
 
 		if (bWrapPath)
 			ValidFileName = ValidFileName.substr(2);
@@ -647,7 +654,7 @@ bool CLocatorAPI::Recurse(const char* path)
 		sFile.attrib = CurrentFile.is_directory() ? _A_SUBDIR : 0;
 
 #ifdef IXR_WINDOWS
-		sFile.attrib = GetFileAttributesA(sFile.name) & FILE_ATTRIBUTE_HIDDEN ? _A_HIDDEN: 0;
+		sFile.attrib = GetFileAttributes(currentPath.generic_wstring().c_str()) & FILE_ATTRIBUTE_HIDDEN ? _A_HIDDEN: 0;
 #endif
 
 		sFile.time_write = xr_chrono_to_time_t(CurrentFile.last_write_time());

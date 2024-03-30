@@ -101,9 +101,9 @@ static errno_t open_internal(LPCSTR fn, int &handle)
 {
 	const char* FileName = Platform::ValidPath(fn);
 	return (
-		_sopen_s(
+		_wsopen_s(
 			&handle,
-			FileName,
+			Platform::ANSI_TO_TCHAR_U8(FileName),
 			_O_RDONLY | _O_BINARY,
 			_SH_DENYNO, 
             _S_IREAD
