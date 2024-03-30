@@ -144,7 +144,15 @@ bool CRestrictedObject::accessible			(const Fvector &position, float radius) con
 bool CRestrictedObject::accessible			(u32 level_vertex_id) const
 {
 	START_PROFILE("Restricted Object/Accessible");
-	VERIFY						(ai().level_graph().valid_vertex_id(level_vertex_id));
+
+	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
+	{
+#ifndef MASTER_GOLD
+		Msg("~[WARNING] Invalid level vertex: ID[%u]", level_vertex_id);
+#endif
+		return false;
+	}
+
 	return						(accessible(level_vertex_id,EPS_L));
 	STOP_PROFILE;
 }
@@ -152,7 +160,15 @@ bool CRestrictedObject::accessible			(u32 level_vertex_id) const
 bool CRestrictedObject::accessible			(u32 level_vertex_id, float radius) const
 {
 	START_PROFILE("Restricted Object/Accessible");
-	VERIFY						(ai().level_graph().valid_vertex_id(level_vertex_id));
+
+	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
+	{
+#ifndef MASTER_GOLD
+		Msg("~[WARNING] Invalid level vertex: ID[%u]", level_vertex_id);
+#endif
+		return false;
+	}
+
 	return						(Level().space_restriction_manager().accessible(object().ID(),level_vertex_id,radius));
 	STOP_PROFILE;
 }
