@@ -69,6 +69,37 @@ bool det_render_debug = false;
 
 #include "../../xrEngine/gamemtllib.h"
 
+static void correction_orientation(const Fvector &pos, const Fvector &dir, const Fvector &ground_normal, float& target_angle)
+{
+	Fplane Plane_;
+	Plane_.build(pos, ground_normal);
+
+	Fvector				position_on_plane;
+	Plane_.project		(position_on_plane, pos);
+
+	// находим проекцию точки, лежащей на векторе текущего направления
+	Fvector				dir_point, proj_point;
+	dir_point.mad		(position_on_plane, dir, 1.f);
+	Plane_.project		(proj_point,dir_point);
+
+	// получаем искомый вектор направления
+	Fvector				target_dir;
+	target_dir.sub		(proj_point,position_on_plane);
+
+	// изменяем текущий угол Эйлера
+	target_angle = target_dir.getP();
+}
+
+static void ground_correction(Fmatrix& xform_, const Fvector &ground_normal)
+{
+	Fvector saved_pos = xform_.c;
+	float h_, p_, b_;
+	xform_.getHPB(h_, p_, b_);
+	correction_orientation(xform_.c, xform_.k, ground_normal, p_);
+	correction_orientation(xform_.c, xform_.i, ground_normal, b_);
+	xform_.setHPB(h_, p_, -b_);
+	xform_.c = saved_pos;
+}
 //#define		DBG_SWITCHOFF_RANDOMIZE
 void		CDetailManager::cache_Decompress(Slot* S)
 {
@@ -181,7 +212,7 @@ void		CDetailManager::cache_Decompress(Slot* S)
 			// Position (Y)
 			float y		= D.vis.box.min.y-5;
 			Fvector	dir; dir.set(0,-1,0);
-
+			Fvector normal;normal.set(0,1,0);
 			float		r_u,r_v,r_range;
 			for (u32 tid=0; tid<triCount; tid++)
 			{
@@ -214,6 +245,7 @@ RDEVICE.Statistic->TEST0.End		();
 						float y_test	= Item_P.y - r_range;
 						if (y_test>y)	y = y_test;
 					}
+					normal.mknormal(verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]]);
 				}
 #endif
 			}
@@ -291,6 +323,8 @@ RDEVICE.Statistic->TEST0.End		();
 #else
 			Item.vis_ID = 0;
 #endif
+			if (Item.vis_ID == 0)//чтобы листики травы ложились на поверхность террейна
+				ground_correction(Item.mRotY, normal);
 			// Save it
 			D.G[index].items.push_back(ItemP);
 		}
