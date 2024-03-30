@@ -652,6 +652,7 @@ bool CLocatorAPI::Recurse(const char* path)
         xr_strcpy(sFile.name, Platform::RestorePath(ValidFileName.c_str()));
 
 		sFile.attrib = CurrentFile.is_directory() ? _A_SUBDIR : 0;
+		sFile.size = CurrentFile.file_size();
 
 #ifdef IXR_WINDOWS
 		sFile.attrib = GetFileAttributes(currentPath.generic_wstring().c_str()) & FILE_ATTRIBUTE_HIDDEN ? _A_HIDDEN: 0;
