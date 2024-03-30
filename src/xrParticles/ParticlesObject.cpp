@@ -84,22 +84,45 @@ CParticlesObject::~CParticlesObject()
 
 void CParticlesObject::UpdateAllAsync()
 {
-	for (CParticlesObject* particle : AllParticleObjects)
+	if(psDeviceFlags.test(mtParticles))
 	{
-		if (particle->m_bDead)
+		for (CParticlesObject* particle : AllParticleObjects)
 		{
-			continue;
+			if (particle->m_bDead)
+			{
+				continue;
+			}
+
+			ParticleObjectTasks.run([particle]()
+			{
+				u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
+				IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual); 
+				VERIFY(V);
+				V->OnFrame(dt);
+
+				particle->dwLastTime = Device.dwTimeGlobal;
+			});
 		}
-
-		ParticleObjectTasks.run([particle]()
+	}
+	else
+	{
+		for (CParticlesObject* particle : AllParticleObjects)
 		{
-			u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
-			IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual); 
-			VERIFY(V);
-			V->OnFrame(dt);
+			if (particle->m_bDead)
+			{
+				continue;
+			}
 
-			particle->dwLastTime = Device.dwTimeGlobal;
-		});
+
+			{
+				u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
+				IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual); 
+				VERIFY(V);
+				V->OnFrame(dt);
+
+				particle->dwLastTime = Device.dwTimeGlobal;
+			}
+		}
 	}
 }
 
@@ -201,7 +224,8 @@ void CParticlesObject::PerformAllTheWork()
 
 void CParticlesObject::WaitForParticles()
 {
-	ParticleObjectTasks.wait();
+	if(psDeviceFlags.test(mtParticles))
+		ParticleObjectTasks.wait();
 }
 
 void CParticlesObject::SetXFORM			(const Fmatrix& m)

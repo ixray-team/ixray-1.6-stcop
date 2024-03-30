@@ -651,14 +651,13 @@ void CCC_Register()
 	CMD1(CCC_Disconnect,"disconnect"			);
 	CMD1(CCC_SaveCFG,	"cfg_save"				);
 	CMD1(CCC_LoadCFG,	"cfg_load"				);
-
+	CMD3(CCC_Mask,		"mt_particles",			&psDeviceFlags,			mtParticles);
 #ifdef DEBUG
 	CMD1(CCC_MotionsStat,	"stat_motions"		);
 	CMD1(CCC_TexturesStat,	"stat_textures"		);
 #endif // DEBUG
 
 #ifdef DEBUG
-	CMD3(CCC_Mask,		"mt_particles",			&psDeviceFlags,			mtParticles);
 
 	CMD1(CCC_DbgStrCheck,	"dbg_str_check"		);
 	CMD1(CCC_DbgStrDump,	"dbg_str_dump"		);
