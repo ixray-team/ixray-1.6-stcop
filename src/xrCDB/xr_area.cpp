@@ -1,47 +1,31 @@
 #include "stdafx.h"
-//#include "igame_level.h"
 
 #include "xr_area.h"
-#include "../xrengine/xr_object.h"
-#include "../xrengine/xrLevel.h"
-#include "../xrengine/xr_collide_form.h"
-//#include "../xrsound/sound.h"
-//#include "x_ray.h"
-//#include "GameFont.h"
-
+#include "../xrEngine/xr_object.h"
+#include "../xrEngine/xrLevel.h"
+#include "../xrEngine/xr_collide_form.h"
 
 using namespace	collide;
-
-
 
 //----------------------------------------------------------------------
 // Class	: CObjectSpace
 // Purpose	: stores space slots
 //----------------------------------------------------------------------
-CObjectSpace::CObjectSpace	( ):
-	xrc()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	,Lock(MUTEX_PROFILE_ID(CObjectSpace::Lock))
-#endif // PROFILE_CRITICAL_SECTIONS
+CObjectSpace::CObjectSpace()
 #ifdef DEBUG
-	,m_pRender(0)
+	: m_pRender(0)
 #endif
 {
 #ifdef DEBUG
-	if( RenderFactory )	
-		m_pRender = CNEW(FactoryPtr<IObjectSpaceRender>)() ;
-
-	//sh_debug.create				("debug\\wireframe","$null");
+	if (RenderFactory)
+		m_pRender = CNEW(FactoryPtr<IObjectSpaceRender>)();
 #endif
-	m_BoundingVolume.invalidate	();
+	m_BoundingVolume.invalidate();
 }
+
 //----------------------------------------------------------------------
 CObjectSpace::~CObjectSpace	( )
 {
-	//moved to ~IGameLevel
-//	Sound->set_geometry_occ		(NULL);
-//	Sound->set_handler			(NULL);
-	//
 #ifdef DEBUG
 	//sh_debug.destroy			();
 	CDELETE(m_pRender);
@@ -72,20 +56,6 @@ int CObjectSpace::GetNearest		( xr_vector<ISpatial*>& q_spatial, xr_vector<CObje
 
 	return (int)q_nearest.size();
 }
-
-//----------------------------------------------------------------------
-IC int	CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
-{
-	return GetNearest
-		   (
-				r_spatial,
-				q_nearest,
-				point,
-				range,
-				ignore_object
-		   );
-}
-
 //----------------------------------------------------------------------
 IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range)
 {
