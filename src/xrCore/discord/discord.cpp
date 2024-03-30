@@ -15,7 +15,7 @@ void DiscordShared::Init() noexcept
 #ifndef IXR_WINDOWS
 	return;
 #endif
-	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_Default, &Core);
+	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_NoRequireDiscord, &Core);
 
 	if (Core == nullptr)
 		return;
