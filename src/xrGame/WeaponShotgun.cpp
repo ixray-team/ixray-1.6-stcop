@@ -46,27 +46,6 @@ void CWeaponShotgun::switch2_Fire()
 	bWorking = false;
 }
 
-bool CWeaponShotgun::SwitchAmmoType(u32 flags)
-{
-	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
-		return false;
-
-	return inherited::SwitchAmmoType(flags);
-}
-
-bool CWeaponShotgun::Action(u16 cmd, u32 flags) 
-{
-	if(inherited::Action(cmd, flags))
-		return true;
-
-	if (m_bTriStateReload && GetState() == eReload && m_sub_state == eSubstateReloadInProcess && cmd == kWPN_FIRE && flags & CMD_START) //остановить перезарядку
-	{
-		bStopReloadSignal = true;
-		return true;
-	}
-	return false;
-}
-
 void CWeaponShotgun::OnAnimationEnd(u32 state) 
 {
 	if (!m_bTriStateReload || state != eReload)
@@ -93,12 +72,12 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 				m_sub_state = eSubstateReloadEnd;
 			SwitchState(eReload);
 		}break;
-
 		case eSubstateReloadEnd:
 		{
 			bStopReloadSignal = false;
 			bReloadKeyPressed = false;
 			bAmmotypeKeyPressed = false;
+			bStopReloadSignal = false;
 			SwitchState(eIdle);
 		}break;
 		
@@ -193,71 +172,6 @@ void CWeaponShotgun::PlayAnimCloseWeapon()
 	VERIFY(GetState()==eReload);
 
 	PlayHUDMotion("anm_close",FALSE,this,GetState());
-}
-
-bool CWeaponShotgun::HaveCartridgeInInventory(u8 cnt)
-{
-	if (unlimited_ammo())	return true;
-	if(!m_pInventory)		return false;
-
-	u32 ac = GetAmmoCount(m_ammoType);
-	if(ac<cnt)
-	{
-		for(u8 i = 0; i < u8(m_ammoTypes.size()); ++i) 
-		{
-			if(m_ammoType==i) continue;
-			ac	+= GetAmmoCount(i);
-			if(ac >= cnt)
-			{
-				m_ammoType = i;
-				break; 
-			}
-		}
-	}
-	return ac>=cnt;
-}
-
-u8 CWeaponShotgun::AddCartridge		(u8 cnt)
-{
-	if(IsMisfire())	bMisfire = false;
-
-	if ( m_set_next_ammoType_on_reload != undefined_ammo_type )
-	{
-		m_ammoType						= m_set_next_ammoType_on_reload;
-		m_set_next_ammoType_on_reload	= undefined_ammo_type;
-	}
-
-	if( !HaveCartridgeInInventory(1) )
-		return 0;
-
-	m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() ));
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
-
-
-	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
-		m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
-
-	CCartridge l_cartridge = m_DefaultCartridge;
-	while(cnt)
-	{
-		if (!unlimited_ammo())
-		{
-			if (!m_pCurrentAmmo->Get(l_cartridge)) break;
-		}
-		--cnt;
-		++iAmmoElapsed;
-		l_cartridge.m_LocalAmmoType = m_ammoType;
-		m_magazine.push_back(l_cartridge);
-//		m_fCurrentCartirdgeDisp = l_cartridge.m_kDisp;
-	}
-
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
-
-	//выкинуть коробку патронов, если она пустая
-	if(m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer()) 
-		m_pCurrentAmmo->SetDropManual(TRUE);
-
-	return cnt;
 }
 
 void	CWeaponShotgun::net_Export	(NET_Packet& P)

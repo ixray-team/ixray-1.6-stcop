@@ -185,6 +185,7 @@ public:
 
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
+	bool bStopReloadSignal;
 
 protected:
 	//состояние подключенных аддонов
@@ -434,7 +435,7 @@ public:
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
 													LPCSTR ammoSect = NULL, 
 													u32 ParentID = 0xffffffff);
-	virtual bool			SwitchAmmoType		(u32 flags);
+	bool					SwitchAmmoType		(u32 flags);
 
 	virtual	float			Get_PDM_Base		()	const	{ return m_pdm.m_fPDM_disp_base			; };
 	virtual	float			Get_PDM_Vel_F		()	const	{ return m_pdm.m_fPDM_disp_vel_factor		; };

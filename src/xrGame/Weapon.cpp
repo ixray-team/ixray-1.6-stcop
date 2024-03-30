@@ -801,6 +801,9 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_strapped_mode				= false;
 	m_strapped_mode_rifle = false;
 	m_zoom_params.m_bIsZoomModeNow	= false;
+	bReloadKeyPressed = false;
+	bAmmotypeKeyPressed = false;
+	bStopReloadSignal = false;
 	UpdateXForm					();
 
 }
@@ -1047,20 +1050,23 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	
 	switch(cmd) 
 	{
-		case kWPN_FIRE: 
+		case kWPN_FIRE:
 			{
-				//если оружие чем-то занято, то ничего не делать
-				{				
-					if(IsPending())		
-						return				false;
+				if (IsTriStateReload() && GetState() == eReload && m_sub_state == eSubstateReloadInProcess && flags & CMD_START)
+				{
+					bStopReloadSignal = true;
+					return true;
+				}
+				if(IsPending())		
+					return false;
 
-					if(flags&CMD_START) 
-						FireStart			();
-					else 
-						FireEnd				();
-				};
+				if (flags&CMD_START) 
+					FireStart();
+				else 
+					FireEnd();
+
+				return true;
 			} 
-			return true;
 		case kWPN_NEXT: 
 			{
 				return SwitchAmmoType(flags);
@@ -1121,6 +1127,9 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 		return false;
 
 	if ( !(flags & CMD_START) )
+		return false;
+
+	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
 		return false;
 
 	if (bReloadKeyPressed || bAmmotypeKeyPressed)
