@@ -17,7 +17,8 @@ enum class EEngineExternalGame
 	EnableSleepiness,
 	EnableAiDieInAnomaly,
 	EnableNPCLookAtActor,
-	EnableBlockSprintInReload
+	EnableBlockSprintInReload,
+	EnableAutoreload
 };
 
 enum class EEngineExternalRender {

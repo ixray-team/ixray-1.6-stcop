@@ -198,7 +198,7 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	if (psActorFlags.test(AF_AUTORELOAD))
+	if (EngineExternal()[EEngineExternalGame::EnableAutoreload])
 	{
 		CActor	*actor = smart_cast<CActor*>(H_Parent());
 		if(m_pInventory && !iAmmoElapsed && actor && GetState()!=eReload)
@@ -821,7 +821,7 @@ void CWeaponMagazined::switch2_Empty()
 {
 	OnZoomOut();
 	
-	if (psActorFlags.test(AF_AUTORELOAD))
+	if (EngineExternal()[EEngineExternalGame::EnableAutoreload])
 	{
 		if (!IsTriStateReload())
 		{
