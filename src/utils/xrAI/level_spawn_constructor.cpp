@@ -512,7 +512,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 		else		*/
 			std::shuffle			(l_tpaStack.begin(),l_tpaStack.end(), rng);
 
-		zone->m_artefact_position_offset= m_level_points.size();
+		zone->m_artefact_position_offset= (u32)m_level_points.size();
 		m_level_points.resize			(zone->m_artefact_position_offset + zone->m_artefact_spawn_count);
 
 //		Msg								("%s  %f [%f][%f][%f] : artefact spawn positions",zone->name_replace(),zone->m_fRadius,VPUSH(zone->o_Position));

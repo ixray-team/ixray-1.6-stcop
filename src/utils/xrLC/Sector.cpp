@@ -62,7 +62,7 @@ void CSector::BuildHierrarhy	()
 
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
-		int iSize			= g_tree.size();
+		int iSize			= (int)g_tree.size();
 
 		for (int I=0; I<iSize; I++)
 		{
@@ -145,5 +145,5 @@ void CSector::Save(IWriter &fs)
 	fs.w_chunk(fsP_Root,&ID,sizeof(u32));
 
 	// Portals
-	fs.w_chunk(fsP_Portals,&*Portals.begin(),Portals.size()*sizeof(u16));
+	fs.w_chunk(fsP_Portals,&*Portals.begin(), (u32)Portals.size()*sizeof(u16));
 }

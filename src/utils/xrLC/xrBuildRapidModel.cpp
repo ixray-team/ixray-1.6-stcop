@@ -51,7 +51,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	xr_vector<Face*>			adjacent_vec;
 	adjacent_vec.reserve		(6*2*3);
 
-	CDB::CollectorPacked	CL	(scene_bb,lc_global_data()->g_vertices().size(),lc_global_data()->g_faces().size());
+	CDB::CollectorPacked	CL(scene_bb, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
 
 	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); it++)
 	{

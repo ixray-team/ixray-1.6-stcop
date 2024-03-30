@@ -133,7 +133,7 @@ void CBuild::BuildCForm	()
 	p_cost  = 1.f/(cfFaces->size());
 
 	// Collect faces
-	CDB::CollectorPacked CL	(BB,cfVertices->size(),cfFaces->size());
+	CDB::CollectorPacked CL	(BB,(int)cfVertices->size(),(int)cfFaces->size());
 	for (vecFaceIt F = cfFaces->begin(); F!=cfFaces->end(); F++)
 	{
 		Face*	T = *F;
@@ -198,5 +198,5 @@ void CBuild::BuildCForm	()
 
 void CBuild::BuildPortals(IWriter& fs)
 {
-	fs.w_chunk		(fsL_PORTALS,&*portals.begin(),portals.size()*sizeof(b_portal));
+	fs.w_chunk(fsL_PORTALS, &*portals.begin(), (u32)portals.size() * sizeof(b_portal));
 }

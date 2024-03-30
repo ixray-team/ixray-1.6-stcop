@@ -152,7 +152,7 @@ public:
 	void	Register	(u32* id, FSlideWindowItem* item)
 	{
 		data.push_back	(item);
-		*id				= data.size()-1;
+		*id				= (u32)data.size()-1;
 	}
 	void	Save		(IWriter &fs)
 	{
