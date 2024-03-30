@@ -51,12 +51,20 @@ void CScriptStackTracker::script_hook	(lua_State *L, lua_Debug *dbg)
 				--m_current_stack_level;
 			break;
 		}
-		case LUA_HOOKLINE : {
+		case LUA_HOOKLINE : 
+		{
+			if (m_current_stack_level >= max_stack_size)
+				return;
+
 			lua_getinfo	(L,"l",dbg);
 			m_stack[m_current_stack_level]->currentline = dbg->currentline;
 			break;
 		}
-		case LUA_HOOKCOUNT : {
+		case LUA_HOOKCOUNT : 
+		{
+			if (m_current_stack_level >= max_stack_size)
+				return;
+
 			lua_getinfo	(L,"l",dbg);
 			m_stack[m_current_stack_level]->currentline = dbg->currentline;
 			break;
