@@ -27,6 +27,7 @@
 #include "../../../Include/xrRender/Kinematics.h"
 #include "../../../xrServerEntities/character_info.h"
 #include "../../actor.h"
+#include "../xrEngine/CameraBase.h"
 #include "../../relation_registry.h"
 #include "../../stalker_animation_manager.h"
 #include "../../stalker_planner.h"
@@ -91,6 +92,10 @@ CAI_Stalker::CAI_Stalker			() :
 	m_dbg_hud_draw					= false;
 #endif // DEBUG
 	m_registered_in_combat_on_migration	= false;
+
+	savedOrientation = { 0.f, 0.f, 0.f };
+	dTimeFSeen = Device.dwTimeGlobal + 1000;
+	dTimeNfSeen = Device.dwTimeGlobal + 1000;
 }
 
 CAI_Stalker::~CAI_Stalker			()
@@ -502,6 +507,84 @@ void CAI_Stalker::Load				(LPCSTR section)
 	m_can_select_items				= !!pSettings->r_bool(section,"can_select_items");
 }
 
+void CAI_Stalker::BoneCallback(CBoneInstance* B) {
+	CAI_Stalker* this_class = static_cast<CAI_Stalker*>(B->callback_param());
+
+	this_class->LookAtActor(B);
+	R_ASSERT2(_valid(B->mTransform), "CAI_Stalker::BoneCallback");
+}
+
+void CAI_Stalker::LookAtActor(CBoneInstance* headBone) {
+	if (!g_Alive())
+		return;
+
+	if (!Actor())
+		return;
+
+	if (wounded())
+		return;
+
+	auto adjustHeadOrientation = [&](float targetPitch, float targetYaw, float targetRoll) {
+		savedOrientation.x = angle_inertion(savedOrientation.x, targetPitch, angle_difference(savedOrientation.x, targetPitch), PI_MUL_2, Device.fTimeDelta);
+		savedOrientation.y = angle_inertion(savedOrientation.y, targetYaw, angle_difference(savedOrientation.y, targetYaw), PI_MUL_2, Device.fTimeDelta);
+		savedOrientation.z = angle_inertion(savedOrientation.z, targetRoll, angle_difference(savedOrientation.z, targetRoll), PI_MUL_2, Device.fTimeDelta);
+		};
+
+	if (Actor()->Position().distance_to(Position()) > 4.f) {
+		adjustHeadOrientation(0.f, 0.f, 0.f);
+		Fmatrix M;
+		M.setHPB(VPUSH(savedOrientation));
+		headBone->mTransform.mulB_43(M);
+		return;
+	}
+
+	if (memory().visual().visible_right_now(Actor())) {
+		Fmatrix actorHead;
+		smart_cast<IKinematics*>(Actor()->Visual())->Bone_GetAnimPos(actorHead, u16(Actor()->m_head), u8(-1), false);
+		actorHead.mulA_43(Actor()->XFORM());
+
+		Fmatrix myHead = headBone->mTransform;
+		myHead.mulA_43(XFORM());
+		myHead.c.mad(myHead.i, .15f);
+
+		Fvector dir, cam_pos = Actor()->HUDview() ? Actor()->cam_FirstEye()->Position() : actorHead.c;
+		dir.sub(cam_pos, myHead.c).normalize();
+
+		Fmatrix target_matrix;
+		target_matrix.identity();
+		target_matrix.k.set(dir);
+		Fvector::generate_orthonormal_basis_normalized(target_matrix.k, target_matrix.i, target_matrix.j);
+		target_matrix.j.invert();
+		target_matrix.mulA_43(Fmatrix(headBone->mTransform).mulA_43(XFORM()).invert());
+
+		float yaw, pitch, roll;
+		target_matrix.getHPB(pitch, yaw, roll);
+
+		clamp(pitch, -0.75f, 0.7f);
+		clamp(yaw, -1.0f, 1.0f);
+		clamp(roll, -0.4f, 0.4f);
+
+		bool inRange = (pitch > -0.7f && pitch < 0.65f) && (yaw > -0.9f && yaw < 0.9f) && (roll > -0.35f && roll < 0.35f);
+		if (inRange && dTimeNfSeen < Device.dwTimeGlobal) {
+			dTimeFSeen = Device.dwTimeGlobal + 1000;
+			adjustHeadOrientation(pitch, yaw, roll);
+		}
+
+		bool outOfRange = !(pitch > -0.75f && pitch < 0.7f) && !(yaw > -1.2f && yaw < 1.2f) && !(roll > -0.5f && roll < 0.5f);
+		if (outOfRange && dTimeFSeen < Device.dwTimeGlobal) {
+			dTimeNfSeen = Device.dwTimeGlobal + 1000;
+			adjustHeadOrientation(0.f, 0.f, 0.f);
+		}
+	}
+	else {
+		adjustHeadOrientation(0.f, 0.f, 0.f); // Reset if actor not visible
+	}
+
+	Fmatrix M;
+	M.setHPB(VPUSH(savedOrientation));
+	headBone->mTransform.mulB_43(M);
+}
+
 BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 {
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
@@ -609,7 +692,13 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 
 	sight().update					();
 	Exec_Look						(.001f);
-	
+
+	if (EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor]) {
+		CBoneInstance* bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(
+			smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
+		bone_head->set_callback(bctCustom, BoneCallback, this);
+	}
+
 	m_pPhysics_support->in_NetSpawn	(e);
 
 	return							(TRUE);
