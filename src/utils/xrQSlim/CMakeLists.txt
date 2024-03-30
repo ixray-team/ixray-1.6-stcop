@@ -19,6 +19,7 @@ list(APPEND QSL_SRC_FILES ${QSL_SOURCE_ALL_FILES})
 # QSlim project
 add_library(QSlim STATIC ${QSL_SRC_FILES})
 target_include_directories(QSlim PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(QSlim PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
 target_compile_definitions(QSlim PRIVATE "$<$<CONFIG:Debug>:DEBUG>")

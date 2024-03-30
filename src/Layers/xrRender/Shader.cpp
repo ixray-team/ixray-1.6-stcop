@@ -166,7 +166,7 @@ Shader::Shader()
 
 void Shader::_copy(Shader& Other)
 {
-	for (size_t i = 0; i < SHADER_ELEMENTS_MAX; i++)
+	for (u32 i = 0; i < SHADER_ELEMENTS_MAX; i++)
 	{
 		E[i] = Other.E[i];
 	}
@@ -178,7 +178,7 @@ SConstantList::SConstantList()
 void SConstantList::_copy(const SConstantList& Other)
 {
 	clear();
-	for (size_t i = 0; i < Other.size(); i++)
+	for (u32 i = 0; i < Other.size(); i++)
 	{
 		push_back(Other[i]);
 	}
@@ -187,7 +187,7 @@ void SConstantList::_copy(const SConstantList& Other)
 void SMatrixList::_copy(const SMatrixList& Other)
 {
 	clear();
-	for (size_t i = 0; i < Other.size(); i++)
+	for (u32 i = 0; i < Other.size(); i++)
 	{
 		push_back(Other[i]);
 	}
@@ -201,7 +201,7 @@ void ShaderElement::_copy(const ShaderElement& Other)
 	flags = Other.flags;
 
 	passes.clear();
-	for (size_t i = 0; i < Other.passes.size(); i++)
+	for (u32 i = 0; i < Other.passes.size(); i++)
 	{
 		passes.push_back(Other.passes[i]);
 	}

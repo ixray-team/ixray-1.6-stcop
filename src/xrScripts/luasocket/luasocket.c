@@ -96,6 +96,9 @@ static int base_open(lua_State *L) {
 /*-------------------------------------------------------------------------*\
 * Initializes all library modules.
 \*-------------------------------------------------------------------------*/
+
+LUA_API void luaL_pushmodule(lua_State* L, const char* modname, int sizehint);
+
 LUASOCKET_API int luaopen_socket_core(lua_State* L)
 {
     {

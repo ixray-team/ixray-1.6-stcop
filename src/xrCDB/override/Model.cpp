@@ -26,7 +26,7 @@ bool CDB_Model::Restore(IReader* reader)
 		Msg("* Level Collision DB cache file missing model code!");
 		return false;
 	}
-	mModelCode = reader->r_u64();
+	mModelCode = (udword)reader->r_u64();
 
 	return pTree->Restore(reader);
 }
@@ -64,7 +64,7 @@ bool CDB_Model::Build(const Opcode::OPCODECREATE& create)
 		Opcode::AABBTreeOfTrianglesBuilder TB;
 		TB.mIMesh = create.mIMesh;
 		TB.mSettings = create.mSettings;
-		TB.mNbPrimitives = NbTris;
+		TB.mNbPrimitives = (udword)NbTris;
 		if (!mSource->Build(&TB))	goto FreeAndExit;
 	}
 

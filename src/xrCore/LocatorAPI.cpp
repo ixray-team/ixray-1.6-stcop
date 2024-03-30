@@ -1641,16 +1641,16 @@ LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src)
     return get_path(initial)->_update(dest,src);
 }
 
-u32 CLocatorAPI::get_file_age(LPCSTR nm)
+time_t CLocatorAPI::get_file_age(LPCSTR nm)
 {
 	// проверить нужно ли пересканировать пути
-    check_pathes	();
+	check_pathes();
 
-	files_it I 		= file_find_it(nm);
-    return (I!=m_files.end())?I->modif:u32(-1);
+	files_it I = file_find_it(nm);
+	return (I != m_files.end()) ? I->modif : std::numeric_limits<long long>::max();
 }
 
-void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
+void CLocatorAPI::set_file_age(LPCSTR nm, time_t age)
 {
 	// проверить нужно ли пересканировать пути
     check_pathes	();
@@ -1665,7 +1665,7 @@ void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
 #ifdef IXR_WINDOWS
     	Msg("!Can't set file age: '%s'. Error: '%s'",nm,_sys_errlist[errno]);
 #else
-        Msg("!Can't set file age: ");
+        Msg("!Can't set file age: '%s'", nm);
 #endif
     }else{
         // update record
