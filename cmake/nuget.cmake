@@ -1,3 +1,4 @@
+# Nuget entry
 find_program(NUGET_COMMAND nuget)
 if(NOT NUGET_COMMAND)
     message("NuGet not found in PATH!")
@@ -12,3 +13,39 @@ if(NOT NUGET_COMMAND)
 else()
     message("NuGet found: ${NUGET_COMMAND}")
 endif()
+
+# Helper
+if (WIN32 AND NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
+    set(NUGET_PACKAGE_PLATFORM x86)
+else()
+    set(NUGET_PACKAGE_PLATFORM x64)
+endif()
+
+# SDL3
+if (WIN32)
+    set(CORE_SDL3_PLATFORM win-${NUGET_PACKAGE_PLATFORM})
+else()
+    set(CORE_SDL3_PLATFORM linux-${NUGET_PACKAGE_PLATFORM})
+endif()
+
+set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2023.12.9.1-open/)
+
+# Optick
+set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
+
+# DxMath
+set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
+
+# Theora
+set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
+
+# OGG
+set(SND_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
+
+# OpenAL
+set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
+
+# Vorbis
+set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
+
+set(ENGINE_FREETYPE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeType.2.13.2/)

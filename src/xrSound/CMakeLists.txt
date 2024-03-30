@@ -51,8 +51,6 @@ target_precompile_headers(xrSound PRIVATE "stdafx.h")
 # Project defines
 target_compile_definitions(xrSound PRIVATE XRSOUND_EXPORTS)
 target_compile_definitions(xrSound PRIVATE _USRDLL)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(xrSound PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list

@@ -61,8 +61,6 @@ target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
 target_compile_definitions(xrRender_R4 PRIVATE XRRENDER_R4_EXPORTS)
 target_compile_definitions(xrRender_R4 PRIVATE USE_DX11)
 target_compile_definitions(xrRender_R4 PRIVATE _USRDLL)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
@@ -80,13 +78,9 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 ## DirectX SDK
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
-target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
 
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x86/release/DirectXTex.lib)
-else()
-    target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x64/release/DirectXTex.lib)
-endif()
+target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
+target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## RenderDoc
 target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")

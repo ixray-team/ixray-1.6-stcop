@@ -62,8 +62,6 @@ target_include_directories(xrRender_R1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 # Project defines
 target_compile_definitions(xrRender_R1 PRIVATE XRRENDER_R1_EXPORTS)
 target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(xrRender_R1 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
@@ -79,11 +77,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 ## DirectX SDK
 target_include_directories(xrRender_R1 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(xrRender_R1 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x86/release/DirectXTex.lib)
-else()
-    target_link_libraries(xrRender_R1 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x64/release/DirectXTex.lib)
-endif()
+target_link_libraries(xrRender_R1 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 target_include_directories(xrRender_R1 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
