@@ -336,15 +336,16 @@ void CResourceManager::DeferredUpload()
 {
 	if (!RDEVICE.b_is_Ready) return;
 
+#ifndef _EDITOR
 	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
-		std::for_each(
-#ifndef DEBUG
-			std::execution::par_unseq,
-#endif // DEBUG
-			m_textures.begin(), m_textures.end(), [](auto& pair) {
-				pair.second->Load();
-			});
-	} else {
+		xr_parallel_for(m_textures.begin(), m_textures.end(), [](auto& pair)
+		{
+			pair.second->Load();
+		});
+	} 
+	else 
+#endif // _EDITOR
+	{
 		for (auto& pair : m_textures) {
 			pair.second->Load();
 		}

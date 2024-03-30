@@ -19,9 +19,13 @@ size_t g_file_mapped_count = 0;
 using FILE_MAPPINGS = xr_hash_map<size_t, std::pair<size_t, shared_str>>;
 FILE_MAPPINGS g_file_mappings;
 
+static xrCriticalSection CSFileMapping;
+
 void register_file_mapping(void* address, const size_t& size, LPCSTR file_name) 
 {
 	size_t CastedAddress = *(size_t*)&address;
+
+	xrCriticalSectionGuard guard(CSFileMapping);
 
 	FILE_MAPPINGS::const_iterator I = g_file_mappings.find(CastedAddress);
 	VERIFY(I == g_file_mappings.end());
@@ -32,7 +36,10 @@ void register_file_mapping(void* address, const size_t& size, LPCSTR file_name)
 	++g_file_mapped_count;
 }
 
-void unregister_file_mapping(void* address, const size_t& size) {
+void unregister_file_mapping(void* address, const size_t& size) 
+{
+	xrCriticalSectionGuard guard(CSFileMapping);
+
 	FILE_MAPPINGS::iterator I = g_file_mappings.find(*(size_t*)&address);
 	VERIFY(I != g_file_mappings.end());
 
