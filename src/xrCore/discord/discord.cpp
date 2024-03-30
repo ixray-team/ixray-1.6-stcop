@@ -43,7 +43,7 @@ void DiscordShared::Init() noexcept
 	Activity.SetInstance(true);
 	Activity.SetType(discord::ActivityType::Playing);
 
-	auto start_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	xr_time_t start_time = xr_chrono_to_time_t(std::chrono::system_clock::now());
 	Activity.GetTimestamps().SetStart(start_time);
 }
 

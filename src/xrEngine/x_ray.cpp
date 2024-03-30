@@ -192,7 +192,7 @@ void destroyEngine()
 	xrLogger::FlushLog();
 
 	Engine.Destroy();
-	DevicePtr.release();
+	xr_delete(DevicePtr.release());
 }
 
 void execUserScript()

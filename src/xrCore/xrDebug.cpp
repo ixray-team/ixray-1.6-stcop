@@ -551,8 +551,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 //		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
     }
 #else
-    typedef int		(__cdecl * _PNH)( size_t );
-
 	void _terminate		()
 	{
 		if (strstr(GetCommandLineA(),"-silent_error_mode"))

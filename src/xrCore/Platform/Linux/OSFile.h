@@ -62,18 +62,6 @@ inline int _mkdir(const char *dir)
 #define _A_HIDDEN 0x02
 #define _A_SUBDIR 0x00000010
 
-struct _finddata_t
-{
-    unsigned attrib;
-    __time64_t time_create;
-    __time64_t time_access;
-    __time64_t time_write;
-    _fsize_t size;
-    char name[FILENAME_MAX];
-};
-
-using _finddata64i32_t = _finddata_t;
-
 inline int _filelength(int fd)
 {
     struct stat file_info;
@@ -127,18 +115,6 @@ inline void _splitpath(const char* path, // Path Input
     if(ext)
         strcpy(ext, end);
 }
-
-#if 0
-struct _finddata32_t
-{
-    unsigned attrib;
-    __time32_t time_create;
-    __time32_t time_access;
-    __time32_t time_write;
-    _fsize_t size;
-    char name[FILENAME_MAX];
-};
-#endif
 
 using FileHandle = int;
 

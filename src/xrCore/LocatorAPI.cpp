@@ -557,11 +557,9 @@ bool CLocatorAPI::load_all_unloaded_archives()
 }
 
 
-void CLocatorAPI::ProcessOne(LPCSTR path, void* _F)
+void CLocatorAPI::ProcessOne(LPCSTR path, system_file* F)
 {
-	_finddata_t& F	= *((_finddata_t*)_F);
-
-	xr_string NormalPath = F.name;
+	xr_string NormalPath = F->name;
 
 	if (!NormalPath.StartWith(path))
 	{
@@ -571,25 +569,35 @@ void CLocatorAPI::ProcessOne(LPCSTR path, void* _F)
 	string_path N = {};
 	xr_strcpy(N, NormalPath.data());
 	xr_strlwr(N);
-	
-	if (F.attrib&_A_HIDDEN)			return;
 
-	if (F.attrib&_A_SUBDIR) {
-		if (bNoRecurse)					return;
-		if (0==xr_strcmp(F.name,"."))	return;
-		if (0==xr_strcmp(F.name,".."))	return;
-		xr_strcat		(N,"\\");
-		Register	(N,0xffffffff,0,0,F.size,F.size, F.time_write);
-		Recurse		(N);
-	} else {
-		if (strext(N) && (0==strncmp(strext(N),".db",3) || 0==strncmp(strext(N),".xdb",4))  )
-			ProcessArchive	(N);
-		else												
-			Register		(N,0xffffffff,0,0,F.size,F.size, F.time_write);
+	if (F->attrib & _A_HIDDEN)		
+		return;
+
+	if (F->attrib & _A_SUBDIR) 
+	{
+		if (bNoRecurse)				
+			return;
+
+		if (0 == xr_strcmp(F->name, "."))	
+			return;
+
+		if (0 == xr_strcmp(F->name, ".."))	
+			return;
+
+		xr_strcat(N, "\\");
+		Register(N, 0xffffffff, 0, 0, F->size, F->size, F->time_write);
+		Recurse(N);
+	}
+	else 
+	{
+		if (strext(N) && (0 == strncmp(strext(N), ".db", 3) || 0 == strncmp(strext(N), ".xdb", 4)))
+			ProcessArchive(N);
+		else
+			Register(N, 0xffffffff, 0, 0, F->size, F->size, F->time_write);
 	}
 }
 
-IC bool pred_str_ff(const _finddata_t& x, const _finddata_t& y)
+IC bool pred_str_ff(const system_file& x, const system_file& y)
 {	
 	return xr_strcmp(x.name,y.name)<0;	
 }
@@ -625,7 +633,7 @@ bool CLocatorAPI::Recurse(const char* path)
 	xr_strcpy(N, sizeof(N), path);
 
 	// find all files
-    _finddata_t sFile;
+	system_file sFile;
 
     xr_strcpy(N, Platform::ValidPath(N));
 
@@ -679,15 +687,15 @@ bool CLocatorAPI::Recurse(const char* path)
             rec_files.push_back(sFile);
     }
 
-	FFVec buffer(rec_files);
-	rec_files.clear();
-	std::sort(buffer.begin(), buffer.end(), pred_str_ff);
-	for (FFIt I = buffer.begin(), E = buffer.end(); I != E; ++I)
-		ProcessOne(path, &*I);
+	std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
+	for (system_file& FileData : rec_files)
+		ProcessOne(path, &FileData);
 
 	// insert self
 	if (path && path[0])
 		Register(path, 0xffffffff, 0, 0, 0, 0, 0);
+
+	rec_files.clear();
 
 	return true;
 }

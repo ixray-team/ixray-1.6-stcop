@@ -3,6 +3,15 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
+struct system_file
+{
+	u8			attrib;
+	xr_time_t	time_create;
+	xr_time_t	time_write;
+	size_t		size;
+	string256	name;
+};
+
 #include "LocatorAPI_defs.h"
 
 class XRCORE_API CStreamReader;
@@ -59,7 +68,7 @@ private:
 	using files_set = xr_set<file, file_pred>;
 	using files_it = files_set::iterator;
 
-	using FFVec = xr_vector<_finddata_t>;
+	using FFVec = xr_vector<system_file>;
 	using FFIt = FFVec::iterator;
 
 	FFVec						rec_files;
@@ -75,7 +84,7 @@ private:
 
 	void						Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif);
 	void						ProcessArchive	(LPCSTR path);
-	void						ProcessOne		(LPCSTR path, void* F);
+	void						ProcessOne		(LPCSTR path, system_file* F);
 	bool						Recurse			(LPCSTR path);	
 
 	files_it					file_find_it	(LPCSTR n);
