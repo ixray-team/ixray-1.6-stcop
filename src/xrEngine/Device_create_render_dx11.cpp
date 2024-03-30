@@ -141,10 +141,10 @@ bool CreateD3D11()
 	UINT createDeviceFlags = 0;
 	bool bHasDebugRender = strstr(Core.Params, "-dxdebug");
 
-	if (g_pGPU != nullptr && g_pGPU->IsAMD)
-	{
-		g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
-	}
+	//if (g_pGPU != nullptr && g_pGPU->IsAMD)
+	//{
+	//	g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
+	//}
 
  	if (bHasDebugRender || HWRenderDevice == nullptr)
 	{
@@ -178,10 +178,10 @@ bool CreateD3D11()
 			return false;
 		};
 	}
-	else
-	{
-		g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
-	}
+	//else
+	//{
+	//	g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
+	//}
 
 	if (!UpdateBuffersD3D11())
 	{

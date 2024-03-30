@@ -456,9 +456,13 @@ void CRenderDevice::ResizeBuffers(u16 Width, u16 Height)
 		break;
 	}
 
-	const bool Centered = strstr(Core.Params, "-no_center_screen") == nullptr;
-	SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
-	SDL_SetWindowPosition(g_AppInfo.Window, Centered ? SDL_WINDOWPOS_CENTERED : 0, Centered ? SDL_WINDOWPOS_CENTERED : 0);
+	if (!psDeviceFlags.is(rsFullscreen))
+	{
+		const bool Centered = strstr(Core.Params, "-no_center_screen") == nullptr;
+		SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
+		SDL_SetWindowPosition(g_AppInfo.Window, Centered ? SDL_WINDOWPOS_CENTERED : 0, Centered ? SDL_WINDOWPOS_CENTERED : 0);
+	}
+
 	Device.TargetWidth = Width;
 	Device.TargetHeight = Height;
 }
