@@ -418,6 +418,8 @@ protected:
 	float					m_fWalk_StrafeFactor;
 	float					m_fRun_StrafeFactor;
 
+	bool					bBlockSprint;
+
 public:
 	Fvector					GetMovementSpeed		() {return NET_SavedAccel;};
 	//////////////////////////////////////////////////////////////////////////

@@ -2148,6 +2148,11 @@ void CWeapon::OnAnimationEnd(u32 state)
 	inherited::OnAnimationEnd(state);
 }
 
+bool CWeapon::NeedBlockSprint() const
+{
+	return GetState() == eFire;
+}
+
 u8 CWeapon::GetCurrentHudOffsetIdx()
 {
 	CActor* pActor	= smart_cast<CActor*>(H_Parent());
