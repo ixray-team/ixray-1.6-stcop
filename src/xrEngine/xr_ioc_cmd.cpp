@@ -637,6 +637,8 @@ extern char			psNET_Name[32];
 extern Flags32		psEnvFlags;
 extern int			g_ErrorLineCount;
 
+extern bool			dsEnableGamepad;
+
 void CCC_Register()
 {
 	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
@@ -762,6 +764,7 @@ void CCC_Register()
 #endif
 
 	CMD1(CCC_ExclusiveMode,		"input_exclusive_mode");
+	CMD2(CCC_Boolean,		"input_enable_gamepad", &dsEnableGamepad);
 
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
