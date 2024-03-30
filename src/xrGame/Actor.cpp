@@ -1694,6 +1694,14 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		outfit->ApplySkinModel	(this, false, false);
 	}
 
+	CHelmet* helmet = smart_cast<CHelmet*>(inventory_item);
+	if (helmet && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
+	{
+		CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+		if (torch && torch->GetNightVisionStatus())
+			torch->SwitchNightVision(false);
+	}
+
 	CWeapon* weapon	= smart_cast<CWeapon*>(inventory_item);
 	if(weapon && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
 	{
