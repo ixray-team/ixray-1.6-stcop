@@ -22,7 +22,9 @@
 
 #ifndef LUABIND_ERROR_HPP_INCLUDED
 #define LUABIND_ERROR_HPP_INCLUDED
-
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#pragma warning(disable: 4275)
 #include <luabind/prefix.hpp>
 #include <exception>
 #include <luabind/config.hpp>
@@ -84,8 +86,7 @@ namespace luabind
 	LUABIND_API void set_pcall_callback(pcall_callback_fun e);
 	LUABIND_API pcall_callback_fun get_pcall_callback();
 
-#pragma warning(push)
-#pragma warning(disable: 4275)
+
     // thrown when trying to use unregistered class or call nonexistent function
     class LUABIND_API unresolved_name : public std::exception
     {
