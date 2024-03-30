@@ -724,6 +724,16 @@ CUIDragDropListEx* CUIActorMenu::GetSlotList(u16 slot_idx)
 		return m_pInventoryBagList;
 	}
 
+	if (slot_idx == GRENADE_SLOT)
+	{
+		//fake
+		if (m_currMenuMode == mmTrade)
+		{
+			return m_pTradeActorBagList;
+		}
+		return m_pInventoryBagList;
+	}
+
 	if (m_pInvList[slot_idx])
 		return m_pInvList[slot_idx];
 
