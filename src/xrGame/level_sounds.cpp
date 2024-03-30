@@ -153,24 +153,19 @@ void CLevelSoundManager::Load()
 
 	CInifile& gameLtx	= *pGameIni;
 
-	if (gameLtx.section_exist(Level().name()))
-	{
-		if (gameLtx.line_exist(Level().name(),"music_tracks"))
-		{
-			LPCSTR music_sect = gameLtx.r_string(Level().name(),"music_tracks");
-
-			if (music_sect && music_sect[0]) 
-			{
+	if (gameLtx.section_exist(Level().name())){
+		if (gameLtx.line_exist(Level().name(),"music_tracks")){
+			LPCSTR music_sect		= gameLtx.r_string(Level().name(),"music_tracks");
+			if (music_sect && music_sect[0]){
 #ifdef DEBUG
-				Msg("- Loading music tracks from '%s'...", music_sect);
-#endif
-				CInifile::Sect& S = gameLtx.r_section(music_sect);
-				m_MusicTracks.reserve(S.Data.size());
-
-				for (const auto& it : S.Data)
-				{
-					m_MusicTracks.push_back(SMusicTrack());
-					m_MusicTracks.back().Load(it.first.c_str(), it.second.c_str());
+				Msg("- Loading music tracks from '%s'...",music_sect);
+#endif // #ifdef DEBUG
+				CInifile::Sect&	S	= gameLtx.r_section	(music_sect);
+				CInifile::SectCIt it	= S.Data.begin(), end = S.Data.end();
+				m_MusicTracks.reserve	(S.Data.size());
+				for (;it!=end; it++){
+					m_MusicTracks.push_back	(SMusicTrack());
+					m_MusicTracks.back().Load(*it->first,*it->second);
 				}
 			}
 		}

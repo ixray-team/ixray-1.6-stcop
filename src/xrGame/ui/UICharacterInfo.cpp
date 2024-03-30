@@ -371,16 +371,17 @@ bool CUICharacterInfo::get_actor_community( shared_str* our, shared_str* enemy )
 	return true;
 }
 
-bool CUICharacterInfo::ignore_community(shared_str const& check_community)
+bool CUICharacterInfo::ignore_community( shared_str const& check_community )
 {
 	LPCSTR comm_section_str = "ignore_icons_communities";
 	VERIFY2(pSettings->section_exist(comm_section_str), make_string<const char*>("Section [%s] does not exist !", comm_section_str));
 
-	CInifile::Sect& faction_section = pSettings->r_section(comm_section_str);
-
-	for (const auto& Item : faction_section.Data)
+	CInifile::Sect&		faction_section = pSettings->r_section( comm_section_str );
+	CInifile::SectIt_	ib = faction_section.Data.begin();
+	CInifile::SectIt_	ie = faction_section.Data.end();
+	for ( ; ib != ie ; ++ib )
 	{
-		if (check_community == Item.first)
+		if ( check_community == (*ib).first )
 		{
 			return true;
 		}

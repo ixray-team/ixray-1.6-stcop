@@ -163,8 +163,8 @@ void CUIRankingWnd::Init()
 	VERIFY2(pSettings->section_exist(section), make_string<const char*>("Section [%s] does not exist!", section));
 
 	CInifile::Sect&	achievs_section = pSettings->r_section(section);
-	auto ib = achievs_section.Data.begin();
-	auto ie = achievs_section.Data.end();
+	CInifile::SectIt_ ib			= achievs_section.Data.begin();
+	CInifile::SectIt_ ie			= achievs_section.Data.end();
 	for(u8 i = 0; ib != ie ; ++ib, ++i)
 		add_achievement(xml, (*ib).first);
 

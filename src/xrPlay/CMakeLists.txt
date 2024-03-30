@@ -5,18 +5,15 @@ set(XPLAY_SRC_FILES)
 file(GLOB_RECURSE XPLAY_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
 )
-
 file(GLOB_RECURSE XPLAY_SOURCE_CPP_FILES
     "*.cpp"
     "*.h"
 )
-
 file(GLOB_RECURSE XPLAY_SOURCE_RES_FILES
     "*.ico"
     "*.rc"
     "*.bmp"
 )
-
 file(GLOB_RECURSE XPLAY_SOURCE_UI_FILES
     "UI*.cpp"
     "UI*.h"

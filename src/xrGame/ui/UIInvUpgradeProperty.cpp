@@ -171,25 +171,25 @@ void UIInvUpgPropertiesWnd::init_from_xml( LPCSTR xml_name )
 	VERIFY2( pSettings->line_count( properties_section ), make_string<const char*>( "Section [%s] is empty !",       properties_section ) );
 	shared_str property_id;
 
-	CInifile::Sect& inv_section = pSettings->r_section(properties_section);
-	for (const auto& ib : inv_section.Data)
+	CInifile::Sect&		inv_section = pSettings->r_section( properties_section );
+	CInifile::SectIt_	ib = inv_section.Data.begin();
+	CInifile::SectIt_	ie = inv_section.Data.end();
+	for ( ; ib != ie ; ++ib )
 	{
-		// load one time !!
-		UIProperty* ui_property = xr_new<UIProperty>();
-		ui_property->init_from_xml(ui_xml);
+		UIProperty* ui_property = xr_new<UIProperty>(); // load one time !!
+		ui_property->init_from_xml( ui_xml );
 
-		property_id._set(ib.first);
-		if (!ui_property->init_property(property_id))
+		property_id._set( (*ib).first );
+		if ( !ui_property->init_property( property_id ) )
 		{
-			Msg("! Invalid property <%s> in inventory upgrade manager!", property_id.c_str());
+			Msg( "! Invalid property <%s> in inventory upgrade manager!", property_id.c_str() );
 			xr_delete(ui_property);
 			continue;
 		}
 
-		m_properties_ui.push_back(ui_property);
-		AttachChild(ui_property);
-	}
-
+		m_properties_ui.push_back( ui_property );
+		AttachChild( ui_property );
+	} // for ib
 	ui_xml.SetLocalRoot( stored_root );
 }
 

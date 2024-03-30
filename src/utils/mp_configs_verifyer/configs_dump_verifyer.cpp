@@ -175,11 +175,11 @@ LPCSTR configs_verifyer::get_diff(CInifile & received,
 								  string256 & dst_diff)
 {
 	LPCSTR diff_str = NULL;
-	for (auto [name, sect] : received.sections())
+	for (auto sect : received.sections())
 	{
-		if (name == cd_info_secion)
+		if (sect->Name == cd_info_secion)
 			continue;
-		if (name == active_params_section)
+		if (sect->Name == active_params_section)
 			continue;
 
 		diff_str = get_section_diff(sect, active_params, dst_diff);
