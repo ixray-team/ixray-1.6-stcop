@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "../xrEngine/bone.h"
 
 

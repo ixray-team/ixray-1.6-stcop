@@ -138,21 +138,21 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 					}
 				}
 			}
-            ParticleManager()->Update(m_HandleEffect,m_HandleActionList,fDT_STEP);
+            ParticleManager()->Update(m_HandleEffect,m_HandleActionList, fDT_STEP);
 
-            PAPI::Particle* particles;
-            u32 p_cnt;
+			PAPI::Particle* particles = nullptr;
+			u32 p_cnt = 0;
             ParticleManager()->GetParticles(m_HandleEffect,particles,p_cnt);
             
 			// our actions
-			if (m_Def->m_Flags.is(CPEDef::dfFramed|CPEDef::dfAnimated))	m_Def->ExecuteAnimate	(particles,p_cnt,fDT_STEP);
-			if (m_Def->m_Flags.is(CPEDef::dfCollision)) 				m_Def->ExecuteCollision	(particles,p_cnt,fDT_STEP,this,m_CollisionCallback);
+			if (m_Def->m_Flags.is(CPEDef::dfFramed|CPEDef::dfAnimated))	m_Def->ExecuteAnimate	(particles,p_cnt, fDT_STEP);
+			if (m_Def->m_Flags.is(CPEDef::dfCollision)) 				m_Def->ExecuteCollision	(particles,p_cnt, fDT_STEP,this,m_CollisionCallback);
 
 			//-move action
 			if (p_cnt)	
 			{
 				vis.box.invalidate	();
-				float p_size = 0.f;
+				float p_size = 0.f; 
 				for(u32 i = 0; i < p_cnt; i++){
 					Particle &m 	= particles[i]; 
 					vis.box.modify((Fvector&)m.pos);

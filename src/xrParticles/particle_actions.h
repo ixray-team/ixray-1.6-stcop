@@ -27,29 +27,24 @@ namespace PAPI
 	class ParticleActions
 	{
 		PAVec actions;
-		bool m_bLocked;
 	public:
 		IC ParticleActions();
 		IC ~ParticleActions();
 
 		IC void			clear	();
 
-		IC void			append	(ParticleAction* pa)	{R_ASSERT(!m_bLocked);actions.push_back(pa);	}
+		IC void			append	(ParticleAction* pa)	{actions.push_back(pa);	}
 		IC bool			empty	()						{return	actions.empty();}
 		IC PAVecIt		begin	()						{return	actions.begin();}
 		IC PAVecIt		end		()						{return actions.end();	}
-        IC int			size	()						{return (int)actions.size();	}
-        IC void			resize	(int cnt)        		{R_ASSERT(!m_bLocked);actions.resize(cnt);	}
-        void			copy	(ParticleActions* src);
-		void			lock	()						{R_ASSERT(!m_bLocked);m_bLocked=true;}
-		void			unlock	()						{R_ASSERT(m_bLocked);m_bLocked=false;}
+        IC int			size	()						{return (int)actions.size();	}		
+		IC void			resize	(int cnt)				{ actions.resize(cnt); }
 	};
 };
 
 IC PAPI::ParticleActions::ParticleActions()
 {
 	actions.reserve(4); 
-	m_bLocked = false;
 }
 
 IC PAPI::ParticleActions::~ParticleActions()
@@ -59,8 +54,6 @@ IC PAPI::ParticleActions::~ParticleActions()
 
 IC void PAPI::ParticleActions::clear()
 {
-	R_ASSERT(!m_bLocked);
-
 	for (ParticleAction* pPAction: actions)
 		xr_delete(pPAction);
 

@@ -212,7 +212,13 @@ void CRenderDevice::on_idle		()
 
 		pApp->LoadDraw();
 		return;
-	} else {
+	}
+	else 
+	{
+		if (g_pGamePersistent != nullptr)
+		{
+			g_pGamePersistent->UpdateParticles();
+		}
 		FrameMove();
 	}
 

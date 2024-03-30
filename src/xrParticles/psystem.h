@@ -141,7 +141,6 @@ namespace PAPI{
 
         // update&render
         virtual void				Update				(int effect_id, int alist_id, float dt)=0;
-        virtual void				Render				(int effect_id)=0;
         virtual void				Transform			(int alist_id, const Fmatrix& m, const Fvector& velocity)=0;
 
         // effect

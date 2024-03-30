@@ -26,6 +26,14 @@ void	R_constant_table::fatal			(LPCSTR S)
 	FATAL	(S);
 }
 
+void R_constant_table::_copy(const R_constant_table& Other)
+{
+	table = Other.table;
+#ifdef USE_DX11
+	m_CBTable = Other.m_CBTable;
+#endif
+}
+
 // predicates
 IC bool	p_search	(ref_constant C, LPCSTR S)
 {

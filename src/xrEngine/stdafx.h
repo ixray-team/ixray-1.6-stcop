@@ -8,6 +8,9 @@
 #include "../xrCore/API/xrAPI.h"
 #include <SDL3/SDL.h>
 
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
+#define smart_cast fast_dynamic_cast
+
 #ifndef XRSE_FACTORY_EXPORTS
 #include "imgui.h"
 #endif

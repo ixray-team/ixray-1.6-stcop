@@ -7,8 +7,6 @@
 #include "BastArtifact.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "../xrphysics/extendedgeom.h"
-#include "ParticlesObject.h"
-
 
 CBastArtefact::CBastArtefact(void) 
 {

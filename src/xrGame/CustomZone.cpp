@@ -4,7 +4,6 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "actor.h"
-#include "ParticlesObject.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "level.h"

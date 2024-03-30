@@ -253,3 +253,6 @@ if (WIN32)
     endif()
 endif()
 target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
+
+target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
+target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/tbb12.lib")

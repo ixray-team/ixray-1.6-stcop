@@ -69,6 +69,7 @@ public:
 #endif
 	IMainMenu*						m_pMainMenu;	
 
+			void					UpdateParticles();
 
 	virtual bool					OnRenderPPUI_query	() { return FALSE; };	// should return true if we want to have second function called
 	virtual void					OnRenderPPUI_main	() {};

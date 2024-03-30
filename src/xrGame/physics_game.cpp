@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParticlesObject.h"
 #include "../xrEngine/gamemtllib.h"
 #include "level.h"
 #include "gamepersistent.h"
