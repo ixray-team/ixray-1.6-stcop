@@ -501,7 +501,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path)
 
 	archive& A					= m_archives.emplace_back();
 	A.vfs_idx					= (u32)m_archives.size()-1;
-	A.path						= path;
+	A.path						= _path;
 
 	A.open						();
 
