@@ -646,9 +646,9 @@ bool CLocatorAPI::Recurse(const char* path)
     if(!std::filesystem::exists(N))
         return false;
 
-    rec_files.reserve(1024);
+    rec_files.reserve(512);
 
-	for (const std::filesystem::directory_entry& CurrentFile : std::filesystem::recursive_directory_iterator{ N })
+	for (const std::filesystem::directory_entry& CurrentFile : std::filesystem::directory_iterator{ N })
     {
 		std::filesystem::path currentPath = CurrentFile.path();
 
@@ -658,12 +658,16 @@ bool CLocatorAPI::Recurse(const char* path)
 			ValidFileName = ValidFileName.substr(2);
 
         xr_strcpy(sFile.name, Platform::RestorePath(ValidFileName.c_str()));
+		sFile.attrib = 0;
 
-		sFile.attrib = CurrentFile.is_directory() ? _A_SUBDIR : 0;
+		if (CurrentFile.is_directory())
+			sFile.attrib |= _A_SUBDIR;
+
 		sFile.size = CurrentFile.file_size();
 
 #ifdef IXR_WINDOWS
-		sFile.attrib = GetFileAttributes(currentPath.generic_wstring().c_str()) & FILE_ATTRIBUTE_HIDDEN ? _A_HIDDEN: 0;
+		if (GetFileAttributes(currentPath.generic_wstring().c_str()) & FILE_ATTRIBUTE_HIDDEN)
+			sFile.attrib |= _A_HIDDEN;
 #endif
 
 		sFile.time_write = xr_chrono_to_time_t(CurrentFile.last_write_time());
@@ -687,8 +691,12 @@ bool CLocatorAPI::Recurse(const char* path)
             rec_files.push_back(sFile);
     }
 
-	std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
-	for (system_file& FileData : rec_files)
+	FFVec StackFiles;
+	StackFiles.swap(rec_files);
+
+	std::sort(StackFiles.begin(), StackFiles.end(), pred_str_ff);
+
+	for (system_file& FileData : StackFiles)
 		ProcessOne(path, &FileData);
 
 	// insert self
