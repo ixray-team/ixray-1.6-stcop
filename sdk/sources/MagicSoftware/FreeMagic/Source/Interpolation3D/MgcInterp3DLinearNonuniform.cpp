@@ -49,7 +49,7 @@ bool Interp3DLinearNonuniform::Evaluate (const Vector3& rkPoint, Real& rfF)
     // the current tetrahedron and the target point.  You effectively follow
     // a linear path through the tetrahedra to get to the target point.
     Vector3 kV0, kV1, kV2, kV3;
-    Tetrahedron* pkTetra;
+    Tetrahedron* pkTetra = nullptr;
     Real afNumer[4], fDenom;
     int i;
     for (i = 0; i < m_iTetrahedronQuantity; i++)
