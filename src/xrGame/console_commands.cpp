@@ -516,7 +516,7 @@ public:
 		timer.Start				();
 #endif
 		if (!xr_strlen(S)){
-			xr_strconcat(S,Core.UserName," - ","quicksave");
+			xr_strconcat(S, Core.UserName, " - ", g_pStringTable->translate("quicksave").c_str());
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
@@ -1896,12 +1896,12 @@ public:
 			{
 				CParticlesObject *pParticle = CParticlesObject::Create(string, FALSE);
 
-				// вычислить позицию и направленность партикла
+				// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 				Fmatrix pos; 
 				pos.identity();
 				pos.k.set(Level().CurrentControlEntity()->XFORM().k);
 				Fvector::generate_orthonormal_basis_normalized(pos.k,pos.j,pos.i);
-				// установить позицию
+				// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ
 				pos.c.set(Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(l_rq.range)));
 				pParticle->UpdateParent(pos, zero_vel);
 				GamePersistent().ps_needtoplay.push_back(pParticle);

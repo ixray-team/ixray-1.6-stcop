@@ -22,6 +22,7 @@
 #include "restriction_space.h"
 #include "profiler.h"
 #include "mt_config.h"
+#include "../xrEngine/string_table.h"
 
 using namespace ALife;
 
@@ -199,14 +200,14 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 		holder->o_Angle				= graph().actor()->o_Angle;
 	}
 
-	string256						autoave_name;
-	xr_strconcat(autoave_name,Core.UserName," - ","autosave");
+	string256						autosave_name;
+	xr_strconcat(autosave_name,Core.UserName," - ", g_pStringTable->translate("autosave").c_str());
 	LPCSTR							temp0 = strstr(**m_server_command_line,"/");
 	VERIFY							(temp0);
 	string256						temp;
-	*m_server_command_line			= xr_strconcat(temp,autoave_name,temp0);
+	*m_server_command_line			= xr_strconcat(temp,autosave_name,temp0);
 	
-	save							(autoave_name);
+	save							(autosave_name);
 
 	graph().actor()->m_tGraphID		= safe_graph_vertex_id;
 	graph().actor()->m_tNodeID		= safe_level_vertex_id;

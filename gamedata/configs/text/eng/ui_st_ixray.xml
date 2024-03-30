@@ -9,4 +9,10 @@
     <string id="st_discord_level">
         <text>Level:</text>
     </string>
+    <string id="quicksave">
+        <text>quick save</text>
+    </string>
+    <string id="autosave">
+        <text>auto save</text>
+    </string>
 </string_table>

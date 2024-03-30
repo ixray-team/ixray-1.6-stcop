@@ -93,6 +93,7 @@ extern float g_separate_radius;
 #include <luabind/functor.hpp>
 #include "../xrScripts/script_engine.h"
 #include "ai_space.h"
+#include "../xrEngine/string_table.h"
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
@@ -177,7 +178,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		FS.rescan_pathes			();
 #endif // DEBUG
 		string_path					saved_game,command;
-		xr_strconcat(saved_game,Core.UserName," - ","quicksave");
+		xr_strconcat(saved_game, Core.UserName, " - ", g_pStringTable->translate("quicksave").c_str());
 		if (!CSavedGameWrapper::valid_saved_game(saved_game))
 			return;
 
