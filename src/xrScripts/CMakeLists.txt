@@ -14,6 +14,7 @@ file(GLOB_RECURSE XRPS_PLUG_SOCKET CONFIGURE_DEPENDS "luasocket/*.*")
 file(GLOB_RECURSE XRPS_PLUG_PANDA CONFIGURE_DEPENDS "luapanda.*")
 file(GLOB_RECURSE XRPS_PLUG_LFS CONFIGURE_DEPENDS "lfs.*")
 file(GLOB_RECURSE XRPS_PLUG_MARSHAL CONFIGURE_DEPENDS "lmarshal.*")
+file(GLOB_RECURSE XRPS_PLUG_UTF8 CONFIGURE_DEPENDS "luautf8/*.*")
 file(GLOB_RECURSE XRPS_PLUG_XML CONFIGURE_DEPENDS "luaxml.*")
 file(GLOB_RECURSE XRPS_CALLBACK CONFIGURE_DEPENDS "script_callback_ex.*" "callback_info.*")
 
@@ -27,6 +28,7 @@ source_group("plugins/panda" FILES ${XRPS_PLUG_PANDA})
 source_group("plugins/marshal" FILES ${XRPS_PLUG_LFS})
 source_group("plugins/lfs" FILES ${XRPS_PLUG_MARSHAL})
 source_group("plugins/xml" FILES ${XRPS_PLUG_XML})
+source_group("plugins/utf8" FILES ${XRPS_PLUG_UTF8})
 
 # Apply list
 list(APPEND XRPS_SRC_FILES ${XRPS_SOURCE_ALL_FILES})

@@ -11,6 +11,7 @@ extern "C"
 
 	int luaopen_marshal(lua_State* L);
 	int luaopen_LuaXML_lib(lua_State* L);
+	int luaopen_utf8(lua_State* L);
 }
 
 #include "lua_ext.h"
@@ -65,6 +66,7 @@ void lua_init_ext(lua_State* L)
 	luaopen_marshal(L);
 	luaopen_lfs(L);
 	luaopen_LuaXML_lib(L);
+	luaopen_utf8(L);
 
 	// Sockets
 	luajit::open_lib(L, "socket.core", luaopen_socket_core);
