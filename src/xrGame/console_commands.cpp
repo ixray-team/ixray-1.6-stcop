@@ -274,6 +274,7 @@ public:
 	}
 	virtual void	Info	(TInfo& I)
 	{	
+		if (!g_pGameLevel)  return;
 		if (!OnServer())	return;
 		float v = Level().GetGameTimeFactor();
 		xr_sprintf(I,sizeof(I)," value = %3.5f", v);
