@@ -81,12 +81,32 @@ function BeforeLoadEvent(fName)
     end
 	
     INFO_TO_LOAD = fName .. ".dat"
-	
     SendScriptCallback("load_state")
 end 
 
-function deleteObsoleteData()
-	-- Need to purge data related to deleted saves
+function deleteObsoleteData(purgedName)
+    if not purgedName or purgedName == "" then
+        print("No purgedName provided for deletion.")
+        return
+    end
+
+    -- Append the ".dat" extension to the purged name to form the filename
+    local filename = purgedName .. ".dat"
+
+    -- Resolve the full path using the game's FS API
+    local fullPath = getFS():update_path(SAVES_FILE_PATH, filename)
+    if not fullPath or fullPath == "" then
+        print("Failed to resolve path for deletion: " .. SAVES_FILE_PATH .. "/" .. filename)
+        return
+    end
+
+    -- Attempt to delete the file
+    local success, reason = os.remove(fullPath)
+    if success then
+        print("Successfully deleted: " .. fullPath)
+    else
+        print("Failed to delete file: " .. fullPath .. ". Reason: " .. tostring(reason))
+    end
 end
 
 function saveToMarshalFile(stateTable)
