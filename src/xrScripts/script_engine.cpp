@@ -169,6 +169,8 @@ void CScriptEngine::init()
 	load_common_scripts();
 #endif
 	m_stack_level = lua_gettop(lua());
+
+	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));
 }
 
 void CScriptEngine::remove_script_process	(const EScriptProcessors &process_id)

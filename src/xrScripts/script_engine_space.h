@@ -12,6 +12,7 @@ namespace ScriptEngine {
 	enum EScriptProcessors {
 		eScriptProcessorLevel = u32(0),
 		eScriptProcessorGame,
+		eScriptProcessorHelper,
 		eScriptProcessorDummy = u32(-1),
 	};
 };

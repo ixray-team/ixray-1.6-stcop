@@ -122,6 +122,7 @@ int APIENTRY WinMain
 	Console->Execute("vid_restart");
 #ifdef DEBUG_DRAW
 	RenderUI();
+	EditorLuaInit();
 #endif
 	EngineLoadStage5();
 

@@ -2,3 +2,4 @@
 
 void RenderUI();
 void RenderUIWeather();
+void EditorLuaInit();

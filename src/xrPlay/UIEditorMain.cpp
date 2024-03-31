@@ -1,9 +1,7 @@
 #include "UIEditorMain.h"
 #include "../xrScripts/stdafx.h"
-#include "../xrScripts/lua_ext.h"
-
-#include <imgui.h>
 #include "../xrEngine/IGame_Actor.h"
+#include "../xrScripts/lua_ext.h"
 
 struct StatisticHashMapEntry
 {

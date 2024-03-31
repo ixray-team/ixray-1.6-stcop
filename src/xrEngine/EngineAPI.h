@@ -26,7 +26,7 @@ typedef  DLL_Pure*	  __cdecl Factory_Create	(CLASS_ID	CLS_ID);
 typedef  void		  __cdecl Factory_Destroy	(DLL_Pure*	O);
 };
 
-enum class EditorUI : std::uint8_t
+enum class EditorUI : u8
 {
 	Shaders,
 	Weather,
@@ -34,6 +34,7 @@ enum class EditorUI : std::uint8_t
 	CmdVars,
 	CmdConsole,
 	LuaDebug,
+	LuaCodespace,
 	ActorInfos,
 	Count
 };
@@ -47,7 +48,7 @@ private:
 public:
 	HMODULE				hGameSpy;
 
-	std::array<bool, static_cast<std::uint8_t>(EditorUI::Count)> EditorStates = {};
+	std::array<bool, static_cast<u8>(EditorUI::Count)> EditorStates = {};
 
 public:
 	Factory_Create*		pCreate;
