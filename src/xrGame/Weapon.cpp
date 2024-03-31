@@ -850,6 +850,14 @@ void CWeapon::OnHiddenItem ()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 }
 
+bool CWeapon::SendDeactivateItem()
+{
+	if (GetState() == eFire)
+		return false;
+
+	return inherited::SendDeactivateItem();
+}
+
 void CWeapon::SendHiddenItem()
 {
 	if (!CHudItem::object().getDestroy() && m_pInventory)
