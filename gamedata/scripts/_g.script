@@ -9,6 +9,8 @@ string.gfind = string.gmatch
 math.mod = math.fmod
 math.randomseed(time_global())
 
+isMarshal = marshal ~= nil
+
 --// Some X-Ray block
 DebugLog = false
 
