@@ -24,7 +24,7 @@ void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGame
 	if (!chunk)
 		return;
 		
-	u32							chunk_iterator;
+	u32 chunk_iterator;
 	for (IReader *sub_chunk = chunk->open_chunk_iterator(chunk_iterator); sub_chunk; sub_chunk = chunk->open_chunk_iterator(chunk_iterator,sub_chunk)) {
 		R_ASSERT				(sub_chunk->find_chunk(WAYOBJECT_CHUNK_VERSION));
 		R_ASSERT				(sub_chunk->r_u16() == WAYOBJECT_VERSION);
@@ -37,9 +37,8 @@ void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGame
 		m_registry.insert		(
 			std::make_pair(
 				patrol_name,
-				&xr_new<CPatrolPath>(
-					patrol_name
-				)->load_raw(
+				&(new CPatrolPath(patrol_name))->load_raw
+				(
 					level_graph,
 					cross,
 					game_graph,
@@ -49,7 +48,7 @@ void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGame
 		);
 	}
 	
-	chunk->close				();
+	chunk->close();
 }
 
 void CPatrolPathStorage::load				(IReader &stream)

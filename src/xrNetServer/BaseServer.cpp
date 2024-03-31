@@ -28,7 +28,7 @@ BaseServer::BaseServer(CTimer* timer, BOOL	Dedicated)
 	stats.clear();
 	stats.dwSendTime = TimeGlobal(device_timer);
 
-	pSvNetLog = NULL;//xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
+	pSvNetLog = nullptr;//new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
 
 #ifdef DEBUG
 	sender_functor_invoked = false;
@@ -202,7 +202,7 @@ void BaseServer::BanAddress(const ip_address& Address, u32 BanTimeSec)
 		return;
 	};
 
-	IBannedClient* pNewClient = xr_new<IBannedClient>();
+	IBannedClient* pNewClient = new IBannedClient();
 	pNewClient->HAddr = Address;
 	time(&pNewClient->BanTime);
 	pNewClient->BanTime += BanTimeSec;
@@ -284,7 +284,7 @@ void BaseServer::BannedList_Load()
 	for (; it != it_e; ++it)
 	{
 		const shared_str& sect_name = (*it)->Name;
-		IBannedClient* Cl = xr_new<IBannedClient>();
+		IBannedClient* Cl = new IBannedClient();
 		Cl->Load(ini, sect_name);
 		BannedAddresses.push_back(Cl);
 	}
@@ -433,7 +433,7 @@ void BaseServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 d
 {
 	/*if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
 	{
-		if (!pSvNetLog) pSvNetLog = xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
+		if (!pSvNetLog) pSvNetLog = new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
 		if (pSvNetLog) pSvNetLog->LogData(TimeGlobal(device_timer), data, size);
 	}*/
 
@@ -522,7 +522,7 @@ void BaseServer::_Recieve(const void* data, u32 data_size, u32 param)
 	/*if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
 	{
 		if (!pSvNetLog)
-			pSvNetLog = xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
+			pSvNetLog = new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
 
 		if (pSvNetLog)
 			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, TRUE);

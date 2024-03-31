@@ -181,7 +181,7 @@ void CWeaponHUD::StopCurrentAnimWithoutCallback		()
 void CWeaponHUD::CreateSharedContainer	()
 {
 	VERIFY(0==g_pWeaponHUDContainer);
-	g_pWeaponHUDContainer	= xr_new<weapon_hud_container>();
+	g_pWeaponHUDContainer	= new weapon_hud_container();
 }
 void CWeaponHUD::DestroySharedContainer	()
 {

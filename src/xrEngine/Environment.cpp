@@ -89,7 +89,7 @@ CEnvironment::CEnvironment	() :
 	CopyMemory				(&CloudsIndices.front(),indices,CloudsIndices.size()*sizeof(u16));
 
 	// perlin noise
-	PerlinNoise1D			= xr_new<CPerlinNoise1D>(Random.randI(0,0xFFFF));
+	PerlinNoise1D			= new CPerlinNoise1D(Random.randI(0,0xFFFF));
 	PerlinNoise1D->SetOctaves(2);
 	PerlinNoise1D->SetAmplitude(0.66666f);
 
@@ -98,7 +98,7 @@ CEnvironment::CEnvironment	() :
 
 	string_path				file_name;
 	m_ambients_config		=
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -109,7 +109,7 @@ CEnvironment::CEnvironment	() :
 			FALSE
 		);
 	m_sound_channels_config	=
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -120,7 +120,7 @@ CEnvironment::CEnvironment	() :
 			FALSE
 		);
 	m_effects_config		=
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -131,7 +131,7 @@ CEnvironment::CEnvironment	() :
 			FALSE
 		);
 	m_suns_config			=
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -142,7 +142,7 @@ CEnvironment::CEnvironment	() :
 			FALSE
 		);
 	m_thunderbolt_collections_config	=
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -153,7 +153,7 @@ CEnvironment::CEnvironment	() :
 			FALSE
 		);
 	m_thunderbolts_config	=
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -165,7 +165,7 @@ CEnvironment::CEnvironment	() :
 		);
 
 	CInifile*		config =
-		xr_new<CInifile>(
+		new CInifile(
 			FS.update_path(
 				file_name,
 				"$game_config$",
@@ -608,7 +608,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 void CEnvironment::create_mixer ()
 {
 	VERIFY					(!CurrentEnv);
-	CurrentEnv				= xr_new<CEnvDescriptorMixer>("00:00:00");
+	CurrentEnv				= new CEnvDescriptorMixer("00:00:00");
 }
 
 void CEnvironment::destroy_mixer()
@@ -618,14 +618,14 @@ void CEnvironment::destroy_mixer()
 
 SThunderboltDesc* CEnvironment::thunderbolt_description			(CInifile& config, shared_str const& section)
 {
-	SThunderboltDesc*		result = xr_new<SThunderboltDesc>();
+	SThunderboltDesc*		result = new SThunderboltDesc();
 	result->load			(config, section);
 	return					(result);
 }
 
 SThunderboltCollection* CEnvironment::thunderbolt_collection	(CInifile* pIni, CInifile* thunderbolts, LPCSTR section)
 {
-	SThunderboltCollection*	result = xr_new<SThunderboltCollection>();
+	SThunderboltCollection*	result = new SThunderboltCollection();
 	result->load			(pIni, thunderbolts, section);
 	return					(result);
 }
@@ -656,7 +656,7 @@ CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescripto
 			return			(*i);
 	}
 
-	CLensFlareDescriptor*	result = xr_new<CLensFlareDescriptor>();
+	CLensFlareDescriptor*	result = new CLensFlareDescriptor();
 	result->load			(m_suns_config, id.c_str());
 	collection.push_back	(result);	
 	return					(result);

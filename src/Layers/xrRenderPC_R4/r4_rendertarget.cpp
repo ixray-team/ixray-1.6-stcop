@@ -407,19 +407,19 @@ CRenderTarget::CRenderTarget		()
 	dxRenderDeviceRender::Instance().Resources->Evict			();
 
 	// Blenders
-	b_occq					= xr_new<CBlender_light_occq>			();
-	b_accum_mask			= xr_new<CBlender_accum_direct_mask>	();
-	b_accum_direct			= xr_new<CBlender_accum_direct>			();
-	b_accum_point			= xr_new<CBlender_accum_point>			();
-	b_accum_spot			= xr_new<CBlender_accum_spot>			();
-	b_accum_reflected		= xr_new<CBlender_accum_reflected>		();
-	b_bloom					= xr_new<CBlender_bloom_build>			();
-	b_luminance				= xr_new<CBlender_luminance>		();
-	b_combine				= xr_new<CBlender_combine>			();
-	b_ssao					= xr_new<CBlender_SSAO>		();
+	b_occq					= new CBlender_light_occq			();
+	b_accum_mask			= new CBlender_accum_direct_mask	();
+	b_accum_direct			= new CBlender_accum_direct			();
+	b_accum_point			= new CBlender_accum_point			();
+	b_accum_spot			= new CBlender_accum_spot			();
+	b_accum_reflected		= new CBlender_accum_reflected		();
+	b_bloom					= new CBlender_bloom_build			();
+	b_luminance				= new CBlender_luminance		();
+	b_combine				= new CBlender_combine			();
+	b_ssao					= new CBlender_SSAO		();
 
 	// HDAO
-	b_hdao_cs               = xr_new<CBlender_CS_HDAO>			();
+	b_hdao_cs               = new CBlender_CS_HDAO			();
 	const u32		s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
 
 	//	NORMAL
@@ -473,13 +473,13 @@ CRenderTarget::CRenderTarget		()
 
 	// FXAA
 	{
-		b_fxaa = xr_new<CBlender_FXAA>();
+		b_fxaa = new CBlender_FXAA();
 		s_fxaa.create(b_fxaa);
 	}
 
 	// SMAA
 	{
-		b_smaa = xr_new<CBlender_SMAA>();
+		b_smaa = new CBlender_SMAA();
 		s_smaa.create(b_smaa);
 
 		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);

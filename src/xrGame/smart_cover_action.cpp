@@ -54,7 +54,7 @@ smart_cover::action::~action()
 void smart_cover::action::add_animation(LPCSTR type, luabind::object const &table)
 {	
 	VERIFY(luabind::type(table) == LUA_TTABLE);
-	Animations* animations = xr_new<Animations>();
+	Animations* animations = new Animations();
 
 	luabind::iterator it(table), end;
 	const size_t count = luabind::distance(it, end);

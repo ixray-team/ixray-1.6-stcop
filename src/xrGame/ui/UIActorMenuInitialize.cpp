@@ -52,22 +52,22 @@ void CUIActorMenu::Construct()
 	xml_init.InitWindow					(uiXml, "main", 0, this);
 	m_hint_wnd = UIHelper::CreateHint	(uiXml, "hint_wnd");
 
-	m_LeftBackground					= xr_new<CUIStatic>();
+	m_LeftBackground					= new CUIStatic();
 	m_LeftBackground->SetAutoDelete		(true);
 	AttachChild							(m_LeftBackground);
 	xml_init.InitStatic					(uiXml, "left_background", 0, m_LeftBackground);
 
-	m_pUpgradeWnd						= xr_new<CUIInventoryUpgradeWnd>(); 
+	m_pUpgradeWnd						= new CUIInventoryUpgradeWnd(); 
 	AttachChild							(m_pUpgradeWnd);
 	m_pUpgradeWnd->SetAutoDelete		(true);
 	m_pUpgradeWnd->Init					();
 
-	m_ActorCharacterInfo				= xr_new<CUICharacterInfo>();
+	m_ActorCharacterInfo				= new CUICharacterInfo();
 	m_ActorCharacterInfo->SetAutoDelete	(true);
 	AttachChild							(m_ActorCharacterInfo);
 	m_ActorCharacterInfo->InitCharacterInfo(&uiXml, "actor_ch_info");
 
-	m_PartnerCharacterInfo				= xr_new<CUICharacterInfo>();
+	m_PartnerCharacterInfo				= new CUICharacterInfo();
 	m_PartnerCharacterInfo->SetAutoDelete(true);
 	AttachChild							(m_PartnerCharacterInfo);
 	m_PartnerCharacterInfo->InitCharacterInfo( &uiXml, "partner_ch_info" );
@@ -118,14 +118,14 @@ void CUIActorMenu::Construct()
 		if (uiXml.GetNodesNum(slot_node, "slot_dragdrop") == 0)
 			continue;
 
-		m_pInvList[i] = xr_new<CUIDragDropListEx>();
+		m_pInvList[i] = new CUIDragDropListEx();
 		AttachChild(m_pInvList[i]);
 		CUIXmlInit::InitDragDropListEx(uiXml, "slot_dragdrop", 0, m_pInvList[i]);
 		m_pInvList[i]->SetAutoDelete(true);
 
 		BindDragDropListEvents(m_pInvList[i]);
 
-		m_pInvSlotHighlight[i] = xr_new<CUIStatic>();
+		m_pInvSlotHighlight[i] = new CUIStatic();
 		AttachChild(m_pInvSlotHighlight[i]);
 		CUIXmlInit::InitStatic(uiXml, "slot_highlight", 0, m_pInvSlotHighlight[i]);
 		m_pInvSlotHighlight[i]->SetAutoDelete(true);
@@ -134,7 +134,7 @@ void CUIActorMenu::Construct()
 		if (uiXml.GetNodesNum(slot_node, "slot_progress") == 0)
 			continue;
 
-		m_pInvSlotProgress[i] = xr_new<CUIProgressBar>();
+		m_pInvSlotProgress[i] = new CUIProgressBar();
 		AttachChild(m_pInvSlotProgress[i]);
 		CUIXmlInit::InitProgressBar(uiXml, "slot_progress", 0, m_pInvSlotProgress[i]);
 		m_pInvSlotProgress[i]->SetAutoDelete(true);
@@ -247,12 +247,12 @@ void CUIActorMenu::Construct()
 //	m_clock_value						= UIHelper::CreateStatic(uiXml, "clock_value", this);
 
 /*
-	m_pDeadBodyBagList					= xr_new<CUIDragDropListEx>(); 
+	m_pDeadBodyBagList					= new CUIDragDropListEx(); 
 	AttachChild							(m_pDeadBodyBagList);
 	m_pDeadBodyBagList->SetAutoDelete	(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_deadbody_bag", 0, m_pDeadBodyBagList);
 */
-	m_ActorStateInfo					= xr_new<ui_actor_state_wnd>();
+	m_ActorStateInfo					= new ui_actor_state_wnd();
 	m_ActorStateInfo->init_from_xml		(uiXml, "actor_state_info");
 	m_ActorStateInfo->SetAutoDelete		(true);
 	AttachChild							(m_ActorStateInfo); 
@@ -271,7 +271,7 @@ void CUIActorMenu::Construct()
 	::Sound->create						(sounds[eItemUse],		uiXml.Read("snd_item_use",		0,	NULL),st_Effect,sg_SourceType);
 	uiXml.SetLocalRoot					(stored_root);
 
-	m_ItemInfo							= xr_new<CUIItemInfo>();
+	m_ItemInfo							= new CUIItemInfo();
 //-	m_ItemInfo->SetAutoDelete			(true);
 //-	AttachChild							(m_ItemInfo);
 	m_ItemInfo->InitItemInfo			("actor_menu_item.xml");
@@ -279,23 +279,23 @@ void CUIActorMenu::Construct()
 	m_upgrade_info						= NULL;
 	if ( ai().get_alife() )
 	{
-		m_upgrade_info						= xr_new<UIInvUpgradeInfo>();
+		m_upgrade_info						= new UIInvUpgradeInfo();
 		m_upgrade_info->SetAutoDelete		(true);
 		AttachChild							(m_upgrade_info);
 		m_upgrade_info->init_from_xml		("actor_menu_item.xml");
 	}
 
-	m_message_box_yes_no				= xr_new<CUIMessageBoxEx>();	
+	m_message_box_yes_no				= new CUIMessageBoxEx();	
 	m_message_box_yes_no->InitMessageBox( "message_box_yes_no" );
 	m_message_box_yes_no->SetAutoDelete	(true);
 	m_message_box_yes_no->SetText		( "" );
 
-	m_message_box_ok					= xr_new<CUIMessageBoxEx>();	
+	m_message_box_ok					= new CUIMessageBoxEx();	
 	m_message_box_ok->InitMessageBox	( "message_box_ok" );
 	m_message_box_ok->SetAutoDelete		(true);
 	m_message_box_ok->SetText			( "" );
 
-	m_UIPropertiesBox					= xr_new<CUIPropertiesBox>();
+	m_UIPropertiesBox					= new CUIPropertiesBox();
 	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
 	AttachChild							(m_UIPropertiesBox);
 	m_UIPropertiesBox->Hide				();

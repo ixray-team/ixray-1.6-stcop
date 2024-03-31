@@ -58,7 +58,7 @@ SState*		CResourceManager::_CreateState		(SimulatorStates& state_code)
 	}
 
 	// Create New
-	v_states.push_back				(xr_new<SState>());
+	v_states.push_back				(new SState());
 	v_states.back()->dwFlags		|= xr_resource_flagged::RF_REGISTERED;
 	v_states.back()->state			= state_code.record();
 	v_states.back()->state_code		= state_code;
@@ -80,7 +80,7 @@ SPass*		CResourceManager::_CreatePass			(const SPass& proto)
 		if (v_passes[it]->equal(proto))
 			return v_passes[it];
 
-	SPass*	P					=	xr_new<SPass>();
+	SPass*	P					=	new SPass();
 	P->dwFlags					|=	xr_resource_flagged::RF_REGISTERED;
 	P->state					=	proto.state;
 	P->ps						=	proto.ps;
@@ -125,7 +125,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	}
 
 	// Create _new
-	SDeclaration* D			= xr_new<SDeclaration>();
+	SDeclaration* D			= new SDeclaration();
 	u32 dcl_size = (u32)GetDeclLength(dcl) + 1;
 	CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);
@@ -159,7 +159,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	if (I!=m_vs.end())	return I->second;
 	else
 	{
-		SVS*	_vs					= xr_new<SVS>	();
+		SVS*	_vs					= new SVS	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
 		if (0==_stricmp(_name,"null"))	{
@@ -220,7 +220,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 	if (I!=m_ps.end())	return		I->second;
 	else
 	{
-		SPS*	_ps					=	xr_new<SPS>	();
+		SPS*	_ps					=	new SPS	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		if (0==_stricmp(name,"null"))	{
@@ -276,7 +276,7 @@ R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
 	for (u32 it=0; it<v_constant_tables.size(); it++)
 		if (v_constant_tables[it]->equal(C))	return v_constant_tables[it];
 
-	R_constant_table* NewElem = v_constant_tables.emplace_back((xr_new<R_constant_table>()));
+	R_constant_table* NewElem = v_constant_tables.emplace_back((new R_constant_table()));
 	NewElem->_copy(C);
 	NewElem->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	return NewElem;
@@ -301,7 +301,7 @@ CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 S
 	if (I!=m_rtargets.end())	return		I->second;
 	else
 	{
-		CRT *RT					=	xr_new<CRT>();
+		CRT *RT					=	new CRT();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_rtargets.insert		(std::make_pair(RT->set_name(Name),RT));
 		if (RDEVICE.b_is_Ready)	RT->create	(Name,w,h,f);
@@ -353,7 +353,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IDirect3DVerte
 		if ((G.dcl==dcl) && (G.vb==vb) && (G.ib==ib) && (G.vb_stride==vb_stride))	return v_geoms[it];
 	}
 
-	SGeometry *Geom		=	xr_new<SGeometry>	();
+	SGeometry *Geom		=	new SGeometry	();
 	Geom->dwFlags		|=	xr_resource_flagged::RF_REGISTERED;
 	Geom->dcl			=	dcl;
 	Geom->vb			=	vb;
@@ -403,7 +403,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	if (I!=m_textures.end())	return	I->second;
 	else
 	{
-		CTexture *	T		=	xr_new<CTexture>();
+		CTexture *	T		=	new CTexture();
 		T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		m_textures.insert	(std::make_pair(T->set_name(Name),T));
 		T->Preload			();
@@ -453,7 +453,7 @@ CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
 	if (I!=m_matrices.end())	return I->second;
 	else
 	{
-		CMatrix* M			=	xr_new<CMatrix>();
+		CMatrix* M			=	new CMatrix();
 		M->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		M->dwReference		=	1;
 		m_matrices.insert	(std::make_pair(M->set_name(Name),M));
@@ -485,7 +485,7 @@ CConstant*	CResourceManager::_CreateConstant	(LPCSTR Name)
 	if (I!=m_constants.end())	return I->second;
 	else
 	{
-		CConstant* C		=	xr_new<CConstant>();
+		CConstant* C		=	new CConstant();
 		C->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		C->dwReference		=	1;
 		m_constants.insert	(std::make_pair(C->set_name(Name),C));
@@ -518,7 +518,7 @@ STextureList*	CResourceManager::_CreateTextureList(STextureList& L)
 		STextureList*	base		= lst_textures[it];
 		if (L.equal(*base))			return base;
 	}
-	STextureList*	lst		=	xr_new<STextureList>(L);
+	STextureList*	lst		=	new STextureList(L);
 	lst->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 	lst_textures.push_back	(lst);
 	return lst;
@@ -543,7 +543,7 @@ SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 		SMatrixList*	base		= lst_matrices[it];
 		if (L.equal(*base))			return base;
 	}
-	SMatrixList* lst = xr_new<SMatrixList>();
+	SMatrixList* lst = new SMatrixList();
 	lst->_copy(L);
 	lst->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 	lst_matrices.push_back	(lst);
@@ -569,7 +569,7 @@ SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 		SConstantList*	base		= lst_constants[it];
 		if (L.equal(*base))			return base;
 	}
-	SConstantList* lst = xr_new<SConstantList>();
+	SConstantList* lst = new SConstantList();
 	lst->_copy(L);
 	lst->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 	lst_constants.push_back	(lst);
@@ -631,7 +631,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	if (I!=m_vs.end())	return I->second;
 	else
 	{
-		SVS*	_vs					= xr_new<SVS>	();
+		SVS*	_vs					= new SVS	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
 		if (0==_stricmp(_name,"null"))	{
@@ -735,7 +735,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 	if (I!=m_ps.end())	return		I->second;
 	else
 	{
-		SPS*	_ps					=	xr_new<SPS>	();
+		SPS*	_ps					=	new SPS	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		if (0==_stricmp(name,"null"))	{

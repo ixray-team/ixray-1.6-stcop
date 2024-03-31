@@ -53,7 +53,7 @@ void CUICursor::InitInternal()
 
 	LPCSTR nodevalue			= xml_doc.Read("texture_name", 0, "ui\\ui_ani_cursor");
 
-	m_static					= xr_new<CUIStatic>();
+	m_static					= new CUIStatic();
 	m_static->InitTextureEx		(nodevalue, "hud\\cursor");
 
 	float r_x					= xml_doc.ReadFlt("texture_rect_x", 0, 45.f);

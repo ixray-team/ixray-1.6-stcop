@@ -90,15 +90,16 @@ int APIENTRY WinMain
 
 	Engine.External.CreateRendererList();
 
-	Console = xr_new<CConsole>();
+	Console = new CConsole();
 	EngineLoadStage3();
 
 	if (strstr(Core.Params, "-r4")) {
 		Console->Execute("renderer renderer_r4");
-	} else if (strstr(Core.Params, "-r2")) {
+	}
+	else if (strstr(Core.Params, "-r2")) {
 		Console->Execute("renderer renderer_r2");
 	} else {
-		CCC_LoadCFG_custom* pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
+		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
 		pTmp->Execute(Console->ConfigFile);
 		xr_delete(pTmp);
 		// В любом случае надо вызывать команду CCC_R2

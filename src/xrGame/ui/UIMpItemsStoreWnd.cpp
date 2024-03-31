@@ -33,7 +33,7 @@ void CStoreHierarchy::LoadLevel(CUIXml& xml, int index, item* _item, int depth_l
 
 	if( depth_level>0 && _item->m_btn_xml_name.size() )
 	{
-		CUITabButtonMP* btn			= xr_new<CUITabButtonMP>();
+		CUITabButtonMP* btn			= new CUITabButtonMP();
 		_item->m_button				= btn;
 		btn->SetAutoDelete			(false);
 	

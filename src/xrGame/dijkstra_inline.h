@@ -77,7 +77,7 @@
 TEMPLATE_SPECIALIZATION
 IC	CSDijkstra::CDijkstra			(const u32 max_vertex_count)
 {
-	m_data_storage		= xr_new<CDataStorage>(max_vertex_count);
+	m_data_storage		= new CDataStorage(max_vertex_count);
 	m_search_started	= false;
 }
 

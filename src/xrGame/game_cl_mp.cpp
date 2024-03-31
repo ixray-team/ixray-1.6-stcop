@@ -85,7 +85,7 @@ game_cl_mp::game_cl_mp()
 	buffer_for_compress_size = 0;
 	//-----------------------------------------------------------
 	//-----------------------------------------------------------
-/*	pBuySpawnMsgBox		= xr_new<CUIMessageBoxEx>();
+/*	pBuySpawnMsgBox		= new CUIMessageBoxEx();
 	//.	pBuySpawnMsgBox->SetWorkPhase(GAME_PHASE_INPROGRESS);
 	pBuySpawnMsgBox->Init("message_box_buy_spawn");
 	pBuySpawnMsgBox->AddCallback("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &game_cl_mp::OnBuySpawn));
@@ -250,7 +250,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 		case kSHOW_ADMIN_MENU:
 			{
 				if(!m_pAdminMenuWindow)
-					m_pAdminMenuWindow = xr_new<CUIMpAdminMenu>();
+					m_pAdminMenuWindow = new CUIMpAdminMenu();
 
 				if(local_player && local_player->testFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS))
 					m_pAdminMenuWindow->ShowDialog(true);
@@ -316,7 +316,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 void	game_cl_mp::VotingBegin()
 {
 	if(!m_pVoteStartWindow)
-		m_pVoteStartWindow		= xr_new<CUIVotingCategory>();
+		m_pVoteStartWindow		= new CUIVotingCategory();
 
 	m_pVoteStartWindow->ShowDialog(true);
 }
@@ -324,7 +324,7 @@ void	game_cl_mp::VotingBegin()
 void	game_cl_mp::Vote()
 {
 	if(!m_pVoteRespondWindow)
-		m_pVoteRespondWindow	= xr_new<CUIVote>();
+		m_pVoteRespondWindow	= new CUIVote();
 
 	m_pVoteRespondWindow->ShowDialog(true);
 }
@@ -1420,7 +1420,7 @@ void game_cl_mp::OnRadminMessage(u16 type, NET_Packet* P)
 				if (!g_dedicated_server)
 				{
 					if(!m_pAdminMenuWindow)
-						m_pAdminMenuWindow = xr_new<CUIMpAdminMenu>();
+						m_pAdminMenuWindow = new CUIMpAdminMenu();
 
 					if(0==_stricmp(buff,"Access permitted."))
 						m_pAdminMenuWindow->ShowDialog(true);

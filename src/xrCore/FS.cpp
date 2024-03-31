@@ -298,9 +298,9 @@ IReader*	IReader::open_chunk(u32 ID)
 			u8*		dest;
 			unsigned	dest_sz;
 			_decompressLZ(&dest,&dest_sz,pointer(),dwSize);
-			return xr_new<CTempReader>	(dest,		dest_sz,		tell()+dwSize);
+			return new CTempReader	(dest,		dest_sz,		tell()+dwSize);
 		} else {
-			return xr_new<IReader>		(pointer(),	dwSize,			tell()+dwSize);
+			return new IReader		(pointer(),	dwSize,			tell()+dwSize);
 		}
 	} else return 0;
 };
@@ -352,10 +352,10 @@ IReader*	IReader::open_chunk_iterator	(u32& ID, IReader* _prev)
 		u8*				dest	;
 		unsigned		dest_sz	;
 		_decompressLZ	(&dest,&dest_sz,pointer(),_size);
-		return xr_new<CTempReader>	(dest,		dest_sz,	tell()+_size);
+		return new CTempReader	(dest,		dest_sz,	tell()+_size);
 	} else {
 		// normal
-		return xr_new<IReader>		(pointer(),	_size,		tell()+_size);
+		return new IReader		(pointer(),	_size,		tell()+_size);
 	}
 }
 

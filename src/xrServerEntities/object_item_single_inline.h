@@ -32,7 +32,7 @@ ObjectFactory::CLIENT_BASE_CLASS *CSObjectItemSingle::client_object	() const
 TEMPLATE_SPECIALIZATION
 ObjectFactory::SERVER_BASE_CLASS *CSObjectItemSingle::server_object	(LPCSTR section) const
 {
-	return				(xr_new<SERVER_TYPE>(section)->init());
+	return				((new SERVER_TYPE(section))->init());
 }
 
 #ifndef NO_XR_GAME
@@ -45,7 +45,7 @@ IC	CObjectItemSingle<_unknown_type,true>::CObjectItemSingle	(const CLASS_ID &cls
 template <typename _unknown_type>
 ObjectFactory::CLIENT_BASE_CLASS *CObjectItemSingle<_unknown_type,true>::client_object	() const
 {
-	return				(xr_new<CLIENT_TYPE>()->_construct());
+	return				((new CLIENT_TYPE())->_construct());
 }
 
 template <typename _unknown_type>

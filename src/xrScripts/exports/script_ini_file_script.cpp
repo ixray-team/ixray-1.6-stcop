@@ -54,7 +54,7 @@ CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 
 	return			(
 		(CScriptIniFile*)
-		xr_new<CInifile>(
+		new CInifile(
 			&temp,
 			FS.get_path("$game_config$")->m_Path
 		)

@@ -141,7 +141,7 @@ struct str_container_impl
 
 str_container::str_container()
 {
-	impl = xr_new<str_container_impl>();
+	impl = new str_container_impl();
 }
 
 str_value* str_container::dock(str_c value)

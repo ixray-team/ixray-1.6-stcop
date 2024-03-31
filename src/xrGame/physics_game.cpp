@@ -210,12 +210,12 @@ void play_particles(float vel_cret, dxGeomUserData* data,  const dContactGeom* c
 	bool play_not_liquid = !liquid && vel_cret > Pars::vel_cret_particles;
 
 	if( play_not_liquid )
-		Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHParticlesPlayCall>(*c,b_invert_normal,ps_name));
+		Level().ph_commander().add_call(new CPHOnesCondition(),new CPHParticlesPlayCall(*c,b_invert_normal,ps_name));
 	else if( play_liquid )
 	{
 		CPHFindLiquidParticlesComparer find( cast_fv( c->pos ) );
 		if( !Level().ph_commander().has_call( &find, &find ) )
-			Level().ph_commander().add_call(xr_new<CPHLiquidParticlesCondition>(),xr_new<CPHLiquidParticlesPlayCall>(*c,b_invert_normal,ps_name));
+			Level().ph_commander().add_call(new CPHLiquidParticlesCondition(),new CPHLiquidParticlesPlayCall(*c,b_invert_normal,ps_name));
 	}
 }
 
@@ -265,7 +265,7 @@ void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 				//ref_shader pWallmarkShader = mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];
 				wm_shader WallmarkShader = mtl_pair->m_pCollideMarks->GenerateWallmark();
 				//ref_shader pWallmarkShader = mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];
-				Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHWallMarksCall>( *((Fvector*)c->pos),T,WallmarkShader));
+				Level().ph_commander().add_call(new CPHOnesCondition(),new CPHWallMarksCall( *((Fvector*)c->pos),T,WallmarkShader));
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			if(square_cam_dist<SQUARE_SOUND_EFFECT_DIST)

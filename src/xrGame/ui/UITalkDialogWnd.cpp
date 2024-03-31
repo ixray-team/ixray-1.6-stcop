@@ -29,7 +29,7 @@ CUITalkDialogWnd::~CUITalkDialogWnd()
 
 void CUITalkDialogWnd::InitTalkDialogWnd()
 {
-	m_uiXml						= xr_new<CUIXml>();
+	m_uiXml						= new CUIXml();
 	m_uiXml->Load				(CONFIG_PATH, UI_PATH, TALK_XML);
 	CUIXmlInit					ml_init;
 
@@ -58,7 +58,7 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 
 
 	//Ответы
-	UIAnswersList				= xr_new<CUIScrollView>();
+	UIAnswersList				= new CUIScrollView();
 	UIAnswersList->SetAutoDelete(true);
 //	UIDialogFrameTop.AttachChild(UIAnswersList);
 	AttachChild(UIAnswersList);
@@ -66,7 +66,7 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	UIAnswersList->SetWindowName("---UIAnswersList");
 
 	//Вопросы
-	UIQuestionsList				= xr_new<CUIScrollView>();
+	UIQuestionsList				= new CUIScrollView();
 	UIQuestionsList->SetAutoDelete(true);
 //	UIDialogFrameBottom.AttachChild(UIQuestionsList);
 	AttachChild(UIQuestionsList);
@@ -174,7 +174,7 @@ void CUITalkDialogWnd::ClearQuestions()
 
 void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, bool b_finalizer)
 {
-	CUIQuestionItem* itm			= xr_new<CUIQuestionItem>(m_uiXml,"question_item");
+	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
 	itm->Init						(value, str);
 	++number; //zero-based index
 
@@ -203,7 +203,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, bool b_
 
 void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 {
-	CUIAnswerItem* itm				= xr_new<CUIAnswerItem>(m_uiXml,bActor?"actor_answer_item":"other_answer_item");
+	CUIAnswerItem* itm				= new CUIAnswerItem(m_uiXml,bActor?"actor_answer_item":"other_answer_item");
 	itm->Init						(str, SpeakerName);
 	UIAnswersList->AddWindow		(itm, true);
 	UIAnswersList->ScrollToEnd		();
@@ -227,7 +227,7 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 
 void CUITalkDialogWnd::AddIconedAnswer(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
-	CUIAnswerItemIconed* itm		= xr_new<CUIAnswerItemIconed>(m_uiXml,templ_name);
+	CUIAnswerItemIconed* itm		= new CUIAnswerItemIconed(m_uiXml,templ_name);
 	itm->Init						(text, caption, texture_name);
 	UIAnswersList->AddWindow		(itm, true);
 	UIAnswersList->ScrollToEnd		();
@@ -276,7 +276,7 @@ void CUIQuestionItem::SendMessage				(CUIWindow* pWnd, s16 msg, void* pData)
 
 CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 {
-	m_text							= xr_new<CUI3tButton>();
+	m_text							= new CUI3tButton();
 	m_text->SetAutoDelete			(true);
 	AttachChild						(m_text);
 
@@ -295,7 +295,7 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 	Register						(m_text);
 	AddCallback						(m_text,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
 
-	m_num_text						= xr_new<CUITextWnd>();
+	m_num_text						= new CUITextWnd();
 	m_num_text->SetAutoDelete		(true);
 	AttachChild						(m_num_text);
 	xr_strconcat(str,path,":num_text");
@@ -319,8 +319,8 @@ void	CUIQuestionItem::OnTextClicked(CUIWindow* w, void*)
 
 CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 {
-	m_text							= xr_new<CUITextWnd>();m_text->SetAutoDelete(true);
-	m_name							= xr_new<CUITextWnd>();m_name->SetAutoDelete(true);
+	m_text							= new CUITextWnd();m_text->SetAutoDelete(true);
+	m_name							= new CUITextWnd();m_name->SetAutoDelete(true);
 	AttachChild						(m_text);
 	AttachChild						(m_name);
 
@@ -353,7 +353,7 @@ void CUIAnswerItem::Init			(LPCSTR text, LPCSTR name)
 CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 :CUIAnswerItem(xml_doc, path)
 {
-	m_icon							= xr_new<CUIStatic>();m_icon->SetAutoDelete(true);
+	m_icon							= new CUIStatic();m_icon->SetAutoDelete(true);
 	AttachChild						(m_icon);
 
 	string512						str;

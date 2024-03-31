@@ -184,7 +184,7 @@ CInifile &CSE_Abstract::spawn_ini			()
 			m_ini_string.size()
 		);
 
-		m_ini_file = xr_new<CInifile>(
+		m_ini_file = new CInifile(
 			&temp,
 			FS.get_path("$game_config$")->m_Path
 		);

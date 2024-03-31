@@ -181,7 +181,7 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	dwHeight = Device.GetSwapchainHeight();
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
-	Resources = xr_new<CResourceManager>();
+	Resources = new CResourceManager();
 
 #ifdef DEBUG_DRAW
 	Device.AddUICommand("dxDebugRenderer", 100, []()

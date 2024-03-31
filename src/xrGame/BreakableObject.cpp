@@ -44,7 +44,7 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT				(obj);
 	inherited::net_Spawn	(DC);
 	VERIFY(!collidable.model);
-	collidable.model = xr_new<CCF_Skeleton>(this);
+	collidable.model = new CCF_Skeleton(this);
 	// set bone id
 	R_ASSERT				(Visual()&&smart_cast<IKinematics*>(Visual()));
 //	IKinematics* K			= smart_cast<IKinematics*>(Visual());

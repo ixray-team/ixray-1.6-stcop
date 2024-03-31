@@ -130,7 +130,7 @@ CScriptEntityAction	*CScriptGameObject::GetCurrentAction	() const
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CSciptEntity : cannot access class member GetCurrentAction!");
 	else
 		if (l_tpScriptMonster->GetCurrentAction())
-			return		(xr_new<CScriptEntityAction>(l_tpScriptMonster->GetCurrentAction()));
+			return		(new CScriptEntityAction(l_tpScriptMonster->GetCurrentAction()));
 	return				(0);
 }
 

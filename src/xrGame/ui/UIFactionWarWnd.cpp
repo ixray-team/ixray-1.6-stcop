@@ -98,7 +98,7 @@ void CUIFactionWarWnd::Init()
 	m_static_line_right		= UIHelper::CreateFrameLine( xml, "static_line_right", this );
 
 	VERIFY( hint_wnd );
-	m_war_states_parent = xr_new<CUIWindow>();
+	m_war_states_parent = new CUIWindow();
 	m_war_states_parent->SetAutoDelete( true );
 	AttachChild( m_war_states_parent );
 	Fvector2 pos;
@@ -108,7 +108,7 @@ void CUIFactionWarWnd::Init()
 
 	for ( u8 i = 0; i < max_war_state; ++i )
 	{
-		m_war_state[i] = xr_new<UIWarState>();
+		m_war_state[i] = new UIWarState();
 		m_war_state[i]->InitXML( xml, "static_vs_state", m_war_states_parent );
 		m_war_state[i]->set_hint_wnd( hint_wnd );
 	}

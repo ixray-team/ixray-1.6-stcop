@@ -416,15 +416,15 @@ void game_sv_GameState::Create					(shared_str &options)
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 	string_path					S;
 	FS.update_path(S, "$game_config$", "script.ltx");
-	CInifile* l_tpIniFile = xr_new<CInifile>(S);
+	CInifile* l_tpIniFile = new CInifile(S);
 	R_ASSERT(l_tpIniFile);
 
 	if (l_tpIniFile->section_exist(type_name()))
 	{
 		if (l_tpIniFile->r_string(type_name(), "script"))
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", l_tpIniFile->r_string(type_name(), "script")));
+			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, new CScriptProcess("game", l_tpIniFile->r_string(type_name(), "script")));
 		else
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", ""));
+			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, new CScriptProcess("game", ""));
 	}
 
 	xr_delete(l_tpIniFile);
@@ -432,7 +432,7 @@ void game_sv_GameState::Create					(shared_str &options)
 	//---------------------------------------------------------------------
 	ConsoleCommands_Create();
 	//---------------------------------------------------------------------
-//	CCC_LoadCFG_custom*	pTmp = xr_new<CCC_LoadCFG_custom>("sv_");
+//	CCC_LoadCFG_custom*	pTmp = new CCC_LoadCFG_custom("sv_");
 //	pTmp->Execute				(Console->ConfigFile);
 //	xr_delete					(pTmp);
 	//---------------------------------------------------------------------
@@ -639,7 +639,7 @@ game_sv_GameState::game_sv_GameState()
 {
 	VERIFY(g_pGameLevel);
 	m_server					= Level().Server;
-	m_event_queue = xr_new<GameEventQueue>();
+	m_event_queue = new GameEventQueue();
 
 	m_bMapRotation = false;
 	m_bMapSwitched = false;

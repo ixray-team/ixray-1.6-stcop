@@ -24,7 +24,7 @@ CUIWindow* CUIStats::InitStats(CUIXml& xml_doc, LPCSTR path,  int team)
 	CUIWindow* pTinfo				= NULL;
 
     // players
-	CUIStatsPlayerList* pPList		= xr_new<CUIStatsPlayerList>();
+	CUIStatsPlayerList* pPList		= new CUIStatsPlayerList();
 	pPList->SetTeam					(team);
 	pPList->Init					(xml_doc, xr_strconcat(_path, path, ":player_list"));
 	pPList->SetMessageTarget		(this);
@@ -36,7 +36,7 @@ CUIWindow* CUIStats::InitStats(CUIXml& xml_doc, LPCSTR path,  int team)
 	if (xml_doc.NavigateToNode(xr_strconcat(_path, path, ":spectator_list"),0))
 	{
 		// spectators
-		pPList						= xr_new<CUIStatsPlayerList>();
+		pPList						= new CUIStatsPlayerList();
 		pPList->SetTeam				(team);
 		pPList->Init				(xml_doc, _path);
 		pPList->SetMessageTarget	(this);

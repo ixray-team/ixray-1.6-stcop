@@ -396,7 +396,7 @@ Shader* CResourceManager::_CreateShader(Shader* InShader)
 	}
 
 	// Create _new_ entry
-	Shader* N = xr_new<Shader>();
+	Shader* N = new Shader();
 	N->_copy(*InShader);
 	N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	v_shaders.push_back(N);

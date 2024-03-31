@@ -34,7 +34,7 @@ void CUINewsWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	strconcat					(sizeof(pth),pth,start_from,"list");
 	xml_init.InitWindow			(uiXml, pth, 0, this);
-	UIScrollWnd					= xr_new<CUIScrollView>();UIScrollWnd->SetAutoDelete(true);
+	UIScrollWnd					= new CUIScrollView();UIScrollWnd->SetAutoDelete(true);
 	AttachChild					(UIScrollWnd);
 	xml_init.InitScrollView		(uiXml, pth, 0, UIScrollWnd);
 }
@@ -81,13 +81,13 @@ void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data)
 	CUIWindow*				itm = NULL;
 	switch(news_data.m_type){
 		case GAME_NEWS_DATA::eNews:{
-			CUINewsItemWnd* _itm		= xr_new<CUINewsItemWnd>();
+			CUINewsItemWnd* _itm		= new CUINewsItemWnd();
 			_itm->Init					(NEWS_XML,"news_item");
 			_itm->Setup					(news_data);
 			itm							= _itm;					   
 		}break;
 		case GAME_NEWS_DATA::eTalk:{
-			CUINewsItemWnd* _itm		= xr_new<CUINewsItemWnd>();
+			CUINewsItemWnd* _itm		= new CUINewsItemWnd();
 			_itm->Init					(NEWS_XML,"talk_item");
 			_itm->Setup					(news_data);
 			itm							= _itm;					   

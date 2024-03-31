@@ -49,14 +49,14 @@ void CObjectAnimator::LoadMotions(LPCSTR fname)
     if (ext){
 		Clear			();
     	if (0==xr_strcmp(ext,".anm")){
-            COMotion* M	= xr_new<COMotion> ();
+            COMotion* M	= new COMotion ();
             if (M->LoadMotion(full_path)) m_Motions.push_back(M);
             else				FATAL("ERROR: Can't load motion. Incorrect file version.");
         }else if (0==xr_strcmp(ext,".anms")){
             IReader* F			= FS.r_open(full_path);
             u32 dwMCnt			= F->r_u32(); VERIFY(dwMCnt);
             for (u32 i=0; i<dwMCnt; i++){
-                COMotion* M		= xr_new<COMotion> ();
+                COMotion* M		= new COMotion ();
                 bool bRes		= M->Load(*F);
                 if (!bRes)		FATAL("ERROR: Can't load motion. Incorrect file version.");
                 m_Motions.push_back(M);

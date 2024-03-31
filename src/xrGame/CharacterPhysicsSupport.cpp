@@ -83,24 +83,24 @@ CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 	
 }
 
-CCharacterPhysicsSupport::CCharacterPhysicsSupport( EType atype, CEntityAlive* aentity ) 
-:	m_pPhysicsShell( aentity->PPhysicsShell( ) ),
-	m_EntityAlife( *aentity ),
-	mXFORM( aentity->XFORM( ) ),
-	m_ph_sound_player( aentity ),
-	m_interactive_motion( 0 ),
-	m_PhysicMovementControl( xr_new<CPHMovementControl>( aentity ) ),
-	m_eType( atype ),
-	m_eState( esAlive ),
-	m_physics_skeleton( NULL ),
-	m_ik_controller	( NULL ),
-	m_BonceDamageFactor( 1.f ),
-	m_collision_hit_callback( NULL ),
-	m_interactive_animation( NULL ),
-	m_physics_shell_animated( NULL ),
-	m_physics_shell_animated_time_destroy( u32(-1) ),
-	m_weapon_attach_bone( 0 ),
-	m_active_item_obj( 0 ),
+CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity)
+	: m_pPhysicsShell(aentity->PPhysicsShell()),
+	m_EntityAlife(*aentity),
+	mXFORM(aentity->XFORM()),
+	m_ph_sound_player(aentity),
+	m_interactive_motion(0),
+	m_PhysicMovementControl(new CPHMovementControl(aentity)),
+	m_eType(atype),
+	m_eState(esAlive),
+	m_physics_skeleton(nullptr),
+	m_ik_controller(nullptr),
+	m_BonceDamageFactor(1.f),
+	m_collision_hit_callback(nullptr),
+	m_interactive_animation(nullptr),
+	m_physics_shell_animated(nullptr),
+	m_physics_shell_animated_time_destroy(u32(-1)),
+	m_weapon_attach_bone(0),
+	m_active_item_obj(0),
 	m_hit_valide_time(u32(-1)),
 	m_collision_activating_delay(NULL)
 {
@@ -163,8 +163,8 @@ void CCharacterPhysicsSupport::in_Load( LPCSTR section )
 
 void CCharacterPhysicsSupport::run_interactive	( CBlend* B )
 {
-	VERIFY( !m_interactive_animation );
-	m_interactive_animation = xr_new<interactive_animation>( &m_EntityAlife, B );
+	VERIFY(!m_interactive_animation);
+	m_interactive_animation = new interactive_animation(&m_EntityAlife, B);
 }
 
 void CCharacterPhysicsSupport::update_interactive_anims	()
@@ -335,7 +335,7 @@ void		CCharacterPhysicsSupport::					SpawnCharacterCreate			( )
 	//else
 	//{
 	//	VERIFY( !m_collision_activating_delay );
-	//	m_collision_activating_delay = xr_new<activating_character_delay>(this);
+	//	m_collision_activating_delay = new activating_character_delay(this);
 	//}
 		
 }
@@ -483,14 +483,15 @@ void CCharacterPhysicsSupport::KillHit( SHit &H )
 
 	if( m.valid( ) )//&& cmp( prev_pose, mXFORM ) 
 	{
-		destroy( m_interactive_motion );
-		if( false && b_death_anim_velocity )
-			m_interactive_motion = xr_new<imotion_velocity>( );
+		destroy(m_interactive_motion);
+		if (false && b_death_anim_velocity)
+			m_interactive_motion = new imotion_velocity();
 		else
-			m_interactive_motion = xr_new<imotion_position>( );
-		m_interactive_motion->setup( m ,m_pPhysicsShell, hit_angle );
-	} else 
-		DestroyIKController( );
+			m_interactive_motion = new imotion_position();
+		m_interactive_motion->setup(m, m_pPhysicsShell, hit_angle);
+	}
+	else
+		DestroyIKController();
 	//KA->SetUpdateTracksCalback( 0 );
 
 	if( is_imotion(m_interactive_motion ) )
@@ -871,7 +872,7 @@ void CCharacterPhysicsSupport::create_animation_collision		( )
 	m_physics_shell_animated_time_destroy = Device.dwTimeGlobal + physics_shell_animated_destroy_delay;
 	if( m_physics_shell_animated )
 		return;
-	m_physics_shell_animated = xr_new<physics_shell_animated>( &m_EntityAlife, true );
+	m_physics_shell_animated = new physics_shell_animated(&m_EntityAlife, true);
 }
 
 void CCharacterPhysicsSupport::update_animation_collision		( )
@@ -1007,8 +1008,8 @@ void CCharacterPhysicsSupport::bone_chain_disable(u16 bone, u16 r_bone, IKinemat
 		CBoneData	&bd =	K.LL_GetData( bid );
 		if( K.LL_GetBoneInstance( bid ).callback() != anim_bone_fix::callback )
 		{
-			m_weapon_bone_fixes.push_back( xr_new<anim_bone_fix>() );
-			m_weapon_bone_fixes.back()->fix( bid, K );
+			m_weapon_bone_fixes.push_back(new anim_bone_fix());
+			m_weapon_bone_fixes.back()->fix(bid, K);
 		}
 		bid =	bd.GetParentID();
 		
@@ -1323,7 +1324,7 @@ void CCharacterPhysicsSupport::CreateIKController()
 {
 
 	VERIFY(!m_ik_controller);
-	m_ik_controller=xr_new<CIKLimbsController>();
+	m_ik_controller = new CIKLimbsController();
 	m_ik_controller->Create(&m_EntityAlife);
 	
 }

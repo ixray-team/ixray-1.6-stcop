@@ -87,7 +87,7 @@ void CUIRankingWnd::Init()
 
 	if (!EngineExternal()[EEngineExternalUI::DiasbleCharacterInfo])
 	{
-		m_actor_ch_info = xr_new<CUICharacterInfo>();
+		m_actor_ch_info = new CUICharacterInfo();
 		m_actor_ch_info->SetAutoDelete(true);
 		AttachChild(m_actor_ch_info);
 		m_actor_ch_info->InitCharacterInfo(&xml, "actor_ch_info");
@@ -113,7 +113,7 @@ void CUIRankingWnd::Init()
 
 	for ( u8 i = 0; i < m_stat_count; ++i )
 	{
-		m_stat_caption[i]		= xr_new<CUITextWnd>();
+		m_stat_caption[i]		= new CUITextWnd();
 		AttachChild				( m_stat_caption[i] );
 		m_stat_caption[i]->SetAutoDelete( true );
 
@@ -121,7 +121,7 @@ void CUIRankingWnd::Init()
 		{
 			m_stat_caption[i]->AdjustWidthToText();
 
-			m_stat_info[i] = xr_new<CUITextWnd>();
+			m_stat_info[i] = new CUITextWnd();
 			AttachChild(m_stat_info[i]);
 			m_stat_info[i]->SetAutoDelete(true);
 			CUIXmlInit::InitTextWnd(xml, "stat", i, m_stat_info[i]);
@@ -153,7 +153,7 @@ void CUIRankingWnd::Init()
 
 
 	m_achievements_background	= UIHelper::CreateFrameWindow(xml, "achievements_background", this);
-	m_achievements = xr_new<CUIScrollView>();
+	m_achievements = new CUIScrollView();
 	CUIXmlInit::InitScrollView(xml, "achievements_wnd", 0, m_achievements);
 	m_achievements->SetAutoDelete(true);
 	AttachChild(m_achievements);
@@ -173,7 +173,7 @@ void CUIRankingWnd::Init()
 
 void CUIRankingWnd::add_achievement(CUIXml& xml, shared_str const& achiev_id)
 {
-	CUIAchievements* achievement = xr_new<CUIAchievements>(m_achievements);
+	CUIAchievements* achievement = new CUIAchievements(m_achievements);
 	VERIFY2(pSettings->section_exist(achiev_id), make_string<const char*>("Section [%s] does not exist!", achiev_id.c_str()));
 	achievement->init_from_xml(xml);
 

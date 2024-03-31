@@ -12,7 +12,7 @@ CEnvelope::CEnvelope(CEnvelope* source)
 {
 	*this 		= *source;
 	for (u32 i=0; i<source->keys.size(); i++)
-    	keys[i]	= xr_new<st_Key> (*source->keys[i]);
+    	keys[i]	= new st_Key (*source->keys[i]);
 }
 
 void  CEnvelope::ClearAndFree()
@@ -67,7 +67,7 @@ void CEnvelope::InsertKey(float t, float val)
     	if ((*k_it)->time>t) break;
     }
     // create _new key
-    st_Key* K 	= xr_new<st_Key>();
+    st_Key* K 	= new st_Key();
     K->time 	= t;
     K->value 	= val;
     K->shape	= SHAPE_TCB; 
@@ -159,7 +159,7 @@ void CEnvelope::Load_1(IReader& F)
     int y		= F.r_u32();
 	keys.resize	(y);
 	for (u32 i=0; i<keys.size(); i++){
-    	keys[i]	= xr_new<st_Key> ();
+    	keys[i]	= new st_Key ();
         keys[i]->Load_1(F);
     }
 }
@@ -171,7 +171,7 @@ void CEnvelope::Load_2(IReader& F)
 	behavior[1]	= F.r_u8();
 	keys.resize	(F.r_u16());
 	for (u32 i=0; i<keys.size(); i++){
-    	keys[i]	= xr_new<st_Key> ();
+    	keys[i]	= new st_Key ();
         keys[i]->Load_2(F);
     }
 }
@@ -190,7 +190,7 @@ void CEnvelope::LoadA(IReader& F)
         int nkeys=atoi(buf);
 		keys.resize(nkeys);
 		for (u32 i=0; i<keys.size(); i++){
-    		keys[i]	= xr_new<st_Key> ();
+    		keys[i]	= new st_Key ();
             st_Key& K=*keys[i];
 			F.r_string(buf,sizeof(buf));
             int cnt = sscanf	(buf,"Key %f %f %f %f %f %f %f %f %f", f+0, f+1, f+2, f+3, f+4, f+5, f+6, f+7, f+8);
@@ -236,8 +236,8 @@ void CEnvelope::Optimize()
     }
     if (equal&&(keys.size()>2)){
         KeyVec		new_keys;
-		new_keys.push_back(xr_new<st_Key>(*keys.front()));
-		new_keys.push_back(xr_new<st_Key>(*keys.back()));
+		new_keys.push_back(new st_Key(*keys.front()));
+		new_keys.push_back(new st_Key(*keys.back()));
         for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++)
             xr_delete(*k_it);
 		keys.clear();

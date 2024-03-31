@@ -43,16 +43,16 @@ void CAI_Space::init				()
 {
 #ifndef NO_SINGLE
 	VERIFY					(!m_ef_storage);
-	m_ef_storage			= xr_new<CEF_Storage>();
+	m_ef_storage			= new CEF_Storage();
 
 	VERIFY					(!m_graph_engine);
-	m_graph_engine			= xr_new<CGraphEngine>(1024);
+	m_graph_engine			= new CGraphEngine(1024);
 
 	VERIFY					(!m_cover_manager);
-	m_cover_manager			= xr_new<CCoverManager>();
+	m_cover_manager			= new CCoverManager();
 
 	VERIFY					(!m_patrol_path_storage);
-	m_patrol_path_storage	= xr_new<CPatrolPathStorage>();
+	m_patrol_path_storage	= new CPatrolPathStorage();
 
 	VERIFY					(!m_moving_objects);
 	m_moving_objects		= xr_new<::moving_objects>();
@@ -60,7 +60,7 @@ void CAI_Space::init				()
 #endif //#ifndef NO_SINGLE
 
 	VERIFY					(!g_pScriptEngine);
-	g_pScriptEngine = xr_new<CScriptEngine>();
+	g_pScriptEngine = new CScriptEngine();
 	script_engine().init	();
 
 #ifndef NO_SINGLE
@@ -103,11 +103,11 @@ void CAI_Space::load				(LPCSTR level_name)
 
 	const CGameGraph::SLevel &current_level = game_graph().header().level(level_name);
 
-	m_level_graph			= xr_new<CLevelGraph>();
+	m_level_graph			= new CLevelGraph();
 	game_graph().set_current_level(current_level.id());
 	R_ASSERT2				(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2				(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
-	m_graph_engine			= xr_new<CGraphEngine>(
+	m_graph_engine			= new CGraphEngine(
 		_max(
 			game_graph().header().vertex_count(),
 			level_graph().header().vertex_count()
@@ -142,7 +142,7 @@ void CAI_Space::unload				(bool reload)
 	xr_delete				(m_level_graph);
 
 	if (!reload && m_game_graph)
-		m_graph_engine		= xr_new<CGraphEngine>( game_graph().header().vertex_count() );
+		m_graph_engine		= new CGraphEngine( game_graph().header().vertex_count() );
 }
 
 #ifdef DEBUG
@@ -180,14 +180,14 @@ void CAI_Space::validate			(const u32 level_id) const
 void CAI_Space::patrol_path_storage_raw	(IReader &stream)
 {
 	xr_delete						(m_patrol_path_storage);
-	m_patrol_path_storage			= xr_new<CPatrolPathStorage>();
+	m_patrol_path_storage			= new CPatrolPathStorage();
 	m_patrol_path_storage->load_raw	(get_level_graph(),get_cross_table(),get_game_graph(),stream);
 }
 
 void CAI_Space::patrol_path_storage		(IReader &stream)
 {
 	xr_delete						(m_patrol_path_storage);
-	m_patrol_path_storage			= xr_new<CPatrolPathStorage>();
+	m_patrol_path_storage			= new CPatrolPathStorage();
 	m_patrol_path_storage->load		(stream);
 }
 
@@ -214,7 +214,7 @@ void CAI_Space::game_graph				(CGameGraph *game_graph)
 
 //	VERIFY					(!m_graph_engine);
 	xr_delete				(m_graph_engine);
-	m_graph_engine			= xr_new<CGraphEngine>(this->game_graph().header().vertex_count());
+	m_graph_engine			= new CGraphEngine(this->game_graph().header().vertex_count());
 }
 
 const CGameLevelCrossTable &CAI_Space::cross_table		() const
