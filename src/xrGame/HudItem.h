@@ -157,6 +157,11 @@ protected:
 
 	HUD_SOUND_COLLECTION		m_sounds;
 	InertionData				m_current_inertion;
+	float						m_nearwall_dist_max;
+	float						m_nearwall_dist_min;
+	float						m_nearwall_last_hud_fov;
+	float						m_nearwall_target_hud_fov;
+	float						m_nearwall_speed_mod;
 	float						m_fHudFov;
 	bool						m_bDisableBore;
 
