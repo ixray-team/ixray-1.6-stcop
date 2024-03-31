@@ -85,7 +85,7 @@ end
 function WeatherManager:change_period()
 	local check_outdoor =
 		utils.cfg_get_string(self.graphs_ini, level.name() .. "_surge_settings", "surge_state", db.actor, false, "", "")
-	if check_outdoor == "1" then
+	if check_outdoor and check_outdoor == "1" then
 		change_to_pre_fx()
 	end
 
