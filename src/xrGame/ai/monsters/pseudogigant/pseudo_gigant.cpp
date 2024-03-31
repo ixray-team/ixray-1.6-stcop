@@ -269,8 +269,11 @@ void CPseudoGigant::on_threaten_execute()
 	PlayParticles(m_kick_particles, pos, Direction());
 	
 	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
-	if (!pA) return;
-	if ((pA->MovingState() & ACTOR_DEFS::mcJump) != 0) return;
+	if (!pA)
+		return;
+
+	if (pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJump)
+		return;
 
 	float dist_to_enemy = pA->Position().distance_to(Position());
 	float			hit_value;

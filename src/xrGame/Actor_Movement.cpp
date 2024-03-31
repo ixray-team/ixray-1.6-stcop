@@ -665,3 +665,22 @@ float CActor::get_additional_weight() const
 
 	return res;
 }
+
+u32 CActor::GetMovementState(const ACTOR_DEFS::EMovementStates& state) const
+{
+	u32 result = 0;
+	switch (state)
+	{
+		case ACTOR_DEFS::EMovementStates::eReal:
+			result = mstate_real;
+		break;
+        case ACTOR_DEFS::EMovementStates::eWishful:
+			result = mstate_wishful;
+		break;
+        case ACTOR_DEFS::EMovementStates::eOld:
+			result = mstate_old;
+		break;
+	}
+
+	return result;
+}

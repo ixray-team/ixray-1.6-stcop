@@ -88,7 +88,7 @@ void CCustomDetector::HideDetector(bool bFastMode)
 			return;
 		}
 		case CHUDState::EHudStates::eShowing: {
-			bool bClimb = ((Actor()->MovingState() & mcClimb) != 0);
+			bool bClimb = Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb;
 			if (bClimb) {
 				StopCurrentAnimWithoutCallback();
 				SetState(eIdle);
@@ -259,7 +259,7 @@ void CCustomDetector::UpdateVisibility()
 	attachable_hud_item* i0		= g_player_hud->attached_item(0);
 	if(i0 && HudItemData())
 	{
-		bool bClimb			= ( (Actor()->MovingState()&mcClimb) != 0 );
+		bool bClimb	= Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb;
 		if(bClimb)
 		{
 			HideDetector		(true);
@@ -281,7 +281,7 @@ void CCustomDetector::UpdateVisibility()
 	if(m_bNeedActivation)
 	{
 		attachable_hud_item* i0_		= g_player_hud->attached_item(0);
-		bool bClimb					= ( (Actor()->MovingState()&mcClimb) != 0 );
+		bool bClimb	= Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb;
 		if(!bClimb)
 		{
 			CHudItem* huditem		= (i0_)?i0_->m_parent_hud_item : NULL;

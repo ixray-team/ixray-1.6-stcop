@@ -406,16 +406,15 @@ bool CHudItem::TryPlayAnimIdle()
 	if(MovingAnimAllowedNow())
 	{
 		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
-		if(pActor)
+		if (pActor)
 		{
-			CEntity::SEntityState st;
-			pActor->g_State(st);
-			if(st.bSprint)
+			u32 state = Actor()->GetMovementState(eReal);
+			if (state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
 				PlayAnimIdleSprint();
 				return true;
-			}else
-			if(!st.bCrouch && pActor->AnyMove())
+			}
+			else if(!(state & ACTOR_DEFS::EMoveCommand::mcCrouch) && pActor->AnyMove())
 			{
 				PlayAnimIdleMoving();
 				return true;

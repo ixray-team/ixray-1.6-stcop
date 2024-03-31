@@ -1889,12 +1889,12 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 
 	float fStepPerUpd = Device.fTimeDelta / fStrafeMaxTime;
 
-	u32 iMovingState = pActor->MovingState();
-	if ((iMovingState & mcLStrafe) != 0) {
+	u32 iMovingState = pActor->GetMovementState(eReal);
+	if ((iMovingState & ACTOR_DEFS::EMoveCommand::mcLStrafe) != 0) {
 		float fVal = (m_fLR_MovingFactor > 0.f ? fStepPerUpd * 3 : fStepPerUpd);
 		m_fLR_MovingFactor -= fVal;
 	}
-	else if ((iMovingState & mcRStrafe) != 0) {
+	else if ((iMovingState & ACTOR_DEFS::EMoveCommand::mcRStrafe) != 0) {
 		float fVal = (m_fLR_MovingFactor < 0.f ? fStepPerUpd * 3 : fStepPerUpd);
 		m_fLR_MovingFactor += fVal;
 	}
