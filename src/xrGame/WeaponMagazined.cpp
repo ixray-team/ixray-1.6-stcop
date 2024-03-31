@@ -97,10 +97,10 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_sounds.LoadSound(section,"snd_empty", "sndEmptyClick"	, false, m_eSoundEmptyClick	);
 	m_sounds.LoadSound(section,"snd_reload", "sndReload"	, true, m_eSoundReload		);
 
-	if (WeaponSoundExist(section, "snd_reload_empty") && isHUDAnimationExist("anm_reload_empty"))
+	if (WeaponSoundExist(section, "snd_reload_empty") && HudAnimationExist("anm_reload_empty"))
 		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload);
 	
-	if (WeaponSoundExist(section, "snd_reload_misfire") && isHUDAnimationExist("anm_reload_misfire"))
+	if (WeaponSoundExist(section, "snd_reload_misfire") && HudAnimationExist("anm_reload_misfire"))
 		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload);
 
 	if (WeaponSoundExist(section, "snd_aim"))
@@ -850,9 +850,9 @@ void CWeaponMagazined::PlayReloadSound()
 	if(!m_sounds_enabled)
 		return;
 
-	if (m_sounds.FindSoundItem("sndReloadMis", false) && isHUDAnimationExist("anm_reload_misfire") && IsMisfire() && bMisfireReload)
+	if (m_sounds.FindSoundItem("sndReloadMis", false) && HudAnimationExist("anm_reload_misfire") && IsMisfire() && bMisfireReload)
 		PlaySound("sndReloadMis", get_LastFP());
-	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && HudAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
 		PlaySound("sndReloadEmpty", get_LastFP());
 	else
 		PlaySound("sndReload", get_LastFP());
@@ -1243,12 +1243,12 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
-	if (isHUDAnimationExist("anm_reload_misfire") && IsMisfire())
+	if (HudAnimationExist("anm_reload_misfire") && IsMisfire())
 	{
 		PlayHUDMotion("anm_reload_misfire", TRUE, this, GetState());
 		bMisfireReload = true;
 	}
-	else if (isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+	else if (HudAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
 		PlayHUDMotion("anm_reload_empty", TRUE, this, GetState());
 	else
 		PlayHUDMotion("anm_reload", TRUE, this, GetState());

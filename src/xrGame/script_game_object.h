@@ -299,7 +299,7 @@ public:
 			bool				inv_box_can_take		(bool status);
 			bool				inv_box_can_take_status	();
 
-	//передача порции информации InventoryOwner
+	//РїРµСЂРµРґР°С‡Р° РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё InventoryOwner
 			bool				GiveInfoPortion		(LPCSTR info_id);
 			bool				DisableInfoPortion	(LPCSTR info_id);
 			void				GiveGameNews		(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time);
@@ -307,10 +307,10 @@ public:
 
 			void				AddIconedTalkMessage_old(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name) {};
 			void				AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
-	//предикаты наличия/отсутствия порции информации у персонажа
+	//РїСЂРµРґРёРєР°С‚С‹ РЅР°Р»РёС‡РёСЏ/РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 			bool				HasInfo				(LPCSTR info_id);
 			bool				DontHasInfo			(LPCSTR info_id);
-	//работа с заданиями
+	//СЂР°Р±РѕС‚Р° СЃ Р·Р°РґР°РЅРёСЏРјРё
 			ETaskState			GetGameTaskState	(LPCSTR task_id);
 			void				SetGameTaskState	(ETaskState state, LPCSTR task_id);
 			void				GiveTaskToActor		(CGameTask* t, u32 dt, bool bCheckExisting, u32 t_timer);
@@ -774,6 +774,26 @@ public:
 			void				unlock_door_for_npc						();
 			bool				is_door_blocked_by_npc					() const;
 			bool				is_weapon_going_to_be_strapped			( CScriptGameObject const* object ) const;
+
+			void IterateFeelTouch(const luabind::functor<bool>& functor);
+			int GetAmmoCount(u8 type);
+			u8 GetWeaponSubstate();
+			u32 GetMainWeaponType();
+			bool IsOnBelt(CScriptGameObject* obj) const;
+			u32 PlayHudMotion(LPCSTR M, bool bMixIn, u32 state);
+			void AmmoSetCount(u16 count);
+			u16 AmmoBoxSize();
+			bool InstallUpgrade(LPCSTR upgrade);
+			bool HasUpgrade(LPCSTR upgrade);
+			void IterateInstalledUpgrades(const luabind::functor<bool>& functor);
+			void Weapon_AddonAttach(CScriptGameObject* item);
+			void Weapon_AddonDetach(LPCSTR item_section, bool b_spawn_item);
+			LPCSTR Weapon_GetAmmoSection(u8 ammo_type);
+			u16 AmmoGetCount();
+			void SwitchState(u32 state);
+			u32 GetState();
+			CScriptGameObject* ItemOnBelt(u32 item_id) const;
+			u32 GetWeaponType();
 
 	doors::door*				m_door;
 

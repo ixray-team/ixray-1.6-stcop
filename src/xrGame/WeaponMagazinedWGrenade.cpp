@@ -619,12 +619,12 @@ void CWeaponMagazinedWGrenade::PlayAnimReload()
 
 	if (IsGrenadeLauncherAttached())
 	{
-		if (isHUDAnimationExist("anm_reload_misfire_w_gl") && IsMisfire())
+		if (HudAnimationExist("anm_reload_misfire_w_gl") && IsMisfire())
 		{
 			PlayHUDMotion("anm_reload_misfire_w_gl", TRUE, this, GetState());
 			bMisfireReload = true;
 		}
-		else if (isHUDAnimationExist("anm_reload_empty_w_gl") && iAmmoElapsed == 0)
+		else if (HudAnimationExist("anm_reload_empty_w_gl") && iAmmoElapsed == 0)
 			PlayHUDMotion("anm_reload_empty_w_gl", TRUE, this, GetState());
 		else
 			PlayHUDMotion("anm_reload_w_gl", TRUE, this, GetState());

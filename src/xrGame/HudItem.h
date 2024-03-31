@@ -132,6 +132,7 @@ public:
 	IC BOOL						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
+			bool				HudAnimationExist		(LPCSTR anim_name);
 	virtual void				on_b_hud_detach			();
 	virtual void				render_hud_mode			()					{};
 	virtual bool				need_renderable			()					{return true;};
@@ -139,8 +140,6 @@ public:
 	virtual bool				render_item_3d_ui_query	()					{return false;}
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
-
-	bool						isHUDAnimationExist		(LPCSTR anim_name);
 
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
