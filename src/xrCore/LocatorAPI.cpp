@@ -493,7 +493,7 @@ void CLocatorAPI::archive::close()
 void CLocatorAPI::ProcessArchive(LPCSTR _path)
 {
 	// find existing archive
-	shared_str path = ANSI_TO_UTF8(_path).c_str();
+	shared_str path = Platform::ANSI_TO_UTF8(_path).c_str();
 
 	for (archives_it it=m_archives.begin(); it!=m_archives.end(); ++it)
 		if (it->path==path)	

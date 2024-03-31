@@ -201,6 +201,11 @@ public:
 #define	_BGCL	
 
 #include <DirectXMath.h>
-XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi);
+namespace Platform
+{
+    XRCORE_API xr_string TCHAR_TO_ANSI_U8(const xr_special_char* C);
+    XRCORE_API xr_string UTF8_to_CP1251(xr_string const& utf8);
+    XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi);
+}
 
 extern XRCORE_API xrCore Core;

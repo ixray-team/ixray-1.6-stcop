@@ -78,8 +78,8 @@ void DiscordShared::SyncActivity() noexcept
 {
 	static bool isCorrect = true;
 
-	Activity.SetDetails(ANSI_TO_UTF8(Status).c_str());
-	Activity.SetState(ANSI_TO_UTF8(Phase).c_str());
+	Activity.SetDetails(Platform::ANSI_TO_UTF8(Status).c_str());
+	Activity.SetState(Platform::ANSI_TO_UTF8(Phase).c_str());
 
 	Core->ActivityManager().UpdateActivity
 	(
