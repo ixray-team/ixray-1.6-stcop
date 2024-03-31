@@ -347,12 +347,8 @@ void RenderUIWeather()
 	if (ImGui::ColorEdit3("rain_color", (float*)&cur->rain_color))
 		changed = true;
 
-	Fvector temp;
-	temp = convert(cur->sky_color);
-	if (ImGui::ColorEdit3("sky_color", (float*)&temp))
+	if (ImGui::ColorEdit3("sky_color", (float*)&cur->sky_color))
 		changed = true;
-
-	cur->sky_color = convert(temp);
 
 	if (ImGui::SliderFloat("sky_rotation", &cur->sky_rotation, 0.0f, 6.28318f))
 		changed = true;
