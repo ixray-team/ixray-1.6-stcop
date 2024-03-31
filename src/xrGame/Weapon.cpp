@@ -794,9 +794,6 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_strapped_mode				= false;
 	m_strapped_mode_rifle = false;
 	m_zoom_params.m_bIsZoomModeNow	= false;
-	bReloadKeyPressed = false;
-	bAmmotypeKeyPressed = false;
-	bStopReloadSignal = false;
 	UpdateXForm					();
 
 }
@@ -827,6 +824,10 @@ void CWeapon::OnActiveItem ()
 //. Show
 	SwitchState					(eShowing);
 //-
+
+	bReloadKeyPressed = false;
+	bAmmotypeKeyPressed = false;
+	bStopReloadSignal = false;
 
 	inherited::OnActiveItem		();
 	//если мы занружаемся и оружие было в руках
