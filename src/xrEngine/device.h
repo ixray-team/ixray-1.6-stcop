@@ -51,7 +51,7 @@ public:
 	virtual				u32					GetSwapchainWidth() = 0;
 	virtual				u32					GetSwapchainHeight() = 0;
 
-	virtual				void				ResizeBuffers(u16 Width, u16 Height) = 0;
+	virtual				void				ResizeWindow(u32 width, u32 height) = 0;
 
 	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
 	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
@@ -154,7 +154,8 @@ public:
 	u32	GetSwapchainWidth() override;
 	u32	GetSwapchainHeight() override;
 
-	void ResizeBuffers(u16 Width, u16 Height) override;
+	void ResizeBuffers(u32 Width, u32 Height);
+	void ResizeWindow(u32 width, u32 height);
 
 	D3D_FEATURE_LEVEL GetFeatureLevel() override;
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;

@@ -312,14 +312,8 @@ u32	CRenderDevice::GetSwapchainHeight()
 	return TargetHeight;
 }
 
-void CRenderDevice::ResizeBuffers(u16 Width, u16 Height)
+void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
-	if (!psDeviceFlags.is(rsFullscreen)) {
-		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
-	} else {
-		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
-	}
-
 	switch (CurrentAPILevel) {
 
 	case APILevel::DX9:
@@ -334,15 +328,71 @@ void CRenderDevice::ResizeBuffers(u16 Width, u16 Height)
 		break;
 	}
 
-	if (!psDeviceFlags.is(rsFullscreen))
-	{
-		const bool Centered = strstr(Core.Params, "-no_center_screen") == nullptr;
-		SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
-		SDL_SetWindowPosition(g_AppInfo.Window, Centered ? SDL_WINDOWPOS_CENTERED : 0, Centered ? SDL_WINDOWPOS_CENTERED : 0);
-	}
-
 	Device.TargetWidth = Width;
 	Device.TargetHeight = Height;
+}
+
+void CRenderDevice::ResizeWindow(u32 width, u32 height)
+{   
+	Width = width;
+	Height = height;
+
+	if (!psDeviceFlags.is(rsFullscreen))
+		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
+	else
+		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
+
+	// Get the index of the primary display
+	SDL_DisplayID displayIndex = SDL_GetDisplayForWindow(g_AppInfo.Window);
+	if (displayIndex < 0) {
+		Msg("! Failed to get display index: %i", SDL_GetError());
+		return;
+	}
+
+	// Get the bounds of the primary display
+	SDL_Rect displayBounds;
+	if (SDL_GetDisplayBounds(displayIndex, &displayBounds) != 0) {
+		Msg("! Failed to get display bounds: %i", SDL_GetError());
+		return;
+	}
+
+	// Calculate maximum width and height based on available display area
+	int maxWidth = displayBounds.w;
+	int maxHeight = displayBounds.h;
+
+	// Ensure the new window size fits within the maximum width and height
+	Width = std::min(Width, maxWidth);
+	Height = std::min(Height, maxHeight);
+
+	// Set the new window size
+	SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
+
+	// Adjust the window position to keep it within the bounds of the primary display
+	const bool bCentered = strstr(Core.Params, "-no_center_screen") == nullptr;
+	if (bCentered)
+	{
+		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+	}
+	else
+	{
+		// Get the position of the window after resizing
+		int windowX, windowY;
+		SDL_GetWindowPosition(g_AppInfo.Window, &windowX, &windowY);
+
+		windowX = std::max(windowX, displayBounds.x);
+		windowY = std::max(windowY, displayBounds.y);
+		windowX = std::min(windowX, displayBounds.x + displayBounds.w - Width);
+		windowY = std::min(windowY, displayBounds.y + displayBounds.h - Height);
+		SDL_SetWindowPosition(g_AppInfo.Window, windowX, windowY);
+	}
+
+	ResizeBuffers(Width, Height);
+
+	if (!psDeviceFlags.is(rsFullscreen) && bCentered)
+	{
+		SDL_PollEvent(nullptr);
+		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+	}
 }
 
 D3D_FEATURE_LEVEL CRenderDevice::GetFeatureLevel()
