@@ -1,9 +1,13 @@
 #include "stdafx.h"
 
 #include "../Include/xrRender/DrawUtils.h"
-#include "render.h"
+#include "Render.h"
 #include "IGame_Persistent.h"
-#include "xr_IOConsole.h"
+
+#include "IGame_Level.h"
+#include "CustomHUD.h"
+
+extern BOOL bNeed_re_create_env;
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
@@ -50,16 +54,12 @@ void CRenderDevice::Destroy()
 	DestroyRenderDevice();
 }
 
-#include "IGame_Level.h"
-#include "CustomHUD.h"
-extern BOOL bNeed_re_create_env;
-void CRenderDevice::Reset		(bool precache)
+void CRenderDevice::Reset(bool precache)
 {
-	u32 dwWidth_before		= TargetWidth;
-	u32 dwHeight_before		= TargetHeight;
+	u32 dwWidth_before = TargetWidth;
+	u32 dwHeight_before = TargetHeight;
 
-	SDL_ShowCursor();
-	u32 tm_start			= TimerAsync();
+	u32 tm_start = TimerAsync();
 
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
 
@@ -67,22 +67,23 @@ void CRenderDevice::Reset		(bool precache)
 	{
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
-	_SetupStates			();
+	_SetupStates();
 	if (precache)
-		PreCache			(20, true, false);
-	u32 tm_end				= TimerAsync();
-	Msg						("*** RESET [%d ms]",tm_end-tm_start);
+		PreCache(20, true, false);
+	u32 tm_end = TimerAsync();
+	Msg("*** RESET [%d ms]", tm_end - tm_start);
 
 	//	TODO: Remove this! It may hide crash
 	Memory.mem_compact();
 
-	if (!g_dedicated_server) {
-		SDL_HideCursor();
+	if (!g_dedicated_server)
+	{
+		SDL_ShowCursor();
 	}
 
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	if(dwWidth_before!= TargetWidth || dwHeight_before!= TargetHeight)
+	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight)
 	{
 		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
 	}

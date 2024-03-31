@@ -114,7 +114,8 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
-	if (!Device.IsCapturingInputs()) {
+	if (!CImGuiManager::Instance().IsCapturingInputs())
+	{
 		vPrevPos = vPos;
 		SDL_GetMouseState(&vPos.x, &vPos.y);
 		vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
@@ -126,7 +127,8 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	if (!Device.IsCapturingInputs()) {
+	if (!CImGuiManager::Instance().IsCapturingInputs())
+	{
 		vPos = pos;
 	}
 }

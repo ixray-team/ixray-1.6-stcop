@@ -133,15 +133,15 @@ void CConsole::Initialize()
 	extern void CCC_Register();
 	CCC_Register();
 
-	Device.AddUICommand("DebugConsole", 3, std::bind(&CConsole::DrawUIConsole, this));
-	Device.AddUICommand("DebugConsoleVars", 3, std::bind(&CConsole::DrawUIConsoleVars, this));
+	CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsole, this));
+	CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsoleVars, this));
 }
 
 CConsole::~CConsole()
 {
 	xrLogger::RemoveLogCallback(ConsoleLogCallback);
-	Device.RemoveUICommand("DebugConsole");
-	Device.RemoveUICommand("DebugConsoleVars");
+	CImGuiManager::Instance().Unsubscribe("DebugConsole");
+	CImGuiManager::Instance().Unsubscribe("DebugConsoleVars");
 
 	xr_delete( m_hShader_back );
 	xr_delete( m_editor );

@@ -56,12 +56,8 @@ public:
 	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
 	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 
-	virtual				bool				IsCapturingInputs() = 0;
 	virtual				void				BeginRender() = 0;
 	virtual				void				EndRender() = 0;
-	virtual				void				DrawUI() = 0;
-	virtual				void				AddUICommand(const char* Name, int Order, std::function<void()>&& Function) = 0;
-	virtual				void				RemoveUICommand(const char* Name) = 0;
 };
 
 class ENGINE_API CRenderDeviceData
@@ -134,19 +130,9 @@ class ENGINE_API CRenderDevice: public CRenderDeviceBase
 	friend void CreateRDoc();
 	friend class CPHWorld;
 
-	struct DrawCommand
-	{
-		int Order;
-		xr_string Name;
-		std::function<void()> Function;
-	};
-
-	xr_vector<DrawCommand> DrawCommands;
 	RENDERDOC_API_1_6_0* pRDocAPI = nullptr;
 
 public:
-	bool CaptureInputs = false;
-	bool DrawUIRender = false;
 	int Width = 0, Height = 0, PosX = 0, PosY = 0;
 
 	CTimer									TimerMM;
@@ -173,12 +159,8 @@ public:
 	D3D_FEATURE_LEVEL GetFeatureLevel() override;
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
-	bool IsCapturingInputs() override;
 	void BeginRender() override;
 	void EndRender() override;
-	void DrawUI() override;
-	void AddUICommand(const char* Name, int Order, std::function<void()>&& Function) override;
-	void RemoveUICommand(const char* Name) override;
 
 public:
 	LRESULT									MsgProc		(HWND,UINT,WPARAM,LPARAM);

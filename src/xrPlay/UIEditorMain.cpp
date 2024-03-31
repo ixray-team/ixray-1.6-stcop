@@ -36,10 +36,10 @@ void RenderUI()
 {
 	static bool FirstDraw = true;
 
-	Device.AddUICommand("Editor Weather Draw", 2, RenderUIWeather);
-	Device.AddUICommand("Actor InfoPortions", 2, RenderActorInfos);
+	CImGuiManager::Instance().Subscribe("Editor Weather Draw", CImGuiManager::ERenderPriority::eMedium, RenderUIWeather);
+	CImGuiManager::Instance().Subscribe("Actor InfoPortions", CImGuiManager::ERenderPriority::eMedium, RenderActorInfos);
 
-	Device.AddUICommand("LuaDebug", 2, []() 
+	CImGuiManager::Instance().Subscribe("LuaDebug", CImGuiManager::ERenderPriority::eLow, []()
 	{
 		static bool Attach = false;
 

@@ -5,6 +5,9 @@
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	ImGui_ImplSDL3_ProcessEvent(&Event);
+	
+	if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID)
+		return true;
 
 	switch (Event.type) {
 	case SDL_EVENT_WINDOW_MOUSE_ENTER:
