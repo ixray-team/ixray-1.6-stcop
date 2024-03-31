@@ -37,8 +37,35 @@
     - IX-Ray Team
 --]]
 
-local SAVE_FILE_PATH = "$game_saves$"
-local SAVE_FILE_NAME = "gamestate.dat"
+local SAVES_FILE_PATH = "$game_saves$"
+local INFO_TO_SAVE = ""
+local INFO_TO_LOAD = ""
+
+function BeforeSaveEvent(fName)
+    if not isMarshal then
+        error("Marshal library is not available.")
+        return
+    end
+	
+    INFO_TO_SAVE = fName .. ".dat"
+	
+	SendScriptCallback("save_state")
+end 
+
+function BeforeLoadEvent(fName)
+    if not isMarshal then
+        error("Marshal library is not available.")
+        return
+    end
+	
+    INFO_TO_LOAD = fName .. ".dat"
+	
+    SendScriptCallback("load_state")
+end 
+
+function deleteObsoleteData()
+	-- Need to purge data related to deleted saves
+end
 
 function saveToMarshalFile(stateTable)
     if not isMarshal then
@@ -50,7 +77,8 @@ function saveToMarshalFile(stateTable)
     local serializedState = marshal.encode(stateTable)
 
     -- Resolve the full path using the game's FS API
-    local fullPath = getFS():update_path(SAVE_FILE_PATH, SAVE_FILE_NAME)
+    local fullPath = getFS():update_path(SAVES_FILE_PATH, INFO_TO_SAVE)
+	printf("Attempting to save to %s" , fullPath)
     if fullPath then
         -- Write the serialized state using Lua's io library
         local file, err = io.open(fullPath, "wb")
@@ -61,7 +89,7 @@ function saveToMarshalFile(stateTable)
             error("Failed to open file for saving with Lua io: " .. (err or "unknown error"))
         end
     else
-        error("Failed to resolve path for saving: " .. SAVE_FILE_PATH .. "/" .. SAVE_FILE_NAME)
+        error("Failed to resolve path for saving: " .. SAVES_FILE_PATH .. "/" .. INFO_TO_SAVE)
     end
 end
 
@@ -72,7 +100,8 @@ function loadFromMarshalFile()
     end
 
     -- Resolve the full path using the game's FS API
-    local fullPath = getFS():update_path(SAVE_FILE_PATH, SAVE_FILE_NAME)
+    local fullPath = getFS():update_path(SAVES_FILE_PATH, INFO_TO_LOAD)
+	printf("Attempting to load from %s" , fullPath)
     local file, err = io.open(fullPath, "rb")
     if not file then
         error("Failed to open file for loading with Lua io: " .. (err or "unknown error"))
