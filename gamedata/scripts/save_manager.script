@@ -41,15 +41,37 @@ local SAVES_FILE_PATH = "$game_saves$"
 local INFO_TO_SAVE = ""
 local INFO_TO_LOAD = ""
 
+-- Ensure the given directory directory exists
+function ensureDirExists(path)
+    if not isLfs then
+        error("LFS library is not available.")
+        return
+    end
+	
+    local attr = lfs.attributes(path)
+    if attr == nil then -- Path does not exist
+        local success, err = lfs.mkdir(path)
+        if not success then
+            error("Failed to create directory: " .. err)
+        end
+    elseif attr.mode ~= "directory" then -- Path exists but is not a directory
+        error("Path exists but is not a directory: " .. path)
+    end
+end
+
 function BeforeSaveEvent(fName)
     if not isMarshal then
         error("Marshal library is not available.")
         return
     end
 	
-    INFO_TO_SAVE = fName .. ".dat"
+    -- Resolve the full path using the game's FS API
+    local saveDir = getFS():update_path(SAVES_FILE_PATH, "")
+    -- Ensure the directory exists
+    ensureDirExists(saveDir)
 	
-	SendScriptCallback("save_state")
+    INFO_TO_SAVE = fName .. ".dat"
+    SendScriptCallback("save_state")
 end 
 
 function BeforeLoadEvent(fName)

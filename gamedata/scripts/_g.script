@@ -10,6 +10,7 @@ math.mod = math.fmod
 math.randomseed(time_global())
 
 isMarshal = marshal ~= nil
+isLfs = lfs ~= nil
 
 --// Some X-Ray block
 DebugLog = false
