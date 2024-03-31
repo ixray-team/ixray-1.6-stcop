@@ -54,6 +54,10 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 		}
 	}
 
+	luabind::functor<void> funct;
+	if (ai().script_engine().functor("save_manager.BeforeSaveEvent", funct))
+		funct((LPCSTR)save_name);
+
 	u32							source_count;
 	u32							dest_count;
 	void						*dest_data;
@@ -146,6 +150,11 @@ bool CALifeStorageManager::load	(LPCSTR save_name_no_check)
 	{
 		xr_strconcat(m_save_name, save_name, SAVE_EXTENSION);
 	}
+
+	luabind::functor<void> funct;
+	if (ai().script_engine().functor("save_manager.BeforeLoadEvent", funct))
+		funct(save_name);
+
 	string_path					file_name;
 	FS.update_path				(file_name,"$game_saves$",m_save_name);
 
