@@ -241,6 +241,8 @@ private:
 
 	void					calculate_dynamic_sun_dir();
 public:
+	void SetEnvDesc(LPCSTR weather_section, CEnvDescriptor*& e);
+
 	static bool sort_env_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
 	{	return x->exec_time < y->exec_time;	}
 	static bool sort_env_etl_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
@@ -326,6 +328,8 @@ public:
 	void					OnDeviceCreate		();
 	void					OnDeviceDestroy		();
 
+	float GetGameTime() { return fGameTime; }
+
 	// editor-related
 #ifdef _EDITOR
 public:
@@ -333,7 +337,6 @@ public:
 	float					ed_to_time			;
 public:
     void					ED_Reload			();
-    float					GetGameTime			(){return fGameTime;}
 #else // #ifdef _EDITOR
 
 	bool					m_paused;

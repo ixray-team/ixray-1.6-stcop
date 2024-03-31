@@ -177,6 +177,47 @@ CScriptGameObject *get_object_by_id(u16 id)
 	return pGameObject->lua_game_object();
 }
 
+LPCSTR get_past_wdesc()
+{
+	return			(g_pGamePersistent->Environment().Current[0] ? g_pGamePersistent->Environment().Current[0]->m_identifier.c_str() : "null");
+}
+
+LPCSTR get_next_wdesc()
+{
+	return			(g_pGamePersistent->Environment().Current[1] ? g_pGamePersistent->Environment().Current[1]->m_identifier.c_str() : "null");
+}
+
+float get_past_wdesc_execution_time()
+{
+	return			(g_pGamePersistent->Environment().Current[0] ? g_pGamePersistent->Environment().Current[0]->exec_time : -1.f);
+}
+
+float get_next_wdesc_execution_time()
+{
+	return			(g_pGamePersistent->Environment().Current[1] ? g_pGamePersistent->Environment().Current[1]->exec_time : -1.f);
+}
+
+float get_weather_game_time()
+{
+	return			(&g_pGamePersistent->Environment() ? g_pGamePersistent->Environment().GetGameTime() : -1.f);
+}
+
+void set_past_wdesc(LPCSTR WeatherSection)
+{
+	if (&g_pGamePersistent->Environment())
+	{
+		g_pGamePersistent->Environment().SetEnvDesc(WeatherSection, g_pGamePersistent->Environment().Current[0]);
+	}
+}
+
+void set_next_wdesc(LPCSTR WeatherSection)
+{
+	if (&g_pGamePersistent->Environment())
+	{
+		g_pGamePersistent->Environment().SetEnvDesc(WeatherSection, g_pGamePersistent->Environment().Current[1]);
+	}
+}
+
 LPCSTR get_weather	()
 {
 	return			(*g_pGamePersistent->Environment().GetWeather());
@@ -960,6 +1001,13 @@ void CLevel::script_register(lua_State *L)
 		def("get_weather",						get_weather),
 		def("set_weather",						set_weather),
 		def("set_weather_fx",					set_weather_fx),
+		def("set_past_weather", set_past_wdesc),
+		def("set_next_weather", set_next_wdesc),
+		def("get_weather_game_time", get_weather_game_time),
+		def("get_past_wdesc_execution_time", get_past_wdesc_execution_time),
+		def("get_next_wdesc_execution_time", get_next_wdesc_execution_time),
+		def("get_past_weather", get_past_wdesc),
+		def("get_next_weather", get_next_wdesc),
 		def("start_weather_fx_from_time",		start_weather_fx_from_time),
 		def("is_wfx_playing",					is_wfx_playing),
 		def("get_wfx_time",						get_wfx_time),
