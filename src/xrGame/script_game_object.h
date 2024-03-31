@@ -89,6 +89,12 @@ class CPhysicObject;
 class CArtefact;
 enum EBoostParams;
 
+namespace ACTOR_DEFS {
+	enum EMovementStates;
+	enum EMoveCommand;
+};
+
+
 #ifdef DEBUG
 	template <typename _object_type>
 	class CActionBase;
@@ -645,6 +651,10 @@ public:
 
 			void				ApplyBooster						(LPCSTR sect);
 			void				SetBoosterTime						(float time, const EBoostParams& param);
+
+			bool				GetActorMovementState				(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask) const;
+			void				SetActorMovementState				(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, const bool status) const;
+
 
 #ifdef DEBUG
 			void				debug_planner						(const script_planner *planner);

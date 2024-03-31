@@ -243,6 +243,9 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("apply_booster", &CScriptGameObject::ApplyBooster)
 		.def("set_booster_time", &CScriptGameObject::SetBoosterTime)
 
+		//Actor states
+		.def("get_movement_state", &CScriptGameObject::GetActorMovementState)
+		.def("set_movement_state", &CScriptGameObject::SetActorMovementState)
 
 		//CustomZone
 		.def("enable_anomaly",              &CScriptGameObject::EnableAnomaly)

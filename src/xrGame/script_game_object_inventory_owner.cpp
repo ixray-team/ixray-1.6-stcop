@@ -1234,6 +1234,32 @@ void CScriptGameObject::SetBoosterTime(float time, const EBoostParams& param)
 	}
 }
 
+bool CScriptGameObject::GetActorMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask) const
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorMovementState!");
+		return 0;
+	}
+
+	return !!((pActor->GetMovementState(state) & mask) > 0);
+}
+
+void CScriptGameObject::SetActorMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, const bool status) const
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member SetActorMovementState!");
+		return;
+	}
+
+	pActor->SetMovementState(state, mask, status);
+}
+
 void CScriptGameObject::enable_movement	(bool enable)
 {
 	CCustomMonster						*monster = smart_cast<CCustomMonster*>(&object());
