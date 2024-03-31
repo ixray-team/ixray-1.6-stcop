@@ -6,8 +6,8 @@ const LPCSTR UI_PATH				= "ui";
 
 #include "tinyxml.h"
 
-typedef TiXmlNode		XML_NODE;
-typedef TiXmlAttribute	XML_ATTRIBUTE;
+using XML_NODE = tinyxml2::XMLNode;
+using XML_ATTRIBUTE = tinyxml2::XMLAttribute;
 
 class XRCORE_API	CXml  
 {
@@ -88,6 +88,6 @@ private:
 						CXml					(const CXml& copy);
 	void				operator=				( const CXml& copy );
 
-	typedef TiXmlElement						XML_ELEM;
-	TiXmlDocument								m_Doc;
+	typedef tinyxml2::XMLElement						XML_ELEM;
+	tinyxml2::XMLDocument								m_Doc;
 };

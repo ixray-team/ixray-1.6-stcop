@@ -670,7 +670,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 	if(!curr_root)
 			curr_root					= xml_doc.GetRoot();
 	
-	XML_NODE* node						= curr_root->IterateChildren(NULL);
+	const XML_NODE* node						= curr_root->FirstChild();
 	int cnt_static						= 0;
 	int cnt_frameline					= 0;
 	int cnt_text						= 0;
@@ -705,7 +705,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 		{
 			++cnt_text;
 		}
-		node						= curr_root->IterateChildren(node);
+		node = node->NextSibling();
 	}
 /*
 	CUIStatic* pUIStatic				= NULL;

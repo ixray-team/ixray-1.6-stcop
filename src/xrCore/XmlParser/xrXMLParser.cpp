@@ -2,11 +2,11 @@
 #pragma hdrstop
 
 #include "xrXMLParser.h"
+#include "AsureXML.h"
 
-
-CXml::CXml()
-	:	m_root			(NULL),
-		m_pLocalRoot	(NULL)
+CXml::CXml() :	
+	m_root(nullptr), 
+	m_pLocalRoot(nullptr)
 {}
 
 CXml::~CXml()
@@ -30,17 +30,17 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader *F, CXml* xml )
 			string256	inc_name;	
 			if (_GetItem	(str,1,inc_name,'"'))
 			{
-				IReader* I 			= NULL;
-				if(inc_name==strstr(inc_name,"ui\\"))
+				IReader* I 			= nullptr;
+				if (inc_name == strstr(inc_name, "ui\\"))
 				{
 					shared_str fn	= xml->correct_file_name("ui", strchr(inc_name,'\\')+1);
 					string_path		buff;
 					xr_strconcat(buff,"ui\\",fn.c_str());
-					I 				= FS.r_open(path, buff);
+					I = FS.r_open(path, buff);
 				}
 
 				if(!I)
-					I 	= FS.r_open(path, inc_name);
+					I = FS.r_open(path, inc_name);
 
 				if(!I){
 					string1024 str_;
@@ -66,28 +66,49 @@ void CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 }
 
 //инициализация и загрузка XML файла
-void CXml::Load(LPCSTR path, LPCSTR  xml_filename)
+void CXml::Load(LPCSTR path, LPCSTR xml_filename)
 {
-	xr_strcpy					(m_xml_file_name, xml_filename);
+	xr_strcpy(m_xml_file_name, xml_filename);
 	// Load and parse xml file
 
-	IReader *F				= FS.r_open(path, xml_filename);
-	R_ASSERT2				(F,xml_filename);
+	IReader* F = FS.r_open(path, xml_filename);
+	R_ASSERT2(F, xml_filename);
 
-	CMemoryWriter			W;
-	ParseFile				(path, W, F, this);
-	W.w_stringZ				("");
-	FS.r_close				(F);
+	CMemoryWriter W;
+	ParseFile(path, W, F, this);
+	W.w_stringZ("");
+	FS.r_close(F);
 
-	m_Doc.Parse				(&m_Doc, (LPCSTR)W.pointer());
+	m_Doc.Parse((LPCSTR)W.pointer());
+
+	// Asure initial
+	CXMLOverride XMLOverrider;
+	const FS_FileSet& AsureData = XMLOverrider.GetModifFiles(path, xml_filename);
+	if (!AsureData.empty())
+	{
+		for (const FS_File& File : AsureData)
+		{
+			IReader* AF = FS.r_open("$game_config$", File.name.c_str());
+
+			CMemoryWriter AW;
+			ParseFile(path, AW, AF, this);
+			AW.w_stringZ("");
+			FS.r_close(AF);
+
+			tinyxml2::XMLDocument ADoc; 
+			ADoc.Parse((LPCSTR)AW.pointer());
+			XMLOverrider.GenerateNewDoc(m_Doc, ADoc);
+		}
+	}
+
 	if (m_Doc.Error())
 	{
-		string1024			str;
-		xr_sprintf				(str, "XML file:%s value:%s errDescr:%s",m_xml_file_name,m_Doc.Value(), m_Doc.ErrorDesc());
-		R_ASSERT2			(false, str);
-	} 
+		string1024 str;
+		xr_sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
+		R_ASSERT2(false, str);
+	}
 
-	m_root					= m_Doc.FirstChildElement();
+	m_root = m_Doc.FirstChildElement();
 }
 
 XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR  path, int node_index)
@@ -109,11 +130,20 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR  path, int node_inde
 
 	if( token != NULL )
 	{
-		node = start_node->FirstChild(token);
+		node = start_node->FirstChildElement(token);
 
 		while (tmp++ < node_index && node)
 		{
-			node = start_node->IterateChildren(token, node);
+			//FX: tinyxml::IterateChildren code:
+			if (node)
+			{
+				R_ASSERT(node->Parent() == start_node);
+				node = node->NextSiblingElement(token);
+			}
+			else
+			{
+				node = start_node->FirstChildElement(token);
+			}
 		}
 	}
 	
@@ -126,7 +156,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR  path, int node_inde
 			if(node != 0) 
 			{
 				node_parent = node;
-				node = node_parent->FirstChild(token);
+				node = node_parent->FirstChildElement(token);
 			}
 
     }
@@ -181,7 +211,7 @@ LPCSTR CXml::Read(XML_NODE* node,  LPCSTR   default_str_val)
 		node					= node->FirstChild();
 		if (!node)				return default_str_val;
 
-		TiXmlText *text			= node->ToText();
+		tinyxml2::XMLText *text			= node->ToText();
 		if (text)				return text->Value();
 		else 
 			return				default_str_val;
@@ -276,7 +306,7 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
 		LPCSTR result_str = NULL;
 		// Кастаем ниже по иерархии
 
-		TiXmlElement *el = node->ToElement(); 
+		tinyxml2::XMLElement *el = node->ToElement(); 
 		
 		if(el)
 		{
@@ -383,7 +413,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR  tag_name)
 	if (!tag_name)
 		el = node->FirstChild();
 	else
-		el = node->FirstChild(tag_name);
+		el = node->FirstChildElement(tag_name);
 
 	int result = 0;
 
@@ -393,7 +423,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR  tag_name)
 		if (!tag_name)
 			el = el->NextSibling();
 		else
-			el = el->NextSibling(tag_name);
+			el = el->NextSiblingElement(tag_name);
 	}
 	
 	return result;
@@ -411,7 +441,7 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
 {
 	while (start_node)
 	{
-		TiXmlElement *el			= start_node->ToElement();
+		tinyxml2::XMLElement *el			= start_node->ToElement();
 		if (el)
 		{
 			LPCSTR attribStr		= el->Attribute(attrib);
@@ -424,12 +454,12 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
 			}
 		}
 
-		XML_NODE *newEl				= start_node->FirstChild(tag_name);
+		XML_NODE *newEl				= start_node->FirstChildElement(tag_name);
 		newEl						= SearchForAttribute(newEl, tag_name, attrib, attrib_value_pattern);
 		if (newEl)
 			return					newEl;
 
-		start_node					= start_node->NextSibling(tag_name);
+		start_node					= start_node->NextSiblingElement(tag_name);
 	}
 	return NULL;
 }

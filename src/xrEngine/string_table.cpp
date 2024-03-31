@@ -28,32 +28,35 @@ void CStringTable::Init		()
 {
 	if(NULL != pData) return;
     
-	pData				= new STRING_TABLE_DATA();
+	pData = new STRING_TABLE_DATA();
 	
 	//имя языка, если не задано (NULL), то первый <text> в <string> в XML
 	pData->m_sLanguage	= pSettings->r_string("string_table", "language");
 
-
-//---
 	FS_FileSet fset;
-	string_path			files_mask;
-	xr_sprintf				(files_mask, "text\\%s\\*.xml",pData->m_sLanguage.c_str());
-	FS.file_list		(fset, "$game_config$", FS_ListFiles, files_mask);
-	FS_FileSetIt fit	= fset.begin();
-	FS_FileSetIt fit_e	= fset.end();
+	FS_FileSet efset;
 
-	for( ;fit!=fit_e; ++fit)
+	string_path files_mask;
+	string_path exclude_files_mask;
+
+	xr_sprintf(files_mask, "text\\%s\\*.xml", pData->m_sLanguage.c_str());
+	FS.file_list(fset, "$game_config$", FS_ListFiles, files_mask);
+
+	xr_sprintf(exclude_files_mask, "text\\%s\\mod_*.xml", pData->m_sLanguage.c_str());
+	FS.file_list(efset, "$game_config$", FS_ListFiles, exclude_files_mask);
+
+	for (const FS_File& File : fset)
 	{
-    	string_path		fn, ext;
-        _splitpath		((*fit).name.c_str(), 0, 0, fn, ext);
-		xr_strcat			(fn, ext);
+		if (efset.contains(File))
+			continue;
 
-		Load			(fn);
+		string_path fn, ext;
+		_splitpath(File.name.c_str(), 0, 0, fn, ext);
+		xr_strcat(fn, ext);
+
+		Load(fn);
 	}
-#ifdef DEBUG
-	Msg("StringTable: loaded %d files", fset.size());
-#endif // #ifdef DEBUG
-//---
+
 	ReparseKeyBindings();
 }
 
