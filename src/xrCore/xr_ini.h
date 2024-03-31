@@ -15,61 +15,79 @@ public:
 	{
 		shared_str	first;
 		shared_str	second;
-//#ifdef DEBUG
-//		shared_str	comment;
-//#endif
 		Item() : first(0), second(0)
-//#ifdef DEBUG
-//			, comment(0)
-//#endif
 		{};
 	};
+
 	typedef xr_vector<Item>				Items;
 	typedef Items::const_iterator		SectCIt;
 	typedef Items::iterator				SectIt_;
-    struct XRCORE_API	Sect {
+
+    struct XRCORE_API	Sect 
+	{
 		shared_str		Name;
 		Items			Data;
 
 		BOOL			line_exist	(LPCSTR L, LPCSTR* val=0);
 	};
+
 	typedef	xr_vector<Sect*>		Root;
 	typedef Root::iterator			RootIt;
 	typedef Root::const_iterator	RootCIt;
 	
-#ifndef _EDITOR
-	typedef fastdelegate::FastDelegate1<LPCSTR, bool>	allow_include_func_t;
-#endif
+	using allow_include_func_t = fastdelegate::FastDelegate1<LPCSTR, bool>;
+
 	static CInifile*	Create		( LPCSTR szFileName, BOOL ReadOnly=TRUE);
 	static void			Destroy		( CInifile*);
     static IC BOOL		IsBOOL		( LPCSTR B)	{ return (xr_strcmp(B,"on")==0 || xr_strcmp(B,"yes")==0 || xr_strcmp(B,"true")==0 || xr_strcmp(B,"1")==0);}
+
 protected:
-	enum{eSaveAtEnd = (1<<0), eReadOnly= (1<<1), eOverrideNames=(1<<2),};
+	enum {eSaveAtEnd = (1<<0), eReadOnly= (1<<1), eOverrideNames=(1<<2),};
 	Flags8			m_flags;
 	string_path		m_file_name;
 	Root			DATA;
 	
-	void			Load		(IReader* F, LPCSTR path
-                                #ifndef _EDITOR
-                                    , allow_include_func_t	allow_include_func = NULL
-                                #endif
-                                );
+	void Load(IReader* F, LPCSTR path, allow_include_func_t	allow_include_func = nullptr);
+	void LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile);
+
+protected:
+	// FX: DLTX trash
+	allow_include_func_t AllowIncludeFunc;
+
+	enum class InsertType : u16
+	{
+		Override,
+		Base,
+		Parent
+	};
+
+	xr_string_map<xr_string, xr_vector<Item>> OverrideModifyListData;
+
+	xr_string_map<xr_string, Sect> FinalData;
+	xr_string_map<xr_string, Sect> BaseData;
+	xr_string_map<xr_string, Sect> OverrideData;
+
+	xr_string_map<xr_string, xr_vector<xr_string>> BaseParentDataMap;
+	xr_string_map<xr_string, xr_vector<xr_string>> OverrideParentDataMap;
+	xr_string_map<xr_string, xr_string_map<xr_string, bool>> OverrideToFilename;
+
+	string_path DLTXCurrentFileName = {};
+
+	void EvaluateSection	(xr_string SectName, xr_vector<xr_string>& Data);
+	void MergeParentSet		(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers);
+
+private:
+	void insert_item(Sect* tgt, const Item& I);
+
 public:
-				CInifile		( IReader* F,
-								   LPCSTR path=0
-                                #ifndef _EDITOR
-								   ,allow_include_func_t allow_include_func = NULL
-                                #endif
-                                    );
+				CInifile		( IReader* F, LPCSTR path=0 ,allow_include_func_t allow_include_func = nullptr );
 
 				CInifile		( LPCSTR szFileName,
 								  BOOL ReadOnly=TRUE,
 								  BOOL bLoadAtStart=TRUE,
 								  BOOL SaveAtEnd=TRUE,
 								  u32 sect_count=0
-                                #ifndef _EDITOR
-								   ,allow_include_func_t allow_include_func = NULL
-                                #endif
+								   ,allow_include_func_t allow_include_func = nullptr
                                     );
 
 	virtual 	~CInifile		( );
