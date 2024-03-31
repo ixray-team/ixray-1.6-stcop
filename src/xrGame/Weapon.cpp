@@ -590,7 +590,6 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
-	m_fRTZoomFactor					= m_zoom_params.m_fScopeZoomFactor;
 	BOOL bResult					= inherited::net_Spawn(DC);
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeItemWeapon			    *E	= smart_cast<CSE_ALifeItemWeapon*>(e);
@@ -601,7 +600,15 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	m_ammoType						= E->ammo_type;
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
-	
+	bMisfire						= E->misfire;
+	if (E->rt_zoom_factor == 0.f)
+		m_fRTZoomFactor					= m_zoom_params.m_fScopeZoomFactor;
+	else
+		m_fRTZoomFactor					= E->rt_zoom_factor;
+
+	if (E->cur_scope < m_scopes.size() && m_scopes.size()>1)
+		m_cur_scope = E->cur_scope;
+
 	m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
 	if(iAmmoElapsed) 
 	{
@@ -655,6 +662,9 @@ void CWeapon::net_Export(NET_Packet& P)
 	P.w_u8					(m_ammoType);
 	P.w_u8					((u8)GetState());
 	P.w_u8					((u8)IsZoomed());
+	P.w_u8					((u8)bMisfire);
+	P.w_float				(m_fRTZoomFactor);
+	P.w_u8					((u8)m_cur_scope);
 }
 
 void CWeapon::net_Import(NET_Packet& P)
@@ -683,6 +693,18 @@ void CWeapon::net_Import(NET_Packet& P)
 
 	u8 Zoom;
 	P.r_u8					(Zoom);
+
+	u8 Misfire;
+	P.r_u8					(Misfire);
+	bMisfire				= Misfire;
+
+	float RTZoom;
+	P.r_float				(RTZoom);
+	m_fRTZoomFactor			= RTZoom;
+
+	u8 scope;
+	P.r_u8					(scope);
+	m_cur_scope				= scope;
 
 	if (H_Parent() && H_Parent()->Remote())
 	{
@@ -721,8 +743,6 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_ammoType,					output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
 	save_data		(m_bRememberActorNVisnStatus,	output_packet);
-	save_data		(m_fRTZoomFactor,				output_packet);
-	save_data		(bMisfire,						output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -734,8 +754,6 @@ void CWeapon::load(IReader &input_packet)
 	UpdateAddonsVisibility			();
 	load_data		(m_ammoType,					input_packet);
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
-	load_data		(m_fRTZoomFactor,				input_packet);
-	load_data		(bMisfire,						input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 			OnZoomIn();

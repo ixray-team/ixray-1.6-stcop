@@ -157,6 +157,10 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	u8								ammo_type;
 	u16								a_current;
 	u16								a_elapsed;
+	u8								misfire;
+	float							rt_zoom_factor;
+	u8								cur_scope;
+
 	//count of grenades to spawn in grenade launcher [ttcccccc]
 	//WARNING! hight 2 bits (tt bits) indicate type of grenade, so maximum grenade count is 2^6 = 64
 	struct grenade_count_t

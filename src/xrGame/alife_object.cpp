@@ -46,6 +46,7 @@ void CSE_ALifeObject::spawn_supplies		(LPCSTR ini_string)
 			bool bScope							= false;
 			bool bSilencer						= false;
 			bool bLauncher						= false;
+			int cur_scope						= 0;
 
 			
 			j					= 1;
@@ -65,6 +66,8 @@ void CSE_ALifeObject::spawn_supplies		(LPCSTR ini_string)
 				if (fis_zero(p)) p	= 1.0f;
 				if(NULL!=strstr(V,"cond="))
 					f_cond			= (float)atof(strstr(V,"cond=")+5);
+				if (nullptr != strstr(V, "scope="))
+					cur_scope = atoi(strstr(V, "scope=") + 6);
 			}
 			for (u32 i=0; i<j; ++i) {
 				if (randF(1.f) < p) {
@@ -73,7 +76,10 @@ void CSE_ALifeObject::spawn_supplies		(LPCSTR ini_string)
 					CSE_ALifeItemWeapon* W =  smart_cast<CSE_ALifeItemWeapon*>(E);
 					if (W) {
 						if (W->m_scope_status == ALife::eAddonAttachable)
+						{
 							W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, bScope);
+							W->cur_scope = cur_scope;
+						}
 						if (W->m_silencer_status == ALife::eAddonAttachable)
 							W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonSilencer, bSilencer);
 						if (W->m_grenade_launcher_status == ALife::eAddonAttachable)
