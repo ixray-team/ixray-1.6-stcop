@@ -22,13 +22,49 @@
 
 INT_PTR CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 
+void EnumerateDisplayModes()
+{
+	int i, numDisplays = 0;
+	SDL_DisplayID* displays = SDL_GetDisplays(&numDisplays);
+	if (displays)
+	{
+		bool isHigherResolutionFound = false;
+
+		for (i = 0; i < numDisplays; ++i) 
+		{
+			SDL_DisplayID instance_id = displays[i];
+			const char* name = SDL_GetDisplayName(instance_id);
+			SDL_Log("Enumerating for display %" SDL_PRIu32 ": %s\n", instance_id, name ? name : "Unknown");
+
+			const SDL_DisplayMode* pDisplayMode = SDL_GetDesktopDisplayMode(instance_id);
+			if (!pDisplayMode)
+			{
+				SDL_Log("Failed to get display mode, using defaults ...");
+				psCurrentVidMode[0] = 800;
+				psCurrentVidMode[1] = 600;
+				return;
+			}
+
+			if (isHigherResolutionFound && psCurrentVidMode[0] < pDisplayMode->w && psCurrentVidMode[1] < pDisplayMode->h)
+			{
+				psCurrentVidMode[0] = pDisplayMode->w;
+				psCurrentVidMode[1] = pDisplayMode->h;
+			}
+			else if (!isHigherResolutionFound)
+			{
+				psCurrentVidMode[0] = pDisplayMode->w;
+				psCurrentVidMode[1] = pDisplayMode->h;
+				isHigherResolutionFound = true;
+			}
+		}
+	}
+}
+
 void CreateGameWindow()
 {
-	if (g_AppInfo.Window == NULL) {
-		DEVMODE dmi;
-		EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmi);
-		psCurrentVidMode[0] = dmi.dmPelsWidth;
-		psCurrentVidMode[1] = dmi.dmPelsHeight;
+	if (g_AppInfo.Window == nullptr) {
+		
+		EnumerateDisplayModes();
 
 		SDL_WindowFlags window_flags = SDL_WINDOW_HIDDEN;
 		g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], window_flags);
