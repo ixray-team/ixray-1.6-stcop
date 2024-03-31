@@ -1176,8 +1176,8 @@ HRESULT	CRender::shader_compile			(
 
 	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
 
-	if (FS.exist(file_name) && !!ps_r__common_flags.test(RFLAG_USE_CACHE))
-	{
+	if (FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+		Msg("compilied shader library found %s", file_name);
 		IReader* file = FS.r_open(file_name);
 		if (file->length()>4)
 		{
@@ -1213,15 +1213,14 @@ HRESULT	CRender::shader_compile			(
 
 		if (SUCCEEDED(_result))
 		{
-			IWriter* file = FS.w_open(file_name);
-
-			u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
-
-			file->w_u32(crc);
-			file->w_u32(RealCodeCRC);
-			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
-			FS.w_close				(file);
-
+			if (ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+				IWriter* file = FS.w_open(file_name);
+				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+				file->w_u32(crc);
+				file->w_u32(RealCodeCRC);
+				file->w(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+				FS.w_close				(file);
+			}
 			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
 		else {
