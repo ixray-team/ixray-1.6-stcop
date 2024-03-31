@@ -98,6 +98,10 @@ xr_vector<xr_string> split(const xr_string& s, char delim)
 	return std::move(elems);
 }
 #include <freetype/ftfntfmt.h>
+
+constexpr u32 TextureDimension = 2048;
+static u32 FontBitmap[TextureDimension * TextureDimension] = {};
+
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	if (!bFreetypeInitialized)
@@ -133,9 +137,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			}
 		}
 	}
-
-	constexpr u32 TextureDimension = 2048; //#TODO calculate size based on font size
-	u32* FontBitmap = (u32*)Memory.mem_alloc((TextureDimension * TextureDimension) * 4);
+	ZeroMemory(FontBitmap, sizeof(FontBitmap));
 
 	// есть кучу способов высчитать размер шрифта для скейлинга
 	// 1. основываясь на DPI(PPI), однако, как не вычисляй его он всегда считается исходя из разрешения моника(системы) и 23 дюймов(мб с дровами на моник - из реальных дюймов)
@@ -176,6 +178,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	u32 TargetX = 0;
 	u32 TargetY = 0;
 	u32 TargetX2 = 0;
+	u32 TargetY2 = 0;
 
 // 	FTError = FT_Set_Pixel_Sizes(OurFont, 0, fHeight);
 // 	R_ASSERT3(FTError == 0, "FT_Set_Pixel_Sizes return error", FullPath);
@@ -192,7 +195,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	float FontSizeInPixels = (float)FT_CEIL(OurFont->size->metrics.height);
 
-	auto CopyGlyphImageToAtlas = [this, TextureDimension, &TargetX, &TargetX2, &TargetY, FontBitmap, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
+	auto CopyGlyphImageToAtlas = [this, &TargetX, &TargetX2, &TargetY, &TargetY2, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
 		{
 			TargetX2 = TargetX + GlyphBitmap.width;
 			if (TargetX2 >= TextureDimension)
@@ -207,7 +210,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			u32 SourceX = 0;
 			u32 SourceY = 0;
 
-			u32 TargetY2 = TargetY + (u32)FontSizeInPixels;
+			TargetY2 = TargetY + (u32)FontSizeInPixels;
 			u32 TargetYSaved = TargetY;
 			TargetY = TargetY + u32(FontSizeInPixels - (float)GlyphBitmap.rows);
 
@@ -313,10 +316,19 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	string128 textureName;
 	xr_sprintf(textureName, "$user$%s", Name); //#TODO optimize
 
-	pFontRender->CreateFontAtlas(TextureDimension, TextureDimension, textureName, FontBitmap);
-	Memory.mem_free(FontBitmap);
-	FS.r_close(FontFile);
+	auto TargetDemensionY = 16u;
 
+	while (TargetDemensionY < TargetY2) {
+		TargetDemensionY *= 2u;
+	}
+#ifdef DEBUG
+	Msg("* Font %s Y size [%d - %d]", Name, TargetDemensionY, TargetY2);
+#endif
+	R_ASSERT2(TargetDemensionY <= TextureDimension, "Font too large, or dimension texture is too small");
+
+	pFontRender->CreateFontAtlas(TextureDimension, TargetDemensionY, textureName, FontBitmap);
+
+	FS.r_close(FontFile);
 	pFontRender->Initialize(shader, textureName);
 }
 

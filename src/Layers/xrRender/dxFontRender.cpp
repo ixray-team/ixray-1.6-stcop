@@ -36,6 +36,9 @@ void dxFontRender::OnRender(CGameFont& owner)
 	{
 		RCache.set_Shader(pShader);
 	}
+	
+	auto fWidth = (float)std::max(pTexture->get_Width(), 4u);
+	auto fHeight = (float)std::max(pTexture->get_Height(), 4u);
 
 	for (CGameFont::String& str : owner.strings) //#TODO mb need use optimization for minimize vertexes allocations?
 	{
@@ -91,11 +94,11 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 				float X2 = X + glyphInfo->Abc.abcB;
 
-				float u1 = float(glyphInfo->TextureCoord.left) / 2048.0f;
-				float u2 = float(glyphInfo->TextureCoord.right) / 2048.0f;
+				float u1 = float(glyphInfo->TextureCoord.left) / fWidth;
+				float u2 = float(glyphInfo->TextureCoord.right) / fWidth;
 
-				float v1 = float(glyphInfo->TextureCoord.top) / 2048.0f;
-				float v2 = float(glyphInfo->TextureCoord.bottom) / 2048.0f;
+				float v1 = float(glyphInfo->TextureCoord.top) / fHeight;
+				float v2 = float(glyphInfo->TextureCoord.bottom) / fHeight;
 
 				vertexes->set(X, GlyphY2, clr2, u1, v2);
 				++vertexes;
@@ -112,7 +115,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 			// Unlock and draw
 			u32 vertexesCount = (u32)(vertexes - start);
 			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
-			if (vertexesCount)
+			if (vertexesCount > 0)
 			{
 				RCache.set_Geometry(pGeom);
 				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
