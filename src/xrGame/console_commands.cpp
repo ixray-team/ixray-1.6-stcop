@@ -1785,15 +1785,27 @@ public:
 			return;
 		}
 
-		if (!pSettings->section_exist(args)) {
-			Msg("! Can't find section: %s", args);
+		int count = 1;
+		char nameSection[128] = {};
+		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
+		if (sc > 2) {
+			Msg("! Failed to parse input");
+			return;
+		}
+
+		if (!pSettings->section_exist(nameSection)) {
+			Msg("! Can't find section: %s", nameSection);
 			return;
 		}
 
 		Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-		if (tpGame != nullptr) {
-			auto item = tpGame->alife().spawn_item(args, point, 0, actor->ai_location().game_vertex_id(), u16(- 1));
+		if (tpGame == nullptr) {
+			return;
+		}
+
+		for (size_t i = 0; i < count; i++) {
+			auto item = tpGame->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
 			item->cast_alife_object()->use_ai_locations(false);
 
 			auto anomaly = item->cast_anomalous_zone();
@@ -1843,14 +1855,26 @@ public:
 			return;
 		}
 
-		if (!pSettings->section_exist(args)) {
-			Msg("! Can't find section: %s", args);
+		int count = 1;
+		char nameSection[128] = {};
+		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
+		if (sc > 2) {
+			Msg("! Failed to parse input");
+			return;
+		}
+
+		if (!pSettings->section_exist(nameSection)) {
+			Msg("! Can't find section: %s", nameSection);
 			return;
 		}
 
 		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-		if (tpGame != nullptr) {
-			CALifeSimulator__spawn_item2(&tpGame->alife(), args, actor->Position(), actor->ai_location().level_vertex_id(),
+		if (tpGame == nullptr) {
+			return;
+		}
+
+		for (int i = 0; i < count; i++) {
+			CALifeSimulator__spawn_item2(&tpGame->alife(), nameSection, actor->Position(), actor->ai_location().level_vertex_id(),
 				actor->ai_location().game_vertex_id(), actor->ID());
 		}
 	}
