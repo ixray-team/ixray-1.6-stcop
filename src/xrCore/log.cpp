@@ -138,6 +138,12 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 
 void xrLogger::InternalCloseLog()
 {
+	while(!logData->empty()) {
+		Sleep(1u);
+	}
+
+	FlushLog();
+
 	if (hLogThread != 0)
 	{
 		bIsAlive = false;
