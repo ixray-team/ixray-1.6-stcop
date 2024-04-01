@@ -1,0 +1,311 @@
+;-------------------------------------------------------------------------------
+;----- Нива 2121 ---------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;#include "models\vehicles\vaz2121_niva.ltx"
+
+;[disable]
+;linear_factor			= 0.3
+;angular_factor			= 0.3
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+
+[car_definition]
+
+camera_pos			= -0.35, 1.5, 0.0	;смещение камеры в кабине влево-вправо, вверх-вниз, вперед-назад
+camera_pos_firsteye			= -0.35, 1.5, 0.0
+camera_pos_lookat			= 0.1, 2.5, -4.2
+camera_pos_free			= 0.1, 2.5, -4.2
+
+exit_position_driver = -2.2, 0.0, 1.0
+exit_position = 2.0, 0.0, 1.0
+
+driving_wheels			= back_left_wheel,back_right_wheel,front_left_wheel,front_right_wheel   ; ведущие колёса
+steering_wheels			= front_left_wheel,front_right_wheel                                    ; рулевые колёса
+breaking_wheels			= front_left_wheel,front_right_wheel,back_left_wheel,back_right_wheel   ; тормозящие колёса
+doors				= left_door,right_door                                                  ; двери
+steer				= stearing_wheel                                                        ; руль
+driver_place			= seat_left                                                         ; место водителя
+exhausts			= exhausts                                                              ; выхлопная труба
+trunk_bone				= back_door
+;exhaust_particles		= vehiclefx\exhaust_1
+
+;-------------------------------------------------------------------------------
+;------ Factory parameters of Engine -------------------------------------------
+
+power_increment_factor	= 0.1
+power_decrement_factor	= 0.05
+rpm_increment_factor	= 0.1
+rpm_decrement_factor	= 0.05
+m_power_neutral_factor	= 1
+
+fuel_tank			= 40		; L
+fuel_consumption		= 12		; L / (100k R); liters per 100 000 rotations
+
+;-------------------------------------------------------------------------------
+;------ Engine settings -------------------------------------------
+
+engine_power			= 15		; horse_power (kW=hp*0.808) max power
+max_engine_rpm			= 4500		;[NET Online] Максимально возможные обороты двигателя(С учётом местности и т.д)
+max_power_rpm			= 4000	    ;[NET Online] Максимально возможные обороты, выдаваемые двигателем(Т.е после нажатия кнопки "Газ")
+max_torque_rpm			= 3500		;[NET Online] Используются в просчётах
+idling_engine_rpm		= 500		;[NET Online] Холостые обороты двигателя
+limiter_engine_rpm      = 0         ;[NET Online] Ограничение/Повышение оборотов двигателя за счёт дополнительного параметра (0 - Не повышать)
+
+;-------------------------------------------------------------------------------
+;------ Adjustment a wheel -----------------------------------------------------
+
+ph_mass                 = 800
+reference_radius		= 0.31		; Радиус колеса, используемый при просчёте двигателя
+axle_friction			= 0.001		; Ослабление скорости в неетральной позиции. (N*m)
+steering_speed			= 0.9		    ; Время поворота рулевого колеса, в максимум. rps (1)
+steering_torque			= 1000000	    ; Сила гидроусилителя руля. (N*m)
+break_torque			= 0.005		; Сила тормозных колодок. (N*m)
+break_time			    = 2.8		; время нарастания силы торможения до максимума, при подтормаживании (стрелка назад)
+hand_break_torque		= 0.115		; сила торможения пробелом (по умолчанию = break_torque)
+
+;-------------------------------------------------------------------------------
+;------ Gearbox ----------------------------------------------------------------
+
+main_gear_ratio			= 7.6		; Передаточное отношение
+auto_transmission		= off		; Автоматическая коробка (on/off)
+
+[transmission_gear_ratio]
+										; shift down/ shift up. (rpm, необходимое для переключения)
+R				= 3.80
+N1				= 3.90
+N2				= 2.20
+N3				= 1.50
+N4				= 1.10
+
+;-------------------------------------------------------------------------------
+;------ Rest Adjustment --------------------------------------------------------
+
+[lights]
+headlights			= f1, f2
+;f3, f4, pribor_panel_light_1, pribor_panel_light_2
+
+[f1]
+bone				= left_light
+color				= 1.0,1.0,1.0,1.0
+range				= 35
+cone_angle			= 60
+spot_texture    = internal\internal_light_torch_r2	
+glow_texture			= glow\glow_Yellow
+glow_radius			= 1.5
+
+[f2]
+bone				= right_light
+color				= 1.0,1.0,1.0,1.0
+range				= 35
+cone_angle			= 60
+spot_texture    = internal\internal_light_torch_r2	
+glow_texture			= glow\glow_Yellow
+glow_radius			= 1.5
+
+[f3]
+bone               		= stop_light_left
+color              		= 0.25,0,0,0.1
+range              		= 2.1
+cone_angle         		= 60
+spot_texture       		= internal\internal_light_torch_r2
+glow_texture       		= glow\glow_torch_r2
+glow_radius        		= 1.5
+is_point                = true
+
+[f4]
+bone               		= stop_light_right
+color              		= 0.25,0,0,0.1
+range              		= 2.1
+cone_angle         		= 60
+spot_texture       		= internal\internal_light_torch_r2
+glow_texture       		= glow\glow_torch_r2
+glow_radius        		= 1.5
+is_point                = true
+
+;------Приборная панель-----------;
+
+[pribor_panel_light_1]
+bone                    = speed_light
+color                   = 1.0, 1.0, 1.0, 1.0
+range                   = 0.1
+cone_angle              = 90
+spot_texture       		= internal\internal_light_torch_r2
+glow_texture       		= glow\glow_torch_r2
+glow_radius        		= 0.1
+is_point                = true
+cast_shadow             = false
+
+
+[pribor_panel_light_2]
+bone                    = rpm_light
+color                   = 1.0, 1.0, 1.0, 1.0
+range                   = 0.1
+cone_angle              = 90
+spot_texture       		= internal\internal_light_torch_r2
+glow_texture       		= glow\glow_torch_r2
+glow_radius        		= 0.1
+is_point                = true
+cast_shadow             = false
+
+[car_sound]
+snd_volume         				= 1.0
+snd_name      		= car\car1
+engine_sound_start_dellay	= 0.5
+engine_start							= car\veh_niva\engine_start
+engine_stop								= car\veh_niva\engine_stop
+transmission_switch				= car\veh_niva\gearchange
+explosion_sound    				= weapons\heli_explosion
+relative_pos       				= 0.1, 1.3, 1.6
+
+;-------------------------------------------------------------------------------
+;------ animations params ------------------------------------------------------
+
+[doors]
+open_torque_factor		= 3	;множитель момента сил для открывания двери (default = 2)
+
+[animations]
+driver_animation_type		= 0	;тип анимаций актера для данной машины.
+
+;-------------------------------------------------------------------------------
+;------ damage params ----------------------------------------------------------
+
+[damage_particles]
+
+explosion_particles		= explosions\expl_car
+car_damage_particles1		= explosions\expl_car_smoke_small
+car_damage_particles2		= explosions\expl_car_smoke_big
+wheels_damage_particles1	= vehiclefx\exhaust_1
+wheels_damage_particles2	= vehiclefx\exhaust_1
+
+particle_bones1			= front_bamper
+particle_bones2			= root
+
+;-------------------------------------------------------------------------------
+;------ particle bones ---------------------------------------------------------
+
+[particle_bones]
+root				= 0,-0.5,1
+front_bamper			= 0,0,0
+
+;-------------------------------------------------------------------------------
+;------ damage items -----------------------------------------------------------
+
+[damage_items]
+back_left_wheel			= 5000
+back_right_wheel		= 5000
+front_left_wheel		= 5000
+front_right_wheel		= 5000
+left_door			= 2000
+right_door			= 2000
+
+;-------------------------------------------------------------------------------
+;------ collisiondamage --------------------------------------------------------
+
+[collision_damage]
+
+;-------------------------------------------------------------------------------
+;------ damage bones -----------------------------------------------------------
+
+[damage_bones]			;аналогично секции в актере, но без анимаций
+;bone_name     			= <hit_scale>,<-1>,<wound_scale>
+;<hit_scale> 			- коэфф. изменения хита (уменьшения здоровья)
+;<wound_scale> 			- коэфф. изменения величины открытой раны - незадействован
+
+default				= 1, -1, 0.1
+
+[immunities]
+burn_immunity			= 0.0       ;коэффициенты иммунитета
+strike_immunity			= 0.0
+shock_immunity			= 0.0
+wound_immunity			= 0.0
+radiation_immunity		= 0.0
+telepatic_immunity		= 0.0
+chemical_burn_immunity	= 0.0
+explosion_immunity		= 0.0
+fire_wound_immunity		= 0.0
+
+;-------------------------------------------------------------------------------
+;----------------explosion params-----------------------------------------------
+
+[explosion]
+blast				= 1
+blast_r				= 15
+blast_impulse			= 350
+frags				= 15
+frags_r				= 30
+frag_hit			= 0.5
+frag_hit_impulse		= 350
+hit_type_blast			= explosion
+hit_type_frag			= fire_wound
+up_throw_factor			= 0.25
+wm_size				= 0.1
+explode_particles		= explosions\expl_car
+light_color			= 0.6,0.5,0.3
+light_range			= 15.0
+light_time			= 0.5
+fragment_speed			= 76
+fragment_tracer_max_length	= 3
+explode_duration		= 50
+snd_explode			= weapons\heli_explosion
+wallmark_section		= explosion_marks
+
+[explode_effector]
+effect_sect_name= effector_explode_hit
+
+;-------------------------------------------------------------------------------
+;------ Others params ----------------------------------------------------------
+
+[air_resistance]
+linear_factor			= 100.f		;
+angular_factor			= 100.f		;
+
+[collide]
+not_collide_parts		= 1
+
+;-------------------------------------------------------------------------------
+;------ destroyed part ---------------------------------------------------------
+
+[destroyed]
+
+[autoremove_parts]
+time				= 30
+;-------------------------------------------------------------------------------
+;--- part impulse_transition ---------------------------------------------------
+
+[impulse_transition_to_parts]
+random_min			= 10.0    ; величина случайно направленного импульса пропорционально массе нового объекта
+random_hit_imp			= 1.0     ; величина случайно направленного импульса пропорционально разрушающему хиту
+;ref_bone			=	; кость из по которой определяется скорость для частей у который связь не задана, по умолчанию рут
+imp_transition_factor		= 1.0     ; фактор с которым прикладывается хит по исходному объекту ко всем частям 
+lv_transition_factor		= 0.5     ; коэффициент передачи линейной скорости
+av_transition_factor		= 0.5     ; коэффициент передачи угловой скорости
+
+;-------------------------------------------------------------------------------
+;--- car dashboard -------------------------------------------------------------
+
+[dashboard]
+rpm_bone = rpm_strelka
+rpm_angle = 5.0, -190.0, -270, 270 ;[NET Online] min_angle, rpm_multiplay
+speed_bone = speed_strelka
+speed_angle = 20.0, -1.625, -270, 270 ;[NET Online] min_angle, speed_multiplay
+
+;-------------------------------------------------------------------------------
+;--- car driver anim -----------------------------------------------------------
+; [car_anims]
+; idle_anim = vaz2121_niva_idle_legs 			;Анимация бездействия ног
+; body_anim = vaz2121_niva_idle_torso 		;Анимация бездействия тела
+; gas_anim = vaz2121_niva_gas 				;Анимация нажатия педали газа
+; brake_anim = vaz2121_niva_brake 			;Анимация нажатия педали тормоза(+сцепления)
+; left_anim = vaz2121_niva_rotation 			;Анимация поворота руля влево
+; right_anim = vaz2121_niva_rotation		 	;Анимация поворота руля вправо
+; gear_up_anim = vaz2121_niva_gear_up 		;Анимация повышения передачи
+; gear_down_anim = vaz2121_niva_gear_down 	;Анимация понижения передачи
+; pas_anim = vaz2121_niva_idle_passenger		;Анимация пассажира
+; ;АНТОН НАКОСЯЧИЛ!!!
+; engine_turn_start = vaz2121_niva_turn_engine_start	;Анимация старта зажигания
+; engine_turn_idle = vaz2121_niva_turn_engine_idle 		;Анимация ожидания зажигания
+; engine_turn_stop = vaz2121_niva_turn_engine_end 		;Анимация окончания зажигания
+; ;АНТОН НАКОСЯЧИЛ!!!
+;-------------------------------------------------------------------------------
+;------ End params -------------------------------------------------------------
