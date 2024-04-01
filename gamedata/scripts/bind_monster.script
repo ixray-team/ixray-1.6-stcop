@@ -5,7 +5,7 @@
 function bind(obj)
 	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
 
-	-- Р”Р»СЏ СЃРїР°СѓРЅР°
+	-- Для спауна
 	--xr_spawner.spawn_client(obj)
 
 	local new_binder = generic_object_binder(obj)
@@ -49,14 +49,7 @@ function generic_object_binder:update(delta)
 	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
 	--'	self.object:name(), time_global())
 
-	if object_alive then
-		if self.object:is_talk_enabled() then
-			self.object:set_tip_text("character_use")
-		else
-			self.object:set_tip_text("")
-		end
-	else
-		self.object:set_tip_text_default()
+	if not object_alive then
 		return
 	end
 
@@ -64,7 +57,7 @@ function generic_object_binder:update(delta)
 	if st ~= nil and st.active_scheme ~= nil then
 		xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
 	end
-	-- РђРїРґРµР№С‚ РѕС‚СЂСЏРґР°
+	-- Апдейт отряда
 	if squad ~= nil then
 		if squad:commander_id() == self.object:id() then
 			squad:update()
@@ -97,7 +90,7 @@ function generic_object_binder:update(delta)
 	end
 
 
--- Р•СЃР»Рё РµСЃС‚СЊ РІСЂР°Рі , С‚Рѕ РёРґРµРј РІ РєРѕРјР±Р°С‚ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- Если есть враг , то идем в комбат !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if self.object:get_enemy() then
 		if xr_logic.mob_captured(self.object) then
 			xr_logic.mob_release(self.object)
@@ -138,7 +131,7 @@ function generic_object_binder:update(delta)
 end
 
 function generic_object_binder:extrapolate_callback()
-	-- РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РѕР±СЉРµРєС‚ РµС‰Рµ РІ РѕРЅР»Р°Р№РЅРµ
+	-- Проверяем, что объект еще в онлайне
 	if db.storage[self.object:id()] == nil or
 		 db.storage[self.object:id()].object == nil
 	then
@@ -188,7 +181,7 @@ function generic_object_binder:death_callback(victim, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
 	end
-	--' РќР°РЅРѕСЃРёРј РЅРµР±РѕР»СЊС€РѕР№ РёРјРїСѓР»СЊСЃ РІРїРµСЂРµРґ.
+	--' Наносим небольшой импульс вперед.
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
@@ -252,7 +245,7 @@ function generic_object_binder:net_spawn(sobject)
 
 	db.add_obj(self.object)
 
---******************************* РўРµР»РµРїРѕСЂС‚ РЅР° РїРµСЂРІСѓСЋ С‚РѕС‡РєСѓ РїСѓС‚Рё СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°...*****************************
+--******************************* Телепорт на первую точку пути работы смарттеррейна...*****************************
 	local se_obj = alife():object(self.object:id())
 	if db.spawned_vertex_by_id[se_obj.id] ~= nil then
 		self.object:set_npc_position(level.vertex_position(db.spawned_vertex_by_id[se_obj.id]))
@@ -289,7 +282,7 @@ function generic_object_binder:net_destroy()
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
 	end
 
--- Р—Р°РїРѕРјРёРЅР°РµРј РїРѕР·РёС†РёСЋ Рё Р°РєС‚РёРІРЅСѓСЋ СЃРµРєС†РёСЋ --------
+-- Запоминаем позицию и активную секцию --------
 if db.offline_objects[self.object:id()] then
 	db.offline_objects[self.object:id()].level_vertex_id = self.object:level_vertex_id()
 	db.offline_objects[self.object:id()].active_section = db.storage[self.object:id()].active_section

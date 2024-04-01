@@ -18,7 +18,8 @@ enum class EEngineExternalGame
 	EnableAiDieInAnomaly,
 	EnableNPCLookAtActor,
 	EnableBlockSprintInReload,
-	EnableAutoreload
+	EnableAutoreload,
+	EnableMonstersInventory
 };
 
 enum class EEngineExternalRender {

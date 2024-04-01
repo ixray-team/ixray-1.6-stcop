@@ -32,6 +32,7 @@
 #include "clsid_game.h"
 #include "hudmanager.h"
 #include "Weapon.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 extern u32 hud_adj_mode;
 
@@ -504,9 +505,7 @@ void CActor::ActorUse()
 	if(character_physics_support()->movement()->PHCapture())
 		character_physics_support()->movement()->PHReleaseObject();
 
-	
-
-	if(m_pUsableObject && NULL==m_pObjectWeLookingAt->cast_inventory_item())
+	if (m_pUsableObject && nullptr == m_pObjectWeLookingAt->cast_inventory_item())
 	{
 		m_pUsableObject->use(this);
 	}
@@ -535,22 +534,26 @@ void CActor::ActorUse()
 
 			if (IsGameTypeSingle())
 			{			
+				CBaseMonster* pMonster = smart_cast<CBaseMonster*>(pEntityAliveWeLookingAt);
+				bool TestMonster =	(pMonster == nullptr) ||
+									(pMonster != nullptr && EngineExternal()[EEngineExternalGame::EnableMonstersInventory]);
 
 				if(pEntityAliveWeLookingAt->g_Alive())
 				{
 					TryToTalk();
-				}else
+				}
+				else
 				{
 					//только если находимся в режиме single
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-					if ( pGameSP )
+					if (pGameSP && TestMonster)
 					{
-						if ( !m_pPersonWeLookingAt->deadbody_closed_status() )
+						if (!m_pPersonWeLookingAt->deadbody_closed_status())
 						{
-							if(pEntityAliveWeLookingAt->AlreadyDie() && 
-								pEntityAliveWeLookingAt->GetLevelDeathTime()+3000 < Device.dwTimeGlobal)
+							if (pEntityAliveWeLookingAt->AlreadyDie() &&
+								pEntityAliveWeLookingAt->GetLevelDeathTime() + 3000 < Device.dwTimeGlobal)
 								// 99.9% dead
-								pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
+								pGameSP->StartCarBody(this, m_pPersonWeLookingAt);
 						}
 					}
 				}
