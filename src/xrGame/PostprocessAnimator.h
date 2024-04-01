@@ -2,16 +2,12 @@
 #define __ppanimator_included__
 #pragma once
 
-#ifndef _PP_EDITOR_
-    #include "../xrEngine/envelope.h"
-    #include "../xrEngine/EffectorPP.h"
-	#include "../xrEngine/cameramanager.h"
+#include "../xrEngine/envelope.h"
+#include "../xrEngine/EffectorPP.h"
+#include "../xrEngine/cameramanager.h"
 
+#ifndef _PP_EDITOR_
 	class CEffectorController;
-#else
-    #include "envelope.h"
-    #include "EffectorPP.h"
-    #include "CameraManager.h"
 #endif /*_PP_EDITOR_*/
 
 #define POSTPROCESS_PARAMS_COUNT    11

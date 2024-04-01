@@ -4,6 +4,7 @@ set(PPE__SRC_FILES)
 # Files import
 file(GLOB_RECURSE PPE__SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
+    "../../xrGame/PostprocessAnimator.*"
 )
 file(GLOB_RECURSE PPE__SOURCE_CPP_FILES
     "*.cpp"
@@ -36,6 +37,7 @@ target_include_directories(PPEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(PPEditor PRIVATE "${IXRAY_SDK_INC}")
 
 target_compile_definitions(PPEditor PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+target_compile_definitions(PPEditor PRIVATE _PP_EDITOR_)
 
 # Linker list
 target_link_libraries(PPEditor PUBLIC EditorRender)

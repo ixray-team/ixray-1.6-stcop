@@ -1,10 +1,5 @@
 #pragma once
 
-#pragma warning(disable:4995)
-#include "../xrEngine/stdafx.h"
-#include "../xrScripts/stdafx.h"
-
-#pragma warning(default:4995)
 #pragma warning( 4 : 4018 )
 #pragma warning( 4 : 4244 )
 #pragma warning(disable:4505)
@@ -19,11 +14,20 @@
 #	define	THROW3					VERIFY3
 #endif
 
+#ifndef _PP_EDITOR_
+#pragma warning(disable:4995)
+#include "../xrEngine/stdafx.h"
+#include "../xrScripts/stdafx.h"
+#pragma warning(default:4995)
+
 #include "../xrEngine/gamefont.h"
 #include "../xrEngine/xr_object.h"
 #include "../xrEngine/igame_level.h"
 #include "../xrphysics/xrphysics.h"
 #include "smart_cast.h"
+#else
+#include "../../Editors/EditorRender/stdafx.h"
+#endif
 
 #undef min
 #undef max
