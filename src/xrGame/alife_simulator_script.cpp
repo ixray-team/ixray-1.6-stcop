@@ -21,6 +21,8 @@
 #include "xrServer.h"
 #include "level.h"
 
+#include <luabind/iterator_policy.hpp>
+
 using namespace luabind;
 
 typedef xr_vector<std::pair<shared_str,int> >	STORY_PAIRS;
@@ -39,6 +41,12 @@ CSE_ALifeDynamicObject *alife_object		(const CALifeSimulator *self_, ALife::_OBJ
 {
 	VERIFY			(self_);
 	return			(self_->objects().object(object_id,true));
+}
+
+const CALifeObjectRegistry::OBJECT_REGISTRY& alife_objects(const CALifeSimulator* self)
+{
+	VERIFY(self);
+	return self->objects().objects();
 }
 
 bool valid_object_id						(const CALifeSimulator *self_, ALife::_OBJECT_ID object_id)
@@ -418,6 +426,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("dont_has_info",			&dont_has_info)
 			.def("switch_distance",			&CALifeSimulator::switch_distance)
 			.def("switch_distance",			&CALifeSimulator::set_switch_distance)
+			.def("objects",					&alife_objects, return_stl_pair_iterator())
 
 			.def("teleport_object", &teleport_object)
 			.def("iterate_info", &IterateInfo)
