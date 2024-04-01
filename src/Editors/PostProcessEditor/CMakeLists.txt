@@ -42,3 +42,4 @@ target_compile_definitions(PPEditor PRIVATE _PP_EDITOR_)
 # Linker list
 target_link_libraries(PPEditor PUBLIC EditorRender)
 target_link_libraries(PPEditor PUBLIC EditorProps)
+target_link_libraries(PPEditor PUBLIC xrParticles)

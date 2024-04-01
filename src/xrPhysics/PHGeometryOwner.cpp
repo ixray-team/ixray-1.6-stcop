@@ -159,6 +159,11 @@ void CPHGeometryOwner::SetMaterial(u16 m)
 	for(;i!=e;++i) (*i)->set_material(m);
 }
 
+void CPHGeometryOwner::SetMaterial(LPCSTR m)
+{
+	SetMaterial(GMLibrary().GetMaterialIdx(m));
+}
+
 void CPHGeometryOwner::SetPhObjectInGeomData(CPHObject* O)
 {
 	if(!b_builded) return;

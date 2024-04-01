@@ -9,6 +9,7 @@ file(GLOB_RECURSE ED_ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 file(GLOB_RECURSE ED_ENGINE_SOURCE_API_FILES CONFIGURE_DEPENDS
     "../../xrEngine/defines.*"
     "../../xrEngine/Envelope.*"
+    "../../xrEngine/Bone.*"
     "../../xrEngine/fmesh.*"
     "../../xrEngine/GameFont.*"
     "../../xrEngine/GameMtlLib.*"

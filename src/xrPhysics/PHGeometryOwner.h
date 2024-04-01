@@ -55,7 +55,7 @@ public:
 		void						dbg_draw								( float scale, u32 color, Flags32 flags )const;
 #endif
 		void						SetMaterial								(u16 m)		  ;
-		void						SetMaterial								(LPCSTR m){SetMaterial(GMLibrary().GetMaterialIdx(m));}								//aux
+		void						SetMaterial								(LPCSTR m);						//aux
 	IC	CODEGeom*					Geom									(u16 num)		{R_ASSERT2 (num<m_geoms.size(),"out of range"); return m_geoms[num]; }
 	IC	const CODEGeom*				Geom									(u16 num) const	{R_ASSERT2 (num<m_geoms.size(),"out of range"); return m_geoms[num]; }
 		CODEGeom*					GeomByBoneID							(u16 bone_id);

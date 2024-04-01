@@ -13,6 +13,27 @@ CEditorDevice::~CEditorDevice()
 	DevicePtr = nullptr;
 }
 
+void CEditorDevice::_Create(IReader* F)
+{
+	b_is_Ready = TRUE;
+
+	// General Render States
+	_SetupStates();
+
+	RCache.OnDeviceCreate();
+	//Resources->OnDeviceCreate(F);
+
+	::RImplementation.OnDeviceCreate();
+
+	m_WireShader.create("editor\\wire");
+	m_SelectionShader.create("editor\\selection");
+
+	// signal another objects
+	//UI->OnDeviceCreate();
+
+	//pSystemFont = new CGameFont("hud_font_small");
+}
+
 void CEditorDevice::ResizeWindow(u32 width, u32 height)
 {
 	TargetWidth = width;
@@ -74,4 +95,44 @@ void CEditorDevice::Clear()
 void CEditorDevice::ProcessEvent(SDL_Event Event)
 {
 	ImGui_ImplSDL3_ProcessEvent(&Event);
+}
+
+void CEditorDevice::DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
+{
+	ref_shader S = m_CurrentShader ? m_CurrentShader : m_WireShader;
+	u32 dwRequired = S->E[0]->passes.size();
+
+	RCache.set_Geometry(geom);
+
+	for (u32 dwPass = 0; dwPass < dwRequired; dwPass++) 
+	{
+		RCache.set_Shader(S, dwPass);
+		RCache.Render(pt, vBase, pc);
+	}
+}
+
+void CEditorDevice::DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
+{
+	ref_shader S = m_CurrentShader ? m_CurrentShader : m_WireShader;
+	u32 dwRequired = S->E[0]->passes.size();
+
+	RCache.set_Geometry(geom);
+
+	for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
+	{
+		RCache.set_Shader(S, dwPass);
+		RCache.Render(pt, baseV, startV, countV, startI, PC);
+	}
+}
+
+void CEditorDevice::RenderNearer(float f_Near)
+{
+	mProject._43 = m_fNearer - f_Near;
+	RCache.set_xform_project(mProject);
+}
+
+void CEditorDevice::ResetNearer()
+{
+	mProject._43 = m_fNearer;
+	RCache.set_xform_project(mProject);
 }

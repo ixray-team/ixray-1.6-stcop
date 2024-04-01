@@ -23,7 +23,7 @@ class ECORE_API CPSLibrary : public particles_systems::library_interface {
     PS::PGDVec			m_PGDs;
     xr_vector<shared_str> m_all_ps;
 #ifdef _EDITOR    
-    AnsiString			m_CurrentParticles;
+    xr_string			m_CurrentParticles;
 public:
 	void 	 	FindByName		(LPCSTR new_name, bool& res);
 #endif

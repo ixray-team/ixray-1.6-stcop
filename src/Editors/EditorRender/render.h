@@ -2,6 +2,7 @@
 #ifndef renderH
 #define renderH
 
+#include "../../xrEngine/Render.h"
 #include "..\..\xrCDB\frustum.h"
 #include "../../xrEngine/vis_common.h"
 
@@ -17,25 +18,11 @@
 
 
 // definition (Renderer)
-class CRenderTarget /*:public IRender_Target*/
+class CRenderTarget :public IRender_Target
 {
 public:
 	virtual u32			get_width			()				{ return Device.TargetWidth;	}
 	virtual u32			get_height			()				{ return Device.TargetHeight;	}
-};
-
-class IRender_interface{
-public:
-	enum GenerationLevel
-	{
-		GENERATION_R1				= 81,
-		GENERATION_DX81				= 81,
-		GENERATION_R2				= 90,
-		GENERATION_DX90				= 90,
-		GENERATION_forcedword		= u32(-1)
-	};
-	// feature level
-	virtual	GenerationLevel	get_generation			()=0;
 };
 
 class	ECORE_API CRender: public IRender_interface
@@ -77,9 +64,7 @@ public:
 	void					add_Visual   	(IRenderVisual* visual, bool);
 
 	virtual ref_shader		getShader		(int id);
-	CRenderTarget*			getTarget		(){return Target;}
-//.	virtual IRender_Target*	getTarget		(){return Target;}
-
+	IRender_Target*			getTarget		(){return Target;}
 
     void					reset_begin				();
     void					reset_end				();

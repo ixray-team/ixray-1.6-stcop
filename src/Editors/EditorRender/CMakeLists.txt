@@ -104,7 +104,6 @@ target_compile_definitions(EditorRender PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(EditorRender PUBLIC EditorEngineAPI)
-#target_link_libraries(EditorRender PUBLIC xrParticles)
 target_link_libraries(EditorRender PUBLIC "d3dcompiler.lib")
 
 # Move precompiled header
