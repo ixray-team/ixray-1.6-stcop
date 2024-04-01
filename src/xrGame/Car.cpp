@@ -457,11 +457,13 @@ void CCar::UpdateCL				( )
 		{
 			CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
 			Panel.SetEngineLamp(b_engine_on);
+			Panel.SetLightLamp(m_lights.IsOn());
 
 			Panel.SetCarHealth(GetfHealth() /* /100.f*/);
 			Panel.SetCarFuel(m_fuel/* /100.f*/);
 			Panel.SetSpeed(lin_vel.magnitude() / 1000.f * 3600.f / 100.f);
 			Panel.SetRPM(m_current_rpm / m_max_rpm / 2.f);
+			Panel.SetSpeedMode(xr_string::ToString((int)m_current_transmission_num));
 		}
 	}
 
