@@ -137,12 +137,6 @@ void CCar::DbgUbdateCl()
 				UI().Font().pFontStat->OutNext		("ENGINE ON")																		;
 				UI().Font().pFontStat->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
 			}
-			if(b_stalling)
-			{
-				UI().Font().pFontStat->SetColor(color_xrgb(255, 0, 0));
-				UI().Font().pFontStat->OutNext		("STALLING")																		;
-				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
-			}
 			if(b_starting)
 			{
 				UI().Font().pFontStat->SetColor(color_xrgb(255, 0, 0));
@@ -155,8 +149,6 @@ void CCar::DbgUbdateCl()
 				UI().Font().pFontStat->OutNext		("BREAKS")																		;
 				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			}
-			//HUD().pFontStat->OutNext("Vel Magnitude: [%3.2f]",m_PhysicMovementControl->GetVelocityMagnitude());
-			//HUD().pFontStat->OutNext("Vel Actual:    [%3.2f]",m_PhysicMovementControl->GetVelocityActual());
 		}
 
 		if(ph_dbg_draw_mask.test(phDbgDrawCarPlots)&&b_plots)
