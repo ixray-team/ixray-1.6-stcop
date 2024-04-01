@@ -80,7 +80,7 @@ int main()
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD);
     Uint32 window_flags =  SDL_WINDOW_RESIZABLE;
-    g_AppInfo.Window = SDL_CreateWindow("Dear ImGui SDL3+OpenGL3 example", 820, 620, window_flags);
+    g_AppInfo.Window = SDL_CreateWindow("IX-Ray PostProcess Editor", 820, 620, window_flags);
     MyDevice = new CEditorDevice;
     DevicePtr = MyDevice;
 
