@@ -170,6 +170,7 @@ void CMainPPE::ClickHandle()
 	{
 		ListData.clear();
 		mAnimator.Clear();
+		mAnimator.Create();
 		NewClick = false;
 	}
 
