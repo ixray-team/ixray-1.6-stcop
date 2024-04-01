@@ -4,7 +4,7 @@
 
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
-#include "../xrEProps/PropValue.h"
+#include "../EditorProps/PropValue.h"
 
 #define R_R1 1
 #define RENDER R_R1

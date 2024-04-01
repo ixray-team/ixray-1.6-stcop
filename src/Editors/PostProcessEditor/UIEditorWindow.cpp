@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIEditorWindow.h"
-#include "ImGuiFileDialog.h"
+#include "../EditorProps/ImGuiFileDialog.h"
 
 static int BackWnd = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
 

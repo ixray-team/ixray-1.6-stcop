@@ -1,11 +1,4 @@
-//---------------------------------------------------------------------------
-
-#ifndef LightAnimLibraryH
-#define LightAnimLibraryH
-//---------------------------------------------------------------------------
-#ifdef _EDITOR
-	#include "../xrEProps/FolderLib.h"              
-#endif
+#pragma once
 
 class ENGINE_API CLAItem				{
 public:
@@ -68,5 +61,3 @@ public:
 };
 
 extern ENGINE_API ELightAnimLibrary LALib;
-
-#endif
