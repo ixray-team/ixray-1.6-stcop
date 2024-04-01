@@ -18,7 +18,7 @@ public:
 
 	CCar*			pCar;
 	CPhysicsJoint*	Joint;
-
+	float saved_lo, saved_hi;
 	Fvector2		door_plane_ext;
 	Ivector2		door_plane_axes;
 	Fvector			door_dir_in_door;

@@ -418,14 +418,12 @@ void CCar::UpdateCL()
 
 void CCar::VisualUpdate(float fov)
 {
-	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
-
-	Fvector lin_vel;
-	m_pPhysicsShell->get_LinearVel(lin_vel);
-	// Sound
-	Fvector		C, V;
-	Center(C);
-	V.set(lin_vel);
+	Fvector lin_vel = zero_vel;
+	if(m_pPhysicsShell)
+	{
+		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		m_pPhysicsShell->get_LinearVel(lin_vel);
+	}
 
 	m_car_sound->Update();
 	if (Owner())
@@ -808,26 +806,22 @@ void CCar::ParseDefinitions()
 
 void CCar::CreateSkeleton(CSE_Abstract* po)
 {
-	if (!Visual())
-		return;
-
-	IRenderVisual* pVis = Visual();
+	if (!Visual()) return;
+	IRenderVisual *pVis = Visual();
 	IKinematics* pK = smart_cast<IKinematics*>(pVis);
 	IKinematicsAnimated* pKA = smart_cast<IKinematicsAnimated*>(pVis);
-
-	if (pKA)
+	if(pKA)
 	{
-		pKA->PlayCycle("idle");
-		pK->CalculateBones(TRUE);
+		pKA->PlayCycle		("idle");
+		pK->CalculateBones	(TRUE);
 	}
 
-	m_pPhysicsShell = P_build_Shell(this, false, &bone_map);
+	m_pPhysicsShell		= P_build_Shell(this, false, &bone_map);
 	m_pPhysicsShell->SetPrefereExactIntegration();
 	m_pPhysicsShell->Activate(true);
 	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
-
-	ApplySpawnIniToPhysicShell(&po->spawn_ini(), m_pPhysicsShell, false);
-	ApplySpawnIniToPhysicShell(pK->LL_UserData(), m_pPhysicsShell, false);
+	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
+	ApplySpawnIniToPhysicShell(pK->LL_UserData(),m_pPhysicsShell,false);
 	pK->CalculateBones(TRUE);
 }
 
@@ -1402,48 +1396,56 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 {
 	xr_map<u16, CCarDoor>::iterator i;
 
-	if (!Owner())
-	{
-		if (Enter(pos, dir, foot_pos)) return true;
-	}
-
 	RQR.r_clear();
-	collide::ray_defs	Q(pos, dir, 3.f, CDB::OPT_CULL, collide::rqtObject);
+	collide::ray_defs	Q(pos, dir, 2.0f, CDB::OPT_CULL, collide::rqtObject);
 
 	VERIFY(!fis_zero(Q.dir.square_magnitude()));
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-		IKinematics* K = smart_cast<IKinematics*>(Visual());
-		CInifile* ini = K->LL_UserData();
-
 		collide::rq_results& R = RQR;
-		int y = R.r_count(); 
-		for (int k = 0; k < y; ++k)
+		for (int k = 0; k < R.r_count(); ++k)
 		{
 			collide::rq_result* I = R.r_begin() + k;
 
 			if (IsGameTypeSingle() && m_bone_trunk == (u16)I->element)
 			{
-				CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-				pGameSP->StartCarBody(Actor(), this);
+				bool IsDoorBone = is_Door((u16)I->element, i);
+				if (I->range < 1.f)
+				{
+					if (IsDoorBone)
+					{
+						CCarDoor& TrunkDoor = m_doors.at(m_bone_trunk);
+						if (TrunkDoor.state != CCarDoor::eState::opened)
+							continue;
+					}
+
+					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+					pGameSP->StartCarBody(Actor(), this);
+				}
+				else if (IsDoorBone)
+				{
+					i->second.Use();
+				}
+
 				return false;
 			}
 
 			if (is_Door((u16)I->element, i))
 			{
 				bool front = i->second.IsFront(pos, dir);
-				if ((Owner() && !front) || (!Owner() && front))i->second.Use();
+				if ((Owner()) || (!Owner() && front))i->second.Use();
 				if (i->second.state == CCarDoor::broken) break;
 				return false;
-
 			}
 		}
 	}
 
 	if (Owner())
+	{
 		return Exit(pos, dir);
+	}
 
-	return false;
+	return Enter(pos, dir, foot_pos);
 }
 
 bool CCar::DoorUse(u16 id)
