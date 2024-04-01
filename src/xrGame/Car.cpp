@@ -35,6 +35,12 @@ CCar::CCar()
 {
 	m_bone_trunk = BI_NONE;
 	m_bone_steer = BI_NONE;
+
+	m_rpm_b = BI_NONE;
+	m_speed_b = BI_NONE;
+	m_rpm_offsets.set(0, 0, 0);
+	m_speed_offsets.set(0, 0, 0);
+
 	m_memory = nullptr;
 	m_driver_anim_type = 0;
 	active_camera = 0;
@@ -210,18 +216,26 @@ void CCar::SpawnInitPhysics(CSE_Abstract* D)
 	CPHUpdateObject::Activate();
 }
 
-void	CCar::net_Destroy()
+void CCar::net_Destroy()
 {
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
+
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
 	if (m_bone_steer != BI_NONE)
 	{
-
 		pKinematics->LL_GetBoneInstance(m_bone_steer).reset_callback();
-
 	}
+	if (m_rpm_b != BI_NONE) 
+	{
+		pKinematics->LL_GetBoneInstance(m_rpm_b).reset_callback();
+	}
+	if (m_speed_b != BI_NONE) 
+	{
+		pKinematics->LL_GetBoneInstance(m_speed_b).reset_callback();
+	}
+
 	CScriptEntity::net_Destroy();
 	inherited::net_Destroy();
 	CExplosive::net_Destroy();
@@ -688,6 +702,33 @@ bool CCar::Exit(const Fvector& pos, const Fvector& dir)
 
 }
 
+void CCar::cb_Speed(CBoneInstance* B)
+{
+	Fvector Vel;
+
+	CCar* car = static_cast<CCar*>(B->callback_param());
+	Fmatrix m;
+
+	car->m_pPhysicsShell->get_LinearVel(Vel);
+	float m_speed = Vel.magnitude() * 3.6f;
+
+	float current_rotation = car->m_speed_offsets.x + car->m_speed_offsets.y * m_speed;
+	//current_rotation *= Device.fTimeDelta;
+
+	m.rotateZ(deg2rad(clampr(current_rotation, car->m_speed_offsets.z, car->m_speed_offsets.w)));
+
+	B->mTransform.mulB_43(m);
+}
+
+void CCar::cb_Rpm(CBoneInstance* B)
+{
+	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;
+	float current_rotation = car->m_rpm_offsets.x + car->m_rpm_offsets.y * car->m_current_rpm / car->m_max_rpm;
+	m.rotateZ(deg2rad(clampr(current_rotation, car->m_rpm_offsets.z, car->m_rpm_offsets.w)));
+
+	B->mTransform.mulB_43(m);
+}
+
 void CCar::ParseDefinitions()
 {
 	bone_map.clear();
@@ -718,6 +759,23 @@ void CCar::ParseDefinitions()
 			bone_map.insert(std::make_pair(bone_id, physicsBone()));
 		}
 	}
+
+	if (ini->section_exist("dashboard")) 
+	{
+		if (ini->line_exist("dashboard", "rpm_bone")) 
+		{
+			m_rpm_b = pKinematics->LL_BoneID(ini->r_string("dashboard", "rpm_bone"));
+			m_rpm_offsets = ini->r_fvector4("dashboard", "rpm_angle");
+			pKinematics->LL_GetBoneInstance(m_rpm_b).set_callback(bctPhysics, cb_Rpm, this);
+		}
+		if (ini->line_exist("dashboard", "speed_bone")) 
+		{
+			m_speed_b = pKinematics->LL_BoneID(ini->r_string("dashboard", "speed_bone"));
+			m_speed_offsets = ini->r_fvector4("dashboard", "speed_angle");
+			pKinematics->LL_GetBoneInstance(m_speed_b).set_callback(bctPhysics, cb_Speed, this);
+		}
+	}
+
 	///////////////////////////car properties///////////////////////////////
 	m_max_power = ini->r_float("car_definition", "engine_power");
 	m_max_power *= (0.8f * 1000.f);
