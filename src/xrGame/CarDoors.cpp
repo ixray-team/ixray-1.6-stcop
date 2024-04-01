@@ -25,10 +25,10 @@ void CCarDoor::Init()
 {
 	update = false;
 
-	if (!CCar::bone_map.contains(bone_id))
+	if (!pCar->bone_map.contains(bone_id))
 		return;
 
-	Joint = CCar::bone_map.find(bone_id)->second.joint;
+	Joint = pCar->bone_map.find(bone_id)->second.joint;
 	if (!Joint)
 		return;
 

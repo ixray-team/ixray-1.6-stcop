@@ -31,15 +31,12 @@
 #include "CharacterPhysicsSupport.h"
 #include "UIGameSP.h"
 
-BONE_P_MAP CCar::bone_map = BONE_P_MAP();
-
-//extern CPHWorld*	ph_world;
-
 CCar::CCar()
 {
+	m_bone_trunk = BI_NONE;
+	m_bone_steer = BI_NONE;
 	m_memory = nullptr;
 	m_driver_anim_type = 0;
-	m_bone_steer = BI_NONE;
 	active_camera = 0;
 	camera[ectFirst] = new CCameraFirstEye(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid);
 	camera[ectFirst]->tag = ectFirst;
@@ -142,11 +139,12 @@ void	CCar::Load(LPCSTR section)
 	inventory().m_pOwner = this;
 }
 
-BOOL	CCar::net_Spawn(CSE_Abstract* DC)
+BOOL CCar::net_Spawn(CSE_Abstract* DC)
 {
 #ifdef DEBUG
 	InitDebug();
 #endif
+
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(e);
 	BOOL							R = inherited::net_Spawn(DC);
@@ -515,6 +513,9 @@ void CCar::ChangeCondition(float fDeltaCondition)
 
 bool CCar::TryTrunk()
 {
+	if (m_bone_trunk == BI_NONE)
+		return false;
+
 	RQR.r_clear();
 	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
 
@@ -667,7 +668,10 @@ bool CCar::Enter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos
 	for (auto& [ID, CarObj] : m_doors)
 	{
 		if (CarObj.CanEnter(pos, dir, enter_pos))
+		{
+			//m_doors[ID].Open();
 			return true;
+		}
 	}
 	return false;
 }
@@ -711,7 +715,7 @@ void CCar::ParseDefinitions()
 		door.bone_id = bone_id;
 		m_doors.insert(std::make_pair(bone_id, door));
 
-		if (bone_map.contains(bone_id))
+		if (!bone_map.contains(bone_id))
 		{
 			bone_map.insert(std::make_pair(bone_id, physicsBone()));
 		}
@@ -804,23 +808,27 @@ void CCar::ParseDefinitions()
 
 void CCar::CreateSkeleton(CSE_Abstract* po)
 {
+	if (!Visual())
+		return;
 
-	if (!Visual()) return;
 	IRenderVisual* pVis = Visual();
 	IKinematics* pK = smart_cast<IKinematics*>(pVis);
 	IKinematicsAnimated* pKA = smart_cast<IKinematicsAnimated*>(pVis);
+
 	if (pKA)
 	{
 		pKA->PlayCycle("idle");
 		pK->CalculateBones(TRUE);
 	}
-	phys_shell_verify_object_model(*this);
 
-	m_pPhysicsShell = P_build_Shell(this, true, &bone_map);
-	m_pPhysicsShell->Enable();
+	m_pPhysicsShell = P_build_Shell(this, false, &bone_map);
+	m_pPhysicsShell->SetPrefereExactIntegration();
+	m_pPhysicsShell->Activate(true);
+	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
 
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(), m_pPhysicsShell, false);
 	ApplySpawnIniToPhysicShell(pK->LL_UserData(), m_pPhysicsShell, false);
+	pK->CalculateBones(TRUE);
 }
 
 void CCar::Init()
@@ -1409,7 +1417,7 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 		CInifile* ini = K->LL_UserData();
 
 		collide::rq_results& R = RQR;
-		int y = R.r_count();
+		int y = R.r_count(); 
 		for (int k = 0; k < y; ++k)
 		{
 			collide::rq_result* I = R.r_begin() + k;
