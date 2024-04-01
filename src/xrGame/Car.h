@@ -1,11 +1,7 @@
 #pragma once
-
-//#if 0
-
-#include "entity.h"
-//#include "../xrphysics/PHDynamicData.h"
-#include "../xrphysics/PhysicsShell.h"
-#include "../xrphysics/phupdateobject.h"
+#include "Entity.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/phupdateobject.h"
 #include "script_entity.h"
 #include "CarLights.h"
 #include "InventoryOwner.h"
@@ -20,6 +16,8 @@
 #include "Explosive.h"
 #include "PHDestroyable.h"
 #include "DelayedActionFuse.h"
+#include "CarDoors.h"
+
 // refs
 class ENGINE_API			CBoneInstance;
 class						CActor;
@@ -52,15 +50,17 @@ class CCar :
 	public CDelayedActionFuse,
 	public CInventoryOwner
 {
+	friend struct SWheel;
+	friend struct CCarDoor;
 private:
 	collide::rq_results		RQR;	
 	u16						m_bone_trunk;
 
 #ifdef DEBUG
-	CFunctionGraph 					m_dbg_power_rpm			;
-	CFunctionGraph 					m_dbg_torque_rpm		;
-	CStatGraph	   					*m_dbg_dynamic_plot		;
-	bool							b_plots					;
+	CFunctionGraph 			m_dbg_power_rpm			;
+	CFunctionGraph 			m_dbg_torque_rpm		;
+	CStatGraph	   			*m_dbg_dynamic_plot		;
+	bool					b_plots					;
 	float					TorqueRpmFun		(float rpm)		{return Parabola(rpm)/rpm;}
 	void 					InitDebug			()				;
 	void 					DbgSheduleUpdate	()				;
@@ -203,7 +203,7 @@ virtual void ApplyDamage			(u16 level);
 		void	Drive		()						;
 		void	Neutral		()						;
 		void	UpdatePower	()						;
-		float	ASpeed		()						;
+		float	ASpeed		() const;
 		void	Load		(LPCSTR /*section*/){}	;
 	};
 	struct SWheelSteer 
@@ -259,83 +259,6 @@ virtual void ApplyDamage			(u16 level);
 		~SExhaust();
 	};
 
-	struct SDoor;
-	struct SDoor :
-	public CDamagableHealthItem
-	{
-		typedef CDamagableHealthItem inherited;
-		u16 bone_id;
-		CCar* pcar;
-		bool  update;
-		CPhysicsJoint*  joint;
-		float			torque;
-		float			a_vel;
-		float			pos_open;
-		float			opened_angle;
-		float			closed_angle;
-		u32				open_time;
-		struct SDoorway
-		{
-		Fvector2		door_plane_ext;
-		_vector2<int>	door_plane_axes;
-			SDoor			*door;
-				 SDoorway	();
-			void SPass		();
-			void Init		(SDoor	*adoor);
-			void Trace		(const Fvector &point,const Fvector &dir);
-		};
-		Fvector2		door_plane_ext;
-		_vector2<int>	door_plane_axes;
-		Fvector			door_dir_in_door;
-		Fmatrix			closed_door_form_in_object;
-		void Use();
-		void Switch();
-		void Init();
-		void Open();
-		void Close();
-		void Break();
-
-virtual void ApplyDamage(u16 level);
-		void Update();
-		float GetAngle();
-		bool CanEnter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos);
-		bool IsInArea(const Fvector& pos,const Fvector& dir);
-		bool IsFront (const Fvector& pos,const Fvector& dir);
-		bool CanExit(const Fvector& pos,const Fvector& dir);
-		bool TestPass(const Fvector& pos,const Fvector& dir);
-		//bool TestPass1(const Fvector& pos,const Fvector& dir);
-		void GetExitPosition(Fvector& pos);
-		void ApplyOpenTorque();
-		void ApplyTorque(float atorque,float aa_vel);
-		void ApplyCloseTorque();
-		void NeutralTorque(float atorque);
-		void ClosingToClosed();
-		void ClosedToOpening();
-		void PlaceInUpdate();
-		void RemoveFromUpdate();
-		void SaveNetState(NET_Packet& P);
-		void RestoreNetState(const CSE_ALifeCar::SDoorState& a_state);
-		void SetDefaultNetState();
-		enum eState
-		{
-			opening,
-			closing,
-			opened,
-			closed,
-			broken
-		};
-		eState state;
-		SDoor(CCar* acar)
-		{
-			bone_id=BI_NONE;
-			pcar=acar;
-			joint=NULL;
-			state=closed;
-			torque=500.f;
-			a_vel=M_PI;
-		}
-	};
-
 	struct SCarSound
 	{
 		ref_sound					snd_engine							;
@@ -382,16 +305,11 @@ private:
 private:
 	CCarWeapon*				m_car_weapon;
 	float					m_steer_angle;
-	bool					m_repairing;
 	u16						m_bone_steer;
 	CCameraBase*			camera[3];
 	CCameraBase*			active_camera;
 
 	Fvector					m_camera_position;
-
-	////////////////////////////////////////////////////
-	friend struct SWheel;
-	friend struct SDoor;
 
 	xr_map   <u16,SWheel>	m_wheels_map;
 	xr_vector <SWheelDrive> m_driving_wheels;
@@ -399,8 +317,8 @@ private:
 	xr_vector <SWheelBreak> m_breaking_wheels;
 	xr_vector <SExhaust>	m_exhausts;
 	shared_str				m_exhaust_particles;
-	xr_map	  <u16,SDoor>	m_doors;
-	xr_vector <SDoor*>		m_doors_update;
+	xr_map <u16, CCarDoor>	m_doors;
+	xr_vector <CCarDoor*>	m_doors_update;
 	xr_vector <Fvector>		m_gear_ratious;
 	xr_vector <Fmatrix>		m_sits_transforms;// m_sits_transforms[0] - driver_place
 	float					m_current_gear_ratio;
@@ -463,17 +381,16 @@ private:
 	float				RefWheelCurTorque					()	;
 	float	 			EnginePower							()	;
 	float	 			EngineDriveSpeed					()	;
-	float	 			DriveWheelsMeanAngleRate			()	;
-IC	float	 			EngineRpmFromWheels					(){return _abs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
+	float	 			DriveWheelsMeanAngleRate			() const;
+IC	float	 			EngineRpmFromWheels					() const {return _abs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
 	/////////////////////////////////////////////////////////////////////////	
 	void				SteerRight							();
 	void				SteerLeft							();
 	void				SteerIdle							();
 	void				Transmission						(size_t num);
-	void				CircleSwitchTransmission			();
 	void				TransmissionUp						();
 	void				TransmissionDown					();
-IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
+IC	size_t				CurrentTransmission					() const {return m_current_transmission_num;}
 	void				PressRight							();
 	void				PressLeft							();
 	void				PressForward						();
@@ -485,7 +402,6 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 	void				ReleaseForward						();
 	void				ReleaseBack							();
 	void				ReleaseBreaks						();
-	void				Revert								();
 	float				EffectiveGravity					();
 	float				AntiGravityAccel					();
 	float				GravityFactorImpulse				();
@@ -534,7 +450,7 @@ public:
 	void					cam_Update					(float dt, float fov);
 	void					detach_Actor				();
 	bool					attach_Actor				(CGameObject* actor);
-	bool					is_Door						(u16 id,xr_map<u16,SDoor>::iterator& i);
+	bool					is_Door						(u16 id,xr_map<u16, CCarDoor>::iterator& i);
 	bool					is_Door						(u16 id);
 	bool					DoorOpen					(u16 id);
 	bool					DoorClose					(u16 id);
@@ -575,7 +491,6 @@ public:
 	virtual void			GetRayExplosionSourcePos	(Fvector &pos);
 	virtual void			ActivateExplosionBox		(const Fvector &size,Fvector &in_out_pos){};
 	virtual void			ResetScriptData				(void *P=0);
-		//	void			AddAvailableItems			(TIItemContainer& items_container) const;
 
 	virtual void			Action						(u16 id, u32 flags);
 	virtual void			SetParam					(int id, Fvector2 val);
@@ -621,7 +536,7 @@ public:
 private:
 	template <class T> IC void fill_wheel_vector(LPCSTR S,xr_vector<T>& type_wheels);
 	IC void fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts);
-	IC void fill_doors_map(LPCSTR S,xr_map<u16,SDoor>& doors);
+	IC void fill_doors_map(LPCSTR S,xr_map<u16, CCarDoor>& doors);
 
 	virtual	void reinit			();
 	virtual	void reload			(LPCSTR section);
