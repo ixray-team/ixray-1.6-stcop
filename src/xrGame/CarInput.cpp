@@ -124,7 +124,12 @@ void CCar::OnKeyboardPress(int cmd)
 	switch (cmd)	
 	{
 	case kCAM_1:	OnCameraChange(ectFirst);	break;
-	case kCAM_2:	OnCameraChange(ectChase);	break;
+	case kCAM_2:
+		if (active_camera->tag != ectChase)
+			OnCameraChange(ectChase);
+		else
+			OnCameraChange(ectFirst);
+		break;
 	case kCAM_3:	OnCameraChange(ectFree);	break;
 	case kACCEL:	TransmissionUp();			break;
 	case kCROUCH:	TransmissionDown();			break;
