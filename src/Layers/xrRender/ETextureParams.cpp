@@ -154,7 +154,7 @@ void STextureParams::Save(IWriter& F)
 
 
 #ifdef _EDITOR
-#include "../../xrServerEntities/PropertiesListHelper.h"
+#include "../../Editors/EditorProps/PropertiesListHelper.h"
 
 void STextureParams::OnTypeChange(PropValue* prop)
 {

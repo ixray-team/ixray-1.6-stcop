@@ -3,6 +3,7 @@
 #define ParticleEffectDefH
 
 #include "Shader.h"
+class ButtonValue;
 
 namespace PAPI
 {

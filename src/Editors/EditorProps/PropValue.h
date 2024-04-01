@@ -11,7 +11,7 @@ class PropValue
 protected:
 	PropItem* m_Owner;
 public:
-	u32					tag;
+	size_t tag;
 public:
 	// base events
 	typedef fastdelegate::FastDelegate1<PropValue*> TOnChange;

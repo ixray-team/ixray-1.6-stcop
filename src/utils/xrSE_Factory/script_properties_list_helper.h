@@ -12,7 +12,8 @@
 #ifndef XRGAME_EXPORTS
 #	include "../xrSound/Sound.h"
 #endif
-#include "xrEProps.h"
+#include "../../Editors/EditorProps/xrEProps.h"
+
 #include "../xrScripts/script_export_space.h"
 #include "script_space.h"
 #include "../xrScripts/exports/script_rtoken_list.h"

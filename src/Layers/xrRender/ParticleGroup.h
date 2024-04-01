@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef ParticleGroupH
 #define ParticleGroupH
+class ButtonValue;
 
 #include "../xrRender/dxParticleCustom.h"
 

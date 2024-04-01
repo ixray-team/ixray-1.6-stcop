@@ -2,14 +2,17 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "GameMtlLib.h"
-//#include "../xrCore/API/xrapi.h"
-
-CGameMtlLibrary GMLib;
-//CSound_manager_interface*	Sound = NULL;
-#ifdef	_EDITOR
-CGameMtlLibrary*			PGMLib = NULL;
+#ifdef _EDITOR
+#include "../EditorProps/stdafx.h"
 #endif
+
+#include "GameMtlLib.h"
+CGameMtlLibrary GMLib;
+
+#ifdef	_EDITOR
+CGameMtlLibrary* PGMLib = nullptr;
+#endif
+
 CGameMtlLibrary::	CGameMtlLibrary		()
 	{
 	    material_index 		= 0;
