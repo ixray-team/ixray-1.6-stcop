@@ -751,33 +751,49 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 }
 
 
-void	CKinematicsAnimated::LL_BuldBoneMatrixDequatize( const CBoneData* bd, u8 channel_mask, SKeyTable	&keys )
+void CKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys)
 {
 		u16							SelfID				= bd->GetSelfID();
 		CBlendInstance				&BLEND_INST			= LL_GetBlendInstance(SelfID);
 const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 		CKey						BK[MAX_CHANNELS][MAX_BLENDED];	//base keys
 		BlendSVecCIt				BI;
-		for (BI=Blend.begin(); BI!=Blend.end(); BI++)
+		for (BI = Blend.begin(); BI != Blend.end(); BI++)
 		{
-			CBlend*			B		 =	*BI;
-			int				&b_count =	keys.chanel_blend_conts[B->channel];
-			CKey*			D		 =	&keys.keys[B->channel][b_count];
-			if(!(channel_mask&(1<<B->channel)))
+			CBlend* B = *BI;
+			int& b_count = keys.chanel_blend_conts[B->channel];
+			CKey* D = &keys.keys[B->channel][b_count];
+
+			if (!(channel_mask & (1 << B->channel)))
 				continue;
-			u8	channel								=  B->channel;
+
+			u8	channel = B->channel;
 			//keys.blend_factors[channel][b_count]	=  B->blendAmount;
-			keys.blends[channel][b_count]			=  B;
-			CMotion			&M						= *LL_GetMotion(B->motionID,SelfID);
-			Dequantize(*D,*B,M);
-			QR2Quat( M._keysR[0], BK[channel][b_count].Q	);
-			if(M.test_flag(flTKeyPresent))
-            {
-            	if(M.test_flag(flTKey16IsBit))
-					QT16_2T(M._keysT16[0] ,M ,BK[channel][b_count].T );
-                else
-					QT8_2T(M._keysT8[0] ,M ,BK[channel][b_count].T );
-			}else
+			keys.blends[channel][b_count] = B;
+			CMotion& M = *LL_GetMotion(B->motionID, SelfID);
+			Dequantize(*D, *B, M);
+
+			if (M.test_flag(flTKeyFFT_Bit))
+				QuatL(M._keysR32[0], BK[channel][b_count].Q);
+			else
+				QR2Quat(M._keysR[0], BK[channel][b_count].Q);
+
+			if (M.test_flag(flTKeyPresent))
+			{
+				if (M.test_flag(flTKeyFFT_Bit))
+				{
+					QT_FFT_l(M._keysT32[0], BK[channel][b_count].T);
+				}
+				else if (M.test_flag(flTKey16IsBit))
+				{
+					QT16_2T(M._keysT16[0], M, BK[channel][b_count].T);
+				}
+				else
+				{
+					QT8_2T(M._keysT8[0], M, BK[channel][b_count].T);
+				}
+			}
+			else
 				BK[channel][b_count].T.set(M._initT);
 			++b_count;
 		}
