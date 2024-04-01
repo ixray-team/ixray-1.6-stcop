@@ -184,7 +184,7 @@ void attachable_hud_item::tune(Ivector values)
 
 void attachable_hud_item::debug_draw_firedeps()
 {
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	bool bForce = (hud_adj_mode==3||hud_adj_mode==4);
 
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7 ||bForce)
@@ -371,12 +371,10 @@ void hud_adjust_mode_keyb(int dik)
 			hud_adj_mode = 9;
 		if (dik == SDL_SCANCODE_KP_ENTER)
 		{
-			if (hud_adj_crosshair)
-				hud_adj_crosshair = false;
-			else
-				hud_adj_crosshair = true;
+			hud_adj_crosshair = !hud_adj_crosshair;
 		}
 	}
+
 	if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL))
 	{
 		if(dik== SDL_SCANCODE_KP_0)

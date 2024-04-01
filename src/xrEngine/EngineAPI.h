@@ -36,6 +36,7 @@ enum class EditorUI : u8
 	LuaDebug,
 	LuaCodespace,
 	ActorInfos,
+	HudAdjust,
 	Count
 };
 

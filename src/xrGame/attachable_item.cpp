@@ -14,8 +14,8 @@
 #include "../xrEngine/xr_input.h"
 #include "ui_base.h"
 
-#ifdef DEBUG
-	CAttachableItem*	CAttachableItem::m_dbgItem = NULL;
+#ifndef MASTER_GOLD
+	CAttachableItem*	CAttachableItem::m_dbgItem = nullptr;
 #endif
 
 CPhysicsShellHolder &CAttachableItem::object	() const
@@ -130,7 +130,7 @@ void CAttachableItem::afterDetach		()
 	object().processing_deactivate	();
 }
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 float ATT_ITEM_MOVE_CURR = 0.01f;
 float ATT_ITEM_ROT_CURR = 0.1f;
 
