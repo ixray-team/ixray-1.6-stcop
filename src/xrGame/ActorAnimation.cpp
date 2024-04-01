@@ -268,28 +268,29 @@ SVehicleAnimCollection::SVehicleAnimCollection()
 
 void SVehicleAnimCollection::Create(IKinematicsAnimated* V,u16 num)
 {
-	string128 buf,buff1,buff2;
-	xr_strconcat(buff1,_itoa(num,buf,10),"_");
-	steer_left=	V->ID_Cycle(xr_strconcat(buf,"steering_idle_",buff1,"ls"));
-	steer_right=V->ID_Cycle(xr_strconcat(buf,"steering_idle_",buff1,"rs"));
-
-	for(int i=0;MAX_IDLES>i;++i){
-		idles[i]=V->ID_Cycle_Safe(xr_strconcat(buf,"steering_idle_",buff1,_itoa(i,buff2,10)));
-		if(idles[i]) idles_num++;
-		else break;
-	}
+	steer_left = V->ID_Cycle_Safe("steering_torso_ls");
+	steer_right = V->ID_Cycle_Safe("steering_torso_rs");
+	idles[0] = V->ID_Cycle_Safe("steering_torso_idle");
+	idles[1] = V->ID_Cycle_Safe("steering_legs_idle");
 }
 
 void CActor::steer_Vehicle(float angle)	
 {
 	if(!m_holder)		return;
 
-	CCar*	car			= smart_cast<CCar*>(m_holder);
-	u16 anim_type       = car->DriverAnimationType();
-	SVehicleAnimCollection& anims=m_vehicle_anims->m_vehicles_type_collections[anim_type];
-	if(angle==0.f) 		smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.idles[0]);
-	else if(angle>0.f)	smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.steer_right);
-	else				smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(anims.steer_left);
+	CCar* car = smart_cast<CCar*>(m_holder);
+	u16 anim_type = car->DriverAnimationType();
+	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(Visual());
+	SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
+	if(angle==0.f)
+	{
+		ka->PlayCycle(anims.idles[0]);
+		ka->PlayCycle(anims.idles[1]);
+	}
+	else if(angle>0.f)
+		ka->PlayCycle(anims.steer_right);
+	else
+		ka->PlayCycle(anims.steer_left);
 }
 
 void legs_play_callback		(CBlend *blend)
