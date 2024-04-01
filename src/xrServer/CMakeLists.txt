@@ -26,9 +26,6 @@ target_precompile_headers(xrServer PRIVATE "stdafx.h")
 # Project defines
 target_compile_definitions(xrServer PRIVATE XRSERVER_EXPORT)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrServer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrServer PUBLIC xrAbstractions)
 add_dependencies(xrServer xrRender_R1)

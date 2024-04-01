@@ -20,9 +20,6 @@ target_include_directories(mp_configs_verifyer PUBLIC "${CMAKE_CURRENT_SOURCE_DI
 # Project defines
 target_compile_definitions(mp_configs_verifyer PRIVATE MPCF_EXPORTS)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(mp_configs_verifyer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(mp_configs_verifyer PUBLIC xrCore)
 target_link_libraries(mp_configs_verifyer PUBLIC crypto)

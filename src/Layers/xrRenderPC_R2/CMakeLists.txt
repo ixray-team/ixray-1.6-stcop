@@ -61,28 +61,15 @@ target_include_directories(xrRender_R2 PUBLIC "${IXRAY_SDK_INC}")
 target_compile_definitions(xrRender_R2 PRIVATE XRRENDER_R2_EXPORTS)
 target_compile_definitions(xrRender_R2 PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrRender_R2 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrRender_R2 PUBLIC xrAbstractions)
 target_link_libraries(xrRender_R2 PUBLIC xrParticles)
 target_link_libraries(xrRender_R2 PUBLIC "d3dcompiler.lib")
 
-# Nuget
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
-
 ## DirectX SDK
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x86/release/DirectXTex.lib)
-else()
-    target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x64/release/DirectXTex.lib)
-endif()
+target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## RenderDoc
 target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")

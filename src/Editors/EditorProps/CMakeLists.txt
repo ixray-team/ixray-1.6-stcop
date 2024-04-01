@@ -20,9 +20,5 @@ list(FILTER ED_PROPS_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 add_library(EditorProps ${ED_PROPS_SRC_FILES})
 target_include_directories(EditorProps PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Project defines
-target_compile_definitions(EditorProps PRIVATE _USRDLL)
-target_compile_definitions(EditorProps PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(EditorProps PUBLIC EditorEngineAPI)

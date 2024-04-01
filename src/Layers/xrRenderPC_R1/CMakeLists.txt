@@ -62,18 +62,11 @@ target_include_directories(xrRender_R1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 # Project defines
 target_compile_definitions(xrRender_R1 PRIVATE XRRENDER_R1_EXPORTS)
 target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
-target_compile_definitions(xrRender_R1 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrRender_R1 PRIVATE xrAbstractions)
 target_link_libraries(xrRender_R1 PRIVATE xrParticles)
 target_link_libraries(xrRender_R1 PRIVATE "d3dcompiler.lib")
-
-# Nuget
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
 
 ## DirectX SDK
 target_include_directories(xrRender_R1 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")

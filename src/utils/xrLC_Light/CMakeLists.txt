@@ -26,43 +26,21 @@ target_precompile_headers(xrLC_Light PRIVATE "stdafx.h")
 # Project defines
 target_compile_definitions(xrLC_Light PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrLC_Light PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrLC_Light PUBLIC xrCore)
 target_link_libraries(xrLC_Light PUBLIC xrDXT)
 target_link_libraries(xrLC_Light PUBLIC xrCDB)
 target_link_libraries(xrLC_Light PUBLIC imgui)
 
-# Nuget
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
-
 ## FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
 target_include_directories(xrLC_Light PUBLIC "${FREEIMAGE}/native/include/")
 
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/x86/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-    target_link_libraries(xrLC_Light PUBLIC ${FREEIMAGE}/native/lib/x86/Release/FreeImage.lib)
-else()
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/x64/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-    target_link_libraries(xrLC_Light PUBLIC ${FREEIMAGE}/native/lib/x64/Release/FreeImage.lib)
-endif()
-
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Zlib.1.2.13.1/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
+target_link_libraries(xrLC_Light PUBLIC ${FREEIMAGE}/native/lib/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.lib)
 
 target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")

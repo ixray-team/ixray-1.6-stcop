@@ -27,24 +27,12 @@ target_precompile_headers(xrDXT PUBLIC "stdafx.h")
 target_compile_definitions(xrDXT PRIVATE DXT_EXPORTS)
 target_compile_definitions(xrDXT PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrDXT PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrDXT PUBLIC xrCore)
 target_link_libraries(xrDXT PUBLIC xrCDB)
 
-# Nuget
-set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
-
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
-
 # NVTT
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVTT}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/nvtt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 

@@ -25,9 +25,6 @@ target_precompile_headers(ETools PRIVATE "stdafx.h")
 target_compile_definitions(ETools PRIVATE ETOOLS_EXPORTS)
 target_compile_definitions(ETools PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(ETools PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(ETools PUBLIC xrCore)
 target_link_libraries(ETools PUBLIC xrCDB)
@@ -35,24 +32,8 @@ target_link_libraries(ETools PUBLIC xrSound)
 target_link_libraries(ETools PUBLIC QSlim)
 target_link_libraries(ETools PUBLIC imgui)
 
-# Nuget
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
-
-# Packages paths
-set(SND_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
-set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
-set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
-
 # DirectX SDK
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(ETools PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
-else()
-    target_link_libraries(ETools PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
-endif()
-
+target_link_libraries(ETools PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/${NUGET_PACKAGE_PLATFORM}/d3dx9.lib)
 target_include_directories(ETools PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(ETools PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 

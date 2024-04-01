@@ -1,11 +1,10 @@
 #pragma once
-#include <SDL3/SDL.h>
+#include "../xrCore/xrCore.h"
 
 #ifdef _EDITOR
 	#include "..\editors\EditorEngineAPI\stdafx.h"
 #else
 
-#include "../xrCore/xrCore.h"
 #include "../xrCore/API/xrAPI.h"
 
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>

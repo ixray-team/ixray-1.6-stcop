@@ -35,8 +35,6 @@ if (WIN32)
     target_compile_definitions(xrCompress PRIVATE _USRDLL)
 endif()
 
-target_compile_definitions(xrCompress PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # includes 
 target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../3rd party/lzo/include")
 

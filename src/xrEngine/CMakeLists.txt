@@ -2,18 +2,14 @@ project(xrAbstractions)
 set(ENGINE_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE ENGINE_SOURCE_INTERFACE_FILES
-    "I*.cpp"
-    "I*.h"
-)
-file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES
-    "ai*.cpp"
-    "ai*.h"
-)
+file(GLOB_RECURSE ENGINE_SOURCE_INTERFACE_FILES "I*.*")
+file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES "ai*.*")
+
 file(GLOB_RECURSE ENGINE_SOURCE_DEVICE_FILES
     "device*.*"
     "Device*.*"
 )
+
 file(GLOB_RECURSE ENGINE_SOURCE_ENV_FILES
     "Environment*.*"
     "Rain.*"
@@ -107,7 +103,6 @@ source_group("pch" FILES ${ENGINE_SOURCE_PCH_FILES})
 
 # Project defines
 target_compile_definitions(xrAbstractions PRIVATE ENGINE_BUILD)
-target_compile_definitions(xrAbstractions PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrAbstractions PUBLIC xrCore)
@@ -119,14 +114,8 @@ target_link_libraries(xrAbstractions PUBLIC "Winmm.lib")
 target_link_libraries(xrAbstractions PUBLIC "Vfw32.lib")
 target_link_libraries(xrAbstractions PUBLIC imgui)
 
-# Nuget
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
-
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
+# Copy binaries
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_FREETYPE}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )

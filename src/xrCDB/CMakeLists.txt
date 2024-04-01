@@ -30,9 +30,6 @@ target_precompile_headers(xrCDB PRIVATE "stdafx.h")
 target_compile_definitions(xrCDB PRIVATE XRCDB_EXPORTS)
 target_compile_definitions(xrCDB PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrCDB PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrCDB PUBLIC xrCore)
 target_link_libraries(xrCDB PUBLIC opcode-prosectors)

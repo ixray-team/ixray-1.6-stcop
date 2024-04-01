@@ -19,8 +19,6 @@ target_include_directories(mp_balancer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Project defines
 target_compile_definitions(mp_balancer PRIVATE MPB_EXPORTS)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(mp_balancer PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list

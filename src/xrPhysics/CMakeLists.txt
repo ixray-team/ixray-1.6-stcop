@@ -54,9 +54,6 @@ target_compile_definitions(xrPhysics PRIVATE XRPHYSICS_EXPORTS)
 target_compile_definitions(xrPhysics PRIVATE dSINGLE)
 target_compile_definitions(xrPhysics PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrPhysics PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrPhysics PUBLIC xrCore)
 target_link_libraries(xrPhysics PUBLIC xrCDB)

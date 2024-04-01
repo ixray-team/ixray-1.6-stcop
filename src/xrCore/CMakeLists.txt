@@ -124,14 +124,20 @@ endif()
 
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
-target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
-target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}")
-target_link_directories(xrCore PUBLIC "${IXRAY_SDK_LIB}")
+target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})
 
 if(IXRAY_ASAN)
-    add_compile_definitions(PURE_ONLY)
+    target_compile_definitions(xrCore PRIVATE PURE_ONLY)
 endif()
+
+# Includes 
+target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
+target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC})
+target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
+target_include_directories(xrCore PUBLIC ${CORE_DXMATH}/include/)
+target_include_directories(xrCore PUBLIC ${CORE_SDL3}build/native/include/)
+target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
 
 # Move precompiled header
 if (MSVC)
@@ -152,6 +158,7 @@ target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 ## Disable user-cheats for Shipping build
+target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
 target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Release>:MASTER_GOLD>")
@@ -161,98 +168,24 @@ if (DEVIXRAY_ENABLE_SHIPPING)
 endif()
 
 # Linker list
+target_link_libraries(xrCore PUBLIC lzo_static_lib)
+target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
+target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.lib)
+target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/tbb12.lib")
+
 if (WIN32)
     target_link_libraries(xrCore PRIVATE dxerr)
     target_link_libraries(xrCore PRIVATE "dbghelp")
     target_link_libraries(xrCore PRIVATE "winmm")
 endif()
+
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
-
-target_link_libraries(xrCore PUBLIC lzo_static_lib)
-target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
-
-# Discord GameSDK
-set(DISCORD_GAME_SDK_FILE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip)
-if(NOT EXISTS ${DISCORD_GAME_SDK_FILE})
-    file(
-        DOWNLOAD
-        https://github.com/ixray-team/ixray-packages/releases/download/d2023.12.8/Discord.GameSdk.3.2.1.zip
-        ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip
-        SHOW_PROGRESS
-    )
-
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/)
-
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/
-    )
-endif()
-set(DISCORD_GAME_SDK ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/)
-
-target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
-
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86/discord_game_sdk.dll.lib)
-else()
-    target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll.lib)
-endif()
-
-set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
-
-if (MSVC)
-	add_custom_command(TARGET ${PROJECT_NAME}
-    	PRE_BUILD
-    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-	)
-else()
-	execute_process(
-    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-	)
-endif()
-
-# DxMath
-target_include_directories(xrCore PUBLIC "${CORE_DXMATH}/include/")
 
 # Git Info
 include(gitver.cmake)
 
-add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+# Copy SDK binaries
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
-
-if (WIN32)
-    if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-        set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x86.2024.3.16-open/)
-    else()
-        set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.win-x64.2024.3.16-open/)
-    endif()
-endif()
-
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/win-x86/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-else()
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/x86_64/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/win-x64/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-endif()
-
-## Sdl3
-if (WIN32)
-    if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-        target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/win-x86/native/Release/SDL3.lib)
-    else()
-        target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/win-x64/native/Release/SDL3.lib)
-    endif()
-endif()
-target_include_directories(xrCore PUBLIC "${CORE_SDL3}/build/native/include/")
-
-target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
-target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/tbb12.lib")

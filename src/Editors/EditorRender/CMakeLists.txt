@@ -94,13 +94,6 @@ list(FILTER ED_RENDER_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # EditorRender project
 add_library(EditorRender ${ED_RENDER_SRC_FILES})
 target_include_directories(EditorRender PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_precompile_headers(EditorRender PRIVATE "stdafx.h")
-
-# Project defines
-target_compile_definitions(EditorRender PRIVATE _USRDLL)
-
-add_compile_options(/fp:fast)
-target_compile_definitions(EditorRender PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(EditorRender PUBLIC EditorEngineAPI)
@@ -118,8 +111,4 @@ source_group("pch" FILES ${ED_RENDER_SOURCE_PCH_FILES})
 ## DirectX SDK
 target_include_directories(EditorRender PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 target_include_directories(EditorRender PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_libraries(EditorRender PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x86/release/DirectXTex.lib)
-else()
-    target_link_libraries(EditorRender PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/x64/release/DirectXTex.lib)
-endif()
+target_link_libraries(EditorRender PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)

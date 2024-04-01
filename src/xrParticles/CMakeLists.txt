@@ -29,9 +29,6 @@ target_include_directories(xrParticles PUBLIC "${IXRAY_SDK_INC}")
 target_compile_definitions(xrParticles PRIVATE XR_PARTICLES_EXPORTS)
 target_compile_definitions(xrParticles PRIVATE _USRDLL)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(xrParticles PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(xrParticles PUBLIC xrCore)
 target_link_libraries(xrParticles PUBLIC xrCDB)

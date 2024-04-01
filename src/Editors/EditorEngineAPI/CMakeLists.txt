@@ -50,9 +50,6 @@ target_include_directories(EditorEngineAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
 target_include_directories(EditorEngineAPI PRIVATE "${IXRAY_SDK_INC}/freetype")
 
 # Project defines
-target_compile_definitions(EditorEngineAPI PRIVATE _USRDLL)
-
-target_compile_definitions(EditorEngineAPI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(EditorEngineAPI PUBLIC "_EDITOR")
 
 # Linker list

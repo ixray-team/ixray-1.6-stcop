@@ -23,7 +23,6 @@ target_include_directories(EditorCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 # Project defines
 target_compile_definitions(EditorCore PRIVATE _EDITOR)
 target_compile_definitions(EditorCore PRIVATE dSINGLE)
-target_compile_definitions(EditorCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(EditorCore PUBLIC EditorRender)

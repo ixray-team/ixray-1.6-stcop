@@ -44,11 +44,7 @@ target_precompile_headers(xrSE_Factory PRIVATE "stdafx.h")
 target_compile_definitions(xrSE_Factory PRIVATE XRSE_FACTORY_EXPORTS)
 target_compile_definitions(xrSE_Factory PRIVATE dSINGLE)
 target_compile_definitions(xrSE_Factory PRIVATE _USRDLL)
-
-target_compile_definitions(xrSE_Factory PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(xrSE_Factory PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CHECKING>")
-
-add_compile_options(/fp:fast)
 
 # Linker list
 target_link_libraries(xrSE_Factory PUBLIC xrCore)

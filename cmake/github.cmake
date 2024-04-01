@@ -66,3 +66,41 @@ else()
     set(IXR_TBB_LIB ${IXR_TBB_SDK}lib/ia32/vc14/)
     set(IXR_TBB_BIN ${IXR_TBB_SDK}redist/ia32/vc14/)
 endif()
+
+# Discord GameSDK
+set(DISCORD_GAME_SDK_FILE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip)
+if(NOT EXISTS ${DISCORD_GAME_SDK_FILE})
+    file(
+        DOWNLOAD
+        https://github.com/ixray-team/ixray-packages/releases/download/d2023.12.8/Discord.GameSdk.3.2.1.zip
+        ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip
+        SHOW_PROGRESS
+    )
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/discord_gamesdk_3.2.1.zip
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/
+    )
+endif()
+set(DISCORD_GAME_SDK ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/)
+
+# AMD AGS SDK
+set(AMD_AGS_SDK_FILE ${CMAKE_BINARY_DIR}/dep/Amd.Ags.Sdk.5.4.2.zip)
+if(NOT EXISTS ${AMD_AGS_SDK_FILE})
+    file(
+        DOWNLOAD
+        https://github.com/ixray-team/ixray-packages/releases/download/d2023.12.8/Amd.Ags.Sdk.5.4.2.zip
+        ${CMAKE_BINARY_DIR}/dep/Amd.Ags.Sdk.5.4.2.zip
+        SHOW_PROGRESS
+    )
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/Amd.Ags.Sdk.5.4.2.zip
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/
+    )
+endif()
+set(AMD_AGS_SDK ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/)

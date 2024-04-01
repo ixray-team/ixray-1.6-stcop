@@ -99,9 +99,6 @@ set_source_files_properties(${MPGF_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPIL
 target_compile_definitions(mp_gpprof_server PRIVATE XRAY_DISABLE_GAMESPY_WARNINGS)
 target_compile_definitions(mp_gpprof_server PRIVATE PTW32_STATIC_LIB)
 
-add_compile_options(/fp:fast)
-target_compile_definitions(mp_gpprof_server PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
-
 # Linker list
 target_link_libraries(mp_gpprof_server PUBLIC xrCore)
 target_link_libraries(mp_gpprof_server PUBLIC "ws2_32.lib")

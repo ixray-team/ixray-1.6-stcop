@@ -33,14 +33,10 @@ target_include_directories(xrForms PRIVATE "../../xrServerEntities/")
 
 # Project defines
 target_compile_definitions(xrForms PRIVATE UTILS_FORMS_EXPORTS)
-target_compile_definitions(xrForms PRIVATE _USRDLL)
 target_compile_definitions(xrForms PRIVATE ECORE_API=)
 target_compile_definitions(xrForms PRIVATE ENGINE_API=)
 target_compile_definitions(xrForms PRIVATE XRLC_LIGHT_API=)
 target_compile_definitions(xrForms PRIVATE AI_COMPILER)
-
-add_compile_options(/fp:fast)
-target_compile_definitions(xrForms PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrForms PUBLIC xrCore)

@@ -76,11 +76,6 @@ add_subdirectory("src")
 # Plugins 
 add_subdirectory("src/plugins")
 
-if(IXRAY_UTILS)
-    add_subdirectory("sdk/sources/MagicSoftware/FreeMagic/Source")
-    # set_target_properties(MagicFM ${IXRAY_FOLDER_3RD})
-endif()
-
 # Utils
 add_subdirectory("src/utils")
 

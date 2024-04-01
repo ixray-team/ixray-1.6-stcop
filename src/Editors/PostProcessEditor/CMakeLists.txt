@@ -35,8 +35,6 @@ list(APPEND PPE__SRC_FILES ${PPE__SOURCE_ALL_FILES})
 add_executable(PPEditor ${PPE__SOURCE_ALL_FILES})
 target_include_directories(PPEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(PPEditor PRIVATE "${IXRAY_SDK_INC}")
-
-target_compile_definitions(PPEditor PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(PPEditor PRIVATE _PP_EDITOR_)
 
 # Linker list
