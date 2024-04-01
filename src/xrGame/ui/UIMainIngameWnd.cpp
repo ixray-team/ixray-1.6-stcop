@@ -240,6 +240,11 @@ void CUIMainIngameWnd::Init()
 
 	uiXml.SetLocalRoot						(uiXml.GetRoot());
 	
+	// Car
+	UICarPanel.Init();
+	AttachChild(&UICarPanel);
+
+	// Icons
 	UIMotionIcon							= new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
 	UIZoneMap->MapFrame().AttachChild		(UIMotionIcon);
 	UIMotionIcon->Init						(UIZoneMap->MapFrame().GetWndRect());

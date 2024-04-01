@@ -448,10 +448,20 @@ void CCar::UpdateCL				( )
 	m_car_sound->Update();
 	if(Owner())
 	{
-		
 		if(m_pPhysicsShell->isEnabled())
 		{
 			Owner()->XFORM().mul_43	(XFORM(),m_sits_transforms[0]);
+		}
+
+		if (CurrentGameUI() != nullptr && CurrentGameUI()->UIMainIngameWnd != nullptr)
+		{
+			CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
+			Panel.SetEngineLamp(b_engine_on);
+
+			Panel.SetCarHealth(GetfHealth() /* /100.f*/);
+			Panel.SetCarFuel(m_fuel/* /100.f*/);
+			Panel.SetSpeed(lin_vel.magnitude() / 1000.f * 3600.f / 100.f);
+			Panel.SetRPM(m_current_rpm / m_max_rpm / 2.f);
 		}
 	}
 
@@ -599,6 +609,8 @@ void CCar::detach_Actor()
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
+	CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
+	Panel.Show(false);
 }
 
 bool CCar::attach_Actor(CGameObject* actor)
@@ -637,6 +649,8 @@ bool CCar::attach_Actor(CGameObject* actor)
 	processing_activate();
 	ReleaseHandBreak();
 
+	CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
+	Panel.Show(true);
 	return true;
 }
 
