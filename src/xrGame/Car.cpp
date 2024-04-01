@@ -550,6 +550,36 @@ bool CCar::TryTrunk()
 	return false;
 }
 
+bool CCar::TryUsableBones()
+{
+	if (UsableBones.empty())
+		return false;
+
+	UsableBonesActive = BI_NONE;
+
+	RQR.r_clear();
+	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
+
+	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+	{
+		collide::rq_results& R = RQR;
+		int y = R.r_count();
+
+		for (int k = 0; k < y; ++k)
+		{
+			collide::rq_result* I = R.r_begin() + k;
+			if (IsGameTypeSingle() && UsableBones.contains(I->element))
+			{
+				UsableBonesActive = I->element;
+				return true;
+			}
+		}
+	}
+
+
+	return false;
+}
+
 void CCar::PHHit(SHit& H)
 {
 	if (!m_pPhysicsShell)	return;
@@ -747,6 +777,28 @@ void CCar::ParseDefinitions()
 	fill_exhaust_vector(ini->r_string("car_definition", "exhausts"), m_exhausts);
 	fill_doors_map(ini->r_string("car_definition", "doors"), m_doors);
 
+	if (ini->line_exist("car_definition", "usable_bones"))
+	{
+		const char* Bones = ini->r_string("car_definition", "usable_bones");
+		const char* Callbacks = ini->r_string("car_definition", "usable_bones_callback");
+
+		size_t BonesCount = _GetItemCount(Bones);
+		R_ASSERT2(BonesCount == _GetItemCount(Callbacks), "Bones list should be equal to callback list!");
+
+		string32 BoneName = {};
+		string64 CallbackName = {};
+		
+		for (size_t Iter = 0; Iter < BonesCount; Iter++)
+		{
+			_GetItem(Bones, Iter, BoneName);
+			_GetItem(Callbacks, Iter, CallbackName);
+
+			u16 BoneID = pKinematics->LL_BoneID(BoneName);
+
+			UsableBones[BoneID] = Callbacks;
+		}
+	}
+
 	if (ini->line_exist("car_definition", "trunk_bone"))
 	{
 		u16 bone_id = pKinematics->LL_BoneID(ini->r_string("car_definition", "trunk_bone"));
@@ -838,7 +890,9 @@ void CCar::ParseDefinitions()
 
 	// fuel
 	m_fuel_tank = ini->r_float("car_definition", "fuel_tank");
+	m_fuel_tank = ini->r_float("car_definition", "fuel_tank");
 	m_fuel = m_fuel_tank;
+
 	m_fuel_consumption = ini->r_float("car_definition", "fuel_consumption");
 	m_fuel_consumption /= 100000.f;
 	if (ini->line_exist("car_definition", "exhaust_particles"))
@@ -1452,6 +1506,21 @@ void CCar::DoExit()
 
 bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 {
+	if (UsableBonesActive != BI_NONE)
+	{
+		luabind::functor<bool> Callback;
+		ai().script_engine().functor(UsableBones[UsableBonesActive].c_str(), Callback);
+		bool CheckComplete = Callback(this);
+
+		if (CheckComplete)
+		{
+			// FX: Если скрипт вернул true, то будем считать, 
+			// что Use был выполнен и посадка в машину не требуется 
+
+			return false;
+		}
+	}
+
 	xr_map<u16, CCarDoor>::iterator i;
 
 	RQR.r_clear();

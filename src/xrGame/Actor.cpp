@@ -445,6 +445,7 @@ if(!g_dedicated_server)
 	m_sDeadCharacterUseOrDragAction	= "dead_character_use_or_drag";
 	m_sDeadCharacterDontUseAction	= "dead_character_dont_use";
 	m_sCarTrunk						= "car_trunk_use";
+	m_sCarUse						= "car_use";
 	m_sCarCharacterUseAction		= "car_character_use";
 	m_sInventoryItemUseAction		= "inventory_item_use";
 	m_sInventoryBoxUseAction		= "inventory_box_use";
@@ -1416,6 +1417,10 @@ void CActor::shedule_Update	(u32 DT)
 						if (pCar->TryTrunk())
 						{
 							m_sDefaultObjAction = m_sCarTrunk;
+						}
+						else if (pCar->TryUsableBones())
+						{
+							m_sDefaultObjAction = m_sCarUse;
 						}
 					}
 				}

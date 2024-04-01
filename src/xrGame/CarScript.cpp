@@ -35,6 +35,12 @@ void CCar::script_register(lua_State *L)
 		.def("SetExplodeTime",	&CCar::SetExplodeTime)
 		.def("ExplodeTime",		&CCar::ExplodeTime)
 		.def("CarExplode",		&CCar::CarExplode)
+			
+		// FX: [AIW]
+		.def("add_fuel",			&CCar::AddFuel)
+		.def_readwrite("fuel",		&CCar::m_fuel)
+		.def_readwrite("fuel_tank",	&CCar::m_fuel_tank)
+
 		.def(constructor<>())
 	];
 }
