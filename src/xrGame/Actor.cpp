@@ -444,6 +444,7 @@ if(!g_dedicated_server)
 	m_sDeadCharacterUseAction		= "dead_character_use";
 	m_sDeadCharacterUseOrDragAction	= "dead_character_use_or_drag";
 	m_sDeadCharacterDontUseAction	= "dead_character_dont_use";
+	m_sCarTrunk						= "car_trunk_use";
 	m_sCarCharacterUseAction		= "car_character_use";
 	m_sInventoryItemUseAction		= "inventory_item_use";
 	m_sInventoryBoxUseAction		= "inventory_box_use";
@@ -1356,6 +1357,11 @@ void CActor::shedule_Update	(u32 DT)
 		m_pVehicleWeLookingAt			= smart_cast<CHolderCustom*>(game_object);
 		CEntityAlive* pEntityAlive		= smart_cast<CEntityAlive*>(game_object);
 		
+		if (m_pVehicleWeLookingAt != nullptr)
+		{
+			m_pPersonWeLookingAt = nullptr;
+		}
+
 		if (IsGameTypeSingle())
 		{
 			if (m_pUsableObject && m_pUsableObject->tip_text())
@@ -1390,6 +1396,14 @@ void CActor::shedule_Update	(u32 DT)
 				else if (m_pVehicleWeLookingAt)
 				{
 					m_sDefaultObjAction = m_sCarCharacterUseAction;
+
+					if (CCar* pCar = smart_cast<CCar*>(m_pVehicleWeLookingAt))
+					{
+						if (pCar->TryTrunk())
+						{
+							m_sDefaultObjAction = m_sCarTrunk;
+						}
+					}
 				}
 				else if (	m_pObjectWeLookingAt && 
 							m_pObjectWeLookingAt->cast_inventory_item() && 

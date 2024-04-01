@@ -25,6 +25,7 @@
 #include "../../xrScripts/script_engine.h"
 #include "../UIGameSP.h"
 #include "UITalkWnd.h"
+#include "Car.h"
 
 // -------------------------------------------------
 
@@ -149,7 +150,7 @@ void CUIActorMenu::DeInitTradeMode()
 
 	if(!CurrentGameUI())
 		return;
-	//только если находимся в режиме single
+	//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if(!pGameSP) return;
 
@@ -357,8 +358,10 @@ void CUIActorMenu::UpdatePartnerBag()
 {
 	string64 buf;
 
-	CBaseMonster* monster = smart_cast<CBaseMonster*>( m_pPartnerInvOwner );
-	if ( monster || m_pPartnerInvOwner->use_simplified_visual() ) 
+	CBaseMonster* monster = smart_cast<CBaseMonster*>(m_pPartnerInvOwner);
+	CCar* pCar = smart_cast<CCar*>(m_pPartnerInvOwner);
+
+	if (pCar || monster || m_pPartnerInvOwner->use_simplified_visual() )
 	{
 		m_PartnerWeight->SetText( "" );
 	}

@@ -39,6 +39,7 @@
 #include "UIPropertiesBox.h"
 #include "UIMainIngameWnd.h"
 #include "../Trade.h"
+#include "Car.h"
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
 {
@@ -61,25 +62,33 @@ void CUIActorMenu::SetActor(CInventoryOwner* io)
 
 void CUIActorMenu::SetPartner(CInventoryOwner* io)
 {
-	R_ASSERT			(!IsShown());
-	m_pPartnerInvOwner	= io;
-	if ( m_pPartnerInvOwner )
+	R_ASSERT(!IsShown());
+	m_pPartnerInvOwner = io;
+
+	if (m_pPartnerInvOwner)
 	{
-		CBaseMonster* monster = smart_cast<CBaseMonster*>(m_pPartnerInvOwner);
-		if (monster || m_pPartnerInvOwner->use_simplified_visual()) {
+		CBaseMonster* pMonster = smart_cast<CBaseMonster*>(m_pPartnerInvOwner);
+		CCar* pCar = smart_cast<CCar*>(m_pPartnerInvOwner);
+
+		if (pMonster || m_pPartnerInvOwner->use_simplified_visual())
+		{
 			m_PartnerCharacterInfo->ClearInfo();
 
-			if (monster)
+			if (pMonster)
 			{
-				m_PartnerCharacterInfo->InitCharacterMP("", 
-					pSettings->r_string(monster->cNameSect(), "icon"));
+				m_PartnerCharacterInfo->InitCharacterMP("",
+					pSettings->r_string(pMonster->cNameSect(), "icon"));
 			}
-		} else {
+		}
+		else if (pCar == nullptr)
+		{
 			m_PartnerCharacterInfo->InitCharacter(m_pPartnerInvOwner->object_id());
 		}
 
-		SetInvBox( NULL );
-	} else {
+		SetInvBox(nullptr);
+	}
+	else
+	{
 		m_PartnerCharacterInfo->ClearInfo();
 	}
 }

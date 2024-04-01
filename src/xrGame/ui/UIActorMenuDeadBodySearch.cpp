@@ -17,6 +17,7 @@
 #include "../InventoryBox.h"
 #include "../../xrEngine/string_table.h"
 #include "../ai/monsters/BaseMonster/base_monster.h"
+#include "../Car.h"
 
 void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
 {
@@ -92,9 +93,10 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	}
 
 	CBaseMonster* monster = smart_cast<CBaseMonster*>( m_pPartnerInvOwner );
+	CCar* pCar = smart_cast<CCar*>( m_pPartnerInvOwner );
 	
 	//only for partner, box = no, monster = no
-	if ( m_pPartnerInvOwner && !monster )
+	if (m_pPartnerInvOwner && !monster && !pCar)
 	{
 		CInfoPortionWrapper						known_info_registry;
 		known_info_registry.registry().init		(m_pPartnerInvOwner->object_id());

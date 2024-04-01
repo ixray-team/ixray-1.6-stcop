@@ -273,3 +273,77 @@ void CSE_ALifeDynamicObject::on_failed_switch_online()
 {
 	clear_client_data();
 }
+void CSE_ALifeCar::add_online(const bool& update_registries)
+{
+	CSE_ALifeDynamicObjectVisual* object = (this);
+
+
+	NET_Packet					tNetPacket;
+	ClientID					clientID;
+	clientID.set(object->alife().server().GetServerClient() ? object->alife().server().GetServerClient()->ID.value() : 0);
+
+
+	ALife::OBJECT_IT			I = object->children.begin();
+	ALife::OBJECT_IT			E = object->children.end();
+	for (; I != E; ++I) {
+		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = ai().alife().objects().object(*I);
+		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
+		R_ASSERT2(l_tpALifeInventoryItem, "Non inventory item object has parent?!");
+		l_tpALifeInventoryItem->base()->s_flags.bor(M_SPAWN_UPDATE);
+		CSE_Abstract* l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
+		object->alife().server().entity_Destroy(l_tpAbstract);
+
+
+		l_tpALifeDynamicObject->o_Position = object->o_Position;
+		l_tpALifeDynamicObject->m_tNodeID = object->m_tNodeID;
+		object->alife().server().Process_spawn(tNetPacket, clientID, FALSE, l_tpALifeInventoryItem->base());
+		l_tpALifeDynamicObject->s_flags.band(u16(-1) ^ M_SPAWN_UPDATE);
+		l_tpALifeDynamicObject->m_bOnline = true;
+	}
+
+
+	CSE_ALifeDynamicObjectVisual::add_online(update_registries);
+}
+
+
+void CSE_ALifeCar::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
+{
+	CSE_ALifeDynamicObjectVisual* object = (this);
+
+
+	for (u32 i = 0, n = saved_children.size(); i < n; ++i) {
+		CSE_ALifeDynamicObject* child = smart_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i], true));
+		R_ASSERT2(child, make_string<const char*>("parent [%d][%s][%s] has not valid child [%d]",
+			ID, name(), name_replace(), saved_children[i]));
+		child->m_bOnline = false;
+
+
+		CSE_ALifeInventoryItem* inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
+		VERIFY2(inventory_item, "Non inventory item object has parent?!");
+
+
+		ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
+		inventory_item->base()->ID = object->alife().server().PerformIDgen(item_id);
+
+
+		if (!child->can_save()) {
+			object->alife().release(child);
+			--i;
+			--n;
+			continue;
+		}
+
+
+		if (!child->keep_saved_data_anyway())
+			child->client_data.clear();
+		object->alife().graph().add(child, child->m_tGraphID, false);
+		alife().graph().remove(child, child->m_tGraphID);
+		children.push_back(child->ID);
+		child->ID_Parent = ID;
+	}
+
+
+
+
+	CSE_ALifeDynamicObjectVisual::add_offline(saved_children, update_registries);
+}

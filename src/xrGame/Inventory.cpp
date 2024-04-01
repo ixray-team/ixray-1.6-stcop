@@ -22,6 +22,7 @@
 #include "player_hud.h"
 #include "ai/stalker/ai_stalker.h"
 #include "weaponmagazined.h"
+#include "Car.h"
 
 using namespace InventoryUtilities;
 
@@ -1191,9 +1192,10 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 	VERIFY3(it == m_all.end(), "item already exists in inventory",*inventory_item->object().cName());
 
 	CActor* pActor = smart_cast<CActor*>(m_pOwner);
+	CCar* pCar = smart_cast<CCar*>(m_pOwner);
 	//актер всегда может взять вещь
-	if(!pActor && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
-		return	false;
+	if((!pCar && !pActor) && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
+		return false;
 
 	return	true;
 }

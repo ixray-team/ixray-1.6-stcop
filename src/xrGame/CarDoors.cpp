@@ -29,8 +29,14 @@ bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 void CCar::SDoor::Init()
 {
 	update=false;
-	joint=bone_map.find(bone_id)->second.joint;
-	if(!joint) return;
+
+	if (!bone_map.contains(bone_id))
+		return;
+
+	joint = bone_map.find(bone_id)->second.joint;
+	if (!joint)
+		return;
+
 	//R_ASSERT2(dJointGetType(joint->GetDJoint())==dJointTypeHinge,"Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
 	R_ASSERT2(joint->IsHingeJoint(),"Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
 	joint->SetBackRef(&joint);
@@ -612,7 +618,7 @@ bool CCar::SDoor::TestPass(const Fvector& pos,const Fvector& dir)
 bool CCar::SDoor::CanEnter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 {
 	//if(!joint) return true;//temp for fake doors
-	return (state==opened || state == broken || !joint) && TestPass(foot_pos,dir)&& IsInArea(pos,dir);//
+	return (state==opened || state == broken || !joint) && TestPass(foot_pos,dir)&& IsInArea(pos,dir) && (pcar->GetTrunkBone() != bone_id);
 }
 
 void CCar::SDoor::SaveNetState(NET_Packet& P)

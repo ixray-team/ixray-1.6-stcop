@@ -319,7 +319,12 @@ void CScriptGameObject::RestoreDefaultStartDialog()
 void CScriptGameObject::SetActorPosition			(Fvector pos)
 {
 	CActor* actor = smart_cast<CActor*>(&object());
-	if(actor){
+	if(actor)
+	{
+		CCar* car = smart_cast<CCar*>(actor->Holder());
+		if (car)
+			car->DoExit();
+
 		Fmatrix F = actor->XFORM();
 		F.c = pos;
 		actor->ForceTransform(F);

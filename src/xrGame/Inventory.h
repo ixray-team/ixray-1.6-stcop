@@ -144,6 +144,7 @@ public:
 	
 
 	friend class CInventoryOwner;
+	friend class CCar;
 
 
 	u32					ModifyFrame					() const					{ return m_dwModifyFrame; }

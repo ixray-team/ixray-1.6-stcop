@@ -8,7 +8,7 @@
 #include "../xrphysics/phupdateobject.h"
 #include "script_entity.h"
 #include "CarLights.h"
-//#include "phobject.h"
+#include "InventoryOwner.h"
 #include "holder_custom.h"
 #include "PHSkeleton.h"
 #include "DamagableItem.h"
@@ -49,10 +49,12 @@ class CCar :
 	public CPHCollisionDamageReceiver,
 	public CHitImmunity,
 	public CExplosive,
-	public CDelayedActionFuse
+	public CDelayedActionFuse,
+	public CInventoryOwner
 {
 private:
-	collide::rq_results		RQR;
+	collide::rq_results		RQR;	
+	u16						m_bone_trunk;
 
 #ifdef DEBUG
 	CFunctionGraph 					m_dbg_power_rpm			;
@@ -106,6 +108,7 @@ protected:
 	};
 public:
 
+	bool TryTrunk();
 
 	bool rsp,lsp,fwp,bkp,brp;
 	Fmatrix m_root_transform;
@@ -291,6 +294,7 @@ virtual void ApplyDamage			(u16 level);
 		void Open();
 		void Close();
 		void Break();
+
 virtual void ApplyDamage(u16 level);
 		void Update();
 		float GetAngle();
@@ -451,6 +455,7 @@ private:
 	void				 UpdatePower						()	;
 	void				 ReleasePedals						()	;
 	void				 ResetKeys							()	;
+	u16					 GetTrunkBone						() const { return m_bone_trunk; };
 
 	////////////////////////////////////////////////////////////////////////////
 	float				RefWheelMaxSpeed					()	;
@@ -520,6 +525,7 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 			bool WheelHit								(float P,s16 element,ALife::EHitType hit_type);
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:
+			void			DoExit						();
 	virtual bool			allowWeapon					() const		{return true;};
 	virtual bool			HUDView						() const;
 	virtual Fvector			ExitPosition				(){return m_exit_position;}
@@ -569,6 +575,7 @@ public:
 	virtual void			GetRayExplosionSourcePos	(Fvector &pos);
 	virtual void			ActivateExplosionBox		(const Fvector &size,Fvector &in_out_pos){};
 	virtual void			ResetScriptData				(void *P=0);
+		//	void			AddAvailableItems			(TIItemContainer& items_container) const;
 
 	virtual void			Action						(u16 id, u32 flags);
 	virtual void			SetParam					(int id, Fvector2 val);
@@ -592,8 +599,7 @@ public:
 	CCameraBase*			Camera						()			{return active_camera;}
 	void					SetExplodeTime				(u32 et)	;
 			u32				ExplodeTime					()			;
-	// Inventory for the car	
-	CInventory*						GetInventory						(){return inventory;}
+
 		  void						VisualUpdate						(float fov=90.0f);
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
@@ -617,9 +623,6 @@ private:
 	IC void fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts);
 	IC void fill_doors_map(LPCSTR S,xr_map<u16,SDoor>& doors);
 
-	//Inventory for the car
-	CInventory	*inventory;
-	
 	virtual	void reinit			();
 	virtual	void reload			(LPCSTR section);
 	virtual CGameObject			*cast_game_object			()	{return this;}
@@ -632,6 +635,13 @@ private:
 
 private:
 	car_memory	*m_memory;
+
+public:
+	virtual bool unlimited_ammo() { return false; };
+
+	virtual CCar* cast_car() override { return this; }
+	// Inventory for the car	
+	CInventory* GetInventory() { return &CInventoryOwner::inventory(); }
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

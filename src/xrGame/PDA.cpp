@@ -79,7 +79,7 @@ void CPda::UpdateActiveContacts	()
 	xr_vector<CObject*>::iterator it= feel_touch.begin();
 	for(;it!=feel_touch.end();++it){
 		CEntityAlive* pEA = smart_cast<CEntityAlive*>(*it);
-		if(!!pEA->g_Alive() && !pEA->cast_base_monster())
+		if(!!pEA->g_Alive() && !pEA->cast_base_monster() && !pEA->cast_car())
 		{
 			m_active_contacts.push_back(*it);
 		}
@@ -91,7 +91,7 @@ void CPda::feel_touch_new(CObject* O)
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
 	CInventoryOwner* pNewContactInvOwner = smart_cast<CInventoryOwner*>(O);
 
-	if (!entity_alive->cast_base_monster() && pNewContactInvOwner)
+	if (!entity_alive->cast_base_monster() && !entity_alive->cast_car() && pNewContactInvOwner)
 	{
 		CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()); VERIFY(pOwner);
 		pOwner->NewPdaContact(pNewContactInvOwner);
@@ -106,8 +106,8 @@ void CPda::feel_touch_delete(CObject* O)
 
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
 	CInventoryOwner* pLostContactInvOwner = smart_cast<CInventoryOwner*>(O);
-
-	if (!entity_alive->cast_base_monster() && pLostContactInvOwner)
+	
+	if (!entity_alive->cast_base_monster() && !entity_alive->cast_car() && pLostContactInvOwner)
 	{
 		CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()); VERIFY(pOwner);
 		pOwner->LostPdaContact(pLostContactInvOwner);
@@ -118,7 +118,7 @@ BOOL CPda::feel_touch_contact(CObject* O)
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
 
-	if (entity_alive && entity_alive->cast_base_monster())
+	if (entity_alive && (entity_alive->cast_base_monster() || entity_alive->cast_car()))
 	{
 		return TRUE;
 	}
