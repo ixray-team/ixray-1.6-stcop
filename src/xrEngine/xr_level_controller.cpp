@@ -582,6 +582,12 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 	int action_id = action_name_to_id(_action);
 	_binding* pbinding = &g_key_bindings[action_id];
 
+	if (action_id == kNOTBINDED)
+	{
+		Msg("! [ERROR]: Action not found %s", _action);
+		return;
+	}
+
 	string128 prim;
 	string128 sec;
 	prim[0] = 0;
