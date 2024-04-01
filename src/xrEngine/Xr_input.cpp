@@ -450,12 +450,13 @@ void CInput::MouseUpdate( )
 void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
-
+#ifndef _EDITOR
 	if (KBState[SDL_SCANCODE_LALT] || CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 
 	else 
+#endif
 	{
 		MouseUpdate();
 		GamepadUpdate();
@@ -521,11 +522,13 @@ void CInput::OnFrame()
 {
 	RDEVICE.Statistic->Input.Begin();
 	dwCurTime = RDEVICE.TimerAsync_MMT();
+#ifndef _EDITOR
 	if (KBState[SDL_SCANCODE_LALT] || CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 
 	else 
+#endif
 	{
 		MouseUpdate();
 		GamepadUpdate();

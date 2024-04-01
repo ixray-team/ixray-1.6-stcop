@@ -94,7 +94,7 @@ void dxDebugRender::NextSceneMode()
 //	TODO: DX10: Check if need this for DX10
 	VERIFY(!"Not implemented for DX10");
 #else //USE_DX11
-	dxRenderDeviceRender::Instance().Caps.SceneMode = (dxRenderDeviceRender::Instance().Caps.SceneMode + 1) % 3;
+	Caps.SceneMode = (Caps.SceneMode + 1) % 3;
 #endif
 }
 

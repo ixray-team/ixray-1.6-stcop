@@ -29,5 +29,5 @@ extern XRCORE_API CGameMtlLibrary* PGMLib;
     extern ENGINE_API CRender* Render;
 
    class IRenderFactory;
-    extern ENGINE_API IRenderFactory* RenderFactory;
+    extern XRCORE_API IRenderFactory* RenderFactory;
 #endif

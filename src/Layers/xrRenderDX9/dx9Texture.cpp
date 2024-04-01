@@ -157,12 +157,12 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     if (!FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump"))
         goto _BUMP_from_base;
 
+    Msg("! Can't find texture '%s'", fname);
+
 #ifdef _EDITOR
-    ELog.Msg(mtError, "Can't find texture '%s'", fname);
     return 0;
 #else
 
-    Msg("! Can't find texture '%s'", fname);
     R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
     goto _DDS;
 

@@ -3,6 +3,7 @@ project(IXRay)
 
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
+option(IXRAY_EDITORS "Apply editors to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
 option(IXRAY_PLUGIN_MAX "Enable X-Ray Plugins for Autodesk 3ds Max" OFF)
@@ -82,3 +83,6 @@ endif()
 
 # Utils
 add_subdirectory("src/utils")
+
+# Editors
+add_subdirectory("src/Editors")

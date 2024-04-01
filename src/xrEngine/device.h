@@ -208,7 +208,7 @@ public:
 	// Scene control
 	void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 	BOOL Begin								();
-	void Clear								();
+	virtual void Clear						();
 	void End								();
 	void FrameMove							();
 	
@@ -267,17 +267,12 @@ virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
 virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 };
 
-extern ENGINE_API xr_unique_ptr<CRenderDevice> DevicePtr;
+extern ENGINE_API CRenderDevice* DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
 
 #define Device (*DevicePtr)
-
-#ifndef	_EDITOR
 #define	RDEVICE	Device
-#else
-#define RDEVICE	EDevice
-#endif
 
 typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;

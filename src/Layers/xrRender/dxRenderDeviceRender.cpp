@@ -111,7 +111,7 @@ void dxRenderDeviceRender::SetupStates()
 	// SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 	// SSManager.SetMipLodBias(ps_r__tf_Mipbias);
 #else //USE_DX11
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.raster.dwStages; i++)				{
+	for (u32 i=0; i<Caps.raster.dwStages; i++)				{
 		CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic));
 		CHK_DX(RDevice->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *(LPDWORD)&ps_r__tf_Mipbias));
 		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MINFILTER,	D3DTEXF_LINEAR 		));
@@ -139,7 +139,7 @@ void dxRenderDeviceRender::SetupStates()
 	// ******************** Fog parameters
 	CHK_DX(RDevice->SetRenderState( D3DRS_FOGCOLOR,			0					));
 	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	FALSE				));
-	if (dxRenderDeviceRender::Instance().Caps.bTableFog)	{
+	if (Caps.bTableFog)	{
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR		));
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE			));
 	} else {
@@ -239,7 +239,7 @@ void dxRenderDeviceRender::overdrawBegin()
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILFAIL,		D3DSTENCILOP_KEEP		));
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILPASS,		D3DSTENCILOP_INCRSAT	));
 
-	if (1==dxRenderDeviceRender::Instance().Caps.SceneMode)		
+	if (1==Caps.SceneMode)		
 	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_KEEP		)); }	// Overdraw
 	else 
 	{ CHK_DX(RDevice->SetRenderState( D3DRS_STENCILZFAIL,	D3DSTENCILOP_INCRSAT	)); }	// ZB access
@@ -360,7 +360,7 @@ void dxRenderDeviceRender::Begin()
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);
-	//if (dxRenderDeviceRender::Instance().Caps.SceneMode)	overdrawBegin	();
+	//if (Caps.SceneMode)	overdrawBegin	();
 }
 
 void dxRenderDeviceRender::Clear()
@@ -378,7 +378,7 @@ void dxRenderDeviceRender::Clear()
 	CHK_DX(RDevice->Clear(0,0,
 		D3DCLEAR_ZBUFFER|
 		(psDeviceFlags.test(rsClearBB)?D3DCLEAR_TARGET:0)|
-		(dxRenderDeviceRender::Instance().Caps.bStencil?D3DCLEAR_STENCIL:0),
+		(Caps.bStencil?D3DCLEAR_STENCIL:0),
 		color_xrgb(0,0,0),1,0
 		));
 #endif

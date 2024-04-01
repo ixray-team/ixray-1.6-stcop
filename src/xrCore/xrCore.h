@@ -152,11 +152,7 @@ using RTokenVecIt = RTokenVec::iterator;
 #include "xr_trims.h"
 #include "xr_ini.h"
 #include "appinfo.h"
-#ifdef NO_FS_SCAN
-#	include "ELocatorAPI.h"
-#else
-#	include "LocatorAPI.h"
-#endif
+#include "LocatorAPI.h"
 #include "FileSystem.h"
 #include "FTimer.h"
 #include "fastdelegate.h"

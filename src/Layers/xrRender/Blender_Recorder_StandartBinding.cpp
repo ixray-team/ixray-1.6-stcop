@@ -306,7 +306,11 @@ static class cl_screen_res : public R_constant_setup
 static class cl_def_aref : public R_constant_setup
 {
 	virtual void setup(R_constant* C) override {
+#ifdef _EDITOR
+		float def_aref_cmd = 100 / 255.0f;
+#else
 		float def_aref_cmd = ps_r2_def_aref_quality / 255.0f;
+#endif
 	#ifdef USE_DX11
 		RCache.set_c(C, def_aref_cmd);
 	#else
@@ -319,10 +323,15 @@ static class cl_rain_params : public R_constant_setup {
 	u32 marker;
 	Fvector4 result;
 
-	virtual void setup(R_constant* C) {
+	virtual void setup(R_constant* C)
+	{
+#ifndef _EDITOR
 		float rainDensity = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 		float rainWetness = g_pGamePersistent->Environment().wetness_factor;
 		RCache.set_c(C, rainDensity, rainWetness, 0.0f, 0.0f);
+#else
+		RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+#endif
 	}
 } binder_rain_params;
 

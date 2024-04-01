@@ -5,7 +5,7 @@
 #ifndef _EDITOR
 	#define DEV dxRenderDeviceRender::Instance().Resources
 #else
-	#define DEV EDevice.Resources
+	#define DEV (ResourcesPtr)
 #endif
 
 #ifndef _EDITOR
@@ -60,10 +60,6 @@ public:
 	CResourceManager*	Resources;
 	ref_shader			m_WireShader;
 	ref_shader			m_SelectionShader;
-
-#ifndef USE_DX11
-	CHWCaps						Caps;
-#endif
 
 private:
 	CGammaControl		m_Gamma;

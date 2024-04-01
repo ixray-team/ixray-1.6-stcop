@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
+#include "R_Backend.h"
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/dx10BufferUtils.h"
@@ -24,8 +25,8 @@ void CBackend::CreateQuadIB		()
 	u16		IndexBuffer[dwIdxCount];
 	u16		*Indices		= IndexBuffer;
 	//u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	//if (dxRenderDeviceRender::Instance().Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
-	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,NULL));
+	//if (Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
+	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
 
 	D3D_BUFFER_DESC desc;
 	desc.ByteWidth = dwIdxCount*2;
@@ -95,8 +96,8 @@ void CBackend::CreateQuadIB		()
 	const u32 dwIdxCount	= dwTriCount*2*3;
 	u16		*Indices		= 0;
 	u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	if (dxRenderDeviceRender::Instance().Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
-	R_CHK(RDevice->CreateIndexBuffer	(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&QuadIB,NULL));
+	if (Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
+	R_CHK(RDevice->CreateIndexBuffer	(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&QuadIB,nullptr));
 //	Msg("CBackend::CreateQuadIB(). Created buffer size = %d ", dwIdxCount*2 );
 	R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
 	{

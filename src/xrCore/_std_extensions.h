@@ -20,48 +20,6 @@
 #undef max
 #endif
 
-#ifdef  _EDITOR
-IC char* strncpy_s(char* strDestination, size_t sizeInBytes, const char *strSource, size_t count)
-{
-    return strncpy(strDestination, strSource, count);
-}
-
-IC char* xr_strcpy(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	return strcpy(strDestination, strSource);
-}
-
-IC char* xr_strcpy(char* strDestination,   const char *strSource)
-{
-	return strcpy(strDestination, strSource);
-}
-
-IC char* _strlwr_s(char* strDestination, size_t sizeInBytes)
-{
-    return strlwr(strDestination);
-}
-
-IC char* xr_strcat(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	return strncat(strDestination, strSource, sizeInBytes);
-}
-
-IC char* xr_strcat(char* strDestination,  const char *strSource)
-{
-	return strcat(strDestination, strSource);
-}
-
-IC int xr_sprintf(char* dest, size_t sizeOfBuffer, const char* format, ...)
-{
-	va_list 	mark;
-	va_start	(mark, format );
-	int sz		= _vsnprintf(dest, sizeOfBuffer, format, mark );
-    dest		[sizeOfBuffer-1]=0;
-    va_end		(mark);
-    return 		sz;
-}
-#endif
-
 // token type definition
 struct XRCORE_API xr_token
 {
@@ -190,35 +148,6 @@ IC char*						xr_strlwr				(char* S)
 IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return (int)strcmp(S1,S2);  }
 
-#ifndef  _EDITOR
-#ifndef MASTER_GOLD
-
-inline errno_t xr_strcpy		( LPSTR destination, size_t const destination_size, LPCSTR source )
-{
-	return strcpy_s( destination, destination_size, source );
-}
-
-inline errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, LPCSTR source )
-{
-	return strcat_s( destination, buffer_size, source );
-}
-
-inline int xr_sprintf( LPSTR destination, size_t const buffer_size, LPCSTR format_string, ... )
-{
-	va_list args;
-	va_start ( args, format_string);
-	return vsprintf_s( destination, buffer_size, format_string, args );
-}
-
-template <int count>
-inline int xr_sprintf( char (&destination)[count], LPCSTR format_string, ... )
-{
-	va_list args;
-	va_start ( args, format_string);
-	return vsprintf_s( destination, count, format_string, args );
-}
-#else // #ifndef MASTER_GOLD
-
 inline errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, LPCSTR source )
 {
 	return						strncpy_s( destination, destination_size, source, destination_size );
@@ -253,7 +182,6 @@ inline int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string
 	va_start					( args, format_string);
 	return						vsnprintf_s( destination, count, count - 1, format_string, args );
 }
-#endif // #ifndef MASTER_GOLD
 
 template <int count>
 inline errno_t xr_strcpy	( char (&destination)[count], LPCSTR source )
@@ -266,7 +194,6 @@ inline errno_t xr_strcat	( char (&destination)[count], LPCSTR source )
 {
 	return						xr_strcat( destination, count, source );
 }
-#endif // #ifndef _EDITOR
 
 XRCORE_API	char*				timestamp				(string64& dest);
 

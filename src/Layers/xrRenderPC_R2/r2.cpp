@@ -103,8 +103,8 @@ void					CRender::create					()
 
 	// hardware
 	o.smapsize			= ps_r__smapsize;
-	o.mrt				= (dxRenderDeviceRender::Instance().Caps.raster.dwMRT_count >= 3);
-	o.mrtmixdepth		= (dxRenderDeviceRender::Instance().Caps.raster.b_MRT_mixdepth);
+	o.mrt				= (Caps.raster.dwMRT_count >= 3);
+	o.mrtmixdepth		= (Caps.raster.b_MRT_mixdepth);
 
 	// Check for NULL render target support
 	D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
@@ -122,7 +122,7 @@ void					CRender::create					()
 		//.		??? if (date < 22-march-07)		
 		if (0)
 		{
-			u32 device_id	= dxRenderDeviceRender::Instance().Caps.id_device;
+			u32 device_id	= Caps.id_device;
 			bool disable_nullrt = false;
 			switch (device_id)	
 			{
@@ -198,7 +198,7 @@ void					CRender::create					()
 		o.fp16_blend	= FALSE;
 	}
 
-	VERIFY2				(o.mrt && (dxRenderDeviceRender::Instance().Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
+	VERIFY2				(o.mrt && (Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
 
 	// nvstencil on NV40 and up
 	// nvstencil should be enabled only for GF 6xxx and GF 7xxx
@@ -266,7 +266,7 @@ void					CRender::create					()
 	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
 	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
 	ZeroMemory(q_sync_point, sizeof(q_sync_point));
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
+	for (u32 i=0; i<Caps.iGPUNum; ++i)
 		R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
 
 	xrRender_apply_tf			();
@@ -279,7 +279,7 @@ void					CRender::destroy				()
 	::PortalTraverser.destroy	();
 	//_RELEASE					(q_sync_point[1]);
 	//_RELEASE					(q_sync_point[0]);
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
+	for (u32 i=0; i<Caps.iGPUNum; ++i)
 		_RELEASE(q_sync_point[i]);
 	HWOCC.occq_destroy			();
 	xr_delete					(Models);
@@ -311,7 +311,7 @@ void CRender::reset_begin()
 	HWOCC.occq_destroy			();
 	//_RELEASE					(q_sync_point[1]);
 	//_RELEASE					(q_sync_point[0]);
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
+	for (u32 i=0; i<Caps.iGPUNum; ++i)
 		_RELEASE(q_sync_point[i]);
 }
 
@@ -319,7 +319,7 @@ void CRender::reset_end()
 {
 	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
 	//R_CHK						(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
-	for (u32 i=0; i<dxRenderDeviceRender::Instance().Caps.iGPUNum; ++i)
+	for (u32 i=0; i<Caps.iGPUNum; ++i)
 		R_CHK					(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
 	HWOCC.occq_create			(occq_size);
 
@@ -704,12 +704,12 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.HW_smap_FETCH4); ++len;
 
-	if (dxRenderDeviceRender::Instance().Caps.raster_major >= 3)	{
+	if (Caps.raster_major >= 3)	{
 		defines[def_it].Name		=	"USE_BRANCHING";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(dxRenderDeviceRender::Instance().Caps.raster_major >= 3); ++len;
+	sh_name[len]='0'+char(Caps.raster_major >= 3); ++len;
 
 	if (ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)) {
 		defines[def_it].Name = "USE_SUNMASK";
@@ -719,12 +719,12 @@ HRESULT	CRender::shader_compile			(
 	sh_name[len] = '0' + char(ps_r2_ls_flags.test(RFLAG_CLOUD_SHADOWS)); ++len;
 	
 
-	if (dxRenderDeviceRender::Instance().Caps.geometry.bVTF)	{
+	if (Caps.geometry.bVTF)	{
 		defines[def_it].Name		=	"USE_VTF";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	sh_name[len]='0'+char(dxRenderDeviceRender::Instance().Caps.geometry.bVTF); ++len;
+	sh_name[len]='0'+char(Caps.geometry.bVTF); ++len;
 
 	if (o.Tshadows)			{
 		defines[def_it].Name		=	"USE_TSHADOWS";

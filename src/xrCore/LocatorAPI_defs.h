@@ -1,7 +1,13 @@
-#ifndef LocatorAPI_defsH
-#define LocatorAPI_defsH
-
 #pragma once
+
+struct system_file
+{
+	u8			attrib;
+	xr_time_t	time_create;
+	xr_time_t	time_write;
+	size_t		size;
+	string256	name;
+};
 
 enum FS_List
 {
@@ -60,5 +66,3 @@ using FS_FileSet = xr_set<FS_File>;
 using FS_FileSetIt = FS_FileSet::iterator;
 
 extern bool	XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask);
-
-#endif //LocatorAPI_defsH

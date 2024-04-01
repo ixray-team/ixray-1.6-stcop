@@ -28,6 +28,7 @@ void* SwapChainRTV = nullptr;
 extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
 {
+#ifndef _EDITOR
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -53,16 +54,19 @@ void DrawMainViewport()
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar();
+#endif
 }
 
 void free_vid_mode_list()
 {
+#ifndef _EDITOR
 	for (int i = 0; vid_mode_token[i].name; i++) {
 		xr_free(vid_mode_token[i].name);
 	}
 
 	xr_free(vid_mode_token);
-	vid_mode_token = NULL;
+	vid_mode_token = nullptr;
+#endif
 }
 
 struct _uniq_mode
@@ -74,7 +78,8 @@ struct _uniq_mode
 
 void fill_vid_mode_list()
 {
-	if (vid_mode_token != NULL)		return;
+#ifndef _EDITOR
+	if (vid_mode_token != nullptr)		return;
 	xr_vector<LPCSTR>	_tmp;
 	xr_vector<DXGI_MODE_DESC>	modes;
 
@@ -136,24 +141,26 @@ void fill_vid_mode_list()
 		Msg("[%s]", _tmp[i]);
 #endif // DEBUG
 	}
+#endif
 }
 
 bool CreateD3D9();
-bool CreateD3D11();
-
-bool UpdateBuffersD3D11();
-void ResizeBuffersD3D11(u16 Width, u16 Height);
-
 bool UpdateBuffersD3D9();
 void ResizeBuffersD3D9(u16 Width, u16 Height);
-
 void DestroyD3D9();
+
+#ifndef _EDITOR
+bool CreateD3D11();
+bool UpdateBuffersD3D11();
+void ResizeBuffersD3D11(u16 Width, u16 Height);
 void DestroyD3D11();
+#endif
+
 
 bool CRenderDevice::InitRenderDevice(APILevel API)
 {
 	fill_vid_mode_list();
-
+#ifndef _EDITOR
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
 	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
@@ -223,7 +230,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	});
-
+#endif
 	switch (API) {
 
 	case APILevel::DX9:
@@ -232,12 +239,14 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		}
 		break;
 
+#ifndef _EDITOR
 	case APILevel::DX11:
 		if (!CreateD3D11()) {
 			return false;
 		}
 		break;
 
+#endif
 	default:
 		break;
 	}
@@ -254,8 +263,9 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 
 void CRenderDevice::DestroyRenderDevice()
 {
+#ifndef _EDITOR
 	CImGuiManager::Instance().Destroy();
-
+#endif
 	switch (CurrentAPILevel) 
 	{
 
@@ -263,9 +273,11 @@ void CRenderDevice::DestroyRenderDevice()
 		DestroyD3D9();
 		break;
 
+#ifndef _EDITOR
 	case APILevel::DX11:
 		DestroyD3D11();
 		break;
+#endif
 
 	default:
 		break;
@@ -321,11 +333,11 @@ void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 	case APILevel::DX9:
 		ResizeBuffersD3D9(Width, Height);
 		break;
-
+#ifndef _EDITOR
 	case APILevel::DX11:
 		ResizeBuffersD3D11(Width, Height);
 		break;
-
+#endif
 	default:
 		break;
 	}
@@ -409,8 +421,10 @@ RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 
 void CRenderDevice::BeginRender()
 {
+#ifndef _EDITOR
 	CImGuiManager::Instance().NewPlatformFrame();
 	CImGuiManager::Instance().UpdateCapture();
+#endif
 }
 
 void CRenderDevice::EndRender()

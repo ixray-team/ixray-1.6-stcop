@@ -69,4 +69,5 @@ public:
 	void			Update(void);
 };
 
+extern CHWCaps Caps;
 #endif

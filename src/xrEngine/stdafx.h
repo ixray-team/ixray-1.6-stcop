@@ -1,12 +1,12 @@
 #pragma once
+#include <SDL3/SDL.h>
 
 #ifdef _EDITOR
-	#include "..\editors\ECore\stdafx.h"
+	#include "..\editors\EditorEngineAPI\stdafx.h"
 #else
 
 #include "../xrCore/xrCore.h"
 #include "../xrCore/API/xrAPI.h"
-#include <SDL3/SDL.h>
 
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast

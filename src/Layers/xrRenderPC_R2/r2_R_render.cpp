@@ -68,7 +68,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 			Device.vCameraPosition,
 			m_ViewProjection,
 			CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE
-			//. disabled scissoring (dxRenderDeviceRender::Instance().Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
+			//. disabled scissoring (Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
 			);
 
 		// Determine visibility for static geometry hierrarhy
@@ -269,7 +269,7 @@ void CRender::Render		()
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait_S.End		();
-	q_sync_count								= (q_sync_count+1)%dxRenderDeviceRender::Instance().Caps.iGPUNum;
+	q_sync_count								= (q_sync_count+1)%Caps.iGPUNum;
 	CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 
 	//******* Main calc - DEFERRER RENDERER
