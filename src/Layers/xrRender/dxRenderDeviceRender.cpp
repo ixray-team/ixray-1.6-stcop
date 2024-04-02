@@ -394,6 +394,7 @@ void dxRenderDeviceRender::End()
 
 	DoAsyncScreenshot();
 
+#ifdef DEBUG_DRAW
 	CImGuiManager& MyImGui = CImGuiManager::Instance();
 	MyImGui.BeginRender();
 
@@ -407,8 +408,16 @@ void dxRenderDeviceRender::End()
 	MyImGui.Render();
 	MyImGui.AfterRender();
 
-#ifdef DEBUG_DRAW
 	DebugRenderImpl.m_lines.resize(0);
+#else
+
+#ifdef USE_DX11
+	ID3D11RenderTargetView* RTV = RTarget;
+	RContext->OMSetRenderTargets(1, &RTV, RDepth);
+#else
+	RDevice->SetRenderTarget(0, RTarget);
+#endif
+
 #endif
 
 #ifdef USE_DX11

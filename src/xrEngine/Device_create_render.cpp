@@ -298,7 +298,12 @@ void* CRenderDevice::GetRenderContext()
 
 void* CRenderDevice::GetRenderTexture()
 {
+	// FX: Use ImGui render for Debug Draw mode
+#ifdef DEBUG_DRAW
 	return RenderRTV;
+#else
+	return SwapChainRTV;
+#endif
 }
 
 void* CRenderDevice::GetDepthTexture()
