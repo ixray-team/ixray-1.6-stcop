@@ -127,12 +127,16 @@ void xrLogger::CloseLog()
 
 void xrLogger::AddLogCallback(LogCallback logCb)
 {
-	if (logCb == nullptr) return;
+	if (logCb == nullptr)
+		return;
+
+	xrCriticalSectionGuard guard(&theLogger->logCallbackGuard);
 	theLogger->logCallbackList.push_back(logCb);
 }
 
 void xrLogger::RemoveLogCallback(LogCallback logCb)
 {
+	xrCriticalSectionGuard guard(&theLogger->logCallbackGuard);
 	theLogger->logCallbackList.remove(logCb);
 }
 
@@ -251,6 +255,7 @@ void xrLogger::LogThreadEntry()
 					mutableWritter->w("\r\n", 2);
 				}
 
+				xrCriticalSectionGuard guard(&logCallbackGuard);
 				for (const LogCallback& FnCallback : logCallbackList)
 				{
 					FnCallback(finalLine);
