@@ -188,4 +188,5 @@ include(gitver.cmake)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN}tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
