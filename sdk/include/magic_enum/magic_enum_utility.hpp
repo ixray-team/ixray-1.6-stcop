@@ -5,11 +5,11 @@
 // | |  | | (_| | (_| | | (__  | |____| | | | |_| | | | | | | | |____|_|   |_|
 // |_|  |_|\__,_|\__, |_|\___| |______|_| |_|\__,_|_| |_| |_|  \_____|
 //                __/ | https://github.com/Neargye/magic_enum
-//               |___/  version 0.9.3
+//               |___/  version 0.9.5
 //
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2019 - 2023 Daniil Goncharov <neargye@gmail.com>.
+// Copyright (c) 2019 - 2024 Daniil Goncharov <neargye@gmail.com>.
 //
 // Permission is hereby  granted, free of charge, to any  person obtaining a copy
 // of this software and associated  documentation files (the "Software"), to deal
@@ -67,6 +67,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>, typename F,
 constexpr auto enum_for_each(F&& f) {
   using D = std::decay_t<E>;
   static_assert(std::is_enum_v<D>, "magic_enum::enum_for_each requires enum type.");
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
   constexpr auto sep = std::make_index_sequence<detail::count_v<D, S>>{};
 
   if constexpr (detail::all_invocable<D, S, F>(sep)) {
@@ -84,7 +85,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
   if (const auto i = enum_index<D, S>(value)) {
     const std::ptrdiff_t index = (static_cast<std::ptrdiff_t>(*i) + n);
     if (index >= 0 && index < count) {
-      return enum_value<D, S>(index);
+      return enum_value<D, S>(static_cast<std::size_t>(index));
     }
   }
   return {};
@@ -98,7 +99,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
   if (const auto i = enum_index<D, S>(value)) {
     const std::ptrdiff_t index = ((((static_cast<std::ptrdiff_t>(*i) + n) % count) + count) % count);
     if (index >= 0 && index < count) {
-      return enum_value<D, S>(index);
+      return enum_value<D, S>(static_cast<std::size_t>(index));
     }
   }
   return MAGIC_ENUM_ASSERT(false), value;
@@ -112,7 +113,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
   if (const auto i = enum_index<D, S>(value)) {
     const std::ptrdiff_t index = (static_cast<std::ptrdiff_t>(*i) - n);
     if (index >= 0 && index < count) {
-      return enum_value<D, S>(index);
+      return enum_value<D, S>(static_cast<std::size_t>(index));
     }
   }
   return {};
@@ -126,7 +127,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
   if (const auto i = enum_index<D, S>(value)) {
     const std::ptrdiff_t index = ((((static_cast<std::ptrdiff_t>(*i) - n) % count) + count) % count);
     if (index >= 0 && index < count) {
-      return enum_value<D, S>(index);
+      return enum_value<D, S>(static_cast<std::size_t>(index));
     }
   }
   return MAGIC_ENUM_ASSERT(false), value;

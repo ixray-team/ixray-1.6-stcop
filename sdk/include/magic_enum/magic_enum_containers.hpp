@@ -5,11 +5,11 @@
 // | |  | | (_| | (_| | | (__  | |____| | | | |_| | | | | | | | |____|_|   |_|
 // |_|  |_|\__,_|\__, |_|\___| |______|_| |_|\__,_|_| |_| |_|  \_____|
 //                __/ | https://github.com/Neargye/magic_enum
-//               |___/  version 0.9.3
+//               |___/  version 0.9.5
 //
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2019 - 2023 Daniil Goncharov <neargye@gmail.com>.
+// Copyright (c) 2019 - 2024 Daniil Goncharov <neargye@gmail.com>.
 // Copyright (c) 2022 - 2023 Bela Schaum <schaumb@gmail.com>.
 //
 // Permission is hereby  granted, free of charge, to any  person obtaining a copy
@@ -331,7 +331,7 @@ template <typename E, typename V, typename Index = default_indexing<E>>
 struct array {
   static_assert(std::is_enum_v<E>);
   static_assert(std::is_trivially_constructible_v<Index>);
-  static_assert(enum_count<E>() == 0 || Index::at(enum_values<E>().front())); // check Index is constexpr
+  static_assert(enum_count<E>() > 0 && Index::at(enum_values<E>().front()));
 
   using index_type = Index;
   using container_type = std::array<V, enum_count<E>()>;
@@ -481,7 +481,7 @@ template <typename E, typename Index = default_indexing<E>>
 class bitset {
   static_assert(std::is_enum_v<E>);
   static_assert(std::is_trivially_constructible_v<Index>);
-  static_assert(enum_count<E>() == 0 || Index::at(enum_values<E>().front())); // check Index is constexpr
+  static_assert(enum_count<E>() > 0 && Index::at(enum_values<E>().front()));
 
   using base_type = std::conditional_t<enum_count<E>() <= 8,  std::uint_least8_t,
                     std::conditional_t<enum_count<E>() <= 16, std::uint_least16_t,
@@ -523,7 +523,7 @@ class bitset {
       return *this;
     }
 
-    [[nodiscard]] constexpr explicit operator bool() const noexcept { return (parent->a[num_index] & bit_index) > 0; }
+    [[nodiscard]] constexpr operator bool() const noexcept { return (parent->a[num_index] & bit_index) > 0; }
 
     [[nodiscard]] constexpr bool operator~() const noexcept { return !static_cast<bool>(*this); }
 
@@ -1125,50 +1125,46 @@ class set {
 template <typename V, int = 0>
 explicit set(V starter) -> set<V>;
 
+template <auto I, typename E, typename V, typename Index>
+constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < enum_count<E>()), V&> get(array<E, V, Index>& a) noexcept {
+  return a.a[I];
+}
+
+template <auto I, typename E, typename V, typename Index>
+constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < enum_count<E>()), V&&> get(array<E, V, Index>&& a) noexcept {
+  return std::move(a.a[I]);
+}
+
+template <auto I, typename E, typename V, typename Index>
+constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < enum_count<E>()), const V&> get(const array<E, V, Index>& a) noexcept {
+  return a.a[I];
+}
+
+template <auto I, typename E, typename V, typename Index>
+constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < enum_count<E>()), const V&&> get(const array<E, V, Index>&& a) noexcept {
+  return std::move(a.a[I]);
+}
+
+template <auto Enum, typename E, typename V, typename Index>
+constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && enum_contains(Enum), V&> get(array<E, V, Index>& a) {
+  return a[Enum];
+}
+
+template <auto Enum, typename E, typename V, typename Index>
+constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && enum_contains(Enum), V&&> get(array<E, V, Index>&& a) {
+  return std::move(a[Enum]);
+}
+
+template <auto Enum, typename E, typename V, typename Index>
+constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && enum_contains(Enum), const V&> get(const array<E, V, Index>& a) {
+  return a[Enum];
+}
+
+template <auto Enum, typename E, typename V, typename Index>
+constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && enum_contains(Enum), const V&&> get(const array<E, V, Index>&& a) {
+  return std::move(a[Enum]);
+}
+
 } // namespace magic_enum::containers
-
-namespace std {
-
-template <auto I, typename E, typename V, typename Index>
-constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < magic_enum::enum_count<E>()), V&> get(magic_enum::containers::array<E, V, Index>& a) noexcept {
-  return a.a[I];
-}
-
-template <auto I, typename E, typename V, typename Index>
-constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < magic_enum::enum_count<E>()), V&&> get(magic_enum::containers::array<E, V, Index>&& a) noexcept {
-  return std::move(a.a[I]);
-}
-
-template <auto I, typename E, typename V, typename Index>
-constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < magic_enum::enum_count<E>()), const V&> get(const magic_enum::containers::array<E, V, Index>& a) noexcept {
-  return a.a[I];
-}
-
-template <auto I, typename E, typename V, typename Index>
-constexpr std::enable_if_t<(std::is_integral_v<decltype(I)> && I < magic_enum::enum_count<E>()), const V&&> get(const magic_enum::containers::array<E, V, Index>&& a) noexcept {
-  return std::move(a.a[I]);
-}
-
-template <auto Enum, typename E, typename V, typename Index>
-constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && magic_enum::enum_contains(Enum), V&> get(magic_enum::containers::array<E, V, Index>& a) noexcept {
-  return a[Enum];
-}
-
-template <auto Enum, typename E, typename V, typename Index>
-constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && magic_enum::enum_contains(Enum), V&&> get(magic_enum::containers::array<E, V, Index>&& a) noexcept {
-  return std::move(a[Enum]);
-}
-
-template <auto Enum, typename E, typename V, typename Index>
-constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && magic_enum::enum_contains(Enum), const V&> get(const magic_enum::containers::array<E, V, Index>& a) noexcept {
-  return a[Enum];
-}
-
-template <auto Enum, typename E, typename V, typename Index>
-constexpr std::enable_if_t<std::is_same_v<decltype(Enum), E> && magic_enum::enum_contains(Enum), const V&&> get(const magic_enum::containers::array<E, V, Index>&& a) noexcept {
-  return std::move(a[Enum]);
-}
-
-} // namespace std
 
 #endif // NEARGYE_MAGIC_ENUM_CONTAINERS_HPP

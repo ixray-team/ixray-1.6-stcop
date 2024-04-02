@@ -5,11 +5,11 @@
 // | |  | | (_| | (_| | | (__  | |____| | | | |_| | | | | | | | |____|_|   |_|
 // |_|  |_|\__,_|\__, |_|\___| |______|_| |_|\__,_|_| |_| |_|  \_____|
 //                __/ | https://github.com/Neargye/magic_enum
-//               |___/  version 0.9.3
+//               |___/  version 0.9.5
 //
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2019 - 2023 Daniil Goncharov <neargye@gmail.com>.
+// Copyright (c) 2019 - 2024 Daniil Goncharov <neargye@gmail.com>.
 //
 // Permission is hereby  granted, free of charge, to any  person obtaining a copy
 // of this software and associated  documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@
 
 #define MAGIC_ENUM_VERSION_MAJOR 0
 #define MAGIC_ENUM_VERSION_MINOR 9
-#define MAGIC_ENUM_VERSION_PATCH 3
+#define MAGIC_ENUM_VERSION_PATCH 5
 
 #include <array>
 #include <cstddef>
@@ -60,7 +60,7 @@
 
 #if defined(MAGIC_ENUM_NO_ASSERT)
 #  define MAGIC_ENUM_ASSERT(...) static_cast<void>(0)
-#else
+#elif !defined(MAGIC_ENUM_ASSERT)
 #  include <cassert>
 #  define MAGIC_ENUM_ASSERT(...) assert((__VA_ARGS__))
 #endif
@@ -69,9 +69,11 @@
 #  pragma clang diagnostic push
 #  pragma clang diagnostic ignored "-Wunknown-warning-option"
 #  pragma clang diagnostic ignored "-Wenum-constexpr-conversion"
+#  pragma clang diagnostic ignored "-Wuseless-cast" // suppresses 'static_cast<char_type>('\0')' for char_type = char (common on Linux).
 #elif defined(__GNUC__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wmaybe-uninitialized" // May be used uninitialized 'return {};'.
+#  pragma GCC diagnostic ignored "-Wuseless-cast" // suppresses 'static_cast<char_type>('\0')' for char_type = char (common on Linux).
 #elif defined(_MSC_VER)
 #  pragma warning(push)
 #  pragma warning(disable : 26495) // Variable 'static_str<N>::chars_' is uninitialized.
@@ -164,14 +166,11 @@ namespace customize {
 // If need another range for specific enum type, add specialization enum_range for necessary enum type.
 template <typename E>
 struct enum_range {
-  static_assert(std::is_enum_v<E>, "magic_enum::customize::enum_range requires enum type.");
   static constexpr int min = MAGIC_ENUM_RANGE_MIN;
   static constexpr int max = MAGIC_ENUM_RANGE_MAX;
-  static_assert(max > min, "magic_enum::customize::enum_range requires max > min.");
 };
 
 static_assert(MAGIC_ENUM_RANGE_MAX > MAGIC_ENUM_RANGE_MIN, "MAGIC_ENUM_RANGE_MAX must be greater than MAGIC_ENUM_RANGE_MIN.");
-static_assert((MAGIC_ENUM_RANGE_MAX - MAGIC_ENUM_RANGE_MIN) < (std::numeric_limits<std::uint16_t>::max)(), "MAGIC_ENUM_RANGE must be less than UINT16_MAX.");
 
 namespace detail {
 
@@ -216,9 +215,9 @@ namespace detail {
 template <typename T>
 struct supported
 #if defined(MAGIC_ENUM_SUPPORTED) && MAGIC_ENUM_SUPPORTED || defined(MAGIC_ENUM_NO_CHECK_SUPPORT)
-    : std::true_type {};
+  : std::true_type {};
 #else
-    : std::false_type {};
+  : std::false_type {};
 #endif
 
 template <auto V, typename E = std::decay_t<decltype(V)>, std::enable_if_t<std::is_enum_v<E>, int> = 0>
@@ -423,10 +422,20 @@ constexpr auto n() noexcept {
     constexpr auto name_ptr = MAGIC_ENUM_GET_TYPE_NAME_BUILTIN(E);
     constexpr auto name = name_ptr ? str_view{name_ptr, std::char_traits<char>::length(name_ptr)} : str_view{};
 #elif defined(__clang__)
-    auto name = str_view{__PRETTY_FUNCTION__ + 34, sizeof(__PRETTY_FUNCTION__) - 36};
+    str_view name;
+    if constexpr (sizeof(__PRETTY_FUNCTION__) == sizeof(__FUNCTION__)) {
+      static_assert(always_false_v<E>, "magic_enum::detail::n requires __PRETTY_FUNCTION__.");
+      return str_view{};
+    } else {
+      name.size_ = sizeof(__PRETTY_FUNCTION__) - 36;
+      name.str_ = __PRETTY_FUNCTION__ + 34;
+    }
 #elif defined(__GNUC__)
     auto name = str_view{__PRETTY_FUNCTION__, sizeof(__PRETTY_FUNCTION__) - 1};
-    if (name.str_[name.size_ - 1] == ']') {
+    if constexpr (sizeof(__PRETTY_FUNCTION__) == sizeof(__FUNCTION__)) {
+      static_assert(always_false_v<E>, "magic_enum::detail::n requires __PRETTY_FUNCTION__.");
+      return str_view{};
+    } else if (name.str_[name.size_ - 1] == ']') {
       name.size_ -= 50;
       name.str_ += 49;
     } else {
@@ -489,7 +498,14 @@ constexpr auto n() noexcept {
     constexpr auto name_ptr = MAGIC_ENUM_GET_ENUM_NAME_BUILTIN(V);
     auto name = name_ptr ? str_view{name_ptr, std::char_traits<char>::length(name_ptr)} : str_view{};
 #elif defined(__clang__)
-    auto name = str_view{__PRETTY_FUNCTION__ + 34, sizeof(__PRETTY_FUNCTION__) - 36};
+    str_view name;
+    if constexpr (sizeof(__PRETTY_FUNCTION__) == sizeof(__FUNCTION__)) {
+      static_assert(always_false_v<decltype(V)>, "magic_enum::detail::n requires __PRETTY_FUNCTION__.");
+      return str_view{};
+    } else {
+      name.size_ = sizeof(__PRETTY_FUNCTION__) - 36;
+      name.str_ = __PRETTY_FUNCTION__ + 34;
+    }
     if (name.size_ > 22 && name.str_[0] == '(' && name.str_[1] == 'a' && name.str_[10] == ' ' && name.str_[22] == ':') {
       name.size_ -= 23;
       name.str_ += 23;
@@ -499,7 +515,10 @@ constexpr auto n() noexcept {
     }
 #elif defined(__GNUC__)
     auto name = str_view{__PRETTY_FUNCTION__, sizeof(__PRETTY_FUNCTION__) - 1};
-    if (name.str_[name.size_ - 1] == ']') {
+    if constexpr (sizeof(__PRETTY_FUNCTION__) == sizeof(__FUNCTION__)) {
+      static_assert(always_false_v<decltype(V)>, "magic_enum::detail::n requires __PRETTY_FUNCTION__.");
+      return str_view{};
+    } else if (name.str_[name.size_ - 1] == ']') {
       name.size_ -= 55;
       name.str_ += 54;
     } else {
@@ -698,7 +717,7 @@ constexpr void valid_count(bool* valid, std::size_t& count) noexcept {
     }                                                       \
   }
 
-  MAGIC_ENUM_FOR_EACH_256(MAGIC_ENUM_V);
+  MAGIC_ENUM_FOR_EACH_256(MAGIC_ENUM_V)
 
   if constexpr ((I + 256) < Size) {
     valid_count<E, S, Size, Min, I + 256>(valid, count);
@@ -750,7 +769,6 @@ constexpr auto values() noexcept {
   constexpr auto max = reflected_max<E, S>();
   constexpr auto range_size = max - min + 1;
   static_assert(range_size > 0, "magic_enum::enum_range requires valid size.");
-  static_assert(range_size < (std::numeric_limits<std::uint16_t>::max)(), "magic_enum::enum_range requires valid size.");
 
   return values<E, S, range_size, min>();
 }
@@ -807,7 +825,8 @@ inline constexpr auto max_v = (count_v<E, S> > 0) ? static_cast<U>(values_v<E, S
 
 template <typename E, enum_subtype S, std::size_t... I>
 constexpr auto names(std::index_sequence<I...>) noexcept {
-  return std::array<string_view, sizeof...(I)>{{enum_name_v<E, values_v<E, S>[I]>...}};
+  constexpr auto names = std::array<string_view, sizeof...(I)>{{enum_name_v<E, values_v<E, S>[I]>...}};
+  return names;
 }
 
 template <typename E, enum_subtype S>
@@ -818,7 +837,8 @@ using names_t = decltype((names_v<D, S>));
 
 template <typename E, enum_subtype S, std::size_t... I>
 constexpr auto entries(std::index_sequence<I...>) noexcept {
-  return std::array<std::pair<E, string_view>, sizeof...(I)>{{{values_v<E, S>[I], enum_name_v<E, values_v<E, S>[I]>}...}};
+  constexpr auto entries = std::array<std::pair<E, string_view>, sizeof...(I)>{{{values_v<E, S>[I], enum_name_v<E, values_v<E, S>[I]>}...}};
+  return entries;
 }
 
 template <typename E, enum_subtype S>
@@ -845,17 +865,16 @@ constexpr bool is_sparse() noexcept {
 template <typename E, enum_subtype S = subtype_v<E>>
 inline constexpr bool is_sparse_v = is_sparse<E, S>();
 
-template <typename E, enum_subtype S, typename U = std::underlying_type_t<E>>
-constexpr U values_ors() noexcept {
-  static_assert(S == enum_subtype::flags, "magic_enum::detail::values_ors requires valid subtype.");
+template <typename E, enum_subtype S>
+struct is_reflected
+#if defined(MAGIC_ENUM_NO_CHECK_REFLECTED_ENUM)
+  : std::true_type {};
+#else
+  : std::bool_constant<std::is_enum_v<E> && (count_v<E, S> != 0)> {};
+#endif
 
-  auto ors = U{0};
-  for (std::size_t i = 0; i < count_v<E, S>; ++i) {
-    ors |= static_cast<U>(values_v<E, S>[i]);
-  }
-
-  return ors;
-}
+template <typename E, enum_subtype S>
+inline constexpr bool is_reflected_v = is_reflected<std::decay_t<E>, S>{};
 
 template <bool, typename R>
 struct enable_if_enum {};
@@ -1156,6 +1175,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_value(std::size_t index) noexcept -> detail::enable_if_t<E, std::decay_t<E>> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
   if constexpr (detail::is_sparse_v<D, S>) {
     return MAGIC_ENUM_ASSERT(index < detail::count_v<D, S>), detail::values_v<D, S>[index];
@@ -1170,6 +1190,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 template <typename E, std::size_t I, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_value() noexcept -> detail::enable_if_t<E, std::decay_t<E>> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
   static_assert(I < detail::count_v<D, S>, "magic_enum::enum_value out of range.");
 
   return enum_value<D, S>(I);
@@ -1178,7 +1199,10 @@ template <typename E, std::size_t I, detail::enum_subtype S = detail::subtype_v<
 // Returns std::array with enum values, sorted by enum value.
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_values() noexcept -> detail::enable_if_t<E, detail::values_t<E, S>> {
-  return detail::values_v<std::decay_t<E>, S>;
+  using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
+
+  return detail::values_v<D, S>;
 }
 
 // Returns integer value from enum value.
@@ -1199,11 +1223,9 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_index(E value) noexcept -> detail::enable_if_t<E, optional<std::size_t>> {
   using D = std::decay_t<E>;
   using U = underlying_type_t<D>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
-  if constexpr (detail::count_v<D, S> == 0) {
-    static_cast<void>(value);
-    return {}; // Empty enum.
-  } else if constexpr (detail::is_sparse_v<D, S> || (S == detail::enum_subtype::flags)) {
+  if constexpr (detail::is_sparse_v<D, S> || (S == detail::enum_subtype::flags)) {
 #if defined(MAGIC_ENUM_ENABLE_HASH)
     return detail::constexpr_switch<&detail::values_v<D, S>, detail::case_call_t::index>(
         [](std::size_t i) { return optional<std::size_t>{i}; },
@@ -1231,14 +1253,17 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 template <detail::enum_subtype S, typename E>
 [[nodiscard]] constexpr auto enum_index(E value) noexcept -> detail::enable_if_t<E, optional<std::size_t>> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
   return enum_index<D, S>(value);
 }
 
 // Obtains index in enum values from static storage enum variable.
 template <auto V, detail::enum_subtype S = detail::subtype_v<std::decay_t<decltype(V)>>>
-[[nodiscard]] constexpr auto enum_index() noexcept -> detail::enable_if_t<decltype(V), std::size_t> {
-  constexpr auto index = enum_index<std::decay_t<decltype(V)>, S>(V);
+[[nodiscard]] constexpr auto enum_index() noexcept -> detail::enable_if_t<decltype(V), std::size_t> {\
+  using D = std::decay_t<decltype(V)>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
+  constexpr auto index = enum_index<D, S>(V);
   static_assert(index, "magic_enum::enum_index enum value does not have a index.");
 
   return *index;
@@ -1259,6 +1284,7 @@ template <auto V>
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_name(E value) noexcept -> detail::enable_if_t<E, string_view> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
   if (const auto i = enum_index<D, S>(value)) {
     return detail::names_v<D, S>[*i];
@@ -1271,6 +1297,7 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 template <detail::enum_subtype S, typename E>
 [[nodiscard]] constexpr auto enum_name(E value) -> detail::enable_if_t<E, string_view> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
   return enum_name<D, S>(value);
 }
@@ -1278,13 +1305,19 @@ template <detail::enum_subtype S, typename E>
 // Returns std::array with names, sorted by enum value.
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_names() noexcept -> detail::enable_if_t<E, detail::names_t<E, S>> {
-  return detail::names_v<std::decay_t<E>, S>;
+  using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
+
+  return detail::names_v<D, S>;
 }
 
 // Returns std::array with pairs (value, name), sorted by enum value.
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_entries() noexcept -> detail::enable_if_t<E, detail::entries_t<E, S>> {
-  return detail::entries_v<std::decay_t<E>, S>;
+  using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
+
+  return detail::entries_v<D, S>;
 }
 
 // Allows you to write magic_enum::enum_cast<foo>("bar", magic_enum::case_insensitive);
@@ -1295,31 +1328,27 @@ inline constexpr auto case_insensitive = detail::case_insensitive<>{};
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 [[nodiscard]] constexpr auto enum_cast(underlying_type_t<E> value) noexcept -> detail::enable_if_t<E, optional<std::decay_t<E>>> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
-  if constexpr (detail::count_v<D, S> == 0) {
-    static_cast<void>(value);
-    return {}; // Empty enum.
-  } else {
-    if constexpr (detail::is_sparse_v<D, S> || (S == detail::enum_subtype::flags)) {
+  if constexpr (detail::is_sparse_v<D, S> || (S == detail::enum_subtype::flags)) {
 #if defined(MAGIC_ENUM_ENABLE_HASH)
-      return detail::constexpr_switch<&detail::values_v<D, S>, detail::case_call_t::value>(
-          [](D v) { return optional<D>{v}; },
-          static_cast<D>(value),
-          detail::default_result_type_lambda<optional<D>>);
+    return detail::constexpr_switch<&detail::values_v<D, S>, detail::case_call_t::value>(
+        [](D v) { return optional<D>{v}; },
+        static_cast<D>(value),
+        detail::default_result_type_lambda<optional<D>>);
 #else
-      for (std::size_t i = 0; i < detail::count_v<D, S>; ++i) {
-        if (value == static_cast<underlying_type_t<D>>(enum_value<D, S>(i))) {
-          return static_cast<D>(value);
-        }
-      }
-      return {}; // Invalid value or out of range.
-#endif
-    } else {
-      if (value >= detail::min_v<D, S> && value <= detail::max_v<D, S>) {
+    for (std::size_t i = 0; i < detail::count_v<D, S>; ++i) {
+      if (value == static_cast<underlying_type_t<D>>(enum_value<D, S>(i))) {
         return static_cast<D>(value);
       }
-      return {}; // Invalid value or out of range.
     }
+    return {}; // Invalid value or out of range.
+#endif
+  } else {
+    if (value >= detail::min_v<D, S> && value <= detail::max_v<D, S>) {
+      return static_cast<D>(value);
+    }
+    return {}; // Invalid value or out of range.
   }
 }
 
@@ -1328,26 +1357,23 @@ template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
 template <typename E, detail::enum_subtype S = detail::subtype_v<E>, typename BinaryPredicate = std::equal_to<>>
 [[nodiscard]] constexpr auto enum_cast(string_view value, [[maybe_unused]] BinaryPredicate p = {}) noexcept(detail::is_nothrow_invocable<BinaryPredicate>()) -> detail::enable_if_t<E, optional<std::decay_t<E>>, BinaryPredicate> {
   using D = std::decay_t<E>;
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
-  if constexpr (detail::count_v<D, S> == 0) {
-    static_cast<void>(value);
-    return {}; // Empty enum.
 #if defined(MAGIC_ENUM_ENABLE_HASH)
-    } else if constexpr (detail::is_default_predicate<BinaryPredicate>()) {
-      return detail::constexpr_switch<&detail::names_v<D, S>, detail::case_call_t::index>(
-          [](std::size_t i) { return optional<D>{detail::values_v<D, S>[i]}; },
-          value,
-          detail::default_result_type_lambda<optional<D>>,
-          [&p](string_view lhs, string_view rhs) { return detail::cmp_equal(lhs, rhs, p); });
-#endif
-    } else {
-    for (std::size_t i = 0; i < detail::count_v<D, S>; ++i) {
-      if (detail::cmp_equal(value, detail::names_v<D, S>[i], p)) {
-        return enum_value<D, S>(i);
-      }
-    }
-    return {}; // Invalid value or out of range.
+  if constexpr (detail::is_default_predicate<BinaryPredicate>()) {
+    return detail::constexpr_switch<&detail::names_v<D, S>, detail::case_call_t::index>(
+        [](std::size_t i) { return optional<D>{detail::values_v<D, S>[i]}; },
+        value,
+        detail::default_result_type_lambda<optional<D>>,
+        [&p](string_view lhs, string_view rhs) { return detail::cmp_equal(lhs, rhs, p); });
   }
+#endif
+  for (std::size_t i = 0; i < detail::count_v<D, S>; ++i) {
+    if (detail::cmp_equal(value, detail::names_v<D, S>[i], p)) {
+      return enum_value<D, S>(i);
+    }
+  }
+  return {}; // Invalid value or out of range.
 }
 
 // Checks whether enum contains value with such value.

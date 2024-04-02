@@ -5,11 +5,11 @@
 // | |  | | (_| | (_| | | (__  | |____| | | | |_| | | | | | | | |____|_|   |_|
 // |_|  |_|\__,_|\__, |_|\___| |______|_| |_|\__,_|_| |_| |_|  \_____|
 //                __/ | https://github.com/Neargye/magic_enum
-//               |___/  version 0.9.3
+//               |___/  version 0.9.5
 //
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2019 - 2023 Daniil Goncharov <neargye@gmail.com>.
+// Copyright (c) 2019 - 2024 Daniil Goncharov <neargye@gmail.com>.
 //
 // Permission is hereby  granted, free of charge, to any  person obtaining a copy
 // of this software and associated  documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ using invoke_result_t = typename invoke_result<F, V>::type;
 
 template <typename E, enum_subtype S, typename F, std::size_t... I>
 constexpr auto common_invocable(std::index_sequence<I...>) noexcept {
-  static_assert(is_enum_v<E>, "magic_enum::detail::invocable_index requires enum type.");
+  static_assert(std::is_enum_v<E>, "magic_enum::detail::invocable_index requires enum type.");
 
   if constexpr (count_v<E, S> == 0) {
     return identity<nonesuch>{};
@@ -69,7 +69,7 @@ constexpr auto common_invocable(std::index_sequence<I...>) noexcept {
 
 template <typename E, enum_subtype S, typename Result, typename F>
 constexpr auto result_type() noexcept {
-  static_assert(is_enum_v<E>, "magic_enum::detail::result_type requires enum type.");
+  static_assert(std::is_enum_v<E>, "magic_enum::detail::result_type requires enum type.");
 
   constexpr auto seq = std::make_index_sequence<count_v<E, S>>{};
   using R = typename decltype(common_invocable<E, S, F>(seq))::type;
@@ -101,22 +101,13 @@ inline constexpr auto default_result_type_lambda = []() noexcept(std::is_nothrow
 template <>
 inline constexpr auto default_result_type_lambda<void> = []() noexcept {};
 
-template <typename R, typename F, typename... Args>
-constexpr R invoke_r(F&& f, Args&&... args) noexcept(std::is_nothrow_invocable_r_v<R, F, Args...>) {
-  if constexpr (std::is_void_v<R>) {
-    std::forward<F>(f)(std::forward<Args>(args)...);
-  } else {
-    return static_cast<R>(std::forward<F>(f)(std::forward<Args>(args)...));
-  }
-}
-
 template <std::size_t I, std::size_t End, typename R, typename E, enum_subtype S, typename F, typename Def>
 constexpr decltype(auto) constexpr_switch_impl(F&& f, E value, Def&& def) {
   if constexpr(I < End) {
     constexpr auto v = enum_constant<enum_value<E, I, S>()>{};
     if (value == v) {
       if constexpr (std::is_invocable_r_v<R, F, decltype(v)>) {
-        return invoke_r<R>(std::forward<F>(f), v);
+        return static_cast<R>(std::forward<F>(f)(v));
       } else {
         return def();
       }
@@ -146,6 +137,7 @@ template <typename Result = detail::default_result_type, typename E, detail::enu
 constexpr decltype(auto) enum_switch(F&& f, E value) {
   using D = std::decay_t<E>;
   static_assert(std::is_enum_v<D>, "magic_enum::enum_switch requires enum type.");
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
 #if defined(MAGIC_ENUM_ENABLE_HASH) || defined(MAGIC_ENUM_ENABLE_HASH_SWITCH)
   return detail::constexpr_switch<&detail::values_v<D, S>, detail::case_call_t::value>(
@@ -169,6 +161,7 @@ template <typename Result, typename E, detail::enum_subtype S = detail::subtype_
 constexpr decltype(auto) enum_switch(F&& f, E value, Result&& result) {
   using D = std::decay_t<E>;
   static_assert(std::is_enum_v<D>, "magic_enum::enum_switch requires enum type.");
+  static_assert(detail::is_reflected_v<D, S>, "magic_enum requires enum implementation and valid max and min.");
 
 #if defined(MAGIC_ENUM_ENABLE_HASH) || defined(MAGIC_ENUM_ENABLE_HASH_SWITCH)
   return detail::constexpr_switch<&detail::values_v<D, S>, detail::case_call_t::value>(
