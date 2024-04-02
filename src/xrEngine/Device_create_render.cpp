@@ -361,6 +361,8 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 	else
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
 
+	SDL_SyncWindow(g_AppInfo.Window);
+
 	// Get the index of the primary display
 	SDL_DisplayID displayIndex = SDL_GetDisplayForWindow(g_AppInfo.Window);
 	if (displayIndex < 0) {
