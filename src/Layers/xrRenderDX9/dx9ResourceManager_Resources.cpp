@@ -335,6 +335,7 @@ void	CResourceManager::DBG_VerifyGeoms	()
 
 SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
 {
+	xrCriticalSectionGuard guard(creationGuard);
 	R_ASSERT			(decl && vb);
 
 	SDeclaration* dcl	= _CreateDecl			(decl);
