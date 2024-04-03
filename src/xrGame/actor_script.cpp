@@ -17,6 +17,8 @@ bool isFirstPerson() { return Actor()->active_cam() == eacFirstEye; }
 void setFirstPerson() { Actor()->cam_Set(eacFirstEye); }
 void setThirdPerson() { Actor()->cam_Set(eacLookAt); }
 
+bool isGodMode() { return psActorFlags.test(AF_GODMODE); }
+
 #pragma optimize("s",on)
 void CActor::script_register(lua_State* L)
 {
@@ -29,6 +31,7 @@ void CActor::script_register(lua_State* L)
 				def("is_first_person", isFirstPerson),
 				def("set_first_person", setFirstPerson),
 				def("set_third_person", setThirdPerson),
+				def("is_god_mode", isGodMode),
 				
 				class_<enum_exporter<EBoostParams>>("EBoostParams").enum_("eboostparams")[
 					value("eBoostHpRestore", eBoostHpRestore),
