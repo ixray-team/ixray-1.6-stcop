@@ -6,6 +6,8 @@
 #include "level.h"
 #include "player_hud.h"
 #include "hudmanager.h"
+#include "inventory.h"
+#include "inventoryOwner.h"
 
 CWeaponRPG7::CWeaponRPG7()
 {
@@ -32,7 +34,62 @@ bool CWeaponRPG7::AllowBore()
 
 void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 {
-	inherited::FireTrace	(P, D);
+	inherited::FireTrace(P, D);
+
+	m_iShotNum = 0;
+	m_bFireSingleShot = true;
+	bWorking = false;
+
+	if (GetState() == eFire && getRocketCount())
+	{
+		Fvector p1, d1, p;
+		Fvector p2, d2, d;
+		p1.set(P);
+		d1.set(D);
+		p = p1;
+		d = d1;
+		CEntity* E = smart_cast<CEntity*>(H_Parent());
+		if (E)
+		{
+			E->g_fireParams(this, p2, d2);
+			p = p2;
+			d = d2;
+
+			if (IsHudModeNow())
+			{
+				Fvector	p0;
+				float dist = HUD().GetCurrentRayQuery().range;
+				p0.mul(d2, dist);
+				p0.add(p1);
+				p = p1;
+				d.sub(p0, p1);
+				d.normalize_safe();
+			}
+		}
+
+		Fmatrix launch_matrix;
+		launch_matrix.identity();
+		launch_matrix.k.set(d);
+		Fvector::generate_orthonormal_basis(launch_matrix.k, launch_matrix.j, launch_matrix.i);
+		launch_matrix.c.set(p);
+
+		d.normalize();
+		d.mul(m_fLaunchSpeed);
+
+		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
+
+		CExplosiveRocket* pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
+		VERIFY(pGrenade);
+		pGrenade->SetInitiator(H_Parent()->ID());
+
+		if (OnServer())
+		{
+			NET_Packet P;
+			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
+			P.w_u16(u16(getCurrentRocket()->ID()));
+			u_EventSend(P);
+		}
+	}
 	UpdateMissileVisibility	();
 }
 
@@ -97,67 +154,6 @@ void CWeaponRPG7::SwitchState(u32 S)
 void CWeaponRPG7::FireStart()
 {
 	inherited::FireStart();
-}
-
-#include "inventory.h"
-#include "inventoryOwner.h"
-void CWeaponRPG7::switch2_Fire()
-{
-	m_iShotNum			= 0;
-	m_bFireSingleShot	= true;
-	bWorking			= false;
-
-	if(GetState()==eFire && getRocketCount()) 
-	{
-		Fvector p1, d1, p; 
-		Fvector p2, d2, d; 
-		p1.set								(get_LastFP()); 
-		d1.set								(get_LastFD());
-		p = p1;
-		d = d1;
-		CEntity* E = smart_cast<CEntity*>	(H_Parent());
-		if(E)
-		{
-			E->g_fireParams				(this, p2,d2);
-			p = p2;
-			d = d2;
-
-			if(IsHudModeNow())
-			{
-				Fvector		p0;
-				float dist	= HUD().GetCurrentRayQuery().range;
-				p0.mul		(d2,dist);
-				p0.add		(p1);
-				p			= p1;
-				d.sub		(p0,p1);
-				d.normalize_safe();
-			}
-		}
-
-		Fmatrix								launch_matrix;
-		launch_matrix.identity				();
-		launch_matrix.k.set					(d);
-		Fvector::generate_orthonormal_basis(launch_matrix.k,
-											launch_matrix.j, launch_matrix.i);
-		launch_matrix.c.set					(p);
-
-		d.normalize							();
-		d.mul								(m_fLaunchSpeed);
-
-		CRocketLauncher::LaunchRocket		(launch_matrix, d, zero_vel);
-
-		CExplosiveRocket* pGrenade			= smart_cast<CExplosiveRocket*>(getCurrentRocket());
-		VERIFY								(pGrenade);
-		pGrenade->SetInitiator				(H_Parent()->ID());
-
-		if (OnServer())
-		{
-			NET_Packet						P;
-			u_EventGen						(P,GE_LAUNCH_ROCKET,ID());
-			P.w_u16							(u16(getCurrentRocket()->ID()));
-			u_EventSend						(P);
-		}
-	}
 }
 
 void CWeaponRPG7::PlayAnimReload()

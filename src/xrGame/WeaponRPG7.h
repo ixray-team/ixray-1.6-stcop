@@ -18,7 +18,6 @@ public:
 	virtual void OnEvent		(NET_Packet& P, u16 type);
 	virtual void ReloadMagazine	();
 	virtual void Load			(LPCSTR section);
-	virtual void switch2_Fire	();
 	virtual	void FireTrace		(const Fvector& P, const Fvector& D);
 	virtual void on_a_hud_attach();
 

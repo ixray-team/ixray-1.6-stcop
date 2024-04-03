@@ -6,6 +6,8 @@
 #include "../xrphysics/MathUtils.h"
 #include "actor.h"
 #include "UIGameCustom.h"
+#include "inventory.h"
+#include "inventoryOwner.h"
 
 #ifdef DEBUG
 #	include "phdebug.h"
@@ -92,15 +94,13 @@ void CWeaponRG6::FireStart()
 	}
 }
 
-#include "inventory.h"
-#include "inventoryOwner.h"
-void CWeaponRG6::switch2_Fire()
+void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 {
-	inheritedSG::switch2_Fire();
+	inheritedSG::FireTrace(P, D);
 	
 	Fvector p1, d; 
-	p1.set(get_LastFP()); 
-	d.set(get_LastFD());
+	p1.set(P); 
+	d.set(D);
 
 	CEntity* E = smart_cast<CEntity*>(H_Parent());
 	if (E){

@@ -19,7 +19,7 @@ protected:
 	virtual void	FireStart				();
 	virtual u8		AddCartridge			(u8 cnt);
 	virtual void	UnloadMagazine			(bool spawn_ammo);
-	virtual void	switch2_Fire			();
+	virtual void	FireTrace				(const Fvector& P, const Fvector& D);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
