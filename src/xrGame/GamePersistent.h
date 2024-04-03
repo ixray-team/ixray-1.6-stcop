@@ -13,6 +13,8 @@ class CGamePersistent:
 	public IGame_Persistent, 
 	public IEventReceiver
 {
+	using inherited = IGame_Persistent;
+
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
 	u32					ambient_sound_next_time		[20]; //max snd channels
