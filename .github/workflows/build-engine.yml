@@ -203,6 +203,7 @@ jobs:
             gamedata/
             patches/xpatch_03.db
             fsgame.ltx
+            .xrignore
 
   publish-engine:
     name: 'Publish engine'
@@ -225,8 +226,8 @@ jobs:
       - name: Get engine
         uses: actions/download-artifact@v4
         with:
-          name: engine-binaries-${{ matrix.platform }}-Release-${{ github.sha }}
-          path: build/${{ matrix.platform }}/Engine/bin/Release/
+          name: engine-binaries-${{ matrix.platform }}-RelWithDebInfo-${{ github.sha }}
+          path: build/${{ matrix.platform }}/Engine/bin/RelWithDebInfo/
 
       - name: Get assets
         uses: actions/download-artifact@v4
@@ -237,7 +238,7 @@ jobs:
       - name: Move files
         run: |
           mkdir ${{ github.workspace }}/bin
-          move ${{ github.workspace }}/build/${{ matrix.platform }}/Engine/bin/Release/*.* ${{ github.workspace }}/bin
+          move ${{ github.workspace }}/build/${{ matrix.platform }}/Engine/bin/RelWithDebInfo/*.* ${{ github.workspace }}/bin
 
       - name: Upload engine
         uses: actions/upload-artifact@v4
@@ -248,3 +249,4 @@ jobs:
             gamedata/
             patches/xpatch_03.db
             fsgame.ltx
+            .xrignore
