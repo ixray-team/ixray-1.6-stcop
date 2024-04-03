@@ -520,6 +520,10 @@ function CSurgeManager:kill_all_unhided()
 		end
 	end
 
+    if is_god_mode() then 
+        return
+    end
+	
 	local cover = self:get_nearest_cover()
 	if(db.actor and db.actor:alive()) then
 		if not(cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
