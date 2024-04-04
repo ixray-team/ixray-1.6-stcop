@@ -26,7 +26,7 @@
 
 ENGINE_API	bool	g_dedicated_server;
 
-CUIXml*				pWpnScopeXml = NULL;
+CUIXml*				pWpnScopeXml = nullptr;
 
 void createWpnScopeXML()
 {
@@ -49,8 +49,8 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	
 	m_sounds_enabled			= true;
 	
-	m_sSndShotCurrent			= NULL;
-	m_sSilencerFlameParticles	= m_sSilencerSmokeParticles = NULL;
+	m_sSndShotCurrent			= nullptr;
+	m_sSilencerFlameParticles	= m_sSilencerSmokeParticles = nullptr;
 
 	m_bFireSingleShot			= false;
 	m_iShotNum					= 0;
@@ -338,7 +338,7 @@ void CWeaponMagazined::ReloadMagazine()
 	
 	if (!m_bLockType)
 	{
-		m_pCurrentAmmo		= NULL;
+		m_pCurrentAmmo		= nullptr;
 	}
 	
 	if (!m_pInventory) return;
@@ -592,14 +592,14 @@ void CWeaponMagazined::state_Fire(float dt)
 		d.set(get_LastFD());
 
 		if (!H_Parent()) return;
-		if (smart_cast<CMPPlayersBag*>(H_Parent()) != NULL)
+		if (smart_cast<CMPPlayersBag*>(H_Parent()) != nullptr)
 		{
 			Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
 			return;
 		}
 
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(NULL == io->inventory().ActiveItem())
+		if(nullptr == io->inventory().ActiveItem())
 		{
 			Msg("current_state %d", GetState() );
 			Msg("next_state %d", GetNextState());
@@ -1074,7 +1074,7 @@ bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_i
 		LPCSTR iter_scope_name = pSettings->r_string((*it),"scope_name");
 		if(!xr_strcmp(iter_scope_name, item_section_name))
 		{
-			m_cur_scope = NULL;
+			m_cur_scope = 0;
 			detached = true;
 		}
 	}
@@ -1264,7 +1264,7 @@ void CWeaponMagazined::PlayAnimReload()
 
 void CWeaponMagazined::PlayAnimAim()
 {
-	PlayHUDMotion("anm_idle_aim", TRUE, NULL, GetState());
+	PlayHUDMotion("anm_idle_aim", TRUE, nullptr, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)

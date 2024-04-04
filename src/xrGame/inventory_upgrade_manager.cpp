@@ -54,7 +54,7 @@ Root* Manager::get_root( shared_str const& root_id )
 	{
 		return ( (*i).second );
 	}
-	return ( NULL );
+	return ( nullptr );
 }
 
 Upgrade* Manager::get_upgrade( shared_str const& upgrade_id )
@@ -64,7 +64,7 @@ Upgrade* Manager::get_upgrade( shared_str const& upgrade_id )
 	{
 		return ( (*i).second );
 	}
-	return ( NULL );
+	return ( nullptr );
 }
 
 Group* Manager::get_group( shared_str const& group_id )
@@ -74,7 +74,7 @@ Group* Manager::get_group( shared_str const& group_id )
 	{
 		return ( (*i).second );
 	}
-	return ( NULL );
+	return ( nullptr );
 }
 
 Property* Manager::get_property( shared_str const& property_id )
@@ -84,7 +84,7 @@ Property* Manager::get_property( shared_str const& property_id )
 	{
 		return ( (*i).second );
 	}
-	return ( NULL );
+	return ( nullptr );
 }
 
 // -----------------------------------------------------------------------
@@ -364,13 +364,13 @@ void Manager::init_install( CInventoryItem& item )
 LPCSTR Manager::get_item_scheme( CInventoryItem& item )
 {
 	Root* root_p = get_root( item.m_section_id );
-	if ( !root_p ) return NULL;
+	if ( !root_p ) return nullptr;
 	return root_p->scheme();
 }
 
 LPCSTR Manager::get_upgrade_by_index( CInventoryItem& item, Ivector2 const& index )
 {
-	Upgrade* upgrade = NULL;
+	Upgrade* upgrade = nullptr;
 	
 	Root* root_p = get_root( item.m_section_id );
 	if ( root_p )
@@ -384,7 +384,7 @@ LPCSTR Manager::get_upgrade_by_index( CInventoryItem& item, Ivector2 const& inde
 
 	VERIFY2( upgrade, make_string<const char*>( "! Upgrade with index <%d,%d> in inventory item [%s] does not exist!",
 		index.x, index.y, item.m_section_id.c_str() ) );
-	return NULL;
+	return nullptr;
 }
 
 // -------------------------------------------------------------------------------------------------

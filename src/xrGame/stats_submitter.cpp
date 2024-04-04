@@ -23,9 +23,9 @@ stats_submitter::stats_submitter(CGameSpy_Full* fullgs) :
 	m_fullgs_obj				= fullgs;
 	m_atlas_obj					= fullgs->GetGameSpyATLAS();
 	VERIFY(Engine.External.hGameSpy == 0 || m_atlas_obj);
-	m_last_operation_profile	= NULL;
-	m_atlas_report				= NULL;
-	m_last_best_scores			= NULL;
+	m_last_operation_profile	= nullptr;
+	m_atlas_report				= nullptr;
+	m_last_best_scores			= nullptr;
 	ZeroMemory					(m_atlas_connection_id, sizeof(m_atlas_connection_id));
 }
 
@@ -160,7 +160,7 @@ void __cdecl stats_submitter::created_session_cb(const SCInterfacePtr theInterfa
 		return;
 	}
 	SCResult tmp_result = my_inst->m_atlas_obj->SetReportIntention(
-		NULL,
+		nullptr,
 		gsi_true,
 		&my_inst->m_last_operation_profile->mCertificate,
 		&my_inst->m_last_operation_profile->mPrivateData,
@@ -413,9 +413,9 @@ bool stats_submitter::create_all_awards_report()
 void stats_submitter::terminate_session()
 {
 	m_last_operation_cb.clear	();
-	m_last_operation_profile	= NULL;
-	m_atlas_report				= NULL;
-	m_last_best_scores			= NULL;
+	m_last_operation_profile	= nullptr;
+	m_atlas_report				= nullptr;
+	m_last_best_scores			= nullptr;
 	ZeroMemory					(m_atlas_connection_id, sizeof(m_atlas_connection_id));
 }
 

@@ -62,7 +62,7 @@ last_updates_cache::last_update_t* last_updates_cache::search_entity(u16 const e
 			return &m_cache[i];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 last_updates_cache::last_update_t*	last_updates_cache::search_most_expired(u32 const current_time,
@@ -87,7 +87,7 @@ last_updates_cache::last_update_t*	last_updates_cache::search_most_expired(u32 c
 	if ((min_time->first.m_update_time == current_time) &&
 		(min_time->second.B.count >= update_size))
 	{
-		return NULL;
+		return nullptr;
 	}
 	return min_time;
 }
@@ -100,14 +100,14 @@ server_updates_compressor::server_updates_compressor()
 		m_ready_for_send.push_back(new NET_Packet());
 	}
 
-	m_trained_stream		= NULL;
-	m_lzo_working_memory	= NULL;
-	m_lzo_working_buffer	= NULL;
+	m_trained_stream		= nullptr;
+	m_lzo_working_memory	= nullptr;
+	m_lzo_working_buffer	= nullptr;
 
 	if (!IsGameTypeSingle())
 		init_compression();
 
-	dbg_update_bins_writer = NULL;
+	dbg_update_bins_writer = nullptr;
 }
 
 server_updates_compressor::~server_updates_compressor()
@@ -168,7 +168,7 @@ NET_Packet*	server_updates_compressor::get_current_dest()
 NET_Packet*	server_updates_compressor::goto_next_dest()
 {
 	++m_current_update;
-	NET_Packet*	new_dest = NULL;
+	NET_Packet*	new_dest = nullptr;
 	VERIFY(m_ready_for_send.size() >= m_current_update);
 
 	if (m_ready_for_send.size() == m_current_update)

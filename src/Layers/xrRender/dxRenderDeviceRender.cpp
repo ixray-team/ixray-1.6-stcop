@@ -424,7 +424,7 @@ void dxRenderDeviceRender::End()
 	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
 #else
 	CHK_DX				(RDevice->EndScene());
-	RDevice->Present( NULL, NULL, NULL, NULL );
+	RDevice->Present( nullptr, nullptr, nullptr, nullptr );
 #endif
 }
 

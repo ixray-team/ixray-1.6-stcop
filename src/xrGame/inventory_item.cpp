@@ -41,11 +41,11 @@ net_updateInvData* CInventoryItem::NetSync()
 
 CInventoryItem::CInventoryItem() 
 {
-	m_net_updateData	= NULL;
+	m_net_updateData	= nullptr;
 	m_flags.set			(Fbelt,FALSE);
 	m_flags.set			(Fruck,TRUE);
 	m_flags.set			(FRuckDefault,TRUE);
-	m_pInventory		= NULL;
+	m_pInventory		= nullptr;
 
 	SetDropManual		(FALSE);
 
@@ -55,7 +55,7 @@ CInventoryItem::CInventoryItem()
 	m_flags.set			(FUsingCondition,FALSE);
 	m_fCondition		= 1.0f;
 
-	m_name = m_nameShort = NULL;
+	m_name = m_nameShort = nullptr;
 
 	m_ItemCurrPlace.value			= 0;
 	m_ItemCurrPlace.type			= eItemPlaceUndefined;
@@ -137,7 +137,7 @@ void CInventoryItem::Load(LPCSTR section)
 		m_flags.set					(FAllowSprint, pSettings->r_bool(section, "sprint_allowed" ));
 		m_fControlInertionFactor	= pSettings->r_float(section,"control_inertion_factor");
 	}
-	m_icon_name					= READ_IF_EXISTS(pSettings, r_string,section,"icon_name",		NULL);
+	m_icon_name					= READ_IF_EXISTS(pSettings, r_string,section,"icon_name",		nullptr);
 	
 	ReadCustomTextAndMarks		(section);
 }
@@ -295,7 +295,7 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 		{
 			Fvector p; 
 			P.r_vec3(p);
-			CPHSynchronize* pSyncObj = NULL;
+			CPHSynchronize* pSyncObj = nullptr;
 			pSyncObj = object().PHGetSyncItem(0);
 			if (!pSyncObj) return;
 			SPHNetState state;
@@ -339,7 +339,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 			if (object().H_Parent())
 				D->ID_Parent	=	u16(object().H_Parent()->ID());
 			else
-				D->ID_Parent	= NULL;
+				D->ID_Parent	= 0;
 		}
 		D->ID_Phantom		=	0xffff;
 		D->o_Position		=	object().Position();
@@ -400,7 +400,7 @@ void CInventoryItem::net_Destroy		()
 	}
 
 	//инвентарь которому мы принадлежали
-//.	m_pInventory = NULL;
+//.	m_pInventory = nullptr;
 }
 
 void CInventoryItem::save(NET_Packet &packet)
@@ -669,7 +669,7 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 		return;
 	}
 
-	CPHSynchronize* pSyncObj				= NULL;
+	CPHSynchronize* pSyncObj				= nullptr;
 	SPHNetState								State;
 	pSyncObj = object().PHGetSyncItem		(0);
 
@@ -718,7 +718,7 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 		P.w_u8				(0);
 		return;
 	}
-	CPHSynchronize* pSyncObj				= NULL;
+	CPHSynchronize* pSyncObj				= nullptr;
 	SPHNetState								State;
 	pSyncObj = object().PHGetSyncItem		(0);
 
@@ -829,7 +829,7 @@ void CInventoryItem::PH_B_CrPr		()
 	object().CrPr_SetActivated(true);
 
 	///////////////////////////////////////////////
-	CPHSynchronize* pSyncObj				= NULL;
+	CPHSynchronize* pSyncObj				= nullptr;
 	pSyncObj = object().PHGetSyncItem		(0);
 	if (!pSyncObj)							return;
 	///////////////////////////////////////////////
@@ -855,7 +855,7 @@ void CInventoryItem::PH_I_CrPr		()		// actions & operations between two phisic p
 	//store recalculated data, then we able to restore it after small future prediction
 	if (!object().CrPr_IsActivated())	return;
 	////////////////////////////////////
-	CPHSynchronize* pSyncObj			= NULL;
+	CPHSynchronize* pSyncObj			= nullptr;
 	pSyncObj = object().PHGetSyncItem	(0);
 	if (!pSyncObj)						return;
 	////////////////////////////////////
@@ -879,7 +879,7 @@ void CInventoryItem::PH_Ch_CrPr			()
 	//restore recalculated data and get data for interpolation	
 	if (!object().CrPr_IsActivated())	return;
 	////////////////////////////////////
-	CPHSynchronize* pSyncObj			= NULL;
+	CPHSynchronize* pSyncObj			= nullptr;
 	pSyncObj = object().PHGetSyncItem	(0);
 	if (!pSyncObj)						return;
 	////////////////////////////////////
@@ -913,8 +913,8 @@ void CInventoryItem::PH_A_CrPr		()
 		VERIFY( K );
 		if (!object().PPhysicsShell())
 		{
-			Msg("! ERROR: PhysicsShell is NULL, object [%s][%d]", object().cName().c_str(), object().ID());
-			VERIFY2(0, "physical shell is NULL");
+			Msg("! ERROR: PhysicsShell is nullptr, object [%s][%d]", object().cName().c_str(), object().ID());
+			VERIFY2(0, "physical shell is nullptr");
 			return;
 		}
 		if(!object().PPhysicsShell()->isFullActive())
@@ -953,7 +953,7 @@ void CInventoryItem::PH_A_CrPr		()
 	//restore recalculated data and get data for interpolation	
 	if (!object().CrPr_IsActivated())	return;
 	////////////////////////////////////
-	CPHSynchronize* pSyncObj			= NULL;
+	CPHSynchronize* pSyncObj			= nullptr;
 	pSyncObj = object().PHGetSyncItem	(0);
 	if (!pSyncObj)						return;
 	////////////////////////////////////
@@ -988,7 +988,7 @@ void CInventoryItem::CalculateInterpolationParams()
 
 	Fvector P0, P1, P2, P3;
 
-	CPHSynchronize* pSyncObj = NULL;
+	CPHSynchronize* pSyncObj = nullptr;
 	pSyncObj = object().PHGetSyncItem(0);
 	
 	Fmatrix xformX0, xformX1;	
@@ -1116,7 +1116,7 @@ void CInventoryItem::make_Interpolation	()
 
 			object().m_pPhysicsShell->NetInterpolationModeOFF();
 
-			CPHSynchronize* pSyncObj		= NULL;
+			CPHSynchronize* pSyncObj		= nullptr;
 			pSyncObj						= object().PHGetSyncItem(0);
 			pSyncObj->set_State				(p->PredictedState);
 			Fmatrix xformI;
@@ -1242,7 +1242,7 @@ void CInventoryItem::reload		(LPCSTR section)
 
 void CInventoryItem::reinit		()
 {
-	m_pInventory	= NULL;
+	m_pInventory	= nullptr;
 	m_ItemCurrPlace.type = eItemPlaceUndefined;
 }
 

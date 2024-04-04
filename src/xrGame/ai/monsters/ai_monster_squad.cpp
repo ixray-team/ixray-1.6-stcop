@@ -259,7 +259,7 @@ squad_grouping_behaviour::squad_grouping_behaviour (CEntity* self,
 										            Fvector  cohesion_factor,
 				                                    Fvector  separate_factor,
 										            float    max_separate_range) : 
-                                                    self(self), squad(NULL),
+                                                    self(self), squad(nullptr),
 									                steering_behaviour::grouping::params
 									                (cohesion_factor, separate_factor, max_separate_range)
 {

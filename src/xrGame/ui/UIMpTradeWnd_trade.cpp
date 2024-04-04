@@ -23,7 +23,7 @@ bool CUIMpTradeWnd::TryToSellItem(SBuyItemInfo* sell_itm, bool do_destroy, SBuyI
 
 	SetMoneyAmount						(GetMoneyAmount() + _item_cost);
 
-	CUICellItem* _itm					= NULL;
+	CUICellItem* _itm					= nullptr;
 	CUIDragDropListEx* list_from		= sell_itm->m_cell_item->OwnerList();
 	if(list_from)
 		_itm = list_from->RemoveItem(sell_itm->m_cell_item, false );
@@ -69,7 +69,7 @@ bool CUIMpTradeWnd::TryToSellItem(SBuyItemInfo* sell_itm, bool do_destroy, SBuyI
 
 bool CUIMpTradeWnd::BuyItemAction(SBuyItemInfo* itm)
 {
-	CUIDragDropListEx*	_list	= NULL;
+	CUIDragDropListEx*	_list	= nullptr;
 	u8 list_idx					= m_item_mngr->GetItemSlotIdx(itm->m_name_sect);
 	VERIFY						(list_idx<e_total_lists && list_idx!=e_shop);
 	if(list_idx==e_pistol || list_idx==e_rifle || list_idx==e_outfit)
@@ -88,15 +88,15 @@ bool CUIMpTradeWnd::BuyItemAction(SBuyItemInfo* itm)
 			SBuyItemInfo* to_sell	= FindItem(ci); 
 			SBuyItemInfo::EItmState	_stored_state = to_sell->GetState();
 
-			SBuyItemInfo*			tmp_iinfo	= NULL;
+			SBuyItemInfo*			tmp_iinfo	= nullptr;
 			TryToSellItem			(to_sell, false, tmp_iinfo);
 
-			bool b_res				= TryToBuyItem(itm, bf_normal, NULL);
+			bool b_res				= TryToBuyItem(itm, bf_normal, nullptr);
 
 			if(!b_res)
 			{
 				to_sell->SetState	(SBuyItemInfo::e_undefined);	//hack
-				bool b_res2			= TryToBuyItem(to_sell, bf_check_money|bf_ignore_team|bf_own_itm, NULL);
+				bool b_res2			= TryToBuyItem(to_sell, bf_check_money|bf_ignore_team|bf_own_itm, nullptr);
 				R_ASSERT			(b_res2);
 				to_sell->SetState	(SBuyItemInfo::e_undefined);	//hack
 				to_sell->SetState	(_stored_state);				//hack
@@ -108,7 +108,7 @@ bool CUIMpTradeWnd::BuyItemAction(SBuyItemInfo* itm)
 		}
 	}
 	
-	return TryToBuyItem	(itm, bf_normal, NULL);
+	return TryToBuyItem	(itm, bf_normal, nullptr);
 }
 
 bool CUIMpTradeWnd::TryToBuyItem(SBuyItemInfo* buy_itm, u32 buy_flags, SBuyItemInfo* itm_parent)
@@ -154,7 +154,7 @@ bool CUIMpTradeWnd::TryToBuyItem(SBuyItemInfo* buy_itm, u32 buy_flags, SBuyItemI
 		iinfo->SetState				(SBuyItemInfo::e_bought);
 
 
-	CUICellItem* cell_itm				= NULL;
+	CUICellItem* cell_itm				= nullptr;
 	bool b_alone						= true;
 	if(iinfo->m_cell_item->OwnerList())// just from shop
 	{
@@ -166,19 +166,19 @@ bool CUIMpTradeWnd::TryToBuyItem(SBuyItemInfo* buy_itm, u32 buy_flags, SBuyItemI
 		b_alone						= true;
 	}
 
-	R_ASSERT(cell_itm->OwnerList()==NULL);
+	R_ASSERT(cell_itm->OwnerList()==nullptr);
 
 	cell_itm->SetTextureColor			(m_item_color_normal);
 	bool b_addon					= TryToAttachItemAsAddon(iinfo, itm_parent);
 	if(!b_addon)
 	{
-		CUIDragDropListEx*_new_owner	= NULL;
+		CUIDragDropListEx*_new_owner	= nullptr;
 		_new_owner						= GetMatchedListForItem(buy_item_name);
 		
 		R_ASSERT2						(!_new_owner->IsOwner(cell_itm), buy_item_name.c_str());
 
 		_new_owner->SetItem				(cell_itm);
-		cell_itm->SetCustomDraw			(NULL);
+		cell_itm->SetCustomDraw			(nullptr);
 		cell_itm->SetAccelerator		(0);
 
 		UpdateCorrespondingItemsForList	(_new_owner);
@@ -273,7 +273,7 @@ void CUIMpTradeWnd::RenewShopItem(const shared_str& sect_name, bool b_just_bough
 		SBuyItemInfo* pitem					= CreateItem(sect_name, SBuyItemInfo::e_shop, true);
 		
 		CUIDragDropListEx*	old_parent = pitem->m_cell_item->OwnerList();
-		R_ASSERT(old_parent==NULL || old_parent==pList);
+		R_ASSERT(old_parent==nullptr || old_parent==pList);
 
 		if(pitem->m_cell_item->OwnerList()!=pList)
 		{

@@ -69,7 +69,7 @@ dx103DFluidData::~dx103DFluidData()
 void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
 	// Create the texture
-	CHK_DX( RDevice->CreateTexture3D(&TexDesc,NULL,&m_pRTTextures[rtIndex]));
+	CHK_DX( RDevice->CreateTexture3D(&TexDesc,nullptr,&m_pRTTextures[rtIndex]));
 	// Create the render target view
 	
 	D3D_RENDER_TARGET_VIEW_DESC DescRT;

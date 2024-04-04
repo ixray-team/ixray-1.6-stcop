@@ -65,7 +65,7 @@ bool CxImage::SelectionDelete()
 {
 	if (pSelection){
 		cxfree(pSelection);//free(pSelection);
-		pSelection=NULL;
+		pSelection=nullptr;
 	}
 	info.rSelectionBox.left = head.biWidth;
 	info.rSelectionBox.bottom = head.biHeight;
@@ -79,7 +79,7 @@ bool CxImage::SelectionDelete()
 bool CxImage::SelectionIsInside(long x, long y)
 {
 	if (IsInside(x,y)){
-		if (pSelection==NULL) return true;
+		if (pSelection==nullptr) return true;
 		return pSelection[x+y*head.biWidth]!=0;
 	}
 	return false;
@@ -99,7 +99,7 @@ bool CxImage::BlindSelectionIsInside(long x, long y)
 		return 0;
   #endif
 #endif
-	if (pSelection==NULL) return true;
+	if (pSelection==nullptr) return true;
 	return pSelection[x+y*head.biWidth]!=0;
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,8 +108,8 @@ bool CxImage::BlindSelectionIsInside(long x, long y)
  */
 bool CxImage::SelectionAddRect(RECT r, BYTE level)
 {
-	if (pSelection==NULL) SelectionCreate();
-	if (pSelection==NULL) return false;
+	if (pSelection==nullptr) SelectionCreate();
+	if (pSelection==nullptr) return false;
 
 	RECT r2;
 	if (r.left<r.right) {r2.left=r.left; r2.right=r.right; } else {r2.left=r.right ; r2.right=r.left; }
@@ -136,8 +136,8 @@ bool CxImage::SelectionAddRect(RECT r, BYTE level)
  */
 bool CxImage::SelectionAddEllipse(RECT r, BYTE level)
 {
-	if (pSelection==NULL) SelectionCreate();
-	if (pSelection==NULL) return false;
+	if (pSelection==nullptr) SelectionCreate();
+	if (pSelection==nullptr) return false;
 
 	long xradius = abs(r.right - r.left)/2;
 	long yradius = abs(r.top - r.bottom)/2;
@@ -198,9 +198,9 @@ bool CxImage::SelectionInvert()
  */
 bool CxImage::SelectionCopy(CxImage &from)
 {
-	if (from.pSelection == NULL || head.biWidth != from.head.biWidth || head.biHeight != from.head.biHeight) return false;
-	if (pSelection==NULL) pSelection = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
-	if (pSelection==NULL) return false;
+	if (from.pSelection == nullptr || head.biWidth != from.head.biWidth || head.biHeight != from.head.biHeight) return false;
+	if (pSelection==nullptr) pSelection = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
+	if (pSelection==nullptr) return false;
 	memcpy(pSelection,from.pSelection,head.biWidth * head.biHeight);
 	memcpy(&info.rSelectionBox,&from.info.rSelectionBox,sizeof(RECT));
 	return true;
@@ -213,18 +213,18 @@ bool CxImage::SelectionCopy(CxImage &from)
  */
 bool CxImage::SelectionAddPolygon(POINT *points, long npoints, BYTE level)
 {
-	if (points==NULL || npoints<3) return false;
+	if (points==nullptr || npoints<3) return false;
 
-	if (pSelection==NULL) SelectionCreate();
-	if (pSelection==NULL) return false;
+	if (pSelection==nullptr) SelectionCreate();
+	if (pSelection==nullptr) return false;
 
 	BYTE* plocal = (BYTE*)calloc(head.biWidth*head.biHeight, 1);
 	RECT localbox = {head.biWidth,0,0,head.biHeight};
 
 	long x,y,i=0;
 	POINT *current;
-	POINT *next = NULL;
-	POINT *start = NULL;
+	POINT *next = nullptr;
+	POINT *start = nullptr;
 	//trace contour
 	while (i < npoints){
 		current = &points[i];
@@ -403,8 +403,8 @@ bool CxImage::SelectionAddPolygon(POINT *points, long npoints, BYTE level)
  */
 bool CxImage::SelectionAddColor(RGBQUAD c, BYTE level)
 {
-    if (pSelection==NULL) SelectionCreate();
-	if (pSelection==NULL) return false;
+    if (pSelection==nullptr) SelectionCreate();
+	if (pSelection==nullptr) return false;
 
 	RECT localbox = {head.biWidth,0,0,head.biHeight};
 
@@ -438,8 +438,8 @@ bool CxImage::SelectionAddColor(RGBQUAD c, BYTE level)
  */
 bool CxImage::SelectionAddPixel(long x, long y, BYTE level)
 {
-    if (pSelection==NULL) SelectionCreate();
-	if (pSelection==NULL) return false;
+    if (pSelection==nullptr) SelectionCreate();
+	if (pSelection==nullptr) return false;
 
     if (IsInside(x,y)) {
         pSelection[x + y * head.biWidth] = level; // set the correct mask bit
@@ -491,11 +491,11 @@ bool CxImage::SelectionSet(CxImage &from)
 		return false;
 	}
 
-	if (pSelection==NULL) pSelection = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
+	if (pSelection==nullptr) pSelection = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
 
 	BYTE* src = from.info.pImage;
 	BYTE* dst = pSelection;
-	if (src==NULL || dst==NULL){
+	if (src==nullptr || dst==nullptr){
 		strcpy(info.szLastError,"CxImage::SelectionSet: null pointer");
 		return false;
 	}
@@ -667,7 +667,7 @@ bool CxImage::SelectionToHRGN(HRGN& region)
 {
 	if (pSelection && region){           
         for(int y = 0; y < head.biHeight; y++){
-            HRGN hTemp = NULL;
+            HRGN hTemp = nullptr;
             int iStart = -1;
             int x = 0;
 			for(; x < head.biWidth; x++){

@@ -95,7 +95,7 @@ Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const {
 	if (cf) {
 		return cf->GetValuePtr();
 	}
-	return					NULL;
+	return					nullptr;
 }
 
 Fvector CConsole::GetFVector(LPCSTR cmd) const {

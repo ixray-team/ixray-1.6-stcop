@@ -168,7 +168,7 @@ void CUIMpTradeWnd::UpdateShop()
 #ifdef DEBUG
 	Msg									("current level=[%s]",m_store_hierarchy->CurrentLevel().m_name.c_str());
 #endif // #ifdef DEBUG
-	SetCurrentItem						(NULL);
+	SetCurrentItem						(nullptr);
 	if(m_store_hierarchy->CurrentIsRoot())	return;
 
 	if(m_store_hierarchy->CurrentLevel().HasSubLevels())
@@ -227,7 +227,7 @@ void CUIMpTradeWnd::Show(bool status)
 
 	if(status)
 	{
-		m_pMouseCapturer		= NULL;
+		m_pMouseCapturer		= nullptr;
 
 		m_static_information->SetText("");
 		m_static_money_change->SetText("");

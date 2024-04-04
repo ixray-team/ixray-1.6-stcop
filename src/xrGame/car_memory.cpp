@@ -34,7 +34,7 @@ void car_memory::reload(LPCSTR section)
 #include "actor.h"
 BOOL car_memory::feel_vision_isRelevant	(CObject *object)
 {
-	return (NULL!=smart_cast<CActor*>(object));
+	return (nullptr!=smart_cast<CActor*>(object));
 //.	return			(FALSE);
 }
 

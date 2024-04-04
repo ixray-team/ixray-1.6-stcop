@@ -9,7 +9,7 @@
 constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 
 CUICursor::CUICursor()
-:m_static(NULL)
+:m_static(nullptr)
 {    
 	bVisible				= false;
 	vPrevPos.set			(0.0f, 0.0f);

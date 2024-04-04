@@ -11,12 +11,12 @@ bool CNvReader::bSupport = false;
 
 CNvReader::CNvReader() : 
 	AdapterID(0),
-	hNvAPIDLL(NULL)
+	hNvAPIDLL(nullptr)
 {}
 
 CNvReader::~CNvReader()
 {
-	if (hNvAPIDLL != NULL)
+	if (hNvAPIDLL != nullptr)
 	{
 		FreeModule(hNvAPIDLL);
 	}
@@ -26,13 +26,13 @@ void CNvReader::Initialize()
 {
 	if (bSupport) return;
 	hNvAPIDLL = LoadLibraryA("nvapi64.dll");
-	if (hNvAPIDLL != NULL)
+	if (hNvAPIDLL != nullptr)
 	{
 		NvAPI_QueryInterface = (NvAPI_QueryInterface_t)GetProcAddress(hNvAPIDLL, "nvapi_QueryInterface");
 		if (NvAPI_QueryInterface == nullptr)
 		{
 			FreeModule(hNvAPIDLL);
-			hNvAPIDLL = NULL;
+			hNvAPIDLL = nullptr;
 			Msg("! Found nvapi64.dll, but DLL missing \"nvapi_QueryInterface\"");
 			return;
 		}
@@ -43,7 +43,7 @@ void CNvReader::Initialize()
 			if (*pFuncPtr == nullptr)
 			{
 				FreeModule(hNvAPIDLL);
-				hNvAPIDLL = NULL;
+				hNvAPIDLL = nullptr;
 				Msg("! Found nvapi64.dll, but DLL missing Func ID \"%u\"", FuncId);
 				return false;
 			}

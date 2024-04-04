@@ -352,7 +352,7 @@ static Fvector PT [5] = {
 	du->DrawIndexedPrimitive(4/*D3DPT_TRIANGLELIST*/, 4, parent.c, PT, 6, IT, 12, C.get());
 	
 	if(bSelected)
-		du->DrawSelectionBox(parent.c, Fvector().set(0.5f,1.0f,0.5f),NULL);
+		du->DrawSelectionBox(parent.c, Fvector().set(0.5f,1.0f,0.5f),nullptr);
 #	endif // #ifdef XRSE_FACTORY_EXPORTS
 }
 

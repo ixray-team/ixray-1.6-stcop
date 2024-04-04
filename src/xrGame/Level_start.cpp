@@ -80,10 +80,10 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	{
 		LPCSTR pdemosave = strstr(op_client, "/mpdemosave=");
 		bool is_single = m_caServerOptions.size() != 0 ? 
-			(strstr(m_caServerOptions.c_str(), "single") != NULL) :
+			(strstr(m_caServerOptions.c_str(), "single") != nullptr) :
 			false;
 		int save_demo = g_cl_save_demo;
-		if (pdemosave != NULL)
+		if (pdemosave != nullptr)
 		{
 			sscanf(pdemosave, "/mpdemosave=%d", &save_demo);
 		}

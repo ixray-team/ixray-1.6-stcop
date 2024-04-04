@@ -315,7 +315,7 @@ void CInifile::EvaluateSection(xr_string SectionName, xr_vector<xr_string>& Prev
 			{
 				// Msg("%s has dltx_listmode %s", I.first.c_str(), xr_string(1, dltx_listmode).c_str());
 
-				if (dltx_listmode && sect_it->second != NULL)
+				if (dltx_listmode && sect_it->second != nullptr)
 				{
 					// Split list
 
@@ -629,7 +629,7 @@ u64 CInifile::r_u64(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 #ifndef _EDITOR
-	return		_strtoui64(C,NULL,10);
+	return		_strtoui64(C,nullptr,10);
 #else
 	return		(u64)_atoi64(C);
 #endif

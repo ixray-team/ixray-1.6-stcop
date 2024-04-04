@@ -1006,7 +1006,7 @@ public:
 	  virtual void	Execute	(LPCSTR args)
 	  {
 		  CCC_Integer::Execute	(args);
-		 // dWorldSetQuickStepNumIterations(NULL,phIterations);
+		 // dWorldSetQuickStepNumIterations(nullptr,phIterations);
 		  if( physics_world() )
 				 physics_world()->StepNumIterations( phIterations );
 	  }
@@ -1349,7 +1349,7 @@ public:
 	CCC_RadioMask(LPCSTR N, Flags32* V, u32 M):
 	  CCC_Mask(N,V,M)
 	 {
-		group=NULL;
+		group=nullptr;
 	 }
 		void	SetGroup	(CCC_RadioGroupMask2		*G)
 	{

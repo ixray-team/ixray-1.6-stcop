@@ -412,7 +412,7 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 			swi.reserved[2]	= fs->r_u32();	
 			swi.reserved[3]	= fs->r_u32();	
 			swi.count		= fs->r_u32();
-			VERIFY			(NULL==swi.sw);
+			VERIFY			(nullptr==swi.sw);
 			swi.sw			= xr_alloc<FSlideWindow> (swi.count);
 			fs->r			(swi.sw,sizeof(FSlideWindow)*swi.count);
 		}

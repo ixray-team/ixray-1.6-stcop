@@ -78,7 +78,7 @@ void CUIMapDesc::Init(){
 
 	CUIXmlInit::InitWindow(xml_doc, "map_desc:map_info", 0, m_pMapInfo);
 	m_pMapInfo->InitMapInfo(m_pMapInfo->GetWndPos(), m_pMapInfo->GetWndSize());
-	m_pMapInfo->InitMap(Level().name().c_str(), NULL);
+	m_pMapInfo->InitMap(Level().name().c_str(), nullptr);
 
 	ADD_TEXT_TO_VIEW2(m_pMapInfo->GetLargeDesc(),m_pTextDesc);
 

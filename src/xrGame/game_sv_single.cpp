@@ -13,7 +13,7 @@
 
 game_sv_Single::game_sv_Single			()
 {
-	m_alife_simulator			= NULL;
+	m_alife_simulator			= nullptr;
 	m_type						= eGameIDSingle;
 };
 

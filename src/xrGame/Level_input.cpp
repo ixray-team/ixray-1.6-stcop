@@ -38,7 +38,7 @@
 bool g_bDisableAllInput = false;
 extern	float	g_fTimeFactor;
 
-#define CURRENT_ENTITY()	(game?((IsGameTypeSingle()) ? CurrentEntity() : CurrentControlEntity()):NULL)
+#define CURRENT_ENTITY()	(game?((IsGameTypeSingle()) ? CurrentEntity() : CurrentControlEntity()):nullptr)
 
 void CLevel::IR_OnMouseWheel( int direction )
 {

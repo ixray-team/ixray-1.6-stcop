@@ -175,7 +175,7 @@ void CRenderTarget::draw_rain( light &RainSetup )
 
 		// setup
 		//RCache.set_Element			(s_accum_direct->E[sub_phase]);
-		//u_setrt	(rt_Normal,NULL,NULL,RDepth);
+		//u_setrt	(rt_Normal,nullptr,nullptr,RDepth);
 		//RCache.set_Element			(s_rain->E[0]);
 		//RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0		);
 //		RCache.set_c				("Ldynamic_color",		L_clr.x,L_clr.y,L_clr.z,L_spec	);
@@ -227,9 +227,9 @@ void CRenderTarget::draw_rain( light &RainSetup )
 
 		//	Use for intermediate results
 		//	Patch normal
-		u_setrt(rt_Accumulator, NULL, NULL, RDepth);
+		u_setrt(rt_Accumulator, nullptr, nullptr, RDepth);
 
-      //u_setrt	(rt_Normal,NULL,NULL,RDepth);
+      //u_setrt	(rt_Normal,nullptr,nullptr,RDepth);
 		RCache.set_Element		(s_rain->E[1]);
 		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0		);
 		RCache.set_c				("WorldX",				W_dirX.x,W_dirX.y,W_dirX.z,0		);
@@ -251,12 +251,12 @@ void CRenderTarget::draw_rain( light &RainSetup )
 		{
 			//	Do this in blender!
 			//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_RED | D3Dxx_COLOR_WRITE_ENABLE_GREEN | D3Dxx_COLOR_WRITE_ENABLE_BLUE );
-			u_setrt(rt_Normal, NULL, NULL, RDepth);
+			u_setrt(rt_Normal, nullptr, nullptr, RDepth);
 		}
 		else
 		{
 			//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_RED | D3Dxx_COLOR_WRITE_ENABLE_GREEN );
-			u_setrt(rt_Position, NULL, NULL, RDepth);
+			u_setrt(rt_Position, nullptr, nullptr, RDepth);
 		}
 
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
@@ -270,7 +270,7 @@ void CRenderTarget::draw_rain( light &RainSetup )
 
 		//	It is restored automatically by a set_Element call
 		//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_ALL );
-		u_setrt	(rt_Color,NULL,NULL,RDepth);
+		u_setrt	(rt_Color,nullptr,nullptr,RDepth);
 
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

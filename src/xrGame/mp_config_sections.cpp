@@ -33,7 +33,7 @@ static const char* important_sections[] =
 };
 
 mp_config_sections::mp_config_sections() :
-	m_tmp_dumper(NULL, FALSE, FALSE, FALSE)
+	m_tmp_dumper(nullptr, FALSE, FALSE, FALSE)
 {
 	u32		gcount	=  pSettings->line_count("mp_item_groups");
 	LPCSTR	line;
@@ -122,8 +122,8 @@ void mp_active_params::load_to	(LPCSTR sect_name, CInifile & dest_dumper)
 	u32 lines_count = pSettings->line_count(sect_name);
 	for (u32 i = 0; i < lines_count; ++i)
 	{
-		LPCSTR	line_name = NULL;
-		LPCSTR	line_value = NULL;
+		LPCSTR	line_name = nullptr;
+		LPCSTR	line_value = nullptr;
 		pSettings->r_line		(sect_name, i, &line_name, &line_value);
 		dest_dumper.w_string	(sect_name, line_name, line_value);
 	}

@@ -74,7 +74,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 
 	
 	float fire_disp = 0.f;
-	CActor* tmp_actor = NULL;
+	CActor* tmp_actor = nullptr;
 	if (!IsGameTypeSingle())
 	{
 		tmp_actor = smart_cast<CActor*>(Level().CurrentControlEntity());

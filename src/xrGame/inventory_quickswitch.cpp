@@ -20,7 +20,7 @@ public:
 		m_except_set(except_set),
 		m_ignore_ammo(ignore_ammo)
 	{
-		m_best_fit = NULL;
+		m_best_fit = nullptr;
 	};
 
 	next_weapon_searcher(next_weapon_searcher const & copy) :
@@ -93,7 +93,7 @@ PIItem CInventory::GetNextItemInActiveSlot(u8 const priority_value, bool ignore_
 		m_next_items_exceptions.clear();
 		m_next_items_exceptions.insert(ActiveItem());
 	}
-	PIItem best_fit = NULL;
+	PIItem best_fit = nullptr;
 	priority_group & tmp_prior_group = GetPriorityGroup(priority_value, m_iActiveSlot);
 	next_weapon_searcher tmp_predicate(
 		tmp_prior_group,
@@ -117,7 +117,7 @@ PIItem CInventory::GetNextItemInActiveSlot(u8 const priority_value, bool ignore_
 		{
 			m_next_items_exceptions.clear		();
 			m_next_items_exceptions.insert		(ActiveItem());
-			return NULL;
+			return nullptr;
 		}
 		return GetNextItemInActiveSlot(0, true);
 	}
@@ -139,7 +139,7 @@ bool CInventory::ActivateNextItemInActiveSlot()
 
 	PIItem new_item = GetNextItemInActiveSlot(0, false);
 
-	if ( new_item == NULL )
+	if ( new_item == nullptr )
 	{
 		return false; //only 1 item for this slot
 	}

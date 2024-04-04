@@ -48,11 +48,11 @@ void game_cl_CaptureTheArtefact::OnSpeechMessage(NET_Packet& P)
 	{
 		if (ps == local_player)
 		{
-			pMSound->mSound_Voice.play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
+			pMSound->mSound_Voice.play_at_pos(nullptr, Fvector().set(0,0,0), sm_2D, 0);
 		}
 		else
 		{
-			pMSound->mSound_Radio.play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
+			pMSound->mSound_Radio.play_at_pos(nullptr, Fvector().set(0,0,0), sm_2D, 0);
 		}
 		Msg("%s said: %s", ps->getName(), *CStringTable().translate(pMMessage->pMessage));
 	}

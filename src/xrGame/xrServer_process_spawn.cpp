@@ -30,7 +30,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 			Msg			("- SERVER: Entity [%s] incompatible with current game type.",*E->s_name);
 #endif // #ifndef MASTER_GOLD
 			F_entity_Destroy(E);
-			return			NULL;
+			return			nullptr;
 		}
 
 //		E->m_bALifeControl = false;
@@ -38,7 +38,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	else {
 		VERIFY				(E->m_bALifeControl);
 //		E->owner			= CL;
-//		if (CL != NULL)
+//		if (CL != nullptr)
 //		{
 //			int x=0;
 //			x=x;
@@ -53,7 +53,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 			R_ASSERT		(!tpExistedEntity);
 //			VERIFY3			(smart_cast<CSE_ALifeItemBolt*>(E) || smart_cast<CSE_ALifeItemGrenade*>(E),*E->s_name,E->name_replace());
 			F_entity_Destroy(E);
-			return			NULL;
+			return			nullptr;
 		}
 	}
 
@@ -71,7 +71,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 		Phantom->Spawn_Read		(P);
 		Phantom->ID				=	PerformIDgen	(0xffff);
 		Phantom->ID_Phantom		=	Phantom->ID;						// Self-linked to avoid phantom-breeding
-		Phantom->owner			=	NULL;
+		Phantom->owner			=	nullptr;
 		entities.insert			(std::make_pair(Phantom->ID,Phantom));
 
 		Phantom->s_flags.set	(M_SPAWN_OBJECT_PHANTOM,TRUE);

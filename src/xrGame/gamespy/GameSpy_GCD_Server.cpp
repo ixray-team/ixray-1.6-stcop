@@ -27,7 +27,7 @@ void CGameSpy_GCD_Server::LoadGameSpy()
 
 bool CGameSpy_GCD_Server::Init()
 {
-	int res = xrGS_gcd_init_qr2(NULL);
+	int res = xrGS_gcd_init_qr2(nullptr);
 	if (res == -1)
 	{
 		Msg("! xrGS::CDKey : Failes to Initialize!");

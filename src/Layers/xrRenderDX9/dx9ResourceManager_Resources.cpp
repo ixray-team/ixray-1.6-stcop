@@ -161,14 +161,14 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
 		if (0==_stricmp(_name,"null"))	{
-			_vs->vs				= NULL;
+			_vs->vs				= nullptr;
 			return _vs;
 		}
 
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(),_name,".vs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
-//		LPCSTR						target		= NULL;
+//		LPCSTR						target		= nullptr;
 
 		IReader*					fs			= FS.r_open(cname);
 		R_ASSERT3					(fs, "shader file doesnt exist", cname);
@@ -219,7 +219,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		if (0==_stricmp(name,"null"))	{
-			_ps->ps				= NULL;
+			_ps->ps				= nullptr;
 			return _ps;
 		}
 
@@ -440,7 +440,7 @@ void	CResourceManager::DBG_VerifyTextures	()
 CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
 {
 	R_ASSERT(Name && Name[0]);
-	if (0==_stricmp(Name,"$null"))	return NULL;
+	if (0==_stricmp(Name,"$null"))	return nullptr;
 
 	xrCriticalSectionGuard guard(creationGuard);
 	LPSTR N = LPSTR(Name);
@@ -472,7 +472,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 CConstant*	CResourceManager::_CreateConstant	(LPCSTR Name)
 {
 	R_ASSERT(Name && Name[0]);
-	if (0==_stricmp(Name,"$null"))	return NULL;
+	if (0==_stricmp(Name,"$null"))	return nullptr;
 
 	xrCriticalSectionGuard guard(creationGuard);
 	LPSTR N = LPSTR(Name);

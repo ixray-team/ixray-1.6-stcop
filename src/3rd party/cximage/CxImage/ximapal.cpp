@@ -66,7 +66,7 @@ RGBQUAD* CxImage::GetPalette() const
 {
 	if ((pDib)&&(head.biClrUsed))
 		return (RGBQUAD*)((BYTE*)pDib + sizeof(BITMAPINFOHEADER));
-	return NULL;
+	return nullptr;
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -93,7 +93,7 @@ RGBQUAD CxImage::GetPaletteColor(BYTE idx)
  */
 BYTE CxImage::GetPixelIndex(long x,long y)
 {
-	if ((pDib==NULL)||(head.biClrUsed==0)) return 0;
+	if ((pDib==nullptr)||(head.biClrUsed==0)) return 0;
 
 	if ((x<0)||(y<0)||(x>=head.biWidth)||(y>=head.biHeight)) {
 		if (info.nBkgndIndex >= 0)	return (BYTE)info.nBkgndIndex;
@@ -120,7 +120,7 @@ BYTE CxImage::GetPixelIndex(long x,long y)
 BYTE CxImage::BlindGetPixelIndex(const long x,const long y)
 {
 #ifdef _DEBUG
-	if ((pDib==NULL) || (head.biClrUsed==0) || !IsInside(x,y))
+	if ((pDib==nullptr) || (head.biClrUsed==0) || !IsInside(x,y))
   #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
 		throw 0;
   #else
@@ -150,7 +150,7 @@ RGBQUAD CxImage::GetPixelColor(long x,long y, bool bGetAlpha)
 {
 //	RGBQUAD rgb={0,0,0,0};
 	RGBQUAD rgb=info.nBkgndColor; //<mpwolski>
-	if ((pDib==NULL)||(x<0)||(y<0)||
+	if ((pDib==nullptr)||(x<0)||(y<0)||
 		(x>=head.biWidth)||(y>=head.biHeight)){
 		if (info.nBkgndIndex >= 0){
 			if (head.biBitCount<24) return GetPaletteColor((BYTE)info.nBkgndIndex);
@@ -187,7 +187,7 @@ RGBQUAD CxImage::BlindGetPixelColor(const long x,const long y, bool bGetAlpha)
 {
   RGBQUAD rgb;
 #ifdef _DEBUG
-	if ((pDib==NULL) || !IsInside(x,y))
+	if ((pDib==nullptr) || !IsInside(x,y))
   #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
 		throw 0;
   #else
@@ -221,7 +221,7 @@ BYTE CxImage::GetPixelGray(long x, long y)
 void CxImage::BlindSetPixelIndex(long x,long y,BYTE i)
 {
 #ifdef _DEBUG
-	if ((pDib==NULL)||(head.biClrUsed==0)||
+	if ((pDib==nullptr)||(head.biClrUsed==0)||
 		(x<0)||(y<0)||(x>=head.biWidth)||(y>=head.biHeight))
   #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
 		throw 0;
@@ -252,7 +252,7 @@ void CxImage::BlindSetPixelIndex(long x,long y,BYTE i)
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::SetPixelIndex(long x,long y,BYTE i)
 {
-	if ((pDib==NULL)||(head.biClrUsed==0)||
+	if ((pDib==nullptr)||(head.biClrUsed==0)||
 		(x<0)||(y<0)||(x>=head.biWidth)||(y>=head.biHeight)) return ;
 
 	if (head.biBitCount==8){
@@ -283,7 +283,7 @@ void CxImage::SetPixelColor(long x,long y,COLORREF cr)
 void CxImage::BlindSetPixelColor(long x,long y,RGBQUAD c, bool bSetAlpha)
 {
 #ifdef _DEBUG
-	if ((pDib==NULL)||(x<0)||(y<0)||
+	if ((pDib==nullptr)||(x<0)||(y<0)||
 		(x>=head.biWidth)||(y>=head.biHeight))
   #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
 		throw 0;
@@ -306,7 +306,7 @@ void CxImage::BlindSetPixelColor(long x,long y,RGBQUAD c, bool bSetAlpha)
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::SetPixelColor(long x,long y,RGBQUAD c, bool bSetAlpha)
 {
-	if ((pDib==NULL)||(x<0)||(y<0)||
+	if ((pDib==nullptr)||(x<0)||(y<0)||
 		(x>=head.biWidth)||(y>=head.biHeight)) return;
 	if (head.biClrUsed)
 		BlindSetPixelIndex(x,y,GetNearestIndex(c));
@@ -330,7 +330,7 @@ void CxImage::SetPixelColor(long x,long y,RGBQUAD c, bool bSetAlpha)
  */
 void CxImage::BlendPixelColor(long x,long y,RGBQUAD c, float blend, bool bSetAlpha)
 {
-	if ((pDib==NULL)||(x<0)||(y<0)||
+	if ((pDib==nullptr)||(x<0)||(y<0)||
 		(x>=head.biWidth)||(y>=head.biHeight)) return;
 
 	int a0 = (int)(256*blend);
@@ -359,7 +359,7 @@ void CxImage::BlendPixelColor(long x,long y,RGBQUAD c, float blend, bool bSetAlp
  */
 BYTE CxImage::GetNearestIndex(RGBQUAD c)
 {
-	if ((pDib==NULL)||(head.biClrUsed==0)) return 0;
+	if ((pDib==nullptr)||(head.biClrUsed==0)) return 0;
 
 	// <RJ> check matching with the previous result
 	if (info.last_c_isvalid && (*(long*)&info.last_c == *(long*)&c)) return info.last_c_index;
@@ -440,7 +440,7 @@ bool CxImage::GetPaletteColor(BYTE i, BYTE* r, BYTE* g, BYTE* b)
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::SetPalette(DWORD n, BYTE *r, BYTE *g, BYTE *b)
 {
-	if ((!r)||(pDib==NULL)||(head.biClrUsed==0)) return;
+	if ((!r)||(pDib==nullptr)||(head.biClrUsed==0)) return;
 	if (!g) g = r;
 	if (!b) b = g;
 	RGBQUAD* ppal=GetPalette();
@@ -455,7 +455,7 @@ void CxImage::SetPalette(DWORD n, BYTE *r, BYTE *g, BYTE *b)
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::SetPalette(rgb_color *rgb,DWORD nColors)
 {
-	if ((!rgb)||(pDib==NULL)||(head.biClrUsed==0)) return;
+	if ((!rgb)||(pDib==nullptr)||(head.biClrUsed==0)) return;
 	RGBQUAD* ppal=GetPalette();
 	DWORD m=std::min(nColors,head.biClrUsed);
 	for (DWORD i=0; i<m;i++){
@@ -468,7 +468,7 @@ void CxImage::SetPalette(rgb_color *rgb,DWORD nColors)
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::SetPalette(RGBQUAD* pPal,DWORD nColors)
 {
-	if ((pPal==NULL)||(pDib==NULL)||(head.biClrUsed==0)) return;
+	if ((pPal==nullptr)||(pDib==nullptr)||(head.biClrUsed==0)) return;
 	memcpy(GetPalette(),pPal,std::min(GetPaletteSize(),nColors* (DWORD)sizeof(RGBQUAD)));
 	info.last_c_isvalid = false;
 }
@@ -480,7 +480,7 @@ void CxImage::SetPalette(RGBQUAD* pPal,DWORD nColors)
  */
 void CxImage::SetGrayPalette()
 {
-	if ((pDib==NULL)||(head.biClrUsed==0)) return;
+	if ((pDib==nullptr)||(head.biClrUsed==0)) return;
 	RGBQUAD* pal=GetPalette();
 	for (DWORD ni=0;ni<head.biClrUsed;ni++)
 		pal[ni].rgbBlue=pal[ni].rgbGreen = pal[ni].rgbRed = (BYTE)(ni*(255/(head.biClrUsed-1)));
@@ -492,7 +492,7 @@ void CxImage::SetGrayPalette()
  */
 void CxImage::BlendPalette(COLORREF cr,long perc)
 {
-	if ((pDib==NULL)||(head.biClrUsed==0)) return;
+	if ((pDib==nullptr)||(head.biClrUsed==0)) return;
 	BYTE* iDst = (BYTE*)(pDib) + sizeof(BITMAPINFOHEADER);
 	DWORD i,r,g,b;
 	RGBQUAD* pPal=(RGBQUAD*)iDst;
@@ -678,7 +678,7 @@ void CxImage::SetClrImportant(DWORD ncolors)
 void* CxImage::BlindGetPixelPointer(const long x, const long y)
 {
 #ifdef _DEBUG
-	if ((pDib==NULL) || !IsInside(x,y))
+	if ((pDib==nullptr) || !IsInside(x,y))
   #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
 		throw 0;
   #else

@@ -39,7 +39,7 @@ const shared_str game_cl_TeamDeathmatch::GetTeamMenu(s16 team)
 		NODEFAULT;
 	};
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif// DEBUG
 }
 
@@ -49,7 +49,7 @@ game_cl_TeamDeathmatch::game_cl_TeamDeathmatch()
 	PresetItemsTeam2.clear();
 
 	m_bTeamSelected		= FALSE;
-	m_game_ui			= NULL;	
+	m_game_ui			= nullptr;	
 
 	m_bShowPlayersNames = false;
 	m_bFriendlyIndicators = false;
@@ -185,7 +185,7 @@ void game_cl_TeamDeathmatch::SetGameUI(CUIGameCustom* uigame)
 CUIGameCustom* game_cl_TeamDeathmatch::createGameUI()
 {
 	if (g_dedicated_server)
-		return NULL;
+		return nullptr;
 
 	CLASS_ID clsid			= CLSID_GAME_UI_TEAMDEATHMATCH;
 	m_game_ui				= smart_cast<CUIGameTDM*> ( NEW_INSTANCE ( clsid ) );
@@ -391,7 +391,7 @@ char*	game_cl_TeamDeathmatch::getTeamSection(int Team)
 			return (char*) "teamdeathmatch_team2";
 		}break;
 	default:
-		return NULL;
+		return nullptr;
 	};
 };
 
@@ -413,7 +413,7 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 	//---------------------------------------------------------
 
 	if (m_game_ui)
-		m_game_ui->SetBuyMsgCaption(NULL);
+		m_game_ui->SetBuyMsgCaption(nullptr);
 	
 	switch (m_phase)
 	{

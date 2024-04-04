@@ -119,7 +119,7 @@ void fill_vid_mode_list()
 		if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
 			continue;
 
-		_tmp.push_back(NULL);
+		_tmp.push_back(nullptr);
 		_tmp.back() = xr_strdup(str);
 	}
 
@@ -128,7 +128,7 @@ void fill_vid_mode_list()
 	vid_mode_token = xr_alloc<xr_token>(_cnt);
 
 	vid_mode_token[_cnt - 1].id = -1;
-	vid_mode_token[_cnt - 1].name = NULL;
+	vid_mode_token[_cnt - 1].name = nullptr;
 
 #ifdef DEBUG
 	Msg("Available video modes[%d]:", _tmp.size());

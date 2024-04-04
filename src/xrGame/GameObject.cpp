@@ -192,7 +192,7 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 			HDS.who		= Hitter;
 			if (!HDS.who)
 			{
-				Msg("! ERROR: hitter object [%d] is NULL on client.", HDS.whoID);
+				Msg("! ERROR: hitter object [%d] is nullptr on client.", HDS.whoID);
 			}
 			//-------------------------------------------------------
 			switch (HDS.PACKET_TYPE)
@@ -228,7 +228,7 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 					H_Parent()->ID(), H_Parent()->cName().c_str(), Device.dwFrame );
 				
 				// This object will be destroy on call function <H_Parent::Destroy>
-				// or it will be call <H_Parent::Reject>  ==>  H_Parent = NULL
+				// or it will be call <H_Parent::Reject>  ==>  H_Parent = nullptr
 				// !!! ___ it is necessary to be check!
 				break;
 			}
@@ -276,7 +276,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		Msg("* Spawning demo spectator ...");
 		demo_spectator = true;
 	} else {
-		R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
+		R_ASSERT(Level().Objects.net_Find(E->ID) == nullptr);
 	}
 
 
@@ -510,15 +510,15 @@ void CGameObject::spawn_supplies()
 			if (n > 0)
 				j			= atoi(_GetItem(V,0,temp)); //count
 			
-			if(NULL!=strstr(V,"prob="))
+			if(nullptr!=strstr(V,"prob="))
 				p			=(float)atof(strstr(V,"prob=")+5);
 			if (fis_zero(p))p = 1.f;
 			if (!j)	j		= 1;
-			if(NULL!=strstr(V,"cond="))
+			if(nullptr!=strstr(V,"cond="))
 				f_cond		= (float)atof(strstr(V,"cond=")+5);
-			bScope			=	(NULL!=strstr(V,"scope"));
-			bSilencer		=	(NULL!=strstr(V,"silencer"));
-			bLauncher		=	(NULL!=strstr(V,"launcher"));
+			bScope			=	(nullptr!=strstr(V,"scope"));
+			bSilencer		=	(nullptr!=strstr(V,"silencer"));
+			bLauncher		=	(nullptr!=strstr(V,"launcher"));
 
 		}
 		for (u32 i=0; i<j; ++i)

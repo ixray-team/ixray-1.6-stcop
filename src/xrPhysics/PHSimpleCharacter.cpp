@@ -183,7 +183,7 @@ CPHSimpleCharacter::CPHSimpleCharacter() :
 void CPHSimpleCharacter::TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
 	do_colide=false;
-	CPHSimpleCharacter* ch=NULL;
+	CPHSimpleCharacter* ch=nullptr;
 	if(bo1)
 	{
 		ch=static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(c.geom.g1)->ph_object);
@@ -223,8 +223,8 @@ void CPHSimpleCharacter::get_Box(Fvector& sz, Fvector& c)const
 	float r, h;
 	dGeomCylinderGetParams(m_geom_shell, &r, &h);
 	sz.set(2 * r, 2 * r + h, 2 * r);
-	const dReal* rot = NULL;
-	const dReal* pos = NULL;
+	const dReal* rot = nullptr;
+	const dReal* pos = nullptr;
 	dMatrix3 rr;
 	CODEGeom::get_final_tx(m_shell_transform, pos, rot, cast_fp(c), rr);
 }
@@ -373,69 +373,69 @@ void CPHSimpleCharacter::Destroy()
 	{
 		dGeomDestroyUserData(m_cap);
 		dGeomDestroy(m_cap);
-		m_cap=NULL;
+		m_cap=nullptr;
 	}
 
 	if(m_cap_transform)
 	{
 		dGeomDestroyUserData(m_cap_transform);
 		dGeomDestroy(m_cap_transform);
-		m_cap_transform=NULL;
+		m_cap_transform=nullptr;
 	}
 
 	if(m_geom_shell)
 	{
 		dGeomDestroyUserData(m_geom_shell);
 		dGeomDestroy(m_geom_shell);
-		m_geom_shell=NULL;
+		m_geom_shell=nullptr;
 	}
 
 	if(m_wheel) 
 	{
 		dGeomDestroyUserData(m_wheel);
 		dGeomDestroy(m_wheel);
-		m_wheel=NULL;
+		m_wheel=nullptr;
 	}
 
 	if(m_shell_transform)
 	{
 		dGeomDestroyUserData(m_shell_transform);
 		dGeomDestroy(m_shell_transform);
-		m_shell_transform=NULL;
+		m_shell_transform=nullptr;
 	}
 
 	if(m_wheel_transform)
 	{
 		dGeomDestroyUserData(m_wheel_transform);
 		dGeomDestroy(m_wheel_transform);
-		m_wheel_transform=NULL;
+		m_wheel_transform=nullptr;
 	}
 
 	if(m_hat)
 	{
 		dGeomDestroyUserData(m_hat);
 		dGeomDestroy(m_hat);
-		m_hat=NULL;
+		m_hat=nullptr;
 	}
 
 	if(m_hat_transform)
 	{
 		dGeomDestroyUserData(m_hat_transform);
 		dGeomDestroy(m_hat_transform);
-		m_hat_transform=NULL;
+		m_hat_transform=nullptr;
 	}
 
 	if(m_space)
 	{
 		dSpaceDestroy(m_space);
-		m_space=NULL;
+		m_space=nullptr;
 	}
 
 	if(m_body)
 	{
 		Island().RemoveBody(m_body);
 		dBodyDestroy(m_body);
-		m_body=NULL;
+		m_body=nullptr;
 	}
 }
 
@@ -1672,7 +1672,7 @@ void CPHSimpleCharacter::SCollisionDamageInfo::HitDir(Fvector& dir)	const
 void CPHSimpleCharacter::SCollisionDamageInfo::Reinit()
 {
 	m_obj_id =u16(-1);
-	m_hit_callback=NULL;
+	m_hit_callback=nullptr;
 	m_contact_velocity=0;
 	is_initiated=false;
 }

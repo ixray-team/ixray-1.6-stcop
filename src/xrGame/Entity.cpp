@@ -218,7 +218,7 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 
 //	SetfHealth			(E->fHealth);
 	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
-	CInifile* ini = NULL;
+	CInifile* ini = nullptr;
 
 	if(pKinematics) ini = pKinematics->LL_UserData();
 	if (ini) {
@@ -320,7 +320,7 @@ DLL_Pure *CEntity::_construct	()
 {
 	inherited::_construct		();
 	CDamageManager::_construct	();
-	m_entity_condition			= create_entity_condition(NULL);
+	m_entity_condition			= create_entity_condition(nullptr);
 	return						(this);
 }
 

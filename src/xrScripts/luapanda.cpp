@@ -703,7 +703,7 @@ void step_process(lua_State* L, lua_Debug* ar) {
 
 // 无需reconnect返回1 ，需要重连时返回0
 int hook_process_reconnect(lua_State* L) {
-    time_t currentSecs = time(static_cast<time_t*>(NULL));
+    time_t currentSecs = time(static_cast<time_t*>(nullptr));
     if (cur_hook_state == DISCONNECT_HOOK) {
         if (currentSecs - recvMsgSeconds > 1) {
             call_lua_function(L, "reConnect", 0);
@@ -715,7 +715,7 @@ int hook_process_reconnect(lua_State* L) {
 }
 
 void litehook_recv_message(lua_State* L) {
-    time_t currentSecs = time(static_cast<time_t*>(NULL));
+    time_t currentSecs = time(static_cast<time_t*>(nullptr));
     //2.定时接收消息 -- 这里的状态不只是run
     if (cur_hook_state == LITE_HOOK && currentSecs - recvMsgSeconds > 1) {
         call_lua_function(L, "debugger_wait_msg", 0);
@@ -724,7 +724,7 @@ void litehook_recv_message(lua_State* L) {
 }
 
 void hook_process_recv_message(lua_State* L) {
-    time_t currentSecs = time(static_cast<time_t*>(NULL));
+    time_t currentSecs = time(static_cast<time_t*>(nullptr));
     if ((cur_run_state == RUN ||
         cur_run_state == STEPOVER ||
         cur_run_state == STEPIN ||
@@ -788,7 +788,7 @@ int checkHasBreakpoint(lua_State* L, const char* src1, int current_line, int sli
 }
 
 void check_hook_state(lua_State* L, const char* source, int current_line, int def_line, int last_line, int event) {
-    if (source == NULL) {
+    if (source == nullptr) {
         return;
     }
     if (cur_run_state == RUN && cur_hook_state != DISCONNECT_HOOK) {
@@ -880,7 +880,7 @@ void debug_hook_c(lua_State* L, lua_Debug* ar) {
 extern "C" int endHook(lua_State * L)
 {
     cur_hook_state = DISCONNECT_HOOK;
-    lua_sethook(L, NULL, 0, 0);
+    lua_sethook(L, nullptr, 0, 0);
     all_breakpoint_map.clear();
     return 0;
 }
@@ -903,7 +903,7 @@ static luaL_Reg libpdebug[] = {
     { "clear_pathcache", clear_pathcache },
     { "set_bp_twice_check_res", set_bp_twice_check_res },
     { "sync_lua_debugger_ver", sync_lua_debugger_ver },
-    { NULL, NULL }
+    { nullptr, nullptr }
 };
 
 #ifdef USE_SOURCE_CODE
@@ -912,7 +912,7 @@ extern "C" void pdebug_init(lua_State * L) {
     //把libhook压入_G，里面方法填上
     lua_newtable(L);
     for (size_t i = 0; i < sizeof(libpdebug) / sizeof(luaL_Reg); i++) {
-        if (libpdebug[i].name == NULL) {
+        if (libpdebug[i].name == nullptr) {
             break;
         }
         lua_pushcfunction(L, libpdebug[i].func);
@@ -938,11 +938,11 @@ DEBUG_API int luaopen_libpdebug(lua_State* L)
 
 #if LUA_VERSION_NUM == 501
     // 在windows平台编译时，luaL_register等是函数指针，运行时查找。
-    if (luaL_register != NULL) {
+    if (luaL_register != nullptr) {
         luaL_register(L, "libpdebug", libpdebug);
     }
 #elif LUA_VERSION_NUM > 501
-    if (lua_createtable != NULL && luaL_setfuncs != NULL) {
+    if (lua_createtable != nullptr && luaL_setfuncs != nullptr) {
         lua_newtable(L);
         luaL_setfuncs(L, libpdebug, 0);
     }
@@ -1092,7 +1092,7 @@ void load(lua_State* L)
 #if LUA_VERSION_NUM > 501
         // find slua-ue dll
         dll_GetLuaInterface interPtr = (dll_GetLuaInterface)GetProcAddress(mi.hModule, "GetLuaInterface");
-        if (interPtr != NULL) {
+        if (interPtr != nullptr) {
             hInstLibrary = mi.hModule;
             getInter = interPtr;
             Slua_UE_find_function();
@@ -1101,7 +1101,7 @@ void load(lua_State* L)
 #endif
         // find general lua dll
         void* versionPtr = (luaDLL_sethook)GetProcAddress(mi.hModule, "lua_sethook");
-        if (versionPtr != NULL) {
+        if (versionPtr != nullptr) {
             hInstLibrary = mi.hModule;
             general_find_function();
             break;

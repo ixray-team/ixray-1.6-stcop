@@ -5,7 +5,7 @@
 #include "GamePersistent.h"
 #include "../xrEngine/LightAnimLibrary.h"
 /*
-CZoneCampfire* g_zone = NULL;
+CZoneCampfire* g_zone = nullptr;
 void turn_zone()
 {
 	if(!g_zone) return;
@@ -16,7 +16,7 @@ void turn_zone()
 }
 */
 CZoneCampfire::CZoneCampfire()
-:m_pDisabledParticles(NULL),m_pEnablingParticles(NULL),m_turned_on(true),m_turn_time(0)
+:m_pDisabledParticles(nullptr),m_pEnablingParticles(nullptr),m_turned_on(true),m_turn_time(0)
 {
 //.	g_zone = this;
 }
@@ -56,7 +56,7 @@ void CZoneCampfire::GoDisabledState()
 {
 	inherited::GoDisabledState		();
 
-	R_ASSERT						(NULL==m_pDisabledParticles);
+	R_ASSERT						(nullptr==m_pDisabledParticles);
 	LPCSTR str						= pSettings->r_string(cNameSect(),"disabled_particles");
 	m_pDisabledParticles			= CParticlesObject::Create(str,FALSE);
 	m_pDisabledParticles->UpdateParent	(XFORM(),zero_vel);

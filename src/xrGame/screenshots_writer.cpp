@@ -6,7 +6,7 @@ namespace screenshots
 {
 
 writer::writer(u8* jpeg_data, u32 jpeg_size, u32 jpeg_buffer_size) :
-	m_info_data(NULL, FALSE, FALSE, FALSE)
+	m_info_data(nullptr, FALSE, FALSE, FALSE)
 {
 	VERIFY				(jpeg_buffer_size - jpeg_size >= info_max_size);
 	m_buffer			= jpeg_data;

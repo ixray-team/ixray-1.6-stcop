@@ -104,7 +104,7 @@ void CRenderTarget::accum_point		(light* L)
 
 	// blend-copy
 	if (!RImplementation.o.fp16_blend)	{
-		u_setrt(rt_Accumulator, NULL, NULL, RDepth);
+		u_setrt(rt_Accumulator, nullptr, nullptr, RDepth);
 		RCache.set_Element(s_accum_mask->E[SE_MASK_ACCUM_VOL]);
 		RCache.set_c("m_texgen", m_Texgen);
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);

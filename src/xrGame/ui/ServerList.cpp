@@ -14,7 +14,7 @@
 
 
 LPCSTR GameTypeToString(EGameIDs gt, bool bShort);
-CGameSpy_Browser* g_gs_browser = NULL;
+CGameSpy_Browser* g_gs_browser = nullptr;
 
 CServerList::CServerList()
 {

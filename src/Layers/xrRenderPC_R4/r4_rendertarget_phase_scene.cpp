@@ -5,8 +5,8 @@ void	CRenderTarget::phase_scene_prepare	()
 {
 	PIX_EVENT(phase_scene_prepare);
 	// Clear depth & stencil
-	//u_setrt	( Device.TargetWidth,Device.TargetHeight,RTarget,NULL,NULL,RDepth );
-	//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+	//u_setrt	( Device.TargetWidth,Device.TargetHeight,RTarget,nullptr,nullptr,RDepth );
+	//CHK_DX	( RDevice->Clear	( 0L, nullptr, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 	//	Igor: soft particles
 
 	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
@@ -26,9 +26,9 @@ void	CRenderTarget::phase_scene_prepare	()
 		(ps_r_ssao > 0))
 	{
 		//	TODO: DX10: Check if we need to set RT here.
-		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Position->pRT, NULL, NULL, RDepth);
+		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Position->pRT, nullptr, nullptr, RDepth);
 
-		//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		//CHK_DX	( RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 		RContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
 		//RContext->ClearRenderTargetView(rt_Normal->pRT, ColorRGBA);
@@ -37,8 +37,8 @@ void	CRenderTarget::phase_scene_prepare	()
 	}
 	else
 	{
-		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), RTarget, NULL, NULL, RDepth);
-		//CHK_DX	( RDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+		u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
+		//CHK_DX	( RDevice->Clear	( 0L, nullptr, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
 		RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 	}
 

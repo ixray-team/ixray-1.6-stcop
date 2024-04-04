@@ -12,7 +12,7 @@ void			xrGameSpyServer::QR2_Init			(int PortID)
 void			xrGameSpyServer::QR2_ShutDown()
 {
 	m_bQR2_Initialized = FALSE;
-	m_QR2.ShutDown(NULL);
+	m_QR2.ShutDown(nullptr);
 };
 
 //------------------------------- CD_Key -----------------------------

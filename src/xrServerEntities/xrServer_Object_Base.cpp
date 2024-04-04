@@ -126,7 +126,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 			m_ini_string		= temp;
 
 #ifdef XRGAME_EXPORTS
-		if ( NULL==ai().get_alife() )
+		if ( nullptr==ai().get_alife() )
 #endif // #ifdef XRGAME_EXPORTS
 		{
 			IReader* _r	= (IReader*)config;

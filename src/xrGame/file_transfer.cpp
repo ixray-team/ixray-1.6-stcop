@@ -319,7 +319,7 @@ filereceiver_node* server_site::start_receive_file(shared_str const & file_name,
 	if (temp_iter != m_receivers.end())
 	{
 		Msg("! ERROR: SV: file already receiving from client [%d]", from_client);
-		return NULL;
+		return nullptr;
 	}
 	filereceiver_node* frnode = new filereceiver_node(file_name, rstate_callback);
 	m_receivers.insert(std::make_pair(from_client, frnode));
@@ -327,7 +327,7 @@ filereceiver_node* server_site::start_receive_file(shared_str const & file_name,
 	{
 		Msg("! ERROR: SV: failed to create file [%s]", file_name.c_str());
 		stop_receive_file(from_client);
-		return NULL;
+		return nullptr;
 	}
 	return frnode;
 }
@@ -340,7 +340,7 @@ filereceiver_node* server_site::start_receive_file(CMemoryWriter& mem_writer,
 	if (temp_iter != m_receivers.end())
 	{
 		Msg("! ERROR: SV: file already receiving from client [%d]", from_client);
-		return NULL;
+		return nullptr;
 	}
 	filereceiver_node* frnode = new filereceiver_node(&mem_writer, rstate_callback);
 	m_receivers.insert(std::make_pair(from_client, frnode));
@@ -385,10 +385,10 @@ bool server_site::is_receiving_active(ClientID const & from_client) const
 
 
 client_site::client_site() : 
-	m_transfering(NULL)
+	m_transfering(nullptr)
 {
 #ifdef DEBUG
-	m_stat_graph = NULL;
+	m_stat_graph = nullptr;
 #endif
 }
 
@@ -548,7 +548,7 @@ filereceiver_node* client_site::start_receive_file(shared_str const & file_name,
 	if (is_receiving_active(from_client))
 	{
 		Msg("! ERROR: CL: file already receiving from client [%d]", from_client);
-		return NULL;
+		return nullptr;
 	}
 	filereceiver_node* frnode = new filereceiver_node(file_name, rstate_callback);
 	m_receivers.insert(std::make_pair(from_client, frnode));
@@ -556,7 +556,7 @@ filereceiver_node* client_site::start_receive_file(shared_str const & file_name,
 	{
 		Msg("! ERROR: CL: failed to create file [%s]", file_name.c_str());
 		stop_receive_file(from_client);
-		return NULL;
+		return nullptr;
 	}
 	return frnode;
 }
@@ -568,7 +568,7 @@ filereceiver_node* client_site::start_receive_file(CMemoryWriter& mem_writer,
 	if (is_receiving_active(from_client))
 	{
 		Msg("! ERROR: CL: file already receiving from client [%d]", from_client);
-		return NULL;
+		return nullptr;
 	}
 	mem_writer.clear();
 	filereceiver_node* frnode = new filereceiver_node(&mem_writer, rstate_callback);

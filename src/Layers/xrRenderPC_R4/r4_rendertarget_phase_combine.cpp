@@ -211,7 +211,7 @@ void	CRenderTarget::phase_combine	()
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
-			//CHK_DX(RDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
+			//CHK_DX(RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
 			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
@@ -229,8 +229,8 @@ void	CRenderTarget::phase_combine	()
 	if (PP_Complex)
 		u_setrt(rt_Color, 0, 0, RDepth);			// LDR RT
 	else
-		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, NULL, NULL, RDepth);
-	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,RTarget,NULL,NULL,RDepth);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, nullptr, nullptr, RDepth);
+	//. u_setrt				( Device.TargetWidth,Device.TargetHeight,RTarget,nullptr,nullptr,RDepth);
 	RCache.set_CullMode		( CULL_NONE )	;
 	RCache.set_Stencil		( FALSE		)	;
 
@@ -317,8 +317,8 @@ void	CRenderTarget::phase_combine	()
 	//*** exposure-pipeline-clear
 	{
 		std::swap					(rt_LUM_pool[gpu_id*2+0],rt_LUM_pool[gpu_id*2+1]);
-		t_LUM_src->surface_set		(NULL);
-		t_LUM_dest->surface_set		(NULL);
+		t_LUM_src->surface_set		(nullptr);
+		t_LUM_dest->surface_set		(nullptr);
 	}
 
 #ifdef DEBUG
@@ -429,9 +429,9 @@ void	CRenderTarget::phase_combine	()
 void CRenderTarget::phase_wallmarks		()
 {
 	// Targets
-	RCache.set_RT(NULL,2);
-	RCache.set_RT(NULL,1);
-	u_setrt(rt_Color, NULL, NULL, RDepth);
+	RCache.set_RT(nullptr,2);
+	RCache.set_RT(nullptr,1);
+	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RCache.set_CullMode					(CULL_CCW);

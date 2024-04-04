@@ -10,7 +10,7 @@
 #include "xrServer_Objects.h"
 void CPHDestroyableNotificate::spawn_notificate(CSE_Abstract* so)
 {
-	CPHDestroyableNotificator* D	=NULL;
+	CPHDestroyableNotificator* D	=nullptr;
 	CSE_PHSkeleton			 * po	=smart_cast<CSE_PHSkeleton*>(so);
 	u16						 id		=u16(-1);
 	if(po)

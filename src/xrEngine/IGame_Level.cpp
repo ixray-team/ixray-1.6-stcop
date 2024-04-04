@@ -12,17 +12,17 @@
 #include "xr_object.h"
 #include "feel_sound.h"
 
-ENGINE_API	IGame_Level*	g_pGameLevel	= NULL;
+ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
 extern	BOOL g_bLoaded;
 
 IGame_Level::IGame_Level	()
 {
 	m_pCameras					= new CCameraManager(true);
 	g_pGameLevel				= this;
-	pLevel						= NULL;
+	pLevel						= nullptr;
 	bReady						= false;
-	pCurrentEntity				= NULL;
-	pCurrentViewEntity			= NULL;
+	pCurrentEntity				= nullptr;
+	pCurrentViewEntity			= nullptr;
 #ifdef DEBUG
 	Device.DumpResourcesMemoryUsage();
 #endif // DEBUG
@@ -47,8 +47,8 @@ IGame_Level::~IGame_Level()
 	Device.seqFrame.Remove(this);
 	CCameraManager::ResetPP();
 
-	Sound->set_geometry_occ(NULL);
-	Sound->set_handler(NULL);
+	Sound->set_geometry_occ(nullptr);
+	Sound->set_handler(nullptr);
 #ifdef DEBUG
 	Device.DumpResourcesMemoryUsage();
 #endif // DEBUG

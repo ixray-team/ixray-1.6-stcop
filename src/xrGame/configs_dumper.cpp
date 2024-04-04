@@ -17,12 +17,12 @@ namespace mp_anticheat
 configs_dumper::configs_dumper()
 {
 	m_state								= ds_not_active;
-	m_buffer_for_compress				= NULL;
+	m_buffer_for_compress				= nullptr;
 	m_buffer_for_compress_size			= 0;
 	m_buffer_for_compress_capacity		= 0;
 
-	m_make_start_event					= NULL;
-	m_make_done_event					= NULL;
+	m_make_start_event					= nullptr;
+	m_make_done_event					= nullptr;
 
 	static u8 const sign_random_init[4] = {42, 42, 42, 42};
 	m_dump_signer.sign					(sign_random_init, sizeof(sign_random_init));
@@ -131,7 +131,7 @@ void configs_dumper::write_configs()
 	{
 		while (m_ltx_configs.dump_one(m_dump_result)) {};
 	}
-	CInifile			active_params_dumper(NULL, FALSE, FALSE, FALSE);
+	CInifile			active_params_dumper(nullptr, FALSE, FALSE, FALSE);
 	active_objects_t	active_objects(
 		_alloca(sizeof(active_objects_t::value_type) * max_active_objects),
 		max_active_objects);
@@ -155,7 +155,7 @@ void configs_dumper::sign_configs		()
 {
 	string64	creation_date;
 	string64		tmp_player_name = {};
-	CInifile	tmp_ini				(NULL, FALSE, FALSE, FALSE);
+	CInifile	tmp_ini				(nullptr, FALSE, FALSE, FALSE);
 	game_cl_mp*	tmp_cl_game			= smart_cast<game_cl_mp*>(&Game());
 	R_ASSERT						(tmp_cl_game);
 	xr_strconcat(tmp_player_name, "\"",
@@ -232,8 +232,8 @@ void configs_dumper::dump_config(complete_callback_t complete_cb)
 		Engine.Sheduler.Register	(this, TRUE);
 		return;
 	}
-	m_make_start_event			= CreateEvent(NULL, FALSE, TRUE, NULL);
-	m_make_done_event			= CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_make_start_event			= CreateEvent(nullptr, FALSE, TRUE, nullptr);
+	m_make_done_event			= CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	thread_spawn				(&configs_dumper::dumper_thread, "configs_dumper", 0, this);
 	Engine.Sheduler.Register	(this, TRUE);
 }

@@ -83,7 +83,7 @@ u32		CBlender_Compile::i_Sampler		(LPCSTR _name)
 	u32 stage				= C->samp.index;
 
 	// Create texture
-	// while (stage>=passTextures.size())	passTextures.push_back		(NULL);
+	// while (stage>=passTextures.size())	passTextures.push_back		(nullptr);
 	return					stage;
 }
 void	CBlender_Compile::i_Texture		(u32 s, LPCSTR name)

@@ -121,9 +121,9 @@ u32 CStreamReader::find_chunk				(u32 ID, BOOL* bCompressed)
 
 void CStreamReader::r_stringZ				(shared_str& dest)
 {
-	char*	dest_str		= NULL;
+	char*	dest_str		= nullptr;
 	u32	current_str_size	= 0;
-	u8*	end_str				= NULL;
+	u8*	end_str				= nullptr;
 	do
 	{
 		u8*	end_ptr	= m_start_pointer + m_current_window_size;

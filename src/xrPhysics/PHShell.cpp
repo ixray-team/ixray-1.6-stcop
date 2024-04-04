@@ -67,12 +67,12 @@ CPHShell::CPHShell()
 	m_flags.assign(0);
 	m_flags.set(flActivating,FALSE);
 	m_flags.set(flActive,FALSE);
-	m_space=NULL;
-	m_pKinematics=NULL;
-	m_spliter_holder=NULL;
+	m_space=nullptr;
+	m_pKinematics=nullptr;
+	m_spliter_holder=nullptr;
 	m_object_in_root.identity();
 	m_active_count=0;
-	m_pPhysicsShellAnimatorC=NULL;
+	m_pPhysicsShellAnimatorC=nullptr;
 }
 
 void CPHShell::EnableObject(CPHObject* obj)
@@ -382,7 +382,7 @@ CPhysicsElement* CPHShell::get_Element( u16 bone_id )
 		CBoneInstance& instance=m_pKinematics->LL_GetBoneInstance				(bone_id);
 		if(instance.callback()==BonesCallback||instance.callback()==StataticRootBonesCallBack)
 		{
-			return (instance.callback_type()==bctPhysics)?(CPhysicsElement*)instance.callback_param():NULL;
+			return (instance.callback_type()==bctPhysics)?(CPhysicsElement*)instance.callback_param():nullptr;
 		}
 	}
 
@@ -390,7 +390,7 @@ CPhysicsElement* CPHShell::get_Element( u16 bone_id )
 	for(; e!=i ;++i)
 		if((*i)->m_SelfID==bone_id)
 			return (CPhysicsElement*)(*i);
-	return NULL;
+	return nullptr;
 }
 
 CPhysicsJoint* CPHShell::get_Joint(u16 bone_id)
@@ -399,7 +399,7 @@ CPhysicsJoint* CPHShell::get_Joint(u16 bone_id)
 	for(;e!=i;i++)
 		if((*i)->BoneID()==bone_id)
 			return (CPhysicsJoint*)(*i);
-	return NULL;
+	return nullptr;
 }
 CPhysicsJoint* CPHShell::get_Joint(const shared_str &bone_name)
 {
@@ -652,7 +652,7 @@ void CPHShell::addEquelInertiaToEls(const dMass& M)
 		(*i)->addInertia(M);
 	}
 }
-static BONE_P_MAP* spGetingMap=NULL;
+static BONE_P_MAP* spGetingMap=nullptr;
 void CPHShell::build_FromKinematics(IKinematics* K,BONE_P_MAP* p_geting_map)
 {
 	VERIFY( K );
@@ -805,7 +805,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 
 
 			//B.Callback_Param=root_e;
-			//B.Callback=NULL;
+			//B.Callback=nullptr;
 
 		}
 		else										//
@@ -1233,7 +1233,7 @@ CPhysicsElement* CPHShell::NearestToPoint(const Fvector& point, NearestToPointCa
 	ELEMENT_I i,e;
 	i=elements.begin(); e=elements.end();
 	float min_distance	=dInfinity;
-	CPHElement* nearest_element=NULL;
+	CPHElement* nearest_element=nullptr;
 	for( ; i!=e; ++i )
 	{
 		Fvector tmp;
@@ -1266,7 +1266,7 @@ void CPHShell::PassEndElements(u16 from,u16 to,CPHShell *dest)
 	if(from!=to)
 	{
 		if(!dest->elements.empty())	(*i_from)->set_ParentElement(dest->elements.back());
-		else						(*i_from)->set_ParentElement(NULL);
+		else						(*i_from)->set_ParentElement(nullptr);
 	}
 	for(ELEMENT_I i=i_from;i!=e;++i)
 	{
@@ -1554,7 +1554,7 @@ CODEGeom* CPHShell::get_GeomByID(u16 bone_id)
 		CODEGeom* ret=(*i)->GeomByBoneID(bone_id);
 		if(ret) return ret;
 	}
-	return NULL;
+	return nullptr;
 }
 void	CPHShell::PureStep(float step)
 {

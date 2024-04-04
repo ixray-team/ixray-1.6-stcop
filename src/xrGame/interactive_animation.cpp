@@ -55,7 +55,7 @@ bool interactive_animation::update(  const Fmatrix	&xrorm )
 
 void	interactive_animation::contact_callback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dxGeomUserData	*gd1 =NULL,	*gd2 =NULL;
+	dxGeomUserData	*gd1 =nullptr,	*gd2 =nullptr;
 	get_user_data( gd1, gd2, bo1, c.geom );
 	VERIFY( gd1 );
 	if( gd2 && gd2->ph_ref_object == gd1->ph_ref_object )

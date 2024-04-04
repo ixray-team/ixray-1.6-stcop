@@ -15,8 +15,8 @@ namespace award_system
 game_state_accumulator::game_state_accumulator()
 {
 	m_last_player_spawn_time	= 0;
-	m_local_player				= NULL;
-	m_item_mngr					= NULL;
+	m_local_player				= nullptr;
+	m_item_mngr					= nullptr;
 }
 
 game_state_accumulator::~game_state_accumulator()
@@ -46,7 +46,7 @@ void game_state_accumulator::init_player(game_PlayerState* local_player)
 	m_local_player					= local_player;
 	init_player_accum_values		(local_player);
 
-	CUIMpTradeWnd* tmp_trade_wnd	= NULL;
+	CUIMpTradeWnd* tmp_trade_wnd	= nullptr;
 	game_cl_Deathmatch* tmp_dm_game = smart_cast<game_cl_Deathmatch*>(&Game());
 	if (tmp_dm_game)
 	{
@@ -310,7 +310,7 @@ bool game_state_accumulator::check_hit_params(u32 count,
 	tmp_fetcher.m_func				= func;
 	tmp_fetcher.m_right_arg			= right_dist_arg;
 
-	buffer_vector<hits_store::bullet_hit>	tmp_fake_buffer(NULL, 0);
+	buffer_vector<hits_store::bullet_hit>	tmp_fake_buffer(nullptr, 0);
 	if (m_hits.fetch_hits(tmp_fetcher, tmp_fake_buffer) >= count)
 	{
 		return true;
@@ -376,7 +376,7 @@ bool game_state_accumulator::check_kill_params(u32 count,
 	tmp_predicate.m_spec_kill		= special_kill_type;
 	tmp_predicate.m_weapon_gid		= weapon_group_id;
 	
-	buffer_vector<kills_store::kill>	tmp_buffer(NULL, 0);
+	buffer_vector<kills_store::kill>	tmp_buffer(nullptr, 0);
 	if (m_kills.fetch_kills(tmp_predicate, tmp_buffer) >= count)
 		return true;
 
@@ -454,7 +454,7 @@ u16	game_state_accumulator::get_active_weapon_of_player	(game_PlayerState* playe
 
 	u16 tmp_active_slot					= tmp_actor->inventory().GetActiveSlot();
 	CInventoryItem const * tmp_inv_item	= tmp_active_slot != NO_ACTIVE_SLOT ?
-		tmp_actor->inventory().ItemFromSlot(tmp_active_slot) : NULL;
+		tmp_actor->inventory().ItemFromSlot(tmp_active_slot) : nullptr;
 
 	if (!tmp_inv_item)
 		return 0;
@@ -465,23 +465,23 @@ u16	game_state_accumulator::get_active_weapon_of_player	(game_PlayerState* playe
 CWeapon* game_state_accumulator::get_active_weapon(game_PlayerState* player)
 {
 	if (!player)
-		return NULL;
+		return nullptr;
 
 	CObject* tmp_obj = Level().Objects.net_Find(player->GameID);
 	if (!tmp_obj)
-		return NULL;
+		return nullptr;
 
 	CActorMP const* tmp_actor = smart_cast<CActorMP const*>(tmp_obj);
 
 	if (!tmp_actor)
-		return NULL;
+		return nullptr;
 
 	u16 tmp_active_slot					= tmp_actor->inventory().GetActiveSlot();
 	CInventoryItem* tmp_inv_item		= tmp_active_slot != NO_ACTIVE_SLOT ?
-		tmp_actor->inventory().ItemFromSlot(tmp_active_slot) : NULL;
+		tmp_actor->inventory().ItemFromSlot(tmp_active_slot) : nullptr;
 
 	if (!tmp_inv_item)
-		return NULL;
+		return nullptr;
 
 	return smart_cast<CWeapon*>(tmp_inv_item);
 }
@@ -490,7 +490,7 @@ CActor*	 game_state_accumulator::get_players_actor(u16 game_id)
 {
 	CObject* tmp_obj = Level().Objects.net_Find(game_id);
 	if (!tmp_obj)
-		return NULL;
+		return nullptr;
 
 	return smart_cast<CActor*>(tmp_obj);
 }

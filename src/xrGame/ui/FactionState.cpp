@@ -25,13 +25,13 @@ FactionState::FactionState():
 	power(0.0f),
 	m_actor_goodwill(0)
 {
-	m_id._set         ( NULL );
-	m_name._set       ( NULL );
-	m_icon._set       ( NULL );
-	m_icon_big._set   ( NULL );
-	m_target._set     ( NULL );
-	m_target_desc._set( NULL );
-	m_location._set   ( NULL );
+	m_id._set         ( nullptr );
+	m_name._set       ( nullptr );
+	m_icon._set       ( nullptr );
+	m_icon_big._set   ( nullptr );
+	m_target._set     ( nullptr );
+	m_target_desc._set( nullptr );
+	m_location._set   ( nullptr );
 	
 	ResetStates();
 }
@@ -50,12 +50,12 @@ void FactionState::ResetStates()
 {
 	for ( int i = 0; i < war_state_count ; ++i )
 	{
-		m_war_state_str[i]._set( NULL );
-		m_war_state_hint_str[i]._set( NULL );
+		m_war_state_str[i]._set( nullptr );
+		m_war_state_hint_str[i]._set( nullptr );
 	}
 	//for ( int i = 0; i < bonuses_count ; ++i )
 	//{
-	//bonuses_vs[i]._set( NULL );
+	//bonuses_vs[i]._set( nullptr );
 	//}
 }
 

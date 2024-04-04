@@ -41,20 +41,20 @@ xr_token	round_end_result_str[]=
 game_PlayerState*	game_sv_GameState::get_id					(ClientID id)							
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return NULL;
+	if (0==C)			return nullptr;
 	else				return C->ps;
 }
 
 LPCSTR				game_sv_GameState::get_name_id				(ClientID id)							
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	return C == NULL ? NULL : C->ps->getName();
+	return C == nullptr ? nullptr : C->ps->getName();
 }
 
 LPCSTR				game_sv_GameState::get_player_name_id				(ClientID id)								
 {
 	xrClientData* xrCData	=	m_server->ID_to_client(id);
-	return xrCData == NULL ? "unknown" : xrCData->ps->getName();
+	return xrCData == nullptr ? "unknown" : xrCData->ps->getName();
 }
 
 u32					game_sv_GameState::get_players_count		()
@@ -104,7 +104,7 @@ game_PlayerState*	game_sv_GameState::get_eid (u16 id) //if exist
 		m_server->FindClient(tmp_predicate));
 	if (tmp_client)
 		return tmp_client->ps;
-	return NULL;
+	return nullptr;
 }
 
 void* game_sv_GameState::get_client (u16 id) //if exist
@@ -746,7 +746,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 		{
 			IClient* CL					= (IClient*)m_server->ID_to_client(sender);
 			VERIFY2(CL, "bad create client message GAME_EVENT_CREATE_CLIENT");
-			if ( CL == NULL ) { break; }
+			if ( CL == nullptr ) { break; }
 			
 			CL->flags.bConnected		= TRUE;
 			m_server->AttachNewClient	(CL);
@@ -792,7 +792,7 @@ bool game_sv_GameState::CheckNewPlayer(xrClientData* CL)
 	xrGameSpyServer*		gs_server = smart_cast<xrGameSpyServer*>(m_server);
 	R_ASSERT				(gs_server);
 	
-	char const *			error_msg = NULL;
+	char const *			error_msg = nullptr;
 	ClientID				tmp_client_id(CL->ID);
 	
 	if (gs_server->IsPublicServer())
@@ -821,7 +821,7 @@ bool game_sv_GameState::CheckNewPlayer(xrClientData* CL)
 	if (error_msg)
 	{
 		m_server->SendProfileCreationError(CL, error_msg);
-		if (CL != m_server->GetServerClient()) //CL can be NULL
+		if (CL != m_server->GetServerClient()) //CL can be nullptr
 			CleanDelayedEventFor(tmp_client_id);
 		return false;
 	}
@@ -863,7 +863,7 @@ void game_sv_GameState::AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 ti
 
 void game_sv_GameState::ProcessDelayedEvent		()
 {
-	GameEvent* ge = NULL;
+	GameEvent* ge = nullptr;
 	while ((ge = m_event_queue->Retreive()) != 0) {
 		OnEvent(ge->P,ge->type,ge->time,ge->sender);
 		m_event_queue->Release();
@@ -1235,7 +1235,7 @@ bool game_sv_GameState::FindPlayerName			(char const * name, IClient const * to_
 	R_ASSERT(name);
 	NameSearcherPredicate	tmp_predicate(name, to_exclude);
 	IClient* tmp_client		= m_server->FindClient(tmp_predicate);
-	return tmp_client != NULL;
+	return tmp_client != nullptr;
 }
 
 void game_sv_GameState::GenerateNewName			(char const * old_name, char * dest, u32 const dest_size)
@@ -1273,7 +1273,7 @@ void game_sv_GameState::CheckPlayerName(xrClientData* CL)
 	R_ASSERT	(CL && CL->ps);
 	R_ASSERT	(!CL->ps->m_account.is_online());
 
-	char const *	current_name = NULL;
+	char const *	current_name = nullptr;
 	if (CL->ps->m_account.name().size())	//in case of logging from gamespy login page
 	{
 		current_name = CL->ps->getName();

@@ -16,7 +16,7 @@
 #define TEAM_PANELS_AHUNT_XML_NAME "ui_team_panels_ahunt.xml"
 
 CUIGameAHunt::CUIGameAHunt()
-:m_game(NULL),m_pBuySpawnMsgBox(NULL)
+:m_game(nullptr),m_pBuySpawnMsgBox(nullptr)
 {
 }
 

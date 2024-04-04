@@ -296,7 +296,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 				Msg("! Error: No object to attach holder [%d]", id_);
 				break;
 			}
-			VERIFY(m_holder==NULL);
+			VERIFY(m_holder==nullptr);
 			CHolderCustom*	holder = smart_cast<CHolderCustom*>(O);
 			if(!holder->Engaged())	use_Holder		(holder);
 
@@ -307,7 +307,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			u16 id_			= P.r_u16();
 			CGameObject*	GO	= smart_cast<CGameObject*>(m_holder);
 			VERIFY			(id_==GO->ID());
-			use_Holder		(NULL);
+			use_Holder		(nullptr);
 		}break;
 	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
 		{

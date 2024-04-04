@@ -13,8 +13,8 @@ void dxUIRender::CreateUIGeom()
 
 void dxUIRender::DestroyUIGeom()
 {
-	hGeom_TL = NULL;
-	hGeom_LIT = NULL;
+	hGeom_TL = nullptr;
+	hGeom_LIT = nullptr;
 }
 
 void dxUIRender::SetShader(IUIShader &shader)

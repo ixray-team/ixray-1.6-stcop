@@ -97,16 +97,16 @@ CBaseMonster::CBaseMonster() :	m_psy_aura(this, "psy"),
 
 	com_man().add_ability				(ControlCom::eComCriticalWound);
 
-	EatedCorpse								=	NULL;
+	EatedCorpse								=	nullptr;
 
-	m_steer_manager							=	NULL;
-	m_grouping_behaviour					=	NULL;
+	m_steer_manager							=	nullptr;
+	m_grouping_behaviour					=	nullptr;
 
 	m_last_grouping_behaviour_update_tick	=	0;
 	m_feel_enemy_who_just_hit_max_distance	=	0;
 	m_feel_enemy_max_distance				=	0;
 
-	m_anti_aim								=	NULL;
+	m_anti_aim								=	nullptr;
 	m_head_bone_name						=	"bip01_head";
 
 	m_first_tick_enemy_inaccessible			=	0;
@@ -345,7 +345,7 @@ void CBaseMonster::UpdateCL()
 
 	if ( EatedCorpse && !CorpseMemory.is_valid_corpse(EatedCorpse) )
 	{
-		EatedCorpse = NULL;
+		EatedCorpse = nullptr;
 	}
 
 	inherited::UpdateCL();
@@ -431,7 +431,7 @@ void CBaseMonster::Die(CObject* who)
 
 	if ( m_grouping_behaviour )
 	{
-		m_grouping_behaviour->set_squad(NULL);
+		m_grouping_behaviour->set_squad(nullptr);
 	}
 	
 	

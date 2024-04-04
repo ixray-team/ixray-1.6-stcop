@@ -54,7 +54,7 @@ GameEvent*		GameEventQueue::CreateSafe	(NET_Packet& P, u16 type, u32 time, Clien
 #ifdef DEBUG
 			Msg("--- Ignoring event type[%d] time[%d] clientID[0x%08x]", type, time, clientID);
 #endif // #ifdef DEBUG
-			return NULL;
+			return nullptr;
 		}
 	}
 	return Create(P, type, time, clientID);

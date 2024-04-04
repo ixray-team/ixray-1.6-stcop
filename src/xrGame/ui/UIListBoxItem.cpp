@@ -5,7 +5,7 @@
 #include "UIStatic.h"
 
 CUIListBoxItem::CUIListBoxItem(float height)
-:m_text(NULL),tag(u32(-1))
+:m_text(nullptr),tag(u32(-1))
 {
 	SetHeight		(height);
 	m_text			= AddTextField("---", 10.0f);
@@ -47,7 +47,7 @@ void CUIListBoxItem::SetFont(CGameFont* F)
 
 CGameFont* CUIListBoxItem::GetFont()
 {
-	return (m_text)?m_text->GetFont():NULL;
+	return (m_text)?m_text->GetFont():nullptr;
 }
 
 bool CUIListBoxItem::OnMouseDown(int mouse_btn)

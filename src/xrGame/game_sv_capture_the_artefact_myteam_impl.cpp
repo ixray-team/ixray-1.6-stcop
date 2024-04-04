@@ -9,8 +9,8 @@ game_sv_CaptureTheArtefact::MyTeam::MyTeam()
 	playersCount = 0;
 	rPointInitialized = false;
 	artefactActivated = false;
-	artefact = NULL;
-	artefactOwner = NULL;
+	artefact = nullptr;
+	artefactOwner = nullptr;
 	score = 0;
 	freeArtefactTimeStart = 0;
 	activationArtefactTimeStart	= 0;
@@ -46,8 +46,8 @@ game_sv_CaptureTheArtefact::MyTeam::MyTeam(
 	rPointInitialized = false;
 	artefactActivated = false;
 	artefactName = aName;
-	artefact = NULL;
-	artefactOwner = NULL;
+	artefact = nullptr;
+	artefactOwner = nullptr;
 	score = 0;
 	freeArtefactTimeStart = 0;
 	activationArtefactTimeStart = 0;
@@ -76,7 +76,7 @@ void game_sv_CaptureTheArtefact::MyTeam::OnPlayerDetachArtefact(
 	VERIFY2(oldArtefactOwner == artefactOwner,
 		make_string<const char*>("artefacts owners not equal: firstOwnerId = %d, secondOwnerId = %d",
 		oldArtefactOwner->ID, artefactOwner->ID));
-	artefactOwner = NULL;
+	artefactOwner = nullptr;
 	freeArtefactTimeStart = Level().timeServer();
 }
 

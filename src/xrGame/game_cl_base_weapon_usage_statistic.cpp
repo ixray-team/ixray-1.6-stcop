@@ -66,7 +66,7 @@ void			HitData::net_load	(NET_Packet* P, victims_table const & vt, bone_table co
 Weapon_Statistic::Weapon_Statistic(LPCSTR Name)
 {
 	WName = Name;
-	InvName = NULL;
+	InvName = nullptr;
 	NumBought = 0;
 
 	m_dwRoundsFired = m_dwRoundsFired_d = 0;

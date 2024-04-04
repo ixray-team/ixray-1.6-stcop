@@ -75,7 +75,7 @@ void player_state_avenger::OnPlayerKilled(u16 killer_id, u16 target_id, u16 weap
 	tmp_predicate.m_killer_spawn_time	= tmp_spawn_time->second;
 	feel_my_team_players				(tmp_local_player, tmp_predicate.m_my_team_players);
 
-	buffer_vector<kills_store::kill>	tmp_fake_buffer(NULL, 0);
+	buffer_vector<kills_store::kill>	tmp_fake_buffer(nullptr, 0);
 	if (m_owner->get_kills_store().fetch_kills(tmp_predicate, tmp_fake_buffer) > 0)
 	{
 		++m_aveng_count;

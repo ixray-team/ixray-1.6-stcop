@@ -145,8 +145,8 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		SVS*	_vs					= new SVS	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
-		//_vs->vs				= NULL;
-		//_vs->signature		= NULL;
+		//_vs->vs				= nullptr;
+		//_vs->signature		= nullptr;
 		if (0==_stricmp(_name,"null"))	{
 			return _vs;
 		}
@@ -162,7 +162,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(),/*_name*/shName,".vs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
-		//		LPCSTR						target		= NULL;
+		//		LPCSTR						target		= nullptr;
 
 		// duplicate and zero-terminate
 		IReader* file			= FS.r_open(cname);
@@ -247,7 +247,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
 		if (0==_stricmp(_name,"null"))	{
-			_ps->ps				= NULL;
+			_ps->ps				= nullptr;
 			return _ps;
 		}
 
@@ -337,7 +337,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 		_gs->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_gs.insert					(std::make_pair(_gs->set_name(name),_gs));
 		if (0==_stricmp(name,"null"))	{
-			_gs->gs				= NULL;
+			_gs->gs				= nullptr;
 			return _gs;
 		}
 
@@ -441,7 +441,7 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 //--------------------------------------------------------------------------------------------------------------
 R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
 {
-	if (C.empty())		return NULL;
+	if (C.empty())		return nullptr;
 
 	xrCriticalSectionGuard guard(creationGuard);
 
@@ -623,7 +623,7 @@ void	CResourceManager::DBG_VerifyTextures	()
 CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
 {
 	R_ASSERT(Name && Name[0]);
-	if (0==_stricmp(Name,"$null"))	return NULL;
+	if (0==_stricmp(Name,"$null"))	return nullptr;
 
 	LPSTR N = LPSTR(Name);
 
@@ -658,7 +658,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 CConstant*	CResourceManager::_CreateConstant	(LPCSTR Name)
 {
 	R_ASSERT(Name && Name[0]);
-	if (0==_stricmp(Name,"$null"))	return NULL;
+	if (0==_stricmp(Name,"$null"))	return nullptr;
 
 	LPSTR N = LPSTR(Name);
 
@@ -722,7 +722,7 @@ SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 	BOOL bEmpty = TRUE;
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
-	if (bEmpty)	return NULL;
+	if (bEmpty)	return nullptr;
 
 	for (u32 it=0; it<lst_matrices.size(); it++)
 	{
@@ -750,7 +750,7 @@ SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 	BOOL bEmpty = TRUE;
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
-	if (bEmpty)	return NULL;
+	if (bEmpty)	return nullptr;
 
 	for (u32 it=0; it<lst_constants.size(); it++)
 	{

@@ -172,7 +172,7 @@ CScriptGameObject *get_object_by_id(u16 id)
 {
 	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
 	if(!pGameObject)
-		return NULL;
+		return nullptr;
 
 	return pGameObject->lua_game_object();
 }
@@ -789,8 +789,8 @@ u32 render_get_dx_level()
 	return ::Render->get_dx_level();
 }
 
-CUISequencer* g_tutorial = NULL;
-CUISequencer* g_tutorial2 = NULL;
+CUISequencer* g_tutorial = nullptr;
+CUISequencer* g_tutorial2 = nullptr;
 
 void start_tutorial(LPCSTR name)
 {
@@ -823,7 +823,7 @@ LPCSTR translate_string(LPCSTR str)
 
 bool has_active_tutotial()
 {
-	return (g_tutorial!=NULL);
+	return (g_tutorial!=nullptr);
 }
 
 bool valid_vertex_id(u32 level_vertex_id) {

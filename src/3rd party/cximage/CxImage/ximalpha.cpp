@@ -74,7 +74,7 @@ void CxImage::AlphaSet(BYTE level)
  */
 bool CxImage::AlphaCreate()
 {
-	if (pAlpha==NULL) {
+	if (pAlpha==nullptr) {
 		pAlpha = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
 		if (pAlpha) memset(pAlpha,255,head.biWidth * head.biHeight);
 	}
@@ -103,9 +103,9 @@ void CxImage::AlphaInvert()
  */
 bool CxImage::AlphaCopy(CxImage &from)
 {
-	if (from.pAlpha == NULL || head.biWidth != from.head.biWidth || head.biHeight != from.head.biHeight) return false;
-	if (pAlpha==NULL) pAlpha = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
-	if (pAlpha==NULL) return false;
+	if (from.pAlpha == nullptr || head.biWidth != from.head.biWidth || head.biHeight != from.head.biHeight) return false;
+	if (pAlpha==nullptr) pAlpha = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
+	if (pAlpha==nullptr) return false;
 	memcpy(pAlpha,from.pAlpha,head.biWidth * head.biHeight);
 	info.nAlphaMax=from.info.nAlphaMax;
 	return true;
@@ -117,10 +117,10 @@ bool CxImage::AlphaCopy(CxImage &from)
 bool CxImage::AlphaSet(CxImage &from)
 {
 	if (!from.IsGrayScale() || head.biWidth != from.head.biWidth || head.biHeight != from.head.biHeight) return false;
-	if (pAlpha==NULL) pAlpha = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
+	if (pAlpha==nullptr) pAlpha = (BYTE*)cxalloc(head.biWidth * head.biHeight);//malloc(head.biWidth * head.biHeight);
 	BYTE* src = from.info.pImage;
 	BYTE* dst = pAlpha;
-	if (src==NULL || dst==NULL) return false;
+	if (src==nullptr || dst==nullptr) return false;
 	for (long y=0; y<head.biHeight; y++){
 		memcpy(dst,src,head.biWidth);
 		dst += head.biWidth;

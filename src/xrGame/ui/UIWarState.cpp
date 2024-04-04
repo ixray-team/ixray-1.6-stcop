@@ -15,7 +15,7 @@
 UIWarState::UIWarState()
 {
 //	m_installed = false;
-//	m_def_texture._set( NULL );
+//	m_def_texture._set( nullptr );
 }
 
 void UIWarState::InitXML( CUIXml& xml, LPCSTR att_name, CUIWindow* parent )
@@ -31,7 +31,7 @@ void UIWarState::InitXML( CUIXml& xml, LPCSTR att_name, CUIWindow* parent )
 	m_static = UIHelper::CreateStatic( xml, buf, this );
 	
 //	strconcat( sizeof(buf), buf, att_name, ":img:texture" );
-//	m_def_texture._set( xml.Read( buf, 0, NULL ) );
+//	m_def_texture._set( xml.Read( buf, 0, nullptr ) );
 //	VERIFY( m_def_texture.size() );
 
 	set_hint_delay( (u32)xml.ReadAttribInt( att_name, 0, "delay", 0 ) );

@@ -11,7 +11,7 @@
 
 CWeaponBinoculars::CWeaponBinoculars()
 {
-	m_binoc_vision	= NULL;
+	m_binoc_vision	= nullptr;
 	m_bVision		= false;
 }
 
@@ -53,7 +53,7 @@ void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 	delta = (delta_factor_total * (1 - min_zoom_k)) / zoom_step_count;
 }
 
-float LastBinocZoomFactor = NULL;
+float LastBinocZoomFactor = 0.f;
 
 void CWeaponBinoculars::OnZoomIn		()
 {

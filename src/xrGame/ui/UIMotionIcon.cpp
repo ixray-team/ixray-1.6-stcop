@@ -4,7 +4,7 @@
 #include "UIXmlInit.h"
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
 
-CUIMotionIcon* g_pMotionIcon = NULL;
+CUIMotionIcon* g_pMotionIcon = nullptr;
 
 CUIMotionIcon::CUIMotionIcon()
 {
@@ -16,7 +16,7 @@ CUIMotionIcon::CUIMotionIcon()
 
 CUIMotionIcon::~CUIMotionIcon()
 {
-	g_pMotionIcon	= NULL;
+	g_pMotionIcon	= nullptr;
 }
 
 void CUIMotionIcon::ResetVisibility()

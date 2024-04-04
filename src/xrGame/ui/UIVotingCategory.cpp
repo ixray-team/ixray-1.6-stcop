@@ -13,11 +13,11 @@
 
 CUIVotingCategory::CUIVotingCategory()
 {
-	xml_doc			= NULL;
-	kick			= NULL;
-	change_weather	= NULL;
-	change_map		= NULL;
-	change_gametype	= NULL;
+	xml_doc			= nullptr;
+	kick			= nullptr;
+	change_weather	= nullptr;
+	change_map		= nullptr;
+	change_gametype	= nullptr;
 
 	bkgrnd			= new CUIStatic(); bkgrnd->SetAutoDelete(true); AttachChild(bkgrnd);
 	header			= new CUIStatic(); header->SetAutoDelete(true);	AttachChild(header);

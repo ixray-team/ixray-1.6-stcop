@@ -102,13 +102,13 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* ae
 	m_weapon_attach_bone(0),
 	m_active_item_obj(0),
 	m_hit_valide_time(u32(-1)),
-	m_collision_activating_delay(NULL)
+	m_collision_activating_delay(nullptr)
 {
 	m_flags.assign( 0 );
 	m_flags.set(fl_death_anim_on,FALSE);
 	m_flags.set(fl_skeleton_in_shell,FALSE);
 	m_flags.set(fl_use_hit_anims,TRUE);
-	m_pPhysicsShell = NULL;
+	m_pPhysicsShell = nullptr;
 	switch(atype)
 	{
 	case etActor:
@@ -302,7 +302,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics( CSE_Abstract* e )
 	}
 	else
 	{
-		ActivateShell( NULL );
+		ActivateShell( nullptr );
 	}
 
 	CSE_PHSkeleton *po		= smart_cast<CSE_PHSkeleton*>(e);
@@ -653,7 +653,7 @@ void CCharacterPhysicsSupport::in_UpdateCL( )
 	} 
 	//else if ( !m_EntityAlife.g_Alive( ) && !m_EntityAlife.use_simplified_visual( ) )
 	//{
-		//ActivateShell( NULL );
+		//ActivateShell( nullptr );
 		//m_PhysicMovementControl->DestroyCharacter( );
 	//} 
 	else if( ik_controller( ) )
@@ -1155,7 +1155,7 @@ void	CCharacterPhysicsSupport::	CreateShell						( CObject* who, Fvector& dp, Fv
 	//shell create
 	R_ASSERT2(m_physics_skeleton,"No skeleton created!!");
 	m_pPhysicsShell=m_physics_skeleton;
-	m_physics_skeleton=NULL;
+	m_physics_skeleton=nullptr;
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
 	m_pPhysicsShell->mXFORM.set(mXFORM);
@@ -1292,7 +1292,7 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 			m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 		if( m_EntityAlife.Visual( ) )
-			ActivateShell(NULL);
+			ActivateShell(nullptr);
 	}
 
 }
@@ -1443,7 +1443,7 @@ void CCharacterPhysicsSupport::in_Die()
 			if (A->Holder()) is_actor_holder = true;
 		};
 		if (!is_actor_holder)
-			ActivateShell(NULL);
+			ActivateShell(nullptr);
 		m_PhysicMovementControl->DestroyCharacter();
 		return;
 	}

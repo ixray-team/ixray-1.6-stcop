@@ -24,7 +24,7 @@
 #include "ui/UIXmlInit.h"
 #include "physicsshellholder.h"
 
-CUIProgressShape* g_MissileForceShape = NULL;
+CUIProgressShape* g_MissileForceShape = nullptr;
 
 void create_force_progress()
 {
@@ -55,7 +55,7 @@ void CMissile::reinit		()
 	m_fThrowForce		= 0;
 	m_dwDestroyTime		= 0xffffffff;
 	SetPending			(FALSE);
-	m_fake_missile		= NULL;
+	m_fake_missile		= nullptr;
 	SetState			( eHidden );
 }
 
@@ -117,7 +117,7 @@ void CMissile::PH_A_CrPr		()
 		VERIFY( K );
 		if (!obj.PPhysicsShell())
 		{
-			Msg("! ERROR: PhysicsShell is NULL, object [%s][%d]", obj.cName().c_str(), obj.ID());
+			Msg("! ERROR: PhysicsShell is nullptr, object [%s][%d]", obj.cName().c_str(), obj.ID());
 			return;
 		}
 		if(!obj.PPhysicsShell()->isFullActive())
@@ -462,7 +462,7 @@ void CMissile::setup_throw_params()
 	if (this == inventory_owner->inventory().ActiveItem())
 	{
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(NULL == io->inventory().ActiveItem())
+		if(nullptr == io->inventory().ActiveItem())
 		{
 				Msg("current_state %d", GetState() );
 				Msg("next_state %d", GetNextState());
@@ -542,7 +542,7 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
 			bool IsFakeMissile = false;
 			if (m_fake_missile && (id == m_fake_missile->ID()))
 			{
-				m_fake_missile	= NULL;
+				m_fake_missile	= nullptr;
 				IsFakeMissile = true;
 			}
 
@@ -706,7 +706,7 @@ void	CMissile::net_Relcase(CObject* O)
 		if(O==smart_cast<CObject*>((CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData()))
 		{
 			PPhysicsShell()->remove_ObjectContactCallback(ExitContactCallback);
-			PPhysicsShell()->set_CallbackData(NULL);
+			PPhysicsShell()->set_CallbackData(nullptr);
 		}
 	}
 
@@ -755,7 +755,7 @@ void CMissile::render_item_ui()
 
 void	 CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dxGeomUserData	*gd1=NULL,	*gd2=NULL;
+	dxGeomUserData	*gd1=nullptr,	*gd2=nullptr;
 	if(bo1)
 	{
 		gd1 =PHRetrieveGeomUserData(c.geom.g1);

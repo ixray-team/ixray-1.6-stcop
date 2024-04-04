@@ -104,14 +104,14 @@ void CxImage::OverflowCoordinates(float &x, float &y, OverflowMethod const ofMet
 RGBQUAD CxImage::GetPixelColorWithOverflow(long x, long y, OverflowMethod const ofMethod, RGBQUAD* const rplColor)
 {
   RGBQUAD color;          //color to return
-  if ((!IsInside(x,y)) || pDib==NULL) {     //is pixel within bouns?:
+  if ((!IsInside(x,y)) || pDib==nullptr) {     //is pixel within bouns?:
     //pixel is out of bounds or no DIB
-    if (rplColor!=NULL)
+    if (rplColor!=nullptr)
       color=*rplColor;
     else {
       color.rgbRed=color.rgbGreen=color.rgbBlue=255; color.rgbReserved=0; //default replacement colour: white transparent
     }//if
-    if (pDib==NULL) return color;
+    if (pDib==nullptr) return color;
     //pixel is out of bounds:
     switch (ofMethod) {
       case OM_TRANSPARENT:

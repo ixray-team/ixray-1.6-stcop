@@ -200,7 +200,7 @@ void	CResourceManager::LS_Load			()
 void	CResourceManager::LS_Unload			()
 {
 	lua_close	(LSVM);
-	LSVM		= NULL;
+	LSVM		= nullptr;
 }
 
 BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
@@ -230,14 +230,14 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	LPCSTR		s_shader = undercorated;
 
 	// Access to template
-	C.BT				= NULL;
+	C.BT				= nullptr;
 	C.bEditor			= FALSE;
 	C.bDetail			= FALSE;
 
 	// Prepare
 	_ParseList			(C.L_textures,	s_textures	);
-	C.detail_texture	= NULL;
-	C.detail_scaler		= NULL;
+	C.detail_texture	= nullptr;
+	C.detail_scaler		= nullptr;
 
 	// Compile element	(LOD0 - HQ)
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal_hq",LUA_TFUNCTION))

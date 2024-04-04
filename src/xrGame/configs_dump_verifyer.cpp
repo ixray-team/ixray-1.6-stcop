@@ -42,7 +42,7 @@ static char* search_info_section(u8* buffer, u32 buffer_size)
 		--r_size;
 	}
 	while (r_size > 0);
-	return NULL;
+	return nullptr;
 }
 
 bool const configs_verifyer::verify_dsign(u8* data,
@@ -161,7 +161,7 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 			return dst_diff;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 LPCSTR configs_verifyer::get_diff(CInifile & received,
@@ -203,7 +203,7 @@ bool const configs_verifyer::verify(u8* data, u32 data_size, string256 & diff)
 
 	IReader		tmp_reader(data, data_size);
 	CInifile	tmp_ini(&tmp_reader);
-	CInifile	tmp_active_params(NULL, FALSE, FALSE, FALSE);
+	CInifile	tmp_active_params(nullptr, FALSE, FALSE, FALSE);
 	
 	string16	tmp_digit;
 	u32			ap_index = 1;

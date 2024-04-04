@@ -35,10 +35,10 @@ CArtefact::CArtefact()
 {
 	shedule.t_min				= 20;
 	shedule.t_max				= 50;
-	m_sParticlesName			= NULL;
-	m_pTrailLight				= NULL;
-	m_activationObj				= NULL;
-	m_detectorObj				= NULL;
+	m_sParticlesName			= nullptr;
+	m_pTrailLight				= nullptr;
+	m_activationObj				= nullptr;
+	m_detectorObj				= nullptr;
 	m_additional_weight			= 0.0f;
 }
 
@@ -130,8 +130,8 @@ void CArtefact::OnH_A_Chield()
 	}
 	if(m_detectorObj)
 	{
-		m_detectorObj->m_currPatrolPath = NULL;
-		m_detectorObj->m_currPatrolVertex = NULL;
+		m_detectorObj->m_currPatrolPath = nullptr;
+		m_detectorObj->m_currPatrolVertex = nullptr;
 	}
 }
 
@@ -249,7 +249,7 @@ void CArtefact::StartLights()
 	VERIFY(!physics_world()->Processing());
 	if(!m_bLightsEnabled)		return;
 
-	VERIFY						(m_pTrailLight == NULL);
+	VERIFY						(m_pTrailLight == nullptr);
 	m_pTrailLight				= ::Render->light_create();
 	bool const b_light_shadow	= !!pSettings->r_bool(cNameSect(), "idle_light_shadow");
 
@@ -424,7 +424,7 @@ void CArtefact::OnStateSwitch(u32 S)
 
 void CArtefact::PlayAnimIdle()
 {
-	PlayHUDMotion("anm_idle", FALSE, NULL, eIdle);
+	PlayHUDMotion("anm_idle", FALSE, nullptr, eIdle);
 }
 
 void CArtefact::OnAnimationEnd(u32 state)
@@ -461,7 +461,7 @@ void CArtefact::FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_forc
 
 bool CArtefact::CanBeInvisible()
 {
-	return (m_detectorObj!=NULL);
+	return (m_detectorObj!=nullptr);
 }
 
 void CArtefact::SwitchVisibility(bool b)
@@ -495,7 +495,7 @@ void CArtefact::CreateArtefactActivation()
 }
 
 SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A)
-:m_parent(A),m_currPatrolPath(NULL),m_currPatrolVertex(NULL),m_switchVisTime(0)
+:m_parent(A),m_currPatrolPath(nullptr),m_currPatrolVertex(nullptr),m_switchVisTime(0)
 {	
 }
 

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////
 SCharacterProfile::SCharacterProfile()
 {
-	m_CharacterId		= NULL;
+	m_CharacterId		= nullptr;
 	m_Rank				= NO_RANK;
 	m_Reputation		= NO_REPUTATION;
 }
@@ -32,13 +32,13 @@ SCharacterProfile::~SCharacterProfile()
 
 CCharacterInfo::CCharacterInfo()
 {
-	m_ProfileId = NULL;
-	m_SpecificCharacterId = NULL;
+	m_ProfileId = nullptr;
+	m_SpecificCharacterId = nullptr;
 
 #ifdef XRGAME_EXPORTS
 	m_CurrentRank.set(NO_RANK);
 	m_CurrentReputation.set(NO_REPUTATION);
-	m_StartDialog = NULL;
+	m_StartDialog = nullptr;
 	m_Sympathy = 0.0f;
 #endif
 }
@@ -52,7 +52,7 @@ CCharacterInfo::~CCharacterInfo()
 void CCharacterInfo::Load(shared_str id)
 {
 	m_ProfileId = id;
-	inherited_shared::load_shared(m_ProfileId, NULL);
+	inherited_shared::load_shared(m_ProfileId, nullptr);
 }
 
 #ifdef XRGAME_EXPORTS
@@ -90,12 +90,12 @@ void CCharacterInfo::load_shared	(LPCSTR)
 
 
 
-	LPCSTR spec_char = pXML->Read("specific_character", 0, NULL);
+	LPCSTR spec_char = pXML->Read("specific_character", 0, nullptr);
 	if(!spec_char)
 	{
-		data()->m_CharacterId	= NULL;
+		data()->m_CharacterId	= nullptr;
 		
-		LPCSTR char_class			= pXML->Read	("class",		0,	NULL);
+		LPCSTR char_class			= pXML->Read	("class",		0,	nullptr);
 
 		if(char_class)
 		{

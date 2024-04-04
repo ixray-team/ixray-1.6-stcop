@@ -4,7 +4,7 @@
 
 message_filter::message_filter()
 {
-	m_msg_log_file = NULL;
+	m_msg_log_file = nullptr;
 	m_last_string[0]	= 0;
 	m_strrepeat_count	= 0;
 }

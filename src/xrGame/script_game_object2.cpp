@@ -399,7 +399,7 @@ CHolderCustom* CScriptGameObject::get_current_holder()
 	if(actor)
 		return actor->Holder();
 	else
-		return NULL;
+		return nullptr;
 }
 
 void CScriptGameObject::set_ignore_monster_threshold	(float ignore_monster_threshold)

@@ -18,7 +18,7 @@ bool CxMemFile::Close()
 {
 	if ( (m_pBuffer) && (m_bFreeOnClose) ){
 		cxfree(m_pBuffer);//free(m_pBuffer);
-		m_pBuffer = NULL;
+		m_pBuffer = nullptr;
 		m_Size = 0;
 	}
 	return true;
@@ -46,9 +46,9 @@ BYTE* CxMemFile::GetBuffer(bool bDetachBuffer)
 //////////////////////////////////////////////////////////
 size_t CxMemFile::Read(void *buffer, size_t size, size_t count)
 {
-	if (buffer==NULL) return 0;
+	if (buffer==nullptr) return 0;
 
-	if (m_pBuffer==NULL) return 0;
+	if (m_pBuffer==nullptr) return 0;
 	if (m_Position >= (long)m_Size) return 0;
 
 	long nCount = (long)(count*size);
@@ -68,8 +68,8 @@ size_t CxMemFile::Read(void *buffer, size_t size, size_t count)
 //////////////////////////////////////////////////////////
 size_t CxMemFile::Write(const void *buffer, size_t size, size_t count)
 {
-	if (m_pBuffer==NULL) return 0;
-	if (buffer==NULL) return 0;
+	if (m_pBuffer==nullptr) return 0;
+	if (buffer==nullptr) return 0;
 
 	long nCount = (long)(count*size);
 	if (nCount == 0) return 0;
@@ -91,7 +91,7 @@ size_t CxMemFile::Write(const void *buffer, size_t size, size_t count)
 //////////////////////////////////////////////////////////
 bool CxMemFile::Seek(long offset, int origin)
 {
-	if (m_pBuffer==NULL) return false;
+	if (m_pBuffer==nullptr) return false;
 	long lNewPos = m_Position;
 
 	if (origin == SEEK_SET)		 lNewPos = offset;
@@ -107,37 +107,37 @@ bool CxMemFile::Seek(long offset, int origin)
 //////////////////////////////////////////////////////////
 long CxMemFile::Tell()
 {
-	if (m_pBuffer==NULL) return -1;
+	if (m_pBuffer==nullptr) return -1;
 	return m_Position;
 }
 //////////////////////////////////////////////////////////
 long CxMemFile::Size()
 {
-	if (m_pBuffer==NULL) return -1;
+	if (m_pBuffer==nullptr) return -1;
 	return m_Size;
 }
 //////////////////////////////////////////////////////////
 bool CxMemFile::Flush()
 {
-	if (m_pBuffer==NULL) return false;
+	if (m_pBuffer==nullptr) return false;
 	return true;
 }
 //////////////////////////////////////////////////////////
 bool CxMemFile::Eof()
 {
-	if (m_pBuffer==NULL) return true;
+	if (m_pBuffer==nullptr) return true;
 	return (m_Position >= (long)m_Size);
 }
 //////////////////////////////////////////////////////////
 long CxMemFile::Error()
 {
-	if (m_pBuffer==NULL) return -1;
+	if (m_pBuffer==nullptr) return -1;
 	return (m_Position > (long)m_Size);
 }
 //////////////////////////////////////////////////////////
 bool CxMemFile::PutC(unsigned char c)
 {
-	if (m_pBuffer==NULL) return false;
+	if (m_pBuffer==nullptr) return false;
 
 	if (m_Position >= m_Edge){
 		if (!Alloc(m_Position + 1)){
@@ -185,7 +185,7 @@ bool CxMemFile::Alloc(DWORD dwNewLen)
 		DWORD dwNewBufferSize = (DWORD)(((dwNewLen>>16)+1)<<16);
 
 		// allocate new buffer
-		if (m_pBuffer == NULL) m_pBuffer = (BYTE*)cxalloc(dwNewBufferSize);//malloc(dwNewBufferSize);
+		if (m_pBuffer == nullptr) m_pBuffer = (BYTE*)cxalloc(dwNewBufferSize);//malloc(dwNewBufferSize);
 		else	m_pBuffer = (BYTE*)cxrealloc(m_pBuffer, dwNewBufferSize);//realloc(m_pBuffer, dwNewBufferSize);
 		// I own this buffer now (caller knows nothing about it)
 		m_bFreeOnClose = true;

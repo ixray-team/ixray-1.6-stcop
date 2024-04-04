@@ -188,7 +188,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 		if (m_Def && m_RT_Flags.is(flRT_Playing))
 		{
 			ParticleManager()->Update(m_HandleEffect, m_HandleActionList, Device.fTimeDelta);
-			PAPI::Particle* particles = NULL;
+			PAPI::Particle* particles = nullptr;
 			u32 p_cnt = 0;
 			ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
 			if (!particles) return;

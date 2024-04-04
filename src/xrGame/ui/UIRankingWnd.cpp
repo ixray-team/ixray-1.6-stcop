@@ -33,7 +33,7 @@
 
 CUIRankingWnd::CUIRankingWnd()
 {
-	m_actor_ch_info				= NULL;
+	m_actor_ch_info				= nullptr;
 	m_previous_time				= Device.dwTimeGlobal;
 	m_delay						= 3000;
 	m_last_monster_icon_back	= "";

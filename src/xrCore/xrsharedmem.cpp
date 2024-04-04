@@ -3,7 +3,7 @@
 
 using namespace std;
 
-XRCORE_API	smem_container*	g_pSharedMemoryContainer	= NULL;
+XRCORE_API	smem_container*	g_pSharedMemoryContainer	= nullptr;
 
 smem_value*			smem_container::dock			(u32 dwCRC, u32 dwLength, void* ptr)
 {

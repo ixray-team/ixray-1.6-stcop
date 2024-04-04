@@ -288,11 +288,11 @@ IReader* open_chunk(FileHandle ptr, u32 ID)
 	{
 		res = ReadFile(ptr, &dwType, 4, &read_byte, 0);
 		if (read_byte == 0)
-			return NULL;
+			return nullptr;
 
 		res = ReadFile(ptr, &dwSize, 4, &read_byte, 0);
 		if (read_byte == 0)
-			return NULL;
+			return nullptr;
 
 		if ((dwType & (~CFS_CompressMark)) == ID)
 		{
@@ -609,8 +609,8 @@ IC bool pred_str_ff(const system_file& x, const system_file& y)
 bool ignore_path(const char* _path)
 {
 #ifdef IXR_WINDOWS
-	HANDLE h = CreateFile(Platform::ANSI_TO_TCHAR_U8(_path), 0, 0, NULL, OPEN_EXISTING,
-		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, NULL);
+	HANDLE h = CreateFile(Platform::ANSI_TO_TCHAR_U8(_path), 0, 0, nullptr, OPEN_EXISTING,
+		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, nullptr);
 
 	if (h!=INVALID_HANDLE_VALUE)
 	{

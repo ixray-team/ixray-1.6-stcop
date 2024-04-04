@@ -463,7 +463,7 @@ void CUIHudStatesWnd::UpdateZones()
 		if( zone_info.snd_time > zone_info.cur_period )
 		{
 			zone_info.snd_time = 0.0f;
-			HUD_SOUND_ITEM::PlaySound( zone_type->detect_snds, Fvector().set(0,0,0), NULL, true, false );
+			HUD_SOUND_ITEM::PlaySound( zone_type->detect_snds, Fvector().set(0,0,0), nullptr, true, false );
 		} 
 		else
 		{
@@ -593,7 +593,7 @@ void CUIHudStatesWnd::SwitchLA( bool state, ALife::EInfluenceType type )
 	}
 	else
 	{
-		m_indik[type]->SetColorAnimation( NULL, 0);//off
+		m_indik[type]->SetColorAnimation( nullptr, 0);//off
 		m_cur_state_LA[type] = false;
 	}
 }

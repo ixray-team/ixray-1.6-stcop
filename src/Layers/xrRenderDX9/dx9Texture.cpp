@@ -118,7 +118,7 @@ ID3DTexture2D* TW_LoadTextureFromTexture(ID3DTexture2D* t_from, int levels_2_ski
         R_CHK(T_dst->GetSurfaceLevel(L_dst, &S_dst));
 
         // Copy
-        R_CHK(RDevice->UpdateSurface(S_src, NULL, S_dst, NULL));
+        R_CHK(RDevice->UpdateSurface(S_src, nullptr, S_dst, nullptr));
 
         // Release surfaces
         _RELEASE(S_src);

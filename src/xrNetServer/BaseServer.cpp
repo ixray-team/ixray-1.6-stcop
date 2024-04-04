@@ -12,7 +12,7 @@ XRNETSERVER_API BOOL psNET_direct_connect = FALSE;
 
 // -----------------------------------------------------------------------------
 
-static	INetLog* pSvNetLog = NULL;
+static	INetLog* pSvNetLog = nullptr;
 
 // -----------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ BaseServer::BaseServer(CTimer* timer, BOOL	Dedicated)
 	, csMessagesQueue(MUTEX_PROFILE_ID(BaseServer::csMessagesQueue))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-	SV_Client = NULL;
+	SV_Client = nullptr;
 	device_timer = timer;
 	stats.clear();
 	stats.dwSendTime = TimeGlobal(device_timer);
@@ -44,7 +44,7 @@ BaseServer::~BaseServer()
 
 	BannedAddresses.clear();
 
-	SV_Client = NULL;
+	SV_Client = nullptr;
 	psNET_direct_connect = FALSE;
 
 	xr_delete(pSvNetLog);
@@ -54,12 +54,12 @@ BaseServer::~BaseServer()
 
 IClient* BaseServer::ID_to_client(ClientID ID, bool ScanAll)
 {
-	if (0 == ID.value())			return NULL;
+	if (0 == ID.value())			return nullptr;
 	IClient* ret_client = GetClientByID(ID);
 	if (ret_client || !ScanAll)
 		return ret_client;
 
-	return NULL;
+	return nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -184,7 +184,7 @@ IBannedClient*	BaseServer::GetBannedClient(const ip_address& Address)
 		if (pBClient->HAddr == Address)
 			return pBClient;
 	}
-	return NULL;
+	return nullptr;
 };
 
 void BaseServer::BanClient(IClient* C, u32 BanTime)

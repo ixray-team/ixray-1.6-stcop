@@ -42,7 +42,7 @@ ima_jpeg_error_exit (j_common_ptr cinfo)
 CxImageJPG::CxImageJPG(): CxImage(CXIMAGE_FORMAT_JPG)
 {
 #if CXIMAGEJPG_SUPPORT_EXIF
-	m_exif = NULL;
+	m_exif = nullptr;
 	memset(&m_exifinfo, 0, sizeof(EXIFINFO));
 #endif
 }
@@ -280,7 +280,7 @@ bool CxImageJPG::Decode(CxFile * hFile)
 ////////////////////////////////////////////////////////////////////////////////
 #if CXIMAGE_SUPPORT_ENCODE
 
-//jpeg_encode_callback_func g_jpeg_encode_cb = NULL;
+//jpeg_encode_callback_func g_jpeg_encode_cb = nullptr;
 fastdelegate::FastDelegate1< long > g_jpeg_encode_delegate;
 
 ////////////////////////////////////////////////////////////////////////////////

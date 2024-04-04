@@ -180,7 +180,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 #ifdef IXR_WINDOWS
 	int result = MessageBoxA
 	(
-		NULL, 
+		nullptr, 
 		message.c_str(), 
 		"Fatal Error",
 		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY
@@ -335,10 +335,10 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 	// firstly see if dbghelp.dll is around and has the function we need
 	// look next to the EXE first, as the one in System32 might be old 
 	// (e.g. Windows 2000)
-	HMODULE hDll	= NULL;
+	HMODULE hDll	= nullptr;
 	string_path		szDbgHelpPath;
 
-	if (GetModuleFileNameA( NULL, szDbgHelpPath, _MAX_PATH ))
+	if (GetModuleFileNameA( nullptr, szDbgHelpPath, _MAX_PATH ))
 	{
 		char *pSlash = strchr( szDbgHelpPath, '\\' );
 		if (pSlash)
@@ -348,13 +348,13 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 		}
 	}
 
-	if (hDll==NULL)
+	if (hDll==nullptr)
 	{
 		// load any version we can
 		hDll = ::LoadLibraryA( "DBGHELP.DLL" );
 	}
 
-	const char* szResult = NULL;
+	const char* szResult = nullptr;
 
 	if (hDll)
 	{
@@ -385,12 +385,12 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
             }
 
 			// create the file
-			HANDLE hFile = ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+			HANDLE hFile = ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
 			if (INVALID_HANDLE_VALUE==hFile)	
 			{
 				// try to place into current directory
 				MoveMemory	(szDumpPath,szDumpPath+5,strlen(szDumpPath));
-				hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+				hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
 			}
 			if (hFile!=INVALID_HANDLE_VALUE)
 			{
@@ -403,7 +403,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 				// write the dump
 				MINIDUMP_TYPE	dump_flags	= MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory );
 
-				BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, NULL, NULL );
+				BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
 				if (bOK)
 				{
 					xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
@@ -448,12 +448,12 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL,
+        nullptr,
         error_code,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         (LPSTR)&message,
         0,
-		NULL
+		nullptr
 	);
 
 	xr_sprintf	(buffer,buffer_size,"[error][%8d]    : %s",error_code,message);
@@ -516,7 +516,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		//SDL_ShowWindow(g_AppInfo.Window);
 		//SDL_MinimizeWindow(g_AppInfo.Window);
-		MessageBoxA			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+		MessageBoxA			(nullptr,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
 #ifndef _EDITOR
@@ -585,7 +585,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 #ifdef IXR_WINDOWS
 		MessageBoxA				(
-			/*GetTopWindow(NULL)*/ nullptr,
+			/*GetTopWindow(nullptr)*/ nullptr,
 			assertion_info,
 			"Fatal Error",
 			MB_OK|MB_ICONERROR|MB_SYSTEMMODAL

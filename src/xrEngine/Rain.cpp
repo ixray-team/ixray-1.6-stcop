@@ -226,8 +226,8 @@ void CEffect_Rain::p_destroy	()
 void CEffect_Rain::p_remove	(Particle* P, Particle* &LST)
 {
 	VERIFY		(P);
-	Particle*	prev		= P->prev;	P->prev = NULL;
-	Particle*	next		= P->next;	P->next	= NULL;
+	Particle*	prev		= P->prev;	P->prev = nullptr;
+	Particle*	next		= P->next;	P->next	= nullptr;
 	if (prev) prev->next	= next;
 	if (next) next->prev	= prev;
 	if (LST==P)	LST			= next;
@@ -259,7 +259,7 @@ int CEffect_Rain::p_size	(Particle* P)
 CEffect_Rain::Particle*	CEffect_Rain::p_allocate	()
 {
 	Particle*	P			= particle_idle;
-	if (0==P)				return NULL;
+	if (0==P)				return nullptr;
 	p_remove	(P,particle_idle);
 	p_insert	(P,particle_active);
 	return		P;

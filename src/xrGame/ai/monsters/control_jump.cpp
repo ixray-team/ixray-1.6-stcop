@@ -63,7 +63,7 @@ bool CControlJump::check_start_conditions()
 void CControlJump::remove_links	(CObject* object)
 {
 	if ( m_data.target_object == object )
-		m_data.target_object	=	NULL;
+		m_data.target_object	=	nullptr;
 }
 
 void CControlJump::activate()
@@ -549,8 +549,8 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 
 	Fvector collide_position;
 	collide::rq_results	temp_rq_results;
-	xr_vector<trajectory_pick> *	pass_jump_picks		=	NULL;
-	xr_vector<Fvector> *	pass_collide_tris	=	NULL;
+	xr_vector<trajectory_pick> *	pass_jump_picks		=	nullptr;
+	xr_vector<Fvector> *	pass_collide_tris	=	nullptr;
 #ifdef DEBUG		
 	xr_vector<trajectory_pick>	jump_picks;
 	pass_jump_picks		=	&jump_picks;

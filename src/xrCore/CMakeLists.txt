@@ -139,6 +139,10 @@ target_include_directories(xrCore PUBLIC ${CORE_DXMATH}/include/)
 target_include_directories(xrCore PUBLIC ${CORE_SDL3}build/native/include/)
 target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
 
+if (NOT WIN32)
+    target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC}/linux)
+endif()
+
 # Move precompiled header
 if (MSVC)
 	set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

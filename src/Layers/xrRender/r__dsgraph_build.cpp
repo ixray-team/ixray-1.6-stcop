@@ -255,7 +255,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2]) {
 		mapSorted_Node* N		= mapDistort.insertInAnyWay		(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= NULL;
+		N->val.pObject			= nullptr;
 		N->val.pVisual			= pVisual;
 		N->val.Matrix			= Fidentity;
 		N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
@@ -269,7 +269,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 	// strict-sorting selection
 	if (sh->flags.bStrictB2F) {
 		mapSorted_Node* N			= mapSorted.insertInAnyWay(distSQ);
-		N->val.pObject				= NULL;
+		N->val.pObject				= nullptr;
 		N->val.pVisual				= pVisual;
 		N->val.Matrix				= Fidentity;
 		N->val.se					= sh;
@@ -285,7 +285,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 	if (sh->flags.bEmissive) {
 		mapSorted_Node* N		= mapEmissive.insertInAnyWay	(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= NULL;
+		N->val.pObject			= nullptr;
 		N->val.pVisual			= pVisual;
 		N->val.Matrix			= Fidentity;
 		N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
@@ -293,7 +293,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 	if (sh->flags.bWmark	&& pmask_wmark)	{
 		mapSorted_Node* N		= mapWmark.insertInAnyWay		(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= NULL;
+		N->val.pObject			= nullptr;
 		N->val.pVisual			= pVisual;
 		N->val.Matrix			= Fidentity;
 		N->val.se				= sh;							
@@ -309,7 +309,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 	{
 		mapLandscape_Node* N = mapLandscape.insertInAnyWay(distSQ);
 		N->val.ssa = SSA;
-		N->val.pObject = NULL;
+		N->val.pObject = nullptr;
 		N->val.pVisual = pVisual;
 		N->val.Matrix = Fidentity;
 		N->val.se = sh;

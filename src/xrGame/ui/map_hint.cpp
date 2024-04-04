@@ -27,7 +27,7 @@ void CUIMapLocationHint::Init(CUIXml& uiXml, LPCSTR path)
 
 	xml_init.InitFrameWindow		(uiXml,path,0,this);
 
-	CUIStatic* S					= NULL;
+	CUIStatic* S					= nullptr;
 
 	S = init_static_field			(uiXml, path, "simple_text");
 	AttachChild						(S);

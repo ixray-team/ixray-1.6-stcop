@@ -12,7 +12,7 @@ BOOL			g_bSheduleInProgress	= FALSE	;
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize		()
 {
-	m_current_step_obj	= NULL;
+	m_current_step_obj	= nullptr;
 	m_processing_now	= false;
 }
 
@@ -134,7 +134,7 @@ bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_fou
 #ifdef DEBUG_SCHEDULER
 				Msg					("SCHEDULER: internal unregister [%s][%x][%s]",*Items[i].scheduled_name,O,"false");
 #endif // DEBUG_SCHEDULER
-				Items[i].Object	= NULL;
+				Items[i].Object	= nullptr;
 				return				(true);
 			}
 		}
@@ -145,7 +145,7 @@ bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_fou
 		Msg					("SCHEDULER: internal unregister (self unregistering) [%x][%s]",O,"false");
 #endif // DEBUG_SCHEDULER
 
-		m_current_step_obj = NULL;
+		m_current_step_obj = nullptr;
 		return true;
 	}
 
@@ -307,7 +307,7 @@ void CSheduler::ProcessStep			()
 		u32		Elapsed				= dwTime-T.dwTimeOfLastExecute;
 		bool	condition;
 		
-		condition					= (NULL==T.Object || !T.Object->shedule_Needed());
+		condition					= (nullptr==T.Object || !T.Object->shedule_Needed());
 		if (condition) {
 			// Erase element
 #ifdef DEBUG_SCHEDULER
@@ -357,7 +357,7 @@ void CSheduler::ProcessStep			()
 //				throw	;
 #endif // DEBUG
 //			}
-		m_current_step_obj = NULL;
+		m_current_step_obj = nullptr;
 
 #ifdef DEBUG
 //		u32	execTime				= eTimer.GetElapsed_ms		();

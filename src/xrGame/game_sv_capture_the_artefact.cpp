@@ -90,7 +90,7 @@ game_sv_CaptureTheArtefact::game_sv_CaptureTheArtefact()
 	m_dwSM_SwitchDelta = 0;
 	m_dwSM_LastSwitchTime = 0;
 	m_dwSM_CurViewEntity = 0;
-	m_pSM_CurViewEntity = NULL;
+	m_pSM_CurViewEntity = nullptr;
 }
 
 game_sv_CaptureTheArtefact::~game_sv_CaptureTheArtefact()
@@ -247,7 +247,7 @@ void game_sv_CaptureTheArtefact::SM_SwitchOnNextActivePlayer()
 	m_server->ForEachClientDo(tmp_functor);
 		
 	
-	CObject* pNewObject				= NULL;
+	CObject* pNewObject				= nullptr;
 	if (!tmp_functor.PPlayersCount)
 	{
 		xrClientData*	C			= (xrClientData*) m_server->GetServerClient();
@@ -578,7 +578,7 @@ void game_sv_CaptureTheArtefact::OnRoundStart()
 	
 	m_dwSM_LastSwitchTime = 0;
 	m_dwSM_CurViewEntity = 0;
-	m_pSM_CurViewEntity = NULL;
+	m_pSM_CurViewEntity = nullptr;
 	
 	//warmap times
 	m_dwWarmUp_CurTime				= 0;
@@ -745,7 +745,7 @@ void game_sv_CaptureTheArtefact::BalanceTeams()
 			s16 MaxTeam;
 			lowest_player_searcher()
 			{
-				LowestPlayer = NULL;
+				LowestPlayer = nullptr;
 				LowestScore = 32767;
 			}
 
@@ -859,7 +859,7 @@ void game_sv_CaptureTheArtefact::OnPlayerSelectTeam(NET_Packet& P, ClientID send
 }
 void game_sv_CaptureTheArtefact::OnPlayerChangeTeam(game_PlayerState * playerState, s8 team)
 {
-	VERIFY2(playerState, "game_PlayerState is NULL");
+	VERIFY2(playerState, "game_PlayerState is nullptr");
 	// search team with minimum players count
 	if (team == -1)
 	{
@@ -1872,7 +1872,7 @@ void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, x
 		if (!item)
 		{
 #ifndef MASTER_GOLD
-			Msg("! ERROR: item from slot %d is NULL", active_slot);
+			Msg("! ERROR: item from slot %d is nullptr", active_slot);
 #endif // #ifndef MASTER_GOLD
 			return;
 		}
@@ -1881,7 +1881,7 @@ void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, x
 		if (!server_item)
 		{
 #ifndef MASTER_GOLD
-			Msg("! ERROR: server entity is NULL, object ID[%d]", item->object_id());
+			Msg("! ERROR: server entity is nullptr, object ID[%d]", item->object_id());
 #endif // #ifndef MASTER_GOLD
 			return;
 		}
@@ -2130,7 +2130,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 	xrClientData* xrCData = actor->owner;
 	game_PlayerState* ps = xrCData->ps;
 	VERIFY2(xrCData, "client data for actor sv object not found");
-	VERIFY2(ps, "player state of client is NULL");
+	VERIFY2(ps, "player state of client is nullptr");
 	TeamsMap::iterator te = teams.end();
 	TeamsMap::iterator artefactOfTeam = teams.find(teamOfArtefact);
 	VERIFY2(artefactOfTeam != te,
@@ -2321,7 +2321,7 @@ void game_sv_CaptureTheArtefact::CheckForArtefactDelivering()
 		{
 			continue;
 		}
-		VERIFY2(xrCData->ps, "player state in client data is NULL");
+		VERIFY2(xrCData->ps, "player state in client data is nullptr");
 		ETeam artefactOfTeam = static_cast<ETeam>(xrCData->ps->team);
 		myTeamIter = teams.find(artefactOfTeam);
 		VERIFY2(myTeamIter != teams.end(),

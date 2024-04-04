@@ -44,7 +44,7 @@ void UIMapLegend::init_from_xml( CUIXml& xml, LPCSTR path )
 	AttachChild( m_list );
 	CUIXmlInit::InitScrollView( xml, "legend_list", 0, m_list );
 
-	UIMapLegendItem* list_item = NULL;
+	UIMapLegendItem* list_item = nullptr;
 
 	int cn = xml.GetNodesNum( "legend_list", 0, "item" );
 	XML_NODE* root2 = xml.NavigateToNode( "legend_list", 0 );

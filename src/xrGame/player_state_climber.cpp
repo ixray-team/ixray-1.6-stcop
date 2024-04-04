@@ -29,7 +29,7 @@ void player_state_climber::OnPlayerRankChanged()
 
 	u8 max_rank								= 0;
 	u8 max_count							= 0;
-	game_PlayerState* max_player_rank		= NULL;
+	game_PlayerState* max_player_rank		= nullptr;
 
 	for (game_cl_GameState::PLAYERS_MAP_CIT i = Game().players.begin(),
 		ie = Game().players.end(); i != ie; ++i)

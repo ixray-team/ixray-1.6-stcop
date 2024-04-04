@@ -253,8 +253,8 @@ void CEnvironment::OnDeviceDestroy()
 {
 	m_pRender->OnDeviceDestroy();
 	/*
-	tsky0->surface_set						(NULL);
-	tsky1->surface_set						(NULL);
+	tsky0->surface_set						(nullptr);
+	tsky1->surface_set						(nullptr);
 	
 	sh_2sky.destroy							();
 	sh_2geom.destroy						();

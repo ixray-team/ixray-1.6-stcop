@@ -26,7 +26,7 @@ void CRenderTarget::phase_hdao	()
        ID3D11ShaderResourceView* srv[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
        //ID3D11ShaderResourceView* new_srv[2]={rt_ssao_temp1->pTexture->m_pSRView,rt_ssao_temp2->pTexture->m_pSRView};
        RContext->OMGetRenderTargets( 8, oldrtv, &olddsv );
-       RContext->OMSetRenderTargets( 8, rtv, NULL );
+       RContext->OMSetRenderTargets( 8, rtv, nullptr );
        //RContext->CSSetShaderResources( 0, 2, new_srv );
        RContext->CSSetUnorderedAccessViews( 0, 1, &rt_ssao_temp->pUAView, &UAVInitialCounts );
 

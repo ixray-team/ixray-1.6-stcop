@@ -13,8 +13,8 @@
 PHDynamicData::PHDynamicData()
 {
 	numOfChilds=0;
-	//Childs=NULL;
-	p_parent_body_interpolation=NULL;
+	//Childs=nullptr;
+	p_parent_body_interpolation=nullptr;
 }
 
 PHDynamicData::~PHDynamicData()
@@ -26,7 +26,7 @@ PHDynamicData::~PHDynamicData()
 			Childs[i].Destroy();
 		}
 		Childs.clear();
-		//Childs=NULL;
+		//Childs=nullptr;
 		numOfChilds=0;
 	}
 }
@@ -35,8 +35,8 @@ PHDynamicData::PHDynamicData(unsigned int numOfchilds,dBodyID Body)
 {
 	numOfChilds=numOfchilds;
 	body=Body;
-	geom=NULL;
-	transform=NULL;
+	geom=nullptr;
+	transform=nullptr;
 	Childs.resize(numOfChilds);
 	ZeroTransform.identity();
 }
@@ -46,8 +46,8 @@ bool PHDynamicData::SetChild(unsigned int childNum,unsigned int numOfchilds,dBod
 
 	if(childNum<numOfChilds){
 		Childs[childNum].body=body;
-		Childs[childNum].geom=NULL;
-		Childs[childNum].transform=NULL;
+		Childs[childNum].geom=nullptr;
+		Childs[childNum].transform=nullptr;
 		Childs[childNum].numOfChilds=numOfchilds;
 		Childs[childNum].ZeroTransform.identity();
 		Childs[childNum].p_parent_body_interpolation=&body_interpolation;
@@ -57,11 +57,11 @@ bool PHDynamicData::SetChild(unsigned int childNum,unsigned int numOfchilds,dBod
 			//Childs[childNum].Childs=new PHDynamicData[numOfchilds];
 			Childs[childNum].Childs.resize(numOfchilds);
 		else   
-			//Childs[childNum].Childs=NULL;
+			//Childs[childNum].Childs=nullptr;
 			Childs[childNum].numOfChilds=0;
 
-		Childs[childNum].geom=NULL;
-		Childs[childNum].transform=NULL;
+		Childs[childNum].geom=nullptr;
+		Childs[childNum].transform=nullptr;
 		return true;
 	}
 	else return false;
@@ -127,7 +127,7 @@ PHDynamicData * PHDynamicData::GetChild(unsigned int ChildNum)
 {
 	if(ChildNum<numOfChilds)
 		return &Childs[ChildNum];
-	else return NULL;
+	else return nullptr;
 }
 
 
@@ -153,7 +153,7 @@ void PHDynamicData::Create(unsigned int numOfchilds, dBodyID Body)
 	ZeroTransform.identity();
 	numOfChilds=numOfchilds;
 	body=Body;
-	geom=NULL;
+	geom=nullptr;
 	Childs.resize(numOfChilds);
 	body_interpolation.SetBody(Body);
 }
@@ -165,7 +165,7 @@ void PHDynamicData::Destroy()
 			Childs[i].Destroy();
 
 		Childs.clear();
-		//Childs=NULL;
+		//Childs=nullptr;
 		numOfChilds=0;
 	}
 }

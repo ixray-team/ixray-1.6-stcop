@@ -33,7 +33,7 @@
 
 UITaskListWnd::UITaskListWnd()
 {
-	hint_wnd = NULL;
+	hint_wnd = nullptr;
 }
 
 UITaskListWnd::~UITaskListWnd()
@@ -88,7 +88,7 @@ void UITaskListWnd::OnMouseScroll( float iDirection )
 void UITaskListWnd::Show( bool status )
 {
 	inherited::Show( status );
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
 	if(status)
 		UpdateList();
 }
@@ -96,13 +96,13 @@ void UITaskListWnd::Show( bool status )
 void UITaskListWnd::OnFocusReceive()
 {
 	inherited::OnFocusReceive();
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
 }
 
 void UITaskListWnd::OnFocusLost()
 {
 	inherited::OnFocusLost();
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
 }
 
 void UITaskListWnd::Update()
@@ -177,7 +177,7 @@ void UITaskListWnd::UpdateCounter()
 
 UITaskListWndItem::UITaskListWndItem()
 {
-	m_task = NULL;
+	m_task = nullptr;
 	
 	m_color_states[0] = (u32)(-1);
 	m_color_states[1] = (u32)(-1);
@@ -225,7 +225,7 @@ void UITaskListWndItem::hide_hint()
 {
 	show_hint_can   = false;
 	show_hint       = false;
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, NULL );
+	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
 }
 
 void UITaskListWndItem::Update()

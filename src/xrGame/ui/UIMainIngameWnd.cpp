@@ -76,7 +76,7 @@ constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 #define				MAININGAME_XML				"maingame.xml"
 
 CUIMainIngameWnd::CUIMainIngameWnd()
-:/*m_pGrenade(NULL),m_pItem(NULL),*/m_pPickUpItem(NULL),m_pMPChatWnd(NULL),UIArtefactIcon(NULL),m_pMPLogWnd(NULL)
+:/*m_pGrenade(nullptr),m_pItem(nullptr),*/m_pPickUpItem(nullptr),m_pMPChatWnd(nullptr),UIArtefactIcon(nullptr),m_pMPLogWnd(nullptr)
 {
 	UIZoneMap					= new CUIZoneMap();
 }
@@ -182,7 +182,7 @@ void CUIMainIngameWnd::Init()
 //		UIPsyHealthIcon.Show	(false);
 	}
 */
-	UIWeaponJammedIcon			= UIHelper::CreateStatic(uiXml, "weapon_jammed_static", NULL);
+	UIWeaponJammedIcon			= UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
 	UIWeaponJammedIcon->Show	(false);
 
 //	xml_init.InitStatic			(uiXml, "radiation_static", 0, &UIRadiaitionIcon);
@@ -191,13 +191,13 @@ void CUIMainIngameWnd::Init()
 //	xml_init.InitStatic			(uiXml, "wound_static", 0, &UIWoundIcon);
 //	UIWoundIcon.Show			(false);
 
-	UIInvincibleIcon			= UIHelper::CreateStatic(uiXml, "invincible_static", NULL);
+	UIInvincibleIcon			= UIHelper::CreateStatic(uiXml, "invincible_static", nullptr);
 	UIInvincibleIcon->Show		(false);
 
 
 	if ( (GameID() == eGameIDArtefactHunt) || (GameID() == eGameIDCaptureTheArtefact) )
 	{
-		UIArtefactIcon			= UIHelper::CreateStatic(uiXml, "artefact_static", NULL);
+		UIArtefactIcon			= UIHelper::CreateStatic(uiXml, "artefact_static", nullptr);
 		UIArtefactIcon->Show		(false);
 	}
 	
@@ -386,7 +386,7 @@ void CUIMainIngameWnd::Update()
 	{
 		//this is a bad style... It left for backward compatibility
 		//need to move this logic into UIGameCTA class
-		//bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
+		//bool b_Artefact = (nullptr != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
 		game_cl_CaptureTheArtefact* cta_game = static_cast<game_cl_CaptureTheArtefact*>(&Game());
 		R_ASSERT(cta_game);
 		R_ASSERT(lookat_player);
@@ -414,11 +414,11 @@ void CUIMainIngameWnd::RenderQuickInfos()
 	if (!pActor)
 		return;
 
-	static CGameObject *pObject			= NULL;
+	static CGameObject *pObject			= nullptr;
 	LPCSTR actor_action					= pActor->GetDefaultActionForObject();
-	UIStaticQuickHelp->Show				(NULL!=actor_action);
+	UIStaticQuickHelp->Show				(nullptr!=actor_action);
 
-	if(NULL!=actor_action)
+	if(nullptr!=actor_action)
 	{
 		if(_stricmp(actor_action,UIStaticQuickHelp->GetText()))
 			UIStaticQuickHelp->SetTextST				(actor_action);
@@ -522,7 +522,7 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
 	int staticsCount = node->GetNodesNum("", 0, flashingIconNodeName);
 
 	CUIXmlInit xml_init;
-	CUIStatic *pIcon = NULL;
+	CUIStatic *pIcon = nullptr;
 	// Пробегаемся по всем нодам и инициализируем из них статики
 	for (int i = 0; i < staticsCount; ++i)
 	{
@@ -654,7 +654,7 @@ void CUIMainIngameWnd::OnSectorChanged(int sector)
 
 void CUIMainIngameWnd::reset_ui()
 {
-	m_pPickUpItem					= NULL;
+	m_pPickUpItem					= nullptr;
 	UIMotionIcon->ResetVisibility	();
 	if ( m_ui_hud_states )
 	{

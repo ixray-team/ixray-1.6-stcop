@@ -70,7 +70,7 @@ void CUICDkey::OnFocusLost()
 	if(m_bInputFocus)
 	{
 		m_bInputFocus = false;
-		GetMessageTarget()->SendMessage(this,EDIT_TEXT_COMMIT,NULL);
+		GetMessageTarget()->SendMessage(this,EDIT_TEXT_COMMIT,nullptr);
 	}
 	SaveOptValue();
 }
@@ -200,7 +200,7 @@ void CUIMPPlayerName::OnFocusLost()
 	if ( m_bInputFocus )
 	{
 		m_bInputFocus = false;
-		GetMessageTarget()->SendMessage(this, EDIT_TEXT_COMMIT, NULL);
+		GetMessageTarget()->SendMessage(this, EDIT_TEXT_COMMIT, nullptr);
 	}
 	string64 name;
 	xr_strcpy( name, GetText() );

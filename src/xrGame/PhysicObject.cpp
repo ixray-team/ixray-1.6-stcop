@@ -41,7 +41,7 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT				(po);
 	m_type					= EPOType(po->type);
 	m_mass					= po->mass;
-	m_collision_hit_callback= NULL;
+	m_collision_hit_callback= nullptr;
 	m_anim_blend			= 0;
 	inherited::net_Spawn	( DC );
 
@@ -209,7 +209,7 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract *D)
 	if(Visual()&&smart_cast<IKinematics*>(Visual()))
 	{
 		//		CSE_PHSkeleton	*po	= smart_cast<CSE_PHSkeleton*>(D);
-		IKinematicsAnimated*	PKinematicsAnimated=NULL;
+		IKinematicsAnimated*	PKinematicsAnimated=nullptr;
 		R_ASSERT			(Visual()&&smart_cast<IKinematics*>(Visual()));
 		PKinematicsAnimated	=smart_cast<IKinematicsAnimated*>(Visual());
 		if(PKinematicsAnimated)
@@ -559,7 +559,7 @@ void CPhysicObject::net_Export			(NET_Packet& P)
 		return;
 	}
 
-	CPHSynchronize* pSyncObj				= NULL;
+	CPHSynchronize* pSyncObj				= nullptr;
 	SPHNetState								State;
 	pSyncObj = this->PHGetSyncItem		(0);
 

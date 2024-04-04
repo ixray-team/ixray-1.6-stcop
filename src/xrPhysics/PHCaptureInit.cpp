@@ -65,9 +65,9 @@ static CBoneInstance* get_capture_bone(CPHCharacter* a_character)
 }
 
 CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_object, NearestToPointCallback* cb /*=0*/) :
-	m_joint(NULL),
-	m_ajoint(NULL),
-	m_body(NULL),
+	m_joint(nullptr),
+	m_ajoint(nullptr),
+	m_body(nullptr),
 	m_taget_object(a_taget_object),
 	m_character(a_character),
 	b_disabled(false),
@@ -101,9 +101,9 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_o
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_object, u16 a_taget_element) :
-	m_joint(NULL),
-	m_ajoint(NULL),
-	m_body(NULL),
+	m_joint(nullptr),
+	m_ajoint(nullptr),
+	m_body(nullptr),
 	b_disabled(false),
 	b_character_feedback(false),
 	m_taget_object(a_taget_object),

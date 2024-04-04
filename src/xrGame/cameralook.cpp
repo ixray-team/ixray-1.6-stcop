@@ -101,10 +101,10 @@ ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
 {
 	collide::rq_result RQ;
-	RQ.set(NULL, range, -1);
+	RQ.set(nullptr, range, -1);
 	collide::rq_results RQR;
 	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
-	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, NULL, ignore);
+	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);
 	return RQ;
 }
 

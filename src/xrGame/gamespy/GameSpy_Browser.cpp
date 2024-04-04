@@ -21,9 +21,9 @@ CGameSpy_Browser::CGameSpy_Browser()
 #endif // PROFILE_CRITICAL_SECTIONS
 
 {
-	m_pQR2 = NULL;
-	m_pGSBrowser = NULL;
-	m_pServerList = NULL;
+	m_pQR2 = nullptr;
+	m_pGSBrowser = nullptr;
+	m_pServerList = nullptr;
 
 	LoadGameSpy();
 	InitInternalData();
@@ -58,7 +58,7 @@ CGameSpy_Browser::~CGameSpy_Browser()
 	if (m_pGSBrowser)
 	{		
 		xrGS_ServerBrowserFree(m_pGSBrowser);
-		m_pGSBrowser = NULL;
+		m_pGSBrowser = nullptr;
 	}
 };
 
@@ -125,7 +125,7 @@ bool	CGameSpy_Browser::Init(CServerList* pServerList)
 
 void	CGameSpy_Browser::Clear()
 {
-	m_pServerList = NULL;
+	m_pServerList = nullptr;
 };
 
 struct RefreshData

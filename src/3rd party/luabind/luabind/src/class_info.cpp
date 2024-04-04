@@ -41,7 +41,7 @@ namespace luabind {
 	LUABIND_API class_info get_class_info(argument const& o)
 	{
 		lua_State* L = o.interpreter();
-		detail::class_rep * crep = NULL;
+		detail::class_rep * crep = nullptr;
 
 		o.push(L);
 		if(detail::is_class_rep(L, -1)) {

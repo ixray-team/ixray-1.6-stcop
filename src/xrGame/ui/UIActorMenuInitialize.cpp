@@ -259,16 +259,16 @@ void CUIActorMenu::Construct()
 
 	stored_root							= uiXml.GetLocalRoot	();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode	("action_sounds",0));
-	::Sound->create						(sounds[eSndOpen],		uiXml.Read("snd_open",			0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eSndClose],		uiXml.Read("snd_close",			0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eItemToSlot],	uiXml.Read("snd_item_to_slot",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eItemToBelt],	uiXml.Read("snd_item_to_belt",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eItemToRuck],	uiXml.Read("snd_item_to_ruck",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eProperties],	uiXml.Read("snd_properties",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eDropItem],		uiXml.Read("snd_drop_item",		0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eAttachAddon],	uiXml.Read("snd_attach_addon",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eDetachAddon],	uiXml.Read("snd_detach_addon",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eItemUse],		uiXml.Read("snd_item_use",		0,	NULL),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eSndOpen],		uiXml.Read("snd_open",			0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eSndClose],		uiXml.Read("snd_close",			0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eItemToSlot],	uiXml.Read("snd_item_to_slot",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eItemToBelt],	uiXml.Read("snd_item_to_belt",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eItemToRuck],	uiXml.Read("snd_item_to_ruck",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eProperties],	uiXml.Read("snd_properties",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eDropItem],		uiXml.Read("snd_drop_item",		0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eAttachAddon],	uiXml.Read("snd_attach_addon",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eDetachAddon],	uiXml.Read("snd_detach_addon",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eItemUse],		uiXml.Read("snd_item_use",		0,	nullptr),st_Effect,sg_SourceType);
 	uiXml.SetLocalRoot					(stored_root);
 
 	m_ItemInfo							= new CUIItemInfo();
@@ -276,7 +276,7 @@ void CUIActorMenu::Construct()
 //-	AttachChild							(m_ItemInfo);
 	m_ItemInfo->InitItemInfo			("actor_menu_item.xml");
 
-	m_upgrade_info						= NULL;
+	m_upgrade_info						= nullptr;
 	if ( ai().get_alife() )
 	{
 		m_upgrade_info						= new UIInvUpgradeInfo();
@@ -353,14 +353,14 @@ void CUIActorMenu::Construct()
 	m_allowed_drops[iQuickSlot].push_back(iActorBag);
 	m_allowed_drops[iQuickSlot].push_back(iActorTrade);
 
-	m_upgrade_selected				= NULL;
-	SetCurrentItem					(NULL);
-	SetActor						(NULL);
-	SetPartner						(NULL);
-	SetInvBox						(NULL);
+	m_upgrade_selected				= nullptr;
+	SetCurrentItem					(nullptr);
+	SetActor						(nullptr);
+	SetPartner						(nullptr);
+	SetInvBox						(nullptr);
 
-	m_actor_trade					= NULL;
-	m_partner_trade					= NULL;
+	m_actor_trade					= nullptr;
+	m_partner_trade					= nullptr;
 	m_repair_mode					= false;
 	m_item_info_view				= false;
 	m_highlight_clear				= true;

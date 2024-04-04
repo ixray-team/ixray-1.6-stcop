@@ -41,19 +41,19 @@
 
 game_cl_Deathmatch::game_cl_Deathmatch()
 {
-	pCurBuyMenu		= NULL;
+	pCurBuyMenu		= nullptr;
 	
 	PresetItemsTeam0.clear();
 	PlayerDefItems.clear();
-	pCurPresetItems	= NULL;;
+	pCurPresetItems	= nullptr;;
 
-	pCurSkinMenu	= NULL;
+	pCurSkinMenu	= nullptr;
 
 	m_bBuyEnabled	= TRUE;
 
 	m_bSkinSelected	= FALSE;	
 
-	m_game_ui		= NULL;
+	m_game_ui		= nullptr;
 
 	m_iCurrentPlayersMoney = 0;
 	Actor_Spawn_Effect = "";
@@ -91,7 +91,7 @@ void game_cl_Deathmatch::SetGameUI(CUIGameCustom* uigame)
 CUIGameCustom* game_cl_Deathmatch::createGameUI()
 {
 	if (g_dedicated_server)
-		return NULL;
+		return nullptr;
 
 	CLASS_ID clsid			= CLSID_GAME_UI_DEATHMATCH;
 	m_game_ui				= smart_cast<CUIGameDM*> ( NEW_INSTANCE ( clsid ) );
@@ -451,13 +451,13 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 	//fake	
 	if(m_game_ui)
 	{
-		m_game_ui->SetTimeMsgCaption		(NULL);
-		m_game_ui->SetRoundResultCaption	(NULL);
-		m_game_ui->SetSpectatorMsgCaption	(NULL);
-		m_game_ui->SetPressJumpMsgCaption	(NULL);
-		m_game_ui->SetPressBuyMsgCaption	(NULL);
-		m_game_ui->SetForceRespawnTimeCaption(NULL);
-		m_game_ui->SetWarmUpCaption			(NULL);
+		m_game_ui->SetTimeMsgCaption		(nullptr);
+		m_game_ui->SetRoundResultCaption	(nullptr);
+		m_game_ui->SetSpectatorMsgCaption	(nullptr);
+		m_game_ui->SetPressJumpMsgCaption	(nullptr);
+		m_game_ui->SetPressBuyMsgCaption	(nullptr);
+		m_game_ui->SetForceRespawnTimeCaption(nullptr);
+		m_game_ui->SetWarmUpCaption			(nullptr);
 	};
 //	if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
 //		CurrentGameUI()->UIMainIngameWnd->ZoneCounter().SetText("");
@@ -510,8 +510,8 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					m_game_ui->ChangeTotalMoneyIndicator(MoneyStr);
 				}				
 
-				m_game_ui->SetPressJumpMsgCaption(NULL);
-				m_game_ui->SetPressBuyMsgCaption(NULL);				
+				m_game_ui->SetPressJumpMsgCaption(nullptr);
+				m_game_ui->SetPressBuyMsgCaption(nullptr);				
 
 				if (m_cl_dwWarmUp_Time > Level().timeServer())
 				{
@@ -893,8 +893,8 @@ void game_cl_Deathmatch::OnVoteStop				(NET_Packet& P)
 	inherited::OnVoteStop(P);
 	if(m_game_ui)
 	{
-		m_game_ui->SetVoteMessage(NULL);
-		m_game_ui->SetVoteTimeResultMsg(NULL);
+		m_game_ui->SetVoteMessage(nullptr);
+		m_game_ui->SetVoteTimeResultMsg(nullptr);
 	}
 };
 
@@ -903,8 +903,8 @@ void game_cl_Deathmatch::OnVoteEnd				(NET_Packet& P)
 	inherited::OnVoteEnd(P);
 	if(m_game_ui)
 	{
-		m_game_ui->SetVoteMessage(NULL);
-		m_game_ui->SetVoteTimeResultMsg(NULL);
+		m_game_ui->SetVoteMessage(nullptr);
+		m_game_ui->SetVoteTimeResultMsg(nullptr);
 	}
 };
 
@@ -990,7 +990,7 @@ void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, Fvector& pos)
 //	CParticlesPlayer::MakeXFORM(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
 
 	// установить particles
-	CParticlesObject* ps = NULL;
+	CParticlesObject* ps = nullptr;
 
 	ps = CParticlesObject::Create(EffName,TRUE);
 

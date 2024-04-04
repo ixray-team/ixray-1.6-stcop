@@ -24,7 +24,7 @@ UIPlayerItem::UIPlayerItem(ETeam team, ClientID const & clientId, UITeamState* t
 	myClientId = clientId;
 	m_prevTeam = team;
 	
-	m_player_node_root = NULL;
+	m_player_node_root = nullptr;
 }
 
 UIPlayerItem::~UIPlayerItem()

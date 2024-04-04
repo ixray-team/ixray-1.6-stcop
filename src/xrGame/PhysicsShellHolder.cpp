@@ -143,7 +143,7 @@ void CPhysicsShellHolder::create_physic_shell	()
 
 void CPhysicsShellHolder::init			()
 {
-	m_pPhysicsShell				=	NULL		;
+	m_pPhysicsShell				=	nullptr		;
 	b_sheduled					=	false		;
 }
 bool	 CPhysicsShellHolder::has_shell_collision_place( const CPhysicsShellHolder* obj ) const

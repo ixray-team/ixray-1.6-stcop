@@ -75,7 +75,7 @@ void CPHCollisionDamageReceiver::Clear()
 	//for(;e!=i;++i)
 	//{
 	//	CODEGeom* og= sh->PPhysicsShell()->get_GeomByID(i->first);
-	//	if(og)og->set_obj_contact_cb(NULL);
+	//	if(og)og->set_obj_contact_cb(nullptr);
 	//}
 		m_controled_bones.clear();
 }

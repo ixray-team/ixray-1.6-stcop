@@ -138,7 +138,7 @@ BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
 			//CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,TRUE));
 			//CHK_DX		(RDevice->SetScissorRect(&R));
 		} else {
-			RCache.set_Scissor(NULL);
+			RCache.set_Scissor(nullptr);
 		}
 	}
 

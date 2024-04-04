@@ -69,10 +69,10 @@ bool Opcode_Err (const char* msg, ...)
 using namespace Opcode;
 
 
-static OPCODE_AbortHandler g_fnAbortHandler = NULL;
+static OPCODE_AbortHandler g_fnAbortHandler = nullptr;
 
 
-bool Opcode::InitOpcode(OPCODE_AbortHandler fnAbortHandler/*=NULL*/)
+bool Opcode::InitOpcode(OPCODE_AbortHandler fnAbortHandler/*=nullptr*/)
 {
 	//Log("// Initializing OPCODE\n\n");
 //	LogAPIInfo();
@@ -104,7 +104,7 @@ void ModuleDetach()
 /*extern */
 void OPCODE_NORETURN IceAbort()
 {
-	if (g_fnAbortHandler != NULL)
+	if (g_fnAbortHandler != nullptr)
 	{
 		g_fnAbortHandler();
 	}

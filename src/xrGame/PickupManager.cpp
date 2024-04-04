@@ -107,7 +107,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 			VERIFY(!fis_zero(RD.dir.square_magnitude()));
 
 			RQR.r_clear();
-			Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, NULL, item);
+			Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, nullptr, item);
 		}
 	}
 	return !bOverlaped;

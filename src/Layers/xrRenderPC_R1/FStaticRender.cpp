@@ -166,7 +166,7 @@ void					CRender::model_Delete			(IRender_DetailModel* & F)
 		CDetail*	D	= (CDetail*)F;
 		D->Unload		();
 		xr_delete		(D);
-		F				= NULL;
+		F				= nullptr;
 	}
 }
 IRenderVisual*			CRender::model_CreatePE			(LPCSTR name)	
@@ -264,7 +264,7 @@ void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
 void					CRender::set_Object				(IRenderable*		O )	
 {
 	VERIFY					(g_bRendering);
-	val_pObject				= O;		// NULL is OK, trust me :)
+	val_pObject				= O;		// nullptr is OK, trust me :)
 	if (val_pObject)		{
 		VERIFY(dynamic_cast<CObject*>(O)||dynamic_cast<CPS_Instance*>(O));
 		if (O->renderable.pROS) { VERIFY(dynamic_cast<CROS_impl*>(O->renderable.pROS)); }
@@ -876,11 +876,11 @@ HRESULT	CRender::shader_compile			(
 	if (FAILED(_result))
 	{
 		includer					Includer;
-		LPD3DBLOB					pShaderBuf = NULL;
-		LPD3DBLOB					pErrorBuf = NULL;
+		LPD3DBLOB					pShaderBuf = nullptr;
+		LPD3DBLOB					pErrorBuf = nullptr;
 
 		_result = D3DCompile(pSrcData, SrcDataLen,
-				"",//NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
+				"",//nullptr, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
 				defines, &Includer, pFunctionName,
 				pTarget,
 				Flags, 0,

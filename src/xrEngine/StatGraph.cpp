@@ -76,9 +76,9 @@ void CStatGraph::OnRender()
 	};
 
 	u32			dwOffsetTri = 0, dwOffsetLine = 0,dwCount;
-	FVF::TL0uv* pv_Tri_start	= NULL;
+	FVF::TL0uv* pv_Tri_start	= nullptr;
 	FVF::TL0uv* pv_Tri;
-	FVF::TL0uv* pv_Line_start	= NULL;
+	FVF::TL0uv* pv_Line_start	= nullptr;
 	FVF::TL0uv* pv_Line;
 
 	if (TriElem)

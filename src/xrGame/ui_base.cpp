@@ -183,7 +183,7 @@ void ui_core::PopScissor()
 	m_Scissors.pop		();
 	
 	if(m_Scissors.empty())
-		UIRender->SetScissor(NULL);
+		UIRender->SetScissor(nullptr);
 	else{
 		const Frect& top= m_Scissors.top();
 		Irect tgt;
@@ -203,7 +203,7 @@ ui_core::ui_core()
 		m_pUICursor					= new CUICursor();
 	}else
 	{
-		m_pUICursor					= NULL;
+		m_pUICursor					= nullptr;
 	}
 	m_bPostprocess				= false;
 	
@@ -268,7 +268,7 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 	string_path				str;
 	if(!is_widescreen()){
 		xr_sprintf(str, "%s", fn);
-		if ( NULL==strext(fn) ) xr_strcat(str, ".xml");
+		if ( nullptr==strext(fn) ) xr_strcat(str, ".xml");
 	}else{
 
 		string_path			str_;
@@ -280,10 +280,10 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 		}else
 			xr_sprintf				(str, "%s_16", fn);
 
-		if(NULL==FS.exist(str_, "$game_config$", "ui\\" , str) )
+		if(nullptr==FS.exist(str_, "$game_config$", "ui\\" , str) )
 		{
 			xr_sprintf(str, "%s", fn);
-			if ( NULL==strext(fn) ) xr_strcat(str, ".xml");
+			if ( nullptr==strext(fn) ) xr_strcat(str, ".xml");
 		}
 #ifdef _DEBUG
 		Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);

@@ -2,7 +2,7 @@
 #include "IClient.h"
 #include "BaseServer.h"
 
-IClient::IClient(CTimer* timer): stats(timer), server(NULL)
+IClient::IClient(CTimer* timer): stats(timer), server(nullptr)
 {
 	dwTime_LastUpdate = 0;
 	flags.bLocal = FALSE;

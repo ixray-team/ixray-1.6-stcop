@@ -44,7 +44,7 @@ void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
     nSWI.reserved[2]	= lods().r_u32();
     nSWI.reserved[3]	= lods().r_u32();
     nSWI.count			= lods().r_u32();
-	VERIFY				(NULL==nSWI.sw);
+	VERIFY				(nullptr==nSWI.sw);
     nSWI.sw				= xr_alloc<FSlideWindow>(nSWI.count);
 	lods().r			(nSWI.sw,nSWI.count*sizeof(FSlideWindow));
 
@@ -60,7 +60,7 @@ void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
 		xSWI->reserved[2]	= def().r_u32();
 		xSWI->reserved[3]	= def().r_u32();
 		xSWI->count			= def().r_u32();
-		VERIFY				(NULL==xSWI->sw);
+		VERIFY				(nullptr==xSWI->sw);
 		xSWI->sw			= xr_alloc<FSlideWindow>(xSWI->count);
 		def().r				(xSWI->sw,xSWI->count*sizeof(FSlideWindow));
 	}

@@ -31,7 +31,7 @@ UITeamState::UITeamState(ETeam teamId, UITeamPanels *teamPanels)
 	AttachChild(myTeamHeader);
 	AttachChild(myScrollList);*/
 
-	mainUiXml = NULL;
+	mainUiXml = nullptr;
 	m_teamPanels = teamPanels;
 }
 
@@ -234,11 +234,11 @@ bool UITeamState::UpdatePlayer(ClientID const & clientId)
 		game_cl_GameState::PLAYERS_MAP::iterator pi = playersMap.find(clientId);
 		VERIFY2(pi != playersMap.end(), "player not found in Game().player list, but in UI list it exist");
 		game_PlayerState *ps = pi->second;
-		// it can be NULL... and player will be removed by player item window
+		// it can be nullptr... and player will be removed by player item window
 		VERIFY(ps);
 		/*if (!ps)
 		{
-			Msg("--- Player state of ClientID = 0x%08x is NULL", clientId.value());
+			Msg("--- Player state of ClientID = 0x%08x is nullptr", clientId.value());
 			return true;
 		}*/
 		if (Game().IsPlayerInTeam(ps, myTeam) == false)

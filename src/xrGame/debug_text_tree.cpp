@@ -128,7 +128,7 @@ text_tree*   text_tree::find_node (const xr_string& s1)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 text_tree&   text_tree::find_or_add (const xr_string& s1)

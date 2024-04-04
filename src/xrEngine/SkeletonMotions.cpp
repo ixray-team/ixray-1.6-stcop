@@ -421,7 +421,7 @@ const motion_marks::interval* motion_marks::pick_mark(const float& t) const
 		if(I.first>t)
 			break;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool motion_marks::is_mark_between	(float const &t0, float const &t1) const

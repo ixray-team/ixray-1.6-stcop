@@ -8,8 +8,8 @@
 
 CTAGameClCaptionsManager::CTAGameClCaptionsManager()
 {
-	parent_game_ui				=	NULL;
-	parent_game_object			=	NULL;
+	parent_game_ui				=	nullptr;
+	parent_game_object			=	nullptr;
 	m_press_fire2spect_showed	=	false;
 	m_press_jump2payspaw_showed	=	false;
 	m_can_show_payspawn			=	false;

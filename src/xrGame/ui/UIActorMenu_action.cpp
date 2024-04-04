@@ -68,12 +68,12 @@ void CUIActorMenu::OnDragItemOnTrash(CUIDragItem* item, bool b_receive)
 	if(b_receive && !CurrentIItem()->IsQuestItem())
 		item->SetCustomDraw(new CUITrashIcon());
 	else
-		item->SetCustomDraw(NULL);
+		item->SetCustomDraw(nullptr);
 }
 
 bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 {
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	CUIDragDropListEx*	new_owner		= CUIDragDropListEx::m_drag_item->BackList();
 	if ( old_owner==new_owner || !old_owner || !new_owner )
@@ -101,7 +101,7 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 				return true;
 			}
 			SendEvent_Item_Drop		(CurrentIItem(), m_pActorInvOwner->object_id());
-			SetCurrentItem			(NULL);
+			SetCurrentItem			(nullptr);
 		}break;
 	case iActorSlot:
 		{
@@ -154,13 +154,13 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 
 bool CUIActorMenu::OnItemStartDrag(CUICellItem* itm)
 {
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	return false; //default behaviour
 }
 
 bool CUIActorMenu::OnItemDbClick(CUICellItem* itm)
 {
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	EDDListType t_old					= GetListType(old_owner);
 
@@ -245,7 +245,7 @@ bool CUIActorMenu::OnItemDbClick(CUICellItem* itm)
 bool CUIActorMenu::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem		(itm);
-	InfoCurItem			(NULL);
+	InfoCurItem			(nullptr);
 	m_item_info_view	= false;
 	return				false;
 }
@@ -253,7 +253,7 @@ bool CUIActorMenu::OnItemSelected(CUICellItem* itm)
 bool CUIActorMenu::OnItemRButtonClick(CUICellItem* itm)
 {
 	SetCurrentItem( itm );
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	ActivatePropertiesBox();
 	m_item_info_view = false;
 	return false;
@@ -261,7 +261,7 @@ bool CUIActorMenu::OnItemRButtonClick(CUICellItem* itm)
 
 bool CUIActorMenu::OnItemFocusReceive(CUICellItem* itm)
 {
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	m_item_info_view = true;
 
 	itm->m_selected = true;
@@ -275,7 +275,7 @@ bool CUIActorMenu::OnItemFocusLost(CUICellItem* itm)
 	{
 		itm->m_selected = false;
 	}
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	clear_highlight_lists();
 
 	return true;
@@ -313,7 +313,7 @@ bool CUIActorMenu::OnMouseAction( float x, float y, EUIMessages mouse_action )
 
 bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	InfoCurItem( NULL );
+	InfoCurItem( nullptr );
 	if ( is_binded(kDROP, dik) )
 	{
 		if ( WINDOW_KEY_PRESSED == keyboard_action && CurrentIItem() && !CurrentIItem()->IsQuestItem()
@@ -321,7 +321,7 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		{
 
 			SendEvent_Item_Drop		(CurrentIItem(), m_pActorInvOwner->object_id());
-			SetCurrentItem			(NULL);
+			SetCurrentItem			(nullptr);
 		}
 		return true;
 	}

@@ -3,7 +3,7 @@
 
 CGameSpy_ATLAS::CGameSpy_ATLAS	()
 {
-	m_interface			= NULL;
+	m_interface			= nullptr;
 	LoadGameSpyATLAS	();
 	Init				();
 }
@@ -79,7 +79,7 @@ u32 CGameSpy_ATLAS::WSLoginProfile(shared_str const & email,
 			nick.c_str(),
 			email.c_str(),
 			password.c_str(),
-			NULL,
+			nullptr,
 			callback,
 			userData
 		)

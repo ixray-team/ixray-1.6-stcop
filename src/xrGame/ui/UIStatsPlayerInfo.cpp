@@ -71,7 +71,7 @@ void CUIStatsPlayerInfo::Update(){
 	for (u32 i = 0; i<m_fields.size(); i++)
 		m_fields[i]->TextItemControl()->SetText(GetInfoByID(*field_info[i].name));
 
-	m_pPlayerInfo = NULL;
+	m_pPlayerInfo = nullptr;
 }
 
 void CUIStatsPlayerInfo::AddField(float len, CGameFont* pF, u32 text_col, bool icon)

@@ -12,10 +12,10 @@ CPHGeometryOwner::CPHGeometryOwner()
 	VERIFY( ph_world );
 	//contact_callback=ContactShotMark;//ph_world->default_contact_shotmark();
 	contact_callback=ph_world->default_contact_shotmark();
-	object_contact_callback=NULL;
+	object_contact_callback=nullptr;
 	ul_material=GMLibrary().GetMaterialIdx("objects\\small_box");
-	m_group=NULL;
-	m_phys_ref_object=NULL;
+	m_group=nullptr;
+	m_phys_ref_object=nullptr;
 }
 
 CPHGeometryOwner::~CPHGeometryOwner()
@@ -309,7 +309,7 @@ void CPHGeometryOwner::remove_ObjectContactCallback(ObjectContactCallbackFun* ca
 
 	if(object_contact_callback==callback)
 	{
-		object_contact_callback= NULL;
+		object_contact_callback= nullptr;
 	}
 	if(!b_builded)return;
 	{
@@ -409,7 +409,7 @@ void	CPHGeometryOwner::	DestroyGroupSpace()
 {
 	if(m_group){
 		dGeomDestroy((dGeomID)m_group);
-		m_group=NULL;
+		m_group=nullptr;
 	}
 }
 struct SFindPred
@@ -434,7 +434,7 @@ CODEGeom* CPHGeometryOwner::GeomByBoneID(u16 bone_id)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

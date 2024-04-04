@@ -2,7 +2,7 @@
 #include "xrCompress.h"
 
 xrCompressor::xrCompressor()
-:fs_pack_writer(NULL),bFast(false),files_list(NULL),folders_list(NULL),bStoreFiles(false),pPackHeader(NULL),config_ltx(NULL)
+:fs_pack_writer(nullptr),bFast(false),files_list(nullptr),folders_list(nullptr),bStoreFiles(false),pPackHeader(nullptr),config_ltx(nullptr)
 {
 	bytesSRC		= 0;
 	bytesDST		= 0;

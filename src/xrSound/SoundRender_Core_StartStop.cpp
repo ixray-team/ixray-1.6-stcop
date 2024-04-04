@@ -40,7 +40,7 @@ void	CSoundRender_Core::i_stop		(CSoundRender_Emitter* E)
 	R_ASSERT			(E);
 	R_ASSERT			(E == E->target->get_emitter());
 	E->target->stop		();
-	E->target			= NULL;
+	E->target			= nullptr;
 }
 
 void	CSoundRender_Core::i_rewind		(CSoundRender_Emitter* E)

@@ -112,14 +112,14 @@ bool Script::bfListLevelVars(CLuaVirtualMachine *tpLuaVirtualMachine, int iStack
 //	Msg			("  Nups			: %d",l_tDebugInfo.nups);
 //	Msg			("  Line defined	: %d",l_tDebugInfo.linedefined);
 //	i			= 1;
-//	while (NULL != (name = lua_getlocal(tpLuaVirtualMachine, &l_tDebugInfo, i++))) {
+//	while (nullptr != (name = lua_getlocal(tpLuaVirtualMachine, &l_tDebugInfo, i++))) {
 //		Msg		("    local   %d %s", i-1, name);
 //		lua_pop	(tpLuaVirtualMachine, 1);  /* remove variable value */
 //	}
 //
 //	lua_getinfo	(tpLuaVirtualMachine, "f", &l_tDebugInfo);  /* retrieves function */
 //	i = 1;
-//	while (NULL != (name = lua_getupvalue(tpLuaVirtualMachine, -1, i++))) {
+//	while (nullptr != (name = lua_getupvalue(tpLuaVirtualMachine, -1, i++))) {
 //		Msg		("    upvalue %d %s", i-1, name);
 //		lua_pop	(tpLuaVirtualMachine, 1);  /* remove upvalue value */
 //	}

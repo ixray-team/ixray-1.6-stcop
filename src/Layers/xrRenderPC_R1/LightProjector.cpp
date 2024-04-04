@@ -306,7 +306,7 @@ void CLightProjector::calculate	()
 
 		// Actual rendering (pass0, temp2real)
 		RCache.set_RT				(RT->pRT);
-		RCache.set_ZB				(NULL);
+		RCache.set_ZB				(nullptr);
 		RCache.set_Shader			(sh_BlurTR	);
 		RCache.set_Geometry			(geom_Blur	);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);

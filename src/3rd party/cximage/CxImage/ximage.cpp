@@ -15,8 +15,8 @@
 void CxImage::Startup(DWORD imagetype)
 {
 	//init pointers
-	pDib = pSelection = pAlpha = NULL;
-	ppLayers = ppFrames = NULL;
+	pDib = pSelection = pAlpha = nullptr;
+	ppLayers = ppFrames = nullptr;
 	//init structures
 	memset(&head,0,sizeof(BITMAPINFOHEADER));
 	memset(&info,0,sizeof(CXIMAGEINFO));
@@ -51,7 +51,7 @@ CxImage::CxImage(DWORD imagetype)
 bool CxImage::Destroy()
 {
 	//free this only if it's valid and it's not a ghost
-	if (info.pGhost==NULL){
+	if (info.pGhost==nullptr){
 		if (ppLayers) { 
 			for(long n=0; n<info.nNumLayers;n++){ delete ppLayers[n]; }
 			delete [] ppLayers; ppLayers=0; info.nNumLayers = 0;
@@ -66,10 +66,10 @@ bool CxImage::Destroy()
 ////////////////////////////////////////////////////////////////////////////////
 bool CxImage::DestroyFrames()
 {
-	if (info.pGhost==NULL) {
+	if (info.pGhost==nullptr) {
 		if (ppFrames) {
 			for (long n=0; n<info.nNumFrames; n++) { delete ppFrames[n]; }
-			delete [] ppFrames; ppFrames = NULL; info.nNumFrames = 0;
+			delete [] ppFrames; ppFrames = nullptr; info.nNumFrames = 0;
 		}
 		return true;
 	}
@@ -147,7 +147,7 @@ void CxImage::Copy(const CxImage &src, bool copypixels, bool copyselection, bool
  */
 void CxImage::CopyInfo(const CxImage &src)
 {
-	if (pDib==NULL) memcpy(&info,&src.info,sizeof(CXIMAGEINFO));
+	if (pDib==nullptr) memcpy(&info,&src.info,sizeof(CXIMAGEINFO));
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -165,18 +165,18 @@ CxImage& CxImage::operator = (const CxImage& isrc)
  * \param dwHeight: height
  * \param wBpp: bit per pixel, can be 1, 4, 8, 24
  * \param imagetype: (optional) set the image format, see ENUM_CXIMAGE_FORMATS
- * \return pointer to the internal pDib object; NULL if an error occurs.
+ * \return pointer to the internal pDib object; nullptr if an error occurs.
  */
 void* CxImage::Create(DWORD dwWidth, DWORD dwHeight, DWORD wBpp, DWORD imagetype)
 {
 	// destroy the existing image (if any)
 	if (!Destroy())
-		return NULL;
+		return nullptr;
 
 	// prevent further actions if width or height are not vaild <Balabasnia>
 	if ((dwWidth == 0) || (dwHeight == 0)){
 		strcpy(info.szLastError,"CxImage::Create : width and height must be greater than zero");
-		return NULL;
+		return nullptr;
 	}
 
     // Make sure bits per pixel is valid
@@ -190,7 +190,7 @@ void* CxImage::Create(DWORD dwWidth, DWORD dwHeight, DWORD wBpp, DWORD imagetype
 		((dwWidth*dwHeight*wBpp)/wBpp) != (dwWidth*dwHeight))
 	{
 		strcpy(info.szLastError,"CXIMAGE_MAX_MEMORY exceeded");
-		return NULL;
+		return nullptr;
 	}
 
 	// set the correct bpp value
@@ -224,7 +224,7 @@ void* CxImage::Create(DWORD dwWidth, DWORD dwHeight, DWORD wBpp, DWORD imagetype
 	pDib = cxalloc(GetSize());//malloc(GetSize()); // alloc memory block to store our bitmap
     if (!pDib){
 		strcpy(info.szLastError,"CxImage::Create can't allocate memory");
-		return NULL;
+		return nullptr;
 	}
 
 	//clear the palette
@@ -260,13 +260,13 @@ BYTE* CxImage::GetBits(DWORD row)
 			if (row<(DWORD)head.biHeight){
 				return ((BYTE*)pDib + *(DWORD*)pDib + GetPaletteSize() + (info.dwEffWidth * row));
 			} else {
-				return NULL;
+				return nullptr;
 			}
 		} else {
 			return ((BYTE*)pDib + *(DWORD*)pDib + GetPaletteSize());
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -324,13 +324,13 @@ bool CxImage::Transfer(CxImage &from, bool bTransferFrames /*=true*/)
 
 	memset(&from.head,0,sizeof(BITMAPINFOHEADER));
 	memset(&from.info,0,sizeof(CXIMAGEINFO));
-	from.pDib = from.pSelection = from.pAlpha = NULL;
-	from.ppLayers = NULL;
+	from.pDib = from.pSelection = from.pAlpha = nullptr;
+	from.ppLayers = nullptr;
 
 	if (bTransferFrames){
 		DestroyFrames();
 		ppFrames = from.ppFrames;
-		from.ppFrames = NULL;
+		from.ppFrames = nullptr;
 	}
 
 	return true;
@@ -433,7 +433,7 @@ void CxImage::Bitfield2RGB(BYTE *src, DWORD redmask, DWORD greenmask, DWORD blue
  */
 bool CxImage::CreateFromArray(BYTE* pArray,DWORD dwWidth,DWORD dwHeight,DWORD dwBitsperpixel, DWORD dwBytesperline, bool bFlipImage)
 {
-	if (pArray==NULL) return false;
+	if (pArray==nullptr) return false;
 	if (!((dwBitsperpixel==1)||(dwBitsperpixel==4)||(dwBitsperpixel==8)||
 		(dwBitsperpixel==24)||(dwBitsperpixel==32))) return false;
 
@@ -472,7 +472,7 @@ bool CxImage::CreateFromArray(BYTE* pArray,DWORD dwWidth,DWORD dwHeight,DWORD dw
  */
 bool CxImage::CreateFromMatrix(BYTE** ppMatrix,DWORD dwWidth,DWORD dwHeight,DWORD dwBitsperpixel, DWORD dwBytesperline, bool bFlipImage)
 {
-	if (ppMatrix==NULL) return false;
+	if (ppMatrix==nullptr) return false;
 	if (!((dwBitsperpixel==1)||(dwBitsperpixel==4)||(dwBitsperpixel==8)||
 		(dwBitsperpixel==24)||(dwBitsperpixel==32))) return false;
 

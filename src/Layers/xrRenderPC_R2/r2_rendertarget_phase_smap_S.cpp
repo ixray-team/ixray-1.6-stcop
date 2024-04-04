@@ -3,17 +3,17 @@
 void	CRenderTarget::phase_smap_spot_clear()
 {
 	/*
-	if (RImplementation.b_HW_smap)		u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_d_depth->pRT);
-	else								u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_d_ZB);
-	CHK_DX								(RDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
+	if (RImplementation.b_HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_d_depth->pRT);
+	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_d_ZB);
+	CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 	*/
 }
 
 void	CRenderTarget::phase_smap_spot		(light* L)
 {
 	// Targets + viewport
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_depth->pRT);
-	else								u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_ZB);
+	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pRT);
+	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
 	D3DVIEWPORT9 VP					=	{L->X.S.posX,L->X.S.posY,L->X.S.size,L->X.S.size,0,1 };
 	CHK_DX								(RDevice->SetViewport(&VP));
 
@@ -23,7 +23,7 @@ void	CRenderTarget::phase_smap_spot		(light* L)
 	// no transparency
 	#pragma todo("can optimize for multi-lights covering more than say 50%...")
 	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	(FALSE);
-	CHK_DX								(RDevice->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
+	CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 }
 
 void	CRenderTarget::phase_smap_spot_tsh	(light* L)
@@ -32,7 +32,7 @@ void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 	RCache.set_ColorWriteEnable		();
 	if (IRender_Light::OMNIPART == L->flags.type)	{
 		// omni-part
-		CHK_DX							(RDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0xffffffff,	1.0f, 0L));
+		CHK_DX							(RDevice->Clear( 0L, nullptr, D3DCLEAR_TARGET,	0xffffffff,	1.0f, 0L));
 	} else {
 		// real-spot
 		// Select color-mask

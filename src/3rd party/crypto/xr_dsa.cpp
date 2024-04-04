@@ -52,7 +52,7 @@ bool		xr_dsa::verify				(public_key_t const & pub_key,
 {
 	BN_bin2bn(pub_key.m_value, sizeof(pub_key.m_value), m_dsa->pub_key);
 
-	BIGNUM*	tmp_bn			= NULL;
+	BIGNUM*	tmp_bn			= nullptr;
 	BN_hex2bn				(&tmp_bn, dsign.c_str());
 	int	sig_size			= tmp_bn->top * sizeof(unsigned long);
 	u8* sig_buff			= static_cast<u8*>(_alloca(sig_size));
@@ -116,7 +116,7 @@ void xr_dsa::generate_params()
 		&counter,
 		&long_ret,
 		dsa_genparams_cb,
-		NULL
+		nullptr
 	);
 	DSA_generate_key	(tmp_dsa_params);
 
@@ -169,7 +169,7 @@ void xr_dsa::generate_params()
 	BN_bin2bn				(sig, siglen, &bn_sign);
 	shared_str sig_str		= BN_bn2hex(&bn_sign);
 	
-	BIGNUM*	bn_rsing		= NULL;
+	BIGNUM*	bn_rsing		= nullptr;
 	ZeroMemory				(sig, siglen);
 	BN_hex2bn				(&bn_rsing, sig_str.c_str());
 	BN_bn2bin				(bn_rsing, sig);

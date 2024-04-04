@@ -171,7 +171,7 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 //	if(m_pActorInvOwner->inventory().CanPutInRuck(iitem))
 	{
 		CUIDragDropListEx*	old_owner		= itm->OwnerList();
-		CUIDragDropListEx*	new_owner		= NULL;
+		CUIDragDropListEx*	new_owner		= nullptr;
 		EDDListType			old_owner_type	= GetListType(old_owner);
 		if(old_owner_type==iQuickSlot)
 			return false;
@@ -213,7 +213,7 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= NULL;
+	CUIDragDropListEx*	new_owner		= nullptr;
 	
 	if(b_use_cursor_pos)
 	{
@@ -236,7 +236,7 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= NULL;
+	CUIDragDropListEx*	new_owner		= nullptr;
 
 	if(b_use_cursor_pos)
 	{
@@ -458,7 +458,7 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 			CallMessageBoxOK( "trade_dont_make" );
 		}
 	}
-	SetCurrentItem					( NULL );
+	SetCurrentItem					( nullptr );
 
 	UpdateItemsPlace				();
 }
@@ -500,7 +500,7 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 			CallMessageBoxOK( "trade_dont_make" );
 		}
 	}
-	SetCurrentItem					( NULL );
+	SetCurrentItem					( nullptr );
 
 	UpdateItemsPlace				();
 }

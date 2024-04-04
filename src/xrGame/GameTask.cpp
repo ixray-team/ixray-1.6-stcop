@@ -25,12 +25,12 @@ CGameTask::CGameTask()
 	m_ReceiveTime			= 0;
 	m_FinishTime			= 0;
 	m_timer_finish			= 0;
-	m_Title					= NULL;
-	m_Description			= NULL;
-	m_ID					= NULL;
+	m_Title					= nullptr;
+	m_Description			= nullptr;
+	m_ID					= nullptr;
 	m_task_type				= eTaskTypeDummy;
 	m_task_state			= eTaskStateDummy;
-	m_linked_map_location	= NULL;
+	m_linked_map_location	= nullptr;
 	m_read					= false;
 }
 
@@ -118,7 +118,7 @@ void CGameTask::RemoveMapLocations(bool notify)
 		Level().MapManager().RemoveMapLocation( m_linked_map_location );
 
 	m_map_location			= 0;
-	m_linked_map_location	= NULL;
+	m_linked_map_location	= nullptr;
 	m_map_object_id			= u16(-1);
 }
 

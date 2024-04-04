@@ -11,7 +11,7 @@ CPHSoundPlayer::CPHSoundPlayer(CPhysicsShellHolder* obj)
 CPHSoundPlayer::~CPHSoundPlayer()
 {
 	m_sound.stop();
-	m_object=NULL;
+	m_object=nullptr;
 }
 
 void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair,const Fvector& pos)

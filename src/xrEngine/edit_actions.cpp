@@ -14,7 +14,7 @@
 namespace text_editor
 {
 
-base::base():	m_previous_action( NULL )
+base::base():	m_previous_action( nullptr )
 {
 }
 

@@ -70,7 +70,7 @@ bool CUIInventoryCellItem::IsHelperOrHasHelperChild()
 
 CUIDragItem* CUIInventoryCellItem::CreateDragItem()
 {
-	return IsHelperOrHasHelperChild() ? NULL : inherited::CreateDragItem();
+	return IsHelperOrHasHelperChild() ? nullptr : inherited::CreateDragItem();
 }
 
 bool CUIInventoryCellItem::IsHelper ()
@@ -140,7 +140,7 @@ bool CUIAmmoCellItem::EqualTo(CUICellItem* itm)
 
 CUIDragItem* CUIAmmoCellItem::CreateDragItem()
 {
-	return IsHelper() ? NULL : inherited::CreateDragItem();
+	return IsHelper() ? nullptr : inherited::CreateDragItem();
 }
 
 u32 CUIAmmoCellItem::CalculateAmmoCount()
@@ -179,9 +179,9 @@ void CUIAmmoCellItem::UpdateItemText()
 CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm)
 :inherited(itm)
 {
-	m_addons[eSilencer]		= NULL;
-	m_addons[eScope]		= NULL;
-	m_addons[eLauncher]		= NULL;
+	m_addons[eSilencer]		= nullptr;
+	m_addons[eScope]		= nullptr;
+	m_addons[eLauncher]		= nullptr;
 
 	if(itm->SilencerAttachable())
 		m_addon_offset[eSilencer].set(object()->GetSilencerX(), object()->GetSilencerY());
@@ -228,7 +228,7 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t)
 void CUIWeaponCellItem::DestroyIcon(eAddonType t)
 {
 	DetachChild		(m_addons[t]);
-	m_addons[t]		= NULL;
+	m_addons[t]		= nullptr;
 }
 
 CUIStatic* CUIWeaponCellItem::GetIcon(eAddonType t)
@@ -400,7 +400,7 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_o
 CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 {
 	CUIDragItem* i		= inherited::CreateDragItem();
-	CUIStatic* s		= NULL;
+	CUIStatic* s		= nullptr;
 
 	if(GetIcon(eSilencer))
 	{

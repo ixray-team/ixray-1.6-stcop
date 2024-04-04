@@ -543,7 +543,7 @@ IInputReceiver* CInput::CurrentIR()
 	if(cbStack.size())
 		return cbStack.back();
 	else
-		return NULL;
+		return nullptr;
 }
 
 void CInput::unacquire()

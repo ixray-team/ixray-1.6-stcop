@@ -4,7 +4,7 @@
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 
-STRING_TABLE_DATA* CStringTable::pData = NULL;
+STRING_TABLE_DATA* CStringTable::pData = nullptr;
 BOOL CStringTable::m_bWriteErrorsToLog = FALSE;
 
 CStringTable::CStringTable	()
@@ -19,18 +19,18 @@ void CStringTable::Destroy	()
 
 void CStringTable::rescan()
 {
-	if(NULL != pData)	return;
+	if(nullptr != pData)	return;
 	Destroy				();
 	Init				();
 }
 
 void CStringTable::Init		()
 {
-	if(NULL != pData) return;
+	if(nullptr != pData) return;
     
 	pData = new STRING_TABLE_DATA();
 	
-	//имя языка, если не задано (NULL), то первый <text> в <string> в XML
+	//имя языка, если не задано (nullptr), то первый <text> в <string> в XML
 	pData->m_sLanguage	= pSettings->r_string("string_table", "language");
 
 	FS_FileSet fset;
@@ -74,11 +74,11 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 
 	for(int i=0; i<string_num; ++i)
 	{
-		LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", NULL);
+		LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
 
 		VERIFY3(pData->m_StringTable.find(string_name) == pData->m_StringTable.end(), "duplicate string table id", string_name);
 
-		LPCSTR string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  NULL);
+		LPCSTR string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[string table] '%s' no translation in '%s'", string_name, pData->m_sLanguage.c_str() );

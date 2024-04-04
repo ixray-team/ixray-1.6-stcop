@@ -78,7 +78,7 @@ void CRenderTarget::phase_downsamp	()
 	//IDirect3DSurface9 *source, *dest;
 	//rt_Position->pSurface->GetSurfaceLevel(0, &source);
 	//rt_half_depth->pSurface->GetSurfaceLevel(0, &dest);
-	//RDevice->StretchRect(source, NULL, dest, NULL, D3DTEXF_POINT);
+	//RDevice->StretchRect(source, nullptr, dest, nullptr, D3DTEXF_POINT);
 
 	//Fvector2	p0,p1;
 	u32			Offset = 0;
