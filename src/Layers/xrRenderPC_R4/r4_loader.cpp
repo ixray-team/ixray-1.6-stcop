@@ -422,7 +422,6 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 
 void CRender::Load3DFluid()
 {
-	//if (strstr(Core.Params,"-no_volumetric_fog"))
 	if (!RImplementation.o.volumetricfog)
 		return;
 

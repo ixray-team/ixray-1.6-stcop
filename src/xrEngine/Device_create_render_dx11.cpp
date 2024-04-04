@@ -98,7 +98,7 @@ bool UpdateBuffersD3D11()
 
 void CreateRDoc() 
 {
-	if (strstr(Core.Params, "-renderdoc")) 
+	if (Core.ParamsData.test(ECoreParams::renderdoc))
 	{
 		if (HMODULE mod = LoadLibraryA("renderdoc.dll")) 
 		{
@@ -139,7 +139,7 @@ bool CreateD3D11()
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	UINT createDeviceFlags = 0;
-	bool bHasDebugRender = strstr(Core.Params, "-dxdebug");
+	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
 
 	//if (g_pGPU != nullptr && g_pGPU->IsAMD)
 	//{
@@ -261,7 +261,7 @@ void DestroyD3D11()
 		RenderTexture = nullptr;
 	}
 
-	bool bHasDebugRender = strstr(Core.Params, "-dxdebug");
+	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
 	if (!bHasDebugRender && g_pGPU != nullptr && !g_pGPU->IsAMD)
 	{
 		g_pGPU->Destroy();

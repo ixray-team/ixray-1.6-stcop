@@ -395,7 +395,7 @@ void	_LogCallback(LPCSTR string)
 
 void CStats::OnDeviceCreate			()
 {
-	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
+	g_bDisableRedText = Core.ParamsData.test(ECoreParams::xclsx);
 
 	if (!g_dedicated_server) {
 		pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);

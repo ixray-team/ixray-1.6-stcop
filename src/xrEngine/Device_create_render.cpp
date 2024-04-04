@@ -389,7 +389,7 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 	SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
 
 	// Adjust the window position to keep it within the bounds of the primary display
-	const bool bCentered = strstr(Core.Params, "-no_center_screen") == nullptr;
+	const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
 	if (bCentered)
 	{
 		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);

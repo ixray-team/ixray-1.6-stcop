@@ -68,24 +68,21 @@ void					CRender::create					()
 
 
 	// distortion
-	u32		v_dev	= CAP_VERSION(Caps.raster_major, Caps.raster_minor);
-	u32		v_need	= CAP_VERSION(1,4);
-	if ( v_dev >= v_need )						o.distortion = TRUE;
-	else										o.distortion = FALSE;
-	if (strstr(Core.Params,"-nodistort"))		o.distortion = FALSE;
-	Msg				("* distortion: %s, dev(%d),need(%d)",o.distortion?"used":"unavailable",v_dev,v_need);
+	u32 v_dev	= CAP_VERSION(Caps.raster_major, Caps.raster_minor);
+	u32 v_need	= CAP_VERSION(1,4);
+
+	o.distortion = v_dev >= v_need && !Core.ParamsData.test(ECoreParams::nodistort);
+	Msg("* distortion: %s, dev(%d),need(%d)", o.distortion ? "used" : "unavailable", v_dev, v_need);
 
 	//	Color mapping
-	if ( v_dev >= v_need )						o.color_mapping = TRUE;
-	else										o.color_mapping = FALSE;
-	if (strstr(Core.Params,"-nocolormap"))		o.color_mapping = FALSE;
-	Msg				("* color_mapping: %s, dev(%d),need(%d)",o.color_mapping?"used":"unavailable",v_dev,v_need);
+	o.color_mapping = v_dev >= v_need && !Core.ParamsData.test(ECoreParams::nocolormap);
+	Msg("* color_mapping: %s, dev(%d),need(%d)", o.color_mapping ? "used" : "unavailable", v_dev, v_need);
 
 	m_skinning					= -1;
 
 	// disasm
-	o.disasm					= (strstr(Core.Params,"-disasm"))?		TRUE	:FALSE	;
-	o.forceskinw				= (strstr(Core.Params,"-skinw"))?		TRUE	:FALSE	;
+	o.disasm					= Core.ParamsData.test(ECoreParams::disasm);
+	o.forceskinw				= Core.ParamsData.test(ECoreParams::skinw);
 	o.no_detail_textures		= !ps_r2_ls_flags.test(R1FLAG_DETAIL_TEXTURES);
 	c_ldynamic_props			= "L_dynamic_props";
 

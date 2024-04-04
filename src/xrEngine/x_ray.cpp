@@ -146,8 +146,6 @@ void InitSettings	()
 
 void InitInput		()
 {
-	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
-
 	pInput						= new CInput		();
 }
 void destroyInput	()

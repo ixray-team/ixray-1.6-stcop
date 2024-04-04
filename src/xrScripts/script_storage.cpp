@@ -230,9 +230,8 @@ void CScriptStorage::print_stack() {
 		//lua_pop(L, 1);
 	}
 
-	if (!strstr(Core.Params, "-use_callstack")) {
+	if (!Core.ParamsData.test(ECoreParams::use_callstack))
 		return;
-	}
 
 	lua_Debug LuaDebugInfo;
 	const char* LocalVarName;
@@ -519,28 +518,19 @@ luabind::object CScriptStorage::name_space(LPCSTR namespace_name)
 	}
 }
 
-struct raii_guard {
+struct raii_guard 
+{
 	int m_error_code;
 	LPCSTR const& m_error_description;
 	raii_guard(const raii_guard& other) = delete;
 	raii_guard& operator=(const raii_guard& other) = delete;
 	raii_guard	(int error_code, LPCSTR const& m_description) : m_error_code(error_code), m_error_description(m_description) {}
-	~raii_guard	()
+	~raii_guard()
 	{
-		{
-#ifdef DEBUG
-			static bool const break_on_assert	= !!strstr(Core.Params,"-break_on_assert");
-#else // #ifdef DEBUG
-			static bool const break_on_assert	= true;
-#endif // #ifdef DEBUG
-			if ( !m_error_code  )
-				return;
+		if (!m_error_code)
+			return;
 
-			if ( break_on_assert )
-				R_ASSERT2		( !m_error_code, m_error_description );
-			else
-				Msg				( "! SCRIPT ERROR: %s", m_error_description );
-		}
+		R_ASSERT2(!m_error_code, m_error_description);
 	}
 }; // struct raii_guard
 

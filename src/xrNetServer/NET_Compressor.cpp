@@ -181,28 +181,6 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
 	if(g_net_compressor_gather_stats && b_compress_packet)
 		_p->compressed_size		+= compressed_size;
 
-    #if 1//def DEBUG
-//	if( strstr(Core.Params,"-dump_traffic")) 
-//	{
-//		fwrite(dest,compressed_size,1,CompressedTrafficDump);
-//		fflush(CompressedTrafficDump);
-//	}	
-    #endif // DEBUG
-
-    #ifdef DEBUG
-/*
-	BYTE			*src_back = (BYTE*)_alloca(count);
-	Decompress		(src_back,count,dest,compressed_size);
-	BYTE			*I = src_back;
-	BYTE			*E = src_back + count;
-	BYTE			*J = src;
-	for ( ; I != E; ++I, ++J)
-		VERIFY		(*I == *J);
-
-*/
-//	CS.Leave		();
-    #endif // DEBUG
-
 	return (u16(compressed_size));
 	
 #endif // if !NET_USE_COMPRESSION

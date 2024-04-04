@@ -131,7 +131,7 @@ void IGame_Persistent::OnGameStart()
 	Msg("* Game Loading Timer: Started!");
 //	LoadTitle("st_prefetching_objects");
 	LoadTitle();
-	if(!strstr(Core.Params,"-noprefetch"))
+	if(!Core.ParamsData.test(ECoreParams::noprefetch))
 		Prefetch();
 #endif
 }

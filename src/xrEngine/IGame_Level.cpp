@@ -30,13 +30,14 @@ IGame_Level::IGame_Level	()
 
 IGame_Level::~IGame_Level()
 {
-	if(strstr(Core.Params,"-nes_texture_storing") )
+	if (Core.ParamsData.test(ECoreParams::nes_texture_storing))
 		Device.m_pRender->ResourcesStoreNecessaryTextures();
-	xr_delete					( pLevel		);
+
+	xr_delete(pLevel);
 
 	// Render-level unload
-	Render->level_Unload		();
-	xr_delete					(m_pCameras);
+	Render->level_Unload();
+	xr_delete(m_pCameras);
 	// Unregister
 	if (!g_dedicated_server)
 	{
@@ -52,12 +53,11 @@ IGame_Level::~IGame_Level()
 	Device.DumpResourcesMemoryUsage();
 #endif // DEBUG
 
-	u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
-	if (Device.m_pRender) 
-		Device.m_pRender->ResourcesGetMemoryUsage(m_base,c_base,m_lmaps,c_lmaps);
+	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
+	if (Device.m_pRender)
+		Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
-	Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
-
+	Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
 }
 
 void IGame_Level::net_Stop			()

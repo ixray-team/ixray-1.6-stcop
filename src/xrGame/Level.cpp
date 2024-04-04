@@ -83,7 +83,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	,DemoCS(MUTEX_PROFILE_ID(DemoCS))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-	g_bDebugEvents				= strstr(Core.Params,"-debug_ge")?TRUE:FALSE;
+	g_bDebugEvents				= Core.ParamsData.test(ECoreParams::debug_ge);
 
 	Server						= NULL;
 

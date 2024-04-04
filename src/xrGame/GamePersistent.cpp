@@ -77,7 +77,7 @@ CGamePersistent::CGamePersistent(void)
 	//dSetFreeHandler				(ode_free		);
 
 	// 
-	BOOL	bDemoMode	= (0!=strstr(Core.Params,"-demomode "));
+	BOOL bDemoMode	= Core.ParamsData.test(ECoreParams::demomode);
 	if (bDemoMode)
 	{
 		string256	fname;
@@ -310,10 +310,8 @@ void CGamePersistent::WeathersUpdate()
 					pos.y				+= 10.f;
 					snd.play_at_pos		(0,pos);
 
-#ifdef DEBUG
-					if (!snd._handle() && strstr(Core.Params,"-nosound"))
+					if (!snd._handle() || Core.ParamsData.test(ECoreParams::nosound))
 						continue;
-#endif // DEBUG
 
 					VERIFY							(snd._handle());
 					u32 _length_ms					= iFloor(snd.get_length_sec()*1000.0f);

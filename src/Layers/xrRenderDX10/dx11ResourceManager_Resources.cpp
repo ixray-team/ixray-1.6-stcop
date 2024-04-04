@@ -192,7 +192,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 
 		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 
-		if (strstr(Core.Params, "-renderdoc")) {
+		if (Core.ParamsData.test(ECoreParams::renderdoc)) {
 			flags |= D3DCOMPILE_DEBUG;
 			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
@@ -296,7 +296,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 
-		if (strstr(Core.Params, "-renderdoc"))
+		if (Core.ParamsData.test(ECoreParams::renderdoc))
 		{
 			flags |= D3DCOMPILE_DEBUG;
 			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
@@ -369,7 +369,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 
 		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 
-		if (strstr(Core.Params, "-renderdoc"))
+		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug))
 		{
 			flags |= D3DCOMPILE_DEBUG;
 			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;

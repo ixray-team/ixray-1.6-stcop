@@ -129,10 +129,10 @@ int APIENTRY WinMain
 	Console = new CConsole();
 	EngineLoadStage3();
 
-	if (strstr(Core.Params, "-r4")) {
+	if (Core.ParamsData.test(ECoreParams::r4)) {
 		Console->Execute("renderer renderer_r4");
 	}
-	else if (strstr(Core.Params, "-r2")) {
+	else if (Core.ParamsData.test(ECoreParams::r2)) {
 		Console->Execute("renderer renderer_r2");
 	} else {
 		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");

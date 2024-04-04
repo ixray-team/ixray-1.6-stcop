@@ -159,7 +159,7 @@ using RTokenVecIt = RTokenVec::iterator;
 #include "intrusive_ptr.h"
 
 #include "net_utils.h"
-
+#include "xrParams.h"
 #include "_thread_types.h"
 
 // destructor
@@ -184,6 +184,7 @@ public:
 	string64	UserName;
 	string64	CompName;
 	string512	Params;
+    Flags64     ParamsData;
 
 public:
 	void _initialize	(LPCSTR ApplicationName, xrLogger::LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

@@ -516,7 +516,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path)
 		bProcessArchiveLoading	= A.header->r_bool("header","auto_load");
 	}
 	
-	if(bProcessArchiveLoading || strstr(Core.Params, "-auto_load_arch"))
+	if(bProcessArchiveLoading || Core.ParamsData.test(ECoreParams::auto_load_arch))
 		LoadArchive				(A);
 	else
 		A.close					();
@@ -884,7 +884,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 	Msg("Init FileSystem %f sec", t.GetElapsed_sec());
 	//-----------------------------------------------------------
-	if (strstr(Core.Params, "-overlaypath"))
+	if (Core.ParamsData.test(ECoreParams::overlaypath))
 	{
 		string1024				c_newAppPathRoot;
 		sscanf(strstr(Core.Params, "-overlaypath ") + 13, "%[^ ] ", c_newAppPathRoot);
@@ -906,7 +906,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	rec_files.clear();
 	//-----------------------------------------------------------
 
-	if (strstr(Core.Params, "-nolog") == nullptr)
+	if (!Core.ParamsData.test(ECoreParams::nolog))
 	{
 		xrLogger::OpenLogFile();
 	}

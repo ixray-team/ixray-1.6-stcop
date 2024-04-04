@@ -142,7 +142,8 @@ void					CRender::create					()
 	o.fp16_blend		= true;
 
 	// search for ATI formats
-	if (!o.HW_smap && (0==strstr(Core.Params,"-nodf24")) )		{
+	if (!o.HW_smap)	
+	{
 		o.HW_smap		= true;
 		if (o.HW_smap)	{
 			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
@@ -152,19 +153,11 @@ void					CRender::create					()
 		Msg				("* DF24/F4 supported and used [%X]", o.HW_smap_FORMAT);
 	}
 
-	// emulate ATI-R4xx series
-	if (strstr(Core.Params,"-r4xx"))	{
-		o.mrtmixdepth	= FALSE;
-		o.HW_smap		= FALSE;
-		o.HW_smap_PCF	= FALSE;
-		o.fp16_filter	= FALSE;
-		o.fp16_blend	= FALSE;
-	}
-
 	// nvstencil on NV40 and up
 	o.nvstencil			= FALSE;
 	//if ((HW.Caps.id_vendor==0x10DE)&&(HW.Caps.id_device>=0x40))	o.nvstencil = TRUE;
-	if (strstr(Core.Params,"-nonvs"))		o.nvstencil	= FALSE;
+	if (Core.ParamsData.test(ECoreParams::nonvs))
+		o.nvstencil	= FALSE;
 
 	// nv-dbt
 	//	DX10 disabled
@@ -186,12 +179,12 @@ void					CRender::create					()
 	// options
 	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
 	o.volumetricfog		= ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
-	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
-	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
-	o.distortion_enabled= (strstr(Core.Params,"-nodistort"))?	FALSE	:TRUE	;
+	o.noshadows			= Core.ParamsData.test(ECoreParams::noshadows);
+	o.Tshadows			= Core.ParamsData.test(ECoreParams::tsh);
+	o.distortion_enabled= !Core.ParamsData.test(ECoreParams::nodistort);
 	o.distortion		= o.distortion_enabled;
-	o.disasm			= (strstr(Core.Params,"-disasm"))?		TRUE	:FALSE	;
-	o.forceskinw		= (strstr(Core.Params,"-skinw"))?		TRUE	:FALSE	;
+	o.disasm			= Core.ParamsData.test(ECoreParams::disasm);
+	o.forceskinw		= Core.ParamsData.test(ECoreParams::skinw);
 
 	o.ssao_blur_on		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && (ps_r_ssao != 0);
 	o.ssao_opt_data		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_OPT_DATA) && (ps_r_ssao != 0);
