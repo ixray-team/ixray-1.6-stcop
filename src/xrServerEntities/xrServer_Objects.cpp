@@ -33,12 +33,7 @@ void CSE_Shape::cform_read					(NET_Packet	&tNetPacket)
 		switch (S.type) {
 			case 0 :
 				{
-					if(tNetPacket.inistream)
-					{
-						tNetPacket.r_vec3(S.data.sphere.P);
-						tNetPacket.r_float(S.data.sphere.R);
-					}else
-						tNetPacket.r	(&S.data.sphere,sizeof(S.data.sphere));	
+				tNetPacket.r	(&S.data.sphere,sizeof(S.data.sphere));	
 
 				}break;
 			case 1 :	
@@ -61,12 +56,7 @@ void CSE_Shape::cform_write					(NET_Packet	&tNetPacket)
 		{
 			case 0:
 				{
-					if(tNetPacket.inistream)
-					{
-						tNetPacket.w_vec3(S.data.sphere.P);
-						tNetPacket.w_float(S.data.sphere.R);
-					}else
-						tNetPacket.w	(&S.data.sphere,sizeof(S.data.sphere));
+					tNetPacket.w	(&S.data.sphere,sizeof(S.data.sphere));
 				}break;
 			case 1:	
 				tNetPacket.w_matrix	(S.data.box);

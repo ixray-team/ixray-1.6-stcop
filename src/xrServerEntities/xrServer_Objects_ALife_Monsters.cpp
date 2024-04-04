@@ -1240,36 +1240,25 @@ void CSE_ALifeMonsterAbstract::STATE_Write	(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ		(m_out_space_restrictors);
 	tNetPacket.w_stringZ		(m_in_space_restrictors);
 	tNetPacket.w_u16			(m_smart_terrain_id);
-
-	if(tNetPacket.inistream)
-		tNetPacket.w_u16			((m_task_reached)?1:0);
-	else
-		tNetPacket.w				(&m_task_reached, sizeof(m_task_reached));
+	tNetPacket.w				(&m_task_reached, sizeof(m_task_reached));
 }
 
-void CSE_ALifeMonsterAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
+void CSE_ALifeMonsterAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-	inherited1::STATE_Read		(tNetPacket, size);
+	inherited1::STATE_Read(tNetPacket, size);
 	if (m_wVersion > 72) {
-		tNetPacket.r_stringZ	(m_out_space_restrictors);
+		tNetPacket.r_stringZ(m_out_space_restrictors);
 		if (m_wVersion > 73)
 			tNetPacket.r_stringZ(m_in_space_restrictors);
 	}
 
 	if (m_wVersion > 111)
-		tNetPacket.r_u16		(m_smart_terrain_id);
+		tNetPacket.r_u16(m_smart_terrain_id);
 
 	if (m_wVersion > 113)
 	{
-		if(tNetPacket.inistream)
-		{
-			u16 tmp;
-			tNetPacket.r_u16		(tmp);
-			m_task_reached			= (tmp!=0);
-		}else
-			tNetPacket.r		(&m_task_reached, sizeof(m_task_reached));
+		tNetPacket.r(&m_task_reached, sizeof(m_task_reached));
 	}
-
 }
 
 void CSE_ALifeMonsterAbstract::UPDATE_Write	(NET_Packet &tNetPacket)
