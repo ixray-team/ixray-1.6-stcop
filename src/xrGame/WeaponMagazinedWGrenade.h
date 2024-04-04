@@ -44,7 +44,6 @@ public:
 	virtual void	switch2_Reload	();
 	virtual void	switch2_SwitchMode();
 	virtual void	state_Fire		(float dt);
-	virtual void	OnShot			();
 	virtual void	OnEvent			(NET_Packet& P, u16 type);
 	virtual void	ReloadMagazine	();
 	virtual void	UnloadMagazine	(bool spawn_ammo = true);

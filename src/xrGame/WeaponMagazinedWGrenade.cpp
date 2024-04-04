@@ -137,19 +137,6 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	     inherited::switch2_Reload();
 }
 
-void CWeaponMagazinedWGrenade::OnShot		()
-{
-	if(m_bGrenadeMode)
-	{
-		PlayAnimShoot		();
-		PlaySound			("sndShotG", get_LastFP2());
-		AddShotEffector		();
-		StartFlameParticles2();
-	} 
-	else 
-		inherited::OnShot	();
-}
-
 bool CWeaponMagazinedWGrenade::SwitchMode() 
 {
 	if (!IsGrenadeLauncherAttached())
