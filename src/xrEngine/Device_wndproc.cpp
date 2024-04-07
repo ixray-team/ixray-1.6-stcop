@@ -23,6 +23,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		OnWM_Activate(false, true);
 		break;
 	case SDL_EVENT_QUIT:
+	case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 		g_pEventManager->Event.Signal("KERNEL:disconnect");
 		g_pEventManager->Event.Signal("KERNEL:quit");
 		return false;
