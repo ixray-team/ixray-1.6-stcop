@@ -26,6 +26,9 @@
 
 #include "../monster_aura.h"
 #include "../../../inventoryowner.h"
+#include "../../../../xrphysics/PHCharacter.h"
+
+#include "../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 
 class CCharacterPhysicsSupport;
 class CMonsterCorpseCoverEvaluator;
@@ -45,6 +48,7 @@ class CControlDirectionBase;
 class CMonsterCoverManager;
 
 class CMonsterHome;
+class CPHCharacter;
 
 // Lain: added
 class CMonsterSquad;
@@ -55,6 +59,20 @@ namespace debug { class text_tree; }
 #endif
 
 class anti_aim_ability;
+
+namespace monster_interpolation {
+	struct InterpData {
+		Fvector Pos;
+		Fvector Vel;
+		SRotation o_torso;
+	};
+
+	struct net_update_A {
+		SPHNetState State;
+		SRotation o_torso;
+		u32 dwTimeStamp = 0;
+	};
+};
 
 class CBaseMonster : public CCustomMonster, public CStepManager, public CInventoryOwner
 {
@@ -104,6 +122,9 @@ public:
 	virtual void			net_Import						(NET_Packet& P);
 	virtual void			net_Relcase						(CObject *O);
 
+	virtual void			net_Export_Sounds(NET_Packet& P);
+	virtual void			net_Import_Sounds(NET_Packet& P);
+
 	//save/load server serialization
 	virtual void			save							(NET_Packet &output_packet) {inherited::save(output_packet);}
 	virtual void			load							(IReader &input_packet)		{inherited::load(input_packet);}
@@ -134,6 +155,12 @@ public:
 	virtual void			PHUnFreeze						()							{return inherited::PHUnFreeze();}
 	virtual void			PHFreeze						()							{return inherited::PHFreeze();}
 	virtual BOOL			UsedAI_Locations				()							{return inherited::UsedAI_Locations();}
+
+	virtual void			PH_B_CrPr();
+	virtual void			PH_I_CrPr();
+	virtual void			PH_A_CrPr();
+
+	void					postprocess_packet(monster_interpolation::net_update_A& packet);
 
 	virtual const SRotation	Orientation						() const					{return inherited::Orientation();}
 	virtual void			renderable_Render				()							{return inherited::renderable_Render();} 
@@ -236,9 +263,33 @@ public:
 			bool			GetCoverFromPoint				(const Fvector &pos, Fvector &position, u32 &vertex_id, float min_dist, float max_dist, float radius);
 			bool			GetCoverCloseToPoint			(const Fvector &dest_pos, float min_dist, float max_dist, float deviation, float radius ,Fvector &position, u32 &vertex_id);
 
+private:
+	// for interpolation
+	SPHNetState						LastState;
+	SPHNetState						RecalculatedState;
+	SPHNetState						PredictedState;
+
+	float							SCoeff[3][4];			//êîýôôèöèýíòû äëÿ ñïëàéíà Áèçüå
+	float							HCoeff[3][4];			//êîýôôèöèýíòû äëÿ ñïëàéíà Ýðìèòà
+	Fvector							IPosS, IPosH, IPosL;	//ïîëîæåíèå àêòåðà ïîñëå èíòåðïîëÿöèè Áèçüå, Ýðìèòà, ëèíåéíîé
 
 
+	xr_deque<monster_interpolation::net_update_A>	NET_A;
+	monster_interpolation::net_update_A				NET_A_Last;
 
+	monster_interpolation::InterpData		IStart;
+	//stalker_interpolation::InterpData		IRec;
+	monster_interpolation::InterpData		IEnd;
+
+	bool							m_bInInterpolation;
+	bool							m_bInterpolate;
+	u32								m_dwIStartTime;
+	u32								m_dwIEndTime;
+	u32								m_dwILastUpdateTime;
+
+	void							CalculateInterpolationParams();
+	void							ApplyAnimation(u16 motion_idx, u8 motion_slot);
+	virtual void					make_Interpolation();
 
 	// Movement Manager
 protected:
@@ -458,12 +509,15 @@ protected:
 	LPCSTR					m_critical_wound_anim_torso;
 	LPCSTR					m_critical_wound_anim_legs;
 
-	//////////////////////////////////////////////////////////////////////////
+	u16 u_last_motion_idx = u16(-1);
+	u16 u_last_motion_slot = u16(-1);
+
+	CSE_ALifeMonsterBase::eMonsterSound m_sv_snd_sync_flag = CSE_ALifeMonsterBase::eMonsterSound::monster_sound_no;
+	u8	m_sv_snd_sync_sound = 0;
+	u32 m_sv_snd_sync_sound_delay = 0;
+
 public:
-
 	virtual	char*			get_monster_class_name () = 0;
-
-//////////////////////////////////////////////////////////////////////////
 // DEBUG stuff
 #ifdef DEBUG
 

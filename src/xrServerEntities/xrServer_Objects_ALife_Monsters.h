@@ -14,6 +14,7 @@
 #include "character_info_defs.h"
 #include "../xrCore/associative_vector.h"
 #include "alife_movement_manager_holder.h"
+#include "../xrPhysics/net_physics_state.h"
 
 class CALifeMonsterBrain;
 class CALifeHumanBrain;
@@ -51,7 +52,7 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 	bool							m_deadbody_closed;
 
 #ifdef XRGAME_EXPORTS
-	//для работы с relation system
+	//РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ relation system
 	u16								object_id				() const;
 	CHARACTER_COMMUNITY_INDEX		Community				() const;
 	LPCSTR							CommunityName			() const;
@@ -64,7 +65,7 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 	shared_str						m_sCharacterProfile;
 	shared_str						m_SpecificCharacter;
 
-	//буферный вектор проверенных персонажей
+	//Р±СѓС„РµСЂРЅС‹Р№ РІРµРєС‚РѕСЂ РїСЂРѕРІРµСЂРµРЅРЅС‹С… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	xr_vector<shared_str> m_CheckedCharacters;
 	xr_vector<shared_str> m_DefaultCharacters;
 
@@ -340,7 +341,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	SPHNetState						m_AliveState;
 //	PH_STATES						m_DeadStates;
 
-	// статический массив - 6 float(вектора пределов квантизации) + m_u16NumItems*(7 u8) (позиция и поворот кости)
+	// СЃС‚Р°С‚РёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ - 6 float(РІРµРєС‚РѕСЂР° РїСЂРµРґРµР»РѕРІ РєРІР°РЅС‚РёР·Р°С†РёРё) + m_u16NumItems*(7 u8) (РїРѕР·РёС†РёСЏ Рё РїРѕРІРѕСЂРѕС‚ РєРѕСЃС‚Рё)
 	u8								m_BoneDataSize;
 	char							m_DeadBodyData[1024];
 	///////////////////////////////////////////
@@ -446,6 +447,25 @@ add_to_type_list(CSE_ALifeMonsterZombie)
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_PHSkeleton)
 	u16								m_spec_object_id;
 
+	float f_health = 1.0f;
+	u16 u_motion_idx = u16(-1);
+	u16 u_motion_slot = u16(-1);
+	net_physics_state* physics_state = nullptr;
+	bool phSyncFlag = false;
+
+	enum class eMonsterSound : u8
+	{
+		monster_sound_no = 0u,
+
+		monster_sound_play,
+		monster_sound_play_with_delay,
+		monster_sound_dummy
+	};
+
+	eMonsterSound m_snd_sync_flag = eMonsterSound::monster_sound_no;
+	u32 m_snd_sync_sound_delay = 0;
+	u8 m_snd_sync_sound = 0;
+
 									CSE_ALifeMonsterBase	(LPCSTR caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterBase	();
 	virtual	void					load					(NET_Packet &tNetPacket);
@@ -457,6 +477,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	virtual	void					add_online				(const bool &update_registries);
 	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
 #endif // XRGAME_EXPORTS
+	virtual BOOL Net_Relevant();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeMonsterBase)
 #define script_type_list save_type_list(CSE_ALifeMonsterBase)

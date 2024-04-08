@@ -350,6 +350,10 @@ void CBaseMonster::UpdateCL()
 
 	inherited::UpdateCL();
 	
+	if(g_Alive() && Remote() && !IsGameTypeSingle()) {
+		make_Interpolation();
+	}
+
 	if ( g_Alive() ) 
 	{
 		update_enemy_accessible_and_at_home_info();
@@ -565,7 +569,9 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 	if (once) {
 	
 		sound().play(type);
-	
+
+		m_sv_snd_sync_flag = CSE_ALifeMonsterBase::eMonsterSound::monster_sound_play;
+		m_sv_snd_sync_sound = u8(type);
 	} else {
 
 		// handle situation, when monster want to play attack sound for the first time
@@ -574,6 +580,8 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 			
 			sound().play(MonsterSound::eMonsterSoundAttackHit);
 
+			m_sv_snd_sync_flag = CSE_ALifeMonsterBase::eMonsterSound::monster_sound_play;
+			m_sv_snd_sync_sound = (u8)MonsterSound::eMonsterSoundAttackHit;
 		} else {
 			// get count of monsters in squad
 			u8 objects_count = monster_squad().get_squad(this)->get_count(this, 20.f);
@@ -615,6 +623,10 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 			}
 
 			sound().play(type, 0, 0, delay);
+
+			m_sv_snd_sync_flag = CSE_ALifeMonsterBase::eMonsterSound::monster_sound_play_with_delay;
+			m_sv_snd_sync_sound = (u8)type;
+			m_sv_snd_sync_sound_delay = delay;
 		} 
 	}
 

@@ -1879,11 +1879,17 @@ CSE_ALifeMonsterBase::CSE_ALifeMonsterBase	(LPCSTR caSection) : CSE_ALifeMonster
 {
     set_visual					(pSettings->r_string(caSection,"visual"));
 	m_spec_object_id			= 0xffff;
-	
+
+#ifdef XRGAME_EXPORTS
+	physics_state = new net_physics_state;
+#endif
 }
 
 CSE_ALifeMonsterBase::~CSE_ALifeMonsterBase()
 {
+#ifdef XRGAME_EXPORTS
+	xr_delete(physics_state);
+#endif
 }
 
 void CSE_ALifeMonsterBase::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
@@ -1906,14 +1912,97 @@ void CSE_ALifeMonsterBase::STATE_Write	(NET_Packet	&tNetPacket)
 
 void CSE_ALifeMonsterBase::UPDATE_Read	(NET_Packet	&tNetPacket)
 {
-	inherited1::UPDATE_Read		(tNetPacket);
-	inherited2::UPDATE_Read		(tNetPacket);
+#ifdef XRGAME_EXPORTS
+	if(g_pGamePersistent->GameType() != eGameIDSingle) {
+		tNetPacket.r_angle8(o_torso.pitch);
+		tNetPacket.r_angle8(o_torso.yaw);
+
+		tNetPacket >> phSyncFlag;
+
+		if(phSyncFlag) 
+		{
+			physics_state->read(tNetPacket);
+			o_Position.set(physics_state->physics_position);
+		}
+		else
+		{
+			tNetPacket >> o_Position;
+		}
+
+		// Sound Sync
+		tNetPacket >> m_snd_sync_flag;
+
+		if(m_snd_sync_flag != eMonsterSound::monster_sound_no) {
+			tNetPacket >> m_snd_sync_sound;
+
+			if(m_snd_sync_flag == eMonsterSound::monster_sound_play_with_delay) {
+				tNetPacket >> m_snd_sync_sound_delay;
+			}
+		}
+		// Sound Sync
+
+		tNetPacket >> u_motion_idx;
+		tNetPacket >> u_motion_slot;
+
+		tNetPacket >> f_health;
+		set_health(f_health);
+		return;
+	}
+#endif
+
+	inherited1::UPDATE_Read(tNetPacket);
+	inherited2::UPDATE_Read(tNetPacket);
 }
 
-void CSE_ALifeMonsterBase::UPDATE_Write	(NET_Packet	&tNetPacket)
+void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet& tNetPacket)
 {
-	inherited1::UPDATE_Write		(tNetPacket);
-	inherited2::UPDATE_Write		(tNetPacket);
+#ifdef XRGAME_EXPORTS
+	if(g_pGamePersistent->GameType() != eGameIDSingle) 
+	{
+		tNetPacket.w_angle8(o_torso.pitch);
+		tNetPacket.w_angle8(o_torso.yaw);
+
+		tNetPacket << phSyncFlag;
+
+		if(phSyncFlag) {
+			physics_state->write(tNetPacket);
+		}
+		else {
+			tNetPacket << o_Position;
+		}
+
+		// Sound Sync
+		tNetPacket << m_snd_sync_flag;
+
+		if(m_snd_sync_flag != eMonsterSound::monster_sound_no) {
+			tNetPacket << m_snd_sync_sound;
+
+			if(m_snd_sync_flag == eMonsterSound::monster_sound_play_with_delay) {
+				tNetPacket << m_snd_sync_sound_delay;
+			}
+		}
+		// Sound Sync
+
+		tNetPacket << u_motion_idx;
+		tNetPacket << u_motion_slot;
+
+		tNetPacket << get_health();
+		return;
+	}
+#endif
+
+	inherited1::UPDATE_Write(tNetPacket);
+	inherited2::UPDATE_Write(tNetPacket);
+}
+
+BOOL CSE_ALifeMonsterBase::Net_Relevant() 
+{
+#ifdef XRGAME_EXPORTS
+	if(g_pGamePersistent->GameType() != eGameIDSingle) {
+		return g_Alive();
+	}
+#endif
+	return inherited1::Net_Relevant();
 }
 
 void CSE_ALifeMonsterBase::load(NET_Packet &tNetPacket)
