@@ -293,6 +293,10 @@ void CActor::GiveInfoPortion(const char* infoPortion) {
 	this->TransferInfo(infoPortion, true);
 }
 
+void CActor::DisableInfoPortion(const char* infoPortion) {
+	this->TransferInfo(infoPortion, false);
+}
+
 void CActor::SetActorPosition(Fvector pos) {
 	CCar* car = smart_cast<CCar*>(this->Holder());
 	if (car)

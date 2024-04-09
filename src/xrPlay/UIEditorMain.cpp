@@ -38,7 +38,9 @@ void RenderActorInfos()
 
 	for (auto Str : Data)
 	{
-		ImGui::Button(Str.c_str(), { 200, 30 });
+		if (ImGui::Button(Str.c_str(), { 200, 30 })) {
+			g_pIGameActor->DisableInfoPortion(Str.c_str());
+		}
 	}
 
 	ImGui::End();

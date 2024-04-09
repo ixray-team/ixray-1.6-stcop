@@ -124,6 +124,7 @@ public:
 	virtual void	 LostPdaContact		(CInventoryOwner*);
 
 	virtual void GiveInfoPortion(const char* infoPortion) override;
+	virtual void DisableInfoPortion(const char* info_id) override;
 	virtual void SetActorPosition(Fvector pos) override;
 	virtual void SetActorDirection(float dir) override;
 
