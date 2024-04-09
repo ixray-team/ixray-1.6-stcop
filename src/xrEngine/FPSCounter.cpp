@@ -40,6 +40,7 @@ void FPS::FPSCounter::ShowEngineVersion(bool IsMainMenu)
 
     if (IsMainMenu && !Console->bVisible)
     {
+        pCGameFont->SetAligment(CGameFont::alLeft);
         pCGameFont->SetHeight(0.022f);
         pCGameFont->SetColor(DebugTextColor::DTC_GAME_VERSION);
 
