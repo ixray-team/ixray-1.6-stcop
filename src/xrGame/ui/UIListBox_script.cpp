@@ -106,11 +106,12 @@ void CUIListBox::script_register(lua_State *L)
 		class_<enum_exporter<EGameIDs> >("GAME_TYPE")
 		.enum_("gametype")
 		[
-			value("GAME_UNKNOWN",			int(-1)),
-			value("eGameIDDeathmatch",		int(eGameIDDeathmatch)),
-			value("eGameIDTeamDeathmatch",	int(eGameIDTeamDeathmatch)),
-			value("eGameIDArtefactHunt",	int(eGameIDArtefactHunt)),
-			value("eGameIDCaptureTheArtefact",int(eGameIDCaptureTheArtefact))
+			value("GAME_UNKNOWN",				int(-1)),
+			value("eGameIDDeathmatch",			int(eGameIDDeathmatch)),
+			value("eGameIDTeamDeathmatch",		int(eGameIDTeamDeathmatch)),
+			value("eGameIDArtefactHunt",		int(eGameIDArtefactHunt)),
+			value("eGameIDCaptureTheArtefact",	int(eGameIDCaptureTheArtefact)),
+			value("eGameIDFreeMp",				int(eGameIDFreeMP))
 		]
 		
 	];

@@ -842,6 +842,10 @@ void enable_vertex(u32 vertex_id) {
 	ai().level_graph().clear_mask(vertex_id);
 }
 
+bool is_dedicated()
+{
+	return g_dedicated_server;
+}
 
 //ability to update level netpacket
 void g_send(NET_Packet& P, bool bReliable = 0, bool bSequential = 1, bool bHighPriority = 0, bool bSendImmediately = 0)
@@ -1140,7 +1144,10 @@ void CLevel::script_register(lua_State *L)
 		def("IsGameTypeSingle",					&IsGameTypeSingle),
 		def("IsDynamicMusic",					&IsDynamicMusic),
 		def("render_get_dx_level",				&render_get_dx_level),
-		def("IsImportantSave",					&IsImportantSave)
+		def("IsImportantSave",					&IsImportantSave),
+		def("IsDedicated",						&is_dedicated),
+		def("OnClient",							&OnClient),
+		def("OnServer",							&OnServer)
 	];
 
 	module(L,"relation_registry")

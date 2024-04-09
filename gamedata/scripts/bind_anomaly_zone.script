@@ -1,5 +1,5 @@
 --'******************************************************
---'*  Биндер объекта зоны аномалии .
+--'*  ?????? ??????? ???? ???????? .
 --'******************************************************
 artefact_ways_by_id					= {}
 artefact_points_by_id				= {}
@@ -7,7 +7,9 @@ parent_zones_by_artefact_id			= {}
 ANOMAL_ZONE_SECT = "anomal_zone"
 
 function bind(obj)
-	obj:bind_object(anomaly_zone_binder(obj))
+	if IsGameTypeSingle() or OnServer() then
+		obj:bind_object(anomaly_zone_binder(obj))
+	end
 end
 
 class "anomaly_zone_binder" (object_binder)
@@ -187,6 +189,11 @@ end
 function anomaly_zone_binder:respawn_artefacts_and_replace_anomaly_zone()
 	local anom_fields = bind_anomaly_field.fields_by_names
 	self.respawn_artefacts = true
+
+	if not IsGameTypeSingle() then
+		return
+	end
+
 	if(self.custom_placement) then
 		local layer = self.cur_layer
 		for k,v in pairs(self.fields_table[layer]) do

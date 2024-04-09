@@ -326,7 +326,7 @@ void game_cl_Deathmatch::ClearBuyMenu			()
 	if (!pCurBuyMenu) return;
 };
 
-bool game_cl_Deathmatch::CanBeReady				()
+bool game_cl_Deathmatch::CanBeReady()
 {
 	if (!local_player) return false;
 
@@ -335,13 +335,13 @@ bool game_cl_Deathmatch::CanBeReady				()
 	SetCurrentSkinMenu();
 
 	SetCurrentBuyMenu();
-	
+
 	if (pCurBuyMenu && !pCurBuyMenu->IsShown())
 	{
 		pCurBuyMenu->ResetItems();
-		SetBuyMenuItems		(&PlayerDefItems);
+		SetBuyMenuItems(&PlayerDefItems);
 	}
-	
+
 	if (!m_bSkinSelected)
 	{
 		m_bMenuCalledFromReady = FALSE;
@@ -352,10 +352,10 @@ bool game_cl_Deathmatch::CanBeReady				()
 	};
 
 	if (pCurBuyMenu)
-	{		
-		const preset_items& _p	= pCurBuyMenu->GetPreset(_preset_idx_last);
+	{
+		const preset_items& _p = pCurBuyMenu->GetPreset(_preset_idx_last);
 		bool Passed = false;
-		Passed = (_p.size()==0) ? 1 : (s32(pCurBuyMenu->GetPresetCost(_preset_idx_last)) <= local_player->money_for_round);
+		Passed = (_p.size() == 0) ? 1 : (s32(pCurBuyMenu->GetPresetCost(_preset_idx_last)) <= local_player->money_for_round);
 		Passed |= pCurBuyMenu->IsIgnoreMoneyAndRank();
 		if (!Passed)
 		{
@@ -369,9 +369,25 @@ bool game_cl_Deathmatch::CanBeReady				()
 		OnBuyMenu_Ok();
 		return true;
 	};
-	//m_bMenuCalledFromReady = FALSE;
+
 	return true;
 };
+
+bool game_cl_Deathmatch::NeedToSendReady_Actor(int key, game_PlayerState* ps)
+{
+	return ((GAME_PHASE_PENDING == Phase()) ||
+		true == ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) &&
+		(kWPN_FIRE == key);
+}
+
+bool game_cl_Deathmatch::NeedToSendReady_Spectator(int key, game_PlayerState* ps)
+{
+	return (GAME_PHASE_PENDING == Phase() && kWPN_FIRE == key) ||
+		(kJUMP == key &&
+			GAME_PHASE_INPROGRESS == Phase() &&
+			CanBeReady() &&
+			ps->DeathTime > 1000);
+}
 
 void	game_cl_Deathmatch::OnSpectatorSelect		()
 {
@@ -694,6 +710,41 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 
 	if (Level().IsDemoPlay() && (key != kSCORES) && (key != kCROUCH))
 		return false;
+
+	if (kJUMP == key || kWPN_FIRE == key)
+	{
+		bool b_need_to_send_ready = false;
+
+		CObject* curr = Level().CurrentControlEntity();
+		if (!curr) return(false);
+
+		bool is_actor = !!smart_cast<CActor*>(curr);
+		bool is_spectator = !!smart_cast<CSpectator*>(curr);
+
+		game_PlayerState* ps = local_player;
+
+		if (is_actor)
+		{
+			b_need_to_send_ready = NeedToSendReady_Actor(key, ps);
+		};
+		if (is_spectator)
+		{
+			b_need_to_send_ready = NeedToSendReady_Spectator(key, ps);
+		};
+		if (b_need_to_send_ready)
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(curr);
+			NET_Packet			P;
+			GO->u_EventGen(P, GE_GAME_EVENT, GO->ID());
+			P.w_u16(GAME_EVENT_PLAYER_READY);
+			GO->u_EventSend(P);
+			return				true;
+		}
+		else
+		{
+			return false;
+		}
+	};
 
 	if (kSCORES == key && Phase() == GAME_PHASE_INPROGRESS)
 	{

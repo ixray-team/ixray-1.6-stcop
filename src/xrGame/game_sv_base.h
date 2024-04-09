@@ -58,7 +58,7 @@ protected:
 	xr_deque<SMapRot>				m_pMapRotation_List;
 
 public:
-#define		TEAM_COUNT 4
+#define		TEAM_COUNT 32
 
 	BOOL							sv_force_sync;
 	float							rpoints_MinDist [TEAM_COUNT];

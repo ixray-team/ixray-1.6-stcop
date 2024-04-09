@@ -170,6 +170,10 @@
 				<texture>ui_inGame2_inventory_button</texture>
 				<text font="letterica16" align="c">st_artefacthunt</text>
 			</ah_button>
+			<ah_button x="200" y="130" width="220" height="26" stretch="1">
+				<texture>ui_inGame2_inventory_button</texture>
+				<text font="letterica16" align="c">st_freemp</text>
+			</ah_button>
 		</game_type_selection_wnd>
 		<game_limits_selection_wnd x="0" y="0" width="610" height="340">
 		    <time_limit_edit x="20" y="10" width="60" height="25" max_symb_count="3" num_only="1">

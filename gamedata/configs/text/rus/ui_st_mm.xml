@@ -375,6 +375,9 @@
 	<string id="st_capture_the_artefact">
 		<text>Захват артефакта</text>
 	</string>
+	<string id="st_freemp">
+		<text>Свободный</text>
+	</string>
 	<string id="st_deathmatch">
 		<text>Все против всех</text>
 	</string>

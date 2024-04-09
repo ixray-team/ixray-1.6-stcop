@@ -86,6 +86,9 @@ protected:
 	virtual BOOL					CanCallSkinMenu			();
 	virtual	BOOL					CanCallInventoryMenu	();
 
+	virtual bool					NeedToSendReady_Actor	(int key, game_PlayerState* ps);
+	virtual bool					NeedToSendReady_Spectator(int key, game_PlayerState* ps);
+
 			void					Check_Invincible_Players ();
 
 	virtual		void				shedule_Update			(u32 dt);

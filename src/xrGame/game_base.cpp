@@ -262,6 +262,10 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 		return			(isServer)?TEXT2CLSID("SV_CTA"):TEXT2CLSID("CL_CTA");
 		break;
 
+	case eGameIDFreeMP:
+		return			(isServer)?TEXT2CLSID("SV_FREE"):TEXT2CLSID("CL_FREE");
+		break;
+
 	default:
 		return			(TEXT2CLSID(""));
 		break;

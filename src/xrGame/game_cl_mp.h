@@ -177,8 +177,8 @@ protected:
 
 	virtual void			OnPlayerKilled			(NET_Packet& P);
 
-	virtual bool			NeedToSendReady_Actor			(int key, game_PlayerState* ps);
-	virtual bool			NeedToSendReady_Spectator		(int key, game_PlayerState* ps);
+	virtual bool			NeedToSendReady_Actor(int key, game_PlayerState* ps) { return false; };
+	virtual bool			NeedToSendReady_Spectator(int key, game_PlayerState* ps) { return false; };
 
 	virtual	void			LoadSndMessage			(LPCSTR caSection, LPCSTR caLine, u32 ID);
 	virtual		void				LoadSndMessages				();
@@ -207,7 +207,7 @@ public:
 
 	virtual		bool				OnKeyboardPress			(int key);
 
-	virtual		bool				CanBeReady				();
+	virtual		bool				CanBeReady() { return true; };
 	virtual		void				shedule_Update			(u32 dt);
 				bool				IsLocalPlayerInitialized() const;
 

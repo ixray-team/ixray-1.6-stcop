@@ -417,6 +417,7 @@ xr_token game_types[]={
 	{ "team_deathmatch",		eGameIDTeamDeathmatch		},
 	{ "artefacthunt",			eGameIDArtefactHunt			},
 	{ "capture_the_artefact",	eGameIDCaptureTheArtefact	},
+	{ "freemp",					eGameIDFreeMP				},
 	//eGameIDDominationZone
 	//eGameIDTeamDominationZone
 	{ 0,				0				}

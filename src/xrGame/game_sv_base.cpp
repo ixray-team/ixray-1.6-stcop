@@ -375,14 +375,20 @@ void game_sv_GameState::Create					(shared_str &options)
 							(type != rptActorSpawn), 
 							"Problem with CTA Team indexes. Propably you have added rpoint of team 0 for cta game type.");
 					}
-					if ((!(GameType & eGameIDDeathmatch) && (Type() == eGameIDDeathmatch)) ||
-						(!(GameType & eGameIDTeamDeathmatch) && (Type() == eGameIDTeamDeathmatch))	||
-						(!(GameType & eGameIDArtefactHunt) && (Type() == eGameIDArtefactHunt)) ||
-						(!(GameType & eGameIDCaptureTheArtefact) && (Type() == eGameIDCaptureTheArtefact))
-						)
+
+					// HACK. USE DM RP POINT FOR FREE MP
+					if (!(GameType & eGameIDTeamDeathmatch) && (Type() == eGameIDFreeMP))
 					{
-						continue;
-					};
+						if ((!(GameType & eGameIDDeathmatch) && (Type() == eGameIDDeathmatch)) ||
+							(!(GameType & eGameIDTeamDeathmatch) && (Type() == eGameIDTeamDeathmatch)) ||
+							(!(GameType & eGameIDArtefactHunt) && (Type() == eGameIDArtefactHunt)) ||
+							(!(GameType & eGameIDCaptureTheArtefact) && (Type() == eGameIDCaptureTheArtefact)) ||
+							(!(GameType & eGameIDFreeMP) && (Type() == eGameIDFreeMP))
+							)
+						{
+							continue;
+						};
+					}
 				};
 				switch (type)
 				{
