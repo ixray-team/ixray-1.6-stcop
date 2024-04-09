@@ -18,7 +18,6 @@ void CBackend::OnFrameEnd	()
 #endif    
 	{
 #ifdef USE_DX11
-		RContext->ClearState();
 		Invalidate			();
 #else //USE_DX11
 

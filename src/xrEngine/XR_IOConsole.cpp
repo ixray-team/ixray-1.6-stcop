@@ -253,6 +253,9 @@ void CConsole::OnRender()
 	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
 	CGameFont* pFont2 = g_FontManager->GetFont(m_fontConsole2Name);
 
+	pFont->SetAligment(CGameFont::alLeft);
+	pFont2->SetAligment(CGameFont::alLeft);
+
 	m_prompt_width = pFont->WidthOf(ioc_prompt);
 	m_cursor_width = pFont->WidthOf(ch_cursor);
 
@@ -367,7 +370,6 @@ void CConsole::OnRender()
 	u32 qn = xr_strlen( q );
 	pFont->SetColor( total_font_color );
 	pFont->OutI( 0.95f - 0.03f * qn, fMaxY - 2.0f * m_line_height, "[%d]", log_line );
-		
 	pFont->OnRender();
 	pFont2->OnRender();
 }
