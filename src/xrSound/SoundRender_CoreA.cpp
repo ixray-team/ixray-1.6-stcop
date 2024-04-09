@@ -20,12 +20,7 @@ CSoundRender_CoreA::CSoundRender_CoreA	():CSoundRender_Core()
 
 CSoundRender_CoreA::~CSoundRender_CoreA	()
 {
-    if (m_is_supported)
-    {
-        alDeleteEffects(1, &effect);
-        if (alIsAuxiliaryEffectSlot(slot))
-            alDeleteAuxiliaryEffectSlots(1, &slot);
-    }
+    DestroyEffect();
 }
 
 // load_reverb loads the given initial reverb properties into the given OpenAL
@@ -85,6 +80,45 @@ void CSoundRender_CoreA::commit()
     A_CHK(alAuxiliaryEffectSlotf(slot, AL_EFFECTSLOT_GAIN, 1.f));
     A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, false));
     A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, effect));
+}
+
+void CSoundRender_CoreA::LoadEffect()
+{
+    alGenEffects(1, &effect);
+
+    load_reverb(effect, &reverbs[0]);
+
+    // Check if an error occured, and clean up if so.
+    ALenum err = alGetError();
+
+    if (psSoundFlags.test(ss_EFX))
+    {
+        if (err == AL_NO_ERROR)
+        {
+            m_is_supported = true;
+            alGenAuxiliaryEffectSlots(1, &slot);
+        }
+        else
+        {
+            Msg("SOUND: OpenAL: Failed to init EFX: %s", alGetString(err));
+            if (alIsEffect(effect))
+                alDeleteEffects(1, &effect);
+        }
+    }
+    else
+    {
+        m_is_supported = false;
+    }
+}
+
+void CSoundRender_CoreA::DestroyEffect()
+{
+    if (m_is_supported)
+    {
+        alDeleteEffects(1, &effect);
+        if (alIsAuxiliaryEffectSlot(slot))
+            alDeleteAuxiliaryEffectSlots(1, &slot);
+    }
 }
 
 void CSoundRender_CoreA::set_listener(const CSoundRender_Environment& env)
@@ -247,31 +281,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     LOAD_PROC(LPALGETAUXILIARYEFFECTSLOTFV, alGetAuxiliaryEffectSlotfv);
 #undef LOAD_PROC
 
-    alGenEffects(1, &effect);
-
-    load_reverb(effect, &reverbs[0]);
-
-    // Check if an error occured, and clean up if so.
-    ALenum err = alGetError();
-
-    if (psSoundFlags.test(ss_EFX))
-    {
-        if (err == AL_NO_ERROR)
-        {
-            m_is_supported = true;
-            alGenAuxiliaryEffectSlots(1, &slot);
-        }
-        else
-        {
-            Msg("SOUND: OpenAL: Failed to init EFX: %s", alGetString(err));
-            if (alIsEffect(effect))
-                alDeleteEffects(1, &effect);
-        }
-    }
-    else
-    {
-        m_is_supported = false;
-    }
+    LoadEffect();
 
     inherited::_initialize		(stage);
 

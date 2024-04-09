@@ -2,7 +2,7 @@ project(xrSound)
 set(SND_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE SND_SOURCE_ALL_FILES
+file(GLOB_RECURSE SND_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )

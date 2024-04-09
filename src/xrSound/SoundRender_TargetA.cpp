@@ -31,6 +31,7 @@ BOOL	CSoundRender_TargetA::_initialize		()
     // initialize buffer
 	A_CHK(alGenBuffers	(sdef_target_count, pBuffers));	
     alGenSources		(1, &pSource);
+   
     ALenum error_		= alGetError();
     if (AL_NO_ERROR==error_){
         A_CHK(alSourcei	(pSource, AL_LOOPING, AL_FALSE));

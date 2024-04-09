@@ -2,11 +2,11 @@
 #pragma hdrstop
 
 #include "../xrEngine/xrLevel.h"
+#include "System/NotificationClient.h"
 
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 #include "SoundRender_Emitter.h"
-
 #include <AL/efx.h>
 
 int		psSoundTargets			= 32;
@@ -44,6 +44,10 @@ CSoundRender_Core::CSoundRender_Core	()
 	fTimer_Value				= Timer.GetElapsed_sec();
 	fTimer_Delta				= 0.0f;
 	m_iPauseCounter				= 1;
+
+#ifndef _EDITOR
+	pSysNotification = new CNotificationClient;
+#endif
 }
 
 CSoundRender_Core::~CSoundRender_Core()
@@ -54,6 +58,8 @@ CSoundRender_Core::~CSoundRender_Core()
 #else
 	xr_delete					(geom_ENV);
 	xr_delete					(geom_SOM);
+
+	xr_delete					(pSysNotification);
 #endif
 }
 

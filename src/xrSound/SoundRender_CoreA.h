@@ -17,9 +17,11 @@
 
 #define FUNCTION_CAST(T, ptr) reinterpret_cast<T>(ptr)
 
-class CSoundRender_CoreA: public CSoundRender_Core
+class CSoundRender_CoreA: 
+	public CSoundRender_Core
 {
 	typedef CSoundRender_Core inherited;
+	friend class CNotificationClient;
 
 	ALCdevice* 				pDevice;
     ALCcontext*				pContext;
@@ -90,6 +92,10 @@ public:
 	virtual void			set_master_volume		( float f		);
 
 	virtual const Fvector&	listener_position		( ){return Listener.position;}
+
+	// EFX Slots
+	void LoadEffect();
+	void DestroyEffect();
 
 	// EFX listener
 	void set_listener(const CSoundRender_Environment& env);

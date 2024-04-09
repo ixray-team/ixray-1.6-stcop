@@ -1,12 +1,13 @@
-#ifndef SoundRender_CoreH
-#define SoundRender_CoreH
 #pragma once
                                           
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
 #include "SoundRender_Cache.h"
 
-class CSoundRender_Core					: public CSound_manager_interface
+class CNotificationClient;
+
+class CSoundRender_Core				
+	: public CSound_manager_interface
 {
     volatile BOOL						bLocked;
 protected:
@@ -15,6 +16,7 @@ protected:
 protected:
     BOOL								bListenerMoved;
 
+	CNotificationClient*				pSysNotification = nullptr;
 	CSoundRender_Environment			e_current;
 	CSoundRender_Environment			e_target;
 public:
@@ -126,4 +128,3 @@ public:
 	void								env_apply				();
 };
 extern CSoundRender_Core* SoundRender;
-#endif
