@@ -15,7 +15,7 @@ inline CActor* GetActor()
     if (IsGameTypeSingle())
         return Actor();
 
-    return smart_cast<CActorMP*>(Level().CurrentViewEntity());
+    return smart_cast<CActor*>(Level().CurrentViewEntity());
 }
 
 #define DECLARE_OUTFIT_PROTECTION_DELEGATE(protectionType) \
