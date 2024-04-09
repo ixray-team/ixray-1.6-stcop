@@ -123,6 +123,10 @@ public:
 	virtual void	 NewPdaContact		(CInventoryOwner*);
 	virtual void	 LostPdaContact		(CInventoryOwner*);
 
+	virtual void GiveInfoPortion(const char* infoPortion) override;
+	virtual void SetActorPosition(Fvector pos) override;
+	virtual void SetActorDirection(float dir) override;
+
 #ifdef DEBUG
 	void			 DumpTasks();
 #endif

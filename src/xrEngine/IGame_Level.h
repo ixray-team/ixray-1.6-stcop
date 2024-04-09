@@ -6,6 +6,7 @@
 #include "iinputreceiver.h"
 #include "xr_object_list.h"
 #include "../xrcdb/xr_area.h"
+#include "../xrEngine/IGame_Patrol.h"
 
 // refs
 class ENGINE_API CCameraManager;
@@ -116,6 +117,9 @@ public:
 	virtual float				GetEnvironmentTimeFactor() const = 0;
 	virtual void				SetEnvironmentTimeFactor(const float fTimeFactor) = 0;
 	virtual u64					GetEnvironmentGameTime() const = 0;
+
+	virtual	void				SpawnItem(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
+	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
 };
 
 //-----------------------------------------------------------------------------------------------------------

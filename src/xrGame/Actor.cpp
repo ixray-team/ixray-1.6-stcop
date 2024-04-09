@@ -289,6 +289,24 @@ xr_vector<xr_string> CActor::GetKnowedPortions() const
 	return SafeVector;
 }
 
+void CActor::GiveInfoPortion(const char* infoPortion) {
+	this->TransferInfo(infoPortion, true);
+}
+
+void CActor::SetActorPosition(Fvector pos) {
+	CCar* car = smart_cast<CCar*>(this->Holder());
+	if (car)
+		car->DoExit();
+
+	Fmatrix F = this->XFORM();
+	F.c = pos;
+	this->ForceTransform(F);
+}
+
+void CActor::SetActorDirection(float dir) {
+	this->cam_Active()->Set(dir, 0, 0);
+}
+
 void CActor::Load	(LPCSTR section )
 {
 	// Msg						("Loading actor: %s",section);
