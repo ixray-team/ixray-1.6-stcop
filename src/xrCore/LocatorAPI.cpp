@@ -321,8 +321,6 @@ IReader* open_chunk(FileHandle ptr, u32 ID)
 				return 0;
 		}
 	}
-	return 0;
-}
 #else
     u32 dwType;
     size_t dwSize = 0;
@@ -365,9 +363,9 @@ IReader* open_chunk(FileHandle ptr, u32 ID)
         if(-1 == lseek(ptr, dwSize, SEEK_CUR))
             return nullptr;
     }
-    return nullptr;
-};
 #endif
+	return nullptr;
+};
 
 void CLocatorAPI::LoadArchive(archive& A, LPCSTR entrypoint)
 {
@@ -876,6 +874,12 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		R_ASSERT(path_exist("$app_data_root$"));
 	};
 
+	// Load addons
+	if (fs_name != nullptr)
+	{
+		FS_Path* AddonsArchsPath = FS.get_path("$arch_dir_addons$");
+		FS.rescan_path(AddonsArchsPath->m_Path, AddonsArchsPath->m_Flags.is(FS_Path::flRecurse));
+	}
 
 	u32	M2 = Memory.mem_usage();
 	Msg("FS: %d files cached %d archives, %dKb memory used.", m_files.size(), m_archives.size(), (M2 - M1) / 1024);
