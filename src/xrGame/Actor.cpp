@@ -277,6 +277,10 @@ xr_vector<xr_string> CActor::GetKnowedPortions() const
 
 	auto KnownInfos = m_known_info_registry->registry().objects_ptr();
 
+	if (KnownInfos == nullptr) {
+		return {};
+	}
+
 	for (auto Info : *KnownInfos)
 	{
 		SafeVector.push_back(Info.c_str());

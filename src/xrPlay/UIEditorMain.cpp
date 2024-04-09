@@ -2,6 +2,8 @@
 #include "../xrScripts/stdafx.h"
 #include "../xrEngine/IGame_Actor.h"
 #include "../xrScripts/lua_ext.h"
+#include "../xrEngine/IGame_Level.h"
+#include "../xrEngine/string_table.h"
 
 struct StatisticHashMapEntry
 {
@@ -12,8 +14,20 @@ struct StatisticHashMapEntry
 
 void RenderActorInfos()
 {
-	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::ActorInfos)] || g_pIGameActor == nullptr)
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::ActorInfos)])
 		return;
+
+	if (g_pIGameActor == nullptr) {
+		return;
+	}
+
+	if (g_pGameLevel == nullptr) {
+		return;
+	}
+
+	if (!g_pGameLevel->bReady) {
+		return;
+	}
 
 	if (!ImGui::Begin("Actor InfoPortions", &Engine.External.EditorStates[static_cast<u8>(EditorUI::ActorInfos)])) {
 		ImGui::End();

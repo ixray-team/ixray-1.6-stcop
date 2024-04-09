@@ -189,7 +189,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 			if (ImGui::BeginMenu("View")) {
 				ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
 				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
-				ImGui::MenuItem("Actor Info Portions", nullptr, &States[static_cast<u8>(EditorUI::ActorInfos)]);
+				ImGui::MenuItem("Actor InfoPortions", nullptr, &States[static_cast<u8>(EditorUI::ActorInfos)]);
 				ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
 				ImGui::EndMenu();
 			}
