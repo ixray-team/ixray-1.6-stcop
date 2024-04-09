@@ -227,7 +227,11 @@ bool	CLevel::net_start_client6				()
 
 		if (game)
 		{
-			game->OnConnected				();
+			if (!g_dedicated_server)
+			{
+				game->OnConnected();
+			}
+
 			if (game->Type() != eGameIDSingle)
 			{
 				m_file_transfer = xr_new<file_transfer::client_site>();

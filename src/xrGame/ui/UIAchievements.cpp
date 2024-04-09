@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "pch_script.h"
+
 #include "UIAchievements.h"
 #include "UIScrollView.h"
 #include "UIXmlInit.h"
@@ -7,7 +8,10 @@
 #include "UIHint.h"
 #include "UIStatic.h"
 #include "UICursor.h"
+
 #include "../ai_space.h"
+#include "../Level.h"
+
 #include "../../xrEngine/string_table.h"
 
 CUIAchievements::CUIAchievements(CUIScrollView* parent):m_parent(parent)
@@ -37,6 +41,9 @@ void CUIAchievements::init_from_xml(CUIXml& xml)
 }
 void CUIAchievements::Update()
 {
+	if (!IsGameTypeSingle())
+		return;
+
 	if(ParentHasMe() && !m_repeat)
 		return;
 

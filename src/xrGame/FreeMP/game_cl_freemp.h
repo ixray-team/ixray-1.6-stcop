@@ -17,14 +17,14 @@ public:
 	virtual CUIGameCustom* createGameUI();
 	virtual void SetGameUI(CUIGameCustom*);
 
-
 	virtual	void net_import_state(NET_Packet& P);
 	virtual	void net_import_update(NET_Packet& P);
 
-
 	virtual	bool OnKeyboardPress(int key);
+	virtual void OnConnected();
 
 	virtual LPCSTR GetGameScore(string32& score_dest);
 	virtual bool Is_Rewarding_Allowed()  const { return false; };
-
 };
+
+bool IsGameTypeSingleCompatible();

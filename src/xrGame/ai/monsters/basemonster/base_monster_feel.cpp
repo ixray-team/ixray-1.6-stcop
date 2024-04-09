@@ -104,7 +104,8 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.Write_Packet(l_P);
 		u_EventSend	(l_P);
 		
-		if (pEntityNC == Actor() && draw_hit_marks) {
+		if (IsGameTypeSingle() && pEntityNC == Actor() && draw_hit_marks)
+		{
 			START_PROFILE("BaseMonster/Animation/HitEntity");
 
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false);

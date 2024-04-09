@@ -15,6 +15,5 @@ public:
 	virtual ~CUIGameFMP();
 
 	virtual void SetClGame(game_cl_GameState* g);
-	virtual void HideShownDialogs();
 	virtual bool IR_UIOnKeyboardPress(int dik);
 };

@@ -13,6 +13,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIMessagesWindow.h"
 #include "ui/UIHudStatesWnd.h"
+#include "ui/UITalkWnd.h"
 #include "actor.h"
 #include "inventory.h"
 #include "game_cl_base.h"
@@ -37,18 +38,22 @@ struct predicate_find_stat
 };
 
 CUIGameCustom::CUIGameCustom()
-:m_msgs_xml(nullptr),m_ActorMenu(nullptr),m_PdaMenu(nullptr),m_window(nullptr),UIMainIngameWnd(nullptr),m_pMessagesWnd(nullptr)
+	: m_msgs_xml(nullptr),		m_ActorMenu(nullptr), 
+	  m_PdaMenu(nullptr),		m_window(nullptr), 
+	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr)
 {
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
 
+	TalkMenu = new CUITalkWnd();
 }
 bool g_b_ClearGameCaptions = false;
 
 CUIGameCustom::~CUIGameCustom()
 {
-	delete_data				(m_custom_statics);
+	delete_data(m_custom_statics);
 	g_b_ClearGameCaptions	= false;
+	delete_data(TalkMenu);
 }
 
 
@@ -239,6 +244,71 @@ void CUIGameCustom::HidePdaMenu()
 	{
 		m_PdaMenu->HideDialog();
 	}
+}
+
+void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner)
+{
+	//.	if( MainInputReceiver() )	return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pOtherOwner);
+
+	m_ActorMenu->SetMenuMode(mmTrade);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void  CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech)
+{
+	//.	if( MainInputReceiver() )	return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pMech);
+
+	m_ActorMenu->SetMenuMode(mmUpgrade);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::StartTalk(bool disable_break)
+{
+	RemoveCustomStatic("main_task");
+	RemoveCustomStatic("secondary_task");
+
+	TalkMenu->b_disable_break = disable_break;
+	TalkMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::HideShownDialogs()
+{
+	HideActorMenu();
+	HidePdaMenu();
+	CUIDialogWnd* mir = TopInputReceiver();
+	if (mir && mir == TalkMenu)
+	{
+		mir->HideDialog();
+	}
+}
+
+void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner) //Deadbody search
+{
+	if (TopInputReceiver())		return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pOtherOwner);
+
+	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Deadbody search
+{
+	if (TopInputReceiver())		return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetInvBox(pBox);
+	VERIFY(pBox);
+
+	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
+	m_ActorMenu->ShowDialog(true);
 }
 
 void CUIGameCustom::SetClGame(game_cl_GameState* g)

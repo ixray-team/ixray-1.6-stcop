@@ -30,4 +30,5 @@ public:
 	virtual		void				OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
 
 	virtual		void				Update();
+	virtual		BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL bForced = false);
 };

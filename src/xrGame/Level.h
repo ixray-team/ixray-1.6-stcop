@@ -477,6 +477,8 @@ IC bool		OnServer()			{ return Level().IsServer();}
 IC bool		OnClient()			{ return Level().IsClient();}
 IC bool		IsGameTypeSingle()	{ return (g_pGamePersistent->GameType() == eGameIDSingle);};
 
+bool IsGameTypeSingleCompatible();
+
 //class  CPHWorld;
 //extern CPHWorld*				ph_world;
 extern BOOL						g_bDebugEvents;

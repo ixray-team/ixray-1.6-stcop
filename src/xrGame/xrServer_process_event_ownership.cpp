@@ -1,7 +1,8 @@
 #include "stdafx.h"
-#include "xrserver.h"
-#include "xrserver_objects.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "Level.h"
+#include "xrServer.h"
+#include "xrServer_Objects.h"
+#include "xrServer_Objects_Alife_Monsters.h"
 #include "xrServer_svclient_validation.h"
 
 void ReplaceOwnershipHeader	(NET_Packet& P)
@@ -54,18 +55,15 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time,
 	xrClientData*		c_entity		= e_entity->owner;
 	xrClientData*		c_from			= ID_to_client	(sender);
 
-	if ( (GetServerClient() != c_from) && (c_parent != c_from) )
+	if (game->Type() == eGameIDSingle && (GetServerClient() != c_from) && (c_parent != c_from))
 	{
 		// trust only ServerClient or new_ownerClient
 		return;
 	}
 
 	CSE_ALifeCreatureAbstract* alife_entity = smart_cast<CSE_ALifeCreatureAbstract*>(e_parent);
-	if (alife_entity && !alife_entity->g_Alive() && game->Type()!=eGameIDSingle)
+	if (alife_entity && !alife_entity->g_Alive() && !IsGameTypeSingleCompatible())
 	{
-#ifdef MP_LOGGING
-		Msg("--- SV: WARNING: dead player [%d] tries to take item [%d]", id_parent, id_entity);
-#endif //#ifdef MP_LOGGING
 		return;
 	};
 

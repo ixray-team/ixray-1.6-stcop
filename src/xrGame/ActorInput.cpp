@@ -510,14 +510,13 @@ void CActor::ActorUse()
 		m_pUsableObject->use(this);
 	}
 	
-	if ( m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable() )
+	if (m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
 	{
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-		if ( pGameSP ) //single
+		if (IsGameTypeSingleCompatible())
 		{
-			if ( !m_pInvBoxWeLookingAt->closed() )
+			if (!m_pInvBoxWeLookingAt->closed())
 			{
-				pGameSP->StartCarBody( this, m_pInvBoxWeLookingAt );
+				CurrentGameUI()->StartCarBody(this, m_pInvBoxWeLookingAt);
 			}
 		}
 		return;

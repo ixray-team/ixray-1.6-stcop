@@ -342,15 +342,24 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					}
 				}
 
-				u32 i = 0;
-				while(all_lists[i])
+				if (!IsGameTypeSingle() && pItem->parent_id() != m_pActorInvOwner->object_id())
 				{
-					CUIDragDropListEx* curr = all_lists[i];
-					if(RemoveItemFromList(curr, pItem))
+					CUIDragDropListEx* lst_to_remove = NULL;
+					lst_to_remove = GetListByType(iDeadBodyBag);
+					RemoveItemFromList(lst_to_remove, pItem);
+				}
+				else
+				{
+					u32 i = 0;
+					while (all_lists[i])
 					{
-						break;
+						CUIDragDropListEx* curr = all_lists[i];
+						if (RemoveItemFromList(curr, pItem))
+						{
+							break;
+						}
+						++i;
 					}
-					++i;
 				}
 				
 				for (u8 i = 1; i <= m_slot_count; ++i)

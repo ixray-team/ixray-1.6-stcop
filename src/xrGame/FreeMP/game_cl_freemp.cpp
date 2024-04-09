@@ -4,6 +4,7 @@
 #include "../../xrEngine/xr_level_controller.h"
 #include "UIGameFreeMP.h"
 #include "actor_mp_client.h"
+#include "game_sv_freemp.h"
 
 game_cl_freemp::game_cl_freemp()
 {
@@ -35,6 +36,21 @@ void game_cl_freemp::SetGameUI(CUIGameCustom* uigame)
 	R_ASSERT(m_game_ui);
 }
 
+void game_cl_freemp::OnConnected()
+{
+	inherited::OnConnected();
+
+	if (m_game_ui)
+	{
+		R_ASSERT(!g_dedicated_server);
+		m_game_ui = smart_cast<CUIGameFMP*>	(CurrentGameUI());
+		m_game_ui->SetClGame(this);
+	}
+
+	//luabind::functor<void>	funct;
+	//R_ASSERT(ai().script_engine().functor("mp_game_cl.on_connected", funct));
+	//funct();
+}
 
 void game_cl_freemp::net_import_state(NET_Packet& P)
 {
@@ -88,4 +104,22 @@ LPCSTR game_cl_freemp::GetGameScore(string32& score_dest)
 	s32 frags = local_player ? local_player->frags() : 0;
 	xr_sprintf(score_dest, "[%d]", frags);
 	return score_dest;
+}
+
+BOOL game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
+{
+	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
+	if (!e_who)
+		return TRUE;
+
+	CSE_Abstract* e_entity = m_server->ID_to_entity(eid_what);
+	if (!e_entity)
+		return FALSE;
+
+	return TRUE;
+}
+
+bool IsGameTypeSingleCompatible()
+{
+	return IsGameTypeSingle() || (g_pGamePersistent->GameType() == eGameIDFreeMP);
 }

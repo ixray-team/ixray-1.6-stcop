@@ -65,6 +65,15 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 
 			itm->H_SetParent	(nullptr, dont_create_shell);
 
+			if (!IsGameTypeSingle() && CurrentGameUI())
+			{
+				if (CurrentGameUI()->ActorMenu().GetMenuMode() == mmDeadBodySearch)
+				{
+					if (this == CurrentGameUI()->ActorMenu().GetInvBox())
+						CurrentGameUI()->OnInventoryAction(smart_cast<CInventoryItem*>(itm), GE_OWNERSHIP_REJECT);
+				}
+			}
+
 			if( m_in_use )
 			{
 				CGameObject* GO		= smart_cast<CGameObject*>(itm);

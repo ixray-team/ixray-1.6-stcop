@@ -74,6 +74,9 @@ public:
 };
 
 extern CMapListHelper	gMapListHelper;
+class CUITalkWnd;
+class CInventoryOwner;
+class CInventoryBox;
 
 class CUIGameCustom :public DLL_Pure, public CDialogHolder
 {
@@ -88,10 +91,10 @@ protected:
 	CUIPdaWnd*			m_PdaMenu;
 
 	bool				m_bShowGameIndicators;
-
 public:
 	CUIMainIngameWnd*	UIMainIngameWnd;
 	CUIMessagesWindow*	m_pMessagesWnd;
+	CUITalkWnd*			TalkMenu;
 
 	virtual void		SetClGame				(game_cl_GameState* g);
 	virtual void		OnInventoryAction		(PIItem item, u16 action_type);
@@ -120,7 +123,13 @@ public:
 	bool				CrosshairShown			()					{return !!psHUD_Flags.test	(HUD_CROSSHAIR_RT);}
 
 	
-	virtual void		HideShownDialogs		(){};
+	void				StartTalk				(bool disable_break);
+	void				StartTrade				(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
+	void				StartUpgrade			(CInventoryOwner* pActorInv, CInventoryOwner* pMech);
+	void				StartCarBody			(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
+	void				StartCarBody			(CInventoryOwner* pActorInv, CInventoryBox* pBox);
+
+	virtual void		HideShownDialogs		();
 
 	SDrawStaticStruct*	AddCustomStatic			(LPCSTR id, bool bSingleInstance);
 	SDrawStaticStruct*	AddHudMessage			(LPCSTR text, LPCSTR text2 = nullptr, LPCSTR id = nullptr, bool trnslate_second_text = false, float time = 3.f, bool bSingleInstance = true);
