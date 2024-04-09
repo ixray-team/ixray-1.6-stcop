@@ -371,14 +371,24 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_o
 
 	cell_size.mul(base_scale);
 
-	if (b_rotate) {
+	if (b_rotate)
+	{
 		s->SetWndSize(Fvector2().set(cell_size.y, cell_size.x));
 		Fvector2 new_offset;
-		new_offset.x = addon_offset.y * base_scale.x;
+		new_offset.x = addon_offset.y * base_scale.y;
 		new_offset.y = GetHeight() - addon_offset.x * base_scale.x - cell_size.x;
 		addon_offset = new_offset;
 		addon_offset.x *= UI().get_current_kx();
-	} else {
+	} 
+	else if (Heading() && !b_rotate)
+	{
+		addon_offset.mul(base_scale);
+		addon_offset.x *= UI().get_current_kx();
+		cell_size.x *= UI().get_current_kx();
+		s->SetWndSize(cell_size);
+	}
+	else
+	{
 		s->SetWndSize(cell_size);
 		addon_offset.mul(base_scale);
 	}
