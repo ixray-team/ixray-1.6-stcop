@@ -626,7 +626,7 @@ bool CHudItem::TryPlayAnimIdle()
 		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
 		if (pActor)
 		{
-			u32 state = Actor()->GetMovementState(eReal);
+			u32 state = pActor->GetMovementState(eReal);
 			if (state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
 				PlayAnimIdleSprint();

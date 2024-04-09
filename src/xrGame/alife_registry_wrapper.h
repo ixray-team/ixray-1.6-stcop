@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////
-// alife_registry_wrapper.h - обертка для реестра, предусматривающая работу
-//							  без alife()
+// alife_registry_wrapper.h - РѕР±РµСЂС‚РєР° РґР»СЏ СЂРµРµСЃС‚СЂР°, РїСЂРµРґСѓСЃРјР°С‚СЂРёРІР°СЋС‰Р°СЏ СЂР°Р±РѕС‚Сѓ
+//							  Р±РµР· alife()
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include "ai_space.h"
 #include "alife_simulator.h"
-
+#include "Level.h"
 
 template <typename _registry_type>
 class CALifeRegistryWrapper
@@ -25,10 +25,10 @@ public:
 	const typename _registry_type::_data*	objects_ptr				(u16 id);
 
 private:
-	//id - владельца реестра
+	//id - РІР»Р°РґРµР»СЊС†Р° СЂРµРµСЃС‚СЂР°
 	u16	holder_id;
 
-	//реестр на случай, если нет ALife (для отладки)
+	//СЂРµРµСЃС‚СЂ РЅР° СЃР»СѓС‡Р°Р№, РµСЃР»Рё РЅРµС‚ ALife (РґР»СЏ РѕС‚Р»Р°РґРєРё)
 //	typename _registry_type::_data	local_registry;
 	typename _registry_type::OBJECT_REGISTRY local_registry;
 };

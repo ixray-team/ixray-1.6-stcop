@@ -60,8 +60,14 @@ CActor*		g_actor						= nullptr;
 
 CActor* Actor()
 {
-	VERIFY(g_actor);
-	return g_actor;
+	if (IsGameTypeSingle())
+	{
+		VERIFY(g_actor);
+		return g_actor;
+	}
+
+	CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	return pActor;
 };
 
 //--------------------------------------------------------------------

@@ -74,7 +74,7 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	{
 		load(p.m_game_or_spawn, !xr_strcmp(p.m_new_or_load, "load") ? false : true, !xr_strcmp(p.m_new_or_load, "new"));
 	}
-	else if(!xr_strcmp(p.m_alife, "alife"))
+	else //if(!xr_strcmp(p.m_alife, "alife"))
 	{
 		load("alife", false, true);
 	}
