@@ -188,27 +188,33 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	CImGuiManager::Instance().Subscribe("dxDebugRenderer", CImGuiManager::ERenderPriority::eHight + 1,
 	[]()
 	{
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty())
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty() ||
+			(g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
 			return;
 
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+		constexpr auto DebugFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
+
+		ImGuiViewport* ViewPort = ImGui::GetMainViewport();
+
+		ImGui::SetNextWindowPos(ViewPort->WorkPos);
+		ImGui::SetNextWindowSize(ViewPort->WorkSize);
 		ImGui::SetNextWindowBgAlpha(0.0f);
+		ImGui::SetNextWindowViewport(ViewPort->ID);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		if (ImGui::Begin("DebugRender", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
+		if (ImGui::Begin("DebugRender", nullptr, DebugFlags))
 		{
 			ImDrawList& CmdList = *ImGui::GetWindowDrawList();
-			for (const auto& Line : DebugRenderImpl.m_lines) 
+			for (const auto& Line : DebugRenderImpl.m_lines)
 			{
 				CmdList.AddLine(
-					ImVec2(Line.first.p.x , Line.first.p.y ),
-					ImVec2(Line.second.p.x, Line.second.p.y),
+					ImVec2(Line.first.p.x + ViewPort->WorkPos.x, Line.first.p.y + ViewPort->WorkPos.y),
+					ImVec2(Line.second.p.x + ViewPort->WorkPos.x, Line.second.p.y + ViewPort->WorkPos.y),
 					Line.first.color
 				);
 			}
-			DebugRenderImpl.m_lines.clear(); 
+			DebugRenderImpl.m_lines.clear();
 		}
 
 		ImGui::End();
