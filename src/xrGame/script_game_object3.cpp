@@ -1165,6 +1165,9 @@ Fvector	CScriptGameObject::head_orientation		() const
 
 void CScriptGameObject::info_add(LPCSTR text)
 {
+	if (g_dedicated_server)
+		return;
+
 #ifdef DEBUG
 	DBG().object_info(&object(), this).add_item(text, color_xrgb(255, 0, 0), 0);
 #endif
@@ -1172,6 +1175,9 @@ void CScriptGameObject::info_add(LPCSTR text)
 
 void CScriptGameObject::info_clear()
 {
+	if (g_dedicated_server)
+		return;
+
 #ifdef DEBUG
 	DBG().object_info(&object(),this).clear		();
 #endif

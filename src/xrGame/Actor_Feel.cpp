@@ -99,7 +99,11 @@ void	CActor::PickupModeUpdate_COD	()
 		
 	if (!g_Alive() || eacFreeLook == cam_active)
 	{
-		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(nullptr);
+		if (!g_dedicated_server)
+		{
+			CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(nullptr);
+		}
+
 		return;
 	};
 	
@@ -165,7 +169,10 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = nullptr;
 	}
 
-	CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	if (!g_dedicated_server)
+	{
+		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	}
 
 	if (pNearestItem && pPickup->GetPickupMode())
 	{

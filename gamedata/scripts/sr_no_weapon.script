@@ -44,6 +44,10 @@ function action_no_weapon:update( delta )
 	
 	self:switch_state( actor )
 	
+	if (IsDedicated()) then
+		return
+	end
+	
 	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("can_use_weapon_now")
 	if custom_static ~= nil and game.get_game_time():diffSec(self.inited_time) > 30 then
@@ -79,6 +83,11 @@ end
 function action_no_weapon:zone_enter()
 	self.state = state_inside
 	bind_stalker.hide_weapon(self.object:id())
+
+	if (IsDedicated()) then
+		return
+	end
+
 	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("can_use_weapon_now")
 	if custom_static ~= nil then

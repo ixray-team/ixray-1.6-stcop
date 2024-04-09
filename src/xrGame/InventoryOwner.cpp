@@ -437,7 +437,12 @@ void CInventoryOwner::SetCommunity	(CHARACTER_COMMUNITY_INDEX new_community)
 		EA->ChangeTeam(CharacterInfo().Community().team(), EA->g_Squad(), EA->g_Group());
 	}
 
-	CSE_Abstract* e_entity = ai().alife().objects().object(EA->ID(), false);
+	CSE_Abstract* e_entity = nullptr;
+	if (IsGameTypeSingle())
+		e_entity = ai().alife().objects().object(EA->ID(), false);
+	else
+		e_entity = smart_cast<CSE_Abstract*>(Level().Objects.net_Find(EA->ID()));
+
 	if (!e_entity) return;
 
 	CSE_ALifeTraderAbstract* trader		= smart_cast<CSE_ALifeTraderAbstract*>(e_entity);

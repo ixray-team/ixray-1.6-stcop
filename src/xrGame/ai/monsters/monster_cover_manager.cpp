@@ -102,8 +102,10 @@ void CCoverEvaluator::initialize(const Fvector &start_position)
 {
 	inherited::initialize	(start_position);
 	m_current_distance		= m_start_position.distance_to(m_dest_position);
+
 #ifdef DEBUG
-	DBG().level_info(this).clear();
+	if (!g_dedicated_server)
+		DBG().level_info(this).clear();
 #endif
 }
 

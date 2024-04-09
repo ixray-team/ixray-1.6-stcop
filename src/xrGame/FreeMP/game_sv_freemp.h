@@ -15,6 +15,7 @@ public:
 
 
 	virtual		bool				UseSKin() const { return false; }
+	virtual		void				SetSkin(CSE_Abstract* E, u16 Team, u16 ID);
 
 	virtual		LPCSTR				type_name() const { return "freemp"; };
 	void							net_Relcase(CObject* O) {};

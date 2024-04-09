@@ -36,7 +36,7 @@
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 {
-	if (!g_Alive()) return SDebugInfo();
+	if (!g_Alive() || g_dedicated_server) return SDebugInfo();
 
  	if (m_show_debug_info == 0 ) {
  		DBG().text(this).clear();
@@ -173,7 +173,7 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 
 void CBaseMonster::debug_fsm()
 {
-	if (!g_Alive()) return;
+	if (!g_Alive() || g_dedicated_server) return;
 
 	if (!psAI_Flags.test(aiMonsterDebug)) {
 		DBG().object_info(this,this).clear ();

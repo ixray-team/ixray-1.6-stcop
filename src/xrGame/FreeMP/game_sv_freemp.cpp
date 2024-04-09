@@ -71,6 +71,58 @@ void game_sv_freemp::OnPlayerConnectFinished(ClientID id_who)
 	};
 }
 
+void game_sv_freemp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
+{
+	if (!E) return;
+	//-------------------------------------------
+	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
+	if (!pV) return;
+	//-------------------------------------------
+	string256 SkinName;
+	xr_strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
+	//загружены ли скины для этой комманды
+//	if (SkinID != -1) ID = u16(SkinID);
+
+	if (!TeamList.empty() &&
+		TeamList.size() > Team &&
+		!TeamList[Team].aSkins.empty())
+	{
+		//загружено ли достаточно скинов для этой комманды
+		if (TeamList[Team].aSkins.size() > ID)
+		{
+			xr_strcat(SkinName, TeamList[Team].aSkins[ID].c_str());
+		}
+		else
+			xr_strcat(SkinName, TeamList[Team].aSkins[0].c_str());
+	}
+	else
+	{
+		//скины для такой комманды не загружены
+		switch (Team)
+		{
+		case 0:
+			xr_strcat(SkinName, "stalker_hood_multiplayer");
+			break;
+		case 1:
+			xr_strcat(SkinName, "soldat_beret");
+			break;
+		case 2:
+			xr_strcat(SkinName, "stalker_black_mask");
+			break;
+		default:
+			R_ASSERT2(0, "Unknown Team");
+			break;
+		};
+	};
+
+	xr_strcat(SkinName, ".ogf");
+	Msg("* Skin - %s", SkinName);
+	int len = xr_strlen(SkinName);
+	R_ASSERT2(len < 64, "Skin Name is too LONG!!!");
+	pV->set_visual(SkinName);
+	//-------------------------------------------
+};
+
 void game_sv_freemp::OnPlayerReady(ClientID id_who)
 {
 	switch (Phase())

@@ -458,7 +458,11 @@ void CBaseMonster::ProcessScripts()
 	m_script_processing_active	= false;
 
 #ifdef DEBUG	
-	if (psAI_Flags.test(aiMonsterDebug)) {
+	if (g_dedicated_server)
+		return;
+	
+	if (psAI_Flags.test(aiMonsterDebug)) 
+	{
 		DBG().object_info(this,this).remove_item (u32(0));
 		DBG().object_info(this,this).remove_item (u32(1));
 		DBG().object_info(this, this).add_item(*cName(), color_xrgb(255, 0, 0), 0);
