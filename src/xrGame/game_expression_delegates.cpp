@@ -115,14 +115,14 @@ DECLARE_ZONEMAXPOWER_PROTECTION_DELEGATE(eHitTypeExplosion);
 int GetActorPDAContactsName()	{return (int)GetActor()->GetPDA()->ActiveContactsNum();	        }
 const char* GetPlayerName()		{ return GetActor()->Name();					    			    }
 
-float GetPlayerHealth()			  { return GetActor()->conditions().GetHealth();				    }
-float GetPlayerPsyHealth()		  { return GetActor()->conditions().GetPsy();				        }
-float GetPlayerRad()			  { return GetActor()->conditions().GetRadiation();			    }
-float GetPlayerPower()			  { return GetActor()->conditions().GetPower();				    }
-float GetPlayerSatiety()		  { return GetActor()->conditions().GetSatiety();				    }
-float GetPlayerBleedingSpeed()	  { return GetActor()->conditions().BleedingSpeed();				}
-float GetPlayerRestoreSpeed()	  { return GetActor()->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / GetActor()->conditions().GetMaxPowerRestoreSpeed();}
-float GetOutfiteMaxFireWoundProtection() { return GetActor()->conditions().GetMaxFireWoundProtection();	}
+float GetPlayerHealth()			            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetHealth();				    }
+float GetPlayerPsyHealth()		            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetPsy();				        }
+float GetPlayerRad()			            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetRadiation();			    }
+float GetPlayerPower()			            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetPower();				    }
+float GetPlayerSatiety()		            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetSatiety();				    }
+float GetPlayerBleedingSpeed()	            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().BleedingSpeed();				}
+float GetPlayerRestoreSpeed()	            { return GetActor() == nullptr ? 0.f : GetActor()->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / GetActor()->conditions().GetMaxPowerRestoreSpeed();}
+float GetOutfiteMaxFireWoundProtection()    { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetMaxFireWoundProtection();	}
 
 void RegisterExpressionDelegates ()
 {
