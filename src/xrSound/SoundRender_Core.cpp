@@ -9,7 +9,7 @@
 #include "SoundRender_Emitter.h"
 #include <AL/efx.h>
 
-int		psSoundTargets			= 32;
+int		psSoundTargets			= 1024;
 Flags32	psSoundFlags			= {ss_Hardware | ss_EFX};
 float	psSoundOcclusionScale	= 0.5f;
 float	psSoundCull				= 0.01f;
@@ -20,7 +20,7 @@ float	psSoundVFactor			= 1.0f;
 float psSoundTimeFactor = 1.0f;       //--#SM+#--
 float psSoundLinearFadeFactor = 0.4f; //--#SM+#--
 float	psSoundVMusic			= 1.0f;
-int		psSoundCacheSizeMB		= 32;
+int		psSoundCacheSizeMB		= 256;
 
 CSoundRender_Core*				SoundRender = nullptr;
 CSound_manager_interface*		Sound		= nullptr;
