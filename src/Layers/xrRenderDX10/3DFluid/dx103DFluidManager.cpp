@@ -377,13 +377,17 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData &FluidData)
 	PIX_EVENT(DetachAndSwapFluidData);
 
 	ID3DTexture3D	*pTTarg = (ID3DTexture3D*) pRTTextures[RENDER_TARGET_COLOR]->surface_get();
+
+	if (pTTarg == nullptr)
+		return;
+
 	ID3DTexture3D	*pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
 	FluidData.SetTexture(dx103DFluidData::VP_COLOR, pTTarg);
 	pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
 	_RELEASE(pTTarg);
 	_RELEASE(pTSrc);
 
-	ID3DRenderTargetView	*pV = FluidData.GetView(dx103DFluidData::VP_COLOR);
+	ID3DRenderTargetView *pV = FluidData.GetView(dx103DFluidData::VP_COLOR);
 	FluidData.SetView(dx103DFluidData::VP_COLOR, pRenderTargetViews[RENDER_TARGET_COLOR]);
 	_RELEASE(pRenderTargetViews[RENDER_TARGET_COLOR]);
 	pRenderTargetViews[RENDER_TARGET_COLOR] = pV;
