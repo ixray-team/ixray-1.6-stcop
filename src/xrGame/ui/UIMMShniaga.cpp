@@ -52,8 +52,6 @@ CUIMMShniaga::~CUIMMShniaga()
 	delete_data(m_buttons_new_network);
 }
 
-extern CActor* g_actor;
-
 void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 {
 	string256 _path;
@@ -100,8 +98,6 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 void CUIMMShniaga::OnDeviceReset()
 {
 }
-
-extern CActor*		g_actor;
 
 void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path)
 {

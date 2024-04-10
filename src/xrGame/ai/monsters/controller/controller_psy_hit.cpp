@@ -147,8 +147,6 @@ bool check_actor_visibility (const Fvector trace_from,
 	Fvector trace_dir;
 	trace_dir.sub(trace_to, trace_from);
 
-	//DBG().level_info(this).add_item	(trace_from,trace_to,color_xrgb(0,150,150));
-
 
 	collide::rq_result l_rq;
 	l_rq.O = nullptr;
@@ -164,54 +162,36 @@ bool check_actor_visibility (const Fvector trace_from,
 
 } // namespace detail
 
-extern CActor* g_actor;
-
 bool CControllerPsyHit::see_enemy ()
 {
 	return	m_object->EnemyMan.see_enemy_now(Actor());
-// 	using namespace detail;
-// 	Fvector const self_head = get_head_position(m_object);
-// 	Fvector actor_center;
-// 	Actor()->Center(actor_center);
-// 	Fvector self_center;
-// 	m_object->Center(self_center);
-// 
-// 	if ( check_actor_visibility(self_head, get_head_position(Actor()), m_object) &&
-// 		 check_actor_visibility(self_head, actor_center, m_object) &&
-// 		 check_actor_visibility(self_center, get_head_position(Actor()), m_object) &&
-// 		 check_actor_visibility(self_center, actor_center, m_object) )
-// 	{
-// 		return true;
-// 	}
-// 
-// 	return false;
 }
 
-bool CControllerPsyHit::check_conditions_final()
-{
-	if (!m_object->g_Alive())						
-		return false;
-	
-	if (!g_actor)									
-		return false;
-	
-// 	if (m_object->EnemyMan.get_enemy() != Actor())	
-// 		return false;
-	
- 	if (!m_object->EnemyMan.is_enemy(Actor()))
- 		return false;
+bool CControllerPsyHit::check_conditions_final() {
+	CActor* pActor = Actor();
 
-	if (!Actor()->g_Alive())						
+	if(!m_object->g_Alive())
 		return false;
 
-	if ( m_object->Position().distance_to_xz(Actor()->Position()) < m_min_tube_dist - 2 )
+	if(pActor == nullptr)
 		return false;
-	
+
+	if(!m_object->EnemyMan.is_enemy(pActor))
+		return false;
+
+	if(!pActor->g_Alive())
+		return false;
+
+	if(m_object->Position().distance_to_xz(pActor->Position()) < m_min_tube_dist - 2)
+		return false;
+
 	return	see_enemy();
 }
 
 void CControllerPsyHit::death_glide_start()
 {
+	CActor* pActor = Actor();
+
 	if (!check_conditions_final()) {
 		m_man->deactivate	(this);
 		return;
@@ -226,10 +206,10 @@ void CControllerPsyHit::death_glide_start()
 	}
 
 	// Start effector
-	CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
+	CEffectorCam* ce = pActor->Cameras().GetCamEffector(eCEControllerPsyHit);
 	VERIFY(!ce);
 	
-	Fvector src_pos		= Actor()->cam_Active()->vPosition;
+	Fvector src_pos		= pActor->cam_Active()->vPosition;
 	Fvector target_pos	= m_object->Position();
 	target_pos.y		+= 1.2f;
 	
@@ -240,7 +220,7 @@ void CControllerPsyHit::death_glide_start()
 	dir.normalize		();
 
 
-	float const actor_psy_immunity	=	Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
+	float const actor_psy_immunity	= pActor->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
 
 	target_pos.mad		(src_pos,dir, 0.01f + actor_psy_immunity*(dist-4.8f) );
 
@@ -248,7 +228,7 @@ void CControllerPsyHit::death_glide_start()
 	float const base_fov	=	g_fov;
 	float const dest_fov	=	g_fov - (g_fov-10.f)*actor_psy_immunity;
 	
-	Actor()->Cameras().AddCamEffector(new CControllerPsyHitCamEffector(eCEControllerPsyHit, src_pos,target_pos, 
+	pActor->Cameras().AddCamEffector(new CControllerPsyHitCamEffector(eCEControllerPsyHit, src_pos,target_pos,
 										m_man->animation().motion_time(m_stage[1], m_object->Visual()),
 										base_fov, dest_fov));
 
@@ -259,15 +239,15 @@ void CControllerPsyHit::death_glide_start()
 	float h,p;
 	dir.getHP(h,p);
 	dir.setHP(h,p+PI_DIV_3);
-	Actor()->character_physics_support()->movement()->ApplyImpulse(dir,Actor()->GetMass() * 530.f);
+	pActor->character_physics_support()->movement()->ApplyImpulse(dir, pActor->GetMass() * 530.f);
 
 	set_sound_state					(eStart);
 
 	NET_Packet			P;
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+	pActor->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, pActor->ID());
 	P.w_u16				(INV_STATE_BLOCK_ALL);
 	P.w_u8				(u8(true));
-	Actor()->u_EventSend(P);
+	pActor->u_EventSend(P);
 	
 	m_blocked			= true;
 
@@ -276,7 +256,7 @@ void CControllerPsyHit::death_glide_start()
 	SControlDirectionData			*ctrl_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir); 
 	VERIFY							(ctrl_dir);
 	ctrl_dir->heading.target_speed	= 3.f;
-	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(Actor()->Position());
+	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(pActor->Position());
 
 	//////////////////////////////////////////////////////////////////////////
 }
@@ -297,13 +277,6 @@ void CControllerPsyHit::death_glide_end()
 
 void CControllerPsyHit::update_frame()
 {
-	//if (m_sound_state == eStart) {
-	//	CController *monster = smart_cast<CController *>(m_object);
-	//	if (!monster->m_sound_tube_start._feedback()) {
-	//		m_sound_state = ePull;
-	//		monster->m_sound_tube_pull.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
-	//	}
-	//}
 }
 
 void CControllerPsyHit::set_sound_state(ESoundState state)
@@ -321,9 +294,6 @@ void CControllerPsyHit::set_sound_state(ESoundState state)
 	if (state == eHit) {
 		if (monster->m_sound_tube_start._feedback())	monster->m_sound_tube_start.stop();
 		if (monster->m_sound_tube_pull._feedback())		monster->m_sound_tube_pull.stop();
-		
-		//monster->m_sound_tube_hit_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		//monster->m_sound_tube_hit_right.play_at_pos(Actor(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
 	} else 
 	if (state == eNone) {
 		if (monster->m_sound_tube_start._feedback())	monster->m_sound_tube_start.stop();
@@ -335,11 +305,8 @@ void CControllerPsyHit::set_sound_state(ESoundState state)
 }
 
 void CControllerPsyHit::hit()
-{
-	//CController *monster	= smart_cast<CController *>(m_object);
-	
+{	
 	set_sound_state			(eHit);
-	//m_object->Hit_Psy		(Actor(), monster->m_tube_damage);
 }
 
 void CControllerPsyHit::stop ()

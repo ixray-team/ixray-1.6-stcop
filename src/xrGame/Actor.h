@@ -776,5 +776,6 @@ extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);
 IC	CActorCondition	&CActor::conditions	() const{ VERIFY(m_entity_condition); return(*m_entity_condition);}
 
 extern CActor*		g_actor;
+extern CActor*		g_actor_single;
 CActor*				Actor		();
 extern const float	s_fFallTime;

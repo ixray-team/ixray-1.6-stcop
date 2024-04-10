@@ -56,18 +56,22 @@ int			g_cl_InterpolationType		= 0;
 u32			g_cl_InterpolationMaxPoints = 0;
 int			g_dwInputUpdateDelta		= 20;
 BOOL		net_cl_inputguaranteed		= FALSE;
-CActor*		g_actor						= nullptr;
+CActor* g_actor = nullptr;
+CActor* g_actor_single = nullptr;
 
 CActor* Actor()
 {
-	if (IsGameTypeSingle())
-	{
+	if (IsGameTypeSingle()) {
 		VERIFY(g_actor);
 		return g_actor;
 	}
 
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
-	return pActor;
+	if(pActor) {
+		return pActor;
+	}
+
+	return g_actor;
 };
 
 //--------------------------------------------------------------------
@@ -530,6 +534,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 				Msg("single_actor_spawn");
 				g_actor = this;
+				g_actor_single = this;
 				g_pIGameActor = this;
 			}
 		}
@@ -548,6 +553,9 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 					}
 				}
 			}
+			else {
+				g_actor_single = this;
+			}
 		}
 	}
 	else
@@ -561,6 +569,10 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		{
 			g_pIGameActor = this;
 			g_actor = this;
+		}
+
+		if(smart_cast<CActorMP*>(this) == nullptr) {
+			g_actor_single = this;
 		}
 	}
 
