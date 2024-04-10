@@ -189,7 +189,7 @@ void CUIWindow::Update()
 			GetAbsoluteRect(rect);
 			add_rect_to_draw(rect);
 			// Sort windows without name
-			if (bDebug && m_windowNodeName != nullptr) {
+			if (bDebug && m_windowNodeName.c_str() != nullptr) {
 				CGameFont* F = UI().Font().pFontDI;
 				F->SetAligment(CGameFont::alCenter);
 				F->SetColor(0xffffffff);
