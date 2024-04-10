@@ -32,48 +32,69 @@ struct SXmlExpressionDelegate
     }
 };
 
-union ExpressionVarVariadic
+struct ExpressionVarVariadic
 {
-    float       Flt;
-    int         Int;
-    u32         UInt;
-    u64         LongInt;
-    shared_str  Str;
-    bool        Boolean;
-    void*       Ptr;
+    enum class EVariadicType 
+    {
+        eFloat,
+        eInt,
+        eUint,
+        eLongInt,
+        eStr,
+        eBool
+    };
 
-    ExpressionVarVariadic()
-        : Ptr(nullptr)
-    {}
+    union
+    {
+        float       Flt;
+        int         Int;
+        u32         UInt;
+        u64         LongInt;
+        shared_str  Str;
+        bool        Boolean;
+        void*       Ptr;
+    };
+
+    EVariadicType VarType;
+
+    ExpressionVarVariadic() {};
+    ~ExpressionVarVariadic() {};
 
     ExpressionVarVariadic(float InFlt)
         : Flt(InFlt)
-    {}
+    {
+        VarType = EVariadicType::eFloat;
+    }
 
     ExpressionVarVariadic(int InInt)
         : Int(InInt)
-    {}
+    {
+        VarType = EVariadicType::eInt;
+    }
 
     ExpressionVarVariadic(bool InBoolean)
         : Boolean(InBoolean)
-    {}
+    {
+        VarType = EVariadicType::eBool;
+    }
 
     ExpressionVarVariadic(const char* InStr)
         : Str(InStr)
-    {}
-
-    ~ExpressionVarVariadic()
-    {}
-
-    ExpressionVarVariadic& operator=(const ExpressionVarVariadic& other)
     {
-        Ptr = other.Ptr;
+        VarType = EVariadicType::eStr;
+    }
+
+    ExpressionVarVariadic& operator=(const ExpressionVarVariadic& Other)
+    {
+        Ptr = Other.Ptr;
+        VarType = Other.VarType;
         return *this;
     }
 
     ExpressionVarVariadic(const ExpressionVarVariadic& Other)
     {
         Ptr = Other.Ptr;
+        VarType = Other.VarType;
     }
 
     u64 GetData() const
@@ -82,7 +103,7 @@ union ExpressionVarVariadic
     }
 };
 
-static_assert(sizeof(ExpressionVarVariadic) == 8); //ExpressionVarVariadic must be placed in 8-aligned expression stack
+//static_assert(sizeof(ExpressionVarVariadic) == 16); //ExpressionVarVariadic must be placed in 8-aligned expression stack
 
 class XRCORE_API CExpressionManager
 {

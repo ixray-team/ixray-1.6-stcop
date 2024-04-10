@@ -159,6 +159,23 @@ void CUIStatic::Update()
 	//update light animation if defined
 	UpdateColorAnimation();
 
+	if (m_expression.IsCompiled())
+	{
+		ExpressionVarVariadic Result = m_expression.ExecuteExpression();
+
+		xr_string NewText;
+		switch (Result.VarType)
+		{
+		case ExpressionVarVariadic::EVariadicType::eFloat:	NewText = xr_string::ToString(Result.Flt); break;
+		case ExpressionVarVariadic::EVariadicType::eStr:	NewText = Result.Str.c_str(); break;
+		case ExpressionVarVariadic::EVariadicType::eInt:	NewText = xr_string::ToString(Result.Int); break;
+		case ExpressionVarVariadic::EVariadicType::eBool:	NewText = Result.Boolean ? "true" : "false"; break;
+			
+		}
+
+		m_pTextControl->SetText(NewText.c_str());
+	}
+
 	if(m_lanim_xform.m_lanim)
 	{
 		if(m_lanim_xform.m_lanim_start_time<0.0f)
