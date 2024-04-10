@@ -1,29 +1,49 @@
 #include "StdAfx.h"
 #include "xrCompress.h"
+#include "xrDecompress.h"
 
 #ifndef MOD_COMPRESS
-	extern int				ProcessDifference();
+extern int ProcessDifference();
 #endif
 
-
-int __cdecl main	(int argc, char* argv[])
+void Unpacker(char* argv[])
 {
+	Core._initialize("xrCompress", 0, true, argv[2]);
+
+	xrDecompressor D(argv[3]);
+	D.Decompress();
+
+	Core._destroy();
+}
+
+int main(int argc, char* argv[])
+{
+#ifdef IXR_WINDOWS
+	const char* params = GetCommandLineA();
+#else
+	xr_string TempBuffer = "";
+	for (size_t Iter = 0; Iter < argc; Iter++)
+	{
+		TempBuffer += argv[Iter];
+		TempBuffer += " ";
+	}
+
+	const char* params = TempBuffer.data();
+#endif
+
 	Debug._initialize	(false);
-	Core._initialize	("xrCompress",0,FALSE);
+
+	if (strstr(params, "-unpack"))
+	{
+		Unpacker(argv);
+		return 0;
+	}
+	else
+	{
+		Core._initialize("xrCompress", 0, false);
+	}
 	printf				("\n\n");
 
-#ifdef IXR_WINDOWS
-    const char*  params = GetCommandLineA();
-#else
-    xr_string TempBuffer = "";
-    for (size_t Iter = 0; Iter < argc; Iter++)
-    {
-        TempBuffer += argv[Iter];
-        TempBuffer += " ";
-    }
-
-    const char* params = TempBuffer.data();
-#endif
 	xrCompressor		C;
 
 	C.SetStoreFiles(0!=strstr(params,"-store"));
