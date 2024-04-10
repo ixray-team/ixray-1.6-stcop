@@ -78,32 +78,32 @@ void HUD_SOUND_ITEM::DestroySound(HUD_SOUND_ITEM& hud_snd)
 	hud_snd.m_activeSnd		= nullptr;
 }
 
-void HUD_SOUND_ITEM::PlaySound(	HUD_SOUND_ITEM&		hud_snd,
-								const Fvector&	position,
-								const CObject*	parent,
-								bool			b_hud_mode,
-								bool			looped,
-								u8 index)
-{
-	if (hud_snd.sounds.empty())	return;
+void HUD_SOUND_ITEM::PlaySound(HUD_SOUND_ITEM& hud_snd, const Fvector& position, const CObject* parent,
+	bool b_hud_mode, bool looped, bool allowOverlap, u8 index) {
+	if (hud_snd.sounds.empty())
+		return;
 
-	hud_snd.m_activeSnd			= nullptr;
-	StopSound					(hud_snd);
+	if (!allowOverlap)
+	{
+		hud_snd.m_activeSnd = nullptr;
+		StopSound(hud_snd);
+	}
 
-	u32 flags = b_hud_mode?sm_2D:0;
-	if(looped)
+	u32 flags = b_hud_mode ? sm_2D : 0;
+	if (looped)
 		flags |= sm_Looped;
 
-	if(index==u8(-1))
+	if (index == u8(-1))
 		index = (u8)Random.randI(hud_snd.sounds.size());
 
-	hud_snd.m_activeSnd = &hud_snd.sounds[ index ];
-	
+	hud_snd.m_activeSnd = &hud_snd.sounds[index];
 
-	hud_snd.m_activeSnd->snd.play_at_pos(	const_cast<CObject*>(parent),
-											flags&sm_2D?Fvector().set(0,0,0):position,
-											flags,
-											hud_snd.m_activeSnd->delay);
+	Fvector pos = flags & sm_2D ? Fvector().set(0, 0, 0) : position;
+
+	if (!allowOverlap)
+		hud_snd.m_activeSnd->snd.play_at_pos(const_cast<CObject*>(parent), pos, flags, hud_snd.m_activeSnd->delay);
+	else
+		hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos);
 
 	hud_snd.m_activeSnd->snd.set_volume(hud_snd.m_activeSnd->volume * (b_hud_mode ? psHUDSoundVolume : 1.0f));
 }
@@ -143,13 +143,8 @@ HUD_SOUND_ITEM* HUD_SOUND_COLLECTION::FindSoundItem(LPCSTR alias, bool b_assert)
 	}
 }
 
-void HUD_SOUND_COLLECTION::PlaySound(	LPCSTR alias, 
-										const Fvector& position,
-										const CObject* parent,
-										bool hud_mode,
-										bool looped,
-										u8 index)
-{
+void HUD_SOUND_COLLECTION::PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent,
+	bool hud_mode, bool looped, bool allowOverlap, u8 index) {
 	xr_vector<HUD_SOUND_ITEM>::iterator it		= m_sound_items.begin();
 	xr_vector<HUD_SOUND_ITEM>::iterator it_e	= m_sound_items.end();
 	for(;it!=it_e;++it)
@@ -160,7 +155,7 @@ void HUD_SOUND_COLLECTION::PlaySound(	LPCSTR alias,
 
 
 	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, true);
-	HUD_SOUND_ITEM::PlaySound		(*snd_item, position, parent, hud_mode, looped, index);
+	HUD_SOUND_ITEM::PlaySound		(*snd_item, position, parent, hud_mode, looped, allowOverlap, index);
 }
 
 void HUD_SOUND_COLLECTION::StopSound(LPCSTR alias)

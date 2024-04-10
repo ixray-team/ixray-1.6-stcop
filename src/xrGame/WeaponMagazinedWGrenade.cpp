@@ -346,7 +346,7 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 				if(bLaunch)
 				{
 					PlayAnimShoot		();
-					PlaySound			("sndShotG", get_LastFP2());
+					PlaySound			("sndShotG", get_LastFP2(), true);
 					AddShotEffector		();
 					StartFlameParticles2();
 				}

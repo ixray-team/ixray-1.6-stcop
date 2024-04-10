@@ -18,12 +18,8 @@ struct HUD_SOUND_ITEM
 
 	static void		DestroySound	(	HUD_SOUND_ITEM& hud_snd);
 
-	static void		PlaySound		(	HUD_SOUND_ITEM& snd,
-										const Fvector& position,
-										const CObject* parent,
-										bool hud_mode,
-										bool looped = false,
-										u8 index=u8(-1));
+	static void PlaySound(HUD_SOUND_ITEM& snd, const Fvector& position, const CObject* parent,
+		bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
 
 	static void		StopSound		(	HUD_SOUND_ITEM& snd);
 
@@ -61,12 +57,8 @@ class HUD_SOUND_COLLECTION
 public:
 	HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
 								~HUD_SOUND_COLLECTION();
-	void						PlaySound		(	LPCSTR alias, 
-													const Fvector& position,
-													const CObject* parent,
-													bool hud_mode,
-													bool looped = false,
-													u8 index=u8(-1));
+								void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, 
+									bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
 
 	void						StopSound		(	LPCSTR alias);
 
