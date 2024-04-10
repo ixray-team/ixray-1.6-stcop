@@ -167,7 +167,7 @@ xr_string xr_string::ToString(int Value)
 	string64 buf = { 0 };
 	itoa(Value, &buf[0], 10);
 
-	return xr_string(buf);
+	return std::move(xr_string(buf));
 }
 
 xr_string xr_string::ToString(unsigned int Value)
@@ -175,7 +175,7 @@ xr_string xr_string::ToString(unsigned int Value)
 	string64 buf = { 0 };
 	sprintf(buf, "%u", Value);
 
-	return xr_string(buf);
+	return std::move(xr_string(buf));
 }
 
 xr_string xr_string::ToString(float Value) 
@@ -183,7 +183,27 @@ xr_string xr_string::ToString(float Value)
 	string64 buf = { 0 };
 	sprintf(buf, "%f", Value);
 
-	return xr_string(buf);
+	xr_string buff = buf;
+
+	size_t StartPos = buff.find('.');
+
+	bool NeedClear = true;
+
+	for (size_t Iter = StartPos + 1; Iter < buff.length(); Iter++)
+	{
+		if (buff[Iter] != '0')
+		{
+			NeedClear = false;
+			break;
+		}
+	}
+
+	if (NeedClear)
+	{
+		return buff.substr(0, StartPos);
+	}
+
+	return buff;
 }
 
 xr_string xr_string::ToString(double Value) 
@@ -191,7 +211,27 @@ xr_string xr_string::ToString(double Value)
 	string64 buf = { 0 };
 	sprintf(buf, "%f", Value);
 
-	return xr_string(buf);
+	xr_string buff = buf;
+
+	size_t StartPos = buff.find('.');
+
+	bool NeedClear = true;
+
+	for (size_t Iter = StartPos + 1; Iter < buff.length(); Iter++)
+	{
+		if (buff[Iter] != '0')
+		{
+			NeedClear = false;
+			break;
+		}
+	}
+
+	if (NeedClear)
+	{
+		return buff.substr(0, StartPos);
+	}
+
+	return buff;
 }
 
 xr_string xr_string::Join(xrStringVector::iterator beginIter, xrStringVector::iterator endIter, const char delimeter /*= '\0'*/) 
