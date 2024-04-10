@@ -116,18 +116,17 @@ void CArtefact::OnH_A_Chield()
 	inherited::OnH_A_Chield		();
 
 	StopLights();
-	if (IsGameTypeSingle())
+
+	if (IsGameTypeSingleCompatible())
 	{
 		SwitchAfParticles(false);
 	}
 	else
 	{
-		IKinematics* K	= smart_cast<IKinematics*>(H_Parent()->Visual());
-		if (K)
-			m_CarringBoneID			= K->LL_BoneID("bip01_head");
-		else
-			m_CarringBoneID = u16(-1);
+		IKinematics* K = smart_cast<IKinematics*>(H_Parent()->Visual());
+		m_CarringBoneID = K != nullptr ? K->LL_BoneID("bip01_head") : u16(-1);
 	}
+
 	if(m_detectorObj)
 	{
 		m_detectorObj->m_currPatrolPath = nullptr;
