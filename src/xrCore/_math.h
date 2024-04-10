@@ -19,15 +19,11 @@ namespace CPU
 	XRCORE_API extern	processor_info	ID					;
 	XRCORE_API extern	u64				QPC	()				;
 	XRCORE_API extern	size_t			GetTickCount()		;
-#ifdef M_VISUAL
-	IC u64 GetCLK(void) {
-		return __rdtsc();
-	}
-#endif
 
-#ifdef M_BORLAND
-	XRCORE_API u64 __fastcall	GetCLK				(void);
-#endif
+	IC u64 GetCLK(void) 
+	{
+		return SDL_GetPerformanceCounter();
+	}
 };
 
 extern XRCORE_API	void	_initialize_cpu			();

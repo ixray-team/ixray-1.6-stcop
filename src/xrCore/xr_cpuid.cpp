@@ -37,7 +37,7 @@ unsigned long countSetBits(ulong_t bitMask)
 unsigned int query_processor_info(processor_info* pinfo)
 {
 	memset(pinfo, 0, sizeof(processor_info));
-#ifdef IXR_WINDOWS
+#if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
 	std::bitset<32> f_1_ECX;
 	std::bitset<32> f_1_EDX;
 	std::bitset<32> f_1_EBX;
@@ -175,6 +175,9 @@ unsigned int query_processor_info(processor_info* pinfo)
 	pinfo->family = (cpui[0] >> 8) & 0xf;
 	pinfo->model = (cpui[0] >> 4) & 0xf;
 	pinfo->stepping = cpui[0] & 0xf;
+#elif defined(IXR_WINDOWS)
+	// FX: SSE2NEON
+	pinfo->features |= static_cast<unsigned>(CPUFeature::SSE2);
 #endif
 
 	// All logical processors

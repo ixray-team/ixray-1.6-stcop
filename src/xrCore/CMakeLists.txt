@@ -178,7 +178,10 @@ target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/n
 target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/tbb12.lib")
 
 if (WIN32)
-    target_link_libraries(xrCore PRIVATE dxerr)
+    if (NOT IXR_ARM_ENABLE)
+        target_link_libraries(xrCore PRIVATE dxerr)
+    endif()
+
     target_link_libraries(xrCore PRIVATE "dbghelp")
     target_link_libraries(xrCore PRIVATE "winmm")
 endif()

@@ -3,10 +3,6 @@
 
 #include "ParticleEffect.h"
 
-#ifndef _EDITOR
-#include <xmmintrin.h>
-#endif
-
 using namespace PAPI;
 using namespace PS;
 

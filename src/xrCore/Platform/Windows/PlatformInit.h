@@ -38,8 +38,16 @@
 #pragma warning(push)
 #pragma warning(disable:4005)
 #include <windows.h>
-#include <atlstr.h>
-#include <atlimage.h>
+
+#ifdef IXR_ARM64
+#	include <arm64_neon.h>
+#	include <sse2neon/sse2neon.h>
+#else
+#	include <xmmintrin.h>
+#	include <atlstr.h>
+#	include <atlimage.h>
+#endif
+
 #ifndef __BORLANDC__
 	#include <windowsx.h>
 #endif

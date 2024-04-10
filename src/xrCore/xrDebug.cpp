@@ -10,10 +10,12 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
-#ifdef IXR_WINDOWS
-#include <direct.h>
-#include <dxerr.h>
+
+#if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
+#	include <direct.h>
+#	include <dxerr.h>
 #endif
+
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
@@ -233,8 +235,10 @@ LPCSTR xrDebug::dxerror2string(long code)
 {
 	static string512 Err = {};
 	memset(Err, 0, sizeof(Err));
-#ifdef IXR_WINDOWS
+#if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
 	DXGetErrorDescriptionA(code, Err, sizeof(Err));
+#elif defined(IXR_WINDOWS)
+	return error2string(code);
 #endif
 	return Err;
 }

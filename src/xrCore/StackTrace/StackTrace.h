@@ -131,19 +131,21 @@ namespace StackTrace
 
 		traceResult.reserve(maxFramesCount);
 
-#ifdef IXR_WIN64
 		stackFrame.AddrPC.Mode = AddrModeFlat;
+		stackFrame.AddrStack.Mode = AddrModeFlat;
+		stackFrame.AddrFrame.Mode = AddrModeFlat;
+
+#if defined(IXR_WIN64) && !defined(IXR_ARM64)
 		stackFrame.AddrPC.Offset = threadCtx->Rip;
-		stackFrame.AddrStack.Mode = AddrModeFlat;
 		stackFrame.AddrStack.Offset = threadCtx->Rsp;
-		stackFrame.AddrFrame.Mode = AddrModeFlat;
 		stackFrame.AddrFrame.Offset = threadCtx->Rbp;
+#elif defined(IXR_ARM64)
+		stackFrame.AddrPC.Offset = threadCtx->Pc;
+		stackFrame.AddrStack.Offset = threadCtx->Sp;
+		stackFrame.AddrFrame.Offset = threadCtx->Fp;
 #else
-		stackFrame.AddrPC.Mode = AddrModeFlat;
 		stackFrame.AddrPC.Offset = threadCtx->Eip;
-		stackFrame.AddrStack.Mode = AddrModeFlat;
 		stackFrame.AddrStack.Offset = threadCtx->Esp;
-		stackFrame.AddrFrame.Mode = AddrModeFlat;
 		stackFrame.AddrFrame.Offset = threadCtx->Ebp;
 #endif
 
