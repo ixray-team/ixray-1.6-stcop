@@ -42,6 +42,7 @@
 
 #include "../xrCore/discord/discord.h"
 #include "../xrEngine/string_table.h"
+#include "Level_Bullet_Manager.h"
 
 extern int g_keypress_on_start;
 static CStringTable strTable;
@@ -799,6 +800,10 @@ bool CGamePersistent::OnRenderPPUI_query()
 extern void draw_wnds_rects();
 void CGamePersistent::OnRenderPPUI_main()
 {
+	if (g_pGameLevel != nullptr) {
+		Level().BulletManager().Render();
+	}
+
 	// always
 	MainMenu()->OnRenderPPUI_main();
 	draw_wnds_rects();

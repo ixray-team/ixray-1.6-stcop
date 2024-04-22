@@ -734,7 +734,6 @@ void CLevel::OnRender()
 	Game().OnRender();
 	//  
 	//Device.Statistic->TEST1.Begin();
-	BulletManager().Render();
 	//Device.Statistic->TEST1.End();
 	// c 
 	HUD().RenderUI();
