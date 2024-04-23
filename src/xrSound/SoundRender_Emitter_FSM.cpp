@@ -243,7 +243,8 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 
 		// Calc linear fade --#SM+#--
 		// https://www.desmos.com/calculator/lojovfugle
-		float fMinDisDiff = dist - p_source.min_distance;
+		float fMinDisDiff = (psSoundRolloff * dist) - p_source.min_distance;
+
 		if (fMinDisDiff > 0.0f) {
 			float fMaxDisDiff = p_source.max_distance - p_source.min_distance;
 			fAttFactor = pow(1.0f - (fMinDisDiff / fMaxDisDiff), psSoundLinearFadeFactor);
