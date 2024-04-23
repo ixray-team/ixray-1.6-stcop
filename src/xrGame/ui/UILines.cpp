@@ -469,12 +469,12 @@ u32 CUILines::GetColorFromText(const xr_string& str)const
 
 	begin = str.find(BEGIN);
 	end = str.find(END, begin);
-	R_ASSERT2(npos != begin, "CUISubLine::GetColorFromText -- can't find beginning tag %c[");
-	R_ASSERT2(npos != end, "CUISubLine::GetColorFromText -- can't find ending tag ]");
-	
-	// try default color
-	if (npos != str.find("%c[default]", begin, end - begin))
+
+	if (begin == npos || end == npos || npos != str.find("%c[default]", begin))
+	{
+		Msg("CUISubLine::GetColorFromText stopped");
 		return m_dwTextColor;
+	}
 
 	// Try predefined in XML colors
 	for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)

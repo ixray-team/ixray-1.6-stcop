@@ -61,17 +61,17 @@ void CPickUpManager::PickupInfoDraw(CObject* object)
 
 ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 {
-	BOOL& bOverlaped = *(BOOL*)params;
+	bool& bOverlaped = *(bool*)params;
 	if (result.O)
 	{
 		if (Level().CurrentEntity() == result.O)
 		{ //ignore self-actor
-			return TRUE;
+			return true;
 		}
 		else
 		{ //check obstacle flag
 			if (result.O->spatial.type & STYPE_OBSTACLE)
-				bOverlaped = TRUE;
+				bOverlaped = true;
 
 			return TRUE;
 		}
@@ -84,7 +84,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 			return TRUE;
 	}
 
-	bOverlaped = TRUE;
+	bOverlaped = true;
 	return FALSE;
 }
 

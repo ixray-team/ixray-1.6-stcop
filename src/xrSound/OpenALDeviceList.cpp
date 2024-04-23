@@ -75,23 +75,15 @@ void ALDeviceList::Enumerate()
 
 	xr_vector<xr_string> DeviceNameList;
 	xr_vector<const char*> DeviceOALNameList;
-	auto list_audio_devices = [&DeviceNameList, &DeviceOALNameList](const ALCchar* devices) 	{
+	auto list_audio_devices = [&DeviceNameList, &DeviceOALNameList](const ALCchar* devices)
+	{
 		const ALCchar* device = devices, * next = devices + 1;
 		size_t len = 0;
 
-		while (device && *device != '\0' && next && *next != '\0') {
+		while (device && *device != '\0' && next && *next != '\0') 
+		{
 			len = strlen(device);
-			wchar_t* wDevice = new wchar_t[len];
-			ZeroMemory(wDevice, sizeof(wchar_t) * len);
-
-			char* AnsiDevice = new char[len];
-
-
-			MultiByteToWideChar(CP_UTF8, 0, device, (int)len, wDevice, (int)len);
-			WideCharToMultiByte(CP_ACP, 0, wDevice, (int)len, AnsiDevice, (int)len, nullptr, nullptr);
-
-			xr_string cDevice = AnsiDevice;
-			delete[] AnsiDevice;
+			xr_string cDevice = Platform::UTF8_to_CP1251(device);
 
 			size_t SubStrPos = cDevice.find('(');
 			if (SubStrPos != xr_string::npos)
@@ -104,8 +96,6 @@ void ALDeviceList::Enumerate()
 
 			device += (len + 1);
 			next += (len + 2);
-
-			delete[] wDevice;
 		}
 	};
 
