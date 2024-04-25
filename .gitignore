@@ -64,3 +64,4 @@ patch/
 # Generated files
 imgui.ini
 git_version.h
+changelog.txt
