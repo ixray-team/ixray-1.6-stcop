@@ -70,5 +70,11 @@ set(LUAJIT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LuaJIT.2.1.0-beta3/)
 # FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
 
-# Nuget
+# Nvtt
 set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
+
+# OneTBB
+if (WIN32)
+    set(ONETBB_PLATFORM win7-${NUGET_PACKAGE_PLATFORM})
+endif()
+set(ONETBB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0)

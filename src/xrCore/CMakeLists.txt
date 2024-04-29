@@ -137,7 +137,6 @@ target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 target_include_directories(xrCore PUBLIC ${CORE_DXMATH}/include/)
 target_include_directories(xrCore PUBLIC ${CORE_SDL3}build/native/include/)
-target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
 
 if (NOT WIN32)
     target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC}/linux)
@@ -175,7 +174,6 @@ endif()
 target_link_libraries(xrCore PUBLIC lzo_static_lib)
 target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
 target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.lib)
-target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/tbb12.lib")
 
 if (WIN32)
     if (NOT IXR_ARM_ENABLE)
@@ -195,5 +193,11 @@ include(gitver.cmake)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN}tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
+
+# OneTBB
+target_include_directories(xrCore PUBLIC ${ONETBB}/build/native/include/)
+target_link_libraries(xrCore PUBLIC ${ONETBB}/runtimes/${ONETBB_PLATFORM}/native/Release/tbb12.lib)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ONETBB}/runtimes/${ONETBB_PLATFORM}/native/Release/tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
