@@ -58,14 +58,14 @@ BOOL CRenderTarget::Create()
 	Msg("* SSample: %dx%d", rtWidth, rtHeight);
 
 	// Bufferts
-	RT.create			(RTname,			rtWidth,rtHeight,D3DFMT_X8R8G8B8);
-	RTTemp.create(RTTempName, rtWidth, rtHeight, D3DFMT_X8R8G8B8);
+	RT.create			(RTname,			rtWidth,rtHeight, FMT_X8R8G8B8);
+	RTTemp.create(RTTempName, rtWidth, rtHeight, FMT_X8R8G8B8);
 
-	RT_distort.create	(RTname_distort,	rtWidth,rtHeight,D3DFMT_X8R8G8B8);
+	RT_distort.create	(RTname_distort,	rtWidth,rtHeight, FMT_X8R8G8B8);
 	if (RImplementation.o.color_mapping)
 	{
 		//RT_color_map.create	(RTname_color_map,	rtWidth,rtHeight,D3DFMT_X8R8G8B8);
-		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, D3DFMT_X8R8G8B8);
+		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, FMT_X8R8G8B8);
 	}
 	//RImplementation.o.color_mapping = RT_color_map->valid();
 

@@ -14,7 +14,7 @@
 const	float		P_distance		= 50;					// switch distance between LOW-q light and HIGH-q light
 const	float		P_cam_dist		= 200;
 const	float		P_cam_range		= 7.f;
-const	D3DFORMAT	P_rtf			= D3DFMT_A8R8G8B8;
+const	ERHITextureFormat	P_rtf = FMT_A8R8G8B8;
 const	float		P_blur_kernel	= .5f;
 const	int			time_min		= 30*1000	;
 const	int			time_max		= 90*1000	;

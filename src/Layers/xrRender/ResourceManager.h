@@ -156,9 +156,9 @@ public:
 #endif //USE_DX11
 
 #ifdef USE_DX11
-	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount = 1, bool useUAV=false );
+	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCount = 1, bool useUAV=false );
 #else
-	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount = 1 );
+	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCount = 1 );
 #endif
 	void							_DeleteRT			(const CRT*	RT	);
 

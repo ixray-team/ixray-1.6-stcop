@@ -22,7 +22,7 @@ const	int			batch_size		= 256;
 const	float		S_tess			= .5f;
 const	int 		S_ambient		= 32;
 const	int 		S_clip			= 256-8;
-const	D3DFORMAT	S_rtf			= D3DFMT_A8R8G8B8;
+const	ERHITextureFormat	S_rtf	= FMT_A8R8G8B8;
 const	float		S_blur_kernel	= 0.75f;
 
 const	u32			cache_old		= 30*1000;	// 30 secs
