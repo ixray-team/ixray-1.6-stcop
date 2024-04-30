@@ -28,13 +28,13 @@ public:
 	bool UnlockRect(u32 Level) override;
 	void SetStage(u32 Stage) override;
 
-	void SetData(const void* pData, const int size);
+	void SetData( LPSUBRESOURCE_DATA pSubresourceData );
 
 	virtual u64 Release();
 	virtual u64 AddRef();
 private:
 	IDirect3DTexture9* m_pTexture;
-	TextureDesc m_textureDesc;
+	TextureDesc m_TextureDesc;
 
 	// Inherited via IRHITexture
 	EResourceType GetType() override;

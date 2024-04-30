@@ -76,6 +76,7 @@ typedef struct SUBRESOURCE_DATA
 	const void* pSysMem;
 	u32 SysMemPitch;
 	u32 SysMemSlicePitch;
+	u32 SysMemSize;
 } SUBRESOURCE_DATA, *LPSUBRESOURCE_DATA;
 
 
