@@ -218,7 +218,7 @@ ENGINE_API void EngineLoadStage4()
 	// Initialize APP
 	g_FontManager = new CFontManager();
 
-	auto APILevel = psDeviceFlags.test(r4) ? IRender_RHI::APILevel::DX11 : IRender_RHI::APILevel::DX9;
+	auto APILevel = psDeviceFlags.test(rsR4) ? IRender_RHI::APILevel::DX11 : IRender_RHI::APILevel::DX9;
 	bool ValidRenderDeviceInit = Device.InitRenderDevice(APILevel);
 	R_ASSERT(ValidRenderDeviceInit);
 

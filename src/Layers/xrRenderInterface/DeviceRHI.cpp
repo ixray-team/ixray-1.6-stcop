@@ -14,16 +14,12 @@ void* RenderRTV = nullptr;
 void* RenderDSV = nullptr;
 void* SwapChainRTV = nullptr;
 
-static CRender_RHI RHIDevice;
-
 CRender_RHI::CRender_RHI()
 {
-    g_RenderRHI = this;
 }
 
 CRender_RHI::~CRender_RHI()
 {
-    g_RenderRHI = nullptr;
 }
 
 bool CRender_RHI::Create(APILevel NewAPI)
