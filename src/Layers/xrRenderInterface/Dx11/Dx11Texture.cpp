@@ -115,10 +115,11 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
-	if ((pTextureDesc->TextureFlags & eTextureRenderTarget) != 0)
+	// Kirill: TODO !!!
+	if ((pTextureDesc->Usage & eUsageRenderTarget) != 0)
 		d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 
-	if ((pTextureDesc->TextureFlags & eTextureDepthStencil) != 0)
+	if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
 		d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
 
 	d3dTextureDesc.CPUAccessFlags = 0;

@@ -43,7 +43,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCoun
 	if (h>caps.MaxTextureHeight)		return;
 
 	// Select usage
-	u32 usage = FMT_D24X8 == fmt ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
+	u32 usage = FMT_D24X8 == fmt ? eUsageDepthStencil : eUsageRenderTarget;
 
 	// Try to create texture/surface
 	DEV->Evict();

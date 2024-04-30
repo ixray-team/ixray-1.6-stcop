@@ -2,10 +2,14 @@
 
 #include "../Layers/xrRenderInterface/TextureFormat.h"
 
-enum eUsage
+enum ERHIUsage
 {
+	eUsageDefault,
+	eUsageRenderTarget,
+	eUsageDepthStencil,
 	eUsageStatic,
-	eUsageDynamic
+	eUsageDynamic,
+	eUsageScratch
 };
 
 enum eLockType
@@ -32,15 +36,6 @@ enum eBufferType
 	eConstantBuffer
 };
 
-enum ETextureFlags
-{
-	eTextureDefault			= 1 << 0, 
-	eTextureRenderTarget	= 1 << 1,
-	eTextureDepthStencil	= 1 << 2, 
-	eTextureDynamic			= 1 << 3, 
-	eTextureScratch			= 1 << 4, 
-};
-
 enum EResourceType {
 	eResourceUnknown = 0,
 	eResourceSurface = 1,
@@ -58,7 +53,7 @@ struct TextureDesc
 	u32 Width;
 	u32 Height;
 	u32 DepthOrSliceNum;
-	eUsage Usage;
+	u32 Usage;
 	ERHITextureFormat Format;
 	u32 TextureFlags;
 	u32 NumMips;
@@ -235,7 +230,8 @@ namespace RHIUtils
 		Desc.NumMips = Levels;
 		Desc.DepthOrSliceNum = 1;
 		Desc.Format = Format;
-		Desc.TextureFlags = eTextureDefault;
+		Desc.Usage = Usage;
+		//Desc.TextureFlags = eUsageDefault;
 		Desc.DefaultPool = DefaultPool;
 
 		IRHITexture* pTexture = g_RenderRHI->CreateAPITexture(&Desc, nullptr);

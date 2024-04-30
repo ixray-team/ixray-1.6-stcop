@@ -135,7 +135,8 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	descFontAtlas.NumMips = 1;
 	descFontAtlas.Format = FMT_A8R8G8B8;
 	descFontAtlas.DefaultPool = false;
-	descFontAtlas.TextureFlags = eTextureDefault;
+	descFontAtlas.Usage = eUsageDefault;
+	descFontAtlas.TextureFlags = eUsageDefault;
 
 	SUBRESOURCE_DATA FontData;
 	FontData.pSysMem = bitmap;

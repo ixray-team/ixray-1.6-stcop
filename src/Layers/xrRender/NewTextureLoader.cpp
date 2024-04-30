@@ -81,7 +81,7 @@ bool RHICreateTextureEx(
     const Image* srcImages,
     size_t nimages,
     const TexMetadata& metadata,
-    eUsage usage,
+    ERHIUsage usage,
     unsigned int bindFlags,
     unsigned int cpuAccessFlags,
     unsigned int miscFlags,

@@ -65,9 +65,10 @@ static D3DFORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
 	return D3DFMT_UNKNOWN;
 }
 
+
 //--------------------------------------------------------------------------------------
-   // Return the BPP for a particular format
-   //--------------------------------------------------------------------------------------
+// Return the BPP for a particular format
+//--------------------------------------------------------------------------------------
 size_t BitsPerPixel(_In_ D3DFORMAT fmt) noexcept
 {
 	switch (static_cast<int>(fmt))
@@ -269,6 +270,30 @@ HRESULT GetSurfaceInfo(
 	return S_OK;
 }
 
+DWORD GetD3D9Usage( ERHIUsage RHIUsage )
+{
+	DWORD dwUsage = 0;
+
+	switch (RHIUsage)
+	{
+	case eUsageRenderTarget:
+		dwUsage = D3DUSAGE_RENDERTARGET;
+		break;
+	case eUsageDepthStencil:
+		dwUsage = D3DUSAGE_DEPTHSTENCIL;
+		break;
+	case eUsageStatic:
+		break;
+	case eUsageDynamic:
+		break;
+	case eUsageScratch:
+		break;
+	default:
+		break;
+	}
+
+	return dwUsage;
+}
 
 CD3D9Texture::CD3D9Texture() :
 	m_pTexture(nullptr)
@@ -320,7 +345,7 @@ HRESULT CD3D9Texture::CreateTexture2D(const TextureDesc* pTextureDesc, LPSUBRESO
 		pTextureDesc->Width,
 		pTextureDesc->Height,
 		pTextureDesc->NumMips,
-		pTextureDesc->Usage,
+		GetD3D9Usage((ERHIUsage)pTextureDesc->Usage),
 		Format,
 		pTextureDesc->DefaultPool ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED,
 		&pTexture,
@@ -331,6 +356,14 @@ HRESULT CD3D9Texture::CreateTexture2D(const TextureDesc* pTextureDesc, LPSUBRESO
 		Msg("! CRenderTextureDX9::Create: Failed to create texture. DirectX Error: %s", Debug.dxerror2string(hr));
 		return hr;
 	}
+
+	if (pTextureDesc->Usage == eUsageRenderTarget)
+		Msg("* CRenderTextureDX9::Create: Created render target [%ix%i]", pTextureDesc->Width,
+			pTextureDesc->Height);
+
+	if (pTextureDesc->Usage == eUsageDepthStencil)
+		Msg("* CRenderTextureDX9::Create: Created depth stencil target [%ix%i]", pTextureDesc->Width,
+			pTextureDesc->Height);
 
 	m_pTexture = pTexture;
 
