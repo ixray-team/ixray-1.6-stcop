@@ -25,12 +25,14 @@ D3D11_MAP GetD3D11Map(eLockType lockType)
 	{
 	case eLOCK_DISCARD:
 		return D3D11_MAP_WRITE_DISCARD;
-	case eLOCK_NO_DIRTY_UPDATE:
-		break;
-	case eLOCK_NOSYSLOCK:
-		break;
+	case eLOCK_NOOVERWRITE:
+		return D3D11_MAP_WRITE_NO_OVERWRITE;
 	case eLOCK_READONLY:
 		return D3D11_MAP_READ;
+
+	// #TODO: To Implement
+	case eLOCK_NO_DIRTY_UPDATE:
+	case eLOCK_NOSYSLOCK:
 	default:
 		break;
 	}
@@ -39,11 +41,11 @@ D3D11_MAP GetD3D11Map(eLockType lockType)
 	return (D3D11_MAP)0;
 }
 
-class CRenderBufferBaseDX11 : public IRender_BufferBase
+class CD3D11Buffer : public IRHIBuffer
 {
 public:
-	CRenderBufferBaseDX11();
-	~CRenderBufferBaseDX11();
+	CD3D11Buffer();
+	~CD3D11Buffer();
 
 	HRESULT Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable);
 
@@ -52,23 +54,25 @@ public:
 	bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags) override;
 	bool Unlock() override;
 
+	ID3D11Buffer* GetD3DBufferObject();
+
 private:
 	ID3D11Buffer* m_pBuffer;
 	eBufferType m_BufferType;
 	bool m_bImmutable;
 };
 
-CRenderBufferBaseDX11::CRenderBufferBaseDX11() :
+CD3D11Buffer::CD3D11Buffer() :
 	m_pBuffer(nullptr),
 	m_bImmutable(false)
 {
 }
 
-CRenderBufferBaseDX11::~CRenderBufferBaseDX11()
+CD3D11Buffer::~CD3D11Buffer()
 {
 }
 
-HRESULT CRenderBufferBaseDX11::Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+HRESULT CD3D11Buffer::Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
 	R_ASSERT(pDevice);
@@ -91,7 +95,7 @@ HRESULT CRenderBufferBaseDX11::Create(eBufferType bufferType, const void* pData,
 	return res;
 }
 
-void CRenderBufferBaseDX11::UpdateData(const void* data, int size)
+void CD3D11Buffer::UpdateData(const void* data, int size)
 {
 	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
 	R_ASSERT(pImmediateContext);
@@ -99,9 +103,9 @@ void CRenderBufferBaseDX11::UpdateData(const void* data, int size)
 	pImmediateContext->UpdateSubresource(m_pBuffer, 0, NULL, data, 0, 0);
 }
 
-bool CRenderBufferBaseDX11::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags)
+bool CD3D11Buffer::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags)
 {
-	R_ASSERT(m_bImmutable);
+//	R_ASSERT(m_bImmutable);
 
 	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
 	R_ASSERT(pImmediateContext);
@@ -110,16 +114,18 @@ bool CRenderBufferBaseDX11::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbDat
 	HRESULT hr = pImmediateContext->Map(m_pBuffer, 0, GetD3D11Map(Flags), 0, &mappedSubresource);
 	if (FAILED(hr))
 	{
-		Msg("CRenderBufferBaseDX11::Lock: Failed to lock buffer. DirectX Error: %s", Debug.error2string(hr));
+		Msg("CD3D11Buffer::Lock: Failed to lock buffer. DirectX Error: %s", Debug.error2string(hr));
 		return false;
 	}
+
+	*ppbData = (byte*)mappedSubresource.pData + OffsetToLock;
 
 	return true;
 }
 
-bool CRenderBufferBaseDX11::Unlock()
+bool CD3D11Buffer::Unlock()
 {
-	R_ASSERT(m_bImmutable);
+//	R_ASSERT(m_bImmutable);
 
 	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
 	R_ASSERT(pImmediateContext);
@@ -129,11 +135,54 @@ bool CRenderBufferBaseDX11::Unlock()
 	return true;
 }
 
-IRender_BufferBase* CreateD3D11Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+ID3D11Buffer* CD3D11Buffer::GetD3DBufferObject()
 {
-	CRenderBufferBaseDX11* pBuffer = new CRenderBufferBaseDX11();
+	return m_pBuffer;
+}
+
+IRHIBuffer* CreateD3D11Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+{
+	CD3D11Buffer* pBuffer = new CD3D11Buffer();
 
 	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));
 
 	return pBuffer;
+}
+
+void SetVertexBuffersD3D11(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets)
+{
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)pVertexBuffer;
+	if (pAPIBuffer)
+	{
+		ID3D11Buffer* pD3DBuffer = pAPIBuffer->GetD3DBufferObject();
+
+		const UINT uStrides = Strides;
+		const UINT uOffsets = Offsets;
+		pImmediateContext->IASetVertexBuffers(StartSlot, 1, &pD3DBuffer, &uStrides, &uOffsets);
+	}
+	else
+	{
+		pImmediateContext->IASetVertexBuffers(StartSlot, 0, nullptr, 0, 0);
+	}
+}
+
+void SetIndexBufferD3D11(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset)
+{
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)pIndexBuffer;
+	if (pAPIBuffer)
+	{
+		ID3D11Buffer* pD3DBuffer = pAPIBuffer->GetD3DBufferObject();
+		DXGI_FORMAT indicesFormat = Is32BitBuffer ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
+		pImmediateContext->IASetIndexBuffer(pD3DBuffer, indicesFormat, Offset);
+	}
+	else
+	{
+		pImmediateContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+	}
 }

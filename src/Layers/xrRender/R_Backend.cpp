@@ -59,7 +59,8 @@ void CBackend::CreateQuadIB		()
 	//R_CHK(QuadIB->Unlock());
 
 	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
-	R_CHK(RDevice->CreateBuffer		( &desc, &subData, &QuadIB));
+	//R_CHK(RDevice->CreateBuffer		( &desc, &subData, &QuadIB));
+	R_CHK(RHIUtils::CreateIndexBuffer(&QuadIB, IndexBuffer, dwIdxCount * 2));
 }
 
 #else //USE_DX11
@@ -145,7 +146,11 @@ void CBackend::OnDeviceDestroy()
 	Vertex.Destroy		();
 
 	// Quad
+#ifdef USE_DX11
+	delete								QuadIB;
+#else
 	_RELEASE							(QuadIB);
+#endif
 
 #ifdef USE_DX11
 	//DestroyConstantBuffers();
@@ -169,3 +174,13 @@ void CBackend::DestroyConstantBuffers()
 }
 */
 #endif
+
+void CBackend::set_Vertices(IRHIBuffer* _vb, u32 _vb_stride)
+{
+	g_RenderRHI->SetVertexBuffer( 0, _vb, _vb_stride, 0 );
+}
+
+void CBackend::set_Indices(IRHIBuffer* _ib)
+{
+	g_RenderRHI->SetIndexBuffer( _ib, false, 0 );
+}

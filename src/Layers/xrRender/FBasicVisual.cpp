@@ -18,8 +18,13 @@
 
 IRender_Mesh::~IRender_Mesh()		
 { 
-	_RELEASE(p_rm_Vertices); 
-	_RELEASE(p_rm_Indices);		
+#ifndef USE_DX11
+	_RELEASE(p_rm_Vertices);
+	_RELEASE(p_rm_Indices);
+#else
+	delete p_rm_Vertices;
+	delete p_rm_Indices;
+#endif // !USE_DX11
 }
 
 dxRender_Visual::dxRender_Visual		()

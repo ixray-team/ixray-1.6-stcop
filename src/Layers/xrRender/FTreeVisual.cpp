@@ -50,7 +50,9 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		VERIFY				(nullptr==p_rm_Vertices);
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
+#ifndef USE_DX11
 		p_rm_Vertices->AddRef();
+#endif // !USE_DX11
 
 		// indices
 		dwPrimitives		= 0;
@@ -61,7 +63,10 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		
 		VERIFY				(nullptr==p_rm_Indices);
 		p_rm_Indices			= RImplementation.getIB		(ID);
-		p_rm_Indices->AddRef	();
+#ifndef USE_DX11
+		p_rm_Indices->AddRef();
+#endif // !USE_DX11
+
 	}
 
 	// load tree-def
@@ -154,12 +159,20 @@ void	FTreeVisual::Copy	(dxRender_Visual *pSrc)
 
 	PCOPY(rm_geom);
 
-	PCOPY(p_rm_Vertices);	if (p_rm_Vertices) p_rm_Vertices->AddRef();
+	PCOPY(p_rm_Vertices);
+	
+#if RENDER!=R_R4
+	if (p_rm_Vertices) p_rm_Vertices->AddRef();
+#endif
 
 	PCOPY(vBase);
 	PCOPY(vCount);
 
-	PCOPY(p_rm_Indices);	if (p_rm_Indices) p_rm_Indices->AddRef();
+	PCOPY(p_rm_Indices);
+	
+#if RENDER!=R_R4
+	if (p_rm_Indices) p_rm_Indices->AddRef();
+#endif
 
 	PCOPY(iBase);
 	PCOPY(iCount);

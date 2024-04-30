@@ -801,7 +801,7 @@ HRESULT CreateRHITextureFromDDS(
         textureDesc.usage = usage;
 
 
-        IRender_Texture* pTexture = nullptr;
+        IRHITexture* pTexture = nullptr;
         bool successed = g_RenderRHI->CreateAPITexture( &textureDesc, nullptr, 0 );
         R_ASSERT(successed);
 
@@ -820,7 +820,7 @@ HRESULT CreateRHITextureFromDDS(
         //    pStagingTexture = pTexture;
         //}
 
-        IRender_Texture* pStagingTexture = pTexture;
+        IRHITexture* pStagingTexture = pTexture;
 
         // Lock, fill, unlock
         size_t NumBytes = 0;

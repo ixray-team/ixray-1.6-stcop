@@ -2,7 +2,7 @@
 #include "Dx9API.h"
 #include <d3d9.h>
 
-class CRenderTextureDX9 : public IRender_Texture
+class CRenderTextureDX9 : public IRHITexture
 {
 public:
 	CRenderTextureDX9();
@@ -128,7 +128,7 @@ void CRenderTextureDX9::SetData(const void* pData, const int size)
 	}
 }
 
-IRender_Texture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* pData, const int size)
+IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* pData, const int size)
 {
 	CRenderTextureDX9* pTexture = new CRenderTextureDX9();
 	
@@ -137,7 +137,7 @@ IRender_Texture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* 
 	return pTexture;
 }
 
-class CRenderBufferBaseDX9 : public IRender_BufferBase
+class CRenderBufferBaseDX9 : public IRHIBuffer
 {
 public:
 	CRenderBufferBaseDX9();
@@ -242,7 +242,7 @@ bool CRenderBufferBaseDX9::Unlock()
 	return true;
 }
 
-IRender_BufferBase* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	CRenderBufferBaseDX9* pBuffer = new CRenderBufferBaseDX9();
 

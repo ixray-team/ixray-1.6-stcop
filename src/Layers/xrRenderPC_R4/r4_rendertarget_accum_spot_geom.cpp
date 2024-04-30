@@ -82,7 +82,7 @@ void CRenderTarget::accum_spot_geom_create	()
 		//CopyMemory				(pData,du_cone_vertices,vCount*vSize);
 		//g_accum_spot_vb->Unlock	();
 
-		R_CHK(dx10BufferUtils::CreateVertexBuffer( &g_accum_spot_vb, du_cone_vertices,vCount*vSize));
+		R_CHK(RHIUtils::CreateVertexBuffer( &g_accum_spot_vb, du_cone_vertices,vCount*vSize));
 	}
 
 	// Indices
@@ -95,20 +95,20 @@ void CRenderTarget::accum_spot_geom_create	()
 		//CopyMemory		(pData,du_cone_faces,iCount*2);
 		//g_accum_spot_ib->Unlock	();
 
-		R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_spot_ib, du_cone_faces, iCount*2 ) );
+		R_CHK( RHIUtils::CreateIndexBuffer( &g_accum_spot_ib, du_cone_faces, iCount*2 ) );
 	}
 }
 
 void CRenderTarget::accum_spot_geom_destroy()
 {
 #ifdef DEBUG
-	_SHOW_REF	("g_accum_spot_ib",g_accum_spot_ib);
+	//_SHOW_REF	("g_accum_spot_ib",g_accum_spot_ib);
 #endif // DEBUG
-	_RELEASE	(g_accum_spot_ib);
+	delete g_accum_spot_ib;
 #ifdef DEBUG
-	_SHOW_REF	("g_accum_spot_vb",g_accum_spot_vb);
+	//_SHOW_REF	("g_accum_spot_vb",g_accum_spot_vb);
 #endif // DEBUG
-	_RELEASE	(g_accum_spot_vb);
+	delete g_accum_spot_vb;
 }
 
 struct Slice
@@ -159,7 +159,7 @@ void CRenderTarget::accum_volumetric_geom_create()
 			t += dt;
 		}
 
-		R_CHK( dx10BufferUtils::CreateVertexBuffer( &g_accum_volumetric_vb, &pSlice, vCount*vSize) );
+		R_CHK( RHIUtils::CreateVertexBuffer( &g_accum_volumetric_vb, &pSlice, vCount*vSize) );
 	}
 
 	// Indices
@@ -196,7 +196,7 @@ void CRenderTarget::accum_volumetric_geom_create()
 			pInd[5] = basevert+3;
 		}
 
-		R_CHK( dx10BufferUtils::CreateIndexBuffer( &g_accum_volumetric_ib, &Datap, iCount*2 ) );
+		R_CHK (RHIUtils::CreateIndexBuffer( &g_accum_volumetric_ib, &Datap, iCount*2 ) );
 
 //		R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_volumetric_ib,0));
 	}
@@ -205,11 +205,11 @@ void CRenderTarget::accum_volumetric_geom_create()
 void CRenderTarget::accum_volumetric_geom_destroy()
 {
 #ifdef DEBUG
-	_SHOW_REF	("g_accum_volumetric_ib",g_accum_volumetric_ib);
+	//_SHOW_REF	("g_accum_volumetric_ib",g_accum_volumetric_ib);
 #endif // DEBUG
-	_RELEASE	(g_accum_volumetric_ib);
+	delete g_accum_volumetric_ib;
 #ifdef DEBUG
-	_SHOW_REF	("g_accum_volumetric_vb",g_accum_volumetric_vb);
+	//_SHOW_REF	("g_accum_volumetric_vb",g_accum_volumetric_vb);
 #endif // DEBUG
-	_RELEASE	(g_accum_volumetric_vb);
+	delete g_accum_volumetric_vb;
 }

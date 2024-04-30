@@ -25,7 +25,7 @@ void	CResourceManager::reset_begin			()
 
 	// destroy DStreams
  	RCache.old_QuadIB					= RCache.QuadIB;
- 	_RELEASE							(RCache.QuadIB);
+	delete RCache.QuadIB;
 
 	RCache.Index.reset_begin	();
 	RCache.Vertex.reset_begin	();

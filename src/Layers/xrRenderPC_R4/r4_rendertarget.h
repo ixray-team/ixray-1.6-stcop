@@ -136,19 +136,19 @@ private:
 	ref_geom						g_accum_omnipart;
 	ref_geom						g_accum_volumetric;
 
-	ID3DVertexBuffer*		g_accum_point_vb;
-	ID3DIndexBuffer*		g_accum_point_ib;
+	IRHIBuffer*					g_accum_point_vb;
+	IRHIBuffer*					g_accum_point_ib;
 
-	ID3DVertexBuffer*		g_accum_omnip_vb;
-	ID3DIndexBuffer*		g_accum_omnip_ib;
+	IRHIBuffer*					g_accum_omnip_vb;
+	IRHIBuffer*					g_accum_omnip_ib;
 
-	ID3DVertexBuffer*		g_accum_spot_vb	;
-	ID3DIndexBuffer*		g_accum_spot_ib	;
+	IRHIBuffer*					g_accum_spot_vb	;
+	IRHIBuffer*					g_accum_spot_ib	;
 
-	ID3DVertexBuffer*		g_accum_volumetric_vb;
-	ID3DIndexBuffer*		g_accum_volumetric_ib;
+	IRHIBuffer*					g_accum_volumetric_vb;
+	IRHIBuffer*					g_accum_volumetric_ib;
 
-	ID3DBlendState*			g_debug_blend_state = nullptr;
+	ID3DBlendState*				g_debug_blend_state = nullptr;
 
 	// Bloom
 	ref_geom					g_bloom_build;

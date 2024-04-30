@@ -113,7 +113,7 @@ void* CRender_RHI::GetSwapchain()
     return HWSwapchain;
 }
 
-IRender_Texture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size )
+IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size )
 {
     switch (API)
     {
@@ -126,7 +126,7 @@ IRender_Texture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc,
     return nullptr;
 }
 
-IRender_BufferBase* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+IRHIBuffer* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
     switch (API)
     {
@@ -142,4 +142,30 @@ IRender_BufferBase* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const v
 int CRender_RHI::GetFeatureLevel()
 {
     return 0xb100;
+}
+
+void CRender_RHI::SetVertexBuffer(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets)
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        break;
+    case APILevel::DX11:
+        return SetVertexBuffersD3D11(StartSlot, pVertexBuffer, Strides, Offsets);
+    default:
+        break;
+    }
+}
+
+void CRender_RHI::SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset)
+{
+    switch (API)
+    {
+    case IRender_RHI::APILevel::DX9:
+        break;
+    case APILevel::DX11:
+        return SetIndexBufferD3D11(pIndexBuffer, Is32BitBuffer, Offset);
+    default:
+        break;
+    }
 }

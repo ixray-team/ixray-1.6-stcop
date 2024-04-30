@@ -129,8 +129,14 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 void SPrimitiveBuffer::Destroy()
 {                       
 	if (pGeom){
-		_RELEASE		(pGeom->vb);
-		_RELEASE		(pGeom->ib);
+#ifndef USE_DX11
+        _RELEASE(pGeom->vb);
+        _RELEASE(pGeom->ib);
+#else
+        delete pGeom->vb;
+        delete pGeom->ib;
+#endif // !USE_DX11
+
 		pGeom.destroy	();
 	}
 }

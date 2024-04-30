@@ -10,6 +10,7 @@ enum eLockType
 {
 	eLOCK_DISCARD,
 	eLOCK_NO_DIRTY_UPDATE,
+	eLOCK_NOOVERWRITE,
 	eLOCK_NOSYSLOCK,
 	eLOCK_READONLY
 };
@@ -65,28 +66,29 @@ typedef struct LOCKED_RECT {
 	void* pBits;
 } LOCKED_RECT, * LPLOCKED_RECT;
 
-class IRender_Texture
+class IRHITexture
 {
 public:
-	virtual ~IRender_Texture() = default;
+	virtual ~IRHITexture() = default;
 
 	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
 	virtual bool UnlockRect(u32 Level) = 0;
 };
 
-typedef IRender_Texture* LPIRENDER_TEXTURE;
+typedef IRHITexture* LPIRHITEXTURE;
 
-class IRender_BufferBase
+class IRHIBuffer
 {
 public:
-	virtual ~IRender_BufferBase() = default;
+	virtual ~IRHIBuffer() = default;
+
 	virtual void UpdateData(const void* data, int size) = 0;
 
 	virtual bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags) = 0;
 	virtual bool Unlock() = 0;
 };
 
-typedef IRender_BufferBase* LPIRENDER_BUFFERBASE;
+typedef IRHIBuffer* LPIRHIBUFFER;
 
 class IRender_RHI
 {
@@ -116,17 +118,20 @@ public:
 	virtual void FillModes() = 0;
 	virtual int GetFeatureLevel() = 0;
 
-	virtual IRender_Texture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size ) = 0;
-	virtual IRender_BufferBase* CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
+	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size ) = 0;
+	virtual IRHIBuffer* CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
+
+	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
+	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
 };
 
 extern ENGINE_API IRender_RHI* g_RenderRHI;
 
 namespace RHIUtils
 {
-	inline bool CreateVertexBuffer(IRender_BufferBase** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	inline bool CreateVertexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
 	{
-		IRender_BufferBase* pBuffer = g_RenderRHI->CreateAPIBuffer(eVertexBuffer, pData, DataSize, bImmutable);
+		IRHIBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(eVertexBuffer, pData, DataSize, bImmutable);
 		if (!pBuffer)
 			return false;
 
@@ -134,9 +139,9 @@ namespace RHIUtils
 		return true;
 	}
 
-	inline bool CreateIndexBuffer(IRender_BufferBase** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	inline bool CreateIndexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
 	{
-		IRender_BufferBase* pBuffer = g_RenderRHI->CreateAPIBuffer(eIndexBuffer, pData, DataSize, bImmutable);
+		IRHIBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(eIndexBuffer, pData, DataSize, bImmutable);
 		if (!pBuffer)
 			return false;
 
@@ -145,9 +150,9 @@ namespace RHIUtils
 	}
 
 	// Will return nullptr on DX9
-	inline bool CreateConstantBuffer(IRender_BufferBase** ppBuffer, u32 DataSize)
+	inline bool CreateConstantBuffer(IRHIBuffer** ppBuffer, u32 DataSize)
 	{
-		IRender_BufferBase* pBuffer = g_RenderRHI->CreateAPIBuffer(eConstantBuffer, NULL, DataSize, FALSE);
+		IRHIBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(eConstantBuffer, NULL, DataSize, FALSE);
 		if (!pBuffer)
 			return false;
 
