@@ -108,7 +108,7 @@ private:
 	bool	m_bInited;
 
 	DXGI_FORMAT				RenderTargetFormats[ NUM_RENDER_TARGETS ];
-	ID3DRenderTargetView	*pRenderTargetViews[ NUM_RENDER_TARGETS ];
+	IRHISurface				*pRenderTargetViews[ NUM_RENDER_TARGETS ];
 	ref_texture				pRTTextures[ NUM_RENDER_TARGETS ];
 	static LPCSTR			m_pEngineTextureNames[ NUM_RENDER_TARGETS ];
 	static LPCSTR			m_pShaderTextureNames[ NUM_RENDER_TARGETS ];

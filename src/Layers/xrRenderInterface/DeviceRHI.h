@@ -56,9 +56,9 @@ public:
 public:
 	int GetFeatureLevel();
 
-
 	// Inherited via IRender_RHI
 	void SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget) override;
+	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView) override;
 
 };
 

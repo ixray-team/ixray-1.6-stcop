@@ -18,6 +18,7 @@ void SetVertexBufferD3D9(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Str
 void SetIndexBufferD3D9(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset);
 
 void SetRenderTargetD3D9(u32 RenderTargetIndex, IRHISurface* pRenderTarget);
+void SetDepthStencilViewD3D9(IRHIDepthStencilView* pDepthStencilView);
 
 class IRHISurface;
 IRHISurface* CreateOffscreenPlainSurfaceD3D9(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool);

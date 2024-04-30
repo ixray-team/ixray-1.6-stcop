@@ -194,6 +194,7 @@ public:
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
 
 	virtual void SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget) = 0;
+	virtual void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView) = 0;
 
 	virtual void GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* pDestSurface) = 0;
 

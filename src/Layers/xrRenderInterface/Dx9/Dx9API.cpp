@@ -87,6 +87,17 @@ void SetRenderTargetD3D9(u32 RenderTargetIndex, IRHISurface* pRenderTarget)
 	}
 }
 
+void SetDepthStencilViewD3D9(IRHIDepthStencilView* pDepthStencilView)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	if (pDepthStencilView)
+		pDepthStencilView->SetActive();
+	else
+		pDevice->SetDepthStencilSurface(0);
+}
+
 IRHISurface* CreateOffscreenPlainSurfaceD3D9(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool)
 {
 	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;

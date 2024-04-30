@@ -11,7 +11,7 @@ IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 	//	TODO: DX10: Implement CBackend::set_xform
 }
 
-IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
+IC void CBackend::set_RT(IRHISurface* RT, u32 ID)
 {
 	if (RT!=pRT[ID])
 	{
@@ -22,13 +22,13 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 		//	Mark RT array dirty
 		//	Reset all RT's here to allow RT to be bounded as input
 		if (!m_bChangedRTorZB)
-			RContext->OMSetRenderTargets(0, 0, 0);
+			g_RenderRHI->SetRenderTarget(0, 0);
 
 		m_bChangedRTorZB = true;
 	}
 }
 
-IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
+IC void	CBackend::set_ZB(IRHIDepthStencilView* ZB)
 {
 	if (ZB!=pZB)
 	{
@@ -38,7 +38,7 @@ IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
 
 		//	Reset all RT's here to allow RT to be bounded as input
 		if (!m_bChangedRTorZB)
-			RContext->OMSetRenderTargets(0, 0, 0);
+			g_RenderRHI->SetDepthStencilView(nullptr);
 
 		m_bChangedRTorZB = true;
 	}
@@ -720,7 +720,11 @@ ICF void CBackend::ApplyRTandZB()
 	if (m_bChangedRTorZB)
 	{
 		m_bChangedRTorZB = false;
-		RContext->OMSetRenderTargets(sizeof(pRT)/sizeof(pRT[0]), pRT, pZB);
+		
+		for (int i = 0; i < sizeof(pRT) / sizeof(pRT[0]); i++)
+			g_RenderRHI->SetRenderTarget(i, pRT[i]);
+		
+		g_RenderRHI->SetDepthStencilView(pZB);
 	}
 }
 

@@ -211,6 +211,18 @@ void CRender_RHI::SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTar
     }
 }
 
+void CRender_RHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView)
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        return SetDepthStencilViewD3D9(pDepthStencilView);
+    case APILevel::DX11:
+        break;
+
+    }
+}
+
 ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
 {
     extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);
