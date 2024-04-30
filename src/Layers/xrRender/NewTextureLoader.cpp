@@ -267,7 +267,6 @@ bool RHICreateTextureEx(
     return hr;
 }
 
-
 IRHITexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
     // Moved here just to avoid warning
