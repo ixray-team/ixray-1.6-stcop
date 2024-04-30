@@ -10,7 +10,7 @@ public:
 
 	HRESULT Create(const TextureDesc* pTextureDesc, const void* pData, const int size);
 
-	bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, u32 Flags) override;
+	bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) override;
 	bool UnlockRect(u32 Level) override;
 
 	void SetData( const void* pData, const int size );
@@ -65,7 +65,7 @@ HRESULT CRenderTextureDX9::Create( const TextureDesc* pTextureDesc, const void* 
 	return S_OK;
 }
 
-bool CRenderTextureDX9::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, u32 Flags)
+bool CRenderTextureDX9::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
 {
 	R_ASSERT( m_pTexture );
 
@@ -147,7 +147,7 @@ public:
 
 	void UpdateData(const void* data, int size) override;
 
-	bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, u32 Flags) override;
+	bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags) override;
 	bool Unlock() override;
 
 private:
@@ -200,7 +200,7 @@ void CRenderBufferBaseDX9::UpdateData(const void* data, int size)
 {
 }
 
-bool CRenderBufferBaseDX9::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, u32 Flags)
+bool CRenderBufferBaseDX9::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags)
 {
 	HRESULT hr = S_OK;
 

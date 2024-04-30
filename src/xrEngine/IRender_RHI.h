@@ -70,7 +70,7 @@ class IRender_Texture
 public:
 	virtual ~IRender_Texture() = default;
 
-	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, u32 Flags) = 0;
+	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
 	virtual bool UnlockRect(u32 Level) = 0;
 };
 
@@ -82,7 +82,7 @@ public:
 	virtual ~IRender_BufferBase() = default;
 	virtual void UpdateData(const void* data, int size) = 0;
 
-	virtual bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, u32 Flags) = 0;
+	virtual bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags) = 0;
 	virtual bool Unlock() = 0;
 };
 
@@ -144,9 +144,10 @@ namespace RHIUtils
 		return true;
 	}
 
+	// Will return nullptr on DX9
 	inline bool CreateConstantBuffer(IRender_BufferBase** ppBuffer, u32 DataSize)
 	{
-		IRender_BufferBase* pBuffer = g_RenderRHI->CreateAPIBuffer(eIndexBuffer, NULL, DataSize, FALSE);
+		IRender_BufferBase* pBuffer = g_RenderRHI->CreateAPIBuffer(eConstantBuffer, NULL, DataSize, FALSE);
 		if (!pBuffer)
 			return false;
 

@@ -133,7 +133,7 @@ IRender_BufferBase* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const v
     case APILevel::DX9:
         return CreateD3D9Buffer(bufferType, pData, DataSize, bImmutable);
     case APILevel::DX11:
-        break;
+        return CreateD3D11Buffer(bufferType, pData, DataSize, bImmutable);
     }
 
     return nullptr;
