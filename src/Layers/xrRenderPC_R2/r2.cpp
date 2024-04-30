@@ -403,11 +403,11 @@ D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id, BOOL	_alt)	{
 	if (_alt)	{ VERIFY(id<int(xDC.size()));	return xDC[id].begin();	}
 	else		{ VERIFY(id<int(nDC.size()));	return nDC[id].begin(); }
 }
-IDirect3DVertexBuffer9*	CRender::getVB					(int id, BOOL	_alt)	{
+IRHIBuffer*				CRender::getVB					(int id, BOOL	_alt)	{
 	if (_alt)	{ VERIFY(id<int(xVB.size()));	return xVB[id];		}
 	else		{ VERIFY(id<int(nVB.size()));	return nVB[id];		}
 }
-IDirect3DIndexBuffer9*	CRender::getIB					(int id, BOOL	_alt)	{ 
+IRHIBuffer*				CRender::getIB					(int id, BOOL	_alt)	{
 	if (_alt)	{ VERIFY(id<int(xIB.size()));	return xIB[id];		}
 	else		{ VERIFY(id<int(nIB.size()));	return nIB[id];		}
 }

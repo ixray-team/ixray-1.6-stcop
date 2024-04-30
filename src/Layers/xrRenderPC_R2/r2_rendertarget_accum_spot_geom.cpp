@@ -66,31 +66,34 @@ void CRenderTarget::accum_spot_geom_create	()
 
 	// vertices
 	{
-		u32		vCount		= DU_CONE_NUMVERTEX;
-		u32		vSize		= 3*4;
-		R_CHK	(RDevice->CreateVertexBuffer(
-			vCount*vSize,
-			dwUsage,
-			0,
-			D3DPOOL_MANAGED,
-			&g_accum_spot_vb,
-			0));
+		u32		vCount = DU_CONE_NUMVERTEX;
+		u32		vSize = 3 * 4;
+		//R_CHK	(RDevice->CreateVertexBuffer(
+		//	vCount*vSize,
+		//	dwUsage,
+		//	0,
+		//	D3DPOOL_MANAGED,
+		//	&g_accum_spot_vb,
+		//	0));
+		//BYTE*	pData				= 0;
+		//R_CHK						(g_accum_spot_vb->Lock(0,0,(void**)&pData,0));
+		//CopyMemory				(pData,du_cone_vertices,vCount*vSize);
+		//g_accum_spot_vb->Unlock	();
 
-		BYTE*	pData				= 0;
-		R_CHK						(g_accum_spot_vb->Lock(0,0,(void**)&pData,0));
-		CopyMemory				(pData,du_cone_vertices,vCount*vSize);
-		g_accum_spot_vb->Unlock	();
+		R_ASSERT(RHIUtils::CreateVertexBuffer(&g_accum_spot_vb, du_cone_vertices, vCount * vSize));
 	}
 
 	// Indices
 	{
-		u32		iCount		= DU_CONE_NUMFACES*3;
+		u32		iCount = DU_CONE_NUMFACES * 3;
 
-		BYTE*	pData		= 0;
-		R_CHK				(RDevice->CreateIndexBuffer	(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_spot_ib,0));
-		R_CHK				(g_accum_spot_ib->Lock(0,0,(void**)&pData,0));
-		CopyMemory		(pData,du_cone_faces,iCount*2);
-		g_accum_spot_ib->Unlock	();
+		//BYTE*	pData		= 0;
+		//R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_spot_ib,0));
+		//R_CHK				(g_accum_spot_ib->Lock(0,0,(void**)&pData,0));
+		//CopyMemory		(pData,du_cone_faces,iCount*2);
+		//g_accum_spot_ib->Unlock	();
+
+		R_ASSERT(RHIUtils::CreateIndexBuffer(&g_accum_spot_ib, du_cone_faces, iCount * 2));
 	}
 }
 
@@ -118,52 +121,82 @@ void CRenderTarget::accum_volumetric_geom_create()
 	// vertices
 	{
 		//	VOLUMETRIC_SLICES quads
-		const u32		vCount		= VOLUMETRIC_SLICES*4;
-		u32		vSize		= 3*4;
-		R_CHK	(RDevice->CreateVertexBuffer(
-			vCount*vSize,
-			dwUsage,
-			0,
-			D3DPOOL_MANAGED,
-			&g_accum_volumetric_vb,
-			0));
+		static const u32		vCount = VOLUMETRIC_SLICES * 4;
+		u32		vSize = 3 * 4;
+		//R_CHK	(RDevice->CreateVertexBuffer(
+		//	vCount*vSize,
+		//	dwUsage,
+		//	0,
+		//	D3DPOOL_MANAGED,
+		//	&g_accum_volumetric_vb,
+		//	0));
+		//BYTE*	pData				= 0;
+		//R_CHK						(g_accum_volumetric_vb->Lock(0,0,(void**)&pData,0));
+		//Slice	*pSlice = (Slice*)pData;
+		//float t=0;
+		//float dt = 1.0f/(VOLUMETRIC_SLICES-1);
+		//for ( int i=0; i<VOLUMETRIC_SLICES; ++i)
+		//{
+		//pSlice[i].m_Vert[0] = Fvector().set(0,0,t);
+		//	pSlice[i].m_Vert[1] = Fvector().set(0,1,t);
+		//	pSlice[i].m_Vert[2] = Fvector().set(1,0,t);
+		//	pSlice[i].m_Vert[3] = Fvector().set(1,1,t);
+		//	t += dt;
+		//}
 
-		BYTE*	pData				= 0;
-		R_CHK						(g_accum_volumetric_vb->Lock(0,0,(void**)&pData,0));
-		Slice	*pSlice = (Slice*)pData;
-		float t=0;
-		float dt = 1.0f/(VOLUMETRIC_SLICES-1);
-		for ( int i=0; i<VOLUMETRIC_SLICES; ++i)
+		Slice	pSlice[VOLUMETRIC_SLICES];
+
+		float t = 0;
+		float dt = 1.0f / (VOLUMETRIC_SLICES - 1);
+		for (int i = 0; i < VOLUMETRIC_SLICES; ++i)
 		{
-			pSlice[i].m_Vert[0] = Fvector().set(0,0,t);
-			pSlice[i].m_Vert[1] = Fvector().set(0,1,t);
-			pSlice[i].m_Vert[2] = Fvector().set(1,0,t);
-			pSlice[i].m_Vert[3] = Fvector().set(1,1,t);
+			pSlice[i].m_Vert[0] = Fvector().set(0, 0, t);
+			pSlice[i].m_Vert[1] = Fvector().set(0, 1, t);
+			pSlice[i].m_Vert[2] = Fvector().set(1, 0, t);
+			pSlice[i].m_Vert[3] = Fvector().set(1, 1, t);
 			t += dt;
 		}
 
-		g_accum_volumetric_vb->Unlock	();
+		R_ASSERT(RHIUtils::CreateVertexBuffer(&g_accum_volumetric_vb, &pSlice, vCount * vSize));
 	}
 
 	// Indices
 	{
-		const u32		iCount		= VOLUMETRIC_SLICES*6;
+		const u32		iCount = VOLUMETRIC_SLICES * 6;
 
-		BYTE*	pData		= 0;
-		R_CHK				(RDevice->CreateIndexBuffer	(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_volumetric_ib,0));
-		R_CHK				(g_accum_volumetric_ib->Lock(0,0,(void**)&pData,0));
-		u16 *pInd = (u16*) pData;
-		for ( u16 i=0; i<VOLUMETRIC_SLICES; ++i, pInd+=6)
+		//BYTE*	pData		= 0;
+		//R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_volumetric_ib,0));
+		//R_CHK				(g_accum_volumetric_ib->Lock(0,0,(void**)&pData,0));
+		//u16 *pInd = (u16*) pData;
+		//for ( u16 i=0; i<VOLUMETRIC_SLICES; ++i, pInd+=6)
+		//{
+		//	u16 basevert = i*4;
+		//	pInd[0] = basevert;
+		//	pInd[1] = basevert+1;
+		//	pInd[2] = basevert+2;
+		//	pInd[3] = basevert+2;
+		//	pInd[4] = basevert+1;
+		//	pInd[5] = basevert+3;
+		//}
+		//g_accum_volumetric_ib->Unlock	();
+
+		BYTE	Datap[iCount * 2];
+
+		u16* pInd = (u16*)Datap;
+		for (u16 i = 0; i < VOLUMETRIC_SLICES; ++i, pInd += 6)
 		{
-			u16 basevert = i*4;
+			u16 basevert = i * 4;
 			pInd[0] = basevert;
-			pInd[1] = basevert+1;
-			pInd[2] = basevert+2;
-			pInd[3] = basevert+2;
-			pInd[4] = basevert+1;
-			pInd[5] = basevert+3;
+			pInd[1] = basevert + 1;
+			pInd[2] = basevert + 2;
+			pInd[3] = basevert + 2;
+			pInd[4] = basevert + 1;
+			pInd[5] = basevert + 3;
 		}
-		g_accum_volumetric_ib->Unlock	();
+
+		R_ASSERT(RHIUtils::CreateIndexBuffer(&g_accum_volumetric_ib, &Datap, iCount * 2));
+
+		//		R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&g_accum_volumetric_ib,0));
 	}
 }
 
