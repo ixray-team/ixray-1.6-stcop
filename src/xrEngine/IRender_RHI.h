@@ -117,6 +117,9 @@ inline u64 IRHIUnknown::Release()
 
 class IRHISurface : public IRHIUnknown
 {
+public:
+	virtual bool LockRect(LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
+	virtual bool UnlockRect() = 0;
 };
 
 class IRHIDepthStencilView : public IRHISurface
@@ -185,11 +188,14 @@ public:
 	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
 	virtual IRHIBuffer*  CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
 	virtual IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) = 0;
+	virtual IRHISurface* CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool) = 0;
 
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
 
 	virtual void SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget) = 0;
+
+	virtual void GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* pDestSurface) = 0;
 
 	virtual ERHITextureFormat GetRHIFormatFromAPI( int dxgiFormat ) = 0;
 };

@@ -90,7 +90,7 @@ BOOL CRenderTarget::Create()
 	//	Create an RT for online screenshot makining
 	//u32		w = Device.TargetWidth, h = Device.TargetHeight;
 	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
-	RDevice->CreateOffscreenPlainSurface(rtWidth,rtHeight,D3DFMT_X8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
+	pFB = g_RenderRHI->CreateAPIOffscreenPlainSurface(rtWidth, rtHeight, FMT_X8R8G8B8, false);
 
 	// Shaders and stream
 	s_postprocess[0].create				("postprocess");
@@ -290,18 +290,11 @@ void CRenderTarget::DoAsyncScreenshot	()
 	//	TODO: fox that later
 	if (RImplementation.m_bMakeAsyncSS)
 	{
-		HRESULT hr;
-#if 0
-		IDirect3DSurface9*	pFBSrc = RTarget;
+		IRHISurface*	pFBSrc = RTarget;
 		//	Don't addref, no need to release.
-		//ID3DTexture2D *pTex = RT->pSurface;
-
-		//hr = pTex->GetSurfaceLevel(0, &pFBSrc);
 
 		//	SHould be async function
-		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
-#endif
-		//pFBSrc->Release();
+		g_RenderRHI->GetRenderTargetData( pFBSrc, pFB );
 
 		RImplementation.m_bMakeAsyncSS = false;
 	}

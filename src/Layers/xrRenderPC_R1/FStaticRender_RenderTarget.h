@@ -57,7 +57,7 @@ public:
 	IRHIDepthStencilView*	pTempZB;
 
 	//	Igor: for async screenshots
-	IDirect3DSurface9*			pFB;				//32bit		(r,g,b,a) is situated in the system memory
+	IRHISurface*			pFB;				//32bit		(r,g,b,a) is situated in the system memory
 
 private:
 	BOOL				Create				()	;

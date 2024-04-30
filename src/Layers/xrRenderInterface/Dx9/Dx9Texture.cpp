@@ -623,22 +623,58 @@ bool CD3D9Texture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 //---------------------------------------------------------------------------------------
 
 CD3D9Surface::CD3D9Surface(IDirect3DSurface9* pSurfaceAPI) :
-	m_pSurfaceAPI(pSurfaceAPI)
+	m_pSurface(pSurfaceAPI)
 {
 }
 
 CD3D9Surface::~CD3D9Surface()
 {
-	if (m_pSurfaceAPI != nullptr)
+	if (m_pSurface != nullptr)
 	{
-		m_pSurfaceAPI->Release();
-		m_pSurfaceAPI = nullptr;
+		m_pSurface->Release();
+		m_pSurface = nullptr;
 	}
 }
 
 IDirect3DSurface9* CD3D9Surface::GetD3D9SurfaceObject()
 {
-	return m_pSurfaceAPI;
+	return m_pSurface;
+}
+
+bool CD3D9Surface::LockRect(LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
+{
+	R_ASSERT(m_pSurface);
+
+	D3DLOCKED_RECT lockedRect;
+	memset(&lockedRect, 0, sizeof(lockedRect));
+
+	RECT rect;
+	memset(&rect, 0, sizeof(rect));
+	if (pRect)
+		rect = { pRect->x1, pRect->y1, pRect->x2, pRect->y2 };
+
+	HRESULT hr = m_pSurface->LockRect(&lockedRect, pRect ? &rect : NULL, Flags);
+	if (FAILED(hr))
+	{
+		Msg("! CD3D9Surface::LockRect: Failed to lock surface. DirectX Error: %s", Debug.dxerror2string(hr));
+		return false;
+	}
+
+	*pLockedRect = *(LOCKED_RECT*)&lockedRect;
+
+	return true;
+}
+
+bool CD3D9Surface::UnlockRect()
+{
+	HRESULT hr = m_pSurface->UnlockRect();
+	if (FAILED(hr))
+	{
+		Msg("! CD3D9Surface::UnlockRect: Failed to unlock surface. DirectX Error: %s", Debug.dxerror2string(hr));
+		return false;
+	}
+
+	return true;
 }
 
 EResourceType CD3D9Surface::GetType()
@@ -649,7 +685,7 @@ EResourceType CD3D9Surface::GetType()
 void CD3D9Surface::SetActive()
 {
 	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
-	pDevice->SetDepthStencilSurface(m_pSurfaceAPI);
+	pDevice->SetDepthStencilSurface(m_pSurface);
 }
 
 ///////////////////////////////////////////////////////////

@@ -11,7 +11,7 @@ IRHIDepthStencilView* CreateD3D9DepthStencilSurface(u32 Width, u32 Height, ERHIT
 	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
 	CD3D9Surface* pDepthTexture = new CD3D9Surface();
 
-	pDevice->CreateDepthStencilSurface(Width, Height, ConvertTextureFormat(Format), (D3DMULTISAMPLE_TYPE)MultiSample, MultisampleQuality, Discard, &pDepthTexture->m_pSurfaceAPI, nullptr);
+	pDevice->CreateDepthStencilSurface(Width, Height, ConvertTextureFormat(Format), (D3DMULTISAMPLE_TYPE)MultiSample, MultisampleQuality, Discard, &pDepthTexture->m_pSurface, nullptr);
 	pDepthTexture->AddRef();
 
 	return pDepthTexture;
@@ -85,4 +85,29 @@ void SetRenderTargetD3D9(u32 RenderTargetIndex, IRHISurface* pRenderTarget)
 	{
 		pDevice->SetRenderTarget( RenderTargetIndex, NULL );
 	}
+}
+
+IRHISurface* CreateOffscreenPlainSurfaceD3D9(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	IDirect3DSurface9* pSurface = nullptr;
+	HRESULT hr = pDevice->CreateOffscreenPlainSurface(Width, Height, ConvertTextureFormat(Format), DefaultPool ? D3DPOOL_DEFAULT : D3DPOOL_SYSTEMMEM, &pSurface, NULL);
+	R_CHK(hr);
+
+	CD3D9Surface* pAPISurface = new CD3D9Surface(pSurface);
+	pAPISurface->AddRef();
+	return pAPISurface;
+}
+
+void GetRenderTargetDataD3D9(IRHISurface* pRenderTarget, IRHISurface* pDestSurface)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	CD3D9Surface* pAPIRenderTarget = (CD3D9Surface*)pRenderTarget;
+	CD3D9Surface* pAPIDestSurface = (CD3D9Surface*)pDestSurface;
+	HRESULT hr = pDevice->GetRenderTargetData(pAPIRenderTarget->GetD3D9SurfaceObject(), pAPIDestSurface->GetD3D9SurfaceObject());
+	R_CHK(hr);
 }

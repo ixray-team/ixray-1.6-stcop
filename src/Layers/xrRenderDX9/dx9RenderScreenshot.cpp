@@ -19,7 +19,6 @@ extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
 
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {
-#if 0
     if (!Device.b_is_Ready) {
         return;
     }
@@ -28,23 +27,19 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     u32* pDst = nullptr;
     
     // Create temp-surface
-    IDirect3DSurface9* pFB = nullptr;
-    D3DLOCKED_RECT D;
+    IRHISurface* pFB = g_RenderRHI->CreateAPIOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), FMT_X8R8G8B8, false);;
+    LOCKED_RECT D;
     ScratchImage scratchImage;
     ScratchImage smallScratchImage;
+    HRESULT hr = S_OK;
 
-    HRESULT hr = RDevice->CreateOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &pFB, nullptr);
-    if (hr != D3D_OK) {
+    if (!pFB)
         return;
-    }
 
-    hr = RDevice->GetRenderTargetData(RTarget, pFB);
-    if (hr != D3D_OK) {
-        goto _end_;
-    }
+    g_RenderRHI->GetRenderTargetData(RTarget, pFB);
 
-    hr = pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK);
-    if (hr != D3D_OK) {
+    bool result = pFB->LockRect(&D, 0, eLOCK_NOSYSLOCK);
+    if (result != true) {
         goto _end_;
     }
 
@@ -76,8 +71,8 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         );
     }
 
-    hr = pFB->UnlockRect();
-    if (hr != D3D_OK) {
+    result = pFB->UnlockRect();
+    if (result != true) {
         goto _end_;
     }
 
@@ -165,7 +160,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
         //	TODO: DX10: This is totally incorrect but mimics 
         //	original behavior. Fix later.
-        hr = pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK);
+        hr = pFB->LockRect(&D, 0, eLOCK_NOSYSLOCK);
         if (hr != D3D_OK) {
             return;
         }
@@ -191,7 +186,6 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
 _end_:
     _RELEASE(pFB);
-#endif
 }
 
 void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
@@ -200,11 +194,11 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
     }
     VERIFY(!m_bMakeAsyncSS);
 
-    D3DLOCKED_RECT D;
-    IDirect3DSurface9* pFB = Target->pFB;
+    LOCKED_RECT D;
+    IRHISurface* pFB = Target->pFB;
 
-    HRESULT hr = pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK);
-    if (hr != D3D_OK) {
+    bool hr = pFB->LockRect(&D, 0, eLOCK_NOSYSLOCK);
+    if (hr != false) {
         return;
     }
 

@@ -14,10 +14,12 @@ public:
 	virtual void SetActive() override;
 
 private:
-	IDirect3DSurface9* m_pSurfaceAPI;
+	IDirect3DSurface9* m_pSurface;
 
 	// Inherited via IRHISurface
 	EResourceType GetType() override;
+	bool LockRect(LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) override;
+	bool UnlockRect() override;
 };
 
 class CD3D9Texture : public IRHITexture

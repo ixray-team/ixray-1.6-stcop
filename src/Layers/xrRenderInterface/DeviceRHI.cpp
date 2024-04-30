@@ -140,6 +140,17 @@ IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, LPS
     return Ptr;
 }
 
+IRHISurface* CRender_RHI::CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool)
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        return CreateOffscreenPlainSurfaceD3D9(Width, Height, Format, DefaultPool);
+    }
+
+    return nullptr;
+}
+
 IRHIBuffer* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
     switch (API)
@@ -177,6 +188,15 @@ void CRender_RHI::SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u
         return SetIndexBufferD3D9(pIndexBuffer, Is32BitBuffer, Offset);
     case APILevel::DX11:
         return SetIndexBufferD3D11(pIndexBuffer, Is32BitBuffer, Offset);
+    }
+}
+
+void CRender_RHI::GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* pDestSurface)
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        return GetRenderTargetDataD3D9(pRenderTarget, pDestSurface);
     }
 }
 
