@@ -14,6 +14,8 @@ void* RenderRTV = nullptr;
 void* RenderDSV = nullptr;
 void* SwapChainRTV = nullptr;
 
+CRender_RHI g_RenderRHI_Implementation;
+
 CRender_RHI::CRender_RHI()
 {
 }

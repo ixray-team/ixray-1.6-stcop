@@ -48,3 +48,5 @@ public:
 	int GetFeatureLevel();
 
 };
+
+extern CRender_RHI g_RenderRHI_Implementation;

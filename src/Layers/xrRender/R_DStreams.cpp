@@ -21,19 +21,6 @@ void _VertexStream::Create	()
 
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, 0, mSize, false));
 
-//#ifdef USE_DX11
-//	D3D_BUFFER_DESC bufferDesc;
-//	bufferDesc.ByteWidth        = mSize;
-//	bufferDesc.Usage            = D3D_USAGE_DYNAMIC;	
-//	bufferDesc.BindFlags        = D3D_BIND_VERTEX_BUFFER;
-//	bufferDesc.CPUAccessFlags   = D3D_CPU_ACCESS_WRITE;
-//	bufferDesc.MiscFlags        = 0;
-//
-//	R_CHK					(RDevice->CreateBuffer	( &bufferDesc, 0, &pVB ));
-//#else //USE_DX11
-//	R_CHK					(RDevice->CreateVertexBuffer	( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &pVB, nullptr));
-//#endif
-
 	R_ASSERT				(pVB);
 
 	mPosition				= 0;
