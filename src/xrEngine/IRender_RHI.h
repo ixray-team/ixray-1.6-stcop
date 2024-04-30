@@ -155,6 +155,7 @@ inline u64 IRHIUnknown::Release()
 	return m_RefCount;
 }
 
+//! Render Target or Surface interface
 class IRHISurface : public IRHIUnknown
 {
 public:
@@ -162,6 +163,7 @@ public:
 	virtual bool UnlockRect() = 0;
 };
 
+//! Depth Stencil Target interface
 class IRHIDepthStencilView : public IRHISurface
 {
 public:

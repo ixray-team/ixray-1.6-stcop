@@ -1,8 +1,7 @@
 #pragma once
 #include <d3d11.h>
 
-class CD3D11DepthStencilView :
-	public IRHIDepthStencilView
+class CD3D11DepthStencilView : public IRHIDepthStencilView
 {
 public:
 	CD3D11DepthStencilView() = default;

@@ -48,7 +48,7 @@ static DX11TextureFormatPairs TextureFormatList[] =
     { FMT_DXT5      ,   DXGI_FORMAT_BC3_UNORM },
 };
 
-static DXGI_FORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
+DXGI_FORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
 {
 	int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
 	for (int i = 0; i < arrayLength; ++i)

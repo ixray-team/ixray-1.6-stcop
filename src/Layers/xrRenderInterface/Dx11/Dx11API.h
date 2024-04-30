@@ -15,3 +15,6 @@ IRHIBuffer* CreateD3D11Buffer(eBufferType bufferType, const void* pData, u32 Dat
 void SetVertexBufferD3D11(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets);
 void SetIndexBufferD3D11(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset);
 void ClearD3D11(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data);
+
+class IRHISurface;
+IRHISurface* CreateOffscreenPlainSurfaceD3D11(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool);

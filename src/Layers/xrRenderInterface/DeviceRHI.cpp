@@ -162,6 +162,9 @@ IRHISurface* CRender_RHI::CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, 
     {
     case APILevel::DX9:
         return CreateOffscreenPlainSurfaceD3D9(Width, Height, Format, DefaultPool);
+       
+    case APILevel::DX11:
+        return CreateOffscreenPlainSurfaceD3D11(Width, Height, Format, DefaultPool);
     }
 
     return nullptr;
