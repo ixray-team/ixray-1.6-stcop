@@ -128,6 +128,14 @@ IRender_Texture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc,
 
 IRender_BufferBase* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
+    switch (API)
+    {
+    case APILevel::DX9:
+        return CreateD3D9Buffer(bufferType, pData, DataSize, bImmutable);
+    case APILevel::DX11:
+        break;
+    }
+
     return nullptr;
 }
 

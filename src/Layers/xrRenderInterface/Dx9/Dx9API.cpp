@@ -10,7 +10,7 @@ public:
 
 	HRESULT Create(const TextureDesc* pTextureDesc, const void* pData, const int size);
 
-	bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, DWORD Flags) override;
+	bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, u32 Flags) override;
 	bool UnlockRect(u32 Level) override;
 
 	void SetData( const void* pData, const int size );
@@ -65,7 +65,7 @@ HRESULT CRenderTextureDX9::Create( const TextureDesc* pTextureDesc, const void* 
 	return S_OK;
 }
 
-bool CRenderTextureDX9::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, DWORD Flags)
+bool CRenderTextureDX9::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, u32 Flags)
 {
 	R_ASSERT( m_pTexture );
 
@@ -136,3 +136,118 @@ IRender_Texture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* 
 
 	return pTexture;
 }
+
+class CRenderBufferBaseDX9 : public IRender_BufferBase
+{
+public:
+	CRenderBufferBaseDX9();
+	~CRenderBufferBaseDX9();
+
+	HRESULT Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable);
+
+	void UpdateData(const void* data, int size) override;
+
+	bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, u32 Flags) override;
+	bool Unlock() override;
+
+private:
+	IDirect3DVertexBuffer9* m_pVertexBuffer;
+	IDirect3DIndexBuffer9* m_pIndexBuffer;
+	eBufferType m_BufferType;
+	bool m_bImmutable;
+};
+
+CRenderBufferBaseDX9::CRenderBufferBaseDX9() :
+	m_pVertexBuffer(nullptr),
+	m_pIndexBuffer(nullptr),
+	m_bImmutable(false)
+{
+}
+
+CRenderBufferBaseDX9::~CRenderBufferBaseDX9()
+{
+}
+
+HRESULT CRenderBufferBaseDX9::Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	m_BufferType = bufferType;
+	m_bImmutable = bImmutable;
+
+	HRESULT hr = S_OK;
+
+	switch (bufferType)
+	{
+	case eVertexBuffer:
+		hr = pDevice->CreateVertexBuffer(DataSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &m_pVertexBuffer, NULL);
+		break;
+	case eIndexBuffer:
+		hr = pDevice->CreateIndexBuffer(DataSize, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &m_pIndexBuffer, NULL);
+		break;
+	case eConstantBuffer:
+	default:
+		break;
+	}
+
+	R_CHK(hr);
+
+	return hr;
+}
+
+void CRenderBufferBaseDX9::UpdateData(const void* data, int size)
+{
+}
+
+bool CRenderBufferBaseDX9::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, u32 Flags)
+{
+	HRESULT hr = S_OK;
+
+	switch (m_BufferType)
+	{
+	case eVertexBuffer:
+		hr = m_pVertexBuffer->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+		break;
+	case eIndexBuffer:
+		hr = m_pIndexBuffer->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+		break;
+	default:
+		break;
+	}
+
+	R_CHK(hr);
+
+	return true;
+}
+
+bool CRenderBufferBaseDX9::Unlock()
+{
+	HRESULT hr = S_OK;
+
+	switch (m_BufferType)
+	{
+	case eVertexBuffer:
+		hr = m_pVertexBuffer->Unlock();
+		break;
+	case eIndexBuffer:
+		hr = m_pIndexBuffer->Unlock();
+		break;
+	default:
+		break;
+	}
+
+	R_CHK(hr);
+
+	return true;
+}
+
+IRender_BufferBase* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+{
+	CRenderBufferBaseDX9* pBuffer = new CRenderBufferBaseDX9();
+
+	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));
+
+	return pBuffer;
+}
+

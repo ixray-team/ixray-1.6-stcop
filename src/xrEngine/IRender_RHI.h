@@ -70,7 +70,7 @@ class IRender_Texture
 public:
 	virtual ~IRender_Texture() = default;
 
-	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, DWORD Flags) = 0;
+	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, u32 Flags) = 0;
 	virtual bool UnlockRect(u32 Level) = 0;
 };
 
@@ -79,10 +79,10 @@ typedef IRender_Texture* LPIRENDER_TEXTURE;
 class IRender_BufferBase
 {
 public:
-	virtual ~IRender_BufferBase() = 0;
+	virtual ~IRender_BufferBase() = default;
 	virtual void UpdateData(const void* data, int size) = 0;
 
-	virtual bool Lock(LOCKED_RECT* pLockedRect, DWORD Flags) = 0;
+	virtual bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, u32 Flags) = 0;
 	virtual bool Unlock() = 0;
 };
 
