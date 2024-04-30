@@ -43,6 +43,7 @@ public:
 
 	IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) override;
 	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
+	IRHITexture* CreateAPITexture3D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHIBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 	IRHISurface* CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool) override;
 
@@ -50,6 +51,7 @@ public:
 	void SetVertexBuffer(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets) override;
 	void SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) override;
 	void GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* pDestSurface) override;
+	void Clear(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data) override;
 
 	ERHITextureFormat GetRHIFormatFromAPI(int dxgiFormat) override;
 

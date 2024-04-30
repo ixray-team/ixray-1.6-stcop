@@ -140,6 +140,22 @@ IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, LPS
     return Ptr;
 }
 
+IRHITexture* CRender_RHI::CreateAPITexture3D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+    IRHITexture* Ptr = nullptr;
+    switch (API)
+    {
+    case APILevel::DX9:  R_ASSERT(!"Not impl");  break;
+    case APILevel::DX11: Ptr = CreateD3D11Texture3D(pTextureDesc, pSubresourceData); break;
+    }
+
+#ifdef DEBUG
+    TextureList.emplace_back(Ptr);
+#endif
+
+    return Ptr;
+}
+
 IRHISurface* CRender_RHI::CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool)
 {
     switch (API)
@@ -198,6 +214,16 @@ void CRender_RHI::GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* p
     case APILevel::DX9:
         return GetRenderTargetDataD3D9(pRenderTarget, pDestSurface);
     }
+}
+
+void CRender_RHI::Clear(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data)
+{
+    if (API == APILevel::DX9)
+    {
+        VERIFY(!"Imlp this");
+        return;
+    }
+
 }
 
 void CRender_RHI::SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget)

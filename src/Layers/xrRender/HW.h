@@ -19,8 +19,8 @@ struct SDL_Window;
 #define RContext ((ID3D11DeviceContext*)g_RenderRHI->GetRenderContext())
 #define RDevice ((ID3D11Device*)g_RenderRHI->GetRenderDevice())
 #define RSwapchainTarget ((ID3D11RenderTargetView*)g_RenderRHI->GetSwapchainTexture())
-#define RTarget ((ID3D11RenderTargetView*)g_RenderRHI->GetRenderTexture())
-#define RDepth ((ID3D11DepthStencilView*)g_RenderRHI->GetDepthTexture())
+#define RTarget ((IRHISurface*)g_RenderRHI->GetRenderTexture())
+#define RDepth ((IRHIDepthStencilView*)g_RenderRHI->GetDepthTexture())
 #define RSwapchain ((IDXGISwapChain*)g_RenderRHI->GetSwapchain())
 #else
 #define RContext ((IDirect3DDevice9*)g_RenderRHI->GetRenderContext())

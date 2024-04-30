@@ -320,9 +320,8 @@ void CRenderTarget::phase_bloom	()
 	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	if (_menu_pp)			
 	{
-		//CHK_DX				(RDevice->Clear( 0L, nullptr, D3DCLEAR_TARGET,	0,	1.0f, 0L));
-		FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-		RContext->ClearRenderTargetView( RCache.get_RT(), ColorRGBA);
+		static ClearData Data(0.0f, 0.0f, 0.0f, 0.0f);
+		g_RenderRHI->Clear(ERHIClearStage::eClearTarget, RCache.get_RT(), Data);
 	};
 
 	// re-enable z-buffer

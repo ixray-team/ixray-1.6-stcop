@@ -163,10 +163,16 @@ void CRender::render_menu	()
 
 	// Distort
 	{
-		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
-		RContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
-		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
+		ClearData Data;
+		Data.Color[0] = 127.0f / 255.0f;
+		Data.Color[1] = 127.0f / 255.0f;
+		Data.Color[2] = 0.0f;
+		Data.Color[3] = 127.0f / 255.0f;
+
+		// Now RT is a distortion mask
+		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);
+		g_RenderRHI->Clear(ERHIClearStage::eClearTarget, Target->rt_Generic_1->pRT, Data);
+		g_pGamePersistent->OnRenderPPUI_PP();
 	}
 
 	// Actual Display

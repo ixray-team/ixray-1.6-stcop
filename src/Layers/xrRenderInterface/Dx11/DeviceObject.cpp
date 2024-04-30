@@ -6,6 +6,8 @@
 
 #include "Dx11Buffer.h"
 #include "Dx11Texture.h"
+#include "Dx11StencilView.h"
+#include "Dx11Surface.h"
 
 D3D11_MAP GetD3D11Map(eLockType lockType)
 {
@@ -32,6 +34,16 @@ D3D11_MAP GetD3D11Map(eLockType lockType)
 IRHITexture* CreateD3D11Texture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
 	CD3D11Texture2D* pTexture = new CD3D11Texture2D();
+	R_CHK(pTexture->Create(pTextureDesc, pSubresourceData));
+
+	pTexture->AddRef();
+
+	return pTexture;
+}
+
+IRHITexture* CreateD3D11Texture3D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+	CD3D11Texture3D* pTexture = new CD3D11Texture3D();
 
 	R_CHK(pTexture->Create(pTextureDesc, pSubresourceData));
 
@@ -43,7 +55,6 @@ IRHITexture* CreateD3D11Texture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_
 IRHIBuffer* CreateD3D11Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	CD3D11Buffer* pBuffer = new CD3D11Buffer();
-
 	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));
 
 	pBuffer->AddRef();
@@ -86,5 +97,29 @@ void SetIndexBufferD3D11(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offse
 	else
 	{
 		pImmediateContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+	}
+}
+
+void ClearD3D11(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data)
+{
+	ID3D11DeviceContext* Context = ((ID3D11DeviceContext*)g_RenderRHI->GetRenderContext());
+
+	switch (Stage)
+	{
+		case ERHIClearStage::eClearDepth:
+		{
+			Context->ClearDepthStencilView(((CD3D11DepthStencilView*)(Ptr))->GetDXObj(), D3D11_CLEAR_DEPTH, Data.Depth, Data.Stencil);
+			break;
+		}
+		case ERHIClearStage::eClearStencil:
+		{
+			Context->ClearDepthStencilView(((CD3D11DepthStencilView*)(Ptr))->GetDXObj(), D3D11_CLEAR_STENCIL, Data.Depth, Data.Stencil);
+			break;
+		}
+		case ERHIClearStage::eClearTarget:
+		{
+			Context->ClearRenderTargetView(((CD3D11Surface*)(Ptr))->GetDXObj(), &Data.Color.x);
+			break;
+		}
 	}
 }

@@ -8,6 +8,7 @@ enum ERHITextureFormat
 {
 	FMT_UNKNOWN,
 
+	FMT_R8G8,
 	FMT_R8G8B8,
 	FMT_A8R8G8B8,
 	FMT_A8B8G8R8,

@@ -9,7 +9,15 @@ enum ERHIUsage
 	eUsageDepthStencil,
 	eUsageStatic,
 	eUsageDynamic,
-	eUsageScratch
+	eUsageScratch,
+	eUsageImmutable = 1
+};
+
+enum ERHIClearStage
+{
+	eClearDepth,
+	eClearStencil,
+	eClearTarget
 };
 
 enum eLockType
@@ -49,12 +57,23 @@ enum EResourceType {
 	eResourceConstantBuffer = 9,
 };
 
+struct ClearData
+{
+	ClearData() = default;
+	ClearData(float r, float g, float b, float a) { Color.set(r, g, b, a); }
+
+	Fvector4 Color;
+	float Depth = 1;
+	float Stencil = 0;
+};
+
 struct TextureDesc
 {
 	u32 Width;
 	u32 Height;
 	u32 DepthOrSliceNum;
 	u32 Usage;
+	u32 Depth;
 	ERHITextureFormat Format;
 	u32 TextureFlags;
 	u32 NumMips;
@@ -218,11 +237,12 @@ public:
 	virtual int GetFeatureLevel() = 0;
 
 	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
+	virtual IRHITexture* CreateAPITexture3D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData) = 0;
 	virtual IRHIBuffer*  CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
 	virtual IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) = 0;
 	virtual IRHISurface* CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool) = 0;
 	virtual IRHIVolumeTexture* CreateAPIVolumeTexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
-
+	virtual void Clear(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data) = 0;
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
 
