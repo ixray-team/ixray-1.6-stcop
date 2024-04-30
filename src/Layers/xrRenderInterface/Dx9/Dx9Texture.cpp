@@ -4,6 +4,15 @@
 
 #include "Dx9Texture.h"
 
+#define DDS_CUBEMAP_POSITIVEX 0x00000600 // DDSCAPS2_CUBEMAP | DDSCAPS2_CUBEMAP_POSITIVEX
+#define DDS_CUBEMAP_NEGATIVEX 0x00000a00 // DDSCAPS2_CUBEMAP | DDSCAPS2_CUBEMAP_NEGATIVEX
+#define DDS_CUBEMAP_POSITIVEY 0x00001200 // DDSCAPS2_CUBEMAP | DDSCAPS2_CUBEMAP_POSITIVEY
+#define DDS_CUBEMAP_NEGATIVEY 0x00002200 // DDSCAPS2_CUBEMAP | DDSCAPS2_CUBEMAP_NEGATIVEY
+#define DDS_CUBEMAP_POSITIVEZ 0x00004200 // DDSCAPS2_CUBEMAP | DDSCAPS2_CUBEMAP_POSITIVEZ
+#define DDS_CUBEMAP_NEGATIVEZ 0x00008200 // DDSCAPS2_CUBEMAP | DDSCAPS2_CUBEMAP_NEGATIVEZ
+
+#define DDS_CUBEMAP 0x00000200			 // DDSCAPS2_CUBEMAP
+
 struct DX9TextureFormatPairs
 {
 	ERHITextureFormat RHIFormat;
@@ -279,7 +288,7 @@ CD3D9Texture::~CD3D9Texture()
 Ivector2 CD3D9Texture::GetTextureSize() const
 {
 	D3DSURFACE_DESC desc;
-	m_pTexture->GetLevelDesc(0, &desc);
+	((IDirect3DTexture9*)m_pTexture)->GetLevelDesc(0, &desc);
 
 	return { (int)desc.Width , (int)desc.Height };
 }
@@ -287,14 +296,26 @@ Ivector2 CD3D9Texture::GetTextureSize() const
 HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
 {
 	R_ASSERT(pTextureDesc);
-
 	m_TextureDesc = *pTextureDesc;
 
+	HRESULT hr = S_OK;
+
+	if (m_TextureDesc.IsCube) // Cubemap
+		hr = CreateTextureCube(pTextureDesc, pSubresourceData);
+	else // 2D Texture
+		hr = CreateTexture2D(pTextureDesc, pSubresourceData);
+
+	return hr;
+}
+
+HRESULT CD3D9Texture::CreateTexture2D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
 	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
 	R_ASSERT(pDevice);
 
 	D3DFORMAT Format = ConvertTextureFormat(pTextureDesc->Format);
 
+	IDirect3DTexture9* pTexture = nullptr;
 	HRESULT hr = pDevice->CreateTexture(
 		pTextureDesc->Width,
 		pTextureDesc->Height,
@@ -302,18 +323,51 @@ HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA
 		pTextureDesc->Usage,
 		Format,
 		pTextureDesc->DefaultPool ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED,
-		&m_pTexture,
+		&pTexture,
 		NULL);
 
 	if (FAILED(hr))
 	{
-		Msg("CRenderTextureDX9::Create: Failed to create texture. DirectX Error: %s", Debug.dxerror2string(hr));
+		Msg("! CRenderTextureDX9::Create: Failed to create texture. DirectX Error: %s", Debug.dxerror2string(hr));
 		return hr;
 	}
 
-	SetData( pSubresourceData );
+	m_pTexture = pTexture;
 
-	return S_OK;
+	SetData(pSubresourceData);
+
+	return hr;
+}
+
+HRESULT CD3D9Texture::CreateTextureCube(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	D3DFORMAT Format = ConvertTextureFormat(pTextureDesc->Format);
+
+	IDirect3DCubeTexture9* pCubeTexture = nullptr;
+
+	HRESULT hr = pDevice->CreateCubeTexture(
+		pTextureDesc->Width, 
+		pTextureDesc->NumMips,
+		pTextureDesc->Usage, 
+		Format, 
+		pTextureDesc->DefaultPool ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED, 
+		&pCubeTexture,
+		nullptr);
+
+	if (FAILED(hr))
+	{
+		Msg("! CRenderTextureDX9::Create: Failed to create texture. DirectX Error: %s", Debug.dxerror2string(hr));
+		return hr;
+	}
+
+	SetDataCube(pCubeTexture, pSubresourceData);
+
+	m_pTexture = pCubeTexture;
+
+	return hr;
 }
 
 bool CD3D9Texture::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
@@ -328,10 +382,10 @@ bool CD3D9Texture::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pR
 	if (pRect)
 		rect = { pRect->x1, pRect->y1, pRect->x2, pRect->y2 };
 
-	HRESULT hr = m_pTexture->LockRect(Level, &lockedRect, pRect ? &rect : NULL, Flags);
+	HRESULT hr = ((IDirect3DTexture9*)m_pTexture)->LockRect(Level, &lockedRect, pRect ? &rect : NULL, Flags);
 	if (FAILED(hr))
 	{
-		Msg("CRenderTextureDX9::LockRect: Failed to lock texture. DirectX Error: %s", Debug.dxerror2string(hr));
+		Msg("! CRenderTextureDX9::LockRect: Failed to lock texture. DirectX Error: %s", Debug.dxerror2string(hr));
 		return false;
 	}
 
@@ -342,10 +396,10 @@ bool CD3D9Texture::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pR
 
 bool CD3D9Texture::UnlockRect(u32 Level)
 {
-	HRESULT hr = m_pTexture->UnlockRect(Level);
+	HRESULT hr = ((IDirect3DTexture9*)m_pTexture)->UnlockRect(Level);
 	if (FAILED(hr))
 	{
-		Msg("CRenderTextureDX9::UnlockRect: Failed to unlock texture. DirectX Error: %s", Debug.dxerror2string(hr));
+		Msg("! CRenderTextureDX9::UnlockRect: Failed to unlock texture. DirectX Error: %s", Debug.dxerror2string(hr));
 		return false;
 	}
 
@@ -390,7 +444,7 @@ void CD3D9Texture::SetData( LPSUBRESOURCE_DATA pSubresourceData )
 		//	//return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
 		//}
 
-		if (SUCCEEDED(m_pTexture->LockRect(i, &LockedRect, nullptr, 0)))
+		if (SUCCEEDED(((IDirect3DTexture9*)m_pTexture)->LockRect(i, &LockedRect, nullptr, 0)))
 		{
 			auto pDestBits = static_cast<uint8_t*>(LockedRect.pBits);
 
@@ -402,7 +456,7 @@ void CD3D9Texture::SetData( LPSUBRESOURCE_DATA pSubresourceData )
 				pSrcBits += RowBytes;
 			}
 
-			m_pTexture->UnlockRect(i);
+			((IDirect3DTexture9*)m_pTexture)->UnlockRect(i);
 		}
 
 		iWidth = iWidth >> 1;
@@ -411,6 +465,58 @@ void CD3D9Texture::SetData( LPSUBRESOURCE_DATA pSubresourceData )
 			iWidth = 1;
 		if (iHeight == 0)
 			iHeight = 1;
+	}
+}
+
+void CD3D9Texture::SetDataCube(IDirect3DCubeTexture9* pCubeTexture, LPSUBRESOURCE_DATA pSubresourceData)
+{
+	UINT iWidth = m_TextureDesc.Width;
+	UINT iHeight = m_TextureDesc.Height;
+	UINT iMipCount = m_TextureDesc.NumMips;
+	D3DFORMAT Format = ConvertTextureFormat(m_TextureDesc.Format);
+
+	// Lock, fill, unlock
+	size_t NumBytes = 0;
+	size_t RowBytes = 0;
+	size_t NumRows = 0;
+	const uint8_t* pSrcBits = (const uint8_t*)pSubresourceData->pSysMem;
+	//const uint8_t* pEndBits = (const uint8_t*)pSubresourceData->pSysMem + bitSize;
+	D3DLOCKED_RECT LockedRect = {};
+
+	UINT mask = DDS_CUBEMAP_POSITIVEX & ~DDS_CUBEMAP;
+	for (UINT f = 0; f < 6; ++f, mask <<= 1)
+	{
+		UINT w = iWidth;
+		UINT h = iHeight;
+		for (UINT i = 0; i < m_TextureDesc.DepthOrSliceNum; ++i)
+		{
+			GetSurfaceInfo(w, h, Format, &NumBytes, &RowBytes, &NumRows);
+
+			if (NumBytes > UINT32_MAX || RowBytes > UINT32_MAX)
+				return;
+
+			if (SUCCEEDED(pCubeTexture->LockRect(static_cast<D3DCUBEMAP_FACES>(f), i, &LockedRect, nullptr, 0)))
+			{
+				auto pDestBits = static_cast<uint8_t*>(LockedRect.pBits);
+
+				// Copy stride line by line
+				for (size_t r = 0; r < NumRows; r++)
+				{
+					memcpy_s(pDestBits, static_cast<size_t>(LockedRect.Pitch), pSrcBits, RowBytes);
+					pDestBits += LockedRect.Pitch;
+					pSrcBits += RowBytes;
+				}
+
+				pCubeTexture->UnlockRect(static_cast<D3DCUBEMAP_FACES>(f), i);
+			}
+
+			w = w >> 1;
+			h = h >> 1;
+			if (w == 0)
+				w = 1;
+			if (h == 0)
+				h = 1;
+		}
 	}
 }
 
@@ -471,7 +577,7 @@ u32 CD3D9Texture::GetLevelCount()
 bool CD3D9Texture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 {
 	IDirect3DSurface9* pSurfaceAPI = nullptr;
-	R_CHK( m_pTexture->GetSurfaceLevel( 0, &pSurfaceAPI ) );
+	R_CHK(((IDirect3DTexture9*)m_pTexture)->GetSurfaceLevel(0, &pSurfaceAPI));
 
 	CD3D9Surface* pSurfaceRHI = new CD3D9Surface(pSurfaceAPI);
 	//pSurfaceRHI->AddRef();
@@ -502,3 +608,6 @@ EResourceType CD3D9Surface::GetType()
 {
 	return eResourceUnknown;
 }
+
+///////////////////////////////////////////////////////////
+// Cubemap implmenetatation

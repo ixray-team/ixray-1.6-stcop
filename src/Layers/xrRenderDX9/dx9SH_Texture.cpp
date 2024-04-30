@@ -142,7 +142,8 @@ void CTexture::apply_seq(u32 dwStage) {
 };
 void CTexture::apply_normal(u32 dwStage) 
 {
-	pSurface->SetStage(dwStage);
+	if (pSurface)
+		pSurface->SetStage(dwStage);
 };
 
 void CTexture::Preload()

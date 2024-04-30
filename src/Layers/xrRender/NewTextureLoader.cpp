@@ -238,6 +238,7 @@ bool RHICreateTextureEx(
         desc.Height = static_cast<UINT>(metadata.height);
         desc.NumMips = static_cast<UINT>(metadata.mipLevels);
         desc.DepthOrSliceNum = static_cast<UINT>(metadata.arraySize);
+        desc.IsCube = metadata.IsCubemap();
         desc.Format = g_RenderRHI->GetRHIFormatFromAPI(format);
         *ppResource = g_RenderRHI->CreateAPITexture(&desc, initData.get());
     }
@@ -330,21 +331,20 @@ IRHITexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
             goto _DDS_2D;
         }
     _DDS_CUBE: {
-        //auto scratchImage = std::make_unique<ScratchImage>();
-        //HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
-        //auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
-        //auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
-        //auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
-        //auto miscFlags = imageInfo.miscFlags;
-        //
-        //hr = CreateTextureEx(RDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
-        //    imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
+        auto scratchImage = std::make_unique<ScratchImage>();
+        HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
+        auto usage = eUsageStatic;
+        auto bindFlags = 0; // (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
+        auto cpuAccessFlags = 0; //(bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
+        auto miscFlags = imageInfo.miscFlags;
+        
+        hr = RHICreateTextureEx(scratchImage->GetImages(), scratchImage->GetImageCount(),
+            imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 
-        //FS.r_close(reader);
-        //mip_cnt = (int)imageInfo.mipLevels;
-        //ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
-        //return pTexture2D;
-        return nullptr;
+        FS.r_close(reader);
+        mip_cnt = (int)imageInfo.mipLevels;
+        ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
+        return pTexture2D;
         }
     _DDS_2D: {
         // Check for LMAP and compress if needed
