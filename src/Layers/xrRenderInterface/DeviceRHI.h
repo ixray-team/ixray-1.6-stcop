@@ -64,6 +64,10 @@ public:
 	// Inherited via IRender_RHI
 	void CopyResource(IRHITexture * pDstResource, IRHITexture * pSrcResource) override;
 
+
+	// Inherited via IRender_RHI
+	IRHIVolumeTexture* CreateAPIVolumeTexture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData) override;
+
 };
 
 extern CRender_RHI g_RenderRHI_Implementation;

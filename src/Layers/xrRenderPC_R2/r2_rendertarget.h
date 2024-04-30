@@ -78,7 +78,7 @@ public:
 	IRHIDepthStencilView*		rt_smap_ZB;		//
 
 	// Textures
-	IDirect3DVolumeTexture9*	t_material_surf;
+	IRHIVolumeTexture*			t_material_surf;
 	ref_texture					t_material;
 
 	IRHITexture*				t_noise_surf	[TEX_jitter_count];

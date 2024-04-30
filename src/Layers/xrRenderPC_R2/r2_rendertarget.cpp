@@ -425,7 +425,8 @@ CRenderTarget::CRenderTarget		()
 		// Build material(s)
 		{
 			// Surface
-			R_CHK(RDevice->CreateVolumeTexture(TEX_material_LdotN,TEX_material_LdotH,4,1,0,FMT_A8L8,D3DPOOL_MANAGED,&t_material_surf, nullptr));
+			R_ASSERT(RHIUtils::CreateVolumeTexture(TEX_material_LdotN, TEX_material_LdotH, 4, 1, 0, FMT_A8L8, false, &t_material_surf, nullptr));
+
 			t_material					= dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			t_material->surface_set		(t_material_surf);
 

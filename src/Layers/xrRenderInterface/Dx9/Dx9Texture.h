@@ -63,3 +63,35 @@ private:
 	// Inherited via IRHITexture
 	void GetDesc(TextureDesc* pTextureDesc) override;
 };
+
+class CD3D9VolumeTexture : public IRHIVolumeTexture
+{
+public:
+	CD3D9VolumeTexture();
+	~CD3D9VolumeTexture();
+
+	HRESULT Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData);
+
+	// Inherited via IRHIVolumeTexture
+	bool LockBox(u32 Level, LOCKED_BOX* pLockedVolume, const RHIBOX* pBox, u32 Flags) override;
+	bool UnlockBox(u32 Level) override;
+
+	EResourceType GetType() override;
+
+	bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) override;
+	bool UnlockRect(u32 Level) override;
+
+	void SetStage(u32 Stage) override;
+
+	u32 GetLevelCount() override;
+
+	bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) override;
+
+	Ivector2 GetTextureSize() const override;
+	void GetAPIData(SRHIAPIData* pAPIData) override;
+	void GetDesc(TextureDesc* pTextureDesc) override;
+
+private:
+	IDirect3DVolumeTexture9* m_pVolumeTexture;
+
+};

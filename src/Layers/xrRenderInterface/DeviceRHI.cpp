@@ -228,6 +228,19 @@ void CRender_RHI::CopyResource(IRHITexture* pDstResource, IRHITexture* pSrcResou
     FATAL(" CRender_RHI::CopyResource: NOT IMPLEMENTED ");
 }
 
+IRHIVolumeTexture* CRender_RHI::CreateAPIVolumeTexture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        return CreateD3D9VolumeTexture(pTextureDesc, pSubresourceData);
+    case APILevel::DX11:
+        break;
+    }
+
+    return nullptr;
+}
+
 ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
 {
     extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);

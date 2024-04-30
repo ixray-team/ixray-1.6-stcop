@@ -6,7 +6,9 @@ void ResizeBuffersD3D9(u16 Width, u16 Height);
 void DestroyD3D9();
 
 class IRHITexture;
+class IRHIVolumeTexture;
 IRHITexture* CreateD3D9Texture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData );
+IRHIVolumeTexture* CreateD3D9VolumeTexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData );
 
 class IRHIDepthStencilView;
 IRHIDepthStencilView* CreateD3D9DepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard);

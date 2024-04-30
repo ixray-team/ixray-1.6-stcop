@@ -28,6 +28,14 @@ IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DA
 	return pTexture;
 }
 
+IRHIVolumeTexture* CreateD3D9VolumeTexture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+	CD3D9VolumeTexture* pTexture = new CD3D9VolumeTexture();
+	R_CHK(pTexture->Create(pTextureDesc, pSubresourceData));
+	pTexture->AddRef();
+	return pTexture;
+}
+
 IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	CD3D9Buffer* pBuffer = new CD3D9Buffer();

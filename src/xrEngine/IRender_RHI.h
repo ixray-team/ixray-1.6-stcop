@@ -67,6 +67,12 @@ typedef struct LOCKED_RECT {
 	void* pBits;
 } LOCKED_RECT, * LPLOCKED_RECT;
 
+typedef struct LOCKED_BOX {
+	int  RowPitch;
+	int  SlicePitch;
+	void* pBits;
+} LOCKED_BOX, * LPLOCKED_BOX;
+
 typedef struct SUBRESOURCE_DATA
 {
 	const void* pSysMem;
@@ -80,6 +86,15 @@ struct SRHIAPIData
 	void* pSRV;
 	void* pUAV;
 };
+
+typedef struct RHIBOX {
+	u32 Left;
+	u32 Top;
+	u32 Right;
+	u32 Bottom;
+	u32 Front;
+	u32 Back;
+} RHIBOX, *LPRHIBOX;
 
 /////////////////////////////////////////////////
 // RHI Objects
@@ -152,6 +167,15 @@ public:
 
 typedef IRHITexture* LPIRHITEXTURE;
 
+class IRHIVolumeTexture : public IRHITexture
+{
+public:
+	virtual bool LockBox(u32 Level, LOCKED_BOX* pLockedVolume, const RHIBOX* pBox, u32 Flags) = 0;
+	virtual bool UnlockBox(u32 Level) = 0;
+};
+
+typedef IRHIVolumeTexture* LPIRHIVOLUMETEXTURE;
+
 class IRHIBuffer : public IRHIUnknown
 {
 public:
@@ -197,6 +221,7 @@ public:
 	virtual IRHIBuffer*  CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
 	virtual IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) = 0;
 	virtual IRHISurface* CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool) = 0;
+	virtual IRHIVolumeTexture* CreateAPIVolumeTexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
 
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
@@ -273,6 +298,34 @@ namespace RHIUtils
 			return false;
 
 		*ppTexture = pTexture;
+
+		return true;
+	}
+
+	inline bool CreateVolumeTexture(u32 Width, 
+									u32 Height, 
+									u32 Depth, 
+									u32 Levels, 
+									u32 Usage, 
+									ERHITextureFormat Format, 
+									bool DefaultPool, 
+									IRHIVolumeTexture** ppVolumeTexture, 
+									void* pSharedHandle)
+	{
+		TextureDesc Desc = {};
+		Desc.Width = Width;
+		Desc.Height = Height;
+		Desc.NumMips = Levels;
+		Desc.DepthOrSliceNum = Depth;
+		Desc.Format = Format;
+		Desc.Usage = Usage;
+		Desc.DefaultPool = DefaultPool;
+
+		IRHIVolumeTexture* pTexture = g_RenderRHI->CreateAPIVolumeTexture(&Desc, nullptr);
+		if (!pTexture)
+			return false;
+
+		*ppVolumeTexture = pTexture;
 
 		return true;
 	}
