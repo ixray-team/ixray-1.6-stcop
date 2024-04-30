@@ -268,7 +268,11 @@ bool RHICreateTextureEx(
     return hr;
 }
 
-IRHITexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
+IRHITexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize
+#ifdef USE_DX11
+    , bool bStaging
+#endif // USE_DX11
+)
 {
     // Moved here just to avoid warning
     TexMetadata imageInfo{};

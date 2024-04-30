@@ -14,8 +14,8 @@ public:
 	virtual Ivector2 GetTextureSize() const override;
 
 private:
-	ID3D11Texture2D* m_pTexture;
-	ID3D11ShaderResourceView* m_pTextureSRV;
+	ID3D11Texture2D*			m_pTexture;
+	ID3D11ShaderResourceView*	m_pTextureSRV;
 	TextureDesc					m_TextureDesc;
 	int							m_Pitch;
 
@@ -27,4 +27,10 @@ private:
 
 	// Inherited via IRHITexture
 	bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) override;
+
+	// Inherited via IRHITexture
+	void GetAPIData(SRHIAPIData* pAPIData) override;
+
+	// Inherited via IRHITexture
+	void GetDesc(TextureDesc* pTextureDesc) override;
 };

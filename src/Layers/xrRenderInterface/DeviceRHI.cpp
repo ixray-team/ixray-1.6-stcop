@@ -223,6 +223,11 @@ void CRender_RHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView)
     }
 }
 
+void CRender_RHI::CopyResource(IRHITexture* pDstResource, IRHITexture* pSrcResource)
+{
+    FATAL(" CRender_RHI::CopyResource: NOT IMPLEMENTED ");
+}
+
 ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
 {
     extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);

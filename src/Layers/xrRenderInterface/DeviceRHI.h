@@ -60,6 +60,10 @@ public:
 	void SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget) override;
 	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView) override;
 
+
+	// Inherited via IRender_RHI
+	void CopyResource(IRHITexture * pDstResource, IRHITexture * pSrcResource) override;
+
 };
 
 extern CRender_RHI g_RenderRHI_Implementation;

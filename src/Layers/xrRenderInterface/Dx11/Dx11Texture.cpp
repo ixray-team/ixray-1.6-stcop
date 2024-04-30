@@ -202,12 +202,12 @@ void CD3D11Texture2D::SetStage(u32 Stage)
 
 Ivector2 CD3D11Texture2D::GetTextureSize() const
 {
-	return Ivector2();
+	return Ivector2(m_TextureDesc.Width, m_TextureDesc.Height);
 }
 
 EResourceType CD3D11Texture2D::GetType()
 {
-	return eResourceTexture;
+	return eResourceTexture2D;
 }
 
 u32 CD3D11Texture2D::GetLevelCount()
@@ -218,4 +218,17 @@ u32 CD3D11Texture2D::GetLevelCount()
 bool CD3D11Texture2D::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 {
 	return false;
+}
+
+void CD3D11Texture2D::GetAPIData(SRHIAPIData* pAPIData)
+{
+	R_ASSERT(pAPIData);
+	pAPIData->pSRV = m_pTextureSRV;
+	pAPIData->pUAV = nullptr;
+}
+
+void CD3D11Texture2D::GetDesc(TextureDesc* pTextureDesc)
+{
+	R_ASSERT(pTextureDesc);
+	*pTextureDesc = m_TextureDesc;
 }

@@ -600,7 +600,7 @@ u64 CD3D9Texture::AddRef()
 
 EResourceType CD3D9Texture::GetType()
 {
-	return eResourceTexture;
+	return eResourceTexture2D;
 }
 
 u32 CD3D9Texture::GetLevelCount()
@@ -618,6 +618,19 @@ bool CD3D9Texture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 	*ppSurfaceLevel = pSurfaceRHI;
 
 	return true;
+}
+
+void CD3D9Texture::GetAPIData(SRHIAPIData* pAPIData)
+{
+	R_ASSERT(pAPIData);
+	pAPIData->pSRV = nullptr;
+	pAPIData->pUAV = nullptr;
+}
+
+void CD3D9Texture::GetDesc(TextureDesc* pTextureDesc)
+{
+	R_ASSERT(pTextureDesc);
+	*pTextureDesc = m_TextureDesc;
 }
 
 //---------------------------------------------------------------------------------------

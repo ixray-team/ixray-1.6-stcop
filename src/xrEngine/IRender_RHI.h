@@ -40,12 +40,13 @@ enum EResourceType {
 	eResourceUnknown = 0,
 	eResourceSurface = 1,
 	eResourceVolume = 2,
-	eResourceTexture = 3,
-	eResourceVolumeTexture = 4,
-	eResourceCubeTexture = 5,
-	eResourceVertexBuffer = 6,
-	eResourceIndexBuffer = 7,
-	eResourceConstantBuffer = 8,
+	eResourceTexture1D = 3,
+	eResourceTexture2D = 4,
+	eResourceVolumeTexture = 5,
+	eResourceCubeTexture = 6,
+	eResourceVertexBuffer = 7,
+	eResourceIndexBuffer = 8,
+	eResourceConstantBuffer = 9,
 };
 
 struct TextureDesc
@@ -74,6 +75,11 @@ typedef struct SUBRESOURCE_DATA
 	u32 SysMemSize;
 } SUBRESOURCE_DATA, *LPSUBRESOURCE_DATA;
 
+struct SRHIAPIData
+{
+	void* pSRV;
+	void* pUAV;
+};
 
 /////////////////////////////////////////////////
 // RHI Objects
@@ -140,6 +146,8 @@ public:
 	virtual bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) = 0;
 
 	virtual Ivector2 GetTextureSize() const = 0;
+	virtual void GetAPIData(SRHIAPIData* pAPIData) = 0;
+	virtual void GetDesc(TextureDesc* pTextureDesc) = 0;
 };
 
 typedef IRHITexture* LPIRHITEXTURE;
@@ -197,6 +205,7 @@ public:
 	virtual void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView) = 0;
 
 	virtual void GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* pDestSurface) = 0;
+	virtual void CopyResource(IRHITexture* pDstResource, IRHITexture* pSrcResource) = 0;
 
 	virtual ERHITextureFormat GetRHIFormatFromAPI( int dxgiFormat ) = 0;
 };
