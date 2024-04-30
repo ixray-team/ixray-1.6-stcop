@@ -405,6 +405,8 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, const void* pDa
 
 		R_ASSERT(pDevice->CreateShaderResourceView(m_pTexture, &shaderResourceViewDesc, &m_pTextureSRV));
 	}
+
+	return S_OK;
 }
 
 bool CD3D11Texture2D::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
