@@ -103,3 +103,18 @@ ID3D11Buffer* CD3D11Buffer::GetD3DBufferObject()
 {
 	return m_pBuffer;
 }
+
+EResourceType CD3D11Buffer::GetType()
+{
+	switch (m_BufferType)
+	{
+	case eVertexBuffer:
+		return eResourceVertexBuffer;
+	case eIndexBuffer:
+		return eResourceIndexBuffer;
+	case eConstantBuffer:
+		return eResourceConstantBuffer;
+	}
+
+	return eResourceUnknown;
+}

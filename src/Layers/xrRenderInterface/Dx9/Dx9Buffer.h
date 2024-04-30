@@ -25,4 +25,7 @@ private:
 	IDirect3DIndexBuffer9* m_pIndexBuffer;
 	eBufferType m_BufferType;
 	bool m_bImmutable;
+
+	// Inherited via IRHIBuffer
+	EResourceType GetType() override;
 };

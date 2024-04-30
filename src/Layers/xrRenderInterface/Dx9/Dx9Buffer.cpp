@@ -141,6 +141,22 @@ IDirect3DIndexBuffer9* CD3D9Buffer::GetD3DIndexBuffer()
 	return m_pIndexBuffer;
 }
 
+EResourceType CD3D9Buffer::GetType()
+{
+	switch (m_BufferType)
+	{
+	case eVertexBuffer:
+		return eResourceVertexBuffer;
+	case eIndexBuffer:
+		return eResourceIndexBuffer;
+	// No support in DX9
+	//case eConstantBuffer:
+	//	break;
+	}
+
+	return eResourceUnknown;
+}
+
 template<typename T>
 void CD3D9Buffer::SetData(T* pBuffer, const void* pData, u32 DataSize)
 {

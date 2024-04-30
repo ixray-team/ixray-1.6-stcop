@@ -12,24 +12,34 @@ struct DX9TextureFormatPairs
 
 static DX9TextureFormatPairs TextureFormatList[] =
 {
-	{UNKNOWN, D3DFMT_UNKNOWN,		},
-	{R8G8B8, D3DFMT_R8G8B8,		},
-	{A8R8G8B8, D3DFMT_A8R8G8B8,		},
-	{R5G6B5, D3DFMT_R5G6B5,		},
-	{A8B8G8R8, D3DFMT_A8B8G8R8,		},
-	{G16R16, D3DFMT_G16R16,		},
-	{A16B16G16R16, D3DFMT_A16B16G16R16,	},
-	{L8, D3DFMT_L8,			},
-	{V8U8, D3DFMT_V8U8,			},
-	{Q8W8V8U8, D3DFMT_Q8W8V8U8,		},
-	{V16U16, D3DFMT_V16U16,		},
-	{D24X8, D3DFMT_D24X8,			},
-	{D32F_LOCKABLE, D3DFMT_D32F_LOCKABLE, },
-	{G16R16F, D3DFMT_G16R16F,		},
-	{A16B16G16R16F, D3DFMT_A16B16G16R16F,	},
-	{R32F, D3DFMT_R32F,			},
-	{R16F, D3DFMT_R16F,			},
-	{A32B32G32R32F, D3DFMT_A32B32G32R32F, },
+	{FMT_UNKNOWN, D3DFMT_UNKNOWN,		},
+	{FMT_R8G8B8, D3DFMT_R8G8B8,		},
+	{FMT_A8R8G8B8, D3DFMT_A8R8G8B8,		},
+	{FMT_R5G6B5, D3DFMT_R5G6B5,		},
+	{FMT_A8B8G8R8, D3DFMT_A8B8G8R8,		},
+	{FMT_G16R16, D3DFMT_G16R16,		},
+	{FMT_A16B16G16R16, D3DFMT_A16B16G16R16,	},
+	{FMT_L8, D3DFMT_L8,			},
+	{FMT_V8U8, D3DFMT_V8U8,			},
+	{FMT_Q8W8V8U8, D3DFMT_Q8W8V8U8,		},
+	{FMT_V16U16, D3DFMT_V16U16,		},
+	{FMT_D24X8, D3DFMT_D24X8,			},
+	{FMT_D32F_LOCKABLE, D3DFMT_D32F_LOCKABLE, },
+	{FMT_G16R16F, D3DFMT_G16R16F,		},
+	{FMT_A16B16G16R16F, D3DFMT_A16B16G16R16F,	},
+	{FMT_R32F, D3DFMT_R32F,			},
+	{FMT_R16F, D3DFMT_R16F,			},
+	{FMT_A32B32G32R32F, D3DFMT_A32B32G32R32F, },
+
+	{ FMT_UYVY          , D3DFMT_UYVY       },
+	{ FMT_R8G8_B8G8     , D3DFMT_R8G8_B8G8  },
+	{ FMT_YUY2          , D3DFMT_YUY2       },
+	{ FMT_G8R8_G8B8     , D3DFMT_G8R8_G8B8  },
+	{ FMT_DXT1          , D3DFMT_DXT1       },
+	{ FMT_DXT2          , D3DFMT_DXT2       },
+	{ FMT_DXT3          , D3DFMT_DXT3       },
+	{ FMT_DXT4          , D3DFMT_DXT4       },
+	{ FMT_DXT5          , D3DFMT_DXT5       },
 };
 
 static D3DFORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
@@ -60,7 +70,7 @@ CD3D9Texture::~CD3D9Texture()
 	}
 }
 
-HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch)
+HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
 {
 	R_ASSERT(pTextureDesc);
 
@@ -87,7 +97,7 @@ HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, const void* pData,
 		return hr;
 	}
 
-	SetData(pData, Size);
+	// SetData(pData, Size);
 
 	return S_OK;
 }
@@ -136,29 +146,39 @@ void CD3D9Texture::SetStage(u32 Stage)
 
 void CD3D9Texture::SetData(const void* pData, const int size)
 {
-	if (!pData)
-		return;
+	//if (!pData)
+	//	return;
 
-	if (!size)
-		return;
+	//if (!size)
+	//	return;
 
-	// #TODO: Level fill
+	//// #TODO: Level fill
 
-	// #TODO: Properly format pitch calc
-	int pitchSize = 0;
-	if (m_textureDesc.Format == R8G8B8)
-		pitchSize = 3;
-	else if (m_textureDesc.Format == A8R8G8B8)
-		pitchSize = 4;
+	//// #TODO: Properly format pitch calc
+	//int pitchSize = 0;
+	//if (m_textureDesc.Format == R8G8B8)
+	//	pitchSize = 3;
+	//else if (m_textureDesc.Format == A8R8G8B8)
+	//	pitchSize = 4;
 
-	// lock rect
-	LOCKED_RECT lockRect;
-	if (this->LockRect(0, &lockRect, NULL, eLOCK_DISCARD))
-	{
-		// copy image data
-		uint8_t* textureData = (uint8_t*)lockRect.pBits;
-		memcpy(textureData, pData, m_textureDesc.Width * m_textureDesc.Height * pitchSize);
+	//// lock rect
+	//LOCKED_RECT lockRect;
+	//if (this->LockRect(0, &lockRect, NULL, eLOCK_DISCARD))
+	//{
+	//	// copy image data
+	//	uint8_t* textureData = (uint8_t*)lockRect.pBits;
+	//	memcpy(textureData, pData, m_textureDesc.Width * m_textureDesc.Height * pitchSize);
 
-		this->UnlockRect(0);
-	}
+	//	this->UnlockRect(0);
+	//}
+}
+
+EResourceType CD3D9Texture::GetType()
+{
+	return eResourceTexture;
+}
+
+u32 CD3D9Texture::GetLevelCount()
+{
+	return m_pTexture->GetLevelCount();
 }

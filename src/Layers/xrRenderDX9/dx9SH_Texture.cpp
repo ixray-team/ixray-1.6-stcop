@@ -202,9 +202,9 @@ void CTexture::Load()
 				Desc.DefaultPool = false;
 				Desc.NumMips = 1;
 				Desc.Usage = eUsageStatic;
-				Desc.Format = ERHITextureFormat::A8R8G8B8;
+				Desc.Format = ERHITextureFormat::FMT_A8R8G8B8;
 
-				pSurface = g_RenderRHI->CreateAPITexture(&Desc, nullptr, 0, 0);
+				pSurface = g_RenderRHI->CreateAPITexture(&Desc, nullptr);
 			}
 		}
 		else if (FS.exist(fn, "$game_textures$", *cName, ".avi"))
@@ -228,9 +228,9 @@ void CTexture::Load()
 				Desc.DefaultPool = false;
 				Desc.NumMips = 1;
 				Desc.Usage = eUsageStatic;
-				Desc.Format = ERHITextureFormat::A8R8G8B8;
+				Desc.Format = ERHITextureFormat::FMT_A8R8G8B8;
 
-				pSurface = g_RenderRHI->CreateAPITexture(&Desc, nullptr, 0, 0);
+				pSurface = g_RenderRHI->CreateAPITexture(&Desc, nullptr);
 			}
 		}
 		else if (FS.exist(fn, "$game_textures$", *cName, ".seq"))

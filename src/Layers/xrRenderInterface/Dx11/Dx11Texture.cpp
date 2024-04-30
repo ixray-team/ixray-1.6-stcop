@@ -15,24 +15,34 @@ struct DX11TextureFormatPairs
 
 static DX11TextureFormatPairs TextureFormatList[] =
 {
-	{UNKNOWN,        DXGI_FORMAT_UNKNOWN},
-	{A8R8G8B8,       DXGI_FORMAT_R8G8B8A8_UNORM},
-	{R8G8B8,		 DXGI_FORMAT_R8G8B8A8_UNORM		},
-	{R5G6B5,         DXGI_FORMAT_R8G8B8A8_UNORM},
-	{A8B8G8R8,       DXGI_FORMAT_R8G8B8A8_UNORM},
-	{G16R16,         DXGI_FORMAT_R16G16_UNORM },
-	{A16B16G16R16,   DXGI_FORMAT_R16G16B16A16_UNORM },
-	{L8,             DXGI_FORMAT_R8_UNORM},
-	{V8U8,           DXGI_FORMAT_R8G8_SNORM },
-	{Q8W8V8U8,       DXGI_FORMAT_R8G8B8A8_SNORM },
-	{V16U16,         DXGI_FORMAT_R16G16_SNORM },
-	{D24X8,          DXGI_FORMAT_R24G8_TYPELESS },
-	{D32F_LOCKABLE,  DXGI_FORMAT_R32_TYPELESS },
-	{G16R16F,        DXGI_FORMAT_R16G16_FLOAT},
-	{A16B16G16R16F,  DXGI_FORMAT_R16G16B16A16_FLOAT },
-	{R32F,			 DXGI_FORMAT_R32_FLOAT },
-	{R16F,			 DXGI_FORMAT_R16_FLOAT },
-	{A32B32G32R32F,  DXGI_FORMAT_R32G32B32A32_FLOAT },
+	{FMT_UNKNOWN,        DXGI_FORMAT_UNKNOWN},
+	{FMT_A8R8G8B8,       DXGI_FORMAT_R8G8B8A8_UNORM},
+	{FMT_R8G8B8,		 DXGI_FORMAT_R8G8B8A8_UNORM		},
+	{FMT_R5G6B5,         DXGI_FORMAT_R8G8B8A8_UNORM},
+	{FMT_A8B8G8R8,       DXGI_FORMAT_R8G8B8A8_UNORM},
+	{FMT_G16R16,         DXGI_FORMAT_R16G16_UNORM },
+	{FMT_A16B16G16R16,   DXGI_FORMAT_R16G16B16A16_UNORM },
+	{FMT_L8,             DXGI_FORMAT_R8_UNORM},
+	{FMT_V8U8,           DXGI_FORMAT_R8G8_SNORM },
+	{FMT_Q8W8V8U8,       DXGI_FORMAT_R8G8B8A8_SNORM },
+	{FMT_V16U16,         DXGI_FORMAT_R16G16_SNORM },
+	{FMT_D24X8,          DXGI_FORMAT_R24G8_TYPELESS },
+	{FMT_D32F_LOCKABLE,  DXGI_FORMAT_R32_TYPELESS },
+	{FMT_G16R16F,        DXGI_FORMAT_R16G16_FLOAT},
+	{FMT_A16B16G16R16F,  DXGI_FORMAT_R16G16B16A16_FLOAT },
+	{FMT_R32F,			 DXGI_FORMAT_R32_FLOAT },
+	{FMT_R16F,			 DXGI_FORMAT_R16_FLOAT },
+	{FMT_A32B32G32R32F,  DXGI_FORMAT_R32G32B32A32_FLOAT },
+
+	{ FMT_UYVY      ,   DXGI_FORMAT_UNKNOWN },
+    { FMT_R8G8_B8G8 ,   DXGI_FORMAT_G8R8_G8B8_UNORM },
+    { FMT_YUY2      ,   DXGI_FORMAT_UNKNOWN },
+    { FMT_G8R8_G8B8 ,   DXGI_FORMAT_R8G8_B8G8_UNORM },
+    { FMT_DXT1      ,   DXGI_FORMAT_BC1_UNORM },
+    { FMT_DXT2      ,   DXGI_FORMAT_BC2_UNORM },
+    { FMT_DXT3      ,   DXGI_FORMAT_BC2_UNORM },
+    { FMT_DXT4      ,   DXGI_FORMAT_BC3_UNORM },
+    { FMT_DXT5      ,   DXGI_FORMAT_BC3_UNORM },
 };
 
 static DXGI_FORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
@@ -46,6 +56,19 @@ static DXGI_FORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
 
 	VERIFY(!"ConvertTextureFormat didn't find appropriate dx10 texture format!");
 	return DXGI_FORMAT_UNKNOWN;
+}
+
+ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT)
+{
+	int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
+	for (int i = 0; i < arrayLength; ++i)
+	{
+		if (TextureFormatList[i].DX9Format == dx9FMT)
+			return TextureFormatList[i].RHIFormat;
+	}
+
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx10 texture format!");
+	return FMT_UNKNOWN;
 }
 
 CD3D11Texture2D::CD3D11Texture2D() :
@@ -71,12 +94,12 @@ CD3D11Texture2D::~CD3D11Texture2D()
 	}
 }
 
-HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch)
+HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
 {
 	R_ASSERT(pTextureDesc);
 
 	m_TextureDesc = *pTextureDesc;
-	m_Pitch = Pitch;
+	m_Pitch = pSubresourceData->SysMemPitch;
 
 	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
 	R_ASSERT(pDevice);
@@ -101,10 +124,11 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, const void* pDa
 	d3dTextureDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subresourceData = {};
-	subresourceData.pSysMem = pData;
-	subresourceData.SysMemPitch = Pitch;
+	subresourceData.pSysMem = pSubresourceData->pSysMem;
+	subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
+	subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
 
-	R_ASSERT(pDevice->CreateTexture2D(&d3dTextureDesc, pData ? &subresourceData : NULL, &m_pTexture));
+	R_CHK(pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? &subresourceData : NULL, &m_pTexture));
 
 	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
 	{
@@ -166,4 +190,19 @@ bool CD3D11Texture2D::UnlockRect(u32 Level)
 
 void CD3D11Texture2D::SetStage(u32 Stage)
 {
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	if (m_pTextureSRV)
+		pImmediateContext->PSSetShaderResources(Stage, 1, &m_pTextureSRV);
+}
+
+EResourceType CD3D11Texture2D::GetType()
+{
+	return eResourceTexture;
+}
+
+u32 CD3D11Texture2D::GetLevelCount()
+{
+	return m_TextureDesc.NumMips;
 }

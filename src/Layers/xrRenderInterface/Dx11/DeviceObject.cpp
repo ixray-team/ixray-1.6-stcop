@@ -29,11 +29,11 @@ D3D11_MAP GetD3D11Map(eLockType lockType)
 	return (D3D11_MAP)0;
 }
 
-IRHITexture* CreateD3D11Texture(const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch)
+IRHITexture* CreateD3D11Texture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
 	CD3D11Texture2D* pTexture = new CD3D11Texture2D();
 
-	R_CHK(pTexture->Create(pTextureDesc, pData, Size, Pitch));
+	R_CHK(pTexture->Create(pTextureDesc, pSubresourceData));
 
 	pTexture->AddRef();
 

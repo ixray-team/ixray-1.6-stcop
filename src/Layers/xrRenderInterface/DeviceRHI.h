@@ -38,12 +38,14 @@ public:
 	virtual void* GetSwapchainTexture();
 	virtual void* GetSwapchain();
 
-	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch ) override;
+	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHIBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 
 	// Унаследовано через IRender_RHI
 	void SetVertexBuffer(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets) override;
 	void SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) override;
+
+	ERHITextureFormat GetRHIFormatFromAPI(int dxgiFormat) override;
 
 public:
 	int GetFeatureLevel();

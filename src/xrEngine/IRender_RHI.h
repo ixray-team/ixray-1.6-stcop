@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Layers/xrRenderInterface/TextureFormat.h"
 
 enum eUsage
@@ -18,10 +19,10 @@ enum eLockType
 
 enum eTextureType
 {
-	eTexture1D,
-	eTexture2D,
-	eTexture3D,
-	eTextureCubemap,
+	eTextureType1D,
+	eTextureType2D,
+	eTextureType3D,
+	eTextureTypeCubemap,
 };
 
 enum eBufferType
@@ -40,6 +41,18 @@ enum ETextureFlags
 	eTextureScratch			= 1 << 4, 
 };
 
+enum EResourceType {
+	eResourceUnknown = 0,
+	eResourceSurface = 1,
+	eResourceVolume = 2,
+	eResourceTexture = 3,
+	eResourceVolumeTexture = 4,
+	eResourceCubeTexture = 5,
+	eResourceVertexBuffer = 6,
+	eResourceIndexBuffer = 7,
+	eResourceConstantBuffer = 8,
+};
+
 struct TextureDesc
 {
 	u32 Width;
@@ -50,12 +63,21 @@ struct TextureDesc
 	u32 TextureFlags;
 	bool NumMips;
 	bool DefaultPool;
+	bool IsCube;
 };
 
 typedef struct LOCKED_RECT {
-	s32  Pitch;
+	u32  Pitch;
 	void* pBits;
 } LOCKED_RECT, * LPLOCKED_RECT;
+
+typedef struct SUBRESOURCE_DATA
+{
+	const void* pSysMem;
+	u32 SysMemPitch;
+	u32 SysMemSlicePitch;
+} SUBRESOURCE_DATA, *LPSUBRESOURCE_DATA;
+
 
 /////////////////////////////////////////////////
 // RHI Objects
@@ -68,6 +90,9 @@ public:
 	// IUnknown interface
 	u64 AddRef();
 	u64 Release();
+
+	// IDirect3DResource9 interface
+	virtual EResourceType GetType() = 0;
 
 private:
 	// Ref counting
@@ -97,6 +122,7 @@ public:
 	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
 	virtual bool UnlockRect(u32 Level) = 0;
 	virtual void SetStage(u32 Stage) = 0;
+	virtual u32 GetLevelCount() = 0;
 };
 
 typedef IRHITexture* LPIRHITEXTURE;
@@ -142,11 +168,13 @@ public:
 	virtual void FillModes() = 0;
 	virtual int GetFeatureLevel() = 0;
 
-	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch ) = 0;
+	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
 	virtual IRHIBuffer* CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
 
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
+
+	virtual ERHITextureFormat GetRHIFormatFromAPI( int dxgiFormat ) = 0;
 };
 
 extern ENGINE_API IRender_RHI* g_RenderRHI;
@@ -181,6 +209,26 @@ namespace RHIUtils
 			return false;
 
 		*ppBuffer = pBuffer;
+		return true;
+	}
+
+	inline bool CreateTexture(u32 Width, u32 Height, u32 Levels, u32 Usage, ERHITextureFormat Format, bool DefaultPool, IRHITexture** ppTexture, void* pSharedHandle)
+	{
+		TextureDesc Desc = {};
+		Desc.Width = Width;
+		Desc.Height = Height;
+		Desc.NumMips = Levels;
+		Desc.DepthOrSliceNum = 1;
+		Desc.Format = Format;
+		Desc.TextureFlags = eTextureDefault;
+		Desc.DefaultPool = DefaultPool;
+
+		IRHITexture* pTexture = g_RenderRHI->CreateAPITexture(&Desc, nullptr);
+		if (!pTexture)
+			return false;
+
+		*ppTexture = pTexture;
+
 		return true;
 	}
 }

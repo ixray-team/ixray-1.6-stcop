@@ -19,4 +19,7 @@ private:
 	ID3D11Buffer* m_pBuffer;
 	eBufferType m_BufferType;
 	bool m_bImmutable;
+
+	// Inherited via IRHIBuffer
+	EResourceType GetType() override;
 };

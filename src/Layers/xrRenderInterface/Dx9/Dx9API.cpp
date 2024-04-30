@@ -5,11 +5,11 @@
 #include "Dx9Texture.h"
 #include "Dx9Buffer.h"
 
-IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch)
+IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
 	CD3D9Texture* pTexture = new CD3D9Texture();
 
-	R_CHK( pTexture->Create( pTextureDesc, pData, Size, Pitch ) );
+	R_CHK( pTexture->Create( pTextureDesc, pSubresourceData ) );
 
 	pTexture->AddRef();
 

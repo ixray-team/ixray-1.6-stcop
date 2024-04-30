@@ -2,6 +2,7 @@
 #include "Dx9/Dx9API.h"
 #include "Dx11/Dx11API.h"
 #include "DxGI/DxgiAPI.h"
+#include <dxgi.h>
 
 void* HWRenderDevice = nullptr;
 void* HWRenderContext = nullptr;
@@ -111,14 +112,14 @@ void* CRender_RHI::GetSwapchain()
     return HWSwapchain;
 }
 
-IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch )
+IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
     switch (API)
     {
     case APILevel::DX9:
-        return CreateD3D9Texture( pTextureDesc, pData, Size, Pitch );
+        return CreateD3D9Texture( pTextureDesc, pSubresourceData );
     case APILevel::DX11:
-        return CreateD3D11Texture( pTextureDesc, pData, Size, Pitch );
+        return CreateD3D11Texture( pTextureDesc, pSubresourceData );
     }
 
     return nullptr;
@@ -162,4 +163,10 @@ void CRender_RHI::SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u
     case APILevel::DX11:
         return SetIndexBufferD3D11(pIndexBuffer, Is32BitBuffer, Offset);
     }
+}
+
+ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
+{
+    extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);
+    return ConvertTextureFormatAPI((DXGI_FORMAT)dxgiFormat);
 }
