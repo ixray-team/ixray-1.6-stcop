@@ -137,11 +137,32 @@ IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* pDat
 	return pTexture;
 }
 
-class CRenderBufferBaseDX9 : public IRHIBuffer
+DWORD GetD3D9BufferLockType(eLockType lockType)
+{
+	switch (lockType)
+	{
+	case eLOCK_DISCARD:
+		return D3DLOCK_DISCARD;
+	case eLOCK_NO_DIRTY_UPDATE:
+		return D3DLOCK_NO_DIRTY_UPDATE;
+	case eLOCK_NOOVERWRITE:
+		return D3DLOCK_NOOVERWRITE;
+	case eLOCK_NOSYSLOCK:
+		return D3DLOCK_NOSYSLOCK;
+	case eLOCK_READONLY:
+		return D3DLOCK_READONLY;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+class CD3D9Buffer : public IRHIBuffer
 {
 public:
-	CRenderBufferBaseDX9();
-	~CRenderBufferBaseDX9();
+	CD3D9Buffer();
+	~CD3D9Buffer();
 
 	HRESULT Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable);
 
@@ -157,18 +178,18 @@ private:
 	bool m_bImmutable;
 };
 
-CRenderBufferBaseDX9::CRenderBufferBaseDX9() :
+CD3D9Buffer::CD3D9Buffer() :
 	m_pVertexBuffer(nullptr),
 	m_pIndexBuffer(nullptr),
 	m_bImmutable(false)
 {
 }
 
-CRenderBufferBaseDX9::~CRenderBufferBaseDX9()
+CD3D9Buffer::~CD3D9Buffer()
 {
 }
 
-HRESULT CRenderBufferBaseDX9::Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+HRESULT CD3D9Buffer::Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
 	R_ASSERT(pDevice);
@@ -196,21 +217,21 @@ HRESULT CRenderBufferBaseDX9::Create(eBufferType bufferType, const void* pData, 
 	return hr;
 }
 
-void CRenderBufferBaseDX9::UpdateData(const void* data, int size)
+void CD3D9Buffer::UpdateData(const void* data, int size)
 {
 }
 
-bool CRenderBufferBaseDX9::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags)
+bool CD3D9Buffer::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags)
 {
 	HRESULT hr = S_OK;
 
 	switch (m_BufferType)
 	{
 	case eVertexBuffer:
-		hr = m_pVertexBuffer->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+		hr = m_pVertexBuffer->Lock(OffsetToLock, SizeToLock, ppbData, GetD3D9BufferLockType(Flags));
 		break;
 	case eIndexBuffer:
-		hr = m_pIndexBuffer->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+		hr = m_pIndexBuffer->Lock(OffsetToLock, SizeToLock, ppbData, GetD3D9BufferLockType(Flags));
 		break;
 	default:
 		break;
@@ -221,7 +242,7 @@ bool CRenderBufferBaseDX9::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData
 	return true;
 }
 
-bool CRenderBufferBaseDX9::Unlock()
+bool CD3D9Buffer::Unlock()
 {
 	HRESULT hr = S_OK;
 
@@ -244,7 +265,7 @@ bool CRenderBufferBaseDX9::Unlock()
 
 IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
-	CRenderBufferBaseDX9* pBuffer = new CRenderBufferBaseDX9();
+	CD3D9Buffer* pBuffer = new CD3D9Buffer();
 
 	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));
 
