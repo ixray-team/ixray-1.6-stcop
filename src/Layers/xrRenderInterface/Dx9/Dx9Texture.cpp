@@ -813,44 +813,54 @@ bool CD3D9VolumeTexture::UnlockBox(u32 Level)
 
 EResourceType CD3D9VolumeTexture::GetType()
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 	return EResourceType();
 }
 
 bool CD3D9VolumeTexture::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 	return false;
 }
 
 bool CD3D9VolumeTexture::UnlockRect(u32 Level)
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 	return false;
 }
 
 void CD3D9VolumeTexture::SetStage(u32 Stage)
 {
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	pDevice->SetTexture(Stage, m_pVolumeTexture);
 }
 
 u32 CD3D9VolumeTexture::GetLevelCount()
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 	return u32();
 }
 
 bool CD3D9VolumeTexture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 	return false;
 }
 
 Ivector2 CD3D9VolumeTexture::GetTextureSize() const
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 	return Ivector2();
 }
 
 void CD3D9VolumeTexture::GetAPIData(SRHIAPIData* pAPIData)
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 }
 
 void CD3D9VolumeTexture::GetDesc(TextureDesc* pTextureDesc)
 {
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
 }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //

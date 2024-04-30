@@ -3,7 +3,7 @@
 void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 {
 	// Targets
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
+	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IRHIDepthStencilView*)rt_smap_depth->pZRT);
 	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
 
 	// Clear

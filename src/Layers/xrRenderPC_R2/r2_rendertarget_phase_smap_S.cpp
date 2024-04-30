@@ -12,7 +12,7 @@ void	CRenderTarget::phase_smap_spot_clear()
 void	CRenderTarget::phase_smap_spot		(light* L)
 {
 	// Targets + viewport
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
+	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IRHIDepthStencilView*)rt_smap_depth->pRT);
 	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
 	D3DVIEWPORT9 VP					=	{L->X.S.posX,L->X.S.posY,L->X.S.size,L->X.S.size,0,1 };
 	CHK_DX								(RDevice->SetViewport(&VP));
