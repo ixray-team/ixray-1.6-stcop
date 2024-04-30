@@ -36,8 +36,8 @@ public:
 	void								Unload			(void);
 //	void								Apply			(u32 dwStage);
 
-	void								surface_set		(ID3DBaseTexture* surf );
-	ID3DBaseTexture*					surface_get 	();
+	void								surface_set		(IRHITexture* surf );
+	IRHITexture*						surface_get 	();
 
 	IC BOOL								isUser			()		{ return flags.bUser;					}
 	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
@@ -92,12 +92,12 @@ public:	//	Public class members (must be encapsulated furthur)
 	};
 
 private:
-	ID3DBaseTexture*					pSurface;
+	IRHITexture*					pSurface;
 	// Sequence data
-	xr_vector<ID3DBaseTexture*>			seqDATA;
+	xr_vector<IRHITexture*>			seqDATA;
 
 	// Description
-	ID3DBaseTexture*					desc_cache;
+	IRHITexture*					desc_cache;
 	D3D_TEXTURE2D_DESC					desc;
 
 #ifdef USE_DX11

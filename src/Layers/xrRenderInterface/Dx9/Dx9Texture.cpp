@@ -111,6 +111,8 @@ bool CD3D9Texture::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pR
 		return false;
 	}
 
+	*pLockedRect = *(LOCKED_RECT*)&lockedRect;
+
 	return true;
 }
 
@@ -124,6 +126,12 @@ bool CD3D9Texture::UnlockRect(u32 Level)
 	}
 
 	return true;
+}
+
+void CD3D9Texture::SetStage(u32 Stage)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	pDevice->SetTexture(Stage, m_pTexture);
 }
 
 void CD3D9Texture::SetData(const void* pData, const int size)

@@ -163,3 +163,7 @@ bool CD3D11Texture2D::UnlockRect(u32 Level)
 
 	return true;
 }
+
+void CD3D11Texture2D::SetStage(u32 Stage)
+{
+}

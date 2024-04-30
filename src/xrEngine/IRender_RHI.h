@@ -96,6 +96,7 @@ public:
 
 	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
 	virtual bool UnlockRect(u32 Level) = 0;
+	virtual void SetStage(u32 Stage) = 0;
 };
 
 typedef IRHITexture* LPIRHITEXTURE;
