@@ -2,6 +2,7 @@
 #include "../../xrEngine/IRender_RHI.h"
 #include "linker.h"
 #include "PixEvent.h"
+#include "TextureFormat.h"
 
 extern void* HWRenderDevice;
 extern void* HWRenderContext;

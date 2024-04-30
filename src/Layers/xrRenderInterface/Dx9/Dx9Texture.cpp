@@ -4,6 +4,46 @@
 
 #include "Dx9Texture.h"
 
+struct DX9TextureFormatPairs
+{
+	ERHITextureFormat RHIFormat;
+	D3DFORMAT	DX9Format;
+};
+
+static DX9TextureFormatPairs TextureFormatList[] =
+{
+	{UNKNOWN, D3DFMT_UNKNOWN,		},
+	{A8R8G8B8, D3DFMT_A8R8G8B8,		},
+	{R5G6B5, D3DFMT_R5G6B5,		},
+	{A8B8G8R8, D3DFMT_A8B8G8R8,		},
+	{G16R16, D3DFMT_G16R16,		},
+	{A16B16G16R16, D3DFMT_A16B16G16R16,	},
+	{L8, D3DFMT_L8,			},
+	{V8U8, D3DFMT_V8U8,			},
+	{Q8W8V8U8, D3DFMT_Q8W8V8U8,		},
+	{V16U16, D3DFMT_V16U16,		},
+	{D24X8, D3DFMT_D24X8,			},
+	{D32F_LOCKABLE, D3DFMT_D32F_LOCKABLE, },
+	{G16R16F, D3DFMT_G16R16F,		},
+	{A16B16G16R16F, D3DFMT_A16B16G16R16F,	},
+	{R32F, D3DFMT_R32F,			},
+	{R16F, D3DFMT_R16F,			},
+	{A32B32G32R32F, D3DFMT_A32B32G32R32F, },
+};
+
+static D3DFORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
+{
+	int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
+	for (int i = 0; i < arrayLength; ++i)
+	{
+		if (TextureFormatList[i].RHIFormat == dx9FMT)
+			return TextureFormatList[i].DX9Format;
+	}
+
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
+	return D3DFMT_UNKNOWN;
+}
+
 CD3D9Texture::CD3D9Texture() :
 	m_pTexture(nullptr)
 {

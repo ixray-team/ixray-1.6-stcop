@@ -7,6 +7,46 @@
 
 D3D11_MAP GetD3D11Map(eLockType lockType);
 
+struct DX11TextureFormatPairs
+{
+	ERHITextureFormat RHIFormat;
+	DXGI_FORMAT	DX9Format;
+};
+
+static DX11TextureFormatPairs TextureFormatList[] =
+{
+	{UNKNOWN,        DXGI_FORMAT_UNKNOWN},
+	{A8R8G8B8,       DXGI_FORMAT_R8G8B8A8_UNORM},
+	{R5G6B5,         DXGI_FORMAT_R8G8B8A8_UNORM},
+	{A8B8G8R8,       DXGI_FORMAT_R8G8B8A8_UNORM},
+	{G16R16,         DXGI_FORMAT_R16G16_UNORM },
+	{A16B16G16R16,   DXGI_FORMAT_R16G16B16A16_UNORM },
+	{L8,             DXGI_FORMAT_R8_UNORM},
+	{V8U8,           DXGI_FORMAT_R8G8_SNORM },
+	{Q8W8V8U8,       DXGI_FORMAT_R8G8B8A8_SNORM },
+	{V16U16,         DXGI_FORMAT_R16G16_SNORM },
+	{D24X8,          DXGI_FORMAT_R24G8_TYPELESS },
+	{D32F_LOCKABLE,  DXGI_FORMAT_R32_TYPELESS },
+	{G16R16F,        DXGI_FORMAT_R16G16_FLOAT},
+	{A16B16G16R16F,  DXGI_FORMAT_R16G16B16A16_FLOAT },
+	{R32F,			 DXGI_FORMAT_R32_FLOAT },
+	{R16F,			 DXGI_FORMAT_R16_FLOAT },
+	{A32B32G32R32F,  DXGI_FORMAT_R32G32B32A32_FLOAT },
+};
+
+static DXGI_FORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
+{
+	int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
+	for (int i = 0; i < arrayLength; ++i)
+	{
+		if (TextureFormatList[i].RHIFormat == dx9FMT)
+			return TextureFormatList[i].DX9Format;
+	}
+
+	VERIFY(!"ConvertTextureFormat didn't find appropriate dx10 texture format!");
+	return DXGI_FORMAT_UNKNOWN;
+}
+
 CD3D11Texture2D::CD3D11Texture2D() :
 	m_pTexture(nullptr),
 	m_pTextureSRV(nullptr),
