@@ -288,7 +288,7 @@ void CRenderTarget::DoAsyncScreenshot	()
 	if (RImplementation.m_bMakeAsyncSS)
 	{
 		HRESULT hr;
-
+#if 0
 		IDirect3DSurface9*	pFBSrc = RTarget;
 		//	Don't addref, no need to release.
 		//ID3DTexture2D *pTex = RT->pSurface;
@@ -297,7 +297,7 @@ void CRenderTarget::DoAsyncScreenshot	()
 
 		//	SHould be async function
 		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
-
+#endif
 		//pFBSrc->Release();
 
 		RImplementation.m_bMakeAsyncSS = false;

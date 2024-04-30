@@ -322,11 +322,11 @@ void CTexture::Unload()
 void CTexture::desc_update()
 {
 	desc_cache = pSurface;
-	if (pSurface && (eResourceTexture == pSurface->GetType()))
-	{
-		ID3DTexture2D* T = (ID3DTexture2D*)pSurface;
-		R_CHK(T->GetLevelDesc(0, &desc));
-	}
+	//if (pSurface && (eResourceTexture == pSurface->GetType()))
+	//{
+	//	ID3DTexture2D* T = (ID3DTexture2D*)pSurface;
+	//	R_CHK(T->GetLevelDesc(0, &desc));
+	//}
 }
 
 void CTexture::video_Play(BOOL looped, u32 _time)

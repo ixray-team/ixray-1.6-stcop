@@ -88,13 +88,13 @@ public:
 	virtual ~IRHIUnknown() {}
 
 	// IUnknown interface
-	u64 AddRef();
-	u64 Release();
+	virtual u64 AddRef();
+	virtual u64 Release();
 
 	// IDirect3DResource9 interface
 	virtual EResourceType GetType() = 0;
 
-private:
+protected:
 	// Ref counting
 	u64 m_RefCount = 0;
 };
@@ -110,14 +110,17 @@ inline u64 IRHIUnknown::Release()
 	R_ASSERT(m_RefCount > 0);
 	--m_RefCount;
 
-	if (m_RefCount == 0) { delete this; return 0; }
+	if (m_RefCount == 0)
+	{
+		delete this; 
+		return 0; 
+	}
+
 	return m_RefCount;
 }
 
 class IRHISurface : public IRHIUnknown
 {
-public:
-	virtual ~IRHISurface() = default;
 };
 
 typedef IRHISurface* LPIRHISURFACE;
@@ -125,8 +128,6 @@ typedef IRHISurface* LPIRHISURFACE;
 class IRHITexture : public IRHIUnknown
 {
 public:
-	virtual ~IRHITexture() = default;
-
 	virtual bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
 	virtual bool UnlockRect(u32 Level) = 0;
 	virtual void SetStage(u32 Stage) = 0;

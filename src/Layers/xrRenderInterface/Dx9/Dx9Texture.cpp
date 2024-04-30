@@ -174,6 +174,31 @@ void CD3D9Texture::SetData(const void* pData, const int size)
 	//}
 }
 
+u64 CD3D9Texture::Release()
+{
+	R_ASSERT(m_RefCount > 0);
+	--m_RefCount;
+
+	if (m_RefCount == 0)
+	{
+		if (m_pTexture != nullptr)
+		{
+			m_pTexture->Release();
+		}
+
+		delete this;
+		return 0;
+	}
+
+	return m_RefCount;
+}
+
+u64 CD3D9Texture::AddRef()
+{
+	//m_pTexture->AddRef();
+	return IRHIUnknown::AddRef();
+}
+
 EResourceType CD3D9Texture::GetType()
 {
 	return eResourceTexture;
@@ -190,7 +215,7 @@ bool CD3D9Texture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 	R_CHK( m_pTexture->GetSurfaceLevel( 0, &pSurfaceAPI ) );
 
 	CD3D9Surface* pSurfaceRHI = new CD3D9Surface(pSurfaceAPI);
-	pSurfaceRHI->AddRef();
+	//pSurfaceRHI->AddRef();
 	return pSurfaceRHI;
 }
 
@@ -203,6 +228,10 @@ CD3D9Surface::CD3D9Surface(IDirect3DSurface9* pSurfaceAPI) :
 
 CD3D9Surface::~CD3D9Surface()
 {
+	if (m_pSurfaceAPI != nullptr)
+	{
+		m_pSurfaceAPI->Release();
+	}
 }
 
 IDirect3DSurface9* CD3D9Surface::GetD3D9SurfaceObject()

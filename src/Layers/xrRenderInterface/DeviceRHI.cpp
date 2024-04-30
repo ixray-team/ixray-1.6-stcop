@@ -114,15 +114,18 @@ void* CRender_RHI::GetSwapchain()
 
 IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
+    IRHITexture* Ptr = nullptr;
     switch (API)
     {
-    case APILevel::DX9:
-        return CreateD3D9Texture( pTextureDesc, pSubresourceData );
-    case APILevel::DX11:
-        return CreateD3D11Texture( pTextureDesc, pSubresourceData );
+    case APILevel::DX9:  Ptr = CreateD3D9Texture(pTextureDesc, pSubresourceData);  break;
+    case APILevel::DX11: Ptr = CreateD3D11Texture(pTextureDesc, pSubresourceData); break;
     }
 
-    return nullptr;
+#ifdef DEBUG
+    TextureList.emplace_back(Ptr);
+#endif
+
+    return Ptr;
 }
 
 IRHIBuffer* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)

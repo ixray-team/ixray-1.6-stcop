@@ -58,7 +58,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCoun
 #ifdef DEBUG
 	Msg			("* created RT(%s), %dx%d",Name,w,h);
 #endif // DEBUG
-	R_CHK		(pSurface->GetSurfaceLevel	(0,&pRT));
+	R_ASSERT(pSurface->GetSurfaceLevel	(0,&pRT));
 	pTexture	= DEV->_CreateTexture	(Name);
 	pTexture->surface_set	(pSurface);
 }

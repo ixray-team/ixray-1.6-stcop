@@ -239,7 +239,7 @@ bool RHICreateTextureEx(
         desc.NumMips = static_cast<UINT>(metadata.mipLevels);
         desc.DepthOrSliceNum = static_cast<UINT>(metadata.arraySize);
         desc.Format = g_RenderRHI->GetRHIFormatFromAPI(format);
-        hr = g_RenderRHI->CreateAPITexture(&desc, initData.get());
+        *ppResource = g_RenderRHI->CreateAPITexture(&desc, initData.get());
     }
     break;
 

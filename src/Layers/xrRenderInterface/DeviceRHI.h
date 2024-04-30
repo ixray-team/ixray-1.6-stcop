@@ -22,6 +22,9 @@ public:
 	CRender_RHI();
 	~CRender_RHI();
 
+#ifdef DEBUG
+	xr_vector<IRHITexture*> TextureList;
+#endif
 public:
 	virtual bool Create(APILevel);
 	virtual bool UpdateBuffers();

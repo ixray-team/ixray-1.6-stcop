@@ -1,4 +1,5 @@
 #pragma once
+#include <d3d9.h>
 
 class CD3D9Surface : public IRHISurface
 {
@@ -29,6 +30,8 @@ public:
 
 	void SetData(const void* pData, const int size);
 
+	virtual u64 Release();
+	virtual u64 AddRef();
 private:
 	IDirect3DTexture9* m_pTexture;
 	TextureDesc m_textureDesc;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Dx9Texture.h"
 
 #include <d3d9.h>
 #pragma comment(lib, "d3d9.lib")
@@ -54,9 +55,13 @@ bool UpdateBuffersD3D9()
 	));
 	RenderSRV = RenderTexture;
 
-	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&RenderRTV));
+	IDirect3DSurface9* DxRenderRTV = nullptr;
+
+	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&DxRenderRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetRenderTarget(0, (IDirect3DSurface9**)&SwapChainRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetDepthStencilSurface((IDirect3DSurface9**)&RenderDSV));
+
+	RenderRTV = new CD3D9Surface(DxRenderRTV);
 
 	return true;
 }
@@ -102,8 +107,7 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 	}
 
 	if (RenderRTV != nullptr) {
-		((IDirect3DSurface9*)RenderRTV)->Release();
-		RenderRTV = nullptr;
+		xr_delete((CD3D9Surface*)RenderRTV);
 	}
 
 	if (SwapChainRTV != nullptr) {
@@ -181,8 +185,7 @@ void DestroyD3D9()
 	}
 
 	if (RenderRTV != nullptr) {
-		((IDirect3DSurface9*)RenderRTV)->Release();
-		RenderRTV = nullptr;
+		xr_delete((CD3D9Surface*)RenderRTV);
 	}
 
 	if (SwapChainRTV != nullptr) {

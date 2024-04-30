@@ -137,10 +137,12 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	descFontAtlas.DefaultPool = false;
 	descFontAtlas.TextureFlags = eTextureDefault;
 
-	int Size = width * height * 4;
-	int Pitch = width * 4;
+	SUBRESOURCE_DATA FontData;
+	FontData.pSysMem = bitmap;
+	FontData.SysMemSlicePitch = 0;
+	FontData.SysMemPitch = width * 4;
 
-	//R_ASSERT(g_RenderRHI->CreateAPITexture(&descFontAtlas, bitmap, Size, Pitch));
+	pSurface = g_RenderRHI->CreateAPITexture(&descFontAtlas, &FontData);
 
 #ifdef USE_DX11
 	//D3D_TEXTURE2D_DESC descFontAtlas;
@@ -174,7 +176,9 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 #endif
 
 	pTexture.create(name);
-	pTexture->surface_set(pSurface);
+	pTexture->pSurface = pSurface;
+	//pTexture->surface_set(pSurface);
+	pSurface->AddRef();
 
 	_RELEASE(pSurface);
 }
