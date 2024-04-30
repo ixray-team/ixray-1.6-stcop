@@ -338,6 +338,8 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("enable_level_changer",		&CScriptGameObject::enable_level_changer)
 		.def("is_level_changer_enabled",	&CScriptGameObject::is_level_changer_enabled)
 
+		.def("is_actor_outdoors",			&CScriptGameObject::IsActorOutdoors)
+
 		.def("set_level_changer_invitation",&CScriptGameObject::set_level_changer_invitation)
 		.def("start_particles",				&CScriptGameObject::start_particles)
 		.def("stop_particles",				&CScriptGameObject::stop_particles)

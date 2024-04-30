@@ -148,6 +148,7 @@ public:
 			CScriptGameObject	*Parent				() const;
 			void				Hit					(CScriptHit *tLuaHit);
 			int					clsid				() const;
+			bool				IsActorOutdoors		() const;
 			void				play_cycle			(LPCSTR anim, bool mix_in);
 			void				play_cycle			(LPCSTR anim);
 			Fvector				Center				();
