@@ -84,6 +84,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		Memory._initialize	(Core.ParamsData.test(ECoreParams::mem_debug));
 
 		xrLogger::InitLog();
+		xrLogger::EnableFastDebugLog();
 		_initialize_cpu		();
 
 //		Debug._initialize	();

@@ -26,7 +26,7 @@ IC void	CBackend::set_ZB(IRHIDepthStencilView* ZB)
 		PGO				(Msg("PGO:setZB"));
 		stat.target_zb	++;
 		pZB				= ZB;
-		ZB->SetActive();
+		g_RenderRHI->SetDepthStencilView(ZB);
 	}
 }
 

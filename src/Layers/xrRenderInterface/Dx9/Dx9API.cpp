@@ -130,3 +130,17 @@ void GetRenderTargetDataD3D9(IRHISurface* pRenderTarget, IRHISurface* pDestSurfa
 	HRESULT hr = pDevice->GetRenderTargetData(pAPIRenderTarget->GetD3D9SurfaceObject(), pAPIDestSurface->GetD3D9SurfaceObject());
 	R_CHK(hr);
 }
+
+void StretchRectD3D9(IRHISurface* pSourceSurface, const Irect* pSourceRect, IRHISurface* pDestSurface, const Irect* pDestRect)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	CD3D9Surface* pAPISourceSurface = (CD3D9Surface*)pSourceSurface;
+	R_ASSERT(pAPISourceSurface);
+	CD3D9Surface* pAPIDestSurface = (CD3D9Surface*)pDestSurface;
+	R_ASSERT(pAPIDestSurface);
+
+	HRESULT hr = pDevice->StretchRect(pAPISourceSurface->GetD3D9SurfaceObject(), (const RECT*)pSourceRect, pAPIDestSurface->GetD3D9SurfaceObject(), (const RECT*)pDestRect, D3DTEXF_NONE);
+	R_CHK(hr);
+}

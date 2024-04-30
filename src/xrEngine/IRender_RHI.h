@@ -231,6 +231,7 @@ public:
 
 	virtual void GetRenderTargetData(IRHISurface* pRenderTarget, IRHISurface* pDestSurface) = 0;
 	virtual void CopyResource(IRHITexture* pDstResource, IRHITexture* pSrcResource) = 0;
+	virtual void StretchRect(IRHISurface* pSourceSurface, const Irect* pSourceRect, IRHISurface* pDestSurface, const Irect* pDestRect) = 0;
 
 	virtual ERHITextureFormat GetRHIFormatFromAPI( int dxgiFormat ) = 0;
 };

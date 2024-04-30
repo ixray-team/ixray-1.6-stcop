@@ -754,7 +754,7 @@ bool CD3D9VolumeTexture::LockBox(u32 Level, LOCKED_BOX* pLockedVolume, const RHI
 {
 	D3DLOCKED_BOX lockedBox = {};
 	D3DBOX box = {};
-	HRESULT hr = m_pVolumeTexture->LockBox(Level, &lockedBox, &box, Flags);
+	HRESULT hr = m_pVolumeTexture->LockBox(Level, &lockedBox, pBox ? &box : NULL, Flags);
 	if (FAILED(hr))
 	{
 		Msg("! CD3D9VolumeTexture::LockBox: Failed to lock volume texture. DirectX Error: %s", Debug.dxerror2string(hr));

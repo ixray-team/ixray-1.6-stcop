@@ -241,6 +241,10 @@ IRHIVolumeTexture* CRender_RHI::CreateAPIVolumeTexture(const TextureDesc* pTextu
     return nullptr;
 }
 
+void CRender_RHI::StretchRect(IRHISurface* pSourceSurface, const Irect* pSourceRect, IRHISurface* pDestSurface, const Irect* pDestRect)
+{
+}
+
 ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
 {
     extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);

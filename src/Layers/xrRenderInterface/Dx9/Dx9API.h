@@ -25,3 +25,4 @@ void SetDepthStencilViewD3D9(IRHIDepthStencilView* pDepthStencilView);
 class IRHISurface;
 IRHISurface* CreateOffscreenPlainSurfaceD3D9(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool);
 void GetRenderTargetDataD3D9(IRHISurface* pRenderTarget, IRHISurface* pDestSurface);
+void StretchRectD3D9(IRHISurface* pSourceSurface, const Irect* pSourceRect, IRHISurface* pDestSurface, const Irect* pDestRect);

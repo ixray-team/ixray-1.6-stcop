@@ -431,8 +431,8 @@ CRenderTarget::CRenderTarget		()
 			t_material->surface_set		(t_material_surf);
 
 			// Fill it (addr: x=dot(L,N),y=dot(L,H))
-			D3DLOCKED_BOX R{};
-			R_CHK						(t_material_surf->LockBox	(0,&R,0,0));
+			LOCKED_BOX R{};
+			R_ASSERT						(t_material_surf->LockBox	(0,&R,0,0));
 			for (u32 slice=0; slice<4; slice++)
 			{
 				for (u32 y=0; y<TEX_material_LdotH; y++)
@@ -477,7 +477,7 @@ CRenderTarget::CRenderTarget		()
 					}
 				}
 			}
-			R_CHK		(t_material_surf->UnlockBox	(0));
+			R_ASSERT		(t_material_surf->UnlockBox	(0));
 			// #ifdef DEBUG
 			// R_CHK	(D3DXSaveTextureToFile	("x:\\r2_material.dds",D3DXIFF_DDS,t_material_surf,0));
 			// #endif
@@ -487,15 +487,15 @@ CRenderTarget::CRenderTarget		()
 		if (1)
 		{
 			// Surfaces
-			D3DLOCKED_RECT				R[TEX_jitter_count];
+			LOCKED_RECT				R[TEX_jitter_count];
 			for (int it1=0; it1<TEX_jitter_count-1; it1++)
 			{
 				string_path					name;
 				xr_sprintf						(name,"%s%d",r2_jitter,it1);
-				R_CHK(RDevice->CreateTexture(TEX_jitter, TEX_jitter, 1, 0, FMT_Q8W8V8U8, D3DPOOL_MANAGED, &t_noise_surf[it1], nullptr));
+				R_ASSERT(RHIUtils::CreateTexture(TEX_jitter, TEX_jitter, 1, 0, FMT_Q8W8V8U8, false, &t_noise_surf[it1], nullptr));
 				t_noise[it1]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 				t_noise[it1]->surface_set	(t_noise_surf[it1]);
-				R_CHK						(t_noise_surf[it1]->LockRect	(0,&R[it1],0,0));
+				R_ASSERT						(t_noise_surf[it1]->LockRect	(0,&R[it1],0,eLOCK_DISCARD));
 			}	
 
 			// Fill it,
@@ -514,17 +514,17 @@ CRenderTarget::CRenderTarget		()
 			}
 			
 			for (int it3=0; it3<TEX_jitter_count-1; it3++)	{
-				R_CHK						(t_noise_surf[it3]->UnlockRect(0));
+				R_ASSERT						(t_noise_surf[it3]->UnlockRect(0));
 			}		
 
 			// generate HBAO jitter texture (last)
 			int it = TEX_jitter_count - 1;
 			string_path					name;
 			xr_sprintf						(name,"%s%d",r2_jitter,it);
-			R_CHK(RDevice->CreateTexture(TEX_jitter, TEX_jitter, 1, 0, FMT_A32B32G32R32F, D3DPOOL_MANAGED, &t_noise_surf[it], nullptr));
+			R_ASSERT(RHIUtils::CreateTexture(TEX_jitter, TEX_jitter, 1, 0, FMT_A32B32G32R32F, false, &t_noise_surf[it], nullptr));
 			t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 			t_noise[it]->surface_set	(t_noise_surf[it]);
-			R_CHK						(t_noise_surf[it]->LockRect	(0,&R[it],0,0));
+			R_ASSERT					(t_noise_surf[it]->LockRect	(0,&R[it],0,eLOCK_DISCARD));
 			
 			// Fill it,
 			for (u32 y=0; y<TEX_jitter; y++)
@@ -551,7 +551,7 @@ CRenderTarget::CRenderTarget		()
 					//generate_hbao_jitter	(data,TEX_jitter*TEX_jitter);
 				}
 			}			
-			R_CHK						(t_noise_surf[it]->UnlockRect(0));
+			R_ASSERT						(t_noise_surf[it]->UnlockRect(0));
 		}
 	}
 
@@ -568,9 +568,7 @@ CRenderTarget::CRenderTarget		()
 	//u32		w = Device.TargetWidth, h = Device.TargetHeight;
 	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,FMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,rt_Color->fmt,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
-	D3DSURFACE_DESC	desc;
-	RTarget->GetDesc(&desc);
-	RDevice->CreateOffscreenPlainSurface(RCache.get_width(),RCache.get_height(),desc.Format,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
+	pFB = g_RenderRHI->CreateAPIOffscreenPlainSurface(RCache.get_width(),RCache.get_height(),FMT_A8R8G8B8, false);
 
 	// 
 	dwWidth		= RCache.get_width();
