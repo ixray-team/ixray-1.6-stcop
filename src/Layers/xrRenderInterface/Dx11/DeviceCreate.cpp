@@ -1,20 +1,10 @@
 #include "stdafx.h"
 #include <d3d11.h>
-#include "ICore_GPU.h"
+#include "../../../xrEngine/ICore_GPU.h"
 #include <renderdoc/api/app/renderdoc_app.h>
+#pragma comment(lib, "d3d11.lib")
 
-extern D3D_FEATURE_LEVEL FeatureLevel;
-extern void* HWSwapchain;
-
-extern void* HWRenderDevice ;
-extern void* HWRenderContext;
-
-extern void* RenderTexture;
-extern void* RenderSRV;
-extern void* RenderRTV;
-
-extern void* RenderDSV;
-extern void* SwapChainRTV;
+D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL_11_1;
 
 bool UpdateBuffersD3D11()
 {
@@ -98,20 +88,20 @@ bool UpdateBuffersD3D11()
 
 void CreateRDoc() 
 {
-	if (Core.ParamsData.test(ECoreParams::renderdoc))
-	{
-		if (HMODULE mod = LoadLibraryA("renderdoc.dll")) 
-		{
-			pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-
-			int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_5_0, (void**)&Device.pRDocAPI);
-			assert(ret == 1);
-
-			int Major, Minor, Path;
-			Device.pRDocAPI->GetAPIVersion(&Major, &Minor, &Path);
-			Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
-		}
-	}
+	//if (Core.ParamsData.test(ECoreParams::renderdoc))
+	//{
+	//	if (HMODULE mod = LoadLibraryA("renderdoc.dll")) 
+	//	{
+	//		pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+	//
+	//		int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_5_0, (void**)&Device.pRDocAPI);
+	//		assert(ret == 1);
+	//
+	//		int Major, Minor, Path;
+	//		Device.pRDocAPI->GetAPIVersion(&Major, &Minor, &Path);
+	//		Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
+	//	}
+	//}
 }
 
 bool CreateD3D11()

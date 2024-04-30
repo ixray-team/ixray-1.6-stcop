@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include "IRender_RHI.h"
 
 // Note:
 // ZNear - always 0.0f
@@ -22,13 +23,6 @@ struct RENDERDOC_API_1_6_0;
 union SDL_Event;
 
 #pragma pack(push,4)
-
-enum class APILevel
-{
-	DX9,
-	DX11
-};
-
 enum D3D_FEATURE_LEVEL;
 
 class IRenderDevice
@@ -38,23 +32,13 @@ public:
 	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
 	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
 
-	virtual				bool				InitRenderDevice(APILevel API) = 0;
+	virtual				bool				InitRenderDevice(IRender_RHI::APILevel API) = 0;
 	virtual				void				DestroyRenderDevice() = 0;
 
-	virtual				void*               GetRenderDevice() = 0;
-	virtual				void*               GetRenderContext() = 0;
-	virtual				void*               GetRenderTexture() = 0;
-	virtual				void*               GetDepthTexture() = 0;
-	virtual				void*               GetSwapchainTexture() = 0;
-
-	virtual				void*				GetSwapchain() = 0;
 	virtual				u32					GetSwapchainWidth() = 0;
 	virtual				u32					GetSwapchainHeight() = 0;
 
 	virtual				void				ResizeWindow(u32 width, u32 height) = 0;
-
-	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
-	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 
 	virtual				void				BeginRender() = 0;
 	virtual				void				EndRender() = 0;
@@ -127,10 +111,7 @@ public:
 // refs
 class ENGINE_API CRenderDevice: public CRenderDeviceBase
 {
-	friend void CreateRDoc();
 	friend class CPHWorld;
-
-	RENDERDOC_API_1_6_0* pRDocAPI = nullptr;
 
 public:
 	int Width = 0, Height = 0, PosX = 0, PosY = 0;
@@ -141,24 +122,14 @@ public:
 	void									_Destroy	(BOOL	bKeepTextures);
 	void									_SetupStates();
 
-	bool InitRenderDevice(APILevel API) override;
+	bool InitRenderDevice(IRender_RHI::APILevel API) override;
 	void DestroyRenderDevice() override;
 
-	void* GetRenderDevice() override;
-	void* GetRenderContext() override;
-	void* GetRenderTexture() override;
-	void* GetDepthTexture() override;
-	void* GetSwapchainTexture() override;
-
-	void* GetSwapchain() override;
 	u32	GetSwapchainWidth() override;
 	u32	GetSwapchainHeight() override;
 
 	void ResizeBuffers(u32 Width, u32 Height);
 	void ResizeWindow(u32 width, u32 height);
-
-	D3D_FEATURE_LEVEL GetFeatureLevel() override;
-	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
 	void BeginRender() override;
 	void EndRender() override;

@@ -1,18 +1,10 @@
 #include "stdafx.h"
 
-extern void* HWSwapchain;
+#include <d3d9.h>
+#pragma comment(lib, "d3d9.lib")
 
 IDirect3D9* D3D = nullptr;
 IDirect3DStateBlock9* DebugSB = nullptr;
-extern void* HWRenderDevice;
-extern void* HWRenderContext;
-
-extern void* RenderTexture;
-extern void* RenderSRV;
-extern void* RenderRTV;
-
-extern void* RenderDSV;
-extern void* SwapChainRTV;
 
 static u32 selectPresentInterval()
 {
@@ -30,20 +22,20 @@ static u32 selectPresentInterval()
 }
 static u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 {
-	if (psDeviceFlags.is(rsRefresh60hz)) 
+	if (psDeviceFlags.is(rsRefresh60hz))
 	{
 		return D3DPRESENT_RATE_DEFAULT;
 	}
-	else 
+	else
 	{
 		u32 selected = D3DPRESENT_RATE_DEFAULT;
 		u32 count = D3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, fmt);
-		for (u32 I = 0; I < count; I++) 
+		for (u32 I = 0; I < count; I++)
 		{
 			D3DDISPLAYMODE	Mode;
 			D3D->EnumAdapterModes(D3DADAPTER_DEFAULT, fmt, I, &Mode);
 
-			if (Mode.Width == dwWidth && Mode.Height == dwHeight) 
+			if (Mode.Width == dwWidth && Mode.Height == dwHeight)
 			{
 				if (Mode.RefreshRate > selected) selected = Mode.RefreshRate;
 			}
@@ -53,7 +45,7 @@ static u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 	}
 }
 
-void UpdateBuffersD3D9()
+bool UpdateBuffersD3D9()
 {
 	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->CreateTexture(
@@ -65,6 +57,8 @@ void UpdateBuffersD3D9()
 	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&RenderRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetRenderTarget(0, (IDirect3DSurface9**)&SwapChainRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetDepthStencilSurface((IDirect3DSurface9**)&RenderDSV));
+
+	return true;
 }
 
 D3DPRESENT_PARAMETERS GetPresentParameter(int Width = psCurrentVidMode[0], int Height = psCurrentVidMode[1])
@@ -121,7 +115,7 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 		((IDirect3DTexture9*)RenderTexture)->Release();
 		RenderTexture = nullptr;
 	}
-	
+
 	if (DebugSB != nullptr) {
 		DebugSB->Release();
 		DebugSB = nullptr;
@@ -132,11 +126,14 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 	if (HWRenderDevice != nullptr) {
 		while (TRUE) {
 			HRESULT _hr = DxDevice->Reset(&P);
-			if (SUCCEEDED(_hr))					break;
+			if (SUCCEEDED(_hr))			
+				break;
+
 			Msg("! ERROR: [%dx%d]: %s", P.BackBufferWidth, P.BackBufferHeight, Debug.dxerror2string(_hr));
 			Sleep(100);
 		}
-	} else {
+	}
+	else {
 		HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 		HRESULT hr = D3D->CreateDevice(
 			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,

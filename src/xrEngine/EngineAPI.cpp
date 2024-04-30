@@ -128,6 +128,8 @@ void CEngineAPI::Initialize(void)
 		}
 	}
 
+	hRenderRHI = LoadLibraryA("xrRenderInterface.dll");
+
 	// GameSpy
 	{
 		LPCSTR g_name = "xrGameSpy.dll";
@@ -227,14 +229,4 @@ void CEngineAPI::CreateRendererList()
 #endif // DEBUG
 		}
 	}
-}
-
-APILevel CEngineAPI::GetAPI()
-{
-	if (psDeviceFlags.test(rsR4))
-	{
-		return APILevel::DX11;
-	}
-
-	return APILevel::DX9;
 }

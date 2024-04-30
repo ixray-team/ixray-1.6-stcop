@@ -6,7 +6,7 @@
 #pragma once
 #include <array>
 
-enum class APILevel;
+#include "IRender_RHI.h"
 
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure {
@@ -46,6 +46,7 @@ class ENGINE_API		CEngineAPI
 private:
 	HMODULE				hGame;
 	HMODULE				hRender;
+	HMODULE				hRenderRHI;
 
 public:
 	HMODULE				hGameSpy;
@@ -61,8 +62,6 @@ public:
 	void				Destroy		();
 
 	void				CreateRendererList();
-
-	APILevel			GetAPI();
 
 	CEngineAPI	();
 	~CEngineAPI	();

@@ -16,7 +16,7 @@
 
 #include "../xrRenderDX10/DXCommonTypes.h"
 
-#include "../xrRender/Debug/dxPixEventWrapper.h"
+#include "../xrRenderInterface/DeviceRHI.h"
 
 #define		R_R1	1
 #define		R_R2	2

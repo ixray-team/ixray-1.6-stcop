@@ -3,27 +3,7 @@
 #include "imgui_impl_sdl3.h"
 #include "IGame_Persistent.h"
 
-#include <d3d11.h>
-#include <d3d9.h>
-
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-
-static APILevel CurrentAPILevel = APILevel::DX11;
-
-D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
-void* HWSwapchain = nullptr;
-
-void* HWRenderDevice = nullptr;
-void* HWRenderContext = nullptr;
-
-void* RenderTexture = nullptr;
-void* RenderSRV = nullptr;
-void* RenderRTV = nullptr;
-
-void* RenderDSV = nullptr;
-void* SwapChainRTV = nullptr;
+#include "IRender_RHI.h"
 
 extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
@@ -47,7 +27,7 @@ void DrawMainViewport()
 		ImGui::SetCursorPos(ImVec2(0, 0));
 		ImGui::GetWindowDrawList()->AddRect(Viewport->Pos, ImVec2((float)Device.TargetWidth + Viewport->Pos.x, (float)Device.TargetHeight + Viewport->Pos.y), 0xFFFFFFFF);
 		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::Image(RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+		ImGui::Image(g_RenderRHI->GetRenderSRV(), ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	}
 	ImGui::End();
 
@@ -69,97 +49,9 @@ void free_vid_mode_list()
 #endif
 }
 
-struct _uniq_mode
+bool CRenderDevice::InitRenderDevice(IRender_RHI::APILevel API)
 {
-	_uniq_mode(LPCSTR v) :_val(v) {}
-	LPCSTR _val;
-	bool operator() (LPCSTR _other) { return !_stricmp(_val, _other); }
-};
-
-void fill_vid_mode_list()
-{
-#ifndef _EDITOR
-	if (vid_mode_token != nullptr)		return;
-	xr_vector<LPCSTR>	_tmp;
-	xr_vector<DXGI_MODE_DESC>	modes;
-
-	IDXGIOutput* pOutput = nullptr;
-	IDXGIAdapter* pAdapter = nullptr;
-	IDXGIFactory* pFactory = nullptr;
-	R_CHK(CreateDXGIFactory(IID_PPV_ARGS(&pFactory)));
-	pFactory->EnumAdapters(0, &pAdapter);
-	pAdapter->EnumOutputs(0, &pOutput);
-	pAdapter->Release();
-	pFactory->Release();
-	VERIFY(pOutput);
-
-	UINT num = 0;
-	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	UINT flags = 0;
-
-	// Get the number of display modes available
-	pOutput->GetDisplayModeList(format, flags, &num, 0);
-
-	// Get the list of display modes
-	modes.resize(num);
-	pOutput->GetDisplayModeList(format, flags, &num, &modes.front());
-
-	_RELEASE(pOutput);
-
-	for (u32 i = 0; i < num; ++i)
-	{
-		DXGI_MODE_DESC& desc = modes[i];
-		string32		str;
-
-		if (desc.Width < 800)
-			continue;
-
-		xr_sprintf(str, sizeof(str), "%dx%d", desc.Width, desc.Height);
-
-		if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
-			continue;
-
-		_tmp.push_back(nullptr);
-		_tmp.back() = xr_strdup(str);
-	}
-
-	u32 _cnt = (u32)_tmp.size() + 1;
-
-	vid_mode_token = xr_alloc<xr_token>(_cnt);
-
-	vid_mode_token[_cnt - 1].id = -1;
-	vid_mode_token[_cnt - 1].name = nullptr;
-
-#ifdef DEBUG
-	Msg("Available video modes[%d]:", _tmp.size());
-#endif // DEBUG
-	for (u32 i = 0; i < _tmp.size(); ++i)
-	{
-		vid_mode_token[i].id = i;
-		vid_mode_token[i].name = _tmp[i];
-#ifdef DEBUG
-		Msg("[%s]", _tmp[i]);
-#endif // DEBUG
-	}
-#endif
-}
-
-bool CreateD3D9();
-bool UpdateBuffersD3D9();
-void ResizeBuffersD3D9(u16 Width, u16 Height);
-void DestroyD3D9();
-
-#ifndef _EDITOR
-bool CreateD3D11();
-bool UpdateBuffersD3D11();
-void ResizeBuffersD3D11(u16 Width, u16 Height);
-void DestroyD3D11();
-#endif
-
-
-bool CRenderDevice::InitRenderDevice(APILevel API)
-{
-	fill_vid_mode_list();
+	g_RenderRHI->FillModes();
 #ifndef _EDITOR
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
@@ -232,33 +124,12 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::PopStyleVar();
 	});
 #endif
-	switch (API) {
 
-	case APILevel::DX9:
-		if (!CreateD3D9()) {
-			return false;
-		}
-		break;
-
-#ifndef _EDITOR
-	case APILevel::DX11:
-		if (!CreateD3D11()) {
-			return false;
-		}
-		break;
-
-#endif
-	default:
-		break;
-	}
-
-	if (HWRenderDevice == nullptr) {
-		return false;
-	}
+	g_RenderRHI->Create(API);
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
-	CurrentAPILevel = API;
+
 	return true;
 }
 
@@ -267,59 +138,9 @@ void CRenderDevice::DestroyRenderDevice()
 #ifndef _EDITOR
 	CImGuiManager::Instance().Destroy();
 #endif
-	switch (CurrentAPILevel) 
-	{
 
-	case APILevel::DX9:
-		DestroyD3D9();
-		break;
-
-#ifndef _EDITOR
-	case APILevel::DX11:
-		DestroyD3D11();
-		break;
-#endif
-
-	default:
-		break;
-	}
-
+	g_RenderRHI->Destroy();
 	free_vid_mode_list();
-}
-
-void* CRenderDevice::GetRenderDevice()
-{
-	return HWRenderDevice;
-}
-
-void* CRenderDevice::GetRenderContext()
-{
-	return HWRenderContext;
-}
-
-void* CRenderDevice::GetRenderTexture()
-{
-	// FX: Use ImGui render for Debug Draw mode
-#ifdef DEBUG_DRAW
-	return RenderRTV;
-#else
-	return SwapChainRTV;
-#endif
-}
-
-void* CRenderDevice::GetDepthTexture()
-{
-	return RenderDSV;
-}
-
-void* CRenderDevice::GetSwapchainTexture()
-{
-	return SwapChainRTV;
-}
-
-void* CRenderDevice::GetSwapchain()
-{
-	return HWSwapchain;
 }
 
 u32	CRenderDevice::GetSwapchainWidth()
@@ -334,19 +155,7 @@ u32	CRenderDevice::GetSwapchainHeight()
 
 void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
-	switch (CurrentAPILevel) {
-
-	case APILevel::DX9:
-		ResizeBuffersD3D9(Width, Height);
-		break;
-#ifndef _EDITOR
-	case APILevel::DX11:
-		ResizeBuffersD3D11(Width, Height);
-		break;
-#endif
-	default:
-		break;
-	}
+	g_RenderRHI->ResizeBuffers(Width, Height);
 
 	Device.TargetWidth = Width;
 	Device.TargetHeight = Height;
@@ -415,16 +224,6 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		SDL_PollEvent(nullptr);
 		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	}
-}
-
-D3D_FEATURE_LEVEL CRenderDevice::GetFeatureLevel()
-{
-	return FeatureLevel;
-}
-
-RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
-{
-	return pRDocAPI;
 }
 
 void CRenderDevice::BeginRender()

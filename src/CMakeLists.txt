@@ -15,6 +15,7 @@ add_subdirectory("xrParticles")
 add_subdirectory("xrScripts")
 
 if (IXRAY_USE_R1)
+    add_subdirectory("Layers/xrRenderInterface")
     add_subdirectory("Layers/xrRenderPC_R1")
 endif()
 

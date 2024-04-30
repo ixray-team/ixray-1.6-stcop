@@ -436,10 +436,10 @@ public:
 	};
 
 	virtual void Execute(LPCSTR args) {
-		if (Device.GetRenderDocAPI()) {
-			HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
-			Device.GetRenderDocAPI()->StartFrameCapture(RDevice, hwnd);
-		}
+		//if (Device.GetRenderDocAPI()) {
+		//	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+		//	Device.GetRenderDocAPI()->StartFrameCapture(RDevice, hwnd);
+		//}
 	}
 };
 
@@ -450,10 +450,10 @@ public:
 	};
 
 	virtual void Execute(LPCSTR args) {
-		if (Device.GetRenderDocAPI()) {
-			HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
-			Device.GetRenderDocAPI()->EndFrameCapture(RDevice, hwnd);
-		}
+		//if (Device.GetRenderDocAPI()) {
+		//	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+		//	Device.GetRenderDocAPI()->EndFrameCapture(RDevice, hwnd);
+		//}
 	}
 };
 #endif

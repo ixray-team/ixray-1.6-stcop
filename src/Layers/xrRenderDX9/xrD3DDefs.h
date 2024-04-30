@@ -7,7 +7,7 @@
 #	include "..\xrRenderDX10\DXCommonTypes.h"
 
 #else //USE_DX11
-
+#include <d3d9.h>
 typedef	IDirect3DVertexShader9	ID3DVertexShader;
 typedef	IDirect3DPixelShader9	ID3DPixelShader;
 typedef	IDirect3DQuery9			ID3DQuery;
