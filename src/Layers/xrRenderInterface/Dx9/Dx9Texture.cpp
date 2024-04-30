@@ -613,8 +613,10 @@ bool CD3D9Texture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
 	R_CHK(((IDirect3DTexture9*)m_pTexture)->GetSurfaceLevel(0, &pSurfaceAPI));
 
 	CD3D9Surface* pSurfaceRHI = new CD3D9Surface(pSurfaceAPI);
-	//pSurfaceRHI->AddRef();
-	return pSurfaceRHI;
+	pSurfaceRHI->AddRef();
+	*ppSurfaceLevel = pSurfaceRHI;
+
+	return true;
 }
 
 //---------------------------------------------------------------------------------------
