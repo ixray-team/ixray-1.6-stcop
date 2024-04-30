@@ -61,7 +61,7 @@ struct TextureDesc
 	eUsage Usage;
 	ERHITextureFormat Format;
 	u32 TextureFlags;
-	bool NumMips;
+	u32 NumMips;
 	bool DefaultPool;
 	bool IsCube;
 };

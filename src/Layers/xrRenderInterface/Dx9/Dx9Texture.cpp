@@ -416,6 +416,9 @@ void CD3D9Texture::SetData( LPSUBRESOURCE_DATA pSubresourceData )
 
 u64 CD3D9Texture::Release()
 {
+	if (this == nullptr)
+		return 0;
+
 	R_ASSERT(m_RefCount > 0);
 	--m_RefCount;
 
@@ -423,10 +426,26 @@ u64 CD3D9Texture::Release()
 	{
 		if (m_pTexture != nullptr)
 		{
-			m_pTexture->Release();
+			ULONG refCount = m_pTexture->AddRef();
+			while (refCount > 0)
+			{
+				refCount = m_pTexture->Release();
+			}
+
+			m_pTexture = nullptr;
+
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
+			//m_pTexture->Release();
 		}
 
-		delete this;
+		//delete this;
 		return 0;
 	}
 

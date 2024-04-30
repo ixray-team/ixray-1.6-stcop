@@ -42,7 +42,7 @@ static DX11TextureFormatPairs TextureFormatList[] =
     { FMT_DXT1      ,   DXGI_FORMAT_BC1_UNORM },
     { FMT_DXT2      ,   DXGI_FORMAT_BC2_UNORM },
     { FMT_DXT3      ,   DXGI_FORMAT_BC2_UNORM },
-    { FMT_DXT4      ,   DXGI_FORMAT_BC3_UNORM },
+    //{ FMT_DXT4      ,   DXGI_FORMAT_BC3_UNORM },
     { FMT_DXT5      ,   DXGI_FORMAT_BC3_UNORM },
 };
 
