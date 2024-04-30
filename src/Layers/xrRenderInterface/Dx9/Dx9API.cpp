@@ -319,6 +319,8 @@ IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 Data
 
 	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));
 
+	pBuffer->AddRef();
+
 	return pBuffer;
 }
 

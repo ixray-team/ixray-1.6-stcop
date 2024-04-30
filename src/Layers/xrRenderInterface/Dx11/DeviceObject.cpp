@@ -146,6 +146,8 @@ IRHIBuffer* CreateD3D11Buffer(eBufferType bufferType, const void* pData, u32 Dat
 
 	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));
 
+	pBuffer->AddRef();
+
 	return pBuffer;
 }
 
