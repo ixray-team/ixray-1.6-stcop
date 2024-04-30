@@ -12,7 +12,7 @@ void* RenderTexture = nullptr;
 void* RenderSRV = nullptr;
 void* RenderRTV = nullptr;
 
-void* RenderDSV = nullptr;
+IRHIDepthStencilView* RenderDSV = nullptr;
 void* SwapChainRTV = nullptr;
 
 CRender_RHI g_RenderRHI_Implementation;
@@ -110,6 +110,18 @@ void* CRender_RHI::GetSwapchainTexture()
 void* CRender_RHI::GetSwapchain()
 {
     return HWSwapchain;
+}
+
+IRHIDepthStencilView* CRender_RHI::CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard)
+{
+    IRHIDepthStencilView* Ptr = nullptr;
+    switch (API)
+    {
+    case APILevel::DX9:  Ptr = CreateD3D9DepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard);  break;
+  //  case APILevel::DX11: Ptr = CreateD3D11Texture(pTextureDesc, pSubresourceData); break;
+    }
+
+    return Ptr;
 }
 
 IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )

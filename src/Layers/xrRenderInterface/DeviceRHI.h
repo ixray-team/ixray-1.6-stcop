@@ -10,7 +10,7 @@ extern void* HWSwapchain;
 
 extern void* RenderTexture;
 extern void* RenderSRV;
-extern void* RenderDSV;
+extern IRHIDepthStencilView* RenderDSV;
 
 extern void* RenderRTV;
 extern void* SwapChainRTV;
@@ -41,6 +41,7 @@ public:
 	virtual void* GetSwapchainTexture();
 	virtual void* GetSwapchain();
 
+	IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) override;
 	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHIBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 

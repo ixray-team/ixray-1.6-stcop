@@ -8,24 +8,24 @@
 
 void CRenderTarget::DoAsyncScreenshot()
 {
-	if (RImplementation.m_bMakeAsyncSS)
-	{
-		HRESULT hr;
-
-		IDirect3DSurface9*	pFBSrc = RTarget;
-
-		//	Don't addref, no need to release.
-	//	ID3DTexture2D *pTex = rt_Color->pSurface;
-
-	//	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
-
-		//	SHould be async function
-		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
-
-	//	pFBSrc->Release();
-
-		RImplementation.m_bMakeAsyncSS = false;
-	}
+	//if (RImplementation.m_bMakeAsyncSS)
+	//{
+	//	HRESULT hr;
+	//
+	//	IDirect3DSurface9*	pFBSrc = RTarget;
+	//
+	//	//	Don't addref, no need to release.
+	////	ID3DTexture2D *pTex = rt_Color->pSurface;
+	//
+	////	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
+	//
+	//	//	SHould be async function
+	//	hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
+	//
+	////	pFBSrc->Release();
+	//
+	//	RImplementation.m_bMakeAsyncSS = false;
+	//}
 }
 
 
@@ -147,8 +147,8 @@ void	CRenderTarget::phase_combine	()
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
-		IDirect3DBaseTexture9*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
-		IDirect3DBaseTexture9*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
+		IRHITexture*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
+		IRHITexture*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	

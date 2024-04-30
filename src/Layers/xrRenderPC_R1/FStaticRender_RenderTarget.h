@@ -21,7 +21,7 @@ private:
 	//FXAA
 	ref_shader s_fxaa;
 	ref_geom g_fxaa;
-	IDirect3DSurface9*	ZB;
+	IRHIDepthStencilView*	ZB;
 	IBlender* b_fxaa;
 
 	//	Can't implement in a single pass of a shader since
@@ -54,7 +54,7 @@ private:
 	u32					frame_distort;
 public:
 
-	IDirect3DSurface9*	pTempZB;
+	IRHIDepthStencilView*	pTempZB;
 
 	//	Igor: for async screenshots
 	IDirect3DSurface9*			pFB;				//32bit		(r,g,b,a) is situated in the system memory

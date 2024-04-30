@@ -106,7 +106,7 @@ public:
 private:
 	// Render-targets
 	IRHISurface*					pRT[4];
-	ID3DDepthStencilView*			pZB;
+	IRHIDepthStencilView*			pZB;
 
 	// Vertices/Indices/etc
 #ifdef USE_DX11
@@ -243,9 +243,9 @@ public:
 	IC	const Fmatrix&				get_xform_project	();
 
 	IC	void						set_RT				(IRHISurface* RT, u32 ID=0);
-	IC	void						set_ZB				(ID3DDepthStencilView* ZB);
+	IC	void						set_ZB				(IRHIDepthStencilView* ZB);
 	IC	IRHISurface*				get_RT				(u32 ID=0);
-	IC	ID3DDepthStencilView*		get_ZB				();
+	IC	IRHIDepthStencilView*		get_ZB				();
 
 	IC	void						set_Constants		(R_constant_table* C);
 	IC	void						set_Constants		(ref_ctable& C_)						{ set_Constants(&*C_);			}

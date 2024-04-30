@@ -1,13 +1,17 @@
 #pragma once
 #include <d3d9.h>
 
-class CD3D9Surface : public IRHISurface
+class CD3D9Surface :
+	public IRHIDepthStencilView
 {
+	friend IRHIDepthStencilView* CreateD3D9DepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard);
 public:
+	CD3D9Surface() = default;
 	CD3D9Surface(IDirect3DSurface9* pSurfaceAPI);
 	~CD3D9Surface();
 
 	IDirect3DSurface9* GetD3D9SurfaceObject();
+	virtual void SetActive() override;
 
 private:
 	IDirect3DSurface9* m_pSurfaceAPI;

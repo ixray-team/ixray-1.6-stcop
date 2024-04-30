@@ -5,6 +5,18 @@
 #include "Dx9Texture.h"
 #include "Dx9Buffer.h"
 
+D3DFORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT);
+IRHIDepthStencilView* CreateD3D9DepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	CD3D9Surface* pDepthTexture = new CD3D9Surface();
+
+	pDevice->CreateDepthStencilSurface(Width, Height, ConvertTextureFormat(Format), (D3DMULTISAMPLE_TYPE)MultiSample, MultisampleQuality, Discard, &pDepthTexture->m_pSurfaceAPI, nullptr);
+	pDepthTexture->AddRef();
+
+	return pDepthTexture;
+}
+
 IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
 	CD3D9Texture* pTexture = new CD3D9Texture();

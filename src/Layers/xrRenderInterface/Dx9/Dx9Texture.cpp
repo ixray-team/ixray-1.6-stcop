@@ -34,6 +34,7 @@ static DX9TextureFormatPairs TextureFormatList[] =
 	{FMT_Q8W8V8U8, D3DFMT_Q8W8V8U8,		},
 	{FMT_V16U16, D3DFMT_V16U16,		},
 	{FMT_D24X8, D3DFMT_D24X8,			},
+	{FMT_D24S8, D3DFMT_D24S8,			},
 	{FMT_D32F_LOCKABLE, D3DFMT_D32F_LOCKABLE, },
 	{FMT_G16R16F, D3DFMT_G16R16F,		},
 	{FMT_A16B16G16R16F, D3DFMT_A16B16G16R16F,	},
@@ -52,7 +53,7 @@ static DX9TextureFormatPairs TextureFormatList[] =
 	{ FMT_DXT5          , D3DFMT_DXT5       },
 };
 
-static D3DFORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
+D3DFORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
 {
 	int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
 	for (int i = 0; i < arrayLength; ++i)
@@ -631,6 +632,7 @@ CD3D9Surface::~CD3D9Surface()
 	if (m_pSurfaceAPI != nullptr)
 	{
 		m_pSurfaceAPI->Release();
+		m_pSurfaceAPI = nullptr;
 	}
 }
 
@@ -642,6 +644,12 @@ IDirect3DSurface9* CD3D9Surface::GetD3D9SurfaceObject()
 EResourceType CD3D9Surface::GetType()
 {
 	return eResourceUnknown;
+}
+
+void CD3D9Surface::SetActive()
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	pDevice->SetDepthStencilSurface(m_pSurfaceAPI);
 }
 
 ///////////////////////////////////////////////////////////

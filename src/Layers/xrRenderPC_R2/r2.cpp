@@ -171,7 +171,7 @@ void					CRender::create					()
 	o.HW_smap			= true;
 	o.HW_smap_PCF		= o.HW_smap		;
 	if (o.HW_smap)		{
-		o.HW_smap_FORMAT	= D3DFMT_D24X8;
+		o.HW_smap_FORMAT	= FMT_D24X8;
 		Msg				("* HWDST/PCF supported and used");
 	}
 
@@ -184,7 +184,7 @@ void					CRender::create					()
 		o.HW_smap = true;
 		if (o.HW_smap)	
 		{
-			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
+			o.HW_smap_FORMAT= RHI_MAKEFOURCC	('D','F','2','4');
 			o.HW_smap_PCF	= FALSE			;
 			o.HW_smap_FETCH4= TRUE			;
 		}

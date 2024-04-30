@@ -56,12 +56,16 @@ bool UpdateBuffersD3D9()
 	RenderSRV = RenderTexture;
 
 	IDirect3DSurface9* DxRenderRTV = nullptr;
+	IDirect3DSurface9* DxRenderDSV = nullptr;
 
 	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&DxRenderRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetRenderTarget(0, (IDirect3DSurface9**)&SwapChainRTV));
-	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetDepthStencilSurface((IDirect3DSurface9**)&RenderDSV));
+	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetDepthStencilSurface((IDirect3DSurface9**)&DxRenderDSV));
 
 	RenderRTV = new CD3D9Surface(DxRenderRTV);
+
+	RenderDSV = new CD3D9Surface(DxRenderDSV);
+	RenderDSV->AddRef();
 
 	return true;
 }
@@ -98,7 +102,7 @@ D3DPRESENT_PARAMETERS GetPresentParameter(int Width = psCurrentVidMode[0], int H
 void ResizeBuffersD3D9(u16 Width, u16 Height)
 {
 	if (RenderDSV != nullptr) {
-		((IDirect3DSurface9*)RenderDSV)->Release();
+		RenderDSV->Release();
 		RenderDSV = nullptr;
 	}
 
@@ -108,6 +112,7 @@ void ResizeBuffersD3D9(u16 Width, u16 Height)
 
 	if (RenderRTV != nullptr) {
 		xr_delete((CD3D9Surface*)RenderRTV);
+		RenderRTV = nullptr;
 	}
 
 	if (SwapChainRTV != nullptr) {
@@ -176,7 +181,7 @@ bool CreateD3D9()
 void DestroyD3D9()
 {
 	if (RenderDSV != nullptr) {
-		((IDirect3DSurface9*)RenderDSV)->Release();
+		xr_delete((CD3D9Surface*)RenderDSV);
 		RenderDSV = nullptr;
 	}
 
@@ -186,6 +191,7 @@ void DestroyD3D9()
 
 	if (RenderRTV != nullptr) {
 		xr_delete((CD3D9Surface*)RenderRTV);
+		RenderRTV = nullptr;
 	}
 
 	if (SwapChainRTV != nullptr) {

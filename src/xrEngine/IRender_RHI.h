@@ -119,6 +119,12 @@ class IRHISurface : public IRHIUnknown
 {
 };
 
+class IRHIDepthStencilView : public IRHISurface
+{
+public:
+	virtual void SetActive() = 0;
+};
+
 typedef IRHISurface* LPIRHISURFACE;
 
 class IRHITexture : public IRHIUnknown
@@ -177,7 +183,8 @@ public:
 	virtual int GetFeatureLevel() = 0;
 
 	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
-	virtual IRHIBuffer* CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
+	virtual IRHIBuffer*  CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
+	virtual IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) = 0;
 
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
@@ -219,6 +226,17 @@ namespace RHIUtils
 			return false;
 
 		*ppBuffer = pBuffer;
+		return true;
+	}
+
+	inline bool CreateDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, DWORD MultisampleQuality, BOOL Discard, IRHIDepthStencilView** ppSurface, [[maybe_unused]] HANDLE* pSharedHandle)
+	{
+		IRHIDepthStencilView* pDepth = g_RenderRHI->CreateAPIDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard);
+		if (!pDepth)
+			return false;
+
+		*ppSurface = pDepth;
+
 		return true;
 	}
 

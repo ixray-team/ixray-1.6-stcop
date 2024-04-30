@@ -8,6 +8,9 @@ void DestroyD3D9();
 class IRHITexture;
 IRHITexture* CreateD3D9Texture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData );
 
+class IRHIDepthStencilView;
+IRHIDepthStencilView* CreateD3D9DepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard);
+
 class IRHIBuffer;
 IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable);
 
