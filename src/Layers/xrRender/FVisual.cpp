@@ -141,7 +141,8 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			vCount				= data->r_u32				();
 			u32 vStride = (u32)ComputeVertexSize(fvf);
 
-#ifdef USE_DX11
+// #TODO: !!!
+#if 1//def USE_DX11
 			VERIFY				(nullptr==p_rm_Vertices);
 			R_ASSERT			(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
 #else //USE_DX11
@@ -185,7 +186,8 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			iCount				= data->r_u32();
 			dwPrimitives		= iCount/3;
 
-#ifdef USE_DX11
+// #TODO: !!!
+#if 1//def USE_DX11
 			VERIFY				(nullptr==p_rm_Indices);
 			R_ASSERT			(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
 #else //USE_DX11
@@ -236,22 +238,10 @@ void	Fvisual::Copy			(dxRender_Visual *pSrc)
 	Fvisual	*pFrom				= dynamic_cast<Fvisual*> (pSrc);
 
 	PCOPY	(rm_geom);
-
-	PCOPY	(p_rm_Vertices); 
-	
-#ifndef USE_DX11
-	if (p_rm_Vertices) p_rm_Vertices->AddRef();
-#endif // !USE_DX11
-	
+	PCOPY	(p_rm_Vertices); if (p_rm_Vertices) p_rm_Vertices->AddRef();
 	PCOPY	(vBase);
 	PCOPY	(vCount);
-
-	PCOPY	(p_rm_Indices); 
-	
-#ifndef USE_DX11
-	if (p_rm_Indices) p_rm_Indices->AddRef();
-#endif
-	
+	PCOPY	(p_rm_Indices); if (p_rm_Indices) p_rm_Indices->AddRef();
 	PCOPY	(iBase);
 	PCOPY	(iCount);
 	PCOPY	(dwPrimitives);

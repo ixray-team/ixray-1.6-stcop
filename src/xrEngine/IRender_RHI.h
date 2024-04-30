@@ -66,7 +66,39 @@ typedef struct LOCKED_RECT {
 	void* pBits;
 } LOCKED_RECT, * LPLOCKED_RECT;
 
-class IRHITexture
+/////////////////////////////////////////////////
+// RHI Objects
+
+class IRHIUnknown
+{
+public:
+	virtual ~IRHIUnknown() {}
+
+	// IUnknown interface
+	u64 AddRef();
+	u64 Release();
+
+private:
+	// Ref counting
+	u64 m_RefCount = 0;
+};
+
+inline u64 IRHIUnknown::AddRef()
+{
+	++m_RefCount;
+	return m_RefCount;
+}
+
+inline u64 IRHIUnknown::Release()
+{
+	R_ASSERT(m_RefCount > 0);
+	--m_RefCount;
+
+	if (m_RefCount == 0) { delete this; return 0; }
+	return m_RefCount;
+}
+
+class IRHITexture : public IRHIUnknown
 {
 public:
 	virtual ~IRHITexture() = default;
@@ -77,7 +109,7 @@ public:
 
 typedef IRHITexture* LPIRHITEXTURE;
 
-class IRHIBuffer
+class IRHIBuffer : public IRHIUnknown
 {
 public:
 	virtual ~IRHIBuffer() = default;

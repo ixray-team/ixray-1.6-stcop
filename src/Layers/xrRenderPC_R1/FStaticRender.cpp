@@ -193,8 +193,8 @@ IRender_Sector*			CRender::getSector				(int id)			{ VERIFY(id<int(Sectors.size(
 IRender_Sector*			CRender::getSectorActive		()					{ return pLastSector;									}
 IRenderVisual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
 D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id)			{ VERIFY(id<int(DCL.size()));		return DCL[id].begin();	}
-IDirect3DVertexBuffer9*	CRender::getVB					(int id)			{ VERIFY(id<int(VB.size()));		return VB[id];		}
-IDirect3DIndexBuffer9*	CRender::getIB					(int id)			{ VERIFY(id<int(IB.size()));		return IB[id];		}
+IRHIBuffer*				CRender::getVB					(int id)			{ VERIFY(id<int(VB.size()));		return VB[id];		}
+IRHIBuffer*				CRender::getIB					(int id)			{ VERIFY(id<int(IB.size()));		return IB[id];		}
 IRender_Target*			CRender::getTarget				()					{ return Target;										}
 FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
 

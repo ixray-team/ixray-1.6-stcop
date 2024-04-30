@@ -57,8 +57,8 @@ public:
 	xr_vector<ref_shader>										Shaders;
 	typedef svector<D3DVERTEXELEMENT9,MAXD3DDECLLENGTH+1>		VertexDeclarator;
 	xr_vector<VertexDeclarator>									DCL;
-	xr_vector<IDirect3DVertexBuffer9*>							VB;
-	xr_vector<IDirect3DIndexBuffer9*>							IB;
+	xr_vector<IRHIBuffer*>										VB;
+	xr_vector<IRHIBuffer*>										IB;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
@@ -101,8 +101,8 @@ public:
 	ShaderElement*						rimp_select_sh_static	(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*						rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq);
 	D3DVERTEXELEMENT9*					getVB_Format			(int id);
-	IDirect3DVertexBuffer9*				getVB					(int id);
-	IDirect3DIndexBuffer9*				getIB					(int id);
+	IRHIBuffer*							getVB					(int id);
+	IRHIBuffer*							getIB					(int id);
 	FSlideWindowItem*					getSWI					(int id);
 	IRender_Portal*						getPortal				(int id);
 	IRender_Sector*						getSectorActive			();

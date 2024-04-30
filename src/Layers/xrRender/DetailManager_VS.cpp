@@ -67,7 +67,8 @@ void CDetailManager::hw_Load_Geom()
 	u32			vSize		= sizeof(vertHW);
 	Msg("* [DETAILS] %d v(%d), %d p",dwVerts,vSize,dwIndices/3);
 
-#ifndef USE_DX11
+// #TODO: !!!
+#if 0//ndef USE_DX11
 	// Determine POOL & USAGE
 	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
 
@@ -81,7 +82,9 @@ void CDetailManager::hw_Load_Geom()
 	// Fill VB
 	{
 		vertHW* pV{};
-#ifdef USE_DX11
+
+// #TODO: !!!
+#if 1//def USE_DX11
 		vertHW*			pVOriginal;
 		pVOriginal	=	xr_alloc<vertHW>(dwVerts);
 		pV = pVOriginal;		
@@ -108,7 +111,9 @@ void CDetailManager::hw_Load_Geom()
 				}
 			}
 		}
-#ifdef USE_DX11
+
+// #TODO: !!!
+#if 1//def USE_DX11
 		R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
 		xr_free(pVOriginal);
 #else //USE_DX11
@@ -119,7 +124,9 @@ void CDetailManager::hw_Load_Geom()
 	// Fill IB
 	{
 		u16* pI{};
-#ifdef USE_DX11
+
+		// #TODO: !!!
+#if 1//def USE_DX11
 		u16*			pIOriginal;
 		pIOriginal = xr_alloc<u16>(dwIndices);
 		pI	= pIOriginal;
@@ -137,7 +144,8 @@ void CDetailManager::hw_Load_Geom()
 				offset		=	u16(offset+u16(D.number_vertices));
 			}
 		}
-#ifdef USE_DX11
+		// #TODO: !!!
+#if 1//def USE_DX11
 		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
 		xr_free(pIOriginal);
 #else //USE_DX11

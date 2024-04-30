@@ -171,6 +171,13 @@ public:
 	bool Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockType Flags) override;
 	bool Unlock() override;
 
+	IDirect3DVertexBuffer9* GetD3DVertexBuffer();
+	IDirect3DIndexBuffer9* GetD3DIndexBuffer();
+
+private:
+	template <typename T>
+	void SetData( T* pBuffer, const void* pData, u32 DataSize );
+
 private:
 	IDirect3DVertexBuffer9* m_pVertexBuffer;
 	IDirect3DIndexBuffer9* m_pIndexBuffer;
@@ -187,6 +194,17 @@ CD3D9Buffer::CD3D9Buffer() :
 
 CD3D9Buffer::~CD3D9Buffer()
 {
+	if (m_pIndexBuffer)
+	{
+		m_pIndexBuffer->Release();
+		m_pIndexBuffer = nullptr;
+	}
+
+	if (m_pVertexBuffer)
+	{
+		m_pVertexBuffer->Release();
+		m_pVertexBuffer = nullptr;
+	}
 }
 
 HRESULT CD3D9Buffer::Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
@@ -197,15 +215,25 @@ HRESULT CD3D9Buffer::Create(eBufferType bufferType, const void* pData, u32 DataS
 	m_BufferType = bufferType;
 	m_bImmutable = bImmutable;
 
+	D3DPOOL dwPool = D3DPOOL_DEFAULT;
+	DWORD dwUsage = 0;
+
+	if (bImmutable)
+		dwPool = D3DPOOL_MANAGED;
+	else
+		dwUsage = D3DUSAGE_DYNAMIC;
+
 	HRESULT hr = S_OK;
 
 	switch (bufferType)
 	{
 	case eVertexBuffer:
-		hr = pDevice->CreateVertexBuffer(DataSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &m_pVertexBuffer, NULL);
+		hr = pDevice->CreateVertexBuffer(DataSize, D3DUSAGE_WRITEONLY | dwUsage, 0, dwPool, &m_pVertexBuffer, NULL);
+		SetData(m_pVertexBuffer, pData, DataSize);
 		break;
 	case eIndexBuffer:
-		hr = pDevice->CreateIndexBuffer(DataSize, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &m_pIndexBuffer, NULL);
+		hr = pDevice->CreateIndexBuffer(DataSize, D3DUSAGE_WRITEONLY | dwUsage, D3DFMT_INDEX16, dwPool, &m_pIndexBuffer, NULL);
+		SetData(m_pIndexBuffer, pData, DataSize);
 		break;
 	case eConstantBuffer:
 	default:
@@ -263,6 +291,28 @@ bool CD3D9Buffer::Unlock()
 	return true;
 }
 
+IDirect3DVertexBuffer9* CD3D9Buffer::GetD3DVertexBuffer()
+{
+	return m_pVertexBuffer;
+}
+
+IDirect3DIndexBuffer9* CD3D9Buffer::GetD3DIndexBuffer()
+{
+	return m_pIndexBuffer;
+}
+
+template<typename T>
+void CD3D9Buffer::SetData( T* pBuffer, const void* pData, u32 DataSize )
+{
+	if (!pData)
+		return;
+
+	byte* bytes = 0;
+	R_CHK( pBuffer->Lock( 0, 0, (void**)&bytes, 0 ) );
+	memcpy( bytes, pData, DataSize );
+	R_CHK( pBuffer->Unlock() );
+}
+
 IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	CD3D9Buffer* pBuffer = new CD3D9Buffer();
@@ -272,3 +322,34 @@ IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 Data
 	return pBuffer;
 }
 
+void SetVertexBufferD3D9(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	CD3D9Buffer* pAPIBuffer = (CD3D9Buffer*)pVertexBuffer;
+	if (pAPIBuffer)
+	{
+		R_CHK(pDevice->SetStreamSource(StartSlot, pAPIBuffer->GetD3DVertexBuffer(), 0, Strides));
+	}
+	else
+	{
+		R_CHK(pDevice->SetStreamSource(StartSlot, nullptr, 0, 0));
+	}
+}
+
+void SetIndexBufferD3D9(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset)
+{
+	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
+	R_ASSERT(pDevice);
+
+	CD3D9Buffer* pAPIBuffer = (CD3D9Buffer*)pIndexBuffer;
+	if (pAPIBuffer)
+	{
+		R_CHK(pDevice->SetIndices(pAPIBuffer->GetD3DIndexBuffer()));
+	}
+	else
+	{
+		R_CHK(pDevice->SetIndices(nullptr));
+	}
+}

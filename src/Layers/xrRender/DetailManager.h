@@ -144,13 +144,8 @@ public:
 	// Hardware processor
 	ref_geom						hw_Geom;
 	u32								hw_BatchSize;
-#ifdef USE_DX11
 	IRHIBuffer*						hw_VB;
 	IRHIBuffer*						hw_IB;
-#else
-	ID3DVertexBuffer* hw_VB;
-	ID3DIndexBuffer* hw_IB;
-#endif // USE_DX11
 	ref_constant					hwc_consts;
 	ref_constant					hwc_wave;
 	ref_constant					hwc_wind;

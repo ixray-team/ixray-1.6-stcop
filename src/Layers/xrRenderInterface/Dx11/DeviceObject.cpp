@@ -149,7 +149,7 @@ IRHIBuffer* CreateD3D11Buffer(eBufferType bufferType, const void* pData, u32 Dat
 	return pBuffer;
 }
 
-void SetVertexBuffersD3D11(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets)
+void SetVertexBufferD3D11(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets)
 {
 	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
 	R_ASSERT(pImmediateContext);

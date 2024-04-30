@@ -459,28 +459,28 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 		if( vis_ptr == nullptr )
 			continue;
 #ifndef USE_DX11
-		D3DINDEXBUFFER_DESC IB_desc;
-		D3DVERTEXBUFFER_DESC VB_desc;
+		//D3DINDEXBUFFER_DESC IB_desc;
+		//D3DVERTEXBUFFER_DESC VB_desc;
 
-		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
+		//vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
 
-		if( IB_desc.Pool == D3DPOOL_DEFAULT ||
-			IB_desc.Pool == D3DPOOL_MANAGED )
-			ib_mem_video += IB_desc.Size;
+		//if( IB_desc.Pool == D3DPOOL_DEFAULT ||
+		//	IB_desc.Pool == D3DPOOL_MANAGED )
+		//	ib_mem_video += IB_desc.Size;
 
-		if( IB_desc.Pool == D3DPOOL_MANAGED ||
-			IB_desc.Pool == D3DPOOL_SCRATCH )
-			ib_mem_system += IB_desc.Size;
+		//if( IB_desc.Pool == D3DPOOL_MANAGED ||
+		//	IB_desc.Pool == D3DPOOL_SCRATCH )
+		//	ib_mem_system += IB_desc.Size;
 
-		vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
+		//vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
 
-		if( VB_desc.Pool == D3DPOOL_DEFAULT ||
-			VB_desc.Pool == D3DPOOL_MANAGED )
-			vb_mem_video += IB_desc.Size;
+		//if( VB_desc.Pool == D3DPOOL_DEFAULT ||
+		//	VB_desc.Pool == D3DPOOL_MANAGED )
+		//	vb_mem_video += IB_desc.Size;
 
-		if( VB_desc.Pool == D3DPOOL_MANAGED ||
-			VB_desc.Pool == D3DPOOL_SCRATCH )
-			vb_mem_system += IB_desc.Size;
+		//if( VB_desc.Pool == D3DPOOL_MANAGED ||
+		//	VB_desc.Pool == D3DPOOL_SCRATCH )
+		//	vb_mem_system += IB_desc.Size;
 
 #else
 		//D3D_BUFFER_DESC IB_desc;

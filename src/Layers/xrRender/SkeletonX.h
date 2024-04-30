@@ -120,10 +120,10 @@ BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result &r, float dist, con
 template<typename T>
 BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result &r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
-	T* vertices;
-	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
+	T* vertices = nullptr;
+	R_ASSERT			(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,eLOCK_READONLY));
 	bool intersect		= !!pick_bone<T,T*>( vertices, Parent, r, dist, S, D, indices, faces);
-	CHK_DX				(V->p_rm_Vertices->Unlock());
+	R_ASSERT			(V->p_rm_Vertices->Unlock());
 	return intersect;
 }
 #endif //USE_DX11

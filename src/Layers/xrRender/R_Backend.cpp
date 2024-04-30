@@ -8,8 +8,10 @@
 
 CBackend			RCache;
 
+
+// #TODO: !!!
 // Create Quad-IB
-#ifdef USE_DX11
+#if 1//def USE_DX11
 
 // Igor: is used to test bug with rain, particles corruption
 void CBackend::RestoreQuadIBData()
@@ -24,22 +26,6 @@ void CBackend::CreateQuadIB		()
 	static const u32 dwIdxCount	= dwTriCount*2*3;
 	u16		IndexBuffer[dwIdxCount];
 	u16		*Indices		= IndexBuffer;
-	//u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	//if (Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
-	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
-
-	D3D_BUFFER_DESC desc;
-	desc.ByteWidth = dwIdxCount*2;
-	//desc.Usage = D3D_USAGE_IMMUTABLE;
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.BindFlags = D3D_BIND_INDEX_BUFFER;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA subData;
-	subData.pSysMem = IndexBuffer;
-
-	//R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
 	{
 		int		Cnt = 0;
 		int		ICnt= 0;
@@ -56,10 +42,7 @@ void CBackend::CreateQuadIB		()
 			Cnt+=4;
 		}
 	}
-	//R_CHK(QuadIB->Unlock());
 
-	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
-	//R_CHK(RDevice->CreateBuffer		( &desc, &subData, &QuadIB));
 	R_ASSERT(RHIUtils::CreateIndexBuffer(&QuadIB, IndexBuffer, dwIdxCount * 2));
 }
 

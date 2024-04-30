@@ -149,11 +149,9 @@ void CRender_RHI::SetVertexBuffer(u32 StartSlot, IRHIBuffer* pVertexBuffer, cons
     switch (API)
     {
     case APILevel::DX9:
-        break;
+        return SetVertexBufferD3D9(StartSlot, pVertexBuffer, Strides, Offsets);
     case APILevel::DX11:
-        return SetVertexBuffersD3D11(StartSlot, pVertexBuffer, Strides, Offsets);
-    default:
-        break;
+        return SetVertexBufferD3D11(StartSlot, pVertexBuffer, Strides, Offsets);
     }
 }
 
@@ -161,11 +159,9 @@ void CRender_RHI::SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u
 {
     switch (API)
     {
-    case IRender_RHI::APILevel::DX9:
-        break;
+    case APILevel::DX9:
+        return SetIndexBufferD3D9(pIndexBuffer, Is32BitBuffer, Offset);
     case APILevel::DX11:
         return SetIndexBufferD3D11(pIndexBuffer, Is32BitBuffer, Offset);
-    default:
-        break;
     }
 }
