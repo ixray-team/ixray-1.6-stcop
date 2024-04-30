@@ -37,6 +37,9 @@ public:
 	virtual void* GetSwapchainTexture();
 	virtual void* GetSwapchain();
 
+	IRender_Texture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size ) override;
+	IRender_BufferBase* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
+
 public:
 	int GetFeatureLevel();
 };

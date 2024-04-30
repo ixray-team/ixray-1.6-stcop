@@ -113,6 +113,24 @@ void* CRender_RHI::GetSwapchain()
     return HWSwapchain;
 }
 
+IRender_Texture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size )
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        return CreateD3D9Texture( pTextureDesc, pData, size );
+    case APILevel::DX11:
+        break;
+    }
+
+    return nullptr;
+}
+
+IRender_BufferBase* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+{
+    return nullptr;
+}
+
 int CRender_RHI::GetFeatureLevel()
 {
     return 0xb100;
