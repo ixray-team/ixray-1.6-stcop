@@ -170,6 +170,27 @@ IRHISurface* CRender_RHI::CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, 
     return nullptr;
 }
 
+IRHIUnorderedAccessView* CRender_RHI::CreateAPIUnorderedAccessView( IRHITexture* pTexture, const RHI_UNORDERED_ACCESS_VIEW_DESC& Desc )
+{
+    return nullptr;
+}
+
+IRHISurface* CRender_RHI::CreateAPIRenderTargetView( IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc )
+{
+    switch (API)
+    {
+    case IRender_RHI::APILevel::DX9:
+        {
+        R_ASSERT(0);
+        }
+        break;
+    case IRender_RHI::APILevel::DX11:
+        return CreateRenderTargetViewD3D11( pTexture, pDesc );
+    }
+
+    return nullptr;
+}
+
 IRHIBuffer* CRender_RHI::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
     switch (API)

@@ -46,6 +46,8 @@ public:
 	IRHITexture* CreateAPITexture3D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHIBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 	IRHISurface* CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool) override;
+	IRHIUnorderedAccessView* CreateAPIUnorderedAccessView( IRHITexture* pTexture, const RHI_UNORDERED_ACCESS_VIEW_DESC& Desc ) override;
+	IRHISurface* CreateAPIRenderTargetView( IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc ) override;
 
 	// Унаследовано через IRender_RHI
 	void SetVertexBuffer(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets) override;

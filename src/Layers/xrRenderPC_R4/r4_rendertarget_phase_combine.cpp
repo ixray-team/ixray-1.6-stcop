@@ -56,10 +56,11 @@ void	CRenderTarget::phase_combine	()
             phase_ssao();
     }
 
-	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	ClearData ColorRGBA = {0.0f, 0.0f, 0.0f, 0.0f};
+
 	// low/hi RTs
-	RContext->ClearRenderTargetView(rt_Generic_0->pRT, ColorRGBA);
-	RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA);
+	g_RenderRHI->Clear(eClearTarget, rt_Generic_0->pRT, ColorRGBA);
+	g_RenderRHI->Clear(eClearTarget, rt_Generic_1->pRT, ColorRGBA);
 	u_setrt(rt_Generic_0, rt_Generic_1, 0, RDepth);
 	RCache.set_CullMode	( CULL_NONE );
 	RCache.set_Stencil	( FALSE		);
@@ -147,14 +148,13 @@ void	CRenderTarget::phase_combine	()
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
-		ID3DBaseTexture*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
-		ID3DBaseTexture*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
+		IRHITexture*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
+		IRHITexture*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
 		// Draw
 		RCache.set_Element			(s_combine->E[0]	);
-		//RCache.set_Geometry			(g_combine_VP		);
 		RCache.set_Geometry			(g_combine		);
 
 		RCache.set_c				("m_v2w",			m_v2w	);
@@ -179,10 +179,14 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_CullMode				(CULL_CCW);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
+
 		//	TODO: DX10: CHeck this!
 		//g_pGamePersistent->Environment().RenderClouds	();
+
 		RImplementation.render_forward	();
-		if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
+
+		if (g_pGamePersistent)
+			g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
 
 	//	Igor: for volumetric lights
@@ -202,18 +206,20 @@ void	CRenderTarget::phase_combine	()
 	{
 		if ((0==RImplementation.mapDistort.size()) && !_menu_pp)		
 			bDistort= FALSE;
+
 		if (bDistort)		
 		{
 			PIX_EVENT(render_distort_objects);
-			FLOAT ColorRGBA_[4] = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
+			ClearData ColorRGBA_ = { 127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
 			u_setrt(rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
-			RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
+			g_RenderRHI->Clear(eClearTarget, rt_Generic_1->pRT, ColorRGBA_);
 			RCache.set_CullMode			(CULL_CCW);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
-			//CHK_DX(RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
-			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
+
+			if (g_pGamePersistent)
+				g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
 	}
 

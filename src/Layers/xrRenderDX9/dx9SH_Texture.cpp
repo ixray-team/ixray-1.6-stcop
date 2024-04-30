@@ -106,7 +106,8 @@ void CTexture::apply_theora(u32 dwStage)
 	}
 	
 	pSurface->SetStage(dwStage);
-};
+}
+
 void CTexture::apply_avi(u32 dwStage)
 {
 	if (pAVI->NeedUpdate()) 

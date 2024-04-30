@@ -13,6 +13,10 @@ public:
 	void SetStage(u32 Stage) override;
 	virtual Ivector2 GetTextureSize() const override;
 
+	void GetTextureDesc( TextureDesc* pTextureDesc );
+
+	ID3D11Texture2D* GetDXObj();
+
 private:
 	ID3D11Texture2D*			m_pTexture;
 	ID3D11ShaderResourceView*	m_pTextureSRV;
@@ -33,6 +37,9 @@ private:
 
 	// Inherited via IRHITexture
 	void GetDesc(TextureDesc* pTextureDesc) override;
+
+	// Inherited via IRHITexture
+	void QueryShaderResourceView(void** ppSRV) override;
 };
 
 class CD3D11Texture3D : public IRHITexture
@@ -64,8 +71,11 @@ private:
 	bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) override;
 
 	// Inherited via IRHITexture
-	void GetAPIData(SRHIAPIData* pAPIData) override;
+	virtual void GetAPIData(SRHIAPIData* pAPIData) override;
 
 	// Inherited via IRHITexture
 	void GetDesc(TextureDesc* pTextureDesc) override;
+
+	// Inherited via IRHITexture
+	void QueryShaderResourceView(void** ppSRV) override;
 };

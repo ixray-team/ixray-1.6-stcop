@@ -57,6 +57,17 @@ enum EResourceType {
 	eResourceConstantBuffer = 9,
 };
 
+enum RHI_UAV_DIMENSION
+{
+	RHI_UAV_DIMENSION_UNKNOWN = 0,
+	RHI_UAV_DIMENSION_BUFFER = 1,
+	RHI_UAV_DIMENSION_TEXTURE1D = 2,
+	RHI_UAV_DIMENSION_TEXTURE1DARRAY = 3,
+	RHI_UAV_DIMENSION_TEXTURE2D = 4,
+	RHI_UAV_DIMENSION_TEXTURE2DARRAY = 5,
+	RHI_UAV_DIMENSION_TEXTURE3D = 8
+};
+
 struct ClearData
 {
 	ClearData() = default;
@@ -102,6 +113,8 @@ typedef struct SUBRESOURCE_DATA
 
 struct SRHIAPIData
 {
+	void* pRTV;
+	void* pDSV;
 	void* pSRV;
 	void* pUAV;
 };
@@ -114,6 +127,42 @@ typedef struct RHIBOX {
 	u32 Front;
 	u32 Back;
 } RHIBOX, *LPRHIBOX;
+
+typedef struct RHI_BUFFER_UAV {
+	UINT FirstElement;
+	UINT NumElements;
+	UINT Flags;
+} RHI_BUFFER_UAV;
+
+typedef struct RHI_TEX2D_UAV
+{
+	UINT MipSlice;
+} 	RHI_TEX2D_UAV;
+
+typedef struct RHI_UNORDERED_ACCESS_VIEW_DESC {
+	ERHITextureFormat       Format;
+	RHI_UAV_DIMENSION		ViewDimension;
+	union {
+		RHI_BUFFER_UAV      Buffer;
+		//D3D11_TEX1D_UAV       Texture1D;
+		//D3D11_TEX1D_ARRAY_UAV Texture1DArray;
+		RHI_TEX2D_UAV       Texture2D;
+		//D3D11_TEX2D_ARRAY_UAV Texture2DArray;
+		//D3D11_TEX3D_UAV       Texture3D;
+	};
+
+} RHI_UNORDERED_ACCESS_VIEW_DESC;
+
+const int kMaxRenderTargetTextures = 8;
+
+class IRHITexture;
+
+struct RenderTargetCreationDesc
+{
+	IRHITexture* Textures2D;
+	IRHITexture* DepthTexture2D;
+	u32			 Textures2DCount;
+};
 
 /////////////////////////////////////////////////
 // RHI Objects
@@ -161,6 +210,7 @@ class IRHISurface : public IRHIUnknown
 public:
 	virtual bool LockRect(LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) = 0;
 	virtual bool UnlockRect() = 0;
+	virtual void GetAPIData(SRHIAPIData* pAPIData) = 0;
 };
 
 //! Depth Stencil Target interface
@@ -171,6 +221,12 @@ public:
 };
 
 typedef IRHISurface* LPIRHISURFACE;
+
+class IRHIUnorderedAccessView : public IRHISurface
+{
+public:
+	virtual ~IRHIUnorderedAccessView() = default;
+};
 
 class IRHITexture : public IRHIUnknown
 {
@@ -184,6 +240,8 @@ public:
 	virtual Ivector2 GetTextureSize() const = 0;
 	virtual void GetAPIData(SRHIAPIData* pAPIData) = 0;
 	virtual void GetDesc(TextureDesc* pTextureDesc) = 0;
+
+	virtual void QueryShaderResourceView(void** ppSRV) = 0;
 };
 
 typedef IRHITexture* LPIRHITEXTURE;
@@ -209,6 +267,12 @@ public:
 };
 
 typedef IRHIBuffer* LPIRHIBUFFER;
+
+class IRHIVertexDeclaration : public IRHIUnknown
+{
+public:
+	virtual ~IRHIVertexDeclaration() = default;
+};
 
 class IRender_RHI
 {
@@ -244,6 +308,9 @@ public:
 	virtual IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) = 0;
 	virtual IRHISurface* CreateAPIOffscreenPlainSurface(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool) = 0;
 	virtual IRHIVolumeTexture* CreateAPIVolumeTexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
+	virtual IRHIUnorderedAccessView* CreateAPIUnorderedAccessView( IRHITexture* pTexture, const RHI_UNORDERED_ACCESS_VIEW_DESC& Desc ) = 0;
+	virtual IRHISurface* CreateAPIRenderTargetView( IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc ) = 0;
+
 	virtual void Clear(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data) = 0;
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;

@@ -18,4 +18,6 @@ private:
 	EResourceType GetType() override { return EResourceType::eResourceSurface; };
 	bool LockRect(LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) override { return false; };
 	bool UnlockRect() override { return false; };
+
+	void GetAPIData(SRHIAPIData* pAPIData) override;
 };

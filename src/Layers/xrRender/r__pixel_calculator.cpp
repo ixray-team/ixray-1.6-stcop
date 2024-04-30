@@ -9,7 +9,7 @@ using namespace DirectX;
 void	r_pixel_calculator::begin	()
 {
 	rt.create		("$user$test",		rt_dimensions,rt_dimensions, FMT_X8R8G8B8);
-	R_CHK			(RHIUtils::CreateDepthStencilSurface(rt_dimensions, rt_dimensions, FMT_D24S8, D3DMULTISAMPLE_NONE, 0, TRUE, &zb, nullptr));
+	R_ASSERT		(RHIUtils::CreateDepthStencilSurface(rt_dimensions, rt_dimensions, FMT_D24S8, D3DMULTISAMPLE_NONE, 0, TRUE, &zb, nullptr));
 
 	RCache.set_RT	(rt->pRT);
 	RCache.set_ZB	(zb);

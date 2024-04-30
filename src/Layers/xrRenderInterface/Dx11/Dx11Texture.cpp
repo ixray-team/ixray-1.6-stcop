@@ -15,27 +15,27 @@ struct DX11TextureFormatPairs
 
 static DX11TextureFormatPairs TextureFormatList[] =
 {
-	{FMT_UNKNOWN,        DXGI_FORMAT_UNKNOWN},
-	{FMT_A8R8G8B8,       DXGI_FORMAT_B8G8R8A8_UNORM },
-	{FMT_R8G8,			 DXGI_FORMAT_R8G8_UNORM 		},
-	{FMT_R8G8B8,		 DXGI_FORMAT_R8G8B8A8_UNORM		},
-	{FMT_X8R8G8B8,		 DXGI_FORMAT_B8G8R8X8_UNORM 		},
-	{FMT_R5G6B5,         DXGI_FORMAT_B5G6R5_UNORM },
-	{FMT_A8B8G8R8,       DXGI_FORMAT_R8G8B8A8_UNORM},
-	{FMT_G16R16,         DXGI_FORMAT_R16G16_UNORM },
-	{FMT_A16B16G16R16,   DXGI_FORMAT_R16G16B16A16_UNORM },
-	{FMT_L8,             DXGI_FORMAT_R8_UNORM},
-	{FMT_V8U8,           DXGI_FORMAT_R8G8_SNORM },
-	{FMT_Q8W8V8U8,       DXGI_FORMAT_R8G8B8A8_SNORM },
-	{FMT_V16U16,         DXGI_FORMAT_R16G16_SNORM },
-	{FMT_D24X8,          DXGI_FORMAT_R24G8_TYPELESS },
-	{FMT_D24S8,          DXGI_FORMAT_D24_UNORM_S8_UINT },
-	{FMT_D32F_LOCKABLE,  DXGI_FORMAT_R32_TYPELESS },
-	{FMT_G16R16F,        DXGI_FORMAT_R16G16_FLOAT},
-	{FMT_A16B16G16R16F,  DXGI_FORMAT_R16G16B16A16_FLOAT },
-	{FMT_R32F,			 DXGI_FORMAT_R32_FLOAT },
-	{FMT_R16F,			 DXGI_FORMAT_R16_FLOAT },
-	{FMT_A32B32G32R32F,  DXGI_FORMAT_R32G32B32A32_FLOAT },
+	{ FMT_UNKNOWN,        DXGI_FORMAT_UNKNOWN},
+	{ FMT_A8R8G8B8,       DXGI_FORMAT_B8G8R8A8_UNORM },
+	{ FMT_R8G8,			 DXGI_FORMAT_R8G8_UNORM 		},
+	{ FMT_R8G8B8,		 DXGI_FORMAT_R8G8B8A8_UNORM		},
+	{ FMT_X8R8G8B8,		 DXGI_FORMAT_B8G8R8X8_UNORM 		},
+	{ FMT_R5G6B5,         DXGI_FORMAT_B5G6R5_UNORM },
+	{ FMT_A8B8G8R8,       DXGI_FORMAT_R8G8B8A8_UNORM},
+	{ FMT_G16R16,         DXGI_FORMAT_R16G16_UNORM },
+	{ FMT_A16B16G16R16,   DXGI_FORMAT_R16G16B16A16_UNORM },
+	{ FMT_L8,             DXGI_FORMAT_R8_UNORM},
+	{ FMT_V8U8,           DXGI_FORMAT_R8G8_SNORM },
+	{ FMT_Q8W8V8U8,       DXGI_FORMAT_R8G8B8A8_SNORM },
+	{ FMT_V16U16,         DXGI_FORMAT_R16G16_SNORM },
+	{ FMT_D24X8,          DXGI_FORMAT_R24G8_TYPELESS },
+	{ FMT_D24S8,          DXGI_FORMAT_D24_UNORM_S8_UINT },
+	{ FMT_D32F_LOCKABLE,  DXGI_FORMAT_R32_TYPELESS },
+	{ FMT_G16R16F,        DXGI_FORMAT_R16G16_FLOAT},
+	{ FMT_A16B16G16R16F,  DXGI_FORMAT_R16G16B16A16_FLOAT },
+	{ FMT_R32F,			 DXGI_FORMAT_R32_FLOAT },
+	{ FMT_R16F,			 DXGI_FORMAT_R16_FLOAT },
+	{ FMT_A32B32G32R32F,  DXGI_FORMAT_R32G32B32A32_FLOAT },
 
 	{ FMT_UYVY      ,   DXGI_FORMAT_UNKNOWN },
     { FMT_R8G8_B8G8 ,   DXGI_FORMAT_G8R8_G8B8_UNORM },
@@ -206,6 +206,17 @@ Ivector2 CD3D11Texture2D::GetTextureSize() const
 	return Ivector2(m_TextureDesc.Width, m_TextureDesc.Height);
 }
 
+void CD3D11Texture2D::GetTextureDesc( TextureDesc* pTextureDesc )
+{
+	R_ASSERT(pTextureDesc);
+	*pTextureDesc = m_TextureDesc;
+}
+
+ID3D11Texture2D* CD3D11Texture2D::GetDXObj()
+{
+	return m_pTexture;
+}
+
 EResourceType CD3D11Texture2D::GetType()
 {
 	return eResourceTexture2D;
@@ -232,6 +243,12 @@ void CD3D11Texture2D::GetDesc(TextureDesc* pTextureDesc)
 {
 	R_ASSERT(pTextureDesc);
 	*pTextureDesc = m_TextureDesc;
+}
+
+void CD3D11Texture2D::QueryShaderResourceView(void** ppSRV)
+{
+	R_ASSERT(ppSRV);
+	*ppSRV = m_pTextureSRV;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,7 +344,7 @@ bool CD3D11Texture3D::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect*
 	HRESULT hr = pImmediateContext->Map(m_pTexture, D3D11CalcSubresource(Level, 0, 0), GetD3D11Map(Flags), 0, &mappedSubresource);
 	if (FAILED(hr))
 	{
-		Msg("CD3D11Texture3D::Lock: Failed to lock texture. DirectX Error: %s", Debug.error2string(hr));
+		Msg("! CD3D11Texture3D::Lock: Failed to lock texture. DirectX Error: %s", Debug.error2string(hr));
 		return false;
 	}
 
@@ -394,4 +411,10 @@ void CD3D11Texture3D::GetDesc(TextureDesc* pTextureDesc)
 {
 	R_ASSERT(pTextureDesc);
 	*pTextureDesc = m_TextureDesc;
+}
+
+void CD3D11Texture3D::QueryShaderResourceView(void** ppSRV)
+{
+	R_ASSERT(ppSRV);
+	*ppSRV = m_pTextureSRV;
 }

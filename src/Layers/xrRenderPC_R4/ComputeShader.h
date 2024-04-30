@@ -24,7 +24,7 @@ private:
 		ref_ctable				ctable,
 		xr_vector<ID3D11SamplerState*>&			Samplers,
 		xr_vector<ID3D11ShaderResourceView*>&	Textures,
-		xr_vector<ID3D11UnorderedAccessView*>&	Outputs
+		xr_vector<IRHIUnorderedAccessView*>&	Outputs
 	);
 
 private:
@@ -32,7 +32,7 @@ private:
 	ref_ctable				m_ctable;
 	xr_vector<ID3D11SamplerState*>			m_Samplers;
 	xr_vector<ID3D11ShaderResourceView*>	m_Textures;
-	xr_vector<ID3D11UnorderedAccessView*>	m_Outputs;
+	xr_vector<IRHIUnorderedAccessView*>	m_Outputs;
 }; // class ComputeShader
 
 #endif // #ifndef COMPUTESHADER_H_INCLUDED

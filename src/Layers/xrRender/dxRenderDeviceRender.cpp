@@ -372,13 +372,18 @@ void dxRenderDeviceRender::Begin()
 void dxRenderDeviceRender::Clear()
 {
 #ifdef USE_DX11
-	RContext->ClearDepthStencilView(RCache.get_ZB(), 
-		D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
+	ClearData ClearDepth = {};
+	ClearDepth.Depth = 1.0f;
+	ClearDepth.Stencil = 0;
+
+#pragma todo("ForserX: TODO !!! ClearRenderTarget/ClearDepthStencil")
+	g_RenderRHI->Clear(eClearDepth, RCache.get_ZB(), ClearDepth);
+	g_RenderRHI->Clear(eClearStencil, RCache.get_ZB(), ClearDepth);
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
-		FLOAT ColorRGBA[4] = {0.0f,0.0f,0.0f,0.0f};
-		RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+		ClearData ColorRGBA = {0.0f,0.0f,0.0f,0.0f};
+		g_RenderRHI->Clear(eClearTarget, RCache.get_RT(), ColorRGBA);
 	}
 #else //USE_DX11
 	CHK_DX(RDevice->Clear(0,0,
@@ -442,8 +447,8 @@ void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()
 void dxRenderDeviceRender::ClearTarget()
 {
 #ifdef USE_DX11
-	FLOAT ColorRGBA[4] = {0.0f,0.0f,0.0f,0.0f};
-	RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+	ClearData ColorRGBA = { 0.0f,0.0f,0.0f,0.0f };
+	g_RenderRHI->Clear( eClearTarget, RCache.get_RT(), ColorRGBA );
 #else //USE_DX11
 	CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(0,0,0), 1, 0));
 #endif

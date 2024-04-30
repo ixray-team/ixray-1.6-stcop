@@ -82,5 +82,5 @@ void CRenderTarget::phase_fxaa()
 
     // Resolve RT
     ref_rt& dest_rt = rt_Color;
-    RContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
+    g_RenderRHI->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
 }

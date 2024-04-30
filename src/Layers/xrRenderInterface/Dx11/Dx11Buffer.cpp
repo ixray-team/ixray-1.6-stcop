@@ -78,7 +78,7 @@ bool CD3D11Buffer::Lock(u32 OffsetToLock, u32 SizeToLock, void** ppbData, eLockT
 	HRESULT hr = pImmediateContext->Map(m_pBuffer, 0, GetD3D11Map(Flags), 0, &mappedSubresource);
 	if (FAILED(hr))
 	{
-		Msg("CD3D11Buffer::Lock: Failed to lock buffer. DirectX Error: %s", Debug.error2string(hr));
+		Msg("! CD3D11Buffer::Lock: Failed to lock buffer. DirectX Error: %s", Debug.error2string(hr));
 		return false;
 	}
 

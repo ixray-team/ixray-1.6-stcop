@@ -634,6 +634,11 @@ void CD3D9Texture::GetDesc(TextureDesc* pTextureDesc)
 	*pTextureDesc = m_TextureDesc;
 }
 
+void CD3D9Texture::QueryShaderResourceView(void** ppSRV)
+{
+	R_ASSERT(0);
+}
+
 //---------------------------------------------------------------------------------------
 
 CD3D9Surface::CD3D9Surface(IDirect3DSurface9* pSurfaceAPI) :
@@ -689,6 +694,11 @@ bool CD3D9Surface::UnlockRect()
 	}
 
 	return true;
+}
+
+void CD3D9Surface::GetAPIData(SRHIAPIData* pAPIData)
+{
+	R_ASSERT(0);
 }
 
 EResourceType CD3D9Surface::GetType()
@@ -861,6 +871,11 @@ void CD3D9VolumeTexture::GetAPIData(SRHIAPIData* pAPIData)
 void CD3D9VolumeTexture::GetDesc(TextureDesc* pTextureDesc)
 {
 	VERIFY(!"ConvertTextureFormat didn't find appropriate dx9 texture format!");
+}
+
+void CD3D9VolumeTexture::QueryShaderResourceView(void** ppSRV)
+{
+	R_ASSERT(0);
 }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //

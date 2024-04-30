@@ -29,14 +29,19 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	}
 	else
 	{
+		SRHIAPIData apidata = {};
+		zb->GetAPIData(&apidata);
+
+		ID3D11DepthStencilView* pAPIZB = (ID3D11DepthStencilView*)apidata.pDSV;
+
 		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
-		zb->GetDesc(&desc);
+		pAPIZB->GetDesc(&desc);
 
 		VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
 
 		ID3DResource* pRes;
 
-		zb->GetResource(&pRes);
+		pAPIZB->GetResource(&pRes);
 
 		ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
 
@@ -66,13 +71,18 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, IRHIDepthSten
 	}
 	else
 	{
+		SRHIAPIData apidata = {};
+		zb->GetAPIData(&apidata);
+
+		ID3D11DepthStencilView* pAPIZB = (ID3D11DepthStencilView*)apidata.pDSV;
+
 		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
-		zb->GetDesc(&desc);
+		pAPIZB->GetDesc(&desc);
 		VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
 
 		ID3DResource *pRes;
 
-		zb->GetResource( &pRes);
+		pAPIZB->GetResource( &pRes);
 
 		ID3DTexture2D *pTex = (ID3DTexture2D *)pRes;
 
@@ -744,7 +754,7 @@ CRenderTarget::CRenderTarget		()
 				}
 			}
 
-			R_CHK(RDevice->CreateTexture3D(&desc, &subData, &t_material_surf));
+			R_ASSERT(g_RenderRHI->CreateAPITexture3D(&desc, &subData));
 			t_material					= dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			t_material->surface_set		(t_material_surf);
 		}

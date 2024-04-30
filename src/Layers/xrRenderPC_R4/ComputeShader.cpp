@@ -12,7 +12,7 @@ void ComputeShader::Construct(
 	ref_ctable				ctable,
 	xr_vector<ID3D11SamplerState*>&			Samplers,
 	xr_vector<ID3D11ShaderResourceView*>&	Textures,
-	xr_vector<ID3D11UnorderedAccessView*>&	Outputs
+	xr_vector<IRHIUnorderedAccessView*>&	Outputs
 	)
 {
 	m_cs = cs;
@@ -90,7 +90,8 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 	if (!m_Outputs.empty())
 	{
 		UINT num = 0;
-		RContext->CSSetUnorderedAccessViews(0, (u32)m_Outputs.size(), &m_Outputs[0], &num);
+#pragma todo("ForserX: TODO !!!")
+		//RContext->CSSetUnorderedAccessViews(0, (u32)m_Outputs.size(), &m_Outputs[0], &num);
 	}
 
 	RContext->Dispatch(dimx, dimy, dimz);

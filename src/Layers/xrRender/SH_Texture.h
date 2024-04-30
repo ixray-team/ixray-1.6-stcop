@@ -58,9 +58,6 @@ public:
 #endif //USE_DX11
 
 private:
-	IC BOOL								desc_valid		()		{ return pSurface==desc_cache; }
-	IC void								desc_enshure	()		{ if (!desc_valid()) desc_update(); }
-	void								desc_update		();
 #ifdef USE_DX11
 	void								Apply			(u32 dwStage);
 	void								ProcessStaging();
@@ -94,11 +91,9 @@ public:	//	Public class members (must be encapsulated furthur)
 
 private:
 	IRHITexture*					pSurface;
+
 	// Sequence data
 	xr_vector<IRHITexture*>			seqDATA;
-
-	// Description
-	IRHITexture*					desc_cache;
 
 #ifdef USE_DX11
 	ID3DShaderResourceView*			m_pSRView;

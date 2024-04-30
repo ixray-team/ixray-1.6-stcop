@@ -13,20 +13,9 @@ void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 	//	TODO: DX9:	Full clear must be faster for the near phase for SLI
 	//	inobody clears this buffer _this_ frame.
 	// Clear
-	//if (SE_SUN_NEAR==sub_phase)			{
-		// optimized clear
-	//	D3DRECT		R;
-	//	R.x1		= L->X.D.minX;
-	//	R.x2		= L->X.D.maxX;
-	//	R.y1		= L->X.D.minY;
-	//	R.y2		= L->X.D.maxY;
-	//	CHK_DX							(RDevice->Clear( 1L, &R,	  D3DCLEAR_ZBUFFER,	0xFFFFFFFF, 1.0f, 0L));
-	//} else {
-		// full-clear
-	//	CHK_DX							(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xFFFFFFFF, 1.0f, 0L));
-	//}
-
-	RContext->ClearDepthStencilView(rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+	ClearData ClearDepth = {};
+	ClearDepth.Depth = 1.0f;
+	g_RenderRHI->Clear(eClearDepth, RCache.get_ZB(), ClearDepth);
 
 	//	Prepare viewport for shadow map rendering
 	if (sub_phase!=SE_SUN_RAIN_SMAP	)
@@ -60,11 +49,12 @@ void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 void	CRenderTarget::phase_smap_direct_tsh	(light* L, u32 sub_phase)
 {
 	VERIFY								(RImplementation.o.Tshadows);
-	//u32		_clr						= 0xffffffff;	//color_rgba(127,127,12,12);
-	FLOAT ColorRGBA[4] = { 1.0f, 1.0f, 1.0f, 1.0f};
+
 	RCache.set_ColorWriteEnable			();
+
 	//	Prepare viewport for shadow map rendering
 	RImplementation.rmNormal();
-	RContext->ClearRenderTargetView( RCache.get_RT(0), ColorRGBA);
-	//CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_TARGET,	_clr,	1.0f, 0L));
+	
+	ClearData ColorRGBA = { 1.0f, 1.0f, 1.0f, 1.0f };
+	g_RenderRHI->Clear(eClearTarget, RCache.get_RT(), ColorRGBA);
 }

@@ -20,6 +20,9 @@ private:
 	EResourceType GetType() override;
 	bool LockRect(LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) override;
 	bool UnlockRect() override;
+
+	// Inherited via IRHIDepthStencilView
+	void GetAPIData(SRHIAPIData* pAPIData) override;
 };
 
 class CD3D9Texture : public IRHITexture
@@ -62,6 +65,9 @@ private:
 
 	// Inherited via IRHITexture
 	void GetDesc(TextureDesc* pTextureDesc) override;
+
+	// Inherited via IRHITexture
+	void QueryShaderResourceView(void** ppSRV) override;
 };
 
 class CD3D9VolumeTexture : public IRHIVolumeTexture
@@ -93,5 +99,9 @@ public:
 
 private:
 	IDirect3DVolumeTexture9* m_pVolumeTexture;
+
+
+	// Inherited via IRHIVolumeTexture
+	void QueryShaderResourceView(void** ppSRV) override;
 
 };

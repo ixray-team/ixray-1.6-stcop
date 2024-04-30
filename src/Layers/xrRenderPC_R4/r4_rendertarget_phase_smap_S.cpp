@@ -8,7 +8,9 @@ void	CRenderTarget::phase_smap_spot_clear()
 	CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 	*/
 
-	RContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+	ClearData clearData = {};
+	clearData.Depth = 1.0f;
+	g_RenderRHI->Clear( eClearDepth, rt_smap_depth->pZRT, clearData );
 }
 
 void	CRenderTarget::phase_smap_spot		(light* L)
@@ -40,9 +42,8 @@ void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 	RCache.set_ColorWriteEnable		();
 	if (IRender_Light::OMNIPART == L->flags.type)	{
 		// omni-part
-		//CHK_DX							(RDevice->Clear( 0L, nullptr, D3DCLEAR_TARGET,	0xffffffff,	1.0f, 0L));
-		FLOAT ColorRGBA[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-		RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+		ClearData ColorRGBA = {1.0f, 1.0f, 1.0f, 1.0f};
+		g_RenderRHI->Clear( eClearTarget, RCache.get_RT(), ColorRGBA );
 	} else {
 		// real-spot
 		// Select color-mask

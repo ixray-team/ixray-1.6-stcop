@@ -18,3 +18,4 @@ void ClearD3D11(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data);
 
 class IRHISurface;
 IRHISurface* CreateOffscreenPlainSurfaceD3D11(u32 Width, u32 Height, ERHITextureFormat Format, bool DefaultPool);
+IRHISurface* CreateRenderTargetViewD3D11(IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc);

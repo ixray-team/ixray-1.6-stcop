@@ -6,6 +6,7 @@ class CD3D11Surface : public IRHISurface
 public:
 	CD3D11Surface();
 	CD3D11Surface(ID3D11RenderTargetView* pSurfaceAPI);
+	CD3D11Surface(ID3D11RenderTargetView* pSurfaceAPI, ID3D11ShaderResourceView* pSRV);
 	~CD3D11Surface();
 
 	void Create(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard);
@@ -17,10 +18,15 @@ public:
 
 	ID3D11RenderTargetView* GetDXObj();
 
+	// Inherited via IRHIDepthStencilView
+	void GetAPIData(SRHIAPIData* pAPIData) override;
+
 private:
 	ID3D11Texture2D*			m_RenderTargetTexture;
 	ID3D11RenderTargetView*		m_RenderTargetView;
 	ID3D11ShaderResourceView*	m_ShaderResourceView;
+
+	bool						m_ManuallyCreated;
 
 	//ID3D11DepthStencilView* m_DepthStencilView;
 };

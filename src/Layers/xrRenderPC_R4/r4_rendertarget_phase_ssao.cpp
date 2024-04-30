@@ -13,8 +13,8 @@ void CRenderTarget::phase_ssao	()
 {
 	u32	Offset	= 0;
 
-	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	RContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
+	ClearData ColorRGBA = { 0.0f, 0.0f, 0.0f, 0.0f };
+	g_RenderRHI->Clear(eClearTarget, rt_ssao_temp->pRT, ColorRGBA);
 	
 	// low/hi RTs
 	u_setrt(rt_ssao_temp, 0, 0, 0/*RDepth*/);
@@ -75,17 +75,13 @@ void CRenderTarget::phase_ssao	()
 void CRenderTarget::phase_downsamp	()
 {
 	// DON'T DO THIS!!!
-	//IDirect3DSurface9 *source, *dest;
-	//rt_Position->pSurface->GetSurfaceLevel(0, &source);
-	//rt_half_depth->pSurface->GetSurfaceLevel(0, &dest);
-	//RDevice->StretchRect(source, nullptr, dest, nullptr, D3DTEXF_POINT);
-
-	//Fvector2	p0,p1;
 	u32			Offset = 0;
 
     u_setrt( rt_half_depth,0,0,0/*RDepth*/ );
-	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    RContext->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
+
+	ClearData ColorRGBA = { 0.0f, 0.0f, 0.0f, 0.0f };
+	g_RenderRHI->Clear(eClearTarget, rt_half_depth->pRT, ColorRGBA);
+
 	u32 w = (u32)RCache.get_width();
 	u32 h = (u32)RCache.get_height();
 

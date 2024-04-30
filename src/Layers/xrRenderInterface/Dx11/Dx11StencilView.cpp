@@ -17,3 +17,11 @@ ID3D11DepthStencilView* CD3D11DepthStencilView::GetDXObj()
 void CD3D11DepthStencilView::SetActive()
 {
 }
+
+void CD3D11DepthStencilView::GetAPIData(SRHIAPIData* pAPIData)
+{
+	if (pAPIData)
+	{
+		pAPIData->pDSV = m_pStencilView;
+	}
+}

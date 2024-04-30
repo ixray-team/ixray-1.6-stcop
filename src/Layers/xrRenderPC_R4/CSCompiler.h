@@ -33,7 +33,7 @@ private:
 	R_constant_table		m_constants;
 	xr_vector<ID3D11SamplerState*>			m_Samplers;
 	xr_vector<ID3D11ShaderResourceView*>	m_Textures;
-	xr_vector<ID3D11UnorderedAccessView*>	m_Outputs;
+	xr_vector<IRHIUnorderedAccessView*>		m_Outputs;
 }; // class CSCompiler
 
 #endif // #ifndef CSCOMPILER_H_INCLUDED

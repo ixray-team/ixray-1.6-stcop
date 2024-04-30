@@ -20,7 +20,7 @@ public:
 	IRHISurface*			pRT;
 	IRHIDepthStencilView*	pZRT;
 #ifdef USE_DX11
-	ID3D11UnorderedAccessView*	pUAView;
+	IRHIUnorderedAccessView*pUAView;
 #endif //USE_DX11
 	ref_texture				pTexture;
 
