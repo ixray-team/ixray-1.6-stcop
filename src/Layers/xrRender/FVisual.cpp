@@ -143,7 +143,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 #ifdef USE_DX11
 			VERIFY				(nullptr==p_rm_Vertices);
-			R_CHK				(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
+			R_ASSERT			(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
 #else //USE_DX11
 			BOOL	bSoft		= Caps.geometry.bSoftware;
 			u32		dwUsage		= D3DUSAGE_WRITEONLY | (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);
@@ -187,7 +187,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 #ifdef USE_DX11
 			VERIFY				(nullptr==p_rm_Indices);
-			R_CHK				(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
+			R_ASSERT			(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
 #else //USE_DX11
 			BOOL	bSoft		= Caps.geometry.bSoftware;
 			u32		dwUsage		= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// indices are read in model-wallmarks code
