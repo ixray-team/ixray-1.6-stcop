@@ -111,14 +111,14 @@ void* CRender_RHI::GetSwapchain()
     return HWSwapchain;
 }
 
-IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size )
+IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch )
 {
     switch (API)
     {
     case APILevel::DX9:
-        return CreateD3D9Texture( pTextureDesc, pData, size );
+        return CreateD3D9Texture( pTextureDesc, pData, Size, Pitch );
     case APILevel::DX11:
-        break;
+        return CreateD3D11Texture( pTextureDesc, pData, Size, Pitch );
     }
 
     return nullptr;

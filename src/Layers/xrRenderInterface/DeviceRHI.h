@@ -37,7 +37,7 @@ public:
 	virtual void* GetSwapchainTexture();
 	virtual void* GetSwapchain();
 
-	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size ) override;
+	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch ) override;
 	IRHIBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 
 	// Унаследовано через IRender_RHI

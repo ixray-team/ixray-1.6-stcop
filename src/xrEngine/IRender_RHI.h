@@ -30,6 +30,15 @@ enum eBufferType
 	eConstantBuffer
 };
 
+enum ETextureFlags
+{
+	eTextureDefault			= 1 << 0, 
+	eTextureRenderTarget	= 1 << 1,
+	eTextureDepthStencil	= 1 << 2, 
+	eTextureDynamic			= 1 << 3, 
+	eTextureScratch			= 1 << 4, 
+};
+
 enum PixelFormat
 {
 	FMT_UNKNOWN,
@@ -45,7 +54,6 @@ enum PixelFormat
 	FMT_R32G32B32FA32F,
 
 	// Depth formats
-	FMT_DEPTH24,
 	FMT_DEPTH24_STENCIL8,
 	FMT_DEPTH32,
 	FMT_DEPTH32F
@@ -53,12 +61,13 @@ enum PixelFormat
 
 struct TextureDesc
 {
-	s32 width;
-	s32 height;
-	s32 depthOrSliceNum;
-	eUsage usage;
-	PixelFormat format;
-	bool numMips;
+	u32 Width;
+	u32 Height;
+	u32 DepthOrSliceNum;
+	eUsage Usage;
+	PixelFormat Format;
+	u32 TextureFlags;
+	bool NumMips;
 };
 
 typedef struct LOCKED_RECT {
@@ -150,7 +159,7 @@ public:
 	virtual void FillModes() = 0;
 	virtual int GetFeatureLevel() = 0;
 
-	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int size ) = 0;
+	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch ) = 0;
 	virtual IRHIBuffer* CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
 
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;

@@ -2,13 +2,13 @@
 #include "Dx9API.h"
 #include <d3d9.h>
 
-class CRenderTextureDX9 : public IRHITexture
+class CD3D9Texture : public IRHITexture
 {
 public:
-	CRenderTextureDX9();
-	~CRenderTextureDX9();
+	CD3D9Texture();
+	~CD3D9Texture();
 
-	HRESULT Create(const TextureDesc* pTextureDesc, const void* pData, const int size);
+	HRESULT Create(const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch);
 
 	bool LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags) override;
 	bool UnlockRect(u32 Level) override;
@@ -20,13 +20,13 @@ private:
 	TextureDesc m_textureDesc;
 };
 
-CRenderTextureDX9::CRenderTextureDX9() :
+CD3D9Texture::CD3D9Texture() :
 	m_pTexture( nullptr )
 {
 	memset(&m_textureDesc, 0, sizeof(m_textureDesc));
 }
 
-CRenderTextureDX9::~CRenderTextureDX9()
+CD3D9Texture::~CD3D9Texture()
 {
 	if (m_pTexture)
 	{
@@ -35,7 +35,7 @@ CRenderTextureDX9::~CRenderTextureDX9()
 	}
 }
 
-HRESULT CRenderTextureDX9::Create( const TextureDesc* pTextureDesc, const void* pData, const int size )
+HRESULT CD3D9Texture::Create( const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch )
 {
 	R_ASSERT( pTextureDesc );
 
@@ -45,9 +45,9 @@ HRESULT CRenderTextureDX9::Create( const TextureDesc* pTextureDesc, const void* 
 	R_ASSERT( pDevice );
 
 	HRESULT hr = pDevice->CreateTexture( 
-		pTextureDesc->width, 
-		pTextureDesc->height,
-		pTextureDesc->numMips,
+		pTextureDesc->Width, 
+		pTextureDesc->Height,
+		pTextureDesc->NumMips,
 		0,
 		D3DFMT_A8R8G8B8,
 		D3DPOOL_MANAGED,
@@ -60,12 +60,12 @@ HRESULT CRenderTextureDX9::Create( const TextureDesc* pTextureDesc, const void* 
 		return hr;
 	}
 
-	SetData( pData, size );
+	SetData( pData, Size );
 
 	return S_OK;
 }
 
-bool CRenderTextureDX9::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
+bool CD3D9Texture::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
 {
 	R_ASSERT( m_pTexture );
 
@@ -87,7 +87,7 @@ bool CRenderTextureDX9::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irec
 	return true;
 }
 
-bool CRenderTextureDX9::UnlockRect(u32 Level)
+bool CD3D9Texture::UnlockRect(u32 Level)
 {
 	HRESULT hr = m_pTexture->UnlockRect(Level);
 	if (FAILED(hr))
@@ -99,7 +99,7 @@ bool CRenderTextureDX9::UnlockRect(u32 Level)
 	return true;
 }
 
-void CRenderTextureDX9::SetData(const void* pData, const int size)
+void CD3D9Texture::SetData(const void* pData, const int size)
 {
 	if (!pData)
 		return;
@@ -111,9 +111,9 @@ void CRenderTextureDX9::SetData(const void* pData, const int size)
 
 	// #TODO: Properly format pitch calc
 	int pitchSize = 0;
-	if (m_textureDesc.format == FMT_R8G8B8)
+	if (m_textureDesc.Format == FMT_R8G8B8)
 		pitchSize = 3;
-	else if (m_textureDesc.format == FMT_R8G8B8A8)
+	else if (m_textureDesc.Format == FMT_R8G8B8A8)
 		pitchSize = 4;
 
 	// lock rect
@@ -122,17 +122,19 @@ void CRenderTextureDX9::SetData(const void* pData, const int size)
 	{
 		// copy image data
 		uint8_t* textureData = (uint8_t*)lockRect.pBits;
-		memcpy(textureData, pData, m_textureDesc.width * m_textureDesc.height * pitchSize);
+		memcpy(textureData, pData, m_textureDesc.Width * m_textureDesc.Height * pitchSize);
 
 		this->UnlockRect(0);
 	}
 }
 
-IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* pData, const int size)
+IRHITexture* CreateD3D9Texture(const TextureDesc* pTextureDesc, const void* pData, const int Size, const int Pitch)
 {
-	CRenderTextureDX9* pTexture = new CRenderTextureDX9();
-	
-	R_CHK( pTexture->Create( pTextureDesc, pData, size ) );
+	CD3D9Texture* pTexture = new CD3D9Texture();
+
+	R_CHK( pTexture->Create( pTextureDesc, pData, Size, Pitch ) );
+
+	pTexture->AddRef();
 
 	return pTexture;
 }
