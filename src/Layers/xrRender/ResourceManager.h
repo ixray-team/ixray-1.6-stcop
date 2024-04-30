@@ -42,19 +42,13 @@ public:
 	using map_RT = xr_map<const char*, CRT*, str_pred>;
 	using map_RTIt = map_RT::iterator;
 
-	// DX10 cut
-	//using map_RTC = xr_map<const char*, CRTC*, str_pred>;
-	//using map_RTCIt = map_RTC::iterator;
-
 	using map_VS = xr_map<const char*, SVS*, str_pred>;
 	using map_VSIt = map_VS::iterator;
 
 #ifdef USE_DX11
 	using map_GS = xr_map<const char*, SGS*, str_pred>;
 	using map_GSIt = map_GS::iterator;
-#endif
 
-#ifdef USE_DX11
 	using map_HS = xr_map<const char*, SHS*, str_pred>;
 	using map_HSIt = map_HS::iterator;
 
@@ -127,7 +121,6 @@ public:
 	IBlender* 						_FindBlender		(LPCSTR Name);
 	void							_GetMemoryUsage		(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
 	void							_DumpMemoryUsage	();
-//.	BOOL							_GetDetailTexture	(LPCSTR Name, LPCSTR& T, R_constant_setup* &M);
 
 	map_Blender&					_GetBlenders		()		{	return m_blenders;	}
 
@@ -174,9 +167,7 @@ public:
 #ifdef USE_DX11
 	SGS*							_CreateGS			(LPCSTR Name);
 	void							_DeleteGS			(const SGS*	GS	);
-#endif //USE_DX11
 
-#ifdef USE_DX11
 	SHS*							_CreateHS			(LPCSTR Name);
 	void							_DeleteHS			(const SHS*	HS	);
 
