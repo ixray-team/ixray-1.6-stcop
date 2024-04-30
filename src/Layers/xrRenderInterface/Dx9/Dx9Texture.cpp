@@ -13,6 +13,7 @@ struct DX9TextureFormatPairs
 static DX9TextureFormatPairs TextureFormatList[] =
 {
 	{UNKNOWN, D3DFMT_UNKNOWN,		},
+	{R8G8B8, D3DFMT_R8G8B8,		},
 	{A8R8G8B8, D3DFMT_A8R8G8B8,		},
 	{R5G6B5, D3DFMT_R5G6B5,		},
 	{A8B8G8R8, D3DFMT_A8B8G8R8,		},
@@ -68,12 +69,14 @@ HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, const void* pData,
 	IDirect3DDevice9* pDevice = (IDirect3DDevice9*)HWRenderDevice;
 	R_ASSERT(pDevice);
 
+	D3DFORMAT Format = ConvertTextureFormat(pTextureDesc->Format);
+
 	HRESULT hr = pDevice->CreateTexture(
 		pTextureDesc->Width,
 		pTextureDesc->Height,
 		pTextureDesc->NumMips,
 		pTextureDesc->Usage,
-		D3DFMT_A8R8G8B8,
+		Format,
 		pTextureDesc->DefaultPool ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED,
 		&m_pTexture,
 		NULL);
@@ -135,9 +138,9 @@ void CD3D9Texture::SetData(const void* pData, const int size)
 
 	// #TODO: Properly format pitch calc
 	int pitchSize = 0;
-	if (m_textureDesc.Format == FMT_R8G8B8)
+	if (m_textureDesc.Format == R8G8B8)
 		pitchSize = 3;
-	else if (m_textureDesc.Format == FMT_R8G8B8A8)
+	else if (m_textureDesc.Format == A8R8G8B8)
 		pitchSize = 4;
 
 	// lock rect

@@ -1,4 +1,5 @@
 #pragma once
+#include "../Layers/xrRenderInterface/TextureFormat.h"
 
 enum eUsage
 {
@@ -39,33 +40,13 @@ enum ETextureFlags
 	eTextureScratch			= 1 << 4, 
 };
 
-enum PixelFormat
-{
-	FMT_UNKNOWN,
-
-	// Unsigned
-	FMT_R8G8B8,
-	FMT_R8G8B8A8,
-
-	// Float
-	FMT_R16G16B16F,
-	FMT_R16G16B16FA16F,
-	FMT_R32G32B32F,
-	FMT_R32G32B32FA32F,
-
-	// Depth formats
-	FMT_DEPTH24_STENCIL8,
-	FMT_DEPTH32,
-	FMT_DEPTH32F
-};
-
 struct TextureDesc
 {
 	u32 Width;
 	u32 Height;
 	u32 DepthOrSliceNum;
 	eUsage Usage;
-	PixelFormat Format;
+	ERHITextureFormat Format;
 	u32 TextureFlags;
 	bool NumMips;
 	bool DefaultPool;

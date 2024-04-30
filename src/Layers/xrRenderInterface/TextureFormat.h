@@ -3,9 +3,12 @@
 enum ERHITextureFormat
 {
 	UNKNOWN,
+
+	R8G8B8,
 	A8R8G8B8,
-	R5G6B5,
 	A8B8G8R8,
+
+	R5G6B5,
 	G16R16,
 	A16B16G16R16,
 	L8,

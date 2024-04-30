@@ -106,31 +106,6 @@ inline DXGI_FORMAT ConvertToTypelessFmt(DXGI_FORMAT fmt)
 	}
 }
 
-inline DXGI_FORMAT GetDxgiFormat(PixelFormat format)
-{
-	switch (format)
-	{
-	case FMT_R16G16B16FA16F:
-		return DXGI_FORMAT_R16G16B16A16_FLOAT;
-	case FMT_DEPTH24_STENCIL8:
-		return DXGI_FORMAT_D24_UNORM_S8_UINT;
-	case FMT_DEPTH32:
-		return DXGI_FORMAT_D32_FLOAT;
-	case FMT_R8G8B8:
-		return DXGI_FORMAT_R8G8B8A8_UNORM;
-	case FMT_R8G8B8A8:
-		return DXGI_FORMAT_R8G8B8A8_UNORM;
-	case FMT_R32G32B32FA32F:
-		return DXGI_FORMAT_R32G32B32A32_FLOAT;
-	default:
-		break;
-	}
-
-	R_ASSERT2(0, "Unknowed image format passed");
-
-	return DXGI_FORMAT_UNKNOWN;
-}
-
 inline size_t BitsPerPixel(DXGI_FORMAT fmt)
 {
 	switch (static_cast<int>(fmt))

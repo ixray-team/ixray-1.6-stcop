@@ -17,6 +17,7 @@ static DX11TextureFormatPairs TextureFormatList[] =
 {
 	{UNKNOWN,        DXGI_FORMAT_UNKNOWN},
 	{A8R8G8B8,       DXGI_FORMAT_R8G8B8A8_UNORM},
+	{R8G8B8,		 DXGI_FORMAT_R8G8B8A8_UNORM		},
 	{R5G6B5,         DXGI_FORMAT_R8G8B8A8_UNORM},
 	{A8B8G8R8,       DXGI_FORMAT_R8G8B8A8_UNORM},
 	{G16R16,         DXGI_FORMAT_R16G16_UNORM },
@@ -85,7 +86,7 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, const void* pDa
 	d3dTextureDesc.Height = pTextureDesc->Height;
 	d3dTextureDesc.MipLevels = pTextureDesc->NumMips;
 	d3dTextureDesc.ArraySize = pTextureDesc->DepthOrSliceNum;
-	d3dTextureDesc.Format = GetDxgiFormat(pTextureDesc->Format);
+	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
 	d3dTextureDesc.SampleDesc.Count = 1;
 	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
