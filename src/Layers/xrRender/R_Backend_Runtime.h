@@ -38,10 +38,9 @@ IC	const Fmatrix&	CBackend::get_xform_world	()	{ return xforms.get_W();	}
 IC	const Fmatrix&	CBackend::get_xform_view	()	{ return xforms.get_V();	}
 IC	const Fmatrix&	CBackend::get_xform_project	()	{ return xforms.get_P();	}
 
-IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
+IC	IRHISurface* CBackend::get_RT(u32 ID)
 {
 	VERIFY((ID>=0)&&(ID<4));
-
 	return pRT[ID];
 }
 

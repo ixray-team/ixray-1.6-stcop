@@ -8,14 +8,14 @@ IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M_)
 	CHK_DX				(RDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID,(D3DMATRIX*)&M_));
 }
 
-IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
+IC void CBackend::set_RT(IRHISurface* RT, u32 ID)
 {
 	if (RT!=pRT[ID])
 	{
 		PGO				(Msg("PGO:setRT"));
 		stat.target_rt	++;
 		pRT[ID]			= RT;
-		CHK_DX			(RDevice->SetRenderTarget(ID,RT));
+		g_RenderRHI->SetRenderTarget(ID, RT);
 	}
 }
 

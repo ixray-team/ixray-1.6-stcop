@@ -182,3 +182,34 @@ u32 CD3D9Texture::GetLevelCount()
 {
 	return m_pTexture->GetLevelCount();
 }
+
+bool CD3D9Texture::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
+{
+	IDirect3DSurface9* pSurfaceAPI = nullptr;
+	R_CHK( m_pTexture->GetSurfaceLevel( 0, &pSurfaceAPI ) );
+
+	CD3D9Surface* pSurfaceRHI = new CD3D9Surface(pSurfaceAPI);
+	pSurfaceRHI->AddRef();
+	return pSurfaceRHI;
+}
+
+//---------------------------------------------------------------------------------------
+
+CD3D9Surface::CD3D9Surface(IDirect3DSurface9* pSurfaceAPI) :
+	m_pSurfaceAPI(pSurfaceAPI)
+{
+}
+
+CD3D9Surface::~CD3D9Surface()
+{
+}
+
+IDirect3DSurface9* CD3D9Surface::GetD3D9SurfaceObject()
+{
+	return m_pSurfaceAPI;
+}
+
+EResourceType CD3D9Surface::GetType()
+{
+	return eResourceUnknown;
+}

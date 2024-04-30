@@ -50,6 +50,10 @@ public:
 public:
 	int GetFeatureLevel();
 
+
+	// Inherited via IRender_RHI
+	void SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget) override;
+
 };
 
 extern CRender_RHI g_RenderRHI_Implementation;

@@ -114,6 +114,14 @@ inline u64 IRHIUnknown::Release()
 	return m_RefCount;
 }
 
+class IRHISurface : public IRHIUnknown
+{
+public:
+	virtual ~IRHISurface() = default;
+};
+
+typedef IRHISurface* LPIRHISURFACE;
+
 class IRHITexture : public IRHIUnknown
 {
 public:
@@ -123,6 +131,7 @@ public:
 	virtual bool UnlockRect(u32 Level) = 0;
 	virtual void SetStage(u32 Stage) = 0;
 	virtual u32 GetLevelCount() = 0;
+	virtual bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) = 0;
 };
 
 typedef IRHITexture* LPIRHITEXTURE;
@@ -173,6 +182,8 @@ public:
 
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
 	virtual void SetIndexBuffer( IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset ) = 0;
+
+	virtual void SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget) = 0;
 
 	virtual ERHITextureFormat GetRHIFormatFromAPI( int dxgiFormat ) = 0;
 };

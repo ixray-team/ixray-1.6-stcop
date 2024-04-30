@@ -17,7 +17,7 @@ public:
 
 public:
 	IRHITexture*			pSurface;
-	ID3DRenderTargetView*	pRT;
+	IRHISurface*			pRT;
 #ifdef USE_DX11
 	ID3DDepthStencilView*	pZRT;
 	ID3D11UnorderedAccessView*	pUAView;

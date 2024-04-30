@@ -13,3 +13,5 @@ IRHIBuffer* CreateD3D9Buffer(eBufferType bufferType, const void* pData, u32 Data
 
 void SetVertexBufferD3D9(u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets);
 void SetIndexBufferD3D9(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset);
+
+void SetRenderTargetD3D9(u32 RenderTargetIndex, IRHISurface* pRenderTarget);

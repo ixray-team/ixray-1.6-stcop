@@ -1,5 +1,20 @@
 #pragma once
 
+class CD3D9Surface : public IRHISurface
+{
+public:
+	CD3D9Surface(IDirect3DSurface9* pSurfaceAPI);
+	~CD3D9Surface();
+
+	IDirect3DSurface9* GetD3D9SurfaceObject();
+
+private:
+	IDirect3DSurface9* m_pSurfaceAPI;
+
+	// Inherited via IRHISurface
+	EResourceType GetType() override;
+};
+
 class CD3D9Texture : public IRHITexture
 {
 public:
@@ -23,4 +38,7 @@ private:
 
 	// Inherited via IRHITexture
 	u32 GetLevelCount() override;
+
+	// Inherited via IRHITexture
+	bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) override;
 };

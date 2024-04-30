@@ -165,6 +165,17 @@ void CRender_RHI::SetIndexBuffer(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u
     }
 }
 
+void CRender_RHI::SetRenderTarget(u32 RenderTargetIndex, IRHISurface* pRenderTarget)
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        return SetRenderTargetD3D9(RenderTargetIndex, pRenderTarget);
+   /* case APILevel::DX11:
+        return SetRenderTargetD3D11(RenderTargetIndex, pRenderTarget);*/
+    }
+}
+
 ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
 {
     extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);

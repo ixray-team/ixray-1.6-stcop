@@ -206,3 +206,8 @@ u32 CD3D11Texture2D::GetLevelCount()
 {
 	return m_TextureDesc.NumMips;
 }
+
+bool CD3D11Texture2D::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
+{
+	return false;
+}

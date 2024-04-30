@@ -23,4 +23,7 @@ private:
 
 	// Inherited via IRHITexture
 	u32 GetLevelCount() override;
+
+	// Inherited via IRHITexture
+	bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) override;
 };

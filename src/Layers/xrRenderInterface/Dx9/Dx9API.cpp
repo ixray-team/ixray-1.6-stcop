@@ -58,3 +58,19 @@ void SetIndexBufferD3D9(IRHIBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset
 		R_CHK(pDevice->SetIndices(nullptr));
 	}
 }
+
+void SetRenderTargetD3D9(u32 RenderTargetIndex, IRHISurface* pRenderTarget)
+{
+	IDirect3DDevice9* pDevice = ( IDirect3DDevice9* )HWRenderDevice;
+	R_ASSERT( pDevice );
+
+	if ( pRenderTarget )
+	{
+		CD3D9Surface* pAPISurface = ( CD3D9Surface* )pRenderTarget;
+		pDevice->SetRenderTarget( RenderTargetIndex, pAPISurface->GetD3D9SurfaceObject() );
+	}
+	else
+	{
+		pDevice->SetRenderTarget( RenderTargetIndex, NULL );
+	}
+}
