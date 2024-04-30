@@ -79,6 +79,7 @@ float _sign(const float& v)
 {
 	return (v>0.0f)?+1.0f:-1.0f;
 }
+
 void CUIProgressBar::Update()
 {
 	inherited::Update();
@@ -86,7 +87,15 @@ void CUIProgressBar::Update()
 	if (m_expression.IsCompiled())
 	{
 		ExpressionVarVariadic Result = m_expression.ExecuteExpression();
-		SetProgressPos(Result.Flt);
+
+		if (Result.VarType == ExpressionVarVariadic::EVariadicType::eStr)
+		{
+			Msg("! Error: Using string expression in progressbar!");
+		}
+		else
+		{
+			SetProgressPos(Result.Flt);
+		}
 	}
 
 	if(!fsimilar(m_ProgressPos.x, m_ProgressPos.y))
