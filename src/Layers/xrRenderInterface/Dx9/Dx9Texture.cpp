@@ -32,9 +32,9 @@ HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, const void* pData,
 		pTextureDesc->Width,
 		pTextureDesc->Height,
 		pTextureDesc->NumMips,
-		0,
+		pTextureDesc->Usage,
 		D3DFMT_A8R8G8B8,
-		D3DPOOL_MANAGED,
+		pTextureDesc->DefaultPool ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED,
 		&m_pTexture,
 		NULL);
 

@@ -68,6 +68,7 @@ struct TextureDesc
 	PixelFormat Format;
 	u32 TextureFlags;
 	bool NumMips;
+	bool DefaultPool;
 };
 
 typedef struct LOCKED_RECT {
