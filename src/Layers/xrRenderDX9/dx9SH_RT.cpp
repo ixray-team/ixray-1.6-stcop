@@ -11,7 +11,7 @@ CRT::CRT			()
 	pRT				= nullptr;
 	dwWidth			= 0;
 	dwHeight		= 0;
-	fmt				= D3DFMT_UNKNOWN;
+	fmt				= FMT_UNKNOWN;
 }
 CRT::~CRT			()
 {
@@ -21,7 +21,7 @@ CRT::~CRT			()
 	DEV->_DeleteRT	(this);
 }
 
-void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
+void CRT::create	(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCount )
 {
 	if (pSurface)	return;
 
@@ -43,20 +43,12 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 	if (h>caps.MaxTextureHeight)		return;
 
 	// Select usage
-	u32 usage	= 0;
-	if (D3DFMT_D24X8==fmt)									usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D24S8		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D15S1		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D16			==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D16_LOCKABLE==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if ((D3DFORMAT)MAKEFOURCC('D','F','2','4') == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
-	else													usage = D3DUSAGE_RENDERTARGET;
+	u32 usage = FMT_D24X8 == fmt ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
 
 	// Try to create texture/surface
-	DEV->Evict				();
-	_hr = RDevice->CreateTexture		(w, h, 1, usage, f, D3DPOOL_DEFAULT, &pSurface,nullptr);
+	DEV->Evict();
 
-	if (FAILED(_hr) || (0 == pSurface))
+	if (!RHIUtils::CreateTexture(w, h, 1, usage, f, true, &pSurface, nullptr) || (0 == pSurface))
 	{
 		Msg("Cannot create surface for %s", Name);
 		return;
@@ -93,7 +85,7 @@ void CRT::reset_end		()
 	create		(*cName,dwWidth,dwHeight,fmt);
 }
 
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount )
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCount )
 {
 	_set			(DEV->_CreateRT(Name,w,h,f));
 }
