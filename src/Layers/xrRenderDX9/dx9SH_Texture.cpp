@@ -192,7 +192,6 @@ void CTexture::Load()
 				pTheora->Play(!bstop_at_end, RDEVICE.dwTimeContinual);
 
 				// Now create texture
-				ID3DTexture2D* pTexture = 0;
 				u32 _w = pTheora->Width(false);
 				u32 _h = pTheora->Height(false);
 
@@ -322,11 +321,6 @@ void CTexture::Unload()
 void CTexture::desc_update()
 {
 	desc_cache = pSurface;
-	//if (pSurface && (eResourceTexture == pSurface->GetType()))
-	//{
-	//	ID3DTexture2D* T = (ID3DTexture2D*)pSurface;
-	//	R_CHK(T->GetLevelDesc(0, &desc));
-	//}
 }
 
 void CTexture::video_Play(BOOL looped, u32 _time)

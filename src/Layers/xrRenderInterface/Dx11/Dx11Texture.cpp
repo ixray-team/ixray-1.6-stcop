@@ -198,6 +198,11 @@ void CD3D11Texture2D::SetStage(u32 Stage)
 		pImmediateContext->PSSetShaderResources(Stage, 1, &m_pTextureSRV);
 }
 
+Ivector2 CD3D11Texture2D::GetTextureSize() const
+{
+	return Ivector2();
+}
+
 EResourceType CD3D11Texture2D::GetType()
 {
 	return eResourceTexture;

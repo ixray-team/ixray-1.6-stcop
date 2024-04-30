@@ -32,6 +32,7 @@ public:
 
 	virtual u64 Release();
 	virtual u64 AddRef();
+	virtual Ivector2 GetTextureSize() const override;
 private:
 	IDirect3DTexture9* m_pTexture;
 	TextureDesc m_TextureDesc;

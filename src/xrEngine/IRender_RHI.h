@@ -134,6 +134,8 @@ public:
 	virtual void SetStage(u32 Stage) = 0;
 	virtual u32 GetLevelCount() = 0;
 	virtual bool GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel) = 0;
+
+	virtual Ivector2 GetTextureSize() const = 0;
 };
 
 typedef IRHITexture* LPIRHITEXTURE;

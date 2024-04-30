@@ -40,9 +40,9 @@ public:
 	void								surface_set		(IRHITexture* surf );
 	IRHITexture*						surface_get 	();
 
-	IC BOOL								isUser			()		{ return flags.bUser;					}
-	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
-	IC u32								get_Height		()		{ desc_enshure(); return desc.Height;	}
+	IC BOOL								isUser			()		{ return flags.bUser;				   }
+	IC u32								get_Width		()		{ return pSurface ? pSurface->GetTextureSize().x : 0; }
+	IC u32								get_Height		()		{ return pSurface ? pSurface->GetTextureSize().y : 0; }
 
 	void								video_Sync		(u32 _time){m_play_time=_time;}
 	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);
@@ -99,7 +99,6 @@ private:
 
 	// Description
 	IRHITexture*					desc_cache;
-	D3D_TEXTURE2D_DESC					desc;
 
 #ifdef USE_DX11
 	ID3DShaderResourceView*			m_pSRView;

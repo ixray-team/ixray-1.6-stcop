@@ -276,6 +276,14 @@ CD3D9Texture::~CD3D9Texture()
 	}
 }
 
+Ivector2 CD3D9Texture::GetTextureSize() const
+{
+	D3DSURFACE_DESC desc;
+	m_pTexture->GetLevelDesc(0, &desc);
+
+	return { (int)desc.Width , (int)desc.Height };
+}
+
 HRESULT CD3D9Texture::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
 {
 	R_ASSERT(pTextureDesc);
