@@ -1211,7 +1211,7 @@ HRESULT	CRender::shader_compile			(
 				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 				file->w_u32(crc);
 				file->w_u32(RealCodeCRC);
-				file->w(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+				file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
 				FS.w_close				(file);
 			}
 			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
