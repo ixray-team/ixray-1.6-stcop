@@ -782,13 +782,13 @@ void CCar::ParseDefinitions()
 		const char* Bones = ini->r_string("car_definition", "usable_bones");
 		const char* Callbacks = ini->r_string("car_definition", "usable_bones_callback");
 
-		size_t BonesCount = _GetItemCount(Bones);
+		int BonesCount = _GetItemCount(Bones);
 		R_ASSERT2(BonesCount == _GetItemCount(Callbacks), "Bones list should be equal to callback list!");
 
 		string32 BoneName = {};
 		string64 CallbackName = {};
 		
-		for (size_t Iter = 0; Iter < BonesCount; Iter++)
+		for (int Iter = 0; Iter < BonesCount; Iter++)
 		{
 			_GetItem(Bones, Iter, BoneName);
 			_GetItem(Callbacks, Iter, CallbackName);
