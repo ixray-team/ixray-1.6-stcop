@@ -499,7 +499,7 @@ CRenderTarget::CRenderTarget		()
 	s_occq.create					(b_occq,		"r2\\occq");
 
 	// DIRECT (spot)
-	ERHITextureFormat depth_format	= (ERHITextureFormat) RImplementation.o.HW_smap_FORMAT;
+	ERHITextureFormat depth_format	= FMT_D24X8; //(ERHITextureFormat) RImplementation.o.HW_smap_FORMAT;
 
 	if (RImplementation.o.HW_smap)
 	{

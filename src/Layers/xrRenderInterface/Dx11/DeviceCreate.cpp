@@ -129,7 +129,7 @@ bool CreateD3D11()
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	UINT createDeviceFlags = 0;
-	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
+	bool bHasDebugRender =  strstr(GetCommandLineA(), "-dxdebug") || Core.ParamsData.test(ECoreParams::dxdebug);
 
 	//if (g_pGPU != nullptr && g_pGPU->IsAMD)
 	//{

@@ -30,3 +30,4 @@ private:
 
 	//ID3D11DepthStencilView* m_DepthStencilView;
 };
+

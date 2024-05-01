@@ -85,7 +85,7 @@ private:
 	DirectX::XMMATRIX m_gridMatrix;
 	//Fmatrix		m_gridMatrix;
 
-	DxgiFormat				RTFormats[ RRT_NumRT ];
+	ERHITextureFormat		RTFormats[ RRT_NumRT ];
 	ref_rt					RT[ RRT_NumRT ];
 	static LPCSTR			m_pRTNames[ RRT_NumRT ];
 	static LPCSTR			m_pResourceRTNames[ RRT_NumRT ];

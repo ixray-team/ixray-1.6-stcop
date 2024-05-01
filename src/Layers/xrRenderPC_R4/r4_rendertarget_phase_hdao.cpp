@@ -6,6 +6,8 @@ static unsigned int g_uGroupTexelDimensionAfterOverlap = g_uGroupTexelDimension 
 
 void CRenderTarget::phase_hdao	()
 {
+    return;
+
    if( ps_r_ssao > 0 )
    {
         ShaderElement* S;
@@ -28,7 +30,7 @@ void CRenderTarget::phase_hdao	()
        RContext->OMGetRenderTargets( 8, oldrtv, &olddsv );
        RContext->OMSetRenderTargets( 8, rtv, nullptr );
        //RContext->CSSetShaderResources( 0, 2, new_srv );
-       RContext->CSSetUnorderedAccessViews( 0, 1, &rt_ssao_temp->pUAView, &UAVInitialCounts );
+       //RContext->CSSetUnorderedAccessViews( 0, 1, &rt_ssao_temp->pUAView, &UAVInitialCounts );
 
        int iGroupsX = (int)ceil( (float)dwWidth / (float)g_uGroupTexelDimensionAfterOverlap );
        int iGroupsY = (int)ceil( (float)dwHeight / (float)g_uGroupTexelDimensionAfterOverlap );

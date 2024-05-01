@@ -10,7 +10,7 @@ enum ERHIUsage
 	eUsageStatic,
 	eUsageDynamic,
 	eUsageScratch,
-	eUsageImmutable = 1
+	eUsageImmutable 
 };
 
 enum ERHIClearStage
@@ -87,9 +87,11 @@ struct TextureDesc
 	u32 Depth;
 	ERHITextureFormat Format;
 	u32 TextureFlags;
+	eTextureType TextureType;
 	u32 NumMips;
 	bool DefaultPool;
 	bool IsCube;
+	bool IsRenderTarget;
 };
 
 typedef struct LOCKED_RECT {
@@ -153,15 +155,41 @@ typedef struct RHI_UNORDERED_ACCESS_VIEW_DESC {
 
 } RHI_UNORDERED_ACCESS_VIEW_DESC;
 
+struct RHI_TEX2D_RT
+{
+	u32 MipSlice;
+};
+
+struct RHI_TEX3D_RT
+{
+	u32 MipSlice;
+	u32 FirstWSlice;
+	u32 WSize;
+};
+
 const int kMaxRenderTargetTextures = 8;
 
 class IRHITexture;
 
+enum RHI_RTV_DIMENSION
+{
+	RHI_RTV_DIMENSION_UNKNOWN = 0,
+	RHI_RTV_DIMENSION_BUFFER = 1,
+	RHI_RTV_DIMENSION_TEXTURE1D = 2,
+	RHI_RTV_DIMENSION_TEXTURE1DARRAY = 3,
+	RHI_RTV_DIMENSION_TEXTURE2D = 4,
+	RHI_RTV_DIMENSION_TEXTURE2DARRAY = 5,
+	RHI_RTV_DIMENSION_TEXTURE2DMS = 6,
+	RHI_RTV_DIMENSION_TEXTURE2DMSARRAY = 7,
+	RHI_RTV_DIMENSION_TEXTURE3D = 8
+};
+
 struct RenderTargetCreationDesc
 {
-	IRHITexture* Textures2D;
-	IRHITexture* DepthTexture2D;
-	u32			 Textures2DCount;
+	ERHITextureFormat	Format;
+	RHI_RTV_DIMENSION	ViewDimension;
+	RHI_TEX2D_RT		Texture2D;
+	RHI_TEX3D_RT		Texture3D;
 };
 
 /////////////////////////////////////////////////
@@ -310,6 +338,7 @@ public:
 	virtual IRHIVolumeTexture* CreateAPIVolumeTexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
 	virtual IRHIUnorderedAccessView* CreateAPIUnorderedAccessView( IRHITexture* pTexture, const RHI_UNORDERED_ACCESS_VIEW_DESC& Desc ) = 0;
 	virtual IRHISurface* CreateAPIRenderTargetView( IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc ) = 0;
+	virtual IRHIDepthStencilView* CreateAPIDepthStencilView( IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc ) = 0;
 
 	virtual void Clear(ERHIClearStage Stage, IRHIUnknown* Ptr, const ClearData& Data) = 0;
 	virtual void SetVertexBuffer( u32 StartSlot, IRHIBuffer* pVertexBuffer, const u32 Strides, const u32 Offsets ) = 0;
@@ -323,6 +352,14 @@ public:
 	virtual void StretchRect(IRHISurface* pSourceSurface, const Irect* pSourceRect, IRHISurface* pDestSurface, const Irect* pDestRect) = 0;
 
 	virtual ERHITextureFormat GetRHIFormatFromAPI( int dxgiFormat ) = 0;
+
+	///////////////////////////////////////////////////////
+	// Temp inline functions
+	inline void ClearRenderTargetView( IRHISurface* pSurface, const float ColorRGBA[4] )
+	{
+		ClearData clearData = { ColorRGBA[0], ColorRGBA[1], ColorRGBA[2], ColorRGBA[3] };
+		Clear( eClearTarget, pSurface, clearData );
+	}
 };
 
 extern ENGINE_API IRender_RHI* g_RenderRHI;

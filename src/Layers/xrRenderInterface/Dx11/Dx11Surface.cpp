@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Dx11Surface.h"
 #include "Dx11Texture.h"
+#include "Dx11StencilView.h"
 #include "Dxgi/Converter.h"
 #include "Dx11API.h"
 
@@ -147,7 +148,10 @@ IRHISurface* CreateRenderTargetViewD3D11(IRHITexture* pTexture, const RenderTarg
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
 	ID3D11RenderTargetView* renderTargetView = nullptr;
-	R_CHK(pDevice->CreateRenderTargetView(d3dTexture, &renderTargetViewDesc, &renderTargetView));
+	//R_CHK(pDevice->CreateRenderTargetView(d3dTexture, &renderTargetViewDesc, &renderTargetView));
+	HRESULT hr = pDevice->CreateRenderTargetView(d3dTexture, &renderTargetViewDesc, &renderTargetView);
+	Msg("! CreateRenderTargetViewD3D11: %s %s", Debug.error2string(hr), Debug.dxerror2string(hr));
+	R_CHK(hr);
 
 	// Create shader resource view
 
@@ -165,4 +169,48 @@ IRHISurface* CreateRenderTargetViewD3D11(IRHITexture* pTexture, const RenderTarg
 	CD3D11Surface* pAPISurface = new CD3D11Surface( renderTargetView, shaderResourceView );
 	pAPISurface->AddRef();
 	return pAPISurface;
+}
+
+IRHIDepthStencilView* CreateD3D11DepthStencilView(IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc)
+{
+	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
+	R_ASSERT(pDevice);
+
+	CD3D11Texture2D* pTexture2D = (CD3D11Texture2D*)pTexture;
+
+	ID3D11Texture2D* d3dTexture = pTexture2D->GetDXObj();
+	R_ASSERT(d3dTexture);
+
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	d3dTexture->GetDesc(&textureDesc);
+
+	// create depth stencil view
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	memset(&depthStencilViewDesc, 0, sizeof(depthStencilViewDesc));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	HRESULT hr = pDevice->CreateDepthStencilView(d3dTexture, &depthStencilViewDesc, &depthStencilView);
+	Msg("! CreateD3D11DepthStencilView: %s %s", Debug.error2string(hr), Debug.dxerror2string(hr));
+	R_CHK(hr);
+
+	// Create shader resource view
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
+	DXGI_FORMAT typelessFormat = ConvertToTypelessFmt(textureDesc.Format);
+	DXGI_FORMAT srvFormat = ConvertToShaderResourceFmt(typelessFormat);
+	shaderResourceViewDesc.Format = typelessFormat == srvFormat ? textureDesc.Format : srvFormat;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	
+	ID3D11ShaderResourceView* shaderResourceView = nullptr;
+	R_CHK(pDevice->CreateShaderResourceView(d3dTexture, &shaderResourceViewDesc, &shaderResourceView));
+
+	CD3D11DepthStencilView* pAPIDepthStencilView = new CD3D11DepthStencilView( depthStencilView, shaderResourceView );
+	pAPIDepthStencilView->AddRef();
+	return pAPIDepthStencilView;
 }

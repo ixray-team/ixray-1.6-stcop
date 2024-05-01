@@ -61,6 +61,31 @@ DXGI_FORMAT ConvertTextureFormat(ERHITextureFormat dx9FMT)
 	return DXGI_FORMAT_UNKNOWN;
 }
 
+D3D11_USAGE GetD3D11Usage(ERHIUsage usage)
+{
+	switch (usage)
+	{
+	case eUsageDefault:
+		return D3D11_USAGE_DEFAULT;
+	case eUsageRenderTarget:
+		break;
+	case eUsageDepthStencil:
+		break;
+	case eUsageStatic:
+		break;
+	case eUsageDynamic:
+		break;
+	case eUsageScratch:
+		break;
+	case eUsageImmutable:
+		return D3D11_USAGE_IMMUTABLE;
+	default:
+		break;
+	}
+
+	return (D3D11_USAGE)0;
+}
+
 ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT)
 {
 	int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
@@ -102,7 +127,9 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	R_ASSERT(pTextureDesc);
 
 	m_TextureDesc = *pTextureDesc;
-	m_Pitch = pSubresourceData->SysMemPitch;
+
+	if (pSubresourceData)
+		m_Pitch = pSubresourceData->SysMemPitch;
 
 	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
 	R_ASSERT(pDevice);
@@ -114,7 +141,7 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.ArraySize = pTextureDesc->DepthOrSliceNum;
 	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
 	d3dTextureDesc.SampleDesc.Count = 1;
-	d3dTextureDesc.Usage = (D3D11_USAGE)pTextureDesc->Usage;
+	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT;// (D3D11_USAGE)pTextureDesc->Usage;
 	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
 	// Kirill: TODO !!!
@@ -128,10 +155,13 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subresourceData = {};
-	subresourceData.pSysMem = pSubresourceData->pSysMem;
-	subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
-	subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
-
+	if (pSubresourceData)
+	{
+		subresourceData.pSysMem = pSubresourceData->pSysMem;
+		subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
+		subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
+	}
+	
 	R_CHK(pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? &subresourceData : NULL, &m_pTexture));
 
 	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
@@ -144,7 +174,7 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 		shaderResourceViewDesc.Texture2D.MipLevels = -1;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
-		R_ASSERT(pDevice->CreateShaderResourceView(m_pTexture, &shaderResourceViewDesc, &m_pTextureSRV));
+		R_CHK(pDevice->CreateShaderResourceView(m_pTexture, &shaderResourceViewDesc, &m_pTextureSRV));
 	}
 
 	return S_OK;
@@ -282,7 +312,9 @@ HRESULT CD3D11Texture3D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	R_ASSERT(pTextureDesc);
 
 	m_TextureDesc = *pTextureDesc;
-	m_Pitch = pSubresourceData->SysMemPitch;
+
+	if (pSubresourceData)
+		m_Pitch = pSubresourceData->SysMemPitch;
 
 	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
 	R_ASSERT(pDevice);
@@ -292,25 +324,28 @@ HRESULT CD3D11Texture3D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.Height = pTextureDesc->Height;
 	d3dTextureDesc.MipLevels = pTextureDesc->NumMips;
 	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
-	d3dTextureDesc.Usage = (D3D11_USAGE)pTextureDesc->Usage;
-	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT; //(D3D11_USAGE)pTextureDesc->Usage;
+	d3dTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	d3dTextureDesc.Depth = pTextureDesc->Depth;
 
 	// Kirill: TODO !!!
-	if ((pTextureDesc->Usage & eUsageRenderTarget) != 0)
-		d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+	//if ((pTextureDesc->Usage & eUsageRenderTarget) != 0)
+	//	d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 
-	if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
-		d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+	//if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
+	//	d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
 
 	d3dTextureDesc.CPUAccessFlags = 0;
 	d3dTextureDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subresourceData = {};
-	subresourceData.pSysMem = pSubresourceData->pSysMem;
-	subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
-	subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
-
+	if (pSubresourceData)
+	{
+		subresourceData.pSysMem = pSubresourceData->pSysMem;
+		subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
+		subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
+	}
+	
 	R_CHK(pDevice->CreateTexture3D(&d3dTextureDesc, pSubresourceData ? &subresourceData : NULL, &m_pTexture));
 
 	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)

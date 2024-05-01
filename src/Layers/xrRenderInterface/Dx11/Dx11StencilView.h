@@ -5,14 +5,15 @@ class CD3D11DepthStencilView : public IRHIDepthStencilView
 {
 public:
 	CD3D11DepthStencilView() = default;
-	CD3D11DepthStencilView(ID3D11DepthStencilView* pSurfaceAPI);
+	CD3D11DepthStencilView(ID3D11DepthStencilView* pSurfaceAPI, ID3D11ShaderResourceView* pSRV);
 	~CD3D11DepthStencilView();
 
 	ID3D11DepthStencilView* GetDXObj();
 	virtual void SetActive() override;
 
 private:
-	ID3D11DepthStencilView* m_pStencilView;
+	ID3D11DepthStencilView* m_pStencilView = nullptr;
+	ID3D11ShaderResourceView* m_pShaderResourceView = nullptr;
 
 	// Inherited via IRHISurface
 	EResourceType GetType() override { return EResourceType::eResourceSurface; };

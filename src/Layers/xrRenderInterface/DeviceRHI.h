@@ -76,6 +76,10 @@ public:
 	// Inherited via IRender_RHI
 	void StretchRect(IRHISurface* pSourceSurface, const Irect* pSourceRect, IRHISurface* pDestSurface, const Irect* pDestRect) override;
 
+
+	// Inherited via IRender_RHI
+	IRHIDepthStencilView* CreateAPIDepthStencilView(IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc) override;
+
 };
 
 extern CRender_RHI g_RenderRHI_Implementation;

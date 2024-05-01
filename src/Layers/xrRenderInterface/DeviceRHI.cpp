@@ -295,6 +295,12 @@ void CRender_RHI::StretchRect(IRHISurface* pSourceSurface, const Irect* pSourceR
 {
 }
 
+IRHIDepthStencilView* CRender_RHI::CreateAPIDepthStencilView(IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc)
+{
+    R_ASSERT(API == APILevel::DX11);
+    return CreateD3D11DepthStencilView( pTexture, pDesc );
+}
+
 ERHITextureFormat CRender_RHI::GetRHIFormatFromAPI(int dxgiFormat)
 {
     extern ERHITextureFormat ConvertTextureFormatAPI(DXGI_FORMAT dx9FMT);

@@ -80,7 +80,12 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCount
 	desc.NumMips = 1;
 	desc.DepthOrSliceNum = 1;
 	desc.Format = fmt;
-	desc.Usage = eUsageDefault;
+
+	if (bUseAsDepth)
+		desc.Usage = eUsageDefault | eUsageDepthStencil;
+	else
+		desc.Usage = eUsageDefault | eUsageRenderTarget;
+	
 	pSurface = g_RenderRHI->CreateAPITexture(&desc, nullptr);
 
 	// #TODO : TO THINK !!!
@@ -94,7 +99,8 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHITextureFormat f, u32 SampleCount
 
 	if (bUseAsDepth)
 	{
-		pZRT = g_RenderRHI->CreateAPIDepthStencilSurface(dwWidth, dwHeight, fmt, SampleCount, 1, false);
+		//pZRT = g_RenderRHI->CreateAPIDepthStencilSurface(dwWidth, dwHeight, fmt, SampleCount, 1, false);
+		pZRT = g_RenderRHI->CreateAPIDepthStencilView(pSurface, nullptr);
 		R_ASSERT(pZRT);
 	}
 	else

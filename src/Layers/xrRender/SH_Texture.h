@@ -61,7 +61,6 @@ private:
 #ifdef USE_DX11
 	void								Apply			(u32 dwStage);
 	void								ProcessStaging();
-	D3D_USAGE							GetUsage();
 #endif //USE_DX11
 
 	//	Class data

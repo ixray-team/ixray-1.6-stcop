@@ -406,11 +406,11 @@ void CTexture::Load()
 		//pSurface = ::RImplementation.texture_load	(*cName,mem);
 		pSurface = ::RImplementation.texture_load(*cName, mem, true);
 
-		if (GetUsage() == D3D_USAGE_STAGING)
-		{
-			flags.bLoadedAsStaging = TRUE;
-			bCreateView = false;
-		}
+		//if (GetUsage() == D3D_USAGE_STAGING)
+		//{
+		//	flags.bLoadedAsStaging = TRUE;
+		//	bCreateView = false;
+		//}
 
 		// Calc memory usage and preload into vid-mem
 		if (pSurface)

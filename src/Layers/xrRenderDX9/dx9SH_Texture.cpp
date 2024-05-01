@@ -32,7 +32,6 @@ CTexture::CTexture()
 	pSurface = nullptr;
 	pAVI = nullptr;
 	pTheora = nullptr;
-	desc_cache = 0;
 	seqMSPF = 0;
 	flags.MemoryUsage = 0;
 	flags.bLoaded = false;
@@ -156,7 +155,6 @@ void CTexture::Preload()
 void CTexture::Load()
 {
 	flags.bLoaded = true;
-	desc_cache = 0;
 	if (pSurface)					return;
 
 	flags.bUser = false;
@@ -318,11 +316,6 @@ void CTexture::Unload()
 	xr_delete(pTheora);
 
 	bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_load);
-}
-
-void CTexture::desc_update()
-{
-	desc_cache = pSurface;
 }
 
 void CTexture::video_Play(BOOL looped, u32 _time)

@@ -59,10 +59,10 @@ LPCSTR			dx103DFluidRenderer::m_pResourceRTNames[ RRT_NumRT ] =
 dx103DFluidRenderer::dx103DFluidRenderer():
 	m_bInited(false)
 {
-	RTFormats[RRT_RayDataTex] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	RTFormats[RRT_RayDataTexSmall] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	RTFormats[RRT_RayCastTex] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	RTFormats[RRT_EdgeTex] = DxgiFormat::DXGI_FORMAT_R32_FLOAT;
+	RTFormats[RRT_RayDataTex]		= FMT_A32B32G32R32F;
+	RTFormats[RRT_RayDataTexSmall]	= FMT_A32B32G32R32F;
+	RTFormats[RRT_RayCastTex]		= FMT_A32B32G32R32F;
+	RTFormats[RRT_EdgeTex]			= FMT_R32F;
 }
 
 dx103DFluidRenderer::~dx103DFluidRenderer()
@@ -279,51 +279,25 @@ void dx103DFluidRenderer::CreateJitterTexture()
 		data[i] = (unsigned char) (rand()/float(RAND_MAX)*256);
 	}
 
-	D3D_TEXTURE2D_DESC desc;
+	TextureDesc desc;
 	desc.Width = 256;
 	desc.Height = 256;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	//desc.Format = DXGI_FORMAT_R8_TYPELESS;
-	desc.Format = DXGI_FORMAT_R8_UNORM;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	//desc.Usage = D3D_USAGE_IMMUTABLE;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.NumMips = 1;
+	desc.DepthOrSliceNum = 1;
+#pragma todo("Rename FMT_L8 to FMT_R8")
+	desc.Format = FMT_L8;
+	desc.Usage = eUsageDefault;
 
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA dataDesc;
+	SUBRESOURCE_DATA dataDesc;
 	dataDesc.pSysMem = data;
 	dataDesc.SysMemPitch = 256;
 
-	ID3DTexture2D* NoiseTexture = nullptr;
-	//ID3DxxShaderResourceView* JitterTextureSRV = nullptr;
-
-	CHK_DX( RDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
-
-	//( m_pD3DDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture) );
-
-	// Create the shader resource view for jittering
-	//D3Dxx_SHADER_RESOURCE_VIEW_DESC descSRV;
-
-	//ZeroMemory( &descSRV, sizeof(descSRV) );
-	//descSRV.Format = DXGI_FORMAT_R8_UNORM;
-	//descSRV.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-	//descSRV.Texture2D.MipLevels = 1;
-	//descSRV.Texture2D.MostDetailedMip = 0;
-
-	//V( m_pD3DDevice->CreateShaderResourceView( NoiseTexture, &descSRV, &JitterTextureSRV ) );
-	//pEffect->GetVariableByName("jitterTex")->AsShaderResource() -> SetResource (JitterTextureSRV);
+	IRHITexture* NoiseTexture = g_RenderRHI->CreateAPITexture( &desc, &dataDesc );
 
 	m_JitterTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVjitterTex");
 	m_JitterTexture->surface_set(NoiseTexture);
 
-
 	_RELEASE(NoiseTexture);
-	//SAFE_RELEASE(JitterTextureSRV);
 }
 
 namespace
@@ -405,29 +379,19 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 
 	XMConvertFloatToHalfStream(converted, sizeof(converted[0]), data, sizeof(data[0]), 4 * iNumSamples);
 
-	D3D_TEXTURE1D_DESC desc;
+	TextureDesc desc;
 	desc.Width = iNumSamples;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	//desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	//desc.Usage = D3D_USAGE_IMMUTABLE;
+	desc.NumMips = 1;
+	desc.DepthOrSliceNum = 1;
+	desc.Format = FMT_A16B16G16R16F;
+	desc.Usage = eUsageDefault;
+	desc.TextureType = eTextureType1D;
 
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA dataDesc;
-	//dataDesc.pSysMem = data;
-	//dataDesc.SysMemPitch = sizeof(data);
+	SUBRESOURCE_DATA dataDesc;
 	dataDesc.pSysMem = converted;
 	dataDesc.SysMemPitch = sizeof(converted);
 
-	ID3DTexture1D* HHGGTexture = nullptr;
-
-	CHK_DX( RDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
+	IRHITexture* HHGGTexture = g_RenderRHI->CreateAPITexture( &desc, &dataDesc );
 
 	m_HHGGTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVHHGGTex");
 	m_HHGGTexture->surface_set(HHGGTexture);
@@ -665,7 +629,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	// Raycast into the temporary render target: 
 	//  raycasting is done at the smaller resolution, using a fullscreen quad
 	//m_pD3DDevice->ClearRenderTargetView( pRayCastRTV, color );
-	RContext->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
+	g_RenderRHI->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayCastRTV , nullptr ); 
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayCastTex],0,0,0);		// LDR RT
@@ -727,7 +691,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	// Clear the color buffer to 0
 	float blackColor[4] = {0, 0, 0, 0 };
 	//m_pD3DDevice->ClearRenderTargetView(pRayDataRTV, blackColor);
-	RContext->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
+	g_RenderRHI->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
 	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, nullptr);
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT

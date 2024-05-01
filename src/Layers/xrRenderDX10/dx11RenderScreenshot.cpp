@@ -12,7 +12,7 @@ extern int SM_FOR_SEND_HEIGHT;
 
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {
     ID3DResource* pSrcTexture = nullptr;
-    RTarget->GetResource(&pSrcTexture);
+ //   RTarget->GetResource(&pSrcTexture);
 
     VERIFY(pSrcTexture);
 
