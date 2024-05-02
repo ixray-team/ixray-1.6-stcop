@@ -93,6 +93,11 @@ void CWeaponBinoculars::OnZoomOut		()
 	inherited::OnZoomOut();
 }
 
+void CWeaponBinoculars::PlayAnimAim()
+{
+	PlayHUDMotion("anm_idle_aim", TRUE, NULL, GetState(), false);
+}
+
 BOOL CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn	(DC);
