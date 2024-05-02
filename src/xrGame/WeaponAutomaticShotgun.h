@@ -26,6 +26,9 @@ public:
 
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };
 
+	bool			m_bAddCartridgeOpen;
+	bool			m_bEmptyPreloadMode;
+	bool			bPreloadAnimAdapter;
 
 protected:
 	virtual void	OnAnimationEnd			(u32 state);
