@@ -248,7 +248,7 @@ void CWeaponMagazined::FireStart()
 		}
 		else 
 		{
-			if (GetState() == eIdle) 
+			if (GetState() == eEmptyClick && !lock_time || GetState() == eIdle) 
 				SwitchState(eEmptyClick);
 		}
 	}
