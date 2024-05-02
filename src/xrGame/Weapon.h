@@ -204,6 +204,7 @@ public:
 	bool m_bRestGL_and_Sil;
 	bool m_bJamNotShot;
 	bool m_bAmmoInChamber;
+	bool bIsNeedCallDet;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
