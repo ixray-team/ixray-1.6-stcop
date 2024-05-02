@@ -30,7 +30,6 @@ public:
 	virtual void net_Import			( NET_Packet& P);				// import from server
 protected:
 	virtual bool	AllowBore		();
-	virtual void	PlayAnimReload	();
 
 	shared_str	m_sRocketSection;
 

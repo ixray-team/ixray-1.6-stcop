@@ -194,51 +194,57 @@ void CWeaponAutomaticShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState() == eReload);
 
+	std::string anm_name = "anm_open";
+
 	if (m_bEmptyPreloadMode && iAmmoElapsed == 0)
 	{
-		PlayHUDMotion("anm_open_empty", false, this, GetState());
+		anm_name += "_empty";
 		bPreloadAnimAdapter = true;
 	}
-	else
-		PlayHUDMotion("anm_open", false, this, GetState());
+
+	PlayHUDMotion(anm_name, false, this, GetState(), false);
 }
 
 void CWeaponAutomaticShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState() == eReload);
 
+	std::string anm_name = "anm_add_cartridge";
+
 	if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 	{
 		if (iAmmoElapsed == 0)
-			PlayHUDMotion("anm_add_cartridge_empty_preloaded", false, this, GetState());
+			anm_name += "_empty_preloaded";
 		else
-			PlayHUDMotion("anm_add_cartridge_preloaded", false, this, GetState());
+			anm_name += "_preloaded";
 
 		bPreloadAnimAdapter = false;
 	}
 	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
-		PlayHUDMotion("anm_add_cartridge_empty", false, this, GetState());
-	else
-		PlayHUDMotion("anm_add_cartridge", false, this, GetState());
+		anm_name += "_empty";
+
+	PlayHUDMotion(anm_name, false, this, GetState(), false);
 }
 
 void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState() == eReload);
 
+	std::string anm_name = "anm_close";
+
 	if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 	{
 		if (iAmmoElapsed == 0)
-			PlayHUDMotion("anm_add_cartridge_empty_preloaded", false, this, GetState());
+			anm_name = "anm_add_cartridge_empty_preloaded";
 		else
-			PlayHUDMotion("anm_close_preloaded", false, this, GetState());
+			anm_name += "_preloaded";
 
 		bPreloadAnimAdapter = false;
 	}
 	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
-		PlayHUDMotion("anm_add_cartridge_empty", false, this, GetState());
-	else
-		PlayHUDMotion("anm_close", false, this, GetState());
+		anm_name = "anm_add_cartridge_empty";
+
+	PlayHUDMotion(anm_name, false, this, GetState(), false);
 }
 
 void	CWeaponAutomaticShotgun::net_Export	(NET_Packet& P)

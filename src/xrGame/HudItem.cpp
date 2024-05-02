@@ -178,7 +178,7 @@ void CHudItem::OnAnimationEnd(u32 state)
 
 void CHudItem::PlayAnimBore()
 {
-	PlayHUDMotion	("anm_bore", TRUE, this, GetState());
+	PlayHUDMotion("anm_bore", TRUE, this, GetState());
 }
 
 bool CHudItem::ActivateItem() 
@@ -233,32 +233,32 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	float fPMag = pActor->fFPCamPitchMagnitude;
 
 	float fStrafeMaxTime = hi->m_measures.m_strafe_offset[2][0].y;
-	// Макс. время в секундах, за которое мы наклонимся из центрального положения
+	// пїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if (fStrafeMaxTime <= EPS)
 		fStrafeMaxTime = 0.01f;
 
-	float fStepPerUpd = fAvgTimeDelta / fStrafeMaxTime; // Величина изменение фактора поворота
+	float fStepPerUpd = fAvgTimeDelta / fStrafeMaxTime; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-	// Добавляем боковой наклон от движения камеры
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	float fCamReturnSpeedMod = 1.5f;
-	// Восколько ускоряем нормализацию наклона, полученного от движения камеры (только от бедра)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
 
-	// Высчитываем минимальную скорость поворота камеры для начала инерции
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float fStrafeMinAngle = hi->m_measures.m_strafe_offset[3][0].y;
 
-	// Высчитываем мксимальный наклон от поворота камеры
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	float fCamLimitBlend = hi->m_measures.m_strafe_offset[3][0].x;
 
-	// Считаем стрейф от поворота камеры
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if (abs(fYMag) > (m_fLR_CameraFactor == 0.0f ? fStrafeMinAngle : 0.0f))
 	{
-		//--> Камера крутится по оси Y
+		//--> пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ Y
 		m_fLR_CameraFactor -= (fYMag * fAvgTimeDelta * 0.75f);
 		clamp(m_fLR_CameraFactor, -fCamLimitBlend, fCamLimitBlend);
 	}
 	else
 	{
-		//--> Камера не поворачивается - убираем наклон
+		//--> пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		if (m_fLR_CameraFactor < 0.0f)
 		{
 			m_fLR_CameraFactor += fStepPerUpd * fCamReturnSpeedMod;
@@ -271,25 +271,25 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		}
 	}
 
-	// Добавляем боковой наклон от ходьбы вбок
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	float fChangeDirSpeedMod = 3;
-	// Восколько быстро меняем направление направление наклона, если оно в другую сторону от текущего
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	u32 iMovingState = pActor->GetMovementState(eReal);
 	if ((iMovingState & ACTOR_DEFS::EMoveCommand::mcLStrafe) != 0)
 	{
-		// Движемся влево
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		float fVal = (m_fLR_MovingFactor > 0.f ? fStepPerUpd * fChangeDirSpeedMod : fStepPerUpd);
 		m_fLR_MovingFactor -= fVal;
 	}
 	else if ((iMovingState & ACTOR_DEFS::EMoveCommand::mcRStrafe) != 0)
 	{
-		// Движемся вправо
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		float fVal = (m_fLR_MovingFactor < 0.f ? fStepPerUpd * fChangeDirSpeedMod : fStepPerUpd);
 		m_fLR_MovingFactor += fVal;
 	}
 	else
 	{
-		// Двигаемся в любом другом направлении - плавно убираем наклон
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		if (m_fLR_MovingFactor < 0.0f)
 		{
 			m_fLR_MovingFactor += fStepPerUpd;
@@ -301,12 +301,12 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 			clamp(m_fLR_MovingFactor, 0.0f, 1.0f);
 		}
 	}
-	clamp(m_fLR_MovingFactor, -1.0f, 1.0f); // Фактор боковой ходьбы не должен превышать эти лимиты
+	clamp(m_fLR_MovingFactor, -1.0f, 1.0f); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
-	// Вычисляем и нормализируем итоговый фактор наклона
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float fLR_Factor = m_fLR_MovingFactor;
 
-	clamp(fLR_Factor, -1.0f, 1.0f); // Фактор боковой ходьбы не должен превышать эти лимиты
+	clamp(fLR_Factor, -1.0f, 1.0f); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
 	Fvector curr_offs, curr_rot;
 	Fmatrix hud_rotation;
@@ -314,14 +314,14 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 
 	if ((hi->m_measures.m_strafe_offset[2][0].x != 0.0f))
 	{
-		// Смещение позиции худа в стрейфе
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		curr_offs = hi->m_measures.m_strafe_offset[0][0]; // pos
-		curr_offs.mul(fLR_Factor); // Умножаем на фактор стрейфа
+		curr_offs.mul(fLR_Factor); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-		// Поворот худа в стрейфе
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		curr_rot = hi->m_measures.m_strafe_offset[1][0]; // rot
-		curr_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
-		curr_rot.mul(fLR_Factor); // Умножаем на фактор стрейфа
+		curr_rot.mul(-PI / 180.f); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		curr_rot.mul(fLR_Factor); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 		hud_rotation.identity();
 		hud_rotation.rotateX(curr_rot.x);
@@ -338,8 +338,8 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		trans.mulB_43(hud_rotation);
 	}
 
-	//============= Инерция оружия =============//
-	// Параметры инерции
+	//============= пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ =============//
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float fInertiaSpeedMod = hi->m_measures.m_inertion_params.m_tendto_speed;
 
 	float fInertiaReturnSpeedMod = hi->m_measures.m_inertion_params.m_tendto_ret_speed;
@@ -352,7 +352,7 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	vIOffsets.z = hi->m_measures.m_inertion_params.m_offset_LRUD.z;
 	vIOffsets.w = hi->m_measures.m_inertion_params.m_offset_LRUD.w;
 
-	// Высчитываем инерцию из поворотов камеры
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	bool bIsInertionPresent = m_fLR_InertiaFactor != 0.0f || m_fUD_InertiaFactor != 0.0f;
 	if (abs(fYMag) > fInertiaMinAngle || bIsInertionPresent)
 	{
@@ -360,10 +360,10 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		if (fYMag > 0.0f && m_fLR_InertiaFactor > 0.0f ||
 			fYMag < 0.0f && m_fLR_InertiaFactor < 0.0f)
 		{
-			fSpeed *= 2.f; //--> Ускоряем инерцию при движении в противоположную сторону
+			fSpeed *= 2.f; //--> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 
-		m_fLR_InertiaFactor -= (fYMag * fAvgTimeDelta * fSpeed); // Горизонталь (м.б. > |1.0|)
+		m_fLR_InertiaFactor -= (fYMag * fAvgTimeDelta * fSpeed); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ.пїЅ. > |1.0|)
 	}
 
 	if (abs(fPMag) > fInertiaMinAngle || bIsInertionPresent)
@@ -372,20 +372,20 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		if (fPMag > 0.0f && m_fUD_InertiaFactor > 0.0f ||
 			fPMag < 0.0f && m_fUD_InertiaFactor < 0.0f)
 		{
-			fSpeed *= 2.f; //--> Ускоряем инерцию при движении в противоположную сторону
+			fSpeed *= 2.f; //--> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 
-		m_fUD_InertiaFactor -= (fPMag * fAvgTimeDelta * fSpeed); // Вертикаль (м.б. > |1.0|)
+		m_fUD_InertiaFactor -= (fPMag * fAvgTimeDelta * fSpeed); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ.пїЅ. > |1.0|)
 	}
 
 	clamp(m_fLR_InertiaFactor, -1.0f, 1.0f);
 	clamp(m_fUD_InertiaFactor, -1.0f, 1.0f);
 
-	// Плавное затухание инерции (основное, но без линейной никогда не опустит инерцию до полного 0.0f)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.0f)
 	m_fLR_InertiaFactor *= clampr(1.f - fAvgTimeDelta * fInertiaReturnSpeedMod, 0.0f, 1.0f);
 	m_fUD_InertiaFactor *= clampr(1.f - fAvgTimeDelta * fInertiaReturnSpeedMod, 0.0f, 1.0f);
 
-	// Минимальное линейное затухание инерции при покое (горизонталь)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	if (fYMag == 0.0f)
 	{
 		float fRetSpeedMod = (fYMag == 0.0f ? 1.0f : 0.75f) * (fInertiaReturnSpeedMod * 0.075f);
@@ -401,7 +401,7 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		}
 	}
 
-	// Минимальное линейное затухание инерции при покое (вертикаль)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	if (fPMag == 0.0f)
 	{
 		float fRetSpeedMod = (fPMag == 0.0f ? 1.0f : 0.75f) * (fInertiaReturnSpeedMod * 0.075f);
@@ -417,7 +417,7 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		}
 	}
 
-	// Применяем инерцию к худу
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 	float fLR_lim = (m_fLR_InertiaFactor < 0.0f ? vIOffsets.x : vIOffsets.y);
 	float fUD_lim = (m_fUD_InertiaFactor < 0.0f ? vIOffsets.z : vIOffsets.w);
 
@@ -555,9 +555,12 @@ bool CHudItem::HudAnimationExist(LPCSTR anim_name)
 }
 //-AVO
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state)
+u32 CHudItem::PlayHUDMotion(std::string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix)
 {
-	u32 anim_time					= PlayHUDMotion_noCB(M, bMixIn);
+	if (need_suffix)
+		M = NeedAddSuffix(M);
+
+	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
 	if (anim_time>0)
 	{
 		m_bStopAtEndAnimIsRunning	= true;
@@ -571,6 +574,15 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 
 	return anim_time;
 }
 
+std::string CHudItem::AddSuffixName(std::string M, std::string suffix)
+{
+	std::string new_name = M + suffix;
+
+	if (HudAnimationExist(new_name.c_str()))
+		return new_name;
+
+	return M;
+}
 
 u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
 {
@@ -617,7 +629,8 @@ BOOL CHudItem::GetHUDmode()
 
 void CHudItem::PlayAnimIdle()
 {
-	if (TryPlayAnimIdle()) return;
+	if (TryPlayAnimIdle())
+		return;
 
 	PlayHUDMotion("anm_idle", TRUE, nullptr, GetState());
 }

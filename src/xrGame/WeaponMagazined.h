@@ -103,6 +103,8 @@ public:
 
 	bool			bMisfireReload;
 
+	virtual std::string	NeedAddSuffix(std::string M);
+
 public:
 	virtual bool	SwitchMode				();
 	virtual bool	SingleShotMode			()			{return 1 == m_iQueueSize;}

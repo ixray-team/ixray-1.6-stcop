@@ -12,15 +12,10 @@ public:
 	virtual void	Load							(LPCSTR section);
 
 protected:
+	virtual std::string	NeedAddSuffix(std::string M);
 	virtual void	PlayAnimShoot					();
-	virtual void	PlayAnimReload					();
 	virtual void	PlayReloadSound					();
-	virtual void	PlayAnimIdle					();
-	virtual void	PlayAnimIdleMoving				();
-	virtual void	PlayAnimIdleSprint				();
-	virtual void	PlayAnimShow					();
-	virtual void	PlayAnimHide					();
-	virtual void	PlayAnimBore					();
+	virtual void	PlayAnimReload					();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponBM16)
