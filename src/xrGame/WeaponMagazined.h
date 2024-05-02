@@ -175,6 +175,7 @@ protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
 	static void		OnAmmoTimer(CWeapon* wpn, int param);
+	bool			NeedShootMix() const;
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow		();
