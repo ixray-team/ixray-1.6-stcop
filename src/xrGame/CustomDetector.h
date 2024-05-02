@@ -52,14 +52,16 @@ public:
 
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
 
+	void 	TurnDetectorInternal(bool b);
+
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
-			void 	TurnDetectorInternal		(bool b);
 	void 			UpdateNightVisionMode		(bool b_off);
 	void			UpdateVisibility			();
 	virtual void	UpfateWork					();
 	virtual void 	UpdateAf					()				{};
 	virtual void 	CreateUI					()				{};
+	void SetHideDetStateInWeapon();
 
 	bool			m_bWorking;
 	float			m_fAfVisRadius;
