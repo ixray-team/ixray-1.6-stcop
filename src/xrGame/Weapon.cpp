@@ -2623,7 +2623,7 @@ bool CWeapon::NeedBlockSprint() const
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
-		return GetState() != eIdle;
+		return GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
 	else
 		return GetState() == eFire || GetState() == eFire2 || EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload] && GetState() == eReload;
 }
