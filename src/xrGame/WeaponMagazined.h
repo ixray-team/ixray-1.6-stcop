@@ -141,6 +141,10 @@ protected:
 	int				m_iOldFireMode;
 	int				m_iPrefferedFireMode;
 
+	shared_str		m_sFireModeMask_1;
+	shared_str		m_sFireModeMask_3;
+	shared_str		m_sFireModeMask_a;
+
 	//переменная блокирует использование
 	//только разных типов патронов
 	bool m_bLockType;
