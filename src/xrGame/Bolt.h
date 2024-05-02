@@ -20,6 +20,7 @@ public:
 	virtual bool Action				(u16 cmd, u32 flags);
 	virtual bool Useful				() const;
     virtual void activate_physic_shell	();
+	virtual bool SendDeactivateItem	();
 
 	virtual BOOL UsedAI_Locations	() {return FALSE;}
 	virtual IDamageSource*	cast_IDamageSource			()	{return this;}
