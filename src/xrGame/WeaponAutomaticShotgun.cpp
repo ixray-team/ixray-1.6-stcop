@@ -221,7 +221,7 @@ void CWeaponAutomaticShotgun::PlayAnimOpenWeapon()
 		bPreloadAnimAdapter = true;
 	}
 
-	PlayHUDMotion(anm_name, false, this, GetState(), false);
+	PlayHUDMotion(anm_name, false, GetState(), false, false);
 }
 
 void CWeaponAutomaticShotgun::PlayAnimAddOneCartridgeWeapon()
@@ -244,7 +244,7 @@ void CWeaponAutomaticShotgun::PlayAnimAddOneCartridgeWeapon()
 	else if (!m_bAddCartridgeOpen && TempTest)
 		anm_name += "_empty";
 
-	PlayHUDMotion(anm_name, false, this, GetState(), false);
+	PlayHUDMotion(anm_name, false, GetState(), false, false);
 }
 
 void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
@@ -267,7 +267,7 @@ void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 	else if (!m_bAddCartridgeOpen && TempTest)
 		anm_name = "anm_add_cartridge_empty";
 
-	PlayHUDMotion(anm_name, false, this, GetState(), false);
+	PlayHUDMotion(anm_name, false, GetState(), false, false);
 }
 
 void	CWeaponAutomaticShotgun::net_Export	(NET_Packet& P)

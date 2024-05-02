@@ -61,6 +61,7 @@ protected:
 
 protected:
 	virtual void	ReloadMagazine();
+	void			DoReload();
 	bool			HaveCartridgeInInventory(u8 cnt);
 	virtual u8		AddCartridge(u8 cnt);
 			void	ApplySilencerKoeffs();
@@ -172,6 +173,8 @@ protected:
 
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
+
+	static void		OnAmmoTimer(CWeapon* wpn, int param);
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow		();

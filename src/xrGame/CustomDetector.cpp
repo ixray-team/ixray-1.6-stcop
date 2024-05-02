@@ -191,13 +191,13 @@ void CCustomDetector::OnStateSwitch(u32 S)
 		{
 			g_player_hud->attach_item	(this);
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode ? "anm_show_fast" : "anm_show", FALSE, this, GetState(), false);
+			PlayHUDMotion				(m_bFastAnimMode ? "anm_show_fast" : "anm_show", FALSE, this, GetState());
 			SetPending					(TRUE);
 		}break;
 	case eHiding:
 		{
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, this, GetState(), false);
+			PlayHUDMotion				(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, this, GetState());
 			SetPending					(TRUE);
 			SetHideDetStateInWeapon();
 		}break;
