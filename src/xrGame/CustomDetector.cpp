@@ -106,13 +106,18 @@ void CCustomDetector::ShowDetector(bool bFastMode)
 
 void CCustomDetector::ToggleDetector(bool bFastMode)
 {
+	isTryToToggle = true;
+	bNeedHideDet = false;
+
 	m_bNeedActivation		= false;
 	m_bFastAnimMode			= bFastMode;
 
+	PIItem iitem = m_pInventory->ActiveItem();
+	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
+	CWeapon* wpn = smart_cast<CWeapon*>(itm);
+
 	if(GetState()==eHidden)
 	{
-		PIItem iitem = m_pInventory->ActiveItem();
-		CHudItem* itm = (iitem)?iitem->cast_hud_item():nullptr;
 		u16 slot_to_activate = NO_ACTIVE_SLOT;
 
 		if(CheckCompatibilityInt(itm, &slot_to_activate))
@@ -124,32 +129,60 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 			}
 			else
 			{
-				CWeapon* wpn = smart_cast<CWeapon*>(itm);
 				CWeaponKnife* knf = smart_cast<CWeaponKnife*>(wpn);
 				if (wpn)
 				{
 					if (knf || wpn->bIsNeedCallDet)
 					{
+						isTryToToggle = false;
 						SwitchState(eShowing);
 						TurnDetectorInternal(true);
 						wpn->bIsNeedCallDet = false;
 					}
 					else
 					{
-						if (wpn->GetState() == CWeapon::eIdle || wpn->GetState() == CWeapon::eEmptyClick)
+						if (wpn->GetState() == CWeapon::eIdle)
+						{
+							isTryToToggle = false;
 							wpn->SwitchState(CWeapon::eShowingDet);
+						}
 					}
 				}
 				else
 				{
+					isTryToToggle = false;
 					SwitchState(eShowing);
 					TurnDetectorInternal(true);
 				}
 			}
 		}
-	}else
-	if(GetState()==eIdle)
-		SwitchState					(eHiding);
+	}
+	else
+	{
+		if (GetState() == eShowing)
+			bNeedHideDet = true;
+
+		if (wpn)
+		{
+			u32 state = wpn->GetState();
+
+			if (state == CWeapon::eHiding || state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire)
+			{
+				if (state == CWeapon::eHiding)
+				{
+					bNeedHideDet = true;
+					isTryToToggle = false;
+				}
+				return;
+			}
+		}
+
+		if (GetState() == eIdle)
+		{
+			isTryToToggle = false;
+			SwitchState(eHiding);
+		}
+	}
 
 }
 
@@ -193,7 +226,7 @@ void CCustomDetector::SetHideDetStateInWeapon()
 	if (knf)
 		return;
 
-	if (wpn->GetState() == eIdle || wpn->GetState() == CWeapon::eEmptyClick)
+	if (wpn->GetState() == CWeapon::eIdle)
 		wpn->SwitchState(CWeapon::eHideDet);
 }
 
@@ -234,6 +267,8 @@ CCustomDetector::CCustomDetector()
 	m_ui				= nullptr;
 	m_bFastAnimMode		= false;
 	m_bNeedActivation	= false;
+	isTryToToggle		= false;
+	bNeedHideDet		= false;
 }
 
 CCustomDetector::~CCustomDetector() 
@@ -306,10 +341,10 @@ void CCustomDetector::UpdateVisibility()
 				u32 state = wpn->GetState();
 				bool TempTest = wpn->m_bAmmoInChamber ? wpn->iAmmoInChamberElapsed == 0 && wpn->GetAmmoElapsed() == 0 : wpn->GetAmmoElapsed() == 0;
 				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-				if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state==CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && TempTest))
+				if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && TempTest))
 				{
-					HideDetector		(true);
-					m_bNeedActivation	= true;
+					HideDetector(true);
+					m_bNeedActivation = true;
 				}
 			}
 		}
@@ -335,7 +370,42 @@ void CCustomDetector::UpdateCL()
 
 	if(H_Parent()!=Level().CurrentEntity() )			return;
 
+	if (m_pInventory)
+	{
+		CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
+
+		if (!wpn)
+		{
+			if (bNeedHideDet && GetState() == eIdle)
+			{
+				bNeedHideDet = false;
+				HideDetector(false);
+			}
+		}
+
+		if (isTryToToggle)
+		{
+			if (wpn)
+			{
+				if (wpn->GetState() == CWeapon::eIdle)
+				{
+					isTryToToggle = false;
+					ToggleDetector(true);
+				}
+			}
+			else
+			{
+				if (GetState() == eHidden)
+				{
+					isTryToToggle = false;
+					ToggleDetector(false);
+				}
+			}
+		}
+	}
+
 	UpdateVisibility		();
+
 	if( !IsWorking() )		return;
 	UpfateWork				();
 }
