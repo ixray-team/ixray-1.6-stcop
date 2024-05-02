@@ -551,11 +551,11 @@ void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 	PlayHUDMotion("anm_switch", TRUE, this, eSwitch);
 }
 
-std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
+xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	std::string new_name = M;
+	xr_string new_name = M;
 
 	if (IsGrenadeLauncherAttached())
 	{
@@ -583,8 +583,6 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 				else
 					new_name = AddSuffixName(new_name, "_misfire", "_g");
 			}
-
-			std::string temp_name = new_name;
 
 			if (IsChangeAmmoType() && iAmmoElapsed != 0)
 				new_name = AddSuffixName(new_name, "_ammochange", "_g");
