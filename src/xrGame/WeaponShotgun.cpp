@@ -86,8 +86,16 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 	{
 	case eSubstateReloadBegin:
 	{
-		m_sub_state = eSubstateReloadInProcess;
-		SwitchState(eReload);
+		if (bStopReloadSignal || iAmmoElapsed == iMagazineSize)
+		{
+			m_sub_state = eSubstateReloadEnd;
+			SwitchState(eReload);
+		}
+		else
+		{
+			m_sub_state = eSubstateReloadInProcess;
+			SwitchState(eReload);
+		}
 	}break;
 	case eSubstateReloadInProcess:
 	{
