@@ -876,6 +876,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		} break;
 		case eUnjam:
 			bMisfire = false;
+			bReloadKeyPressed = false;
 			SwitchState(eIdle);
 		break;
 		case eHiding:
