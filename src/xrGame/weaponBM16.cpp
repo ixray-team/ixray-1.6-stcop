@@ -27,22 +27,23 @@ void CWeaponBM16::PlayReloadSound()
 		switch (m_magazine.size())
 		{
 		case 0:
-			PlaySound("sndReloadEmpty", get_LastFP());
+			if (m_sounds.FindSoundItem("sndReloadEmpty", false))
+				PlaySound("sndReloadEmpty", get_LastFP());
 			break;
 		case 1:
 		{
-			if (IsMisfire())
+			if (IsMisfire() && m_sounds.FindSoundItem("sndReloadJammed", false))
 				PlaySound("sndReloadJammed", get_LastFP());
-			else if (IsChangeAmmoType())
+			else if (IsChangeAmmoType() && m_sounds.FindSoundItem("sndChangeCartridgeOne", false))
 				PlaySound("sndChangeCartridgeOne", get_LastFP());
-			else
+			else if (m_sounds.FindSoundItem("sndReload", false))
 				PlaySound("sndReload", get_LastFP());
 		}break;
 		case 2:
 		{
-			if (IsMisfire())
+			if (IsMisfire() && m_sounds.FindSoundItem("sndReloadJammed", false))
 				PlaySound("sndReloadJammed", get_LastFP());
-			else
+			else if (m_sounds.FindSoundItem("sndChangeCartridgeFull", false))
 				PlaySound("sndChangeCartridgeFull", get_LastFP());
 		}break;
 		}
