@@ -196,6 +196,7 @@ public:
 	bool m_bUseGLHud;
 
 	bool m_bUseChangeFireModeAnim;
+	bool m_bRestGL_and_Sil;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
