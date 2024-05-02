@@ -154,19 +154,31 @@ void HUD_SOUND_COLLECTION::PlaySound(LPCSTR alias, const Fvector& position, cons
 	}
 
 
-	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, true);
+	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, false);
+
+	if (!snd_item)
+		return;
+
 	HUD_SOUND_ITEM::PlaySound		(*snd_item, position, parent, hud_mode, looped, allowOverlap, index);
 }
 
 void HUD_SOUND_COLLECTION::StopSound(LPCSTR alias)
 {
-	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, true);
+	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, false);
+
+	if (!snd_item)
+		return;
+
 	HUD_SOUND_ITEM::StopSound		(*snd_item);
 }
 
 void HUD_SOUND_COLLECTION::SetPosition(LPCSTR alias, const Fvector& pos)
 {
-	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, true);
+	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, false);
+
+	if (!snd_item)
+		return;
+
 	if(snd_item->playing())
 		snd_item->set_position		(pos);
 }

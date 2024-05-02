@@ -171,16 +171,16 @@ void CHudItem::OnStateSwitch(u32 S)
 		SetPending(FALSE);
 		SwitchSprint = true;
 		PlayHUDMotion("anm_idle_sprint_start", true, this, GetState());
-		if (m_sounds.FindSoundItem("sndSprintStart", false));
-			PlaySound("sndSprintStart", object().XFORM().c);
+		if (HudItemData() && m_sounds.FindSoundItem("sndSprintStart", false));
+			PlaySound("sndSprintStart", HudItemData()->m_item_transform.c);
 	}break;
 	case eSprintEnd:
 	{
 		SetPending(FALSE);
 		SwitchSprint = false;
 		PlayHUDMotion("anm_idle_sprint_end", true, this, GetState());
-		if (m_sounds.FindSoundItem("sndSprintEnd", false));
-			PlaySound("sndSprintEnd", object().XFORM().c);
+		if (HudItemData() && m_sounds.FindSoundItem("sndSprintEnd", false));
+			PlaySound("sndSprintEnd", HudItemData()->m_item_transform.c);
 	}break;
 	}
 
