@@ -268,8 +268,11 @@ void CMissile::UpdateCL()
 	Fvector P;
 	Center(P);
 
-	m_sounds.SetPosition("SndShow", P);
-	m_sounds.SetPosition("SndHide", P);
+	if (m_sounds.FindSoundItem("SndShow", false))
+		m_sounds.SetPosition("SndShow", P);
+
+	if (m_sounds.FindSoundItem("SndHide", false))
+		m_sounds.SetPosition("SndHide", P);
 }
 
 void CMissile::shedule_Update(u32 dt)
@@ -311,7 +314,8 @@ void CMissile::State(u32 state)
         {
 			SetPending			(TRUE);
 			PlayHUDMotion("anm_show", FALSE, this, GetState());
-			PlaySound("SndShow", Position());
+			if (m_sounds.FindSoundItem("SndShow", false))
+				PlaySound("SndShow", Position());
 		} break;
 	case eIdle:
 		{
@@ -324,7 +328,8 @@ void CMissile::State(u32 state)
 			{
 				SetPending			(TRUE);
 				PlayHUDMotion		("anm_hide", TRUE, this, GetState());
-				PlaySound("SndHide", Position());
+				if (m_sounds.FindSoundItem("SndHide", false))
+					PlaySound("SndHide", Position());
 			}
 		} break;
 	case eHidden:
