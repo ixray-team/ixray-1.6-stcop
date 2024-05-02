@@ -95,7 +95,101 @@ void CActor::cam_UnsetLadder()
 	C->lim_yaw[1]			= 0;
 	C->bClampYaw			= false;
 }
+
 float cammera_into_collision_shift = 0.05f;
+void CActor::CorrectActorCameraHeight(float* h)
+{
+	if (_last_camera_height == 0.f)
+	{
+		_last_camera_height = *h;
+		_last_cam_update_time = Device.dwTimeGlobal;
+		return;
+	}
+
+	u32 curtime = Device.dwTimeGlobal;
+
+	u32 result = curtime - _last_cam_update_time;
+	if (result > curtime)
+		result = u32(-1) - _last_cam_update_time + curtime;
+
+	u32 dt = result;
+	_last_cam_update_time = curtime;
+
+	if (mstate_real & mcLanding2)
+	{
+		_landing2_effect_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_time", 0.5f) * 1000.f);
+		_landing_effect_time_remains = 0;
+		_landing_effect_finish_time_remains = 0;
+	}
+	else if (mstate_real & mcLanding)
+	{
+		_landing2_effect_time_remains = 0;
+		_landing_effect_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_time", 0.5f) * 1000.f);
+		_landing_effect_finish_time_remains = 0;
+	}
+
+	float dh_pow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_speed_pow", 1.f);
+	float speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "default_actor_camera_speed", 10.f);
+
+	CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
+	if (wpn)
+		speed *= READ_IF_EXISTS(pSettings, r_float, wpn->cNameSect(), "actor_camera_speed_factor", 1.f);
+
+	float max_offset = 0.f;
+	if (_landing_effect_time_remains > 0)
+	{
+		max_offset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_offset", 0.f);
+		speed *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_factor", 1.f);
+		dh_pow *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_pow_factor", 1.f);
+	}
+	else if (_landing2_effect_time_remains > 0)
+	{
+		max_offset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_offset", 0.f);
+		speed *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_factor", 1.f);
+		dh_pow *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_pow_factor", 1.f);
+	}
+	else if (_landing_effect_finish_time_remains > 0)
+	{
+		speed *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_factor", 1.f);
+		dh_pow *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_pow_factor", 1.f);
+		max_offset = 0.f;
+	}
+
+	float target_h = *h + max_offset;
+	float dh = target_h - _last_camera_height;
+	float delta = abs(pow(abs(dh), dh_pow) * dt * speed / 1000.f);
+
+	if (dh < 0.f)
+		delta *= -1.f;
+
+	if (abs(delta) > abs(dh))
+	{
+		delta = dh;
+		_landing_effect_finish_time_remains = 0;
+	}
+
+	*h = _last_camera_height + delta;
+	_last_camera_height = *h;
+
+	if (_landing_effect_time_remains > dt)
+		_landing_effect_time_remains -= dt;
+	else if (_landing_effect_time_remains > 0)
+	{
+		_landing_effect_finish_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_time", 0.5f) * 1000.f);
+		_landing_effect_time_remains = 0;
+	}
+
+	if (_landing_effect_finish_time_remains > dt)
+		_landing_effect_finish_time_remains -= dt;
+	else
+		_landing_effect_finish_time_remains = 0;
+
+	if (_landing2_effect_time_remains > dt)
+		_landing2_effect_time_remains -= dt;
+	else
+		_landing2_effect_time_remains = 0;
+}
+
 float CActor::CameraHeight()
 {
 	Fvector						R;
@@ -336,17 +430,29 @@ void CActor::cam_Update(float dt, float fFOV)
 	} else
 		current_ik_cam_shift = 0;
 
-	// Alex ADD: smooth crouch
-	float HeightInterpolationSpeed = 4.f;
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	float camera_h;
+	if (!isGuns)
+	{
+		// Alex ADD: smooth crouch
+		float HeightInterpolationSpeed = 4.f;
 
-	if (CurrentHeight < 0.0f)
-		CurrentHeight = CameraHeight();
+		if (CurrentHeight < 0.0f)
+			CurrentHeight = CameraHeight();
 
-	if (CurrentHeight != CameraHeight())
-		CurrentHeight = (CurrentHeight * (1.0f - HeightInterpolationSpeed * dt)) +
-		(CameraHeight() * HeightInterpolationSpeed * dt);
+		if (CurrentHeight != CameraHeight())
+			CurrentHeight = (CurrentHeight * (1.0f - HeightInterpolationSpeed * dt)) +
+			(CameraHeight() * HeightInterpolationSpeed * dt);
 
-	Fvector point = { 0, CurrentHeight + current_ik_cam_shift, 0 };
+		camera_h = CurrentHeight;
+	}
+	else
+	{
+		camera_h = CameraHeight();
+		CorrectActorCameraHeight(&camera_h);
+	}
+
+	Fvector point = { 0, camera_h + current_ik_cam_shift, 0};
 	Fvector dangle		= {0,0,0};
 	Fmatrix				xform;
 	xform.setXYZ		(0,r_torso.yaw,0);
