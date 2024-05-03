@@ -115,7 +115,15 @@ public:
 	virtual void				OnCalculateBones	(){}
 	
 public:
-	dxRender_Visual*				m_lod;
+	dxRender_Visual*			m_lod;
+
+public:
+	Fmatrix						mOldWorldMartrix;
+	Fmatrix						mOldWorldMartrixTmp;
+
+	u32							dwFirstRenderFrame;
+
+	void						StoreVisualMatrix(Fmatrix& world_matrix);
 protected:
 	SkeletonWMVec				wallmarks;
 	u32							wm_frame;
@@ -206,6 +214,7 @@ public:
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
+	ICF Fmatrix&					LL_GetTransform_R_old(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform_old;		}	// rendering only old
 	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
 	const Fbox&				_BCL	GetBox				()const				{	return vis.box ;}
 	void							LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
