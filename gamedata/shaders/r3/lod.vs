@@ -1,55 +1,38 @@
 #include "common.h"
+#define L_SCALE 3.1f
 
-struct vv
-{
-	float3 pos0	: POSITION0	;
-	float3 pos1	: POSITION1	;
-	float3 n0	: NORMAL0	;
-	float3 n1	: NORMAL1	;
-	float2 tc0	: TEXCOORD0	;
-	float2 tc1	: TEXCOORD1	;
-	float4 rgbh0	: TEXCOORD2;	// rgb.h
-	float4 rgbh1	: TEXCOORD3;	// rgb.h
-	float4 sun_af	: COLOR0;	// x=sun_0, y=sun_1, z=alpha, w=factor
-};
-struct vf
-{
-	float3	Pe	: TEXCOORD0	;
- 	float2 	tc0	: TEXCOORD1	;	// base0
- 	float2 	tc1	: TEXCOORD2	;	// base1
-	float4 hpos_curr	: TEXCOORD3;	// rgb.h
-	float4 hpos_old	: TEXCOORD4;	// rgb.h
-	float4 	af	: COLOR1	;	// alpha&factor
-	float4 	hpos: SV_Position;
-};
-
-#define L_SCALE (2.0h*1.55h)
-vf 	main	( vv I )
-{
-	vf 		o;
-
-	I.sun_af.xyz	= I.sun_af.zyx;
-	I.rgbh0.xyz		= I.rgbh0.zyx;
-	I.rgbh1.xyz		= I.rgbh1.zyx;
-
-	// lerp pos
-	float 	factor 	= I.sun_af.w	;
-	float4 	pos 	= float4	(lerp(I.pos0,I.pos1,factor),1);
-
-	float 	h 	= lerp		(I.rgbh0.w,I.rgbh1.w,factor)		*L_SCALE;
-
-	o.hpos 		= mul		(m_VP, 	pos);				// xform, input in world coords
-	o.Pe		= mul		(m_V,	pos);
+struct v_bolbord {
+	float3 pos0 : POSITION0;
+	float3 pos1 : POSITION1;
 	
-	o.hpos_curr = mul (m_VP, pos);
-	o.hpos_old = mul (m_VP_old, pos);
+	float3 n0 : NORMAL0;
+	float3 n1 : NORMAL1;
+	
+	float2 tc0 : TEXCOORD0;
+	float2 tc1 : TEXCOORD1;
+	
+	float4 rgbh0 : TEXCOORD2;
+	float4 rgbh1 : TEXCOORD3;
+	
+	float4 sun_af : COLOR0;
+};
 
-	// replicate TCs
-	o.tc0		= I.tc0;						
-	o.tc1		= I.tc1;						
+void main (in v_bolbord I, out p_bilbord o) {
+	I.sun_af.xyz = I.sun_af.zyx;
+	I.rgbh0.xyz = I.rgbh0.zyx;
+	I.rgbh1.xyz = I.rgbh1.zyx;
+	
+	float4 pos = float4(lerp(I.pos0, I.pos1, I.sun_af.w), 1.0f);
+	float h = lerp(I.rgbh0.w, I.rgbh1.w, I.sun_af.w) * L_SCALE;
+	o.af = float4(h, h, I.sun_af.z, I.sun_af.w);
+	
+	o.hpos = mul(m_VP, pos);
+	o.position = mul(m_V, pos);
 
-	// calc normal & lighting
-	o.af		= float4	(h,h,I.sun_af.z,factor);
-	return o	;
+	o.tc0 = I.tc0;
+	o.tc1 = I.tc1;
+	
+	o.hpos_curr = mul(m_VP, pos);
+	o.hpos_old = mul(m_VP_old, pos);
 }
-FXVS;
+
