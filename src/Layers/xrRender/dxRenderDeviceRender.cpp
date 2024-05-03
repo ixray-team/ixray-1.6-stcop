@@ -461,6 +461,12 @@ void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)
 	RCache.set_xform_project(mProject);
 }
 
+void dxRenderDeviceRender::SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject)
+{
+	RCache.set_xform_view_old(mView);
+	RCache.set_xform_project_old(mProject);
+}
+
 bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()
 {
 	return true;

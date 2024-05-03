@@ -248,6 +248,8 @@ void CRenderDevice::on_idle		()
 	mProject_old			= mProject_saved;
 	mFullTransform_old		= mFullTransform_saved;
 
+	m_pRender->SetCacheXformOld(mView_old, mProject_old);
+
 	mView_saved				= mView;
 	mProject_saved			= mProject;
 	mFullTransform_saved	= mFullTransform;
