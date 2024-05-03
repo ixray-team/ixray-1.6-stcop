@@ -270,7 +270,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		// setup stencil
 		//RCache.set_Stencil	(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 		RCache.set_Stencil	(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,st_mask, D3DSTENCILOP_KEEP, st_pass, D3DSTENCILOP_KEEP);
-		RCache.Render			(D3DPT_TRIANGLELIST,Offset,0,8,0,16);
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
 
 		// Fetch4 : disable
 		//		if (RImplementation.o.HW_smap_FETCH4)	{
@@ -286,11 +286,11 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		//	Igor: draw volumetric here
 		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
 		if ((ps_r_sun_shafts>0) && sub_phase == SE_SUN_FAR)
-			accum_direct_volumetric	(sub_phase, Offset, m_shadow);
+			accum_direct_volumetric(sub_phase, Offset, i_offset, m_shadow);
 	}
 }
 
-void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, const Fmatrix &mShadow)
+void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, const u32 i_offset, const Fmatrix &mShadow)
 {
 	PIX_EVENT(accum_direct_volumetric);
 
@@ -427,7 +427,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 
 		// setup stencil: we have to draw to both lit and unlit pixels
 		//RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, 0, 16);
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
 
 		// Fetch4 : disable
 //		if (RImplementation.o.HW_smap_FETCH4)	{
