@@ -259,66 +259,71 @@ static cl_eye_N		binder_eye_N;
 
 #ifndef _EDITOR
 // D-Light0
-class cl_sun0_color	: public R_constant_setup {
+class cl_sun0_color : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
-	virtual void setup	(R_constant* C)	{
-		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-			result.set				(desc.sun_color.x,	desc.sun_color.y, desc.sun_color.z,	0);
+	virtual void setup(R_constant* C) {
+		if (marker != Device.dwFrame) {
+			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+			result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
 		}
-		RCache.set_c	(C,result);
+		RCache.set_c(C, result);
 	}
-};	static cl_sun0_color		binder_sun0_color;
-class cl_sun0_dir_w	: public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup	(R_constant* C)	{
-		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-			result.set				(desc.sun_dir.x,	desc.sun_dir.y, desc.sun_dir.z,	0);
-		}
-		RCache.set_c	(C,result);
-	}
-};	static cl_sun0_dir_w		binder_sun0_dir_w;
-class cl_sun0_dir_e	: public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup	(R_constant* C)	{
-		if (marker!=Device.dwFrame)	{
-			Fvector D;
-			CEnvDescriptor&	desc		= *g_pGamePersistent->Environment().CurrentEnv;
-			Device.mView.transform_dir	(D,desc.sun_dir);
-			D.normalize					();
-			result.set					(D.x,D.y,D.z,0);
-		}
-		RCache.set_c	(C,result);
-	}
-};	static cl_sun0_dir_e		binder_sun0_dir_e;
+};	static cl_sun0_color binder_sun0_color;
 
-//
-class cl_amb_color	: public R_constant_setup {
+class cl_sun0_dir_w : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
-	virtual void setup	(R_constant* C)	{
-		if (marker!=Device.dwFrame)	{
-			CEnvDescriptorMixer&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-			result.set				(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
+	virtual void setup(R_constant* C) {
+		if (marker != Device.dwFrame) {
+			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+			result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
 		}
-		RCache.set_c	(C,result);
+		RCache.set_c(C, result);
 	}
-};	static cl_amb_color		binder_amb_color;
-class cl_hemi_color	: public R_constant_setup {
+};	static cl_sun0_dir_w binder_sun0_dir_w;
+
+class cl_sun0_dir_e : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
-	virtual void setup	(R_constant* C)	{
-		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-			result.set				(desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z, desc.hemi_color.w);
+	virtual void setup(R_constant* C) {
+		if (marker != Device.dwFrame) {
+			Fvector D;
+			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+			Device.mView.transform_dir(D, desc.sun_dir);
+			D.normalize();
+			result.set(D.x, D.y, D.z, 0);
 		}
-		RCache.set_c	(C,result);
+		RCache.set_c(C, result);
 	}
-};	static cl_hemi_color		binder_hemi_color;
+};	static cl_sun0_dir_e binder_sun0_dir_e;
+
+class cl_amb_color : public R_constant_setup {
+	u32			marker;
+	Fvector4	result;
+	virtual void setup(R_constant* C) {
+		if (marker != Device.dwFrame) {
+			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
+
+			result.set(desc.ambient.x * ps_r2_sun_lumscale_amb * 2.0f,
+				desc.ambient.y * ps_r2_sun_lumscale_amb * 2.0f, desc.ambient.z * ps_r2_sun_lumscale_amb * 2.0f, desc.weight);
+		}
+		RCache.set_c(C, result);
+	}
+};	static cl_amb_color binder_amb_color;
+
+class cl_hemi_color : public R_constant_setup {
+	u32			marker;
+	Fvector4	result;
+	virtual void setup(R_constant* C) {
+		if (marker != Device.dwFrame) {
+			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
+			result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
+				desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+		}
+		RCache.set_c(C, result);
+	}
+}; static cl_hemi_color binder_hemi_color;
 #endif
 
 static class cl_screen_res : public R_constant_setup		
@@ -438,7 +443,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("L_sun_color",		&binder_sun0_color);
 	r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
 	r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
-//	r_Constant				("L_lmap_color",	&binder_lm_color);
+
 	r_Constant				("L_hemi_color",	&binder_hemi_color);
 	r_Constant				("L_ambient",		&binder_amb_color);
 #endif
