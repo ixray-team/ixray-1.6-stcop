@@ -35,7 +35,7 @@
 #define NOSERVICE
 #define NOHELP
 #define NOPROFILER
-#define NOMINMAX
+//#define NOMINMAX
 
 #pragma warning(push)
 #pragma warning(disable:4005)

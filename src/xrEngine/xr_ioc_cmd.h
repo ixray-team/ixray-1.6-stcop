@@ -6,6 +6,8 @@
 #define CMD3(cls,p1,p2,p3)			{ static cls x##cls(p1,p2,p3);		Console->AddCommand(&x##cls);}
 #define CMD4(cls,p1,p2,p3,p4)		{ static cls x##cls(p1,p2,p3,p4);	Console->AddCommand(&x##cls);}
 
+#include <charconv>
+
 class ENGINE_API	IConsole_Command
 {
 public		:
@@ -301,7 +303,7 @@ public:
 
 	virtual void	Status	(TStatus& S)
 	{	
-		xr_sprintf	(S,sizeof(S),"(%f, %f, %f)",value->x,value->y,value->z);
+		xr_sprintf	(S,sizeof(S),"%f,%f,%f",value->x,value->y,value->z);
 	}
 	virtual void	Info	(TInfo& I)
 	{	
