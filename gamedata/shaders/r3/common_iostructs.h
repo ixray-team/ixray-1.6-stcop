@@ -298,6 +298,7 @@ struct                  f_deffer
 	float4	position: SV_Target0;        // px,py,pz, m-id
 	float4	Ne		  : SV_Target1;        // nx,ny,nz, hemi
 	float4	C		  : SV_Target2;        // r, g, b,  gloss
+	float2	V		  : SV_Target3;
 #ifdef EXTEND_F_DEFFER
    uint     mask    : SV_COVERAGE;
 #endif
@@ -307,6 +308,7 @@ struct                  f_deffer
 {
 	float4	position: SV_Target0;        // xy=encoded normal, z = pz, w = encoded(m-id,hemi)
 	float4	C		  : SV_Target1;        // r, g, b,  gloss
+	float2	V		  : SV_Target2;
 #ifdef EXTEND_F_DEFFER
    uint     mask    : SV_COVERAGE;
 #endif
@@ -342,6 +344,8 @@ struct v2p_bumped
 #ifdef USE_LM_HEMI
 		float2	lmh	: TEXCOORD6;	// lm-hemi
 #endif
+	float4	hpos_curr	: POSITION0;
+	float4	hpos_old	: POSITION1;
 	float4	hpos	: SV_Position;
 };
 
@@ -362,6 +366,8 @@ struct p_bumped
 #ifdef USE_LM_HEMI
 		float2	lmh	: TEXCOORD6;	// lm-hemi
 #endif
+	float4	hpos_curr	: POSITION0;
+	float4	hpos_old	: POSITION1;
 };
 ////////////////////////////////////////////////////////////////
 //	Defer flat
@@ -380,6 +386,8 @@ struct	v2p_flat
 #ifdef USE_LM_HEMI
 	float2	lmh		: TEXCOORD4;	// lm-hemi
 #endif
+	float4	hpos_curr	: POSITION0;
+	float4	hpos_old	: POSITION1;
 	float4	hpos	: SV_Position;
 };
 
@@ -398,6 +406,8 @@ struct	p_flat
 #ifdef USE_LM_HEMI
 	float2	lmh		: TEXCOORD4;	// lm-hemi
 #endif
+	float4	hpos_curr	: POSITION0;
+	float4	hpos_old	: POSITION1;
 };
 
 ////////////////////////////////////////////////////////////////
