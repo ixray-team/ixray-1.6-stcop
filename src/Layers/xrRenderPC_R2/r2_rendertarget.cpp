@@ -242,10 +242,10 @@ CRenderTarget::CRenderTarget		()
 		}
 
 		// generic(LDR) RTs
-		rt_Generic_0.create			(r2_RT_generic0,w,h,D3DFMT_A8R8G8B8		);
-		rt_Generic_1.create			(r2_RT_generic1,w,h,D3DFMT_A8R8G8B8		);
+		rt_Generic_0.create(r2_RT_generic0, w, h, D3DFMT_A16B16G16R16F);
+		rt_Generic_1.create(r2_RT_generic1, w, h, D3DFMT_A8R8G8B8);
+
 		//	Igor: for volumetric lights
-		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
 		//	temp: for higher quality blends
 		rt_Generic_2.create(r2_RT_generic2, w, h, D3DFMT_A16B16G16R16F);
 	}

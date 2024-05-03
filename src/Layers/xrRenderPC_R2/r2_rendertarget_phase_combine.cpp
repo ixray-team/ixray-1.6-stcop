@@ -49,17 +49,16 @@ void	CRenderTarget::phase_combine	()
 	if (RImplementation.o.ssao_opt_data)
 	{
 		phase_downsamp();
-		//phase_ssao();
 	}
 	else if (RImplementation.o.ssao_blur_on)
 		phase_ssao();
 
 	// low/hi RTs
-	u_setrt				( rt_Generic_0,rt_Generic_1,0,RDepth );
-	RCache.set_Stencil	( FALSE		);
+	u_setrt(rt_Generic_0, 0, 0, RDepth);
+	RCache.set_Stencil(FALSE);
 
-	BOOL	split_the_scene_to_minimize_wait			= FALSE;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
+	BOOL split_the_scene_to_minimize_wait = FALSE;
+	if(ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait = TRUE;
 
 	// draw skybox
 	if (1)
@@ -262,8 +261,7 @@ void	CRenderTarget::phase_combine	()
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
 		// Draw COLOR
-		if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
-		else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
+		RCache.set_Element(s_combine->E[bDistort ? 1 : 2]);	// look at blender_combine.cpp
 		RCache.set_c				("e_barrier",	ps_r2_aa_barier.x,	ps_r2_aa_barier.y,	ps_r2_aa_barier.z,	0);
 		RCache.set_c				("e_weights",	ps_r2_aa_weight.x,	ps_r2_aa_weight.y,	ps_r2_aa_weight.z,	0);
 		RCache.set_c				("e_kernel",	ps_r2_aa_kernel,	ps_r2_aa_kernel,	ps_r2_aa_kernel,	0);
@@ -276,17 +274,16 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}
-	RCache.set_Stencil		(FALSE);
 
-	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
-	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares	();	// lens-flares
+	RCache.set_Stencil (FALSE);
+	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 
 	//	Igor: screenshot will not have postprocess applied.
 	//	TODO: fox that later
 
 	//	PP-if required
 	if (PP_Complex)		{
-		phase_pp		();
+		phase_pp ();
 	}
 
 	//	Re-adapt luminance
@@ -343,69 +340,6 @@ void	CRenderTarget::phase_combine	()
 	}
 #endif
 
-	// ********************* Debug
-	/*
-	if (0)		{
-		u32		C					= color_rgba	(255,255,255,255);
-		float	_w					= float(Device.TargetWidth)/3;
-		float	_h					= float(Device.TargetHeight)/3;
-
-		// draw light-spheres
-#ifdef DEBUG
-		if (0) for (u32 it=0; it<dbg_spheres.size(); it++)
-		{
-			Fsphere				S	= dbg_spheres[it].first;
-			Fmatrix				M;	
-			u32				ccc		= dbg_spheres[it].second.get();
-			M.scale					(S.R,S.R,S.R);
-			M.translate_over		(S.P);
-			RCache.dbg_DrawEllipse	(M,ccc);
-			RCache.dbg_DrawAABB		(S.P,.05f,.05f,.05f,ccc);
-		}
-#endif
-		// Draw quater-screen quad textured with our direct-shadow-map-image
-		if (1) 
-		{
-			u32							IX=0,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-			// Fill vertex buffer
-			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
-			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-			// Draw COLOR
-			RCache.set_Shader			(s_combine_dbg_0);
-			RCache.set_Geometry			(g_combine);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		}
-
-		// Draw quater-screen quad textured with our accumulator
-		if (0)
-		{
-			u32							IX=1,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-			// Fill vertex buffer
-			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
-			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-			// Draw COLOR
-			RCache.set_Shader			(s_combine_dbg_1);
-			RCache.set_Geometry			(g_combine);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		}
-	}
-	*/
 #ifdef DEBUG
 	dbg_spheres.clear	();
 	dbg_lines.clear		();
@@ -430,8 +364,7 @@ void CRenderTarget::phase_combine_volumetric()
 	u32			Offset					= 0;
 	Fvector2	p0,p1;
 
-	//u_setrt(rt_Generic_0,0,0,RDepth );			// LDR RT
-	u_setrt(rt_Generic_0,rt_Generic_1,0,RDepth );
+	u_setrt(rt_Generic_0, 0, 0, RDepth);
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{
