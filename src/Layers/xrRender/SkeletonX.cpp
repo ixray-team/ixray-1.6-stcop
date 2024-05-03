@@ -342,6 +342,8 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		}
 		break;
 	}
+
+	RCache.set_xform_world_old(Fidentity);
 }
 void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
