@@ -90,28 +90,32 @@ static const float g_fRingWeightsTotal[RING_2] =
 
 float4 GatherZSamples( float2 f2TexCoord )
 {
-	float4 f4Ret;
+	float4 f4Ret, f4Add;
 
 	float2 f2InvRTSize = (1.0f).xx / pos_decompression_params2.xy;
 	
 #ifndef SM_5
-	f4Ret.x = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 0)).z;
-	f4Ret.y = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 1)).z;
-	f4Ret.z = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 1)).z;
-	f4Ret.w = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 0)).z;
+	f4Ret.x = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 0)).x;
+	f4Ret.y = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 1)).x;
+	f4Ret.z = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 1)).x;
+	f4Ret.w = g_txDepth.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 0)).x;
 #else // !SM_5
-	f4Ret = g_txDepth.GatherBlue(smp_nofilter, f2TexCoord);
+	f4Ret = g_txDepth.GatherRed(smp_nofilter, f2TexCoord);
 #endif // SM_5
 
+	f4Ret = m_P._34 / (f4Ret - m_P._33);
+
 #ifndef SM_5
-	f4Ret.x += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(1, 0)).z;
-	f4Ret.y += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(1, 1)).z;
-	f4Ret.z += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(0, 1)).z;
-	f4Ret.w += g_fHDAOZDispScale * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0 ), int2(0, 0)).z;
+	f4Add.x = 1.0f - 2.0f * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 0)).z;
+	f4Add.y = 1.0f - 2.0f * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 1)).z;
+	f4Add.z = 1.0f - 2.0f * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 1)).z;
+	f4Add.w = 1.0f - 2.0f * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(0, 0)).z;
 #else // !SM_5
-	f4Ret += g_fHDAOZDispScale * g_txNormal.GatherBlue(smp_nofilter, f2TexCoord);
+	f4Add = 1.0f - 2.0f * g_txNormal.GatherBlue(smp_nofilter, f2TexCoord);
 #endif // SM_5
       
+	f4Ret += g_fHDAOZDispScale * f4Add;
+	  
 	return f4Ret;
 }
 
@@ -139,7 +143,7 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 	int2 i2OffsetScreenCoord;
 	int2 i2MirrorOffsetScreenCoord;
 	
-	float3 N = gbuf_unpack_normal(g_txNormal.Load(int3( u2ScreenCoord, 0), 0).xy);
+	float3 N = 1.0f - 2.0f * g_txNormal.Load(int3( u2ScreenCoord, 0), 0).xyz;
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
 	{
@@ -153,8 +157,8 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 		i2OffsetScreenCoord = ( i2OffsetScreenCoord < 0 ) ? ( 0 ) : ( i2OffsetScreenCoord );
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
-		f3N1.xyz = g_txNormal.Load(int3( i2OffsetScreenCoord, 0), 0).xyz;
-		f3N2.xyz = g_txNormal.Load(int3( i2MirrorOffsetScreenCoord, 0), 0).xyz;			
+		f3N1.xyz = 1.0f - 2.0f * g_txNormal.Load(int3( i2OffsetScreenCoord, 0), 0).xyz;
+		f3N2.xyz = 1.0f - 2.0f * g_txNormal.Load(int3( i2MirrorOffsetScreenCoord, 0), 0).xyz;			
 		
 		fDot = dot(f3N1, N);
 		
