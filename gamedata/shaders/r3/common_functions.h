@@ -35,7 +35,7 @@ void tonemap( out float4 low, out float4 high, float3 rgb, float scale)
 
 float4 combine_bloom( float3  low, float4 high)	
 {
-        return float4( low + high*high.a, 1.h );
+	return float4( low + high*high.a, 1.f);
 }
 
 float calc_fogging( float4 w_pos )      
@@ -169,149 +169,76 @@ float3 gbuf_unpack_normal( float2 norm )
    return res;
 }
 
-float gbuf_pack_hemi_mtl( float hemi, float mtl )
-{
-   uint packed_mtl = uint( ( mtl / 1.333333333 ) * 31.0 );
-//   uint packed = ( MUST_BE_SET + ( uint( hemi * 255.0 ) << 13 ) + ( ( packed_mtl & uint( 31 ) ) << 21 ) );
-	//	Clamp hemi max value
-	uint packed = ( MUST_BE_SET + ( uint( saturate(hemi) * 255.9 ) << 13 ) + ( ( packed_mtl & uint( 31 ) ) << 21 ) );
+float gbuf_pack_hemi_mtl(float hemi, float mtl) {
+	uint pack_hemi = saturate(hemi) * 0x3FF;
+	uint pack_mtl = uint(mtl * 0x3F) & 0x3F;
+	uint packed = (pack_hemi << 6) | (pack_mtl);
 
-   if( ( packed & USABLE_BIT_13 ) == 0 )
-      packed |= USABLE_BIT_14;
-
-   if( packed_mtl & uint( 16 ) )
-      packed |= USABLE_BIT_15;
-
-   return asfloat( packed );
+	return float(packed) / 65535.0f;
 }
 
-float gbuf_unpack_hemi( float mtl_hemi )
-{
-//   return float( ( asuint( mtl_hemi ) >> 13 ) & uint(255) ) * (1.0/255.0);
-	return float( ( asuint( mtl_hemi ) >> 13 ) & uint(255) ) * (1.0/254.8);
+float gbuf_unpack_hemi(float mtl_hemi) {
+	uint packed = mtl_hemi * 0xffff;
+	return float(packed >> 6) / 1023.0f;
 }
 
-float gbuf_unpack_mtl( float mtl_hemi )
-{
-   uint packed       = asuint( mtl_hemi );
-   uint packed_hemi  = ( ( packed >> 21 ) & uint(15) ) + ( ( packed & USABLE_BIT_15 ) == 0 ? 0 : 16 );
-   return float( packed_hemi ) * (1.0/31.0) * 1.333333333;
+float gbuf_unpack_mtl(float mtl_hemi) {
+	uint packed = mtl_hemi * 0xffff;
+	return float(packed & 0x3F) / 63.0f;
 }
 
-#ifndef EXTEND_F_DEFFER
-f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col )
-#else
-f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, uint imask )
-#endif
+f_deffer pack_gbuffer(float4 Normal, float4 Point, float4 Color)
 {
 	f_deffer res;
-
-#ifndef GBUFFER_OPTIMIZATION
-	res.position	= pos;
-	res.Ne			= norm;
-	res.C			   = col;
-#else
-	res.position	= float4( gbuf_pack_normal( norm ), pos.z, gbuf_pack_hemi_mtl( norm.w, pos.w ) );
-	res.C			   = col;
-#endif
-
-#ifdef EXTEND_F_DEFFER
-   res.mask = imask;
-#endif
+	
+	Normal.z = -Normal.z;
+	res.Ne.xyz = saturate(Normal.xyz * 0.5f + 0.5f);
+	res.Ne.w = gbuf_pack_hemi_mtl(Normal.w, Point.w);
+	res.C = Color;
 
 	return res;
 }
 
-#ifdef GBUFFER_OPTIMIZATION
-gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d, int iSample )
+gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d)
 {
 	gbuffer_data gbd;
 
-	gbd.P = float3(0,0,0);
-	gbd.hemi = 0;
-	gbd.mtl = 0;
-	gbd.C = 0;
-	gbd.N = float3(0,0,0);
+	gbd.P = float3(0.0f, 0.0f, 0.0f);
+	gbd.N = float3(0.0f, 0.0f, 0.0f);
+	gbd.hemi = 0.0f;
+	gbd.mtl = 0.0f;
+	gbd.C = 0.0f;
 
-	float4 P	= s_position.Sample( smp_nofilter, tc );
-
-	// 3d view space pos reconstruction math
-	// center of the plane (0,0) or (0.5,0.5) at distance 1 is eyepoint(0,0,0) + lookat (assuming |lookat| ==1
-	// left/right = (0,0,1) -/+ tan(fHorzFOV/2) * (1,0,0 ) 
-	// top/bottom = (0,0,1) +/- tan(fVertFOV/2) * (0,1,0 )
-	// lefttop		= ( -tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
-	// righttop		= (  tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
-	// leftbottom   = ( -tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
-	// rightbottom	= (  tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
-	gbd.P  = float3( P.z * ( pos2d * pos_decompression_params.zw - pos_decompression_params.xy ), P.z );
+	float P = s_position.Sample(smp_nofilter, tc).x;
+	P = m_P._34 / (P - m_P._33);  
+	
+	pos2d = pos2d - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
+	gbd.P = P * float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+		
+	float4 N = s_normal.Sample(smp_nofilter, tc);
 
 	// reconstruct N
-	gbd.N = gbuf_unpack_normal( P.xy );
+	gbd.N = normalize(N.xyz - 0.5f);
+	gbd.N.z = -gbd.N.z;
 
 	// reconstruct material
-	gbd.mtl	= gbuf_unpack_mtl( P.w );
+	gbd.mtl	= gbuf_unpack_mtl(N.w);
 
-   // reconstruct hemi
-   gbd.hemi = gbuf_unpack_hemi( P.w );
+	// reconstruct hemi
+	gbd.hemi = gbuf_unpack_hemi(N.w);
 
-   float4	C	= s_diffuse.Sample( smp_nofilter, tc );
+	float4 C = s_diffuse.Sample(smp_nofilter, tc);
 
-	gbd.C		= C.xyz;
-	gbd.gloss	= C.w;
-
-	return gbd;
-}
-
-gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d )
-{
-   return gbuffer_load_data( tc, pos2d, 0 );
-}
-
-gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, float2 pos2d )
-{
-	float2  delta	  = ( ( OffsetTC - tc ) * pos_decompression_params2.xy );
-
-	return gbuffer_load_data( OffsetTC, pos2d + delta, 0 );
-}
-
-gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, float2 pos2d, uint iSample )
-{
-   float2  delta	  = ( ( OffsetTC - tc ) * pos_decompression_params2.xy );
-
-   return gbuffer_load_data( OffsetTC, pos2d + delta, iSample );
-}
-
-#else // GBUFFER_OPTIMIZATION
-gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, uint iSample )
-{
-	gbuffer_data gbd;
-
-	float4 P	= s_position.Sample( smp_nofilter, tc );
-	gbd.P		= P.xyz;
-	gbd.mtl		= P.w;
-
-	float4 N	= s_normal.Sample( smp_nofilter, tc );
-	gbd.N		= N.xyz;
-	gbd.hemi	= N.w;
-
-	float4	C	= s_diffuse.Sample(  smp_nofilter, tc );
-
-	gbd.C		= C.xyz;
-	gbd.gloss	= C.w;
+	gbd.C = C.xyz;
+	gbd.gloss = C.w;
 
 	return gbd;
 }
 
-gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD  )
+gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, float2 pos2d)
 {
-   return gbuffer_load_data( tc, 0 );
+   float2 delta = ((OffsetTC - tc) * pos_decompression_params2.xy);
+   return gbuffer_load_data(OffsetTC, pos2d + delta);
 }
-
-gbuffer_data gbuffer_load_data_offset( float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, uint iSample )
-{
-   return gbuffer_load_data( OffsetTC, iSample );
-}
-
-#endif // GBUFFER_OPTIMIZATION
 
 #endif	//	common_functions_h_included
