@@ -100,6 +100,17 @@ class cl_texgen : public R_constant_setup
 };
 static cl_texgen		binder_texgen;
 
+class cl_invV : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		Fmatrix mInvV = Fmatrix().invert(RCache.xforms.m_v);
+
+		RCache.set_c(C, mInvV);
+	}
+};
+static cl_invV binder_invv;
+
 class cl_VPtexgen : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
@@ -376,7 +387,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_WV_old",		&binder_wv_old);
 	r_Constant				("m_VP_old",		&binder_vp_old);
 	r_Constant				("m_WVP_old",		&binder_wvp_old);
-
+	
 	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
 	r_Constant				("m_xform",			&tree_binder_m_xform);
 	r_Constant				("consts",			&tree_binder_consts);
@@ -392,6 +403,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("hemi_cube_neg_faces",			&binder_hemi_cube_neg_faces);
 
 	//	Igor	temp solution for the texgen functionality in the shader
+	r_Constant				("m_invV",				&binder_invv);
 	r_Constant				("m_texgen",			&binder_texgen);
 	r_Constant				("mVPTexgen",			&binder_VPtexgen);
 
