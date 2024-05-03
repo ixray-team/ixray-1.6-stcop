@@ -106,7 +106,7 @@ void SloadNew(inout p_bumped_new I, inout XrayMaterial M) {
 		M.Normal = Bump.wzy + BumpX.xyz - 1.0f;
 		M.Normal.z *= 0.5f;
 		
-		M.Roughness = Bump.x;
+		M.Roughness = Bump.x * Bump.x;
 		M.Metalness = 0.0f;
 		
 		M.SSS = 0.0;
