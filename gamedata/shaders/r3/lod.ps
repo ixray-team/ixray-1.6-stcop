@@ -1,13 +1,15 @@
 #include "common.h"
 #include "sload.h"
 
-struct 	vf
+struct vf
 {
-	float3	position	: TEXCOORD0;
- 	float2	tc0			: TEXCOORD1;	// base0
- 	float2	tc1			: TEXCOORD2;	// base1
-	float4	af			: COLOR1;		// alpha&factor
-	float4	hpos		: SV_Position;
+	float3	position	: TEXCOORD0	;
+ 	float2 	tc0	: TEXCOORD1	;	// base0
+ 	float2 	tc1	: TEXCOORD2	;	// base1
+	float4 hpos_curr	: TEXCOORD3;	// rgb.h
+	float4 hpos_old	: TEXCOORD4;	// rgb.h
+	float4 	af	: COLOR1	;	// alpha&factor
+	float4 	hpos: SV_Position;
 };
 
 void sample_Textures( inout float4 D, inout float4 H, float2 tc1, float2 tc0, float4 af, float2 pixeloffset )
@@ -56,6 +58,8 @@ f_deffer 	main	( vf I )
 								float4	(N					, H.w		),
 								float4 	(I.position + N*def_virtualh/2.0f, 0.0f),
 								float4	(D.x,	D.y,	D.z			, def_gloss	) );		// OUT: rgb.gloss
+								
+	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
   return O;
 }
 

@@ -41,7 +41,10 @@ v2p_flat 	main (v_detail v)
 	O.tcdh.w	= c0.x;								// (,,,dir-occlusion)
 # endif
 
-	O.position	= float4	(Pe, 		c0.w		);
+	O.hpos_curr = mul (m_WVP, pos);
+	O.hpos_old = mul (m_WVP_old, pos);
+	
+	O.position	= float4 (Pe, c0.w);
 
 	return O;
 }

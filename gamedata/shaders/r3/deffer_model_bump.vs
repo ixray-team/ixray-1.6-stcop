@@ -15,6 +15,9 @@ v2p_bumped _main( v_model I )
 	float2 	tc 	= I.tc;
 	float3	Pe	= mul( m_WV, w_pos );
 	O.tcdh 		= float4( tc.xyyy );
+	
+	O.hpos_curr = mul		(m_WVP, w_pos);
+	O.hpos_old = mul		(m_WVP_old, I.P_old);
 
 	//  Hemi cube lighting
 	float3	Nw	= mul		((float3x3)m_W, (float3)I.N);

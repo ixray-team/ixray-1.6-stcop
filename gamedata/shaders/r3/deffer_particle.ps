@@ -25,6 +25,7 @@ f_deffer 	main	( p_particle II )
   O				= pack_gbuffer( 
 								Ne,
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh / 2.0f, xmaterial		),
-								float4	(D.xyz,			def_gloss) );		// OUT: rgb.gloss					
+								float4	(D.xyz,			def_gloss) );		// OUT: rgb.gloss			
+	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;		
   return O;
 }

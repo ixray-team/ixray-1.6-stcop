@@ -25,6 +25,9 @@ v2p_bumped main( v_in I )
 	O.tcdh.w	= I.color.w;					// (r,g,b,dir-occlusion)
 #endif
 
+	O.hpos_curr = mul		(m_WVP, w_pos);
+	O.hpos_old = mul		(m_WVP_old, w_pos);
+
 	// Calculate the 3x3 transform from tangent space to eye-space
 	// TangentToEyeSpace = object2eye * tangent2object
 	//		     = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)

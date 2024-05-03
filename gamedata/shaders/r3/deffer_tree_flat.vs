@@ -2,9 +2,9 @@
 
 uniform float3x4	m_xform;
 uniform float3x4	m_xform_v;
-uniform float4 		consts; 	// {1/quant,1/quant,???,???}
-uniform float4 		c_scale,c_bias,wind,wave;
-uniform float2 		c_sun;		// x=*, y=+
+uniform float4 		consts, consts_old, wave_old, wind_old; 	// {1/quant,1/quant,???,???}
+uniform float4 		c_scale, c_bias, wind, wave;
+uniform float2 		c_sun; // x=*, y=+
 
 v2p_flat main (v_tree I)
 {
@@ -17,21 +17,31 @@ v2p_flat main (v_tree I)
 	// Transform to world coords
 	float3 	pos		= mul		(m_xform, I.P);
 
-	//
-	float 	base 	= m_xform._24;			// take base height from matrix
-	float 	dp		= calc_cyclic  (wave.w+dot(pos,(float3)wave));
+#ifndef USE_TREEWAVE
+	float 	base 	= m_xform._24; // take base height from matrix
 	float 	H 		= pos.y - base;			// height of vertex (scaled, rotated, etc.)
-	float 	frac 	= I.tc.z*consts.x;		// fractional (or rigidity)
-	float 	inten 	= H * dp;			// intensity
-	float2 	result	= calc_xz_wave	(wind.xz*inten, frac);
-#ifdef		USE_TREEWAVE
-			result	= 0;
-#endif
+	
+	float 	dp		= calc_cyclic  (wave.w + dot(pos,(float3)wave));
+	float 	frac 	= I.tc.z*consts.x; // fractional (or rigidity)
+	float 	inten 	= H * dp; // intensity
+	
+	float 	dp_old	= calc_cyclic  (wave_old.w + dot(pos,(float3)wave_old));
+	float 	frac_old 	= I.tc.z * consts_old.x; // fractional (or rigidity)
+	float 	inten_old 	= H * dp_old; // intensity
+	
+	float2 	result	= calc_xz_wave	(wind.xz * inten, frac);
+	float2 	result_old	= calc_xz_wave	(wind_old.xz * inten_old, frac_old);
+	
 	float4 	f_pos 	= float4(pos.x+result.x, pos.y, pos.z+result.y, 1);
-
+	float4 	o_pos 	= float4(pos.x+result_old.x, pos.y, pos.z+result_old.y, 1);
+#else
+	float4 	f_pos 	= float4(pos.xyz, 1);
+	float4 	o_pos 	= f_pos;
+#endif
+	
 	// Final xform(s)
 	// Final xform
-	float3	Pe		= mul		(m_V,  f_pos				);
+	float3	Pe		= mul (m_V,  f_pos);
 	float 	hemi 	= I.Nh.w*c_scale.w + c_bias.w;
     //float 	hemi 	= I.Nh.w;
 	o.hpos			= mul		(m_VP, f_pos				);
@@ -39,6 +49,9 @@ v2p_flat main (v_tree I)
 	o.tcdh 			= float4	((I.tc * consts).xyyy		);
 	o.position		= float4	(Pe, hemi					);
 
+	o.hpos_curr = mul (m_VP, f_pos);
+	o.hpos_old = mul (m_VP_old, o_pos);
+	
 #if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
 	float 	suno 	= I.Nh.w * c_sun.x + c_sun.y	;
 	o.tcdh.w		= suno;					// (,,,dir-occlusion)

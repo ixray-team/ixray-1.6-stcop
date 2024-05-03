@@ -44,6 +44,8 @@ f_deffer 	main	( p_flat I )
   								Ne,
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.0f	, 	ms			),
 								float4	(D.rgb,											def_gloss	) );
+								
+  O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
   return O;
 }
 
