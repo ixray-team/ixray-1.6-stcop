@@ -19,6 +19,41 @@
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "magic_enum/magic_enum.hpp"
 
+void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
+{
+	VERIFY(_1 || zb);
+	if (_1)	{
+		dwWidth = _1->dwWidth;
+		dwHeight = _1->dwHeight;
+	}
+	else {
+		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
+		zb->GetDesc(&desc);
+
+		VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
+
+		ID3DResource* pRes;
+
+		zb->GetResource(&pRes);
+
+		ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
+
+		D3D_TEXTURE2D_DESC	TexDesc;
+
+		pTex->GetDesc(&TexDesc);
+
+		dwWidth = TexDesc.Width;
+		dwHeight = TexDesc.Height;
+		_RELEASE(pRes);
+	}
+
+	RCache.set_RT(_1 ? _1->pRT : NULL, 0);
+	RCache.set_RT(_2 ? _2->pRT : NULL, 1);
+	RCache.set_RT(_3 ? _3->pRT : NULL, 2);
+	RCache.set_RT(_4 ? _4->pRT : NULL, 3);
+	RCache.set_ZB(zb);
+}
+
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
 	VERIFY									(_1||zb);
@@ -53,7 +88,6 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
 	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT(nullptr,2);
 	RCache.set_ZB							(zb);
-//	RImplementation.rmNormal				();
 }
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb)
@@ -88,7 +122,6 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthSten
 	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
 	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
 	RCache.set_ZB							(zb);
-//	RImplementation.rmNormal				();
 }
 
 void	CRenderTarget::u_setrt			(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb)
@@ -462,6 +495,8 @@ CRenderTarget::CRenderTarget		()
 		// generic(LDR) RTs
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+
+		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);
 
 		rt_Back_Buffer.create(r2_RT_backbuffer_final, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 

@@ -62,6 +62,7 @@ public:
 	ref_rt						rt_Position;		// 64bit,	fat	(x,y,z,?)				(eye-space)
 	ref_rt						rt_Normal;			// 64bit,	fat	(x,y,z,hemi)			(eye-space)
 	ref_rt						rt_Color;			// 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
+	ref_rt						rt_Velocity;
 
 	// 
 	ref_rt						rt_Accumulator;		// 64bit		(r,g,b,specular)
@@ -218,6 +219,7 @@ public:
 	void						u_stencil_optimize		(eStencilOptimizeMode eSOM = SO_Light);
 	void						u_compute_texgen_screen	(Fmatrix&	dest);
 	void						u_compute_texgen_jitter	(Fmatrix&	dest);
+	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb);
 	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb);
 	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb);
 	void						u_setrt					(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
