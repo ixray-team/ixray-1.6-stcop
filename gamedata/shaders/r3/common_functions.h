@@ -12,25 +12,14 @@ float Contrast(float Input, float ContrastPower)
      return Output;
 }
 
-void tonemap( out float4 low, out float4 high, float3 rgb, float scale)
+float3 tonemap(float3 rgb, float scale)
 {
-	rgb		=	rgb*scale;
+	rgb = rgb * scale;
 
 	const float fWhiteIntensity = 1.7f;
+	const float fWhiteIntensitySQR = fWhiteIntensity * fWhiteIntensity;
 
-	const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
-
-//	low		=	(rgb/(rgb + 1)).xyzz;
-	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1.0f) ).xyzz;
-
-	high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
-
-/*
-	rgb		=	rgb*scale;
-
-	low		=	rgb.xyzz;
-	high	=	low/def_hdr;	// 8x dynamic range
-*/
+	return rgb * (1.0f + rgb / fWhiteIntensitySQR) / (rgb + 1.0f);
 }
 
 float4 combine_bloom( float3  low, float4 high)	
