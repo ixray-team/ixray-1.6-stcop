@@ -22,6 +22,7 @@
 #define		r2_RT_half_depth	"$user$half_depth"		//temporary rt for ssao calculation
 
 #define		r2_RT_generic0		"$user$generic0"		// ---
+#define		r2_RT_generic0_old	"$user$generic0_old"	// ---
 #define		r2_RT_generic0_r	"$user$generic0_r"	// ---
 #define		r2_RT_generic1		"$user$generic1"		// ---
 #define		r2_RT_generic1_r	"$user$generic1_r"	// ---

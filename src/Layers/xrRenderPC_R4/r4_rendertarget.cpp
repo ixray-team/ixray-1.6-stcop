@@ -482,6 +482,7 @@ CRenderTarget::CRenderTarget		()
 
 		// generic(LDR) RTs
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
+		rt_Generic_0_old.create(r2_RT_generic0_old, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
 
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 
