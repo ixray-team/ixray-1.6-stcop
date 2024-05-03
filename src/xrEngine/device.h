@@ -101,6 +101,14 @@ public:
 	Fmatrix									mProject_old;
 	Fmatrix									mFullTransform_old;
 
+	Fmatrix									mView_hud;
+	Fmatrix									mProject_hud;
+	Fmatrix									mFullTransform_hud;
+
+	Fmatrix									mView_hud_old;
+	Fmatrix									mProject_hud_old;
+	Fmatrix									mFullTransform_hud_old;
+
 	float									fFOV;
 	float									fASPECT;
 protected:

@@ -30,7 +30,8 @@ ENGINE_API CLoadScreenRenderer load_screen_renderer;
 #endif
 ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
-ENGINE_API BOOL g_bRendering = FALSE; 
+ENGINE_API BOOL g_bRendering = FALSE;
+extern ENGINE_API float psHUD_FOV;
 
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
@@ -243,12 +244,22 @@ void CRenderDevice::on_idle		()
 
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
+	
+	mView_hud_old			= mView_hud;
+	mProject_hud_old		= mProject_hud;
+	mFullTransform_hud_old	= mFullTransform_hud;
 
 	mView_old				= mView_saved;
 	mProject_old			= mProject_saved;
 	mFullTransform_old		= mFullTransform_saved;
 
 	m_pRender->SetCacheXformOld(mView_old, mProject_old);
+
+	mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, 
+		HUD_VIEWPORT_NEAR, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	mView_hud.set(mView);
+	mFullTransform_hud.mul(mProject_hud, mView_hud);
 
 	mView_saved				= mView;
 	mProject_saved			= mProject;
