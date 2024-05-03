@@ -53,6 +53,7 @@ vf main (v_vert v)
 	o.tctexgen.z = Pe.z;
 #endif	//	USE_SOFT_WATER
 #endif	//	NEED_SOFT_WATER
+	o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
 	return o;
 }

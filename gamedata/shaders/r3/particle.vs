@@ -31,7 +31,8 @@ v2p main (vv v)
 //	o.hpos 		= mul	(m_VP, v.P);		// xform, input in world coords
 	o.tc		= v.tc;				// copy tc
 	o.c			= unpack_D3DCOLOR(v.c);				// copy color
-
+	
+	o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 //	Igor: for additional depth dest
 #ifdef	USE_SOFT_PARTICLES
 	o.tctexgen 	= mul( mVPTexgen, v.P);

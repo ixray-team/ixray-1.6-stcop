@@ -11,20 +11,15 @@ struct vf
 
 vf main (v_static v)
 {
-	vf 		o;
+	vf o;
 
-	float3 	N 	= 	unpack_normal	(v.Nh);
-	float4 	P 	= 	wmark_shift	(v.P,N);
-	o.hpos 		= 	mul		(m_VP, P);			// xform, input in world coords
-	o.tc0		= 	unpack_tc_base	(v.tc,v.T.w,v.B.w);		// copy tc
-
-	//float3 	L_rgb 	= v.color.xyz;					// precalculated RGB lighting
-	//float3 	L_hemi 	= v_hemi(N)*v.norm.w;				// hemisphere
-	//float3 	L_sun 	= v_sun(N)*v.color.w;				// sun
-	//float3 	L_final	= L_rgb + L_hemi + L_sun + L_ambient		;
-
-	o.c0		= 0;	//L_final;
-	o.fog 		= saturate(calc_fogging 		(v.P));				// fog, input in world coords
+	float3 N = unpack_normal(v.Nh);
+	float4 P = wmark_shift(v.P,N);
+	o.hpos = mul(m_VP, P);
+	o.tc0 = unpack_tc_base(v.tc,v.T.w,v.B.w);
+	o.c0 = 0;
+	o.fog = saturate(calc_fogging(v.P));
+	o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
 	return o;
 }
