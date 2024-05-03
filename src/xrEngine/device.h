@@ -97,6 +97,10 @@ public:
 	Fmatrix									mProject_saved;
 	Fmatrix									mFullTransform_saved;
 
+	Fmatrix									mView_old;
+	Fmatrix									mProject_old;
+	Fmatrix									mFullTransform_old;
+
 	float									fFOV;
 	float									fASPECT;
 protected:

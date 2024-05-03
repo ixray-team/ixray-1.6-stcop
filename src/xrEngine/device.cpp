@@ -244,10 +244,15 @@ void CRenderDevice::on_idle		()
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
 
-	vCameraPosition_saved	= vCameraPosition;
-	mFullTransform_saved	= mFullTransform;
+	mView_old				= mView_saved;
+	mProject_old			= mProject_saved;
+	mFullTransform_old		= mFullTransform_saved;
+
 	mView_saved				= mView;
 	mProject_saved			= mProject;
+	mFullTransform_saved	= mFullTransform;
+
+	vCameraPosition_saved	= vCameraPosition;
 
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
