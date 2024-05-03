@@ -1,0 +1,53 @@
+#include "common.h"
+#include "sload.h"
+#include "lmodel.h"
+#include "hmodel.h"
+
+uniform float3 L_sun_dir_e;
+
+void main (p_bumped_new I, out f_forward O) {
+	XrayMaterial M;
+	
+	M.Sun = I.tcdh.w;
+	M.Hemi = I.tcdh.z;
+	M.Point = I.position.xyz;
+	
+	SloadNew(I, M);
+	
+#ifdef USE_AREF
+	clip(M.Color.w - def_aref);
+#endif
+	
+	M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
+	M.Normal = normalize(M.Normal);
+	
+#ifdef USE_LM_HEMI
+	float4 lm = s_hemi.Sample(smp_rtlinear, I.tcdh.zw);
+	
+	M.Sun = get_sun(lm);
+	M.Hemi = get_hemi(lm);
+#endif
+	
+	M.Sun = saturate(M.Sun * 2.0f);
+	M.Color.xyz = saturate(M.Color.xyz);
+	
+	float MaterialID = xmaterial;
+	float Gloss = 1.0f - M.Roughness;
+	
+	float4 Light = float4(L_sun_color, 1.0f) * M.Sun * plight_infinity (MaterialID, M.Point, M.Normal, L_sun_dir_e);
+	float3 Diffuse, Specular;
+	
+	hmodel(Diffuse, Specular, MaterialID, M.Hemi, Gloss, M.Point, M.Normal);
+	
+	O.Color = float4(Diffuse + Light.xyz, M.Color.w);
+	O.Color.xyz *= M.Color.xyz;
+	O.Color.xyz += Light.w * Gloss + Specular;
+	
+	float fog = saturate(length(M.Point) * fog_params.w + fog_params.x);
+	O.Color.xyz = lerp(O.Color.xyz, fog_color, fog);
+	O.Color.w *= 1.0f - fog * fog;
+	
+	O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	O.Reactive = O.Color.w;
+}
+
