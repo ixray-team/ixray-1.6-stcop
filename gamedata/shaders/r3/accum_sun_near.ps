@@ -18,10 +18,18 @@
 
 float4 main ( v2p_volume I ) : SV_Target
 {
-	float2 tcProj = I.tc.xy/I.tc.w;
-	
+	float2 tcProj = I.tc.xy / I.tc.w;
 	gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, I.hpos, ISAMPLE));
+	
+	if(gbd.sss > 0.5f) {
+		gbd.N *= dot(Ldynamic_dir, gbd.N) >= 0.0 ? -1.0f : 1.0f;
+	}
+	
 	gbd.P += gbd.N * 0.015f;
+	
+	if(gbd.sss > 0.5f) {
+		gbd.N = -Ldynamic_dir;
+	}
 
 	float4 _P = float4(gbd.P_real, gbd.mtl);
 	float4 _N = float4(gbd.N, gbd.hemi);
@@ -32,6 +40,7 @@ float4 main ( v2p_volume I ) : SV_Target
 			m 	= _P.w;
 # endif
 	float4	light	= plight_infinity (m, _P, _N, Ldynamic_dir );
+	light.w *= 1.0f - gbd.sss;
 
 	// ----- shadow
   	float4 	P4 	= float4(gbd.P.xyz, 1.f);

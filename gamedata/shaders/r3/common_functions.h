@@ -197,10 +197,12 @@ float3 gbuf_unpack_normal( float2 norm )
    return res;
 }
 
-float gbuf_pack_hemi_mtl(float hemi, float mtl) {
+float gbuf_pack_hemi_mtl(float hemi, float mtl, float sss = 1) {
 	uint pack_hemi = saturate(hemi) * 0x3FF;
-	uint pack_mtl = uint(mtl * 0x3F) & 0x3F;
-	uint packed = (pack_hemi << 6) | (pack_mtl);
+	uint pack_mtl = uint(mtl * 0x1F) & 0x1F;
+	
+	uint pack_sss = uint(sss * 0x01);
+	uint packed = (pack_hemi << 6) | (pack_mtl << 1) | (pack_sss);
 
 	return float(packed) / 65535.0f;
 }
@@ -212,16 +214,21 @@ float gbuf_unpack_hemi(float mtl_hemi) {
 
 float gbuf_unpack_mtl(float mtl_hemi) {
 	uint packed = mtl_hemi * 0xffff;
-	return float(packed & 0x3F) / 63.0f;
+	return float((packed >> 1) & 0x1F) / 31.0f;
 }
 
-f_deffer pack_gbuffer(float4 Normal, float4 Point, float4 Color)
+float gbuf_unpack_sss(float mtl_hemi) {
+	uint packed = mtl_hemi * 0xffff;
+	return float(packed & 0x01);
+}
+
+f_deffer pack_gbuffer(float4 Normal, float4 Point, float4 Color, float SSS = 0.0f)
 {
 	f_deffer res;
 	
 	Normal.z = -Normal.z;
 	res.Ne.xyz = saturate(Normal.xyz * 0.5f + 0.5f);
-	res.Ne.w = gbuf_pack_hemi_mtl(Normal.w, Point.w);
+	res.Ne.w = gbuf_pack_hemi_mtl(Normal.w, Point.w, SSS);
 	res.C = Color;
 
 	return res;
@@ -261,6 +268,9 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d)
 
 	// reconstruct hemi
 	gbd.hemi = gbuf_unpack_hemi(N.w);
+
+	// reconstruct sss
+	gbd.sss = gbuf_unpack_sss(N.w);
 
 	float4 C = s_diffuse.Sample(smp_nofilter, tc);
 

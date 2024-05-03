@@ -19,22 +19,28 @@ uniform float3	view_shadow_proj;
 
 float4 main ( v2p_volume I ) : SV_Target
 {
-	//float4 	_P	= tex2D( s_position, tc );
-	//float4	_N	= tex2D( s_normal, tc );
+	gbuffer_data gbd = gbuffer_load_data(I.tc.xy / I.tc.w, I.hpos);
 
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc.xy/I.tc.w, I.hpos, ISAMPLE) );
-
-	gbd.P += gbd.N*0.015f;
-
-	float4 _P = float4( gbd.P, gbd.mtl );
-	float4  _N = float4( gbd.N, gbd.hemi );
-
+	float4 _N = float4(gbd.N, gbd.hemi);
+	float4 _P = float4(gbd.P, gbd.mtl);
+	
+	if(gbd.sss > 0.5f) {
+		_N.xyz *= dot(Ldynamic_dir.xyz, _N.xyz) >= 0.0 ? -1.0f : 1.0f;
+	}
+	
+	_P.xyz += _N.xyz * 0.015f;
+	
+	if(gbd.sss > 0.5f) {
+		_N.xyz = -Ldynamic_dir.xyz;
+	}
+	
 	// ----- light-model
 	float	m	= xmaterial;
 # ifndef USE_R2_STATIC_SUN
 			m 	= _P.w;
 # endif
-	float4	light	= plight_infinity ( m, _P, _N, Ldynamic_dir );
+	float4	light	= plight_infinity (m, _P, _N, Ldynamic_dir);
+	light.w *= 1.0f - gbd.sss;
 
 	// ----- shadow
   	float4 	P4 	= float4( _P.x, _P.y, _P.z, 1.f);
@@ -42,7 +48,7 @@ float4 main ( v2p_volume I ) : SV_Target
 	float 	s 	= 1.0f;
 	
 	#if SUN_QUALITY == 2 // Hight quality
-	  		s 	*= shadow_high(PS); //shadowtest_sun( PS, float4(0,0,0,0) );
+	  		s 	*= shadow_high(PS);
 	#else
 		s *= shadow( PS );
 	#endif
@@ -54,7 +60,10 @@ float4 main ( v2p_volume I ) : SV_Target
 	float3 fac = 1.0f - saturate((tc_f - border)/(0.5f - border));
 	
 	float fall_shadow = saturate(_N.w * 3.0f - 0.5f);
+ 	fall_shadow *= lerp(1.0f, saturate(0.9f - 0.8 * dot(Ldynamic_dir.xyz, gbd.N.xyz)), gbd.sss);
+	
 	s = lerp(s, fall_shadow, 1.0f - fac.x * fac.y * fac.z);
+	
 	s *= sunmask(P4);
 	
 	return blend(Ldynamic_color * light * s, I.tc);

@@ -317,6 +317,8 @@ struct gbuffer_data
 	float   hemi;
 	float3  C;
 	float   gloss;
+	
+	float   sss;
 };
 
 ////////////////////////////////////////////////////////////////

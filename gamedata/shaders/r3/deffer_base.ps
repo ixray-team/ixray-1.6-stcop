@@ -27,8 +27,12 @@ void main (p_bumped_new I, out f_deffer O) {
 #ifndef USE_R2_STATIC_SUN
 	M.Sun = xmaterial;
 #endif
+
+#if defined(USE_AREF) && defined(USE_TREEWAVE)
+	M.SSS = 1.0f;
+#endif
 	
-	O = pack_gbuffer(float4(M.Normal, M.Hemi), float4(M.Point, M.Sun), float4(M.Color.xyz, 1.0f - M.Roughness));
+	O = pack_gbuffer(float4(M.Normal, M.Hemi), float4(M.Point, M.Sun), float4(M.Color.xyz, 1.0f - M.Roughness), M.SSS);
 	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
 }
 
