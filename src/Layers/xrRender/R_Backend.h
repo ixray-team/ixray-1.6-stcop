@@ -64,7 +64,7 @@ public:
 	};
 	enum
 	{
-		MaxCBuffers	= 14
+		MaxCBuffers	= 32
 	};
 #else //USE_DX11
 	enum	MaxTextures
