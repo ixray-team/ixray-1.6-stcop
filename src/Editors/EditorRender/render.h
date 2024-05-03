@@ -15,6 +15,7 @@
 #include "..\..\Layers\xrRender\ModelPool.h"
 #include "..\..\Layers\xrRender\SkeletonCustom.h"
 #include "..\..\xrCore/API/xrAPI.h"
+#include <d3dcommon.h>
 
 
 // definition (Renderer)
@@ -112,6 +113,13 @@ public:
 		LPCSTR                          pTarget,
 		DWORD                           Flags,
 		void*& result);
+
+	xr_string getShaderParams();
+	void addShaderOption(const char* name, const char* value);
+	void clearAllShaderOptions() { m_ShaderOptions.clear(); }
+
+private:
+	xr_vector<D3D_SHADER_MACRO>									m_ShaderOptions;
 };
 
 IC  float   CalcSSA(Fvector& C, float R)

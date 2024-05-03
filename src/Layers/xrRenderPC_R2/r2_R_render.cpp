@@ -350,27 +350,13 @@ void CRender::Render		()
 	LP_pending.sort							();
 
 	//******* Main render :: PART-1 (second)
-	if (split_the_scene_to_minimize_wait)	{
-		// skybox can be drawn here
-		if (0)
-		{
-			Target->u_setrt		( Target->rt_Generic_0,	Target->rt_Generic_1,0,RDepth );
-			RCache.set_CullMode	( CULL_NONE );
-			RCache.set_Stencil	( FALSE		);
-
-			// draw skybox
-			RCache.set_ColorWriteEnable					();
-			CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-			g_pGamePersistent->Environment().RenderSky	();
-			CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
-		}
-
+	if(split_the_scene_to_minimize_wait) {
 		// level
-		Target->phase_scene_begin				();
-		r_dsgraph_render_hud					();
-		r_dsgraph_render_lods					(true,true);
-		if(Details)	Details->Render				();
-		Target->phase_scene_end					();
+		Target->phase_scene_begin();
+		r_dsgraph_render_hud();
+		r_dsgraph_render_lods(true, true);
+		if(Details)	Details->Render();
+		Target->phase_scene_end();
 	}
 
 	if (g_hud && g_hud->RenderActiveItemUIQuery())

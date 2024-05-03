@@ -138,28 +138,35 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 #include "uber_deffer.h"
 void	CBlender_Tree::Compile	(CBlender_Compile& C)
 {
-	IBlender::Compile	(C);
+	IBlender::Compile(C);
 
-	//*************** codepath is the same, only shaders differ
-	LPCSTR	tvs				= "tree";
-	LPCSTR	tvs_s			= "shadow_direct_tree";
-	if (oNotAnTree.value)	{ tvs="tree_s"; tvs_s="shadow_direct_tree_s"; }
-	switch (C.iElement)
-	{
-	case SE_R2_NORMAL_HQ:	// deffer
-		uber_deffer			(C,true,tvs,"base",oBlend.value);
+	if(!oNotAnTree.value) {
+		RImplementation.addShaderOption("USE_TREEWAVE", "1");
+	}
+
+	switch(C.iElement) {
+		case SE_R2_NORMAL_HQ:
+		uber_deffer(C, true, "deffer_lod", "deffer_base", oBlend.value, 0, true);
+		C.r_End();
+
 		break;
-	case SE_R2_NORMAL_LQ:	// deffer
-		uber_deffer			(C,false,tvs,"base",oBlend.value);
+		case SE_R2_NORMAL_LQ:
+		uber_deffer(C, false, "deffer_lod", "deffer_base", oBlend.value, 0, true);
+		C.r_End();
+
 		break;
-	case SE_R2_SHADOW:		// smap-spot
-//	TODO: DX10: Use dumb shader for shadowmap since shadows are drawn using hardware PCF
-		if (oBlend.value)	C.r_Pass	(tvs_s,"shadow_direct_base_aref",	FALSE,TRUE,TRUE,TRUE,D3DBLEND_ZERO,D3DBLEND_ONE,TRUE,200);
-		else				C.r_Pass	(tvs_s,"shadow_direct_base",		FALSE);
-		C.r_Sampler			("s_base",	C.L_textures[0]);
-		C.r_End				();
+		case SE_R2_SHADOW:
+		if(oBlend.value) {
+			RImplementation.addShaderOption("USE_AREF", "1");
+		}
+
+		C.r_Pass("shadow_lod", "shadow_base", FALSE);
+		C.r_Sampler("s_base", C.L_textures[0]);
+		C.r_End();
+
 		break;
 	}
+	RImplementation.clearAllShaderOptions();
 }
 #else
 //////////////////////////////////////////////////////////////////////////

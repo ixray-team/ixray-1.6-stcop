@@ -135,17 +135,17 @@ public:
 	void				r_dx10Texture(LPCSTR ResourceName,	LPCSTR texture);
 	void				r_dx10Texture(LPCSTR ResourceName,	shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str());};
 	u32					r_dx10Sampler(LPCSTR ResourceName);
-	void				r_End(bool clear = true);
 #else //USE_DX11
 	u32					r_Sampler			(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false, u32	address=D3DTADDRESS_WRAP,	u32		fmin=D3DTEXF_LINEAR,	u32		fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR);
 	u32					r_Sampler			(LPCSTR name,	shared_str texture, bool b_ps1x_ProjectiveDivide=false, u32	address=D3DTADDRESS_WRAP,	u32		fmin=D3DTEXF_LINEAR,	u32		fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR)	{
 		return r_Sampler	(name,texture.c_str(),b_ps1x_ProjectiveDivide,address,fmin,fmip,fmag);
 	}
-	void				r_Sampler_rtf		(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false);
-	void				r_Sampler_clf		(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false);
-	void				r_Sampler_clw		(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false);
-	void				r_End();
+	void				r_Sampler_rtf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false);
+	void				r_Sampler_clf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false);
+	void				r_Sampler_waf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false);
+	void				r_Sampler_clw(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false);
 #endif
+	void				r_End(bool clear = true);
 	void				r_ColorWriteEnable( bool cR=true, bool cG=true, bool cB=true, bool cA=true);
 
 	//

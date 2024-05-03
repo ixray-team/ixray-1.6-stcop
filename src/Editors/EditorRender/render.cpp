@@ -144,6 +144,24 @@ IRenderVisual*	CRender::model_Duplicate	(IRenderVisual* V)					{ return Models->
 void 			CRender::model_Render		(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD){Models->Render(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, priority, strictB2F, m_fLOD);}
 void 			CRender::model_RenderSingle	(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD){Models->RenderSingle(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, m_fLOD);}
 
+xr_string CRender::getShaderParams() {
+	xr_string params = "";
+	if (!m_ShaderOptions.empty()) {
+		params.append("(").append(m_ShaderOptions[0].Name);
+
+		for (auto i = 1u; i < m_ShaderOptions.size(); ++i) {
+			params.append(",").append(m_ShaderOptions[i].Name);
+		}
+
+		params.append(")");
+	}
+	return params;
+}
+
+void CRender::addShaderOption(const char* name, const char* value) {
+	m_ShaderOptions.emplace_back(name, value);
+}
+
 HRESULT	CRender::shader_compile			(
 	LPCSTR							name,
 	DWORD const* pSrcData,

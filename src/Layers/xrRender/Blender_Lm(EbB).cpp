@@ -45,6 +45,7 @@ void	CBlender_LmEbB::Load(	IReader& fs, u16 version )
 		xrPREAD_PROP	(fs,xrPID_BOOL,	oBlend);
 	}
 }
+#pragma todo("Hozar to ???: Cheak using this!")
 
 #if RENDER==R_R1
 //////////////////////////////////////////////////////////////////////////
@@ -145,13 +146,46 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 //////////////////////////////////////////////////////////////////////////
 void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 {
-	if (oBlend.value)	C.r_Pass	("lmapE","lmapE",TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
-	else				C.r_Pass	("lmapE","lmapE",TRUE);
-	C.r_Sampler			("s_base",	C.L_textures[0]	);
-	C.r_Sampler			("s_lmap",	C.L_textures[1]	);
-	C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
-	C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
-	C.r_End				();
+	IBlender::Compile(C);
+
+	if(oBlend.value) {
+		switch(C.iElement) {
+			case SE_R2_NORMAL_HQ:
+			case SE_R2_NORMAL_LQ:
+			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_base", "forward_base", false, 0, true);
+
+			C.PassSET_ZB(TRUE, FALSE);
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+
+			C.r_Sampler("s_material", r2_material);
+			C.r_Sampler("env_s0", r2_T_envs0);
+			C.r_Sampler("env_s1", r2_T_envs1);
+			C.r_Sampler("sky_s0", r2_T_sky0);
+			C.r_Sampler("sky_s1", r2_T_sky1);
+
+			C.r_End();
+			break;
+		}
+	}
+	else {
+		C.SetParams(1, false);
+
+		switch(C.iElement) {
+			case SE_R2_NORMAL_HQ:
+			uber_deffer(C, true, "deffer_base", "deffer_base", true, 0, true);
+			C.r_End();
+			break;
+			case SE_R2_NORMAL_LQ:
+			uber_deffer(C, false, "deffer_base", "deffer_base", true, 0, true);
+			C.r_End();
+			break;
+			case SE_R2_SHADOW:
+			C.r_Pass("shadow_base", "shadow_base", FALSE);
+			C.r_Sampler("s_base", C.L_textures[0]);
+			C.r_End();
+			break;
+		}
+	}
 }
 #else
 //////////////////////////////////////////////////////////////////////////
@@ -176,7 +210,6 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 	//C.r_dx10Sampler			("smp_rtlinear");
 	C.r_End				();
 #else
-#pragma todo("Hozar to ???: Cheak using this!")
 
 	IBlender::Compile(C);
 

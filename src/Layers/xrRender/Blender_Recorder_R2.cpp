@@ -149,31 +149,37 @@ u32		CBlender_Compile::r_Sampler		(LPCSTR _name, LPCSTR texture, bool b_ps1x_Pro
 	}
 	return	dwStage;
 }
-	
-void	CBlender_Compile::r_Sampler_rtf	(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
-{
-	r_Sampler	(name,texture,b_ps1x_ProjectiveDivide,D3DTADDRESS_CLAMP,D3DTEXF_POINT,D3DTEXF_NONE,D3DTEXF_POINT);
-}
-void	CBlender_Compile::r_Sampler_clf	(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
-{
-	r_Sampler	(name,texture,b_ps1x_ProjectiveDivide,D3DTADDRESS_CLAMP,D3DTEXF_LINEAR,D3DTEXF_NONE,D3DTEXF_LINEAR);
-}
-void	CBlender_Compile::r_Sampler_clw	(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
-{
-	u32 s			= r_Sampler	(name,texture,b_ps1x_ProjectiveDivide,D3DTADDRESS_CLAMP,D3DTEXF_LINEAR,D3DTEXF_NONE,D3DTEXF_LINEAR);
-	if (u32(-1)!=s)	RS.SetSAMP	(s,D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
+
+void CBlender_Compile::r_Sampler_rtf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide) {
+	r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
 }
 
-void	CBlender_Compile::r_End			()
-{
-	SetMapping				();
-	dest.constants			= DEV->_CreateConstantTable(ctable);
-	dest.state				= DEV->_CreateState		(RS.GetContainer());
-	dest.T					= DEV->_CreateTextureList	(passTextures);
-	dest.C					= 0;
+void CBlender_Compile::r_Sampler_clf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide) {
+	r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
+}
+
+void CBlender_Compile::r_Sampler_waf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide) {
+	r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+}
+
+void CBlender_Compile::r_Sampler_clw(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide) {
+	u32 s = r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
+	if(u32(-1) != s) RS.SetSAMP(s, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
+}
+
+void CBlender_Compile::r_End(bool clear) {
+	SetMapping();
+	dest.constants = DEV->_CreateConstantTable(ctable);
+	dest.state = DEV->_CreateState(RS.GetContainer());
+	dest.T = DEV->_CreateTextureList(passTextures);
+	dest.C = 0;
 #ifdef _EDITOR
-	dest.M					= 0;
+	dest.M = 0;
 #endif
 	SH->passes.push_back(DEV->_CreatePass(dest));
+
+	if(clear) {
+		RImplementation.clearAllShaderOptions();
+	}
 }
 #endif //USE_DX11
