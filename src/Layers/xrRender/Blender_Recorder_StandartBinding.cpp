@@ -190,8 +190,8 @@ class cl_fog_params	: public R_constant_setup {
 		if (marker!=Device.dwFrame)
 		{
 			// Near/Far
-			float	n		= g_pGamePersistent->Environment().CurrentEnv->fog_near	;
-			float	f		= g_pGamePersistent->Environment().CurrentEnv->fog_far		;
+			float	n		= g_pGamePersistent->Environment().CurrentEnv->fog_near;
+			float	f		= g_pGamePersistent->Environment().CurrentEnv->fog_far;
 			float	r		= 1/(f-n);
 			result.set		(-n*r, r, r, r);
 		}
@@ -206,11 +206,11 @@ class cl_fog_color	: public R_constant_setup {
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
 			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-		#if RENDER==R_R1
+#if RENDER == R_R1
 			result.set(desc.fog_color.x * ps_r1_fog_luminance, desc.fog_color.y * ps_r1_fog_luminance, desc.fog_color.z * ps_r1_fog_luminance, 0);
-		#else
-			result.set(desc.fog_color.x,	desc.fog_color.y, desc.fog_color.z,	0);
-		#endif // RENDER==R_R1
+#else
+			result.set(desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, 0);
+#endif // RENDER==R_R1
 		}
 		RCache.set_c	(C,result);
 	}
@@ -271,12 +271,16 @@ static cl_taa_jitter binder_taa_jitter;
 #ifndef _EDITOR
 // D-Light0
 class cl_sun0_color : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
+	u32 marker;
+	Fvector4 result;
 	virtual void setup(R_constant* C) {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+#if RENDER != R_R1
 			result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
+#else
+			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
+#endif
 		}
 		RCache.set_c(C, result);
 	}
@@ -316,8 +320,12 @@ class cl_amb_color : public R_constant_setup {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 
+#if RENDER != R_R1
 			result.set(desc.ambient.x * ps_r2_sun_lumscale_amb * 2.0f,
 				desc.ambient.y * ps_r2_sun_lumscale_amb * 2.0f, desc.ambient.z * ps_r2_sun_lumscale_amb * 2.0f, desc.weight);
+#else
+			result.set(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
+#endif
 		}
 		RCache.set_c(C, result);
 	}
@@ -329,8 +337,12 @@ class cl_hemi_color : public R_constant_setup {
 	virtual void setup(R_constant* C) {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
+#if RENDER != R_R1
 			result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
 				desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+#else
+			result.set(desc.hemi_color);
+#endif
 		}
 		RCache.set_c(C, result);
 	}
