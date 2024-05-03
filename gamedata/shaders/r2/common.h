@@ -96,36 +96,25 @@ struct         v_model                 	{
         float2      tc                	: TEXCOORD0;        // (u,v)
 };
 
-struct        v_detail                    {
-        float4      pos                : POSITION;                // (float,float,float,1)
-        int4        misc        : TEXCOORD0;        // (u(Q),v(Q),frac,matrix-id)
+struct v_detail {
+	float4 pos : POSITION; // (float,float,float,1)
+	int4 misc : TEXCOORD0; // (u(Q),v(Q),frac,matrix-id)
 };
 
-#ifdef  USE_HWSMAP
-struct         v_shadow_direct_aref
-{
-        float4      hpos:        POSITION;       // Clip-space position         (for rasterization)
-        float2      tc0:        TEXCOORD1;       // Diffuse map for aref
-};
-struct         v_shadow_direct
-{
-        float4      hpos:        POSITION;       // Clip-space position         (for rasterization)
-};
-#else
-struct         v_shadow_direct_aref
-{
-        float4      hpos:        POSITION;       // Clip-space position         (for rasterization)
-        float       depth:         TEXCOORD0;     // Depth
-        float2      tc0:        TEXCOORD1;       // Diffuse map for aref
-};
-struct         v_shadow_direct
-{
-        float4      hpos:        POSITION;       // Clip-space position         (for rasterization)
-        float       depth:         TEXCOORD0;     // Depth
+struct v_shadow_direct_aref {
+	float4 P: POSITION; // Clip-space position (for rasterization)
+	float4 tc: TEXCOORD1; // Diffuse map for aref
 };
 
-
-#endif
+struct p_bumped_new {
+	float4	hpos        : POSITION;
+	
+	float4	tcdh        : TEXCOORD0;        // Texture coordinates, sun_occlusion || lm-hemi
+	float4	position	: TEXCOORD1;        // position + hemi
+	float3	M1			: TEXCOORD2;        // nmap 2 eye - 1
+	float3	M2			: TEXCOORD3;        // nmap 2 eye - 2
+	float3	M3			: TEXCOORD4;        // nmap 2 eye - 3
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 struct         p_bumped        {
@@ -173,10 +162,25 @@ struct         p_flat                  {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-struct                  f_deffer        		{
-        float4           position        		: COLOR0;        // px,py,pz, m-id
-        float4           Ne                		: COLOR1;        // nx,ny,nz, hemi
-        float4       	C                		: COLOR2;        // r, g, b,  gloss
+// struct                  f_deffer        		{
+        // float4           position        		: COLOR0;        // px,py,pz, m-id
+        // float4           Ne                		: COLOR1;        // nx,ny,nz, hemi
+        // float4       	C                		: COLOR2;        // r, g, b,  gloss
+// };
+
+struct f_deffer {
+	float4 P : COLOR0;
+	float4 N : COLOR1;
+	float4 C : COLOR2;
+};
+
+struct f_forward {
+	float4 Color : COLOR0;
+};
+
+struct p_shadow {
+	float2	tc0 : TEXCOORD0;	
+	float4	hpos : POSITION;
 };
 //////////////////////////////////////////////////////////////////////////////////////////
 struct  				p_screen                {
@@ -222,48 +226,27 @@ uniform sampler2D       s_generic;              //
 uniform sampler2D       s_bloom;                //
 uniform sampler         s_image;                // used in various post-processing
 uniform sampler2D       s_tonemap;              // actually MidleGray / exp(Lw + eps)
-//////////////////////////////////////////////////////////////////////////////////////////
-// Defines                                		//
-#define def_gloss       float(2.0f /255.0f)
-#define def_dbumph      float(0.333f)
-#define def_virtualh    float(0.05f)              // 5cm
-#define def_distort     float(0.05f)             // we get -0.5 .. 0.5 range, this is -512 .. 512 for 1024, so scale it
-#define def_hdr         float(9.0f)         		// hight luminance range float(3.h)
-#define def_hdr_clip	float(0.75f)        		//
 
-//////////////////////////////////////////////////////////////////////////////////////////
-#define	LUMINANCE_VECTOR                 float3(0.3f, 0.38f, 0.22f)
-void        tonemap              (out float4 low, out float4 high, float3 rgb, float scale)
+#define def_gloss float(4.0f /255.0f)
+#define def_dbumph float(0.333f)
+#define def_virtualh float(0.05f)
+#define def_distort float(0.05f)
+#define def_hdr float(9.0f)
+#define def_hdr_clip float(0.75f)
+#define	LUMINANCE_VECTOR float3(0.3f, 0.38f, 0.22f)
+
+float3 tonemap(float3 rgb, float scale)
 {
-        rgb     =      	rgb*scale       ;
+	rgb = rgb * scale;
 
-		const float fWhiteIntensity = 1.7;
+	const float fWhiteIntensity = 1.7f;
+	const float fWhiteIntensitySQR = fWhiteIntensity * fWhiteIntensity;
 
-		const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
-#ifdef	USE_BRANCHING		// ps_3_0
-        //low		=       rgb.xyzz		;
-
-		low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ).xyzz;
-
-        high	=		low/def_hdr		;        // 8x dynamic range
-#else
-        low		=       float4           ( ( (rgb*(1.0f+rgb/fWhiteIntensitySQR)) / (rgb+1.0f) ),           0 )	;
-        high	=       float4       	(rgb/def_hdr,   0.0f )	;		// 8x dynamic range
-#endif
-
-/*
-	rgb		=	rgb*scale;
-
-	low		=	rgb.xyzz;
-	high	=	low/def_hdr;	// 8x dynamic range
-*/
-
-//		low		= 	float4	(rgb, 0);
-//		rgb		/=	def_hdr	;
-//		high	= 	float4	(rgb, dot(rgb,0.333f)-def_hdr_clip)		;
+	return rgb * (1.0f + rgb / fWhiteIntensitySQR) / (rgb + 1.0f);
 }
-float4		combine_bloom        (float3  low, float4 high)	{
-        return        float4(low + high*high.a, 1.0f);
+
+float4 combine_bloom(float3  low, float4 high) {
+	return float4(low + high*high.a, 1.0f);
 }
 
 float3	v_hemi        	(float3 n)                        	{        return L_hemi_color*(.5f + .5f*n.y);                   }
@@ -296,6 +279,14 @@ float Contrast(float Input, float ContrastPower)
      float Output = 0.5f*pow(ToRaise, ContrastPower);
      Output = IsAbovefloat ? 1.0f-Output : Output;
      return Output;
+}
+
+f_deffer pack_gbuffer(float4 Normal, float4 Point, float4 Color) {
+	f_deffer Output;
+	Output.N = Normal;
+	Output.P = Point;
+	Output.C = Color;
+	return Output;
 }
 
 #define FXPS technique _render{pass _code{PixelShader=compile ps_3_0 main();}}

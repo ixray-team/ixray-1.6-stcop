@@ -77,14 +77,6 @@ float4   main( vf I )          : COLOR
 	float3	c_reflection       = env*amount;
 	float3	final              = lerp(c_reflection,base.rgb,base.a);
 
-
-        // tonemap
-#ifdef        USE_VTF
-//                final                *= I.c0.w        ;
-#else
-//                 final                 *= tex2D        (s_tonemap,I.tbase).x        ;        // any TC - OK
-#endif
-
 #ifdef	NEED_SOFT_WATER
 
 	float	alpha	= 0.75f + 0.25f * power;                        // 1=full env, 0=no env

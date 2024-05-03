@@ -1,19 +1,6 @@
 #include "common.h"
 
-float4 	main	( float4 C:COLOR0 )	: COLOR
+float4 main(float4 C : COLOR0) : COLOR
 {
-		float4	result;
-
-#ifdef        USE_VTF
-        result.rgb	= C;
-#else
-		float4	high;
-        float    scale	= tex2D(s_tonemap,float2(0.5f, 0.5f)).x;
-//		tonemap			(result, high, C, scale*0.9);
-		tonemap			(result, high, C, scale);
-#endif
-
-	result.a = C.a;
-
-	return	result;
+	return C;
 }
