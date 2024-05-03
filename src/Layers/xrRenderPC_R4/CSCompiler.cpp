@@ -199,5 +199,5 @@ void CSCompiler::compile(const char* name)
 
 	R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
 
-	FS.r_close					( file );
+	FS.r_close ( file );
 }

@@ -71,11 +71,14 @@
 	inline CResourceManager::map_CS& CResourceManager::GetShaderMap(){return m_cs;}
 
     template<typename T>
-	inline T* CResourceManager::CreateShader(const char* name)
+	inline T* CResourceManager::CreateShader(const char* _name)
 	{
 		xrCriticalSectionGuard guard(creationGuard);
+		xr_string res_name = _name + RImplementation.getShaderParams();
+		LPCSTR name = res_name.c_str();
+		LPSTR N = LPSTR(name);
+
 		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-		LPSTR	N = LPSTR(name);
 		typename ShaderTypeTraits<T>::MapType::iterator	I = sh_map.find(N);
 
 		if (I!=sh_map.end())
@@ -86,21 +89,15 @@
 
 			sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			sh_map.insert(std::make_pair(sh->set_name(name),sh));
-			if (0==_stricmp(name,"null"))
+			if (0==_stricmp(_name,"null"))
 			{
 				sh->sh				= NULL;
 				return sh;
 			}
 
-			string_path					shName;
-			const char*	pchr = strchr(name, '(');
-			ptrdiff_t	strSize = pchr?pchr-name:xr_strlen(name);
-			strncpy(shName, name, strSize);
-			shName[strSize] = 0;
-
 			// Open file
 			string_path					cname;
-			xr_strconcat(cname,::Render->getShaderPath(),/*name*/shName, ShaderTypeTraits<T>::GetShaderExt());
+			xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
 			FS.update_path				(cname,	"$game_shaders$", cname);
 
 			// duplicate and zero-terminate
