@@ -801,12 +801,11 @@ float 	shadow_rain 	(float4 tc, float2 tcJ)			// jittered sampling
 float3x4 m_sunmask;	// ortho-projection
 float sunmask( float4 P )
 {
-	float2 		tc	= mul( m_sunmask, P );		//
-//	return 		tex2D( s_lmap, tc ).w;			// A8 
-	return 		s_lmap.Sample( smp_linear, tc ).w;	// A8 	
+	float2 tc = mul(m_sunmask, P);
+	return s_lmap.SampleLevel(smp_linear, tc, 0).w;
 }
 #else
-float sunmask( float4 P ) { return 1.h; }		// 
+float sunmask( float4 P ) { return 1.f; }		// 
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 uniform float4x4	m_shadow;
