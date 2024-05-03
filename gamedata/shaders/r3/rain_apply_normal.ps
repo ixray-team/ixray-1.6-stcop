@@ -5,16 +5,13 @@
 #define ISAMPLE 0
 #endif
 
-float3x4 m_sunmask;	// ortho-projection
-Texture2D	s_patched_normal;
+Texture2D s_patched_normal;
 
-float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
+float4 main (float2 tc : TEXCOORD0) : SV_Target
 {
-	float3 _N = s_patched_normal.Sample( smp_nofilter, tc );
+	float3 Normal = s_patched_normal.Sample(smp_nofilter, tc);
+	Normal.z = -Normal.z; Normal = saturate(Normal.xyz * 0.5 + 0.5);
 
-#ifndef GBUFFER_OPTIMIZATION	
-	return float4(_N,1);
-#else
-	return float4( gbuf_pack_normal( _N ), 0, 0 );
-#endif
+	return float4(Normal, 1.0f);
 }
+
