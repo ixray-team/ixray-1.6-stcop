@@ -14,13 +14,22 @@
 #define	BIND_DECLARE(xf)	\
 class cl_xform_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.xforms.set_c_##xf (C); } }; \
 	static cl_xform_##xf	binder_##xf
-BIND_DECLARE(w);
+
 BIND_DECLARE(invw);
+
+BIND_DECLARE(w);
 BIND_DECLARE(v);
 BIND_DECLARE(p);
 BIND_DECLARE(wv);
 BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
+
+BIND_DECLARE(w_old);
+BIND_DECLARE(v_old);
+BIND_DECLARE(p_old);
+BIND_DECLARE(wv_old);
+BIND_DECLARE(vp_old);
+BIND_DECLARE(wvp_old);
 
 #define DECLARE_TREE_BIND(c)	\
 	class cl_tree_##c: public R_constant_setup	{virtual void setup(R_constant* C) {RCache.tree.set_c_##c(C);} };	\
@@ -360,6 +369,14 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_VP",			&binder_vp);
 	r_Constant				("m_WVP",			&binder_wvp);
 	r_Constant				("m_inv_V",			&binder_inv_v);
+
+	r_Constant				("m_W_old",			&binder_w_old);
+	r_Constant				("m_V_old",			&binder_v_old);
+	r_Constant				("m_P_old",			&binder_p_old);
+	r_Constant				("m_WV_old",		&binder_wv_old);
+	r_Constant				("m_VP_old",		&binder_vp_old);
+	r_Constant				("m_WVP_old",		&binder_wvp_old);
+
 	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
 	r_Constant				("m_xform",			&tree_binder_m_xform);
 	r_Constant				("consts",			&tree_binder_consts);

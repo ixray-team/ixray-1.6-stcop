@@ -39,6 +39,38 @@ void	R_xforms::set_P			(const Fmatrix& m)
 	RCache.set_xform(D3DTS_PROJECTION,m);		
 }
 
+void	R_xforms::set_W_old			(const Fmatrix& m)
+{
+	m_w_old.set			(m);
+	m_wv_old.mul_43		(m_v_old,m_w_old);
+	m_wvp_old.mul		(m_p_old,m_wv_old);
+
+	if (c_w_old)		RCache.set_c(c_w_old,	m_w_old);
+	if (c_wv_old)		RCache.set_c(c_wv_old,	m_wv_old);
+	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
+}
+void	R_xforms::set_V_old			(const Fmatrix& m)
+{
+	m_v_old.set			(m);
+	m_wv_old.mul_43		(m_v_old,m_w_old);
+	m_vp_old.mul		(m_p_old,m_v_old);
+	m_wvp_old.mul		(m_p_old,m_wv_old);
+
+	if (c_v_old)		RCache.set_c(c_v_old,	m_v_old);
+	if (c_vp_old)		RCache.set_c(c_vp_old,	m_vp_old);
+	if (c_wv_old)		RCache.set_c(c_wv_old,	m_wv_old);
+	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
+}
+void	R_xforms::set_P_old			(const Fmatrix& m)
+{
+	m_p_old.set			(m);
+	m_vp_old.mul		(m_p_old,m_v_old);
+	m_wvp_old.mul		(m_p_old,m_wv_old);
+	if (c_p_old)		RCache.set_c(c_p_old,	m_p_old);
+	if (c_vp_old)		RCache.set_c(c_vp_old,	m_vp_old);
+	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
+}
+
 void	R_xforms::apply_invw()
 {
 	VERIFY(c_invw);
