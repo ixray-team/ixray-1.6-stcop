@@ -258,6 +258,17 @@ class cl_eye_N		: public R_constant_setup {
 static cl_eye_N		binder_eye_N;
 
 #ifndef _EDITOR
+// TAA Jiter
+class cl_taa_jitter : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		Fvector& V = ps_r_taa_jitter;
+		RCache.set_c(C, V.x, V.y, V.z, 0);
+	}
+};
+static cl_taa_jitter binder_taa_jitter;
+#endif
+
+#ifndef _EDITOR
 // D-Light0
 class cl_sun0_color : public R_constant_setup {
 	u32			marker;
@@ -443,6 +454,8 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("L_sun_color",		&binder_sun0_color);
 	r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
 	r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
+	
+	r_Constant				("m_taa_jitter",	&binder_taa_jitter);
 
 	r_Constant				("L_hemi_color",	&binder_hemi_color);
 	r_Constant				("L_ambient",		&binder_amb_color);
