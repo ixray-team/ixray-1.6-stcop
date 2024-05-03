@@ -77,51 +77,36 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C)
 			break;
 		}
 	} else {
-		BOOL	bAref = oBlend.value;
+		BOOL bAref = oBlend.value;
 
 		C.TessMethod = oTessellation.IDselected;
-		switch(C.iElement) 
+		switch (C.iElement)
 		{
-		case SE_R2_NORMAL_HQ: 			// deffer
-			uber_deffer		(C,true,	"deffer_model",	"deffer_base",bAref,0,true);
+		case SE_R2_NORMAL_HQ: // deffer
+			uber_deffer(C, true, "deffer_model", "deffer_base", bAref, 0, true);
 
-			C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-			C.r_StencilRef	(0x01);
-			C.r_End			();
+			C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+			C.r_StencilRef(0x01);
+			C.r_End();
 			break;
-		case SE_R2_NORMAL_LQ: 			// deffer
-			uber_deffer		(C,false,	"deffer_model",	"deffer_base",bAref,0,true);
-			C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-			C.r_StencilRef	(0x01);
-			C.r_End			();
+		case SE_R2_NORMAL_LQ: // deffer
+			uber_deffer(C, false, "deffer_model", "deffer_base", bAref, 0, true);
+			C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+			C.r_StencilRef(0x01);
+			C.r_End();
 			break;
-		case SE_R2_SHADOW:				// smap
-			if (bAref)
-			{
-				//if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model_aref","shadow_direct_base_aref",	FALSE,TRUE,TRUE,FALSE,D3DBLEND_ZERO,D3DBLEND_ONE,TRUE,220);
-				//else							C.r_Pass	("shadow_direct_model_aref","shadow_direct_base_aref",	FALSE);
-				//C.r_Sampler		("s_base",C.L_textures[0]);
-				C.r_Pass	("shadow_direct_model_aref","shadow_direct_base_aref",	FALSE,TRUE,TRUE,FALSE,D3DBLEND_ZERO,D3DBLEND_ONE,TRUE,220);
-				C.r_dx10Texture		("s_base",C.L_textures[0]);
-				C.r_dx10Sampler		("smp_base");
-				C.r_dx10Sampler		("smp_linear");
-				C.r_ColorWriteEnable(false, false, false, false);
-				C.r_End			();
-				break;
-			} 
-			else 
-			{
-				//if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model","dumb",	FALSE,TRUE,TRUE,FALSE);
-				//else							C.r_Pass	("shadow_direct_model","shadow_direct_base",FALSE);
-				C.r_Pass	("shadow_direct_model","dumb",	FALSE,TRUE,TRUE,FALSE);
-				//C.r_Sampler		("s_base",C.L_textures[0]);
-				C.r_dx10Texture		("s_base",C.L_textures[0]);
-				C.r_dx10Sampler		("smp_base");
-				C.r_dx10Sampler		("smp_linear");
-				C.r_ColorWriteEnable(false, false, false, false);
-				C.r_End			();
-				break;
+		case SE_R2_SHADOW: // smap
+			if (bAref) {
+				RImplementation.addShaderOption("USE_AREF", "1");
 			}
+			C.r_Pass("shadow_model", "shadow_base", FALSE);
+
+			C.r_dx10Texture("s_base", C.L_textures[0]);
+			C.r_dx10Sampler("smp_base");
+			C.r_dx10Sampler("smp_linear");
+			C.r_ColorWriteEnable(false, false, false, false);
+			C.r_End();
+			break;
 		}
 	}
 }
