@@ -2,33 +2,142 @@
 #include "mblur.h"
 #include "dof.h"
 
+#define	FXAA_GATHER4_ALPHA 0
+#define	FXAA_GREEN_AS_LUMA 1
+#define	FXAA_LOW_LIM (0.0833/4)
+
+#include "fxaa.h"
+
+#define	TAA_MAXIMUM_REUSE_VELOCITY 9.14f
+
 //////////////////////////////////////////////////////////////////////////////////////////
 Texture2D s_image_old;
 Texture2D s_velocity;
 
+// ***** Karis'13 (full intersection)
+
+// Intersect ray with AABB, knowing there is an intersection.
+//   Dir = Ray direction.
+//   Org = Start of the ray.
+//   Box = Box is at {0,0,0} with this size.
+// Returns distance on line segment.
+float IntersectAABB(float4 Dir, float4 Org, float4 Box) {
+	float3 RcpDir = rcp(Dir);
+	float3 TNeg = (  Box  - Org) * RcpDir;
+	float3 TPos = ((-Box) - Org) * RcpDir;
+	return max(min(TNeg.x, TPos.x), max(min(TNeg.y, TPos.y), min(TNeg.z, TPos.z)));
+}
+
+float HistoryClamp(float4 History, float4 Filtered, float4 aabb_min, float4 aabb_max) {
+	float4 Min = min(Filtered, min(aabb_min, aabb_max));
+	float4 Max = max(Filtered, max(aabb_min, aabb_max));
+	
+	float4 Avg2 = Max + Min;
+	float4 Dir = Filtered - History;
+	
+	float4 Org = History - Avg2 * 0.5;
+	float4 Scale = Max - Avg2 * 0.5;
+	
+	return saturate(IntersectAABB(Dir, Org, Scale));
+}
+
+void history_clamp(inout float4 history, float4 aabb_min, float4 aabb_max, float4 low_pass_center) {
+	float ClampBlend = HistoryClamp(history, low_pass_center, aabb_min, aabb_max);
+	history = lerp (history, low_pass_center,  ClampBlend);
+}
+
+// The same optimized 5 tap "bicubic" as in "Filmic SMAA" SIGGRAPH'16 presentation
+float4	Hsample(float uv_x, float uv_y)	{
+	return	float4(s_image_old.SampleLevel(smp_rtlinear, float2(uv_x,uv_y), 0).rgb, 1.0);
+}
+
+float3	sample_history(float2 texcoord)	{
+	float4	rtMetrics			= pos_decompression_params2.zwxy;
+
+	float2	position			= rtMetrics.zw*texcoord;
+	float2	center_position		= floor(position - 0.5) + 0.5;
+	float2	f					= position-center_position;
+	float2	f2					= f * f;
+	float2	f3					= f * f2;
+	float	c					= 0.75f;
+	float2	w0					=		- c  * f3 +  2.0 * c			* f2 - c * f;
+	float2	w1					=  (2.0 - c) * f3 - (3.0 - c)			* f2		+ 1.0;
+	float2	w2					= -(2.0 - c) * f3 + (3.0 -  2.0 * c)	* f2 + c * f;
+	float2	w3					=		  c  * f3 -				   c	* f2;
+
+	float2	wl2					= w1 + w2;
+	float2	tcl2				= rtMetrics.xy * (center_position + w2 / wl2);
+	float3	center_color		= Hsample	(tcl2.x, tcl2.y);
+
+	float2	tc0					= rtMetrics.xy * (center_position - 1.0);
+	float2	tc3					= rtMetrics.xy * (center_position + 2.0);
+
+	float4	color				= Hsample(tcl2.x, tc0.y ) * (wl2.x * w0.y ) +
+								  Hsample(tc0.x,  tcl2.y) * (w0.x  * wl2.y) +
+								  float4(center_color,1.0)* (wl2.x * wl2.y) +
+								  Hsample(tc3.x,  tcl2.y) * (w3.x  * wl2.y) +
+								  Hsample(tcl2.x, tc3.y ) * (wl2.x * w3.y );
+
+	return	color.rgb * rcp(color.w);
+}
+
 float4 main(v2p_aa_AA I) : SV_Target {
 	float2 vel = s_velocity.Sample(smp_nofilter, I.Tex0).xy * float2(-0.5f, 0.5f);
 	
-	float4 image = s_image.Sample(smp_nofilter, I.Tex0);
-	float4 image_old = s_image_old.Sample(smp_rtlinear, I.Tex0 + vel);
+	float2 prev_texcoord = saturate(I.Tex0.xy + vel);
+	float4 image_old = sample_history(prev_texcoord).xyzz; //s_image_old.Sample(smp_rtlinear, prev_texcoord);
 	
-	float4 image0 = s_image.Sample(smp_nofilter, I.Tex0, int2(+1, +0));
-	float4 image1 = s_image.Sample(smp_nofilter, I.Tex0, int2(-0, +1));
-	float4 image2 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, -0));
-	float4 image3 = s_image.Sample(smp_nofilter, I.Tex0, int2(-0, -1));
+	float4 image0 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(+1, +0));
+	float4 image1 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(-0, +1));
+	float4 image2 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(-1, -0));
+	float4 image3 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(-0, -1));
 	
-	float4 image4 = s_image.Sample(smp_nofilter, I.Tex0, int2(+1, +1));
-	float4 image5 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, +1));
-	float4 image6 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, -1));
-	float4 image7 = s_image.Sample(smp_nofilter, I.Tex0, int2(-1, -1));
+	float4 image4 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0);
 	
-	float4 BoxMin = min(image, min(image0, min(image1, min(image2, image3))));
-	BoxMin = min(BoxMin, min(image4, min(image5, min(image6, image7))));
+	float4 image5 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(+1, +1));
+	float4 image6 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(-1, +1));
+	float4 image7 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(-1, -1));
+	float4 image8 = s_image.SampleLevel(smp_nofilter, I.Tex0, 0, int2(-1, -1));
 	
-    float4 BoxMax = max(image, max(image0, max(image1, max(image2, image3))));
-    BoxMax = max(BoxMax, max(image4, max(image5, max(image6, image7))));
+	float4 BoxMinPos = min(image0, min(image2, min(image6, image8)));
+	float4 BoxMaxPos = max(image0, max(image2, max(image6, image8)));
 	
-	image_old = clamp(image_old, BoxMin, BoxMax);
+	float4 BoxMin = min(image1, min(image3, min(image5, image7)));
+	float4 BoxMax = max(image1, max(image3, max(image5, image7)));
 	
-	return lerp(image, image_old, parallax.x * 2.0f);
+	BoxMinPos = min(BoxMin, BoxMinPos);
+	BoxMaxPos = max(BoxMax, BoxMaxPos);
+	
+	BoxMin = BoxMin * 0.5f + BoxMinPos * 0.5f;
+	BoxMax = BoxMax * 0.5f + BoxMaxPos * 0.5f;
+	
+	history_clamp(image_old, BoxMin, BoxMax, image4);
+	
+	float W = saturate(1.1 - saturate(length(vel) * TAA_MAXIMUM_REUSE_VELOCITY));
+	
+	if(!all(min(prev_texcoord, 1.0 - prev_texcoord))) {
+		W *= 0.0;
+	}
+	
+	FxaaTex tex = { smp_rtlinear, s_image};
+	
+	float4 fxaa = FxaaPixelShader(I.Tex0.xy,
+	FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),		// FxaaFloat4 fxaaConsolePosPos,
+	tex,							// FxaaTex tex,
+	tex,							// FxaaTex fxaaConsole360TexExpBiasNegOne,
+	tex,							// FxaaTex fxaaConsole360TexExpBiasNegTwo,
+	pos_decompression_params2.zw,							// FxaaFloat2 fxaaQualityRcpFrame,
+	FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),		// FxaaFloat4 fxaaConsoleRcpFrameOpt,
+	FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),		// FxaaFloat4 fxaaConsoleRcpFrameOpt2,
+	FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),		// FxaaFloat4 fxaaConsole360RcpFrameOpt2,
+	0.6,				
+	0.166,				
+	FXAA_LOW_LIM,		
+	0.0f,									// FxaaFloat fxaaConsoleEdgeSharpness,
+	0.0f,									// FxaaFloat fxaaConsoleEdgeThreshold,
+	0.0f,									// FxaaFloat fxaaConsoleEdgeThresholdMin,
+	FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f)		// FxaaFloat fxaaConsole360ConstDir,
+	);
+	
+	return lerp(fxaa, image_old, W * parallax.x * 2.0f);
 }
