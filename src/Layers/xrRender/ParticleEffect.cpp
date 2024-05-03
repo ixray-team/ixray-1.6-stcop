@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include "ParticleEffect.h"
+#include "CHudInitializer.h"
 
 using namespace PAPI;
 using namespace PS;
@@ -530,18 +531,11 @@ void CParticleEffect::Render(float) {
 			if (dwCount)    
 			{
 #ifndef _EDITOR
-				Fmatrix Pold						= Device.mProject;
-				Fmatrix FTold						= Device.mFullTransform;
-				if(GetHudMode())
-				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV),
-														Device.fASPECT, 
-														HUD_VIEWPORT_NEAR, 
-														g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				CHudInitializer initalizer(false);
 
-					Device.mFullTransform.mul	(Device.mProject, Device.mView);
-					RCache.set_xform_project	(Device.mProject);
-					RImplementation.rmNear		();
+				if (GetHudMode()) {
+					initalizer.SetHudMode();
+					RImplementation.rmNear();
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
@@ -553,12 +547,9 @@ void CParticleEffect::Render(float) {
 				RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
                 RCache.set_CullMode		(CULL_CCW	); 
 #ifndef _EDITOR
-				if(GetHudMode())
-				{
-					RImplementation.rmNormal	();
-					Device.mProject				= Pold;
-					Device.mFullTransform		= FTold;
-					RCache.set_xform_project	(Device.mProject);
+				if (GetHudMode()) {
+					RImplementation.rmNormal();
+					initalizer.SetDefaultMode();
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
@@ -702,18 +693,11 @@ void CParticleEffect::Render(float )
 			if (dwCount)    
 			{
 #ifndef _EDITOR
-				Fmatrix Pold						= Device.mProject;
-				Fmatrix FTold						= Device.mFullTransform;
-				if(GetHudMode())
-				{
-					RDEVICE.mProject.build_projection(	deg2rad(psHUD_FOV),
-														Device.fASPECT, 
-														HUD_VIEWPORT_NEAR, 
-														g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				CHudInitializer initalizer(false);
 
-					Device.mFullTransform.mul	(Device.mProject, Device.mView);
-					RCache.set_xform_project	(Device.mProject);
-					RImplementation.rmNear		();
+				if (GetHudMode()) {
+					initalizer.SetHudMode();
+					RImplementation.rmNear();
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
@@ -725,12 +709,9 @@ void CParticleEffect::Render(float )
 				RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
                 RCache.set_CullMode		(CULL_CCW	); 
 #ifndef _EDITOR
-				if(GetHudMode())
-				{
-					RImplementation.rmNormal	();
-					Device.mProject				= Pold;
-					Device.mFullTransform		= FTold;
-					RCache.set_xform_project	(Device.mProject);
+				if (GetHudMode()) {
+					RImplementation.rmNormal();
+					initalizer.SetDefaultMode();
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
