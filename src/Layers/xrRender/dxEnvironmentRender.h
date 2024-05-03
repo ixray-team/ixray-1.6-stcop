@@ -14,18 +14,17 @@ public:
 
 	virtual		void		Compile			(CBlender_Compile& C)
 	{
-		C.r_Pass			("sky2",		"sky2",			FALSE,	TRUE, FALSE);
+		C.r_Pass("sky", "sky", FALSE, TRUE, FALSE);
 #ifdef USE_DX11
-		C.r_dx10Texture		("s_sky0",		"$null"			);
-		C.r_dx10Texture		("s_sky1",		"$null"			);
-		C.r_dx10Sampler		("smp_base");
-	 	C.PassSET_ZB(FALSE, FALSE);
+		C.r_dx10Texture("s_sky0", "$null");
+		C.r_dx10Texture("s_sky1", "$null");
+		C.r_dx10Sampler("smp_base");
+		C.PassSET_ZB(FALSE, FALSE);
 #else //USE_DX11
-		C.r_Sampler_clf		("s_sky0",		"$null"			);
-		C.r_Sampler_clf		("s_sky1",		"$null"			);
-		C.r_Sampler_rtf		("s_tonemap",	"$user$tonemap"	);	//. hack
+		C.r_Sampler_clf("s_sky0", "$null");
+		C.r_Sampler_clf("s_sky1", "$null");
 #endif
-		C.r_End				();
+		C.r_End ();
 	}
 };
 
@@ -82,7 +81,6 @@ private:
 	ref_shader				clouds_sh;
 	ref_geom				clouds_geom;
 
-	ref_texture				tonemap;
 	ref_texture				tsky0,tsky1;
 };
 
