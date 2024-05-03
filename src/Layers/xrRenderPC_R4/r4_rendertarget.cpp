@@ -401,11 +401,13 @@ CRenderTarget::CRenderTarget		()
 		DisplayTarget(rt_Generic_2);
 		DisplayTarget(rt_Generic);
 		DisplayTarget(rt_Back_Buffer);
+		DisplayTarget(rt_Velocity);
+		DisplayTarget(rt_Normal);
 		DisplayTarget(rt_Position);
 		DisplayTarget(rt_Color);
 		DisplayTarget(rt_Accumulator);
 		DisplayTarget(rt_smap_surf);
-		DisplayTarget(rt_smap_depth);	
+		DisplayTarget(rt_smap_depth);
 		ImGui::End();
 	});
 
@@ -453,8 +455,8 @@ CRenderTarget::CRenderTarget		()
 
 	//	NORMAL
 	{
-		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS, SampleCount);
+		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM, SampleCount);
 
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
@@ -470,7 +472,6 @@ CRenderTarget::CRenderTarget		()
 				// NV40
 				rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
 				rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-				
 			} else {
 				// R4xx, no-fp-blend,-> albedo_wo
 				rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// normal
@@ -480,7 +481,8 @@ CRenderTarget::CRenderTarget		()
 		}
 
 		// generic(LDR) RTs
-		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
+
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);

@@ -212,10 +212,8 @@ void CRender::Render		()
 	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
-	if( !(g_pGameLevel && g_hud)
-		|| bMenu)	
-	{
-		Target->u_setrt				((u32)RCache.get_target_width(), (u32)RCache.get_target_height(),RTarget,nullptr,nullptr,RDepth);
+	if (!(g_pGameLevel && g_hud) || bMenu) {
+		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, nullptr, nullptr, RDepth);
 		return;
 	}
 
@@ -225,13 +223,12 @@ void CRender::Render		()
 		return;
 	}
 
-	ps_r_taa_jitter.x = Random.randF(-1.0f, 1.0f) / float(Device.TargetWidth);
-	ps_r_taa_jitter.y = Random.randF(-1.0f, 1.0f) / float(Device.TargetHeight);
+	ps_r_taa_jitter.x = Random.randF(-1.0f, 1.0f) / RCache.get_target_width();
+	ps_r_taa_jitter.y = Random.randF(-1.0f, 1.0f) / RCache.get_target_height();
 	ps_r_taa_jitter.z = 0.0f;
 
 	ps_r_taa_jitter = ps_r_taa_jitter.mul(ps_r_taa_jitter_scale);
 
-//.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
 	RImplementation.o.distortion				= FALSE;		// disable distorion
@@ -240,6 +237,7 @@ void CRender::Render		()
 
 	// Msg						("sstatic: %s, sun: %s",o.sunstatic?;"true":"false", bSUN?"true":"false");
 
+	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_world_old(Fidentity);
 
 	// HOM
@@ -407,6 +405,12 @@ void CRender::Render		()
 		Target->phase_wallmarks();
 		r_dsgraph_render_hud_ui();
 	}
+
+	Target->u_setrt(RCache.get_target_width(), RCache.get_target_height(), nullptr, nullptr, nullptr, nullptr);
+	ID3D11Resource* res;
+	RDepth->GetResource(&res);
+
+	RContext->CopyResource(Target->rt_Position->pSurface, res);
 
 	// Wall marks
 	if(Wallmarks)	
