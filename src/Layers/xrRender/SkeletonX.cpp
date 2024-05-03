@@ -235,6 +235,10 @@ void  xrSkin4W_x86(vertRender*		D,
 
 shared_str	s_bones_array_const;
 
+#ifdef USE_DX11
+shared_str	s_bones_array_const_old;
+#endif // USE_DX11
+
 //////////////////////////////////////////////////////////////////////
 // Body Part
 //////////////////////////////////////////////////////////////////////
@@ -268,6 +272,9 @@ void CSkeletonX::_Copy		(CSkeletonX *B)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
+	Parent->StoreVisualMatrix(RCache.xforms.m_w);
+	RCache.set_xform_world_old (Parent->mOldWorldMartrix);
+
 	RCache.stat.r.s_dynamic.add		(vCount);
 	switch (RenderMode)
 	{
@@ -278,7 +285,11 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	case RM_SINGLE:	
 		{
 			Fmatrix	W;	W.mul_43	(RCache.xforms.m_w,Parent->LL_GetTransform_R	(u16(RMS_boneid)));
+			Fmatrix	O;	O.mul_43	(RCache.xforms.m_w_old,Parent->LL_GetTransform_R_old	(u16(RMS_boneid)));
+
 			RCache.set_xform_world	(W);
+			RCache.set_xform_world_old	(O);
+
 			RCache.set_Geometry		(hGeom);
 			RCache.Render			(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
 			RCache.stat.r.s_dynamic_inst.add	(vCount);
@@ -290,15 +301,28 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	case RM_SKINNING_4B:
 		{
 			// transfer matrices
-			ref_constant			array	= RCache.get_c(s_bones_array_const);
-			u32						count	= RMS_bonecount;
-			for (u32 mid = 0; mid<count; mid++)	
+			ref_constant array = RCache.get_c(s_bones_array_const);
+
+#ifdef USE_DX11
+			ref_constant array_old = RCache.get_c(s_bones_array_const_old);
+#endif // USE_DX11
+
+			u16 count = u16(RMS_bonecount);
+			for (u16 mid = 0; mid < count; mid++)
 			{
-				Fmatrix&	M				= Parent->LL_GetTransform_R(u16(mid));
-				u32			id				= mid*3;
-				RCache.set_ca				(&*array,id+0,M._11,M._21,M._31,M._41);
-				RCache.set_ca				(&*array,id+1,M._12,M._22,M._32,M._42);
-				RCache.set_ca				(&*array,id+2,M._13,M._23,M._33,M._43);
+				u32 id = u32(mid * 3);
+
+				Fmatrix& M = Parent->LL_GetTransform_R(mid);
+				RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
+				RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
+				RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
+
+#ifdef USE_DX11
+				Fmatrix& O = Parent->LL_GetTransform_R_old(mid);
+				RCache.set_ca(&*array_old, id + 0, O._11, O._21, O._31, O._41);
+				RCache.set_ca(&*array_old, id + 1, O._12, O._22, O._32, O._42);
+				RCache.set_ca(&*array_old, id + 2, O._13, O._23, O._33, O._43);
+#endif // USE_DX11
 			}
 
 			// render
@@ -381,6 +405,10 @@ void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCo
 void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount) 
 {	
 	s_bones_array_const		= "sbones_array";
+#ifdef USE_DX11
+	s_bones_array_const_old = "sbones_array_old";
+#endif // USE_DX11
+
 	xr_vector<u16>			bids;
 
 	// Load vertices
