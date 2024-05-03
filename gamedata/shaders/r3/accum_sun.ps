@@ -2,23 +2,7 @@
 #include "lmodel.h"
 #include "shadow.h"
 
-/*
-struct 	_input
-{
-	float2 	tc 	: TEXCOORD0;
-	float4 	tcJ : TEXCOORD1;
-	float2	LT	: TEXCOORD2;
-	float2	RT	: TEXCOORD3;
-	float2	LB	: TEXCOORD4;
-	float2 	RB	: TEXCOORD5;
-};
-*/
-
-#ifdef GBUFFER_OPTIMIZATION
 float4 	main	( p_aa_AA_sun I, float4 pos2d : SV_Position ) : SV_Target
-#else
-float4 	main	( p_aa_AA_sun I ) : SV_Target
-#endif
 {
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc, pos2d, ISAMPLE) );
 

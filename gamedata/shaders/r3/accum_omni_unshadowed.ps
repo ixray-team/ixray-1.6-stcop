@@ -2,11 +2,7 @@
 #include "lmodel.h"
 
 //	TODO: DX10: Move to Load
-#ifdef GBUFFER_OPTIMIZATION
 float4 main ( float4 tc:TEXCOORD0, float4 pos2d : SV_Position ) : SV_Target
-#else
-float4 main ( float4 tc:TEXCOORD0 ) : SV_Target
-#endif
 {
 	const float bias_mul 	= 0.999f;
 

@@ -75,15 +75,8 @@ float3 min_diff(float3 P, float3 Pr, float3 Pl)
 // fix that later
 float3 fetch_eye_pos(float2 uv)
 {
-////#define SSAO_OPT_DATA
 #ifndef SSAO_OPT_DATA
-#ifdef GBUFFER_OPTIMIZATION
 		gbuffer_data gbd = gbuffer_load_data_offset( tc, tap, pos2d ); // this is wrong - need to correct this
-#else
-		gbuffer_data gbd = gbuffer_load_data( tap );
-#endif
-
-		//float3	tap_pos	= s_position.Sample(smp_nofilter,tap);
 		float3	tap_pos	= gbd.P;
 #else // SSAO_OPT_DATA
     float z = s_half_depth.SampleLevel( smp_nofilter, uv, 0 );

@@ -35,33 +35,28 @@ float4 main( v2p I ) : SV_Target
 #ifdef	USE_SOFT_WATER
 #ifdef	NEED_SOFT_WATER
 	float	alphaDistort;
-//	float4	_P	= tex2Dproj         (s_position,         I.tctexgen);
 	float2 PosTc = I.tctexgen.xy/I.tctexgen.z;
-#ifdef GBUFFER_OPTIMIZATION
-	gbuffer_data gbd = gbuffer_load_data( PosTc, I.hpos );
-#else
-	gbuffer_data gbd = gbuffer_load_data( PosTc );
-#endif
-	//float4 _P = 	s_position.Sample( smp_nofilter, PosTc);
-	float4 _P = 	float4( gbd.P, gbd.mtl );
-	float 	waterDepth = _P.z-I.tctexgen.z;
+	gbuffer_data gbd = gbuffer_load_data(PosTc, I.hpos);
+	
+	float4 _P = float4( gbd.P, gbd.mtl );
+	float waterDepth = _P.z-I.tctexgen.z;
 	alphaDistort = saturate(5*waterDepth);
 	faded 	= lerp  ( zero, faded, alphaDistort);
 #endif	//	NEED_SOFT_WATER
 #endif	//	USE_SOFT_WATER & NEED_SOFT_WATER
 
-	float2	faded_bx2	= (faded*2-1)*W_DISTORT_POWER;
-	float	faded_dot	= dot        (float3(faded_bx2,0),.75        );        //0.75
-	float	alpha		= .5f        ;                //abs          (faded_dot);
+	float2	faded_bx2 = (faded*2-1)*W_DISTORT_POWER;
+	float	faded_dot = dot (float3(faded_bx2,0),.75);
+	float	alpha = .5f;
 
-
-	faded	= faded*POWER - .5*POWER + 0.5        ;
+	faded = faded*POWER - .5*POWER + 0.5;
 
         // out
 	//	Igor: need for alpha water
 #ifdef	NEED_SOFT_WATER
-	return  float4( faded, 0.0h, alpha );
+	return  float4( faded, 0.0h, alpha);
 #else	//	NEED_SOFT_WATER
-	return  float4( faded, .08h, alpha );
+	return  float4( faded, .08h, alpha);
 #endif	//	NEED_SOFT_WATER
 }
+

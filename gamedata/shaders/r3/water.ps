@@ -32,15 +32,8 @@ float3	water_intensity;
 ////////////////////////////////////////////////////////////////////////////////
 // Pixel
 
-#ifdef GBUFFER_OPTIMIZATION
 float4 main( vf I, float4 pos2d : SV_Position ) : SV_Target
-#else
-float4 main( vf I ) : SV_Target
-#endif
 {
-//	float4	base	= tex2D (s_base,I.tbase);
-//	float3	n0	= tex2D (s_nmap,I.tnorm0);
-//	float3	n1	= tex2D (s_nmap,I.tnorm1);
 	float4	base= s_base.Sample( smp_base, I.tbase);
 	float3	n0	= s_nmap.Sample( smp_base, I.tnorm0);
 	float3	n1	= s_nmap.Sample( smp_base, I.tnorm1);
@@ -72,30 +65,18 @@ float4 main( vf I ) : SV_Target
 	float3	c_reflection       = env*amount;
 	float3	final              = lerp(c_reflection,base.rgb,base.a);
 
-
-        // tonemap
-#ifdef        USE_VTF
-//                final                *= I.c0.w        ;
-#else
-//                 final                 *= tex2D        (s_tonemap,I.tbase).x        ;        // any TC - OK
-#endif
-
 #ifdef	NEED_SOFT_WATER
-
-	float	alpha	= 0.75f+0.25f*power;                        // 1=full env, 0=no env
+	float	alpha	= 0.75f + 0.25f * power; // 1=full env, 0=no env
 
 #ifdef	USE_SOFT_WATER
 	//	Igor: additional depth test
-//	float4 _P = 	tex2Dproj( s_position, I.tctexgen);
+	
 	float2 PosTc = I.tctexgen.xy/I.tctexgen.z;
-#ifdef GBUFFER_OPTIMIZATION
-	gbuffer_data gbd = gbuffer_load_data( PosTc, pos2d );
-#else
-	gbuffer_data gbd = gbuffer_load_data( PosTc );
-#endif
-	float4 _P = 	float4( gbd.P, gbd.mtl );
-
-	float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
+	gbuffer_data gbd = gbuffer_load_data(PosTc, pos2d);
+	
+	float4 _P = float4(gbd.P, gbd.mtl);
+	
+	float3 waterPos = (gbd.P.xyz / gbd.P.z) * I.tctexgen.z;
 	float waterDepth = length(waterPos - _P) * 0.75f;
 
 	//	water fog

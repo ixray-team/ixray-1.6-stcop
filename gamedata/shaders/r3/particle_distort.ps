@@ -27,11 +27,8 @@ float4 main ( v2p I ) : SV_Target
 	float2	zero = float2( 0.5, 0.5);
 	float	alphaDistort;
 	float2 tcProj = I.txtexgen.xy / I.texgen.w;
-#ifdef GBUFFER_OPTIMIZATION
-	gbuffer_data gbd = gbuffer_load_data( tcProj, I.HPos );
-#else
-	gbuffer_data gbd = gbuffer_load_data( tcProj );
-#endif
+	gbuffer_data gbd = gbuffer_load_data( tcProj, I.HPos);
+	
 	//float4 _P = tex2Dproj( s_position, I.tctexgen);
 	float4 _P = float4( gbd.P, gbd.mtl );
 	float spaceDepth = _P.z - I.tctexgen.z;
