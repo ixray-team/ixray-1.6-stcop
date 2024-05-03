@@ -31,6 +31,8 @@ cbuffer	shader_params
 
 cbuffer	static_globals
 {
+	uniform float3x4	m_invV;
+	
 	uniform float3x4	m_V;
 	uniform float4x4 	m_P;
 	uniform float4x4 	m_VP;

@@ -64,6 +64,9 @@ p_bumped main( InputPatch<p_bumped, 3> ip,
 	ouput.M1		= ip[i].M1;
 	ouput.M2		= ip[i].M2;
 	ouput.M3		= ip[i].M3;
+	
+	ouput.hpos_curr = ip[i].hpos_curr;
+	ouput.hpos_old 	= ip[i].hpos_old;
 #ifdef USE_TDETAIL
 	ouput.tcdbump	= ip[i].tcdbump;
 #endif
