@@ -37,9 +37,15 @@ BIND_DECLARE(wvp_old);
 
 DECLARE_TREE_BIND(m_xform_v);
 DECLARE_TREE_BIND(m_xform);
+
 DECLARE_TREE_BIND(consts);
 DECLARE_TREE_BIND(wave);
 DECLARE_TREE_BIND(wind);
+
+DECLARE_TREE_BIND(consts_old);
+DECLARE_TREE_BIND(wave_old);
+DECLARE_TREE_BIND(wind_old);
+
 DECLARE_TREE_BIND(c_scale);
 DECLARE_TREE_BIND(c_bias);
 DECLARE_TREE_BIND(c_sun);
@@ -390,9 +396,15 @@ void	CBlender_Compile::SetMapping	()
 	
 	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
 	r_Constant				("m_xform",			&tree_binder_m_xform);
+
 	r_Constant				("consts",			&tree_binder_consts);
 	r_Constant				("wave",			&tree_binder_wave);
 	r_Constant				("wind",			&tree_binder_wind);
+
+	r_Constant				("consts_old",		&tree_binder_consts_old);
+	r_Constant				("wave_old",  		&tree_binder_wave_old);
+	r_Constant				("wind_old",  		&tree_binder_wind_old);
+
 	r_Constant				("c_scale",			&tree_binder_c_scale);
 	r_Constant				("c_bias",			&tree_binder_c_bias);
 	r_Constant				("c_sun",			&tree_binder_c_sun);
