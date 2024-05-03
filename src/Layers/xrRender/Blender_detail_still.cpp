@@ -83,17 +83,20 @@ void	CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 // R2
 //////////////////////////////////////////////////////////////////////////
 #include "uber_deffer.h"
-void	CBlender_Detail_Still::Compile	(CBlender_Compile& C)
+void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile	(C);
 
 	switch(C.iElement) 
 	{
-	case SE_R2_NORMAL_HQ: 		// deffer wave
-		uber_deffer				(C,false,"detail_w","base",true);
+	case SE_R2_NORMAL_HQ:
+		RImplementation.addShaderOption("USE_TREEWAVE", "1");
+		uber_deffer (C,false,"deffer_detail","deffer_base",true, 0, true);
+		C.r_End();
 		break;
-	case SE_R2_NORMAL_LQ: 		// deffer still
-		uber_deffer				(C,false,"detail_s","base",true);
+	case SE_R2_NORMAL_LQ:
+		uber_deffer (C,false,"deffer_detail","deffer_base",true, 0, true);
+		C.r_End();
 		break;
 	}
 }
@@ -102,20 +105,27 @@ void	CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 // R3
 //////////////////////////////////////////////////////////////////////////
 #include "uber_deffer.h"
-void	CBlender_Detail_Still::Compile	(CBlender_Compile& C)
+void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile	(C);
 
-	switch(C.iElement) 
+	if(C.iElement == SE_R2_NORMAL_HQ || C.iElement == SE_R2_NORMAL_LQ) {
+		RImplementation.addShaderOption("USE_JITTER_FOR_TAA", "1");
+	}
+
+	switch(C.iElement)
 	{
-	case SE_R2_NORMAL_HQ: 		// deffer wave
+	case SE_R2_NORMAL_HQ:
+	case SE_R2_DETAIL_SHADOW_HQ:
+		RImplementation.addShaderOption("USE_TREEWAVE", "1");
 		uber_deffer		(C,false,"deffer_detail","deffer_base",true, 0, true);
 		C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		C.r_StencilRef	(0x01);
 		C.r_CullMode	(D3DCULL_NONE);
 		C.r_End			();
 		break;
-	case SE_R2_NORMAL_LQ: 		// deffer still
+	case SE_R2_NORMAL_LQ:
+	case SE_R2_DETAIL_SHADOW_LQ:
 		uber_deffer		(C,false,"deffer_detail","deffer_base",true, 0, true);
 		C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		C.r_StencilRef	(0x01);
@@ -123,5 +133,7 @@ void	CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		C.r_End			();
 		break;
 	}
+
+	RImplementation.clearAllShaderOptions();
 }
 #endif

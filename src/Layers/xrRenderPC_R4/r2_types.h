@@ -78,6 +78,9 @@ const		u32					LUMINANCE_size		= 16	;
 #define		SE_R2_NORMAL_LQ		1	// low quality
 #define		SE_R2_SHADOW		2	// shadow generation
 
+#define		SE_R2_DETAIL_SHADOW_HQ 2	 // shadow generation (Wind)
+#define		SE_R2_DETAIL_SHADOW_LQ 3	 // shadow generation (Stil)
+
 // spot
 #define		SE_L_FILL			0
 #define		SE_L_UNSHADOWED		1
