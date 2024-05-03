@@ -30,6 +30,10 @@ float DOFFactor( float depth)
 	return blur;
 }
 
+float sampleDepth(float2 center) {
+	float P = s_position.SampleLevel(smp_nofilter, center, 0).x;
+	return m_P._34 / (P - m_P._33);
+}
 
 //#define MAXCOF		5.h
 #define MAXCOF		7.h
@@ -37,7 +41,7 @@ float DOFFactor( float depth)
 float3	dof(float2 center)
 {
 	// Scale tap offsets based on render target size
-   float 	depth		= s_position.Sample( smp_nofilter, center).z;
+   float 	depth		= sampleDepth(center);
 	if (depth <= EPSDEPTH)	depth = dof_params.w;
 	float	blur 		= DOFFactor(depth);
 	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h) * (dof_kernel.z * blur);
@@ -64,7 +68,7 @@ float3	dof(float2 center)
 	{
 		float2 	tap 		= center + o[i];
 		float4	tap_color	= s_image.Sample( smp_nofilter, tap );
-      float 	tap_depth 	= s_position.Sample( smp_nofilter, tap).z;
+      float 	tap_depth 	= sampleDepth(tap);
 		[flatten] if (tap_depth <= EPSDEPTH)	tap_depth = dof_params.w;
 		float 	tap_contrib	= DOFFactor(tap_depth);
 		sum 		+= tap_color	* tap_contrib;
