@@ -203,8 +203,6 @@ void					CRender::create					()
     if( o.ssao_hdao )
         o.ssao_opt_data = false;
 
-	o.dx10_gbuffer_opt	= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
-
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
 	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
 
@@ -1075,18 +1073,6 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len] = '0' + static_cast<char>(ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX));
 		++len;
 	}
-
-   if( o.dx10_gbuffer_opt )
-	{
-		defines[def_it].Name		=	"GBUFFER_OPTIMIZATION";
-		defines[def_it].Definition	=	"1";
-		def_it						++;
-	}
-   else
-   {
-	   sh_name[len] = '0' + static_cast<char>(o.dx10_gbuffer_opt); 
-	   ++len;
-   }
 
    if(RFeatureLevel == D3D_FEATURE_LEVEL_10_1)
    {

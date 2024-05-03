@@ -247,17 +247,7 @@ void CRenderTarget::draw_rain( light &RainSetup )
 		RCache.set_c				("m_shadow",			m_shadow						);
 		RCache.set_c				("m_sunmask",			m_clouds_shadow					);
 
-		if( !RImplementation.o.dx10_gbuffer_opt )
-		{
-			//	Do this in blender!
-			//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_RED | D3Dxx_COLOR_WRITE_ENABLE_GREEN | D3Dxx_COLOR_WRITE_ENABLE_BLUE );
-			u_setrt(rt_Normal, nullptr, nullptr, RDepth);
-		}
-		else
-		{
-			//StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_RED | D3Dxx_COLOR_WRITE_ENABLE_GREEN );
-			u_setrt(rt_Position, nullptr, nullptr, RDepth);
-		}
+		u_setrt(rt_Normal, NULL, NULL, RDepth);
 
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

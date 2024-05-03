@@ -138,7 +138,6 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
 	| R2FLAG_EXP_MT_CALC | R3FLAG_DYN_WET_SURF
 	| R3FLAG_VOLUMETRIC_SMOKE
-	| R3FLAG_GBUFFER_OPT
 	|R2FLAG_DETAIL_BUMP
 	|R2FLAG_DOF
 	|R2FLAG_SOFT_PARTICLES
@@ -868,7 +867,6 @@ void		xrRender_initconsole	()
 	//	Igor: need restart
 	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
 	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
-	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
 	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);
 
 	CMD3(CCC_Token,		"r__type_aa",					&ps_r2_aa_type,				aa_type_token);

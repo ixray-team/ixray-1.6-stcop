@@ -415,10 +415,6 @@ CRenderTarget::CRenderTarget		()
 
 	RImplementation.o.ssao_ultra		= ps_r_ssao>3;
 
-#ifdef DEBUG
-	if( RImplementation.o.dx10_gbuffer_opt )
-		Msg		("dx10_gbuffer_opt = on" );
-#endif // DEBUG
 	param_blur			= 0.f;
 	param_gray			= 0.f;
 	param_noise			= 0.f;
@@ -458,9 +454,7 @@ CRenderTarget::CRenderTarget		()
 	//	NORMAL
 	{
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-
-		if( !RImplementation.o.dx10_gbuffer_opt )
-			rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
@@ -474,16 +468,9 @@ CRenderTarget::CRenderTarget		()
 			// can't - mix-depth
 			if (RImplementation.o.fp16_blend) {
 				// NV40
-				if( !RImplementation.o.dx10_gbuffer_opt )
-				{
-					rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
-					rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-				}
-				else
-				{
-					rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// expand to full
-					rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
-				}
+				rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);	// expand to full
+				rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+				
 			} else {
 				// R4xx, no-fp-blend,-> albedo_wo
 				rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);	// normal
