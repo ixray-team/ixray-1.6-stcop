@@ -1,19 +1,18 @@
 #include "common.h"
 
 cbuffer DetailConstants {
-float4 consts;
+	float4 consts;
 
-float4 wave;
-float4 wave_old;
+	float4 wave;
+	float4 wave_old;
 
-float4 dir2D;
-float4 dir2D_old; 
+	float4 dir2D;
+	float4 dir2D_old; 
 
-float4 array[61*4];
+	float4 array[61*4];
 }
 
-void main(in v_detail I, out p_bumped_new O)
-{
+void main(in v_detail I, out p_bumped_new O) {
 	int i = I.misc.w;
 	float4 m0 = array[i + 0];
 	float4 m1 = array[i + 1];
@@ -27,6 +26,7 @@ void main(in v_detail I, out p_bumped_new O)
 	pos.w = 1.0f;
 	pos_old = pos;
 
+#ifdef USE_TREEWAVE
 	float base = m1.w;
 	float H = pos.y - base;
 	float frac = I.misc.z * consts.x;
@@ -36,10 +36,13 @@ void main(in v_detail I, out p_bumped_new O)
 	
 	pos.xz += calc_xz_wave(dir2D.xz * inten, frac);
 	
+#ifdef USE_JITTER_FOR_TAA
 	float dp_old = calc_cyclic(dot(pos_old, wave_old));
 	float inten_old = H * dp_old;
 	
 	pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, frac);
+#endif
+#endif
 
 	float3 Pe = mul(m_WV, pos);
 	float2 tc = I.misc.xy * consts.xy;
@@ -64,9 +67,13 @@ void main(in v_detail I, out p_bumped_new O)
 	
 	O.hpos = mul(m_WVP, pos);
 	
+#ifdef USE_JITTER_FOR_TAA
 	O.hpos_curr = mul(m_VP, pos);
 	O.hpos_old = mul(m_VP_old, pos_old);
 	
 	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
+#else
+	O.hpos_curr = O.hpos_old = O.hpos;
+#endif
 }
 
