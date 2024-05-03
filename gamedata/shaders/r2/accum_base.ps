@@ -16,6 +16,8 @@ float4         main         ( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : 
 	float4 _P               = tex2Dproj         (s_position,         tc);
 	float4  _N               = tex2Dproj         (s_normal,           tc);
 
+	_P.xyz += normalize(_N.xyz) * 0.015f;
+
 	float 	m	= xmaterial	;
 # ifndef USE_R2_STATIC_SUN
 			m 	= _P.w		;
@@ -39,7 +41,7 @@ float4         main         ( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : 
               			PS.x         		= dot         	(P4, m_lmap[0]);
                         PS.y                = dot           (P4, m_lmap[1]);
                 #endif
-                lightmap= tex2Dproj         (s_lmap,        PS);        //
+                lightmap = tex2Dlod (s_lmap, float4(PS.xy / PS.w, 0.0f, 0.0f));        //
         #endif
 
         return         blendp        (Ldynamic_color * light * s * lightmap, tc);
