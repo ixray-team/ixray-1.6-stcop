@@ -75,3 +75,20 @@ if(NOT EXISTS ${AMD_AGS_SDK_FILE})
     )
 endif()
 set(AMD_AGS_SDK ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/)
+
+# NVIDIA DLSS SDK
+set(NVIDIA_DLSS_SDK_FILE ${CMAKE_BINARY_DIR}/dep/Nvidia.Dlss.Sdk.Libraries.Windows.3.7.0.zip)
+if(NOT EXISTS ${NVIDIA_DLSS_SDK_FILE})
+    file(
+        DOWNLOAD
+        https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Nvidia.Dlss.Sdk.Libraries.Windows.3.7.0.zip
+        ${CMAKE_BINARY_DIR}/dep/Nvidia.Dlss.Sdk.Libraries.Windows.3.7.0.zip
+        SHOW_PROGRESS
+    )
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/nvngx_dlss_sdk/)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/Nvidia.Dlss.Sdk.Libraries.Windows.3.7.0.zip
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/nvngx_dlss_sdk/
+    )
+endif()
+set(NVIDIA_DLSS_SDK ${CMAKE_BINARY_DIR}/dep/nvngx_dlss_sdk/)
