@@ -257,6 +257,15 @@ class cl_eye_N		: public R_constant_setup {
 };
 static cl_eye_N		binder_eye_N;
 
+// eye-params
+class cl_hud_project : public R_constant_setup {
+	virtual void setup(R_constant* C)
+	{
+		RCache.set_c (C, Device.mProject_hud);
+	}
+};
+static cl_hud_project binder_hud_project;
+
 #ifndef _EDITOR
 // TAA Jiter
 class cl_taa_jitter : public R_constant_setup {
@@ -433,6 +442,8 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_VP",			&binder_vp);
 	r_Constant				("m_WVP",			&binder_wvp);
 	r_Constant				("m_inv_V",			&binder_inv_v);
+
+	r_Constant				("m_P_hud",			&binder_hud_project);
 
 	r_Constant				("m_W_old",			&binder_w_old);
 	r_Constant				("m_V_old",			&binder_v_old);

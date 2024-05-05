@@ -22,6 +22,45 @@ float3 tonemap(float3 rgb, float scale)
 	return rgb * (1.0f + rgb / fWhiteIntensitySQR) / (rgb + 1.0f);
 }
 
+// Функции генерации случайных чисел [0, 1]
+// START
+
+float Hash(float n) { return frac(sin(n) * 43758.5453123f); }
+float Hash(float2 n) { return Hash(Hash(n.x) + n.y); }
+float Hash(float3 n) { return Hash(Hash(dot(n.xy, float2(12.989, 78.233))) + n.z); }
+
+float2 Hash22(float2 value) {
+	return float2(
+		Hash(dot(value, float2(12.989, 78.233))),
+		Hash(dot(value, float2(39.346, 11.135)))
+	);
+}
+
+float3 Hash23(float2 value) {
+	return float3(
+		Hash(dot(value, float2(12.989, 78.233))),
+		Hash(dot(value, float2(39.346, 11.135))),
+		Hash(dot(value, float2(73.156, 52.235)))
+	);
+}
+
+float2 Hash32(float3 value) {
+	return float2(
+		Hash(dot(value, float3(12.989, 78.233, 123.134f))),
+		Hash(dot(value, float3(39.346, 11.135, 543.142f)))
+	);
+}
+
+float3 Hash33(float3 value) {
+	return float3(
+		Hash(dot(value, float3(12.989, 78.233, 123.134f))),
+		Hash(dot(value, float3(39.346, 11.135, 543.142f))),
+		Hash(dot(value, float3(73.156, 52.235, 143.425f)))
+	);
+}
+
+// END
+
 float4 combine_bloom( float3  low, float4 high)	
 {
 	return float4( low + high*high.a, 1.f);
@@ -192,17 +231,24 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d)
 {
 	gbuffer_data gbd;
 
+	gbd.N = float3(0.0f, 0.0f, 1.0f);
 	gbd.P = float3(0.0f, 0.0f, 0.0f);
-	gbd.N = float3(0.0f, 0.0f, 0.0f);
+	
+	gbd.P_hud = float3(0.0f, 0.0f, 0.0f);
+	gbd.P_real = float3(0.0f, 0.0f, 0.0f);
+	
 	gbd.hemi = 0.0f;
 	gbd.mtl = 0.0f;
 	gbd.C = 0.0f;
 
-	float P = s_position.Sample(smp_nofilter, tc).x;
-	P = m_P._34 / (P - m_P._33);  
+	gbd.depth = s_position.Sample(smp_nofilter, tc).x;
 	
 	pos2d = pos2d - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
-	gbd.P = P * float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+	float3 P = float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+	
+	gbd.P = P * m_P._34 / (gbd.depth - m_P._33);
+	gbd.P_hud = P * m_P_hud._34 / (min(1.0f, gbd.depth * 50.0f) - m_P_hud._33);
+	gbd.P_real = gbd.depth > 0.02f ? gbd.P : gbd.P_hud;
 		
 	float4 N = s_normal.Sample(smp_nofilter, tc);
 

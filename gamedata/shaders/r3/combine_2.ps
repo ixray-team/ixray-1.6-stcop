@@ -2,18 +2,8 @@
 #include "mblur.h"
 #include "dof.h"
 
-float hash(float n) { return frac(sin(n) * 43758.5453123f); }
-
-float3 hash23(float2 value) {
-	return float3(
-		hash(dot(value, float2(12.989, 78.233))),
-		hash(dot(value, float2(39.346, 11.135))),
-		hash(dot(value, float2(73.156, 52.235)))
-	);
-}
-
 float3 deband_color (float3 image, float2 uv) {
-	float3 dither = hash23(cos(uv.xy * timers.x) * 1245.0f);
+	float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);
 	
 	float3 color = image * 255.0f;
 	float3 pq = frac(color);

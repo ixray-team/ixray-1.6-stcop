@@ -14,34 +14,42 @@
 #endif
 
 #include "shadow.h"
+#include "ScreenSpaceContactShadows.hlsl"
 
 float4 main ( v2p_volume I ) : SV_Target
 {
-	//float4 	_P	= tex2D( s_position, tc );
-	//float4	_N	= tex2D( s_normal, tc );
+	float2 tcProj = I.tc.xy/I.tc.w;
+	
+	gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, I.hpos, ISAMPLE));
+	gbd.P += gbd.N * 0.015f;
 
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc.xy/I.tc.w, I.hpos, ISAMPLE) );
-	gbd.P += gbd.N*0.015f;
-
-	float4 _P = float4( gbd.P, gbd.mtl );
-	float4  _N = float4( gbd.N, gbd.hemi );
+	float4 _P = float4(gbd.P_real, gbd.mtl);
+	float4 _N = float4(gbd.N, gbd.hemi);
 
 	// ----- light-model
 	float	m	= xmaterial;
 # ifndef USE_R2_STATIC_SUN
 			m 	= _P.w;
 # endif
-	float4	light	= plight_infinity ( m, _P, _N, Ldynamic_dir );
+	float4	light	= plight_infinity (m, _P, _N, Ldynamic_dir );
 
 	// ----- shadow
-  	float4 	P4 	= float4( _P.x, _P.y, _P.z, 1.f);
+  	float4 	P4 	= float4(gbd.P.xyz, 1.f);
 	float4 	PS	= mul( m_shadow, P4 );
 	float 	s 	= sunmask( P4 );
-	#if SUN_QUALITY==2 // Hight quality
-	  		s 	*= shadow_high(PS); //shadowtest_sun( PS, float4(0,0,0,0) );
-	#else
+	
+#if SUN_QUALITY==2 // Hight quality
+		s *= shadow_high(PS);
+#else
 		s *= shadow( PS );
-	#endif
+#endif
 
-	return 		blend( Ldynamic_color * light * s/*float4( 1.f, 0.2f, 0.2f, 1.f)*/, I.tc );
+#ifdef USE_HUD_SHADOWS
+	if(gbd.depth < 0.02f) {
+		RayTraceContactShadow(tcProj, gbd.P_hud, -Ldynamic_dir, s);
+	}
+#endif
+
+	return blend( Ldynamic_color * light * s, I.tc );
 }
+

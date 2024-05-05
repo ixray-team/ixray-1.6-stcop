@@ -159,6 +159,7 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	|R2FLAG_TONEMAP
 	|R2FLAG_VOLUMETRIC_LIGHTS
 	| RFLAG_CLOUD_SHADOWS
+	| R4FLAG_SCREEN_SPACE_HUD_SHADOWS
 	};	// r2-only
 
 Flags32		ps_r2_ls_flags_ext			= {
@@ -852,6 +853,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
+
+	CMD3(CCC_Mask,		"r4_hud_shadows",				&ps_r2_ls_flags_ext,		R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
 
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);

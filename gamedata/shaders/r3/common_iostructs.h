@@ -306,10 +306,15 @@ struct f_forward {
 
 struct gbuffer_data
 {
-	float3  P; // position.( mtl or sun )
-	float   mtl; // material id
-	float3  N; // normal
-	float   hemi; // AO
+	float3  P;
+	float3  P_hud;
+	float3  P_real;
+	
+	float depth;
+	
+	float   mtl;
+	float3  N;
+	float   hemi;
 	float3  C;
 	float   gloss;
 };

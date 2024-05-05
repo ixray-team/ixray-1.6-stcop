@@ -17,6 +17,8 @@ cbuffer	dynamic_transforms
 	uniform float3x4		m_WV_old;
 	uniform float3x4	    m_W_old;
 	
+	uniform float4x4	    m_P_hud;
+	
 	//	Used by VS only
 	uniform float4		L_material;	// 0,0,0,mid
 	uniform float4		hemi_cube_pos_faces;
