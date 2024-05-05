@@ -244,23 +244,22 @@ void	CRenderTarget::phase_combine	()
 		}
 	}
 
+	u_setrt(get_width(), get_height(), 0, 0, 0, 0);
+	RImplementation.rmNormal();
 	switch(ps_r_scale_mode)
 	{
-		case 2:
-		case 3:
-		{
-			u_setrt(get_width(), get_height(), 0, 0, 0, 0);
-			RImplementation.rmNormal();
-
-			phase_fsr();
-
-		}
+	case 2: {
+		phase_dlss();
 		break;
-		default:
-		{
-			phase_scale();
-		}
+	}
+	case 3: {
+		phase_fsr();
 		break;
+	}
+	default: {
+		phase_scale();
+	}
+	break;
 	}
 
 	dwWidth = get_target_width();

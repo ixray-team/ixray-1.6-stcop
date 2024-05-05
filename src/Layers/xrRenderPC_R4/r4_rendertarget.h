@@ -233,6 +233,8 @@ public:
 
 	void						init_fsr				();
 	void						phase_fsr				();
+	void						init_dlss();
+	void						phase_dlss();
 	void						phase_scale				();
 
 	void						phase_fxaa				();

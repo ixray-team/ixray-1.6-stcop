@@ -30,6 +30,7 @@ void CRenderTarget::init_fsr()
 
 void CRenderTarget::phase_fsr()
 {
+	PIX_EVENT(FSR);
 	Fsr2Wrapper::DrawParameters fsr2Params = {};
 	fsr2Params.deviceContext = RContext;
 
