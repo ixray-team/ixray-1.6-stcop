@@ -23,6 +23,17 @@ xr_token qsmapsize_token[] = {
 	{ nullptr, 0   }
 };
 
+u32 ps_r_scale_mode = 0;
+xr_token qscale_mode_token[] = {
+	{ "st_filter_linear", 0},
+	{ "st_filter_point", 1},
+#ifdef USE_DX11
+	{ "st_filter_dlss", 2},
+	{ "st_filter_fsr", 3},
+#endif
+	{ 0, 0 }
+};
+
 u32			ps_r_ssao_mode			=	2;
 xr_token							qssao_mode_token						[ ]={
 	{ "disabled",					0											},
@@ -220,6 +231,8 @@ float		ps_r2_def_aref_quality = 100.0f;
 float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
 float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
+
+float		ps_r4_fsr_sharpening = 0.8f;
 
 // Test float exported to shaders for development
 float		ps_r__test_exp_to_shaders_1	= 1.0f;
@@ -737,6 +750,7 @@ void		xrRender_initconsole	()
 	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
 
 	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
+	CMD4(CCC_Float, "r4_fsr_sharpening", &ps_r4_fsr_sharpening, 0.0f, 1.0f);
 
 	// R2-specific
 	CMD2(CCC_R2GM,		"r2em",					&ps_r2_gmaterial							);
@@ -838,10 +852,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
-	
-//	float		ps_r2_dof_near			= 0.f;					// 0.f
-//	float		ps_r2_dof_focus			= 1.4f;					// 1.4f
-	
+
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
@@ -854,6 +865,8 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_ssao_hdao",					&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HDAO);//Need restart
 	CMD3(CCC_Mask,		"r4_enable_tessellation",		&ps_r2_ls_flags_ext,		R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
 	CMD3(CCC_Mask,		"r4_wireframe",					&ps_r2_ls_flags_ext,		R2FLAGEXT_WIREFRAME);//Need restart
+
+	CMD3(CCC_SSAO_Mode,	"r_scale_mode",					&ps_r_scale_mode,			qscale_mode_token);
 
 	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
 	CMD4(CCC_Float, "r2_def_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);

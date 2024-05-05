@@ -17,8 +17,8 @@ void CRenderTarget::phase_fxaa()
         Fvector4 uv6;
     };
 
-    float _w = RCache.get_width();
-    float _h = RCache.get_height();
+    float _w = RCache.get_target_width();
+    float _h = RCache.get_target_height();
     float ddw = 1.f / _w;
     float ddh = 1.f / _h;
 
@@ -28,7 +28,7 @@ void CRenderTarget::phase_fxaa()
     //////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    u_setrt(rt_Back_Buffer, nullptr, nullptr, RDepth);
+    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, RDepth);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -81,6 +81,5 @@ void CRenderTarget::phase_fxaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    ref_rt& dest_rt = rt_Color;
-    RContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
+    RContext->CopyResource(rt_Back_Buffer->pTexture->surface_get(), rt_Back_Buffer_AA->pTexture->surface_get());
 }

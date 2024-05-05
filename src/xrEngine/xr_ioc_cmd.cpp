@@ -22,6 +22,8 @@ ENGINE_API float					devfloat2 = 1.0f;
 ENGINE_API float					devfloat3 = 1.0f;
 ENGINE_API float					devfloat4 = 1.0f;
 
+ENGINE_API float ps_render_scale = 1.0f;
+
 xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},
 	{ "32",							32											},
@@ -705,7 +707,8 @@ void CCC_Register()
 	CMD4(CCC_Integer,	"net_dedicated_sleep",	&psNET_DedicatedSleep,		0,	64	);
 
 	// General video control
-	CMD1(CCC_VidMode,	"vid_mode"				);
+	CMD1(CCC_VidMode, "vid_mode");
+	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.25f, 2.0f);
 
 #ifdef DEBUG
 	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );

@@ -12,6 +12,8 @@ extern ECORE_API	xr_token	qsmapsize_token[];
 extern ECORE_API	u32			ps_r_ssao;			//	=	0;
 extern ECORE_API	xr_token	qssao_token[];
 
+extern ECORE_API	u32			ps_r_scale_mode;
+
 extern ECORE_API	u32			ps_r_ssao_mode;
 extern ECORE_API	xr_token	qssao_mode_token[];
 
@@ -134,6 +136,8 @@ extern ECORE_API float			ps_r2_def_aref_quality;
 extern ECORE_API float			ps_r3_dyn_wet_surf_near;	// 10.0f
 extern ECORE_API float			ps_r3_dyn_wet_surf_far;		// 30.0f
 extern ECORE_API int			ps_r3_dyn_wet_surf_sm_res;	// 256
+
+extern ECORE_API float			ps_r4_fsr_sharpening;
 
 // Test float exported to shaders for development
 extern  float					ps_r__test_exp_to_shaders_1;

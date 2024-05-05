@@ -559,9 +559,9 @@ IC float 				_y2real			(float y)
 { return (y+1)*Device.m_RenderHeight_2;}
 #else
 IC float 				_x2real			(float x)
-{ return (x+1)*Device.TargetWidth*0.5f;	}
+{ return (x+1)*RCache.get_width()*0.5f;	}
 IC float 				_y2real			(float y)
-{ return (y+1)*Device.TargetHeight*0.5f;}
+{ return (y+1)*RCache.get_height()*0.5f;}
 #endif
 
 void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption, u32 clr_font)

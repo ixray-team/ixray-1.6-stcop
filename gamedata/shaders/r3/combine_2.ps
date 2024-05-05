@@ -2,53 +2,44 @@
 #include "mblur.h"
 #include "dof.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-Texture2D 			s_distort;
-#define	EPSDEPTH	0.001
-uniform float4 		e_barrier;	// x=norm(.8f), y=depth(.1f), z=clr
-uniform float4 		e_weights;	// x=norm, y=depth, z=clr
-uniform float4 		e_kernel;	// x=norm, y=depth, z=clr
-//////////////////////////////////////////////////////////////////////////////////////////
-// Pixel
+float hash(float n) { return frac(sin(n) * 43758.5453123f); }
 
-struct c2_out
-{
-	float4	Color : SV_Target;
-};
-
-c2_out main( v2p_aa_AA I ) : SV_Target
-{
-	c2_out	res;
-	res.Color = float4(0,0,0,0);
-
-	int iSample = 0;
-	gbuffer_data gbd = gbuffer_load_data(GLD_P(I.Tex0, I.HPos, iSample));
-	
-#ifdef 	USE_DISTORT
-  	float 	depth 	= gbd.P.z;
-	float4 	distort	= s_distort.Sample(smp_nofilter, I.Tex0);
-	float2	offset	= (distort.xy-(127.0h/255.0h))*def_distort;  // fix newtral offset
-	float2	center	= I.Tex0 + offset;
-
-	gbuffer_data gbdx	= gbuffer_load_data_offset(I.Tex0, center, I.HPos);
-
-	float 	depth_x	= gbdx.P.z;
-	if ((depth_x+EPSDEPTH)<depth)	center	= I.Tex0;	// discard new sample
-#else // USE_DISTORT
-	float2	center 	= I.Tex0;
-#endif
-
-	float3	img	= dof(center);
-	float4 	bloom = s_bloom.Sample(smp_rtlinear, center);
-			img = mblur(center, (gbd).P, img.rgb);
-
-	img = tonemap(img, s_tonemap.Sample(smp_nofilter, float2(0.5f, 0.5f)).x);
-
-#ifdef 	USE_DISTORT
- 	float3	blurred	= bloom * def_hdr;
-			img		= lerp(img, blurred, distort.z);
-#endif
-
- 	res.Color += combine_bloom( img, bloom );
-	return res;
+float3 hash23(float2 value) {
+	return float3(
+		hash(dot(value, float2(12.989, 78.233))),
+		hash(dot(value, float2(39.346, 11.135))),
+		hash(dot(value, float2(73.156, 52.235)))
+	);
 }
+
+float3 deband_color (float3 image, float2 uv) {
+	float3 dither = hash23(cos(uv.xy * timers.x) * 1245.0f);
+	
+	float3 color = image * 255.0f;
+	float3 pq = frac(color);
+	
+	color -= pq;
+ 	pq = step(dither, pq);
+	
+	color += pq;
+	color /= 255.0f;
+	
+	return color;
+}
+
+float4 main( v2p_aa_AA I ) : SV_Target
+{
+	gbuffer_data gbd = gbuffer_load_data(I.Tex0, I.HPos);
+
+	float3 img = dof(I.Tex0);
+	float4 bloom = s_bloom.Sample(smp_rtlinear, I.Tex0);
+
+	float scale = s_tonemap.Sample(smp_nofilter, float2(0.5f, 0.5f)).x;
+	img = tonemap(img, scale);
+
+ 	float4 Color = combine_bloom(img, bloom);
+	Color.xyz = deband_color(Color.xyz, I.Tex0);
+	
+	return Color;
+}
+

@@ -9,8 +9,8 @@ void CRenderTarget::phase_smaa()
     u32 C = color_rgba(0, 0, 0, 255);
     FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    float _w = RCache.get_width();
-    float _h = RCache.get_height();
+    float _w = RCache.get_target_width();
+    float _h = RCache.get_target_height();
 
     p0.set(0.0f, 0.0f);
     p1.set(1.0f, 1.0f);
@@ -63,7 +63,7 @@ void CRenderTarget::phase_smaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Phase 2: neighbour blend //////////////////////////////////////////////
-    u_setrt(rt_Back_Buffer, nullptr, nullptr, nullptr);
+    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -86,6 +86,5 @@ void CRenderTarget::phase_smaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    ref_rt& dest_rt = rt_Color;
-    RContext->CopyResource(dest_rt->pTexture->surface_get(), rt_Back_Buffer->pTexture->surface_get());
+    RContext->CopyResource(rt_Back_Buffer->pTexture->surface_get(), rt_Back_Buffer_AA->pTexture->surface_get());
 }

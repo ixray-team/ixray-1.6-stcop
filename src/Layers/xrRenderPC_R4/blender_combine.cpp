@@ -38,30 +38,28 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_End				();
 		break;
 	case 1:
-		RImplementation.addShaderOption("USE_DISTORT", "1");
+		C.r_Pass("stub_notransform_t_scaled", "combine_distort", FALSE, FALSE, FALSE);
+
+		C.r_dx10Texture("s_position", r2_RT_P);
+		C.r_dx10Texture("s_image", r2_RT_generic0);
+		C.r_dx10Texture("s_distort", r2_RT_generic1);
+
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_dx10Sampler("smp_rtlinear");
+		C.r_End();
+		break;
 	case 2:
 		C.r_Pass ("stub_notransform_aa_AA","combine_2",	FALSE,	FALSE,	FALSE);
 
 		C.r_dx10Texture		("s_position",		r2_RT_P);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
-		C.r_dx10Texture		("s_image",			r2_RT_generic0);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-		C.r_dx10Texture		("s_distort",		r2_RT_generic1);
+		C.r_dx10Texture		("s_image",			r2_RT_generic);
 		C.r_dx10Texture		("s_tonemap",		r2_RT_luminance_cur);
 
 		C.r_dx10Sampler		("smp_nofilter");
 		C.r_dx10Sampler		("smp_rtlinear");
 		C.r_End				();
-		break;
-	case 3:	// post-processing
-		C.r_Pass("stub_notransform_aa_AA", "combine_taa", FALSE, FALSE, FALSE);
-		C.r_dx10Texture("s_image", r2_RT_generic2);
-		C.r_dx10Texture("s_image_old", r2_RT_generic0_old);
-		C.r_dx10Texture("s_velocity", r2_RT_velocity);
-
-		C.r_dx10Sampler("smp_nofilter");
-		C.r_dx10Sampler("smp_rtlinear");
-		C.r_End();
 		break;
 	}
 	RImplementation.clearAllShaderOptions();

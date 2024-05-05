@@ -56,14 +56,13 @@ float4 main( vf I, float4 pos2d : SV_Position ) : SV_Target
 //	float3	env1	= texCUBE (s_env1, vreflect);
 	float3	env0	= s_env0.Sample( smp_rtlinear, vreflect);
 	float3	env1	= s_env1.Sample( smp_rtlinear, vreflect);
-	float3	env	= lerp (env0,env1,L_ambient.w);
-			env	*= env*2;
+	float3	env	= lerp (env0,env1,L_ambient.w) * 0.8;
 
 	float	power	= pow(fresnel,9);
 	float	amount	= 0.15f+0.25f*power;	// 1=full env, 0=no env
 
 	float3	c_reflection       = env*amount;
-	float3	final              = lerp(c_reflection,base.rgb,base.a);
+	float3	final              = c_reflection - base.a * c_reflection;
 
 #ifdef	NEED_SOFT_WATER
 	float	alpha	= 0.75f + 0.25f * power; // 1=full env, 0=no env
@@ -101,7 +100,7 @@ float4 main( vf I, float4 pos2d : SV_Position ) : SV_Target
 
 #endif	//	USE_SOFT_WATER
 
-	final	*= I.c0*2.0f;
+	final	*= I.c0;
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);
 	alpha		*= I.fog*I.fog;
@@ -110,7 +109,7 @@ float4 main( vf I, float4 pos2d : SV_Position ) : SV_Target
 
 #else	//	NEED_SOFT_WATER
 
-	final	*= I.c0*2;
+	final	*= I.c0;
 //	return  float4   (final, 1 )                ;
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);

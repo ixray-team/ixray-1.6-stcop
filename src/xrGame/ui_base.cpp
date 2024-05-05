@@ -6,8 +6,6 @@
 CUICursor&	GetUICursor		()	{return UI().GetUICursor();};
 ui_core&	UI				()	{return *GamePersistent().m_pUI_core;};
 
-//extern ENGINE_API Fvector2		g_current_font_scale;
-
 void S2DVert::rotate_pt(const Fvector2& pivot, const float cosA, const float sinA, const float kx)
 {
 	Fvector2 t		= pt;
@@ -210,7 +208,6 @@ ui_core::ui_core()
 	OnDeviceReset				();
 
 	m_current_scale				= &m_scale_;
-	//g_current_font_scale.set	(1.0f,1.0f);
 	m_currentPointType			= IUIRender::pttTL;
 }
 
@@ -221,27 +218,18 @@ ui_core::~ui_core()
 
 void ui_core::pp_start()
 {
-	m_bPostprocess		= true;
+	m_bPostprocess = true;
 
-	m_pp_scale_.set	( float(::Render->getTarget()->get_width())/float(UI_BASE_WIDTH),	float(::Render->getTarget()->get_height())/float(UI_BASE_HEIGHT) );
-	m_2DFrustumPP.CreateFromRect(Frect().set(	0.0f,
-												0.0f,
-												float(::Render->getTarget()->get_width()),
-												float(::Render->getTarget()->get_height())
-												));
+	m_pp_scale_.set(float(Device.TargetWidth) / float(UI_BASE_WIDTH), float(Device.TargetHeight) / float(UI_BASE_HEIGHT));
+	m_2DFrustumPP.CreateFromRect(Frect().set(0.0f, 0.0f, float(Device.TargetWidth), float(Device.TargetHeight)));
 
-	m_current_scale			= &m_pp_scale_;
-	
-	//g_current_font_scale.set(	float(::Render->getTarget()->get_width())/float(Device.TargetWidth),	
-	//							float(::Render->getTarget()->get_height())/float(Device.TargetHeight) );
-
+	m_current_scale = &m_pp_scale_;
 }
 
 void ui_core::pp_stop()
 {
 	m_bPostprocess			= false;
 	m_current_scale			= &m_scale_;
-	//g_current_font_scale.set	(1.0f,1.0f);
 }
 
 void ui_core::RenderFont()

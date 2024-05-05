@@ -24,21 +24,13 @@ void	CRenderTarget::phase_scene_begin	()
 	// Enable ANISO
 	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 
-   ID3DDepthStencilView* pZB = RDepth;
-
-   dwWidth = get_width();
-   dwHeight = get_height();
-
-   u_setrt(rt_Normal, rt_Color, rt_Velocity, pZB);
+   u_setrt(rt_Normal, rt_Color, rt_Velocity, RDepth);
 
 	// Stencil - write 0x1 at pixel pos
    RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
-	// Misc		- draw only front-faces
-	//	TODO: DX10: siable two-sided stencil here
-	//CHK_DX(RDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));
-	RCache.set_CullMode					( CULL_CCW );
-	RCache.set_ColorWriteEnable			( );
+   RCache.set_CullMode(CULL_CCW);
+   RCache.set_ColorWriteEnable();
 }
 
 void	CRenderTarget::disable_aniso		()

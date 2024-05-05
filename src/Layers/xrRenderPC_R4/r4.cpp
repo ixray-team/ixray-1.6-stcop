@@ -206,7 +206,7 @@ void					CRender::create					()
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
 	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
 
-	o.dx11_enable_tessellation = ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
+	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("parallax",	&binder_parallax);
@@ -540,7 +540,7 @@ xr_string CRender::getShaderParams()
 	if (!m_ShaderOptions.empty()) {
 		params.append("(").append(m_ShaderOptions[0].Name);
 
-		for (auto i = 1u; i < m_ShaderOptions.size(); ++i) {
+		for(size_t i = 1u; i < m_ShaderOptions.size(); ++i) {
 			params.append(",").append(m_ShaderOptions[i].Name);
 		}
 
@@ -551,7 +551,8 @@ xr_string CRender::getShaderParams()
 
 void CRender::addShaderOption(const char* name, const char* value)
 {
-	m_ShaderOptions.emplace_back(name, value);
+	D3D_SHADER_MACRO macro = {name, value};
+	m_ShaderOptions.push_back(macro);
 }
 
 template <typename T>
@@ -760,22 +761,22 @@ HRESULT	CRender::shader_compile			(
 	DWORD                           Flags,
 	void*&							result)
 {
-	D3D_SHADER_MACRO				defines			[128];
-	int								def_it			= 0;
-	char							c_smapsize		[32];
-	char							c_gloss			[32];
-	char							c_sun_shafts	[32];
-	char							c_ssao			[32];
-	char							c_sun_quality	[32];
+	D3D_SHADER_MACRO defines[128];
+	int def_it = 0;
 
-	char	sh_name[MAX_PATH] = "";
-	
-	for (u32 i=0; i<m_ShaderOptions.size(); ++i)
-	{
-			defines[def_it++]			= m_ShaderOptions[i];
+	char c_smapsize[32];
+	char c_gloss[32];
+	char c_sun_shafts[32];
+	char c_ssao[32];
+	char c_sun_quality[32];
+
+	char sh_name[MAX_PATH] = "";
+
+	for(u32 i = 0; i < m_ShaderOptions.size(); ++i) {
+		defines[def_it++] = m_ShaderOptions[i];
 	}
 
-	u32		len = xr_strlen(sh_name);
+	u32 len = xr_strlen(sh_name);
 	// options
 	{
 		xr_sprintf						(c_smapsize,"%04d",u32(o.smapsize));

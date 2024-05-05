@@ -39,6 +39,7 @@ public:
 
 	IBlender*					b_fxaa;
 	IBlender*					b_smaa;
+	IBlender*					b_scale;
 
     // compute shader for hdao
     IBlender*                   b_hdao_cs;
@@ -55,10 +56,9 @@ public:
 
 	// MRT-path
 	ref_rt						rt_Depth;			// Z-buffer like - initial depth
-	ref_rt						rt_Generic_0_r;   // MRT generic 0
-	ref_rt						rt_Generic_1_r;   // MRT generic 1
 	ref_rt						rt_Generic;
 	ref_rt						rt_Back_Buffer;
+	ref_rt						rt_Back_Buffer_AA;
 	ref_rt						rt_Position;		// 64bit,	fat	(x,y,z,?)				(eye-space)
 	ref_rt						rt_Normal;			// 64bit,	fat	(x,y,z,hemi)			(eye-space)
 	ref_rt						rt_Color;			// 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
@@ -68,7 +68,6 @@ public:
 	ref_rt						rt_Accumulator;		// 64bit		(r,g,b,specular)
 	ref_rt						rt_Accumulator_temp;// only for HW which doesn't feature fp16 blend
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-	ref_rt						rt_Generic_0_old;	// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
@@ -104,6 +103,7 @@ public:
 private:
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
+	ref_shader					s_scale;
 
 	// OCCq
 	ref_shader					s_occq;
@@ -230,6 +230,10 @@ public:
 	bool						u_need_CM				();
 	BOOL						u_DBT_enable			(float zMin, float zMax);
 	void						u_DBT_disable			();
+
+	void						init_fsr				();
+	void						phase_fsr				();
+	void						phase_scale				();
 
 	void						phase_fxaa				();
 	void						phase_smaa				();

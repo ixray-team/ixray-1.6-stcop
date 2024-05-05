@@ -66,6 +66,7 @@ class ENGINE_API CRenderDeviceData
 public:
 	u32										TargetWidth;
 	u32										TargetHeight;
+	float									RenderScale = 1.0f;
 	
 	u32										dwPrecacheFrame;
 	BOOL									b_is_Ready;

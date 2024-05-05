@@ -54,12 +54,16 @@ void CRenderDevice::Destroy()
 	DestroyRenderDevice();
 }
 
+extern ENGINE_API float ps_render_scale;
+
 void CRenderDevice::Reset(bool precache)
 {
 	u32 dwWidth_before = TargetWidth;
 	u32 dwHeight_before = TargetHeight;
-
+	u32 RenderScale_before = RenderScale;
 	u32 tm_start = TimerAsync();
+
+	RenderScale = ps_render_scale;
 
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
 
@@ -68,8 +72,10 @@ void CRenderDevice::Reset(bool precache)
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
 	_SetupStates();
+	
 	if (precache)
 		PreCache(20, true, false);
+
 	u32 tm_end = TimerAsync();
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 
@@ -83,7 +89,7 @@ void CRenderDevice::Reset(bool precache)
 
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight)
+	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight || RenderScale_before != RenderScale)
 	{
 		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
 	}

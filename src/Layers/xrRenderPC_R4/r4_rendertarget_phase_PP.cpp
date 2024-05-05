@@ -38,7 +38,7 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	// Calculate ordinaty TCs from blur and SS
 	float	tw			= float(dwWidth);
 	float	th			= float(dwHeight);
-	if (dwHeight!= (u32)RCache.get_height())	param_blur = 1.f;
+//	if (dwHeight!= (u32)RCache.get_height())	param_blur = 1.f;
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
@@ -108,7 +108,7 @@ void CRenderTarget::phase_pp		()
 	// combination/postprocess
 	u32 _w = (u32)RCache.get_target_width();
 	u32 _h = (u32)RCache.get_target_height();
-	u_setrt(_w,_h,RTarget,nullptr,nullptr,RDepth);
+	u_setrt(_w, _h, RTarget, nullptr, nullptr, nullptr);
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();

@@ -1,10 +1,13 @@
 #include "stdafx.h"
+
 #include "../../xrEngine/igame_persistent.h"
 #include "../xrRender/FBasicVisual.h"
 #include "../../xrEngine/customhud.h"
 #include "../../xrEngine/xr_object.h"
 
 #include "../xrRender/QueryHelper.h"
+
+#include "FSR2Wrapper.h"
 
 IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
 {
@@ -147,51 +150,60 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals, bool first
 	}
 }
 
-void CRender::render_menu	()
-{
+void CRender::render_menu() {
 	PIX_EVENT(render_menu);
 	//	Globals
-	RCache.set_CullMode				(CULL_CCW);
-	RCache.set_Stencil				(FALSE);
-	RCache.set_ColorWriteEnable		();
+	RCache.set_CullMode(CULL_CCW);
+	RCache.set_Stencil(FALSE);
+	RCache.set_ColorWriteEnable();
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Generic_0,0,0,RDepth);		// LDR RT
-		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
+		Target->u_setrt(Target->rt_Generic, 0, 0, 0);		// LDR RT
+		rmNormal();
+
+		g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
 	}
 
 	// Distort
 	{
-		FLOAT ColorRGBA[4] = {127.0f/255.0f, 127.0f/255.0f, 0.0f, 127.0f/255.0f};
-		Target->u_setrt(Target->rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
-		RContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);		
-		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
+		FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
+		Target->u_setrt(Target->rt_Generic_1, 0, 0, 0);		// Now RT is a distortion mask
+		rmNormal();
+		RContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);
+		g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt					((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget,nullptr,nullptr,RDepth);
-	RCache.set_Shader				( Target->s_menu	);
-	RCache.set_Geometry				( Target->g_menu	);
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, nullptr, nullptr, nullptr);
+	rmNormal();
 
-	Fvector2						p0,p1;
-	u32								Offset;
-	u32		C						= color_rgba	(255,255,255,255);
-	float	_w						= RCache.get_target_width();
-	float	_h						= RCache.get_target_height();
-	float	d_Z						= EPS_S;
-	float	d_W						= 1.f;
-	p0.set							(.5f/_w, .5f/_h);
-	p1.set							((_w+.5f)/_w, (_h+.5f)/_h );
+	RCache.set_Shader(Target->s_menu);
+	RCache.set_Geometry(Target->g_menu);
 
-	FVF::TL* pv						= (FVF::TL*) RCache.Vertex.Lock	(4,Target->g_menu->vb_stride,Offset);
-	pv->set							(EPS,			float(_h+EPS),	d_Z,	d_W, C, p0.x, p1.y);	pv++;
-	pv->set							(EPS,			EPS,			d_Z,	d_W, C, p0.x, p0.y);	pv++;
-	pv->set							(float(_w+EPS),	float(_h+EPS),	d_Z,	d_W, C, p1.x, p1.y);	pv++;
-	pv->set							(float(_w+EPS),	EPS,			d_Z,	d_W, C, p1.x, p0.y);	pv++;
-	RCache.Vertex.Unlock			(4,Target->g_menu->vb_stride);
-	RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+	Fvector2 p0, p1;
+	u32 Offset;
+	constexpr auto C = color_rgba(255, 255, 255, 255);
+	float	_w = RCache.get_target_width();
+	float	_h = RCache.get_target_height();
+	float	d_Z = EPS_S;
+	float	d_W = 1.f;
+
+	p0.set(.5f / _w, .5f / _h);
+	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, Target->g_menu->vb_stride, Offset);
+
+	pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);	pv++;
+	pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);	pv++;
+	pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);	pv++;
+	pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);	pv++;
+
+	RCache.Vertex.Unlock(4, Target->g_menu->vb_stride);
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
+
+Fvector3 ps_r_taa_jitter_full = {0,0,0};
 
 extern u32 g_r;
 void CRender::Render		()
@@ -201,7 +213,7 @@ void CRender::Render		()
 	g_r						= 1;
 	VERIFY					(0==mapDistort.size());
 
-	rmNormal();
+//	rmNormal();
 
 	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	if (_menu_pp)			{
@@ -213,21 +225,30 @@ void CRender::Render		()
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
 	if (!(g_pGameLevel && g_hud) || bMenu) {
-		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, nullptr, nullptr, RDepth);
+		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, nullptr, nullptr, nullptr);
 		return;
 	}
 
-	if( m_bFirstFrameAfterReset )
+	if(m_bFirstFrameAfterReset)
 	{
+		xrRender_apply_tf();
 		m_bFirstFrameAfterReset = false;
 		return;
 	}
 
-	ps_r_taa_jitter.x = Random.randF(-1.0f, 1.0f) / RCache.get_target_width();
-	ps_r_taa_jitter.y = Random.randF(-1.0f, 1.0f) / RCache.get_target_height();
-	ps_r_taa_jitter.z = 0.0f;
+	if(ps_r_scale_mode > 1) {
+		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount(RCache.get_width(), RCache.get_target_width());
+		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
-	ps_r_taa_jitter = ps_r_taa_jitter.mul(ps_r_taa_jitter_scale);
+		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
+
+		ps_r_taa_jitter.x = 2.0f * ps_r_taa_jitter_full.x / RCache.get_width();
+		ps_r_taa_jitter.y = -2.0f * ps_r_taa_jitter_full.y / RCache.get_height();
+	}
+	else {
+		ps_r_taa_jitter.set(0, 0, 0);
+		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+	}
 
 	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
 
@@ -326,9 +347,10 @@ void CRender::Render		()
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
+	rmNormal();
 
 	// Landshaft phase 
-	Target->u_setrt(Device.TargetWidth, Device.TargetHeight, nullptr, nullptr, nullptr, RDepth);
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), nullptr, nullptr, nullptr, RDepth);
 	r_dsgraph_render_landscape(0, false);
 
 	//******* Main render :: PART-0	-- first
@@ -416,7 +438,7 @@ void CRender::Render		()
 		r_dsgraph_render_hud_ui();
 	}
 
-	Target->u_setrt(RCache.get_target_width(), RCache.get_target_height(), nullptr, nullptr, nullptr, nullptr);
+	Target->u_setrt(RCache.get_width(), RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
 	ID3D11Resource* res;
 	RDepth->GetResource(&res);
 
@@ -453,6 +475,8 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_RAIN);
 		render_rain();
 	}
+
+	rmNormal();
 
 	// Directional light - fucking sun
 	if (bSUN)	

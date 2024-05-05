@@ -452,7 +452,7 @@ void dxRenderDeviceRender::ClearTarget()
 void dxRenderDeviceRender::SetupDefaultTarget()
 {
 	RCache.set_RT(RTarget);
-	RCache.set_ZB(RDepth);
+	RCache.set_ZB(nullptr);
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)

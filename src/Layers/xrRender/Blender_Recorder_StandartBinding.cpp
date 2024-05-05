@@ -353,9 +353,28 @@ static class cl_screen_res : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
+		RCache.set_c(C, RCache.get_target_width(), RCache.get_target_height(), 1.0f / RCache.get_target_width(), 1.0f / RCache.get_target_height());
 	}
 }	binder_screen_res;
+
+static class cl_scaled_screen_res : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
+	}
+}	binder_scaled_screen_res;
+
+static class cl_target_screen_res : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		RCache.set_c(C, (float)::Render->getTarget()->get_width(), (float)::Render->getTarget()->get_height(),
+			1.0f / (float)::Render->getTarget()->get_width(), 1.0f / (float)::Render->getTarget()->get_height());
+	}
+}	binder_target_screen_res;
+
+static class cl_screen_scale : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		RCache.set_c(C, RDEVICE.RenderScale, 0.0f, 0.0f, 0.0f);
+	}
+} binder_screen_scale;
 
 static class cl_def_aref : public R_constant_setup
 {
@@ -474,6 +493,11 @@ void	CBlender_Compile::SetMapping	()
 #endif
 	r_Constant				("screen_res",		&binder_screen_res);
 	r_Constant				("def_aref",		&binder_def_aref);
+
+	r_Constant("scaled_screen_res", &binder_scaled_screen_res);
+	r_Constant("target_screen_res", &binder_target_screen_res);
+
+	r_Constant("screen_scale", &binder_screen_scale);
 	
 	// Rain
 	r_Constant				("rain_params",		&binder_rain_params);

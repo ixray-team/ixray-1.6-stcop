@@ -2,7 +2,7 @@
 
 void set_viewport(ID3DDeviceContext *dev, float w, float h)
 {
-	static D3D_VIEWPORT viewport[1] =
+	D3D_VIEWPORT viewport[1] =
 	{
 		0, 0, w, h, 0.f, 1.f
 	};

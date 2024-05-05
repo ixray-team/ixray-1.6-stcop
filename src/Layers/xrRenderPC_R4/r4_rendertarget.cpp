@@ -11,6 +11,7 @@
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"
+#include "blender_scale.h"
 #include "dx11MinMaxSMBlender.h"
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
@@ -18,6 +19,7 @@
 #include "../xrRender/blender_smaa.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "magic_enum/magic_enum.hpp"
+#include "FSR2Wrapper.h"
 
 void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
 {
@@ -396,11 +398,14 @@ CRenderTarget::CRenderTarget		()
 			return;
 		}
 
+		DisplayTarget(rt_Bloom_1);
+		DisplayTarget(rt_Depth);
+		DisplayTarget(rt_Back_Buffer);
+		DisplayTarget(rt_Generic);
 		DisplayTarget(rt_Generic_0);
 		DisplayTarget(rt_Generic_1);
 		DisplayTarget(rt_Generic_2);
-		DisplayTarget(rt_Generic);
-		DisplayTarget(rt_Back_Buffer);
+		DisplayTarget(rt_Back_Buffer_AA);
 		DisplayTarget(rt_Velocity);
 		DisplayTarget(rt_Normal);
 		DisplayTarget(rt_Position);
@@ -451,10 +456,11 @@ CRenderTarget::CRenderTarget		()
 
 	// HDAO
 	b_hdao_cs               = new CBlender_CS_HDAO			();
-	const u32		s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
+	u32		s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
 
 	//	NORMAL
 	{
+		rt_Depth.create(r2_RT_depth, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_FLOAT, SampleCount);
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS, SampleCount);
 		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM, SampleCount);
 
@@ -482,18 +488,24 @@ CRenderTarget::CRenderTarget		()
 
 		// generic(LDR) RTs
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
-		rt_Generic_0_old.create(r2_RT_generic0_old, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
-
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+
+		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT, 1);
 
-		rt_Back_Buffer.create(r2_RT_backbuffer_final, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
+		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 1);
 
-		//	Igor: for volumetric lights
-		//rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
-		//	temp: for higher quality blends
-		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
+		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1, true);
+	}
+
+	init_fsr();
+
+	// Scale
+	{
+		b_scale = new CBlender_scale();
+		s_scale.create(b_scale);
 	}
 
 	// FXAA
@@ -615,7 +627,7 @@ CRenderTarget::CRenderTarget		()
 			FLOAT ColorRGBA[4] = { 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f, 127.0f/255.0f};
 			RContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
-		u_setrt(s_dwWidth, s_dwHeight, RTarget, nullptr, nullptr, RDepth);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, nullptr, nullptr, nullptr);
 	}
 
 	// HBAO
@@ -640,20 +652,8 @@ CRenderTarget::CRenderTarget		()
 		s_ssao.create(b_ssao, "r2\\ssao");
 	}
 
-	//if (RImplementation.o.ssao_blur_on)
-	//{
-	//	u32		w = Device.TargetWidth, h = Device.TargetHeight;
-	//	rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F, SampleCount);
-	//	s_ssao.create				(b_ssao, "r2\\ssao");
-	//}
-
-	// HDAO
-	if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
-	{
-		u32		w = s_dwWidth, h = s_dwHeight;
-		rt_ssao_temp.create			(r2_RT_ssao_temp,  w, h, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1, true);
-		s_hdao_cs.create			(b_hdao_cs, "r2\\ssao");
-	}
+	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1, true);
+	s_hdao_cs.create(b_hdao_cs, "r2\\ssao");
 
 	// COMBINE
 	{
@@ -936,9 +936,9 @@ CRenderTarget::CRenderTarget		()
 	s_menu.create						("distort");
 	g_menu.create						(FVF::F_TL,RCache.Vertex.Buffer(),RCache.QuadIB);
 
-	// 
-	dwWidth		= s_dwWidth;
-	dwHeight	= s_dwHeight;
+
+	dwWidth = Device.TargetWidth;
+	dwHeight = Device.TargetHeight;
 }
 
 CRenderTarget::~CRenderTarget	()

@@ -76,10 +76,14 @@ bool UpdateBuffersD3D11()
 	R = ((ID3D11Device*)HWRenderDevice)->CreateShaderResourceView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11ShaderResourceView**)&RenderSRV);
 	R_CHK(R);
 
+	descDepth.Width = sd.BufferDesc.Width * Device.RenderScale;			// TODO: render scale
+	descDepth.Height = sd.BufferDesc.Height * Device.RenderScale;		// TODO: render scale
+
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	R = ((ID3D11Device*)HWRenderDevice)->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
 	R_CHK(R);
+
 	if (pDepthStencil == nullptr) {
 		return false;
 	}

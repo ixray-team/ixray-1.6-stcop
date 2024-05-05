@@ -107,8 +107,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 			C.R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 		}
 
-		C.r_dx10Texture("s_tbump", fnameA);
-		C.r_dx10Texture("s_tbumpX", fnameB);
+		if(bump) {
+			C.r_dx10Texture("s_tbump", fnameA);
+			C.r_dx10Texture("s_tbumpX", fnameB);
+		}
 
 		if (bHasDetailBump) {
 			C.r_dx10Texture("s_tdetailBumpX", texDetailBumpX);
@@ -122,10 +124,15 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	}
 
 	C.r_dx10Texture("s_base", C.L_textures[0]);
-	C.r_dx10Texture("s_bumpX", fnameB);
-	C.r_dx10Texture("s_bump", fnameA);
 
-	C.r_dx10Texture("s_detail", dt);
+	if(bump) {
+		C.r_dx10Texture("s_bumpX", fnameB);
+		C.r_dx10Texture("s_bump", fnameA);
+	}
+
+	if(dt[0] && dt) {
+		C.r_dx10Texture("s_detail", dt);
+	}
 
 	if (bHasDetailBump) {
 		C.r_dx10Texture("s_detailBump", texDetailBump);
