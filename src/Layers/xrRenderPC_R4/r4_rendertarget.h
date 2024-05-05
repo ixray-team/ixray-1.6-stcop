@@ -232,9 +232,9 @@ public:
 	void						u_DBT_disable			();
 
 	void						init_fsr				();
-	void						phase_fsr				();
+	bool						phase_fsr				();
 	void						init_dlss();
-	void						phase_dlss();
+	bool						phase_dlss();
 	void						phase_scale				();
 
 	void						phase_fxaa				();

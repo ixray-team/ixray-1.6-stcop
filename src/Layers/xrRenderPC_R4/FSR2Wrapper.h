@@ -7,7 +7,7 @@ class Fsr2Wrapper
 public:
     struct ContextParameters
     {
-        uint32_t        flags = 0;
+        uint32_t flags = 0;
         FfxDimensions2D maxRenderSize = { 0, 0 };
         FfxDimensions2D displaySize = { 0, 0 };
         FfxFsr2Message fpMessage;
@@ -52,7 +52,7 @@ public:
     void Create(ContextParameters params);
     void Destroy();
 
-    void Draw(const DrawParameters& params);
+    bool Draw(const DrawParameters& params);
 
     bool IsCreated() const { return m_created; }
     FfxDimensions2D GetDisplaySize() const { return m_contextDesc.displaySize; }

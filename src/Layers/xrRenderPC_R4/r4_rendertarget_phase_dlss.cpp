@@ -14,28 +14,37 @@ void CRenderTarget::init_dlss() {
 	g_DLSSWrapper.Create(initParams);
 }
 
-void CRenderTarget::phase_dlss() {
+bool CRenderTarget::phase_dlss() {
 	PIX_EVENT(DLSS);
 
-	DLSSWrapper::DrawParameters dlssParams;
+	DLSSWrapper::DrawParameters dlssParams = {};
 	dlssParams.deviceContext = RContext;
-	dlssParams.exposureResource = nullptr;
+
 	dlssParams.unresolvedColorResource = rt_Generic_0->pSurface;
 	dlssParams.motionvectorResource = rt_Velocity->pSurface;
 	dlssParams.depthbufferResource = rt_Position->pSurface;
+
+	dlssParams.exposureResource = nullptr;
 	dlssParams.reactiveMapResource = nullptr;
 	dlssParams.transparencyAndCompositionResource = nullptr;
+
 	dlssParams.resolvedColorResource = rt_Generic->pSurface;
+
 	dlssParams.renderWidth = RCache.get_width();
 	dlssParams.renderHeight = RCache.get_height();
+
 	dlssParams.cameraReset = false;
+
 	dlssParams.cameraJitterX = ps_r_taa_jitter_full.x;
 	dlssParams.cameraJitterY = ps_r_taa_jitter_full.y;
+
+	dlssParams.sharpness = ps_r4_fsr_sharpening;
+
 	dlssParams.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
+
 	dlssParams.nearPlane = VIEWPORT_NEAR;
 	dlssParams.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
 	dlssParams.fovH = deg2rad(Device.fFOV);
-	dlssParams.sharpness = ps_r4_fsr_sharpening;
 
-	g_DLSSWrapper.Draw(dlssParams);
+	return g_DLSSWrapper.Draw(dlssParams);
 }

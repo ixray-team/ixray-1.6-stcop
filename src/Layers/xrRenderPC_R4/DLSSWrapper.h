@@ -50,7 +50,7 @@ public:
     void Create(const ContextParameters& Parameters);
     void Destroy();
 
-    void Draw(const DrawParameters& params);
+    bool Draw(const DrawParameters& params);
 
     const Ivector2& GetDisplaySize() const { return DisplaySize; }
 

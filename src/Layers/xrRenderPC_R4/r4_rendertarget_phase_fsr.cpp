@@ -28,13 +28,11 @@ void CRenderTarget::init_fsr()
 	g_Fsr2Wrapper.Create(initParams);
 }
 
-void CRenderTarget::phase_fsr()
-{
+bool CRenderTarget::phase_fsr() {
 	PIX_EVENT(FSR);
+
 	Fsr2Wrapper::DrawParameters fsr2Params = {};
 	fsr2Params.deviceContext = RContext;
-
-	fsr2Params.unresolvedOpaqueResource = rt_Accumulator->pSurface;
 
 	fsr2Params.unresolvedColorResource = rt_Generic_0->pSurface;
 	fsr2Params.motionvectorResource = rt_Velocity->pSurface;
@@ -60,8 +58,8 @@ void CRenderTarget::phase_fsr()
 
 	fsr2Params.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
 	fsr2Params.nearPlane = VIEWPORT_NEAR;
-
 	fsr2Params.fovH = deg2rad(Device.fFOV);
-	g_Fsr2Wrapper.Draw(fsr2Params);
+
+	return g_Fsr2Wrapper.Draw(fsr2Params);
 }
 

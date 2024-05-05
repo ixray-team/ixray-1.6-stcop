@@ -50,10 +50,11 @@ void Fsr2Wrapper::Destroy()
     ffxFsr2ContextDestroy(&m_context);
 }
 
-void Fsr2Wrapper::Draw(const DrawParameters& params)
+bool Fsr2Wrapper::Draw(const DrawParameters& params)
 {
     if(!m_created) {
-        return;
+        Msg("! Fsr2Wrapper not created. Need use linear filter");
+        return false;
     }
 
     FfxFsr2DispatchDescription dispatchParameters = {};
@@ -108,7 +109,13 @@ void Fsr2Wrapper::Draw(const DrawParameters& params)
     }
 
     FfxErrorCode errorCode = ffxFsr2ContextDispatch(&m_context, &dispatchParameters);
-    R_ASSERT(errorCode == FFX_OK);
+
+    if(errorCode != FFX_OK) {
+        Msg("! ffxFsr2ContextDispatch not valid. Need use linear filter");
+        return false;
+    }
+
+    return true;
 }
 
 Fsr2Wrapper::~Fsr2Wrapper()

@@ -62,7 +62,7 @@ void DLSSWrapper::Create(const ContextParameters& Parameters)
     }
 
     m_created = true;
-#endif // WIN32
+#endif // IXR_X64
 }
 
 void DLSSWrapper::Destroy() 
@@ -91,36 +91,47 @@ void DLSSWrapper::Destroy()
 #endif // IXR_X64
 }
 
-void DLSSWrapper::Draw(const DrawParameters& params)
+bool DLSSWrapper::Draw(const DrawParameters& params)
 {
-#ifdef IXR_X64
-    if (!m_created) {
-        return;
+    if(!m_created) {
+        Msg("! DLSSWrapper not created. Need use FSR");
+        return false;
     }
-
+#ifdef IXR_X64
     ID3D11Resource* resourceInput = params.unresolvedColorResource;
     ID3D11Resource* resourceMv = params.motionvectorResource;
     ID3D11Resource* resourceDepth = params.depthbufferResource;
     ID3D11Resource* resourceOutput = params.resolvedColorResource;
 
     NVSDK_NGX_D3D11_DLSS_Eval_Params dlssEvalParams = {};
+
     dlssEvalParams.Feature.pInColor = resourceInput;
     dlssEvalParams.Feature.pInOutput = resourceOutput;
-    //dlssEvalParams.Feature.InSharpness = 0.5f;
+    dlssEvalParams.Feature.InSharpness = params.sharpness;
+
     dlssEvalParams.pInDepth = resourceDepth;
     dlssEvalParams.pInMotionVectors = resourceMv;
+
     dlssEvalParams.InRenderSubrectDimensions.Width = params.renderWidth;
     dlssEvalParams.InRenderSubrectDimensions.Height = params.renderHeight;
+
     dlssEvalParams.InJitterOffsetX = params.cameraJitterX;
     dlssEvalParams.InJitterOffsetY = params.cameraJitterY;
+
     dlssEvalParams.InReset = params.cameraReset;
+
     dlssEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;    // adjust the x direction in motion vector to fit FSR2's requirement
     dlssEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
+
     dlssEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
 
     NVSDK_NGX_Result result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &dlssEvalParams);
-    VERIFY(result == NVSDK_NGX_Result_Success);
-#endif
+    if(result != NVSDK_NGX_Result_Success) {
+        Msg("! NGX_D3D11_EVALUATE_DLSS_EXT not valid. Need use FSR");
+        return false;
+    }
+#endif // IXR_X64
+    return true;
 }
 
 DLSSWrapper::~DLSSWrapper()
