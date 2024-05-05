@@ -56,6 +56,7 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
+target_include_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/build/native/include/")
 
 # Project defines
 target_compile_definitions(xrRender_R4 PRIVATE XRRENDER_R4_EXPORTS)
@@ -69,6 +70,16 @@ target_link_libraries(xrRender_R4 PUBLIC xrParticles)
 target_link_libraries(xrRender_R4 PUBLIC "d3dcompiler.lib")
 target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
 target_link_libraries(xrRender_R4 PUBLIC "d3d11.lib")
+
+## AMD FidelityFX FSR 2
+target_link_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
 
 ## DirectX SDK
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")

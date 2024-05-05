@@ -78,3 +78,6 @@ if (WIN32)
     set(ONETBB_PLATFORM win7-${NUGET_PACKAGE_PLATFORM})
 endif()
 set(ONETBB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0)
+
+# AMD FidelityFX FSR2
+set(AMD_FSR2 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FidelityFX.FSR2.DirectX11.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.2.1.1)
