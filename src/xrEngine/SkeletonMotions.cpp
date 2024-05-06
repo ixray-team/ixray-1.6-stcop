@@ -118,7 +118,7 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 					Msg			("!Can't load: '%s' invalid bones count", N);
 				}
 #else
-				VERIFY3			(*b_it!=BI_NONE,"Can't find bone:", buf);
+				R_ASSERT3(*b_it != BI_NONE, "Can't find bone:", buf);
 #endif
 				if (bRes)		rm_bones[m_idx] = u16(*b_it);
 			}
@@ -131,7 +131,7 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 			Msg("!Different bone count[%s] [Object: '%d' <-> Motions: '%d']", N, bones->size(),part_bone_cnt);
 		}
 #else
-		VERIFY3(part_bone_cnt==(u16)bones->size(),"Different bone count '%s'",N);
+		R_ASSERT3(part_bone_cnt==(u16)bones->size(),"Different bone count '%s'",N);
 #endif
 		if (bRes)
 		{
@@ -180,17 +180,15 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 		string128			mname;
 		R_ASSERT			(MS->find_chunk(m_idx+1));             
 		MS->r_stringZ		(mname,sizeof(mname));
-#ifdef _DEBUG        
 		// sanity check
 		xr_strlwr			(mname);
         accel_map::iterator I= m_motion_map.find(mname); 
-        VERIFY3				(I!=m_motion_map.end(),"Can't find motion:",mname);
-        VERIFY3				(I->second==m_idx,"Invalid motion index:",mname);
-#endif
+        R_ASSERT3(I != m_motion_map.end(), "Can't find motion: ", mname);
+        R_ASSERT3(I->second==m_idx, "Invalid motion index: ", mname);
 		u32 dwLen			= MS->r_u32();
 		for (u32 i=0; i<bones->size(); i++){
 			u16 bone_id		= rm_bones[i];
-			VERIFY2			(bone_id!=BI_NONE,"Invalid remap index.");
+			R_ASSERT2(bone_id != BI_NONE, "Invalid remap index.");
 			CMotion&		M	= m_motions[bones->at(bone_id)->name][m_idx];
 			M.set_count			(dwLen);
 			M.set_flags			(MS->r_u8());
