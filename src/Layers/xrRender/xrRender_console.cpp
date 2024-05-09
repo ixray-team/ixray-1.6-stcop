@@ -869,7 +869,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r4_enable_tessellation",		&ps_r2_ls_flags_ext,		R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
 	CMD3(CCC_Mask,		"r4_wireframe",					&ps_r2_ls_flags_ext,		R2FLAGEXT_WIREFRAME);//Need restart
 
-	CMD3(CCC_SSAO_Mode,	"r_scale_mode",					&ps_r_scale_mode,			qscale_mode_token);
+	CMD3(CCC_Token,		"r_scale_mode",					&ps_r_scale_mode,			qscale_mode_token);
 
 	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
 	CMD4(CCC_Float, "r2_def_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
