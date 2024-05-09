@@ -122,6 +122,10 @@ int APIENTRY WinMain
 		g_pGPU->Initialize();
 	}
 
+#ifdef DEBUG
+	xrLogger::EnableFastDebugLog();
+#endif
+
 	EngineLoadStage2();
 
 	Engine.External.CreateRendererList();

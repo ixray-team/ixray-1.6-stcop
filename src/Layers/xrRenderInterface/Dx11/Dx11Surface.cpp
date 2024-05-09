@@ -131,40 +131,72 @@ IRHISurface* CreateRenderTargetViewD3D11(IRHITexture* pTexture, const RenderTarg
 	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
 	R_ASSERT(pDevice);
 
-	CD3D11Texture2D* pTexture2D = (CD3D11Texture2D*)pTexture;
+	ID3D11Resource* pTextureResource = nullptr;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
 
-	ID3D11Texture2D* d3dTexture = pTexture2D->GetDXObj();
-	R_ASSERT(d3dTexture);
+	if (pDesc && pDesc->ViewDimension == RHI_RTV_DIMENSION_TEXTURE3D)
+	{
+		CD3D11Texture3D* pTexture3D = (CD3D11Texture3D*)pTexture;
+		ID3D11Texture3D* d3dTexture = pTexture3D->GetDXObj();
+		R_ASSERT(d3dTexture);
 
-	D3D11_TEXTURE2D_DESC textureDesc = {};
-	d3dTexture->GetDesc(&textureDesc);
+		D3D11_TEXTURE3D_DESC textureDesc = {};
+		d3dTexture->GetDesc(&textureDesc);
+		renderTargetViewDesc.Format = textureDesc.Format;
+		pTextureResource = d3dTexture;
+	}
+	else
+	{
+		CD3D11Texture2D* pTexture2D = (CD3D11Texture2D*)pTexture;
+		ID3D11Texture2D* d3dTexture = pTexture2D->GetDXObj();
+		R_ASSERT(d3dTexture);
+
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		d3dTexture->GetDesc(&textureDesc);
+		renderTargetViewDesc.Format = textureDesc.Format;
+		pTextureResource = d3dTexture;
+	}
 
 	// Create render target view
+	if (pDesc == nullptr)
+	{
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	}
+	else
+	{
+		renderTargetViewDesc.ViewDimension = (D3D11_RTV_DIMENSION)pDesc->ViewDimension;
+		shaderResourceViewDesc.ViewDimension = (D3D_SRV_DIMENSION)pDesc->ViewDimension;
 
+		if (pDesc->ViewDimension == RHI_RTV_DIMENSION_TEXTURE3D)
+		{
+			renderTargetViewDesc.Texture3D = *(D3D11_TEX3D_RTV*)const_cast<RHI_TEX3D_RT*>(&pDesc->Texture3D);
+		}
+		else
+		{
+			renderTargetViewDesc.Texture2D = *(D3D11_TEX2D_RTV*)const_cast<RHI_TEX2D_RT*>(&pDesc->Texture2D);
+		}
+	}
+	
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	//R_CHK(pDevice->CreateRenderTargetView(d3dTexture, &renderTargetViewDesc, &renderTargetView));
-	HRESULT hr = pDevice->CreateRenderTargetView(d3dTexture, &renderTargetViewDesc, &renderTargetView);
+	HRESULT hr = pDevice->CreateRenderTargetView(pTextureResource, &renderTargetViewDesc, &renderTargetView);
 	Msg("! CreateRenderTargetViewD3D11: %s %s", Debug.error2string(hr), Debug.dxerror2string(hr));
 	R_CHK(hr);
 
 	// Create shader resource view
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
-	DXGI_FORMAT typelessFormat = ConvertToTypelessFmt(textureDesc.Format);
-	DXGI_FORMAT srvFormat = ConvertToShaderResourceFmt(typelessFormat);
-	shaderResourceViewDesc.Format = typelessFormat == srvFormat ? textureDesc.Format : srvFormat;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	shaderResourceViewDesc.Texture3D.MipLevels = 1;
+	DXGI_FORMAT typelessFormat = ConvertToTypelessFmt(renderTargetViewDesc.Format);
+	DXGI_FORMAT srvFormat = ConvertToShaderResourceFmt(typelessFormat);
+
+	shaderResourceViewDesc.Format = typelessFormat == srvFormat ? renderTargetViewDesc.Format : srvFormat;
 
 	ID3D11ShaderResourceView* shaderResourceView = nullptr;
-	R_CHK(pDevice->CreateShaderResourceView(d3dTexture, &shaderResourceViewDesc, &shaderResourceView));
+	R_CHK(pDevice->CreateShaderResourceView(pTextureResource, &shaderResourceViewDesc, &shaderResourceView));
 
 	CD3D11Surface* pAPISurface = new CD3D11Surface( renderTargetView, shaderResourceView );
 	pAPISurface->AddRef();

@@ -54,6 +54,7 @@ public:
 	bool UnlockRect(u32 Level) override;
 	void SetStage(u32 Stage) override;
 	virtual Ivector2 GetTextureSize() const override;
+	ID3D11Texture3D* GetDXObj();
 
 private:
 	ID3D11Texture3D* m_pTexture;

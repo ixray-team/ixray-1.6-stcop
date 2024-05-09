@@ -325,7 +325,7 @@ HRESULT CD3D11Texture3D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.MipLevels = pTextureDesc->NumMips;
 	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
 	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT; //(D3D11_USAGE)pTextureDesc->Usage;
-	d3dTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	d3dTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	d3dTextureDesc.Depth = pTextureDesc->Depth;
 
 	// Kirill: TODO !!!
@@ -452,4 +452,9 @@ void CD3D11Texture3D::QueryShaderResourceView(void** ppSRV)
 {
 	R_ASSERT(ppSRV);
 	*ppSRV = m_pTextureSRV;
+}
+
+ID3D11Texture3D* CD3D11Texture3D::GetDXObj()
+{
+	return m_pTexture;
 }

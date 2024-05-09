@@ -114,7 +114,7 @@ void dx103DFluidManager::Initialize( int width, int height, int depth )
 
 	TextureDesc desc;
 	desc.NumMips = 1;
-	desc.Usage = /*eUsageDefault |*/ eUsageRenderTarget;
+	desc.Usage = /*eUsageDefault |*/ eUsageDefault;
 	desc.Width =  width;
 	desc.Height = height;
 	desc.Depth =  depth;
