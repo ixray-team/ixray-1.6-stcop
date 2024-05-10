@@ -96,7 +96,7 @@ using RStrVecIt = RStrVec::iterator;
 #include "Editor/EditorPreferences.h"
 
 #ifdef _LEVEL_EDITOR                
-	#include "net_utils.h"
+	#include "../../xrCore/net_utils.h"
 #endif
 
 #define INI_NAME(buf) 		{FS.update_path(buf,"$local_root$",EFS.ChangeFileExt(UI->EditorName(),".ini").c_str());}

@@ -10,7 +10,7 @@
 
 #include "graph_vertex.h"
 #include "graph_edge.h"
-#include "object_broker.h"
+#include "../xrServerEntities/object_broker.h"
 
 template <
 	typename _data_type = Loki::EmptyType,
