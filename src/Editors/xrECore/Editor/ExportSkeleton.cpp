@@ -28,6 +28,7 @@
 #define MAX_BONE 64
 
 ECORE_API BOOL g_force16BitTransformQuant = FALSE;
+ECORE_API BOOL g_force32BitTransformQuant = FALSE;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
@@ -861,22 +862,28 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 }
 //----------------------------------------------------
 struct bm_item{
-    CKeyQR* 		_keysQR; 
+    CKeyQR* 		_keysQR;
+    CKeyQR32*       _keysQR32;
     CKeyQT8* 		_keysQT8; 
-    CKeyQT16* 		_keysQT16; 
+    CKeyQT16* 		_keysQT16;
+    CKeyQT32*       _keysQT32;
     Fvector* 		_keysT;
     void create(u32 len)
     {
-        _keysQR 	= xr_alloc<CKeyQR>(len); 
+        _keysQR 	= xr_alloc<CKeyQR>(len);
+        _keysQR32   = xr_alloc<CKeyQR32>(len);
         _keysQT8 	= xr_alloc<CKeyQT8>(len); 
-        _keysQT16 	= xr_alloc<CKeyQT16>(len); 
+        _keysQT16 	= xr_alloc<CKeyQT16>(len);
+        _keysQT32   = xr_alloc<CKeyQT32>(len);
         _keysT 		= xr_alloc<Fvector>(len);
     }
     void destroy()
     {
         xr_free		(_keysQR);
+        xr_free     (_keysQR32);
         xr_free		(_keysQT8);
         xr_free		(_keysQT16);
+        xr_free     (_keysQT32);
         xr_free		(_keysT);
     }
 };
@@ -971,13 +978,29 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 	         	if (B->IsRoot()) mat.mulA_43(mGT);
 				Fquaternion			q;
                 q.set				(mat);
-                CKeyQR&	Kr 			= items[bone_id]._keysQR[frame-cur_motion->FrameStart()];
+                
                 Fvector&Kt 			= items[bone_id]._keysT [frame-cur_motion->FrameStart()];
                 // Quantize quaternion
-                int	_x 				= int(q.x*KEY_Quant); clamp(_x,-32767,32767); Kr.x =  (s16)_x;
-                int	_y 				= int(q.y*KEY_Quant); clamp(_y,-32767,32767); Kr.y =  (s16)_y;
-                int	_z 				= int(q.z*KEY_Quant); clamp(_z,-32767,32767); Kr.z =  (s16)_z;
-                int	_w 				= int(q.w*KEY_Quant); clamp(_w,-32767,32767); Kr.w =  (s16)_w;
+
+                if (g_force32BitTransformQuant)
+                {
+                    CKeyQR32& Kr = items[bone_id]._keysQR32[frame - cur_motion->FrameStart()];
+
+                    Kr.x = q.x;
+                    Kr.y = q.y;
+                    Kr.z = q.z;
+                    Kr.w = q.w;
+                }
+                else
+                {
+                    CKeyQR& Kr = items[bone_id]._keysQR[frame - cur_motion->FrameStart()];
+
+                    int	_x = int(q.x * KEY_Quant); clamp(_x, -32767, 32767); Kr.x = (s16)_x;
+                    int	_y = int(q.y * KEY_Quant); clamp(_y, -32767, 32767); Kr.y = (s16)_y;
+                    int	_z = int(q.z * KEY_Quant); clamp(_z, -32767, 32767); Kr.z = (s16)_z;
+                    int	_w = int(q.w * KEY_Quant); clamp(_w, -32767, 32767); Kr.w = (s16)_w;
+                }
+
                 Kt.set				(mat.c);//B->_Offset());
             }
         }
@@ -1018,44 +1041,64 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             	bTransform16Bit = true;
                 Msg("animation [%s] is 16bit-transform (%f)m", cur_motion->Name(), St.magnitude());
             }
+            else if (g_force32BitTransformQuant)
+            {
+                Msg("animation [%s] is 32bit-transform (%f)m", cur_motion->Name(), St.magnitude());
+            }
             
             for (int t_idx=0; t_idx<dwLen; ++t_idx)
             {
-                Fvector& t	= BM._keysT[t_idx];
-                CKeyQR& r	= BM._keysQR[t_idx];
-                if (!Mt.similar(t,EPS_L))							t_present = TRUE;
-                if ((R.x!=r.x)||(R.y!=r.y)||(R.z!=r.z)||(R.w!=r.w))	r_present = TRUE;
+                Fvector& t = BM._keysT[t_idx];
+                if (!Mt.similar(t, EPS_L))	t_present = TRUE;
 
-            	if(bTransform16Bit)
+                if (g_force32BitTransformQuant)
+                {                    
+                    CKeyQR32& r = BM._keysQR32[t_idx];
+                    if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
+
+                    CKeyQT32& Kt = BM._keysQT32[t_idx];
+
+                    Kt.x1 = t.x;
+                    Kt.y1 = t.y;
+                    Kt.z1 = t.z;
+                }
+                else
                 {
-                    CKeyQT16&	Kt 	= BM._keysQT16[t_idx];
-                    int	_x 		= int(32767.f*(t.x-Ct.x)/St.x); 
-                    clamp		(_x,-32767,32767); 
-                    Kt.x1 		= (s16)_x;
-                
-                    int	_y 		= int(32767.f*(t.y-Ct.y)/St.y); 
-                    clamp		(_y,-32767,32767); 
+                    CKeyQR& r = BM._keysQR[t_idx];
+                    if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
 
-                    Kt.y1 		=(s16)_y;
-                
-                    int	_z 		= int(32767.f*(t.z-Ct.z)/St.z); 
-                    clamp		(_z,-32767,32767); 
-                    Kt.z1 		=(s16)_z;
-                }else
-                {
-                    CKeyQT8&	Kt 	= BM._keysQT8[t_idx];
-                    int	_x 		= int(127.f*(t.x-Ct.x)/St.x); 
-                    clamp		(_x,-128,127); 
-                    Kt.x1 		= (s16)_x;
-                
-                    int	_y 		= int(127.f*(t.y-Ct.y)/St.y); 
-                    clamp		(_y,-128,127); 
+                    if (bTransform16Bit)
+                    {
+                        CKeyQT16& Kt = BM._keysQT16[t_idx];
+                        int	_x = int(32767.f * (t.x - Ct.x) / St.x);
+                        clamp(_x, -32767, 32767);
+                        Kt.x1 = (s16)_x;
 
-                    Kt.y1 		=(s16)_y;
-                
-                    int	_z 		= int(127.f*(t.z-Ct.z)/St.z); 
-                    clamp		(_z,-128,127); 
-                    Kt.z1 		=(s16)_z;
+                        int	_y = int(32767.f * (t.y - Ct.y) / St.y);
+                        clamp(_y, -32767, 32767);
+
+                        Kt.y1 = (s16)_y;
+
+                        int	_z = int(32767.f * (t.z - Ct.z) / St.z);
+                        clamp(_z, -32767, 32767);
+                        Kt.z1 = (s16)_z;
+                    }
+                    else
+                    {
+                        CKeyQT8& Kt = BM._keysQT8[t_idx];
+                        int	_x = int(127.f * (t.x - Ct.x) / St.x);
+                        clamp(_x, -128, 127);
+                        Kt.x1 = (s16)_x;
+
+                        int	_y = int(127.f * (t.y - Ct.y) / St.y);
+                        clamp(_y, -128, 127);
+
+                        Kt.y1 = (s16)_y;
+
+                        int	_z = int(127.f * (t.z - Ct.z) / St.z);
+                        clamp(_z, -128, 127);
+                        Kt.z1 = (s16)_z;
+                    }
                 }
             }
             if(bTransform16Bit)
@@ -1064,28 +1107,50 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             	St.div	(127.f);
                 
             // save
-            F.w_u8	(u8((t_present?flTKeyPresent:0)|(r_present?0:flRKeyAbsent)|(bTransform16Bit?flTKey16IsBit:0)));
+            F.w_u8	(u8((t_present?flTKeyPresent:0)|(r_present?0:flRKeyAbsent)|(bTransform16Bit?flTKey16IsBit:0)|(g_force32BitTransformQuant ? flTKeyFFT_Bit : 0)));
             if (r_present)
             {	
-                F.w_u32	(crc32(BM._keysQR,dwLen*sizeof(CKeyQR)));
-                F.w		(BM._keysQR,dwLen*sizeof(CKeyQR));
-            }else
+                if (g_force32BitTransformQuant)
+                {
+                    F.w_u32(crc32(BM._keysQR32, dwLen * sizeof(CKeyQR32)));
+                    F.w(BM._keysQR32, dwLen * sizeof(CKeyQR32));
+                }
+                else
+                {
+                    F.w_u32(crc32(BM._keysQR, dwLen * sizeof(CKeyQR)));
+                    F.w(BM._keysQR, dwLen * sizeof(CKeyQR));
+                }
+
+            }
+            else
             {
-                F.w		(&BM._keysQR[0],sizeof(BM._keysQR[0]));
+                if (g_force32BitTransformQuant)
+                    F.w		(&BM._keysQR32[0],sizeof(BM._keysQR32[0]));
+                else
+                    F.w     (&BM._keysQR[0],sizeof(BM._keysQR[0]));
             }
             if (t_present)
-            {	
-            	if(bTransform16Bit)
+            {
+                if (g_force32BitTransformQuant)
                 {
-                    F.w_u32(crc32(BM._keysQT16,u32(dwLen*sizeof(CKeyQT16))));
-                    F.w	(BM._keysQT16,dwLen*sizeof(CKeyQT16));
-                }else
-                {
-                    F.w_u32(crc32(BM._keysQT8,u32(dwLen*sizeof(CKeyQT8))));
-                    F.w	(BM._keysQT8,dwLen*sizeof(CKeyQT8));
+                    F.w_u32(crc32(BM._keysQT32, u32(dwLen * sizeof(CKeyQT32))));
+                    F.w(BM._keysQT32, dwLen * sizeof(CKeyQT32));
                 }
-	            F.w_fvector3		(St);
-    	        F.w_fvector3		(Ct);
+                else
+                {
+                    if (bTransform16Bit)
+                    {
+                        F.w_u32(crc32(BM._keysQT16, u32(dwLen * sizeof(CKeyQT16))));
+                        F.w(BM._keysQT16, dwLen * sizeof(CKeyQT16));
+                    }
+                    else
+                    {
+                        F.w_u32(crc32(BM._keysQT8, u32(dwLen * sizeof(CKeyQT8))));
+                        F.w(BM._keysQT8, dwLen * sizeof(CKeyQT8));
+                    }
+                    F.w_fvector3(St);
+                    F.w_fvector3(Ct);
+                }
             }else
             {
                 F.w_fvector3		(Mt);
