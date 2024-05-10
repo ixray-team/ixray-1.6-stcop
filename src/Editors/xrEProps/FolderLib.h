@@ -311,6 +311,7 @@ public:
 				if (node.IsFolder() && IsDrawFolder(&node))
 				{
 					DrawNode(&node);
+					ImGui::Separator();
 				}
 			}
 			for (Node& node : N->Nodes)
@@ -318,6 +319,7 @@ public:
 				if (!node.IsFolder())
 				{
 					DrawNode(&node);
+					ImGui::Separator();
 				}
 			}
 		}

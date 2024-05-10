@@ -335,12 +335,12 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
     V->OnChangeEvent.bind			(this,&CActorTools::OnMotionRefsChange);
     ButtonValue* B;             
 
-    B=PHelper().CreateButton	(items, PrepareKey(pref,"Export Import"),			"ExportRefs,ImportRefs",ButtonValue::flFirstOnly);
+    B=PHelper().CreateButton	(items, PrepareKey(pref,"Export Import"),			"Export,Import",ButtonValue::flFirstOnly);
     B->OnBtnClickEvent.bind		(this,&CActorTools::OnExportImportRefsClick); 
 
     if (m_pEditObject->m_SMotionRefs.size()==0) 
     {            
-        B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Edit"),			"Append,Delete,Save",ButtonValue::flFirstOnly);
+        B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Edit"),			"Add,Del,Save",ButtonValue::flFirstOnly);
         B->OnBtnClickEvent.bind		(this,&CActorTools::OnMotionEditClick); 
     }
     if (SM)

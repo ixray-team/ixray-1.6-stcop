@@ -91,12 +91,12 @@ void UILeftBarForm::Draw()
 
 		ImGui::Separator();
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (ImGui::TreeNode("Object Items"))
+		//if (ImGui::TreeNode("Object Items"))
 		{
 			ImGui::BeginGroup();
 			ATools->m_ObjectItems->Draw();
 			ImGui::EndGroup();
-			ImGui::TreePop();
+		//	ImGui::TreePop();
 		}
 
 		ImGui::End();

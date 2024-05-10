@@ -1251,12 +1251,16 @@ void CDrawUtilities::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 sha
 {
 	Fvector p;
 	float w	= pos.x*EDevice->mFullTransform._14 + pos.y*EDevice->mFullTransform._24 + pos.z*EDevice->mFullTransform._34 + EDevice->mFullTransform._44;
-	if (w>=0){
+
+	if (w>=0)
+    {
 		EDevice->mFullTransform.transform(p,pos);
 		p.x = (float)iFloor(_x2real(p.x)); p.y = (float)iFloor(_y2real(-p.y));
 
+        const float DeltaQuality = EDevice->m_ScreenQuality;
+
         TUI::DrawDebugString StringData;
-        StringData.Pos = { p.x, p.y };
+        StringData.Pos = { p.x / DeltaQuality, p.y / DeltaQuality };
         StringData.Text = text;
         StringData.Color = color;
 
