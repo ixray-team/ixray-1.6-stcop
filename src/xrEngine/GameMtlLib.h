@@ -81,9 +81,7 @@ class ButtonValue;
 struct MTL_EXPORT_API SGameMtl
 {
 	friend class CGameMtlLibrary;
-protected:
 	int 				ID; 	// auto number
-public:
 	enum{
     	flBreakable		= (1ul<<0ul),
 //		flShootable 	= (1ul<<1ul),

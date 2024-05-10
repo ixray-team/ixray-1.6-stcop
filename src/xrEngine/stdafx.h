@@ -1,11 +1,8 @@
 #pragma once
 #include "../xrCore/xrCore.h"
 
-#ifdef _EDITOR
-	#include "..\editors\EditorEngineAPI\stdafx.h"
-#else
 
-#include "../xrCore/API/xrAPI.h"
+
 
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
@@ -38,6 +35,8 @@
 	#define ENGINE_API
 	#define DLL_API
 #endif // NO_ENGINE_API
+
+#include "../xrCore/API/xrAPI.h"
 
 #define ECORE_API
 
@@ -74,4 +73,3 @@ extern ENGINE_API CInifile *pGameIni;
 
 #include "FontManager.h"
 #include "ImGuiManager.h"
-#endif // !M_BORLAND
