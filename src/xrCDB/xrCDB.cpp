@@ -1,7 +1,7 @@
 // xrCDB.cpp : Defines the entry point for the DLL application.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #pragma hdrstop
 
 #include "xrCDB.h"
@@ -16,21 +16,37 @@ namespace Opcode
 using namespace CDB;
 using namespace Opcode;
 
-BOOL APIENTRY DllMain( HANDLE hModule, 
-					  u32  ul_reason_for_call, 
-					  LPVOID lpReserved
-					  )
+#ifdef IXR_WINDOWS
+BOOL APIENTRY DllMain( HANDLE hModule,
+                      DWORD  ul_reason_for_call,
+                      LPVOID lpReserved
+)
 {
-    switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-    }
-    return TRUE;
+  switch (ul_reason_for_call)
+  {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    break;
+  }
+  return TRUE;
 }
+#else
+#include <stdio.h>
+
+__attribute__((constructor))
+void library_load(void) {
+  // Code here will run when the shared library is loaded
+  printf("Library loaded.\n");
+}
+
+__attribute__((destructor))
+void library_unload(void) {
+  // Code here will run when the shared library is unloaded
+  printf("Library unloaded.\n");
+}
+#endif
 
 XRCDB_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
 {

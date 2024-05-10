@@ -9,7 +9,7 @@ private:
 	T*					list;
 	xr_vector<T*>		blocks;
 private:
-	T**					access			(T* P)	{ return (T**) LPVOID(P);	}
+	T** access(T* P) { return (T**)((void*)P); }
 	void				block_create	()
 	{
 		// Allocate
@@ -23,7 +23,7 @@ private:
 			T*		E			= list+it;
 			*access(E)			= E+1;
 		}
-		*access(list+granularity-1)	= NULL;
+		*access(list+granularity-1)	= nullptr;
 	}
 public:
 	poolSS()
@@ -48,7 +48,7 @@ public:
 		P->~T			();
 		*access(P)		= list;
 		list			= P;
-		P				= NULL;
+		P				= nullptr;
 	}
     void				clear			()
     {

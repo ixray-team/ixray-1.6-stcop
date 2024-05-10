@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "igame_level.h"
+#include "IGame_Level.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"
-#include "../xrcdb/xr_area.h"
+#include "../xrCDB/xr_area.h"
 #include "x_ray.h"
 #include "xrLevel.h"
-#include "fmesh.h"
-#include "../xrCDB/frustum.h"
+#include "Fmesh.h"
+#include "../xrCDB/Frustum.h"
 
 //#include "skeletoncustom.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -18,7 +18,7 @@ IC float DET(const Fmatrix &a){
 		a._12 * ( a._21 * a._33 - a._23 * a._31 ) +
 		a._13 * ( a._21 * a._32 - a._22 * a._31 ) ));
 }
-#include "objectdump.h"
+#include "ObjectDump.h"
 #endif
 using namespace	collide;
 //----------------------------------------------------------------------

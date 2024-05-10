@@ -8,7 +8,9 @@
 #define REG_PRIORITY_CAPTURE	0x7ffffffful
 #define REG_PRIORITY_INVALID	0xfffffffful
 
-typedef void __fastcall RP_FUNC		(void *obj);
+// typedef void __fastcall RP_FUNC		(void *obj);
+typedef void RP_FUNC(void* obj);
+
 #define DECLARE_MESSAGE_CL(name,calling)		extern ENGINE_API RP_FUNC rp_##name; class ENGINE_API pure##name { public: virtual void calling On##name(void)=0;	}
 	
 #define DECLARE_MESSAGE( name )	DECLARE_MESSAGE_CL(name, )

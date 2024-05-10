@@ -115,7 +115,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		FS._initialize		(flags,0,fs_fname);
 		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
 		EFS._initialize		();
-#ifdef DEBUG
+#if defined(DEBUG) && defined(IXR_WINDOWS)
     #ifndef	_EDITOR
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
 		Msg					("Process heap 0x%08x",GetProcessHeap());

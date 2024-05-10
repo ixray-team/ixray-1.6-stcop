@@ -37,7 +37,7 @@ BOOL xrCriticalSection::TryEnter()
 #ifdef IXR_WINDOWS
 	return TryEnterCriticalSection((CRITICAL_SECTION*)&pmutex);
 #else
-    pmutex.try_lock();
+    return pmutex.try_lock();
 #endif
 }
 

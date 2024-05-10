@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "xr_area.h"
 #include "../xrEngine/xr_object.h"

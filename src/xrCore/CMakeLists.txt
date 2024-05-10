@@ -187,10 +187,12 @@ if (WIN32)
 else()
     target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/libtbb.so.12.13")
     target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0)
-    target_link_libraries(xrCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/discord.so)
+
 endif()
 
-target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
+if (WIN32)
+    target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
+endif()
 
 # Git Info
 include(gitver.cmake)
@@ -202,4 +204,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN}tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
+else()
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Debug/libSDL3.so.0.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/libSDL3.so.0
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_LIB}/libtbb.so.12.13 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/libtbb.so.12.13
+)    
 endif()

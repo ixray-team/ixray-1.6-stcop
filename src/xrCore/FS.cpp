@@ -517,6 +517,8 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 #ifdef IXR_WINDOWS
 	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
+#else
+	hSrcMap = hSrcFile;
 #endif
 
     data = (char*)Platform::MapFile(hSrcMap, Size, true);

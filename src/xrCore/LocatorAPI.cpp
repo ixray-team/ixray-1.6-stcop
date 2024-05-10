@@ -662,8 +662,8 @@ bool CLocatorAPI::Recurse(const char* path)
 
 		if (CurrentFile.is_directory())
 			sFile.attrib |= _A_SUBDIR;
-
-		sFile.size = CurrentFile.file_size();
+		else 
+			sFile.size = CurrentFile.file_size();
 
 #ifdef IXR_WINDOWS
 		if (GetFileAttributes(currentPath.generic_wstring().c_str()) & FILE_ATTRIBUTE_HIDDEN)

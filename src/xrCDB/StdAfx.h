@@ -44,7 +44,7 @@ IC	void cdelete		(T* &ptr)
 	if (ptr) 
 	{
 		cspecial_free<std::is_polymorphic<T>::value,T>()(ptr);
-		ptr = NULL;
+		ptr = nullptr;
 	}
 }
 

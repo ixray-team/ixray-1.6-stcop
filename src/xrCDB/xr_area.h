@@ -10,7 +10,7 @@ class 	CObject;
 #include "../Include/xrRender/ObjectSpaceRender.h"
 #include "xrXRC.h"
 
-#include "xrcdb.h"
+#include "xrCDB.h"
 
 //-----------------------------------------------------------------------------------------------------------
 //Space Area

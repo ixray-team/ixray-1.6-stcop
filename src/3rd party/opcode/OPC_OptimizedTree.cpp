@@ -546,17 +546,17 @@ bool AABBNoLeafTree::Walk(GenericWalkingCallback callback, void* user_data) cons
 		}																			\
 	}
 
-#define REMAP_DATA(member)											\
-	/* Fix data */													\
-	Data = Nodes[i].member;											\
-	if(!(Data&1))													\
-	{																\
-		/* Compute box number */									\
-		size_t Nb = (Data - size_t(Nodes))/Nodes[i].GetNodeSize();	\
-		Data = (size_t) &mNodes[Nb];								\
-	}																\
-	/* ...remapped */												\
-	mNodes[i].member = Data;
+#define REMAP_DATA(member, NodeType)                                    \
+    /* Fix data */                                                      \
+    Data = Nodes[i].member;                                             \
+    if(!(Data&1))                                                       \
+    {                                                                   \
+        /* Compute box number */                                        \
+        size_t Nb = (Data - size_t(Nodes))/sizeof(NodeType);			\
+        Data = reinterpret_cast<size_t>(&mNodes[Nb]);                   \
+    }                                                                   \
+    /* ...remapped */                                                   \
+    mNodes[i].member = Data;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**

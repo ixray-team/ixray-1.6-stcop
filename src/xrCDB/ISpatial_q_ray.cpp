@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ISpatial.h"
 
 // can you say "barebone"?

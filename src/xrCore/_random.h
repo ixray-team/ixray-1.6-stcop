@@ -3,7 +3,7 @@
 class CRandom
 {
 private:
-	volatile	s32		holdrand;
+        s32		holdrand;
 public:
 	CRandom()			: holdrand(1)				{};
 	CRandom(s32 _seed)	: holdrand(_seed)			{};

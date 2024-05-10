@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "shared_string.h"
 
-XRCORE_API extern str_container* g_pStringContainer = nullptr;
+XRCORE_API str_container* g_pStringContainer = nullptr;
 
 shared_str& __cdecl shared_str::printf(const char* format, ...)
 {

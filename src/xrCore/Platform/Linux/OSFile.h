@@ -184,7 +184,13 @@ namespace Platform
         if (!bRead)
             flag |= PROT_WRITE;
 
-        return mmap(0, Size, flag, MAP_SHARED, hSrcFile, Offset);
+        auto Ptr = mmap(0, Size, flag, MAP_SHARED, hSrcFile, Offset);
+        if (Ptr == MAP_FAILED)
+        {
+            std::string error = strerror(errno);
+            return nullptr;
+        }
+        return Ptr;
     }
 
     IC void UnmapFile(void* Ptr, size_t Size)

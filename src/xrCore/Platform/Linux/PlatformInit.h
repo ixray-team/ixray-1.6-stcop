@@ -46,6 +46,18 @@ using LPCSTR = const char*;
 using BYTE = char;
 using UINT_PTR = uint64_t;
 
+using DWORD = uint32_t;
+using BOOL = int32_t;
+using HRESULT = long;
+using LRESULT = long;
+using HMODULE = void*;
+
+#define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
+#define FAILED(hr) (((HRESULT)(hr)) < 0)
+#define S_OK 0x00000000
+#define S_FALSE 0x10000000
+#define E_FAIL 0x80004005
+
 #define xr_strerror(errno, buffer, bufferSize) strerror_r(errno, buffer, sizeof(buffer))
 
 inline unsigned long GetLastError()

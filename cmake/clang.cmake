@@ -1,12 +1,10 @@
 # General build options
-add_compile_options(-Wno-reorder-ctor -Wno-switch -Wno-macro-redefined -Wno-implicit-exception-spec-mismatch -Wno-deprecated-volatile 
-                    -Wno-inline-new-delete -Wno-c++11-narrowing -Wno-unused-local-typedef -Wno-defaulted-function-deleted -Wno-undefined-inline
-                    -Wno-volatile)
+add_compile_options(-Wno-switch -Wno-unused-result)
 
 if (WIN32)
     add_compile_options(--Wno-microsoft-template-shadow)
 else()
-    add_compile_options(-fms-extensions -Wno-null-conversion -Wno-null-dereference)
+    add_compile_options(-fms-extensions -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format)
 endif()
 
 if (NOT WIN32)

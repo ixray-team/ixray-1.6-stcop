@@ -88,6 +88,11 @@ u32	mem_usage_impl	(u32* pBlocksUsed, u32* pBlocksFree)
 	}
 	return (u32) total;
 }
+#else
+u32    mem_usage_impl    (u32* pBlocksUsed, u32* pBlocksFree)
+{
+  return 0;
+}
 #endif
 
 u32		xrMemory::mem_usage		(u32* pBlocksUsed, u32* pBlocksFree)

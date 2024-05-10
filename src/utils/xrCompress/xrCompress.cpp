@@ -175,7 +175,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 		return;
 	}
 
-	string_path		fn;				
+	string_path		fn = {};				
 	xr_strconcat(fn, target_name.c_str(), "\\", path);
 
 	if (std::filesystem::is_directory(Platform::ValidPath(fn)))
