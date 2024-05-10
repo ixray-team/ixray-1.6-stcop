@@ -4,10 +4,14 @@ project(xrEUI)
 file(GLOB_RECURSE EUI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
 )
+file(GLOB_RECURSE EUI_SOURCE_NODE_FILES CONFIGURE_DEPENDS
+    "ImNodeEditor/*.*"
+)
 
 set(EUI_SRC_FILES)
 
 source_group("src" FILES ${EUI_SOURCE_ALL_FILES})
+source_group("node" FILES ${EUI_SOURCE_NODE_FILES})
 
 # Apply list
 list(APPEND EUI_SRC_FILES ${EUI_SOURCE_ALL_FILES})

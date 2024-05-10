@@ -18,5 +18,6 @@ using ImTextureID = IDirect3DBaseTexture9*;
 #define IMGUI_IMPL_API
 #define IMGUI_DISABLE_INCLUDE_IMCONFIG_H
 #define IMGUI_INCLUDE_IMGUI_USER_H
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "imgui.h"

@@ -192,6 +192,8 @@ void CActorTools::RealUpdateProperties()
                 m_pEditObject->FillMotionList(MOTIONS_PREFIX, items, emMotion);
             }
             m_pEditObject->FillBoneList(BONES_PREFIX, items, emBone);
+
+            BoneView->FillBones(m_pEditObject->Bones());
         }
     }
 

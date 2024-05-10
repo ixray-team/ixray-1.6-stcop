@@ -4,6 +4,8 @@
 #include "../../xrEngine/xr_input.h"
 
 #include "../xrEProps/UIFileLoad.h"
+#include "../xrEProps/UIBoneView.h"
+
 CUFileOpen* FileOpen = nullptr;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)

@@ -108,9 +108,9 @@ void UILeftBarForm::Draw()
 		ImGui::BeginGroup();
 			ATools->m_Props->Draw();
 		ImGui::EndGroup();
-
-		ImGui::End();
 	}
+
+	ImGui::End();
 }
 
 void UILeftBarForm::SetRenderMode(bool bEngineMode)
