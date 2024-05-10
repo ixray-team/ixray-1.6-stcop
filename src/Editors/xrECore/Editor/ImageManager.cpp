@@ -204,62 +204,81 @@ bool CImageManager::MakeGameTexture(LPCSTR game_name, u32* data, const STextureP
 }
 bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, LPCSTR game_name, u32* load_data)
 {
-	VerifyPath(game_name);
+    VerifyPath(game_name);
     // flip
     u32 w = THM->_Width();
     u32 h = THM->_Height();
-    u32 w4= w*4;
-	// remove old
-    FS.file_delete			(game_name);
-    xr_string game_name2 	= ChangeFileExt(game_name,"#.dds");
-    FS.file_delete			(game_name2.c_str());
+    u32 w4 = w * 4;
+    // remove old
+    FS.file_delete(game_name);
+    xr_string game_name2 = ChangeFileExt(game_name, "#.dds");
+    FS.file_delete(game_name2.c_str());
 
     U32Vec 	ext_data;
-    if ((THM->m_TexParams.type==STextureParams::ttBumpMap)&&(THM->m_TexParams.ext_normal_map_name.size()))
+    if ((THM->m_TexParams.type == STextureParams::ttBumpMap) && (THM->m_TexParams.ext_normal_map_name.size()))
     {
-    	bool e_res			= true;
-        LPCSTR e_name		= THM->m_TexParams.ext_normal_map_name.c_str();
-        ETextureThumbnail* 	NM_THM = xr_new<ETextureThumbnail>(e_name);
-        if (NM_THM->_Format().type==STextureParams::ttNormalMap)
+        bool e_res = true;
+        LPCSTR e_name = THM->m_TexParams.ext_normal_map_name.c_str();
+        ETextureThumbnail* NM_THM = xr_new<ETextureThumbnail>(e_name);
+        if (NM_THM->_Format().type == STextureParams::ttNormalMap)
         {
-	        if (NM_THM->_Format().fmt==STextureParams::tfRGBA)
+            if (NM_THM->_Format().fmt == STextureParams::tfRGBA)
             {
-            	u32 _w,_h;
-                if (!LoadTextureData(e_name,ext_data,_w,_h))
+                u32 _w, _h;
+                if (!LoadTextureData(e_name, ext_data, _w, _h))
                 {
-                    ELog.DlgMsg	(mtError,"Can't load special normal map texture '%s'.",e_name);
-                    e_res		= false;
-                }else if ((_w!=w)||(_h!=h))
-                {
-                    ELog.DlgMsg	(mtError,"Invalid load special normal map size '%s'. It should be [%dx%d]",e_name,w,h);
-                    e_res		= false;
+                    ELog.DlgMsg(mtError, "Can't load special normal map texture '%s'.", e_name);
+                    e_res = false;
                 }
-        	}else{
-                ELog.DlgMsg		(mtError,"Invalid special normal map format '%s'. It should be '32 bit (8:8:8:8)'",e_name);
-                e_res			= false;
+                else if ((_w != w) || (_h != h))
+                {
+                    ELog.DlgMsg(mtError, "Invalid load special normal map size '%s'. It should be [%dx%d]", e_name, w, h);
+                    e_res = false;
+                }
             }
-        }else{
-            ELog.DlgMsg		(mtError,"Invalid special normal map type '%s'. It should be 'NormalMap'",e_name);
-            e_res			= false;
+            else {
+                ELog.DlgMsg(mtError, "Invalid special normal map format '%s'. It should be '32 bit (8:8:8:8)'", e_name);
+                e_res = false;
+            }
         }
-        xr_delete			(NM_THM);
-        if (false==e_res)	return false;
+        else {
+            ELog.DlgMsg(mtError, "Invalid special normal map type '%s'. It should be 'NormalMap'", e_name);
+            e_res = false;
+        }
+        xr_delete(NM_THM);
+        if (false == e_res)	return false;
     }
     // compress
-    int res 	= DXTCompress(game_name, (u8*)load_data, (u8*)(ext_data.empty()?0:ext_data.data()), w, h, w4, &THM->m_TexParams, 4);
-   if (1!=res){
-    	if (-1000!=res){ //. Special for Oles (glos<10%) 
-            FS.file_delete	(game_name);
-            FS.file_delete	(game_name2.c_str());
-        }
-        switch(res){
-        case 0:		ELog.DlgMsg	(mtError,"Can't make game texture '%s'.",THM->m_SrcName.c_str());	break;
-        case -1000:	ELog.Msg	(mtError,"Invalid gloss mask '%s'.",THM->m_SrcName.c_str());		return true;
-        }
-		return false;
+
+    int res = 0;
+
+   //if (THM->m_TexParams.type == STextureParams::ttCubeMap)
+   //{
+   //    Msg("CubeMap not supported! I'm sorry... :(");
+   //}
+   //else
+    {
+        res = DXTCompress(game_name, (u8*)load_data, (u8*)(ext_data.empty() ? 0 : ext_data.data()), w, h, w4, &THM->m_TexParams, 4);
     }
-    R_ASSERT((res==1)&&FS.file_length(game_name));
-    return res==1;
+
+    if (1 != res) 
+    {
+        if (-1000 != res) 
+        {
+            //. Special for Oles (glos<10%) 
+            FS.file_delete(game_name);
+            FS.file_delete(game_name2.c_str());
+        }
+
+        switch (res) {
+        case 0:		ELog.DlgMsg(mtError, "Can't make game texture '%s'.", THM->m_SrcName.c_str());	break;
+        case -1000:	ELog.Msg(mtError, "Invalid gloss mask '%s'.", THM->m_SrcName.c_str());		return true;
+        }
+        return false;
+    }
+
+    //R_ASSERT((res == 1) && FS.file_length(game_name));
+    return res == 1;
 }
 
 //------------------------------------------------------------------------------

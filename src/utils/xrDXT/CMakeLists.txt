@@ -38,3 +38,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 target_link_libraries(xrDXT PRIVATE ${NVTT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/nvtt.lib)
 target_include_directories(xrDXT PRIVATE "${NVTT}/native/include/")
+
+target_include_directories(xrDXT PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
+target_link_libraries(xrDXT PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)

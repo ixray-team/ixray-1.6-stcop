@@ -103,8 +103,11 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	}
 	bool result = false;
 	nvtt::InputOptions inOpt;
-	auto layout = fmt->type == STextureParams::ttCubeMap ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
-	inOpt.setTextureLayout(layout, w, h);
+	
+	
+	//auto layout = fmt->type == STextureParams::ttCubeMap ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
+	// nvtt требует реального CUBE, а не ту срань, что мы ему кормим из SDK
+	inOpt.setTextureLayout(nvtt::TextureType_2D, w, h);
 	if (fmt->flags.is(STextureParams::flGenerateMipMaps))	inOpt.setMipmapGeneration(true);
 	else													inOpt.setMipmapGeneration(false);
 	inOpt.setWrapMode(nvtt::WrapMode_Clamp);
@@ -133,6 +136,7 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	case STextureParams::kMIPFilterKaiser:      inOpt.setMipmapFilter(nvtt::MipmapFilter_Kaiser);   break;
 	}
 	nvtt::OutputOptions outOpt;
+	
 	DDSWriter writer(gFileOut);
 	outOpt.setOutputHandler(&writer);
 	DDSErrorHandler handler;
@@ -178,8 +182,7 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	}
 	else
 	{
-		RGBAImage pImage(w, h);
-		rgba_t* pixels = pImage.pixels();
+		rgba_t* pixels = new rgba_t[w * h * 4];
 		u8* pixel = raw_data;
 		for (u32 k = 0; k<w*h; k++, pixel += 4)
 			pixels[k].set(pixel[0], pixel[1], pixel[2], pixel[3]);

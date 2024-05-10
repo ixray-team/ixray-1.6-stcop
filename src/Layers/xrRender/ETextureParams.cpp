@@ -40,6 +40,7 @@ xr_token					tfmt_token								[ ]={
 	{ "DXT1 Alpha",			STextureParams::tfADXT1						},
 	{ "DXT3",				STextureParams::tfDXT3						},
 	{ "DXT5",				STextureParams::tfDXT5						},
+	{ "DBC7",				STextureParams::tfBC7						},
 	{ "16 bit (1:5:5:5)",	STextureParams::tf1555						},
 	{ "16 bit (5:6:5)",		STextureParams::tf565						},
 	{ "32 bit (8:8:8:8)",	STextureParams::tfRGBA						},
