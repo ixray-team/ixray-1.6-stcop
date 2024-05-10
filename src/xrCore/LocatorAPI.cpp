@@ -649,9 +649,11 @@ bool CLocatorAPI::Recurse(const char* path)
 	for (const std::filesystem::directory_entry& CurrentFile : std::filesystem::directory_iterator{ N })
     {
 		std::filesystem::path currentPath = CurrentFile.path();
-
+#ifdef IXR_WINDOWS
 		xr_string ValidFileName = Platform::TCHAR_TO_ANSI_U8(currentPath.generic_wstring().c_str());
-
+#else
+                xr_string ValidFileName = Platform::TCHAR_TO_ANSI_U8(currentPath.generic_string().c_str());
+#endif
 		if (bWrapPath)
 			ValidFileName = ValidFileName.substr(2);
 

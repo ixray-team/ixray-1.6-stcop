@@ -51,7 +51,11 @@ if (IXRAY_ASAN)
 endif()
 
 # Configure NuGet
-include("cmake/nuget.cmake")
+if (WIN32)
+    include("cmake/windows/nuget.cmake")
+else()
+    include("cmake/linux/nuget.cmake")
+endif()
 
 # Download API from GitHub Releases
 include("cmake/github.cmake")

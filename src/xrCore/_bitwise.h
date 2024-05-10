@@ -86,7 +86,7 @@ IC int iFloor (float x)
 /* intCeil() is a non-interesting variant, since effectively
    ceil(x) == -floor(-x)
 */
-ICF int iCeil (float x)
+IC int iCeil (float x)
 {
 	return (int)std::ceil(x);
 }

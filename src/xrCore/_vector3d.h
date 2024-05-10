@@ -20,8 +20,8 @@ public:
 	ICF	T&			operator[] (int i)					{ return *((T*)this + i); }
 	ICF	T&			operator[] (int i)	const			{ return *((T*)this + i); }
 
-	template<class T>
-	IC bool operator==(T ls)
+	template<class T1>
+	IC bool operator==(T1 ls)
 	{
 		return x == ls.x && y == ls.y && z == ls.z;
 	}

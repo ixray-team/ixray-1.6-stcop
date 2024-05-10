@@ -16,6 +16,7 @@ using errno_t = int;
 #define _read read
 #define _lseeki64 lseek64
 #define _lseek lseek
+#define _wsopen_s _sopen_s
 
 #define _O_WRONLY O_WRONLY
 #define _O_RDONLY O_RDONLY

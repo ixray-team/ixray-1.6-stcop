@@ -65,3 +65,7 @@ patch/
 imgui.ini
 git_version.h
 changelog.txt
+
+#CLion
+cmake-build-debug/
+cmake-build-release/
