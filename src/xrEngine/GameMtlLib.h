@@ -239,7 +239,8 @@ public:
 using GameMtlPairVec = xr_vector<SGameMtlPair*>;
 using GameMtlPairIt = GameMtlPairVec::iterator;
 
-class MTL_EXPORT_API CGameMtlLibrary{
+class MTL_EXPORT_API CGameMtlLibrary
+{
 	int					material_index;
 	int					material_pair_index;
 
@@ -318,7 +319,7 @@ public:
 #endif
 	IC u16				GetMaterialIdx	(int ID)		{GameMtlIt it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
 	IC u16				GetMaterialIdx	(LPCSTR name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
-	IC SGameMtl*		GetMaterialByIdx(u16 idx)		{VERIFY(idx<(u16)materials.size()); return materials[idx];}
+	   SGameMtl*		GetMaterialByIdx(u16 idx)		;
 
 
 	IC GameMtlIt		FirstMaterial	(){return materials.begin();}

@@ -23,6 +23,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     ::MainForm = MainForm;
 
     GameMaterialLibraryEditors->Load();
+    PGMLib->Load();
 
     FileOpen = new CUFileOpen;
     UI->Push(MainForm, false);

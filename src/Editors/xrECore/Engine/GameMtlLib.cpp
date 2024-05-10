@@ -7,6 +7,17 @@
 
 CGameMtlLibrary GMLib;
 
+SGameMtl* CGameMtlLibrary::GetMaterialByIdx(u16 idx)
+{
+    if (idx >= materials.size())
+    {
+        Msg("Material [%d] not found in library! ", (int)idx);
+        return materials[0];
+    }
+
+    return materials[idx];
+}
+
 void SGameMtl::Load(IReader& fs)
 {
 	R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_MAIN));
